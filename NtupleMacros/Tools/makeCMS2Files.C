@@ -32,7 +32,7 @@ makeCMS2Files(std::string fname) {
 
   
   TTree *ev = (TTree*)f->Get("Events");
-  TObjArray *aliasarray = ev->GetListOfAliases();
+  TList *aliasarray = ev->GetListOfAliases();
 
   for(Int_t i = 0; i< aliasarray->GetSize(); ++i) {
 
