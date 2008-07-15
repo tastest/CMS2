@@ -33,7 +33,6 @@ makeCMS2Files(std::string fname) {
   
   TTree *ev = (TTree*)f->Get("Events");
   TList *aliasarray = ev->GetListOfAliases();
-
   for(Int_t i = 0; i< aliasarray->GetSize(); ++i) {
 
     //Class name is blank for a int of float
@@ -60,9 +59,11 @@ makeCMS2Files(std::string fname) {
     TString aliasname(aliasarray->At(i)->GetName());
     TBranch *branch = ev->GetBranch(ev->GetAlias(aliasname.Data()));
     TString classname = branch->GetClassName();
-    if ( classname.Contains("Lorentz") ) {
-      headerf << "\t" << Form("%s_branch",aliasname.Data()) << " = tree->GetBranch(tree->GetAlias(\"" << aliasname << "\"));" << endl;
-      headerf << "\t" << Form("%s_branch",aliasname.Data()) << "->SetAddress(&" << aliasname << ");" << endl;
+    if ( !classname.Contains("vector<vector") ) {
+      if ( classname.Contains("Lorentz") ) {
+	headerf << "\t" << Form("%s_branch",aliasname.Data()) << " = tree->GetBranch(tree->GetAlias(\"" << aliasname << "\"));" << endl;
+	headerf << "\t" << Form("%s_branch",aliasname.Data()) << "->SetAddress(&" << aliasname << ");" << endl;
+      }
     }
   }
   
@@ -72,7 +73,7 @@ makeCMS2Files(std::string fname) {
     TString aliasname(aliasarray->At(i)->GetName());
     TBranch *branch = ev->GetBranch(ev->GetAlias(aliasname.Data()));
     TString classname = branch->GetClassName();
-    if ( !classname.Contains("Lorentz") ) {
+    if ( !classname.Contains("Lorentz") || classname.Contains("vector<vector") ) {
       headerf << "\t" << Form("%s_branch",aliasname.Data()) << " = tree->GetBranch(tree->GetAlias(\"" << aliasname << "\"));" << endl;
       headerf << "\t" << Form("%s_branch",aliasname.Data()) << "->SetAddress(&" << aliasname << ");" << endl;
     }
@@ -90,8 +91,6 @@ makeCMS2Files(std::string fname) {
   }
 
   headerf << "}" << endl;
-
-
 
   codef << "//now make the source file" << endl;
   codef << "#include <iostream>" << endl;
@@ -125,8 +124,22 @@ makeCMS2Files(std::string fname) {
   codef << "    for( unsigned int event = 0; event < nEvents; ++event) {" << endl;
   codef << "      GetEntry(event);" << endl;
   codef << "      ++nEventsTotal;" << endl;
-  codef << "	  std::cout << \"els size: \" << els_p4.size() << std::endl;" << endl;
-  codef << "	  std::cout << \"mus size: \" << mus_p4.size() << std::endl;" << endl;
+  codef << "      std::cout << \"els size: \" << els_p4.size() << \" \";" << endl;
+  codef << "      std::cout << \"mus size: \" << mus_p4.size() << std::endl;" << endl;
+  codef << "      for (unsigned int hyp = 0;" << endl;
+  codef << "           hyp < hyp_jets_p4.size();" << endl;
+  codef << "           ++hyp) {" << endl;
+  codef << "        std::cout << \"hyp: \" << hyp << \"jet corrections:\";" << endl;
+  codef << "        for ( unsigned int jet = 0;" << endl;
+  codef << "              jet < hyp_jets_p4[hyp].size();" << endl;
+  codef << "              ++jet ) {" << endl;
+  codef << "          std::cout << \" \" << hyp_jets_p4[hyp][jet].pt();" << endl;
+  codef << "        }" << endl;
+  codef << "        std::cout << endl;" << endl;
+  codef << "      }" << endl;
+  codef << "      if ( hyp_jets_p4.size() == 0 ) {" << endl;
+  codef << "        std::cout << \"no hypothesis!\" << std::endl;" << endl;
+  codef << "      }" << endl;
   codef << "    }" << endl;
   codef << "  }" << endl;
   codef << "" << endl;
