@@ -26,7 +26,14 @@
 char* outFile = "myHist.root";
 
 // Flags for files to run over
-bool runWW = true;
+bool runWW    = true;
+bool runWZ    = true;
+bool runZZ    = true;
+bool runWjets = true;
+bool runDYee  = true;
+bool runDYmm  = true;
+bool runDYtt  = true;
+bool runttbar = true;
 
 // Load various tools
 gROOT->SetMacroPath((string(gROOT->GetMacroPath()) + ":" + "../Tools/").c_str());
@@ -39,7 +46,49 @@ gROOT->ProcessLine(".L myLoopingFunction.C+");
 //WW file
 if (runWW) {
   TChain *fWW = new TChain("Events");
-  fWW->Add("ntuple*.root");
+  fWW->Add("/uscms_data/d1/fgolf/sntuples/signal/ww/ntuple*.root");
+}
+
+//WZ file
+if (runWZ) {
+  TChain *fWZ = new TChain("Events");
+  fWZ->Add("/uscms_data/d1/fgolf/sntuples/signal/wz/ntuple*.root");
+}
+
+//ZZ file
+if (runZZ) {
+  TChain *fZZ = new TChain("Events");
+  fZZ->Add("/uscms_data/d1/fgolf/sntuples/signal/zz/ntuple*.root");
+}
+
+//Wjets file
+if (runWjets) {
+  TChain *fWjets = new TChain("Events");
+  fWjets->Add("/uscms_data/d1/fgolf/sntuples/soups/ntuple*.root");
+}
+
+//DYee file
+if (runDYee) {
+  TChain *fDYee = new TChain("Events");
+  fDYee->Add("/uscms_data/d1/fgolf/sntuples/soups/ntuple*.root");
+}
+
+//DYmm file
+if (runDYmm) {
+  TChain *fDYmm = new TChain("Events");
+  fDYmm->Add("/uscms_data/d1/fgolf/sntuples/soups/ntuple*.root");
+}
+
+//DYtt file
+if (runDYtt) {
+  TChain *fDYtt = new TChain("Events");
+  fDYtt->Add("/uscms_data/d1/fgolf/sntuples/soups/ntuple*.root");
+}
+
+//ttbar file
+if (runttbar) {
+  TChain *fttbar = new TChain("Events");
+  fttbar->Add("/uscms_data/d1/fgolf/sntuples/soups/ntuple*.root");
 }
 
 // Define colors numbers:
@@ -48,12 +97,53 @@ enum EColor { kWhite, kBlack, kRed, kGreen, kBlue, kYellow, kMagenta, kCyan };
 
 // Process files one at a time, and color them as needed
 if (runWW) {
-  cout << "Processing WW.."<<endl;
-  ScanChain(fWW);
-  hist::color("ww", kBlue);
+  cout << "Processing WW.."<< endl;
+  ScanChain(fWW, WW);
+  hist::color("ww", kRed);
+}
+
+if (runWZ) {
+  cout << "Processing WZ.."<< endl;
+  ScanChain(fWZ, WZ);
+  hist::color("wz", kBlue);
+}
+
+if (runZZ) {
+  cout << "Processing ZZ.."<< endl;
+  ScanChain(fZZ, ZZ);
+  hist::color("zz", kGreen);
+}
+
+if (runWjets) {
+  cout << "Processing Wjets.."<<endl;
+  ScanChain(fWjets, Wjets);
+  hist::color("wjets", 40);
+}
+
+if (runDYee) {
+  cout << "Processing DYee.."<<endl;
+  ScanChain(fDYee, DYee);
+  hist::color("dyee", kMagenta);
+}
+
+if (runDYmm) {
+  cout << "Processing DYmm.."<<endl;
+  ScanChain(fDYmm, DYmm);
+  hist::color("dymm", kCyan);
+}
+
+if (runDYtt) {
+  cout << "Processing DYtt.."<<endl;
+  ScanChain(fDYtt, DYtt);
+  hist::color("dytt", kBlack);
+}
+
+if (runttbar) {
+  cout << "Processing ttbar.."<<endl;
+  ScanChain(fttbar, ttbar);
+  hist::color("ttbar", kYellow);
 }
 
 //save all the histograms
 saveHist(outFile);
-
 }

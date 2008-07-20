@@ -2,6 +2,7 @@
 #include "TMath.h"
 #include "TBranch.h"
 #include "TTree.h"
+
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 	l1met_p4;
 	TBranch *l1met_p4_branch;
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	els_mc_p4;
@@ -104,6 +105,12 @@
 	TBranch *hyp_other_jets_tq_genParton_p4_branch;
 	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > >	hyp_other_jets_tq_jet_p4;
 	TBranch *hyp_other_jets_tq_jet_p4_branch;
+	float	evt_CSA07FilterEff;
+	TBranch *evt_CSA07FilterEff_branch;
+	float	evt_CSA07Pthat;
+	TBranch *evt_CSA07Pthat_branch;
+	float	evt_CSA07Weight;
+	TBranch *evt_CSA07Weight_branch;
 	float	evt_kfactor;
 	TBranch *evt_kfactor_branch;
 	float	evt_weight;
@@ -502,6 +509,8 @@
 	TBranch *hyp_other_jets_tq_noCorrF_branch;
 	vector<vector<float> >	hyp_other_jets_tq_udsCorrF;
 	TBranch *hyp_other_jets_tq_udsCorrF_branch;
+	int	evt_CSA07Process;
+	TBranch *evt_CSA07Process_branch;
 	int	evt_HLT1;
 	TBranch *evt_HLT1_branch;
 	int	evt_HLT2;
@@ -854,6 +863,15 @@ void Init(TTree *tree) {
 	hyp_other_jets_tq_genParton_p4_branch->SetAddress(&hyp_other_jets_tq_genParton_p4);
 	hyp_other_jets_tq_jet_p4_branch = tree->GetBranch(tree->GetAlias("hyp_other_jets_tq_jet_p4"));
 	hyp_other_jets_tq_jet_p4_branch->SetAddress(&hyp_other_jets_tq_jet_p4);
+	evt_CSA07FilterEff_branch = tree->GetBranch(tree->GetAlias("evt_CSA07FilterEff"));
+	evt_CSA07FilterEff_branch->SetAddress(&evt_CSA07FilterEff);
+
+	std::cout << "still working init..." << std::endl;
+
+	evt_CSA07Pthat_branch = tree->GetBranch(tree->GetAlias("evt_CSA07Pthat"));
+	evt_CSA07Pthat_branch->SetAddress(&evt_CSA07Pthat);
+	evt_CSA07Weight_branch = tree->GetBranch(tree->GetAlias("evt_CSA07Weight"));
+	evt_CSA07Weight_branch->SetAddress(&evt_CSA07Weight);
 	evt_kfactor_branch = tree->GetBranch(tree->GetAlias("evt_kfactor"));
 	evt_kfactor_branch->SetAddress(&evt_kfactor);
 	evt_weight_branch = tree->GetBranch(tree->GetAlias("evt_weight"));
@@ -1252,6 +1270,8 @@ void Init(TTree *tree) {
 	hyp_other_jets_tq_noCorrF_branch->SetAddress(&hyp_other_jets_tq_noCorrF);
 	hyp_other_jets_tq_udsCorrF_branch = tree->GetBranch(tree->GetAlias("hyp_other_jets_tq_udsCorrF"));
 	hyp_other_jets_tq_udsCorrF_branch->SetAddress(&hyp_other_jets_tq_udsCorrF);
+	evt_CSA07Process_branch = tree->GetBranch(tree->GetAlias("evt_CSA07Process"));
+	evt_CSA07Process_branch->SetAddress(&evt_CSA07Process);
 	evt_HLT1_branch = tree->GetBranch(tree->GetAlias("evt_HLT1"));
 	evt_HLT1_branch->SetAddress(&evt_HLT1);
 	evt_HLT2_branch = tree->GetBranch(tree->GetAlias("evt_HLT2"));
@@ -1554,6 +1574,9 @@ void GetEntry(unsigned int index) {
 	hyp_other_jets_tq_genPartonMother_p4_branch->GetEntry(index);
 	hyp_other_jets_tq_genParton_p4_branch->GetEntry(index);
 	hyp_other_jets_tq_jet_p4_branch->GetEntry(index);
+	evt_CSA07FilterEff_branch->GetEntry(index);
+	evt_CSA07Pthat_branch->GetEntry(index);
+	evt_CSA07Weight_branch->GetEntry(index);
 	evt_kfactor_branch->GetEntry(index);
 	evt_weight_branch->GetEntry(index);
 	evt_xsec_excl_branch->GetEntry(index);
@@ -1753,6 +1776,7 @@ void GetEntry(unsigned int index) {
 	hyp_other_jets_tq_jetCharge_branch->GetEntry(index);
 	hyp_other_jets_tq_noCorrF_branch->GetEntry(index);
 	hyp_other_jets_tq_udsCorrF_branch->GetEntry(index);
+	evt_CSA07Process_branch->GetEntry(index);
 	evt_HLT1_branch->GetEntry(index);
 	evt_HLT2_branch->GetEntry(index);
 	evt_HLT3_branch->GetEntry(index);
