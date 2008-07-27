@@ -24,6 +24,7 @@ makeCMS2Files(std::string fname) {
   ofstream codef;
   headerf.open("CMS2.h");
   codef.open("CMS2.C");
+  headerf << "// -*- C++ -*-" << endl;
   headerf << "#include \"Math/LorentzVector.h\"" << endl;
   headerf << "#include \"TMath.h\"" << endl;
   headerf << "#include \"TBranch.h\"" << endl;
@@ -77,11 +78,13 @@ makeCMS2Files(std::string fname) {
     TBranch *branch = ev->GetBranch(ev->GetAlias(aliasname.Data()));
     TString classname = branch->GetClassName();
     if ( !classname.Contains("Lorentz") || classname.Contains("vector<vector") ) {
-      headerf << "\t" << Form("%s_branch",aliasname.Data()) << " = tree->GetBranch(tree->GetAlias(\"" << aliasname << "\"));" << endl;
-      headerf << "\t" << Form("%s_branch",aliasname.Data()) << "->SetAddress(&" << aliasname << ");" << endl;
-      headerf << "\t" << "if(" << Form("%s_branch",aliasname.Data()) << " == 0 ) {" << endl;
-      headerf << "\t" << "cout << \"Branch " << aliasname.Data() << " does not exist.\" << endl;" << endl;
-      headerf << "\t" << "}" << endl;
+	 headerf << "\t" << Form("%s_branch",aliasname.Data()) << " = 0;" << endl;
+	 headerf << "\t" << "if (tree->GetAlias(\"" << aliasname << "\") != 0) {" << endl;
+	 headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << " = tree->GetBranch(tree->GetAlias(\"" << aliasname << "\"));" << endl;
+	 headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << "->SetAddress(&" << aliasname << ");" << endl << "\t}" << endl;
+	 headerf << "\t" << "if(" << Form("%s_branch",aliasname.Data()) << " == 0 ) {" << endl;
+	 headerf << "\t" << "cout << \"Branch " << aliasname.Data() << " does not exist.\" << endl;" << endl;
+	 headerf << "\t" << "}" << endl;
     }
   }
 
