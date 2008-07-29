@@ -23,17 +23,17 @@
 //==============================================================
 {
 // Output file
-char* outFile = "myHist.root";
+char* outFile = "myHist_WW.root";
 
 // Flags for files to run over
 bool runWW    = true;
-bool runWZ    = true;
-bool runZZ    = true;
-bool runWjets = true;
-bool runDYee  = true;
-bool runDYmm  = true;
-bool runDYtt  = true;
-bool runttbar = true;
+bool runWZ    = false;
+bool runZZ    = false;
+bool runWjets = false;
+bool runDYee  = false;
+bool runDYmm  = false;
+bool runDYtt  = false;
+bool runttbar = false;
 
 // Load various tools
 gROOT->SetMacroPath((string(gROOT->GetMacroPath()) + ":" + "../Tools/").c_str());
@@ -41,54 +41,59 @@ gROOT->SetMacroPath((string(gROOT->GetMacroPath()) + ":" + "../Tools/").c_str())
 gROOT->ProcessLine(".x setup.C");
 
 // Load and compile the looping code
-gROOT->ProcessLine(".L myLoopingFunction.C+");
+gROOT->ProcessLine(".L ClaudioLoopingFunction.C+");
 
 //WW file
 if (runWW) {
   TChain *fWW = new TChain("Events");
-  fWW->Add("/uscms_data/d1/fgolf/sntuples/signal/ww/ntuple*.root");
+  fWW->Add("data/ww/ntuple*.root");
 }
 
 //WZ file
 if (runWZ) {
   TChain *fWZ = new TChain("Events");
-  fWZ->Add("/uscms_data/d1/fgolf/sntuples/signal/wz/ntuple*.root");
+  fWZ->Add("data/wz/ntuple*.root");
 }
 
 //ZZ file
 if (runZZ) {
   TChain *fZZ = new TChain("Events");
-  fZZ->Add("/uscms_data/d1/fgolf/sntuples/signal/zz/ntuple*.root");
+  fZZ->Add("data/zz/ntuple*.root");
 }
 
 //Wjets file
 if (runWjets) {
   TChain *fWjets = new TChain("Events");
-  fWjets->Add("/uscms_data/d1/fgolf/sntuples/soups/ntuple*.root");
+//   fWjets->Add("data/electron_soup/ntuple*.root");
+  fWjets->Add("data/muon_soup/muon_soup.root");
 }
 
 //DYee file
 if (runDYee) {
   TChain *fDYee = new TChain("Events");
-  fDYee->Add("/uscms_data/d1/fgolf/sntuples/soups/ntuple*.root");
+//   fDYee->Add("data/electron_soup/ntuple*.root");
+  fDYee->Add("data/muon_soup/muon_soup.root");
 }
 
 //DYmm file
 if (runDYmm) {
   TChain *fDYmm = new TChain("Events");
-  fDYmm->Add("/uscms_data/d1/fgolf/sntuples/soups/ntuple*.root");
+//   fDYmm->Add("data/electron_soup/ntuple*.root");
+  fDYmm->Add("data/muon_soup/muon_soup.root");
 }
 
 //DYtt file
 if (runDYtt) {
   TChain *fDYtt = new TChain("Events");
-  fDYtt->Add("/uscms_data/d1/fgolf/sntuples/soups/ntuple*.root");
+//   fDYtt->Add("data/electron_soup/ntuple*.root");
+  fDYtt->Add("data/muon_soup/muon_soup.root");
 }
 
 //ttbar file
 if (runttbar) {
   TChain *fttbar = new TChain("Events");
-  fttbar->Add("/uscms_data/d1/fgolf/sntuples/soups/ntuple*.root");
+//   fttbar->Add("data/electron_soup/ntuple*.root");
+  fttbar->Add("data/muon_soup/muon_soup.root");
 }
 
 // Define colors numbers:
@@ -98,13 +103,15 @@ enum EColor { kWhite, kBlack, kRed, kGreen, kBlue, kYellow, kMagenta, kCyan };
 // Process files one at a time, and color them as needed
 if (runWW) {
   cout << "Processing WW.."<< endl;
-  ScanChain(fWW, WW);
+  TChain *t = TreePipe_glob("data/ww/ntuple*.root", "Events"); 
+  ScanChain(t, WW);
   hist::color("ww", kRed);
 }
 
 if (runWZ) {
   cout << "Processing WZ.."<< endl;
-  ScanChain(fWZ, WZ);
+  TChain *t = TreePipe_glob("data/wz/ntuple*.root", "Events"); 
+  ScanChain(t, WZ);
   hist::color("wz", kBlue);
 }
 
