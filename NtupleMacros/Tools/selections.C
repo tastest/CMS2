@@ -21,19 +21,19 @@ bool inZmassWindow (float mass) {
 //----------------------------------------------------------------
 // true electron
 //----------------------------------------------------------------
-bool trueElectron(int index) {
-  if ( abs(els_mc_id[index]) != 11 ) return false;
-  if ( abs(els_mc_motherid[index]) == 23 || abs(els_mc_motherid[index]) == 24) return true;
-  return false;
-}
+// bool trueElectron(int index) {
+//   if ( abs(els_mc_id[index]) != 11 ) return false;
+//   if ( abs(els_mc_motherid[index]) == 23 || abs(els_mc_motherid[index]) == 24) return true;
+//   return false;
+// }
 //----------------------------------------------------------------
 // true muon
 //----------------------------------------------------------------
-bool trueMuon(int index) {
-   if ( abs(mus_mc_id[index]) != 13 ) return false;
-   if ( abs(mus_mc_motherid[index]) == 23 || abs(mus_mc_motherid[index]) == 24) return true;
-  return false;
-}
+// bool trueMuon(int index) {
+//    if ( abs(mus_mc_id[index]) != 13 ) return false;
+//    if ( abs(mus_mc_motherid[index]) == 23 || abs(mus_mc_motherid[index]) == 24) return true;
+//   return false;
+// }
 //----------------------------------------------------------------
 // Electron ID without isolation
 //----------------------------------------------------------------
