@@ -133,29 +133,29 @@ bool goodLeptonIsolated(int bucket, int first, int second, int third) {
   //
 
   bool result = false;
-  if ( bucket == 16 ||
-       bucket == 17 ||
-       bucket == 18 ||
-       bucket == 19 ) {
+  if ( bucket == 0 ||
+       bucket == 1 ||
+       bucket == 2 ||
+       bucket == 3 ) {
     result = goodElectronIsolated(first) && goodElectronIsolated(second) && goodElectronIsolated(third);
-  } else if ( bucket == 0 ||
-	      bucket == 1 ||
-	      bucket == 2 ||
-	      bucket == 3 ) {
-    result = goodMuonIsolated(first) && goodMuonIsolated(second) && goodMuonIsolated(third);
-  } else if ( bucket == 10 ||
-	      bucket == 13 ||
-	      bucket == 14 ||
-	      bucket == 12 ||
-	      bucket == 15 ||
-	      bucket == 11 ) {
-    result = goodMuonIsolated(first) && goodElectronIsolated(second) && goodElectronIsolated(third);
   } else if ( bucket == 4 ||
 	      bucket == 5 ||
-	      bucket == 7 ||
 	      bucket == 6 ||
+	      bucket == 7 ) {
+    result = goodMuonIsolated(first) && goodMuonIsolated(second) && goodMuonIsolated(third);
+  } else if ( bucket == 8 ||
 	      bucket == 9 ||
-	      bucket == 8 ) {
+	      bucket == 10 ||
+	      bucket == 11 ||
+	      bucket == 12 ||
+	      bucket == 13 ) {
+    result = goodMuonIsolated(first) && goodElectronIsolated(second) && goodElectronIsolated(third);
+  } else if ( bucket == 14 ||
+	      bucket == 15 ||
+	      bucket == 16 ||
+	      bucket == 17 ||
+	      bucket == 18 ||
+	      bucket == 19 ) {
     result = goodMuonIsolated(first) && goodMuonIsolated(second) && goodElectronIsolated(third);
   } else {
     cout << "ERROR: goodIsolatedLepton tried to use not existing bucket!" << endl;
@@ -169,35 +169,35 @@ float ptLowestPtLepton(int bucket, int first, int second, int third) {
   // determine pt of lowest pt lepton
   float array[3] = {0,0,0};
 
-  if ( bucket == 16 ||
-       bucket == 17 ||
-       bucket == 18 ||
-       bucket == 19 ) {
+  if ( bucket == 0 ||
+       bucket == 1 ||
+       bucket == 2 ||
+       bucket == 3 ) {
     array[0] = els_p4[first].pt();
-    array[1] = els_p4[second].pt();
-    array[2] = els_p4[third].pt();
-  } else if ( bucket == 0 ||
-	      bucket == 1 ||
-	      bucket == 2 ||
-	      bucket == 3 ) {
-    array[0] = mus_p4[first].pt();
-    array[1] = mus_p4[second].pt();
-    array[2] = mus_p4[third].pt();
-  } else if ( bucket == 10 ||
-	      bucket == 13 ||
-	      bucket == 14 ||
-	      bucket == 12 ||
-	      bucket == 15 ||
-	      bucket == 11 ) {
-    array[0] = mus_p4[first].pt();
     array[1] = els_p4[second].pt();
     array[2] = els_p4[third].pt();
   } else if ( bucket == 4 ||
 	      bucket == 5 ||
-	      bucket == 7 ||
 	      bucket == 6 ||
+	      bucket == 7 ) {
+    array[0] = mus_p4[first].pt();
+    array[1] = mus_p4[second].pt();
+    array[2] = mus_p4[third].pt();
+  } else if ( bucket == 8 ||
 	      bucket == 9 ||
-	      bucket == 8 ) {
+	      bucket == 10 ||
+	      bucket == 11 ||
+	      bucket == 12 ||
+	      bucket == 13 ) {
+    array[0] = mus_p4[first].pt();
+    array[1] = els_p4[second].pt();
+    array[2] = els_p4[third].pt();
+  } else if ( bucket == 14 ||
+	      bucket == 15 ||
+	      bucket == 16 ||
+	      bucket == 17 ||
+	      bucket == 18 ||
+	      bucket == 19 ) {
     array[0] = mus_p4[first].pt();
     array[1] = mus_p4[second].pt();
     array[2] = els_p4[third].pt();
@@ -221,35 +221,35 @@ bool passTriggerLeptonMinPtCut(int bucket, int first, int second, int third, flo
 
   float array[3] = {0,0,0};
 
-  if ( bucket == 16 ||
-       bucket == 17 ||
-       bucket == 18 ||
-       bucket == 19 ) {
+  if ( bucket == 0 ||
+       bucket == 1 ||
+       bucket == 2 ||
+       bucket == 3 ) {
     array[0] = els_p4[first].pt();
-    array[1] = els_p4[second].pt();
-    array[2] = els_p4[third].pt();
-  } else if ( bucket == 0 ||
-	      bucket == 1 ||
-	      bucket == 2 ||
-	      bucket == 3 ) {
-    array[0] = mus_p4[first].pt();
-    array[1] = mus_p4[second].pt();
-    array[2] = mus_p4[third].pt();
-  } else if ( bucket == 10 ||
-	      bucket == 13 ||
-	      bucket == 14 ||
-	      bucket == 12 ||
-	      bucket == 15 ||
-	      bucket == 11 ) {
-    array[0] = mus_p4[first].pt();
     array[1] = els_p4[second].pt();
     array[2] = els_p4[third].pt();
   } else if ( bucket == 4 ||
 	      bucket == 5 ||
-	      bucket == 7 ||
 	      bucket == 6 ||
+	      bucket == 7 ) {
+    array[0] = mus_p4[first].pt();
+    array[1] = mus_p4[second].pt();
+    array[2] = mus_p4[third].pt();
+  } else if ( bucket == 8 ||
 	      bucket == 9 ||
-	      bucket == 8 ) {
+	      bucket == 10 ||
+	      bucket == 11 ||
+	      bucket == 12 ||
+	      bucket == 13 ) {
+    array[0] = mus_p4[first].pt();
+    array[1] = els_p4[second].pt();
+    array[2] = els_p4[third].pt();
+  } else if ( bucket == 14 ||
+	      bucket == 15 ||
+	      bucket == 16 ||
+	      bucket == 17 ||
+	      bucket == 18 ||
+	      bucket == 19 ) {
     array[0] = mus_p4[first].pt();
     array[1] = mus_p4[second].pt();
     array[2] = els_p4[third].pt();
@@ -263,61 +263,3 @@ bool passTriggerLeptonMinPtCut(int bucket, int first, int second, int third, flo
   return array[2] > triggerLeptonMinPtCut;
 
 }
-TString printCand(int bucket, int first, int second, int third) {
-  // print candidate based on bucket
-  //
-
-  TString result = "";
-
-  if ( bucket == 16 ||
-       bucket == 17 ||
-       bucket == 18 ||
-       bucket == 19 ) {
-
-    result.Append("electron 1: " );
-    result += els_p4[first].pt();
-    result.Append(" electron 2: " );
-    result += els_p4[second].pt();
-    result.Append(" electron 3: " );
-    result += els_p4[third].pt();
-  } else if ( bucket == 0 ||
-	      bucket == 1 ||
-	      bucket == 2 ||
-	      bucket == 3 ) {
-    result.Append("muon 1: " );
-    result += mus_p4[first].pt();
-    result.Append(" muon 2: " );
-    result += mus_p4[second].pt();
-    result.Append(" muon 3: " );
-    result += mus_p4[third].pt();
-  } else if ( bucket == 10 ||
-	      bucket == 13 ||
-	      bucket == 14 ||
-	      bucket == 12 ||
-	      bucket == 15 ||
-	      bucket == 11 ) {
-    result.Append("muon 1: " );
-    result += mus_p4[first].pt();
-    result.Append(" electron 2: " );
-    result += els_p4[second].pt();
-    result.Append(" electron 3: " );
-    result += els_p4[third].pt();
-  } else if ( bucket == 4 ||
-	      bucket == 5 ||
-	      bucket == 7 ||
-	      bucket == 6 ||
-	      bucket == 9 ||
-	      bucket == 8 ) {
-    result.Append("muon 1: " );
-    result += mus_p4[first].pt();
-    result.Append(" muon 2: " );
-    result += mus_p4[second].pt();
-    result.Append(" electron 3: " );
-    result += els_p4[third].pt();
-  } else {
-    cout << "ERROR: goodIsolatedLepton tried to use not existing bucket!" << endl;
-  }
-
-  return result;
-}
- 
