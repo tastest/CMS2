@@ -4,6 +4,7 @@
 #include <fstream>
 #include <vector>
 #include "TChain.h"
+#include "TChainElement.h"
 #include "TFile.h"
 #include "TH1.h"
 #include "TH2.h"
@@ -463,8 +464,6 @@ void hypo (int i_hyp, double kFactor)
 
 int ScanChain( TChain* chain, enum Sample sample ) {
 
-  TObjArray *listOfFiles = chain->GetListOfFiles();
-
   unsigned int nEventsChain = chain->GetEntries();  // number of entries in chain --> number of events from all files
   unsigned int nEventsTotal = 0;
 
@@ -486,9 +485,7 @@ int ScanChain( TChain* chain, enum Sample sample ) {
 
   switch (sample) {
   case WW:
-       // In cms1, we had 111278 events with weight 0.1536.  In cms2, we
-       // have  so far.
-       evt_scale1fb = 0.1536 * 111278 / 97047;
+       evt_scale1fb = 0.1538;
        break;
   default:
        break;
@@ -616,10 +613,15 @@ int ScanChain( TChain* chain, enum Sample sample ) {
 
   int i_permille_old = 0;
   // file loop
+  TObjArray *listOfFiles = chain->GetListOfFiles();
   TIter fileIter(listOfFiles);
-  while (TFile *currentFile = (TFile*)fileIter.Next()) {
-       TFile f(currentFile->GetTitle());
-       TTree *tree = (TTree*)f.Get("Events");
+  while (TChainElement *currentFile = (TChainElement*)fileIter.Next()) {
+       // need to call TFile::Open(), since the file is not
+       // necessarily a plain TFile (TNetFile, TDcacheFile, etc)
+//        printf("current file: %s (%s), %s\n", currentFile->GetName(), 
+// 	      currentFile->GetTitle(), currentFile->IsA()->GetName());
+       TFile *f = TFile::Open(currentFile->GetTitle()); 
+       TTree *tree = (TTree*)f->Get("Events");
        
        Init(tree);  // set branch addresses for TTree tree
        
@@ -650,6 +652,7 @@ int ScanChain( TChain* chain, enum Sample sample ) {
 		 hypo(i_hyp, kFactor);
 	    }
        }
+       delete f;
   }
   if ( nEventsChain != nEventsTotal ) {
        printf("ERROR: number of events from files (%d) is not equal to total number"

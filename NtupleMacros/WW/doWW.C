@@ -46,7 +46,9 @@ gROOT->ProcessLine(".L ClaudioLoopingFunction.C+");
 //WW file
 if (runWW) {
   TChain *fWW = new TChain("Events");
-  fWW->Add("data/ww/ntuple*.root");
+  fWW->Add("dcap://dcap-2.t2.ucsd.edu:22139//pnfs/t2.ucsd.edu/data4/cms/phedex/store/user/jmuelmen/cms2_WW_signal_postprocessed_a38953977b4f365d80e08a78eaaff932/ntuple_signal_1.root");
+  fWW->Add("dcap://dcap-2.t2.ucsd.edu:22139//pnfs/t2.ucsd.edu/data4/cms/phedex/store/user/jmuelmen/cms2_WW_signal_postprocessed_a38953977b4f365d80e08a78eaaff932/ntuple_signal_2.root");
+  fWW->Add("dcap://dcap-2.t2.ucsd.edu:22139//pnfs/t2.ucsd.edu/data4/cms/phedex/store/user/jmuelmen/cms2_WW_signal_postprocessed_a38953977b4f365d80e08a78eaaff932/ntuple_signal_3.root");
 }
 
 //WZ file
@@ -103,8 +105,7 @@ enum EColor { kWhite, kBlack, kRed, kGreen, kBlue, kYellow, kMagenta, kCyan };
 // Process files one at a time, and color them as needed
 if (runWW) {
   cout << "Processing WW.."<< endl;
-  TChain *t = TreePipe_glob("data/ww/ntuple*.root", "Events"); 
-  ScanChain(t, WW);
+  ScanChain(fWW, WW);
   hist::color("ww", kRed);
 }
 
