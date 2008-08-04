@@ -18,6 +18,10 @@ using namespace std;
 #include "CMS2.h"
 #include "selections.C"
 
+static int hypos_total_n;
+static double hypos_total_weight;
+
+
 enum Sample {WW, WZ, ZZ, Wjets, DYee, DYmm, DYtt, ttbar}; // signal samples
 enum Hypothesis {MM, EM, EE, ALL}; // hypothesis types (em and me counted as same) and all
 
@@ -273,6 +277,9 @@ void hypo (int i_hyp, double kFactor)
 	  return;
      }
     
+     hypos_total_n++;
+     hypos_total_weight += weight;
+
      // jet count
      hnJet[myType]->Fill(hyp_njets[i_hyp], weight);
      hnJet[3]->Fill(hyp_njets[i_hyp], weight);
@@ -479,9 +486,9 @@ int ScanChain( TChain* chain, enum Sample sample ) {
 
   switch (sample) {
   case WW:
-       // In cms1, we had 111k events with weight 0.1536.  In cms2, we
-       // have 65k so far.
-       evt_scale1fb = 0.1536 * 111 / 65;
+       // In cms1, we had 111278 events with weight 0.1536.  In cms2, we
+       // have  so far.
+       evt_scale1fb = 0.1536 * 111278 / 97047;
        break;
   default:
        break;
@@ -604,48 +611,53 @@ int ScanChain( TChain* chain, enum Sample sample ) {
     hmuRelIso[i]->Sumw2(); 
   }
 
+  hypos_total_n = 0;
+  hypos_total_weight = 0;
+
+  int i_permille_old = 0;
   // file loop
   TIter fileIter(listOfFiles);
-  TFile *currentFile = 0;
-  
-  int i_permille_old = 0;
-
-  TTree *tree = chain;
-
-  Init(tree);  // set branch addresses for TTree tree
-  
-  printf("%d events in chain\n", nEventsChain);
-  //Event Loop
-  unsigned int nEvents = tree->GetEntries();
+  while (TFile *currentFile = (TFile*)fileIter.Next()) {
+       TFile f(currentFile->GetTitle());
+       TTree *tree = (TTree*)f.Get("Events");
+       
+       Init(tree);  // set branch addresses for TTree tree
+       
+       //Event Loop
+       unsigned int nEvents = tree->GetEntries();
 //   nEvents = std::min(nEvents, 1000u);
-  for( unsigned int event = 0; event < nEvents; ++event) {
-       tree->GetEntry(event);  // get entries for Event number event from branches of TTree tree
-       ++nEventsTotal;
-       
-       // Progress feedback to the user
+       for( unsigned int event = 0; event < nEvents; ++event) {
+	    GetEntry(event);  // get entries for Event number event from branches of TTree tree
+	    ++nEventsTotal;
+	    
+	    // Progress feedback to the user
 //       if ( (nEventsTotal)%1000 == 0 ) std::cout << "Processing event: " << nEventsTotal << std::endl;
-       int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
-       if (i_permille != i_permille_old) {
-	    // xterm magic from L. Vacanvant and A. Cerri
-	    printf("\015\033[32m ---> \033[1m\033[31m%4.1f%%"
-		   "\033[0m\033[32m <---\033[0m\015", i_permille/10.);
-	    fflush(stdout);
-	    i_permille_old = i_permille;
-       }
-       
-      // filter by process
-       if ( !filterByProcess(sample) ) continue;
-       
-       // loop over hypothesis candidates
-       unsigned int nHyps = hyp_type.size();
-       for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
-	    hypo(i_hyp, kFactor);
+	    int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
+	    if (i_permille != i_permille_old) {
+		 // xterm magic from L. Vacanvant and A. Cerri
+		 printf("\015\033[32m ---> \033[1m\033[31m%4.1f%%"
+			"\033[0m\033[32m <---\033[0m\015", i_permille/10.);
+		 fflush(stdout);
+		 i_permille_old = i_permille;
+	    }
+	    
+	    // filter by process
+	    if ( !filterByProcess(sample) ) continue;
+	    
+	    // loop over hypothesis candidates
+	    unsigned int nHyps = hyp_type.size();
+	    for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
+		 hypo(i_hyp, kFactor);
+	    }
        }
   }
   if ( nEventsChain != nEventsTotal ) {
        printf("ERROR: number of events from files (%d) is not equal to total number"
-	      " of events (%d)", nEventsChain, nEventsTotal);
+	      " of events (%d)\n", nEventsChain, nEventsTotal);
   }
+
+  printf("Total candidate count: %d.  Total weight %f\n",   
+	 hypos_total_n, hypos_total_weight);
   
   return 0;
 }
