@@ -12,6 +12,7 @@
 #include "TMath.h"
 #include "TStopwatch.h"
 #include <algorithm>
+#include <set>
 #include "TCanvas.h"
 #include "TRegexp.h"
 
@@ -25,7 +26,7 @@ CMS2 cms2;
 
 static int hypos_total_n;
 static double hypos_total_weight;
-static double evt_scale1fb;
+// static double evt_scale1fb;
 
 enum Sample {WW, WZ, ZZ, Wjets, DYee, DYmm, DYtt, ttbar}; // signal samples
 enum Hypothesis {MM, EM, EE, ALL}; // hypothesis types (em and me counted as same) and all
@@ -90,6 +91,65 @@ void saveHist(const char* filename, const char* pat="*")
    outf.Close() ;
 
    delete iter ;
+}
+
+struct DorkyEventIdentifier {
+     // this is a workaround for not having unique event id's in MC
+     unsigned long int run, event;
+     float trks_d0;
+     float hyp_lt_pt, hyp_lt_eta, hyp_lt_phi;
+     bool operator < (const DorkyEventIdentifier &) const;
+     bool operator == (const DorkyEventIdentifier &) const;
+};
+
+bool DorkyEventIdentifier::operator < (const DorkyEventIdentifier &other) const
+{
+     if (run != other.run)
+	  return run < other.run;
+     if (event != other.event)
+	  return event < other.event;
+     // the floating point numbers are not easy, because we're
+     // comapring ones that are truncated (because they were written
+     // to file and read back in) with ones that are not truncated.
+     if (fabs(trks_d0 - other.trks_d0) > 1e-6 * trks_d0)
+	  return trks_d0 < other.trks_d0;
+     if (fabs(hyp_lt_pt - other.hyp_lt_pt) > 1e-6 * hyp_lt_pt)
+	  return hyp_lt_pt < other.hyp_lt_pt;
+     if (fabs(hyp_lt_eta - other.hyp_lt_eta) > 1e-6 * hyp_lt_eta)
+	  return hyp_lt_eta < other.hyp_lt_eta;
+     if (fabs(hyp_lt_phi - other.hyp_lt_phi) > 1e-6 * hyp_lt_phi)
+	  return hyp_lt_phi < other.hyp_lt_phi;
+     // if the records are exactly the same, then r1 is not less than
+     // r2.  Duh!
+     return false;
+}
+
+bool DorkyEventIdentifier::operator == (const DorkyEventIdentifier &other) const
+{
+     if (run != other.run)
+	  return false;
+     if (event != other.event)
+	  return false;
+     // the floating point numbers are not easy, because we're
+     // comapring ones that are truncated (because they were written
+     // to file and read back in) with ones that are not truncated.
+     if (fabs(trks_d0 - other.trks_d0) > 1e-6 * trks_d0)
+	  return false;
+     if (fabs(hyp_lt_pt - other.hyp_lt_pt) > 1e-6 * hyp_lt_pt)
+	  return false;
+     if (fabs(hyp_lt_eta - other.hyp_lt_eta) > 1e-6 * hyp_lt_eta)
+	  return false;
+     if (fabs(hyp_lt_phi - other.hyp_lt_phi) > 1e-6 * hyp_lt_phi)
+	  return false;
+     return true;
+}
+
+static std::set<DorkyEventIdentifier> already_seen;
+bool is_duplicate (const DorkyEventIdentifier &id)
+{
+     std::pair<std::set<DorkyEventIdentifier>::const_iterator, bool> ret = 
+	  already_seen.insert(id);
+     return !ret.second;
 }
 
 //-------------------------------------------------
@@ -267,7 +327,7 @@ void hypo (int i_hyp, double kFactor)
      int inumTightLep = 0;    
 
      // The event weight including the kFactor (scaled to 1 fb-1)
-     float weight = evt_scale1fb * kFactor;
+     float weight = cms2.evt_scale1fb() * kFactor;
 
      // For top group political reasons, we rescale to 10 pb-1
      //  weight = weight/100.
@@ -487,13 +547,13 @@ int ScanChain( TChain* chain, enum Sample sample ) {
        break;
   }
 
-  switch (sample) {
-  case WW:
-       evt_scale1fb = 0.1538;
-       break;
-  default:
-       break;
-  }
+//   switch (sample) {
+//   case WW:
+//        evt_scale1fb = 0.1538;
+//        break;
+//   default:
+//        break;
+//   }
   char *suffix[3];
   suffix[0] = "ee";
   suffix[1] = "mm";
@@ -615,6 +675,11 @@ int ScanChain( TChain* chain, enum Sample sample ) {
   hypos_total_n = 0;
   hypos_total_weight = 0;
 
+  // clear list of duplicates
+  already_seen.clear();
+  int duplicates_total_n = 0;
+  double duplicates_total_weight = 0;
+
   int i_permille_old = 0;
   // file loop
   TObjArray *listOfFiles = chain->GetListOfFiles();
@@ -636,7 +701,15 @@ int ScanChain( TChain* chain, enum Sample sample ) {
        for( unsigned int event = 0; event < nEvents; ++event) {
 	    cms2.GetEntry(event);  // get entries for Event number event from branches of TTree tree
 	    ++nEventsTotal;
-	    
+	    if (cms2.trks_d0().size() == 0)
+		 continue;
+	    DorkyEventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.trks_d0()[0], 
+					cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
+	    if (is_duplicate(id)) {
+		 duplicates_total_n++;
+		 duplicates_total_weight += cms2.evt_scale1fb();
+		 continue;
+	    }
 	    // Progress feedback to the user
 //       if ( (nEventsTotal)%1000 == 0 ) std::cout << "Processing event: " << nEventsTotal << std::endl;
 	    int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
@@ -671,6 +744,8 @@ int ScanChain( TChain* chain, enum Sample sample ) {
 
   printf("Total candidate count: %d.  Total weight %f\n",   
 	 hypos_total_n, hypos_total_weight);
+  printf("Total duplicate count: %d.  Total weight %f\n",   
+	 duplicates_total_n, duplicates_total_weight);
   
   return 0;
 }
