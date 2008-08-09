@@ -11,44 +11,11 @@
 #include "TCanvas.h"
 #include "TRegexp.h"
 #include "CMS2.h"
-#include "ClaudioOriginal/selections.h"
 
 using namespace std;
 
 enum Sample {WW, WZ, ZZ, Wjets, DYee, DYmm, DYtt, ttbar}; // signal samples
 enum Hypothesis {MM, EM, EE, ALL}; // hypothesis types (em and me counted as same) and all
-
-TChain *TreePipe (const char *cmd, const char *treename) 
-{
-     FILE *f = popen(cmd, "r");
-     if (!f) {
-	  perror("Opening pipe");
-	  return 0;
-     }
-     TChain *c = new TChain(treename);
-     int s;
-     do {
-	  char fname[1024];
-	  s = fscanf(f, " %1024s\n", fname);
-	  if (s != 1) {
-	       if (s != EOF)
-		    perror("scanning file list");
-	  } else {
-	       printf("Adding %s\n", fname);
-	       c->Add(fname);
-	  }
-     } while (s == 1);
-     if (pclose(f) == -1) 
-	  perror("Closing pipe");
-     return c;
-}
-
-TChain *TreePipe_glob (const char *glob, const char *treename) 
-{
-     std::string cmd = "ls ";
-     cmd += glob;
-     return TreePipe(cmd.c_str(), treename);
-}
 
 // save histograms to outfile
 void saveHist(const char* filename, const char* pat="*")
@@ -168,29 +135,24 @@ int ScanChain( TChain* chain, enum Sample sample ) {
   TIter fileIter(listOfFiles);
   TFile *currentFile = 0;
 
-  int i_permille_old = 0;
+  while ( currentFile = (TFile*)fileIter.Next() ) {
+    TFile f(currentFile->GetTitle());
+    TTree *tree = (TTree*)f.Get("Events");
 
-  TTree *tree = chain;
+    cout << "still working 1..." << endl;
+    
+    Init(tree);  // set branch addresses for TTree tree
+    
+    cout << "still working 2..." << endl;
 
-  Init(tree);  // set branch addresses for TTree tree
-  
-  printf("%d events in chain\n", nEventsChain);
-  //Event Loop
-  unsigned int nEvents = tree->GetEntries();
-  for( unsigned int event = 0; event < nEvents; ++event) {
-       tree->GetEntry(event);  // get entries for Event number event from branches of TTree tree
+    //Event Loop
+    unsigned int nEvents = tree->GetEntries();
+    for( unsigned int event = 0; event < nEvents; ++event) {
+      GetEntry(event);  // get entries for Event number event from branches of TTree tree
       ++nEventsTotal;
 
       // Progress feedback to the user
-//       if ( (nEventsTotal)%1000 == 0 ) std::cout << "Processing event: " << nEventsTotal << std::endl;
-      int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
-      if (i_permille != i_permille_old) {
-	   // xterm magic from L. Vacanvant and A. Cerri
-	   printf("\015\033[32m ---> \033[1m\033[31m%4.1f%%"
-		  "\033[0m\033[32m <---\033[0m\015", i_permille/10.);
-	   fflush(stdout);
-	   i_permille_old = i_permille;
-      }
+      if ( (nEventsTotal)%1000 == 0 ) std::cout << "Processing event: " << nEventsTotal << std::endl;
 
       // filter by process
       if ( !filterByProcess(sample) ) continue;
@@ -202,20 +164,17 @@ int ScanChain( TChain* chain, enum Sample sample ) {
 	unsigned int numJets = ( hyp_jets_p4[hyps].size() < 3 ) ? hyp_jets_p4[hyps].size() : 3;
 	hist_njets[ALL]->Fill( numJets );
 
-	printf("numJets = %d\n", numJets);
-
 	// filter by hypothesis candidate
 	enum Hypothesis final_state  = filterByHypothesis( hyp_type[hyps] );
 	
 	// fill final state njet bin
 	hist_njets[final_state]->Fill( numJets );
       }
+    }
   }
-  
 
   if ( nEventsChain != nEventsTotal ) {
-       printf("ERROR: number of events from files (%d) is not equal to total number"
-	      " of events (%d)", nEventsChain, nEventsTotal);
+    std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
   }
 
   return 0;
