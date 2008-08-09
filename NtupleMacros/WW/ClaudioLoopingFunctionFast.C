@@ -24,11 +24,11 @@ CMS2 cms2;
 #include "selectionsFast.C"
 #endif
 
-static int hypos_total_n;
-static double hypos_total_weight;
+static int hypos_total_n[4];
+static double hypos_total_weight[4];
 // static double evt_scale1fb;
 
-enum Sample {WW, WZ, ZZ, Wjets, DYee, DYmm, DYtt, ttbar}; // signal samples
+enum Sample {WW, WZ, ZZ, Wjets, DYee, DYmm, DYtt, ttbar, tW}; // signal samples
 enum Hypothesis {MM, EM, EE, ALL}; // hypothesis types (em and me counted as same) and all
 
 TChain *TreePipe (const char *cmd, const char *treename) 
@@ -342,8 +342,10 @@ void hypo (int i_hyp, double kFactor)
 	  return;
      }
     
-     hypos_total_n++;
-     hypos_total_weight += weight;
+     hypos_total_n[myType]++;
+     hypos_total_n[3]++;
+     hypos_total_weight[myType] += weight;
+     hypos_total_weight[3] += weight;
 
      // jet count
      hnJet[myType]->Fill(cms2.hyp_njets()[i_hyp], weight);
@@ -534,7 +536,7 @@ int ScanChain( TChain* chain, enum Sample sample ) {
   const unsigned int numHypTypes = 4;  // number of hypotheses: MM, EM, EE, ALL
 
  // declare and create array of histograms
-  const char sample_names[][1024] = { "WW", "WZ", "ZZ", "Wjets", "DYee", "DYmm", "DYtt", "ttbar" };
+  const char sample_names[][1024] = { "WW", "WZ", "ZZ", "Wjets", "DYee", "DYmm", "DYtt", "ttbar", "tW" };
   const char *prefix = sample_names[sample];
 
   // DY samples are supposed to get an additional k-factor of 1.2
@@ -672,8 +674,8 @@ int ScanChain( TChain* chain, enum Sample sample ) {
     hmuRelIso[i]->Sumw2(); 
   }
 
-  hypos_total_n = 0;
-  hypos_total_weight = 0;
+  memset(hypos_total_n, 0, sizeof(hypos_total_n));
+  memset(hypos_total_weight, 0, sizeof(hypos_total_weight));
 
   // clear list of duplicates
   already_seen.clear();
@@ -742,8 +744,9 @@ int ScanChain( TChain* chain, enum Sample sample ) {
 	      " of events (%d)\n", nEventsChain, nEventsTotal);
   }
 
-  printf("Total candidate count: %d.  Total weight %f\n",   
-	 hypos_total_n, hypos_total_weight);
+  printf("Total candidate count (ee em mm all): %d %d %d %d.  Total weight %f %f %f %f\n",   
+	 hypos_total_n[0], hypos_total_n[1], hypos_total_n[2], hypos_total_n[3], 
+	 hypos_total_weight[0], hypos_total_weight[1], hypos_total_weight[2], hypos_total_weight[3]);
   printf("Total duplicate count: %d.  Total weight %f\n",   
 	 duplicates_total_n, duplicates_total_weight);
   
