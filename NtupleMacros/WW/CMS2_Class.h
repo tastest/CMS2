@@ -6,7 +6,7 @@
 
 class CMS2 { 
 protected: 
-     unsigned int index;
+	unsigned int index;
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 	l1met_p4_;
 	TBranch *l1met_p4_branch;
 	bool l1met_p4_isLoaded;
@@ -166,6 +166,9 @@ protected:
 	float	evt_xsec_incl_;
 	TBranch *evt_xsec_incl_branch;
 	bool evt_xsec_incl_isLoaded;
+	float	evt_scale1fb_;
+	TBranch *evt_scale1fb_branch;
+	bool evt_scale1fb_isLoaded;
 	float	l1met_etHad_;
 	TBranch *l1met_etHad_branch;
 	bool l1met_etHad_isLoaded;
@@ -778,12 +781,6 @@ protected:
 	int	evt_L1_4_;
 	TBranch *evt_L1_4_branch;
 	bool evt_L1_4_isLoaded;
-	int	evt_event_;
-	TBranch *evt_event_branch;
-	bool evt_event_isLoaded;
-	int	evt_run_;
-	TBranch *evt_run_branch;
-	bool evt_run_isLoaded;
 	int	evt_nl1emiso_;
 	TBranch *evt_nl1emiso_branch;
 	bool evt_nl1emiso_isLoaded;
@@ -1120,6 +1117,12 @@ protected:
 	unsigned int	evt_nels_;
 	TBranch *evt_nels_branch;
 	bool evt_nels_isLoaded;
+	unsigned int	evt_event_;
+	TBranch *evt_event_branch;
+	bool evt_event_isLoaded;
+	unsigned int	evt_run_;
+	TBranch *evt_run_branch;
+	bool evt_run_isLoaded;
 	unsigned int	evt_njets_;
 	TBranch *evt_njets_branch;
 	bool evt_njets_isLoaded;
@@ -1576,6 +1579,14 @@ void Init(TTree *tree) {
 	}
 	if(evt_xsec_incl_branch == 0 ) {
 	cout << "Branch evt_xsec_incl does not exist." << endl;
+	}
+	evt_scale1fb_branch = 0;
+	if (tree->GetAlias("evt_scale1fb") != 0) {
+		evt_scale1fb_branch = tree->GetBranch(tree->GetAlias("evt_scale1fb"));
+		evt_scale1fb_branch->SetAddress(&evt_scale1fb_);
+	}
+	if(evt_scale1fb_branch == 0 ) {
+	cout << "Branch evt_scale1fb does not exist." << endl;
 	}
 	l1met_etHad_branch = 0;
 	if (tree->GetAlias("l1met_etHad") != 0) {
@@ -3209,22 +3220,6 @@ void Init(TTree *tree) {
 	if(evt_L1_4_branch == 0 ) {
 	cout << "Branch evt_L1_4 does not exist." << endl;
 	}
-	evt_event_branch = 0;
-	if (tree->GetAlias("evt_event") != 0) {
-		evt_event_branch = tree->GetBranch(tree->GetAlias("evt_event"));
-		evt_event_branch->SetAddress(&evt_event_);
-	}
-	if(evt_event_branch == 0 ) {
-	cout << "Branch evt_event does not exist." << endl;
-	}
-	evt_run_branch = 0;
-	if (tree->GetAlias("evt_run") != 0) {
-		evt_run_branch = tree->GetBranch(tree->GetAlias("evt_run"));
-		evt_run_branch->SetAddress(&evt_run_);
-	}
-	if(evt_run_branch == 0 ) {
-	cout << "Branch evt_run does not exist." << endl;
-	}
 	evt_nl1emiso_branch = 0;
 	if (tree->GetAlias("evt_nl1emiso") != 0) {
 		evt_nl1emiso_branch = tree->GetBranch(tree->GetAlias("evt_nl1emiso"));
@@ -4121,6 +4116,22 @@ void Init(TTree *tree) {
 	if(evt_nels_branch == 0 ) {
 	cout << "Branch evt_nels does not exist." << endl;
 	}
+	evt_event_branch = 0;
+	if (tree->GetAlias("evt_event") != 0) {
+		evt_event_branch = tree->GetBranch(tree->GetAlias("evt_event"));
+		evt_event_branch->SetAddress(&evt_event_);
+	}
+	if(evt_event_branch == 0 ) {
+	cout << "Branch evt_event does not exist." << endl;
+	}
+	evt_run_branch = 0;
+	if (tree->GetAlias("evt_run") != 0) {
+		evt_run_branch = tree->GetBranch(tree->GetAlias("evt_run"));
+		evt_run_branch->SetAddress(&evt_run_);
+	}
+	if(evt_run_branch == 0 ) {
+	cout << "Branch evt_run does not exist." << endl;
+	}
 	evt_njets_branch = 0;
 	if (tree->GetAlias("evt_njets") != 0) {
 		evt_njets_branch = tree->GetBranch(tree->GetAlias("evt_njets"));
@@ -4203,10 +4214,10 @@ void Init(TTree *tree) {
 	}
   tree->SetMakeClass(0);
 }
-     void GetEntry(unsigned int index_) 
-     // this only marks branches as not loaded, saving a lot of time
-	  {
-	       index = index_;
+void GetEntry(unsigned int idx) 
+	// this only marks branches as not loaded, saving a lot of time
+	{
+		index = idx;
 		l1met_p4_isLoaded = false;
 		els_p4_isLoaded = false;
 		els_p4In_isLoaded = false;
@@ -4260,6 +4271,7 @@ void Init(TTree *tree) {
 		evt_weight_isLoaded = false;
 		evt_xsec_excl_isLoaded = false;
 		evt_xsec_incl_isLoaded = false;
+		evt_scale1fb_isLoaded = false;
 		l1met_etHad_isLoaded = false;
 		l1met_etTot_isLoaded = false;
 		l1met_met_isLoaded = false;
@@ -4464,8 +4476,6 @@ void Init(TTree *tree) {
 		evt_L1_2_isLoaded = false;
 		evt_L1_3_isLoaded = false;
 		evt_L1_4_isLoaded = false;
-		evt_event_isLoaded = false;
-		evt_run_isLoaded = false;
 		evt_nl1emiso_isLoaded = false;
 		evt_nl1emnoiso_isLoaded = false;
 		evt_nl1jetsc_isLoaded = false;
@@ -4578,6 +4588,8 @@ void Init(TTree *tree) {
 		hyp_quadlep_jets_index_isLoaded = false;
 		hyp_trilep_jets_index_isLoaded = false;
 		evt_nels_isLoaded = false;
+		evt_event_isLoaded = false;
+		evt_run_isLoaded = false;
 		evt_njets_isLoaded = false;
 		hyp_quadlep_bucket_isLoaded = false;
 		hyp_quadlep_first_index_isLoaded = false;
@@ -4590,16 +4602,16 @@ void Init(TTree *tree) {
 		hyp_trilep_third_index_isLoaded = false;
 	}
 
-     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 	&l1met_p4()
-	  {
-	       if (not l1met_p4_isLoaded) {
-		    if (l1met_p4_branch != 0) 
-			 l1met_p4_branch->GetEntry(index);
-		    l1met_p4_isLoaded = true;
-	       }
-	       return l1met_p4_;
-	  }
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&els_p4()
+	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >  &l1met_p4()
+	{
+		if (not l1met_p4_isLoaded) {
+			if (l1met_p4_branch != 0) 
+				l1met_p4_branch->GetEntry(index);
+			l1met_p4_isLoaded = true;
+		}
+		return l1met_p4_;
+	}
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &els_p4()
 	{
 		if (not els_p4_isLoaded) {
 			if (els_p4_branch != 0) 
@@ -4608,7 +4620,7 @@ void Init(TTree *tree) {
 		}
 		return els_p4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&els_p4In()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &els_p4In()
 	{
 		if (not els_p4In_isLoaded) {
 			if (els_p4In_branch != 0) 
@@ -4617,7 +4629,7 @@ void Init(TTree *tree) {
 		}
 		return els_p4In_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&els_p4Out()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &els_p4Out()
 	{
 		if (not els_p4Out_isLoaded) {
 			if (els_p4Out_branch != 0) 
@@ -4626,7 +4638,7 @@ void Init(TTree *tree) {
 		}
 		return els_p4Out_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&els_trk_p4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &els_trk_p4()
 	{
 		if (not els_trk_p4_isLoaded) {
 			if (els_trk_p4_branch != 0) 
@@ -4635,7 +4647,7 @@ void Init(TTree *tree) {
 		}
 		return els_trk_p4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&genps_p4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &genps_p4()
 	{
 		if (not genps_p4_isLoaded) {
 			if (genps_p4_branch != 0) 
@@ -4644,7 +4656,7 @@ void Init(TTree *tree) {
 		}
 		return genps_p4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&genps_prod_vtx()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &genps_prod_vtx()
 	{
 		if (not genps_prod_vtx_isLoaded) {
 			if (genps_prod_vtx_branch != 0) 
@@ -4653,7 +4665,7 @@ void Init(TTree *tree) {
 		}
 		return genps_prod_vtx_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&hyp_ll_mc_p4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &hyp_ll_mc_p4()
 	{
 		if (not hyp_ll_mc_p4_isLoaded) {
 			if (hyp_ll_mc_p4_branch != 0) 
@@ -4662,7 +4674,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_ll_mc_p4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&hyp_ll_p4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &hyp_ll_p4()
 	{
 		if (not hyp_ll_p4_isLoaded) {
 			if (hyp_ll_p4_branch != 0) 
@@ -4671,7 +4683,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_ll_p4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&hyp_ll_trk_p4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &hyp_ll_trk_p4()
 	{
 		if (not hyp_ll_trk_p4_isLoaded) {
 			if (hyp_ll_trk_p4_branch != 0) 
@@ -4680,7 +4692,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_ll_trk_p4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&hyp_lt_mc_p4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &hyp_lt_mc_p4()
 	{
 		if (not hyp_lt_mc_p4_isLoaded) {
 			if (hyp_lt_mc_p4_branch != 0) 
@@ -4689,7 +4701,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_lt_mc_p4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&hyp_lt_p4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &hyp_lt_p4()
 	{
 		if (not hyp_lt_p4_isLoaded) {
 			if (hyp_lt_p4_branch != 0) 
@@ -4698,7 +4710,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_lt_p4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&hyp_lt_trk_p4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &hyp_lt_trk_p4()
 	{
 		if (not hyp_lt_trk_p4_isLoaded) {
 			if (hyp_lt_trk_p4_branch != 0) 
@@ -4707,7 +4719,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_lt_trk_p4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&hyp_p4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &hyp_p4()
 	{
 		if (not hyp_p4_isLoaded) {
 			if (hyp_p4_branch != 0) 
@@ -4716,7 +4728,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_p4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&jets_p4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &jets_p4()
 	{
 		if (not jets_p4_isLoaded) {
 			if (jets_p4_branch != 0) 
@@ -4725,7 +4737,7 @@ void Init(TTree *tree) {
 		}
 		return jets_p4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&l1emiso_p4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &l1emiso_p4()
 	{
 		if (not l1emiso_p4_isLoaded) {
 			if (l1emiso_p4_branch != 0) 
@@ -4734,7 +4746,7 @@ void Init(TTree *tree) {
 		}
 		return l1emiso_p4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&l1emnoiso_p4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &l1emnoiso_p4()
 	{
 		if (not l1emnoiso_p4_isLoaded) {
 			if (l1emnoiso_p4_branch != 0) 
@@ -4743,7 +4755,7 @@ void Init(TTree *tree) {
 		}
 		return l1emnoiso_p4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&l1jetsc_p4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &l1jetsc_p4()
 	{
 		if (not l1jetsc_p4_isLoaded) {
 			if (l1jetsc_p4_branch != 0) 
@@ -4752,7 +4764,7 @@ void Init(TTree *tree) {
 		}
 		return l1jetsc_p4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&l1jetsf_p4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &l1jetsf_p4()
 	{
 		if (not l1jetsf_p4_isLoaded) {
 			if (l1jetsf_p4_branch != 0) 
@@ -4761,7 +4773,7 @@ void Init(TTree *tree) {
 		}
 		return l1jetsf_p4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&l1jetst_p4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &l1jetst_p4()
 	{
 		if (not l1jetst_p4_isLoaded) {
 			if (l1jetst_p4_branch != 0) 
@@ -4770,7 +4782,7 @@ void Init(TTree *tree) {
 		}
 		return l1jetst_p4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&l1mus_p4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &l1mus_p4()
 	{
 		if (not l1mus_p4_isLoaded) {
 			if (l1mus_p4_branch != 0) 
@@ -4779,7 +4791,7 @@ void Init(TTree *tree) {
 		}
 		return l1mus_p4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&mus_p4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &mus_p4()
 	{
 		if (not mus_p4_isLoaded) {
 			if (mus_p4_branch != 0) 
@@ -4788,7 +4800,7 @@ void Init(TTree *tree) {
 		}
 		return mus_p4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&mus_trk_p4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &mus_trk_p4()
 	{
 		if (not mus_trk_p4_isLoaded) {
 			if (mus_trk_p4_branch != 0) 
@@ -4797,7 +4809,7 @@ void Init(TTree *tree) {
 		}
 		return mus_trk_p4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&els_tq_genMotherP4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &els_tq_genMotherP4()
 	{
 		if (not els_tq_genMotherP4_isLoaded) {
 			if (els_tq_genMotherP4_branch != 0) 
@@ -4806,7 +4818,7 @@ void Init(TTree *tree) {
 		}
 		return els_tq_genMotherP4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&els_tq_genP4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &els_tq_genP4()
 	{
 		if (not els_tq_genP4_isLoaded) {
 			if (els_tq_genP4_branch != 0) 
@@ -4815,7 +4827,7 @@ void Init(TTree *tree) {
 		}
 		return els_tq_genP4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&jets_tq_genJet_p4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &jets_tq_genJet_p4()
 	{
 		if (not jets_tq_genJet_p4_isLoaded) {
 			if (jets_tq_genJet_p4_branch != 0) 
@@ -4824,7 +4836,7 @@ void Init(TTree *tree) {
 		}
 		return jets_tq_genJet_p4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&jets_tq_genPartonMother_p4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &jets_tq_genPartonMother_p4()
 	{
 		if (not jets_tq_genPartonMother_p4_isLoaded) {
 			if (jets_tq_genPartonMother_p4_branch != 0) 
@@ -4833,7 +4845,7 @@ void Init(TTree *tree) {
 		}
 		return jets_tq_genPartonMother_p4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&jets_tq_genParton_p4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &jets_tq_genParton_p4()
 	{
 		if (not jets_tq_genParton_p4_isLoaded) {
 			if (jets_tq_genParton_p4_branch != 0) 
@@ -4842,7 +4854,7 @@ void Init(TTree *tree) {
 		}
 		return jets_tq_genParton_p4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&jets_tq_jet_p4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &jets_tq_jet_p4()
 	{
 		if (not jets_tq_jet_p4_isLoaded) {
 			if (jets_tq_jet_p4_branch != 0) 
@@ -4851,7 +4863,7 @@ void Init(TTree *tree) {
 		}
 		return jets_tq_jet_p4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&mus_tq_genMotherP4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &mus_tq_genMotherP4()
 	{
 		if (not mus_tq_genMotherP4_isLoaded) {
 			if (mus_tq_genMotherP4_branch != 0) 
@@ -4860,7 +4872,7 @@ void Init(TTree *tree) {
 		}
 		return mus_tq_genMotherP4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&mus_tq_genP4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &mus_tq_genP4()
 	{
 		if (not mus_tq_genP4_isLoaded) {
 			if (mus_tq_genP4_branch != 0) 
@@ -4869,7 +4881,7 @@ void Init(TTree *tree) {
 		}
 		return mus_tq_genP4_;
 	}
-	 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	&trks_trk_p4()
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &trks_trk_p4()
 	{
 		if (not trks_trk_p4_isLoaded) {
 			if (trks_trk_p4_branch != 0) 
@@ -4878,7 +4890,7 @@ void Init(TTree *tree) {
 		}
 		return trks_trk_p4_;
 	}
-	 vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > >	&hyp_jets_mc_gp_p4()
+	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > > &hyp_jets_mc_gp_p4()
 	{
 		if (not hyp_jets_mc_gp_p4_isLoaded) {
 			if (hyp_jets_mc_gp_p4_branch != 0) 
@@ -4887,7 +4899,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_jets_mc_gp_p4_;
 	}
-	 vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > >	&hyp_jets_mc_p4()
+	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > > &hyp_jets_mc_p4()
 	{
 		if (not hyp_jets_mc_p4_isLoaded) {
 			if (hyp_jets_mc_p4_branch != 0) 
@@ -4896,7 +4908,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_jets_mc_p4_;
 	}
-	 vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > >	&hyp_jets_p4()
+	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > > &hyp_jets_p4()
 	{
 		if (not hyp_jets_p4_isLoaded) {
 			if (hyp_jets_p4_branch != 0) 
@@ -4905,7 +4917,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_jets_p4_;
 	}
-	 vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > >	&hyp_jets_tq_p4()
+	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > > &hyp_jets_tq_p4()
 	{
 		if (not hyp_jets_tq_p4_isLoaded) {
 			if (hyp_jets_tq_p4_branch != 0) 
@@ -4914,7 +4926,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_jets_tq_p4_;
 	}
-	 vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > >	&hyp_jets_tq_genPartonMother_p4()
+	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > > &hyp_jets_tq_genPartonMother_p4()
 	{
 		if (not hyp_jets_tq_genPartonMother_p4_isLoaded) {
 			if (hyp_jets_tq_genPartonMother_p4_branch != 0) 
@@ -4923,7 +4935,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_jets_tq_genPartonMother_p4_;
 	}
-	 vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > >	&hyp_jets_tq_genParton_p4()
+	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > > &hyp_jets_tq_genParton_p4()
 	{
 		if (not hyp_jets_tq_genParton_p4_isLoaded) {
 			if (hyp_jets_tq_genParton_p4_branch != 0) 
@@ -4932,7 +4944,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_jets_tq_genParton_p4_;
 	}
-	 vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > >	&hyp_jets_tq_jet_p4()
+	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > > &hyp_jets_tq_jet_p4()
 	{
 		if (not hyp_jets_tq_jet_p4_isLoaded) {
 			if (hyp_jets_tq_jet_p4_branch != 0) 
@@ -4941,7 +4953,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_jets_tq_jet_p4_;
 	}
-	 vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > >	&hyp_other_jets_mc_gp_p4()
+	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > > &hyp_other_jets_mc_gp_p4()
 	{
 		if (not hyp_other_jets_mc_gp_p4_isLoaded) {
 			if (hyp_other_jets_mc_gp_p4_branch != 0) 
@@ -4950,7 +4962,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_other_jets_mc_gp_p4_;
 	}
-	 vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > >	&hyp_other_jets_mc_p4()
+	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > > &hyp_other_jets_mc_p4()
 	{
 		if (not hyp_other_jets_mc_p4_isLoaded) {
 			if (hyp_other_jets_mc_p4_branch != 0) 
@@ -4959,7 +4971,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_other_jets_mc_p4_;
 	}
-	 vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > >	&hyp_other_jets_p4()
+	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > > &hyp_other_jets_p4()
 	{
 		if (not hyp_other_jets_p4_isLoaded) {
 			if (hyp_other_jets_p4_branch != 0) 
@@ -4968,7 +4980,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_other_jets_p4_;
 	}
-	 vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > >	&hyp_other_jets_tq_genJet_p4()
+	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > > &hyp_other_jets_tq_genJet_p4()
 	{
 		if (not hyp_other_jets_tq_genJet_p4_isLoaded) {
 			if (hyp_other_jets_tq_genJet_p4_branch != 0) 
@@ -4977,7 +4989,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_other_jets_tq_genJet_p4_;
 	}
-	 vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > >	&hyp_other_jets_tq_genPartonMother_p4()
+	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > > &hyp_other_jets_tq_genPartonMother_p4()
 	{
 		if (not hyp_other_jets_tq_genPartonMother_p4_isLoaded) {
 			if (hyp_other_jets_tq_genPartonMother_p4_branch != 0) 
@@ -4986,7 +4998,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_other_jets_tq_genPartonMother_p4_;
 	}
-	 vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > >	&hyp_other_jets_tq_genParton_p4()
+	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > > &hyp_other_jets_tq_genParton_p4()
 	{
 		if (not hyp_other_jets_tq_genParton_p4_isLoaded) {
 			if (hyp_other_jets_tq_genParton_p4_branch != 0) 
@@ -4995,7 +5007,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_other_jets_tq_genParton_p4_;
 	}
-	 vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > >	&hyp_other_jets_tq_jet_p4()
+	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > > &hyp_other_jets_tq_jet_p4()
 	{
 		if (not hyp_other_jets_tq_jet_p4_isLoaded) {
 			if (hyp_other_jets_tq_jet_p4_branch != 0) 
@@ -5004,7 +5016,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_other_jets_tq_jet_p4_;
 	}
-	 float	&evt_CSA07FilterEff()
+	float &evt_CSA07FilterEff()
 	{
 		if (not evt_CSA07FilterEff_isLoaded) {
 			if (evt_CSA07FilterEff_branch != 0) 
@@ -5013,7 +5025,7 @@ void Init(TTree *tree) {
 		}
 		return evt_CSA07FilterEff_;
 	}
-	 float	&evt_CSA07Pthat()
+	float &evt_CSA07Pthat()
 	{
 		if (not evt_CSA07Pthat_isLoaded) {
 			if (evt_CSA07Pthat_branch != 0) 
@@ -5022,7 +5034,7 @@ void Init(TTree *tree) {
 		}
 		return evt_CSA07Pthat_;
 	}
-	 float	&evt_CSA07Weight()
+	float &evt_CSA07Weight()
 	{
 		if (not evt_CSA07Weight_isLoaded) {
 			if (evt_CSA07Weight_branch != 0) 
@@ -5031,7 +5043,7 @@ void Init(TTree *tree) {
 		}
 		return evt_CSA07Weight_;
 	}
-	 float	&evt_kfactor()
+	float &evt_kfactor()
 	{
 		if (not evt_kfactor_isLoaded) {
 			if (evt_kfactor_branch != 0) 
@@ -5040,7 +5052,7 @@ void Init(TTree *tree) {
 		}
 		return evt_kfactor_;
 	}
-	 float	&evt_weight()
+	float &evt_weight()
 	{
 		if (not evt_weight_isLoaded) {
 			if (evt_weight_branch != 0) 
@@ -5049,7 +5061,7 @@ void Init(TTree *tree) {
 		}
 		return evt_weight_;
 	}
-	 float	&evt_xsec_excl()
+	float &evt_xsec_excl()
 	{
 		if (not evt_xsec_excl_isLoaded) {
 			if (evt_xsec_excl_branch != 0) 
@@ -5058,7 +5070,7 @@ void Init(TTree *tree) {
 		}
 		return evt_xsec_excl_;
 	}
-	 float	&evt_xsec_incl()
+	float &evt_xsec_incl()
 	{
 		if (not evt_xsec_incl_isLoaded) {
 			if (evt_xsec_incl_branch != 0) 
@@ -5067,7 +5079,16 @@ void Init(TTree *tree) {
 		}
 		return evt_xsec_incl_;
 	}
-	 float	&l1met_etHad()
+	float &evt_scale1fb()
+	{
+		if (not evt_scale1fb_isLoaded) {
+			if (evt_scale1fb_branch != 0) 
+				evt_scale1fb_branch->GetEntry(index);
+			evt_scale1fb_isLoaded = true;
+		}
+		return evt_scale1fb_;
+	}
+	float &l1met_etHad()
 	{
 		if (not l1met_etHad_isLoaded) {
 			if (l1met_etHad_branch != 0) 
@@ -5076,7 +5097,7 @@ void Init(TTree *tree) {
 		}
 		return l1met_etHad_;
 	}
-	 float	&l1met_etTot()
+	float &l1met_etTot()
 	{
 		if (not l1met_etTot_isLoaded) {
 			if (l1met_etTot_branch != 0) 
@@ -5085,7 +5106,7 @@ void Init(TTree *tree) {
 		}
 		return l1met_etTot_;
 	}
-	 float	&l1met_met()
+	float &l1met_met()
 	{
 		if (not l1met_met_isLoaded) {
 			if (l1met_met_branch != 0) 
@@ -5094,7 +5115,7 @@ void Init(TTree *tree) {
 		}
 		return l1met_met_;
 	}
-	 float	&evt_met()
+	float &evt_met()
 	{
 		if (not evt_met_isLoaded) {
 			if (evt_met_branch != 0) 
@@ -5103,7 +5124,7 @@ void Init(TTree *tree) {
 		}
 		return evt_met_;
 	}
-	 float	&evt_metPhi()
+	float &evt_metPhi()
 	{
 		if (not evt_metPhi_isLoaded) {
 			if (evt_metPhi_branch != 0) 
@@ -5112,7 +5133,7 @@ void Init(TTree *tree) {
 		}
 		return evt_metPhi_;
 	}
-	 float	&evt_metSig()
+	float &evt_metSig()
 	{
 		if (not evt_metSig_isLoaded) {
 			if (evt_metSig_branch != 0) 
@@ -5121,7 +5142,7 @@ void Init(TTree *tree) {
 		}
 		return evt_metSig_;
 	}
-	 float	&evt_met_jetcorr()
+	float &evt_met_jetcorr()
 	{
 		if (not evt_met_jetcorr_isLoaded) {
 			if (evt_met_jetcorr_branch != 0) 
@@ -5130,7 +5151,7 @@ void Init(TTree *tree) {
 		}
 		return evt_met_jetcorr_;
 	}
-	 float	&metphi_jetcorr()
+	float &metphi_jetcorr()
 	{
 		if (not metphi_jetcorr_isLoaded) {
 			if (metphi_jetcorr_branch != 0) 
@@ -5139,7 +5160,7 @@ void Init(TTree *tree) {
 		}
 		return metphi_jetcorr_;
 	}
-	 vector<float>	&els_musdr()
+	vector<float> &els_musdr()
 	{
 		if (not els_musdr_isLoaded) {
 			if (els_musdr_branch != 0) 
@@ -5148,7 +5169,7 @@ void Init(TTree *tree) {
 		}
 		return els_musdr_;
 	}
-	 vector<float>	&els_trkdr()
+	vector<float> &els_trkdr()
 	{
 		if (not els_trkdr_isLoaded) {
 			if (els_trkdr_branch != 0) 
@@ -5157,7 +5178,7 @@ void Init(TTree *tree) {
 		}
 		return els_trkdr_;
 	}
-	 vector<float>	&els_ESc()
+	vector<float> &els_ESc()
 	{
 		if (not els_ESc_isLoaded) {
 			if (els_ESc_branch != 0) 
@@ -5166,7 +5187,7 @@ void Init(TTree *tree) {
 		}
 		return els_ESc_;
 	}
-	 vector<float>	&els_ESc_raw()
+	vector<float> &els_ESc_raw()
 	{
 		if (not els_ESc_raw_isLoaded) {
 			if (els_ESc_raw_branch != 0) 
@@ -5175,7 +5196,7 @@ void Init(TTree *tree) {
 		}
 		return els_ESc_raw_;
 	}
-	 vector<float>	&els_ESeed()
+	vector<float> &els_ESeed()
 	{
 		if (not els_ESeed_isLoaded) {
 			if (els_ESeed_branch != 0) 
@@ -5184,7 +5205,7 @@ void Init(TTree *tree) {
 		}
 		return els_ESeed_;
 	}
-	 vector<float>	&els_chi2()
+	vector<float> &els_chi2()
 	{
 		if (not els_chi2_isLoaded) {
 			if (els_chi2_branch != 0) 
@@ -5193,7 +5214,7 @@ void Init(TTree *tree) {
 		}
 		return els_chi2_;
 	}
-	 vector<float>	&els_d0()
+	vector<float> &els_d0()
 	{
 		if (not els_d0_isLoaded) {
 			if (els_d0_branch != 0) 
@@ -5202,7 +5223,7 @@ void Init(TTree *tree) {
 		}
 		return els_d0_;
 	}
-	 vector<float>	&els_d0Err()
+	vector<float> &els_d0Err()
 	{
 		if (not els_d0Err_isLoaded) {
 			if (els_d0Err_branch != 0) 
@@ -5211,7 +5232,7 @@ void Init(TTree *tree) {
 		}
 		return els_d0Err_;
 	}
-	 vector<float>	&els_dEtaIn()
+	vector<float> &els_dEtaIn()
 	{
 		if (not els_dEtaIn_isLoaded) {
 			if (els_dEtaIn_branch != 0) 
@@ -5220,7 +5241,7 @@ void Init(TTree *tree) {
 		}
 		return els_dEtaIn_;
 	}
-	 vector<float>	&els_dEtaOut()
+	vector<float> &els_dEtaOut()
 	{
 		if (not els_dEtaOut_isLoaded) {
 			if (els_dEtaOut_branch != 0) 
@@ -5229,7 +5250,7 @@ void Init(TTree *tree) {
 		}
 		return els_dEtaOut_;
 	}
-	 vector<float>	&els_dPhiIn()
+	vector<float> &els_dPhiIn()
 	{
 		if (not els_dPhiIn_isLoaded) {
 			if (els_dPhiIn_branch != 0) 
@@ -5238,7 +5259,7 @@ void Init(TTree *tree) {
 		}
 		return els_dPhiIn_;
 	}
-	 vector<float>	&els_dPhiInPhiOut()
+	vector<float> &els_dPhiInPhiOut()
 	{
 		if (not els_dPhiInPhiOut_isLoaded) {
 			if (els_dPhiInPhiOut_branch != 0) 
@@ -5247,7 +5268,7 @@ void Init(TTree *tree) {
 		}
 		return els_dPhiInPhiOut_;
 	}
-	 vector<float>	&els_dPhiOut()
+	vector<float> &els_dPhiOut()
 	{
 		if (not els_dPhiOut_isLoaded) {
 			if (els_dPhiOut_branch != 0) 
@@ -5256,7 +5277,7 @@ void Init(TTree *tree) {
 		}
 		return els_dPhiOut_;
 	}
-	 vector<float>	&els_e3x3()
+	vector<float> &els_e3x3()
 	{
 		if (not els_e3x3_isLoaded) {
 			if (els_e3x3_branch != 0) 
@@ -5265,7 +5286,7 @@ void Init(TTree *tree) {
 		}
 		return els_e3x3_;
 	}
-	 vector<float>	&els_e5x5()
+	vector<float> &els_e5x5()
 	{
 		if (not els_e5x5_isLoaded) {
 			if (els_e5x5_branch != 0) 
@@ -5274,7 +5295,7 @@ void Init(TTree *tree) {
 		}
 		return els_e5x5_;
 	}
-	 vector<float>	&els_eOverPIn()
+	vector<float> &els_eOverPIn()
 	{
 		if (not els_eOverPIn_isLoaded) {
 			if (els_eOverPIn_branch != 0) 
@@ -5283,7 +5304,7 @@ void Init(TTree *tree) {
 		}
 		return els_eOverPIn_;
 	}
-	 vector<float>	&els_eSeedOverPOut()
+	vector<float> &els_eSeedOverPOut()
 	{
 		if (not els_eSeedOverPOut_isLoaded) {
 			if (els_eSeedOverPOut_branch != 0) 
@@ -5292,7 +5313,7 @@ void Init(TTree *tree) {
 		}
 		return els_eSeedOverPOut_;
 	}
-	 vector<float>	&els_etaErr()
+	vector<float> &els_etaErr()
 	{
 		if (not els_etaErr_isLoaded) {
 			if (els_etaErr_branch != 0) 
@@ -5301,7 +5322,7 @@ void Init(TTree *tree) {
 		}
 		return els_etaErr_;
 	}
-	 vector<float>	&els_fBrem()
+	vector<float> &els_fBrem()
 	{
 		if (not els_fBrem_isLoaded) {
 			if (els_fBrem_branch != 0) 
@@ -5310,7 +5331,7 @@ void Init(TTree *tree) {
 		}
 		return els_fBrem_;
 	}
-	 vector<float>	&els_hOverE()
+	vector<float> &els_hOverE()
 	{
 		if (not els_hOverE_isLoaded) {
 			if (els_hOverE_branch != 0) 
@@ -5319,7 +5340,7 @@ void Init(TTree *tree) {
 		}
 		return els_hOverE_;
 	}
-	 vector<float>	&els_ndof()
+	vector<float> &els_ndof()
 	{
 		if (not els_ndof_isLoaded) {
 			if (els_ndof_branch != 0) 
@@ -5328,7 +5349,7 @@ void Init(TTree *tree) {
 		}
 		return els_ndof_;
 	}
-	 vector<float>	&els_outerEta()
+	vector<float> &els_outerEta()
 	{
 		if (not els_outerEta_isLoaded) {
 			if (els_outerEta_branch != 0) 
@@ -5337,7 +5358,7 @@ void Init(TTree *tree) {
 		}
 		return els_outerEta_;
 	}
-	 vector<float>	&els_outerPhi()
+	vector<float> &els_outerPhi()
 	{
 		if (not els_outerPhi_isLoaded) {
 			if (els_outerPhi_branch != 0) 
@@ -5346,7 +5367,7 @@ void Init(TTree *tree) {
 		}
 		return els_outerPhi_;
 	}
-	 vector<float>	&els_phiErr()
+	vector<float> &els_phiErr()
 	{
 		if (not els_phiErr_isLoaded) {
 			if (els_phiErr_branch != 0) 
@@ -5355,7 +5376,7 @@ void Init(TTree *tree) {
 		}
 		return els_phiErr_;
 	}
-	 vector<float>	&els_ptErr()
+	vector<float> &els_ptErr()
 	{
 		if (not els_ptErr_isLoaded) {
 			if (els_ptErr_branch != 0) 
@@ -5364,7 +5385,7 @@ void Init(TTree *tree) {
 		}
 		return els_ptErr_;
 	}
-	 vector<float>	&els_sigmaEtaEta()
+	vector<float> &els_sigmaEtaEta()
 	{
 		if (not els_sigmaEtaEta_isLoaded) {
 			if (els_sigmaEtaEta_branch != 0) 
@@ -5373,7 +5394,7 @@ void Init(TTree *tree) {
 		}
 		return els_sigmaEtaEta_;
 	}
-	 vector<float>	&els_sigmaPhiPhi()
+	vector<float> &els_sigmaPhiPhi()
 	{
 		if (not els_sigmaPhiPhi_isLoaded) {
 			if (els_sigmaPhiPhi_branch != 0) 
@@ -5382,7 +5403,7 @@ void Init(TTree *tree) {
 		}
 		return els_sigmaPhiPhi_;
 	}
-	 vector<float>	&els_tkIso()
+	vector<float> &els_tkIso()
 	{
 		if (not els_tkIso_isLoaded) {
 			if (els_tkIso_branch != 0) 
@@ -5391,7 +5412,7 @@ void Init(TTree *tree) {
 		}
 		return els_tkIso_;
 	}
-	 vector<float>	&els_vertexphi()
+	vector<float> &els_vertexphi()
 	{
 		if (not els_vertexphi_isLoaded) {
 			if (els_vertexphi_branch != 0) 
@@ -5400,7 +5421,7 @@ void Init(TTree *tree) {
 		}
 		return els_vertexphi_;
 	}
-	 vector<float>	&els_z0()
+	vector<float> &els_z0()
 	{
 		if (not els_z0_isLoaded) {
 			if (els_z0_branch != 0) 
@@ -5409,7 +5430,7 @@ void Init(TTree *tree) {
 		}
 		return els_z0_;
 	}
-	 vector<float>	&els_z0Err()
+	vector<float> &els_z0Err()
 	{
 		if (not els_z0Err_isLoaded) {
 			if (els_z0Err_branch != 0) 
@@ -5418,7 +5439,7 @@ void Init(TTree *tree) {
 		}
 		return els_z0Err_;
 	}
-	 vector<float>	&hyp_ll_chi2()
+	vector<float> &hyp_ll_chi2()
 	{
 		if (not hyp_ll_chi2_isLoaded) {
 			if (hyp_ll_chi2_branch != 0) 
@@ -5427,7 +5448,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_ll_chi2_;
 	}
-	 vector<float>	&hyp_ll_d0()
+	vector<float> &hyp_ll_d0()
 	{
 		if (not hyp_ll_d0_isLoaded) {
 			if (hyp_ll_d0_branch != 0) 
@@ -5436,7 +5457,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_ll_d0_;
 	}
-	 vector<float>	&hyp_ll_d0Err()
+	vector<float> &hyp_ll_d0Err()
 	{
 		if (not hyp_ll_d0Err_isLoaded) {
 			if (hyp_ll_d0Err_branch != 0) 
@@ -5445,7 +5466,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_ll_d0Err_;
 	}
-	 vector<float>	&hyp_ll_etaErr()
+	vector<float> &hyp_ll_etaErr()
 	{
 		if (not hyp_ll_etaErr_isLoaded) {
 			if (hyp_ll_etaErr_branch != 0) 
@@ -5454,7 +5475,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_ll_etaErr_;
 	}
-	 vector<float>	&hyp_ll_iso()
+	vector<float> &hyp_ll_iso()
 	{
 		if (not hyp_ll_iso_isLoaded) {
 			if (hyp_ll_iso_branch != 0) 
@@ -5463,7 +5484,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_ll_iso_;
 	}
-	 vector<float>	&hyp_ll_ndof()
+	vector<float> &hyp_ll_ndof()
 	{
 		if (not hyp_ll_ndof_isLoaded) {
 			if (hyp_ll_ndof_branch != 0) 
@@ -5472,7 +5493,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_ll_ndof_;
 	}
-	 vector<float>	&hyp_ll_outerEta()
+	vector<float> &hyp_ll_outerEta()
 	{
 		if (not hyp_ll_outerEta_isLoaded) {
 			if (hyp_ll_outerEta_branch != 0) 
@@ -5481,7 +5502,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_ll_outerEta_;
 	}
-	 vector<float>	&hyp_ll_outerPhi()
+	vector<float> &hyp_ll_outerPhi()
 	{
 		if (not hyp_ll_outerPhi_isLoaded) {
 			if (hyp_ll_outerPhi_branch != 0) 
@@ -5490,7 +5511,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_ll_outerPhi_;
 	}
-	 vector<float>	&hyp_ll_phiErr()
+	vector<float> &hyp_ll_phiErr()
 	{
 		if (not hyp_ll_phiErr_isLoaded) {
 			if (hyp_ll_phiErr_branch != 0) 
@@ -5499,7 +5520,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_ll_phiErr_;
 	}
-	 vector<float>	&hyp_ll_ptErr()
+	vector<float> &hyp_ll_ptErr()
 	{
 		if (not hyp_ll_ptErr_isLoaded) {
 			if (hyp_ll_ptErr_branch != 0) 
@@ -5508,7 +5529,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_ll_ptErr_;
 	}
-	 vector<float>	&hyp_ll_tkIso()
+	vector<float> &hyp_ll_tkIso()
 	{
 		if (not hyp_ll_tkIso_isLoaded) {
 			if (hyp_ll_tkIso_branch != 0) 
@@ -5517,7 +5538,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_ll_tkIso_;
 	}
-	 vector<float>	&hyp_ll_vertexphi()
+	vector<float> &hyp_ll_vertexphi()
 	{
 		if (not hyp_ll_vertexphi_isLoaded) {
 			if (hyp_ll_vertexphi_branch != 0) 
@@ -5526,7 +5547,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_ll_vertexphi_;
 	}
-	 vector<float>	&hyp_ll_z0()
+	vector<float> &hyp_ll_z0()
 	{
 		if (not hyp_ll_z0_isLoaded) {
 			if (hyp_ll_z0_branch != 0) 
@@ -5535,7 +5556,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_ll_z0_;
 	}
-	 vector<float>	&hyp_ll_z0Err()
+	vector<float> &hyp_ll_z0Err()
 	{
 		if (not hyp_ll_z0Err_isLoaded) {
 			if (hyp_ll_z0Err_branch != 0) 
@@ -5544,7 +5565,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_ll_z0Err_;
 	}
-	 vector<float>	&hyp_lt_chi2()
+	vector<float> &hyp_lt_chi2()
 	{
 		if (not hyp_lt_chi2_isLoaded) {
 			if (hyp_lt_chi2_branch != 0) 
@@ -5553,7 +5574,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_lt_chi2_;
 	}
-	 vector<float>	&hyp_lt_d0()
+	vector<float> &hyp_lt_d0()
 	{
 		if (not hyp_lt_d0_isLoaded) {
 			if (hyp_lt_d0_branch != 0) 
@@ -5562,7 +5583,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_lt_d0_;
 	}
-	 vector<float>	&hyp_lt_d0Err()
+	vector<float> &hyp_lt_d0Err()
 	{
 		if (not hyp_lt_d0Err_isLoaded) {
 			if (hyp_lt_d0Err_branch != 0) 
@@ -5571,7 +5592,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_lt_d0Err_;
 	}
-	 vector<float>	&hyp_lt_etaErr()
+	vector<float> &hyp_lt_etaErr()
 	{
 		if (not hyp_lt_etaErr_isLoaded) {
 			if (hyp_lt_etaErr_branch != 0) 
@@ -5580,7 +5601,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_lt_etaErr_;
 	}
-	 vector<float>	&hyp_lt_iso()
+	vector<float> &hyp_lt_iso()
 	{
 		if (not hyp_lt_iso_isLoaded) {
 			if (hyp_lt_iso_branch != 0) 
@@ -5589,7 +5610,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_lt_iso_;
 	}
-	 vector<float>	&hyp_lt_ndof()
+	vector<float> &hyp_lt_ndof()
 	{
 		if (not hyp_lt_ndof_isLoaded) {
 			if (hyp_lt_ndof_branch != 0) 
@@ -5598,7 +5619,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_lt_ndof_;
 	}
-	 vector<float>	&hyp_lt_outerEta()
+	vector<float> &hyp_lt_outerEta()
 	{
 		if (not hyp_lt_outerEta_isLoaded) {
 			if (hyp_lt_outerEta_branch != 0) 
@@ -5607,7 +5628,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_lt_outerEta_;
 	}
-	 vector<float>	&hyp_lt_outerPhi()
+	vector<float> &hyp_lt_outerPhi()
 	{
 		if (not hyp_lt_outerPhi_isLoaded) {
 			if (hyp_lt_outerPhi_branch != 0) 
@@ -5616,7 +5637,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_lt_outerPhi_;
 	}
-	 vector<float>	&hyp_lt_phiErr()
+	vector<float> &hyp_lt_phiErr()
 	{
 		if (not hyp_lt_phiErr_isLoaded) {
 			if (hyp_lt_phiErr_branch != 0) 
@@ -5625,7 +5646,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_lt_phiErr_;
 	}
-	 vector<float>	&hyp_lt_ptErr()
+	vector<float> &hyp_lt_ptErr()
 	{
 		if (not hyp_lt_ptErr_isLoaded) {
 			if (hyp_lt_ptErr_branch != 0) 
@@ -5634,7 +5655,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_lt_ptErr_;
 	}
-	 vector<float>	&hyp_lt_tkIso()
+	vector<float> &hyp_lt_tkIso()
 	{
 		if (not hyp_lt_tkIso_isLoaded) {
 			if (hyp_lt_tkIso_branch != 0) 
@@ -5643,7 +5664,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_lt_tkIso_;
 	}
-	 vector<float>	&hyp_lt_vertexphi()
+	vector<float> &hyp_lt_vertexphi()
 	{
 		if (not hyp_lt_vertexphi_isLoaded) {
 			if (hyp_lt_vertexphi_branch != 0) 
@@ -5652,7 +5673,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_lt_vertexphi_;
 	}
-	 vector<float>	&hyp_lt_z0()
+	vector<float> &hyp_lt_z0()
 	{
 		if (not hyp_lt_z0_isLoaded) {
 			if (hyp_lt_z0_branch != 0) 
@@ -5661,7 +5682,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_lt_z0_;
 	}
-	 vector<float>	&hyp_lt_z0Err()
+	vector<float> &hyp_lt_z0Err()
 	{
 		if (not hyp_lt_z0Err_isLoaded) {
 			if (hyp_lt_z0Err_branch != 0) 
@@ -5670,7 +5691,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_lt_z0Err_;
 	}
-	 vector<float>	&hyp_met()
+	vector<float> &hyp_met()
 	{
 		if (not hyp_met_isLoaded) {
 			if (hyp_met_branch != 0) 
@@ -5679,7 +5700,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_met_;
 	}
-	 vector<float>	&hyp_metAll()
+	vector<float> &hyp_metAll()
 	{
 		if (not hyp_metAll_isLoaded) {
 			if (hyp_metAll_branch != 0) 
@@ -5688,7 +5709,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metAll_;
 	}
-	 vector<float>	&hyp_metAllCaloExp()
+	vector<float> &hyp_metAllCaloExp()
 	{
 		if (not hyp_metAllCaloExp_isLoaded) {
 			if (hyp_metAllCaloExp_branch != 0) 
@@ -5697,7 +5718,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metAllCaloExp_;
 	}
-	 vector<float>	&hyp_metCaloExp()
+	vector<float> &hyp_metCaloExp()
 	{
 		if (not hyp_metCaloExp_isLoaded) {
 			if (hyp_metCaloExp_branch != 0) 
@@ -5706,7 +5727,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metCaloExp_;
 	}
-	 vector<float>	&hyp_metCone()
+	vector<float> &hyp_metCone()
 	{
 		if (not hyp_metCone_isLoaded) {
 			if (hyp_metCone_branch != 0) 
@@ -5715,7 +5736,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metCone_;
 	}
-	 vector<float>	&hyp_metDPhiJet10()
+	vector<float> &hyp_metDPhiJet10()
 	{
 		if (not hyp_metDPhiJet10_isLoaded) {
 			if (hyp_metDPhiJet10_branch != 0) 
@@ -5724,7 +5745,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metDPhiJet10_;
 	}
-	 vector<float>	&hyp_metDPhiJet15()
+	vector<float> &hyp_metDPhiJet15()
 	{
 		if (not hyp_metDPhiJet15_isLoaded) {
 			if (hyp_metDPhiJet15_branch != 0) 
@@ -5733,7 +5754,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metDPhiJet15_;
 	}
-	 vector<float>	&hyp_metDPhiJet20()
+	vector<float> &hyp_metDPhiJet20()
 	{
 		if (not hyp_metDPhiJet20_isLoaded) {
 			if (hyp_metDPhiJet20_branch != 0) 
@@ -5742,7 +5763,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metDPhiJet20_;
 	}
-	 vector<float>	&hyp_metDPhiTrk10()
+	vector<float> &hyp_metDPhiTrk10()
 	{
 		if (not hyp_metDPhiTrk10_isLoaded) {
 			if (hyp_metDPhiTrk10_branch != 0) 
@@ -5751,7 +5772,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metDPhiTrk10_;
 	}
-	 vector<float>	&hyp_metDPhiTrk25()
+	vector<float> &hyp_metDPhiTrk25()
 	{
 		if (not hyp_metDPhiTrk25_isLoaded) {
 			if (hyp_metDPhiTrk25_branch != 0) 
@@ -5760,7 +5781,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metDPhiTrk25_;
 	}
-	 vector<float>	&hyp_metDPhiTrk50()
+	vector<float> &hyp_metDPhiTrk50()
 	{
 		if (not hyp_metDPhiTrk50_isLoaded) {
 			if (hyp_metDPhiTrk50_branch != 0) 
@@ -5769,7 +5790,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metDPhiTrk50_;
 	}
-	 vector<float>	&hyp_metJes10()
+	vector<float> &hyp_metJes10()
 	{
 		if (not hyp_metJes10_isLoaded) {
 			if (hyp_metJes10_branch != 0) 
@@ -5778,7 +5799,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metJes10_;
 	}
-	 vector<float>	&hyp_metJes15()
+	vector<float> &hyp_metJes15()
 	{
 		if (not hyp_metJes15_isLoaded) {
 			if (hyp_metJes15_branch != 0) 
@@ -5787,7 +5808,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metJes15_;
 	}
-	 vector<float>	&hyp_metJes30()
+	vector<float> &hyp_metJes30()
 	{
 		if (not hyp_metJes30_isLoaded) {
 			if (hyp_metJes30_branch != 0) 
@@ -5796,7 +5817,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metJes30_;
 	}
-	 vector<float>	&hyp_metJes5()
+	vector<float> &hyp_metJes5()
 	{
 		if (not hyp_metJes5_isLoaded) {
 			if (hyp_metJes5_branch != 0) 
@@ -5805,7 +5826,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metJes5_;
 	}
-	 vector<float>	&hyp_metJes50()
+	vector<float> &hyp_metJes50()
 	{
 		if (not hyp_metJes50_isLoaded) {
 			if (hyp_metJes50_branch != 0) 
@@ -5814,7 +5835,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metJes50_;
 	}
-	 vector<float>	&hyp_metNoCalo()
+	vector<float> &hyp_metNoCalo()
 	{
 		if (not hyp_metNoCalo_isLoaded) {
 			if (hyp_metNoCalo_branch != 0) 
@@ -5823,7 +5844,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metNoCalo_;
 	}
-	 vector<float>	&hyp_metPhi()
+	vector<float> &hyp_metPhi()
 	{
 		if (not hyp_metPhi_isLoaded) {
 			if (hyp_metPhi_branch != 0) 
@@ -5832,7 +5853,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metPhi_;
 	}
-	 vector<float>	&hyp_metPhiAll()
+	vector<float> &hyp_metPhiAll()
 	{
 		if (not hyp_metPhiAll_isLoaded) {
 			if (hyp_metPhiAll_branch != 0) 
@@ -5841,7 +5862,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metPhiAll_;
 	}
-	 vector<float>	&hyp_metPhiAllCaloExp()
+	vector<float> &hyp_metPhiAllCaloExp()
 	{
 		if (not hyp_metPhiAllCaloExp_isLoaded) {
 			if (hyp_metPhiAllCaloExp_branch != 0) 
@@ -5850,7 +5871,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metPhiAllCaloExp_;
 	}
-	 vector<float>	&hyp_metPhiCaloExp()
+	vector<float> &hyp_metPhiCaloExp()
 	{
 		if (not hyp_metPhiCaloExp_isLoaded) {
 			if (hyp_metPhiCaloExp_branch != 0) 
@@ -5859,7 +5880,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metPhiCaloExp_;
 	}
-	 vector<float>	&hyp_metPhiCone()
+	vector<float> &hyp_metPhiCone()
 	{
 		if (not hyp_metPhiCone_isLoaded) {
 			if (hyp_metPhiCone_branch != 0) 
@@ -5868,7 +5889,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metPhiCone_;
 	}
-	 vector<float>	&hyp_metPhiJes10()
+	vector<float> &hyp_metPhiJes10()
 	{
 		if (not hyp_metPhiJes10_isLoaded) {
 			if (hyp_metPhiJes10_branch != 0) 
@@ -5877,7 +5898,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metPhiJes10_;
 	}
-	 vector<float>	&hyp_metPhiJes15()
+	vector<float> &hyp_metPhiJes15()
 	{
 		if (not hyp_metPhiJes15_isLoaded) {
 			if (hyp_metPhiJes15_branch != 0) 
@@ -5886,7 +5907,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metPhiJes15_;
 	}
-	 vector<float>	&hyp_metPhiJes30()
+	vector<float> &hyp_metPhiJes30()
 	{
 		if (not hyp_metPhiJes30_isLoaded) {
 			if (hyp_metPhiJes30_branch != 0) 
@@ -5895,7 +5916,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metPhiJes30_;
 	}
-	 vector<float>	&hyp_metPhiJes5()
+	vector<float> &hyp_metPhiJes5()
 	{
 		if (not hyp_metPhiJes5_isLoaded) {
 			if (hyp_metPhiJes5_branch != 0) 
@@ -5904,7 +5925,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metPhiJes5_;
 	}
-	 vector<float>	&hyp_metPhiJes50()
+	vector<float> &hyp_metPhiJes50()
 	{
 		if (not hyp_metPhiJes50_isLoaded) {
 			if (hyp_metPhiJes50_branch != 0) 
@@ -5913,7 +5934,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metPhiJes50_;
 	}
-	 vector<float>	&hyp_metPhiNoCalo()
+	vector<float> &hyp_metPhiNoCalo()
 	{
 		if (not hyp_metPhiNoCalo_isLoaded) {
 			if (hyp_metPhiNoCalo_branch != 0) 
@@ -5922,7 +5943,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_metPhiNoCalo_;
 	}
-	 vector<float>	&hyp_quadlep_met()
+	vector<float> &hyp_quadlep_met()
 	{
 		if (not hyp_quadlep_met_isLoaded) {
 			if (hyp_quadlep_met_branch != 0) 
@@ -5931,7 +5952,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_quadlep_met_;
 	}
-	 vector<float>	&hyp_quadlep_metAll()
+	vector<float> &hyp_quadlep_metAll()
 	{
 		if (not hyp_quadlep_metAll_isLoaded) {
 			if (hyp_quadlep_metAll_branch != 0) 
@@ -5940,7 +5961,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_quadlep_metAll_;
 	}
-	 vector<float>	&hyp_trilep_met()
+	vector<float> &hyp_trilep_met()
 	{
 		if (not hyp_trilep_met_isLoaded) {
 			if (hyp_trilep_met_branch != 0) 
@@ -5949,7 +5970,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_trilep_met_;
 	}
-	 vector<float>	&hyp_trilep_metAll()
+	vector<float> &hyp_trilep_metAll()
 	{
 		if (not hyp_trilep_metAll_isLoaded) {
 			if (hyp_trilep_metAll_branch != 0) 
@@ -5958,7 +5979,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_trilep_metAll_;
 	}
-	 vector<float>	&jets_EMFcor()
+	vector<float> &jets_EMFcor()
 	{
 		if (not jets_EMFcor_isLoaded) {
 			if (jets_EMFcor_branch != 0) 
@@ -5967,7 +5988,7 @@ void Init(TTree *tree) {
 		}
 		return jets_EMFcor_;
 	}
-	 vector<float>	&jets_chFrac()
+	vector<float> &jets_chFrac()
 	{
 		if (not jets_chFrac_isLoaded) {
 			if (jets_chFrac_branch != 0) 
@@ -5976,7 +5997,7 @@ void Init(TTree *tree) {
 		}
 		return jets_chFrac_;
 	}
-	 vector<float>	&jets_cor()
+	vector<float> &jets_cor()
 	{
 		if (not jets_cor_isLoaded) {
 			if (jets_cor_branch != 0) 
@@ -5985,7 +6006,7 @@ void Init(TTree *tree) {
 		}
 		return jets_cor_;
 	}
-	 vector<float>	&jets_emFrac()
+	vector<float> &jets_emFrac()
 	{
 		if (not jets_emFrac_isLoaded) {
 			if (jets_emFrac_branch != 0) 
@@ -5994,7 +6015,7 @@ void Init(TTree *tree) {
 		}
 		return jets_emFrac_;
 	}
-	 vector<float>	&mus_eledr()
+	vector<float> &mus_eledr()
 	{
 		if (not mus_eledr_isLoaded) {
 			if (mus_eledr_branch != 0) 
@@ -6003,7 +6024,7 @@ void Init(TTree *tree) {
 		}
 		return mus_eledr_;
 	}
-	 vector<float>	&mus_jetdr()
+	vector<float> &mus_jetdr()
 	{
 		if (not mus_jetdr_isLoaded) {
 			if (mus_jetdr_branch != 0) 
@@ -6012,7 +6033,7 @@ void Init(TTree *tree) {
 		}
 		return mus_jetdr_;
 	}
-	 vector<float>	&mus_trkdr()
+	vector<float> &mus_trkdr()
 	{
 		if (not mus_trkdr_isLoaded) {
 			if (mus_trkdr_branch != 0) 
@@ -6021,7 +6042,7 @@ void Init(TTree *tree) {
 		}
 		return mus_trkdr_;
 	}
-	 vector<float>	&mus_chi2()
+	vector<float> &mus_chi2()
 	{
 		if (not mus_chi2_isLoaded) {
 			if (mus_chi2_branch != 0) 
@@ -6030,7 +6051,7 @@ void Init(TTree *tree) {
 		}
 		return mus_chi2_;
 	}
-	 vector<float>	&mus_d0()
+	vector<float> &mus_d0()
 	{
 		if (not mus_d0_isLoaded) {
 			if (mus_d0_branch != 0) 
@@ -6039,7 +6060,7 @@ void Init(TTree *tree) {
 		}
 		return mus_d0_;
 	}
-	 vector<float>	&mus_d0Err()
+	vector<float> &mus_d0Err()
 	{
 		if (not mus_d0Err_isLoaded) {
 			if (mus_d0Err_branch != 0) 
@@ -6048,7 +6069,7 @@ void Init(TTree *tree) {
 		}
 		return mus_d0Err_;
 	}
-	 vector<float>	&mus_e_em()
+	vector<float> &mus_e_em()
 	{
 		if (not mus_e_em_isLoaded) {
 			if (mus_e_em_branch != 0) 
@@ -6057,7 +6078,7 @@ void Init(TTree *tree) {
 		}
 		return mus_e_em_;
 	}
-	 vector<float>	&mus_e_emS9()
+	vector<float> &mus_e_emS9()
 	{
 		if (not mus_e_emS9_isLoaded) {
 			if (mus_e_emS9_branch != 0) 
@@ -6066,7 +6087,7 @@ void Init(TTree *tree) {
 		}
 		return mus_e_emS9_;
 	}
-	 vector<float>	&mus_e_had()
+	vector<float> &mus_e_had()
 	{
 		if (not mus_e_had_isLoaded) {
 			if (mus_e_had_branch != 0) 
@@ -6075,7 +6096,7 @@ void Init(TTree *tree) {
 		}
 		return mus_e_had_;
 	}
-	 vector<float>	&mus_e_hadS9()
+	vector<float> &mus_e_hadS9()
 	{
 		if (not mus_e_hadS9_isLoaded) {
 			if (mus_e_hadS9_branch != 0) 
@@ -6084,7 +6105,7 @@ void Init(TTree *tree) {
 		}
 		return mus_e_hadS9_;
 	}
-	 vector<float>	&mus_e_ho()
+	vector<float> &mus_e_ho()
 	{
 		if (not mus_e_ho_isLoaded) {
 			if (mus_e_ho_branch != 0) 
@@ -6093,7 +6114,7 @@ void Init(TTree *tree) {
 		}
 		return mus_e_ho_;
 	}
-	 vector<float>	&mus_e_hoS9()
+	vector<float> &mus_e_hoS9()
 	{
 		if (not mus_e_hoS9_isLoaded) {
 			if (mus_e_hoS9_branch != 0) 
@@ -6102,7 +6123,7 @@ void Init(TTree *tree) {
 		}
 		return mus_e_hoS9_;
 	}
-	 vector<float>	&mus_etaErr()
+	vector<float> &mus_etaErr()
 	{
 		if (not mus_etaErr_isLoaded) {
 			if (mus_etaErr_branch != 0) 
@@ -6111,7 +6132,7 @@ void Init(TTree *tree) {
 		}
 		return mus_etaErr_;
 	}
-	 vector<float>	&mus_gfit_chi2()
+	vector<float> &mus_gfit_chi2()
 	{
 		if (not mus_gfit_chi2_isLoaded) {
 			if (mus_gfit_chi2_branch != 0) 
@@ -6120,7 +6141,7 @@ void Init(TTree *tree) {
 		}
 		return mus_gfit_chi2_;
 	}
-	 vector<float>	&mus_gfit_ndof()
+	vector<float> &mus_gfit_ndof()
 	{
 		if (not mus_gfit_ndof_isLoaded) {
 			if (mus_gfit_ndof_branch != 0) 
@@ -6129,7 +6150,7 @@ void Init(TTree *tree) {
 		}
 		return mus_gfit_ndof_;
 	}
-	 vector<float>	&mus_iso()
+	vector<float> &mus_iso()
 	{
 		if (not mus_iso_isLoaded) {
 			if (mus_iso_branch != 0) 
@@ -6138,7 +6159,7 @@ void Init(TTree *tree) {
 		}
 		return mus_iso_;
 	}
-	 vector<float>	&mus_iso03_emEt()
+	vector<float> &mus_iso03_emEt()
 	{
 		if (not mus_iso03_emEt_isLoaded) {
 			if (mus_iso03_emEt_branch != 0) 
@@ -6147,7 +6168,7 @@ void Init(TTree *tree) {
 		}
 		return mus_iso03_emEt_;
 	}
-	 vector<float>	&mus_iso03_hadEt()
+	vector<float> &mus_iso03_hadEt()
 	{
 		if (not mus_iso03_hadEt_isLoaded) {
 			if (mus_iso03_hadEt_branch != 0) 
@@ -6156,7 +6177,7 @@ void Init(TTree *tree) {
 		}
 		return mus_iso03_hadEt_;
 	}
-	 vector<float>	&mus_iso03_hoEt()
+	vector<float> &mus_iso03_hoEt()
 	{
 		if (not mus_iso03_hoEt_isLoaded) {
 			if (mus_iso03_hoEt_branch != 0) 
@@ -6165,7 +6186,7 @@ void Init(TTree *tree) {
 		}
 		return mus_iso03_hoEt_;
 	}
-	 vector<float>	&mus_iso03_sumPt()
+	vector<float> &mus_iso03_sumPt()
 	{
 		if (not mus_iso03_sumPt_isLoaded) {
 			if (mus_iso03_sumPt_branch != 0) 
@@ -6174,7 +6195,7 @@ void Init(TTree *tree) {
 		}
 		return mus_iso03_sumPt_;
 	}
-	 vector<float>	&mus_iso05_emEt()
+	vector<float> &mus_iso05_emEt()
 	{
 		if (not mus_iso05_emEt_isLoaded) {
 			if (mus_iso05_emEt_branch != 0) 
@@ -6183,7 +6204,7 @@ void Init(TTree *tree) {
 		}
 		return mus_iso05_emEt_;
 	}
-	 vector<float>	&mus_iso05_hadEt()
+	vector<float> &mus_iso05_hadEt()
 	{
 		if (not mus_iso05_hadEt_isLoaded) {
 			if (mus_iso05_hadEt_branch != 0) 
@@ -6192,7 +6213,7 @@ void Init(TTree *tree) {
 		}
 		return mus_iso05_hadEt_;
 	}
-	 vector<float>	&mus_iso05_hoEt()
+	vector<float> &mus_iso05_hoEt()
 	{
 		if (not mus_iso05_hoEt_isLoaded) {
 			if (mus_iso05_hoEt_branch != 0) 
@@ -6201,7 +6222,7 @@ void Init(TTree *tree) {
 		}
 		return mus_iso05_hoEt_;
 	}
-	 vector<float>	&mus_iso05_sumPt()
+	vector<float> &mus_iso05_sumPt()
 	{
 		if (not mus_iso05_sumPt_isLoaded) {
 			if (mus_iso05_sumPt_branch != 0) 
@@ -6210,7 +6231,7 @@ void Init(TTree *tree) {
 		}
 		return mus_iso05_sumPt_;
 	}
-	 vector<float>	&mus_ndof()
+	vector<float> &mus_ndof()
 	{
 		if (not mus_ndof_isLoaded) {
 			if (mus_ndof_branch != 0) 
@@ -6219,7 +6240,7 @@ void Init(TTree *tree) {
 		}
 		return mus_ndof_;
 	}
-	 vector<float>	&mus_outerEta()
+	vector<float> &mus_outerEta()
 	{
 		if (not mus_outerEta_isLoaded) {
 			if (mus_outerEta_branch != 0) 
@@ -6228,7 +6249,7 @@ void Init(TTree *tree) {
 		}
 		return mus_outerEta_;
 	}
-	 vector<float>	&mus_outerPhi()
+	vector<float> &mus_outerPhi()
 	{
 		if (not mus_outerPhi_isLoaded) {
 			if (mus_outerPhi_branch != 0) 
@@ -6237,7 +6258,7 @@ void Init(TTree *tree) {
 		}
 		return mus_outerPhi_;
 	}
-	 vector<float>	&mus_phiErr()
+	vector<float> &mus_phiErr()
 	{
 		if (not mus_phiErr_isLoaded) {
 			if (mus_phiErr_branch != 0) 
@@ -6246,7 +6267,7 @@ void Init(TTree *tree) {
 		}
 		return mus_phiErr_;
 	}
-	 vector<float>	&mus_ptErr()
+	vector<float> &mus_ptErr()
 	{
 		if (not mus_ptErr_isLoaded) {
 			if (mus_ptErr_branch != 0) 
@@ -6255,7 +6276,7 @@ void Init(TTree *tree) {
 		}
 		return mus_ptErr_;
 	}
-	 vector<float>	&mus_vertexphi()
+	vector<float> &mus_vertexphi()
 	{
 		if (not mus_vertexphi_isLoaded) {
 			if (mus_vertexphi_branch != 0) 
@@ -6264,7 +6285,7 @@ void Init(TTree *tree) {
 		}
 		return mus_vertexphi_;
 	}
-	 vector<float>	&mus_z0()
+	vector<float> &mus_z0()
 	{
 		if (not mus_z0_isLoaded) {
 			if (mus_z0_branch != 0) 
@@ -6273,7 +6294,7 @@ void Init(TTree *tree) {
 		}
 		return mus_z0_;
 	}
-	 vector<float>	&mus_z0Err()
+	vector<float> &mus_z0Err()
 	{
 		if (not mus_z0Err_isLoaded) {
 			if (mus_z0Err_branch != 0) 
@@ -6282,7 +6303,7 @@ void Init(TTree *tree) {
 		}
 		return mus_z0Err_;
 	}
-	 vector<float>	&els_tq_LRComb()
+	vector<float> &els_tq_LRComb()
 	{
 		if (not els_tq_LRComb_isLoaded) {
 			if (els_tq_LRComb_branch != 0) 
@@ -6291,7 +6312,7 @@ void Init(TTree *tree) {
 		}
 		return els_tq_LRComb_;
 	}
-	 vector<float>	&els_tq_caloIso()
+	vector<float> &els_tq_caloIso()
 	{
 		if (not els_tq_caloIso_isLoaded) {
 			if (els_tq_caloIso_branch != 0) 
@@ -6300,7 +6321,7 @@ void Init(TTree *tree) {
 		}
 		return els_tq_caloIso_;
 	}
-	 vector<float>	&els_tq_egammaEcalIso()
+	vector<float> &els_tq_egammaEcalIso()
 	{
 		if (not els_tq_egammaEcalIso_isLoaded) {
 			if (els_tq_egammaEcalIso_branch != 0) 
@@ -6309,7 +6330,7 @@ void Init(TTree *tree) {
 		}
 		return els_tq_egammaEcalIso_;
 	}
-	 vector<float>	&els_tq_egammaHcalIso()
+	vector<float> &els_tq_egammaHcalIso()
 	{
 		if (not els_tq_egammaHcalIso_isLoaded) {
 			if (els_tq_egammaHcalIso_branch != 0) 
@@ -6318,7 +6339,7 @@ void Init(TTree *tree) {
 		}
 		return els_tq_egammaHcalIso_;
 	}
-	 vector<float>	&els_tq_egammaTkIso()
+	vector<float> &els_tq_egammaTkIso()
 	{
 		if (not els_tq_egammaTkIso_isLoaded) {
 			if (els_tq_egammaTkIso_branch != 0) 
@@ -6327,7 +6348,7 @@ void Init(TTree *tree) {
 		}
 		return els_tq_egammaTkIso_;
 	}
-	 vector<float>	&els_tq_electronIDRobust()
+	vector<float> &els_tq_electronIDRobust()
 	{
 		if (not els_tq_electronIDRobust_isLoaded) {
 			if (els_tq_electronIDRobust_branch != 0) 
@@ -6336,7 +6357,7 @@ void Init(TTree *tree) {
 		}
 		return els_tq_electronIDRobust_;
 	}
-	 vector<float>	&els_tq_leptonID()
+	vector<float> &els_tq_leptonID()
 	{
 		if (not els_tq_leptonID_isLoaded) {
 			if (els_tq_leptonID_branch != 0) 
@@ -6345,7 +6366,7 @@ void Init(TTree *tree) {
 		}
 		return els_tq_leptonID_;
 	}
-	 vector<float>	&els_tq_trackIso()
+	vector<float> &els_tq_trackIso()
 	{
 		if (not els_tq_trackIso_isLoaded) {
 			if (els_tq_trackIso_branch != 0) 
@@ -6354,7 +6375,7 @@ void Init(TTree *tree) {
 		}
 		return els_tq_trackIso_;
 	}
-	 vector<float>	&jets_tq_bCorrF()
+	vector<float> &jets_tq_bCorrF()
 	{
 		if (not jets_tq_bCorrF_isLoaded) {
 			if (jets_tq_bCorrF_branch != 0) 
@@ -6363,7 +6384,7 @@ void Init(TTree *tree) {
 		}
 		return jets_tq_bCorrF_;
 	}
-	 vector<float>	&jets_tq_cCorrF()
+	vector<float> &jets_tq_cCorrF()
 	{
 		if (not jets_tq_cCorrF_isLoaded) {
 			if (jets_tq_cCorrF_branch != 0) 
@@ -6372,7 +6393,7 @@ void Init(TTree *tree) {
 		}
 		return jets_tq_cCorrF_;
 	}
-	 vector<float>	&jets_tq_gluCorrF()
+	vector<float> &jets_tq_gluCorrF()
 	{
 		if (not jets_tq_gluCorrF_isLoaded) {
 			if (jets_tq_gluCorrF_branch != 0) 
@@ -6381,7 +6402,7 @@ void Init(TTree *tree) {
 		}
 		return jets_tq_gluCorrF_;
 	}
-	 vector<float>	&jets_tq_jetCharge()
+	vector<float> &jets_tq_jetCharge()
 	{
 		if (not jets_tq_jetCharge_isLoaded) {
 			if (jets_tq_jetCharge_branch != 0) 
@@ -6390,7 +6411,7 @@ void Init(TTree *tree) {
 		}
 		return jets_tq_jetCharge_;
 	}
-	 vector<float>	&jets_tq_noCorrF()
+	vector<float> &jets_tq_noCorrF()
 	{
 		if (not jets_tq_noCorrF_isLoaded) {
 			if (jets_tq_noCorrF_branch != 0) 
@@ -6399,7 +6420,7 @@ void Init(TTree *tree) {
 		}
 		return jets_tq_noCorrF_;
 	}
-	 vector<float>	&jets_tq_udsCorrF()
+	vector<float> &jets_tq_udsCorrF()
 	{
 		if (not jets_tq_udsCorrF_isLoaded) {
 			if (jets_tq_udsCorrF_branch != 0) 
@@ -6408,7 +6429,7 @@ void Init(TTree *tree) {
 		}
 		return jets_tq_udsCorrF_;
 	}
-	 vector<float>	&mus_tq_caloIso()
+	vector<float> &mus_tq_caloIso()
 	{
 		if (not mus_tq_caloIso_isLoaded) {
 			if (mus_tq_caloIso_branch != 0) 
@@ -6417,7 +6438,7 @@ void Init(TTree *tree) {
 		}
 		return mus_tq_caloIso_;
 	}
-	 vector<float>	&mus_tq_leptonID()
+	vector<float> &mus_tq_leptonID()
 	{
 		if (not mus_tq_leptonID_isLoaded) {
 			if (mus_tq_leptonID_branch != 0) 
@@ -6426,7 +6447,7 @@ void Init(TTree *tree) {
 		}
 		return mus_tq_leptonID_;
 	}
-	 vector<float>	&mus_tq_lrComb()
+	vector<float> &mus_tq_lrComb()
 	{
 		if (not mus_tq_lrComb_isLoaded) {
 			if (mus_tq_lrComb_branch != 0) 
@@ -6435,7 +6456,7 @@ void Init(TTree *tree) {
 		}
 		return mus_tq_lrComb_;
 	}
-	 vector<float>	&mus_tq_trackIso()
+	vector<float> &mus_tq_trackIso()
 	{
 		if (not mus_tq_trackIso_isLoaded) {
 			if (mus_tq_trackIso_branch != 0) 
@@ -6444,7 +6465,7 @@ void Init(TTree *tree) {
 		}
 		return mus_tq_trackIso_;
 	}
-	 vector<float>	&trks_chi2()
+	vector<float> &trks_chi2()
 	{
 		if (not trks_chi2_isLoaded) {
 			if (trks_chi2_branch != 0) 
@@ -6453,7 +6474,7 @@ void Init(TTree *tree) {
 		}
 		return trks_chi2_;
 	}
-	 vector<float>	&trks_d0()
+	vector<float> &trks_d0()
 	{
 		if (not trks_d0_isLoaded) {
 			if (trks_d0_branch != 0) 
@@ -6462,7 +6483,7 @@ void Init(TTree *tree) {
 		}
 		return trks_d0_;
 	}
-	 vector<float>	&trks_d0Err()
+	vector<float> &trks_d0Err()
 	{
 		if (not trks_d0Err_isLoaded) {
 			if (trks_d0Err_branch != 0) 
@@ -6471,7 +6492,7 @@ void Init(TTree *tree) {
 		}
 		return trks_d0Err_;
 	}
-	 vector<float>	&trks_etaErr()
+	vector<float> &trks_etaErr()
 	{
 		if (not trks_etaErr_isLoaded) {
 			if (trks_etaErr_branch != 0) 
@@ -6480,7 +6501,7 @@ void Init(TTree *tree) {
 		}
 		return trks_etaErr_;
 	}
-	 vector<float>	&trks_ndof()
+	vector<float> &trks_ndof()
 	{
 		if (not trks_ndof_isLoaded) {
 			if (trks_ndof_branch != 0) 
@@ -6489,7 +6510,7 @@ void Init(TTree *tree) {
 		}
 		return trks_ndof_;
 	}
-	 vector<float>	&trks_outerEta()
+	vector<float> &trks_outerEta()
 	{
 		if (not trks_outerEta_isLoaded) {
 			if (trks_outerEta_branch != 0) 
@@ -6498,7 +6519,7 @@ void Init(TTree *tree) {
 		}
 		return trks_outerEta_;
 	}
-	 vector<float>	&trks_outerPhi()
+	vector<float> &trks_outerPhi()
 	{
 		if (not trks_outerPhi_isLoaded) {
 			if (trks_outerPhi_branch != 0) 
@@ -6507,7 +6528,7 @@ void Init(TTree *tree) {
 		}
 		return trks_outerPhi_;
 	}
-	 vector<float>	&trks_phiErr()
+	vector<float> &trks_phiErr()
 	{
 		if (not trks_phiErr_isLoaded) {
 			if (trks_phiErr_branch != 0) 
@@ -6516,7 +6537,7 @@ void Init(TTree *tree) {
 		}
 		return trks_phiErr_;
 	}
-	 vector<float>	&trks_ptErr()
+	vector<float> &trks_ptErr()
 	{
 		if (not trks_ptErr_isLoaded) {
 			if (trks_ptErr_branch != 0) 
@@ -6525,7 +6546,7 @@ void Init(TTree *tree) {
 		}
 		return trks_ptErr_;
 	}
-	 vector<float>	&trks_vertexphi()
+	vector<float> &trks_vertexphi()
 	{
 		if (not trks_vertexphi_isLoaded) {
 			if (trks_vertexphi_branch != 0) 
@@ -6534,7 +6555,7 @@ void Init(TTree *tree) {
 		}
 		return trks_vertexphi_;
 	}
-	 vector<float>	&trks_z0()
+	vector<float> &trks_z0()
 	{
 		if (not trks_z0_isLoaded) {
 			if (trks_z0_branch != 0) 
@@ -6543,7 +6564,7 @@ void Init(TTree *tree) {
 		}
 		return trks_z0_;
 	}
-	 vector<float>	&trks_z0Err()
+	vector<float> &trks_z0Err()
 	{
 		if (not trks_z0Err_isLoaded) {
 			if (trks_z0Err_branch != 0) 
@@ -6552,7 +6573,7 @@ void Init(TTree *tree) {
 		}
 		return trks_z0Err_;
 	}
-	 vector<float>	&trk_elsdr()
+	vector<float> &trk_elsdr()
 	{
 		if (not trk_elsdr_isLoaded) {
 			if (trk_elsdr_branch != 0) 
@@ -6561,7 +6582,7 @@ void Init(TTree *tree) {
 		}
 		return trk_elsdr_;
 	}
-	 vector<float>	&trk_musdr()
+	vector<float> &trk_musdr()
 	{
 		if (not trk_musdr_isLoaded) {
 			if (trk_musdr_branch != 0) 
@@ -6570,7 +6591,7 @@ void Init(TTree *tree) {
 		}
 		return trk_musdr_;
 	}
-	 vector<vector<float> >	&hyp_jets_EMFcor()
+	vector<vector<float> > &hyp_jets_EMFcor()
 	{
 		if (not hyp_jets_EMFcor_isLoaded) {
 			if (hyp_jets_EMFcor_branch != 0) 
@@ -6579,7 +6600,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_jets_EMFcor_;
 	}
-	 vector<vector<float> >	&hyp_jets_chFrac()
+	vector<vector<float> > &hyp_jets_chFrac()
 	{
 		if (not hyp_jets_chFrac_isLoaded) {
 			if (hyp_jets_chFrac_branch != 0) 
@@ -6588,7 +6609,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_jets_chFrac_;
 	}
-	 vector<vector<float> >	&hyp_jets_cor()
+	vector<vector<float> > &hyp_jets_cor()
 	{
 		if (not hyp_jets_cor_isLoaded) {
 			if (hyp_jets_cor_branch != 0) 
@@ -6597,7 +6618,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_jets_cor_;
 	}
-	 vector<vector<float> >	&hyp_jets_emFrac()
+	vector<vector<float> > &hyp_jets_emFrac()
 	{
 		if (not hyp_jets_emFrac_isLoaded) {
 			if (hyp_jets_emFrac_branch != 0) 
@@ -6606,7 +6627,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_jets_emFrac_;
 	}
-	 vector<vector<float> >	&hyp_jets_mc_emEnergy()
+	vector<vector<float> > &hyp_jets_mc_emEnergy()
 	{
 		if (not hyp_jets_mc_emEnergy_isLoaded) {
 			if (hyp_jets_mc_emEnergy_branch != 0) 
@@ -6615,7 +6636,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_jets_mc_emEnergy_;
 	}
-	 vector<vector<float> >	&hyp_jets_mc_hadEnergy()
+	vector<vector<float> > &hyp_jets_mc_hadEnergy()
 	{
 		if (not hyp_jets_mc_hadEnergy_isLoaded) {
 			if (hyp_jets_mc_hadEnergy_branch != 0) 
@@ -6624,7 +6645,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_jets_mc_hadEnergy_;
 	}
-	 vector<vector<float> >	&hyp_jets_mc_invEnergy()
+	vector<vector<float> > &hyp_jets_mc_invEnergy()
 	{
 		if (not hyp_jets_mc_invEnergy_isLoaded) {
 			if (hyp_jets_mc_invEnergy_branch != 0) 
@@ -6633,7 +6654,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_jets_mc_invEnergy_;
 	}
-	 vector<vector<float> >	&hyp_jets_mc_otherEnergy()
+	vector<vector<float> > &hyp_jets_mc_otherEnergy()
 	{
 		if (not hyp_jets_mc_otherEnergy_isLoaded) {
 			if (hyp_jets_mc_otherEnergy_branch != 0) 
@@ -6642,7 +6663,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_jets_mc_otherEnergy_;
 	}
-	 vector<vector<float> >	&hyp_jets_tq_bCorrF()
+	vector<vector<float> > &hyp_jets_tq_bCorrF()
 	{
 		if (not hyp_jets_tq_bCorrF_isLoaded) {
 			if (hyp_jets_tq_bCorrF_branch != 0) 
@@ -6651,7 +6672,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_jets_tq_bCorrF_;
 	}
-	 vector<vector<float> >	&hyp_jets_tq_cCorrF()
+	vector<vector<float> > &hyp_jets_tq_cCorrF()
 	{
 		if (not hyp_jets_tq_cCorrF_isLoaded) {
 			if (hyp_jets_tq_cCorrF_branch != 0) 
@@ -6660,7 +6681,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_jets_tq_cCorrF_;
 	}
-	 vector<vector<float> >	&hyp_jets_tq_gluCorrF()
+	vector<vector<float> > &hyp_jets_tq_gluCorrF()
 	{
 		if (not hyp_jets_tq_gluCorrF_isLoaded) {
 			if (hyp_jets_tq_gluCorrF_branch != 0) 
@@ -6669,7 +6690,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_jets_tq_gluCorrF_;
 	}
-	 vector<vector<float> >	&hyp_jets_tq_jetCharge()
+	vector<vector<float> > &hyp_jets_tq_jetCharge()
 	{
 		if (not hyp_jets_tq_jetCharge_isLoaded) {
 			if (hyp_jets_tq_jetCharge_branch != 0) 
@@ -6678,7 +6699,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_jets_tq_jetCharge_;
 	}
-	 vector<vector<float> >	&hyp_jets_tq_noCorrF()
+	vector<vector<float> > &hyp_jets_tq_noCorrF()
 	{
 		if (not hyp_jets_tq_noCorrF_isLoaded) {
 			if (hyp_jets_tq_noCorrF_branch != 0) 
@@ -6687,7 +6708,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_jets_tq_noCorrF_;
 	}
-	 vector<vector<float> >	&hyp_jets_tq_udsCorrF()
+	vector<vector<float> > &hyp_jets_tq_udsCorrF()
 	{
 		if (not hyp_jets_tq_udsCorrF_isLoaded) {
 			if (hyp_jets_tq_udsCorrF_branch != 0) 
@@ -6696,7 +6717,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_jets_tq_udsCorrF_;
 	}
-	 vector<vector<float> >	&hyp_other_jets_EMFcor()
+	vector<vector<float> > &hyp_other_jets_EMFcor()
 	{
 		if (not hyp_other_jets_EMFcor_isLoaded) {
 			if (hyp_other_jets_EMFcor_branch != 0) 
@@ -6705,7 +6726,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_other_jets_EMFcor_;
 	}
-	 vector<vector<float> >	&hyp_other_jets_chFrac()
+	vector<vector<float> > &hyp_other_jets_chFrac()
 	{
 		if (not hyp_other_jets_chFrac_isLoaded) {
 			if (hyp_other_jets_chFrac_branch != 0) 
@@ -6714,7 +6735,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_other_jets_chFrac_;
 	}
-	 vector<vector<float> >	&hyp_other_jets_cor()
+	vector<vector<float> > &hyp_other_jets_cor()
 	{
 		if (not hyp_other_jets_cor_isLoaded) {
 			if (hyp_other_jets_cor_branch != 0) 
@@ -6723,7 +6744,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_other_jets_cor_;
 	}
-	 vector<vector<float> >	&hyp_other_jets_emFrac()
+	vector<vector<float> > &hyp_other_jets_emFrac()
 	{
 		if (not hyp_other_jets_emFrac_isLoaded) {
 			if (hyp_other_jets_emFrac_branch != 0) 
@@ -6732,7 +6753,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_other_jets_emFrac_;
 	}
-	 vector<vector<float> >	&hyp_other_jets_mc_emEnergy()
+	vector<vector<float> > &hyp_other_jets_mc_emEnergy()
 	{
 		if (not hyp_other_jets_mc_emEnergy_isLoaded) {
 			if (hyp_other_jets_mc_emEnergy_branch != 0) 
@@ -6741,7 +6762,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_other_jets_mc_emEnergy_;
 	}
-	 vector<vector<float> >	&hyp_other_jets_mc_hadEnergy()
+	vector<vector<float> > &hyp_other_jets_mc_hadEnergy()
 	{
 		if (not hyp_other_jets_mc_hadEnergy_isLoaded) {
 			if (hyp_other_jets_mc_hadEnergy_branch != 0) 
@@ -6750,7 +6771,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_other_jets_mc_hadEnergy_;
 	}
-	 vector<vector<float> >	&hyp_other_jets_mc_invEnergy()
+	vector<vector<float> > &hyp_other_jets_mc_invEnergy()
 	{
 		if (not hyp_other_jets_mc_invEnergy_isLoaded) {
 			if (hyp_other_jets_mc_invEnergy_branch != 0) 
@@ -6759,7 +6780,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_other_jets_mc_invEnergy_;
 	}
-	 vector<vector<float> >	&hyp_other_jets_mc_otherEnergy()
+	vector<vector<float> > &hyp_other_jets_mc_otherEnergy()
 	{
 		if (not hyp_other_jets_mc_otherEnergy_isLoaded) {
 			if (hyp_other_jets_mc_otherEnergy_branch != 0) 
@@ -6768,7 +6789,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_other_jets_mc_otherEnergy_;
 	}
-	 vector<vector<float> >	&hyp_other_jets_tq_bCorrF()
+	vector<vector<float> > &hyp_other_jets_tq_bCorrF()
 	{
 		if (not hyp_other_jets_tq_bCorrF_isLoaded) {
 			if (hyp_other_jets_tq_bCorrF_branch != 0) 
@@ -6777,7 +6798,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_other_jets_tq_bCorrF_;
 	}
-	 vector<vector<float> >	&hyp_other_jets_tq_cCorrF()
+	vector<vector<float> > &hyp_other_jets_tq_cCorrF()
 	{
 		if (not hyp_other_jets_tq_cCorrF_isLoaded) {
 			if (hyp_other_jets_tq_cCorrF_branch != 0) 
@@ -6786,7 +6807,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_other_jets_tq_cCorrF_;
 	}
-	 vector<vector<float> >	&hyp_other_jets_tq_gluCorrF()
+	vector<vector<float> > &hyp_other_jets_tq_gluCorrF()
 	{
 		if (not hyp_other_jets_tq_gluCorrF_isLoaded) {
 			if (hyp_other_jets_tq_gluCorrF_branch != 0) 
@@ -6795,7 +6816,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_other_jets_tq_gluCorrF_;
 	}
-	 vector<vector<float> >	&hyp_other_jets_tq_jetCharge()
+	vector<vector<float> > &hyp_other_jets_tq_jetCharge()
 	{
 		if (not hyp_other_jets_tq_jetCharge_isLoaded) {
 			if (hyp_other_jets_tq_jetCharge_branch != 0) 
@@ -6804,7 +6825,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_other_jets_tq_jetCharge_;
 	}
-	 vector<vector<float> >	&hyp_other_jets_tq_noCorrF()
+	vector<vector<float> > &hyp_other_jets_tq_noCorrF()
 	{
 		if (not hyp_other_jets_tq_noCorrF_isLoaded) {
 			if (hyp_other_jets_tq_noCorrF_branch != 0) 
@@ -6813,7 +6834,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_other_jets_tq_noCorrF_;
 	}
-	 vector<vector<float> >	&hyp_other_jets_tq_udsCorrF()
+	vector<vector<float> > &hyp_other_jets_tq_udsCorrF()
 	{
 		if (not hyp_other_jets_tq_udsCorrF_isLoaded) {
 			if (hyp_other_jets_tq_udsCorrF_branch != 0) 
@@ -6822,7 +6843,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_other_jets_tq_udsCorrF_;
 	}
-	 int	&evt_CSA07Process()
+	int &evt_CSA07Process()
 	{
 		if (not evt_CSA07Process_isLoaded) {
 			if (evt_CSA07Process_branch != 0) 
@@ -6831,7 +6852,7 @@ void Init(TTree *tree) {
 		}
 		return evt_CSA07Process_;
 	}
-	 int	&evt_HLT1()
+	int &evt_HLT1()
 	{
 		if (not evt_HLT1_isLoaded) {
 			if (evt_HLT1_branch != 0) 
@@ -6840,7 +6861,7 @@ void Init(TTree *tree) {
 		}
 		return evt_HLT1_;
 	}
-	 int	&evt_HLT2()
+	int &evt_HLT2()
 	{
 		if (not evt_HLT2_isLoaded) {
 			if (evt_HLT2_branch != 0) 
@@ -6849,7 +6870,7 @@ void Init(TTree *tree) {
 		}
 		return evt_HLT2_;
 	}
-	 int	&evt_HLT3()
+	int &evt_HLT3()
 	{
 		if (not evt_HLT3_isLoaded) {
 			if (evt_HLT3_branch != 0) 
@@ -6858,7 +6879,7 @@ void Init(TTree *tree) {
 		}
 		return evt_HLT3_;
 	}
-	 int	&evt_HLT4()
+	int &evt_HLT4()
 	{
 		if (not evt_HLT4_isLoaded) {
 			if (evt_HLT4_branch != 0) 
@@ -6867,7 +6888,7 @@ void Init(TTree *tree) {
 		}
 		return evt_HLT4_;
 	}
-	 int	&evt_L1_1()
+	int &evt_L1_1()
 	{
 		if (not evt_L1_1_isLoaded) {
 			if (evt_L1_1_branch != 0) 
@@ -6876,7 +6897,7 @@ void Init(TTree *tree) {
 		}
 		return evt_L1_1_;
 	}
-	 int	&evt_L1_2()
+	int &evt_L1_2()
 	{
 		if (not evt_L1_2_isLoaded) {
 			if (evt_L1_2_branch != 0) 
@@ -6885,7 +6906,7 @@ void Init(TTree *tree) {
 		}
 		return evt_L1_2_;
 	}
-	 int	&evt_L1_3()
+	int &evt_L1_3()
 	{
 		if (not evt_L1_3_isLoaded) {
 			if (evt_L1_3_branch != 0) 
@@ -6894,7 +6915,7 @@ void Init(TTree *tree) {
 		}
 		return evt_L1_3_;
 	}
-	 int	&evt_L1_4()
+	int &evt_L1_4()
 	{
 		if (not evt_L1_4_isLoaded) {
 			if (evt_L1_4_branch != 0) 
@@ -6903,25 +6924,7 @@ void Init(TTree *tree) {
 		}
 		return evt_L1_4_;
 	}
-	 int	&evt_event()
-	{
-		if (not evt_event_isLoaded) {
-			if (evt_event_branch != 0) 
-				evt_event_branch->GetEntry(index);
-			evt_event_isLoaded = true;
-		}
-		return evt_event_;
-	}
-	 int	&evt_run()
-	{
-		if (not evt_run_isLoaded) {
-			if (evt_run_branch != 0) 
-				evt_run_branch->GetEntry(index);
-			evt_run_isLoaded = true;
-		}
-		return evt_run_;
-	}
-	 int	&evt_nl1emiso()
+	int &evt_nl1emiso()
 	{
 		if (not evt_nl1emiso_isLoaded) {
 			if (evt_nl1emiso_branch != 0) 
@@ -6930,7 +6933,7 @@ void Init(TTree *tree) {
 		}
 		return evt_nl1emiso_;
 	}
-	 int	&evt_nl1emnoiso()
+	int &evt_nl1emnoiso()
 	{
 		if (not evt_nl1emnoiso_isLoaded) {
 			if (evt_nl1emnoiso_branch != 0) 
@@ -6939,7 +6942,7 @@ void Init(TTree *tree) {
 		}
 		return evt_nl1emnoiso_;
 	}
-	 int	&evt_nl1jetsc()
+	int &evt_nl1jetsc()
 	{
 		if (not evt_nl1jetsc_isLoaded) {
 			if (evt_nl1jetsc_branch != 0) 
@@ -6948,7 +6951,7 @@ void Init(TTree *tree) {
 		}
 		return evt_nl1jetsc_;
 	}
-	 int	&evt_nl1jetsf()
+	int &evt_nl1jetsf()
 	{
 		if (not evt_nl1jetsf_isLoaded) {
 			if (evt_nl1jetsf_branch != 0) 
@@ -6957,7 +6960,7 @@ void Init(TTree *tree) {
 		}
 		return evt_nl1jetsf_;
 	}
-	 int	&evt_nl1jetst()
+	int &evt_nl1jetst()
 	{
 		if (not evt_nl1jetst_isLoaded) {
 			if (evt_nl1jetst_branch != 0) 
@@ -6966,7 +6969,7 @@ void Init(TTree *tree) {
 		}
 		return evt_nl1jetst_;
 	}
-	 int	&evt_nl1mus()
+	int &evt_nl1mus()
 	{
 		if (not evt_nl1mus_isLoaded) {
 			if (evt_nl1mus_branch != 0) 
@@ -6975,7 +6978,7 @@ void Init(TTree *tree) {
 		}
 		return evt_nl1mus_;
 	}
-	 vector<int>	&els_closestMuon()
+	vector<int> &els_closestMuon()
 	{
 		if (not els_closestMuon_isLoaded) {
 			if (els_closestMuon_branch != 0) 
@@ -6984,7 +6987,7 @@ void Init(TTree *tree) {
 		}
 		return els_closestMuon_;
 	}
-	 vector<int>	&els_trkidx()
+	vector<int> &els_trkidx()
 	{
 		if (not els_trkidx_isLoaded) {
 			if (els_trkidx_branch != 0) 
@@ -6993,7 +6996,7 @@ void Init(TTree *tree) {
 		}
 		return els_trkidx_;
 	}
-	 vector<int>	&els_charge()
+	vector<int> &els_charge()
 	{
 		if (not els_charge_isLoaded) {
 			if (els_charge_branch != 0) 
@@ -7002,7 +7005,7 @@ void Init(TTree *tree) {
 		}
 		return els_charge_;
 	}
-	 vector<int>	&els_class()
+	vector<int> &els_class()
 	{
 		if (not els_class_isLoaded) {
 			if (els_class_branch != 0) 
@@ -7011,7 +7014,7 @@ void Init(TTree *tree) {
 		}
 		return els_class_;
 	}
-	 vector<int>	&els_looseId()
+	vector<int> &els_looseId()
 	{
 		if (not els_looseId_isLoaded) {
 			if (els_looseId_branch != 0) 
@@ -7020,7 +7023,7 @@ void Init(TTree *tree) {
 		}
 		return els_looseId_;
 	}
-	 vector<int>	&els_lostHits()
+	vector<int> &els_lostHits()
 	{
 		if (not els_lostHits_isLoaded) {
 			if (els_lostHits_branch != 0) 
@@ -7029,7 +7032,7 @@ void Init(TTree *tree) {
 		}
 		return els_lostHits_;
 	}
-	 vector<int>	&els_nSeed()
+	vector<int> &els_nSeed()
 	{
 		if (not els_nSeed_isLoaded) {
 			if (els_nSeed_branch != 0) 
@@ -7038,7 +7041,7 @@ void Init(TTree *tree) {
 		}
 		return els_nSeed_;
 	}
-	 vector<int>	&els_pass3looseId()
+	vector<int> &els_pass3looseId()
 	{
 		if (not els_pass3looseId_isLoaded) {
 			if (els_pass3looseId_branch != 0) 
@@ -7047,7 +7050,7 @@ void Init(TTree *tree) {
 		}
 		return els_pass3looseId_;
 	}
-	 vector<int>	&els_pass3simpleId()
+	vector<int> &els_pass3simpleId()
 	{
 		if (not els_pass3simpleId_isLoaded) {
 			if (els_pass3simpleId_branch != 0) 
@@ -7056,7 +7059,7 @@ void Init(TTree *tree) {
 		}
 		return els_pass3simpleId_;
 	}
-	 vector<int>	&els_pass3tightId()
+	vector<int> &els_pass3tightId()
 	{
 		if (not els_pass3tightId_isLoaded) {
 			if (els_pass3tightId_branch != 0) 
@@ -7065,7 +7068,7 @@ void Init(TTree *tree) {
 		}
 		return els_pass3tightId_;
 	}
-	 vector<int>	&els_robustId()
+	vector<int> &els_robustId()
 	{
 		if (not els_robustId_isLoaded) {
 			if (els_robustId_branch != 0) 
@@ -7074,7 +7077,7 @@ void Init(TTree *tree) {
 		}
 		return els_robustId_;
 	}
-	 vector<int>	&els_simpleIdPlus()
+	vector<int> &els_simpleIdPlus()
 	{
 		if (not els_simpleIdPlus_isLoaded) {
 			if (els_simpleIdPlus_branch != 0) 
@@ -7083,7 +7086,7 @@ void Init(TTree *tree) {
 		}
 		return els_simpleIdPlus_;
 	}
-	 vector<int>	&els_tightId()
+	vector<int> &els_tightId()
 	{
 		if (not els_tightId_isLoaded) {
 			if (els_tightId_branch != 0) 
@@ -7092,7 +7095,7 @@ void Init(TTree *tree) {
 		}
 		return els_tightId_;
 	}
-	 vector<int>	&els_validHits()
+	vector<int> &els_validHits()
 	{
 		if (not els_validHits_isLoaded) {
 			if (els_validHits_branch != 0) 
@@ -7101,7 +7104,7 @@ void Init(TTree *tree) {
 		}
 		return els_validHits_;
 	}
-	 vector<int>	&genps_id()
+	vector<int> &genps_id()
 	{
 		if (not genps_id_isLoaded) {
 			if (genps_id_branch != 0) 
@@ -7110,7 +7113,7 @@ void Init(TTree *tree) {
 		}
 		return genps_id_;
 	}
-	 vector<int>	&genps_id_mother()
+	vector<int> &genps_id_mother()
 	{
 		if (not genps_id_mother_isLoaded) {
 			if (genps_id_mother_branch != 0) 
@@ -7119,7 +7122,7 @@ void Init(TTree *tree) {
 		}
 		return genps_id_mother_;
 	}
-	 vector<int>	&genps_status()
+	vector<int> &genps_status()
 	{
 		if (not genps_status_isLoaded) {
 			if (genps_status_branch != 0) 
@@ -7128,7 +7131,7 @@ void Init(TTree *tree) {
 		}
 		return genps_status_;
 	}
-	 vector<int>	&hyp_ll_charge()
+	vector<int> &hyp_ll_charge()
 	{
 		if (not hyp_ll_charge_isLoaded) {
 			if (hyp_ll_charge_branch != 0) 
@@ -7137,7 +7140,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_ll_charge_;
 	}
-	 vector<int>	&hyp_ll_id()
+	vector<int> &hyp_ll_id()
 	{
 		if (not hyp_ll_id_isLoaded) {
 			if (hyp_ll_id_branch != 0) 
@@ -7146,7 +7149,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_ll_id_;
 	}
-	 vector<int>	&hyp_ll_index()
+	vector<int> &hyp_ll_index()
 	{
 		if (not hyp_ll_index_isLoaded) {
 			if (hyp_ll_index_branch != 0) 
@@ -7155,7 +7158,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_ll_index_;
 	}
-	 vector<int>	&hyp_ll_lostHits()
+	vector<int> &hyp_ll_lostHits()
 	{
 		if (not hyp_ll_lostHits_isLoaded) {
 			if (hyp_ll_lostHits_branch != 0) 
@@ -7164,7 +7167,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_ll_lostHits_;
 	}
-	 vector<int>	&hyp_ll_mc_id()
+	vector<int> &hyp_ll_mc_id()
 	{
 		if (not hyp_ll_mc_id_isLoaded) {
 			if (hyp_ll_mc_id_branch != 0) 
@@ -7173,7 +7176,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_ll_mc_id_;
 	}
-	 vector<int>	&hyp_ll_mc_motherid()
+	vector<int> &hyp_ll_mc_motherid()
 	{
 		if (not hyp_ll_mc_motherid_isLoaded) {
 			if (hyp_ll_mc_motherid_branch != 0) 
@@ -7182,7 +7185,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_ll_mc_motherid_;
 	}
-	 vector<int>	&hyp_ll_validHits()
+	vector<int> &hyp_ll_validHits()
 	{
 		if (not hyp_ll_validHits_isLoaded) {
 			if (hyp_ll_validHits_branch != 0) 
@@ -7191,7 +7194,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_ll_validHits_;
 	}
-	 vector<int>	&hyp_lt_charge()
+	vector<int> &hyp_lt_charge()
 	{
 		if (not hyp_lt_charge_isLoaded) {
 			if (hyp_lt_charge_branch != 0) 
@@ -7200,7 +7203,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_lt_charge_;
 	}
-	 vector<int>	&hyp_lt_id()
+	vector<int> &hyp_lt_id()
 	{
 		if (not hyp_lt_id_isLoaded) {
 			if (hyp_lt_id_branch != 0) 
@@ -7209,7 +7212,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_lt_id_;
 	}
-	 vector<int>	&hyp_lt_index()
+	vector<int> &hyp_lt_index()
 	{
 		if (not hyp_lt_index_isLoaded) {
 			if (hyp_lt_index_branch != 0) 
@@ -7218,7 +7221,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_lt_index_;
 	}
-	 vector<int>	&hyp_lt_lostHits()
+	vector<int> &hyp_lt_lostHits()
 	{
 		if (not hyp_lt_lostHits_isLoaded) {
 			if (hyp_lt_lostHits_branch != 0) 
@@ -7227,7 +7230,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_lt_lostHits_;
 	}
-	 vector<int>	&hyp_lt_mc_id()
+	vector<int> &hyp_lt_mc_id()
 	{
 		if (not hyp_lt_mc_id_isLoaded) {
 			if (hyp_lt_mc_id_branch != 0) 
@@ -7236,7 +7239,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_lt_mc_id_;
 	}
-	 vector<int>	&hyp_lt_mc_motherid()
+	vector<int> &hyp_lt_mc_motherid()
 	{
 		if (not hyp_lt_mc_motherid_isLoaded) {
 			if (hyp_lt_mc_motherid_branch != 0) 
@@ -7245,7 +7248,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_lt_mc_motherid_;
 	}
-	 vector<int>	&hyp_lt_validHits()
+	vector<int> &hyp_lt_validHits()
 	{
 		if (not hyp_lt_validHits_isLoaded) {
 			if (hyp_lt_validHits_branch != 0) 
@@ -7254,7 +7257,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_lt_validHits_;
 	}
-	 vector<int>	&hyp_njets()
+	vector<int> &hyp_njets()
 	{
 		if (not hyp_njets_isLoaded) {
 			if (hyp_njets_branch != 0) 
@@ -7263,7 +7266,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_njets_;
 	}
-	 vector<int>	&hyp_nojets()
+	vector<int> &hyp_nojets()
 	{
 		if (not hyp_nojets_isLoaded) {
 			if (hyp_nojets_branch != 0) 
@@ -7272,7 +7275,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_nojets_;
 	}
-	 vector<int>	&hyp_type()
+	vector<int> &hyp_type()
 	{
 		if (not hyp_type_isLoaded) {
 			if (hyp_type_branch != 0) 
@@ -7281,7 +7284,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_type_;
 	}
-	 vector<int>	&hyp_quadlep_first_type()
+	vector<int> &hyp_quadlep_first_type()
 	{
 		if (not hyp_quadlep_first_type_isLoaded) {
 			if (hyp_quadlep_first_type_branch != 0) 
@@ -7290,7 +7293,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_quadlep_first_type_;
 	}
-	 vector<int>	&hyp_quadlep_fourth_type()
+	vector<int> &hyp_quadlep_fourth_type()
 	{
 		if (not hyp_quadlep_fourth_type_isLoaded) {
 			if (hyp_quadlep_fourth_type_branch != 0) 
@@ -7299,7 +7302,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_quadlep_fourth_type_;
 	}
-	 vector<int>	&hyp_quadlep_second_type()
+	vector<int> &hyp_quadlep_second_type()
 	{
 		if (not hyp_quadlep_second_type_isLoaded) {
 			if (hyp_quadlep_second_type_branch != 0) 
@@ -7308,7 +7311,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_quadlep_second_type_;
 	}
-	 vector<int>	&hyp_quadlep_third_type()
+	vector<int> &hyp_quadlep_third_type()
 	{
 		if (not hyp_quadlep_third_type_isLoaded) {
 			if (hyp_quadlep_third_type_branch != 0) 
@@ -7317,7 +7320,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_quadlep_third_type_;
 	}
-	 vector<int>	&hyp_trilep_first_type()
+	vector<int> &hyp_trilep_first_type()
 	{
 		if (not hyp_trilep_first_type_isLoaded) {
 			if (hyp_trilep_first_type_branch != 0) 
@@ -7326,7 +7329,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_trilep_first_type_;
 	}
-	 vector<int>	&hyp_trilep_second_type()
+	vector<int> &hyp_trilep_second_type()
 	{
 		if (not hyp_trilep_second_type_isLoaded) {
 			if (hyp_trilep_second_type_branch != 0) 
@@ -7335,7 +7338,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_trilep_second_type_;
 	}
-	 vector<int>	&hyp_trilep_third_type()
+	vector<int> &hyp_trilep_third_type()
 	{
 		if (not hyp_trilep_third_type_isLoaded) {
 			if (hyp_trilep_third_type_branch != 0) 
@@ -7344,7 +7347,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_trilep_third_type_;
 	}
-	 vector<int>	&jets_closestElectron()
+	vector<int> &jets_closestElectron()
 	{
 		if (not jets_closestElectron_isLoaded) {
 			if (jets_closestElectron_branch != 0) 
@@ -7353,7 +7356,7 @@ void Init(TTree *tree) {
 		}
 		return jets_closestElectron_;
 	}
-	 vector<int>	&jets_closestMuon()
+	vector<int> &jets_closestMuon()
 	{
 		if (not jets_closestMuon_isLoaded) {
 			if (jets_closestMuon_branch != 0) 
@@ -7362,7 +7365,7 @@ void Init(TTree *tree) {
 		}
 		return jets_closestMuon_;
 	}
-	 vector<int>	&l1emiso_ieta()
+	vector<int> &l1emiso_ieta()
 	{
 		if (not l1emiso_ieta_isLoaded) {
 			if (l1emiso_ieta_branch != 0) 
@@ -7371,7 +7374,7 @@ void Init(TTree *tree) {
 		}
 		return l1emiso_ieta_;
 	}
-	 vector<int>	&l1emiso_iphi()
+	vector<int> &l1emiso_iphi()
 	{
 		if (not l1emiso_iphi_isLoaded) {
 			if (l1emiso_iphi_branch != 0) 
@@ -7380,7 +7383,7 @@ void Init(TTree *tree) {
 		}
 		return l1emiso_iphi_;
 	}
-	 vector<int>	&l1emiso_rawId()
+	vector<int> &l1emiso_rawId()
 	{
 		if (not l1emiso_rawId_isLoaded) {
 			if (l1emiso_rawId_branch != 0) 
@@ -7389,7 +7392,7 @@ void Init(TTree *tree) {
 		}
 		return l1emiso_rawId_;
 	}
-	 vector<int>	&l1emiso_type()
+	vector<int> &l1emiso_type()
 	{
 		if (not l1emiso_type_isLoaded) {
 			if (l1emiso_type_branch != 0) 
@@ -7398,7 +7401,7 @@ void Init(TTree *tree) {
 		}
 		return l1emiso_type_;
 	}
-	 vector<int>	&l1emnoiso_ieta()
+	vector<int> &l1emnoiso_ieta()
 	{
 		if (not l1emnoiso_ieta_isLoaded) {
 			if (l1emnoiso_ieta_branch != 0) 
@@ -7407,7 +7410,7 @@ void Init(TTree *tree) {
 		}
 		return l1emnoiso_ieta_;
 	}
-	 vector<int>	&l1emnoiso_iphi()
+	vector<int> &l1emnoiso_iphi()
 	{
 		if (not l1emnoiso_iphi_isLoaded) {
 			if (l1emnoiso_iphi_branch != 0) 
@@ -7416,7 +7419,7 @@ void Init(TTree *tree) {
 		}
 		return l1emnoiso_iphi_;
 	}
-	 vector<int>	&l1emnoiso_rawId()
+	vector<int> &l1emnoiso_rawId()
 	{
 		if (not l1emnoiso_rawId_isLoaded) {
 			if (l1emnoiso_rawId_branch != 0) 
@@ -7425,7 +7428,7 @@ void Init(TTree *tree) {
 		}
 		return l1emnoiso_rawId_;
 	}
-	 vector<int>	&l1emnoiso_type()
+	vector<int> &l1emnoiso_type()
 	{
 		if (not l1emnoiso_type_isLoaded) {
 			if (l1emnoiso_type_branch != 0) 
@@ -7434,7 +7437,7 @@ void Init(TTree *tree) {
 		}
 		return l1emnoiso_type_;
 	}
-	 vector<int>	&l1jetsc_ieta()
+	vector<int> &l1jetsc_ieta()
 	{
 		if (not l1jetsc_ieta_isLoaded) {
 			if (l1jetsc_ieta_branch != 0) 
@@ -7443,7 +7446,7 @@ void Init(TTree *tree) {
 		}
 		return l1jetsc_ieta_;
 	}
-	 vector<int>	&l1jetsc_iphi()
+	vector<int> &l1jetsc_iphi()
 	{
 		if (not l1jetsc_iphi_isLoaded) {
 			if (l1jetsc_iphi_branch != 0) 
@@ -7452,7 +7455,7 @@ void Init(TTree *tree) {
 		}
 		return l1jetsc_iphi_;
 	}
-	 vector<int>	&l1jetsc_rawId()
+	vector<int> &l1jetsc_rawId()
 	{
 		if (not l1jetsc_rawId_isLoaded) {
 			if (l1jetsc_rawId_branch != 0) 
@@ -7461,7 +7464,7 @@ void Init(TTree *tree) {
 		}
 		return l1jetsc_rawId_;
 	}
-	 vector<int>	&l1jetsc_type()
+	vector<int> &l1jetsc_type()
 	{
 		if (not l1jetsc_type_isLoaded) {
 			if (l1jetsc_type_branch != 0) 
@@ -7470,7 +7473,7 @@ void Init(TTree *tree) {
 		}
 		return l1jetsc_type_;
 	}
-	 vector<int>	&l1jetsf_ieta()
+	vector<int> &l1jetsf_ieta()
 	{
 		if (not l1jetsf_ieta_isLoaded) {
 			if (l1jetsf_ieta_branch != 0) 
@@ -7479,7 +7482,7 @@ void Init(TTree *tree) {
 		}
 		return l1jetsf_ieta_;
 	}
-	 vector<int>	&l1jetsf_iphi()
+	vector<int> &l1jetsf_iphi()
 	{
 		if (not l1jetsf_iphi_isLoaded) {
 			if (l1jetsf_iphi_branch != 0) 
@@ -7488,7 +7491,7 @@ void Init(TTree *tree) {
 		}
 		return l1jetsf_iphi_;
 	}
-	 vector<int>	&l1jetsf_rawId()
+	vector<int> &l1jetsf_rawId()
 	{
 		if (not l1jetsf_rawId_isLoaded) {
 			if (l1jetsf_rawId_branch != 0) 
@@ -7497,7 +7500,7 @@ void Init(TTree *tree) {
 		}
 		return l1jetsf_rawId_;
 	}
-	 vector<int>	&l1jetsf_type()
+	vector<int> &l1jetsf_type()
 	{
 		if (not l1jetsf_type_isLoaded) {
 			if (l1jetsf_type_branch != 0) 
@@ -7506,7 +7509,7 @@ void Init(TTree *tree) {
 		}
 		return l1jetsf_type_;
 	}
-	 vector<int>	&l1jetst_ieta()
+	vector<int> &l1jetst_ieta()
 	{
 		if (not l1jetst_ieta_isLoaded) {
 			if (l1jetst_ieta_branch != 0) 
@@ -7515,7 +7518,7 @@ void Init(TTree *tree) {
 		}
 		return l1jetst_ieta_;
 	}
-	 vector<int>	&l1jetst_iphi()
+	vector<int> &l1jetst_iphi()
 	{
 		if (not l1jetst_iphi_isLoaded) {
 			if (l1jetst_iphi_branch != 0) 
@@ -7524,7 +7527,7 @@ void Init(TTree *tree) {
 		}
 		return l1jetst_iphi_;
 	}
-	 vector<int>	&l1jetst_rawId()
+	vector<int> &l1jetst_rawId()
 	{
 		if (not l1jetst_rawId_isLoaded) {
 			if (l1jetst_rawId_branch != 0) 
@@ -7533,7 +7536,7 @@ void Init(TTree *tree) {
 		}
 		return l1jetst_rawId_;
 	}
-	 vector<int>	&l1jetst_type()
+	vector<int> &l1jetst_type()
 	{
 		if (not l1jetst_type_isLoaded) {
 			if (l1jetst_type_branch != 0) 
@@ -7542,7 +7545,7 @@ void Init(TTree *tree) {
 		}
 		return l1jetst_type_;
 	}
-	 vector<int>	&l1mus_flags()
+	vector<int> &l1mus_flags()
 	{
 		if (not l1mus_flags_isLoaded) {
 			if (l1mus_flags_branch != 0) 
@@ -7551,7 +7554,7 @@ void Init(TTree *tree) {
 		}
 		return l1mus_flags_;
 	}
-	 vector<int>	&l1mus_q()
+	vector<int> &l1mus_q()
 	{
 		if (not l1mus_q_isLoaded) {
 			if (l1mus_q_branch != 0) 
@@ -7560,7 +7563,7 @@ void Init(TTree *tree) {
 		}
 		return l1mus_q_;
 	}
-	 vector<int>	&l1mus_qual()
+	vector<int> &l1mus_qual()
 	{
 		if (not l1mus_qual_isLoaded) {
 			if (l1mus_qual_branch != 0) 
@@ -7569,7 +7572,7 @@ void Init(TTree *tree) {
 		}
 		return l1mus_qual_;
 	}
-	 vector<int>	&l1mus_qualFlags()
+	vector<int> &l1mus_qualFlags()
 	{
 		if (not l1mus_qualFlags_isLoaded) {
 			if (l1mus_qualFlags_branch != 0) 
@@ -7578,7 +7581,7 @@ void Init(TTree *tree) {
 		}
 		return l1mus_qualFlags_;
 	}
-	 vector<int>	&mus_closestEle()
+	vector<int> &mus_closestEle()
 	{
 		if (not mus_closestEle_isLoaded) {
 			if (mus_closestEle_branch != 0) 
@@ -7587,7 +7590,7 @@ void Init(TTree *tree) {
 		}
 		return mus_closestEle_;
 	}
-	 vector<int>	&mus_closestJet()
+	vector<int> &mus_closestJet()
 	{
 		if (not mus_closestJet_isLoaded) {
 			if (mus_closestJet_branch != 0) 
@@ -7596,7 +7599,7 @@ void Init(TTree *tree) {
 		}
 		return mus_closestJet_;
 	}
-	 vector<int>	&mus_trkidx()
+	vector<int> &mus_trkidx()
 	{
 		if (not mus_trkidx_isLoaded) {
 			if (mus_trkidx_branch != 0) 
@@ -7605,7 +7608,7 @@ void Init(TTree *tree) {
 		}
 		return mus_trkidx_;
 	}
-	 vector<int>	&mus_charge()
+	vector<int> &mus_charge()
 	{
 		if (not mus_charge_isLoaded) {
 			if (mus_charge_branch != 0) 
@@ -7614,7 +7617,7 @@ void Init(TTree *tree) {
 		}
 		return mus_charge_;
 	}
-	 vector<int>	&mus_gfit_validHits()
+	vector<int> &mus_gfit_validHits()
 	{
 		if (not mus_gfit_validHits_isLoaded) {
 			if (mus_gfit_validHits_branch != 0) 
@@ -7623,7 +7626,7 @@ void Init(TTree *tree) {
 		}
 		return mus_gfit_validHits_;
 	}
-	 vector<int>	&mus_iso03_ntrk()
+	vector<int> &mus_iso03_ntrk()
 	{
 		if (not mus_iso03_ntrk_isLoaded) {
 			if (mus_iso03_ntrk_branch != 0) 
@@ -7632,7 +7635,7 @@ void Init(TTree *tree) {
 		}
 		return mus_iso03_ntrk_;
 	}
-	 vector<int>	&mus_iso05_ntrk()
+	vector<int> &mus_iso05_ntrk()
 	{
 		if (not mus_iso05_ntrk_isLoaded) {
 			if (mus_iso05_ntrk_branch != 0) 
@@ -7641,7 +7644,7 @@ void Init(TTree *tree) {
 		}
 		return mus_iso05_ntrk_;
 	}
-	 vector<int>	&mus_lostHits()
+	vector<int> &mus_lostHits()
 	{
 		if (not mus_lostHits_isLoaded) {
 			if (mus_lostHits_branch != 0) 
@@ -7650,7 +7653,7 @@ void Init(TTree *tree) {
 		}
 		return mus_lostHits_;
 	}
-	 vector<int>	&mus_nmatches()
+	vector<int> &mus_nmatches()
 	{
 		if (not mus_nmatches_isLoaded) {
 			if (mus_nmatches_branch != 0) 
@@ -7659,7 +7662,7 @@ void Init(TTree *tree) {
 		}
 		return mus_nmatches_;
 	}
-	 vector<int>	&mus_pid_TM2DCompatibilityLoose()
+	vector<int> &mus_pid_TM2DCompatibilityLoose()
 	{
 		if (not mus_pid_TM2DCompatibilityLoose_isLoaded) {
 			if (mus_pid_TM2DCompatibilityLoose_branch != 0) 
@@ -7668,7 +7671,7 @@ void Init(TTree *tree) {
 		}
 		return mus_pid_TM2DCompatibilityLoose_;
 	}
-	 vector<int>	&mus_pid_TM2DCompatibilityTight()
+	vector<int> &mus_pid_TM2DCompatibilityTight()
 	{
 		if (not mus_pid_TM2DCompatibilityTight_isLoaded) {
 			if (mus_pid_TM2DCompatibilityTight_branch != 0) 
@@ -7677,7 +7680,7 @@ void Init(TTree *tree) {
 		}
 		return mus_pid_TM2DCompatibilityTight_;
 	}
-	 vector<int>	&mus_pid_TMLastStationLoose()
+	vector<int> &mus_pid_TMLastStationLoose()
 	{
 		if (not mus_pid_TMLastStationLoose_isLoaded) {
 			if (mus_pid_TMLastStationLoose_branch != 0) 
@@ -7686,7 +7689,7 @@ void Init(TTree *tree) {
 		}
 		return mus_pid_TMLastStationLoose_;
 	}
-	 vector<int>	&mus_pid_TMLastStationTight()
+	vector<int> &mus_pid_TMLastStationTight()
 	{
 		if (not mus_pid_TMLastStationTight_isLoaded) {
 			if (mus_pid_TMLastStationTight_branch != 0) 
@@ -7695,7 +7698,7 @@ void Init(TTree *tree) {
 		}
 		return mus_pid_TMLastStationTight_;
 	}
-	 vector<int>	&mus_trkrefkey()
+	vector<int> &mus_trkrefkey()
 	{
 		if (not mus_trkrefkey_isLoaded) {
 			if (mus_trkrefkey_branch != 0) 
@@ -7704,7 +7707,7 @@ void Init(TTree *tree) {
 		}
 		return mus_trkrefkey_;
 	}
-	 vector<int>	&mus_validHits()
+	vector<int> &mus_validHits()
 	{
 		if (not mus_validHits_isLoaded) {
 			if (mus_validHits_branch != 0) 
@@ -7713,7 +7716,7 @@ void Init(TTree *tree) {
 		}
 		return mus_validHits_;
 	}
-	 vector<int>	&els_tq_egammaTkNumIso()
+	vector<int> &els_tq_egammaTkNumIso()
 	{
 		if (not els_tq_egammaTkNumIso_isLoaded) {
 			if (els_tq_egammaTkNumIso_branch != 0) 
@@ -7722,7 +7725,7 @@ void Init(TTree *tree) {
 		}
 		return els_tq_egammaTkNumIso_;
 	}
-	 vector<int>	&els_tq_genID()
+	vector<int> &els_tq_genID()
 	{
 		if (not els_tq_genID_isLoaded) {
 			if (els_tq_genID_branch != 0) 
@@ -7731,7 +7734,7 @@ void Init(TTree *tree) {
 		}
 		return els_tq_genID_;
 	}
-	 vector<int>	&els_tq_genMotherID()
+	vector<int> &els_tq_genMotherID()
 	{
 		if (not els_tq_genMotherID_isLoaded) {
 			if (els_tq_genMotherID_branch != 0) 
@@ -7740,7 +7743,7 @@ void Init(TTree *tree) {
 		}
 		return els_tq_genMotherID_;
 	}
-	 vector<int>	&jets_tq_genPartonMother_id()
+	vector<int> &jets_tq_genPartonMother_id()
 	{
 		if (not jets_tq_genPartonMother_id_isLoaded) {
 			if (jets_tq_genPartonMother_id_branch != 0) 
@@ -7749,7 +7752,7 @@ void Init(TTree *tree) {
 		}
 		return jets_tq_genPartonMother_id_;
 	}
-	 vector<int>	&jets_tq_genParton_id()
+	vector<int> &jets_tq_genParton_id()
 	{
 		if (not jets_tq_genParton_id_isLoaded) {
 			if (jets_tq_genParton_id_branch != 0) 
@@ -7758,7 +7761,7 @@ void Init(TTree *tree) {
 		}
 		return jets_tq_genParton_id_;
 	}
-	 vector<int>	&jets_tq_partonFlavour()
+	vector<int> &jets_tq_partonFlavour()
 	{
 		if (not jets_tq_partonFlavour_isLoaded) {
 			if (jets_tq_partonFlavour_branch != 0) 
@@ -7767,7 +7770,7 @@ void Init(TTree *tree) {
 		}
 		return jets_tq_partonFlavour_;
 	}
-	 vector<int>	&mus_tq_genID()
+	vector<int> &mus_tq_genID()
 	{
 		if (not mus_tq_genID_isLoaded) {
 			if (mus_tq_genID_branch != 0) 
@@ -7776,7 +7779,7 @@ void Init(TTree *tree) {
 		}
 		return mus_tq_genID_;
 	}
-	 vector<int>	&mus_tq_genMotherID()
+	vector<int> &mus_tq_genMotherID()
 	{
 		if (not mus_tq_genMotherID_isLoaded) {
 			if (mus_tq_genMotherID_branch != 0) 
@@ -7785,7 +7788,7 @@ void Init(TTree *tree) {
 		}
 		return mus_tq_genMotherID_;
 	}
-	 vector<int>	&trks_charge()
+	vector<int> &trks_charge()
 	{
 		if (not trks_charge_isLoaded) {
 			if (trks_charge_branch != 0) 
@@ -7794,7 +7797,7 @@ void Init(TTree *tree) {
 		}
 		return trks_charge_;
 	}
-	 vector<int>	&trks_lostHits()
+	vector<int> &trks_lostHits()
 	{
 		if (not trks_lostHits_isLoaded) {
 			if (trks_lostHits_branch != 0) 
@@ -7803,7 +7806,7 @@ void Init(TTree *tree) {
 		}
 		return trks_lostHits_;
 	}
-	 vector<int>	&trks_validHits()
+	vector<int> &trks_validHits()
 	{
 		if (not trks_validHits_isLoaded) {
 			if (trks_validHits_branch != 0) 
@@ -7812,7 +7815,7 @@ void Init(TTree *tree) {
 		}
 		return trks_validHits_;
 	}
-	 vector<int>	&trk_elsidx()
+	vector<int> &trk_elsidx()
 	{
 		if (not trk_elsidx_isLoaded) {
 			if (trk_elsidx_branch != 0) 
@@ -7821,7 +7824,7 @@ void Init(TTree *tree) {
 		}
 		return trk_elsidx_;
 	}
-	 vector<int>	&trk_musidx()
+	vector<int> &trk_musidx()
 	{
 		if (not trk_musidx_isLoaded) {
 			if (trk_musidx_branch != 0) 
@@ -7830,7 +7833,7 @@ void Init(TTree *tree) {
 		}
 		return trk_musidx_;
 	}
-	 vector<vector<int> >	&hyp_jets_mc_id()
+	vector<vector<int> > &hyp_jets_mc_id()
 	{
 		if (not hyp_jets_mc_id_isLoaded) {
 			if (hyp_jets_mc_id_branch != 0) 
@@ -7839,7 +7842,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_jets_mc_id_;
 	}
-	 vector<vector<int> >	&hyp_jets_tq_genPartonMother_id()
+	vector<vector<int> > &hyp_jets_tq_genPartonMother_id()
 	{
 		if (not hyp_jets_tq_genPartonMother_id_isLoaded) {
 			if (hyp_jets_tq_genPartonMother_id_branch != 0) 
@@ -7848,7 +7851,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_jets_tq_genPartonMother_id_;
 	}
-	 vector<vector<int> >	&hyp_jets_tq_genParton_id()
+	vector<vector<int> > &hyp_jets_tq_genParton_id()
 	{
 		if (not hyp_jets_tq_genParton_id_isLoaded) {
 			if (hyp_jets_tq_genParton_id_branch != 0) 
@@ -7857,7 +7860,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_jets_tq_genParton_id_;
 	}
-	 vector<vector<int> >	&hyp_jets_tq_partonFlavour()
+	vector<vector<int> > &hyp_jets_tq_partonFlavour()
 	{
 		if (not hyp_jets_tq_partonFlavour_isLoaded) {
 			if (hyp_jets_tq_partonFlavour_branch != 0) 
@@ -7866,7 +7869,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_jets_tq_partonFlavour_;
 	}
-	 vector<vector<int> >	&hyp_other_jets_mc_id()
+	vector<vector<int> > &hyp_other_jets_mc_id()
 	{
 		if (not hyp_other_jets_mc_id_isLoaded) {
 			if (hyp_other_jets_mc_id_branch != 0) 
@@ -7875,7 +7878,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_other_jets_mc_id_;
 	}
-	 vector<vector<int> >	&hyp_other_jets_tq_genPartonMother_id()
+	vector<vector<int> > &hyp_other_jets_tq_genPartonMother_id()
 	{
 		if (not hyp_other_jets_tq_genPartonMother_id_isLoaded) {
 			if (hyp_other_jets_tq_genPartonMother_id_branch != 0) 
@@ -7884,7 +7887,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_other_jets_tq_genPartonMother_id_;
 	}
-	 vector<vector<int> >	&hyp_other_jets_tq_genParton_id()
+	vector<vector<int> > &hyp_other_jets_tq_genParton_id()
 	{
 		if (not hyp_other_jets_tq_genParton_id_isLoaded) {
 			if (hyp_other_jets_tq_genParton_id_branch != 0) 
@@ -7893,7 +7896,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_other_jets_tq_genParton_id_;
 	}
-	 vector<vector<int> >	&hyp_other_jets_tq_partonFlavour()
+	vector<vector<int> > &hyp_other_jets_tq_partonFlavour()
 	{
 		if (not hyp_other_jets_tq_partonFlavour_isLoaded) {
 			if (hyp_other_jets_tq_partonFlavour_branch != 0) 
@@ -7902,7 +7905,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_other_jets_tq_partonFlavour_;
 	}
-	 vector<vector<int> >	&hyp_quadlep_jets_index()
+	vector<vector<int> > &hyp_quadlep_jets_index()
 	{
 		if (not hyp_quadlep_jets_index_isLoaded) {
 			if (hyp_quadlep_jets_index_branch != 0) 
@@ -7911,7 +7914,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_quadlep_jets_index_;
 	}
-	 vector<vector<int> >	&hyp_trilep_jets_index()
+	vector<vector<int> > &hyp_trilep_jets_index()
 	{
 		if (not hyp_trilep_jets_index_isLoaded) {
 			if (hyp_trilep_jets_index_branch != 0) 
@@ -7920,7 +7923,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_trilep_jets_index_;
 	}
-	 unsigned int	&evt_nels()
+	unsigned int &evt_nels()
 	{
 		if (not evt_nels_isLoaded) {
 			if (evt_nels_branch != 0) 
@@ -7929,7 +7932,25 @@ void Init(TTree *tree) {
 		}
 		return evt_nels_;
 	}
-	 unsigned int	&evt_njets()
+	unsigned int &evt_event()
+	{
+		if (not evt_event_isLoaded) {
+			if (evt_event_branch != 0) 
+				evt_event_branch->GetEntry(index);
+			evt_event_isLoaded = true;
+		}
+		return evt_event_;
+	}
+	unsigned int &evt_run()
+	{
+		if (not evt_run_isLoaded) {
+			if (evt_run_branch != 0) 
+				evt_run_branch->GetEntry(index);
+			evt_run_isLoaded = true;
+		}
+		return evt_run_;
+	}
+	unsigned int &evt_njets()
 	{
 		if (not evt_njets_isLoaded) {
 			if (evt_njets_branch != 0) 
@@ -7938,7 +7959,7 @@ void Init(TTree *tree) {
 		}
 		return evt_njets_;
 	}
-	 vector<unsigned int>	&hyp_quadlep_bucket()
+	vector<unsigned int> &hyp_quadlep_bucket()
 	{
 		if (not hyp_quadlep_bucket_isLoaded) {
 			if (hyp_quadlep_bucket_branch != 0) 
@@ -7947,7 +7968,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_quadlep_bucket_;
 	}
-	 vector<unsigned int>	&hyp_quadlep_first_index()
+	vector<unsigned int> &hyp_quadlep_first_index()
 	{
 		if (not hyp_quadlep_first_index_isLoaded) {
 			if (hyp_quadlep_first_index_branch != 0) 
@@ -7956,7 +7977,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_quadlep_first_index_;
 	}
-	 vector<unsigned int>	&hyp_quadlep_fourth_index()
+	vector<unsigned int> &hyp_quadlep_fourth_index()
 	{
 		if (not hyp_quadlep_fourth_index_isLoaded) {
 			if (hyp_quadlep_fourth_index_branch != 0) 
@@ -7965,7 +7986,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_quadlep_fourth_index_;
 	}
-	 vector<unsigned int>	&hyp_quadlep_second_index()
+	vector<unsigned int> &hyp_quadlep_second_index()
 	{
 		if (not hyp_quadlep_second_index_isLoaded) {
 			if (hyp_quadlep_second_index_branch != 0) 
@@ -7974,7 +7995,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_quadlep_second_index_;
 	}
-	 vector<unsigned int>	&hyp_quadlep_third_index()
+	vector<unsigned int> &hyp_quadlep_third_index()
 	{
 		if (not hyp_quadlep_third_index_isLoaded) {
 			if (hyp_quadlep_third_index_branch != 0) 
@@ -7983,7 +8004,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_quadlep_third_index_;
 	}
-	 vector<unsigned int>	&hyp_trilep_bucket()
+	vector<unsigned int> &hyp_trilep_bucket()
 	{
 		if (not hyp_trilep_bucket_isLoaded) {
 			if (hyp_trilep_bucket_branch != 0) 
@@ -7992,7 +8013,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_trilep_bucket_;
 	}
-	 vector<unsigned int>	&hyp_trilep_first_index()
+	vector<unsigned int> &hyp_trilep_first_index()
 	{
 		if (not hyp_trilep_first_index_isLoaded) {
 			if (hyp_trilep_first_index_branch != 0) 
@@ -8001,7 +8022,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_trilep_first_index_;
 	}
-	 vector<unsigned int>	&hyp_trilep_second_index()
+	vector<unsigned int> &hyp_trilep_second_index()
 	{
 		if (not hyp_trilep_second_index_isLoaded) {
 			if (hyp_trilep_second_index_branch != 0) 
@@ -8010,7 +8031,7 @@ void Init(TTree *tree) {
 		}
 		return hyp_trilep_second_index_;
 	}
-	 vector<unsigned int>	&hyp_trilep_third_index()
+	vector<unsigned int> &hyp_trilep_third_index()
 	{
 		if (not hyp_trilep_third_index_isLoaded) {
 			if (hyp_trilep_third_index_branch != 0) 
