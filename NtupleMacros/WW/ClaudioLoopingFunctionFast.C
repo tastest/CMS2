@@ -279,6 +279,7 @@ void hypo (int i_hyp, double kFactor)
      
      // Require opposite sign
      if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) return;
+//      if ( cms2.hyp_lt_id()[i_hyp] != -11) return;
      
      // Z mass veto using hyp_leptons for ee and mumu final states
      if (cms2.hyp_type()[i_hyp] == 0 || cms2.hyp_type()[i_hyp] == 3) {
@@ -341,7 +342,7 @@ void hypo (int i_hyp, double kFactor)
 	  std::cout << "YUK:  unknown dilepton type = " << cms2.hyp_type()[i_hyp] << std::endl;
 	  return;
      }
-    
+     
      hypos_total_n[myType]++;
      hypos_total_n[3]++;
      hypos_total_weight[myType] += weight;
@@ -536,14 +537,17 @@ int ScanChain( TChain* chain, enum Sample sample ) {
   const unsigned int numHypTypes = 4;  // number of hypotheses: MM, EM, EE, ALL
 
  // declare and create array of histograms
-  const char sample_names[][1024] = { "WW", "WZ", "ZZ", "Wjets", "DYee", "DYmm", "DYtt", "ttbar", "tW" };
+  const char sample_names[][1024] = { "ww", "wz", "zz", "wjets", "dyee", "dymm", "dytt", "ttbar", "tw" };
   const char *prefix = sample_names[sample];
 
   // DY samples are supposed to get an additional k-factor of 1.2
   double kFactor = 1;
   switch (sample) {
   case DYee: case DYmm: case DYtt:
-       kFactor = 1.2;
+       kFactor = 1.12;
+       break;
+  case ttbar:
+       kFactor = 1.85;
        break;
   default:
        break;
