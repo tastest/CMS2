@@ -139,14 +139,12 @@ if (runDYtt) {
 //ttbar file
 if (runttbar) {
      TChain *fttbar = new TChain("Events");
-//   fttbar->Add("data/electron_soup/ntuple*.root");
      fttbar->Add("/data/tmp/cms2/cms2_muon_soup_postprocessed_split_ttbar_a8faccabfc12f0755896310bdda19928/ntuple_ttbar_1.root");
      fttbar->Add("/data/tmp/cms2/cms2_electron_soup_postprocessed_split_ttbar_a8faccabfc12f0755896310bdda19928/ntuple_ttbar_1.root");
 }
 
 if (runtW) {
      TChain *ftW = new TChain("Events");
-//   ftW->Add("data/electron_soup/ntuple*.root");
      ftW->Add("/data/tmp/cms2/cms2_tW_signal_postprocessed_a38953977b4f365d80e08a78eaaff932/ntuple_signal_1.root");
 }
 
@@ -206,7 +204,7 @@ if (runttbar) {
 if (runtW) {
   cout << "Processing tW.."<<endl;
   ScanChain(ftW, tW);
-  hist::color("ttbar", 63);
+  hist::color("tw", 63);
 }
 
 //save all the histograms
