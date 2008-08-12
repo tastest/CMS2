@@ -278,7 +278,7 @@ namespace hist {
    //want to stack, to "hist" to display histograms without errors, to "histe"
    //to display histograms with errors, etc.
 
-   void stack(const char* stackHistName, const char* patORpfx, Bool_t addColor = kFALSE, Option_t* drawOption = "") {
+   THStack* stack(const char* stackHistName, const char* patORpfx, Bool_t addColor = kFALSE, Option_t* drawOption = "") {
       TRegexp reg(patORpfx, kFALSE);
 
       TList* list = gDirectory->GetListOfKeys() ;
@@ -292,6 +292,12 @@ namespace hist {
       stack = gDirectory->Get(stackHistName);
       //If stack hist does not exist, remember to create it
       if (! stack) makeStackHist = true;
+
+      if (makeStackHist) {
+	stack = new THStack(stackHistName, stackHistName);
+	makeStackHist = false;
+      }
+
 
       //Hist color iterator
       Int_t colorIt = 1;
@@ -307,11 +313,6 @@ namespace hist {
             if (TString(obj->GetName()).Index(reg) < 0 ) continue;
          } else if (! name.BeginsWith(patORpfx)) continue;
 
-         if (makeStackHist) {
-            stack = new THStack(stackHistName, stackHistName);
-            makeStackHist = false;
-         }
-
          if (addColor) {
             hist::color(obj->GetName(), colorIt);
             ++colorIt;
@@ -319,6 +320,8 @@ namespace hist {
 	 
 	 ((THStack*)stack)->Add((TH1*)obj, drawOption);
       }
+
+      return (THStack*)stack;
 
       // Currently breaks .ls
       //gDirectory->Append(stack);
@@ -665,7 +668,22 @@ TCanvas* AllPlots(const char* pattern) {
       pad->SetLeftMargin(0.199);
       pad->SetTopMargin(0.125);
       pad->SetBottomMargin(0.136);
-      TH1* hist = (TH1*)gFile->Get(Form("%s_%s",pattern,suffix[i]));
+      TH1* hist = 0;
+      if ( suffix[i] == "zee_e" ) {
+         hist = (TH1*)gFile->Get(Form("%s_%s",pattern,"epepem"));
+         hist.Add((TH1*)gFile->Get(Form("%s_%s",pattern,"epemem")));
+      } else if ( suffix[i] == "zee_m" ) {
+         hist = (TH1*)gFile->Get(Form("%s_%s",pattern,"mmepem"));
+         hist.Add((TH1*)gFile->Get(Form("%s_%s",pattern,"mpepem")));
+      } else if ( suffix[i] == "zmm_e" ) {
+         hist = (TH1*)gFile->Get(Form("%s_%s",pattern,"mpmmem"));
+         hist.Add((TH1*)gFile->Get(Form("%s_%s",pattern,"mpmmep")));
+      } else if ( suffix[i] == "zmm_m" ) {
+         hist = (TH1*)gFile->Get(Form("%s_%s",pattern,"mpmpmm"));
+         hist.Add((TH1*)gFile->Get(Form("%s_%s",pattern,"mpmmmm")));
+      } else {
+         hist = (TH1*)gFile->Get(Form("%s_%s",pattern,suffix[i]));
+      }
       cout << "Drawing histogram: " << Form("%s_%s",pattern,suffix[i]) << endl;
       if ( hist != 0 ) {
          hist->SetMarkerStyle(20);
