@@ -29,7 +29,10 @@ char* outFile = "myHist.root";
 bool runWZ       = true;
 
 // Load various tools
-gROOT->ProcessLine(".x ../Tools/setup.C");
+gROOT->SetMacroPath((string(gROOT->GetMacroPath()) + ":" + "../Tools/").c_str());
+
+// Load various tools
+gROOT->ProcessLine(".x setup.C");
 
 // Load and compile the looping code
 gROOT->ProcessLine(".L CMS2.C+");
@@ -47,7 +50,7 @@ enum EColor { kWhite, kBlack, kRed, kGreen, kBlue, kYellow, kMagenta, kCyan };
 // Process files one at a time, and color them as needed
 if (runWZ) {
   cout << "Processing WZ.."<<endl;
-  ScanChain(fWZ);
+  ScanChain(fWZ,"wz",-1,1.0);
   hist::color("wz", kBlue);
 }
 
