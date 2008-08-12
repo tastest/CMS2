@@ -1,0 +1,29 @@
+#!/bin/bash
+#taken from required_packages.txt
+cvs co -rV01-00-13_15X RecoMuon/MuonIdentification
+# latest as of Feb 01, to be used with CMSSW 168
+#taken from https://twiki.cern.ch/twiki/bin/view/CMS/TWikiTopQuarkFramework#CMSSW_1_6_8_current_baseline_ver
+cvs co -r jet_corrections_16X_L5 CondFormats/JetMETObjects
+cvs co -r jet_corrections_16X_L5 JetMETCorrections/MCJet
+cvs co -r jet_corrections_16X_L5 JetMETCorrections/Modules
+cvs co -r V00-00-19 DataFormats/TauReco
+cvs co -r V00-00-41 RecoTauTag/RecoTau
+cvs co -r V00-00-06 RecoTauTag/TauTagTools
+cvs co -r V00-01-01 EgammaAnalysis/EgammaIsolationProducers
+cvs co -r V00-00-04 RecoEgamma/EgammaIsolationAlgos
+cvs co -r eID16X_5Dic EgammaAnalysis/ElectronIDAlgos
+cvs co -r eID16X_26Nov EgammaAnalysis/ElectronIDProducers
+cvs co -r TQAF_168_080131 AnalysisDataFormats/TopObjects TopQuarkAnalysis/Examples TopQuarkAnalysis/TopEventProducers TopQuarkAnalysis/TopEventSelection TopQuarkAnalysis/TopJetCombination TopQuarkAnalysis/TopJetSelection TopQuarkAnalysis/TopKinFitter TopQuarkAnalysis/TopLeptonSelection TopQuarkAnalysis/TopObjectProducers TopQuarkAnalysis/TopObjectResolutions TopQuarkAnalysis/TopTools
+cvs co -r V01-03-01-01 TopQuarkAnalysis/TopSkimming
+#for CSA07 and recoGenParticleCandidate stuff
+cvs co -r V09-19-03-02 PhysicsTools/HepMCCandAlgos
+cvs update -r 1.2 TopQuarkAnalysis/TopSkimming/interface/TopDecayChannelFilter.h
+cvs update -r 1.6 TopQuarkAnalysis/TopSkimming/interface/TtDecayChannelSelector.h
+cvs update -r 1.10 TopQuarkAnalysis/TopSkimming/src/TtDecayChannelSelector.cc
+cvs update -r 1.5 TopQuarkAnalysis/TopSkimming/data/TtFullyHadronicFilter.cfi
+cvs update -r 1.6 TopQuarkAnalysis/TopSkimming/data/TtFullyLeptonicFilter.cfi
+cvs update -r 1.6 TopQuarkAnalysis/TopSkimming/data/TtSemiLeptonicFilter.cfi
+
+
+#remove the TQAF likelihood ratio and resolution root files
+rm TopQuarkAnalysis/*/data/*.root
