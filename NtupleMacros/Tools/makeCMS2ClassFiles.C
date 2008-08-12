@@ -30,7 +30,8 @@ makeCMS2Files(std::string fname) {
   headerf << "#include \"TBranch.h\"" << endl;
   headerf << "#include \"TTree.h\"" << endl << endl;
 
-
+  headerf << "#ifndef CMS2_H" << endl;
+  headerf << "#define CMS2_H" << endl << endl;
   
   headerf << "class CMS2 { " << endl;
   headerf << "protected: " << endl;
@@ -130,7 +131,9 @@ makeCMS2Files(std::string fname) {
        headerf << "\t\t" << "}" << endl;
        headerf << "\t\t" << "return " << aliasname << "_;" << endl << "\t}" << endl;
   }
-  headerf << "};" << endl;
+  headerf << "};" << endl << endl;
+
+  headerf << "#endif" << endl;
 
   codef << "//now make the source file" << endl;
   codef << "#include <iostream>" << endl;

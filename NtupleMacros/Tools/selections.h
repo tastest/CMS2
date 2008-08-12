@@ -1,18 +1,15 @@
-// Lepton selections
+#ifndef SELECTION_H
+#define SELECTION_H
+
+bool inZmassWindow (float mass);
 bool goodElectronWithoutIsolation(int index);
 bool goodMuonWithoutIsolation(int index);
+bool passElectronIsolation(int index);
 bool passMuonIsolation(int index);
 bool goodMuonIsolated(int index);
-// Event level stuff
-bool inZmassWindow(float mass);
-bool passMet();
-bool additionalZveto();
-// Auxiliary stuff
-int getDrellYanType();
-bool isDYee();
-bool isDYmm();
-bool isDYtt();
-void dumpDocLines();
-
-
-
+bool goodElectronIsolated(int index);
+void correctMETmuons_crossedE(double& met, double& metPhi, 
+			      double muon_pt, double muon_phi,
+			      double muon_track_theta, double muon_track_phi,
+			      double mu_crossedem_dep, double mu_crossedhad_dep, double mu_crossedho_dep );
+#endif
