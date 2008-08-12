@@ -11,8 +11,10 @@
 
 using namespace std;
 
+#ifndef __CINT__
 #include "CMS2.h"
-
+CMS2 cms2;
+#endif
 #include "../Tools/selections.C"
 #include "../Tools/utilities.C"
 
@@ -35,13 +37,13 @@ bool DorkyEventIdentifier::operator < (const DorkyEventIdentifier &other) const
      // comapring ones that are truncated (because they were written                                                                                  
      // to file and read back in) with ones that are not truncated.                                                                                   
      if (fabs(trks_d0 - other.trks_d0) > 1e-6 * trks_d0)
-          return trks_d0 < other.trks_d0;
+       return trks_d0 < other.trks_d0;
      if (fabs(hyp_lt_pt - other.hyp_lt_pt) > 1e-6 * hyp_lt_pt)
-          return hyp_lt_pt < other.hyp_lt_pt;
+       return hyp_lt_pt < other.hyp_lt_pt;
      if (fabs(hyp_lt_eta - other.hyp_lt_eta) > 1e-6 * hyp_lt_eta)
-          return hyp_lt_eta < other.hyp_lt_eta;
+       return hyp_lt_eta < other.hyp_lt_eta;
      if (fabs(hyp_lt_phi - other.hyp_lt_phi) > 1e-6 * hyp_lt_phi)
-          return hyp_lt_phi < other.hyp_lt_phi;
+       return hyp_lt_phi < other.hyp_lt_phi;
      // if the records are exactly the same, then r1 is not less than                                                                                 
      // r2.  Duh!                                                                                                                                     
      return false;
@@ -209,21 +211,21 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
   while ( currentFile = (TFile*)fileIter.Next() ) {
     TFile f(currentFile->GetTitle());
     TTree *tree = (TTree*)f.Get("Events");
-    Init(tree);
+    cms2.Init(tree);
     
     //Event Loop
     unsigned int nEvents = tree->GetEntries();
     for( unsigned int event = 0; event < nEvents; ++event) {
-      GetEntry(event);
+      cms2.GetEntry(event);
       ++nEventsTotal;
 
-      if (trks_d0().size() == 0)
+      if (cms2.trks_d0().size() == 0)
 	continue;
-      DorkyEventIdentifier id = { evt_run(), evt_event(), trks_d0()[0],
-				  hyp_lt_p4()[0].pt(), hyp_lt_p4()[0].eta(), hyp_lt_p4()[0].phi() };
+      DorkyEventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.trks_d0()[0],
+				  cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
       if (is_duplicate(id)) {
 	duplicates_total_n++;
-	duplicates_total_weight += evt_scale1fb();
+	duplicates_total_weight += cms2.evt_scale1fb();
 	continue;
       }
 
@@ -231,7 +233,7 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
       if ((nEventsTotal)%1000 == 0) std::cout << "Processing event: " << nEventsTotal << std::endl;
 
       // The event weight including the kFactor (scaled to 1 fb-1)
-      float weight = evt_scale1fb() * kFactor;
+      float weight = cms2.evt_scale1fb() * kFactor;
 
       // special handling for DY
       bool processEvent=true;
@@ -245,38 +247,38 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
       if (!processEvent) continue;
       
       // metAll correct, buggy in ntuples
-      double metAll = evt_met();
-      double metAllPhi = evt_metPhi();
+      double metAll = cms2.evt_met();
+      double metAllPhi = cms2.evt_metPhi();
       
       for ( unsigned int muon = 0;
-	    muon < mus_p4().size();
-	    ++muon ) {
+	    muon < cms2.mus_p4().size();
+            ++muon ) {
 	correctMETmuons_crossedE(metAll, metAllPhi, 
-				 mus_p4()[muon].pt(), mus_p4()[muon].phi(),
-				 mus_trk_p4()[muon].theta(), mus_trk_p4()[muon].phi(),
-				 mus_e_em()[muon], mus_e_had()[muon],mus_e_ho()[muon]);
+				 cms2.mus_p4()[muon].pt(), cms2.mus_p4()[muon].phi(),
+				 cms2.mus_trk_p4()[muon].theta(), cms2.mus_trk_p4()[muon].phi(),
+				 cms2.mus_e_em()[muon], cms2.mus_e_had()[muon],cms2.mus_e_ho()[muon]);
       }
 
       // loop over trilepton candidates
       for ( unsigned int cand = 0; 
-	    cand < hyp_trilep_bucket().size();
+	    cand < cms2.hyp_trilep_bucket().size();
 	    ++cand ) {
 	
-	unsigned int bucket = hyp_trilep_bucket()[cand],;
-	int first = hyp_trilep_first_index()[cand];
-	int second = hyp_trilep_second_index()[cand];
-	int third = hyp_trilep_third_index()[cand];
+	unsigned int bucket = cms2.hyp_trilep_bucket()[cand],;
+	int first = cms2.hyp_trilep_first_index()[cand];
+	int second = cms2.hyp_trilep_second_index()[cand];
+	int third = cms2.hyp_trilep_third_index()[cand];
 
 	// count good leptons and all leptons
 	// good lepton is goodIsolated<lepton>
 	// lepton is good<lepton>
 	int goodLeptons = 0;
 	int allLeptons  = 0;
-	for ( unsigned int i = 0; i < evt_nels(); ++i ) {
+	for ( unsigned int i = 0; i < cms2.evt_nels(); ++i ) {
 	  if ( goodElectronIsolated(i) ) ++goodLeptons;
 	  if ( goodElectronWithoutIsolation(i) ) ++allLeptons;
 	}
-	for ( unsigned int i = 0; i < mus_p4().size(); ++i ) {
+	for ( unsigned int i = 0; i < cms2.mus_p4().size(); ++i ) {
 	  if ( goodMuonIsolated(i) ) ++goodLeptons;
 	  if ( goodMuonWithoutIsolation(i) ) ++allLeptons;
 	}
@@ -315,8 +317,8 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
 	// CUT: do nothing unless one of the opposite sign same flavor combos is in the zmass window:
 	if( !inZmassWindow(mZPrim) ) continue;
 
-	hMETFinal[bucket]->Fill(hyp_trilep_met()[cand],weight);
-	hMETFinal[allBuckets]->Fill(hyp_trilep_met()[cand],weight);
+	hMETFinal[bucket]->Fill(cms2.hyp_trilep_met()[cand],weight);
+	hMETFinal[allBuckets]->Fill(cms2.hyp_trilep_met()[cand],weight);
 	hMETAllFinal[bucket]->Fill(metAll,weight);
 	hMETAllFinal[allBuckets]->Fill(metAll,weight);
 

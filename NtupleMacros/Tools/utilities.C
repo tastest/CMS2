@@ -115,9 +115,9 @@ TH1F* book1DVarHist(const char* name, const char* title, unsigned int nbins, flo
 }
 
 float mee(int i, int j){
-  if ( els_charge()[i] * els_charge()[j] < 0 ) {
+  if ( cms2.els_charge()[i] * cms2.els_charge()[j] < 0 ) {
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
-      vec = els_p4()[i] + els_p4()[j];
+      vec = cms2.els_p4()[i] + cms2.els_p4()[j];
     return vec.mass();
   } else {
     cout << "ERROR: mee tries to calculate Z mass from same charge leptons" << endl;
@@ -126,9 +126,9 @@ float mee(int i, int j){
 }
 
 float mmm(int i, int j){
-  if ( mus_charge()[i] * mus_charge()[j] < 0 ) {
+  if ( cms2.mus_charge()[i] * cms2.mus_charge()[j] < 0 ) {
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
-      vec = mus_p4()[i] + mus_p4()[j];
+      vec = cms2.mus_p4()[i] + cms2.mus_p4()[j];
     return vec.mass();
   } else {
     cout << "ERROR: mmm tries to calculate Z mass from same charge leptons" << endl;
@@ -181,34 +181,34 @@ float ptLowestPtLepton(int bucket, int first, int second, int third) {
        bucket == 17 ||
        bucket == 18 ||
        bucket == 19 ) {
-    array[0] = els_p4()[first].pt();
-    array[1] = els_p4()[second].pt();
-    array[2] = els_p4()[third].pt();
+    array[0] = cms2.els_p4()[first].pt();
+    array[1] = cms2.els_p4()[second].pt();
+    array[2] = cms2.els_p4()[third].pt();
   } else if ( bucket == 0 ||
 	      bucket == 1 ||
 	      bucket == 2 ||
 	      bucket == 3 ) {
-    array[0] = mus_p4()[first].pt();
-    array[1] = mus_p4()[second].pt();
-    array[2] = mus_p4()[third].pt();
+    array[0] = cms2.mus_p4()[first].pt();
+    array[1] = cms2.mus_p4()[second].pt();
+    array[2] = cms2.mus_p4()[third].pt();
   } else if ( bucket == 10 ||
 	      bucket == 13 ||
 	      bucket == 14 ||
 	      bucket == 12 ||
 	      bucket == 15 ||
 	      bucket == 11 ) {
-    array[0] = mus_p4()[first].pt();
-    array[1] = els_p4()[second].pt();
-    array[2] = els_p4()[third].pt();
+    array[0] = cms2.mus_p4()[first].pt();
+    array[1] = cms2.els_p4()[second].pt();
+    array[2] = cms2.els_p4()[third].pt();
   } else if ( bucket == 4 ||
 	      bucket == 5 ||
 	      bucket == 7 ||
 	      bucket == 6 ||
 	      bucket == 9 ||
 	      bucket == 8 ) {
-    array[0] = mus_p4()[first].pt();
-    array[1] = mus_p4()[second].pt();
-    array[2] = els_p4()[third].pt();
+    array[0] = cms2.mus_p4()[first].pt();
+    array[1] = cms2.mus_p4()[second].pt();
+    array[2] = cms2.els_p4()[third].pt();
   } else {
     cout << "ERROR: ptLowestPtLepton tried to use not existing bucket!" << endl;
   }
@@ -233,34 +233,34 @@ bool passTriggerLeptonMinPtCut(int bucket, int first, int second, int third, flo
        bucket == 17 ||
        bucket == 18 ||
        bucket == 19 ) {
-    array[0] = els_p4()[first].pt();
-    array[1] = els_p4()[second].pt();
-    array[2] = els_p4()[third].pt();
+    array[0] = cms2.els_p4()[first].pt();
+    array[1] = cms2.els_p4()[second].pt();
+    array[2] = cms2.els_p4()[third].pt();
   } else if ( bucket == 0 ||
 	      bucket == 1 ||
 	      bucket == 2 ||
 	      bucket == 3 ) {
-    array[0] = mus_p4()[first].pt();
-    array[1] = mus_p4()[second].pt();
-    array[2] = mus_p4()[third].pt();
+    array[0] = cms2.mus_p4()[first].pt();
+    array[1] = cms2.mus_p4()[second].pt();
+    array[2] = cms2.mus_p4()[third].pt();
   } else if ( bucket == 10 ||
 	      bucket == 13 ||
 	      bucket == 14 ||
 	      bucket == 12 ||
 	      bucket == 15 ||
 	      bucket == 11 ) {
-    array[0] = mus_p4()[first].pt();
-    array[1] = els_p4()[second].pt();
-    array[2] = els_p4()[third].pt();
+    array[0] = cms2.mus_p4()[first].pt();
+    array[1] = cms2.els_p4()[second].pt();
+    array[2] = cms2.els_p4()[third].pt();
   } else if ( bucket == 4 ||
 	      bucket == 5 ||
 	      bucket == 7 ||
 	      bucket == 6 ||
 	      bucket == 9 ||
 	      bucket == 8 ) {
-    array[0] = mus_p4()[first].pt();
-    array[1] = mus_p4()[second].pt();
-    array[2] = els_p4()[third].pt();
+    array[0] = cms2.mus_p4()[first].pt();
+    array[1] = cms2.mus_p4()[second].pt();
+    array[2] = cms2.els_p4()[third].pt();
   } else {
     cout << "ERROR: ptLowestPtLepton tried to use not existing bucket!" << endl;
   }
@@ -283,21 +283,21 @@ TString printCand(int bucket, int first, int second, int third) {
        bucket == 19 ) {
 
     result.Append("electron 1: " );
-    result += els_p4()[first].pt();
+    result += cms2.els_p4()[first].pt();
     result.Append(" electron 2: " );
-    result += els_p4()[second].pt();
+    result += cms2.els_p4()[second].pt();
     result.Append(" electron 3: " );
-    result += els_p4()[third].pt();
+    result += cms2.els_p4()[third].pt();
   } else if ( bucket == 0 ||
 	      bucket == 1 ||
 	      bucket == 2 ||
 	      bucket == 3 ) {
     result.Append("muon 1: " );
-    result += mus_p4()[first].pt();
+    result += cms2.mus_p4()[first].pt();
     result.Append(" muon 2: " );
-    result += mus_p4()[second].pt();
+    result += cms2.mus_p4()[second].pt();
     result.Append(" muon 3: " );
-    result += mus_p4()[third].pt();
+    result += cms2.mus_p4()[third].pt();
   } else if ( bucket == 10 ||
 	      bucket == 13 ||
 	      bucket == 14 ||
@@ -305,11 +305,11 @@ TString printCand(int bucket, int first, int second, int third) {
 	      bucket == 15 ||
 	      bucket == 11 ) {
     result.Append("muon 1: " );
-    result += mus_p4()[first].pt();
+    result += cms2.mus_p4()[first].pt();
     result.Append(" electron 2: " );
-    result += els_p4()[second].pt();
+    result += cms2.els_p4()[second].pt();
     result.Append(" electron 3: " );
-    result += els_p4()[third].pt();
+    result += cms2.els_p4()[third].pt();
   } else if ( bucket == 4 ||
 	      bucket == 5 ||
 	      bucket == 7 ||
@@ -317,11 +317,11 @@ TString printCand(int bucket, int first, int second, int third) {
 	      bucket == 9 ||
 	      bucket == 8 ) {
     result.Append("muon 1: " );
-    result += mus_p4()[first].pt();
+    result += cms2.mus_p4()[first].pt();
     result.Append(" muon 2: " );
-    result += mus_p4()[second].pt();
+    result += cms2.mus_p4()[second].pt();
     result.Append(" electron 3: " );
-    result += els_p4()[third].pt();
+    result += cms2.els_p4()[third].pt();
   } else {
     cout << "ERROR: goodIsolatedLepton tried to use not existing bucket!" << endl;
   }
@@ -338,7 +338,7 @@ void calcPrimZ(int bucket, int first, int second, int third, float zmass, unsign
 
   float mz1 = 0;
   float  mz2 = 0;
-  if ( bucket == 17 && els_charge()[first] == -1 ){ //found the odd one out
+  if ( bucket == 17 && cms2.els_charge()[first] == -1 ){ //found the odd one out
     mz1 = mee(first, second);
     mz2 = mee(first, third);
     array[0] = first;
@@ -352,7 +352,7 @@ void calcPrimZ(int bucket, int first, int second, int third, float zmass, unsign
       array[1] = third;
       array[2] = second;    
     }
-  } else if ( bucket == 17 && els_charge()[second] == -1 ){ //found the odd one out
+  } else if ( bucket == 17 && cms2.els_charge()[second] == -1 ){ //found the odd one out
     mz1 = mee(second, first);
     mz2 = mee(second, third);
     array[0] = second;
@@ -366,7 +366,7 @@ void calcPrimZ(int bucket, int first, int second, int third, float zmass, unsign
       array[1] = third;
       array[2] = first;    
     }
-  } else if ( bucket == 17 && els_charge()[third] == -1 ){ //found the odd one out
+  } else if ( bucket == 17 && cms2.els_charge()[third] == -1 ){ //found the odd one out
     mz1 = mee(third, first);
     mz2 = mee(third, second);
     array[0] = third;
@@ -380,7 +380,7 @@ void calcPrimZ(int bucket, int first, int second, int third, float zmass, unsign
       array[1] = second;
       array[2] = first;    
     }
-  } else if ( bucket == 18 && els_charge()[first] == 1 ){ //found the odd one out
+  } else if ( bucket == 18 && cms2.els_charge()[first] == 1 ){ //found the odd one out
     mz1 = mee(first, second);
     mz2 = mee(first, third);
     array[0] = first;
@@ -394,7 +394,7 @@ void calcPrimZ(int bucket, int first, int second, int third, float zmass, unsign
       array[1] = third;
       array[2] = second;    
     }
-  } else if ( bucket == 18 && els_charge()[second] == 1 ){ //found the odd one out
+  } else if ( bucket == 18 && cms2.els_charge()[second] == 1 ){ //found the odd one out
     mz1 = mee(second, first);
     mz2 = mee(second, third);
     array[0] = second;
@@ -408,7 +408,7 @@ void calcPrimZ(int bucket, int first, int second, int third, float zmass, unsign
       array[1] = third;
       array[2] = first;    
     }
-  } else if ( bucket == 18 && els_charge()[third] == 1 ){ //found the odd one out
+  } else if ( bucket == 18 && cms2.els_charge()[third] == 1 ){ //found the odd one out
     mz1 = mee(third, first);
     mz2 = mee(third, second);
     array[0] = third;
@@ -422,7 +422,7 @@ void calcPrimZ(int bucket, int first, int second, int third, float zmass, unsign
       array[1] = second;
       array[2] = first;    
     }
-  } else if ( bucket == 1 && mus_charge()[first] == -1 ){ //found the odd one out
+  } else if ( bucket == 1 && cms2.mus_charge()[first] == -1 ){ //found the odd one out
     mz1 = mmm(first, second);
     mz2 = mmm(first, third);
     array[0] = first;
@@ -436,7 +436,7 @@ void calcPrimZ(int bucket, int first, int second, int third, float zmass, unsign
       array[1] = third;
       array[2] = second;    
     }
-  } else if ( bucket == 1 && mus_charge()[second] == -1 ){ //found the odd one out
+  } else if ( bucket == 1 && cms2.mus_charge()[second] == -1 ){ //found the odd one out
     mz1 = mmm(second, first);
     mz2 = mmm(second, third);
     array[0] = second;
@@ -450,7 +450,7 @@ void calcPrimZ(int bucket, int first, int second, int third, float zmass, unsign
       array[1] = third;
       array[2] = first;    
     }
-  } else if ( bucket == 1 && mus_charge()[third] == -1 ){ //found the odd one out
+  } else if ( bucket == 1 && cms2.mus_charge()[third] == -1 ){ //found the odd one out
     mz1 = mmm(third, first);
     mz2 = mmm(third, second);
     array[0] = third;
@@ -464,7 +464,7 @@ void calcPrimZ(int bucket, int first, int second, int third, float zmass, unsign
       array[1] = second;
       array[2] = first;    
     }
-  } else if ( bucket == 2 && mus_charge()[first] == 1 ){ //found the odd one out
+  } else if ( bucket == 2 && cms2.mus_charge()[first] == 1 ){ //found the odd one out
     mz1 = mmm(first, second);
     mz2 = mmm(first, third);
     array[0] = first;
@@ -478,7 +478,7 @@ void calcPrimZ(int bucket, int first, int second, int third, float zmass, unsign
       array[1] = third;
       array[2] = second;    
     }
-  } else if ( bucket == 2 && mus_charge()[second] == 1 ){ //found the odd one out
+  } else if ( bucket == 2 && cms2.mus_charge()[second] == 1 ){ //found the odd one out
     mz1 = mmm(second, first);
     mz2 = mmm(second, third);
     array[0] = second;
@@ -492,7 +492,7 @@ void calcPrimZ(int bucket, int first, int second, int third, float zmass, unsign
       array[1] = third;
       array[2] = first;    
     }
-  } else if ( bucket == 2 && mus_charge()[third] == 1 ){ //found the odd one out
+  } else if ( bucket == 2 && cms2.mus_charge()[third] == 1 ){ //found the odd one out
     mz1 = mmm(third, first);
     mz2 = mmm(third, second);
     array[0] = third;
@@ -570,11 +570,11 @@ float calcSecZMass(int bucket, unsigned int* leptons, float zmass) {
   
   if ( bucket == 17 ||
        bucket == 18 ) {
-    if ( evt_nels() > 3 ) {
-      for ( unsigned int i = 0; i < evt_nels(); ++i ) {
+    if ( cms2.evt_nels() > 3 ) {
+      for ( unsigned int i = 0; i < cms2.evt_nels(); ++i ) {
 	if ( i != leptons[0] && i != leptons[1] && i != leptons[2]) {
 	  if ( goodElectronWithoutIsolation(i) ) {
-	    if ( els_charge()[i] * els_charge()[leptons[2]] < 0 ) {
+	    if ( cms2.els_charge()[i] * cms2.els_charge()[leptons[2]] < 0 ) {
 	      float mass = mee(i,leptons[2]);
 	      // store Z mass closest to true Z mass
 	      if ( abs(zmass-mass) < abs(zmass-result) ) {
@@ -587,11 +587,11 @@ float calcSecZMass(int bucket, unsigned int* leptons, float zmass) {
     }
   } else if ( bucket == 1 ||
 	      bucket == 2 ) {
-    if ( mus_p4().size() > 3 ) {
-      for ( unsigned int i = 0; i < mus_p4().size(); ++i ) {
+    if ( cms2.mus_p4().size() > 3 ) {
+      for ( unsigned int i = 0; i < cms2.mus_p4().size(); ++i ) {
 	if ( i != leptons[0] && i != leptons[1] && i != leptons[2]) {
 	  if ( goodMuonWithoutIsolation(i) ) {
-	    if ( mus_charge()[i] * mus_charge()[leptons[2]] < 0 ) {
+	    if ( cms2.mus_charge()[i] * cms2.mus_charge()[leptons[2]] < 0 ) {
 	      float mass = mmm(i,leptons[2]);
 	      // store Z mass closest to true Z mass
 	      if ( abs(zmass-mass) < abs(zmass-result) ) {
@@ -604,11 +604,11 @@ float calcSecZMass(int bucket, unsigned int* leptons, float zmass) {
     }
   } else if ( bucket == 14 ||
 	      bucket == 11) {
-    if ( mus_p4().size() > 1 ) {
-      for ( unsigned int i = 0; i < mus_p4().size(); ++i ) {
+    if ( cms2.mus_p4().size() > 1 ) {
+      for ( unsigned int i = 0; i < cms2.mus_p4().size(); ++i ) {
 	if ( i != leptons[2] ) {
 	  if ( goodMuonWithoutIsolation(i) ) {
-	    if ( mus_charge()[i] * mus_charge()[leptons[2]] < 0 ) {
+	    if ( cms2.mus_charge()[i] * cms2.mus_charge()[leptons[2]] < 0 ) {
 	      float mass = mmm(i,leptons[2]);
 	      // store Z mass closest to true Z mass
 	      if ( abs(zmass-mass) < abs(zmass-result) ) {
@@ -621,11 +621,11 @@ float calcSecZMass(int bucket, unsigned int* leptons, float zmass) {
     }
   } else if ( bucket == 7 ||
 	      bucket == 6 ) {
-    if ( evt_nels() > 1 ) {
-      for ( unsigned int i = 0; i < evt_nels(); ++i ) {
+    if ( cms2.evt_nels() > 1 ) {
+      for ( unsigned int i = 0; i < cms2.evt_nels(); ++i ) {
 	if ( i != leptons[2] ) {
 	  if ( goodElectronWithoutIsolation(i) ) {
-	    if ( els_charge()[i] * els_charge()[leptons[2]] < 0 ) {
+	    if ( cms2.els_charge()[i] * cms2.els_charge()[leptons[2]] < 0 ) {
 	      float mass = mee(i,leptons[2]);
 	      // store Z mass closest to true Z mass
 	      if ( abs(zmass-mass) < abs(zmass-result) ) {
@@ -672,7 +672,7 @@ std::vector<LorentzVector> correctJetsForElectrons(int bucket, int first, int se
   double hypJetMinPtCut  = 15;
 
   for ( unsigned int jet = 0;
-	jet < jets_p4().size();
+	jet < cms2.jets_p4().size();
 	++jet ) {
     if ( bucket == 4 ||
 	 bucket == 5 ||
@@ -680,29 +680,29 @@ std::vector<LorentzVector> correctJetsForElectrons(int bucket, int first, int se
 	 bucket == 7 ||
 	 bucket == 8 ||
 	 bucket == 9 ) {
-      if ( !testJetForElectrons(jets_p4()[jet],els_p4()[third]) ) continue;
+      if ( !testJetForElectrons(cms2.jets_p4()[jet],cms2.els_p4()[third]) ) continue;
     } else if ( bucket == 10 ||
 		bucket == 11 ||
 		bucket == 12 ||
 		bucket == 13 ||
 		bucket == 14 ||
 		bucket == 15 ) {
-      if ( !testJetForElectrons(jets_p4()[jet],els_p4()[second]) ) continue;
-      if ( !testJetForElectrons(jets_p4()[jet],els_p4()[third]) ) continue;
+      if ( !testJetForElectrons(cms2.jets_p4()[jet],cms2.els_p4()[second]) ) continue;
+      if ( !testJetForElectrons(cms2.jets_p4()[jet],cms2.els_p4()[third]) ) continue;
     } else if ( bucket == 16 ||
 		bucket == 17 ||
 		bucket == 18 ||
 		bucket == 19 ) {
-      if ( !testJetForElectrons(jets_p4()[jet],els_p4()[first]) ) continue;
-      if ( !testJetForElectrons(jets_p4()[jet],els_p4()[second]) ) continue;
-      if ( !testJetForElectrons(jets_p4()[jet],els_p4()[third]) ) continue;
+      if ( !testJetForElectrons(cms2.jets_p4()[jet],cms2.els_p4()[first]) ) continue;
+      if ( !testJetForElectrons(cms2.jets_p4()[jet],cms2.els_p4()[second]) ) continue;
+      if ( !testJetForElectrons(cms2.jets_p4()[jet],cms2.els_p4()[third]) ) continue;
     }
 
-    if ( jets_p4()[jet].eta() >= hypJetMaxEtaCut ) continue;
-    if ( jets_p4()[jet].eta() <= hypJetMinEtaCut ) continue;
-    if ( jets_p4()[jet].Pt() <= hypJetMinPtCut/jets_tq_noCorrF()[jet] ) continue;
+    if ( cms2.jets_p4()[jet].eta() >= hypJetMaxEtaCut ) continue;
+    if ( cms2.jets_p4()[jet].eta() <= hypJetMinEtaCut ) continue;
+    if ( cms2.jets_p4()[jet].Pt() <= hypJetMinPtCut/cms2.jets_tq_noCorrF()[jet] ) continue;
 
-    result.push_back(jets_p4()[jet]);
+    result.push_back(cms2.jets_p4()[jet]);
 
   }
 

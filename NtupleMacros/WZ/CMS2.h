@@ -4,7 +4,13 @@
 #include "TBranch.h"
 #include "TTree.h"
 
-	unsigned int local_index;
+#ifndef CMS2_H
+#define CMS2_H
+
+
+class CMS2 { 
+protected: 
+	unsigned int index;
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 	l1met_p4_;
 	TBranch *l1met_p4_branch;
 	bool l1met_p4_isLoaded;
@@ -143,6 +149,15 @@
 	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > >	hyp_other_jets_tq_jet_p4_;
 	TBranch *hyp_other_jets_tq_jet_p4_branch;
 	bool hyp_other_jets_tq_jet_p4_isLoaded;
+	float	evt_CSA07FilterEff_;
+	TBranch *evt_CSA07FilterEff_branch;
+	bool evt_CSA07FilterEff_isLoaded;
+	float	evt_CSA07Pthat_;
+	TBranch *evt_CSA07Pthat_branch;
+	bool evt_CSA07Pthat_isLoaded;
+	float	evt_CSA07Weight_;
+	TBranch *evt_CSA07Weight_branch;
+	bool evt_CSA07Weight_isLoaded;
 	float	evt_kfactor_;
 	TBranch *evt_kfactor_branch;
 	bool evt_kfactor_isLoaded;
@@ -743,6 +758,9 @@
 	vector<vector<float> >	hyp_other_jets_tq_udsCorrF_;
 	TBranch *hyp_other_jets_tq_udsCorrF_branch;
 	bool hyp_other_jets_tq_udsCorrF_isLoaded;
+	int	evt_CSA07Process_;
+	TBranch *evt_CSA07Process_branch;
+	bool evt_CSA07Process_isLoaded;
 	int	evt_HLT1_;
 	TBranch *evt_HLT1_branch;
 	bool evt_HLT1_isLoaded;
@@ -1139,6 +1157,7 @@
 	vector<unsigned int>	hyp_trilep_third_index_;
 	TBranch *hyp_trilep_third_index_branch;
 	bool hyp_trilep_third_index_isLoaded;
+public: 
 void Init(TTree *tree) {
 	l1met_p4_branch = 0;
 	if (tree->GetAlias("l1met_p4") != 0) {
@@ -1508,6 +1527,30 @@ void Init(TTree *tree) {
 	}
 	if(hyp_other_jets_tq_jet_p4_branch == 0 ) {
 	cout << "Branch hyp_other_jets_tq_jet_p4 does not exist." << endl;
+	}
+	evt_CSA07FilterEff_branch = 0;
+	if (tree->GetAlias("evt_CSA07FilterEff") != 0) {
+		evt_CSA07FilterEff_branch = tree->GetBranch(tree->GetAlias("evt_CSA07FilterEff"));
+		evt_CSA07FilterEff_branch->SetAddress(&evt_CSA07FilterEff_);
+	}
+	if(evt_CSA07FilterEff_branch == 0 ) {
+	cout << "Branch evt_CSA07FilterEff does not exist." << endl;
+	}
+	evt_CSA07Pthat_branch = 0;
+	if (tree->GetAlias("evt_CSA07Pthat") != 0) {
+		evt_CSA07Pthat_branch = tree->GetBranch(tree->GetAlias("evt_CSA07Pthat"));
+		evt_CSA07Pthat_branch->SetAddress(&evt_CSA07Pthat_);
+	}
+	if(evt_CSA07Pthat_branch == 0 ) {
+	cout << "Branch evt_CSA07Pthat does not exist." << endl;
+	}
+	evt_CSA07Weight_branch = 0;
+	if (tree->GetAlias("evt_CSA07Weight") != 0) {
+		evt_CSA07Weight_branch = tree->GetBranch(tree->GetAlias("evt_CSA07Weight"));
+		evt_CSA07Weight_branch->SetAddress(&evt_CSA07Weight_);
+	}
+	if(evt_CSA07Weight_branch == 0 ) {
+	cout << "Branch evt_CSA07Weight does not exist." << endl;
 	}
 	evt_kfactor_branch = 0;
 	if (tree->GetAlias("evt_kfactor") != 0) {
@@ -3109,6 +3152,14 @@ void Init(TTree *tree) {
 	if(hyp_other_jets_tq_udsCorrF_branch == 0 ) {
 	cout << "Branch hyp_other_jets_tq_udsCorrF does not exist." << endl;
 	}
+	evt_CSA07Process_branch = 0;
+	if (tree->GetAlias("evt_CSA07Process") != 0) {
+		evt_CSA07Process_branch = tree->GetBranch(tree->GetAlias("evt_CSA07Process"));
+		evt_CSA07Process_branch->SetAddress(&evt_CSA07Process_);
+	}
+	if(evt_CSA07Process_branch == 0 ) {
+	cout << "Branch evt_CSA07Process does not exist." << endl;
+	}
 	evt_HLT1_branch = 0;
 	if (tree->GetAlias("evt_HLT1") != 0) {
 		evt_HLT1_branch = tree->GetBranch(tree->GetAlias("evt_HLT1"));
@@ -4170,7 +4221,7 @@ void Init(TTree *tree) {
 void GetEntry(unsigned int idx) 
 	// this only marks branches as not loaded, saving a lot of time
 	{
-		local_index = idx;
+		index = idx;
 		l1met_p4_isLoaded = false;
 		els_p4_isLoaded = false;
 		els_p4In_isLoaded = false;
@@ -4217,6 +4268,9 @@ void GetEntry(unsigned int idx)
 		hyp_other_jets_tq_genPartonMother_p4_isLoaded = false;
 		hyp_other_jets_tq_genParton_p4_isLoaded = false;
 		hyp_other_jets_tq_jet_p4_isLoaded = false;
+		evt_CSA07FilterEff_isLoaded = false;
+		evt_CSA07Pthat_isLoaded = false;
+		evt_CSA07Weight_isLoaded = false;
 		evt_kfactor_isLoaded = false;
 		evt_weight_isLoaded = false;
 		evt_xsec_excl_isLoaded = false;
@@ -4417,6 +4471,7 @@ void GetEntry(unsigned int idx)
 		hyp_other_jets_tq_jetCharge_isLoaded = false;
 		hyp_other_jets_tq_noCorrF_isLoaded = false;
 		hyp_other_jets_tq_udsCorrF_isLoaded = false;
+		evt_CSA07Process_isLoaded = false;
 		evt_HLT1_isLoaded = false;
 		evt_HLT2_isLoaded = false;
 		evt_HLT3_isLoaded = false;
@@ -4555,7 +4610,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1met_p4_isLoaded) {
 			if (l1met_p4_branch != 0) 
-				l1met_p4_branch->GetEntry(local_index);
+				l1met_p4_branch->GetEntry(index);
 			l1met_p4_isLoaded = true;
 		}
 		return l1met_p4_;
@@ -4564,7 +4619,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_p4_isLoaded) {
 			if (els_p4_branch != 0) 
-				els_p4_branch->GetEntry(local_index);
+				els_p4_branch->GetEntry(index);
 			els_p4_isLoaded = true;
 		}
 		return els_p4_;
@@ -4573,7 +4628,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_p4In_isLoaded) {
 			if (els_p4In_branch != 0) 
-				els_p4In_branch->GetEntry(local_index);
+				els_p4In_branch->GetEntry(index);
 			els_p4In_isLoaded = true;
 		}
 		return els_p4In_;
@@ -4582,7 +4637,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_p4Out_isLoaded) {
 			if (els_p4Out_branch != 0) 
-				els_p4Out_branch->GetEntry(local_index);
+				els_p4Out_branch->GetEntry(index);
 			els_p4Out_isLoaded = true;
 		}
 		return els_p4Out_;
@@ -4591,7 +4646,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_trk_p4_isLoaded) {
 			if (els_trk_p4_branch != 0) 
-				els_trk_p4_branch->GetEntry(local_index);
+				els_trk_p4_branch->GetEntry(index);
 			els_trk_p4_isLoaded = true;
 		}
 		return els_trk_p4_;
@@ -4600,7 +4655,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not genps_p4_isLoaded) {
 			if (genps_p4_branch != 0) 
-				genps_p4_branch->GetEntry(local_index);
+				genps_p4_branch->GetEntry(index);
 			genps_p4_isLoaded = true;
 		}
 		return genps_p4_;
@@ -4609,7 +4664,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not genps_prod_vtx_isLoaded) {
 			if (genps_prod_vtx_branch != 0) 
-				genps_prod_vtx_branch->GetEntry(local_index);
+				genps_prod_vtx_branch->GetEntry(index);
 			genps_prod_vtx_isLoaded = true;
 		}
 		return genps_prod_vtx_;
@@ -4618,7 +4673,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_ll_mc_p4_isLoaded) {
 			if (hyp_ll_mc_p4_branch != 0) 
-				hyp_ll_mc_p4_branch->GetEntry(local_index);
+				hyp_ll_mc_p4_branch->GetEntry(index);
 			hyp_ll_mc_p4_isLoaded = true;
 		}
 		return hyp_ll_mc_p4_;
@@ -4627,7 +4682,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_ll_p4_isLoaded) {
 			if (hyp_ll_p4_branch != 0) 
-				hyp_ll_p4_branch->GetEntry(local_index);
+				hyp_ll_p4_branch->GetEntry(index);
 			hyp_ll_p4_isLoaded = true;
 		}
 		return hyp_ll_p4_;
@@ -4636,7 +4691,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_ll_trk_p4_isLoaded) {
 			if (hyp_ll_trk_p4_branch != 0) 
-				hyp_ll_trk_p4_branch->GetEntry(local_index);
+				hyp_ll_trk_p4_branch->GetEntry(index);
 			hyp_ll_trk_p4_isLoaded = true;
 		}
 		return hyp_ll_trk_p4_;
@@ -4645,7 +4700,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_lt_mc_p4_isLoaded) {
 			if (hyp_lt_mc_p4_branch != 0) 
-				hyp_lt_mc_p4_branch->GetEntry(local_index);
+				hyp_lt_mc_p4_branch->GetEntry(index);
 			hyp_lt_mc_p4_isLoaded = true;
 		}
 		return hyp_lt_mc_p4_;
@@ -4654,7 +4709,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_lt_p4_isLoaded) {
 			if (hyp_lt_p4_branch != 0) 
-				hyp_lt_p4_branch->GetEntry(local_index);
+				hyp_lt_p4_branch->GetEntry(index);
 			hyp_lt_p4_isLoaded = true;
 		}
 		return hyp_lt_p4_;
@@ -4663,7 +4718,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_lt_trk_p4_isLoaded) {
 			if (hyp_lt_trk_p4_branch != 0) 
-				hyp_lt_trk_p4_branch->GetEntry(local_index);
+				hyp_lt_trk_p4_branch->GetEntry(index);
 			hyp_lt_trk_p4_isLoaded = true;
 		}
 		return hyp_lt_trk_p4_;
@@ -4672,7 +4727,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_p4_isLoaded) {
 			if (hyp_p4_branch != 0) 
-				hyp_p4_branch->GetEntry(local_index);
+				hyp_p4_branch->GetEntry(index);
 			hyp_p4_isLoaded = true;
 		}
 		return hyp_p4_;
@@ -4681,7 +4736,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not jets_p4_isLoaded) {
 			if (jets_p4_branch != 0) 
-				jets_p4_branch->GetEntry(local_index);
+				jets_p4_branch->GetEntry(index);
 			jets_p4_isLoaded = true;
 		}
 		return jets_p4_;
@@ -4690,7 +4745,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1emiso_p4_isLoaded) {
 			if (l1emiso_p4_branch != 0) 
-				l1emiso_p4_branch->GetEntry(local_index);
+				l1emiso_p4_branch->GetEntry(index);
 			l1emiso_p4_isLoaded = true;
 		}
 		return l1emiso_p4_;
@@ -4699,7 +4754,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1emnoiso_p4_isLoaded) {
 			if (l1emnoiso_p4_branch != 0) 
-				l1emnoiso_p4_branch->GetEntry(local_index);
+				l1emnoiso_p4_branch->GetEntry(index);
 			l1emnoiso_p4_isLoaded = true;
 		}
 		return l1emnoiso_p4_;
@@ -4708,7 +4763,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1jetsc_p4_isLoaded) {
 			if (l1jetsc_p4_branch != 0) 
-				l1jetsc_p4_branch->GetEntry(local_index);
+				l1jetsc_p4_branch->GetEntry(index);
 			l1jetsc_p4_isLoaded = true;
 		}
 		return l1jetsc_p4_;
@@ -4717,7 +4772,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1jetsf_p4_isLoaded) {
 			if (l1jetsf_p4_branch != 0) 
-				l1jetsf_p4_branch->GetEntry(local_index);
+				l1jetsf_p4_branch->GetEntry(index);
 			l1jetsf_p4_isLoaded = true;
 		}
 		return l1jetsf_p4_;
@@ -4726,7 +4781,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1jetst_p4_isLoaded) {
 			if (l1jetst_p4_branch != 0) 
-				l1jetst_p4_branch->GetEntry(local_index);
+				l1jetst_p4_branch->GetEntry(index);
 			l1jetst_p4_isLoaded = true;
 		}
 		return l1jetst_p4_;
@@ -4735,7 +4790,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1mus_p4_isLoaded) {
 			if (l1mus_p4_branch != 0) 
-				l1mus_p4_branch->GetEntry(local_index);
+				l1mus_p4_branch->GetEntry(index);
 			l1mus_p4_isLoaded = true;
 		}
 		return l1mus_p4_;
@@ -4744,7 +4799,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_p4_isLoaded) {
 			if (mus_p4_branch != 0) 
-				mus_p4_branch->GetEntry(local_index);
+				mus_p4_branch->GetEntry(index);
 			mus_p4_isLoaded = true;
 		}
 		return mus_p4_;
@@ -4753,7 +4808,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_trk_p4_isLoaded) {
 			if (mus_trk_p4_branch != 0) 
-				mus_trk_p4_branch->GetEntry(local_index);
+				mus_trk_p4_branch->GetEntry(index);
 			mus_trk_p4_isLoaded = true;
 		}
 		return mus_trk_p4_;
@@ -4762,7 +4817,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_tq_genMotherP4_isLoaded) {
 			if (els_tq_genMotherP4_branch != 0) 
-				els_tq_genMotherP4_branch->GetEntry(local_index);
+				els_tq_genMotherP4_branch->GetEntry(index);
 			els_tq_genMotherP4_isLoaded = true;
 		}
 		return els_tq_genMotherP4_;
@@ -4771,7 +4826,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_tq_genP4_isLoaded) {
 			if (els_tq_genP4_branch != 0) 
-				els_tq_genP4_branch->GetEntry(local_index);
+				els_tq_genP4_branch->GetEntry(index);
 			els_tq_genP4_isLoaded = true;
 		}
 		return els_tq_genP4_;
@@ -4780,7 +4835,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not jets_tq_genJet_p4_isLoaded) {
 			if (jets_tq_genJet_p4_branch != 0) 
-				jets_tq_genJet_p4_branch->GetEntry(local_index);
+				jets_tq_genJet_p4_branch->GetEntry(index);
 			jets_tq_genJet_p4_isLoaded = true;
 		}
 		return jets_tq_genJet_p4_;
@@ -4789,7 +4844,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not jets_tq_genPartonMother_p4_isLoaded) {
 			if (jets_tq_genPartonMother_p4_branch != 0) 
-				jets_tq_genPartonMother_p4_branch->GetEntry(local_index);
+				jets_tq_genPartonMother_p4_branch->GetEntry(index);
 			jets_tq_genPartonMother_p4_isLoaded = true;
 		}
 		return jets_tq_genPartonMother_p4_;
@@ -4798,7 +4853,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not jets_tq_genParton_p4_isLoaded) {
 			if (jets_tq_genParton_p4_branch != 0) 
-				jets_tq_genParton_p4_branch->GetEntry(local_index);
+				jets_tq_genParton_p4_branch->GetEntry(index);
 			jets_tq_genParton_p4_isLoaded = true;
 		}
 		return jets_tq_genParton_p4_;
@@ -4807,7 +4862,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not jets_tq_jet_p4_isLoaded) {
 			if (jets_tq_jet_p4_branch != 0) 
-				jets_tq_jet_p4_branch->GetEntry(local_index);
+				jets_tq_jet_p4_branch->GetEntry(index);
 			jets_tq_jet_p4_isLoaded = true;
 		}
 		return jets_tq_jet_p4_;
@@ -4816,7 +4871,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_tq_genMotherP4_isLoaded) {
 			if (mus_tq_genMotherP4_branch != 0) 
-				mus_tq_genMotherP4_branch->GetEntry(local_index);
+				mus_tq_genMotherP4_branch->GetEntry(index);
 			mus_tq_genMotherP4_isLoaded = true;
 		}
 		return mus_tq_genMotherP4_;
@@ -4825,7 +4880,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_tq_genP4_isLoaded) {
 			if (mus_tq_genP4_branch != 0) 
-				mus_tq_genP4_branch->GetEntry(local_index);
+				mus_tq_genP4_branch->GetEntry(index);
 			mus_tq_genP4_isLoaded = true;
 		}
 		return mus_tq_genP4_;
@@ -4834,7 +4889,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not trks_trk_p4_isLoaded) {
 			if (trks_trk_p4_branch != 0) 
-				trks_trk_p4_branch->GetEntry(local_index);
+				trks_trk_p4_branch->GetEntry(index);
 			trks_trk_p4_isLoaded = true;
 		}
 		return trks_trk_p4_;
@@ -4843,7 +4898,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_jets_mc_gp_p4_isLoaded) {
 			if (hyp_jets_mc_gp_p4_branch != 0) 
-				hyp_jets_mc_gp_p4_branch->GetEntry(local_index);
+				hyp_jets_mc_gp_p4_branch->GetEntry(index);
 			hyp_jets_mc_gp_p4_isLoaded = true;
 		}
 		return hyp_jets_mc_gp_p4_;
@@ -4852,7 +4907,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_jets_mc_p4_isLoaded) {
 			if (hyp_jets_mc_p4_branch != 0) 
-				hyp_jets_mc_p4_branch->GetEntry(local_index);
+				hyp_jets_mc_p4_branch->GetEntry(index);
 			hyp_jets_mc_p4_isLoaded = true;
 		}
 		return hyp_jets_mc_p4_;
@@ -4861,7 +4916,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_jets_p4_isLoaded) {
 			if (hyp_jets_p4_branch != 0) 
-				hyp_jets_p4_branch->GetEntry(local_index);
+				hyp_jets_p4_branch->GetEntry(index);
 			hyp_jets_p4_isLoaded = true;
 		}
 		return hyp_jets_p4_;
@@ -4870,7 +4925,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_jets_tq_p4_isLoaded) {
 			if (hyp_jets_tq_p4_branch != 0) 
-				hyp_jets_tq_p4_branch->GetEntry(local_index);
+				hyp_jets_tq_p4_branch->GetEntry(index);
 			hyp_jets_tq_p4_isLoaded = true;
 		}
 		return hyp_jets_tq_p4_;
@@ -4879,7 +4934,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_jets_tq_genPartonMother_p4_isLoaded) {
 			if (hyp_jets_tq_genPartonMother_p4_branch != 0) 
-				hyp_jets_tq_genPartonMother_p4_branch->GetEntry(local_index);
+				hyp_jets_tq_genPartonMother_p4_branch->GetEntry(index);
 			hyp_jets_tq_genPartonMother_p4_isLoaded = true;
 		}
 		return hyp_jets_tq_genPartonMother_p4_;
@@ -4888,7 +4943,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_jets_tq_genParton_p4_isLoaded) {
 			if (hyp_jets_tq_genParton_p4_branch != 0) 
-				hyp_jets_tq_genParton_p4_branch->GetEntry(local_index);
+				hyp_jets_tq_genParton_p4_branch->GetEntry(index);
 			hyp_jets_tq_genParton_p4_isLoaded = true;
 		}
 		return hyp_jets_tq_genParton_p4_;
@@ -4897,7 +4952,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_jets_tq_jet_p4_isLoaded) {
 			if (hyp_jets_tq_jet_p4_branch != 0) 
-				hyp_jets_tq_jet_p4_branch->GetEntry(local_index);
+				hyp_jets_tq_jet_p4_branch->GetEntry(index);
 			hyp_jets_tq_jet_p4_isLoaded = true;
 		}
 		return hyp_jets_tq_jet_p4_;
@@ -4906,7 +4961,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_other_jets_mc_gp_p4_isLoaded) {
 			if (hyp_other_jets_mc_gp_p4_branch != 0) 
-				hyp_other_jets_mc_gp_p4_branch->GetEntry(local_index);
+				hyp_other_jets_mc_gp_p4_branch->GetEntry(index);
 			hyp_other_jets_mc_gp_p4_isLoaded = true;
 		}
 		return hyp_other_jets_mc_gp_p4_;
@@ -4915,7 +4970,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_other_jets_mc_p4_isLoaded) {
 			if (hyp_other_jets_mc_p4_branch != 0) 
-				hyp_other_jets_mc_p4_branch->GetEntry(local_index);
+				hyp_other_jets_mc_p4_branch->GetEntry(index);
 			hyp_other_jets_mc_p4_isLoaded = true;
 		}
 		return hyp_other_jets_mc_p4_;
@@ -4924,7 +4979,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_other_jets_p4_isLoaded) {
 			if (hyp_other_jets_p4_branch != 0) 
-				hyp_other_jets_p4_branch->GetEntry(local_index);
+				hyp_other_jets_p4_branch->GetEntry(index);
 			hyp_other_jets_p4_isLoaded = true;
 		}
 		return hyp_other_jets_p4_;
@@ -4933,7 +4988,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_other_jets_tq_genJet_p4_isLoaded) {
 			if (hyp_other_jets_tq_genJet_p4_branch != 0) 
-				hyp_other_jets_tq_genJet_p4_branch->GetEntry(local_index);
+				hyp_other_jets_tq_genJet_p4_branch->GetEntry(index);
 			hyp_other_jets_tq_genJet_p4_isLoaded = true;
 		}
 		return hyp_other_jets_tq_genJet_p4_;
@@ -4942,7 +4997,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_other_jets_tq_genPartonMother_p4_isLoaded) {
 			if (hyp_other_jets_tq_genPartonMother_p4_branch != 0) 
-				hyp_other_jets_tq_genPartonMother_p4_branch->GetEntry(local_index);
+				hyp_other_jets_tq_genPartonMother_p4_branch->GetEntry(index);
 			hyp_other_jets_tq_genPartonMother_p4_isLoaded = true;
 		}
 		return hyp_other_jets_tq_genPartonMother_p4_;
@@ -4951,7 +5006,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_other_jets_tq_genParton_p4_isLoaded) {
 			if (hyp_other_jets_tq_genParton_p4_branch != 0) 
-				hyp_other_jets_tq_genParton_p4_branch->GetEntry(local_index);
+				hyp_other_jets_tq_genParton_p4_branch->GetEntry(index);
 			hyp_other_jets_tq_genParton_p4_isLoaded = true;
 		}
 		return hyp_other_jets_tq_genParton_p4_;
@@ -4960,16 +5015,43 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_other_jets_tq_jet_p4_isLoaded) {
 			if (hyp_other_jets_tq_jet_p4_branch != 0) 
-				hyp_other_jets_tq_jet_p4_branch->GetEntry(local_index);
+				hyp_other_jets_tq_jet_p4_branch->GetEntry(index);
 			hyp_other_jets_tq_jet_p4_isLoaded = true;
 		}
 		return hyp_other_jets_tq_jet_p4_;
+	}
+	float &evt_CSA07FilterEff()
+	{
+		if (not evt_CSA07FilterEff_isLoaded) {
+			if (evt_CSA07FilterEff_branch != 0) 
+				evt_CSA07FilterEff_branch->GetEntry(index);
+			evt_CSA07FilterEff_isLoaded = true;
+		}
+		return evt_CSA07FilterEff_;
+	}
+	float &evt_CSA07Pthat()
+	{
+		if (not evt_CSA07Pthat_isLoaded) {
+			if (evt_CSA07Pthat_branch != 0) 
+				evt_CSA07Pthat_branch->GetEntry(index);
+			evt_CSA07Pthat_isLoaded = true;
+		}
+		return evt_CSA07Pthat_;
+	}
+	float &evt_CSA07Weight()
+	{
+		if (not evt_CSA07Weight_isLoaded) {
+			if (evt_CSA07Weight_branch != 0) 
+				evt_CSA07Weight_branch->GetEntry(index);
+			evt_CSA07Weight_isLoaded = true;
+		}
+		return evt_CSA07Weight_;
 	}
 	float &evt_kfactor()
 	{
 		if (not evt_kfactor_isLoaded) {
 			if (evt_kfactor_branch != 0) 
-				evt_kfactor_branch->GetEntry(local_index);
+				evt_kfactor_branch->GetEntry(index);
 			evt_kfactor_isLoaded = true;
 		}
 		return evt_kfactor_;
@@ -4978,7 +5060,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not evt_weight_isLoaded) {
 			if (evt_weight_branch != 0) 
-				evt_weight_branch->GetEntry(local_index);
+				evt_weight_branch->GetEntry(index);
 			evt_weight_isLoaded = true;
 		}
 		return evt_weight_;
@@ -4987,7 +5069,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not evt_xsec_excl_isLoaded) {
 			if (evt_xsec_excl_branch != 0) 
-				evt_xsec_excl_branch->GetEntry(local_index);
+				evt_xsec_excl_branch->GetEntry(index);
 			evt_xsec_excl_isLoaded = true;
 		}
 		return evt_xsec_excl_;
@@ -4996,7 +5078,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not evt_xsec_incl_isLoaded) {
 			if (evt_xsec_incl_branch != 0) 
-				evt_xsec_incl_branch->GetEntry(local_index);
+				evt_xsec_incl_branch->GetEntry(index);
 			evt_xsec_incl_isLoaded = true;
 		}
 		return evt_xsec_incl_;
@@ -5005,7 +5087,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not evt_scale1fb_isLoaded) {
 			if (evt_scale1fb_branch != 0) 
-				evt_scale1fb_branch->GetEntry(local_index);
+				evt_scale1fb_branch->GetEntry(index);
 			evt_scale1fb_isLoaded = true;
 		}
 		return evt_scale1fb_;
@@ -5014,7 +5096,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1met_etHad_isLoaded) {
 			if (l1met_etHad_branch != 0) 
-				l1met_etHad_branch->GetEntry(local_index);
+				l1met_etHad_branch->GetEntry(index);
 			l1met_etHad_isLoaded = true;
 		}
 		return l1met_etHad_;
@@ -5023,7 +5105,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1met_etTot_isLoaded) {
 			if (l1met_etTot_branch != 0) 
-				l1met_etTot_branch->GetEntry(local_index);
+				l1met_etTot_branch->GetEntry(index);
 			l1met_etTot_isLoaded = true;
 		}
 		return l1met_etTot_;
@@ -5032,7 +5114,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1met_met_isLoaded) {
 			if (l1met_met_branch != 0) 
-				l1met_met_branch->GetEntry(local_index);
+				l1met_met_branch->GetEntry(index);
 			l1met_met_isLoaded = true;
 		}
 		return l1met_met_;
@@ -5041,7 +5123,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not evt_met_isLoaded) {
 			if (evt_met_branch != 0) 
-				evt_met_branch->GetEntry(local_index);
+				evt_met_branch->GetEntry(index);
 			evt_met_isLoaded = true;
 		}
 		return evt_met_;
@@ -5050,7 +5132,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not evt_metPhi_isLoaded) {
 			if (evt_metPhi_branch != 0) 
-				evt_metPhi_branch->GetEntry(local_index);
+				evt_metPhi_branch->GetEntry(index);
 			evt_metPhi_isLoaded = true;
 		}
 		return evt_metPhi_;
@@ -5059,7 +5141,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not evt_metSig_isLoaded) {
 			if (evt_metSig_branch != 0) 
-				evt_metSig_branch->GetEntry(local_index);
+				evt_metSig_branch->GetEntry(index);
 			evt_metSig_isLoaded = true;
 		}
 		return evt_metSig_;
@@ -5068,7 +5150,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not evt_met_jetcorr_isLoaded) {
 			if (evt_met_jetcorr_branch != 0) 
-				evt_met_jetcorr_branch->GetEntry(local_index);
+				evt_met_jetcorr_branch->GetEntry(index);
 			evt_met_jetcorr_isLoaded = true;
 		}
 		return evt_met_jetcorr_;
@@ -5077,7 +5159,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not metphi_jetcorr_isLoaded) {
 			if (metphi_jetcorr_branch != 0) 
-				metphi_jetcorr_branch->GetEntry(local_index);
+				metphi_jetcorr_branch->GetEntry(index);
 			metphi_jetcorr_isLoaded = true;
 		}
 		return metphi_jetcorr_;
@@ -5086,7 +5168,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_musdr_isLoaded) {
 			if (els_musdr_branch != 0) 
-				els_musdr_branch->GetEntry(local_index);
+				els_musdr_branch->GetEntry(index);
 			els_musdr_isLoaded = true;
 		}
 		return els_musdr_;
@@ -5095,7 +5177,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_trkdr_isLoaded) {
 			if (els_trkdr_branch != 0) 
-				els_trkdr_branch->GetEntry(local_index);
+				els_trkdr_branch->GetEntry(index);
 			els_trkdr_isLoaded = true;
 		}
 		return els_trkdr_;
@@ -5104,7 +5186,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_ESc_isLoaded) {
 			if (els_ESc_branch != 0) 
-				els_ESc_branch->GetEntry(local_index);
+				els_ESc_branch->GetEntry(index);
 			els_ESc_isLoaded = true;
 		}
 		return els_ESc_;
@@ -5113,7 +5195,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_ESc_raw_isLoaded) {
 			if (els_ESc_raw_branch != 0) 
-				els_ESc_raw_branch->GetEntry(local_index);
+				els_ESc_raw_branch->GetEntry(index);
 			els_ESc_raw_isLoaded = true;
 		}
 		return els_ESc_raw_;
@@ -5122,7 +5204,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_ESeed_isLoaded) {
 			if (els_ESeed_branch != 0) 
-				els_ESeed_branch->GetEntry(local_index);
+				els_ESeed_branch->GetEntry(index);
 			els_ESeed_isLoaded = true;
 		}
 		return els_ESeed_;
@@ -5131,7 +5213,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_chi2_isLoaded) {
 			if (els_chi2_branch != 0) 
-				els_chi2_branch->GetEntry(local_index);
+				els_chi2_branch->GetEntry(index);
 			els_chi2_isLoaded = true;
 		}
 		return els_chi2_;
@@ -5140,7 +5222,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_d0_isLoaded) {
 			if (els_d0_branch != 0) 
-				els_d0_branch->GetEntry(local_index);
+				els_d0_branch->GetEntry(index);
 			els_d0_isLoaded = true;
 		}
 		return els_d0_;
@@ -5149,7 +5231,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_d0Err_isLoaded) {
 			if (els_d0Err_branch != 0) 
-				els_d0Err_branch->GetEntry(local_index);
+				els_d0Err_branch->GetEntry(index);
 			els_d0Err_isLoaded = true;
 		}
 		return els_d0Err_;
@@ -5158,7 +5240,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_dEtaIn_isLoaded) {
 			if (els_dEtaIn_branch != 0) 
-				els_dEtaIn_branch->GetEntry(local_index);
+				els_dEtaIn_branch->GetEntry(index);
 			els_dEtaIn_isLoaded = true;
 		}
 		return els_dEtaIn_;
@@ -5167,7 +5249,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_dEtaOut_isLoaded) {
 			if (els_dEtaOut_branch != 0) 
-				els_dEtaOut_branch->GetEntry(local_index);
+				els_dEtaOut_branch->GetEntry(index);
 			els_dEtaOut_isLoaded = true;
 		}
 		return els_dEtaOut_;
@@ -5176,7 +5258,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_dPhiIn_isLoaded) {
 			if (els_dPhiIn_branch != 0) 
-				els_dPhiIn_branch->GetEntry(local_index);
+				els_dPhiIn_branch->GetEntry(index);
 			els_dPhiIn_isLoaded = true;
 		}
 		return els_dPhiIn_;
@@ -5185,7 +5267,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_dPhiInPhiOut_isLoaded) {
 			if (els_dPhiInPhiOut_branch != 0) 
-				els_dPhiInPhiOut_branch->GetEntry(local_index);
+				els_dPhiInPhiOut_branch->GetEntry(index);
 			els_dPhiInPhiOut_isLoaded = true;
 		}
 		return els_dPhiInPhiOut_;
@@ -5194,7 +5276,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_dPhiOut_isLoaded) {
 			if (els_dPhiOut_branch != 0) 
-				els_dPhiOut_branch->GetEntry(local_index);
+				els_dPhiOut_branch->GetEntry(index);
 			els_dPhiOut_isLoaded = true;
 		}
 		return els_dPhiOut_;
@@ -5203,7 +5285,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_e3x3_isLoaded) {
 			if (els_e3x3_branch != 0) 
-				els_e3x3_branch->GetEntry(local_index);
+				els_e3x3_branch->GetEntry(index);
 			els_e3x3_isLoaded = true;
 		}
 		return els_e3x3_;
@@ -5212,7 +5294,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_e5x5_isLoaded) {
 			if (els_e5x5_branch != 0) 
-				els_e5x5_branch->GetEntry(local_index);
+				els_e5x5_branch->GetEntry(index);
 			els_e5x5_isLoaded = true;
 		}
 		return els_e5x5_;
@@ -5221,7 +5303,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_eOverPIn_isLoaded) {
 			if (els_eOverPIn_branch != 0) 
-				els_eOverPIn_branch->GetEntry(local_index);
+				els_eOverPIn_branch->GetEntry(index);
 			els_eOverPIn_isLoaded = true;
 		}
 		return els_eOverPIn_;
@@ -5230,7 +5312,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_eSeedOverPOut_isLoaded) {
 			if (els_eSeedOverPOut_branch != 0) 
-				els_eSeedOverPOut_branch->GetEntry(local_index);
+				els_eSeedOverPOut_branch->GetEntry(index);
 			els_eSeedOverPOut_isLoaded = true;
 		}
 		return els_eSeedOverPOut_;
@@ -5239,7 +5321,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_etaErr_isLoaded) {
 			if (els_etaErr_branch != 0) 
-				els_etaErr_branch->GetEntry(local_index);
+				els_etaErr_branch->GetEntry(index);
 			els_etaErr_isLoaded = true;
 		}
 		return els_etaErr_;
@@ -5248,7 +5330,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_fBrem_isLoaded) {
 			if (els_fBrem_branch != 0) 
-				els_fBrem_branch->GetEntry(local_index);
+				els_fBrem_branch->GetEntry(index);
 			els_fBrem_isLoaded = true;
 		}
 		return els_fBrem_;
@@ -5257,7 +5339,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_hOverE_isLoaded) {
 			if (els_hOverE_branch != 0) 
-				els_hOverE_branch->GetEntry(local_index);
+				els_hOverE_branch->GetEntry(index);
 			els_hOverE_isLoaded = true;
 		}
 		return els_hOverE_;
@@ -5266,7 +5348,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_ndof_isLoaded) {
 			if (els_ndof_branch != 0) 
-				els_ndof_branch->GetEntry(local_index);
+				els_ndof_branch->GetEntry(index);
 			els_ndof_isLoaded = true;
 		}
 		return els_ndof_;
@@ -5275,7 +5357,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_outerEta_isLoaded) {
 			if (els_outerEta_branch != 0) 
-				els_outerEta_branch->GetEntry(local_index);
+				els_outerEta_branch->GetEntry(index);
 			els_outerEta_isLoaded = true;
 		}
 		return els_outerEta_;
@@ -5284,7 +5366,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_outerPhi_isLoaded) {
 			if (els_outerPhi_branch != 0) 
-				els_outerPhi_branch->GetEntry(local_index);
+				els_outerPhi_branch->GetEntry(index);
 			els_outerPhi_isLoaded = true;
 		}
 		return els_outerPhi_;
@@ -5293,7 +5375,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_phiErr_isLoaded) {
 			if (els_phiErr_branch != 0) 
-				els_phiErr_branch->GetEntry(local_index);
+				els_phiErr_branch->GetEntry(index);
 			els_phiErr_isLoaded = true;
 		}
 		return els_phiErr_;
@@ -5302,7 +5384,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_ptErr_isLoaded) {
 			if (els_ptErr_branch != 0) 
-				els_ptErr_branch->GetEntry(local_index);
+				els_ptErr_branch->GetEntry(index);
 			els_ptErr_isLoaded = true;
 		}
 		return els_ptErr_;
@@ -5311,7 +5393,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_sigmaEtaEta_isLoaded) {
 			if (els_sigmaEtaEta_branch != 0) 
-				els_sigmaEtaEta_branch->GetEntry(local_index);
+				els_sigmaEtaEta_branch->GetEntry(index);
 			els_sigmaEtaEta_isLoaded = true;
 		}
 		return els_sigmaEtaEta_;
@@ -5320,7 +5402,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_sigmaPhiPhi_isLoaded) {
 			if (els_sigmaPhiPhi_branch != 0) 
-				els_sigmaPhiPhi_branch->GetEntry(local_index);
+				els_sigmaPhiPhi_branch->GetEntry(index);
 			els_sigmaPhiPhi_isLoaded = true;
 		}
 		return els_sigmaPhiPhi_;
@@ -5329,7 +5411,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_tkIso_isLoaded) {
 			if (els_tkIso_branch != 0) 
-				els_tkIso_branch->GetEntry(local_index);
+				els_tkIso_branch->GetEntry(index);
 			els_tkIso_isLoaded = true;
 		}
 		return els_tkIso_;
@@ -5338,7 +5420,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_vertexphi_isLoaded) {
 			if (els_vertexphi_branch != 0) 
-				els_vertexphi_branch->GetEntry(local_index);
+				els_vertexphi_branch->GetEntry(index);
 			els_vertexphi_isLoaded = true;
 		}
 		return els_vertexphi_;
@@ -5347,7 +5429,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_z0_isLoaded) {
 			if (els_z0_branch != 0) 
-				els_z0_branch->GetEntry(local_index);
+				els_z0_branch->GetEntry(index);
 			els_z0_isLoaded = true;
 		}
 		return els_z0_;
@@ -5356,7 +5438,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_z0Err_isLoaded) {
 			if (els_z0Err_branch != 0) 
-				els_z0Err_branch->GetEntry(local_index);
+				els_z0Err_branch->GetEntry(index);
 			els_z0Err_isLoaded = true;
 		}
 		return els_z0Err_;
@@ -5365,7 +5447,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_ll_chi2_isLoaded) {
 			if (hyp_ll_chi2_branch != 0) 
-				hyp_ll_chi2_branch->GetEntry(local_index);
+				hyp_ll_chi2_branch->GetEntry(index);
 			hyp_ll_chi2_isLoaded = true;
 		}
 		return hyp_ll_chi2_;
@@ -5374,7 +5456,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_ll_d0_isLoaded) {
 			if (hyp_ll_d0_branch != 0) 
-				hyp_ll_d0_branch->GetEntry(local_index);
+				hyp_ll_d0_branch->GetEntry(index);
 			hyp_ll_d0_isLoaded = true;
 		}
 		return hyp_ll_d0_;
@@ -5383,7 +5465,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_ll_d0Err_isLoaded) {
 			if (hyp_ll_d0Err_branch != 0) 
-				hyp_ll_d0Err_branch->GetEntry(local_index);
+				hyp_ll_d0Err_branch->GetEntry(index);
 			hyp_ll_d0Err_isLoaded = true;
 		}
 		return hyp_ll_d0Err_;
@@ -5392,7 +5474,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_ll_etaErr_isLoaded) {
 			if (hyp_ll_etaErr_branch != 0) 
-				hyp_ll_etaErr_branch->GetEntry(local_index);
+				hyp_ll_etaErr_branch->GetEntry(index);
 			hyp_ll_etaErr_isLoaded = true;
 		}
 		return hyp_ll_etaErr_;
@@ -5401,7 +5483,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_ll_iso_isLoaded) {
 			if (hyp_ll_iso_branch != 0) 
-				hyp_ll_iso_branch->GetEntry(local_index);
+				hyp_ll_iso_branch->GetEntry(index);
 			hyp_ll_iso_isLoaded = true;
 		}
 		return hyp_ll_iso_;
@@ -5410,7 +5492,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_ll_ndof_isLoaded) {
 			if (hyp_ll_ndof_branch != 0) 
-				hyp_ll_ndof_branch->GetEntry(local_index);
+				hyp_ll_ndof_branch->GetEntry(index);
 			hyp_ll_ndof_isLoaded = true;
 		}
 		return hyp_ll_ndof_;
@@ -5419,7 +5501,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_ll_outerEta_isLoaded) {
 			if (hyp_ll_outerEta_branch != 0) 
-				hyp_ll_outerEta_branch->GetEntry(local_index);
+				hyp_ll_outerEta_branch->GetEntry(index);
 			hyp_ll_outerEta_isLoaded = true;
 		}
 		return hyp_ll_outerEta_;
@@ -5428,7 +5510,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_ll_outerPhi_isLoaded) {
 			if (hyp_ll_outerPhi_branch != 0) 
-				hyp_ll_outerPhi_branch->GetEntry(local_index);
+				hyp_ll_outerPhi_branch->GetEntry(index);
 			hyp_ll_outerPhi_isLoaded = true;
 		}
 		return hyp_ll_outerPhi_;
@@ -5437,7 +5519,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_ll_phiErr_isLoaded) {
 			if (hyp_ll_phiErr_branch != 0) 
-				hyp_ll_phiErr_branch->GetEntry(local_index);
+				hyp_ll_phiErr_branch->GetEntry(index);
 			hyp_ll_phiErr_isLoaded = true;
 		}
 		return hyp_ll_phiErr_;
@@ -5446,7 +5528,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_ll_ptErr_isLoaded) {
 			if (hyp_ll_ptErr_branch != 0) 
-				hyp_ll_ptErr_branch->GetEntry(local_index);
+				hyp_ll_ptErr_branch->GetEntry(index);
 			hyp_ll_ptErr_isLoaded = true;
 		}
 		return hyp_ll_ptErr_;
@@ -5455,7 +5537,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_ll_tkIso_isLoaded) {
 			if (hyp_ll_tkIso_branch != 0) 
-				hyp_ll_tkIso_branch->GetEntry(local_index);
+				hyp_ll_tkIso_branch->GetEntry(index);
 			hyp_ll_tkIso_isLoaded = true;
 		}
 		return hyp_ll_tkIso_;
@@ -5464,7 +5546,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_ll_vertexphi_isLoaded) {
 			if (hyp_ll_vertexphi_branch != 0) 
-				hyp_ll_vertexphi_branch->GetEntry(local_index);
+				hyp_ll_vertexphi_branch->GetEntry(index);
 			hyp_ll_vertexphi_isLoaded = true;
 		}
 		return hyp_ll_vertexphi_;
@@ -5473,7 +5555,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_ll_z0_isLoaded) {
 			if (hyp_ll_z0_branch != 0) 
-				hyp_ll_z0_branch->GetEntry(local_index);
+				hyp_ll_z0_branch->GetEntry(index);
 			hyp_ll_z0_isLoaded = true;
 		}
 		return hyp_ll_z0_;
@@ -5482,7 +5564,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_ll_z0Err_isLoaded) {
 			if (hyp_ll_z0Err_branch != 0) 
-				hyp_ll_z0Err_branch->GetEntry(local_index);
+				hyp_ll_z0Err_branch->GetEntry(index);
 			hyp_ll_z0Err_isLoaded = true;
 		}
 		return hyp_ll_z0Err_;
@@ -5491,7 +5573,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_lt_chi2_isLoaded) {
 			if (hyp_lt_chi2_branch != 0) 
-				hyp_lt_chi2_branch->GetEntry(local_index);
+				hyp_lt_chi2_branch->GetEntry(index);
 			hyp_lt_chi2_isLoaded = true;
 		}
 		return hyp_lt_chi2_;
@@ -5500,7 +5582,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_lt_d0_isLoaded) {
 			if (hyp_lt_d0_branch != 0) 
-				hyp_lt_d0_branch->GetEntry(local_index);
+				hyp_lt_d0_branch->GetEntry(index);
 			hyp_lt_d0_isLoaded = true;
 		}
 		return hyp_lt_d0_;
@@ -5509,7 +5591,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_lt_d0Err_isLoaded) {
 			if (hyp_lt_d0Err_branch != 0) 
-				hyp_lt_d0Err_branch->GetEntry(local_index);
+				hyp_lt_d0Err_branch->GetEntry(index);
 			hyp_lt_d0Err_isLoaded = true;
 		}
 		return hyp_lt_d0Err_;
@@ -5518,7 +5600,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_lt_etaErr_isLoaded) {
 			if (hyp_lt_etaErr_branch != 0) 
-				hyp_lt_etaErr_branch->GetEntry(local_index);
+				hyp_lt_etaErr_branch->GetEntry(index);
 			hyp_lt_etaErr_isLoaded = true;
 		}
 		return hyp_lt_etaErr_;
@@ -5527,7 +5609,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_lt_iso_isLoaded) {
 			if (hyp_lt_iso_branch != 0) 
-				hyp_lt_iso_branch->GetEntry(local_index);
+				hyp_lt_iso_branch->GetEntry(index);
 			hyp_lt_iso_isLoaded = true;
 		}
 		return hyp_lt_iso_;
@@ -5536,7 +5618,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_lt_ndof_isLoaded) {
 			if (hyp_lt_ndof_branch != 0) 
-				hyp_lt_ndof_branch->GetEntry(local_index);
+				hyp_lt_ndof_branch->GetEntry(index);
 			hyp_lt_ndof_isLoaded = true;
 		}
 		return hyp_lt_ndof_;
@@ -5545,7 +5627,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_lt_outerEta_isLoaded) {
 			if (hyp_lt_outerEta_branch != 0) 
-				hyp_lt_outerEta_branch->GetEntry(local_index);
+				hyp_lt_outerEta_branch->GetEntry(index);
 			hyp_lt_outerEta_isLoaded = true;
 		}
 		return hyp_lt_outerEta_;
@@ -5554,7 +5636,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_lt_outerPhi_isLoaded) {
 			if (hyp_lt_outerPhi_branch != 0) 
-				hyp_lt_outerPhi_branch->GetEntry(local_index);
+				hyp_lt_outerPhi_branch->GetEntry(index);
 			hyp_lt_outerPhi_isLoaded = true;
 		}
 		return hyp_lt_outerPhi_;
@@ -5563,7 +5645,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_lt_phiErr_isLoaded) {
 			if (hyp_lt_phiErr_branch != 0) 
-				hyp_lt_phiErr_branch->GetEntry(local_index);
+				hyp_lt_phiErr_branch->GetEntry(index);
 			hyp_lt_phiErr_isLoaded = true;
 		}
 		return hyp_lt_phiErr_;
@@ -5572,7 +5654,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_lt_ptErr_isLoaded) {
 			if (hyp_lt_ptErr_branch != 0) 
-				hyp_lt_ptErr_branch->GetEntry(local_index);
+				hyp_lt_ptErr_branch->GetEntry(index);
 			hyp_lt_ptErr_isLoaded = true;
 		}
 		return hyp_lt_ptErr_;
@@ -5581,7 +5663,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_lt_tkIso_isLoaded) {
 			if (hyp_lt_tkIso_branch != 0) 
-				hyp_lt_tkIso_branch->GetEntry(local_index);
+				hyp_lt_tkIso_branch->GetEntry(index);
 			hyp_lt_tkIso_isLoaded = true;
 		}
 		return hyp_lt_tkIso_;
@@ -5590,7 +5672,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_lt_vertexphi_isLoaded) {
 			if (hyp_lt_vertexphi_branch != 0) 
-				hyp_lt_vertexphi_branch->GetEntry(local_index);
+				hyp_lt_vertexphi_branch->GetEntry(index);
 			hyp_lt_vertexphi_isLoaded = true;
 		}
 		return hyp_lt_vertexphi_;
@@ -5599,7 +5681,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_lt_z0_isLoaded) {
 			if (hyp_lt_z0_branch != 0) 
-				hyp_lt_z0_branch->GetEntry(local_index);
+				hyp_lt_z0_branch->GetEntry(index);
 			hyp_lt_z0_isLoaded = true;
 		}
 		return hyp_lt_z0_;
@@ -5608,7 +5690,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_lt_z0Err_isLoaded) {
 			if (hyp_lt_z0Err_branch != 0) 
-				hyp_lt_z0Err_branch->GetEntry(local_index);
+				hyp_lt_z0Err_branch->GetEntry(index);
 			hyp_lt_z0Err_isLoaded = true;
 		}
 		return hyp_lt_z0Err_;
@@ -5617,7 +5699,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_met_isLoaded) {
 			if (hyp_met_branch != 0) 
-				hyp_met_branch->GetEntry(local_index);
+				hyp_met_branch->GetEntry(index);
 			hyp_met_isLoaded = true;
 		}
 		return hyp_met_;
@@ -5626,7 +5708,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metAll_isLoaded) {
 			if (hyp_metAll_branch != 0) 
-				hyp_metAll_branch->GetEntry(local_index);
+				hyp_metAll_branch->GetEntry(index);
 			hyp_metAll_isLoaded = true;
 		}
 		return hyp_metAll_;
@@ -5635,7 +5717,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metAllCaloExp_isLoaded) {
 			if (hyp_metAllCaloExp_branch != 0) 
-				hyp_metAllCaloExp_branch->GetEntry(local_index);
+				hyp_metAllCaloExp_branch->GetEntry(index);
 			hyp_metAllCaloExp_isLoaded = true;
 		}
 		return hyp_metAllCaloExp_;
@@ -5644,7 +5726,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metCaloExp_isLoaded) {
 			if (hyp_metCaloExp_branch != 0) 
-				hyp_metCaloExp_branch->GetEntry(local_index);
+				hyp_metCaloExp_branch->GetEntry(index);
 			hyp_metCaloExp_isLoaded = true;
 		}
 		return hyp_metCaloExp_;
@@ -5653,7 +5735,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metCone_isLoaded) {
 			if (hyp_metCone_branch != 0) 
-				hyp_metCone_branch->GetEntry(local_index);
+				hyp_metCone_branch->GetEntry(index);
 			hyp_metCone_isLoaded = true;
 		}
 		return hyp_metCone_;
@@ -5662,7 +5744,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metDPhiJet10_isLoaded) {
 			if (hyp_metDPhiJet10_branch != 0) 
-				hyp_metDPhiJet10_branch->GetEntry(local_index);
+				hyp_metDPhiJet10_branch->GetEntry(index);
 			hyp_metDPhiJet10_isLoaded = true;
 		}
 		return hyp_metDPhiJet10_;
@@ -5671,7 +5753,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metDPhiJet15_isLoaded) {
 			if (hyp_metDPhiJet15_branch != 0) 
-				hyp_metDPhiJet15_branch->GetEntry(local_index);
+				hyp_metDPhiJet15_branch->GetEntry(index);
 			hyp_metDPhiJet15_isLoaded = true;
 		}
 		return hyp_metDPhiJet15_;
@@ -5680,7 +5762,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metDPhiJet20_isLoaded) {
 			if (hyp_metDPhiJet20_branch != 0) 
-				hyp_metDPhiJet20_branch->GetEntry(local_index);
+				hyp_metDPhiJet20_branch->GetEntry(index);
 			hyp_metDPhiJet20_isLoaded = true;
 		}
 		return hyp_metDPhiJet20_;
@@ -5689,7 +5771,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metDPhiTrk10_isLoaded) {
 			if (hyp_metDPhiTrk10_branch != 0) 
-				hyp_metDPhiTrk10_branch->GetEntry(local_index);
+				hyp_metDPhiTrk10_branch->GetEntry(index);
 			hyp_metDPhiTrk10_isLoaded = true;
 		}
 		return hyp_metDPhiTrk10_;
@@ -5698,7 +5780,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metDPhiTrk25_isLoaded) {
 			if (hyp_metDPhiTrk25_branch != 0) 
-				hyp_metDPhiTrk25_branch->GetEntry(local_index);
+				hyp_metDPhiTrk25_branch->GetEntry(index);
 			hyp_metDPhiTrk25_isLoaded = true;
 		}
 		return hyp_metDPhiTrk25_;
@@ -5707,7 +5789,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metDPhiTrk50_isLoaded) {
 			if (hyp_metDPhiTrk50_branch != 0) 
-				hyp_metDPhiTrk50_branch->GetEntry(local_index);
+				hyp_metDPhiTrk50_branch->GetEntry(index);
 			hyp_metDPhiTrk50_isLoaded = true;
 		}
 		return hyp_metDPhiTrk50_;
@@ -5716,7 +5798,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metJes10_isLoaded) {
 			if (hyp_metJes10_branch != 0) 
-				hyp_metJes10_branch->GetEntry(local_index);
+				hyp_metJes10_branch->GetEntry(index);
 			hyp_metJes10_isLoaded = true;
 		}
 		return hyp_metJes10_;
@@ -5725,7 +5807,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metJes15_isLoaded) {
 			if (hyp_metJes15_branch != 0) 
-				hyp_metJes15_branch->GetEntry(local_index);
+				hyp_metJes15_branch->GetEntry(index);
 			hyp_metJes15_isLoaded = true;
 		}
 		return hyp_metJes15_;
@@ -5734,7 +5816,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metJes30_isLoaded) {
 			if (hyp_metJes30_branch != 0) 
-				hyp_metJes30_branch->GetEntry(local_index);
+				hyp_metJes30_branch->GetEntry(index);
 			hyp_metJes30_isLoaded = true;
 		}
 		return hyp_metJes30_;
@@ -5743,7 +5825,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metJes5_isLoaded) {
 			if (hyp_metJes5_branch != 0) 
-				hyp_metJes5_branch->GetEntry(local_index);
+				hyp_metJes5_branch->GetEntry(index);
 			hyp_metJes5_isLoaded = true;
 		}
 		return hyp_metJes5_;
@@ -5752,7 +5834,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metJes50_isLoaded) {
 			if (hyp_metJes50_branch != 0) 
-				hyp_metJes50_branch->GetEntry(local_index);
+				hyp_metJes50_branch->GetEntry(index);
 			hyp_metJes50_isLoaded = true;
 		}
 		return hyp_metJes50_;
@@ -5761,7 +5843,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metNoCalo_isLoaded) {
 			if (hyp_metNoCalo_branch != 0) 
-				hyp_metNoCalo_branch->GetEntry(local_index);
+				hyp_metNoCalo_branch->GetEntry(index);
 			hyp_metNoCalo_isLoaded = true;
 		}
 		return hyp_metNoCalo_;
@@ -5770,7 +5852,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metPhi_isLoaded) {
 			if (hyp_metPhi_branch != 0) 
-				hyp_metPhi_branch->GetEntry(local_index);
+				hyp_metPhi_branch->GetEntry(index);
 			hyp_metPhi_isLoaded = true;
 		}
 		return hyp_metPhi_;
@@ -5779,7 +5861,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metPhiAll_isLoaded) {
 			if (hyp_metPhiAll_branch != 0) 
-				hyp_metPhiAll_branch->GetEntry(local_index);
+				hyp_metPhiAll_branch->GetEntry(index);
 			hyp_metPhiAll_isLoaded = true;
 		}
 		return hyp_metPhiAll_;
@@ -5788,7 +5870,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metPhiAllCaloExp_isLoaded) {
 			if (hyp_metPhiAllCaloExp_branch != 0) 
-				hyp_metPhiAllCaloExp_branch->GetEntry(local_index);
+				hyp_metPhiAllCaloExp_branch->GetEntry(index);
 			hyp_metPhiAllCaloExp_isLoaded = true;
 		}
 		return hyp_metPhiAllCaloExp_;
@@ -5797,7 +5879,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metPhiCaloExp_isLoaded) {
 			if (hyp_metPhiCaloExp_branch != 0) 
-				hyp_metPhiCaloExp_branch->GetEntry(local_index);
+				hyp_metPhiCaloExp_branch->GetEntry(index);
 			hyp_metPhiCaloExp_isLoaded = true;
 		}
 		return hyp_metPhiCaloExp_;
@@ -5806,7 +5888,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metPhiCone_isLoaded) {
 			if (hyp_metPhiCone_branch != 0) 
-				hyp_metPhiCone_branch->GetEntry(local_index);
+				hyp_metPhiCone_branch->GetEntry(index);
 			hyp_metPhiCone_isLoaded = true;
 		}
 		return hyp_metPhiCone_;
@@ -5815,7 +5897,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metPhiJes10_isLoaded) {
 			if (hyp_metPhiJes10_branch != 0) 
-				hyp_metPhiJes10_branch->GetEntry(local_index);
+				hyp_metPhiJes10_branch->GetEntry(index);
 			hyp_metPhiJes10_isLoaded = true;
 		}
 		return hyp_metPhiJes10_;
@@ -5824,7 +5906,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metPhiJes15_isLoaded) {
 			if (hyp_metPhiJes15_branch != 0) 
-				hyp_metPhiJes15_branch->GetEntry(local_index);
+				hyp_metPhiJes15_branch->GetEntry(index);
 			hyp_metPhiJes15_isLoaded = true;
 		}
 		return hyp_metPhiJes15_;
@@ -5833,7 +5915,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metPhiJes30_isLoaded) {
 			if (hyp_metPhiJes30_branch != 0) 
-				hyp_metPhiJes30_branch->GetEntry(local_index);
+				hyp_metPhiJes30_branch->GetEntry(index);
 			hyp_metPhiJes30_isLoaded = true;
 		}
 		return hyp_metPhiJes30_;
@@ -5842,7 +5924,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metPhiJes5_isLoaded) {
 			if (hyp_metPhiJes5_branch != 0) 
-				hyp_metPhiJes5_branch->GetEntry(local_index);
+				hyp_metPhiJes5_branch->GetEntry(index);
 			hyp_metPhiJes5_isLoaded = true;
 		}
 		return hyp_metPhiJes5_;
@@ -5851,7 +5933,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metPhiJes50_isLoaded) {
 			if (hyp_metPhiJes50_branch != 0) 
-				hyp_metPhiJes50_branch->GetEntry(local_index);
+				hyp_metPhiJes50_branch->GetEntry(index);
 			hyp_metPhiJes50_isLoaded = true;
 		}
 		return hyp_metPhiJes50_;
@@ -5860,7 +5942,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_metPhiNoCalo_isLoaded) {
 			if (hyp_metPhiNoCalo_branch != 0) 
-				hyp_metPhiNoCalo_branch->GetEntry(local_index);
+				hyp_metPhiNoCalo_branch->GetEntry(index);
 			hyp_metPhiNoCalo_isLoaded = true;
 		}
 		return hyp_metPhiNoCalo_;
@@ -5869,7 +5951,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_quadlep_met_isLoaded) {
 			if (hyp_quadlep_met_branch != 0) 
-				hyp_quadlep_met_branch->GetEntry(local_index);
+				hyp_quadlep_met_branch->GetEntry(index);
 			hyp_quadlep_met_isLoaded = true;
 		}
 		return hyp_quadlep_met_;
@@ -5878,7 +5960,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_quadlep_metAll_isLoaded) {
 			if (hyp_quadlep_metAll_branch != 0) 
-				hyp_quadlep_metAll_branch->GetEntry(local_index);
+				hyp_quadlep_metAll_branch->GetEntry(index);
 			hyp_quadlep_metAll_isLoaded = true;
 		}
 		return hyp_quadlep_metAll_;
@@ -5887,7 +5969,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_trilep_met_isLoaded) {
 			if (hyp_trilep_met_branch != 0) 
-				hyp_trilep_met_branch->GetEntry(local_index);
+				hyp_trilep_met_branch->GetEntry(index);
 			hyp_trilep_met_isLoaded = true;
 		}
 		return hyp_trilep_met_;
@@ -5896,7 +5978,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_trilep_metAll_isLoaded) {
 			if (hyp_trilep_metAll_branch != 0) 
-				hyp_trilep_metAll_branch->GetEntry(local_index);
+				hyp_trilep_metAll_branch->GetEntry(index);
 			hyp_trilep_metAll_isLoaded = true;
 		}
 		return hyp_trilep_metAll_;
@@ -5905,7 +5987,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not jets_EMFcor_isLoaded) {
 			if (jets_EMFcor_branch != 0) 
-				jets_EMFcor_branch->GetEntry(local_index);
+				jets_EMFcor_branch->GetEntry(index);
 			jets_EMFcor_isLoaded = true;
 		}
 		return jets_EMFcor_;
@@ -5914,7 +5996,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not jets_chFrac_isLoaded) {
 			if (jets_chFrac_branch != 0) 
-				jets_chFrac_branch->GetEntry(local_index);
+				jets_chFrac_branch->GetEntry(index);
 			jets_chFrac_isLoaded = true;
 		}
 		return jets_chFrac_;
@@ -5923,7 +6005,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not jets_cor_isLoaded) {
 			if (jets_cor_branch != 0) 
-				jets_cor_branch->GetEntry(local_index);
+				jets_cor_branch->GetEntry(index);
 			jets_cor_isLoaded = true;
 		}
 		return jets_cor_;
@@ -5932,7 +6014,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not jets_emFrac_isLoaded) {
 			if (jets_emFrac_branch != 0) 
-				jets_emFrac_branch->GetEntry(local_index);
+				jets_emFrac_branch->GetEntry(index);
 			jets_emFrac_isLoaded = true;
 		}
 		return jets_emFrac_;
@@ -5941,7 +6023,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_eledr_isLoaded) {
 			if (mus_eledr_branch != 0) 
-				mus_eledr_branch->GetEntry(local_index);
+				mus_eledr_branch->GetEntry(index);
 			mus_eledr_isLoaded = true;
 		}
 		return mus_eledr_;
@@ -5950,7 +6032,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_jetdr_isLoaded) {
 			if (mus_jetdr_branch != 0) 
-				mus_jetdr_branch->GetEntry(local_index);
+				mus_jetdr_branch->GetEntry(index);
 			mus_jetdr_isLoaded = true;
 		}
 		return mus_jetdr_;
@@ -5959,7 +6041,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_trkdr_isLoaded) {
 			if (mus_trkdr_branch != 0) 
-				mus_trkdr_branch->GetEntry(local_index);
+				mus_trkdr_branch->GetEntry(index);
 			mus_trkdr_isLoaded = true;
 		}
 		return mus_trkdr_;
@@ -5968,7 +6050,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_chi2_isLoaded) {
 			if (mus_chi2_branch != 0) 
-				mus_chi2_branch->GetEntry(local_index);
+				mus_chi2_branch->GetEntry(index);
 			mus_chi2_isLoaded = true;
 		}
 		return mus_chi2_;
@@ -5977,7 +6059,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_d0_isLoaded) {
 			if (mus_d0_branch != 0) 
-				mus_d0_branch->GetEntry(local_index);
+				mus_d0_branch->GetEntry(index);
 			mus_d0_isLoaded = true;
 		}
 		return mus_d0_;
@@ -5986,7 +6068,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_d0Err_isLoaded) {
 			if (mus_d0Err_branch != 0) 
-				mus_d0Err_branch->GetEntry(local_index);
+				mus_d0Err_branch->GetEntry(index);
 			mus_d0Err_isLoaded = true;
 		}
 		return mus_d0Err_;
@@ -5995,7 +6077,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_e_em_isLoaded) {
 			if (mus_e_em_branch != 0) 
-				mus_e_em_branch->GetEntry(local_index);
+				mus_e_em_branch->GetEntry(index);
 			mus_e_em_isLoaded = true;
 		}
 		return mus_e_em_;
@@ -6004,7 +6086,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_e_emS9_isLoaded) {
 			if (mus_e_emS9_branch != 0) 
-				mus_e_emS9_branch->GetEntry(local_index);
+				mus_e_emS9_branch->GetEntry(index);
 			mus_e_emS9_isLoaded = true;
 		}
 		return mus_e_emS9_;
@@ -6013,7 +6095,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_e_had_isLoaded) {
 			if (mus_e_had_branch != 0) 
-				mus_e_had_branch->GetEntry(local_index);
+				mus_e_had_branch->GetEntry(index);
 			mus_e_had_isLoaded = true;
 		}
 		return mus_e_had_;
@@ -6022,7 +6104,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_e_hadS9_isLoaded) {
 			if (mus_e_hadS9_branch != 0) 
-				mus_e_hadS9_branch->GetEntry(local_index);
+				mus_e_hadS9_branch->GetEntry(index);
 			mus_e_hadS9_isLoaded = true;
 		}
 		return mus_e_hadS9_;
@@ -6031,7 +6113,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_e_ho_isLoaded) {
 			if (mus_e_ho_branch != 0) 
-				mus_e_ho_branch->GetEntry(local_index);
+				mus_e_ho_branch->GetEntry(index);
 			mus_e_ho_isLoaded = true;
 		}
 		return mus_e_ho_;
@@ -6040,7 +6122,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_e_hoS9_isLoaded) {
 			if (mus_e_hoS9_branch != 0) 
-				mus_e_hoS9_branch->GetEntry(local_index);
+				mus_e_hoS9_branch->GetEntry(index);
 			mus_e_hoS9_isLoaded = true;
 		}
 		return mus_e_hoS9_;
@@ -6049,7 +6131,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_etaErr_isLoaded) {
 			if (mus_etaErr_branch != 0) 
-				mus_etaErr_branch->GetEntry(local_index);
+				mus_etaErr_branch->GetEntry(index);
 			mus_etaErr_isLoaded = true;
 		}
 		return mus_etaErr_;
@@ -6058,7 +6140,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_gfit_chi2_isLoaded) {
 			if (mus_gfit_chi2_branch != 0) 
-				mus_gfit_chi2_branch->GetEntry(local_index);
+				mus_gfit_chi2_branch->GetEntry(index);
 			mus_gfit_chi2_isLoaded = true;
 		}
 		return mus_gfit_chi2_;
@@ -6067,7 +6149,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_gfit_ndof_isLoaded) {
 			if (mus_gfit_ndof_branch != 0) 
-				mus_gfit_ndof_branch->GetEntry(local_index);
+				mus_gfit_ndof_branch->GetEntry(index);
 			mus_gfit_ndof_isLoaded = true;
 		}
 		return mus_gfit_ndof_;
@@ -6076,7 +6158,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_iso_isLoaded) {
 			if (mus_iso_branch != 0) 
-				mus_iso_branch->GetEntry(local_index);
+				mus_iso_branch->GetEntry(index);
 			mus_iso_isLoaded = true;
 		}
 		return mus_iso_;
@@ -6085,7 +6167,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_iso03_emEt_isLoaded) {
 			if (mus_iso03_emEt_branch != 0) 
-				mus_iso03_emEt_branch->GetEntry(local_index);
+				mus_iso03_emEt_branch->GetEntry(index);
 			mus_iso03_emEt_isLoaded = true;
 		}
 		return mus_iso03_emEt_;
@@ -6094,7 +6176,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_iso03_hadEt_isLoaded) {
 			if (mus_iso03_hadEt_branch != 0) 
-				mus_iso03_hadEt_branch->GetEntry(local_index);
+				mus_iso03_hadEt_branch->GetEntry(index);
 			mus_iso03_hadEt_isLoaded = true;
 		}
 		return mus_iso03_hadEt_;
@@ -6103,7 +6185,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_iso03_hoEt_isLoaded) {
 			if (mus_iso03_hoEt_branch != 0) 
-				mus_iso03_hoEt_branch->GetEntry(local_index);
+				mus_iso03_hoEt_branch->GetEntry(index);
 			mus_iso03_hoEt_isLoaded = true;
 		}
 		return mus_iso03_hoEt_;
@@ -6112,7 +6194,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_iso03_sumPt_isLoaded) {
 			if (mus_iso03_sumPt_branch != 0) 
-				mus_iso03_sumPt_branch->GetEntry(local_index);
+				mus_iso03_sumPt_branch->GetEntry(index);
 			mus_iso03_sumPt_isLoaded = true;
 		}
 		return mus_iso03_sumPt_;
@@ -6121,7 +6203,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_iso05_emEt_isLoaded) {
 			if (mus_iso05_emEt_branch != 0) 
-				mus_iso05_emEt_branch->GetEntry(local_index);
+				mus_iso05_emEt_branch->GetEntry(index);
 			mus_iso05_emEt_isLoaded = true;
 		}
 		return mus_iso05_emEt_;
@@ -6130,7 +6212,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_iso05_hadEt_isLoaded) {
 			if (mus_iso05_hadEt_branch != 0) 
-				mus_iso05_hadEt_branch->GetEntry(local_index);
+				mus_iso05_hadEt_branch->GetEntry(index);
 			mus_iso05_hadEt_isLoaded = true;
 		}
 		return mus_iso05_hadEt_;
@@ -6139,7 +6221,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_iso05_hoEt_isLoaded) {
 			if (mus_iso05_hoEt_branch != 0) 
-				mus_iso05_hoEt_branch->GetEntry(local_index);
+				mus_iso05_hoEt_branch->GetEntry(index);
 			mus_iso05_hoEt_isLoaded = true;
 		}
 		return mus_iso05_hoEt_;
@@ -6148,7 +6230,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_iso05_sumPt_isLoaded) {
 			if (mus_iso05_sumPt_branch != 0) 
-				mus_iso05_sumPt_branch->GetEntry(local_index);
+				mus_iso05_sumPt_branch->GetEntry(index);
 			mus_iso05_sumPt_isLoaded = true;
 		}
 		return mus_iso05_sumPt_;
@@ -6157,7 +6239,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_ndof_isLoaded) {
 			if (mus_ndof_branch != 0) 
-				mus_ndof_branch->GetEntry(local_index);
+				mus_ndof_branch->GetEntry(index);
 			mus_ndof_isLoaded = true;
 		}
 		return mus_ndof_;
@@ -6166,7 +6248,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_outerEta_isLoaded) {
 			if (mus_outerEta_branch != 0) 
-				mus_outerEta_branch->GetEntry(local_index);
+				mus_outerEta_branch->GetEntry(index);
 			mus_outerEta_isLoaded = true;
 		}
 		return mus_outerEta_;
@@ -6175,7 +6257,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_outerPhi_isLoaded) {
 			if (mus_outerPhi_branch != 0) 
-				mus_outerPhi_branch->GetEntry(local_index);
+				mus_outerPhi_branch->GetEntry(index);
 			mus_outerPhi_isLoaded = true;
 		}
 		return mus_outerPhi_;
@@ -6184,7 +6266,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_phiErr_isLoaded) {
 			if (mus_phiErr_branch != 0) 
-				mus_phiErr_branch->GetEntry(local_index);
+				mus_phiErr_branch->GetEntry(index);
 			mus_phiErr_isLoaded = true;
 		}
 		return mus_phiErr_;
@@ -6193,7 +6275,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_ptErr_isLoaded) {
 			if (mus_ptErr_branch != 0) 
-				mus_ptErr_branch->GetEntry(local_index);
+				mus_ptErr_branch->GetEntry(index);
 			mus_ptErr_isLoaded = true;
 		}
 		return mus_ptErr_;
@@ -6202,7 +6284,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_vertexphi_isLoaded) {
 			if (mus_vertexphi_branch != 0) 
-				mus_vertexphi_branch->GetEntry(local_index);
+				mus_vertexphi_branch->GetEntry(index);
 			mus_vertexphi_isLoaded = true;
 		}
 		return mus_vertexphi_;
@@ -6211,7 +6293,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_z0_isLoaded) {
 			if (mus_z0_branch != 0) 
-				mus_z0_branch->GetEntry(local_index);
+				mus_z0_branch->GetEntry(index);
 			mus_z0_isLoaded = true;
 		}
 		return mus_z0_;
@@ -6220,7 +6302,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_z0Err_isLoaded) {
 			if (mus_z0Err_branch != 0) 
-				mus_z0Err_branch->GetEntry(local_index);
+				mus_z0Err_branch->GetEntry(index);
 			mus_z0Err_isLoaded = true;
 		}
 		return mus_z0Err_;
@@ -6229,7 +6311,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_tq_LRComb_isLoaded) {
 			if (els_tq_LRComb_branch != 0) 
-				els_tq_LRComb_branch->GetEntry(local_index);
+				els_tq_LRComb_branch->GetEntry(index);
 			els_tq_LRComb_isLoaded = true;
 		}
 		return els_tq_LRComb_;
@@ -6238,7 +6320,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_tq_caloIso_isLoaded) {
 			if (els_tq_caloIso_branch != 0) 
-				els_tq_caloIso_branch->GetEntry(local_index);
+				els_tq_caloIso_branch->GetEntry(index);
 			els_tq_caloIso_isLoaded = true;
 		}
 		return els_tq_caloIso_;
@@ -6247,7 +6329,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_tq_egammaEcalIso_isLoaded) {
 			if (els_tq_egammaEcalIso_branch != 0) 
-				els_tq_egammaEcalIso_branch->GetEntry(local_index);
+				els_tq_egammaEcalIso_branch->GetEntry(index);
 			els_tq_egammaEcalIso_isLoaded = true;
 		}
 		return els_tq_egammaEcalIso_;
@@ -6256,7 +6338,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_tq_egammaHcalIso_isLoaded) {
 			if (els_tq_egammaHcalIso_branch != 0) 
-				els_tq_egammaHcalIso_branch->GetEntry(local_index);
+				els_tq_egammaHcalIso_branch->GetEntry(index);
 			els_tq_egammaHcalIso_isLoaded = true;
 		}
 		return els_tq_egammaHcalIso_;
@@ -6265,7 +6347,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_tq_egammaTkIso_isLoaded) {
 			if (els_tq_egammaTkIso_branch != 0) 
-				els_tq_egammaTkIso_branch->GetEntry(local_index);
+				els_tq_egammaTkIso_branch->GetEntry(index);
 			els_tq_egammaTkIso_isLoaded = true;
 		}
 		return els_tq_egammaTkIso_;
@@ -6274,7 +6356,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_tq_electronIDRobust_isLoaded) {
 			if (els_tq_electronIDRobust_branch != 0) 
-				els_tq_electronIDRobust_branch->GetEntry(local_index);
+				els_tq_electronIDRobust_branch->GetEntry(index);
 			els_tq_electronIDRobust_isLoaded = true;
 		}
 		return els_tq_electronIDRobust_;
@@ -6283,7 +6365,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_tq_leptonID_isLoaded) {
 			if (els_tq_leptonID_branch != 0) 
-				els_tq_leptonID_branch->GetEntry(local_index);
+				els_tq_leptonID_branch->GetEntry(index);
 			els_tq_leptonID_isLoaded = true;
 		}
 		return els_tq_leptonID_;
@@ -6292,7 +6374,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_tq_trackIso_isLoaded) {
 			if (els_tq_trackIso_branch != 0) 
-				els_tq_trackIso_branch->GetEntry(local_index);
+				els_tq_trackIso_branch->GetEntry(index);
 			els_tq_trackIso_isLoaded = true;
 		}
 		return els_tq_trackIso_;
@@ -6301,7 +6383,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not jets_tq_bCorrF_isLoaded) {
 			if (jets_tq_bCorrF_branch != 0) 
-				jets_tq_bCorrF_branch->GetEntry(local_index);
+				jets_tq_bCorrF_branch->GetEntry(index);
 			jets_tq_bCorrF_isLoaded = true;
 		}
 		return jets_tq_bCorrF_;
@@ -6310,7 +6392,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not jets_tq_cCorrF_isLoaded) {
 			if (jets_tq_cCorrF_branch != 0) 
-				jets_tq_cCorrF_branch->GetEntry(local_index);
+				jets_tq_cCorrF_branch->GetEntry(index);
 			jets_tq_cCorrF_isLoaded = true;
 		}
 		return jets_tq_cCorrF_;
@@ -6319,7 +6401,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not jets_tq_gluCorrF_isLoaded) {
 			if (jets_tq_gluCorrF_branch != 0) 
-				jets_tq_gluCorrF_branch->GetEntry(local_index);
+				jets_tq_gluCorrF_branch->GetEntry(index);
 			jets_tq_gluCorrF_isLoaded = true;
 		}
 		return jets_tq_gluCorrF_;
@@ -6328,7 +6410,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not jets_tq_jetCharge_isLoaded) {
 			if (jets_tq_jetCharge_branch != 0) 
-				jets_tq_jetCharge_branch->GetEntry(local_index);
+				jets_tq_jetCharge_branch->GetEntry(index);
 			jets_tq_jetCharge_isLoaded = true;
 		}
 		return jets_tq_jetCharge_;
@@ -6337,7 +6419,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not jets_tq_noCorrF_isLoaded) {
 			if (jets_tq_noCorrF_branch != 0) 
-				jets_tq_noCorrF_branch->GetEntry(local_index);
+				jets_tq_noCorrF_branch->GetEntry(index);
 			jets_tq_noCorrF_isLoaded = true;
 		}
 		return jets_tq_noCorrF_;
@@ -6346,7 +6428,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not jets_tq_udsCorrF_isLoaded) {
 			if (jets_tq_udsCorrF_branch != 0) 
-				jets_tq_udsCorrF_branch->GetEntry(local_index);
+				jets_tq_udsCorrF_branch->GetEntry(index);
 			jets_tq_udsCorrF_isLoaded = true;
 		}
 		return jets_tq_udsCorrF_;
@@ -6355,7 +6437,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_tq_caloIso_isLoaded) {
 			if (mus_tq_caloIso_branch != 0) 
-				mus_tq_caloIso_branch->GetEntry(local_index);
+				mus_tq_caloIso_branch->GetEntry(index);
 			mus_tq_caloIso_isLoaded = true;
 		}
 		return mus_tq_caloIso_;
@@ -6364,7 +6446,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_tq_leptonID_isLoaded) {
 			if (mus_tq_leptonID_branch != 0) 
-				mus_tq_leptonID_branch->GetEntry(local_index);
+				mus_tq_leptonID_branch->GetEntry(index);
 			mus_tq_leptonID_isLoaded = true;
 		}
 		return mus_tq_leptonID_;
@@ -6373,7 +6455,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_tq_lrComb_isLoaded) {
 			if (mus_tq_lrComb_branch != 0) 
-				mus_tq_lrComb_branch->GetEntry(local_index);
+				mus_tq_lrComb_branch->GetEntry(index);
 			mus_tq_lrComb_isLoaded = true;
 		}
 		return mus_tq_lrComb_;
@@ -6382,7 +6464,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_tq_trackIso_isLoaded) {
 			if (mus_tq_trackIso_branch != 0) 
-				mus_tq_trackIso_branch->GetEntry(local_index);
+				mus_tq_trackIso_branch->GetEntry(index);
 			mus_tq_trackIso_isLoaded = true;
 		}
 		return mus_tq_trackIso_;
@@ -6391,7 +6473,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not trks_chi2_isLoaded) {
 			if (trks_chi2_branch != 0) 
-				trks_chi2_branch->GetEntry(local_index);
+				trks_chi2_branch->GetEntry(index);
 			trks_chi2_isLoaded = true;
 		}
 		return trks_chi2_;
@@ -6400,7 +6482,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not trks_d0_isLoaded) {
 			if (trks_d0_branch != 0) 
-				trks_d0_branch->GetEntry(local_index);
+				trks_d0_branch->GetEntry(index);
 			trks_d0_isLoaded = true;
 		}
 		return trks_d0_;
@@ -6409,7 +6491,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not trks_d0Err_isLoaded) {
 			if (trks_d0Err_branch != 0) 
-				trks_d0Err_branch->GetEntry(local_index);
+				trks_d0Err_branch->GetEntry(index);
 			trks_d0Err_isLoaded = true;
 		}
 		return trks_d0Err_;
@@ -6418,7 +6500,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not trks_etaErr_isLoaded) {
 			if (trks_etaErr_branch != 0) 
-				trks_etaErr_branch->GetEntry(local_index);
+				trks_etaErr_branch->GetEntry(index);
 			trks_etaErr_isLoaded = true;
 		}
 		return trks_etaErr_;
@@ -6427,7 +6509,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not trks_ndof_isLoaded) {
 			if (trks_ndof_branch != 0) 
-				trks_ndof_branch->GetEntry(local_index);
+				trks_ndof_branch->GetEntry(index);
 			trks_ndof_isLoaded = true;
 		}
 		return trks_ndof_;
@@ -6436,7 +6518,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not trks_outerEta_isLoaded) {
 			if (trks_outerEta_branch != 0) 
-				trks_outerEta_branch->GetEntry(local_index);
+				trks_outerEta_branch->GetEntry(index);
 			trks_outerEta_isLoaded = true;
 		}
 		return trks_outerEta_;
@@ -6445,7 +6527,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not trks_outerPhi_isLoaded) {
 			if (trks_outerPhi_branch != 0) 
-				trks_outerPhi_branch->GetEntry(local_index);
+				trks_outerPhi_branch->GetEntry(index);
 			trks_outerPhi_isLoaded = true;
 		}
 		return trks_outerPhi_;
@@ -6454,7 +6536,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not trks_phiErr_isLoaded) {
 			if (trks_phiErr_branch != 0) 
-				trks_phiErr_branch->GetEntry(local_index);
+				trks_phiErr_branch->GetEntry(index);
 			trks_phiErr_isLoaded = true;
 		}
 		return trks_phiErr_;
@@ -6463,7 +6545,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not trks_ptErr_isLoaded) {
 			if (trks_ptErr_branch != 0) 
-				trks_ptErr_branch->GetEntry(local_index);
+				trks_ptErr_branch->GetEntry(index);
 			trks_ptErr_isLoaded = true;
 		}
 		return trks_ptErr_;
@@ -6472,7 +6554,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not trks_vertexphi_isLoaded) {
 			if (trks_vertexphi_branch != 0) 
-				trks_vertexphi_branch->GetEntry(local_index);
+				trks_vertexphi_branch->GetEntry(index);
 			trks_vertexphi_isLoaded = true;
 		}
 		return trks_vertexphi_;
@@ -6481,7 +6563,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not trks_z0_isLoaded) {
 			if (trks_z0_branch != 0) 
-				trks_z0_branch->GetEntry(local_index);
+				trks_z0_branch->GetEntry(index);
 			trks_z0_isLoaded = true;
 		}
 		return trks_z0_;
@@ -6490,7 +6572,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not trks_z0Err_isLoaded) {
 			if (trks_z0Err_branch != 0) 
-				trks_z0Err_branch->GetEntry(local_index);
+				trks_z0Err_branch->GetEntry(index);
 			trks_z0Err_isLoaded = true;
 		}
 		return trks_z0Err_;
@@ -6499,7 +6581,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not trk_elsdr_isLoaded) {
 			if (trk_elsdr_branch != 0) 
-				trk_elsdr_branch->GetEntry(local_index);
+				trk_elsdr_branch->GetEntry(index);
 			trk_elsdr_isLoaded = true;
 		}
 		return trk_elsdr_;
@@ -6508,7 +6590,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not trk_musdr_isLoaded) {
 			if (trk_musdr_branch != 0) 
-				trk_musdr_branch->GetEntry(local_index);
+				trk_musdr_branch->GetEntry(index);
 			trk_musdr_isLoaded = true;
 		}
 		return trk_musdr_;
@@ -6517,7 +6599,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_jets_EMFcor_isLoaded) {
 			if (hyp_jets_EMFcor_branch != 0) 
-				hyp_jets_EMFcor_branch->GetEntry(local_index);
+				hyp_jets_EMFcor_branch->GetEntry(index);
 			hyp_jets_EMFcor_isLoaded = true;
 		}
 		return hyp_jets_EMFcor_;
@@ -6526,7 +6608,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_jets_chFrac_isLoaded) {
 			if (hyp_jets_chFrac_branch != 0) 
-				hyp_jets_chFrac_branch->GetEntry(local_index);
+				hyp_jets_chFrac_branch->GetEntry(index);
 			hyp_jets_chFrac_isLoaded = true;
 		}
 		return hyp_jets_chFrac_;
@@ -6535,7 +6617,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_jets_cor_isLoaded) {
 			if (hyp_jets_cor_branch != 0) 
-				hyp_jets_cor_branch->GetEntry(local_index);
+				hyp_jets_cor_branch->GetEntry(index);
 			hyp_jets_cor_isLoaded = true;
 		}
 		return hyp_jets_cor_;
@@ -6544,7 +6626,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_jets_emFrac_isLoaded) {
 			if (hyp_jets_emFrac_branch != 0) 
-				hyp_jets_emFrac_branch->GetEntry(local_index);
+				hyp_jets_emFrac_branch->GetEntry(index);
 			hyp_jets_emFrac_isLoaded = true;
 		}
 		return hyp_jets_emFrac_;
@@ -6553,7 +6635,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_jets_mc_emEnergy_isLoaded) {
 			if (hyp_jets_mc_emEnergy_branch != 0) 
-				hyp_jets_mc_emEnergy_branch->GetEntry(local_index);
+				hyp_jets_mc_emEnergy_branch->GetEntry(index);
 			hyp_jets_mc_emEnergy_isLoaded = true;
 		}
 		return hyp_jets_mc_emEnergy_;
@@ -6562,7 +6644,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_jets_mc_hadEnergy_isLoaded) {
 			if (hyp_jets_mc_hadEnergy_branch != 0) 
-				hyp_jets_mc_hadEnergy_branch->GetEntry(local_index);
+				hyp_jets_mc_hadEnergy_branch->GetEntry(index);
 			hyp_jets_mc_hadEnergy_isLoaded = true;
 		}
 		return hyp_jets_mc_hadEnergy_;
@@ -6571,7 +6653,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_jets_mc_invEnergy_isLoaded) {
 			if (hyp_jets_mc_invEnergy_branch != 0) 
-				hyp_jets_mc_invEnergy_branch->GetEntry(local_index);
+				hyp_jets_mc_invEnergy_branch->GetEntry(index);
 			hyp_jets_mc_invEnergy_isLoaded = true;
 		}
 		return hyp_jets_mc_invEnergy_;
@@ -6580,7 +6662,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_jets_mc_otherEnergy_isLoaded) {
 			if (hyp_jets_mc_otherEnergy_branch != 0) 
-				hyp_jets_mc_otherEnergy_branch->GetEntry(local_index);
+				hyp_jets_mc_otherEnergy_branch->GetEntry(index);
 			hyp_jets_mc_otherEnergy_isLoaded = true;
 		}
 		return hyp_jets_mc_otherEnergy_;
@@ -6589,7 +6671,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_jets_tq_bCorrF_isLoaded) {
 			if (hyp_jets_tq_bCorrF_branch != 0) 
-				hyp_jets_tq_bCorrF_branch->GetEntry(local_index);
+				hyp_jets_tq_bCorrF_branch->GetEntry(index);
 			hyp_jets_tq_bCorrF_isLoaded = true;
 		}
 		return hyp_jets_tq_bCorrF_;
@@ -6598,7 +6680,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_jets_tq_cCorrF_isLoaded) {
 			if (hyp_jets_tq_cCorrF_branch != 0) 
-				hyp_jets_tq_cCorrF_branch->GetEntry(local_index);
+				hyp_jets_tq_cCorrF_branch->GetEntry(index);
 			hyp_jets_tq_cCorrF_isLoaded = true;
 		}
 		return hyp_jets_tq_cCorrF_;
@@ -6607,7 +6689,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_jets_tq_gluCorrF_isLoaded) {
 			if (hyp_jets_tq_gluCorrF_branch != 0) 
-				hyp_jets_tq_gluCorrF_branch->GetEntry(local_index);
+				hyp_jets_tq_gluCorrF_branch->GetEntry(index);
 			hyp_jets_tq_gluCorrF_isLoaded = true;
 		}
 		return hyp_jets_tq_gluCorrF_;
@@ -6616,7 +6698,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_jets_tq_jetCharge_isLoaded) {
 			if (hyp_jets_tq_jetCharge_branch != 0) 
-				hyp_jets_tq_jetCharge_branch->GetEntry(local_index);
+				hyp_jets_tq_jetCharge_branch->GetEntry(index);
 			hyp_jets_tq_jetCharge_isLoaded = true;
 		}
 		return hyp_jets_tq_jetCharge_;
@@ -6625,7 +6707,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_jets_tq_noCorrF_isLoaded) {
 			if (hyp_jets_tq_noCorrF_branch != 0) 
-				hyp_jets_tq_noCorrF_branch->GetEntry(local_index);
+				hyp_jets_tq_noCorrF_branch->GetEntry(index);
 			hyp_jets_tq_noCorrF_isLoaded = true;
 		}
 		return hyp_jets_tq_noCorrF_;
@@ -6634,7 +6716,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_jets_tq_udsCorrF_isLoaded) {
 			if (hyp_jets_tq_udsCorrF_branch != 0) 
-				hyp_jets_tq_udsCorrF_branch->GetEntry(local_index);
+				hyp_jets_tq_udsCorrF_branch->GetEntry(index);
 			hyp_jets_tq_udsCorrF_isLoaded = true;
 		}
 		return hyp_jets_tq_udsCorrF_;
@@ -6643,7 +6725,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_other_jets_EMFcor_isLoaded) {
 			if (hyp_other_jets_EMFcor_branch != 0) 
-				hyp_other_jets_EMFcor_branch->GetEntry(local_index);
+				hyp_other_jets_EMFcor_branch->GetEntry(index);
 			hyp_other_jets_EMFcor_isLoaded = true;
 		}
 		return hyp_other_jets_EMFcor_;
@@ -6652,7 +6734,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_other_jets_chFrac_isLoaded) {
 			if (hyp_other_jets_chFrac_branch != 0) 
-				hyp_other_jets_chFrac_branch->GetEntry(local_index);
+				hyp_other_jets_chFrac_branch->GetEntry(index);
 			hyp_other_jets_chFrac_isLoaded = true;
 		}
 		return hyp_other_jets_chFrac_;
@@ -6661,7 +6743,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_other_jets_cor_isLoaded) {
 			if (hyp_other_jets_cor_branch != 0) 
-				hyp_other_jets_cor_branch->GetEntry(local_index);
+				hyp_other_jets_cor_branch->GetEntry(index);
 			hyp_other_jets_cor_isLoaded = true;
 		}
 		return hyp_other_jets_cor_;
@@ -6670,7 +6752,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_other_jets_emFrac_isLoaded) {
 			if (hyp_other_jets_emFrac_branch != 0) 
-				hyp_other_jets_emFrac_branch->GetEntry(local_index);
+				hyp_other_jets_emFrac_branch->GetEntry(index);
 			hyp_other_jets_emFrac_isLoaded = true;
 		}
 		return hyp_other_jets_emFrac_;
@@ -6679,7 +6761,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_other_jets_mc_emEnergy_isLoaded) {
 			if (hyp_other_jets_mc_emEnergy_branch != 0) 
-				hyp_other_jets_mc_emEnergy_branch->GetEntry(local_index);
+				hyp_other_jets_mc_emEnergy_branch->GetEntry(index);
 			hyp_other_jets_mc_emEnergy_isLoaded = true;
 		}
 		return hyp_other_jets_mc_emEnergy_;
@@ -6688,7 +6770,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_other_jets_mc_hadEnergy_isLoaded) {
 			if (hyp_other_jets_mc_hadEnergy_branch != 0) 
-				hyp_other_jets_mc_hadEnergy_branch->GetEntry(local_index);
+				hyp_other_jets_mc_hadEnergy_branch->GetEntry(index);
 			hyp_other_jets_mc_hadEnergy_isLoaded = true;
 		}
 		return hyp_other_jets_mc_hadEnergy_;
@@ -6697,7 +6779,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_other_jets_mc_invEnergy_isLoaded) {
 			if (hyp_other_jets_mc_invEnergy_branch != 0) 
-				hyp_other_jets_mc_invEnergy_branch->GetEntry(local_index);
+				hyp_other_jets_mc_invEnergy_branch->GetEntry(index);
 			hyp_other_jets_mc_invEnergy_isLoaded = true;
 		}
 		return hyp_other_jets_mc_invEnergy_;
@@ -6706,7 +6788,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_other_jets_mc_otherEnergy_isLoaded) {
 			if (hyp_other_jets_mc_otherEnergy_branch != 0) 
-				hyp_other_jets_mc_otherEnergy_branch->GetEntry(local_index);
+				hyp_other_jets_mc_otherEnergy_branch->GetEntry(index);
 			hyp_other_jets_mc_otherEnergy_isLoaded = true;
 		}
 		return hyp_other_jets_mc_otherEnergy_;
@@ -6715,7 +6797,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_other_jets_tq_bCorrF_isLoaded) {
 			if (hyp_other_jets_tq_bCorrF_branch != 0) 
-				hyp_other_jets_tq_bCorrF_branch->GetEntry(local_index);
+				hyp_other_jets_tq_bCorrF_branch->GetEntry(index);
 			hyp_other_jets_tq_bCorrF_isLoaded = true;
 		}
 		return hyp_other_jets_tq_bCorrF_;
@@ -6724,7 +6806,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_other_jets_tq_cCorrF_isLoaded) {
 			if (hyp_other_jets_tq_cCorrF_branch != 0) 
-				hyp_other_jets_tq_cCorrF_branch->GetEntry(local_index);
+				hyp_other_jets_tq_cCorrF_branch->GetEntry(index);
 			hyp_other_jets_tq_cCorrF_isLoaded = true;
 		}
 		return hyp_other_jets_tq_cCorrF_;
@@ -6733,7 +6815,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_other_jets_tq_gluCorrF_isLoaded) {
 			if (hyp_other_jets_tq_gluCorrF_branch != 0) 
-				hyp_other_jets_tq_gluCorrF_branch->GetEntry(local_index);
+				hyp_other_jets_tq_gluCorrF_branch->GetEntry(index);
 			hyp_other_jets_tq_gluCorrF_isLoaded = true;
 		}
 		return hyp_other_jets_tq_gluCorrF_;
@@ -6742,7 +6824,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_other_jets_tq_jetCharge_isLoaded) {
 			if (hyp_other_jets_tq_jetCharge_branch != 0) 
-				hyp_other_jets_tq_jetCharge_branch->GetEntry(local_index);
+				hyp_other_jets_tq_jetCharge_branch->GetEntry(index);
 			hyp_other_jets_tq_jetCharge_isLoaded = true;
 		}
 		return hyp_other_jets_tq_jetCharge_;
@@ -6751,7 +6833,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_other_jets_tq_noCorrF_isLoaded) {
 			if (hyp_other_jets_tq_noCorrF_branch != 0) 
-				hyp_other_jets_tq_noCorrF_branch->GetEntry(local_index);
+				hyp_other_jets_tq_noCorrF_branch->GetEntry(index);
 			hyp_other_jets_tq_noCorrF_isLoaded = true;
 		}
 		return hyp_other_jets_tq_noCorrF_;
@@ -6760,16 +6842,25 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_other_jets_tq_udsCorrF_isLoaded) {
 			if (hyp_other_jets_tq_udsCorrF_branch != 0) 
-				hyp_other_jets_tq_udsCorrF_branch->GetEntry(local_index);
+				hyp_other_jets_tq_udsCorrF_branch->GetEntry(index);
 			hyp_other_jets_tq_udsCorrF_isLoaded = true;
 		}
 		return hyp_other_jets_tq_udsCorrF_;
+	}
+	int &evt_CSA07Process()
+	{
+		if (not evt_CSA07Process_isLoaded) {
+			if (evt_CSA07Process_branch != 0) 
+				evt_CSA07Process_branch->GetEntry(index);
+			evt_CSA07Process_isLoaded = true;
+		}
+		return evt_CSA07Process_;
 	}
 	int &evt_HLT1()
 	{
 		if (not evt_HLT1_isLoaded) {
 			if (evt_HLT1_branch != 0) 
-				evt_HLT1_branch->GetEntry(local_index);
+				evt_HLT1_branch->GetEntry(index);
 			evt_HLT1_isLoaded = true;
 		}
 		return evt_HLT1_;
@@ -6778,7 +6869,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not evt_HLT2_isLoaded) {
 			if (evt_HLT2_branch != 0) 
-				evt_HLT2_branch->GetEntry(local_index);
+				evt_HLT2_branch->GetEntry(index);
 			evt_HLT2_isLoaded = true;
 		}
 		return evt_HLT2_;
@@ -6787,7 +6878,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not evt_HLT3_isLoaded) {
 			if (evt_HLT3_branch != 0) 
-				evt_HLT3_branch->GetEntry(local_index);
+				evt_HLT3_branch->GetEntry(index);
 			evt_HLT3_isLoaded = true;
 		}
 		return evt_HLT3_;
@@ -6796,7 +6887,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not evt_HLT4_isLoaded) {
 			if (evt_HLT4_branch != 0) 
-				evt_HLT4_branch->GetEntry(local_index);
+				evt_HLT4_branch->GetEntry(index);
 			evt_HLT4_isLoaded = true;
 		}
 		return evt_HLT4_;
@@ -6805,7 +6896,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not evt_L1_1_isLoaded) {
 			if (evt_L1_1_branch != 0) 
-				evt_L1_1_branch->GetEntry(local_index);
+				evt_L1_1_branch->GetEntry(index);
 			evt_L1_1_isLoaded = true;
 		}
 		return evt_L1_1_;
@@ -6814,7 +6905,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not evt_L1_2_isLoaded) {
 			if (evt_L1_2_branch != 0) 
-				evt_L1_2_branch->GetEntry(local_index);
+				evt_L1_2_branch->GetEntry(index);
 			evt_L1_2_isLoaded = true;
 		}
 		return evt_L1_2_;
@@ -6823,7 +6914,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not evt_L1_3_isLoaded) {
 			if (evt_L1_3_branch != 0) 
-				evt_L1_3_branch->GetEntry(local_index);
+				evt_L1_3_branch->GetEntry(index);
 			evt_L1_3_isLoaded = true;
 		}
 		return evt_L1_3_;
@@ -6832,7 +6923,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not evt_L1_4_isLoaded) {
 			if (evt_L1_4_branch != 0) 
-				evt_L1_4_branch->GetEntry(local_index);
+				evt_L1_4_branch->GetEntry(index);
 			evt_L1_4_isLoaded = true;
 		}
 		return evt_L1_4_;
@@ -6841,7 +6932,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not evt_nl1emiso_isLoaded) {
 			if (evt_nl1emiso_branch != 0) 
-				evt_nl1emiso_branch->GetEntry(local_index);
+				evt_nl1emiso_branch->GetEntry(index);
 			evt_nl1emiso_isLoaded = true;
 		}
 		return evt_nl1emiso_;
@@ -6850,7 +6941,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not evt_nl1emnoiso_isLoaded) {
 			if (evt_nl1emnoiso_branch != 0) 
-				evt_nl1emnoiso_branch->GetEntry(local_index);
+				evt_nl1emnoiso_branch->GetEntry(index);
 			evt_nl1emnoiso_isLoaded = true;
 		}
 		return evt_nl1emnoiso_;
@@ -6859,7 +6950,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not evt_nl1jetsc_isLoaded) {
 			if (evt_nl1jetsc_branch != 0) 
-				evt_nl1jetsc_branch->GetEntry(local_index);
+				evt_nl1jetsc_branch->GetEntry(index);
 			evt_nl1jetsc_isLoaded = true;
 		}
 		return evt_nl1jetsc_;
@@ -6868,7 +6959,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not evt_nl1jetsf_isLoaded) {
 			if (evt_nl1jetsf_branch != 0) 
-				evt_nl1jetsf_branch->GetEntry(local_index);
+				evt_nl1jetsf_branch->GetEntry(index);
 			evt_nl1jetsf_isLoaded = true;
 		}
 		return evt_nl1jetsf_;
@@ -6877,7 +6968,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not evt_nl1jetst_isLoaded) {
 			if (evt_nl1jetst_branch != 0) 
-				evt_nl1jetst_branch->GetEntry(local_index);
+				evt_nl1jetst_branch->GetEntry(index);
 			evt_nl1jetst_isLoaded = true;
 		}
 		return evt_nl1jetst_;
@@ -6886,7 +6977,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not evt_nl1mus_isLoaded) {
 			if (evt_nl1mus_branch != 0) 
-				evt_nl1mus_branch->GetEntry(local_index);
+				evt_nl1mus_branch->GetEntry(index);
 			evt_nl1mus_isLoaded = true;
 		}
 		return evt_nl1mus_;
@@ -6895,7 +6986,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_closestMuon_isLoaded) {
 			if (els_closestMuon_branch != 0) 
-				els_closestMuon_branch->GetEntry(local_index);
+				els_closestMuon_branch->GetEntry(index);
 			els_closestMuon_isLoaded = true;
 		}
 		return els_closestMuon_;
@@ -6904,7 +6995,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_trkidx_isLoaded) {
 			if (els_trkidx_branch != 0) 
-				els_trkidx_branch->GetEntry(local_index);
+				els_trkidx_branch->GetEntry(index);
 			els_trkidx_isLoaded = true;
 		}
 		return els_trkidx_;
@@ -6913,7 +7004,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_charge_isLoaded) {
 			if (els_charge_branch != 0) 
-				els_charge_branch->GetEntry(local_index);
+				els_charge_branch->GetEntry(index);
 			els_charge_isLoaded = true;
 		}
 		return els_charge_;
@@ -6922,7 +7013,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_class_isLoaded) {
 			if (els_class_branch != 0) 
-				els_class_branch->GetEntry(local_index);
+				els_class_branch->GetEntry(index);
 			els_class_isLoaded = true;
 		}
 		return els_class_;
@@ -6931,7 +7022,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_looseId_isLoaded) {
 			if (els_looseId_branch != 0) 
-				els_looseId_branch->GetEntry(local_index);
+				els_looseId_branch->GetEntry(index);
 			els_looseId_isLoaded = true;
 		}
 		return els_looseId_;
@@ -6940,7 +7031,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_lostHits_isLoaded) {
 			if (els_lostHits_branch != 0) 
-				els_lostHits_branch->GetEntry(local_index);
+				els_lostHits_branch->GetEntry(index);
 			els_lostHits_isLoaded = true;
 		}
 		return els_lostHits_;
@@ -6949,7 +7040,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_nSeed_isLoaded) {
 			if (els_nSeed_branch != 0) 
-				els_nSeed_branch->GetEntry(local_index);
+				els_nSeed_branch->GetEntry(index);
 			els_nSeed_isLoaded = true;
 		}
 		return els_nSeed_;
@@ -6958,7 +7049,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_pass3looseId_isLoaded) {
 			if (els_pass3looseId_branch != 0) 
-				els_pass3looseId_branch->GetEntry(local_index);
+				els_pass3looseId_branch->GetEntry(index);
 			els_pass3looseId_isLoaded = true;
 		}
 		return els_pass3looseId_;
@@ -6967,7 +7058,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_pass3simpleId_isLoaded) {
 			if (els_pass3simpleId_branch != 0) 
-				els_pass3simpleId_branch->GetEntry(local_index);
+				els_pass3simpleId_branch->GetEntry(index);
 			els_pass3simpleId_isLoaded = true;
 		}
 		return els_pass3simpleId_;
@@ -6976,7 +7067,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_pass3tightId_isLoaded) {
 			if (els_pass3tightId_branch != 0) 
-				els_pass3tightId_branch->GetEntry(local_index);
+				els_pass3tightId_branch->GetEntry(index);
 			els_pass3tightId_isLoaded = true;
 		}
 		return els_pass3tightId_;
@@ -6985,7 +7076,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_robustId_isLoaded) {
 			if (els_robustId_branch != 0) 
-				els_robustId_branch->GetEntry(local_index);
+				els_robustId_branch->GetEntry(index);
 			els_robustId_isLoaded = true;
 		}
 		return els_robustId_;
@@ -6994,7 +7085,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_simpleIdPlus_isLoaded) {
 			if (els_simpleIdPlus_branch != 0) 
-				els_simpleIdPlus_branch->GetEntry(local_index);
+				els_simpleIdPlus_branch->GetEntry(index);
 			els_simpleIdPlus_isLoaded = true;
 		}
 		return els_simpleIdPlus_;
@@ -7003,7 +7094,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_tightId_isLoaded) {
 			if (els_tightId_branch != 0) 
-				els_tightId_branch->GetEntry(local_index);
+				els_tightId_branch->GetEntry(index);
 			els_tightId_isLoaded = true;
 		}
 		return els_tightId_;
@@ -7012,7 +7103,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_validHits_isLoaded) {
 			if (els_validHits_branch != 0) 
-				els_validHits_branch->GetEntry(local_index);
+				els_validHits_branch->GetEntry(index);
 			els_validHits_isLoaded = true;
 		}
 		return els_validHits_;
@@ -7021,7 +7112,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not genps_id_isLoaded) {
 			if (genps_id_branch != 0) 
-				genps_id_branch->GetEntry(local_index);
+				genps_id_branch->GetEntry(index);
 			genps_id_isLoaded = true;
 		}
 		return genps_id_;
@@ -7030,7 +7121,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not genps_id_mother_isLoaded) {
 			if (genps_id_mother_branch != 0) 
-				genps_id_mother_branch->GetEntry(local_index);
+				genps_id_mother_branch->GetEntry(index);
 			genps_id_mother_isLoaded = true;
 		}
 		return genps_id_mother_;
@@ -7039,7 +7130,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not genps_status_isLoaded) {
 			if (genps_status_branch != 0) 
-				genps_status_branch->GetEntry(local_index);
+				genps_status_branch->GetEntry(index);
 			genps_status_isLoaded = true;
 		}
 		return genps_status_;
@@ -7048,7 +7139,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_ll_charge_isLoaded) {
 			if (hyp_ll_charge_branch != 0) 
-				hyp_ll_charge_branch->GetEntry(local_index);
+				hyp_ll_charge_branch->GetEntry(index);
 			hyp_ll_charge_isLoaded = true;
 		}
 		return hyp_ll_charge_;
@@ -7057,7 +7148,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_ll_id_isLoaded) {
 			if (hyp_ll_id_branch != 0) 
-				hyp_ll_id_branch->GetEntry(local_index);
+				hyp_ll_id_branch->GetEntry(index);
 			hyp_ll_id_isLoaded = true;
 		}
 		return hyp_ll_id_;
@@ -7066,7 +7157,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_ll_index_isLoaded) {
 			if (hyp_ll_index_branch != 0) 
-				hyp_ll_index_branch->GetEntry(local_index);
+				hyp_ll_index_branch->GetEntry(index);
 			hyp_ll_index_isLoaded = true;
 		}
 		return hyp_ll_index_;
@@ -7075,7 +7166,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_ll_lostHits_isLoaded) {
 			if (hyp_ll_lostHits_branch != 0) 
-				hyp_ll_lostHits_branch->GetEntry(local_index);
+				hyp_ll_lostHits_branch->GetEntry(index);
 			hyp_ll_lostHits_isLoaded = true;
 		}
 		return hyp_ll_lostHits_;
@@ -7084,7 +7175,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_ll_mc_id_isLoaded) {
 			if (hyp_ll_mc_id_branch != 0) 
-				hyp_ll_mc_id_branch->GetEntry(local_index);
+				hyp_ll_mc_id_branch->GetEntry(index);
 			hyp_ll_mc_id_isLoaded = true;
 		}
 		return hyp_ll_mc_id_;
@@ -7093,7 +7184,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_ll_mc_motherid_isLoaded) {
 			if (hyp_ll_mc_motherid_branch != 0) 
-				hyp_ll_mc_motherid_branch->GetEntry(local_index);
+				hyp_ll_mc_motherid_branch->GetEntry(index);
 			hyp_ll_mc_motherid_isLoaded = true;
 		}
 		return hyp_ll_mc_motherid_;
@@ -7102,7 +7193,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_ll_validHits_isLoaded) {
 			if (hyp_ll_validHits_branch != 0) 
-				hyp_ll_validHits_branch->GetEntry(local_index);
+				hyp_ll_validHits_branch->GetEntry(index);
 			hyp_ll_validHits_isLoaded = true;
 		}
 		return hyp_ll_validHits_;
@@ -7111,7 +7202,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_lt_charge_isLoaded) {
 			if (hyp_lt_charge_branch != 0) 
-				hyp_lt_charge_branch->GetEntry(local_index);
+				hyp_lt_charge_branch->GetEntry(index);
 			hyp_lt_charge_isLoaded = true;
 		}
 		return hyp_lt_charge_;
@@ -7120,7 +7211,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_lt_id_isLoaded) {
 			if (hyp_lt_id_branch != 0) 
-				hyp_lt_id_branch->GetEntry(local_index);
+				hyp_lt_id_branch->GetEntry(index);
 			hyp_lt_id_isLoaded = true;
 		}
 		return hyp_lt_id_;
@@ -7129,7 +7220,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_lt_index_isLoaded) {
 			if (hyp_lt_index_branch != 0) 
-				hyp_lt_index_branch->GetEntry(local_index);
+				hyp_lt_index_branch->GetEntry(index);
 			hyp_lt_index_isLoaded = true;
 		}
 		return hyp_lt_index_;
@@ -7138,7 +7229,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_lt_lostHits_isLoaded) {
 			if (hyp_lt_lostHits_branch != 0) 
-				hyp_lt_lostHits_branch->GetEntry(local_index);
+				hyp_lt_lostHits_branch->GetEntry(index);
 			hyp_lt_lostHits_isLoaded = true;
 		}
 		return hyp_lt_lostHits_;
@@ -7147,7 +7238,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_lt_mc_id_isLoaded) {
 			if (hyp_lt_mc_id_branch != 0) 
-				hyp_lt_mc_id_branch->GetEntry(local_index);
+				hyp_lt_mc_id_branch->GetEntry(index);
 			hyp_lt_mc_id_isLoaded = true;
 		}
 		return hyp_lt_mc_id_;
@@ -7156,7 +7247,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_lt_mc_motherid_isLoaded) {
 			if (hyp_lt_mc_motherid_branch != 0) 
-				hyp_lt_mc_motherid_branch->GetEntry(local_index);
+				hyp_lt_mc_motherid_branch->GetEntry(index);
 			hyp_lt_mc_motherid_isLoaded = true;
 		}
 		return hyp_lt_mc_motherid_;
@@ -7165,7 +7256,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_lt_validHits_isLoaded) {
 			if (hyp_lt_validHits_branch != 0) 
-				hyp_lt_validHits_branch->GetEntry(local_index);
+				hyp_lt_validHits_branch->GetEntry(index);
 			hyp_lt_validHits_isLoaded = true;
 		}
 		return hyp_lt_validHits_;
@@ -7174,7 +7265,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_njets_isLoaded) {
 			if (hyp_njets_branch != 0) 
-				hyp_njets_branch->GetEntry(local_index);
+				hyp_njets_branch->GetEntry(index);
 			hyp_njets_isLoaded = true;
 		}
 		return hyp_njets_;
@@ -7183,7 +7274,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_nojets_isLoaded) {
 			if (hyp_nojets_branch != 0) 
-				hyp_nojets_branch->GetEntry(local_index);
+				hyp_nojets_branch->GetEntry(index);
 			hyp_nojets_isLoaded = true;
 		}
 		return hyp_nojets_;
@@ -7192,7 +7283,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_type_isLoaded) {
 			if (hyp_type_branch != 0) 
-				hyp_type_branch->GetEntry(local_index);
+				hyp_type_branch->GetEntry(index);
 			hyp_type_isLoaded = true;
 		}
 		return hyp_type_;
@@ -7201,7 +7292,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_quadlep_first_type_isLoaded) {
 			if (hyp_quadlep_first_type_branch != 0) 
-				hyp_quadlep_first_type_branch->GetEntry(local_index);
+				hyp_quadlep_first_type_branch->GetEntry(index);
 			hyp_quadlep_first_type_isLoaded = true;
 		}
 		return hyp_quadlep_first_type_;
@@ -7210,7 +7301,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_quadlep_fourth_type_isLoaded) {
 			if (hyp_quadlep_fourth_type_branch != 0) 
-				hyp_quadlep_fourth_type_branch->GetEntry(local_index);
+				hyp_quadlep_fourth_type_branch->GetEntry(index);
 			hyp_quadlep_fourth_type_isLoaded = true;
 		}
 		return hyp_quadlep_fourth_type_;
@@ -7219,7 +7310,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_quadlep_second_type_isLoaded) {
 			if (hyp_quadlep_second_type_branch != 0) 
-				hyp_quadlep_second_type_branch->GetEntry(local_index);
+				hyp_quadlep_second_type_branch->GetEntry(index);
 			hyp_quadlep_second_type_isLoaded = true;
 		}
 		return hyp_quadlep_second_type_;
@@ -7228,7 +7319,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_quadlep_third_type_isLoaded) {
 			if (hyp_quadlep_third_type_branch != 0) 
-				hyp_quadlep_third_type_branch->GetEntry(local_index);
+				hyp_quadlep_third_type_branch->GetEntry(index);
 			hyp_quadlep_third_type_isLoaded = true;
 		}
 		return hyp_quadlep_third_type_;
@@ -7237,7 +7328,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_trilep_first_type_isLoaded) {
 			if (hyp_trilep_first_type_branch != 0) 
-				hyp_trilep_first_type_branch->GetEntry(local_index);
+				hyp_trilep_first_type_branch->GetEntry(index);
 			hyp_trilep_first_type_isLoaded = true;
 		}
 		return hyp_trilep_first_type_;
@@ -7246,7 +7337,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_trilep_second_type_isLoaded) {
 			if (hyp_trilep_second_type_branch != 0) 
-				hyp_trilep_second_type_branch->GetEntry(local_index);
+				hyp_trilep_second_type_branch->GetEntry(index);
 			hyp_trilep_second_type_isLoaded = true;
 		}
 		return hyp_trilep_second_type_;
@@ -7255,7 +7346,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_trilep_third_type_isLoaded) {
 			if (hyp_trilep_third_type_branch != 0) 
-				hyp_trilep_third_type_branch->GetEntry(local_index);
+				hyp_trilep_third_type_branch->GetEntry(index);
 			hyp_trilep_third_type_isLoaded = true;
 		}
 		return hyp_trilep_third_type_;
@@ -7264,7 +7355,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not jets_closestElectron_isLoaded) {
 			if (jets_closestElectron_branch != 0) 
-				jets_closestElectron_branch->GetEntry(local_index);
+				jets_closestElectron_branch->GetEntry(index);
 			jets_closestElectron_isLoaded = true;
 		}
 		return jets_closestElectron_;
@@ -7273,7 +7364,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not jets_closestMuon_isLoaded) {
 			if (jets_closestMuon_branch != 0) 
-				jets_closestMuon_branch->GetEntry(local_index);
+				jets_closestMuon_branch->GetEntry(index);
 			jets_closestMuon_isLoaded = true;
 		}
 		return jets_closestMuon_;
@@ -7282,7 +7373,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1emiso_ieta_isLoaded) {
 			if (l1emiso_ieta_branch != 0) 
-				l1emiso_ieta_branch->GetEntry(local_index);
+				l1emiso_ieta_branch->GetEntry(index);
 			l1emiso_ieta_isLoaded = true;
 		}
 		return l1emiso_ieta_;
@@ -7291,7 +7382,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1emiso_iphi_isLoaded) {
 			if (l1emiso_iphi_branch != 0) 
-				l1emiso_iphi_branch->GetEntry(local_index);
+				l1emiso_iphi_branch->GetEntry(index);
 			l1emiso_iphi_isLoaded = true;
 		}
 		return l1emiso_iphi_;
@@ -7300,7 +7391,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1emiso_rawId_isLoaded) {
 			if (l1emiso_rawId_branch != 0) 
-				l1emiso_rawId_branch->GetEntry(local_index);
+				l1emiso_rawId_branch->GetEntry(index);
 			l1emiso_rawId_isLoaded = true;
 		}
 		return l1emiso_rawId_;
@@ -7309,7 +7400,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1emiso_type_isLoaded) {
 			if (l1emiso_type_branch != 0) 
-				l1emiso_type_branch->GetEntry(local_index);
+				l1emiso_type_branch->GetEntry(index);
 			l1emiso_type_isLoaded = true;
 		}
 		return l1emiso_type_;
@@ -7318,7 +7409,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1emnoiso_ieta_isLoaded) {
 			if (l1emnoiso_ieta_branch != 0) 
-				l1emnoiso_ieta_branch->GetEntry(local_index);
+				l1emnoiso_ieta_branch->GetEntry(index);
 			l1emnoiso_ieta_isLoaded = true;
 		}
 		return l1emnoiso_ieta_;
@@ -7327,7 +7418,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1emnoiso_iphi_isLoaded) {
 			if (l1emnoiso_iphi_branch != 0) 
-				l1emnoiso_iphi_branch->GetEntry(local_index);
+				l1emnoiso_iphi_branch->GetEntry(index);
 			l1emnoiso_iphi_isLoaded = true;
 		}
 		return l1emnoiso_iphi_;
@@ -7336,7 +7427,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1emnoiso_rawId_isLoaded) {
 			if (l1emnoiso_rawId_branch != 0) 
-				l1emnoiso_rawId_branch->GetEntry(local_index);
+				l1emnoiso_rawId_branch->GetEntry(index);
 			l1emnoiso_rawId_isLoaded = true;
 		}
 		return l1emnoiso_rawId_;
@@ -7345,7 +7436,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1emnoiso_type_isLoaded) {
 			if (l1emnoiso_type_branch != 0) 
-				l1emnoiso_type_branch->GetEntry(local_index);
+				l1emnoiso_type_branch->GetEntry(index);
 			l1emnoiso_type_isLoaded = true;
 		}
 		return l1emnoiso_type_;
@@ -7354,7 +7445,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1jetsc_ieta_isLoaded) {
 			if (l1jetsc_ieta_branch != 0) 
-				l1jetsc_ieta_branch->GetEntry(local_index);
+				l1jetsc_ieta_branch->GetEntry(index);
 			l1jetsc_ieta_isLoaded = true;
 		}
 		return l1jetsc_ieta_;
@@ -7363,7 +7454,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1jetsc_iphi_isLoaded) {
 			if (l1jetsc_iphi_branch != 0) 
-				l1jetsc_iphi_branch->GetEntry(local_index);
+				l1jetsc_iphi_branch->GetEntry(index);
 			l1jetsc_iphi_isLoaded = true;
 		}
 		return l1jetsc_iphi_;
@@ -7372,7 +7463,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1jetsc_rawId_isLoaded) {
 			if (l1jetsc_rawId_branch != 0) 
-				l1jetsc_rawId_branch->GetEntry(local_index);
+				l1jetsc_rawId_branch->GetEntry(index);
 			l1jetsc_rawId_isLoaded = true;
 		}
 		return l1jetsc_rawId_;
@@ -7381,7 +7472,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1jetsc_type_isLoaded) {
 			if (l1jetsc_type_branch != 0) 
-				l1jetsc_type_branch->GetEntry(local_index);
+				l1jetsc_type_branch->GetEntry(index);
 			l1jetsc_type_isLoaded = true;
 		}
 		return l1jetsc_type_;
@@ -7390,7 +7481,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1jetsf_ieta_isLoaded) {
 			if (l1jetsf_ieta_branch != 0) 
-				l1jetsf_ieta_branch->GetEntry(local_index);
+				l1jetsf_ieta_branch->GetEntry(index);
 			l1jetsf_ieta_isLoaded = true;
 		}
 		return l1jetsf_ieta_;
@@ -7399,7 +7490,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1jetsf_iphi_isLoaded) {
 			if (l1jetsf_iphi_branch != 0) 
-				l1jetsf_iphi_branch->GetEntry(local_index);
+				l1jetsf_iphi_branch->GetEntry(index);
 			l1jetsf_iphi_isLoaded = true;
 		}
 		return l1jetsf_iphi_;
@@ -7408,7 +7499,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1jetsf_rawId_isLoaded) {
 			if (l1jetsf_rawId_branch != 0) 
-				l1jetsf_rawId_branch->GetEntry(local_index);
+				l1jetsf_rawId_branch->GetEntry(index);
 			l1jetsf_rawId_isLoaded = true;
 		}
 		return l1jetsf_rawId_;
@@ -7417,7 +7508,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1jetsf_type_isLoaded) {
 			if (l1jetsf_type_branch != 0) 
-				l1jetsf_type_branch->GetEntry(local_index);
+				l1jetsf_type_branch->GetEntry(index);
 			l1jetsf_type_isLoaded = true;
 		}
 		return l1jetsf_type_;
@@ -7426,7 +7517,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1jetst_ieta_isLoaded) {
 			if (l1jetst_ieta_branch != 0) 
-				l1jetst_ieta_branch->GetEntry(local_index);
+				l1jetst_ieta_branch->GetEntry(index);
 			l1jetst_ieta_isLoaded = true;
 		}
 		return l1jetst_ieta_;
@@ -7435,7 +7526,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1jetst_iphi_isLoaded) {
 			if (l1jetst_iphi_branch != 0) 
-				l1jetst_iphi_branch->GetEntry(local_index);
+				l1jetst_iphi_branch->GetEntry(index);
 			l1jetst_iphi_isLoaded = true;
 		}
 		return l1jetst_iphi_;
@@ -7444,7 +7535,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1jetst_rawId_isLoaded) {
 			if (l1jetst_rawId_branch != 0) 
-				l1jetst_rawId_branch->GetEntry(local_index);
+				l1jetst_rawId_branch->GetEntry(index);
 			l1jetst_rawId_isLoaded = true;
 		}
 		return l1jetst_rawId_;
@@ -7453,7 +7544,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1jetst_type_isLoaded) {
 			if (l1jetst_type_branch != 0) 
-				l1jetst_type_branch->GetEntry(local_index);
+				l1jetst_type_branch->GetEntry(index);
 			l1jetst_type_isLoaded = true;
 		}
 		return l1jetst_type_;
@@ -7462,7 +7553,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1mus_flags_isLoaded) {
 			if (l1mus_flags_branch != 0) 
-				l1mus_flags_branch->GetEntry(local_index);
+				l1mus_flags_branch->GetEntry(index);
 			l1mus_flags_isLoaded = true;
 		}
 		return l1mus_flags_;
@@ -7471,7 +7562,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1mus_q_isLoaded) {
 			if (l1mus_q_branch != 0) 
-				l1mus_q_branch->GetEntry(local_index);
+				l1mus_q_branch->GetEntry(index);
 			l1mus_q_isLoaded = true;
 		}
 		return l1mus_q_;
@@ -7480,7 +7571,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1mus_qual_isLoaded) {
 			if (l1mus_qual_branch != 0) 
-				l1mus_qual_branch->GetEntry(local_index);
+				l1mus_qual_branch->GetEntry(index);
 			l1mus_qual_isLoaded = true;
 		}
 		return l1mus_qual_;
@@ -7489,7 +7580,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not l1mus_qualFlags_isLoaded) {
 			if (l1mus_qualFlags_branch != 0) 
-				l1mus_qualFlags_branch->GetEntry(local_index);
+				l1mus_qualFlags_branch->GetEntry(index);
 			l1mus_qualFlags_isLoaded = true;
 		}
 		return l1mus_qualFlags_;
@@ -7498,7 +7589,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_closestEle_isLoaded) {
 			if (mus_closestEle_branch != 0) 
-				mus_closestEle_branch->GetEntry(local_index);
+				mus_closestEle_branch->GetEntry(index);
 			mus_closestEle_isLoaded = true;
 		}
 		return mus_closestEle_;
@@ -7507,7 +7598,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_closestJet_isLoaded) {
 			if (mus_closestJet_branch != 0) 
-				mus_closestJet_branch->GetEntry(local_index);
+				mus_closestJet_branch->GetEntry(index);
 			mus_closestJet_isLoaded = true;
 		}
 		return mus_closestJet_;
@@ -7516,7 +7607,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_trkidx_isLoaded) {
 			if (mus_trkidx_branch != 0) 
-				mus_trkidx_branch->GetEntry(local_index);
+				mus_trkidx_branch->GetEntry(index);
 			mus_trkidx_isLoaded = true;
 		}
 		return mus_trkidx_;
@@ -7525,7 +7616,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_charge_isLoaded) {
 			if (mus_charge_branch != 0) 
-				mus_charge_branch->GetEntry(local_index);
+				mus_charge_branch->GetEntry(index);
 			mus_charge_isLoaded = true;
 		}
 		return mus_charge_;
@@ -7534,7 +7625,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_gfit_validHits_isLoaded) {
 			if (mus_gfit_validHits_branch != 0) 
-				mus_gfit_validHits_branch->GetEntry(local_index);
+				mus_gfit_validHits_branch->GetEntry(index);
 			mus_gfit_validHits_isLoaded = true;
 		}
 		return mus_gfit_validHits_;
@@ -7543,7 +7634,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_iso03_ntrk_isLoaded) {
 			if (mus_iso03_ntrk_branch != 0) 
-				mus_iso03_ntrk_branch->GetEntry(local_index);
+				mus_iso03_ntrk_branch->GetEntry(index);
 			mus_iso03_ntrk_isLoaded = true;
 		}
 		return mus_iso03_ntrk_;
@@ -7552,7 +7643,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_iso05_ntrk_isLoaded) {
 			if (mus_iso05_ntrk_branch != 0) 
-				mus_iso05_ntrk_branch->GetEntry(local_index);
+				mus_iso05_ntrk_branch->GetEntry(index);
 			mus_iso05_ntrk_isLoaded = true;
 		}
 		return mus_iso05_ntrk_;
@@ -7561,7 +7652,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_lostHits_isLoaded) {
 			if (mus_lostHits_branch != 0) 
-				mus_lostHits_branch->GetEntry(local_index);
+				mus_lostHits_branch->GetEntry(index);
 			mus_lostHits_isLoaded = true;
 		}
 		return mus_lostHits_;
@@ -7570,7 +7661,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_nmatches_isLoaded) {
 			if (mus_nmatches_branch != 0) 
-				mus_nmatches_branch->GetEntry(local_index);
+				mus_nmatches_branch->GetEntry(index);
 			mus_nmatches_isLoaded = true;
 		}
 		return mus_nmatches_;
@@ -7579,7 +7670,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_pid_TM2DCompatibilityLoose_isLoaded) {
 			if (mus_pid_TM2DCompatibilityLoose_branch != 0) 
-				mus_pid_TM2DCompatibilityLoose_branch->GetEntry(local_index);
+				mus_pid_TM2DCompatibilityLoose_branch->GetEntry(index);
 			mus_pid_TM2DCompatibilityLoose_isLoaded = true;
 		}
 		return mus_pid_TM2DCompatibilityLoose_;
@@ -7588,7 +7679,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_pid_TM2DCompatibilityTight_isLoaded) {
 			if (mus_pid_TM2DCompatibilityTight_branch != 0) 
-				mus_pid_TM2DCompatibilityTight_branch->GetEntry(local_index);
+				mus_pid_TM2DCompatibilityTight_branch->GetEntry(index);
 			mus_pid_TM2DCompatibilityTight_isLoaded = true;
 		}
 		return mus_pid_TM2DCompatibilityTight_;
@@ -7597,7 +7688,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_pid_TMLastStationLoose_isLoaded) {
 			if (mus_pid_TMLastStationLoose_branch != 0) 
-				mus_pid_TMLastStationLoose_branch->GetEntry(local_index);
+				mus_pid_TMLastStationLoose_branch->GetEntry(index);
 			mus_pid_TMLastStationLoose_isLoaded = true;
 		}
 		return mus_pid_TMLastStationLoose_;
@@ -7606,7 +7697,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_pid_TMLastStationTight_isLoaded) {
 			if (mus_pid_TMLastStationTight_branch != 0) 
-				mus_pid_TMLastStationTight_branch->GetEntry(local_index);
+				mus_pid_TMLastStationTight_branch->GetEntry(index);
 			mus_pid_TMLastStationTight_isLoaded = true;
 		}
 		return mus_pid_TMLastStationTight_;
@@ -7615,7 +7706,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_trkrefkey_isLoaded) {
 			if (mus_trkrefkey_branch != 0) 
-				mus_trkrefkey_branch->GetEntry(local_index);
+				mus_trkrefkey_branch->GetEntry(index);
 			mus_trkrefkey_isLoaded = true;
 		}
 		return mus_trkrefkey_;
@@ -7624,7 +7715,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_validHits_isLoaded) {
 			if (mus_validHits_branch != 0) 
-				mus_validHits_branch->GetEntry(local_index);
+				mus_validHits_branch->GetEntry(index);
 			mus_validHits_isLoaded = true;
 		}
 		return mus_validHits_;
@@ -7633,7 +7724,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_tq_egammaTkNumIso_isLoaded) {
 			if (els_tq_egammaTkNumIso_branch != 0) 
-				els_tq_egammaTkNumIso_branch->GetEntry(local_index);
+				els_tq_egammaTkNumIso_branch->GetEntry(index);
 			els_tq_egammaTkNumIso_isLoaded = true;
 		}
 		return els_tq_egammaTkNumIso_;
@@ -7642,7 +7733,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_tq_genID_isLoaded) {
 			if (els_tq_genID_branch != 0) 
-				els_tq_genID_branch->GetEntry(local_index);
+				els_tq_genID_branch->GetEntry(index);
 			els_tq_genID_isLoaded = true;
 		}
 		return els_tq_genID_;
@@ -7651,7 +7742,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not els_tq_genMotherID_isLoaded) {
 			if (els_tq_genMotherID_branch != 0) 
-				els_tq_genMotherID_branch->GetEntry(local_index);
+				els_tq_genMotherID_branch->GetEntry(index);
 			els_tq_genMotherID_isLoaded = true;
 		}
 		return els_tq_genMotherID_;
@@ -7660,7 +7751,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not jets_tq_genPartonMother_id_isLoaded) {
 			if (jets_tq_genPartonMother_id_branch != 0) 
-				jets_tq_genPartonMother_id_branch->GetEntry(local_index);
+				jets_tq_genPartonMother_id_branch->GetEntry(index);
 			jets_tq_genPartonMother_id_isLoaded = true;
 		}
 		return jets_tq_genPartonMother_id_;
@@ -7669,7 +7760,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not jets_tq_genParton_id_isLoaded) {
 			if (jets_tq_genParton_id_branch != 0) 
-				jets_tq_genParton_id_branch->GetEntry(local_index);
+				jets_tq_genParton_id_branch->GetEntry(index);
 			jets_tq_genParton_id_isLoaded = true;
 		}
 		return jets_tq_genParton_id_;
@@ -7678,7 +7769,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not jets_tq_partonFlavour_isLoaded) {
 			if (jets_tq_partonFlavour_branch != 0) 
-				jets_tq_partonFlavour_branch->GetEntry(local_index);
+				jets_tq_partonFlavour_branch->GetEntry(index);
 			jets_tq_partonFlavour_isLoaded = true;
 		}
 		return jets_tq_partonFlavour_;
@@ -7687,7 +7778,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_tq_genID_isLoaded) {
 			if (mus_tq_genID_branch != 0) 
-				mus_tq_genID_branch->GetEntry(local_index);
+				mus_tq_genID_branch->GetEntry(index);
 			mus_tq_genID_isLoaded = true;
 		}
 		return mus_tq_genID_;
@@ -7696,7 +7787,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not mus_tq_genMotherID_isLoaded) {
 			if (mus_tq_genMotherID_branch != 0) 
-				mus_tq_genMotherID_branch->GetEntry(local_index);
+				mus_tq_genMotherID_branch->GetEntry(index);
 			mus_tq_genMotherID_isLoaded = true;
 		}
 		return mus_tq_genMotherID_;
@@ -7705,7 +7796,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not trks_charge_isLoaded) {
 			if (trks_charge_branch != 0) 
-				trks_charge_branch->GetEntry(local_index);
+				trks_charge_branch->GetEntry(index);
 			trks_charge_isLoaded = true;
 		}
 		return trks_charge_;
@@ -7714,7 +7805,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not trks_lostHits_isLoaded) {
 			if (trks_lostHits_branch != 0) 
-				trks_lostHits_branch->GetEntry(local_index);
+				trks_lostHits_branch->GetEntry(index);
 			trks_lostHits_isLoaded = true;
 		}
 		return trks_lostHits_;
@@ -7723,7 +7814,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not trks_validHits_isLoaded) {
 			if (trks_validHits_branch != 0) 
-				trks_validHits_branch->GetEntry(local_index);
+				trks_validHits_branch->GetEntry(index);
 			trks_validHits_isLoaded = true;
 		}
 		return trks_validHits_;
@@ -7732,7 +7823,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not trk_elsidx_isLoaded) {
 			if (trk_elsidx_branch != 0) 
-				trk_elsidx_branch->GetEntry(local_index);
+				trk_elsidx_branch->GetEntry(index);
 			trk_elsidx_isLoaded = true;
 		}
 		return trk_elsidx_;
@@ -7741,7 +7832,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not trk_musidx_isLoaded) {
 			if (trk_musidx_branch != 0) 
-				trk_musidx_branch->GetEntry(local_index);
+				trk_musidx_branch->GetEntry(index);
 			trk_musidx_isLoaded = true;
 		}
 		return trk_musidx_;
@@ -7750,7 +7841,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_jets_mc_id_isLoaded) {
 			if (hyp_jets_mc_id_branch != 0) 
-				hyp_jets_mc_id_branch->GetEntry(local_index);
+				hyp_jets_mc_id_branch->GetEntry(index);
 			hyp_jets_mc_id_isLoaded = true;
 		}
 		return hyp_jets_mc_id_;
@@ -7759,7 +7850,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_jets_tq_genPartonMother_id_isLoaded) {
 			if (hyp_jets_tq_genPartonMother_id_branch != 0) 
-				hyp_jets_tq_genPartonMother_id_branch->GetEntry(local_index);
+				hyp_jets_tq_genPartonMother_id_branch->GetEntry(index);
 			hyp_jets_tq_genPartonMother_id_isLoaded = true;
 		}
 		return hyp_jets_tq_genPartonMother_id_;
@@ -7768,7 +7859,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_jets_tq_genParton_id_isLoaded) {
 			if (hyp_jets_tq_genParton_id_branch != 0) 
-				hyp_jets_tq_genParton_id_branch->GetEntry(local_index);
+				hyp_jets_tq_genParton_id_branch->GetEntry(index);
 			hyp_jets_tq_genParton_id_isLoaded = true;
 		}
 		return hyp_jets_tq_genParton_id_;
@@ -7777,7 +7868,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_jets_tq_partonFlavour_isLoaded) {
 			if (hyp_jets_tq_partonFlavour_branch != 0) 
-				hyp_jets_tq_partonFlavour_branch->GetEntry(local_index);
+				hyp_jets_tq_partonFlavour_branch->GetEntry(index);
 			hyp_jets_tq_partonFlavour_isLoaded = true;
 		}
 		return hyp_jets_tq_partonFlavour_;
@@ -7786,7 +7877,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_other_jets_mc_id_isLoaded) {
 			if (hyp_other_jets_mc_id_branch != 0) 
-				hyp_other_jets_mc_id_branch->GetEntry(local_index);
+				hyp_other_jets_mc_id_branch->GetEntry(index);
 			hyp_other_jets_mc_id_isLoaded = true;
 		}
 		return hyp_other_jets_mc_id_;
@@ -7795,7 +7886,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_other_jets_tq_genPartonMother_id_isLoaded) {
 			if (hyp_other_jets_tq_genPartonMother_id_branch != 0) 
-				hyp_other_jets_tq_genPartonMother_id_branch->GetEntry(local_index);
+				hyp_other_jets_tq_genPartonMother_id_branch->GetEntry(index);
 			hyp_other_jets_tq_genPartonMother_id_isLoaded = true;
 		}
 		return hyp_other_jets_tq_genPartonMother_id_;
@@ -7804,7 +7895,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_other_jets_tq_genParton_id_isLoaded) {
 			if (hyp_other_jets_tq_genParton_id_branch != 0) 
-				hyp_other_jets_tq_genParton_id_branch->GetEntry(local_index);
+				hyp_other_jets_tq_genParton_id_branch->GetEntry(index);
 			hyp_other_jets_tq_genParton_id_isLoaded = true;
 		}
 		return hyp_other_jets_tq_genParton_id_;
@@ -7813,7 +7904,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_other_jets_tq_partonFlavour_isLoaded) {
 			if (hyp_other_jets_tq_partonFlavour_branch != 0) 
-				hyp_other_jets_tq_partonFlavour_branch->GetEntry(local_index);
+				hyp_other_jets_tq_partonFlavour_branch->GetEntry(index);
 			hyp_other_jets_tq_partonFlavour_isLoaded = true;
 		}
 		return hyp_other_jets_tq_partonFlavour_;
@@ -7822,7 +7913,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_quadlep_jets_index_isLoaded) {
 			if (hyp_quadlep_jets_index_branch != 0) 
-				hyp_quadlep_jets_index_branch->GetEntry(local_index);
+				hyp_quadlep_jets_index_branch->GetEntry(index);
 			hyp_quadlep_jets_index_isLoaded = true;
 		}
 		return hyp_quadlep_jets_index_;
@@ -7831,7 +7922,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_trilep_jets_index_isLoaded) {
 			if (hyp_trilep_jets_index_branch != 0) 
-				hyp_trilep_jets_index_branch->GetEntry(local_index);
+				hyp_trilep_jets_index_branch->GetEntry(index);
 			hyp_trilep_jets_index_isLoaded = true;
 		}
 		return hyp_trilep_jets_index_;
@@ -7840,7 +7931,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not evt_nels_isLoaded) {
 			if (evt_nels_branch != 0) 
-				evt_nels_branch->GetEntry(local_index);
+				evt_nels_branch->GetEntry(index);
 			evt_nels_isLoaded = true;
 		}
 		return evt_nels_;
@@ -7849,7 +7940,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not evt_event_isLoaded) {
 			if (evt_event_branch != 0) 
-				evt_event_branch->GetEntry(local_index);
+				evt_event_branch->GetEntry(index);
 			evt_event_isLoaded = true;
 		}
 		return evt_event_;
@@ -7858,7 +7949,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not evt_run_isLoaded) {
 			if (evt_run_branch != 0) 
-				evt_run_branch->GetEntry(local_index);
+				evt_run_branch->GetEntry(index);
 			evt_run_isLoaded = true;
 		}
 		return evt_run_;
@@ -7867,7 +7958,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not evt_njets_isLoaded) {
 			if (evt_njets_branch != 0) 
-				evt_njets_branch->GetEntry(local_index);
+				evt_njets_branch->GetEntry(index);
 			evt_njets_isLoaded = true;
 		}
 		return evt_njets_;
@@ -7876,7 +7967,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_quadlep_bucket_isLoaded) {
 			if (hyp_quadlep_bucket_branch != 0) 
-				hyp_quadlep_bucket_branch->GetEntry(local_index);
+				hyp_quadlep_bucket_branch->GetEntry(index);
 			hyp_quadlep_bucket_isLoaded = true;
 		}
 		return hyp_quadlep_bucket_;
@@ -7885,7 +7976,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_quadlep_first_index_isLoaded) {
 			if (hyp_quadlep_first_index_branch != 0) 
-				hyp_quadlep_first_index_branch->GetEntry(local_index);
+				hyp_quadlep_first_index_branch->GetEntry(index);
 			hyp_quadlep_first_index_isLoaded = true;
 		}
 		return hyp_quadlep_first_index_;
@@ -7894,7 +7985,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_quadlep_fourth_index_isLoaded) {
 			if (hyp_quadlep_fourth_index_branch != 0) 
-				hyp_quadlep_fourth_index_branch->GetEntry(local_index);
+				hyp_quadlep_fourth_index_branch->GetEntry(index);
 			hyp_quadlep_fourth_index_isLoaded = true;
 		}
 		return hyp_quadlep_fourth_index_;
@@ -7903,7 +7994,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_quadlep_second_index_isLoaded) {
 			if (hyp_quadlep_second_index_branch != 0) 
-				hyp_quadlep_second_index_branch->GetEntry(local_index);
+				hyp_quadlep_second_index_branch->GetEntry(index);
 			hyp_quadlep_second_index_isLoaded = true;
 		}
 		return hyp_quadlep_second_index_;
@@ -7912,7 +8003,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_quadlep_third_index_isLoaded) {
 			if (hyp_quadlep_third_index_branch != 0) 
-				hyp_quadlep_third_index_branch->GetEntry(local_index);
+				hyp_quadlep_third_index_branch->GetEntry(index);
 			hyp_quadlep_third_index_isLoaded = true;
 		}
 		return hyp_quadlep_third_index_;
@@ -7921,7 +8012,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_trilep_bucket_isLoaded) {
 			if (hyp_trilep_bucket_branch != 0) 
-				hyp_trilep_bucket_branch->GetEntry(local_index);
+				hyp_trilep_bucket_branch->GetEntry(index);
 			hyp_trilep_bucket_isLoaded = true;
 		}
 		return hyp_trilep_bucket_;
@@ -7930,7 +8021,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_trilep_first_index_isLoaded) {
 			if (hyp_trilep_first_index_branch != 0) 
-				hyp_trilep_first_index_branch->GetEntry(local_index);
+				hyp_trilep_first_index_branch->GetEntry(index);
 			hyp_trilep_first_index_isLoaded = true;
 		}
 		return hyp_trilep_first_index_;
@@ -7939,7 +8030,7 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_trilep_second_index_isLoaded) {
 			if (hyp_trilep_second_index_branch != 0) 
-				hyp_trilep_second_index_branch->GetEntry(local_index);
+				hyp_trilep_second_index_branch->GetEntry(index);
 			hyp_trilep_second_index_isLoaded = true;
 		}
 		return hyp_trilep_second_index_;
@@ -7948,8 +8039,12 @@ void GetEntry(unsigned int idx)
 	{
 		if (not hyp_trilep_third_index_isLoaded) {
 			if (hyp_trilep_third_index_branch != 0) 
-				hyp_trilep_third_index_branch->GetEntry(local_index);
+				hyp_trilep_third_index_branch->GetEntry(index);
 			hyp_trilep_third_index_isLoaded = true;
 		}
 		return hyp_trilep_third_index_;
 	}
+};
+
+#endif
+
