@@ -90,31 +90,30 @@ bool pass2Met (int i_hyp) {
   return true;
 }
 
-
-#if 0
 //-------------------------------------------------
 // Auxiliary function to scan the doc line and 
 // identify DY-> ee vs mm vs tt
 //-------------------------------------------------
 int getDrellYanType() {
   bool foundZ;
-  int size = genps_id.size();
+  int size = cms2.genps_id().size();
   for (int jj=0; jj<size; jj++) {
-    if (genps_id.at(jj) == 23) {
+    if (cms2.genps_id().at(jj) == 23) {
       foundZ = true;
       if (jj+3 > size) {
 	std::cout << 
-         "Found Z but not enough room in doc lines for leptons?" << std::endl;
-	return 999;
+	  "Found Z but not enough room in doc lines for leptons?" << std::endl;
+        return 999;
       }
-      if (abs(genps_id.at(jj+1)) == 11) return 0;  //DY->ee
-      if (abs(genps_id.at(jj+1)) == 13) return 1;  //DY->mm
-      if (abs(genps_id.at(jj+1)) == 15) return 2;  //DY->tautau
+      if (abs(cms2.genps_id().at(jj+1)) == 11) return 0;  //DY->ee
+      if (abs(cms2.genps_id().at(jj+1)) == 13) return 1;  //DY->mm
+      if (abs(cms2.genps_id().at(jj+1)) == 15) return 2;  //DY->tautau
     }
   }
   std::cout << "Does not look like a DY event" << std::endl;
   return 999;
 }
+
 //--------------------------------------------
 // Booleans for DY
 //------------------------------------------
@@ -130,7 +129,7 @@ bool isDYtt() {
   if (getDrellYanType() == 2) return true;
   return false;
 }
-#endif
+
 //--------------------------------------------------------------------
 // Veto events if there are two leptons in the 
 // event that make the Z mass.  This uses the mus and els
