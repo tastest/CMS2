@@ -22,7 +22,7 @@ makeCMS2Files(std::string fname) {
 
   ofstream headerf;
   ofstream codef;
-  headerf.open("CMS2.h");
+  headerf.open("CMS2_Class.h");
   codef.open("CMS2.C");
   headerf << "// -*- C++ -*-" << endl;
   headerf << "#include \"Math/LorentzVector.h\"" << endl;
