@@ -15,67 +15,9 @@ using namespace std;
 #include "CMS2.h"
 CMS2 cms2;
 #endif
+
 #include "../Tools/selections.C"
 #include "../Tools/utilities.C"
-
-struct DorkyEventIdentifier {
-  // this is a workaround for not having unique event id's in MC                                                                                   
-     unsigned long int run, event;
-     float trks_d0;
-     float hyp_lt_pt, hyp_lt_eta, hyp_lt_phi;
-     bool operator < (const DorkyEventIdentifier &) const;
-     bool operator == (const DorkyEventIdentifier &) const;
-};
-
-bool DorkyEventIdentifier::operator < (const DorkyEventIdentifier &other) const
-{
-     if (run != other.run)
-          return run < other.run;
-     if (event != other.event)
-          return event < other.event;
-     // the floating point numbers are not easy, because we're                                                                                        
-     // comapring ones that are truncated (because they were written                                                                                  
-     // to file and read back in) with ones that are not truncated.                                                                                   
-     if (fabs(trks_d0 - other.trks_d0) > 1e-6 * trks_d0)
-       return trks_d0 < other.trks_d0;
-     if (fabs(hyp_lt_pt - other.hyp_lt_pt) > 1e-6 * hyp_lt_pt)
-       return hyp_lt_pt < other.hyp_lt_pt;
-     if (fabs(hyp_lt_eta - other.hyp_lt_eta) > 1e-6 * hyp_lt_eta)
-       return hyp_lt_eta < other.hyp_lt_eta;
-     if (fabs(hyp_lt_phi - other.hyp_lt_phi) > 1e-6 * hyp_lt_phi)
-       return hyp_lt_phi < other.hyp_lt_phi;
-     // if the records are exactly the same, then r1 is not less than                                                                                 
-     // r2.  Duh!                                                                                                                                     
-     return false;
-}
-
-bool DorkyEventIdentifier::operator == (const DorkyEventIdentifier &other) const
-{
-     if (run != other.run)
-          return false;
-     if (event != other.event)
-          return false;
-     // the floating point numbers are not easy, because we're                                                                                        
-     // comapring ones that are truncated (because they were written                                                                                  
-     // to file and read back in) with ones that are not truncated.                                                                                   
-     if (fabs(trks_d0 - other.trks_d0) > 1e-6 * trks_d0)
-          return false;
-     if (fabs(hyp_lt_pt - other.hyp_lt_pt) > 1e-6 * hyp_lt_pt)
-          return false;
-     if (fabs(hyp_lt_eta - other.hyp_lt_eta) > 1e-6 * hyp_lt_eta)
-          return false;
-     if (fabs(hyp_lt_phi - other.hyp_lt_phi) > 1e-6 * hyp_lt_phi)
-          return false;
-     return true;
-}
-
-static std::set<DorkyEventIdentifier> already_seen;
-bool is_duplicate (const DorkyEventIdentifier &id)
-{
-     std::pair<std::set<DorkyEventIdentifier>::const_iterator, bool> ret =
-          already_seen.insert(id);
-     return !ret.second;
-}
 
 int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0) {
 
@@ -89,6 +31,7 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
   already_seen.clear();
   int duplicates_total_n = 0;
   double duplicates_total_weight = 0;
+  int i_permille_old = 0;
 
   TObjArray *listOfFiles = chain->GetListOfFiles();
 
@@ -219,8 +162,7 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
       cms2.GetEntry(event);
       ++nEventsTotal;
 
-      if (cms2.trks_d0().size() == 0)
-	continue;
+      if (cms2.trks_d0().size() == 0) continue;
       DorkyEventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.trks_d0()[0],
 				  cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
       if (is_duplicate(id)) {
@@ -230,7 +172,7 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
       }
 
       // Progress feedback to the user
-      if ((nEventsTotal)%1000 == 0) std::cout << "Processing event: " << nEventsTotal << std::endl;
+      progressBar(i_permille_old, nEventsTotal, nEventsChain);
 
       // The event weight including the kFactor (scaled to 1 fb-1)
       float weight = cms2.evt_scale1fb() * kFactor;
@@ -372,11 +314,6 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
   }
   
   std::cout << std::endl;
-  for ( unsigned int i = 0; i < allBuckets; ++i ) {
-    cout << "Bucket: " << i << " entries: " << trilepCounter[i] << endl;
-  }
-  std::cout << std::endl;
-
   if ( nEventsChain != nEventsTotal ) {
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
   }

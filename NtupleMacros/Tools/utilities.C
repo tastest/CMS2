@@ -709,3 +709,119 @@ std::vector<LorentzVector> correctJetsForElectrons(int bucket, int first, int se
   return result;
 
 }
+
+void progressBar(int& i_permille_old, int nEventsTotal, int nEventsChain) {
+  // 
+  // progress bar
+  //
+  int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
+  if (i_permille != i_permille_old) {
+    // xterm magic from L. Vacavant and A. Cerri
+    printf("\015\033[32m ---> \033[1m\033[31m%4.1f%%"
+	   "\033[0m\033[32m <---\033[0m\015", i_permille/10.);
+    fflush(stdout);
+    i_permille_old = i_permille;
+  }
+}
+
+
+void correctMETmuons_crossedE(double& met, double& metPhi, 
+			      double muon_pt, double muon_phi,
+			      double muon_track_theta, double muon_track_phi,
+			      double mu_crossedem_dep, double mu_crossedhad_dep, double mu_crossedho_dep ) {
+
+  // first, account for muon momentum
+  double metx =  met*cos(metPhi);
+  double mety =  met*sin(metPhi);
+  double pt0  =  muon_pt; 
+  double phi0 =  muon_phi; 
+  metx -= pt0*cos(phi0);
+  mety -= pt0*sin(phi0);
+  
+  
+  met = sqrt(metx*metx+mety*mety);
+  metPhi = atan2(mety, metx);
+   
+   double muEx = 0.0;
+   double muEy = 0.0;
+   
+   
+   // use muon position at the outer most state of the silicon track if 
+   // TrackExtra is available and momentum direction at the origin 
+   // otherwise. Both should be fine.
+   // NOTICE: MET is built out of towers, which are 5x5 ECAL crystals + one 
+   // element of HCAL and HO. Muon energy is reported for individual crossed 
+   // elements of all the detectors and 3x3 elements of each time as an 
+   // alternative way of energy calculation.
+   double theta = muon_track_theta;
+   double phi   = muon_track_phi;
+	 
+   muEx += ( mu_crossedem_dep + mu_crossedhad_dep + mu_crossedho_dep )*sin(theta)*cos( phi );
+   muEy += ( mu_crossedem_dep + mu_crossedhad_dep + mu_crossedho_dep )*sin(theta)*sin( phi );
+   
+   
+   metx = met*cos(metPhi) + muEx;
+   mety = met*sin(metPhi) + muEy;
+   met   = sqrt(metx*metx + mety*mety);
+   metPhi = atan2(mety, metx);
+}
+
+struct DorkyEventIdentifier {
+  // this is a workaround for not having unique event id's in MC                                                                                   
+     unsigned long int run, event;
+     float trks_d0;
+     float hyp_lt_pt, hyp_lt_eta, hyp_lt_phi;
+     bool operator < (const DorkyEventIdentifier &) const;
+     bool operator == (const DorkyEventIdentifier &) const;
+};
+
+bool DorkyEventIdentifier::operator < (const DorkyEventIdentifier &other) const
+{
+     if (run != other.run)
+          return run < other.run;
+     if (event != other.event)
+          return event < other.event;
+     // the floating point numbers are not easy, because we're                                                                                        
+     // comapring ones that are truncated (because they were written                                                                                  
+     // to file and read back in) with ones that are not truncated.                                                                                   
+     if (fabs(trks_d0 - other.trks_d0) > 1e-6 * trks_d0)
+       return trks_d0 < other.trks_d0;
+     if (fabs(hyp_lt_pt - other.hyp_lt_pt) > 1e-6 * hyp_lt_pt)
+       return hyp_lt_pt < other.hyp_lt_pt;
+     if (fabs(hyp_lt_eta - other.hyp_lt_eta) > 1e-6 * hyp_lt_eta)
+       return hyp_lt_eta < other.hyp_lt_eta;
+     if (fabs(hyp_lt_phi - other.hyp_lt_phi) > 1e-6 * hyp_lt_phi)
+       return hyp_lt_phi < other.hyp_lt_phi;
+     // if the records are exactly the same, then r1 is not less than                                                                                 
+     // r2.  Duh!                                                                                                                                     
+     return false;
+}
+
+bool DorkyEventIdentifier::operator == (const DorkyEventIdentifier &other) const
+{
+     if (run != other.run)
+          return false;
+     if (event != other.event)
+          return false;
+     // the floating point numbers are not easy, because we're                                                                                        
+     // comapring ones that are truncated (because they were written                                                                                  
+     // to file and read back in) with ones that are not truncated.                                                                                   
+     if (fabs(trks_d0 - other.trks_d0) > 1e-6 * trks_d0)
+          return false;
+     if (fabs(hyp_lt_pt - other.hyp_lt_pt) > 1e-6 * hyp_lt_pt)
+          return false;
+     if (fabs(hyp_lt_eta - other.hyp_lt_eta) > 1e-6 * hyp_lt_eta)
+          return false;
+     if (fabs(hyp_lt_phi - other.hyp_lt_phi) > 1e-6 * hyp_lt_phi)
+          return false;
+     return true;
+}
+
+static std::set<DorkyEventIdentifier> already_seen;
+bool is_duplicate (const DorkyEventIdentifier &id)
+{
+     std::pair<std::set<DorkyEventIdentifier>::const_iterator, bool> ret =
+          already_seen.insert(id);
+     return !ret.second;
+}
+

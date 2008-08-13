@@ -161,11 +161,11 @@ bool additionalZveto() {
   bool veto=false;
 
   // first, look for Z->mumu
-  for (int i=0; i < cms2.mus_p4().size(); i++) {
+  for (unsigned int i=0; i < cms2.mus_p4().size(); i++) {
     if (cms2.mus_p4().at(i).pt() < 20.)     continue;
     if (!goodMuonWithoutIsolation(i)) continue;
 
-    for (int j=i+1; j < cms2.mus_p4().size(); j++) {
+    for (unsigned int j=i+1; j < cms2.mus_p4().size(); j++) {
       if (cms2.mus_p4().at(j).pt() < 20.) continue;
       if (!goodMuonWithoutIsolation(j)) continue;
       if (cms2.mus_charge().at(i) == cms2.mus_charge().at(j)) continue;
@@ -182,11 +182,11 @@ bool additionalZveto() {
   }
 
   // now, look for Z->ee
-  for (int i=0; i < cms2.els_p4().size(); i++) {
+  for (unsigned int i=0; i < cms2.els_p4().size(); i++) {
     if (cms2.els_p4().at(i).pt() < 20.)     continue;
     if (!goodElectronWithoutIsolation(i)) continue;
 
-    for (int j=i+1; j<cms2.els_p4().size(); j++) {
+    for (unsigned int j=i+1; j<cms2.els_p4().size(); j++) {
       if (cms2.els_p4().at(j).pt() < 20.) continue;
       if (!goodElectronWithoutIsolation(j)) continue;
       if (cms2.els_charge().at(i) == cms2.els_charge().at(j)) continue;
@@ -223,45 +223,4 @@ void dumpDocLines() {
   }
   // Clean up
   delete pdg;
-}
-
-void correctMETmuons_crossedE(double& met, double& metPhi, 
-			      double muon_pt, double muon_phi,
-			      double muon_track_theta, double muon_track_phi,
-			      double mu_crossedem_dep, double mu_crossedhad_dep, double mu_crossedho_dep ) {
-
-  // first, account for muon momentum
-  double metx =  met*cos(metPhi);
-  double mety =  met*sin(metPhi);
-  double pt0  =  muon_pt; 
-  double phi0 =  muon_phi; 
-  metx -= pt0*cos(phi0);
-  mety -= pt0*sin(phi0);
-  
-  
-  met = sqrt(metx*metx+mety*mety);
-  metPhi = atan2(mety, metx);
-   
-   double muEx = 0.0;
-   double muEy = 0.0;
-   
-   
-   // use muon position at the outer most state of the silicon track if 
-   // TrackExtra is available and momentum direction at the origin 
-   // otherwise. Both should be fine.
-   // NOTICE: MET is built out of towers, which are 5x5 ECAL crystals + one 
-   // element of HCAL and HO. Muon energy is reported for individual crossed 
-   // elements of all the detectors and 3x3 elements of each time as an 
-   // alternative way of energy calculation.
-   double theta = muon_track_theta;
-   double phi   = muon_track_phi;
-	 
-   muEx += ( mu_crossedem_dep + mu_crossedhad_dep + mu_crossedho_dep )*sin(theta)*cos( phi );
-   muEy += ( mu_crossedem_dep + mu_crossedhad_dep + mu_crossedho_dep )*sin(theta)*sin( phi );
-   
-   
-   metx = met*cos(metPhi) + muEx;
-   mety = met*sin(metPhi) + muEy;
-   met   = sqrt(metx*metx + mety*mety);
-   metPhi = atan2(mety, metx);
 }
