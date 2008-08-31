@@ -18,6 +18,5 @@ float mmm(int i, int j);
 bool goodLeptonIsolated(int bucket, int first, int second, int third);
 float ptLowestPtLepton(int bucket, int first, int second, int third);
 bool passTriggerLeptonMinPtCut(int bucket, int first, int second, int third, float triggerLeptonMinPtCut);
-TString printCand(seint bucket, int first, int second, int third);
- 
+TString printCand(int bucket, int first, int second, int third);
 #endif

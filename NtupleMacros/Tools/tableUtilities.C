@@ -1,8 +1,7 @@
-#include <iomanip>
 #include <sstream>
-#include <fstream>
+#include <iomanip>
 
-const char* printTable(const char* mode, const char* pattern, const int numBins) {
+const char* printTrilepTable(const char* mode, const char* pattern, const int numBins) {
 
   const int allBuckets = 20;
   char *suffix[allBuckets+1];
@@ -32,7 +31,6 @@ const char* printTable(const char* mode, const char* pattern, const int numBins)
    
    for ( int i = 0; i < allBuckets+1; ++i ) {
       TH1* hist = (TH1*)gFile->Get(Form("%s_%s",pattern,suffix[i]));
-      // cout << "Reading histogram: " << Form("%s_%s",pattern,suffix[i]) << endl;
       if ( hist != 0 ) {
          histos[i] = hist;
       } else {
@@ -69,28 +67,3 @@ const char* printTable(const char* mode, const char* pattern, const int numBins)
    return stream.str().c_str();
 
 }
-
-void doTableNjetBothLeptonsVeto() {
-   // Load and compile something to allow proper treatment of vectors
-   // Not clear that it is needed
-   gROOT->LoadMacro("loader.C+");
-
-   // Load various tools
-   gROOT->ProcessLine(".x setup.C");
-
-   ofstream file("tables_both.txt");
-
-   file << " NjetsBothLeptonsVeto " << endl;
-   file << printTable("WZ","wz_hNjetsBothLeptonsVeto",5);
-   file << printTable("DYee","DYee_hNjetsBothLeptonsVeto",5);
-   file << printTable("DYmm","DYmm_hNjetsBothLeptonsVeto",5);
-   file << printTable("DYtautau","DYtautau_hNjetsBothLeptonsVeto",5);
-   file << printTable("tt","tt_hNjetsBothLeptonsVeto",5);
-   file << printTable("wjets","wjets_hNjetsBothLeptonsVeto",5);
-   file << printTable("ww","ww_hNjetsBothLeptonsVeto",5);
-   file << printTable("zz","zz_hNjetsBothLeptonsVeto",5);
-   file << printTable("tW","tW_hNjetsBothLeptonsVeto",5);
-   
-   file.close();
-}
-
