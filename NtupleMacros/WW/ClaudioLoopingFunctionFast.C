@@ -21,7 +21,7 @@ using namespace std;
 #ifndef __CINT__
 #include "CMS2_Class.h"
 CMS2 cms2;
-#include "selectionsFast.C"
+#include "../Tools/selections.C"
 #endif
 
 static int hypos_total_n[4];
@@ -123,7 +123,7 @@ bool is_duplicate (const DorkyEventIdentifier &id)
 // filter events by process
 bool filterByProcess( enum Sample sample ) {
   switch (sample) {
-  case WW: case WZ: case ZZ: 
+  case WW: case WZ: case ZZ: case tW:
     return true;
   case Wjets:
     return cms2.evt_CSA07Process() < 11;
