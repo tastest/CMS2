@@ -23,6 +23,7 @@
 //==============================================================
 {
 // Output file
+//char* outFile = "/home/users/fkw/CMS/CMS2/NtupleMacros/WW/myHist_WW_fast.root";
 char* outFile = "myHist_WW_fast.root";
 
 // Flags for files to run over
@@ -42,7 +43,8 @@ gROOT->SetMacroPath((string(gROOT->GetMacroPath()) + ":" + "../Tools/").c_str())
 gROOT->ProcessLine(".x setup.C");
 
 // Load and compile the looping code
-gROOT->ProcessLine(".L ClaudioLoopingFunctionFast.C+");
+//gROOT->ProcessLine(".L fkwLoopingFunctionFast.C+");
+//gROOT->ProcessLine(".L ClaudioLoopingFunctionFast.C+");
 
 //WW file
 if (runWW) {
@@ -208,5 +210,24 @@ if (runtW) {
 }
 
 //save all the histograms
-saveHist(outFile);
+//saveHist(outFile);
+ cout << "got up to here" << endl;
+ TList* list = gDirectory->GetList() ;
+ TIterator* iter = list->MakeIterator();
+ 
+ TRegexp re("*",kTRUE) ;
+ 
+ TFile outf(outFile,"RECREATE") ;
+ while(obj=iter->Next()) {
+   if (TString(obj->GetName()).Index(re)>=0) {
+     obj->Write() ;
+     cout << "." ;
+     cout.flush() ;
+   }
+ }
+ cout << endl ;
+ outf.Close() ;
+ 
+ delete iter ;
+
 }

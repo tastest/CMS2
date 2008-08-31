@@ -106,6 +106,44 @@ bool pass2Met (int i_hyp) {
   return true;
 }
 
+double nearestDeltaPhi(double Phi, int i_hyp)
+{
+  //WARNING!  This was designed to work in a dilepton environment - NOT a trilepton 
+  double tightDPhi = TMath::Min(TMath::Abs(cms2.hyp_lt_p4()[i_hyp].Phi() - Phi), 2*TMath::Pi() - TMath::Abs(cms2.hyp_lt_p4()[i_hyp].Phi() - Phi));
+  double looseDPhi = TMath::Min(TMath::Abs(cms2.hyp_ll_p4()[i_hyp].Phi() - Phi), 2*TMath::Pi() - TMath::Abs(cms2.hyp_ll_p4()[i_hyp].Phi() - Phi));
+
+  return TMath::Min(tightDPhi, looseDPhi);
+
+}//END nearest DeltaPhi                                                                                                                                 
+
+double MetSpecial(double Met, double MetPhi, int i_hyp)
+{
+  //Warning, this was designed to work in a dilepton environment - NOT a trilepton  
+  double DeltaPhi = nearestDeltaPhi(MetPhi,i_hyp);
+
+  if (DeltaPhi < TMath::Pi()/2) return Met*TMath::Sin(DeltaPhi);
+  else return Met;
+
+  return -1.0;
+}//END MetSpecial calculation  
+
+//--------------------------------------------
+// Pass 4 MET selection
+// Use MetSpecial from CDF for now
+//--------------------------------------------
+bool pass4Met(int i_hyp) {
+  double metspec = MetSpecial(cms2.hyp_met()[i_hyp], cms2.hyp_metPhi()[i_hyp], i_hyp);
+  if (cms2.hyp_type()[i_hyp] == 0 || cms2.hyp_type()[i_hyp] == 3) {
+    if ( metspec < 20 ) return false;
+    //if ( metspec < 20 && hyp_p4->mass() < 90 ) return false;
+    if ( cms2.hyp_met()[i_hyp] < 45 ) return false;
+  }
+  else if (cms2.hyp_type()[i_hyp] == 1 || cms2.hyp_type()[i_hyp] == 2) {
+    //if ( metspec < 20 && hyp_p4->mass() < 90 ) return false;
+    if ( metspec < 20 ) return false;
+  }
+  return true;
+}
 //-------------------------------------------------
 // Auxiliary function to scan the doc line and 
 // identify DY-> ee vs mm vs tt
