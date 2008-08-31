@@ -313,6 +313,11 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
     }
   }
   
+//   std::cout << std::endl;
+//   for ( unsigned int i = 0; i < allBuckets; ++i ) {
+//     cout << "Bucket: " << i << " entries: " << trilepCounter[i] << endl;
+//   }
+
   std::cout << std::endl;
   if ( nEventsChain != nEventsTotal ) {
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
