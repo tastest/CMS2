@@ -224,10 +224,11 @@ float ptLowestPtLepton(int bucket, int first, int second, int third) {
 
 }
 
-bool passTriggerLeptonMinPtCut(int bucket, int first, int second, int third, float triggerLeptonMinPtCut) {
-  // return true if at least one lepton in trilepton candidate passes pt > triggerLeptonMinPtCut
-
-  float array[3] = {0,0,0};
+float* triLeptonPtArray(int bucket, int first, int second, int third) {
+  //
+  // returns pt of leptons in trilepton cand.
+  //
+  float *array = new float[3];
 
   if ( bucket == 16 ||
        bucket == 17 ||
@@ -262,8 +263,17 @@ bool passTriggerLeptonMinPtCut(int bucket, int first, int second, int third, flo
     array[1] = cms2.mus_p4()[second].pt();
     array[2] = cms2.els_p4()[third].pt();
   } else {
-    cout << "ERROR: ptLowestPtLepton tried to use not existing bucket!" << endl;
+    cout << "ERROR: triLeptonPtArray tried to use not existing bucket!" << endl;
   }
+
+  return array;
+}
+
+
+bool passTriggerLeptonMinPtCut(int bucket, int first, int second, int third, float triggerLeptonMinPtCut) {
+  // return true if at least one lepton in trilepton candidate passes pt > triggerLeptonMinPtCut
+
+  float* array = triLeptonPtArray(bucket,first,second,third);
 
   // sort array
   sort(array,array+3);
@@ -539,10 +549,10 @@ float calcPrimZMass(int bucket, int first, int second) {
 
 }
 
-bool passMETAllCut(int bucket, float metAll, float electronMETAllCut, float muonMETAllCut) {
-  // cut on MET all
-  // use electronMETAllCut if lepton not belonging to the primary Z is an electron
-  // use muonMETAllCut if lepton not belonging to the primary Z is an muon
+bool passMETCut(int bucket, float metAll, float electronMETCut, float muonMETCut) {
+  // cut on MET 
+  // use electronMETCut if lepton not belonging to the primary Z is an electron
+  // use muonMETCut if lepton not belonging to the primary Z is an muon
 
   bool result = false;
   
@@ -550,12 +560,12 @@ bool passMETAllCut(int bucket, float metAll, float electronMETAllCut, float muon
        bucket == 18 ||
        bucket == 7 ||
        bucket == 6 ) {
-    result = metAll > electronMETAllCut;
+    result = metAll > electronMETCut;
   } else if ( bucket == 14 ||
 	      bucket == 11 ||
 	      bucket == 1 ||
 	      bucket == 2 ) {
-    result = metAll > muonMETAllCut;
+    result = metAll > muonMETCut;
   }
 
   return result;

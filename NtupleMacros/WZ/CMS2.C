@@ -97,11 +97,12 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
   const float zmass = 91.19; //just making sure that I use the same Z mass everywhere!
 
   // CUTS
-  const int   goodLeptonsCut        = 3;   // good lepton cut
-  const float triggerLeptonMinPtCut = 20.; // one of the leptons of the trilepton canidate has to have at least this pt
-  const float leptonMinPtCut        = 10.; // all leptons of the trilepton canidate have to have at least this pt
-  const float electronMETAllCut     = 40.; // cut on METAll if lepton not belonging to primary Z is an electron
-  const float muonMETAllCut         = 20.; // cut on METAll if lepton not belonging to primary Z is an muon
+  const int   goodLeptonsCut        = 3;     // good lepton cut
+  const float triggerLeptonMinPtCut = 20.;   // one of the leptons of the trilepton canidate has to have at least this pt
+  const float leptonMinPtCut        = 10.;   // all leptons of the trilepton canidate have to have at least this pt
+  const float electronMETCut        = 40.;   // cut on MET if lepton not belonging to primary Z is an electron
+  const float muonMETCut            = 20.;   // cut on MET if lepton not belonging to primary Z is an muon
+  bool        useMETAll             = true; // use metAll corrected for all muons instead of met corrected for muons from cand.
 
   // file loop
   TIter fileIter(listOfFiles);
@@ -143,18 +144,21 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
       }
       if (!processEvent) continue;
       
-//       // metAll correction for all muons, not necessary if bugfix in HypTrilepMaker for NTuples used
-//       double metAll = cms2.evt_met();
-//       double metAllPhi = cms2.evt_metPhi();
+      double metAll = 0;
+      if ( useMETAll ) {
+	// metAll correction for all muons, not necessary if bugfix in HypTrilepMaker for NTuples used
+	metAll = cms2.evt_met();
+	double metAllPhi = cms2.evt_metPhi();
       
-//       for ( unsigned int muon = 0;
-// 	    muon < cms2.mus_p4().size();
-//             ++muon ) {
-// 	correctMETmuons_crossedE(metAll, metAllPhi, 
-// 				 cms2.mus_p4()[muon].pt(), cms2.mus_p4()[muon].phi(),
-// 				 cms2.mus_trk_p4()[muon].theta(), cms2.mus_trk_p4()[muon].phi(),
-// 				 cms2.mus_e_em()[muon], cms2.mus_e_had()[muon],cms2.mus_e_ho()[muon]);
-//       }
+	for ( unsigned int muon = 0;
+	      muon < cms2.mus_p4().size();
+	      ++muon ) {
+	  correctMETmuons_crossedE(metAll, metAllPhi, 
+				   cms2.mus_p4()[muon].pt(), cms2.mus_p4()[muon].phi(),
+				   cms2.mus_trk_p4()[muon].theta(), cms2.mus_trk_p4()[muon].phi(),
+				   cms2.mus_e_em()[muon], cms2.mus_e_had()[muon],cms2.mus_e_ho()[muon]);
+	}
+      }
 
       // loop over trilepton candidates
       for ( unsigned int cand = 0; 
@@ -168,6 +172,9 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
 
 	// use met corrected for all muons or met corrected for muons in hyp
 	double met = cms2.hyp_trilep_met()[cand];
+	if ( useMETAll ) {
+	  met = metAll;
+	}
 
 	// count good leptons and all leptons
 	// good lepton is goodIsolated<lepton>
@@ -209,7 +216,7 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
 	if( !inZmassWindow(mZPrim) ) continue;
 
 	// CUT: MET cut
-	if ( !passMETAllCut(bucket,met,electronMETAllCut,muonMETAllCut) ) continue;
+	if ( !passMETCut(bucket,met,electronMETCut,muonMETCut) ) continue;
 
 	float mZSec = calcSecZMass(bucket,zArray,zmass);
 	  
