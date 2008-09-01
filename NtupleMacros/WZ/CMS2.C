@@ -63,79 +63,34 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
   suffix[20] = "all";
 
   // declare histograms
-  TH1F* hLowestPtGood[allBuckets];
+  TH1F* hPtFirst[allBuckets];
+  TH1F* hPtSecond[allBuckets];
+  TH1F* hPtThird[allBuckets];
+  TH1F* hMET[allBuckets];
+  TH1F* hNjets[allBuckets];
 
-  TH1F* hMETFinal[allBuckets];
-  TH1F* hMETAllFinal[allBuckets];
-
-  TH1F* hZmassFinal[allBuckets];
-  TH1F* h2ndZmass[allBuckets];
-
-  TH1F* hNjetsFinal[allBuckets];
-  TH1F* hNjetsNoMetCut[allBuckets];
-  TH1F* hNjetsGoodLeptonsVeto[allBuckets];
-  TH1F* hNjets2ndZVeto[allBuckets];
-  TH1F* hNjetsBothLeptonsVeto[allBuckets];
-  TH1F* hNjetsBucket[allBuckets];
-
-  TH1F* hNGoodLeptons[allBuckets];
-  TH1F* hNAllLeptons[allBuckets];
-    
   for (unsigned int i=0; i<=allBuckets; ++i) {
 
-    // plots of pt of lowest pt lepton in trilepton candidate, only requires goodIsolated<lepton> 20/X/10
-    const int nbins = 4;
-    float bins[nbins+1] = {0.,5.,10.,20.,30.};
-    hLowestPtGood[i] = book1DVarHist(Form("%s_hLowestPtGood_%s",prefix,suffix[i]),Form("%s_nLowestPtGood_%s",prefix,suffix[i]),nbins,bins,"p_{T} [GeV]","trilepton cand.");   
+    // Pt of first,second,third lepton
+    const int nBinsPt = 40;
+    const float lowBinPt = 0.;
+    const float highBinPt = 200;
+    hPtFirst[i] = book1DHist(Form("%s_hPtFirst_%s",prefix,suffix[i]),Form("%s_hPtFirst_%s",prefix,suffix[i]),nBinsPt,lowBinPt,highBinPt,"p_{T} [GeV]","lepton");   
+    hPtSecond[i] = book1DHist(Form("%s_hPtSecond_%s",prefix,suffix[i]),Form("%s_hPtSecond_%s",prefix,suffix[i]),nBinsPt,lowBinPt,highBinPt,"p_{T} [GeV]","lepton");   
+    hPtThird[i] = book1DHist(Form("%s_hPtThird_%s",prefix,suffix[i]),Form("%s_hPtThird_%s",prefix,suffix[i]),nBinsPt,lowBinPt,highBinPt,"p_{T} [GeV]","lepton");   
 
-    // MET plots, require goodIsolated<lepton> 20/X/10 and Z candidate in Z window cut
-    const int nBinsMET = 50;
+    // MET 
+    const int nBinsMET = 25;
     const float lowBinMET = 0.;
-    const float highBinMET = 500;
-    hMETFinal[i] = book1DHist(Form("%s_hMETFinal_%s",prefix,suffix[i]),Form("%s_nMETFinal_%s",prefix,suffix[i]),nBinsMET,lowBinMET,highBinMET,"MET [GeV]","trilepton cand.");   
-    hMETAllFinal[i] = book1DHist(Form("%s_hMETAllFinal_%s",prefix,suffix[i]),Form("%s_nMETAllFinal_%s",prefix,suffix[i]),nBinsMET,lowBinMET,highBinMET,"MET [GeV]","trilepton cand.");   
+    const float highBinMET = 250;
+    hMET[i] = book1DHist(Form("%s_hMET_%s",prefix,suffix[i]),Form("%s_hMET_%s",prefix,suffix[i]),nBinsMET,lowBinMET,highBinMET,"MET [GeV]","trilepton cand.");   
 
-    // Z mass plot, requires MET cut and goodIsolated<lepton> 20/X/10
-    const int nBinsZmass = 100;
-    const float lowBinZmass = 0.;
-    const float highBinZmass = 200.;
-    hZmassFinal[i] = book1DHist(Form("%s_hZmassFinal_%s",prefix,suffix[i]),Form("%s_nZmassFinal_%s",prefix,suffix[i]),nBinsZmass,lowBinZmass,highBinZmass,"Mass [GeV]","trilepton cand.");   
-
-    // Z mass plot of 2nd Z candidate, requires Z candidate in Z windows, goodIsolated<lepton> 20/X/10 and MET cut 
-    h2ndZmass[i] = book1DHist(Form("%s_h2ndZmass_%s",prefix,suffix[i]),Form("%s_n2ndZmass_%s",prefix,suffix[i]),nBinsZmass,lowBinZmass,highBinZmass,"Mass [GeV]","trilepton cand.");   
-
-    // njets plot, requires Z candidate in Z windows, goodIsolated<lepton> 20/X/10 and MET cut
-    const int nBinsNjets = 10;
+    // nJets
+    const int nBinsNjets = 7;
     const float lowBinNjets = 0.;
-    const float highBinNjets = 10.;
-    hNjetsFinal[i] = book1DHist(Form("%s_hNjetsFinal_%s",prefix,suffix[i]),Form("%s_nNjetsFinal_%s",prefix,suffix[i]),nBinsNjets,lowBinNjets,highBinNjets,"Njets","trilepton cand.");   
-    hNjetsNoMetCut[i] = book1DHist(Form("%s_hNjetsNoMetCut_%s",prefix,suffix[i]),Form("%s_nNjetsNoMetCut_%s",prefix,suffix[i]),nBinsNjets,lowBinNjets,highBinNjets,"Njets","trilepton cand.");   
+    const float highBinNjets = 7.;
+    hNjets[i] = book1DHist(Form("%s_hNjets_%s",prefix,suffix[i]),Form("%s_hNjets_%s",prefix,suffix[i]),nBinsNjets,lowBinNjets,highBinNjets,"Njets","trilepton cand.");   
 
-    // njets plot, requires Z candidate in Z windows, goodIsolated<lepton> 20/X/10 and MET cut and goodLeptonsVeto
-    hNjetsGoodLeptonsVeto[i] = book1DHist(Form("%s_hNjetsGoodLeptonsVeto_%s",prefix,suffix[i]),Form("%s_nNjetsGoodLeptonsVeto_%s",prefix,suffix[i]),nBinsNjets,lowBinNjets,highBinNjets,"Njets","trilepton cand.");   
-
-    // njets plot, requires Z candidate in Z windows, goodIsolated<lepton> 20/X/10 and MET cut and 2nd Z candidate veto
-    hNjets2ndZVeto[i] = book1DHist(Form("%s_hNjets2ndZVeto_%s",prefix,suffix[i]),Form("%s_nNjets2ndZVeto_%s",prefix,suffix[i]),nBinsNjets,lowBinNjets,highBinNjets,"Njets","trilepton cand.");   
-
-    // njets plot, requires Z candidate in Z windows, goodIsolated<lepton> 20/X/10 and MET cut, goodLeptonsVeto and 2nd Z candidate veto
-    hNjetsBothLeptonsVeto[i] = book1DHist(Form("%s_hNjetsBothLeptonsVeto_%s",prefix,suffix[i]),Form("%s_nNjetsBothLeptonsVeto_%s",prefix,suffix[i]),nBinsNjets,lowBinNjets,highBinNjets,"Njets","trilepton cand.");   
-
-    // njets plot with the same cuts for all buckets: goodIsolated<lepton> 20/X/10 and MET cut
-    hNjetsBucket[i] = book1DHist(Form("%s_hNjetsBucket_%s",prefix,suffix[i]),Form("%s_nNjetsBucket_%s",prefix,suffix[i]),nBinsNjets,lowBinNjets,highBinNjets,"Njets","trilepton cand.");   
-
-    // nlepton plots, requires Z candidate in Z windows, goodIsolated<lepton> 20/X/10 and MET cut
-    const int nBinsNGoodLeptons = 20;
-    const float lowBinNGoodLeptons = 0.;
-    const float highBinNGoodLeptons = 20.;
-    hNGoodLeptons[i] = book1DHist(Form("%s_hNGoodLeptons_%s",prefix,suffix[i]),Form("%s_nNGoodLeptons_%s",prefix,suffix[i]),nBinsNGoodLeptons,lowBinNGoodLeptons,highBinNGoodLeptons,"NLeptons","trilepton cand.");   
-    hNAllLeptons[i] = book1DHist(Form("%s_hNAllLeptons_%s",prefix,suffix[i]),Form("%s_nNAllLeptons_%s",prefix,suffix[i]),nBinsNGoodLeptons,lowBinNGoodLeptons,highBinNGoodLeptons,"NLeptons","trilepton cand.");   
-
-  }
-
-  // trilepton candidate per bucket
-  float trilepCounter[allBuckets];
-  for ( unsigned int i = 0; i < allBuckets; ++i ) {
-    trilepCounter[i] = 0.;
   }
 
   //CONSTANTS
@@ -188,18 +143,18 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
       }
       if (!processEvent) continue;
       
-      // metAll correct, buggy in ntuples
-      double metAll = cms2.evt_met();
-      double metAllPhi = cms2.evt_metPhi();
+//       // metAll correction for all muons, not necessary if bugfix in HypTrilepMaker for NTuples used
+//       double metAll = cms2.evt_met();
+//       double metAllPhi = cms2.evt_metPhi();
       
-      for ( unsigned int muon = 0;
-	    muon < cms2.mus_p4().size();
-            ++muon ) {
-	correctMETmuons_crossedE(metAll, metAllPhi, 
-				 cms2.mus_p4()[muon].pt(), cms2.mus_p4()[muon].phi(),
-				 cms2.mus_trk_p4()[muon].theta(), cms2.mus_trk_p4()[muon].phi(),
-				 cms2.mus_e_em()[muon], cms2.mus_e_had()[muon],cms2.mus_e_ho()[muon]);
-      }
+//       for ( unsigned int muon = 0;
+// 	    muon < cms2.mus_p4().size();
+//             ++muon ) {
+// 	correctMETmuons_crossedE(metAll, metAllPhi, 
+// 				 cms2.mus_p4()[muon].pt(), cms2.mus_p4()[muon].phi(),
+// 				 cms2.mus_trk_p4()[muon].theta(), cms2.mus_trk_p4()[muon].phi(),
+// 				 cms2.mus_e_em()[muon], cms2.mus_e_had()[muon],cms2.mus_e_ho()[muon]);
+//       }
 
       // loop over trilepton candidates
       for ( unsigned int cand = 0; 
@@ -210,6 +165,9 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
 	int first = cms2.hyp_trilep_first_index()[cand];
 	int second = cms2.hyp_trilep_second_index()[cand];
 	int third = cms2.hyp_trilep_third_index()[cand];
+
+	// use met corrected for all muons or met corrected for muons in hyp
+	double met = cms2.hyp_trilep_met()[cand];
 
 	// count good leptons and all leptons
 	// good lepton is goodIsolated<lepton>
@@ -231,93 +189,60 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
 				 second,
 				 third) ) continue;
 	
+	// CUT: do nothing unless pt = 20/X/10
+	if ( !passTriggerLeptonMinPtCut(bucket,first,second,third,triggerLeptonMinPtCut) ) continue;
+
 	// determine pt of lowest pt lepton
 	float lowest = ptLowestPtLepton(bucket,first,second,third);
       
-	hLowestPtGood[bucket]->Fill(lowest,weight);
-	hLowestPtGood[allBuckets]->Fill(lowest,weight);
-	
-	// CUT: do nothing unless pt = 20/X/10
-	if ( !passTriggerLeptonMinPtCut(bucket,first,second,third,triggerLeptonMinPtCut) ) continue;
+	// CUT: do nothing if lowest Pt lepton < leptonMinPtCut
 	if ( lowest < leptonMinPtCut ) continue;
 
 	// identify primary Z candidate
 	unsigned int zArray[3] = {999999,999999,999999};
 	calcPrimZ(bucket,first,second,third,zmass,zArray);
+
 	// calculate mass of primary Z candiate
 	float mZPrim = calcPrimZMass(bucket,zArray[0],zArray[1]);
 
- 	std::vector<LorentzVector> correctedJets = correctJetsForElectrons(bucket,first,second,third);
-	// distributions for Zmass
-	if ( passMETAllCut(bucket,metAll,electronMETAllCut,muonMETAllCut) ){
-	  hNjetsBucket[bucket]->Fill(correctedJets.size(),weight);
-	  hNjetsBucket[allBuckets]->Fill(correctedJets.size(),weight);
-
-	  hZmassFinal[bucket]->Fill(mZPrim, weight);
-	  hZmassFinal[allBuckets]->Fill(mZPrim, weight);
-	}
 	// CUT: do nothing unless one of the opposite sign same flavor combos is in the zmass window:
 	if( !inZmassWindow(mZPrim) ) continue;
 
-	hMETFinal[bucket]->Fill(cms2.hyp_trilep_met()[cand],weight);
-	hMETFinal[allBuckets]->Fill(cms2.hyp_trilep_met()[cand],weight);
-	hMETAllFinal[bucket]->Fill(metAll,weight);
-	hMETAllFinal[allBuckets]->Fill(metAll,weight);
-
-	hNjetsNoMetCut[bucket]->Fill(correctedJets.size(),weight);
-	hNjetsNoMetCut[allBuckets]->Fill(correctedJets.size(),weight);
-
 	// CUT: MET cut
-	if ( !passMETAllCut(bucket,metAll,electronMETAllCut,muonMETAllCut) ) continue;
-
-	hNjetsFinal[bucket]->Fill(correctedJets.size(),weight);
-	hNjetsFinal[allBuckets]->Fill(correctedJets.size(),weight);
-
-	hNGoodLeptons[bucket]->Fill(goodLeptons,weight);
-	hNGoodLeptons[allBuckets]->Fill(goodLeptons,weight);
-
-	hNAllLeptons[bucket]->Fill(allLeptons,weight);
-	hNAllLeptons[allBuckets]->Fill(allLeptons,weight);
+	if ( !passMETAllCut(bucket,met,electronMETAllCut,muonMETAllCut) ) continue;
 
 	float mZSec = calcSecZMass(bucket,zArray,zmass);
-
-	if ( mZSec == 999999. ) {
-	  // if no 2nd Z candidate is found, fill 0
-	  h2ndZmass[bucket]->Fill(0., weight);
-	  h2ndZmass[allBuckets]->Fill(0., weight);
-	} else {
-	  h2ndZmass[bucket]->Fill(mZSec, weight);
-	  h2ndZmass[allBuckets]->Fill(mZSec, weight);
-	}
 	  
-	// njet plots with all cuts except goodLeptonsVeto
-	if ( !inZmassWindow(mZSec) ) {
-	  hNjets2ndZVeto[bucket]->Fill(correctedJets.size(),weight);
-	  hNjets2ndZVeto[allBuckets]->Fill(correctedJets.size(),weight);
-	}
-
 	// CUT: goodLeptonsVeto
 	if ( goodLeptons > goodLeptonsCut ) continue;
 
-	hNjetsGoodLeptonsVeto[bucket]->Fill(correctedJets.size(),weight);
-	hNjetsGoodLeptonsVeto[allBuckets]->Fill(correctedJets.size(),weight);
-
 	// CUT: veto 2nd Z candidate
 	if ( inZmassWindow(mZSec) ) continue;
-	trilepCounter[bucket] += weight;
-
-	hNjetsBothLeptonsVeto[bucket]->Fill(correctedJets.size(),weight);
-	hNjetsBothLeptonsVeto[allBuckets]->Fill(correctedJets.size(),weight);
 	
+	// correct number of jets for electrons in candidate, not necessary if bugfix in TriLeptonMaker is used for NTuples
+ 	std::vector<LorentzVector> correctedJets = correctJetsForElectrons(bucket,first,second,third);
+
+	// array of lepton pt for trilep. cand.
+	float *array = triLeptonPtArray(bucket,first,second,third); 
+
+	// fill histograms
+	hPtFirst[bucket]->Fill(array[0],weight);
+	hPtSecond[bucket]->Fill(array[1],weight);
+	hPtThird[bucket]->Fill(array[2],weight);
+	hPtFirst[allBuckets]->Fill(array[0],weight);
+	hPtSecond[allBuckets]->Fill(array[1],weight);
+	hPtThird[allBuckets]->Fill(array[2],weight);
+
+	hMET[bucket]->Fill(met,weight);
+	hMET[allBuckets]->Fill(met,weight);
+
+	hNjets[bucket]->Fill(correctedJets.size(),weight);
+	hNjets[allBuckets]->Fill(correctedJets.size(),weight);
+
       }
     }
   }
   
-//   std::cout << std::endl;
-//   for ( unsigned int i = 0; i < allBuckets; ++i ) {
-//     cout << "Bucket: " << i << " entries: " << trilepCounter[i] << endl;
-//   }
-
   std::cout << std::endl;
   if ( nEventsChain != nEventsTotal ) {
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;

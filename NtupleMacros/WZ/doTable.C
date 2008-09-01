@@ -12,7 +12,7 @@ void doTable() {
   gROOT->ProcessLine(".L ../Tools/tableUtilities.C");
 
   // histogram name
-  const char* histname = "hNjetsBothLeptonsVeto";
+  const char* histname = "hNjets";
   unsigned int nBins = 5;
 
   cout << "oli" << endl;
