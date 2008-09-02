@@ -22,10 +22,16 @@ using namespace std;
 #include "CMS2_Class.h"
 CMS2 cms2;
 #include "../Tools/selections.C"
+#include "../Tools/matchTools.C"
 #endif
 
 static int hypos_total_n[4];
 static double hypos_total_weight[4];
+static unsigned int bGen;
+static unsigned int bbarGen;
+static unsigned int lep;
+static unsigned int alep;
+
 // static double evt_scale1fb;
 
 enum Sample {WW, WZ, ZZ, Wjets, DYee, DYmm, DYtt, ttbar, tW}; // signal samples
@@ -193,11 +199,21 @@ TH1F* hmuSumPt[4];   // sumPt for muon isolation
 TH1F* hmuSumIso[4];  // sum of trk pt, em et, had et in cone of 0.3  
 TH1F* heleRelIso[4]; //  Iso variable defined as pt/(pt+sum) for electron
 TH1F* hmuRelIso[4]; //  Iso variable defined as pt/(pt+sum) for muons
-
-// Unfortunately, our ntuple has no info for electron isolation other than candidate electrons.
-// When counting electrons, we thus can not apply an isolation criteria at this point !!!
-// For muons we only count good isolated muons.
 TH1F* hnJetLepVeto[4]; //njet distribution after requiring numTightLep < 3.
+// fkw September 2008 hists:
+TH1F* hbfoundEta[4]; //eta distribution of gen b or bbar that is within dR<0.2 of found jet.
+TH1F* hbnotfoundEta[4]; //eta distribution of gen b or bbar with no jet found within dR<0.2.
+TH1F* hbfoundPt[4]; //pT distribution of gen b or bbar that is within dR<0.2 of found jet.
+TH1F* hbnotfoundPt[4]; //pT distribution of gen b or bbar with no jet found within dR<0.2.
+TH1F* hbfoundmuondR[4]; // dR between gen b/bbar and reco muon that is not candidate.
+TH1F* hbnotfoundmuondR[4]; // dR between gen b/bbar and reco muon that is not candidate.
+TH1F* hbfoundmuonEta[4]; // eta of closest reco muon that is not candidate and gen b/bbar.
+TH1F* hbnotfoundmuonEta[4]; // eta of closest reco muon that is not candidate and gen b/bbar.
+TH1F* hbfoundmuonPt[4]; // pT of closest reco muon that is not candidate and gen b/bbar.
+TH1F* hbnotfoundmuonPt[4]; // pT of closest reco muon that is not candidate and gen b/bbar.
+TH1F* hbfoundmuonD0sig[4]; // d0 significance of closest reco muon that is not candidate and gen b/bbar.
+TH1F* hbnotfoundmuonD0sig[4]; // d0 significance of closest reco muon that is not candidate and gen b/bbar.
+
 
 void hypo (int i_hyp, double kFactor) 
 {
@@ -207,7 +223,6 @@ void hypo (int i_hyp, double kFactor)
      
      // Require opposite sign
      if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) return;
-//      if ( cms2.hyp_lt_id()[i_hyp] != -11) return;
      
      // Z mass veto using hyp_leptons for ee and mumu final states
      if (cms2.hyp_type()[i_hyp] == 0 || cms2.hyp_type()[i_hyp] == 3) {
@@ -227,17 +242,9 @@ void hypo (int i_hyp, double kFactor)
      if (!processEvent) return;
 #endif
 
-     // fkw is following the logic that was in the WW code that resulted in the February Diboson presentation
-     // As I'm not sure what's implemented in dilepton hypothesis, I'll put the standard cuts here as well.
-     if ( cms2.hyp_njets()[i_hyp] != 0) return;  //only 0-jet bin
-     if ( cms2.hyp_lt_p4()[i_hyp].pt() < 20.0 ) return;  // pt > 20GeV only
-     if ( cms2.hyp_ll_p4()[i_hyp].pt() < 20.0 ) return;  // pt > 20GeV only
-     if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) return;  //opposite charge
-     if ( cms2.hyp_type()[i_hyp] == 0 || cms2.hyp_type()[i_hyp] == 3 ){ //veto Zwindow for ee and mumu
-       if ( inZmassWindow( cms2.hyp_p4()[i_hyp].mass() ) ) return; 
-     }
+     // fkw: There are 2 cuts that were not applied in this:
+     if ( cms2.hyp_njets()[i_hyp] != 2) return;  //only 0-jet bin
      if (!pass4Met(i_hyp)) return; //metspecial cut, and extra tight MET if ee or mumu.
-
      // fkw: now we go back to the standard ttbar selection.
 
      // Dima's MET requirement
@@ -275,7 +282,8 @@ void hypo (int i_hyp, double kFactor)
 	  std::cout << "YUK:  unknown dilepton type = " << cms2.hyp_type()[i_hyp] << std::endl;
 	  return;
      }
-     
+
+     //cout << " passed all cuts for WW " << endl;
      hypos_total_n[myType]++;
      hypos_total_n[3]++;
      hypos_total_weight[myType] += weight;
@@ -459,8 +467,119 @@ void hypo (int i_hyp, double kFactor)
 	       hetaJet4[myType]->Fill(my_hyp_jets_p4[3].Eta(), weight);
 	       hetaJet4[3]->Fill(my_hyp_jets_p4[3].Eta(), weight);
 	  }
+     }//end of if-clause requiring at least one jet
+     //fkw September 2008 histograms
+     if ( bGen != 0) {//this event has at least one b-quark in genps block
+       int iJet = match4vector(cms2.genps_p4()[bGen],cms2.hyp_jets_p4()[i_hyp],0.2);
+       //int iJet = -1;
+       //vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > my_mus_p4(cms2.mus_p4());
+       //ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >  my_bgen_p4(cms2.genps_p4()[bGen]);
+       //cout << " bGen = " << bGen << " bbarGen = " << bbarGen << endl; 
+       int iMuon = match4vector(cms2.genps_p4()[bGen],cms2.mus_p4());
+       //int iMuon = match4vector(my_bgen_p4 , my_mus_p4);
+       //cout << " iJet = " << iJet << " iMuon = " << iMuon << endl;
+       if ( iMuon != -1 && ( 
+	    myType == 0 ||
+	    ( myType == 1 && cms2.hyp_lt_index()[i_hyp] != iMuon && cms2.hyp_ll_index()[i_hyp] != iMuon ) ||
+	    ( myType == 2 && abs(cms2.hyp_lt_id()[i_hyp]) == 11 && cms2.hyp_ll_index()[i_hyp] != iMuon ) ||
+	    ( myType == 2 && abs(cms2.hyp_ll_id()[i_hyp]) == 11 && cms2.hyp_lt_index()[i_hyp] != iMuon )
+	    ) ) {//found a muon other than the candidate leptons
+	 double dR = dRbetweenVectors(cms2.genps_p4()[bGen],cms2.mus_p4()[iMuon]);
+	 double eta = cms2.mus_p4()[iMuon].Eta();
+	 double pt = cms2.mus_p4()[iMuon].Pt();
+	 double d0sig = cms2.mus_d0()[iMuon]/cms2.mus_d0Err()[iMuon];
+	 if( iJet != -1) {//found a matching jet
+	   hbfoundEta[myType]->Fill(cms2.genps_p4()[bGen].Eta(),weight);
+	   hbfoundPt[myType]->Fill(cms2.genps_p4()[bGen].Pt(),weight);
+	   hbfoundEta[3]->Fill(cms2.genps_p4()[bGen].Eta(),weight);
+	   hbfoundPt[3]->Fill(cms2.genps_p4()[bGen].Pt(),weight);
+	   hbfoundmuondR[myType]->Fill(dR,weight);
+	   hbfoundmuonEta[myType]->Fill(eta,weight);
+	   hbfoundmuonPt[myType]->Fill(pt,weight);
+	   hbfoundmuonD0sig[myType]->Fill(d0sig,weight);
+	   hbfoundmuondR[3]->Fill(dR,weight);
+	   hbfoundmuonEta[3]->Fill(eta,weight);
+	   hbfoundmuonPt[3]->Fill(pt,weight);
+	   hbfoundmuonD0sig[3]->Fill(d0sig,weight);
+	 }else {//no matching jet found
+	   hbnotfoundEta[myType]->Fill(cms2.genps_p4()[bGen].Eta(),weight);
+	   hbnotfoundPt[myType]->Fill(cms2.genps_p4()[bGen].Pt(),weight);
+	   hbnotfoundEta[3]->Fill(cms2.genps_p4()[bGen].Eta(),weight);
+	   hbnotfoundPt[3]->Fill(cms2.genps_p4()[bGen].Pt(),weight);
+	   hbnotfoundmuondR[myType]->Fill(dR,weight);
+	   hbnotfoundmuonEta[myType]->Fill(eta,weight);
+	   hbnotfoundmuonPt[myType]->Fill(pt,weight);
+	   hbnotfoundmuonD0sig[myType]->Fill(d0sig,weight);
+	   hbnotfoundmuondR[3]->Fill(dR,weight);
+	   hbnotfoundmuonEta[3]->Fill(eta,weight);
+	   hbnotfoundmuonPt[3]->Fill(pt,weight);
+	   hbnotfoundmuonD0sig[3]->Fill(d0sig,weight);
+	 }
+       } else {//no muon found
+	 if( iJet != -1) {//found a matching jet
+	   hbfoundEta[myType]->Fill(cms2.genps_p4()[bGen].Eta(),weight);
+	   hbfoundPt[myType]->Fill(cms2.genps_p4()[bGen].Pt(),weight);
+	   hbfoundEta[3]->Fill(cms2.genps_p4()[bGen].Eta(),weight);
+	   hbfoundPt[3]->Fill(cms2.genps_p4()[bGen].Pt(),weight);
+	 }else {//no matching jet found
+	   hbnotfoundEta[myType]->Fill(cms2.genps_p4()[bGen].Eta(),weight);
+	   hbnotfoundPt[myType]->Fill(cms2.genps_p4()[bGen].Pt(),weight);
+	   hbnotfoundEta[3]->Fill(cms2.genps_p4()[bGen].Eta(),weight);
+	   hbnotfoundPt[3]->Fill(cms2.genps_p4()[bGen].Pt(),weight);
+	 }
+       }//end of if muon found
+     }//end of if bgen
+     if ( bbarGen != 0) {//this event has at least one bbar-quark in genps block
+       int iJet = match4vector(cms2.genps_p4()[bbarGen],cms2.hyp_jets_p4()[i_hyp],0.2);
+       int iMuon = match4vector(cms2.genps_p4()[bbarGen],cms2.mus_p4());
+       if ( iMuon != -1) {//found a muon
+	 double dR = dRbetweenVectors(cms2.genps_p4()[bbarGen],cms2.mus_p4()[iMuon]);
+	 double eta = cms2.mus_p4()[iMuon].Eta();
+	 double pt = cms2.mus_p4()[iMuon].Pt();
+	 double d0sig = cms2.mus_d0()[iMuon]/cms2.mus_d0Err()[iMuon];
+	 if( iJet != -1) {//found a matching jet
+	   hbfoundEta[myType]->Fill(cms2.genps_p4()[bbarGen].Eta(),weight);
+	   hbfoundPt[myType]->Fill(cms2.genps_p4()[bbarGen].Pt(),weight);
+	   hbfoundEta[3]->Fill(cms2.genps_p4()[bbarGen].Eta(),weight);
+	   hbfoundPt[3]->Fill(cms2.genps_p4()[bbarGen].Pt(),weight);
+	   hbfoundmuondR[myType]->Fill(dR,weight);
+	   hbfoundmuonEta[myType]->Fill(eta,weight);
+	   hbfoundmuonPt[myType]->Fill(pt,weight);
+	   hbfoundmuonD0sig[myType]->Fill(d0sig,weight);
+	   hbfoundmuondR[3]->Fill(dR,weight);
+	   hbfoundmuonEta[3]->Fill(eta,weight);
+	   hbfoundmuonPt[3]->Fill(pt,weight);
+	   hbfoundmuonD0sig[3]->Fill(d0sig,weight);
+	 }else {//no matching jet found
+	   hbnotfoundEta[myType]->Fill(cms2.genps_p4()[bbarGen].Eta(),weight);
+	   hbnotfoundPt[myType]->Fill(cms2.genps_p4()[bbarGen].Pt(),weight);
+	   hbnotfoundEta[3]->Fill(cms2.genps_p4()[bbarGen].Eta(),weight);
+	   hbnotfoundPt[3]->Fill(cms2.genps_p4()[bbarGen].Pt(),weight);
+	   hbnotfoundmuondR[myType]->Fill(dR,weight);
+	   hbnotfoundmuonEta[myType]->Fill(eta,weight);
+	   hbnotfoundmuonPt[myType]->Fill(pt,weight);
+	   hbnotfoundmuonD0sig[myType]->Fill(d0sig,weight);
+	   hbnotfoundmuondR[3]->Fill(dR,weight);
+	   hbnotfoundmuonEta[3]->Fill(eta,weight);
+	   hbnotfoundmuonPt[3]->Fill(pt,weight);
+	   hbnotfoundmuonD0sig[3]->Fill(d0sig,weight);
+	 }
+       } else {//no muon found
+	 if( iJet != -1) {//found a matching jet
+	   hbfoundEta[myType]->Fill(cms2.genps_p4()[bbarGen].Eta(),weight);
+	   hbfoundPt[myType]->Fill(cms2.genps_p4()[bbarGen].Pt(),weight);
+	   hbfoundEta[3]->Fill(cms2.genps_p4()[bbarGen].Eta(),weight);
+	   hbfoundPt[3]->Fill(cms2.genps_p4()[bbarGen].Pt(),weight);
+	 }else {//no matching jet found
+	   hbnotfoundEta[myType]->Fill(cms2.genps_p4()[bbarGen].Eta(),weight);
+	   hbnotfoundPt[myType]->Fill(cms2.genps_p4()[bbarGen].Pt(),weight);
+	   hbnotfoundEta[3]->Fill(cms2.genps_p4()[bbarGen].Eta(),weight);
+	   hbnotfoundPt[3]->Fill(cms2.genps_p4()[bbarGen].Pt(),weight);
+	 }
+       }//end of if muon found
      }
-}
+
+}//end of void hypo
 
 int ScanChain( TChain* chain, enum Sample sample ) {
 
@@ -577,6 +696,21 @@ int ScanChain( TChain* chain, enum Sample sample ) {
 			     100, 0., 1.);
     hmuRelIso[i] = new TH1F(Form("%s_hmuRelIso_%s",prefix,suffix[i]),Form("%s_hmuRelIso_%s",prefix,suffix[i]),
 			     100, 0., 1.);
+    //fkw new hists September 2008
+    hbfoundEta[i] = new TH1F(Form("%s_hbfoundEta_%s",prefix,suffix[i]),Form("%s_hbfoundEta_%s",prefix,suffix[i]),100, -5., 5.);			 
+    hbfoundPt[i] = new TH1F(Form("%s_hbfoundPt_%s",prefix,suffix[i]),Form("%s_hbfoundPt_%s",prefix,suffix[i]),100, 0., 100.);			 
+    hbfoundmuondR[i] = new TH1F(Form("%s_hbfoundmuondR_%s",prefix,suffix[i]),Form("%s_hbfoundmuondR_%s",prefix,suffix[i]),100, 0., 2.);			 
+    hbfoundmuonPt[i] = new TH1F(Form("%s_hbfoundmuonPt_%s",prefix,suffix[i]),Form("%s_hbfoundmuonPt_%s",prefix,suffix[i]),100, 0., 100.);			 
+    hbfoundmuonEta[i] = new TH1F(Form("%s_hbfoundmuonEta_%s",prefix,suffix[i]),Form("%s_hbfoundmuonEta_%s",prefix,suffix[i]),100, -5., 5.);			 
+    hbfoundmuonD0sig[i] = new TH1F(Form("%s_hbfoundmuonD0sig_%s",prefix,suffix[i]),Form("%s_hbfoundmuonD0sig_%s",prefix,suffix[i]),100, -5., 5.);			 
+
+    hbnotfoundEta[i] = new TH1F(Form("%s_hbnotfoundEta_%s",prefix,suffix[i]),Form("%s_hbnotfoundEta_%s",prefix,suffix[i]),100, -5., 5.);			 
+    hbnotfoundPt[i] = new TH1F(Form("%s_hbnotfoundPt_%s",prefix,suffix[i]),Form("%s_hbnotfoundPt_%s",prefix,suffix[i]),100, 0., 100.);			 
+    hbnotfoundmuondR[i] = new TH1F(Form("%s_hbnotfoundmuondR_%s",prefix,suffix[i]),Form("%s_hbnotfoundmuondR_%s",prefix,suffix[i]),100, 0., 2.);			 
+    hbnotfoundmuonPt[i] = new TH1F(Form("%s_hbnotfoundmuonPt_%s",prefix,suffix[i]),Form("%s_hbnotfoundmuonPt_%s",prefix,suffix[i]),100, 0., 100.);			 
+    hbnotfoundmuonEta[i] = new TH1F(Form("%s_hbnotfoundmuonEta_%s",prefix,suffix[i]),Form("%s_hbnotfoundmuonEta_%s",prefix,suffix[i]),100, -5., 5.);			 
+    hbnotfoundmuonD0sig[i] = new TH1F(Form("%s_hbnotfoundmuonD0sig_%s",prefix,suffix[i]),Form("%s_hbnotfoundmuonD0sig_%s",prefix,suffix[i]),100, -5., 5.);			 
+
 
     hnJet[i]->Sumw2();
     hnJetLepVeto[i]->Sumw2();
@@ -609,6 +743,18 @@ int ScanChain( TChain* chain, enum Sample sample ) {
     hmuSumIso[i]->Sumw2();
     heleRelIso[i]->Sumw2(); 
     hmuRelIso[i]->Sumw2(); 
+    hbfoundEta[i]->Sumw2();
+    hbfoundPt[i]->Sumw2();
+    hbfoundmuondR[i]->Sumw2();
+    hbfoundmuonEta[i]->Sumw2();
+    hbfoundmuonPt[i]->Sumw2();
+    hbfoundmuonD0sig[i]->Sumw2();
+    hbnotfoundEta[i]->Sumw2();
+    hbnotfoundPt[i]->Sumw2();
+    hbnotfoundmuondR[i]->Sumw2();
+    hbnotfoundmuonEta[i]->Sumw2();
+    hbnotfoundmuonPt[i]->Sumw2();
+    hbnotfoundmuonD0sig[i]->Sumw2();
   }
 
   memset(hypos_total_n, 0, sizeof(hypos_total_n));
@@ -636,7 +782,6 @@ int ScanChain( TChain* chain, enum Sample sample ) {
        TStopwatch t;
        //Event Loop
        unsigned int nEvents = tree->GetEntries();
-//   nEvents = std::min(nEvents, 1000u);
        for( unsigned int event = 0; event < nEvents; ++event) {
 	    cms2.GetEntry(event);  // get entries for Event number event from branches of TTree tree
 	    ++nEventsTotal;
@@ -649,8 +794,7 @@ int ScanChain( TChain* chain, enum Sample sample ) {
 		 duplicates_total_weight += cms2.evt_scale1fb();
 		 continue;
 	    }
-	    // Progress feedback to the user
-//       if ( (nEventsTotal)%1000 == 0 ) std::cout << "Processing event: " << nEventsTotal << std::endl;
+
 	    int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
 	    if (i_permille != i_permille_old) {
 		 // xterm magic from L. Vacavant and A. Cerri
@@ -663,10 +807,28 @@ int ScanChain( TChain* chain, enum Sample sample ) {
 	    // filter by process
 	    if ( !filterByProcess(sample) ) continue;
 	    
+	    // fkw, here go all histos that should be filled per event instead of per hyp:
+	    // loop over generator particles:
+	    //Note: top = +-6, W = +-24, b = +-5
+	    //cout << " Event = " << event << endl;
+	    bGen = 0;
+	    bbarGen = 0;
+	    lep = 0;
+	    alep = 0;
+	    unsigned int nGen = cms2.genps_id().size();
+	    for( unsigned int iGen = 0; iGen < nGen; ++iGen){
+	      if ( cms2.genps_id()[iGen] == 5 && cms2.genps_id_mother()[iGen] == 6 ) bGen = iGen;
+	      if ( cms2.genps_id()[iGen] == -5 && cms2.genps_id_mother()[iGen] == -6 ) bbarGen = iGen;
+	      if ( cms2.genps_id()[iGen] == 11 || cms2.genps_id()[iGen] == 13 ) lep = iGen;
+	      if ( cms2.genps_id()[iGen] == -11 || cms2.genps_id()[iGen] == -13 ) alep = iGen;
+	    } 
+	    //cout << " bgen= " << bGen << " bbarGen= " << bbarGen << " lep= " << lep << " alep= " << alep << endl;
+	    // fkw, end of per event filling of histos.
+	    
 	    // loop over hypothesis candidates
 	    unsigned int nHyps = cms2.hyp_type().size();
 	    for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
-		 hypo(i_hyp, kFactor);
+	      hypo(i_hyp, kFactor);
 	    }
        }
        t.Stop();
