@@ -1,3 +1,16 @@
+/*
+This version of the looper is the same as fkwLoopingFunctionFast.C with tag "fkw_muontag_v1" except:
+- switched to ../Tools/CMS2_soup_messedwith_Class.h so I can access the trkjets_p4 as well as alltrkjets_p4
+- added trkjet study histograms
+  simply make trkjet_p4().size() vs njet 2D histogram, as well as equivalent for pT>15, 20, 25, 30 GeV
+- added impact parameter study histograms
+  take trkjet collection, and find for each trkjet:
+   - the number of tracks within dR < 0.5
+   - the largest abs(do/doErr) for these tracks
+   - the sum of all abs(d0/d0Err)
+   - the sum of log(Gaus(d0/d0Err)) which is implemented as sum of (d0/d0Err)^2
+*/
+
 //now make the source file
 #include <algorithm>
 #include <iostream>
@@ -19,6 +32,7 @@
 using namespace std;
 
 #ifndef __CINT__
+//#include "../Tools/CMS2_soup_messedwith_Class.h"
 #include "CMS2_Class.h"
 CMS2 cms2;
 #include "../Tools/selections.C"
@@ -142,6 +156,7 @@ bool filterByProcess( enum Sample sample ) {
   case ttbar:
     return (cms2.evt_CSA07Process() > 21 && cms2.evt_CSA07Process() < 27);
   }
+  return false;
 }
 
 // filter candidates by hypothesis
@@ -223,8 +238,18 @@ TH1F* hbmuonHidRd0sig[4];
 TH1F* hbfoundmuonancestor[4];
 TH1F* hbnotfoundmuonancestor[4];
 
-// fkw September 2008 final hist used for muon tage estimate of top bkg
+// fkw September 2008 final hist used for muon tags estimate of top bkg
 TH2F* hextramuonsvsnjet[4];
+
+// fkw September 2008 hists for jetVeto and impact parameter study
+TH2F* hntrkjetvsncalojet[4];
+TH2F* hnalltrkjetvsncalojet[4];
+TH1F* hntrkpertrkjet[4];
+TH1F* hmaxd0sigoftrksintrkjet[4];
+TH1F* hsumd0sigoftrksintrkjet[4];
+TH1F* hprobd0sigoftrksintrkjet[4];
+TH1F* htrkjetpt[4];
+TH1F* halltrkjetpt[4];
 
 void hypo (int i_hyp, double kFactor) 
 {
@@ -254,7 +279,7 @@ void hypo (int i_hyp, double kFactor)
 #endif
 
      // fkw: There are 2 cuts that were not applied in this:
-     //if ( cms2.hyp_njets()[i_hyp] != 1) return;  //only 0-jet bin
+     if ( cms2.hyp_njets()[i_hyp] != 0) return;  //only 0-jet bin
      if (!pass4Met(i_hyp)) return; //metspecial cut, and extra tight MET if ee or mumu.
      // fkw: now we go back to the standard ttbar selection.
 
@@ -497,7 +522,6 @@ void hypo (int i_hyp, double kFactor)
 	 double eta = cms2.mus_p4()[iMuon].Eta();
 	 double pt = cms2.mus_p4()[iMuon].Pt();
 	 double d0sig = cms2.mus_d0()[iMuon]/cms2.mus_d0Err()[iMuon];
-	 //d0sig = d0sig * cms2.mus_charge()[iMuon];
 	 //fill hists irrespective of b-quark found
 	 if( dR < 0.4) { 
 	   hbmuonLowdRPt[myType]->Fill(pt,weight);
@@ -572,7 +596,6 @@ void hypo (int i_hyp, double kFactor)
 	 double eta = cms2.mus_p4()[iMuon].Eta();
 	 double pt = cms2.mus_p4()[iMuon].Pt();
 	 double d0sig = cms2.mus_d0()[iMuon]/cms2.mus_d0Err()[iMuon];
-	 //d0sig = d0sig * cms2.mus_charge()[iMuon];
 	 //fill hists irrespective of b-quark found
 	 if( dR < 0.4) { 
 	   hbmuonLowdRPt[myType]->Fill(pt,weight);
@@ -632,6 +655,7 @@ void hypo (int i_hyp, double kFactor)
        }//end of if muon found
      }//end of if bbargen
 
+     //2d hist for muon tag counting
      float countmus = 0;
      for ( int imu=0; imu < cms2.mus_charge().size(); ++imu) {
        if ( myType == 0 ||
@@ -642,6 +666,64 @@ void hypo (int i_hyp, double kFactor)
      }
      hextramuonsvsnjet[myType]->Fill(countmus, cms2.hyp_njets()[i_hyp],weight);
      hextramuonsvsnjet[3]->Fill(countmus, cms2.hyp_njets()[i_hyp],weight);
+
+     //2d hist for trkjet vs njet counting
+     //I probably got this backwards which version of trkjets needs to be muon vetoed and which doesn't!
+     //fkw checked this. I think the alltrkjets includes all trks 
+     //    while the trkjets excludes isolated high pt muons that pass our nominal cuts.
+     float ptcut = 10.0;
+     int count = 0;
+     float maxpt = 0.0;
+
+     //deal with trkjets first
+     for ( unsigned int itrkjet=0; itrkjet<cms2.trkjets_p4().size(); ++itrkjet){//loop over trkjets
+       if ((abs(cms2.hyp_lt_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],cms2.trkjets_p4()[itrkjet]) < 0.4)||
+	   (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.trkjets_p4()[itrkjet]) < 0.4)
+	   ) continue;//veto trkjets within dR<0.4 of electrons in hypothesis.
+       //muons in hypothesis are allowed to be as close as they want to a trkjet because they are excluded from trkjet anyway.
+       if ( cms2.trkjets_p4()[itrkjet].pt() > ptcut ) {
+	 ++count;
+	 vector<unsigned int> idxIntrkJet = idxInCone( cms2.trkjets_p4()[itrkjet],cms2.trks_trk_p4());
+	 hntrkpertrkjet[myType]->Fill(idxIntrkJet.size(),weight);
+	 hntrkpertrkjet[3]->Fill(idxIntrkJet.size(),weight);
+	 double maxd0sig = 0.0;
+	 double sumd0sig = 0.0;
+	 double probd0sig = 0.0;
+	 for (unsigned int itrk=0; itrk<idxIntrkJet.size(); ++itrk){//loop over trks in trkjet cone
+	   double d0sig = abs(cms2.trks_d0()[idxIntrkJet[itrk]]/cms2.trks_d0Err()[idxIntrkJet[itrk]]);
+	   if ( d0sig > maxd0sig ) maxd0sig = d0sig;
+	   sumd0sig = sumd0sig+d0sig;
+	   probd0sig = probd0sig + d0sig*d0sig;
+	 }
+	 hmaxd0sigoftrksintrkjet[myType]->Fill(maxd0sig,weight);
+	 hsumd0sigoftrksintrkjet[myType]->Fill(sumd0sig,weight);
+	 hprobd0sigoftrksintrkjet[myType]->Fill(probd0sig,weight);
+	 hmaxd0sigoftrksintrkjet[3]->Fill(maxd0sig,weight);
+	 hsumd0sigoftrksintrkjet[3]->Fill(sumd0sig,weight);
+	 hprobd0sigoftrksintrkjet[3]->Fill(probd0sig,weight);
+       }//end of ptcut on trkjets
+       if ( cms2.trkjets_p4()[itrkjet].pt() > maxpt ) maxpt = cms2.trkjets_p4()[itrkjet].pt();
+     }//end of loop over trkjets
+     htrkjetpt[myType]->Fill(maxpt,weight);
+     htrkjetpt[3]->Fill(maxpt,weight);
+     hntrkjetvsncalojet[myType]->Fill(count, cms2.hyp_njets()[i_hyp],weight);
+     hntrkjetvsncalojet[3]->Fill(count, cms2.hyp_njets()[i_hyp],weight);
+
+     //deal with alltrkjets second
+     //don't bother with lifetime hists for alltrkjets for now.
+     count = 0;
+     maxpt = 0.0;
+     for ( unsigned int itrkjet=0; itrkjet<cms2.alltrkjets_p4().size(); ++itrkjet){//loop over alltrkjets
+       if ( dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],cms2.alltrkjets_p4()[itrkjet]) < 0.4 ||
+	    dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.alltrkjets_p4()[itrkjet]) < 0.4
+	    ) continue; //veto alltrkjets for both electrons and muons!
+       if ( cms2.alltrkjets_p4()[itrkjet].pt() > ptcut ) ++count;
+       if ( cms2.alltrkjets_p4()[itrkjet].pt() > maxpt ) maxpt = cms2.alltrkjets_p4()[itrkjet].pt();
+     }//end of loop over alltrkjets
+     halltrkjetpt[myType]->Fill(maxpt,weight);
+     halltrkjetpt[3]->Fill(maxpt,weight);
+     hnalltrkjetvsncalojet[myType]->Fill(count, cms2.hyp_njets()[i_hyp],weight);
+     hnalltrkjetvsncalojet[3]->Fill(count, cms2.hyp_njets()[i_hyp],weight);
 
 
 }//end of void hypo
@@ -768,14 +850,14 @@ int ScanChain( TChain* chain, enum Sample sample ) {
     hbfoundmuondR[i] = new TH1F(Form("%s_hbfoundmuondR_%s",prefix,suffix[i]),Form("%s_hbfoundmuondR_%s",prefix,suffix[i]),100, 0., 2.);			 
     hbfoundmuonPt[i] = new TH1F(Form("%s_hbfoundmuonPt_%s",prefix,suffix[i]),Form("%s_hbfoundmuonPt_%s",prefix,suffix[i]),100, 0., 100.);			 
     hbfoundmuonEta[i] = new TH1F(Form("%s_hbfoundmuonEta_%s",prefix,suffix[i]),Form("%s_hbfoundmuonEta_%s",prefix,suffix[i]),100, -5., 5.);			 
-    hbfoundmuonD0sig[i] = new TH1F(Form("%s_hbfoundmuonD0sig_%s",prefix,suffix[i]),Form("%s_hbfoundmuonD0sig_%s",prefix,suffix[i]),100, -20., 20.);			 
+    hbfoundmuonD0sig[i] = new TH1F(Form("%s_hbfoundmuonD0sig_%s",prefix,suffix[i]),Form("%s_hbfoundmuonD0sig_%s",prefix,suffix[i]),100, -5., 5.);			 
 
     hbnotfoundEta[i] = new TH1F(Form("%s_hbnotfoundEta_%s",prefix,suffix[i]),Form("%s_hbnotfoundEta_%s",prefix,suffix[i]),100, -5., 5.);			 
     hbnotfoundPt[i] = new TH1F(Form("%s_hbnotfoundPt_%s",prefix,suffix[i]),Form("%s_hbnotfoundPt_%s",prefix,suffix[i]),100, 0., 100.);			 
     hbnotfoundmuondR[i] = new TH1F(Form("%s_hbnotfoundmuondR_%s",prefix,suffix[i]),Form("%s_hbnotfoundmuondR_%s",prefix,suffix[i]),100, 0., 2.);			 
     hbnotfoundmuonPt[i] = new TH1F(Form("%s_hbnotfoundmuonPt_%s",prefix,suffix[i]),Form("%s_hbnotfoundmuonPt_%s",prefix,suffix[i]),100, 0., 100.);			 
     hbnotfoundmuonEta[i] = new TH1F(Form("%s_hbnotfoundmuonEta_%s",prefix,suffix[i]),Form("%s_hbnotfoundmuonEta_%s",prefix,suffix[i]),100, -5., 5.);			 
-    hbnotfoundmuonD0sig[i] = new TH1F(Form("%s_hbnotfoundmuonD0sig_%s",prefix,suffix[i]),Form("%s_hbnotfoundmuonD0sig_%s",prefix,suffix[i]),100, -20., 20.);			 
+    hbnotfoundmuonD0sig[i] = new TH1F(Form("%s_hbnotfoundmuonD0sig_%s",prefix,suffix[i]),Form("%s_hbnotfoundmuonD0sig_%s",prefix,suffix[i]),100, -5., 5.);			 
 
     // fkw September 2008 2nd round hists:
     hbmuonLowdRPt[i] = new TH1F(Form("%s_hbmuonLowdRPt_%s",prefix,suffix[i]),Form("%s_hbmuonLowdRPt_%s",prefix,suffix[i]),100, 0., 100.);		 
@@ -790,6 +872,34 @@ int ScanChain( TChain* chain, enum Sample sample ) {
 					 prefix,suffix[i]),
 			       Form("%s_extramuonsvsnjet_%s",prefix,suffix[i]),
 			       10,0.0,10.0,10,0.0,10.0);
+
+    // fkw September 2008 hists for jetveto and impact parameter study
+    hntrkjetvsncalojet[i] = new TH2F(Form("%s_trkjetvsncalojet_%s",
+					 prefix,suffix[i]),
+			       Form("%s_trkjetvsncalojet_%s",prefix,suffix[i]),
+			       10,0.0,10.0,10,0.0,10.0);
+    hnalltrkjetvsncalojet[i] = new TH2F(Form("%s_alltrkjetvsncalojet_%s",
+					 prefix,suffix[i]),
+			       Form("%s_alltrkjetvsncalojet_%s",prefix,suffix[i]),
+			       10,0.0,10.0,10,0.0,10.0);
+    hntrkpertrkjet[i] = new TH1F(Form("%s_ntrkpertrkjet_%s",prefix,suffix[i]),
+				 Form("%s_ntrkpertrkjet_%s",prefix,suffix[i]),
+				 50,0.0,50.0);
+    hmaxd0sigoftrksintrkjet[i] = new TH1F(Form("%s_maxd0sigoftrksintrkjet_%s",prefix,suffix[i]),
+				 Form("%s_maxd0sigoftrksintrkjet_%s",prefix,suffix[i]),
+					  100,0.0,10.0);
+    hsumd0sigoftrksintrkjet[i] = new TH1F(Form("%s_sumd0sigoftrksintrkjet_%s",prefix,suffix[i]),
+				 Form("%s_sumd0sigoftrksintrkjet_%s",prefix,suffix[i]),
+					  100,0.0,50.0);
+    hprobd0sigoftrksintrkjet[i] = new TH1F(Form("%s_probd0sigoftrksintrkjet_%s",prefix,suffix[i]),
+				 Form("%s_probd0sigoftrksintrkjet_%s",prefix,suffix[i]),
+					   100,0.0,100.0);
+    htrkjetpt[i] = new TH1F(Form("%s_trkjetpt_%s",prefix,suffix[i]),
+				 Form("%s_trkjetpt_%s",prefix,suffix[i]),
+					   100,0.0,100.0);
+    halltrkjetpt[i] = new TH1F(Form("%s_alltrkjetpt_%s",prefix,suffix[i]),
+				 Form("%s_alltrkjetpt_%s",prefix,suffix[i]),
+					   100,0.0,100.0);
 
 
     hnJet[i]->Sumw2();
@@ -842,6 +952,14 @@ int ScanChain( TChain* chain, enum Sample sample ) {
     hbfoundmuonancestor[i]->Sumw2();
     hbnotfoundmuonancestor[i]->Sumw2();
     hextramuonsvsnjet[i]->Sumw2();
+    hntrkjetvsncalojet[i]->Sumw2();
+    hnalltrkjetvsncalojet[i]->Sumw2();
+    hntrkpertrkjet[i]->Sumw2();
+    hmaxd0sigoftrksintrkjet[i]->Sumw2();
+    hsumd0sigoftrksintrkjet[i]->Sumw2();
+    hprobd0sigoftrksintrkjet[i]->Sumw2();
+    htrkjetpt[i]->Sumw2();
+    halltrkjetpt[i]->Sumw2();
   }
 
   memset(hypos_total_n, 0, sizeof(hypos_total_n));
