@@ -497,6 +497,7 @@ void hypo (int i_hyp, double kFactor)
 	 double eta = cms2.mus_p4()[iMuon].Eta();
 	 double pt = cms2.mus_p4()[iMuon].Pt();
 	 double d0sig = cms2.mus_d0()[iMuon]/cms2.mus_d0Err()[iMuon];
+	 //d0sig = d0sig * cms2.mus_charge()[iMuon];
 	 //fill hists irrespective of b-quark found
 	 if( dR < 0.4) { 
 	   hbmuonLowdRPt[myType]->Fill(pt,weight);
@@ -571,6 +572,7 @@ void hypo (int i_hyp, double kFactor)
 	 double eta = cms2.mus_p4()[iMuon].Eta();
 	 double pt = cms2.mus_p4()[iMuon].Pt();
 	 double d0sig = cms2.mus_d0()[iMuon]/cms2.mus_d0Err()[iMuon];
+	 //d0sig = d0sig * cms2.mus_charge()[iMuon];
 	 //fill hists irrespective of b-quark found
 	 if( dR < 0.4) { 
 	   hbmuonLowdRPt[myType]->Fill(pt,weight);
@@ -766,14 +768,14 @@ int ScanChain( TChain* chain, enum Sample sample ) {
     hbfoundmuondR[i] = new TH1F(Form("%s_hbfoundmuondR_%s",prefix,suffix[i]),Form("%s_hbfoundmuondR_%s",prefix,suffix[i]),100, 0., 2.);			 
     hbfoundmuonPt[i] = new TH1F(Form("%s_hbfoundmuonPt_%s",prefix,suffix[i]),Form("%s_hbfoundmuonPt_%s",prefix,suffix[i]),100, 0., 100.);			 
     hbfoundmuonEta[i] = new TH1F(Form("%s_hbfoundmuonEta_%s",prefix,suffix[i]),Form("%s_hbfoundmuonEta_%s",prefix,suffix[i]),100, -5., 5.);			 
-    hbfoundmuonD0sig[i] = new TH1F(Form("%s_hbfoundmuonD0sig_%s",prefix,suffix[i]),Form("%s_hbfoundmuonD0sig_%s",prefix,suffix[i]),100, -5., 5.);			 
+    hbfoundmuonD0sig[i] = new TH1F(Form("%s_hbfoundmuonD0sig_%s",prefix,suffix[i]),Form("%s_hbfoundmuonD0sig_%s",prefix,suffix[i]),100, -20., 20.);			 
 
     hbnotfoundEta[i] = new TH1F(Form("%s_hbnotfoundEta_%s",prefix,suffix[i]),Form("%s_hbnotfoundEta_%s",prefix,suffix[i]),100, -5., 5.);			 
     hbnotfoundPt[i] = new TH1F(Form("%s_hbnotfoundPt_%s",prefix,suffix[i]),Form("%s_hbnotfoundPt_%s",prefix,suffix[i]),100, 0., 100.);			 
     hbnotfoundmuondR[i] = new TH1F(Form("%s_hbnotfoundmuondR_%s",prefix,suffix[i]),Form("%s_hbnotfoundmuondR_%s",prefix,suffix[i]),100, 0., 2.);			 
     hbnotfoundmuonPt[i] = new TH1F(Form("%s_hbnotfoundmuonPt_%s",prefix,suffix[i]),Form("%s_hbnotfoundmuonPt_%s",prefix,suffix[i]),100, 0., 100.);			 
     hbnotfoundmuonEta[i] = new TH1F(Form("%s_hbnotfoundmuonEta_%s",prefix,suffix[i]),Form("%s_hbnotfoundmuonEta_%s",prefix,suffix[i]),100, -5., 5.);			 
-    hbnotfoundmuonD0sig[i] = new TH1F(Form("%s_hbnotfoundmuonD0sig_%s",prefix,suffix[i]),Form("%s_hbnotfoundmuonD0sig_%s",prefix,suffix[i]),100, -5., 5.);			 
+    hbnotfoundmuonD0sig[i] = new TH1F(Form("%s_hbnotfoundmuonD0sig_%s",prefix,suffix[i]),Form("%s_hbnotfoundmuonD0sig_%s",prefix,suffix[i]),100, -20., 20.);			 
 
     // fkw September 2008 2nd round hists:
     hbmuonLowdRPt[i] = new TH1F(Form("%s_hbmuonLowdRPt_%s",prefix,suffix[i]),Form("%s_hbmuonLowdRPt_%s",prefix,suffix[i]),100, 0., 100.);		 
