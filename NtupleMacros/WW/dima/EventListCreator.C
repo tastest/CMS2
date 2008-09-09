@@ -19,8 +19,10 @@ TEventList* EventListCreator::getAllUniqueEvents( TTree* tree,
   unsigned int nEvents = tree->GetEntries();
   for( unsigned int event = 0; event < nEvents; ++event) {
     GetEntry(event);
-    ULong64_t key = int((evt_met()-int(evt_met()))*10000)<<48 + evt_run()<<32+ evt_event();
-    if ( ! known_events.insert(key).second ) list->Enter( event );
+    ULong64_t key = int((evt_met()-int(evt_met()))*10000) + 
+      ULong64_t(evt_run()%100000)*10000 + 
+      ULong64_t(evt_event()%100000)*1000000000;
+    if ( known_events.insert(key).second ) list->Enter( event );
   }
   return list;
 }
