@@ -1,16 +1,3 @@
-/*
-This version of the looper is the same as fkwLoopingFunctionFast.C with tag "fkw_muontag_v1" except:
-- switched to ../Tools/CMS2_soup_messedwith_Class.h so I can access the trkjets_p4 as well as alltrkjets_p4
-- added trkjet study histograms
-  simply make trkjet_p4().size() vs njet 2D histogram, as well as equivalent for pT>15, 20, 25, 30 GeV
-- added impact parameter study histograms
-  take trkjet collection, and find for each trkjet:
-   - the number of tracks within dR < 0.5
-   - the largest abs(do/doErr) for these tracks
-   - the sum of all abs(d0/d0Err)
-   - the sum of log(Gaus(d0/d0Err)) which is implemented as sum of (d0/d0Err)^2
-*/
-
 //now make the source file
 #include <algorithm>
 #include <iostream>
@@ -28,6 +15,7 @@ This version of the looper is the same as fkwLoopingFunctionFast.C with tag "fkw
 #include <set>
 #include "TCanvas.h"
 #include "TRegexp.h"
+#include "TLorentzVector.h"
 
 using namespace std;
 
@@ -55,30 +43,6 @@ enum Hypothesis {MM, EM, EE, ALL}; // hypothesis types (em and me counted as sam
 Bool_t comparePt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1, 
                  ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv2) {
    return lv1.pt() > lv2.pt();
-}
-
-// save histograms to outfile
-void saveHist(const char* filename, const char* pat="*")
-{
-   TList* list = gDirectory->GetList() ;
-   TIterator* iter = list->MakeIterator();
-
-   //TRegexp re(pat,kTRUE) ;
-
-   TRegexp re(pat, 1) ;
-
-   TFile outf(filename,"RECREATE") ;
-   while(TObject *obj=iter->Next()) {
-      if (TString(obj->GetName()).Index(re)>=0) {
-         obj->Write() ;
-         cout << "." ;
-         cout.flush() ;
-      }
-   }
-   cout << endl ;
-   outf.Close() ;
-
-   delete iter ;
 }
 
 struct DorkyEventIdentifier {
@@ -251,6 +215,24 @@ TH1F* hprobd0sigoftrksintrkjet[4];
 TH1F* htrkjetpt[4];
 TH1F* halltrkjetpt[4];
 
+// Sanjay histogram start
+
+TH1F* hnTrkJet[4];
+TH1F* hnCaloJet[4];
+TH1F* hnTotalTrkJet[4];
+TH1F* hnTotalCaloJet[4];
+TH1F* h_itemTrkJet[4];
+TH1F* h_itemCaloJet[4];
+TH1F* h_itemCaloandTrkJet[27][4];
+
+std::vector<TLorentzVector>* trk_jets = new std::vector<TLorentzVector>();
+std::vector<TLorentzVector>* calo_jets = new std::vector<TLorentzVector>();
+
+  static const Double_t etbin[27] =
+    { 0., 5., 10., 15., 20., 25., 30., 35., 40., 45., 50., 55., 60., 65., 70., 75., 80., 85., 90., 95., 100., 105., 110., 115., 120., 125., 130.};
+
+// Sanjay histogram end
+
 void hypo (int i_hyp, double kFactor) 
 {
      // Cut on lepton Pt
@@ -279,7 +261,7 @@ void hypo (int i_hyp, double kFactor)
 #endif
 
      // fkw: There are 2 cuts that were not applied in this:
-     if ( cms2.hyp_njets()[i_hyp] != 0) return;  //only 0-jet bin
+     //     if ( cms2.hyp_njets()[i_hyp] != 0) return;  //only 0-jet bin
      if (!pass4Met(i_hyp)) return; //metspecial cut, and extra tight MET if ee or mumu.
      // fkw: now we go back to the standard ttbar selection.
 
@@ -320,6 +302,85 @@ void hypo (int i_hyp, double kFactor)
      }
 
      //cout << " passed all cuts for WW " << endl;
+
+     trk_jets->clear();
+     calo_jets->clear();
+
+     double jetet = 0;
+     double jeteta = 3.0;
+
+     // TrkJets & CaloJet save it after the lepton subtraction
+
+     for ( unsigned int itrkjet=0; itrkjet<cms2.trkjets_p4().size(); ++itrkjet) {
+       if ((abs(cms2.hyp_lt_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],cms2.trkjets_p4()[itrkjet]) < 0.4)||
+           (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.trkjets_p4()[itrkjet]) < 0.4)
+           ) continue;
+       TLorentzVector p(cms2.trkjets_p4()[itrkjet].Px(), cms2.trkjets_p4()[itrkjet].Py(), cms2.trkjets_p4()[itrkjet].Pz(), cms2.trkjets_p4()[itrkjet].E());
+       if (p.Perp() < jetet) continue;
+       if (fabs(p.Eta()) > jeteta) continue;
+       trk_jets->push_back(p);
+     }
+
+     vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > calo_jets_p4(cms2.jets_p4());
+
+     for (int icalojet=0; icalojet<calo_jets_p4.size(); ++icalojet) {
+       if ((abs(cms2.hyp_lt_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],calo_jets_p4[icalojet]) < 0.4)||
+	   (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],calo_jets_p4[icalojet]) < 0.4)
+	   ) continue;
+       TLorentzVector p(calo_jets_p4[icalojet].Px()*cms2.jets_tq_noCorrF()[icalojet], 
+			calo_jets_p4[icalojet].Py()*cms2.jets_tq_noCorrF()[icalojet], 
+			calo_jets_p4[icalojet].Pz()*cms2.jets_tq_noCorrF()[icalojet],  
+			calo_jets_p4[icalojet].E()*cms2.jets_tq_noCorrF()[icalojet]);//p is now uncorrected jet energy
+       if (p.Perp() < jetet) continue;
+       if (fabs(p.Eta()) > jeteta) continue;
+       //	 if (p.Perp() < 28 ) cout << p.Perp() << endl;
+       calo_jets->push_back(p);
+     }
+
+     //     get the data
+     std::vector<TLorentzVector> trkjets = *trk_jets;
+     std::vector<TLorentzVector> cjets = *calo_jets;
+
+     hnTrkJet[myType]->Fill(NjetVeto(trkjets, 15),weight);
+     hnCaloJet[myType]->Fill(NjetVeto(cjets, 15),weight);
+     hnTrkJet[3]->Fill(NjetVeto(trkjets, 15),weight);
+     hnCaloJet[3]->Fill(NjetVeto(cjets, 15),weight);
+
+     //     cout << cjets.size() << endl;
+
+     for(unsigned int k=0; k<26; ++k) {
+       if (NjetVeto(trkjets, etbin[k]) == 0 ) {
+	 h_itemTrkJet[myType]->Fill(etbin[k], weight);
+	 h_itemTrkJet[3]->Fill(etbin[k], weight);
+       }
+
+       if (NjetVeto(cjets, etbin[k]) == 0 ) {
+	 h_itemCaloJet[myType]->Fill(etbin[k], weight);
+	 h_itemCaloJet[3]->Fill(etbin[k], weight);
+       }
+     }
+
+
+     for(unsigned int k=0; k<26; ++k) {
+       if (NjetVeto(trkjets, 10000.) == 0 ) {
+	 hnTotalTrkJet[myType]->Fill(etbin[k], weight);
+	 hnTotalTrkJet[3]->Fill(etbin[k], weight);
+       }
+       if (NjetVeto(cjets, 10000.) == 0 ) {
+	 hnTotalCaloJet[myType]->Fill(etbin[k], weight);
+	 hnTotalCaloJet[3]->Fill(etbin[k], weight);
+       }
+     }
+
+     for(unsigned int m=0; m<26; ++m) {
+       for(unsigned int k=0; k<26; ++k) {
+	 if ((NjetVeto(trkjets, etbin[m]) == 0 ) && (NjetVeto(cjets, etbin[k]) == 0 )) {
+	   h_itemCaloandTrkJet[m][myType]->Fill(etbin[k], weight);
+	   h_itemCaloandTrkJet[m][3]->Fill(etbin[k], weight);
+	 }
+       }
+     }
+
      hypos_total_n[myType]++;
      hypos_total_n[3]++;
      hypos_total_weight[myType] += weight;
@@ -657,7 +718,7 @@ void hypo (int i_hyp, double kFactor)
 
      //2d hist for muon tag counting
      float countmus = 0;
-     for ( int imu=0; imu < cms2.mus_charge().size(); ++imu) {
+     for (int imu=0; imu < cms2.mus_charge().size(); ++imu) {
        if ( myType == 0 ||
 	    ( myType == 1 && cms2.hyp_lt_index()[i_hyp] != imu && cms2.hyp_ll_index()[i_hyp] != imu ) ||
 	    ( myType == 2 && abs(cms2.hyp_lt_id()[i_hyp]) == 11 && cms2.hyp_ll_index()[i_hyp] != imu ) ||
@@ -770,6 +831,47 @@ int ScanChain( TChain* chain, enum Sample sample ) {
   //TH1::SetDefaultSumw2(kTRUE); // do errors properly based on weights
   
   for (int i=0; i<4; i++) {
+
+    hnTrkJet[i] = new TH1F(Form("%s_hnTrkJet_%s",prefix,suffix[i]),Form("%s_hnTrkJet_%s",prefix,suffix[i]),
+			   10,0.,10.);	
+    hnCaloJet[i] = new TH1F(Form("%s_hnCaloJet_%s",prefix,suffix[i]),Form("%s_hnCaloJet_%s",prefix,suffix[i]),
+			    10,0.,10.);	
+    
+    hnTotalTrkJet[i] = new TH1F(Form("%s_hnTotalTrkJet_%s",prefix,suffix[i]),Form("%s_hnTotalTrkJet_%s",prefix,suffix[i]), 26,0.,130.);
+    hnTotalCaloJet[i] = new TH1F(Form("%s_hnTotalCaloJet_%s",prefix,suffix[i]),Form("%s_hnTotalCaloJet_%s",prefix,suffix[i]), 26,0.,130.);
+
+    h_itemTrkJet[i] = new TH1F(Form("%s_h_itemTrkJet_%s",prefix,suffix[i]),Form("%s_h_itemTrkJet_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloJet[i] = new TH1F(Form("%s_h_itemCaloJet_%s",prefix,suffix[i]),Form("%s_h_itemCaloJet_%s",prefix,suffix[i]), 26,0.,130.);
+
+    h_itemCaloandTrkJet[0][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_0_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_0_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[1][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_1_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_1_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[2][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_2_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_2_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[3][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_3_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_3_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[4][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_4_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_4_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[5][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_5_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_5_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[6][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_6_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_6_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[7][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_7_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_7_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[8][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_8_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_8_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[9][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_9_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_9_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[10][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_10_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_10_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[11][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_11_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_11_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[12][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_12_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_12_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[13][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_13_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_13_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[14][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_14_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_14_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[15][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_15_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_15_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[16][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_16_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_16_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[17][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_17_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_17_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[18][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_18_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_18_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[19][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_19_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_19_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[20][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_20_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_20_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[21][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_21_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_21_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[22][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_22_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_22_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[23][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_23_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_23_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[24][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_24_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_24_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[25][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_25_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_25_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[26][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_26_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_26_%s",prefix,suffix[i]), 26,0.,130.);
+    h_itemCaloandTrkJet[27][i] = new TH1F(Form("%s_h_itemCaloandTrkJet_27_%s",prefix,suffix[i]),Form("%s_h_itemCaloandTrkJet_27_%s",prefix,suffix[i]), 26,0.,130.);
+
     hnJet[i] = new TH1F(Form("%s_hnJet_%s",prefix,suffix[i]),Form("%s_nJet_%s",prefix,suffix[i]),
 			5,0.,5.);	
     hnJetLepVeto[i] = new TH1F(Form("%s_hnJetLepVeto_%s",prefix,suffix[i]),Form("%s_nJetLepVeto_%s",prefix,suffix[i]),

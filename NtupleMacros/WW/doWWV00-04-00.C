@@ -25,7 +25,8 @@
 // Output file
 //char* outFile = "/home/users/fkw/CMS/CMS2/NtupleMacros/WW/myHist_WW_fast.root";
 //char* outFile = "myHist_WW_fast_bjetstudy_allmcs_alljets.root";
-char* outFile = "myHist_test.root";
+// char* outFile = "myHist_test.root";
+char* outFile = "/home/users/spadhi/public_html/myHist_test2.root";
 
 // Flags for files to run over
 bool runWW    = true;
@@ -68,79 +69,31 @@ if (runZZ) {
 //Wjets file
 if (runWjets) {
      TChain *fWjets = new TChain("Events");
-     fWjets->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_Wjet_1ac3e5ee47ec18c52404771fc74ace5d/ntuple_Wjet_1*.root");
-     fWjets->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_Wjet_1ac3e5ee47ec18c52404771fc74ace5d/ntuple_Wjet_2*.root");
-     fWjets->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_Wjet_1ac3e5ee47ec18c52404771fc74ace5d/ntuple_Wjet_3*.root");
-     fWjets->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_Wjet_1ac3e5ee47ec18c52404771fc74ace5d/ntuple_Wjet_4*.root");
-     fWjets->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_Wjet_1ac3e5ee47ec18c52404771fc74ace5d/ntuple_Wjet_5*.root");
-     fWjets->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_Wjet_1ac3e5ee47ec18c52404771fc74ace5d/ntuple_Wjet_6*.root");
-     fWjets->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_Wjet_1ac3e5ee47ec18c52404771fc74ace5d/ntuple_Wjet_7*.root");
-     fWjets->Add("/data/tmp/dietcms2/cms2_electron_soup_postprocessed_split_Wjet_1ac3e5ee47ec18c52404771fc74ace5d/ntuple_Wjet_1*.root");
-     fWjets->Add("/data/tmp/dietcms2/cms2_electron_soup_postprocessed_split_Wjet_1ac3e5ee47ec18c52404771fc74ace5d/ntuple_Wjet_2*.root");
-     fWjets->Add("/data/tmp/dietcms2/cms2_electron_soup_postprocessed_split_Wjet_1ac3e5ee47ec18c52404771fc74ace5d/ntuple_Wjet_3*.root");
-     fWjets->Add("/data/tmp/dietcms2/cms2_electron_soup_postprocessed_split_Wjet_1ac3e5ee47ec18c52404771fc74ace5d/ntuple_Wjet_4*.root");
-     fWjets->Add("/data/tmp/dietcms2/cms2_electron_soup_postprocessed_split_Wjet_1ac3e5ee47ec18c52404771fc74ace5d/ntuple_Wjet_5*.root");
-     fWjets->Add("/data/tmp/dietcms2/cms2_electron_soup_postprocessed_split_Wjet_1ac3e5ee47ec18c52404771fc74ace5d/ntuple_Wjet_6*.root");
+     fWjets->Add("/data/tmp/cms2-V00-04-01/merge_Wjet.root");
 }
 
 //DYee file
 if (runDYee) {
      TChain *fDYee = new TChain("Events");
-     fDYee->Add("/data/tmp/dietcms2/cms2_electron_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_1*.root");
-     fDYee->Add("/data/tmp/dietcms2/cms2_electron_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_2*.root");
-     fDYee->Add("/data/tmp/dietcms2/cms2_electron_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_3*.root");
-     fDYee->Add("/data/tmp/dietcms2/cms2_electron_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_4*.root");
-     fDYee->Add("/data/tmp/dietcms2/cms2_electron_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_5*.root");
-     fDYee->Add("/data/tmp/dietcms2/cms2_electron_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_6*.root");
-     fDYee->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_1*.root");
-     fDYee->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_2*.root");
-     fDYee->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_3*.root");
-     fDYee->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_4*.root");
-     fDYee->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_5*.root");
-     fDYee->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_6*.root");
-     fDYee->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_7*.root");
+     fDYee->Add("/data/tmp/cms2-V00-04-01/merge_DY.root");
 }
 
 //DYmm file
 if (runDYmm) {
   TChain *fDYmm = new TChain("Events");
-     fDYmm->Add("/data/tmp/dietcms2/cms2_electron_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_1*.root");
-     fDYmm->Add("/data/tmp/dietcms2/cms2_electron_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_2*.root");
-     fDYmm->Add("/data/tmp/dietcms2/cms2_electron_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_3*.root");
-     fDYmm->Add("/data/tmp/dietcms2/cms2_electron_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_4*.root");
-     fDYmm->Add("/data/tmp/dietcms2/cms2_electron_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_5*.root");
-     fDYmm->Add("/data/tmp/dietcms2/cms2_electron_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_6*.root");
-     fDYmm->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_1*.root");
-     fDYmm->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_2*.root");
-     fDYmm->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_3*.root");
-     fDYmm->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_4*.root");
-     fDYmm->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_5*.root");
-     fDYmm->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_6*.root");
-     fDYmm->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_7*.root");
+     fDYmm->Add("/data/tmp/cms2-V00-04-01/merge_DY.root");
 }
 
 //DYtt file
 if (runDYtt) {
   TChain *fDYtt = new TChain("Events");
-     fDYtt->Add("/data/tmp/dietcms2/cms2_electron_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_1*.root");
-     fDYtt->Add("/data/tmp/dietcms2/cms2_electron_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_2*.root");
-     fDYtt->Add("/data/tmp/dietcms2/cms2_electron_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_3*.root");
-     fDYtt->Add("/data/tmp/dietcms2/cms2_electron_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_4*.root");
-     fDYtt->Add("/data/tmp/dietcms2/cms2_electron_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_5*.root");
-     fDYtt->Add("/data/tmp/dietcms2/cms2_electron_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_6*.root");
-     fDYtt->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_1*.root");
-     fDYtt->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_2*.root");
-     fDYtt->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_3*.root");
-     fDYtt->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_4*.root");
-     fDYtt->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_5*.root");
-     fDYtt->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_6*.root");
-     fDYtt->Add("/data/tmp/dietcms2/cms2_muon_soup_postprocessed_split_DY_095a1b92de7be271c0725c75b81c98ea/ntuple_DY_7*.root");
+     fDYtt->Add("/data/tmp/cms2-V00-04-01/merge_DY.root");
 }
 
 //ttbar file
 if (runttbar) {
      TChain *fttbar = new TChain("Events");
-     fttbar->Add("/data/tmp/cms2-V00-04-00/merge_ttbar.root");
+     fttbar->Add("/data/tmp/cms2-V00-04-01/merge_ttbar.root");
 }
 
 if (runtW) {
