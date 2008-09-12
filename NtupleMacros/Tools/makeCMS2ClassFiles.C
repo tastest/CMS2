@@ -28,15 +28,18 @@ makeCMS2Files(std::string fname, std::string className = "") {
   headerf.open((Classname+".h").c_str());
   codef.open((Classname+".C").c_str());
   headerf << "// -*- C++ -*-" << endl;
+  headerf << "#ifndef " << Classname << "_H" << endl;
+  headerf << "#define " << Classname << "_H" << endl;
   headerf << "#include \"Math/LorentzVector.h\"" << endl;
   headerf << "#include \"TMath.h\"" << endl;
   headerf << "#include \"TBranch.h\"" << endl;
   headerf << "#include \"TTree.h\"" << endl << endl;
+  headerf << "#include \"TH1F.h\""  << endl << endl;
   headerf << "#include <vector> " << endl;
-  headerf << "#ifndef " << Classname << "_H" << endl;
-  headerf << "#define " << Classname << "_H" << endl;
   headerf << "using namespace std; " << endl;
   headerf << "class " << Classname << " { " << endl;
+  headerf << "private: " << endl;
+  headerf << "\t TH1F *samplehisto;" << endl;
   headerf << "protected: " << endl;
   headerf << "\tunsigned int index;" << endl;
   TTree *ev = (TTree*)f->Get("Events");
@@ -78,7 +81,7 @@ makeCMS2Files(std::string fname, std::string className = "") {
   
   
   headerf << "public: " << endl;
-  headerf << "int ScanChain( TChain* chain);" << endl;
+  headerf << "int ScanChain( TChain* chain, int nEvents=-1);" << endl;
   headerf << "void Init(TTree *tree) {" << endl;
 
   // SetBranchAddresses for LorentzVectors
@@ -171,20 +174,26 @@ makeCMS2Files(std::string fname, std::string className = "") {
   codef << "" << endl;
   codef << "#include \"TChain.h\"" << endl;
   codef << "#include \"TFile.h\"" << endl;
-  codef << "" << endl;
-  codef << "#include \"TH1F.h\"" << endl;
-  codef << "#include \"TH2F.h\"" << endl;
+  codef << "#include \"TDirectory.h\"" << endl;
+  codef << "#include \"TROOT.h\"" << endl;
   codef << "" << endl;
   codef << "#include \"" + Classname+".h\"" << endl;
   codef << "" << endl;
+  codef << "" << endl;
   
-  codef << "int " + Classname+"::ScanChain( TChain* chain) {" << endl;
+  codef << "int " + Classname+"::ScanChain( TChain* chain, int nEvents) {" << endl;
   codef << "" << endl;
   codef << "  TObjArray *listOfFiles = chain->GetListOfFiles();" << endl;
   codef << "" << endl;
-  codef << "  unsigned int nEventsChain = chain->GetEntries();" << endl;
+  codef << "  unsigned int nEventsChain=0;" << endl;
+  codef << "  if(nEvents==-1) " << endl << "    nEvents = chain->GetEntries();" << endl;
+  codef << "  else nEventsChain = nEvents;" << endl;
+  
   codef << "  unsigned int nEventsTotal = 0;" << endl;
-  codef << "" << endl;
+  codef << "  TDirectory *rootdir = gDirectory->GetDirectory(\"Rint:\");" << endl << endl;
+  codef << "  samplehisto = new TH1F(\"samplehisto\", \"Example histogram\", 200,0,200);" << endl;
+  codef << "  samplehisto->SetDirectory(rootdir);" << endl;
+    
   codef << "  // file loop" << endl;
   codef << "  TIter fileIter(listOfFiles);" << endl;
   codef << "  TFile *currentFile = 0;" << endl;
@@ -199,7 +208,10 @@ makeCMS2Files(std::string fname, std::string className = "") {
   codef << "      GetEntry(event);" << endl;
   codef << "      ++nEventsTotal;" << endl;
   codef << "      std::cout << \"els size: \" << els_p4().size() << \" \";" << endl;
-  codef << "      std::cout << \"mus size: \" << mus_p4().size() << std::endl;" << endl;
+  codef << "      std::cout << \"mus size: \" << mus_p4().size() << std::endl;" << endl << endl;
+  codef << "      for (unsigned int mus = 0; " << endl;
+  codef << "           mus < mus_p4().size(); mus++) " << endl << endl;
+  codef << "         samplehisto->Fill(mus_p4().at(mus).Pt());" << endl << endl;
   codef << "      for (unsigned int hyp = 0;" << endl;
   codef << "           hyp < hyp_jets_p4().size();" << endl;
   codef << "           ++hyp) {" << endl;
@@ -221,6 +233,7 @@ makeCMS2Files(std::string fname, std::string className = "") {
   codef << "    std::cout << \"ERROR: number of events from files is not equal to total number of events\" << std::endl;" << endl;
   codef << "  }" << endl;
   codef << "" << endl;
+  codef << "  samplehisto->Draw();" << endl;
   codef << "  return 0;" << endl;
   codef << "}" << endl << endl << endl;
 
@@ -231,13 +244,19 @@ makeCMS2Files(std::string fname, std::string className = "") {
 
   
   codef << "//This function does not require you to instantiate "+Classname+" to call it" << endl; 
-  codef << "int ScanChain( TChain* chain) {" << endl;
+  codef << "int ScanChain( TChain* chain, int nEvents) {" << endl;
   codef << "" << endl;
   codef << "  TObjArray *listOfFiles = chain->GetListOfFiles();" << endl;
   codef << "" << endl;
-  codef << "  unsigned int nEventsChain = chain->GetEntries();" << endl;
+  codef << "  unsigned int nEventsChain=0;" << endl;
+  codef << "  if(nEvents==-1) " << endl << "     nEvents = chain->GetEntries();" << endl;
+  codef << "  else nEventsChain = nEvents;" << endl;
+  
   codef << "  unsigned int nEventsTotal = 0;" << endl;
-  codef << "" << endl;
+  codef << "  TDirectory *rootdir = gDirectory->GetDirectory(\"Rint:\");" << endl << endl;
+  codef << "  TH1F *samplehisto = new TH1F(\"samplehisto\", \"Example histogram\", 200,0,200);" << endl;
+  codef << "  samplehisto->SetDirectory(rootdir);" << endl;
+
   codef << "  // file loop" << endl;
   codef << "  TIter fileIter(listOfFiles);" << endl;
   codef << "  TFile *currentFile = 0;" << endl;
@@ -254,6 +273,9 @@ makeCMS2Files(std::string fname, std::string className = "") {
   codef << "      ++nEventsTotal;" << endl;
   codef << "      std::cout << \"els size: \" << cms2.els_p4().size() << \" \";" << endl;
   codef << "      std::cout << \"mus size: \" << cms2.mus_p4().size() << std::endl;" << endl;
+  codef << "      for (unsigned int mus = 0; " << endl;
+  codef << "           mus < cms2.mus_p4().size(); mus++) " << endl << endl;
+  codef << "         samplehisto->Fill(cms2.mus_p4().at(mus).Pt());" << endl << endl;
   codef << "      for (unsigned int hyp = 0;" << endl;
   codef << "           hyp < cms2.hyp_jets_p4().size();" << endl;
   codef << "           ++hyp) {" << endl;
@@ -275,6 +297,7 @@ makeCMS2Files(std::string fname, std::string className = "") {
   codef << "    std::cout << \"ERROR: number of events from files is not equal to total number of events\" << std::endl;" << endl;
   codef << "  }" << endl;
   codef << "" << endl;
+  codef << "  samplehisto->Draw();" << endl;
   codef << "  return 0;" << endl;
   codef << "}" << endl;
 
