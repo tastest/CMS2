@@ -24,7 +24,7 @@
 {
 // Output file
 //char* outFile = "/home/users/fkw/CMS/CMS2/NtupleMacros/WW/myHist_WW_fast.root";
-char* outFile = "myHist_WW_fast_bjetstudy_allmcs_alljets.root";
+char* outFile = "myHist_WW_fast.root";
 
 // Flags for files to run over
 bool runWW    = true;

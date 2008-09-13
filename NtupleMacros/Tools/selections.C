@@ -5,7 +5,6 @@
 //============================================================
 #include "Math/LorentzVector.h"
 #include "TMath.h"
-#include "TLorentzVector.h"
 // #include "selections.h"
 //#include <vector>
 //#include "CMS1.h"
@@ -262,14 +261,4 @@ void dumpDocLines() {
   }
   // Clean up
   delete pdg;
-}
-
-int NjetVeto(std::vector<TLorentzVector>& Jet, double min_et) {
-  int njets = 0;
-  for(unsigned int i=0; i<Jet.size() ; ++i) {
-    if ( Jet[i].Perp() >= min_et) {
-      njets++;
-    }
-  }
-  return njets;
 }
