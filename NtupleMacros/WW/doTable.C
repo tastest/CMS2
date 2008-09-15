@@ -7,7 +7,7 @@
 gROOT->ProcessLine(".x ../Tools/setup.C");
 
 //hist file:
-TFile *ftt = TFile::Open("myHist_WW_fast_bjetstudy_allmcs_alljets.root");
+TFile *ftt = TFile::Open("processed_data.root");
 
  float DYee[4], DYmm[4], DYtt[4], tt[4], wjets[4], wz[4], zz[4], ww[4], h140[4], tw[4];
 
