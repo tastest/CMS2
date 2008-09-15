@@ -133,6 +133,9 @@ Hypothesis filterByHypothesis( int candidate ) {
   case 3:
     return EE;
   }
+  cout << "Unknown type: " << candidate << "Abort" << endl;
+  assert(0);
+  return MM;
 }
 
 //  Book histograms...
@@ -225,8 +228,8 @@ TH1F* h_itemTrkJet[4];
 TH1F* h_itemCaloJet[4];
 TH1F* h_itemCaloandTrkJet[27][4];
 
-std::vector<TLorentzVector>* trk_jets = new std::vector<TLorentzVector>();
-std::vector<TLorentzVector>* calo_jets = new std::vector<TLorentzVector>();
+static std::vector<TLorentzVector>* trk_jets = new std::vector<TLorentzVector>();
+static std::vector<TLorentzVector>* calo_jets = new std::vector<TLorentzVector>();
 
   static const Double_t etbin[27] =
     { 0., 5., 10., 15., 20., 25., 30., 35., 40., 45., 50., 55., 60., 65., 70., 75., 80., 85., 90., 95., 100., 105., 110., 115., 120., 125., 130.};
@@ -323,7 +326,7 @@ void hypo (int i_hyp, double kFactor)
 
      vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > calo_jets_p4(cms2.jets_p4());
 
-     for (int icalojet=0; icalojet<calo_jets_p4.size(); ++icalojet) {
+     for (unsigned int icalojet=0; icalojet<calo_jets_p4.size(); ++icalojet) {
        if ((abs(cms2.hyp_lt_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],calo_jets_p4[icalojet]) < 0.4)||
 	   (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],calo_jets_p4[icalojet]) < 0.4)
 	   ) continue;
@@ -718,7 +721,7 @@ void hypo (int i_hyp, double kFactor)
 
      //2d hist for muon tag counting
      float countmus = 0;
-     for (int imu=0; imu < cms2.mus_charge().size(); ++imu) {
+     for (int imu=0; imu < int(cms2.mus_charge().size()); ++imu) {
        if ( myType == 0 ||
 	    ( myType == 1 && cms2.hyp_lt_index()[i_hyp] != imu && cms2.hyp_ll_index()[i_hyp] != imu ) ||
 	    ( myType == 2 && abs(cms2.hyp_lt_id()[i_hyp]) == 11 && cms2.hyp_ll_index()[i_hyp] != imu ) ||
@@ -794,7 +797,7 @@ int ScanChain( TChain* chain, enum Sample sample ) {
   unsigned int nEventsChain = chain->GetEntries();  // number of entries in chain --> number of events from all files
   unsigned int nEventsTotal = 0;
 
-  const unsigned int numHypTypes = 4;  // number of hypotheses: MM, EM, EE, ALL
+  // const unsigned int numHypTypes = 4;  // number of hypotheses: MM, EM, EE, ALL
 
  // declare and create array of histograms
   const char sample_names[][1024] = { "ww", "wz", "zz", "wjets", "dyee", "dymm", "dytt", "ttbar", "tw" };
@@ -1082,6 +1085,7 @@ int ScanChain( TChain* chain, enum Sample sample ) {
 //        printf("current file: %s (%s), %s\n", currentFile->GetName(), 
 // 	      currentFile->GetTitle(), currentFile->IsA()->GetName());
        TFile *f = TFile::Open(currentFile->GetTitle()); 
+       assert(f);
        TTree *tree = (TTree*)f->Get("Events");
        
        cms2.Init(tree);  // set branch addresses for TTree tree
