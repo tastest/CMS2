@@ -282,6 +282,9 @@ void hypo (int i_hyp, double kFactor)
      // Z veto using additional leptons in the event
      if (additionalZveto()) return;
 
+     // trkjet veto
+     if ( !passTrkJetVeto(i_hyp) ) return;
+
      //count the number of tight leptons:
      // This is an FKW variable which I turned off since I do not understand it 
      // and also uses simpleIdPlus, so it should be fixed up before being turned back on.

@@ -10,6 +10,7 @@
 //#include <vector>
 //#include "CMS1.h"
 #include "TDatabasePDG.h"
+#include "../Tools/matchTools.h"
 
 //----------------------------------------------------------------
 // A ridicolusly simple function, but since the Z veto is used 
@@ -264,6 +265,13 @@ void dumpDocLines() {
   delete pdg;
 }
 
+//--------------------------------
+//
+// Functions related to trkjet veto
+// This needs ot be rewritten once we
+// have added appropriate variables into ntuple itself.
+//
+//--------------------------------
 int NjetVeto(std::vector<TLorentzVector>& Jet, double min_et) {
   int njets = 0;
   for(unsigned int i=0; i<Jet.size() ; ++i) {
@@ -273,3 +281,24 @@ int NjetVeto(std::vector<TLorentzVector>& Jet, double min_et) {
   }
   return njets;
 }
+
+
+bool passTrkJetVeto(int i_hyp){
+  std::vector<TLorentzVector> trkjets;
+  double jetet = 0;
+  double jeteta = 3.0;
+  // TrkJets & CaloJet save it after the lepton subtraction
+
+  for ( unsigned int itrkjet=0; itrkjet<cms2.trkjets_p4().size(); ++itrkjet) {
+    if ((abs(cms2.hyp_lt_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],cms2.trkjets_p4()[itrkjet]) < 0.4)||
+	(abs(cms2.hyp_ll_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.trkjets_p4()[itrkjet]) < 0.4)
+	) continue;
+    TLorentzVector p(cms2.trkjets_p4()[itrkjet].Px(), cms2.trkjets_p4()[itrkjet].Py(), cms2.trkjets_p4()[itrkjet].Pz(), cms2.trkjets_p4()[itrkjet].E());
+    if (p.Perp() < jetet) continue;
+    if (fabs(p.Eta()) > jeteta) continue;
+    trkjets.push_back(p);
+  }
+
+  return (NjetVeto(trkjets, 15) == 0);
+}
+
