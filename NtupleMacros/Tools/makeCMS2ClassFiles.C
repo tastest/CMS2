@@ -4,7 +4,7 @@
   of CMS2 ntuples. Usage:
 
   [kalavase@stau ~/rootmacros]$ root
-  root [0] .L makeCMS2Header.C
+  root [0] .L makeCMS2ClassFiles.C
   //second string is optional. The classname is CMS2 by default
   root [1] makeCMS2Header("tablemaker_Zmumu_ntuple.root","classname")
 
