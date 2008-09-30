@@ -1,0 +1,253 @@
+//now make the source file
+#include <iostream>
+#include <vector>
+#include <set>
+
+#include "TChain.h"
+#include "TFile.h"
+
+#include "TH1F.h"
+#include "TH2F.h"
+
+using namespace std;
+
+#ifndef __CINT__
+#include "CMS2_V00_04_00.h"
+CMS2 cms2;
+#endif
+
+#include "../Tools/selections.C"
+#include "../Tools/utilities.C"
+
+int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0) {
+
+  // Make sure the specDY flags is kosher                                                                                                             
+  if (specDY < -1 || specDY > 2) {
+    std::cout << "specDY flag is not allowed...quit" << std::endl;
+    return 1;
+  }
+
+  // clear list of duplicates                                                                                                                         
+  already_seen.clear();
+  int duplicates_total_n = 0;
+  double duplicates_total_weight = 0;
+  int i_permille_old = 0;
+
+  TObjArray *listOfFiles = chain->GetListOfFiles();
+
+  unsigned int nEventsChain = chain->GetEntries();
+  unsigned int nEventsTotal = 0;
+  unsigned int nCandidatesSelected = 0;
+
+  const unsigned int allBuckets = 20;
+  char *suffix[allBuckets+1];
+  suffix[0]  = "mpmpmp";
+  suffix[1]  = "mpmpmm";
+  suffix[2]  = "mpmmmm";
+  suffix[3]  = "mmmmmm";
+  suffix[4]  = "mpmpep";
+  suffix[5]  = "mpmpem";
+  suffix[6]  = "mpmmep";
+  suffix[7]  = "mpmmem";
+  suffix[8]  = "mmmmep";
+  suffix[9]  = "mmmmem";
+  suffix[10] = "mpepep";
+  suffix[11] = "mpepem";
+  suffix[12] = "mpemem";
+  suffix[13] = "mmepep";
+  suffix[14] = "mmepem";
+  suffix[15] = "mmemem";
+  suffix[16] = "epepep";
+  suffix[17] = "epepem";
+  suffix[18] = "epemem";
+  suffix[19] = "ememem";
+  suffix[20] = "all";
+
+  // declare histograms
+  TH1F* hPtFirst[allBuckets];
+  TH1F* hPtSecond[allBuckets];
+  TH1F* hPtThird[allBuckets];
+  TH1F* hMET[allBuckets];
+  TH1F* hNjets[allBuckets];
+
+  for (unsigned int i=0; i<=allBuckets; ++i) {
+
+    // Pt of first,second,third lepton
+    const int nBinsPt = 40;
+    const float lowBinPt = 0.;
+    const float highBinPt = 200;
+    hPtFirst[i] = book1DHist(Form("%s_hPtFirst_%s",prefix,suffix[i]),Form("%s_hPtFirst_%s",prefix,suffix[i]),nBinsPt,lowBinPt,highBinPt,"p_{T} [GeV]","lepton");   
+    hPtSecond[i] = book1DHist(Form("%s_hPtSecond_%s",prefix,suffix[i]),Form("%s_hPtSecond_%s",prefix,suffix[i]),nBinsPt,lowBinPt,highBinPt,"p_{T} [GeV]","lepton");   
+    hPtThird[i] = book1DHist(Form("%s_hPtThird_%s",prefix,suffix[i]),Form("%s_hPtThird_%s",prefix,suffix[i]),nBinsPt,lowBinPt,highBinPt,"p_{T} [GeV]","lepton");   
+
+    // MET 
+    const int nBinsMET = 25;
+    const float lowBinMET = 0.;
+    const float highBinMET = 250;
+    hMET[i] = book1DHist(Form("%s_hMET_%s",prefix,suffix[i]),Form("%s_hMET_%s",prefix,suffix[i]),nBinsMET,lowBinMET,highBinMET,"MET [GeV]","trilepton cand.");   
+
+    // nJets
+    const int nBinsNjets = 7;
+    const float lowBinNjets = 0.;
+    const float highBinNjets = 7.;
+    hNjets[i] = book1DHist(Form("%s_hNjets_%s",prefix,suffix[i]),Form("%s_hNjets_%s",prefix,suffix[i]),nBinsNjets,lowBinNjets,highBinNjets,"Njets","trilepton cand.");   
+
+  }
+
+  //CONSTANTS
+  const float zmass = 91.19; //just making sure that I use the same Z mass everywhere!
+
+  // CUTS
+  const int   goodLeptonsCut        = 3;     // good lepton cut
+  const float triggerLeptonMinPtCut = 20.;   // one of the leptons of the trilepton canidate has to have at least this pt
+  const float leptonMinPtCut        = 10.;   // all leptons of the trilepton canidate have to have at least this pt
+  const float electronMETCut        = 40.;   // cut on MET if lepton not belonging to primary Z is an electron
+  const float muonMETCut            = 20.;   // cut on MET if lepton not belonging to primary Z is an muon
+  bool        useMETAll             = true; // use metAll corrected for all muons instead of met corrected for muons from cand.
+
+  // file loop
+  TIter fileIter(listOfFiles);
+  TFile *currentFile = 0;
+  while ( currentFile = (TFile*)fileIter.Next() ) {
+    TFile f(currentFile->GetTitle());
+    TTree *tree = (TTree*)f.Get("Events");
+    cms2.Init(tree);
+    
+    //Event Loop
+    unsigned int nEvents = tree->GetEntries();
+    for( unsigned int event = 0; event < nEvents; ++event) {
+      cms2.GetEntry(event);
+      ++nEventsTotal;
+
+      if (cms2.trks_d0().size() == 0) continue;
+      DorkyEventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.trks_d0()[0],
+				  cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
+      if (is_duplicate(id)) {
+	duplicates_total_n++;
+	duplicates_total_weight += cms2.evt_scale1fb();
+	continue;
+      }
+
+      // Progress feedback to the user
+      progressBar(i_permille_old, nEventsTotal, nEventsChain);
+
+      // The event weight including the kFactor (scaled to 1 fb-1)
+      float weight = cms2.evt_scale1fb() * kFactor;
+
+      // special handling for DY
+      bool processEvent=true;
+      if (specDY == 0) {
+	if ( !isDYee() ) processEvent = false;
+      } else if (specDY == 1) {
+	if ( !isDYmm() ) processEvent = false;
+      } else if (specDY == 2) {
+	if ( !isDYtt() ) processEvent = false;
+      }
+      if (!processEvent) continue;
+      
+      // loop over trilepton candidates
+      for ( unsigned int cand = 0; 
+	    cand < cms2.hyp_trilep_bucket().size();
+	    ++cand ) {
+	
+	double metAll = cms2.hyp_trilep_metAll()[cand];
+	unsigned int bucket = cms2.hyp_trilep_bucket()[cand],;
+	int first = cms2.hyp_trilep_first_index()[cand];
+	int second = cms2.hyp_trilep_second_index()[cand];
+	int third = cms2.hyp_trilep_third_index()[cand];
+
+
+
+	// use met corrected for all muons or met corrected for muons in hyp
+	double met = cms2.hyp_trilep_met()[cand];
+	if ( useMETAll ) {
+	  met = metAll;
+	}
+
+	// count good leptons and all leptons
+	// good lepton is goodIsolated<lepton>
+	// lepton is good<lepton>
+	int goodLeptons = 0;
+	int allLeptons  = 0;
+	for ( unsigned int i = 0; i < cms2.evt_nels(); ++i ) {
+	  if ( goodElectronIsolated(i) ) ++goodLeptons;
+	  if ( goodElectronWithoutIsolation(i) ) ++allLeptons;
+	}
+	for ( unsigned int i = 0; i < cms2.mus_p4().size(); ++i ) {
+	  if ( goodMuonIsolated(i) ) ++goodLeptons;
+	  if ( goodMuonWithoutIsolation(i) ) ++allLeptons;
+	}
+
+	// CUT: goodLeptonIsolated
+	if ( !goodLeptonIsolated(bucket,
+				 first,
+				 second,
+				 third) ) continue;
+	
+	// CUT: do nothing unless pt = 20/X/10
+	if ( !passTriggerLeptonMinPtCut(bucket,first,second,third,triggerLeptonMinPtCut) ) continue;
+
+	// determine pt of lowest pt lepton
+	float lowest = ptLowestPtLepton(bucket,first,second,third);
+      
+	// CUT: do nothing if lowest Pt lepton < leptonMinPtCut
+	if ( lowest < leptonMinPtCut ) continue;
+
+	// identify primary Z candidate
+	unsigned int zArray[3] = {999999,999999,999999};
+	calcPrimZ(bucket,first,second,third,zmass,zArray);
+
+	// calculate mass of primary Z candiate
+	float mZPrim = calcPrimZMass(bucket,zArray[0],zArray[1]);
+
+	// CUT: do nothing unless one of the opposite sign same flavor combos is in the zmass window:
+	if( !inZmassWindow(mZPrim) ) continue;
+
+	// CUT: MET cut
+	if ( !passMETCut(bucket,met,electronMETCut,muonMETCut) ) continue;
+
+	float mZSec = calcSecZMass(bucket,zArray,zmass);
+	  
+	// CUT: goodLeptonsVeto
+	if ( goodLeptons > goodLeptonsCut ) continue;
+
+	// CUT: veto 2nd Z candidate
+	if ( inZmassWindow(mZSec) ) continue;
+	
+	// array of lepton pt for trilep. cand.
+	float *array = triLeptonPtArray(bucket,first,second,third); 
+
+	// count selected events
+	++nCandidatesSelected;
+
+	// fill histograms
+	hPtFirst[bucket]->Fill(array[0],weight);
+	hPtSecond[bucket]->Fill(array[1],weight);
+	hPtThird[bucket]->Fill(array[2],weight);
+	hPtFirst[allBuckets]->Fill(array[0],weight);
+	hPtSecond[allBuckets]->Fill(array[1],weight);
+	hPtThird[allBuckets]->Fill(array[2],weight);
+
+	hMET[bucket]->Fill(met,weight);
+	hMET[allBuckets]->Fill(met,weight);
+
+	hNjets[bucket]->Fill(cms2.hyp_trilep_jets_index()[cand].size(),weight);
+	hNjets[allBuckets]->Fill(cms2.hyp_trilep_jets_index()[cand].size(),weight);
+
+      }
+    }
+  }
+
+  std::cout << std::endl;
+  if ( nEventsChain != nEventsTotal ) {
+    std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
+  }
+  
+  std::cout << "Prefix: " << prefix << " processed: " << nEventsTotal
+	    << " Events, found: " << duplicates_total_n 
+	    << " Duplicates and selected: " << nCandidatesSelected
+	    << " Candidates."
+	    << endl << endl;
+
+  return 0;
+}

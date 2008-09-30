@@ -1,19 +1,41 @@
 // -*- C++ -*-
+#ifndef CMS2_H
+#define CMS2_H
 #include "Math/LorentzVector.h"
 #include "TMath.h"
 #include "TBranch.h"
 #include "TTree.h"
 
-#ifndef CMS2_H
-#define CMS2_H
+#include "TH1F.h"
 
-
+#include <vector> 
+using namespace std; 
 class CMS2 { 
+private: 
+	 TH1F *samplehisto;
 protected: 
 	unsigned int index;
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 	l1met_p4_;
 	TBranch *l1met_p4_branch;
 	bool l1met_p4_isLoaded;
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	alltrkjets_p4_;
+	TBranch *alltrkjets_p4_branch;
+	bool alltrkjets_p4_isLoaded;
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	els_mc_p4_;
+	TBranch *els_mc_p4_branch;
+	bool els_mc_p4_isLoaded;
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	jets_mc_gp_p4_;
+	TBranch *jets_mc_gp_p4_branch;
+	bool jets_mc_gp_p4_isLoaded;
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	jets_mc_p4_;
+	TBranch *jets_mc_p4_branch;
+	bool jets_mc_p4_isLoaded;
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	mus_mc_p4_;
+	TBranch *mus_mc_p4_branch;
+	bool mus_mc_p4_isLoaded;
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	trk_mcp4_;
+	TBranch *trk_mcp4_branch;
+	bool trk_mcp4_isLoaded;
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	els_p4_;
 	TBranch *els_p4_branch;
 	bool els_p4_isLoaded;
@@ -26,6 +48,9 @@ protected:
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	els_trk_p4_;
 	TBranch *els_trk_p4_branch;
 	bool els_trk_p4_isLoaded;
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	genjets_p4_;
+	TBranch *genjets_p4_branch;
+	bool genjets_p4_isLoaded;
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	genps_p4_;
 	TBranch *genps_p4_branch;
 	bool genps_p4_isLoaded;
@@ -107,6 +132,12 @@ protected:
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	trks_trk_p4_;
 	TBranch *trks_trk_p4_branch;
 	bool trks_trk_p4_isLoaded;
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	tkmus_p4_;
+	TBranch *tkmus_p4_branch;
+	bool tkmus_p4_isLoaded;
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	trkjets_p4_;
+	TBranch *trkjets_p4_branch;
+	bool trkjets_p4_isLoaded;
 	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > >	hyp_jets_mc_gp_p4_;
 	TBranch *hyp_jets_mc_gp_p4_branch;
 	bool hyp_jets_mc_gp_p4_isLoaded;
@@ -149,15 +180,18 @@ protected:
 	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > >	hyp_other_jets_tq_jet_p4_;
 	TBranch *hyp_other_jets_tq_jet_p4_branch;
 	bool hyp_other_jets_tq_jet_p4_isLoaded;
-	float	evt_CSA07FilterEff_;
-	TBranch *evt_CSA07FilterEff_branch;
-	bool evt_CSA07FilterEff_isLoaded;
-	float	evt_CSA07Pthat_;
-	TBranch *evt_CSA07Pthat_branch;
-	bool evt_CSA07Pthat_isLoaded;
-	float	evt_CSA07Weight_;
-	TBranch *evt_CSA07Weight_branch;
-	bool evt_CSA07Weight_isLoaded;
+	vector<double>	jets_closestElectron_DR_;
+	TBranch *jets_closestElectron_DR_branch;
+	bool jets_closestElectron_DR_isLoaded;
+	vector<double>	jets_closestMuon_DR_;
+	TBranch *jets_closestMuon_DR_branch;
+	bool jets_closestMuon_DR_isLoaded;
+	float	gen_met_;
+	TBranch *gen_met_branch;
+	bool gen_met_isLoaded;
+	float	gen_metPhi_;
+	TBranch *gen_metPhi_branch;
+	bool gen_metPhi_isLoaded;
 	float	evt_kfactor_;
 	TBranch *evt_kfactor_branch;
 	bool evt_kfactor_isLoaded;
@@ -197,6 +231,45 @@ protected:
 	float	metphi_jetcorr_;
 	TBranch *metphi_jetcorr_branch;
 	bool metphi_jetcorr_isLoaded;
+	vector<float>	els_mcdr_;
+	TBranch *els_mcdr_branch;
+	bool els_mcdr_isLoaded;
+	vector<float>	jets_mcdr_;
+	TBranch *jets_mcdr_branch;
+	bool jets_mcdr_isLoaded;
+	vector<float>	jets_mc_emEnergy_;
+	TBranch *jets_mc_emEnergy_branch;
+	bool jets_mc_emEnergy_isLoaded;
+	vector<float>	jets_mc_gpdr_;
+	TBranch *jets_mc_gpdr_branch;
+	bool jets_mc_gpdr_isLoaded;
+	vector<float>	jets_mc_hadEnergy_;
+	TBranch *jets_mc_hadEnergy_branch;
+	bool jets_mc_hadEnergy_isLoaded;
+	vector<float>	jets_mc_invEnergy_;
+	TBranch *jets_mc_invEnergy_branch;
+	bool jets_mc_invEnergy_isLoaded;
+	vector<float>	jets_mc_otherEnergy_;
+	TBranch *jets_mc_otherEnergy_branch;
+	bool jets_mc_otherEnergy_isLoaded;
+	vector<float>	mus_mcdr_;
+	TBranch *mus_mcdr_branch;
+	bool mus_mcdr_isLoaded;
+	vector<float>	trk_mcdr_;
+	TBranch *trk_mcdr_branch;
+	bool trk_mcdr_isLoaded;
+	vector<float>	els_ecalJuraIso_;
+	TBranch *els_ecalJuraIso_branch;
+	bool els_ecalJuraIso_isLoaded;
+	vector<float>	els_ecalJuraTowerIso_;
+	TBranch *els_ecalJuraTowerIso_branch;
+	bool els_ecalJuraTowerIso_isLoaded;
+	vector<float>	els_hcalConeIso_;
+	TBranch *els_hcalConeIso_branch;
+	bool els_hcalConeIso_isLoaded;
+	vector<float>	els_jetdr_;
+	TBranch *els_jetdr_branch;
+	bool els_jetdr_isLoaded;
 	vector<float>	els_musdr_;
 	TBranch *els_musdr_branch;
 	bool els_musdr_isLoaded;
@@ -674,6 +747,9 @@ protected:
 	vector<float>	trk_musdr_;
 	TBranch *trk_musdr_branch;
 	bool trk_musdr_isLoaded;
+	vector<float>	ww_pmet_;
+	TBranch *ww_pmet_branch;
+	bool ww_pmet_isLoaded;
 	vector<vector<float> >	hyp_jets_EMFcor_;
 	TBranch *hyp_jets_EMFcor_branch;
 	bool hyp_jets_EMFcor_isLoaded;
@@ -758,9 +834,6 @@ protected:
 	vector<vector<float> >	hyp_other_jets_tq_udsCorrF_;
 	TBranch *hyp_other_jets_tq_udsCorrF_branch;
 	bool hyp_other_jets_tq_udsCorrF_isLoaded;
-	int	evt_CSA07Process_;
-	TBranch *evt_CSA07Process_branch;
-	bool evt_CSA07Process_isLoaded;
 	int	evt_HLT1_;
 	TBranch *evt_HLT1_branch;
 	bool evt_HLT1_isLoaded;
@@ -803,6 +876,39 @@ protected:
 	int	evt_nl1mus_;
 	TBranch *evt_nl1mus_branch;
 	bool evt_nl1mus_isLoaded;
+	vector<int>	els_mc_id_;
+	TBranch *els_mc_id_branch;
+	bool els_mc_id_isLoaded;
+	vector<int>	els_mcidx_;
+	TBranch *els_mcidx_branch;
+	bool els_mcidx_isLoaded;
+	vector<int>	els_mc_motherid_;
+	TBranch *els_mc_motherid_branch;
+	bool els_mc_motherid_isLoaded;
+	vector<int>	jets_mc_id_;
+	TBranch *jets_mc_id_branch;
+	bool jets_mc_id_isLoaded;
+	vector<int>	mus_mc_id_;
+	TBranch *mus_mc_id_branch;
+	bool mus_mc_id_isLoaded;
+	vector<int>	mus_mcidx_;
+	TBranch *mus_mcidx_branch;
+	bool mus_mcidx_isLoaded;
+	vector<int>	mus_mc_motherid_;
+	TBranch *mus_mc_motherid_branch;
+	bool mus_mc_motherid_isLoaded;
+	vector<int>	trk_mc_id_;
+	TBranch *trk_mc_id_branch;
+	bool trk_mc_id_isLoaded;
+	vector<int>	trk_mcidx_;
+	TBranch *trk_mcidx_branch;
+	bool trk_mcidx_isLoaded;
+	vector<int>	trk_mc_motherid_;
+	TBranch *trk_mc_motherid_branch;
+	bool trk_mc_motherid_isLoaded;
+	vector<int>	els_closestJet_;
+	TBranch *els_closestJet_branch;
+	bool els_closestJet_isLoaded;
 	vector<int>	els_closestMuon_;
 	TBranch *els_closestMuon_branch;
 	bool els_closestMuon_isLoaded;
@@ -1088,6 +1194,78 @@ protected:
 	vector<int>	trk_musidx_;
 	TBranch *trk_musidx_branch;
 	bool trk_musidx_isLoaded;
+	vector<int>	tkmus_index_;
+	TBranch *tkmus_index_branch;
+	bool tkmus_index_isLoaded;
+	vector<int>	tkmus_nmatches_;
+	TBranch *tkmus_nmatches_branch;
+	bool tkmus_nmatches_isLoaded;
+	vector<int>	tkmus_pid_TM2DCompatibilityLoose_;
+	TBranch *tkmus_pid_TM2DCompatibilityLoose_branch;
+	bool tkmus_pid_TM2DCompatibilityLoose_isLoaded;
+	vector<int>	tkmus_pid_TM2DCompatibilityTight_;
+	TBranch *tkmus_pid_TM2DCompatibilityTight_branch;
+	bool tkmus_pid_TM2DCompatibilityTight_isLoaded;
+	vector<int>	tkmus_pid_TMLastStationLoose_;
+	TBranch *tkmus_pid_TMLastStationLoose_branch;
+	bool tkmus_pid_TMLastStationLoose_isLoaded;
+	vector<int>	tkmus_pid_TMLastStationTight_;
+	TBranch *tkmus_pid_TMLastStationTight_branch;
+	bool tkmus_pid_TMLastStationTight_isLoaded;
+	vector<int>	ww_isdyee_;
+	TBranch *ww_isdyee_branch;
+	bool ww_isdyee_isLoaded;
+	vector<int>	ww_isdymm_;
+	TBranch *ww_isdymm_branch;
+	bool ww_isdymm_isLoaded;
+	vector<int>	ww_isdytt_;
+	TBranch *ww_isdytt_branch;
+	bool ww_isdytt_isLoaded;
+	vector<int>	ww_llgoodel_;
+	TBranch *ww_llgoodel_branch;
+	bool ww_llgoodel_isLoaded;
+	vector<int>	ww_llgoodeliso_;
+	TBranch *ww_llgoodeliso_branch;
+	bool ww_llgoodeliso_isLoaded;
+	vector<int>	ww_llgoodmu_;
+	TBranch *ww_llgoodmu_branch;
+	bool ww_llgoodmu_isLoaded;
+	vector<int>	ww_llgoodmuiso_;
+	TBranch *ww_llgoodmuiso_branch;
+	bool ww_llgoodmuiso_isLoaded;
+	vector<int>	ww_ltgoodel_;
+	TBranch *ww_ltgoodel_branch;
+	bool ww_ltgoodel_isLoaded;
+	vector<int>	ww_ltgoodeliso_;
+	TBranch *ww_ltgoodeliso_branch;
+	bool ww_ltgoodeliso_isLoaded;
+	vector<int>	ww_ltgoodmu_;
+	TBranch *ww_ltgoodmu_branch;
+	bool ww_ltgoodmu_isLoaded;
+	vector<int>	ww_ltgoodmuiso_;
+	TBranch *ww_ltgoodmuiso_branch;
+	bool ww_ltgoodmuiso_isLoaded;
+	vector<int>	ww_oppsign_;
+	TBranch *ww_oppsign_branch;
+	bool ww_oppsign_isLoaded;
+	vector<int>	ww_pass2met_;
+	TBranch *ww_pass2met_branch;
+	bool ww_pass2met_isLoaded;
+	vector<int>	ww_pass4met_;
+	TBranch *ww_pass4met_branch;
+	bool ww_pass4met_isLoaded;
+	vector<int>	ww_passFebsel_no_jetveto_;
+	TBranch *ww_passFebsel_no_jetveto_branch;
+	bool ww_passFebsel_no_jetveto_isLoaded;
+	vector<int>	ww_passFebsel_with_jetveto_;
+	TBranch *ww_passFebsel_with_jetveto_branch;
+	bool ww_passFebsel_with_jetveto_isLoaded;
+	vector<int>	ww_passaddzveto_;
+	TBranch *ww_passaddzveto_branch;
+	bool ww_passaddzveto_isLoaded;
+	vector<int>	ww_passzveto_;
+	TBranch *ww_passzveto_branch;
+	bool ww_passzveto_isLoaded;
 	vector<vector<int> >	hyp_jets_mc_id_;
 	TBranch *hyp_jets_mc_id_branch;
 	bool hyp_jets_mc_id_isLoaded;
@@ -1118,6 +1296,9 @@ protected:
 	vector<vector<int> >	hyp_trilep_jets_index_;
 	TBranch *hyp_trilep_jets_index_branch;
 	bool hyp_trilep_jets_index_isLoaded;
+	unsigned int	evt_nalltrkjets_;
+	TBranch *evt_nalltrkjets_branch;
+	bool evt_nalltrkjets_isLoaded;
 	unsigned int	evt_nels_;
 	TBranch *evt_nels_branch;
 	bool evt_nels_isLoaded;
@@ -1127,9 +1308,15 @@ protected:
 	unsigned int	evt_run_;
 	TBranch *evt_run_branch;
 	bool evt_run_isLoaded;
+	unsigned int	evt_ngenjets_;
+	TBranch *evt_ngenjets_branch;
+	bool evt_ngenjets_isLoaded;
 	unsigned int	evt_njets_;
 	TBranch *evt_njets_branch;
 	bool evt_njets_isLoaded;
+	unsigned int	evt_ntrkjets_;
+	TBranch *evt_ntrkjets_branch;
+	bool evt_ntrkjets_isLoaded;
 	vector<unsigned int>	hyp_quadlep_bucket_;
 	TBranch *hyp_quadlep_bucket_branch;
 	bool hyp_quadlep_bucket_isLoaded;
@@ -1158,6 +1345,7 @@ protected:
 	TBranch *hyp_trilep_third_index_branch;
 	bool hyp_trilep_third_index_isLoaded;
 public: 
+int ScanChain( TChain* chain, int nEvents=-1);
 void Init(TTree *tree) {
 	l1met_p4_branch = 0;
 	if (tree->GetAlias("l1met_p4") != 0) {
@@ -1166,6 +1354,54 @@ void Init(TTree *tree) {
 	}
 	if(l1met_p4_branch == 0 ) {
 	cout << "Branch l1met_p4 does not exist." << endl;
+	}
+	alltrkjets_p4_branch = 0;
+	if (tree->GetAlias("alltrkjets_p4") != 0) {
+		alltrkjets_p4_branch = tree->GetBranch(tree->GetAlias("alltrkjets_p4"));
+		alltrkjets_p4_branch->SetAddress(&alltrkjets_p4_);
+	}
+	if(alltrkjets_p4_branch == 0 ) {
+	cout << "Branch alltrkjets_p4 does not exist." << endl;
+	}
+	els_mc_p4_branch = 0;
+	if (tree->GetAlias("els_mc_p4") != 0) {
+		els_mc_p4_branch = tree->GetBranch(tree->GetAlias("els_mc_p4"));
+		els_mc_p4_branch->SetAddress(&els_mc_p4_);
+	}
+	if(els_mc_p4_branch == 0 ) {
+	cout << "Branch els_mc_p4 does not exist." << endl;
+	}
+	jets_mc_gp_p4_branch = 0;
+	if (tree->GetAlias("jets_mc_gp_p4") != 0) {
+		jets_mc_gp_p4_branch = tree->GetBranch(tree->GetAlias("jets_mc_gp_p4"));
+		jets_mc_gp_p4_branch->SetAddress(&jets_mc_gp_p4_);
+	}
+	if(jets_mc_gp_p4_branch == 0 ) {
+	cout << "Branch jets_mc_gp_p4 does not exist." << endl;
+	}
+	jets_mc_p4_branch = 0;
+	if (tree->GetAlias("jets_mc_p4") != 0) {
+		jets_mc_p4_branch = tree->GetBranch(tree->GetAlias("jets_mc_p4"));
+		jets_mc_p4_branch->SetAddress(&jets_mc_p4_);
+	}
+	if(jets_mc_p4_branch == 0 ) {
+	cout << "Branch jets_mc_p4 does not exist." << endl;
+	}
+	mus_mc_p4_branch = 0;
+	if (tree->GetAlias("mus_mc_p4") != 0) {
+		mus_mc_p4_branch = tree->GetBranch(tree->GetAlias("mus_mc_p4"));
+		mus_mc_p4_branch->SetAddress(&mus_mc_p4_);
+	}
+	if(mus_mc_p4_branch == 0 ) {
+	cout << "Branch mus_mc_p4 does not exist." << endl;
+	}
+	trk_mcp4_branch = 0;
+	if (tree->GetAlias("trk_mcp4") != 0) {
+		trk_mcp4_branch = tree->GetBranch(tree->GetAlias("trk_mcp4"));
+		trk_mcp4_branch->SetAddress(&trk_mcp4_);
+	}
+	if(trk_mcp4_branch == 0 ) {
+	cout << "Branch trk_mcp4 does not exist." << endl;
 	}
 	els_p4_branch = 0;
 	if (tree->GetAlias("els_p4") != 0) {
@@ -1198,6 +1434,14 @@ void Init(TTree *tree) {
 	}
 	if(els_trk_p4_branch == 0 ) {
 	cout << "Branch els_trk_p4 does not exist." << endl;
+	}
+	genjets_p4_branch = 0;
+	if (tree->GetAlias("genjets_p4") != 0) {
+		genjets_p4_branch = tree->GetBranch(tree->GetAlias("genjets_p4"));
+		genjets_p4_branch->SetAddress(&genjets_p4_);
+	}
+	if(genjets_p4_branch == 0 ) {
+	cout << "Branch genjets_p4 does not exist." << endl;
 	}
 	genps_p4_branch = 0;
 	if (tree->GetAlias("genps_p4") != 0) {
@@ -1415,6 +1659,22 @@ void Init(TTree *tree) {
 	if(trks_trk_p4_branch == 0 ) {
 	cout << "Branch trks_trk_p4 does not exist." << endl;
 	}
+	tkmus_p4_branch = 0;
+	if (tree->GetAlias("tkmus_p4") != 0) {
+		tkmus_p4_branch = tree->GetBranch(tree->GetAlias("tkmus_p4"));
+		tkmus_p4_branch->SetAddress(&tkmus_p4_);
+	}
+	if(tkmus_p4_branch == 0 ) {
+	cout << "Branch tkmus_p4 does not exist." << endl;
+	}
+	trkjets_p4_branch = 0;
+	if (tree->GetAlias("trkjets_p4") != 0) {
+		trkjets_p4_branch = tree->GetBranch(tree->GetAlias("trkjets_p4"));
+		trkjets_p4_branch->SetAddress(&trkjets_p4_);
+	}
+	if(trkjets_p4_branch == 0 ) {
+	cout << "Branch trkjets_p4 does not exist." << endl;
+	}
   tree->SetMakeClass(1);
 	hyp_jets_mc_gp_p4_branch = 0;
 	if (tree->GetAlias("hyp_jets_mc_gp_p4") != 0) {
@@ -1528,29 +1788,37 @@ void Init(TTree *tree) {
 	if(hyp_other_jets_tq_jet_p4_branch == 0 ) {
 	cout << "Branch hyp_other_jets_tq_jet_p4 does not exist." << endl;
 	}
-	evt_CSA07FilterEff_branch = 0;
-	if (tree->GetAlias("evt_CSA07FilterEff") != 0) {
-		evt_CSA07FilterEff_branch = tree->GetBranch(tree->GetAlias("evt_CSA07FilterEff"));
-		evt_CSA07FilterEff_branch->SetAddress(&evt_CSA07FilterEff_);
+	jets_closestElectron_DR_branch = 0;
+	if (tree->GetAlias("jets_closestElectron_DR") != 0) {
+		jets_closestElectron_DR_branch = tree->GetBranch(tree->GetAlias("jets_closestElectron_DR"));
+		jets_closestElectron_DR_branch->SetAddress(&jets_closestElectron_DR_);
 	}
-	if(evt_CSA07FilterEff_branch == 0 ) {
-	cout << "Branch evt_CSA07FilterEff does not exist." << endl;
+	if(jets_closestElectron_DR_branch == 0 ) {
+	cout << "Branch jets_closestElectron_DR does not exist." << endl;
 	}
-	evt_CSA07Pthat_branch = 0;
-	if (tree->GetAlias("evt_CSA07Pthat") != 0) {
-		evt_CSA07Pthat_branch = tree->GetBranch(tree->GetAlias("evt_CSA07Pthat"));
-		evt_CSA07Pthat_branch->SetAddress(&evt_CSA07Pthat_);
+	jets_closestMuon_DR_branch = 0;
+	if (tree->GetAlias("jets_closestMuon_DR") != 0) {
+		jets_closestMuon_DR_branch = tree->GetBranch(tree->GetAlias("jets_closestMuon_DR"));
+		jets_closestMuon_DR_branch->SetAddress(&jets_closestMuon_DR_);
 	}
-	if(evt_CSA07Pthat_branch == 0 ) {
-	cout << "Branch evt_CSA07Pthat does not exist." << endl;
+	if(jets_closestMuon_DR_branch == 0 ) {
+	cout << "Branch jets_closestMuon_DR does not exist." << endl;
 	}
-	evt_CSA07Weight_branch = 0;
-	if (tree->GetAlias("evt_CSA07Weight") != 0) {
-		evt_CSA07Weight_branch = tree->GetBranch(tree->GetAlias("evt_CSA07Weight"));
-		evt_CSA07Weight_branch->SetAddress(&evt_CSA07Weight_);
+	gen_met_branch = 0;
+	if (tree->GetAlias("gen_met") != 0) {
+		gen_met_branch = tree->GetBranch(tree->GetAlias("gen_met"));
+		gen_met_branch->SetAddress(&gen_met_);
 	}
-	if(evt_CSA07Weight_branch == 0 ) {
-	cout << "Branch evt_CSA07Weight does not exist." << endl;
+	if(gen_met_branch == 0 ) {
+	cout << "Branch gen_met does not exist." << endl;
+	}
+	gen_metPhi_branch = 0;
+	if (tree->GetAlias("gen_metPhi") != 0) {
+		gen_metPhi_branch = tree->GetBranch(tree->GetAlias("gen_metPhi"));
+		gen_metPhi_branch->SetAddress(&gen_metPhi_);
+	}
+	if(gen_metPhi_branch == 0 ) {
+	cout << "Branch gen_metPhi does not exist." << endl;
 	}
 	evt_kfactor_branch = 0;
 	if (tree->GetAlias("evt_kfactor") != 0) {
@@ -1655,6 +1923,110 @@ void Init(TTree *tree) {
 	}
 	if(metphi_jetcorr_branch == 0 ) {
 	cout << "Branch metphi_jetcorr does not exist." << endl;
+	}
+	els_mcdr_branch = 0;
+	if (tree->GetAlias("els_mcdr") != 0) {
+		els_mcdr_branch = tree->GetBranch(tree->GetAlias("els_mcdr"));
+		els_mcdr_branch->SetAddress(&els_mcdr_);
+	}
+	if(els_mcdr_branch == 0 ) {
+	cout << "Branch els_mcdr does not exist." << endl;
+	}
+	jets_mcdr_branch = 0;
+	if (tree->GetAlias("jets_mcdr") != 0) {
+		jets_mcdr_branch = tree->GetBranch(tree->GetAlias("jets_mcdr"));
+		jets_mcdr_branch->SetAddress(&jets_mcdr_);
+	}
+	if(jets_mcdr_branch == 0 ) {
+	cout << "Branch jets_mcdr does not exist." << endl;
+	}
+	jets_mc_emEnergy_branch = 0;
+	if (tree->GetAlias("jets_mc_emEnergy") != 0) {
+		jets_mc_emEnergy_branch = tree->GetBranch(tree->GetAlias("jets_mc_emEnergy"));
+		jets_mc_emEnergy_branch->SetAddress(&jets_mc_emEnergy_);
+	}
+	if(jets_mc_emEnergy_branch == 0 ) {
+	cout << "Branch jets_mc_emEnergy does not exist." << endl;
+	}
+	jets_mc_gpdr_branch = 0;
+	if (tree->GetAlias("jets_mc_gpdr") != 0) {
+		jets_mc_gpdr_branch = tree->GetBranch(tree->GetAlias("jets_mc_gpdr"));
+		jets_mc_gpdr_branch->SetAddress(&jets_mc_gpdr_);
+	}
+	if(jets_mc_gpdr_branch == 0 ) {
+	cout << "Branch jets_mc_gpdr does not exist." << endl;
+	}
+	jets_mc_hadEnergy_branch = 0;
+	if (tree->GetAlias("jets_mc_hadEnergy") != 0) {
+		jets_mc_hadEnergy_branch = tree->GetBranch(tree->GetAlias("jets_mc_hadEnergy"));
+		jets_mc_hadEnergy_branch->SetAddress(&jets_mc_hadEnergy_);
+	}
+	if(jets_mc_hadEnergy_branch == 0 ) {
+	cout << "Branch jets_mc_hadEnergy does not exist." << endl;
+	}
+	jets_mc_invEnergy_branch = 0;
+	if (tree->GetAlias("jets_mc_invEnergy") != 0) {
+		jets_mc_invEnergy_branch = tree->GetBranch(tree->GetAlias("jets_mc_invEnergy"));
+		jets_mc_invEnergy_branch->SetAddress(&jets_mc_invEnergy_);
+	}
+	if(jets_mc_invEnergy_branch == 0 ) {
+	cout << "Branch jets_mc_invEnergy does not exist." << endl;
+	}
+	jets_mc_otherEnergy_branch = 0;
+	if (tree->GetAlias("jets_mc_otherEnergy") != 0) {
+		jets_mc_otherEnergy_branch = tree->GetBranch(tree->GetAlias("jets_mc_otherEnergy"));
+		jets_mc_otherEnergy_branch->SetAddress(&jets_mc_otherEnergy_);
+	}
+	if(jets_mc_otherEnergy_branch == 0 ) {
+	cout << "Branch jets_mc_otherEnergy does not exist." << endl;
+	}
+	mus_mcdr_branch = 0;
+	if (tree->GetAlias("mus_mcdr") != 0) {
+		mus_mcdr_branch = tree->GetBranch(tree->GetAlias("mus_mcdr"));
+		mus_mcdr_branch->SetAddress(&mus_mcdr_);
+	}
+	if(mus_mcdr_branch == 0 ) {
+	cout << "Branch mus_mcdr does not exist." << endl;
+	}
+	trk_mcdr_branch = 0;
+	if (tree->GetAlias("trk_mcdr") != 0) {
+		trk_mcdr_branch = tree->GetBranch(tree->GetAlias("trk_mcdr"));
+		trk_mcdr_branch->SetAddress(&trk_mcdr_);
+	}
+	if(trk_mcdr_branch == 0 ) {
+	cout << "Branch trk_mcdr does not exist." << endl;
+	}
+	els_ecalJuraIso_branch = 0;
+	if (tree->GetAlias("els_ecalJuraIso") != 0) {
+		els_ecalJuraIso_branch = tree->GetBranch(tree->GetAlias("els_ecalJuraIso"));
+		els_ecalJuraIso_branch->SetAddress(&els_ecalJuraIso_);
+	}
+	if(els_ecalJuraIso_branch == 0 ) {
+	cout << "Branch els_ecalJuraIso does not exist." << endl;
+	}
+	els_ecalJuraTowerIso_branch = 0;
+	if (tree->GetAlias("els_ecalJuraTowerIso") != 0) {
+		els_ecalJuraTowerIso_branch = tree->GetBranch(tree->GetAlias("els_ecalJuraTowerIso"));
+		els_ecalJuraTowerIso_branch->SetAddress(&els_ecalJuraTowerIso_);
+	}
+	if(els_ecalJuraTowerIso_branch == 0 ) {
+	cout << "Branch els_ecalJuraTowerIso does not exist." << endl;
+	}
+	els_hcalConeIso_branch = 0;
+	if (tree->GetAlias("els_hcalConeIso") != 0) {
+		els_hcalConeIso_branch = tree->GetBranch(tree->GetAlias("els_hcalConeIso"));
+		els_hcalConeIso_branch->SetAddress(&els_hcalConeIso_);
+	}
+	if(els_hcalConeIso_branch == 0 ) {
+	cout << "Branch els_hcalConeIso does not exist." << endl;
+	}
+	els_jetdr_branch = 0;
+	if (tree->GetAlias("els_jetdr") != 0) {
+		els_jetdr_branch = tree->GetBranch(tree->GetAlias("els_jetdr"));
+		els_jetdr_branch->SetAddress(&els_jetdr_);
+	}
+	if(els_jetdr_branch == 0 ) {
+	cout << "Branch els_jetdr does not exist." << endl;
 	}
 	els_musdr_branch = 0;
 	if (tree->GetAlias("els_musdr") != 0) {
@@ -2928,6 +3300,14 @@ void Init(TTree *tree) {
 	if(trk_musdr_branch == 0 ) {
 	cout << "Branch trk_musdr does not exist." << endl;
 	}
+	ww_pmet_branch = 0;
+	if (tree->GetAlias("ww_pmet") != 0) {
+		ww_pmet_branch = tree->GetBranch(tree->GetAlias("ww_pmet"));
+		ww_pmet_branch->SetAddress(&ww_pmet_);
+	}
+	if(ww_pmet_branch == 0 ) {
+	cout << "Branch ww_pmet does not exist." << endl;
+	}
 	hyp_jets_EMFcor_branch = 0;
 	if (tree->GetAlias("hyp_jets_EMFcor") != 0) {
 		hyp_jets_EMFcor_branch = tree->GetBranch(tree->GetAlias("hyp_jets_EMFcor"));
@@ -3152,14 +3532,6 @@ void Init(TTree *tree) {
 	if(hyp_other_jets_tq_udsCorrF_branch == 0 ) {
 	cout << "Branch hyp_other_jets_tq_udsCorrF does not exist." << endl;
 	}
-	evt_CSA07Process_branch = 0;
-	if (tree->GetAlias("evt_CSA07Process") != 0) {
-		evt_CSA07Process_branch = tree->GetBranch(tree->GetAlias("evt_CSA07Process"));
-		evt_CSA07Process_branch->SetAddress(&evt_CSA07Process_);
-	}
-	if(evt_CSA07Process_branch == 0 ) {
-	cout << "Branch evt_CSA07Process does not exist." << endl;
-	}
 	evt_HLT1_branch = 0;
 	if (tree->GetAlias("evt_HLT1") != 0) {
 		evt_HLT1_branch = tree->GetBranch(tree->GetAlias("evt_HLT1"));
@@ -3271,6 +3643,94 @@ void Init(TTree *tree) {
 	}
 	if(evt_nl1mus_branch == 0 ) {
 	cout << "Branch evt_nl1mus does not exist." << endl;
+	}
+	els_mc_id_branch = 0;
+	if (tree->GetAlias("els_mc_id") != 0) {
+		els_mc_id_branch = tree->GetBranch(tree->GetAlias("els_mc_id"));
+		els_mc_id_branch->SetAddress(&els_mc_id_);
+	}
+	if(els_mc_id_branch == 0 ) {
+	cout << "Branch els_mc_id does not exist." << endl;
+	}
+	els_mcidx_branch = 0;
+	if (tree->GetAlias("els_mcidx") != 0) {
+		els_mcidx_branch = tree->GetBranch(tree->GetAlias("els_mcidx"));
+		els_mcidx_branch->SetAddress(&els_mcidx_);
+	}
+	if(els_mcidx_branch == 0 ) {
+	cout << "Branch els_mcidx does not exist." << endl;
+	}
+	els_mc_motherid_branch = 0;
+	if (tree->GetAlias("els_mc_motherid") != 0) {
+		els_mc_motherid_branch = tree->GetBranch(tree->GetAlias("els_mc_motherid"));
+		els_mc_motherid_branch->SetAddress(&els_mc_motherid_);
+	}
+	if(els_mc_motherid_branch == 0 ) {
+	cout << "Branch els_mc_motherid does not exist." << endl;
+	}
+	jets_mc_id_branch = 0;
+	if (tree->GetAlias("jets_mc_id") != 0) {
+		jets_mc_id_branch = tree->GetBranch(tree->GetAlias("jets_mc_id"));
+		jets_mc_id_branch->SetAddress(&jets_mc_id_);
+	}
+	if(jets_mc_id_branch == 0 ) {
+	cout << "Branch jets_mc_id does not exist." << endl;
+	}
+	mus_mc_id_branch = 0;
+	if (tree->GetAlias("mus_mc_id") != 0) {
+		mus_mc_id_branch = tree->GetBranch(tree->GetAlias("mus_mc_id"));
+		mus_mc_id_branch->SetAddress(&mus_mc_id_);
+	}
+	if(mus_mc_id_branch == 0 ) {
+	cout << "Branch mus_mc_id does not exist." << endl;
+	}
+	mus_mcidx_branch = 0;
+	if (tree->GetAlias("mus_mcidx") != 0) {
+		mus_mcidx_branch = tree->GetBranch(tree->GetAlias("mus_mcidx"));
+		mus_mcidx_branch->SetAddress(&mus_mcidx_);
+	}
+	if(mus_mcidx_branch == 0 ) {
+	cout << "Branch mus_mcidx does not exist." << endl;
+	}
+	mus_mc_motherid_branch = 0;
+	if (tree->GetAlias("mus_mc_motherid") != 0) {
+		mus_mc_motherid_branch = tree->GetBranch(tree->GetAlias("mus_mc_motherid"));
+		mus_mc_motherid_branch->SetAddress(&mus_mc_motherid_);
+	}
+	if(mus_mc_motherid_branch == 0 ) {
+	cout << "Branch mus_mc_motherid does not exist." << endl;
+	}
+	trk_mc_id_branch = 0;
+	if (tree->GetAlias("trk_mc_id") != 0) {
+		trk_mc_id_branch = tree->GetBranch(tree->GetAlias("trk_mc_id"));
+		trk_mc_id_branch->SetAddress(&trk_mc_id_);
+	}
+	if(trk_mc_id_branch == 0 ) {
+	cout << "Branch trk_mc_id does not exist." << endl;
+	}
+	trk_mcidx_branch = 0;
+	if (tree->GetAlias("trk_mcidx") != 0) {
+		trk_mcidx_branch = tree->GetBranch(tree->GetAlias("trk_mcidx"));
+		trk_mcidx_branch->SetAddress(&trk_mcidx_);
+	}
+	if(trk_mcidx_branch == 0 ) {
+	cout << "Branch trk_mcidx does not exist." << endl;
+	}
+	trk_mc_motherid_branch = 0;
+	if (tree->GetAlias("trk_mc_motherid") != 0) {
+		trk_mc_motherid_branch = tree->GetBranch(tree->GetAlias("trk_mc_motherid"));
+		trk_mc_motherid_branch->SetAddress(&trk_mc_motherid_);
+	}
+	if(trk_mc_motherid_branch == 0 ) {
+	cout << "Branch trk_mc_motherid does not exist." << endl;
+	}
+	els_closestJet_branch = 0;
+	if (tree->GetAlias("els_closestJet") != 0) {
+		els_closestJet_branch = tree->GetBranch(tree->GetAlias("els_closestJet"));
+		els_closestJet_branch->SetAddress(&els_closestJet_);
+	}
+	if(els_closestJet_branch == 0 ) {
+	cout << "Branch els_closestJet does not exist." << endl;
 	}
 	els_closestMuon_branch = 0;
 	if (tree->GetAlias("els_closestMuon") != 0) {
@@ -4032,6 +4492,198 @@ void Init(TTree *tree) {
 	if(trk_musidx_branch == 0 ) {
 	cout << "Branch trk_musidx does not exist." << endl;
 	}
+	tkmus_index_branch = 0;
+	if (tree->GetAlias("tkmus_index") != 0) {
+		tkmus_index_branch = tree->GetBranch(tree->GetAlias("tkmus_index"));
+		tkmus_index_branch->SetAddress(&tkmus_index_);
+	}
+	if(tkmus_index_branch == 0 ) {
+	cout << "Branch tkmus_index does not exist." << endl;
+	}
+	tkmus_nmatches_branch = 0;
+	if (tree->GetAlias("tkmus_nmatches") != 0) {
+		tkmus_nmatches_branch = tree->GetBranch(tree->GetAlias("tkmus_nmatches"));
+		tkmus_nmatches_branch->SetAddress(&tkmus_nmatches_);
+	}
+	if(tkmus_nmatches_branch == 0 ) {
+	cout << "Branch tkmus_nmatches does not exist." << endl;
+	}
+	tkmus_pid_TM2DCompatibilityLoose_branch = 0;
+	if (tree->GetAlias("tkmus_pid_TM2DCompatibilityLoose") != 0) {
+		tkmus_pid_TM2DCompatibilityLoose_branch = tree->GetBranch(tree->GetAlias("tkmus_pid_TM2DCompatibilityLoose"));
+		tkmus_pid_TM2DCompatibilityLoose_branch->SetAddress(&tkmus_pid_TM2DCompatibilityLoose_);
+	}
+	if(tkmus_pid_TM2DCompatibilityLoose_branch == 0 ) {
+	cout << "Branch tkmus_pid_TM2DCompatibilityLoose does not exist." << endl;
+	}
+	tkmus_pid_TM2DCompatibilityTight_branch = 0;
+	if (tree->GetAlias("tkmus_pid_TM2DCompatibilityTight") != 0) {
+		tkmus_pid_TM2DCompatibilityTight_branch = tree->GetBranch(tree->GetAlias("tkmus_pid_TM2DCompatibilityTight"));
+		tkmus_pid_TM2DCompatibilityTight_branch->SetAddress(&tkmus_pid_TM2DCompatibilityTight_);
+	}
+	if(tkmus_pid_TM2DCompatibilityTight_branch == 0 ) {
+	cout << "Branch tkmus_pid_TM2DCompatibilityTight does not exist." << endl;
+	}
+	tkmus_pid_TMLastStationLoose_branch = 0;
+	if (tree->GetAlias("tkmus_pid_TMLastStationLoose") != 0) {
+		tkmus_pid_TMLastStationLoose_branch = tree->GetBranch(tree->GetAlias("tkmus_pid_TMLastStationLoose"));
+		tkmus_pid_TMLastStationLoose_branch->SetAddress(&tkmus_pid_TMLastStationLoose_);
+	}
+	if(tkmus_pid_TMLastStationLoose_branch == 0 ) {
+	cout << "Branch tkmus_pid_TMLastStationLoose does not exist." << endl;
+	}
+	tkmus_pid_TMLastStationTight_branch = 0;
+	if (tree->GetAlias("tkmus_pid_TMLastStationTight") != 0) {
+		tkmus_pid_TMLastStationTight_branch = tree->GetBranch(tree->GetAlias("tkmus_pid_TMLastStationTight"));
+		tkmus_pid_TMLastStationTight_branch->SetAddress(&tkmus_pid_TMLastStationTight_);
+	}
+	if(tkmus_pid_TMLastStationTight_branch == 0 ) {
+	cout << "Branch tkmus_pid_TMLastStationTight does not exist." << endl;
+	}
+	ww_isdyee_branch = 0;
+	if (tree->GetAlias("ww_isdyee") != 0) {
+		ww_isdyee_branch = tree->GetBranch(tree->GetAlias("ww_isdyee"));
+		ww_isdyee_branch->SetAddress(&ww_isdyee_);
+	}
+	if(ww_isdyee_branch == 0 ) {
+	cout << "Branch ww_isdyee does not exist." << endl;
+	}
+	ww_isdymm_branch = 0;
+	if (tree->GetAlias("ww_isdymm") != 0) {
+		ww_isdymm_branch = tree->GetBranch(tree->GetAlias("ww_isdymm"));
+		ww_isdymm_branch->SetAddress(&ww_isdymm_);
+	}
+	if(ww_isdymm_branch == 0 ) {
+	cout << "Branch ww_isdymm does not exist." << endl;
+	}
+	ww_isdytt_branch = 0;
+	if (tree->GetAlias("ww_isdytt") != 0) {
+		ww_isdytt_branch = tree->GetBranch(tree->GetAlias("ww_isdytt"));
+		ww_isdytt_branch->SetAddress(&ww_isdytt_);
+	}
+	if(ww_isdytt_branch == 0 ) {
+	cout << "Branch ww_isdytt does not exist." << endl;
+	}
+	ww_llgoodel_branch = 0;
+	if (tree->GetAlias("ww_llgoodel") != 0) {
+		ww_llgoodel_branch = tree->GetBranch(tree->GetAlias("ww_llgoodel"));
+		ww_llgoodel_branch->SetAddress(&ww_llgoodel_);
+	}
+	if(ww_llgoodel_branch == 0 ) {
+	cout << "Branch ww_llgoodel does not exist." << endl;
+	}
+	ww_llgoodeliso_branch = 0;
+	if (tree->GetAlias("ww_llgoodeliso") != 0) {
+		ww_llgoodeliso_branch = tree->GetBranch(tree->GetAlias("ww_llgoodeliso"));
+		ww_llgoodeliso_branch->SetAddress(&ww_llgoodeliso_);
+	}
+	if(ww_llgoodeliso_branch == 0 ) {
+	cout << "Branch ww_llgoodeliso does not exist." << endl;
+	}
+	ww_llgoodmu_branch = 0;
+	if (tree->GetAlias("ww_llgoodmu") != 0) {
+		ww_llgoodmu_branch = tree->GetBranch(tree->GetAlias("ww_llgoodmu"));
+		ww_llgoodmu_branch->SetAddress(&ww_llgoodmu_);
+	}
+	if(ww_llgoodmu_branch == 0 ) {
+	cout << "Branch ww_llgoodmu does not exist." << endl;
+	}
+	ww_llgoodmuiso_branch = 0;
+	if (tree->GetAlias("ww_llgoodmuiso") != 0) {
+		ww_llgoodmuiso_branch = tree->GetBranch(tree->GetAlias("ww_llgoodmuiso"));
+		ww_llgoodmuiso_branch->SetAddress(&ww_llgoodmuiso_);
+	}
+	if(ww_llgoodmuiso_branch == 0 ) {
+	cout << "Branch ww_llgoodmuiso does not exist." << endl;
+	}
+	ww_ltgoodel_branch = 0;
+	if (tree->GetAlias("ww_ltgoodel") != 0) {
+		ww_ltgoodel_branch = tree->GetBranch(tree->GetAlias("ww_ltgoodel"));
+		ww_ltgoodel_branch->SetAddress(&ww_ltgoodel_);
+	}
+	if(ww_ltgoodel_branch == 0 ) {
+	cout << "Branch ww_ltgoodel does not exist." << endl;
+	}
+	ww_ltgoodeliso_branch = 0;
+	if (tree->GetAlias("ww_ltgoodeliso") != 0) {
+		ww_ltgoodeliso_branch = tree->GetBranch(tree->GetAlias("ww_ltgoodeliso"));
+		ww_ltgoodeliso_branch->SetAddress(&ww_ltgoodeliso_);
+	}
+	if(ww_ltgoodeliso_branch == 0 ) {
+	cout << "Branch ww_ltgoodeliso does not exist." << endl;
+	}
+	ww_ltgoodmu_branch = 0;
+	if (tree->GetAlias("ww_ltgoodmu") != 0) {
+		ww_ltgoodmu_branch = tree->GetBranch(tree->GetAlias("ww_ltgoodmu"));
+		ww_ltgoodmu_branch->SetAddress(&ww_ltgoodmu_);
+	}
+	if(ww_ltgoodmu_branch == 0 ) {
+	cout << "Branch ww_ltgoodmu does not exist." << endl;
+	}
+	ww_ltgoodmuiso_branch = 0;
+	if (tree->GetAlias("ww_ltgoodmuiso") != 0) {
+		ww_ltgoodmuiso_branch = tree->GetBranch(tree->GetAlias("ww_ltgoodmuiso"));
+		ww_ltgoodmuiso_branch->SetAddress(&ww_ltgoodmuiso_);
+	}
+	if(ww_ltgoodmuiso_branch == 0 ) {
+	cout << "Branch ww_ltgoodmuiso does not exist." << endl;
+	}
+	ww_oppsign_branch = 0;
+	if (tree->GetAlias("ww_oppsign") != 0) {
+		ww_oppsign_branch = tree->GetBranch(tree->GetAlias("ww_oppsign"));
+		ww_oppsign_branch->SetAddress(&ww_oppsign_);
+	}
+	if(ww_oppsign_branch == 0 ) {
+	cout << "Branch ww_oppsign does not exist." << endl;
+	}
+	ww_pass2met_branch = 0;
+	if (tree->GetAlias("ww_pass2met") != 0) {
+		ww_pass2met_branch = tree->GetBranch(tree->GetAlias("ww_pass2met"));
+		ww_pass2met_branch->SetAddress(&ww_pass2met_);
+	}
+	if(ww_pass2met_branch == 0 ) {
+	cout << "Branch ww_pass2met does not exist." << endl;
+	}
+	ww_pass4met_branch = 0;
+	if (tree->GetAlias("ww_pass4met") != 0) {
+		ww_pass4met_branch = tree->GetBranch(tree->GetAlias("ww_pass4met"));
+		ww_pass4met_branch->SetAddress(&ww_pass4met_);
+	}
+	if(ww_pass4met_branch == 0 ) {
+	cout << "Branch ww_pass4met does not exist." << endl;
+	}
+	ww_passFebsel_no_jetveto_branch = 0;
+	if (tree->GetAlias("ww_passFebsel_no_jetveto") != 0) {
+		ww_passFebsel_no_jetveto_branch = tree->GetBranch(tree->GetAlias("ww_passFebsel_no_jetveto"));
+		ww_passFebsel_no_jetveto_branch->SetAddress(&ww_passFebsel_no_jetveto_);
+	}
+	if(ww_passFebsel_no_jetveto_branch == 0 ) {
+	cout << "Branch ww_passFebsel_no_jetveto does not exist." << endl;
+	}
+	ww_passFebsel_with_jetveto_branch = 0;
+	if (tree->GetAlias("ww_passFebsel_with_jetveto") != 0) {
+		ww_passFebsel_with_jetveto_branch = tree->GetBranch(tree->GetAlias("ww_passFebsel_with_jetveto"));
+		ww_passFebsel_with_jetveto_branch->SetAddress(&ww_passFebsel_with_jetveto_);
+	}
+	if(ww_passFebsel_with_jetveto_branch == 0 ) {
+	cout << "Branch ww_passFebsel_with_jetveto does not exist." << endl;
+	}
+	ww_passaddzveto_branch = 0;
+	if (tree->GetAlias("ww_passaddzveto") != 0) {
+		ww_passaddzveto_branch = tree->GetBranch(tree->GetAlias("ww_passaddzveto"));
+		ww_passaddzveto_branch->SetAddress(&ww_passaddzveto_);
+	}
+	if(ww_passaddzveto_branch == 0 ) {
+	cout << "Branch ww_passaddzveto does not exist." << endl;
+	}
+	ww_passzveto_branch = 0;
+	if (tree->GetAlias("ww_passzveto") != 0) {
+		ww_passzveto_branch = tree->GetBranch(tree->GetAlias("ww_passzveto"));
+		ww_passzveto_branch->SetAddress(&ww_passzveto_);
+	}
+	if(ww_passzveto_branch == 0 ) {
+	cout << "Branch ww_passzveto does not exist." << endl;
+	}
 	hyp_jets_mc_id_branch = 0;
 	if (tree->GetAlias("hyp_jets_mc_id") != 0) {
 		hyp_jets_mc_id_branch = tree->GetBranch(tree->GetAlias("hyp_jets_mc_id"));
@@ -4112,6 +4764,14 @@ void Init(TTree *tree) {
 	if(hyp_trilep_jets_index_branch == 0 ) {
 	cout << "Branch hyp_trilep_jets_index does not exist." << endl;
 	}
+	evt_nalltrkjets_branch = 0;
+	if (tree->GetAlias("evt_nalltrkjets") != 0) {
+		evt_nalltrkjets_branch = tree->GetBranch(tree->GetAlias("evt_nalltrkjets"));
+		evt_nalltrkjets_branch->SetAddress(&evt_nalltrkjets_);
+	}
+	if(evt_nalltrkjets_branch == 0 ) {
+	cout << "Branch evt_nalltrkjets does not exist." << endl;
+	}
 	evt_nels_branch = 0;
 	if (tree->GetAlias("evt_nels") != 0) {
 		evt_nels_branch = tree->GetBranch(tree->GetAlias("evt_nels"));
@@ -4136,6 +4796,14 @@ void Init(TTree *tree) {
 	if(evt_run_branch == 0 ) {
 	cout << "Branch evt_run does not exist." << endl;
 	}
+	evt_ngenjets_branch = 0;
+	if (tree->GetAlias("evt_ngenjets") != 0) {
+		evt_ngenjets_branch = tree->GetBranch(tree->GetAlias("evt_ngenjets"));
+		evt_ngenjets_branch->SetAddress(&evt_ngenjets_);
+	}
+	if(evt_ngenjets_branch == 0 ) {
+	cout << "Branch evt_ngenjets does not exist." << endl;
+	}
 	evt_njets_branch = 0;
 	if (tree->GetAlias("evt_njets") != 0) {
 		evt_njets_branch = tree->GetBranch(tree->GetAlias("evt_njets"));
@@ -4143,6 +4811,14 @@ void Init(TTree *tree) {
 	}
 	if(evt_njets_branch == 0 ) {
 	cout << "Branch evt_njets does not exist." << endl;
+	}
+	evt_ntrkjets_branch = 0;
+	if (tree->GetAlias("evt_ntrkjets") != 0) {
+		evt_ntrkjets_branch = tree->GetBranch(tree->GetAlias("evt_ntrkjets"));
+		evt_ntrkjets_branch->SetAddress(&evt_ntrkjets_);
+	}
+	if(evt_ntrkjets_branch == 0 ) {
+	cout << "Branch evt_ntrkjets does not exist." << endl;
 	}
 	hyp_quadlep_bucket_branch = 0;
 	if (tree->GetAlias("hyp_quadlep_bucket") != 0) {
@@ -4223,10 +4899,17 @@ void GetEntry(unsigned int idx)
 	{
 		index = idx;
 		l1met_p4_isLoaded = false;
+		alltrkjets_p4_isLoaded = false;
+		els_mc_p4_isLoaded = false;
+		jets_mc_gp_p4_isLoaded = false;
+		jets_mc_p4_isLoaded = false;
+		mus_mc_p4_isLoaded = false;
+		trk_mcp4_isLoaded = false;
 		els_p4_isLoaded = false;
 		els_p4In_isLoaded = false;
 		els_p4Out_isLoaded = false;
 		els_trk_p4_isLoaded = false;
+		genjets_p4_isLoaded = false;
 		genps_p4_isLoaded = false;
 		genps_prod_vtx_isLoaded = false;
 		hyp_ll_mc_p4_isLoaded = false;
@@ -4254,6 +4937,8 @@ void GetEntry(unsigned int idx)
 		mus_tq_genMotherP4_isLoaded = false;
 		mus_tq_genP4_isLoaded = false;
 		trks_trk_p4_isLoaded = false;
+		tkmus_p4_isLoaded = false;
+		trkjets_p4_isLoaded = false;
 		hyp_jets_mc_gp_p4_isLoaded = false;
 		hyp_jets_mc_p4_isLoaded = false;
 		hyp_jets_p4_isLoaded = false;
@@ -4268,9 +4953,10 @@ void GetEntry(unsigned int idx)
 		hyp_other_jets_tq_genPartonMother_p4_isLoaded = false;
 		hyp_other_jets_tq_genParton_p4_isLoaded = false;
 		hyp_other_jets_tq_jet_p4_isLoaded = false;
-		evt_CSA07FilterEff_isLoaded = false;
-		evt_CSA07Pthat_isLoaded = false;
-		evt_CSA07Weight_isLoaded = false;
+		jets_closestElectron_DR_isLoaded = false;
+		jets_closestMuon_DR_isLoaded = false;
+		gen_met_isLoaded = false;
+		gen_metPhi_isLoaded = false;
 		evt_kfactor_isLoaded = false;
 		evt_weight_isLoaded = false;
 		evt_xsec_excl_isLoaded = false;
@@ -4284,6 +4970,19 @@ void GetEntry(unsigned int idx)
 		evt_metSig_isLoaded = false;
 		evt_met_jetcorr_isLoaded = false;
 		metphi_jetcorr_isLoaded = false;
+		els_mcdr_isLoaded = false;
+		jets_mcdr_isLoaded = false;
+		jets_mc_emEnergy_isLoaded = false;
+		jets_mc_gpdr_isLoaded = false;
+		jets_mc_hadEnergy_isLoaded = false;
+		jets_mc_invEnergy_isLoaded = false;
+		jets_mc_otherEnergy_isLoaded = false;
+		mus_mcdr_isLoaded = false;
+		trk_mcdr_isLoaded = false;
+		els_ecalJuraIso_isLoaded = false;
+		els_ecalJuraTowerIso_isLoaded = false;
+		els_hcalConeIso_isLoaded = false;
+		els_jetdr_isLoaded = false;
 		els_musdr_isLoaded = false;
 		els_trkdr_isLoaded = false;
 		els_ESc_isLoaded = false;
@@ -4443,6 +5142,7 @@ void GetEntry(unsigned int idx)
 		trks_z0Err_isLoaded = false;
 		trk_elsdr_isLoaded = false;
 		trk_musdr_isLoaded = false;
+		ww_pmet_isLoaded = false;
 		hyp_jets_EMFcor_isLoaded = false;
 		hyp_jets_chFrac_isLoaded = false;
 		hyp_jets_cor_isLoaded = false;
@@ -4471,7 +5171,6 @@ void GetEntry(unsigned int idx)
 		hyp_other_jets_tq_jetCharge_isLoaded = false;
 		hyp_other_jets_tq_noCorrF_isLoaded = false;
 		hyp_other_jets_tq_udsCorrF_isLoaded = false;
-		evt_CSA07Process_isLoaded = false;
 		evt_HLT1_isLoaded = false;
 		evt_HLT2_isLoaded = false;
 		evt_HLT3_isLoaded = false;
@@ -4486,6 +5185,17 @@ void GetEntry(unsigned int idx)
 		evt_nl1jetsf_isLoaded = false;
 		evt_nl1jetst_isLoaded = false;
 		evt_nl1mus_isLoaded = false;
+		els_mc_id_isLoaded = false;
+		els_mcidx_isLoaded = false;
+		els_mc_motherid_isLoaded = false;
+		jets_mc_id_isLoaded = false;
+		mus_mc_id_isLoaded = false;
+		mus_mcidx_isLoaded = false;
+		mus_mc_motherid_isLoaded = false;
+		trk_mc_id_isLoaded = false;
+		trk_mcidx_isLoaded = false;
+		trk_mc_motherid_isLoaded = false;
+		els_closestJet_isLoaded = false;
 		els_closestMuon_isLoaded = false;
 		els_trkidx_isLoaded = false;
 		els_charge_isLoaded = false;
@@ -4581,6 +5291,30 @@ void GetEntry(unsigned int idx)
 		trks_validHits_isLoaded = false;
 		trk_elsidx_isLoaded = false;
 		trk_musidx_isLoaded = false;
+		tkmus_index_isLoaded = false;
+		tkmus_nmatches_isLoaded = false;
+		tkmus_pid_TM2DCompatibilityLoose_isLoaded = false;
+		tkmus_pid_TM2DCompatibilityTight_isLoaded = false;
+		tkmus_pid_TMLastStationLoose_isLoaded = false;
+		tkmus_pid_TMLastStationTight_isLoaded = false;
+		ww_isdyee_isLoaded = false;
+		ww_isdymm_isLoaded = false;
+		ww_isdytt_isLoaded = false;
+		ww_llgoodel_isLoaded = false;
+		ww_llgoodeliso_isLoaded = false;
+		ww_llgoodmu_isLoaded = false;
+		ww_llgoodmuiso_isLoaded = false;
+		ww_ltgoodel_isLoaded = false;
+		ww_ltgoodeliso_isLoaded = false;
+		ww_ltgoodmu_isLoaded = false;
+		ww_ltgoodmuiso_isLoaded = false;
+		ww_oppsign_isLoaded = false;
+		ww_pass2met_isLoaded = false;
+		ww_pass4met_isLoaded = false;
+		ww_passFebsel_no_jetveto_isLoaded = false;
+		ww_passFebsel_with_jetveto_isLoaded = false;
+		ww_passaddzveto_isLoaded = false;
+		ww_passzveto_isLoaded = false;
 		hyp_jets_mc_id_isLoaded = false;
 		hyp_jets_tq_genPartonMother_id_isLoaded = false;
 		hyp_jets_tq_genParton_id_isLoaded = false;
@@ -4591,10 +5325,13 @@ void GetEntry(unsigned int idx)
 		hyp_other_jets_tq_partonFlavour_isLoaded = false;
 		hyp_quadlep_jets_index_isLoaded = false;
 		hyp_trilep_jets_index_isLoaded = false;
+		evt_nalltrkjets_isLoaded = false;
 		evt_nels_isLoaded = false;
 		evt_event_isLoaded = false;
 		evt_run_isLoaded = false;
+		evt_ngenjets_isLoaded = false;
 		evt_njets_isLoaded = false;
+		evt_ntrkjets_isLoaded = false;
 		hyp_quadlep_bucket_isLoaded = false;
 		hyp_quadlep_first_index_isLoaded = false;
 		hyp_quadlep_fourth_index_isLoaded = false;
@@ -4614,6 +5351,60 @@ void GetEntry(unsigned int idx)
 			l1met_p4_isLoaded = true;
 		}
 		return l1met_p4_;
+	}
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &alltrkjets_p4()
+	{
+		if (not alltrkjets_p4_isLoaded) {
+			if (alltrkjets_p4_branch != 0) 
+				alltrkjets_p4_branch->GetEntry(index);
+			alltrkjets_p4_isLoaded = true;
+		}
+		return alltrkjets_p4_;
+	}
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &els_mc_p4()
+	{
+		if (not els_mc_p4_isLoaded) {
+			if (els_mc_p4_branch != 0) 
+				els_mc_p4_branch->GetEntry(index);
+			els_mc_p4_isLoaded = true;
+		}
+		return els_mc_p4_;
+	}
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &jets_mc_gp_p4()
+	{
+		if (not jets_mc_gp_p4_isLoaded) {
+			if (jets_mc_gp_p4_branch != 0) 
+				jets_mc_gp_p4_branch->GetEntry(index);
+			jets_mc_gp_p4_isLoaded = true;
+		}
+		return jets_mc_gp_p4_;
+	}
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &jets_mc_p4()
+	{
+		if (not jets_mc_p4_isLoaded) {
+			if (jets_mc_p4_branch != 0) 
+				jets_mc_p4_branch->GetEntry(index);
+			jets_mc_p4_isLoaded = true;
+		}
+		return jets_mc_p4_;
+	}
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &mus_mc_p4()
+	{
+		if (not mus_mc_p4_isLoaded) {
+			if (mus_mc_p4_branch != 0) 
+				mus_mc_p4_branch->GetEntry(index);
+			mus_mc_p4_isLoaded = true;
+		}
+		return mus_mc_p4_;
+	}
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &trk_mcp4()
+	{
+		if (not trk_mcp4_isLoaded) {
+			if (trk_mcp4_branch != 0) 
+				trk_mcp4_branch->GetEntry(index);
+			trk_mcp4_isLoaded = true;
+		}
+		return trk_mcp4_;
 	}
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &els_p4()
 	{
@@ -4650,6 +5441,15 @@ void GetEntry(unsigned int idx)
 			els_trk_p4_isLoaded = true;
 		}
 		return els_trk_p4_;
+	}
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &genjets_p4()
+	{
+		if (not genjets_p4_isLoaded) {
+			if (genjets_p4_branch != 0) 
+				genjets_p4_branch->GetEntry(index);
+			genjets_p4_isLoaded = true;
+		}
+		return genjets_p4_;
 	}
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &genps_p4()
 	{
@@ -4894,6 +5694,24 @@ void GetEntry(unsigned int idx)
 		}
 		return trks_trk_p4_;
 	}
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &tkmus_p4()
+	{
+		if (not tkmus_p4_isLoaded) {
+			if (tkmus_p4_branch != 0) 
+				tkmus_p4_branch->GetEntry(index);
+			tkmus_p4_isLoaded = true;
+		}
+		return tkmus_p4_;
+	}
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &trkjets_p4()
+	{
+		if (not trkjets_p4_isLoaded) {
+			if (trkjets_p4_branch != 0) 
+				trkjets_p4_branch->GetEntry(index);
+			trkjets_p4_isLoaded = true;
+		}
+		return trkjets_p4_;
+	}
 	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > > &hyp_jets_mc_gp_p4()
 	{
 		if (not hyp_jets_mc_gp_p4_isLoaded) {
@@ -5020,32 +5838,41 @@ void GetEntry(unsigned int idx)
 		}
 		return hyp_other_jets_tq_jet_p4_;
 	}
-	float &evt_CSA07FilterEff()
+	vector<double> &jets_closestElectron_DR()
 	{
-		if (not evt_CSA07FilterEff_isLoaded) {
-			if (evt_CSA07FilterEff_branch != 0) 
-				evt_CSA07FilterEff_branch->GetEntry(index);
-			evt_CSA07FilterEff_isLoaded = true;
+		if (not jets_closestElectron_DR_isLoaded) {
+			if (jets_closestElectron_DR_branch != 0) 
+				jets_closestElectron_DR_branch->GetEntry(index);
+			jets_closestElectron_DR_isLoaded = true;
 		}
-		return evt_CSA07FilterEff_;
+		return jets_closestElectron_DR_;
 	}
-	float &evt_CSA07Pthat()
+	vector<double> &jets_closestMuon_DR()
 	{
-		if (not evt_CSA07Pthat_isLoaded) {
-			if (evt_CSA07Pthat_branch != 0) 
-				evt_CSA07Pthat_branch->GetEntry(index);
-			evt_CSA07Pthat_isLoaded = true;
+		if (not jets_closestMuon_DR_isLoaded) {
+			if (jets_closestMuon_DR_branch != 0) 
+				jets_closestMuon_DR_branch->GetEntry(index);
+			jets_closestMuon_DR_isLoaded = true;
 		}
-		return evt_CSA07Pthat_;
+		return jets_closestMuon_DR_;
 	}
-	float &evt_CSA07Weight()
+	float &gen_met()
 	{
-		if (not evt_CSA07Weight_isLoaded) {
-			if (evt_CSA07Weight_branch != 0) 
-				evt_CSA07Weight_branch->GetEntry(index);
-			evt_CSA07Weight_isLoaded = true;
+		if (not gen_met_isLoaded) {
+			if (gen_met_branch != 0) 
+				gen_met_branch->GetEntry(index);
+			gen_met_isLoaded = true;
 		}
-		return evt_CSA07Weight_;
+		return gen_met_;
+	}
+	float &gen_metPhi()
+	{
+		if (not gen_metPhi_isLoaded) {
+			if (gen_metPhi_branch != 0) 
+				gen_metPhi_branch->GetEntry(index);
+			gen_metPhi_isLoaded = true;
+		}
+		return gen_metPhi_;
 	}
 	float &evt_kfactor()
 	{
@@ -5163,6 +5990,123 @@ void GetEntry(unsigned int idx)
 			metphi_jetcorr_isLoaded = true;
 		}
 		return metphi_jetcorr_;
+	}
+	vector<float> &els_mcdr()
+	{
+		if (not els_mcdr_isLoaded) {
+			if (els_mcdr_branch != 0) 
+				els_mcdr_branch->GetEntry(index);
+			els_mcdr_isLoaded = true;
+		}
+		return els_mcdr_;
+	}
+	vector<float> &jets_mcdr()
+	{
+		if (not jets_mcdr_isLoaded) {
+			if (jets_mcdr_branch != 0) 
+				jets_mcdr_branch->GetEntry(index);
+			jets_mcdr_isLoaded = true;
+		}
+		return jets_mcdr_;
+	}
+	vector<float> &jets_mc_emEnergy()
+	{
+		if (not jets_mc_emEnergy_isLoaded) {
+			if (jets_mc_emEnergy_branch != 0) 
+				jets_mc_emEnergy_branch->GetEntry(index);
+			jets_mc_emEnergy_isLoaded = true;
+		}
+		return jets_mc_emEnergy_;
+	}
+	vector<float> &jets_mc_gpdr()
+	{
+		if (not jets_mc_gpdr_isLoaded) {
+			if (jets_mc_gpdr_branch != 0) 
+				jets_mc_gpdr_branch->GetEntry(index);
+			jets_mc_gpdr_isLoaded = true;
+		}
+		return jets_mc_gpdr_;
+	}
+	vector<float> &jets_mc_hadEnergy()
+	{
+		if (not jets_mc_hadEnergy_isLoaded) {
+			if (jets_mc_hadEnergy_branch != 0) 
+				jets_mc_hadEnergy_branch->GetEntry(index);
+			jets_mc_hadEnergy_isLoaded = true;
+		}
+		return jets_mc_hadEnergy_;
+	}
+	vector<float> &jets_mc_invEnergy()
+	{
+		if (not jets_mc_invEnergy_isLoaded) {
+			if (jets_mc_invEnergy_branch != 0) 
+				jets_mc_invEnergy_branch->GetEntry(index);
+			jets_mc_invEnergy_isLoaded = true;
+		}
+		return jets_mc_invEnergy_;
+	}
+	vector<float> &jets_mc_otherEnergy()
+	{
+		if (not jets_mc_otherEnergy_isLoaded) {
+			if (jets_mc_otherEnergy_branch != 0) 
+				jets_mc_otherEnergy_branch->GetEntry(index);
+			jets_mc_otherEnergy_isLoaded = true;
+		}
+		return jets_mc_otherEnergy_;
+	}
+	vector<float> &mus_mcdr()
+	{
+		if (not mus_mcdr_isLoaded) {
+			if (mus_mcdr_branch != 0) 
+				mus_mcdr_branch->GetEntry(index);
+			mus_mcdr_isLoaded = true;
+		}
+		return mus_mcdr_;
+	}
+	vector<float> &trk_mcdr()
+	{
+		if (not trk_mcdr_isLoaded) {
+			if (trk_mcdr_branch != 0) 
+				trk_mcdr_branch->GetEntry(index);
+			trk_mcdr_isLoaded = true;
+		}
+		return trk_mcdr_;
+	}
+	vector<float> &els_ecalJuraIso()
+	{
+		if (not els_ecalJuraIso_isLoaded) {
+			if (els_ecalJuraIso_branch != 0) 
+				els_ecalJuraIso_branch->GetEntry(index);
+			els_ecalJuraIso_isLoaded = true;
+		}
+		return els_ecalJuraIso_;
+	}
+	vector<float> &els_ecalJuraTowerIso()
+	{
+		if (not els_ecalJuraTowerIso_isLoaded) {
+			if (els_ecalJuraTowerIso_branch != 0) 
+				els_ecalJuraTowerIso_branch->GetEntry(index);
+			els_ecalJuraTowerIso_isLoaded = true;
+		}
+		return els_ecalJuraTowerIso_;
+	}
+	vector<float> &els_hcalConeIso()
+	{
+		if (not els_hcalConeIso_isLoaded) {
+			if (els_hcalConeIso_branch != 0) 
+				els_hcalConeIso_branch->GetEntry(index);
+			els_hcalConeIso_isLoaded = true;
+		}
+		return els_hcalConeIso_;
+	}
+	vector<float> &els_jetdr()
+	{
+		if (not els_jetdr_isLoaded) {
+			if (els_jetdr_branch != 0) 
+				els_jetdr_branch->GetEntry(index);
+			els_jetdr_isLoaded = true;
+		}
+		return els_jetdr_;
 	}
 	vector<float> &els_musdr()
 	{
@@ -6595,6 +7539,15 @@ void GetEntry(unsigned int idx)
 		}
 		return trk_musdr_;
 	}
+	vector<float> &ww_pmet()
+	{
+		if (not ww_pmet_isLoaded) {
+			if (ww_pmet_branch != 0) 
+				ww_pmet_branch->GetEntry(index);
+			ww_pmet_isLoaded = true;
+		}
+		return ww_pmet_;
+	}
 	vector<vector<float> > &hyp_jets_EMFcor()
 	{
 		if (not hyp_jets_EMFcor_isLoaded) {
@@ -6847,15 +7800,6 @@ void GetEntry(unsigned int idx)
 		}
 		return hyp_other_jets_tq_udsCorrF_;
 	}
-	int &evt_CSA07Process()
-	{
-		if (not evt_CSA07Process_isLoaded) {
-			if (evt_CSA07Process_branch != 0) 
-				evt_CSA07Process_branch->GetEntry(index);
-			evt_CSA07Process_isLoaded = true;
-		}
-		return evt_CSA07Process_;
-	}
 	int &evt_HLT1()
 	{
 		if (not evt_HLT1_isLoaded) {
@@ -6981,6 +7925,105 @@ void GetEntry(unsigned int idx)
 			evt_nl1mus_isLoaded = true;
 		}
 		return evt_nl1mus_;
+	}
+	vector<int> &els_mc_id()
+	{
+		if (not els_mc_id_isLoaded) {
+			if (els_mc_id_branch != 0) 
+				els_mc_id_branch->GetEntry(index);
+			els_mc_id_isLoaded = true;
+		}
+		return els_mc_id_;
+	}
+	vector<int> &els_mcidx()
+	{
+		if (not els_mcidx_isLoaded) {
+			if (els_mcidx_branch != 0) 
+				els_mcidx_branch->GetEntry(index);
+			els_mcidx_isLoaded = true;
+		}
+		return els_mcidx_;
+	}
+	vector<int> &els_mc_motherid()
+	{
+		if (not els_mc_motherid_isLoaded) {
+			if (els_mc_motherid_branch != 0) 
+				els_mc_motherid_branch->GetEntry(index);
+			els_mc_motherid_isLoaded = true;
+		}
+		return els_mc_motherid_;
+	}
+	vector<int> &jets_mc_id()
+	{
+		if (not jets_mc_id_isLoaded) {
+			if (jets_mc_id_branch != 0) 
+				jets_mc_id_branch->GetEntry(index);
+			jets_mc_id_isLoaded = true;
+		}
+		return jets_mc_id_;
+	}
+	vector<int> &mus_mc_id()
+	{
+		if (not mus_mc_id_isLoaded) {
+			if (mus_mc_id_branch != 0) 
+				mus_mc_id_branch->GetEntry(index);
+			mus_mc_id_isLoaded = true;
+		}
+		return mus_mc_id_;
+	}
+	vector<int> &mus_mcidx()
+	{
+		if (not mus_mcidx_isLoaded) {
+			if (mus_mcidx_branch != 0) 
+				mus_mcidx_branch->GetEntry(index);
+			mus_mcidx_isLoaded = true;
+		}
+		return mus_mcidx_;
+	}
+	vector<int> &mus_mc_motherid()
+	{
+		if (not mus_mc_motherid_isLoaded) {
+			if (mus_mc_motherid_branch != 0) 
+				mus_mc_motherid_branch->GetEntry(index);
+			mus_mc_motherid_isLoaded = true;
+		}
+		return mus_mc_motherid_;
+	}
+	vector<int> &trk_mc_id()
+	{
+		if (not trk_mc_id_isLoaded) {
+			if (trk_mc_id_branch != 0) 
+				trk_mc_id_branch->GetEntry(index);
+			trk_mc_id_isLoaded = true;
+		}
+		return trk_mc_id_;
+	}
+	vector<int> &trk_mcidx()
+	{
+		if (not trk_mcidx_isLoaded) {
+			if (trk_mcidx_branch != 0) 
+				trk_mcidx_branch->GetEntry(index);
+			trk_mcidx_isLoaded = true;
+		}
+		return trk_mcidx_;
+	}
+	vector<int> &trk_mc_motherid()
+	{
+		if (not trk_mc_motherid_isLoaded) {
+			if (trk_mc_motherid_branch != 0) 
+				trk_mc_motherid_branch->GetEntry(index);
+			trk_mc_motherid_isLoaded = true;
+		}
+		return trk_mc_motherid_;
+	}
+	vector<int> &els_closestJet()
+	{
+		if (not els_closestJet_isLoaded) {
+			if (els_closestJet_branch != 0) 
+				els_closestJet_branch->GetEntry(index);
+			els_closestJet_isLoaded = true;
+		}
+		return els_closestJet_;
 	}
 	vector<int> &els_closestMuon()
 	{
@@ -7837,6 +8880,222 @@ void GetEntry(unsigned int idx)
 		}
 		return trk_musidx_;
 	}
+	vector<int> &tkmus_index()
+	{
+		if (not tkmus_index_isLoaded) {
+			if (tkmus_index_branch != 0) 
+				tkmus_index_branch->GetEntry(index);
+			tkmus_index_isLoaded = true;
+		}
+		return tkmus_index_;
+	}
+	vector<int> &tkmus_nmatches()
+	{
+		if (not tkmus_nmatches_isLoaded) {
+			if (tkmus_nmatches_branch != 0) 
+				tkmus_nmatches_branch->GetEntry(index);
+			tkmus_nmatches_isLoaded = true;
+		}
+		return tkmus_nmatches_;
+	}
+	vector<int> &tkmus_pid_TM2DCompatibilityLoose()
+	{
+		if (not tkmus_pid_TM2DCompatibilityLoose_isLoaded) {
+			if (tkmus_pid_TM2DCompatibilityLoose_branch != 0) 
+				tkmus_pid_TM2DCompatibilityLoose_branch->GetEntry(index);
+			tkmus_pid_TM2DCompatibilityLoose_isLoaded = true;
+		}
+		return tkmus_pid_TM2DCompatibilityLoose_;
+	}
+	vector<int> &tkmus_pid_TM2DCompatibilityTight()
+	{
+		if (not tkmus_pid_TM2DCompatibilityTight_isLoaded) {
+			if (tkmus_pid_TM2DCompatibilityTight_branch != 0) 
+				tkmus_pid_TM2DCompatibilityTight_branch->GetEntry(index);
+			tkmus_pid_TM2DCompatibilityTight_isLoaded = true;
+		}
+		return tkmus_pid_TM2DCompatibilityTight_;
+	}
+	vector<int> &tkmus_pid_TMLastStationLoose()
+	{
+		if (not tkmus_pid_TMLastStationLoose_isLoaded) {
+			if (tkmus_pid_TMLastStationLoose_branch != 0) 
+				tkmus_pid_TMLastStationLoose_branch->GetEntry(index);
+			tkmus_pid_TMLastStationLoose_isLoaded = true;
+		}
+		return tkmus_pid_TMLastStationLoose_;
+	}
+	vector<int> &tkmus_pid_TMLastStationTight()
+	{
+		if (not tkmus_pid_TMLastStationTight_isLoaded) {
+			if (tkmus_pid_TMLastStationTight_branch != 0) 
+				tkmus_pid_TMLastStationTight_branch->GetEntry(index);
+			tkmus_pid_TMLastStationTight_isLoaded = true;
+		}
+		return tkmus_pid_TMLastStationTight_;
+	}
+	vector<int> &ww_isdyee()
+	{
+		if (not ww_isdyee_isLoaded) {
+			if (ww_isdyee_branch != 0) 
+				ww_isdyee_branch->GetEntry(index);
+			ww_isdyee_isLoaded = true;
+		}
+		return ww_isdyee_;
+	}
+	vector<int> &ww_isdymm()
+	{
+		if (not ww_isdymm_isLoaded) {
+			if (ww_isdymm_branch != 0) 
+				ww_isdymm_branch->GetEntry(index);
+			ww_isdymm_isLoaded = true;
+		}
+		return ww_isdymm_;
+	}
+	vector<int> &ww_isdytt()
+	{
+		if (not ww_isdytt_isLoaded) {
+			if (ww_isdytt_branch != 0) 
+				ww_isdytt_branch->GetEntry(index);
+			ww_isdytt_isLoaded = true;
+		}
+		return ww_isdytt_;
+	}
+	vector<int> &ww_llgoodel()
+	{
+		if (not ww_llgoodel_isLoaded) {
+			if (ww_llgoodel_branch != 0) 
+				ww_llgoodel_branch->GetEntry(index);
+			ww_llgoodel_isLoaded = true;
+		}
+		return ww_llgoodel_;
+	}
+	vector<int> &ww_llgoodeliso()
+	{
+		if (not ww_llgoodeliso_isLoaded) {
+			if (ww_llgoodeliso_branch != 0) 
+				ww_llgoodeliso_branch->GetEntry(index);
+			ww_llgoodeliso_isLoaded = true;
+		}
+		return ww_llgoodeliso_;
+	}
+	vector<int> &ww_llgoodmu()
+	{
+		if (not ww_llgoodmu_isLoaded) {
+			if (ww_llgoodmu_branch != 0) 
+				ww_llgoodmu_branch->GetEntry(index);
+			ww_llgoodmu_isLoaded = true;
+		}
+		return ww_llgoodmu_;
+	}
+	vector<int> &ww_llgoodmuiso()
+	{
+		if (not ww_llgoodmuiso_isLoaded) {
+			if (ww_llgoodmuiso_branch != 0) 
+				ww_llgoodmuiso_branch->GetEntry(index);
+			ww_llgoodmuiso_isLoaded = true;
+		}
+		return ww_llgoodmuiso_;
+	}
+	vector<int> &ww_ltgoodel()
+	{
+		if (not ww_ltgoodel_isLoaded) {
+			if (ww_ltgoodel_branch != 0) 
+				ww_ltgoodel_branch->GetEntry(index);
+			ww_ltgoodel_isLoaded = true;
+		}
+		return ww_ltgoodel_;
+	}
+	vector<int> &ww_ltgoodeliso()
+	{
+		if (not ww_ltgoodeliso_isLoaded) {
+			if (ww_ltgoodeliso_branch != 0) 
+				ww_ltgoodeliso_branch->GetEntry(index);
+			ww_ltgoodeliso_isLoaded = true;
+		}
+		return ww_ltgoodeliso_;
+	}
+	vector<int> &ww_ltgoodmu()
+	{
+		if (not ww_ltgoodmu_isLoaded) {
+			if (ww_ltgoodmu_branch != 0) 
+				ww_ltgoodmu_branch->GetEntry(index);
+			ww_ltgoodmu_isLoaded = true;
+		}
+		return ww_ltgoodmu_;
+	}
+	vector<int> &ww_ltgoodmuiso()
+	{
+		if (not ww_ltgoodmuiso_isLoaded) {
+			if (ww_ltgoodmuiso_branch != 0) 
+				ww_ltgoodmuiso_branch->GetEntry(index);
+			ww_ltgoodmuiso_isLoaded = true;
+		}
+		return ww_ltgoodmuiso_;
+	}
+	vector<int> &ww_oppsign()
+	{
+		if (not ww_oppsign_isLoaded) {
+			if (ww_oppsign_branch != 0) 
+				ww_oppsign_branch->GetEntry(index);
+			ww_oppsign_isLoaded = true;
+		}
+		return ww_oppsign_;
+	}
+	vector<int> &ww_pass2met()
+	{
+		if (not ww_pass2met_isLoaded) {
+			if (ww_pass2met_branch != 0) 
+				ww_pass2met_branch->GetEntry(index);
+			ww_pass2met_isLoaded = true;
+		}
+		return ww_pass2met_;
+	}
+	vector<int> &ww_pass4met()
+	{
+		if (not ww_pass4met_isLoaded) {
+			if (ww_pass4met_branch != 0) 
+				ww_pass4met_branch->GetEntry(index);
+			ww_pass4met_isLoaded = true;
+		}
+		return ww_pass4met_;
+	}
+	vector<int> &ww_passFebsel_no_jetveto()
+	{
+		if (not ww_passFebsel_no_jetveto_isLoaded) {
+			if (ww_passFebsel_no_jetveto_branch != 0) 
+				ww_passFebsel_no_jetveto_branch->GetEntry(index);
+			ww_passFebsel_no_jetveto_isLoaded = true;
+		}
+		return ww_passFebsel_no_jetveto_;
+	}
+	vector<int> &ww_passFebsel_with_jetveto()
+	{
+		if (not ww_passFebsel_with_jetveto_isLoaded) {
+			if (ww_passFebsel_with_jetveto_branch != 0) 
+				ww_passFebsel_with_jetveto_branch->GetEntry(index);
+			ww_passFebsel_with_jetveto_isLoaded = true;
+		}
+		return ww_passFebsel_with_jetveto_;
+	}
+	vector<int> &ww_passaddzveto()
+	{
+		if (not ww_passaddzveto_isLoaded) {
+			if (ww_passaddzveto_branch != 0) 
+				ww_passaddzveto_branch->GetEntry(index);
+			ww_passaddzveto_isLoaded = true;
+		}
+		return ww_passaddzveto_;
+	}
+	vector<int> &ww_passzveto()
+	{
+		if (not ww_passzveto_isLoaded) {
+			if (ww_passzveto_branch != 0) 
+				ww_passzveto_branch->GetEntry(index);
+			ww_passzveto_isLoaded = true;
+		}
+		return ww_passzveto_;
+	}
 	vector<vector<int> > &hyp_jets_mc_id()
 	{
 		if (not hyp_jets_mc_id_isLoaded) {
@@ -7927,6 +9186,15 @@ void GetEntry(unsigned int idx)
 		}
 		return hyp_trilep_jets_index_;
 	}
+	unsigned int &evt_nalltrkjets()
+	{
+		if (not evt_nalltrkjets_isLoaded) {
+			if (evt_nalltrkjets_branch != 0) 
+				evt_nalltrkjets_branch->GetEntry(index);
+			evt_nalltrkjets_isLoaded = true;
+		}
+		return evt_nalltrkjets_;
+	}
 	unsigned int &evt_nels()
 	{
 		if (not evt_nels_isLoaded) {
@@ -7954,6 +9222,15 @@ void GetEntry(unsigned int idx)
 		}
 		return evt_run_;
 	}
+	unsigned int &evt_ngenjets()
+	{
+		if (not evt_ngenjets_isLoaded) {
+			if (evt_ngenjets_branch != 0) 
+				evt_ngenjets_branch->GetEntry(index);
+			evt_ngenjets_isLoaded = true;
+		}
+		return evt_ngenjets_;
+	}
 	unsigned int &evt_njets()
 	{
 		if (not evt_njets_isLoaded) {
@@ -7962,6 +9239,15 @@ void GetEntry(unsigned int idx)
 			evt_njets_isLoaded = true;
 		}
 		return evt_njets_;
+	}
+	unsigned int &evt_ntrkjets()
+	{
+		if (not evt_ntrkjets_isLoaded) {
+			if (evt_ntrkjets_branch != 0) 
+				evt_ntrkjets_branch->GetEntry(index);
+			evt_ntrkjets_isLoaded = true;
+		}
+		return evt_ntrkjets_;
 	}
 	vector<unsigned int> &hyp_quadlep_bucket()
 	{
@@ -8047,4 +9333,3 @@ void GetEntry(unsigned int idx)
 };
 
 #endif
-

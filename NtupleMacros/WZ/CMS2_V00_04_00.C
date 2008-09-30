@@ -12,7 +12,7 @@
 using namespace std;
 
 #ifndef __CINT__
-#include "CMS2.h"
+#include "CMS2_V00_04_00.h"
 CMS2 cms2;
 #endif
 
@@ -37,6 +37,7 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
 
   unsigned int nEventsChain = chain->GetEntries();
   unsigned int nEventsTotal = 0;
+  unsigned int nCandidatesSelected = 0;
 
   const unsigned int allBuckets = 20;
   char *suffix[allBuckets+1];
@@ -144,31 +145,18 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
       }
       if (!processEvent) continue;
       
-      double metAll = 0;
-      if ( useMETAll ) {
-	// metAll correction for all muons, not necessary if bugfix in HypTrilepMaker for NTuples used
-	metAll = cms2.evt_met();
-	double metAllPhi = cms2.evt_metPhi();
-      
-	for ( unsigned int muon = 0;
-	      muon < cms2.mus_p4().size();
-	      ++muon ) {
-	  correctMETmuons_crossedE(metAll, metAllPhi, 
-				   cms2.mus_p4()[muon].pt(), cms2.mus_p4()[muon].phi(),
-				   cms2.mus_trk_p4()[muon].theta(), cms2.mus_trk_p4()[muon].phi(),
-				   cms2.mus_e_em()[muon], cms2.mus_e_had()[muon],cms2.mus_e_ho()[muon]);
-	}
-      }
-
       // loop over trilepton candidates
       for ( unsigned int cand = 0; 
 	    cand < cms2.hyp_trilep_bucket().size();
 	    ++cand ) {
 	
+	double metAll = cms2.hyp_trilep_metAll()[cand];
 	unsigned int bucket = cms2.hyp_trilep_bucket()[cand],;
 	int first = cms2.hyp_trilep_first_index()[cand];
 	int second = cms2.hyp_trilep_second_index()[cand];
 	int third = cms2.hyp_trilep_third_index()[cand];
+
+
 
 	// use met corrected for all muons or met corrected for muons in hyp
 	double met = cms2.hyp_trilep_met()[cand];
@@ -226,11 +214,11 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
 	// CUT: veto 2nd Z candidate
 	if ( inZmassWindow(mZSec) ) continue;
 	
-	// correct number of jets for electrons in candidate, not necessary if bugfix in TriLeptonMaker is used for NTuples
- 	std::vector<LorentzVector> correctedJets = correctJetsForElectrons(bucket,first,second,third);
-
 	// array of lepton pt for trilep. cand.
 	float *array = triLeptonPtArray(bucket,first,second,third); 
+
+	// count selected events
+	++nCandidatesSelected;
 
 	// fill histograms
 	hPtFirst[bucket]->Fill(array[0],weight);
@@ -243,17 +231,23 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
 	hMET[bucket]->Fill(met,weight);
 	hMET[allBuckets]->Fill(met,weight);
 
-	hNjets[bucket]->Fill(correctedJets.size(),weight);
-	hNjets[allBuckets]->Fill(correctedJets.size(),weight);
+	hNjets[bucket]->Fill(cms2.hyp_trilep_jets_index()[cand].size(),weight);
+	hNjets[allBuckets]->Fill(cms2.hyp_trilep_jets_index()[cand].size(),weight);
 
       }
     }
   }
-  
+
   std::cout << std::endl;
   if ( nEventsChain != nEventsTotal ) {
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
   }
   
+  std::cout << "Prefix: " << prefix << " processed: " << nEventsTotal
+	    << " Events, found: " << duplicates_total_n 
+	    << " Duplicates and selected: " << nCandidatesSelected
+	    << " Candidates."
+	    << endl << endl;
+
   return 0;
 }

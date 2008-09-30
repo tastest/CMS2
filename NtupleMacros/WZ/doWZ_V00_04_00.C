@@ -1,7 +1,14 @@
 {
 
   // Output file
-  char* outFile = "myHist.root";
+  char* outFile = "myHist_V00_04_00.root";
+
+  //
+  // ATTENTION
+  //
+  // V00-04-0x samples not complete
+  // take WZ,ZZ,LM1 from V00-05-00
+  //
 
   // Flags for files to run over
   bool runWW    = true;
@@ -13,9 +20,7 @@
   bool runDYtt  = true;
   bool runttbar = true;
   bool runtW    = true;
-
-  // ntuple base directory
-  const char* base = "/home/gutsche/data/dietcms2";
+  bool runLM1   = true;
 
   // Load various tools
   gROOT->SetMacroPath((string(gROOT->GetMacroPath()) + ":" + "../Tools/").c_str());
@@ -24,65 +29,68 @@
   gROOT->ProcessLine(".x setup.C");
 
   // Load and compile the looping code
-  gROOT->ProcessLine(".L CMS2.C+");
+  gROOT->ProcessLine(".L CMS2_V00_04_00.C+");
 
   //WW file
   if (runWW) {
     TChain *fWW = new TChain("Events");
-    fWW->Add(Form("%s/WW_signal/*.root",base));
+    fWW->Add("/data/tmp/cms2-V00-04-0x/ww.root");
   }
 
   //WZ file
   if (runWZ) {
     TChain *fWZ = new TChain("Events");
-    fWZ->Add(Form("%s/WZ_signal/*.root",base));
+    fWZ->Add("/data/tmp/cms2-V00-05-00/merge_WZ.root");
   }
 
   //ZZ file
   if (runZZ) {
     TChain *fZZ = new TChain("Events");
-    fZZ->Add(Form("%s/ZZ_signal/*.root",base));
+    fZZ->Add("/data/tmp/cms2-V00-05-00/merge_ZZ.root");
   }
 
   //Wjets file
   if (runWjets) {
     TChain *fWjets = new TChain("Events");
-    fWjets->Add(Form("%s/cms2_muon_soup_postprocessed_split_Wjet/*.root",base));
-    fWjets->Add(Form("%s/cms2_electron_soup_postprocessed_split_Wjet/*.root",base));
+    fWjets->Add("/data/tmp/cms2-V00-04-0x/wjets.root");
   }
 
   //DYee file
   if (runDYee) {
     TChain *fDYee = new TChain("Events");
-    fDYee->Add(Form("%s/cms2_muon_soup_postprocessed_split_DY/*.root",base));
-    fDYee->Add(Form("%s/cms2_electron_soup_postprocessed_split_DY/*.root",base));
+    fDYee->Add("/data/tmp/cms2-V00-04-0x/dy.root");
   }
 
   //DYmm file
   if (runDYmm) {
     TChain *fDYmm = new TChain("Events");
-    fDYmm->Add(Form("%s/cms2_muon_soup_postprocessed_split_DY/*.root",base));
-    fDYmm->Add(Form("%s/cms2_electron_soup_postprocessed_split_DY/*.root",base));
+    fDYmm->Add("/data/tmp/cms2-V00-04-0x/dy.root");
   }
 
   //DYtt file
   if (runDYtt) {
     TChain *fDYtt = new TChain("Events");
-    fDYtt->Add(Form("%s/cms2_muon_soup_postprocessed_split_DY/*.root",base));
-    fDYtt->Add(Form("%s/cms2_electron_soup_postprocessed_split_DY/*.root",base));
+    fDYtt->Add("/data/tmp/cms2-V00-04-0x/dy.root");
   }
 
   //ttbar file
   if (runttbar) {
     TChain *fttbar = new TChain("Events");
-    fttbar->Add(Form("%s/cms2_muon_soup_postprocessed_split_ttbar/*.root",base));
-    fttbar->Add(Form("%s/cms2_electron_soup_postprocessed_split_ttbar/*.root",base));
+    fttbar->Add("/data/tmp/cms2-V00-04-0x/ttbar.root");
   }
 
+  //tW file
   if (runtW) {
     TChain *ftW = new TChain("Events");
-    ftW->Add(Form("%s/tW_signal/*.root",base));
+    ftW->Add("/data/tmp/cms2-V00-04-0x/tw.root");
   }
+
+  //LM1 file
+  if (runLM1) {
+    TChain *fLM1 = new TChain("Events");
+    fLM1->Add("/data/tmp/cms2-V00-05-00/mergeLM1.root");
+  }
+
 
   // Define colors numbers:
   gStyle->SetPalette(1);
@@ -141,6 +149,12 @@
     cout << "Processing tW.."<<endl;
     ScanChain(ftW, "tW",-1,1.0);
     hist::color("tW", 63);
+  }
+
+  if (runLM1) {
+    cout << "Processing LM1.."<<endl;
+    ScanChain(fLM1, "LM1",-1,1.0);
+    hist::color("LM1", 98);
   }
 
   //save all the histograms
