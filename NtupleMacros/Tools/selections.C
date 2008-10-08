@@ -10,7 +10,7 @@
 //#include <vector>
 //#include "CMS1.h"
 #include "TDatabasePDG.h"
-#include "../Tools/matchTools.h"
+#include "../Tools/matchTools.C"
 
 //----------------------------------------------------------------
 // A ridicolusly simple function, but since the Z veto is used 
@@ -41,6 +41,15 @@ bool inZmassWindow (float mass) {
 //----------------------------------------------------------------
 bool goodElectronWithoutIsolation(int index) {
   if ( cms2.els_tightId().at(index)     !=  1) return false;
+  if ( cms2.els_closestMuon().at(index) != -1) return false;
+  if ( abs(cms2.els_d0().at(index)) > 0.025)   return false;
+  return true;
+}
+//----------------------------------------------------------------
+// loose Electron ID without isolation
+//----------------------------------------------------------------
+bool goodLooseElectronWithoutIsolation(int index) {
+  if ( cms2.els_looseId().at(index)     !=  1) return false;
   if ( cms2.els_closestMuon().at(index) != -1) return false;
   if ( abs(cms2.els_d0().at(index)) > 0.025)   return false;
   return true;
