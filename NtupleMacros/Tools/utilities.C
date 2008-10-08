@@ -114,6 +114,72 @@ TH1F* book1DVarHist(const char* name, const char* title, unsigned int nbins, flo
   return hist;   
 }
 
+TH1F* book1DVarHist(const char* name, const char* title, vector<float> &bins, const char* xtitle, const char* ytitle) {
+  // return histogram instance with called Sumw2
+  const unsigned int nBins = bins.size()-1;
+  float binArray[nBins+1];
+  for (unsigned int i = 0;
+       i < nBins+1;
+       ++i) {
+    binArray[i] = bins[i];
+  }
+
+  TH1F *hist = new TH1F(name,title,nBins,binArray);
+  hist->SetXTitle(xtitle);
+  hist->SetYTitle(ytitle);
+  hist->Sumw2();
+   
+  return hist;
+}
+
+TH2F* book2DHist(const char* name, const char* title, unsigned int nxbins, float xlow, float xhigh, unsigned int nybins, float ylow, float yhigh, const char* xtitle, const char* ytitle, const char* ztitle) {
+  // return histogram instance with called Sumw2
+  TH2F *hist = new TH2F(name,title,nxbins,xlow,xhigh,nybins,ylow,yhigh);
+  hist->SetXTitle(xtitle);
+  hist->SetYTitle(ytitle);
+  hist->SetZTitle(ztitle);
+  hist->Sumw2();
+   
+  return hist;   
+}
+
+TH2F* book2DVarHist(const char* name, const char* title, unsigned int nxbins, float* xbins, unsigned int nybins, float* ybins, const char* xtitle, const char* ytitle, const char* ztitle) {
+  // return histogram instance with called Sumw2
+  TH2F *hist = new TH2F(name,title,nxbins,xbins,nybins,ybins);
+  hist->SetXTitle(xtitle);
+  hist->SetYTitle(ytitle);
+  hist->SetZTitle(ztitle);
+  hist->Sumw2();
+   
+  return hist;   
+}
+
+TH2F* book2DVarHist(const char* name, const char* title, vector<float> &xbins, vector<float> &ybins, const char* xtitle, const char* ytitle, const char* ztitle) {
+  // return histogram instance with called Sumw2
+  const unsigned int nxBins = xbins.size()-1;
+  float xbinArray[nxBins+1];
+  for (unsigned int i = 0;
+       i < nxBins+1;
+       ++i) {
+    xbinArray[i] = xbins[i];
+  }
+  const unsigned int nyBins = ybins.size()-1;
+  float ybinArray[nyBins+1];
+  for (unsigned int i = 0;
+       i < nyBins+1;
+       ++i) {
+    ybinArray[i] = ybins[i];
+  }
+
+  TH2F *hist = new TH2F(name,title,nxBins,xbinArray,nyBins,ybinArray);
+  hist->SetXTitle(xtitle);
+  hist->SetYTitle(ytitle);
+  hist->SetZTitle(ztitle);
+  hist->Sumw2();
+   
+  return hist;
+}
+
 float mee(int i, int j){
   if ( cms2.els_charge()[i] * cms2.els_charge()[j] < 0 ) {
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
@@ -652,21 +718,19 @@ float calcSecZMass(int bucket, unsigned int* leptons, float zmass) {
 
 }
 
+float CalculateDeltaR(const LorentzVector &one, const LorentzVector& two) {
+  float dphi = one.Phi() - two.Phi();
+  float deta = one.Eta() - two.Eta();
+  if(fabs(dphi) > TMath::Pi() ) dphi = 2*TMath::Pi() - fabs(dphi);
+   
+  return sqrt(dphi*dphi + deta*deta);
+}
+
 bool testJetForElectrons(const LorentzVector& jetP4, const LorentzVector& elP4) {
   
   
   bool matched = false;
-  float elphi  = elP4.Phi();
-  float jetphi = jetP4.Phi();
-   
-  float eleta  = elP4.Eta();
-  float jeteta = jetP4.Eta();
-   
-  float dphi = elphi - jetphi;
-  float deta = eleta - jeteta;
-  if(fabs(dphi) > TMath::Pi() ) dphi = 2*TMath::Pi() - fabs(dphi);
-   
-  double dR = sqrt(dphi*dphi + deta*deta);
+  double dR = CalculateDeltaR(jetP4,elP4);
   if (dR < 0.4) 
     matched = true;
   
