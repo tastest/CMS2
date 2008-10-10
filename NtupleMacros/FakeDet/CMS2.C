@@ -67,7 +67,6 @@ bool isNumeratorElectron(int index, int type=0) {
   if ( cms2.els_p4()[index].Pt()  < pt_cut )                 result = false;
   if ( std::abs(cms2.els_p4()[index].Eta()) > eta_cut )      result = false;
   if ( !passElectronIsolation(index) )          	result = false;
-
   if ( type == 1 ) {
     // loose
     if ( !goodLooseElectronWithoutIsolation(index) )   result = false;
@@ -275,13 +274,6 @@ int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
 	    ++jet_counter ) {
 	jetpt->Fill(cms2.jets_p4()[jet_counter].Pt());
 	jeteta->Fill(cms2.jets_p4()[jet_counter].Eta());
-      }
-      for ( unsigned int electron_counter = 0;
-	    electron_counter < (unsigned int)cms2.evt_nels();
-	    ++electron_counter ) {
-	tkIso_uncut->Fill(cms2.els_tkIso()[electron_counter]);
-	EOverp_uncut->Fill(cms2.els_eOverPIn()[electron_counter]);
-	HOverE_uncut->Fill(cms2.els_hOverE()[electron_counter]);
       }
 
       // electron loop
