@@ -311,3 +311,63 @@ bool passTrkJetVeto(int i_hyp){
   return (NjetVeto(trkjets, 15) == 0);
 }
 
+bool trueMuonFromW(int index) {
+
+  bool muIsFromW = false;
+
+  if( abs(cms2.mus_mc_id()[index]) == 13 && abs(cms2.mus_mc_motherid()[index]) == 24 ) muIsFromW = true;
+
+  return muIsFromW;
+}
+
+bool isFakeDenominatorElectron(int index) {
+  //
+  // returns true if input fulfills certain cuts
+  //
+
+  // cut definition
+  float pt_cut        		= 15.;
+  float eta_cut       		= 2.5;
+  float hOverE_cut    		= 0.2;
+
+  bool result = true;
+
+  if ( cms2.els_p4()[index].Pt()  < pt_cut )            result = false;
+  if ( std::abs(cms2.els_p4()[index].Eta()) > eta_cut ) result = false;
+  if ( !passElectronIsolation(index) )          	result = false;
+  if ( cms2.els_hOverE()[index]   > hOverE_cut )        result = false;
+
+  return result;
+
+}
+
+bool isFakeNumeratorElectron(int index, int type=0) { 
+  //
+  // 1=loose, 2=tight
+  //
+  // returns true if input fulfills certain cuts
+  //
+  
+  // cut definition
+  float pt_cut        		= 15;
+  float eta_cut       		= 2.5;
+
+  bool result = true;
+
+  if ( cms2.els_p4()[index].Pt()  < pt_cut )                 result = false;
+  if ( std::abs(cms2.els_p4()[index].Eta()) > eta_cut )      result = false;
+  if ( !passElectronIsolation(index) )          	result = false;
+  if ( type == 1 ) {
+    // loose
+    if ( !goodLooseElectronWithoutIsolation(index) )   result = false;
+  } else if ( type == 2 ) {
+    // tight
+    if ( !goodElectronWithoutIsolation(index) )   result = false;
+  } else {
+    cout << "WARNING: wrong electron type detected, please select loose (1) or tight (2)" << endl;
+  }
+
+  return result;
+  
+}
+

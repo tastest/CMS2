@@ -20,67 +20,6 @@ CMS2 cms2;
 #include "../Tools/selections.C"
 #include "../Tools/utilities.C"
 
-bool isDenominatorElectron(int index) {
-  //
-  // returns true if input fulfills certain cuts
-  //
-
-  // cut definition
-  float pt_cut        		= 15.;
-  float eta_cut       		= 2.5;
-  float hOverE_cut    		= 0.2;
-  unsigned int   njets_cut    	= 1;  // require at least N jets
-  float HLT_jet_approx_uncorr 	= 30.0; // require leading jet to be larger than N GeV uncorrected v2_3
-  float HLT_jet_approx 		= HLT_jet_approx_uncorr / cms2.jets_tq_noCorrF()[0]; // V00-05-01 Fake tuples have TQ corrected jets. Uncorreced cut is done here.
-
-  bool result = true;
-
-  if ( cms2.evt_njets() < njets_cut)                         result = false;
-  if ( cms2.jets_p4()[0].Pt() < HLT_jet_approx )      	result = false;
-  if ( cms2.els_p4()[index].Pt()  < pt_cut )                 result = false;
-  if ( std::abs(cms2.els_p4()[index].Eta()) > eta_cut )      result = false;
-  if ( !passElectronIsolation(index) )          	result = false;
-  if ( cms2.els_hOverE()[index]   > hOverE_cut )             result = false;
-
-  return result;
-
-}
-
-bool isNumeratorElectron(int index, int type=0) { 
-  //
-  // 1=loose, 2=tight
-  //
-  // returns true if input fulfills certain cuts
-  //
-  
-  // cut definition
-  float pt_cut        		= 15;
-  float eta_cut       		= 2.5;
-  unsigned int   njets_cut      = 1;  // require at least N jets
-  float HLT_jet_approx_uncorr 	= 30.0; // require leading jet to be larger than N GeV uncorrected v2_3
-  float HLT_jet_approx 		= HLT_jet_approx_uncorr / cms2.jets_tq_noCorrF()[0]; // V00-05-01 Fake tuples have TQ corrected jets. Uncorreced cut is done here.
-
-  bool result = true;
-
-  if ( cms2.evt_njets() < njets_cut)                         result = false;
-  if ( cms2.jets_p4()[0].Pt() < HLT_jet_approx )      	result = false;
-  if ( cms2.els_p4()[index].Pt()  < pt_cut )                 result = false;
-  if ( std::abs(cms2.els_p4()[index].Eta()) > eta_cut )      result = false;
-  if ( !passElectronIsolation(index) )          	result = false;
-  if ( type == 1 ) {
-    // loose
-    if ( !goodLooseElectronWithoutIsolation(index) )   result = false;
-  } else if ( type == 2 ) {
-    // tight
-    if ( !goodElectronWithoutIsolation(index) )   result = false;
-  } else {
-    cout << "WARNING: wrong electron type detected, please select loose (1) or tight (2)" << endl;
-  }
-
-  return result;
-  
-}
-
 int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
 
   // event counting
@@ -276,6 +215,14 @@ int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
 	jeteta->Fill(cms2.jets_p4()[jet_counter].Eta());
       }
 
+      // require at least one jet with pt uncorrected > 30 GeV (most loose HLT jet trigger simulation)
+      unsigned int   njets_cut    	= 1;  // require at least N jets
+      if ( cms2.evt_njets() < njets_cut) continue;
+
+      float HLT_jet_approx_uncorr 	= 30.0; // require leading jet to be larger than N GeV uncorrected v2_3
+      float HLT_jet_approx 		= HLT_jet_approx_uncorr / cms2.jets_tq_noCorrF()[0]; // V00-05-01 Fake tuples have TQ corrected jets. Uncorreced cut is done here.
+      if ( cms2.jets_p4()[0].Pt() < HLT_jet_approx ) continue;
+
       // electron loop
       for ( unsigned int electron_counter = 0;
 	    electron_counter < (unsigned int)cms2.evt_nels();
@@ -290,7 +237,7 @@ int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
 	float pt = cms2.els_p4()[electron_counter].Pt();
 	if (pt >= 150.) pt = 149.;
 
-	if ( isDenominatorElectron(electron_counter)){
+	if ( isFakeDenominatorElectron(electron_counter)){
 	  
 	  pt_den_ele->Fill(pt);
 	  eta_den_ele->Fill(cms2.els_p4()[electron_counter].Eta());
@@ -307,7 +254,7 @@ int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
 	}
 
 	// loose electrons
-	if (isNumeratorElectron(electron_counter,1)){ 
+	if (isFakeNumeratorElectron(electron_counter,1)){ 
 	  // 1=loose, 2=tight
 	  pt_num_ell->Fill(pt);
 	  eta_num_ell->Fill(cms2.els_p4()[electron_counter].Eta());
@@ -315,7 +262,7 @@ int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
 	}
 
 	// tight electrons
-	if ( isNumeratorElectron(electron_counter,2)){ 
+	if ( isFakeNumeratorElectron(electron_counter,2)){ 
 	  // 1=loose, 2=tight
 	  pt_num_elt->Fill(pt);
 	  eta_num_elt->Fill(cms2.els_p4()[electron_counter].Eta());
@@ -325,14 +272,14 @@ int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
 	// exclude leading jet
 	if ( CalculateDeltaR(cms2.els_p4()[electron_counter],cms2.jets_p4()[0]) >= deltaRCut ) {
 
-	  if ( isDenominatorElectron(electron_counter)){
+	  if ( isFakeDenominatorElectron(electron_counter)){
 	    pt_den_wo_leading_ele->Fill(pt);
 	    eta_den_wo_leading_ele->Fill(cms2.els_p4()[electron_counter].Eta());
 	    den_wo_leading_ele->Fill(cms2.els_p4()[electron_counter].Eta(),pt);
 	  }
 
 	  // loose electrons
-	  if (isNumeratorElectron(electron_counter,1)){ 
+	  if (isFakeNumeratorElectron(electron_counter,1)){ 
 	    // 1=loose, 2=tight
 	    pt_num_wo_leading_ell->Fill(pt);
 	    eta_num_wo_leading_ell->Fill(cms2.els_p4()[electron_counter].Eta());
@@ -340,7 +287,7 @@ int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
 	  }
 
 	  // tight electrons
-	  if ( isNumeratorElectron(electron_counter,2)) { 
+	  if ( isFakeNumeratorElectron(electron_counter,2)) { 
 	    // 1=loose, 2=tight
 	    pt_num_wo_leading_elt->Fill(pt);
 	    eta_num_wo_leading_elt->Fill(cms2.els_p4()[electron_counter].Eta());
@@ -355,14 +302,14 @@ int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
 	  if ( (CalculateDeltaR(cms2.els_p4()[electron_counter],cms2.jets_p4()[0]) >= deltaRCut) &&
 	       (CalculateDeltaR(cms2.els_p4()[electron_counter],cms2.jets_p4()[1]) >= deltaRCut) ) {
 
-	    if ( isDenominatorElectron(electron_counter)){
+	    if ( isFakeDenominatorElectron(electron_counter)){
 	      pt_den_wo_second_leading_ele->Fill(pt);
 	      eta_den_wo_second_leading_ele->Fill(cms2.els_p4()[electron_counter].Eta());
 	      den_wo_second_leading_ele->Fill(cms2.els_p4()[electron_counter].Eta(),pt);
 	    }
 
 	    // loose electrons
-	    if (isNumeratorElectron(electron_counter,1)){ 
+	    if (isFakeNumeratorElectron(electron_counter,1)){ 
 	      // 1=loose, 2=tight
 	      pt_num_wo_second_leading_ell->Fill(pt);
 	      eta_num_wo_second_leading_ell->Fill(cms2.els_p4()[electron_counter].Eta());
@@ -370,7 +317,7 @@ int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
 	    }
 
 	    // tight electrons
-	    if ( isNumeratorElectron(electron_counter,2)){ 
+	    if ( isFakeNumeratorElectron(electron_counter,2)){ 
 	      // 1=loose, 2=tight
 	      pt_num_wo_second_leading_elt->Fill(pt);
 	      eta_num_wo_second_leading_elt->Fill(cms2.els_p4()[electron_counter].Eta());
