@@ -1,7 +1,7 @@
 {
 
   // Output file
-  char* outFile = "myHist.root";
+  char* outFile = "fakeRatesFull.root";
 
   // Flags for files to run over
   bool run_qcd_0_15 	= true;

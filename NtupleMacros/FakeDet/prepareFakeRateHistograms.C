@@ -5,7 +5,7 @@ const char* makeName(const char* bin, const char* name) {
   return Form("%s_h%s",bin,name);
 }
 
-void prepareFakeRatioHistograms() {
+void prepareFakeRateHistograms() {
 
   vector<char*> qcdBins;
   vector<float> qcdBinXSec;
@@ -79,7 +79,7 @@ void prepareFakeRatioHistograms() {
   histograms.push_back("num_wo_leading_elt");
   histograms.push_back("num_wo_second_leading_elt");
 
-  TFile *file = TFile::Open("myHist.root","UPDATE");
+  TFile *file = TFile::Open("fakeRatesFull.root","UPDATE");
 
   for ( unsigned int histo = 0;
 	histo < histograms.size();
@@ -92,7 +92,6 @@ void prepareFakeRatioHistograms() {
 
       TH2F *tmp = dynamic_cast<TH2F*>(file->Get(makeName(qcdBins[bin],histograms[histo])));
       if ( tmp == 0. ) continue;
-      cout << tmp->GetName() << endl;
       tmp->SetDirectory(0);
       if ( first ) {
 	clone = dynamic_cast<TH2F*>tmp->Clone(histograms[histo]);

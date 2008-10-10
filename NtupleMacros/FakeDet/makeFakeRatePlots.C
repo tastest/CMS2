@@ -1,14 +1,14 @@
 TCanvas canvas("canvas","canvas",900,900);
 
-void makeFakeRatioPlots() {
+void makeFakeRatePlots() {
   gStyle->SetOptStat(0);
   gStyle->SetPalette(1,0);
 
-  TFile *output = new TFile("fakeRatios.root","RECREATE");
+  TFile *output = new TFile("fakeRates.root","RECREATE");
 
   vector<TString> samples;
 
-  samples.push_back(TString("myHist"));
+  samples.push_back(TString("fakeRatesFull"));
 
   for ( unsigned int sample = 0;
 	sample < samples.size();
@@ -26,7 +26,7 @@ void makeFakeRatioPlots() {
 			"den_ele",
 			"#eta",    
 			"p_{T} [GeV]",    
-			"Fake Ratio");
+			"Fake Rate");
 
       makeFractionPlots(file,		      
 			output,
@@ -35,7 +35,7 @@ void makeFakeRatioPlots() {
 			"den_wo_leading_ele",
 			"#eta",    
 			"p_{T} [GeV]",    
-			"Fake Ratio");
+			"Fake Rate");
 
       makeFractionPlots(file,		      
 			output,
@@ -44,7 +44,7 @@ void makeFakeRatioPlots() {
 			"den_wo_second_leading_ele",
 			"#eta",    
 			"p_{T} [GeV]",    
-			"Fake Ratio");
+			"Fake Rate");
       makeFractionPlots(file,		      
 			output,
 			samples[sample],
@@ -52,7 +52,7 @@ void makeFakeRatioPlots() {
 			"den_ele",
 			"#eta",    
 			"p_{T} [GeV]",    
-			"Fake Ratio");
+			"Fake Rate");
 
       makeFractionPlots(file,		      
 			output,
@@ -61,7 +61,7 @@ void makeFakeRatioPlots() {
 			"den_wo_leading_ele",
 			"#eta",    
 			"p_{T} [GeV]",    
-			"Fake Ratio");
+			"Fake Rate");
 
       makeFractionPlots(file,		      
 			output,
@@ -70,7 +70,7 @@ void makeFakeRatioPlots() {
 			"den_wo_second_leading_ele",
 			"#eta",    
 			"p_{T} [GeV]",    
-			"Fake Ratio");
+			"Fake Rate");
     }
   }
 
@@ -95,12 +95,12 @@ void makeFractionPlots(TFile *file,
 
   TH2F *fake_rate = (TH2F*)num->Clone();
   fake_rate->Divide(den);
-  TString name = "fraction_";
+  TString name = "fakeRateTemplate_";
   name.Append(numerator);
   name.Append("_");
   name.Append(sample);
   name.ReplaceAll("num_","");
-  TString title = "Fraction ";
+  TString title = "Fake Rate ";
   title.Append(numerator);
   title.Append(" ");
   title.Append(sample);
@@ -127,12 +127,12 @@ void makeFractionPlots(TFile *file,
 
   TH2F *fake_rate_error = (TH2F*)fake_rate->Clone();
   fake_rate_error->Clear();
-  TString name = "fractionError_";
+  TString name = "fakeRateTemplateError_";
   name.Append(numerator);
   name.Append("_");
   name.Append(sample);
   name.ReplaceAll("num_","");
-  TString title = "Fraction error ";
+  TString title = "Fake Rate error ";
   title.Append(numerator);
   title.Append(" ");
   title.Append(sample);
@@ -160,13 +160,13 @@ void makeFractionPlots(TFile *file,
   TH1D *fake_rate_project_x = num->ProjectionX();
   fake_rate_project_x->Sumw2();
   fake_rate_project_x->Divide(den->ProjectionX());
-  name = "fraction_";
+  name = "fakeRateTemplate_";
   name.Append(numerator);
   name.Append("_");
   name.Append(sample);
   name.Append("_eta");
   name.ReplaceAll("num_","");
-  title = "Fraction ";
+  title = "Fake Rate ";
   title.Append(numerator);
   title.Append(" ");
   title.Append(sample);
@@ -185,13 +185,13 @@ void makeFractionPlots(TFile *file,
   TH1D *fake_rate_project_y = num->ProjectionY();
   fake_rate_project_y->Sumw2();
   fake_rate_project_y->Divide(den->ProjectionY());
-  name = "fraction_";
+  name = "fakeRateTemplate_";
   name.Append(numerator);
   name.Append("_");
   name.Append(sample);
   name.Append("_pt");
   name.ReplaceAll("num_","");
-  title = "Fraction ";
+  title = "Fake Rate ";
   title.Append(numerator);
   title.Append(" ");
   title.Append(sample);
