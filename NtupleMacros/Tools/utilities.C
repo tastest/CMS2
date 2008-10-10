@@ -899,3 +899,30 @@ bool is_duplicate (const DorkyEventIdentifier &id)
      return !ret.second;
 }
 
+// fake probability for i-th electron (fakeable object) 
+// in the electron block.  For now: set to 0.5
+float fakeProb(int i, TH2F* theFakeRate, int add_error_times=0){
+
+  float prob = 0.0;
+  float prob_error = 0.0;
+  // cut definition
+  float eta = cms2.els_p4()[i].Eta();
+  float pt  = cms2.els_p4()[i].Pt();
+  if ( pt >= 150.) pt = 149.;
+
+  prob       = theFakeRate->GetBinContent(theFakeRate->FindBin(eta,pt));
+  prob_error = theFakeRate->GetBinError(theFakeRate->FindBin(eta,pt));
+
+  if (prob>1.0 || prob<0.0) {
+    std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob << std::endl;
+  }
+  if (prob==0.0){
+    std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob 
+	     <<" for Et = " <<cms2.els_p4()[i].Pt()
+	     <<" and Eta = " <<cms2.els_p4()[i].Eta()
+	     << std::endl;
+  }
+  return prob+add_error_times*prob_error;
+
+}
+
