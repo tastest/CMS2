@@ -23,9 +23,10 @@
 
   // load fake rate template histograms
   TFile *fakeRateFile = new TFile("fakeRates.root"); 
-  TH2F *theFakeRate = (TH2F*)fakeRateFile->Get("fakeRateTemplateError_wo_leading_elt_fakeRatesFull");
+  TH2F *theFakeRate = (TH2F*)fakeRateFile->Get("fakeRateTemplate_wo_leading_elt_fakeRatesFull");
   theFakeRate->SetDirectory(0);
 
+  gDirectory->cd("Rint:") ;
 
   //WW file
   if (runWW) {
@@ -100,7 +101,7 @@
   //flag = 0:  normal processing
   //flag = 1:  lepton + fakeable object
   //flag = 2:  lepton + fakeable object weighted by fake probability
-  for (int flag=2; flag<3; flag++) {
+  for (int flag=0; flag<3; flag++) {
     //for (int flag=2; flag<3; flag++) {
 
     // do not prepare the histos 
@@ -169,7 +170,7 @@
       //hist::color("LM1", 98);
     }
 
-    cout << gDirectory->ls() << endl;
+    //    gDirectory->ls();
 
     // save all the histograms
     saveHist(Form("myWHist_elt_%d.root",flag));
