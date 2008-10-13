@@ -1,0 +1,40 @@
+#--------------------------------------------------------------------
+#--------------------------------------------------------------------
+#--------------------------------------------------------------------
+Use this code to:
+1) prepare new fake rates
+2) apply the fake rates to the Wjets sample to check validity
+
+#--------------------------------------------------------------------
+#--------------------------------------------------------------------
+For 1):
+
+I)   root doFakeDet.C
+        this produces fake rates in each QCD bin, all store in the 
+        file fakeRatesFull.root
+
+II)  root prepareFakeRateHistograms.C
+        this merges the QCD bins with proper weighting. Result is 
+        again stored in fakeRatesFull.root
+
+III) root makeFakeRatePlots.C
+        this divides the numerator and denominator histograms and 
+        sets the names expected by the Wjet test code. Result is 
+        stored in fakeRates.root
+
+#--------------------------------------------------------------------
+#--------------------------------------------------------------------
+For 2):
+
+I)   root doFakeTest.C
+        This produces myWHist_elt_0.root and myWHist_elt_2.root
+        _0 contains the observerd fake electrons in Wjets
+        _2 contains the predicted fake electrons in Wjets
+
+II)  root makeFakeRateWjetTestPlots.C
+        This displays a few of the comparison histograms 
+        in pT, eta, nJet
+
+#--------------------------------------------------------------------
+#--------------------------------------------------------------------
+#--------------------------------------------------------------------
