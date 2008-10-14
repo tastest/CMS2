@@ -1,0 +1,92 @@
+This directory contains different versions of electron fake rate histograms.
+
+v2_2:
+------
+Using Denominator and Numerator definitions below. 
+Only QCD ptHat bins 80-300 were used for these fakeRates.
+
+bool isDenominatorElectron(int index) {
+  //
+  // returns true if input fulfills certain cuts
+  //
+  // cut definition
+  float et_cut        = 0.;
+  float pt_cut        = 15.;
+  float eta_cut       = 2.5;
+  float iso_ratio_cut = 0.92;
+  float eOverP_cut    = 999999.99;
+  float hOverE_cut    = 0.2;
+
+  float iso_ratio = 0.0;
+
+  if( (els_p4->at(index).Pt()+els_tkIso->at(index)) > 0.0 ) iso_ratio = els_p4->at(index).Pt()/(els_p4->at(index).Pt()+els_tkIso->at(index));
+  else iso_ratio = 0.0; // reject events with 0 momentum - do we have thses at all?
+
+  bool result = true;
+
+  if ( els_ESc->at(index)      < et_cut )                 result = false;
+  if ( els_p4->at(index).Pt()  < pt_cut )                 result = false;
+  if ( std::abs(els_p4->at(index).Eta()) > eta_cut )      result = false;
+  if ( iso_ratio               < iso_ratio_cut )          result = false;
+  if ( els_eOverPIn->at(index) > eOverP_cut )             result = false;
+  if ( els_hOverE->at(index)   > hOverE_cut )             result = false;
+
+  return result;
+
+}
+
+bool isNumeratorElectron(int index, int type=0) { // 0=loose, 1=tight, for pass4: 1=loose, 2=tight
+  //
+  // returns true if input fulfills certain cuts
+  //
+  // cut definition
+  float et_cut        = 0.;
+  float pt_cut        = 15;
+  float eta_cut       = 2.5;
+  float iso_ratio_cut = 0.92; // use alternatively to iso cut above
+  float eOverP_cut    = 999999.99;
+  float hOverE_cut    = 0.2;
+  float d0_cut        = 0.025;
+
+  float iso_ratio = els_p4->at(index).Pt()/(els_p4->at(index).Pt()+els_tkIso->at(index));
+  
+  bool result = true;
+  
+  if ( els_ESc->at(index)      < et_cut )                 result = false;
+  if ( els_p4->at(index).Pt()  < pt_cut )                 result = false;
+  if ( std::abs(els_p4->at(index).Eta()) > eta_cut )      result = false;
+  if ( iso_ratio               < iso_ratio_cut )          result = false;
+  if ( els_eOverPIn->at(index) > eOverP_cut )             result = false;
+  if ( els_hOverE->at(index)   > hOverE_cut )             result = false;
+  if ( std::abs(els_d0->at(index))  > d0_cut )            result = false;
+  
+  // _pass4 has 3 types - 0=robust, 1=loose, 2=tight
+  // - need to adjust in all places here
+  bool IdCuts = electron_selection_pass4(index, type); // eleID from code from Avi
+  if (!IdCuts) result = false;
+  
+  return result;
+  
+}
+
+
+v2_2_allpt:
+------
+same as v2_2
+using ALL xsec weighted QCD pt-hat samples to produce this guy. This is 
+daring, as the low pthat bins are severely statistics limited (the weights are HUGE).
+
+
+v2_3_allpt_ljet_gt_30: (not in cvs)
+------
+same as v2_2_allpt but additionally requiring a leading jet with 
+jetpt>30 GeV (lowest HLTrigger cut) for both the numerator and denominator
+
+
+v4_0:
+------
+same as v2_3 using only ptHat bins 0 to 600
+Using the ele ID from ntuples
+Using uncorrected Jets for the leading Jet Veto
+Using ptHat bins 0 to 600
+Using code from cvs :)
