@@ -3,6 +3,7 @@
 // Various selection functions are kept here
 //
 //============================================================
+#include <assert.h>
 #include "Math/LorentzVector.h"
 #include "TMath.h"
 #include "TLorentzVector.h"
@@ -10,7 +11,15 @@
 //#include <vector>
 //#include "CMS1.h"
 #include "TDatabasePDG.h"
+#ifdef TOOLSLIB
+#include "CMS2.h"
+#include "matchTools.h"
+#include "selections.h"
+#else
 #include "../Tools/matchTools.C"
+#endif
+
+bool goodElectronIsolated(int index, bool use_calo_iso = false);
 
 //----------------------------------------------------------------
 // A ridicolusly simple function, but since the Z veto is used 
@@ -66,22 +75,34 @@ bool goodMuonWithoutIsolation(int index) {
 //-----------------------------------------------------------
 // Electron Isolation
 //-----------------------------------------------------------
-bool passElectronIsolation(int index) {
-  double sum = cms2.els_tkIso().at(index);
-  double pt  = cms2.els_p4().at(index).pt();
-   if ( pt/(pt+sum) < 0.92) return false;
-  return true;  
+double el_rel_iso (int index, bool use_calo_iso)
+{
+     double sum = cms2.els_tkIso().at(index);
+     if (use_calo_iso)
+	  sum += cms2.els_ecalJuraIso()[index] + cms2.els_hcalConeIso()[index];
+     double pt  = cms2.els_p4().at(index).pt();
+     return pt / (pt + sum);
+}
+bool passElectronIsolation(int index, bool use_calo_iso) 
+{
+     const double cut = use_calo_iso ? 0.9 : 0.92;
+     return el_rel_iso(index, use_calo_iso) > cut;
 } 
 //-----------------------------------------------------------
 // Muon Isolation
 //-----------------------------------------------------------
-bool passMuonIsolation(int index) {
-  double sum =  cms2.mus_iso03_sumPt().at(index) +  
-                cms2.mus_iso03_emEt().at(index)  +
-                cms2.mus_iso03_hadEt().at(index);
-  double pt  = cms2.mus_p4().at(index).pt();
-  if ( pt/(pt+sum) < 0.92) return false;
-  return true;  
+double mu_rel_iso (int index)
+{
+     double sum =  cms2.mus_iso03_sumPt().at(index) +  
+	  cms2.mus_iso03_emEt().at(index)  +
+	  cms2.mus_iso03_hadEt().at(index);
+     double pt  = cms2.mus_p4().at(index).pt();
+     return pt / (pt+sum);
+
+}
+bool passMuonIsolation(int index) 
+{
+     return mu_rel_iso(index) > 0.92;
 }
 //--------------------------------------------
 // Muon ID with isolation
@@ -94,9 +115,9 @@ bool goodMuonIsolated(int index) {
 //--------------------------------------------
 // Electron ID with isolation
 //--------------------------------------------
-bool goodElectronIsolated(int index) {
+bool goodElectronIsolated(int index, bool use_calo_iso) {
   if (!goodElectronWithoutIsolation(index)) return false;
-  if (!passElectronIsolation(index))       return false;
+  if (!passElectronIsolation(index, use_calo_iso))       return false;
   return true;
 }
 //--------------------------------------------
@@ -241,7 +262,7 @@ bool additionalZveto() {
       if (cms2.els_charge().at(i) == cms2.els_charge().at(j)) continue;
 
       // At least one of them has to pass isolation
-      if (!passElectronIsolation(i) && !passElectronIsolation(j)) continue;
+      if (!passElectronIsolation(i, false) && !passElectronIsolation(j, false)) continue;
 
       // Make the invariant mass
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
@@ -274,6 +295,80 @@ void dumpDocLines() {
   delete pdg;
 }
 
+//----------------------------------------------------------------------
+// search and destroy extra muons.  If they're stiff and isolated,
+// they're probably from WZ, ZZ or (in emu) DYmm (with a spurious
+// electron).  If they're soft or non-isolated, use them to tag top
+// events
+// ----------------------------------------------------------------------
+bool passTriLepVeto (int i_dilep)
+{
+     double tag_mu_pt = tagMuonPt(i_dilep);
+     if (tag_mu_pt < 0) // no mu
+	  return true;
+     if (tag_mu_pt < 20) // soft
+	  return true;
+     double tag_mu_iso = tagMuonRelIso(i_dilep);
+     if (tag_mu_iso < 0.9) // non-isolated
+	  return true;
+     // we've found a muon that's stiff and isolated.  Fail the veto.
+     return false;
+}
+
+bool passMuonBVeto (int i_dilep, bool soft_nonisolated)
+{
+     if (soft_nonisolated) {
+	  double tag_mu_pt = tagMuonPt(i_dilep);
+	  if (tag_mu_pt < 0) // no mu
+	       return true;
+	  if (tag_mu_pt < 20) // soft
+	       return false;
+	  return true;
+     } else {
+	  unsigned int mus_in_hyp = 0;
+	  if (abs(cms2.hyp_lt_id()[i_dilep]) == 13)
+	       mus_in_hyp++;
+	  if (abs(cms2.hyp_ll_id()[i_dilep]) == 13)
+	       mus_in_hyp++;
+	  return cms2.mus_p4().size() <= mus_in_hyp;
+     }
+     assert(false);
+     return false;
+}
+
+// If there is an extra muon in the event, return its index.  (Otherwise -1) 
+int tagMuonIdx (int i_dilep)
+{
+     for (unsigned int i = 0; i < cms2.mus_p4().size(); ++i) {
+	  if (abs(cms2.hyp_lt_id()[i_dilep]) == 13 &&
+	      cms2.hyp_lt_index()[i_dilep] == int(i))
+	       continue;
+	  if (abs(cms2.hyp_ll_id()[i_dilep]) == 13 &&
+	      cms2.hyp_ll_index()[i_dilep] == int(i))
+	       continue;
+	  return i;
+     }
+     return -1;
+}
+
+// return the pt of the first muon that's not lt or ll
+double tagMuonPt (int i_dilep)
+{
+     int idx = tagMuonIdx(i_dilep);
+     if (idx == -1)
+	  return -1;
+     return cms2.mus_p4()[idx].pt();
+}
+
+// same for rel iso
+double tagMuonRelIso (int i_dilep)
+{
+     int idx = tagMuonIdx(i_dilep);
+     if (idx == -1)
+	  return -1;
+     return mu_rel_iso(idx);
+}
+
 //--------------------------------
 //
 // Functions related to trkjet veto
@@ -291,8 +386,7 @@ int NjetVeto(std::vector<TLorentzVector>& Jet, double min_et) {
   return njets;
 }
 
-
-bool passTrkJetVeto(int i_hyp){
+bool nTrkJets(int i_hyp){
   std::vector<TLorentzVector> trkjets;
   double jetet = 0;
   double jeteta = 3.0;
@@ -308,7 +402,40 @@ bool passTrkJetVeto(int i_hyp){
     trkjets.push_back(p);
   }
 
-  return (NjetVeto(trkjets, 15) == 0);
+  return NjetVeto(trkjets, 15);
+}
+
+bool passTrkJetVeto(int i_hyp)
+{
+     return nTrkJets(i_hyp) == 0;
+}
+
+double reliso_lt (int i_hyp, bool use_calo_iso)
+{
+     // muons do it one way:
+     if (abs(cms2.hyp_lt_id()[i_hyp]) == 13) {
+	  return mu_rel_iso(cms2.hyp_lt_index()[i_hyp]);
+     }
+     // electrons do it another way:
+     if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
+	  return el_rel_iso(cms2.hyp_lt_index()[i_hyp], use_calo_iso);
+     }
+     // mysterions are not well handled:
+     return 0;
+}
+
+double reliso_ll (int i_hyp, bool use_calo_iso)
+{
+     // muons do it one way:
+     if (abs(cms2.hyp_ll_id()[i_hyp]) == 13) {
+	  return mu_rel_iso(cms2.hyp_ll_index()[i_hyp]);
+     }
+     // electrons do it another way:
+     if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
+	  return el_rel_iso(cms2.hyp_ll_index()[i_hyp], use_calo_iso);
+     }
+     // mysterions are not well handled:
+     return 0;
 }
 
 bool trueMuonFromW(int index) {
@@ -370,4 +497,3 @@ bool isFakeNumeratorElectron(int index, int type=0) {
   return result;
   
 }
-
