@@ -19,8 +19,6 @@
 #include "../Tools/matchTools.C"
 #endif
 
-bool goodElectronIsolated(int index, bool use_calo_iso = false);
-
 //----------------------------------------------------------------
 // A ridicolusly simple function, but since the Z veto is used 
 // in two places, might as well centralize it to keep consistency
