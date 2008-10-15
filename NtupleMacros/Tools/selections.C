@@ -11,10 +11,10 @@
 //#include <vector>
 //#include "CMS1.h"
 #include "TDatabasePDG.h"
+#include "selections.h"
 #ifdef TOOLSLIB
 #include "CMS2.h"
 #include "matchTools.h"
-#include "selections.h"
 #else
 #include "../Tools/matchTools.C"
 #endif
