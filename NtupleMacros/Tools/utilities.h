@@ -2,8 +2,10 @@
 #define UTILITIES_H
 
 #include "TH1F.h"
+#include "TVector3.h"
 #include <algorithm>
-#include "../Tools/selections.C"
+#include <set>
+#include "selections.h"
 #include "Math/VectorUtil.h"
 
 unsigned int encodeTriLeptonCand(unsigned int bucket,unsigned int first, unsigned int second, unsigned int third);
@@ -19,4 +21,21 @@ bool goodLeptonIsolated(int bucket, int first, int second, int third);
 float ptLowestPtLepton(int bucket, int first, int second, int third);
 bool passTriggerLeptonMinPtCut(int bucket, int first, int second, int third, float triggerLeptonMinPtCut);
 TString printCand(int bucket, int first, int second, int third);
+
+struct DorkyEventIdentifier {
+     // this is a workaround for not having unique event id's in MC 
+     unsigned long int run, event;
+     float trks_d0;
+     float hyp_lt_pt, hyp_lt_eta, hyp_lt_phi;
+     bool operator < (const DorkyEventIdentifier &) const;
+     bool operator == (const DorkyEventIdentifier &) const;
+};
+extern std::set<DorkyEventIdentifier> already_seen;
+bool is_duplicate (const DorkyEventIdentifier &id);
+
+TVector3 correctMETforTracks ();
+
+void saveHist(const char* filename, const char* pat="*");
+
+extern class TDirectory *histo_directory;
 #endif
