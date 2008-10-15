@@ -22,7 +22,7 @@ H cumulate (const H &in, bool increasing)
      return h_out;
 }
 
-TGraph eff_rej (const H &signal, H &background, bool normalize) 
+TGraph eff_rej (const H &signal, H &background, bool normalize, bool increasing)
 {
      H sig = signal;
      if (normalize)
@@ -30,8 +30,8 @@ TGraph eff_rej (const H &signal, H &background, bool normalize)
      H bg = background;
      if (normalize)
 	  bg.Scale(1 / bg.Integral(1, bg.GetNbinsX()));
-     H sig_cum = cumulate(sig);
-     H bg_cum = cumulate(bg);
+     H sig_cum = cumulate(sig, increasing);
+     H bg_cum = cumulate(bg, increasing);
      TGraph ret(signal.GetNbinsX());
      for (int i = 1; i <= signal.GetNbinsX(); ++i) {
 	  const double x = sig_cum.GetBinCenter(i);
