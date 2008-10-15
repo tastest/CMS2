@@ -1,8 +1,8 @@
-# $Id: Makefile,v 1.1 2008/10/15 08:07:55 jmuelmen Exp $
+# $Id: Makefile,v 1.2 2008/10/15 08:41:28 jmuelmen Exp $
 
 CC = g++
 INCLUDE = -ITools -IWW
-CFLAGS = -Wall -g -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS)
+CFLAGS = -Wall -g -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS) -DTOOLSLIB
 
 LINKER = g++
 LINKERFLAGS = $(shell root-config --ldflags)
