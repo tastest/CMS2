@@ -85,8 +85,17 @@ jetpt>30 GeV (lowest HLTrigger cut) for both the numerator and denominator
 
 v4_0:
 ------
-same as v2_3 using only ptHat bins 0 to 600
+same as v2_3 using only ptHat bins 0 to 600 BUT:
 Using the ele ID from ntuples
 Using uncorrected Jets for the leading Jet Veto
 Using ptHat bins 0 to 600
 Using code from cvs :)
+see http://omega.physics.ucsb.edu/twiki/bin/viewfile/CMS/20081014AgendaMinutes?rev=2;filename=EFakes_ogu_ibl_081014.pdf
+
+v5_0: VERY preliminary
+------
+same as v2_3 using only ptHat bins 0 to 600 BUT:
+Using the ele ID from ntuples
+Using uncorrected Jets for the leading Jet Veto
+Using ptHat bins 0 to 600
+Using CaloIso+trackIso!
