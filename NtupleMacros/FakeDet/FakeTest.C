@@ -47,6 +47,10 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
   suffix[3] = "all";
 
   // declare histograms
+
+  TH1F* hnEleMCId[allBuckets+1];                // mc id of electron
+  TH1F* hnEleMotherMCId[allBuckets+1];          // mc id of mother of electron
+
   TH1F* hnJet[allBuckets+1];       		// Njet distributions
   TH1F* helePt[allBuckets+1];      		// electron Pt
   TH1F* helePtTrue[allBuckets+1];      		// electron Pt, MC tagged electron (not matched to signal)
@@ -111,6 +115,11 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
   TH1F* hetaJet4[allBuckets+1];   		// eta of 4th jet
 
   for (unsigned int i=0; i<=allBuckets; ++i) {
+
+    hnEleMCId[i] = new TH1F(Form("%s_hnEleMCId_%s",prefix,suffix[i]),Form("%s_hnEleMCId_%s",prefix,suffix[i]),
+			    1000,0.,1000.);	
+    hnEleMotherMCId[i] = new TH1F(Form("%s_hnEleMotherMCId_%s",prefix,suffix[i]),Form("%s_hnEleMotherMCId_%s",prefix,suffix[i]),
+			    1000,0.,1000.);	
 
     hnJet[i] = new TH1F(Form("%s_hnJet_%s",prefix,suffix[i]),Form("%s_nJet_%s",prefix,suffix[i]),
 			5,0.,5.);	
@@ -401,10 +410,10 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
 	    
 	  // Electron quality cuts
 	  if (abs(cms2.hyp_lt_id()[cand]) == 11) {
-	    if ( !goodElectronIsolated(cms2.hyp_lt_index()[cand]) ) continue;
+	    if ( !goodElectronIsolated(cms2.hyp_lt_index()[cand],true) ) continue;
 	  }
 	  if (abs(cms2.hyp_ll_id()[cand]) == 11) {
-	    if ( !goodElectronIsolated(cms2.hyp_ll_index()[cand]) ) continue;
+	    if ( !goodElectronIsolated(cms2.hyp_ll_index()[cand],true) ) continue;
 	  }
 
 	} else {  // Special handling for W+jets case
@@ -447,7 +456,7 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
 	  // as a fakeable object.  What happens is both pass cuts?  For now we will
 	  // just take the 1st combination.  THIS IS VERY VERY VERY SLOPPY.....
 	  if (ele_index == -1) {	      
-	    if ( goodElectronIsolated(cms2.hyp_lt_index()[cand]) ) {   // "tight" lepton is a good lepton
+	    if ( goodElectronIsolated(cms2.hyp_lt_index()[cand],true) ) {   // "tight" lepton is a good lepton
 	      if (isFakeDenominatorElectron(cms2.hyp_ll_index()[cand])) {         
 		ele_index = cms2.hyp_ll_index()[cand];
 		if (WjBG == 2) {
@@ -459,7 +468,7 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
 	    }
 	    // looks like the previous combination did not work...try the other one
 	    if (ele_index == -1) {
-	      if ( goodElectronIsolated(cms2.hyp_ll_index()[cand]) ) {   // "loose" lepton is a good lepton
+	      if ( goodElectronIsolated(cms2.hyp_ll_index()[cand],true) ) {   // "loose" lepton is a good lepton
 		if (isFakeDenominatorElectron(cms2.hyp_lt_index()[cand])) {         
 		  ele_index = cms2.hyp_lt_index()[cand];
 		  if (WjBG == 2) {
@@ -607,6 +616,16 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
 	if (dphi > TMath::Pi()) dphi = TMath::TwoPi() - dphi;
 	hdphiLep[bucket]->Fill(dphi, weight);
 	hdphiLep[3]->Fill(dphi, weight);
+
+	// electron mc information
+	if (abs(cms2.hyp_lt_id()[cand]) == 11) {
+	  hnEleMCId[bucket]->Fill(cms2.hyp_lt_mc_id()[cand], weight);
+	  hnEleMotherMCId[bucket]->Fill(cms2.hyp_lt_mc_motherid()[cand], weight);
+	}
+	if (abs(cms2.hyp_ll_id()[cand]) == 11) {
+	  hnEleMCId[bucket]->Fill(cms2.hyp_ll_mc_id()[cand], weight);
+	  hnEleMotherMCId[bucket]->Fill(cms2.hyp_ll_mc_motherid()[cand], weight);
+	}
 
 	// lepton Eta
 	if (abs(cms2.hyp_lt_id()[cand]) == 11) heleEta[bucket]->Fill(cms2.hyp_lt_p4()[cand].eta(), weight);

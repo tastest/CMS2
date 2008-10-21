@@ -9,8 +9,8 @@
   int rebinvalue_pt = 4;
   int rebinvalue_eta = 2;
 
-  TFile *_file0 = TFile::Open("/uscms/home/ibloch/FakeE_Ntuples_1_6_12/CMSSW_1_6_12/src/CMS2/NtupleMacros/FakeDet/myWHist_elt_0.root");
-  TFile *_file2 = TFile::Open("/uscms/home/ibloch/FakeE_Ntuples_1_6_12/CMSSW_1_6_12/src/CMS2/NtupleMacros/FakeDet/myWHist_elt_2.root");
+  TFile *_file0 = TFile::Open("myWHist_elt_0.root");
+  TFile *_file2 = TFile::Open("myWHist_elt_2.root");
 
   TCanvas * elept_em = new TCanvas("elept_em","elept_em");
   TCanvas * eleeta_em = new TCanvas("eleeta_em","eleeta_em");
