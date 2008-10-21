@@ -83,7 +83,7 @@ double el_rel_iso (int index, bool use_calo_iso)
 }
 bool passElectronIsolation(int index, bool use_calo_iso) 
 {
-     const double cut = use_calo_iso ? 0.9 : 0.92;
+     const double cut = 0.92;
      return el_rel_iso(index, use_calo_iso) > cut;
 } 
 //-----------------------------------------------------------
@@ -117,6 +117,27 @@ bool goodElectronIsolated(int index, bool use_calo_iso) {
   if (!goodElectronWithoutIsolation(index)) return false;
   if (!passElectronIsolation(index, use_calo_iso))       return false;
   return true;
+}
+//--------------------------------------------
+// "super-tight" Electron ID (to kill EM fakes)
+//--------------------------------------------
+bool supertightElectron (int index)
+{
+     if (fabs(cms2.els_p4()[index].eta()) > 1.479)
+	  return false;
+     if (cms2.els_sigmaPhiPhi()[index] > 0.018)
+  	  return false;
+     if (cms2.els_sigmaEtaEta()[index] > 0.009)
+	  return false;
+     if (cms2.els_eOverPIn()[index] > 2 || cms2.els_eOverPIn()[index] < 0.75)
+	  return false;
+     if (cms2.els_charge()[index] * cms2.els_dPhiIn()[index] > 0.04)
+	  return false;
+     if (cms2.els_charge()[index] * cms2.els_dPhiOut()[index] < -1e-3)
+	  return false;
+     if (cms2.els_dEtaIn()[index] > 0.0025 || cms2.els_dEtaIn()[index] < -0.0025)
+	  return false;
+     return true;
 }
 //--------------------------------------------
 // Pass 2 MET selection

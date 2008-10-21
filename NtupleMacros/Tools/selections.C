@@ -83,7 +83,7 @@ double el_rel_iso (int index, bool use_calo_iso)
 }
 bool passElectronIsolation(int index, bool use_calo_iso) 
 {
-     const double cut = use_calo_iso ? 0.9 : 0.92;
+     const double cut = 0.92;
      return el_rel_iso(index, use_calo_iso) > cut;
 } 
 //-----------------------------------------------------------
