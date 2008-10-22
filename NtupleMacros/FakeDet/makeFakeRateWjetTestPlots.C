@@ -15,6 +15,7 @@
   TCanvas * elept_em = new TCanvas("elept_em","elept_em");
   TCanvas * eleeta_em = new TCanvas("eleeta_em","eleeta_em");
   TCanvas * nJet_em = new TCanvas("nJet_em","nJet_em");
+  TCanvas * MET_em = new TCanvas("MET_em","MET_em");
 
   TCanvas * elept_em_true = new TCanvas("elept_em_true","elept_em_true");
 
@@ -121,6 +122,22 @@
   wjets_hnJet_em_predicted->SetLineColor(kBlue);
   wjets_hnJet_em_predicted->SetLineWidth(2.);
   wjets_hnJet_em_predicted->Draw("sames");
+   lable_new->Draw();
+   lable_ref->Draw();
+
+  // plot MET comparison
+  MET_em->cd();
+  TH1F* wjets_hMET_em_observed = (TH1F*) ((_file0->Get("wjets_hMET_em"))->Clone("wjets_hMET_em_observed"));
+  //  wjets_hMET_em_observed->Rebin(5);
+  wjets_hMET_em_observed->SetLineColor(kRed);
+  wjets_hMET_em_observed->SetLineWidth(2.);
+  wjets_hMET_em_observed->Draw();
+
+  TH1F* wjets_hMET_em_predicted = (TH1F*) ((_file2->Get("wjets_hMET_em"))->Clone("wjets_hMET_em_predicted"));
+  //  wjets_hMET_em_predicted->Rebin(5);
+  wjets_hMET_em_predicted->SetLineColor(kBlue);
+  wjets_hMET_em_predicted->SetLineWidth(2.);
+  wjets_hMET_em_predicted->Draw("sames");
    lable_new->Draw();
    lable_ref->Draw();
 

@@ -52,6 +52,9 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
   TH1F* hnEleMCId[allBuckets+1];                // mc id of electron
   TH1F* hnEleMotherMCId[allBuckets+1];          // mc id of mother of electron
 
+  TH1F* hMET[allBuckets+1];       		// MET distributions
+  TH3F* hMET3D[allBuckets+1];       		// MET distributions in eta/pt bins for fake prop error propagation
+
   TH1F* hnJet[allBuckets+1];       		// Njet distributions
   TH3F* hnJet3D[allBuckets+1];       		// Njet distributions in eta/pt bins for fake prop error propagation
   TH1F* helePt[allBuckets+1];      		// electron Pt
@@ -154,6 +157,19 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
 			 ptNBins,ptBins);
     helePt3D[i] = new TH3F(Form("%s_helePt3D_%s",prefix,suffix[i]),Form("%s_elePt3D_%s",prefix,suffix[i]),
 			   ptNBins,ptBins,fakeXNBins,fakeXBins,fakeYNBins,fakeYBins);
+
+    const unsigned int metNBins = 25;
+    float metBins[metNBins+1];
+    for ( unsigned int metBin = 0;
+	  metBin <= metNBins;
+	  ++metBin) {
+      metBins[metBin] = float(metBin)*200./25.;
+    }
+
+    hMET[i] = new TH1F(Form("%s_hMET_%s",prefix,suffix[i]),Form("%s_MET_%s",prefix,suffix[i]),
+			 metNBins,metBins);
+    hMET3D[i] = new TH3F(Form("%s_hMET3D_%s",prefix,suffix[i]),Form("%s_MET3D_%s",prefix,suffix[i]),
+			   metNBins,metBins,fakeXNBins,fakeXBins,fakeYNBins,fakeYBins);
 
     helePtTrue[i] = new TH1F(Form("%s_helePtTrue_%s",prefix,suffix[i]),Form("%s_elePtTrue_%s",prefix,suffix[i]),
 			     150,0.,150.);
@@ -286,6 +302,8 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
 
     hnJet[i]->Sumw2();
     hnJet3D[i]->Sumw2();
+    hMET[i]->Sumw2();
+    hMET3D[i]->Sumw2();
     helePt[i]->Sumw2();
     helePt3D[i]->Sumw2();
     helePtTrue[i]->Sumw2();
@@ -536,12 +554,11 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
 
 	// jet count
 
-// 	hnJet[bucket]->Fill(cms2.hyp_njets()[cand], weight);
-// 	hnJet[3]->Fill(cms2.hyp_njets()[cand], weight);
-
 	if ( ele_index == -1 ) {
 	  hnJet[bucket]->Fill(cms2.hyp_njets()[cand], weight);
 	  hnJet[3]->Fill(cms2.hyp_njets()[cand], weight);
+	  hMET[bucket]->Fill(cms2.hyp_met()[cand], weight);
+	  hMET[3]->Fill(cms2.hyp_met()[cand], weight);
 	  if (abs(cms2.hyp_lt_id()[cand]) == 11) {
 	    heleEta[bucket]->Fill(cms2.hyp_lt_p4()[cand].eta(), weight);
 	    heleEta[3]->Fill(cms2.hyp_lt_p4()[cand].eta(), weight);
@@ -567,6 +584,18 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
 			 hnJet3D[3],
 			 ele_index,
 			 cms2.hyp_njets()[cand],
+			 weight/fProb);
+	  fillPrediction(theFakeRate,
+			 hMET[bucket],
+			 hMET3D[bucket],
+			 ele_index,
+			 cms2.hyp_met()[cand],
+			 weight/fProb);
+	  fillPrediction(theFakeRate,
+			 hMET[3],
+			 hMET3D[3],
+			 ele_index,
+			 cms2.hyp_met()[cand],
 			 weight/fProb);
 	  if (abs(cms2.hyp_lt_id()[cand]) == 11) {
 	    fillPrediction(theFakeRate,
@@ -855,6 +884,9 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
       fillErrorInPrediction(theFakeRate,
 			    hnJet[i],
 			    hnJet3D[i]);
+      fillErrorInPrediction(theFakeRate,
+			    hMET[i],
+			    hMET3D[i]);
       fillErrorInPrediction(theFakeRate,
 			    heleEta[i],
 			    heleEta3D[i]);

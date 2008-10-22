@@ -957,7 +957,8 @@ bool fillPrediction(TH2F* theFakeRate,
 
 bool fillErrorInPrediction(TH2F* fakeRate,
 			   TH1F* prediction,
-			   TH3F* predictionError) {
+			   TH3F* predictionError,
+			   bool addStatisticalError = true) {
   //
   // calculate error for prediction from predictionError
   //
@@ -976,7 +977,16 @@ bool fillErrorInPrediction(TH2F* fakeRate,
 	  predictionError->GetBinContent(predictionBin,fakeXBin,fakeYBin);
       }
     }
-    prediction->SetBinError(predictionBin,sqrt(err2));
+    float err = 0;
+    if ( addStatisticalError ) {
+      err = sqrt( prediction->GetBinError(predictionBin) *
+		  prediction->GetBinError(predictionBin) +
+		  err2 );
+    } else {
+      err = sqrt(err2);
+    }
+
+    prediction->SetBinError(predictionBin,err);
   }
   return true;
 }

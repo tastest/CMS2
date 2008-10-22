@@ -108,20 +108,35 @@ void prepareFakeRateHistograms() {
   TH2F* den1  = dynamic_cast<TH2F*>(file->Get(histograms[1]));
   TH2F* den2  = dynamic_cast<TH2F*>(file->Get(histograms[2]));
 
-  TH2F* fake0 = dynamic_cast<TH2F*>(file->Get(histograms[3])->Clone(TString(histograms[3]).ReplaceAll("num_","fakeRate_")));
-  fake0->Divide(den0);
-  TH2F* fake1 = dynamic_cast<TH2F*>(file->Get(histograms[4])->Clone(TString(histograms[4]).ReplaceAll("num_","fakeRate_")));
-  fake1->Divide(den1);
-  TH2F* fake2 = dynamic_cast<TH2F*>(file->Get(histograms[5])->Clone(TString(histograms[5]).ReplaceAll("num_","fakeRate_")));
-  fake2->Divide(den2);
+  TH2F* num0 = dynamic_cast<TH2F*>(file->Get(histograms[3]));
+  TH2F* fake0 = dynamic_cast<TH2F*>(num0->Clone(TString(histograms[3]).ReplaceAll("num_","fakeRate_")));
+  fake0->Reset();
+  fake0->Divide(num0,den0,1.,1.,"B");
 
-  TH2F* fake3 = dynamic_cast<TH2F*>(file->Get(histograms[6])->Clone(TString(histograms[6]).ReplaceAll("num_","fakeRate_")));
-  fake3->Divide(den0);
-  TH2F* fake4 = dynamic_cast<TH2F*>(file->Get(histograms[7])->Clone(TString(histograms[7]).ReplaceAll("num_","fakeRate_")));
-  fake4->Divide(den1);
-  TH2F* fake5 = dynamic_cast<TH2F*>(file->Get(histograms[8])->Clone(TString(histograms[8]).ReplaceAll("num_","fakeRate_")));
-  fake5->Divide(den2);
+  TH2F* num1 = dynamic_cast<TH2F*>(file->Get(histograms[4]));
+  TH2F* fake1 = dynamic_cast<TH2F*>(num1->Clone(TString(histograms[4]).ReplaceAll("num_","fakeRate_")));
+  fake1->Reset();
+  fake1->Divide(num1,den1,1.,1.,"B");
 
+  TH2F* num2 = dynamic_cast<TH2F*>(file->Get(histograms[5]));
+  TH2F* fake2 = dynamic_cast<TH2F*>(num2->Clone(TString(histograms[5]).ReplaceAll("num_","fakeRate_")));
+  fake2->Reset();
+  fake2->Divide(num2,den2,1.,1.,"B");
+
+  TH2F* num3 = dynamic_cast<TH2F*>(file->Get(histograms[6]));
+  TH2F* fake3 = dynamic_cast<TH2F*>(num3->Clone(TString(histograms[6]).ReplaceAll("num_","fakeRate_")));
+  fake3->Reset();
+  fake3->Divide(num3,den0,1.,1.,"B");
+
+  TH2F* num4 = dynamic_cast<TH2F*>(file->Get(histograms[7]));
+  TH2F* fake4 = dynamic_cast<TH2F*>(num4->Clone(TString(histograms[7]).ReplaceAll("num_","fakeRate_")));
+  fake4->Reset();
+  fake4->Divide(num4,den1,1.,1.,"B");
+
+  TH2F* num5 = dynamic_cast<TH2F*>(file->Get(histograms[8]));
+  TH2F* fake5 = dynamic_cast<TH2F*>(num5->Clone(TString(histograms[8]).ReplaceAll("num_","fakeRate_")));
+  fake5->Reset();
+  fake5->Divide(num5,den2,1.,1.,"B");
 
   file->Write();
   file->Close();
