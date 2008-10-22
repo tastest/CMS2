@@ -1,3 +1,4 @@
+
 //===========================================================
 //
 // Various selection functions are kept here
@@ -84,6 +85,19 @@ double el_rel_iso (int index, bool use_calo_iso)
 bool passElectronIsolation(int index, bool use_calo_iso) 
 {
      const double cut = 0.92;
+     return el_rel_iso(index, use_calo_iso) > cut;
+}
+
+bool passElectronIsolationLoose(int index, bool use_calo_iso) 
+{
+  const double cut = 0.8; // leads to 91 pred, 81 obs
+     return el_rel_iso(index, use_calo_iso) > cut;
+} 
+
+bool passElectronIsolationLoose2(int index, bool use_calo_iso) 
+{
+  //     const double cut = 0.85; leads to 107 pred, 81 obs
+     const double cut = 0.75;
      return el_rel_iso(index, use_calo_iso) > cut;
 } 
 //-----------------------------------------------------------
@@ -461,6 +475,8 @@ bool isFakeDenominatorElectron(int index) {
   if ( cms2.els_p4()[index].Pt()  < pt_cut )            result = false;
   if ( std::abs(cms2.els_p4()[index].Eta()) > eta_cut ) result = false;
   if ( !passElectronIsolation(index,use_calo_iso) )          	result = false;
+  //  if ( !passElectronIsolationLoose(index,true) )          	result = false; //v5_2
+  if ( !passElectronIsolationLoose2(index,true) )          	result = false; //v5_4
   if ( cms2.els_hOverE()[index]   > hOverE_cut )        result = false;
 
   return result;

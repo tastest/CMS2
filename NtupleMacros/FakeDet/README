@@ -13,11 +13,11 @@ I)   root doFakeDet.C
         this produces fake rates in each QCD bin, all store in the 
         file fakeRatesFull.root
 
-II)  root prepareFakeRateHistograms.C
+II)  root -b -q -l prepareFakeRateHistograms.C
         this merges the QCD bins with proper weighting. Result is 
         again stored in fakeRatesFull.root
 
-III) root makeFakeRatePlots.C
+III) root  -b -q -l makeFakeRatePlots.C
         this divides the numerator and denominator histograms and 
         sets the names expected by the Wjet test code. Result is 
         stored in fakeRates.root

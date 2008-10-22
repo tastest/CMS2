@@ -99,3 +99,32 @@ Using the ele ID from ntuples
 Using uncorrected Jets for the leading Jet Veto
 Using ptHat bins 0 to 600
 Using CaloIso+trackIso!
+result: overestimation
+
+v5_1:
+------
+same as v5_0 BUT:
+Using CaloIso+trackIso on Numerator
+Using trackIso         on Denominator
+result: underestimation
+
+v5_2:
+------
+same as v5_0 BUT:
+Using CaloIso+trackIso                on Numerator
+Using CaloIso(cut at 0.8)+trackIso    on Denominator
+result: overestimation (pred 91, obs 81)
+
+v5_3:
+------
+same as v5_0 BUT:
+Using CaloIso+trackIso                on Numerator
+Using CaloIso(cut at 0.85)+trackIso   on Denominator
+result: overestimation (pred 107, obs 81)
+
+v5_4:
+------
+same as v5_0 BUT:
+Using CaloIso+trackIso                on Numerator
+Using CaloIso(cut at 0.75)+trackIso   on Denominator
+result: good estimation (pred 85, obs 81)
