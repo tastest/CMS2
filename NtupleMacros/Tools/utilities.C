@@ -1,4 +1,7 @@
 #include "TH1F.h"
+#include "TH2F.h"
+#include "TH3F.h"
+#include "TAxis.h"
 #include <algorithm>
 #include "../Tools/selections.h"
 #include "Math/VectorUtil.h"
@@ -6,6 +9,7 @@
 #include "Math/PtEtaPhiM4D.h"
 #include "Math/LorentzVector.h"
 #include "TMath.h"
+
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 
@@ -924,5 +928,69 @@ float fakeProb(int i, TH2F* theFakeRate, int add_error_times=0){
   }
   return prob+add_error_times*prob_error;
 
+}
+
+bool fillPrediction(TH2F* theFakeRate,
+		    TH1F* prediction,
+		    TH3F* predictionError,
+		    int   electronIndex,
+		    float value,
+		    float weight) {
+  //
+  // fill predicted fake contribution of property in to histogram
+  // in parallel fill error per fake rate extraction added linearly over all measurments
+  //
+
+  float eta = cms2.els_p4()[electronIndex].Eta();
+  float pt  = cms2.els_p4()[electronIndex].Pt();
+  if ( pt >= 150.) pt = 149.;
+
+  float prob       = theFakeRate->GetBinContent(theFakeRate->FindBin(eta,pt));
+  float prob_error = theFakeRate->GetBinError(theFakeRate->FindBin(eta,pt));
+
+  prediction->Fill(value,weight*prob);
+  predictionError->Fill(value,eta,pt,weight*prob_error);
+  
+  return true;
+
+}
+
+bool fillErrorInPrediction(TH2F* fakeRate,
+			   TH1F* prediction,
+			   TH3F* predictionError) {
+  //
+  // calculate error for prediction from predictionError
+  //
+
+  for (int predictionBin = 0;
+       predictionBin <= prediction->GetNbinsX()+1;
+       ++predictionBin ) {
+    float err2 = 0;
+    for ( int fakeXBin = 0;
+	  fakeXBin <= fakeRate->GetNbinsX()+1;
+	  ++fakeXBin ) {
+      for ( int fakeYBin = 0;
+	    fakeYBin <= fakeRate->GetNbinsY()+1;
+	    ++fakeYBin ) {
+	err2 += predictionError->GetBinContent(predictionBin,fakeXBin,fakeYBin) * 
+	  predictionError->GetBinContent(predictionBin,fakeXBin,fakeYBin);
+      }
+    }
+    prediction->SetBinError(predictionBin,sqrt(err2));
+  }
+  return true;
+}
+
+bool extractBins(TAxis *axis, unsigned int nBins, float* bins) {
+  //
+  // extract flota array of bin borders with dimension nbins+1
+  //
+
+  for ( unsigned int bin = 0;
+	bin < nBins+1;
+	++bin ) {
+    bins[bin] = axis->GetBinLowEdge(bin+1);
+  }
+  return true;
 }
 

@@ -8,6 +8,7 @@
 
 #include "TH1F.h"
 #include "TH2F.h"
+#include "TH3F.h"
 
 using namespace std;
 
@@ -52,7 +53,9 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
   TH1F* hnEleMotherMCId[allBuckets+1];          // mc id of mother of electron
 
   TH1F* hnJet[allBuckets+1];       		// Njet distributions
+  TH3F* hnJet3D[allBuckets+1];       		// Njet distributions in eta/pt bins for fake prop error propagation
   TH1F* helePt[allBuckets+1];      		// electron Pt
+  TH3F* helePt3D[allBuckets+1];      		// electron Pt distributions in eta/pt bins for fake prop error propagation
   TH1F* helePtTrue[allBuckets+1];      		// electron Pt, MC tagged electron (not matched to signal)
   TH1F* helePtFake[allBuckets+1];      		// electron Pt, MC anti-tagged electron (not matched to signal)
   TH1F* helePtTrueEW[allBuckets+1];      	// electron Pt, MC tagged electron (matched to W)
@@ -81,7 +84,9 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
   TH1F* helePhi[allBuckets+1];     		// electron phi
   TH1F* hmuPhi[allBuckets+1];      		// muon phi
   TH1F* hdphiLep[allBuckets+1];    		// delta phi between leptons
+
   TH1F* heleEta[allBuckets+1];     		// electron eta
+  TH3F* heleEta3D[allBuckets+1];     		// electron eta distributions in eta/pt bins for fake prop error propagation
   TH1F* heleEtaTrue[allBuckets+1];     		// electron eta
   TH1F* heleEtaTrueEW[allBuckets+1];     	// electron eta
   TH1F* heleEtaTrueFSR[allBuckets+1];     	// electron eta
@@ -114,6 +119,14 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
   TH1F* hetaJet3[allBuckets+1];   		// eta of 3rd jet
   TH1F* hetaJet4[allBuckets+1];   		// eta of 4th jet
 
+  // determine bin arrays for fakeRate histogram
+  const unsigned int fakeXNBins = theFakeRate->GetXaxis()->GetNbins();
+  float fakeXBins[fakeXNBins+1];
+  extractBins(theFakeRate->GetXaxis(),fakeXNBins,fakeXBins);
+  const unsigned int fakeYNBins = theFakeRate->GetYaxis()->GetNbins();
+  float fakeYBins[fakeYNBins+1];
+  extractBins(theFakeRate->GetYaxis(),fakeYNBins,fakeYBins);
+
   for (unsigned int i=0; i<=allBuckets; ++i) {
 
     hnEleMCId[i] = new TH1F(Form("%s_hnEleMCId_%s",prefix,suffix[i]),Form("%s_hnEleMCId_%s",prefix,suffix[i]),
@@ -121,10 +134,27 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
     hnEleMotherMCId[i] = new TH1F(Form("%s_hnEleMotherMCId_%s",prefix,suffix[i]),Form("%s_hnEleMotherMCId_%s",prefix,suffix[i]),
 			    1000,0.,1000.);	
 
+    const unsigned int jetNBins = 5;
+    float jetBins[jetNBins+1] = {0.,1.,2.,3.,4.,5.};
+
     hnJet[i] = new TH1F(Form("%s_hnJet_%s",prefix,suffix[i]),Form("%s_nJet_%s",prefix,suffix[i]),
-			5,0.,5.);	
+			jetNBins,jetBins);
+    hnJet3D[i] = new TH3F(Form("%s_hnJet3D_%s",prefix,suffix[i]),Form("%s_nJet3D_%s",prefix,suffix[i]),
+			  jetNBins,jetBins,fakeXNBins,fakeXBins,fakeYNBins,fakeYBins);
+
+    const unsigned int ptNBins = 150;
+    float ptBins[ptNBins+1];
+    for ( unsigned int ptBin = 0;
+	  ptBin <= ptNBins;
+	  ++ptBin) {
+      ptBins[ptBin] = ptBin;
+    }
+
     helePt[i] = new TH1F(Form("%s_helePt_%s",prefix,suffix[i]),Form("%s_elePt_%s",prefix,suffix[i]),
-			 150,0.,150.);
+			 ptNBins,ptBins);
+    helePt3D[i] = new TH3F(Form("%s_helePt3D_%s",prefix,suffix[i]),Form("%s_elePt3D_%s",prefix,suffix[i]),
+			   ptNBins,ptBins,fakeXNBins,fakeXBins,fakeYNBins,fakeYBins);
+
     helePtTrue[i] = new TH1F(Form("%s_helePtTrue_%s",prefix,suffix[i]),Form("%s_elePtTrue_%s",prefix,suffix[i]),
 			     150,0.,150.);
     helePtFake[i] = new TH1F(Form("%s_helePtFake_%s",prefix,suffix[i]),Form("%s_elePtFake_%s",prefix,suffix[i]),
@@ -178,8 +208,20 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
 			  50,-1*TMath::Pi(), TMath::Pi());
     hdphiLep[i]  = new TH1F(Form("%s_hdphiLep_%s",prefix,suffix[i]),Form("%s_dphiLep_%s",prefix,suffix[i]),
 			    50,0., TMath::Pi());
+
+    const unsigned int etaNBins = 60;
+    float etaBins[etaNBins+1];
+    for ( unsigned int etaBin = 0;
+	  etaBin <= etaNBins;
+	  ++etaBin) {
+      etaBins[etaBin] = float(etaBin)/10.-3.;
+    }
+
     heleEta[i] = new TH1F(Form("%s_heleEta_%s",prefix,suffix[i]),Form("%s_eleEta_%s",prefix,suffix[i]),
-			  60, -3., 3.);
+			  etaNBins,etaBins);
+    heleEta3D[i] = new TH3F(Form("%s_heleEta3D_%s",prefix,suffix[i]),Form("%s_eleEta3D_%s",prefix,suffix[i]),
+			  etaNBins,etaBins,fakeXNBins,fakeXBins,fakeYNBins,fakeYBins);
+
     heleEtaTrue[i] = new TH1F(Form("%s_heleEtaTrue_%s",prefix,suffix[i]),Form("%s_eleEtaTrue_%s",prefix,suffix[i]),
 			      60, -3., 3.);
     heleEtaTrueEW[i] = new TH1F(Form("%s_heleEtaTrueEW_%s",prefix,suffix[i]),Form("%s_eleEtaTrueEW_%s",prefix,suffix[i]),
@@ -243,7 +285,9 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
 
 
     hnJet[i]->Sumw2();
+    hnJet3D[i]->Sumw2();
     helePt[i]->Sumw2();
+    helePt3D[i]->Sumw2();
     helePtTrue[i]->Sumw2();
     helePtFake[i]->Sumw2();
     helePtTrueEW[i]->Sumw2();
@@ -273,6 +317,7 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
     hmuPhi[i]->Sumw2();
     hdphiLep[i]->Sumw2();
     heleEta[i]->Sumw2();
+    heleEta3D[i]->Sumw2();
     heleEtaTrue[i]->Sumw2();
     heleEtaTrueEW[i]->Sumw2();
     heleEtaTrueFSR[i]->Sumw2();
@@ -382,6 +427,8 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
 	  if( cms2.hyp_lt_p4()[cand].Pt()  < 20. || abs(cms2.hyp_lt_p4()[cand].eta()) > 2.4 ) continue;
 	}
 
+	int ele_index = -1;
+
 	// Apply all the selection cuts and the lepton quality cuts...unless it is special W+jet handling for ee and emu
 	// Note that if it is a mu-mu event we dont do anything special for now
 	if (WjBG == 0 || cms2.hyp_type()[cand]==0) {
@@ -425,7 +472,7 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
 	  if ( cms2.hyp_lt_id()[cand] * cms2.hyp_ll_id()[cand] > 0) continue;
 
 	  // If it is an emu, apply muon ID and isolation on the muon
-	  int ele_index=-1;
+	  ele_index=-1;
 	  if (abs(cms2.hyp_lt_id()[cand]) == 13) {
 	    if ( !goodMuonIsolated(cms2.hyp_lt_index()[cand]) ) continue;
 	    // CHEAT - remove all but true W muons:
@@ -488,17 +535,98 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
 	weight = weight * fProb;    // histogram weight
 
 	// jet count
-	hnJet[bucket]->Fill(cms2.hyp_njets()[cand], weight);
-	hnJet[3]->Fill(cms2.hyp_njets()[cand], weight);
+
+// 	hnJet[bucket]->Fill(cms2.hyp_njets()[cand], weight);
+// 	hnJet[3]->Fill(cms2.hyp_njets()[cand], weight);
+
+	if ( ele_index == -1 ) {
+	  hnJet[bucket]->Fill(cms2.hyp_njets()[cand], weight);
+	  hnJet[3]->Fill(cms2.hyp_njets()[cand], weight);
+	  if (abs(cms2.hyp_lt_id()[cand]) == 11) {
+	    heleEta[bucket]->Fill(cms2.hyp_lt_p4()[cand].eta(), weight);
+	    heleEta[3]->Fill(cms2.hyp_lt_p4()[cand].eta(), weight);
+	    helePt[bucket]->Fill(cms2.hyp_lt_p4()[cand].Pt(), weight);
+	    helePt[3]->Fill(cms2.hyp_lt_p4()[cand].Pt(), weight);
+	  }
+	  if (abs(cms2.hyp_ll_id()[cand]) == 11) {
+	    heleEta[bucket]->Fill(cms2.hyp_ll_p4()[cand].eta(), weight);
+	    heleEta[3]->Fill(cms2.hyp_ll_p4()[cand].eta(), weight);
+	    helePt[bucket]->Fill(cms2.hyp_ll_p4()[cand].Pt(), weight);
+	    helePt[3]->Fill(cms2.hyp_ll_p4()[cand].Pt(), weight);
+	  }
+
+	} else {
+	  fillPrediction(theFakeRate,
+			 hnJet[bucket],
+			 hnJet3D[bucket],
+			 ele_index,
+			 cms2.hyp_njets()[cand],
+			 weight/fProb);
+	  fillPrediction(theFakeRate,
+			 hnJet[3],
+			 hnJet3D[3],
+			 ele_index,
+			 cms2.hyp_njets()[cand],
+			 weight/fProb);
+	  if (abs(cms2.hyp_lt_id()[cand]) == 11) {
+	    fillPrediction(theFakeRate,
+			   heleEta[bucket],
+			   heleEta3D[bucket],
+			   ele_index,
+			   cms2.hyp_lt_p4()[cand].eta(),
+			   weight/fProb);
+	    fillPrediction(theFakeRate,
+			   heleEta[3],
+			   heleEta3D[3],
+			   ele_index,
+			   cms2.hyp_lt_p4()[cand].eta(),
+			   weight/fProb);
+	    fillPrediction(theFakeRate,
+			   helePt[bucket],
+			   helePt3D[bucket],
+			   ele_index,
+			   cms2.hyp_lt_p4()[cand].Pt(),
+			   weight/fProb);
+	    fillPrediction(theFakeRate,
+			   helePt[3],
+			   helePt3D[3],
+			   ele_index,
+			   cms2.hyp_lt_p4()[cand].Pt(),
+			   weight/fProb);
+	  }
+	  if (abs(cms2.hyp_ll_id()[cand]) == 11) {
+	    fillPrediction(theFakeRate,
+			   heleEta[bucket],
+			   heleEta3D[bucket],
+			   ele_index,
+			   cms2.hyp_ll_p4()[cand].eta(),
+			   weight/fProb);
+	    fillPrediction(theFakeRate,
+			   heleEta[3],
+			   heleEta3D[3],
+			   ele_index,
+			   cms2.hyp_ll_p4()[cand].eta(),
+			   weight/fProb);
+	    fillPrediction(theFakeRate,
+			   helePt[bucket],
+			   helePt3D[bucket],
+			   ele_index,
+			   cms2.hyp_ll_p4()[cand].Pt(),
+			   weight/fProb);
+	    fillPrediction(theFakeRate,
+			   helePt[3],
+			   helePt3D[3],
+			   ele_index,
+			   cms2.hyp_ll_p4()[cand].Pt(),
+			   weight/fProb);
+	  }
+	}
+
 	hnJetplErr[bucket]->Fill(cms2.hyp_njets()[cand], weight*fProbplErr/fProb);
 	hnJetplErr[3]->Fill(cms2.hyp_njets()[cand], weight*fProbplErr/fProb);
 	hnJetmiErr[bucket]->Fill(cms2.hyp_njets()[cand], weight*fProbmiErr/fProb);
 	hnJetmiErr[3]->Fill(cms2.hyp_njets()[cand], weight*fProbmiErr/fProb);
-	  
-	// lepton Pt
-	if (abs(cms2.hyp_lt_id()[cand]) == 11) helePt[bucket]->Fill(cms2.hyp_lt_p4()[cand].Pt(), weight);
-	if (abs(cms2.hyp_ll_id()[cand]) == 11) helePt[bucket]->Fill(cms2.hyp_ll_p4()[cand].Pt(), weight);
-
+	 
 	if (abs(cms2.hyp_lt_id()[cand]) == 11 && abs(cms2.hyp_lt_mc_id()[cand])  == 11 ) helePtTrue[bucket]->Fill(cms2.hyp_lt_p4()[cand].Pt(), weight);
 	if (abs(cms2.hyp_ll_id()[cand]) == 11 && abs(cms2.hyp_ll_mc_id()[cand])  == 11 ) helePtTrue[bucket]->Fill(cms2.hyp_ll_p4()[cand].Pt(), weight);
 	if (abs(cms2.hyp_lt_id()[cand]) == 11 && abs(cms2.hyp_lt_mc_id()[cand])  != 11 ) helePtFake[bucket]->Fill(cms2.hyp_lt_p4()[cand].Pt(), weight);
@@ -548,8 +676,6 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
 	hminLepPt[bucket]->Fill(min(cms2.hyp_ll_p4()[cand].Pt(), cms2.hyp_lt_p4()[cand].Pt()), weight);
 	hmaxLepPt[bucket]->Fill(max(cms2.hyp_ll_p4()[cand].Pt(), cms2.hyp_lt_p4()[cand].Pt()), weight );
 
-	if (abs(cms2.hyp_lt_id()[cand]) == 11) helePt[3]->Fill(cms2.hyp_lt_p4()[cand].Pt(), weight);
-	if (abs(cms2.hyp_ll_id()[cand]) == 11) helePt[3]->Fill(cms2.hyp_ll_p4()[cand].Pt(), weight);
 
 	if (abs(cms2.hyp_lt_id()[cand]) == 11 &&  abs(cms2.hyp_lt_mc_id()[cand])  == 11 ) helePtTrue[3]->Fill(cms2.hyp_lt_p4()[cand].Pt(), weight);
 	if (abs(cms2.hyp_ll_id()[cand]) == 11 &&  abs(cms2.hyp_ll_mc_id()[cand])  == 11 ) helePtTrue[3]->Fill(cms2.hyp_ll_p4()[cand].Pt(), weight);
@@ -627,9 +753,6 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
 	  hnEleMotherMCId[bucket]->Fill(cms2.hyp_ll_mc_motherid()[cand], weight);
 	}
 
-	// lepton Eta
-	if (abs(cms2.hyp_lt_id()[cand]) == 11) heleEta[bucket]->Fill(cms2.hyp_lt_p4()[cand].eta(), weight);
-	if (abs(cms2.hyp_ll_id()[cand]) == 11) heleEta[bucket]->Fill(cms2.hyp_ll_p4()[cand].eta(), weight);
 
 	if (abs(cms2.hyp_lt_id()[cand]) == 11) heleEtaTrue[bucket]->Fill(cms2.hyp_lt_p4()[cand].eta(), weight);
 	if (abs(cms2.hyp_ll_id()[cand]) == 11) heleEtaTrue[bucket]->Fill(cms2.hyp_ll_p4()[cand].eta(), weight);
@@ -641,8 +764,6 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
 	if (abs(cms2.hyp_lt_id()[cand]) == 13) hmuEta[bucket]->Fill(cms2.hyp_lt_p4()[cand].eta(), weight);
 	if (abs(cms2.hyp_ll_id()[cand]) == 13) hmuEta[bucket]->Fill(cms2.hyp_ll_p4()[cand].eta(), weight);
 
-	if (abs(cms2.hyp_lt_id()[cand]) == 11) heleEta[3]->Fill(cms2.hyp_lt_p4()[cand].eta(), weight);
-	if (abs(cms2.hyp_ll_id()[cand]) == 11) heleEta[3]->Fill(cms2.hyp_ll_p4()[cand].eta(), weight);
 
 	if (abs(cms2.hyp_lt_id()[cand]) == 11) heleEtaTrue[3]->Fill(cms2.hyp_lt_p4()[cand].eta(), weight);
 	if (abs(cms2.hyp_ll_id()[cand]) == 11) heleEtaTrue[3]->Fill(cms2.hyp_ll_p4()[cand].eta(), weight);
@@ -725,6 +846,21 @@ int ScanChain( TChain* chain, char * prefix="", int specDY=-1, float kFactor=1.0
 	hmetOverPtVsDphi[3]->Fill(cms2.hyp_met()[cand]/cms2.hyp_p4()[cand].Pt(), dphi2, weight);
 
       }
+    }
+  }
+
+  
+  if ( WjBG == 2 ) {
+    for (unsigned int i=0; i<=allBuckets; ++i) {
+      fillErrorInPrediction(theFakeRate,
+			    hnJet[i],
+			    hnJet3D[i]);
+      fillErrorInPrediction(theFakeRate,
+			    heleEta[i],
+			    heleEta3D[i]);
+      fillErrorInPrediction(theFakeRate,
+			    helePt[i],
+			    helePt3D[i]);
     }
   }
 

@@ -256,6 +256,7 @@ int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
 	// loose electrons
 	if (isFakeNumeratorElectron(electron_counter,1)){ 
 	  // 1=loose, 2=tight
+	  if ( !isFakeDenominatorElectron(electron_counter) ) cout << "Loose electron: num is fullfilled but den is not!" << endl;
 	  pt_num_ell->Fill(pt);
 	  eta_num_ell->Fill(cms2.els_p4()[electron_counter].Eta());
 	  num_ell->Fill(cms2.els_p4()[electron_counter].Eta(),pt);
@@ -264,6 +265,7 @@ int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
 	// tight electrons
 	if ( isFakeNumeratorElectron(electron_counter,2)){ 
 	  // 1=loose, 2=tight
+	  if ( !isFakeDenominatorElectron(electron_counter) ) cout << "Tight electron: num is fullfilled but den is not!" << endl;
 	  pt_num_elt->Fill(pt);
 	  eta_num_elt->Fill(cms2.els_p4()[electron_counter].Eta());
 	  num_elt->Fill(cms2.els_p4()[electron_counter].Eta(),pt);
@@ -281,6 +283,7 @@ int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
 	  // loose electrons
 	  if (isFakeNumeratorElectron(electron_counter,1)){ 
 	    // 1=loose, 2=tight
+	    if ( !isFakeDenominatorElectron(electron_counter) ) cout << "Loose electron wo leading: num is fullfilled but den is not!" << endl;
 	    pt_num_wo_leading_ell->Fill(pt);
 	    eta_num_wo_leading_ell->Fill(cms2.els_p4()[electron_counter].Eta());
 	    num_wo_leading_ell->Fill(cms2.els_p4()[electron_counter].Eta(),pt);
@@ -289,6 +292,7 @@ int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
 	  // tight electrons
 	  if ( isFakeNumeratorElectron(electron_counter,2)) { 
 	    // 1=loose, 2=tight
+	    if ( !isFakeDenominatorElectron(electron_counter) ) cout << "Tight electron wo leading: num is fullfilled but den is not!" << endl;
 	    pt_num_wo_leading_elt->Fill(pt);
 	    eta_num_wo_leading_elt->Fill(cms2.els_p4()[electron_counter].Eta());
 	    num_wo_leading_elt->Fill(cms2.els_p4()[electron_counter].Eta(),pt);
@@ -311,6 +315,7 @@ int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
 	    // loose electrons
 	    if (isFakeNumeratorElectron(electron_counter,1)){ 
 	      // 1=loose, 2=tight
+	      if ( !isFakeDenominatorElectron(electron_counter) ) cout << "Loose electron wo 2nd leading: num is fullfilled but den is not!" << endl;
 	      pt_num_wo_second_leading_ell->Fill(pt);
 	      eta_num_wo_second_leading_ell->Fill(cms2.els_p4()[electron_counter].Eta());
 	      num_wo_second_leading_ell->Fill(cms2.els_p4()[electron_counter].Eta(),pt);
@@ -319,6 +324,7 @@ int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
 	    // tight electrons
 	    if ( isFakeNumeratorElectron(electron_counter,2)){ 
 	      // 1=loose, 2=tight
+	      if ( !isFakeDenominatorElectron(electron_counter) ) cout << "Tight electron wo 2nd leading: num is fullfilled but den is not!" << endl;
 	      pt_num_wo_second_leading_elt->Fill(pt);
 	      eta_num_wo_second_leading_elt->Fill(cms2.els_p4()[electron_counter].Eta());
 	      num_wo_second_leading_elt->Fill(cms2.els_p4()[electron_counter].Eta(),pt);
@@ -346,11 +352,11 @@ int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
   cout<<" Loose Fraction: " << eta_num_ell->GetEntries()/eta_den_ele->GetEntries() << endl;
   cout<<" Tight Fraction: " << eta_num_elt->GetEntries()/eta_den_ele->GetEntries() << endl;
 
-  cout<<" # Denom Electrons 20-40 GeV: " << pt_den_ele->GetBinContent(2) << endl;
-  cout<<" # Loose Electrons 20-40 GeV: " << pt_num_ell->GetBinContent(2) << endl;
-  cout<<" # Tight Electrons 20-40 GeV: " << pt_num_elt->GetBinContent(2) << endl;
-  cout<<" Loose Fraction 20-40 GeV: " << pt_num_ell->GetBinContent(2)/pt_den_ele->GetBinContent(2) << endl;
-  cout<<" Tight Fraction 20-40 GeV: " << pt_num_elt->GetBinContent(2)/pt_den_ele->GetBinContent(2) << endl;
+//   cout<<" # Denom Electrons 20-40 GeV: " << pt_den_ele->GetBinContent(2) << endl;
+//   cout<<" # Loose Electrons 20-40 GeV: " << pt_num_ell->GetBinContent(2) << endl;
+//   cout<<" # Tight Electrons 20-40 GeV: " << pt_num_elt->GetBinContent(2) << endl;
+//   cout<<" Loose Fraction 20-40 GeV: " << pt_num_ell->GetBinContent(2)/pt_den_ele->GetBinContent(2) << endl;
+//   cout<<" Tight Fraction 20-40 GeV: " << pt_num_elt->GetBinContent(2)/pt_den_ele->GetBinContent(2) << endl;
 
   cout<<" # Denom Electrons without leading jet: " << eta_den_wo_leading_ele->GetEntries() << endl;
   cout<<" # Loose Electrons without leading jet: " << eta_num_wo_leading_ell->GetEntries() << endl;

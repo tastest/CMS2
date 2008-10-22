@@ -30,6 +30,8 @@
   // const char* location = "/uscms_data/d1/cms1/cms2-V00-05-01"; // (old ntuples without calo iso)
   const char* location = "/uscms_data/d1/cms1/cms2-V00-05-01_v2"; // (old ntuples without calo iso)
   // const char* location = "/uscms/home/ibloch/FakeE_Ntuples_1_6_12/CMSSW_1_6_12/src/CAF_submit_4"; // (new ntuples with calo iso)
+  // const char* location = "/scratch1/cms2-V00-05-01_v2"; // (old ntuples without calo iso)
+
 
   // 0_15
   if ( run_qcd_0_15 ) {
