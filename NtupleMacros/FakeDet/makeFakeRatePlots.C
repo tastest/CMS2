@@ -92,9 +92,9 @@ void makeFractionPlots(TFile *file,
 
   TH2F *num = (TH2F*)file->Get(numerator);
   TH2F *den = (TH2F*)file->Get(denominator);
-
   TH2F *fake_rate = (TH2F*)num->Clone();
-  fake_rate->Divide(den);
+  fake_rate->Reset();
+  fake_rate->Divide(num,den,1.,1.,"B");
   TString name = "fakeRateTemplate_";
   name.Append(numerator);
   name.Append("_");
@@ -126,7 +126,7 @@ void makeFractionPlots(TFile *file,
   fake_rate->GetZaxis()->SetTitleOffset(1.35);
 
   TH2F *fake_rate_error = (TH2F*)fake_rate->Clone();
-  fake_rate_error->Clear();
+  fake_rate_error->Reset();
   TString name = "fakeRateTemplateError_";
   name.Append(numerator);
   name.Append("_");
@@ -148,18 +148,20 @@ void makeFractionPlots(TFile *file,
   fake_rate_error->SetMinimum(0.0);
   fake_rate_error->SetMaximum(1.0);
   for ( unsigned int x = 0;
-	x < fake_rate->GetNbinsX();
+	x <= fake_rate->GetNbinsX();
 	++x) {
     for ( unsigned int y = 0;
-	  y < fake_rate->GetNbinsY();
+	  y <= fake_rate->GetNbinsY();
 	  ++y) {
       fake_rate_error->SetBinContent(x,y,fake_rate->GetBinError(x,y));
     }
   }
 
-  TH1D *fake_rate_project_x = num->ProjectionX();
-  fake_rate_project_x->Sumw2();
-  fake_rate_project_x->Divide(den->ProjectionX());
+  TH1D *fake_rate_project_x_num = num->ProjectionX("1",-1,-1,"e");
+  TH1D *fake_rate_project_x_den = den->ProjectionX("2",-1,-1,"e");
+  TH1D *fake_rate_project_x = dynamic_cast<TH1D*>fake_rate_project_x_num->Clone("clone_1");
+  fake_rate_project_x->Reset();
+  fake_rate_project_x->Divide(fake_rate_project_x_num,fake_rate_project_x_den,1.,1.,"B");
   name = "fakeRateTemplate_";
   name.Append(numerator);
   name.Append("_");
@@ -182,9 +184,11 @@ void makeFractionPlots(TFile *file,
   fake_rate_project_x->SetMinimum(0.0);
   fake_rate_project_x->SetMaximum(0.5);
 
-  TH1D *fake_rate_project_y = num->ProjectionY();
-  fake_rate_project_y->Sumw2();
-  fake_rate_project_y->Divide(den->ProjectionY());
+  TH1D *fake_rate_project_y_num = num->ProjectionY("3",-1,-1,"e");
+  TH1D *fake_rate_project_y_den = den->ProjectionY("4",-1,-1,"e");
+  TH1D *fake_rate_project_y = dynamic_cast<TH1D*>fake_rate_project_y_num->Clone("clone_2");
+  fake_rate_project_y->Reset();
+  fake_rate_project_y->Divide(fake_rate_project_y_num,fake_rate_project_y_den,1.,1.,"B");
   name = "fakeRateTemplate_";
   name.Append(numerator);
   name.Append("_");
