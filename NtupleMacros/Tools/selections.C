@@ -478,6 +478,8 @@ bool isFakeDenominatorElectron(int index) {
   //  if ( !passElectronIsolationLoose(index,true) )          	result = false; //v5_2
   if ( !passElectronIsolationLoose2(index,true) )          	result = false; //v5_4
   if ( cms2.els_hOverE()[index]   > hOverE_cut )        result = false;
+  if ( cms2.els_closestMuon().at(index) != -1) return false;  // muon veto from nominator, addded 081022
+
 
   return result;
 

@@ -240,8 +240,10 @@ int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
 	if ( isFakeDenominatorElectron(electron_counter)){
 	  
 	  pt_den_ele->Fill(pt);
-	  eta_den_ele->Fill(cms2.els_p4()[electron_counter].Eta());
-	  den_ele->Fill(cms2.els_p4()[electron_counter].Eta(),pt);
+	  eta_den_ele->Fill(abs(cms2.els_p4()[electron_counter].Eta()));
+	  eta_den_ele->Fill(-abs(cms2.els_p4()[electron_counter].Eta()));
+	  den_ele->Fill(abs(cms2.els_p4()[electron_counter].Eta()),pt);
+	  den_ele->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),pt);
 
 	  for ( unsigned int jet_counter = 0;
 		jet_counter < (unsigned int)cms2.evt_njets();
@@ -258,8 +260,10 @@ int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
 	  // 1=loose, 2=tight
 	  if ( !isFakeDenominatorElectron(electron_counter) ) cout << "Loose electron: num is fullfilled but den is not!" << endl;
 	  pt_num_ell->Fill(pt);
-	  eta_num_ell->Fill(cms2.els_p4()[electron_counter].Eta());
-	  num_ell->Fill(cms2.els_p4()[electron_counter].Eta(),pt);
+	  eta_num_ell->Fill(abs(cms2.els_p4()[electron_counter].Eta()));
+	  eta_num_ell->Fill(-abs(cms2.els_p4()[electron_counter].Eta()));
+	  num_ell->Fill(abs(cms2.els_p4()[electron_counter].Eta()),pt);
+	  num_ell->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),pt);
 	}
 
 	// tight electrons
@@ -267,8 +271,10 @@ int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
 	  // 1=loose, 2=tight
 	  if ( !isFakeDenominatorElectron(electron_counter) ) cout << "Tight electron: num is fullfilled but den is not!" << endl;
 	  pt_num_elt->Fill(pt);
-	  eta_num_elt->Fill(cms2.els_p4()[electron_counter].Eta());
-	  num_elt->Fill(cms2.els_p4()[electron_counter].Eta(),pt);
+	  eta_num_elt->Fill(abs(cms2.els_p4()[electron_counter].Eta()));
+	  eta_num_elt->Fill(-abs(cms2.els_p4()[electron_counter].Eta()));
+	  num_elt->Fill(abs(cms2.els_p4()[electron_counter].Eta()),pt);
+	  num_elt->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),pt);
 	}
 
 	// exclude leading jet
@@ -276,8 +282,10 @@ int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
 
 	  if ( isFakeDenominatorElectron(electron_counter)){
 	    pt_den_wo_leading_ele->Fill(pt);
-	    eta_den_wo_leading_ele->Fill(cms2.els_p4()[electron_counter].Eta());
-	    den_wo_leading_ele->Fill(cms2.els_p4()[electron_counter].Eta(),pt);
+	    eta_den_wo_leading_ele->Fill(abs(cms2.els_p4()[electron_counter].Eta()));
+	    eta_den_wo_leading_ele->Fill(-abs(cms2.els_p4()[electron_counter].Eta()));
+	    den_wo_leading_ele->Fill(abs(cms2.els_p4()[electron_counter].Eta()),pt);
+	    den_wo_leading_ele->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),pt);
 	  }
 
 	  // loose electrons
@@ -285,8 +293,10 @@ int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
 	    // 1=loose, 2=tight
 	    if ( !isFakeDenominatorElectron(electron_counter) ) cout << "Loose electron wo leading: num is fullfilled but den is not!" << endl;
 	    pt_num_wo_leading_ell->Fill(pt);
-	    eta_num_wo_leading_ell->Fill(cms2.els_p4()[electron_counter].Eta());
-	    num_wo_leading_ell->Fill(cms2.els_p4()[electron_counter].Eta(),pt);
+	    eta_num_wo_leading_ell->Fill(abs(cms2.els_p4()[electron_counter].Eta()));
+	    eta_num_wo_leading_ell->Fill(-abs(cms2.els_p4()[electron_counter].Eta()));
+	    num_wo_leading_ell->Fill(abs(cms2.els_p4()[electron_counter].Eta()),pt);
+	    num_wo_leading_ell->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),pt);
 	  }
 
 	  // tight electrons
@@ -294,8 +304,10 @@ int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
 	    // 1=loose, 2=tight
 	    if ( !isFakeDenominatorElectron(electron_counter) ) cout << "Tight electron wo leading: num is fullfilled but den is not!" << endl;
 	    pt_num_wo_leading_elt->Fill(pt);
-	    eta_num_wo_leading_elt->Fill(cms2.els_p4()[electron_counter].Eta());
-	    num_wo_leading_elt->Fill(cms2.els_p4()[electron_counter].Eta(),pt);
+	    eta_num_wo_leading_elt->Fill(abs(cms2.els_p4()[electron_counter].Eta()));
+	    eta_num_wo_leading_elt->Fill(-abs(cms2.els_p4()[electron_counter].Eta()));
+	    num_wo_leading_elt->Fill(abs(cms2.els_p4()[electron_counter].Eta()),pt);
+	    num_wo_leading_elt->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),pt);
 	  }
 
 	}
@@ -308,8 +320,10 @@ int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
 
 	    if ( isFakeDenominatorElectron(electron_counter)){
 	      pt_den_wo_second_leading_ele->Fill(pt);
-	      eta_den_wo_second_leading_ele->Fill(cms2.els_p4()[electron_counter].Eta());
-	      den_wo_second_leading_ele->Fill(cms2.els_p4()[electron_counter].Eta(),pt);
+	      eta_den_wo_second_leading_ele->Fill(abs(cms2.els_p4()[electron_counter].Eta()));
+	      eta_den_wo_second_leading_ele->Fill(-abs(cms2.els_p4()[electron_counter].Eta()));
+	      den_wo_second_leading_ele->Fill(abs(cms2.els_p4()[electron_counter].Eta()),pt);
+	      den_wo_second_leading_ele->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),pt);
 	    }
 
 	    // loose electrons
@@ -317,8 +331,10 @@ int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
 	      // 1=loose, 2=tight
 	      if ( !isFakeDenominatorElectron(electron_counter) ) cout << "Loose electron wo 2nd leading: num is fullfilled but den is not!" << endl;
 	      pt_num_wo_second_leading_ell->Fill(pt);
-	      eta_num_wo_second_leading_ell->Fill(cms2.els_p4()[electron_counter].Eta());
-	      num_wo_second_leading_ell->Fill(cms2.els_p4()[electron_counter].Eta(),pt);
+	      eta_num_wo_second_leading_ell->Fill(abs(cms2.els_p4()[electron_counter].Eta()));
+	      eta_num_wo_second_leading_ell->Fill(-abs(cms2.els_p4()[electron_counter].Eta()));
+	      num_wo_second_leading_ell->Fill(abs(cms2.els_p4()[electron_counter].Eta()),pt);
+	      num_wo_second_leading_ell->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),pt);
 	    }
 
 	    // tight electrons
@@ -326,8 +342,10 @@ int ScanChain( TChain* chain, char * prefix = "", int nEvents = -1) {
 	      // 1=loose, 2=tight
 	      if ( !isFakeDenominatorElectron(electron_counter) ) cout << "Tight electron wo 2nd leading: num is fullfilled but den is not!" << endl;
 	      pt_num_wo_second_leading_elt->Fill(pt);
-	      eta_num_wo_second_leading_elt->Fill(cms2.els_p4()[electron_counter].Eta());
-	      num_wo_second_leading_elt->Fill(cms2.els_p4()[electron_counter].Eta(),pt);
+	      eta_num_wo_second_leading_elt->Fill(abs(cms2.els_p4()[electron_counter].Eta()));
+	      eta_num_wo_second_leading_elt->Fill(-abs(cms2.els_p4()[electron_counter].Eta()));
+	      num_wo_second_leading_elt->Fill(abs(cms2.els_p4()[electron_counter].Eta()),pt);
+	      num_wo_second_leading_elt->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),pt);
 	    }
 	  }
 	}

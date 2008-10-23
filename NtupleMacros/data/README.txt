@@ -128,3 +128,10 @@ same as v5_0 BUT:
 Using CaloIso+trackIso                on Numerator
 Using CaloIso(cut at 0.75)+trackIso   on Denominator
 result: good estimation (pred 85, obs 81)
+
+v5_5:
+-----
+same as v5_4 BUT:
+use muon veto near electron           on Denominator
+use absolute value of eta in numerator and denominator to increase statistics
+result: better estimation (pred 79, obs 81)
