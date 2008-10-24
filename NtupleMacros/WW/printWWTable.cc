@@ -2,7 +2,8 @@
 #include "WWLooper.h"
 #include "DileptonHypType.h"
 
-void printWWTable (const WWLooperBase **hists, int n, const char *fname) 
+void printWWTable (const WWLooperBase **hists, int n, const char *fname, 
+		   uint32 which_ones) 
 {
      FILE *f = 0;
      if (fname == 0 || strlen(fname) == 0)
@@ -28,6 +29,23 @@ void printWWTable (const WWLooperBase **hists, int n, const char *fname)
 	       cands += hists[j]->CandsPassing(DileptonHypType(i));
 	       w2 += hists[j]->RMS(DileptonHypType(i)) * 
 		    hists[j]->RMS(DileptonHypType(i));
+	       if (not (which_ones & 1 << j))
+		    continue;
+	       const WWFakeRateLooper *looper = 
+		    dynamic_cast<const WWFakeRateLooper *>(hists[j]);
+	       if (looper != 0) {
+#if 0
+		    fprintf(f, " + %5.1f &minus; %5.1f", 
+			    looper->CandsPassingSystHi(DileptonHypType(i)) 
+			    - looper->CandsPassing(DileptonHypType(i)),
+			    looper->CandsPassing(DileptonHypType(i)) 
+			    - looper->CandsPassingSystLo(DileptonHypType(i)));
+#else
+		    fprintf(f, "(stat) &plusmn; %5.1f (fake)", 
+			    looper->FakeSyst(DileptonHypType(i)));
+#endif
+	       }
+
 	  }
 	  fprintf(f, "|  %10.1f &plusmn; %10.1f|\n", cands, sqrt(w2));
      }
