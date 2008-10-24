@@ -1,4 +1,4 @@
 #!/bin/bash
 cvs co -r CMSSW_2_1_9 PhysicsTools/PatAlgos/python
-cvs update -r V04-13-01 PhysicsTools/PatAlgos/python/electronId_cff.py
-cvs update -r V04-13-01 PhysicsTools/PatAlgos/python/electronProducer_cfi.py
+cvs update -r V04-13-01 PhysicsTools/PatAlgos/python/recoLayer0/electronId_cff.py
+cvs update -r V04-13-01 PhysicsTools/PatAlgos/python/producersLayer1/electronProducer_cfi.py
