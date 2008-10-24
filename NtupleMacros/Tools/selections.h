@@ -2,6 +2,7 @@
 #define SELECTION_H
 
 bool inZmassWindow (float mass);
+bool supertightElectron (int index);
 bool goodElectronWithoutIsolation(int index);
 bool goodMuonWithoutIsolation(int index);
 bool passElectronIsolation(int index, bool use_calo_iso = false);
@@ -10,6 +11,7 @@ bool passElectronIsolationLoose2(int index, bool use_calo_iso = false);
 bool passMuonIsolation(int index);
 bool goodMuonIsolated(int index);
 bool goodElectronIsolated(int index, bool use_calo_iso = false);
+bool goodLooseElectronWithoutIsolation(int index);
 bool pass2Met(int index);
 double nearestDeltaPhi(double Phi, int index);
 double MetSpecial(double MET, double MetPhi, int index);
@@ -35,4 +37,6 @@ double el_rel_iso (int index, bool use_calo_iso);
 double reliso_lt (int i_hyp, bool use_calo_iso = false);
 double reliso_ll (int i_hyp, bool use_calo_iso = false);
 
+int conversionPartner (int i_el);
+double conversionDeltaPhi (int i_conv, int i_el);
 #endif

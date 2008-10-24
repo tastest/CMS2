@@ -1,3 +1,4 @@
+
 //===========================================================
 //
 // Various selection functions are kept here
@@ -5,6 +6,7 @@
 //============================================================
 #include <assert.h>
 #include "Math/LorentzVector.h"
+#include "Math/VectorUtil.h"
 #include "TMath.h"
 #include "TLorentzVector.h"
 // #include "selections.h"
@@ -18,6 +20,8 @@
 #else
 #include "../Tools/matchTools.C"
 #endif
+
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 
 //----------------------------------------------------------------
 // A ridicolusly simple function, but since the Z veto is used 
@@ -84,6 +88,19 @@ double el_rel_iso (int index, bool use_calo_iso)
 bool passElectronIsolation(int index, bool use_calo_iso) 
 {
      const double cut = 0.92;
+     return el_rel_iso(index, use_calo_iso) > cut;
+}
+
+bool passElectronIsolationLoose(int index, bool use_calo_iso) 
+{
+  const double cut = 0.8; // leads to 91 pred, 81 obs
+     return el_rel_iso(index, use_calo_iso) > cut;
+} 
+
+bool passElectronIsolationLoose2(int index, bool use_calo_iso) 
+{
+  //     const double cut = 0.85; leads to 107 pred, 81 obs
+     const double cut = 0.75;
      return el_rel_iso(index, use_calo_iso) > cut;
 } 
 //-----------------------------------------------------------
@@ -515,4 +532,36 @@ bool isFakeNumeratorElectron(int index, int type=0) {
 
   return result;
   
+}
+
+int conversionPartner (int i_el)
+{
+     LorentzVector el_p4 = cms2.els_p4()[i_el];
+     double min_dcottheta = 5e-4;
+     int idx = -1;
+     const double el_cottheta = el_p4.pz() / el_p4.pt();
+     for (unsigned int i = 0; i < cms2.trks_trk_p4().size(); ++i) {
+	  // if the track is within some ratio of the electron momentum,
+	  // reject it
+	  if (cms2.trks_trk_p4()[i].pt() > 0.1 * el_p4.pt())
+	       continue;
+	  const double tk_cottheta = cms2.trks_trk_p4()[i].pz() / 
+	       cms2.trks_trk_p4()[i].pt();
+	  if (fabs(tk_cottheta - el_cottheta) < min_dcottheta) {
+	       min_dcottheta = fabs(tk_cottheta - el_cottheta);
+	       idx = i;
+	  }
+     }
+     if (min_dcottheta < 5e-4)
+	  return idx;
+     return -1;
+}
+
+double conversionDeltaPhi (int i_conv, int i_el)
+{
+     if (i_conv == -1)
+	  return -1;
+     double dphi = ROOT::Math::VectorUtil::DeltaPhi(cms2.trks_trk_p4()[i_conv],
+						    cms2.els_p4()[i_el]);
+     return fabs(dphi);
 }
