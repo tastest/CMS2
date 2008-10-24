@@ -10,26 +10,25 @@
 WWLooperBase::WWLooperBase (Sample s, cuts_t c, const char *fname) 
      : LooperBase(s),
        cuts(c),
-       hnJet		(s, "nJet"            ,	 6	, -0.5, 5	, cuts, (1 << WW_PASS_JETVETO_CALO) | (1 << WW_PASS_JETVETO_TRACKJETS) 	),
-       hnCaloJet	(s, "nCaloJet"        ,	 6	, -0.5, 5	, cuts, (1 << WW_PASS_JETVETO_CALO) | (1 << WW_PASS_JETVETO_TRACKJETS)	),
-       hnTrackJet	(s, "nTrackJet"       ,	 6	, -0.5, 5	, cuts, (1 << WW_PASS_JETVETO_CALO) | (1 << WW_PASS_JETVETO_TRACKJETS) 	),
-       hcaloJetPt	(s, "caloJetPt"       ,	 6	, -0.5, 5	, cuts, (1 << WW_PASS_JETVETO_CALO) 	),
-       htrackJetPt	(s, "trackJetPt"      ,	 6	, -0.5, 5	, cuts, (1 << WW_PASS_JETVETO_TRACKJETS) 	),
-       hminLepPt	(s, "minLepPt"        ,	 150	, 0, 150	, cuts, 1 << WW_LL_PT	),
-       hmaxLepPt	(s, "maxLepPt"        ,	 150	, 0, 150	, cuts, 1 << WW_LL_PT  	),
-       hltPt		(s, "ltPt"            ,	 150	, 0, 150	, cuts, (1 << WW_LT_PT)	),
-       hllPt		(s, "llPt"            ,	 150	, 0, 150	, cuts, (1 << WW_LL_PT)	),
-       helPt		(s, "elPt"            ,	 16	, 0, 160	, cuts, 1 << WW_LL_PT	),
-       hmuPt		(s, "muPt"            ,	 16	, 0, 160	, cuts, 1 << WW_LL_PT	),
+       hnJet		(s, "nJet"            ,	 6	, -0.5, 5	, cuts, (CUT_BIT(WW_PASS_JETVETO_CALO)) | (CUT_BIT(WW_PASS_JETVETO_TRACKJETS)) 	),
+       hnCaloJet	(s, "nCaloJet"        ,	 6	, -0.5, 5	, cuts, (CUT_BIT(WW_PASS_JETVETO_CALO)) | (CUT_BIT(WW_PASS_JETVETO_TRACKJETS))	),
+       hnTrackJet	(s, "nTrackJet"       ,	 6	, -0.5, 5	, cuts, (CUT_BIT(WW_PASS_JETVETO_CALO)) | (CUT_BIT(WW_PASS_JETVETO_TRACKJETS)) 	),
+       hcaloJetPt	(s, "caloJetPt"       ,	 6	, -0.5, 5	, cuts, (CUT_BIT(WW_PASS_JETVETO_CALO)) 	),
+       htrackJetPt	(s, "trackJetPt"      ,	 6	, -0.5, 5	, cuts, (CUT_BIT(WW_PASS_JETVETO_TRACKJETS)) 	),
+       hminLepPt	(s, "minLepPt"        ,	 150	, 0, 150	, cuts, CUT_BIT(WW_LL_PT)	),
+       hmaxLepPt	(s, "maxLepPt"        ,	 150	, 0, 150	, cuts, CUT_BIT(WW_LL_PT)  	),
+       hltPt		(s, "ltPt"            ,	 150	, 0, 150	, cuts, (CUT_BIT(WW_LT_PT))	),
+       hllPt		(s, "llPt"            ,	 150	, 0, 150	, cuts, (CUT_BIT(WW_LL_PT))	),
+       helPt		(s, "elPt"            ,	 16	, 0, 160	, cuts, CUT_BIT(WW_LL_PT)	),
+       hmuPt		(s, "muPt"            ,	 16	, 0, 160	, cuts, CUT_BIT(WW_LL_PT)	),
        helEta		(s, "elEta"           ,	 12	, -3, 3		, cuts, 0),
        hmuEta		(s, "muEta"           ,	 12	, -3, 3		, cuts, 0),
-       helHE		(s, "elHE"	      ,  11	, -0.1, 1	, cuts, (1 << WW_LT_GOOD | 1 << WW_LL_GOOD | 1 << WW_LT_ISO | 1 << WW_LL_ISO | 1 << WW_LT_CALOISO | 1 << WW_LL_CALOISO)),
        hdphiLep		(s, "dphiLep"         ,	 50	, 0, M_PI	, cuts, 0	),
-       hdilMass		(s, "dilMass"         ,	 100	, 0, 300	, cuts, (1 << WW_PASS_ZVETO) | (1 << WW_PASS_ADDZVETO) 	),
+       hdilMass		(s, "dilMass"         ,	 100	, 0, 300	, cuts, (CUT_BIT(WW_PASS_ZVETO)) | (CUT_BIT(WW_PASS_ADDZVETO)) 	),
        hdilPt		(s, "dilPt"           ,	 100	, 0, 300	, cuts, 0	),
-       hmet		(s, "met"             ,	 100	, 0, 200	, cuts, (1 << WW_PASS4_MET) | (1 << WW_PASS2_MET)	),
-       hmetSpec		(s, "metSpec"         ,	 100	, 0, 200	, cuts, (1 << WW_PASS4_MET) | (1 << WW_PASS2_MET)      	),
-       hmetTrkCorr	(s, "metTrkCorr"      ,	 100	, 0, 200	, cuts, (1 << WW_PASS4_MET) | (1 << WW_PASS2_MET)	),
+       hmet		(s, "met"             ,	 100	, 0, 200	, cuts, (CUT_BIT(WW_PASS4_MET)) | (CUT_BIT(WW_PASS2_MET))	),
+       hmetSpec		(s, "metSpec"         ,	 100	, 0, 200	, cuts, (CUT_BIT(WW_PASS4_MET)) | (CUT_BIT(WW_PASS2_MET))      	),
+       hmetTrkCorr	(s, "metTrkCorr"      ,	 100	, 0, 200	, cuts, (CUT_BIT(WW_PASS4_MET)) | (CUT_BIT(WW_PASS2_MET))	),
        hptJet1		(s, "ptJet1"          ,	 100	, 0, 300	, cuts, 0		),
        hptJet2		(s, "ptJet2"          ,	 100	, 0, 300	, cuts, 0       	),
        hptJet3		(s, "ptJet3"          ,	 100	, 0, 300	, cuts, 0       	),
@@ -39,16 +38,31 @@ WWLooperBase::WWLooperBase (Sample s, cuts_t c, const char *fname)
        hetaJet3		(s, "etaJet3"         ,	 50	, -4, 4		, cuts, 0       	),
        hetaJet4		(s, "etaJet4"         ,	 50	, -4, 4		, cuts, 0       	),
        hnumTightLep	(s, "numTightLep"     ,	 6	, -0.5, 5.5	, cuts, 0             	),
-       heleRelIso	(s, "eleRelIso"       ,	 101	, 0, 1.01	, cuts, (1 << WW_LT_ISO) | (1 << WW_LL_ISO)	),
-       hmuRelIso	(s, "muRelIso"        ,	 101	, 0, 1.01	, cuts, (1 << WW_LT_ISO) | (1 << WW_LL_ISO)	),
-       hminRelIso	(s, "minRelIso"       ,	 101	, 0, 1.01	, cuts, (1 << WW_LT_ISO) | (1 << WW_LL_ISO)	),
-       hminRelIso_withCalo	(s, "minRelIso_withCalo", 101, 0, 1.01	, cuts, (1 << WW_LT_ISO) | (1 << WW_LL_ISO)	),
-       htagMuPt		(s, "tagMuPt"	      ,	 100	, 0, 100	, cuts & ~((1 << WW_PASS_MUON_B_VETO) | (1 << WW_PASS_MUON_B_VETO_WITHOUT_PTCUT) | (1 << WW_PASS_EXTRALEPTON_VETO)), (1 << WW_PASS_JETVETO_TRACKJETS)),
-       htagMuRelIso	(s, "tagMuRelIso"     ,	 101	, 0, 1.01	, cuts & ~((1 << WW_PASS_MUON_B_VETO) | (1 << WW_PASS_MUON_B_VETO_WITHOUT_PTCUT) | (1 << WW_PASS_EXTRALEPTON_VETO)), (1 << WW_PASS_JETVETO_TRACKJETS)),
-       hmuPdgId		(s, "muPdgId", 		2301, -0.5, 2300.5),
-       hmuMoPdgId	(s, "muMoPdgId", 	2301, -0.5, 2300.5),
-       helPdgId		(s, "elPdgId", 		2301, -0.5, 2300.5),
-       helMoPdgId	(s, "elMoPdgId", 	2301, -0.5, 2300.5)
+       heleRelIso	(s, "eleRelIso"       ,	 101	, 0, 1.01	, cuts, 0		),
+       heleRelIsoTrk	(s, "eleRelIsoTrk"    ,	 101	, 0, 1.01	, cuts, 0		),
+       hmuRelIso	(s, "muRelIso"        ,	 101	, 0, 1.01	, cuts, (CUT_BIT(WW_LT_ISO)) | (CUT_BIT(WW_LL_ISO))	),
+       hminRelIso	(s, "minRelIso"       ,	 101	, 0, 1.01	, cuts, (CUT_BIT(WW_LT_ISO)) | (CUT_BIT(WW_LL_ISO))	),
+       hminRelIso_withCalo	(s, "minRelIso_withCalo", 101, 0, 1.01	, cuts, (CUT_BIT(WW_LT_ISO)) | (CUT_BIT(WW_LL_ISO))	),
+       htagMuPt		(s, "tagMuPt"	      ,	 100	, 0, 100	, cuts & ~((CUT_BIT(WW_PASS_MUON_B_VETO)) | (CUT_BIT(WW_PASS_MUON_B_VETO_WITHOUT_PTCUT)) | (CUT_BIT(WW_PASS_EXTRALEPTON_VETO))), (CUT_BIT(WW_PASS_JETVETO_TRACKJETS))),
+       htagMuRelIso	(s, "tagMuRelIso"     ,	 101	, 0, 1.01	, cuts & ~((CUT_BIT(WW_PASS_MUON_B_VETO)) | (CUT_BIT(WW_PASS_MUON_B_VETO_WITHOUT_PTCUT)) | (CUT_BIT(WW_PASS_EXTRALEPTON_VETO))), (CUT_BIT(WW_PASS_JETVETO_TRACKJETS))),
+       hmuPdgId		(s, "muPdgId", 		2301, -0.5, 2300.5, cuts, 0),
+       hmuMoPdgId	(s, "muMoPdgId", 	2301, -0.5, 2300.5, cuts, 0),
+       helPdgId		(s, "elPdgId", 		2301, -0.5, 2300.5, cuts, 0),
+       helMoPdgId	(s, "elMoPdgId", 	2301, -0.5, 2300.5, cuts, 0),
+       helEop      	(s, "elEop"	      ,  10	, 0, 10	, cuts, (CUT_BIT(WW_LT_GOOD) | CUT_BIT(WW_LL_GOOD) | CUT_BIT(WW_LT_ISO) | CUT_BIT(WW_LL_ISO) | CUT_BIT(WW_LT_CALOISO) | CUT_BIT(WW_LL_CALOISO))),
+       held0    	(s, "eld0"	      ,  50	, 0, 0.1	, cuts, (CUT_BIT(WW_LT_GOOD) | CUT_BIT(WW_LL_GOOD) | CUT_BIT(WW_LT_ISO) | CUT_BIT(WW_LL_ISO) | CUT_BIT(WW_LT_CALOISO) | CUT_BIT(WW_LL_CALOISO))),
+       helfbrem    	(s, "elfbrem"	      ,  11	, -0.1, 1	, cuts, (CUT_BIT(WW_LT_GOOD) | CUT_BIT(WW_LL_GOOD) | CUT_BIT(WW_LT_ISO) | CUT_BIT(WW_LL_ISO) | CUT_BIT(WW_LT_CALOISO) | CUT_BIT(WW_LL_CALOISO))),
+       helHE       	(s, "elHE"	      ,  11	, -0.03, 0.3	, cuts, (CUT_BIT(WW_LT_GOOD) | CUT_BIT(WW_LL_GOOD) | CUT_BIT(WW_LT_ISO) | CUT_BIT(WW_LL_ISO) | CUT_BIT(WW_LT_CALOISO) | CUT_BIT(WW_LL_CALOISO))),
+       helsee      	(s, "elsee"	      ,  50	, 0, 0.05	, cuts, (CUT_BIT(WW_LT_GOOD) | CUT_BIT(WW_LL_GOOD) | CUT_BIT(WW_LT_ISO) | CUT_BIT(WW_LL_ISO) | CUT_BIT(WW_LT_CALOISO) | CUT_BIT(WW_LL_CALOISO))),
+       helsppEB  	(s, "elsppEB"	      ,  50	, 0, 0.0	, cuts, (CUT_BIT(WW_LT_GOOD) | CUT_BIT(WW_LL_GOOD) | CUT_BIT(WW_LT_ISO) | CUT_BIT(WW_LL_ISO) | CUT_BIT(WW_LT_CALOISO) | CUT_BIT(WW_LL_CALOISO))),
+       helsppEE	  	(s, "elsppEC"	      ,  50	, 0, 0.0	, cuts, (CUT_BIT(WW_LT_GOOD) | CUT_BIT(WW_LL_GOOD) | CUT_BIT(WW_LT_ISO) | CUT_BIT(WW_LL_ISO) | CUT_BIT(WW_LT_CALOISO) | CUT_BIT(WW_LL_CALOISO))),
+       heldphiin   	(s, "eldphiin"	      ,  10	, -0.1, 0.1	, cuts, (CUT_BIT(WW_LT_GOOD) | CUT_BIT(WW_LL_GOOD) | CUT_BIT(WW_LT_ISO) | CUT_BIT(WW_LL_ISO) | CUT_BIT(WW_LT_CALOISO) | CUT_BIT(WW_LL_CALOISO))),
+       heldetain   	(s, "eldetain"	      ,  10	, -0.02, 0.02	, cuts, (CUT_BIT(WW_LT_GOOD) | CUT_BIT(WW_LL_GOOD) | CUT_BIT(WW_LT_ISO) | CUT_BIT(WW_LL_ISO) | CUT_BIT(WW_LT_CALOISO) | CUT_BIT(WW_LL_CALOISO))),
+       helEseedopin	(s, "elEseedopin"     ,  10	, 0, 20	, cuts, (CUT_BIT(WW_LT_GOOD) | CUT_BIT(WW_LL_GOOD) | CUT_BIT(WW_LT_ISO) | CUT_BIT(WW_LL_ISO) | CUT_BIT(WW_LT_CALOISO) | CUT_BIT(WW_LL_CALOISO))),
+       helConvDeltaPhi_ss   	(s, "elConvDeltaPhi_ss"	    ,  10	, 0, 0.1, cuts, 0),
+       helConvDeltaPhi_os	(s, "elConvDeltaPhi_os"     ,  10	, 0, 0.1, cuts, 0),
+       held0vsRelIso (Form("%s_%s_em", s.name.c_str(), "d0vsRelIso"), ";d0;rel iso", 50, 0, 0.1, 41, 0, 1.025),
+       heldphiinvsRelIso (Form("%s_%s_em", s.name.c_str(), "dphiinvsRelIso"), ";dphiin;rel iso", 50, -0.1, 0.1, 41, 0, 1.025)
 {
      memset(cands_passing	, 0, sizeof(cands_passing       ));
      memset(cands_passing_w2	, 0, sizeof(cands_passing_w2    ));
@@ -68,95 +82,122 @@ cuts_t WWLooperBase::DilepSelect (int i_hyp)
 
      // pt cuts
      if (cms2.hyp_lt_p4()[i_hyp].pt() > 20.0) 
-	  ret |= (1 << WW_LT_PT);
+	  ret |= (CUT_BIT(WW_LT_PT));
      if (cms2.hyp_ll_p4()[i_hyp].pt() > 20.0) 
-	  ret |= (1 << WW_LL_PT);
+	  ret |= (CUT_BIT(WW_LL_PT));
      // sign cuts
      if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] < 0 ) 
-	  ret |= (1 << WW_OPP_SIGN);
+	  ret |= (CUT_BIT(WW_OPP_SIGN));
      if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) 
-	  ret |= (1 << WW_SAME_SIGN);
+	  ret |= (CUT_BIT(WW_SAME_SIGN));
      // MET
      if (pass4Met(i_hyp))
-	  ret |= (1 << WW_PASS4_MET);
+	  ret |= (CUT_BIT(WW_PASS4_MET));
      if (pass2Met(i_hyp))
-	  ret |= (1 << WW_PASS2_MET);
+	  ret |= (CUT_BIT(WW_PASS2_MET));
      // muon quality
      int n_iso_mu = 0;
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 13 && goodMuonWithoutIsolation(cms2.hyp_lt_index()[i_hyp]) ) 
-	  ret |= (1 << WW_LT_GOOD);
+	  ret |= CUT_BIT(WW_LT_GOOD) | CUT_BIT(WW_MU_GOOD);
      if (abs(cms2.hyp_ll_id()[i_hyp]) == 13 && goodMuonWithoutIsolation(cms2.hyp_ll_index()[i_hyp]) ) 
-	  ret |= (1 << WW_LL_GOOD);
+	  ret |= CUT_BIT(WW_LL_GOOD) | CUT_BIT(WW_MU_GOOD);
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 13 && goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) {
-	  ret |= (1 << WW_LT_GOOD) | (1 << WW_LT_ISO);
+	  ret |= CUT_BIT(WW_LT_GOOD) | CUT_BIT(WW_LT_ISO) | CUT_BIT(WW_MU_GOOD) | CUT_BIT(WW_MU_ISO);
 	  n_iso_mu++;
      }
      if (abs(cms2.hyp_ll_id()[i_hyp]) == 13 && goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) ) {
-	  ret |= (1 << WW_LL_GOOD) | (1 << WW_LL_ISO);
+	  ret |= CUT_BIT(WW_LL_GOOD) | CUT_BIT(WW_LL_ISO) | CUT_BIT(WW_MU_GOOD) | CUT_BIT(WW_MU_ISO);
 	  n_iso_mu++;
      }
      // electron quality
      int n_iso_el = 0;
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && goodElectronWithoutIsolation(cms2.hyp_lt_index()[i_hyp]) )
-	  ret |= (1 << WW_LT_GOOD);
+	  ret |= CUT_BIT(WW_LT_GOOD) | CUT_BIT(WW_EL_GOOD);
      if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && goodElectronWithoutIsolation(cms2.hyp_ll_index()[i_hyp]) )
-	  ret |= (1 << WW_LL_GOOD);
+	  ret |= CUT_BIT(WW_LL_GOOD) | CUT_BIT(WW_EL_GOOD);
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && goodElectronIsolated(cms2.hyp_lt_index()[i_hyp], false)) {
-	  ret |= (1 << WW_LT_GOOD) | (1 << WW_LT_ISO);
+	  ret |= CUT_BIT(WW_LT_GOOD) | CUT_BIT(WW_LT_ISO) | CUT_BIT(WW_EL_GOOD) | CUT_BIT(WW_EL_ISO);
 	  n_iso_el++;
      }
      if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && goodElectronIsolated(cms2.hyp_ll_index()[i_hyp], false)) {
-	  ret |= (1 << WW_LL_GOOD) | (1 << WW_LL_ISO);
+	  ret |= CUT_BIT(WW_LL_GOOD) | CUT_BIT(WW_LL_ISO) | CUT_BIT(WW_EL_GOOD) | CUT_BIT(WW_EL_ISO);
 	  n_iso_el++;
      }     
      if (n_iso_mu + n_iso_el >= 1)
-	  ret |= (1 << WW_ONE_ISO);
+	  ret |= (CUT_BIT(WW_ONE_ISO));
      if (n_iso_mu + n_iso_el >= 2)
-	  ret |= (1 << WW_TWO_ISO);
+	  ret |= (CUT_BIT(WW_TWO_ISO));
+     // supertight cuts (only for electrons)
+     int n_supertight_el = 0;
+     if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
+	  if (supertightElectron(cms2.hyp_lt_index()[i_hyp])) {
+// 	       ret |= (CUT_BIT(WW_LT_SUPERTIGHT));
+	       n_supertight_el++;
+	  }
+     }
+     if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
+	  if (supertightElectron(cms2.hyp_ll_index()[i_hyp])) {
+// 	       ret |= (CUT_BIT(WW_LL_SUPERTIGHT));
+	       n_supertight_el++;
+	  }
+     }
+     if (n_supertight_el >= 1)
+	  ret |= CUT_BIT(WW_ONE_SUPERTIGHT);
+     if (n_supertight_el >= 2)
+   	  ret |= CUT_BIT(WW_TWO_SUPERTIGHT);
+     // barrel
+     if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
+	  if (fabs(cms2.els_p4()[cms2.hyp_lt_index()[i_hyp]].eta()) < 1.479)
+ 	       ret |= (CUT_BIT(WW_EL_BARREL));
+     }
+     if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
+	  if (fabs(cms2.els_p4()[cms2.hyp_ll_index()[i_hyp]].eta()) < 1.479)
+ 	       ret |= (CUT_BIT(WW_EL_BARREL));
+     }
      // calo iso
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 13 && goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) {
-	  ret |= (1 << WW_LT_GOOD) | (1 << WW_LT_CALOISO);
+	  ret |= (CUT_BIT(WW_LT_GOOD)) | (CUT_BIT(WW_LT_CALOISO));
      }
      if (abs(cms2.hyp_ll_id()[i_hyp]) == 13 && goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) ) {
-	  ret |= (1 << WW_LL_GOOD) | (1 << WW_LL_CALOISO);
+	  ret |= (CUT_BIT(WW_LL_GOOD)) | (CUT_BIT(WW_LL_CALOISO));
      }
      int n_caloiso_el = 0;
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && goodElectronIsolated(cms2.hyp_lt_index()[i_hyp], true)) {
-	  ret |= (1 << WW_LT_GOOD) | (1 << WW_LT_CALOISO);
+	  ret |= CUT_BIT(WW_LT_GOOD) | CUT_BIT(WW_LT_CALOISO) | CUT_BIT(WW_EL_CALOISO);
 	  n_caloiso_el++;
      }
      if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && goodElectronIsolated(cms2.hyp_ll_index()[i_hyp], true)) {
-	  ret |= (1 << WW_LL_GOOD) | (1 << WW_LL_CALOISO);
+	  ret |= CUT_BIT(WW_LL_GOOD) | CUT_BIT(WW_LL_CALOISO) | CUT_BIT(WW_EL_CALOISO);
 	  n_caloiso_el++;
      }     
      if (n_iso_mu + n_caloiso_el >= 1)
-	  ret |= (1 << WW_ONE_CALOISO);
+ 	  ret |= (CUT_BIT(WW_ONE_CALOISO));
      if (n_iso_mu + n_caloiso_el >= 2)
-	  ret |= (1 << WW_TWO_CALOISO);
+ 	  ret |= (CUT_BIT(WW_TWO_CALOISO));
      // jet veto
      if (cms2.hyp_njets()[i_hyp] == 0)
-	  ret |= (1 << WW_PASS_JETVETO_CALO);
+	  ret |= (CUT_BIT(WW_PASS_JETVETO_CALO));
      // track jets
      if (passTrkJetVeto(i_hyp))
-	  ret |= (1 << WW_PASS_JETVETO_TRACKJETS);
+	  ret |= (CUT_BIT(WW_PASS_JETVETO_TRACKJETS));
      // muon b tag, with 20 GeV upper cut on the muon pt
      if (passMuonBVeto(i_hyp, true))
-	  ret |= (1 << WW_PASS_MUON_B_VETO);
-     else ret |= (1 << WW_MUON_TAGGED);
+	  ret |= (CUT_BIT(WW_PASS_MUON_B_VETO));
+     else ret |= (CUT_BIT(WW_MUON_TAGGED));
      // muon b tag, with no upper cut on the muon pt
      if (passMuonBVeto(i_hyp, false))
-	  ret |= (1 << WW_PASS_MUON_B_VETO_WITHOUT_PTCUT);
-     else ret |= (1 << WW_MUON_TAGGED_WITHOUT_PTCUT);
+	  ret |= (CUT_BIT(WW_PASS_MUON_B_VETO_WITHOUT_PTCUT));
+     else ret |= (CUT_BIT(WW_MUON_TAGGED_WITHOUT_PTCUT));
      // Z veto
      if (cms2.hyp_type()[i_hyp] == 1 || cms2.hyp_type()[i_hyp] == 2 ||
 	 not inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))
-	  ret |= (1 << WW_PASS_ZVETO);
+	  ret |= (CUT_BIT(WW_PASS_ZVETO));
      // Z veto using additional leptons in the event
      if (not additionalZveto())
-	  ret |= (1 << WW_PASS_ADDZVETO);
+	  ret |= (CUT_BIT(WW_PASS_ADDZVETO));
      // any additional high-pt, isolated leptons?
      if (passTriLepVeto(i_hyp))
-	  ret |= (1 << WW_PASS_EXTRALEPTON_VETO);
+	  ret |= (CUT_BIT(WW_PASS_EXTRALEPTON_VETO));
      // the return value gets cached, too
      cuts_passed = ret;
 
@@ -170,29 +211,29 @@ cuts_t WWLooperBase::DilepSelect (int i_hyp)
      // in addition, for the muons, check that they pass tight+iso
      // (since the fake rate is electron only right now)
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 13) {
-	  if ((cuts_passed & (1 << WW_LT_GOOD | 1 << WW_LT_ISO)) != 
-	      (1 << WW_LT_GOOD | 1 << WW_LT_ISO))
+	  if ((cuts_passed & (CUT_BIT(WW_LT_GOOD) | CUT_BIT(WW_LT_ISO))) != 
+	      (CUT_BIT(WW_LT_GOOD) | CUT_BIT(WW_LT_ISO)))
 	       return ret;
      }
      if (abs(cms2.hyp_ll_id()[i_hyp]) == 13) {
-	  if ((cuts_passed & (1 << WW_LL_GOOD | 1 << WW_LL_ISO)) != 
-	      (1 << WW_LL_GOOD | 1 << WW_LL_ISO))
+	  if ((cuts_passed & (CUT_BIT(WW_LL_GOOD) | CUT_BIT(WW_LL_ISO))) != 
+	      (CUT_BIT(WW_LL_GOOD) | CUT_BIT(WW_LL_ISO)))
 	       return ret;
      }
      // now set the fake flags for the electron
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
-	  if (isFakeable_v2_2(cms2.hyp_lt_index()[i_hyp]))
-	       ret |= 1 << WW_ELFAKE_FAKEABLE_OBJECT;
+	  if (isFakeable(cms2.hyp_lt_index()[i_hyp]))
+	       ret |= CUT_BIT(WW_ELFAKE_FAKEABLE_OBJECT);
 	  if (isNumeratorElectron(cms2.hyp_lt_index()[i_hyp]))
-	       ret |= 1 << WW_ELFAKE_NUMERATOR;
-	  else ret |= 1 << WW_ELFAKE_NOT_NUMERATOR;
+	       ret |= CUT_BIT(WW_ELFAKE_NUMERATOR);
+	  else ret |= CUT_BIT(WW_ELFAKE_NOT_NUMERATOR);
      } else {
 	  if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
-	       if (isFakeable_v2_2(cms2.hyp_ll_index()[i_hyp]))
-		    ret |= 1 << WW_ELFAKE_FAKEABLE_OBJECT;
+	       if (isFakeable(cms2.hyp_ll_index()[i_hyp]))
+		    ret |= CUT_BIT(WW_ELFAKE_FAKEABLE_OBJECT);
 	       if (isNumeratorElectron(cms2.hyp_ll_index()[i_hyp]))
-		    ret |= 1 << WW_ELFAKE_NUMERATOR;
-	       else ret |= 1 << WW_ELFAKE_NOT_NUMERATOR;
+		    ret |= CUT_BIT(WW_ELFAKE_NUMERATOR);
+	       else ret |= CUT_BIT(WW_ELFAKE_NOT_NUMERATOR);
 	  }
      }
 
@@ -265,10 +306,12 @@ void WWLooperBase::FillHists (int i_hyp)
 
      // Relative isolation... electrons
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
-	  heleRelIso.Fill(cuts_passed, myType, reliso_lt(i_hyp), weight);
+	  heleRelIso.Fill(cuts_passed, myType, reliso_lt(i_hyp, true), weight);
+	  heleRelIsoTrk.Fill(cuts_passed, myType, reliso_lt(i_hyp, false), weight);
      }
      if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
-	  heleRelIso.Fill(cuts_passed, myType, reliso_ll(i_hyp), weight);
+	  heleRelIso.Fill(cuts_passed, myType, reliso_ll(i_hyp, true), weight);
+	  heleRelIsoTrk.Fill(cuts_passed, myType, reliso_ll(i_hyp, false), weight);
      }
 
      // lower of the two isolations, regardless of species (used for Dumbo method)
@@ -310,11 +353,48 @@ void WWLooperBase::FillHists (int i_hyp)
 	       el_idx = cms2.hyp_lt_index()[i_hyp];
 	  }
 	  assert(el_idx != -1 && mu_idx != -1);
-	  hmuPdgId.Fill(myType, abs(cms2.mus_mc_id()[mu_idx]), weight);
-	  hmuMoPdgId.Fill(myType, abs(cms2.mus_mc_motherid()[mu_idx]), weight);
-	  helPdgId.Fill(myType, abs(cms2.els_mc_id()[el_idx]), weight);
-	  helMoPdgId.Fill(myType, abs(cms2.els_mc_motherid()[el_idx]), weight);
-	  helHE.Fill(cuts_passed, myType, cms2.els_hOverE()[el_idx], weight);
+	  hmuPdgId.Fill(cuts_passed, myType, abs(cms2.mus_mc_id()[mu_idx]), weight);
+	  hmuMoPdgId.Fill(cuts_passed, myType, abs(cms2.mus_mc_motherid()[mu_idx]), weight);
+	  helPdgId.Fill(cuts_passed, myType, abs(cms2.els_mc_id()[el_idx]), weight);
+	  helMoPdgId.Fill(cuts_passed, myType, abs(cms2.els_mc_motherid()[el_idx]), weight);
+	  helEop      .Fill(cuts_passed, myType, cms2.els_eOverPIn	()[el_idx], weight);
+	  held0	      .Fill(cuts_passed, myType, fabs(cms2.els_d0		()[el_idx]), weight);
+	  if ((cuts_passed & cuts) == cuts) {
+	       held0vsRelIso.Fill(fabs(cms2.els_d0		()[el_idx]), el_rel_iso(el_idx, true), weight);
+	       heldphiinvsRelIso.Fill(cms2.els_charge	()[el_idx] * cms2.els_dPhiIn	()[el_idx], el_rel_iso(el_idx, true), weight);
+	  }
+	  helfbrem    .Fill(cuts_passed, myType, cms2.els_fBrem		()[el_idx], weight);
+	  helHE       .Fill(cuts_passed, myType, cms2.els_hOverE	()[el_idx], weight);
+	  helsee      .Fill(cuts_passed, myType, cms2.els_sigmaEtaEta	()[el_idx], weight);
+	  if (cuts_passed & CUT_BIT(WW_EL_BARREL))
+	       helsppEB      .Fill(cuts_passed, myType, cms2.els_sigmaPhiPhi	()[el_idx], weight);
+	  else helsppEE      .Fill(cuts_passed, myType, cms2.els_sigmaPhiPhi	()[el_idx], weight);
+	  heldphiin   .Fill(cuts_passed, myType, cms2.els_charge	()[el_idx] * cms2.els_dPhiIn	()[el_idx], weight);
+	  heldetain   .Fill(cuts_passed, myType, cms2.els_dEtaIn	()[el_idx], weight);
+	  helEseedopin.Fill(cuts_passed, myType, cms2.els_eSeedOverPOut	()[el_idx], weight);
+// 	  if (cms2.els_mc_id()[el_idx] == 22 && (cuts_passed & cuts) == cuts)
+// 	       printf("run %10u, event %10u: weight %f\n", cms2.evt_run(), cms2.evt_event(),
+// 		      cms2.evt_scale1fb());
+     }
+
+     // coversions
+     if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
+	  const int conv = conversionPartner(cms2.hyp_lt_index()[i_hyp]);
+	  if (conv != -1) {
+	       const double dphi = conversionDeltaPhi(conv, cms2.hyp_lt_index()[i_hyp]);
+	       if (cms2.hyp_lt_id()[i_hyp] * cms2.trks_charge()[conv] > 0)
+		    helConvDeltaPhi_os.Fill(cuts_passed, myType, dphi, weight);
+	       else helConvDeltaPhi_ss.Fill(cuts_passed, myType, dphi, weight);
+	  }
+     }
+     if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
+	  const int conv = conversionPartner(cms2.hyp_ll_index()[i_hyp]);
+	  if (conv != -1) {
+	       const double dphi = conversionDeltaPhi(conv, cms2.hyp_ll_index()[i_hyp]);
+	       if (cms2.hyp_ll_id()[i_hyp] * cms2.trks_charge()[conv] > 0)
+		    helConvDeltaPhi_os.Fill(cuts_passed, myType, dphi, weight);
+	       else helConvDeltaPhi_ss.Fill(cuts_passed, myType, dphi, weight);
+	  }
      }
 }
 
