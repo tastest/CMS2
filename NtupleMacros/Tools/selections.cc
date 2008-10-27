@@ -159,17 +159,20 @@ bool supertightElectron (int index)
 //--------------------------------------------
 // Pass 2 MET selection
 //--------------------------------------------
-bool pass2Met (int i_hyp) {
+bool pass2Met (int i_hyp, const TVector3& corr) {
   // for e-e and mu-mu
+  TVector3 hyp_met;
+  hyp_met.SetPtEtaPhi(cms2.hyp_met()[i_hyp], 0, cms2.hyp_metPhi()[i_hyp]);
+  hyp_met += corr;
   if (cms2.hyp_type()[i_hyp] == 0 || cms2.hyp_type()[i_hyp] == 3) {
-    if (cms2.hyp_met()[i_hyp] < 30) return false;
+    if (hyp_met.Pt() < 30) return false;
     //    if ( fabs(hyp_p4[i_hyp]->mass()-90.0)<10.0) return false;
-    if( cms2.hyp_met()[i_hyp]/cms2.hyp_p4()[i_hyp].pt()<0.6 && 
-	acos(cos(cms2.hyp_metPhi()[i_hyp]-cms2.hyp_p4()[i_hyp].phi()-3.1416))<0.25 ) return false;
+    if( hyp_met.Pt()/cms2.hyp_p4()[i_hyp].pt()<0.6 && 
+	acos(cos(hyp_met.Phi()-cms2.hyp_p4()[i_hyp].phi()-3.1416))<0.25 ) return false;
   }
   // for e-mu and mu-e
   if (cms2.hyp_type()[i_hyp] == 1 || cms2.hyp_type()[i_hyp] == 2) {
-    if (cms2.hyp_met()[i_hyp] < 20) return false;
+    if (hyp_met.Pt() < 20) return false;
   }
   return true;
 }
@@ -199,12 +202,15 @@ double MetSpecial(double Met, double MetPhi, int i_hyp)
 // Pass 4 MET selection
 // Use MetSpecial from CDF for now
 //--------------------------------------------
-bool pass4Met(int i_hyp) {
-  double metspec = MetSpecial(cms2.hyp_met()[i_hyp], cms2.hyp_metPhi()[i_hyp], i_hyp);
+bool pass4Met(int i_hyp, const TVector3& corr) {
+  TVector3 hyp_met;
+  hyp_met.SetPtEtaPhi(cms2.hyp_met()[i_hyp], 0, cms2.hyp_metPhi()[i_hyp]);
+  hyp_met += corr;
+  double metspec = MetSpecial(hyp_met.Pt(), hyp_met.Phi(), i_hyp);
   if (cms2.hyp_type()[i_hyp] == 0 || cms2.hyp_type()[i_hyp] == 3) {
     if ( metspec < 20 ) return false;
     //if ( metspec < 20 && hyp_p4->mass() < 90 ) return false;
-    if ( cms2.hyp_met()[i_hyp] < 45 ) return false;
+    if ( hyp_met.Pt() < 45 ) return false;
   }
   else if (cms2.hyp_type()[i_hyp] == 1 || cms2.hyp_type()[i_hyp] == 2) {
     //if ( metspec < 20 && hyp_p4->mass() < 90 ) return false;
