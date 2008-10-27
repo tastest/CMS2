@@ -90,10 +90,17 @@ cuts_t WWLooperBase::DilepSelect (int i_hyp)
 	  ret |= (CUT_BIT(WW_OPP_SIGN));
      if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) 
 	  ret |= (CUT_BIT(WW_SAME_SIGN));
+     // track corrected MET
+     const TVector3 trkCorr = correctMETforTracks();
+     
+     if (pass4Met(i_hyp, trkCorr))
+	  ret |= (CUT_BIT(WW_PASS4_METCORR));
+     if (pass2Met(i_hyp, trkCorr))
+	  ret |= (CUT_BIT(WW_PASS2_METCORR));
      // MET
-     if (pass4Met(i_hyp))
+     if (pass4Met(i_hyp, TVector3()))
 	  ret |= (CUT_BIT(WW_PASS4_MET));
-     if (pass2Met(i_hyp))
+     if (pass2Met(i_hyp, TVector3()))
 	  ret |= (CUT_BIT(WW_PASS2_MET));
      // muon quality
      int n_iso_mu = 0;
