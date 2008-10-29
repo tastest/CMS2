@@ -94,7 +94,7 @@ int WW_NoLLPtCut ()
 
 int WW_Results ()
 {
-     return run<WWResultsLooper>(ww_baseline_cuts & ~(CUT_BIT(WW_PASS_MUON_B_VETO_WITHOUT_PTCUT) | CUT_BIT(WW_PASS4_MET)), "WW_Results", 1 << LOOP_WW | 1 << LOOP_DYTT);
+     return run<WWResultsLooper>(ww_baseline_cuts, "WW_Results");
 }
 
 int WW_NoMuTag ()
