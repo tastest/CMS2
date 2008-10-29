@@ -48,9 +48,18 @@ bool inZmassWindow (float mass) {
 // Electron ID without isolation
 //----------------------------------------------------------------
 bool goodElectronWithoutIsolation(int index) {
+     if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
   if ( cms2.els_tightId().at(index)     !=  1) return false;
   if ( cms2.els_closestMuon().at(index) != -1) return false;
   if ( abs(cms2.els_d0().at(index)) > 0.025)   return false;
+  return true;
+}
+//----------------------------------------------------------------
+// Electron ID without isolation or d0 cut
+//----------------------------------------------------------------
+bool goodElectronWithoutIsolationWithoutd0(int index) {
+  if ( cms2.els_tightId().at(index)     !=  1) return false;
+  if ( cms2.els_closestMuon().at(index) != -1) return false;
   return true;
 }
 //----------------------------------------------------------------
