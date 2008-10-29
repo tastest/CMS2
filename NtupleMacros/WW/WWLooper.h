@@ -19,9 +19,12 @@ enum {
      WW_OPP_SIGN,
      WW_PASS2_MET,
      WW_PASS4_MET,
+     WW_PASS2_METCORR,
+     WW_PASS4_METCORR,
      WW_LT_GOOD,
      WW_LL_GOOD,
      WW_EL_GOOD,
+     WW_EL_GOOD_NO_D0,
      WW_MU_GOOD,
      WW_ONE_SUPERTIGHT,
      WW_TWO_SUPERTIGHT,
@@ -37,6 +40,7 @@ enum {
      WW_TWO_CALOISO,
      WW_EL_CALOISO,
      WW_PASS_ZVETO,
+     WW_IN_Z_WINDOW,
      WW_PASS_ADDZVETO,
      WW_PASS_JETVETO_CALO,
      WW_PASS_JETVETO_TRACKJETS,
@@ -106,9 +110,21 @@ const static cuts_t ww_old_baseline_cuts =
 
 const static cuts_t ww_ss_baseline_cuts = (ww_baseline_cuts & ~(CUT_BIT(WW_OPP_SIGN))) | (CUT_BIT(WW_SAME_SIGN));
 
-const static cuts_t ww_dumbo_cuts = (ww_baseline_cuts & ~(CUT_BIT(WW_LT_ISO) | CUT_BIT(WW_LL_ISO) |
-							  CUT_BIT(WW_LT_CALOISO) | CUT_BIT(WW_LL_CALOISO))) | // relax iso cuts
-     (CUT_BIT(WW_MU_ISO)); // so only muon has to be isolated
+const static cuts_t ww_dumbo_cuts = 
+     (CUT_BIT(WW_LT_PT)		) | 
+     (CUT_BIT(WW_LL_PT)		) | 
+     (CUT_BIT(WW_OPP_SIGN)		) | 
+     (CUT_BIT(WW_PASS4_MET)		) |  
+     (CUT_BIT(WW_PASS2_MET)		) |  
+     (CUT_BIT(WW_MU_GOOD)		) | 
+     (CUT_BIT(WW_EL_GOOD)		) | 
+     (CUT_BIT(WW_MU_ISO)	) |  
+     (CUT_BIT(WW_PASS_ADDZVETO)	) | 
+     (CUT_BIT(WW_PASS_JETVETO_CALO)	) |
+     (CUT_BIT(WW_PASS_JETVETO_TRACKJETS)	) |  
+     (CUT_BIT(WW_PASS_MUON_B_VETO_WITHOUT_PTCUT)	);   
+
+const static cuts_t ww_dumbo_cuts_nod0 = (ww_dumbo_cuts & ~CUT_BIT(WW_EL_GOOD)) | CUT_BIT(WW_EL_GOOD_NO_D0);
 
 const static cuts_t ww_ss_dumbo_cuts = (ww_dumbo_cuts & ~(CUT_BIT(WW_OPP_SIGN))) | (CUT_BIT(WW_SAME_SIGN));
 
@@ -132,6 +148,14 @@ const static cuts_t ww_baseline_cuts_nomet_nozveto = ww_baseline_cuts &
 
 const static cuts_t ww_baseline_cuts_nomet = ww_baseline_cuts & 
      ~(CUT_BIT(WW_PASS2_MET) | CUT_BIT(WW_PASS4_MET));
+
+const static cuts_t ww_baseline_cuts_zwindow = (ww_baseline_cuts & 
+						~(CUT_BIT(WW_PASS_ZVETO) | CUT_BIT(WW_PASS_ADDZVETO))) |
+		   CUT_BIT(WW_IN_Z_WINDOW);
+
+const static cuts_t ww_baseline_cuts_zwindow_trkcorr = (ww_baseline_cuts_zwindow & 
+							~(CUT_BIT(WW_PASS2_MET) | CUT_BIT(WW_PASS4_MET))) |
+		   CUT_BIT(WW_PASS2_METCORR) | CUT_BIT(WW_PASS4_METCORR);
 
 class WWLooperBase : public LooperBase {
 // WW looper base class.  
@@ -209,7 +233,8 @@ protected:
      // for conversion killing
      NMinus1Hist	helConvDeltaPhi_ss,
  	  helConvDeltaPhi_os;
-     TH2F	held0vsRelIso, heldphiinvsRelIso;
+     TH2F	held0vsRelIso, heldphiinvsRelIso,
+	  held0vsRelIsoMCgamma, heldphiinvsRelIsoMCgamma;
 
 protected:
      cuts_t		cuts_passed; 
