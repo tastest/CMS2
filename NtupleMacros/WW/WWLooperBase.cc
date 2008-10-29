@@ -7,6 +7,10 @@
 #include "CMS2.h"
 #include "WWLooper.h"
 
+static const double d0_bins[] = { 0, 0.025, 0.03, 0.055 };
+static const double dphiin_bins[] = { -0.04, 0, 0.04, 0.045, 0.085 };
+static const double iso_bins[] = { 0, 0.82, 0.9, 0.92, 1.0001};
+
 WWLooperBase::WWLooperBase (Sample s, cuts_t c, const char *fname) 
      : LooperBase(s),
        cuts(c),
@@ -24,7 +28,7 @@ WWLooperBase::WWLooperBase (Sample s, cuts_t c, const char *fname)
        helEta		(s, "elEta"           ,	 12	, -3, 3		, cuts, 0),
        hmuEta		(s, "muEta"           ,	 12	, -3, 3		, cuts, 0),
        hdphiLep		(s, "dphiLep"         ,	 50	, 0, M_PI	, cuts, 0	),
-       hdilMass		(s, "dilMass"         ,	 100	, 0, 300	, cuts, (CUT_BIT(WW_PASS_ZVETO)) | (CUT_BIT(WW_PASS_ADDZVETO)) 	),
+       hdilMass		(s, "dilMass"         ,	 100	, 0, 300	, cuts, CUT_BIT(WW_PASS_ZVETO) | CUT_BIT(WW_PASS_ADDZVETO) | CUT_BIT(WW_IN_Z_WINDOW)),
        hdilPt		(s, "dilPt"           ,	 100	, 0, 300	, cuts, 0	),
        hmet		(s, "met"             ,	 100	, 0, 200	, cuts, (CUT_BIT(WW_PASS4_MET)) | (CUT_BIT(WW_PASS2_MET))	),
        hmetSpec		(s, "metSpec"         ,	 100	, 0, 200	, cuts, (CUT_BIT(WW_PASS4_MET)) | (CUT_BIT(WW_PASS2_MET))      	),
@@ -61,8 +65,14 @@ WWLooperBase::WWLooperBase (Sample s, cuts_t c, const char *fname)
        helEseedopin	(s, "elEseedopin"     ,  10	, 0, 20	, cuts, (CUT_BIT(WW_LT_GOOD) | CUT_BIT(WW_LL_GOOD) | CUT_BIT(WW_LT_ISO) | CUT_BIT(WW_LL_ISO) | CUT_BIT(WW_LT_CALOISO) | CUT_BIT(WW_LL_CALOISO))),
        helConvDeltaPhi_ss   	(s, "elConvDeltaPhi_ss"	    ,  10	, 0, 0.1, cuts, 0),
        helConvDeltaPhi_os	(s, "elConvDeltaPhi_os"     ,  10	, 0, 0.1, cuts, 0),
-       held0vsRelIso (Form("%s_%s_em", s.name.c_str(), "d0vsRelIso"), ";d0;rel iso", 50, 0, 0.1, 41, 0, 1.025),
-       heldphiinvsRelIso (Form("%s_%s_em", s.name.c_str(), "dphiinvsRelIso"), ";dphiin;rel iso", 50, -0.1, 0.1, 41, 0, 1.025)
+//         held0vsRelIso (Form("%s_%s_em", s.name.c_str(), "d0vsRelIso"), ";d0;rel iso", 50, 0, 0.1, 41, 0, 1.025),
+//        heldphiinvsRelIso (Form("%s_%s_em", s.name.c_str(), "dphiinvsRelIso"), ";dphiin;rel iso", 50, -0.1, 0.1, 41, 0, 1.025),
+       held0vsRelIso (Form("%s_%s_em", s.name.c_str(), "d0vsRelIso"), ";d0;rel iso", sizeof(d0_bins) / sizeof(double) - 1, d0_bins, sizeof(iso_bins) / sizeof(double) - 1, iso_bins),
+       heldphiinvsRelIso (Form("%s_%s_em", s.name.c_str(), "dphiinvsRelIso"), ";dphiin;rel iso", sizeof(dphiin_bins) / sizeof(double) - 1, dphiin_bins, sizeof(iso_bins) / sizeof(double) - 1, iso_bins),
+       held0vsRelIsoMCgamma (Form("%s_%s_em", s.name.c_str(), "d0vsRelIsoMCgamma"), ";d0;rel iso", sizeof(d0_bins) / sizeof(double) - 1, d0_bins, sizeof(iso_bins) / sizeof(double) - 1, iso_bins),
+       heldphiinvsRelIsoMCgamma (Form("%s_%s_em", s.name.c_str(), "dphiinvsRelIsoMCgamma"), ";dphiin;rel iso", sizeof(dphiin_bins) / sizeof(double) - 1, dphiin_bins, sizeof(iso_bins) / sizeof(double) - 1, iso_bins)
+//        held0vsRelIso (Form("%s_%s_em", s.name.c_str(), "d0vsRelIso"), ";d0;rel iso", sizeof(d0_bins) / sizeof(double) - 1, d0_bins, 101, 0, 1.01),
+//        heldphiinvsRelIso (Form("%s_%s_em", s.name.c_str(), "dphiinvsRelIso"), ";dphiin;rel iso", sizeof(dphiin_bins) / sizeof(double) - 1, dphiin_bins, 101, 0, 1.01)
 {
      memset(cands_passing	, 0, sizeof(cands_passing       ));
      memset(cands_passing_w2	, 0, sizeof(cands_passing_w2    ));
@@ -122,18 +132,23 @@ cuts_t WWLooperBase::DilepSelect (int i_hyp)
 	  ret |= CUT_BIT(WW_LT_GOOD) | CUT_BIT(WW_EL_GOOD);
      if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && goodElectronWithoutIsolation(cms2.hyp_ll_index()[i_hyp]) )
 	  ret |= CUT_BIT(WW_LL_GOOD) | CUT_BIT(WW_EL_GOOD);
-     if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && goodElectronIsolated(cms2.hyp_lt_index()[i_hyp], false)) {
-	  ret |= CUT_BIT(WW_LT_GOOD) | CUT_BIT(WW_LT_ISO) | CUT_BIT(WW_EL_GOOD) | CUT_BIT(WW_EL_ISO);
+     if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && passElectronIsolation(cms2.hyp_lt_index()[i_hyp], false)) {
+	  ret |= CUT_BIT(WW_LT_ISO) | CUT_BIT(WW_EL_ISO);
 	  n_iso_el++;
      }
-     if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && goodElectronIsolated(cms2.hyp_ll_index()[i_hyp], false)) {
-	  ret |= CUT_BIT(WW_LL_GOOD) | CUT_BIT(WW_LL_ISO) | CUT_BIT(WW_EL_GOOD) | CUT_BIT(WW_EL_ISO);
+     if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && passElectronIsolation(cms2.hyp_ll_index()[i_hyp], false)) {
+	  ret |= CUT_BIT(WW_LL_ISO) | CUT_BIT(WW_EL_ISO);
 	  n_iso_el++;
      }     
      if (n_iso_mu + n_iso_el >= 1)
 	  ret |= (CUT_BIT(WW_ONE_ISO));
      if (n_iso_mu + n_iso_el >= 2)
 	  ret |= (CUT_BIT(WW_TWO_ISO));
+     // electrons without d0
+     if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && goodElectronWithoutIsolationWithoutd0(cms2.hyp_lt_index()[i_hyp]) )
+	  ret |= CUT_BIT(WW_EL_GOOD_NO_D0);
+     if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && goodElectronWithoutIsolationWithoutd0(cms2.hyp_ll_index()[i_hyp]) )
+	  ret |= CUT_BIT(WW_EL_GOOD_NO_D0);
      // supertight cuts (only for electrons)
      int n_supertight_el = 0;
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
@@ -196,9 +211,11 @@ cuts_t WWLooperBase::DilepSelect (int i_hyp)
 	  ret |= (CUT_BIT(WW_PASS_MUON_B_VETO_WITHOUT_PTCUT));
      else ret |= (CUT_BIT(WW_MUON_TAGGED_WITHOUT_PTCUT));
      // Z veto
-     if (cms2.hyp_type()[i_hyp] == 1 || cms2.hyp_type()[i_hyp] == 2 ||
-	 not inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))
+     if (cms2.hyp_type()[i_hyp] == 1 || cms2.hyp_type()[i_hyp] == 2)
 	  ret |= (CUT_BIT(WW_PASS_ZVETO));
+     else if (not inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))
+	  ret |= (CUT_BIT(WW_PASS_ZVETO));
+     else ret |= (CUT_BIT(WW_IN_Z_WINDOW));
      // Z veto using additional leptons in the event
      if (not additionalZveto())
 	  ret |= (CUT_BIT(WW_PASS_ADDZVETO));
@@ -369,6 +386,10 @@ void WWLooperBase::FillHists (int i_hyp)
 	  if ((cuts_passed & cuts) == cuts) {
 	       held0vsRelIso.Fill(fabs(cms2.els_d0		()[el_idx]), el_rel_iso(el_idx, true), weight);
 	       heldphiinvsRelIso.Fill(cms2.els_charge	()[el_idx] * cms2.els_dPhiIn	()[el_idx], el_rel_iso(el_idx, true), weight);
+	       if (abs(cms2.els_mc_id()[el_idx]) == 22) {
+		    held0vsRelIsoMCgamma.Fill(fabs(cms2.els_d0		()[el_idx]), el_rel_iso(el_idx, true), weight);
+		    heldphiinvsRelIsoMCgamma.Fill(cms2.els_charge	()[el_idx] * cms2.els_dPhiIn	()[el_idx], el_rel_iso(el_idx, true), weight);
+	       }
 	  }
 	  helfbrem    .Fill(cuts_passed, myType, cms2.els_fBrem		()[el_idx], weight);
 	  helHE       .Fill(cuts_passed, myType, cms2.els_hOverE	()[el_idx], weight);
