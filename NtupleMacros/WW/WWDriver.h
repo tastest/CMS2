@@ -20,6 +20,7 @@ int WW_TopEstimate_oldcuts ();
 int WW_SS_Results (); 		// same-sign control sample 
 int WW_SS_NoCaloIso (); 		// same-sign control sample 
 int WW_Wjets_Dumbo ();		// get W+jets estimate from the Dumbo method
+int WW_Wjets_Dumbo_nod0 ();		// get W+jets estimate from the Dumbo method, no d0 cut (2D dumbo)
 int WW_Wjets_SS_Dumbo ();	// get W+jets estimate in same-sign control sample from the Dumbo method
 int WW_Wjets_Fakerates ();	// get W+jets estimate from el fake rate
 int WW_Wjets_Fakerates_barrel ();	// get W+jets estimate from el fake rate (barrel only)
@@ -42,5 +43,7 @@ int WW_Wjets_SS_FOs_supertight ();
 int WW_DY_in_emu ();
 int WW_TrkCorrMET_NoMetNoZVeto ();
 int WW_TrkCorrMET_NoMet ();
+int WW_In_Zwindow ();
+int WW_In_Zwindow_TrkCorr ();
 
 #endif

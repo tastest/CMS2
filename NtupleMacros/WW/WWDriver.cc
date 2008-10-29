@@ -94,7 +94,7 @@ int WW_NoLLPtCut ()
 
 int WW_Results ()
 {
-     return run<WWResultsLooper>(ww_baseline_cuts, "WW_Results");
+     return run<WWResultsLooper>(ww_baseline_cuts & ~(CUT_BIT(WW_PASS_MUON_B_VETO_WITHOUT_PTCUT) | CUT_BIT(WW_PASS4_MET)), "WW_Results", 1 << LOOP_WW | 1 << LOOP_DYTT);
 }
 
 int WW_NoMuTag ()
@@ -288,6 +288,11 @@ int WW_Wjets_Dumbo ()
      return run<WWResultsLooper>(ww_dumbo_cuts, "WW_Wjets_Dumbo", 1 << LOOP_WW | 1 << LOOP_WJETS);
 }
 
+int WW_Wjets_Dumbo_nod0 ()
+{
+     return run<WWResultsLooper>(ww_dumbo_cuts_nod0, "WW_Wjets_Dumbo_nod0", 1 << LOOP_WW | 1 << LOOP_WJETS);
+}
+
 int WW_Wjets_SS_Dumbo ()
 {
      WWDumboLooper looper_ww		(fWW()		, ww_ss_dumbo_cuts, "WW_SS_Dumbo.log");	looper_ww          .Loop();
@@ -299,7 +304,7 @@ int WW_Wjets_SS_Dumbo ()
 int WW_Wjets_Numerator ()
 {
      return run<WWResultsLooper>(ww_fakerate_cuts | CUT_BIT(WW_ELFAKE_NUMERATOR), "WW_Wjets_Numerator",
-				 1 << LOOP_WW | 1 << LOOP_WJETS);
+				 1 << LOOP_WW | 1 << LOOP_WJETS | 0xffffffff);
 }
 
 int WW_Wjets_Numerator_barrel ()
@@ -325,7 +330,7 @@ int WW_Wjets_Numerator_barrel_supertight_caloiso ()
 int WW_Wjets_Fakerates ()
 {
      return run<WWFakeRateLooper>(ww_fakerate_cuts | CUT_BIT(WW_ELFAKE_FAKEABLE_OBJECT) | CUT_BIT(WW_ELFAKE_NOT_NUMERATOR), 
-				  "WW_Wjets_Fakerates", 1 | LOOP_WW | 1 << LOOP_WJETS | 0xffffffff & 0);
+				  "WW_Wjets_Fakerates", 1 | LOOP_WW | 1 << LOOP_WJETS | 0xffffffff );
 }
 
 int WW_Wjets_Fakerates_barrel ()
@@ -355,7 +360,7 @@ int WW_Wjets_FOs_not_numerator ()
 
 int WW_Wjets_SS_Numerator ()
 {
-     return run<WWResultsLooper>(ww_ss_fakerate_cuts | CUT_BIT(WW_ELFAKE_NUMERATOR), "WW_Wjets_SS_Numerator", 1 << LOOP_WW | 1 << LOOP_WJETS);
+     return run<WWResultsLooper>(ww_ss_fakerate_cuts | CUT_BIT(WW_ELFAKE_NUMERATOR), "WW_Wjets_SS_Numerator", 1 << LOOP_WW | 1 << LOOP_WJETS & 0xffffffff);
 }
 
 int WW_Wjets_SS_Numerator_barrel ()
@@ -379,7 +384,7 @@ int WW_Wjets_SS_Numerator_barrel_supertight_caloiso ()
 int WW_Wjets_SS_Fakerates ()
 {
      return run<WWFakeRateLooper>(ww_ss_fakerate_cuts | CUT_BIT(WW_ELFAKE_FAKEABLE_OBJECT) | CUT_BIT(WW_ELFAKE_NOT_NUMERATOR), 
-				  "WW_Wjets_SS_Fakerates", 1 << LOOP_WW | 1 << LOOP_WJETS | 0xffffffff & 0);
+				  "WW_Wjets_SS_Fakerates", 1 << LOOP_WW | 1 << LOOP_WJETS | 0xffffffff);
 }
 
 int WW_Wjets_SS_Fakerates_barrel ()
@@ -423,3 +428,14 @@ int WW_TrkCorrMET_NoMet ()
 {
      return run<WWResultsLooper>(ww_baseline_cuts_nomet, "WW_TrkCorrMET_NoMet", 1 << LOOP_WW | 1 << LOOP_DYEE | 1 << LOOP_DYMM | 1 << LOOP_DYTT);
 }
+
+int WW_In_Zwindow ()
+{
+     return run<WWResultsLooper>(ww_baseline_cuts_zwindow, "WW_In_Zwindow");
+}
+
+int WW_In_Zwindow_TrkCorr ()
+{
+     return run<WWResultsLooper>(ww_baseline_cuts_zwindow_trkcorr, "WW_In_Zwindow_TrkCorr");
+}
+
