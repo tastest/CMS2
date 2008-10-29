@@ -28,22 +28,22 @@ class NMinus1Hist {
 public:
      NMinus1Hist (const Sample &, const std::string &name, 
 		  int bins, double min, double max,
-		  uint32 cuts, uint32 cut_mask);
+		  cuts_t cuts, cuts_t cut_mask);
      NMinus1Hist (const Sample &, const std::string &name, 
 		  int bins, double min, double max,
-		  uint32 cuts, std::vector<uint32> cut_mask, 
+		  cuts_t cuts, std::vector<cuts_t> cut_mask, 
 		  std::vector<std::string> cut_names = std::vector<std::string>());
      virtual ~NMinus1Hist () { }
-     void		Fill (uint32 cuts_passed, enum DileptonHypType, double, 
+     void		Fill (cuts_t cuts_passed, enum DileptonHypType, double, 
 			      double w = 1);
      DileptonHist	&N () 		{ return h_N; }
      DileptonHist	&NMinus1 ()	{ return *h_NMinus1[0]; }
      operator const DileptonHist & () const { return h_N; }
 
 protected:
-     uint32		cuts;
-     std::vector<uint32> cut_mask;
-     std::vector<uint32> mask;
+     cuts_t		cuts;
+     std::vector<cuts_t> cut_mask;
+     std::vector<cuts_t> mask;
      DileptonHist	h_N;
      std::vector<DileptonHist *> h_NMinus1;
 };
