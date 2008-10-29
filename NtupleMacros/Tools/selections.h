@@ -4,6 +4,7 @@
 bool inZmassWindow (float mass);
 bool supertightElectron (int index);
 bool goodElectronWithoutIsolation(int index);
+bool goodElectronWithoutIsolationWithoutd0(int index);
 bool goodMuonWithoutIsolation(int index);
 bool passElectronIsolation(int index, bool use_calo_iso = false);
 bool passElectronIsolationLoose(int index, bool use_calo_iso = false);
