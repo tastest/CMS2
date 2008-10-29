@@ -6,7 +6,7 @@ using std::string;
 
 NMinus1Hist::NMinus1Hist (const Sample &s, const std::string &name, 
 	     int bins, double min, double max,
-	     uint32 cuts_, uint32 cut_mask_)
+	     cuts_t cuts_, cuts_t cut_mask_)
      : cuts(cuts_),
        h_N(s, name, bins, min, max)
 {
@@ -21,7 +21,7 @@ NMinus1Hist::NMinus1Hist (const Sample &s, const std::string &name,
 
 NMinus1Hist::NMinus1Hist (const Sample &s, const std::string &name, 
 	     int bins, double min, double max,
-	     uint32 cuts_, vector<uint32> cut_mask_,
+	     cuts_t cuts_, vector<cuts_t> cut_mask_,
 	     std::vector<std::string> cut_names)
      : cuts(cuts_),
        cut_mask(cut_mask_),
@@ -29,7 +29,7 @@ NMinus1Hist::NMinus1Hist (const Sample &s, const std::string &name,
 {
      mask.reserve(cut_mask.size());
      h_NMinus1.reserve(cut_mask.size());
-     for (vector<uint32>::const_iterator i = cut_mask.begin(); 
+     for (vector<cuts_t>::const_iterator i = cut_mask.begin(); 
 	  i != cut_mask.end(); ++i) {
 	  mask.push_back(cuts & ~*i);
      }
@@ -39,7 +39,7 @@ NMinus1Hist::NMinus1Hist (const Sample &s, const std::string &name,
      }
 }
 
-void NMinus1Hist::Fill (uint32 cuts_passed, enum DileptonHypType t, double x, 
+void NMinus1Hist::Fill (cuts_t cuts_passed, enum DileptonHypType t, double x, 
 			double w)
 {
      for (unsigned int i = 0; i < mask.size(); ++i) { 
