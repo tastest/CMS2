@@ -30,7 +30,7 @@ void correctMETmuons_crossedE(double& met, double& metPhi,
 bool isDYee();
 bool isDYmm();
 bool isDYtt();
-bool nTrkJets(int i_hyp);
+int nTrkJets(int i_hyp);
 bool passTrkJetVeto(int i_hyp);
 
 double mu_rel_iso (int index);

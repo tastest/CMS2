@@ -436,7 +436,7 @@ int NjetVeto(std::vector<TLorentzVector>& Jet, double min_et) {
   return njets;
 }
 
-bool nTrkJets(int i_hyp){
+int nTrkJets(int i_hyp){
   std::vector<TLorentzVector> trkjets;
   double jetet = 0;
   double jeteta = 3.0;
