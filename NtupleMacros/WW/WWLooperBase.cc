@@ -70,9 +70,11 @@ WWLooperBase::WWLooperBase (Sample s, cuts_t c, const char *fname)
        held0vsRelIso (Form("%s_%s_em", s.name.c_str(), "d0vsRelIso"), ";d0;rel iso", sizeof(d0_bins) / sizeof(double) - 1, d0_bins, sizeof(iso_bins) / sizeof(double) - 1, iso_bins),
        heldphiinvsRelIso (Form("%s_%s_em", s.name.c_str(), "dphiinvsRelIso"), ";dphiin;rel iso", sizeof(dphiin_bins) / sizeof(double) - 1, dphiin_bins, sizeof(iso_bins) / sizeof(double) - 1, iso_bins),
        held0vsRelIsoMCgamma (Form("%s_%s_em", s.name.c_str(), "d0vsRelIsoMCgamma"), ";d0;rel iso", sizeof(d0_bins) / sizeof(double) - 1, d0_bins, sizeof(iso_bins) / sizeof(double) - 1, iso_bins),
-       heldphiinvsRelIsoMCgamma (Form("%s_%s_em", s.name.c_str(), "dphiinvsRelIsoMCgamma"), ";dphiin;rel iso", sizeof(dphiin_bins) / sizeof(double) - 1, dphiin_bins, sizeof(iso_bins) / sizeof(double) - 1, iso_bins)
+       heldphiinvsRelIsoMCgamma (Form("%s_%s_em", s.name.c_str(), "dphiinvsRelIsoMCgamma"), ";dphiin;rel iso", sizeof(dphiin_bins) / sizeof(double) - 1, dphiin_bins, sizeof(iso_bins) / sizeof(double) - 1, iso_bins),
 //        held0vsRelIso (Form("%s_%s_em", s.name.c_str(), "d0vsRelIso"), ";d0;rel iso", sizeof(d0_bins) / sizeof(double) - 1, d0_bins, 101, 0, 1.01),
 //        heldphiinvsRelIso (Form("%s_%s_em", s.name.c_str(), "dphiinvsRelIso"), ";dphiin;rel iso", sizeof(dphiin_bins) / sizeof(double) - 1, dphiin_bins, 101, 0, 1.01)
+       htrkCalodRvsPtSum	(Form("%s_%s_em", s.name.c_str(), "trkCalodRvsPtSum"), ";pt sum;#DeltaR", 10, 0, 30, 60, 0, M_PI),
+       hCaloEtaPt	(Form("%s_%s_em", s.name.c_str(), "CaloEtaPt"), ";pt;#eta", 10, 0, 30, 10, -5, 5)
 {
      memset(cands_passing	, 0, sizeof(cands_passing       ));
      memset(cands_passing_w2	, 0, sizeof(cands_passing_w2    ));
@@ -89,6 +91,11 @@ WWLooperBase::WWLooperBase (Sample s, cuts_t c, const char *fname)
 cuts_t WWLooperBase::DilepSelect (int i_hyp)
 {
      cuts_t ret = 0;
+     const enum DileptonHypType myType = hyp_typeToHypType(cms2.hyp_type()[i_hyp]);
+
+     // enough tracks?
+     if (cms2.trks_trk_p4().size() > 2)
+	  ret |= CUT_BIT(WW_MORE_THAN_TWO_TRACKS);
 
      // pt cuts
      if (cms2.hyp_lt_p4()[i_hyp].pt() > 20.0) 
@@ -115,15 +122,15 @@ cuts_t WWLooperBase::DilepSelect (int i_hyp)
      // muon quality
      int n_iso_mu = 0;
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 13 && goodMuonWithoutIsolation(cms2.hyp_lt_index()[i_hyp]) ) 
-	  ret |= CUT_BIT(WW_LT_GOOD) | CUT_BIT(WW_MU_GOOD);
+	  ret |= CUT_BIT(WW_LT_GOOD) | CUT_BIT(WW_LT_TIGHT_DPHIIN)  | CUT_BIT(WW_MU_GOOD);
      if (abs(cms2.hyp_ll_id()[i_hyp]) == 13 && goodMuonWithoutIsolation(cms2.hyp_ll_index()[i_hyp]) ) 
-	  ret |= CUT_BIT(WW_LL_GOOD) | CUT_BIT(WW_MU_GOOD);
+	  ret |= CUT_BIT(WW_LL_GOOD) | CUT_BIT(WW_LL_TIGHT_DPHIIN)  | CUT_BIT(WW_MU_GOOD);
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 13 && goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) {
-	  ret |= CUT_BIT(WW_LT_GOOD) | CUT_BIT(WW_LT_ISO) | CUT_BIT(WW_MU_GOOD) | CUT_BIT(WW_MU_ISO);
+	  ret |= CUT_BIT(WW_LT_GOOD) | CUT_BIT(WW_LT_TIGHT_DPHIIN)  | CUT_BIT(WW_LT_ISO) | CUT_BIT(WW_MU_GOOD) | CUT_BIT(WW_MU_ISO);
 	  n_iso_mu++;
      }
      if (abs(cms2.hyp_ll_id()[i_hyp]) == 13 && goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) ) {
-	  ret |= CUT_BIT(WW_LL_GOOD) | CUT_BIT(WW_LL_ISO) | CUT_BIT(WW_MU_GOOD) | CUT_BIT(WW_MU_ISO);
+	  ret |= CUT_BIT(WW_LL_GOOD) | CUT_BIT(WW_LL_TIGHT_DPHIIN)  | CUT_BIT(WW_LL_ISO) | CUT_BIT(WW_MU_GOOD) | CUT_BIT(WW_MU_ISO);
 	  n_iso_mu++;
      }
      // electron quality
@@ -167,6 +174,17 @@ cuts_t WWLooperBase::DilepSelect (int i_hyp)
 	  ret |= CUT_BIT(WW_ONE_SUPERTIGHT);
      if (n_supertight_el >= 2)
    	  ret |= CUT_BIT(WW_TWO_SUPERTIGHT);
+     // supertight dphiin cut
+     if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
+	  if (deltaPhiInElectron(cms2.hyp_lt_index()[i_hyp])) {
+	       ret |= CUT_BIT(WW_LT_TIGHT_DPHIIN);
+	  }
+     }
+     if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
+	  if (deltaPhiInElectron(cms2.hyp_ll_index()[i_hyp])) {
+	       ret |= CUT_BIT(WW_LL_TIGHT_DPHIIN);
+	  }
+     }
      // barrel
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
 	  if (fabs(cms2.els_p4()[cms2.hyp_lt_index()[i_hyp]].eta()) < 1.479)
@@ -222,6 +240,12 @@ cuts_t WWLooperBase::DilepSelect (int i_hyp)
      // any additional high-pt, isolated leptons?
      if (passTriLepVeto(i_hyp))
 	  ret |= (CUT_BIT(WW_PASS_EXTRALEPTON_VETO));
+
+     if (myType == DILEPTON_MUMU) { // don't want to deal with electron overlap right now
+	  if (passCaloTrkjetCombo())
+	       ret |= CUT_BIT(WW_PASS_JETVETO_CALOTRACKJETS_COMBO);
+     }
+
      // the return value gets cached, too
      cuts_passed = ret;
 
@@ -229,7 +253,6 @@ cuts_t WWLooperBase::DilepSelect (int i_hyp)
      // special handling for the fake rate cuts for now, because they
      // only work for emu
      //*****************************************************************
-     const enum DileptonHypType myType = hyp_typeToHypType(cms2.hyp_type()[i_hyp]);
      if (myType != DILEPTON_EMU)
 	  return ret;
      // in addition, for the muons, check that they pass tight+iso
@@ -423,6 +446,41 @@ void WWLooperBase::FillHists (int i_hyp)
 		    helConvDeltaPhi_os.Fill(cuts_passed, myType, dphi, weight);
 	       else helConvDeltaPhi_ss.Fill(cuts_passed, myType, dphi, weight);
 	  }
+     }
+
+     if ((cuts_passed & cuts) == cuts && myType == DILEPTON_MUMU) {
+	       // get rid of anything near the hypo electrons
+// 	       if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) 
+// 		    if (ROOT::Math::VectorUtil::DeltaR(cms2.trkjets_p4()[j],
+// 						       cms2.hyp_lt_p4()[i_hyp]) < 0.4)
+// 			 continue;
+// 	       if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) 
+// 		    if (ROOT::Math::VectorUtil::DeltaR(cms2.trkjets_p4()[j],
+// 						       cms2.hyp_ll_p4()[i_hyp]) < 0.4)
+// 			 continue;
+	  double dr = 999;
+	  double max_sumpt = 0;
+	  for (unsigned int i = 0; i < cms2.jets_p4().size(); ++i) {
+	       hCaloEtaPt.Fill(cms2.jets_p4()[i].pt() * cms2.jets_tq_noCorrF()[i],
+			       cms2.jets_p4()[i].eta());
+	       double min_dr = 999;
+	       double sumpt = 0;
+	       for (unsigned int j = 0; j < cms2.trkjets_p4().size(); ++j) {
+		    double dr = ROOT::Math::VectorUtil::DeltaR(cms2.trkjets_p4()[j],
+							       cms2.jets_p4()[i]);
+		    if (dr < min_dr) {
+			 min_dr = dr;
+			 sumpt = cms2.trkjets_p4()[j].pt() + 
+			      cms2.jets_p4()[i].pt() * cms2.jets_tq_noCorrF()[i];
+		    }
+// 		    printf("sumpt %f, dr %f\n", sumpt, dr);
+	       }
+	       if (sumpt > max_sumpt) {
+		    max_sumpt = sumpt;
+		    dr = min_dr;
+	       }
+	  }
+	  htrkCalodRvsPtSum.Fill(max_sumpt, dr, weight);
      }
 }
 

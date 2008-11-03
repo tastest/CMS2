@@ -25,6 +25,8 @@ enum {
      WW_LL_GOOD,
      WW_EL_GOOD,
      WW_EL_GOOD_NO_D0,
+     WW_LT_TIGHT_DPHIIN,
+     WW_LL_TIGHT_DPHIIN,
      WW_MU_GOOD,
      WW_ONE_SUPERTIGHT,
      WW_TWO_SUPERTIGHT,
@@ -44,6 +46,7 @@ enum {
      WW_PASS_ADDZVETO,
      WW_PASS_JETVETO_CALO,
      WW_PASS_JETVETO_TRACKJETS,
+     WW_PASS_JETVETO_CALOTRACKJETS_COMBO,
      WW_PASS_MUON_B_VETO,	
      WW_MUON_TAGGED,
      WW_PASS_MUON_B_VETO_WITHOUT_PTCUT,	
@@ -53,6 +56,7 @@ enum {
      WW_ELFAKE_FAKEABLE_OBJECT,
      WW_ELFAKE_NUMERATOR,
      WW_ELFAKE_NOT_NUMERATOR,
+     WW_MORE_THAN_TWO_TRACKS,
 };
 
 inline cuts_t CUT_BIT (int i)
@@ -62,6 +66,7 @@ inline cuts_t CUT_BIT (int i)
 
 // define useful cut combinations here
 const static cuts_t ww_baseline_cuts = 
+     (CUT_BIT(WW_MORE_THAN_TWO_TRACKS)) |
      (CUT_BIT(WW_LT_PT)		) | 
      (CUT_BIT(WW_LL_PT)		) | 
      (CUT_BIT(WW_OPP_SIGN)		) | 
@@ -71,12 +76,19 @@ const static cuts_t ww_baseline_cuts =
      (CUT_BIT(WW_LL_GOOD)		) | 
      (CUT_BIT(WW_LT_CALOISO)	) |  
      (CUT_BIT(WW_LL_CALOISO)	) |  
+     (CUT_BIT(WW_PASS_ZVETO)	) | 
      (CUT_BIT(WW_PASS_ADDZVETO)	) | 
      (CUT_BIT(WW_PASS_JETVETO_CALO)	) |
      (CUT_BIT(WW_PASS_JETVETO_TRACKJETS)	) |  
      (CUT_BIT(WW_PASS_MUON_B_VETO_WITHOUT_PTCUT)	);   
 /*      (CUT_BIT(WW_PASS_MUON_B_VETO_WITHOUT_PTCUT)	) | */
 /*      (CUT_BIT(WW_PASS_EXTRALEPTON_VETO)	);    */
+
+// baseline + tight delta phi in
+const static cuts_t ww_baseline_tight_dphiin_cuts = ww_baseline_cuts | CUT_BIT(WW_LT_TIGHT_DPHIIN) | CUT_BIT(WW_LL_TIGHT_DPHIIN);
+												   
+const static cuts_t ww_baseline_metcorr_cuts = (ww_baseline_cuts & ~(CUT_BIT(WW_PASS4_MET) | CUT_BIT(WW_PASS2_MET)))
+		   | CUT_BIT(WW_PASS4_METCORR) | CUT_BIT(WW_PASS2_METCORR);
 
 // these cuts are used to measure the mu tagging efficiency for top
 const static cuts_t ww_baseline_mu_tageff_cuts = ww_baseline_cuts & ~((CUT_BIT(WW_PASS_JETVETO_CALO)	) | 
@@ -235,6 +247,8 @@ protected:
  	  helConvDeltaPhi_os;
      TH2F	held0vsRelIso, heldphiinvsRelIso,
 	  held0vsRelIsoMCgamma, heldphiinvsRelIsoMCgamma;
+     TH2F	htrkCalodRvsPtSum;
+     TH2F	hCaloEtaPt;
 
 protected:
      cuts_t		cuts_passed; 
