@@ -429,6 +429,31 @@ int WW_TrkCorrMET_NoMet ()
      return run<WWResultsLooper>(ww_baseline_cuts_nomet, "WW_TrkCorrMET_NoMet", 1 << LOOP_WW | 1 << LOOP_DYEE | 1 << LOOP_DYMM | 1 << LOOP_DYTT);
 }
 
+int WW_TrkCorrMET ()
+{
+     return run<WWResultsLooper>(ww_baseline_cuts 
+        	                        & ~(CUT_BIT(WW_PASS2_MET))
+	                                & ~(CUT_BIT(WW_PASS4_MET))
+					| (CUT_BIT(WW_PASS2_METCORR))
+      					| (CUT_BIT(WW_PASS4_METCORR)),
+		"WW_TrkCorrMET", 1 << LOOP_WW | 1 << LOOP_DYEE | 1 << LOOP_DYMM | 1 << LOOP_DYTT);
+}
+
+int WW_DYEstimate_Results ()
+{
+
+        // cuts as in WW_Results but remove the Z VETO
+     return run<WWDYEstimateLooper>(ww_baseline_cuts
+                                & ~(CUT_BIT(WW_PASS_ADDZVETO))
+                                & ~(CUT_BIT(WW_PASS2_MET))
+                                & ~(CUT_BIT(WW_PASS4_MET))
+				& ~(CUT_BIT(WW_PASS_JETVETO_CALO))
+     				& ~(CUT_BIT(WW_PASS_JETVETO_TRACKJETS)),
+                                 "WW_DYEstimate_Results", 
+				1 << LOOP_WW | 1 << LOOP_DYEE | 1 << LOOP_DYMM | 1 << LOOP_DYTT);
+}
+
+
 int WW_In_Zwindow ()
 {
      return run<WWResultsLooper>(ww_baseline_cuts_zwindow, "WW_In_Zwindow");

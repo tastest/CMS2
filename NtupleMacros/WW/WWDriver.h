@@ -41,9 +41,17 @@ int WW_Wjets_SS_FOs ();
 int WW_Wjets_SS_FOs_not_numerator ();
 int WW_Wjets_SS_FOs_supertight ();
 int WW_DY_in_emu ();
+
 int WW_TrkCorrMET_NoMetNoZVeto ();
 int WW_TrkCorrMET_NoMet ();
+int WW_TrkCorrMET ();
+
 int WW_In_Zwindow ();
 int WW_In_Zwindow_TrkCorr ();
+
+// DLE
+int WW_DYEstimate_Results ();
+// end added by DLE
+
 
 #endif

@@ -368,4 +368,80 @@ protected:
 protected:
      NMinus1Hist	hDphi;
 };
+
+//
+// WW DY Estimate Looper (Dave Evans)
+//
+
+class WWDYEstimateLooper : public WWLooperBase {
+public:
+     WWDYEstimateLooper (Sample,
+                      cuts_t cuts = ww_baseline_cuts,
+                      const char *fname = 0);
+     ~WWDYEstimateLooper ();
+
+protected:
+     virtual void       Dilep           (int idx);
+
+     // DLE stuff
+     TFile * outFile_;
+     TTree * outTree_;
+
+      // SampleId
+      Int_t sampleId_;
+      Float_t weight_;
+
+      //Try a di-lepton hist
+        DileptonHist dh1_mll_;
+        DileptonHist dh1_hyp_met_;
+        DileptonHist dh1_n_trkjet_;
+        DileptonHist dh1_n_trkjet_met15_;
+
+        DileptonHist dh1_mll_0j_met15_;
+        DileptonHist dh1_mll_0j_met25_;
+        DileptonHist dh1_mll_0j_met35_;
+        DileptonHist dh1_mll_0j_met45_;
+        DileptonHist dh1_mll_0j_met55_;
+        DileptonHist dh1_mll_0j_met65_;
+        DileptonHist dh1_mll_0j_met75_;
+        DileptonHist dh1_mll_0j_met85_;
+                                         
+        DileptonHist dh1_mll_1j_met15_;
+        DileptonHist dh1_mll_1j_met25_;
+        DileptonHist dh1_mll_1j_met35_;
+        DileptonHist dh1_mll_1j_met45_;
+        DileptonHist dh1_mll_1j_met55_;
+        DileptonHist dh1_mll_1j_met65_;
+        DileptonHist dh1_mll_1j_met75_;
+        DileptonHist dh1_mll_1j_met85_;
+
+        DileptonHist dh1_mll_2j_met15_;
+        DileptonHist dh1_mll_2j_met25_;
+        DileptonHist dh1_mll_2j_met35_;
+        DileptonHist dh1_mll_2j_met45_;
+        DileptonHist dh1_mll_2j_met55_;
+        DileptonHist dh1_mll_2j_met65_;
+        DileptonHist dh1_mll_2j_met75_;
+        DileptonHist dh1_mll_2j_met85_;
+
+        DileptonHist dh1_mll_3j_met15_;
+        DileptonHist dh1_mll_3j_met25_;
+        DileptonHist dh1_mll_3j_met35_;
+        DileptonHist dh1_mll_3j_met45_;
+        DileptonHist dh1_mll_3j_met55_;
+        DileptonHist dh1_mll_3j_met65_;
+        DileptonHist dh1_mll_3j_met75_;
+        DileptonHist dh1_mll_3j_met85_;
+
+        DileptonHist dh1_mll_4j_met15_;
+        DileptonHist dh1_mll_4j_met25_;
+        DileptonHist dh1_mll_4j_met35_;
+        DileptonHist dh1_mll_4j_met45_;
+        DileptonHist dh1_mll_4j_met55_;
+        DileptonHist dh1_mll_4j_met65_;
+        DileptonHist dh1_mll_4j_met75_;
+        DileptonHist dh1_mll_4j_met85_;
+
+};
+
 #endif
