@@ -3,6 +3,7 @@
 
 bool inZmassWindow (float mass);
 bool supertightElectron (int index);
+bool deltaPhiInElectron (int index);
 bool goodElectronWithoutIsolation(int index);
 bool goodElectronWithoutIsolationWithoutd0(int index);
 bool goodMuonWithoutIsolation(int index);
@@ -32,6 +33,7 @@ bool isDYmm();
 bool isDYtt();
 int nTrkJets(int i_hyp);
 bool passTrkJetVeto(int i_hyp);
+bool passCaloTrkjetCombo ();
 
 double mu_rel_iso (int index);
 double el_rel_iso (int index, bool use_calo_iso);

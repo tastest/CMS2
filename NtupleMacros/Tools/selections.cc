@@ -165,6 +165,13 @@ bool supertightElectron (int index)
      return true;
 }
 //--------------------------------------------
+// tighter cut on delta phi in (to kill more fakes)
+//--------------------------------------------
+bool deltaPhiInElectron (int index)
+{
+     return cms2.els_charge()[index] * cms2.els_dPhiIn()[index] < 0.04;
+}
+//--------------------------------------------
 // Pass 2 MET selection
 //--------------------------------------------
 bool pass2Met (int i_hyp, const TVector3& corr) {
@@ -578,4 +585,30 @@ double conversionDeltaPhi (int i_conv, int i_el)
      double dphi = ROOT::Math::VectorUtil::DeltaPhi(cms2.trks_trk_p4()[i_conv],
 						    cms2.els_p4()[i_el]);
      return fabs(dphi);
+}
+
+bool passCaloTrkjetCombo ()
+{
+     double dr = 999;
+     double max_sumpt = 0;
+     for (unsigned int i = 0; i < cms2.jets_p4().size(); ++i) {
+	  double min_dr = 999;
+	  double sumpt = 0;
+	  for (unsigned int j = 0; j < cms2.trkjets_p4().size(); ++j) {
+	       double dr = ROOT::Math::VectorUtil::DeltaR(cms2.trkjets_p4()[j],
+							  cms2.jets_p4()[i]);
+	       if (dr < min_dr) {
+		    min_dr = dr;
+		    sumpt = cms2.trkjets_p4()[j].pt() + 
+			 cms2.jets_p4()[i].pt() * cms2.jets_tq_noCorrF()[i];
+	       }
+	  }
+	  if (sumpt > max_sumpt) {
+	       max_sumpt = sumpt;
+	       dr = min_dr;
+	  }
+     }
+     if (max_sumpt > 15 && dr < 0.5)
+	  return false;
+     return true;
 }
