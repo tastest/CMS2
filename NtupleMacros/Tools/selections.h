@@ -15,6 +15,8 @@ bool goodMuonIsolated(int index);
 bool goodElectronIsolated(int index, bool use_calo_iso = false);
 bool goodLooseElectronWithoutIsolation(int index);
 bool pass2Met(int index, const class TVector3& corr);
+bool met10(int index, const class TVector3& corr);
+bool met1(int index, const class TVector3& corr);
 double nearestDeltaPhi(double Phi, int index);
 double MetSpecial(double MET, double MetPhi, int index);
 bool pass4Met(int index, const class TVector3& corr);

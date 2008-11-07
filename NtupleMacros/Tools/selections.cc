@@ -612,3 +612,27 @@ bool passCaloTrkjetCombo ()
 	  return false;
      return true;
 }
+
+//-------------------------------------------
+// plain MET cut for reducing SM contribution 
+// in WW selection to 10%
+//-------------------------------------------
+bool met10(int i_hyp, const TVector3& corr) {
+  TVector3 hyp_met;
+  hyp_met.SetPtEtaPhi(cms2.hyp_met()[i_hyp], 0, cms2.hyp_metPhi()[i_hyp]);
+  hyp_met += corr;
+  if ( hyp_met.Pt() < 80 ) return false;
+  return true;
+} 
+  
+//-------------------------------------------
+// plain MET cut for reducing SM contribution 
+// in WW selection to 1%
+//-------------------------------------------
+bool met1(int i_hyp, const TVector3& corr) {
+  TVector3 hyp_met;
+  hyp_met.SetPtEtaPhi(cms2.hyp_met()[i_hyp], 0, cms2.hyp_metPhi()[i_hyp]);
+  hyp_met += corr;
+  if ( hyp_met.Pt() < 200 ) return false;
+  return true;
+}
