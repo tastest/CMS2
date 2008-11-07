@@ -4,7 +4,7 @@
 
 #include <string>
 
-enum Process { WW, WZ, ZZ, Wjets, DYee, DYmm, DYtt, ttbar, tW };
+enum Process { WW, WZ, ZZ, Wjets, DYee, DYmm, DYtt, ttbar, tW, LM1, LM2, LM4 };
 
 class TChain;
 // struct that contains all the necessary information about a sample
@@ -28,6 +28,9 @@ Sample fDYmm 	();
 Sample fDYtt 	();
 Sample fttbar	();
 Sample ftW	();
+Sample fLM1     ();
+Sample fLM2     ();
+Sample fLM4     ();
 
 // filter events by process
 bool filterByProcess (enum Process sample);
