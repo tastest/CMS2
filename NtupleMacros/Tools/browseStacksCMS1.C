@@ -31,9 +31,11 @@ void browseStacks( bool makePictures=false, bool wait=true ) {
                     Form("%s_%s$",myNames->At(i)->GetName(), suffix[sample]));
         THStack* thisStack = (THStack*) gROOT->FindObjectAny(
                               Form("st_%s_%s", myNames->At(i)->GetName(), suffix[sample]));
-	TLegend* thisLeg = hist::legend(thisStack, "lpf", 0, 0);
         c->cd(sample+1);
-        thisStack->Draw("hist");
+	if ( thisStack ) {
+	  TLegend* thisLeg = hist::legend(thisStack, "lpf", 0, 0);
+	  thisStack->Draw("hist");
+	}
         thisLeg->Draw();
         c->Update();
      }

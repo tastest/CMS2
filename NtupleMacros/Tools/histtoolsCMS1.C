@@ -575,7 +575,7 @@ loadHist(const char* filename, const char* pfx=0, const char* pat="*", Bool_t do
          continue ;
       }
 
-      obj = inf->Get(key->GetName()) ;
+      obj = inf.Get(key->GetName()) ;
       TObject* clone ;
       if (pfx) {
 
