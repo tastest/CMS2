@@ -1,5 +1,6 @@
 #include <unistd.h>
 #include <string>
+#include "TDirectory.h"
 #include "WWLooper.h"
 #include "Sample.h"
 #include "utilities.h"

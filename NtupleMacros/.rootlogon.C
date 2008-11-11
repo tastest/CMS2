@@ -1,5 +1,6 @@
 //
 {
+	gSystem->Load("libTree.so");
 	gSystem->Load("libPhysics.so");
 	gSystem->Load("libEG.so");
 	gSystem->Load("libMathCore.so");
