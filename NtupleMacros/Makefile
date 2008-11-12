@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.4 2008/11/12 23:20:29 gutsche Exp $
+# $Id: Makefile,v 1.5 2008/11/12 23:52:50 jmuelmen Exp $
 
 CC = g++
 INCLUDE = -ITools -IWW -IDSG
@@ -12,14 +12,17 @@ TOOLSOBJECTS = $(TOOLSSOURCES:.cc=.o) # Tools/linkdef_out.o
 TOOLSLIB = libCMS2NtupleMacrosTools.so
 
 WWSOURCES = $(wildcard WW/*.cc) 
-WWOBJECTS = $(WWSOURCES:.cc=.o) WW/linkdef_out.o
+WWOBJECTS = $(WWSOURCES:.cc=.o) 
 WWLIB = libCMS2NtupleMacrosWW.so
 
 DSGSOURCES = $(wildcard DSG/*.cc) 
-DSGOBJECTS = $(DSGSOURCES:.cc=.o) DSG/linkdef_out.o
+DSGOBJECTS = $(DSGSOURCES:.cc=.o) 
 DSGLIB = libCMS2NtupleMacrosDSG.so
 
-LIBS = $(TOOLSLIB) $(WWLIB) $(DSGLIB)
+DICTOBJECTS = linkdef_out.o
+DICTLIB = libCMS2Dict.so
+
+LIBS = $(TOOLSLIB) $(WWLIB) $(DSGLIB) $(DICTLIB)
 
 WWTABLES = WW_Results.tbl WW_Results_softmu.tbl WW_NoMuTag.tbl WW_NoTrackJets.tbl WW_NoCaloIso.tbl \
 	   WW_OldResults.tbl WW_OldResults_trkjets.tbl WW_OldResults_caloiso.tbl WW_OldResults_muveto.tbl \
@@ -42,14 +45,20 @@ $(WWLIB):	$(WWOBJECTS)
 $(DSGLIB):	$(DSGOBJECTS) 
 	$(LINKER) $(LINKERFLAGS) -shared $(DSGOBJECTS) -o $@ 
 
+$(DICTLIB):	$(DICTOBJECTS) 
+	$(LINKER) $(LINKERFLAGS) -shared $(DICTOBJECTS) -o $@ 
+
+linkdef_out.cxx: linkdef.h Tools/Sample.h Tools/LooperBase.h WW/WWDriver.h DSG/DSGDriver.h
+	rootcint -f $@ -c $(INCLUDE) Sample.h LooperBase.h WWDriver.h DSGDriver.h $<
+
 Tools/linkdef_out.cxx: Tools/linkdef.h Tools/Sample.h Tools/LooperBase.h
 	rootcint -f $@ -c $(INCLUDE) Sample.h LooperBase.h $<
 
-WW/linkdef_out.cxx: WW/linkdef.h WW/WWDriver.h WW/WWLooper.h
-	rootcint -f $@ -c $(INCLUDE) WWDriver.h WWLooper.h $<
+WW/linkdef_out.cxx: WW/linkdef.h WW/WWDriver.h
+	rootcint -f $@ -c $(INCLUDE) WWDriver.h $<
 
-DSG/linkdef_out.cxx: DSG/linkdef.h DSG/DSGDriver.h DSG/DSGLooper.h
-	rootcint -f $@ -c $(INCLUDE) DSGDriver.h DSGLooper.h $<
+DSG/linkdef_out.cxx: DSG/linkdef.h DSG/DSGDriver.h
+	rootcint -f $@ -c $(INCLUDE) DSGDriver.h $<
 
 # General rule for making object files
 %.d:	%.cc

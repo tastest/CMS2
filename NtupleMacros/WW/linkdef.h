@@ -5,7 +5,7 @@
 
 #pragma link off nestedclasses;
 #pragma link off nestedtypedefs;
-#pragma link C++ class WWResultsLooper;
-#pragma link C++ class WWDYInEMuLooper;
+/* #pragma link C++ class WWResultsLooper; */
+/* #pragma link C++ class WWDYInEMuLooper; */
 
 #endif
