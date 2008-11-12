@@ -1,7 +1,7 @@
-# $Id: Makefile,v 1.3 2008/10/24 09:36:15 jmuelmen Exp $
+# $Id: Makefile,v 1.4 2008/11/12 23:20:29 gutsche Exp $
 
 CC = g++
-INCLUDE = -ITools -IWW
+INCLUDE = -ITools -IWW -IDSG
 CFLAGS = -Wall -g -O2 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS) -DTOOLSLIB
 
 LINKER = g++
@@ -15,15 +15,20 @@ WWSOURCES = $(wildcard WW/*.cc)
 WWOBJECTS = $(WWSOURCES:.cc=.o) WW/linkdef_out.o
 WWLIB = libCMS2NtupleMacrosWW.so
 
-LIBS = $(TOOLSLIB) $(WWLIB)
+DSGSOURCES = $(wildcard DSG/*.cc) 
+DSGOBJECTS = $(DSGSOURCES:.cc=.o) DSG/linkdef_out.o
+DSGLIB = libCMS2NtupleMacrosDSG.so
 
-TABLES = WW_Results.tbl WW_Results_softmu.tbl WW_NoMuTag.tbl WW_NoTrackJets.tbl WW_NoCaloIso.tbl \
-	WW_OldResults.tbl WW_OldResults_trkjets.tbl WW_OldResults_caloiso.tbl WW_OldResults_muveto.tbl \
-	WW_OldResults_caloiso_trkjets.tbl WW_OldResults_caloiso_muveto.tbl \
-	WW_TopEstimate.tbl WW_TopEstimate_noptcut.tbl 
+LIBS = $(TOOLSLIB) $(WWLIB) $(DSGLIB)
+
+WWTABLES = WW_Results.tbl WW_Results_softmu.tbl WW_NoMuTag.tbl WW_NoTrackJets.tbl WW_NoCaloIso.tbl \
+	   WW_OldResults.tbl WW_OldResults_trkjets.tbl WW_OldResults_caloiso.tbl WW_OldResults_muveto.tbl \
+	   WW_OldResults_caloiso_trkjets.tbl WW_OldResults_caloiso_muveto.tbl \
+	   WW_TopEstimate.tbl WW_TopEstimate_noptcut.tbl 
+DSGTABLES = DSG_BaseLine.tbl DSG_MET_10.tbl DSG_MET_1.tbl
 
 .PHONY: all
-all:	$(TOOLSLIB) $(WWLIB) $(TABLES)
+all:	$(TOOLSLIB) $(WWLIB) $(WWTABLES) $(DSGLIB) $(DSGTABLES)
 
 .PHONY: libs
 libs:	$(LIBS)
@@ -34,11 +39,17 @@ $(TOOLSLIB):	$(TOOLSOBJECTS)
 $(WWLIB):	$(WWOBJECTS) 
 	$(LINKER) $(LINKERFLAGS) -shared $(WWOBJECTS) -o $@ 
 
+$(DSGLIB):	$(DSGOBJECTS) 
+	$(LINKER) $(LINKERFLAGS) -shared $(DSGOBJECTS) -o $@ 
+
 Tools/linkdef_out.cxx: Tools/linkdef.h Tools/Sample.h Tools/LooperBase.h
 	rootcint -f $@ -c $(INCLUDE) Sample.h LooperBase.h $<
 
 WW/linkdef_out.cxx: WW/linkdef.h WW/WWDriver.h WW/WWLooper.h
 	rootcint -f $@ -c $(INCLUDE) WWDriver.h WWLooper.h $<
+
+DSG/linkdef_out.cxx: DSG/linkdef.h DSG/DSGDriver.h DSG/DSGLooper.h
+	rootcint -f $@ -c $(INCLUDE) DSGDriver.h DSGLooper.h $<
 
 # General rule for making object files
 %.d:	%.cc
@@ -55,14 +66,20 @@ WW/linkdef_out.cxx: WW/linkdef.h WW/WWDriver.h WW/WWLooper.h
 clean:  
 	rm -f Tools/*.o Tools/*.d Tools/linkdef_out.* $(TOOLSLIB) \
 		WW/*.o WW/*.d WW/linkdef_out.* $(WWLIB) \
-		$(TABLES)
+		DSG/*.o DSG/*.d DSG/linkdef_out.* $(DSGLIB) \
+		$(WWTABLES) $(DSGTABLES)
 
 # how to make tables
-$(TABLES): $(LIBS)
+$(WWTABLES): $(LIBS)
+
+# how to make tables
+$(DSGTABLES): $(LIBS)
 
 %.tbl:	$(LIBS)
 	echo $(@:.tbl=)"()" | root.exe -b
 
+
 -include $(TOOLSSOURCES:.cc=.d)
 -include $(WWSOURCES:.cc=.d)
+-include $(DSGSOURCES:.cc=.d)
 
