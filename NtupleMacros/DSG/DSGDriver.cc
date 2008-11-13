@@ -64,10 +64,10 @@ int DSG_BaseLine ()
 
 int DSG_MET_10 ()
 {
-     return runDSG<DSGResultsLooper>(dsg_met_10_cuts, "DSG_MET_10");
+  return runDSG<DSGResultsLooper>(dsg_met_10_cuts, "DSG_MET_10");
 }
 
 int DSG_MET_1 ()
 {
-     return runDSG<DSGResultsLooper>(dsg_met_10_cuts, "DSG_MET_1");
+     return runDSG<DSGResultsLooper>(dsg_met_1_cuts, "DSG_MET_1");
 }

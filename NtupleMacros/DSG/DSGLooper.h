@@ -78,15 +78,13 @@ const static cuts_t dsg_baseline_cuts =
 		(CUT_BIT(DSG_LL_GOOD)		) | 
 		(CUT_BIT(DSG_LT_CALOISO)	) |  
 		(CUT_BIT(DSG_LL_CALOISO)	) |  
-		//(CUT_BIT(DSG_PASS_ZVETO)	) | 
-		//(CUT_BIT(DSG_PASS_ADDZVETO)	) | 
+		(CUT_BIT(DSG_PASS_ZVETO)	) | 
+		(CUT_BIT(DSG_PASS_ADDZVETO)	) | 
 		(CUT_BIT(DSG_PASS_MUON_B_VETO_WITHOUT_PTCUT)	);   
 
-const static cuts_t dsg_met_10_cuts = dsg_baseline_cuts & 
-		~(CUT_BIT(DSG_PASS_MET_10));
+const static cuts_t dsg_met_10_cuts = dsg_baseline_cuts | CUT_BIT(DSG_PASS_MET_10);
 
-const static cuts_t dsg_met_1_cuts = dsg_baseline_cuts & 
-		~(CUT_BIT(DSG_PASS_MET_1));
+const static cuts_t dsg_met_1_cuts = dsg_baseline_cuts | CUT_BIT(DSG_PASS_MET_1);
 
 const static cuts_t dsg_fakerate_cuts = dsg_baseline_cuts & 
 		~(CUT_BIT(DSG_LT_GOOD) | CUT_BIT(DSG_LL_GOOD) |

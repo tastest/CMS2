@@ -119,7 +119,7 @@ cuts_t DSGLooperBase::DilepSelect (int i_hyp)
 	  ret |= (CUT_BIT(DSG_PASS4_MET));
      if (pass2Met(i_hyp, TVector3()))
 	  ret |= (CUT_BIT(DSG_PASS2_MET));
-     if (met10(i_hyp, TVector3()))
+     if (met10(i_hyp, TVector3())) 
           ret |= (CUT_BIT(DSG_PASS_MET_10));
      if (met1(i_hyp, TVector3()))
           ret |= (CUT_BIT(DSG_PASS_MET_1));
