@@ -15,6 +15,7 @@ public:
      int		histo_color;
      double		kFactor;
      std::string	name;
+     bool               sm;
 };
 
 // helper functions that provide samples from their default locations

@@ -21,6 +21,7 @@ public:
      virtual ~LooperBase ();
      virtual uint64 	Loop ();
      const std::string 	&SampleName () const { return sample.name; }
+     const bool 	&SampleSM () const { return sample.sm; }
      
 protected:
      virtual cuts_t	EventSelect 	()		{ return 1; 	}

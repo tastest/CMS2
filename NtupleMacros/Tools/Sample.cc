@@ -36,7 +36,7 @@ Sample fWW ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-04-00/merge_WW.root";
      }
      c->Add(sample.c_str());
-     Sample ret = { c, WW, kRed, 1, "ww" };
+     Sample ret = { c, WW, kRed, 1, "ww", true };
      return ret;
 }
 
@@ -50,7 +50,7 @@ Sample fWZ ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-05-00/merge_WZ.root";
      }
      c->Add(sample.c_str());
-     Sample ret = { c, WZ, kBlue, 1, "wz" };
+     Sample ret = { c, WZ, kBlue, 1, "wz", true };
      return ret;
 }
 
@@ -64,7 +64,7 @@ Sample fZZ ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-05-00/merge_ZZ.root";
      }
      c->Add(sample.c_str());
-     Sample ret = { c, ZZ, kGreen, 1, "zz" };
+     Sample ret = { c, ZZ, kGreen, 1, "zz", true };
      return ret;
 }
 
@@ -78,7 +78,7 @@ Sample fWjets ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-04-01/merge_Wjet.root";
      }
      c->Add(sample.c_str());
-     Sample ret = { c, Wjets, 40, 1, "wjets" };
+     Sample ret = { c, Wjets, 40, 1, "wjets", true };
      return ret;
 }
 
@@ -92,7 +92,7 @@ Sample fDYee ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-04-01/merge_DY.root";
      }
      c->Add(sample.c_str());
-     Sample ret = { c, DYee, kMagenta, 1.12, "dyee" };
+     Sample ret = { c, DYee, kMagenta, 1.12, "dyee", true };
      return ret;
 }
 
@@ -106,7 +106,7 @@ Sample fDYmm ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-04-01/merge_DY.root";
      }
      c->Add(sample.c_str());
-     Sample ret = { c, DYmm, kCyan, 1.12, "dymm" };
+     Sample ret = { c, DYmm, kCyan, 1.12, "dymm", true };
      return ret;
 }
 
@@ -120,7 +120,7 @@ Sample fDYtt ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-04-01/merge_DY.root";
      }
      c->Add(sample.c_str());
-     Sample ret = { c, DYtt, kBlack, 1.12, "dytt" };
+     Sample ret = { c, DYtt, kBlack, 1.12, "dytt", true };
      return ret;
 }
 
@@ -134,7 +134,7 @@ Sample fttbar ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-04-01/merge_ttbar.root";
      }
      c->Add(sample.c_str());
-     Sample ret = { c, ttbar, kYellow, 1.85, "ttbar" };
+     Sample ret = { c, ttbar, kYellow, 1.85, "ttbar", true };
      return ret;
 }
 
@@ -147,7 +147,7 @@ Sample ftW ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-04-00/merge_tW.root";
      }
      c->Add(sample.c_str());
-     Sample ret = { c, tW, 63, 1, "tw" };
+     Sample ret = { c, tW, 63, 1, "tw", true };
      return ret;
 }
 
@@ -160,7 +160,7 @@ Sample fLM1 ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-05-00/LM1/*.root";
      }
      c->Add(sample.c_str());
-     Sample ret = { c, LM1, 37, 1, "LM1" };
+     Sample ret = { c, LM1, 37, 1, "LM1", false };
      return ret;
 }
 
@@ -173,7 +173,7 @@ Sample fLM2 ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-05-00/LM2/*.root";
      }
      c->Add(sample.c_str());
-     Sample ret = { c, LM2, 38, 1, "LM2" };
+     Sample ret = { c, LM2, 38, 1, "LM2", false };
      return ret;
 }
 
@@ -186,6 +186,6 @@ Sample fLM4 ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-05-00/LM4/*.root";
      }
      c->Add(sample.c_str());
-     Sample ret = { c, LM4, 28, 1, "LM4" };
+     Sample ret = { c, LM4, 28, 1, "LM4", false };
      return ret;
 }
