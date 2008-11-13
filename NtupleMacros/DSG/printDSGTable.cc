@@ -17,7 +17,7 @@ void printDSGTable (const DSGLooperBase **hists, int n, const char *fname,
   for (int j = 0; j < n; ++j) {
     fprintf(f, "|  *%30s*  ", hists[j]->SampleName().c_str());
   }
-  fprintf(f, "|%30s  |\n", "total");
+  fprintf(f, "|%30s  |\n", "SM total");
   for (int i = 0; i < 4; ++i) {
     fprintf(f, "|%10s  ", dilepton_hypo_names[i]);
     double cands = 0;
@@ -26,9 +26,12 @@ void printDSGTable (const DSGLooperBase **hists, int n, const char *fname,
       fprintf(f, "|  %10.1f &plusmn; %10.1f", 
 	      hists[j]->CandsPassing(DileptonHypType(i)),
 	      hists[j]->RMS(DileptonHypType(i)));
-      cands += hists[j]->CandsPassing(DileptonHypType(i));
-      w2 += hists[j]->RMS(DileptonHypType(i)) * 
-	hists[j]->RMS(DileptonHypType(i));
+      // only sum up SM samples
+      if ( hists[j]->SampleSM() ) {
+	cands += hists[j]->CandsPassing(DileptonHypType(i));
+	w2 += hists[j]->RMS(DileptonHypType(i)) * 
+	  hists[j]->RMS(DileptonHypType(i));
+      }
       if (not (which_ones & 1 << j))
 	continue;
       const DSGFakeRateLooper *looper = 
