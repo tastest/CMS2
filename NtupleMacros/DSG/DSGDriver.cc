@@ -71,3 +71,13 @@ int DSG_MET_1 ()
 {
      return runDSG<DSGResultsLooper>(dsg_met_1_cuts, "DSG_MET_1");
 }
+
+int DSG_SUMET_10 ()
+{
+  return runDSG<DSGResultsLooper>(dsg_sumet_10_cuts, "DSG_SUMET_10");
+}
+
+int DSG_SUMET_1 ()
+{
+     return runDSG<DSGResultsLooper>(dsg_sumet_1_cuts, "DSG_SUMET_1");
+}

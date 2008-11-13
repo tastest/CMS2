@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.5 2008/11/12 23:52:50 jmuelmen Exp $
+# $Id: Makefile,v 1.6 2008/11/13 17:35:06 ibloch Exp $
 
 CC = g++
 INCLUDE = -ITools -IWW -IDSG
@@ -28,7 +28,8 @@ WWTABLES = WW_Results.tbl WW_Results_softmu.tbl WW_NoMuTag.tbl WW_NoTrackJets.tb
 	   WW_OldResults.tbl WW_OldResults_trkjets.tbl WW_OldResults_caloiso.tbl WW_OldResults_muveto.tbl \
 	   WW_OldResults_caloiso_trkjets.tbl WW_OldResults_caloiso_muveto.tbl \
 	   WW_TopEstimate.tbl WW_TopEstimate_noptcut.tbl 
-DSGTABLES = DSG_BaseLine.tbl DSG_MET_10.tbl DSG_MET_1.tbl
+
+DSGTABLES = DSG_BaseLine.tbl DSG_MET_10.tbl DSG_MET_1.tbl DSG_SUMET_10.tbl DSG_SUMET_1.tbl
 
 .PHONY: all
 all:	$(TOOLSLIB) $(WWLIB) $(WWTABLES) $(DSGLIB) $(DSGTABLES)

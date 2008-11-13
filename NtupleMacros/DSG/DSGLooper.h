@@ -21,6 +21,8 @@ enum {
   DSG_PASS4_MET,
   DSG_PASS_MET_10,
   DSG_PASS_MET_1,
+  DSG_PASS_SUMET_10,
+  DSG_PASS_SUMET_1,
   DSG_PASS2_METCORR,
   DSG_PASS4_METCORR,
   DSG_LT_GOOD,
@@ -85,6 +87,10 @@ const static cuts_t dsg_baseline_cuts =
 const static cuts_t dsg_met_10_cuts = dsg_baseline_cuts | CUT_BIT(DSG_PASS_MET_10);
 
 const static cuts_t dsg_met_1_cuts = dsg_baseline_cuts | CUT_BIT(DSG_PASS_MET_1);
+
+const static cuts_t dsg_sumet_10_cuts = dsg_baseline_cuts | CUT_BIT(DSG_PASS_SUMET_10);
+
+const static cuts_t dsg_sumet_1_cuts = dsg_baseline_cuts | CUT_BIT(DSG_PASS_SUMET_1);
 
 const static cuts_t dsg_fakerate_cuts = dsg_baseline_cuts & 
 		~(CUT_BIT(DSG_LT_GOOD) | CUT_BIT(DSG_LL_GOOD) |

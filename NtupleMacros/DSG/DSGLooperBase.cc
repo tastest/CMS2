@@ -6,6 +6,7 @@
 #include "fakerates.h"
 #include "CMS2.h"
 #include "DSGLooper.h"
+#include "../Tools/matchTools.C"
 
 static const double d0_bins[] = { 0, 0.025, 0.03, 0.055 };
 static const double dphiin_bins[] = { -0.04, 0, 0.04, 0.045, 0.085 };
@@ -93,6 +94,29 @@ cuts_t DSGLooperBase::DilepSelect (int i_hyp)
      cuts_t ret = 0;
      const enum DileptonHypType myType = hyp_typeToHypType(cms2.hyp_type()[i_hyp]);
 
+     // temporarily calculate ONE global uncorrected jetSumEt:
+     // prepare uncorrected jet collection
+     vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > calo_jets_p4(cms2.jets_p4());
+     double sumEt = 0.;
+
+     for (unsigned int icalojet=0; icalojet<calo_jets_p4.size(); ++icalojet) {
+       // remove electron jets:
+       if ((abs(cms2.hyp_lt_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],calo_jets_p4[icalojet]) < 0.4)||
+           (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],calo_jets_p4[icalojet]) < 0.4)
+           ) continue;
+       TLorentzVector p(calo_jets_p4[icalojet].Px()*cms2.jets_tq_noCorrF()[icalojet],
+                        calo_jets_p4[icalojet].Py()*cms2.jets_tq_noCorrF()[icalojet],
+                        calo_jets_p4[icalojet].Pz()*cms2.jets_tq_noCorrF()[icalojet],
+                        calo_jets_p4[icalojet].E()*cms2.jets_tq_noCorrF()[icalojet]);//p is now uncorrected jet energy
+       //       if (p.Perp() < jetet) continue;
+       //       if (fabs(p.Eta()) > jeteta) continue;
+       //        if (p.Perp() < 28 ) cout << p.Perp() << endl;
+       if (fabs(p.Eta()) > 3.0 ) continue;
+       if (p.Perp() < 15.) continue;
+       //                 calo_jets->push_back(p);
+       sumEt += p.Perp();
+     }
+
      // enough tracks?
      if (cms2.trks_trk_p4().size() > 2)
 	  ret |= CUT_BIT(DSG_MORE_THAN_TWO_TRACKS);
@@ -123,6 +147,11 @@ cuts_t DSGLooperBase::DilepSelect (int i_hyp)
           ret |= (CUT_BIT(DSG_PASS_MET_10));
      if (met1(i_hyp, TVector3()))
           ret |= (CUT_BIT(DSG_PASS_MET_1));
+
+     if (sumEt10( sumEt )) 
+          ret |= (CUT_BIT(DSG_PASS_SUMET_10));
+     if (sumEt1( sumEt ))
+          ret |= (CUT_BIT(DSG_PASS_SUMET_1));
 
      // muon quality
      int n_iso_mu = 0;

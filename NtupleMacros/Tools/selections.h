@@ -1,5 +1,6 @@
 #ifndef SELECTION_H
 #define SELECTION_H
+#include "TLorentzVector.h"
 
 bool inZmassWindow (float mass);
 bool supertightElectron (int index);
@@ -20,6 +21,10 @@ bool met1(int index, const class TVector3& corr);
 double nearestDeltaPhi(double Phi, int index);
 double MetSpecial(double MET, double MetPhi, int index);
 bool pass4Met(int index, const class TVector3& corr);
+bool met10(int index, const class TVector3& corr);
+bool met1(int index, const class TVector3& corr);
+bool sumEt10(double sumEt);
+bool sumEt1(double sumEt);
 bool passMuonBVeto (int i_dilep, bool soft_nonisolated);
 bool passTriLepVeto (int i_dilep);
 int tagMuonIdx (int i_dilep);

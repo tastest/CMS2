@@ -233,6 +233,26 @@ bool pass4Met(int i_hyp, const TVector3& corr) {
   }
   return true;
 }
+
+//-------------------------------------------
+// plain SUMET cut for reducing SM contribution 
+// in WW selection to 10%
+//-------------------------------------------
+bool sumEt10(double sumEt) {
+  //  std::cout<<"cutting on sumEt10: "<<sumEt<<std::endl;
+  if ( sumEt < 225 ) return false; 
+  return true;
+}
+
+//-------------------------------------------
+// plain SUMET cut for reducing SM contribution 
+// in WW selection to 1%
+//-------------------------------------------
+bool sumEt1(double sumEt) {
+  if ( sumEt < 550 ) return false; // good for ~1%? currently "optimizing"
+  return true;
+}
+
 //-------------------------------------------------
 // Auxiliary function to scan the doc line and 
 // identify DY-> ee vs mm vs tt
