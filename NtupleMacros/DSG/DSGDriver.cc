@@ -59,7 +59,7 @@ template <class Looper> int runDSG (cuts_t cuts, const string &name, uint32 whic
 
 int DSG_BaseLine ()
 {
-     return runDSG<DSGResultsLooper>(dsg_baseline_cuts, "DSG_BaseLine");
+  return runDSG<DSGResultsLooper>(dsg_baseline_cuts, "DSG_BaseLine");
 }
 
 int DSG_MET_10 ()

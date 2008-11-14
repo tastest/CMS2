@@ -676,7 +676,7 @@ int passTrackZVeto(int hyp_index) {
   // combine tracks to Z candidates and check invariant mass window for 3 modi:
   // 1: combine one track with either lt or ll of dilepton hyp, if a cand. is within the z window, reject event (return 1)
   // 2: combine two tracks, if a cand. is within the z window ,reject event (return 2)
-  // 3: apply both 1 and 2 (return 3)
+  // 3: 1 && 2
   //
   // when combining 2 objects, require:
   // - delta z0 < 0.5 cm.
@@ -695,9 +695,9 @@ int passTrackZVeto(int hyp_index) {
   else if ( abs(cms2.hyp_lt_id()[hyp_index]) == 11 )
     ltTrkIdx = cms2.els_trkidx()[cms2.hyp_lt_index()[hyp_index]];
   if ( abs(cms2.hyp_ll_id()[hyp_index]) == 13 ) 
-    ltTrkIdx = cms2.mus_trkidx()[cms2.hyp_ll_index()[hyp_index]];
+    llTrkIdx = cms2.mus_trkidx()[cms2.hyp_ll_index()[hyp_index]];
   else if ( abs(cms2.hyp_ll_id()[hyp_index]) == 11 )
-    ltTrkIdx = cms2.els_trkidx()[cms2.hyp_ll_index()[hyp_index]];
+    llTrkIdx = cms2.els_trkidx()[cms2.hyp_ll_index()[hyp_index]];
 
   // form trk-isolated track collection
   std::vector<int> isoTrks;
@@ -733,7 +733,9 @@ int passTrackZVeto(int hyp_index) {
 	    // if inv. mass of candidate within z mass window, veto event
 	    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
 	      vec = cms2.hyp_lt_p4()[hyp_index] + cms2.trks_trk_p4()[trk1];
-	    if ( inZmassWindow(vec.mass()) ) mode1 = true;
+	    if ( inZmassWindow(vec.mass()) ) {
+	      mode1 = true;
+	    }
 	  }
 	}
       }
@@ -748,15 +750,18 @@ int passTrackZVeto(int hyp_index) {
 	    // if inv. mass of candidate within z mass window, veto event
 	    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
 	      vec = cms2.hyp_ll_p4()[hyp_index] + cms2.trks_trk_p4()[trk1];
-	    if ( inZmassWindow(vec.mass()) ) mode1 = true;
+	    if ( inZmassWindow(vec.mass()) ) {
+	      mode1 = true;
+	    }
 	  }
 	}
       }
       // try to combine one track with another track from the collection of selected trk-isolated tracks
-    } else if ( !mode2 ) {
-      for ( unsigned int trk2 = trk1+1;
-	    trk2 < isoTrks.size();
-	    ++trk2 ) {
+    }
+    for ( unsigned int trk2 = trk1+1;
+	  trk2 < isoTrks.size();
+	  ++trk2 ) {
+      if ( !mode2 ) {
 	// require opposite sign
 	if ( (cms2.trks_charge()[trk2] * cms2.trks_charge()[trk1]) < 0 ) {
 	  // require delta z0 < 0.5 cm
@@ -768,7 +773,9 @@ int passTrackZVeto(int hyp_index) {
 	      // if inv. mass of candidate within z mass window, veto event
 	      ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
 		vec = cms2.trks_trk_p4()[trk2] + cms2.trks_trk_p4()[trk1];
-	      if ( inZmassWindow(vec.mass()) ) mode2 = true;
+	      if ( inZmassWindow(vec.mass()) ) {
+		mode2 = true;
+	      }
 	    }
 	  }
 	}
@@ -776,7 +783,7 @@ int passTrackZVeto(int hyp_index) {
     }
   }
 
-  if ( mode1 || mode2 ) return 3;
+  if ( mode1 && mode2 ) return 3;
   if ( mode1 ) return 1;
   if ( mode2 ) return 2;
   
