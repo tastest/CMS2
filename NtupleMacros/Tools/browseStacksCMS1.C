@@ -5,7 +5,10 @@
 //
 // keep2D=false to skip the annoying 2D histograms
 //
-void browseStacks( bool makePictures=false, bool wait=true ) {
+void browseStacks( bool makePictures=false, bool wait=true, const char* dir = "out" ) {
+
+  // check if dir exists, if not, create it
+  gSystem->mkdir(dir);
 
   bool keep2D=false;
 
@@ -23,7 +26,7 @@ void browseStacks( bool makePictures=false, bool wait=true ) {
    suffix[1] = "mm";
    suffix[2] = "em";
    suffix[3] = "all";
-   if (makePictures) c->Print("out/stacks.ps[");
+   if (makePictures) c->Print(Form("%s/stacks.ps[",dir));
    for (int i=0; i<myNames->GetEntries(); i++) {
      //  cout << myNames->At(i)->GetName() << endl;
      for (int sample=0; sample<4; sample++) {
@@ -40,9 +43,9 @@ void browseStacks( bool makePictures=false, bool wait=true ) {
         c->Update();
      }
      if (makePictures) {
-       c->Print("out/stacks.ps");
+       c->Print(Form("%s/stacks.ps",dir));
        //       c->Print(Form("out/stacks_%d.png",i+1));
-       c->Print(Form("out/stacks_%s.png",myNames->At(i)->GetName()));
+       c->Print(Form("%s/stacks_%s.png",dir,myNames->At(i)->GetName()));
      }
      if (wait) {
        cout << "Enter carriage return for the next set of plots....q to quit" << endl;
@@ -50,7 +53,7 @@ void browseStacks( bool makePictures=false, bool wait=true ) {
        if (in == 'q') break;
      }
    }
-   if (makePictures) c->Print("out/stacks.ps]");
+   if (makePictures) c->Print(Form("%s/stacks.ps]",dir));
 }
 
 void browseStacksTrilep( bool makePictures=false, bool wait=true ) {
@@ -89,7 +92,7 @@ void browseStacksTrilep( bool makePictures=false, bool wait=true ) {
   suffix[18] = "epemem";
   suffix[19] = "ememem";
   suffix[20] = "all";
-   if (makePictures) c->Print("out/stacks.ps[");
+  if (makePictures) c->Print(Form("%s/stacks.ps[",dir));
    for (int i=0; i<myNames->GetEntries(); i++) {
      //  cout << myNames->At(i)->GetName() << endl;
      for (int sample=0; sample<allBuckets; sample++) {
@@ -104,9 +107,9 @@ void browseStacksTrilep( bool makePictures=false, bool wait=true ) {
         c->Update();
      }
      if (makePictures) {
-       c->Print("out/stacks.ps");
+       c->Print(Form("%s/stacks.ps",dir));
        //       c->Print(Form("out/stacks_%d.png",i+1));
-       c->Print(Form("out/stacks_%s.png",myNames->At(i)->GetName()));
+       c->Print(Form("%s/stacks_%s.png",dir,myNames->At(i)->GetName()));
      }
      if (wait) {
        cout << "Enter carriage return for the next set of plots....q to quit" << endl;
@@ -114,5 +117,5 @@ void browseStacksTrilep( bool makePictures=false, bool wait=true ) {
        if (in == 'q') break;
      }
    }
-   if (makePictures) c->Print("out/stacks.ps]");
+   if (makePictures) c->Print(Form("%s/stacks.ps]",dir));
 }
