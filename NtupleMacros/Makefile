@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.6 2008/11/13 17:35:06 ibloch Exp $
+# $Id: Makefile,v 1.7 2008/11/14 02:28:46 gutsche Exp $
 
 CC = g++
 INCLUDE = -ITools -IWW -IDSG
@@ -77,6 +77,7 @@ clean:
 	rm -f Tools/*.o Tools/*.d Tools/linkdef_out.* $(TOOLSLIB) \
 		WW/*.o WW/*.d WW/linkdef_out.* $(WWLIB) \
 		DSG/*.o DSG/*.d DSG/linkdef_out.* $(DSGLIB) \
+                linkdef_out.* \
 		$(WWTABLES) $(DSGTABLES)
 
 # how to make tables
