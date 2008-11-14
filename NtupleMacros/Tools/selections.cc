@@ -17,6 +17,7 @@
 #ifdef TOOLSLIB
 #include "CMS2.h"
 #include "matchTools.h"
+#include "utilities.h"
 #else
 #include "../Tools/matchTools.C"
 #endif
@@ -655,4 +656,129 @@ bool met1(int i_hyp, const TVector3& corr) {
   hyp_met += corr;
   if ( hyp_met.Pt() < 175 ) return false;
   return true;
+}
+
+bool passTrackIsolation(int index){
+  //
+  // track isolation
+  //
+  const double cut = 0.92;
+  double pt  = cms2.trks_trk_p4()[index].pt();
+  return (pt / (pt + trkIsolation(index))) > cut;
+}
+
+int passTrackZVeto(int hyp_index) {
+  //
+  // build list of trk-isolated tracks with minimal quality cuts for dilepton hypothesis
+  // nHits > 7
+  // pT >= 1.0
+  //
+  // combine tracks to Z candidates and check invariant mass window for 3 modi:
+  // 1: combine one track with either lt or ll of dilepton hyp, if a cand. is within the z window, reject event (return 1)
+  // 2: combine two tracks, if a cand. is within the z window ,reject event (return 2)
+  // 3: apply both 1 and 2 (return 3)
+  //
+  // when combining 2 objects, require:
+  // - delta z0 < 0.5 cm.
+  // - delta R > 0.1
+  // - opposite sign
+
+  double dZCut = 0.5;
+  bool mode1 = false;
+  bool mode2 = false;
+
+  // store trk indices of ll and lt
+  unsigned int llTrkIdx = 1000000;
+  unsigned int ltTrkIdx = 1000000;
+  if ( abs(cms2.hyp_lt_id()[hyp_index]) == 13 ) 
+    ltTrkIdx = cms2.mus_trkidx()[cms2.hyp_lt_index()[hyp_index]];
+  else if ( abs(cms2.hyp_lt_id()[hyp_index]) == 11 )
+    ltTrkIdx = cms2.els_trkidx()[cms2.hyp_lt_index()[hyp_index]];
+  if ( abs(cms2.hyp_ll_id()[hyp_index]) == 13 ) 
+    ltTrkIdx = cms2.mus_trkidx()[cms2.hyp_ll_index()[hyp_index]];
+  else if ( abs(cms2.hyp_ll_id()[hyp_index]) == 11 )
+    ltTrkIdx = cms2.els_trkidx()[cms2.hyp_ll_index()[hyp_index]];
+
+  // form trk-isolated track collection
+  std::vector<int> isoTrks;
+  for ( unsigned int trk = 0;
+	trk < cms2.trks_trk_p4().size();
+	++trk ) {
+    // exclude lt or ll
+    if ( trk == llTrkIdx ) continue;
+    if ( trk == ltTrkIdx ) continue;
+    // require at least 8 hits
+    if ( cms2.trks_validHits()[trk] <= 7 ) continue;
+    // require pt >= 1. GeV
+    if ( cms2.trks_trk_p4()[trk].pt() < 1.0 ) continue;
+    // require trk-isolation
+    if ( ! passTrackIsolation(trk) ) continue;
+    isoTrks.push_back(trk);
+  }
+
+  // loop over all selected trk-isolated tracks
+  for ( unsigned int trk1 = 0;
+	trk1 < isoTrks.size();
+	++trk1 ) {
+    // try to combine with ll or lt, if in Z mass window, veto event
+    if ( !mode1 ) {
+      // require opposite sign
+      if ( (cms2.hyp_lt_charge()[hyp_index] * cms2.trks_charge()[trk1]) < 0 ) {
+	// require delta z0 < 0.5 cm
+	double dZ = fabs(cms2.hyp_lt_z0()[hyp_index] - cms2.trks_z0()[trk1]);
+	if ( dZ < dZCut ) {
+	  // require delta R > 0.1
+	  double dR = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[hyp_index], cms2.trks_trk_p4()[trk1]);
+	  if ( dR > 0.1 ) {
+	    // if inv. mass of candidate within z mass window, veto event
+	    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
+	      vec = cms2.hyp_lt_p4()[hyp_index] + cms2.trks_trk_p4()[trk1];
+	    if ( inZmassWindow(vec.mass()) ) mode1 = true;
+	  }
+	}
+      }
+      // require opposite sign
+      if ( (cms2.hyp_ll_charge()[hyp_index] * cms2.trks_charge()[trk1]) < 0 ) {
+	// require delta z0 < 0.5 cm
+	double dZ = fabs(cms2.hyp_ll_z0()[hyp_index] - cms2.trks_z0()[trk1]);
+	if ( dZ < dZCut ) {
+	  // require delta R > 0.1
+	  double dR = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[hyp_index], cms2.trks_trk_p4()[trk1]);
+	  if ( dR > 0.1 ) {
+	    // if inv. mass of candidate within z mass window, veto event
+	    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
+	      vec = cms2.hyp_ll_p4()[hyp_index] + cms2.trks_trk_p4()[trk1];
+	    if ( inZmassWindow(vec.mass()) ) mode1 = true;
+	  }
+	}
+      }
+      // try to combine one track with another track from the collection of selected trk-isolated tracks
+    } else if ( !mode2 ) {
+      for ( unsigned int trk2 = trk1+1;
+	    trk2 < isoTrks.size();
+	    ++trk2 ) {
+	// require opposite sign
+	if ( (cms2.trks_charge()[trk2] * cms2.trks_charge()[trk1]) < 0 ) {
+	  // require delta z0 < 0.5 cm
+	  double dZ = fabs(cms2.trks_z0()[trk2] - cms2.trks_z0()[trk1]);
+	  if ( dZ < dZCut ) {
+	    // require delta R > 0.1
+	    double dR = ROOT::Math::VectorUtil::DeltaR(cms2.trks_trk_p4()[trk2], cms2.trks_trk_p4()[trk1]);
+	    if ( dR > 0.1 ) {
+	      // if inv. mass of candidate within z mass window, veto event
+	      ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
+		vec = cms2.trks_trk_p4()[trk2] + cms2.trks_trk_p4()[trk1];
+	      if ( inZmassWindow(vec.mass()) ) mode2 = true;
+	    }
+	  }
+	}
+      }
+    }
+  }
+
+  if ( mode1 || mode2 ) return 3;
+  if ( mode1 ) return 1;
+  if ( mode2 ) return 2;
+  
+  return -1;
 }

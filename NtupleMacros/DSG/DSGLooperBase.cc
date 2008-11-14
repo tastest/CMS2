@@ -280,6 +280,20 @@ cuts_t DSGLooperBase::DilepSelect (int i_hyp)
 	       ret |= CUT_BIT(DSG_PASS_JETVETO_CALOTRACKJETS_COMBO);
      }
 
+     // track z veto
+     // use one of DSG_TRACK_Z_VETO_HYP, DSG_Z_TRACK_VETO_TRACKS or DSG_Z_TRACK_VETO_HYP_OR_TRACKS
+
+     int modus = passTrackZVeto(i_hyp);
+
+     // modus 1: combine trk-isolated tracks with hyp ll or lt, set DSG_TRACK_Z_VETO_HYP
+     if ( modus != 1 && modus != 3 ) ret |= CUT_BIT(DSG_TRACK_Z_VETO_HYP);
+
+     // modus 2: combine trk-isolated tracks with another track, set DSG_Z_TRACK_VETO_TRACKS
+     if ( modus != 2 && modus != 3 ) ret |= CUT_BIT(DSG_Z_TRACK_VETO_TRACKS);
+
+     // modus 3: combine trk-isolated tracks with another track or hyp ll or lt , set DSG_Z_TRACK_VETO_HYP_OR_TRACKS
+     if ( modus != 3 ) ret |= CUT_BIT(DSG_Z_TRACK_VETO_HYP_OR_TRACKS);
+
      // the return value gets cached, too
      cuts_passed = ret;
 

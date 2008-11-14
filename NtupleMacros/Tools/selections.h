@@ -49,4 +49,7 @@ double reliso_ll (int i_hyp, bool use_calo_iso = false);
 
 int conversionPartner (int i_el);
 double conversionDeltaPhi (int i_conv, int i_el);
+
+bool passTrackIsolation(int index);
+int passTrackZVeto(int hyp_index);
 #endif

@@ -23,10 +23,10 @@ void DSGResultsLooper::Dilep (int i_hyp)
 	  return;
 
      // if we get an extra muon, print it out
-     int tag_muon_idx = tagMuonIdx(i_hyp);
-     enum DileptonHypType myType = hyp_typeToHypType(cms2.hyp_type()[i_hyp]);
-     if (tag_muon_idx != -1 && myType == DILEPTON_EMU)
-	  printf("tag muon: %d (out of %u), pt = %.1f (%.1f), iso = %f\n",
-		 tag_muon_idx, cms2.mus_p4().size(), cms2.mus_p4()[tag_muon_idx].pt(),
-		 tagMuonPt(i_hyp), tagMuonRelIso(i_hyp));
+//      int tag_muon_idx = tagMuonIdx(i_hyp);
+//      enum DileptonHypType myType = hyp_typeToHypType(cms2.hyp_type()[i_hyp]);
+//      if (tag_muon_idx != -1 && myType == DILEPTON_EMU)
+// 	  printf("tag muon: %d (out of %u), pt = %.1f (%.1f), iso = %f\n",
+// 		 tag_muon_idx, cms2.mus_p4().size(), cms2.mus_p4()[tag_muon_idx].pt(),
+// 		 tagMuonPt(i_hyp), tagMuonRelIso(i_hyp));
 }

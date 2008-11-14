@@ -37,5 +37,7 @@ TVector3 correctMETforTracks ();
 
 void saveHist(const char* filename, const char* pat="*");
 
+double trkIsolation(int trk_index);
+
 extern class TDirectory *histo_directory;
 #endif

@@ -876,3 +876,48 @@ void saveHist(const char* filename, const char* pat)
      
      delete iter ;
 }
+
+double trkIsolation(int trk_index) {
+  //
+  // calculate track isolation following electron isolation definition in ElectronMaker.cc
+  //
+  // sum up all track.pt around track if track fulfills:
+  // dR < 0.3
+  // dR > 0.01
+  // d0 < 0.1
+  // dZ < 0.5
+  // pT >= 1.0
+  // nHits > 7
+
+  float dRConeMin = 0.01;
+  float dRConeMax = 0.3;
+  float vtxDiffZMax = 0.5;
+  float tkVtxDMax = 0.1;
+  float ptMin = 1.0;
+  int nHits = 7;
+
+  double isoResult = -10.;
+  if( cms2.trks_trk_p4().size() == 0 ) {
+    std::cout << "Configuration Error: track collection is not set!" <<std::endl;
+    return isoResult;
+  }
+
+  double sumPt = 0;
+
+  for ( unsigned int trk = 0;
+	trk < cms2.trks_trk_p4().size();
+	++trk ) {
+    if ( cms2.trks_z0()[trk] > tkVtxDMax ) continue;
+    double pt = cms2.trks_trk_p4()[trk].pt();
+    if (  pt < ptMin ) continue;
+    if ( cms2.trks_validHits()[trk] <= nHits ) continue;
+    double dR = ROOT::Math::VectorUtil::DeltaR(cms2.trks_trk_p4()[trk_index], cms2.trks_trk_p4()[trk]);
+    if (dR < dRConeMin) continue;
+    if ( dR > dRConeMax ) continue;
+    double dZ = fabs(cms2.trks_z0()[trk_index] - cms2.trks_z0()[trk]);
+    if ( dZ >= vtxDiffZMax) continue;
+    sumPt += pt;
+  }
+
+  return sumPt;
+}

@@ -61,6 +61,9 @@ enum {
   DSG_ELFAKE_NUMERATOR,
   DSG_ELFAKE_NOT_NUMERATOR,
   DSG_MORE_THAN_TWO_TRACKS,
+  DSG_TRACK_Z_VETO_HYP,
+  DSG_Z_TRACK_VETO_TRACKS,
+  DSG_Z_TRACK_VETO_HYP_OR_TRACKS
 };
 
 inline cuts_t CUT_BIT (int i)
@@ -70,20 +73,22 @@ inline cuts_t CUT_BIT (int i)
 
 // define useful cut combinations here
 const static cuts_t dsg_baseline_cuts = 
-		(CUT_BIT(DSG_MORE_THAN_TWO_TRACKS)) |
-		(CUT_BIT(DSG_LT_PT)		) | 
-		(CUT_BIT(DSG_LL_PT)		) | 
-		(CUT_BIT(DSG_OPP_SIGN)		) | 
-		(CUT_BIT(DSG_PASS4_MET)		) |  
-		(CUT_BIT(DSG_PASS2_MET)		) |  
-		(CUT_BIT(DSG_LT_GOOD)		) | 
-		(CUT_BIT(DSG_LL_GOOD)		) | 
-		(CUT_BIT(DSG_LT_CALOISO)	) |  
-		(CUT_BIT(DSG_LL_CALOISO)	) |  
-		(CUT_BIT(DSG_PASS_ZVETO)	) | 
-		(CUT_BIT(DSG_PASS_ADDZVETO)	) | 
-		(CUT_BIT(DSG_PASS_MUON_B_VETO_WITHOUT_PTCUT)	);   
-
+		(CUT_BIT(DSG_MORE_THAN_TWO_TRACKS) |
+		 // 		(CUT_BIT(DSG_PASS_ZVETO)	) | 
+		 // 		(CUT_BIT(DSG_PASS_ADDZVETO)	) | 
+		 // 		(CUT_BIT(DSG_PASS_MUON_B_VETO_WITHOUT_PTCUT) | 
+		 //             (CUT_BIT(DSG_PASS_MUON_B_VETO)) |
+		 (CUT_BIT(DSG_Z_TRACK_VETO_HYP_OR_TRACKS)) |
+		 (CUT_BIT(DSG_LT_PT)		) | 
+		 (CUT_BIT(DSG_LL_PT)		) | 
+		 (CUT_BIT(DSG_OPP_SIGN)		) | 
+		 (CUT_BIT(DSG_PASS4_MET)		) |  
+		 (CUT_BIT(DSG_PASS2_MET)		) |  
+		 (CUT_BIT(DSG_LT_GOOD)		) | 
+		 (CUT_BIT(DSG_LL_GOOD)		) | 
+		 (CUT_BIT(DSG_LT_CALOISO)	) |  
+		 (CUT_BIT(DSG_LL_CALOISO)	) );   
+		  
 const static cuts_t dsg_met_10_cuts = dsg_baseline_cuts | CUT_BIT(DSG_PASS_MET_10);
 
 const static cuts_t dsg_met_1_cuts = dsg_baseline_cuts | CUT_BIT(DSG_PASS_MET_1);
