@@ -1,8 +1,20 @@
 {
-   // final numbers with projected met and flags
-   TCut final_emu_new2  = "((ww_ltgoodmuiso&&ww_llgoodeliso&&hyp_type==1)||(ww_ltgoodeliso&&ww_llgoodmuiso&&hyp_type==2))&&ww_pass4met&&ww_passzveto&&ww_passaddzveto&&hyp_ll_p4.Pt()>20&&ww_oppsign&&hyp_njets==0";
-   TCut final_ee_new2  = "ww_ltgoodeliso&&ww_llgoodeliso&&hyp_type==3&&ww_pass4met&&ww_passzveto&&ww_passaddzveto&&hyp_ll_p4.Pt()>20&&ww_oppsign&&hyp_njets==0";
-   TCut final_mm_new2  = "ww_ltgoodmuiso&&ww_llgoodmuiso&&hyp_type==0&&ww_pass4met&&ww_passzveto&&ww_passaddzveto&&hyp_ll_p4.Pt()>20&&ww_oppsign&&hyp_njets==0";
+   TCut sep08_emu =  "((ww_ltgoodmuiso&&ww_llgoodeliso&&hyp_type==1)||(ww_ltgoodeliso&&ww_llgoodmuiso&&hyp_type==2))&&ww_pass4met&&ww_passzveto&&ww_passaddzveto&&hyp_ll_p4.Pt()>20&&ww_oppsign&&hyp_njets==0";
+
+   // final numbers with projected met and flags (February presentation)
+   TCut final_emu  = "((ww_ltgoodmuiso&&ww_llgoodeliso&&hyp_type==1)||(ww_ltgoodeliso&&ww_llgoodmuiso&&hyp_type==2))&&ww_pass4met&&ww_passzveto&&ww_passaddzveto&&hyp_ll_p4.Pt()>20&&ww_oppsign&&hyp_njets==0";
+   TCut final_ee  = "ww_ltgoodeliso&&ww_llgoodeliso&&hyp_type==3&&ww_pass4met&&ww_passzveto&&ww_passaddzveto&&hyp_ll_p4.Pt()>20&&ww_oppsign&&hyp_njets==0";
+   TCut final_mm  = "ww_ltgoodmuiso&&ww_llgoodmuiso&&hyp_type==0&&ww_pass4met&&ww_passzveto&&ww_passaddzveto&&hyp_ll_p4.Pt()>20&&ww_oppsign&&hyp_njets==0";
+
+   TCut final_emu_alljets  = "((ww_ltgoodmuiso&&ww_llgoodeliso&&hyp_type==1)||(ww_ltgoodeliso&&ww_llgoodmuiso&&hyp_type==2))&&ww_pass4met&&ww_passzveto&&ww_passaddzveto&&hyp_ll_p4.Pt()>20&&ww_oppsign";
+
+   TCut final_emu_noeliso  = "((ww_ltgoodmuiso&&ww_llgoodel&&hyp_type==1)||(ww_ltgoodel&&ww_llgoodmuiso&&hyp_type==2))&&ww_pass4met&&ww_passzveto&&ww_passaddzveto&&hyp_ll_p4.Pt()>20&&ww_oppsign&&hyp_njets==0";
+   TCut final_emu_noelis_noelid  = "((ww_ltgoodmuiso&&hyp_type==1)||(ww_llgoodmuiso&&hyp_type==2))&&ww_pass4met&&ww_passzveto&&ww_passaddzveto&&hyp_ll_p4.Pt()>20&&ww_oppsign&&hyp_njets==0";
+   TCut final_emu_noeliso_samesign  = "((ww_ltgoodmuiso&&ww_llgoodel&&hyp_type==1)||(ww_ltgoodel&&ww_llgoodmuiso&&hyp_type==2))&&ww_pass4met&&ww_passzveto&&ww_passaddzveto&&hyp_ll_p4.Pt()>20&&!ww_oppsign&&hyp_njets==0";
+
+   TCut iso("hyp_lt_p4.pt()/(hyp_lt_p4.pt()+els_tkIso[hyp_lt_index]+els_ecalJuraIso[hyp_lt_index]+els_hcalConeIso[hyp_lt_index])-0.001>0.9");
+   TCut final_emu_nomet  = "((ww_ltgoodmuiso&&ww_llgoodeliso&&hyp_type==1)||(ww_ltgoodeliso&&ww_llgoodmuiso&&hyp_type==2))&&ww_passzveto&&ww_passaddzveto&&hyp_ll_p4.Pt()>20&&ww_oppsign&&hyp_njets==0";
+/////////////////////////////////// OLD STUFF /////////////////////
 
    // divide hypotheses
    TCut ee (" abs(hyp_lt_id)==11 && abs(hyp_ll_id)==11");
@@ -39,10 +51,12 @@
    TCut metcut_emu = (em||me) && "hyp_met>20";
    TCut metcut_ll = (ee||mm) && "hyp_met>30 && abs(hyp_p4.mass()-91)>15 && (hyp_met/hyp_p4.pt()>0.6 || acos(cos(hyp_metPhi-hyp_p4.Phi()-3.1416))>0.25)";
    TCut metcut = metcut_emu || metcut_ll;
-   
+
+
    // first set of cuts
-   TCut final_emu  = ((gd_lt_muo+gd_ll_ele+"hyp_type==1")||(gd_lt_ele+gd_ll_muo+"hyp_type==2"))+metcut+"hyp_ll_p4.Pt()>20&&hyp_lt_id*hyp_ll_id==-143&&hyp_njets==0";
+   TCut feb08_noflags_emu  = ((gd_lt_muo+gd_ll_ele+"hyp_type==1")||(gd_lt_ele+gd_ll_muo+"hyp_type==2"))+metcut+"hyp_ll_p4.Pt()>20&&hyp_lt_id*hyp_ll_id==-143&&hyp_njets==0";
+/*
    TCut final_emu_new  = "((ww_ltgoodmuiso&&ww_llgoodeliso&&hyp_type==1)||(ww_ltgoodeliso&&ww_llgoodmuiso&&hyp_type==2))&&ww_pass2met&&ww_passzveto&&hyp_ll_p4.Pt()>20&&ww_oppsign&&hyp_njets==0";
-   
+*/ 
 
 }
