@@ -1,13 +1,12 @@
 #!/bin/bash
-cvs co -r CMSSW_2_1_9 PhysicsTools/PatAlgos/python
+cvs co -r CMSSW_2_1_11 PhysicsTools/PatAlgos/python
 cvs update -r V04-13-01 PhysicsTools/PatAlgos/python/recoLayer0/electronId_cff.py
 cvs update -r V04-13-01 PhysicsTools/PatAlgos/python/producersLayer1/electronProducer_cfi.py
 cvs co -r V00-16-07  DataFormats/RecoCandidate                        
 cvs co -r V00-02-04  EgammaAnalysis/EgammaIsolationProducers          
 cvs co -r V01-01-06  PhysicsTools/IsolationAlgos                      
 cvs co -r V00-02-00  RecoEgamma/EgammaIsolationAlgos
-wget http://www.hep.ucsb.edu/people/kalavase/CMS2/electronIsolation_cff.py
-mv electronIsolation_cff.py PhysicsTools/PatAlgos/python/recoLayer0
+mv CMS2/Configuration/electronIsolation_cff.py PhysicsTools/PatAlgos/python/recoLayer0
 
 
 
