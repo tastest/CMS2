@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/4
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: ElToMuAssMaker.h,v 1.2 2008/09/13 08:07:22 jmuelmen Exp $
+// $Id: ElToMuAssMaker.h,v 1.1 2008/06/13 16:44:44 kalavase Exp $
 //
 //
 #ifndef CMS2_ELTOMUASSMAKER_H
@@ -38,8 +38,7 @@ private:
      virtual void produce(edm::Event&, const edm::EventSetup&);
      virtual void endJob() ;
       
-     // ----------member data ---------------------------
-     double m_minDR;
+      // ----------member data ---------------------------
 };
 
 

@@ -11,7 +11,7 @@
 //
 // Original Author:  Frank Golf
 //         Created:  Wed Jun 25 18:32:24 UTC 2008
-// $Id: MuToJetAssMaker.cc,v 1.2 2008/09/13 08:07:23 jmuelmen Exp $
+// $Id: MuToJetAssMaker.cc,v 1.1 2008/07/02 02:28:07 jmuelmen Exp $
 //
 //
 
@@ -38,10 +38,12 @@ typedef math::XYZTLorentzVector LorentzVector;
 using std::vector;
 
 MuToJetAssMaker::MuToJetAssMaker(const edm::ParameterSet& iConfig)
-     : m_minDR(iConfig.getParameter<double>("minDR"))
 {
      produces<vector<int>   >("musclosestJet").setBranchAlias("mus_closestJet");	// muon closest to jet
      produces<vector<float> >("musjetdr"     ).setBranchAlias("mus_jetdr"     );     
+     
+     minDR = iConfig.getParameter<double>("minDR");
+
 }
 
 void MuToJetAssMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
@@ -67,7 +69,7 @@ void MuToJetAssMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
        double mu_eta = mus_it->Eta();
        double mu_phi = mus_it->Phi();
        
-       double minDR = m_minDR;
+       double minDR   = 999;
        unsigned int i = 0;
        int index      = -999; 
 

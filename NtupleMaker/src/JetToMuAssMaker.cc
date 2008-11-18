@@ -11,7 +11,7 @@
 //
 // Original Author:  Oliver Gutsche
 //         Created:  Tue Jun 17 20:40:42 UTC 2008
-// $Id: JetToMuAssMaker.cc,v 1.3 2008/09/13 09:26:04 jmuelmen Exp $
+// $Id: JetToMuAssMaker.cc,v 1.1 2008/06/17 23:16:00 gutsche Exp $
 //
 //
 
@@ -38,10 +38,11 @@ typedef math::XYZTLorentzVector LorentzVector;
 using std::vector;
 
 JetToMuAssMaker::JetToMuAssMaker(const edm::ParameterSet& iConfig)
-     : m_minDR(iConfig.getParameter<double>("minDR"))
 {
      produces<vector<int> >("jetsclosestMuon").setBranchAlias("jets_closestMuon");	// muon closest to jet
-     produces<vector<double> >("jetsclosestMuonDR").setBranchAlias("jets_closestMuon_DR");	// Delta R of muon closest to jet
+     
+     minDR = iConfig.getParameter<double>("minDR");
+
 }
 
 void JetToMuAssMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
@@ -49,7 +50,6 @@ void JetToMuAssMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
      using namespace edm;
      // make vectors to hold the information
      std::auto_ptr<vector<int> > vector_jets_closestMuon(new vector<int>);        
-     std::auto_ptr<vector<double> > vector_jets_closestMuon_DR(new vector<double>);        
      // get muons
      Handle<vector<LorentzVector> > mus_p4_h;
      iEvent.getByLabel("muonMaker", "musp4", mus_p4_h);  
@@ -66,7 +66,7 @@ void JetToMuAssMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
        double jet_eta = jets_it->Eta();
        double jet_phi = jets_it->Phi();
        
-       double minDR = m_minDR;
+       double minDR = 0.1;
        unsigned int i = 0;
        int index = -1; 
        for(vector<LorentzVector>::const_iterator mus_it = mus_p4_h->begin();
@@ -82,11 +82,9 @@ void JetToMuAssMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
        }
        // fill vector
        vector_jets_closestMuon->push_back(index);
-       vector_jets_closestMuon_DR->push_back(minDR);
      }
      // store vectors
      iEvent.put(vector_jets_closestMuon, "jetsclosestMuon");
-     iEvent.put(vector_jets_closestMuon_DR, "jetsclosestMuonDR");
 }
 
 // ------------ method called once each job just before starting event loop  ------------
