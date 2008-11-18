@@ -9,7 +9,7 @@
 #include "LooperBase.h"
 #include "DileptonHist.h"
 #include "NMinus1Hist.h"
-#include "CMS2.h"
+#include "../CORE/CMS2.h"
 
 // enums for cuts
 enum {
@@ -70,8 +70,8 @@ const static cuts_t ww_baseline_cuts =
      (CUT_BIT(WW_LT_PT)		) | 
      (CUT_BIT(WW_LL_PT)		) | 
      (CUT_BIT(WW_OPP_SIGN)		) | 
-     (CUT_BIT(WW_PASS4_MET)		) |  
-     (CUT_BIT(WW_PASS2_MET)		) |  
+     (CUT_BIT(WW_PASS4_METCORR)		) |  
+     (CUT_BIT(WW_PASS2_METCORR)		) |  
      (CUT_BIT(WW_LT_GOOD)		) | 
      (CUT_BIT(WW_LL_GOOD)		) | 
      (CUT_BIT(WW_LT_CALOISO)	) |  

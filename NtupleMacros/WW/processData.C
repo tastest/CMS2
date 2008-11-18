@@ -29,85 +29,78 @@ const char* outFile = "processed_data_tag.root";
 bool runWW    = true;
 bool runWZ    = false;
 bool runZZ    = false;
-bool runWjets = true;
-bool runDYee  = true;
-bool runDYmm  = true;
-bool runDYtt  = true;
-bool runttbar = true;
-bool runtW    = true;
+bool runWjets = false;
+bool runDYee  = false;
+bool runDYmm  = false;
+bool runDYtt  = false;
+bool runttbar = false;
+bool runtW    = false;
 
 // Load various tools
 gROOT->SetMacroPath((string(gROOT->GetMacroPath()) + ":" + "../Tools/").c_str());
 
 gROOT->ProcessLine(".x setup.C");
 
-// Load and compile the looping code
-//gROOT->ProcessLine(".L fkwLoopingFunctionFast.C+");
-//gROOT->ProcessLine(".L ClaudioLoopingFunctionFast.C+");
-
 // read dataset prefix
- ifstream f;
- f.open("dataset.txt");
- if ( ! f.is_open() ) {
-   cout << "Dataset location is not set. Please create dataset.txt file that has dataset prefix" <<endl;
+ string dataset;
+ if ( ! gSystem->Getenv("CMS2_NTUPLE_LOCATION") ){
+   cout << "ERROR: Dataset location is not set. Please set CMS2_NTUPLE_LOCATION." <<endl;
    return;
  }
- string dataset;
- f >> dataset;
- f.close();
-
+ dataset = gSystem->Getenv("CMS2_NTUPLE_LOCATION");
+ 
 //WW file
 TChain *fWW = new TChain("Events");
 if (runWW) {
-  fWW->Add((dataset+"/ww.root").c_str());
+  fWW->Add((dataset+"/cms2-V00-04-00/merge_WW.root").c_str());
 }
 
 //WZ file
 TChain *fWZ = new TChain("Events");
 if (runWZ) {
-  fWZ->Add("/data/tmp/dietcms2/cms2_WZ_signal_postprocessed_a38953977b4f365d80e08a78eaaff932/ntuple_signal_1*.root");
+  fWZ->Add((dataset+"/cms2-V00-05-00/merge_WZ.root").c_str());
 }
 
 //ZZ file
 TChain *fZZ = new TChain("Events");
 if (runZZ) {
-  fZZ->Add("/data/tmp/dietcms2/cms2_ZZ_signal_postprocessed_a38953977b4f365d80e08a78eaaff932/ntuple_signal_1*.root");
+  fZZ->Add((dataset+"/cms2-V00-05-00/merge_ZZ.root").c_str());
 }
 
 //Wjets file
 TChain *fWjets = new TChain("Events");
 if (runWjets) {
-  fWjets->Add((dataset+"/wjets.root").c_str());
+  fWjets->Add((dataset+"/cms2-V00-04-01/merge_Wjet.root").c_str());
 }
 
 //DYee file
 TChain *fDYee = new TChain("Events");
 if (runDYee) {
-  fDYee->Add((dataset+"/dy.root").c_str());
+  fDYee->Add((dataset+"/cms2-V00-04-01/merge_DY.root").c_str());
 }
 
 //DYmm file
 TChain *fDYmm = new TChain("Events");
 if (runDYmm) {
-  fDYmm->Add((dataset+"/dy.root").c_str());
+  fDYmm->Add((dataset+"/cms2-V00-04-01/merge_DY.root").c_str());
 }
 
 //DYtt file
 TChain *fDYtt = new TChain("Events");
 if (runDYtt) {
-  fDYtt->Add((dataset+"/dy.root").c_str());
+  fDYtt->Add((dataset+"/cms2-V00-04-01/merge_DY.root").c_str());
 }
 
 //ttbar file
 TChain *fttbar = new TChain("Events");
 if (runttbar) {
-  fttbar->Add((dataset+"/ttbar.root").c_str());
+  fttbar->Add((dataset+"/cms2-V00-04-01/merge_ttbar.root").c_str());
 }
 
 //tW file
 TChain *ftW = new TChain("Events");
 if (runtW) {
-  ftW->Add((dataset+"/tw.root").c_str());
+  ftW->Add((dataset+"/cms2-V00-04-00/merge_tW.root").c_str());
 }
 
 // Define colors numbers:

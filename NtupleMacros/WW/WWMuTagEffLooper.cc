@@ -1,6 +1,6 @@
 #include <unistd.h>
-#include "selections.h"
-#include "CMS2.h"
+#include "../CORE/selections.h"
+#include "../CORE/CMS2.h"
 #include "WWLooper.h"
 
 WWMuTagEffLooper::WWMuTagEffLooper (Sample s, cuts_t c, cuts_t muc, const char *fname) 

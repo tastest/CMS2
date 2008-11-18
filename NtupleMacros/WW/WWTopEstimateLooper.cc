@@ -1,6 +1,6 @@
 #include <unistd.h>
-#include "selections.h"
-#include "CMS2.h"
+#include "../CORE/selections.h"
+#include "../CORE/CMS2.h"
 #include "WWLooper.h"
 
 WWTopEstimateLooper::WWTopEstimateLooper (Sample s, const double *eff,
