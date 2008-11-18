@@ -1,5 +1,5 @@
-#include "selections.h"
-#include "CMS2.h"
+#include "../CORE/selections.h"
+#include "../CORE/CMS2.h"
 #include "DSGLooper.h"
 
 DSGResultsLooper::DSGResultsLooper (Sample s, cuts_t c, const char *fname) 

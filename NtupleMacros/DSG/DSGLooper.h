@@ -9,7 +9,7 @@
 #include "LooperBase.h"
 #include "DileptonHist.h"
 #include "NMinus1Hist.h"
-#include "CMS2.h"
+#include "../CORE/CMS2.h"
 
 // enums for cuts
 enum {
