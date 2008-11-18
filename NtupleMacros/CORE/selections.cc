@@ -244,7 +244,7 @@ bool sumEt10(double sumEt) {
 // in WW selection to 1%
 //-------------------------------------------
 bool sumEt1(double sumEt) {
-  if ( sumEt < 550 ) return false; // good for ~1%? currently "optimizing"
+  if ( sumEt < 525 ) return false; // good for ~1%? currently "optimizing"
   return true;
 }
 
