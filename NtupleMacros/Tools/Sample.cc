@@ -1,8 +1,8 @@
 #include "TChain.h"
 #include "Sample.h"
 #include "utilities.h"
-#include "selections.h"
-#include "CMS2.h"
+#include "../CORE/selections.h"
+#include "../CORE/CMS2.h"
 #include <cstdlib>
 #include <string>
 #include <iostream>

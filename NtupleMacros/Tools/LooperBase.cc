@@ -5,7 +5,7 @@
 #include "LooperBase.h"
 #include "Sample.h"
 #include "utilities.h"
-#include "CMS2.h"
+#include "../CORE/CMS2.h"
 
 LooperBase::LooperBase (Sample s) : sample(s)
 {

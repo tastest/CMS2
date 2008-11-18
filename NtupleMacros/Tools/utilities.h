@@ -5,7 +5,7 @@
 #include "TVector3.h"
 #include <algorithm>
 #include <set>
-#include "selections.h"
+#include "../CORE/selections.h"
 #include "Math/VectorUtil.h"
 
 unsigned int encodeTriLeptonCand(unsigned int bucket,unsigned int first, unsigned int second, unsigned int third);
@@ -33,11 +33,7 @@ struct DorkyEventIdentifier {
 extern std::set<DorkyEventIdentifier> already_seen;
 bool is_duplicate (const DorkyEventIdentifier &id);
 
-TVector3 correctMETforTracks ();
-
 void saveHist(const char* filename, const char* pat="*");
-
-double trkIsolation(int trk_index);
 
 extern class TDirectory *histo_directory;
 #endif
