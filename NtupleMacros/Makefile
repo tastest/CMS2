@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.7 2008/11/14 02:28:46 gutsche Exp $
+# $Id: Makefile,v 1.8 2008/11/18 16:24:51 dmytro Exp $
 
 CC = g++
 INCLUDE = -ITools -IWW -IDSG
@@ -6,6 +6,10 @@ CFLAGS = -Wall -g -O2 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLA
 
 LINKER = g++
 LINKERFLAGS = $(shell root-config --ldflags)
+
+CORESOURCES = $(wildcard CORE/*.cc) 
+COREOBJECTS = $(CORESOURCES:.cc=.o) # Tools/linkdef_out.o
+CORELIB = libCMS2NtupleMacrosCORE.so
 
 TOOLSSOURCES = $(wildcard Tools/*.cc) 
 TOOLSOBJECTS = $(TOOLSSOURCES:.cc=.o) # Tools/linkdef_out.o
@@ -22,7 +26,7 @@ DSGLIB = libCMS2NtupleMacrosDSG.so
 DICTOBJECTS = linkdef_out.o
 DICTLIB = libCMS2Dict.so
 
-LIBS = $(TOOLSLIB) $(WWLIB) $(DSGLIB) $(DICTLIB)
+LIBS = $(CORELIB) $(TOOLSLIB) $(WWLIB) $(DSGLIB) $(DICTLIB)
 
 WWTABLES = WW_Results.tbl WW_Results_softmu.tbl WW_NoMuTag.tbl WW_NoTrackJets.tbl WW_NoCaloIso.tbl \
 	   WW_OldResults.tbl WW_OldResults_trkjets.tbl WW_OldResults_caloiso.tbl WW_OldResults_muveto.tbl \
@@ -39,6 +43,9 @@ libs:	$(LIBS)
 
 $(TOOLSLIB):	$(TOOLSOBJECTS) 
 	$(LINKER) $(LINKERFLAGS) -shared $(TOOLSOBJECTS) -o $@ 
+
+$(CORELIB):	$(COREOBJECTS) 
+	$(LINKER) $(LINKERFLAGS) -shared $(COREOBJECTS) -o $@ 
 
 $(WWLIB):	$(WWOBJECTS) 
 	$(LINKER) $(LINKERFLAGS) -shared $(WWOBJECTS) -o $@ 
