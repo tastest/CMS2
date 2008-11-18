@@ -31,6 +31,7 @@ makeCMS2Files(std::string fname, std::string className = "") {
   headerf << "#ifndef " << Classname << "_H" << endl;
   headerf << "#define " << Classname << "_H" << endl;
   headerf << "#include \"Math/LorentzVector.h\"" << endl;
+  headerf << "#include \"Math/Point3D.h\"" << endl;
   headerf << "#include \"TMath.h\"" << endl;
   headerf << "#include \"TBranch.h\"" << endl;
   headerf << "#include \"TTree.h\"" << endl << endl;
