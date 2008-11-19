@@ -31,6 +31,7 @@ TVector3 correctMETforTracks()
     TDirectory* currentDir = gDirectory;
     TFile *metcorr_file = TFile::Open("../data/metcorr.root", "read");
     if ( !metcorr_file ) metcorr_file = TFile::Open("data/metcorr.root", "read");
+    if ( !metcorr_file ) metcorr_file = TFile::Open("../../data/metcorr.root", "read");
     assert( metcorr_file );
     rfhist = dynamic_cast<TH2D*>(metcorr_file->Get("rf_pt_mbin"));
     assert( rfhist );
