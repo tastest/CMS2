@@ -37,7 +37,7 @@ bool runttbar = true;
 bool runtW    = true;
 
 // Load various tools
-gROOT->SetMacroPath((string(gROOT->GetMacroPath()) + ":" + "../Tools/").c_str());
+gROOT->SetMacroPath((string(gROOT->GetMacroPath()) + ":" + "../../Tools/").c_str());
 
 gROOT->ProcessLine(".x setup.C");
 
