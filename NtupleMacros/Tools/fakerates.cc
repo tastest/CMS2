@@ -3,10 +3,10 @@
 #include "../CORE/CMS2.h"
 #include "../CORE/selections.h"
 
-static TFile *el_fakeRateFile_v2_2 = TFile::Open("data/fakeRates-v2_2_allpt.root", "read"); 
+static TFile *el_fakeRateFile_v2_2 = TFile::Open("$CMSSW_BASE/src/CMS2/NtupleMacros/data/fakeRates-v2_2_allpt.root", "read"); 
 static TH2F  *el_fakeRate_v2_2 = dynamic_cast<TH2F *>(el_fakeRateFile_v2_2->Get("fakeRate_wo_leading_elt_qcd"));
 
-static TFile *el_fakeRateFile_v5 = TFile::Open("data/fakeRates-v5_5.root", "read"); 
+static TFile *el_fakeRateFile_v5 = TFile::Open("$CMSSW_BASE/src/CMS2/NtupleMacros/data/fakeRates-v5_5.root", "read"); 
 static TH2F  *el_fakeRate_v5 = dynamic_cast<TH2F *>(el_fakeRateFile_v5->Get("fakeRateTemplate_wo_leading_elt_fakeRatesFull"));
 static TH2F  *el_fakeRate_err_v5 = dynamic_cast<TH2F *>(el_fakeRateFile_v5->Get("fakeRateTemplateError_wo_leading_elt_fakeRatesFull"));
 
