@@ -7,6 +7,7 @@
 #include "TH1.h"
 #include "DileptonHist.h"
 #include "LooperBase.h"
+#include "LooperTypes.h"
 
 // extension of the dilepton hypo hist:
 //
