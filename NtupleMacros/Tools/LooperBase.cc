@@ -4,12 +4,19 @@
 #include "TStopwatch.h"
 #include "LooperBase.h"
 #include "Sample.h"
-#include "utilities.h"
+#include "tools.h"
 #include "../CORE/CMS2.h"
 
-LooperBase::LooperBase (Sample s) : sample(s)
+LooperBase::LooperBase (Sample s, cuts_t c, const char *fname) : 
+     sample(s), cuts(c)
 {
-
+     if (fname != 0 && strlen(fname) != 0) {
+	  logfile = fopen(fname, "a");
+	  if (logfile == 0)
+	       perror("opening log file");
+     } else {
+	  logfile = stdout;
+     }
 }
 
 LooperBase::~LooperBase ()
@@ -17,13 +24,15 @@ LooperBase::~LooperBase ()
 
 }
 
-void LooperBase::Begin ()
+double LooperBase::Weight (int i_hyp)
 {
-     printf("Processing %s\n", sample.name.c_str());
+     return cms2.evt_scale1fb() * sample.kFactor;
 }
 
 uint64 LooperBase::Loop ()
 {
+     printf("Processing %s\n", sample.name.c_str());
+     BookHistos();
      Begin();
      TChain *chain = sample.chain;
      uint64 nEventsChain = chain->GetEntries();  // number of entries in chain --> number of events from all files
@@ -44,12 +53,16 @@ uint64 LooperBase::Loop ()
 	  // need to call TFile::Open(), since the file is not
 	  // necessarily a plain TFile (TNetFile, TDcacheFile, etc)
 	  TFile *f = TFile::Open(currentFile->GetTitle()); 
+	  if (f == 0) {
+	       fprintf(stderr, "File %s could not be opened.  Aborting looper.\n", 
+		       currentFile->GetTitle());
+	       exit(1);
+	  }
 	  TTree *tree = (TTree*)f->Get("Events");
 	  if (tree == 0) { 
-	       fprintf(stderr, "***HELP ME!  Events TREE IS NOT ACCESSIBLE IN %s!***\n",
-		       currentFile->GetTitle());
-	       delete f;
-	       continue;
+	       fprintf(stderr, "Events tree is not accessible in file %s.  "
+		       "Aborting looper.\n", currentFile->GetTitle());
+	       exit(1);
 	  }
 
 	  cms2.Init(tree);  // set branch addresses for TTree tree
@@ -86,22 +99,22 @@ uint64 LooperBase::Loop ()
 	       if ( !filterByProcess(sample.process) ) continue;
 	       
 	       // call the event function
-	       Event();
-
+	       FillEventHistos();
+	       
 	       // call the dilepton candidate function
 	       for (unsigned int i_hyp = 0, nHyps = cms2.hyp_type().size();
 		    i_hyp < nHyps; ++i_hyp ) {
-		    Dilep(i_hyp);
+		    FillDilepHistos(i_hyp);
 	       }
 	       // trilepton
 	       for (unsigned int i_hyp = 0, nHyps = cms2.hyp_trilep_bucket().size();
 		    i_hyp < nHyps; ++i_hyp ) {
-		    Trilep(i_hyp);
+		    FillTrilepHistos(i_hyp);
 	       }
 	       // quadlepton
 	       for (unsigned int i_hyp = 0, nHyps = cms2.hyp_quadlep_bucket().size();
 		    i_hyp < nHyps; ++i_hyp ) {
-		    Quadlep(i_hyp);
+		    FillQuadlepHistos(i_hyp);
 	       }
 	       
 	  }
@@ -123,5 +136,9 @@ uint64 LooperBase::Loop ()
 //      printf("Total duplicate count: %d.  Total weight %f\n",   
 // 	    duplicates_total_n, duplicates_total_weight);
      End();
+     if (logfile != stdout)
+	  fclose(logfile);
+     if (sample.chain != 0)
+	  delete sample.chain;
      return nEventsTotal;
 }
