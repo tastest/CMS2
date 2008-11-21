@@ -33,9 +33,9 @@ void DileptonHist::build (const Sample &sample, const string &var_name,
 	  histos[i]->Sumw2();
 	  histos[i]->SetFillColor(sample.histo_color);
 	  histos[i]->SetLineColor(sample.histo_color);
-	  TH1::AddDirectory(dir_stat);
+// 	  TH1::AddDirectory(dir_stat);
      }
-     gDirectory = old_gDirectory;
+//      gDirectory = old_gDirectory;
      memset(entries, 0, sizeof(entries));
      memset(integral, 0, sizeof(integral));
 }
