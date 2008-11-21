@@ -12,6 +12,9 @@ data/ - ROOT files with corrections, fake rates etc
 
 Tools/ - common tools
 
+Templates/ - a template directory for a simple dilepton
+looper (to be extended by the user into a real analysis)
+
 
 #################################################################
                       Ntuple Location and Naming
@@ -51,21 +54,25 @@ guidance:
                       HOWTO Run New Looper                      
 #################################################################
 
-NOTE: the make files need to be reorganized. Below is just an
-      example how to use what is available.
-
 Set CMS2_NTUPLE_LOCATION environment variable that points to data 
 location. 
 
   setenv CMS2_NTUPLE_LOCATION /data/tmp/
 
-Push the button to get baseline WW result:
+To make a new analysis looper, type
+
+  make analysis NAME=<name of your analysis>
+
+This will give you a skeleton looper in a directory named
+after your analysis. 
+
+In that directory, push the button to get baseline result:
   
-  make WW_Results.tbl
+  make Results.tbl
 
-10 mins later, print results. 
+When it's done, print results. 
 
-  cat WW_Results.tbl
+  cat Results.tbl
 
 After deciphering it for a bit, you should get something like that:
 
@@ -76,10 +83,11 @@ After deciphering it for a bit, you should get something like that:
 | ee  |  61.7 +/- 3.1 |  2.3 +/- 0.6 | 2.1 +/- 0.5 |  4.1 +/- 2.0 | 2.0 +/- 1.4 |  0.0 +/- 0.0 |  0.0 +/- 0.0 |  16.6 +/- 2.7 |  6.4 +/- 0.9 |  95.3 +/-  4.9 |
 
 Output as of 11/18/2008:
-  * feb selection
+  * feb WW selection
   * nTrk>2
   * MET->tcMET
   * el with calo iso - 0.92
   * trkJet veto
   * extra muon veto
 
+See also the AAAREADME.txt file in the analysis directory.
