@@ -17,6 +17,10 @@ Looper::Looper (Sample s, cuts_t c, const char *fname)
 
 void Looper::BookHistos ()
 {
+     // change to histogram directory
+     TDirectory *old_gDirectory = gDirectory;
+     gDirectory = histo_directory;
+
      // book histograms the manual way:
      for (int i = 0; i < 4; ++i) {
 	  helPt[i] = new TH1F(Form("%s_%s_%s", SampleName().c_str(), "elPt", dilepton_hypo_names[i]), ";el pt", 100, 0, 100);
@@ -32,6 +36,9 @@ void Looper::BookHistos ()
      // for the dilepton mass plot, we relax any cut to do with the Z 
      hdilMass		= new NMinus1Hist(sample, "dilMass",	 100, 0, 300, cuts, 
 					  CUT_BIT(CUT_PASS_ZVETO) | CUT_BIT(CUT_PASS_ADDZVETO) | CUT_BIT(CUT_IN_Z_WINDOW));
+
+     // change back to current directory
+     gDirectory = old_gDirectory;
 }
 
 cuts_t Looper::DilepSelect (int i_hyp)
@@ -216,17 +223,24 @@ void Looper::FillDilepHistos (int i_hyp)
      if ((cuts_passed & cuts) == cuts) {
 	  // and then fill
 	  if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
+	       helPt[DILEPTON_ALL]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
 	       helPt[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
 	  } else {
+	       hmuPt[DILEPTON_ALL]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
 	       hmuPt[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
 	  }
 	  if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
+	       helPt[DILEPTON_ALL]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
 	       helPt[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
 	  } else {
+	       hmuPt[DILEPTON_ALL]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
 	       hmuPt[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
 	  }
 	  for (unsigned int i = 0; i < cms2.jets_p4().size(); ++i) {
 	       // histogram the eta and pt of all jets
+	       hCaloEtaPt[DILEPTON_ALL]->Fill(cms2.jets_p4()[i].pt() * cms2.jets_tq_noCorrF()[i],
+					cms2.jets_p4()[i].eta(),
+					weight);
 	       hCaloEtaPt[myType]->Fill(cms2.jets_p4()[i].pt() * cms2.jets_tq_noCorrF()[i],
 					cms2.jets_p4()[i].eta(),
 					weight);
