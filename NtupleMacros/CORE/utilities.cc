@@ -27,7 +27,7 @@ TH2D* rfhist = 0;
 TVector3 correctMETforTracks()
 {
   if ( ! rfhist ){
-    printf("loading RF histo\n");
+    printf("correctMETforTracks(): loading RF histo\n");
     TDirectory* currentDir = gDirectory;
     TFile *metcorr_file = TFile::Open("../data/metcorr.root", "read");
     if ( !metcorr_file ) metcorr_file = TFile::Open("data/metcorr.root", "read");
