@@ -88,8 +88,8 @@ const static cuts_t baseline_cuts =
      (CUT_BIT(CUT_LT_PT)		) | 
      (CUT_BIT(CUT_LL_PT)		) | 
      (CUT_BIT(CUT_OPP_SIGN)		) | 
-     (CUT_BIT(CUT_PASS4_MET)		) |  
-     (CUT_BIT(CUT_PASS2_MET)		) |  
+     (CUT_BIT(CUT_PASS4_METCORR)	) |  
+     (CUT_BIT(CUT_PASS2_METCORR)	) |  
      (CUT_BIT(CUT_LT_GOOD)		) | 
      (CUT_BIT(CUT_LL_GOOD)		) | 
      (CUT_BIT(CUT_LT_CALOISO)	) |  
