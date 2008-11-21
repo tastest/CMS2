@@ -17,10 +17,6 @@ Looper::Looper (Sample s, cuts_t c, const char *fname)
 
 void Looper::BookHistos ()
 {
-     // change to histogram directory
-     TDirectory *old_gDirectory = gDirectory;
-     gDirectory = histo_directory;
-
      // book histograms the manual way:
      for (int i = 0; i < 4; ++i) {
 	  helPt[i] = new TH1F(Form("%s_%s_%s", SampleName().c_str(), "elPt", dilepton_hypo_names[i]), ";el pt", 100, 0, 100);
@@ -36,9 +32,6 @@ void Looper::BookHistos ()
      // for the dilepton mass plot, we relax any cut to do with the Z 
      hdilMass		= new NMinus1Hist(sample, "dilMass",	 100, 0, 300, cuts, 
 					  CUT_BIT(CUT_PASS_ZVETO) | CUT_BIT(CUT_PASS_ADDZVETO) | CUT_BIT(CUT_IN_Z_WINDOW));
-
-     // change back to current directory
-     gDirectory = old_gDirectory;
 }
 
 cuts_t Looper::DilepSelect (int i_hyp)

@@ -32,7 +32,13 @@ double LooperBase::Weight (int i_hyp)
 uint64 LooperBase::Loop ()
 {
      printf("Processing %s\n", sample.name.c_str());
+     // change to histogram directory
+     TDirectory *old_gDirectory = gDirectory;
+     gDirectory = histo_directory;
+     // book histos
      BookHistos();
+     // change back to current directory
+     gDirectory = old_gDirectory;
      Begin();
      TChain *chain = sample.chain;
      uint64 nEventsChain = chain->GetEntries();  // number of entries in chain --> number of events from all files
