@@ -9,7 +9,7 @@
 Looper::Looper (Sample s, cuts_t c, const char *fname) 
      : LooperBase(s, c, fname)
 {
-     // zero out the candidate counters
+     // zero out the candidate counters (don't comment this out)
      memset(cands_passing	, 0, sizeof(cands_passing       ));
      memset(cands_passing_w2	, 0, sizeof(cands_passing_w2    ));
      memset(cands_count		, 0, sizeof(cands_count         ));
@@ -17,6 +17,10 @@ Looper::Looper (Sample s, cuts_t c, const char *fname)
 
 void Looper::BookHistos ()
 {
+     //------------------------------------------------------------
+     // Example histo booking; edit for your application
+     //------------------------------------------------------------
+
      // book histograms the manual way:
      for (int i = 0; i < 4; ++i) {
 	  helPt[i] = new TH1F(Form("%s_%s_%s", SampleName().c_str(), "elPt", dilepton_hypo_names[i]), ";el pt", 100, 0, 100);
@@ -34,8 +38,22 @@ void Looper::BookHistos ()
 					  CUT_BIT(CUT_PASS_ZVETO) | CUT_BIT(CUT_PASS_ADDZVETO) | CUT_BIT(CUT_IN_Z_WINDOW));
 }
 
+cuts_t Looper::EventSelect ()
+{
+     //------------------------------------------------------------
+     // In an event-based analysis, you would make your cuts here
+     //------------------------------------------------------------
+
+     cuts_t ret = 0;
+     return ret;
+}
+
 cuts_t Looper::DilepSelect (int i_hyp)
 {
+     //------------------------------------------------------------
+     // Example dilepton cuts; edit for your application
+     //------------------------------------------------------------
+
      // cuts are failed until proven otherwise
      cuts_t ret = 0;
 
@@ -188,8 +206,39 @@ cuts_t Looper::DilepSelect (int i_hyp)
      return ret;
 }
 
+cuts_t Looper::TrilepSelect (int i_hyp)
+{
+     //------------------------------------------------------------
+     // In a trilepton analysis, you would make your cuts here
+     //------------------------------------------------------------
+
+     cuts_t ret = 0;
+     return ret;
+}
+
+cuts_t Looper::QuadlepSelect (int i_hyp)
+{
+     //------------------------------------------------------------
+     // In a quadlepton analysis, you would make your cuts here
+     //------------------------------------------------------------
+
+     cuts_t ret = 0;
+     return ret;
+}
+
+void Looper::FillEventHistos ()
+{
+     //------------------------------------------------------------
+     // In an event-based analysis, you would fill your histos here
+     //------------------------------------------------------------
+}
+
 void Looper::FillDilepHistos (int i_hyp)
 {
+     //------------------------------------------------------------
+     // Example dilepton histo filling; edit for your application
+     //------------------------------------------------------------
+
      // everybody histogram needs to know what hypothesis he is 
      const enum DileptonHypType myType = hyp_typeToHypType(cms2.hyp_type()[i_hyp]);
      // and what the event weight is 
@@ -246,8 +295,27 @@ void Looper::FillDilepHistos (int i_hyp)
      hdilMass->Fill(cuts_passed, myType, cms2.hyp_p4()[i_hyp].mass(), weight);
 }
 
+void Looper::FillTrilepHistos (int i_hyp)
+{
+     //------------------------------------------------------------
+     // In a trilepton analysis, you would fill your histos here
+     //------------------------------------------------------------
+}
+
+void Looper::FillQuadlepHistos (int i_hyp)
+{
+     //------------------------------------------------------------
+     // In a quadlepton analysis, you would fill your histos here
+     //------------------------------------------------------------
+}
+
 void Looper::End ()
 {
+     //------------------------------------------------------------
+     //Example status message at the end of a looper; edit for your
+     //application
+     //------------------------------------------------------------
+
      int ret = fprintf(logfile, 
 		       "Sample %10s: Total candidate count (ee em mm all): %8u %8u %8u %8u."
 		       " Total weight %10.1f +- %10.1f %10.1f +- %10.1f %10.1f +- %10.1f %10.1f +- %10.1f\n",   

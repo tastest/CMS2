@@ -184,7 +184,7 @@ const static cuts_t baseline_cuts_zwindow_trkcorr = (baseline_cuts_zwindow &
 // Loopers 
 //----------------------------------------------------------------------
 
-// Looper for a dilepton analysis.  
+// Looper for an analysis.  
 //
 // - switching between files, removing duplicates and other technical stuff is handled by LooperBase
 // - analysis-specific stuff is defined here: 
@@ -204,12 +204,33 @@ public:
 protected:
      // this is where we book our histograms
      virtual void	BookHistos ();
-     // we define an analysis-specific DilepSelect() that checks which
-     // cuts a dilepton candidate passed
+     // we define an analysis-specific EventSelect(), DilepSelect(),
+     // TrilepSelect() and QuadlepSelect() that check which cuts the
+     // event, dilepton/trilepton/quadlepton candidate passes
+     virtual cuts_t	EventSelect	();
      virtual cuts_t	DilepSelect 	(int idx);
-     // we define an analysis-specific FillDilepHistos() that fills our histograms
-     virtual void	FillDilepHistos	(int idx);
-     // at the end of the loop, we want to print a quick status message
+     virtual cuts_t	TrilepSelect 	(int idx);
+     virtual cuts_t	QuadlepSelect 	(int idx);
+     // we define an analysis-specific set of FillEventHistos(),
+     // FillDilepHistos(), FillTrilepHistos() and FillQuadlepHistos()
+     // that fill our histograms.  
+     // 
+     // the framework calls our FillEventHistos() function for every event
+     virtual void	FillEventHistos ();
+     // the framework calls our FillDilepHistos() function for every
+     // dilepton candidate; the argument is the index of the candidate
+     // in the dilepton block
+     virtual void	FillDilepHistos (int idx);
+     // the framework calls our FillTrilepHistos() function for every
+     // trilepton candidate; the argument is the index of the candidate
+     // in the trilepton block
+     virtual void	FillTrilepHistos (int idx);
+     // the framework calls our FillQuadlepHistos() function for every
+     // quadlepton candidate; the argument is the index of the candidate
+     // in the quadlepton block
+     virtual void	FillQuadlepHistos (int idx);
+     // at the end of the loop, we get a callback to do things like
+     // printing a status message
      virtual void	End		();
 
 public:
