@@ -26,6 +26,20 @@ void Looper::BookHistos ()
 	  helPt[i] = new TH1F(Form("%s_%s_%s", SampleName().c_str(), "elPt", dilepton_hypo_names[i]), ";el pt", 100, 0, 100);
 	  hmuPt[i] = new TH1F(Form("%s_%s_%s", SampleName().c_str(), "muPt", dilepton_hypo_names[i]), ";mu pt", 100, 0, 100);
 	  hCaloEtaPt[i] = new TH2F(Form("%s_%s_%s", SampleName().c_str(), "CaloEtaPt", dilepton_hypo_names[i]), ";pt;eta", 100, 0, 100, 10, -5, 5);
+
+	  // call Sumw2 on all histograms
+	  helPt[i]->Sumw2();
+	  hmuPt[i]->Sumw2();
+	  hCaloEtaPt[i]->Sumw2();
+
+	  // set histogram color according to definitions in Tools/Samples.cc
+	  helPt[i]->SetFillColor(sample.histo_color);
+	  helPt[i]->SetLineColor(sample.histo_color);
+	  hmuPt[i]->SetFillColor(sample.histo_color);
+	  hmuPt[i]->SetLineColor(sample.histo_color);
+	  hCaloEtaPt[i]->SetFillColor(sample.histo_color);
+	  hCaloEtaPt[i]->SetLineColor(sample.histo_color);
+
      }
      // or use the N - 1 technology (see NMinus1Hist.h)
      // arguments are as follows: sample, name, binning, required cuts, cuts that are relaxed for the N - 1 plot
