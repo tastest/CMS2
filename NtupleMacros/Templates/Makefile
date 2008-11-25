@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.1 2008/11/20 19:46:18 jmuelmen Exp $
+# $Id: Makefile,v 1.2 2008/11/25 22:42:50 gutsche Exp $
 
 CC = g++
 INCLUDE = -I../Tools -I../CORE
@@ -63,7 +63,7 @@ clean:
 $(TABLES): $(LIBS)
 
 %.tbl %.root %.log:	$(LIBS)
-	echo $(@:.tbl=)"()" | root.exe -b
+	echo $(@:.tbl=)"()" | root.exe -b rootlogon.C
 
 -include $(TOOLSSOURCES:.cc=.d)
 -include $(CORESOURCES:.cc=.d)
