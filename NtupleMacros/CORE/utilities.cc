@@ -10,6 +10,7 @@
 #include "TList.h"
 #include "TRegexp.h"
 #include "TDirectory.h"
+#include "TSystem.h"
 
 #include "Math/LorentzVector.h"
 #include "TMath.h"
@@ -29,9 +30,13 @@ TVector3 correctMETforTracks()
   if ( ! rfhist ){
     printf("correctMETforTracks(): loading RF histo\n");
     TDirectory* currentDir = gDirectory;
-    TFile *metcorr_file = TFile::Open("../data/metcorr.root", "read");
-    if ( !metcorr_file ) metcorr_file = TFile::Open("data/metcorr.root", "read");
-    if ( !metcorr_file ) metcorr_file = TFile::Open("../../data/metcorr.root", "read");
+    TFile *metcorr_file = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/metcorr.root", "read");
+    if ( metcorr_file == 0 ) {
+        std::cout << "$CMS2_LOCATION/NtupleMacros/data/metcorr.root could not be found!!" << std::endl;
+	std::cout << "Please make sure that $CMS2_LOCATION points to your CMS2 directory and that" << std::endl;
+	std::cout << "$CMS2_LOCATION/NtupleMacros/data/metcorr.root exists!" << std::endl;
+        gSystem->Exit(1); 
+    }
     assert( metcorr_file );
     rfhist = dynamic_cast<TH2D*>(metcorr_file->Get("rf_pt_mbin"));
     assert( rfhist );

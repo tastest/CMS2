@@ -1,17 +1,17 @@
-# $Id: Makefile,v 1.2 2008/11/25 22:42:50 gutsche Exp $
+# $Id: Makefile,v 1.3 2008/11/26 22:46:08 gutsche Exp $
 
 CC = g++
-INCLUDE = -I../Tools -I../CORE
+INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
 CFLAGS = -Wall -g -O2 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS) -DTOOLSLIB
 
 LINKER = g++
 LINKERFLAGS = $(shell root-config --ldflags)
 
-CORESOURCES = $(wildcard ../CORE/*.cc) 
+CORESOURCES = $(wildcard ${CMS2_LOCATION}/NtupleMacros/CORE/*.cc) 
 COREOBJECTS = $(CORESOURCES:.cc=.o) 
 CORELIB = libCMS2NtupleMacrosCORE.so
 
-TOOLSSOURCES = $(wildcard ../Tools/*.cc) 
+TOOLSSOURCES = $(wildcard ${CMS2_LOCATION}/NtupleMacros/Tools/*.cc) 
 TOOLSOBJECTS = $(TOOLSSOURCES:.cc=.o) 
 TOOLSLIB = libCMS2NtupleMacrosTools.so
 
@@ -38,7 +38,7 @@ $(CORELIB):	$(COREOBJECTS)
 $(LOOPERLIB):	$(LOOPEROBJECTS) 
 	$(LINKER) $(LINKERFLAGS) -shared $(LOOPEROBJECTS) -o $@ 
 
-linkdef_out.cxx: ../linkdef.h ConfigAndRun.h
+linkdef_out.cxx: ${CMS2_LOCATION}/NtupleMacros/linkdef.h ConfigAndRun.h
 	rootcint -f $@ -c $(INCLUDE) ConfigAndRun.h $<
 
 # General rule for making object files
@@ -54,8 +54,8 @@ linkdef_out.cxx: ../linkdef.h ConfigAndRun.h
 
 .PHONY: clean
 clean:  
-	rm -f ../Tools/*.o ../Tools/*.d $(TOOLSLIB) \
-		../CORE/*.o ../CORE/*.d $(CORELIB) \
+	rm -f ${CMS2_LOCATION}/NtupleMacros/Tools/*.o ${CMS2_LOCATION}/NtupleMacros/Tools/*.d $(TOOLSLIB) \
+		${CMS2_LOCATION}/NtupleMacros/CORE/*.o ${CMS2_LOCATION}/NtupleMacros/CORE/*.d $(CORELIB) \
 		*.o *.d linkdef_out.* $(LOOPERLIB) \
 		$(TABLES) 
 
@@ -63,7 +63,7 @@ clean:
 $(TABLES): $(LIBS)
 
 %.tbl %.root %.log:	$(LIBS)
-	echo $(@:.tbl=)"()" | root.exe -b rootlogon.C
+	echo $(@:.tbl=)"()" | root.exe -b setup.C
 
 -include $(TOOLSSOURCES:.cc=.d)
 -include $(CORESOURCES:.cc=.d)

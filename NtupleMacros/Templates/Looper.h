@@ -3,7 +3,7 @@
 #ifndef LOOPER_H
 #define LOOPER_H
 
-#include "LooperBase.h"
+#include "Tools/LooperBase.h"
 
 // List of all cuts that can be applied.  The cuts are handled as a
 // bitfield; these labels define which bit corresponds to which cut.

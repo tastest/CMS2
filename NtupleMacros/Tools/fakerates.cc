@@ -1,17 +1,29 @@
 #include "TFile.h"
+#include "TSystem.h"
 #include "TH2.h"
-#include "../CORE/CMS2.h"
-#include "../CORE/selections.h"
+#include "CORE/CMS2.h"
+#include "CORE/selections.h"
 
-static TFile *el_fakeRateFile_v2_2 = TFile::Open("$CMSSW_BASE/src/CMS2/NtupleMacros/data/fakeRates-v2_2_allpt.root", "read"); 
-static TH2F  *el_fakeRate_v2_2 = dynamic_cast<TH2F *>(el_fakeRateFile_v2_2->Get("fakeRate_wo_leading_elt_qcd"));
+static TFile *el_fakeRateFile_v2_2 = 0;
+static TH2F  *el_fakeRate_v2_2 = 0;
 
-static TFile *el_fakeRateFile_v5 = TFile::Open("$CMSSW_BASE/src/CMS2/NtupleMacros/data/fakeRates-v5_5.root", "read"); 
-static TH2F  *el_fakeRate_v5 = dynamic_cast<TH2F *>(el_fakeRateFile_v5->Get("fakeRateTemplate_wo_leading_elt_fakeRatesFull"));
-static TH2F  *el_fakeRate_err_v5 = dynamic_cast<TH2F *>(el_fakeRateFile_v5->Get("fakeRateTemplateError_wo_leading_elt_fakeRatesFull"));
+static TFile *el_fakeRateFile_v5 = 0; 
+static TH2F  *el_fakeRate_v5 = 0;
+static TH2F  *el_fakeRate_err_v5 = 0;
 
 double elFakeProb_v2_2 (int i_el, int add_error_times)
 {
+  if ( el_fakeRateFile_v2_2 == 0 ) {
+    el_fakeRateFile_v2_2 = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/fakeRates-v2_2_allpt.root", "read");
+    if ( el_fakeRateFile_v2_2 == 0 ) {
+      std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v2_2_allpt.root could not be found!!" << std::endl;
+      std::cout << "Please make sure that $CMS2_LOCATION points to your CMS2 directory and that" << std::endl;
+      std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v2_2_allpt.root exists!" << std::endl;
+      gSystem->Exit(1);
+    }
+    el_fakeRate_v2_2 = dynamic_cast<TH2F *>(el_fakeRateFile_v2_2->Get("fakeRate_wo_leading_elt_qcd"));
+  }
+
      float prob = 0.0;
      float prob_error = 0.0;
      TH2F *theFakeRate = el_fakeRate_v2_2;
@@ -140,6 +152,19 @@ bool isNumeratorElectron_v2_2 (int index, int type) { // 0=loose, 1=tight, for p
 
 double elFakeProb_v5 (int i_el, int add_error_times)
 {
+
+  if ( el_fakeRateFile_v5 == 0 ) {
+    el_fakeRateFile_v5 = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/fakeRates-v5_5.root", "read"); 
+    if ( el_fakeRateFile_v5 == 0 ) {
+      std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v5_5.root could not be found!!" << std::endl;
+      std::cout << "Please make sure that $CMS2_LOCATION points to your CMS2 directory and that" << std::endl;
+      std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v5_5.root exists!" << std::endl;
+      gSystem->Exit(1);
+    }
+    el_fakeRate_v5 = dynamic_cast<TH2F *>(el_fakeRateFile_v5->Get("fakeRateTemplate_wo_leading_elt_fakeRatesFull"));
+    el_fakeRate_err_v5 = dynamic_cast<TH2F *>(el_fakeRateFile_v5->Get("fakeRateTemplateError_wo_leading_elt_fakeRatesFull"));
+  }
+
      float prob = 0.0;
      float prob_error = 0.0;
      TH2F *theFakeRate = el_fakeRate_v5;

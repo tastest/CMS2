@@ -1,9 +1,9 @@
 #include <math.h>
 #include "TVector3.h"
-#include "selections.h"
-#include "utilities.h"
-#include "CMS2.h"
-#include "tools.h"
+#include "CORE/selections.h"
+#include "CORE/utilities.h"
+#include "CORE/CMS2.h"
+#include "Tools/tools.h"
 #include "Looper.h"
 
 Looper::Looper (Sample s, cuts_t c, const char *fname) 

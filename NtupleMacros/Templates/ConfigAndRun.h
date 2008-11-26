@@ -1,8 +1,8 @@
 #include <unistd.h>
 #include <string>
 #include "Looper.h"
-#include "Sample.h"
-#include "tools.h"
+#include "Tools/Sample.h"
+#include "Tools/tools.h"
 
 using std::string;
 
