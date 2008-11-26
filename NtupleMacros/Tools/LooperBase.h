@@ -27,6 +27,10 @@ public:
 protected:
      // book your histograms here
      virtual void	BookHistos	()		{ }
+
+     // filter out this event.  If FilterEvent returns true, no
+     // further processing is done on this event
+     virtual bool	FilterEvent	() 		{ return false; }
      
      // The *Select() functions return a bitmask that says which cuts
      // a candidate passes.  "Candidate" means event, dilepton

@@ -76,22 +76,11 @@ uint64 LooperBase::Loop ()
 	  TStopwatch t;
 	  //Event Loop
 	  uint64 nEvents = tree->GetEntries();
-// 	  nEvents = std::min(nEvents, 1000u);
 	  for( uint64 event = 0; event < nEvents; ++event) {
 	       cms2.GetEntry(event);  // get entries for Event number event from branches of TTree tree
 	       ++nEventsTotal;
 	       
-	       if (cms2.trks_d0().size() == 0)
-		    continue;
-	       DorkyEventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.trks_d0()[0], 
-					   cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
-	       if (is_duplicate(id)) {
-		    duplicates_total_n++;
-		    duplicates_total_weight += cms2.evt_scale1fb();
-		    continue;
-	       }
 	       // Progress feedback to the user
-//       if ( (nEventsTotal)%1000 == 0 ) std::cout << "Processing event: " << nEventsTotal << std::endl;
 	       int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
 	       if (i_permille != i_permille_old) {
 		    // xterm magic from L. Vacavant and A. Cerri
@@ -104,6 +93,11 @@ uint64 LooperBase::Loop ()
 	       // filter by process
 	       if ( !filterByProcess(sample.process) ) continue;
 	       
+	       // give the analysis a chance to filter out this event
+	       // (for example because it's a duplicate)
+	       if (FilterEvent())
+		    continue;
+
 	       // call the event function
 	       FillEventHistos();
 	       
