@@ -78,6 +78,8 @@ protected:
      FILE		*logfile;
      double		hypos_total_weight[4];
      uint64		hypos_total_n[4];
+     int                duplicates_total_n_; // for duplicate filter
+     double             duplicates_total_weight_; // for duplicate filter
 };
 
 inline cuts_t CUT_BIT (int i)

@@ -204,6 +204,11 @@ public:
 protected:
      // this is where we book our histograms
      virtual void	BookHistos ();
+
+     // filter out this event.  If FilterEvent returns true, no
+     // further processing is done on this event
+     virtual bool	FilterEvent();
+
      // we define an analysis-specific EventSelect(), DilepSelect(),
      // TrilepSelect() and QuadlepSelect() that check which cuts the
      // event, dilepton/trilepton/quadlepton candidate passes
