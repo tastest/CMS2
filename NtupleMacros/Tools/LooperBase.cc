@@ -8,14 +8,14 @@
 #include "../CORE/CMS2.h"
 
 LooperBase::LooperBase (Sample s, cuts_t c, const char *fname) : 
-     sample(s), cuts(c)
+     sample_(s), cuts_(c)
 {
      if (fname != 0 && strlen(fname) != 0) {
-	  logfile = fopen(fname, "a");
-	  if (logfile == 0)
+	  logfile_ = fopen(fname, "a");
+	  if (logfile_ == 0)
 	       perror("opening log file");
      } else {
-	  logfile = stdout;
+	  logfile_ = stdout;
      }
 }
 
@@ -26,12 +26,12 @@ LooperBase::~LooperBase ()
 
 double LooperBase::Weight (int i_hyp)
 {
-     return cms2.evt_scale1fb() * sample.kFactor;
+     return cms2.evt_scale1fb() * sample_.kFactor;
 }
 
 uint64 LooperBase::Loop ()
 {
-     printf("Processing %s\n", sample.name.c_str());
+     printf("Processing %s\n", sample_.name.c_str());
      // change to histogram directory
      TDirectory *old_gDirectory = gDirectory;
      gDirectory = histo_directory;
@@ -40,11 +40,11 @@ uint64 LooperBase::Loop ()
      // change back to current directory
      gDirectory = old_gDirectory;
      Begin();
-     TChain *chain = sample.chain;
+     TChain *chain = sample_.chain;
      uint64 nEventsChain = chain->GetEntries();  // number of entries in chain --> number of events from all files
      uint64 nEventsTotal = 0;
-     memset(hypos_total_n, 0, sizeof(hypos_total_n));
-     memset(hypos_total_weight, 0, sizeof(hypos_total_weight));
+     memset(hypos_total_n_, 0, sizeof(hypos_total_n_));
+     memset(hypos_total_weight_, 0, sizeof(hypos_total_weight_));
 
      // clear list of duplicates
      already_seen.clear();
@@ -91,7 +91,7 @@ uint64 LooperBase::Loop ()
 	       }
 	       
 	       // filter by process
-	       if ( !filterByProcess(sample.process) ) continue;
+	       if ( !filterByProcess(sample_.process) ) continue;
 	       
 	       // give the analysis a chance to filter out this event
 	       // (for example because it's a duplicate)
@@ -131,14 +131,14 @@ uint64 LooperBase::Loop ()
      }
      
 //      printf("Total candidate count (ee em mm all): %llu %llu %llu %llu.  Total weight %f %f %f %f\n",   
-// 	    hypos_total_n[0], hypos_total_n[1], hypos_total_n[2], hypos_total_n[3], 
-// 	    hypos_total_weight[0], hypos_total_weight[1], hypos_total_weight[2], hypos_total_weight[3]);
+// 	    hypos_total_n_[0], hypos_total_n_[1], hypos_total_n_[2], hypos_total_n_[3], 
+// 	    hypos_total_weight_[0], hypos_total_weight_[1], hypos_total_weight_[2], hypos_total_weight_[3]);
 //      printf("Total duplicate count: %d.  Total weight %f\n",   
 // 	    duplicates_total_n, duplicates_total_weight);
      End();
-     if (logfile != stdout)
-	  fclose(logfile);
-     if (sample.chain != 0)
-	  delete sample.chain;
+     if (logfile_ != stdout)
+	  fclose(logfile_);
+     if (sample_.chain != 0)
+	  delete sample_.chain;
      return nEventsTotal;
 }

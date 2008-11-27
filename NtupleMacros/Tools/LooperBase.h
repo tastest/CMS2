@@ -69,15 +69,15 @@ protected:
 public:
      virtual ~LooperBase ();
      virtual uint64 	Loop ();
-     const std::string 	&SampleName () const { return sample.name; }
-     const bool 	&SampleSM () const { return sample.sm; }
+     const std::string 	&SampleName () const { return sample_.name; }
+     const bool 	&SampleSM () const { return sample_.sm; }
      
 protected:
-     Sample		sample;
-     cuts_t		cuts;
-     FILE		*logfile;
-     double		hypos_total_weight[4];
-     uint64		hypos_total_n[4];
+     Sample		sample_;
+     cuts_t		cuts_;
+     FILE		*logfile_;
+     double		hypos_total_weight_[4];
+     uint64		hypos_total_n_[4];
      int                duplicates_total_n_; // for duplicate filter
      double             duplicates_total_weight_; // for duplicate filter
 };

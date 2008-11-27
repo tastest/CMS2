@@ -240,9 +240,9 @@ protected:
 
 public:
      // these functions are called by the table-printing code
-     virtual double	CandsPassing (enum DileptonHypType i) const { return cands_passing[i]; }
-     virtual int       	CandsCount (enum DileptonHypType i) const { return cands_count[i]; }
-     virtual double	RMS (enum DileptonHypType i) const { return sqrt(cands_passing_w2[i]); }
+     virtual double	CandsPassing (enum DileptonHypType i) const { return cands_passing_[i]; }
+     virtual int       	CandsCount (enum DileptonHypType i) const { return cands_count_[i]; }
+     virtual double	RMS (enum DileptonHypType i) const { return sqrt(cands_passing_w2_[i]); }
 
 protected:
      //----------------------------------------------------------------------
@@ -250,19 +250,19 @@ protected:
      //----------------------------------------------------------------------
 
      // a simple TH1/TH2, times four to split by hypothesis type:
-     TH1F		*helPt[4];
-     TH1F		*hmuPt[4];
-     TH2F		*hCaloEtaPt[4];
+     TH1F		*helPt_[4];
+     TH1F		*hmuPt_[4];
+     TH2F		*hCaloEtaPt_[4];
 
      // NMinus1Hists take care of N - 1 plots and splitting by hypothesis automatically
-     NMinus1Hist	*hltPt;
-     NMinus1Hist	*hllPt;
-     NMinus1Hist	*hdilMass;
+     NMinus1Hist	*hltPt_;
+     NMinus1Hist	*hllPt_;
+     NMinus1Hist	*hdilMass_;
 
 protected:
      // count the (weighted and unweighted) number of candidates passing our cuts
-     double		cands_passing[4];
-     double		cands_passing_w2[4];
-     unsigned int	cands_count[4];
+     double		cands_passing_[4];
+     double		cands_passing_w2_[4];
+     unsigned int	cands_count_[4];
 };
 #endif

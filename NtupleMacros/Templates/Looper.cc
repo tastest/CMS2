@@ -10,9 +10,9 @@ Looper::Looper (Sample s, cuts_t c, const char *fname)
      : LooperBase(s, c, fname)
 {
      // zero out the candidate counters (don't comment this out)
-     memset(cands_passing	, 0, sizeof(cands_passing       ));
-     memset(cands_passing_w2	, 0, sizeof(cands_passing_w2    ));
-     memset(cands_count		, 0, sizeof(cands_count         ));
+     memset(cands_passing_	, 0, sizeof(cands_passing_       ));
+     memset(cands_passing_w2_	, 0, sizeof(cands_passing_w2_    ));
+     memset(cands_count_		, 0, sizeof(cands_count_         ));
 }
 
 void Looper::BookHistos ()
@@ -23,32 +23,32 @@ void Looper::BookHistos ()
 
      // book histograms the manual way:
      for (int i = 0; i < 4; ++i) {
-	  helPt[i] = new TH1F(Form("%s_%s_%s", SampleName().c_str(), "elPt", dilepton_hypo_names[i]), ";el pt", 100, 0, 100);
-	  hmuPt[i] = new TH1F(Form("%s_%s_%s", SampleName().c_str(), "muPt", dilepton_hypo_names[i]), ";mu pt", 100, 0, 100);
-	  hCaloEtaPt[i] = new TH2F(Form("%s_%s_%s", SampleName().c_str(), "CaloEtaPt", dilepton_hypo_names[i]), ";pt;eta", 100, 0, 100, 10, -5, 5);
+	  helPt_[i] = new TH1F(Form("%s_%s_%s", SampleName().c_str(), "elPt", dilepton_hypo_names[i]), ";el pt", 100, 0, 100);
+	  hmuPt_[i] = new TH1F(Form("%s_%s_%s", SampleName().c_str(), "muPt", dilepton_hypo_names[i]), ";mu pt", 100, 0, 100);
+	  hCaloEtaPt_[i] = new TH2F(Form("%s_%s_%s", SampleName().c_str(), "CaloEtaPt", dilepton_hypo_names[i]), ";pt;eta", 100, 0, 100, 10, -5, 5);
 
 	  // call Sumw2 on all histograms
-	  helPt[i]->Sumw2();
-	  hmuPt[i]->Sumw2();
-	  hCaloEtaPt[i]->Sumw2();
+	  helPt_[i]->Sumw2();
+	  hmuPt_[i]->Sumw2();
+	  hCaloEtaPt_[i]->Sumw2();
 
 	  // set histogram color according to definitions in Tools/Samples.cc
-	  helPt[i]->SetFillColor(sample.histo_color);
-	  helPt[i]->SetLineColor(sample.histo_color);
-	  hmuPt[i]->SetFillColor(sample.histo_color);
-	  hmuPt[i]->SetLineColor(sample.histo_color);
-	  hCaloEtaPt[i]->SetFillColor(sample.histo_color);
-	  hCaloEtaPt[i]->SetLineColor(sample.histo_color);
+	  helPt_[i]->SetFillColor(sample_.histo_color);
+	  helPt_[i]->SetLineColor(sample_.histo_color);
+	  hmuPt_[i]->SetFillColor(sample_.histo_color);
+	  hmuPt_[i]->SetLineColor(sample_.histo_color);
+	  hCaloEtaPt_[i]->SetFillColor(sample_.histo_color);
+	  hCaloEtaPt_[i]->SetLineColor(sample_.histo_color);
 
      }
      // or use the N - 1 technology (see NMinus1Hist.h)
      // arguments are as follows: sample, name, binning, required cuts, cuts that are relaxed for the N - 1 plot
      // for the lt N - 1 plot, we relax the lt pt requirement
-     hltPt		= new NMinus1Hist(sample, "ltPt"   ,	 150, 0, 150, cuts, CUT_BIT(CUT_LT_PT));
+     hltPt_		= new NMinus1Hist(sample_, "ltPt"   ,	 150, 0, 150, cuts_, CUT_BIT(CUT_LT_PT));
      // same for ll
-     hllPt		= new NMinus1Hist(sample, "llPt"   ,	 150, 0, 150, cuts, CUT_BIT(CUT_LL_PT));
+     hllPt_		= new NMinus1Hist(sample_, "llPt"   ,	 150, 0, 150, cuts_, CUT_BIT(CUT_LL_PT));
      // for the dilepton mass plot, we relax any cut to do with the Z 
-     hdilMass		= new NMinus1Hist(sample, "dilMass",	 100, 0, 300, cuts, 
+     hdilMass_		= new NMinus1Hist(sample_, "dilMass",	 100, 0, 300, cuts_, 
 					  CUT_BIT(CUT_PASS_ZVETO) | CUT_BIT(CUT_PASS_ADDZVETO) | CUT_BIT(CUT_IN_Z_WINDOW));
 }
 
@@ -291,49 +291,49 @@ void Looper::FillDilepHistos (int i_hyp)
      // this is how to test that the candidate passes the cuts (which
      // we specified in the constructor when we made the looper)
      // (*note: the parentheses are important*):
-     if ((cuts_passed & cuts) == cuts) {
+     if ((cuts_passed & cuts_) == cuts_) {
 
 	  // if the candidate passed, we count it
-	  cands_passing[myType] += weight;
-	  cands_passing_w2[myType] += weight * weight;
-	  cands_count[myType]++;
-	  cands_passing[DILEPTON_ALL] += weight;
-	  cands_passing_w2[DILEPTON_ALL] += weight * weight;
-	  cands_count[DILEPTON_ALL]++;
+	  cands_passing_[myType] += weight;
+	  cands_passing_w2_[myType] += weight * weight;
+	  cands_count_[myType]++;
+	  cands_passing_[DILEPTON_ALL] += weight;
+	  cands_passing_w2_[DILEPTON_ALL] += weight * weight;
+	  cands_count_[DILEPTON_ALL]++;
      }
 
      // for TH1/TH2, we have to check explicitly whether the candidate passes
-     if ((cuts_passed & cuts) == cuts) {
+     if ((cuts_passed & cuts_) == cuts_) {
 	  // and then fill
 	  if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
-	       helPt[DILEPTON_ALL]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
-	       helPt[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
+	       helPt_[DILEPTON_ALL]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
+	       helPt_[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
 	  } else {
-	       hmuPt[DILEPTON_ALL]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
-	       hmuPt[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
+	       hmuPt_[DILEPTON_ALL]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
+	       hmuPt_[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
 	  }
 	  if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
-	       helPt[DILEPTON_ALL]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
-	       helPt[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
+	       helPt_[DILEPTON_ALL]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
+	       helPt_[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
 	  } else {
-	       hmuPt[DILEPTON_ALL]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
-	       hmuPt[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
+	       hmuPt_[DILEPTON_ALL]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
+	       hmuPt_[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
 	  }
 	  for (unsigned int i = 0; i < cms2.jets_p4().size(); ++i) {
 	       // histogram the eta and pt of all jets
-	       hCaloEtaPt[DILEPTON_ALL]->Fill(cms2.jets_p4()[i].pt() * cms2.jets_tq_noCorrF()[i],
+	       hCaloEtaPt_[DILEPTON_ALL]->Fill(cms2.jets_p4()[i].pt() * cms2.jets_tq_noCorrF()[i],
 					cms2.jets_p4()[i].eta(),
 					weight);
-	       hCaloEtaPt[myType]->Fill(cms2.jets_p4()[i].pt() * cms2.jets_tq_noCorrF()[i],
+	       hCaloEtaPt_[myType]->Fill(cms2.jets_p4()[i].pt() * cms2.jets_tq_noCorrF()[i],
 					cms2.jets_p4()[i].eta(),
 					weight);
 	  }
      }
 
      // for the NMinus1Hist, the histogram checks the cuts for us
-     hltPt->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].pt(), weight);
-     hllPt->Fill(cuts_passed, myType, cms2.hyp_ll_p4()[i_hyp].pt(), weight);
-     hdilMass->Fill(cuts_passed, myType, cms2.hyp_p4()[i_hyp].mass(), weight);
+     hltPt_->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].pt(), weight);
+     hllPt_->Fill(cuts_passed, myType, cms2.hyp_ll_p4()[i_hyp].pt(), weight);
+     hdilMass_->Fill(cuts_passed, myType, cms2.hyp_p4()[i_hyp].mass(), weight);
 }
 
 void Looper::FillTrilepHistos (int i_hyp)
@@ -357,10 +357,10 @@ void Looper::End ()
      //application
      //------------------------------------------------------------
 
-     int ret = fprintf(logfile, 
+     int ret = fprintf(logfile_, 
 		       "Sample %10s: Total candidate count (ee em mm all): %8u %8u %8u %8u."
 		       " Total weight %10.1f +- %10.1f %10.1f +- %10.1f %10.1f +- %10.1f %10.1f +- %10.1f\n",   
-		       sample.name.c_str(),
+		       sample_.name.c_str(),
 		       CandsCount(DILEPTON_EE), CandsCount(DILEPTON_EMU), CandsCount(DILEPTON_MUMU), CandsCount(DILEPTON_ALL), 
 		       CandsPassing(DILEPTON_EE)  , RMS(DILEPTON_EE),  
 		       CandsPassing(DILEPTON_EMU) , RMS(DILEPTON_EMU),  
