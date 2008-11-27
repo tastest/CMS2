@@ -26,13 +26,12 @@ TObjArray* getMyHistosNames( char* prefix, char* postfix, bool keep2D=true) {
   bool skip2D = !keep2D;
 
   // Get a list of object and their iterator 
-  TList* list = gDirectory->GetListOfKeys() ;
+  TList* list = gDirectory->GetList() ;
   TIterator* iter = list->MakeIterator();
 
   // Loop over objects
-  TKey* key;
-  while(key=(TKey*)iter->Next()) {
-    TObject* obj = gDirectory->Get(key->GetName());
+  TObject* obj;
+  while(obj=iter->Next()) {
 
     // Only look at objects beginning with 'prefix' and ending with 'postfix'
     TString name = obj->GetName();

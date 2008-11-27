@@ -278,13 +278,12 @@ namespace hist {
    //want to stack, to "hist" to display histograms without errors, to "histe"
    //to display histograms with errors, etc.
 
-   THStack* stack(const char* stackHistName, const char* patORpfx, Bool_t addColor = kFALSE, Option_t* drawOption = "") {
+   void stack(const char* stackHistName, const char* patORpfx, Bool_t addColor = kFALSE, Option_t* drawOption = "") {
       TRegexp reg(patORpfx, kFALSE);
 
-      TList* list = gDirectory->GetListOfKeys() ;
+      TList* list = gDirectory->GetList() ;
       TIterator* iter = list->MakeIterator();
 
-      TKey* key = 0;
       TObject* obj = 0;
       TObject* stack = 0;
       Bool_t makeStackHist = false;
@@ -293,18 +292,10 @@ namespace hist {
       //If stack hist does not exist, remember to create it
       if (! stack) makeStackHist = true;
 
-      if (makeStackHist) {
-	stack = new THStack(stackHistName, stackHistName);
-	makeStackHist = false;
-      }
-
-
       //Hist color iterator
       Int_t colorIt = 1;
 
-
-      while (key = (TKey*)iter->Next()) {
-	obj = gDirectory->Get(key->GetName());
+      while (obj = iter->Next()) {
          if (! obj->InheritsFrom(TH1::Class())) continue;
 
          TString name = obj->GetName();
@@ -313,15 +304,18 @@ namespace hist {
             if (TString(obj->GetName()).Index(reg) < 0 ) continue;
          } else if (! name.BeginsWith(patORpfx)) continue;
 
+         if (makeStackHist) {
+            stack = new THStack(stackHistName, stackHistName);
+            makeStackHist = false;
+         }
+
          if (addColor) {
             hist::color(obj->GetName(), colorIt);
             ++colorIt;
          }
-	 
-	 ((THStack*)stack)->Add((TH1*)obj, drawOption);
-      }
 
-      return (THStack*)stack;
+         ((THStack*)stack)->Add((TH1*)obj, drawOption);
+      }
 
       // Currently breaks .ls
       //gDirectory->Append(stack);
@@ -581,7 +575,7 @@ loadHist(const char* filename, const char* pfx=0, const char* pat="*", Bool_t do
          continue ;
       }
 
-      obj = inf->Get(key->GetName()) ;
+      obj = inf.Get(key->GetName()) ;
       TObject* clone ;
       if (pfx) {
 
@@ -628,216 +622,4 @@ loadHist(const char* filename, const char* pfx=0, const char* pat="*", Bool_t do
    cout << endl;
    inf.Close() ;
    delete iter ;
-}
-
-bool EffPlot(TH1F *sig, TH1F* bkg, float* x, float* y) {
-
-  if (sig->GetNbinsX() != bkg->GetNbinsX()) return false;
-
-  int nbins = sig->GetNbinsX();
-  float nsig = sig->Integral(0,nbins+1);
-  float nbkg = bkg->Integral(0,nbins+1);
-
-  for ( int i=1; i < nbins+1; ++i){
-    x[i] = bkg->Integral(i,nbins+1)/nbkg ;
-    y[i] = sig->Integral(i,nbins+1)/nsig ;
-    //cout << x[i] << y[i] << endl;
-  }
-  return true;
-}
-
-TCanvas* AllPlots(const char* pattern) {
-   // uses pattern to draw all 5 categories on same canvas
-   // save as gif
-   
-   TCanvas *canvas = new TCanvas(pattern,pattern,1400,1000);
-   
-   canvas->Divide(3,2);
-   
-   // define categories
-   const int num_suffix = 5;
-   char *suffix[num_suffix];
-   suffix[0] = "zee_e";
-   suffix[1] = "zee_m";
-   suffix[2] = "zmm_e";
-   suffix[3] = "zmm_m";
-   suffix[4] = "all";
-   
-   for ( int i = 0; i < num_suffix; ++i ) {
-      TPad *pad = canvas->cd(i+1);
-      pad->SetLeftMargin(0.199);
-      pad->SetTopMargin(0.125);
-      pad->SetBottomMargin(0.136);
-      TH1* hist = 0;
-      if ( suffix[i] == "zee_e" ) {
-         hist = (TH1*)gFile->Get(Form("%s_%s",pattern,"epepem"));
-         hist.Add((TH1*)gFile->Get(Form("%s_%s",pattern,"epemem")));
-      } else if ( suffix[i] == "zee_m" ) {
-         hist = (TH1*)gFile->Get(Form("%s_%s",pattern,"mmepem"));
-         hist.Add((TH1*)gFile->Get(Form("%s_%s",pattern,"mpepem")));
-      } else if ( suffix[i] == "zmm_e" ) {
-         hist = (TH1*)gFile->Get(Form("%s_%s",pattern,"mpmmem"));
-         hist.Add((TH1*)gFile->Get(Form("%s_%s",pattern,"mpmmep")));
-      } else if ( suffix[i] == "zmm_m" ) {
-         hist = (TH1*)gFile->Get(Form("%s_%s",pattern,"mpmpmm"));
-         hist.Add((TH1*)gFile->Get(Form("%s_%s",pattern,"mpmmmm")));
-      } else {
-         hist = (TH1*)gFile->Get(Form("%s_%s",pattern,suffix[i]));
-      }
-      cout << "Drawing histogram: " << Form("%s_%s",pattern,suffix[i]) << endl;
-      if ( hist != 0 ) {
-         hist->SetMarkerStyle(20);
-         hist->SetMarkerSize(0.7);
-         hist->GetYaxis()->SetTitleOffset(1.8);
-         hist->GetXaxis()->SetLabelSize(0.04);
-         hist->Draw();
-      } else {
-         cout << "Histogram: " << Form("%s_%s",pattern,suffix[i]) << "could not be found in input file" << endl;
-      }
-   }
-   
-   cout << "Saving plot: " << Form("%s.gif",pattern) << endl;
-   canvas->SaveAs(Form("%s.gif",pattern));
-   
-   return canvas;
-   
-}
-
-TCanvas* AllMETPlots(const char* pattern) {
-   // uses pattern to draw all 5 categories on same canvas
-   // save as gif
-   
-   TCanvas *canvas = new TCanvas(pattern,pattern,1400,1000);
-   
-   canvas->Divide(3,2);
-   
-   // define categories
-   const int num_suffix = 5;
-   char *suffix[num_suffix];
-   suffix[0] = "zee_e";
-   suffix[1] = "zee_m";
-   suffix[2] = "zmm_e";
-   suffix[3] = "zmm_m";
-   suffix[4] = "all";
-   
-   for ( int i = 0; i < num_suffix; ++i ) {
-      TPad *pad = canvas->cd(i+1);
-      pad->SetLeftMargin(0.199);
-      pad->SetTopMargin(0.125);
-      pad->SetBottomMargin(0.136);
-      float max = 0.0;
-      TH1F* hist1 = (TH1F*)gFile->Get(Form("wz_%s_%s",pattern,suffix[i]));
-      max = hist1->GetMaximum();
-      cout << max << endl;
-      TH1F* hist2 = (TH1F*)gFile->Get(Form("DYtautau_%s_%s",pattern,suffix[i]));
-      if ( hist2->GetMaximum() > max ) max = hist2->GetMaximum();
-      TH1F* hist3 = (TH1F*)gFile->Get(Form("DYmm_%s_%s",pattern,suffix[i]));
-      if ( hist3->GetMaximum() > max ) max = hist3->GetMaximum();
-      TH1F* hist4 = (TH1F*)gFile->Get(Form("DYee_%s_%s",pattern,suffix[i]));
-      if ( hist4->GetMaximum() > max ) max = hist4->GetMaximum();
-      if ( hist1 != 0 ) {
-	hist1->SetMaximum(1.1*max);
-	hist2->SetMaximum(1.1*max);
-	hist3->SetMaximum(1.1*max);
-	hist4->SetMaximum(1.1*max);
-	hist1->GetXaxis()->SetRangeUser(1.,160.);
-	hist2->GetXaxis()->SetRangeUser(1.,160.);
-	hist3->GetXaxis()->SetRangeUser(1.,160.);
-	hist4->GetXaxis()->SetRangeUser(1.,160.);
-	hist1->GetYaxis()->SetTitleOffset(1.8);
-        hist1->GetXaxis()->SetLabelSize(0.04);
-        hist1->Draw();
-        hist2->Draw("SAMES");
-        hist3->Draw("SAMES");
-        hist4->Draw("SAMES");
-      } else {
-         cout << "Histogram: " << Form("met_%s_%s",pattern,suffix[i]) << "could not be found in input file" << endl;
-      }
-   }
-   
-   cout << "Saving plot: " << Form("%s.gif",pattern) << endl;
-   canvas->SaveAs(Form("%s.gif",pattern));
-   
-   return canvas;
-   
-}
-
-bool makeTrilepStackPlots(const char* histname) {
-
-  bool skip = false;
-
-  TCanvas *canvas = new TCanvas("stacks","stacks",1200.,800.);
-  TCanvas *canvas2 = new TCanvas("stack","stack",1200.,800.);
-
-  canvas->Divide(6,4);
-
-  const unsigned int allBuckets = 20;
-  char *suffix[allBuckets+1];
-  suffix[0]  = "mpmpmp";
-  suffix[1]  = "mpmpmm";
-  suffix[2]  = "mpmmmm";
-  suffix[3]  = "mmmmmm";
-  suffix[4]  = "mpmpep";
-  suffix[5]  = "mpmpem";
-  suffix[6]  = "mpmmep";
-  suffix[7]  = "mpmmem";
-  suffix[8]  = "mmmmep";
-  suffix[9]  = "mmmmem";
-  suffix[10] = "mpepep";
-  suffix[11] = "mpepem";
-  suffix[12] = "mpemem";
-  suffix[13] = "mmepep";
-  suffix[14] = "mmepem";
-  suffix[15] = "mmemem";
-  suffix[16] = "epepep";
-  suffix[17] = "epepem";
-  suffix[18] = "epemem";
-  suffix[19] = "ememem";
-  suffix[20] = "all";
-
-  for ( unsigned int bucket = 0;
-	bucket < allBuckets+1;
-	++bucket ) {
-    canvas->cd(bucket+1);
-    THStack *stack = hist::stack(Form("st_%s_%s",histname,suffix[bucket]),Form("._%s_%s",histname,suffix[bucket]));
-    stack->Draw("HIST");
-    TLegend *leg = hist::legend(stack,"lpf",0,0);
-    leg->SetBorderSize(1);
-    leg->SetFillColor(0);
-    leg->Draw("SAME");
-    canvas->Update();
-
-    canvas2->Clear();
-    canvas2->cd();
-    stack->Draw("HIST");
-    leg->Draw("SAME");
-    canvas2->Update();
-    canvas2->Print(Form("stack_%s_%s.png",histname,suffix[bucket]));
-
-    if ( !skip ) {
-      if ( !gROOT->IsBatch() ) {
-	char *in = Getline("Enter carriage return for the next plot....q to quit, e to complete all stack plots for this histogram: ");
-	if (*in == 'e') skip = true;
-	if (*in == 'q') {
-	  delete canvas;
-	  delete canvas2;
-	  return false;
-	}
-      }
-    }
-  }
-
-  canvas->cd();
-  canvas->Print(Form("stacks_%s.png",histname));
-  if ( !gROOT->IsBatch() ) {
-    char *in = Getline("Enter carriage return for the next plots....q to quit: ");
-    if (*in == 'q') {
-      delete canvas;
-      delete canvas2;
-      return false;
-    }
-  }
-  delete canvas;
-  delete canvas2;
-  return true;
 }
