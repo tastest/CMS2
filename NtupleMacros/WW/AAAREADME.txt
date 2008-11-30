@@ -11,7 +11,11 @@ Set CMS2_NTUPLE_LOCATION environment variable that points to data
 location. 
 
   setenv CMS2_NTUPLE_LOCATION /data/tmp/
+  setenv CMS2_LOCATION ../../../CMS2/
 
+You need the CMS2_LOCATION environment variable because lot's of filenames 
+are searched for relative to it. It is expected that this envvar points to the CMS2
+directory, i.e. the one that contains NtupleMacros directory.
 
 #################################################################
                      Make Default Histograms
