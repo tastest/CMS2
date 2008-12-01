@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.10 2008/11/21 06:57:10 jmuelmen Exp $
+# $Id: Makefile,v 1.11 2008/12/01 19:15:52 gutsche Exp $
 
 .PHONY: all
 all:	help
@@ -24,8 +24,8 @@ analysis:
 		echo "Cut names are defined in Looper.h." | tee -a $(NAME)/AAAREADME.txt ;\
 		echo "Cuts are defined in Looper.cc." | tee -a $(NAME)/AAAREADME.txt ;\
 		echo "Histograms are booked and filled in Looper.cc." | tee -a $(NAME)/AAAREADME.txt ;\
-		echo "ConfigAndRun.cc defines samples and cuts to use for tables." | tee -a $(NAME)/AAAREADME.txt ;\
+		echo "ConfigAndRun.h defines samples and cuts to use for tables." | tee -a $(NAME)/AAAREADME.txt ;\
 		echo "" | tee -a $(NAME)/AAAREADME.txt ;\
-		echo "To make a table, add a rule in ConfigAndRun.cc and run:" | tee -a $(NAME)/AAAREADME.txt ;\
+		echo "To make a table, add a rule in ConfigAndRun.h and run:" | tee -a $(NAME)/AAAREADME.txt ;\
 		echo "   make -j 8 <your table name>.tbl" | tee -a $(NAME)/AAAREADME.txt ;\
 	fi; fi
