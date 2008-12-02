@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.1 2008/12/02 01:21:28 gutsche Exp $
+# $Id: Makefile,v 1.2 2008/12/02 22:48:57 gutsche Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
@@ -68,6 +68,12 @@ $(TABLES): $(LIBS)
 
 %.tbl %.root %.log:	$(LIBS)
 	echo $(@:.tbl=)"()" | root.exe -b setup.C
+
+%.oli: $(LIBS)
+	echo $(@:.oli=)"()" | root.exe -b setup.C
+	echo "loadHist(\""$(@:.oli=.root)"\"); browseStacks(1,0,\""$(@:.oli=)"\");" | root -b ${CMS2_LOCATION}/NtupleMacros/Tools/setup.C
+	ps2pdf $(@:.oli=)/stacks.ps $(@:.oli=)/stacks.pdf
+
 
 -include $(TOOLSSOURCES:.cc=.d)
 -include $(CORESOURCES:.cc=.d)

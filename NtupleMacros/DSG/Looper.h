@@ -193,11 +193,14 @@ protected:
   NMinus1Hist *hmet_;
   NMinus1Hist *hmetSpec_;
   NMinus1Hist *hmetTrkCorr_;
+  NMinus1Hist *hsumet_;
 
 protected:
   // count the (weighted and unweighted) number of candidates passing our cuts
   double		cands_passing_[4];
   double		cands_passing_w2_[4];
-  unsigned int	cands_count_[4];
+  unsigned int	        cands_count_[4];
+  double                sumEt_;
+
 };
 #endif

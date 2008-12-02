@@ -32,9 +32,9 @@ void Looper::BookHistos ()
   lt_cuts.push_back((CUT_BIT(CUT_LT_CALOISO)));
 
   std::vector<std::string> lt_cut_names;
-  lt_cut_names.push_back("_Cut_On_PT");
-  lt_cut_names.push_back("_Cut_On_GOOD");
-  lt_cut_names.push_back("_Cut_On_CALOISO");
+  lt_cut_names.push_back("-Cut-On-PT");
+  lt_cut_names.push_back("-Cut-On-GOOD");
+  lt_cut_names.push_back("-Cut-On-CALOISO");
 
   hltPt_ = new NMinus1Hist(sample_, "ltPt;p_{T} [GeV];Dilepton Cand." , 150 , 0, 150 , cuts_, lt_cuts, lt_cut_names);
   hltEta_ = new NMinus1Hist(sample_, "ltEta;#eta;Dilepton Cand." , 12 , -3, 3 , cuts_, lt_cuts, lt_cut_names);
@@ -46,9 +46,9 @@ void Looper::BookHistos ()
   ll_cuts.push_back((CUT_BIT(CUT_LL_CALOISO)));
 
   std::vector<std::string> ll_cut_names;
-  ll_cut_names.push_back("_Cut_On_PT");
-  ll_cut_names.push_back("_Cut_On_GOOD");
-  ll_cut_names.push_back("_Cut_On_CALOISO");
+  ll_cut_names.push_back("-Cut-On-PT");
+  ll_cut_names.push_back("-Cut-On-GOOD");
+  ll_cut_names.push_back("-Cut-On-CALOISO");
 
   hllPt_ = new NMinus1Hist(sample_, "llPt;p_{T} [GeV];Dilepton Cand." , 150 , 0, 150 , cuts_, ll_cuts, ll_cut_names);
   hllEta_ = new NMinus1Hist(sample_, "llEta;#eta;Dilepton Cand." , 12 , -3, 3 , cuts_, ll_cuts, ll_cut_names);
@@ -63,12 +63,12 @@ void Looper::BookHistos ()
   lepton_cuts.push_back((CUT_BIT(CUT_LL_CALOISO)));
 
   std::vector<std::string> lepton_cut_names;
-  lepton_cut_names.push_back("_Cut_On_lt_PT");
-  lepton_cut_names.push_back("_Cut_On_lt_GOOD");
-  lepton_cut_names.push_back("_Cut_On_lt_CALOISO");
-  lepton_cut_names.push_back("_Cut_On_ll_PT");
-  lepton_cut_names.push_back("_Cut_On_ll_GOOD");
-  lepton_cut_names.push_back("_Cut_On_ll_CALOISO");
+  lepton_cut_names.push_back("-Cut-On-lt-PT");
+  lepton_cut_names.push_back("-Cut-On-lt-GOOD");
+  lepton_cut_names.push_back("-Cut-On-lt-CALOISO");
+  lepton_cut_names.push_back("-Cut-On-ll-PT");
+  lepton_cut_names.push_back("-Cut-On-ll-GOOD");
+  lepton_cut_names.push_back("-Cut-On-ll-CALOISO");
 
   helPt_ = new NMinus1Hist(sample_, "elPt;p_{T} [GeV];Dilepton Cand." , 16 , 0, 160 , cuts_, lepton_cuts, lepton_cut_names);
   hmuPt_ = new NMinus1Hist(sample_, "muPt;p_{T} [GeV];Dilepton Cand." , 16 , 0, 160 , cuts_, lepton_cuts, lepton_cut_names);
@@ -86,9 +86,35 @@ void Looper::BookHistos ()
   hdilPt_ = new NMinus1Hist(sample_, "dilPt;p_{T} [GeV];Dilepton Cand." , 100 , 0, 300 , cuts_, 0 );
 
   // MET plots
-  hmet_ = new NMinus1Hist(sample_, "met;MET [GeV];Dilepton Cand." , 100 , 0, 200 , cuts_, (CUT_BIT(CUT_PASS4_MET)) | (CUT_BIT(CUT_PASS2_MET)) );
-  hmetSpec_ = new NMinus1Hist(sample_, "metSpec;MET [GeV];Dilepton Cand." , 100 , 0, 200 , cuts_, (CUT_BIT(CUT_PASS4_MET)) | (CUT_BIT(CUT_PASS2_MET)) );
-  hmetTrkCorr_ = new NMinus1Hist(sample_, "metTrkCorr;MET [GeV];Dilepton Cand." , 100 , 0, 200 , cuts_, (CUT_BIT(CUT_PASS4_MET)) | (CUT_BIT(CUT_PASS2_MET)) );
+  std::vector<cuts_t> met_cuts;
+  met_cuts.push_back((CUT_BIT(CUT_PASS2_MET)));
+  met_cuts.push_back((CUT_BIT(CUT_PASS4_MET)));
+  met_cuts.push_back((CUT_BIT(CUT_PASS2_MET)) | (CUT_BIT(CUT_PASS4_MET)));
+  met_cuts.push_back((CUT_BIT(CUT_PASS_MET_10)));
+  met_cuts.push_back((CUT_BIT(CUT_PASS_MET_1)));
+
+  std::vector<std::string> met_cut_names;
+  met_cut_names.push_back("-Cut-On-PASS2-MET");
+  met_cut_names.push_back("-Cut-On-PASS4-MET");
+  met_cut_names.push_back("-Cut-On-PASS2-AND-PASS4-MET");
+  met_cut_names.push_back("-Cut-On-MET-10");
+  met_cut_names.push_back("-Cut-On-MET-1");
+
+  hmet_ = new NMinus1Hist(sample_, "met;MET [GeV];Dilepton Cand." , 100 , 0, 200 , cuts_, met_cuts, met_cut_names );
+  hmetSpec_ = new NMinus1Hist(sample_, "metSpec;MET [GeV];Dilepton Cand." , 100 , 0, 200 , cuts_, met_cuts, met_cut_names );
+  hmetTrkCorr_ = new NMinus1Hist(sample_, "metTrkCorr;MET [GeV];Dilepton Cand." , 100 , 0, 200 , cuts_, met_cuts, met_cut_names );
+
+  // SumET plots
+  
+  std::vector<cuts_t> sumet_cuts;
+  sumet_cuts.push_back((CUT_BIT(CUT_PASS_SUMET_10)));
+  sumet_cuts.push_back((CUT_BIT(CUT_PASS_SUMET_1)));
+
+  std::vector<std::string> sumet_cut_names;
+  sumet_cut_names.push_back("-Cut-On-SUMET-10");
+  sumet_cut_names.push_back("-Cut-On-SUMET-1");
+
+  hsumet_ = new NMinus1Hist(sample_, "sum-et;#Sum E_{T} [GeV];Dilepton Cand." , 300 , 0, 1500 , cuts_, sumet_cuts, sumet_cut_names );
 
 }
 
@@ -109,7 +135,7 @@ bool Looper::FilterEvent()
   if (is_duplicate(id)) {
     duplicates_total_n_++;
     duplicates_total_weight_ += cms2.evt_scale1fb();
-//     cout << "Filtered duplicate run: " << cms2.evt_run() << " event: " << cms2.evt_event() << endl;
+    //     cout << "Filtered duplicate run: " << cms2.evt_run() << " event: " << cms2.evt_event() << endl;
     return true;
   }
 
@@ -141,7 +167,7 @@ cuts_t Looper::DilepSelect (int i_hyp)
   // temporarily calculate ONE global uncorrected jetSumEt:
   // prepare uncorrected jet collection
   vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > calo_jets_p4(cms2.jets_p4());
-  double sumEt = 0.;
+  sumEt_ = 0.;
 
   for (unsigned int icalojet=0; icalojet<calo_jets_p4.size(); ++icalojet) {
     // remove electron jets:
@@ -158,7 +184,7 @@ cuts_t Looper::DilepSelect (int i_hyp)
     if (fabs(p.Eta()) > 3.0 ) continue;
     if (p.Perp() < 15.) continue;
     //                 calo_jets->push_back(p);
-    sumEt += p.Perp();
+    sumEt_ += p.Perp();
   }
 
   // enough tracks?
@@ -196,9 +222,9 @@ cuts_t Looper::DilepSelect (int i_hyp)
   if (met1(i_hyp, TVector3()))
     ret |= (CUT_BIT(CUT_PASS_MET_1));
 
-  if (sumEt10( sumEt )) 
+  if (sumEt10( sumEt_ )) 
     ret |= (CUT_BIT(CUT_PASS_SUMET_10));
-  if (sumEt1( sumEt ))
+  if (sumEt1( sumEt_ ))
     ret |= (CUT_BIT(CUT_PASS_SUMET_1));
 
   // muon quality
@@ -345,7 +371,7 @@ void Looper::FillDilepHistos (int i_hyp)
   // we specified in the constructor when we made the looper)
   // (*note: the parentheses are important*):
   if ((cuts_passed & cuts_) == cuts_) {
-//     cout << "run: " << cms2.evt_run() << " event: " << cms2.evt_event() << endl;
+    //     cout << "run: " << cms2.evt_run() << " event: " << cms2.evt_event() << endl;
     // if the candidate passed, we count it
     cands_passing_[myType] += weight;
     cands_passing_w2_[myType] += weight * weight;
@@ -406,14 +432,17 @@ void Looper::FillDilepHistos (int i_hyp)
   // MET plots
   hmet_->Fill(cuts_passed, myType, cms2.hyp_met()[i_hyp], weight);      
   hmetSpec_->Fill(cuts_passed, myType, 
-MetSpecial(cms2.hyp_met()[i_hyp], cms2.hyp_metPhi()[i_hyp], i_hyp),
-weight);
+		  MetSpecial(cms2.hyp_met()[i_hyp], cms2.hyp_metPhi()[i_hyp], i_hyp),
+		  weight);
   // track correction to the met
   const TVector3 trkCorr = correctMETforTracks();
   TVector3 hyp_met;
   hyp_met.SetPtEtaPhi(cms2.hyp_met()[i_hyp], 0, cms2.hyp_metPhi()[i_hyp]);
   hyp_met += trkCorr;
   hmetTrkCorr_->Fill(cuts_passed, myType, hyp_met.Perp(), weight);
+
+  // sumet plots
+  hsumet_->Fill(cuts_passed, myType, sumEt_, weight);      
 
 }
 
@@ -439,14 +468,14 @@ void Looper::End ()
   //------------------------------------------------------------
 
   int ret = fprintf(logfile_, 
-    "Sample %10s: Total candidate count (ee em mm all): %8u %8u %8u %8u."
-    " Total weight %10.1f +- %10.1f %10.1f +- %10.1f %10.1f +- %10.1f %10.1f +- %10.1f\n", 
-    sample_.name.c_str(),
-    CandsCount(DILEPTON_EE), CandsCount(DILEPTON_EMU), CandsCount(DILEPTON_MUMU), CandsCount(DILEPTON_ALL), 
-    CandsPassing(DILEPTON_EE) , RMS(DILEPTON_EE), 
-    CandsPassing(DILEPTON_EMU) , RMS(DILEPTON_EMU), 
-    CandsPassing(DILEPTON_MUMU), RMS(DILEPTON_MUMU), 
-    CandsPassing(DILEPTON_ALL) , RMS(DILEPTON_ALL));
+		    "Sample %10s: Total candidate count (ee em mm all): %8u %8u %8u %8u."
+		    " Total weight %10.1f +- %10.1f %10.1f +- %10.1f %10.1f +- %10.1f %10.1f +- %10.1f\n", 
+		    sample_.name.c_str(),
+		    CandsCount(DILEPTON_EE), CandsCount(DILEPTON_EMU), CandsCount(DILEPTON_MUMU), CandsCount(DILEPTON_ALL), 
+		    CandsPassing(DILEPTON_EE) , RMS(DILEPTON_EE), 
+		    CandsPassing(DILEPTON_EMU) , RMS(DILEPTON_EMU), 
+		    CandsPassing(DILEPTON_MUMU), RMS(DILEPTON_MUMU), 
+		    CandsPassing(DILEPTON_ALL) , RMS(DILEPTON_ALL));
   if (ret < 0)
     perror("writing to log file");
 }
