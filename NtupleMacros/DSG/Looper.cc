@@ -25,79 +25,57 @@ void Looper::BookHistos ()
   hnTrackJet_ = new NMinus1Hist(sample_, "nTrackJet;n_{jets};Dilepton Cand." , 6 , -0.5, 5 , cuts_, 0 );
 
   // general lepton plots
-  hltPt_ = new NMinus1Hist(sample_, "ltPt;p_{T} [GeV];Dilepton Cand." , 150 , 0, 150 , cuts_, (CUT_BIT(CUT_LT_PT)) | 
-			   (CUT_BIT(CUT_LL_PT)		) |  
-			   (CUT_BIT(CUT_LT_GOOD)	) | 
-			   (CUT_BIT(CUT_LL_GOOD)	) | 
-			   (CUT_BIT(CUT_LT_CALOISO)	) |  
-			   (CUT_BIT(CUT_LL_CALOISO)	) );
-  hllPt_ = new NMinus1Hist(sample_, "llPt;p_{T} [GeV];Dilepton Cand." , 150 , 0, 150 , cuts_, (CUT_BIT(CUT_LT_PT)) | 
-			   (CUT_BIT(CUT_LL_PT)		) |  
-			   (CUT_BIT(CUT_LT_GOOD)	) | 
-			   (CUT_BIT(CUT_LL_GOOD)	) | 
-			   (CUT_BIT(CUT_LT_CALOISO)	) |  
-			   (CUT_BIT(CUT_LL_CALOISO)	) );
-  hltEta_ = new NMinus1Hist(sample_, "ltEta;#eta;Dilepton Cand." , 12 , -3, 3 , cuts_, (CUT_BIT(CUT_LT_PT)) | 
-			    (CUT_BIT(CUT_LL_PT)		) |  
-			    (CUT_BIT(CUT_LT_GOOD)	) | 
-			    (CUT_BIT(CUT_LL_GOOD)	) | 
-			    (CUT_BIT(CUT_LT_CALOISO)	) |  
-			    (CUT_BIT(CUT_LL_CALOISO)	) );
-  hllEta_ = new NMinus1Hist(sample_, "llEta;#eta;Dilepton Cand." , 12 , -3, 3 , cuts_, (CUT_BIT(CUT_LT_PT)) | 
-			    (CUT_BIT(CUT_LL_PT)		) |  
-			    (CUT_BIT(CUT_LT_GOOD)	) | 
-			    (CUT_BIT(CUT_LL_GOOD)	) | 
-			    (CUT_BIT(CUT_LT_CALOISO)	) |  
-			    (CUT_BIT(CUT_LL_CALOISO)	) );
-  hltCaloIso_ = new NMinus1Hist(sample_, "ltCaloIso;calo iso;Dilepton Cand." , 50 , 0., 1. , cuts_, (CUT_BIT(CUT_LT_PT)) | 
-				(CUT_BIT(CUT_LL_PT)		) |  
-				(CUT_BIT(CUT_LT_GOOD)	) | 
-				(CUT_BIT(CUT_LL_GOOD)	) | 
-				(CUT_BIT(CUT_LT_CALOISO)	) |  
-				(CUT_BIT(CUT_LL_CALOISO)	) );
-  hllCaloIso_ = new NMinus1Hist(sample_, "llCaloIso;calo iso;Dilepton Cand." , 50 , 0., 1. , cuts_, (CUT_BIT(CUT_LT_PT)) | 
-				(CUT_BIT(CUT_LL_PT)		) |  
-				(CUT_BIT(CUT_LT_GOOD)	) | 
-				(CUT_BIT(CUT_LL_GOOD)	) | 
-				(CUT_BIT(CUT_LT_CALOISO)	) |  
-				(CUT_BIT(CUT_LL_CALOISO)	) );
 
-  helPt_ = new NMinus1Hist(sample_, "elPt;p_{T} [GeV];Dilepton Cand." , 16 , 0, 160 , cuts_, (CUT_BIT(CUT_LT_PT)) | 
-			   (CUT_BIT(CUT_LL_PT)		) |  
-			   (CUT_BIT(CUT_LT_GOOD)	) | 
-			   (CUT_BIT(CUT_LL_GOOD)	) | 
-			   (CUT_BIT(CUT_LT_CALOISO)	) |  
-			   (CUT_BIT(CUT_LL_CALOISO)	) );
-  hmuPt_ = new NMinus1Hist(sample_, "muPt;p_{T} [GeV];Dilepton Cand." , 16 , 0, 160 , cuts_, (CUT_BIT(CUT_LT_PT)) | 
-			   (CUT_BIT(CUT_LL_PT)		) |  
-			   (CUT_BIT(CUT_LT_GOOD)	) | 
-			   (CUT_BIT(CUT_LL_GOOD)	) | 
-			   (CUT_BIT(CUT_LT_CALOISO)	) |  
-			   (CUT_BIT(CUT_LL_CALOISO)	) );
-  helEta_ = new NMinus1Hist(sample_, "elEta;#eta;Dilepton Cand." , 12 , -3, 3 , cuts_, (CUT_BIT(CUT_LT_PT)) | 
-			    (CUT_BIT(CUT_LL_PT)		) |  
-			    (CUT_BIT(CUT_LT_GOOD)	) | 
-			    (CUT_BIT(CUT_LL_GOOD)	) | 
-			    (CUT_BIT(CUT_LT_CALOISO)	) |  
-			    (CUT_BIT(CUT_LL_CALOISO)	) );
-  hmuEta_ = new NMinus1Hist(sample_, "muEta;#eta;Dilepton Cand." , 12 , -3, 3 , cuts_, (CUT_BIT(CUT_LT_PT)) | 
-			    (CUT_BIT(CUT_LL_PT)		) |  
-			    (CUT_BIT(CUT_LT_GOOD)	) | 
-			    (CUT_BIT(CUT_LL_GOOD)	) | 
-			    (CUT_BIT(CUT_LT_CALOISO)	) |  
-			    (CUT_BIT(CUT_LL_CALOISO)	) );
-  helCaloIso_ = new NMinus1Hist(sample_, "elCaloIso;calo iso;Dilepton Cand." , 50 , 0., 1. , cuts_, (CUT_BIT(CUT_LT_PT)) | 
-				(CUT_BIT(CUT_LL_PT)		) |  
-				(CUT_BIT(CUT_LT_GOOD)	) | 
-				(CUT_BIT(CUT_LL_GOOD)	) | 
-				(CUT_BIT(CUT_LT_CALOISO)	) |  
-				(CUT_BIT(CUT_LL_CALOISO)	) );
-  hmuCaloIso_ = new NMinus1Hist(sample_, "muCaloIso;calo iso;Dilepton Cand." , 50 , 0., 1. , cuts_, (CUT_BIT(CUT_LT_PT)) | 
-				(CUT_BIT(CUT_LL_PT)		) |  
-				(CUT_BIT(CUT_LT_GOOD)	) | 
-				(CUT_BIT(CUT_LL_GOOD)	) | 
-				(CUT_BIT(CUT_LT_CALOISO)	) |  
-				(CUT_BIT(CUT_LL_CALOISO)	) );
+  std::vector<cuts_t> lt_cuts;
+  lt_cuts.push_back((CUT_BIT(CUT_LT_PT)));
+  lt_cuts.push_back((CUT_BIT(CUT_LT_GOOD))); 
+  lt_cuts.push_back((CUT_BIT(CUT_LT_CALOISO)));
+
+  std::vector<std::string> lt_cut_names;
+  lt_cut_names.push_back("_Cut_On_PT");
+  lt_cut_names.push_back("_Cut_On_GOOD");
+  lt_cut_names.push_back("_Cut_On_CALOISO");
+
+  hltPt_ = new NMinus1Hist(sample_, "ltPt;p_{T} [GeV];Dilepton Cand." , 150 , 0, 150 , cuts_, lt_cuts, lt_cut_names);
+  hltEta_ = new NMinus1Hist(sample_, "ltEta;#eta;Dilepton Cand." , 12 , -3, 3 , cuts_, lt_cuts, lt_cut_names);
+  hltCaloIso_ = new NMinus1Hist(sample_, "ltCaloIso;calo iso;Dilepton Cand." , 50 , 0., 1., cuts_, lt_cuts, lt_cut_names);
+
+  std::vector<cuts_t> ll_cuts;
+  ll_cuts.push_back((CUT_BIT(CUT_LL_PT)));
+  ll_cuts.push_back((CUT_BIT(CUT_LL_GOOD))); 
+  ll_cuts.push_back((CUT_BIT(CUT_LL_CALOISO)));
+
+  std::vector<std::string> ll_cut_names;
+  ll_cut_names.push_back("_Cut_On_PT");
+  ll_cut_names.push_back("_Cut_On_GOOD");
+  ll_cut_names.push_back("_Cut_On_CALOISO");
+
+  hllPt_ = new NMinus1Hist(sample_, "llPt;p_{T} [GeV];Dilepton Cand." , 150 , 0, 150 , cuts_, ll_cuts, ll_cut_names);
+  hllEta_ = new NMinus1Hist(sample_, "llEta;#eta;Dilepton Cand." , 12 , -3, 3 , cuts_, ll_cuts, ll_cut_names);
+  hllCaloIso_ = new NMinus1Hist(sample_, "llCaloIso;calo iso;Dilepton Cand." , 50 , 0., 1., cuts_, ll_cuts, ll_cut_names);
+
+  std::vector<cuts_t> lepton_cuts;
+  lepton_cuts.push_back((CUT_BIT(CUT_LT_PT)));
+  lepton_cuts.push_back((CUT_BIT(CUT_LT_GOOD))); 
+  lepton_cuts.push_back((CUT_BIT(CUT_LT_CALOISO)));
+  lepton_cuts.push_back((CUT_BIT(CUT_LL_PT)));
+  lepton_cuts.push_back((CUT_BIT(CUT_LL_GOOD))); 
+  lepton_cuts.push_back((CUT_BIT(CUT_LL_CALOISO)));
+
+  std::vector<std::string> lepton_cut_names;
+  lepton_cut_names.push_back("_Cut_On_lt_PT");
+  lepton_cut_names.push_back("_Cut_On_lt_GOOD");
+  lepton_cut_names.push_back("_Cut_On_lt_CALOISO");
+  lepton_cut_names.push_back("_Cut_On_ll_PT");
+  lepton_cut_names.push_back("_Cut_On_ll_GOOD");
+  lepton_cut_names.push_back("_Cut_On_ll_CALOISO");
+
+  helPt_ = new NMinus1Hist(sample_, "elPt;p_{T} [GeV];Dilepton Cand." , 16 , 0, 160 , cuts_, lepton_cuts, lepton_cut_names);
+  hmuPt_ = new NMinus1Hist(sample_, "muPt;p_{T} [GeV];Dilepton Cand." , 16 , 0, 160 , cuts_, lepton_cuts, lepton_cut_names);
+  helEta_ = new NMinus1Hist(sample_, "elEta;#eta;Dilepton Cand." , 12 , -3, 3 , cuts_, lepton_cuts, lepton_cut_names);
+  hmuEta_ = new NMinus1Hist(sample_, "muEta;#eta;Dilepton Cand." , 12 , -3, 3 , cuts_, lepton_cuts, lepton_cut_names);
+  helCaloIso_ = new NMinus1Hist(sample_, "elCaloIso;calo iso;Dilepton Cand." , 50 , 0., 1. , cuts_, lepton_cuts, lepton_cut_names);
+  hmuCaloIso_ = new NMinus1Hist(sample_, "muCaloIso;calo iso;Dilepton Cand." , 50 , 0., 1. , cuts_, lepton_cuts, lepton_cut_names);
 
   // track plots
   hnTrack_ = new NMinus1Hist(sample_, "nTrack;n_{track};Dilepton Cand." , 200 , 0., 200. , cuts_, (CUT_BIT(CUT_MORE_THAN_TWO_TRACKS)) );
