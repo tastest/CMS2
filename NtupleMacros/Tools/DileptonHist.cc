@@ -20,14 +20,19 @@ DileptonHist::DileptonHist (const Sample &sample, const HistParm &parm)
 void DileptonHist::build (const Sample &sample, const string &var_name, 
 			    int bins, double min, double max)
 {
-     TDirectory *old_gDirectory = gDirectory;
+//      TDirectory *old_gDirectory = gDirectory;
      gDirectory = histo_directory;
      for (int i = 0; i < 4; ++i) {
-	  string name = sample.name + "_" + var_name + "_";
+          // remove trailing axis label descriptions
+       string local_var_name = var_name;
+	  if ( var_name.find_first_of(";") < var_name.size() ) {
+	    local_var_name = var_name.substr(0,var_name.find_first_of(";"));
+	  }
+	  string name = sample.name + "_" + local_var_name + "_";
 	  name += dilepton_hypo_names[i];
 	  // need to make this thing first, without the directory
 	  // finding out about it
-	  bool dir_stat = TH1::AddDirectoryStatus();
+// 	  bool dir_stat = TH1::AddDirectoryStatus();
 	  TH1::AddDirectory(true);
 	  histos[i] = new H_t(name.c_str(), var_name.c_str(), bins, min, max);
 	  histos[i]->Sumw2();

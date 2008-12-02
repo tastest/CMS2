@@ -1,5 +1,7 @@
 #include "NMinus1Hist.h"
 #include "Sample.h"
+#include <iostream>
+
 
 using std::vector;
 using std::string;
@@ -15,8 +17,13 @@ NMinus1Hist::NMinus1Hist (const Sample &s, const std::string &name,
      h_NMinus1.reserve(1);
      cut_mask.push_back(cut_mask_);
      mask.push_back(cuts & ~cut_mask_);
-//      printf("cuts: %x, cut_mask: %x, mask: %x\n", cuts, cut_mask[0], mask[0]);
-     h_NMinus1[0] = new DileptonHist(s, name + "-N-1", bins, min, max);
+     string local_name = name;
+     if ( name.find_first_of(";") < name.size() ) {
+       local_name = name.substr(0,name.find_first_of(";")) + "-N-1" + name.substr(name.find_first_of(";"));
+     } else {
+       local_name = name + "-N-1";
+     }
+     h_NMinus1[0] = new DileptonHist(s, local_name, bins, min, max);
 }
 
 NMinus1Hist::NMinus1Hist (const Sample &s, const std::string &name, 
@@ -35,7 +42,11 @@ NMinus1Hist::NMinus1Hist (const Sample &s, const std::string &name,
      }
      for (vector<string>::const_iterator i = cut_names.begin();
 	  i != cut_names.end(); ++i) {
-	  h_NMinus1.push_back(new DileptonHist(s, name + *i, bins, min, max));
+	  string local_name = name;
+	  if ( name.find_first_of(";") < name.size() ) {
+	    local_name = name.substr(0,name.find_first_of(";")) + *i + name.substr(name.find_first_of(";"));
+	  }
+	  h_NMinus1.push_back(new DileptonHist(s, local_name, bins, min, max));
      }
 }
 
