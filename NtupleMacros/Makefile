@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.11 2008/12/01 19:15:52 gutsche Exp $
+# $Id: Makefile,v 1.12 2008/12/05 16:28:49 jmuelmen Exp $
 
 .PHONY: all
 all:	help
@@ -13,7 +13,7 @@ analysis:
 	else if [ -e $(NAME) ] ;\
 		then echo "$(NAME) already exists" ;\
 	else \
-		mkdir $(NAME); \
+		mkdir -p $(NAME); \
 		find Templates/ -maxdepth 1 -type f -exec sh -c "cp {} $(NAME)" \; ;\
 		echo "Made a skeleton dilepton analysis in $(NAME)" | tee $(NAME)/AAAREADME.txt ;\
 		echo "" | tee -a $(NAME)/AAAREADME.txt ;\
