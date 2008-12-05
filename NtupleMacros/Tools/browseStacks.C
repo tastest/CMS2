@@ -46,6 +46,7 @@ void browseStacks( bool makePictures=false, bool wait=true, const char* dir = "o
        c->Print(Form("%s/stacks.ps",dir));
        //       c->Print(Form("out/stacks_%d.png",i+1));
        c->Print(Form("%s/stacks_%s.png",dir,myNames->At(i)->GetName()));
+       c->Print(Form("%s/stacks_%s.root",dir,myNames->At(i)->GetName()));
      }
      if (wait) {
        cout << "Enter carriage return for the next set of plots....q to quit" << endl;
