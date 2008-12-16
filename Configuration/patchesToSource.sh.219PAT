@@ -7,7 +7,7 @@ cvs co -r V00-02-05  EgammaAnalysis/EgammaIsolationProducers
 cvs co -r V01-02-00  PhysicsTools/IsolationAlgos                      
 cvs co -r V00-02-01  RecoEgamma/EgammaIsolationAlgos
 cvs co -r V00-02-16  RecoEgamma/Configuration
-mv CMS2/Configuration/electronIsolation_cff.py PhysicsTools/PatAlgos/python/recoLayer0
+cp CMS2/Configuration/electronIsolation_cff.py PhysicsTools/PatAlgos/python/recoLayer0
 
 
 
