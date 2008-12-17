@@ -1,0 +1,15 @@
+#!/bin/bash
+
+##PAT tuple configuration
+cvs co -r V04-05-04 TopQuarkAnalysis/TopObjectProducers
+##Jet Energy Corrections
+cvs co -r V01-06-05 CondFormats/JetMETObjects
+cvs co -r V01-08-10 JetMETCorrections/Configuration                  
+cvs co -r V02-09-00 JetMETCorrections/Modules
+##track MET stuff
+cvs co -r V02-08-02-14 RecoMET/METProducers/
+cvs co -r V02-05-00-16 RecoMET/METAlgorithms/
+cvs co -r V00-06-02-09 DataFormats/METReco/
+cvs co -r V00-04-02-15 RecoMET/Configuration/
+
+
