@@ -1,7 +1,8 @@
 #!/bin/bash
 
-##PAT tuple configuration
+##PAT tuple configuration. sigh
 cvs co -r V04-06-01 TopQuarkAnalysis/TopObjectProducers
+cvs co -r V04-14-15 PhysicsTools/PatAlgos
 ##Jet Energy Corrections
 cvs co -r V01-06-05 CondFormats/JetMETObjects
 cvs co -r V01-08-10 JetMETCorrections/Configuration                  
