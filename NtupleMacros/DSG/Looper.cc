@@ -50,7 +50,7 @@ void Looper::BookHistos ()
   ll_cut_names.push_back("-Cut-On-GOOD");
   ll_cut_names.push_back("-Cut-On-CALOISO");
 
-  hllPt_ = new NMinus1Hist(sample_, "llPt;p_{T} [GeV];Dilepton Cand." , 150 , 0, 150 , cuts_, ll_cuts, ll_cut_names);
+  hllPt_ = new NMinus1Hist(sample_, "llPt;p_{T} [GeV];Dilepton Cand." , 75 , 0, 150 , cuts_, ll_cuts, ll_cut_names);
   hllEta_ = new NMinus1Hist(sample_, "llEta;#eta;Dilepton Cand." , 12 , -3, 3 , cuts_, ll_cuts, ll_cut_names);
   hllCaloIso_ = new NMinus1Hist(sample_, "llCaloIso;calo iso;Dilepton Cand." , 50 , 0., 1., cuts_, ll_cuts, ll_cut_names);
 
@@ -70,8 +70,8 @@ void Looper::BookHistos ()
   lepton_cut_names.push_back("-Cut-On-ll-GOOD");
   lepton_cut_names.push_back("-Cut-On-ll-CALOISO");
 
-  helPt_ = new NMinus1Hist(sample_, "elPt;p_{T} [GeV];Dilepton Cand." , 16 , 0, 160 , cuts_, lepton_cuts, lepton_cut_names);
-  hmuPt_ = new NMinus1Hist(sample_, "muPt;p_{T} [GeV];Dilepton Cand." , 16 , 0, 160 , cuts_, lepton_cuts, lepton_cut_names);
+  helPt_ = new NMinus1Hist(sample_, "elPt;p_{T} [GeV];Dilepton Cand." , 75 , 0, 150 , cuts_, lepton_cuts, lepton_cut_names);
+  hmuPt_ = new NMinus1Hist(sample_, "muPt;p_{T} [GeV];Dilepton Cand." , 75 , 0, 150 , cuts_, lepton_cuts, lepton_cut_names);
   helEta_ = new NMinus1Hist(sample_, "elEta;#eta;Dilepton Cand." , 12 , -3, 3 , cuts_, lepton_cuts, lepton_cut_names);
   hmuEta_ = new NMinus1Hist(sample_, "muEta;#eta;Dilepton Cand." , 12 , -3, 3 , cuts_, lepton_cuts, lepton_cut_names);
   helCaloIso_ = new NMinus1Hist(sample_, "elCaloIso;calo iso;Dilepton Cand." , 50 , 0., 1. , cuts_, lepton_cuts, lepton_cut_names);
@@ -87,11 +87,11 @@ void Looper::BookHistos ()
 
   // MET plots
   std::vector<cuts_t> met_cuts;
-  met_cuts.push_back((CUT_BIT(CUT_PASS2_MET)));
-  met_cuts.push_back((CUT_BIT(CUT_PASS4_MET)));
-  met_cuts.push_back((CUT_BIT(CUT_PASS2_MET)) | (CUT_BIT(CUT_PASS4_MET)));
-  met_cuts.push_back((CUT_BIT(CUT_PASS_MET_10)));
-  met_cuts.push_back((CUT_BIT(CUT_PASS_MET_1)));
+  met_cuts.push_back((CUT_BIT(CUT_PASS2_METCORR)));
+  met_cuts.push_back((CUT_BIT(CUT_PASS4_METCORR)));
+  met_cuts.push_back((CUT_BIT(CUT_PASS2_METCORR)) | (CUT_BIT(CUT_PASS4_METCORR)));
+  met_cuts.push_back((CUT_BIT(CUT_PASS_METCORR_10)));
+  met_cuts.push_back((CUT_BIT(CUT_PASS_METCORR_1)));
 
   std::vector<std::string> met_cut_names;
   met_cut_names.push_back("-Cut-On-PASS2-MET");
@@ -115,6 +115,9 @@ void Looper::BookHistos ()
   sumet_cut_names.push_back("-Cut-On-SUMET-1");
 
   hsumet_ = new NMinus1Hist(sample_, "sum-et;#Sum E_{T} [GeV];Dilepton Cand." , 300 , 0, 1500 , cuts_, sumet_cuts, sumet_cut_names );
+
+  hmeff_ = new NMinus1Hist(sample_, "nMeff;M_{eff} [GeV];Dilepton Cand." , 100 , 0., 4000 , cuts_, 0 );
+  hmeffcorr_ = new NMinus1Hist(sample_, "nMeffCorr;M_{eff, tcCorr} [GeV];Dilepton Cand." , 100 , 0., 4000 , cuts_, 0 );
 
 }
 
@@ -221,6 +224,10 @@ cuts_t Looper::DilepSelect (int i_hyp)
     ret |= (CUT_BIT(CUT_PASS_MET_10));
   if (met1(i_hyp, TVector3()))
     ret |= (CUT_BIT(CUT_PASS_MET_1));
+  if (met10(i_hyp, trkCorr)) 
+    ret |= (CUT_BIT(CUT_PASS_METCORR_10));
+  if (met1(i_hyp, trkCorr))
+    ret |= (CUT_BIT(CUT_PASS_METCORR_1));
 
   if (sumEt10( sumEt_ )) 
     ret |= (CUT_BIT(CUT_PASS_SUMET_10));
@@ -443,6 +450,19 @@ void Looper::FillDilepHistos (int i_hyp)
 
   // sumet plots
   hsumet_->Fill(cuts_passed, myType, sumEt_, weight);      
+
+  // effective mass
+  float meff = 0.;
+  for ( unsigned int jet = 0;
+	jet < cms2.hyp_jets_p4()[i_hyp].size();
+	++jet ) {
+    meff += cms2.hyp_jets_p4()[i_hyp][jet].pt();
+  }
+  meff += cms2.hyp_lt_p4()[i_hyp].pt();
+  meff += cms2.hyp_ll_p4()[i_hyp].pt();
+
+  hmeff_->Fill(cuts_passed, myType, meff+cms2.hyp_met()[i_hyp],weight);
+  hmeffcorr_->Fill(cuts_passed, myType, meff+hyp_met.Perp(),weight);
 
 }
 

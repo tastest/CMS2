@@ -31,6 +31,8 @@ enum {
 
   CUT_PASS_MET_10,
   CUT_PASS_MET_1,
+  CUT_PASS_METCORR_10,
+  CUT_PASS_METCORR_1,
 
   CUT_PASS_SUMET_10,
   CUT_PASS_SUMET_1,
@@ -89,13 +91,13 @@ const static cuts_t dsg_baseline_cuts = (
 					 (CUT_BIT(CUT_LT_CALOISO)	) |  
 					 (CUT_BIT(CUT_LL_CALOISO)	) | 
 					 (CUT_BIT(CUT_OPP_SIGN)	) | 
-					 (CUT_BIT(CUT_PASS4_MET)	) |  
-					 (CUT_BIT(CUT_PASS2_MET)	) 
+					 (CUT_BIT(CUT_PASS4_METCORR)	) |  
+					 (CUT_BIT(CUT_PASS2_METCORR)	) 
 					 );   
 		  
-const static cuts_t dsg_met_10_cuts = dsg_baseline_cuts | CUT_BIT(CUT_PASS_MET_10);
+const static cuts_t dsg_met_10_cuts = dsg_baseline_cuts | CUT_BIT(CUT_PASS_METCORR_10);
 
-const static cuts_t dsg_met_1_cuts = dsg_baseline_cuts | CUT_BIT(CUT_PASS_MET_1);
+const static cuts_t dsg_met_1_cuts = dsg_baseline_cuts | CUT_BIT(CUT_PASS_METCORR_1);
 
 const static cuts_t dsg_sumet_10_cuts = dsg_baseline_cuts | CUT_BIT(CUT_PASS_SUMET_10);
 
@@ -194,6 +196,8 @@ protected:
   NMinus1Hist *hmetSpec_;
   NMinus1Hist *hmetTrkCorr_;
   NMinus1Hist *hsumet_;
+  NMinus1Hist *hmeff_;
+  NMinus1Hist *hmeffcorr_;
 
 protected:
   // count the (weighted and unweighted) number of candidates passing our cuts
