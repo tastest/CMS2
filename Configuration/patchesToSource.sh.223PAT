@@ -4,9 +4,11 @@
 cvs co -r V04-06-01 TopQuarkAnalysis/TopObjectProducers
 cvs co -r V04-14-15 PhysicsTools/PatAlgos
 ##Jet Energy Corrections
-cvs co -r V01-06-05 CondFormats/JetMETObjects
-cvs co -r V01-08-10 JetMETCorrections/Configuration                  
+cvs co -r V01-06-06 CondFormats/JetMETObjects
+cvs co -r V01-08-11 JetMETCorrections/Configuration                  
 cvs co -r V02-09-00 JetMETCorrections/Modules
+cvs co -r V01-07-11 JetMETCorrections/Algorithms
+cvs co -r V03-02-06 JetMETCorrections/JetPlusTrack
 ##track MET stuff
 cvs co -r V02-08-02-14 RecoMET/METProducers/
 cvs co -r V02-05-00-16 RecoMET/METAlgorithms/
