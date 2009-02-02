@@ -63,12 +63,14 @@ TVector3 correctMETforTracks()
       if( cms2.mus_trkidx()[cms2.trk_musidx()[trkCount]]  == int(trkCount) && cms2.mus_trkdr()[cms2.trk_musidx()[trkCount]] < 0.1 ) continue;
     }
 
+    /* MISSING NTUPLE VARIABLES
     // skip track if matched to an "electron"
     if( cms2.trk_elsidx()[trkCount] != -999 && cms2.trk_elsdr()[trkCount] < 0.1) {
       if( cms2.els_hOverE()[ cms2.trk_elsidx()[trkCount] ] < hoe_cut ) {
 	if( cms2.els_trkidx()[cms2.trk_elsidx()[trkCount]]  == int(trkCount) && cms2.els_trkdr()[cms2.trk_elsidx()[trkCount]] < 0.1 ) continue;
       }
     }
+    */
 
     // skip tracks at large eta or with large pt
     if( fabs( cms2.trks_trk_p4()[trkCount].eta() ) > eta_cut || cms2.trks_trk_p4()[trkCount].pt() > hi_pt_cut ) continue;
