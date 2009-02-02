@@ -91,7 +91,7 @@ uint64 LooperBase::Loop ()
 	       }
 	       
 	       // filter by process
-	       if ( !filterByProcess(sample_.process) ) continue;
+// 	       if ( !filterByProcess(sample_.process) ) continue;
 	       
 	       // give the analysis a chance to filter out this event
 	       // (for example because it's a duplicate)
