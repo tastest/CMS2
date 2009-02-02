@@ -253,21 +253,55 @@ bool sumEt1(double sumEt) {
 // identify DY-> ee vs mm vs tt
 //-------------------------------------------------
 int getDrellYanType() {
-  bool foundZ;
-  int size = cms2.genps_id().size();
-  for (int jj=0; jj<size; jj++) {
-    if (cms2.genps_id().at(jj) == 23) {
-      foundZ = true;
-      if (jj+3 > size) {
-	std::cout << 
-	  "Found Z but not enough room in doc lines for leptons?" << std::endl;
-        return 999;
+  bool foundEP = false;
+  bool foundEM = false;
+  bool foundMP = false;
+  bool foundMM = false;
+  bool foundTP = false;
+  bool foundTM = false;
+  for (unsigned int i = 0; i < cms2.genps_id().size(); ++i) {
+    if ( cms2.genps_id_mother().at(i) == 23 ){
+      switch ( abs(cms2.genps_id().at(i)) ){
+      case 11:
+	return 0;
+	break;
+      case 13:
+	return 1;
+	break;
+      case 15:
+	return 2;
+	break;
+      default:
+	break;
       }
-      if (abs(cms2.genps_id().at(jj+1)) == 11) return 0;  //DY->ee
-      if (abs(cms2.genps_id().at(jj+1)) == 13) return 1;  //DY->mm
-      if (abs(cms2.genps_id().at(jj+1)) == 15) return 2;  //DY->tautau
+    }
+    switch ( cms2.genps_id().at(i) ){
+    case 11:
+      foundEM = true;
+      break;
+    case -11:
+      foundEP = true;
+      break;
+    case 13:
+      foundMM = true;
+      break;
+    case -13:
+      foundMP = true;
+      break;
+    case 15:
+      foundTM = true;
+      break;
+    case -15:
+      foundTP = true;
+      break;
+    default:
+      break;
     }
   }
+  
+  if ( foundEP && foundEM ) return 0;  //DY->ee
+  if ( foundMP && foundMM ) return 1;  //DY->mm
+  if ( foundTP && foundTM ) return 2;  //DY->tautau
   std::cout << "Does not look like a DY event" << std::endl;
   return 999;
 }
