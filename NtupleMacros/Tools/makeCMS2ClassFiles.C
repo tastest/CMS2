@@ -4,13 +4,24 @@
   of CMS2 ntuples. Usage:
 
   [kalavase@stau ~/rootmacros]$ root
-  root [0] .L makeCMS2ClassFiles.C
+  root [0] .L makeCMS2ClassFiles.C++
   //second string is optional. The classname is CMS2 by default
   root [1] makeCMS2Header("tablemaker_Zmumu_ntuple.root","classname")
 
 */
 
-makeCMS2Files(std::string fname, std::string className = "") {
+
+#include "TBranch.h"
+#include "TString.h"
+#include "TFile.h"
+#include "TTree.h"
+#include <iostream>
+#include <fstream>
+#include "Math/LorentzVector.h"
+
+using namespace std;
+
+void makeCMS2Files(std::string fname, std::string className = "") {
 
   using namespace std;
   
@@ -67,6 +78,7 @@ makeCMS2Files(std::string fname, std::string className = "") {
     TBranch *branch = ev->GetBranch(ev->GetAlias(aliasname.Data()));
     
     TString classname = branch->GetClassName();
+    TString title     = branch->GetTitle();
     if ( classname.Contains("vector") ) {
       classname = classname(0,classname.Length()-2);
       classname.ReplaceAll("edm::Wrapper<","");
@@ -74,7 +86,14 @@ makeCMS2Files(std::string fname, std::string className = "") {
     } else {
       classname = classname(0,classname.Length()-1);
       classname.ReplaceAll("edm::Wrapper<","");
-      headerf << "\t" << classname << "\t" << aliasname << "_;" << endl;
+      if(classname != "") {
+	headerf << "\t" << classname << "\t" << aliasname << "_;" << endl;
+      } else {
+	if(title.EndsWith("/F"))
+	  headerf << "\tfloat" << "\t" << aliasname << "_;" << endl;
+	if(title.EndsWith("/I"))
+	  headerf << "\tint" << "\t" << aliasname << "_;" << endl;
+      }
     }
     headerf << "\tTBranch *" << Form("%s_branch",aliasname.Data()) << ";" << endl;
     headerf << "\tbool " << Form("%s_isLoaded",aliasname.Data()) << ";" << endl;
@@ -139,16 +158,24 @@ makeCMS2Files(std::string fname, std::string className = "") {
        TString aliasname(aliasarray->At(i)->GetName());
        TBranch *branch = ev->GetBranch(ev->GetAlias(aliasname.Data()));
        TString classname = branch->GetClassName();
+       TString title = branch->GetTitle();
        if ( classname.Contains("vector") ) {
-	    classname = classname(0,classname.Length()-2);
-	    classname.ReplaceAll("edm::Wrapper<","");
-	    headerf << "\t" << classname << " &" << aliasname << "()" << endl;
+	 classname = classname(0,classname.Length()-2);
+	 classname.ReplaceAll("edm::Wrapper<","");
+	 headerf << "\t" << classname << " &" << aliasname << "()" << endl;
        } else {
-	    classname = classname(0,classname.Length()-1);
-	    classname.ReplaceAll("edm::Wrapper<","");
-	    headerf << "\t" << classname << " &" << aliasname << "()" << endl;
+	 classname = classname(0,classname.Length()-1);
+	 classname.ReplaceAll("edm::Wrapper<","");
+	 if(classname != "" ) {
+	   headerf << "\t" << classname << " &" << aliasname << "()" << endl;
+	 } else {
+	   if(title.EndsWith("/F"))
+	     headerf << "\tfloat &" << aliasname << "()" << endl;
+	   if(title.EndsWith("/I"))
+	     headerf << "\tint &" << aliasname << "()" << endl;
+	 }
        }
-       TString aliasname(aliasarray->At(i)->GetName());
+       aliasname = aliasarray->At(i)->GetName();
        headerf << "\t{" << endl;
        headerf << "\t\t" << "if (not " << Form("%s_isLoaded) {",aliasname.Data()) << endl;
        headerf << "\t\t\t" << "if (" << Form("%s_branch",aliasname.Data()) << " != 0) " << endl;
