@@ -9,31 +9,17 @@
 
 bool filterByProcess (enum Process sample)
 {
-     switch (sample) {
-     case WW: case WZ: case ZZ: case tW: case LM1: case LM2: case LM4:
-	  return true;
-     case Wjets:
-	  return cms2.evt_CSA07Process() < 11;
-     case DYee: 
-	  return (cms2.evt_CSA07Process() > 10 && cms2.evt_CSA07Process() < 22 && isDYee() );
-     case DYmm:
-	  return (cms2.evt_CSA07Process() > 10 && cms2.evt_CSA07Process() < 22 && isDYmm() );
-     case DYtt:
-	  return (cms2.evt_CSA07Process() > 10 && cms2.evt_CSA07Process() < 22 && isDYtt() );
-     case ttbar:
-	  return (cms2.evt_CSA07Process() > 21 && cms2.evt_CSA07Process() < 27);
-     }
-     return false;
+     return true;
 }
 
 //WW file
 Sample fWW ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = "/data/tmp/cms2-V00-04-00/merge_WW.root";
+     std::string sample = "/data/tmp/cms2-V01-02-01/WW_2l-Pythia/merged_ntuple*.root";
      char *location = getenv("CMS2_NTUPLE_LOCATION");
      if ( location != 0 ) {
-       sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-04-00/merge_WW.root";
+       sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "/data/tmp/jmuelmen/2_2_ntuple_test/ntuple_*.root";
      }
      c->Add(sample.c_str());
      Sample ret = { c, WW, kRed, 1, "ww", true };
@@ -44,7 +30,7 @@ Sample fWW ()
 Sample fWZ ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = "/data/tmp/cms2-V00-05-00/merge_WZ.root";
+     std::string sample = "/data/tmp/cms2-V01-02-01/WZ_3l-Pythia/merged_ntuple*.root";
      char *location = getenv("CMS2_NTUPLE_LOCATION");
      if ( location != 0 ) {
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-05-00/merge_WZ.root";
@@ -58,7 +44,7 @@ Sample fWZ ()
 Sample fZZ ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = "/data/tmp/cms2-V00-05-00/merge_ZZ.root";
+     std::string sample = "/data/tmp/cms2-V01-02-01/ZZ_2l2n-Pythia/merged_ntuple*.root";
      char *location = getenv("CMS2_NTUPLE_LOCATION");
      if ( location != 0 ) {
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-05-00/merge_ZZ.root";
@@ -72,7 +58,7 @@ Sample fZZ ()
 Sample fWjets ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = "/data/tmp/cms2-V00-04-01/merge_Wjet.root";
+     std::string sample = "/data/tmp/cms2-V01-02-01/WJets-madgraph/merged_ntuple*.root";
      char *location = getenv("CMS2_NTUPLE_LOCATION");
      if ( location != 0 ) {
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-04-01/merge_Wjet.root";
@@ -86,7 +72,7 @@ Sample fWjets ()
 Sample fDYee ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = "/data/tmp/cms2-V00-04-01/merge_DY.root";
+     std::string sample = "/data/tmp/cms2-V01-02-01/ZJets-madgraph/merged_ntuple*.root";
      char *location = getenv("CMS2_NTUPLE_LOCATION");
      if ( location != 0 ) {
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-04-01/merge_DY.root";
@@ -100,7 +86,7 @@ Sample fDYee ()
 Sample fDYmm ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = "/data/tmp/cms2-V00-04-01/merge_DY.root";
+     std::string sample = "/data/tmp/cms2-V01-02-01/ZJets-madgraph/merged_ntuple*.root";
      char *location = getenv("CMS2_NTUPLE_LOCATION");
      if ( location != 0 ) {
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-04-01/merge_DY.root";
@@ -114,7 +100,7 @@ Sample fDYmm ()
 Sample fDYtt ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = "/data/tmp/cms2-V00-04-01/merge_DY.root";
+     std::string sample = "/data/tmp/cms2-V01-02-01/ZJets-madgraph/merged_ntuple*.root";
      char *location = getenv("CMS2_NTUPLE_LOCATION");
      if ( location != 0 ) {
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-04-01/merge_DY.root";
@@ -128,7 +114,7 @@ Sample fDYtt ()
 Sample fttbar ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = "/data/tmp/cms2-V00-04-01/merge_ttbar.root";
+     std::string sample = "/data/tmp/cms2-V01-02-01/TTJets-madgraph/merged_ntuple*.root";
      char *location = getenv("CMS2_NTUPLE_LOCATION");
      if ( location != 0 ) {
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-04-01/merge_ttbar.root";
@@ -141,7 +127,7 @@ Sample fttbar ()
 Sample ftW ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = "/data/tmp/cms2-V00-04-00/merge_tW.root";
+     std::string sample = "/data/tmp/cms2-V01-02-01/SingleTop_tWChannel-madgraph-LHE/merged_ntuple*.root";
      char *location = getenv("CMS2_NTUPLE_LOCATION");
      if ( location != 0 ) {
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-04-00/merge_tW.root";
