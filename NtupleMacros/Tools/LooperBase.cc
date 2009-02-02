@@ -43,6 +43,7 @@ uint64 LooperBase::Loop ()
      TChain *chain = sample_.chain;
      uint64 nEventsChain = chain->GetEntries();  // number of entries in chain --> number of events from all files
      uint64 nEventsTotal = 0;
+     double weightEventsTotal = 0;
      memset(hypos_total_n_, 0, sizeof(hypos_total_n_));
      memset(hypos_total_weight_, 0, sizeof(hypos_total_weight_));
 
@@ -79,6 +80,8 @@ uint64 LooperBase::Loop ()
 	  for( uint64 event = 0; event < nEvents; ++event) {
 	       cms2.GetEntry(event);  // get entries for Event number event from branches of TTree tree
 	       ++nEventsTotal;
+// 	       fprintf(logfile_, "%f\n", LooperBase::Weight(0));
+	       weightEventsTotal += LooperBase::Weight(0);
 	       
 	       // Progress feedback to the user
 	       int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
@@ -95,8 +98,11 @@ uint64 LooperBase::Loop ()
 	       
 	       // give the analysis a chance to filter out this event
 	       // (for example because it's a duplicate)
-	       if (FilterEvent())
+	       if (FilterEvent()) {
+		    duplicates_total_n_++;
+		    duplicates_total_weight_ += LooperBase::Weight(0);
 		    continue;
+	       }
 
 	       // call the event function
 	       FillEventHistos();
@@ -128,13 +134,21 @@ uint64 LooperBase::Loop ()
      if ( nEventsChain != nEventsTotal ) {
 	  printf("ERROR: number of events from files (%llu) is not equal to total number"
 		 " of events (%llu)\n", nEventsChain, nEventsTotal);
+	  exit(1);
      }
      
-//      printf("Total candidate count (ee em mm all): %llu %llu %llu %llu.  Total weight %f %f %f %f\n",   
-// 	    hypos_total_n_[0], hypos_total_n_[1], hypos_total_n_[2], hypos_total_n_[3], 
-// 	    hypos_total_weight_[0], hypos_total_weight_[1], hypos_total_weight_[2], hypos_total_weight_[3]);
-//      printf("Total duplicate count: %d.  Total weight %f\n",   
-// 	    duplicates_total_n, duplicates_total_weight);
+     int ret = fprintf(logfile_, 
+		       "Sample %10s: Events before cut (weight): %10.1f.  Events: %8u\n",
+		       sample_.name.c_str(),
+		       weightEventsTotal, nEventsTotal);
+     if (ret < 0)
+	  perror("writing to log file");
+     ret = fprintf(logfile_, 
+		   "Sample %10s: Duplicate events: %8u.  Weight %10.1lf\n",
+		   sample_.name.c_str(),
+		   duplicates_total_n_, duplicates_total_weight_);
+     if (ret < 0)
+	  perror("writing to log file");
      End();
      if (logfile_ != stdout)
 	  fclose(logfile_);
