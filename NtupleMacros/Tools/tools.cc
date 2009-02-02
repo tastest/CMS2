@@ -688,7 +688,7 @@ bool testJetForElectrons(const LorentzVector& jetP4, const LorentzVector& elP4) 
 std::vector<LorentzVector> correctJetsForElectrons(int bucket, int first, int second, int third) {
 
   std::vector<LorentzVector> result;
-
+#if 0
   double hypJetMinEtaCut = -3.0;
   double hypJetMaxEtaCut = 3.0;
   double hypJetMinPtCut  = 15;
@@ -727,7 +727,7 @@ std::vector<LorentzVector> correctJetsForElectrons(int bucket, int first, int se
     result.push_back(cms2.jets_p4()[jet]);
 
   }
-
+#endif
   return result;
 
 }
