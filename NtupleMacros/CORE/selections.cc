@@ -48,7 +48,7 @@ bool inZmassWindow (float mass) {
 bool goodElectronWithoutIsolation(int index) {
   if ( cms2.els_tightId().at(index)     !=  1) return false;
   if ( cms2.els_closestMuon().at(index) != -1) return false;
-  if ( abs(cms2.els_d0().at(index)) > 0.025)   return false;
+  if ( abs(cms2.els_d0corr().at(index)) > 0.025)   return false;
   return true;
 }
 //----------------------------------------------------------------
@@ -65,7 +65,7 @@ bool goodElectronWithoutIsolationWithoutd0(int index) {
 bool goodLooseElectronWithoutIsolation(int index) {
   if ( cms2.els_looseId().at(index)     !=  1) return false;
   if ( cms2.els_closestMuon().at(index) != -1) return false;
-  if ( abs(cms2.els_d0().at(index)) > 0.025)   return false;
+  if ( abs(cms2.els_d0corr().at(index)) > 0.025)   return false;
   return true;
 }
 //----------------------------------------------------------------
@@ -73,7 +73,7 @@ bool goodLooseElectronWithoutIsolation(int index) {
 //---------------------------------------------------------------
 bool goodMuonWithoutIsolation(int index) {
   if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) > 5.) return false;
-  if (abs(cms2.mus_d0().at(index))   > 0.25) return false;
+  if (abs(cms2.mus_d0corr().at(index))   > 0.25) return false;
   if (cms2.mus_validHits().at(index) < 7)    return false;
   return true;
 }
@@ -602,6 +602,7 @@ double conversionDeltaPhi (int i_conv, int i_el)
      return fabs(dphi);
 }
 
+/* missing ntuple variables
 bool passCaloTrkjetCombo ()
 {
      double dr = 999;
@@ -627,6 +628,7 @@ bool passCaloTrkjetCombo ()
 	  return false;
      return true;
 }
+*/
 
 //-------------------------------------------
 // plain MET cut for reducing SM contribution 
