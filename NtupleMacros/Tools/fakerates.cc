@@ -116,7 +116,7 @@ bool isNumeratorElectron_v2_2 (int index, int type) { // 0=loose, 1=tight, for p
      if ( cms2.els_eOverPIn()[index] > eOverP_cut )             result = false;
      if ( cms2.els_hOverE()[index]   > hOverE_cut )             result = false;
      // add additional cleaning cuts (from FKW) 080324
-     if ( std::abs(cms2.els_d0()[index])  > d0_cut )            result = false;
+     if ( std::abs(cms2.els_d0corr()[index])  > d0_cut )            result = false;
      
      /*
        bool IdCuts = cut_verysimple(els_dEtaIn->at(index),
