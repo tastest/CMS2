@@ -4,7 +4,10 @@
 
 #include <string>
 
-enum Process { WW, WZ, ZZ, Wjets, DYee, DYmm, DYtt, ttbar, tW, LM1, LM2, LM4 };
+enum Process { WW, WZ, ZZ, Wjets, DYee, DYmm, DYtt, ttbar, tW, LM1, LM2, LM4,
+	       InclusiveMu5Pt50, InclusiveMuPt15, 
+	       QCDBCtoEPt20to30, QCDBCtoEPt30to80, QCDBCtoEPt80to170, 
+	       QCDEMenrichedPt20to30, QCDEMenrichedPt30to80, QCDEMenrichedPt80to170};
 
 class TChain;
 // struct that contains all the necessary information about a sample
@@ -32,6 +35,17 @@ Sample ftW	();
 Sample fLM1     ();
 Sample fLM2     ();
 Sample fLM4     ();
+
+// QCD samples
+Sample fInclusiveMu5Pt50	();
+Sample fInclusiveMuPt15	        ();
+Sample fQCDBCtoEPt20to30	();
+Sample fQCDBCtoEPt30to80	();
+Sample fQCDBCtoEPt80to170	();
+Sample fQCDEMenrichedPt20to30	();
+Sample fQCDEMenrichedPt30to80	();
+Sample fQCDEMenrichedPt80to170  ();
+
 
 // filter events by process
 bool filterByProcess (enum Process sample);
