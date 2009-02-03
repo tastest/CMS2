@@ -1,6 +1,7 @@
 #ifndef SELECTION_H
 #define SELECTION_H
 #include "TLorentzVector.h"
+#include <vector>
 
 bool inZmassWindow (float mass);
 bool supertightElectron (int index);
@@ -46,4 +47,12 @@ double conversionDeltaPhi (int i_conv, int i_el);
 
 bool passTrackIsolation(int index);
 int passTrackZVeto(int hyp_index);
+
+int getDrellYanType();
+void dumpDocLines();
+int NjetVeto(std::vector<TLorentzVector>& Jet, double min_et);
+bool trueMuonFromW(int index);
+bool isFakeDenominatorElectron(int index);
+bool isFakeNumeratorElectron(int index, int type); 
+
 #endif
