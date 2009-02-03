@@ -1,5 +1,8 @@
 #include "TFile.h"
 #include "TH2F.h"
+#include <vector>
+
+using std::vector;
 
 const char* makeName(const char* bin, const char* name) {
   return Form("%s_h%s",bin,name);
@@ -8,64 +11,11 @@ const char* makeName(const char* bin, const char* name) {
 void prepareFakeRateHistograms() {
 
   vector<char*> qcdBins;
-  vector<float> qcdBinXSec;
-  vector<float> qcdBinFilterEff;
-  vector<float> qcdBinNEvents; // number of processed events corresponding to used ntuples
-
   vector<char*> histograms;
 
-  qcdBins.push_back("qcd_0_15");
-  qcdBins.push_back("qcd_15_20");
-  qcdBins.push_back("qcd_20_30");
-  qcdBins.push_back("qcd_30_50");
-  qcdBins.push_back("qcd_50_80");
-  qcdBins.push_back("qcd_80_120");
-  qcdBins.push_back("qcd_120_170");
-  qcdBins.push_back("qcd_170_230");
-  qcdBins.push_back("qcd_230_300");
-  qcdBins.push_back("qcd_300_380");
-  qcdBins.push_back("qcd_380_470");
-  qcdBins.push_back("qcd_470_600");
-
-  qcdBinFilterEff.push_back(0.964);
-  qcdBinFilterEff.push_back(1.);
-  qcdBinFilterEff.push_back(1.);
-  qcdBinFilterEff.push_back(1.);
-  qcdBinFilterEff.push_back(1.);
-  qcdBinFilterEff.push_back(1.);
-  qcdBinFilterEff.push_back(1.);
-  qcdBinFilterEff.push_back(1.);
-  qcdBinFilterEff.push_back(1.);
-  qcdBinFilterEff.push_back(1.);
-  qcdBinFilterEff.push_back(1.);
-  qcdBinFilterEff.push_back(1.);
-
-  qcdBinXSec.push_back(55000000000.00);
-  qcdBinXSec.push_back(1460000000.00);
-  qcdBinXSec.push_back(630000000.00);
-  qcdBinXSec.push_back(163000000.00);
-  qcdBinXSec.push_back(21600000.00);
-  qcdBinXSec.push_back(3080000.00);
-  qcdBinXSec.push_back(494000.00);
-  qcdBinXSec.push_back(101000.00);
-  qcdBinXSec.push_back(24500.00);
-  qcdBinXSec.push_back(6240.00);
-  qcdBinXSec.push_back(1780.00);
-  qcdBinXSec.push_back(683.);
-
-
-  qcdBinNEvents.push_back(611787);
-  qcdBinNEvents.push_back(1286976);
-  qcdBinNEvents.push_back(1908861);
-  qcdBinNEvents.push_back(1160479);
-  qcdBinNEvents.push_back(914740);
-  qcdBinNEvents.push_back(1258762);
-  qcdBinNEvents.push_back(1260951);
-  qcdBinNEvents.push_back(934870);
-  qcdBinNEvents.push_back(799844);
-  qcdBinNEvents.push_back(1274039);
-  qcdBinNEvents.push_back(1246217);
-  qcdBinNEvents.push_back(1315614);
+  qcdBins.push_back("QCDEMenrichedPt20to30");
+  qcdBins.push_back("QCDEMenrichedPt30to80");
+  qcdBins.push_back("QCDEMenrichedPt80to170");
 
   histograms.push_back("den_ele");
   histograms.push_back("den_wo_leading_ele");
@@ -95,10 +45,9 @@ void prepareFakeRateHistograms() {
       tmp->SetDirectory(0);
       if ( first ) {
 	clone = dynamic_cast<TH2F*>tmp->Clone(histograms[histo]);
-	clone->Scale(qcdBinXSec[bin]*qcdBinFilterEff[bin]/qcdBinNEvents[bin]);
 	first = false;
       } else {
-	clone->Add(tmp,qcdBinXSec[bin]*qcdBinFilterEff[bin]/qcdBinNEvents[bin]);
+	clone->Add(tmp,1.);
       }
     }
   }
