@@ -5,6 +5,7 @@
 #include "Math/PtEtaPhiM4D.h"
 #include "Math/LorentzVector.h"
 #include "TH1F.h"
+#include "TH2F.h"
 #include "TFile.h"
 #include "TMath.h"
 #include "TList.h"
@@ -106,24 +107,102 @@ unsigned int decodeThird(unsigned int cand) {
   return (cand - (cand/100*100));
 }
 
-TH1F* book1DHist(const char* name, const char* title, unsigned int nbins, float low, float high, const char* xtitle, const char* ytitle) {
+TH1F* book1DHist(const char* name, const char* title, unsigned int nbins, float low, float high, const char* xtitle, const char* ytitle, int color) {
   // return histogram instance with called Sumw2
   TH1F *hist = new TH1F(name,title,nbins,low,high);
   hist->SetXTitle(xtitle);
   hist->SetYTitle(ytitle);
   hist->Sumw2();
+  hist->SetFillColor(color);
+  hist->SetLineColor(color);
    
   return hist;   
 }
 
-TH1F* book1DVarHist(const char* name, const char* title, unsigned int nbins, float* bins, const char* xtitle, const char* ytitle) {
+TH1F* book1DVarHist(const char* name, const char* title, unsigned int nbins, float* bins, const char* xtitle, const char* ytitle, int color) {
   // return histogram instance with called Sumw2
   TH1F *hist = new TH1F(name,title,nbins,bins);
   hist->SetXTitle(xtitle);
   hist->SetYTitle(ytitle);
   hist->Sumw2();
+  hist->SetFillColor(color);
+  hist->SetLineColor(color);
    
   return hist;   
+}
+
+TH1F* book1DVarHist(const char* name, const char* title, vector<float> &bins, const char* xtitle, const char* ytitle, int color) {
+  // return histogram instance with called Sumw2
+  const unsigned int nBins = bins.size()-1;
+  float binArray[nBins+1];
+  for (unsigned int i = 0;
+       i < nBins+1;
+       ++i) {
+    binArray[i] = bins[i];
+  }
+
+  TH1F *hist = new TH1F(name,title,nBins,binArray);
+  hist->SetXTitle(xtitle);
+  hist->SetYTitle(ytitle);
+  hist->Sumw2();
+  hist->SetFillColor(color);
+  hist->SetLineColor(color);
+   
+  return hist;
+}
+
+TH2F* book2DHist(const char* name, const char* title, unsigned int nxbins, float xlow, float xhigh, unsigned int nybins, float ylow, float yhigh, const char* xtitle, const char* ytitle, const char* ztitle, int color) {
+  // return histogram instance with called Sumw2
+  TH2F *hist = new TH2F(name,title,nxbins,xlow,xhigh,nybins,ylow,yhigh);
+  hist->SetXTitle(xtitle);
+  hist->SetYTitle(ytitle);
+  hist->SetZTitle(ztitle);
+  hist->Sumw2();
+  hist->SetFillColor(color);
+  hist->SetLineColor(color);
+   
+  return hist;   
+}
+
+TH2F* book2DVarHist(const char* name, const char* title, unsigned int nxbins, float* xbins, unsigned int nybins, float* ybins, const char* xtitle, const char* ytitle, const char* ztitle, int color) {
+  // return histogram instance with called Sumw2
+  TH2F *hist = new TH2F(name,title,nxbins,xbins,nybins,ybins);
+  hist->SetXTitle(xtitle);
+  hist->SetYTitle(ytitle);
+  hist->SetZTitle(ztitle);
+  hist->Sumw2();
+  hist->SetFillColor(color);
+  hist->SetLineColor(color);
+   
+  return hist;   
+}
+
+TH2F* book2DVarHist(const char* name, const char* title, vector<float> &xbins, vector<float> &ybins, const char* xtitle, const char* ytitle, const char* ztitle, int color) {
+  // return histogram instance with called Sumw2
+  const unsigned int nxBins = xbins.size()-1;
+  float xbinArray[nxBins+1];
+  for (unsigned int i = 0;
+       i < nxBins+1;
+       ++i) {
+    xbinArray[i] = xbins[i];
+  }
+  const unsigned int nyBins = ybins.size()-1;
+  float ybinArray[nyBins+1];
+  for (unsigned int i = 0;
+       i < nyBins+1;
+       ++i) {
+    ybinArray[i] = ybins[i];
+  }
+
+  TH2F *hist = new TH2F(name,title,nxBins,xbinArray,nyBins,ybinArray);
+  hist->SetXTitle(xtitle);
+  hist->SetYTitle(ytitle);
+  hist->SetZTitle(ztitle);
+  hist->Sumw2();
+  hist->SetFillColor(color);
+  hist->SetLineColor(color);
+   
+  return hist;
 }
 
 float mee(int i, int j){

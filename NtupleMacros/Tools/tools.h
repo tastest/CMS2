@@ -2,19 +2,27 @@
 #define TOOLS_H
 
 #include "TH1F.h"
+#include "TH2F.h"
 #include "TVector3.h"
 #include <algorithm>
+#include <vector>
 #include <set>
 #include "../CORE/selections.h"
 #include "Math/VectorUtil.h"
+
+using std::vector;
 
 unsigned int encodeTriLeptonCand(unsigned int bucket,unsigned int first, unsigned int second, unsigned int third);
 unsigned int decodeBucket(unsigned int cand);
 unsigned int decodeFirst(unsigned int cand);
 unsigned int decodeSecond(unsigned int cand);
 unsigned int decodeThird(unsigned int cand);
-TH1F* book1DHist(const char* name, const char* title, unsigned int nbins, float low, float high, const char* xtitle, const char* ytitle);
-TH1F* book1DVarHist(const char* name, const char* title, unsigned int nbins, float* bins, const char* xtitle, const char* ytitle);
+TH1F* book1DHist(const char* name, const char* title, unsigned int nbins, float low, float high, const char* xtitle, const char* ytitle, int color = 1);
+TH1F* book1DVarHist(const char* name, const char* title, unsigned int nbins, float* bins, const char* xtitle, const char* ytitle, int color = 1);
+TH1F* book1DVarHist(const char* name, const char* title, vector<float> &bins, const char* xtitle, const char* ytitle, int color = 1);
+TH2F* book2DHist(const char* name, const char* title, unsigned int nxbins, float xlow, float xhigh, unsigned int nybins, float ylow, float yhigh, const char* xtitle, const char* ytitle, const char* ztitle, int color = 1);
+TH2F* book2DVarHist(const char* name, const char* title, unsigned int nxbins, float* xbins, unsigned int nybins, float* ybins, const char* xtitle, const char* ytitle, const char* ztitle, int color = 1);
+TH2F* book2DVarHist(const char* name, const char* title, vector<float> &xbins, vector<float> &ybins, const char* xtitle, const char* ytitle, const char* ztitle, int color = 1);
 float mee(int i, int j);
 float mmm(int i, int j);
 bool goodLeptonIsolated(int bucket, int first, int second, int third);
