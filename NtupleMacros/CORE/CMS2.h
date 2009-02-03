@@ -1,16 +1,23 @@
 // -*- C++ -*-
-#ifndef CMS2_H
-#define CMS2_H
 #include "Math/LorentzVector.h"
 #include "Math/Point3D.h"
 #include "TMath.h"
 #include "TBranch.h"
 #include "TTree.h"
+#include "TChain.h"
 
 #include "TH1F.h"
 
 #include <vector> 
 using namespace std; 
+
+#ifndef CMS2_H
+#define CMS2_H  
+
+ 
+#ifdef __CINT__  
+class CMS2;  
+ #else
 class CMS2 { 
 private: 
 	 TH1F *samplehisto;
@@ -13142,4 +13149,6 @@ void GetEntry(unsigned int idx)
 	}
 };
 
+extern CMS2 cms2;  
+#endif
 #endif
