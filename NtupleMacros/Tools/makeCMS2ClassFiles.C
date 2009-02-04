@@ -49,6 +49,9 @@ void makeCMS2Files(std::string fname, std::string className = "") {
   headerf << "#include \"TH1F.h\""  << endl << endl;
   headerf << "#include <vector> " << endl;
   headerf << "using namespace std; " << endl;
+  headerf << "#ifdef __CINT__" << endl;
+  headerf << "class " << Classname << endl;
+  headerf << "#else " << endl;
   headerf << "class " << Classname << " { " << endl;
   headerf << "private: " << endl;
   headerf << "\t TH1F *samplehisto;" << endl;
@@ -101,7 +104,7 @@ void makeCMS2Files(std::string fname, std::string className = "") {
   
   
   headerf << "public: " << endl;
-  headerf << "int ScanChain( TChain* chain, int nEvents=-1);" << endl;
+  headerf << "int ScanChain(class TChain* chain, int nEvents=-1);" << endl;
   headerf << "void Init(TTree *tree) {" << endl;
 
   // SetBranchAddresses for LorentzVectors
@@ -186,6 +189,8 @@ void makeCMS2Files(std::string fname, std::string className = "") {
   }
   headerf << "};" << endl << endl;
 
+  headerf << "extern " << Classname << " cms2;" << endl;
+  headerf << "#endif" << endl;
   headerf << "#endif" << endl;
 
   codef << "/* Usage:" << endl;
