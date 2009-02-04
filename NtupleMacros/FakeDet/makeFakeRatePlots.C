@@ -8,7 +8,7 @@ void makeFakeRatePlots() {
 
   vector<TString> samples;
 
-  samples.push_back(TString("fakeRatesFull"));
+  samples.push_back(TString("EleFakes"));
 
   for ( unsigned int sample = 0;
 	sample < samples.size();

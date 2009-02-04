@@ -29,7 +29,7 @@ void prepareFakeRateHistograms() {
   histograms.push_back("num_wo_leading_elt");
   histograms.push_back("num_wo_second_leading_elt");
 
-  TFile *file = TFile::Open("fakeRatesFull.root","UPDATE");
+  TFile *file = TFile::Open("EleFakes.root","UPDATE");
 
   for ( unsigned int histo = 0;
 	histo < histograms.size();
