@@ -183,6 +183,10 @@ void makeCMS2Files(std::string fname, std::string className = "") {
        headerf << "\t\t" << "if (not " << Form("%s_isLoaded) {",aliasname.Data()) << endl;
        headerf << "\t\t\t" << "if (" << Form("%s_branch",aliasname.Data()) << " != 0) " << endl;
        headerf << "\t\t\t\t" << Form("%s_branch",aliasname.Data()) << "->GetEntry(index);" << endl;
+       headerf << "\t\t\t" << "else { " << endl;
+       headerf << "\t\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
+	       << " does not exist!\\n\");" << endl;
+       headerf << "\t\t\t\t" << "exit(1);" << endl << "\t\t\t}" << endl;
        headerf << "\t\t\t" << Form("%s_isLoaded",aliasname.Data()) << " = true;" << endl;
        headerf << "\t\t" << "}" << endl;
        headerf << "\t\t" << "return " << aliasname << "_;" << endl << "\t}" << endl;
