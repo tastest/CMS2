@@ -52,55 +52,55 @@ gROOT->ProcessLine(".x setup.C");
 //WW file
 TChain *fWW = new TChain("Events");
 if (runWW) {
-  fWW->Add((dataset+"/cms2-V00-04-00/merge_WW.root").c_str());
+  fWW->Add((dataset+"/cms2-V01-02-01/WW_2l-Pythia/merged_ntuple.root").c_str());
 }
 
 //WZ file
 TChain *fWZ = new TChain("Events");
 if (runWZ) {
-  fWZ->Add((dataset+"/cms2-V00-05-00/merge_WZ.root").c_str());
+  fWZ->Add((dataset+"/cms2-V01-02-01/WZ_3l-Pythia/merged_ntuple.root").c_str());
 }
 
 //ZZ file
 TChain *fZZ = new TChain("Events");
 if (runZZ) {
-  fZZ->Add((dataset+"/cms2-V00-05-00/merge_ZZ.root").c_str());
+  fZZ->Add((dataset+"/cms2-V01-02-01/ZZ_2l2n-Pythia/merged_ntuple.root").c_str());
 }
 
 //Wjets file
 TChain *fWjets = new TChain("Events");
 if (runWjets) {
-  fWjets->Add((dataset+"/cms2-V00-04-01/merge_Wjet.root").c_str());
+  fWjets->Add((dataset+"/cms2-V01-02-01/WJets-madgraph/merged_ntuple*.root").c_str());
 }
 
 //DYee file
 TChain *fDYee = new TChain("Events");
 if (runDYee) {
-  fDYee->Add((dataset+"/cms2-V00-04-01/merge_DY.root").c_str());
+  fDYee->Add((dataset+"/cms2-V01-02-01/ZJets-madgraph/merged_ntuple*.root").c_str());
 }
 
 //DYmm file
 TChain *fDYmm = new TChain("Events");
 if (runDYmm) {
-  fDYmm->Add((dataset+"/cms2-V00-04-01/merge_DY.root").c_str());
+  fDYmm->Add((dataset+"/cms2-V01-02-01/ZJets-madgraph/merged_ntuple*.root").c_str());
 }
 
 //DYtt file
 TChain *fDYtt = new TChain("Events");
 if (runDYtt) {
-  fDYtt->Add((dataset+"/cms2-V00-04-01/merge_DY.root").c_str());
+  fDYtt->Add((dataset+"/cms2-V01-02-01/ZJets-madgraph/merged_ntuple*.root").c_str());
 }
 
 //ttbar file
 TChain *fttbar = new TChain("Events");
 if (runttbar) {
-  fttbar->Add((dataset+"/cms2-V00-04-01/merge_ttbar.root").c_str());
+  fttbar->Add((dataset+"/cms2-V01-02-01/TTJets-madgraph/merged_ntuple*.root").c_str());
 }
 
 //tW file
 TChain *ftW = new TChain("Events");
 if (runtW) {
-  ftW->Add((dataset+"/cms2-V00-04-00/merge_tW.root").c_str());
+  ftW->Add((dataset+"/cms2-V01-02-01/SingleTop_tWChannel-madgraph-LHE/merged_ntuple.root").c_str());
 }
 
 // Define colors numbers:
