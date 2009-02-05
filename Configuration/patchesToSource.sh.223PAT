@@ -2,7 +2,9 @@
 
 ##PAT tuple configuration. sigh
 cvs co -r V04-06-01 TopQuarkAnalysis/TopObjectProducers
-cvs co -r V04-14-15 PhysicsTools/PatAlgos
+cvs co -r V04-14-19 PhysicsTools/PatAlgos
+cvs co -r V03-05-02 PhysicsTools/PatUtils
+cvs co -r V03-18-04 DataFormats/PatCandidates
 ##Jet Energy Corrections
 cvs co -r V01-06-06 CondFormats/JetMETObjects
 cvs co -r V01-08-11 JetMETCorrections/Configuration                  
@@ -14,5 +16,3 @@ cvs co -r V02-08-02-14 RecoMET/METProducers/
 cvs co -r V02-05-00-16 RecoMET/METAlgorithms/
 cvs co -r V00-06-02-09 DataFormats/METReco/
 cvs co -r V00-04-02-15 RecoMET/Configuration/
-
-
