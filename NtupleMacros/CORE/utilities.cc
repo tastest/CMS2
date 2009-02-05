@@ -63,20 +63,18 @@ TVector3 correctMETforTracks()
       if( cms2.mus_trkidx()[cms2.trk_musidx()[trkCount]]  == int(trkCount) && cms2.mus_trkdr()[cms2.trk_musidx()[trkCount]] < 0.1 ) continue;
     }
 
-    /* MISSING NTUPLE VARIABLES
     // skip track if matched to an "electron"
-    if( cms2.trk_elsidx()[trkCount] != -999 && cms2.trk_elsdr()[trkCount] < 0.1) {
-      if( cms2.els_hOverE()[ cms2.trk_elsidx()[trkCount] ] < hoe_cut ) {
-	if( cms2.els_trkidx()[cms2.trk_elsidx()[trkCount]]  == int(trkCount) && cms2.els_trkdr()[cms2.trk_elsidx()[trkCount]] < 0.1 ) continue;
+    if( cms2.trks_elsidx()[trkCount] != -999 && cms2.trks_elsdr()[trkCount] < 0.1) {
+      if( cms2.els_hOverE()[ cms2.trks_elsidx()[trkCount] ] < hoe_cut ) {
+	if( cms2.els_trkidx()[cms2.trks_elsidx()[trkCount]]  == int(trkCount) && cms2.els_trkdr()[cms2.trks_elsidx()[trkCount]] < 0.1 ) continue;
       }
     }
-    */
 
     // skip tracks at large eta or with large pt
     if( fabs( cms2.trks_trk_p4()[trkCount].eta() ) > eta_cut || cms2.trks_trk_p4()[trkCount].pt() > hi_pt_cut ) continue;
 
     // skip tracks that do no pass quality cuts
-    if( cms2.trks_validHits()[trkCount] < nhits_cut || ( cms2.trks_chi2()[trkCount] / cms2.trks_ndof()[trkCount] ) > nchisq_cut || fabs( cms2.trks_d0()[trkCount] ) > d0_cut ) continue;
+    if( cms2.trks_validHits()[trkCount] < nhits_cut || ( cms2.trks_chi2()[trkCount] / cms2.trks_ndof()[trkCount] ) > nchisq_cut || fabs( cms2.trks_d0corr()[trkCount] ) > d0_cut ) continue;
 
     // correct tracks w/ pt < 2 setting RF = 0
     if( cms2.trks_trk_p4()[trkCount].pt() < low_pt_cut ) {
