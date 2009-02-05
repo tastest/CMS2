@@ -55,9 +55,6 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true, std::string cl
   if (paranoid)
        headerf << "#define PARANOIA" << endl << endl;
   headerf << "using namespace std; " << endl;
-  headerf << "#ifdef __CINT__" << endl;
-  headerf << "class " << Classname << endl;
-  headerf << "#else " << endl;
   headerf << "class " << Classname << " { " << endl;
   headerf << "private: " << endl;
   headerf << "\t TH1F *samplehisto;" << endl;
@@ -269,8 +266,6 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true, std::string cl
   }
   headerf << "};" << endl << endl;
 
-  headerf << "extern " << Classname << " cms2;" << endl;
-  headerf << "#endif" << endl;
   headerf << "#endif" << endl;
 
   codef << "/* Usage:" << endl;
