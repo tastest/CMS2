@@ -16,3 +16,5 @@ cvs co -r V02-08-02-14 RecoMET/METProducers/
 cvs co -r V02-05-00-16 RecoMET/METAlgorithms/
 cvs co -r V00-06-02-09 DataFormats/METReco/
 cvs co -r V00-04-02-15 RecoMET/Configuration/
+##patch RecoMET for tcmet
+patch -p0 < CMS2/Configuration/RecoMET.patch
