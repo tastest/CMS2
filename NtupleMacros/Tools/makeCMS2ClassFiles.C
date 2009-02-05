@@ -25,7 +25,7 @@
 
 using namespace std;
 
-void makeCMS2Files(std::string fname, bool paranoid = true, std::string className = "") {
+void makeCMS2ClassFiles (std::string fname, bool paranoid = true, std::string className = "") {
 
   using namespace std;
   
@@ -49,9 +49,11 @@ void makeCMS2Files(std::string fname, bool paranoid = true, std::string classNam
   headerf << "#include \"Math/Point3D.h\"" << endl;
   headerf << "#include \"TMath.h\"" << endl;
   headerf << "#include \"TBranch.h\"" << endl;
-  headerf << "#include \"TTree.h\"" << endl << endl;
-  headerf << "#include \"TH1F.h\""  << endl << endl;
-  headerf << "#include <vector> " << endl;
+  headerf << "#include \"TTree.h\"" << endl;
+  headerf << "#include \"TH1F.h\""  << endl;
+  headerf << "#include <vector> " << endl << endl;
+  if (paranoid)
+       headerf << "#define PARANOIA" << endl << endl;
   headerf << "using namespace std; " << endl;
   headerf << "#ifdef __CINT__" << endl;
   headerf << "class " << Classname << endl;
@@ -200,7 +202,9 @@ void makeCMS2Files(std::string fname, bool paranoid = true, std::string classNam
 			 << aliasname << "_.begin(); i != "<< aliasname << "_.end(); ++i) {" << endl;
 		 headerf << "\t\t\t" << "for (vector<float>::const_iterator j = i->begin(); " 
 		      "j != i->end(); ++j) {" << endl;
-		 headerf << "\t\t\t\t" << "if (not isfinite(*j)) {" << endl;
+		 headerf << "\t\t\t\t" << "int e;" << endl;
+		 headerf << "\t\t\t\t" << "frexpf(*j, &e);" << endl;
+		 headerf << "\t\t\t\t" << "if (not isfinite(*j) || e > 30 || e < -30) {" << endl;
 		 headerf << "\t\t\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
 			 << " contains a bad float: %f\\n\", *j);" << endl << "\t\t\t\t\t" << "exit(1);"
 			 << endl;
@@ -208,13 +212,17 @@ void makeCMS2Files(std::string fname, bool paranoid = true, std::string classNam
 	    } else if (classname == "vector<float>") {
 		 headerf << "\t\t" << "for (vector<float>::const_iterator i = " 
 			 << aliasname << "_.begin(); i != "<< aliasname << "_.end(); ++i) {" << endl;
-		 headerf << "\t\t\t" << "if (not isfinite(*i)) {" << endl;
+		 headerf << "\t\t\t" << "int e;" << endl;
+		 headerf << "\t\t\t" << "frexpf(*i, &e);" << endl;
+		 headerf << "\t\t\t" << "if (not isfinite(*i) || e > 30 || e < -30) {" << endl;
 		 headerf << "\t\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
 			 << " contains a bad float: %f\\n\", *i);" << endl << "\t\t\t\t" << "exit(1);"
 			 << endl;
 		 headerf << "\t\t\t}\n\t\t}" << endl;
 	    } else if (classname == "float") {
-		 headerf << "\t\t" << "if (not isfinite(" << aliasname << "_)) {" << endl;
+		 headerf << "\t\t" << "int e;" << endl;
+		 headerf << "\t\t" << "frexpf(" << aliasname << "_, &e);" << endl;
+		 headerf << "\t\t" << "if (not isfinite(" << aliasname << "_) || e > 30 || e < -30) {" << endl;
 		 headerf << "\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
 			 << " contains a bad float: %f\\n\", " << aliasname << "_);" << endl 
 			 << "\t\t\t" << "exit(1);"
@@ -228,7 +236,9 @@ void makeCMS2Files(std::string fname, bool paranoid = true, std::string classNam
 		 str[str.length() - 2] = 0;
 		 headerf << "\t\t\t" << "for (" << str.c_str() << "::const_iterator j = i->begin(); " 
 		      "j != i->end(); ++j) {" << endl;
-		 headerf << "\t\t\t\t" << "if (not isfinite(j->pt())) {" << endl;
+		 headerf << "\t\t\t\t" << "int e;" << endl;
+		 headerf << "\t\t\t\t" << "frexp(j->pt(), &e);" << endl;
+		 headerf << "\t\t\t\t" << "if (not isfinite(j->pt()) || e > 30 || e < -30) {" << endl;
 		 headerf << "\t\t\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
 			 << " contains a bad float: %f\\n\", j->pt());" << endl << "\t\t\t\t\t" << "exit(1);"
 			 << endl;
@@ -236,13 +246,17 @@ void makeCMS2Files(std::string fname, bool paranoid = true, std::string classNam
 	    } else if (classname.BeginsWith("vector<vector<ROOT")) {
 		 headerf << "\t\t" << "for (" << classname.Data() << "::const_iterator i = " 
 			 << aliasname << "_.begin(); i != "<< aliasname << "_.end(); ++i) {" << endl;
-		 headerf << "\t\t\t" << "if (not isfinite(i->pt())) {" << endl;
+		 headerf << "\t\t\t\t" << "int e;" << endl;
+		 headerf << "\t\t\t\t" << "frexp(i->pt(), &e);" << endl;
+		 headerf << "\t\t\t\t" << "if (not isfinite(i->pt()) || e > 30 || e < -30) {" << endl;
 		 headerf << "\t\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
 			 << " contains a bad float: %f\\n\", i->pt());" << endl << "\t\t\t\t" << "exit(1);"
 			 << endl;
 		 headerf << "\t\t\t}\n\t\t}" << endl;
 	    } else if (classname.BeginsWith("ROOT")) {
-		 headerf << "\t\t" << "if (not isfinite(" << aliasname << "_.pt())) {" << endl;
+		 headerf << "\t\t\t\t" << "int e;" << endl;
+		 headerf << "\t\t\t\t" << "frexp(" << aliasname << "_.pt(), &e);" << endl;
+		 headerf << "\t\t" << "if (not isfinite(" << aliasname << "_.pt()) || e > 30 || e < -30) {" << endl;
 		 headerf << "\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
 			 << " contains a bad float: %f\\n\", " << aliasname << "_.pt());" << endl 
 			 << "\t\t\t" << "exit(1);"
