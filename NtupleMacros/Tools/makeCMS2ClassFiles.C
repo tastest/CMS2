@@ -5,6 +5,10 @@
 
   [kalavase@stau ~/rootmacros]$ root
   root [0] .L makeCMS2ClassFiles.C++
+  // 
+  // if we are paranoid, each float, vector<float> and
+  // vector<vector<float> > is checked for NaNs and infs
+  // 
   //second string is optional. The classname is CMS2 by default
   root [1] makeCMS2Header("tablemaker_Zmumu_ntuple.root","classname")
 
@@ -21,7 +25,7 @@
 
 using namespace std;
 
-void makeCMS2Files(std::string fname, std::string className = "") {
+void makeCMS2Files(std::string fname, bool paranoid = true, std::string className = "") {
 
   using namespace std;
   
@@ -189,6 +193,64 @@ void makeCMS2Files(std::string fname, std::string className = "") {
        headerf << "\t\t\t\t" << "exit(1);" << endl << "\t\t\t}" << endl;
        headerf << "\t\t\t" << Form("%s_isLoaded",aliasname.Data()) << " = true;" << endl;
        headerf << "\t\t" << "}" << endl;
+       if (paranoid) {
+	    headerf << "\t\t#ifdef PARANOIA" << endl;
+	    if (classname == "vector<vector<float> >") {
+		 headerf << "\t\t" << "for (vector<vector<float> >::const_iterator i = " 
+			 << aliasname << "_.begin(); i != "<< aliasname << "_.end(); ++i) {" << endl;
+		 headerf << "\t\t\t" << "for (vector<float>::const_iterator j = i->begin(); " 
+		      "j != i->end(); ++j) {" << endl;
+		 headerf << "\t\t\t\t" << "if (not isfinite(*j)) {" << endl;
+		 headerf << "\t\t\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
+			 << " contains a bad float: %f\\n\", *j);" << endl << "\t\t\t\t\t" << "exit(1);"
+			 << endl;
+		 headerf << "\t\t\t\t}\n\t\t\t}\n\t\t}" << endl;
+	    } else if (classname == "vector<float>") {
+		 headerf << "\t\t" << "for (vector<float>::const_iterator i = " 
+			 << aliasname << "_.begin(); i != "<< aliasname << "_.end(); ++i) {" << endl;
+		 headerf << "\t\t\t" << "if (not isfinite(*i)) {" << endl;
+		 headerf << "\t\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
+			 << " contains a bad float: %f\\n\", *i);" << endl << "\t\t\t\t" << "exit(1);"
+			 << endl;
+		 headerf << "\t\t\t}\n\t\t}" << endl;
+	    } else if (classname == "float") {
+		 headerf << "\t\t" << "if (not isfinite(" << aliasname << "_)) {" << endl;
+		 headerf << "\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
+			 << " contains a bad float: %f\\n\", " << aliasname << "_);" << endl 
+			 << "\t\t\t" << "exit(1);"
+			 << endl;
+		 headerf << "\t\t}" << endl;
+	    } else if (classname.BeginsWith("vector<vector<ROOT")) {
+		 headerf << "\t\t" << "for (" << classname.Data() <<"::const_iterator i = " 
+			 << aliasname << "_.begin(); i != "<< aliasname << "_.end(); ++i) {" << endl;
+		 // this is a slightly hacky way to get rid of the outer vector< > ...
+		 std::string str = classname.Data() + 7;
+		 str[str.length() - 2] = 0;
+		 headerf << "\t\t\t" << "for (" << str.c_str() << "::const_iterator j = i->begin(); " 
+		      "j != i->end(); ++j) {" << endl;
+		 headerf << "\t\t\t\t" << "if (not isfinite(j->pt())) {" << endl;
+		 headerf << "\t\t\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
+			 << " contains a bad float: %f\\n\", j->pt());" << endl << "\t\t\t\t\t" << "exit(1);"
+			 << endl;
+		 headerf << "\t\t\t\t}\n\t\t\t}\n\t\t}" << endl;
+	    } else if (classname.BeginsWith("vector<vector<ROOT")) {
+		 headerf << "\t\t" << "for (" << classname.Data() << "::const_iterator i = " 
+			 << aliasname << "_.begin(); i != "<< aliasname << "_.end(); ++i) {" << endl;
+		 headerf << "\t\t\t" << "if (not isfinite(i->pt())) {" << endl;
+		 headerf << "\t\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
+			 << " contains a bad float: %f\\n\", i->pt());" << endl << "\t\t\t\t" << "exit(1);"
+			 << endl;
+		 headerf << "\t\t\t}\n\t\t}" << endl;
+	    } else if (classname.BeginsWith("ROOT")) {
+		 headerf << "\t\t" << "if (not isfinite(" << aliasname << "_.pt())) {" << endl;
+		 headerf << "\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
+			 << " contains a bad float: %f\\n\", " << aliasname << "_.pt());" << endl 
+			 << "\t\t\t" << "exit(1);"
+			 << endl;
+		 headerf << "\t\t}" << endl;
+	    }
+	    headerf << "\t\t#endif // #ifdef PARANOIA" << endl;
+       }
        headerf << "\t\t" << "return " << aliasname << "_;" << endl << "\t}" << endl;
   }
   headerf << "};" << endl << endl;
