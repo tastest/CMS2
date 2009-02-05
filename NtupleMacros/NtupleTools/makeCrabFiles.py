@@ -32,7 +32,7 @@ def makeCrabConfig():
     outFile.write('storage_element        = ' + storageElement + '\n')
     outFile.write('ui_working_dir         = ' + outFileName + '\n')
     outFile.write('publish_data          = 1\n')
-    outFile.write('publish_data_name     = CMS2\n')
+    outFile.write('publish_data_name     = CMS2_V01-02-06\n')
     outFile.write('dbs_url_for_publication =  http://ming.ucsd.edu:8080/DBS1/servlet/DBSServlet\n\n')
     outFile.write('[EDG]\n')
     outFile.write('##here are some default sites that we \n')
