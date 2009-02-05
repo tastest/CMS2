@@ -102,20 +102,15 @@ bool is_duplicate (const DorkyEventIdentifier &id)
 // filter events by process
 bool filterByProcess( enum Sample sample ) {
   switch (sample) {
-  case WW: case WZ: case ZZ: case tW:
-    return true;
-  case Wjets:
-    return cms2.evt_CSA07Process() < 11;
   case DYee: 
-    return (cms2.evt_CSA07Process() > 10 && cms2.evt_CSA07Process() < 22 && isDYee() );
+    return isDYee();
   case DYmm:
-    return (cms2.evt_CSA07Process() > 10 && cms2.evt_CSA07Process() < 22 && isDYmm() );
+    return isDYmm();
   case DYtt:
-    return (cms2.evt_CSA07Process() > 10 && cms2.evt_CSA07Process() < 22 && isDYtt() );
-  case ttbar:
-    return (cms2.evt_CSA07Process() > 21 && cms2.evt_CSA07Process() < 27);
+    return isDYtt();
+  default:
+    return true;
   }
-  return false;
 }
 
 // filter candidates by hypothesis
@@ -170,22 +165,47 @@ TH1F* hetaJet1[4];   // eta of 1st jet
 TH1F* hetaJet2[4];   // eta of 2nd jet
 TH1F* hetaJet3[4];   // eta of 3rd jet
 TH1F* hetaJet4[4];   // eta of 4th jet
-TH1F* numTightLep[4]; // number of tight leptons per event.
 TH1F* heleSumPt[4];   // sumPt for electron isolation
 TH1F* hmuSumPt[4];   // sumPt for muon isolation
 TH1F* hmuSumIso[4];  // sum of trk pt, em et, had et in cone of 0.3  
 TH1F* heleRelIso[4]; //  Iso variable defined as pt/(pt+sum) for electron
 TH1F* hmuRelIso[4]; //  Iso variable defined as pt/(pt+sum) for muons
-TH1F* hnJetLepVeto[4]; //njet distribution after requiring numTightLep < 3.
+
+// Histograms with only basic cuts
+TH1F* helEcalJuraIso[4]; // electron ECAL Jurassic isolation based on basic clusters
+TH1F* helEcalPatIso[4];   // electron ECAL PAT Jurassic isolation based on rec hits
 
 // fkw September 2008 final hist used for muon tags estimate of top bkg
 TH2F* hextramuonsvsnjet[4];
 
+struct hypo_monitor{
+  std::vector<std::pair<std::string,unsigned int> > counters;
+  void count(unsigned int index, const char* name){
+    unsigned int current_size = counters.size();
+    for ( unsigned int i=current_size; i<=index; ++i ) 
+      counters.push_back( std::pair<std::string,unsigned int>("",0) );
+    counters[index].first = name;
+    counters[index].second++;
+  }
+  void print(){
+    for ( unsigned int i=0; i<counters.size(); ++i ) 
+      std::cout << counters[i].first << "\t" << counters[i].second << std::endl;
+  }
+};
+    
+hypo_monitor monitor;
+
+  
+
 void hypo (int i_hyp, double kFactor) 
 {
+     unsigned int icounter(0);
+     monitor.count(icounter++,"Total number of hypothesis: ");
+     
      // Cut on lepton Pt
      if (cms2.hyp_lt_p4()[i_hyp].pt() < 20.0) return;
      if (cms2.hyp_ll_p4()[i_hyp].pt() < 20.0) return;
+     monitor.count(icounter++,"Total number of hypothesis after lepton pt cut: ");
      
      // Require opposite sign
      if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) return;
@@ -194,25 +214,9 @@ void hypo (int i_hyp, double kFactor)
      if (cms2.hyp_type()[i_hyp] == 0 || cms2.hyp_type()[i_hyp] == 3) {
 	  if (inZmassWindow(cms2.hyp_p4()[i_hyp].mass())) return;
      }
-     
-     // special handling for DY --- moved to event loop
-#if 0
-     bool processEvent=true;
-     if (specDY == 0) {
-	  if ( !isDYee() ) processEvent = false;
-     } else if (specDY == 1) {
-	  if ( !isDYmm() ) processEvent = false;
-     } else if (specDY == 2) {
-	  if ( !isDYtt() ) processEvent = false;
-     }
-     if (!processEvent) return;
-#endif
-
-     // track corrected MET
-     const TVector3 trkCorr = correctMETforTracks();
-     
-     if (!pass2Met(i_hyp, trkCorr)) return;
-     if (!pass4Met(i_hyp, trkCorr)) return;
+     // Z veto using additional leptons in the event
+     if (additionalZveto()) return;
+     monitor.count(icounter++,"Total number of hypothesis after lepton pt + z vetos: ");
      
      // Muon quality cuts, including isolation
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) return;
@@ -221,18 +225,24 @@ void hypo (int i_hyp, double kFactor)
      // Electron quality cuts, including isolation
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_lt_index()[i_hyp],true) ) return;
      if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_ll_index()[i_hyp],true) ) return;
+     monitor.count(icounter++,"Total number of hypothesis after full lepton selection + z vetos: ");
      
-     // Z veto using additional leptons in the event
-     if (additionalZveto()) return;
-
+     // track corrected MET
+     // const TVector3 trkCorr = correctMETforTracks();
+     const TVector3 trkCorr; // no tcMET correction
+     
+     if (!pass2Met(i_hyp, trkCorr)) return;
+     if (!pass4Met(i_hyp, trkCorr)) return;
+     monitor.count(icounter++,"Total number of hypothesis after full lepton selection + z vetos + MET cuts: ");
+     
      // trkjet veto
      if ( !passTrkJetVeto(i_hyp) ) return;
 
      // extra muon veto (second argument is true if only soft non-isolated muons should be considered)
      if ( !passMuonBVeto(i_hyp,false) ) return;
 
-     // nTrks > 2 - clean up veto on non-hardronized events
-     if ( cms2.trks_trk_p4().size() < 3 ) return;
+     // CSA07 bugfix: nTrks > 2 - clean up veto on non-hardronized events
+     // if ( cms2.trks_trk_p4().size() < 3 ) return;
 
      // The event weight including the kFactor (scaled to 1 fb-1)
      float weight = cms2.evt_scale1fb() * kFactor;
@@ -260,16 +270,6 @@ void hypo (int i_hyp, double kFactor)
      // jet count
      hnJet[myType]->Fill(cms2.hyp_njets()[i_hyp], weight);
      hnJet[3]->Fill(cms2.hyp_njets()[i_hyp], weight);
-     //fkw inumTightLep was once upon a time a counter for the number of tight leptons per event.
-     //At this point, it's not implemented, but the histograms are still used in the doTable.C
-     //So rather than taking this all out, we just fill it without vetoing on 3 tight leptons.
-     int inumTightLep = 0;
-     if( inumTightLep < 3) {
-	  hnJetLepVeto[myType]->Fill(cms2.hyp_njets()[i_hyp], weight);
-	  hnJetLepVeto[3]->Fill(cms2.hyp_njets()[i_hyp], weight);
-     }
-     numTightLep[myType]->Fill(inumTightLep,weight);
-     numTightLep[3]->Fill(inumTightLep,weight);
     
      // lepton Pt
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) helePt[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
@@ -468,6 +468,7 @@ int ScanChain( TChain* chain, enum Sample sample ) {
 
   // DY samples are supposed to get an additional k-factor of 1.2
   double kFactor = 1;
+  /* 
   switch (sample) {
   case DYee: case DYmm: case DYtt:
        kFactor = 1.12;
@@ -478,6 +479,7 @@ int ScanChain( TChain* chain, enum Sample sample ) {
   default:
        break;
   }
+  */
 
 //   switch (sample) {
 //   case WW:
@@ -500,10 +502,6 @@ int ScanChain( TChain* chain, enum Sample sample ) {
 
     hnJet[i] = new TH1F(Form("%s_hnJet_%s",prefix,suffix[i]),Form("%s_nJet_%s",prefix,suffix[i]),
 			5,0.,5.);	
-    hnJetLepVeto[i] = new TH1F(Form("%s_hnJetLepVeto_%s",prefix,suffix[i]),Form("%s_nJetLepVeto_%s",prefix,suffix[i]),
-			       5,0.,5.);	
-    numTightLep[i] = new TH1F(Form("%s_numTightLep_%s",prefix,suffix[i]),Form("%s_numTightLep_%s",prefix,suffix[i]),
-			      10,0.,10.);	
     helePt[i] = new TH1F(Form("%s_helePt_%s",prefix,suffix[i]),Form("%s_elePt_%s",prefix,suffix[i]),
 			       150,0.,150.);
     hmuPt[i]  = new TH1F(Form("%s_hmuPt_%s",prefix,suffix[i]),Form("%s_muPt_%s",prefix,suffix[i]),
@@ -580,8 +578,6 @@ int ScanChain( TChain* chain, enum Sample sample ) {
 
 
     hnJet[i]->Sumw2();
-    hnJetLepVeto[i]->Sumw2();
-    numTightLep[i]->Sumw2();
     helePt[i]->Sumw2();
     hmuPt[i]->Sumw2();
     hmuPtFromSilicon[i]->Sumw2();
@@ -626,6 +622,7 @@ int ScanChain( TChain* chain, enum Sample sample ) {
   // file loop
   TObjArray *listOfFiles = chain->GetListOfFiles();
   TIter fileIter(listOfFiles);
+  monitor.counters.clear();
   while (TChainElement *currentFile = (TChainElement*)fileIter.Next()) {
        // need to call TFile::Open(), since the file is not
        // necessarily a plain TFile (TNetFile, TDcacheFile, etc)
@@ -678,12 +675,16 @@ int ScanChain( TChain* chain, enum Sample sample ) {
 	    }
        }
        t.Stop();
+       printf("Finished processing file: %s\n",currentFile->GetTitle());
        printf("Real time: %u events / %f s = %e event/s\n", nEvents, 
 	      t.RealTime(), nEvents / t.RealTime());
        printf("CPU time: %u events / %f s = %e event/s\n", nEvents, 
 	      t.CpuTime(), nEvents / t.CpuTime());
+       printf("Total duplicate count: %d.  Total weight %f\n",   
+	      duplicates_total_n, duplicates_total_weight);
        delete f;
   }
+  monitor.print();
   if ( nEventsChain != nEventsTotal ) {
        printf("ERROR: number of events from files (%d) is not equal to total number"
 	      " of events (%d)\n", nEventsChain, nEventsTotal);
@@ -692,8 +693,6 @@ int ScanChain( TChain* chain, enum Sample sample ) {
   printf("Total candidate count (ee em mm all): %d %d %d %d.  Total weight %f %f %f %f\n",   
 	 hypos_total_n[0], hypos_total_n[1], hypos_total_n[2], hypos_total_n[3], 
 	 hypos_total_weight[0], hypos_total_weight[1], hypos_total_weight[2], hypos_total_weight[3]);
-  printf("Total duplicate count: %d.  Total weight %f\n",   
-	 duplicates_total_n, duplicates_total_weight);
   
   return 0;
 }
