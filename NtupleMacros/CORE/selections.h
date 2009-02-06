@@ -35,7 +35,7 @@ bool isDYmm();
 bool isDYtt();
 int nTrkJets(int i_hyp);
 bool passTrkJetVeto(int i_hyp);
-bool passCaloTrkjetCombo ();
+// bool passCaloTrkjetCombo ();
 
 double mu_rel_iso (int index);
 double el_rel_iso (int index, bool use_calo_iso);
@@ -52,7 +52,7 @@ int getDrellYanType();
 void dumpDocLines();
 int NjetVeto(std::vector<TLorentzVector>& Jet, double min_et);
 bool trueMuonFromW(int index);
-bool isFakeDenominatorElectron(int index);
-bool isFakeNumeratorElectron(int index, int type); 
+//bool isFakeDenominatorElectron(int index);
+//bool isFakeNumeratorElectron(int index, int type); 
 
 #endif

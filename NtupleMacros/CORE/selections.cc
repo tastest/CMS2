@@ -553,33 +553,36 @@ bool trueMuonFromW(int index) {
   return muIsFromW;
 }
 
-bool isFakeDenominatorElectron(int index) {
+
+//  moved to Tools/fakerates.cc
+//bool isFakeDenominatorElectron(int index) {
   //
   // returns true if input fulfills certain cuts
   //
 
   // cut definition
-  float pt_cut        		= 15.;
-  float eta_cut       		= 2.5;
-  float hOverE_cut    		= 0.2;
-  bool  use_calo_iso            = false;
+//  float pt_cut        		= 15.;
+//  float eta_cut       		= 2.5;
+//  float hOverE_cut    		= 0.2;
+//  bool  use_calo_iso            = false;
 
-  bool result = true;
+//  bool result = true;
 
-  if ( cms2.els_p4()[index].Pt()  < pt_cut )            result = false;
-  if ( std::abs(cms2.els_p4()[index].Eta()) > eta_cut ) result = false;
-  if ( !passElectronIsolation(index,use_calo_iso) )          	result = false;
+//  if ( cms2.els_p4()[index].Pt()  < pt_cut )            result = false;
+//  if ( std::abs(cms2.els_p4()[index].Eta()) > eta_cut ) result = false;
+//  if ( !passElectronIsolation(index,use_calo_iso) )          	result = false;
   //  if ( !passElectronIsolationLoose(index,true) )          	result = false; //v5_2
-  if ( !passElectronIsolationLoose2(index,true) )          	result = false; //v5_4
-  if ( cms2.els_hOverE()[index]   > hOverE_cut )        result = false;
-  if ( cms2.els_closestMuon().at(index) != -1) return false;  // muon veto from nominator, addded 081022
+//  if ( !passElectronIsolationLoose2(index,true) )          	result = false; //v5_4
+//  if ( cms2.els_hOverE()[index]   > hOverE_cut )        result = false;
+//  if ( cms2.els_closestMuon().at(index) != -1) return false;  // muon veto from nominator, addded 081022
 
 
-  return result;
+//  return result;
 
-}
+//}
 
-bool isFakeNumeratorElectron(int index, int type=0) { 
+// moved to Tools/fakerates.cc
+//bool isFakeNumeratorElectron(int index, int type=0) { 
   //
   // 1=loose, 2=tight
   //
@@ -587,28 +590,28 @@ bool isFakeNumeratorElectron(int index, int type=0) {
   //
   
   // cut definition
-  float pt_cut        		= 15;
-  float eta_cut       		= 2.5;
-  bool  use_calo_iso            = true;
+//  float pt_cut        		= 15;
+//  float eta_cut       		= 2.5;
+//  bool  use_calo_iso            = true;
 
-  bool result = true;
+//  bool result = true;
 
-  if ( cms2.els_p4()[index].Pt()  < pt_cut )                 result = false;
-  if ( std::abs(cms2.els_p4()[index].Eta()) > eta_cut )      result = false;
-  if ( !passElectronIsolation(index,use_calo_iso) )          	result = false;
-  if ( type == 1 ) {
-    // loose
-    if ( !goodLooseElectronWithoutIsolation(index) )   result = false;
-  } else if ( type == 2 ) {
-    // tight
-    if ( !goodElectronWithoutIsolation(index) )   result = false;
-  } else {
-    cout << "WARNING: wrong electron type detected, please select loose (1) or tight (2)" << endl;
-  }
-
-  return result;
-  
-}
+//  if ( cms2.els_p4()[index].Pt()  < pt_cut )                 result = false;
+//  if ( std::abs(cms2.els_p4()[index].Eta()) > eta_cut )      result = false;
+//  if ( !passElectronIsolation(index,use_calo_iso) )          	result = false;
+//  if ( type == 1 ) {
+//    // loose
+//    if ( !goodLooseElectronWithoutIsolation(index) )   result = false;
+//  } else if ( type == 2 ) {
+//    // tight
+//    if ( !goodElectronWithoutIsolation(index) )   result = false;
+//  } else {
+//    cout << "WARNING: wrong electron type detected, please select loose (1) or tight (2)" << endl;
+//  }
+//
+//  return result;
+//  
+//}
 
 int conversionPartner (int i_el)
 {
