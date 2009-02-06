@@ -314,8 +314,6 @@ bool isFakeable (int i_el)
 {
 #ifdef USE_V5
   return isFakeDenominatorElectron_v5(i_el);
-#else
-  return isFakeable_v2_2(i_el);
 #endif
 #ifdef USE_V6
   return isFakeDenominatorElectron_v6(i_el);
@@ -328,8 +326,6 @@ double elFakeProb (int i_el, int add_error_times)
 {
 #ifdef USE_V5
      return elFakeProb_v5(i_el, add_error_times);
-#else
-     return elFakeProb_v2_2(i_el, add_error_times);
 #endif
 #ifdef USE_V6
      return elFakeProb_v6(i_el, add_error_times);
@@ -342,8 +338,6 @@ bool isNumeratorElectron (int index, int type)
 {
 #ifdef USE_V5
      return isFakeNumeratorElectron_v5(index, 2);
-#else
-     return isNumeratorElectron_v2_2(index, type);
 #endif
 #ifdef USE_V6
      return isFakeNumeratorElectron_v6(index, 2);
@@ -367,18 +361,6 @@ TH2F &fakeRate ()
 	  el_fakeRate_err_v5 = dynamic_cast<TH2F *>(el_fakeRateFile_v5->Get("fakeRateTemplateError_wo_leading_elt_fakeRatesFull"));
      }
      return *el_fakeRate_v5;
-#else
-     if ( el_fakeRateFile_v2_2 == 0 ) {
-	  el_fakeRateFile_v2_2 = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/fakeRates-v2_2_allpt.root", "read");
-	  if ( el_fakeRateFile_v2_2 == 0 ) {
-	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v2_2_allpt.root could not be found!!" << std::endl;
-	       std::cout << "Please make sure that $CMS2_LOCATION points to your CMS2 directory and that" << std::endl;
-	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v2_2_allpt.root exists!" << std::endl;
-	       gSystem->Exit(1);
-	  }
-	  el_fakeRate_v2_2 = dynamic_cast<TH2F *>(el_fakeRateFile_v2_2->Get("fakeRate_wo_leading_elt_qcd"));
-     }
-     return *el_fakeRate_v2_2;
 #endif
 #ifdef USE_V6
      if ( el_fakeRateFile_v6 == 0 ) {
@@ -423,8 +405,6 @@ TH2F &fakeRateError ()
 	  el_fakeRate_err_v5 = dynamic_cast<TH2F *>(el_fakeRateFile_v5->Get("fakeRateTemplateError_wo_leading_elt_fakeRatesFull"));
      }
      return *el_fakeRate_err_v5;
-#else
-     assert("use the bin errors in the fake rate histo instead of error histogram" && 0);
 #endif
 #ifdef USE_V6
      if ( el_fakeRateFile_v6 == 0 ) {
