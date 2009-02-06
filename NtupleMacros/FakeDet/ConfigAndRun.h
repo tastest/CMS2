@@ -10,6 +10,7 @@ using std::string;
 // looping time if you only care about the yields for one or two
 // samples)
 enum {
+  LOOP_WW,
   LOOP_InclusiveMu5Pt50,
   LOOP_InclusiveMuPt15,
   LOOP_QCDBCtoEPt20to30,
@@ -64,6 +65,7 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
   const string log = name + ".log";
   // by default, we run this list of samples; if we're told by the
   // which_ones bit field to skip a sample, we skip it
+  Looper looper_ww		                (fWW()		                , cuts, log.c_str());	if (which_ones & (1 << LOOP_WW    )) looper_ww          .Loop();
   Looper looper_InclusiveMu5Pt50		(fInclusiveMu5Pt50()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_InclusiveMu5Pt50          )) looper_InclusiveMu5Pt50       .Loop();
   Looper looper_InclusiveMuPt15		        (fInclusiveMuPt15()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_InclusiveMuPt15           )) looper_InclusiveMuPt15        .Loop();
   Looper looper_QCDBCtoEPt20to30		(fQCDBCtoEPt20to30()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_QCDBCtoEPt20to30          )) looper_QCDBCtoEPt20to30       .Loop();
@@ -94,3 +96,4 @@ int EleFakes ()
 {
   return run<Looper>(ele_fakes_cuts, "EleFakes", 1 << LOOP_QCDEMenrichedPt20to30 | 1 << LOOP_QCDEMenrichedPt30to80 | 1 << LOOP_QCDEMenrichedPt80to170);
 }
+

@@ -4,6 +4,7 @@
 #include "CORE/utilities.h"
 #include "CORE/CMS2.h"
 #include "Tools/tools.h"
+#include "Tools/fakerates.h"
 #include "Looper.h"
 
 Looper::Looper (Sample s, cuts_t c, const char *fname) 
@@ -141,9 +142,9 @@ void Looper::BookHistos ()
   EOverp_ = book1DHist(Form("%s_hEOverp",prefix),"E/p",EOverpBins,EOverpLow,EOverpHigh,"E/p","Events",color);
   EOverp_uncut_ = book1DHist(Form("%s_hEOverp_uncut",prefix),"uncut E/p",EOverpBins,EOverpLow,EOverpHigh,"E/p","Events",color);
 
-  unsigned int HOverEBins = 300;
-  float        HOverELow  = -5.;
-  float        HOverEHigh = 5.;
+  unsigned int HOverEBins = 100;
+  float        HOverELow  = 0.;
+  float        HOverEHigh = 0.1;
 
   HOverE_ = book1DHist(Form("%s_hHOverE",prefix),"H/E",HOverEBins,HOverELow,HOverEHigh,"H/E","Events",color);
   HOverE_uncut_ = book1DHist(Form("%s_hHOverE_uncut",prefix),"uncut H/E",HOverEBins,HOverELow,HOverEHigh,"H/E","Events",color);
@@ -291,7 +292,7 @@ void Looper::FillEventHistos ()
       float pt = cms2.els_p4()[electron_counter].Pt();
       if (pt >= 150.) pt = 149.;
 
-      if ( isFakeDenominatorElectron(electron_counter)){
+      if ( isFakeable(electron_counter)){
 	  
 	pt_den_ele_->Fill(pt);
 	if ( useAbsEta ) {
@@ -315,9 +316,9 @@ void Looper::FillEventHistos ()
       }
 
       // loose electrons
-      if (isFakeNumeratorElectron(electron_counter,1)){ 
+      if (isNumeratorElectron(electron_counter,1)){ 
 	// 1=loose, 2=tight
-	if ( !isFakeDenominatorElectron(electron_counter) ) cout << "Loose electron: num is fullfilled but den is not!" << endl;
+	if ( !isFakeable(electron_counter) ) cout << "Loose electron: num is fullfilled but den is not!" << endl;
 	pt_num_ell_->Fill(pt,weight);
 	if ( useAbsEta ) {
 	  eta_num_ell_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),weight);
@@ -331,9 +332,9 @@ void Looper::FillEventHistos ()
       }
 
       // tight electrons
-      if ( isFakeNumeratorElectron(electron_counter,2)){ 
+      if ( isNumeratorElectron(electron_counter,2)){ 
 	// 1=loose, 2=tight
-	if ( !isFakeDenominatorElectron(electron_counter) ) cout << "Tight electron: num is fullfilled but den is not!" << endl;
+	if ( !isFakeable(electron_counter) ) cout << "Tight electron: num is fullfilled but den is not!" << endl;
 	pt_num_elt_->Fill(pt,weight);
 	if ( useAbsEta ) {
 	  eta_num_elt_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),weight);
@@ -349,7 +350,7 @@ void Looper::FillEventHistos ()
       // exclude leading jet
       if ( dRbetweenVectors(cms2.els_p4()[electron_counter],cms2.jets_p4()[0]) >= deltaRCut ) {
 
-	if ( isFakeDenominatorElectron(electron_counter)){
+	if ( isFakeable(electron_counter)){
 	  pt_den_wo_leading_ele_->Fill(pt,weight);
 	  if ( useAbsEta ) {
 	    eta_den_wo_leading_ele_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),weight);
@@ -363,9 +364,9 @@ void Looper::FillEventHistos ()
 	}
 
 	// loose electrons
-	if (isFakeNumeratorElectron(electron_counter,1)){ 
+	if (isNumeratorElectron(electron_counter,1)){ 
 	  // 1=loose, 2=tight
-	  if ( !isFakeDenominatorElectron(electron_counter) ) cout << "Loose electron wo leading: num is fullfilled but den is not!" << endl;
+	  if ( !isFakeable(electron_counter) ) cout << "Loose electron wo leading: num is fullfilled but den is not!" << endl;
 	  pt_num_wo_leading_ell_->Fill(pt,weight);
 	  if ( useAbsEta ) {
 	    eta_num_wo_leading_ell_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),weight);
@@ -379,9 +380,9 @@ void Looper::FillEventHistos ()
 	}
 
 	// tight electrons
-	if ( isFakeNumeratorElectron(electron_counter,2)) { 
+	if ( isNumeratorElectron(electron_counter,2)) { 
 	  // 1=loose, 2=tight
-	  if ( !isFakeDenominatorElectron(electron_counter) ) cout << "Tight electron wo leading: num is fullfilled but den is not!" << endl;
+	  if ( !isFakeable(electron_counter) ) cout << "Tight electron wo leading: num is fullfilled but den is not!" << endl;
 	  pt_num_wo_leading_elt_->Fill(pt,weight);
 	  if ( useAbsEta ) {
 	    eta_num_wo_leading_elt_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),weight);
@@ -402,7 +403,7 @@ void Looper::FillEventHistos ()
 	if ( (dRbetweenVectors(cms2.els_p4()[electron_counter],cms2.jets_p4()[0]) >= deltaRCut) &&
 	     (dRbetweenVectors(cms2.els_p4()[electron_counter],cms2.jets_p4()[1]) >= deltaRCut) ) {
 
-	  if ( isFakeDenominatorElectron(electron_counter)){
+	  if ( isFakeable(electron_counter)){
 	    pt_den_wo_second_leading_ele_->Fill(pt,weight);
 	    if ( useAbsEta ) {
 	      eta_den_wo_second_leading_ele_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),weight);
@@ -416,9 +417,9 @@ void Looper::FillEventHistos ()
 	  }
 
 	  // loose electrons
-	  if (isFakeNumeratorElectron(electron_counter,1)){ 
+	  if (isNumeratorElectron(electron_counter,1)){ 
 	    // 1=loose, 2=tight
-	    if ( !isFakeDenominatorElectron(electron_counter) ) cout << "Loose electron wo 2nd leading: num is fullfilled but den is not!" << endl;
+	    if ( !isFakeable(electron_counter) ) cout << "Loose electron wo 2nd leading: num is fullfilled but den is not!" << endl;
 	    pt_num_wo_second_leading_ell_->Fill(pt,weight);
 	    if ( useAbsEta ) {
 	      eta_num_wo_second_leading_ell_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),weight);
@@ -432,9 +433,9 @@ void Looper::FillEventHistos ()
 	  }
 
 	  // tight electrons
-	  if ( isFakeNumeratorElectron(electron_counter,2)){ 
+	  if ( isNumeratorElectron(electron_counter,2)){ 
 	    // 1=loose, 2=tight
-	    if ( !isFakeDenominatorElectron(electron_counter) ) cout << "Tight electron wo 2nd leading: num is fullfilled but den is not!" << endl;
+	    if ( !isFakeable(electron_counter) ) cout << "Tight electron wo 2nd leading: num is fullfilled but den is not!" << endl;
 	    pt_num_wo_second_leading_elt_->Fill(pt,weight);
 	    if ( useAbsEta ) {
 	      eta_num_wo_second_leading_elt_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),weight);
