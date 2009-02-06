@@ -12,52 +12,55 @@
 //  - dilepton candidate in DilepSelect()
 //  - trilepton candidate in TrilepSelect()
 //  - quadlepton candidate in QuadlepSelect().
-enum {
-     CUT_LT_PT,
-     CUT_LL_PT,
-     CUT_SAME_SIGN,
-     CUT_OPP_SIGN,
-     CUT_PASS2_MET,
-     CUT_PASS4_MET,
-     CUT_PASS2_TCMET,
-     CUT_PASS4_TCMET,
-     CUT_LT_GOOD,
-     CUT_LL_GOOD,
-     CUT_EL_GOOD,
-     CUT_EL_GOOD_NO_D0,
-     CUT_LT_TIGHT_DPHIIN,
-     CUT_LL_TIGHT_DPHIIN,
-     CUT_MU_GOOD,
-     CUT_ONE_SUPERTIGHT,
-     CUT_TWO_SUPERTIGHT,
-     CUT_LT_ISO,
-     CUT_LL_ISO,
-     CUT_ONE_ISO,
-     CUT_TWO_ISO,
-     CUT_EL_ISO,
-     CUT_MU_ISO,
-     CUT_LT_CALOISO,
-     CUT_LL_CALOISO,
-     CUT_ONE_CALOISO,
-     CUT_TWO_CALOISO,
-     CUT_EL_CALOISO,
-     CUT_PASS_ZVETO,
-     CUT_IN_Z_WINDOW,
-     CUT_PASS_ADDZVETO,
-     CUT_PASS_JETVETO_CALO,
-     CUT_PASS_JETVETO_TRACKJETS,
-     CUT_PASS_JETVETO_CALOTRACKJETS_COMBO,
-     CUT_PASS_MUON_B_VETO,	
-     CUT_MUON_TAGGED,
-     CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT,	
-     CUT_MUON_TAGGED_WITHOUT_PTCUT,
-     CUT_PASS_EXTRALEPTON_VETO,
-     CUT_EL_BARREL,
-     CUT_ELFAKE_FAKEABLE_OBJECT,
-     CUT_ELFAKE_NUMERATOR,
-     CUT_ELFAKE_NOT_NUMERATOR,
-     CUT_MORE_THAN_TWO_TRACKS,
-};
+// #define PRETTY_PRINT(args ...) args
+// PRETTY_PRINT (
+     enum {
+	  CUT_LT_PT,
+	  CUT_LL_PT,
+	  CUT_SAME_SIGN,
+	  CUT_OPP_SIGN,
+	  CUT_PASS2_MET,
+	  CUT_PASS4_MET,
+	  CUT_PASS2_TCMET,
+	  CUT_PASS4_TCMET,
+	  CUT_LT_GOOD,
+	  CUT_LL_GOOD,
+	  CUT_EL_GOOD,
+	  CUT_EL_GOOD_NO_D0,
+	  CUT_LT_TIGHT_DPHIIN,
+	  CUT_LL_TIGHT_DPHIIN,
+	  CUT_MU_GOOD,
+	  CUT_ONE_SUPERTIGHT,
+	  CUT_TWO_SUPERTIGHT,
+	  CUT_LT_ISO,
+	  CUT_LL_ISO,
+	  CUT_ONE_ISO,
+	  CUT_TWO_ISO,
+	  CUT_EL_ISO,
+	  CUT_MU_ISO,
+	  CUT_LT_CALOISO,
+	  CUT_LL_CALOISO,
+	  CUT_ONE_CALOISO,
+	  CUT_TWO_CALOISO,
+	  CUT_EL_CALOISO,
+	  CUT_PASS_ZVETO,
+	  CUT_IN_Z_WINDOW,
+	  CUT_PASS_ADDZVETO,
+	  CUT_PASS_JETVETO_CALO,
+	  CUT_PASS_JETVETO_TRACKJETS,
+	  CUT_PASS_JETVETO_CALOTRACKJETS_COMBO,
+	  CUT_PASS_MUON_B_VETO,	
+	  CUT_MUON_TAGGED,
+	  CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT,	
+	  CUT_MUON_TAGGED_WITHOUT_PTCUT,
+	  CUT_PASS_EXTRALEPTON_VETO,
+	  CUT_EL_BARREL,
+	  CUT_ELFAKE_FAKEABLE_OBJECT,
+	  CUT_ELFAKE_NUMERATOR,
+	  CUT_ELFAKE_NOT_NUMERATOR,
+	  CUT_MORE_THAN_TWO_TRACKS,
+     };
+//      );
 
 //----------------------------------------------------------------------
 // Cut combinations for selections.  These are examples that are used
@@ -256,6 +259,8 @@ protected:
      // weight for dilepton candidate
      virtual double 	Weight (int);
 
+     // count candidates passing various cuts
+     virtual void	CountCuts (cuts_t, double);
 public:
      // these functions are called by the table-printing code
      virtual double	CandsPassing (enum DileptonHypType i) const { return cands_passing_[i]; }
@@ -334,6 +339,8 @@ protected:
      double		cands_passing_[4];
      double		cands_passing_w2_[4];
      unsigned int	cands_count_[4];
+     double		count_cuts_[64];
+     double		count_correlation_[64][64];
 };
 
 // background estimate for W+jets from fake rates (only electrons in

@@ -18,6 +18,8 @@ Looper::Looper (Sample s, cuts_t c, const char *fname)
      memset(cands_passing_	, 0, sizeof(cands_passing_       ));
      memset(cands_passing_w2_	, 0, sizeof(cands_passing_w2_    ));
      memset(cands_count_		, 0, sizeof(cands_count_         ));
+     memset(count_cuts_		, 0, sizeof(count_cuts_         ));
+     memset(count_correlation_	, 0, sizeof(count_correlation_         ));
 }
 
 void Looper::BookHistos ()
@@ -170,23 +172,23 @@ cuts_t Looper::DilepSelect (int i_hyp)
      if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && goodElectronWithoutIsolationWithoutd0(cms2.hyp_ll_index()[i_hyp]) )
 	  ret |= CUT_BIT(CUT_EL_GOOD_NO_D0);
      // supertight cuts (only for electrons)
-     int n_supertight_el = 0;
-     if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
-	  if (supertightElectron(cms2.hyp_lt_index()[i_hyp])) {
-// 	       ret |= (CUT_BIT(CUT_LT_SUPERTIGHT));
-	       n_supertight_el++;
-	  }
-     }
-     if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
-	  if (supertightElectron(cms2.hyp_ll_index()[i_hyp])) {
-// 	       ret |= (CUT_BIT(CUT_LL_SUPERTIGHT));
-	       n_supertight_el++;
-	  }
-     }
-     if (n_supertight_el >= 1)
-	  ret |= CUT_BIT(CUT_ONE_SUPERTIGHT);
-     if (n_supertight_el >= 2)
-   	  ret |= CUT_BIT(CUT_TWO_SUPERTIGHT);
+//      int n_supertight_el = 0;
+//      if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
+// 	  if (supertightElectron(cms2.hyp_lt_index()[i_hyp])) {
+// // 	       ret |= (CUT_BIT(CUT_LT_SUPERTIGHT));
+// 	       n_supertight_el++;
+// 	  }
+//      }
+//      if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
+// 	  if (supertightElectron(cms2.hyp_ll_index()[i_hyp])) {
+// // 	       ret |= (CUT_BIT(CUT_LL_SUPERTIGHT));
+// 	       n_supertight_el++;
+// 	  }
+//      }
+//      if (n_supertight_el >= 1)
+// 	  ret |= CUT_BIT(CUT_ONE_SUPERTIGHT);
+//      if (n_supertight_el >= 2)
+//    	  ret |= CUT_BIT(CUT_TWO_SUPERTIGHT);
      // supertight dphiin cut
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
 	  if (deltaPhiInElectron(cms2.hyp_lt_index()[i_hyp])) {
@@ -254,10 +256,10 @@ cuts_t Looper::DilepSelect (int i_hyp)
      if (passTriLepVeto(i_hyp))
 	  ret |= (CUT_BIT(CUT_PASS_EXTRALEPTON_VETO));
 
-     if (myType == DILEPTON_MUMU) { // don't want to deal with electron overlap right now
-	  if (passCaloTrkjetCombo())
-	       ret |= CUT_BIT(CUT_PASS_JETVETO_CALOTRACKJETS_COMBO);
-     }
+//      if (myType == DILEPTON_MUMU) { // don't want to deal with electron overlap right now
+// 	  if (passCaloTrkjetCombo())
+// 	       ret |= CUT_BIT(CUT_PASS_JETVETO_CALOTRACKJETS_COMBO);
+//      }
 
      //*****************************************************************
      // special handling for the fake rate cuts for now, because they
@@ -329,6 +331,19 @@ void Looper::FillEventHistos ()
      //------------------------------------------------------------
 }
 
+void Looper::CountCuts (cuts_t cuts_passed, double weight) 
+{
+     for (int i = 0; i < 64; ++i) {
+	  if (cuts_passed & CUT_BIT(i)) {
+	       count_cuts_[i] += weight;
+	       for (int j = 0; j < 64; ++j) {
+		    if (cuts_passed & CUT_BIT(j)) 
+			 count_correlation_[i][j] += weight;
+	       }
+	  }
+     }
+}
+
 void Looper::FillDilepHistos (int i_hyp)
 {
      //------------------------------------------------------------
@@ -343,6 +358,7 @@ void Looper::FillDilepHistos (int i_hyp)
      // these are the cuts that the candidate passes:
      cuts_t cuts_passed = DilepSelect(i_hyp);
      
+     CountCuts(cuts_passed, weight);
      if ((cuts_passed & cuts_) == cuts_) {
 	  cands_passing_[myType] += weight;
 	  cands_passing_w2_[myType] += weight * weight;
@@ -447,12 +463,12 @@ void Looper::FillDilepHistos (int i_hyp)
 	  helPdgId->Fill(cuts_passed, myType, abs(cms2.els_mc_id()[el_idx]), weight);
 	  helMoPdgId->Fill(cuts_passed, myType, abs(cms2.els_mc_motherid()[el_idx]), weight);
 	  helEop      ->Fill(cuts_passed, myType, cms2.els_eOverPIn	()[el_idx], weight);
-	  held0	      ->Fill(cuts_passed, myType, fabs(cms2.els_d0		()[el_idx]), weight);
+	  held0	      ->Fill(cuts_passed, myType, fabs(cms2.els_d0corr		()[el_idx]), weight);
 	  if ((cuts_passed & cuts_) == cuts_) {
-	       held0vsRelIso->Fill(fabs(cms2.els_d0		()[el_idx]), el_rel_iso(el_idx, true), weight);
+	       held0vsRelIso->Fill(fabs(cms2.els_d0corr		()[el_idx]), el_rel_iso(el_idx, true), weight);
 	       heldphiinvsRelIso->Fill(cms2.els_charge	()[el_idx] * cms2.els_dPhiIn	()[el_idx], el_rel_iso(el_idx, true), weight);
 	       if (abs(cms2.els_mc_id()[el_idx]) == 22) {
-		    held0vsRelIsoMCgamma->Fill(fabs(cms2.els_d0		()[el_idx]), el_rel_iso(el_idx, true), weight);
+		    held0vsRelIsoMCgamma->Fill(fabs(cms2.els_d0corr		()[el_idx]), el_rel_iso(el_idx, true), weight);
 		    heldphiinvsRelIsoMCgamma->Fill(cms2.els_charge	()[el_idx] * cms2.els_dPhiIn	()[el_idx], el_rel_iso(el_idx, true), weight);
 	       }
 	  }
@@ -463,7 +479,7 @@ void Looper::FillDilepHistos (int i_hyp)
 	       helsppEB      ->Fill(cuts_passed, myType, cms2.els_sigmaPhiPhi	()[el_idx], weight);
 	  else helsppEE      ->Fill(cuts_passed, myType, cms2.els_sigmaPhiPhi	()[el_idx], weight);
 	  heldphiin   ->Fill(cuts_passed, myType, cms2.els_charge	()[el_idx] * cms2.els_dPhiIn	()[el_idx], weight);
-	  heldetain   ->Fill(cuts_passed, myType, cms2.els_dEtaIn	()[el_idx], weight);
+// 	  heldetain   ->Fill(cuts_passed, myType, cms2.els_dEtaIn	()[el_idx], weight);
 	  helEseedopin->Fill(cuts_passed, myType, cms2.els_eSeedOverPOut	()[el_idx], weight);
 // 	  if (cms2.els_mc_id()[el_idx] == 22 && (cuts_passed & cuts) == cuts)
 // 	       printf("run %10u, event %10u: weight %f\n", cms2.evt_run(), cms2.evt_event(),
@@ -523,4 +539,53 @@ void Looper::End ()
 		       CandsPassing(DILEPTON_ALL) , RMS(DILEPTON_ALL));
      if (ret < 0)
 	  perror("writing to log file");
+     for (int i = 0; i < 64; ++i) {
+	  ret = fprintf(logfile_, 
+			"Sample %10s: cands passing cut %c%2d: %10.1f\n",
+			sample_.name.c_str(), cuts_ & CUT_BIT(i) ? '*' : ' ',
+			i, count_cuts_[i]);
+	  if (ret < 0)
+	       perror("writing to log file");
+     }
+     ret = fprintf(logfile_, 
+		   "Sample %10s: correlations\nSample %10s:          ", 
+		   sample_.name.c_str(), sample_.name.c_str());
+     if (ret < 0)
+	  perror("writing to log file");
+     for (int i = 0; i < 64; ++i) {
+	  if (not (cuts_ & CUT_BIT(i)))
+	       continue;
+	  ret = fprintf(logfile_, " %c%2d  ", cuts_ & CUT_BIT(i) ? '*' : ' ', i);
+	  if (ret < 0)
+	       perror("writing to log file");
+     }
+     ret = fprintf(logfile_, "\n");
+     if (ret < 0)
+	  perror("writing to log file");
+     for (int i = 0; i < 64; ++i) {
+	  if (not (cuts_ & CUT_BIT(i)))
+	       continue;
+	  ret = fprintf(logfile_, 
+			"Sample %10s: %c%2d     ", 
+			sample_.name.c_str(), cuts_ & CUT_BIT(i) ? '*' : ' ', i);
+	  if (ret < 0)
+	       perror("writing to log file");
+	  const double den = count_cuts_[i];
+	  for (int j = 0; j < 64; ++j) {
+	       if (not (cuts_ & CUT_BIT(j)))
+		    continue;
+	       if (den != 0) {
+		    ret = fprintf(logfile_, 
+				  "%5.1f ", count_correlation_[i][j] / den);
+	       } else {
+		    ret = fprintf(logfile_, 
+				  "----- ");
+	       }
+	       if (ret < 0)
+		    perror("writing to log file");
+	  }
+	  ret = fprintf(logfile_, "\n");
+	  if (ret < 0)
+	       perror("writing to log file");
+     }
 }
