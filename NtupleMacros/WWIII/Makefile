@@ -1,8 +1,8 @@
-# $Id: Makefile,v 1.1 2008/12/05 16:25:33 jmuelmen Exp $
+# $Id: Makefile,v 1.2 2009/02/06 19:24:46 jmuelmen Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
-CFLAGS = -Wall -g -O2 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS) -DTOOLSLIB
+CFLAGS = -Wall -g -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS) -DTOOLSLIB
 
 LINKER = g++
 LINKERFLAGS = $(shell root-config --ldflags)
@@ -59,6 +59,9 @@ linkdef_out.cxx: ${CMS2_LOCATION}/NtupleMacros/linkdef.h ConfigAndRun.h
 %.d:	%.cc
 	$(CC) -MM -MT $@ -MT ${@:.d=.o} $(CFLAGS) $< > $@; \
                      [ -s $@ ] || rm -f $@
+%.d:	%.cxx
+	$(CC) -MM -MT $@ -MT ${@:.d=.o} $(CFLAGS) $< > $@; \
+                     [ -s $@ ] || rm -f $@
 
 %.o: 	%.cc 
 	$(CC) $(CFLAGS) $< -c -o $@
@@ -82,4 +85,6 @@ $(TABLES): $(LIBS)
 -include $(TOOLSSOURCES:.cc=.d)
 -include $(CORESOURCES:.cc=.d)
 -include $(LOOPERSOURCES:.cc=.d)
+-include linkdef_out.d
 
+.PRECIOUS: $(wildcard *.tbl) $(wildcard *.log) $(wildcard *.root)
