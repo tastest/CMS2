@@ -69,10 +69,14 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true, std::string cl
     TString aliasname(fullarray->At(i)->GetName());
     TBranch *branch = ev->GetBranch(ev->GetAlias(aliasname.Data()));
     TString branchname(branch->GetName());
+    TString branchtitle(branch->GetTitle());
     if(!branchname.BeginsWith("int") && 
        !branchname.BeginsWith("uint") && 
        !branchname.BeginsWith("float") &&
-       !branchname.BeginsWith("double") ) continue;
+       !branchname.BeginsWith("double") &&
+       !branchtitle.EndsWith("/F") && 
+       !branchtitle.EndsWith("/I"))
+	 continue;
     aliasarray->Add(fullarray->At(i));
   }
   
@@ -266,6 +270,9 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true, std::string cl
   }
   headerf << "};" << endl << endl;
 
+  headerf << "#ifndef __CINT__" << endl;
+  headerf << "extern " << Classname << " cms2;" << endl;
+  headerf << "#endif" << endl;
   headerf << "#endif" << endl;
 
   codef << "/* Usage:" << endl;
