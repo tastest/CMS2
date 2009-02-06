@@ -18,7 +18,8 @@ Looper::Looper (Sample s, cuts_t c, const char *fname)
 
 void Looper::BookHistos ()
 {
-       hnJet		= new NMinus1Hist(sample_, "nJet"            ,	 6	, -0.5, 5	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_CALO)) | (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)) 	);
+       hnJet		= new NMinus1Hist(sample_, "nJet"            ,	 6	, -0.5, 5	, cuts_,  
+     0 	);
        helPt		= new NMinus1Hist(sample_, "elPt"            ,	 16	, 0, 160	, cuts_, CUT_BIT(CUT_LL_PT)	);
        helEta		= new NMinus1Hist(sample_, "elEta"           ,	 12	, -3, 3		, cuts_, 0);
        hmet		= new NMinus1Hist(sample_, "met"             ,	 100	, 0, 200	, cuts_, CUT_BIT(CUT_PASS4_MET) | CUT_BIT(CUT_PASS2_MET) | CUT_BIT(CUT_PASS4_TCMET) | CUT_BIT(CUT_PASS2_TCMET)	);
