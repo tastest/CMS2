@@ -58,10 +58,10 @@ Sample fZZ ()
 Sample fWjets ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = "/data/tmp/cms2-V01-02-01/WJets-madgraph/merged_ntuple*.root";
+     std::string sample = "/data/tmp/cms2-V01-02-01/WJets-madgraph/postprocessing/merged_ntuple*.root";
      char *location = getenv("CMS2_NTUPLE_LOCATION");
      if ( location != 0 ) {
-       sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V01-02-01/WJets-madgraph/merged_ntuple*.root";
+       sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V01-02-01/WJets-madgraph/postprocessing/merged_ntuple*.root";
      }
      c->Add(sample.c_str());
      Sample ret = { c, Wjets, 40, 1, "wjets", true };
