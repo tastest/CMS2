@@ -1,4 +1,19 @@
+#include "TCanvas.h"
+#include "TFile.h"
+#include "TH1.h"
+#include "TH2.h"
+#include "THStack.h"
+#include "TKey.h"
+#include "TLegend.h"
+#include "TRegexp.h"
+
+#include <iostream>
+
+using namespace std;
+
 namespace hist {
+
+     void add(const char* outHistName, const char* patORpfx);
 
    //Add all histograms whose names match one of ten possible regular expression
    //patterns or begin with one of ten possible given prefixes.  Feel free to
@@ -98,8 +113,8 @@ namespace hist {
    //their respective histograms.  Optionally, if histogram names are of the
    //form XX_YY_ZZ_WW, entry labels can be XX (token=0), YY (token=1), etc.
 
-   TLegend* legend(TCanvas* canvas, Option_t* option = "lpf", Bool_t addColor = kFALSE, Int_t token = -1,
-                   Float_t xmin = 0.75, Float_t ymin = 0.75, Float_t xmax = 0.99, Float_t ymax = 0.99) {
+     TLegend* legend(TCanvas* canvas, Option_t* option = "lpf", Bool_t addColor = kFALSE, Int_t token = -1,
+		     Float_t xmin = 0.75, Float_t ymin = 0.75, Float_t xmax = 0.99, Float_t ymax = 0.99) {
       if(! canvas) return 0;
 
       TLegend* leg = new TLegend(xmin, ymin, xmax, ymax);
@@ -242,7 +257,7 @@ namespace hist {
    //sizes the bottom histogram.
 
    void setrangey(TCanvas* canvas) {
-      if(! canvas) return 0;
+      if(! canvas) return;
 
       TList* list = canvas->GetListOfPrimitives();
       TIterator* iter = list->MakeIterator();
@@ -526,11 +541,12 @@ void deleteHistos() {
          obj->IsA()->InheritsFrom(TH2::Class()) ) {delete obj;}
    }
 }
-histio()
+
+void histio()
 {
 }
 
-saveHist(const char* filename, const char* pat="*")
+void saveHist(const char* filename, const char* pat="*")
 {
    TList* list = gDirectory->GetList() ;
    TIterator* iter = list->MakeIterator();
@@ -538,7 +554,7 @@ saveHist(const char* filename, const char* pat="*")
    TRegexp re(pat,kTRUE) ;
 
    TFile outf(filename,"RECREATE") ;
-   while(obj=iter->Next()) {
+   while(TObject *obj=iter->Next()) {
       if (TString(obj->GetName()).Index(re)>=0) {
          obj->Write() ;
          cout << "." ;
@@ -552,7 +568,7 @@ saveHist(const char* filename, const char* pat="*")
 }
 
 
-loadHist(const char* filename, const char* pfx=0, const char* pat="*", Bool_t doAdd=kFALSE)
+void loadHist(const char* filename, const char* pfx=0, const char* pat="*", Bool_t doAdd=kFALSE)
 {
    TFile inf(filename) ;
    //inf.ReadAll() ;
