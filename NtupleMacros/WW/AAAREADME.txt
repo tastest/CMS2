@@ -1,8 +1,4 @@
-This is main CVS area for all _common_ tools for WW and related 
-analyses. 
-
-NOTE: All instructions are given for tcsh. If you use other shell
-      and cannot translate, type tcsh on the command prompt.
+                       FWLITE is required 
 
 #################################################################
                             SETUP
