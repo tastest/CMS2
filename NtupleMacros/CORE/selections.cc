@@ -82,9 +82,10 @@ bool goodMuonWithoutIsolation(int index) {
 //-----------------------------------------------------------
 double el_rel_iso (int index, bool use_calo_iso)
 {
-     double sum = cms2.els_tkIso().at(index);
+     double sum = cms2.els_pat_trackIso().at(index);
      if (use_calo_iso)
-	  sum += cms2.els_ecalJuraIso()[index] + cms2.els_hcalConeIso()[index];
+        sum += cms2.els_pat_ecalIso()[index] + cms2.els_pat_hcalIso()[index];
+  
      double pt  = cms2.els_p4().at(index).pt();
      return pt / (pt + sum);
 }
@@ -134,6 +135,7 @@ bool goodMuonIsolated(int index) {
 // Electron ID with isolation
 //--------------------------------------------
 bool goodElectronIsolated(int index, bool use_calo_iso) {
+  // if (!goodElectronWithoutIsolationWithoutd0(index)) return false;
   if (!goodElectronWithoutIsolation(index)) return false;
   if (!passElectronIsolation(index, use_calo_iso))       return false;
   return true;
