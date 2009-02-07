@@ -47,7 +47,7 @@ def getGoodXMLFiles(crabpath):
                     duplicateFile = True
                     break
             if duplicateFile == False:
-                print 'Parsing + ' j
+                print 'Parsing ' + j
                 doc = xml.dom.minidom.parse(j) #read xml file to see if the job failed
                 jobFailed = True
                 for node in doc.getElementsByTagName("FrameworkJobReport"):
@@ -182,6 +182,7 @@ def makeRootMacros(outpath):
     outFile.write("\n}\n")
     outFile.close()
     cmd = "mv postProcessingMacro.C " + outpath
+    print outpath + '/postProcessingMacro.C written'
     commands.getoutput(cmd)
 
 
@@ -261,10 +262,8 @@ if datapath.find("pnfs") != -1:
         print cmd
         print commands.getoutput(cmd)
 
-    
-print 'Now making root macros for dieting'
 makeRootMacros(outpath)
-
+print totalNumEventsRun + ' were processed'
 
     
 
