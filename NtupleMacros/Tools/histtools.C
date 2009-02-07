@@ -88,6 +88,10 @@ namespace hist {
       TRegexp reg(patORpfx, kFALSE);
 
       TList* list = gDirectory->GetList() ;
+      if (!list) {
+	cout << "Failed to set color for " << patORpfx << endl;
+	return;
+      }
       TIterator* iter = list->MakeIterator();
 
       TObject* obj = 0;
