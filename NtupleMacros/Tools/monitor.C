@@ -17,6 +17,7 @@
 #include "TStyle.h"
 #include "TChain.h"
 #include <iostream>
+#include "TProfile.h"
 
 struct variable{
   const char* title;
@@ -25,10 +26,18 @@ struct variable{
   unsigned int nbins;
   float varmin;
   float varmax;
+  const char* varexp2;
+  unsigned int nbins2;
+  float varmin2;
+  float varmax2;
+  
   variable( const char* ititle, const char* ivarexp, const char* iselection,
-	    unsigned int inbins, float ivarmin, float ivarmax ):
+	    unsigned int inbins, float ivarmin, float ivarmax,
+	    const char* ivarexp2=0, unsigned int inbins2=0, float ivarmin2=0, float ivarmax2=0):
     title(ititle), varexp(ivarexp), selection(iselection), 
-    nbins(inbins), varmin(ivarmin), varmax(ivarmax) {}
+    nbins(inbins), varmin(ivarmin), varmax(ivarmax),
+    varexp2(ivarexp2), nbins2(inbins2), varmin2(ivarmin2), varmax2(ivarmax2)
+  {}
 };
 
 
@@ -47,6 +56,7 @@ void drawAll( TTree* tree1,
   // Variables to monitor
   std::vector<variable> vars;
   vars.push_back( variable("Electron d0 corrected for beam spot (pt>20)", "els_d0corr", "els_p4.pt()>20", 400, -0.1, 0.1 ) );
+  vars.push_back( variable("Electron d0 corrected for beam spot (pt>20) vs phi", "els_d0corr", "els_p4.pt()>20", 100, -3.14, 3.14, "els_p4.phi()",0,-.1,.1 ) );
   vars.push_back( variable("Electron MC match PDG id (no ID,pt>20)", "abs(els_mc_id)", "els_p4.pt()>20", 350, 0, 350 ) );
   vars.push_back( variable("Electron MC match PDG id (robust ID,pt>20)", "abs(els_mc_id)", "els_robustId&&els_p4.pt()>20", 350, 0, 350 ) );
   vars.push_back( variable("Electron MC match PDG id (loose ID,pt>20)", "abs(els_mc_id)", "els_looseId&&els_p4.pt()>20", 350, 0, 350 ) );
@@ -91,6 +101,7 @@ void drawAll( TTree* tree1,
   
   gROOT->SetStyle("Plain");
   gStyle->SetOptStat("nemruosk");
+  gStyle->SetPalette(1);
   TCanvas* c1 = new TCanvas("c1","c1", 1100,850);
 
   for ( unsigned int ivar = 0; ivar < vars.size(); ++ivar ){
@@ -120,12 +131,27 @@ void drawAll( TTree* tree1,
       sprintf(hname,"h%d",i+10*ivar);
       char htitle[1024];
       sprintf(htitle,"[%s] %s",trees[i]->GetTitle(),vars[ivar].title);
-      TH1F* h = new TH1F(hname,htitle,vars[ivar].nbins,vars[ivar].varmin,vars[ivar].varmax);
-      h->GetXaxis()->SetTitle(vars[ivar].varexp);
-      h->SetFillColor(kBlue);
-      char drawCommand[1024];
-      sprintf(drawCommand,"%s>>%s",vars[ivar].varexp,hname);
-      trees[i]->Draw(drawCommand, vars[ivar].selection);
+      if ( vars[ivar].varexp2 == 0 ) {
+	TH1F* h = new TH1F(hname,htitle,vars[ivar].nbins,vars[ivar].varmin,vars[ivar].varmax);
+	h->GetXaxis()->SetTitle(vars[ivar].varexp);
+	h->SetFillColor(kBlue);
+	char drawCommand[1024];
+	sprintf(drawCommand,"%s>>%s",vars[ivar].varexp,hname);
+	trees[i]->Draw(drawCommand, vars[ivar].selection);
+      } else {
+	if ( vars[ivar].nbins2 == 0 ){
+	  TProfile* p = new TProfile(hname,htitle,vars[ivar].nbins,vars[ivar].varmin,vars[ivar].varmax,
+				     vars[ivar].varmin2,vars[ivar].varmax2);
+	  p->GetXaxis()->SetTitle(vars[ivar].varexp2);
+	  p->GetYaxis()->SetTitle(vars[ivar].varexp);
+	  p->SetLineColor(kBlue);
+	  p->SetMinimum(vars[ivar].varmin2);
+	  p->SetMaximum(vars[ivar].varmax2);
+	  char drawCommand[1024];
+	  sprintf(drawCommand,"%s:%s>>%s",vars[ivar].varexp,vars[ivar].varexp2,hname);
+	  trees[i]->Draw(drawCommand, vars[ivar].selection);
+	}
+      }
     }
     if ( ivar == 0 )
       c1->Print((psname+"(").c_str(),"ps");
