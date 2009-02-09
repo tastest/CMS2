@@ -9,6 +9,14 @@
 
 bool filterByProcess (enum Process sample)
 {
+     switch (sample) {
+     case DYee: 
+          return isDYee();
+     case DYmm:
+          return isDYmm();
+     case DYtt:
+          return isDYtt();
+     }
      return true;
 }
 
