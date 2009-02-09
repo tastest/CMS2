@@ -63,7 +63,7 @@ bool isFakeable_v2_2 (int i_el) {
      bool result = true;
      
      if (cms2.els_closestMuon().at(i_el) != -1)		result = false;
-     if ( cms2.els_ESc()[i_el]      < et_cut )                 result = false;
+     if ( cms2.els_eSC()[i_el]      < et_cut )                 result = false;
      if ( cms2.els_p4()[i_el].Pt()  < pt_cut )                 result = false;
      if ( std::abs(cms2.els_p4()[i_el].Eta()) > eta_cut )      result = false;
      //   // previous iso requirement, use this OR the one below!
@@ -110,7 +110,7 @@ bool isNumeratorElectron_v2_2 (int index, int type) { // 0=loose, 1=tight, for p
 //      if ( jets_p4->at(0).Pt() < HLT_jet_approx )             result = false;
      //  if ( (jets_p4->at(0).Pt()+jets_p4->at(1).Pt())/2. < HLT_jet_approx )     result = false; // hmm! did not require a jet to be preset in the first case..
      
-     if ( cms2.els_ESc()[index]      < et_cut )                 result = false;
+     if ( cms2.els_eSC()[index]      < et_cut )                 result = false;
      if ( cms2.els_p4()[index].Pt()  < pt_cut )                 result = false;
      if ( std::abs(cms2.els_p4()[index].Eta()) > eta_cut )      result = false;
      //   // previous iso requirement, use this OR the one below!
