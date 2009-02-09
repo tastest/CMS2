@@ -61,7 +61,7 @@ void printTable (const Looper **hists, int n, const char *fname,
 	       }
 	       
 	  }
-	  fprintf(f, "|  %10.1f &plusmn; %10.1f|\n", cands, sqrt(w2));
+ 	  fprintf(f, "|  %10.1f &plusmn; %10.1f|\n", cands, sqrt(w2));
      }
      if (f != stdin) 
 	  fclose(f);
@@ -202,3 +202,9 @@ int Wjets_Fakerate ()
 {
      return run<FakeRateLooper>(fakerate_denominator_not_numerator_cuts, "Wjets_Fakerate");
 }
+
+int Wjets_Oingo ()
+{
+     return run<FakeRateLooper>(oingo_cuts, "Wjets_Oingo");
+}
+
