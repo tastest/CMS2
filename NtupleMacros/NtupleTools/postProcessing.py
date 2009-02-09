@@ -178,7 +178,7 @@ def makeRootMacros(outpath):
     for i in goodRootFiles:
         fname = i.split("/")[len(i.split("/"))-1]
         outFile.write("  chain->Add(\"" + outpath + "postprocessing/" + fname+"\");\n")
-    outFile.write("  chain->Merge(\"" + outpath + "postprocessing/merged_ntuple.root\",\"fast\");\n")
+    outFile.write("  chain->Merge(\"" + outpath + "merged_ntuple.root\",\"fast\");\n")
     outFile.write("\n}\n")
     outFile.close()
     cmd = "mv postProcessingMacro.C " + outpath
