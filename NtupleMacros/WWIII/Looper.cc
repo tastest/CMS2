@@ -124,7 +124,9 @@ cuts_t Looper::DilepSelect (int i_hyp)
      if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) 
 	  ret |= (CUT_BIT(CUT_SAME_SIGN));
      // track corrected MET
-     const TVector3 trkCorr = correctMETforTracks();
+     const TVector3 trkCorr; // well, don't correct until the tcmet in
+			     // the 2_2 samples is figured out...
+     // const TVector3 trkCorr = correctMETforTracks();
      if (pass4Met(i_hyp, trkCorr))
 	  ret |= (CUT_BIT(CUT_PASS4_TCMET));
      if (pass2Met(i_hyp, trkCorr))
@@ -436,7 +438,9 @@ void Looper::FillDilepHistos (int i_hyp)
 		   MetSpecial(cms2.hyp_met()[i_hyp], cms2.hyp_metPhi()[i_hyp], i_hyp),
 		   weight);
      // track correction to the met
-     const TVector3 trkCorr = correctMETforTracks();
+     const TVector3 trkCorr; // = correctMETforTracks(); // correction
+			     // deactivated until 2_2 tcmet is
+			     // understood
      TVector3 hyp_met;
      hyp_met.SetPtEtaPhi(cms2.hyp_met()[i_hyp], 0, cms2.hyp_metPhi()[i_hyp]);
      hyp_met += trkCorr;
