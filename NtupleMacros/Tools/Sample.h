@@ -25,13 +25,17 @@ public:
 // (takes the guesswork out of data access...)
 Sample fWW	();
 Sample fWZ	();
+Sample fWZ_incl	();
 Sample fZZ	();
 Sample fWjets	();
 Sample fDYee 	();
 Sample fDYmm 	();
 Sample fDYtt 	();
 Sample fttbar	();
+Sample fttbar_taula	();
 Sample ftW	();
+Sample fSingleTop_tChannel	();
+Sample fSingleTop_sChannel	();
 Sample fLM1     ();
 Sample fLM2     ();
 Sample fLM4     ();
