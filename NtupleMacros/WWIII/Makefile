@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.2 2009/02/06 19:24:46 jmuelmen Exp $
+# $Id: Makefile,v 1.3 2009/02/09 01:45:02 jmuelmen Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
@@ -34,6 +34,15 @@ Results_NoBtags.tbl Results_NoCaloIso.tbl Results_NoPass4MET.tbl	\
 Results_NoNtrks.tbl Wjets_Numerator.tbl Wjets_FOs_Not_Numerator.tbl	\
 Wjets_Fakerate.tbl
 
+FAKETABLES = Wjets_Numerator.tbl Wjets_FOs_Not_Numerator.tbl	\
+Wjets_Fakerate.tbl Wjets_Oingo.tbl
+
+NM1TABLES = Results_NoTcMET.tbl Results_NoTrackJets.tbl		\
+Results_NoBtags.tbl Results_NoCaloIso.tbl Results_NoPass4MET.tbl	\
+Results_NoNtrks.tbl
+
+RESULTTABLES = Results.tbl
+
 .PHONY: all
 all:	$(LIBS) 
 
@@ -41,7 +50,7 @@ all:	$(LIBS)
 libs:	$(LIBS)
 
 .PHONY: tables
-tables:	$(TABLES)
+tables:	$(RESULTTABLES) $(FAKETABLES) $(NM1TABLES) 
 
 $(TOOLSLIB):	$(TOOLSOBJECTS) 
 	$(LINKER) $(LINKERFLAGS) -shared $(TOOLSOBJECTS) -o $@ 
