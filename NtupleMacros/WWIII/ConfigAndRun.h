@@ -87,9 +87,9 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
      // which_ones bit field to skip a sample, we skip it
      L looper_ww		(fWW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WW    )) looper_ww          .Loop();
      L looper_wz		(fWZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WZ    )) looper_wz          .Loop();
-     L looper_wz_incl		(fWZ_incl()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WZ    )) looper_wz_incl     .Loop();
+//      L looper_wz_incl		(fWZ_incl()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WZ    )) looper_wz_incl     .Loop();
      L looper_zz		(fZZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_ZZ    )) looper_zz          .Loop();
-     L looper_wjets		(fWjets()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS )) looper_wjets       .Loop();
+//      L looper_wjets		(fWjets()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS )) looper_wjets       .Loop();
      L looper_dyee		(fDYee()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYEE  )) looper_dyee        .Loop();
      L looper_dymm		(fDYmm()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYMM  )) looper_dymm        .Loop();
      L looper_dytt		(fDYtt()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYTT  )) looper_dytt        .Loop();
@@ -104,9 +104,9 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
      const Looper *loopers[] = { 
 	  &looper_ww          ,
 	  &looper_wz          ,
-	  &looper_wz_incl     ,
+// 	  &looper_wz_incl     ,
 	  &looper_zz          ,
-	  &looper_wjets       ,
+// 	  &looper_wjets       ,
 	  &looper_dyee        ,
 	  &looper_dymm        ,
 	  &looper_dytt        ,
