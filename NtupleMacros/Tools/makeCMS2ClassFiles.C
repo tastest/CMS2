@@ -188,84 +188,84 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true, std::string cl
        aliasname = aliasarray->At(i)->GetName();
        headerf << "\t{" << endl;
        headerf << "\t\t" << "if (not " << Form("%s_isLoaded) {",aliasname.Data()) << endl;
-       headerf << "\t\t\t" << "if (" << Form("%s_branch",aliasname.Data()) << " != 0) " << endl;
+       headerf << "\t\t\t" << "if (" << Form("%s_branch",aliasname.Data()) << " != 0) {" << endl;
        headerf << "\t\t\t\t" << Form("%s_branch",aliasname.Data()) << "->GetEntry(index);" << endl;
-       headerf << "\t\t\t" << "else { " << endl;
+       if (paranoid) {
+	    headerf << "\t\t\t\t#ifdef PARANOIA" << endl;
+	    if (classname == "vector<vector<float> >") {
+		 headerf << "\t\t\t\t" << "for (vector<vector<float> >::const_iterator i = " 
+			 << aliasname << "_.begin(); i != "<< aliasname << "_.end(); ++i) {" << endl;
+		 headerf << "\t\t\t\t\t" << "for (vector<float>::const_iterator j = i->begin(); " 
+		      "j != i->end(); ++j) {" << endl;
+		 headerf << "\t\t\t\t\t\t" << "int e;" << endl;
+		 headerf << "\t\t\t\t\t\t" << "frexpf(*j, &e);" << endl;
+		 headerf << "\t\t\t\t\t\t" << "if (not isfinite(*j) || e > 30 || e < -30) {" << endl;
+		 headerf << "\t\t\t\t\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
+			 << " contains a bad float: %f\\n\", *j);" << endl << "\t\t\t\t\t\t\t" << "exit(1);"
+			 << endl;
+		 headerf << "\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t}" << endl;
+	    } else if (classname == "vector<float>") {
+		 headerf << "\t\t\t\t" << "for (vector<float>::const_iterator i = " 
+			 << aliasname << "_.begin(); i != "<< aliasname << "_.end(); ++i) {" << endl;
+		 headerf << "\t\t\t\t\t" << "int e;" << endl;
+		 headerf << "\t\t\t\t\t" << "frexpf(*i, &e);" << endl;
+		 headerf << "\t\t\t\t\t" << "if (not isfinite(*i) || e > 30 || e < -30) {" << endl;
+		 headerf << "\t\t\t\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
+			 << " contains a bad float: %f\\n\", *i);" << endl << "\t\t\t\t\t\t" << "exit(1);"
+			 << endl;
+		 headerf << "\t\t\t\t\t}\n\t\t\t\t}" << endl;
+	    } else if (classname == "float") {
+		 headerf << "\t\t\t\t" << "int e;" << endl;
+		 headerf << "\t\t\t\t" << "frexpf(" << aliasname << "_, &e);" << endl;
+		 headerf << "\t\t\t\t" << "if (not isfinite(" << aliasname << "_) || e > 30 || e < -30) {" << endl;
+		 headerf << "\t\t\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
+			 << " contains a bad float: %f\\n\", " << aliasname << "_);" << endl 
+			 << "\t\t\t\t\t" << "exit(1);"
+			 << endl;
+		 headerf << "\t\t\t\t}" << endl;
+	    } else if (classname.BeginsWith("vector<vector<ROOT::Math::LorentzVector")) {
+		 headerf << "\t\t\t\t" << "for (" << classname.Data() <<"::const_iterator i = " 
+			 << aliasname << "_.begin(); i != "<< aliasname << "_.end(); ++i) {" << endl;
+		 // this is a slightly hacky way to get rid of the outer vector< > ...
+		 std::string str = classname.Data() + 7;
+		 str[str.length() - 2] = 0;
+		 headerf << "\t\t\t\t\t" << "for (" << str.c_str() << "::const_iterator j = i->begin(); " 
+		      "j != i->end(); ++j) {" << endl;
+		 headerf << "\t\t\t\t\t\t" << "int e;" << endl;
+		 headerf << "\t\t\t\t\t\t" << "frexp(j->pt(), &e);" << endl;
+		 headerf << "\t\t\t\t\t\t" << "if (not isfinite(j->pt()) || e > 30 || e < -30) {" << endl;
+		 headerf << "\t\t\t\t\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
+			 << " contains a bad float: %f\\n\", j->pt());" << endl << "\t\t\t\t\t\t\t" << "exit(1);"
+			 << endl;
+		 headerf << "\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t}" << endl;
+	    } else if (classname.BeginsWith("vector<ROOT::Math::LorentzVector")) {
+		 headerf << "\t\t\t\t" << "for (" << classname.Data() << "::const_iterator i = " 
+			 << aliasname << "_.begin(); i != "<< aliasname << "_.end(); ++i) {" << endl;
+		 headerf << "\t\t\t\t\t" << "int e;" << endl;
+		 headerf << "\t\t\t\t\t" << "frexp(i->pt(), &e);" << endl;
+		 headerf << "\t\t\t\t\t" << "if (not isfinite(i->pt()) || e > 30 || e < -30) {" << endl;
+		 headerf << "\t\t\t\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
+			 << " contains a bad float: %f\\n\", i->pt());" << endl << "\t\t\t\t\t\t" << "exit(1);"
+			 << endl;
+		 headerf << "\t\t\t\t\t}\n\t\t\t\t}" << endl;
+	    } else if (classname.BeginsWith("ROOT::Math::LorentzVector")) {
+		 headerf << "\t\t\t\t" << "int e;" << endl;
+		 headerf << "\t\t\t\t" << "frexp(" << aliasname << "_.pt(), &e);" << endl;
+		 headerf << "\t\t\t\t" << "if (not isfinite(" << aliasname << "_.pt()) || e > 30 || e < -30) {" << endl;
+		 headerf << "\t\t\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
+			 << " contains a bad float: %f\\n\", " << aliasname << "_.pt());" << endl 
+			 << "\t\t\t\t\t" << "exit(1);"
+			 << endl;
+		 headerf << "\t\t\t\t}" << endl;
+	    }
+	    headerf << "\t\t\t\t#endif // #ifdef PARANOIA" << endl;
+       }
+       headerf << "\t\t\t" << "} else { " << endl;
        headerf << "\t\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
 	       << " does not exist!\\n\");" << endl;
        headerf << "\t\t\t\t" << "exit(1);" << endl << "\t\t\t}" << endl;
        headerf << "\t\t\t" << Form("%s_isLoaded",aliasname.Data()) << " = true;" << endl;
        headerf << "\t\t" << "}" << endl;
-       if (paranoid) {
-	    headerf << "\t\t#ifdef PARANOIA" << endl;
-	    if (classname == "vector<vector<float> >") {
-		 headerf << "\t\t" << "for (vector<vector<float> >::const_iterator i = " 
-			 << aliasname << "_.begin(); i != "<< aliasname << "_.end(); ++i) {" << endl;
-		 headerf << "\t\t\t" << "for (vector<float>::const_iterator j = i->begin(); " 
-		      "j != i->end(); ++j) {" << endl;
-		 headerf << "\t\t\t\t" << "int e;" << endl;
-		 headerf << "\t\t\t\t" << "frexpf(*j, &e);" << endl;
-		 headerf << "\t\t\t\t" << "if (not isfinite(*j) || e > 30 || e < -30) {" << endl;
-		 headerf << "\t\t\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
-			 << " contains a bad float: %f\\n\", *j);" << endl << "\t\t\t\t\t" << "exit(1);"
-			 << endl;
-		 headerf << "\t\t\t\t}\n\t\t\t}\n\t\t}" << endl;
-	    } else if (classname == "vector<float>") {
-		 headerf << "\t\t" << "for (vector<float>::const_iterator i = " 
-			 << aliasname << "_.begin(); i != "<< aliasname << "_.end(); ++i) {" << endl;
-		 headerf << "\t\t\t" << "int e;" << endl;
-		 headerf << "\t\t\t" << "frexpf(*i, &e);" << endl;
-		 headerf << "\t\t\t" << "if (not isfinite(*i) || e > 30 || e < -30) {" << endl;
-		 headerf << "\t\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
-			 << " contains a bad float: %f\\n\", *i);" << endl << "\t\t\t\t" << "exit(1);"
-			 << endl;
-		 headerf << "\t\t\t}\n\t\t}" << endl;
-	    } else if (classname == "float") {
-		 headerf << "\t\t" << "int e;" << endl;
-		 headerf << "\t\t" << "frexpf(" << aliasname << "_, &e);" << endl;
-		 headerf << "\t\t" << "if (not isfinite(" << aliasname << "_) || e > 30 || e < -30) {" << endl;
-		 headerf << "\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
-			 << " contains a bad float: %f\\n\", " << aliasname << "_);" << endl 
-			 << "\t\t\t" << "exit(1);"
-			 << endl;
-		 headerf << "\t\t}" << endl;
-	    } else if (classname.BeginsWith("vector<vector<ROOT::Math::LorentzVector")) {
-		 headerf << "\t\t" << "for (" << classname.Data() <<"::const_iterator i = " 
-			 << aliasname << "_.begin(); i != "<< aliasname << "_.end(); ++i) {" << endl;
-		 // this is a slightly hacky way to get rid of the outer vector< > ...
-		 std::string str = classname.Data() + 7;
-		 str[str.length() - 2] = 0;
-		 headerf << "\t\t\t" << "for (" << str.c_str() << "::const_iterator j = i->begin(); " 
-		      "j != i->end(); ++j) {" << endl;
-		 headerf << "\t\t\t\t" << "int e;" << endl;
-		 headerf << "\t\t\t\t" << "frexp(j->pt(), &e);" << endl;
-		 headerf << "\t\t\t\t" << "if (not isfinite(j->pt()) || e > 30 || e < -30) {" << endl;
-		 headerf << "\t\t\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
-			 << " contains a bad float: %f\\n\", j->pt());" << endl << "\t\t\t\t\t" << "exit(1);"
-			 << endl;
-		 headerf << "\t\t\t\t}\n\t\t\t}\n\t\t}" << endl;
-	    } else if (classname.BeginsWith("vector<ROOT::Math::LorentzVector")) {
-		 headerf << "\t\t" << "for (" << classname.Data() << "::const_iterator i = " 
-			 << aliasname << "_.begin(); i != "<< aliasname << "_.end(); ++i) {" << endl;
-		 headerf << "\t\t\t\t" << "int e;" << endl;
-		 headerf << "\t\t\t\t" << "frexp(i->pt(), &e);" << endl;
-		 headerf << "\t\t\t\t" << "if (not isfinite(i->pt()) || e > 30 || e < -30) {" << endl;
-		 headerf << "\t\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
-			 << " contains a bad float: %f\\n\", i->pt());" << endl << "\t\t\t\t" << "exit(1);"
-			 << endl;
-		 headerf << "\t\t\t}\n\t\t}" << endl;
-	    } else if (classname.BeginsWith("ROOT::Math::LorentzVector")) {
-		 headerf << "\t\t\t\t" << "int e;" << endl;
-		 headerf << "\t\t\t\t" << "frexp(" << aliasname << "_.pt(), &e);" << endl;
-		 headerf << "\t\t" << "if (not isfinite(" << aliasname << "_.pt()) || e > 30 || e < -30) {" << endl;
-		 headerf << "\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
-			 << " contains a bad float: %f\\n\", " << aliasname << "_.pt());" << endl 
-			 << "\t\t\t" << "exit(1);"
-			 << endl;
-		 headerf << "\t\t}" << endl;
-	    }
-	    headerf << "\t\t#endif // #ifdef PARANOIA" << endl;
-       }
        headerf << "\t\t" << "return " << aliasname << "_;" << endl << "\t}" << endl;
   }
   headerf << "};" << endl << endl;
