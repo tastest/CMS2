@@ -24,7 +24,11 @@ def getGoodXMLFiles(crabpath):
     
     for i in temp:
         print 'Parsing ' + i
-        doc = xml.dom.minidom.parse(submissionDirs[0]+'/'+i) #read xml file to see if the job failed
+	try:
+            doc = xml.dom.minidom.parse(submissionDirs[0]+'/'+i) #read xml file to see if the job failed
+        except:
+            print 'FrameworkJobReport:',i,'could not be parsed and is skipped'
+	    continue
         jobFailed = True
         for node in doc.getElementsByTagName("FrameworkJobReport"):
             key =  node.attributes.keys()[0].encode('ascii')
@@ -75,7 +79,11 @@ def getGoodXMLFiles(crabpath):
                 duplicateFile = True
                 break
         if duplicateFile == False:
-            doc = xml.dom.minidom.parse(j) #read xml file to see if the job failed
+            try:
+                doc = xml.dom.minidom.parse(j) #read xml file to see if the job failed
+            except:
+                print 'FrameworkJobReport:',j,'could not be parsed and is skipped'
+                continue
             jobFailed = False
             for node in doc.getElementsByTagName("FrameworkJobReport"):
                 key =  node.attributes.keys()[0].encode('ascii')
@@ -263,7 +271,7 @@ if datapath.find("pnfs") != -1:
         print commands.getoutput(cmd)
 
 makeRootMacros(outpath)
-print totalNumEventsRun + ' were processed'
+print str(totalNumEventsRun) + ' were processed'
 
     
 
