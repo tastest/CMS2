@@ -366,16 +366,3 @@ Sample fQCDEMenrichedPt80to170 ()
      return ret;
 }
 
-Sample fQCDpt30 ()
-{
-     TChain *c = new TChain("Events");
-     std::string sample = "/data/tmp/cms2-V01-02-06/QCDpt30/*.root";
-     char *location = getenv("CMS2_NTUPLE_LOCATION");
-     if ( location != 0 ) {
-       sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V01-02-06/QCDpt30/*.root";
-     }
-     c->Add(sample.c_str());
-     Sample ret = { c, QCDpt30, 28, 1, "QCDpt30", true };
-     return ret;
-}
-

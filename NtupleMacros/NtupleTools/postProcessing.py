@@ -23,12 +23,7 @@ def getGoodXMLFiles(crabpath):
     
     
     for i in temp:
-        print 'Parsing ' + i
-	try:
-            doc = xml.dom.minidom.parse(submissionDirs[0]+'/'+i) #read xml file to see if the job failed
-        except:
-            print 'FrameworkJobReport:',i,'could not be parsed and is skipped'
-	    continue
+        doc = xml.dom.minidom.parse(submissionDirs[0]+'/'+i) #read xml file to see if the job failed
         jobFailed = True
         for node in doc.getElementsByTagName("FrameworkJobReport"):
             key =  node.attributes.keys()[0].encode('ascii')
@@ -51,7 +46,6 @@ def getGoodXMLFiles(crabpath):
                     duplicateFile = True
                     break
             if duplicateFile == False:
-                print 'Parsing ' + j
                 doc = xml.dom.minidom.parse(j) #read xml file to see if the job failed
                 jobFailed = True
                 for node in doc.getElementsByTagName("FrameworkJobReport"):
@@ -67,23 +61,19 @@ def getGoodXMLFiles(crabpath):
             
     ##now add the files in the top res directory that do not
     cmd = 'find ' + crabpath + '/res/ -iname *.xml'
+    print commands.getstatusoutput(cmd)
     temp = commands.getoutput(cmd).split('\n')
 
     
     
     for j in temp:
-        print 'Parsing ' + j
         duplicateFile = False
         for k in goodCrabXMLFiles:
             if k.split('/')[len(k.split('/'))-1] == j.split('/')[len(j.split('/'))-1]:
                 duplicateFile = True
                 break
         if duplicateFile == False:
-            try:
-                doc = xml.dom.minidom.parse(j) #read xml file to see if the job failed
-            except:
-                print 'FrameworkJobReport:',j,'could not be parsed and is skipped'
-                continue
+            doc = xml.dom.minidom.parse(j) #read xml file to see if the job failed
             jobFailed = False
             for node in doc.getElementsByTagName("FrameworkJobReport"):
                 key =  node.attributes.keys()[0].encode('ascii')
@@ -147,7 +137,7 @@ def getGoodRootFiles(datapath):
         print 'Checking File ' + path + ' for integrity'
         cmd = ""
         if path.find("pnfs") != -1:
-            cmd = "/home/users/kalavase/crabTools/sweepRoot -o Events dcap://dcap-2.t2.ucsd.edu:22136/" + path + ' 2> /dev/null'
+            cmd = "/home/users/kalavase/crabTools/sweepRoot -o Events dcap://dcap-2.t2.ucsd.edu:22162/" + path + ' 2> /dev/null'
         else:
             cmd = "/home/users/kalavase/crabTools/sweepRoot -o Events " + path + ' 2> /dev/null'
         output = commands.getoutput(cmd).split('\n')
@@ -170,7 +160,7 @@ def makeRootMacros(outpath):
     #get the basic skeleton root script from my directory
     commands.getoutput("cp ~kalavase/crabTools/skelPostProcessingMacro.C postProcessingMacro.C")
     outFile = open("postProcessingMacro.C", "a")
-    text = "\n\n\nvoid postProcess(Float_t xsec, Float_t kFactor, Float_t filterEfficiency=1) {\n"
+    text = "\n\n\nvoid postProcess(Float_t xsec, Float_t kFactor) {\n"
     outFile.write(text)
     #write the 
     for i in goodRootFiles:
@@ -186,11 +176,10 @@ def makeRootMacros(outpath):
     for i in goodRootFiles:
         fname = i.split("/")[len(i.split("/"))-1]
         outFile.write("  chain->Add(\"" + outpath + "postprocessing/" + fname+"\");\n")
-    outFile.write("  chain->Merge(\"" + outpath + "merged_ntuple.root\",\"fast\");\n")
+    outFile.write("  chain->Merge(\"" + outpath + "postprocessing/merged_ntuple.root\",\"fast\");\n")
     outFile.write("\n}\n")
     outFile.close()
     cmd = "mv postProcessingMacro.C " + outpath
-    print outpath + '/postProcessingMacro.C written'
     commands.getoutput(cmd)
 
 
@@ -266,12 +255,14 @@ if datapath.find("pnfs") != -1:
     print "Moving files from dcache to " + outpath + "/preprocessing"
     for i in goodRootFiles:
         print i
-        cmd = "dccp dcap://dcap-2.t2.ucsd.edu:22136/" + i + " " + outpath + "/preprocessing"
+        cmd = "dccp dcap://dcap-2.t2.ucsd.edu:22162/" + i + " " + outpath + "/preprocessing"
         print cmd
         print commands.getoutput(cmd)
 
+    
+print 'Now making root macros for dieting'
 makeRootMacros(outpath)
-print str(totalNumEventsRun) + ' were processed'
+
 
     
 
