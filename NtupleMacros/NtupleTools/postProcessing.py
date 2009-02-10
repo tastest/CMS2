@@ -24,7 +24,7 @@ def getGoodXMLFiles(crabpath):
     
     for i in temp:
         print 'Parsing ' + i
-	try:
+        try:
             doc = xml.dom.minidom.parse(submissionDirs[0]+'/'+i) #read xml file to see if the job failed
         except:
             print 'FrameworkJobReport:',i,'could not be parsed and is skipped'
@@ -52,7 +52,11 @@ def getGoodXMLFiles(crabpath):
                     break
             if duplicateFile == False:
                 print 'Parsing ' + j
-                doc = xml.dom.minidom.parse(j) #read xml file to see if the job failed
+                try:
+                    doc = xml.dom.minidom.parse(j) #read xml file to see if the job failed
+                except:
+                    print 'FrameworkJobReport:',i,'could not be parsed and is skipped'
+                    continue
                 jobFailed = True
                 for node in doc.getElementsByTagName("FrameworkJobReport"):
                     key =  node.attributes.keys()[0].encode('ascii')
@@ -82,7 +86,7 @@ def getGoodXMLFiles(crabpath):
             try:
                 doc = xml.dom.minidom.parse(j) #read xml file to see if the job failed
             except:
-                print 'FrameworkJobReport:',j,'could not be parsed and is skipped'
+                print 'FrameworkJobReport:',i,'could not be parsed and is skipped'
                 continue
             jobFailed = False
             for node in doc.getElementsByTagName("FrameworkJobReport"):
@@ -121,6 +125,12 @@ def getNumEventsRun(crabpath):
     global goodCrabXMLFiles
     #get the job number from the crab file
     for i in goodCrabXMLFiles:
+        jobNum = i.split("_")[len(i.split("_"))-1]
+        jobNum = jobNum.split(".")[0]
+        cmd = "ls " +  outpath + "/preprocessing/ntuple_" + jobNum + ".root"
+        print cmd
+        if commands.getstatusoutput(cmd)[0] == 256:
+            continue
         #parse the crab file:
         print "Getting Number of Events run for Job: " + i 
         doc = xml.dom.minidom.parse(i)
@@ -257,10 +267,7 @@ rootFilesToMerge = []
 
 getGoodXMLFiles(crabpath)
 getGoodRootFiles(datapath)        
-getNumEventsRun(crabpath)
 
-print '+++++++++++++++++++++++++++++'
-print 'Total number of events that were run over to produce ntuples: ' + str(totalNumEventsRun)
 
 if datapath.find("pnfs") != -1:
     print "Moving files from dcache to " + outpath + "/preprocessing"
@@ -270,9 +277,12 @@ if datapath.find("pnfs") != -1:
         print cmd
         print commands.getoutput(cmd)
 
-makeRootMacros(outpath)
-print str(totalNumEventsRun) + ' were processed'
+getNumEventsRun(crabpath)
 
+print '+++++++++++++++++++++++++++++'
+print 'Total number of events that were run over to produce ntuples: ' + str(totalNumEventsRun)
+
+makeRootMacros(outpath)
     
 
 
