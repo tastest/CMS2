@@ -229,7 +229,7 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true, std::string cl
 			 << "\t\t\t" << "exit(1);"
 			 << endl;
 		 headerf << "\t\t}" << endl;
-	    } else if (classname.BeginsWith("vector<vector<ROOT")) {
+	    } else if (classname.BeginsWith("vector<vector<ROOT::Math::LorentzVector")) {
 		 headerf << "\t\t" << "for (" << classname.Data() <<"::const_iterator i = " 
 			 << aliasname << "_.begin(); i != "<< aliasname << "_.end(); ++i) {" << endl;
 		 // this is a slightly hacky way to get rid of the outer vector< > ...
@@ -244,7 +244,7 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true, std::string cl
 			 << " contains a bad float: %f\\n\", j->pt());" << endl << "\t\t\t\t\t" << "exit(1);"
 			 << endl;
 		 headerf << "\t\t\t\t}\n\t\t\t}\n\t\t}" << endl;
-	    } else if (classname.BeginsWith("vector<ROOT")) {
+	    } else if (classname.BeginsWith("vector<ROOT::Math::LorentzVector")) {
 		 headerf << "\t\t" << "for (" << classname.Data() << "::const_iterator i = " 
 			 << aliasname << "_.begin(); i != "<< aliasname << "_.end(); ++i) {" << endl;
 		 headerf << "\t\t\t\t" << "int e;" << endl;
@@ -254,7 +254,7 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true, std::string cl
 			 << " contains a bad float: %f\\n\", i->pt());" << endl << "\t\t\t\t" << "exit(1);"
 			 << endl;
 		 headerf << "\t\t\t}\n\t\t}" << endl;
-	    } else if (classname.BeginsWith("ROOT")) {
+	    } else if (classname.BeginsWith("ROOT::Math::LorentzVector")) {
 		 headerf << "\t\t\t\t" << "int e;" << endl;
 		 headerf << "\t\t\t\t" << "frexp(" << aliasname << "_.pt(), &e);" << endl;
 		 headerf << "\t\t" << "if (not isfinite(" << aliasname << "_.pt()) || e > 30 || e < -30) {" << endl;

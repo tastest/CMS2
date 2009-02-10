@@ -7904,6 +7904,14 @@ void GetEntry(unsigned int idx)
 			alltrkjets_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = alltrkjets_p4_.begin(); i != alltrkjets_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch alltrkjets_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return alltrkjets_p4_;
 	}
@@ -7919,6 +7927,14 @@ void GetEntry(unsigned int idx)
 			els_mc3_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = els_mc3_p4_.begin(); i != els_mc3_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch els_mc3_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return els_mc3_p4_;
 	}
@@ -7934,6 +7950,14 @@ void GetEntry(unsigned int idx)
 			els_mc_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = els_mc_p4_.begin(); i != els_mc_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch els_mc_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return els_mc_p4_;
 	}
@@ -7949,6 +7973,14 @@ void GetEntry(unsigned int idx)
 			jets_mc_gp_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = jets_mc_gp_p4_.begin(); i != jets_mc_gp_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch jets_mc_gp_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return jets_mc_gp_p4_;
 	}
@@ -7964,6 +7996,14 @@ void GetEntry(unsigned int idx)
 			jets_mc_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = jets_mc_p4_.begin(); i != jets_mc_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch jets_mc_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return jets_mc_p4_;
 	}
@@ -7979,6 +8019,14 @@ void GetEntry(unsigned int idx)
 			mus_mc3_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = mus_mc3_p4_.begin(); i != mus_mc3_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch mus_mc3_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return mus_mc3_p4_;
 	}
@@ -7994,6 +8042,14 @@ void GetEntry(unsigned int idx)
 			mus_mc_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = mus_mc_p4_.begin(); i != mus_mc_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch mus_mc_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return mus_mc_p4_;
 	}
@@ -8009,6 +8065,14 @@ void GetEntry(unsigned int idx)
 			trk_mc3p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = trk_mc3p4_.begin(); i != trk_mc3p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch trk_mc3p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return trk_mc3p4_;
 	}
@@ -8024,6 +8088,14 @@ void GetEntry(unsigned int idx)
 			trk_mcp4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = trk_mcp4_.begin(); i != trk_mcp4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch trk_mcp4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return trk_mcp4_;
 	}
@@ -8039,6 +8111,14 @@ void GetEntry(unsigned int idx)
 			els_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = els_p4_.begin(); i != els_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch els_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return els_p4_;
 	}
@@ -8054,6 +8134,14 @@ void GetEntry(unsigned int idx)
 			els_p4In_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = els_p4In_.begin(); i != els_p4In_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch els_p4In_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return els_p4In_;
 	}
@@ -8069,6 +8157,14 @@ void GetEntry(unsigned int idx)
 			els_p4Out_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = els_p4Out_.begin(); i != els_p4Out_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch els_p4Out_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return els_p4Out_;
 	}
@@ -8084,6 +8180,14 @@ void GetEntry(unsigned int idx)
 			els_trk_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = els_trk_p4_.begin(); i != els_trk_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch els_trk_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return els_trk_p4_;
 	}
@@ -8099,6 +8203,14 @@ void GetEntry(unsigned int idx)
 			els_vertex_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = els_vertex_p4_.begin(); i != els_vertex_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch els_vertex_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return els_vertex_p4_;
 	}
@@ -8114,6 +8226,14 @@ void GetEntry(unsigned int idx)
 			genjets_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = genjets_p4_.begin(); i != genjets_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch genjets_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return genjets_p4_;
 	}
@@ -8129,6 +8249,14 @@ void GetEntry(unsigned int idx)
 			genps_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = genps_p4_.begin(); i != genps_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch genps_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return genps_p4_;
 	}
@@ -8144,6 +8272,14 @@ void GetEntry(unsigned int idx)
 			genps_prod_vtx_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = genps_prod_vtx_.begin(); i != genps_prod_vtx_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch genps_prod_vtx_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return genps_prod_vtx_;
 	}
@@ -8159,6 +8295,14 @@ void GetEntry(unsigned int idx)
 			hyp_ll_mc_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = hyp_ll_mc_p4_.begin(); i != hyp_ll_mc_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch hyp_ll_mc_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return hyp_ll_mc_p4_;
 	}
@@ -8174,6 +8318,14 @@ void GetEntry(unsigned int idx)
 			hyp_ll_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = hyp_ll_p4_.begin(); i != hyp_ll_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch hyp_ll_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return hyp_ll_p4_;
 	}
@@ -8189,6 +8341,14 @@ void GetEntry(unsigned int idx)
 			hyp_ll_trk_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = hyp_ll_trk_p4_.begin(); i != hyp_ll_trk_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch hyp_ll_trk_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return hyp_ll_trk_p4_;
 	}
@@ -8204,6 +8364,14 @@ void GetEntry(unsigned int idx)
 			hyp_lt_mc_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = hyp_lt_mc_p4_.begin(); i != hyp_lt_mc_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch hyp_lt_mc_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return hyp_lt_mc_p4_;
 	}
@@ -8219,6 +8387,14 @@ void GetEntry(unsigned int idx)
 			hyp_lt_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = hyp_lt_p4_.begin(); i != hyp_lt_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch hyp_lt_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return hyp_lt_p4_;
 	}
@@ -8234,6 +8410,14 @@ void GetEntry(unsigned int idx)
 			hyp_lt_trk_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = hyp_lt_trk_p4_.begin(); i != hyp_lt_trk_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch hyp_lt_trk_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return hyp_lt_trk_p4_;
 	}
@@ -8249,6 +8433,14 @@ void GetEntry(unsigned int idx)
 			hyp_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = hyp_p4_.begin(); i != hyp_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch hyp_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return hyp_p4_;
 	}
@@ -8264,6 +8456,14 @@ void GetEntry(unsigned int idx)
 			jets_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = jets_p4_.begin(); i != jets_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch jets_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return jets_p4_;
 	}
@@ -8279,6 +8479,14 @@ void GetEntry(unsigned int idx)
 			jpts_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = jpts_p4_.begin(); i != jpts_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch jpts_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return jpts_p4_;
 	}
@@ -8294,6 +8502,14 @@ void GetEntry(unsigned int idx)
 			l1emiso_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = l1emiso_p4_.begin(); i != l1emiso_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch l1emiso_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return l1emiso_p4_;
 	}
@@ -8309,6 +8525,14 @@ void GetEntry(unsigned int idx)
 			l1emnoiso_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = l1emnoiso_p4_.begin(); i != l1emnoiso_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch l1emnoiso_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return l1emnoiso_p4_;
 	}
@@ -8324,6 +8548,14 @@ void GetEntry(unsigned int idx)
 			l1jetsc_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = l1jetsc_p4_.begin(); i != l1jetsc_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch l1jetsc_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return l1jetsc_p4_;
 	}
@@ -8339,6 +8571,14 @@ void GetEntry(unsigned int idx)
 			l1jetsf_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = l1jetsf_p4_.begin(); i != l1jetsf_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch l1jetsf_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return l1jetsf_p4_;
 	}
@@ -8354,6 +8594,14 @@ void GetEntry(unsigned int idx)
 			l1jetst_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = l1jetst_p4_.begin(); i != l1jetst_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch l1jetst_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return l1jetst_p4_;
 	}
@@ -8369,6 +8617,14 @@ void GetEntry(unsigned int idx)
 			l1mus_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = l1mus_p4_.begin(); i != l1mus_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch l1mus_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return l1mus_p4_;
 	}
@@ -8384,6 +8640,14 @@ void GetEntry(unsigned int idx)
 			mus_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = mus_p4_.begin(); i != mus_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch mus_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return mus_p4_;
 	}
@@ -8399,6 +8663,14 @@ void GetEntry(unsigned int idx)
 			mus_trk_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = mus_trk_p4_.begin(); i != mus_trk_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch mus_trk_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return mus_trk_p4_;
 	}
@@ -8414,6 +8686,14 @@ void GetEntry(unsigned int idx)
 			mus_vertex_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = mus_vertex_p4_.begin(); i != mus_vertex_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch mus_vertex_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return mus_vertex_p4_;
 	}
@@ -8429,6 +8709,14 @@ void GetEntry(unsigned int idx)
 			els_pat_genMotherP4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = els_pat_genMotherP4_.begin(); i != els_pat_genMotherP4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch els_pat_genMotherP4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return els_pat_genMotherP4_;
 	}
@@ -8444,6 +8732,14 @@ void GetEntry(unsigned int idx)
 			els_pat_genP4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = els_pat_genP4_.begin(); i != els_pat_genP4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch els_pat_genP4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return els_pat_genP4_;
 	}
@@ -8459,6 +8755,14 @@ void GetEntry(unsigned int idx)
 			jets_pat_genJet_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = jets_pat_genJet_p4_.begin(); i != jets_pat_genJet_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch jets_pat_genJet_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return jets_pat_genJet_p4_;
 	}
@@ -8474,6 +8778,14 @@ void GetEntry(unsigned int idx)
 			jets_pat_genPartonMother_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = jets_pat_genPartonMother_p4_.begin(); i != jets_pat_genPartonMother_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch jets_pat_genPartonMother_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return jets_pat_genPartonMother_p4_;
 	}
@@ -8489,6 +8801,14 @@ void GetEntry(unsigned int idx)
 			jets_pat_genParton_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = jets_pat_genParton_p4_.begin(); i != jets_pat_genParton_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch jets_pat_genParton_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return jets_pat_genParton_p4_;
 	}
@@ -8504,6 +8824,14 @@ void GetEntry(unsigned int idx)
 			jets_pat_jet_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = jets_pat_jet_p4_.begin(); i != jets_pat_jet_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch jets_pat_jet_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return jets_pat_jet_p4_;
 	}
@@ -8519,6 +8847,14 @@ void GetEntry(unsigned int idx)
 			jets_pat_jet_uncorp4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = jets_pat_jet_uncorp4_.begin(); i != jets_pat_jet_uncorp4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch jets_pat_jet_uncorp4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return jets_pat_jet_uncorp4_;
 	}
@@ -8534,6 +8870,14 @@ void GetEntry(unsigned int idx)
 			mus_pat_genMotherP4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = mus_pat_genMotherP4_.begin(); i != mus_pat_genMotherP4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch mus_pat_genMotherP4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return mus_pat_genMotherP4_;
 	}
@@ -8549,6 +8893,14 @@ void GetEntry(unsigned int idx)
 			mus_pat_genP4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = mus_pat_genP4_.begin(); i != mus_pat_genP4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch mus_pat_genP4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return mus_pat_genP4_;
 	}
@@ -8564,6 +8916,14 @@ void GetEntry(unsigned int idx)
 			scs_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = scs_p4_.begin(); i != scs_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch scs_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return scs_p4_;
 	}
@@ -8579,6 +8939,14 @@ void GetEntry(unsigned int idx)
 			trks_trk_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = trks_trk_p4_.begin(); i != trks_trk_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch trks_trk_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return trks_trk_p4_;
 	}
@@ -8594,6 +8962,14 @@ void GetEntry(unsigned int idx)
 			trks_vertex_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = trks_vertex_p4_.begin(); i != trks_vertex_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch trks_vertex_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return trks_vertex_p4_;
 	}
@@ -8609,6 +8985,14 @@ void GetEntry(unsigned int idx)
 			hlt2ele10LWR_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = hlt2ele10LWR_p4_.begin(); i != hlt2ele10LWR_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch hlt2ele10LWR_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return hlt2ele10LWR_p4_;
 	}
@@ -8624,6 +9008,14 @@ void GetEntry(unsigned int idx)
 			hlt2mu3_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = hlt2mu3_p4_.begin(); i != hlt2mu3_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch hlt2mu3_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return hlt2mu3_p4_;
 	}
@@ -8639,6 +9031,14 @@ void GetEntry(unsigned int idx)
 			hltLisoele18LWR_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = hltLisoele18LWR_p4_.begin(); i != hltLisoele18LWR_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch hltLisoele18LWR_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return hltLisoele18LWR_p4_;
 	}
@@ -8654,6 +9054,14 @@ void GetEntry(unsigned int idx)
 			hltisoele18R_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = hltisoele18R_p4_.begin(); i != hltisoele18R_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch hltisoele18R_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return hltisoele18R_p4_;
 	}
@@ -8669,6 +9077,14 @@ void GetEntry(unsigned int idx)
 			hltjet30_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = hltjet30_p4_.begin(); i != hltjet30_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch hltjet30_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return hltjet30_p4_;
 	}
@@ -8684,6 +9100,14 @@ void GetEntry(unsigned int idx)
 			hltl1jet15_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = hltl1jet15_p4_.begin(); i != hltl1jet15_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch hltl1jet15_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return hltl1jet15_p4_;
 	}
@@ -8699,6 +9123,14 @@ void GetEntry(unsigned int idx)
 			hltl1met20_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = hltl1met20_p4_.begin(); i != hltl1met20_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch hltl1met20_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return hltl1met20_p4_;
 	}
@@ -8714,6 +9146,14 @@ void GetEntry(unsigned int idx)
 			hltl1mu_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = hltl1mu_p4_.begin(); i != hltl1mu_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch hltl1mu_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return hltl1mu_p4_;
 	}
@@ -8729,6 +9169,14 @@ void GetEntry(unsigned int idx)
 			hltl2mu9_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = hltl2mu9_p4_.begin(); i != hltl2mu9_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch hltl2mu9_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return hltl2mu9_p4_;
 	}
@@ -8744,6 +9192,14 @@ void GetEntry(unsigned int idx)
 			hltmet25_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = hltmet25_p4_.begin(); i != hltmet25_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch hltmet25_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return hltmet25_p4_;
 	}
@@ -8759,6 +9215,14 @@ void GetEntry(unsigned int idx)
 			hltmu11_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = hltmu11_p4_.begin(); i != hltmu11_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch hltmu11_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return hltmu11_p4_;
 	}
@@ -8774,6 +9238,14 @@ void GetEntry(unsigned int idx)
 			hltmu9_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = hltmu9_p4_.begin(); i != hltmu9_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch hltmu9_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return hltmu9_p4_;
 	}
@@ -8789,6 +9261,14 @@ void GetEntry(unsigned int idx)
 			trkjets_p4_isLoaded = true;
 		}
 		#ifdef PARANOIA
+		for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = trkjets_p4_.begin(); i != trkjets_p4_.end(); ++i) {
+				int e;
+				frexp(i->pt(), &e);
+				if (not isfinite(i->pt()) || e > 30 || e < -30) {
+				printf("branch trkjets_p4_branch contains a bad float: %f\n", i->pt());
+				exit(1);
+			}
+		}
 		#endif // #ifdef PARANOIA
 		return trkjets_p4_;
 	}
