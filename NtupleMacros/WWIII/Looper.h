@@ -215,6 +215,13 @@ const static cuts_t oingo_cuts =
      (CUT_BIT(CUT_LT_CALOISO)	) |  
      (CUT_BIT(CUT_LL_CALOISO)	);   
 
+static const cuts_t fakerate_ss_numerator_cuts = 
+     (fakerate_numerator_cuts & ~CUT_BIT(CUT_OPP_SIGN)) | CUT_BIT(CUT_SAME_SIGN);
+
+static const cuts_t fakerate_ss_denominator_not_numerator_cuts = 
+     (fakerate_denominator_not_numerator_cuts & ~CUT_BIT(CUT_OPP_SIGN)) 
+     | CUT_BIT(CUT_SAME_SIGN);
+
 //----------------------------------------------------------------------
 // Loopers 
 //----------------------------------------------------------------------

@@ -23,6 +23,9 @@ enum {
      LOOP_TW	,
 };
 
+// #define TWIKI_OUTPUT
+#define LATEX_OUTPUT
+
 // helper function used to print yield tables
 void printTable (const Looper **hists, int n, const char *fname, 
 		 uint32 which_ones) 
@@ -35,24 +38,52 @@ void printTable (const Looper **hists, int n, const char *fname,
 	  perror("printing table");
 	  return;
      }
+#if defined(TWIKI_OUTPUT)
      fprintf(f, "| %10s", "");
      for (int j = 0; j < n; ++j) {
+	  if (not (which_ones & 1 << j))
+	       continue;
 	  fprintf(f, "|  *%30s*  ", hists[j]->SampleName().c_str());
      }
      fprintf(f, "|%30s  |\n", "total");
+#else 
+#if defined(LATEX_OUTPUT)
+     fprintf(f, "\\hline\\hline\n%10s", "");
+     for (int j = 0; j < n; ++j) {
+	  if (not (which_ones & 1 << j))
+	       continue;
+	  fprintf(f, "&  \\%-30s  ", hists[j]->SampleName().c_str());
+     }
+     fprintf(f, "\\\\\\hline\n");
+#endif
+#endif
      for (int i = 0; i < 4; ++i) {
+#if defined(TWIKI_OUTPUT)
 	  fprintf(f, "|%10s  ", dilepton_hypo_names[i]);
+#else 
+#if defined(LATEX_OUTPUT)
+	  fprintf(f, "\\%-10s  ", dilepton_hypo_names[i]);
+#endif
+#endif
 	  double cands = 0;
 	  double w2 = 0;
 	  for (int j = 0; j < n; ++j) {
+	       if (not (which_ones & 1 << j))
+		    continue;
+#if defined(TWIKI_OUTPUT)
 	       fprintf(f, "|  %10.1f &plusmn; %10.1f", 
 		       hists[j]->CandsPassing(DileptonHypType(i)),
 		       hists[j]->RMS(DileptonHypType(i)));
+#else 
+#if defined(LATEX_OUTPUT)
+	       fprintf(f, "&  %10.1f $\\pm$ %10.1f", 
+		       hists[j]->CandsPassing(DileptonHypType(i)),
+		       hists[j]->RMS(DileptonHypType(i)));
+#endif
+#endif
 	       cands += hists[j]->CandsPassing(DileptonHypType(i));
 	       w2 += hists[j]->RMS(DileptonHypType(i)) * 
 		    hists[j]->RMS(DileptonHypType(i));
-	       if (not (which_ones & 1 << j))
-		    continue;
 	       const FakeRateLooper *looper = 
 		    dynamic_cast<const FakeRateLooper *>(hists[j]);
 	       if (looper != 0) {
@@ -61,8 +92,17 @@ void printTable (const Looper **hists, int n, const char *fname,
 	       }
 	       
 	  }
- 	  fprintf(f, "|  %10.1f &plusmn; %10.1f|\n", cands, sqrt(w2));
+#if defined(TWIKI_OUTPUT)
+	  fprintf(f, "|  %10.1f &plusmn; %10.1f|\n", cands, sqrt(w2));
+#else
+#if defined(LATEX_OUTPUT)
+	  fprintf(f, "\\\\\n");
+#endif
+#endif
      }
+#if defined(LATEX_OUTPUT)
+	  fprintf(f, "\\hline\\hline\n");
+#endif
      if (f != stdin) 
 	  fclose(f);
 }
@@ -89,7 +129,7 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
      L looper_wz		(fWZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WZ    )) looper_wz          .Loop();
 //      L looper_wz_incl		(fWZ_incl()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WZ    )) looper_wz_incl     .Loop();
      L looper_zz		(fZZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_ZZ    )) looper_zz          .Loop();
-//      L looper_wjets		(fWjets()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS )) looper_wjets       .Loop();
+     L looper_wjets		(fWjets()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS )) looper_wjets       .Loop();
      L looper_dyee		(fDYee()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYEE  )) looper_dyee        .Loop();
      L looper_dymm		(fDYmm()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYMM  )) looper_dymm        .Loop();
      L looper_dytt		(fDYtt()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYTT  )) looper_dytt        .Loop();
@@ -106,7 +146,7 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
 	  &looper_wz          ,
 // 	  &looper_wz_incl     ,
 	  &looper_zz          ,
-// 	  &looper_wjets       ,
+ 	  &looper_wjets       ,
 	  &looper_dyee        ,
 	  &looper_dymm        ,
 	  &looper_dytt        ,
@@ -214,5 +254,20 @@ int Wjets_Fakerate ()
 int Wjets_Oingo ()
 {
      return run<FakeRateLooper>(oingo_cuts, "Wjets_Oingo");
+}
+
+int Wjets_SS_Numerator ()
+{
+     return run<Looper>(fakerate_ss_numerator_cuts, "Wjets_SS_Numerator");
+}
+
+int Wjets_SS_FOs_Not_Numerator ()
+{
+     return run<Looper>(fakerate_ss_denominator_not_numerator_cuts, "Wjets_SS_FOs_Not_Numerator");
+}
+
+int Wjets_SS_Fakerate ()
+{
+     return run<FakeRateLooper>(fakerate_ss_denominator_not_numerator_cuts, "Wjets_SS_Fakerate");
 }
 
