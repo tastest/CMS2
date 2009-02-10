@@ -13,9 +13,17 @@ void prepareFakeRateHistograms() {
   vector<char*> qcdBins;
   vector<char*> histograms;
 
+  bool useQCDBCtoE = true;
+
   qcdBins.push_back("QCDEMenrichedPt20to30");
   qcdBins.push_back("QCDEMenrichedPt30to80");
   qcdBins.push_back("QCDEMenrichedPt80to170");
+
+  if(useQCDBCtoE) {
+  qcdBins.push_back("QCDBCtoEPt20to30");
+  qcdBins.push_back("QCDBCtoEPt30to80");
+  qcdBins.push_back("QCDBCtoEPt80to170");
+  }
 
   histograms.push_back("den_ele");
   histograms.push_back("den_wo_leading_ele");

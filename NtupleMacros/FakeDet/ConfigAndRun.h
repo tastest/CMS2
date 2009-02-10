@@ -94,6 +94,6 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 // default yield table
 int EleFakes ()
 {
-  return run<Looper>(ele_fakes_cuts, "EleFakes", 1 << LOOP_QCDEMenrichedPt20to30 | 1 << LOOP_QCDEMenrichedPt30to80 | 1 << LOOP_QCDEMenrichedPt80to170);
+  return run<Looper>(ele_fakes_cuts, "EleFakes", 1 << LOOP_QCDEMenrichedPt20to30 | 1 << LOOP_QCDEMenrichedPt30to80 | 1 << LOOP_QCDEMenrichedPt80to170 | 1 << LOOP_QCDBCtoEPt20to30 | 1 << LOOP_QCDBCtoEPt30to80 | 1 << LOOP_QCDBCtoEPt80to170);
 }
 
