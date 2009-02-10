@@ -244,7 +244,7 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true, std::string cl
 			 << " contains a bad float: %f\\n\", j->pt());" << endl << "\t\t\t\t\t" << "exit(1);"
 			 << endl;
 		 headerf << "\t\t\t\t}\n\t\t\t}\n\t\t}" << endl;
-	    } else if (classname.BeginsWith("vector<vector<ROOT")) {
+	    } else if (classname.BeginsWith("vector<ROOT")) {
 		 headerf << "\t\t" << "for (" << classname.Data() << "::const_iterator i = " 
 			 << aliasname << "_.begin(); i != "<< aliasname << "_.end(); ++i) {" << endl;
 		 headerf << "\t\t\t\t" << "int e;" << endl;
