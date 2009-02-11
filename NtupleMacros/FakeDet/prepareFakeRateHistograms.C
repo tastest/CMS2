@@ -14,15 +14,21 @@ void prepareFakeRateHistograms() {
   vector<char*> histograms;
 
   bool useQCDBCtoE = true;
+  bool useInclusiveSamples = false;
 
-  qcdBins.push_back("QCDEMenrichedPt20to30");
-  qcdBins.push_back("QCDEMenrichedPt30to80");
-  qcdBins.push_back("QCDEMenrichedPt80to170");
 
-  if(useQCDBCtoE) {
-  qcdBins.push_back("QCDBCtoEPt20to30");
-  qcdBins.push_back("QCDBCtoEPt30to80");
-  qcdBins.push_back("QCDBCtoEPt80to170");
+  if ( useInclusiveSamples ) {
+    qcdBins.push_back("QCDpt30");
+  } else {
+    qcdBins.push_back("QCDEMenrichedPt20to30");
+    qcdBins.push_back("QCDEMenrichedPt30to80");
+    qcdBins.push_back("QCDEMenrichedPt80to170");
+
+    if(useQCDBCtoE) {
+      qcdBins.push_back("QCDBCtoEPt20to30");
+      qcdBins.push_back("QCDBCtoEPt30to80");
+      qcdBins.push_back("QCDBCtoEPt80to170");
+    }
   }
 
   histograms.push_back("den_ele");
