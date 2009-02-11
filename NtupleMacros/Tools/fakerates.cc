@@ -364,11 +364,11 @@ TH2F &fakeRate ()
 #endif
 #ifdef USE_V6
      if ( el_fakeRateFile_v6 == 0 ) {
-	  el_fakeRateFile_v6 = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/fakeRates-v6_1.root", "read"); 
+	  el_fakeRateFile_v6 = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/fakeRates-v6_3.root", "read"); 
 	  if ( el_fakeRateFile_v6 == 0 ) {
-	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v6_1.root could not be found!!" << std::endl;
+	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v6_3.root could not be found!!" << std::endl;
 	       std::cout << "Please make sure that $CMS2_LOCATION points to your CMS2 directory and that" << std::endl;
-	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v6_1.root exists!" << std::endl;
+	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v6_3.root exists!" << std::endl;
 	       gSystem->Exit(1);
 	  }
 	  el_fakeRate_v6 = dynamic_cast<TH2F *>(el_fakeRateFile_v6->Get("fakeRateTemplate_wo_leading_elt_EleFakes"));
@@ -408,11 +408,11 @@ TH2F &fakeRateError ()
 #endif
 #ifdef USE_V6
      if ( el_fakeRateFile_v6 == 0 ) {
-	  el_fakeRateFile_v6 = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/fakeRates-v6_1.root", "read"); 
+	  el_fakeRateFile_v6 = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/fakeRates-v6_3.root", "read"); 
 	  if ( el_fakeRateFile_v6 == 0 ) {
-	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v6_1.root could not be found!!" << std::endl;
+	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v6_3.root could not be found!!" << std::endl;
 	       std::cout << "Please make sure that $CMS2_LOCATION points to your CMS2 directory and that" << std::endl;
-	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v6_1.root exists!" << std::endl;
+	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v6_3.root exists!" << std::endl;
 	       gSystem->Exit(1);
 	  }
 	  el_fakeRate_v6 = dynamic_cast<TH2F *>(el_fakeRateFile_v6->Get("fakeRateTemplate_wo_leading_elt_EleFakes"));

@@ -135,3 +135,30 @@ same as v5_4 BUT:
 use muon veto near electron           on Denominator
 use absolute value of eta in numerator and denominator to increase statistics
 result: better estimation (pred 79, obs 81)
+
+v6_1:
+-----
+same as v5_5 BUT:
+use d0corr
+use V01-02-01 new ntuples with bug in d0corr
+use EMenriched samples
+
+v6_2:
+-----
+same selection as v6_1 BUT:
+use new ntuples V01-02-06 with fixed d0corr
+
+v6_3:
+-----
+same as v6_2 BUT:
+add BCtoE samples to EMenriched samples
+
+v6_4:
+-----
+same as v6_2 BUT:
+use QCDpt30 sample
+
+
+
+
+
