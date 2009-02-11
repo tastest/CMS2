@@ -53,19 +53,19 @@ void doAll(unsigned int bitmask){
   
   //these two are taken from Ceballos's pdf. 
   //It looks like the top x-section is for mtop = 175 GeV
-  float kttdil    = 375.E3/127000.; //375pb, 127000 events processed
-  float kttotr    = 375.E3/127000.; //375pb, 127000 events processed
+  float kttdil    = 1.; //375pb, 127000 events processed
+  float kttotr    = 1.; //375pb, 127000 events processed
 
   float kWW       = 1.;
   float kWZ       = 1.;
   float kZZ       = 1.;
-  float kWjets    = 3.*11850.E3/980000.; //11850 pb, 980000 events processed
-  float kDYee     = 3.*1230.E3/970360.;  //1230 pb,  970360 events processed
-  float kDYmm     = 3.*1230.E3/970360.;  //1230 pb,  970360 events processed
-  float kDYtautau = 3.*1230.E3/970360.;  //1230 pb,  970360 events processed
-  float kppMuX    = 121674.9E3/1000000; //xsec/nevents
+  float kWjets    = 1.; //11850 pb, 980000 events processed
+  float kDYee     = 1.;  //1230 pb,  970360 events processed
+  float kDYmm     = 1.;  //1230 pb,  970360 events processed
+  float kDYtautau = 1.;  //1230 pb,  970360 events processed
+  float kppMuX    = 1.; //xsec/nevents
   float kEM       = 1.;
-  float ktW       = -1.; //the evtScale is all negative for some reason
+  float ktW       = 1.; //the evtScale is all negative for some reason
   float kWQQ      = 1;
 
   // Prescales
@@ -86,16 +86,16 @@ void doAll(unsigned int bitmask){
   // Flags for files to run over
   bool runttdil    = true;
   bool runttotr    = true;
-  bool runWW       = false;
-  bool runWZ       = false;
-  bool runZZ       = false;
+  bool runWW       = true;
+  bool runWZ       = true;
+  bool runZZ       = true;
   bool runWjets    = true;
   bool runDYee     = true;
   bool runDYmm     = true;
   bool runDYtautau = true;
   bool runppMuX    = true;
-  bool runEM       = false;
-  bool runtW       = false;
+  bool runEM       = true;
+  bool runtW       = true;
   bool runWQQ      = false;
 
   // Load and compile something to allow proper treatment of vectors
@@ -106,57 +106,75 @@ void doAll(unsigned int bitmask){
   gROOT->ProcessLine(".x setup.C");
 
   // Load and compile the looping code
-  gROOT->ProcessLine(".L looperTTDisambiguation.C++");
+  gROOT->ProcessLine(".L ttDilCounts_looper.C++");
 
   TChain* chtopdil = new TChain("Events");
-  chtopdil->Add("/net/stau/cdf26/dietcms2/V01-00-04/PYTHIA_TauolaTTbar_Summer08/ntuple_diet_*.root");
+//   chtopdil->Add("/net/stau/cdf26/dietcms2/V01-00-04/PYTHIA_TauolaTTbar_Summer08/ntuple_diet_*.root");
+ chtopdil->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/TTJets-madgraph/merged*.root");
 
   TChain* chtopotr = new TChain("Events");
-  chtopotr->Add("/net/stau/cdf26/dietcms2/V01-00-04/PYTHIA_TauolaTTbar_Summer08/ntuple_diet_*.root");
+//   chtopotr->Add("/net/stau/cdf26/dietcms2/V01-00-04/PYTHIA_TauolaTTbar_Summer08/ntuple_diet_*.root");
+  chtopotr->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/TTJets-madgraph/merged*.root");
 
   TChain* chww = new TChain("Events");
 //   chww->Add("data/signal/skim/ntuplemaker_WW_incl_2020.root");
+  chww->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/WW_2l-Pythia/merged*.root");
 
   TChain* chWZ = new TChain("Events");
 //   chWZ->Add("data/signal/skim/ntuplemaker_WZ_incl_2020.root");
+  chWZ->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/WZ_incl-Pythia/merged*.root"); // can try WZ_3l-Pythia
 
   TChain* chZZ = new TChain("Events");
 //   chZZ->Add("data/signal/skim/ntuplemaker_ZZ_incl_2020.root");
+  chZZ->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/ZZ_2l2n-Pythia/merged*.root");
   
   TChain* chWjets = new  TChain("Events");
-  chWjets->Add("/net/stau/cdf26/dietcms2/V01-00-04/MadGraph_Wjets_Summer08/ntuple_diet_*.root");
+  //  chWjets->Add("/net/stau/cdf26/dietcms2/V01-00-04/MadGraph_Wjets_Summer08/ntuple_diet_*.root");
+  chWjets->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/WJets-madgraph/merged*.root");
 
   TChain* chDYtautau = new  TChain("Events");
-  chDYtautau->Add("/net/stau/cdf26/dietcms2/V01-00-04/MadGraph_Zjets_Summer08/ntuple_diet_*.root");
-
+  //  chDYtautau->Add("/net/stau/cdf26/dietcms2/V01-00-04/MadGraph_Zjets_Summer08/ntuple_diet_*.root");
+  chDYtautau->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/ZJets-madgraph/merged*.root");
+  
   TChain* chDYee = new  TChain("Events");
-  chDYee->Add("/net/stau/cdf26/dietcms2/V01-00-04/MadGraph_Zjets_Summer08/ntuple_diet_*.root");
+  //  chDYee->Add("/net/stau/cdf26/dietcms2/V01-00-04/MadGraph_Zjets_Summer08/ntuple_diet_*.root");
+  chDYee->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/ZJets-madgraph/merged*.root");
 
   TChain* chDYmm = new  TChain("Events");
-  chDYmm->Add("/net/stau/cdf26/dietcms2/V01-00-04/MadGraph_Zjets_Summer08/ntuple_diet_*.root");
-
+  //  chDYmm->Add("/net/stau/cdf26/dietcms2/V01-00-04/MadGraph_Zjets_Summer08/ntuple_diet_*.root");
+  chDYmm->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/ZJets-madgraph/merged*.root");
+  
   //ppMuX
   TChain* chppMuX = new  TChain("Events");
   if (runppMuX) {
-    chppMuX->Add("/data3/slava77/cms/mc/Mupt15Inclusive_Summer08/V01-00-04/diet/ntuple_*.root");
+    //    chppMuX->Add("/data3/slava77/cms/mc/Mupt15Inclusive_Summer08/V01-00-04/diet/ntuple_*.root");
+    chppMuX->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/InclusiveMuPt15/merged*.root"); 
+    //can try InclusiveMu5Pt50 .. figure out how to merge later
   }
   
   //ppEM
   TChain* chEM =  new  TChain("Events");
   if (runEM) {
 //     chEM->Add("data/signal/skim/ntuplemaker_QCDJetsEnriched_eehyp_2020.root");
+    chEM->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/QCD_EMenriched_Pt20to30/merged*.root");
+    chEM->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/QCD_EMenriched_Pt30to80/merged*.root");
+    chEM->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/QCD_EMenriched_Pt80to170/merged*.root");
   }
 
   //tW
   TChain* chtW = new  TChain("Events");
   if (runtW) {
 //     chtW->Add("/net/bquark/data2/slava77/cms/cms1/V04-03-05/TopRex_tWinclusive/ntuple_merged_skim2020.root");
+    chtW->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/SingleTop_sChannel-madgraph-LHE/merged*.root"); 
+    chtW->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/SingleTop_tChannel-madgraph-LHE/merged*.root"); 
+    chtW->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/SingleTop_tWChannel-madgraph-LHE/merged*.root"); 
   }
 
   //WQQ
   TChain* chWQQ = new TChain("Events");
   if (runWQQ) {
 //     chWQQ->Add("/net/bquark/data2/slava77/cms/cms1/V04-03-05/Alpgen_Wbb_0jets/ntuple_merged.root");
+//    chWQQ->Add("");
   }
 
 
@@ -170,8 +188,9 @@ void doAll(unsigned int bitmask){
 //   int bitmaskR = atoi(getenv("FFFbitmask"));
 //   unsigned int bitmask = (unsigned int)bitmaskR;
 
-  looperTTDisambiguation looper;
-  
+//  looperTTDisambiguation looper;
+  ttDilCounts_looper looper;
+
   // Process files one at a time, and color them as needed
   if (runttdil) {
     cout << "Processing ttbar dileptonic.. "<<endl;

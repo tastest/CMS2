@@ -55,10 +55,13 @@ makeCMS2Files(std::string fname, std::string className = "") {
     TString aliasname(fullarray->At(i)->GetName());
     TBranch *branch = ev->GetBranch(ev->GetAlias(aliasname.Data()));
     TString branchname(branch->GetName());
+    TString branchtitle(branch->GetTitle());
     if(!branchname.BeginsWith("int") && 
        !branchname.BeginsWith("uint") && 
        !branchname.BeginsWith("float") &&
-       !branchname.BeginsWith("double") ) continue;
+       !branchname.BeginsWith("double") &&
+       !branchtitle.EndsWith("/F") && 
+       !branchtitle.EndsWith("/I")) continue;
     aliasarray->Add(fullarray->At(i));
   }
   
@@ -73,6 +76,7 @@ makeCMS2Files(std::string fname, std::string className = "") {
     TBranch *branch = ev->GetBranch(ev->GetAlias(aliasname.Data()));
     
     TString classname = branch->GetClassName();
+    TString title     = branch->GetTitle();
     if ( classname.Contains("vector") ) {
       classname = classname(0,classname.Length()-2);
       classname.ReplaceAll("edm::Wrapper<","");
@@ -80,7 +84,14 @@ makeCMS2Files(std::string fname, std::string className = "") {
     } else {
       classname = classname(0,classname.Length()-1);
       classname.ReplaceAll("edm::Wrapper<","");
-      headerBLOBf << "\t" << classname << "\t" << aliasname << "_;" << endl;
+      if(classname != "") {
+	headerBLOBf << "\t" << classname << "\t" << aliasname << "_;" << endl;
+      } else {
+	if(title.EndsWith("/F"))
+	  headerBLOBf << "\tfloat" << "\t" << aliasname << "_;" << endl;
+	if(title.EndsWith("/I"))
+	  headerBLOBf << "\tint" << "\t" << aliasname << "_;" << endl;
+      }
     }
     headerBLOBf << "\tTBranch *" << Form("%s_branch",aliasname.Data()) << ";" << endl;
     headerBLOBf << "\tbool " << Form("%s_isLoaded",aliasname.Data()) << ";" << endl;
@@ -143,6 +154,7 @@ makeCMS2Files(std::string fname, std::string className = "") {
        TString aliasname(aliasarray->At(i)->GetName());
        TBranch *branch = ev->GetBranch(ev->GetAlias(aliasname.Data()));
        TString classname = branch->GetClassName();
+       TString title = branch->GetTitle();
        if ( classname.Contains("vector") ) {
 	    classname = classname(0,classname.Length()-2);
 	    classname.ReplaceAll("edm::Wrapper<","");
@@ -150,7 +162,14 @@ makeCMS2Files(std::string fname, std::string className = "") {
        } else {
 	    classname = classname(0,classname.Length()-1);
 	    classname.ReplaceAll("edm::Wrapper<","");
-	    headerBLOBf << "\t" << classname << " &" << aliasname << "()" << endl;
+	    if(classname != "" ) {
+	      headerBLOBf << "\t" << classname << " &" << aliasname << "()" << endl;
+	    } else {
+	      if(title.EndsWith("/F"))
+		headerBLOBf << "\tfloat &" << aliasname << "()" << endl;
+	      if(title.EndsWith("/I"))
+		headerBLOBf << "\tint &" << aliasname << "()" << endl;
+	    }
        }
        TString aliasname(aliasarray->At(i)->GetName());
        headerBLOBf << "\t{" << endl;
