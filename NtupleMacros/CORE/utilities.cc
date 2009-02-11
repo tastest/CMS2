@@ -71,10 +71,10 @@ TVector3 correctMETforTracks()
     }
 
     // skip tracks at large eta or with large pt
-    if( fabs( cms2.trks_trk_p4()[trkCount].eta() ) > eta_cut || cms2.trks_trk_p4()[trkCount].pt() > hi_pt_cut ) continue;
+    if( TMath::Abs( cms2.trks_trk_p4()[trkCount].eta() ) > eta_cut || cms2.trks_trk_p4()[trkCount].pt() > hi_pt_cut ) continue;
 
     // skip tracks that do no pass quality cuts
-    if( cms2.trks_validHits()[trkCount] < nhits_cut || ( cms2.trks_chi2()[trkCount] / cms2.trks_ndof()[trkCount] ) > nchisq_cut || fabs( cms2.trks_d0corr()[trkCount] ) > d0_cut ) continue;
+    if( cms2.trks_validHits()[trkCount] < nhits_cut || ( cms2.trks_chi2()[trkCount] / cms2.trks_ndof()[trkCount] ) > nchisq_cut || TMath::Abs( cms2.trks_d0corr()[trkCount] ) > d0_cut ) continue;
 
     // correct tracks w/ pt < 2 setting RF = 0
     if( cms2.trks_trk_p4()[trkCount].pt() < low_pt_cut ) {
@@ -209,7 +209,7 @@ double trkIsolation(int trk_index) {
     double dR = ROOT::Math::VectorUtil::DeltaR(cms2.trks_trk_p4()[trk_index], cms2.trks_trk_p4()[trk]);
     if (dR < dRConeMin) continue;
     if ( dR > dRConeMax ) continue;
-    double dZ = fabs(cms2.trks_z0()[trk_index] - cms2.trks_z0()[trk]);
+    double dZ = TMath::Abs(cms2.trks_z0()[trk_index] - cms2.trks_z0()[trk]);
     if ( dZ >= vtxDiffZMax) continue;
     sumPt += pt;
   }

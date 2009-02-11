@@ -445,7 +445,7 @@ void calcPrimZ(int bucket, int first, int second, int third, float zmass, unsign
     array[0] = first;
     array[1] = second;
     array[2] = third;    
-    if( abs(mz2-zmass) < abs(mz1-zmass) ){ //swap the masses to always make mz1 the one thats closer to Z
+    if( TMath::Abs(mz2-zmass) < TMath::Abs(mz1-zmass) ){ //swap the masses to always make mz1 the one thats closer to Z
       float tmp = mz1;
       mz1 = mz2;
       mz2 = tmp;
@@ -459,7 +459,7 @@ void calcPrimZ(int bucket, int first, int second, int third, float zmass, unsign
     array[0] = second;
     array[1] = first;
     array[2] = third;    
-    if( abs(mz2-zmass) < abs(mz1-zmass) ){ //swap the masses to always make mz1 the one thats closer to Z
+    if( TMath::Abs(mz2-zmass) < TMath::Abs(mz1-zmass) ){ //swap the masses to always make mz1 the one thats closer to Z
       float tmp = mz1;
       mz1 = mz2;
       mz2 = tmp;
@@ -473,7 +473,7 @@ void calcPrimZ(int bucket, int first, int second, int third, float zmass, unsign
     array[0] = third;
     array[1] = first;
     array[2] = second;    
-    if( abs(mz2-zmass) < abs(mz1-zmass) ){ //swap the masses to always make mz1 the one thats closer to Z
+    if( TMath::Abs(mz2-zmass) < TMath::Abs(mz1-zmass) ){ //swap the masses to always make mz1 the one thats closer to Z
       float tmp = mz1;
       mz1 = mz2;
       mz2 = tmp;
@@ -487,7 +487,7 @@ void calcPrimZ(int bucket, int first, int second, int third, float zmass, unsign
     array[0] = first;
     array[1] = second;
     array[2] = third;    
-    if( abs(mz2-zmass) < abs(mz1-zmass) ){ //swap the masses to always make mz1 the one thats closer to Z
+    if( TMath::Abs(mz2-zmass) < TMath::Abs(mz1-zmass) ){ //swap the masses to always make mz1 the one thats closer to Z
       float tmp = mz1;
       mz1 = mz2;
       mz2 = tmp;
@@ -501,7 +501,7 @@ void calcPrimZ(int bucket, int first, int second, int third, float zmass, unsign
     array[0] = second;
     array[1] = first;
     array[2] = third;    
-    if( abs(mz2-zmass) < abs(mz1-zmass) ){ //swap the masses to always make mz1 the one thats closer to Z
+    if( TMath::Abs(mz2-zmass) < TMath::Abs(mz1-zmass) ){ //swap the masses to always make mz1 the one thats closer to Z
       float tmp = mz1;
       mz1 = mz2;
       mz2 = tmp;
@@ -515,7 +515,7 @@ void calcPrimZ(int bucket, int first, int second, int third, float zmass, unsign
     array[0] = third;
     array[1] = first;
     array[2] = second;    
-    if( abs(mz2-zmass) < abs(mz1-zmass) ){ //swap the masses to always make mz1 the one thats closer to Z
+    if( TMath::Abs(mz2-zmass) < TMath::Abs(mz1-zmass) ){ //swap the masses to always make mz1 the one thats closer to Z
       float tmp = mz1;
       mz1 = mz2;
       mz2 = tmp;
@@ -529,7 +529,7 @@ void calcPrimZ(int bucket, int first, int second, int third, float zmass, unsign
     array[0] = first;
     array[1] = second;
     array[2] = third;    
-    if( abs(mz2-zmass) < abs(mz1-zmass) ){ //swap the masses to always make mz1 the one thats closer to Z
+    if( TMath::Abs(mz2-zmass) < TMath::Abs(mz1-zmass) ){ //swap the masses to always make mz1 the one thats closer to Z
       float tmp = mz1;
       mz1 = mz2;
       mz2 = tmp;
@@ -543,7 +543,7 @@ void calcPrimZ(int bucket, int first, int second, int third, float zmass, unsign
     array[0] = second;
     array[1] = first;
     array[2] = third;    
-    if( abs(mz2-zmass) < abs(mz1-zmass) ){ //swap the masses to always make mz1 the one thats closer to Z
+    if( TMath::Abs(mz2-zmass) < TMath::Abs(mz1-zmass) ){ //swap the masses to always make mz1 the one thats closer to Z
       float tmp = mz1;
       mz1 = mz2;
       mz2 = tmp;
@@ -557,7 +557,7 @@ void calcPrimZ(int bucket, int first, int second, int third, float zmass, unsign
     array[0] = third;
     array[1] = first;
     array[2] = second;    
-    if( abs(mz2-zmass) < abs(mz1-zmass) ){ //swap the masses to always make mz1 the one thats closer to Z
+    if( TMath::Abs(mz2-zmass) < TMath::Abs(mz1-zmass) ){ //swap the masses to always make mz1 the one thats closer to Z
       float tmp = mz1;
       mz1 = mz2;
       mz2 = tmp;
@@ -571,7 +571,7 @@ void calcPrimZ(int bucket, int first, int second, int third, float zmass, unsign
     array[0] = first;
     array[1] = second;
     array[2] = third;    
-    if( abs(mz2-zmass) < abs(mz1-zmass) ){ //swap the masses to always make mz1 the one thats closer to Z
+    if( TMath::Abs(mz2-zmass) < TMath::Abs(mz1-zmass) ){ //swap the masses to always make mz1 the one thats closer to Z
       float tmp = mz1;
       mz1 = mz2;
       mz2 = tmp;
@@ -585,7 +585,7 @@ void calcPrimZ(int bucket, int first, int second, int third, float zmass, unsign
     array[0] = second;
     array[1] = first;
     array[2] = third;    
-    if( abs(mz2-zmass) < abs(mz1-zmass) ){ //swap the masses to always make mz1 the one thats closer to Z
+    if( TMath::Abs(mz2-zmass) < TMath::Abs(mz1-zmass) ){ //swap the masses to always make mz1 the one thats closer to Z
       float tmp = mz1;
       mz1 = mz2;
       mz2 = tmp;
@@ -599,7 +599,7 @@ void calcPrimZ(int bucket, int first, int second, int third, float zmass, unsign
     array[0] = third;
     array[1] = first;
     array[2] = second;    
-    if( abs(mz2-zmass) < abs(mz1-zmass) ){ //swap the masses to always make mz1 the one thats closer to Z
+    if( TMath::Abs(mz2-zmass) < TMath::Abs(mz1-zmass) ){ //swap the masses to always make mz1 the one thats closer to Z
       float tmp = mz1;
       mz1 = mz2;
       mz2 = tmp;
@@ -678,7 +678,7 @@ float calcSecZMass(int bucket, unsigned int* leptons, float zmass) {
 	    if ( cms2.els_charge()[i] * cms2.els_charge()[leptons[2]] < 0 ) {
 	      float mass = mee(i,leptons[2]);
 	      // store Z mass closest to true Z mass
-	      if ( abs(zmass-mass) < abs(zmass-result) ) {
+	      if ( TMath::Abs(zmass-mass) < TMath::Abs(zmass-result) ) {
 		result = mass;
 	      }
 	    }
@@ -695,7 +695,7 @@ float calcSecZMass(int bucket, unsigned int* leptons, float zmass) {
 	    if ( cms2.mus_charge()[i] * cms2.mus_charge()[leptons[2]] < 0 ) {
 	      float mass = mmm(i,leptons[2]);
 	      // store Z mass closest to true Z mass
-	      if ( abs(zmass-mass) < abs(zmass-result) ) {
+	      if ( TMath::Abs(zmass-mass) < TMath::Abs(zmass-result) ) {
 		result = mass;
 	      }
 	    }
@@ -712,7 +712,7 @@ float calcSecZMass(int bucket, unsigned int* leptons, float zmass) {
 	    if ( cms2.mus_charge()[i] * cms2.mus_charge()[leptons[2]] < 0 ) {
 	      float mass = mmm(i,leptons[2]);
 	      // store Z mass closest to true Z mass
-	      if ( abs(zmass-mass) < abs(zmass-result) ) {
+	      if ( TMath::Abs(zmass-mass) < TMath::Abs(zmass-result) ) {
 		result = mass;
 	      }
 	    }
@@ -729,7 +729,7 @@ float calcSecZMass(int bucket, unsigned int* leptons, float zmass) {
 	    if ( cms2.els_charge()[i] * cms2.els_charge()[leptons[2]] < 0 ) {
 	      float mass = mee(i,leptons[2]);
 	      // store Z mass closest to true Z mass
-	      if ( abs(zmass-mass) < abs(zmass-result) ) {
+	      if ( TMath::Abs(zmass-mass) < TMath::Abs(zmass-result) ) {
 		result = mass;
 	      }
 	    }
@@ -755,7 +755,7 @@ bool testJetForElectrons(const LorentzVector& jetP4, const LorentzVector& elP4) 
    
   float dphi = elphi - jetphi;
   float deta = eleta - jeteta;
-  if(fabs(dphi) > TMath::Pi() ) dphi = 2*TMath::Pi() - fabs(dphi);
+  if(TMath::Abs(dphi) > TMath::Pi() ) dphi = 2*TMath::Pi() - TMath::Abs(dphi);
    
   double dR = sqrt(dphi*dphi + deta*deta);
   if (dR < 0.4) 
@@ -876,13 +876,13 @@ bool DorkyEventIdentifier::operator < (const DorkyEventIdentifier &other) const
      // the floating point numbers are not easy, because we're                                                                                        
      // comapring ones that are truncated (because they were written                                                                                  
      // to file and read back in) with ones that are not truncated.                                                                                   
-     if (fabs(trks_d0 - other.trks_d0) > 1e-6 * trks_d0)
+     if (TMath::Abs(trks_d0 - other.trks_d0) > 1e-6 * trks_d0)
        return trks_d0 < other.trks_d0;
-     if (fabs(hyp_lt_pt - other.hyp_lt_pt) > 1e-6 * hyp_lt_pt)
+     if (TMath::Abs(hyp_lt_pt - other.hyp_lt_pt) > 1e-6 * hyp_lt_pt)
        return hyp_lt_pt < other.hyp_lt_pt;
-     if (fabs(hyp_lt_eta - other.hyp_lt_eta) > 1e-6 * hyp_lt_eta)
+     if (TMath::Abs(hyp_lt_eta - other.hyp_lt_eta) > 1e-6 * hyp_lt_eta)
        return hyp_lt_eta < other.hyp_lt_eta;
-     if (fabs(hyp_lt_phi - other.hyp_lt_phi) > 1e-6 * hyp_lt_phi)
+     if (TMath::Abs(hyp_lt_phi - other.hyp_lt_phi) > 1e-6 * hyp_lt_phi)
        return hyp_lt_phi < other.hyp_lt_phi;
      // if the records are exactly the same, then r1 is not less than                                                                                 
      // r2.  Duh!                                                                                                                                     
@@ -898,13 +898,13 @@ bool DorkyEventIdentifier::operator == (const DorkyEventIdentifier &other) const
      // the floating point numbers are not easy, because we're                                                                                        
      // comapring ones that are truncated (because they were written                                                                                  
      // to file and read back in) with ones that are not truncated.                                                                                   
-     if (fabs(trks_d0 - other.trks_d0) > 1e-6 * trks_d0)
+     if (TMath::Abs(trks_d0 - other.trks_d0) > 1e-6 * trks_d0)
           return false;
-     if (fabs(hyp_lt_pt - other.hyp_lt_pt) > 1e-6 * hyp_lt_pt)
+     if (TMath::Abs(hyp_lt_pt - other.hyp_lt_pt) > 1e-6 * hyp_lt_pt)
           return false;
-     if (fabs(hyp_lt_eta - other.hyp_lt_eta) > 1e-6 * hyp_lt_eta)
+     if (TMath::Abs(hyp_lt_eta - other.hyp_lt_eta) > 1e-6 * hyp_lt_eta)
           return false;
-     if (fabs(hyp_lt_phi - other.hyp_lt_phi) > 1e-6 * hyp_lt_phi)
+     if (TMath::Abs(hyp_lt_phi - other.hyp_lt_phi) > 1e-6 * hyp_lt_phi)
           return false;
      return true;
 }

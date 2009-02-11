@@ -174,17 +174,17 @@ cuts_t Looper::DilepSelect (int i_hyp)
 
   for (unsigned int icalojet=0; icalojet<calo_jets_p4.size(); ++icalojet) {
     // remove electron jets:
-    if ((abs(cms2.hyp_lt_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],calo_jets_p4[icalojet]) < 0.4)||
-	(abs(cms2.hyp_ll_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],calo_jets_p4[icalojet]) < 0.4)
+    if ((TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],calo_jets_p4[icalojet]) < 0.4)||
+	(TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],calo_jets_p4[icalojet]) < 0.4)
 	) continue;
-    TLorentzVector p(calo_jets_p4[icalojet].Px()*cms2.jets_tq_noCorrF()[icalojet],
-		     calo_jets_p4[icalojet].Py()*cms2.jets_tq_noCorrF()[icalojet],
-		     calo_jets_p4[icalojet].Pz()*cms2.jets_tq_noCorrF()[icalojet],
-		     calo_jets_p4[icalojet].E()*cms2.jets_tq_noCorrF()[icalojet]);//p is now uncorrected jet energy
+    TLorentzVector p(calo_jets_p4[icalojet].Px()*cms2.jets_pat_noCorrF()[icalojet],
+		     calo_jets_p4[icalojet].Py()*cms2.jets_pat_noCorrF()[icalojet],
+		     calo_jets_p4[icalojet].Pz()*cms2.jets_pat_noCorrF()[icalojet],
+		     calo_jets_p4[icalojet].E()*cms2.jets_pat_noCorrF()[icalojet]);//p is now uncorrected jet energy
     //       if (p.Perp() < jetet) continue;
-    //       if (fabs(p.Eta()) > jeteta) continue;
+    //       if (TMath::Abs(p.Eta()) > jeteta) continue;
     //        if (p.Perp() < 28 ) cout << p.Perp() << endl;
-    if (fabs(p.Eta()) > 3.0 ) continue;
+    if (TMath::Abs(p.Eta()) > 3.0 ) continue;
     if (p.Perp() < 15.) continue;
     //                 calo_jets->push_back(p);
     sumEt_ += p.Perp();
@@ -235,28 +235,28 @@ cuts_t Looper::DilepSelect (int i_hyp)
     ret |= (CUT_BIT(CUT_PASS_SUMET_1));
 
   // muon quality
-  if (abs(cms2.hyp_lt_id()[i_hyp]) == 13 && goodMuonWithoutIsolation(cms2.hyp_lt_index()[i_hyp]) ) 
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && goodMuonWithoutIsolation(cms2.hyp_lt_index()[i_hyp]) ) 
     ret |= CUT_BIT(CUT_LT_GOOD);
-  if (abs(cms2.hyp_ll_id()[i_hyp]) == 13 && goodMuonWithoutIsolation(cms2.hyp_ll_index()[i_hyp]) ) 
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && goodMuonWithoutIsolation(cms2.hyp_ll_index()[i_hyp]) ) 
     ret |= CUT_BIT(CUT_LL_GOOD);
 
   // electron quality
-  if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && goodElectronWithoutIsolation(cms2.hyp_lt_index()[i_hyp]) )
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && goodElectronWithoutIsolation(cms2.hyp_lt_index()[i_hyp]) )
     ret |= CUT_BIT(CUT_LT_GOOD);
-  if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && goodElectronWithoutIsolation(cms2.hyp_ll_index()[i_hyp]) )
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && goodElectronWithoutIsolation(cms2.hyp_ll_index()[i_hyp]) )
     ret |= CUT_BIT(CUT_LL_GOOD);
   
   // calo iso
-  if (abs(cms2.hyp_lt_id()[i_hyp]) == 13 && passMuonIsolation(cms2.hyp_lt_index()[i_hyp]) ) {
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && passMuonIsolation(cms2.hyp_lt_index()[i_hyp]) ) {
     ret |= (CUT_BIT(CUT_LT_CALOISO));
   }
-  if (abs(cms2.hyp_ll_id()[i_hyp]) == 13 && passMuonIsolation(cms2.hyp_ll_index()[i_hyp]) ) {
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && passMuonIsolation(cms2.hyp_ll_index()[i_hyp]) ) {
     ret |= (CUT_BIT(CUT_LL_CALOISO));
   }
-  if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && passElectronIsolation(cms2.hyp_lt_index()[i_hyp], true)) {
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && passElectronIsolation(cms2.hyp_lt_index()[i_hyp], true)) {
     ret |= CUT_BIT(CUT_LT_CALOISO);
   }
-  if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && passElectronIsolation(cms2.hyp_ll_index()[i_hyp], true)) {
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && passElectronIsolation(cms2.hyp_ll_index()[i_hyp], true)) {
     ret |= CUT_BIT(CUT_LL_CALOISO);
   } 
 
@@ -303,25 +303,25 @@ cuts_t Looper::DilepSelect (int i_hyp)
     return ret;
   // in addition, for the muons, check that they pass tight+iso
   // (since the fake rate is electron only right now)
-  if (abs(cms2.hyp_lt_id()[i_hyp]) == 13) {
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13) {
     if ((ret & (CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LT_CALOISO))) != 
 	(CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LT_CALOISO)))
       return ret;
   }
-  if (abs(cms2.hyp_ll_id()[i_hyp]) == 13) {
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13) {
     if ((ret & (CUT_BIT(CUT_LL_GOOD) | CUT_BIT(CUT_LL_CALOISO))) != 
 	(CUT_BIT(CUT_LL_GOOD) | CUT_BIT(CUT_LL_CALOISO)))
       return ret;
   }
   // now set the fake flags for the electron
-  if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
     if (isFakeable(cms2.hyp_lt_index()[i_hyp]))
       ret |= CUT_BIT(CUT_ELFAKE_FAKEABLE_OBJECT);
     if (isNumeratorElectron(cms2.hyp_lt_index()[i_hyp]))
       ret |= CUT_BIT(CUT_ELFAKE_NUMERATOR);
     else ret |= CUT_BIT(CUT_ELFAKE_NOT_NUMERATOR);
   } else {
-    if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
+    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
       if (isFakeable(cms2.hyp_ll_index()[i_hyp]))
 	ret |= CUT_BIT(CUT_ELFAKE_FAKEABLE_OBJECT);
       if (isNumeratorElectron(cms2.hyp_ll_index()[i_hyp]))
@@ -399,7 +399,7 @@ void Looper::FillDilepHistos (int i_hyp)
   hltEta_->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].eta(), weight);
   hllEta_->Fill(cuts_passed, myType, cms2.hyp_ll_p4()[i_hyp].eta(), weight);
 
-  if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
     helPt_->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].pt(), weight);
     helEta_->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].eta(), weight);
     hltCaloIso_->Fill(cuts_passed, myType, el_rel_iso(cms2.hyp_lt_index()[i_hyp],true), weight);
@@ -410,7 +410,7 @@ void Looper::FillDilepHistos (int i_hyp)
     hltCaloIso_->Fill(cuts_passed, myType, mu_rel_iso(cms2.hyp_lt_index()[i_hyp]), weight);
     hmuCaloIso_->Fill(cuts_passed, myType, mu_rel_iso(cms2.hyp_lt_index()[i_hyp]), weight);
   }
-  if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
     helPt_->Fill(cuts_passed, myType, cms2.hyp_ll_p4()[i_hyp].pt(), weight);
     helEta_->Fill(cuts_passed, myType, cms2.hyp_ll_p4()[i_hyp].eta(), weight);
     hllCaloIso_->Fill(cuts_passed, myType, el_rel_iso(cms2.hyp_ll_index()[i_hyp],true), weight);
@@ -429,7 +429,7 @@ void Looper::FillDilepHistos (int i_hyp)
   hdilMass_->Fill(cuts_passed, myType, cms2.hyp_p4()[i_hyp].mass(), weight);
     
   // delta phi btw leptons
-  double dphi = fabs(cms2.hyp_lt_p4()[i_hyp].phi() - cms2.hyp_ll_p4()[i_hyp].phi());
+  double dphi = TMath::Abs(cms2.hyp_lt_p4()[i_hyp].phi() - cms2.hyp_ll_p4()[i_hyp].phi());
   if (dphi > TMath::Pi()) dphi = TMath::TwoPi() - dphi;
   hdphiLep_->Fill(cuts_passed, myType, dphi, weight);
 

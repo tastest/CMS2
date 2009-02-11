@@ -30,16 +30,16 @@ bool inZmassWindow (float mass) {
 // true electron
 //----------------------------------------------------------------
 // bool trueElectron(int index) {
-//   if ( abs(cms2.els_mc_id()[index]) != 11 ) return false;
-//   if ( abs(cms2.els_mc_motherid()[index]) == 23 || abs(cms2.els_mc_motherid()[index]) == 24) return true;
+//   if ( TMath::Abs(cms2.els_mc_id()[index]) != 11 ) return false;
+//   if ( TMath::Abs(cms2.els_mc_motherid()[index]) == 23 || TMath::Abs(cms2.els_mc_motherid()[index]) == 24) return true;
 //   return false;
 // }
 // //----------------------------------------------------------------
 // // true muon
 // //----------------------------------------------------------------
 // bool trueMuon(int index) {
-//    if ( abs(cms2.mus_mc_id()[index]) != 13 ) return false;
-//    if ( abs(cms2.mus_mc_motherid()[index]) == 23 || abs(cms2.mus_mc_motherid()[index]) == 24) return true;
+//    if ( TMath::Abs(cms2.mus_mc_id()[index]) != 13 ) return false;
+//    if ( TMath::Abs(cms2.mus_mc_motherid()[index]) == 23 || TMath::Abs(cms2.mus_mc_motherid()[index]) == 24) return true;
 //   return false;
 // }
 //----------------------------------------------------------------
@@ -48,7 +48,7 @@ bool inZmassWindow (float mass) {
 bool goodElectronWithoutIsolation(int index) {
   if ( cms2.els_tightId().at(index)     !=  1) return false;
   if ( cms2.els_closestMuon().at(index) != -1) return false;
-  if ( abs(cms2.els_d0corr().at(index)) > 0.025)   return false;
+  if ( TMath::Abs(cms2.els_d0corr().at(index)) > 0.025)   return false;
   return true;
 }
 //----------------------------------------------------------------
@@ -65,7 +65,7 @@ bool goodElectronWithoutIsolationWithoutd0(int index) {
 bool goodLooseElectronWithoutIsolation(int index) {
   if ( cms2.els_looseId().at(index)     !=  1) return false;
   if ( cms2.els_closestMuon().at(index) != -1) return false;
-  if ( abs(cms2.els_d0corr().at(index)) > 0.025)   return false;
+  if ( TMath::Abs(cms2.els_d0corr().at(index)) > 0.025)   return false;
   return true;
 }
 //----------------------------------------------------------------
@@ -73,7 +73,7 @@ bool goodLooseElectronWithoutIsolation(int index) {
 //---------------------------------------------------------------
 bool goodMuonWithoutIsolation(int index) {
   if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) > 5.) return false;
-  if (abs(cms2.mus_d0corr().at(index))   > 0.25) return false;
+  if (TMath::Abs(cms2.mus_d0corr().at(index))   > 0.25) return false;
   if (cms2.mus_validHits().at(index) < 7)    return false;
   return true;
 }
@@ -145,7 +145,7 @@ bool goodElectronIsolated(int index, bool use_calo_iso) {
 //--------------------------------------------
 bool supertightElectron (int index)
 {
-     if (fabs(cms2.els_p4()[index].eta()) > 1.479)
+     if (TMath::Abs(cms2.els_p4()[index].eta()) > 1.479)
 	  return false;
      if (cms2.els_sigmaPhiPhi()[index] > 0.018)
   	  return false;
@@ -178,7 +178,7 @@ bool pass2Met (int i_hyp, const TVector3& corr) {
   hyp_met += corr;
   if (cms2.hyp_type()[i_hyp] == 0 || cms2.hyp_type()[i_hyp] == 3) {
     if (hyp_met.Pt() < 30) return false;
-    //    if ( fabs(hyp_p4[i_hyp]->mass()-90.0)<10.0) return false;
+    //    if ( TMath::Abs(hyp_p4[i_hyp]->mass()-90.0)<10.0) return false;
     if( hyp_met.Pt()/cms2.hyp_p4()[i_hyp].pt()<0.6 && 
 	acos(cos(hyp_met.Phi()-cms2.hyp_p4()[i_hyp].phi()-3.1416))<0.25 ) return false;
   }
@@ -263,7 +263,7 @@ int getDrellYanType() {
   bool foundTM = false;
   for (unsigned int i = 0; i < cms2.genps_id().size(); ++i) {
     if ( cms2.genps_id_mother().at(i) == 23 ){
-      switch ( abs(cms2.genps_id().at(i)) ){
+      switch ( TMath::Abs(cms2.genps_id().at(i)) ){
       case 11:
 	return 0;
 	break;
@@ -434,9 +434,9 @@ bool passMuonBVeto (int i_dilep, bool soft_nonisolated)
 	  return true;
      } else {
 	  unsigned int mus_in_hyp = 0;
-	  if (abs(cms2.hyp_lt_id()[i_dilep]) == 13)
+	  if (TMath::Abs(cms2.hyp_lt_id()[i_dilep]) == 13)
 	       mus_in_hyp++;
-	  if (abs(cms2.hyp_ll_id()[i_dilep]) == 13)
+	  if (TMath::Abs(cms2.hyp_ll_id()[i_dilep]) == 13)
 	       mus_in_hyp++;
 	  return cms2.mus_p4().size() <= mus_in_hyp;
      }
@@ -448,10 +448,10 @@ bool passMuonBVeto (int i_dilep, bool soft_nonisolated)
 int tagMuonIdx (int i_dilep)
 {
      for (unsigned int i = 0; i < cms2.mus_p4().size(); ++i) {
-	  if (abs(cms2.hyp_lt_id()[i_dilep]) == 13 &&
+	  if (TMath::Abs(cms2.hyp_lt_id()[i_dilep]) == 13 &&
 	      cms2.hyp_lt_index()[i_dilep] == int(i))
 	       continue;
-	  if (abs(cms2.hyp_ll_id()[i_dilep]) == 13 &&
+	  if (TMath::Abs(cms2.hyp_ll_id()[i_dilep]) == 13 &&
 	      cms2.hyp_ll_index()[i_dilep] == int(i))
 	       continue;
 	  return i;
@@ -501,12 +501,12 @@ int nTrkJets(int i_hyp){
   // TrkJets & CaloJet save it after the lepton subtraction
 
   for ( unsigned int itrkjet=0; itrkjet<cms2.trkjets_p4().size(); ++itrkjet) {
-    if ((abs(cms2.hyp_lt_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],cms2.trkjets_p4()[itrkjet]) < 0.4)||
-	(abs(cms2.hyp_ll_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.trkjets_p4()[itrkjet]) < 0.4)
+    if ((TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],cms2.trkjets_p4()[itrkjet]) < 0.4)||
+	(TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.trkjets_p4()[itrkjet]) < 0.4)
 	) continue;
     TLorentzVector p(cms2.trkjets_p4()[itrkjet].Px(), cms2.trkjets_p4()[itrkjet].Py(), cms2.trkjets_p4()[itrkjet].Pz(), cms2.trkjets_p4()[itrkjet].E());
     if (p.Perp() < jetet) continue;
-    if (fabs(p.Eta()) > jeteta) continue;
+    if (TMath::Abs(p.Eta()) > jeteta) continue;
     trkjets.push_back(p);
   }
 
@@ -521,11 +521,11 @@ bool passTrkJetVeto(int i_hyp)
 double reliso_lt (int i_hyp, bool use_calo_iso)
 {
      // muons do it one way:
-     if (abs(cms2.hyp_lt_id()[i_hyp]) == 13) {
+     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13) {
 	  return mu_rel_iso(cms2.hyp_lt_index()[i_hyp]);
      }
      // electrons do it another way:
-     if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
+     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
 	  return el_rel_iso(cms2.hyp_lt_index()[i_hyp], use_calo_iso);
      }
      // mysterions are not well handled:
@@ -535,11 +535,11 @@ double reliso_lt (int i_hyp, bool use_calo_iso)
 double reliso_ll (int i_hyp, bool use_calo_iso)
 {
      // muons do it one way:
-     if (abs(cms2.hyp_ll_id()[i_hyp]) == 13) {
+     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13) {
 	  return mu_rel_iso(cms2.hyp_ll_index()[i_hyp]);
      }
      // electrons do it another way:
-     if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
+     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
 	  return el_rel_iso(cms2.hyp_ll_index()[i_hyp], use_calo_iso);
      }
      // mysterions are not well handled:
@@ -550,7 +550,7 @@ bool trueMuonFromW(int index) {
 
   bool muIsFromW = false;
 
-  if( abs(cms2.mus_mc_id()[index]) == 13 && abs(cms2.mus_mc_motherid()[index]) == 24 ) muIsFromW = true;
+  if( TMath::Abs(cms2.mus_mc_id()[index]) == 13 && TMath::Abs(cms2.mus_mc_motherid()[index]) == 24 ) muIsFromW = true;
 
   return muIsFromW;
 }
@@ -571,7 +571,7 @@ bool trueMuonFromW(int index) {
 //  bool result = true;
 
 //  if ( cms2.els_p4()[index].Pt()  < pt_cut )            result = false;
-//  if ( std::abs(cms2.els_p4()[index].Eta()) > eta_cut ) result = false;
+//  if ( TMath::Abs(cms2.els_p4()[index].Eta()) > eta_cut ) result = false;
 //  if ( !passElectronIsolation(index,use_calo_iso) )          	result = false;
   //  if ( !passElectronIsolationLoose(index,true) )          	result = false; //v5_2
 //  if ( !passElectronIsolationLoose2(index,true) )          	result = false; //v5_4
@@ -599,7 +599,7 @@ bool trueMuonFromW(int index) {
 //  bool result = true;
 
 //  if ( cms2.els_p4()[index].Pt()  < pt_cut )                 result = false;
-//  if ( std::abs(cms2.els_p4()[index].Eta()) > eta_cut )      result = false;
+//  if ( TMath::Abs(cms2.els_p4()[index].Eta()) > eta_cut )      result = false;
 //  if ( !passElectronIsolation(index,use_calo_iso) )          	result = false;
 //  if ( type == 1 ) {
 //    // loose
@@ -628,8 +628,8 @@ int conversionPartner (int i_el)
 	       continue;
 	  const double tk_cottheta = cms2.trks_trk_p4()[i].pz() / 
 	       cms2.trks_trk_p4()[i].pt();
-	  if (fabs(tk_cottheta - el_cottheta) < min_dcottheta) {
-	       min_dcottheta = fabs(tk_cottheta - el_cottheta);
+	  if (TMath::Abs(tk_cottheta - el_cottheta) < min_dcottheta) {
+	       min_dcottheta = TMath::Abs(tk_cottheta - el_cottheta);
 	       idx = i;
 	  }
      }
@@ -644,7 +644,7 @@ double conversionDeltaPhi (int i_conv, int i_el)
 	  return -1;
      double dphi = ROOT::Math::VectorUtil::DeltaPhi(cms2.trks_trk_p4()[i_conv],
 						    cms2.els_p4()[i_el]);
-     return fabs(dphi);
+     return TMath::Abs(dphi);
 }
 
 /* missing ntuple variables
@@ -731,13 +731,13 @@ int passTrackZVeto(int hyp_index) {
   // store trk indices of ll and lt
   unsigned int llTrkIdx = 1000000;
   unsigned int ltTrkIdx = 1000000;
-  if ( abs(cms2.hyp_lt_id()[hyp_index]) == 13 ) 
+  if ( TMath::Abs(cms2.hyp_lt_id()[hyp_index]) == 13 ) 
     ltTrkIdx = cms2.mus_trkidx()[cms2.hyp_lt_index()[hyp_index]];
-  else if ( abs(cms2.hyp_lt_id()[hyp_index]) == 11 )
+  else if ( TMath::Abs(cms2.hyp_lt_id()[hyp_index]) == 11 )
     ltTrkIdx = cms2.els_trkidx()[cms2.hyp_lt_index()[hyp_index]];
-  if ( abs(cms2.hyp_ll_id()[hyp_index]) == 13 ) 
+  if ( TMath::Abs(cms2.hyp_ll_id()[hyp_index]) == 13 ) 
     llTrkIdx = cms2.mus_trkidx()[cms2.hyp_ll_index()[hyp_index]];
-  else if ( abs(cms2.hyp_ll_id()[hyp_index]) == 11 )
+  else if ( TMath::Abs(cms2.hyp_ll_id()[hyp_index]) == 11 )
     llTrkIdx = cms2.els_trkidx()[cms2.hyp_ll_index()[hyp_index]];
 
   // form trk-isolated track collection
@@ -766,7 +766,7 @@ int passTrackZVeto(int hyp_index) {
       // require opposite sign
       if ( (cms2.hyp_lt_charge()[hyp_index] * cms2.trks_charge()[trk1]) < 0 ) {
 	// require delta z0 < 0.5 cm
-	double dZ = fabs(cms2.hyp_lt_z0()[hyp_index] - cms2.trks_z0()[trk1]);
+	double dZ = TMath::Abs(cms2.hyp_lt_z0()[hyp_index] - cms2.trks_z0()[trk1]);
 	if ( dZ < dZCut ) {
 	  // require delta R > 0.1
 	  double dR = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[hyp_index], cms2.trks_trk_p4()[trk1]);
@@ -783,7 +783,7 @@ int passTrackZVeto(int hyp_index) {
       // require opposite sign
       if ( (cms2.hyp_ll_charge()[hyp_index] * cms2.trks_charge()[trk1]) < 0 ) {
 	// require delta z0 < 0.5 cm
-	double dZ = fabs(cms2.hyp_ll_z0()[hyp_index] - cms2.trks_z0()[trk1]);
+	double dZ = TMath::Abs(cms2.hyp_ll_z0()[hyp_index] - cms2.trks_z0()[trk1]);
 	if ( dZ < dZCut ) {
 	  // require delta R > 0.1
 	  double dR = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[hyp_index], cms2.trks_trk_p4()[trk1]);
@@ -806,7 +806,7 @@ int passTrackZVeto(int hyp_index) {
 	// require opposite sign
 	if ( (cms2.trks_charge()[trk2] * cms2.trks_charge()[trk1]) < 0 ) {
 	  // require delta z0 < 0.5 cm
-	  double dZ = fabs(cms2.trks_z0()[trk2] - cms2.trks_z0()[trk1]);
+	  double dZ = TMath::Abs(cms2.trks_z0()[trk2] - cms2.trks_z0()[trk1]);
 	  if ( dZ < dZCut ) {
 	    // require delta R > 0.1
 	    double dR = ROOT::Math::VectorUtil::DeltaR(cms2.trks_trk_p4()[trk2], cms2.trks_trk_p4()[trk1]);

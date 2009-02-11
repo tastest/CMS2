@@ -296,10 +296,10 @@ void Looper::FillEventHistos ()
 	  
 	pt_den_ele_->Fill(pt);
 	if ( useAbsEta ) {
-	  eta_den_ele_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),weight);
-	  eta_den_ele_->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),weight);
-	  den_ele_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
-	  den_ele_->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
+	  eta_den_ele_->Fill(TMath::Abs(cms2.els_p4()[electron_counter].Eta()),weight);
+	  eta_den_ele_->Fill(-TMath::Abs(cms2.els_p4()[electron_counter].Eta()),weight);
+	  den_ele_->Fill(TMath::Abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
+	  den_ele_->Fill(-TMath::Abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
 	} else {
 	  eta_den_ele_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	  den_ele_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
@@ -321,10 +321,10 @@ void Looper::FillEventHistos ()
 	if ( !isFakeable(electron_counter) ) cout << "Loose electron: num is fullfilled but den is not!" << endl;
 	pt_num_ell_->Fill(pt,weight);
 	if ( useAbsEta ) {
-	  eta_num_ell_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),weight);
-	  eta_num_ell_->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),weight);
-	  num_ell_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
-	  num_ell_->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
+	  eta_num_ell_->Fill(TMath::Abs(cms2.els_p4()[electron_counter].Eta()),weight);
+	  eta_num_ell_->Fill(-TMath::Abs(cms2.els_p4()[electron_counter].Eta()),weight);
+	  num_ell_->Fill(TMath::Abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
+	  num_ell_->Fill(-TMath::Abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
 	} else {
 	  eta_num_ell_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	  num_ell_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
@@ -337,10 +337,10 @@ void Looper::FillEventHistos ()
 	if ( !isFakeable(electron_counter) ) cout << "Tight electron: num is fullfilled but den is not!" << endl;
 	pt_num_elt_->Fill(pt,weight);
 	if ( useAbsEta ) {
-	  eta_num_elt_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),weight);
-	  eta_num_elt_->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),weight);
-	  num_elt_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
-	  num_elt_->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
+	  eta_num_elt_->Fill(TMath::Abs(cms2.els_p4()[electron_counter].Eta()),weight);
+	  eta_num_elt_->Fill(-TMath::Abs(cms2.els_p4()[electron_counter].Eta()),weight);
+	  num_elt_->Fill(TMath::Abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
+	  num_elt_->Fill(-TMath::Abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
 	} else {
 	  eta_num_elt_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	  num_elt_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
@@ -353,10 +353,10 @@ void Looper::FillEventHistos ()
 	if ( isFakeable(electron_counter)){
 	  pt_den_wo_leading_ele_->Fill(pt,weight);
 	  if ( useAbsEta ) {
-	    eta_den_wo_leading_ele_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),weight);
-	    eta_den_wo_leading_ele_->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),weight);
-	    den_wo_leading_ele_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
-	    den_wo_leading_ele_->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
+	    eta_den_wo_leading_ele_->Fill(TMath::Abs(cms2.els_p4()[electron_counter].Eta()),weight);
+	    eta_den_wo_leading_ele_->Fill(-TMath::Abs(cms2.els_p4()[electron_counter].Eta()),weight);
+	    den_wo_leading_ele_->Fill(TMath::Abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
+	    den_wo_leading_ele_->Fill(-TMath::Abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
 	  } else {
 	    eta_den_wo_leading_ele_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	    den_wo_leading_ele_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
@@ -369,10 +369,10 @@ void Looper::FillEventHistos ()
 	  if ( !isFakeable(electron_counter) ) cout << "Loose electron wo leading: num is fullfilled but den is not!" << endl;
 	  pt_num_wo_leading_ell_->Fill(pt,weight);
 	  if ( useAbsEta ) {
-	    eta_num_wo_leading_ell_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),weight);
-	    eta_num_wo_leading_ell_->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),weight);
-	    num_wo_leading_ell_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
-	    num_wo_leading_ell_->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
+	    eta_num_wo_leading_ell_->Fill(TMath::Abs(cms2.els_p4()[electron_counter].Eta()),weight);
+	    eta_num_wo_leading_ell_->Fill(-TMath::Abs(cms2.els_p4()[electron_counter].Eta()),weight);
+	    num_wo_leading_ell_->Fill(TMath::Abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
+	    num_wo_leading_ell_->Fill(-TMath::Abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
 	  } else {
 	    eta_num_wo_leading_ell_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	    num_wo_leading_ell_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
@@ -385,10 +385,10 @@ void Looper::FillEventHistos ()
 	  if ( !isFakeable(electron_counter) ) cout << "Tight electron wo leading: num is fullfilled but den is not!" << endl;
 	  pt_num_wo_leading_elt_->Fill(pt,weight);
 	  if ( useAbsEta ) {
-	    eta_num_wo_leading_elt_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),weight);
-	    eta_num_wo_leading_elt_->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),weight);
-	    num_wo_leading_elt_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
-	    num_wo_leading_elt_->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
+	    eta_num_wo_leading_elt_->Fill(TMath::Abs(cms2.els_p4()[electron_counter].Eta()),weight);
+	    eta_num_wo_leading_elt_->Fill(-TMath::Abs(cms2.els_p4()[electron_counter].Eta()),weight);
+	    num_wo_leading_elt_->Fill(TMath::Abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
+	    num_wo_leading_elt_->Fill(-TMath::Abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
 	  } else {
 	    eta_num_wo_leading_elt_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	    num_wo_leading_elt_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
@@ -406,10 +406,10 @@ void Looper::FillEventHistos ()
 	  if ( isFakeable(electron_counter)){
 	    pt_den_wo_second_leading_ele_->Fill(pt,weight);
 	    if ( useAbsEta ) {
-	      eta_den_wo_second_leading_ele_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),weight);
-	      eta_den_wo_second_leading_ele_->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),weight);
-	      den_wo_second_leading_ele_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
-	      den_wo_second_leading_ele_->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
+	      eta_den_wo_second_leading_ele_->Fill(TMath::Abs(cms2.els_p4()[electron_counter].Eta()),weight);
+	      eta_den_wo_second_leading_ele_->Fill(-TMath::Abs(cms2.els_p4()[electron_counter].Eta()),weight);
+	      den_wo_second_leading_ele_->Fill(TMath::Abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
+	      den_wo_second_leading_ele_->Fill(-TMath::Abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
 	    } else {
 	      eta_den_wo_second_leading_ele_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	      den_wo_second_leading_ele_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
@@ -422,10 +422,10 @@ void Looper::FillEventHistos ()
 	    if ( !isFakeable(electron_counter) ) cout << "Loose electron wo 2nd leading: num is fullfilled but den is not!" << endl;
 	    pt_num_wo_second_leading_ell_->Fill(pt,weight);
 	    if ( useAbsEta ) {
-	      eta_num_wo_second_leading_ell_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),weight);
-	      eta_num_wo_second_leading_ell_->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),weight);
-	      num_wo_second_leading_ell_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
-	      num_wo_second_leading_ell_->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
+	      eta_num_wo_second_leading_ell_->Fill(TMath::Abs(cms2.els_p4()[electron_counter].Eta()),weight);
+	      eta_num_wo_second_leading_ell_->Fill(-TMath::Abs(cms2.els_p4()[electron_counter].Eta()),weight);
+	      num_wo_second_leading_ell_->Fill(TMath::Abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
+	      num_wo_second_leading_ell_->Fill(-TMath::Abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
 	    } else {
 	      eta_num_wo_second_leading_ell_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	      num_wo_second_leading_ell_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
@@ -438,10 +438,10 @@ void Looper::FillEventHistos ()
 	    if ( !isFakeable(electron_counter) ) cout << "Tight electron wo 2nd leading: num is fullfilled but den is not!" << endl;
 	    pt_num_wo_second_leading_elt_->Fill(pt,weight);
 	    if ( useAbsEta ) {
-	      eta_num_wo_second_leading_elt_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),weight);
-	      eta_num_wo_second_leading_elt_->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),weight);
-	      num_wo_second_leading_elt_->Fill(abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
-	      num_wo_second_leading_elt_->Fill(-abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
+	      eta_num_wo_second_leading_elt_->Fill(TMath::Abs(cms2.els_p4()[electron_counter].Eta()),weight);
+	      eta_num_wo_second_leading_elt_->Fill(-TMath::Abs(cms2.els_p4()[electron_counter].Eta()),weight);
+	      num_wo_second_leading_elt_->Fill(TMath::Abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
+	      num_wo_second_leading_elt_->Fill(-TMath::Abs(cms2.els_p4()[electron_counter].Eta()),pt,weight);
 	    } else {
 	      eta_num_wo_second_leading_elt_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	      num_wo_second_leading_elt_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);

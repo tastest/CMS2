@@ -65,7 +65,7 @@ bool isFakeable_v2_2 (int i_el) {
      if (cms2.els_closestMuon().at(i_el) != -1)		result = false;
      if ( cms2.els_eSC()[i_el]      < et_cut )                 result = false;
      if ( cms2.els_p4()[i_el].Pt()  < pt_cut )                 result = false;
-     if ( std::abs(cms2.els_p4()[i_el].Eta()) > eta_cut )      result = false;
+     if ( TMath::Abs(cms2.els_p4()[i_el].Eta()) > eta_cut )      result = false;
      //   // previous iso requirement, use this OR the one below!
      //   if ( cms2.els_tkIso()[i_el]    > tkIso_cut )              result = false;
      //new isolation requirement
@@ -112,7 +112,7 @@ bool isNumeratorElectron_v2_2 (int index, int type) { // 0=loose, 1=tight, for p
      
      if ( cms2.els_eSC()[index]      < et_cut )                 result = false;
      if ( cms2.els_p4()[index].Pt()  < pt_cut )                 result = false;
-     if ( std::abs(cms2.els_p4()[index].Eta()) > eta_cut )      result = false;
+     if ( TMath::Abs(cms2.els_p4()[index].Eta()) > eta_cut )      result = false;
      //   // previous iso requirement, use this OR the one below!
      //   if ( els_tkIso->at(index)    > tkIso_cut )              result = false;
      //new isolation requirement
@@ -120,7 +120,7 @@ bool isNumeratorElectron_v2_2 (int index, int type) { // 0=loose, 1=tight, for p
      if ( cms2.els_eOverPIn()[index] > eOverP_cut )             result = false;
      if ( cms2.els_hOverE()[index]   > hOverE_cut )             result = false;
      // add additional cleaning cuts (from FKW) 080324
-     if ( std::abs(cms2.els_d0corr()[index])  > d0_cut )            result = false;
+     if ( TMath::Abs(cms2.els_d0corr()[index])  > d0_cut )            result = false;
      
      /*
        bool IdCuts = cut_verysimple(els_dEtaIn->at(index),
@@ -183,7 +183,7 @@ bool isFakeDenominatorElectron_v5 (int index)
 
   if (cms2.els_closestMuon().at(index) != -1)		result = false;
   if ( cms2.els_p4()[index].Pt()  < pt_cut )            result = false;
-  if ( std::abs(cms2.els_p4()[index].Eta()) > eta_cut ) result = false;
+  if ( TMath::Abs(cms2.els_p4()[index].Eta()) > eta_cut ) result = false;
   if ( !passElectronIsolation(index,use_calo_iso) )          	result = false;
   //  if ( !passElectronIsolationLoose(index,true) )          	result = false; //v5_2
   if ( !passElectronIsolationLoose2(index,true) )          	result = false; //v5_4
@@ -210,7 +210,7 @@ bool isFakeNumeratorElectron_v5 (int index, int type)
 
   if (cms2.els_closestMuon().at(index) != -1)		result = false;
   if ( cms2.els_p4()[index].Pt()  < pt_cut )                 result = false;
-  if ( std::abs(cms2.els_p4()[index].Eta()) > eta_cut )      result = false;
+  if ( TMath::Abs(cms2.els_p4()[index].Eta()) > eta_cut )      result = false;
   if ( !passElectronIsolation(index,use_calo_iso) )          	result = false;
   if ( type == 1 ) {
     // loose
@@ -265,7 +265,7 @@ bool isFakeDenominatorElectron_v6 (int index)
 
   if (cms2.els_closestMuon().at(index) != -1)		result = false;
   if ( cms2.els_p4()[index].Pt()  < pt_cut )            result = false;
-  if ( std::abs(cms2.els_p4()[index].Eta()) > eta_cut ) result = false;
+  if ( TMath::Abs(cms2.els_p4()[index].Eta()) > eta_cut ) result = false;
   if ( !passElectronIsolation(index,use_calo_iso) )          	result = false;
   //  if ( !passElectronIsolationLoose(index,true) )          	result = false; //v5_2
   if ( !passElectronIsolationLoose2(index,true) )          	result = false; //v5_4
@@ -292,7 +292,7 @@ bool isFakeNumeratorElectron_v6 (int index, int type)
 
   if (cms2.els_closestMuon().at(index) != -1)		result = false;
   if ( cms2.els_p4()[index].Pt()  < pt_cut )                 result = false;
-  if ( std::abs(cms2.els_p4()[index].Eta()) > eta_cut )      result = false;
+  if ( TMath::Abs(cms2.els_p4()[index].Eta()) > eta_cut )      result = false;
   if ( !passElectronIsolation(index,use_calo_iso) )          	result = false;
   if ( type == 1 ) {
     // loose
