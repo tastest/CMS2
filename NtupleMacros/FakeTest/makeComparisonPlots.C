@@ -7,8 +7,8 @@
   int rebinvalue_pt = 1;
   int rebinvalue_eta = 1;
 
-  TFile *_file0 = TFile::Open("Results.root");
-  TFile *_file2 = TFile::Open("Wjets_Fakerate.root");
+  TFile *_file0 = TFile::Open("090211_03/Results.root");
+  TFile *_file2 = TFile::Open("090211_02/Results.root");
 
   TCanvas * elept_em = new TCanvas("elept_em","elept_em");
   TCanvas * eleeta_em = new TCanvas("eleeta_em","eleeta_em");
@@ -37,11 +37,11 @@
   stats_elpt->SetX2NDC(0.98);
   stats_elpt->SetY2NDC(0.71);
   elept_em->Update();
-  TLatex *   lable_ref = new TLatex(0.55,0.75,"Red: observed");
+  TLatex *   lable_ref = new TLatex(0.55,0.75,"Red: with std::abs");
   lable_ref->SetNDC();
   lable_ref->SetTextSize(0.04);
   lable_ref->SetTextColor(kRed);
-  TLatex *   lable_new = new TLatex(0.55,0.7,"Blue: predicted");
+  TLatex *   lable_new = new TLatex(0.55,0.7,"Blue: with TMath::Abs");
   lable_new->SetNDC();
   lable_new->SetTextSize(0.04);
   lable_new->SetTextColor(kBlue);
