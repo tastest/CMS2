@@ -5,7 +5,7 @@
 //============================================================
 #include "Math/LorentzVector.h"
 #include "TMath.h"
-#include "CMS2_SW2.h"
+//#include "CMS2_SW2.h"
 #include "TDatabasePDG.h"
 
 //----------------------------------------------------------------
