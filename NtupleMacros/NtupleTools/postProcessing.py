@@ -86,7 +86,7 @@ def getGoodXMLFiles(crabpath):
             try:
                 doc = xml.dom.minidom.parse(j) #read xml file to see if the job failed
             except:
-                print 'FrameworkJobReport:',i,'could not be parsed and is skipped'
+                print 'FrameworkJobReport:',j,'could not be parsed and is skipped'
                 continue
             jobFailed = False
             for node in doc.getElementsByTagName("FrameworkJobReport"):
