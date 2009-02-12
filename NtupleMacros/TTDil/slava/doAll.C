@@ -93,8 +93,8 @@ void doAll(unsigned int bitmask){
   bool runDYee     = true;
   bool runDYmm     = true;
   bool runDYtautau = true;
-  bool runppMuX    = false;
-  bool runEM       = false;
+  bool runppMuX    = true;
+  bool runEM       = true;
   bool runtW       = true;
   bool runWQQ      = true;
 
@@ -106,59 +106,59 @@ void doAll(unsigned int bitmask){
   gROOT->ProcessLine(".x setup.C");
 
   // Load and compile the looping code
-  gROOT->ProcessLine(".L ttDilCounts_looper.C++");
+  gROOT->ProcessLine(".L ttDilCounts_looper.C+");
 
   TChain* chtopdil = new TChain("Events");
 //   chtopdil->Add("/net/stau/cdf26/dietcms2/V01-00-04/PYTHIA_TauolaTTbar_Summer08/ntuple_diet_*.root");
-//  chtopdil->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/TTJets-madgraph/merged*.root");
-  chtopdil->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-06/TTJets-madgraph_Fall08_IDEAL_V9_v2/merged*.root");
+//  chtopdil->Add("/data3/slava77/cms/mc/cms2/V01-02-01/TTJets-madgraph/merged*.root");
+  chtopdil->Add("/data3/slava77/cms/mc/cms2/V01-02-06/TTJets-madgraph_Fall08_IDEAL_V9_v2/merged*.root");
 
   TChain* chtopotr = new TChain("Events");
 //   chtopotr->Add("/net/stau/cdf26/dietcms2/V01-00-04/PYTHIA_TauolaTTbar_Summer08/ntuple_diet_*.root");
-//   chtopotr->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/TTJets-madgraph/merged*.root");
-  chtopotr->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-06/TTJets-madgraph_Fall08_IDEAL_V9_v2/merged*.root");
+//   chtopotr->Add("/data3/slava77/cms/mc/cms2/V01-02-01/TTJets-madgraph/merged*.root");
+  chtopotr->Add("/data3/slava77/cms/mc/cms2/V01-02-06/TTJets-madgraph_Fall08_IDEAL_V9_v2/merged*.root");
 
   TChain* chww = new TChain("Events");
 //   chww->Add("data/signal/skim/ntuplemaker_WW_incl_2020.root");
-//   chww->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/WW_2l-Pythia/merged*.root");
-  chww->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-06/WW_2l_Summer08_IDEAL_V9_v2/merged*.root");
+//   chww->Add("/data3/slava77/cms/mc/cms2/V01-02-01/WW_2l-Pythia/merged*.root");
+  chww->Add("/data3/slava77/cms/mc/cms2/V01-02-06/WW_2l_Summer08_IDEAL_V9_v2/merged*.root");
 
   TChain* chWZ = new TChain("Events");
 //   chWZ->Add("data/signal/skim/ntuplemaker_WZ_incl_2020.root");
-//   chWZ->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/WZ_incl-Pythia/merged*.root"); // can try WZ_3l-Pythia
-  chWZ->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-06/WZ_3l_Summer08_IDEAL_V9_v2/merged*.root"); // can try WZ_3l-Pythia
+//   chWZ->Add("/data3/slava77/cms/mc/cms2/V01-02-01/WZ_incl-Pythia/merged*.root"); // can try WZ_3l-Pythia
+  chWZ->Add("/data3/slava77/cms/mc/cms2/V01-02-06/WZ_3l_Summer08_IDEAL_V9_v2/merged*.root"); // can try WZ_3l-Pythia
 
   TChain* chZZ = new TChain("Events");
 //   chZZ->Add("data/signal/skim/ntuplemaker_ZZ_incl_2020.root");
-//   chZZ->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/ZZ_2l2n-Pythia/merged*.root");
-  chZZ->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-06/ZZ_2l2n_Summer08_IDEAL_V9_v2/merged*.root");
+//   chZZ->Add("/data3/slava77/cms/mc/cms2/V01-02-01/ZZ_2l2n-Pythia/merged*.root");
+  chZZ->Add("/data3/slava77/cms/mc/cms2/V01-02-06/ZZ_2l2n_Summer08_IDEAL_V9_v2/merged*.root");
   
   TChain* chWjets = new  TChain("Events");
   //  chWjets->Add("/net/stau/cdf26/dietcms2/V01-00-04/MadGraph_Wjets_Summer08/ntuple_diet_*.root");
-//   chWjets->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/WJets-madgraph/merged*.root");
-  chWjets->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-06/WJets-madgraph_Fall08_IDEAL_V9_v1/merged*.root");
+//   chWjets->Add("/data3/slava77/cms/mc/cms2/V01-02-01/WJets-madgraph/merged*.root");
+  chWjets->Add("/data3/slava77/cms/mc/cms2/V01-02-06/WJets-madgraph_Fall08_IDEAL_V9_v1/merged*.root");
 
   TChain* chDYtautau = new  TChain("Events");
   //  chDYtautau->Add("/net/stau/cdf26/dietcms2/V01-00-04/MadGraph_Zjets_Summer08/ntuple_diet_*.root");
-//   chDYtautau->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/ZJets-madgraph/merged*.root");
-  chDYtautau->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-06/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged*.root");
+//   chDYtautau->Add("/data3/slava77/cms/mc/cms2/V01-02-01/ZJets-madgraph/merged*.root");
+  chDYtautau->Add("/data3/slava77/cms/mc/cms2/V01-02-06/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged*.root");
   
   TChain* chDYee = new  TChain("Events");
   //  chDYee->Add("/net/stau/cdf26/dietcms2/V01-00-04/MadGraph_Zjets_Summer08/ntuple_diet_*.root");
-//   chDYee->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/ZJets-madgraph/merged*.root");
-  chDYee->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-06/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged*.root");
+//   chDYee->Add("/data3/slava77/cms/mc/cms2/V01-02-01/ZJets-madgraph/merged*.root");
+  chDYee->Add("/data3/slava77/cms/mc/cms2/V01-02-06/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged*.root");
 
   TChain* chDYmm = new  TChain("Events");
 //  chDYmm->Add("/net/stau/cdf26/dietcms2/V01-00-04/MadGraph_Zjets_Summer08/ntuple_diet_*.root");
-//   chDYmm->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/ZJets-madgraph/merged*.root");
-  chDYmm->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-06/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged*.root");
+//   chDYmm->Add("/data3/slava77/cms/mc/cms2/V01-02-01/ZJets-madgraph/merged*.root");
+  chDYmm->Add("/data3/slava77/cms/mc/cms2/V01-02-06/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged*.root");
   
   //ppMuX
   TChain* chppMuX = new  TChain("Events");
   if (runppMuX) {
     //    chppMuX->Add("/data3/slava77/cms/mc/Mupt15Inclusive_Summer08/V01-00-04/diet/ntuple_*.root");
-//     chppMuX->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/InclusiveMuPt15/merged*.root"); 
-    chppMuX->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-06/InclusiveMuPt15/merged*.root"); 
+//     chppMuX->Add("/data3/slava77/cms/mc/cms2/V01-02-01/InclusiveMuPt15/merged*.root"); 
+    chppMuX->Add("/data3/slava77/cms/mc/cms2/V01-02-06/InclusiveMuPt15/merged*.root"); 
     //can try InclusiveMu5Pt50 .. figure out how to merge later
   }
   
@@ -166,32 +166,32 @@ void doAll(unsigned int bitmask){
   TChain* chEM =  new  TChain("Events");
   if (runEM) {
 //     chEM->Add("data/signal/skim/ntuplemaker_QCDJetsEnriched_eehyp_2020.root");
-//     chEM->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/QCD_EMenriched_Pt20to30/merged*.root");
-//     chEM->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/QCD_EMenriched_Pt30to80/merged*.root");
-//     chEM->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/QCD_EMenriched_Pt80to170/merged*.root");
-    chEM->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-06/QCD_EMenriched_Pt20to30/merged*.root");
-    chEM->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-06/QCD_EMenriched_Pt30to80/merged*.root");
-    chEM->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-06/QCD_EMenriched_Pt80to170/merged*.root");
+//     chEM->Add("/data3/slava77/cms/mc/cms2/V01-02-01/QCD_EMenriched_Pt20to30/merged*.root");
+//     chEM->Add("/data3/slava77/cms/mc/cms2/V01-02-01/QCD_EMenriched_Pt30to80/merged*.root");
+//     chEM->Add("/data3/slava77/cms/mc/cms2/V01-02-01/QCD_EMenriched_Pt80to170/merged*.root");
+    chEM->Add("/data3/slava77/cms/mc/cms2/V01-02-06/QCD_EMenriched_Pt20to30/merged*.root");
+    chEM->Add("/data3/slava77/cms/mc/cms2/V01-02-06/QCD_EMenriched_Pt30to80/merged*.root");
+    chEM->Add("/data3/slava77/cms/mc/cms2/V01-02-06/QCD_EMenriched_Pt80to170/merged*.root");
   }
 
   //tW
   TChain* chtW = new  TChain("Events");
   if (runtW) {
-//     chtW->Add("/net/bquark/data2/slava77/cms/cms1/V04-03-05/TopRex_tWinclusive/ntuple_merged_skim2020.root");
-//     chtW->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/SingleTop_sChannel-madgraph-LHE/merged*.root"); 
-//     chtW->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/SingleTop_tChannel-madgraph-LHE/merged*.root"); 
-//     chtW->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-01/SingleTop_tWChannel-madgraph-LHE/merged*.root"); 
-    chtW->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-06/SingleTop_sChannel-madgraph-LHE/merged*.root"); 
-    chtW->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-06/SingleTop_tChannel-madgraph-LHE/merged*.root"); 
-    chtW->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-06/SingleTop_tWChannel-madgraph-LHE/merged*.root"); 
+//     chtW->Add("/data2/slava77/cms/cms1/V04-03-05/TopRex_tWinclusive/ntuple_merged_skim2020.root");
+//     chtW->Add("/data3/slava77/cms/mc/cms2/V01-02-01/SingleTop_sChannel-madgraph-LHE/merged*.root"); 
+//     chtW->Add("/data3/slava77/cms/mc/cms2/V01-02-01/SingleTop_tChannel-madgraph-LHE/merged*.root"); 
+//     chtW->Add("/data3/slava77/cms/mc/cms2/V01-02-01/SingleTop_tWChannel-madgraph-LHE/merged*.root"); 
+    chtW->Add("/data3/slava77/cms/mc/cms2/V01-02-06/SingleTop_sChannel-madgraph-LHE/merged*.root"); 
+    chtW->Add("/data3/slava77/cms/mc/cms2/V01-02-06/SingleTop_tChannel-madgraph-LHE/merged*.root"); 
+    chtW->Add("/data3/slava77/cms/mc/cms2/V01-02-06/SingleTop_tWChannel-madgraph-LHE/merged*.root"); 
   }
 
   //WQQ
   TChain* chWQQ = new TChain("Events");
   if (runWQQ) {
-//     chWQQ->Add("/net/bquark/data2/slava77/cms/cms1/V04-03-05/Alpgen_Wbb_0jets/ntuple_merged.root");
+//     chWQQ->Add("/data2/slava77/cms/cms1/V04-03-05/Alpgen_Wbb_0jets/ntuple_merged.root");
 //    chWQQ->Add("");
-    chWQQ->Add("/net/bquark/data3/slava77/cms/mc/cms2/V01-02-06/VQQ-madgraph_Fall08_IDEAL_V9_v1/merged*.root");
+    chWQQ->Add("/data3/slava77/cms/mc/cms2/V01-02-06/VQQ-madgraph_Fall08_IDEAL_V9_v1/merged*.root");
   }
 
 
