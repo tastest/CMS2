@@ -219,47 +219,150 @@ Sample fSingleTop_sChannel ()
 }
 
 
-// still old, has to be changed
 Sample fLM1 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = "/data/tmp/cms2-V00-05-00/LM1/*.root";
+     std::string sample = "/data/tmp/cms2-V01-02-06/SUSY_LM1-sftsht/merge*.root";
      char *location = getenv("CMS2_NTUPLE_LOCATION");
      if ( location != 0 ) {
-       sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-05-00/LM1/*.root";
+       sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V01-02-06/SUSY_LM1-sftsht/merge*.root";
      }
      c->Add(sample.c_str());
      Sample ret = { c, LM1, 37, 1, "LM1", false };
      return ret;
 }
 
-// still old, has to be changed
 Sample fLM2 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = "/data/tmp/cms2-V00-05-00/LM2/*.root";
+     std::string sample = "/data/tmp/cms2-V01-02-06/SUSY_LM2-sftsht/merge*.root";
      char *location = getenv("CMS2_NTUPLE_LOCATION");
      if ( location != 0 ) {
-       sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-05-00/LM2/*.root";
+       sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V01-02-06/SUSY_LM2-sftsht/merge*.root";
      }
      c->Add(sample.c_str());
-     Sample ret = { c, LM2, 38, 1, "LM2", false };
+     Sample ret = { c, LM2, 37, 1, "LM2", false };
      return ret;
 }
 
-// still old, has to be changed
+Sample fLM3 ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = "/data/tmp/cms2-V01-02-06/SUSY_LM3-sftsht/merge*.root";
+     char *location = getenv("CMS2_NTUPLE_LOCATION");
+     if ( location != 0 ) {
+       sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V01-02-06/SUSY_LM3-sftsht/merge*.root";
+     }
+     c->Add(sample.c_str());
+     Sample ret = { c, LM3, 37, 1, "LM3", false };
+     return ret;
+}
+
 Sample fLM4 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = "/data/tmp/cms2-V00-05-00/LM4/*.root";
+     std::string sample = "/data/tmp/cms2-V01-02-06/SUSY_LM4-sftsht/merge*.root";
      char *location = getenv("CMS2_NTUPLE_LOCATION");
      if ( location != 0 ) {
-       sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-05-00/LM4/*.root";
+       sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V01-02-06/SUSY_LM4-sftsht/merge*.root";
      }
      c->Add(sample.c_str());
-     Sample ret = { c, LM4, 38, 1, "LM4", false };
+     Sample ret = { c, LM4, 37, 1, "LM4", false };
      return ret;
 }
+
+Sample fLM5 ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = "/data/tmp/cms2-V01-02-06/SUSY_LM5-sftsht/merge*.root";
+     char *location = getenv("CMS2_NTUPLE_LOCATION");
+     if ( location != 0 ) {
+       sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V01-02-06/SUSY_LM5-sftsht/merge*.root";
+     }
+     c->Add(sample.c_str());
+     Sample ret = { c, LM5, 37, 1, "LM5", false };
+     return ret;
+}
+
+Sample fLM6 ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = "/data/tmp/cms2-V01-02-06/SUSY_LM6-sftsht/merge*.root";
+     char *location = getenv("CMS2_NTUPLE_LOCATION");
+     if ( location != 0 ) {
+       sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V01-02-06/SUSY_LM6-sftsht/merge*.root";
+     }
+     c->Add(sample.c_str());
+     Sample ret = { c, LM6, 37, 1, "LM6", false };
+     return ret;
+}
+
+Sample fLM7 ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = "/data/tmp/cms2-V01-02-06/SUSY_LM7-sftsht/merge*.root";
+     char *location = getenv("CMS2_NTUPLE_LOCATION");
+     if ( location != 0 ) {
+       sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V01-02-06/SUSY_LM7-sftsht/merge*.root";
+     }
+     c->Add(sample.c_str());
+     Sample ret = { c, LM7, 37, 1, "LM7", false };
+     return ret;
+}
+
+Sample fLM8 ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = "/data/tmp/cms2-V01-02-06/SUSY_LM8-sftsht/merge*.root";
+     char *location = getenv("CMS2_NTUPLE_LOCATION");
+     if ( location != 0 ) {
+       sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V01-02-06/SUSY_LM8-sftsht/merge*.root";
+     }
+     c->Add(sample.c_str());
+     Sample ret = { c, LM8, 37, 1, "LM8", false };
+     return ret;
+}
+
+Sample fLM9 ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = "/data/tmp/cms2-V01-02-06/SUSY_LM9-sftsht/merge*.root";
+     char *location = getenv("CMS2_NTUPLE_LOCATION");
+     if ( location != 0 ) {
+       sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V01-02-06/SUSY_LM9-sftsht/merge*.root";
+     }
+     c->Add(sample.c_str());
+     Sample ret = { c, LM9, 37, 1, "LM9", false };
+     return ret;
+}
+
+Sample fLM10 ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = "/data/tmp/cms2-V01-02-06/SUSY_LM10-sftsht/merge*.root";
+     char *location = getenv("CMS2_NTUPLE_LOCATION");
+     if ( location != 0 ) {
+       sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V01-02-06/SUSY_LM10-sftsht/merge*.root";
+     }
+     c->Add(sample.c_str());
+     Sample ret = { c, LM10, 37, 1, "LM10", false };
+     return ret;
+}
+
+Sample fLM11 ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = "/data/tmp/cms2-V01-02-06/SUSY_LM11-sftsht/merge*.root";
+     char *location = getenv("CMS2_NTUPLE_LOCATION");
+     if ( location != 0 ) {
+       sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V01-02-06/SUSY_LM11-sftsht/merge*.root";
+     }
+     c->Add(sample.c_str());
+     Sample ret = { c, LM11, 37, 1, "LM11", false };
+     return ret;
+}
+
+
 
 // QCD samples
 Sample fInclusiveMu5Pt50 ()

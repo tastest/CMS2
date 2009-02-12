@@ -4,7 +4,7 @@
 
 #include <string>
 
-enum Process { WW, WZ, ZZ, Wjets, DYee, DYmm, DYtt, ttbar, tW, LM1, LM2, LM4,
+enum Process { WW, WZ, ZZ, Wjets, DYee, DYmm, DYtt, ttbar, tW, LM1, LM2, LM3, LM4, LM5, LM6, LM7, LM8, LM9, LM10, LM11,
 	       InclusiveMu5Pt50, InclusiveMuPt15, 
 	       QCDBCtoEPt20to30, QCDBCtoEPt30to80, QCDBCtoEPt80to170, 
 	       QCDEMenrichedPt20to30, QCDEMenrichedPt30to80, QCDEMenrichedPt80to170, QCDpt30};
@@ -38,7 +38,15 @@ Sample fSingleTop_tChannel	();
 Sample fSingleTop_sChannel	();
 Sample fLM1     ();
 Sample fLM2     ();
+Sample fLM3     ();
 Sample fLM4     ();
+Sample fLM5     ();
+Sample fLM6     ();
+Sample fLM7     ();
+Sample fLM8     ();
+Sample fLM9     ();
+Sample fLM10    ();
+Sample fLM11    ();
 
 // QCD samples
 Sample fInclusiveMu5Pt50	();
