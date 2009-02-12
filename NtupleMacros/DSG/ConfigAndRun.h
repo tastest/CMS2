@@ -21,7 +21,15 @@ enum {
   LOOP_TW	,
   LOOP_LM1	,
   LOOP_LM2	,
+  LOOP_LM3	,
   LOOP_LM4	,
+  LOOP_LM5	,
+  LOOP_LM6	,
+  LOOP_LM7	,
+  LOOP_LM8	,
+  LOOP_LM9	,
+  LOOP_LM10	,
+  LOOP_LM11	,
 };
 
 // helper function used to print yield tables
@@ -104,7 +112,15 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
   Looper looper_tw		(ftW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_TW    )) looper_tw          .Loop();
   Looper looper_lm1		(fLM1()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_LM1   )) looper_lm1         .Loop();
   Looper looper_lm2		(fLM2()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_LM2   )) looper_lm2         .Loop();
+  Looper looper_lm3		(fLM3()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_LM3   )) looper_lm3         .Loop();
   Looper looper_lm4		(fLM4()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_LM4   )) looper_lm4         .Loop();
+  Looper looper_lm5		(fLM5()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_LM5   )) looper_lm5         .Loop();
+  Looper looper_lm6		(fLM6()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_LM6   )) looper_lm6         .Loop();
+  Looper looper_lm7		(fLM7()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_LM7   )) looper_lm7         .Loop();
+  Looper looper_lm8		(fLM8()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_LM8   )) looper_lm8         .Loop();
+  Looper looper_lm9		(fLM9()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_LM9   )) looper_lm9         .Loop();
+  Looper looper_lm10		(fLM10()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_LM10  )) looper_lm10        .Loop();
+  Looper looper_lm11		(fLM11()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_LM11  )) looper_lm11        .Loop();
   // when all the loopers are done, we save the histograms to file
   saveHist(hist.c_str());
   // then we collect them all and print a table
@@ -120,7 +136,15 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
     &looper_tw          ,
     &looper_lm1         ,
     &looper_lm2         ,
+    &looper_lm3         ,
     &looper_lm4         ,
+    &looper_lm5         ,
+    &looper_lm6         ,
+    &looper_lm7         ,
+    &looper_lm8         ,
+    &looper_lm9         ,
+    &looper_lm10        ,
+    &looper_lm11        ,
   };
   printTable(loopers, sizeof(loopers) / sizeof(Looper *), tbl.c_str(), which_ones);
   return 0;
