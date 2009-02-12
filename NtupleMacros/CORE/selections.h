@@ -24,7 +24,12 @@ bool met10(int index, const class TVector3& corr);
 bool met1(int index, const class TVector3& corr);
 bool sumEt10(double sumEt);
 bool sumEt1(double sumEt);
+/*
+Dima: Commented out since it's not clear how it works and who needs it
+
+
 bool passMuonBVeto (int i_dilep, bool soft_nonisolated);
+*/
 bool passTriLepVeto (int i_dilep);
 int tagMuonIdx (int i_dilep);
 double tagMuonPt (int i_dilep);
