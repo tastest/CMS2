@@ -68,11 +68,14 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
   bool METveto = false;
   bool applyMuTag5 = false;
   int  isoLooseMode = 0;
-  bool looseDilSelection = false;
+  bool looseDilSelectionTTDil08 = false;
   bool fillMultipleHypsOnly = false;
   bool applyZWindow = false;
   bool osSelection = false;
   bool fillMaxWeightDilOnly = false;
+  bool leptonIsolationDilSelectionTTDil08 = false;
+  bool looseDilSelectionNoIsoTTDil08 = false;
+  bool lepton20Eta2p4DilSelection = false;
 
   if( cutsMask & 1) {
     idcuts = true;
@@ -150,9 +153,9 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
     cout << "Require two hyp leptons  with iso (0.6, 0.92)" << endl;
   }
 
-  looseDilSelection = ((cutsMask>>10)&1);
-  if (looseDilSelection ){
-    std::cout<< "Require loose dil selection "<<std::endl;
+  looseDilSelectionTTDil08 = ((cutsMask>>10)&1);
+  if (looseDilSelectionTTDil08 ){
+    std::cout<< "Require loose dil selection for TTbar-->dilepton ana 2008/09"<<std::endl;
   }
 
   fillMultipleHypsOnly = ((cutsMask >> 11)&1);
@@ -173,6 +176,21 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
   fillMaxWeightDilOnly = ((cutsMask >> 14) & 1);
   if (fillMaxWeightDilOnly){
     std::cout<<"Fill only the dilepton with the max dilepton weight"<<std::endl;
+  }
+
+  leptonIsolationDilSelectionTTDil08 = ((cutsMask>> 15) & 1);
+  if (leptonIsolationDilSelectionTTDil08){
+    std::cout<<" Apply isolation cuts on leptons for TTbar-->dilepton ana 2008/09"<<std::endl;
+  }
+
+  looseDilSelectionNoIsoTTDil08 = ((cutsMask>>16)&1);
+  if (looseDilSelectionNoIsoTTDil08 ){
+    std::cout<< "Require loose dil selection for TTbar-->dilepton ana 2008/09; drop loose iso cuts"<<std::endl;
+  }
+
+  lepton20Eta2p4DilSelection = ((cutsMask>>17)&1);
+  if (lepton20Eta2p4DilSelection){
+    std::cout<<"Two leptons pt>20 and |eta|<2.4 are selected -- bare minimum"<<std::endl;
   }
 
   // Check that prescale is OK
@@ -299,14 +317,44 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	if (applyMuTag5 && ! haveExtraMuon5(hypIdx)) continue;
 
 
-	if (looseDilSelection){
-	  // Muon quality cuts, excluding isolation
-	  if (abs(hyp_lt_id().at(hypIdx)) == 13 && !looseMuonSelection(i_lt) ) continue;
-	  if (abs(hyp_ll_id().at(hypIdx)) == 13 && !looseMuonSelection(i_ll) ) continue;
+	if (lepton20Eta2p4DilSelection){
+	  // Muon pt eta cuts
+	  if (abs(hyp_lt_id().at(hypIdx)) == 13 && !muon20Eta2p4(i_lt) ) continue;
+	  if (abs(hyp_ll_id().at(hypIdx)) == 13 && !muon20Eta2p4(i_ll) ) continue;
 
-	  // Electron quality cuts, excluding isolation
-	  if (abs(hyp_lt_id().at(hypIdx)) == 11 && !looseElectronSelection(i_lt) ) continue;
-	  if (abs(hyp_ll_id().at(hypIdx)) == 11 && !looseElectronSelection(i_ll) ) continue;
+	  // Electron pt, eta cuts
+	  if (abs(hyp_lt_id().at(hypIdx)) == 11 && !electron20Eta2p4(i_lt) ) continue;
+	  if (abs(hyp_ll_id().at(hypIdx)) == 11 && !electron20Eta2p4(i_ll) ) continue;	  
+	}
+
+	if (looseDilSelectionNoIsoTTDil08){
+	  // Muon quality cuts, no isolation
+	  if (abs(hyp_lt_id().at(hypIdx)) == 13 && !looseMuonSelectionNoIsoTTDil08(i_lt) ) continue;
+	  if (abs(hyp_ll_id().at(hypIdx)) == 13 && !looseMuonSelectionNoIsoTTDil08(i_ll) ) continue;
+
+	  // Electron quality cuts, no isolation
+	  if (abs(hyp_lt_id().at(hypIdx)) == 11 && !looseElectronSelectionNoIsoTTDil08(i_lt) ) continue;
+	  if (abs(hyp_ll_id().at(hypIdx)) == 11 && !looseElectronSelectionNoIsoTTDil08(i_ll) ) continue;
+	}
+
+	if (looseDilSelectionTTDil08){
+	  // Muon quality cuts, loose isolation
+	  if (abs(hyp_lt_id().at(hypIdx)) == 13 && !looseMuonSelectionTTDil08(i_lt) ) continue;
+	  if (abs(hyp_ll_id().at(hypIdx)) == 13 && !looseMuonSelectionTTDil08(i_ll) ) continue;
+
+	  // Electron quality cuts, loose isolation
+	  if (abs(hyp_lt_id().at(hypIdx)) == 11 && !looseElectronSelectionTTDil08(i_lt) ) continue;
+	  if (abs(hyp_ll_id().at(hypIdx)) == 11 && !looseElectronSelectionTTDil08(i_ll) ) continue;
+	}
+
+	if (leptonIsolationDilSelectionTTDil08){
+	  // muon passes ttdil08 iso cuts
+	  if (abs(hyp_lt_id().at(hypIdx)) == 13 && !passMuonIsolationTTDil08(i_lt) ) continue;
+	  if (abs(hyp_ll_id().at(hypIdx)) == 13 && !passMuonIsolationTTDil08(i_ll) ) continue;
+
+	  // Electron passes ttdil08 iso cuts
+	  if (abs(hyp_lt_id().at(hypIdx)) == 11 && !passElectronIsolationTTDil08(i_lt) ) continue;
+	  if (abs(hyp_ll_id().at(hypIdx)) == 11 && !passElectronIsolationTTDil08(i_ll) ) continue;
 
 	}
 
@@ -379,12 +427,12 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	    std::vector<unsigned int> looseEls(0);
 	    std::vector<unsigned int> looseMus(0);
 	    for (unsigned int iEl =0; iEl < els_p4().size(); ++iEl){
-	      if (looseElectronSelection(iEl)){
+	      if (looseElectronSelectionTTDil08(iEl)){
 		looseEls.push_back(iEl);
 	      }
 	    }
 	    for (unsigned int iMu =0; iMu < mus_p4().size(); ++iMu){
-	      if (looseMuonSelection(iMu)){
+	      if (looseMuonSelectionTTDil08(iMu)){
 		looseMus.push_back(iMu);
 	      }
 	    }

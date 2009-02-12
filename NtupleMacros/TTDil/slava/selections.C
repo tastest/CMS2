@@ -23,7 +23,7 @@ bool inZmassWindow (float mass) {
 bool goodElectronWithoutIsolation(int index) {
   if ( els_tightId().at(index)     !=  1) return false;
   if ( els_closestMuon().at(index) != -1) return false;
-  if ( abs(els_d0().at(index)) > 0.040)   return false;
+  if ( abs(els_d0corr().at(index)) > 0.040)   return false;
   return true;
 }
 //----------------------------------------------------------------
@@ -31,7 +31,7 @@ bool goodElectronWithoutIsolation(int index) {
 //---------------------------------------------------------------
 bool goodMuonWithoutIsolation(int index) {
   if (mus_gfit_chi2().at(index)/mus_gfit_ndof().at(index) > 5.) return false;
-  if (abs(mus_d0().at(index))   > 0.25) return false;
+  if (abs(mus_d0corr().at(index))   > 0.25) return false;
   if (mus_validHits().at(index) < 7)    return false;
   return true;
 }
@@ -413,13 +413,24 @@ bool haveExtraMuon5(int hypIdx){
 // loose lepton definitions 
 //
 
-
-bool looseElectronSelection(int index) {
-  
+bool electron20Eta2p4(int index){
   if (els_p4().at(index).pt() < 20 )   return false;
   if (fabs(els_p4().at(index).eta()) > 2.4 ) return false;
+
+}
+
+
+bool looseElectronSelectionNoIsoTTDil08(int index) {
+  if ( ! electron20Eta2p4(index) ) return false;
   if ( els_looseId().at(index)     !=  1) return false;
   if ( fabs(els_d0corr().at(index)) > 0.040)   return false;
+
+  return true;
+}
+
+
+bool looseElectronSelectionTTDil08(int index) {
+  if ( ! looseElectronSelectionTTDil08(index) ) return false;
 
   if ( electronTrkIsolation(index) < 0.5 ) return false;
   if ( electronCalIsolation(index) < 0.5 ) return false;
@@ -427,56 +438,40 @@ bool looseElectronSelection(int index) {
   return true;
 }
 
-bool looseMuonSelection(int index) {
+bool passElectronIsolationTTDil08(int index){
+  if ( electronTrkIsolation(index) < 0.9 ) return false;
+  if ( electronCalIsolation(index) < 0.8 ) return false;
+}
+
+bool muon20Eta2p4(int index){
+  if (mus_p4().at(index).pt() < 20 ) return false;
+  if (fabs(mus_p4().at(index).eta()) >2.4 ) return false;
+}
+
+bool looseMuonSelectionNoIsoTTDil08(int index) {
+
+  if (! muon20Eta2p4(index) ) return false;
 
   if(!(2 & mus_type().at(index))) return false;
-  if (mus_p4().at(index).pt() < 20 ) return false;
-  if (fabs(mus_p4().at(index).eta()) >2.4 ) return false;
-
   if (mus_gfit_chi2().at(index)/mus_gfit_ndof().at(index) > 10.) return false;
-  
-  // disable this for now -- will need to cut on it at some point
   //  if (fabs(mus_d0corr().at(index))   > 0.25) return false;
   if (mus_validHits().at(index) < 11)    return false;
+  
+  return true;
+}
 
+bool looseMuonSelectionTTDil08(int index) {
+  if (! looseMuonSelectionNoIsoTTDil08(index) ) return false;
+  
   if ( muonTrkIsolation(index) < 0.5 ) return false;
   if ( muonCalIsolation(index) < 0.5 ) return false;
 
   return true;
 }
 
-//------------------------------------------------------------------------------------
-
-  
-bool looseElectron20WithIsolation05(int index){
-  
-  if (els_p4().at(index).pt() < 20 )   return false;
-  if (fabs(els_p4().at(index).eta()) > 2.4 ) return false;
-  
-  if ( els_looseId().at(index)     !=  1) return false;
-  if ( els_closestMuon().at(index) != -1) return false;
-  if ( fabs(els_d0corr().at(index)) > 0.040)   return false;
-
-  if ( electronTrkIsolation(index) < 0.5 ) return false;
-  if ( electronCalIsolation(index) < 0.5 ) return false;
-
-  return true;
+bool passMuonIsolationTTDil08(int index) {
+  if ( muonTrkIsolation(index) < 0.9 ) return false;
+  if ( muonCalIsolation(index) < 0.9 ) return false;
 }
 
-bool looseMuon20WithIsolation05(int index){
-
-  if(!(2 & mus_type().at(index))) return false; //has to be a global muon
-  if (mus_p4().at(index).pt() < 20 ) return false;
-  if (fabs(mus_p4().at(index).eta()) >2.4 ) return false;
-
-  if (mus_gfit_chi2().at(index)/mus_gfit_ndof().at(index) > 10.) return false;
-  //FIXME: need to turn it on at some point
-  //  if (fabs(mus_d0corr().at(index))   > 0.25) return false;
-  if (mus_validHits().at(index) < 11)    return false;
-
-  if ( muonTrkIsolation(index) < 0.5 ) return false;
-  if ( muonCalIsolation(index) < 0.5 ) return false;
-
-  return true;
-}
 //------------------------------------------------------------------------------------
