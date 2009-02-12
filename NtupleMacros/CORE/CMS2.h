@@ -9,7 +9,7 @@
 #include "TH1F.h"
 #include <vector> 
 
-//#define PARANOIA
+#define PARANOIA
 
 using namespace std; 
 class CMS2 { 
@@ -17,6 +17,15 @@ private:
 	 TH1F *samplehisto;
 protected: 
 	unsigned int index;
+	TString	evt_dataset_;
+	TBranch *evt_dataset_branch;
+	bool evt_dataset_isLoaded;
+	vector<TString>	evt_HLT_trigNames_;
+	TBranch *evt_HLT_trigNames_branch;
+	bool evt_HLT_trigNames_isLoaded;
+	vector<TString>	evt_L1_trigNames_;
+	TBranch *evt_L1_trigNames_branch;
+	bool evt_L1_trigNames_isLoaded;
 	vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<double>,ROOT::Math::DefaultCoordinateSystemTag> >	scs_pos_;
 	TBranch *scs_pos_branch;
 	bool scs_pos_isLoaded;
@@ -2461,6 +2470,30 @@ void Init(TTree *tree) {
 	cout << "Branch trkjets_p4 does not exist." << endl;
 	}
   tree->SetMakeClass(1);
+	evt_dataset_branch = 0;
+	if (tree->GetAlias("evt_dataset") != 0) {
+		evt_dataset_branch = tree->GetBranch(tree->GetAlias("evt_dataset"));
+		evt_dataset_branch->SetAddress(&evt_dataset_);
+	}
+	if(evt_dataset_branch == 0 ) {
+	cout << "Branch evt_dataset does not exist." << endl;
+	}
+	evt_HLT_trigNames_branch = 0;
+	if (tree->GetAlias("evt_HLT_trigNames") != 0) {
+		evt_HLT_trigNames_branch = tree->GetBranch(tree->GetAlias("evt_HLT_trigNames"));
+		evt_HLT_trigNames_branch->SetAddress(&evt_HLT_trigNames_);
+	}
+	if(evt_HLT_trigNames_branch == 0 ) {
+	cout << "Branch evt_HLT_trigNames does not exist." << endl;
+	}
+	evt_L1_trigNames_branch = 0;
+	if (tree->GetAlias("evt_L1_trigNames") != 0) {
+		evt_L1_trigNames_branch = tree->GetBranch(tree->GetAlias("evt_L1_trigNames"));
+		evt_L1_trigNames_branch->SetAddress(&evt_L1_trigNames_);
+	}
+	if(evt_L1_trigNames_branch == 0 ) {
+	cout << "Branch evt_L1_trigNames does not exist." << endl;
+	}
 	scs_pos_branch = 0;
 	if (tree->GetAlias("scs_pos") != 0) {
 		scs_pos_branch = tree->GetBranch(tree->GetAlias("scs_pos"));
@@ -7155,6 +7188,9 @@ void GetEntry(unsigned int idx)
 	// this only marks branches as not loaded, saving a lot of time
 	{
 		index = idx;
+		evt_dataset_isLoaded = false;
+		evt_HLT_trigNames_isLoaded = false;
+		evt_L1_trigNames_isLoaded = false;
 		scs_pos_isLoaded = false;
 		scs_vtx_isLoaded = false;
 		vtxs_position_isLoaded = false;
@@ -7805,6 +7841,51 @@ void GetEntry(unsigned int idx)
 		evt_filt_eff_isLoaded = false;
 	}
 
+	TString &evt_dataset()
+	{
+		if (not evt_dataset_isLoaded) {
+			if (evt_dataset_branch != 0) {
+				evt_dataset_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch evt_dataset_branch does not exist!\n");
+				exit(1);
+			}
+			evt_dataset_isLoaded = true;
+		}
+		return evt_dataset_;
+	}
+	vector<TString> &evt_HLT_trigNames()
+	{
+		if (not evt_HLT_trigNames_isLoaded) {
+			if (evt_HLT_trigNames_branch != 0) {
+				evt_HLT_trigNames_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch evt_HLT_trigNames_branch does not exist!\n");
+				exit(1);
+			}
+			evt_HLT_trigNames_isLoaded = true;
+		}
+		return evt_HLT_trigNames_;
+	}
+	vector<TString> &evt_L1_trigNames()
+	{
+		if (not evt_L1_trigNames_isLoaded) {
+			if (evt_L1_trigNames_branch != 0) {
+				evt_L1_trigNames_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch evt_L1_trigNames_branch does not exist!\n");
+				exit(1);
+			}
+			evt_L1_trigNames_isLoaded = true;
+		}
+		return evt_L1_trigNames_;
+	}
 	vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<double>,ROOT::Math::DefaultCoordinateSystemTag> > &scs_pos()
 	{
 		if (not scs_pos_isLoaded) {
