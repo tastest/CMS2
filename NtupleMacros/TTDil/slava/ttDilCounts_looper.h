@@ -2,7 +2,7 @@
 #ifndef ttDilCounts_looper_H
 #define ttDilCounts_looper_H
 // switch to V6 later
-#include "CMS2V010201.h"
+#include "CMS2V010206.h"
 #include "TH1F.h"
 
 class ttDilCounts_looper {
