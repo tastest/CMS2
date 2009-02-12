@@ -111,7 +111,7 @@ Sample fDYee ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V01-02-06/ZJets-madgraph_Fall08_IDEAL_V9_v1/merged_ntuple*.root";
      }
      c->Add(sample.c_str());
-     Sample ret = { c, DYee, kMagenta, 1.12, "dyee", true };
+     Sample ret = { c, DYee, kMagenta, 1, "dyee", true };
      return ret;
 }
 
@@ -127,7 +127,7 @@ Sample fDYmm ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V01-02-06/ZJets-madgraph_Fall08_IDEAL_V9_v1/merged_ntuple*.root";
      }
      c->Add(sample.c_str());
-     Sample ret = { c, DYmm, kCyan, 1.12, "dymm", true };
+     Sample ret = { c, DYmm, kCyan, 1, "dymm", true };
      return ret;
 }
 
@@ -143,7 +143,7 @@ Sample fDYtt ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V01-02-06/ZJets-madgraph_Fall08_IDEAL_V9_v1/merged_ntuple*.root";
      }
      c->Add(sample.c_str());
-     Sample ret = { c, DYtt, kBlack, 1.12, "dytt", true };
+     Sample ret = { c, DYtt, kBlack, 1, "dytt", true };
      return ret;
 }
 
@@ -159,7 +159,7 @@ Sample fttbar ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V01-02-06/TTJets-madgraph_Fall08_IDEAL_V9_v1/merged_ntuple*.root";
      }
      c->Add(sample.c_str());
-     Sample ret = { c, ttbar, kYellow, 1.85, "ttbar", true };
+     Sample ret = { c, ttbar, kYellow, 1, "ttbar", true };
      return ret;
 }
 
@@ -173,7 +173,7 @@ Sample fttbar_taula ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V01-02-06/TauolaTTbar-Pythia/merged_ntuple*.root";
      }
      c->Add(sample.c_str());
-     Sample ret = { c, ttbar, kYellow, 1.85, "ttbartauola", true };
+     Sample ret = { c, ttbar, kYellow, 1, "ttbartauola", true };
      return ret;
 }
 
