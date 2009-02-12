@@ -26,10 +26,8 @@ using namespace std;
 #include "../CORE/selections.cc"
 #endif
 
-static int hypos_total_n[4];
-static double hypos_total_weight[4];
-
-// static double evt_scale1fb;
+TH1F* hypos_total;
+TH1F* hypos_total_weighted;
 
 enum Sample {WW, WZ, ZZ, Wjets, DYee, DYmm, DYtt, ttbar, tW}; // signal samples
 enum Hypothesis {MM, EM, EE, ALL}; // hypothesis types (em and me counted as same) and all
@@ -42,7 +40,7 @@ Bool_t comparePt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1,
 
 struct DorkyEventIdentifier {
      // this is a workaround for not having unique event id's in MC
-     unsigned long int run, event;
+     unsigned long int run, event, lumi;
      float trks_d0;
      float hyp_lt_pt, hyp_lt_eta, hyp_lt_phi;
      bool operator < (const DorkyEventIdentifier &) const;
@@ -172,8 +170,34 @@ TH1F* heleRelIso[4]; //  Iso variable defined as pt/(pt+sum) for electron
 TH1F* hmuRelIso[4]; //  Iso variable defined as pt/(pt+sum) for muons
 
 // Histograms with only basic cuts
-TH1F* helEcalJuraIso[4]; // electron ECAL Jurassic isolation based on basic clusters
-TH1F* helEcalPatIso[4];   // electron ECAL PAT Jurassic isolation based on rec hits
+TH1F* helTrkIsoPassId;      // electron trk isolation passed el ID
+TH1F* helTrkPatIsoPassId;   // electron trk PAT isolation passed  el ID
+TH1F* helTrkIsoNoId;        // electron trk isolation no el ID
+TH1F* helTrkPatIsoNoId;     // electron trk PAT isolation no el ID
+TH1F* helTrkIsoFailId;      // electron trk isolation failed el ID
+TH1F* helTrkPatIsoFailId;   // electron trk PAT failed el ID
+
+TH1F* helEcalJuraIsoPassId;  // electron ECAL Jurassic isolation based on basic clusters with el ID
+TH1F* helEcalPatIsoPassId;   // electron ECAL PAT Jurassic isolation based on rec hits with el ID
+TH1F* helEcalJuraIsoNoId;    // electron ECAL Jurassic isolation based on basic clusters no el ID
+TH1F* helEcalPatIsoNoId;     // electron ECAL PAT Jurassic isolation based on rec hits no el ID
+TH1F* helEcalJuraIsoFailId;    // electron ECAL Jurassic isolation based on basic clusters failed el ID
+TH1F* helEcalPatIsoFailId;     // electron ECAL PAT Jurassic isolation based on rec hits failed el ID
+
+TH1F* helHcalConeIsoPassId;  // electron HCAL tower isolation based on basic clusters with el ID
+TH1F* helHcalPatIsoPassId;   // electron HCAL PAT isolation based on rec hits with el ID
+TH1F* helHcalConeIsoNoId;    // electron HCAL tower isolation based on basic clusters no el ID
+TH1F* helHcalPatIsoNoId;     // electron HCAL PAT isolation based on rec hits no el ID
+TH1F* helHcalConeIsoFailId;    // electron HCAL tower isolation based on basic clusters failed el ID
+TH1F* helHcalPatIsoFailId;     // electron HCAL PAT isolation based on rec hits failed el ID
+
+TH1F* helRelIsoPassId;  // electron relative iso (trk+ecal+hcal) CMS2 with weights 1,1,1 passed el ID
+TH1F* helRelIsoNoId;    // electron relative iso (trk+ecal+hcal) CMS2 with weights 1,1,1 no el ID
+TH1F* helRelIsoFailId;  // electron relative iso (trk+ecal+hcal) CMS2 with weights 1,1,1 failed el ID
+
+TH1F* helRelPatIsoPassId;  // electron relative iso (trk+ecal+hcal) PAT with weights 1,1,1 passed el ID
+TH1F* helRelPatIsoNoId;    // electron relative iso (trk+ecal+hcal) PAT with weights 1,1,1 no el ID
+TH1F* helRelPatIsoFailId;  // electron relative iso (trk+ecal+hcal) PAT with weights 1,1,1 failed el ID
 
 // fkw September 2008 final hist used for muon tags estimate of top bkg
 TH2F* hextramuonsvsnjet[4];
@@ -195,10 +219,118 @@ struct hypo_monitor{
     
 hypo_monitor monitor;
 
-  
+void checkIsolation(int i_hyp, double weight){
+  // LT
+  if ( abs(cms2.hyp_lt_id()[i_hyp]) == 11 ) { 
+    helTrkIsoNoId->Fill(      cms2.els_tkIso()[cms2.hyp_lt_index()[i_hyp]], weight );
+    helTrkPatIsoNoId->Fill(   cms2.els_pat_trackIso()[cms2.hyp_lt_index()[i_hyp]], weight );
+    helEcalJuraIsoNoId->Fill( cms2.els_ecalJuraIso()[cms2.hyp_lt_index()[i_hyp]], weight );
+    helEcalPatIsoNoId->Fill(  cms2.els_pat_ecalIso()[cms2.hyp_lt_index()[i_hyp]], weight );
+    helHcalConeIsoNoId->Fill( cms2.els_hcalConeIso()[cms2.hyp_lt_index()[i_hyp]], weight );
+    helHcalPatIsoNoId->Fill(  cms2.els_pat_hcalIso()[cms2.hyp_lt_index()[i_hyp]], weight );
+    double sum = cms2.els_tkIso()[cms2.hyp_lt_index()[i_hyp]] +
+      cms2.els_ecalJuraIso()[cms2.hyp_lt_index()[i_hyp]] +
+      cms2.els_hcalConeIso()[cms2.hyp_lt_index()[i_hyp]];
+    helRelIsoNoId->Fill(cms2.hyp_lt_p4()[i_hyp].pt()/(cms2.hyp_lt_p4()[i_hyp].pt()+sum) , weight);
+    double sum2 = cms2.els_pat_trackIso()[cms2.hyp_lt_index()[i_hyp]] +
+      cms2.els_pat_ecalIso()[cms2.hyp_lt_index()[i_hyp]] +
+      cms2.els_pat_hcalIso()[cms2.hyp_lt_index()[i_hyp]];
+    helRelPatIsoNoId->Fill(cms2.hyp_lt_p4()[i_hyp].pt()/(cms2.hyp_lt_p4()[i_hyp].pt()+sum2) , weight);
+    if ( cms2.els_robustId()[cms2.hyp_lt_index()[i_hyp]] ) {
+      helTrkIsoPassId->Fill(      cms2.els_tkIso()[cms2.hyp_lt_index()[i_hyp]], weight );
+      helTrkPatIsoPassId->Fill(   cms2.els_pat_trackIso()[cms2.hyp_lt_index()[i_hyp]], weight );
+      helEcalJuraIsoPassId->Fill( cms2.els_ecalJuraIso()[cms2.hyp_lt_index()[i_hyp]], weight );
+      helEcalPatIsoPassId->Fill(  cms2.els_pat_ecalIso()[cms2.hyp_lt_index()[i_hyp]], weight );
+      helHcalConeIsoPassId->Fill( cms2.els_hcalConeIso()[cms2.hyp_lt_index()[i_hyp]], weight );
+      helHcalPatIsoPassId->Fill(  cms2.els_pat_hcalIso()[cms2.hyp_lt_index()[i_hyp]], weight );
+      double sum = cms2.els_tkIso()[cms2.hyp_lt_index()[i_hyp]] +
+	cms2.els_ecalJuraIso()[cms2.hyp_lt_index()[i_hyp]] +
+	cms2.els_hcalConeIso()[cms2.hyp_lt_index()[i_hyp]];
+      helRelIsoPassId->Fill(cms2.hyp_lt_p4()[i_hyp].pt()/(cms2.hyp_lt_p4()[i_hyp].pt()+sum) , weight);
+      double sum2 = cms2.els_pat_trackIso()[cms2.hyp_lt_index()[i_hyp]] +
+	cms2.els_pat_ecalIso()[cms2.hyp_lt_index()[i_hyp]] +
+	cms2.els_pat_hcalIso()[cms2.hyp_lt_index()[i_hyp]];
+      helRelPatIsoPassId->Fill(cms2.hyp_lt_p4()[i_hyp].pt()/(cms2.hyp_lt_p4()[i_hyp].pt()+sum2) , weight);
+    } else {
+      helTrkIsoFailId->Fill(      cms2.els_tkIso()[cms2.hyp_lt_index()[i_hyp]], weight );
+      helTrkPatIsoFailId->Fill(   cms2.els_pat_trackIso()[cms2.hyp_lt_index()[i_hyp]], weight );
+      helEcalJuraIsoFailId->Fill( cms2.els_ecalJuraIso()[cms2.hyp_lt_index()[i_hyp]], weight );
+      helEcalPatIsoFailId->Fill(  cms2.els_pat_ecalIso()[cms2.hyp_lt_index()[i_hyp]], weight );
+      helHcalConeIsoFailId->Fill( cms2.els_hcalConeIso()[cms2.hyp_lt_index()[i_hyp]], weight );
+      helHcalPatIsoFailId->Fill(  cms2.els_pat_hcalIso()[cms2.hyp_lt_index()[i_hyp]], weight );
+      double sum = cms2.els_tkIso()[cms2.hyp_lt_index()[i_hyp]] +
+	cms2.els_ecalJuraIso()[cms2.hyp_lt_index()[i_hyp]] +
+	cms2.els_hcalConeIso()[cms2.hyp_lt_index()[i_hyp]];
+      helRelIsoFailId->Fill(cms2.hyp_lt_p4()[i_hyp].pt()/(cms2.hyp_lt_p4()[i_hyp].pt()+sum) , weight);
+      double sum2 = cms2.els_pat_trackIso()[cms2.hyp_lt_index()[i_hyp]] +
+	cms2.els_pat_ecalIso()[cms2.hyp_lt_index()[i_hyp]] +
+	cms2.els_pat_hcalIso()[cms2.hyp_lt_index()[i_hyp]];
+      helRelPatIsoFailId->Fill(cms2.hyp_lt_p4()[i_hyp].pt()/(cms2.hyp_lt_p4()[i_hyp].pt()+sum2) , weight);
+    }
+  }
+  // LL
+  if ( abs(cms2.hyp_ll_id()[i_hyp]) == 11 ) { 
+    helTrkIsoNoId->Fill(      cms2.els_tkIso()[cms2.hyp_ll_index()[i_hyp]], weight );
+    helTrkPatIsoNoId->Fill(   cms2.els_pat_trackIso()[cms2.hyp_ll_index()[i_hyp]], weight );
+    helEcalJuraIsoNoId->Fill( cms2.els_ecalJuraIso()[cms2.hyp_ll_index()[i_hyp]], weight );
+    helEcalPatIsoNoId->Fill(  cms2.els_pat_ecalIso()[cms2.hyp_ll_index()[i_hyp]], weight );
+    helHcalConeIsoNoId->Fill( cms2.els_hcalConeIso()[cms2.hyp_ll_index()[i_hyp]], weight );
+    helHcalPatIsoNoId->Fill(  cms2.els_pat_hcalIso()[cms2.hyp_ll_index()[i_hyp]], weight );
+    double sum = cms2.els_tkIso()[cms2.hyp_ll_index()[i_hyp]] +
+      cms2.els_ecalJuraIso()[cms2.hyp_ll_index()[i_hyp]] +
+      cms2.els_hcalConeIso()[cms2.hyp_ll_index()[i_hyp]];
+    helRelIsoNoId->Fill(cms2.hyp_ll_p4()[i_hyp].pt()/(cms2.hyp_ll_p4()[i_hyp].pt()+sum) , weight);
+    double sum2 = cms2.els_pat_trackIso()[cms2.hyp_ll_index()[i_hyp]] +
+      cms2.els_pat_ecalIso()[cms2.hyp_ll_index()[i_hyp]] +
+      cms2.els_pat_hcalIso()[cms2.hyp_ll_index()[i_hyp]];
+    helRelPatIsoNoId->Fill(cms2.hyp_ll_p4()[i_hyp].pt()/(cms2.hyp_ll_p4()[i_hyp].pt()+sum2) , weight);
+    if ( cms2.els_robustId()[cms2.hyp_ll_index()[i_hyp]] ) {
+      helTrkIsoPassId->Fill(      cms2.els_tkIso()[cms2.hyp_ll_index()[i_hyp]], weight );
+      helTrkPatIsoPassId->Fill(   cms2.els_pat_trackIso()[cms2.hyp_ll_index()[i_hyp]], weight );
+      helEcalJuraIsoPassId->Fill( cms2.els_ecalJuraIso()[cms2.hyp_ll_index()[i_hyp]], weight );
+      helEcalPatIsoPassId->Fill(  cms2.els_pat_ecalIso()[cms2.hyp_ll_index()[i_hyp]], weight );
+      helHcalConeIsoPassId->Fill( cms2.els_hcalConeIso()[cms2.hyp_ll_index()[i_hyp]], weight );
+      helHcalPatIsoPassId->Fill(  cms2.els_pat_hcalIso()[cms2.hyp_ll_index()[i_hyp]], weight );
+      double sum = cms2.els_tkIso()[cms2.hyp_ll_index()[i_hyp]] +
+	cms2.els_ecalJuraIso()[cms2.hyp_ll_index()[i_hyp]] +
+	cms2.els_hcalConeIso()[cms2.hyp_ll_index()[i_hyp]];
+      helRelIsoPassId->Fill(cms2.hyp_ll_p4()[i_hyp].pt()/(cms2.hyp_ll_p4()[i_hyp].pt()+sum) , weight);
+      double sum2 = cms2.els_pat_trackIso()[cms2.hyp_ll_index()[i_hyp]] +
+	cms2.els_pat_ecalIso()[cms2.hyp_ll_index()[i_hyp]] +
+	cms2.els_pat_hcalIso()[cms2.hyp_ll_index()[i_hyp]];
+      helRelPatIsoPassId->Fill(cms2.hyp_ll_p4()[i_hyp].pt()/(cms2.hyp_ll_p4()[i_hyp].pt()+sum2) , weight);
+    } else {
+      helTrkIsoFailId->Fill(      cms2.els_tkIso()[cms2.hyp_ll_index()[i_hyp]], weight );
+      helTrkPatIsoFailId->Fill(   cms2.els_pat_trackIso()[cms2.hyp_ll_index()[i_hyp]], weight );
+      helEcalJuraIsoFailId->Fill( cms2.els_ecalJuraIso()[cms2.hyp_ll_index()[i_hyp]], weight );
+      helEcalPatIsoFailId->Fill(  cms2.els_pat_ecalIso()[cms2.hyp_ll_index()[i_hyp]], weight );
+      helHcalConeIsoFailId->Fill( cms2.els_hcalConeIso()[cms2.hyp_ll_index()[i_hyp]], weight );
+      helHcalPatIsoFailId->Fill(  cms2.els_pat_hcalIso()[cms2.hyp_ll_index()[i_hyp]], weight );
+      double sum = cms2.els_tkIso()[cms2.hyp_ll_index()[i_hyp]] +
+	cms2.els_ecalJuraIso()[cms2.hyp_ll_index()[i_hyp]] +
+	cms2.els_hcalConeIso()[cms2.hyp_ll_index()[i_hyp]];
+      helRelIsoFailId->Fill(cms2.hyp_ll_p4()[i_hyp].pt()/(cms2.hyp_ll_p4()[i_hyp].pt()+sum) , weight);
+      double sum2 = cms2.els_pat_trackIso()[cms2.hyp_ll_index()[i_hyp]] +
+	cms2.els_pat_ecalIso()[cms2.hyp_ll_index()[i_hyp]] +
+	cms2.els_pat_hcalIso()[cms2.hyp_ll_index()[i_hyp]];
+      helRelPatIsoFailId->Fill(cms2.hyp_ll_p4()[i_hyp].pt()/(cms2.hyp_ll_p4()[i_hyp].pt()+sum2) , weight);
+    }
+  }
+}
 
 void hypo (int i_hyp, double kFactor) 
 {
+     int myType = 99;
+     if (cms2.hyp_type()[i_hyp] == 3) myType = 0;  // ee
+     if (cms2.hyp_type()[i_hyp] == 0) myType = 1;  // mm
+     if (cms2.hyp_type()[i_hyp] == 1 || cms2.hyp_type()[i_hyp] == 2) myType=2; // em
+     if (myType == 99) {
+	  std::cout << "YUK:  unknown dilepton type = " << cms2.hyp_type()[i_hyp] << std::endl;
+	  return;
+     }
+     // The event weight including the kFactor (scaled to 1 fb-1)
+     float weight = cms2.evt_scale1fb() * kFactor;
+
      unsigned int icounter(0);
      monitor.count(icounter++,"Total number of hypothesis: ");
      
@@ -210,12 +342,16 @@ void hypo (int i_hyp, double kFactor)
      // Require opposite sign
      if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) return;
      
+     // check electron isolation and id (no selection at this point)
+     checkIsolation(i_hyp, weight);
+
      // Z mass veto using hyp_leptons for ee and mumu final states
      if (cms2.hyp_type()[i_hyp] == 0 || cms2.hyp_type()[i_hyp] == 3) {
-	  if (inZmassWindow(cms2.hyp_p4()[i_hyp].mass())) return;
+       if (inZmassWindow(cms2.hyp_p4()[i_hyp].mass())) return;
      }
+
      // Z veto using additional leptons in the event
-     if (additionalZveto()) return;
+     // if (additionalZveto()) return;
      monitor.count(icounter++,"Total number of hypothesis after lepton pt + z vetos: ");
      
      // Muon quality cuts, including isolation
@@ -236,41 +372,34 @@ void hypo (int i_hyp, double kFactor)
      monitor.count(icounter++,"Total number of hypothesis after full lepton selection + z vetos + MET cuts: ");
      
      // trkjet veto
-     if ( !passTrkJetVeto(i_hyp) ) return;
+     // if ( !passTrkJetVeto(i_hyp) ) return;
+     unsigned int nJPT = nJPTs(i_hyp);
+     
+     // 2D hist for muon tag counting
+     int countmus = numberOfExtraMuons(i_hyp);;
+     hextramuonsvsnjet[myType]->Fill(countmus, nJPT, weight);
+     hextramuonsvsnjet[3]->Fill(countmus, nJPT, weight);
+     
+     // jet veto
+     if ( nJPT > 0 ) return;
+     // if ( nCaloJets(i_hyp) > 0 ) return;
 
-     // extra muon veto (second argument is true if only soft non-isolated muons should be considered)
-     if ( !passMuonBVeto(i_hyp,false) ) return;
+     // extra muon veto
+     if ( countmus >0 ) return;
 
-     // CSA07 bugfix: nTrks > 2 - clean up veto on non-hardronized events
-     // if ( cms2.trks_trk_p4().size() < 3 ) return;
-
-     // The event weight including the kFactor (scaled to 1 fb-1)
-     float weight = cms2.evt_scale1fb() * kFactor;
-
-     // For top group political reasons, we rescale to 10 pb-1
-     //  weight = weight/100.
-
-     // If we made it to here, we passed all cuts and we are ready to fill
-     int myType = 99;
-     if (cms2.hyp_type()[i_hyp] == 3) myType = 0;  // ee
-     if (cms2.hyp_type()[i_hyp] == 0) myType = 1;  // mm
-     if (cms2.hyp_type()[i_hyp] == 1 || cms2.hyp_type()[i_hyp] == 2) myType=2; // em
-     if (myType == 99) {
-	  std::cout << "YUK:  unknown dilepton type = " << cms2.hyp_type()[i_hyp] << std::endl;
-	  return;
-     }
-
-     //cout << " passed all cuts for WW " << endl;
-
-     hypos_total_n[myType]++;
-     hypos_total_n[3]++;
-     hypos_total_weight[myType] += weight;
-     hypos_total_weight[3] += weight;
+     // -------------------------------------------------------------------//
+     // If we made it to here, we passed all cuts and we are ready to fill //
+     // -------------------------------------------------------------------//
+     
+     hypos_total->Fill(myType);
+     hypos_total->Fill(3);
+     hypos_total_weighted->Fill(myType,weight);
+     hypos_total_weighted->Fill(3,weight);
 
      // jet count
      hnJet[myType]->Fill(cms2.hyp_njets()[i_hyp], weight);
      hnJet[3]->Fill(cms2.hyp_njets()[i_hyp], weight);
-    
+     
      // lepton Pt
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) helePt[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
      if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) helePt[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
@@ -441,17 +570,6 @@ void hypo (int i_hyp, double kFactor)
 	  }
      }//end of if-clause requiring at least one jet
 
-     //2d hist for muon tag counting
-     float countmus = 0;
-     for (int imu=0; imu < int(cms2.mus_charge().size()); ++imu) {
-       if ( myType == 0 ||
-	    ( myType == 1 && cms2.hyp_lt_index()[i_hyp] != imu && cms2.hyp_ll_index()[i_hyp] != imu ) ||
-	    ( myType == 2 && abs(cms2.hyp_lt_id()[i_hyp]) == 11 && cms2.hyp_ll_index()[i_hyp] != imu ) ||
-	    ( myType == 2 && abs(cms2.hyp_ll_id()[i_hyp]) == 11 && cms2.hyp_lt_index()[i_hyp] != imu )
-	    ) ++countmus;       
-     }
-     hextramuonsvsnjet[myType]->Fill(countmus, cms2.hyp_njets()[i_hyp],weight);
-     hextramuonsvsnjet[3]->Fill(countmus, cms2.hyp_njets()[i_hyp],weight);
 
 }//end of void hypo
 
@@ -493,6 +611,15 @@ int ScanChain( TChain* chain, enum Sample sample ) {
   suffix[1] = "mm";
   suffix[2] = "em";
   suffix[3] = "all";
+  
+  hypos_total          = new TH1F(Form("%s_hypos_total",prefix),"Total number of hypothesis counts",4,0,4);
+  hypos_total_weighted = new TH1F(Form("%s_hypos_total_weighted",prefix),"Total number of hypotheses (weighted)",4,0,4);
+  hypos_total_weighted->Sumw2();
+
+  for (unsigned int i=0; i<4; ++i){
+    hypos_total->GetXaxis()->SetBinLabel(i+1,suffix[i]);
+    hypos_total_weighted->GetXaxis()->SetBinLabel(i+1,suffix[i]);
+  }
   
   // The statement below should work but does not work due to bug in root when TH2 are also used
   // Rene Brun promised a fix.
@@ -609,9 +736,107 @@ int ScanChain( TChain* chain, enum Sample sample ) {
     hextramuonsvsnjet[i]->Sumw2();
 
   }
+  
+  helTrkIsoPassId = new TH1F(Form("%s_helTrkIsoPassId",prefix),
+				  Form("%s - electron trk isolation passed robust el id",prefix),
+				  100, 0., 20.);
+  helTrkIsoPassId->Sumw2();
+  helTrkIsoFailId = new TH1F(Form("%s_helTrkIsoFailId",prefix),
+				  Form("%s - electron trk isolation failed robust el id",prefix),
+				  100, 0., 20.);
+  helTrkIsoFailId->Sumw2();
+  helTrkIsoNoId   = new TH1F(Form("%s_helTrkIsoNoId",prefix),
+				  Form("%s - electron trk isolation without el id",prefix),
+				  100, 0., 20.);
+  helTrkIsoNoId->Sumw2();
+  helTrkPatIsoPassId  = new TH1F(Form("%s_helTrkPatIsoPassId",prefix),
+				  Form("%s - electron trk PAT isolation passed robust el id",prefix),
+				  100, 0., 20.);
+  helTrkPatIsoPassId->Sumw2();
+  helTrkPatIsoFailId  = new TH1F(Form("%s_helTrkPatIsoFailId",prefix),
+				  Form("%s - electron trk PAT isolation failed robust el id",prefix),
+				  100, 0., 20.);
+  helTrkPatIsoFailId->Sumw2();
+  helTrkPatIsoNoId    = new TH1F(Form("%s_helTrkPatIsoNoId",prefix),
+				  Form("%s - electron trk PAT isolation without el id",prefix),
+				  100, 0., 20.);
+  helTrkPatIsoNoId->Sumw2();
+  
+  helEcalJuraIsoPassId = new TH1F(Form("%s_helEcalJuraIsoPassId",prefix),
+				  Form("%s - electron ecal jurassic isolation based on basic clusters passed robust el id",prefix),
+				  100, 0., 20.);
+  helEcalJuraIsoPassId->Sumw2();
+  helEcalJuraIsoFailId = new TH1F(Form("%s_helEcalJuraIsoFailId",prefix),
+				  Form("%s - electron ecal jurassic isolation based on basic clusters failed robust el id",prefix),
+				  100, 0., 20.);
+  helEcalJuraIsoFailId->Sumw2();
+  helEcalJuraIsoNoId   = new TH1F(Form("%s_helEcalJuraIsoNoId",prefix),
+				  Form("%s - electron ecal jurassic isolation based on basic clusters without el id",prefix),
+				  100, 0., 20.);
+  helEcalJuraIsoNoId->Sumw2();
+  helEcalPatIsoPassId  = new TH1F(Form("%s_helEcalPatIsoPassId",prefix),
+				  Form("%s - electron ecal jurassic isolation based on rechits pass robust el id",prefix),
+				  100, 0., 20.);
+  helEcalPatIsoPassId->Sumw2();
+  helEcalPatIsoFailId  = new TH1F(Form("%s_helEcalPatIsoFailId",prefix),
+				  Form("%s - electron ecal jurassic isolation based on rechits failed robust el id",prefix),
+				  100, 0., 20.);
+  helEcalPatIsoFailId->Sumw2();
+  helEcalPatIsoNoId    = new TH1F(Form("%s_helEcalPatIsoNoId",prefix),
+				  Form("%s - electron ecal jurassic isolation based on rechits without el id",prefix),
+				  100, 0., 20.);
+  helEcalPatIsoNoId->Sumw2();
 
-  memset(hypos_total_n, 0, sizeof(hypos_total_n));
-  memset(hypos_total_weight, 0, sizeof(hypos_total_weight));
+  helHcalConeIsoPassId = new TH1F(Form("%s_helHcalConeIsoPassId",prefix),
+				  Form("%s - electron hcal cone isolation based on basic clusters passed robust el id",prefix),
+				  100, 0., 20.);
+  helHcalConeIsoPassId->Sumw2();
+  helHcalConeIsoFailId = new TH1F(Form("%s_helHcalConeIsoFailId",prefix),
+				  Form("%s - electron hcal cone isolation based on basic clusters failed robust el id",prefix),
+				  100, 0., 20.);
+  helHcalConeIsoFailId->Sumw2();
+  helHcalConeIsoNoId   = new TH1F(Form("%s_helHcalConeIsoNoId",prefix),
+				  Form("%s - electron hcal cone isolation based on basic clusters without el id",prefix),
+				  100, 0., 20.);
+  helHcalConeIsoNoId->Sumw2();
+  helHcalPatIsoPassId  = new TH1F(Form("%s_helHcalPatIsoPassId",prefix),
+				  Form("%s - electron hcal cone isolation based on rechits pass robust el id",prefix),
+				  100, 0., 20.);
+  helHcalPatIsoPassId->Sumw2();
+  helHcalPatIsoFailId  = new TH1F(Form("%s_helHcalPatIsoFailId",prefix),
+				  Form("%s - electron hcal cone isolation based on rechits failed robust el id",prefix),
+				  100, 0., 20.);
+  helHcalPatIsoFailId->Sumw2();
+  helHcalPatIsoNoId    = new TH1F(Form("%s_helHcalPatIsoNoId",prefix),
+				  Form("%s - electron hcal cone isolation based on rechits without el id",prefix),
+				  100, 0., 20.);
+  helHcalPatIsoNoId->Sumw2();
+  
+  helRelIsoPassId = new TH1F(Form("%s_helRelIsoPassId",prefix),
+				  Form("%s - electron relative iso (trk+ecal+hcal) CMS2 with weights 1,1,1 passed robust el id",prefix),
+				  120, 0., 1.2);
+  helRelIsoPassId->Sumw2();
+  helRelIsoFailId = new TH1F(Form("%s_helRelIsoFailId",prefix),
+				  Form("%s - electron relative iso (trk+ecal+hcal) CMS2 with weights 1,1,1 failed robust el id",prefix),
+				  120, 0., 1.2);
+  helRelIsoFailId->Sumw2();
+  helRelIsoNoId   = new TH1F(Form("%s_helRelIsoNoId",prefix),
+				  Form("%s - electron relative iso (trk+ecal+hcal) CMS2 with weights 1,1,1 without el id",prefix),
+				  120, 0., 1.2);
+  helRelIsoNoId->Sumw2();
+  helRelPatIsoPassId  = new TH1F(Form("%s_helRelPatIsoPassId",prefix),
+				  Form("%s - electron relative iso (trk+ecal+hcal) PAT with weights 1,1,1 passed robust el id",prefix),
+				  120, 0., 1.2);
+  helRelPatIsoPassId->Sumw2();
+  helRelPatIsoFailId  = new TH1F(Form("%s_helRelPatIsoFailId",prefix),
+				  Form("%s - electron relative iso (trk+ecal+hcal) PAT with weights 1,1,1 failed robust el id",prefix),
+				  120, 0., 1.2);
+  helRelPatIsoFailId->Sumw2();
+  helRelPatIsoNoId    = new TH1F(Form("%s_helRelPatIsoNoId",prefix),
+				  Form("%s - electron relative iso (trk+ecal+hcal) PAT with weights 1,1,1 without el id",prefix),
+				  120, 0., 1.2);
+  helRelPatIsoNoId->Sumw2();
+
 
   // clear list of duplicates
   already_seen.clear();
@@ -642,11 +867,12 @@ int ScanChain( TChain* chain, enum Sample sample ) {
 	    ++nEventsTotal;
 	    if (cms2.trks_d0().size() == 0)
 		 continue;
-	    DorkyEventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.trks_d0()[0], 
+	    DorkyEventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.evt_lumiBlock(), cms2.trks_d0()[0], 
 					cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
 	    if (is_duplicate(id)) {
 		 duplicates_total_n++;
 		 duplicates_total_weight += cms2.evt_scale1fb();
+		 // cout << "Duplicate event found. Run: " << cms2.evt_run() << ", Event:" << cms2.evt_event() << ", Lumi: " << cms2.evt_lumiBlock() << endl;
 		 continue;
 	    }
 
@@ -690,9 +916,11 @@ int ScanChain( TChain* chain, enum Sample sample ) {
 	      " of events (%d)\n", nEventsChain, nEventsTotal);
   }
 
-  printf("Total candidate count (ee em mm all): %d %d %d %d.  Total weight %f %f %f %f\n",   
-	 hypos_total_n[0], hypos_total_n[1], hypos_total_n[2], hypos_total_n[3], 
-	 hypos_total_weight[0], hypos_total_weight[1], hypos_total_weight[2], hypos_total_weight[3]);
+  printf("Total candidate count (ee mm em all): %.0f %.0f %.0f %0.f.  Total weight %f %f %f %f\n",   
+	 hypos_total->GetBinContent(1), hypos_total->GetBinContent(2), 
+	 hypos_total->GetBinContent(3), hypos_total->GetBinContent(4),
+	 hypos_total_weighted->GetBinContent(1), hypos_total_weighted->GetBinContent(2), 
+	 hypos_total_weighted->GetBinContent(3), hypos_total_weighted->GetBinContent(4));
   
   return 0;
 }

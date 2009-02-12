@@ -46,7 +46,7 @@ bool inZmassWindow (float mass) {
 // Electron ID without isolation
 //----------------------------------------------------------------
 bool goodElectronWithoutIsolation(int index) {
-  if ( cms2.els_tightId().at(index)     !=  1) return false;
+  if ( cms2.els_tightId22XMinMatteo().at(index)     !=  1) return false;
   if ( cms2.els_closestMuon().at(index) != -1) return false;
   if ( TMath::Abs(cms2.els_d0corr().at(index)) > 0.025)   return false;
   return true;
@@ -55,7 +55,7 @@ bool goodElectronWithoutIsolation(int index) {
 // Electron ID without isolation or d0 cut
 //----------------------------------------------------------------
 bool goodElectronWithoutIsolationWithoutd0(int index) {
-  if ( cms2.els_tightId().at(index)     !=  1) return false;
+  if ( cms2.els_tightId22XMinMatteo().at(index)     !=  1) return false;
   if ( cms2.els_closestMuon().at(index) != -1) return false;
   return true;
 }
@@ -72,9 +72,9 @@ bool goodLooseElectronWithoutIsolation(int index) {
 // Muon ID without isolation
 //---------------------------------------------------------------
 bool goodMuonWithoutIsolation(int index) {
-  if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) > 5.) return false;
-  if (TMath::Abs(cms2.mus_d0corr().at(index))   > 0.25) return false;
-  if (cms2.mus_validHits().at(index) < 7)    return false;
+  if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) > 10.) return false;
+  if (TMath::Abs(cms2.mus_d0corr().at(index))   > 0.2) return false;
+  if (cms2.mus_validHits().at(index) < 11)    return false;
   return true;
 }
 //-----------------------------------------------------------
@@ -174,7 +174,7 @@ bool deltaPhiInElectron (int index)
 bool pass2Met (int i_hyp, const TVector3& corr) {
   // for e-e and mu-mu
   TVector3 hyp_met;
-  hyp_met.SetPtEtaPhi(cms2.hyp_met()[i_hyp], 0, cms2.hyp_metPhi()[i_hyp]);
+  hyp_met.SetPtEtaPhi(cms2.evt_tcmet(), 0, cms2.evt_tcmetPhi());
   hyp_met += corr;
   if (cms2.hyp_type()[i_hyp] == 0 || cms2.hyp_type()[i_hyp] == 3) {
     if (hyp_met.Pt() < 30) return false;
@@ -216,7 +216,7 @@ double MetSpecial(double Met, double MetPhi, int i_hyp)
 //--------------------------------------------
 bool pass4Met(int i_hyp, const TVector3& corr) {
   TVector3 hyp_met;
-  hyp_met.SetPtEtaPhi(cms2.hyp_met()[i_hyp], 0, cms2.hyp_metPhi()[i_hyp]);
+  hyp_met.SetPtEtaPhi(cms2.evt_tcmet(), 0, cms2.evt_tcmetPhi());
   hyp_met += corr;
   double metspec = MetSpecial(hyp_met.Pt(), hyp_met.Phi(), i_hyp);
   if (cms2.hyp_type()[i_hyp] == 0 || cms2.hyp_type()[i_hyp] == 3) {
@@ -423,6 +423,22 @@ bool passTriLepVeto (int i_dilep)
      return false;
 }
 
+int numberOfExtraMuons(int i_hyp){
+  unsigned int nMuons = 0;
+  for (int imu=0; imu < int(cms2.mus_charge().size()); ++imu) {
+    // quality cuts
+    if (  ((cms2.mus_goodmask()[imu]) & (1<<14)) == 0 ) continue; // TMLastStationOptimizedLowPtTight
+    if ( TMath::Abs(cms2.mus_d0corr()[imu]) > 0.2) continue;
+    if ( cms2.mus_validHits()[imu] < 11) continue;
+    if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == imu ) continue;
+    if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == imu ) continue;
+    ++nMuons;
+  }
+  return nMuons;
+}
+/*
+Dima: Commented out since it's not clear how it works and who needs it
+
 bool passMuonBVeto (int i_dilep, bool soft_nonisolated)
 {
      if (soft_nonisolated) {
@@ -443,7 +459,7 @@ bool passMuonBVeto (int i_dilep, bool soft_nonisolated)
      assert(false);
      return false;
 }
-
+*/
 // If there is an extra muon in the event, return its index.  (Otherwise -1) 
 int tagMuonIdx (int i_dilep)
 {
@@ -513,6 +529,23 @@ int nTrkJets(int i_hyp){
   return NjetVeto(trkjets, 15);
 }
 
+// count JPT jets excluding those that are close to the hypothesis leptons
+unsigned int nJPTs(int i_hyp){
+  unsigned int njets(0);
+  const double etThreshold = 20.;
+  const double etaMax      = 3.0;
+  const double vetoCone    = 0.4;
+
+  for ( unsigned int i=0; i < cms2.jpts_p4().size(); ++i) {
+    if ( cms2.jpts_p4()[i].Et() < etThreshold ) continue;
+    if ( TMath::Abs(cms2.jpts_p4()[i].eta()) > etaMax ) continue;
+    if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ||
+	 TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ) continue;
+    ++njets;
+  }
+  return njets;
+}
+
 bool passTrkJetVeto(int i_hyp)
 {
      return nTrkJets(i_hyp) == 0;
@@ -554,66 +587,6 @@ bool trueMuonFromW(int index) {
 
   return muIsFromW;
 }
-
-
-//  moved to Tools/fakerates.cc
-//bool isFakeDenominatorElectron(int index) {
-  //
-  // returns true if input fulfills certain cuts
-  //
-
-  // cut definition
-//  float pt_cut        		= 15.;
-//  float eta_cut       		= 2.5;
-//  float hOverE_cut    		= 0.2;
-//  bool  use_calo_iso            = false;
-
-//  bool result = true;
-
-//  if ( cms2.els_p4()[index].Pt()  < pt_cut )            result = false;
-//  if ( TMath::Abs(cms2.els_p4()[index].Eta()) > eta_cut ) result = false;
-//  if ( !passElectronIsolation(index,use_calo_iso) )          	result = false;
-  //  if ( !passElectronIsolationLoose(index,true) )          	result = false; //v5_2
-//  if ( !passElectronIsolationLoose2(index,true) )          	result = false; //v5_4
-//  if ( cms2.els_hOverE()[index]   > hOverE_cut )        result = false;
-//  if ( cms2.els_closestMuon().at(index) != -1) return false;  // muon veto from nominator, addded 081022
-
-
-//  return result;
-
-//}
-
-// moved to Tools/fakerates.cc
-//bool isFakeNumeratorElectron(int index, int type=0) { 
-  //
-  // 1=loose, 2=tight
-  //
-  // returns true if input fulfills certain cuts
-  //
-  
-  // cut definition
-//  float pt_cut        		= 15;
-//  float eta_cut       		= 2.5;
-//  bool  use_calo_iso            = true;
-
-//  bool result = true;
-
-//  if ( cms2.els_p4()[index].Pt()  < pt_cut )                 result = false;
-//  if ( TMath::Abs(cms2.els_p4()[index].Eta()) > eta_cut )      result = false;
-//  if ( !passElectronIsolation(index,use_calo_iso) )          	result = false;
-//  if ( type == 1 ) {
-//    // loose
-//    if ( !goodLooseElectronWithoutIsolation(index) )   result = false;
-//  } else if ( type == 2 ) {
-//    // tight
-//    if ( !goodElectronWithoutIsolation(index) )   result = false;
-//  } else {
-//    cout << "WARNING: wrong electron type detected, please select loose (1) or tight (2)" << endl;
-//  }
-//
-//  return result;
-//  
-//}
 
 int conversionPartner (int i_el)
 {
