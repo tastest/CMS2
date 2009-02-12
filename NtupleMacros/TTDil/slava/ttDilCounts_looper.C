@@ -52,7 +52,7 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
   
   //ostream& out = cout;
   ofstream outf;
-  outf.open("eventsCMS2.txt");
+  outf.open(Form("eventsCMS2_%d.txt",cutsMask));
   outf << "Starting " << prefix << " bitmask: " << cutsMask << endl;
   
   
@@ -76,6 +76,11 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
   bool leptonIsolationDilSelectionTTDil08 = false;
   bool looseDilSelectionNoIsoTTDil08 = false;
   bool lepton20Eta2p4DilSelection = false;
+  bool metBaselineSelectionTTDil08 = false;
+  bool dilepMassVetoCutTTDil08 = false;
+
+  bool applyTriggersMu9orLisoE15 = false;
+  bool applyTriggersTTDil08JanTrial = false;
 
   if( cutsMask & 1) {
     idcuts = true;
@@ -193,6 +198,26 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
     std::cout<<"Two leptons pt>20 and |eta|<2.4 are selected -- bare minimum"<<std::endl;
   }
 
+  metBaselineSelectionTTDil08 = ((cutsMask>>18)&1);
+  if (metBaselineSelectionTTDil08){
+    std::cout<<"Apply TTDil08 baseline MET selection: use corrected pat-met emu met >20, mm,em met>30"<<std::endl;
+  }
+
+  dilepMassVetoCutTTDil08 = ((cutsMask>>19)&1);
+  if (dilepMassVetoCutTTDil08){
+    std::cout<<"Apply Z mass veto on same flavor dils, use TTDil08 selections"<<std::endl;
+  }
+
+  applyTriggersMu9orLisoE15 = ((cutsMask>>20)&1);
+  if (applyTriggersMu9orLisoE15){
+    std::cout<<"HLT bits: 47 (HLT_LooseIsoEle15_LW_L1R), 82 (HLT_Mu9): ee -- 47, em -- 47 OR 82, mm -- 82"<<std::endl;
+  }
+  applyTriggersTTDil08JanTrial = ((cutsMask>>21)&1);
+  if (applyTriggersTTDil08JanTrial){
+    std::cout<<"HLT bits 45 (IsoEle18_L1R), 54 (DoubleIsoEle12_L1R), 86 (Mu15_L1Mu7), 90 (DoubleMu3), 126 (IsoEle10_Mu10_L1R):\n"
+	     <<"\t ee -- 45 OR 54, mm -- 86 or 90, em -- 45 OR 86 OR 126"<<std::endl;
+  }
+
   // Check that prescale is OK
   if (prescale < 1) {
     cout << "Illegal Prescale = " << prescale << endl;
@@ -253,6 +278,14 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 
       std::vector<unsigned int> goodHyps(0);
 
+      bool hltIsoEle18_L1R = ((evt_HLT2() & (1<<(45-32))) != 0);
+      bool hltLooseIsoEle15_LW_L1R = ((evt_HLT2() & (1<<(47-32))) != 0);
+      bool hltDoubleIsoEle12_L1R = ((evt_HLT2() & (1<<(54-32))) != 0); 
+      bool hltMu9 = ((evt_HLT3() & (1<<(82-64))) != 0);
+      bool hltMu15_L1Mu7 = ((evt_HLT3() & (1<<(86-64))) != 0); 
+      bool hltDoubleMu3 = ((evt_HLT3() & (1<<(90-64))) != 0);
+      bool hltIsoEle10_Mu10_L1R = ((evt_HLT4() & (1<<(126-96))) != 0);
+
       for(unsigned int hypIdx = 0; hypIdx < hyp_p4().size(); hypIdx++) {
        
 	if (applyZWindow && fabs(hyp_p4().at(hypIdx).mass()-91)> 15) continue;
@@ -278,8 +311,8 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	unsigned int i_ll = hyp_ll_index().at(hypIdx);
 	
 	// Cut on lepton Pt
-	if (hyp_lt_p4().at(hypIdx).pt() < 20.0) continue;
-	if (hyp_ll_p4().at(hypIdx).pt() < 20.0) continue;
+// 	if (hyp_lt_p4().at(hypIdx).pt() < 20.0) continue;
+// 	if (hyp_ll_p4().at(hypIdx).pt() < 20.0) continue;
 
 	if(dilepMassVetoCut) {
 	  // Z mass veto using hyp_leptons for ee and mumu final states
@@ -290,6 +323,15 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	  // Z veto using additional leptons in the event
 	  if (additionalZveto()) continue;
 	}
+        if(dilepMassVetoCutTTDil08) {
+          // Z mass veto using hyp_leptons for ee and mumu final states
+          if (hyp_type().at(hypIdx) == 0 || hyp_type().at(hypIdx) == 3) {
+            if (inZmassWindow(hyp_p4().at(hypIdx).mass())) continue;
+          }
+    
+          // Z veto using additional leptons in the event
+          if (additionalZveto(true)) continue; //"true" to use TTDil lepton selections                                                
+        }
 
       
 	// Dima's MET requirement
@@ -297,6 +339,23 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	if (! pass2MetPassed && METcut) continue;
 	if ( pass2MetPassed && METveto ) continue;
 
+	// ! for TTDil analysis this should be made for the event-qualifying hyp only
+	if (!fillMaxWeightDilOnly && metBaselineSelectionTTDil08){
+	  if (! passPatMet_OF20_SF30(hypIdx)) continue;
+	}
+
+	// this is for per-hypothesis choice
+	if (! fillMaxWeightDilOnly && applyTriggersMu9orLisoE15){
+	  if (hyp_type().at(hypIdx) == 0 && ! (hltMu9) ) continue;
+	  if ((hyp_type().at(hypIdx) == 1 || hyp_type().at(hypIdx) == 2) && ! (hltMu9 || hltLooseIsoEle15_LW_L1R)) continue;
+	  if (hyp_type().at(hypIdx) == 3 && ! hltLooseIsoEle15_LW_L1R) continue; 
+	}
+	if (! fillMaxWeightDilOnly && applyTriggersTTDil08JanTrial){
+	  if (hyp_type().at(hypIdx) == 0 && ! (hltMu15_L1Mu7 || hltDoubleMu3) ) continue;
+	  if ((hyp_type().at(hypIdx) == 1 || hyp_type().at(hypIdx) == 2) 
+	      && ! (hltIsoEle18_L1R || hltMu15_L1Mu7 || hltIsoEle10_Mu10_L1R)) continue;
+	  if (hyp_type().at(hypIdx) == 3 && ! (hltIsoEle18_L1R || hltDoubleIsoEle12_L1R) ) continue; 
+	}
 
 	if(idcuts) {
 	  // Muon quality cuts, excluding isolation
@@ -504,6 +563,27 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	}
       }
 
+      // ! event level cut here, can reset the eventPassed to false
+      if (fillMaxWeightDilOnly && metBaselineSelectionTTDil08 && nGoodHyps > 0){
+	if (! passPatMet_OF20_SF30(maxWeightIndex)){
+	  eventPassed = false;
+	  continue;
+	}
+      }
+      // this is for per-hypothesis choice
+      if ( fillMaxWeightDilOnly && applyTriggersMu9orLisoE15 && nGoodHyps>0){
+	if (hyp_type().at(maxWeightIndex) == 0 && ! (hltMu9) ) continue;
+	if ((hyp_type().at(maxWeightIndex) == 1 || hyp_type().at(maxWeightIndex) == 2) 
+	    && ! (hltMu9 || hltLooseIsoEle15_LW_L1R)) continue;
+	if (hyp_type().at(maxWeightIndex) == 3 && ! hltLooseIsoEle15_LW_L1R) continue; 
+      }
+      if ( fillMaxWeightDilOnly && applyTriggersTTDil08JanTrial && nGoodHyps >0){
+	if (hyp_type().at(maxWeightIndex) == 0 && ! (hltMu15_L1Mu7 || hltDoubleMu3) ) continue;
+	if ((hyp_type().at(maxWeightIndex) == 1 || hyp_type().at(maxWeightIndex) == 2) 
+	    && ! (hltIsoEle18_L1R || hltMu15_L1Mu7 || hltIsoEle10_Mu10_L1R)) continue;
+	if (hyp_type().at(maxWeightIndex) == 3 && ! (hltIsoEle18_L1R || hltDoubleIsoEle12_L1R) ) continue; 
+      }
+
       for(unsigned int hypIdxL=0; hypIdxL< nGoodHyps; ++ hypIdxL){
 	unsigned int hypIdx = goodHyps[hypIdxL];
 	if (fillMaxWeightDilOnly && hypIdx != maxWeightIndex) continue;
@@ -517,6 +597,10 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	//float weight = evt_scale1fb * kFactor * prescale;
 	//float weight = CalculateWeight(evt_CSA07Process(), evt_scale1fb(), kFactor, prescale);
 	float weight = kFactor*evt_scale1fb(); // /100; //10pb^-1
+
+	if ( (prefixStr == "ppMuX" || prefixStr == "EM") 
+	     && (hyp_type().at(hypIdx) == 1 || hyp_type().at(hypIdx) == 2)) weight *= 0.5;//this isn't quite right :(
+	//and works only if both em and ppmux are in play
       
 	// If we made it to here, we passed all cuts and we are ready to fill
 	m_events.insert(pair<int,int>(evt_event(), 1));
