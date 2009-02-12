@@ -15,6 +15,289 @@ using namespace std;
 class CMS2 { 
 private: 
 	 TH1F *samplehisto;
+   enum e_HLTTriggers {generation_step,
+		      simulation_step,
+		      digitisation_step,
+		      L1simulation_step,
+		      digi2raw_step,
+		      HLTriggerFirstPath,
+		      HLT_L1Jet15,
+		      HLT_Jet30,
+		      HLT_Jet50,
+		      HLT_Jet80,
+		      HLT_Jet110,
+		      HLT_Jet180,
+		      HLT_Jet250,
+		      HLT_FwdJet20,
+		      HLT_DoubleJet150,
+		      HLT_DoubleJet125_Aco,
+		      HLT_DoubleFwdJet50,
+		      HLT_DiJetAve15,
+		      HLT_DiJetAve30,
+		      HLT_DiJetAve50,
+		      HLT_DiJetAve70,
+		      HLT_DiJetAve130,
+		      HLT_DiJetAve220,
+		      HLT_TripleJet85,
+		      HLT_QuadJet30,
+		      HLT_QuadJet60,
+		      HLT_SumET120,
+		      HLT_L1MET20,
+		      HLT_MET25,
+		      HLT_MET35,
+		      HLT_MET50,
+		      HLT_MET65,
+		      HLT_MET75,
+		      HLT_MET35_HT350,
+		      HLT_Jet180_MET60,
+		      HLT_Jet60_MET70_Aco,
+		      HLT_Jet100_MET60_Aco,
+		      HLT_DoubleJet125_MET60,
+		      HLT_DoubleFwdJet40_MET60,
+		      HLT_DoubleJet60_MET60_Aco,
+		      HLT_DoubleJet50_MET70_Aco,
+		      HLT_DoubleJet40_MET70_Aco,
+		      HLT_TripleJet60_MET60,
+		      HLT_QuadJet35_MET60,
+		      HLT_IsoEle15_L1I,
+		      HLT_IsoEle18_L1R,
+		      HLT_IsoEle15_LW_L1I,
+		      HLT_LooseIsoEle15_LW_L1R,
+		      HLT_Ele10_SW_L1R,
+		      HLT_Ele15_SW_L1R,
+		      HLT_Ele15_LW_L1R,
+		      HLT_EM80,
+		      HLT_EM200,
+		      HLT_DoubleIsoEle10_L1I,
+		      HLT_DoubleIsoEle12_L1R,
+		      HLT_DoubleIsoEle10_LW_L1I,
+		      HLT_DoubleIsoEle12_LW_L1R,
+		      HLT_DoubleEle5_SW_L1R,
+		      HLT_DoubleEle10_LW_OnlyPixelM_L1R,
+		      HLT_DoubleEle10_Z,
+		      HLT_DoubleEle6_Exclusive,
+		      HLT_IsoPhoton30_L1I,
+		      HLT_IsoPhoton10_L1R,
+		      HLT_IsoPhoton15_L1R,
+		      HLT_IsoPhoton20_L1R,
+		      HLT_IsoPhoton25_L1R,
+		      HLT_IsoPhoton40_L1R,
+		      HLT_Photon15_L1R,
+		      HLT_Photon25_L1R,
+		      HLT_DoubleIsoPhoton20_L1I,
+		      HLT_DoubleIsoPhoton20_L1R,
+		      HLT_DoublePhoton10_Exclusive,
+		      HLT_L1Mu,
+		      HLT_L1MuOpen,
+		      HLT_L2Mu9,
+		      HLT_IsoMu9,
+		      HLT_IsoMu11,
+		      HLT_IsoMu13,
+		      HLT_IsoMu15,
+		      HLT_Mu3,
+		      HLT_Mu5,
+		      HLT_Mu7,
+		      HLT_Mu9,
+		      HLT_Mu11,
+		      HLT_Mu13,
+		      HLT_Mu15,
+		      HLT_Mu15_L1Mu7,
+		      HLT_Mu15_Vtx2cm,
+		      HLT_Mu15_Vtx2mm,
+		      HLT_DoubleIsoMu3,
+		      HLT_DoubleMu3,
+		      HLT_DoubleMu3_Vtx2cm,
+		      HLT_DoubleMu3_Vtx2mm,
+		      HLT_DoubleMu3_JPsi,
+		      HLT_DoubleMu3_Upsilon,
+		      HLT_DoubleMu7_Z,
+		      HLT_DoubleMu3_SameSign,
+		      HLT_DoubleMu3_Psi2S,
+		      HLT_BTagIP_Jet180,
+		      HLT_BTagIP_Jet120_Relaxed,
+		      HLT_BTagIP_DoubleJet120,
+		      HLT_BTagIP_DoubleJet60_Relaxed,
+		      HLT_BTagIP_TripleJet70,
+		      HLT_BTagIP_TripleJet40_Relaxed,
+		      HLT_BTagIP_QuadJet40,
+		      HLT_BTagIP_QuadJet30_Relaxed,
+		      HLT_BTagIP_HT470,
+		      HLT_BTagIP_HT320_Relaxed,
+		      HLT_BTagMu_DoubleJet120,
+		      HLT_BTagMu_DoubleJet60_Relaxed,
+		      HLT_BTagMu_TripleJet70,
+		      HLT_BTagMu_TripleJet40_Relaxed,
+		      HLT_BTagMu_QuadJet40,
+		      HLT_BTagMu_QuadJet30_Relaxed,
+		      HLT_BTagMu_HT370,
+		      HLT_BTagMu_HT250_Relaxed,
+		      HLT_DoubleMu3_BJPsi,
+		      HLT_DoubleMu4_BJPsi,
+		      HLT_TripleMu3_TauTo3Mu,
+		      HLT_IsoTau_MET65_Trk20,
+		      HLT_IsoTau_MET35_Trk15_L1MET,
+		      HLT_LooseIsoTau_MET30,
+		      HLT_LooseIsoTau_MET30_L1MET,
+		      HLT_DoubleIsoTau_Trk3,
+		      HLT_DoubleLooseIsoTau,
+		      HLT_IsoEle8_IsoMu7,
+		      HLT_IsoEle10_Mu10_L1R,
+		      HLT_IsoEle12_IsoTau_Trk3,
+		      HLT_IsoEle10_BTagIP_Jet35,
+		      HLT_IsoEle12_Jet40,
+		      HLT_IsoEle12_DoubleJet80,
+		      HLT_IsoEle5_TripleJet30,
+		      HLT_IsoEle12_TripleJet60,
+		      HLT_IsoEle12_QuadJet35,
+		      HLT_IsoMu14_IsoTau_Trk3,
+		      HLT_IsoMu7_BTagIP_Jet35,
+		      HLT_IsoMu7_BTagMu_Jet20,
+		      HLT_IsoMu7_Jet40,
+		      HLT_NoL2IsoMu8_Jet40,
+		      HLT_Mu14_Jet50,
+		      HLT_Mu5_TripleJet30,
+		      HLT_BTagMu_Jet20_Calib,
+		      HLT_ZeroBias,
+		      HLT_MinBias,
+		      HLT_MinBiasHcal,
+		      HLT_MinBiasEcal,
+		      HLT_MinBiasPixel,
+		      HLT_MinBiasPixel_Trk5,
+		      HLT_BackwardBSC,
+		      HLT_ForwardBSC,
+		      HLT_CSCBeamHalo,
+		      HLT_CSCBeamHaloOverlapRing1,
+		      HLT_CSCBeamHaloOverlapRing2,
+		      HLT_CSCBeamHaloRing2or3,
+		      HLT_TrackerCosmics };
+  enum e_L1Triggers {L1_DoubleEG10,
+		     L1_DoubleEG10_ETM20,
+		     L1_DoubleEG10_HTT200,
+		     L1_DoubleEG10_Mu3,
+		     L1_DoubleEG15,
+		     L1_DoubleEG5,
+		     L1_DoubleIsoEG10,
+		     L1_DoubleIsoEG5_ETM20,
+		     L1_DoubleIsoEG5_HTT200,
+		     L1_DoubleIsoEG5_Mu3,
+		     L1_DoubleIsoEG8,
+		     L1_DoubleJet100,
+		     L1_DoubleJet50_ETM20,
+		     L1_DoubleJet50_HTT200,
+		     L1_DoubleJet70,
+		     L1_DoubleMu3,
+		     L1_DoubleMu3_EG10,
+		     L1_DoubleMu3_ETM20,
+		     L1_DoubleMu3_HTT200,
+		     L1_DoubleMu3_IsoEG5,
+		     L1_DoubleTauJet20,
+		     L1_DoubleTauJet30,
+		     L1_DoubleTauJet35,
+		     L1_DoubleTauJet40,
+		     L1_DoubleTauJet40_ETM20,
+		     L1_DoubleTauJet40_HTT200,
+		     L1_EG10_Jet15,
+		     L1_EG12_ETM30,
+		     L1_EG12_HTT200,
+		     L1_EG12_Jet70,
+		     L1_EG12_TauJet40,
+		     L1_ETM10,
+		     L1_ETM15,
+		     L1_ETM20,
+		     L1_ETM40,
+		     L1_ETM45,
+		     L1_ETM50,
+		     L1_ETM60,
+		     L1_ETT60,
+		     L1_ExclusiveDoubleIsoEG6,
+		     L1_ExclusiveDoubleJet60,
+		     L1_ExclusiveJet25_Gap_Jet25,
+		     L1_HTT100,
+		     L1_HTT100_ETM30,
+		     L1_HTT200,
+		     L1_HTT250,
+		     L1_HTT300,
+		     L1_HTT400,
+		     L1_HTT500,
+		     L1_IsoEG10_EG10,
+		     L1_IsoEG10_HTT200,
+		     L1_IsoEG10_Jet15,
+		     L1_IsoEG10_Jet15_ForJet10,
+		     L1_IsoEG10_Jet20,
+		     L1_IsoEG10_Jet30,
+		     L1_IsoEG10_Jet70,
+		     L1_IsoEG10_TauJet20,
+		     L1_IsoEG10_TauJet30,
+		     L1_Jet70_ETM40,
+		     L1_Jet70_HTT200,
+		     L1_Jet70_TauJet40,
+		     L1_MinBias_HTT10,
+		     L1_Mu3_EG12,
+		     L1_Mu3_ETM30,
+		     L1_Mu3_HTT200,
+		     L1_Mu3_IsoEG5,
+		     L1_Mu3_Jet15,
+		     L1_Mu3_Jet70,
+		     L1_Mu5_IsoEG10,
+		     L1_Mu5_Jet15,
+		     L1_Mu5_Jet20,
+		     L1_Mu5_TauJet20,
+		     L1_Mu5_TauJet30,
+		     L1_QuadJet40,
+		     L1_SingleEG10,
+		     L1_SingleEG12,
+		     L1_SingleEG15,
+		     L1_SingleEG20,
+		     L1_SingleEG25,
+		     L1_SingleEG5,
+		     L1_SingleEG8,
+		     L1_SingleIsoEG10,
+		     L1_SingleIsoEG12,
+		     L1_SingleIsoEG15,
+		     L1_SingleIsoEG20,
+		     L1_SingleIsoEG25,
+		     L1_SingleIsoEG5,
+		     L1_SingleIsoEG8,
+		     L1_SingleJet100,
+		     L1_SingleJet15,
+		     L1_SingleJet150,
+		     L1_SingleJet20,
+		     L1_SingleJet200,
+		     L1_SingleJet30,
+		     L1_SingleJet50,
+		     L1_SingleJet70,
+		     L1_SingleMu10,
+		     L1_SingleMu14,
+		     L1_SingleMu20,
+		     L1_SingleMu25,
+		     L1_SingleMu3,
+		     L1_SingleMu5,
+		     L1_SingleMu7,
+		     L1_SingleTauJet10,
+		     L1_SingleTauJet100,
+		     L1_SingleTauJet20,
+		     L1_SingleTauJet30,
+		     L1_SingleTauJet40,
+		     L1_SingleTauJet60,
+		     L1_SingleTauJet80,
+		     L1_TauJet20_ETM20,
+		     L1_TauJet30_ETM30,
+		     L1_TauJet30_ETM40,
+		     L1_TauJet40_HTT200,
+		     L1_TripleEG10,
+		     L1_TripleIsoEG5,
+		     L1_TripleJet50,
+		     L1_TripleMu3,
+		     L1_TripleTauJet40,
+		     L1_VBF_DoubleTauHad,
+		     L1_VBF_ETM50,
+		     L1_VBF_ETM50_veto,
+		     L1_VBF_IsoEG10_Tau_TauHad,
+		     L1_VBF_IsoEG15,
+		     L1_VBF_Mu10,
+		     L1_VBF_Mu7_Tau_TauHad,
+		     L1_VBF_QuadJet,
+		     L1_ZeroBias};
 protected: 
 	unsigned int index;
 	TString	evt_dataset_;
@@ -20898,9 +21181,88 @@ void GetEntry(unsigned int idx)
 		}
 		return evt_filt_eff_;
 	}
+  bool passHLTTrigger(e_HLTTriggers trig) {
+    
+    if(trig <=31 ) {
+      unsigned int bitmask = 1;
+      bitmask <<= trig;
+      return evt_HLT1() & bitmask;
+    }
+    
+    if( trig >= 32 && trig <=63) {
+      unsigned int bitmask = 1;
+      bitmask <<= (trig - 32);
+      return evt_HLT2() & bitmask;
+    }
+    
+    if( trig >= 64 && trig <=95) {
+      unsigned int bitmask = 1;
+      bitmask <<= (trig - 64);
+      return evt_HLT3() & bitmask;
+    }
+    
+    if( trig >= 96 && trig <=127) {
+      unsigned int bitmask = 1;
+      bitmask <<= (trig - 96);
+      return evt_HLT4() & bitmask;
+    }
+    
+  
+    if( trig >= 128 && trig <=159) {
+      unsigned int bitmask = 1;
+      bitmask <<= (trig - 128);
+      return evt_HLT5() & bitmask;
+    }
+    
+    if( trig >= 160 && trig <=191) {
+      unsigned int bitmask = 1;
+      bitmask <<= (trig - 160);
+      return evt_HLT6() & bitmask;
+    }
+    
+    if( trig >= 192 && trig <=223) {
+      unsigned int bitmask = 1;
+      bitmask <<= (trig - 192);
+      return evt_HLT7() & bitmask;
+    }
+    
+    if( trig >= 224 && trig <=255) {
+      unsigned int bitmask = 1;
+      bitmask <<= (trig - 224);
+      return evt_HLT8() & bitmask;
+    }
+  }
+  bool passL1Trigger(e_L1Triggers trig) {
+    
+    if(trig <=31 ) {
+      unsigned int bitmask = 1;
+      bitmask <<= trig;
+      return evt_L1_1() & bitmask;
+    }
+    
+    if( trig >= 32 && trig <=63) {
+      unsigned int bitmask = 1;
+      bitmask <<= (trig - 32);
+      return evt_L1_2() & bitmask;
+    }
+    
+    if( trig >= 64 && trig <=95) {
+      unsigned int bitmask = 1;
+      bitmask <<= (trig - 64);
+      return evt_L1_3() & bitmask;
+    }
+    
+    if( trig >= 96 && trig <=127) {
+      unsigned int bitmask = 1;
+      bitmask <<= (trig - 96);
+      return evt_L1_4() & bitmask;
+    }
+    
+    return 0;
+  }
 };
 
 #ifndef __CINT__
-extern CMS2 cms2;
+  extern CMS2 cms2;
 #endif
 #endif
