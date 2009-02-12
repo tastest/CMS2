@@ -75,7 +75,8 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true, std::string cl
        !branchname.BeginsWith("float") &&
        !branchname.BeginsWith("double") &&
        !branchtitle.EndsWith("/F") && 
-       !branchtitle.EndsWith("/I"))
+       !branchtitle.EndsWith("/I") &&
+       !branchtitle.BeginsWith("TString"))
 	 continue;
     aliasarray->Add(fullarray->At(i));
   }
