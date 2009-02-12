@@ -23,7 +23,7 @@ bool inZmassWindow (float mass) {
 bool goodElectronWithoutIsolation(int index) {
   if ( els_tightId().at(index)     !=  1) return false;
   if ( els_closestMuon().at(index) != -1) return false;
-  if ( abs(els_d0corr().at(index)) > 0.040)   return false;
+  if ( fabs(els_d0corr().at(index)) > 0.040)   return false;
   return true;
 }
 //----------------------------------------------------------------
@@ -31,7 +31,7 @@ bool goodElectronWithoutIsolation(int index) {
 //---------------------------------------------------------------
 bool goodMuonWithoutIsolation(int index) {
   if (mus_gfit_chi2().at(index)/mus_gfit_ndof().at(index) > 5.) return false;
-  if (abs(mus_d0corr().at(index))   > 0.25) return false;
+  if (fabs(mus_d0corr().at(index))   > 0.25) return false;
   if (mus_validHits().at(index) < 7)    return false;
   return true;
 }
@@ -194,6 +194,17 @@ bool pass2Met(int hypIdx) {
   return true;
 }
 
+// event-level pat-met: emu met >20, mm,em met>30
+bool passPatMet_OF20_SF30(int hypIdx){
+  if  (hyp_type().at(hypIdx) == 0 || hyp_type().at(hypIdx) == 3) {
+    if (met_pat_metCor() < 30) return false;
+  }
+  
+  if (hyp_type().at(hypIdx) == 1 || hyp_type().at(hypIdx) == 2) {
+    if (met_pat_metCor() < 20) return false;
+  }
+  return true;
+}
 
 //-------------------------------------------------
 // Auxiliary function to scan the doc line and 
@@ -266,66 +277,6 @@ int genpDileptonType(){
   if (nels == 1 && nmus == 1) dilType = 1;
   return dilType;
 }
-
-//--------------------------------------------------------------------
-// Veto events if there are two leptons in the 
-// event that make the Z mass.  This uses the mus and els
-// blocks, ie, it is a veto that can use the 3rd (4th,5th,..)
-// lepton in the event.
-//
-// Both leptons must be 20 GeV, and pass the same cuts as 
-// the hypothesis leptons, except that one of them can be non-isolated
-//---------------------------------------------------------------------
-bool additionalZveto() {
-
-  // true if we want to veto this event
-  bool veto=false;
-
-  // first, look for Z->mumu
-  for (uint i=0; i<mus_p4().size(); i++) {
-    if (mus_p4().at(i).pt() < 20.)     continue;
-    if (!goodMuonWithoutIsolation(i)) continue;
-
-    for (uint j=i+1; j<mus_p4().size(); j++) {
-      if (mus_p4().at(j).pt() < 20.) continue;
-      if (!goodMuonWithoutIsolation(j)) continue;
-      if (mus_charge().at(i) == mus_charge().at(j)) continue;
-
-      // At least one of them has to pass isolation
-      if (!passMuonIsolation(i) && !passMuonIsolation(j)) continue;
-
-      // Make the invariant mass
-      ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
-	vec = mus_p4().at(i) + mus_p4().at(j);
-      if ( inZmassWindow(vec.mass()) ) return true;
-
-    }
-  }
-
-  // now, look for Z->ee
-  for (uint i=0; i<evt_nels(); i++) {
-    if (els_p4().at(i).pt() < 20.)     continue;
-    if (!goodElectronWithoutIsolation(i)) continue;
-
-    for (uint j=i+1; j<evt_nels(); j++) {
-      if (els_p4().at(j).pt() < 20.) continue;
-      if (!goodElectronWithoutIsolation(j)) continue;
-      if (els_charge().at(i) == els_charge().at(j)) continue;
-
-      // At least one of them has to pass isolation
-      if (!passElectronIsolation(i) && !passElectronIsolation(j)) continue;
-
-      // Make the invariant mass
-      ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
-	vec = els_p4().at(i) + els_p4().at(j);
-      if ( inZmassWindow(vec.mass()) ) return true;
-
-    }
-  }
-  // done
-  return veto;
-}
-
 
 
   
@@ -416,7 +367,8 @@ bool haveExtraMuon5(int hypIdx){
 bool electron20Eta2p4(int index){
   if (els_p4().at(index).pt() < 20 )   return false;
   if (fabs(els_p4().at(index).eta()) > 2.4 ) return false;
-
+  
+  return true;
 }
 
 
@@ -430,7 +382,7 @@ bool looseElectronSelectionNoIsoTTDil08(int index) {
 
 
 bool looseElectronSelectionTTDil08(int index) {
-  if ( ! looseElectronSelectionTTDil08(index) ) return false;
+  if ( ! looseElectronSelectionNoIsoTTDil08(index) ) return false;
 
   if ( electronTrkIsolation(index) < 0.5 ) return false;
   if ( electronCalIsolation(index) < 0.5 ) return false;
@@ -441,11 +393,15 @@ bool looseElectronSelectionTTDil08(int index) {
 bool passElectronIsolationTTDil08(int index){
   if ( electronTrkIsolation(index) < 0.9 ) return false;
   if ( electronCalIsolation(index) < 0.8 ) return false;
+
+  return true;
 }
 
 bool muon20Eta2p4(int index){
   if (mus_p4().at(index).pt() < 20 ) return false;
   if (fabs(mus_p4().at(index).eta()) >2.4 ) return false;
+
+  return true;
 }
 
 bool looseMuonSelectionNoIsoTTDil08(int index) {
@@ -472,6 +428,89 @@ bool looseMuonSelectionTTDil08(int index) {
 bool passMuonIsolationTTDil08(int index) {
   if ( muonTrkIsolation(index) < 0.9 ) return false;
   if ( muonCalIsolation(index) < 0.9 ) return false;
+
+  return true;
 }
 
 //------------------------------------------------------------------------------------
+
+//--------------------------------------------------------------------
+// Veto events if there are two leptons in the 
+// event that make the Z mass.  This uses the mus and els
+// blocks, ie, it is a veto that can use the 3rd (4th,5th,..)
+// lepton in the event.
+//
+// Both leptons must be 20 GeV, and pass the same cuts as 
+// the hypothesis leptons, except that one of them can be non-isolated
+//---------------------------------------------------------------------
+bool additionalZveto(bool useTTDil08 = false) {
+
+  // true if we want to veto this event
+  bool veto=false;
+
+  // first, look for Z->mumu
+  for (uint i=0; i<mus_p4().size(); i++) {
+    if (mus_p4().at(i).pt() < 20.)     continue;
+    if (useTTDil08){
+      if (!looseMuonSelectionNoIsoTTDil08(i)) continue;
+    } else {
+      if (!goodMuonWithoutIsolation(i)) continue;
+    }
+
+    for (uint j=i+1; j<mus_p4().size(); j++) {
+      if (mus_p4().at(j).pt() < 20.) continue;
+      if (useTTDil08){
+	if (!looseMuonSelectionNoIsoTTDil08(j)) continue;
+      } else {
+	if (!goodMuonWithoutIsolation(j)) continue;
+      }
+      if (mus_charge().at(i) == mus_charge().at(j)) continue;
+
+      // At least one of them has to pass isolation
+      if (useTTDil08){
+	if (!passMuonIsolationTTDil08(i) && !passMuonIsolationTTDil08(j)) continue;
+      } else {
+	if (!passMuonIsolation(i) && !passMuonIsolation(j)) continue;
+      }
+
+      // Make the invariant mass
+      ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
+	vec = mus_p4().at(i) + mus_p4().at(j);
+      if ( inZmassWindow(vec.mass()) ) return true;
+
+    }
+  }
+
+  // now, look for Z->ee
+  for (uint i=0; i<evt_nels(); i++) {
+    if (els_p4().at(i).pt() < 20.)     continue;
+    if (useTTDil08){
+      if (!looseElectronSelectionNoIsoTTDil08(i)) continue;
+    } else {
+      if (!goodElectronWithoutIsolation(i)) continue;
+    }
+
+    for (uint j=i+1; j<evt_nels(); j++) {
+      if (els_p4().at(j).pt() < 20.) continue;
+      if (useTTDil08){
+	if (!looseElectronSelectionNoIsoTTDil08(j)) continue;
+      } else {
+	if (!goodElectronWithoutIsolation(j)) continue;
+      }
+      if (els_charge().at(i) == els_charge().at(j)) continue;
+
+      // At least one of them has to pass isolation
+      if (!passElectronIsolationTTDil08(i) && !passElectronIsolationTTDil08(j)) continue;
+
+      // Make the invariant mass
+      ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
+	vec = els_p4().at(i) + els_p4().at(j);
+      if ( inZmassWindow(vec.mass()) ) return true;
+
+    }
+  }
+  // done
+  return veto;
+}
+
+
