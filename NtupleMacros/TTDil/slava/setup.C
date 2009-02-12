@@ -1,5 +1,8 @@
 // Loads a bunch of tools in interpretative mode
 {
+  gSystem->Load("libFWCoreFWLite");
+  AutoLibraryLoader::enable();
+
   gSystem->Load("libGui.so");
   gSystem->Load("libPhysics.so");
   
