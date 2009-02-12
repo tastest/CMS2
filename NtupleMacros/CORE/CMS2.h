@@ -15,289 +15,6 @@ using namespace std;
 class CMS2 { 
 private: 
 	 TH1F *samplehisto;
-   enum e_HLTTriggers {generation_step,
-		      simulation_step,
-		      digitisation_step,
-		      L1simulation_step,
-		      digi2raw_step,
-		      HLTriggerFirstPath,
-		      HLT_L1Jet15,
-		      HLT_Jet30,
-		      HLT_Jet50,
-		      HLT_Jet80,
-		      HLT_Jet110,
-		      HLT_Jet180,
-		      HLT_Jet250,
-		      HLT_FwdJet20,
-		      HLT_DoubleJet150,
-		      HLT_DoubleJet125_Aco,
-		      HLT_DoubleFwdJet50,
-		      HLT_DiJetAve15,
-		      HLT_DiJetAve30,
-		      HLT_DiJetAve50,
-		      HLT_DiJetAve70,
-		      HLT_DiJetAve130,
-		      HLT_DiJetAve220,
-		      HLT_TripleJet85,
-		      HLT_QuadJet30,
-		      HLT_QuadJet60,
-		      HLT_SumET120,
-		      HLT_L1MET20,
-		      HLT_MET25,
-		      HLT_MET35,
-		      HLT_MET50,
-		      HLT_MET65,
-		      HLT_MET75,
-		      HLT_MET35_HT350,
-		      HLT_Jet180_MET60,
-		      HLT_Jet60_MET70_Aco,
-		      HLT_Jet100_MET60_Aco,
-		      HLT_DoubleJet125_MET60,
-		      HLT_DoubleFwdJet40_MET60,
-		      HLT_DoubleJet60_MET60_Aco,
-		      HLT_DoubleJet50_MET70_Aco,
-		      HLT_DoubleJet40_MET70_Aco,
-		      HLT_TripleJet60_MET60,
-		      HLT_QuadJet35_MET60,
-		      HLT_IsoEle15_L1I,
-		      HLT_IsoEle18_L1R,
-		      HLT_IsoEle15_LW_L1I,
-		      HLT_LooseIsoEle15_LW_L1R,
-		      HLT_Ele10_SW_L1R,
-		      HLT_Ele15_SW_L1R,
-		      HLT_Ele15_LW_L1R,
-		      HLT_EM80,
-		      HLT_EM200,
-		      HLT_DoubleIsoEle10_L1I,
-		      HLT_DoubleIsoEle12_L1R,
-		      HLT_DoubleIsoEle10_LW_L1I,
-		      HLT_DoubleIsoEle12_LW_L1R,
-		      HLT_DoubleEle5_SW_L1R,
-		      HLT_DoubleEle10_LW_OnlyPixelM_L1R,
-		      HLT_DoubleEle10_Z,
-		      HLT_DoubleEle6_Exclusive,
-		      HLT_IsoPhoton30_L1I,
-		      HLT_IsoPhoton10_L1R,
-		      HLT_IsoPhoton15_L1R,
-		      HLT_IsoPhoton20_L1R,
-		      HLT_IsoPhoton25_L1R,
-		      HLT_IsoPhoton40_L1R,
-		      HLT_Photon15_L1R,
-		      HLT_Photon25_L1R,
-		      HLT_DoubleIsoPhoton20_L1I,
-		      HLT_DoubleIsoPhoton20_L1R,
-		      HLT_DoublePhoton10_Exclusive,
-		      HLT_L1Mu,
-		      HLT_L1MuOpen,
-		      HLT_L2Mu9,
-		      HLT_IsoMu9,
-		      HLT_IsoMu11,
-		      HLT_IsoMu13,
-		      HLT_IsoMu15,
-		      HLT_Mu3,
-		      HLT_Mu5,
-		      HLT_Mu7,
-		      HLT_Mu9,
-		      HLT_Mu11,
-		      HLT_Mu13,
-		      HLT_Mu15,
-		      HLT_Mu15_L1Mu7,
-		      HLT_Mu15_Vtx2cm,
-		      HLT_Mu15_Vtx2mm,
-		      HLT_DoubleIsoMu3,
-		      HLT_DoubleMu3,
-		      HLT_DoubleMu3_Vtx2cm,
-		      HLT_DoubleMu3_Vtx2mm,
-		      HLT_DoubleMu3_JPsi,
-		      HLT_DoubleMu3_Upsilon,
-		      HLT_DoubleMu7_Z,
-		      HLT_DoubleMu3_SameSign,
-		      HLT_DoubleMu3_Psi2S,
-		      HLT_BTagIP_Jet180,
-		      HLT_BTagIP_Jet120_Relaxed,
-		      HLT_BTagIP_DoubleJet120,
-		      HLT_BTagIP_DoubleJet60_Relaxed,
-		      HLT_BTagIP_TripleJet70,
-		      HLT_BTagIP_TripleJet40_Relaxed,
-		      HLT_BTagIP_QuadJet40,
-		      HLT_BTagIP_QuadJet30_Relaxed,
-		      HLT_BTagIP_HT470,
-		      HLT_BTagIP_HT320_Relaxed,
-		      HLT_BTagMu_DoubleJet120,
-		      HLT_BTagMu_DoubleJet60_Relaxed,
-		      HLT_BTagMu_TripleJet70,
-		      HLT_BTagMu_TripleJet40_Relaxed,
-		      HLT_BTagMu_QuadJet40,
-		      HLT_BTagMu_QuadJet30_Relaxed,
-		      HLT_BTagMu_HT370,
-		      HLT_BTagMu_HT250_Relaxed,
-		      HLT_DoubleMu3_BJPsi,
-		      HLT_DoubleMu4_BJPsi,
-		      HLT_TripleMu3_TauTo3Mu,
-		      HLT_IsoTau_MET65_Trk20,
-		      HLT_IsoTau_MET35_Trk15_L1MET,
-		      HLT_LooseIsoTau_MET30,
-		      HLT_LooseIsoTau_MET30_L1MET,
-		      HLT_DoubleIsoTau_Trk3,
-		      HLT_DoubleLooseIsoTau,
-		      HLT_IsoEle8_IsoMu7,
-		      HLT_IsoEle10_Mu10_L1R,
-		      HLT_IsoEle12_IsoTau_Trk3,
-		      HLT_IsoEle10_BTagIP_Jet35,
-		      HLT_IsoEle12_Jet40,
-		      HLT_IsoEle12_DoubleJet80,
-		      HLT_IsoEle5_TripleJet30,
-		      HLT_IsoEle12_TripleJet60,
-		      HLT_IsoEle12_QuadJet35,
-		      HLT_IsoMu14_IsoTau_Trk3,
-		      HLT_IsoMu7_BTagIP_Jet35,
-		      HLT_IsoMu7_BTagMu_Jet20,
-		      HLT_IsoMu7_Jet40,
-		      HLT_NoL2IsoMu8_Jet40,
-		      HLT_Mu14_Jet50,
-		      HLT_Mu5_TripleJet30,
-		      HLT_BTagMu_Jet20_Calib,
-		      HLT_ZeroBias,
-		      HLT_MinBias,
-		      HLT_MinBiasHcal,
-		      HLT_MinBiasEcal,
-		      HLT_MinBiasPixel,
-		      HLT_MinBiasPixel_Trk5,
-		      HLT_BackwardBSC,
-		      HLT_ForwardBSC,
-		      HLT_CSCBeamHalo,
-		      HLT_CSCBeamHaloOverlapRing1,
-		      HLT_CSCBeamHaloOverlapRing2,
-		      HLT_CSCBeamHaloRing2or3,
-		      HLT_TrackerCosmics };
-  enum e_L1Triggers {L1_DoubleEG10,
-		     L1_DoubleEG10_ETM20,
-		     L1_DoubleEG10_HTT200,
-		     L1_DoubleEG10_Mu3,
-		     L1_DoubleEG15,
-		     L1_DoubleEG5,
-		     L1_DoubleIsoEG10,
-		     L1_DoubleIsoEG5_ETM20,
-		     L1_DoubleIsoEG5_HTT200,
-		     L1_DoubleIsoEG5_Mu3,
-		     L1_DoubleIsoEG8,
-		     L1_DoubleJet100,
-		     L1_DoubleJet50_ETM20,
-		     L1_DoubleJet50_HTT200,
-		     L1_DoubleJet70,
-		     L1_DoubleMu3,
-		     L1_DoubleMu3_EG10,
-		     L1_DoubleMu3_ETM20,
-		     L1_DoubleMu3_HTT200,
-		     L1_DoubleMu3_IsoEG5,
-		     L1_DoubleTauJet20,
-		     L1_DoubleTauJet30,
-		     L1_DoubleTauJet35,
-		     L1_DoubleTauJet40,
-		     L1_DoubleTauJet40_ETM20,
-		     L1_DoubleTauJet40_HTT200,
-		     L1_EG10_Jet15,
-		     L1_EG12_ETM30,
-		     L1_EG12_HTT200,
-		     L1_EG12_Jet70,
-		     L1_EG12_TauJet40,
-		     L1_ETM10,
-		     L1_ETM15,
-		     L1_ETM20,
-		     L1_ETM40,
-		     L1_ETM45,
-		     L1_ETM50,
-		     L1_ETM60,
-		     L1_ETT60,
-		     L1_ExclusiveDoubleIsoEG6,
-		     L1_ExclusiveDoubleJet60,
-		     L1_ExclusiveJet25_Gap_Jet25,
-		     L1_HTT100,
-		     L1_HTT100_ETM30,
-		     L1_HTT200,
-		     L1_HTT250,
-		     L1_HTT300,
-		     L1_HTT400,
-		     L1_HTT500,
-		     L1_IsoEG10_EG10,
-		     L1_IsoEG10_HTT200,
-		     L1_IsoEG10_Jet15,
-		     L1_IsoEG10_Jet15_ForJet10,
-		     L1_IsoEG10_Jet20,
-		     L1_IsoEG10_Jet30,
-		     L1_IsoEG10_Jet70,
-		     L1_IsoEG10_TauJet20,
-		     L1_IsoEG10_TauJet30,
-		     L1_Jet70_ETM40,
-		     L1_Jet70_HTT200,
-		     L1_Jet70_TauJet40,
-		     L1_MinBias_HTT10,
-		     L1_Mu3_EG12,
-		     L1_Mu3_ETM30,
-		     L1_Mu3_HTT200,
-		     L1_Mu3_IsoEG5,
-		     L1_Mu3_Jet15,
-		     L1_Mu3_Jet70,
-		     L1_Mu5_IsoEG10,
-		     L1_Mu5_Jet15,
-		     L1_Mu5_Jet20,
-		     L1_Mu5_TauJet20,
-		     L1_Mu5_TauJet30,
-		     L1_QuadJet40,
-		     L1_SingleEG10,
-		     L1_SingleEG12,
-		     L1_SingleEG15,
-		     L1_SingleEG20,
-		     L1_SingleEG25,
-		     L1_SingleEG5,
-		     L1_SingleEG8,
-		     L1_SingleIsoEG10,
-		     L1_SingleIsoEG12,
-		     L1_SingleIsoEG15,
-		     L1_SingleIsoEG20,
-		     L1_SingleIsoEG25,
-		     L1_SingleIsoEG5,
-		     L1_SingleIsoEG8,
-		     L1_SingleJet100,
-		     L1_SingleJet15,
-		     L1_SingleJet150,
-		     L1_SingleJet20,
-		     L1_SingleJet200,
-		     L1_SingleJet30,
-		     L1_SingleJet50,
-		     L1_SingleJet70,
-		     L1_SingleMu10,
-		     L1_SingleMu14,
-		     L1_SingleMu20,
-		     L1_SingleMu25,
-		     L1_SingleMu3,
-		     L1_SingleMu5,
-		     L1_SingleMu7,
-		     L1_SingleTauJet10,
-		     L1_SingleTauJet100,
-		     L1_SingleTauJet20,
-		     L1_SingleTauJet30,
-		     L1_SingleTauJet40,
-		     L1_SingleTauJet60,
-		     L1_SingleTauJet80,
-		     L1_TauJet20_ETM20,
-		     L1_TauJet30_ETM30,
-		     L1_TauJet30_ETM40,
-		     L1_TauJet40_HTT200,
-		     L1_TripleEG10,
-		     L1_TripleIsoEG5,
-		     L1_TripleJet50,
-		     L1_TripleMu3,
-		     L1_TripleTauJet40,
-		     L1_VBF_DoubleTauHad,
-		     L1_VBF_ETM50,
-		     L1_VBF_ETM50_veto,
-		     L1_VBF_IsoEG10_Tau_TauHad,
-		     L1_VBF_IsoEG15,
-		     L1_VBF_Mu10,
-		     L1_VBF_Mu7_Tau_TauHad,
-		     L1_VBF_QuadJet,
-		     L1_ZeroBias};
 protected: 
 	unsigned int index;
 	TString	evt_dataset_;
@@ -10022,9 +9739,7 @@ void GetEntry(unsigned int idx)
 			if (evt_bs_dxdz_branch != 0) {
 				evt_bs_dxdz_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_bs_dxdz_, &e);
-				if (not isfinite(evt_bs_dxdz_) || e > 30) {
+				if (not isfinite(evt_bs_dxdz_)) {
 					printf("branch evt_bs_dxdz_branch contains a bad float: %f\n", evt_bs_dxdz_);
 					exit(1);
 				}
@@ -10043,9 +9758,7 @@ void GetEntry(unsigned int idx)
 			if (evt_bs_dxdzErr_branch != 0) {
 				evt_bs_dxdzErr_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_bs_dxdzErr_, &e);
-				if (not isfinite(evt_bs_dxdzErr_) || e > 30) {
+				if (not isfinite(evt_bs_dxdzErr_)) {
 					printf("branch evt_bs_dxdzErr_branch contains a bad float: %f\n", evt_bs_dxdzErr_);
 					exit(1);
 				}
@@ -10064,9 +9777,7 @@ void GetEntry(unsigned int idx)
 			if (evt_bs_dydz_branch != 0) {
 				evt_bs_dydz_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_bs_dydz_, &e);
-				if (not isfinite(evt_bs_dydz_) || e > 30) {
+				if (not isfinite(evt_bs_dydz_)) {
 					printf("branch evt_bs_dydz_branch contains a bad float: %f\n", evt_bs_dydz_);
 					exit(1);
 				}
@@ -10085,9 +9796,7 @@ void GetEntry(unsigned int idx)
 			if (evt_bs_dydzErr_branch != 0) {
 				evt_bs_dydzErr_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_bs_dydzErr_, &e);
-				if (not isfinite(evt_bs_dydzErr_) || e > 30) {
+				if (not isfinite(evt_bs_dydzErr_)) {
 					printf("branch evt_bs_dydzErr_branch contains a bad float: %f\n", evt_bs_dydzErr_);
 					exit(1);
 				}
@@ -10106,9 +9815,7 @@ void GetEntry(unsigned int idx)
 			if (evt_bs_sigmaZ_branch != 0) {
 				evt_bs_sigmaZ_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_bs_sigmaZ_, &e);
-				if (not isfinite(evt_bs_sigmaZ_) || e > 30) {
+				if (not isfinite(evt_bs_sigmaZ_)) {
 					printf("branch evt_bs_sigmaZ_branch contains a bad float: %f\n", evt_bs_sigmaZ_);
 					exit(1);
 				}
@@ -10127,9 +9834,7 @@ void GetEntry(unsigned int idx)
 			if (evt_bs_sigmaZErr_branch != 0) {
 				evt_bs_sigmaZErr_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_bs_sigmaZErr_, &e);
-				if (not isfinite(evt_bs_sigmaZErr_) || e > 30) {
+				if (not isfinite(evt_bs_sigmaZErr_)) {
 					printf("branch evt_bs_sigmaZErr_branch contains a bad float: %f\n", evt_bs_sigmaZErr_);
 					exit(1);
 				}
@@ -10148,9 +9853,7 @@ void GetEntry(unsigned int idx)
 			if (evt_bs_widthErr_branch != 0) {
 				evt_bs_widthErr_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_bs_widthErr_, &e);
-				if (not isfinite(evt_bs_widthErr_) || e > 30) {
+				if (not isfinite(evt_bs_widthErr_)) {
 					printf("branch evt_bs_widthErr_branch contains a bad float: %f\n", evt_bs_widthErr_);
 					exit(1);
 				}
@@ -10169,9 +9872,7 @@ void GetEntry(unsigned int idx)
 			if (evt_bs_xErr_branch != 0) {
 				evt_bs_xErr_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_bs_xErr_, &e);
-				if (not isfinite(evt_bs_xErr_) || e > 30) {
+				if (not isfinite(evt_bs_xErr_)) {
 					printf("branch evt_bs_xErr_branch contains a bad float: %f\n", evt_bs_xErr_);
 					exit(1);
 				}
@@ -10190,9 +9891,7 @@ void GetEntry(unsigned int idx)
 			if (evt_bs_yErr_branch != 0) {
 				evt_bs_yErr_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_bs_yErr_, &e);
-				if (not isfinite(evt_bs_yErr_) || e > 30) {
+				if (not isfinite(evt_bs_yErr_)) {
 					printf("branch evt_bs_yErr_branch contains a bad float: %f\n", evt_bs_yErr_);
 					exit(1);
 				}
@@ -10211,9 +9910,7 @@ void GetEntry(unsigned int idx)
 			if (evt_bs_zErr_branch != 0) {
 				evt_bs_zErr_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_bs_zErr_, &e);
-				if (not isfinite(evt_bs_zErr_) || e > 30) {
+				if (not isfinite(evt_bs_zErr_)) {
 					printf("branch evt_bs_zErr_branch contains a bad float: %f\n", evt_bs_zErr_);
 					exit(1);
 				}
@@ -10232,9 +9929,7 @@ void GetEntry(unsigned int idx)
 			if (gen_met_branch != 0) {
 				gen_met_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(gen_met_, &e);
-				if (not isfinite(gen_met_) || e > 30) {
+				if (not isfinite(gen_met_)) {
 					printf("branch gen_met_branch contains a bad float: %f\n", gen_met_);
 					exit(1);
 				}
@@ -10253,9 +9948,7 @@ void GetEntry(unsigned int idx)
 			if (gen_metPhi_branch != 0) {
 				gen_metPhi_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(gen_metPhi_, &e);
-				if (not isfinite(gen_metPhi_) || e > 30) {
+				if (not isfinite(gen_metPhi_)) {
 					printf("branch gen_metPhi_branch contains a bad float: %f\n", gen_metPhi_);
 					exit(1);
 				}
@@ -10274,9 +9967,7 @@ void GetEntry(unsigned int idx)
 			if (evt_bField_branch != 0) {
 				evt_bField_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_bField_, &e);
-				if (not isfinite(evt_bField_) || e > 30) {
+				if (not isfinite(evt_bField_)) {
 					printf("branch evt_bField_branch contains a bad float: %f\n", evt_bField_);
 					exit(1);
 				}
@@ -10310,9 +10001,7 @@ void GetEntry(unsigned int idx)
 			if (evt_weight_branch != 0) {
 				evt_weight_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_weight_, &e);
-				if (not isfinite(evt_weight_) || e > 30) {
+				if (not isfinite(evt_weight_)) {
 					printf("branch evt_weight_branch contains a bad float: %f\n", evt_weight_);
 					exit(1);
 				}
@@ -10361,9 +10050,7 @@ void GetEntry(unsigned int idx)
 			if (l1met_etHad_branch != 0) {
 				l1met_etHad_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(l1met_etHad_, &e);
-				if (not isfinite(l1met_etHad_) || e > 30) {
+				if (not isfinite(l1met_etHad_)) {
 					printf("branch l1met_etHad_branch contains a bad float: %f\n", l1met_etHad_);
 					exit(1);
 				}
@@ -10382,9 +10069,7 @@ void GetEntry(unsigned int idx)
 			if (l1met_etTot_branch != 0) {
 				l1met_etTot_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(l1met_etTot_, &e);
-				if (not isfinite(l1met_etTot_) || e > 30) {
+				if (not isfinite(l1met_etTot_)) {
 					printf("branch l1met_etTot_branch contains a bad float: %f\n", l1met_etTot_);
 					exit(1);
 				}
@@ -10403,9 +10088,7 @@ void GetEntry(unsigned int idx)
 			if (l1met_met_branch != 0) {
 				l1met_met_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(l1met_met_, &e);
-				if (not isfinite(l1met_met_) || e > 30) {
+				if (not isfinite(l1met_met_)) {
 					printf("branch l1met_met_branch contains a bad float: %f\n", l1met_met_);
 					exit(1);
 				}
@@ -10424,9 +10107,7 @@ void GetEntry(unsigned int idx)
 			if (evt_met_branch != 0) {
 				evt_met_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_met_, &e);
-				if (not isfinite(evt_met_) || e > 30) {
+				if (not isfinite(evt_met_)) {
 					printf("branch evt_met_branch contains a bad float: %f\n", evt_met_);
 					exit(1);
 				}
@@ -10445,9 +10126,7 @@ void GetEntry(unsigned int idx)
 			if (evt_metHO_branch != 0) {
 				evt_metHO_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_metHO_, &e);
-				if (not isfinite(evt_metHO_) || e > 30) {
+				if (not isfinite(evt_metHO_)) {
 					printf("branch evt_metHO_branch contains a bad float: %f\n", evt_metHO_);
 					exit(1);
 				}
@@ -10466,9 +10145,7 @@ void GetEntry(unsigned int idx)
 			if (evt_metHOPhi_branch != 0) {
 				evt_metHOPhi_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_metHOPhi_, &e);
-				if (not isfinite(evt_metHOPhi_) || e > 30) {
+				if (not isfinite(evt_metHOPhi_)) {
 					printf("branch evt_metHOPhi_branch contains a bad float: %f\n", evt_metHOPhi_);
 					exit(1);
 				}
@@ -10487,9 +10164,7 @@ void GetEntry(unsigned int idx)
 			if (evt_metHOSig_branch != 0) {
 				evt_metHOSig_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_metHOSig_, &e);
-				if (not isfinite(evt_metHOSig_) || e > 30) {
+				if (not isfinite(evt_metHOSig_)) {
 					printf("branch evt_metHOSig_branch contains a bad float: %f\n", evt_metHOSig_);
 					exit(1);
 				}
@@ -10508,9 +10183,7 @@ void GetEntry(unsigned int idx)
 			if (evt_metMuonCorr_branch != 0) {
 				evt_metMuonCorr_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_metMuonCorr_, &e);
-				if (not isfinite(evt_metMuonCorr_) || e > 30) {
+				if (not isfinite(evt_metMuonCorr_)) {
 					printf("branch evt_metMuonCorr_branch contains a bad float: %f\n", evt_metMuonCorr_);
 					exit(1);
 				}
@@ -10529,9 +10202,7 @@ void GetEntry(unsigned int idx)
 			if (evt_metMuonCorrPhi_branch != 0) {
 				evt_metMuonCorrPhi_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_metMuonCorrPhi_, &e);
-				if (not isfinite(evt_metMuonCorrPhi_) || e > 30) {
+				if (not isfinite(evt_metMuonCorrPhi_)) {
 					printf("branch evt_metMuonCorrPhi_branch contains a bad float: %f\n", evt_metMuonCorrPhi_);
 					exit(1);
 				}
@@ -10550,9 +10221,7 @@ void GetEntry(unsigned int idx)
 			if (evt_metMuonCorrSig_branch != 0) {
 				evt_metMuonCorrSig_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_metMuonCorrSig_, &e);
-				if (not isfinite(evt_metMuonCorrSig_) || e > 30) {
+				if (not isfinite(evt_metMuonCorrSig_)) {
 					printf("branch evt_metMuonCorrSig_branch contains a bad float: %f\n", evt_metMuonCorrSig_);
 					exit(1);
 				}
@@ -10571,9 +10240,7 @@ void GetEntry(unsigned int idx)
 			if (evt_metNoHF_branch != 0) {
 				evt_metNoHF_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_metNoHF_, &e);
-				if (not isfinite(evt_metNoHF_) || e > 30) {
+				if (not isfinite(evt_metNoHF_)) {
 					printf("branch evt_metNoHF_branch contains a bad float: %f\n", evt_metNoHF_);
 					exit(1);
 				}
@@ -10592,9 +10259,7 @@ void GetEntry(unsigned int idx)
 			if (evt_metNoHFHO_branch != 0) {
 				evt_metNoHFHO_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_metNoHFHO_, &e);
-				if (not isfinite(evt_metNoHFHO_) || e > 30) {
+				if (not isfinite(evt_metNoHFHO_)) {
 					printf("branch evt_metNoHFHO_branch contains a bad float: %f\n", evt_metNoHFHO_);
 					exit(1);
 				}
@@ -10613,9 +10278,7 @@ void GetEntry(unsigned int idx)
 			if (evt_metNoHFHOPhi_branch != 0) {
 				evt_metNoHFHOPhi_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_metNoHFHOPhi_, &e);
-				if (not isfinite(evt_metNoHFHOPhi_) || e > 30) {
+				if (not isfinite(evt_metNoHFHOPhi_)) {
 					printf("branch evt_metNoHFHOPhi_branch contains a bad float: %f\n", evt_metNoHFHOPhi_);
 					exit(1);
 				}
@@ -10634,9 +10297,7 @@ void GetEntry(unsigned int idx)
 			if (evt_metNoHFHOSig_branch != 0) {
 				evt_metNoHFHOSig_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_metNoHFHOSig_, &e);
-				if (not isfinite(evt_metNoHFHOSig_) || e > 30) {
+				if (not isfinite(evt_metNoHFHOSig_)) {
 					printf("branch evt_metNoHFHOSig_branch contains a bad float: %f\n", evt_metNoHFHOSig_);
 					exit(1);
 				}
@@ -10655,9 +10316,7 @@ void GetEntry(unsigned int idx)
 			if (evt_metNoHFPhi_branch != 0) {
 				evt_metNoHFPhi_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_metNoHFPhi_, &e);
-				if (not isfinite(evt_metNoHFPhi_) || e > 30) {
+				if (not isfinite(evt_metNoHFPhi_)) {
 					printf("branch evt_metNoHFPhi_branch contains a bad float: %f\n", evt_metNoHFPhi_);
 					exit(1);
 				}
@@ -10676,9 +10335,7 @@ void GetEntry(unsigned int idx)
 			if (evt_metSig_branch != 0) {
 				evt_metSig_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_metSig_, &e);
-				if (not isfinite(evt_metSig_) || e > 30) {
+				if (not isfinite(evt_metSig_)) {
 					printf("branch evt_metSig_branch contains a bad float: %f\n", evt_metSig_);
 					exit(1);
 				}
@@ -10697,9 +10354,7 @@ void GetEntry(unsigned int idx)
 			if (evt_metOpt_branch != 0) {
 				evt_metOpt_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_metOpt_, &e);
-				if (not isfinite(evt_metOpt_) || e > 30) {
+				if (not isfinite(evt_metOpt_)) {
 					printf("branch evt_metOpt_branch contains a bad float: %f\n", evt_metOpt_);
 					exit(1);
 				}
@@ -10718,9 +10373,7 @@ void GetEntry(unsigned int idx)
 			if (evt_metOptHO_branch != 0) {
 				evt_metOptHO_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_metOptHO_, &e);
-				if (not isfinite(evt_metOptHO_) || e > 30) {
+				if (not isfinite(evt_metOptHO_)) {
 					printf("branch evt_metOptHO_branch contains a bad float: %f\n", evt_metOptHO_);
 					exit(1);
 				}
@@ -10739,9 +10392,7 @@ void GetEntry(unsigned int idx)
 			if (evt_metOptHOPhi_branch != 0) {
 				evt_metOptHOPhi_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_metOptHOPhi_, &e);
-				if (not isfinite(evt_metOptHOPhi_) || e > 30) {
+				if (not isfinite(evt_metOptHOPhi_)) {
 					printf("branch evt_metOptHOPhi_branch contains a bad float: %f\n", evt_metOptHOPhi_);
 					exit(1);
 				}
@@ -10760,9 +10411,7 @@ void GetEntry(unsigned int idx)
 			if (evt_metOptHOSig_branch != 0) {
 				evt_metOptHOSig_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_metOptHOSig_, &e);
-				if (not isfinite(evt_metOptHOSig_) || e > 30) {
+				if (not isfinite(evt_metOptHOSig_)) {
 					printf("branch evt_metOptHOSig_branch contains a bad float: %f\n", evt_metOptHOSig_);
 					exit(1);
 				}
@@ -10781,9 +10430,7 @@ void GetEntry(unsigned int idx)
 			if (evt_metOptNoHF_branch != 0) {
 				evt_metOptNoHF_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_metOptNoHF_, &e);
-				if (not isfinite(evt_metOptNoHF_) || e > 30) {
+				if (not isfinite(evt_metOptNoHF_)) {
 					printf("branch evt_metOptNoHF_branch contains a bad float: %f\n", evt_metOptNoHF_);
 					exit(1);
 				}
@@ -10802,9 +10449,7 @@ void GetEntry(unsigned int idx)
 			if (evt_metOptNoHFHO_branch != 0) {
 				evt_metOptNoHFHO_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_metOptNoHFHO_, &e);
-				if (not isfinite(evt_metOptNoHFHO_) || e > 30) {
+				if (not isfinite(evt_metOptNoHFHO_)) {
 					printf("branch evt_metOptNoHFHO_branch contains a bad float: %f\n", evt_metOptNoHFHO_);
 					exit(1);
 				}
@@ -10823,9 +10468,7 @@ void GetEntry(unsigned int idx)
 			if (evt_metOptNoHFHOPhi_branch != 0) {
 				evt_metOptNoHFHOPhi_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_metOptNoHFHOPhi_, &e);
-				if (not isfinite(evt_metOptNoHFHOPhi_) || e > 30) {
+				if (not isfinite(evt_metOptNoHFHOPhi_)) {
 					printf("branch evt_metOptNoHFHOPhi_branch contains a bad float: %f\n", evt_metOptNoHFHOPhi_);
 					exit(1);
 				}
@@ -10844,9 +10487,7 @@ void GetEntry(unsigned int idx)
 			if (evt_metOptNoHFHOSig_branch != 0) {
 				evt_metOptNoHFHOSig_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_metOptNoHFHOSig_, &e);
-				if (not isfinite(evt_metOptNoHFHOSig_) || e > 30) {
+				if (not isfinite(evt_metOptNoHFHOSig_)) {
 					printf("branch evt_metOptNoHFHOSig_branch contains a bad float: %f\n", evt_metOptNoHFHOSig_);
 					exit(1);
 				}
@@ -10865,9 +10506,7 @@ void GetEntry(unsigned int idx)
 			if (evt_metOptNoHFPhi_branch != 0) {
 				evt_metOptNoHFPhi_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_metOptNoHFPhi_, &e);
-				if (not isfinite(evt_metOptNoHFPhi_) || e > 30) {
+				if (not isfinite(evt_metOptNoHFPhi_)) {
 					printf("branch evt_metOptNoHFPhi_branch contains a bad float: %f\n", evt_metOptNoHFPhi_);
 					exit(1);
 				}
@@ -10886,9 +10525,7 @@ void GetEntry(unsigned int idx)
 			if (evt_metOptSig_branch != 0) {
 				evt_metOptSig_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_metOptSig_, &e);
-				if (not isfinite(evt_metOptSig_) || e > 30) {
+				if (not isfinite(evt_metOptSig_)) {
 					printf("branch evt_metOptSig_branch contains a bad float: %f\n", evt_metOptSig_);
 					exit(1);
 				}
@@ -10907,9 +10544,7 @@ void GetEntry(unsigned int idx)
 			if (evt_metOptPhi_branch != 0) {
 				evt_metOptPhi_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_metOptPhi_, &e);
-				if (not isfinite(evt_metOptPhi_) || e > 30) {
+				if (not isfinite(evt_metOptPhi_)) {
 					printf("branch evt_metOptPhi_branch contains a bad float: %f\n", evt_metOptPhi_);
 					exit(1);
 				}
@@ -10928,9 +10563,7 @@ void GetEntry(unsigned int idx)
 			if (evt_metPhi_branch != 0) {
 				evt_metPhi_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_metPhi_, &e);
-				if (not isfinite(evt_metPhi_) || e > 30) {
+				if (not isfinite(evt_metPhi_)) {
 					printf("branch evt_metPhi_branch contains a bad float: %f\n", evt_metPhi_);
 					exit(1);
 				}
@@ -10949,9 +10582,7 @@ void GetEntry(unsigned int idx)
 			if (evt_sumet_branch != 0) {
 				evt_sumet_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_sumet_, &e);
-				if (not isfinite(evt_sumet_) || e > 30) {
+				if (not isfinite(evt_sumet_)) {
 					printf("branch evt_sumet_branch contains a bad float: %f\n", evt_sumet_);
 					exit(1);
 				}
@@ -10970,9 +10601,7 @@ void GetEntry(unsigned int idx)
 			if (evt_sumetHO_branch != 0) {
 				evt_sumetHO_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_sumetHO_, &e);
-				if (not isfinite(evt_sumetHO_) || e > 30) {
+				if (not isfinite(evt_sumetHO_)) {
 					printf("branch evt_sumetHO_branch contains a bad float: %f\n", evt_sumetHO_);
 					exit(1);
 				}
@@ -10991,9 +10620,7 @@ void GetEntry(unsigned int idx)
 			if (evt_sumetMuonCorr_branch != 0) {
 				evt_sumetMuonCorr_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_sumetMuonCorr_, &e);
-				if (not isfinite(evt_sumetMuonCorr_) || e > 30) {
+				if (not isfinite(evt_sumetMuonCorr_)) {
 					printf("branch evt_sumetMuonCorr_branch contains a bad float: %f\n", evt_sumetMuonCorr_);
 					exit(1);
 				}
@@ -11012,9 +10639,7 @@ void GetEntry(unsigned int idx)
 			if (evt_sumetNoHF_branch != 0) {
 				evt_sumetNoHF_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_sumetNoHF_, &e);
-				if (not isfinite(evt_sumetNoHF_) || e > 30) {
+				if (not isfinite(evt_sumetNoHF_)) {
 					printf("branch evt_sumetNoHF_branch contains a bad float: %f\n", evt_sumetNoHF_);
 					exit(1);
 				}
@@ -11033,9 +10658,7 @@ void GetEntry(unsigned int idx)
 			if (evt_sumetNoHFHO_branch != 0) {
 				evt_sumetNoHFHO_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_sumetNoHFHO_, &e);
-				if (not isfinite(evt_sumetNoHFHO_) || e > 30) {
+				if (not isfinite(evt_sumetNoHFHO_)) {
 					printf("branch evt_sumetNoHFHO_branch contains a bad float: %f\n", evt_sumetNoHFHO_);
 					exit(1);
 				}
@@ -11054,9 +10677,7 @@ void GetEntry(unsigned int idx)
 			if (evt_sumetOpt_branch != 0) {
 				evt_sumetOpt_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_sumetOpt_, &e);
-				if (not isfinite(evt_sumetOpt_) || e > 30) {
+				if (not isfinite(evt_sumetOpt_)) {
 					printf("branch evt_sumetOpt_branch contains a bad float: %f\n", evt_sumetOpt_);
 					exit(1);
 				}
@@ -11075,9 +10696,7 @@ void GetEntry(unsigned int idx)
 			if (evt_sumetOptHO_branch != 0) {
 				evt_sumetOptHO_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_sumetOptHO_, &e);
-				if (not isfinite(evt_sumetOptHO_) || e > 30) {
+				if (not isfinite(evt_sumetOptHO_)) {
 					printf("branch evt_sumetOptHO_branch contains a bad float: %f\n", evt_sumetOptHO_);
 					exit(1);
 				}
@@ -11096,9 +10715,7 @@ void GetEntry(unsigned int idx)
 			if (evt_sumetOptNoHF_branch != 0) {
 				evt_sumetOptNoHF_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_sumetOptNoHF_, &e);
-				if (not isfinite(evt_sumetOptNoHF_) || e > 30) {
+				if (not isfinite(evt_sumetOptNoHF_)) {
 					printf("branch evt_sumetOptNoHF_branch contains a bad float: %f\n", evt_sumetOptNoHF_);
 					exit(1);
 				}
@@ -11117,9 +10734,7 @@ void GetEntry(unsigned int idx)
 			if (evt_sumetOptNoHFHO_branch != 0) {
 				evt_sumetOptNoHFHO_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_sumetOptNoHFHO_, &e);
-				if (not isfinite(evt_sumetOptNoHFHO_) || e > 30) {
+				if (not isfinite(evt_sumetOptNoHFHO_)) {
 					printf("branch evt_sumetOptNoHFHO_branch contains a bad float: %f\n", evt_sumetOptNoHFHO_);
 					exit(1);
 				}
@@ -11138,9 +10753,7 @@ void GetEntry(unsigned int idx)
 			if (met_pat_metCor_branch != 0) {
 				met_pat_metCor_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(met_pat_metCor_, &e);
-				if (not isfinite(met_pat_metCor_) || e > 30) {
+				if (not isfinite(met_pat_metCor_)) {
 					printf("branch met_pat_metCor_branch contains a bad float: %f\n", met_pat_metCor_);
 					exit(1);
 				}
@@ -11159,9 +10772,7 @@ void GetEntry(unsigned int idx)
 			if (met_pat_metPhiCor_branch != 0) {
 				met_pat_metPhiCor_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(met_pat_metPhiCor_, &e);
-				if (not isfinite(met_pat_metPhiCor_) || e > 30) {
+				if (not isfinite(met_pat_metPhiCor_)) {
 					printf("branch met_pat_metPhiCor_branch contains a bad float: %f\n", met_pat_metPhiCor_);
 					exit(1);
 				}
@@ -11180,9 +10791,7 @@ void GetEntry(unsigned int idx)
 			if (met_pat_metPhiUncor_branch != 0) {
 				met_pat_metPhiUncor_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(met_pat_metPhiUncor_, &e);
-				if (not isfinite(met_pat_metPhiUncor_) || e > 30) {
+				if (not isfinite(met_pat_metPhiUncor_)) {
 					printf("branch met_pat_metPhiUncor_branch contains a bad float: %f\n", met_pat_metPhiUncor_);
 					exit(1);
 				}
@@ -11201,9 +10810,7 @@ void GetEntry(unsigned int idx)
 			if (met_pat_metPhiUncorJES_branch != 0) {
 				met_pat_metPhiUncorJES_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(met_pat_metPhiUncorJES_, &e);
-				if (not isfinite(met_pat_metPhiUncorJES_) || e > 30) {
+				if (not isfinite(met_pat_metPhiUncorJES_)) {
 					printf("branch met_pat_metPhiUncorJES_branch contains a bad float: %f\n", met_pat_metPhiUncorJES_);
 					exit(1);
 				}
@@ -11222,9 +10829,7 @@ void GetEntry(unsigned int idx)
 			if (met_pat_metPhiUncorMuon_branch != 0) {
 				met_pat_metPhiUncorMuon_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(met_pat_metPhiUncorMuon_, &e);
-				if (not isfinite(met_pat_metPhiUncorMuon_) || e > 30) {
+				if (not isfinite(met_pat_metPhiUncorMuon_)) {
 					printf("branch met_pat_metPhiUncorMuon_branch contains a bad float: %f\n", met_pat_metPhiUncorMuon_);
 					exit(1);
 				}
@@ -11243,9 +10848,7 @@ void GetEntry(unsigned int idx)
 			if (met_pat_metUncor_branch != 0) {
 				met_pat_metUncor_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(met_pat_metUncor_, &e);
-				if (not isfinite(met_pat_metUncor_) || e > 30) {
+				if (not isfinite(met_pat_metUncor_)) {
 					printf("branch met_pat_metUncor_branch contains a bad float: %f\n", met_pat_metUncor_);
 					exit(1);
 				}
@@ -11264,9 +10867,7 @@ void GetEntry(unsigned int idx)
 			if (met_pat_metUncorJES_branch != 0) {
 				met_pat_metUncorJES_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(met_pat_metUncorJES_, &e);
-				if (not isfinite(met_pat_metUncorJES_) || e > 30) {
+				if (not isfinite(met_pat_metUncorJES_)) {
 					printf("branch met_pat_metUncorJES_branch contains a bad float: %f\n", met_pat_metUncorJES_);
 					exit(1);
 				}
@@ -11285,9 +10886,7 @@ void GetEntry(unsigned int idx)
 			if (met_pat_metUncorMuon_branch != 0) {
 				met_pat_metUncorMuon_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(met_pat_metUncorMuon_, &e);
-				if (not isfinite(met_pat_metUncorMuon_) || e > 30) {
+				if (not isfinite(met_pat_metUncorMuon_)) {
 					printf("branch met_pat_metUncorMuon_branch contains a bad float: %f\n", met_pat_metUncorMuon_);
 					exit(1);
 				}
@@ -11306,9 +10905,7 @@ void GetEntry(unsigned int idx)
 			if (evt_tcmet_branch != 0) {
 				evt_tcmet_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_tcmet_, &e);
-				if (not isfinite(evt_tcmet_) || e > 30) {
+				if (not isfinite(evt_tcmet_)) {
 					printf("branch evt_tcmet_branch contains a bad float: %f\n", evt_tcmet_);
 					exit(1);
 				}
@@ -11327,9 +10924,7 @@ void GetEntry(unsigned int idx)
 			if (evt_tcmetPhi_branch != 0) {
 				evt_tcmetPhi_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_tcmetPhi_, &e);
-				if (not isfinite(evt_tcmetPhi_) || e > 30) {
+				if (not isfinite(evt_tcmetPhi_)) {
 					printf("branch evt_tcmetPhi_branch contains a bad float: %f\n", evt_tcmetPhi_);
 					exit(1);
 				}
@@ -11348,9 +10943,7 @@ void GetEntry(unsigned int idx)
 			if (evt_tcsumet_branch != 0) {
 				evt_tcsumet_branch->GetEntry(index);
 				#ifdef PARANOIA
-				int e;
-				frexpf(evt_tcsumet_, &e);
-				if (not isfinite(evt_tcsumet_) || e > 30) {
+				if (not isfinite(evt_tcsumet_)) {
 					printf("branch evt_tcsumet_branch contains a bad float: %f\n", evt_tcsumet_);
 					exit(1);
 				}
@@ -11370,9 +10963,7 @@ void GetEntry(unsigned int idx)
 				els_mc3dr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_mc3dr_.begin(); i != els_mc3dr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_mc3dr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11393,9 +10984,7 @@ void GetEntry(unsigned int idx)
 				els_mcdr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_mcdr_.begin(); i != els_mcdr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_mcdr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11416,9 +11005,7 @@ void GetEntry(unsigned int idx)
 				jets_mcdr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_mcdr_.begin(); i != jets_mcdr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_mcdr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11439,9 +11026,7 @@ void GetEntry(unsigned int idx)
 				jets_mc_emEnergy_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_mc_emEnergy_.begin(); i != jets_mc_emEnergy_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_mc_emEnergy_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11462,9 +11047,7 @@ void GetEntry(unsigned int idx)
 				jets_mc_gpdr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_mc_gpdr_.begin(); i != jets_mc_gpdr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_mc_gpdr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11485,9 +11068,7 @@ void GetEntry(unsigned int idx)
 				jets_mc_hadEnergy_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_mc_hadEnergy_.begin(); i != jets_mc_hadEnergy_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_mc_hadEnergy_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11508,9 +11089,7 @@ void GetEntry(unsigned int idx)
 				jets_mc_invEnergy_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_mc_invEnergy_.begin(); i != jets_mc_invEnergy_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_mc_invEnergy_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11531,9 +11110,7 @@ void GetEntry(unsigned int idx)
 				jets_mc_otherEnergy_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_mc_otherEnergy_.begin(); i != jets_mc_otherEnergy_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_mc_otherEnergy_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11554,9 +11131,7 @@ void GetEntry(unsigned int idx)
 				mus_mc3dr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_mc3dr_.begin(); i != mus_mc3dr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_mc3dr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11577,9 +11152,7 @@ void GetEntry(unsigned int idx)
 				mus_mcdr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_mcdr_.begin(); i != mus_mcdr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_mcdr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11600,9 +11173,7 @@ void GetEntry(unsigned int idx)
 				trk_mc3dr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = trk_mc3dr_.begin(); i != trk_mc3dr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch trk_mc3dr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11623,9 +11194,7 @@ void GetEntry(unsigned int idx)
 				trk_mcdr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = trk_mcdr_.begin(); i != trk_mcdr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch trk_mcdr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11646,9 +11215,7 @@ void GetEntry(unsigned int idx)
 				els_conv_dcot_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_conv_dcot_.begin(); i != els_conv_dcot_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_conv_dcot_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11669,9 +11236,7 @@ void GetEntry(unsigned int idx)
 				els_conv_dist_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_conv_dist_.begin(); i != els_conv_dist_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_conv_dist_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11692,9 +11257,7 @@ void GetEntry(unsigned int idx)
 				trks_conv_dcot_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = trks_conv_dcot_.begin(); i != trks_conv_dcot_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch trks_conv_dcot_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11715,9 +11278,7 @@ void GetEntry(unsigned int idx)
 				trks_conv_dist_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = trks_conv_dist_.begin(); i != trks_conv_dist_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch trks_conv_dist_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11738,9 +11299,7 @@ void GetEntry(unsigned int idx)
 				els_ecalJuraIso_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_ecalJuraIso_.begin(); i != els_ecalJuraIso_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_ecalJuraIso_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11761,9 +11320,7 @@ void GetEntry(unsigned int idx)
 				els_ecalJuraTowerIso_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_ecalJuraTowerIso_.begin(); i != els_ecalJuraTowerIso_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_ecalJuraTowerIso_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11784,9 +11341,7 @@ void GetEntry(unsigned int idx)
 				els_hcalConeIso_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_hcalConeIso_.begin(); i != els_hcalConeIso_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_hcalConeIso_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11807,9 +11362,7 @@ void GetEntry(unsigned int idx)
 				els_jetdr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_jetdr_.begin(); i != els_jetdr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_jetdr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11830,9 +11383,7 @@ void GetEntry(unsigned int idx)
 				els_musdr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_musdr_.begin(); i != els_musdr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_musdr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11853,9 +11404,7 @@ void GetEntry(unsigned int idx)
 				els_trkdr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_trkdr_.begin(); i != els_trkdr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_trkdr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11876,9 +11425,7 @@ void GetEntry(unsigned int idx)
 				els_trkshFrac_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_trkshFrac_.begin(); i != els_trkshFrac_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_trkshFrac_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11899,9 +11446,7 @@ void GetEntry(unsigned int idx)
 				els_chi2_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_chi2_.begin(); i != els_chi2_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_chi2_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11922,9 +11467,7 @@ void GetEntry(unsigned int idx)
 				els_d0_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_d0_.begin(); i != els_d0_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_d0_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11945,9 +11488,7 @@ void GetEntry(unsigned int idx)
 				els_d0Err_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_d0Err_.begin(); i != els_d0Err_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_d0Err_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11968,9 +11509,7 @@ void GetEntry(unsigned int idx)
 				els_d0corr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_d0corr_.begin(); i != els_d0corr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_d0corr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -11991,9 +11530,7 @@ void GetEntry(unsigned int idx)
 				els_dEtaIn_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_dEtaIn_.begin(); i != els_dEtaIn_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_dEtaIn_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12014,9 +11551,7 @@ void GetEntry(unsigned int idx)
 				els_dEtaOut_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_dEtaOut_.begin(); i != els_dEtaOut_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_dEtaOut_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12037,9 +11572,7 @@ void GetEntry(unsigned int idx)
 				els_dPhiIn_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_dPhiIn_.begin(); i != els_dPhiIn_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_dPhiIn_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12060,9 +11593,7 @@ void GetEntry(unsigned int idx)
 				els_dPhiInPhiOut_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_dPhiInPhiOut_.begin(); i != els_dPhiInPhiOut_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_dPhiInPhiOut_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12083,9 +11614,7 @@ void GetEntry(unsigned int idx)
 				els_dPhiOut_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_dPhiOut_.begin(); i != els_dPhiOut_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_dPhiOut_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12106,9 +11635,7 @@ void GetEntry(unsigned int idx)
 				els_e2x5Max_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_e2x5Max_.begin(); i != els_e2x5Max_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_e2x5Max_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12129,9 +11656,7 @@ void GetEntry(unsigned int idx)
 				els_e3x3_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_e3x3_.begin(); i != els_e3x3_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_e3x3_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12152,9 +11677,7 @@ void GetEntry(unsigned int idx)
 				els_e5x5_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_e5x5_.begin(); i != els_e5x5_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_e5x5_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12175,9 +11698,7 @@ void GetEntry(unsigned int idx)
 				els_eMax_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_eMax_.begin(); i != els_eMax_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_eMax_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12198,9 +11719,7 @@ void GetEntry(unsigned int idx)
 				els_eOverPIn_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_eOverPIn_.begin(); i != els_eOverPIn_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_eOverPIn_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12221,9 +11740,7 @@ void GetEntry(unsigned int idx)
 				els_eSC_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_eSC_.begin(); i != els_eSC_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_eSC_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12244,9 +11761,7 @@ void GetEntry(unsigned int idx)
 				els_eSCPresh_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_eSCPresh_.begin(); i != els_eSCPresh_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_eSCPresh_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12267,9 +11782,7 @@ void GetEntry(unsigned int idx)
 				els_eSCRaw_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_eSCRaw_.begin(); i != els_eSCRaw_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_eSCRaw_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12290,9 +11803,7 @@ void GetEntry(unsigned int idx)
 				els_eSeed_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_eSeed_.begin(); i != els_eSeed_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_eSeed_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12313,9 +11824,7 @@ void GetEntry(unsigned int idx)
 				els_eSeedOverPOut_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_eSeedOverPOut_.begin(); i != els_eSeedOverPOut_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_eSeedOverPOut_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12336,9 +11845,7 @@ void GetEntry(unsigned int idx)
 				els_etaErr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_etaErr_.begin(); i != els_etaErr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_etaErr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12359,9 +11866,7 @@ void GetEntry(unsigned int idx)
 				els_fBrem_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_fBrem_.begin(); i != els_fBrem_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_fBrem_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12382,9 +11887,7 @@ void GetEntry(unsigned int idx)
 				els_hOverE_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_hOverE_.begin(); i != els_hOverE_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_hOverE_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12405,9 +11908,7 @@ void GetEntry(unsigned int idx)
 				els_ndof_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_ndof_.begin(); i != els_ndof_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_ndof_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12428,9 +11929,7 @@ void GetEntry(unsigned int idx)
 				els_outerEta_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_outerEta_.begin(); i != els_outerEta_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_outerEta_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12451,9 +11950,7 @@ void GetEntry(unsigned int idx)
 				els_outerPhi_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_outerPhi_.begin(); i != els_outerPhi_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_outerPhi_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12474,9 +11971,7 @@ void GetEntry(unsigned int idx)
 				els_phiErr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_phiErr_.begin(); i != els_phiErr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_phiErr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12497,9 +11992,7 @@ void GetEntry(unsigned int idx)
 				els_ptErr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_ptErr_.begin(); i != els_ptErr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_ptErr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12520,9 +12013,7 @@ void GetEntry(unsigned int idx)
 				els_sigmaEtaEta_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_sigmaEtaEta_.begin(); i != els_sigmaEtaEta_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_sigmaEtaEta_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12543,9 +12034,7 @@ void GetEntry(unsigned int idx)
 				els_sigmaIEtaIEta_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_sigmaIEtaIEta_.begin(); i != els_sigmaIEtaIEta_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_sigmaIEtaIEta_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12566,9 +12055,7 @@ void GetEntry(unsigned int idx)
 				els_sigmaIPhiIPhi_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_sigmaIPhiIPhi_.begin(); i != els_sigmaIPhiIPhi_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_sigmaIPhiIPhi_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12589,9 +12076,7 @@ void GetEntry(unsigned int idx)
 				els_sigmaPhiPhi_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_sigmaPhiPhi_.begin(); i != els_sigmaPhiPhi_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_sigmaPhiPhi_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12612,9 +12097,7 @@ void GetEntry(unsigned int idx)
 				els_tkIso_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_tkIso_.begin(); i != els_tkIso_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_tkIso_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12635,9 +12118,7 @@ void GetEntry(unsigned int idx)
 				els_vertexphi_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_vertexphi_.begin(); i != els_vertexphi_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_vertexphi_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12658,9 +12139,7 @@ void GetEntry(unsigned int idx)
 				els_z0_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_z0_.begin(); i != els_z0_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_z0_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12681,9 +12160,7 @@ void GetEntry(unsigned int idx)
 				els_z0Err_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_z0Err_.begin(); i != els_z0Err_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_z0Err_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12704,9 +12181,7 @@ void GetEntry(unsigned int idx)
 				els_z0corr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_z0corr_.begin(); i != els_z0corr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_z0corr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12727,9 +12202,7 @@ void GetEntry(unsigned int idx)
 				hyp_ll_chi2_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_ll_chi2_.begin(); i != hyp_ll_chi2_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_ll_chi2_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12750,9 +12223,7 @@ void GetEntry(unsigned int idx)
 				hyp_ll_d0_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_ll_d0_.begin(); i != hyp_ll_d0_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_ll_d0_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12773,9 +12244,7 @@ void GetEntry(unsigned int idx)
 				hyp_ll_d0Err_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_ll_d0Err_.begin(); i != hyp_ll_d0Err_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_ll_d0Err_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12796,9 +12265,7 @@ void GetEntry(unsigned int idx)
 				hyp_ll_d0corr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_ll_d0corr_.begin(); i != hyp_ll_d0corr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_ll_d0corr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12819,9 +12286,7 @@ void GetEntry(unsigned int idx)
 				hyp_ll_etaErr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_ll_etaErr_.begin(); i != hyp_ll_etaErr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_ll_etaErr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12842,9 +12307,7 @@ void GetEntry(unsigned int idx)
 				hyp_ll_iso_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_ll_iso_.begin(); i != hyp_ll_iso_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_ll_iso_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12865,9 +12328,7 @@ void GetEntry(unsigned int idx)
 				hyp_ll_ndof_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_ll_ndof_.begin(); i != hyp_ll_ndof_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_ll_ndof_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12888,9 +12349,7 @@ void GetEntry(unsigned int idx)
 				hyp_ll_outerEta_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_ll_outerEta_.begin(); i != hyp_ll_outerEta_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_ll_outerEta_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12911,9 +12370,7 @@ void GetEntry(unsigned int idx)
 				hyp_ll_outerPhi_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_ll_outerPhi_.begin(); i != hyp_ll_outerPhi_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_ll_outerPhi_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12934,9 +12391,7 @@ void GetEntry(unsigned int idx)
 				hyp_ll_phiErr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_ll_phiErr_.begin(); i != hyp_ll_phiErr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_ll_phiErr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12957,9 +12412,7 @@ void GetEntry(unsigned int idx)
 				hyp_ll_ptErr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_ll_ptErr_.begin(); i != hyp_ll_ptErr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_ll_ptErr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -12980,9 +12433,7 @@ void GetEntry(unsigned int idx)
 				hyp_ll_tkIso_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_ll_tkIso_.begin(); i != hyp_ll_tkIso_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_ll_tkIso_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13003,9 +12454,7 @@ void GetEntry(unsigned int idx)
 				hyp_ll_vertexphi_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_ll_vertexphi_.begin(); i != hyp_ll_vertexphi_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_ll_vertexphi_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13026,9 +12475,7 @@ void GetEntry(unsigned int idx)
 				hyp_ll_z0_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_ll_z0_.begin(); i != hyp_ll_z0_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_ll_z0_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13049,9 +12496,7 @@ void GetEntry(unsigned int idx)
 				hyp_ll_z0Err_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_ll_z0Err_.begin(); i != hyp_ll_z0Err_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_ll_z0Err_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13072,9 +12517,7 @@ void GetEntry(unsigned int idx)
 				hyp_ll_z0corr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_ll_z0corr_.begin(); i != hyp_ll_z0corr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_ll_z0corr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13095,9 +12538,7 @@ void GetEntry(unsigned int idx)
 				hyp_lt_chi2_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_lt_chi2_.begin(); i != hyp_lt_chi2_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_lt_chi2_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13118,9 +12559,7 @@ void GetEntry(unsigned int idx)
 				hyp_lt_d0_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_lt_d0_.begin(); i != hyp_lt_d0_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_lt_d0_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13141,9 +12580,7 @@ void GetEntry(unsigned int idx)
 				hyp_lt_d0Err_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_lt_d0Err_.begin(); i != hyp_lt_d0Err_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_lt_d0Err_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13164,9 +12601,7 @@ void GetEntry(unsigned int idx)
 				hyp_lt_d0corr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_lt_d0corr_.begin(); i != hyp_lt_d0corr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_lt_d0corr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13187,9 +12622,7 @@ void GetEntry(unsigned int idx)
 				hyp_lt_etaErr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_lt_etaErr_.begin(); i != hyp_lt_etaErr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_lt_etaErr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13210,9 +12643,7 @@ void GetEntry(unsigned int idx)
 				hyp_lt_iso_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_lt_iso_.begin(); i != hyp_lt_iso_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_lt_iso_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13233,9 +12664,7 @@ void GetEntry(unsigned int idx)
 				hyp_lt_ndof_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_lt_ndof_.begin(); i != hyp_lt_ndof_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_lt_ndof_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13256,9 +12685,7 @@ void GetEntry(unsigned int idx)
 				hyp_lt_outerEta_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_lt_outerEta_.begin(); i != hyp_lt_outerEta_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_lt_outerEta_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13279,9 +12706,7 @@ void GetEntry(unsigned int idx)
 				hyp_lt_outerPhi_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_lt_outerPhi_.begin(); i != hyp_lt_outerPhi_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_lt_outerPhi_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13302,9 +12727,7 @@ void GetEntry(unsigned int idx)
 				hyp_lt_phiErr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_lt_phiErr_.begin(); i != hyp_lt_phiErr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_lt_phiErr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13325,9 +12748,7 @@ void GetEntry(unsigned int idx)
 				hyp_lt_ptErr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_lt_ptErr_.begin(); i != hyp_lt_ptErr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_lt_ptErr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13348,9 +12769,7 @@ void GetEntry(unsigned int idx)
 				hyp_lt_tkIso_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_lt_tkIso_.begin(); i != hyp_lt_tkIso_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_lt_tkIso_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13371,9 +12790,7 @@ void GetEntry(unsigned int idx)
 				hyp_lt_vertexphi_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_lt_vertexphi_.begin(); i != hyp_lt_vertexphi_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_lt_vertexphi_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13394,9 +12811,7 @@ void GetEntry(unsigned int idx)
 				hyp_lt_z0_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_lt_z0_.begin(); i != hyp_lt_z0_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_lt_z0_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13417,9 +12832,7 @@ void GetEntry(unsigned int idx)
 				hyp_lt_z0Err_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_lt_z0Err_.begin(); i != hyp_lt_z0Err_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_lt_z0Err_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13440,9 +12853,7 @@ void GetEntry(unsigned int idx)
 				hyp_lt_z0corr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_lt_z0corr_.begin(); i != hyp_lt_z0corr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_lt_z0corr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13463,9 +12874,7 @@ void GetEntry(unsigned int idx)
 				hyp_met_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_met_.begin(); i != hyp_met_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_met_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13486,9 +12895,7 @@ void GetEntry(unsigned int idx)
 				hyp_metAll_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metAll_.begin(); i != hyp_metAll_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metAll_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13509,9 +12916,7 @@ void GetEntry(unsigned int idx)
 				hyp_metAllCaloExp_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metAllCaloExp_.begin(); i != hyp_metAllCaloExp_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metAllCaloExp_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13532,9 +12937,7 @@ void GetEntry(unsigned int idx)
 				hyp_metCaloExp_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metCaloExp_.begin(); i != hyp_metCaloExp_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metCaloExp_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13555,9 +12958,7 @@ void GetEntry(unsigned int idx)
 				hyp_metCone_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metCone_.begin(); i != hyp_metCone_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metCone_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13578,9 +12979,7 @@ void GetEntry(unsigned int idx)
 				hyp_metDPhiJet10_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metDPhiJet10_.begin(); i != hyp_metDPhiJet10_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metDPhiJet10_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13601,9 +13000,7 @@ void GetEntry(unsigned int idx)
 				hyp_metDPhiJet15_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metDPhiJet15_.begin(); i != hyp_metDPhiJet15_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metDPhiJet15_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13624,9 +13021,7 @@ void GetEntry(unsigned int idx)
 				hyp_metDPhiJet20_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metDPhiJet20_.begin(); i != hyp_metDPhiJet20_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metDPhiJet20_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13647,9 +13042,7 @@ void GetEntry(unsigned int idx)
 				hyp_metDPhiTrk10_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metDPhiTrk10_.begin(); i != hyp_metDPhiTrk10_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metDPhiTrk10_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13670,9 +13063,7 @@ void GetEntry(unsigned int idx)
 				hyp_metDPhiTrk25_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metDPhiTrk25_.begin(); i != hyp_metDPhiTrk25_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metDPhiTrk25_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13693,9 +13084,7 @@ void GetEntry(unsigned int idx)
 				hyp_metDPhiTrk50_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metDPhiTrk50_.begin(); i != hyp_metDPhiTrk50_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metDPhiTrk50_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13716,9 +13105,7 @@ void GetEntry(unsigned int idx)
 				hyp_metJes10_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metJes10_.begin(); i != hyp_metJes10_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metJes10_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13739,9 +13126,7 @@ void GetEntry(unsigned int idx)
 				hyp_metJes15_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metJes15_.begin(); i != hyp_metJes15_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metJes15_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13762,9 +13147,7 @@ void GetEntry(unsigned int idx)
 				hyp_metJes30_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metJes30_.begin(); i != hyp_metJes30_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metJes30_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13785,9 +13168,7 @@ void GetEntry(unsigned int idx)
 				hyp_metJes5_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metJes5_.begin(); i != hyp_metJes5_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metJes5_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13808,9 +13189,7 @@ void GetEntry(unsigned int idx)
 				hyp_metJes50_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metJes50_.begin(); i != hyp_metJes50_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metJes50_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13831,9 +13210,7 @@ void GetEntry(unsigned int idx)
 				hyp_metNoCalo_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metNoCalo_.begin(); i != hyp_metNoCalo_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metNoCalo_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13854,9 +13231,7 @@ void GetEntry(unsigned int idx)
 				hyp_metPhi_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metPhi_.begin(); i != hyp_metPhi_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metPhi_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13877,9 +13252,7 @@ void GetEntry(unsigned int idx)
 				hyp_metPhiAll_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metPhiAll_.begin(); i != hyp_metPhiAll_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metPhiAll_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13900,9 +13273,7 @@ void GetEntry(unsigned int idx)
 				hyp_metPhiAllCaloExp_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metPhiAllCaloExp_.begin(); i != hyp_metPhiAllCaloExp_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metPhiAllCaloExp_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13923,9 +13294,7 @@ void GetEntry(unsigned int idx)
 				hyp_metPhiCaloExp_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metPhiCaloExp_.begin(); i != hyp_metPhiCaloExp_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metPhiCaloExp_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13946,9 +13315,7 @@ void GetEntry(unsigned int idx)
 				hyp_metPhiCone_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metPhiCone_.begin(); i != hyp_metPhiCone_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metPhiCone_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13969,9 +13336,7 @@ void GetEntry(unsigned int idx)
 				hyp_metPhiJes10_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metPhiJes10_.begin(); i != hyp_metPhiJes10_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metPhiJes10_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -13992,9 +13357,7 @@ void GetEntry(unsigned int idx)
 				hyp_metPhiJes15_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metPhiJes15_.begin(); i != hyp_metPhiJes15_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metPhiJes15_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14015,9 +13378,7 @@ void GetEntry(unsigned int idx)
 				hyp_metPhiJes30_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metPhiJes30_.begin(); i != hyp_metPhiJes30_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metPhiJes30_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14038,9 +13399,7 @@ void GetEntry(unsigned int idx)
 				hyp_metPhiJes5_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metPhiJes5_.begin(); i != hyp_metPhiJes5_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metPhiJes5_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14061,9 +13420,7 @@ void GetEntry(unsigned int idx)
 				hyp_metPhiJes50_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metPhiJes50_.begin(); i != hyp_metPhiJes50_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metPhiJes50_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14084,9 +13441,7 @@ void GetEntry(unsigned int idx)
 				hyp_metPhiNoCalo_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_metPhiNoCalo_.begin(); i != hyp_metPhiNoCalo_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_metPhiNoCalo_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14107,9 +13462,7 @@ void GetEntry(unsigned int idx)
 				hyp_quadlep_met_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_quadlep_met_.begin(); i != hyp_quadlep_met_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_quadlep_met_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14130,9 +13483,7 @@ void GetEntry(unsigned int idx)
 				hyp_quadlep_metAll_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_quadlep_metAll_.begin(); i != hyp_quadlep_metAll_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_quadlep_metAll_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14153,9 +13504,7 @@ void GetEntry(unsigned int idx)
 				hyp_trilep_met_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_trilep_met_.begin(); i != hyp_trilep_met_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_trilep_met_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14176,9 +13525,7 @@ void GetEntry(unsigned int idx)
 				hyp_trilep_metAll_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = hyp_trilep_metAll_.begin(); i != hyp_trilep_metAll_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch hyp_trilep_metAll_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14199,9 +13546,7 @@ void GetEntry(unsigned int idx)
 				jets_EMFcor_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_EMFcor_.begin(); i != jets_EMFcor_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_EMFcor_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14222,9 +13567,7 @@ void GetEntry(unsigned int idx)
 				jets_chFrac_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_chFrac_.begin(); i != jets_chFrac_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_chFrac_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14245,9 +13588,7 @@ void GetEntry(unsigned int idx)
 				jets_cor_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_cor_.begin(); i != jets_cor_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_cor_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14268,9 +13609,7 @@ void GetEntry(unsigned int idx)
 				jets_emFrac_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_emFrac_.begin(); i != jets_emFrac_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_emFrac_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14291,9 +13630,7 @@ void GetEntry(unsigned int idx)
 				jpts_chFrac_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jpts_chFrac_.begin(); i != jpts_chFrac_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jpts_chFrac_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14314,9 +13651,7 @@ void GetEntry(unsigned int idx)
 				jpts_cor_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jpts_cor_.begin(); i != jpts_cor_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jpts_cor_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14337,9 +13672,7 @@ void GetEntry(unsigned int idx)
 				jpts_emFrac_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jpts_emFrac_.begin(); i != jpts_emFrac_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jpts_emFrac_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14360,9 +13693,7 @@ void GetEntry(unsigned int idx)
 				mus_eledr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_eledr_.begin(); i != mus_eledr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_eledr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14383,9 +13714,7 @@ void GetEntry(unsigned int idx)
 				mus_jetdr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_jetdr_.begin(); i != mus_jetdr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_jetdr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14406,9 +13735,7 @@ void GetEntry(unsigned int idx)
 				mus_trkdr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_trkdr_.begin(); i != mus_trkdr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_trkdr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14429,9 +13756,7 @@ void GetEntry(unsigned int idx)
 				mus_caloCompatibility_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_caloCompatibility_.begin(); i != mus_caloCompatibility_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_caloCompatibility_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14452,9 +13777,7 @@ void GetEntry(unsigned int idx)
 				mus_chi2_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_chi2_.begin(); i != mus_chi2_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_chi2_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14475,9 +13798,7 @@ void GetEntry(unsigned int idx)
 				mus_d0_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_d0_.begin(); i != mus_d0_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_d0_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14498,9 +13819,7 @@ void GetEntry(unsigned int idx)
 				mus_d0Err_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_d0Err_.begin(); i != mus_d0Err_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_d0Err_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14521,9 +13840,7 @@ void GetEntry(unsigned int idx)
 				mus_d0corr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_d0corr_.begin(); i != mus_d0corr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_d0corr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14544,9 +13861,7 @@ void GetEntry(unsigned int idx)
 				mus_e_em_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_e_em_.begin(); i != mus_e_em_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_e_em_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14567,9 +13882,7 @@ void GetEntry(unsigned int idx)
 				mus_e_emS9_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_e_emS9_.begin(); i != mus_e_emS9_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_e_emS9_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14590,9 +13903,7 @@ void GetEntry(unsigned int idx)
 				mus_e_had_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_e_had_.begin(); i != mus_e_had_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_e_had_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14613,9 +13924,7 @@ void GetEntry(unsigned int idx)
 				mus_e_hadS9_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_e_hadS9_.begin(); i != mus_e_hadS9_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_e_hadS9_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14636,9 +13945,7 @@ void GetEntry(unsigned int idx)
 				mus_e_ho_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_e_ho_.begin(); i != mus_e_ho_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_e_ho_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14659,9 +13966,7 @@ void GetEntry(unsigned int idx)
 				mus_e_hoS9_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_e_hoS9_.begin(); i != mus_e_hoS9_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_e_hoS9_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14682,9 +13987,7 @@ void GetEntry(unsigned int idx)
 				mus_etaErr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_etaErr_.begin(); i != mus_etaErr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_etaErr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14705,9 +14008,7 @@ void GetEntry(unsigned int idx)
 				mus_gfit_chi2_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_gfit_chi2_.begin(); i != mus_gfit_chi2_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_gfit_chi2_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14728,9 +14029,7 @@ void GetEntry(unsigned int idx)
 				mus_gfit_ndof_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_gfit_ndof_.begin(); i != mus_gfit_ndof_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_gfit_ndof_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14751,9 +14050,7 @@ void GetEntry(unsigned int idx)
 				mus_iso_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_iso_.begin(); i != mus_iso_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_iso_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14774,9 +14071,7 @@ void GetEntry(unsigned int idx)
 				mus_iso03_emEt_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_iso03_emEt_.begin(); i != mus_iso03_emEt_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_iso03_emEt_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14797,9 +14092,7 @@ void GetEntry(unsigned int idx)
 				mus_iso03_hadEt_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_iso03_hadEt_.begin(); i != mus_iso03_hadEt_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_iso03_hadEt_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14820,9 +14113,7 @@ void GetEntry(unsigned int idx)
 				mus_iso03_hoEt_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_iso03_hoEt_.begin(); i != mus_iso03_hoEt_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_iso03_hoEt_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14843,9 +14134,7 @@ void GetEntry(unsigned int idx)
 				mus_iso03_sumPt_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_iso03_sumPt_.begin(); i != mus_iso03_sumPt_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_iso03_sumPt_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14866,9 +14155,7 @@ void GetEntry(unsigned int idx)
 				mus_iso05_emEt_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_iso05_emEt_.begin(); i != mus_iso05_emEt_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_iso05_emEt_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14889,9 +14176,7 @@ void GetEntry(unsigned int idx)
 				mus_iso05_hadEt_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_iso05_hadEt_.begin(); i != mus_iso05_hadEt_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_iso05_hadEt_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14912,9 +14197,7 @@ void GetEntry(unsigned int idx)
 				mus_iso05_hoEt_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_iso05_hoEt_.begin(); i != mus_iso05_hoEt_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_iso05_hoEt_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14935,9 +14218,7 @@ void GetEntry(unsigned int idx)
 				mus_iso05_sumPt_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_iso05_sumPt_.begin(); i != mus_iso05_sumPt_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_iso05_sumPt_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14958,9 +14239,7 @@ void GetEntry(unsigned int idx)
 				mus_ndof_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_ndof_.begin(); i != mus_ndof_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_ndof_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -14981,9 +14260,7 @@ void GetEntry(unsigned int idx)
 				mus_outerEta_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_outerEta_.begin(); i != mus_outerEta_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_outerEta_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15004,9 +14281,7 @@ void GetEntry(unsigned int idx)
 				mus_outerPhi_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_outerPhi_.begin(); i != mus_outerPhi_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_outerPhi_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15027,9 +14302,7 @@ void GetEntry(unsigned int idx)
 				mus_phiErr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_phiErr_.begin(); i != mus_phiErr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_phiErr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15050,9 +14323,7 @@ void GetEntry(unsigned int idx)
 				mus_ptErr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_ptErr_.begin(); i != mus_ptErr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_ptErr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15073,9 +14344,7 @@ void GetEntry(unsigned int idx)
 				mus_vertexphi_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_vertexphi_.begin(); i != mus_vertexphi_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_vertexphi_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15096,9 +14365,7 @@ void GetEntry(unsigned int idx)
 				mus_z0_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_z0_.begin(); i != mus_z0_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_z0_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15119,9 +14386,7 @@ void GetEntry(unsigned int idx)
 				mus_z0Err_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_z0Err_.begin(); i != mus_z0Err_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_z0Err_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15142,9 +14407,7 @@ void GetEntry(unsigned int idx)
 				mus_z0corr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_z0corr_.begin(); i != mus_z0corr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_z0corr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15165,9 +14428,7 @@ void GetEntry(unsigned int idx)
 				els_pat_caloIso_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_pat_caloIso_.begin(); i != els_pat_caloIso_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_pat_caloIso_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15188,9 +14449,7 @@ void GetEntry(unsigned int idx)
 				els_pat_ecalIso_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_pat_ecalIso_.begin(); i != els_pat_ecalIso_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_pat_ecalIso_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15211,9 +14470,7 @@ void GetEntry(unsigned int idx)
 				els_pat_hcalIso_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_pat_hcalIso_.begin(); i != els_pat_hcalIso_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_pat_hcalIso_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15234,9 +14491,7 @@ void GetEntry(unsigned int idx)
 				els_pat_looseId_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_pat_looseId_.begin(); i != els_pat_looseId_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_pat_looseId_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15257,9 +14512,7 @@ void GetEntry(unsigned int idx)
 				els_pat_robustHighEnergy_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_pat_robustHighEnergy_.begin(); i != els_pat_robustHighEnergy_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_pat_robustHighEnergy_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15280,9 +14533,7 @@ void GetEntry(unsigned int idx)
 				els_pat_robustLooseId_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_pat_robustLooseId_.begin(); i != els_pat_robustLooseId_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_pat_robustLooseId_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15303,9 +14554,7 @@ void GetEntry(unsigned int idx)
 				els_pat_robustTightId_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_pat_robustTightId_.begin(); i != els_pat_robustTightId_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_pat_robustTightId_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15326,9 +14575,7 @@ void GetEntry(unsigned int idx)
 				els_pat_scE1x5_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_pat_scE1x5_.begin(); i != els_pat_scE1x5_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_pat_scE1x5_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15349,9 +14596,7 @@ void GetEntry(unsigned int idx)
 				els_pat_scE2x5Max_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_pat_scE2x5Max_.begin(); i != els_pat_scE2x5Max_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_pat_scE2x5Max_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15372,9 +14617,7 @@ void GetEntry(unsigned int idx)
 				els_pat_scE5x5_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_pat_scE5x5_.begin(); i != els_pat_scE5x5_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_pat_scE5x5_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15395,9 +14638,7 @@ void GetEntry(unsigned int idx)
 				els_pat_sigmaEtaEta_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_pat_sigmaEtaEta_.begin(); i != els_pat_sigmaEtaEta_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_pat_sigmaEtaEta_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15418,9 +14659,7 @@ void GetEntry(unsigned int idx)
 				els_pat_sigmaIEtaIEta_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_pat_sigmaIEtaIEta_.begin(); i != els_pat_sigmaIEtaIEta_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_pat_sigmaIEtaIEta_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15441,9 +14680,7 @@ void GetEntry(unsigned int idx)
 				els_pat_tightId_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_pat_tightId_.begin(); i != els_pat_tightId_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_pat_tightId_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15464,9 +14701,7 @@ void GetEntry(unsigned int idx)
 				els_pat_trackIso_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = els_pat_trackIso_.begin(); i != els_pat_trackIso_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch els_pat_trackIso_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15487,9 +14722,7 @@ void GetEntry(unsigned int idx)
 				jets_pat_bCorrF_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_pat_bCorrF_.begin(); i != jets_pat_bCorrF_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_pat_bCorrF_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15510,9 +14743,7 @@ void GetEntry(unsigned int idx)
 				jets_pat_cCorrF_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_pat_cCorrF_.begin(); i != jets_pat_cCorrF_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_pat_cCorrF_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15533,9 +14764,7 @@ void GetEntry(unsigned int idx)
 				jets_pat_combinedSecondaryVertexBJetTag_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_pat_combinedSecondaryVertexBJetTag_.begin(); i != jets_pat_combinedSecondaryVertexBJetTag_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_pat_combinedSecondaryVertexBJetTag_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15556,9 +14785,7 @@ void GetEntry(unsigned int idx)
 				jets_pat_combinedSecondaryVertexMVABJetTag_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_pat_combinedSecondaryVertexMVABJetTag_.begin(); i != jets_pat_combinedSecondaryVertexMVABJetTag_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_pat_combinedSecondaryVertexMVABJetTag_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15579,9 +14806,7 @@ void GetEntry(unsigned int idx)
 				jets_pat_coneIsolationTauJetTag_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_pat_coneIsolationTauJetTag_.begin(); i != jets_pat_coneIsolationTauJetTag_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_pat_coneIsolationTauJetTag_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15602,9 +14827,7 @@ void GetEntry(unsigned int idx)
 				jets_pat_gluCorrF_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_pat_gluCorrF_.begin(); i != jets_pat_gluCorrF_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_pat_gluCorrF_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15625,9 +14848,7 @@ void GetEntry(unsigned int idx)
 				jets_pat_impactParameterMVABJetTag_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_pat_impactParameterMVABJetTag_.begin(); i != jets_pat_impactParameterMVABJetTag_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_pat_impactParameterMVABJetTag_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15648,9 +14869,7 @@ void GetEntry(unsigned int idx)
 				jets_pat_jetBProbabilityBJetTag_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_pat_jetBProbabilityBJetTag_.begin(); i != jets_pat_jetBProbabilityBJetTag_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_pat_jetBProbabilityBJetTag_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15671,9 +14890,7 @@ void GetEntry(unsigned int idx)
 				jets_pat_jetCharge_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_pat_jetCharge_.begin(); i != jets_pat_jetCharge_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_pat_jetCharge_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15694,9 +14911,7 @@ void GetEntry(unsigned int idx)
 				jets_pat_jetProbabilityBJetTag_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_pat_jetProbabilityBJetTag_.begin(); i != jets_pat_jetProbabilityBJetTag_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_pat_jetProbabilityBJetTag_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15717,9 +14932,7 @@ void GetEntry(unsigned int idx)
 				jets_pat_noCorrF_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_pat_noCorrF_.begin(); i != jets_pat_noCorrF_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_pat_noCorrF_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15740,9 +14953,7 @@ void GetEntry(unsigned int idx)
 				jets_pat_simpleSecondaryVertexBJetTag_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_pat_simpleSecondaryVertexBJetTag_.begin(); i != jets_pat_simpleSecondaryVertexBJetTag_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_pat_simpleSecondaryVertexBJetTag_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15763,9 +14974,7 @@ void GetEntry(unsigned int idx)
 				jets_pat_softElectronBJetTag_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_pat_softElectronBJetTag_.begin(); i != jets_pat_softElectronBJetTag_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_pat_softElectronBJetTag_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15786,9 +14995,7 @@ void GetEntry(unsigned int idx)
 				jets_pat_softMuonBJetTag_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_pat_softMuonBJetTag_.begin(); i != jets_pat_softMuonBJetTag_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_pat_softMuonBJetTag_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15809,9 +15016,7 @@ void GetEntry(unsigned int idx)
 				jets_pat_softMuonNoIPBJetTag_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_pat_softMuonNoIPBJetTag_.begin(); i != jets_pat_softMuonNoIPBJetTag_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_pat_softMuonNoIPBJetTag_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15832,9 +15037,7 @@ void GetEntry(unsigned int idx)
 				jets_pat_trackCountingHighEffBJetTag_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_pat_trackCountingHighEffBJetTag_.begin(); i != jets_pat_trackCountingHighEffBJetTag_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_pat_trackCountingHighEffBJetTag_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15855,9 +15058,7 @@ void GetEntry(unsigned int idx)
 				jets_pat_trackCountingHighPurBJetTag_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_pat_trackCountingHighPurBJetTag_.begin(); i != jets_pat_trackCountingHighPurBJetTag_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_pat_trackCountingHighPurBJetTag_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15878,9 +15079,7 @@ void GetEntry(unsigned int idx)
 				jets_pat_udsCorrF_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = jets_pat_udsCorrF_.begin(); i != jets_pat_udsCorrF_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch jets_pat_udsCorrF_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15901,9 +15100,7 @@ void GetEntry(unsigned int idx)
 				mus_pat_caloIso_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_pat_caloIso_.begin(); i != mus_pat_caloIso_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_pat_caloIso_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15924,9 +15121,7 @@ void GetEntry(unsigned int idx)
 				mus_pat_ecalIso_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_pat_ecalIso_.begin(); i != mus_pat_ecalIso_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_pat_ecalIso_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15947,9 +15142,7 @@ void GetEntry(unsigned int idx)
 				mus_pat_ecalvetoDep_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_pat_ecalvetoDep_.begin(); i != mus_pat_ecalvetoDep_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_pat_ecalvetoDep_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15970,9 +15163,7 @@ void GetEntry(unsigned int idx)
 				mus_pat_hcalIso_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_pat_hcalIso_.begin(); i != mus_pat_hcalIso_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_pat_hcalIso_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -15993,9 +15184,7 @@ void GetEntry(unsigned int idx)
 				mus_pat_hcalvetoDep_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_pat_hcalvetoDep_.begin(); i != mus_pat_hcalvetoDep_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_pat_hcalvetoDep_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16016,9 +15205,7 @@ void GetEntry(unsigned int idx)
 				mus_pat_trackIso_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_pat_trackIso_.begin(); i != mus_pat_trackIso_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_pat_trackIso_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16039,9 +15226,7 @@ void GetEntry(unsigned int idx)
 				mus_pat_vetoDep_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = mus_pat_vetoDep_.begin(); i != mus_pat_vetoDep_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch mus_pat_vetoDep_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16062,9 +15247,7 @@ void GetEntry(unsigned int idx)
 				scs_clustersSize_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = scs_clustersSize_.begin(); i != scs_clustersSize_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch scs_clustersSize_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16085,9 +15268,7 @@ void GetEntry(unsigned int idx)
 				scs_crystalsSize_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = scs_crystalsSize_.begin(); i != scs_crystalsSize_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch scs_crystalsSize_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16108,9 +15289,7 @@ void GetEntry(unsigned int idx)
 				scs_e1x3_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = scs_e1x3_.begin(); i != scs_e1x3_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch scs_e1x3_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16131,9 +15310,7 @@ void GetEntry(unsigned int idx)
 				scs_e1x5_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = scs_e1x5_.begin(); i != scs_e1x5_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch scs_e1x5_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16154,9 +15331,7 @@ void GetEntry(unsigned int idx)
 				scs_e2x2_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = scs_e2x2_.begin(); i != scs_e2x2_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch scs_e2x2_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16177,9 +15352,7 @@ void GetEntry(unsigned int idx)
 				scs_e2x5Max_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = scs_e2x5Max_.begin(); i != scs_e2x5Max_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch scs_e2x5Max_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16200,9 +15373,7 @@ void GetEntry(unsigned int idx)
 				scs_e3x1_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = scs_e3x1_.begin(); i != scs_e3x1_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch scs_e3x1_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16223,9 +15394,7 @@ void GetEntry(unsigned int idx)
 				scs_e3x2_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = scs_e3x2_.begin(); i != scs_e3x2_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch scs_e3x2_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16246,9 +15415,7 @@ void GetEntry(unsigned int idx)
 				scs_e3x3_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = scs_e3x3_.begin(); i != scs_e3x3_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch scs_e3x3_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16269,9 +15436,7 @@ void GetEntry(unsigned int idx)
 				scs_e4x4_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = scs_e4x4_.begin(); i != scs_e4x4_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch scs_e4x4_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16292,9 +15457,7 @@ void GetEntry(unsigned int idx)
 				scs_e5x5_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = scs_e5x5_.begin(); i != scs_e5x5_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch scs_e5x5_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16315,9 +15478,7 @@ void GetEntry(unsigned int idx)
 				scs_energy_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = scs_energy_.begin(); i != scs_energy_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch scs_energy_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16338,9 +15499,7 @@ void GetEntry(unsigned int idx)
 				scs_eta_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = scs_eta_.begin(); i != scs_eta_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch scs_eta_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16361,9 +15520,7 @@ void GetEntry(unsigned int idx)
 				scs_hoe_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = scs_hoe_.begin(); i != scs_hoe_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch scs_hoe_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16384,9 +15541,7 @@ void GetEntry(unsigned int idx)
 				scs_phi_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = scs_phi_.begin(); i != scs_phi_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch scs_phi_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16407,9 +15562,7 @@ void GetEntry(unsigned int idx)
 				scs_preshowerEnergy_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = scs_preshowerEnergy_.begin(); i != scs_preshowerEnergy_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch scs_preshowerEnergy_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16430,9 +15583,7 @@ void GetEntry(unsigned int idx)
 				scs_rawEnergy_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = scs_rawEnergy_.begin(); i != scs_rawEnergy_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch scs_rawEnergy_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16453,9 +15604,7 @@ void GetEntry(unsigned int idx)
 				scs_sigmaEtaEta_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = scs_sigmaEtaEta_.begin(); i != scs_sigmaEtaEta_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch scs_sigmaEtaEta_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16476,9 +15625,7 @@ void GetEntry(unsigned int idx)
 				scs_sigmaEtaPhi_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = scs_sigmaEtaPhi_.begin(); i != scs_sigmaEtaPhi_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch scs_sigmaEtaPhi_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16499,9 +15646,7 @@ void GetEntry(unsigned int idx)
 				scs_sigmaIEtaIEta_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = scs_sigmaIEtaIEta_.begin(); i != scs_sigmaIEtaIEta_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch scs_sigmaIEtaIEta_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16522,9 +15667,7 @@ void GetEntry(unsigned int idx)
 				scs_sigmaIEtaIPhi_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = scs_sigmaIEtaIPhi_.begin(); i != scs_sigmaIEtaIPhi_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch scs_sigmaIEtaIPhi_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16545,9 +15688,7 @@ void GetEntry(unsigned int idx)
 				scs_sigmaIPhiIPhi_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = scs_sigmaIPhiIPhi_.begin(); i != scs_sigmaIPhiIPhi_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch scs_sigmaIPhiIPhi_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16568,9 +15709,7 @@ void GetEntry(unsigned int idx)
 				scs_sigmaPhiPhi_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = scs_sigmaPhiPhi_.begin(); i != scs_sigmaPhiPhi_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch scs_sigmaPhiPhi_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16591,9 +15730,7 @@ void GetEntry(unsigned int idx)
 				trks_chi2_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = trks_chi2_.begin(); i != trks_chi2_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch trks_chi2_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16614,9 +15751,7 @@ void GetEntry(unsigned int idx)
 				trks_d0_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = trks_d0_.begin(); i != trks_d0_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch trks_d0_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16637,9 +15772,7 @@ void GetEntry(unsigned int idx)
 				trks_d0Err_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = trks_d0Err_.begin(); i != trks_d0Err_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch trks_d0Err_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16660,9 +15793,7 @@ void GetEntry(unsigned int idx)
 				trks_d0corr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = trks_d0corr_.begin(); i != trks_d0corr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch trks_d0corr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16683,9 +15814,7 @@ void GetEntry(unsigned int idx)
 				trks_etaErr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = trks_etaErr_.begin(); i != trks_etaErr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch trks_etaErr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16706,9 +15835,7 @@ void GetEntry(unsigned int idx)
 				trks_ndof_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = trks_ndof_.begin(); i != trks_ndof_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch trks_ndof_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16729,9 +15856,7 @@ void GetEntry(unsigned int idx)
 				trks_outerEta_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = trks_outerEta_.begin(); i != trks_outerEta_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch trks_outerEta_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16752,9 +15877,7 @@ void GetEntry(unsigned int idx)
 				trks_outerPhi_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = trks_outerPhi_.begin(); i != trks_outerPhi_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch trks_outerPhi_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16775,9 +15898,7 @@ void GetEntry(unsigned int idx)
 				trks_phiErr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = trks_phiErr_.begin(); i != trks_phiErr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch trks_phiErr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16798,9 +15919,7 @@ void GetEntry(unsigned int idx)
 				trks_ptErr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = trks_ptErr_.begin(); i != trks_ptErr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch trks_ptErr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16821,9 +15940,7 @@ void GetEntry(unsigned int idx)
 				trks_tkIso_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = trks_tkIso_.begin(); i != trks_tkIso_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch trks_tkIso_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16844,9 +15961,7 @@ void GetEntry(unsigned int idx)
 				trks_vertexphi_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = trks_vertexphi_.begin(); i != trks_vertexphi_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch trks_vertexphi_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16867,9 +15982,7 @@ void GetEntry(unsigned int idx)
 				trks_z0_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = trks_z0_.begin(); i != trks_z0_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch trks_z0_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16890,9 +16003,7 @@ void GetEntry(unsigned int idx)
 				trks_z0Err_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = trks_z0Err_.begin(); i != trks_z0Err_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch trks_z0Err_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16913,9 +16024,7 @@ void GetEntry(unsigned int idx)
 				trks_z0corr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = trks_z0corr_.begin(); i != trks_z0corr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch trks_z0corr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16936,9 +16045,7 @@ void GetEntry(unsigned int idx)
 				trks_elsdr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = trks_elsdr_.begin(); i != trks_elsdr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch trks_elsdr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16959,9 +16066,7 @@ void GetEntry(unsigned int idx)
 				trks_elsshFrac_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = trks_elsshFrac_.begin(); i != trks_elsshFrac_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch trks_elsshFrac_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -16982,9 +16087,7 @@ void GetEntry(unsigned int idx)
 				trk_musdr_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = trk_musdr_.begin(); i != trk_musdr_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch trk_musdr_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -17005,9 +16108,7 @@ void GetEntry(unsigned int idx)
 				vtxs_chi2_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = vtxs_chi2_.begin(); i != vtxs_chi2_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch vtxs_chi2_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -17028,9 +16129,7 @@ void GetEntry(unsigned int idx)
 				vtxs_ndof_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = vtxs_ndof_.begin(); i != vtxs_ndof_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch vtxs_ndof_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -17051,9 +16150,7 @@ void GetEntry(unsigned int idx)
 				vtxs_xError_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = vtxs_xError_.begin(); i != vtxs_xError_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch vtxs_xError_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -17074,9 +16171,7 @@ void GetEntry(unsigned int idx)
 				vtxs_yError_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = vtxs_yError_.begin(); i != vtxs_yError_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch vtxs_yError_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -17097,9 +16192,7 @@ void GetEntry(unsigned int idx)
 				vtxs_zError_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = vtxs_zError_.begin(); i != vtxs_zError_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch vtxs_zError_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -17120,9 +16213,7 @@ void GetEntry(unsigned int idx)
 				ww_pmet_branch->GetEntry(index);
 				#ifdef PARANOIA
 				for (vector<float>::const_iterator i = ww_pmet_.begin(); i != ww_pmet_.end(); ++i) {
-					int e;
-					frexpf(*i, &e);
-					if (not isfinite(*i) || e > 30) {
+					if (not isfinite(*i)) {
 						printf("branch ww_pmet_branch contains a bad float: %f\n", *i);
 						exit(1);
 					}
@@ -17144,9 +16235,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_jets_EMFcor_.begin(); i != hyp_jets_EMFcor_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_jets_EMFcor_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17169,9 +16258,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_jets_chFrac_.begin(); i != hyp_jets_chFrac_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_jets_chFrac_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17194,9 +16281,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_jets_cor_.begin(); i != hyp_jets_cor_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_jets_cor_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17219,9 +16304,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_jets_emFrac_.begin(); i != hyp_jets_emFrac_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_jets_emFrac_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17244,9 +16327,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_jets_mc_emEnergy_.begin(); i != hyp_jets_mc_emEnergy_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_jets_mc_emEnergy_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17269,9 +16350,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_jets_mc_hadEnergy_.begin(); i != hyp_jets_mc_hadEnergy_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_jets_mc_hadEnergy_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17294,9 +16373,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_jets_mc_invEnergy_.begin(); i != hyp_jets_mc_invEnergy_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_jets_mc_invEnergy_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17319,9 +16396,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_jets_mc_otherEnergy_.begin(); i != hyp_jets_mc_otherEnergy_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_jets_mc_otherEnergy_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17344,9 +16419,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_jets_pat_bCorrF_.begin(); i != hyp_jets_pat_bCorrF_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_jets_pat_bCorrF_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17369,9 +16442,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_jets_pat_cCorrF_.begin(); i != hyp_jets_pat_cCorrF_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_jets_pat_cCorrF_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17394,9 +16465,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_jets_pat_gluCorrF_.begin(); i != hyp_jets_pat_gluCorrF_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_jets_pat_gluCorrF_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17419,9 +16488,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_jets_pat_jetCharge_.begin(); i != hyp_jets_pat_jetCharge_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_jets_pat_jetCharge_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17444,9 +16511,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_jets_pat_noCorrF_.begin(); i != hyp_jets_pat_noCorrF_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_jets_pat_noCorrF_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17469,9 +16534,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_jets_pat_udsCorrF_.begin(); i != hyp_jets_pat_udsCorrF_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_jets_pat_udsCorrF_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17494,9 +16557,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_other_jets_EMFcor_.begin(); i != hyp_other_jets_EMFcor_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_other_jets_EMFcor_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17519,9 +16580,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_other_jets_chFrac_.begin(); i != hyp_other_jets_chFrac_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_other_jets_chFrac_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17544,9 +16603,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_other_jets_cor_.begin(); i != hyp_other_jets_cor_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_other_jets_cor_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17569,9 +16626,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_other_jets_emFrac_.begin(); i != hyp_other_jets_emFrac_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_other_jets_emFrac_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17594,9 +16649,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_other_jets_mc_emEnergy_.begin(); i != hyp_other_jets_mc_emEnergy_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_other_jets_mc_emEnergy_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17619,9 +16672,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_other_jets_mc_hadEnergy_.begin(); i != hyp_other_jets_mc_hadEnergy_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_other_jets_mc_hadEnergy_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17644,9 +16695,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_other_jets_mc_invEnergy_.begin(); i != hyp_other_jets_mc_invEnergy_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_other_jets_mc_invEnergy_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17669,9 +16718,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_other_jets_mc_otherEnergy_.begin(); i != hyp_other_jets_mc_otherEnergy_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_other_jets_mc_otherEnergy_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17694,9 +16741,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_other_jets_pat_bCorrF_.begin(); i != hyp_other_jets_pat_bCorrF_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_other_jets_pat_bCorrF_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17719,9 +16764,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_other_jets_pat_cCorrF_.begin(); i != hyp_other_jets_pat_cCorrF_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_other_jets_pat_cCorrF_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17744,9 +16787,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_other_jets_pat_gluCorrF_.begin(); i != hyp_other_jets_pat_gluCorrF_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_other_jets_pat_gluCorrF_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17769,9 +16810,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_other_jets_pat_jetCharge_.begin(); i != hyp_other_jets_pat_jetCharge_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_other_jets_pat_jetCharge_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17794,9 +16833,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_other_jets_pat_noCorrF_.begin(); i != hyp_other_jets_pat_noCorrF_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_other_jets_pat_noCorrF_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -17819,9 +16856,7 @@ void GetEntry(unsigned int idx)
 				#ifdef PARANOIA
 				for (vector<vector<float> >::const_iterator i = hyp_other_jets_pat_udsCorrF_.begin(); i != hyp_other_jets_pat_udsCorrF_.end(); ++i) {
 					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						int e;
-						frexpf(*j, &e);
-						if (not isfinite(*j) || e > 30) {
+						if (not isfinite(*j)) {
 							printf("branch hyp_other_jets_pat_udsCorrF_branch contains a bad float: %f\n", *j);
 							exit(1);
 						}
@@ -21181,88 +20216,9 @@ void GetEntry(unsigned int idx)
 		}
 		return evt_filt_eff_;
 	}
-  bool passHLTTrigger(e_HLTTriggers trig) {
-    
-    if(trig <=31 ) {
-      unsigned int bitmask = 1;
-      bitmask <<= trig;
-      return evt_HLT1() & bitmask;
-    }
-    
-    if( trig >= 32 && trig <=63) {
-      unsigned int bitmask = 1;
-      bitmask <<= (trig - 32);
-      return evt_HLT2() & bitmask;
-    }
-    
-    if( trig >= 64 && trig <=95) {
-      unsigned int bitmask = 1;
-      bitmask <<= (trig - 64);
-      return evt_HLT3() & bitmask;
-    }
-    
-    if( trig >= 96 && trig <=127) {
-      unsigned int bitmask = 1;
-      bitmask <<= (trig - 96);
-      return evt_HLT4() & bitmask;
-    }
-    
-  
-    if( trig >= 128 && trig <=159) {
-      unsigned int bitmask = 1;
-      bitmask <<= (trig - 128);
-      return evt_HLT5() & bitmask;
-    }
-    
-    if( trig >= 160 && trig <=191) {
-      unsigned int bitmask = 1;
-      bitmask <<= (trig - 160);
-      return evt_HLT6() & bitmask;
-    }
-    
-    if( trig >= 192 && trig <=223) {
-      unsigned int bitmask = 1;
-      bitmask <<= (trig - 192);
-      return evt_HLT7() & bitmask;
-    }
-    
-    if( trig >= 224 && trig <=255) {
-      unsigned int bitmask = 1;
-      bitmask <<= (trig - 224);
-      return evt_HLT8() & bitmask;
-    }
-  }
-  bool passL1Trigger(e_L1Triggers trig) {
-    
-    if(trig <=31 ) {
-      unsigned int bitmask = 1;
-      bitmask <<= trig;
-      return evt_L1_1() & bitmask;
-    }
-    
-    if( trig >= 32 && trig <=63) {
-      unsigned int bitmask = 1;
-      bitmask <<= (trig - 32);
-      return evt_L1_2() & bitmask;
-    }
-    
-    if( trig >= 64 && trig <=95) {
-      unsigned int bitmask = 1;
-      bitmask <<= (trig - 64);
-      return evt_L1_3() & bitmask;
-    }
-    
-    if( trig >= 96 && trig <=127) {
-      unsigned int bitmask = 1;
-      bitmask <<= (trig - 96);
-      return evt_L1_4() & bitmask;
-    }
-    
-    return 0;
-  }
 };
 
 #ifndef __CINT__
-  extern CMS2 cms2;
+extern CMS2 cms2;
 #endif
 #endif
