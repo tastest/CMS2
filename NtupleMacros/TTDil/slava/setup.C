@@ -1,7 +1,9 @@
 // Loads a bunch of tools in interpretative mode
-{
-  gSystem->Load("libFWCoreFWLite");
-  AutoLibraryLoader::enable();
+void setup(bool skipFWLite = false){
+  if (!skipFWLite){
+    gSystem->Load("libFWCoreFWLite");
+    AutoLibraryLoader::enable();
+  }
 
   gSystem->Load("libGui.so");
   gSystem->Load("libPhysics.so");
