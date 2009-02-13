@@ -49,6 +49,8 @@
 	  CUT_PASS_JETVETO_CALO,
 	  CUT_PASS_JETVETO_TRACKJETS,
 	  CUT_PASS_JETVETO_CALOTRACKJETS_COMBO,
+	  CUT_PASS_JETVETO_JPT20,
+	  CUT_PASS_JETVETO_JPT25,
 	  CUT_PASS_MUON_B_VETO,	
 	  CUT_MUON_TAGGED,
 	  CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT,	
@@ -89,7 +91,6 @@
 
 // this is the current baseline set of cuts
 const static cuts_t baseline_cuts = 
-     (CUT_BIT(CUT_MORE_THAN_TWO_TRACKS)) |
      (CUT_BIT(CUT_LT_PT)		) | 
      (CUT_BIT(CUT_LL_PT)		) | 
      (CUT_BIT(CUT_OPP_SIGN)		) | 
@@ -100,9 +101,10 @@ const static cuts_t baseline_cuts =
      (CUT_BIT(CUT_LT_CALOISO)	) |  
      (CUT_BIT(CUT_LL_CALOISO)	) |  
      (CUT_BIT(CUT_PASS_ZVETO)	) | 
-     (CUT_BIT(CUT_PASS_ADDZVETO)	) | 
-     (CUT_BIT(CUT_PASS_JETVETO_CALO)	) |
-     (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)	) |  
+//      (CUT_BIT(CUT_PASS_ADDZVETO)	) | 
+//      (CUT_BIT(CUT_PASS_JETVETO_CALO)	) |
+//      (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)	) |  
+     (CUT_BIT(CUT_PASS_JETVETO_JPT20)	) |  
      (CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT)	);   
 
 // cuts used in the Feb 08 presentation by fkw
@@ -214,6 +216,26 @@ const static cuts_t oingo_cuts =
      (CUT_BIT(CUT_LL_GOOD)		) | 
      (CUT_BIT(CUT_LT_CALOISO)	) |  
      (CUT_BIT(CUT_LL_CALOISO)	);   
+
+const static cuts_t fakerate_histat_cuts = 
+     (CUT_BIT(CUT_LT_PT)		) | 
+     (CUT_BIT(CUT_LL_PT)		) | 
+     (CUT_BIT(CUT_OPP_SIGN)		) | 
+     (CUT_BIT(CUT_LT_GOOD)		) | 
+     (CUT_BIT(CUT_LL_GOOD)		) | 
+     (CUT_BIT(CUT_LT_CALOISO)	) |  
+     (CUT_BIT(CUT_LL_CALOISO)	);
+
+const static cuts_t fakerate_histat_denominator_cuts = (fakerate_histat_cuts & 
+							~(CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD) |
+							  CUT_BIT(CUT_LT_ISO) | CUT_BIT(CUT_LL_ISO) |
+							  CUT_BIT(CUT_LT_CALOISO) | CUT_BIT(CUT_LL_CALOISO))) |
+     CUT_BIT(CUT_ELFAKE_FAKEABLE_OBJECT);
+						 
+// denominator and not numerator (this is the yield that should be
+// multiplied by FR / (1 - FR))
+const static cuts_t fakerate_histat_denominator_not_numerator_cuts = 
+     fakerate_histat_denominator_cuts | CUT_BIT(CUT_ELFAKE_NOT_NUMERATOR);
 
 static const cuts_t fakerate_ss_numerator_cuts = 
      (fakerate_numerator_cuts & ~CUT_BIT(CUT_OPP_SIGN)) | CUT_BIT(CUT_SAME_SIGN);

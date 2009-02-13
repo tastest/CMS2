@@ -256,6 +256,16 @@ int Wjets_Oingo ()
      return run<FakeRateLooper>(oingo_cuts, "Wjets_Oingo");
 }
 
+int Wjets_Histat ()
+{
+     return run<Looper>(fakerate_histat_cuts, "Wjets_Histat");
+}
+
+int Wjets_Histat_Fakerate ()
+{
+     return run<FakeRateLooper>(fakerate_histat_denominator_not_numerator_cuts, "Wjets_Histat_Fakerate");
+}
+
 int Wjets_SS_Numerator ()
 {
      return run<Looper>(fakerate_ss_numerator_cuts, "Wjets_SS_Numerator");

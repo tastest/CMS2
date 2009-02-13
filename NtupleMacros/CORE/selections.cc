@@ -75,10 +75,11 @@ bool goodMuonWithoutIsolation(int index) {
   if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) > 10.) return false;
   if (TMath::Abs(cms2.mus_d0corr().at(index))   > 0.2) return false;
   if (cms2.mus_validHits().at(index) < 11)    return false;
+  if ( (cms2.mus_type().at(index)&0x2)==0 ) return false;
   return true;
 }
 //-----------------------------------------------------------
-// Electron Isolation
+// Electron Isolation using pat iso
 //-----------------------------------------------------------
 double el_rel_iso (int index, bool use_calo_iso)
 {
@@ -106,6 +107,36 @@ bool passElectronIsolationLoose2(int index, bool use_calo_iso)
   //     const double cut = 0.85; leads to 107 pred, 81 obs
      const double cut = 0.75;
      return el_rel_iso(index, use_calo_iso) > cut;
+} 
+//-----------------------------------------------------------
+// Electron Isolation using ECAL clusters
+//-----------------------------------------------------------
+double el_rel_iso_1_6 (int index, bool use_calo_iso)
+{
+     double sum = cms2.els_tkIso().at(index);
+     if (use_calo_iso)
+	  sum += cms2.els_ecalJuraIso()[index] + cms2.els_hcalConeIso()[index];
+     double pt  = cms2.els_p4().at(index).pt();
+     return pt / (pt + sum);
+}
+
+bool passElectronIsolation_1_6 (int index, bool use_calo_iso) 
+{
+     const double cut = 0.92;
+     return el_rel_iso_1_6(index, use_calo_iso) > cut;
+}
+
+bool passElectronIsolationLoose_1_6 (int index, bool use_calo_iso) 
+{
+     const double cut = 0.8; // leads to 91 pred, 81 obs
+     return el_rel_iso_1_6(index, use_calo_iso) > cut;
+} 
+
+bool passElectronIsolationLoose2_1_6 (int index, bool use_calo_iso) 
+{
+  //     const double cut = 0.85; leads to 107 pred, 81 obs
+     const double cut = 0.75;
+     return el_rel_iso_1_6(index, use_calo_iso) > cut;
 } 
 //-----------------------------------------------------------
 // Muon Isolation
@@ -423,23 +454,23 @@ bool passTriLepVeto (int i_dilep)
      return false;
 }
 
-int numberOfExtraMuons(int i_hyp){
+int numberOfExtraMuons(int i_hyp, bool nonisolated = false){
   unsigned int nMuons = 0;
   for (int imu=0; imu < int(cms2.mus_charge().size()); ++imu) {
     // quality cuts
     if (  ((cms2.mus_goodmask()[imu]) & (1<<14)) == 0 ) continue; // TMLastStationOptimizedLowPtTight
+    // if ( cms2.mus_p4()[imu].pt() < 3 ) continue;
     if ( TMath::Abs(cms2.mus_d0corr()[imu]) > 0.2) continue;
     if ( cms2.mus_validHits()[imu] < 11) continue;
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == imu ) continue;
     if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == imu ) continue;
+    if ( nonisolated && mu_rel_iso(imu) > 0.95 ) continue;
     ++nMuons;
   }
   return nMuons;
 }
-/*
-Dima: Commented out since it's not clear how it works and who needs it
 
-bool passMuonBVeto (int i_dilep, bool soft_nonisolated)
+bool passMuonBVeto_1_6 (int i_dilep, bool soft_nonisolated)
 {
      if (soft_nonisolated) {
 	  double tag_mu_pt = tagMuonPt(i_dilep);
@@ -459,7 +490,7 @@ bool passMuonBVeto (int i_dilep, bool soft_nonisolated)
      assert(false);
      return false;
 }
-*/
+
 // If there is an extra muon in the event, return its index.  (Otherwise -1) 
 int tagMuonIdx (int i_dilep)
 {
@@ -530,9 +561,14 @@ int nTrkJets(int i_hyp){
 }
 
 // count JPT jets excluding those that are close to the hypothesis leptons
-unsigned int nJPTs(int i_hyp){
+unsigned int nJPTs (int i_hyp)
+{
+     return nJPTs(i_hyp, 20);
+}
+
+unsigned int nJPTs(int i_hyp, double etThreshold)
+{
   unsigned int njets(0);
-  const double etThreshold = 20.;
   const double etaMax      = 3.0;
   const double vetoCone    = 0.4;
 
