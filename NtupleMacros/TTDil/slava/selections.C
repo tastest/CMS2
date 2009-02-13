@@ -376,6 +376,7 @@ bool looseElectronSelectionNoIsoTTDil08(int index) {
   if ( ! electron20Eta2p4(index) ) return false;
   if ( els_looseId().at(index)     !=  1) return false;
   if ( fabs(els_d0corr().at(index)) > 0.040)   return false;
+  if ( els_closestMuon().at(index) != -1) return false; 
 
   return true;
 }
