@@ -158,6 +158,30 @@ v6_4:
 same as v6_2 BUT:
 use QCDpt30 sample
 
+v6_5:
+-----
+same as v6_4 BUT:
+remove trigger simulation (don't require at least one jet with uncorrected pt > 30 GeV)
+only to be used with fake rates without trigger bias removal (take all
+electrons, do not discard electron near trigger jet)
+
+v6_6:
+-----
+same as v6_3 BUT:
+new final WW selection cuts (cms2.els_tightId22XMinMatteo and tcMET) from 2/12/09
+
+v6_7:
+-----
+same as v6_5 BUT:
+new final WW selection cuts (cms2.els_tightId22XMinMatteo and tcMET) from 2/12/09
+
+
+
+
+
+
+
+
 
 
 
