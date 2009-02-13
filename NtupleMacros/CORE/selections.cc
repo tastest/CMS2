@@ -531,7 +531,7 @@ int numberOfExtraMuons(int i_hyp, bool nonisolated = false){
   for (int imu=0; imu < int(cms2.mus_charge().size()); ++imu) {
     // quality cuts
     if (  ((cms2.mus_goodmask()[imu]) & (1<<14)) == 0 ) continue; // TMLastStationOptimizedLowPtTight
-    // if ( cms2.mus_p4()[imu].pt() < 3 ) continue;
+    if ( cms2.mus_p4()[imu].pt() < 3 ) continue;
     if ( TMath::Abs(cms2.mus_d0corr()[imu]) > 0.2) continue;
     if ( cms2.mus_validHits()[imu] < 11) continue;
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == imu ) continue;
