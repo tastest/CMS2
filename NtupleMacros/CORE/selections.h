@@ -9,9 +9,12 @@ bool deltaPhiInElectron (int index);
 bool goodElectronWithoutIsolation(int index);
 bool goodElectronWithoutIsolationWithoutd0(int index);
 bool goodMuonWithoutIsolation(int index);
-bool passElectronIsolation(int index, bool use_calo_iso = false);
-bool passElectronIsolationLoose(int index, bool use_calo_iso = false);
-bool passElectronIsolationLoose2(int index, bool use_calo_iso = false);
+bool passElectronIsolation(int index, bool use_calo_iso);
+bool passElectronIsolationLoose(int index, bool use_calo_iso);
+bool passElectronIsolationLoose2(int index, bool use_calo_iso);
+bool passElectronIsolation_1_6(int index, bool use_calo_iso);
+bool passElectronIsolationLoose_1_6(int index, bool use_calo_iso);
+bool passElectronIsolationLoose2_1_6(int index, bool use_calo_iso);
 bool passMuonIsolation(int index);
 bool goodMuonIsolated(int index);
 bool goodElectronIsolated(int index, bool use_calo_iso = false);
@@ -24,12 +27,10 @@ bool met10(int index, const class TVector3& corr);
 bool met1(int index, const class TVector3& corr);
 bool sumEt10(double sumEt);
 bool sumEt1(double sumEt);
-/*
-Dima: Commented out since it's not clear how it works and who needs it
 
+int numberOfExtraMuons(int i_hyp, bool nonisolated);
+bool passMuonBVeto_1_6 (int i_dilep, bool soft_nonisolated);
 
-bool passMuonBVeto (int i_dilep, bool soft_nonisolated);
-*/
 bool passTriLepVeto (int i_dilep);
 int tagMuonIdx (int i_dilep);
 double tagMuonPt (int i_dilep);
@@ -40,6 +41,8 @@ bool isDYmm();
 bool isDYtt();
 int nTrkJets(int i_hyp);
 bool passTrkJetVeto(int i_hyp);
+unsigned int nJPTs(int i_hyp, double etThreshod);
+unsigned int nJPTs(int i_hyp); // with default threshold = 20
 // bool passCaloTrkjetCombo ();
 
 double mu_rel_iso (int index);
