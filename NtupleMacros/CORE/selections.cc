@@ -199,6 +199,78 @@ bool deltaPhiInElectron (int index)
 {
      return cms2.els_charge()[index] * cms2.els_dPhiIn()[index] < 0.04;
 }
+
+//--------------------------------------------
+// Fudge to reject events where the LT muon
+// has a badly measured momentum
+//--------------------------------------------
+bool muonReconstructionCleaning(int i_hyp, float threshold)
+{
+   // only apply to mm hyp type
+   if (cms2.hyp_type()[i_hyp] == 0)
+   {
+      if (fabs((cms2.hyp_lt_trk_p4()[i_hyp].Pt()
+             /cms2.hyp_lt_p4()[i_hyp].Pt()) - 1) > threshold) return false;
+   }
+   return true;
+}
+
+//
+// Refactorized MET cuts
+//
+//--------------------------------------------
+// 'simple' MET selection
+//--------------------------------------------
+bool metSimple (int i_hyp, float threshold, const TVector3& corr) {
+  TVector3 hyp_met;
+  hyp_met.SetPtEtaPhi(cms2.evt_tcmet(), 0, cms2.evt_tcmetPhi());
+  hyp_met += corr;
+  if (hyp_met.Pt() < threshold) return false;
+  return true;
+}
+//--------------------------------------------
+// pT(ll)/MET ratio selection
+//--------------------------------------------
+bool metBalance (int i_hyp, const TVector3& corr) {
+  TVector3 hyp_met;
+  hyp_met.SetPtEtaPhi(cms2.evt_tcmet(), 0, cms2.evt_tcmetPhi());
+  hyp_met += corr;
+  if(hyp_met.Pt()/cms2.hyp_p4()[i_hyp].pt() < 0.6 &&
+      acos(cos(hyp_met.Phi()-cms2.hyp_p4()[i_hyp].phi() - 3.1416)) < 0.25 ) return false;
+  return true;
+}
+//--------------------------------------------
+// pMET selection
+//--------------------------------------------
+bool metProjected (int i_hyp, const TVector3& corr) {
+  TVector3 hyp_met;
+  hyp_met.SetPtEtaPhi(cms2.evt_tcmet(), 0, cms2.evt_tcmetPhi());
+  hyp_met += corr;
+  double metspec = MetSpecial(hyp_met.Pt(), hyp_met.Phi(), i_hyp);
+  if ( metspec < 20 ) return false;
+  return true;
+}
+//--------------------------------------------
+// PASS5 MET
+//--------------------------------------------
+bool pass5Met (int i_hyp, const TVector3& corr) {
+  // for e-e and mu-mu
+  if (cms2.hyp_type()[i_hyp] == 0 || cms2.hyp_type()[i_hyp] == 3) {
+    if(!metSimple(i_hyp, 45.0, corr)) return false;
+    if(!metBalance(i_hyp, corr))      return false;
+    if(!metProjected(i_hyp, corr))    return false;
+  }
+  // for e-mu and mu-e
+  if (cms2.hyp_type()[i_hyp] == 1 || cms2.hyp_type()[i_hyp] == 2) {
+    if(!metSimple(i_hyp, 20.0, corr)) return false;
+    if(!metProjected(i_hyp, corr))    return false;
+  }
+  return true;
+}
+//
+// end refactorized MET cuts
+//
+
 //--------------------------------------------
 // Pass 2 MET selection
 //--------------------------------------------

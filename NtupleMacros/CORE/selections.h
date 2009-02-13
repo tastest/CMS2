@@ -63,4 +63,16 @@ bool trueMuonFromW(int index);
 //bool isFakeDenominatorElectron(int index);
 //bool isFakeNumeratorElectron(int index, int type); 
 
+// muon cleaning by ratio of track and global Pt
+bool muonReconstructionCleaning(int i_hyp, float threshold);
+
+// new MET factorization
+bool metSimple (int i_hyp, float threshold, const TVector3& corr);
+bool metBalance (int i_hyp, const TVector3& corr);
+bool metProjected (int i_hyp, const TVector3& corr);
+bool pass5Met (int i_hyp, const TVector3& corr);
+bool pass5MetForDYEstimate (int i_hyp, const TVector3& corr);
+//
+
+
 #endif
