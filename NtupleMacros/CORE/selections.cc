@@ -75,6 +75,7 @@ bool goodMuonWithoutIsolation(int index) {
   if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) > 10.) return false;
   if (TMath::Abs(cms2.mus_d0corr().at(index))   > 0.2) return false;
   if (cms2.mus_validHits().at(index) < 11)    return false;
+  if ( (cms2.mus_type().at(index)&0x2)==0 ) return false;
   return true;
 }
 //-----------------------------------------------------------
@@ -423,15 +424,17 @@ bool passTriLepVeto (int i_dilep)
      return false;
 }
 
-int numberOfExtraMuons(int i_hyp){
+int numberOfExtraMuons(int i_hyp, bool nonisolated = false){
   unsigned int nMuons = 0;
   for (int imu=0; imu < int(cms2.mus_charge().size()); ++imu) {
     // quality cuts
     if (  ((cms2.mus_goodmask()[imu]) & (1<<14)) == 0 ) continue; // TMLastStationOptimizedLowPtTight
+    // if ( cms2.mus_p4()[imu].pt() < 3 ) continue;
     if ( TMath::Abs(cms2.mus_d0corr()[imu]) > 0.2) continue;
     if ( cms2.mus_validHits()[imu] < 11) continue;
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == imu ) continue;
     if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == imu ) continue;
+    if ( nonisolated && mu_rel_iso(imu) > 0.95 ) continue;
     ++nMuons;
   }
   return nMuons;
