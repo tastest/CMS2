@@ -1,6 +1,7 @@
 #include "TFile.h"
 #include "TH2F.h"
 #include <vector>
+#include "checkZeroBin2D.C"
 
 using std::vector;
 
@@ -70,29 +71,45 @@ void prepareFakeRateHistograms() {
   TH2F* den0  = dynamic_cast<TH2F*>(file->Get(histograms[0]));
   TH2F* den1  = dynamic_cast<TH2F*>(file->Get(histograms[1]));
   TH2F* den2  = dynamic_cast<TH2F*>(file->Get(histograms[2]));
-
+  
+  checkZeroBin2D((TH2D*)den0);
+  checkZeroBin2D((TH2D*)den1);
+  checkZeroBin2D((TH2D*)den2);
+  
   TH2F* num0 = dynamic_cast<TH2F*>(file->Get(histograms[3]));
   TH2F* fake0 = dynamic_cast<TH2F*>(num0->Clone(TString(histograms[3]).ReplaceAll("num_","fakeRate_")));
+
+  checkZeroBin2D((TH2D*)num0);
+  checkZeroBin2D((TH2D*)fake0);
+
   fake0->Reset();
   fake0->Divide(num0,den0,1.,1.,"B");
 
   TH2F* num1 = dynamic_cast<TH2F*>(file->Get(histograms[4]));
   TH2F* fake1 = dynamic_cast<TH2F*>(num1->Clone(TString(histograms[4]).ReplaceAll("num_","fakeRate_")));
+  checkZeroBin2D((TH2D*)num1);
+  checkZeroBin2D((TH2D*)fake1);
   fake1->Reset();
   fake1->Divide(num1,den1,1.,1.,"B");
 
   TH2F* num2 = dynamic_cast<TH2F*>(file->Get(histograms[5]));
   TH2F* fake2 = dynamic_cast<TH2F*>(num2->Clone(TString(histograms[5]).ReplaceAll("num_","fakeRate_")));
+  checkZeroBin2D((TH2D*)num2);
+  checkZeroBin2D((TH2D*)fake2);
   fake2->Reset();
   fake2->Divide(num2,den2,1.,1.,"B");
 
   TH2F* num3 = dynamic_cast<TH2F*>(file->Get(histograms[6]));
   TH2F* fake3 = dynamic_cast<TH2F*>(num3->Clone(TString(histograms[6]).ReplaceAll("num_","fakeRate_")));
+  checkZeroBin2D((TH2D*)num3);
+  checkZeroBin2D((TH2D*)fake3);
   fake3->Reset();
   fake3->Divide(num3,den0,1.,1.,"B");
 
   TH2F* num4 = dynamic_cast<TH2F*>(file->Get(histograms[7]));
   TH2F* fake4 = dynamic_cast<TH2F*>(num4->Clone(TString(histograms[7]).ReplaceAll("num_","fakeRate_")));
+  checkZeroBin2D((TH2D*)num4);
+  checkZeroBin2D((TH2D*)fake4);
   fake4->Reset();
   fake4->Divide(num4,den1,1.,1.,"B");
 
