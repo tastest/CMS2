@@ -7,7 +7,7 @@
 //
 //
 //==============================================================
-void doAll(unsigned int bitmask){
+void doAll(unsigned int bitmask, bool skipFWLite = false){
   
   //cut <-> bit mask
   //ID cuts               -> 2**0 (1)
@@ -106,7 +106,7 @@ void doAll(unsigned int bitmask){
   gROOT->LoadMacro("loader.C+");
 
   // Load various tools  
-  gROOT->ProcessLine(".x setup.C");
+  gROOT->ProcessLine(Form(".x setup.C(%d)",skipFWLite));
 
   // Load and compile the looping code
   gROOT->ProcessLine(".L ttDilCounts_looper.C+");
