@@ -8,8 +8,8 @@ void setup(bool skipFWLite = false){
   gSystem->Load("libGui.so");
   gSystem->Load("libPhysics.so");
   
-  gROOT->LoadMacro("getMyHistosNames.C+");
-  gROOT->LoadMacro("histtools.C+");
-  gROOT->LoadMacro("browseStacks.C+");
+  gSystem->CompileMacro("getMyHistosNames.C", "++k", "libgetMyHistosNames");
+  gSystem->CompileMacro("histtools.C", "++k", "libhisttools");
+  gSystem->CompileMacro("browseStacks.C", "++k", "libbrowseStacks");
   
 }

@@ -7,6 +7,16 @@
 //
 //
 //==============================================================
+#ifndef __CINT__
+#include "TROOT.h"
+#include "TSystem.h"
+#include "TStyle.h"
+#include "TChain.h"
+#include <iostream>
+#include "histtools.h"
+#include "ttDilCounts_looper.h"
+#endif //__CINT__
+
 void doAll(unsigned int bitmask, bool skipFWLite = false){
   
   //cut <-> bit mask
@@ -43,6 +53,16 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
   //                                            ee -> HLT_IsoEle18_L1R || HLT_DoubleIsoEle12_L1R
   //                                            em -> HLT_IsoEle18_L1R || HLT_Mu15_L1Mu7 || HLT_IsoEle10_Mu10_L1R
 
+  // Load and compile something to allow proper treatment of vectors
+  // Not clear that it is needed
+  //  gROOT->LoadMacro("loader.C+");
+  gSystem->CompileMacro("loader.C", "++k", "libloader");
+
+  // Load various tools  
+  gROOT->ProcessLine(Form(".x setup.C(%d)",skipFWLite));
+
+  // Load and compile the looping code
+  gSystem->CompileMacro("ttDilCounts_looper.C", "++k", "libttDilCounts_looper");
 
 
   // Flag for jet selection
@@ -101,21 +121,11 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
   bool runtW       = true;
   bool runWQQ      = true;
 
-  // Load and compile something to allow proper treatment of vectors
-  // Not clear that it is needed
-  gROOT->LoadMacro("loader.C+");
-
-  // Load various tools  
-  gROOT->ProcessLine(Form(".x setup.C(%d)",skipFWLite));
-
-  // Load and compile the looping code
-  gROOT->ProcessLine(".L ttDilCounts_looper.C+");
-
   TChain* chtopdil = new TChain("Events");
   chtopdil->Add("data/TTJets-madgraph_Fall08_IDEAL_V9_v2/merged*.root");
 
   TChain* chtopotr = new TChain("Events");
-  chtopotr->Add("data/TTJets-madgraph_Fall08_IDEAL_V9_v2/merged*.root");
+  chtopotr->Add("data/TTJets-madgraph_Fall08_IDEAL_V9_v1/merged*.root");
 
   TChain* chww = new TChain("Events");
   chww->Add("data/WW_2l_Summer08_IDEAL_V9_v2/merged*.root");
@@ -174,73 +184,74 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
   
 
 
-  ttDilCounts_looper looper;
+  ttDilCounts_looper* looper = new ttDilCounts_looper();
 
   // Process files one at a time, and color them as needed
   if (runttdil) {
     cout << "Processing ttbar dileptonic.. "<<endl;
-    looper.ScanChain(chtopdil,"ttdil", kttdil, prettdil, oldjet, bitmask);
+    looper->ScanChain(chtopdil,"ttdil", kttdil, prettdil, oldjet, bitmask);
+    cout << "Done Processing ttbar dileptonic.. "<<endl;
     hist::color("ttdil", kYellow);
   }
   if (runttotr) {
     cout << "Processing ttbar no-dileptons.. "<<endl;
-    looper.ScanChain(chtopotr,"ttotr", kttotr, prettotr, oldjet, bitmask);
+    looper->ScanChain(chtopotr,"ttotr", kttotr, prettotr, oldjet, bitmask);
     hist::color("ttotr", 30);
   }
   if (runWW) {
     cout << "Processing WW.."<<endl;
-    looper.ScanChain(chww,"ww", kWW, preWW, oldjet, bitmask);
+    looper->ScanChain(chww,"ww", kWW, preWW, oldjet, bitmask);
     hist::color("ww", kRed);
   }
   if (runWZ) {
     cout << "Processing WZ.."<<endl;
-    looper.ScanChain(chWZ,"wz", kWZ, preWZ, oldjet, bitmask);
+    looper->ScanChain(chWZ,"wz", kWZ, preWZ, oldjet, bitmask);
     hist::color("wz", kBlue);
   }
   if (runZZ) {
     cout << "Processing ZZ.."<<endl;
-    looper.ScanChain(chZZ,"zz", kZZ, preZZ, oldjet, bitmask);
+    looper->ScanChain(chZZ,"zz", kZZ, preZZ, oldjet, bitmask);
     hist::color("zz", kGreen);
   }
   if (runWjets) {
     cout << "Processing Wjets.."<<endl;
-    looper.ScanChain(chWjets,"wjets", kWjets, preWjets, oldjet, bitmask);
+    looper->ScanChain(chWjets,"wjets", kWjets, preWjets, oldjet, bitmask);
     hist::color("wjets", 40);
   }
   if (runDYtautau) {
     cout << "Processing DY->tautau" << endl;
-    looper.ScanChain(chDYtautau,"DYtautau", kDYtautau, preDYtautau, oldjet, bitmask);
+    looper->ScanChain(chDYtautau,"DYtautau", kDYtautau, preDYtautau, oldjet, bitmask);
     hist::color("DYtautau", kBlack);
   }
   if (runDYee) {
     cout << "Processing DY->ee" << endl;
-    looper.ScanChain(chDYee,"DYee", kDYee, preDYee, oldjet, bitmask);
+    looper->ScanChain(chDYee,"DYee", kDYee, preDYee, oldjet, bitmask);
     hist::color("DYee", kMagenta);
   }
   if (runDYmm) {
     cout << "Processing DY->mm" << endl;
-    looper.ScanChain(chDYmm,"DYmm", kDYmm, preDYmm, oldjet, bitmask);
+    looper->ScanChain(chDYmm,"DYmm", kDYmm, preDYmm, oldjet, bitmask);
     hist::color("DYmm", kCyan);
   }
   if (runppMuX) {
     cout << "Processing ppMuX"<<endl;
-    looper.ScanChain(chppMuX,"ppMuX", kppMuX, preppMuX, oldjet, bitmask);
+    looper->ScanChain(chppMuX,"ppMuX", kppMuX, preppMuX, oldjet, bitmask);
     hist::color("ppMuX", 51);
   }
   if (runEM) {
     cout << "Processing EM"<<endl;
-    looper.ScanChain(chEM,"EM", kEM, preEM, oldjet, bitmask);
+    looper->ScanChain(chEM,"EM", kEM, preEM, oldjet, bitmask);
     hist::color("EM", 49);
   }
   if (runtW) {
     cout << "Processing tW"<<endl;
-    looper.ScanChain(chtW,"tW", ktW, pretW, oldjet, bitmask);
+    looper->ScanChain(chtW,"tW", ktW, pretW, oldjet, bitmask);
     hist::color("tW", 63);
   }
     
   if (runWQQ) {
     cout << "Processing WQQ"<<endl;
-    looper.ScanChain(chWQQ,"WQQ", kWQQ, preWQQ, oldjet, bitmask);
+    looper->ScanChain(chWQQ,"WQQ", kWQQ, preWQQ, oldjet, bitmask);
     hist::color("WQQ", 45);
   }
 

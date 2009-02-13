@@ -6,6 +6,7 @@ doAll(cutBits)
 // doAll(cutBits, skipFWLite=true) -- is possible to turn off loading FWlite --
 // this only seems to work in compiled doAll case:
 root -l -b -q "doAll.C+(bits, true)"; //need to do it twice though (the first time it confuses itself with libs)
+// the option to avoid this reqmnt to "compile" and then "load and run" is to pre-load all relevant libs ... lazy
 //this will make myHist_cutBits.root
 -------------------------
 

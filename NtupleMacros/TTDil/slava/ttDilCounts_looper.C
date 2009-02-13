@@ -48,12 +48,16 @@ Bool_t comparePt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1,
 
 int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor, int prescale, bool oldjets, unsigned int cutsMask){
   
+  TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
+  rootdir->cd();
+
   using namespace std;
   
   //ostream& out = cout;
   ofstream outf;
   outf.open(Form("eventsCMS2_%d.txt",cutsMask));
   outf << "Starting " << prefix << " bitmask: " << cutsMask << endl;
+  std::cout << "Starting " << prefix << " bitmask: " << cutsMask << std::endl;
   
   
   //book Histograms
@@ -862,8 +866,12 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
   }
 
-  
+  std::cout<<"Done with "<<prefix<<std::endl;
   outf.close();
+  std::cout<<"Closed outf "<<std::endl;
+  rootdir = gDirectory->GetDirectory("Rint:"); 
+  rootdir->cd(); 
+
   return 0;
 }
 
