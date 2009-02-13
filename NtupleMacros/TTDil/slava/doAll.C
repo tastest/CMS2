@@ -9,38 +9,41 @@
 //==============================================================
 void doAll(unsigned int bitmask){
   
-  //No cuts - Cut0
-  //Bitmask = 00000
+  //cut <-> bit mask
+  //ID cuts               -> 2**0 (1)
+  //Isolation cuts        -> 2**1 (2) (default is both legs are isolated. Using relative isolation, TRK+CALO)
+  //                       2**8+2**1 (Require one-only hyp lepton to be isolated. In emu, that will mean that the muon
+  //                                  will have rel iso > 0.92 and the el will have 0.6 < relIso < 0.92)
+  //                       2**9+2**1 (Require one-only hyp lepton to be isolated. In emu, that will mean that the el
+  //                                  will have rel iso > 0.92 and the mu will have 0.6 < relIso < 0.92)
+  //                       2**9+2**8+2**1 (require both leptons to have 0.6 < relIso < 0.92)
+  //DileptonMassVeto      -> 2**2 (4)
+  //METcut                -> 2**3 (8)
+  //nJets                 -> 2**4 (16)
+  //extra MuTag           -> 2**5 (32)
+  //METveto               -> 2**6 (64)
+  //Extra MuTag (pt>5)    -> 2**7 (128)
+  //looseDileptonSelection, TTdil note 2008
+  //                      -> 2**10 (1024)
+  //fullMultipleHypsOnly  -> 2**11 (2048) !!!!! Not implemented, so does nothing right now !!!!!!!
+  //applyZWindow cut      -> 2**12 (4096)
+  //Opp. Sign Selection   -> 2**13 (8192)
+  //fillMaxWeightDilOnly  -> 2**14 (16284
+  //leptonIsolationDilSelectionTTDil08 -> 2**15 (uses trk and calo isolation seperately, reltrkIso > 0.9, 
+  //                                             relCaloIso > 0.9. NO OTHER CUTS BUT ISOLATION APPLIED)
+  //looseDilSelectionNoIsoTTDil08      -> 2**16 (basic muon preselection cuts, no isolation)
+  //lepton20Eta2p4DilSelection         -> 2**17 (only pt and eta cuts applied to leptons)
+  //metBaselineSelectionTTDil108       -> 2**18 (calls passPatMet_OF20_SF30 -> corrMET  > 20 (emu),
+  //                                             corrMET > 30 (ee, mumu))
+  //dilepMassVetoCutTTDil08            -> 2**19 pretty much what it sounds like
+  //applyTriggersMu9orLisoE15          -> 2**20 mm -> HLT_Mu9 
+  //                                            ee -> HLT_LooseIsoEle15_LW_L14
+  //                                            em -> HLT_Mu9 or HLT_LooseIsoEle15_LW_L14
+  //applyTriggersTTDil08JanTrial       -> 2**21 mm -> HLT_Mu15_L1Mu7 || HLT_DoubleMu3
+  //                                            ee -> HLT_IsoEle18_L1R || HLT_DoubleIsoEle12_L1R
+  //                                            em -> HLT_IsoEle18_L1R || HLT_Mu15_L1Mu7 || HLT_IsoEle10_Mu10_L1R
 
-  //ID cuts only - Cut1:
-  //Bitmask = 00001
-  
-  //ID+isolation - Cut2
-  //Bitmask = 00011
-  
-  //ID+isolation+dileptonMass veto - Cut3
-  //Bitmask = 00111
-  
-  //ID+isolation+dileptonMass veto+MET (all of it) - Cut4
-  //Bitmask 01111
-  
-  //ID+isolation+dileptonMass veto+MET (all of it)+NJETS>=2 - Cut5
-  //Bitmask 11111
-  
-  //all except ID and nJet Cut - Cut6 
-  //Bitmask 01110
-  
-  //all except iso and NJetCut - Cut7
-  //Bitmask 01101
-  
-  //all except massVeto and NJet Cut - Cut 8
-  //Bitmask 01011
-  
-  //all except MET and NJet  - Cut 9
-  //Bitmask 00111
- 
-  //ID+isolation+dileptonMass veto + dima MET (only dima met!) + NJets - cuts 10
-  //BitMask - 11111
+
 
   // Flag for jet selection
   // true  = hyp_jet selection (15 GeV uncorrectedm eta<3)
@@ -109,89 +112,59 @@ void doAll(unsigned int bitmask){
   gROOT->ProcessLine(".L ttDilCounts_looper.C+");
 
   TChain* chtopdil = new TChain("Events");
-//   chtopdil->Add("/net/stau/cdf26/dietcms2/V01-00-04/PYTHIA_TauolaTTbar_Summer08/ntuple_diet_*.root");
-//  chtopdil->Add("/data3/slava77/cms/mc/cms2/V01-02-01/TTJets-madgraph/merged*.root");
-  chtopdil->Add("/data3/slava77/cms/mc/cms2/V01-02-06/TTJets-madgraph_Fall08_IDEAL_V9_v2/merged*.root");
+  chtopdil->Add("data/TTJets-madgraph_Fall08_IDEAL_V9_v2/merged*.root");
 
   TChain* chtopotr = new TChain("Events");
-//   chtopotr->Add("/net/stau/cdf26/dietcms2/V01-00-04/PYTHIA_TauolaTTbar_Summer08/ntuple_diet_*.root");
-//   chtopotr->Add("/data3/slava77/cms/mc/cms2/V01-02-01/TTJets-madgraph/merged*.root");
-  chtopotr->Add("/data3/slava77/cms/mc/cms2/V01-02-06/TTJets-madgraph_Fall08_IDEAL_V9_v2/merged*.root");
+  chtopotr->Add("data/TTJets-madgraph_Fall08_IDEAL_V9_v2/merged*.root");
 
   TChain* chww = new TChain("Events");
-//   chww->Add("data/signal/skim/ntuplemaker_WW_incl_2020.root");
-//   chww->Add("/data3/slava77/cms/mc/cms2/V01-02-01/WW_2l-Pythia/merged*.root");
-  chww->Add("/data3/slava77/cms/mc/cms2/V01-02-06/WW_2l_Summer08_IDEAL_V9_v2/merged*.root");
+  chww->Add("data/WW_2l_Summer08_IDEAL_V9_v2/merged*.root");
 
   TChain* chWZ = new TChain("Events");
-//   chWZ->Add("data/signal/skim/ntuplemaker_WZ_incl_2020.root");
-//   chWZ->Add("/data3/slava77/cms/mc/cms2/V01-02-01/WZ_incl-Pythia/merged*.root"); // can try WZ_3l-Pythia
-  chWZ->Add("/data3/slava77/cms/mc/cms2/V01-02-06/WZ_3l_Summer08_IDEAL_V9_v2/merged*.root"); // can try WZ_3l-Pythia
+  chWZ->Add("data/WZ_3l_Summer08_IDEAL_V9_v2/merged*.root"); // can try WZ_3l-Pythia
 
   TChain* chZZ = new TChain("Events");
-//   chZZ->Add("data/signal/skim/ntuplemaker_ZZ_incl_2020.root");
-//   chZZ->Add("/data3/slava77/cms/mc/cms2/V01-02-01/ZZ_2l2n-Pythia/merged*.root");
-  chZZ->Add("/data3/slava77/cms/mc/cms2/V01-02-06/ZZ_2l2n_Summer08_IDEAL_V9_v2/merged*.root");
+  chZZ->Add("data/ZZ_2l2n_Summer08_IDEAL_V9_v2/merged*.root");
   
   TChain* chWjets = new  TChain("Events");
-  //  chWjets->Add("/net/stau/cdf26/dietcms2/V01-00-04/MadGraph_Wjets_Summer08/ntuple_diet_*.root");
-//   chWjets->Add("/data3/slava77/cms/mc/cms2/V01-02-01/WJets-madgraph/merged*.root");
-  chWjets->Add("/data3/slava77/cms/mc/cms2/V01-02-06/WJets-madgraph_Fall08_IDEAL_V9_v1/merged*.root");
+  chWjets->Add("data/WJets-madgraph_Fall08_IDEAL_V9_v1/merged*.root");
 
   TChain* chDYtautau = new  TChain("Events");
-  //  chDYtautau->Add("/net/stau/cdf26/dietcms2/V01-00-04/MadGraph_Zjets_Summer08/ntuple_diet_*.root");
-//   chDYtautau->Add("/data3/slava77/cms/mc/cms2/V01-02-01/ZJets-madgraph/merged*.root");
-  chDYtautau->Add("/data3/slava77/cms/mc/cms2/V01-02-06/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged*.root");
+  chDYtautau->Add("data/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged*.root");
   
   TChain* chDYee = new  TChain("Events");
-  //  chDYee->Add("/net/stau/cdf26/dietcms2/V01-00-04/MadGraph_Zjets_Summer08/ntuple_diet_*.root");
-//   chDYee->Add("/data3/slava77/cms/mc/cms2/V01-02-01/ZJets-madgraph/merged*.root");
-  chDYee->Add("/data3/slava77/cms/mc/cms2/V01-02-06/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged*.root");
+  chDYee->Add("data/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged*.root");
 
   TChain* chDYmm = new  TChain("Events");
-//  chDYmm->Add("/net/stau/cdf26/dietcms2/V01-00-04/MadGraph_Zjets_Summer08/ntuple_diet_*.root");
-//   chDYmm->Add("/data3/slava77/cms/mc/cms2/V01-02-01/ZJets-madgraph/merged*.root");
-  chDYmm->Add("/data3/slava77/cms/mc/cms2/V01-02-06/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged*.root");
+  chDYmm->Add("data/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged*.root");
   
   //ppMuX
   TChain* chppMuX = new  TChain("Events");
   if (runppMuX) {
-    //    chppMuX->Add("/data3/slava77/cms/mc/Mupt15Inclusive_Summer08/V01-00-04/diet/ntuple_*.root");
-//     chppMuX->Add("/data3/slava77/cms/mc/cms2/V01-02-01/InclusiveMuPt15/merged*.root"); 
-    chppMuX->Add("/data3/slava77/cms/mc/cms2/V01-02-06/InclusiveMuPt15/merged*.root"); 
+    chppMuX->Add("data/InclusiveMuPt15/merged*.root"); 
     //can try InclusiveMu5Pt50 .. figure out how to merge later
   }
   
   //ppEM
   TChain* chEM =  new  TChain("Events");
   if (runEM) {
-//     chEM->Add("data/signal/skim/ntuplemaker_QCDJetsEnriched_eehyp_2020.root");
-//     chEM->Add("/data3/slava77/cms/mc/cms2/V01-02-01/QCD_EMenriched_Pt20to30/merged*.root");
-//     chEM->Add("/data3/slava77/cms/mc/cms2/V01-02-01/QCD_EMenriched_Pt30to80/merged*.root");
-//     chEM->Add("/data3/slava77/cms/mc/cms2/V01-02-01/QCD_EMenriched_Pt80to170/merged*.root");
-    chEM->Add("/data3/slava77/cms/mc/cms2/V01-02-06/QCD_EMenriched_Pt20to30/merged*.root");
-    chEM->Add("/data3/slava77/cms/mc/cms2/V01-02-06/QCD_EMenriched_Pt30to80/merged*.root");
-    chEM->Add("/data3/slava77/cms/mc/cms2/V01-02-06/QCD_EMenriched_Pt80to170/merged*.root");
+    chEM->Add("data/QCD_EMenriched_Pt20to30/merged*.root");
+    chEM->Add("data/QCD_EMenriched_Pt30to80/merged*.root");
+    chEM->Add("data/QCD_EMenriched_Pt80to170/merged*.root");
   }
 
   //tW
   TChain* chtW = new  TChain("Events");
   if (runtW) {
-//     chtW->Add("/data2/slava77/cms/cms1/V04-03-05/TopRex_tWinclusive/ntuple_merged_skim2020.root");
-//     chtW->Add("/data3/slava77/cms/mc/cms2/V01-02-01/SingleTop_sChannel-madgraph-LHE/merged*.root"); 
-//     chtW->Add("/data3/slava77/cms/mc/cms2/V01-02-01/SingleTop_tChannel-madgraph-LHE/merged*.root"); 
-//     chtW->Add("/data3/slava77/cms/mc/cms2/V01-02-01/SingleTop_tWChannel-madgraph-LHE/merged*.root"); 
-    chtW->Add("/data3/slava77/cms/mc/cms2/V01-02-06/SingleTop_sChannel-madgraph-LHE/merged*.root"); 
-    chtW->Add("/data3/slava77/cms/mc/cms2/V01-02-06/SingleTop_tChannel-madgraph-LHE/merged*.root"); 
-    chtW->Add("/data3/slava77/cms/mc/cms2/V01-02-06/SingleTop_tWChannel-madgraph-LHE/merged*.root"); 
+    chtW->Add("data/SingleTop_sChannel-madgraph-LHE/merged*.root"); 
+    chtW->Add("data/SingleTop_tChannel-madgraph-LHE/merged*.root"); 
+    chtW->Add("data/SingleTop_tWChannel-madgraph-LHE/merged*.root"); 
   }
 
   //WQQ
   TChain* chWQQ = new TChain("Events");
   if (runWQQ) {
-//     chWQQ->Add("/data2/slava77/cms/cms1/V04-03-05/Alpgen_Wbb_0jets/ntuple_merged.root");
-//    chWQQ->Add("");
-    chWQQ->Add("/data3/slava77/cms/mc/cms2/V01-02-06/VQQ-madgraph_Fall08_IDEAL_V9_v1/merged*.root");
+    chWQQ->Add("data/VQQ-madgraph_Fall08_IDEAL_V9_v1/merged*.root");
   }
 
 
@@ -201,11 +174,6 @@ void doAll(unsigned int bitmask){
   
 
 
-  //do no cuts first:
-//   int bitmaskR = atoi(getenv("FFFbitmask"));
-//   unsigned int bitmask = (unsigned int)bitmaskR;
-
-//  looperTTDisambiguation looper;
   ttDilCounts_looper looper;
 
   // Process files one at a time, and color them as needed
