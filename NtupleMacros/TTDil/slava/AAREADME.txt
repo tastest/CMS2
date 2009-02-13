@@ -3,6 +3,9 @@ root
 // load FWLite stuff
 .L doAll.C
 doAll(cutBits)
+// doAll(cutBits, skipFWLite=true) -- is possible to turn off loading FWlite --
+// this only seems to work in compiled doAll case:
+root -l -b -q "doAll.C+(bits, true)"; //need to do it twice though (the first time it confuses itself with libs)
 //this will make myHist_cutBits.root
 -------------------------
 
