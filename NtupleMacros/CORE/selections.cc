@@ -221,7 +221,7 @@ bool muonReconstructionCleaning(int i_hyp, float threshold)
 //--------------------------------------------
 // 'simple' MET selection
 //--------------------------------------------
-bool metSimple (int i_hyp, float threshold, const TVector3& corr) {
+bool metSimple (float threshold, const TVector3& corr) {
   TVector3 hyp_met;
   hyp_met.SetPtEtaPhi(cms2.evt_tcmet(), 0, cms2.evt_tcmetPhi());
   hyp_met += corr;
