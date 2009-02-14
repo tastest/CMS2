@@ -21,6 +21,8 @@
 #include "TTree.h"
 #include <iostream>
 #include <fstream>
+#include <set>
+#include <algorithm>
 #include "Math/LorentzVector.h"
 
 using namespace std;
@@ -263,6 +265,113 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true, std::string cl
        headerf << "\t\t" << "}" << endl;
        headerf << "\t\t" << "return " << aliasname << "_;" << endl << "\t}" << endl;
   }
+
+  bool haveHLTInfo = false;
+  bool haveL1Info  = false;
+  for(int i = 0; i < aliasarray->GetSize(); i++) {
+    TString aliasname(aliasarray->At(i)->GetName());
+    if(aliasname=="evt_HLT_trigNames") 
+      haveHLTInfo = true;
+    if(aliasname=="evt_L1_trigNames") 
+      haveL1Info = true;
+  }
+   
+  if(haveHLTInfo) {
+    //functions to return whether or not trigger fired - HLT
+    headerf << "\t" << "bool passHLTTrigger(TString trigName) {" << endl;
+    headerf << "\t\t" << "int trigIndx;" << endl;
+    headerf << "\t\t" << "vector<TString>::const_iterator begin_it = evt_HLT_trigNames().begin();" << endl;
+    headerf << "\t\t" << "vector<TString>::const_iterator end_it = evt_HLT_trigNames().end();" << endl;
+    headerf << "\t\t" << "vector<TString>::const_iterator found_it = find(begin_it, end_it, trigName);" << endl;
+    headerf << "\t\t" << "if(found_it != end_it)" << endl;
+    headerf << "\t\t\t" << "trigIndx = found_it - begin_it;" << endl;
+    headerf << "\t\t" << "else {" << endl;
+    headerf << "\t\t\t" << "cout << \"Cannot find Trigger \" << trigName << endl; " << endl;
+    headerf << "\t\t\t" << "return 0;" << endl;
+    headerf << "\t\t"   << "}" << endl << endl;
+    //get the list of branches that hold the HLT bitmasks
+    //store in a set 'cause its automatically sorted
+    set<TString> s_HLTbitmasks;
+    set<TString> s_L1bitmasks;
+    for(int j = 0; j < aliasarray->GetSize(); j++) {
+      TString aliasname(aliasarray->At(j)->GetName());
+      TBranch *branch = ev->GetBranch(ev->GetAlias(aliasname.Data()));
+      TString classname = branch->GetClassName();
+      if(aliasname.Contains("evt_HLT") && classname.Contains("int")) {
+	s_HLTbitmasks.insert(aliasname);
+      }
+     
+    }
+    int i = 0;
+    for(set<TString>::const_iterator s_it = s_HLTbitmasks.begin();
+	s_it != s_HLTbitmasks.end(); s_it++, i++) {
+      
+      if(i==0) {
+	headerf << "\t\t" << "if(trigIndx <= 31) {" << endl;
+	headerf << "\t\t\t" << "unsigned int bitmask = 1;" << endl;
+	headerf << "\t\t\t" << "bitmask <<= trigIndx;" << endl;	
+	headerf << "\t\t\t" << "return " << *s_it << "() & bitmask;" << endl;
+	headerf << "\t\t" << "}" << endl;
+	continue;
+      }
+      headerf << "\t\t" << "if(trigIndx >= " << Form("%d && trigIndx <= %d", 32*i, 32*i+31) << ") {" << endl;
+      headerf << "\t\t\t" << "unsigned int bitmask = 1;" << endl;
+      headerf << "\t\t\t" << "bitmask <<= (trigIndx - " << Form("%d",32*i) << "); " << endl;	
+      headerf << "\t\t\t" << "return " << *s_it << "() & bitmask;" << endl;
+      headerf << "\t\t" << "}" << endl;
+    }
+    headerf << "\t" << "return 0;" << endl;
+    headerf << "\t" << "}" << endl;
+  }//if(haveHLTInfo) 
+
+
+  if(haveL1Info) {
+    //functions to return whether or not trigger fired - L1
+    headerf << "\t" << "bool passL1Trigger(TString trigName) {" << endl;
+    headerf << "\t\t" << "int trigIndx;" << endl;
+    headerf << "\t\t" << "vector<TString>::const_iterator begin_it = evt_L1_trigNames().begin();" << endl;
+    headerf << "\t\t" << "vector<TString>::const_iterator end_it = evt_L1_trigNames().end();" << endl;
+    headerf << "\t\t" << "vector<TString>::const_iterator found_it = find(begin_it, end_it, trigName);" << endl;
+    headerf << "\t\t" << "if(found_it != end_it)" << endl;
+    headerf << "\t\t\t" << "trigIndx = found_it - begin_it;" << endl;
+    headerf << "\t\t" << "else {" << endl;
+    headerf << "\t\t\t" << "cout << \"Cannot find Trigger \" << trigName << endl; " << endl;
+    headerf << "\t\t\t" << "return 0;" << endl;
+    headerf << "\t\t"   << "}" << endl << endl;
+    //get the list of branches that hold the L1 bitmasks
+    //store in a set 'cause its automatically sorted
+    set<TString> s_L1bitmasks;
+    for(int j = 0; j < aliasarray->GetSize(); j++) {
+      TString aliasname(aliasarray->At(j)->GetName());
+      TBranch *branch = ev->GetBranch(ev->GetAlias(aliasname.Data()));
+      TString classname = branch->GetClassName();
+      if(aliasname.Contains("evt_L1") && classname.Contains("int")) {
+	s_L1bitmasks.insert(aliasname);
+      }
+     
+    }
+    int i = 0;
+    for(set<TString>::const_iterator s_it = s_L1bitmasks.begin();
+	s_it != s_L1bitmasks.end(); s_it++, i++) {
+      
+      if(i==0) {
+	headerf << "\t\t" << "if(trigIndx <= 31) {" << endl;
+	headerf << "\t\t\t" << "unsigned int bitmask = 1;" << endl;
+	headerf << "\t\t\t" << "bitmask <<= trigIndx;" << endl;	
+	headerf << "\t\t\t" << "return " << *s_it << "() & bitmask;" << endl;
+	headerf << "\t\t" << "}" << endl;
+	continue;
+      }
+      headerf << "\t\t" << "if(trigIndx >= " << Form("%d && trigIndx <= %d", 32*i, 32*i+31) << ") {" << endl;
+      headerf << "\t\t\t" << "unsigned int bitmask = 1;" << endl;
+      headerf << "\t\t\t" << "bitmask <<= (trigIndx - " << Form("%d",32*i) << "); " << endl;	
+      headerf << "\t\t\t" << "return " << *s_it << "() & bitmask;" << endl;
+      headerf << "\t\t" << "}" << endl;
+    }
+    headerf << "\t" << "return 0;" << endl;
+    headerf << "\t" << "}" << endl;
+  }//if(haveL1Info)
+    
   headerf << "};" << endl << endl;
 
   headerf << "#ifndef __CINT__" << endl;
