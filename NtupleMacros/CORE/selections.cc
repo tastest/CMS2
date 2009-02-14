@@ -536,7 +536,7 @@ int numberOfExtraMuons(int i_hyp, bool nonisolated = false){
     if ( cms2.mus_validHits()[imu] < 11) continue;
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == imu ) continue;
     if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == imu ) continue;
-    if ( nonisolated && mu_rel_iso(imu) > 0.95 ) continue;
+    if ( nonisolated && mu_rel_iso(imu) > 0.90 && cms2.mus_p4()[imu].pt()>20 ) continue;
     ++nMuons;
   }
   return nMuons;
