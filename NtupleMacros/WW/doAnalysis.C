@@ -199,6 +199,9 @@ TH1F* helRelPatIsoPassId;  // electron relative iso (trk+ecal+hcal) PAT with wei
 TH1F* helRelPatIsoNoId;    // electron relative iso (trk+ecal+hcal) PAT with weights 1,1,1 no el ID
 TH1F* helRelPatIsoFailId;  // electron relative iso (trk+ecal+hcal) PAT with weights 1,1,1 failed el ID
 
+TH1F* hemElRelIso;  // electron relative iso for emu final selection
+TH1F* hemMuRelIso;  // muon relative iso for emu final selection
+
 // fkw September 2008 final hist used for muon tags estimate of top bkg
 TH2F* hextramuonsvsnjet[4];
 
@@ -318,6 +321,38 @@ void checkIsolation(int i_hyp, double weight){
   }
 }
 
+void checkIsolationAfterSelections(int i_hyp, double weight){
+  // em case
+  if ( cms2.hyp_type()[i_hyp] == 1 || cms2.hyp_type()[i_hyp] == 2 ){
+    unsigned int imu = cms2.hyp_lt_index()[i_hyp];
+    unsigned int iel = cms2.hyp_ll_index()[i_hyp];
+    if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp])==11 ){
+      imu = cms2.hyp_ll_index()[i_hyp];
+      iel = cms2.hyp_lt_index()[i_hyp];
+    }
+    if ( goodElectronWithoutIsolation(iel) && goodMuonIsolated(imu) ) hemElRelIso->Fill( el_rel_iso(iel,true), weight );
+    if ( goodElectronIsolated(iel,true) && goodMuonWithoutIsolation(imu) ) hemMuRelIso->Fill( mu_rel_iso(imu), weight );
+  }
+  /*
+    unsigned int iLT = cms2.hyp_lt_index()[i_hyp];
+    unsigned int iLL = cms2.hyp_ll_index()[i_hyp];
+    if ( goodElectronWithoutIsolation(iLT) &&  goodElectronWithoutIsolation(iLL) ) {
+      double isoLT = el_rel_iso(cms2.hyp_lt_index()[i_hyp]);
+      double isoLL = el_rel_iso(cms2.hyp_ll_index()[i_hyp]);
+      if ( isoLT > isoLL ) {
+	if ( goodElectronIsolated(isoLT) ) heeLeastIsolatedElRelIso->Fill( isoLL );
+      } else {
+	if ( goodElectronIsolated(isoLL) ) heeLeastIsolatedElRelIso->Fill( isoLT );
+      }
+      if ( cms2.hyp_lt_p4()[i_hyp].pt() > cms2.hyp_ll_p4()[i_hyp].pt() ) {
+	if ( goodElectronIsolated(isoLT) ) heeLeastEnergeticElRelIso->Fill( isoLL );
+      } else {
+	if ( goodElectronIsolated(isoLL) ) heeLeastEnergeticElRelIso->Fill( isoLT );
+      }
+    }
+      */
+}
+
 void hypo (int i_hyp, double kFactor) 
 {
      int myType = 99;
@@ -354,6 +389,25 @@ void hypo (int i_hyp, double kFactor)
      // if (additionalZveto()) return;
      monitor.count(icounter++,"Total number of hypothesis after lepton pt + z vetos: ");
      
+     // track corrected MET
+     // const TVector3 trkCorr = correctMETforTracks();
+     const TVector3 trkCorr; // no tcMET correction
+     
+     if (!pass2Met(i_hyp, trkCorr)) return;
+     if (!pass4Met(i_hyp, trkCorr)) return;
+     monitor.count(icounter++,"Total number of hypothesis after lepton pt + z vetos + MET cuts: ");
+     
+     bool goodEvent = true;
+
+     unsigned int nJPT = nJPTs(i_hyp);
+     if (nJPT>0) goodEvent = false;
+     int countmus = numberOfExtraMuons(i_hyp,true);
+     // int countmus = numberOfExtraMuons(i_hyp);
+     int nExtraVetoMuons = numberOfExtraMuons(i_hyp);;
+     if (nExtraVetoMuons) goodEvent = false;
+     
+     if (goodEvent) checkIsolationAfterSelections(i_hyp, weight);
+
      // Muon quality cuts, including isolation
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) return;
      if (abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) ) return;
@@ -361,31 +415,16 @@ void hypo (int i_hyp, double kFactor)
      // Electron quality cuts, including isolation
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_lt_index()[i_hyp],true) ) return;
      if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_ll_index()[i_hyp],true) ) return;
-     monitor.count(icounter++,"Total number of hypothesis after full lepton selection + z vetos: ");
-     
-     // track corrected MET
-     // const TVector3 trkCorr = correctMETforTracks();
-     const TVector3 trkCorr; // no tcMET correction
-     
-     if (!pass2Met(i_hyp, trkCorr)) return;
-     if (!pass4Met(i_hyp, trkCorr)) return;
      monitor.count(icounter++,"Total number of hypothesis after full lepton selection + z vetos + MET cuts: ");
      
      // trkjet veto
      // if ( !passTrkJetVeto(i_hyp) ) return;
-     unsigned int nJPT = nJPTs(i_hyp);
      
      // 2D hist for muon tag counting
-     int countmus = numberOfExtraMuons(i_hyp);;
      hextramuonsvsnjet[myType]->Fill(countmus, nJPT, weight);
      hextramuonsvsnjet[3]->Fill(countmus, nJPT, weight);
      
-     // jet veto
-     if ( nJPT > 0 ) return;
-     // if ( nCaloJets(i_hyp) > 0 ) return;
-
-     // extra muon veto
-     if ( countmus >0 ) return;
+     if ( ! goodEvent ) return;
 
      // -------------------------------------------------------------------//
      // If we made it to here, we passed all cuts and we are ready to fill //
@@ -837,6 +876,14 @@ int ScanChain( TChain* chain, enum Sample sample ) {
 				  120, 0., 1.2);
   helRelPatIsoNoId->Sumw2();
 
+  hemElRelIso = new TH1F(Form("%s_hemElRelIso",prefix),
+			 Form("%s - electron relative iso for emu final selection",prefix),
+			 120, 0., 1.2);
+  hemElRelIso->Sumw2();
+  hemMuRelIso = new TH1F(Form("%s_hemMuRelIso",prefix),
+			 Form("%s - muon relative iso for emu final selection",prefix),
+			 120, 0., 1.2);
+  hemMuRelIso->Sumw2();
 
   // clear list of duplicates
   already_seen.clear();
