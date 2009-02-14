@@ -79,6 +79,15 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 
   std::string compactConfig = "";
 
+  // this will likely change (playing with options for now)...
+  // To define, set and print the new cut:
+  // declare the flag "bool flag = false;"
+  // then "DEFINE_CUT(flag, bitIndex, mask, descriptionIfFalse, descrIfTrue, "", "", shortDescrIfFalse, shortDescrIfTrue)
+  // then actually set the flag based on input cutsMask "SET_CUT(cutsMask, flag, compactConfig, printDescription)"
+  // all these macro do is hide a bunch of copy-paste looking code from you
+  // Eventually the DEFINE_CUT piece will move outside ScanChain to smth like SetConfig
+  // and compactConfig will be usable as a part of the output file name
+  // so that instead of currrent, e.g.,  myHist_2122752.root you get myHist_preDil08_OS_noDupWt_hltTry08.root
   bool idcuts = false;
   DEFINE_CUT(idcuts, 0, 1, 
 	     "Id cuts disabled", "Id cuts enabled", "", "", 
