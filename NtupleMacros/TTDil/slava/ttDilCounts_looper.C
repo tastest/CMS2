@@ -43,8 +43,22 @@ Bool_t comparePt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1,
 }
 
 
+unsigned int cutConf(unsigned int cutsMask, unsigned int shift, unsigned int mask, std::string* sConf, bool doPrint){
+  unsigned int res = ((cutsMask>> shift) & mask);
+  if ( res > 3 ) { std::cout<<"Config error "<<std::endl; exit (99);}
+  if (doPrint ) if (sConf[res].size() ) std::cout << sConf[res].c_str() << std::endl;
+  //  std::cout<< cutsMask<<" "<<shift<<" "<<mask<<" "<<res<<" "<<sConf[res].c_str()<<std::endl;
+  return (res);
+}
 
+#define DEFINE_CUT(CUT, OFFSET, MASK, C1, C2, C3, C4, S1, S2, S3, S4)	\
+  unsigned int CUT##_##shift = OFFSET; unsigned int CUT##_##mask = MASK;\
+  std::string CUT##_##confS[4] = { C1, C2, C3, C4 };			\
+  std::string CUT##_##shortS[4] = { S1, S2, S3, S4 }
 
+#define SET_CUT(BITS, CUT, SHORTS, FLAG)					\
+  CUT = cutConf(BITS, CUT##_##shift, CUT##_##mask, CUT##_##confS, FLAG);\
+  SHORTS += CUT##_##shortS[CUT] == "" ? "" : "_"+CUT##_##shortS[CUT]
 
 int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor, int prescale, bool oldjets, unsigned int cutsMask){
   
@@ -62,165 +76,148 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
   
   //book Histograms
   bookHistos(prefix);
-  
+
+  std::string compactConfig = "";
+
   bool idcuts = false;
+  DEFINE_CUT(idcuts, 0, 1, 
+	     "Id cuts disabled", "Id cuts enabled", "", "", 
+	     "", "idOld", "", "");
+  SET_CUT(cutsMask, idcuts, compactConfig, true);
+
   bool isolationcuts = false;
+  DEFINE_CUT( isolationcuts, 1, 1,
+	      "Isolation cuts disabled", "Isolation cuts enabled", "", "",
+	      "", "isoOld", "", "");
+  SET_CUT(cutsMask, isolationcuts, compactConfig, true);
+
   bool dilepMassVetoCut = false;
+  DEFINE_CUT(dilepMassVetoCut, 2, 1,
+	     "DiLeptonMassVetoCut disabled", "DiLeptonMassVetoCut enabled", "", "",
+	     "", "zVetOld", "", "");
+  SET_CUT(cutsMask, dilepMassVetoCut, compactConfig, true);
+
   bool METcut = false;
-  bool nJets2 = false; //true if we want >=2 jets
+  DEFINE_CUT(METcut, 3, 1, 
+	     "METCut disabled", "METCut enabled", "", "",
+	     "", "wMET", "", "");
+  SET_CUT(cutsMask, METcut, compactConfig, true);
+
+  bool nJets2 = false; 
+  DEFINE_CUT(nJets2, 4, 1,
+	     "NJets>=2 cut disabled", "NJets>=2 cut enabled", "", "",
+	     "", "2J", "", "");
+  SET_CUT(cutsMask, nJets2, compactConfig, true);
+
   bool applyMuTag = false;
+  DEFINE_CUT(applyMuTag, 5, 1, 
+	     "Extra muon tag cut disabled", "Extra Muon tag cut enabled", "", "",
+	     "", "muTag", "", "");
+  SET_CUT(cutsMask, applyMuTag, compactConfig, true);
+
   bool METveto = false;
+  DEFINE_CUT(METveto, 6, 1,
+	     "MET veto is disabled", "MET veto is enabled", "", "",
+	     "", "vetoMET", "", "");
+  SET_CUT(cutsMask, METveto, compactConfig, true);
+
   bool applyMuTag5 = false;
+  DEFINE_CUT(applyMuTag5, 7, 1,
+	     "Extra muon 5GeV tag cut disabled", "Extra Muon 5GeV tag cut enabled", "", "",
+	     "", "muTag5", "", "");
+  SET_CUT(cutsMask, applyMuTag5, compactConfig, true);
+
   int  isoLooseMode = 0;
+  DEFINE_CUT(isoLooseMode, 8, 3,
+	     "Require both leptons to be isolated", 
+	     "Require one-only hyp lepton (electron in emu) with iso (0.6, 0.92)", 
+	     "Require one-only hyp lepton (muon in emu) with iso (0.6, 0.92)",
+	     "Require two hyp leptons  with iso (0.6, 0.92)",
+	     "", "isoReg1", "isoReg2", "isoReg3");
+  SET_CUT(cutsMask, isoLooseMode, compactConfig, true);
+
   bool looseDilSelectionTTDil08 = false;
+  DEFINE_CUT(looseDilSelectionTTDil08, 10, 1,
+	     "", "Require loose dil selection for TTbar-->dilepton ana 2008/09", "", "",
+	     "", "preDil08", "", "");
+  SET_CUT(cutsMask, looseDilSelectionTTDil08, compactConfig, true);
+
   bool fillMultipleHypsOnly = false;
+  DEFINE_CUT(fillMultipleHypsOnly, 11, 1,
+	     "", "Fill only multiple hypotheses", "", "",
+	     "", "dupOnly", "", "");
+  SET_CUT(cutsMask, fillMultipleHypsOnly, compactConfig, true);
+
   bool applyZWindow = false;
+  DEFINE_CUT(applyZWindow, 12, 1, 
+	     "", "Events from Z-window only", "", "",
+	     "", "inZ", "", "");
+  SET_CUT(cutsMask, applyZWindow, compactConfig, true);
+
   bool osSelection = false;
+  DEFINE_CUT(osSelection, 13, 1,
+	     "", "Require OS", "", "",
+	     "", "OS", "", "");
+  SET_CUT(cutsMask,osSelection , compactConfig, true);
+
   bool fillMaxWeightDilOnly = false;
+  DEFINE_CUT(fillMaxWeightDilOnly, 14, 1,
+	     "", "Fill only the dilepton with the max dilepton weight", "", "",
+	     "", "noDupWt", "", "");
+  SET_CUT(cutsMask, fillMaxWeightDilOnly, compactConfig, true);
+
   bool leptonIsolationDilSelectionTTDil08 = false;
+  DEFINE_CUT(leptonIsolationDilSelectionTTDil08, 15, 1,
+	     "", "Apply isolation cuts on leptons for TTbar-->dilepton ana 2008/09", "", "",
+	     "", "isoDil08", "", "");
+  SET_CUT(cutsMask, leptonIsolationDilSelectionTTDil08, compactConfig, true);
+
   bool looseDilSelectionNoIsoTTDil08 = false;
+  DEFINE_CUT(looseDilSelectionNoIsoTTDil08, 16, 1,
+	     "", "Require loose dil selection for TTbar-->dilepton ana 2008/09; drop loose iso cuts", "", "",
+	     "", "preDil08noIso", "", "");
+  SET_CUT(cutsMask, looseDilSelectionNoIsoTTDil08, compactConfig, true);
+
   bool lepton20Eta2p4DilSelection = false;
+  DEFINE_CUT(lepton20Eta2p4DilSelection, 17, 1,
+	     "", "Two leptons pt>20 and |eta|<2.4 are selected -- bare minimum", "", "",
+	     "", "2pt20", "", "");
+  SET_CUT(cutsMask, lepton20Eta2p4DilSelection, compactConfig, true);
+
   bool metBaselineSelectionTTDil08 = false;
+  DEFINE_CUT(metBaselineSelectionTTDil08, 18, 1,
+	     "", "Apply TTDil08 baseline MET selection: use corrected pat-met emu met >20, mm,em met>30", "", "",
+	     "", "preMet08", "", "");
+  SET_CUT(cutsMask, metBaselineSelectionTTDil08, compactConfig, true);
+
   bool dilepMassVetoCutTTDil08 = false;
+  DEFINE_CUT(dilepMassVetoCutTTDil08, 19, 1,
+	     "", "Apply Z mass veto on same flavor dils, use TTDil08 selections", "", "",
+	     "", "outZ08", "", "");
+  SET_CUT(cutsMask, dilepMassVetoCutTTDil08, compactConfig, true);
 
   bool applyTriggersMu9orLisoE15 = false;
+  DEFINE_CUT(applyTriggersMu9orLisoE15, 20, 1,
+	     "", "HLT bits: 47 (HLT_LooseIsoEle15_LW_L1R), 82 (HLT_Mu9): ee -- 47, em -- 47 OR 82, mm -- 82", "", "",
+	     "", "hltMu9E15", "", "");
+  SET_CUT(cutsMask, applyTriggersMu9orLisoE15, compactConfig, true);
+
   bool applyTriggersTTDil08JanTrial = false;
+  DEFINE_CUT(applyTriggersTTDil08JanTrial, 21, 1,
+	     "", 
+	     "HLT bits 45 (IsoEle18_L1R), 54 (DoubleIsoEle12_L1R), 86 (Mu15_L1Mu7), 90 (DoubleMu3),\
+ 126 (IsoEle10_Mu10_L1R):\n\t ee -- 45 OR 54, mm -- 86 or 90, em -- 45 OR 86 OR 126", "", "",
+	     "", "hltTry08", "", "");
+  SET_CUT(cutsMask, applyTriggersTTDil08JanTrial, compactConfig, true);
 
-  if( cutsMask & 1) {
-    idcuts = true;
-    cout << "Id cuts enabled" << endl;
-  } else{
-    idcuts = false;
-    cout << "Id cuts disabled" << endl;
-  }
+  bool dilepAdditionalMassVetoCutTTDil08 = false;
+  DEFINE_CUT(dilepAdditionalMassVetoCutTTDil08, 22, 1,
+	     "", "Apply additional z-veto (reject if there is a pair of loose,\
+ at least one isolated same flavor OS leptons with mass inside z-window", "", "",
+	     "", "extraZv", "", "");
+  SET_CUT(cutsMask, dilepAdditionalMassVetoCutTTDil08, compactConfig, true);
 
-  if((cutsMask>>1) & 1 ) {
-    isolationcuts = true;
-    cout << "Isolation cuts enabled" << endl;
-  } else {
-    isolationcuts = false;
-    cout << "Isolation cuts disabled" << endl;
-  }
-
-  if( (cutsMask>>2) & 1) {
-    dilepMassVetoCut = true;
-    cout << "DiLeptonMassVetoCut enabled" << endl;
-  } else {
-    dilepMassVetoCut = false;
-    cout << "DiLeptonMassVetoCut disabled" << endl;
-  }
-
-  if( (cutsMask>>3) & 1) {
-    METcut = true;
-    cout << "METCut enabled" << endl;
-  } else {
-    METcut = false;
-    cout << "METCut disabled" << endl;
-  }
-
-  if( (cutsMask>>4) & 1 ) {
-    nJets2 = true;
-    cout << "NJets>=2 cut enabled" << endl;
-  } else {
-    nJets2 = false;
-    cout << "NJets>=2 cut disabled" << endl;
-  }
-  if( (cutsMask>>5) & 1 ) {
-    applyMuTag = true;
-    cout << "Extra Muon tag cut enabled" << endl;
-  } else {
-    applyMuTag = false;
-    cout << "Extra muon tag cut disabled" << endl;
-  }
-  
-
-  if ( (cutsMask>>6) & 1 ){
-    METveto = true;
-    cout << "MET veto is enabled" << endl;
-  } else {
-    METveto = false;
-    cout << "MET veto is disabled" << endl;
-  }
-
-  if( (cutsMask>>7) & 1) {
-    applyMuTag5 = true;
-    cout << "Extra Muon 5GeV tag cut enabled" << endl;
-  } else {
-    applyMuTag5 = false;
-    cout << "Extra muon 5GeV tag cut disabled" << endl;
-  }
-
-  
-  isoLooseMode = ((cutsMask>>8) & 3);
-  if (isoLooseMode == 0){
-    cout << "Require both leptons to be isolated" << endl;
-  } else if( isoLooseMode == 1) {
-    cout << "Require one-only hyp lepton (electron in emu) with iso (0.6, 0.92)" << endl;
-  } else if (isoLooseMode == 2 ) {
-    cout << "Require one-only hyp lepton (muon in emu) with iso (0.6, 0.92)" << endl;
-  } else if (isoLooseMode == 3){
-    cout << "Require two hyp leptons  with iso (0.6, 0.92)" << endl;
-  }
-
-  looseDilSelectionTTDil08 = ((cutsMask>>10)&1);
-  if (looseDilSelectionTTDil08 ){
-    std::cout<< "Require loose dil selection for TTbar-->dilepton ana 2008/09"<<std::endl;
-  }
-
-  fillMultipleHypsOnly = ((cutsMask >> 11)&1);
-  if (fillMultipleHypsOnly){
-    std::cout<< "Fill only multiple hypotheses"<<std::endl;
-  }
-
-  applyZWindow = ((cutsMask >> 12) & 1);
-  if (applyZWindow){
-    std::cout<<"Events from Z-window only"<<std::endl;
-  }
-  
-  osSelection = ((cutsMask >> 13 ) & 1);
-  if (osSelection){
-    std::cout<<"Require OS"<<std::endl;
-  }
-
-  fillMaxWeightDilOnly = ((cutsMask >> 14) & 1);
-  if (fillMaxWeightDilOnly){
-    std::cout<<"Fill only the dilepton with the max dilepton weight"<<std::endl;
-  }
-
-  leptonIsolationDilSelectionTTDil08 = ((cutsMask>> 15) & 1);
-  if (leptonIsolationDilSelectionTTDil08){
-    std::cout<<" Apply isolation cuts on leptons for TTbar-->dilepton ana 2008/09"<<std::endl;
-  }
-
-  looseDilSelectionNoIsoTTDil08 = ((cutsMask>>16)&1);
-  if (looseDilSelectionNoIsoTTDil08 ){
-    std::cout<< "Require loose dil selection for TTbar-->dilepton ana 2008/09; drop loose iso cuts"<<std::endl;
-  }
-
-  lepton20Eta2p4DilSelection = ((cutsMask>>17)&1);
-  if (lepton20Eta2p4DilSelection){
-    std::cout<<"Two leptons pt>20 and |eta|<2.4 are selected -- bare minimum"<<std::endl;
-  }
-
-  metBaselineSelectionTTDil08 = ((cutsMask>>18)&1);
-  if (metBaselineSelectionTTDil08){
-    std::cout<<"Apply TTDil08 baseline MET selection: use corrected pat-met emu met >20, mm,em met>30"<<std::endl;
-  }
-
-  dilepMassVetoCutTTDil08 = ((cutsMask>>19)&1);
-  if (dilepMassVetoCutTTDil08){
-    std::cout<<"Apply Z mass veto on same flavor dils, use TTDil08 selections"<<std::endl;
-  }
-
-  applyTriggersMu9orLisoE15 = ((cutsMask>>20)&1);
-  if (applyTriggersMu9orLisoE15){
-    std::cout<<"HLT bits: 47 (HLT_LooseIsoEle15_LW_L1R), 82 (HLT_Mu9): ee -- 47, em -- 47 OR 82, mm -- 82"<<std::endl;
-  }
-  applyTriggersTTDil08JanTrial = ((cutsMask>>21)&1);
-  if (applyTriggersTTDil08JanTrial){
-    std::cout<<"HLT bits 45 (IsoEle18_L1R), 54 (DoubleIsoEle12_L1R), 86 (Mu15_L1Mu7), 90 (DoubleMu3), 126 (IsoEle10_Mu10_L1R):\n"
-	     <<"\t ee -- 45 OR 54, mm -- 86 or 90, em -- 45 OR 86 OR 126"<<std::endl;
-  }
+  std::cout<<"Compact config string is "<<compactConfig.c_str()<<std::endl;
 
   // Check that prescale is OK
   if (prescale < 1) {
@@ -282,147 +279,103 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 
       std::vector<unsigned int> goodHyps(0);
 
-      bool hltIsoEle18_L1R = ((evt_HLT2() & (1<<(45-32))) != 0);
-      bool hltLooseIsoEle15_LW_L1R = ((evt_HLT2() & (1<<(47-32))) != 0);
-      bool hltDoubleIsoEle12_L1R = ((evt_HLT2() & (1<<(54-32))) != 0); 
-      bool hltMu9 = ((evt_HLT3() & (1<<(82-64))) != 0);
-      bool hltMu15_L1Mu7 = ((evt_HLT3() & (1<<(86-64))) != 0); 
-      bool hltDoubleMu3 = ((evt_HLT3() & (1<<(90-64))) != 0);
-      bool hltIsoEle10_Mu10_L1R = ((evt_HLT4() & (1<<(126-96))) != 0);
 
       for(unsigned int hypIdx = 0; hypIdx < hyp_p4().size(); hypIdx++) {
        
-	if (applyZWindow && fabs(hyp_p4().at(hypIdx).mass()-91)> 15) continue;
-      
-              
-// 	// Triggers (comment out the unused ones)
-// 	bool HLT1ElectronRelaxed     = ( (evt_HLT2() & 0x2) != 0);
-// 	// bool HLT2ElectronRelaxed     = ( (evt_HLT2() & 0x8) != 0);
-// 	bool HLT1MuonNonIso          = ( (evt_HLT2() & 0x8000) != 0);
-// 	// bool HLT2MuonNonIso          = ( (evt_HLT2() & 0x20000) != 0);
-// 	// bool HLTXElectronMuonRelaxed = ( (evt_HLT3() & 0x80000) != 0); 
-
-       
-
-	// if (hyp_type().at(hypIdx) == 3 && !(HLT1ElectronRelaxed)) continue; // mm
-	// 	if (hyp_type().at(hypIdx) == 0 && !(HLT1MuonNonIso))      continue; // ee
-	// 	if (  (hyp_type().at(hypIdx) == 1 || hyp_type().at(hypIdx) == 2) && 
-	// 	      !(HLT1ElectronRelaxed || HLT1MuonNonIso)) continue; // emu
-	//if(hyp_type().at(hypIdx) !=1 && hyp_type().at(hypIdx) !=2 ) continue;
-       
-       
 	unsigned int i_lt = hyp_lt_index().at(hypIdx);
 	unsigned int i_ll = hyp_ll_index().at(hypIdx);
-	
-	// Cut on lepton Pt
-// 	if (hyp_lt_p4().at(hypIdx).pt() < 20.0) continue;
-// 	if (hyp_ll_p4().at(hypIdx).pt() < 20.0) continue;
 
-	if(dilepMassVetoCut) {
-	  // Z mass veto using hyp_leptons for ee and mumu final states
-	  if (hyp_type().at(hypIdx) == 0 || hyp_type().at(hypIdx) == 3) {
-	    if (inZmassWindow(hyp_p4().at(hypIdx).mass())) continue;
+	int id_lt = hyp_lt_id().at(hypIdx);
+	int id_ll = hyp_ll_id().at(hypIdx);
+
+	{// scope out old/legacy selections
+	  if (applyZWindow && fabs(hyp_p4().at(hypIdx).mass()-91)> 15) continue;
+	  
+	  if(dilepMassVetoCut) {
+	    // Z mass veto using hyp_leptons for ee and mumu final states
+	    if (hyp_type().at(hypIdx) == 0 || hyp_type().at(hypIdx) == 3) {
+	      if (inZmassWindow(hyp_p4().at(hypIdx).mass())) continue;
+	    }
+	    
+	    // Z veto using additional leptons in the event
+	    if (additionalZveto()) continue;
 	  }
+	  
+	  // Dima's MET requirement
+	  bool pass2MetPassed = pass2Met(hypIdx);
+	  if (! pass2MetPassed && METcut) continue;
+	  if ( pass2MetPassed && METveto ) continue;
+
+	  if(idcuts) {
+	    // Muon quality cuts, excluding isolation
+	    if (abs(id_lt) == 13 && !goodMuonWithoutIsolation(i_lt) ) continue;
+	    if (abs(id_ll) == 13 && !goodMuonWithoutIsolation(i_ll) ) continue;
       
-	  // Z veto using additional leptons in the event
-	  if (additionalZveto()) continue;
+	    // Electron quality cuts, excluding isolation
+	    if (abs(id_lt) == 11 && !goodElectronWithoutIsolation(i_lt) ) continue;
+	    if (abs(id_ll) == 11 && !goodElectronWithoutIsolation(i_ll) ) continue;
+	  }
+
+	  if(isolationcuts) {
+	    if (!passDilAntiIsolation(isoLooseMode, hypIdx)) continue; 
+	  }
+    
+  
+	  if (applyMuTag && ! haveExtraMuon(hypIdx)) continue;
+	  if (applyMuTag5 && ! haveExtraMuon5(hypIdx)) continue;
+
+	}// end scope-out of old selections
+
+	// this is for per-hypothesis choice
+	if (! fillMaxWeightDilOnly && applyTriggersMu9orLisoE15){
+	  if (! passTriggersMu9orLisoE15(hyp_type().at(hypIdx)) ) continue;
 	}
+
+	if (! fillMaxWeightDilOnly && applyTriggersTTDil08JanTrial){
+	  if (! passTriggersTTDil08JanTrial(hyp_type().at(hypIdx)) ) continue;
+	}
+
         if(dilepMassVetoCutTTDil08) {
           // Z mass veto using hyp_leptons for ee and mumu final states
           if (hyp_type().at(hypIdx) == 0 || hyp_type().at(hypIdx) == 3) {
             if (inZmassWindow(hyp_p4().at(hypIdx).mass())) continue;
-          }
-    
+          }    
+        }
+	if(dilepAdditionalMassVetoCutTTDil08){
           // Z veto using additional leptons in the event
           if (additionalZveto(true)) continue; //"true" to use TTDil lepton selections                                                
-        }
-
+	}
       
-	// Dima's MET requirement
-	bool pass2MetPassed = pass2Met(hypIdx);
-	if (! pass2MetPassed && METcut) continue;
-	if ( pass2MetPassed && METveto ) continue;
-
 	// ! for TTDil analysis this should be made for the event-qualifying hyp only
 	if (!fillMaxWeightDilOnly && metBaselineSelectionTTDil08){
 	  if (! passPatMet_OF20_SF30(hypIdx)) continue;
 	}
 
-	// this is for per-hypothesis choice
-	if (! fillMaxWeightDilOnly && applyTriggersMu9orLisoE15){
-	  if (hyp_type().at(hypIdx) == 0 && ! (hltMu9) ) continue;
-	  if ((hyp_type().at(hypIdx) == 1 || hyp_type().at(hypIdx) == 2) && ! (hltMu9 || hltLooseIsoEle15_LW_L1R)) continue;
-	  if (hyp_type().at(hypIdx) == 3 && ! hltLooseIsoEle15_LW_L1R) continue; 
-	}
-	if (! fillMaxWeightDilOnly && applyTriggersTTDil08JanTrial){
-	  if (hyp_type().at(hypIdx) == 0 && ! (hltMu15_L1Mu7 || hltDoubleMu3) ) continue;
-	  if ((hyp_type().at(hypIdx) == 1 || hyp_type().at(hypIdx) == 2) 
-	      && ! (hltIsoEle18_L1R || hltMu15_L1Mu7 || hltIsoEle10_Mu10_L1R)) continue;
-	  if (hyp_type().at(hypIdx) == 3 && ! (hltIsoEle18_L1R || hltDoubleIsoEle12_L1R) ) continue; 
-	}
-
-	if(idcuts) {
-	  // Muon quality cuts, excluding isolation
-	  if (abs(hyp_lt_id().at(hypIdx)) == 13 && !goodMuonWithoutIsolation(i_lt) ) continue;
-	  if (abs(hyp_ll_id().at(hypIdx)) == 13 && !goodMuonWithoutIsolation(i_ll) ) continue;
-      
-	  // Electron quality cuts, excluding isolation
-	  if (abs(hyp_lt_id().at(hypIdx)) == 11 && !goodElectronWithoutIsolation(i_lt) ) continue;
-	  if (abs(hyp_ll_id().at(hypIdx)) == 11 && !goodElectronWithoutIsolation(i_ll) ) continue;
-	}
-
-	if(isolationcuts) {
-	  if (!passDilAntiIsolation(isoLooseMode, hypIdx)) continue; 
-	}
-    
-  
-	if (applyMuTag && ! haveExtraMuon(hypIdx)) continue;
-	if (applyMuTag5 && ! haveExtraMuon5(hypIdx)) continue;
-
-
 	if (lepton20Eta2p4DilSelection){
-	  // Muon pt eta cuts
-	  if (abs(hyp_lt_id().at(hypIdx)) == 13 && !muon20Eta2p4(i_lt) ) continue;
-	  if (abs(hyp_ll_id().at(hypIdx)) == 13 && !muon20Eta2p4(i_ll) ) continue;
-
-	  // Electron pt, eta cuts
-	  if (abs(hyp_lt_id().at(hypIdx)) == 11 && !electron20Eta2p4(i_lt) ) continue;
-	  if (abs(hyp_ll_id().at(hypIdx)) == 11 && !electron20Eta2p4(i_ll) ) continue;	  
+	  //pt eta cuts
+	  if (! lepton20Eta2p4(id_lt, i_lt) ) continue;
+	  if (! lepton20Eta2p4(id_ll, i_ll) ) continue;
 	}
 
 	if (looseDilSelectionNoIsoTTDil08){
 	  // Muon quality cuts, no isolation
-	  if (abs(hyp_lt_id().at(hypIdx)) == 13 && !looseMuonSelectionNoIsoTTDil08(i_lt) ) continue;
-	  if (abs(hyp_ll_id().at(hypIdx)) == 13 && !looseMuonSelectionNoIsoTTDil08(i_ll) ) continue;
-
-	  // Electron quality cuts, no isolation
-	  if (abs(hyp_lt_id().at(hypIdx)) == 11 && !looseElectronSelectionNoIsoTTDil08(i_lt) ) continue;
-	  if (abs(hyp_ll_id().at(hypIdx)) == 11 && !looseElectronSelectionNoIsoTTDil08(i_ll) ) continue;
+	  if (! looseLeptonSelectionNoIsoTTDil08(id_lt, i_lt)) continue;
+	  if (! looseLeptonSelectionNoIsoTTDil08(id_ll, i_ll)) continue;
 	}
 
 	if (looseDilSelectionTTDil08){
 	  // Muon quality cuts, loose isolation
-	  if (abs(hyp_lt_id().at(hypIdx)) == 13 && !looseMuonSelectionTTDil08(i_lt) ) continue;
-	  if (abs(hyp_ll_id().at(hypIdx)) == 13 && !looseMuonSelectionTTDil08(i_ll) ) continue;
-
-	  // Electron quality cuts, loose isolation
-	  if (abs(hyp_lt_id().at(hypIdx)) == 11 && !looseElectronSelectionTTDil08(i_lt) ) continue;
-	  if (abs(hyp_ll_id().at(hypIdx)) == 11 && !looseElectronSelectionTTDil08(i_ll) ) continue;
+	  if (! looseLeptonSelectionTTDil08(id_lt, i_lt)) continue;
+	  if (! looseLeptonSelectionTTDil08(id_ll, i_ll)) continue;
 	}
 
 	if (leptonIsolationDilSelectionTTDil08){
-	  // muon passes ttdil08 iso cuts
-	  if (abs(hyp_lt_id().at(hypIdx)) == 13 && !passMuonIsolationTTDil08(i_lt) ) continue;
-	  if (abs(hyp_ll_id().at(hypIdx)) == 13 && !passMuonIsolationTTDil08(i_ll) ) continue;
-
-	  // Electron passes ttdil08 iso cuts
-	  if (abs(hyp_lt_id().at(hypIdx)) == 11 && !passElectronIsolationTTDil08(i_lt) ) continue;
-	  if (abs(hyp_ll_id().at(hypIdx)) == 11 && !passElectronIsolationTTDil08(i_ll) ) continue;
-
+	  if (! passLeptonIsolationTTDil08(id_lt, i_lt)) continue;
+	  if (! passLeptonIsolationTTDil08(id_ll, i_ll)) continue;
 	}
 
 	if (osSelection){
-	  if ( hyp_lt_id().at(hypIdx) * hyp_ll_id().at(hypIdx) > 0 ) continue;
+	  if ( id_lt * id_ll > 0 ) continue;
 	}
 
 	goodHyps.push_back(hypIdx);
@@ -432,170 +385,38 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
       }
       
       unsigned int nGoodHyps = goodHyps.size();
-      std::vector<float> hypWeights(0);
+
       unsigned int maxWeightIndex = 0;
       int strasbourgDilType = -1;
+
       if (nGoodHyps > 0){
-	//some debug printouts
-	float maxWeight = -1;
-	
-	for (unsigned int hypIdxL=0; hypIdxL < nGoodHyps; ++hypIdxL){
-	  unsigned int hypIdx = goodHyps[hypIdxL];
-	  float hypWeight_lt = 0;
-	  float hypWeight_ll = 0;
-	  float hypWeight_iso = 0;
-	  float hypWeight = 0;
-	  unsigned int i_lt = hyp_lt_index().at(hypIdx);
-	  unsigned int i_ll = hyp_ll_index().at(hypIdx);
-	  //ad-hoc selection of weights
-	  if (abs(hyp_lt_id().at(hypIdx)) == 11){
-	    //I want to select "trk & cal"-isolated ones
-	    //shift by 0.25 to be positive-definite
-	    hypWeight_iso += (electronTrkIsolation(i_lt)*electronCalIsolation(i_lt)-0.25);
-	    if (els_tightId().at(i_lt)) hypWeight_lt += 0.2;
-	  }
-	  if (abs(hyp_lt_id().at(hypIdx)) == 13){
-	    //I want to select "trk & cal"-isolated ones
-	    //shift by 0.25 to be positive-definite
-	    hypWeight_iso += (muonTrkIsolation(i_lt)*muonCalIsolation(i_lt)-0.25);
-	    hypWeight_lt += 0.4;
-	  }
-	  if (abs(hyp_ll_id().at(hypIdx)) == 11){
-	    //I want to select "trk & cal"-isolated ones
-	    //shift by 0.25 to be positive-definite
-	    hypWeight_iso *= (electronTrkIsolation(i_ll)*electronCalIsolation(i_ll)-0.25);
-	    if (els_tightId().at(i_ll)) hypWeight_ll += 0.2;
-	  }
-	  if (abs(hyp_ll_id().at(hypIdx)) == 13){
-	    //I want to select "trk & cal"-isolated ones
-	    //shift by 0.25 to be positive-definite
-	    hypWeight_iso *= (muonTrkIsolation(i_ll)*muonCalIsolation(i_ll)-0.25);
-	    hypWeight_ll += 0.4;
-	  }
-	  float pt_lt = hyp_lt_p4().at(hypIdx).pt();
-	  float pt_ll = hyp_ll_p4().at(hypIdx).pt();
-	  hypWeight_lt += (1. - 20./pt_lt*20./pt_lt);
-	  hypWeight_ll += (1. - 20./pt_ll*20./pt_ll);
+	maxWeightIndex = eventDilIndexByWeightTTDil08(goodHyps, strasbourgDilType);
 
-	  hypWeight = hypWeight_ll*hypWeight_lt*hypWeight_iso; //again, desire to have both good
-
-	  if (hypWeight > maxWeight){
-	    maxWeight = hypWeight;
-	    maxWeightIndex = hypIdx;
-	  }
-
-	  //Now let's implement the Strasbourg-type disambiguation/dispatch
-	  //ee
-	  {
-	    std::vector<unsigned int> looseEls(0);
-	    std::vector<unsigned int> looseMus(0);
-	    for (unsigned int iEl =0; iEl < els_p4().size(); ++iEl){
-	      if (looseElectronSelectionTTDil08(iEl)){
-		looseEls.push_back(iEl);
-	      }
-	    }
-	    for (unsigned int iMu =0; iMu < mus_p4().size(); ++iMu){
-	      if (looseMuonSelectionTTDil08(iMu)){
-		looseMus.push_back(iMu);
-	      }
-	    }
-	    
-	    bool pass_elec = false;
-	    if (looseEls.size()>1){
-	      if (els_charge().at(looseEls[0]) != els_charge().at(looseEls[1])){
-		pass_elec = true;
-	      }
-	      if (looseMus.size()>0 && mus_p4().at(looseMus[0]).pt() > els_p4().at(looseEls[1]).pt()) pass_elec = false;
-	      if (looseMus.size()>0 && 
-		  ( ( muonTrkIsolation(looseMus[0]) > electronTrkIsolation(looseEls[0]) 
-		      && mus_charge().at(looseMus[0]) != els_charge().at(looseEls[0]) )
-		    || ( muonTrkIsolation(looseMus[0]) > electronTrkIsolation(looseEls[1])
-			 && mus_charge().at(looseMus[0]) != els_charge().at(looseEls[0]))
-		    )
-		  ) pass_elec = false; 
-	    }
-	    bool pass_muon = false;
-	    if (looseMus.size()>1){
-	      for (unsigned int iMu=0; iMu < looseMus.size(); ++iMu){
-		for (unsigned int jMu=iMu+1; jMu < looseMus.size(); ++jMu){
-		  if (mus_charge().at(looseMus[iMu]) != mus_charge().at(looseMus[jMu])) pass_muon = true;
-		}
-	      }
-	      if (looseEls.size()>0 && els_p4().at(looseEls[0]).pt() > mus_p4().at(looseMus[1]).pt()
-		  && mus_charge().at(looseMus[1]) != els_charge().at(looseEls[0])) pass_muon = false;
-	    }
-	    bool pass_elecmuon = false;
-	    if (looseMus.size() > 0 && looseEls.size() > 0){
-	      if (! pass_elec && ! pass_muon ){
-		if (mus_charge().at(looseMus[0]) != els_charge().at(looseEls[0])) pass_elecmuon = true;
-		if (! pass_elecmuon && looseEls.size()>1){
-		  if (mus_charge().at(looseMus[0]) != els_charge().at(looseEls[0])) pass_elecmuon = true;
-		}
-	      }
-	    }
-
-	    unsigned int passStatus = 0;
-	    if (pass_muon) passStatus++;
-	    if (pass_elecmuon) passStatus++;
-	    if (pass_elec) passStatus++;
-	    if (passStatus > 1) std::cout<<"ERROR: inconsistent assignment"<<std::endl;
-	    if (passStatus == 1){
-	      if (pass_muon) strasbourgDilType = 0;
-	      if (pass_elecmuon) strasbourgDilType = 1;
-	      if (pass_elec) strasbourgDilType = 2;
-	    }
-	  }
+	// ! event level cut here, can reset the eventPassed to false
+	if (fillMaxWeightDilOnly && metBaselineSelectionTTDil08){
+	  if (! passPatMet_OF20_SF30(maxWeightIndex)) continue;
 	}
-	int genpDilType = genpDileptonType();
-	if (genpDilType>=0 && 1>2){ std::cout<<"Dil type "<<genpDilType<<std::endl;
-	  if (nGoodHyps > 1){
-	    int maxWeightType = hyp_type().at(maxWeightIndex);
-	    if ((maxWeightType == 0 && genpDilType == 0)
-		|| ( (maxWeightType == 1 || maxWeightType == 2) && genpDilType == 1)
-		|| (maxWeightType == 3 && genpDilType == 2)){
-	      std::cout<<"Dil type "<<genpDilType<<" ; Strasbourg dil type "<<strasbourgDilType 
-		       <<" assigned correctly by maxWeight method";
-	      std::cout<<" out of"; for(unsigned int iih=0;iih<nGoodHyps;++iih)std::cout<<" "<<hyp_type().at(goodHyps[iih]);
-	      std::cout<<std::endl;
-	    } else {
-	      std::cout<<"Dil type "<<genpDilType<<" ; Strasbourg dil type "<<strasbourgDilType 
-		       <<" assigned incorrectly by maxWeight method";
-	      std::cout<<" out of"; for(unsigned int iih=0;iih<nGoodHyps;++iih)std::cout<<" "<<hyp_type().at(goodHyps[iih]);
-	      std::cout<<std::endl;	    
-	    }
-	  }
+
+	// this is for per-hypothesis choice
+	if ( fillMaxWeightDilOnly && applyTriggersMu9orLisoE15){
+	  if (! passTriggersMu9orLisoE15(hyp_type().at(maxWeightIndex)) ) continue;
+	}
+
+	if ( fillMaxWeightDilOnly && applyTriggersTTDil08JanTrial){
+	  if (! passTriggersTTDil08JanTrial(hyp_type().at(maxWeightIndex)) ) continue;
 	}
       }
 
-      // ! event level cut here, can reset the eventPassed to false
-      if (fillMaxWeightDilOnly && metBaselineSelectionTTDil08 && nGoodHyps > 0){
-	if (! passPatMet_OF20_SF30(maxWeightIndex)){
-	  eventPassed = false;
-	  continue;
-	}
-      }
-      // this is for per-hypothesis choice
-      if ( fillMaxWeightDilOnly && applyTriggersMu9orLisoE15 && nGoodHyps>0){
-	if (hyp_type().at(maxWeightIndex) == 0 && ! (hltMu9) ) continue;
-	if ((hyp_type().at(maxWeightIndex) == 1 || hyp_type().at(maxWeightIndex) == 2) 
-	    && ! (hltMu9 || hltLooseIsoEle15_LW_L1R)) continue;
-	if (hyp_type().at(maxWeightIndex) == 3 && ! hltLooseIsoEle15_LW_L1R) continue; 
-      }
-      if ( fillMaxWeightDilOnly && applyTriggersTTDil08JanTrial && nGoodHyps >0){
-	if (hyp_type().at(maxWeightIndex) == 0 && ! (hltMu15_L1Mu7 || hltDoubleMu3) ) continue;
-	if ((hyp_type().at(maxWeightIndex) == 1 || hyp_type().at(maxWeightIndex) == 2) 
-	    && ! (hltIsoEle18_L1R || hltMu15_L1Mu7 || hltIsoEle10_Mu10_L1R)) continue;
-	if (hyp_type().at(maxWeightIndex) == 3 && ! (hltIsoEle18_L1R || hltDoubleIsoEle12_L1R) ) continue; 
-      }
+      //=============================================================================================
+
+      //now fill the histograms
+
+      //=============================================================================================
 
       for(unsigned int hypIdxL=0; hypIdxL< nGoodHyps; ++ hypIdxL){
 	unsigned int hypIdx = goodHyps[hypIdxL];
 	if (fillMaxWeightDilOnly && hypIdx != maxWeightIndex) continue;
-	//count the number of tight leptons:
-	// This is an FKW variable which I turned off since I do not understand it 
-	// and also uses simpleIdPlus, so it should be fixed up before being turned back on.
-	//    int inumTightLep = numTightLeptons();
-	int inumTightLep = 0;    
+
 
 	// The event weight including the kFactor (scaled to 1 fb-1) and the prescale
 	//float weight = evt_scale1fb * kFactor * prescale;
@@ -663,52 +484,54 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	//     // Last chance to reject...
 	int arrNjets = min(new_hyp_njets, 2);
 
+	float pt_lt = hyp_lt_p4().at(hypIdx).pt();
+	float pt_ll = hyp_ll_p4().at(hypIdx).pt();
+
+	unsigned int i_lt = hyp_lt_index().at(hypIdx);
+	unsigned int i_ll = hyp_ll_index().at(hypIdx);
+
+	int id_lt = hyp_lt_id().at(hypIdx);
+	int id_ll = hyp_ll_id().at(hypIdx);
+
 
 	// jet count
 	hnJet[myType]->Fill(new_hyp_njets, weight);
 	hnJet[3]->Fill(new_hyp_njets, weight);
-	if( inumTightLep < 3) {
-	  hnJetLepVeto[myType]->Fill(new_hyp_njets, weight);
-	  hnJetLepVeto[3]->Fill(new_hyp_njets, weight);
-	}
-	numTightLep[myType][arrNjets]->Fill(inumTightLep,weight);
-	numTightLep[3][arrNjets]->Fill(inumTightLep,weight);
-      
-      
+
 	// lepton Pt
-	if (abs(hyp_lt_id().at(hypIdx)) == 11) helePt[myType][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).pt(), weight);
-	if (abs(hyp_ll_id().at(hypIdx)) == 11) helePt[myType][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).pt(), weight);
-	if (abs(hyp_lt_id().at(hypIdx)) == 13) hmuPt[myType][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).pt(), weight);
-	if (abs(hyp_ll_id().at(hypIdx)) == 13) hmuPt[myType][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).pt(), weight);
-	if (abs(hyp_lt_id().at(hypIdx)) == 13) 
-	  hmuPtFromSilicon[myType][arrNjets]->Fill(mus_trk_p4().at(hyp_lt_index().at(hypIdx)).pt(), weight);
-	if (abs(hyp_ll_id().at(hypIdx)) == 13)
-	  hmuPtFromSilicon[myType][arrNjets]->Fill(mus_trk_p4().at(hyp_ll_index().at(hypIdx)).pt(), weight);
-	hminLepPt[myType][arrNjets]->Fill(min(hyp_ll_p4().at(hypIdx).pt(), hyp_lt_p4().at(hypIdx).pt()), weight);
-	hmaxLepPt[myType][arrNjets]->Fill(max(hyp_ll_p4().at(hypIdx).pt(), hyp_lt_p4().at(hypIdx).pt()), weight );
+	if (abs(id_lt) == 11) helePt[myType][arrNjets]->Fill(pt_lt, weight);
+	if (abs(id_ll) == 11) helePt[myType][arrNjets]->Fill(pt_ll, weight);
+	if (abs(id_lt) == 13) hmuPt[myType][arrNjets]->Fill(pt_lt, weight);
+	if (abs(id_ll) == 13) hmuPt[myType][arrNjets]->Fill(pt_ll, weight);
+	if (abs(id_lt) == 13) 
+	  hmuPtFromSilicon[myType][arrNjets]->Fill(mus_trk_p4().at(i_lt).pt(), weight);
+	if (abs(id_ll) == 13)
+	  hmuPtFromSilicon[myType][arrNjets]->Fill(mus_trk_p4().at(i_ll).pt(), weight);
+	hminLepPt[myType][arrNjets]->Fill(min(pt_ll, pt_lt), weight);
+	hmaxLepPt[myType][arrNjets]->Fill(max(pt_ll, pt_lt), weight );
     
-	if (abs(hyp_lt_id().at(hypIdx)) == 11) helePt[3][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).pt(), weight);
-	if (abs(hyp_ll_id().at(hypIdx)) == 11) helePt[3][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).pt(), weight);
-	if (abs(hyp_lt_id().at(hypIdx)) == 13) hmuPt[3][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).pt(), weight);
-	if (abs(hyp_ll_id().at(hypIdx)) == 13) hmuPt[3][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).pt(), weight);
-	if (abs(hyp_lt_id().at(hypIdx)) == 13) 
-	  hmuPtFromSilicon[3][arrNjets]->Fill(mus_trk_p4().at(hyp_lt_index().at(hypIdx)).pt(), weight);
-	if (abs(hyp_ll_id().at(hypIdx)) == 13) 
-	  hmuPtFromSilicon[3][arrNjets]->Fill(mus_trk_p4().at(hyp_ll_index().at(hypIdx)).pt(), weight);
-	hminLepPt[3][arrNjets]->Fill(min(hyp_ll_p4().at(hypIdx).pt(), hyp_lt_p4().at(hypIdx).pt()), weight);
-	hmaxLepPt[3][arrNjets]->Fill(max(hyp_ll_p4().at(hypIdx).pt(), hyp_lt_p4().at(hypIdx).pt()), weight );
+	if (abs(id_lt) == 11) helePt[3][arrNjets]->Fill(pt_lt, weight);
+	if (abs(id_ll) == 11) helePt[3][arrNjets]->Fill(pt_ll, weight);
+	if (abs(id_lt) == 13) hmuPt[3][arrNjets]->Fill(pt_lt, weight);
+	if (abs(id_ll) == 13) hmuPt[3][arrNjets]->Fill(pt_ll, weight);
+	if (abs(id_lt) == 13) 
+	  hmuPtFromSilicon[3][arrNjets]->Fill(mus_trk_p4().at(i_lt).pt(), weight);
+	if (abs(id_ll) == 13) 
+	  hmuPtFromSilicon[3][arrNjets]->Fill(mus_trk_p4().at(i_ll).pt(), weight);
+	hminLepPt[3][arrNjets]->Fill(min(pt_ll, pt_lt), weight);
+	hmaxLepPt[3][arrNjets]->Fill(max(pt_ll, pt_lt), weight );
 
 
 	// lepton Phi
-	if (abs(hyp_lt_id().at(hypIdx)) == 11) helePhi[myType][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).phi(), weight);
-	if (abs(hyp_ll_id().at(hypIdx)) == 11) helePhi[myType][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).phi(), weight);
-	if (abs(hyp_lt_id().at(hypIdx)) == 13) hmuPhi[myType][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).phi(), weight);
-	if (abs(hyp_ll_id().at(hypIdx)) == 13) hmuPhi[myType][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).phi(), weight);
+	if (abs(id_lt) == 11) helePhi[myType][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).phi(), weight);
+	if (abs(id_ll) == 11) helePhi[myType][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).phi(), weight);
+	if (abs(id_lt) == 13) hmuPhi[myType][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).phi(), weight);
+	if (abs(id_ll) == 13) hmuPhi[myType][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).phi(), weight);
     
-	if (abs(hyp_lt_id().at(hypIdx)) == 11) helePhi[3][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).phi(), weight);
-	if (abs(hyp_ll_id().at(hypIdx)) == 11) helePhi[3][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).phi(), weight);
-	if (abs(hyp_lt_id().at(hypIdx)) == 13) hmuPhi[3][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).phi(), weight);
-	if (abs(hyp_ll_id().at(hypIdx)) == 13) hmuPhi[3][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).phi(), weight);
+	if (abs(id_lt) == 11) helePhi[3][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).phi(), weight);
+	if (abs(id_ll) == 11) helePhi[3][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).phi(), weight);
+	if (abs(id_lt) == 13) hmuPhi[3][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).phi(), weight);
+	if (abs(id_ll) == 13) hmuPhi[3][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).phi(), weight);
     
 	// dilepton mass
 	hdilMass[myType][arrNjets]->Fill(hyp_p4().at(hypIdx).mass(), weight);
@@ -727,64 +550,64 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	hdphillvsmll[3][arrNjets]->Fill(hyp_p4().at(hypIdx).mass(), dphi, weight);
  
 	// lepton Eta
-	if (abs(hyp_lt_id().at(hypIdx)) == 11) heleEta[myType][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).eta(), weight);
-	if (abs(hyp_ll_id().at(hypIdx)) == 11) heleEta[myType][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).eta(), weight);
-	if (abs(hyp_lt_id().at(hypIdx)) == 13) hmuEta[myType][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).eta(), weight);
-	if (abs(hyp_ll_id().at(hypIdx)) == 13) hmuEta[myType][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).eta(), weight);
+	if (abs(id_lt) == 11) heleEta[myType][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).eta(), weight);
+	if (abs(id_ll) == 11) heleEta[myType][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).eta(), weight);
+	if (abs(id_lt) == 13) hmuEta[myType][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).eta(), weight);
+	if (abs(id_ll) == 13) hmuEta[myType][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).eta(), weight);
     
-	if (abs(hyp_lt_id().at(hypIdx)) == 11) heleEta[3][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).eta(), weight);
-	if (abs(hyp_ll_id().at(hypIdx)) == 11) heleEta[3][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).eta(), weight);
-	if (abs(hyp_lt_id().at(hypIdx)) == 13) hmuEta[3][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).eta(), weight);
-	if (abs(hyp_ll_id().at(hypIdx)) == 13) hmuEta[3][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).eta(), weight);
+	if (abs(id_lt) == 11) heleEta[3][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).eta(), weight);
+	if (abs(id_ll) == 11) heleEta[3][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).eta(), weight);
+	if (abs(id_lt) == 13) hmuEta[3][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).eta(), weight);
+	if (abs(id_ll) == 13) hmuEta[3][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).eta(), weight);
        
       
 	// electron trk isolation 
 	double temp_lt_iso = hyp_lt_iso().at(hypIdx);  // so that min works
 	double temp_ll_iso = hyp_ll_iso().at(hypIdx);  // so that min works
-	if (abs(hyp_lt_id().at(hypIdx)) == 11) heleSumPt[myType][arrNjets]->Fill(min(temp_lt_iso,24.99),weight);
-	if (abs(hyp_lt_id().at(hypIdx)) == 11) heleSumPt[3][arrNjets]->Fill(min(temp_lt_iso,24.99),weight);
-	if (abs(hyp_ll_id().at(hypIdx)) == 11) heleSumPt[myType][arrNjets]->Fill(min(temp_ll_iso,24.99),weight);
-	if (abs(hyp_ll_id().at(hypIdx)) == 11) heleSumPt[3][arrNjets]->Fill(min(temp_ll_iso,24.99),weight);
+	if (abs(id_lt) == 11) heleSumPt[myType][arrNjets]->Fill(min(temp_lt_iso,24.99),weight);
+	if (abs(id_lt) == 11) heleSumPt[3][arrNjets]->Fill(min(temp_lt_iso,24.99),weight);
+	if (abs(id_ll) == 11) heleSumPt[myType][arrNjets]->Fill(min(temp_ll_iso,24.99),weight);
+	if (abs(id_ll) == 11) heleSumPt[3][arrNjets]->Fill(min(temp_ll_iso,24.99),weight);
 
 	// muon trk isolation
-	if (abs(hyp_lt_id().at(hypIdx)) == 13) hmuSumPt[myType][arrNjets]->Fill(min(temp_lt_iso,24.99),weight);
-	if (abs(hyp_lt_id().at(hypIdx)) == 13) hmuSumPt[3][arrNjets]->Fill(min(temp_lt_iso,24.99),weight);
-	if (abs(hyp_ll_id().at(hypIdx)) == 13) hmuSumPt[myType][arrNjets]->Fill(min(temp_ll_iso,24.99),weight);
-	if (abs(hyp_ll_id().at(hypIdx)) == 13) hmuSumPt[3][arrNjets]->Fill(min(temp_ll_iso,24.99),weight);
+	if (abs(id_lt) == 13) hmuSumPt[myType][arrNjets]->Fill(min(temp_lt_iso,24.99),weight);
+	if (abs(id_lt) == 13) hmuSumPt[3][arrNjets]->Fill(min(temp_lt_iso,24.99),weight);
+	if (abs(id_ll) == 13) hmuSumPt[myType][arrNjets]->Fill(min(temp_ll_iso,24.99),weight);
+	if (abs(id_ll) == 13) hmuSumPt[3][arrNjets]->Fill(min(temp_ll_iso,24.99),weight);
       
       
 	// muon trk+calo isolation
 	double combIso_lt = -1.;
 	double combIso_ll = -1.;
-	if (abs(hyp_lt_id().at(hypIdx)) == 13)
-	  combIso_lt = mus_iso03_sumPt().at(hyp_lt_index().at(hypIdx))
-	    +mus_iso03_emEt().at(hyp_lt_index().at(hypIdx))
-	    +mus_iso03_hadEt().at(hyp_lt_index().at(hypIdx));
-	if (abs(hyp_ll_id().at(hypIdx)) == 13)
-	  combIso_ll = mus_iso03_sumPt().at(hyp_ll_index().at(hypIdx))
-	    +mus_iso03_emEt().at(hyp_ll_index().at(hypIdx))
-	    +mus_iso03_hadEt().at(hyp_ll_index().at(hypIdx));
-	if (abs(hyp_lt_id().at(hypIdx)) == 13) hmuSumIso[myType][arrNjets]->Fill(min(combIso_lt,24.99),weight);
-	if (abs(hyp_lt_id().at(hypIdx)) == 13) hmuSumIso[3][arrNjets]->Fill(min(combIso_lt,24.99),weight);
-	if (abs(hyp_ll_id().at(hypIdx)) == 13) hmuSumIso[myType][arrNjets]->Fill(min(combIso_ll,24.99),weight);
-	if (abs(hyp_ll_id().at(hypIdx)) == 13) hmuSumIso[3][arrNjets]->Fill(min(combIso_ll,24.99),weight);
+	if (abs(id_lt) == 13)
+	  combIso_lt = mus_iso03_sumPt().at(i_lt)
+	    +mus_iso03_emEt().at(i_lt)
+	    +mus_iso03_hadEt().at(i_lt);
+	if (abs(id_ll) == 13)
+	  combIso_ll = mus_iso03_sumPt().at(i_ll)
+	    +mus_iso03_emEt().at(i_ll)
+	    +mus_iso03_hadEt().at(i_ll);
+	if (abs(id_lt) == 13) hmuSumIso[myType][arrNjets]->Fill(min(combIso_lt,24.99),weight);
+	if (abs(id_lt) == 13) hmuSumIso[3][arrNjets]->Fill(min(combIso_lt,24.99),weight);
+	if (abs(id_ll) == 13) hmuSumIso[myType][arrNjets]->Fill(min(combIso_ll,24.99),weight);
+	if (abs(id_ll) == 13) hmuSumIso[3][arrNjets]->Fill(min(combIso_ll,24.99),weight);
 
 
 	// Relative isolation... muons
-	if (abs(hyp_lt_id().at(hypIdx)) == 13) {
-	  double thisSum =  mus_iso03_sumPt().at(hyp_lt_index().at(hypIdx)) +  
-	    mus_iso03_emEt().at(hyp_lt_index().at(hypIdx))  +
-	    mus_iso03_hadEt().at(hyp_lt_index().at(hypIdx));
-	  double thisPt  = mus_p4().at(hyp_lt_index().at(hypIdx)).pt();
+	if (abs(id_lt) == 13) {
+	  double thisSum =  mus_iso03_sumPt().at(i_lt) +  
+	    mus_iso03_emEt().at(i_lt)  +
+	    mus_iso03_hadEt().at(i_lt);
+	  double thisPt  = mus_p4().at(i_lt).pt();
 	  double temp    = thisPt / (thisPt+thisSum);
 	  hmuRelIso[myType][arrNjets]->Fill(temp, weight);
 	  hmuRelIso[3][arrNjets]->Fill(temp, weight);
 	}
-	if (abs(hyp_ll_id().at(hypIdx)) == 13) {
-	  double thisSum =  mus_iso03_sumPt().at(hyp_ll_index().at(hypIdx)) +  
-	    mus_iso03_emEt().at(hyp_ll_index().at(hypIdx))  +
-	    mus_iso03_hadEt().at(hyp_ll_index().at(hypIdx));
-	  double thisPt  = mus_p4().at(hyp_ll_index().at(hypIdx)).pt();
+	if (abs(id_ll) == 13) {
+	  double thisSum =  mus_iso03_sumPt().at(i_ll) +  
+	    mus_iso03_emEt().at(i_ll)  +
+	    mus_iso03_hadEt().at(i_ll);
+	  double thisPt  = mus_p4().at(i_ll).pt();
 	  double temp    = thisPt / (thisPt+thisSum);
 	  hmuRelIso[myType][arrNjets]->Fill(temp, weight);
 	  hmuRelIso[3][arrNjets]->Fill(temp, weight);
@@ -792,16 +615,16 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 
 
 	// Relative isolation... electrons
-	if (abs(hyp_lt_id().at(hypIdx)) == 11) {
+	if (abs(id_lt) == 11) {
 	  double thisSum =  hyp_lt_iso().at(hypIdx);
-	  double thisPt  = hyp_lt_p4().at(hypIdx).pt();
+	  double thisPt  = pt_lt;
 	  double temp    = thisPt / (thisPt+thisSum);
 	  heleRelIso[myType][arrNjets]->Fill(temp, weight);
 	  heleRelIso[3][arrNjets]->Fill(temp, weight);
 	}
-	if (abs(hyp_ll_id().at(hypIdx)) == 11) {
+	if (abs(id_ll) == 11) {
 	  double thisSum =  hyp_ll_iso().at(hypIdx);
-	  double thisPt  = hyp_ll_p4().at(hypIdx).pt();
+	  double thisPt  = pt_ll;
 	  double temp    = thisPt / (thisPt+thisSum);
 	  heleRelIso[myType][arrNjets]->Fill(temp, weight);
 	  heleRelIso[3][arrNjets]->Fill(temp, weight);
@@ -834,10 +657,12 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	if (new_hyp_njets > 0) {
 	  vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > my_hyp_jets_p4(*new_hyp_jets_p4);
 	  sort(my_hyp_jets_p4.begin(), my_hyp_jets_p4.end(), comparePt);   // sort them by Pt
+
 	  hptJet1[myType][arrNjets]->Fill(my_hyp_jets_p4[0].Pt(), weight);
 	  hptJet1[3][arrNjets]->Fill(my_hyp_jets_p4[0].Pt(), weight);
 	  hetaJet1[myType][arrNjets]->Fill(my_hyp_jets_p4[0].Eta(), weight);
 	  hetaJet1[3][arrNjets]->Fill(my_hyp_jets_p4[0].Eta(), weight);
+
 	  if (new_hyp_njets > 1) {
 	    hptJet2[myType][arrNjets]->Fill(my_hyp_jets_p4[1].Pt(), weight);
 	    hptJet2[3][arrNjets]->Fill(my_hyp_jets_p4[1].Pt(), weight);
@@ -905,18 +730,10 @@ void ttDilCounts_looper::bookHistos(char *prefix) {
 	hnJet[i]->SetDirectory(rootdir);
 	hnJet[i]->GetXaxis()->SetTitle("nJets");
 	
-	hnJetLepVeto[i] = new TH1F(Form("%s_hnJetLepVeto_%s",prefix,suffixall[i]),Form("%s_nJetLepVeto_%s",prefix,suffixall[i]),
-				   5,0.,5.);	
-	hnJetLepVeto[i]->SetDirectory(rootdir);
-	hnJetLepVeto[i]->GetXaxis()->SetTitle("nJets");
-	
-	
 	for(int k = 0; k<5; k++) {
 	  hnJet[i]->GetXaxis()->SetBinLabel(k+1, jetbins[k]);
 	  hnJet[i]->GetXaxis()->SetLabelSize(0.07);
 	  
-	  hnJetLepVeto[i]->GetXaxis()->SetBinLabel(k+1, jetbins[k]);
-	  hnJetLepVeto[i]->GetXaxis()->SetLabelSize(0.07);
 	}
       }
     
@@ -927,10 +744,6 @@ void ttDilCounts_looper::bookHistos(char *prefix) {
       suffix[2] = Form("%s_em", njetCh[j]);
       suffix[3] = Form("%s_all", njetCh[j]);
 
-      numTightLep[i][j] = new TH1F(Form("%s_numTightLep_%s",prefix,suffix[i]),Form("%s_numTightLep_%s",prefix,suffix[i]),
-				   10,0.,10.);	
-      numTightLep[i][j]->SetDirectory(rootdir);
-      
       helePt[i][j] = new TH1F(Form("%s_helePt_%s",prefix,suffix[i]),Form("%s_elePt_%s",prefix,suffix[i]),
 			      150,0.,150.);
       helePt[i][j]->SetDirectory(rootdir);
@@ -1103,9 +916,7 @@ void ttDilCounts_looper::bookHistos(char *prefix) {
 
       if (j==0){
 	hnJet[i]->Sumw2();
-	hnJetLepVeto[i]->Sumw2();
       }
-      numTightLep[i][j]->Sumw2();
       helePt[i][j]->Sumw2();
       hmuPt[i][j]->Sumw2();
       hmuPtFromSilicon[i][j]->Sumw2();
