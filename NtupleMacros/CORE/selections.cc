@@ -256,13 +256,13 @@ bool metProjected (int i_hyp, const TVector3& corr) {
 bool pass5Met (int i_hyp, const TVector3& corr) {
   // for e-e and mu-mu
   if (cms2.hyp_type()[i_hyp] == 0 || cms2.hyp_type()[i_hyp] == 3) {
-    if(!metSimple(i_hyp, 45.0, corr)) return false;
+    if(!metSimple(45.0, corr)) return false;
     if(!metBalance(i_hyp, corr))      return false;
     if(!metProjected(i_hyp, corr))    return false;
   }
   // for e-mu and mu-e
   if (cms2.hyp_type()[i_hyp] == 1 || cms2.hyp_type()[i_hyp] == 2) {
-    if(!metSimple(i_hyp, 20.0, corr)) return false;
+    if(!metSimple(20.0, corr)) return false;
     if(!metProjected(i_hyp, corr))    return false;
   }
   return true;
