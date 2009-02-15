@@ -4,6 +4,7 @@
 #define LOOPER_H
 
 #include "Tools/LooperBase.h"
+#include "TDatabasePDG.h"
 
 // List of all cuts that can be applied.  The cuts are handled as a
 // bitfield; these labels define which bit corresponds to which cut.
@@ -187,6 +188,8 @@ protected:
      double		cands_passing_[4];
      double		cands_passing_w2_[4];
      unsigned int	cands_count_[4];
+     TDatabasePDG       *pdg;
+
 };
 
 // background estimate for W+jets from fake rates (only electrons in
@@ -196,7 +199,10 @@ public:
      FakeRateLooper (Sample s, cuts_t cuts, const char *fname = 0);
      virtual double	CandsPassingSystHi (enum DileptonHypType i) const { return cands_passing_syst_hi[i]; }
      virtual double	CandsPassingSystLo (enum DileptonHypType i) const { return cands_passing_syst_lo[i]; }
+     virtual double	CandsPassingEventWeightOnly (enum DileptonHypType i) const { return cands_passing_event_weight_only_[i]; }
+     virtual double	RMSEventWeightOnly (enum DileptonHypType i) const { return sqrt(cands_passing_event_weight_only_w2_[i]); }
      virtual double	FakeSyst (enum DileptonHypType i) const;
+     virtual void	End		();
 protected:
      virtual void	BookHistos 	();
      virtual cuts_t	DilepSelect 	(int idx);
@@ -205,9 +211,12 @@ protected:
      virtual double	Weight		(int idx, int n_sig_syst);
 
 protected:
+     double		cands_passing_event_weight_only_[4];
+     double		cands_passing_event_weight_only_w2_[4];
      double		cands_passing_syst_hi[4];
      double		cands_passing_syst_lo[4];
      TH2F		*fake_syst;
+
 };
 
 #endif
