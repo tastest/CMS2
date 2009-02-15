@@ -102,7 +102,9 @@ const static cuts_t fakerate_denominator_cuts = (baseline_cuts &
 						 ~(CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD) |
 						   CUT_BIT(CUT_LT_ISO) | CUT_BIT(CUT_LL_ISO) |
 						   CUT_BIT(CUT_LT_CALOISO) | CUT_BIT(CUT_LL_CALOISO))) |
-  CUT_BIT(CUT_ELFAKE_FAKEABLE_OBJECT);
+  CUT_BIT(CUT_ELFAKE_FAKEABLE_OBJECT) |
+  CUT_BIT(CUT_MU_GOOD) |
+  CUT_BIT(CUT_MU_ISO);
 						 
 // numerator object cuts for the fake rate prediction 
 const static cuts_t fakerate_numerator_cuts = 
