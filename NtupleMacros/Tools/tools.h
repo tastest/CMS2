@@ -3,6 +3,7 @@
 
 #include "TH1F.h"
 #include "TH2F.h"
+#include "TH3F.h"
 #include "TVector3.h"
 #include <algorithm>
 #include <vector>
@@ -23,6 +24,9 @@ TH1F* book1DVarHist(const char* name, const char* title, vector<float> &bins, co
 TH2F* book2DHist(const char* name, const char* title, unsigned int nxbins, float xlow, float xhigh, unsigned int nybins, float ylow, float yhigh, const char* xtitle, const char* ytitle, const char* ztitle, int color = 1);
 TH2F* book2DVarHist(const char* name, const char* title, unsigned int nxbins, float* xbins, unsigned int nybins, float* ybins, const char* xtitle, const char* ytitle, const char* ztitle, int color = 1);
 TH2F* book2DVarHist(const char* name, const char* title, vector<float> &xbins, vector<float> &ybins, const char* xtitle, const char* ytitle, const char* ztitle, int color = 1);
+TH3F* book3DHist(const char* name, const char* title, unsigned int nxbins, float xlow, float xhigh, unsigned int nybins, float ylow, float yhigh, unsigned int nzbins, float zlow, float zhigh, const char* xtitle, const char* ytitle, const char* ztitle, int color = 1);
+TH3F* book3DVarHist(const char* name, const char* title, unsigned int nxbins, float* xbins, unsigned int nybins, float* ybins, unsigned int nzbins, float* zbins, const char* xtitle, const char* ytitle, const char* ztitle, int color = 1);
+TH3F* book3DVarHist(const char* name, const char* title, vector<float> &xbins, vector<float> &zbins, vector<float> &ybins, const char* xtitle, const char* ytitle, const char* ztitle, int color = 1);
 float mee(int i, int j);
 float mmm(int i, int j);
 bool goodLeptonIsolated(int bucket, int first, int second, int third);

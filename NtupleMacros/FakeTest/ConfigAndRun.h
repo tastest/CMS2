@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <string>
 #include "Looper.h"
+#include "FakeRateLooper.h"
 #include "Tools/Sample.h"
 #include "Tools/tools.h"
 

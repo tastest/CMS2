@@ -8,6 +8,7 @@
 #include "Tools/tools.h"
 #include "Tools/fakerates.h"
 #include "Looper.h"
+#include "TDirectory.h"
 
 Looper::Looper (Sample s, cuts_t c, const char *fname) 
   : LooperBase(s, c, fname)
@@ -19,15 +20,61 @@ Looper::Looper (Sample s, cuts_t c, const char *fname)
 
   pdg = new TDatabasePDG();
 
+
 }
 
 void Looper::BookHistos ()
 {
-  hnJet		= new NMinus1Hist(sample_, "nJet"            ,	 6	, -0.5, 5	, cuts_,  
-				  0 	);
-  helPt		= new NMinus1Hist(sample_, "elPt"            ,	 16	, 0, 160	, cuts_, CUT_BIT(CUT_LL_PT)	);
-  helEta		= new NMinus1Hist(sample_, "elEta"           ,	 12	, -3, 3		, cuts_, 0);
-  hmet		= new NMinus1Hist(sample_, "met"             ,	 100	, 0, 200	, cuts_, CUT_BIT(CUT_PASS4_MET) | CUT_BIT(CUT_PASS2_MET) | CUT_BIT(CUT_PASS4_TCMET) | CUT_BIT(CUT_PASS2_TCMET)	);
+
+  gDirectory = histo_directory;
+
+  const unsigned int jetNBins = 5;
+  float jetBins[jetNBins+1] = {0.,1.,2.,3.,4.,5.};
+
+  const unsigned int ptNBins = 16;
+  float ptBins[ptNBins+1];
+  for ( unsigned int ptBin = 0;
+	ptBin <= ptNBins;
+	++ptBin) {
+    ptBins[ptBin] = float(ptBin)*160./16.;
+  }
+
+  const unsigned int metNBins = 100;
+  float metBins[metNBins+1];
+  for ( unsigned int metBin = 0;
+	metBin <= metNBins;
+	++metBin) {
+    metBins[metBin] = float(metBin)*200./100.;
+  }
+
+  const unsigned int etaNBins = 12;
+  float etaBins[etaNBins+1];
+  for ( unsigned int etaBin = 0;
+	etaBin <= etaNBins;
+	++etaBin) {
+    etaBins[etaBin] = float(etaBin)/2.-3.;
+  }
+
+  for (unsigned int bucket = 0;
+       bucket < 4;
+       ++bucket ) {
+    hnJet_[bucket] = book1DVarHist(Form("%s_%s_%s",sample_.name.c_str(),"nJet",dilepton_hypo_names[bucket]),
+				   Form("%s_%s_%s",sample_.name.c_str(),"nJet",dilepton_hypo_names[bucket]),
+				   jetNBins,jetBins,
+				   "n_{jet}","Events",sample_.histo_color);
+    helPt_[bucket] = book1DVarHist(Form("%s_%s_%s",sample_.name.c_str(),"elPt",dilepton_hypo_names[bucket]),
+				   Form("%s_%s_%s",sample_.name.c_str(),"elPt",dilepton_hypo_names[bucket]),
+				   ptNBins,ptBins,
+				   "p_{T}^{e} [GeV]","Events",sample_.histo_color);
+    helEta_[bucket] = book1DVarHist(Form("%s_%s_%s",sample_.name.c_str(),"elEta",dilepton_hypo_names[bucket]),
+				    Form("%s_%s_%s",sample_.name.c_str(),"elEta",dilepton_hypo_names[bucket]),
+				    etaNBins,etaBins,
+				    "#eta^{e} [GeV]","Events",sample_.histo_color);
+    hmet_[bucket] = book1DVarHist(Form("%s_%s_%s",sample_.name.c_str(),"met",dilepton_hypo_names[bucket]),
+				  Form("%s_%s_%s",sample_.name.c_str(),"met",dilepton_hypo_names[bucket]),
+				  metNBins,metBins,
+				  "MET [GeV]","Events",sample_.histo_color);
+  }
 }
 
 bool Looper::FilterEvent()
@@ -306,24 +353,28 @@ void Looper::FillDilepHistos (int i_hyp)
     cands_passing_[DILEPTON_ALL] += weight;
     cands_passing_w2_[DILEPTON_ALL] += weight * weight;
     cands_count_[DILEPTON_ALL]++;
-  }
 
-     
+    // jet count
+    hnJet_[myType]->Fill(cms2.hyp_njets()[i_hyp], weight);
+    hnJet_[DILEPTON_ALL]->Fill(cms2.hyp_njets()[i_hyp], weight);
 
-  // jet count
-  hnJet->Fill(cuts_passed, myType, cms2.hyp_njets()[i_hyp], weight);
-
-  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
-    helPt->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].pt(), weight);
-    helEta->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].eta(), weight);
-  }
-  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
-    helPt->Fill(cuts_passed, myType, cms2.hyp_ll_p4()[i_hyp].pt(), weight);
-    helEta->Fill(cuts_passed, myType, cms2.hyp_ll_p4()[i_hyp].eta(), weight);
-  }
+    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
+      helPt_[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
+      helPt_[DILEPTON_ALL]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
+      helEta_[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].eta(), weight);
+      helEta_[DILEPTON_ALL]->Fill(cms2.hyp_lt_p4()[i_hyp].eta(), weight);
+    }
+    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
+      helPt_[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
+      helPt_[DILEPTON_ALL]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
+      helEta_[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].eta(), weight);
+      helEta_[DILEPTON_ALL]->Fill(cms2.hyp_ll_p4()[i_hyp].eta(), weight);
+    }
     
-  // Met and Met special
-  hmet->Fill(cuts_passed, myType, cms2.hyp_met()[i_hyp], weight);      
+    // Met and Met special
+    hmet_[myType]->Fill(cms2.hyp_met()[i_hyp], weight);      
+    hmet_[DILEPTON_ALL]->Fill(cms2.hyp_met()[i_hyp], weight);      
+  }
 }
 
 void Looper::FillTrilepHistos (int i_hyp)

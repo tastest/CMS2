@@ -205,6 +205,80 @@ TH2F* book2DVarHist(const char* name, const char* title, vector<float> &xbins, v
   return hist;
 }
 
+TH3F* book3DHist(const char* name, const char* title, 
+		 unsigned int nxbins, float xlow, float xhigh, 
+		 unsigned int nybins, float ylow, float yhigh, 
+		 unsigned int nzbins, float zlow, float zhigh, 
+		 const char* xtitle, const char* ytitle, const char* ztitle, int color) {
+  // return histogram instance with called Sumw2
+  TH3F *hist = new TH3F(name,title,nxbins,xlow,xhigh,nybins,ylow,yhigh,nzbins,zlow,zhigh);
+  hist->SetXTitle(xtitle);
+  hist->SetYTitle(ytitle);
+  hist->SetZTitle(ztitle);
+  hist->Sumw2();
+  hist->SetFillColor(color);
+  hist->SetLineColor(color);
+   
+  return hist;   
+}
+
+TH3F* book3DVarHist(const char* name, const char* title, 
+		    unsigned int nxbins, float* xbins, 
+		    unsigned int nybins, float* ybins, 
+		    unsigned int nzbins, float* zbins, 
+		    const char* xtitle, const char* ytitle, const char* ztitle, int color) {
+  // return histogram instance with called Sumw2
+  TH3F *hist = new TH3F(name,title,nxbins,xbins,nybins,ybins,nzbins,zbins);
+  hist->SetXTitle(xtitle);
+  hist->SetYTitle(ytitle);
+  hist->SetZTitle(ztitle);
+  hist->Sumw2();
+  hist->SetFillColor(color);
+  hist->SetLineColor(color);
+   
+  return hist;   
+}
+
+TH3F* book3DVarHist(const char* name, const char* title, 
+		    vector<float> &xbins, 
+		    vector<float> &ybins, 
+		    vector<float> &zbins, 
+		    const char* xtitle, const char* ytitle, const char* ztitle, int color) {
+  // return histogram instance with called Sumw2
+  const unsigned int nxBins = xbins.size()-1;
+  float xbinArray[nxBins+1];
+  for (unsigned int i = 0;
+       i < nxBins+1;
+       ++i) {
+    xbinArray[i] = xbins[i];
+  }
+  const unsigned int nyBins = ybins.size()-1;
+  float ybinArray[nyBins+1];
+  for (unsigned int i = 0;
+       i < nyBins+1;
+       ++i) {
+    ybinArray[i] = ybins[i];
+  }
+
+  const unsigned int nzBins = zbins.size()-1;
+  float zbinArray[nzBins+1];
+  for (unsigned int i = 0;
+       i < nzBins+1;
+       ++i) {
+    zbinArray[i] = zbins[i];
+  }
+
+  TH3F *hist = new TH3F(name,title,nxBins,xbinArray,nyBins,ybinArray,nzBins,zbinArray);
+  hist->SetXTitle(xtitle);
+  hist->SetYTitle(ytitle);
+  hist->SetZTitle(ztitle);
+  hist->Sumw2();
+  hist->SetFillColor(color);
+  hist->SetLineColor(color);
+   
+  return hist;
+}
+
 float mee(int i, int j){
   if ( cms2.els_charge()[i] * cms2.els_charge()[j] < 0 ) {
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
