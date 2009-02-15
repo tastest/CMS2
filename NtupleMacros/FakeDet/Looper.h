@@ -4,6 +4,7 @@
 #define LOOPER_H
 
 #include "Tools/LooperBase.h"
+#include "TDatabasePDG.h"
 
 // List of all cuts that can be applied.  The cuts are handled as a
 // bitfield; these labels define which bit corresponds to which cut.
@@ -14,6 +15,7 @@
 //  - quadlepton candidate in QuadlepSelect().
 enum {
   CUT_PT_LEADING_JET,
+  CUT_NO_CUT,
 };
 
 //----------------------------------------------------------------------
@@ -41,6 +43,9 @@ enum {
  
 // baseline cuts
 const static cuts_t ele_fakes_cuts = 
+  (CUT_BIT(CUT_NO_CUT));   
+
+const static cuts_t ele_fakes_wo_trigger_jet_cuts = 
   (CUT_BIT(CUT_PT_LEADING_JET));   
 
 //----------------------------------------------------------------------
@@ -103,9 +108,12 @@ protected:
 
 public:
   // these functions are called by the table-printing code
-  virtual double	CandsPassing () const { return cands_passing_; }
-  virtual int       	CandsCount () const { return cands_count_; }
-  virtual double	RMS () const { return sqrt(cands_passing_w2_); }
+  virtual double	EventsPassing () const { return events_passing_; }
+  virtual int       	EventsCount () const { return events_count_; }
+  virtual double	RMS () const { return sqrt(events_passing_w2_); }
+
+  virtual double calculateFakeRateError(unsigned int nNum, unsigned int nDen);
+  virtual double calculateWeightedFakeRateError(double nNum, double nNumErr2, double nDen, double nDenErr2);
 
 protected:
   //----------------------------------------------------------------------
@@ -169,8 +177,42 @@ protected:
 
 protected:
   // count the (weighted and unweighted) number of candidates passing our cuts
-  double		cands_passing_;
-  double		cands_passing_w2_;
-  unsigned int	cands_count_;
+  unsigned int          events_;
+  double                events_weighted_;
+  double		events_passing_;
+  double		events_passing_w2_;
+  unsigned int		events_count_;
+  unsigned int          nDenominator_;
+  unsigned int          nDenominator_wo_leading_;
+  unsigned int          nDenominator_wo_second_leading_;
+  unsigned int          nNumerator_ll_;
+  unsigned int          nNumerator_ll_wo_leading_;
+  unsigned int          nNumerator_ll_wo_second_leading_;
+  unsigned int          nNumerator_lt_;
+  unsigned int          nNumerator_lt_wo_leading_;
+  unsigned int          nNumerator_lt_wo_second_leading_;
+
+  double                nDenominator_weighted_;
+  double                nDenominator_wo_leading_weighted_;
+  double                nDenominator_wo_second_leading_weighted_;
+  double                nNumerator_ll_weighted_;
+  double                nNumerator_ll_wo_leading_weighted_;
+  double                nNumerator_ll_wo_second_leading_weighted_;
+  double                nNumerator_lt_weighted_;
+  double                nNumerator_lt_wo_leading_weighted_;
+  double                nNumerator_lt_wo_second_leading_weighted_;
+
+  double                nDenominator_weighted_w2_;
+  double                nDenominator_wo_leading_weighted_w2_;
+  double                nDenominator_wo_second_leading_weighted_w2_;
+  double                nNumerator_ll_weighted_w2_;
+  double                nNumerator_ll_wo_leading_weighted_w2_;
+  double                nNumerator_ll_wo_second_leading_weighted_w2_;
+  double                nNumerator_lt_weighted_w2_;
+  double                nNumerator_lt_wo_leading_weighted_w2_;
+  double                nNumerator_lt_wo_second_leading_weighted_w2_;
+
+  TDatabasePDG *pdg;
+
 };
 #endif

@@ -15,7 +15,7 @@ void prepareFakeRateHistograms() {
   vector<char*> histograms;
 
   bool useQCDBCtoE = true;
-  bool useInclusiveSamples = false;
+  bool useInclusiveSamples = true;
 
 
   if ( useInclusiveSamples ) {

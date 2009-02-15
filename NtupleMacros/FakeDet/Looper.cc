@@ -1,4 +1,5 @@
 #include <math.h>
+#include <sstream>
 #include "TVector3.h"
 #include "CORE/selections.h"
 #include "CORE/utilities.h"
@@ -11,9 +12,44 @@ Looper::Looper (Sample s, cuts_t c, const char *fname)
   : LooperBase(s, c, fname)
 {
   // zero out the candidate counters (don't comment this out)
-  cands_passing_    = 0;
-  cands_passing_w2_ = 0;
-  cands_count_	    = 0;
+  events_            = 0;
+  events_weighted_   = 0;
+  events_passing_    = 0;
+  events_passing_w2_ = 0;
+  events_count_	     = 0;
+
+  nDenominator_ = 0;
+  nDenominator_wo_leading_ = 0;
+  nDenominator_wo_second_leading_ = 0;
+  nNumerator_ll_ = 0;
+  nNumerator_ll_wo_leading_ = 0;
+  nNumerator_ll_wo_second_leading_ = 0;
+  nNumerator_lt_ = 0;
+  nNumerator_lt_wo_leading_ = 0;
+  nNumerator_lt_wo_second_leading_ = 0;
+
+  nDenominator_weighted_ = 0;
+  nDenominator_wo_leading_weighted_ = 0;
+  nDenominator_wo_second_leading_weighted_ = 0;
+  nNumerator_ll_weighted_ = 0;
+  nNumerator_ll_wo_leading_weighted_ = 0;
+  nNumerator_ll_wo_second_leading_weighted_ = 0;
+  nNumerator_lt_weighted_ = 0;
+  nNumerator_lt_wo_leading_weighted_ = 0;
+  nNumerator_lt_wo_second_leading_weighted_ = 0;
+
+  nDenominator_weighted_w2_ = 0;
+  nDenominator_wo_leading_weighted_w2_ = 0;
+  nDenominator_wo_second_leading_weighted_w2_ = 0;
+  nNumerator_ll_weighted_w2_ = 0;
+  nNumerator_ll_wo_leading_weighted_w2_ = 0;
+  nNumerator_ll_wo_second_leading_weighted_w2_ = 0;
+  nNumerator_lt_weighted_w2_ = 0;
+  nNumerator_lt_wo_leading_weighted_w2_ = 0;
+  nNumerator_lt_wo_second_leading_weighted_w2_ = 0;
+
+  pdg = new TDatabasePDG();
+
 }
 
 void Looper::BookHistos ()
@@ -167,7 +203,7 @@ bool Looper::FilterEvent()
     if (is_duplicate(id)) {
       duplicates_total_n_++;
       duplicates_total_weight_ += cms2.evt_scale1fb();
-      cout << "Filtered duplicate run: " << cms2.evt_run() << " event: " << cms2.evt_event() << endl;
+      //cout << "Filtered duplicate run: " << cms2.evt_run() << " event: " << cms2.evt_event() << endl;
       return true;
     }
   } else if ( cms2.mus_p4().size() > 0 ) {
@@ -176,7 +212,7 @@ bool Looper::FilterEvent()
     if (is_duplicate(id)) {
       duplicates_total_n_++;
       duplicates_total_weight_ += cms2.evt_scale1fb();
-      cout << "Filtered duplicate run: " << cms2.evt_run() << " event: " << cms2.evt_event() << endl;
+      //cout << "Filtered duplicate run: " << cms2.evt_run() << " event: " << cms2.evt_event() << endl;
       return true;
     }
   } else {
@@ -205,6 +241,8 @@ cuts_t Looper::EventSelect ()
       ret |= (CUT_BIT(CUT_PT_LEADING_JET));
     }
   }
+
+  ret |= (CUT_BIT(CUT_NO_CUT));
 
   return ret;
 }
@@ -251,6 +289,9 @@ void Looper::FillEventHistos ()
   // and what the event weight is 
   const double weight = Weight(0);
 
+  ++events_;
+  events_weighted_ += weight;
+
   // these are the cuts that the candidate passes:
   cuts_t cuts_passed = EventSelect();
 
@@ -259,9 +300,9 @@ void Looper::FillEventHistos ()
   // (*note: the parentheses are important*):
   if ((cuts_passed & cuts_) == cuts_) {
     // if the candidate passed, we count it
-    cands_passing_ += weight;
-    cands_passing_w2_ += weight * weight;
-    cands_count_++;
+    events_passing_ += weight;
+    events_passing_w2_ += weight * weight;
+    ++events_count_;
 
     // fill general histograms
     ele_n_->Fill(cms2.evt_nels(),weight);
@@ -294,6 +335,8 @@ void Looper::FillEventHistos ()
 
       if ( isFakeable(electron_counter)){
 	  
+// 	cout << "mc id: " << pdg->GetParticle(cms2.els_mc_id()[electron_counter])->GetName() << " mother: " << pdg->GetParticle(cms2.els_mc_motherid()[electron_counter])->GetName() << endl;
+
 	pt_den_ele_->Fill(pt);
 	if ( useAbsEta ) {
 	  eta_den_ele_->Fill(TMath::Abs(cms2.els_p4()[electron_counter].Eta()),weight);
@@ -304,6 +347,9 @@ void Looper::FillEventHistos ()
 	  eta_den_ele_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	  den_ele_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
 	}
+        ++nDenominator_;
+	nDenominator_weighted_ += weight;
+	nDenominator_weighted_w2_ += weight * weight;
 
 	for ( unsigned int jet_counter = 0;
 	      jet_counter < (unsigned int)cms2.evt_njets();
@@ -329,6 +375,9 @@ void Looper::FillEventHistos ()
 	  eta_num_ell_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	  num_ell_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
 	}
+        ++nNumerator_ll_;
+	nNumerator_ll_weighted_ += weight;
+	nNumerator_ll_weighted_w2_ += weight * weight;
       }
 
       // tight electrons
@@ -345,6 +394,9 @@ void Looper::FillEventHistos ()
 	  eta_num_elt_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	  num_elt_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
 	}
+        ++nNumerator_lt_;
+	nNumerator_lt_weighted_ += weight;
+	nNumerator_lt_weighted_w2_ += weight * weight;
       }
 
       // exclude leading jet
@@ -361,6 +413,9 @@ void Looper::FillEventHistos ()
 	    eta_den_wo_leading_ele_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	    den_wo_leading_ele_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
 	  }
+	  ++nDenominator_wo_leading_;
+	  nDenominator_wo_leading_weighted_ += weight;
+	  nDenominator_wo_leading_weighted_w2_ += weight * weight;
 	}
 
 	// loose electrons
@@ -377,6 +432,9 @@ void Looper::FillEventHistos ()
 	    eta_num_wo_leading_ell_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	    num_wo_leading_ell_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
 	  }
+	  ++nNumerator_ll_wo_leading_;
+	  nNumerator_ll_wo_leading_weighted_ += weight;
+	  nNumerator_ll_wo_leading_weighted_w2_ += weight * weight;
 	}
 
 	// tight electrons
@@ -393,6 +451,9 @@ void Looper::FillEventHistos ()
 	    eta_num_wo_leading_elt_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	    num_wo_leading_elt_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
 	  }
+	  ++nNumerator_lt_wo_leading_;
+	  nNumerator_lt_wo_leading_weighted_ += weight;
+	  nNumerator_lt_wo_leading_weighted_w2_ += weight * weight;
 	}
 
       }
@@ -414,6 +475,9 @@ void Looper::FillEventHistos ()
 	      eta_den_wo_second_leading_ele_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	      den_wo_second_leading_ele_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
 	    }
+	    ++nDenominator_wo_second_leading_;
+	    nDenominator_wo_second_leading_weighted_ += weight;
+	    nDenominator_wo_second_leading_weighted_w2_ += weight * weight;
 	  }
 
 	  // loose electrons
@@ -430,6 +494,9 @@ void Looper::FillEventHistos ()
 	      eta_num_wo_second_leading_ell_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	      num_wo_second_leading_ell_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
 	    }
+	    ++nNumerator_ll_wo_second_leading_;
+	    nNumerator_ll_wo_second_leading_weighted_ += weight;
+	    nNumerator_ll_wo_second_leading_weighted_w2_ += weight * weight;
 	  }
 
 	  // tight electrons
@@ -446,6 +513,9 @@ void Looper::FillEventHistos ()
 	      eta_num_wo_second_leading_elt_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	      num_wo_second_leading_elt_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
 	    }
+	    ++nNumerator_lt_wo_second_leading_;
+	    nNumerator_lt_wo_second_leading_weighted_ += weight;
+	    nNumerator_lt_wo_second_leading_weighted_w2_ += weight * weight;
 	  }
 	}
       }
@@ -482,12 +552,39 @@ void Looper::End ()
   //application
   //------------------------------------------------------------
 
+  ostringstream stream;
+
+  stream << endl << "=========" << endl;
+  stream << "Sample: " << SampleName().c_str() << endl;
+  stream << "=========" << endl;
+  stream << events_count_ << " of " << events_ << " events passed event selection" << endl;
+  stream << events_passing_ << " of " << events_weighted_ << " weighted events passed event selection" << endl;
+  stream << duplicates_total_n_ << " duplicates corresponding to " << duplicates_total_weight_ << " weighted events excluded" << endl;      
+  stream << "=========" << endl;
+
+  stream << "Tight: num: " << nNumerator_lt_ << " den: " << nDenominator_ << " fake rate: " << (double)nNumerator_lt_/(double)nDenominator_ << "+-" <<  calculateFakeRateError(nNumerator_lt_,nDenominator_) << endl;
+  stream << "Tight (weighted): num: " << nNumerator_lt_weighted_ << " den: " << nDenominator_weighted_ << " fake rate: " << nNumerator_lt_weighted_/nDenominator_weighted_ << "+-" << calculateWeightedFakeRateError(nNumerator_lt_weighted_,nNumerator_lt_weighted_w2_,nDenominator_weighted_,nDenominator_weighted_w2_) << endl;
+
+  stream << "Tight wo leading: num: " << nNumerator_lt_wo_leading_ << " den: " << nDenominator_wo_leading_ << " fake rate: " << (double)nNumerator_lt_wo_leading_/(double)nDenominator_wo_leading_ << "+-" << calculateFakeRateError(nNumerator_lt_wo_leading_,nDenominator_wo_leading_) << endl;
+  stream << "Tight wo leading (weighted): num: " << nNumerator_lt_wo_leading_weighted_ << " den: " << nDenominator_wo_leading_weighted_ << " fake rate: " << nNumerator_lt_wo_leading_weighted_/nDenominator_wo_leading_weighted_ << "+-" << calculateWeightedFakeRateError(nNumerator_lt_wo_leading_weighted_,nNumerator_lt_wo_leading_weighted_w2_,nDenominator_wo_leading_weighted_,nDenominator_wo_leading_weighted_w2_) << endl;
+
+  stream << "Tight wo second leading: num: " << nNumerator_lt_wo_second_leading_ << " den: " << nDenominator_wo_second_leading_ << " fake rate: " << (double)nNumerator_lt_wo_second_leading_/(double)nDenominator_wo_second_leading_ << "+-" << calculateFakeRateError(nNumerator_lt_wo_second_leading_,nDenominator_wo_second_leading_) << endl;
+  stream << "Tight wo second leading (weighted): num: " << nNumerator_lt_wo_second_leading_weighted_ << " den: " << nDenominator_weighted_ << " fake rate: " << nNumerator_lt_wo_second_leading_weighted_/nDenominator_wo_second_leading_weighted_ << "+-" << calculateWeightedFakeRateError(nNumerator_lt_wo_second_leading_weighted_,nNumerator_lt_wo_second_leading_weighted_w2_,nDenominator_wo_second_leading_weighted_,nDenominator_wo_second_leading_weighted_w2_) << endl;
+  stream << "=========" << endl << endl;
+
+  cout << stream.str();
+
   int ret = fprintf(logfile_, 
-		    "Sample %10s: Total candidate count: %8u %8u %8u %8u."
-		    " Total weight %10.1f +- %10.1f\n",   
-		    sample_.name.c_str(),
-		    CandsCount(),
-		    CandsPassing()  , RMS());
+		    stream.str().c_str());
   if (ret < 0)
     perror("writing to log file");
 }
+
+double Looper::calculateFakeRateError(unsigned int nNum, unsigned int nDen) {
+  return sqrt( (double)nNum/((double)nDen*(double)nDen) + ((double)nNum*(double)nNum)/((double)nDen*(double)nDen*(double)nDen) );
+}
+
+double Looper::calculateWeightedFakeRateError(double nNum, double nNumErr2, double nDen, double nDenErr2) {
+  return sqrt( (1/(nDen*nDen))*nNumErr2 + (nNum*nNum)/(nDen*nDen*nDen*nDen) * nDenErr2 );
+}
+

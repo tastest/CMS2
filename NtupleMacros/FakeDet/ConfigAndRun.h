@@ -40,7 +40,7 @@ void printTable (const Looper **hists, int n, const char *fname,
   fprintf(f, "|%30s  |\n", "total");
   for (int j = 0; j < n; ++j) {
     fprintf(f, "|  %10.1f &plusmn; %10.1f", 
-	    hists[j]->CandsPassing(),
+	    hists[j]->EventsPassing(),
 	    hists[j]->RMS());
   }
   fprintf(f, "\n");
@@ -98,10 +98,16 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 // default yield table
 int EleFakes ()
 {
-  return run<Looper>(ele_fakes_cuts, "EleFakes", 1 << LOOP_QCDEMenrichedPt20to30 | 1 << LOOP_QCDEMenrichedPt30to80 | 1 << LOOP_QCDEMenrichedPt80to170 | 1 << LOOP_QCDBCtoEPt20to30 | 1 << LOOP_QCDBCtoEPt30to80 | 1 << LOOP_QCDBCtoEPt80to170);
+//  return run<Looper>(ele_fakes_cuts, "EleFakes", 1 << LOOP_QCDEMenrichedPt20to30 | 1 << LOOP_QCDEMenrichedPt30to80 | 1 << LOOP_QCDEMenrichedPt80to170 | 1 << LOOP_QCDBCtoEPt20to30 | 1 << LOOP_QCDBCtoEPt30to80 | 1 << LOOP_QCDBCtoEPt80to170);
+return run<Looper>(ele_fakes_cuts, "EleFakes", 1 << LOOP_QCDBCtoEPt20to30);
 }
 
 int EleFakesInc ()
 {
   return run<Looper>(ele_fakes_cuts, "EleFakes", 1 << LOOP_QCDpt30);
+}
+
+int EleFakesIncWOTriggerJet ()
+{
+  return run<Looper>(ele_fakes_wo_trigger_jet_cuts, "EleFakes", 1 << LOOP_QCDpt30);
 }
