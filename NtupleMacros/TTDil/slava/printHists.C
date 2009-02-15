@@ -18,7 +18,7 @@ void printNJets(){
     int nHists = thisStack->GetHists()->GetSize();
     std::cout<<"===================================================="<<std::endl;
     std::cout<<suffix[sample]<<std::endl;
-    std::cout<<" |   sample  |        nJet = 0      |       nJet = 1       |       nJet >= 2      |"<<std::endl;
+    std::cout<<" |   sample  |        nJet = 0        |       nJet = 1         |       nJet >= 2       |"<<std::endl;
     for(int iH=0; iH< nHists; ++iH){
       TH1F* h1F = (TH1F*)(thisStack->GetHists()->At(iH));
       TObjArray* sampleNs = TString(h1F->GetName()).Tokenize("_");
@@ -33,11 +33,12 @@ void printNJets(){
       for (int i=3; i<= nBins; ++i) n2E += h1F->GetBinError(i)*h1F->GetBinError(i);
       n2E = sqrt(n2E);
       std::cout<<" | "<<Form("%9s",sampleNs->At(0)->GetName())
-	       <<" | "<<Form("%5.2f",n0) <<" &plusmn; "<<Form("%5.2f",n0E)
-	       <<" | "<<Form("%5.2f",n1) <<" &plusmn; "<<Form("%5.2f",n1E)
-	       <<" | "<<Form("%5.2f",n2) <<" &plusmn; "<<Form("%5.2f",n2E)
+	       <<" | "<<Form("%6.1f",n0) <<" &plusmn; "<<Form("%6.1f",n0E)
+	       <<" | "<<Form("%6.1f",n1) <<" &plusmn; "<<Form("%6.1f",n1E)
+	       <<" | "<<Form("%6.1f",n2) <<" &plusmn; "<<Form("%6.1f",n2E)
 	       <<" | "<<std::endl;
     }
+    std::cout << " " << std::endl;
   }
  
 }
