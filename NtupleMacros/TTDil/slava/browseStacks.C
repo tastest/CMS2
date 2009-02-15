@@ -124,32 +124,34 @@ void browseStacks( bool makePictures=false, bool wait=true , bool addHistName = 
       if (setMinZero) thisStack->SetMinimum(0);
       if (logScale && stackMin <=0) thisStack->SetMinimum(1e-2*stackMax);
       if (logScale && stackMax == 0) thisStack->SetMinimum(1e-12); 
-      thisStack->Draw("hist");
-      string xtitle( ((TH1*)gROOT->FindObjectAny(Form("ttdil_%s_%s", myNames->At(i)->GetName(), suffix[sample])))->GetXaxis()->GetTitle());
-      string ytitle( ((TH1*)gROOT->FindObjectAny(Form("ttdil_%s_%s", myNames->At(i)->GetName(), suffix[sample])))->GetYaxis()->GetTitle());
-      thisStack->GetXaxis()->SetTitle(xtitle.c_str());
-      thisStack->GetYaxis()->SetTitle(ytitle.c_str());
-      TString hname = thisStack->GetName();
-      if(hname.Contains("hnJet")) {
-	thisStack->GetXaxis()->SetLabelSize(0.075);
-	thisStack->GetYaxis()->SetLabelSize(0.05);
-	thisStack->GetXaxis()->SetTitle("N_{jets}");
+      if ( makePictures || wait ) {
+	thisStack->Draw("hist");
+	string xtitle( ((TH1*)gROOT->FindObjectAny(Form("ttdil_%s_%s", myNames->At(i)->GetName(), suffix[sample])))->GetXaxis()->GetTitle());
+	string ytitle( ((TH1*)gROOT->FindObjectAny(Form("ttdil_%s_%s", myNames->At(i)->GetName(), suffix[sample])))->GetYaxis()->GetTitle());
+	thisStack->GetXaxis()->SetTitle(xtitle.c_str());
+	thisStack->GetYaxis()->SetTitle(ytitle.c_str());
+	TString hname = thisStack->GetName();
+	if(hname.Contains("hnJet")) {
+	  thisStack->GetXaxis()->SetLabelSize(0.075);
+	  thisStack->GetYaxis()->SetLabelSize(0.05);
+	  thisStack->GetXaxis()->SetTitle("N_{jets}");
+	}
+        thisLeg->Draw();
+	
+	TPaveText *pt1 = new TPaveText(0.1, 0.95, 0.4, 0.999, "brNDC");
+	pt1->SetName("pt1name");
+	pt1->SetBorderSize(0);
+	pt1->SetFillStyle(0);
+	
+	TText *blah;
+	if (addHistName) blah = pt1->AddText(hname);
+	else blah = pt1->AddText("CMS Preliminary");
+	blah->SetTextSize(0.05);
+        pt1->Draw();
+        c->Modified();
+	
+	c->Update();
       }
-      thisLeg->Draw();
-	
-      TPaveText *pt1 = new TPaveText(0.1, 0.95, 0.4, 0.999, "brNDC");
-      pt1->SetName("pt1name");
-      pt1->SetBorderSize(0);
-      pt1->SetFillStyle(0);
-	
-      TText *blah;
-      if (addHistName) blah = pt1->AddText(hname);
-      else blah = pt1->AddText("CMS Preliminary");
-      blah->SetTextSize(0.05);
-      pt1->Draw();
-      c->Modified();
-	
-      c->Update();
     }
     if (makePictures) {
       c->Print("out/stacks.ps");
