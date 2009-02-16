@@ -347,9 +347,13 @@ void Looper::FillEventHistos ()
 	  eta_den_ele_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	  den_ele_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
 	}
-        ++nDenominator_;
-	nDenominator_weighted_ += weight;
-	nDenominator_weighted_w2_ += weight * weight;
+
+	// hard cut to calculate zero-bin fake rate correctly
+	if ( pt >= 20. ) {
+	  ++nDenominator_;
+	  nDenominator_weighted_ += weight;
+	  nDenominator_weighted_w2_ += weight * weight;
+	}
 
 	for ( unsigned int jet_counter = 0;
 	      jet_counter < (unsigned int)cms2.evt_njets();
@@ -375,9 +379,13 @@ void Looper::FillEventHistos ()
 	  eta_num_ell_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	  num_ell_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
 	}
-        ++nNumerator_ll_;
-	nNumerator_ll_weighted_ += weight;
-	nNumerator_ll_weighted_w2_ += weight * weight;
+
+	// hard cut to calculate zero-bin fake rate correctly
+	if ( pt >= 20. ) {
+	  ++nNumerator_ll_;
+	  nNumerator_ll_weighted_ += weight;
+	  nNumerator_ll_weighted_w2_ += weight * weight;
+	}
       }
 
       // tight electrons
@@ -394,9 +402,12 @@ void Looper::FillEventHistos ()
 	  eta_num_elt_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	  num_elt_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
 	}
-        ++nNumerator_lt_;
-	nNumerator_lt_weighted_ += weight;
-	nNumerator_lt_weighted_w2_ += weight * weight;
+	// hard cut to calculate zero-bin fake rate correctly
+	if ( pt >= 20. ) {
+	  ++nNumerator_lt_;
+	  nNumerator_lt_weighted_ += weight;
+	  nNumerator_lt_weighted_w2_ += weight * weight;
+	}
       }
 
       // exclude leading jet
@@ -413,9 +424,12 @@ void Looper::FillEventHistos ()
 	    eta_den_wo_leading_ele_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	    den_wo_leading_ele_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
 	  }
-	  ++nDenominator_wo_leading_;
-	  nDenominator_wo_leading_weighted_ += weight;
-	  nDenominator_wo_leading_weighted_w2_ += weight * weight;
+	  // hard cut to calculate zero-bin fake rate correctly
+	  if ( pt >= 20. ) {
+	    ++nDenominator_wo_leading_;
+	    nDenominator_wo_leading_weighted_ += weight;
+	    nDenominator_wo_leading_weighted_w2_ += weight * weight;
+	  }
 	}
 
 	// loose electrons
@@ -432,9 +446,12 @@ void Looper::FillEventHistos ()
 	    eta_num_wo_leading_ell_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	    num_wo_leading_ell_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
 	  }
-	  ++nNumerator_ll_wo_leading_;
-	  nNumerator_ll_wo_leading_weighted_ += weight;
-	  nNumerator_ll_wo_leading_weighted_w2_ += weight * weight;
+	  // hard cut to calculate zero-bin fake rate correctly
+	  if ( pt >= 20. ) {
+	    ++nNumerator_ll_wo_leading_;
+	    nNumerator_ll_wo_leading_weighted_ += weight;
+	    nNumerator_ll_wo_leading_weighted_w2_ += weight * weight;
+	  }
 	}
 
 	// tight electrons
@@ -451,9 +468,12 @@ void Looper::FillEventHistos ()
 	    eta_num_wo_leading_elt_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	    num_wo_leading_elt_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
 	  }
-	  ++nNumerator_lt_wo_leading_;
-	  nNumerator_lt_wo_leading_weighted_ += weight;
-	  nNumerator_lt_wo_leading_weighted_w2_ += weight * weight;
+	  // hard cut to calculate zero-bin fake rate correctly
+	  if ( pt >= 20. ) {
+	    ++nNumerator_lt_wo_leading_;
+	    nNumerator_lt_wo_leading_weighted_ += weight;
+	    nNumerator_lt_wo_leading_weighted_w2_ += weight * weight;
+	  }
 	}
 
       }
@@ -475,9 +495,12 @@ void Looper::FillEventHistos ()
 	      eta_den_wo_second_leading_ele_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	      den_wo_second_leading_ele_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
 	    }
-	    ++nDenominator_wo_second_leading_;
-	    nDenominator_wo_second_leading_weighted_ += weight;
-	    nDenominator_wo_second_leading_weighted_w2_ += weight * weight;
+	    // hard cut to calculate zero-bin fake rate correctly
+	    if ( pt >= 20. ) {
+	      ++nDenominator_wo_second_leading_;
+	      nDenominator_wo_second_leading_weighted_ += weight;
+	      nDenominator_wo_second_leading_weighted_w2_ += weight * weight;
+	    }
 	  }
 
 	  // loose electrons
@@ -494,9 +517,12 @@ void Looper::FillEventHistos ()
 	      eta_num_wo_second_leading_ell_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	      num_wo_second_leading_ell_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
 	    }
-	    ++nNumerator_ll_wo_second_leading_;
-	    nNumerator_ll_wo_second_leading_weighted_ += weight;
-	    nNumerator_ll_wo_second_leading_weighted_w2_ += weight * weight;
+	    // hard cut to calculate zero-bin fake rate correctly
+	    if ( pt >= 20. ) {
+	      ++nNumerator_ll_wo_second_leading_;
+	      nNumerator_ll_wo_second_leading_weighted_ += weight;
+	      nNumerator_ll_wo_second_leading_weighted_w2_ += weight * weight;
+	    }
 	  }
 
 	  // tight electrons
@@ -513,9 +539,12 @@ void Looper::FillEventHistos ()
 	      eta_num_wo_second_leading_elt_->Fill(cms2.els_p4()[electron_counter].Eta(),weight);
 	      num_wo_second_leading_elt_->Fill(cms2.els_p4()[electron_counter].Eta(),pt,weight);
 	    }
-	    ++nNumerator_lt_wo_second_leading_;
-	    nNumerator_lt_wo_second_leading_weighted_ += weight;
-	    nNumerator_lt_wo_second_leading_weighted_w2_ += weight * weight;
+	    // hard cut to calculate zero-bin fake rate correctly
+	    if ( pt >= 20. ) {
+	      ++nNumerator_lt_wo_second_leading_;
+	      nNumerator_lt_wo_second_leading_weighted_ += weight;
+	      nNumerator_lt_wo_second_leading_weighted_w2_ += weight * weight;
+	    }
 	  }
 	}
       }
