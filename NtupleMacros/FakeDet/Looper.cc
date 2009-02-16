@@ -64,43 +64,67 @@ void Looper::BookHistos ()
   // sample color is used for histogram colors
   int color = sample_.histo_color;
 
+  // coarse or fine fake rate binning?
+  bool fineBinning = false;
+
   vector<float> binsPt;
-  binsPt.push_back(0.);
-  //	binsPt.push_back(10.);
-  binsPt.push_back(20.);
-  //	binsPt.push_back(30.);
-  binsPt.push_back(40.);
-  //	binsPt.push_back(50.);
-  binsPt.push_back(65.);
-  //	binsPt.push_back(80.);
-  binsPt.push_back(95.);
-  //	binsPt.push_back(115.);
-  binsPt.push_back(150.);
   vector<float> binsEta;
-  binsEta.push_back(-2.5);
-  //	binsEta.push_back(-2.1);
-  binsEta.push_back(-1.9);
-  //	binsEta.push_back(-1.7);
-  binsEta.push_back(-1.5);
-  //	binsEta.push_back(-1.3);
-  binsEta.push_back(-1.1);
-  //	binsEta.push_back(-0.9);
-  binsEta.push_back(-0.7);
-  //	binsEta.push_back(-0.5);
-  binsEta.push_back(-0.3);
-  // 	binsEta.push_back(-0.1);
-  // 	binsEta.push_back(0.1);
-  binsEta.push_back(0.3);
-  //	binsEta.push_back(0.5);
-  binsEta.push_back(0.7);
-  //	binsEta.push_back(0.9);
-  binsEta.push_back(1.1);
-  //	binsEta.push_back(1.3);
-  binsEta.push_back(1.5);
-  //	binsEta.push_back(1.7);
-  binsEta.push_back(1.9);
-  //	binsEta.push_back(2.1);
-  binsEta.push_back(2.5);
+
+  if(fineBinning) {
+
+    // set Pt bins
+    binsPt.push_back(0.);
+    //	binsPt.push_back(10.);
+    binsPt.push_back(20.);
+    //	binsPt.push_back(30.);
+    binsPt.push_back(40.);
+    //	binsPt.push_back(50.);
+    binsPt.push_back(65.);
+    //	binsPt.push_back(80.);
+    binsPt.push_back(95.);
+    //	binsPt.push_back(115.);
+    binsPt.push_back(150.);
+
+    // set eta bins
+    binsEta.push_back(-2.5);
+    //	binsEta.push_back(-2.1);
+    binsEta.push_back(-1.9);
+    //	binsEta.push_back(-1.7);
+    binsEta.push_back(-1.5);
+    //	binsEta.push_back(-1.3);
+    binsEta.push_back(-1.1);
+    //	binsEta.push_back(-0.9);
+    binsEta.push_back(-0.7);
+    //	binsEta.push_back(-0.5);
+    binsEta.push_back(-0.3);
+    // 	binsEta.push_back(-0.1);
+    // 	binsEta.push_back(0.1);
+    binsEta.push_back(0.3);
+    //	binsEta.push_back(0.5);
+    binsEta.push_back(0.7);
+    //	binsEta.push_back(0.9);
+    binsEta.push_back(1.1);
+    //	binsEta.push_back(1.3);
+    binsEta.push_back(1.5);
+    //	binsEta.push_back(1.7);
+    binsEta.push_back(1.9);
+    //	binsEta.push_back(2.1);
+    binsEta.push_back(2.5);
+  }
+  else {
+
+    // set Pt bins
+    binsPt.push_back(0.);
+    binsPt.push_back(20.);
+    binsPt.push_back(60.);
+    binsPt.push_back(150.);
+
+    // set eta bins
+    binsEta.push_back(-2.5);
+    binsEta.push_back(-1.0);
+    binsEta.push_back(1.0);
+    binsEta.push_back(2.5);
+  }
 
   pt_num_ell_  = book1DVarHist(Form("%s_hpt_num_ell",prefix),"p_{T} Numerator",binsPt,"p_{T} [GeV]","p_{T} Loose Electron Numerator",color);
   pt_num_elt_  = book1DVarHist(Form("%s_hpt_num_elt",prefix),"p_{T} Numerator",binsPt,"p_{T} [GeV]","p_{T} Tight Electron Numerator",color);

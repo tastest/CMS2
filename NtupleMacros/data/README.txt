@@ -175,7 +175,17 @@ v6_7:
 same as v6_5 BUT:
 new final WW selection cuts (cms2.els_tightId22XMinMatteo and tcMET) from 2/12/09
 
-
+v7_0:
+-----
+Twiki:
+        Determination:
+        - selections as for v6_7
+        - uses incQCDpt30 sample
+        - does NOT have leading jet > 30 GeV requirement (i.e. Trigger simulation disabled)
+        - does HAVE fewer bins (3 in eta (-2.5, -1.1, 1.1, 2.5), 3 in pT (0, 20, 60, 150))
+        Application:
+        - changed fakerates.cc standard for v7 so the used histogram
+          does NOT have FO close to leading jets removed (i.e. Trigger bias removal disabled)
 
 
 

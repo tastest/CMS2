@@ -16,6 +16,10 @@ static TFile *el_fakeRateFile_v6 = 0;
 static TH2F  *el_fakeRate_v6 = 0;
 static TH2F  *el_fakeRate_err_v6 = 0;
 
+static TFile *el_fakeRateFile_v7 = 0;
+static TH2F  *el_fakeRate_v7 = 0;
+static TH2F  *el_fakeRate_err_v7 = 0;
+
 double elFakeProb_v2_2 (int i_el, int add_error_times)
 {
      float prob = 0.0;
@@ -307,8 +311,90 @@ bool isFakeNumeratorElectron_v6 (int index, int type)
   return result;
   
 }
+//asdasd
+double elFakeProb_v7 (int i_el, int add_error_times)
+{
+     float prob = 0.0;
+     float prob_error = 0.0;
+     TH2F *theFakeRate = &fakeRate();
+     TH2F *theFakeRateErr = &fakeRateError();
+     // cut definition
+     prob = theFakeRate->GetBinContent(theFakeRate->FindBin(cms2.els_p4()[i_el].Eta(),cms2.els_p4()[i_el].Pt()));
+     prob_error =
+	  theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(cms2.els_p4()[i_el].Eta(),cms2.els_p4()[i_el].Pt()));
+     
+     if (prob>1.0 || prob<0.0) {
+	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob << std::endl;
+     }
+     if (prob==0.0){
+	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob
+		   <<" for Et = " <<cms2.els_p4()[i_el].Pt()
+		   <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
+		   << std::endl;
+     }
+     return prob+add_error_times*prob_error;
+}
 
-#define USE_V6
+bool isFakeDenominatorElectron_v7 (int index) 
+{
+  //
+  // returns true if input fulfills certain cuts
+  //
+
+  // cut definition
+  float pt_cut        		= 15.;
+  float eta_cut       		= 2.5;
+  float hOverE_cut    		= 0.2;
+  bool  use_calo_iso            = false;
+
+  bool result = true;
+
+  if (cms2.els_closestMuon().at(index) != -1)		result = false;
+  if ( cms2.els_p4()[index].Pt()  < pt_cut )            result = false;
+  if ( TMath::Abs(cms2.els_p4()[index].Eta()) > eta_cut ) result = false;
+  if ( !passElectronIsolation(index,use_calo_iso) )          	result = false;
+  //  if ( !passElectronIsolationLoose(index,true) )          	result = false; //v5_2
+  if ( !passElectronIsolationLoose2(index,true) )          	result = false; //v5_4
+  if ( cms2.els_hOverE()[index]   > hOverE_cut )        result = false;
+
+  return result;
+
+}
+
+bool isFakeNumeratorElectron_v7 (int index, int type) 
+{ 
+  //
+  // 1=loose, 2=tight
+  //
+  // returns true if input fulfills certain cuts
+  //
+  
+  // cut definition
+  float pt_cut        		= 15;
+  float eta_cut       		= 2.5;
+  bool  use_calo_iso            = true;
+
+  bool result = true;
+
+  if (cms2.els_closestMuon().at(index) != -1)		result = false;
+  if ( cms2.els_p4()[index].Pt()  < pt_cut )                 result = false;
+  if ( TMath::Abs(cms2.els_p4()[index].Eta()) > eta_cut )      result = false;
+  if ( !passElectronIsolation(index,use_calo_iso) )          	result = false;
+  if ( type == 1 ) {
+    // loose
+    if ( !goodLooseElectronWithoutIsolation(index) )   result = false;
+  } else if ( type == 2 ) {
+    // tight
+    if ( !goodElectronWithoutIsolation(index) )   result = false;
+  } else {
+    cout << "WARNING: wrong electron type detected, please select loose (1) or tight (2)" << endl;
+  }
+
+  return result;
+  
+}
+
+#define USE_V7
 
 bool isFakeable (int i_el)
 {
@@ -317,6 +403,9 @@ bool isFakeable (int i_el)
 #endif
 #ifdef USE_V6
   return isFakeDenominatorElectron_v6(i_el);
+#endif
+#ifdef USE_V7
+  return isFakeDenominatorElectron_v7(i_el);
 #else
   return isFakeable_v2_2(i_el);
 #endif
@@ -329,6 +418,9 @@ double elFakeProb (int i_el, int add_error_times)
 #endif
 #ifdef USE_V6
      return elFakeProb_v6(i_el, add_error_times);
+#endif
+#ifdef USE_V7
+     return elFakeProb_v7(i_el, add_error_times);
 #else
      return elFakeProb_v2_2(i_el, add_error_times);
 #endif
@@ -341,6 +433,9 @@ bool isNumeratorElectron (int index, int type)
 #endif
 #ifdef USE_V6
      return isFakeNumeratorElectron_v6(index, 2);
+#endif
+#ifdef USE_V7
+     return isFakeNumeratorElectron_v7(index, 2);
 #else
      return isNumeratorElectron_v2_2(index, type);
 #endif
@@ -371,10 +466,24 @@ TH2F &fakeRate ()
 	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v6_6.root exists!" << std::endl;
 	       gSystem->Exit(1);
 	  }
-	  el_fakeRate_v6 = dynamic_cast<TH2F *>(el_fakeRateFile_v6->Get("fakeRateTemplate_wo_leading_elt_EleFakes"));
-	  el_fakeRate_err_v6 = dynamic_cast<TH2F *>(el_fakeRateFile_v6->Get("fakeRateTemplateError_wo_leading_elt_EleFakes"));
+ 	  el_fakeRate_v6 = dynamic_cast<TH2F *>(el_fakeRateFile_v6->Get("fakeRateTemplate_wo_leading_elt_EleFakes"));
+ 	  el_fakeRate_err_v6 = dynamic_cast<TH2F *>(el_fakeRateFile_v6->Get("fakeRateTemplateError_wo_leading_elt_EleFakes"));
      }
      return *el_fakeRate_v6;
+#endif
+#ifdef USE_V7
+     if ( el_fakeRateFile_v7 == 0 ) {
+	  el_fakeRateFile_v7 = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/fakeRates-v7_0.root", "read"); 
+	  if ( el_fakeRateFile_v7 == 0 ) {
+	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v7_0.root could not be found!!" << std::endl;
+	       std::cout << "Please make sure that $CMS2_LOCATION points to your CMS2 directory and that" << std::endl;
+	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v7_0.root exists!" << std::endl;
+	       gSystem->Exit(1);
+	  }
+	  el_fakeRate_v7 = dynamic_cast<TH2F *>(el_fakeRateFile_v7->Get("fakeRateTemplate_elt_EleFakes"));
+	  el_fakeRate_err_v7 = dynamic_cast<TH2F *>(el_fakeRateFile_v7->Get("fakeRateTemplateError_elt_EleFakes"));
+     }
+     return *el_fakeRate_v7;
 #else
      if ( el_fakeRateFile_v2_2 == 0 ) {
 	  el_fakeRateFile_v2_2 = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/fakeRates-v2_2_allpt.root", "read");
@@ -415,10 +524,24 @@ TH2F &fakeRateError ()
 	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v6_6.root exists!" << std::endl;
 	       gSystem->Exit(1);
 	  }
-	  el_fakeRate_v6 = dynamic_cast<TH2F *>(el_fakeRateFile_v6->Get("fakeRateTemplate_wo_leading_elt_EleFakes"));
-	  el_fakeRate_err_v6 = dynamic_cast<TH2F *>(el_fakeRateFile_v6->Get("fakeRateTemplateError_wo_leading_elt_EleFakes"));
+ 	  el_fakeRate_v6 = dynamic_cast<TH2F *>(el_fakeRateFile_v6->Get("fakeRateTemplate_wo_leading_elt_EleFakes"));
+ 	  el_fakeRate_err_v6 = dynamic_cast<TH2F *>(el_fakeRateFile_v6->Get("fakeRateTemplateError_wo_leading_elt_EleFakes"));
      }
      return *el_fakeRate_err_v6;
+#endif
+#ifdef USE_V7
+     if ( el_fakeRateFile_v7 == 0 ) {
+	  el_fakeRateFile_v7 = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/fakeRates-v7_0.root", "read"); 
+	  if ( el_fakeRateFile_v7 == 0 ) {
+	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v7_0.root could not be found!!" << std::endl;
+	       std::cout << "Please make sure that $CMS2_LOCATION points to your CMS2 directory and that" << std::endl;
+	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v7_0.root exists!" << std::endl;
+	       gSystem->Exit(1);
+	  }
+	  el_fakeRate_v7 = dynamic_cast<TH2F *>(el_fakeRateFile_v7->Get("fakeRateTemplate_elt_EleFakes"));
+	  el_fakeRate_err_v7 = dynamic_cast<TH2F *>(el_fakeRateFile_v7->Get("fakeRateTemplateError_elt_EleFakes"));
+     }
+     return *el_fakeRate_err_v7;
 #else
      assert("use the bin errors in the fake rate histo instead of error histogram" && 0);
 #endif
