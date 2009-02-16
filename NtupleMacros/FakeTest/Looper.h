@@ -59,6 +59,7 @@ enum {
   CUT_ELFAKE_NOT_NUMERATOR,
   CUT_MORE_THAN_TWO_TRACKS,
   CUT_TRUE_MU_FROM_W,
+  CUT_TRUE_MU_FROM_W_WJETS,
 };
 
 //----------------------------------------------------------------------
@@ -88,6 +89,7 @@ enum {
 
 // this is the current baseline set of cuts
 const static cuts_t baseline_cuts = 
+  (CUT_BIT(CUT_TRUE_MU_FROM_W_WJETS) ) |
   (CUT_BIT(CUT_LT_PT)		) | 
   (CUT_BIT(CUT_LL_PT)		) | 
   (CUT_BIT(CUT_OPP_SIGN)		) | 

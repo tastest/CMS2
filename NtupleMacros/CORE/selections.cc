@@ -51,6 +51,40 @@ bool goodElectronWithoutIsolation(int index) {
   if ( TMath::Abs(cms2.els_d0corr().at(index)) > 0.025)   return false;
   return true;
 }
+
+//----------------------------------------------------------------
+// MC truth tag - Muon from W
+//----------------------------------------------------------------
+bool trueMuonFromW_WJets(int index) {
+  // try to find out if there is a muon
+  // from W. Currently valid ONLY on WJets!! 
+  if ( TMath::Abs(cms2.mus_mc_id()[index]) == 13 && ( TMath::Abs(cms2.mus_mc_motherid()[index]) == 24) ) {
+    //    std::cout<<"best match - part id: "<<(cms2.mus_mc_id()[index])<<" mother: "<<(cms2.mus_mc_motherid()[index])<<std::endl;
+    return true;
+  }
+  // need additional loop over status 3 particles
+  // if it contains a W and an muon from W, we claim
+  // that the muon is from W - valid for WJets
+  unsigned int nGen = cms2.genps_id().size();
+  for( unsigned int iGen = 0; iGen < nGen; ++iGen){
+    // just in case the mother link does work :)
+    if ( cms2.genps_status()[iGen] == 3 && TMath::Abs(cms2.genps_id()[iGen]) == 13 && TMath::Abs(cms2.genps_id_mother()[iGen]) == 24 ) {
+      //    std::cout<<"2nd best match part id: "<<cms2.genps_id()[iGen]<<" mother: "<<cms2.genps_id_mother()[iGen]<<std::endl;
+      return true;
+    }
+    // also return true if there is a status 3 muon
+    if ( cms2.genps_status()[iGen] == 3 && TMath::Abs(cms2.genps_id()[iGen]) == 13 ) {
+      //    std::cout<<"3rd best match part id: "<<cms2.genps_id()[iGen]<<" mother: NOT CHECKED"<<std::endl;
+      return true;
+    }
+    //      if ( TMath::Abs(cms2.genps_id_mother()[iGen]) == 23 ) return true;
+    //      if ( TMath::Abs(cms2.genps_id_mother()[iGen]) == 24 ) return true;
+  }
+  
+  return false;
+}
+
+
 //----------------------------------------------------------------
 // Electron ID without isolation or d0 cut
 //----------------------------------------------------------------

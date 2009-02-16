@@ -262,6 +262,12 @@ cuts_t Looper::DilepSelect (int i_hyp)
   if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && trueMuonFromW(cms2.hyp_ll_index()[i_hyp]) )
     ret |= CUT_BIT(CUT_TRUE_MU_FROM_W);
 
+  if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && trueMuonFromW_WJets(cms2.hyp_lt_index()[i_hyp]) )
+    ret |= CUT_BIT(CUT_TRUE_MU_FROM_W_WJETS);
+
+  if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && trueMuonFromW_WJets(cms2.hyp_ll_index()[i_hyp]) )
+    ret |= CUT_BIT(CUT_TRUE_MU_FROM_W_WJETS);
+
   //*****************************************************************
       // special handling for the fake rate cuts for now, because they
       // only work for emu
