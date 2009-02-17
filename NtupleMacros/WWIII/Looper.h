@@ -107,6 +107,16 @@ const static cuts_t baseline_cuts =
      (CUT_BIT(CUT_PASS_JETVETO_JPT20)	) |  
      (CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT)	);   
 
+const static cuts_t calojet_veto_cuts = (baseline_cuts & ~CUT_BIT(CUT_PASS_JETVETO_JPT20))
+     | CUT_BIT(CUT_PASS_JETVETO_CALO);
+
+const static cuts_t calojet_trkjet_veto_cuts = (baseline_cuts & ~CUT_BIT(CUT_PASS_JETVETO_JPT20))
+     | CUT_BIT(CUT_PASS_JETVETO_CALO) 
+     | CUT_BIT(CUT_PASS_JETVETO_TRACKJETS);
+
+const static cuts_t jpt25_veto_cuts = (baseline_cuts & ~CUT_BIT(CUT_PASS_JETVETO_JPT20))
+     | CUT_BIT(CUT_PASS_JETVETO_JPT25);
+
 // cuts used in the Feb 08 presentation by fkw
 const static cuts_t feb_baseline_cuts = 
      (CUT_BIT(CUT_LT_PT)		) | 
@@ -231,11 +241,22 @@ const static cuts_t fakerate_histat_denominator_cuts = (fakerate_histat_cuts &
 							  CUT_BIT(CUT_LT_ISO) | CUT_BIT(CUT_LL_ISO) |
 							  CUT_BIT(CUT_LT_CALOISO) | CUT_BIT(CUT_LL_CALOISO))) |
      CUT_BIT(CUT_ELFAKE_FAKEABLE_OBJECT);
+
+const static cuts_t fakerate_histat_numerator_cuts = 
+     fakerate_histat_denominator_cuts | CUT_BIT(CUT_ELFAKE_NUMERATOR);
+
+const static cuts_t fakerate_histat_ss_numerator_cuts = 
+     (fakerate_histat_numerator_cuts & ~CUT_BIT(CUT_OPP_SIGN)) 
+     | CUT_BIT(CUT_SAME_SIGN);
 						 
 // denominator and not numerator (this is the yield that should be
 // multiplied by FR / (1 - FR))
 const static cuts_t fakerate_histat_denominator_not_numerator_cuts = 
      fakerate_histat_denominator_cuts | CUT_BIT(CUT_ELFAKE_NOT_NUMERATOR);
+
+const static cuts_t fakerate_histat_ss_denominator_not_numerator_cuts = 
+     (fakerate_histat_denominator_not_numerator_cuts & ~CUT_BIT(CUT_OPP_SIGN)) 
+     | CUT_BIT(CUT_SAME_SIGN);
 
 static const cuts_t fakerate_ss_numerator_cuts = 
      (fakerate_numerator_cuts & ~CUT_BIT(CUT_OPP_SIGN)) | CUT_BIT(CUT_SAME_SIGN);

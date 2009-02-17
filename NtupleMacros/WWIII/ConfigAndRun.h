@@ -166,6 +166,21 @@ int Results ()
      return run<Looper>(baseline_cuts, "Results");
 }
 
+int Calojet ()
+{
+     return run<Looper>(calojet_veto_cuts, "Calojet");
+}
+
+int Calojet_Trkjet ()
+{
+     return run<Looper>(calojet_trkjet_veto_cuts, "Calojet_Trkjet");
+}
+
+int JPT25 ()
+{
+     return run<Looper>(jpt25_veto_cuts, "JPT25");
+}
+
 int Feb_Results ()
 {
      return run<Looper>(feb_baseline_cuts, "Feb_Results");
@@ -258,12 +273,22 @@ int Wjets_Oingo ()
 
 int Wjets_Histat ()
 {
-     return run<Looper>(fakerate_histat_cuts, "Wjets_Histat");
+     return run<Looper>(fakerate_histat_numerator_cuts, "Wjets_Histat");
 }
 
 int Wjets_Histat_Fakerate ()
 {
      return run<FakeRateLooper>(fakerate_histat_denominator_not_numerator_cuts, "Wjets_Histat_Fakerate");
+}
+
+int Wjets_Histat_SS ()
+{
+     return run<Looper>(fakerate_histat_ss_numerator_cuts, "Wjets_Histat_SS");
+}
+
+int Wjets_Histat_SS_Fakerate ()
+{
+     return run<FakeRateLooper>(fakerate_histat_ss_denominator_not_numerator_cuts, "Wjets_Histat_SS_Fakerate");
 }
 
 int Wjets_SS_Numerator ()
