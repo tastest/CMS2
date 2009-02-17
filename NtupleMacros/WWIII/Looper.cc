@@ -372,6 +372,17 @@ void Looper::FillDilepHistos (int i_hyp)
 	  cands_passing_[DILEPTON_ALL] += weight;
 	  cands_passing_w2_[DILEPTON_ALL] += weight * weight;
 	  cands_count_[DILEPTON_ALL]++;
+// 	  printf("candidate passing: run %10lu, event %10lu, lumi block %10lu (lt pt = %5.1f, ll pt = %5.1f)\n",
+// 		 cms2.evt_run(), cms2.evt_event(), cms2.evt_lumiBlock(),
+// 		 cms2.hyp_lt_p4()[i_hyp].pt(), cms2.hyp_ll_p4()[i_hyp].pt());
+// 	  for (int i = 0; i < cms2.els_p4().size(); ++i) {
+// 	       printf("E = (%5.1f %6.3f %6.3f) trk p = (%5.1f %6.3f %6.3f) eSC = %5.1f E/p = %5.3f\t", 
+// 		      cms2.els_p4()[i].Et(), cms2.els_p4()[i].eta(), cms2.els_p4()[i].phi(),
+// 		      cms2.els_trk_p4()[i].pt(), cms2.els_trk_p4()[i].eta(), cms2.els_trk_p4()[i].phi(),
+// 		      cms2.els_eSC()[i_hyp],
+// 		      cms2.els_eOverPIn()[i]);
+// 	  }
+// 	  printf("\n");
      }
 
      // jet count
