@@ -215,15 +215,22 @@ bool pass2Met(int hypIdx) {
 }
 
 // event-level pat-met: emu met >20, mm,em met>30
-bool passPatMet_OF20_SF30(int hypIdx){
+bool passPatMet_OF20_SF30(float metx, float mety, int hypIdx){
+  float mymet = sqrt(metx*metx + mety*mety);
   if  (hyp_type().at(hypIdx) == 0 || hyp_type().at(hypIdx) == 3) {
-    if (met_pat_metCor() < 30) return false;
+    if (mymet < 30) return false;
   }
   
   if (hyp_type().at(hypIdx) == 1 || hyp_type().at(hypIdx) == 2) {
-    if (met_pat_metCor() < 20) return false;
+    if (mymet < 20) return false;
   }
   return true;
+}
+// event-level pat-met: emu met >20, mm,em met>30
+bool passPatMet_OF20_SF30(int hypIdx){
+  return passPatMet_OF20_SF30(met_pat_metCor()*cos(met_pat_metPhiCor()), 
+			      met_pat_metCor()*sin(met_pat_metPhiCor()),
+			      hypIdx);
 }
 
 //-------------------------------------------------
