@@ -33,9 +33,15 @@ class ttDilCounts_looper {
   TH1F* hdilPt[4][3];       // dilepton Pt
   TH1F* hmet[4][3];       // MET
   TH1F* hmetPhi[4][3];       // MET phi
-  TH2F* hmetVsDilepPt[4][3];  // MET vs dilepton Pt
+  TH1F* hpatmet[4][3];       // pat MET
+  TH1F* hpatmetPhi[4][3];       // pat MET phi
 
+  TH2F* hmetVsDilepPt[4][3];  // MET vs dilepton Pt
   TH2F* hmetOverPtVsDphi[4][3]; // MET/Lepton Pt vs DeltaPhi between MET and Lepton Pt
+
+  TH2F* hpatmetVsDilepPt[4][3];  // PAT MET vs dilepton Pt
+  TH2F* hpatmetOverPtVsDphi[4][3]; // PAT MET/Lepton Pt vs DeltaPhi between MET and Lepton Pt
+
   TH2F* hdphillvsmll[4][3]; // delta phi between leptons vs dilepton mass
   TH1F* hptJet1[4][3];   // Pt of 1st jet
   TH1F* hptJet2[4][3];   // Pt of 2nd jet
