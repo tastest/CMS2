@@ -226,6 +226,25 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	     "", "extraZv", "", "");
   SET_CUT(cutsMask, dilepAdditionalMassVetoCutTTDil08, compactConfig, true);
 
+  bool corJES10ptUp = false;
+  DEFINE_CUT(corJES10ptUp, 23, 1,
+	     "", "Jets are scaled 10% up ", "", "",
+	     "", "jes10Up", "", "");
+  SET_CUT(cutsMask, corJES10ptUp, compactConfig, true);
+  bool corJES10ptDn = false;
+  DEFINE_CUT(corJES10ptDn, 24, 1,
+	     "", "Jets are scaled 10% down ", "", "",
+	     "", "jes10Dn", "", "");
+  SET_CUT(cutsMask, corJES10ptDn, compactConfig, true);
+  if (corJES10ptUp && corJES10ptDn){
+    std::cout<<"Inconsistent config: JES up and down requested at the same time: bailing"<<std::endl;
+    return 99;
+  }
+  float globalJESscaleRescale = 1.;
+  if (corJES10ptUp)  globalJESscaleRescale = 1.1;
+  if (corJES10ptDn)  globalJESscaleRescale = 0.9;
+  
+
   std::cout<<"Compact config string is "<<compactConfig.c_str()<<std::endl;
 
   // Check that prescale is OK
@@ -357,7 +376,21 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
       
 	// ! for TTDil analysis this should be made for the event-qualifying hyp only
 	if (!fillMaxWeightDilOnly && metBaselineSelectionTTDil08){
-	  if (! passPatMet_OF20_SF30(hypIdx)) continue;
+	  if (globalJESscaleRescale == 1 && ! passPatMet_OF20_SF30(hypIdx)) continue;
+	  if (globalJESscaleRescale != 1.){
+	    float metx = met_pat_metCor()*cos(met_pat_metPhiCor());
+	    float mety = met_pat_metCor()*sin(met_pat_metPhiCor());
+	    unsigned int nJ = jets_p4().size();
+	    //this isn't quite precise due to pt cuts in jet corrector and in the 
+	    // pat selectedLayer1Jets -- the cuts are not the same and available jets are not the same
+	    for (unsigned int iJ = 0; iJ < nJ; ++iJ){
+	      if (jets_emFrac().at(iJ) < 0.9){
+		metx -= jets_p4().at(iJ).x()*(globalJESscaleRescale - 1.); 
+		mety -= jets_p4().at(iJ).y()*(globalJESscaleRescale - 1.); 
+	      }
+	    }
+	    if (! passPatMet_OF20_SF30(metx, mety, hypIdx)) continue;
+	  }
 	}
 
 	if (lepton20Eta2p4DilSelection){
@@ -403,7 +436,21 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 
 	// ! event level cut here, can reset the eventPassed to false
 	if (fillMaxWeightDilOnly && metBaselineSelectionTTDil08){
-	  if (! passPatMet_OF20_SF30(maxWeightIndex)) continue;
+	  if (globalJESscaleRescale == 1. && ! passPatMet_OF20_SF30(maxWeightIndex)) continue;
+	  if (globalJESscaleRescale != 1.){
+	    float metx = met_pat_metCor()*cos(met_pat_metPhiCor());
+	    float mety = met_pat_metCor()*sin(met_pat_metPhiCor());
+	    unsigned int nJ = jets_p4().size();
+	    //this isn't quite precise due to pt cuts in jet corrector and in the 
+	    // pat selectedLayer1Jets -- the cuts are not the same and available jets are not the same
+	    for (unsigned int iJ = 0; iJ < nJ; ++iJ){
+	      if (jets_emFrac().at(iJ) < 0.9 ){ // this is what the jet corr requires for met corr type 1
+		metx -= jets_p4().at(iJ).x()*(globalJESscaleRescale - 1.); 
+		mety -= jets_p4().at(iJ).y()*(globalJESscaleRescale - 1.); 
+	      }
+	    }
+	    if (! passPatMet_OF20_SF30(metx, mety, maxWeightIndex)) continue;
+	  }
 	}
 
 	// this is for per-hypothesis choice
@@ -430,7 +477,7 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	// The event weight including the kFactor (scaled to 1 fb-1) and the prescale
 	//float weight = evt_scale1fb * kFactor * prescale;
 	//float weight = CalculateWeight(evt_CSA07Process(), evt_scale1fb(), kFactor, prescale);
-	float weight = kFactor*evt_scale1fb(); // /100; //10pb^-1
+	float weight = kFactor*evt_scale1fb()*0.01; // /100; //10pb^-1
 
 	if ( (prefixStr == "ppMuX" || prefixStr == "EM") 
 	     && (hyp_type().at(hypIdx) == 1 || hyp_type().at(hypIdx) == 2)) weight *= 0.5;//this isn't quite right :(
@@ -467,13 +514,16 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	  for (unsigned int ijet=0; 
 	       ijet<(unsigned int)(hyp_njets().at(hypIdx)); 
 	       ijet++) {
-	    blah = hyp_jets_pat_noCorrF().at(hypIdx).at(ijet) * hyp_jets_p4().at(hypIdx).at(ijet);
+	    float thisJetRescale = hyp_jets_emFrac().at(hypIdx).at(ijet) < 0.9 ? globalJESscaleRescale : 1.;
+	    blah = hyp_jets_pat_noCorrF().at(hypIdx).at(ijet) * hyp_jets_p4().at(hypIdx).at(ijet) * thisJetRescale;
+	    //FIXME : this should be combined the same way as below
 	    jp4.push_back(blah);
 	  }
 	} else {
 	  // Look among the hyp_jets
 	  for (unsigned int ijet=0; ijet<(unsigned int)(hyp_njets().at(hypIdx)); ijet++) {
-	    blah = hyp_jets_p4().at(hypIdx).at(ijet);
+	    float thisJetRescale = hyp_jets_emFrac().at(hypIdx).at(ijet) < 0.9 ? globalJESscaleRescale : 1.;
+	    blah = hyp_jets_p4().at(hypIdx).at(ijet)* thisJetRescale;
 	    if (blah.pt() > 30 && abs(blah.eta()) < 2.4) {
 	      jp4.push_back(blah);
 	      new_hyp_njets++;
@@ -481,7 +531,8 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	  }
 	  // Now look among the other jets
 	  for (unsigned int ijet=0; ijet<hyp_other_jets_p4().at(hypIdx).size(); ijet++) {
-	    blah = hyp_other_jets_p4().at(hypIdx).at(ijet);
+	    float thisJetRescale = hyp_other_jets_emFrac().at(hypIdx).at(ijet) < 0.9 ? globalJESscaleRescale : 1.;
+	    blah = hyp_other_jets_p4().at(hypIdx).at(ijet)* thisJetRescale;
 	    if (blah.pt() > 30 && abs(blah.eta()) < 2.4) {
 	      jp4.push_back(blah);
 	      new_hyp_njets++;
@@ -648,10 +699,18 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	hmetPhi[myType][arrNjets]->Fill(hyp_metPhi().at(hypIdx), weight);      
 	hmet[3][arrNjets]->Fill(hyp_met().at(hypIdx), weight);      
 	hmetPhi[3][arrNjets]->Fill(hyp_metPhi().at(hypIdx), weight);      
+	// pat Met and Met phi
+	hpatmet[myType][arrNjets]->Fill(met_pat_metCor(), weight);      
+	hpatmetPhi[myType][arrNjets]->Fill(met_pat_metPhiCor(), weight);      
+	hpatmet[3][arrNjets]->Fill(met_pat_metCor(), weight);      
+	hpatmetPhi[3][arrNjets]->Fill(met_pat_metPhiCor(), weight);      
     
 	// Met vs dilepton Pt
 	hmetVsDilepPt[myType][arrNjets]->Fill(hyp_met().at(hypIdx), hyp_p4().at(hypIdx).pt(), weight);
 	hmetVsDilepPt[3][arrNjets]->Fill(hyp_met().at(hypIdx), hyp_p4().at(hypIdx).pt(), weight);
+	//pat  Met vs dilepton Pt
+	hpatmetVsDilepPt[myType][arrNjets]->Fill(met_pat_metCor(), hyp_p4().at(hypIdx).pt(), weight);
+	hpatmetVsDilepPt[3][arrNjets]->Fill(met_pat_metCor(), hyp_p4().at(hypIdx).pt(), weight);
     
 	// Met over dilepton Pt vs deltaphi btw the two
 	double dphi2 = fabs(hyp_p4().at(hypIdx).phi() - hyp_metPhi().at(hypIdx));
@@ -659,6 +718,12 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	dphi2 = TMath::Pi() - dphi2;  // changed the definition CC 28 March 08
 	hmetOverPtVsDphi[myType][arrNjets]->Fill(hyp_met().at(hypIdx)/hyp_p4().at(hypIdx).pt(), dphi2, weight);
 	hmetOverPtVsDphi[3][arrNjets]->Fill(hyp_met().at(hypIdx)/hyp_p4().at(hypIdx).pt(), dphi2, weight);
+	//pat Met over dilepton Pt vs deltaphi btw the two
+	dphi2 = fabs(hyp_p4().at(hypIdx).phi() - met_pat_metPhiCor());
+	if (dphi2 > TMath::Pi()) dphi2 = TMath::TwoPi() - dphi2;
+	dphi2 = TMath::Pi() - dphi2;  // changed the definition CC 28 March 08
+	hpatmetOverPtVsDphi[myType][arrNjets]->Fill(met_pat_metCor()/hyp_p4().at(hypIdx).pt(), dphi2, weight);
+	hpatmetOverPtVsDphi[3][arrNjets]->Fill(met_pat_metCor()/hyp_p4().at(hypIdx).pt(), dphi2, weight);
     
       
 
@@ -854,7 +919,32 @@ void ttDilCounts_looper::bookHistos(char *prefix) {
       hmetOverPtVsDphi[i][j]->SetDirectory(rootdir);
       hmetVsDilepPt[i][j]->GetXaxis()->SetTitle("#Delta#Phi");
       hmetVsDilepPt[i][j]->GetYaxis()->SetTitle("MET/Pt_{ll}");
+      //pat
+      hpatmet[i][j] = new TH1F(Form("%s_hpatmet_%s",prefix,suffix[i]),Form("%s_patmet_%s",prefix,suffix[i]),20,0.,200.);
+      hpatmet[i][j]->SetDirectory(rootdir);
+      hpatmet[i][j]->GetXaxis()->SetTitle("MET (GeV)");
+
+      hpatmetPhi[i][j] = new TH1F(Form("%s_hpatmetPhi_%s",prefix,suffix[i]),Form("%s_patmetPhi_%s",prefix,suffix[i]),
+			       50,-1*TMath::Pi(), TMath::Pi());
+      hpatmetPhi[i][j]->SetDirectory(rootdir);
+      hpatmetPhi[i][j]->GetXaxis()->SetTitle("#phi");
+
+      hpatmetVsDilepPt[i][j] = new TH2F(Form("%s_hpatmetVsDilepPt_%s",prefix,suffix[i]),
+				     Form("%s_patmetVsDilepPt_%s",prefix,suffix[i]),
+				     100,0.,200.,100,0.,200.);
+      hpatmetVsDilepPt[i][j]->SetDirectory(rootdir);
+      hpatmetVsDilepPt[i][j]->GetXaxis()->SetTitle("Pt_{ll} (GeV)");
+      hpatmetVsDilepPt[i][j]->GetYaxis()->SetTitle("Met (GeV)");
     
+      hpatmetOverPtVsDphi[i][j] = new TH2F(Form("%s_hpatmetOverPtVsDphi_%s",prefix,suffix[i]),
+					Form("%s_patmetOverPtVsDphi_%s",prefix,suffix[i]),
+					30,0.,3.,25,0.,TMath::Pi());
+      hpatmetOverPtVsDphi[i][j]->SetDirectory(rootdir);
+      hpatmetVsDilepPt[i][j]->GetXaxis()->SetTitle("#Delta#Phi");
+      hpatmetVsDilepPt[i][j]->GetYaxis()->SetTitle("MET/Pt_{ll}");
+    
+    
+
       hdphillvsmll[i][j] = new TH2F(Form("%s_dphillvsmll_%s",prefix,suffix[i]),
 				    Form("%s_dphillvsmll_%s",prefix,suffix[i]),
 				    100,10.,210.,50,0., TMath::Pi());
@@ -941,6 +1031,8 @@ void ttDilCounts_looper::bookHistos(char *prefix) {
       hdilPt[i][j]->Sumw2();
       hmet[i][j]->Sumw2();
       hmetPhi[i][j]->Sumw2();
+      hpatmet[i][j]->Sumw2();
+      hpatmetPhi[i][j]->Sumw2();
       hptJet1[i][j]->Sumw2();
       hptJet2[i][j]->Sumw2();
       hptJet3[i][j]->Sumw2();
