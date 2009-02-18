@@ -121,8 +121,8 @@ void Looper::BookHistos ()
 
     // set eta bins
     binsEta.push_back(-2.5);
-    binsEta.push_back(-1.0);
-    binsEta.push_back(1.0);
+    binsEta.push_back(-1.479);
+    binsEta.push_back(1.479);
     binsEta.push_back(2.5);
   }
 
