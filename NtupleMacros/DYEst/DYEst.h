@@ -63,12 +63,14 @@
      CUT_MUON_RECO_CLEANING,
      CUT_MUON_RECO_CLEANING20,
      CUT_MET_SIMPLE20,
+     CUT_MET_SIMPLE25,
+     CUT_MET_SIMPLE30,
      CUT_MET_SIMPLE35,
+     CUT_MET_SIMPLE40,
      CUT_MET_SIMPLE45,
      CUT_MET_BALLANCE,
      CUT_MET_PROJECTED,
      CUT_PASS5_MET,
-
 
      };
 
@@ -126,9 +128,6 @@ const static cuts_t baseline_cuts_pass5 =
 //     (CUT_BIT(CUT_PASS4_TCMET)          ) |
 //     (CUT_BIT(CUT_PASS2_TCMET)          ) |
      (CUT_BIT(CUT_PASS5_MET)          ) |
-//          (CUT_BIT(CUT_MET_SIMPLE45)   ) |
-//          (CUT_BIT(CUT_MET_BALLANCE)   ) |
-//          (CUT_BIT(CUT_MET_PROJECTED)   ) |
      (CUT_BIT(CUT_LT_GOOD)              ) |
      (CUT_BIT(CUT_LL_GOOD)              ) |
      (CUT_BIT(CUT_LT_CALOISO)   ) |
@@ -141,12 +140,33 @@ const static cuts_t baseline_cuts_pass5 =
      (CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT)       );
 
 
+// this is the current baseline set of cuts
+const static cuts_t baseline_cuts_nomet =
+     (CUT_BIT(CUT_LT_PT)                ) |
+     (CUT_BIT(CUT_LL_PT)                ) |
+     (CUT_BIT(CUT_OPP_SIGN)             ) |
+     (CUT_BIT(CUT_LT_GOOD)              ) |
+     (CUT_BIT(CUT_LL_GOOD)              ) |
+     (CUT_BIT(CUT_LT_CALOISO)   ) |
+     (CUT_BIT(CUT_LL_CALOISO)   ) |
+     (CUT_BIT(CUT_PASS_ZVETO)   ) |
+//      (CUT_BIT(CUT_PASS_ADDZVETO)     ) | 
+//      (CUT_BIT(CUT_PASS_JETVETO_CALO) ) |
+//      (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)    ) |  
+     (CUT_BIT(CUT_PASS_JETVETO_JPT20)   ) |
+     (CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT)       );
+
+
 const static cuts_t jet_z_veto_cuts =
         (CUT_BIT(CUT_PASS_ZVETO)) |
         (CUT_BIT(CUT_PASS_JETVETO_JPT20));
 
+
 const static cuts_t simple_met_cuts =
         (CUT_BIT(CUT_MET_SIMPLE20)) |
+        (CUT_BIT(CUT_MET_SIMPLE25)) |
+        (CUT_BIT(CUT_MET_SIMPLE30)) |
+        (CUT_BIT(CUT_MET_SIMPLE35)) |
         (CUT_BIT(CUT_MET_SIMPLE45));
 
 // cuts used in the Feb 08 presentation by fkw
@@ -341,16 +361,6 @@ protected:
      NMinus1Hist        *hnm1_met_0j_out_;
      NMinus1Hist        *hnm1_met_1j_out_;
      NMinus1Hist        *hnm1_met_2j_out_;
-
-	Long_t n_WZ_ee_;
-	Long_t n_ZZ_ee_;
-	Long_t n_Total_ee_;
-
-        Long_t n_WZ_mm_;
-        Long_t n_ZZ_mm_;
-        Long_t n_Total_mm_;
-
-	float test_;
 
 protected:
      // count the (weighted and unweighted) number of candidates passing our cuts

@@ -13,6 +13,9 @@ enum {
      LOOP_WW	,
      LOOP_WZ	,
      LOOP_ZZ	,
+     LOOP_WWINCL    , 
+     LOOP_WZINCL    ,
+     LOOP_ZZINCL    ,
      LOOP_WJETS	,
      LOOP_DYEE	,
      LOOP_DYMM	,
@@ -77,12 +80,18 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
      Looper looper_ww		(fWW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WW    )) looper_ww          .Loop();
      Looper looper_wz		(fWZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WZ    )) looper_wz          .Loop();
      Looper looper_zz		(fZZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_ZZ    )) looper_zz          .Loop();
+
+     Looper looper_wwincl       (fWW_incl()     , cuts, log.c_str());   if (which_ones & (1 << LOOP_WWINCL)) looper_wwincl      .Loop();
+     Looper looper_wzincl       (fWZ_incl()     , cuts, log.c_str());   if (which_ones & (1 << LOOP_WZINCL)) looper_wzincl      .Loop();
+     Looper looper_zzincl       (fZZ_incl()     , cuts, log.c_str());   if (which_ones & (1 << LOOP_ZZINCL)) looper_zzincl      .Loop();
+
      Looper looper_wjets	(fWjets()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS )) looper_wjets       .Loop();
      Looper looper_dyee		(fDYee()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYEE  )) looper_dyee        .Loop();
      Looper looper_dymm		(fDYmm()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYMM  )) looper_dymm        .Loop();
      Looper looper_dytt		(fDYtt()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYTT  )) looper_dytt        .Loop();
      Looper looper_ttbar	(fttbar()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_TTBAR )) looper_ttbar       .Loop();
      Looper looper_tw		(ftW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_TW    )) looper_tw          .Loop();
+
      // when all the loopers are done, we save the histograms to file
      saveHist(hist.c_str());
      // then we collect them all and print a table
@@ -90,6 +99,9 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 	  &looper_ww          ,
 	  &looper_wz          ,
 	  &looper_zz          ,
+          &looper_wwincl      ,
+          &looper_wzincl      ,
+          &looper_zzincl      ,
 	  &looper_wjets       ,
 	  &looper_dyee        ,
 	  &looper_dymm        ,
@@ -101,25 +113,45 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
      return 0;
 }
 
-int DYEstResults_PASS2PASS4 ()
+int DYEstResults_ForWW_MET20 ()
 {
-     return run<DYEst>(baseline_cuts & ~(CUT_BIT(CUT_PASS5_MET))
-                                     | (CUT_BIT(CUT_PASS2_TCMET))
-                                     | (CUT_BIT(CUT_PASS4_TCMET)),
-			"DYEstResults_PASS2PASS4");
+        // make sure that the 'pass5' is removed and
+        // the same set of cuts is applied to each hyp_type
+        // as far as the met is concerned (this is needed
+        // to get the non peaking bg estimate from emu
+     return run<DYEst>(baseline_cuts_nomet
+                                     | (CUT_BIT(CUT_MET_SIMPLE20))
+                                     | (CUT_BIT(CUT_MET_BALLANCE))
+                                     | (CUT_BIT(CUT_MET_PROJECTED)),
+                        "DYEstResults_ForWW_MET20");
 }
 
-int DYEstResults_PASS5 ()
+int DYEstResults_ForWW_MET25 ()
 {
-     return run<DYEst>(baseline_cuts,
-                        "DYEstResults_PASS5");
+        // make sure that the 'pass5' is removed and
+        // the same set of cuts is applied to each hyp_type
+        // as far as the met is concerned (this is needed
+        // to get the non peaking bg estimate from emu
+     return run<DYEst>(baseline_cuts_nomet
+                                     | (CUT_BIT(CUT_MET_SIMPLE25))
+                                     | (CUT_BIT(CUT_MET_BALLANCE))
+                                     | (CUT_BIT(CUT_MET_PROJECTED)),
+                        "DYEstResults_ForWW_MET25");
 }
 
-int DYEstResults_PASS5_WITH_MUON_RECO_CLEANING ()
+int DYEstResults_ForWW_MET30 ()
 {
-     return run<DYEst>(baseline_cuts | (CUT_BIT(CUT_MUON_RECO_CLEANING)),
-                        "DYEstResults_PASS5_WITH_MUON_RECO_CLEANING");
+        // make sure that the 'pass5' is removed and
+        // the same set of cuts is applied to each hyp_type
+        // as far as the met is concerned (this is needed
+        // to get the non peaking bg estimate from emu
+     return run<DYEst>(baseline_cuts_nomet
+                                     | (CUT_BIT(CUT_MET_SIMPLE30))
+                                     | (CUT_BIT(CUT_MET_BALLANCE))
+                                     | (CUT_BIT(CUT_MET_PROJECTED)),
+                        "DYEstResults_ForWW_MET30");
 }
+
 
 int DYEstResults_ForWW_MET35 ()
 {
@@ -127,22 +159,59 @@ int DYEstResults_ForWW_MET35 ()
         // the same set of cuts is applied to each hyp_type
         // as far as the met is concerned (this is needed
         // to get the non peaking bg estimate from emu
-     return run<DYEst>(baseline_cuts
-                                     & ~(CUT_BIT(CUT_PASS5_MET))
-                                        | (CUT_BIT(CUT_MUON_RECO_CLEANING))
+     return run<DYEst>(baseline_cuts_nomet
                                      | (CUT_BIT(CUT_MET_SIMPLE35))
                                      | (CUT_BIT(CUT_MET_BALLANCE))
                                      | (CUT_BIT(CUT_MET_PROJECTED)),
                         "DYEstResults_ForWW_MET35");
-//                        1 << LOOP_DYMM | 1 << LOOP_TTBAR);
+}
+
+
+int DYEstResults_ForWW_MET40 ()
+{
+        // make sure that the 'pass5' is removed and
+        // the same set of cuts is applied to each hyp_type
+        // as far as the met is concerned (this is needed
+        // to get the non peaking bg estimate from emu
+     return run<DYEst>(baseline_cuts_nomet
+                                     | (CUT_BIT(CUT_MET_SIMPLE40))
+                                     | (CUT_BIT(CUT_MET_BALLANCE))
+                                     | (CUT_BIT(CUT_MET_PROJECTED)),
+                        "DYEstResults_ForWW_MET35");
+}
+
+int DYEstResults_ForWW_MET45 ()
+{
+        // make sure that the 'pass5' is removed and
+        // the same set of cuts is applied to each hyp_type
+        // as far as the met is concerned (this is needed
+        // to get the non peaking bg estimate from emu
+     return run<DYEst>(baseline_cuts_nomet
+                                     | (CUT_BIT(CUT_MET_SIMPLE45))
+                                     | (CUT_BIT(CUT_MET_BALLANCE))
+                                     | (CUT_BIT(CUT_MET_PROJECTED)),
+                        "DYEstResults_ForWW_MET45");
+}
+
+// use the inclusive WW, ZZ and WZ samples
+int DYEstResults_ForWW_MET45_INCL ()
+{
+     return run<DYEst>(baseline_cuts_nomet
+                                     | (CUT_BIT(CUT_MET_SIMPLE45))
+                                     | (CUT_BIT(CUT_MET_BALLANCE))
+                                     | (CUT_BIT(CUT_MET_PROJECTED)),
+                        "DYEstResults_ForWW_MET45_INCL",
+                        1 << LOOP_WWINCL | 1 << LOOP_WZINCL | 1 << LOOP_ZZINCL |
+                        1 << LOOP_TTBAR | 1 << LOOP_WJETS | 1 << LOOP_TW |
+                        1 << LOOP_DYEE | 1 << LOOP_DYMM | 1 << LOOP_DYTT);
 }
 
 int DYEstResults_ForWW22X_ValStandard ()
 {
 	// standard new baseline cuts for 22X
      return run<DYEst>(baseline_cuts,
-                        "DYEstResults_ForWW22X_ValStandard",
-                        1 << LOOP_WW);// | 1 << LOOP_TTBAR);
+                        "DYEstResults_ForWW22X_ValStandard");
+                        //1 << LOOP_WW);// | 1 << LOOP_TTBAR);
 
 }
 
@@ -150,79 +219,10 @@ int DYEstResults_ForWW22X_ValPass5 ()
 {
         // standard new baseline cuts for 22X
      return run<DYEst>(baseline_cuts_pass5,
-                        "DYEstResults_ForWW22X_ValPass5",
-                        1 << LOOP_WW);// | 1 << LOOP_TTBAR);
+                        "DYEstResults_ForWW22X_ValPass5");
+                      //  1 << LOOP_WW);// | 1 << LOOP_TTBAR);
 
 }
-
-
-
-int DYEstResults_ForWW ()
-{
-	// make sure that the 'pass5' is removed and
-	// the same set of cuts is applied to each hyp_type
-	// as far as the met is concerned (this is needed
-	// to get the non peaking bg estimate from emu
-     return run<DYEst>(baseline_cuts
-				     & ~(CUT_BIT(CUT_PASS5_MET))
-					| (CUT_BIT(CUT_MUON_RECO_CLEANING))
-				     | (CUT_BIT(CUT_MET_SIMPLE45))
-     				     | (CUT_BIT(CUT_MET_BALLANCE))
-				     | (CUT_BIT(CUT_MET_PROJECTED)),
-                        "DYEstResults_ForWW");
-//                        1 << LOOP_DYMM | 1 << LOOP_TTBAR);
-}
-
-int DYEstResults_ForWW_MuonRecoCleaning20 ()
-{
-        // make sure that the 'pass5' is removed and
-        // the same set of cuts is applied to each hyp_type
-        // as far as the met is concerned (this is needed
-        // to get the non peaking bg estimate from emu
-     return run<DYEst>(baseline_cuts
-                                     & ~(CUT_BIT(CUT_PASS5_MET))
-                                        | (CUT_BIT(CUT_MUON_RECO_CLEANING20))
-                                     | (CUT_BIT(CUT_MET_SIMPLE45))
-                                     | (CUT_BIT(CUT_MET_BALLANCE))
-                                     | (CUT_BIT(CUT_MET_PROJECTED)),
-                        "DYEstResults_ForWW_MuonRecoCleaning20");
-//                        1 << LOOP_DYMM | 1 << LOOP_TTBAR);
-}
-
-
-int DYEstResults_ForTTBAR ()
-{
-        // make sure that the 'pass5' is removed and
-        // the same set of cuts is applied to each hyp_type
-        // as far as the met is concerned (this is needed
-        // to get the non peaking bg estimate from emu
-     return run<DYEst>(baseline_cuts
-                                     & ~(CUT_BIT(CUT_PASS5_MET))
-				     & ~(CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT))
-                                        | (CUT_BIT(CUT_MUON_RECO_CLEANING))
-                                     | (CUT_BIT(CUT_MET_SIMPLE45))
-                                     | (CUT_BIT(CUT_MET_BALLANCE))
-                                     | (CUT_BIT(CUT_MET_PROJECTED)),
-                        "DYEstResults_ForTTBAR");
-//                        1 << LOOP_DYMM | 1 << LOOP_TTBAR);
-}
-
-int DYEstResults_ForInvestigateWZ ()
-{
-        // make sure that the 'pass5' is removed and
-        // the same set of cuts is applied to each hyp_type
-        // as far as the met is concerned (this is needed
-        // to get the non peaking bg estimate from emu
-     return run<DYEst>(baseline_cuts
-                                     & ~(CUT_BIT(CUT_PASS5_MET))
-                                        | (CUT_BIT(CUT_MUON_RECO_CLEANING))
-                                     | (CUT_BIT(CUT_MET_SIMPLE45))
-                                     | (CUT_BIT(CUT_MET_BALLANCE))
-                                     | (CUT_BIT(CUT_MET_PROJECTED)),
-                        "DYEstResults_ForInvestigateWW", 
-                        1 << LOOP_WZ);
-}
-
 
 // needed to get the difference in efficiency
 // between e and mu without any met cuts applied
@@ -230,12 +230,10 @@ int DYEstResults_ForInvestigateWZ ()
 // final state.
 int DYEstResults_GetEMuEff ()
 {
-     return run<DYEst>(baseline_cuts 
-                                     & ~(CUT_BIT(CUT_PASS5_MET))
-				| (CUT_BIT(CUT_MUON_RECO_CLEANING)),
+     return run<DYEst>(baseline_cuts_pass5
+                                     & ~(CUT_BIT(CUT_PASS5_MET)),
                         "DYEstResults_GetEMuEff");
+
 }
-
-
 
 

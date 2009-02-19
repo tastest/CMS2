@@ -1,17 +1,21 @@
-# $Id: Makefile,v 1.1 2009/02/14 22:13:11 dlevans Exp $
+# $Id: Makefile,v 1.2 2009/02/19 19:48:29 dlevans Exp $
 
 CC = g++
-INCLUDE = -I$(CMS2_LOCATION)/NtupleMacros/
-CFLAGS = -Wall -g -O2 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS) -DTOOLSLIB
+INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
+CFLAGS = -Wall -g -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS) -DTOOLSLIB
 
 LINKER = g++
 LINKERFLAGS = $(shell root-config --ldflags)
+ifeq ($(shell root-config --platform),macosx)
+	# linker option for Mac OS X, got it from old project, seems to work ;-)
+	LINKERFLAGS = -bundle -undefined suppress -Wl,-x -O -Xlinker -bind_at_load -flat_namespace $(shell root-config --libs) -lEG -lGenVector
+endif
 
-CORESOURCES = $(wildcard ../CORE/*.cc) 
+CORESOURCES = $(wildcard ${CMS2_LOCATION}/NtupleMacros/CORE/*.cc) 
 COREOBJECTS = $(CORESOURCES:.cc=.o) 
 CORELIB = libCMS2NtupleMacrosCORE.so
 
-TOOLSSOURCES = $(wildcard ../Tools/*.cc) 
+TOOLSSOURCES = $(wildcard ${CMS2_LOCATION}/NtupleMacros/Tools/*.cc) 
 TOOLSOBJECTS = $(TOOLSSOURCES:.cc=.o) 
 TOOLSLIB = libCMS2NtupleMacrosTools.so
 
@@ -21,13 +25,43 @@ LOOPERLIB = libCMS2NtupleMacrosLooper.so
 
 LIBS = $(CORELIB) $(TOOLSLIB) $(LOOPERLIB)
 
-TABLES = Results.tbl
+TABLES = DYEstResults_ForWW_MET20.tbl \
+         DYEstResults_ForWW_MET25.tbl  \
+         DYEstResults_ForWW_MET30.tbl  \
+         DYEstResults_ForWW_MET35.tbl  \
+         DYEstResults_ForWW_MET40.tbl  \
+         DYEstResults_ForWW_MET35.tbl  \
+         DYEstResults_GetEMuEff.tbl
+
+#Results.tbl #Feb_Results.tbl Feb_Results_With_Ntrks.tbl		\
+#Feb_Results_With_Ntrks.tbl Feb_Results_With_TcMET.tbl			\
+Feb_Results_With_TrackJets.tbl Feb_Results_With_Btags.tbl		\
+Feb_Results_NoPass4MET.tbl Feb_Results_With_CaloIso.tbl			\
+Oct_Results.tbl Results_NoTcMET.tbl Results_NoTrackJets.tbl		\
+Results_NoBtags.tbl Results_NoCaloIso.tbl Results_NoPass4MET.tbl	\
+Results_NoNtrks.tbl Wjets_Numerator.tbl Wjets_FOs_Not_Numerator.tbl	\
+Wjets_Fakerate.tbl
+
+FAKETABLES = Wjets_Numerator.tbl Wjets_FOs_Not_Numerator.tbl	\
+Wjets_Fakerate.tbl Wjets_Oingo.tbl \
+Wjets_SS_Fakerate.tbl Wjets_SS_FOs_Not_Numerator.tbl Wjets_SS_Numerator.tbl
+
+NM1TABLES = Results_NoTcMET.tbl Results_NoTrackJets.tbl		\
+Results_NoBtags.tbl Results_NoCaloIso.tbl Results_NoPass4MET.tbl	\
+Results_NoNtrks.tbl
+
+RESULTTABLES = Results.tbl
 
 .PHONY: all
 all:	$(LIBS) 
 
 .PHONY: libs
 libs:	$(LIBS)
+
+.PHONY: tables
+tables:	$(TABLES)
+
+
 
 $(TOOLSLIB):	$(TOOLSOBJECTS) 
 	$(LINKER) $(LINKERFLAGS) -shared $(TOOLSOBJECTS) -o $@ 
@@ -38,11 +72,14 @@ $(CORELIB):	$(COREOBJECTS)
 $(LOOPERLIB):	$(LOOPEROBJECTS) 
 	$(LINKER) $(LINKERFLAGS) -shared $(LOOPEROBJECTS) -o $@ 
 
-linkdef_out.cxx: ../linkdef.h ConfigAndRun.h
+linkdef_out.cxx: ${CMS2_LOCATION}/NtupleMacros/linkdef.h ConfigAndRun.h
 	rootcint -f $@ -c $(INCLUDE) ConfigAndRun.h $<
 
 # General rule for making object files
 %.d:	%.cc
+	$(CC) -MM -MT $@ -MT ${@:.d=.o} $(CFLAGS) $< > $@; \
+                     [ -s $@ ] || rm -f $@
+%.d:	%.cxx
 	$(CC) -MM -MT $@ -MT ${@:.d=.o} $(CFLAGS) $< > $@; \
                      [ -s $@ ] || rm -f $@
 
@@ -54,8 +91,8 @@ linkdef_out.cxx: ../linkdef.h ConfigAndRun.h
 
 .PHONY: clean
 clean:  
-	rm -f ../Tools/*.o ../Tools/*.d $(TOOLSLIB) \
-		../CORE/*.o ../CORE/*.d $(CORELIB) \
+	rm -f ${CMS2_LOCATION}/NtupleMacros/Tools/*.o ${CMS2_LOCATION}/NtupleMacros/Tools/*.d $(TOOLSLIB) \
+		${CMS2_LOCATION}/NtupleMacros/CORE/*.o ${CMS2_LOCATION}/NtupleMacros/CORE/*.d $(CORELIB) \
 		*.o *.d linkdef_out.* $(LOOPERLIB) \
 		$(TABLES) 
 
@@ -70,4 +107,4 @@ $(TABLES): $(LIBS)
 -include $(LOOPERSOURCES:.cc=.d)
 -include linkdef_out.d
 
-
+.PRECIOUS: $(wildcard *.tbl) $(wildcard *.log) $(wildcard *.root)

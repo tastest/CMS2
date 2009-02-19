@@ -19,26 +19,21 @@ void DYEst::BookHistos ()
 {
 
 	// for computing the R ratio / estimating the background
-     hnm1_mll_0j_ = new NMinus1Hist(sample_, "mll_0j", 200, 0, 200, cuts_, jet_z_veto_cuts);
+	// only remove the z veto in the zero jet bin
+     hnm1_mll_0j_ = new NMinus1Hist(sample_, "mll_0j", 200, 0, 200, cuts_, (CUT_BIT(CUT_PASS_ZVETO)));
      hnm1_mll_1j_ = new NMinus1Hist(sample_, "mll_1j", 200, 0, 200, cuts_, jet_z_veto_cuts);
      hnm1_mll_2j_ = new NMinus1Hist(sample_, "mll_2j", 200, 0, 200, cuts_, jet_z_veto_cuts);
 
 	// for studying the behavior of the R ratio as a function of MET
 	// remove the straight met cut for this
-     hnm1_met_0j_in_ = new NMinus1Hist(sample_, "met_0j_in", 200, 0, 200, cuts_, jet_z_veto_cuts | simple_met_cuts);
-     hnm1_met_1j_in_ = new NMinus1Hist(sample_, "met_1j_in", 200, 0, 200, cuts_, jet_z_veto_cuts | simple_met_cuts);
-     hnm1_met_2j_in_ = new NMinus1Hist(sample_, "met_2j_in", 200, 0, 200, cuts_, jet_z_veto_cuts | simple_met_cuts);
-     hnm1_met_0j_out_ = new NMinus1Hist(sample_, "met_0j_out", 200, 0, 200, cuts_, jet_z_veto_cuts | simple_met_cuts);
-     hnm1_met_1j_out_ = new NMinus1Hist(sample_, "met_1j_out", 200, 0, 200, cuts_, jet_z_veto_cuts | simple_met_cuts);
-     hnm1_met_2j_out_ = new NMinus1Hist(sample_, "met_2j_out", 200, 0, 200, cuts_, jet_z_veto_cuts | simple_met_cuts);
-
-        n_WZ_ee_ = 0;
-        n_ZZ_ee_ = 0;
-        n_Total_ee_ = 0;
-        
-        n_WZ_mm_ = 0;
-        n_ZZ_mm_ = 0;
-        n_Total_mm_ = 0;
+	// note: remove the z veto from all because this is handled elsewhere
+        // remove the jet veto from the 1 and 2 jet hists as this is handled elsewhere
+     hnm1_met_0j_in_ = new NMinus1Hist(sample_, "met_0j_in", 200, 0, 200, cuts_, (CUT_BIT(CUT_PASS_ZVETO)) | simple_met_cuts);
+     hnm1_met_1j_in_ = new NMinus1Hist(sample_, "met_1j_in", 200, 0, 200, cuts_, (CUT_BIT(CUT_PASS_ZVETO)) | (CUT_BIT(CUT_PASS_JETVETO_JPT20)) | simple_met_cuts);
+     hnm1_met_2j_in_ = new NMinus1Hist(sample_, "met_2j_in", 200, 0, 200, cuts_, (CUT_BIT(CUT_PASS_ZVETO)) | (CUT_BIT(CUT_PASS_JETVETO_JPT20)) | simple_met_cuts);
+     hnm1_met_0j_out_ = new NMinus1Hist(sample_, "met_0j_out", 200, 0, 200, cuts_, (CUT_BIT(CUT_PASS_ZVETO)) |simple_met_cuts);
+     hnm1_met_1j_out_ = new NMinus1Hist(sample_, "met_1j_out", 200, 0, 200, cuts_, (CUT_BIT(CUT_PASS_ZVETO)) | (CUT_BIT(CUT_PASS_JETVETO_JPT20)) | simple_met_cuts);
+     hnm1_met_2j_out_ = new NMinus1Hist(sample_, "met_2j_out", 200, 0, 200, cuts_, (CUT_BIT(CUT_PASS_ZVETO)) | (CUT_BIT(CUT_PASS_JETVETO_JPT20)) | simple_met_cuts);
 
 }
 
@@ -46,7 +41,7 @@ cuts_t DYEst::DilepSelect (int i_hyp)
 {
 
      cuts_t ret = 0;
-     const enum DileptonHypType myType = hyp_typeToHypType(cms2.hyp_type()[i_hyp]);
+     //const enum DileptonHypType myType = hyp_typeToHypType(cms2.hyp_type()[i_hyp]);
 
      // enough tracks?
      if (cms2.trks_trk_p4().size() > 2)
@@ -205,10 +200,12 @@ cuts_t DYEst::DilepSelect (int i_hyp)
 // 	       ret |= CUT_BIT(CUT_PASS_JETVETO_CALOTRACKJETS_COMBO);
 //      }
 
+
      //*****************************************************************
      // special handling for the fake rate cuts for now, because they
      // only work for emu
      //*****************************************************************
+/*
      if (myType != DILEPTON_EMU)
 	  return ret;
      // in addition, for the muons, check that they pass tight+iso
@@ -223,6 +220,7 @@ cuts_t DYEst::DilepSelect (int i_hyp)
 	      (CUT_BIT(CUT_LL_GOOD) | CUT_BIT(CUT_LL_ISO)))
 	       return ret;
      }
+*/
 
 /*
      // now set the fake flags for the electron
@@ -246,14 +244,22 @@ cuts_t DYEst::DilepSelect (int i_hyp)
 	//
 	// My stuff
 	//
-
-     if (pass5Met(i_hyp, trkCorr))
+     if (pass5Met(i_hyp, trkCorr)) 
           ret |= (CUT_BIT(CUT_PASS5_MET));
-     //if (metSimple(20.0, trkCorr))
-     //     ret |= (CUT_BIT(CUT_MET_SIMPLE20));
+     if (metSimple(20.0, trkCorr))
+          ret |= (CUT_BIT(CUT_MET_SIMPLE20));
+
+     if (metSimple(25.0, trkCorr))
+          ret |= (CUT_BIT(CUT_MET_SIMPLE25));
+
+     if (metSimple(30.0, trkCorr))
+          ret |= (CUT_BIT(CUT_MET_SIMPLE30));
+
      if (metSimple(35.0, trkCorr))
           ret |= (CUT_BIT(CUT_MET_SIMPLE35));
-     if (metSimple(45.0, trkCorr))
+     if (metSimple(40.0, trkCorr))
+          ret |= (CUT_BIT(CUT_MET_SIMPLE40));
+     if (metSimple(45.0, trkCorr)) 
           ret |= (CUT_BIT(CUT_MET_SIMPLE45));
      if (metBalance(i_hyp, trkCorr))
           ret |= (CUT_BIT(CUT_MET_BALLANCE));
@@ -301,42 +307,18 @@ void DYEst::FillDilepHistos (int i_hyp)
      bool isInWindow = inZmassWindow(cms2.hyp_p4()[i_hyp].M());
 
 	// get the tcMET
-     const TVector3 trkCorr = correctMETforTracks();
+     const TVector3 trkCorr(0, 0, 0); // = correctMETforTracks();
      TVector3 hyp_met;
-     hyp_met.SetPtEtaPhi(cms2.hyp_met()[i_hyp], 0, cms2.hyp_metPhi()[i_hyp]);
+     hyp_met.SetPtEtaPhi(cms2.evt_tcmet(), 0, cms2.evt_tcmetPhi());
      hyp_met += trkCorr;
 
      // zero jet bin (including track jet veto)
-     if (cms2.hyp_njets()[i_hyp] == 0 && nTrkJets(i_hyp) == 0) {
+////     if (cuts_passed & CUT_BIT(CUT_PASS_JETVETO_JPT20)) {
      	hnm1_mll_0j_->Fill(cuts_passed, myType, cms2.hyp_p4()[i_hyp].M(), weight);
-
-	//if (hyp_met.Pt() > 35.0) {
-		//std::cout 	<< "hyp_type (" << myType << ") hyp_lt_mc_motherid, hyp_ll_mc_motherid: " 
-		//		<< cms2.hyp_lt_mc_motherid()[i_hyp] << ", " << cms2.hyp_ll_mc_motherid()[i_hyp] << std::endl;
-
-		//int eventCase = 0;
-		//if ((cms2.hyp_lt_mc_motherid()[i_hyp] == 23 && abs(cms2.hyp_ll_mc_motherid()[i_hyp]) == 24)
-		//     || (abs(cms2.hyp_lt_mc_motherid()[i_hyp]) == 24 && cms2.hyp_ll_mc_motherid()[i_hyp] == 23)) eventCase = 0;
-		//else if (cms2.hyp_lt_mc_motherid()[i_hyp] == 23 && cms2.hyp_ll_mc_motherid()[i_hyp] == 23) eventCase = 1;
-
-		//if (myType == 1) {
-		//	if (eventCase == 0) n_WZ_mm_ ++;
-		//	if (eventCase == 1) n_ZZ_mm_ ++;
-		//}
-
-                //if (myType == 3) {
-                //        if (eventCase == 0) n_WZ_ee_ ++;
-                //        if (eventCase == 1) n_ZZ_ee_ ++;
-                //}
-
-		//n_Total_mm_ ++;
-		//n_Total_ee_ ++;
-
-	//}
 
 	if (isInWindow) hnm1_met_0j_in_->Fill(cuts_passed, myType, hyp_met.Pt(), weight);
 	else hnm1_met_0j_out_->Fill(cuts_passed, myType, hyp_met.Pt(), weight);
-     }
+////     }
 
      // one jet bin
      if (cms2.hyp_njets()[i_hyp] == 1) {
@@ -358,17 +340,6 @@ void DYEst::FillDilepHistos (int i_hyp)
 
 void DYEst::End ()
 {
-
-	//std::cout << "mm" << std::endl;
-	//std::cout << "n_WZ_mm_   " << n_WZ_mm_ << std::endl;
-	//std::cout << "n_ZZ_mm_   " << n_ZZ_mm_ << std::endl;
-	//std::cout << "n_Total_mm_" << n_Total_mm_ << std::endl;
-
-        //std::cout << "ee" << std::endl;
-        //std::cout << "n_WZ_ee_   " << n_WZ_ee_ << std::endl;
-        //std::cout << "n_ZZ_ee_   " << n_ZZ_ee_ << std::endl;
-        //std::cout << "n_Total_ee_" << n_Total_ee_ << std::endl;
-
 
      int ret = fprintf(logfile_, 
 		       "Sample %10s: Total candidate count (ee em mm all): %8u %8u %8u %8u."
