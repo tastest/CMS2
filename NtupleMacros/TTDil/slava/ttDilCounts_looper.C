@@ -30,9 +30,10 @@
 #include "TRandom2.h"
 #include <fstream>
 
+#include "CORE/CMS2.cc"
 #include "ttDilCounts_looper.h"
-#include "selections.C"
-
+#include "CORE/selections.cc"
+#include "CORE/utilities.cc"
 
 typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >  VofP4;
 
@@ -138,12 +139,15 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 
   int  isoLooseMode = 0;
   DEFINE_CUT(isoLooseMode, 8, 3,
-	     "Require both leptons to be isolated", 
-	     "Require one-only hyp lepton (electron in emu) with iso (0.6, 0.92)", 
-	     "Require one-only hyp lepton (muon in emu) with iso (0.6, 0.92)",
-	     "Require two hyp leptons  with iso (0.6, 0.92)",
+	     "", 
+	     "Require one-only hyp lepton (electron in emu) with iso (0.6, 0.92) DISABLED", 
+	     "Require one-only hyp lepton (muon in emu) with iso (0.6, 0.92) DISABLED",
+	     "Require two hyp leptons  with iso (0.6, 0.92) DISABLED",
 	     "", "isoReg1", "isoReg2", "isoReg3");
   SET_CUT(cutsMask, isoLooseMode, compactConfig, true);
+  if (isoLooseMode != 0){
+    std::cout<<"isoLooseMode is disabled, fix your config"<<std::endl; return 99;
+  }
 
   bool looseDilSelectionTTDil08 = false;
   DEFINE_CUT(looseDilSelectionTTDil08, 10, 1,
@@ -271,7 +275,7 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
   while(TChainElement *currentFile = (TChainElement*)fileIter.Next() ) {
     TFile f(currentFile->GetTitle());
     TTree *tree = (TTree*)f.Get("Events");
-    Init(tree);
+    cms2.Init(tree);
     unsigned int nEntries = tree->GetEntries();
     unsigned int nLoop = nEntries;
 
@@ -289,7 +293,7 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	if (r->Uniform(1) > probOfKeeping) continue;
       }
       nAfterPrescale++;
-      GetEntry(z);
+      cms2.GetEntry(z);
       ++nEventsTotal;
 
 
@@ -308,21 +312,21 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
       std::vector<unsigned int> goodHyps(0);
 
 
-      for(unsigned int hypIdx = 0; hypIdx < hyp_p4().size(); hypIdx++) {
+      for(unsigned int hypIdx = 0; hypIdx < cms2.hyp_p4().size(); hypIdx++) {
        
-	unsigned int i_lt = hyp_lt_index().at(hypIdx);
-	unsigned int i_ll = hyp_ll_index().at(hypIdx);
+	unsigned int i_lt = cms2.hyp_lt_index().at(hypIdx);
+	unsigned int i_ll = cms2.hyp_ll_index().at(hypIdx);
 
-	int id_lt = hyp_lt_id().at(hypIdx);
-	int id_ll = hyp_ll_id().at(hypIdx);
+	int id_lt = cms2.hyp_lt_id().at(hypIdx);
+	int id_ll = cms2.hyp_ll_id().at(hypIdx);
 
 	{// scope out old/legacy selections
-	  if (applyZWindow && fabs(hyp_p4().at(hypIdx).mass()-91)> 15) continue;
+	  if (applyZWindow && fabs(cms2.hyp_p4().at(hypIdx).mass()-91)> 15) continue;
 	  
 	  if(dilepMassVetoCut) {
 	    // Z mass veto using hyp_leptons for ee and mumu final states
-	    if (hyp_type().at(hypIdx) == 0 || hyp_type().at(hypIdx) == 3) {
-	      if (inZmassWindow(hyp_p4().at(hypIdx).mass())) continue;
+	    if (cms2.hyp_type().at(hypIdx) == 0 || cms2.hyp_type().at(hypIdx) == 3) {
+	      if (inZmassWindow(cms2.hyp_p4().at(hypIdx).mass())) continue;
 	    }
 	    
 	    // Z veto using additional leptons in the event
@@ -330,7 +334,8 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	  }
 	  
 	  // Dima's MET requirement
-	  bool pass2MetPassed = pass2Met(hypIdx);
+	  TVector3 vecDummy;
+	  bool pass2MetPassed = pass2Met(hypIdx, vecDummy);
 	  if (! pass2MetPassed && METcut) continue;
 	  if ( pass2MetPassed && METveto ) continue;
 
@@ -345,7 +350,8 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	  }
 
 	  if(isolationcuts) {
-	    if (!passDilAntiIsolation(isoLooseMode, hypIdx)) continue; 
+	    if (!passLeptonIsolation(id_ll, i_ll, true)) continue; //use caloiso if it's ele
+	    if (!passLeptonIsolation(id_lt, i_lt, true)) continue; //use caloiso it it's ele
 	  }
     
   
@@ -356,37 +362,37 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 
 	// this is for per-hypothesis choice
 	if (! fillMaxWeightDilOnly && applyTriggersMu9orLisoE15){
-	  if (! passTriggersMu9orLisoE15(hyp_type().at(hypIdx)) ) continue;
+	  if (! passTriggersMu9orLisoE15(cms2.hyp_type().at(hypIdx)) ) continue;
 	}
 
 	if (! fillMaxWeightDilOnly && applyTriggersTTDil08JanTrial){
-	  if (! passTriggersTTDil08JanTrial(hyp_type().at(hypIdx)) ) continue;
+	  if (! passTriggersTTDil08JanTrial(cms2.hyp_type().at(hypIdx)) ) continue;
 	}
 
         if(dilepMassVetoCutTTDil08) {
           // Z mass veto using hyp_leptons for ee and mumu final states
-          if (hyp_type().at(hypIdx) == 0 || hyp_type().at(hypIdx) == 3) {
-            if (inZmassWindow(hyp_p4().at(hypIdx).mass())) continue;
+          if (cms2.hyp_type().at(hypIdx) == 0 || cms2.hyp_type().at(hypIdx) == 3) {
+            if (inZmassWindow(cms2.hyp_p4().at(hypIdx).mass())) continue;
           }    
         }
 	if(dilepAdditionalMassVetoCutTTDil08){
           // Z veto using additional leptons in the event
-          if (additionalZveto(true)) continue; //"true" to use TTDil lepton selections                                                
+          if (additionalZvetoTTDil08()) continue; //"true" to use TTDil lepton selections                                                
 	}
       
 	// ! for TTDil analysis this should be made for the event-qualifying hyp only
 	if (!fillMaxWeightDilOnly && metBaselineSelectionTTDil08){
 	  if (globalJESscaleRescale == 1 && ! passPatMet_OF20_SF30(hypIdx)) continue;
 	  if (globalJESscaleRescale != 1.){
-	    float metx = met_pat_metCor()*cos(met_pat_metPhiCor());
-	    float mety = met_pat_metCor()*sin(met_pat_metPhiCor());
-	    unsigned int nJ = jets_p4().size();
+	    float metx = cms2.met_pat_metCor()*cos(cms2.met_pat_metPhiCor());
+	    float mety = cms2.met_pat_metCor()*sin(cms2.met_pat_metPhiCor());
+	    unsigned int nJ = cms2.jets_p4().size();
 	    //this isn't quite precise due to pt cuts in jet corrector and in the 
 	    // pat selectedLayer1Jets -- the cuts are not the same and available jets are not the same
 	    for (unsigned int iJ = 0; iJ < nJ; ++iJ){
-	      if (jets_emFrac().at(iJ) < 0.9){
-		metx -= jets_p4().at(iJ).x()*(globalJESscaleRescale - 1.); 
-		mety -= jets_p4().at(iJ).y()*(globalJESscaleRescale - 1.); 
+	      if (cms2.jets_emFrac().at(iJ) < 0.9){
+		metx -= cms2.jets_p4().at(iJ).x()*(globalJESscaleRescale - 1.); 
+		mety -= cms2.jets_p4().at(iJ).y()*(globalJESscaleRescale - 1.); 
 	      }
 	    }
 	    if (! passPatMet_OF20_SF30(metx, mety, hypIdx)) continue;
@@ -438,15 +444,15 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	if (fillMaxWeightDilOnly && metBaselineSelectionTTDil08){
 	  if (globalJESscaleRescale == 1. && ! passPatMet_OF20_SF30(maxWeightIndex)) continue;
 	  if (globalJESscaleRescale != 1.){
-	    float metx = met_pat_metCor()*cos(met_pat_metPhiCor());
-	    float mety = met_pat_metCor()*sin(met_pat_metPhiCor());
-	    unsigned int nJ = jets_p4().size();
+	    float metx = cms2.met_pat_metCor()*cos(cms2.met_pat_metPhiCor());
+	    float mety = cms2.met_pat_metCor()*sin(cms2.met_pat_metPhiCor());
+	    unsigned int nJ = cms2.jets_p4().size();
 	    //this isn't quite precise due to pt cuts in jet corrector and in the 
 	    // pat selectedLayer1Jets -- the cuts are not the same and available jets are not the same
 	    for (unsigned int iJ = 0; iJ < nJ; ++iJ){
-	      if (jets_emFrac().at(iJ) < 0.9 ){ // this is what the jet corr requires for met corr type 1
-		metx -= jets_p4().at(iJ).x()*(globalJESscaleRescale - 1.); 
-		mety -= jets_p4().at(iJ).y()*(globalJESscaleRescale - 1.); 
+	      if (cms2.jets_emFrac().at(iJ) < 0.9 ){ // this is what the jet corr requires for met corr type 1
+		metx -= cms2.jets_p4().at(iJ).x()*(globalJESscaleRescale - 1.); 
+		mety -= cms2.jets_p4().at(iJ).y()*(globalJESscaleRescale - 1.); 
 	      }
 	    }
 	    if (! passPatMet_OF20_SF30(metx, mety, maxWeightIndex)) continue;
@@ -455,11 +461,11 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 
 	// this is for per-hypothesis choice
 	if ( fillMaxWeightDilOnly && applyTriggersMu9orLisoE15){
-	  if (! passTriggersMu9orLisoE15(hyp_type().at(maxWeightIndex)) ) continue;
+	  if (! passTriggersMu9orLisoE15(cms2.hyp_type().at(maxWeightIndex)) ) continue;
 	}
 
 	if ( fillMaxWeightDilOnly && applyTriggersTTDil08JanTrial){
-	  if (! passTriggersTTDil08JanTrial(hyp_type().at(maxWeightIndex)) ) continue;
+	  if (! passTriggersTTDil08JanTrial(cms2.hyp_type().at(maxWeightIndex)) ) continue;
 	}
       }
 
@@ -475,23 +481,23 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 
 
 	// The event weight including the kFactor (scaled to 1 fb-1) and the prescale
-	//float weight = evt_scale1fb * kFactor * prescale;
-	//float weight = CalculateWeight(evt_CSA07Process(), evt_scale1fb(), kFactor, prescale);
-	float weight = kFactor*evt_scale1fb()*0.01; // /100; //10pb^-1
+	//float weight = cms2.evt_scale1fb * kFactor * prescale;
+	//float weight = CalculateWeight(evt_CSA07Process(), cms2.evt_scale1fb(), kFactor, prescale);
+	float weight = kFactor*cms2.evt_scale1fb()*0.01; // /100; //10pb^-1
 
 	if ( (prefixStr == "ppMuX" || prefixStr == "EM") 
-	     && (hyp_type().at(hypIdx) == 1 || hyp_type().at(hypIdx) == 2)) weight *= 0.5;//this isn't quite right :(
+	     && (cms2.hyp_type().at(hypIdx) == 1 || cms2.hyp_type().at(hypIdx) == 2)) weight *= 0.5;//this isn't quite right :(
 	//and works only if both em and ppmux are in play
       
 	// If we made it to here, we passed all cuts and we are ready to fill
-	m_events.insert(pair<int,int>(evt_event(), 1));
+	m_events.insert(pair<int,int>(cms2.evt_event(), 1));
 
 	int myType = 99;
-	if (hyp_type().at(hypIdx) == 3) myType = 0;  // ee
-	if (hyp_type().at(hypIdx) == 0) myType = 1;  // mm
-	if (hyp_type().at(hypIdx) == 1 || hyp_type().at(hypIdx) == 2) myType=2; // em
+	if (cms2.hyp_type().at(hypIdx) == 3) myType = 0;  // ee
+	if (cms2.hyp_type().at(hypIdx) == 0) myType = 1;  // mm
+	if (cms2.hyp_type().at(hypIdx) == 1 || cms2.hyp_type().at(hypIdx) == 2) myType=2; // em
 	if (myType == 99) {
-	  cout << "YUK:  unknown dilepton type = " << hyp_type().at(hypIdx) << endl;
+	  cout << "YUK:  unknown dilepton type = " << cms2.hyp_type().at(hypIdx) << endl;
 	  continue;
 	}
 
@@ -510,29 +516,29 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > blah; // temp variable
 	// First the case where we take the default hyp_jets
 	if (oldjets) {
-	  new_hyp_njets = hyp_njets().at(hypIdx);
+	  new_hyp_njets = cms2.hyp_njets().at(hypIdx);
 	  for (unsigned int ijet=0; 
-	       ijet<(unsigned int)(hyp_njets().at(hypIdx)); 
+	       ijet<(unsigned int)(cms2.hyp_njets().at(hypIdx)); 
 	       ijet++) {
-	    float thisJetRescale = hyp_jets_emFrac().at(hypIdx).at(ijet) < 0.9 ? globalJESscaleRescale : 1.;
-	    blah = hyp_jets_pat_noCorrF().at(hypIdx).at(ijet) * hyp_jets_p4().at(hypIdx).at(ijet) * thisJetRescale;
+	    float thisJetRescale = cms2.hyp_jets_emFrac().at(hypIdx).at(ijet) < 0.9 ? globalJESscaleRescale : 1.;
+	    blah = cms2.hyp_jets_pat_noCorrF().at(hypIdx).at(ijet) * cms2.hyp_jets_p4().at(hypIdx).at(ijet) * thisJetRescale;
 	    //FIXME : this should be combined the same way as below
 	    jp4.push_back(blah);
 	  }
 	} else {
 	  // Look among the hyp_jets
-	  for (unsigned int ijet=0; ijet<(unsigned int)(hyp_njets().at(hypIdx)); ijet++) {
-	    float thisJetRescale = hyp_jets_emFrac().at(hypIdx).at(ijet) < 0.9 ? globalJESscaleRescale : 1.;
-	    blah = hyp_jets_p4().at(hypIdx).at(ijet)* thisJetRescale;
+	  for (unsigned int ijet=0; ijet<(unsigned int)(cms2.hyp_njets().at(hypIdx)); ijet++) {
+	    float thisJetRescale = cms2.hyp_jets_emFrac().at(hypIdx).at(ijet) < 0.9 ? globalJESscaleRescale : 1.;
+	    blah = cms2.hyp_jets_p4().at(hypIdx).at(ijet)* thisJetRescale;
 	    if (blah.pt() > 30 && abs(blah.eta()) < 2.4) {
 	      jp4.push_back(blah);
 	      new_hyp_njets++;
 	    }
 	  }
 	  // Now look among the other jets
-	  for (unsigned int ijet=0; ijet<hyp_other_jets_p4().at(hypIdx).size(); ijet++) {
-	    float thisJetRescale = hyp_other_jets_emFrac().at(hypIdx).at(ijet) < 0.9 ? globalJESscaleRescale : 1.;
-	    blah = hyp_other_jets_p4().at(hypIdx).at(ijet)* thisJetRescale;
+	  for (unsigned int ijet=0; ijet<cms2.hyp_other_jets_p4().at(hypIdx).size(); ijet++) {
+	    float thisJetRescale = cms2.hyp_other_jets_emFrac().at(hypIdx).at(ijet) < 0.9 ? globalJESscaleRescale : 1.;
+	    blah = cms2.hyp_other_jets_p4().at(hypIdx).at(ijet)* thisJetRescale;
 	    if (blah.pt() > 30 && abs(blah.eta()) < 2.4) {
 	      jp4.push_back(blah);
 	      new_hyp_njets++;
@@ -544,14 +550,14 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	//     // Last chance to reject...
 	int arrNjets = min(new_hyp_njets, 2);
 
-	float pt_lt = hyp_lt_p4().at(hypIdx).pt();
-	float pt_ll = hyp_ll_p4().at(hypIdx).pt();
+	float pt_lt = cms2.hyp_lt_p4().at(hypIdx).pt();
+	float pt_ll = cms2.hyp_ll_p4().at(hypIdx).pt();
 
-	unsigned int i_lt = hyp_lt_index().at(hypIdx);
-	unsigned int i_ll = hyp_ll_index().at(hypIdx);
+	unsigned int i_lt = cms2.hyp_lt_index().at(hypIdx);
+	unsigned int i_ll = cms2.hyp_ll_index().at(hypIdx);
 
-	int id_lt = hyp_lt_id().at(hypIdx);
-	int id_ll = hyp_ll_id().at(hypIdx);
+	int id_lt = cms2.hyp_lt_id().at(hypIdx);
+	int id_ll = cms2.hyp_ll_id().at(hypIdx);
 
 
 	// jet count
@@ -564,9 +570,9 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	if (abs(id_lt) == 13) hmuPt[myType][arrNjets]->Fill(pt_lt, weight);
 	if (abs(id_ll) == 13) hmuPt[myType][arrNjets]->Fill(pt_ll, weight);
 	if (abs(id_lt) == 13) 
-	  hmuPtFromSilicon[myType][arrNjets]->Fill(mus_trk_p4().at(i_lt).pt(), weight);
+	  hmuPtFromSilicon[myType][arrNjets]->Fill(cms2.mus_trk_p4().at(i_lt).pt(), weight);
 	if (abs(id_ll) == 13)
-	  hmuPtFromSilicon[myType][arrNjets]->Fill(mus_trk_p4().at(i_ll).pt(), weight);
+	  hmuPtFromSilicon[myType][arrNjets]->Fill(cms2.mus_trk_p4().at(i_ll).pt(), weight);
 	hminLepPt[myType][arrNjets]->Fill(min(pt_ll, pt_lt), weight);
 	hmaxLepPt[myType][arrNjets]->Fill(max(pt_ll, pt_lt), weight );
     
@@ -575,55 +581,55 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	if (abs(id_lt) == 13) hmuPt[3][arrNjets]->Fill(pt_lt, weight);
 	if (abs(id_ll) == 13) hmuPt[3][arrNjets]->Fill(pt_ll, weight);
 	if (abs(id_lt) == 13) 
-	  hmuPtFromSilicon[3][arrNjets]->Fill(mus_trk_p4().at(i_lt).pt(), weight);
+	  hmuPtFromSilicon[3][arrNjets]->Fill(cms2.mus_trk_p4().at(i_lt).pt(), weight);
 	if (abs(id_ll) == 13) 
-	  hmuPtFromSilicon[3][arrNjets]->Fill(mus_trk_p4().at(i_ll).pt(), weight);
+	  hmuPtFromSilicon[3][arrNjets]->Fill(cms2.mus_trk_p4().at(i_ll).pt(), weight);
 	hminLepPt[3][arrNjets]->Fill(min(pt_ll, pt_lt), weight);
 	hmaxLepPt[3][arrNjets]->Fill(max(pt_ll, pt_lt), weight );
 
 
 	// lepton Phi
-	if (abs(id_lt) == 11) helePhi[myType][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).phi(), weight);
-	if (abs(id_ll) == 11) helePhi[myType][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).phi(), weight);
-	if (abs(id_lt) == 13) hmuPhi[myType][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).phi(), weight);
-	if (abs(id_ll) == 13) hmuPhi[myType][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).phi(), weight);
+	if (abs(id_lt) == 11) helePhi[myType][arrNjets]->Fill(cms2.hyp_lt_p4().at(hypIdx).phi(), weight);
+	if (abs(id_ll) == 11) helePhi[myType][arrNjets]->Fill(cms2.hyp_ll_p4().at(hypIdx).phi(), weight);
+	if (abs(id_lt) == 13) hmuPhi[myType][arrNjets]->Fill(cms2.hyp_lt_p4().at(hypIdx).phi(), weight);
+	if (abs(id_ll) == 13) hmuPhi[myType][arrNjets]->Fill(cms2.hyp_ll_p4().at(hypIdx).phi(), weight);
     
-	if (abs(id_lt) == 11) helePhi[3][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).phi(), weight);
-	if (abs(id_ll) == 11) helePhi[3][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).phi(), weight);
-	if (abs(id_lt) == 13) hmuPhi[3][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).phi(), weight);
-	if (abs(id_ll) == 13) hmuPhi[3][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).phi(), weight);
+	if (abs(id_lt) == 11) helePhi[3][arrNjets]->Fill(cms2.hyp_lt_p4().at(hypIdx).phi(), weight);
+	if (abs(id_ll) == 11) helePhi[3][arrNjets]->Fill(cms2.hyp_ll_p4().at(hypIdx).phi(), weight);
+	if (abs(id_lt) == 13) hmuPhi[3][arrNjets]->Fill(cms2.hyp_lt_p4().at(hypIdx).phi(), weight);
+	if (abs(id_ll) == 13) hmuPhi[3][arrNjets]->Fill(cms2.hyp_ll_p4().at(hypIdx).phi(), weight);
     
 	// dilepton mass
-	hdilMass[myType][arrNjets]->Fill(hyp_p4().at(hypIdx).mass(), weight);
-	hdilMassTightWindow[myType][arrNjets]->Fill(hyp_p4().at(hypIdx).mass(), weight);
-	hdilMass[3][arrNjets]->Fill(hyp_p4().at(hypIdx).mass(), weight);
-	hdilMassTightWindow[3][arrNjets]->Fill(hyp_p4().at(hypIdx).mass(), weight);
+	hdilMass[myType][arrNjets]->Fill(cms2.hyp_p4().at(hypIdx).mass(), weight);
+	hdilMassTightWindow[myType][arrNjets]->Fill(cms2.hyp_p4().at(hypIdx).mass(), weight);
+	hdilMass[3][arrNjets]->Fill(cms2.hyp_p4().at(hypIdx).mass(), weight);
+	hdilMassTightWindow[3][arrNjets]->Fill(cms2.hyp_p4().at(hypIdx).mass(), weight);
     
 	// delta phi btw leptons
-	double dphi = fabs(hyp_lt_p4().at(hypIdx).phi() - hyp_ll_p4().at(hypIdx).phi());
+	double dphi = fabs(cms2.hyp_lt_p4().at(hypIdx).phi() - cms2.hyp_ll_p4().at(hypIdx).phi());
 	if (dphi > TMath::Pi()) dphi = TMath::TwoPi() - dphi;
 	hdphiLep[myType][arrNjets]->Fill(dphi, weight);
 	hdphiLep[3][arrNjets]->Fill(dphi, weight);
 			   
 	// dphill vs mll, i.e. the 2d correlation between the previous two variables
-	hdphillvsmll[myType][arrNjets]->Fill(hyp_p4().at(hypIdx).mass(), dphi, weight);
-	hdphillvsmll[3][arrNjets]->Fill(hyp_p4().at(hypIdx).mass(), dphi, weight);
+	hdphillvsmll[myType][arrNjets]->Fill(cms2.hyp_p4().at(hypIdx).mass(), dphi, weight);
+	hdphillvsmll[3][arrNjets]->Fill(cms2.hyp_p4().at(hypIdx).mass(), dphi, weight);
  
 	// lepton Eta
-	if (abs(id_lt) == 11) heleEta[myType][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).eta(), weight);
-	if (abs(id_ll) == 11) heleEta[myType][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).eta(), weight);
-	if (abs(id_lt) == 13) hmuEta[myType][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).eta(), weight);
-	if (abs(id_ll) == 13) hmuEta[myType][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).eta(), weight);
+	if (abs(id_lt) == 11) heleEta[myType][arrNjets]->Fill(cms2.hyp_lt_p4().at(hypIdx).eta(), weight);
+	if (abs(id_ll) == 11) heleEta[myType][arrNjets]->Fill(cms2.hyp_ll_p4().at(hypIdx).eta(), weight);
+	if (abs(id_lt) == 13) hmuEta[myType][arrNjets]->Fill(cms2.hyp_lt_p4().at(hypIdx).eta(), weight);
+	if (abs(id_ll) == 13) hmuEta[myType][arrNjets]->Fill(cms2.hyp_ll_p4().at(hypIdx).eta(), weight);
     
-	if (abs(id_lt) == 11) heleEta[3][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).eta(), weight);
-	if (abs(id_ll) == 11) heleEta[3][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).eta(), weight);
-	if (abs(id_lt) == 13) hmuEta[3][arrNjets]->Fill(hyp_lt_p4().at(hypIdx).eta(), weight);
-	if (abs(id_ll) == 13) hmuEta[3][arrNjets]->Fill(hyp_ll_p4().at(hypIdx).eta(), weight);
+	if (abs(id_lt) == 11) heleEta[3][arrNjets]->Fill(cms2.hyp_lt_p4().at(hypIdx).eta(), weight);
+	if (abs(id_ll) == 11) heleEta[3][arrNjets]->Fill(cms2.hyp_ll_p4().at(hypIdx).eta(), weight);
+	if (abs(id_lt) == 13) hmuEta[3][arrNjets]->Fill(cms2.hyp_lt_p4().at(hypIdx).eta(), weight);
+	if (abs(id_ll) == 13) hmuEta[3][arrNjets]->Fill(cms2.hyp_ll_p4().at(hypIdx).eta(), weight);
        
       
 	// electron trk isolation 
-	double temp_lt_iso = hyp_lt_iso().at(hypIdx);  // so that min works
-	double temp_ll_iso = hyp_ll_iso().at(hypIdx);  // so that min works
+	double temp_lt_iso = cms2.hyp_lt_iso().at(hypIdx);  // so that min works
+	double temp_ll_iso = cms2.hyp_ll_iso().at(hypIdx);  // so that min works
 	if (abs(id_lt) == 11) heleSumPt[myType][arrNjets]->Fill(min(temp_lt_iso,24.99),weight);
 	if (abs(id_lt) == 11) heleSumPt[3][arrNjets]->Fill(min(temp_lt_iso,24.99),weight);
 	if (abs(id_ll) == 11) heleSumPt[myType][arrNjets]->Fill(min(temp_ll_iso,24.99),weight);
@@ -640,13 +646,13 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	double combIso_lt = -1.;
 	double combIso_ll = -1.;
 	if (abs(id_lt) == 13)
-	  combIso_lt = mus_iso03_sumPt().at(i_lt)
-	    +mus_iso03_emEt().at(i_lt)
-	    +mus_iso03_hadEt().at(i_lt);
+	  combIso_lt = cms2.mus_iso03_sumPt().at(i_lt)
+	    +cms2.mus_iso03_emEt().at(i_lt)
+	    +cms2.mus_iso03_hadEt().at(i_lt);
 	if (abs(id_ll) == 13)
-	  combIso_ll = mus_iso03_sumPt().at(i_ll)
-	    +mus_iso03_emEt().at(i_ll)
-	    +mus_iso03_hadEt().at(i_ll);
+	  combIso_ll = cms2.mus_iso03_sumPt().at(i_ll)
+	    +cms2.mus_iso03_emEt().at(i_ll)
+	    +cms2.mus_iso03_hadEt().at(i_ll);
 	if (abs(id_lt) == 13) hmuSumIso[myType][arrNjets]->Fill(min(combIso_lt,24.99),weight);
 	if (abs(id_lt) == 13) hmuSumIso[3][arrNjets]->Fill(min(combIso_lt,24.99),weight);
 	if (abs(id_ll) == 13) hmuSumIso[myType][arrNjets]->Fill(min(combIso_ll,24.99),weight);
@@ -655,19 +661,19 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 
 	// Relative isolation... muons
 	if (abs(id_lt) == 13) {
-	  double thisSum =  mus_iso03_sumPt().at(i_lt) +  
-	    mus_iso03_emEt().at(i_lt)  +
-	    mus_iso03_hadEt().at(i_lt);
-	  double thisPt  = mus_p4().at(i_lt).pt();
+	  double thisSum =  cms2.mus_iso03_sumPt().at(i_lt) +  
+	    cms2.mus_iso03_emEt().at(i_lt)  +
+	    cms2.mus_iso03_hadEt().at(i_lt);
+	  double thisPt  = cms2.mus_p4().at(i_lt).pt();
 	  double temp    = thisPt / (thisPt+thisSum);
 	  hmuRelIso[myType][arrNjets]->Fill(temp, weight);
 	  hmuRelIso[3][arrNjets]->Fill(temp, weight);
 	}
 	if (abs(id_ll) == 13) {
-	  double thisSum =  mus_iso03_sumPt().at(i_ll) +  
-	    mus_iso03_emEt().at(i_ll)  +
-	    mus_iso03_hadEt().at(i_ll);
-	  double thisPt  = mus_p4().at(i_ll).pt();
+	  double thisSum =  cms2.mus_iso03_sumPt().at(i_ll) +  
+	    cms2.mus_iso03_emEt().at(i_ll)  +
+	    cms2.mus_iso03_hadEt().at(i_ll);
+	  double thisPt  = cms2.mus_p4().at(i_ll).pt();
 	  double temp    = thisPt / (thisPt+thisSum);
 	  hmuRelIso[myType][arrNjets]->Fill(temp, weight);
 	  hmuRelIso[3][arrNjets]->Fill(temp, weight);
@@ -676,14 +682,14 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 
 	// Relative isolation... electrons
 	if (abs(id_lt) == 11) {
-	  double thisSum =  hyp_lt_iso().at(hypIdx);
+	  double thisSum =  cms2.hyp_lt_iso().at(hypIdx);
 	  double thisPt  = pt_lt;
 	  double temp    = thisPt / (thisPt+thisSum);
 	  heleRelIso[myType][arrNjets]->Fill(temp, weight);
 	  heleRelIso[3][arrNjets]->Fill(temp, weight);
 	}
 	if (abs(id_ll) == 11) {
-	  double thisSum =  hyp_ll_iso().at(hypIdx);
+	  double thisSum =  cms2.hyp_ll_iso().at(hypIdx);
 	  double thisPt  = pt_ll;
 	  double temp    = thisPt / (thisPt+thisSum);
 	  heleRelIso[myType][arrNjets]->Fill(temp, weight);
@@ -691,39 +697,39 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	}
       
 	// dilepton pt
-	hdilPt[myType][arrNjets]->Fill(hyp_p4().at(hypIdx).pt(), weight);
-	hdilPt[3][arrNjets]->Fill(hyp_p4().at(hypIdx).pt(), weight);
+	hdilPt[myType][arrNjets]->Fill(cms2.hyp_p4().at(hypIdx).pt(), weight);
+	hdilPt[3][arrNjets]->Fill(cms2.hyp_p4().at(hypIdx).pt(), weight);
     
 	// Met and Met phi
-	hmet[myType][arrNjets]->Fill(hyp_met().at(hypIdx), weight);      
-	hmetPhi[myType][arrNjets]->Fill(hyp_metPhi().at(hypIdx), weight);      
-	hmet[3][arrNjets]->Fill(hyp_met().at(hypIdx), weight);      
-	hmetPhi[3][arrNjets]->Fill(hyp_metPhi().at(hypIdx), weight);      
+	hmet[myType][arrNjets]->Fill(cms2.hyp_met().at(hypIdx), weight);      
+	hmetPhi[myType][arrNjets]->Fill(cms2.hyp_metPhi().at(hypIdx), weight);      
+	hmet[3][arrNjets]->Fill(cms2.hyp_met().at(hypIdx), weight);      
+	hmetPhi[3][arrNjets]->Fill(cms2.hyp_metPhi().at(hypIdx), weight);      
 	// pat Met and Met phi
-	hpatmet[myType][arrNjets]->Fill(met_pat_metCor(), weight);      
-	hpatmetPhi[myType][arrNjets]->Fill(met_pat_metPhiCor(), weight);      
-	hpatmet[3][arrNjets]->Fill(met_pat_metCor(), weight);      
-	hpatmetPhi[3][arrNjets]->Fill(met_pat_metPhiCor(), weight);      
+	hpatmet[myType][arrNjets]->Fill(cms2.met_pat_metCor(), weight);      
+	hpatmetPhi[myType][arrNjets]->Fill(cms2.met_pat_metPhiCor(), weight);      
+	hpatmet[3][arrNjets]->Fill(cms2.met_pat_metCor(), weight);      
+	hpatmetPhi[3][arrNjets]->Fill(cms2.met_pat_metPhiCor(), weight);      
     
 	// Met vs dilepton Pt
-	hmetVsDilepPt[myType][arrNjets]->Fill(hyp_met().at(hypIdx), hyp_p4().at(hypIdx).pt(), weight);
-	hmetVsDilepPt[3][arrNjets]->Fill(hyp_met().at(hypIdx), hyp_p4().at(hypIdx).pt(), weight);
+	hmetVsDilepPt[myType][arrNjets]->Fill(cms2.hyp_met().at(hypIdx), cms2.hyp_p4().at(hypIdx).pt(), weight);
+	hmetVsDilepPt[3][arrNjets]->Fill(cms2.hyp_met().at(hypIdx), cms2.hyp_p4().at(hypIdx).pt(), weight);
 	//pat  Met vs dilepton Pt
-	hpatmetVsDilepPt[myType][arrNjets]->Fill(met_pat_metCor(), hyp_p4().at(hypIdx).pt(), weight);
-	hpatmetVsDilepPt[3][arrNjets]->Fill(met_pat_metCor(), hyp_p4().at(hypIdx).pt(), weight);
+	hpatmetVsDilepPt[myType][arrNjets]->Fill(cms2.met_pat_metCor(), cms2.hyp_p4().at(hypIdx).pt(), weight);
+	hpatmetVsDilepPt[3][arrNjets]->Fill(cms2.met_pat_metCor(), cms2.hyp_p4().at(hypIdx).pt(), weight);
     
 	// Met over dilepton Pt vs deltaphi btw the two
-	double dphi2 = fabs(hyp_p4().at(hypIdx).phi() - hyp_metPhi().at(hypIdx));
+	double dphi2 = fabs(cms2.hyp_p4().at(hypIdx).phi() - cms2.hyp_metPhi().at(hypIdx));
 	if (dphi2 > TMath::Pi()) dphi2 = TMath::TwoPi() - dphi2;
 	dphi2 = TMath::Pi() - dphi2;  // changed the definition CC 28 March 08
-	hmetOverPtVsDphi[myType][arrNjets]->Fill(hyp_met().at(hypIdx)/hyp_p4().at(hypIdx).pt(), dphi2, weight);
-	hmetOverPtVsDphi[3][arrNjets]->Fill(hyp_met().at(hypIdx)/hyp_p4().at(hypIdx).pt(), dphi2, weight);
+	hmetOverPtVsDphi[myType][arrNjets]->Fill(cms2.hyp_met().at(hypIdx)/cms2.hyp_p4().at(hypIdx).pt(), dphi2, weight);
+	hmetOverPtVsDphi[3][arrNjets]->Fill(cms2.hyp_met().at(hypIdx)/cms2.hyp_p4().at(hypIdx).pt(), dphi2, weight);
 	//pat Met over dilepton Pt vs deltaphi btw the two
-	dphi2 = fabs(hyp_p4().at(hypIdx).phi() - met_pat_metPhiCor());
+	dphi2 = fabs(cms2.hyp_p4().at(hypIdx).phi() - cms2.met_pat_metPhiCor());
 	if (dphi2 > TMath::Pi()) dphi2 = TMath::TwoPi() - dphi2;
 	dphi2 = TMath::Pi() - dphi2;  // changed the definition CC 28 March 08
-	hpatmetOverPtVsDphi[myType][arrNjets]->Fill(met_pat_metCor()/hyp_p4().at(hypIdx).pt(), dphi2, weight);
-	hpatmetOverPtVsDphi[3][arrNjets]->Fill(met_pat_metCor()/hyp_p4().at(hypIdx).pt(), dphi2, weight);
+	hpatmetOverPtVsDphi[myType][arrNjets]->Fill(cms2.met_pat_metCor()/cms2.hyp_p4().at(hypIdx).pt(), dphi2, weight);
+	hpatmetOverPtVsDphi[3][arrNjets]->Fill(cms2.met_pat_metCor()/cms2.hyp_p4().at(hypIdx).pt(), dphi2, weight);
     
       
 
