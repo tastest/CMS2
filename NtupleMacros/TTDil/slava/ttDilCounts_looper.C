@@ -43,10 +43,10 @@ Bool_t comparePt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1,
 }
 
 
-unsigned int cutConf(unsigned int cutsMask, unsigned int shift, unsigned int mask, std::string* sConf, bool doPrint){
+unsigned int cutConf(unsigned int cutsMask, unsigned int shift, unsigned int mask, std::string* sConf, bool doPrint, char* cutName=""){
   unsigned int res = ((cutsMask>> shift) & mask);
   if ( res > 3 ) { std::cout<<"Config error "<<std::endl; exit (99);}
-  if (doPrint ) if (sConf[res].size() ) std::cout << sConf[res].c_str() << std::endl;
+  if (doPrint ) if (sConf[res].size() ) std::cout << sConf[res].c_str()<<" set by "<<cutName << std::endl;
   //  std::cout<< cutsMask<<" "<<shift<<" "<<mask<<" "<<res<<" "<<sConf[res].c_str()<<std::endl;
   return (res);
 }
@@ -57,7 +57,7 @@ unsigned int cutConf(unsigned int cutsMask, unsigned int shift, unsigned int mas
   std::string CUT##_##shortS[4] = { S1, S2, S3, S4 }
 
 #define SET_CUT(BITS, CUT, SHORTS, FLAG)					\
-  CUT = cutConf(BITS, CUT##_##shift, CUT##_##mask, CUT##_##confS, FLAG);\
+  CUT = cutConf(BITS, CUT##_##shift, CUT##_##mask, CUT##_##confS, FLAG, #CUT); \
   SHORTS += CUT##_##shortS[CUT] == "" ? "" : "_"+CUT##_##shortS[CUT]
 
 int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor, int prescale, bool oldjets, unsigned int cutsMask){
