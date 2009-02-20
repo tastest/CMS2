@@ -17,6 +17,24 @@
 #include "ttDilCounts_looper.h"
 #endif //__CINT__
 
+void pickSkimIfExists(TChain* ch, const std::string& base, const std::string& skimExt){
+  TChain* dummy = new TChain("Events");
+  if (skimExt != ""){
+    std::string skimName = base+skimExt;
+    if (dummy->Add(skimName.c_str())){
+      int nFiles = ch->Add(skimName.c_str());
+      std::cout<<"Skim "<<skimName.c_str()<<" exists: use it. Loaded "<<nFiles<<" files"<<std::endl;
+      return;
+    } else {
+      std::cout<<"Skim "<<skimName.c_str()<<" does not exist ==> will use "<<base.c_str()<<std::endl;
+    }
+  }
+  int nFiles = ch->Add(base.c_str());
+  std::cout<<"Main "<<base.c_str()<<" exists: use it. Loaded "<<nFiles<<" files"<<std::endl;
+  return;
+  
+}
+
 void doAll(unsigned int bitmask, bool skipFWLite = false){
   
   //cut <-> bit mask
@@ -55,7 +73,6 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
 
   // Load and compile something to allow proper treatment of vectors
   // Not clear that it is needed
-  //  gROOT->LoadMacro("loader.C+");
   gSystem->CompileMacro("loader.C", "++k", "libloader");
 
   // Load various tools  
@@ -122,59 +139,62 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
   bool runWQQ      = true;
 
   TChain* chtopdil = new TChain("Events");
-  chtopdil->Add("data/TTJets-madgraph_Fall08_IDEAL_V9_v2/merged*.root");
+  pickSkimIfExists(chtopdil, "data/TTJets-madgraph_Fall08_IDEAL_V9_v2/merged*.root", "_skimSimple2020anydil");
 
   TChain* chtopotr = new TChain("Events");
-  chtopotr->Add("data/TTJets-madgraph_Fall08_IDEAL_V9_v1/merged*.root");
+  pickSkimIfExists(chtopotr, "data/TTJets-madgraph_Fall08_IDEAL_V9_v1/merged*.root", "_skimSimple2020nodil");
 
   TChain* chww = new TChain("Events");
-  chww->Add("data/WW_2l_Summer08_IDEAL_V9_v2/merged*.root");
+  pickSkimIfExists(chww, "data/WW_2l_Summer08_IDEAL_V9_v2/merged*.root", "");
 
   TChain* chWZ = new TChain("Events");
-  chWZ->Add("data/WZ_3l_Summer08_IDEAL_V9_v2/merged*.root"); // can try WZ_3l-Pythia
+  pickSkimIfExists(chWZ, "data/WZ_3l_Summer08_IDEAL_V9_v2/merged*.root", ""); // can try WZ_3l-Pythia
 
   TChain* chZZ = new TChain("Events");
-  chZZ->Add("data/ZZ_2l2n_Summer08_IDEAL_V9_v2/merged*.root");
+  pickSkimIfExists(chZZ, "data/ZZ_2l2n_Summer08_IDEAL_V9_v2/merged*.root", "");
   
   TChain* chWjets = new  TChain("Events");
-  chWjets->Add("data/WJets-madgraph_Fall08_IDEAL_V9_v1/merged*.root");
+  pickSkimIfExists(chWjets, "data/WJets-madgraph_Fall08_IDEAL_V9_v1/merged*.root", "");
 
   TChain* chDYtautau = new  TChain("Events");
-  chDYtautau->Add("data/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged*.root");
+  pickSkimIfExists(chDYtautau, "data/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged*.root", "_skimSimple2020tautau");
   
   TChain* chDYee = new  TChain("Events");
-  chDYee->Add("data/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged*.root");
+  pickSkimIfExists(chDYee, "data/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged*.root", "_skimSimple2020ee");
 
   TChain* chDYmm = new  TChain("Events");
-  chDYmm->Add("data/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged*.root");
+  pickSkimIfExists(chDYmm, "data/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged*.root", "_skimSimple2020mm");
   
   //ppMuX
   TChain* chppMuX = new  TChain("Events");
   if (runppMuX) {
-    chppMuX->Add("data/InclusiveMuPt15/merged*.root"); 
+    pickSkimIfExists(chppMuX, "data/InclusiveMuPt15/merged*.root", "_skimSimple2020"); 
     //can try InclusiveMu5Pt50 .. figure out how to merge later
   }
   
   //ppEM
   TChain* chEM =  new  TChain("Events");
   if (runEM) {
-    chEM->Add("data/QCD_EMenriched_Pt20to30/merged*.root");
-    chEM->Add("data/QCD_EMenriched_Pt30to80/merged*.root");
-    chEM->Add("data/QCD_EMenriched_Pt80to170/merged*.root");
+    pickSkimIfExists(chEM, "data/QCD_EMenriched_Pt20to30/merged*.root", "_skimSimple2020");
+    pickSkimIfExists(chEM, "data/QCD_EMenriched_Pt30to80/merged*.root", "_skimSimple2020");
+    pickSkimIfExists(chEM, "data/QCD_EMenriched_Pt80to170/merged*.root", "_skimSimple2020");
+    pickSkimIfExists(chEM, "data/QCD_BCtoE_Pt20to30/merged*.root", "_skimSimple2020");
+    pickSkimIfExists(chEM, "data/QCD_BCtoE_Pt30to80/merged*.root", "_skimSimple2020");
+    pickSkimIfExists(chEM, "data/QCD_BCtoE_Pt80to170/merged*.root", "_skimSimple2020");
   }
 
   //tW
   TChain* chtW = new  TChain("Events");
   if (runtW) {
-    chtW->Add("data/SingleTop_sChannel-madgraph-LHE/merged*.root"); 
-    chtW->Add("data/SingleTop_tChannel-madgraph-LHE/merged*.root"); 
-    chtW->Add("data/SingleTop_tWChannel-madgraph-LHE/merged*.root"); 
+    pickSkimIfExists(chtW, "data/SingleTop_sChannel-madgraph-LHE/merged*.root", ""); 
+    pickSkimIfExists(chtW, "data/SingleTop_tChannel-madgraph-LHE/merged*.root", ""); 
+    pickSkimIfExists(chtW, "data/SingleTop_tWChannel-madgraph-LHE/merged*.root", ""); 
   }
 
   //WQQ
   TChain* chWQQ = new TChain("Events");
   if (runWQQ) {
-    chWQQ->Add("data/VQQ-madgraph_Fall08_IDEAL_V9_v1/merged*.root");
+    pickSkimIfExists(chWQQ, "data/VQQ-madgraph_Fall08_IDEAL_V9_v1/merged*.root", "");
   }
 
 
