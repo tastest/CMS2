@@ -23,5 +23,6 @@ void setup(bool skipFWLite = false){
   }
 
   //punch in more quesses where NtupleMacros are -- don't keep multiple copies ;)
-  gSystem->AddIncludePath(Form(" -w -I./ -I%s -I../CMS2/NtupleMacros -I../../CMS2/NtupleMacros", cms2Location.c_str()));
+  gSystem->AddIncludePath(Form(" -w -I./ -I%s/CORE -I../CMS2/NtupleMacros/CORE -I../../CMS2/NtupleMacros/CORE\
+  -I%s -I../CMS2/NtupleMacros -I../../CMS2/NtupleMacros ", cms2Location.c_str(),cms2Location.c_str() ));
 }
