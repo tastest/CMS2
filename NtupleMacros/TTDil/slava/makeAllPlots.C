@@ -1,6 +1,6 @@
 void makeAllPlots(char* fname, bool logScale=false){
   gROOT->SetStyle("Plain");
-  gROOT->LoadMacro("loader.C+");
+  gSystem->CompileMacro("loader.C", "++k", "libloader");
   gROOT->ProcessLine(".x setup.C(true)"); //don't need FWLite to make plots
   hist::loadHist(fname);
   
