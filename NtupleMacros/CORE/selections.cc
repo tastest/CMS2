@@ -142,6 +142,16 @@ bool passElectronIsolationLoose2(int index, bool use_calo_iso)
      const double cut = 0.75;
      return el_rel_iso(index, use_calo_iso) > cut;
 } 
+
+//=================================================
+// lepton isolation: use id of the lepton do decode
+//-------------------------------------------------
+bool passLeptonIsolation(int id, int index, bool use_ele_calo_iso){
+  if (abs(id)==11) return passElectronIsolation(index, use_ele_calo_iso);
+  if (abs(id)==13) return passMuonIsolation(index);
+  return false;
+}
+
 //-----------------------------------------------------------
 // Electron Isolation using ECAL clusters
 //-----------------------------------------------------------
@@ -560,7 +570,8 @@ bool passTriLepVeto (int i_dilep)
      return false;
 }
 
-int numberOfExtraMuons(int i_hyp, bool nonisolated = false){
+//int numberOfExtraMuons(int i_hyp, bool nonisolated = false){
+int numberOfExtraMuons(int i_hyp, bool nonisolated){
   unsigned int nMuons = 0;
   for (int imu=0; imu < int(cms2.mus_charge().size()); ++imu) {
     // quality cuts
@@ -945,3 +956,515 @@ int passTrackZVeto(int hyp_index) {
   
   return -1;
 }
+
+
+// count genp leptons
+//-------------------------------------------------- 
+// Returns the number of e,mu, and tau in the doc lines 
+//----------------------------------------------------- 
+void leptonGenpCount(int& nele, int& nmuon, int& ntau) { 
+  nele=0; 
+  nmuon=0; 
+  ntau=0; 
+  int size = cms2.genps_id().size(); 
+  for (int jj=0; jj<size; jj++) { 
+    if (abs(cms2.genps_id().at(jj)) == 11) nele++; 
+    if (abs(cms2.genps_id().at(jj)) == 13) nmuon++; 
+    if (abs(cms2.genps_id().at(jj)) == 15) ntau++; 
+  } 
+} 
+
+
+// TTbar-->dilepton selections for Fall08-based analysis
+double muonTrkIsolationPAT(int index){ 
+  double sum =  cms2.mus_pat_trackIso().at(index); 
+  double pt  = cms2.mus_p4().at(index).pt(); 
+  return  pt/(pt+sum); 
+} 
+double muonCalIsolationPAT(int index){ 
+  double sum =  cms2.mus_pat_caloIso().at(index); 
+  double pt  = cms2.mus_p4().at(index).pt(); 
+  return  pt/(pt+sum); 
+} 
+
+// event-level pat-met: emu met >20, mm,em met>30
+bool passPatMet_OF20_SF30(float metx, float mety, int hypIdx){
+  float mymet = sqrt(metx*metx + mety*mety);
+  if  (cms2.hyp_type().at(hypIdx) == 0 || cms2.hyp_type().at(hypIdx) == 3) {
+    if (mymet < 30) return false;
+  }
+  
+  if (cms2.hyp_type().at(hypIdx) == 1 || cms2.hyp_type().at(hypIdx) == 2) {
+    if (mymet < 20) return false;
+  }
+  return true;
+}
+// event-level pat-met: emu met >20, mm,em met>30
+bool passPatMet_OF20_SF30(int hypIdx){
+  return passPatMet_OF20_SF30(cms2.met_pat_metCor()*cos(cms2.met_pat_metPhiCor()), 
+			      cms2.met_pat_metCor()*sin(cms2.met_pat_metPhiCor()),
+			      hypIdx);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+//New selections for the common TTDil working group
+//-----------------------------------------------------------------------------------------------
+//
+// loose lepton definitions 
+//
+
+bool electron20Eta2p4(int index){
+  if (cms2.els_p4().at(index).pt() < 20 )   return false;
+  if (fabs(cms2.els_p4().at(index).eta()) > 2.4 ) return false;
+  
+  return true;
+}
+
+
+bool looseElectronSelectionNoIsoTTDil08(int index) {
+  if ( ! electron20Eta2p4(index) ) return false;
+  if ( cms2.els_looseId().at(index)     !=  1) return false;
+  if ( fabs(cms2.els_d0corr().at(index)) > 0.040)   return false;
+  if ( cms2.els_closestMuon().at(index) != -1) return false; 
+
+  return true;
+}
+
+//
+double electronTrkIsolationPAT(int index){ 
+  double sum = cms2.els_pat_trackIso().at(index); 
+  double pt  = cms2.els_p4().at(index).pt(); 
+  return pt/(pt+sum); 
+} 
+double electronCalIsolationPAT(int index){ 
+  double sum = cms2.els_pat_caloIso().at(index); 
+  double pt  = cms2.els_p4().at(index).pt(); 
+  return pt/(pt+sum); 
+} 
+
+
+// factorize this stuff out
+float electronTrkIsolationTTDil08(int index){
+  return electronTrkIsolationPAT(index);
+}
+float electronCalIsolationTTDil08(int index){
+  return electronCalIsolationPAT(index);
+}
+
+bool looseElectronSelectionTTDil08(int index) {
+  if ( ! looseElectronSelectionNoIsoTTDil08(index) ) return false;
+
+  if ( electronTrkIsolationTTDil08(index) < 0.5 ) return false;
+  if ( electronCalIsolationTTDil08(index) < 0.5 ) return false;
+
+  return true;
+}
+
+bool passElectronIsolationTTDil08(int index){
+  if ( electronTrkIsolationTTDil08(index) < 0.9 ) return false;
+  if ( electronCalIsolationTTDil08(index) < 0.8 ) return false;
+
+  return true;
+}
+
+bool muon20Eta2p4(int index){
+  if (cms2.mus_p4().at(index).pt() < 20 ) return false;
+  if (fabs(cms2.mus_p4().at(index).eta()) >2.4 ) return false;
+
+  return true;
+}
+
+bool looseMuonSelectionNoIsoTTDil08(int index) {
+
+  if (! muon20Eta2p4(index) ) return false;
+
+  if(!(2 & cms2.mus_type().at(index))) return false;
+  if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) > 10.) return false;
+  //  if (fabs(cms2.mus_d0corr().at(index))   > 0.25) return false;
+  if (cms2.mus_validHits().at(index) < 11)    return false;
+  
+  return true;
+}
+
+bool lepton20Eta2p4(int id, int index){
+  if (abs(id)==11) return electron20Eta2p4(index);
+  if (abs(id)==13) return muon20Eta2p4(index);
+  return false;
+}
+
+// factorize this stuff out
+float muonTrkIsolationTTDil08(int index){
+  return muonTrkIsolationPAT(index);
+}
+float muonCalIsolationTTDil08(int index){
+  return muonCalIsolationPAT(index);
+}
+
+float leptonTrkIsolationTTDil08(int id, int index){
+  if (abs(id) == 11) return electronTrkIsolationTTDil08(index);
+  if (abs(id) == 13) return muonTrkIsolationTTDil08(index);
+  return -1;
+}
+float leptonCalIsolationTTDil08(int id, int index){
+  if (abs(id) == 11) return electronCalIsolationTTDil08(index);
+  if (abs(id) == 13) return muonCalIsolationTTDil08(index);
+  return -1;
+}
+
+bool looseMuonSelectionTTDil08(int index) {
+  if (! looseMuonSelectionNoIsoTTDil08(index) ) return false;
+  
+  if ( muonTrkIsolationTTDil08(index) < 0.5 ) return false;
+  if ( muonCalIsolationTTDil08(index) < 0.5 ) return false;
+
+  return true;
+}
+
+bool passMuonIsolationTTDil08(int index) {
+  if ( muonTrkIsolationTTDil08(index) < 0.9 ) return false;
+  if ( muonCalIsolationTTDil08(index) < 0.9 ) return false;
+
+  return true;
+}
+
+//now make it figure out which lepton type it is
+bool passLeptonIsolationTTDil08(int id, int index){
+  if (abs(id) == 11) return passElectronIsolationTTDil08(index);
+  if (abs(id) == 13) return passMuonIsolationTTDil08(index);
+  return false;
+}
+
+bool looseLeptonSelectionNoIsoTTDil08(int id, int index){
+  if (abs(id) == 11) return looseElectronSelectionNoIsoTTDil08(index);  
+  if (abs(id) == 13) return looseMuonSelectionNoIsoTTDil08(index);
+  return false;
+}
+bool looseLeptonSelectionTTDil08(int id, int index){
+  if (abs(id) == 11) return looseElectronSelectionTTDil08(index);  
+  if (abs(id) == 13) return looseMuonSelectionTTDil08(index);
+  return false;
+}
+
+//------------------------------------------------------------------------------------
+
+//--------------------------------------------------------------------
+// Veto events if there are two leptons in the 
+// event that make the Z mass.  This uses the mus and els
+// blocks, ie, it is a veto that can use the 3rd (4th,5th,..)
+// lepton in the event.
+//
+// Both leptons must be 20 GeV, and pass the same cuts as 
+// the hypothesis leptons, except that one of them can be non-isolated
+//---------------------------------------------------------------------
+bool additionalZvetoTTDil08() {
+
+  // true if we want to veto this event
+  bool veto=false;
+
+  // first, look for Z->mumu
+  for (uint i=0; i<cms2.mus_p4().size(); i++) {
+    if (cms2.mus_p4().at(i).pt() < 20.)     continue;
+    if (!looseMuonSelectionNoIsoTTDil08(i)) continue;
+
+    for (uint j=i+1; j<cms2.mus_p4().size(); j++) {
+      if (cms2.mus_p4().at(j).pt() < 20.) continue;
+      if (!looseMuonSelectionNoIsoTTDil08(j)) continue;
+
+      if (cms2.mus_charge().at(i) == cms2.mus_charge().at(j)) continue;
+
+      // At least one of them has to pass isolation
+      if (!passMuonIsolationTTDil08(i) && !passMuonIsolationTTDil08(j)) continue;
+
+      // Make the invariant mass
+      ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
+	vec = cms2.mus_p4().at(i) + cms2.mus_p4().at(j);
+      if ( inZmassWindow(vec.mass()) ) return true;
+
+    }
+  }
+
+  // now, look for Z->ee
+  for (uint i=0; i<cms2.evt_nels(); i++) {
+    if (cms2.els_p4().at(i).pt() < 20.)     continue;
+    if (!looseElectronSelectionNoIsoTTDil08(i)) continue;
+
+    for (uint j=i+1; j<cms2.evt_nels(); j++) {
+      if (cms2.els_p4().at(j).pt() < 20.) continue;
+      if (!looseElectronSelectionNoIsoTTDil08(j)) continue;
+
+      if (cms2.els_charge().at(i) == cms2.els_charge().at(j)) continue;
+
+      // At least one of them has to pass isolation
+      if (!passElectronIsolationTTDil08(i) && !passElectronIsolationTTDil08(j)) continue;
+
+      // Make the invariant mass
+      ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
+	vec = cms2.els_p4().at(i) + cms2.els_p4().at(j);
+      if ( inZmassWindow(vec.mass()) ) return true;
+
+    }
+  }
+  // done
+  return veto;
+}
+
+// 
+// true if there is a muon not in the hypothesis
+bool haveExtraMuon(int hypIdx){
+  bool result = false;
+
+  int nHMus = 0;
+  if (abs(cms2.hyp_lt_id().at(hypIdx))==13){
+    nHMus++;
+  }
+  if (abs(cms2.hyp_ll_id().at(hypIdx))==13){
+    nHMus++;
+  }
+
+  int nEvtMus = cms2.mus_p4().size();
+  result = (nEvtMus - nHMus) > 0;
+
+  return result;
+}
+
+// true if there is a muon not in the hypothesis
+bool haveExtraMuon5(int hypIdx){
+  double minPtCut = 5;
+  bool result = false;
+
+  int nHMus = 0;
+  if (abs(cms2.hyp_lt_id().at(hypIdx))==13){
+    if (cms2.hyp_lt_p4().at(hypIdx).pt() > minPtCut ) nHMus++;
+  }
+  if (abs(cms2.hyp_ll_id().at(hypIdx))==13){
+    if (cms2.hyp_ll_p4().at(hypIdx).pt() > minPtCut) nHMus++;
+  }
+
+  int nEvtMus = 0;
+  for (uint iMu = 0; iMu < cms2.mus_p4().size(); ++iMu){
+    if (cms2.mus_p4().at(iMu).pt() > minPtCut) nEvtMus++;
+  }
+  result = (nEvtMus - nHMus) > 0;
+
+  return result;
+}
+
+
+
+// Trigger-related selections
+
+//Bits passing for hyp type
+bool passTriggersMu9orLisoE15(int dilType) {
+  bool hltLooseIsoEle15_LW_L1R = ((cms2.evt_HLT2() & (1<<(47-32))) != 0);
+  bool hltMu9 = ((cms2.evt_HLT3() & (1<<(82-64))) != 0);
+  
+  if (dilType == 0 && ! (hltMu9) ) return false;
+  if ((dilType == 1 || dilType == 2) && ! (hltMu9 || hltLooseIsoEle15_LW_L1R)) return false;
+  if (dilType == 3 && ! hltLooseIsoEle15_LW_L1R) return false;     
+
+  return true;
+}
+
+
+bool passTriggersTTDil08JanTrial(int dilType) {
+  bool hltIsoEle18_L1R = ((cms2.evt_HLT2() & (1<<(45-32))) != 0);
+  bool hltDoubleIsoEle12_L1R = ((cms2.evt_HLT2() & (1<<(54-32))) != 0); 
+  bool hltMu15_L1Mu7 = ((cms2.evt_HLT3() & (1<<(86-64))) != 0); 
+  bool hltDoubleMu3 = ((cms2.evt_HLT3() & (1<<(90-64))) != 0);
+  bool hltIsoEle10_Mu10_L1R = ((cms2.evt_HLT4() & (1<<(126-96))) != 0);
+  
+  if (dilType == 0 && ! (hltMu15_L1Mu7 || hltDoubleMu3) ) return false;
+  if ((dilType == 1 || dilType == 2) 
+      && ! (hltIsoEle18_L1R || hltMu15_L1Mu7 || hltIsoEle10_Mu10_L1R)) return false;
+  if (dilType == 3 && ! (hltIsoEle18_L1R || hltDoubleIsoEle12_L1R) ) return false; 
+  return true;
+}
+
+
+int genpCountPDGId(int id0, int id1, int id2){ 
+  int count = 0; 
+  int size = cms2.genps_id().size(); 
+  for (int jj=0; jj<size; jj++) { 
+    if (abs(cms2.genps_id().at(jj)) == id0) count++; 
+    if (abs(cms2.genps_id().at(jj)) == id1) count++; 
+    if (abs(cms2.genps_id().at(jj)) == id2) count++; 
+  } 
+  return count; 
+} 
+
+
+int genpDileptonType(){
+  //0 mumu; 1 emu; 2 ee
+  
+  uint nmus = 0;
+  uint nels = 0;
+  int size = cms2.genps_id().size();
+  for (int jj=0; jj<size; jj++) {
+    if (abs(cms2.genps_id().at(jj)) == 11) nels++;
+    if (abs(cms2.genps_id().at(jj)) == 13) nmus++;
+  }
+
+  if ((nels + nmus) != 2){
+    return -1;
+  }
+
+  int dilType = -1;
+  if (nmus == 2) dilType = 0;
+  if (nels == 2) dilType = 2;
+  if (nels == 1 && nmus == 1) dilType = 1;
+  return dilType;
+}
+
+
+
+int eventDilIndexByWeightTTDil08(const std::vector<unsigned int>& goodHyps, int& strasbourgDilType, bool printDebug){
+  int result = -1;
+  unsigned int nGoodHyps = goodHyps.size();
+  if ( nGoodHyps == 0 ) return result;
+
+  float maxWeight = -1;
+  unsigned int maxWeightIndex = 9999;
+  
+  for (unsigned int hypIdxL=0; hypIdxL < nGoodHyps; ++hypIdxL){
+    unsigned int hypIdx = goodHyps[hypIdxL];
+    float hypWeight_lt = 0;
+    float hypWeight_ll = 0;
+    float hypWeight_iso = 0;
+    float hypWeight = 0;
+    unsigned int i_lt = cms2.hyp_lt_index().at(hypIdx);
+    unsigned int i_ll = cms2.hyp_ll_index().at(hypIdx);
+
+    int id_lt = cms2.hyp_lt_id().at(hypIdx);
+    int id_ll = cms2.hyp_ll_id().at(hypIdx);
+
+    float isoTk_lt = leptonTrkIsolationTTDil08(id_lt, i_lt);
+    float isoTk_ll = leptonTrkIsolationTTDil08(id_ll, i_ll);
+
+    float isoCal_lt = leptonCalIsolationTTDil08(id_lt, i_lt);
+    float isoCal_ll = leptonCalIsolationTTDil08(id_ll, i_ll);
+
+    //ad-hoc selection of weights
+    if (abs(id_lt) == 11){
+      //I want to select "trk & cal"-isolated ones
+      hypWeight_iso += (isoTk_lt*isoCal_lt - 0.25); //shift by 0.25 to be positive-definite
+      if (cms2.els_tightId().at(i_lt)) hypWeight_lt += 0.2;
+    }
+    if (abs(id_lt) == 13){
+      //I want to select "trk & cal"-isolated ones	    
+      hypWeight_iso += (isoTk_lt*isoCal_lt - 0.25);//shift by 0.25 to be positive-definite
+      hypWeight_lt += 0.4;
+    }
+    if (abs(id_ll) == 11){
+      //I want to select "trk & cal"-isolated ones
+      hypWeight_iso *= (isoTk_ll*isoCal_ll - 0.25); //shift by 0.25 to be positive-definite
+      if (cms2.els_tightId().at(i_ll)) hypWeight_ll += 0.2;
+    }
+    if (abs(id_ll) == 13){
+      //I want to select "trk & cal"-isolated ones
+      hypWeight_iso *= (isoTk_ll*isoCal_ll - 0.25); //shift by 0.25 to be positive-definite
+      hypWeight_ll += 0.4;
+    }
+    float pt_lt = cms2.hyp_lt_p4().at(hypIdx).pt();
+    float pt_ll = cms2.hyp_ll_p4().at(hypIdx).pt();
+    hypWeight_lt += (1. - 20./pt_lt*20./pt_lt);
+    hypWeight_ll += (1. - 20./pt_ll*20./pt_ll);
+
+    hypWeight = hypWeight_ll*hypWeight_lt*hypWeight_iso; //again, desire to have both good
+
+    if (hypWeight > maxWeight){
+      maxWeight = hypWeight;
+      maxWeightIndex = hypIdx;
+    }
+  }
+
+
+  //Now let's implement the Strasbourg-type disambiguation/dispatch
+  //ee
+  {
+    std::vector<unsigned int> looseEls(0);
+    std::vector<unsigned int> looseMus(0);
+    for (unsigned int iEl =0; iEl < cms2.els_p4().size(); ++iEl){
+      if (looseElectronSelectionTTDil08(iEl)){
+	looseEls.push_back(iEl);
+      }
+    }
+    for (unsigned int iMu =0; iMu < cms2.mus_p4().size(); ++iMu){
+      if (looseMuonSelectionTTDil08(iMu)){
+	looseMus.push_back(iMu);
+      }
+    }
+	    
+    bool pass_elec = false;
+    if (looseEls.size()>1){
+      if (cms2.els_charge().at(looseEls[0]) != cms2.els_charge().at(looseEls[1])){
+	pass_elec = true;
+      }
+      if (looseMus.size()>0 && cms2.mus_p4().at(looseMus[0]).pt() > cms2.els_p4().at(looseEls[1]).pt()) pass_elec = false;
+      if (looseMus.size()>0 && 
+	  ( ( muonTrkIsolationTTDil08(looseMus[0]) > electronTrkIsolationTTDil08(looseEls[0]) 
+	      && cms2.mus_charge().at(looseMus[0]) != cms2.els_charge().at(looseEls[0]) )
+	    || ( muonTrkIsolationTTDil08(looseMus[0]) > electronTrkIsolationTTDil08(looseEls[1])
+		 && cms2.mus_charge().at(looseMus[0]) != cms2.els_charge().at(looseEls[0]))
+	    )
+	  ) pass_elec = false; 
+    }
+    bool pass_muon = false;
+    if (looseMus.size()>1){
+      for (unsigned int iMu=0; iMu < looseMus.size(); ++iMu){
+	for (unsigned int jMu=iMu+1; jMu < looseMus.size(); ++jMu){
+	  if (cms2.mus_charge().at(looseMus[iMu]) != cms2.mus_charge().at(looseMus[jMu])) pass_muon = true;
+	}
+      }
+      if (looseEls.size()>0 && cms2.els_p4().at(looseEls[0]).pt() > cms2.mus_p4().at(looseMus[1]).pt()
+	  && cms2.mus_charge().at(looseMus[1]) != cms2.els_charge().at(looseEls[0])) pass_muon = false;
+    }
+    bool pass_elecmuon = false;
+    if (looseMus.size() > 0 && looseEls.size() > 0){
+      if (! pass_elec && ! pass_muon ){
+	if (cms2.mus_charge().at(looseMus[0]) != cms2.els_charge().at(looseEls[0])) pass_elecmuon = true;
+	if (! pass_elecmuon && looseEls.size()>1){
+	  if (cms2.mus_charge().at(looseMus[0]) != cms2.els_charge().at(looseEls[0])) pass_elecmuon = true;
+	}
+      }
+    }
+
+    unsigned int passStatus = 0;
+    if (pass_muon) passStatus++;
+    if (pass_elecmuon) passStatus++;
+    if (pass_elec) passStatus++;
+    if (passStatus > 1) std::cout<<"ERROR: inconsistent assignment"<<std::endl;
+    if (passStatus == 1){
+      if (pass_muon) strasbourgDilType = 0;
+      if (pass_elecmuon) strasbourgDilType = 1;
+      if (pass_elec) strasbourgDilType = 2;
+    }
+  }
+
+  if (printDebug){
+    int genpDilType = genpDileptonType();
+    if (genpDilType>=0 ){ std::cout<<"Dil type "<<genpDilType<<std::endl;
+      if (nGoodHyps > 1){
+	int maxWeightType = cms2.hyp_type().at(maxWeightIndex);
+	if ((maxWeightType == 0 && genpDilType == 0)
+	    || ( (maxWeightType == 1 || maxWeightType == 2) && genpDilType == 1)
+	    || (maxWeightType == 3 && genpDilType == 2)){
+	  std::cout<<"Dil type "<<genpDilType<<" ; Strasbourg dil type "<<strasbourgDilType 
+		   <<" assigned correctly by maxWeight method";
+	  std::cout<<" out of"; for(unsigned int iih=0;iih<nGoodHyps;++iih)std::cout<<" "<<cms2.hyp_type().at(goodHyps[iih]);
+	  std::cout<<std::endl;
+	} else {
+	  std::cout<<"Dil type "<<genpDilType<<" ; Strasbourg dil type "<<strasbourgDilType 
+		   <<" assigned incorrectly by maxWeight method";
+	  std::cout<<" out of"; for(unsigned int iih=0;iih<nGoodHyps;++iih)std::cout<<" "<<cms2.hyp_type().at(goodHyps[iih]);
+	  std::cout<<std::endl;	    
+	}
+      }
+    }
+  }
+
+  result = maxWeightIndex;
+  return result;
+}
+
+

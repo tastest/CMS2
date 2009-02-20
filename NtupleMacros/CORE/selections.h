@@ -75,4 +75,37 @@ bool pass5Met (int i_hyp, const TVector3& corr);
 //
 
 
+bool passLeptonIsolation(int id, int index, bool use_ele_calo_iso);
+void leptonGenpCount(int& nele, int& nmuon, int& ntau) ; 
+double muonTrkIsolationPAT(int index); 
+double muonCalIsolationPAT(int index); 
+bool electron20Eta2p4(int index);
+bool looseElectronSelectionNoIsoTTDil08(int index) ;
+double electronTrkIsolationPAT(int index); 
+double electronCalIsolationPAT(int index); 
+float electronTrkIsolationTTDil08(int index);
+float electronCalIsolationTTDil08(int index);
+bool looseElectronSelectionTTDil08(int index) ;
+bool passElectronIsolationTTDil08(int index);
+bool muon20Eta2p4(int index);
+bool looseMuonSelectionNoIsoTTDil08(int index) ;
+bool lepton20Eta2p4(int id, int index);
+float muonTrkIsolationTTDil08(int index);
+float muonCalIsolationTTDil08(int index);
+float leptonTrkIsolationTTDil08(int id, int index);
+float leptonCalIsolationTTDil08(int id, int index);
+bool looseMuonSelectionTTDil08(int index) ;
+bool passMuonIsolationTTDil08(int index) ;
+bool passLeptonIsolationTTDil08(int id, int index);
+bool looseLeptonSelectionNoIsoTTDil08(int id, int index);
+bool looseLeptonSelectionTTDil08(int id, int index);
+bool additionalZvetoTTDil08() ;
+bool haveExtraMuon(int hypIdx);
+bool haveExtraMuon5(int hypIdx);
+bool passTriggersMu9orLisoE15(int dilType) ;
+bool passTriggersTTDil08JanTrial(int dilType) ;
+int genpCountPDGId(int id0, int id1=-1, int id2=-1); 
+int genpDileptonType();
+int eventDilIndexByWeightTTDil08(const std::vector<unsigned int>& goodHyps, int& strasbourgDilType, bool printDebug = false);
+
 #endif
