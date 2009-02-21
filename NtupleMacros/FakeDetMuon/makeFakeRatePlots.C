@@ -114,8 +114,8 @@ void makeFractionPlots(TFile *file,
   fake_rate->SetMarkerColor(kBlack);
   fake_rate->SetDirectory(output);
   fake_rate->SetMinimum(0.0);
-  //  fake_rate->SetMaximum(1.0);
-  fake_rate->SetMaximum(0.05);
+  fake_rate->SetMaximum(1.0);
+  //  fake_rate->SetMaximum(0.5);
   fake_rate->GetXaxis()->SetLabelSize(0.03);
   fake_rate->GetXaxis()->SetTitleSize(0.03);
   fake_rate->GetXaxis()->SetTitleOffset(2.);
@@ -147,8 +147,8 @@ void makeFractionPlots(TFile *file,
   fake_rate_error->SetMarkerColor(kBlack);
   fake_rate_error->SetDirectory(output);
   fake_rate_error->SetMinimum(0.0);
-  //  fake_rate_error->SetMaximum(1.0);
-  fake_rate_error->SetMaximum(0.05);
+  fake_rate_error->SetMaximum(1.0);
+  //  fake_rate_error->SetMaximum(0.5);
   for ( unsigned int x = 0;
 	x <= fake_rate->GetNbinsX();
 	++x) {
@@ -184,8 +184,8 @@ void makeFractionPlots(TFile *file,
   fake_rate_project_x->SetMarkerColor(kRed);
   fake_rate_project_x->SetDirectory(output);
   fake_rate_project_x->SetMinimum(0.0);
+  fake_rate_project_x->SetMaximum(1.0);
   //  fake_rate_project_x->SetMaximum(0.5);
-  fake_rate_project_x->SetMaximum(0.05);
 
   TH1D *fake_rate_project_y_num = num->ProjectionY("3",-1,-1,"e");
   TH1D *fake_rate_project_y_den = den->ProjectionY("4",-1,-1,"e");
@@ -212,8 +212,8 @@ void makeFractionPlots(TFile *file,
   fake_rate_project_y->SetMarkerColor(kRed);
   fake_rate_project_y->SetDirectory(output);
   fake_rate_project_y->SetMinimum(0.0);
+  fake_rate_project_y->SetMaximum(1.0);
   //  fake_rate_project_y->SetMaximum(0.5);
-  fake_rate_project_y->SetMaximum(0.05);
 
   TPad *pad1 = canvas.cd(1);
   fake_rate->Draw("LEGO2");

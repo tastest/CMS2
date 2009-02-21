@@ -393,6 +393,82 @@ bool isFakeNumeratorElectron_v7 (int index, int type)
   return result;
   
 }
+bool isFakeDenominatorMuon_v1 (int index) 
+{
+  //
+  // returns true if input fulfills certain cuts
+  //
+
+  // cut definition
+  float pt_cut        		= 20.;
+  float eta_cut       		= 2.5;
+
+  bool result = true;
+
+  // need: 
+
+  // - global muon
+  if ( (cms2.mus_type().at(index)&0x2)==0 )                                result = false;
+
+  // - pt > 20 GeV
+  if ( cms2.mus_p4()[index].Pt()  < pt_cut )                               result = false;
+
+  // - d0corr < 0.1 cm -> loosened to 0.2!!
+  if (TMath::Abs(cms2.mus_d0corr().at(index))   > 0.2)                     result = false;
+
+  // - chi2/ndf < 20 (?)
+  if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) > 20.) result = false;
+
+  // - isoSumPt < 15 -> needs revision - would go for same def as for electrons?
+  // - changed iso to mu_rel_iso > 0.75
+    if ( !passMuonIsolationLoose(index) )          	                   result = false; 
+
+  //  if (cms2.mus_validHits().at(index) < 11)                             result = false;
+
+  if ( TMath::Abs(cms2.mus_p4()[index].Eta()) > eta_cut )                  result = false;
+
+  return result;
+
+}
+
+bool isFakeNumeratorMuon_v1 (int index, int type) 
+{ 
+  //
+  // 1=loose, 2=tight
+  //
+  // returns true if input fulfills certain cuts
+  //
+  
+  // cut definition
+  float pt_cut        		= 20;
+  float eta_cut       		= 2.5;
+
+  bool result = true;
+
+  // need: 
+  // - global muon
+  // - pt > 20 GeV
+  // - d0corr < 0.1 cm
+  // - chi2/ndf < 10
+  // - isoSumPt < 3 -> needs revision - would go for same def as for electrons?
+
+  if ( cms2.mus_p4()[index].Pt()  < pt_cut )              result = false;
+  if ( TMath::Abs(cms2.mus_p4()[index].Eta()) > eta_cut ) result = false;
+  if ( !passMuonIsolation(index) )          	          result = false;
+  if ( type == 1 ) {
+    // loose
+    // Currently this is the same as tight
+    if ( !goodMuonWithoutIsolation(index) )               result = false;
+  } else if ( type == 2 ) {
+    // tight
+    if ( !goodMuonWithoutIsolation(index) )               result = false;
+  } else {
+    cout << "WARNING: wrong muon type detected, please select loose (1) or tight (2)" << endl;
+  }
+
+  return result;
+  
+}
 
 #define USE_V7
 
@@ -411,6 +487,11 @@ bool isFakeable (int i_el)
 #endif
 }
 
+bool isFakeableMuon (int i_mu)
+{
+  return  isFakeDenominatorMuon_v1(i_mu);
+}
+
 double elFakeProb (int i_el, int add_error_times)
 {
 #ifdef USE_V5
@@ -426,6 +507,12 @@ double elFakeProb (int i_el, int add_error_times)
 #endif
 }
 
+double muFakeProb (int i_mu, int add_error_times)
+{
+  //     return muFakeProb_v1(i_mu, add_error_times);
+     return -999.99;
+}
+
 bool isNumeratorElectron (int index, int type)
 {
 #ifdef USE_V5
@@ -439,6 +526,11 @@ bool isNumeratorElectron (int index, int type)
 #else
      return isNumeratorElectron_v2_2(index, type);
 #endif
+}
+
+bool isNumeratorMuon (int index, int type)
+{
+     return isFakeNumeratorMuon_v1(index, 2);
 }
 
 TH2F &fakeRate ()

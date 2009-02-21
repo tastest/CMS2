@@ -16,6 +16,7 @@ bool passElectronIsolation_1_6(int index, bool use_calo_iso);
 bool passElectronIsolationLoose_1_6(int index, bool use_calo_iso);
 bool passElectronIsolationLoose2_1_6(int index, bool use_calo_iso);
 bool passMuonIsolation(int index);
+bool passMuonIsolationLoose(int index);
 bool goodMuonIsolated(int index);
 bool goodElectronIsolated(int index, bool use_calo_iso = false);
 bool goodLooseElectronWithoutIsolation(int index);

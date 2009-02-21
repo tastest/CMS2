@@ -15,12 +15,22 @@ void prepareFakeRateHistograms() {
   vector<char*> histograms;
 
   bool useQCDBCtoE = true;
-  bool useInclusiveSamples = true;
+  bool useInclusiveSamples = false;
+  bool useInclusiveMuonSamples = true;
 
+  if(useInclusiveSamples && useInclusiveMuonSamples) {
+    cout<<"Both incl QCD and inclusiveMuon samples are set to true - currently not possible. EXIT"<<endl;
+    break;
+  }
+    
 
   if ( useInclusiveSamples ) {
     qcdBins.push_back("QCDpt30");
-  } else {
+  }
+  else if( useInclusiveMuonSamples ) {
+    qcdBins.push_back("InclusiveMuPt15");
+  }
+  else {
     qcdBins.push_back("QCDEMenrichedPt20to30");
     qcdBins.push_back("QCDEMenrichedPt30to80");
     qcdBins.push_back("QCDEMenrichedPt80to170");

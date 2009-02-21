@@ -198,6 +198,14 @@ bool passMuonIsolation(int index)
 {
      return mu_rel_iso(index) > 0.92;
 }
+
+bool passMuonIsolationLoose(int index) 
+{
+  //     const double cut = 0.85; leads to 107 pred, 81 obs
+     const double cut = 0.75;
+     return mu_rel_iso(index) > cut;
+} 
+
 //--------------------------------------------
 // Muon ID with isolation
 //--------------------------------------------
