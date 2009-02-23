@@ -71,10 +71,6 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
   //                                            ee -> HLT_IsoEle18_L1R || HLT_DoubleIsoEle12_L1R
   //                                            em -> HLT_IsoEle18_L1R || HLT_Mu15_L1Mu7 || HLT_IsoEle10_Mu10_L1R
 
-  // Load and compile something to allow proper treatment of vectors
-  // Not clear that it is needed
-  gSystem->CompileMacro("loader.C", "++k", "libloader");
-
   // Load various tools  
   gROOT->ProcessLine(Form(".x setup.C(%d)",skipFWLite));
 
@@ -106,7 +102,7 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
   float kppMuX    = 1.; //xsec/nevents
   float kEM       = 1.;
   float ktW       = 1.; //the evtScale is all negative for some reason
-  float kWQQ      = 1;
+  float kVQQ      = 1;
 
   // Prescales
   int prettdil    = 1;
@@ -121,7 +117,7 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
   int preppMuX    = 1;
   int preEM       = 1;
   int pretW       = 1;
-  int preWQQ      = 1;
+  int preVQQ      = 1;
 
   // Flags for files to run over
   bool runttdil    = true;
@@ -136,7 +132,7 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
   bool runppMuX    = true;
   bool runEM       = true;
   bool runtW       = true;
-  bool runWQQ      = true;
+  bool runVQQ      = true;
 
   TChain* chtopdil = new TChain("Events");
   pickSkimIfExists(chtopdil, "data/TTJets-madgraph_Fall08_IDEAL_V9_v2/merged*.root", "_skimSimple2020anydil");
@@ -191,10 +187,10 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
     pickSkimIfExists(chtW, "data/SingleTop_tWChannel-madgraph-LHE/merged*.root", ""); 
   }
 
-  //WQQ
-  TChain* chWQQ = new TChain("Events");
-  if (runWQQ) {
-    pickSkimIfExists(chWQQ, "data/VQQ-madgraph_Fall08_IDEAL_V9_v1/merged*.root", "");
+  //VQQ
+  TChain* chVQQ = new TChain("Events");
+  if (runVQQ) {
+    pickSkimIfExists(chVQQ, "data/VQQ-madgraph_Fall08_IDEAL_V9_v1/merged*.root", "");
   }
 
 
@@ -269,10 +265,10 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
     hist::color("tW", 63);
   }
     
-  if (runWQQ) {
-    cout << "Processing WQQ"<<endl;
-    looper->ScanChain(chWQQ,"WQQ", kWQQ, preWQQ, oldjet, bitmask);
-    hist::color("WQQ", 45);
+  if (runVQQ) {
+    cout << "Processing VQQ"<<endl;
+    looper->ScanChain(chVQQ,"VQQ", kVQQ, preVQQ, oldjet, bitmask);
+    hist::color("VQQ", 45);
   }
 
   //save all the histograms
