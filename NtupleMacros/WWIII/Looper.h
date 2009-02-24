@@ -40,6 +40,8 @@
 	  CUT_MU_ISO,
 	  CUT_LT_CALOISO,
 	  CUT_LL_CALOISO,
+	  CUT_LT_CALOISO_1_6,
+	  CUT_LL_CALOISO_1_6,
 	  CUT_ONE_CALOISO,
 	  CUT_TWO_CALOISO,
 	  CUT_EL_CALOISO,
@@ -193,6 +195,11 @@ const static cuts_t baseline_no_btags_cuts = baseline_cuts &
 const static cuts_t baseline_no_caloiso_cuts = (baseline_cuts & 
 						~(CUT_BIT(CUT_LT_CALOISO) | CUT_BIT(CUT_LL_CALOISO))) | 
      CUT_BIT(CUT_LT_ISO) | CUT_BIT(CUT_LL_ISO);
+
+// use 1_6 trk+calo iso for electrons 
+const static cuts_t baseline_caloiso_1_6_cuts = (baseline_cuts & 
+						~(CUT_BIT(CUT_LT_CALOISO) | CUT_BIT(CUT_LL_CALOISO))) | 
+     CUT_BIT(CUT_LT_CALOISO_1_6) | CUT_BIT(CUT_LL_CALOISO_1_6);
 
 // skip pass4 met cut (in emu, this is the same as not making a pMET cut)
 const static cuts_t baseline_no_pass4met_cuts = baseline_cuts & 

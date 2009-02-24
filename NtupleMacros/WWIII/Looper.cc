@@ -31,14 +31,14 @@ void Looper::BookHistos ()
        htrackJetPt	= new NMinus1Hist(sample_, "trackJetPt"      ,	 6	, -0.5, 5	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)) 	);
        hminLepPt	= new NMinus1Hist(sample_, "minLepPt"        ,	 150	, 0, 150	, cuts_, CUT_BIT(CUT_LL_PT)	);
        hmaxLepPt	= new NMinus1Hist(sample_, "maxLepPt"        ,	 150	, 0, 150	, cuts_, CUT_BIT(CUT_LL_PT)  	);
-       hltPt		= new NMinus1Hist(sample_, "ltPt"            ,	 150	, 0, 150	, cuts_, (CUT_BIT(CUT_LT_PT))	);
-       hllPt		= new NMinus1Hist(sample_, "llPt"            ,	 150	, 0, 150	, cuts_, (CUT_BIT(CUT_LL_PT))	);
+       hltPt		= new NMinus1Hist(sample_, "ltPt"            ,	 15	, 0, 150	, cuts_, (CUT_BIT(CUT_LT_PT))	);
+       hllPt		= new NMinus1Hist(sample_, "llPt"            ,	 15	, 0, 150	, cuts_, (CUT_BIT(CUT_LL_PT))	);
        helPt		= new NMinus1Hist(sample_, "elPt"            ,	 16	, 0, 160	, cuts_, CUT_BIT(CUT_LL_PT)	);
        hmuPt		= new NMinus1Hist(sample_, "muPt"            ,	 16	, 0, 160	, cuts_, CUT_BIT(CUT_LL_PT)	);
        helEta		= new NMinus1Hist(sample_, "elEta"           ,	 12	, -3, 3		, cuts_, 0);
        hmuEta		= new NMinus1Hist(sample_, "muEta"           ,	 12	, -3, 3		, cuts_, 0);
        hdphiLep		= new NMinus1Hist(sample_, "dphiLep"         ,	 50	, 0, M_PI	, cuts_, 0	);
-       hdilMass		= new NMinus1Hist(sample_, "dilMass"         ,	 100	, 0, 300	, cuts_, CUT_BIT(CUT_PASS_ZVETO) | CUT_BIT(CUT_PASS_ADDZVETO) | CUT_BIT(CUT_IN_Z_WINDOW));
+       hdilMass		= new NMinus1Hist(sample_, "dilMass"         ,	 30	, 0, 300	, cuts_, CUT_BIT(CUT_PASS_ZVETO) | CUT_BIT(CUT_PASS_ADDZVETO) | CUT_BIT(CUT_IN_Z_WINDOW));
        hdilPt		= new NMinus1Hist(sample_, "dilPt"           ,	 100	, 0, 300	, cuts_, 0	);
        hmet		= new NMinus1Hist(sample_, "met"             ,	 100	, 0, 200	, cuts_, CUT_BIT(CUT_PASS4_MET) | CUT_BIT(CUT_PASS2_MET) | CUT_BIT(CUT_PASS4_TCMET) | CUT_BIT(CUT_PASS2_TCMET)	);
        hmetSpec		= new NMinus1Hist(sample_, "metSpec"         ,	 100	, 0, 200	, cuts_, CUT_BIT(CUT_PASS4_MET) | CUT_BIT(CUT_PASS2_MET) | CUT_BIT(CUT_PASS4_TCMET) | CUT_BIT(CUT_PASS2_TCMET)  );
@@ -213,10 +213,10 @@ cuts_t Looper::DilepSelect (int i_hyp)
      }
      // calo iso
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 13 && goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) {
-	  ret |= (CUT_BIT(CUT_LT_GOOD)) | (CUT_BIT(CUT_LT_CALOISO));
+	  ret |= (CUT_BIT(CUT_LT_GOOD)) | (CUT_BIT(CUT_LT_CALOISO)) | CUT_BIT(CUT_LT_CALOISO_1_6);
      }
      if (abs(cms2.hyp_ll_id()[i_hyp]) == 13 && goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) ) {
-	  ret |= (CUT_BIT(CUT_LL_GOOD)) | (CUT_BIT(CUT_LL_CALOISO));
+	  ret |= (CUT_BIT(CUT_LL_GOOD)) | (CUT_BIT(CUT_LL_CALOISO)) | CUT_BIT(CUT_LL_CALOISO_1_6);
      }
      int n_caloiso_el = 0;
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && goodElectronIsolated(cms2.hyp_lt_index()[i_hyp], true)) {
@@ -226,6 +226,13 @@ cuts_t Looper::DilepSelect (int i_hyp)
      if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && goodElectronIsolated(cms2.hyp_ll_index()[i_hyp], true)) {
 	  ret |= CUT_BIT(CUT_LL_GOOD) | CUT_BIT(CUT_LL_CALOISO) | CUT_BIT(CUT_EL_CALOISO);
 	  n_caloiso_el++;
+     }     
+     // 1_6 calo iso
+     if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && passElectronIsolation_1_6(cms2.hyp_lt_index()[i_hyp], true)) {
+	  ret |= CUT_BIT(CUT_LT_CALOISO_1_6);
+     }
+     if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && passElectronIsolation_1_6(cms2.hyp_ll_index()[i_hyp], true)) {
+	  ret |= CUT_BIT(CUT_LL_CALOISO_1_6);
      }     
      if (n_iso_mu + n_caloiso_el >= 1)
  	  ret |= (CUT_BIT(CUT_ONE_CALOISO));

@@ -20,11 +20,12 @@ enum {
      LOOP_DYMM	,
      LOOP_DYTT	,
      LOOP_TTBAR	,
+     LOOP_TTBAR_TAUOLA	,
      LOOP_TW	,
 };
 
-// #define TWIKI_OUTPUT
-#define LATEX_OUTPUT
+#define TWIKI_OUTPUT
+//#define LATEX_OUTPUT
 
 // helper function used to print yield tables
 void printTable (const Looper **hists, int n, const char *fname, 
@@ -134,7 +135,7 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
      L looper_dymm		(fDYmm()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYMM  )) looper_dymm        .Loop();
      L looper_dytt		(fDYtt()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYTT  )) looper_dytt        .Loop();
      L looper_ttbar		(fttbar()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_TTBAR )) looper_ttbar       .Loop();
-     L looper_ttbar_tauola	(fttbar_taula()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_TTBAR )) looper_ttbar_tauola.Loop();
+     L looper_ttbar_tauola	(fttbar_taula()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_TTBAR_TAUOLA )) looper_ttbar_tauola.Loop();
      L looper_tw		(ftW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_TW    )) looper_tw          .Loop();
      L looper_singletop_tchan	(fSingleTop_tChannel()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_TW    )) looper_singletop_tchan          .Loop();
      L looper_singletop_schan	(fSingleTop_sChannel()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_TW    )) looper_singletop_schan          .Loop();
@@ -163,12 +164,19 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
 // default yield table
 int Results ()
 {
-     return run<Looper>(baseline_cuts, "Results");
+     return run<Looper>(baseline_cuts, "Results", 0xffffffff & ~(1 << LOOP_TTBAR_TAUOLA));
 }
 
 int Calojet ()
 {
      return run<Looper>(calojet_veto_cuts, "Calojet");
+}
+
+int Results_NoJetVeto ()
+{
+     return run<Looper>(baseline_cuts & ~(CUT_BIT(CUT_PASS_JETVETO_CALO) |
+					  CUT_BIT(CUT_PASS_JETVETO_TRACKJETS) |
+					  CUT_BIT(CUT_PASS_JETVETO_JPT20)), "Results_NoJetVeto");
 }
 
 int Calojet_Trkjet ()
@@ -241,9 +249,24 @@ int Results_NoCaloIso ()
      return run<Looper>(baseline_no_caloiso_cuts, "Results_NoCaloIso");
 }
 
+int Results_CaloIso_1_6 ()
+{
+     return run<Looper>(baseline_caloiso_1_6_cuts, "Results_CaloIso_1_6");
+}
+
 int Results_NoPass4MET ()
 {
      return run<Looper>(baseline_no_pass4met_cuts, "Results_NoPass4MET");
+}
+
+int Results_NoPass2MET ()
+{
+     return run<Looper>(baseline_cuts & ~CUT_BIT(CUT_PASS2_TCMET), "Results_NoPass2MET");
+}
+
+int Results_NoZVeto ()
+{
+     return run<Looper>(baseline_cuts & ~CUT_BIT(CUT_PASS_ZVETO), "Results_NoZVeto");
 }
 
 int Results_NoNtrks ()
