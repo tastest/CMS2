@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.4 2008/11/27 00:19:21 gutsche Exp $
+# $Id: Makefile,v 1.5 2009/02/24 23:25:01 jmuelmen Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
@@ -49,6 +49,9 @@ linkdef_out.cxx: ${CMS2_LOCATION}/NtupleMacros/linkdef.h ConfigAndRun.h
 %.d:	%.cc
 	$(CC) -MM -MT $@ -MT ${@:.d=.o} $(CFLAGS) $< > $@; \
                      [ -s $@ ] || rm -f $@
+%.d:	%.cxx
+	$(CC) -MM -MT $@ -MT ${@:.d=.o} $(CFLAGS) $< > $@; \
+                     [ -s $@ ] || rm -f $@
 
 %.o: 	%.cc 
 	$(CC) $(CFLAGS) $< -c -o $@
@@ -72,4 +75,6 @@ $(TABLES): $(LIBS)
 -include $(TOOLSSOURCES:.cc=.d)
 -include $(CORESOURCES:.cc=.d)
 -include $(LOOPERSOURCES:.cc=.d)
+-include linkdef_out.d
 
+.PRECIOUS: $(wildcard *.tbl) $(wildcard *.log) $(wildcard *.root)
