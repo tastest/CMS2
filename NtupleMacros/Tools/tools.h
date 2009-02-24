@@ -47,5 +47,7 @@ bool is_duplicate (const DorkyEventIdentifier &id);
 
 void saveHist(const char* filename, const char* pat="*");
 
+double correctd0Phi(int trk_idx);
+
 extern class TDirectory *histo_directory;
 #endif

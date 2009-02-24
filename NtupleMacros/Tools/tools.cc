@@ -1029,3 +1029,7 @@ void saveHist(const char* filename, const char* pat)
      
      delete iter ;
 }
+
+double correctd0Phi(int trk_idx) {
+  return atan2( -1 * trks_d0corr * sin( trks_trk_p4->phi() ), trks_d0corr * cos( trks_trk_p4->phi() ) );
+}
