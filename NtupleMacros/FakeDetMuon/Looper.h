@@ -15,6 +15,7 @@
 //  - quadlepton candidate in QuadlepSelect().
 enum {
   CUT_PT_LEADING_JET,
+  CUT_QCD_BIN_UPPER_PTHAT,
   CUT_NO_CUT,
 };
 
@@ -47,6 +48,9 @@ const static cuts_t muo_fakes_cuts =
 
 const static cuts_t muo_fakes_wo_trigger_jet_cuts = 
   (CUT_BIT(CUT_PT_LEADING_JET));   
+
+const static cuts_t muo_fakes_cuts_using_bins = 
+  muo_fakes_cuts | (CUT_BIT(CUT_QCD_BIN_UPPER_PTHAT));
 
 //----------------------------------------------------------------------
 // Loopers 
