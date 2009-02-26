@@ -15,8 +15,8 @@ void prepareFakeRateHistograms() {
   vector<char*> histograms;
 
   bool useQCDBCtoE = true;
-  bool useInclusiveSamples = true;
-  bool useInclusiveMuonSamples = false;
+  bool useInclusiveSamples = false;
+  bool useInclusiveMuonSamples = true;
 
   if(useInclusiveSamples && useInclusiveMuonSamples) {
     cout<<"Both incl QCD and inclusiveMuon samples are set to true - currently not possible. EXIT"<<endl;
@@ -25,16 +25,10 @@ void prepareFakeRateHistograms() {
     
 
   if ( useInclusiveSamples ) {
-//     qcdBins.push_back("QCDpt30");
-    qcdBins.push_back("QCDpt30to80");
-    qcdBins.push_back("QCDpt80to170");
-    qcdBins.push_back("QCDpt170to300");
-    qcdBins.push_back("QCDpt300to470");
-    qcdBins.push_back("QCDpt470to800");
-    qcdBins.push_back("QCDpt800toInf");
+    qcdBins.push_back("QCDpt30");
   }
   else if( useInclusiveMuonSamples ) {
-    qcdBins.push_back("InclusiveMu5Pt50");
+    qcdBins.push_back("InclusiveMuPt15");
   }
   else {
     qcdBins.push_back("QCDEMenrichedPt20to30");
