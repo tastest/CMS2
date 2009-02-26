@@ -90,7 +90,7 @@ void Looper::BookHistos ()
     //	binsEta.push_back(-2.1);
     binsEta.push_back(-1.9);
     //	binsEta.push_back(-1.7);
-    binsEta.push_back(-1.5);
+    binsEta.push_back(-1.479);
     //	binsEta.push_back(-1.3);
     binsEta.push_back(-1.1);
     //	binsEta.push_back(-0.9);
@@ -105,7 +105,7 @@ void Looper::BookHistos ()
     //	binsEta.push_back(0.9);
     binsEta.push_back(1.1);
     //	binsEta.push_back(1.3);
-    binsEta.push_back(1.5);
+    binsEta.push_back(1.479);
     //	binsEta.push_back(1.7);
     binsEta.push_back(1.9);
     //	binsEta.push_back(2.1);

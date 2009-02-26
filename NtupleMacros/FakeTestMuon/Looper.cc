@@ -70,6 +70,14 @@ void Looper::BookHistos ()
 				    Form("%s_%s_%s",sample_.name.c_str(),"elEta",dilepton_hypo_names[bucket]),
 				    etaNBins,etaBins,
 				    "#eta^{e} [GeV]","Events",sample_.histo_color);
+    hmuPt_[bucket] = book1DVarHist(Form("%s_%s_%s",sample_.name.c_str(),"muPt",dilepton_hypo_names[bucket]),
+				   Form("%s_%s_%s",sample_.name.c_str(),"muPt",dilepton_hypo_names[bucket]),
+				   ptNBins,ptBins,
+				   "p_{T}^{e} [GeV]","Events",sample_.histo_color);
+    hmuEta_[bucket] = book1DVarHist(Form("%s_%s_%s",sample_.name.c_str(),"muEta",dilepton_hypo_names[bucket]),
+				    Form("%s_%s_%s",sample_.name.c_str(),"muEta",dilepton_hypo_names[bucket]),
+				    etaNBins,etaBins,
+				    "#eta^{e} [GeV]","Events",sample_.histo_color);
     hmet_[bucket] = book1DVarHist(Form("%s_%s_%s",sample_.name.c_str(),"met",dilepton_hypo_names[bucket]),
 				  Form("%s_%s_%s",sample_.name.c_str(),"met",dilepton_hypo_names[bucket]),
 				  metNBins,metBins,
@@ -322,23 +330,26 @@ cuts_t Looper::DilepSelect (int i_hyp)
     // Here we try to find an event with a true Electron from W and a
     // fakable (denominator) muon
     // True electron is LT and fake muon is LL:
-    if ((ret & ( CUT_BIT(CUT_TRUE_LT_EL_FROM_W_WJETS ) ) ) == 
-        ( CUT_BIT(CUT_TRUE_LT_EL_FROM_W_WJETS))) {
-      if (isFakeableMuon(cms2.hyp_ll_index()[i_hyp]))
-        ret |= CUT_BIT(CUT_MUFAKE_FAKEABLE_OBJECT) | CUT_BIT(CUT_MUFAKE_LL_FAKEABLE_OBJECT);
-      if (isNumeratorMuon(cms2.hyp_ll_index()[i_hyp]))
-        ret |= CUT_BIT(CUT_MUFAKE_NUMERATOR) | CUT_BIT(CUT_MUFAKE_LL_NUMERATOR);
-      else ret |= CUT_BIT(CUT_MUFAKE_NOT_NUMERATOR) | CUT_BIT(CUT_MUFAKE_LL_NOT_NUMERATOR);
+    if( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13) { // just a protection
+      if ((ret & ( CUT_BIT(CUT_TRUE_LT_EL_FROM_W_WJETS ) ) ) == 
+          ( CUT_BIT(CUT_TRUE_LT_EL_FROM_W_WJETS))) {
+        if (isFakeableMuon(cms2.hyp_ll_index()[i_hyp]))
+          ret |= CUT_BIT(CUT_MUFAKE_FAKEABLE_OBJECT) | CUT_BIT(CUT_MUFAKE_LL_FAKEABLE_OBJECT);
+        if (isNumeratorMuon(cms2.hyp_ll_index()[i_hyp]))
+          ret |= CUT_BIT(CUT_MUFAKE_NUMERATOR) | CUT_BIT(CUT_MUFAKE_LL_NUMERATOR);
+        else ret |= CUT_BIT(CUT_MUFAKE_NOT_NUMERATOR) | CUT_BIT(CUT_MUFAKE_LL_NOT_NUMERATOR);
+      }
     }
-    
     // True electron is LL and fake muon is LT:
-    if ((ret & ( CUT_BIT(CUT_TRUE_LL_EL_FROM_W_WJETS) ) ) == 
-        ( CUT_BIT(CUT_TRUE_LL_EL_FROM_W_WJETS) ) ) {
-      if (isFakeableMuon(cms2.hyp_lt_index()[i_hyp]))
-        ret |= CUT_BIT(CUT_MUFAKE_FAKEABLE_OBJECT) | CUT_BIT(CUT_MUFAKE_LT_FAKEABLE_OBJECT);
-      if (isNumeratorMuon(cms2.hyp_lt_index()[i_hyp]))
-        ret |= CUT_BIT(CUT_MUFAKE_NUMERATOR) | CUT_BIT(CUT_MUFAKE_LT_NUMERATOR);
-      else ret |= CUT_BIT(CUT_MUFAKE_NOT_NUMERATOR) | CUT_BIT(CUT_MUFAKE_LT_NOT_NUMERATOR);
+    if( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13) { // just a protection
+      if ((ret & ( CUT_BIT(CUT_TRUE_LL_EL_FROM_W_WJETS) ) ) == 
+          ( CUT_BIT(CUT_TRUE_LL_EL_FROM_W_WJETS) ) ) {
+        if (isFakeableMuon(cms2.hyp_lt_index()[i_hyp]))
+          ret |= CUT_BIT(CUT_MUFAKE_FAKEABLE_OBJECT) | CUT_BIT(CUT_MUFAKE_LT_FAKEABLE_OBJECT);
+        if (isNumeratorMuon(cms2.hyp_lt_index()[i_hyp]))
+          ret |= CUT_BIT(CUT_MUFAKE_NUMERATOR) | CUT_BIT(CUT_MUFAKE_LT_NUMERATOR);
+        else ret |= CUT_BIT(CUT_MUFAKE_NOT_NUMERATOR) | CUT_BIT(CUT_MUFAKE_LT_NOT_NUMERATOR);
+      }
     }
   }
   return ret;
@@ -382,15 +393,15 @@ void Looper::FillDilepHistos (int i_hyp)
   // Example dilepton histo filling; edit for your application
   //------------------------------------------------------------
 
-  // every histogram needs to know what hypothesis he is 
-  const enum DileptonHypType myType = hyp_typeToHypType(cms2.hyp_type()[i_hyp]);
-  // and what the event weight is 
-  const double weight = Weight(i_hyp);
-     
   // these are the cuts that the candidate passes:
   cuts_t cuts_passed = DilepSelect(i_hyp);
-     
+
   if ((cuts_passed & cuts_) == cuts_) {
+    // every histogram needs to know what hypothesis he is 
+    const enum DileptonHypType myType = hyp_typeToHypType(cms2.hyp_type()[i_hyp]);
+    // and what the event weight is 
+    const double weight = Weight(i_hyp);
+     
     cands_passing_[myType] += weight;
     cands_passing_w2_[myType] += weight * weight;
     cands_count_[myType]++;
@@ -402,35 +413,32 @@ void Looper::FillDilepHistos (int i_hyp)
     hnJet_[myType]->Fill(cms2.hyp_njets()[i_hyp], weight);
     hnJet_[DILEPTON_ALL]->Fill(cms2.hyp_njets()[i_hyp], weight);
 
-    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
-      helPt_[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
-      helPt_[DILEPTON_ALL]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
-      helEta_[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].eta(), weight);
-      helEta_[DILEPTON_ALL]->Fill(cms2.hyp_lt_p4()[i_hyp].eta(), weight);
-      cout << "lt electron: pt: " << cms2.hyp_lt_p4()[i_hyp].pt() << " eta: " << cms2.hyp_lt_p4()[i_hyp].eta() << "  true: " << pdg->GetParticle(cms2.hyp_lt_mc_id()[i_hyp])->GetName() << " mother: " << pdg->GetParticle(cms2.hyp_lt_mc_motherid()[i_hyp])->GetName() << endl;
-    }
-    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
-      helPt_[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
-      helPt_[DILEPTON_ALL]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
-      helEta_[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].eta(), weight);
-      helEta_[DILEPTON_ALL]->Fill(cms2.hyp_ll_p4()[i_hyp].eta(), weight);
-      cout << "ll electron: pt: " << cms2.hyp_ll_p4()[i_hyp].pt() << " eta: " << cms2.hyp_ll_p4()[i_hyp].eta() << "  true: " << pdg->GetParticle(cms2.hyp_ll_mc_id()[i_hyp])->GetName() << " mother: " << pdg->GetParticle(cms2.hyp_ll_mc_motherid()[i_hyp])->GetName() << endl;
-    }
-//     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13) {
-//       hmuPt_[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
-//       hmuPt_[DILEPTON_ALL]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
-//       hmuEta_[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].eta(), weight);
-//       hmuEta_[DILEPTON_ALL]->Fill(cms2.hyp_lt_p4()[i_hyp].eta(), weight);
-//       cout << "lt electron: pt: " << cms2.hyp_lt_p4()[i_hyp].pt() << " eta: " << cms2.hyp_lt_p4()[i_hyp].eta() << "  true: " << pdg->GetParticle(cms2.hyp_lt_mc_id()[i_hyp])->GetName() << " mother: " << pdg->GetParticle(cms2.hyp_lt_mc_motherid()[i_hyp])->GetName() << endl;
+//     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
+//       helPt_[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
+//       helPt_[DILEPTON_ALL]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
+//       helEta_[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].eta(), weight);
+//       helEta_[DILEPTON_ALL]->Fill(cms2.hyp_lt_p4()[i_hyp].eta(), weight);
 //     }
-//     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13) {
-//       hmuPt_[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
-//       hmuPt_[DILEPTON_ALL]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
-//       hmuEta_[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].eta(), weight);
-//       hmuEta_[DILEPTON_ALL]->Fill(cms2.hyp_ll_p4()[i_hyp].eta(), weight);
-//       cout << "ll electron: pt: " << cms2.hyp_ll_p4()[i_hyp].pt() << " eta: " << cms2.hyp_ll_p4()[i_hyp].eta() << "  true: " << pdg->GetParticle(cms2.hyp_ll_mc_id()[i_hyp])->GetName() << " mother: " << pdg->GetParticle(cms2.hyp_ll_mc_motherid()[i_hyp])->GetName() << endl;
+//     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
+//       helPt_[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
+//       helPt_[DILEPTON_ALL]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
+//       helEta_[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].eta(), weight);
+//       helEta_[DILEPTON_ALL]->Fill(cms2.hyp_ll_p4()[i_hyp].eta(), weight);
 //     }
-    
+     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13) {
+       hmuPt_[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
+       hmuPt_[DILEPTON_ALL]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
+       hmuEta_[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].eta(), weight);
+       hmuEta_[DILEPTON_ALL]->Fill(cms2.hyp_lt_p4()[i_hyp].eta(), weight);
+     }
+     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13) {
+       hmuPt_[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
+       hmuPt_[DILEPTON_ALL]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
+       hmuEta_[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].eta(), weight);
+       hmuEta_[DILEPTON_ALL]->Fill(cms2.hyp_ll_p4()[i_hyp].eta(), weight);
+     }
+
+
     // Met and Met special
     hmet_[myType]->Fill(cms2.hyp_met()[i_hyp], weight);      
     hmet_[DILEPTON_ALL]->Fill(cms2.hyp_met()[i_hyp], weight);      

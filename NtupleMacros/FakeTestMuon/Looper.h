@@ -203,6 +203,8 @@ protected:
   TH1F	*hnJet_[4];
   TH1F	*helPt_[4];
   TH1F	*helEta_[4];
+  TH1F	*hmuPt_[4];
+  TH1F	*hmuEta_[4];
   TH1F	*hmet_[4];
   
 

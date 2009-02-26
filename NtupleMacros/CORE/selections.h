@@ -62,6 +62,8 @@ void dumpDocLines();
 int NjetVeto(std::vector<TLorentzVector>& Jet, double min_et);
 bool trueMuonFromW(int index);
 bool trueMuonFromW_WJets(int index);
+bool trueElectronFromW(int index);
+bool trueElectronFromW_WJets(int index);
 //bool isFakeDenominatorElectron(int index);
 //bool isFakeNumeratorElectron(int index, int type); 
 

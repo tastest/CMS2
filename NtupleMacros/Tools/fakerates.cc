@@ -20,6 +20,10 @@ static TFile *el_fakeRateFile_v7 = 0;
 static TH2F  *el_fakeRate_v7 = 0;
 static TH2F  *el_fakeRate_err_v7 = 0;
 
+static TFile *mu_fakeRateFile_v1 = 0;
+static TH2F  *mu_fakeRate_v1 = 0;
+static TH2F  *mu_fakeRate_err_v1 = 0;
+
 double elFakeProb_v2_2 (int i_el, int add_error_times)
 {
      float prob = 0.0;
@@ -323,7 +327,6 @@ bool isFakeNumeratorElectron_v6 (int index, int type)
   return result;
   
 }
-//asdasd
 double elFakeProb_v7 (int i_el, int add_error_times)
 {
      float prob = 0.0;
@@ -409,6 +412,30 @@ bool isFakeNumeratorElectron_v7 (int index, int type)
   return result;
   
 }
+
+double muFakeProb_v1 (int i_mu, int add_error_times)
+{
+     float prob = 0.0;
+     float prob_error = 0.0;
+     TH2F *theFakeRate = &fakeRateMuon();
+     TH2F *theFakeRateErr = &fakeRateErrorMuon();
+     // cut definition
+     prob = theFakeRate->GetBinContent(theFakeRate->FindBin(cms2.mus_p4()[i_mu].Eta(),cms2.mus_p4()[i_mu].Pt()));
+     prob_error =
+	  theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(cms2.mus_p4()[i_mu].Eta(),cms2.mus_p4()[i_mu].Pt()));
+     
+     if (prob>1.0 || prob<0.0) {
+	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob << std::endl;
+     }
+     if (prob==0.0){
+	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob
+		   <<" for Et = " <<cms2.mus_p4()[i_mu].Pt()
+		   <<" and Eta = " <<cms2.mus_p4()[i_mu].Eta()
+		   << std::endl;
+     }
+     return prob+add_error_times*prob_error;
+}
+
 bool isFakeDenominatorMuon_v1 (int index) 
 {
   //
@@ -516,8 +543,8 @@ double elFakeProb (int i_el, int add_error_times)
 
 double muFakeProb (int i_mu, int add_error_times)
 {
-  //     return muFakeProb_v1(i_mu, add_error_times);
-     return -999.99;
+     return muFakeProb_v1(i_mu, add_error_times);
+     //     return -999.99;
 }
 
 bool isNumeratorElectron (int index, int type)
@@ -646,3 +673,38 @@ TH2F &fakeRateError ()
 #endif
 }
 
+
+TH2F &fakeRateMuon ()
+{
+     if ( mu_fakeRateFile_v1 == 0 ) {
+	  mu_fakeRateFile_v1 = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/fakeRatesMuon-v1_0.root", "read"); 
+	  if ( mu_fakeRateFile_v1 == 0 ) {
+	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRatesMuon-v1_0.root could not be found!!" << std::endl;
+	       std::cout << "Please make sure that $CMS2_LOCATION points to your CMS2 directory and that" << std::endl;
+	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRatesMuon-v1_0.root exists!" << std::endl;
+	       gSystem->Exit(1);
+	  }
+	  mu_fakeRate_v1 = dynamic_cast<TH2F *>(mu_fakeRateFile_v1->Get("fakeRateTemplate_mlt_MuoFakes"));
+	  mu_fakeRate_err_v1 = dynamic_cast<TH2F *>(mu_fakeRateFile_v1->Get("fakeRateTemplateError_mlt_MuoFakes"));
+     }
+     return *mu_fakeRate_v1;
+}
+
+TH2F &fakeRateErrorMuon ()
+{
+     if ( mu_fakeRateFile_v1 == 0 ) {
+	  mu_fakeRateFile_v1 = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/fakeRatesMuon-v1_0.root", "read"); 
+	  if ( mu_fakeRateFile_v1 == 0 ) {
+	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRatesMuon-v1_0.root could not be found!!" << std::endl;
+	       std::cout << "Please make sure that $CMS2_LOCATION points to your CMS2 directory and that" << std::endl;
+	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRatesMuon-v1_0.root exists!" << std::endl;
+	       gSystem->Exit(1);
+	  }
+	  mu_fakeRate_v1 = dynamic_cast<TH2F *>(mu_fakeRateFile_v1->Get("fakeRateTemplate_mlt_MuoFakes"));
+	  mu_fakeRate_err_v1 = dynamic_cast<TH2F *>(mu_fakeRateFile_v1->Get("fakeRateTemplateError_mlt_MuoFakes"));
+     }
+     return *mu_fakeRate_err_v1;
+}
+
+
+//  LocalWords:  fakeRateErrorMuon

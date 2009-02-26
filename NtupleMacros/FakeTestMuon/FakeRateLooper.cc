@@ -85,6 +85,18 @@ void FakeRateLooper::BookHistos 	()
 				      fakeXNBins,fakeXBins,
 				      fakeYNBins,fakeYBins,
 				      "#eta^{e} [GeV]","#eta", "p_{T} [GeV]",sample_.histo_color);
+    hmuPt3D_[bucket] = book3DVarHist(Form("%s_%s_%s",sample_.name.c_str(),"muPt3D",dilepton_hypo_names[bucket]),
+				     Form("%s_%s_%s",sample_.name.c_str(),"muPt3D",dilepton_hypo_names[bucket]),
+				     ptNBins,ptBins,
+				     fakeXNBins,fakeXBins,
+				     fakeYNBins,fakeYBins,
+				     "p_{T}^{e} [GeV]","#eta", "p_{T} [GeV]",sample_.histo_color);
+    hmuEta3D_[bucket] = book3DVarHist(Form("%s_%s_%s",sample_.name.c_str(),"muEta3D",dilepton_hypo_names[bucket]),
+				      Form("%s_%s_%s",sample_.name.c_str(),"muEta3D",dilepton_hypo_names[bucket]),
+				      etaNBins,etaBins,
+				      fakeXNBins,fakeXBins,
+				      fakeYNBins,fakeYBins,
+				      "#eta^{e} [GeV]","#eta", "p_{T} [GeV]",sample_.histo_color);
     hmet3D_[bucket] = book3DVarHist(Form("%s_%s_%s",sample_.name.c_str(),"met3D",dilepton_hypo_names[bucket]),
 				    Form("%s_%s_%s",sample_.name.c_str(),"met3D",dilepton_hypo_names[bucket]),
 				    metNBins,metBins,
@@ -120,34 +132,33 @@ void FakeRateLooper::FillDilepHistos (int i_hyp)
     cands_passing_event_weight_only_[DILEPTON_ALL] += weight;
     cands_passing_event_weight_only_w2_[DILEPTON_ALL] += weight * weight;
 
-    // this doesn't work for ee, since it assumes only one of
-    // the hyp leptons is an electron
+    // this doesn't work for ee/mumu, since it assumes 
+    // that the tagged true lepton from W is the electron
 
     //    std::cout<<"ALARM - grepforthis001: This will not work for MuMu fake test! Likely also not for EMu where Mu is fake?"<<std::endl;
-    if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
-      const double err = elFakeProb(cms2.hyp_lt_index()[i_hyp], 1) - 
-	elFakeProb(cms2.hyp_lt_index()[i_hyp], 0);
-      const double eta = cms2.els_p4()[cms2.hyp_lt_index()[i_hyp]].eta();
-      const double pt = cms2.els_p4()[cms2.hyp_lt_index()[i_hyp]].pt();
+    if (abs(cms2.hyp_lt_id()[i_hyp]) == 13) {
+      const double err = muFakeProb(cms2.hyp_lt_index()[i_hyp], 1) - 
+	muFakeProb(cms2.hyp_lt_index()[i_hyp], 0);
+      const double eta = cms2.mus_p4()[cms2.hyp_lt_index()[i_hyp]].eta();
+      const double pt = cms2.mus_p4()[cms2.hyp_lt_index()[i_hyp]].pt();
       fake_syst->Fill(eta, pt, weight * err);
       hnJet3D_[myType]->Fill(cms2.hyp_njets()[i_hyp],eta,pt, weight * err);
-      helPt3D_[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(),eta,pt, weight * err);
-      helEta3D_[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].eta(),eta,pt, weight * err);
+      hmuPt3D_[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(),eta,pt, weight * err);
+      hmuEta3D_[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].eta(),eta,pt, weight * err);
       hmet3D_[myType]->Fill(cms2.hyp_met()[i_hyp],eta,pt, weight * err);
-    } else if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
-      const double err = elFakeProb(cms2.hyp_ll_index()[i_hyp], 1) - 
-	elFakeProb(cms2.hyp_ll_index()[i_hyp], 0);
-      const double eta = cms2.els_p4()[cms2.hyp_ll_index()[i_hyp]].eta();
-      const double pt = cms2.els_p4()[cms2.hyp_ll_index()[i_hyp]].pt();
+    } else if (abs(cms2.hyp_ll_id()[i_hyp]) == 13) {
+      const double err = muFakeProb(cms2.hyp_ll_index()[i_hyp], 1) - 
+	muFakeProb(cms2.hyp_ll_index()[i_hyp], 0);
+      const double eta = cms2.mus_p4()[cms2.hyp_ll_index()[i_hyp]].eta();
+      const double pt = cms2.mus_p4()[cms2.hyp_ll_index()[i_hyp]].pt();
       fake_syst->Fill(eta, pt, weight * err);
       hnJet3D_[myType]->Fill(cms2.hyp_njets()[i_hyp],eta,pt, weight * err);
-      helPt3D_[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(),eta,pt, weight * err);
-      helEta3D_[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].eta(),eta,pt, weight * err);
+      hmuPt3D_[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(),eta,pt, weight * err);
+      hmuEta3D_[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].eta(),eta,pt, weight * err);
       hmet3D_[myType]->Fill(cms2.hyp_met()[i_hyp],eta,pt, weight * err);
     }
 
   }
-
   Looper::FillDilepHistos(i_hyp);
 }
 
@@ -163,10 +174,10 @@ double FakeRateLooper::Weight (int i_hyp, int n_sig_syst)
   //    std::cout<<"ALARM - grepforthis002: This will not work for MuMu fake test! Also not for EMu where Mu is fake?"<<std::endl;
   // this doesn't work for ee, since it assumes only one of
   // the hyp leptons is an electron
-  if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
-    fr = elFakeProb(cms2.hyp_lt_index()[i_hyp], n_sig_syst);
-  } else if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
-    fr = elFakeProb(cms2.hyp_ll_index()[i_hyp], n_sig_syst);
+  if (abs(cms2.hyp_lt_id()[i_hyp]) == 13) {
+    fr = muFakeProb(cms2.hyp_lt_index()[i_hyp], n_sig_syst);
+  } else if (abs(cms2.hyp_ll_id()[i_hyp]) == 13) {
+    fr = muFakeProb(cms2.hyp_ll_index()[i_hyp], n_sig_syst);
   }
      
   return weight * fr / (1 - fr); 
@@ -204,6 +215,8 @@ void FakeRateLooper::End ()
     fillErrorInPrediction(hnJet_[bucket],hnJet3D_[bucket]);
     fillErrorInPrediction(helPt_[bucket],helPt3D_[bucket]);
     fillErrorInPrediction(helEta_[bucket],helEta3D_[bucket]);
+    fillErrorInPrediction(hmuPt_[bucket],hmuPt3D_[bucket]);
+    fillErrorInPrediction(hmuEta_[bucket],hmuEta3D_[bucket]);
     fillErrorInPrediction(hmet_[bucket],hmet3D_[bucket]);
   }
 

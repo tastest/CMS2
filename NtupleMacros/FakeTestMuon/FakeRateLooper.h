@@ -37,6 +37,8 @@ protected:
   TH3F	 *hnJet3D_[4];
   TH3F	 *helPt3D_[4];
   TH3F	 *helEta3D_[4];
+  TH3F	 *hmuPt3D_[4];
+  TH3F	 *hmuEta3D_[4];
   TH3F	 *hmet3D_[4];
 
 };

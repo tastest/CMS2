@@ -86,6 +86,37 @@ bool trueMuonFromW_WJets(int index) {
 
 
 //----------------------------------------------------------------
+// MC truth tag - Electron from W
+//----------------------------------------------------------------
+bool trueElectronFromW_WJets(int index) {
+  // try to find out if there is a electron
+  // from W. Currently valid ONLY on WJets!! 
+  if ( TMath::Abs(cms2.els_mc_id()[index]) == 11 && ( TMath::Abs(cms2.els_mc_motherid()[index]) == 24) ) {
+    //    std::cout<<"best match - part id: "<<(cms2.els_mc_id()[index])<<" mother: "<<(cms2.els_mc_motherid()[index])<<std::endl;
+    return true;
+  }
+  // need additional loop over status 3 particles
+  // if it contains a W and an electron from W, we claim
+  // that the electron is from W - valid for WJets
+  unsigned int nGen = cms2.genps_id().size();
+  for( unsigned int iGen = 0; iGen < nGen; ++iGen){
+    // just in case the mother link does work :)
+    if ( cms2.genps_status()[iGen] == 3 && TMath::Abs(cms2.genps_id()[iGen]) == 11 && TMath::Abs(cms2.genps_id_mother()[iGen]) == 24 ) {
+      //      std::cout<<"2nd best match part id: "<<cms2.genps_id()[iGen]<<" mother: "<<cms2.genps_id_mother()[iGen]<<std::endl;
+      return true;
+    }
+    // also return true if there is a status 3 electron
+    if ( cms2.genps_status()[iGen] == 3 && TMath::Abs(cms2.genps_id()[iGen]) == 11 ) {
+      //      std::cout<<"3rd best match part id: "<<cms2.genps_id()[iGen]<<" mother: NOT CHECKED"<<std::endl;
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+
+//----------------------------------------------------------------
 // Electron ID without isolation or d0 cut
 //----------------------------------------------------------------
 bool goodElectronWithoutIsolationWithoutd0(int index) {
@@ -747,6 +778,15 @@ bool trueMuonFromW(int index) {
   if( TMath::Abs(cms2.mus_mc_id()[index]) == 13 && TMath::Abs(cms2.mus_mc_motherid()[index]) == 24 ) muIsFromW = true;
 
   return muIsFromW;
+}
+
+bool trueElectronFromW(int index) {
+
+  bool elIsFromW = false;
+
+  if( TMath::Abs(cms2.els_mc_id()[index]) == 11 && TMath::Abs(cms2.els_mc_motherid()[index]) == 24 ) elIsFromW = true;
+
+  return elIsFromW;
 }
 
 int conversionPartner (int i_el)
