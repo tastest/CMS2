@@ -44,18 +44,18 @@ Bool_t comparePt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1,
 }
 
 
-unsigned int cutConf(unsigned int cutsMask, unsigned int shift, unsigned int mask, std::string* sConf, bool doPrint, char* cutName=""){
-  unsigned int res = ((cutsMask>> shift) & mask);
-  if ( res > 3 ) { std::cout<<"Config error "<<std::endl; exit (99);}
+unsigned int cutConf(unsigned int cutsMask, unsigned int shift, std::string* sConf, bool doPrint, char* cutName=""){
+  unsigned int res = ((cutsMask>> shift) & 1);
+  if ( res > 1 ) { std::cout<<"Config error "<<std::endl; exit (99);}
   if (doPrint ) if (sConf[res].size() ) std::cout << sConf[res].c_str()<<" set by "<<cutName << std::endl;
-  //  std::cout<< cutsMask<<" "<<shift<<" "<<mask<<" "<<res<<" "<<sConf[res].c_str()<<std::endl;
+  //  std::cout<< cutsMask<<" "<<shift<<" "<<res<<" "<<sConf[res].c_str()<<std::endl;
   return (res);
 }
 
-#define DEFINE_CUT(CUT, OFFSET, MASK, C1, C2, C3, C4, S1, S2, S3, S4)	\
+#define DEFINE_CUT(CUT, OFFSET, MASK, Coff, Con, Soff, Son)	\
   unsigned int CUT##_##shift = OFFSET; unsigned int CUT##_##mask = MASK;\
-  std::string CUT##_##confS[4] = { C1, C2, C3, C4 };			\
-  std::string CUT##_##shortS[4] = { S1, S2, S3, S4 }
+  std::string CUT##_##confS[2] = { Coff, Con };			\
+  std::string CUT##_##shortS[2] = { Soff, Son }
 
 #define SET_CUT(BITS, CUT, SHORTS, FLAG)					\
   CUT = cutConf(BITS, CUT##_##shift, CUT##_##mask, CUT##_##confS, FLAG, #CUT); \
@@ -91,154 +91,152 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
   // so that instead of currrent, e.g.,  myHist_2122752.root you get myHist_preDil08_OS_noDupWt_hltTry08.root
   bool idcuts = false;
   DEFINE_CUT(idcuts, 0, 1, 
-	     "Id cuts disabled", "Id cuts enabled", "", "", 
-	     "", "idOld", "", "");
+	     "Id cuts disabled", "Id cuts enabled", 
+	     "", "idOld");
   SET_CUT(cutsMask, idcuts, compactConfig, true);
 
   bool isolationcuts = false;
-  DEFINE_CUT( isolationcuts, 1, 1,
-	      "Isolation cuts disabled", "Isolation cuts enabled", "", "",
-	      "", "isoOld", "", "");
+  DEFINE_CUT( isolationcuts, 1,
+	      "Isolation cuts disabled", "Isolation cuts enabled",
+	      "", "isoOld");
   SET_CUT(cutsMask, isolationcuts, compactConfig, true);
 
   bool dilepMassVetoCut = false;
-  DEFINE_CUT(dilepMassVetoCut, 2, 1,
-	     "DiLeptonMassVetoCut disabled", "DiLeptonMassVetoCut enabled", "", "",
-	     "", "zVetOld", "", "");
+  DEFINE_CUT(dilepMassVetoCut, 2,
+	     "DiLeptonMassVetoCut disabled", "DiLeptonMassVetoCut enabled",
+	     "", "zVetOld");
   SET_CUT(cutsMask, dilepMassVetoCut, compactConfig, true);
 
   bool METcut = false;
-  DEFINE_CUT(METcut, 3, 1, 
-	     "METCut disabled", "METCut enabled", "", "",
-	     "", "wMET", "", "");
+  DEFINE_CUT(METcut, 3, 
+	     "METCut disabled", "METCut enabled",
+	     "", "wMET");
   SET_CUT(cutsMask, METcut, compactConfig, true);
 
   bool nJets2 = false; 
-  DEFINE_CUT(nJets2, 4, 1,
-	     "NJets>=2 cut disabled", "NJets>=2 cut enabled", "", "",
-	     "", "2J", "", "");
+  DEFINE_CUT(nJets2, 4,
+	     "NJets>=2 cut disabled", "NJets>=2 cut enabled",
+	     "", "2J");
   SET_CUT(cutsMask, nJets2, compactConfig, true);
 
   bool applyMuTag = false;
-  DEFINE_CUT(applyMuTag, 5, 1, 
-	     "Extra muon tag cut disabled", "Extra Muon tag cut enabled", "", "",
-	     "", "muTag", "", "");
+  DEFINE_CUT(applyMuTag, 5, 
+	     "Extra muon tag cut disabled", "Extra Muon tag cut enabled",
+	     "", "muTag");
   SET_CUT(cutsMask, applyMuTag, compactConfig, true);
 
   bool METveto = false;
-  DEFINE_CUT(METveto, 6, 1,
-	     "MET veto is disabled", "MET veto is enabled", "", "",
-	     "", "vetoMET", "", "");
+  DEFINE_CUT(METveto, 6,
+	     "MET veto is disabled", "MET veto is enabled",
+	     "", "vetoMET");
   SET_CUT(cutsMask, METveto, compactConfig, true);
 
   bool applyMuTag5 = false;
-  DEFINE_CUT(applyMuTag5, 7, 1,
-	     "Extra muon 5GeV tag cut disabled", "Extra Muon 5GeV tag cut enabled", "", "",
-	     "", "muTag5", "", "");
+  DEFINE_CUT(applyMuTag5, 7,
+	     "Extra muon 5GeV tag cut disabled", "Extra Muon 5GeV tag cut enabled",
+	     "", "muTag5");
   SET_CUT(cutsMask, applyMuTag5, compactConfig, true);
 
   int  isoLooseMode = 0;
-  DEFINE_CUT(isoLooseMode, 8, 3,
+  DEFINE_CUT(isoLooseMode, 8,
 	     "", 
-	     "Require one-only hyp lepton (electron in emu) with iso (0.6, 0.92) DISABLED", 
-	     "Require one-only hyp lepton (muon in emu) with iso (0.6, 0.92) DISABLED",
-	     "Require two hyp leptons  with iso (0.6, 0.92) DISABLED",
-	     "", "isoReg1", "isoReg2", "isoReg3");
+	     "DISABLED", 
+	     "", "isoReg1");
   SET_CUT(cutsMask, isoLooseMode, compactConfig, true);
   if (isoLooseMode != 0){
     std::cout<<"isoLooseMode is disabled, fix your config"<<std::endl; return 99;
   }
 
   bool looseDilSelectionTTDil08 = false;
-  DEFINE_CUT(looseDilSelectionTTDil08, 10, 1,
-	     "", "Require loose dil selection for TTbar-->dilepton ana 2008/09", "", "",
-	     "", "preDil08", "", "");
+  DEFINE_CUT(looseDilSelectionTTDil08, 10,
+	     "", "Require loose dil selection for TTbar-->dilepton ana 2008/09",
+	     "", "preDil08");
   SET_CUT(cutsMask, looseDilSelectionTTDil08, compactConfig, true);
 
   bool fillMultipleHypsOnly = false;
-  DEFINE_CUT(fillMultipleHypsOnly, 11, 1,
-	     "", "Fill only multiple hypotheses", "", "",
-	     "", "dupOnly", "", "");
+  DEFINE_CUT(fillMultipleHypsOnly, 11,
+	     "", "Fill only multiple hypotheses",
+	     "", "dupOnly");
   SET_CUT(cutsMask, fillMultipleHypsOnly, compactConfig, true);
 
   bool applyZWindow = false;
-  DEFINE_CUT(applyZWindow, 12, 1, 
-	     "", "Events from Z-window only", "", "",
-	     "", "inZ", "", "");
+  DEFINE_CUT(applyZWindow, 12, 
+	     "", "Events from Z-window only",
+	     "", "inZ");
   SET_CUT(cutsMask, applyZWindow, compactConfig, true);
 
   bool osSelection = false;
-  DEFINE_CUT(osSelection, 13, 1,
-	     "", "Require OS", "", "",
-	     "", "OS", "", "");
+  DEFINE_CUT(osSelection, 13,
+	     "", "Require OS",
+	     "", "OS");
   SET_CUT(cutsMask,osSelection , compactConfig, true);
 
   bool fillMaxWeightDilOnly = false;
-  DEFINE_CUT(fillMaxWeightDilOnly, 14, 1,
-	     "", "Fill only the dilepton with the max dilepton weight", "", "",
-	     "", "noDupWt", "", "");
+  DEFINE_CUT(fillMaxWeightDilOnly, 14,
+	     "", "Fill only the dilepton with the max dilepton weight",
+	     "", "noDupWt");
   SET_CUT(cutsMask, fillMaxWeightDilOnly, compactConfig, true);
 
   bool leptonIsolationDilSelectionTTDil08 = false;
-  DEFINE_CUT(leptonIsolationDilSelectionTTDil08, 15, 1,
-	     "", "Apply isolation cuts on leptons for TTbar-->dilepton ana 2008/09", "", "",
-	     "", "isoDil08", "", "");
+  DEFINE_CUT(leptonIsolationDilSelectionTTDil08, 15,
+	     "", "Apply isolation cuts on leptons for TTbar-->dilepton ana 2008/09",
+	     "", "isoDil08");
   SET_CUT(cutsMask, leptonIsolationDilSelectionTTDil08, compactConfig, true);
 
   bool looseDilSelectionNoIsoTTDil08 = false;
-  DEFINE_CUT(looseDilSelectionNoIsoTTDil08, 16, 1,
-	     "", "Require loose dil selection for TTbar-->dilepton ana 2008/09; drop loose iso cuts", "", "",
-	     "", "preDil08noIso", "", "");
+  DEFINE_CUT(looseDilSelectionNoIsoTTDil08, 16,
+	     "", "Require loose dil selection for TTbar-->dilepton ana 2008/09; drop loose iso cuts",
+	     "", "preDil08noIso");
   SET_CUT(cutsMask, looseDilSelectionNoIsoTTDil08, compactConfig, true);
 
   bool lepton20Eta2p4DilSelection = false;
-  DEFINE_CUT(lepton20Eta2p4DilSelection, 17, 1,
-	     "", "Two leptons pt>20 and |eta|<2.4 are selected -- bare minimum", "", "",
-	     "", "2pt20", "", "");
+  DEFINE_CUT(lepton20Eta2p4DilSelection, 17,
+	     "", "Two leptons pt>20 and |eta|<2.4 are selected -- bare minimum",
+	     "", "2pt20");
   SET_CUT(cutsMask, lepton20Eta2p4DilSelection, compactConfig, true);
 
   bool metBaselineSelectionTTDil08 = false;
-  DEFINE_CUT(metBaselineSelectionTTDil08, 18, 1,
-	     "", "Apply TTDil08 baseline MET selection: use corrected pat-met emu met >20, mm,em met>30", "", "",
-	     "", "preMet08", "", "");
+  DEFINE_CUT(metBaselineSelectionTTDil08, 18,
+	     "", "Apply TTDil08 baseline MET selection: use corrected pat-met emu met >20, mm,em met>30",
+	     "", "preMet08");
   SET_CUT(cutsMask, metBaselineSelectionTTDil08, compactConfig, true);
 
   bool dilepMassVetoCutTTDil08 = false;
-  DEFINE_CUT(dilepMassVetoCutTTDil08, 19, 1,
-	     "", "Apply Z mass veto on same flavor dils, use TTDil08 selections", "", "",
-	     "", "outZ08", "", "");
+  DEFINE_CUT(dilepMassVetoCutTTDil08, 19,
+	     "", "Apply Z mass veto on same flavor dils, use TTDil08 selections",
+	     "", "outZ08");
   SET_CUT(cutsMask, dilepMassVetoCutTTDil08, compactConfig, true);
 
   bool applyTriggersMu9orLisoE15 = false;
-  DEFINE_CUT(applyTriggersMu9orLisoE15, 20, 1,
-	     "", "HLT bits: 47 (HLT_LooseIsoEle15_LW_L1R), 82 (HLT_Mu9): ee -- 47, em -- 47 OR 82, mm -- 82", "", "",
-	     "", "hltMu9E15", "", "");
+  DEFINE_CUT(applyTriggersMu9orLisoE15, 20,
+	     "", "HLT bits: 47 (HLT_LooseIsoEle15_LW_L1R), 82 (HLT_Mu9): ee -- 47, em -- 47 OR 82, mm -- 82",
+	     "", "hltMu9E15");
   SET_CUT(cutsMask, applyTriggersMu9orLisoE15, compactConfig, true);
 
   bool applyTriggersTTDil08JanTrial = false;
-  DEFINE_CUT(applyTriggersTTDil08JanTrial, 21, 1,
+  DEFINE_CUT(applyTriggersTTDil08JanTrial, 21,
 	     "", 
 	     "HLT bits 45 (IsoEle18_L1R), 54 (DoubleIsoEle12_L1R), 86 (Mu15_L1Mu7), 90 (DoubleMu3),\
- 126 (IsoEle10_Mu10_L1R):\n\t ee -- 45 OR 54, mm -- 86 or 90, em -- 45 OR 86 OR 126", "", "",
-	     "", "hltTry08", "", "");
+ 126 (IsoEle10_Mu10_L1R):\n\t ee -- 45 OR 54, mm -- 86 or 90, em -- 45 OR 86 OR 126",
+	     "", "hltTry08");
   SET_CUT(cutsMask, applyTriggersTTDil08JanTrial, compactConfig, true);
 
   bool dilepAdditionalMassVetoCutTTDil08 = false;
-  DEFINE_CUT(dilepAdditionalMassVetoCutTTDil08, 22, 1,
+  DEFINE_CUT(dilepAdditionalMassVetoCutTTDil08, 22,
 	     "", "Apply additional z-veto (reject if there is a pair of loose,\
- at least one isolated same flavor OS leptons with mass inside z-window", "", "",
-	     "", "extraZv", "", "");
+ at least one isolated same flavor OS leptons with mass inside z-window",
+	     "", "extraZv");
   SET_CUT(cutsMask, dilepAdditionalMassVetoCutTTDil08, compactConfig, true);
 
   bool corJES10ptUp = false;
-  DEFINE_CUT(corJES10ptUp, 23, 1,
-	     "", "Jets are scaled 10% up ", "", "",
-	     "", "jes10Up", "", "");
+  DEFINE_CUT(corJES10ptUp, 23,
+	     "", "Jets are scaled 10% up ",
+	     "", "jes10Up");
   SET_CUT(cutsMask, corJES10ptUp, compactConfig, true);
   bool corJES10ptDn = false;
-  DEFINE_CUT(corJES10ptDn, 24, 1,
-	     "", "Jets are scaled 10% down ", "", "",
-	     "", "jes10Dn", "", "");
+  DEFINE_CUT(corJES10ptDn, 24,
+	     "", "Jets are scaled 10% down ",
+	     "", "jes10Dn");
   SET_CUT(cutsMask, corJES10ptDn, compactConfig, true);
   if (corJES10ptUp && corJES10ptDn){
     std::cout<<"Inconsistent config: JES up and down requested at the same time: bailing"<<std::endl;
@@ -710,6 +708,11 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	hpatmetPhi[myType][arrNjets]->Fill(cms2.met_pat_metPhiCor(), weight);      
 	hpatmet[3][arrNjets]->Fill(cms2.met_pat_metCor(), weight);      
 	hpatmetPhi[3][arrNjets]->Fill(cms2.met_pat_metPhiCor(), weight);      
+	// tc Met and Met phi
+	htcmet[myType][arrNjets]->Fill(cms2.evt_tcmet(), weight);      
+	htcmetPhi[myType][arrNjets]->Fill(cms2.evt_tcmetPhi(), weight);      
+	htcmet[3][arrNjets]->Fill(cms2.evt_tcmet(), weight);      
+	htcmetPhi[3][arrNjets]->Fill(cms2.evt_tcmetPhi(), weight);      
     
 	// Met vs dilepton Pt
 	hmetVsDilepPt[myType][arrNjets]->Fill(cms2.hyp_met().at(hypIdx), cms2.hyp_p4().at(hypIdx).pt(), weight);
@@ -717,6 +720,9 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	//pat  Met vs dilepton Pt
 	hpatmetVsDilepPt[myType][arrNjets]->Fill(cms2.met_pat_metCor(), cms2.hyp_p4().at(hypIdx).pt(), weight);
 	hpatmetVsDilepPt[3][arrNjets]->Fill(cms2.met_pat_metCor(), cms2.hyp_p4().at(hypIdx).pt(), weight);
+	//tc  Met vs dilepton Pt
+	htcmetVsDilepPt[myType][arrNjets]->Fill(cms2.evt_tcmet(), cms2.hyp_p4().at(hypIdx).pt(), weight);
+	htcmetVsDilepPt[3][arrNjets]->Fill(cms2.evt_tcmet(), cms2.hyp_p4().at(hypIdx).pt(), weight);
     
 	// Met over dilepton Pt vs deltaphi btw the two
 	double dphi2 = fabs(cms2.hyp_p4().at(hypIdx).phi() - cms2.hyp_metPhi().at(hypIdx));
@@ -730,6 +736,12 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	dphi2 = TMath::Pi() - dphi2;  // changed the definition CC 28 March 08
 	hpatmetOverPtVsDphi[myType][arrNjets]->Fill(cms2.met_pat_metCor()/cms2.hyp_p4().at(hypIdx).pt(), dphi2, weight);
 	hpatmetOverPtVsDphi[3][arrNjets]->Fill(cms2.met_pat_metCor()/cms2.hyp_p4().at(hypIdx).pt(), dphi2, weight);
+	//tc Met over dilepton Pt vs deltaphi btw the two
+	dphi2 = fabs(cms2.hyp_p4().at(hypIdx).phi() - cms2.evt_tcmetPhi());
+	if (dphi2 > TMath::Pi()) dphi2 = TMath::TwoPi() - dphi2;
+	dphi2 = TMath::Pi() - dphi2;  // changed the definition CC 28 March 08
+	htcmetOverPtVsDphi[myType][arrNjets]->Fill(cms2.evt_tcmet()/cms2.hyp_p4().at(hypIdx).pt(), dphi2, weight);
+	htcmetOverPtVsDphi[3][arrNjets]->Fill(cms2.evt_tcmet()/cms2.hyp_p4().at(hypIdx).pt(), dphi2, weight);
     
       
 
@@ -949,6 +961,30 @@ void ttDilCounts_looper::bookHistos(char *prefix) {
       hpatmetVsDilepPt[i][j]->GetXaxis()->SetTitle("#Delta#Phi");
       hpatmetVsDilepPt[i][j]->GetYaxis()->SetTitle("MET/Pt_{ll}");
     
+      //tc
+      htcmet[i][j] = new TH1F(Form("%s_htcmet_%s",prefix,suffix[i]),Form("%s_tcmet_%s",prefix,suffix[i]),20,0.,200.);
+      htcmet[i][j]->SetDirectory(rootdir);
+      htcmet[i][j]->GetXaxis()->SetTitle("MET (GeV)");
+
+      htcmetPhi[i][j] = new TH1F(Form("%s_htcmetPhi_%s",prefix,suffix[i]),Form("%s_tcmetPhi_%s",prefix,suffix[i]),
+			       50,-1*TMath::Pi(), TMath::Pi());
+      htcmetPhi[i][j]->SetDirectory(rootdir);
+      htcmetPhi[i][j]->GetXaxis()->SetTitle("#phi");
+
+      htcmetVsDilepPt[i][j] = new TH2F(Form("%s_htcmetVsDilepPt_%s",prefix,suffix[i]),
+				     Form("%s_tcmetVsDilepPt_%s",prefix,suffix[i]),
+				     100,0.,200.,100,0.,200.);
+      htcmetVsDilepPt[i][j]->SetDirectory(rootdir);
+      htcmetVsDilepPt[i][j]->GetXaxis()->SetTitle("Pt_{ll} (GeV)");
+      htcmetVsDilepPt[i][j]->GetYaxis()->SetTitle("Met (GeV)");
+    
+      htcmetOverPtVsDphi[i][j] = new TH2F(Form("%s_htcmetOverPtVsDphi_%s",prefix,suffix[i]),
+					Form("%s_tcmetOverPtVsDphi_%s",prefix,suffix[i]),
+					30,0.,3.,25,0.,TMath::Pi());
+      htcmetOverPtVsDphi[i][j]->SetDirectory(rootdir);
+      htcmetVsDilepPt[i][j]->GetXaxis()->SetTitle("#Delta#Phi");
+      htcmetVsDilepPt[i][j]->GetYaxis()->SetTitle("MET/Pt_{ll}");
+    
     
 
       hdphillvsmll[i][j] = new TH2F(Form("%s_dphillvsmll_%s",prefix,suffix[i]),
@@ -1039,6 +1075,8 @@ void ttDilCounts_looper::bookHistos(char *prefix) {
       hmetPhi[i][j]->Sumw2();
       hpatmet[i][j]->Sumw2();
       hpatmetPhi[i][j]->Sumw2();
+      htcmet[i][j]->Sumw2();
+      htcmetPhi[i][j]->Sumw2();
       hptJet1[i][j]->Sumw2();
       hptJet2[i][j]->Sumw2();
       hptJet3[i][j]->Sumw2();
