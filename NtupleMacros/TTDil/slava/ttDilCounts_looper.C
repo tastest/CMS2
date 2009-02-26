@@ -52,13 +52,13 @@ unsigned int cutConf(unsigned int cutsMask, unsigned int shift, std::string* sCo
   return (res);
 }
 
-#define DEFINE_CUT(CUT, OFFSET, MASK, Coff, Con, Soff, Son)	\
-  unsigned int CUT##_##shift = OFFSET; unsigned int CUT##_##mask = MASK;\
+#define DEFINE_CUT(CUT, OFFSET, Coff, Con, Soff, Son)	\
+  unsigned int CUT##_##shift = OFFSET;\
   std::string CUT##_##confS[2] = { Coff, Con };			\
   std::string CUT##_##shortS[2] = { Soff, Son }
 
 #define SET_CUT(BITS, CUT, SHORTS, FLAG)					\
-  CUT = cutConf(BITS, CUT##_##shift, CUT##_##mask, CUT##_##confS, FLAG, #CUT); \
+  CUT = cutConf(BITS, CUT##_##shift, CUT##_##confS, FLAG, #CUT); \
   SHORTS += CUT##_##shortS[CUT] == "" ? "" : "_"+CUT##_##shortS[CUT]
 
 int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor, int prescale, bool oldjets, unsigned int cutsMask){
@@ -78,7 +78,7 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
   //book Histograms
   bookHistos(prefix);
 
-  std::string compactConfig = "";
+  compactConfig = "";
 
   // this will likely change (playing with options for now)...
   // To define, set and print the new cut:
@@ -90,7 +90,7 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
   // and compactConfig will be usable as a part of the output file name
   // so that instead of currrent, e.g.,  myHist_2122752.root you get myHist_preDil08_OS_noDupWt_hltTry08.root
   bool idcuts = false;
-  DEFINE_CUT(idcuts, 0, 1, 
+  DEFINE_CUT(idcuts, 0,
 	     "Id cuts disabled", "Id cuts enabled", 
 	     "", "idOld");
   SET_CUT(cutsMask, idcuts, compactConfig, true);
