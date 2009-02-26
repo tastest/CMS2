@@ -200,3 +200,19 @@ ONLY CHANGE to 7_0:
         - does HAVE fewer bins (3 in eta (-2.5, -1.479, 1.479, 2.5), 3 in pT (0, 20, 60, 150))
         Application:
         - not yet changed default to 7_1 -> decide in next TaS meeting.
+
+v7_2:
+-----
+Twiki:
+http://omega.physics.ucsb.edu/twiki/bin/view/CMS/FakeRateIncQCDpt30FinalWWcutsStatisticsOptimizedII
+
+        Determination:
+        - selections as for v6_7
+        - uses all QCD bins
+        - does NOT have leading jet > 30 GeV requirement (i.e. Trigger
+          simulation disabled)
+        - does HAVE fewer bins (3 in eta (-2.5, -1.479, 1.479, 2.5), 3 in pT
+          (0, 20, 60, 150))
+        Application:
+        - not yet changed default to 7_1 -> decide in next TaS meeting.
+
