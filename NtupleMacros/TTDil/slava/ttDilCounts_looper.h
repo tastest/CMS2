@@ -73,6 +73,7 @@ class ttDilCounts_looper {
   // Rene Brun promised a fix.
   //TH1::SetDefaultSumw2(kTRUE); // do errors properly based on weights
 
+  std::string compactConfig;
   void bookHistos(char *prefix);
 };
 #endif
