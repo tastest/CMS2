@@ -273,7 +273,7 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
 
   //save all the histograms
     
-  const char* outFile = Form("myHist_%d.root", bitmask);
+  const char* outFile = Form("myHist_%d_%s.root", bitmask, looper->compactConfig.c_str());
   hist::saveHist(outFile);
   hist::deleteHistos();
 
