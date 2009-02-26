@@ -43,24 +43,6 @@ Bool_t comparePt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1,
   return lv1.pt() > lv2.pt();
 }
 
-
-unsigned int cutConf(unsigned int cutsMask, unsigned int shift, std::string* sConf, bool doPrint, char* cutName=""){
-  unsigned int res = ((cutsMask>> shift) & 1);
-  if ( res > 1 ) { std::cout<<"Config error "<<std::endl; exit (99);}
-  if (doPrint ) if (sConf[res].size() ) std::cout << sConf[res].c_str()<<" set by "<<cutName << std::endl;
-  //  std::cout<< cutsMask<<" "<<shift<<" "<<res<<" "<<sConf[res].c_str()<<std::endl;
-  return (res);
-}
-
-#define DEFINE_CUT(CUT, OFFSET, Coff, Con, Soff, Son)	\
-  unsigned int CUT##_##shift = OFFSET;\
-  std::string CUT##_##confS[2] = { Coff, Con };			\
-  std::string CUT##_##shortS[2] = { Soff, Son }
-
-#define SET_CUT(BITS, CUT, SHORTS, FLAG)					\
-  CUT = cutConf(BITS, CUT##_##shift, CUT##_##confS, FLAG, #CUT); \
-  SHORTS += CUT##_##shortS[CUT] == "" ? "" : "_"+CUT##_##shortS[CUT]
-
 int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor, int prescale, bool oldjets, unsigned int cutsMask){
   
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
@@ -89,163 +71,176 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
   // Eventually the DEFINE_CUT piece will move outside ScanChain to smth like SetConfig
   // and compactConfig will be usable as a part of the output file name
   // so that instead of currrent, e.g.,  myHist_2122752.root you get myHist_preDil08_OS_noDupWt_hltTry08.root
-  bool idcuts = false;
-  DEFINE_CUT(idcuts, 0,
-	     "Id cuts disabled", "Id cuts enabled", 
-	     "", "idOld");
-  SET_CUT(cutsMask, idcuts, compactConfig, true);
-
-  bool isolationcuts = false;
-  DEFINE_CUT( isolationcuts, 1,
-	      "Isolation cuts disabled", "Isolation cuts enabled",
-	      "", "isoOld");
-  SET_CUT(cutsMask, isolationcuts, compactConfig, true);
-
-  bool dilepMassVetoCut = false;
-  DEFINE_CUT(dilepMassVetoCut, 2,
-	     "DiLeptonMassVetoCut disabled", "DiLeptonMassVetoCut enabled",
-	     "", "zVetOld");
-  SET_CUT(cutsMask, dilepMassVetoCut, compactConfig, true);
-
-  bool METcut = false;
-  DEFINE_CUT(METcut, 3, 
-	     "METCut disabled", "METCut enabled",
-	     "", "wMET");
-  SET_CUT(cutsMask, METcut, compactConfig, true);
-
-  bool nJets2 = false; 
-  DEFINE_CUT(nJets2, 4,
-	     "NJets>=2 cut disabled", "NJets>=2 cut enabled",
-	     "", "2J");
-  SET_CUT(cutsMask, nJets2, compactConfig, true);
-
-  bool applyMuTag = false;
-  DEFINE_CUT(applyMuTag, 5, 
-	     "Extra muon tag cut disabled", "Extra Muon tag cut enabled",
-	     "", "muTag");
-  SET_CUT(cutsMask, applyMuTag, compactConfig, true);
-
-  bool METveto = false;
-  DEFINE_CUT(METveto, 6,
-	     "MET veto is disabled", "MET veto is enabled",
-	     "", "vetoMET");
-  SET_CUT(cutsMask, METveto, compactConfig, true);
-
-  bool applyMuTag5 = false;
-  DEFINE_CUT(applyMuTag5, 7,
-	     "Extra muon 5GeV tag cut disabled", "Extra Muon 5GeV tag cut enabled",
-	     "", "muTag5");
-  SET_CUT(cutsMask, applyMuTag5, compactConfig, true);
-
-  int  isoLooseMode = 0;
-  DEFINE_CUT(isoLooseMode, 8,
-	     "", 
-	     "DISABLED", 
-	     "", "isoReg1");
-  SET_CUT(cutsMask, isoLooseMode, compactConfig, true);
-  if (isoLooseMode != 0){
-    std::cout<<"isoLooseMode is disabled, fix your config"<<std::endl; return 99;
+  bool idcuts =  cutsMask & 1;
+  if( cutsMask & 1) {
+    idcuts = true;
+    cout << "Id cuts enabled" << endl;
+    compactConfig = compactConfig+ "_idOld";
   }
 
-  bool looseDilSelectionTTDil08 = false;
-  DEFINE_CUT(looseDilSelectionTTDil08, 10,
-	     "", "Require loose dil selection for TTbar-->dilepton ana 2008/09",
-	     "", "preDil08");
-  SET_CUT(cutsMask, looseDilSelectionTTDil08, compactConfig, true);
-
-  bool fillMultipleHypsOnly = false;
-  DEFINE_CUT(fillMultipleHypsOnly, 11,
-	     "", "Fill only multiple hypotheses",
-	     "", "dupOnly");
-  SET_CUT(cutsMask, fillMultipleHypsOnly, compactConfig, true);
-
-  bool applyZWindow = false;
-  DEFINE_CUT(applyZWindow, 12, 
-	     "", "Events from Z-window only",
-	     "", "inZ");
-  SET_CUT(cutsMask, applyZWindow, compactConfig, true);
-
-  bool osSelection = false;
-  DEFINE_CUT(osSelection, 13,
-	     "", "Require OS",
-	     "", "OS");
-  SET_CUT(cutsMask,osSelection , compactConfig, true);
-
-  bool fillMaxWeightDilOnly = false;
-  DEFINE_CUT(fillMaxWeightDilOnly, 14,
-	     "", "Fill only the dilepton with the max dilepton weight",
-	     "", "noDupWt");
-  SET_CUT(cutsMask, fillMaxWeightDilOnly, compactConfig, true);
-
-  bool leptonIsolationDilSelectionTTDil08 = false;
-  DEFINE_CUT(leptonIsolationDilSelectionTTDil08, 15,
-	     "", "Apply isolation cuts on leptons for TTbar-->dilepton ana 2008/09",
-	     "", "isoDil08");
-  SET_CUT(cutsMask, leptonIsolationDilSelectionTTDil08, compactConfig, true);
-
-  bool looseDilSelectionNoIsoTTDil08 = false;
-  DEFINE_CUT(looseDilSelectionNoIsoTTDil08, 16,
-	     "", "Require loose dil selection for TTbar-->dilepton ana 2008/09; drop loose iso cuts",
-	     "", "preDil08noIso");
-  SET_CUT(cutsMask, looseDilSelectionNoIsoTTDil08, compactConfig, true);
-
-  bool lepton20Eta2p4DilSelection = false;
-  DEFINE_CUT(lepton20Eta2p4DilSelection, 17,
-	     "", "Two leptons pt>20 and |eta|<2.4 are selected -- bare minimum",
-	     "", "2pt20");
-  SET_CUT(cutsMask, lepton20Eta2p4DilSelection, compactConfig, true);
-
-  bool metBaselineSelectionTTDil08 = false;
-  DEFINE_CUT(metBaselineSelectionTTDil08, 18,
-	     "", "Apply TTDil08 baseline MET selection: use corrected pat-met emu met >20, mm,em met>30",
-	     "", "preMet08");
-  SET_CUT(cutsMask, metBaselineSelectionTTDil08, compactConfig, true);
-
-  bool dilepMassVetoCutTTDil08 = false;
-  DEFINE_CUT(dilepMassVetoCutTTDil08, 19,
-	     "", "Apply Z mass veto on same flavor dils, use TTDil08 selections",
-	     "", "outZ08");
-  SET_CUT(cutsMask, dilepMassVetoCutTTDil08, compactConfig, true);
-
-  bool applyTriggersMu9orLisoE15 = false;
-  DEFINE_CUT(applyTriggersMu9orLisoE15, 20,
-	     "", "HLT bits: 47 (HLT_LooseIsoEle15_LW_L1R), 82 (HLT_Mu9): ee -- 47, em -- 47 OR 82, mm -- 82",
-	     "", "hltMu9E15");
-  SET_CUT(cutsMask, applyTriggersMu9orLisoE15, compactConfig, true);
-
-  bool applyTriggersTTDil08JanTrial = false;
-  DEFINE_CUT(applyTriggersTTDil08JanTrial, 21,
-	     "", 
-	     "HLT bits 45 (IsoEle18_L1R), 54 (DoubleIsoEle12_L1R), 86 (Mu15_L1Mu7), 90 (DoubleMu3),\
- 126 (IsoEle10_Mu10_L1R):\n\t ee -- 45 OR 54, mm -- 86 or 90, em -- 45 OR 86 OR 126",
-	     "", "hltTry08");
-  SET_CUT(cutsMask, applyTriggersTTDil08JanTrial, compactConfig, true);
-
-  bool dilepAdditionalMassVetoCutTTDil08 = false;
-  DEFINE_CUT(dilepAdditionalMassVetoCutTTDil08, 22,
-	     "", "Apply additional z-veto (reject if there is a pair of loose,\
- at least one isolated same flavor OS leptons with mass inside z-window",
-	     "", "extraZv");
-  SET_CUT(cutsMask, dilepAdditionalMassVetoCutTTDil08, compactConfig, true);
-
-  bool corJES10ptUp = false;
-  DEFINE_CUT(corJES10ptUp, 23,
-	     "", "Jets are scaled 10% up ",
-	     "", "jes10Up");
-  SET_CUT(cutsMask, corJES10ptUp, compactConfig, true);
-  bool corJES10ptDn = false;
-  DEFINE_CUT(corJES10ptDn, 24,
-	     "", "Jets are scaled 10% down ",
-	     "", "jes10Dn");
-  SET_CUT(cutsMask, corJES10ptDn, compactConfig, true);
-  if (corJES10ptUp && corJES10ptDn){
-    std::cout<<"Inconsistent config: JES up and down requested at the same time: bailing"<<std::endl;
-    return 99;
+  bool isolationcuts = (cutsMask>>1) & 1;
+  if( isolationcuts ) {
+    cout << "Isolation cuts enabled" << endl;
+    compactConfig = compactConfig + "_isoOld";
   }
+
+  bool dilepMassVetoCut =  (cutsMask>>2) & 1;
+  if( dilepMassVetoCut ) {
+    cout << "DiLeptonMassVetoCut enabled" << endl;
+    compactConfig = compactConfig + "_zVetoOld";
+  }
+  
+  bool METcut =  (cutsMask>>3) & 1;
+   if( METcut ) {
+     cout << "METCut enabled" << endl;
+    compactConfig = compactConfig + "_wMET";
+  } 
+
+   bool nJets2 =  (cutsMask>>4) & 1; 
+   if( nJets2 ) {
+     cout << "NJets>=2 cut enabled" << endl;
+     compactConfig = compactConfig + "_nJets2";
+   }
+
+   bool applyMuTag = (cutsMask>>5) & 1;
+   if( applyMuTag ) {
+     cout << "Extra Muon tag cut enabled" << endl;
+     compactConfig = compactConfig + "_muTag";
+   } 
+   
+   bool METveto = (cutsMask>>6) & 1;
+   if ( METveto ){
+     cout << "MET veto is enabled" << endl;
+     compactConfig = compactConfig + "_vetoMET";
+   } 
+
+   bool applyMuTag5 =  (cutsMask>>7) & 1;
+   if( applyMuTag5 ) {
+     cout << "Extra Muon 5GeV tag cut enabled" << endl;
+     compactConfig = compactConfig + "_muTag5";
+   } 
+   
+   int  isoLooseMode = 0;
+   isoLooseMode = ((cutsMask>>8) & 3);
+   if (isoLooseMode == 0){
+     cout << "Require both leptons to be isolated" << endl;
+     compactConfig = compactConfig + "_isoReg";
+  } else if( isoLooseMode == 1) {
+     cout << "Require one-only hyp lepton (electron in emu) with iso (0.6, 0.92)" << endl;
+     compactConfig = compactConfig + "_isoReg1";
+   } else if (isoLooseMode == 2 ) {
+     cout << "Require one-only hyp lepton (muon in emu) with iso (0.6, 0.92)" << endl;
+    compactConfig = compactConfig + "_isoReg2";
+   } else if (isoLooseMode == 3){
+     cout << "Require two hyp leptons  with iso (0.6, 0.92)" << endl;
+     compactConfig = compactConfig + "_isoReg3";
+   }
+
+   
+   bool looseDilSelectionTTDil08 = (cutsMask>>10) & 1;
+   if (looseDilSelectionTTDil08 ){
+     cout << "Require loose dil selection for TTbar-->dilepton ana 2008/09"<< endl;
+     compactConfig = compactConfig + "_looseDil08";
+   }
+   
+   bool fillMultipleHypsOnly = ((cutsMask >> 11)&1);
+   if (fillMultipleHypsOnly){
+     std::cout<< "Fill only multiple hypotheses"<<std::endl;
+     compactConfig = compactConfig + "_dupOnly";
+   }
+
+   bool applyZWindow = ((cutsMask >> 12) & 1);
+   if (applyZWindow){
+     std::cout<<"Events from Z-window only"<<std::endl;
+     compactConfig = compactConfig + "_inZ";
+   }
+   
+
+   bool osSelection = ((cutsMask >> 13 ) & 1);
+   if (osSelection){
+     std::cout<<"Require OS"<<std::endl;
+     compactConfig = compactConfig + "_OS";
+   }
+   
+   bool  fillMaxWeightDilOnly = ((cutsMask >> 14) & 1);
+   if (fillMaxWeightDilOnly){
+     std::cout<<"Fill only the dilepton with the max dilepton weight"<<std::endl;
+     compactConfig = compactConfig + "_noDupWt";
+  }
+   
+   bool leptonIsolationDilSelectionTTDil08 = ((cutsMask>> 15) & 1);
+   if (leptonIsolationDilSelectionTTDil08){
+     std::cout<<" Apply isolation cuts on leptons for TTbar-->dilepton ana 2008/09"<<std::endl;
+     compactConfig = compactConfig + "_isoDil08";
+   }
+   
+   bool looseDilSelectionNoIsoTTDil08 = ((cutsMask>>16)&1);
+   if (looseDilSelectionNoIsoTTDil08 ){
+     std::cout<< "Require loose dil selection for TTbar-->dilepton ana 2008/09; drop loose iso cuts"<<std::endl;
+     compactConfig = compactConfig +"_preDil08noIso";
+   }
+   
+   bool lepton20Eta2p4DilSelection = ((cutsMask>>17)&1);
+   if (lepton20Eta2p4DilSelection){
+     std::cout<<"Two leptons pt>20 and |eta|<2.4 are selected -- bare minimum"<<std::endl;
+     compactConfig = compactConfig;
+   }
+
+   bool metBaselineSelectionTTDil08 = ((cutsMask>>18)&1);
+   if (metBaselineSelectionTTDil08){
+     std::cout<<"Apply TTDil08 baseline MET selection: use corrected pat-met emu met >20, mm,em met>30"<<std::endl;
+     compactConfig = compactConfig + "_preMet08";
+   }
+   
+   bool dilepMassVetoCutTTDil08 = ((cutsMask>>19)&1);
+   if (dilepMassVetoCutTTDil08){
+     std::cout<<"Apply Z mass veto on same flavor dils, use TTDil08 selections"<<std::endl;
+     compactConfig = compactConfig + "_outZ08";
+   }
+   
+   bool applyTriggersMu9orLisoE15 = ((cutsMask>>20)&1);
+   if (applyTriggersMu9orLisoE15){
+     std::cout<<"HLT bits: 47 (HLT_LooseIsoEle15_LW_L1R), 82 (HLT_Mu9): ee -- 47, em -- 47 OR 82, mm -- 82"<<std::endl;
+     compactConfig = compactConfig + "_hltMu9E15";
+   }
+
+   bool applyTriggersTTDil08JanTrial = ((cutsMask>>21)&1);
+   if (applyTriggersTTDil08JanTrial){
+     std::cout<<"HLT bits 45 (IsoEle18_L1R), 54 (DoubleIsoEle12_L1R), 86 (Mu15_L1Mu7), 90 (DoubleMu3), 126 (IsoEle10_Mu10_L1R):\n"
+	      <<"\t ee -- 45 OR 54, mm -- 86 or 90, em -- 45 OR 86 OR 126"<<std::endl;
+     compactConfig = compactConfig + "_hltTry08";
+   }
+   
+   bool dilepAdditionalMassVetoCutTTDil08 = ((cutsMask>>22)&1);
+   if( dilepAdditionalMassVetoCutTTDil08 ) {
+     cout << "Apply additional z-veto. Reject event if there is a pair of opp. "
+         << " sign same flavor leptons (with one loosely isolated) that has inv. mass " 
+	  << "inside Z mass veto region" << endl;
+     compactConfig = compactConfig + "_xtraZv";
+   }
+
+   bool corJES10ptUp = ((cutsMask>>23)&1);
+   if(corJES10ptUp) {
+     cout << "Jets are scaled 10% up" << endl;
+     compactConfig = "_jets10Up";
+  }
+   
+   bool corJES10ptDn = ((cutsMask>>24)&1);
+   if(corJES10ptDn) {
+     cout << "Jets are scaled 10% down" << endl;
+     compactConfig = "_jets10Dn";
+   }
+   
+   if (corJES10ptUp && corJES10ptDn){
+     std::cout<<"Inconsistent config: JES up and down requested at the same time: bailing"<<std::endl;
+     return 99;
+   }
+
+
   float globalJESscaleRescale = 1.;
   if (corJES10ptUp)  globalJESscaleRescale = 1.1;
   if (corJES10ptDn)  globalJESscaleRescale = 0.9;
-  
+
 
   std::cout<<"Compact config string is "<<compactConfig.c_str()<<std::endl;
 
