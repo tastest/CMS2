@@ -26,6 +26,8 @@ bool filterByProcess (enum Process sample)
      return false;
 }
 
+#define SCALE_TO_10_TEV
+
 //WW file
 Sample fWW ()
 {
@@ -36,7 +38,11 @@ Sample fWW ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-04-00/merge_WW.root";
      }
      c->Add(sample.c_str());
+#ifdef SCALE_TO_10_TEV
+     Sample ret = { c, WW, kRed, 0.65, "ww", true };
+#else
      Sample ret = { c, WW, kRed, 1, "ww", true };
+#endif
      return ret;
 }
 
@@ -50,7 +56,11 @@ Sample fWZ ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-05-00/merge_WZ.root";
      }
      c->Add(sample.c_str());
+#ifdef SCALE_TO_10_TEV
+     Sample ret = { c, WZ, kBlue, 0.65, "wz", true };
+#else
      Sample ret = { c, WZ, kBlue, 1, "wz", true };
+#endif
      return ret;
 }
 
@@ -64,7 +74,11 @@ Sample fZZ ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-05-00/merge_ZZ.root";
      }
      c->Add(sample.c_str());
+#ifdef SCALE_TO_10_TEV
+     Sample ret = { c, ZZ, kGreen, 0.65, "zz", true };
+#else
      Sample ret = { c, ZZ, kGreen, 1, "zz", true };
+#endif
      return ret;
 }
 
@@ -78,7 +92,11 @@ Sample fWjets ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-04-01/merge_Wjet.root";
      }
      c->Add(sample.c_str());
+#ifdef SCALE_TO_10_TEV
+     Sample ret = { c, Wjets, 40, 0.68, "wjets", true };
+#else
      Sample ret = { c, Wjets, 40, 1, "wjets", true };
+#endif
      return ret;
 }
 
@@ -92,7 +110,11 @@ Sample fDYee ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-04-01/merge_DY.root";
      }
      c->Add(sample.c_str());
+#ifdef SCALE_TO_10_TEV
+     Sample ret = { c, DYee, kMagenta, 1.12 * 0.68, "dyee", true };
+#else
      Sample ret = { c, DYee, kMagenta, 1.12, "dyee", true };
+#endif
      return ret;
 }
 
@@ -106,7 +128,11 @@ Sample fDYmm ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-04-01/merge_DY.root";
      }
      c->Add(sample.c_str());
+#ifdef SCALE_TO_10_TEV
+     Sample ret = { c, DYmm, kCyan, 1.12 * 0.68, "dymm", true };
+#else
      Sample ret = { c, DYmm, kCyan, 1.12, "dymm", true };
+#endif
      return ret;
 }
 
@@ -120,7 +146,11 @@ Sample fDYtt ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-04-01/merge_DY.root";
      }
      c->Add(sample.c_str());
+#ifdef SCALE_TO_10_TEV
+     Sample ret = { c, DYtt, kBlack, 1.12 * 0.68, "dytt", true };
+#else
      Sample ret = { c, DYtt, kBlack, 1.12, "dytt", true };
+#endif
      return ret;
 }
 
@@ -134,7 +164,11 @@ Sample fttbar ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-04-01/merge_ttbar.root";
      }
      c->Add(sample.c_str());
+#ifdef SCALE_TO_10_TEV
+     Sample ret = { c, ttbar, kYellow, 1.85 * 0.45, "ttbar", true };
+#else
      Sample ret = { c, ttbar, kYellow, 1.85, "ttbar", true };
+#endif
      return ret;
 }
 
@@ -147,7 +181,11 @@ Sample ftW ()
        sample = std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" + "cms2-V00-04-00/merge_tW.root";
      }
      c->Add(sample.c_str());
+#ifdef SCALE_TO_10_TEV
+     Sample ret = { c, tW, 63, 0.45, "tw", true };
+#else
      Sample ret = { c, tW, 63, 1, "tw", true };
+#endif
      return ret;
 }
 
