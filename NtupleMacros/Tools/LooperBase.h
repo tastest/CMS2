@@ -71,6 +71,7 @@ public:
      virtual uint64 	Loop ();
      const std::string 	&SampleName () const { return sample_.name; }
      const bool 	&SampleSM () const { return sample_.sm; }
+     bool		HasRun () const { return hasRun_; }
      
 protected:
      Sample		sample_;
@@ -80,6 +81,7 @@ protected:
      uint64		hypos_total_n_[4];
      int                duplicates_total_n_; // for duplicate filter
      double             duplicates_total_weight_; // for duplicate filter
+     bool		hasRun_;
 };
 
 inline cuts_t CUT_BIT (int i)

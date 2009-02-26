@@ -8,7 +8,7 @@
 #include "../CORE/CMS2.h"
 
 LooperBase::LooperBase (Sample s, cuts_t c, const char *fname) : 
-     sample_(s), cuts_(c)
+     sample_(s), cuts_(c), hasRun_(false)
 {
      if (fname != 0 && strlen(fname) != 0) {
 	  logfile_ = fopen(fname, "a");
@@ -155,5 +155,6 @@ uint64 LooperBase::Loop ()
 	  fclose(logfile_);
      if (sample_.chain != 0)
 	  delete sample_.chain;
+     hasRun_ = true;
      return nEventsTotal;
 }
