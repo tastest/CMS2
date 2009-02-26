@@ -26,18 +26,22 @@ double elFakeProb_v2_2 (int i_el, int add_error_times)
      float prob_error = 0.0;
      TH2F *theFakeRate = &fakeRate();
      // cut definition
-     prob = theFakeRate->GetBinContent(theFakeRate->FindBin(cms2.els_p4()[i_el].Eta(),cms2.els_p4()[i_el].Pt()));
+     float pt = cms2.els_p4()[i_el].Pt();
+     float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
+     if ( pt > upperEdge )
+       pt = upperEdge;
+     prob = theFakeRate->GetBinContent(theFakeRate->FindBin(cms2.els_p4()[i_el].Eta(),pt));
      prob_error =
-	  theFakeRate->GetBinError(theFakeRate->FindBin(cms2.els_p4()[i_el].Eta(),cms2.els_p4()[i_el].Pt()));
+	  theFakeRate->GetBinError(theFakeRate->FindBin(cms2.els_p4()[i_el].Eta(),pt));
      
      if (prob>1.0 || prob<0.0) {
-	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob << std::endl;
+// 	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob << std::endl;
      }
      if (prob==0.0){
-	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob
-		   <<" for Et = " <<cms2.els_p4()[i_el].Pt()
-		   <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
-		   << std::endl;
+// 	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob
+// 		   <<" for Et = " <<cms2.els_p4()[i_el].Pt()
+// 		   <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
+// 		   << std::endl;
      }
      return prob+add_error_times*prob_error;
 }
@@ -155,18 +159,22 @@ double elFakeProb_v5 (int i_el, int add_error_times)
      TH2F *theFakeRate = &fakeRate();
      TH2F *theFakeRateErr = &fakeRateError();
      // cut definition
-     prob = theFakeRate->GetBinContent(theFakeRate->FindBin(cms2.els_p4()[i_el].Eta(),cms2.els_p4()[i_el].Pt()));
+     float pt = cms2.els_p4()[i_el].Pt();
+     float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
+     if ( pt > upperEdge )
+       pt = upperEdge;
+     prob = theFakeRate->GetBinContent(theFakeRate->FindBin(cms2.els_p4()[i_el].Eta(),pt));
      prob_error =
-	  theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(cms2.els_p4()[i_el].Eta(),cms2.els_p4()[i_el].Pt()));
+	  theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(cms2.els_p4()[i_el].Eta(),pt));
      
      if (prob>1.0 || prob<0.0) {
-	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob << std::endl;
+// 	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob << std::endl;
      }
      if (prob==0.0){
-	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob
-		   <<" for Et = " <<cms2.els_p4()[i_el].Pt()
-		   <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
-		   << std::endl;
+// 	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob
+// 		   <<" for Et = " <<cms2.els_p4()[i_el].Pt()
+// 		   <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
+// 		   << std::endl;
      }
      return prob+add_error_times*prob_error;
 }
@@ -237,18 +245,22 @@ double elFakeProb_v6 (int i_el, int add_error_times)
      TH2F *theFakeRate = &fakeRate();
      TH2F *theFakeRateErr = &fakeRateError();
      // cut definition
-     prob = theFakeRate->GetBinContent(theFakeRate->FindBin(cms2.els_p4()[i_el].Eta(),cms2.els_p4()[i_el].Pt()));
+     float pt = cms2.els_p4()[i_el].Pt();
+     float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
+     if ( pt > upperEdge )
+       pt = upperEdge;
+     prob = theFakeRate->GetBinContent(theFakeRate->FindBin(cms2.els_p4()[i_el].Eta(),pt));
      prob_error =
-	  theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(cms2.els_p4()[i_el].Eta(),cms2.els_p4()[i_el].Pt()));
+	  theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(cms2.els_p4()[i_el].Eta(),pt));
      
      if (prob>1.0 || prob<0.0) {
-	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob << std::endl;
+// 	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob << std::endl;
      }
      if (prob==0.0){
-	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob
-		   <<" for Et = " <<cms2.els_p4()[i_el].Pt()
-		   <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
-		   << std::endl;
+// 	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob
+// 		   <<" for Et = " <<cms2.els_p4()[i_el].Pt()
+// 		   <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
+// 		   << std::endl;
      }
      return prob+add_error_times*prob_error;
 }
@@ -319,9 +331,13 @@ double elFakeProb_v7 (int i_el, int add_error_times)
      TH2F *theFakeRate = &fakeRate();
      TH2F *theFakeRateErr = &fakeRateError();
      // cut definition
-     prob = theFakeRate->GetBinContent(theFakeRate->FindBin(cms2.els_p4()[i_el].Eta(),cms2.els_p4()[i_el].Pt()));
+     float pt = cms2.els_p4()[i_el].Pt();
+     float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
+     if ( pt > upperEdge )
+       pt = upperEdge;
+     prob = theFakeRate->GetBinContent(theFakeRate->FindBin(cms2.els_p4()[i_el].Eta(),pt));
      prob_error =
-	  theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(cms2.els_p4()[i_el].Eta(),cms2.els_p4()[i_el].Pt()));
+	  theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(cms2.els_p4()[i_el].Eta(),pt));
      
      if (prob>1.0 || prob<0.0) {
 	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob << std::endl;
@@ -342,7 +358,7 @@ bool isFakeDenominatorElectron_v7 (int index)
   //
 
   // cut definition
-  float pt_cut        		= 15.;
+  float pt_cut        		= 20.;
   float eta_cut       		= 2.5;
   float hOverE_cut    		= 0.2;
   bool  use_calo_iso            = false;
@@ -370,7 +386,7 @@ bool isFakeNumeratorElectron_v7 (int index, int type)
   //
   
   // cut definition
-  float pt_cut        		= 15;
+  float pt_cut        		= 20;
   float eta_cut       		= 2.5;
   bool  use_calo_iso            = true;
 
@@ -421,7 +437,7 @@ bool isFakeDenominatorMuon_v1 (int index)
 
   // - isoSumPt < 15 -> needs revision - would go for same def as for electrons?
   // - changed iso to mu_rel_iso > 0.75
-    if ( !passMuonIsolationLoose(index) )          	                   result = false; 
+  if ( !passMuonIsolationLoose(index) )          	                   result = false; 
 
   //  if (cms2.mus_validHits().at(index) < 11)                             result = false;
 
@@ -434,8 +450,6 @@ bool isFakeDenominatorMuon_v1 (int index)
 bool isFakeNumeratorMuon_v1 (int index, int type) 
 { 
   //
-  // 1=loose, 2=tight
-  //
   // returns true if input fulfills certain cuts
   //
   
@@ -445,26 +459,19 @@ bool isFakeNumeratorMuon_v1 (int index, int type)
 
   bool result = true;
 
-  // need: 
+  // Jakes original definition
   // - global muon
   // - pt > 20 GeV
   // - d0corr < 0.1 cm
   // - chi2/ndf < 10
   // - isoSumPt < 3 -> needs revision - would go for same def as for electrons?
 
+  // now using WW analysis selection
+
   if ( cms2.mus_p4()[index].Pt()  < pt_cut )              result = false;
   if ( TMath::Abs(cms2.mus_p4()[index].Eta()) > eta_cut ) result = false;
   if ( !passMuonIsolation(index) )          	          result = false;
-  if ( type == 1 ) {
-    // loose
-    // Currently this is the same as tight
-    if ( !goodMuonWithoutIsolation(index) )               result = false;
-  } else if ( type == 2 ) {
-    // tight
-    if ( !goodMuonWithoutIsolation(index) )               result = false;
-  } else {
-    cout << "WARNING: wrong muon type detected, please select loose (1) or tight (2)" << endl;
-  }
+  if ( !goodMuonWithoutIsolation(index) )                 result = false;
 
   return result;
   
@@ -565,11 +572,11 @@ TH2F &fakeRate ()
 #endif
 #ifdef USE_V7
      if ( el_fakeRateFile_v7 == 0 ) {
-	  el_fakeRateFile_v7 = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/fakeRates-v7_0.root", "read"); 
+	  el_fakeRateFile_v7 = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/fakeRates-v7_2.root", "read"); 
 	  if ( el_fakeRateFile_v7 == 0 ) {
-	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v7_0.root could not be found!!" << std::endl;
+	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v7_2.root could not be found!!" << std::endl;
 	       std::cout << "Please make sure that $CMS2_LOCATION points to your CMS2 directory and that" << std::endl;
-	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v7_0.root exists!" << std::endl;
+	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v7_2.root exists!" << std::endl;
 	       gSystem->Exit(1);
 	  }
 	  el_fakeRate_v7 = dynamic_cast<TH2F *>(el_fakeRateFile_v7->Get("fakeRateTemplate_elt_EleFakes"));
@@ -623,11 +630,11 @@ TH2F &fakeRateError ()
 #endif
 #ifdef USE_V7
      if ( el_fakeRateFile_v7 == 0 ) {
-	  el_fakeRateFile_v7 = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/fakeRates-v7_0.root", "read"); 
+	  el_fakeRateFile_v7 = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/fakeRates-v7_2.root", "read"); 
 	  if ( el_fakeRateFile_v7 == 0 ) {
-	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v7_0.root could not be found!!" << std::endl;
+	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v7_2.root could not be found!!" << std::endl;
 	       std::cout << "Please make sure that $CMS2_LOCATION points to your CMS2 directory and that" << std::endl;
-	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v7_0.root exists!" << std::endl;
+	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v7_2.root exists!" << std::endl;
 	       gSystem->Exit(1);
 	  }
 	  el_fakeRate_v7 = dynamic_cast<TH2F *>(el_fakeRateFile_v7->Get("fakeRateTemplate_elt_EleFakes"));
