@@ -256,11 +256,11 @@ cuts_t Looper::DilepSelect (int i_hyp)
     ret |= (CUT_BIT(CUT_PASS_ZVETO));
   else ret |= (CUT_BIT(CUT_IN_Z_WINDOW));
   // Z veto using additional leptons in the event
-  if (not additionalZveto())
-    ret |= (CUT_BIT(CUT_PASS_ADDZVETO));
-  // any additional high-pt, isolated leptons?
-  if (passTriLepVeto(i_hyp))
-    ret |= (CUT_BIT(CUT_PASS_EXTRALEPTON_VETO));
+//   if (not additionalZveto())
+//     ret |= (CUT_BIT(CUT_PASS_ADDZVETO));
+//   // any additional high-pt, isolated leptons?
+//   if (passTriLepVeto(i_hyp))
+//     ret |= (CUT_BIT(CUT_PASS_EXTRALEPTON_VETO));
 
   //      if (myType == DILEPTON_MUMU) { // don't want to deal with electron overlap right now
   // 	  if (passCaloTrkjetCombo())
