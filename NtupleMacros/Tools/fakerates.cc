@@ -172,13 +172,13 @@ double elFakeProb_v5 (int i_el, int add_error_times)
 	  theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(cms2.els_p4()[i_el].Eta(),pt));
      
      if (prob>1.0 || prob<0.0) {
-// 	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob << std::endl;
+	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob << std::endl;
      }
      if (prob==0.0){
-// 	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob
-// 		   <<" for Et = " <<cms2.els_p4()[i_el].Pt()
-// 		   <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
-// 		   << std::endl;
+	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob
+		   <<" for Et = " <<cms2.els_p4()[i_el].Pt()
+		   <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
+		   << std::endl;
      }
      return prob+add_error_times*prob_error;
 }
@@ -258,13 +258,13 @@ double elFakeProb_v6 (int i_el, int add_error_times)
 	  theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(cms2.els_p4()[i_el].Eta(),pt));
      
      if (prob>1.0 || prob<0.0) {
-// 	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob << std::endl;
+	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob << std::endl;
      }
      if (prob==0.0){
-// 	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob
-// 		   <<" for Et = " <<cms2.els_p4()[i_el].Pt()
-// 		   <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
-// 		   << std::endl;
+	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob
+		   <<" for Et = " <<cms2.els_p4()[i_el].Pt()
+		   <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
+		   << std::endl;
      }
      return prob+add_error_times*prob_error;
 }
@@ -420,9 +420,13 @@ double muFakeProb_v1 (int i_mu, int add_error_times)
      TH2F *theFakeRate = &fakeRateMuon();
      TH2F *theFakeRateErr = &fakeRateErrorMuon();
      // cut definition
-     prob = theFakeRate->GetBinContent(theFakeRate->FindBin(cms2.mus_p4()[i_mu].Eta(),cms2.mus_p4()[i_mu].Pt()));
+     float pt = cms2.mus_p4()[i_mu].Pt();
+     float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
+     if ( pt > upperEdge )
+       pt = upperEdge;
+     prob = theFakeRate->GetBinContent(theFakeRate->FindBin(cms2.mus_p4()[i_mu].Eta(),pt));
      prob_error =
-	  theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(cms2.mus_p4()[i_mu].Eta(),cms2.mus_p4()[i_mu].Pt()));
+	  theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(cms2.mus_p4()[i_mu].Eta(),pt));
      
      if (prob>1.0 || prob<0.0) {
 	  std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob << std::endl;
