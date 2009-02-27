@@ -17,6 +17,8 @@ enum {
   CUT_PT_LEADING_JET,
   CUT_QCD_BIN_UPPER_PTHAT,
   CUT_NO_CUT,
+  CUT_EVEN,
+  CUT_ODD,
 };
 
 //----------------------------------------------------------------------
@@ -42,7 +44,6 @@ enum {
 //   following: 
 //   cuts_t baseline_cuts_without_lt_pt = baseline_cuts & ~CUT_BIT(CUT_LT_PT);
  
-// baseline cuts
 const static cuts_t muo_fakes_cuts = 
   (CUT_BIT(CUT_NO_CUT));   
 
@@ -51,6 +52,24 @@ const static cuts_t muo_fakes_wo_trigger_jet_cuts =
 
 const static cuts_t muo_fakes_cuts_using_bins = 
   muo_fakes_cuts | (CUT_BIT(CUT_QCD_BIN_UPPER_PTHAT));
+
+const static cuts_t muo_fakes_cuts_even = 
+  (CUT_BIT(CUT_NO_CUT)) | (CUT_BIT(CUT_EVEN));   
+
+const static cuts_t muo_fakes_wo_trigger_jet_cuts_even = 
+  (CUT_BIT(CUT_PT_LEADING_JET)) | (CUT_BIT(CUT_EVEN));   
+
+const static cuts_t muo_fakes_cuts_using_bins_even = 
+  muo_fakes_cuts_even | (CUT_BIT(CUT_QCD_BIN_UPPER_PTHAT));
+
+const static cuts_t muo_fakes_cuts_odd = 
+  (CUT_BIT(CUT_NO_CUT)) | (CUT_BIT(CUT_ODD));   
+
+const static cuts_t muo_fakes_wo_trigger_jet_cuts_odd = 
+  (CUT_BIT(CUT_PT_LEADING_JET)) | (CUT_BIT(CUT_ODD));   
+
+const static cuts_t muo_fakes_cuts_using_bins_odd = 
+  muo_fakes_cuts_odd | (CUT_BIT(CUT_QCD_BIN_UPPER_PTHAT));
 
 //----------------------------------------------------------------------
 // Loopers 
@@ -215,8 +234,6 @@ protected:
   double                nNumerator_lt_weighted_w2_;
   double                nNumerator_lt_wo_leading_weighted_w2_;
   double                nNumerator_lt_wo_second_leading_weighted_w2_;
-
-  TDatabasePDG *pdg;
 
 };
 #endif

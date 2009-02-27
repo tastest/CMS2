@@ -144,3 +144,13 @@ int MuoFakesQCDBins ()
 {
   return run<Looper>(muo_fakes_cuts_using_bins, "MuoFakes", 1 << LOOP_QCDpt30to80 | 1 << LOOP_QCDpt80to170 | 1 << LOOP_QCDpt170to300 | 1 << LOOP_QCDpt300to470 | 1 << LOOP_QCDpt470to800 | 1 << LOOP_QCDpt800toInf);
 }
+
+int MuoFakesQCDBinsEven ()
+{
+  return run<Looper>(muo_fakes_cuts_using_bins_even, "MuoFakes", 1 << LOOP_QCDpt30to80 | 1 << LOOP_QCDpt80to170 | 1 << LOOP_QCDpt170to300 | 1 << LOOP_QCDpt300to470 | 1 << LOOP_QCDpt470to800 | 1 << LOOP_QCDpt800toInf);
+}
+
+int MuoFakesQCDBinsOdd ()
+{
+  return run<Looper>(muo_fakes_cuts_using_bins_odd, "MuoFakes", 1 << LOOP_QCDpt30to80 | 1 << LOOP_QCDpt80to170 | 1 << LOOP_QCDpt170to300 | 1 << LOOP_QCDpt300to470 | 1 << LOOP_QCDpt470to800 | 1 << LOOP_QCDpt800toInf);
+}
