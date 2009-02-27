@@ -140,3 +140,23 @@ int EleFakesQCDBinsWOTriggerJet ()
   return run<Looper>(ele_fakes_wo_trigger_jet_cuts_using_bins, "EleFakes", 1 << LOOP_QCDpt30to80 | 1 << LOOP_QCDpt80to170 | 1 << LOOP_QCDpt170to300 | 1 << LOOP_QCDpt300to470 | 1 << LOOP_QCDpt470to800 | 1 << LOOP_QCDpt800toInf);
 }
 
+int EleFakesQCDBinsEven ()
+{
+  return run<Looper>(ele_fakes_cuts_using_bins_even, "EleFakes", 1 << LOOP_QCDpt30to80 | 1 << LOOP_QCDpt80to170 | 1 << LOOP_QCDpt170to300 | 1 << LOOP_QCDpt300to470 | 1 << LOOP_QCDpt470to800 | 1 << LOOP_QCDpt800toInf);
+}
+
+int EleFakesQCDBinsWOTriggerJetEven ()
+{
+  return run<Looper>(ele_fakes_wo_trigger_jet_cuts_using_bins_even, "EleFakes", 1 << LOOP_QCDpt30to80 | 1 << LOOP_QCDpt80to170 | 1 << LOOP_QCDpt170to300 | 1 << LOOP_QCDpt300to470 | 1 << LOOP_QCDpt470to800 | 1 << LOOP_QCDpt800toInf);
+}
+
+int EleFakesQCDBinsOdd ()
+{
+  return run<Looper>(ele_fakes_cuts_using_bins_odd, "EleFakes", 1 << LOOP_QCDpt30to80 | 1 << LOOP_QCDpt80to170 | 1 << LOOP_QCDpt170to300 | 1 << LOOP_QCDpt300to470 | 1 << LOOP_QCDpt470to800 | 1 << LOOP_QCDpt800toInf);
+}
+
+int EleFakesQCDBinsWOTriggerJetOdd ()
+{
+  return run<Looper>(ele_fakes_wo_trigger_jet_cuts_using_bins_odd, "EleFakes", 1 << LOOP_QCDpt30to80 | 1 << LOOP_QCDpt80to170 | 1 << LOOP_QCDpt170to300 | 1 << LOOP_QCDpt300to470 | 1 << LOOP_QCDpt470to800 | 1 << LOOP_QCDpt800toInf);
+}
+

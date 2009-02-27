@@ -269,6 +269,12 @@ cuts_t Looper::EventSelect ()
   if ( cms2.genps_pthat() < sample_.upper_pthat )
     ret |= (CUT_BIT(CUT_QCD_BIN_UPPER_PTHAT));
 
+  if ( events_ % 2 ) {
+    ret |= (CUT_BIT(CUT_ODD));
+  } else {
+    ret |= (CUT_BIT(CUT_EVEN));
+  }
+
   return ret;
 }
 

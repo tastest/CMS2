@@ -17,6 +17,8 @@ enum {
   CUT_PT_LEADING_JET,
   CUT_QCD_BIN_UPPER_PTHAT,
   CUT_NO_CUT,
+  CUT_EVEN,
+  CUT_ODD,
 };
 
 //----------------------------------------------------------------------
@@ -55,6 +57,29 @@ const static cuts_t ele_fakes_cuts_using_bins =
 const static cuts_t ele_fakes_wo_trigger_jet_cuts_using_bins =
   ele_fakes_wo_trigger_jet_cuts | (CUT_BIT(CUT_QCD_BIN_UPPER_PTHAT));
 
+const static cuts_t ele_fakes_cuts_even = 
+  (CUT_BIT(CUT_NO_CUT)) | (CUT_BIT(CUT_EVEN));   
+
+const static cuts_t ele_fakes_wo_trigger_jet_cuts_even = 
+  (CUT_BIT(CUT_PT_LEADING_JET)) | (CUT_BIT(CUT_EVEN));   
+
+const static cuts_t ele_fakes_cuts_using_bins_even = 
+  ele_fakes_cuts_even | (CUT_BIT(CUT_QCD_BIN_UPPER_PTHAT));
+
+const static cuts_t ele_fakes_wo_trigger_jet_cuts_using_bins_even =
+  ele_fakes_wo_trigger_jet_cuts_even | (CUT_BIT(CUT_QCD_BIN_UPPER_PTHAT));
+
+const static cuts_t ele_fakes_cuts_odd = 
+  (CUT_BIT(CUT_NO_CUT)) | (CUT_BIT(CUT_ODD));   
+
+const static cuts_t ele_fakes_wo_trigger_jet_cuts_odd = 
+  (CUT_BIT(CUT_PT_LEADING_JET)) | (CUT_BIT(CUT_ODD));   
+
+const static cuts_t ele_fakes_cuts_using_bins_odd = 
+  ele_fakes_cuts_odd | (CUT_BIT(CUT_QCD_BIN_UPPER_PTHAT));
+
+const static cuts_t ele_fakes_wo_trigger_jet_cuts_using_bins_odd =
+  ele_fakes_wo_trigger_jet_cuts_odd | (CUT_BIT(CUT_QCD_BIN_UPPER_PTHAT));
 
 //----------------------------------------------------------------------
 // Loopers 
