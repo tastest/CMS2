@@ -8,7 +8,8 @@ enum Process { WW, WZ, ZZ, Wjets, DYee, DYmm, DYtt, DY, Wgamma, Zgamma, ttbar, t
 	       LM1, LM2, LM3, LM4, LM5, LM6, LM7, LM8, LM9, LM10, LM11,
 	       InclusiveMu5Pt50, InclusiveMuPt15, 
 	       QCDBCtoEPt20to30, QCDBCtoEPt30to80, QCDBCtoEPt80to170, 
-	       QCDEMenrichedPt20to30, QCDEMenrichedPt30to80, QCDEMenrichedPt80to170, QCDpt30};
+	       QCDEMenrichedPt20to30, QCDEMenrichedPt30to80, QCDEMenrichedPt80to170, QCDpt30,
+	       QCDpt30to80,QCDpt80to170,QCDpt170to300,QCDpt300to470,QCDpt470to800,QCDpt800toInf};
 
 class TChain;
 // struct that contains all the necessary information about a sample
@@ -20,6 +21,7 @@ public:
      double		kFactor;
      std::string	name;
      bool               sm;
+     double             upper_pthat;
 };
 
 // helper functions that provide samples from their default locations
@@ -66,6 +68,12 @@ Sample fQCDEMenrichedPt20to30	();
 Sample fQCDEMenrichedPt30to80	();
 Sample fQCDEMenrichedPt80to170  ();
 Sample fQCDpt30  ();
+Sample fQCDpt30to80  ();
+Sample fQCDpt80to170  ();
+Sample fQCDpt170to300  ();
+Sample fQCDpt300to470  ();
+Sample fQCDpt470to800  ();
+Sample fQCDpt800toInf  ();
 
 
 // filter events by process

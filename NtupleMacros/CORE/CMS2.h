@@ -26,6 +26,9 @@ protected:
 	vector<TString>	evt_L1_trigNames_;
 	TBranch *evt_L1_trigNames_branch;
 	bool evt_L1_trigNames_isLoaded;
+	double	genps_pthat_;
+	TBranch *genps_pthat_branch;
+	bool genps_pthat_isLoaded;
 	vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<double>,ROOT::Math::DefaultCoordinateSystemTag> >	scs_pos_;
 	TBranch *scs_pos_branch;
 	bool scs_pos_isLoaded;
@@ -2493,6 +2496,14 @@ void Init(TTree *tree) {
 	}
 	if(evt_L1_trigNames_branch == 0 ) {
 	cout << "Branch evt_L1_trigNames does not exist." << endl;
+	}
+	genps_pthat_branch = 0;
+	if (tree->GetAlias("genps_pthat") != 0) {
+		genps_pthat_branch = tree->GetBranch(tree->GetAlias("genps_pthat"));
+		genps_pthat_branch->SetAddress(&genps_pthat_);
+	}
+	if(genps_pthat_branch == 0 ) {
+	cout << "Branch genps_pthat does not exist." << endl;
 	}
 	scs_pos_branch = 0;
 	if (tree->GetAlias("scs_pos") != 0) {
@@ -7191,6 +7202,7 @@ void GetEntry(unsigned int idx)
 		evt_dataset_isLoaded = false;
 		evt_HLT_trigNames_isLoaded = false;
 		evt_L1_trigNames_isLoaded = false;
+		genps_pthat_isLoaded = false;
 		scs_pos_isLoaded = false;
 		scs_vtx_isLoaded = false;
 		vtxs_position_isLoaded = false;
@@ -7885,6 +7897,21 @@ void GetEntry(unsigned int idx)
 			evt_L1_trigNames_isLoaded = true;
 		}
 		return evt_L1_trigNames_;
+	}
+	double &genps_pthat()
+	{
+		if (not genps_pthat_isLoaded) {
+			if (genps_pthat_branch != 0) {
+				genps_pthat_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch genps_pthat_branch does not exist!\n");
+				exit(1);
+			}
+			genps_pthat_isLoaded = true;
+		}
+		return genps_pthat_;
 	}
 	vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<double>,ROOT::Math::DefaultCoordinateSystemTag> > &scs_pos()
 	{
@@ -20215,6 +20242,94 @@ void GetEntry(unsigned int idx)
 			evt_filt_eff_isLoaded = true;
 		}
 		return evt_filt_eff_;
+	}
+	bool passHLTTrigger(TString trigName) {
+		int trigIndx;
+		vector<TString>::const_iterator begin_it = evt_HLT_trigNames().begin();
+		vector<TString>::const_iterator end_it = evt_HLT_trigNames().end();
+		vector<TString>::const_iterator found_it = find(begin_it, end_it, trigName);
+		if(found_it != end_it)
+			trigIndx = found_it - begin_it;
+		else {
+			cout << "Cannot find Trigger " << trigName << endl; 
+			return 0;
+		}
+
+		if(trigIndx <= 31) {
+			unsigned int bitmask = 1;
+			bitmask <<= trigIndx;
+			return evt_HLT1() & bitmask;
+		}
+		if(trigIndx >= 32 && trigIndx <= 63) {
+			unsigned int bitmask = 1;
+			bitmask <<= (trigIndx - 32); 
+			return evt_HLT2() & bitmask;
+		}
+		if(trigIndx >= 64 && trigIndx <= 95) {
+			unsigned int bitmask = 1;
+			bitmask <<= (trigIndx - 64); 
+			return evt_HLT3() & bitmask;
+		}
+		if(trigIndx >= 96 && trigIndx <= 127) {
+			unsigned int bitmask = 1;
+			bitmask <<= (trigIndx - 96); 
+			return evt_HLT4() & bitmask;
+		}
+		if(trigIndx >= 128 && trigIndx <= 159) {
+			unsigned int bitmask = 1;
+			bitmask <<= (trigIndx - 128); 
+			return evt_HLT5() & bitmask;
+		}
+		if(trigIndx >= 160 && trigIndx <= 191) {
+			unsigned int bitmask = 1;
+			bitmask <<= (trigIndx - 160); 
+			return evt_HLT6() & bitmask;
+		}
+		if(trigIndx >= 192 && trigIndx <= 223) {
+			unsigned int bitmask = 1;
+			bitmask <<= (trigIndx - 192); 
+			return evt_HLT7() & bitmask;
+		}
+		if(trigIndx >= 224 && trigIndx <= 255) {
+			unsigned int bitmask = 1;
+			bitmask <<= (trigIndx - 224); 
+			return evt_HLT8() & bitmask;
+		}
+	return 0;
+	}
+	bool passL1Trigger(TString trigName) {
+		int trigIndx;
+		vector<TString>::const_iterator begin_it = evt_L1_trigNames().begin();
+		vector<TString>::const_iterator end_it = evt_L1_trigNames().end();
+		vector<TString>::const_iterator found_it = find(begin_it, end_it, trigName);
+		if(found_it != end_it)
+			trigIndx = found_it - begin_it;
+		else {
+			cout << "Cannot find Trigger " << trigName << endl; 
+			return 0;
+		}
+
+		if(trigIndx <= 31) {
+			unsigned int bitmask = 1;
+			bitmask <<= trigIndx;
+			return evt_L1_1() & bitmask;
+		}
+		if(trigIndx >= 32 && trigIndx <= 63) {
+			unsigned int bitmask = 1;
+			bitmask <<= (trigIndx - 32); 
+			return evt_L1_2() & bitmask;
+		}
+		if(trigIndx >= 64 && trigIndx <= 95) {
+			unsigned int bitmask = 1;
+			bitmask <<= (trigIndx - 64); 
+			return evt_L1_3() & bitmask;
+		}
+		if(trigIndx >= 96 && trigIndx <= 127) {
+			unsigned int bitmask = 1;
+			bitmask <<= (trigIndx - 96); 
+			return evt_L1_4() & bitmask;
+		}
+	return 0;
 	}
 };
 
