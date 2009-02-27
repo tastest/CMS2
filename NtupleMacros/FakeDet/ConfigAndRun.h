@@ -20,6 +20,12 @@ enum {
   LOOP_QCDEMenrichedPt30to80,
   LOOP_QCDEMenrichedPt80to170,
   LOOP_QCDpt30,
+  LOOP_QCDpt30to80,
+  LOOP_QCDpt80to170,
+  LOOP_QCDpt170to300,
+  LOOP_QCDpt300to470,
+  LOOP_QCDpt470to800,
+  LOOP_QCDpt800toInf,
 };
 
 // helper function used to print yield tables
@@ -76,6 +82,12 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
   Looper looper_QCDEMenrichedPt30to80		(fQCDEMenrichedPt30to80()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_QCDEMenrichedPt30to80     )) looper_QCDEMenrichedPt30to80  .Loop();
   Looper looper_QCDEMenrichedPt80to170	        (fQCDEMenrichedPt80to170()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_QCDEMenrichedPt80to170    )) looper_QCDEMenrichedPt80to170 .Loop();
   Looper looper_QCDpt30          (fQCDpt30()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt30    )) looper_QCDpt30 .Loop();
+  Looper looper_QCDpt30to80          (fQCDpt30to80()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt30to80    )) looper_QCDpt30to80 .Loop();
+  Looper looper_QCDpt80to170          (fQCDpt80to170()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt80to170    )) looper_QCDpt80to170 .Loop();
+  Looper looper_QCDpt170to300          (fQCDpt170to300()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt170to300    )) looper_QCDpt170to300 .Loop();
+  Looper looper_QCDpt300to470          (fQCDpt300to470()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt300to470    )) looper_QCDpt300to470 .Loop();
+  Looper looper_QCDpt470to800          (fQCDpt470to800()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt470to800    )) looper_QCDpt470to800 .Loop();
+  Looper looper_QCDpt800toInf          (fQCDpt800toInf()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt800toInf    )) looper_QCDpt800toInf .Loop();
   // when all the loopers are done, we save the histograms to file
   saveHist(hist.c_str());
   // then we collect them all and print a table
@@ -90,6 +102,12 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
     &looper_QCDEMenrichedPt80to170,
     &looper_QCDEMenrichedPt80to170,
     &looper_QCDpt30,
+    &looper_QCDpt30to80,
+    &looper_QCDpt80to170,
+    &looper_QCDpt170to300,
+    &looper_QCDpt300to470,
+    &looper_QCDpt470to800,
+    &looper_QCDpt800toInf,
   };
   printTable(loopers, sizeof(loopers) / sizeof(Looper *), tbl.c_str(), which_ones);
   return 0;
@@ -111,3 +129,14 @@ int EleFakesIncWOTriggerJet ()
 {
   return run<Looper>(ele_fakes_wo_trigger_jet_cuts, "EleFakes", 1 << LOOP_QCDpt30);
 }
+
+int EleFakesQCDBins ()
+{
+  return run<Looper>(ele_fakes_cuts_using_bins, "EleFakes", 1 << LOOP_QCDpt30to80 | 1 << LOOP_QCDpt80to170 | 1 << LOOP_QCDpt170to300 | 1 << LOOP_QCDpt300to470 | 1 << LOOP_QCDpt470to800 | 1 << LOOP_QCDpt800toInf);
+}
+
+int EleFakesQCDBinsWOTriggerJet ()
+{
+  return run<Looper>(ele_fakes_wo_trigger_jet_cuts_using_bins, "EleFakes", 1 << LOOP_QCDpt30to80 | 1 << LOOP_QCDpt80to170 | 1 << LOOP_QCDpt170to300 | 1 << LOOP_QCDpt300to470 | 1 << LOOP_QCDpt470to800 | 1 << LOOP_QCDpt800toInf);
+}
+

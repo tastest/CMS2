@@ -48,8 +48,6 @@ Looper::Looper (Sample s, cuts_t c, const char *fname)
   nNumerator_lt_wo_leading_weighted_w2_ = 0;
   nNumerator_lt_wo_second_leading_weighted_w2_ = 0;
 
-  pdg = new TDatabasePDG();
-
 }
 
 void Looper::BookHistos ()
@@ -114,7 +112,7 @@ void Looper::BookHistos ()
   else {
 
     // set Pt bins
-    binsPt.push_back(0.);
+//     binsPt.push_back(0.);
     binsPt.push_back(20.);
     binsPt.push_back(60.);
     binsPt.push_back(150.);
@@ -268,6 +266,9 @@ cuts_t Looper::EventSelect ()
 
   ret |= (CUT_BIT(CUT_NO_CUT));
 
+  if ( cms2.genps_pthat() < sample_.upper_pthat )
+    ret |= (CUT_BIT(CUT_QCD_BIN_UPPER_PTHAT));
+
   return ret;
 }
 
@@ -359,8 +360,6 @@ void Looper::FillEventHistos ()
 
       if ( isFakeable(electron_counter)){
 	  
-// 	cout << "mc id: " << pdg->GetParticle(cms2.els_mc_id()[electron_counter])->GetName() << " mother: " << pdg->GetParticle(cms2.els_mc_motherid()[electron_counter])->GetName() << endl;
-
 	pt_den_ele_->Fill(pt);
 	if ( useAbsEta ) {
 	  eta_den_ele_->Fill(TMath::Abs(cms2.els_p4()[electron_counter].Eta()),weight);
@@ -616,13 +615,13 @@ void Looper::End ()
   stream << "=========" << endl;
 
   stream << "Tight: num: " << nNumerator_lt_ << " den: " << nDenominator_ << " fake rate: " << (double)nNumerator_lt_/(double)nDenominator_ << "+-" <<  calculateFakeRateError(nNumerator_lt_,nDenominator_) << endl;
-  stream << "Tight (weighted): num: " << nNumerator_lt_weighted_ << " den: " << nDenominator_weighted_ << " fake rate: " << nNumerator_lt_weighted_/nDenominator_weighted_ << "+-" << calculateWeightedFakeRateError(nNumerator_lt_weighted_,nNumerator_lt_weighted_w2_,nDenominator_weighted_,nDenominator_weighted_w2_) << endl;
+  stream << "Tight (weighted): num: " << nNumerator_lt_weighted_ << "+-" << sqrt(nNumerator_lt_weighted_w2_) << " den: " << nDenominator_weighted_ << "+-" << sqrt(nDenominator_weighted_w2_) << " fake rate: " << nNumerator_lt_weighted_/nDenominator_weighted_ << "+-" << calculateWeightedFakeRateError(nNumerator_lt_weighted_,nNumerator_lt_weighted_w2_,nDenominator_weighted_,nDenominator_weighted_w2_) << endl;
 
   stream << "Tight wo leading: num: " << nNumerator_lt_wo_leading_ << " den: " << nDenominator_wo_leading_ << " fake rate: " << (double)nNumerator_lt_wo_leading_/(double)nDenominator_wo_leading_ << "+-" << calculateFakeRateError(nNumerator_lt_wo_leading_,nDenominator_wo_leading_) << endl;
-  stream << "Tight wo leading (weighted): num: " << nNumerator_lt_wo_leading_weighted_ << " den: " << nDenominator_wo_leading_weighted_ << " fake rate: " << nNumerator_lt_wo_leading_weighted_/nDenominator_wo_leading_weighted_ << "+-" << calculateWeightedFakeRateError(nNumerator_lt_wo_leading_weighted_,nNumerator_lt_wo_leading_weighted_w2_,nDenominator_wo_leading_weighted_,nDenominator_wo_leading_weighted_w2_) << endl;
+  stream << "Tight wo leading (weighted): num: " << nNumerator_lt_wo_leading_weighted_ << "+-" << sqrt(nNumerator_lt_wo_leading_weighted_w2_) << " den: " << nDenominator_wo_leading_weighted_ << "+-" << sqrt(nDenominator_wo_leading_weighted_w2_) << " fake rate: " << nNumerator_lt_wo_leading_weighted_/nDenominator_wo_leading_weighted_ << "+-" << calculateWeightedFakeRateError(nNumerator_lt_wo_leading_weighted_,nNumerator_lt_wo_leading_weighted_w2_,nDenominator_wo_leading_weighted_,nDenominator_wo_leading_weighted_w2_) << endl;
 
   stream << "Tight wo second leading: num: " << nNumerator_lt_wo_second_leading_ << " den: " << nDenominator_wo_second_leading_ << " fake rate: " << (double)nNumerator_lt_wo_second_leading_/(double)nDenominator_wo_second_leading_ << "+-" << calculateFakeRateError(nNumerator_lt_wo_second_leading_,nDenominator_wo_second_leading_) << endl;
-  stream << "Tight wo second leading (weighted): num: " << nNumerator_lt_wo_second_leading_weighted_ << " den: " << nDenominator_weighted_ << " fake rate: " << nNumerator_lt_wo_second_leading_weighted_/nDenominator_wo_second_leading_weighted_ << "+-" << calculateWeightedFakeRateError(nNumerator_lt_wo_second_leading_weighted_,nNumerator_lt_wo_second_leading_weighted_w2_,nDenominator_wo_second_leading_weighted_,nDenominator_wo_second_leading_weighted_w2_) << endl;
+  stream << "Tight wo second leading (weighted): num: " << nNumerator_lt_wo_second_leading_weighted_ << "+-" << sqrt(nNumerator_lt_wo_second_leading_weighted_w2_) << " den: " << nDenominator_wo_second_leading_weighted_ << "+-" << sqrt(nDenominator_wo_second_leading_weighted_w2_) << " fake rate: " << nNumerator_lt_wo_second_leading_weighted_/nDenominator_wo_second_leading_weighted_ << "+-" << calculateWeightedFakeRateError(nNumerator_lt_wo_second_leading_weighted_,nNumerator_lt_wo_second_leading_weighted_w2_,nDenominator_wo_second_leading_weighted_,nDenominator_wo_second_leading_weighted_w2_) << endl;
   stream << "=========" << endl << endl;
 
   cout << stream.str();

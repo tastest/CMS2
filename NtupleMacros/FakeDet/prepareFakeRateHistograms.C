@@ -19,7 +19,13 @@ void prepareFakeRateHistograms() {
 
 
   if ( useInclusiveSamples ) {
-    qcdBins.push_back("QCDpt30");
+//     qcdBins.push_back("QCDpt30");
+    qcdBins.push_back("QCDpt30to80");
+    qcdBins.push_back("QCDpt80to170");
+    qcdBins.push_back("QCDpt170to300");
+    qcdBins.push_back("QCDpt300to470");
+    qcdBins.push_back("QCDpt470to800");
+    qcdBins.push_back("QCDpt800toInf");
   } else {
     qcdBins.push_back("QCDEMenrichedPt20to30");
     qcdBins.push_back("QCDEMenrichedPt30to80");

@@ -15,6 +15,7 @@
 //  - quadlepton candidate in QuadlepSelect().
 enum {
   CUT_PT_LEADING_JET,
+  CUT_QCD_BIN_UPPER_PTHAT,
   CUT_NO_CUT,
 };
 
@@ -47,6 +48,13 @@ const static cuts_t ele_fakes_cuts =
 
 const static cuts_t ele_fakes_wo_trigger_jet_cuts = 
   (CUT_BIT(CUT_PT_LEADING_JET));   
+
+const static cuts_t ele_fakes_cuts_using_bins = 
+  ele_fakes_cuts | (CUT_BIT(CUT_QCD_BIN_UPPER_PTHAT));
+
+const static cuts_t ele_fakes_wo_trigger_jet_cuts_using_bins =
+  ele_fakes_wo_trigger_jet_cuts | (CUT_BIT(CUT_QCD_BIN_UPPER_PTHAT));
+
 
 //----------------------------------------------------------------------
 // Loopers 
@@ -211,8 +219,6 @@ protected:
   double                nNumerator_lt_weighted_w2_;
   double                nNumerator_lt_wo_leading_weighted_w2_;
   double                nNumerator_lt_wo_second_leading_weighted_w2_;
-
-  TDatabasePDG *pdg;
 
 };
 #endif
