@@ -165,7 +165,6 @@ double FakeRateLooper::Weight (int i_hyp, int n_sig_syst)
   } else if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
     fr = elFakeProb(cms2.hyp_ll_index()[i_hyp], n_sig_syst);
   }
-     
   return weight * fr / (1 - fr); 
 }
 

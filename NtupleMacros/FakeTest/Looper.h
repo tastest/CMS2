@@ -100,7 +100,7 @@ enum {
 
 // this is the current baseline set of cuts
 const static cuts_t baseline_cuts = 
-  (CUT_BIT(CUT_TRUE_MU_FROM_W_WJETS) ) |
+  //(CUT_BIT(CUT_TRUE_MU_FROM_W_WJETS) ) |
   (CUT_BIT(CUT_LT_PT)		) | 
   (CUT_BIT(CUT_LL_PT)		) | 
   (CUT_BIT(CUT_OPP_SIGN)		) | 
@@ -205,7 +205,6 @@ protected:
   double	cands_passing_[4];
   double	cands_passing_w2_[4];
   unsigned int	cands_count_[4];
-  TDatabasePDG *pdg;
 
 };
 

@@ -18,9 +18,6 @@ Looper::Looper (Sample s, cuts_t c, const char *fname)
   memset(cands_passing_w2_	, 0, sizeof(cands_passing_w2_    ));
   memset(cands_count_		, 0, sizeof(cands_count_         ));
 
-  pdg = new TDatabasePDG();
-
-
 }
 
 void Looper::BookHistos ()
