@@ -60,6 +60,8 @@ int passTrackZVeto(int hyp_index);
 int getDrellYanType();
 void dumpDocLines();
 int NjetVeto(std::vector<TLorentzVector>& Jet, double min_et);
+bool trueElectron(int index);
+bool trueMuon(int index);
 bool trueMuonFromW(int index);
 bool trueMuonFromW_WJets(int index);
 bool trueElectronFromW(int index);

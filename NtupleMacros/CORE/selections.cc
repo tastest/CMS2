@@ -29,19 +29,19 @@ bool inZmassWindow (float mass) {
 //----------------------------------------------------------------
 // true electron
 //----------------------------------------------------------------
-// bool trueElectron(int index) {
-//   if ( TMath::Abs(cms2.els_mc_id()[index]) != 11 ) return false;
+bool trueElectron(int index) {
+  if ( TMath::Abs(cms2.els_mc_id()[index]) != 11 ) return false;
 //   if ( TMath::Abs(cms2.els_mc_motherid()[index]) == 23 || TMath::Abs(cms2.els_mc_motherid()[index]) == 24) return true;
-//   return false;
-// }
+  return true;
+}
 // //----------------------------------------------------------------
 // // true muon
 // //----------------------------------------------------------------
-// bool trueMuon(int index) {
-//    if ( TMath::Abs(cms2.mus_mc_id()[index]) != 13 ) return false;
+bool trueMuon(int index) {
+  if ( TMath::Abs(cms2.mus_mc_id()[index]) != 13 ) return false;
 //    if ( TMath::Abs(cms2.mus_mc_motherid()[index]) == 23 || TMath::Abs(cms2.mus_mc_motherid()[index]) == 24) return true;
-//   return false;
-// }
+  return true;
+}
 //----------------------------------------------------------------
 // Electron ID without isolation
 //----------------------------------------------------------------
