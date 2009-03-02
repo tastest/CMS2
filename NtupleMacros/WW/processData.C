@@ -36,10 +36,16 @@ bool runDYtt  = true;
 bool runttbar = true;
 bool runtW    = true;
 
-// Load various tools
-gROOT->SetMacroPath((string(gROOT->GetMacroPath()) + ":" + "../Tools/").c_str());
+bool runWjetBackground1 = false;
+bool runWjetBackground2 = false;
 
-gROOT->ProcessLine(".x setup.C");
+// Load various tools
+ string old_path = gROOT->GetMacroPath();
+ gROOT->SetMacroPath((string(gROOT->GetMacroPath()) + ":" + "../Tools/").c_str());
+
+ gROOT->ProcessLine(".x setup.C");
+ gROOT->SetMacroPath(old_path.c_str());
+ gROOT->ProcessLine(".L fitWjets.C+");
 
 // read dataset prefix
  string dataset;
@@ -107,58 +113,114 @@ if (runtW) {
 gStyle->SetPalette(1);
 enum EColor { kWhite, kBlack, kRed, kGreen, kBlue, kYellow, kMagenta, kCyan };
 
+ RooDataSet *fullDataSet(0);
+
 // Process files one at a time, and color them as needed
 if (runWW) {
   cout << "Processing WW.."<< endl;
-  ScanChain(fWW, WW);
+  RooDataSet* data = ScanChain(fWW, WW);
+  if( data ){
+    if ( fullDataSet )
+      fullDataSet->append(*data);
+    else
+      fullDataSet=data;
+  }
   hist::color("ww", kRed);
 }
 
 if (runWZ) {
   cout << "Processing WZ.."<< endl;
-  ScanChain(fWZ, WZ);
+  RooDataSet* data = ScanChain(fWZ, WZ);
+  if ( data ){
+    if ( fullDataSet )
+      fullDataSet->append(*data);
+    else
+      fullDataSet=data;
+  }
   hist::color("wz", kBlue);
 }
 
 if (runZZ) {
   cout << "Processing ZZ.."<< endl;
-  ScanChain(fZZ, ZZ);
+  RooDataSet* data = ScanChain(fZZ, ZZ);
+  if ( data ){
+    if ( fullDataSet )
+      fullDataSet->append(*data);
+    else
+      fullDataSet=data;
+  }
   hist::color("zz", kGreen);
 }
 
 if (runWjets) {
   cout << "Processing Wjets.."<<endl;
-  ScanChain(fWjets, Wjets);
+  RooDataSet* data = ScanChain(fWjets, Wjets);
+  if ( data ){
+    if ( fullDataSet )
+      fullDataSet->append(*data);
+    else
+      fullDataSet=data;
+  }
   hist::color("wjets", 40);
 }
 
 if (runDYee) {
   cout << "Processing DYee.."<<endl;
-  ScanChain(fDYee, DYee);
+  RooDataSet* data = ScanChain(fDYee, DYee);
+  if ( data ){
+    if ( fullDataSet )
+      fullDataSet->append(*data);
+    else
+      fullDataSet=data;
+  }
   hist::color("dyee", kMagenta);
 }
 
 if (runDYmm) {
   cout << "Processing DYmm.."<<endl;
-  ScanChain(fDYmm, DYmm);
+  RooDataSet* data = ScanChain(fDYmm, DYmm);
+  if ( data ){
+    if ( fullDataSet )
+      fullDataSet->append(*data);
+    else
+      fullDataSet=data;
+  }
   hist::color("dymm", kCyan);
 }
 
 if (runDYtt) {
   cout << "Processing DYtt.."<<endl;
-  ScanChain(fDYtt, DYtt);
+  RooDataSet* data = ScanChain(fDYtt, DYtt);
+  if ( data ){
+    if ( fullDataSet )
+      fullDataSet->append(*data);
+    else
+      fullDataSet=data;
+  }
   hist::color("dytt", kBlack);
 }
 
 if (runttbar) {
   cout << "Processing ttbar.."<<endl;
-  ScanChain(fttbar, ttbar);
+  RooDataSet* data = ScanChain(fttbar, ttbar);
+  if ( data ){
+    if ( fullDataSet )
+      fullDataSet->append(*data);
+    else
+      fullDataSet=data;
+  }
   hist::color("ttbar", kYellow);
 }
 
 if (runtW) {
   cout << "Processing tW.."<<endl;
-  ScanChain(ftW, tW);
+  RooDataSet* data = ScanChain(ftW, tW);
+  if ( data ){
+    if ( fullDataSet )
+      fullDataSet->append(*data);
+    else
+      fullDataSet=data;
+  }
   hist::color("tw", 63);
 }
 
@@ -183,4 +245,35 @@ if (runtW) {
  
  delete iter ;
 
+ if ( runWjetBackground1 ){ 
+   TCanvas* c1 = new TCanvas("wjetsBackgroundEstimates_sidebandfit","",800,800);
+   c1->Divide(2,2);
+   c1->cd(1);
+   fit_isolation(fullDataSet,0,2,"Wjets e-fake background (pdf2)");
+   c1->cd(2);
+   fit_isolation(fullDataSet,0,1,"Wjets e-fake background (pdf1)");
+   c1->cd(3);
+   fit_isolation(fullDataSet,1,2,"Wjets mu-fake background (pdf2)");
+   c1->cd(4);
+   fit_isolation(fullDataSet,1,1,"Wjets mu-fake background (pdf1)");
+ }
+ if ( runWjetBackground2 ){ 
+   TFile* fcs = TFile::Open("fakeIsoControlSamples.root");
+   if ( fcs ){
+     TCanvas* c2 = new TCanvas("wjetsBackgroundEstimates_qcd_sideband","",600,900);
+     c2->Divide(2,3);
+     c2->cd(1);
+     fit_isolation(fullDataSet,0,3,"Wjets e-fake background (QCD30)",h_electron_qcd30);
+     c2->cd(2);
+     fit_isolation(fullDataSet,1,3,"Wjets mu-fake background (QCD30)",h_muon_qcd30);
+     c2->cd(3);
+     fit_isolation(fullDataSet,0,3,"Wjets e-fake background (QCD80)",h_electron_qcd80);
+     c2->cd(4);
+     fit_isolation(fullDataSet,1,3,"Wjets mu-fake background (QCD80)",h_muon_qcd80);
+     c2->cd(5);
+     fit_isolation(fullDataSet,0,3,"Wjets e-fake background (QCD170)",h_electron_qcd170);
+     c2->cd(6);
+     fit_isolation(fullDataSet,1,3,"Wjets mu-fake background (QCD170)",h_muon_qcd170);
+   }
+ }
 }

@@ -75,6 +75,7 @@ void showResults(const char* file = "processed_data_tag.root")
     types[3] = "all";
 
     // top background estimate
+    /*
     for ( unsigned int type = 0; type < 4; ++type ){
       double ttbar_yield_before(0.);
       double ttbar_yield_after(0.);
@@ -140,5 +141,5 @@ void showResults(const char* file = "processed_data_tag.root")
     cout << "\ttotal el-fake: " << wjets_el_estatimate << endl;
     cout << "\ttotal mu-fake: " << wjets_mu_estatimate << endl;
     cout << "\tTOTAL: " << wjets_el_estatimate+wjets_mu_estatimate << endl;
-
+    */
 }
