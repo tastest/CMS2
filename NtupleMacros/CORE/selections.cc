@@ -153,7 +153,7 @@ double el_rel_iso (int index, bool use_calo_iso)
         sum += cms2.els_pat_ecalIso()[index] + cms2.els_pat_hcalIso()[index];
   
      double pt  = cms2.els_p4().at(index).pt();
-     return pt / (pt + sum);
+     return pt / (pt + sum + 1e-5);
 }
 bool passElectronIsolation(int index, bool use_calo_iso) 
 {
@@ -192,7 +192,7 @@ double el_rel_iso_1_6 (int index, bool use_calo_iso)
      if (use_calo_iso)
 	  sum += cms2.els_ecalJuraIso()[index] + cms2.els_hcalConeIso()[index];
      double pt  = cms2.els_p4().at(index).pt();
-     return pt / (pt + sum);
+     return pt / (pt + sum+1e-5);
 }
 
 bool passElectronIsolation_1_6 (int index, bool use_calo_iso) 
@@ -222,7 +222,7 @@ double mu_rel_iso (int index)
 	  cms2.mus_iso03_emEt().at(index)  +
 	  cms2.mus_iso03_hadEt().at(index);
      double pt  = cms2.mus_p4().at(index).pt();
-     return pt / (pt+sum);
+     return pt / (pt+sum+1e-5);
 
 }
 bool passMuonIsolation(int index) 
