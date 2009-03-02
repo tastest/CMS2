@@ -58,19 +58,19 @@ bool runWjetBackground2 = false;
 //WW file
 TChain *fWW = new TChain("Events");
 if (runWW) {
-  fWW->Add((dataset+"/cms2-V01-02-06/WW_2l_Summer08_IDEAL_V9_v2/merged_ntuple.root").c_str());
+  fWW->Add((dataset+"/cms2-V01-02-06/WW_Summer08_IDEAL_V9_v1/merged_ntuple*.root").c_str());
 }
 
 //WZ file
 TChain *fWZ = new TChain("Events");
 if (runWZ) {
-  fWZ->Add((dataset+"/cms2-V01-02-06/WZ_3l_Summer08_IDEAL_V9_v2/merged_ntuple.root").c_str());
+  fWZ->Add((dataset+"/cms2-V01-02-06/WZ_incl_Summer08_IDEAL_V9_v2/merged_ntuple*.root").c_str());
 }
 
 //ZZ file
 TChain *fZZ = new TChain("Events");
 if (runZZ) {
-  fZZ->Add((dataset+"/cms2-V01-02-06/ZZ_2l2n_Summer08_IDEAL_V9_v2/merged_ntuple.root").c_str());
+  fZZ->Add((dataset+"/cms2-V01-02-06/ZZ_Summer08_IDEAL_V9_v1/merged_ntuple*.root").c_str());
 }
 
 //Wjets file
@@ -82,19 +82,22 @@ if (runWjets) {
 //DYee file
 TChain *fDYee = new TChain("Events");
 if (runDYee) {
-  fDYee->Add((dataset+"/cms2-V01-02-06/ZJets-madgraph_Fall08_IDEAL_V9_v1/merged_ntuple*.root").c_str());
+  fDYee->Add((dataset+"/cms2-V01-02-06/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged_ntuple*.root").c_str());
+  fDYee->Add((dataset+"/cms2-V01-02-06/AstarJets-madgraph_Fall08_IDEAL_V9_v2/merged_ntuple*.root").c_str());
 }
 
 //DYmm file
 TChain *fDYmm = new TChain("Events");
 if (runDYmm) {
-  fDYmm->Add((dataset+"/cms2-V01-02-06/ZJets-madgraph_Fall08_IDEAL_V9_v1/merged_ntuple*.root").c_str());
+  fDYmm->Add((dataset+"/cms2-V01-02-06/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged_ntuple*.root").c_str());
+  fDYmm->Add((dataset+"/cms2-V01-02-06/AstarJets-madgraph_Fall08_IDEAL_V9_v2/merged_ntuple*.root").c_str());
 }
 
 //DYtt file
 TChain *fDYtt = new TChain("Events");
 if (runDYtt) {
-  fDYtt->Add((dataset+"/cms2-V01-02-06/ZJets-madgraph_Fall08_IDEAL_V9_v1/merged_ntuple*.root").c_str());
+  fDYtt->Add((dataset+"/cms2-V01-02-06/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged_ntuple*.root").c_str());
+  fDYtt->Add((dataset+"/cms2-V01-02-06/AstarJets-madgraph_Fall08_IDEAL_V9_v2/merged_ntuple*.root").c_str());
 }
 
 //ttbar file

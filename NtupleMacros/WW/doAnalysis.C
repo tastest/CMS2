@@ -817,8 +817,7 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample ) {
   const char sample_names[][1024] = { "ww", "wz", "zz", "wjets", "dyee", "dymm", "dytt", "ttbar", "tw" };
   const char *prefix = sample_names[sample];
   RooDataSet* dataset = MakeNewDataset(sample_names[sample]);
-  // DY samples are supposed to get an additional k-factor of 1.2
-  double kFactor = 1;
+  double kFactor = .1; // 100pb-1
   /* 
   switch (sample) {
   case DYee: case DYmm: case DYtt:
@@ -831,7 +830,6 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample ) {
        break;
   }
   */
-
 //   switch (sample) {
 //   case WW:
 //        evt_scale1fb = 0.1538;
