@@ -370,8 +370,8 @@
   muPt_predicted->Rebin(rebinvalue_pt);
   muPt_predicted->SetLineColor(kBlue);
   muPt_predicted->SetLineWidth(2.);
-  muPt_predicted->Draw();
-  muPt_observed->Draw("sames");
+  muPt_observed->Draw();
+  muPt_predicted->Draw("sames");
   mupt->Update();
   TPaveStats *stats_mupt = (TPaveStats*)(muPt_predicted->GetListOfFunctions()->FindObject("stats"));
   stats_mupt->SetX1NDC(0.78);
@@ -412,8 +412,8 @@
   muEta_predicted->Rebin(rebinvalue_eta);
   muEta_predicted->SetLineColor(kBlue);
   muEta_predicted->SetLineWidth(2.);
-  muEta_predicted->Draw();
-  muEta_observed->Draw("sames");
+  muEta_observed->Draw();
+  muEta_predicted->Draw("sames");
   mueta->Update();
   TPaveStats *stats_mueta = (TPaveStats*)(muEta_predicted->GetListOfFunctions()->FindObject("stats"));
   stats_mueta->SetX1NDC(0.78);
