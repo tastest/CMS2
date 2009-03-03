@@ -1304,9 +1304,13 @@ bool haveExtraMuon5(int hypIdx){
 
 //Bits passing for hyp type
 bool passTriggersMu9orLisoE15(int dilType) {
-  bool hlt_ele15_lw_l1r = ((cms2.evt_HLT2() & (1<<(50-32))) != 0);
-  //  bool hltLooseIsoEle15_LW_L1R = ((cms2.evt_HLT2() & (1<<(47-32))) != 0);
-  bool hltMu9 = ((cms2.evt_HLT3() & (1<<(82-64))) != 0);
+  //old bit based method
+  //bool hlt_ele15_lw_l1r = ((cms2.evt_HLT2() & (1<<(50-32))) != 0);
+  //bool hltMu9 = ((cms2.evt_HLT3() & (1<<(82-64))) != 0);
+  
+  //TString method
+  bool hlt_ele15_lw_l1r = cms2.passHLTTrigger("HLT_Ele15_LW_L1R");
+  bool hltMu9           = cms2.passHLTTrigger("HLT_Mu9");
   
   if (dilType == 0 && ! (hltMu9) ) return false;
   if ((dilType == 1 || dilType == 2) && ! (hltMu9 || hlt_ele15_lw_l1r)) return false;
