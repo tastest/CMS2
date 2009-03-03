@@ -60,7 +60,7 @@ void printTable (const Looper **hists, int n, const char *fname,
 	       continue;
 	  fprintf(f, "|  *%30s*  ", hists[j]->SampleName().c_str());
      }
-     fprintf(f, "|%30s  |\n", "total");
+     fprintf(f, "|*%30s*  |\n", "total bg");
 #else 
 #if defined(LATEX_OUTPUT)
      fprintf(f, "\\hline\\hline\n%10s", "");
@@ -82,6 +82,7 @@ void printTable (const Looper **hists, int n, const char *fname,
 #endif
 	  double cands = 0;
 	  double w2 = 0;
+	  int is_background = 0;
 	  for (int j = 0; j < n; ++j) {
 	       if (not hists[j]->HasRun())
 		    continue;
@@ -96,9 +97,12 @@ void printTable (const Looper **hists, int n, const char *fname,
 		       hists[j]->RMS(DileptonHypType(i)));
 #endif
 #endif
-	       cands += hists[j]->CandsPassing(DileptonHypType(i));
-	       w2 += hists[j]->RMS(DileptonHypType(i)) * 
-		    hists[j]->RMS(DileptonHypType(i));
+	       if (is_background) {
+		    cands += hists[j]->CandsPassing(DileptonHypType(i));
+		    w2 += hists[j]->RMS(DileptonHypType(i)) * 
+			 hists[j]->RMS(DileptonHypType(i));
+	       }
+	       is_background++;
 	       const FakeRateLooper *looper = 
 		    dynamic_cast<const FakeRateLooper *>(hists[j]);
 	       if (looper != 0) {
@@ -369,5 +373,43 @@ int Wjets_SS_FOs_Not_Numerator ()
 int Wjets_SS_Fakerate ()
 {
      return run<FakeRateLooper>(fakerate_ss_denominator_not_numerator_cuts, "Wjets_SS_Fakerate");
+}
+
+int Efficiency_base ()
+{
+     return run<EventCountingLooper>(CUT_BIT(CUT_OPP_SIGN), "Efficiency_base");
+}
+
+int Efficiency_pt ()
+{
+     return run<EventCountingLooper>(CUT_BIT(CUT_OPP_SIGN) |
+			CUT_BIT(CUT_LT_PT) | CUT_BIT(CUT_LL_PT), "Efficiency_pt");
+}
+
+int Efficiency_id ()
+{
+     return run<EventCountingLooper>(CUT_BIT(CUT_OPP_SIGN) |
+			CUT_BIT(CUT_LT_PT) | CUT_BIT(CUT_LL_PT) |
+			CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD), 
+			"Efficiency_id");
+}
+
+int Efficiency_iso ()
+{
+     return run<EventCountingLooper>(CUT_BIT(CUT_OPP_SIGN) |
+			CUT_BIT(CUT_LT_PT) | CUT_BIT(CUT_LL_PT) |
+			CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD) |
+			CUT_BIT(CUT_LT_CALOISO) | CUT_BIT(CUT_LL_CALOISO), 
+			"Efficiency_iso");
+}
+
+int Efficiency_tcmet ()
+{
+     return run<EventCountingLooper>(CUT_BIT(CUT_OPP_SIGN) |
+			CUT_BIT(CUT_LT_PT) | CUT_BIT(CUT_LL_PT) |
+			CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD) |
+			CUT_BIT(CUT_LT_CALOISO) | CUT_BIT(CUT_LL_CALOISO) |
+			CUT_BIT(CUT_PASS2_TCMET) | CUT_BIT(CUT_PASS4_TCMET), 
+			"Efficiency_tcmet");
 }
 
