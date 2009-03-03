@@ -29,7 +29,7 @@ static const std::string prefix = (getenv("CMS2_NTUPLE_LOCATION") != 0) ?
 Sample fWW ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-02-06/WW_Summer08_IDEAL_V9_v1/merged_ntuple*.root";
+     std::string sample = prefix + "cms2-V01-02-06/WW_2l_Summer08_IDEAL_V9_v2/merged_ntuple*.root";
      c->Add(sample.c_str());
      Sample ret = { c, WW, kRed, 1, "ww", true, 0. };
      return ret;
@@ -39,17 +39,31 @@ Sample fWW ()
 Sample fWZ ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-02-06/WZ_incl_Summer08_IDEAL_V9_v2/merged_ntuple*.root";
+     std::string sample = prefix + "cms2-V01-02-06/WZ_3l_Summer08_IDEAL_V9_v2/merged_ntuple*.root";
      c->Add(sample.c_str());
      Sample ret = { c, WZ, kBlue, 1, "wz", true, 0. };
      return ret;
 }
 
+// //WZ file
+// Sample fWZ_incl ()
+// {
+//      TChain *c = new TChain("Events");
+//      std::string sample = "/data/tmp/cms2-V01-02-01/WZ_incl-Pythia/merged_ntuple*.root";
+//      char *location = getenv("CMS2_NTUPLE_LOCATION");
+//      if ( location != 0 ) {
+//        sample = prefix + "cms2-V01-02-01/WZ_incl-Pythia/merged_ntuple*.root";
+//      }
+//      c->Add(sample.c_str());
+//      Sample ret = { c, WZ, kBlue, 1, "wzincl", true };
+//      return ret;
+// }
+
 //ZZ file
 Sample fZZ ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-02-06/ZZ_Summer08_IDEAL_V9_v1/merged_ntuple*.root";
+     std::string sample = prefix + "cms2-V01-02-06/ZZ_2l2n_Summer08_IDEAL_V9_v2/merged_ntuple*.root";
      c->Add(sample.c_str());
      Sample ret = { c, ZZ, kGreen, 1, "zz", true, 0. };
      return ret;
