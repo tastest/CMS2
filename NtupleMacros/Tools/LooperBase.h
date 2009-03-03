@@ -62,6 +62,12 @@ protected:
      // - sometimes, specific applications might require a fancier weight
      virtual double	Weight		(int idx);
 
+     // sometimes it's useful to get a call before the loop over
+     // dilepton cands is done, and another call after the loop over
+     // dilepton cands has been done
+     virtual void	BeforeDilepHistos	()	{ return; }
+     virtual void	AfterDilepHistos	()	{ return; }
+
      //------------------------------------------------------------
      // everything below here is implementation details ...
      //------------------------------------------------------------
