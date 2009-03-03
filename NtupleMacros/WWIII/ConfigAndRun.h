@@ -16,13 +16,27 @@ enum {
      LOOP_WZ	,
      LOOP_ZZ	,
      LOOP_WJETS	,
+     LOOP_WJETS_AND_FRIENDS	,
      LOOP_DYEE	,
      LOOP_DYMM	,
      LOOP_DYTT	,
+     LOOP_DY_AND_FRIENDS	,
+     LOOP_WGAMMA,
+     LOOP_ZGAMMA,
      LOOP_TTBAR	,
      LOOP_TTBAR_TAUOLA	,
      LOOP_TW	,
 };
+
+uint32 default_samples = (1 <<      LOOP_WW)	|
+     (1 << LOOP_WZ	)	|
+     (1 << LOOP_ZZ	)	|
+     (1 << LOOP_WJETS	)	|
+     (1 << LOOP_DYEE	)	|
+     (1 << LOOP_DYMM	)	|
+     (1 << LOOP_DYTT	)	|
+     (1 << LOOP_TTBAR	)	|
+     (1 << LOOP_TW	);
 
 #define TWIKI_OUTPUT
 //#define LATEX_OUTPUT
@@ -42,16 +56,16 @@ void printTable (const Looper **hists, int n, const char *fname,
 #if defined(TWIKI_OUTPUT)
      fprintf(f, "| %10s", "");
      for (int j = 0; j < n; ++j) {
-	  if (not (which_ones & 1 << j))
+	  if (not hists[j]->HasRun())
 	       continue;
 	  fprintf(f, "|  *%30s*  ", hists[j]->SampleName().c_str());
      }
-     fprintf(f, "|%30s  |\n", "total");
+     fprintf(f, "|*%30s*  |\n", "total bg");
 #else 
 #if defined(LATEX_OUTPUT)
      fprintf(f, "\\hline\\hline\n%10s", "");
      for (int j = 0; j < n; ++j) {
-	  if (not (which_ones & 1 << j))
+	  if (not hists[j]->HasRun())
 	       continue;
 	  fprintf(f, "&  \\%-30s  ", hists[j]->SampleName().c_str());
      }
@@ -68,8 +82,9 @@ void printTable (const Looper **hists, int n, const char *fname,
 #endif
 	  double cands = 0;
 	  double w2 = 0;
+	  int is_background = 0;
 	  for (int j = 0; j < n; ++j) {
-	       if (not (which_ones & 1 << j))
+	       if (not hists[j]->HasRun())
 		    continue;
 #if defined(TWIKI_OUTPUT)
 	       fprintf(f, "|  %10.1f &plusmn; %10.1f", 
@@ -82,9 +97,12 @@ void printTable (const Looper **hists, int n, const char *fname,
 		       hists[j]->RMS(DileptonHypType(i)));
 #endif
 #endif
-	       cands += hists[j]->CandsPassing(DileptonHypType(i));
-	       w2 += hists[j]->RMS(DileptonHypType(i)) * 
-		    hists[j]->RMS(DileptonHypType(i));
+	       if (is_background) {
+		    cands += hists[j]->CandsPassing(DileptonHypType(i));
+		    w2 += hists[j]->RMS(DileptonHypType(i)) * 
+			 hists[j]->RMS(DileptonHypType(i));
+	       }
+	       is_background++;
 	       const FakeRateLooper *looper = 
 		    dynamic_cast<const FakeRateLooper *>(hists[j]);
 	       if (looper != 0) {
@@ -119,7 +137,7 @@ void printTable (const Looper **hists, int n, const char *fname,
 // run<Looper>(baseline_cuts, "Results", 1 << LOOP_WW)				// produce table with default cuts, WW only
 // run<Looper>(baseline_cuts, "Results", 1 << LOOP_WW | 1 << LOOP_WJETS)	// produce table with default cuts, WW and Wjets only
 // run<Looper>(baseline_cuts, "Results")					// produce table with default cuts, all samples
-template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones = 0xffffffff)
+template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones = default_samples)
 {
      const string hist = name + ".root";
      const string tbl = name + ".tbl";
@@ -131,9 +149,15 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
 //      L looper_wz_incl		(fWZ_incl()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WZ    )) looper_wz_incl     .Loop();
      L looper_zz		(fZZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_ZZ    )) looper_zz          .Loop();
      L looper_wjets		(fWjets()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS )) looper_wjets       .Loop();
+     L looper_wc		(fWc()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS_AND_FRIENDS )) looper_wc       .Loop();
+     L looper_vlqq		(fVlqq()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS_AND_FRIENDS )) looper_vlqq       .Loop();
      L looper_dyee		(fDYee()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYEE  )) looper_dyee        .Loop();
      L looper_dymm		(fDYmm()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYMM  )) looper_dymm        .Loop();
      L looper_dytt		(fDYtt()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYTT  )) looper_dytt        .Loop();
+     L looper_astar		(fAstar()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DY_AND_FRIENDS  )) looper_astar        .Loop();
+     L looper_dy20tt		(fDY20tt()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DY_AND_FRIENDS  )) looper_dy20tt        .Loop();
+     L looper_wgamma		(fWgamma()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WGAMMA  )) looper_wgamma        .Loop();
+     L looper_zgamma		(fZgamma()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_ZGAMMA  )) looper_zgamma        .Loop();
      L looper_ttbar		(fttbar()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_TTBAR )) looper_ttbar       .Loop();
      L looper_ttbar_tauola	(fttbar_taula()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_TTBAR_TAUOLA )) looper_ttbar_tauola.Loop();
      L looper_tw		(ftW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_TW    )) looper_tw          .Loop();
@@ -148,9 +172,15 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
 // 	  &looper_wz_incl     ,
 	  &looper_zz          ,
  	  &looper_wjets       ,
+ 	  &looper_wc       ,
+ 	  &looper_vlqq       ,
 	  &looper_dyee        ,
 	  &looper_dymm        ,
 	  &looper_dytt        ,
+	  &looper_astar        ,
+	  &looper_dy20tt        ,
+	  &looper_wgamma        ,
+	  &looper_zgamma        ,
 	  &looper_ttbar       ,
 	  &looper_ttbar_tauola,
 	  &looper_tw          ,
@@ -164,7 +194,23 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
 // default yield table
 int Results ()
 {
-     return run<Looper>(baseline_cuts, "Results", 0xffffffff & ~(1 << LOOP_TTBAR_TAUOLA));
+     return run<Looper>(baseline_cuts, "Results");
+}
+
+int Results_W ()
+{
+     return run<Looper>(baseline_cuts, "Results_W", (1 << LOOP_WJETS) | (1 << LOOP_WJETS_AND_FRIENDS));
+}
+
+int Results_DY ()
+{
+     return run<Looper>(baseline_cuts, "Results_DY", (1 << LOOP_DYEE) | (1 << LOOP_DYMM) | (1 << LOOP_DYTT)
+	  |  (1 << LOOP_DY_AND_FRIENDS));
+}
+
+int Results_Vgamma ()
+{
+     return run<Looper>(baseline_cuts, "Results_Vgamma", (1 << LOOP_WGAMMA) | (1 << LOOP_ZGAMMA));
 }
 
 int Calojet ()
@@ -327,5 +373,43 @@ int Wjets_SS_FOs_Not_Numerator ()
 int Wjets_SS_Fakerate ()
 {
      return run<FakeRateLooper>(fakerate_ss_denominator_not_numerator_cuts, "Wjets_SS_Fakerate");
+}
+
+int Efficiency_base ()
+{
+     return run<EventCountingLooper>(CUT_BIT(CUT_OPP_SIGN), "Efficiency_base");
+}
+
+int Efficiency_pt ()
+{
+     return run<EventCountingLooper>(CUT_BIT(CUT_OPP_SIGN) |
+			CUT_BIT(CUT_LT_PT) | CUT_BIT(CUT_LL_PT), "Efficiency_pt");
+}
+
+int Efficiency_id ()
+{
+     return run<EventCountingLooper>(CUT_BIT(CUT_OPP_SIGN) |
+			CUT_BIT(CUT_LT_PT) | CUT_BIT(CUT_LL_PT) |
+			CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD), 
+			"Efficiency_id");
+}
+
+int Efficiency_iso ()
+{
+     return run<EventCountingLooper>(CUT_BIT(CUT_OPP_SIGN) |
+			CUT_BIT(CUT_LT_PT) | CUT_BIT(CUT_LL_PT) |
+			CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD) |
+			CUT_BIT(CUT_LT_CALOISO) | CUT_BIT(CUT_LL_CALOISO), 
+			"Efficiency_iso");
+}
+
+int Efficiency_tcmet ()
+{
+     return run<EventCountingLooper>(CUT_BIT(CUT_OPP_SIGN) |
+			CUT_BIT(CUT_LT_PT) | CUT_BIT(CUT_LL_PT) |
+			CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD) |
+			CUT_BIT(CUT_LT_CALOISO) | CUT_BIT(CUT_LL_CALOISO) |
+			CUT_BIT(CUT_PASS2_TCMET) | CUT_BIT(CUT_PASS4_TCMET), 
+			"Efficiency_tcmet");
 }
 

@@ -8,7 +8,7 @@
 #include "../CORE/CMS2.h"
 
 LooperBase::LooperBase (Sample s, cuts_t c, const char *fname) : 
-     sample_(s), cuts_(c)
+     sample_(s), cuts_(c), hasRun_(false)
 {
      if (fname != 0 && strlen(fname) != 0) {
 	  logfile_ = fopen(fname, "a");
@@ -52,6 +52,9 @@ uint64 LooperBase::Loop ()
      duplicates_total_n_ = 0;
      duplicates_total_weight_ = 0.;
 
+     int evts_processed;
+     double weight_evts_processed;
+
      int i_permille_old = 0;
      // file loop
      TObjArray *listOfFiles = chain->GetListOfFiles();
@@ -83,6 +86,9 @@ uint64 LooperBase::Loop ()
 // 	       fprintf(logfile_, "%f\n", LooperBase::Weight(0));
 	       weightEventsTotal += LooperBase::Weight(0);
 	       
+	       weight_evts_processed = cms2.evt_nEvts() * cms2.evt_scale1fb();
+	       evts_processed = cms2.evt_nEvts();
+
 	       // Progress feedback to the user
 	       int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
 	       if (i_permille != i_permille_old) {
@@ -109,10 +115,12 @@ uint64 LooperBase::Loop ()
 	       FillEventHistos();
 	       
 	       // call the dilepton candidate function
+	       BeforeDilepHistos();
 	       for (unsigned int i_hyp = 0, nHyps = cms2.hyp_type().size();
 		    i_hyp < nHyps; ++i_hyp ) {
 		    FillDilepHistos(i_hyp);
 	       }
+	       AfterDilepHistos();
 	       // trilepton
 	       for (unsigned int i_hyp = 0, nHyps = cms2.hyp_trilep_bucket().size();
 		    i_hyp < nHyps; ++i_hyp ) {
@@ -123,7 +131,6 @@ uint64 LooperBase::Loop ()
 		    i_hyp < nHyps; ++i_hyp ) {
 		    FillQuadlepHistos(i_hyp);
 	       }
-	       
 	  }
 	  t.Stop();
 	  printf("Real time: %llu events / %f s = %e event/s\n", nEvents, 
@@ -139,9 +146,14 @@ uint64 LooperBase::Loop ()
      }
      
      int ret = fprintf(logfile_, 
-		       "Sample %10s: Events before cut (weight): %10.1f.  Events: %8u\n",
-		       sample_.name.c_str(),
-		       weightEventsTotal, nEventsTotal);
+		       "Sample %10s: Events processed (weight): %10.1f.  Events: %8u\n",
+		       sample_.name.c_str(), weight_evts_processed, evts_processed);
+     if (ret < 0)
+	  perror("writing to log file");
+     ret = fprintf(logfile_, 
+		   "Sample %10s: Events before cut (weight): %10.1f.  Events: %8u\n",
+		   sample_.name.c_str(),
+		   weightEventsTotal, nEventsTotal);
      if (ret < 0)
 	  perror("writing to log file");
      ret = fprintf(logfile_, 
@@ -155,5 +167,6 @@ uint64 LooperBase::Loop ()
 	  fclose(logfile_);
      if (sample_.chain != 0)
 	  delete sample_.chain;
+     hasRun_ = true;
      return nEventsTotal;
 }

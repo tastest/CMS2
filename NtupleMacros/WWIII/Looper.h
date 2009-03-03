@@ -431,4 +431,17 @@ protected:
      TH2F		*fake_syst;
 };
 
+class EventCountingLooper : public Looper {
+public:
+     EventCountingLooper (Sample s, cuts_t cuts, const char *fname = 0);
+protected:
+     virtual void	End		();
+     virtual void	BeforeDilepHistos	();
+     virtual void	AfterDilepHistos	();
+protected:
+     double		events_passing_[4];
+     double		events_passing_w2_[4];
+     double		cands_passing_prev_[4];
+};     
+
 #endif
