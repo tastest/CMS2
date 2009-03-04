@@ -65,18 +65,19 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
   //                                             corrMET > 30 (ee, mumu))
   //dilepMassVetoCutTTDil08            -> 2**19 pretty much what it sounds like
   //applyTriggersMu9orLisoE15          -> 2**20 mm -> HLT_Mu9 
-  //                                            ee -> HLT_LooseIsoEle15_LW_L14
-  //                                            em -> HLT_Mu9 or HLT_LooseIsoEle15_LW_L14
+  //                                            ee -> HLT_Ele15_SW_L1R
+  //                                            em -> HLT_Mu9 or HLT_Ele15_SW_L1R
   //applyTriggersTTDil08JanTrial       -> 2**21 mm -> HLT_Mu15_L1Mu7 || HLT_DoubleMu3
   //                                            ee -> HLT_IsoEle18_L1R || HLT_DoubleIsoEle12_L1R
   //                                            em -> HLT_IsoEle18_L1R || HLT_Mu15_L1Mu7 || HLT_IsoEle10_Mu10_L1R
+
 
   // Load various tools  
   gROOT->ProcessLine(Form(".x setup.C(%d)",skipFWLite));
 
   // Load and compile the looping code
   gSystem->CompileMacro("ttDilCounts_looper.C", "++k", "libttDilCounts_looper");
-
+  
 
   // Flag for jet selection
   // true  = hyp_jet selection (15 GeV uncorrectedm eta<3)
@@ -201,7 +202,7 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
 
 
   ttDilCounts_looper* looper = new ttDilCounts_looper();
-
+  
   // Process files one at a time, and color them as needed
   if (runttdil) {
     cout << "Processing ttbar dileptonic.. "<<endl;
