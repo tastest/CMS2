@@ -1309,7 +1309,7 @@ bool passTriggersMu9orLisoE15(int dilType) {
   //bool hltMu9 = ((cms2.evt_HLT3() & (1<<(82-64))) != 0);
   
   //TString method
-  bool hlt_ele15_lw_l1r = cms2.passHLTTrigger("HLT_Ele15_LW_L1R");
+  bool hlt_ele15_lw_l1r = cms2.passHLTTrigger("HLT_Ele15_SW_L1R");
   bool hltMu9           = cms2.passHLTTrigger("HLT_Mu9");
   
   if (dilType == 0 && ! (hltMu9) ) return false;
