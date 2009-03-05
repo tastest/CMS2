@@ -139,16 +139,19 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
   pickSkimIfExists(chtopdil, "data/TTJets-madgraph_Fall08_IDEAL_V9_v2/merged*.root", "_skimSimple2020anydil");
 
   TChain* chtopotr = new TChain("Events");
-  pickSkimIfExists(chtopotr, "data/TTJets-madgraph_Fall08_IDEAL_V9_v1/merged*.root", "_skimSimple2020nodil");
+  pickSkimIfExists(chtopotr, "data/TTJets-madgraph_Fall08_IDEAL_V9_v2/merged*.root", "_skimSimple2020nodil");
 
   TChain* chww = new TChain("Events");
-  pickSkimIfExists(chww, "data/WW_2l_Summer08_IDEAL_V9_v2/merged*.root", "");
+  //  pickSkimIfExists(chww, "data/WW_2l_Summer08_IDEAL_V9_v2/merged*.root", "");
+  pickSkimIfExists(chww, "data/WW_Summer08_IDEAL_V9_v1/merged*.root", "");
 
   TChain* chWZ = new TChain("Events");
-  pickSkimIfExists(chWZ, "data/WZ_3l_Summer08_IDEAL_V9_v2/merged*.root", ""); // can try WZ_3l-Pythia
+  //  pickSkimIfExists(chWZ, "data/WZ_3l_Summer08_IDEAL_V9_v2/merged*.root", ""); // can try WZ_3l-Pythia
+  pickSkimIfExists(chWZ, "data/WZ_incl_Summer08_IDEAL_V9_v2/merged*.root", ""); // can try WZ_3l-Pythia
 
   TChain* chZZ = new TChain("Events");
-  pickSkimIfExists(chZZ, "data/ZZ_2l2n_Summer08_IDEAL_V9_v2/merged*.root", "");
+  //  pickSkimIfExists(chZZ, "data/ZZ_2l2n_Summer08_IDEAL_V9_v2/merged*.root", "");
+  pickSkimIfExists(chZZ, "data/ZZ_Summer08_IDEAL_V9_v1/merged*.root", "");
   
   TChain* chWjets = new  TChain("Events");
   pickSkimIfExists(chWjets, "data/WJets-madgraph_Fall08_IDEAL_V9_v1/merged*.root", "");
