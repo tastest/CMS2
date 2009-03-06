@@ -115,7 +115,7 @@ void makeFractionPlots(TFile *file,
   fake_rate->SetDirectory(output);
   fake_rate->SetMinimum(0.0);
   //  fake_rate->SetMaximum(1.0);
-  fake_rate->SetMaximum(0.05);
+  fake_rate->SetMaximum(0.08);
   fake_rate->GetXaxis()->SetLabelSize(0.03);
   fake_rate->GetXaxis()->SetTitleSize(0.03);
   fake_rate->GetXaxis()->SetTitleOffset(2.);
@@ -148,7 +148,7 @@ void makeFractionPlots(TFile *file,
   fake_rate_error->SetDirectory(output);
   fake_rate_error->SetMinimum(0.0);
   //  fake_rate_error->SetMaximum(1.0);
-  fake_rate_error->SetMaximum(0.05);
+  fake_rate_error->SetMaximum(0.08);
   for ( unsigned int x = 0;
 	x <= fake_rate->GetNbinsX();
 	++x) {
@@ -185,7 +185,7 @@ void makeFractionPlots(TFile *file,
   fake_rate_project_x->SetDirectory(output);
   fake_rate_project_x->SetMinimum(0.0);
   //  fake_rate_project_x->SetMaximum(0.5);
-  fake_rate_project_x->SetMaximum(0.05);
+  fake_rate_project_x->SetMaximum(0.08);
 
   TH1D *fake_rate_project_y_num = num->ProjectionY("3",-1,-1,"e");
   TH1D *fake_rate_project_y_den = den->ProjectionY("4",-1,-1,"e");
@@ -213,9 +213,15 @@ void makeFractionPlots(TFile *file,
   fake_rate_project_y->SetDirectory(output);
   fake_rate_project_y->SetMinimum(0.0);
   //  fake_rate_project_y->SetMaximum(0.5);
-  fake_rate_project_y->SetMaximum(0.05);
+  fake_rate_project_y->SetMaximum(0.08);
 
   TPad *pad1 = canvas.cd(1);
+  fake_rate->SetTitle("");
+  fake_rate->GetZaxis()->SetTitleOffset(2.0);
+  fake_rate->GetYaxis()->SetTitleSize(0.05);
+  fake_rate->GetYaxis()->SetTitleOffset(1.8);
+  fake_rate->GetXaxis()->SetTitleSize(0.06);
+  fake_rate->GetXaxis()->SetTitleOffset(1.1);
   fake_rate->Draw("LEGO2");
   TPaveStats *fake_rate_stats = (TPaveStats*)(fake_rate->GetListOfFunctions()->FindObject("stats"));
   if ( fake_rate_stats != 0 ) {
@@ -224,9 +230,16 @@ void makeFractionPlots(TFile *file,
     fake_rate_stats->SetX2NDC(0.9);
     fake_rate_stats->SetY2NDC(0.99);
   }
+  pad1->SetLeftMargin(0.17);
   pad1->Update();
 
   TPad *pad2 = canvas.cd(2);
+  fake_rate_error->GetZaxis()->SetTitleOffset(2.0);
+  fake_rate_error->SetTitle("");
+  fake_rate_error->GetYaxis()->SetTitleSize(0.05);
+  fake_rate_error->GetYaxis()->SetTitleOffset(1.8);
+  fake_rate_error->GetXaxis()->SetTitleSize(0.06);
+  fake_rate_error->GetXaxis()->SetTitleOffset(1.1);
   fake_rate_error->Draw("LEGO2");
   TPaveStats *fake_rate_error_stats = (TPaveStats*)(fake_rate_error->GetListOfFunctions()->FindObject("stats"));
   if ( fake_rate_error_stats != 0 ) {
@@ -235,9 +248,12 @@ void makeFractionPlots(TFile *file,
     fake_rate_error_stats->SetX2NDC(0.9);
     fake_rate_error_stats->SetY2NDC(0.99);
   }
+  pad2->SetLeftMargin(0.17);
   pad2->Update();
 
   TPad *pad3 = canvas.cd(3);
+  fake_rate_project_x->SetTitle("");
+  fake_rate_project_x->GetYaxis()->SetTitleOffset(1.5);
   fake_rate_project_x->Draw("PE");
   TPaveStats *fake_rate_project_x_stats = (TPaveStats*)(fake_rate_project_x->GetListOfFunctions()->FindObject("stats"));
   if ( fake_rate_project_x_stats != 0 ) {
@@ -246,13 +262,15 @@ void makeFractionPlots(TFile *file,
     fake_rate_project_x_stats->SetX2NDC(0.9);
     fake_rate_project_x_stats->SetY2NDC(0.99);
   }
-  pad3->SetLeftMargin(0.15);
+  pad3->SetLeftMargin(0.17);
   pad3->SetRightMargin(0.1);
   pad3->SetBottomMargin(0.17);
   pad3->SetTopMargin(0.1);
   pad3->Update();
 
   TPad *pad4 = canvas.cd(4);
+  fake_rate_project_y->SetTitle("");
+  fake_rate_project_y->GetYaxis()->SetTitleOffset(1.5);
   fake_rate_project_y->Draw("PE");
   TPaveStats *fake_rate_project_y_stats = (TPaveStats*)(fake_rate_project_y->GetListOfFunctions()->FindObject("stats"));
   if ( fake_rate_project_y_stats != 0 ) {
@@ -261,7 +279,7 @@ void makeFractionPlots(TFile *file,
     fake_rate_project_y_stats->SetX2NDC(0.9);
     fake_rate_project_y_stats->SetY2NDC(0.99);
   }
-  pad4->SetLeftMargin(0.15);
+  pad4->SetLeftMargin(0.17);
   pad4->SetRightMargin(0.1);
   pad4->SetBottomMargin(0.17);
   pad4->SetTopMargin(0.1);
@@ -271,7 +289,7 @@ void makeFractionPlots(TFile *file,
   picture_name.Append(numerator);
   picture_name.Append("_");
   picture_name.Append(sample);
-  picture_name.Append(".gif");
+  picture_name.Append(".png");
   picture_name.ReplaceAll("num_","");
 
   canvas.Print(picture_name);
