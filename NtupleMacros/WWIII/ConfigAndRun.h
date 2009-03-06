@@ -475,40 +475,40 @@ int Wjets_SS_Fakerate ()
 
 int Efficiency_base ()
 {
-     return run< Looper>(eff_base, "Efficiency_base");
+     return run<EventCountingLooper>(eff_base, "Efficiency_base");
 }
 
 int Efficiency_trigger ()
 {
-     return run< Looper>(eff_trigger, "Efficiency_trigger");
+     return run<EventCountingLooper>(eff_trigger, "Efficiency_trigger");
 }
 
 int Efficiency_tcmet ()
 {
-     return run< Looper>(eff_tcmet, "Efficiency_tcmet");
+     return run<EventCountingLooper>(eff_tcmet, "Efficiency_tcmet");
 }
 
 int Efficiency_id ()
 {
-     return run< Looper>(eff_id, "Efficiency_id");
+     return run<EventCountingLooper>(eff_id, "Efficiency_id");
 }
 
 int Efficiency_iso ()
 {
-     return run< Looper>(eff_iso, "Efficiency_iso");
+     return run<EventCountingLooper>(eff_iso, "Efficiency_iso");
 }
 
 int Efficiency_jet ()
 {
-     return run< Looper>(eff_jet, "Efficiency_jet");
+     return run<EventCountingLooper>(eff_jet, "Efficiency_jet");
 }
 
 int Efficiency_zveto ()
 {
-     return run< Looper>(eff_zveto, "Efficiency_zveto");
+     return run<EventCountingLooper>(eff_zveto, "Efficiency_zveto");
 }
 
 int Efficiency_muveto ()
 {
-     return run< Looper>(eff_muveto, "Efficiency_muveto");
+     return run<EventCountingLooper>(eff_muveto, "Efficiency_muveto");
 }
