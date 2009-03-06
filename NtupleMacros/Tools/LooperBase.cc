@@ -8,7 +8,7 @@
 #include "../CORE/CMS2.h"
 
 LooperBase::LooperBase (Sample s, cuts_t c, const char *fname) : 
-     sample_(s), cuts_(c), hasRun_(false)
+     sample_(s), cuts_(c), fname_(fname), hasRun_(false)
 {
      if (fname != 0 && strlen(fname) != 0) {
 	  logfile_ = fopen(fname, "a");
@@ -93,9 +93,11 @@ uint64 LooperBase::Loop ()
 	       int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
 	       if (i_permille != i_permille_old) {
 		    // xterm magic from L. Vacavant and A. Cerri
-		    printf("\015\033[32m ---> \033[1m\033[31m%4.1f%%"
-			   "\033[0m\033[32m <---\033[0m\015", i_permille/10.);
-		    fflush(stdout);
+		    if (isatty(1)) {
+			 printf("\015\033[32m ---> \033[1m\033[31m%4.1f%%"
+				"\033[0m\033[32m <---\033[0m\015", i_permille/10.);
+			 fflush(stdout);
+		    }
 		    i_permille_old = i_permille;
 	       }
 	       

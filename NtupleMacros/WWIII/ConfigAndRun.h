@@ -26,6 +26,7 @@ enum {
      LOOP_TTBAR	,
      LOOP_TTBAR_TAUOLA	,
      LOOP_TW	,
+     LOOP_TW_AND_FRIENDS	,
 };
 
 uint32 default_samples = (1 <<      LOOP_WW)	|
@@ -38,8 +39,9 @@ uint32 default_samples = (1 <<      LOOP_WW)	|
      (1 << LOOP_TTBAR	)	|
      (1 << LOOP_TW	);
 
-#define TWIKI_OUTPUT
-//#define LATEX_OUTPUT
+// #define TWIKI_OUTPUT
+#define LATEX_OUTPUT
+#define SUMMARY_OUTPUT
 
 // helper function used to print yield tables
 void printTable (const Looper **hists, int n, const char *fname, 
@@ -126,6 +128,102 @@ void printTable (const Looper **hists, int n, const char *fname,
 	  fclose(f);
 }
 
+void printTableVertically (const Looper **hists, int n, const char *fname, 
+			   uint32 which_ones) 
+{
+     FILE *f = 0;
+     if (fname == 0 || strlen(fname) == 0)
+	  f = stdin;
+     else f = fopen(fname, "w");
+     if (f == 0) {
+	  perror("printing table");
+	  return;
+     }
+     for (int i = 0; i < 1; ++i) {
+	  double cands = 0;
+	  double w2 = 0;
+	  int is_background = 0;
+#if defined(LATEX_OUTPUT) && !defined(SUMMARY_OUTPUT)
+	  fprintf(f, "\\hline\\hline\n");
+#endif
+	  for (int j = 0; j < n; ++j) {
+	       if (not hists[j]->HasRun())
+		    continue;
+#if defined(TWIKI_OUTPUT)
+	       fprintf(f, "|  *%30s*  ", hists[j]->SampleName().c_str());
+#else 
+#if defined(LATEX_OUTPUT)
+	       fprintf(f, "\\%-30s  ", hists[j]->SampleName().c_str());
+#endif
+#endif
+#if defined(TWIKI_OUTPUT)
+	       fprintf(f, "|  %10.1f &plusmn; %10.1f  |\n", 
+		       hists[j]->CandsPassing(DileptonHypType(i)),
+		       hists[j]->RMS(DileptonHypType(i)));
+#else 
+#if defined(LATEX_OUTPUT)
+	       const double n = hists[j]->CandsPassing(DileptonHypType(i));
+#if defined(SUMMARY_OUTPUT)
+	       if (n < 10000)
+		    fprintf(f, "& %18.0f\\\\\n", n);
+	       else {
+		    const double expo = log(n) / log(10);
+		    const int log10 = (int)floor(expo);
+		    const int exp10 = pow(10.0, log10);
+		    fprintf(f, "& %3.1f$\\cdot$10$^{%d}$\\\\\n", n / exp10, log10);
+	       }
+#else
+	       fprintf(f, "&  %10.1f $\\pm$ %10.1f\\\\\n", 
+		       hists[j]->CandsPassing(DileptonHypType(i)),
+		       hists[j]->RMS(DileptonHypType(i)));
+#endif
+#endif
+#endif
+	       if (is_background) {
+		    cands += hists[j]->CandsPassing(DileptonHypType(i));
+		    w2 += hists[j]->RMS(DileptonHypType(i)) * 
+			 hists[j]->RMS(DileptonHypType(i));
+	       }
+	       is_background++;
+	       const FakeRateLooper *looper = 
+		    dynamic_cast<const FakeRateLooper *>(hists[j]);
+	       if (looper != 0) {
+		    fprintf(f, "(stat) &plusmn; %5.1f (fake)", 
+			    looper->FakeSyst(DileptonHypType(i)));
+	       }
+	       
+	  }
+#if defined(TWIKI_OUTPUT)
+	  fprintf(f, "|  *%30s*  ", "total");
+	  fprintf(f, "|  %10.1f &plusmn; %10.1f  |\n", cands, sqrt(w2));
+#else
+#if defined(LATEX_OUTPUT)
+#if defined(SUMMARY_OUTPUT)
+	  fprintf(f, "\\hline\n %-30s  ", "total");
+	  const double n = cands;
+	  if (n < 10000)
+	       fprintf(f, "& %18.0f\\\\\n", n);
+	  else {
+	       const double expo = log(n) / log(10);
+	       const int log10 = (int)floor(expo);
+	       const int exp10 = pow(10.0, log10);
+	       fprintf(f, "& %3.1f$\\cdot$10$^{%d}$\\\\\n", n / exp10, log10);
+	  }
+#else
+	  fprintf(f, "\\hline\n %-30s  ", "total");
+	  fprintf(f, "&  %10.1f $\\pm$ %10.1f\\\\\n", cands, sqrt(w2));
+	  fprintf(f, "\\\\\n");
+#endif
+#endif
+#endif
+     }
+#if defined(LATEX_OUTPUT) && !defined(SUMMARY_OUTPUT)
+	  fprintf(f, "\\hline\\hline\n");
+#endif
+     if (f != stdin) 
+	  fclose(f);
+}
+
 // run a looper on each sample and produce a yield table; arguments:
 //
 // class Looper: which type of looper to run (usually: Looper)
@@ -161,8 +259,8 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
      L looper_ttbar		(fttbar()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_TTBAR )) looper_ttbar       .Loop();
      L looper_ttbar_tauola	(fttbar_taula()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_TTBAR_TAUOLA )) looper_ttbar_tauola.Loop();
      L looper_tw		(ftW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_TW    )) looper_tw          .Loop();
-     L looper_singletop_tchan	(fSingleTop_tChannel()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_TW    )) looper_singletop_tchan          .Loop();
-     L looper_singletop_schan	(fSingleTop_sChannel()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_TW    )) looper_singletop_schan          .Loop();
+     L looper_singletop_tchan	(fSingleTop_tChannel()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_TW_AND_FRIENDS    )) looper_singletop_tchan          .Loop();
+     L looper_singletop_schan	(fSingleTop_sChannel()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_TW_AND_FRIENDS    )) looper_singletop_schan          .Loop();
      // when all the loopers are done, we save the histograms to file
      saveHist(hist.c_str());
      // then we collect them all and print a table
@@ -187,7 +285,7 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
 	  &looper_singletop_tchan          ,
 	  &looper_singletop_schan          ,
      };
-     printTable(loopers, sizeof(loopers) / sizeof(L *), tbl.c_str(), which_ones);
+     printTableVertically(loopers, sizeof(loopers) / sizeof(L *), tbl.c_str(), which_ones);
      return 0;
 }
 
@@ -377,39 +475,40 @@ int Wjets_SS_Fakerate ()
 
 int Efficiency_base ()
 {
-     return run<EventCountingLooper>(CUT_BIT(CUT_OPP_SIGN), "Efficiency_base");
+     return run<EventCountingLooper>(eff_base, "Efficiency_base");
 }
 
-int Efficiency_pt ()
+int Efficiency_trigger ()
 {
-     return run<EventCountingLooper>(CUT_BIT(CUT_OPP_SIGN) |
-			CUT_BIT(CUT_LT_PT) | CUT_BIT(CUT_LL_PT), "Efficiency_pt");
-}
-
-int Efficiency_id ()
-{
-     return run<EventCountingLooper>(CUT_BIT(CUT_OPP_SIGN) |
-			CUT_BIT(CUT_LT_PT) | CUT_BIT(CUT_LL_PT) |
-			CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD), 
-			"Efficiency_id");
-}
-
-int Efficiency_iso ()
-{
-     return run<EventCountingLooper>(CUT_BIT(CUT_OPP_SIGN) |
-			CUT_BIT(CUT_LT_PT) | CUT_BIT(CUT_LL_PT) |
-			CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD) |
-			CUT_BIT(CUT_LT_CALOISO) | CUT_BIT(CUT_LL_CALOISO), 
-			"Efficiency_iso");
+     return run<EventCountingLooper>(eff_trigger, "Efficiency_trigger");
 }
 
 int Efficiency_tcmet ()
 {
-     return run<EventCountingLooper>(CUT_BIT(CUT_OPP_SIGN) |
-			CUT_BIT(CUT_LT_PT) | CUT_BIT(CUT_LL_PT) |
-			CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD) |
-			CUT_BIT(CUT_LT_CALOISO) | CUT_BIT(CUT_LL_CALOISO) |
-			CUT_BIT(CUT_PASS2_TCMET) | CUT_BIT(CUT_PASS4_TCMET), 
-			"Efficiency_tcmet");
+     return run<EventCountingLooper>(eff_tcmet, "Efficiency_tcmet");
 }
 
+int Efficiency_id ()
+{
+     return run<EventCountingLooper>(eff_id, "Efficiency_id");
+}
+
+int Efficiency_iso ()
+{
+     return run<EventCountingLooper>(eff_iso, "Efficiency_iso");
+}
+
+int Efficiency_jet ()
+{
+     return run<EventCountingLooper>(eff_jet, "Efficiency_jet");
+}
+
+int Efficiency_zveto ()
+{
+     return run<EventCountingLooper>(eff_zveto, "Efficiency_zveto");
+}
+
+int Efficiency_muveto ()
+{
+     return run<EventCountingLooper>(eff_muveto, "Efficiency_muveto");
+}

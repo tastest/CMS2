@@ -494,6 +494,127 @@ int getDrellYanType() {
   return 999;
 }
 
+int getVVType() {
+  // types:
+  //   0 - WW
+  //   1 - WZ
+  //   2 - ZZ
+  unsigned int nZ(0);
+  unsigned int nW(0);
+  std::vector<std::vector<int> > leptons;
+  std::vector<int> mothers;
+
+  bool verbose = false;
+
+  for (unsigned int i = 0; i < cms2.genps_id().size(); ++i) {
+    int pid = cms2.genps_id().at(i);
+    int mid = cms2.genps_id_mother().at(i);
+    if ( verbose ) std::cout << "Gen particle id: " << pid << ",\t mother id: " << mid <<std::endl;
+    if ( abs(pid)<11 || abs(pid)>16 ) continue;
+    if ( mid == 23 ) ++nZ;
+    if ( abs(mid) == 24 ) ++nW;
+    // now we need to really understand the pattern.
+    unsigned int mIndex = 0;
+    while ( mIndex < mothers.size() && mid != mothers[mIndex] ) ++mIndex;
+    if ( mIndex == mothers.size() ) {
+      mothers.push_back(mid);
+      leptons.push_back(std::vector<int>());
+    }
+    leptons[mIndex].push_back(pid);
+    if (mothers.size()>3){
+      if (verbose) std::cout << "WARNING: failed to identify event (too many mothers)" << std::endl;
+      return 999;
+    }
+  }
+
+  if ( nZ == 4 ) {
+    if ( verbose ) std::cout << "Event type ZZ" << std::endl;
+    return 2;
+  }
+  if ( nW == 4 ) {
+    if ( verbose ) std::cout << "Event type WW" << std::endl;
+    return 0;
+  }
+  if ( nW == 2 && nZ == 2 ) {
+    if ( verbose ) std::cout << "Event type WZ" << std::endl;
+    return 1;
+  }
+  unsigned int nNus(0);
+  for ( unsigned int i=0; i<mothers.size(); ++i ){
+      nNus += leptons[i].size();
+  }
+  if ( mothers.size() < 3 && nNus == 4){
+    for ( unsigned int i=0; i<mothers.size(); ++i ){
+      if ( mothers[i] != 23 && abs(mothers[i]) != 24 ){
+	if( leptons[i].size() != 2 && leptons[i].size() != 4){
+	  if (verbose) std::cout << "WARNING: failed to identify event (unexpected number of daughters)" << std::endl;
+	  if (verbose) std::cout << "\tnumber of daughters for first mother: " <<  leptons[0].size() << std::endl;
+	  if (verbose) std::cout << "\tnumber of daughters for second mother: " <<  leptons[1].size() << std::endl;
+	  return 999;
+	}
+	if ( abs(leptons[i][0]) == abs(leptons[i][1]) )
+	  nZ += 2;
+	else
+	  nW += 2;
+	if ( leptons[i].size()==4 ){
+	  // now it's a wild guess, it's fraction should be small
+	  if ( abs(leptons[i][2]) == abs(leptons[i][3]) )
+	    nZ += 2;
+	  else
+	    nW += 2;
+	}
+      }
+    }
+  } else {
+    // here be dragons
+    
+    // if we have 2 leptons and 3 neutrinos and they all of the same
+    // generation, we assume it's ZZ (can be WZ also), but if
+    // neutrinos are from different generations, than we conclude it's
+    // WZ. 
+    
+    std::set<int> nus;
+    for ( unsigned int i=0; i<mothers.size(); ++i )
+      for ( unsigned int j=0; j<leptons[i].size(); ++j ) 
+	if ( abs(leptons[i][j]) == 12 ||
+	     abs(leptons[i][j]) == 14 ||
+	     abs(leptons[i][j]) == 16 )
+	  nus.insert(abs(leptons[i][j]));
+    
+    if ( nNus == 5 ){
+      if ( nus.size() == 1 ) return 2;
+      if ( nus.size() == 2 ) return 1;
+    }
+    
+    if ( verbose ) std::cout << "WARNING: failed to identify event" << std::endl;
+    return 999;
+  }
+
+  if ( nZ+nW != 4 ){
+    if (verbose) std::cout << "WARNING: failed to identify event (wrong number of bosons)" << std::endl;
+    if (verbose) std::cout << "\tfirst mother id: " << mothers[0] << std::endl;
+    if (verbose) std::cout << "\tsecond mother id: " << mothers[1] << std::endl;
+    if (verbose) std::cout << "\tnumber of daughters for first mother: " << leptons[0].size() << std::endl;
+    if (verbose) std::cout << "\tnumber of daughters for second mother: " << leptons[1].size() << std::endl;
+    if (verbose) std::cout << "\tnumber of Zs: " << nZ << std::endl;
+    if (verbose) std::cout << "\tnumber of Ws: " << nW << std::endl;
+    return 999;
+  }
+
+  if ( nZ == 4 ) {
+    if ( verbose ) std::cout << "Event type ZZ" << std::endl;
+    return 2;
+  }
+  if ( nW == 4 ) {
+    if ( verbose ) std::cout << "Event type WW" << std::endl;
+    return 0;
+  }
+  // this covers screws in logic, i.e. most hard to identify events end up being WZ
+  if ( verbose ) std::cout << "Event type WZ (can be wrong)" << std::endl;
+  return 1;
+}
+
+
 //--------------------------------------------
 // Booleans for DY
 //------------------------------------------
@@ -507,6 +628,25 @@ bool isDYmm() {
 }
 bool isDYtt() {
   if (getDrellYanType() == 2) return true;
+  return false;
+}
+
+//--------------------------------------------
+// Booleans for VVjets
+//------------------------------------------
+
+bool isWW() {
+  if (getVVType() == 0) return true;
+  return false;
+}
+
+bool isWZ() {
+  if (getVVType() == 1) return true;
+  return false;
+}
+
+bool isZZ() {
+  if (getVVType() == 2) return true;
   return false;
 }
 
@@ -1304,12 +1444,17 @@ bool haveExtraMuon5(int hypIdx){
 
 //Bits passing for hyp type
 bool passTriggersMu9orLisoE15(int dilType) {
-  bool hltLooseIsoEle15_LW_L1R = ((cms2.evt_HLT2() & (1<<(47-32))) != 0);
-  bool hltMu9 = ((cms2.evt_HLT3() & (1<<(82-64))) != 0);
+  //old bit based method
+  //bool hlt_ele15_lw_l1r = ((cms2.evt_HLT2() & (1<<(50-32))) != 0);
+  //bool hltMu9 = ((cms2.evt_HLT3() & (1<<(82-64))) != 0);
+  
+  //TString method
+  bool hlt_ele15_lw_l1r = cms2.passHLTTrigger("HLT_Ele15_SW_L1R");
+  bool hltMu9           = cms2.passHLTTrigger("HLT_Mu9");
   
   if (dilType == 0 && ! (hltMu9) ) return false;
-  if ((dilType == 1 || dilType == 2) && ! (hltMu9 || hltLooseIsoEle15_LW_L1R)) return false;
-  if (dilType == 3 && ! hltLooseIsoEle15_LW_L1R) return false;     
+  if ((dilType == 1 || dilType == 2) && ! (hltMu9 || hlt_ele15_lw_l1r)) return false;
+  if (dilType == 3 && ! hlt_ele15_lw_l1r) return false;     
 
   return true;
 }

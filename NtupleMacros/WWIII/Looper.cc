@@ -85,7 +85,7 @@ void Looper::BookHistos ()
 
 bool Looper::FilterEvent()
 { 
-     //
+    //
      // duplicate filter, based on trk information and dilepton hyp
      //
      if (cms2.trks_d0().size() == 0)
@@ -110,6 +110,9 @@ cuts_t Looper::DilepSelect (int i_hyp)
      cuts_t ret = 0;
      const enum DileptonHypType myType = hyp_typeToHypType(cms2.hyp_type()[i_hyp]);
 
+     // pass trigger?
+     if (passTriggersMu9orLisoE15(cms2.hyp_type()[i_hyp]))
+	  ret |= CUT_BIT(CUT_PASS_TRIGGER);
      // enough tracks?
      if (cms2.trks_trk_p4().size() > 2)
 	  ret |= CUT_BIT(CUT_MORE_THAN_TWO_TRACKS);
@@ -282,6 +285,7 @@ cuts_t Looper::DilepSelect (int i_hyp)
 	  return ret;
      // in addition, for the muons, check that they pass tight+iso
      // (since the fake rate is electron only right now)
+#if 1
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 13) {
 	  if ((ret & (CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LT_ISO))) != 
 	      (CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LT_ISO)))
@@ -292,6 +296,15 @@ cuts_t Looper::DilepSelect (int i_hyp)
 	      (CUT_BIT(CUT_LL_GOOD) | CUT_BIT(CUT_LL_ISO)))
 	       return ret;
      }
+#else
+     // require MC truth mu from W instead
+  if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !trueMuonFromW_WJets(cms2.hyp_lt_index()[i_hyp]) )
+       return ret;
+
+  if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !trueMuonFromW_WJets(cms2.hyp_ll_index()[i_hyp]) )
+       return ret;
+#endif
+
      // now set the fake flags for the electron
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
 	  if (isFakeable(cms2.hyp_lt_index()[i_hyp]))
@@ -314,7 +327,7 @@ cuts_t Looper::DilepSelect (int i_hyp)
 
 double Looper::Weight (int)
 {
-     return cms2.evt_scale1fb() * sample_.kFactor;
+     return cms2.evt_scale1fb() * 0.1;
 }
 
 cuts_t Looper::TrilepSelect (int i_hyp)

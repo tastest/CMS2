@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.8 2009/03/03 18:14:59 jmuelmen Exp $
+# $Id: Makefile,v 1.9 2009/03/06 07:00:02 jmuelmen Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
@@ -45,8 +45,8 @@ Results_NoPass2MET.tbl Results_NoZVeto.tbl
 
 RESULTTABLES = Results.tbl Results_W.tbl Results_DY.tbl Results_Vgamma.tbl
 
-EFFTABLES = Efficiency_base.tbl Efficiency_pt.tbl Efficiency_id.tbl \
-Efficiency_iso.tbl Efficiency_tcmet.tbl
+EFFTABLES = Efficiency_base.tbl Efficiency_trigger.tbl Efficiency_id.tbl Efficiency_iso.tbl \
+Efficiency_tcmet.tbl Efficiency_jet.tbl Efficiency_zveto.tbl Efficiency_muveto.tbl
 
 .PHONY: all
 all:	$(LIBS) 

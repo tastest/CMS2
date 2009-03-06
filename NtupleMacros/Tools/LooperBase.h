@@ -82,6 +82,7 @@ public:
 protected:
      Sample		sample_;
      cuts_t		cuts_;
+     const char 	*fname_;
      FILE		*logfile_;
      double		hypos_total_weight_[4];
      uint64		hypos_total_n_[4];

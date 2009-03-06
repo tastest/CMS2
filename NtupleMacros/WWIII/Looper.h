@@ -62,7 +62,11 @@
 	  CUT_ELFAKE_FAKEABLE_OBJECT,
 	  CUT_ELFAKE_NUMERATOR,
 	  CUT_ELFAKE_NOT_NUMERATOR,
+	  CUT_MUFAKE_FAKEABLE_OBJECT,
+	  CUT_MUFAKE_NUMERATOR,
+	  CUT_MUFAKE_NOT_NUMERATOR,
 	  CUT_MORE_THAN_TWO_TRACKS,
+	  CUT_PASS_TRIGGER,
      };
 //      );
 
@@ -107,7 +111,8 @@ const static cuts_t baseline_cuts =
 //      (CUT_BIT(CUT_PASS_JETVETO_CALO)	) |
 //      (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)	) |  
      (CUT_BIT(CUT_PASS_JETVETO_JPT20)	) |  
-     (CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT)	);   
+     (CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT))	|
+     (CUT_BIT(CUT_PASS_TRIGGER));   
 
 const static cuts_t calojet_veto_cuts = (baseline_cuts & ~CUT_BIT(CUT_PASS_JETVETO_JPT20))
      | CUT_BIT(CUT_PASS_JETVETO_CALO);
@@ -272,6 +277,17 @@ static const cuts_t fakerate_ss_denominator_not_numerator_cuts =
      (fakerate_denominator_not_numerator_cuts & ~CUT_BIT(CUT_OPP_SIGN)) 
      | CUT_BIT(CUT_SAME_SIGN);
 
+static const cuts_t eff_base = 
+     CUT_BIT(CUT_OPP_SIGN) | 
+     CUT_BIT(CUT_LT_PT) | 
+     CUT_BIT(CUT_LL_PT);
+static const cuts_t eff_trigger = eff_base | CUT_BIT(CUT_PASS_TRIGGER);
+static const cuts_t eff_tcmet = eff_trigger | CUT_BIT(CUT_PASS2_TCMET) | CUT_BIT(CUT_PASS4_TCMET);
+static const cuts_t eff_id = eff_tcmet | CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD);
+static const cuts_t eff_iso = eff_id | CUT_BIT(CUT_LT_CALOISO) | CUT_BIT(CUT_LL_CALOISO);
+static const cuts_t eff_jet = eff_iso | CUT_BIT(CUT_PASS_JETVETO_JPT20);
+static const cuts_t eff_zveto = eff_jet | CUT_BIT(CUT_PASS_ZVETO);
+static const cuts_t eff_muveto = eff_zveto | CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT);
 //----------------------------------------------------------------------
 // Loopers 
 //----------------------------------------------------------------------
