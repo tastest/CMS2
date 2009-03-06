@@ -327,7 +327,7 @@ cuts_t Looper::DilepSelect (int i_hyp)
 
 double Looper::Weight (int)
 {
-     return cms2.evt_scale1fb() * sample_.kFactor;
+     return cms2.evt_scale1fb() * 0.1;
 }
 
 cuts_t Looper::TrilepSelect (int i_hyp)
