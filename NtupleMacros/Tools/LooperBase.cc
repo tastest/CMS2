@@ -8,7 +8,7 @@
 #include "../CORE/CMS2.h"
 
 LooperBase::LooperBase (Sample s, cuts_t c, const char *fname) : 
-     sample_(s), cuts_(c), hasRun_(false)
+     sample_(s), cuts_(c), fname_(fname), hasRun_(false)
 {
      if (fname != 0 && strlen(fname) != 0) {
 	  logfile_ = fopen(fname, "a");
