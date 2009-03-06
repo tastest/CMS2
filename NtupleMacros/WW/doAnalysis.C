@@ -109,6 +109,27 @@ bool filterByProcess( enum Sample sample ) {
     return isDYmm();
   case DYtt:
     return isDYtt();
+  case WW:
+    return isWW();
+  case WZ:
+    return isWZ();
+  case ZZ:
+    return isZZ();
+  default:
+    return true;
+  }
+}
+
+bool isIdentified( enum Sample sample ) {
+  switch (sample) {
+  case DYee:
+  case DYmm:
+  case DYtt:
+    return getDrellYanType()!=999;
+  case WW:
+  case WZ:
+  case ZZ:
+    return getVVType()!=999;
   default:
     return true;
   }
@@ -806,7 +827,7 @@ void AddIsoSignalControlSample( int i_hyp, double kFactor, RooDataSet* dataset =
   }
 }
 
-RooDataSet* ScanChain( TChain* chain, enum Sample sample ) {
+RooDataSet* ScanChain( TChain* chain, enum Sample sample, bool identifyEvents ) {
   
   unsigned int nEventsChain = chain->GetEntries();  // number of entries in chain --> number of events from all files
   unsigned int nEventsTotal = 0;
@@ -818,18 +839,6 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample ) {
   const char *prefix = sample_names[sample];
   RooDataSet* dataset = MakeNewDataset(sample_names[sample]);
   double kFactor = .1; // 100pb-1
-  /* 
-  switch (sample) {
-  case DYee: case DYmm: case DYtt:
-       kFactor = 1.12;
-       break;
-  case ttbar:
-       kFactor = 1.85;
-       break;
-  default:
-       break;
-  }
-  */
 //   switch (sample) {
 //   case WW:
 //        evt_scale1fb = 0.1538;
@@ -1094,6 +1103,8 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample ) {
   already_seen.clear();
   int duplicates_total_n = 0;
   double duplicates_total_weight = 0;
+  int nFailedIdentification = 0;
+  int nFilteredOut = 0;
 
   int i_permille_old = 0;
   // file loop
@@ -1137,9 +1148,17 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample ) {
 		 i_permille_old = i_permille;
 	    }
 	    
-	    // filter by process
-	    if ( !filterByProcess(sample) ) continue;
-	    
+	    if ( identifyEvents ){
+	      // check if we know what we are looking at
+	      if ( ! isIdentified(sample) ) nFailedIdentification++;
+	      
+	      // filter by process
+	      if ( ! filterByProcess(sample) ) {
+		nFilteredOut++;
+		continue;
+	      }
+	    }
+
 	    // fkw, here go all histos that should be filled per event instead of per hyp:
 	    // loop over generator particles:
 	    //Note: top = +-6, W = +-24, b = +-5
@@ -1168,10 +1187,14 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample ) {
        printf("ERROR: number of events from files (%d) is not equal to total number"
 	      " of events (%d)\n", nEventsChain, nEventsTotal);
   }
-
-  printf("Total candidate count (ee mm em all): %.0f %.0f %.0f %0.f.  Total weight %f %f %f %f\n",   
+  printf("Total number of skipped events due to bad identification: %d (%0.0f %%)\n",   
+	   nFailedIdentification, nFailedIdentification*100.0/(nEventsChain+1e-5));
+  printf("Total number of filtered out events: %d (%0.0f %%)\n",   
+	   nFilteredOut, nFilteredOut*100.0/(nEventsChain+1e-5));
+  printf("Total candidate count (ee mm em all): %.0f %.0f %.0f %0.f.\n",
 	 hypos_total->GetBinContent(1), hypos_total->GetBinContent(2), 
-	 hypos_total->GetBinContent(3), hypos_total->GetBinContent(4),
+	 hypos_total->GetBinContent(3), hypos_total->GetBinContent(4));
+  printf("Total weighted candidate yeild (ee mm em all): %f %f %f %f\n",   
 	 hypos_total_weighted->GetBinContent(1), hypos_total_weighted->GetBinContent(2), 
 	 hypos_total_weighted->GetBinContent(3), hypos_total_weighted->GetBinContent(4));
   

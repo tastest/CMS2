@@ -23,7 +23,9 @@
 //==============================================================
 {
 // Output file
-const char* outFile = "processed_data_tag.root";
+  const char* outFile = "processed_data_tag.root";
+  const bool identifyVVEvents = false; // careful with this option. You don't need it for not mixed samples
+  const bool identifyDYEvents = true;
 
 // Flags for files to run over
 bool runWW    = true;
@@ -59,18 +61,21 @@ bool runWjetBackground2 = false;
 TChain *fWW = new TChain("Events");
 if (runWW) {
   fWW->Add((dataset+"/cms2-V01-02-06/WW_Summer08_IDEAL_V9_v1/merged_ntuple*.root").c_str());
+  // fWW->Add("/data/tmp/cms2-V01-02-06/VVJets/merged_vvjets.root");
 }
 
 //WZ file
 TChain *fWZ = new TChain("Events");
 if (runWZ) {
   fWZ->Add((dataset+"/cms2-V01-02-06/WZ_incl_Summer08_IDEAL_V9_v2/merged_ntuple*.root").c_str());
+  // fWZ->Add("/data/tmp/cms2-V01-02-06/VVJets/merged_vvjets.root");
 }
 
 //ZZ file
 TChain *fZZ = new TChain("Events");
 if (runZZ) {
   fZZ->Add((dataset+"/cms2-V01-02-06/ZZ_Summer08_IDEAL_V9_v1/merged_ntuple*.root").c_str());
+  // fZZ->Add("/data/tmp/cms2-V01-02-06/VVJets/merged_vvjets.root");
 }
 
 //Wjets file
@@ -121,7 +126,7 @@ enum EColor { kWhite, kBlack, kRed, kGreen, kBlue, kYellow, kMagenta, kCyan };
 // Process files one at a time, and color them as needed
 if (runWW) {
   cout << "Processing WW.."<< endl;
-  RooDataSet* data = ScanChain(fWW, WW);
+  RooDataSet* data = ScanChain(fWW, WW, identifyVVEvents);
   if( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -133,7 +138,7 @@ if (runWW) {
 
 if (runWZ) {
   cout << "Processing WZ.."<< endl;
-  RooDataSet* data = ScanChain(fWZ, WZ);
+  RooDataSet* data = ScanChain(fWZ, WZ, identifyVVEvents);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -145,7 +150,7 @@ if (runWZ) {
 
 if (runZZ) {
   cout << "Processing ZZ.."<< endl;
-  RooDataSet* data = ScanChain(fZZ, ZZ);
+  RooDataSet* data = ScanChain(fZZ, ZZ, identifyVVEvents);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -157,7 +162,7 @@ if (runZZ) {
 
 if (runWjets) {
   cout << "Processing Wjets.."<<endl;
-  RooDataSet* data = ScanChain(fWjets, Wjets);
+  RooDataSet* data = ScanChain(fWjets, Wjets, false);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -169,7 +174,7 @@ if (runWjets) {
 
 if (runDYee) {
   cout << "Processing DYee.."<<endl;
-  RooDataSet* data = ScanChain(fDYee, DYee);
+  RooDataSet* data = ScanChain(fDYee, DYee, identifyDYEvents);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -181,7 +186,7 @@ if (runDYee) {
 
 if (runDYmm) {
   cout << "Processing DYmm.."<<endl;
-  RooDataSet* data = ScanChain(fDYmm, DYmm);
+  RooDataSet* data = ScanChain(fDYmm, DYmm, identifyDYEvents);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -193,7 +198,7 @@ if (runDYmm) {
 
 if (runDYtt) {
   cout << "Processing DYtt.."<<endl;
-  RooDataSet* data = ScanChain(fDYtt, DYtt);
+  RooDataSet* data = ScanChain(fDYtt, DYtt, identifyDYEvents);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -205,7 +210,7 @@ if (runDYtt) {
 
 if (runttbar) {
   cout << "Processing ttbar.."<<endl;
-  RooDataSet* data = ScanChain(fttbar, ttbar);
+  RooDataSet* data = ScanChain(fttbar, ttbar, false);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -217,7 +222,7 @@ if (runttbar) {
 
 if (runtW) {
   cout << "Processing tW.."<<endl;
-  RooDataSet* data = ScanChain(ftW, tW);
+  RooDataSet* data = ScanChain(ftW, tW, false);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
