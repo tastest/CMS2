@@ -233,6 +233,8 @@ TH1F* hmaxCaloTrkJetEt;  // energy distribution for the most energetic jet
 TH1F* hmaxCaloTrkJet2Et; // energy distribution for the most energetic jet
 TH1F* hmaxGenJetEt;      // energy distribution for the most energetic jet
 
+TH1F* hCentralBquarkEtaAfterVeto;   
+TH1F* hForwardBquarkEtaAfterVeto;   
 
 // fkw September 2008 final hist used for muon tags estimate of top bkg
 TH2F* hextramuonsvsnjet[4];
@@ -498,6 +500,9 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
      unsigned int icounter(0);
      monitor.count(icounter++,"Total number of hypothesis: ");
      
+     if ( ! passTriggersMu9orLisoE15( cms2.hyp_type()[i_hyp] ) ) return;
+     monitor.count(icounter++,"Total number of hypothesis after trigger requirements: ");
+     
      // Cut on lepton Pt
      if (cms2.hyp_lt_p4()[i_hyp].pt() < 20.0) return;
      if (cms2.hyp_ll_p4()[i_hyp].pt() < 20.0) return;
@@ -527,9 +532,13 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
      monitor.count(icounter++,"Total number of hypothesis after lepton pt + z vetos + MET cuts: ");
      
      bool goodEvent = true;
+     bool passedJetVeto = true;
 
      unsigned int nJPT = nJPTs(i_hyp);
-     if (nJPT>0) goodEvent = false;
+     if (nJPT>0) {
+       goodEvent = false;
+       passedJetVeto = false;
+     }
      int countmus = numberOfExtraMuons(i_hyp,true);
      // int countmus = numberOfExtraMuons(i_hyp);
      int nExtraVetoMuons = numberOfExtraMuons(i_hyp,false);;
@@ -559,6 +568,21 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
      hextramuonsvsnjet[myType]->Fill(countmus, nJPT, weight);
      hextramuonsvsnjet[3]->Fill(countmus, nJPT, weight);
      
+     if ( passedJetVeto ) {
+       // loop over gen particles
+       float centralBQuarkEta(100);
+       float forwardBQuarkEta(0);
+       unsigned int nBQuarks(0);
+       for ( unsigned int i=0; i<cms2.genps_id().size(); ++i )
+	 if ( abs(cms2.genps_id()[i])==5 ) {
+	   ++nBQuarks;
+	   float abs_quark_eta = fabs(cms2.genps_p4()[i].eta());
+	   if ( centralBQuarkEta > abs_quark_eta ) centralBQuarkEta = abs_quark_eta;
+	   if ( forwardBQuarkEta < abs_quark_eta ) forwardBQuarkEta = abs_quark_eta;
+	 }
+       if ( nBQuarks>0 ) hCentralBquarkEtaAfterVeto->Fill(centralBQuarkEta);
+       if ( nBQuarks>1 ) hForwardBquarkEtaAfterVeto->Fill(forwardBQuarkEta);
+     }
      if ( ! goodEvent ) return;
 
      // -------------------------------------------------------------------//
@@ -1098,6 +1122,10 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, bool identifyEvents ) 
   hmaxCaloTrkJet2Et->Sumw2();
   hmaxGenJetEt = new TH1F(Form("%s_hmaxGenJetEt",prefix), Form("%s - most energetic jet Et (GenJet)",prefix), 100, 0., 100);
   hmaxGenJetEt->Sumw2();
+  hCentralBquarkEtaAfterVeto = new TH1F(Form("%s_centralBQuarkEtaAfterVeto",prefix), 
+					Form("%s - central b quark eta distribution after jet veto",prefix), 20, 0, 10);
+  hForwardBquarkEtaAfterVeto = new TH1F(Form("%s_forwardBQuarkEtaAfterVeto",prefix), 
+					Form("%s - forward b quark eta distribution after jet veto",prefix), 20, 0, 10);
 
   // clear list of duplicates
   already_seen.clear();
