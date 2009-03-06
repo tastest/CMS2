@@ -19,6 +19,7 @@ enum {
      LOOP_WJETS	,
      LOOP_DYEE	,
      LOOP_DYMM	,
+     LOOP_DY20MM,
      LOOP_DYTT	,
      LOOP_TTBAR	,
      LOOP_TW	,
@@ -88,6 +89,8 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
      Looper looper_wjets	(fWjets()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS )) looper_wjets       .Loop();
      Looper looper_dyee		(fDYee()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYEE  )) looper_dyee        .Loop();
      Looper looper_dymm		(fDYmm()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYMM  )) looper_dymm        .Loop();
+     Looper looper_dy20mm       (fDY20mm()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_DY20MM)) looper_dy20mm      .Loop();
+
      Looper looper_dytt		(fDYtt()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYTT  )) looper_dytt        .Loop();
      Looper looper_ttbar	(fttbar()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_TTBAR )) looper_ttbar       .Loop();
      Looper looper_tw		(ftW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_TW    )) looper_tw          .Loop();
@@ -190,7 +193,24 @@ int DYEstResults_ForWW_MET45 ()
                                      | (CUT_BIT(CUT_MET_SIMPLE45))
                                      | (CUT_BIT(CUT_MET_BALLANCE))
                                      | (CUT_BIT(CUT_MET_PROJECTED)),
-                        "DYEstResults_ForWW_MET45");
+                        "DYEstResults_ForWW_MET45",
+                        1 << LOOP_WW | 1 << LOOP_WZ | 1 << LOOP_ZZ |
+                        1 << LOOP_TTBAR | 1 << LOOP_WJETS | 1 << LOOP_TW |
+                        1 << LOOP_DYEE | 1 << LOOP_DYMM | 1 << LOOP_DYTT);
+}
+
+int DYEstResults_ForWW_MET45_DY20MM ()
+{
+     return run<DYEst>(baseline_cuts_nomet
+                                     | (CUT_BIT(CUT_MET_SIMPLE45))
+                                     | (CUT_BIT(CUT_MET_BALLANCE))
+                                     | (CUT_BIT(CUT_MET_PROJECTED)),
+                        "DYEstResults_ForWW_MET45_DY20MM",
+//                        1 << LOOP_WWINCL | 1 << LOOP_WZINCL | 1 << LOOP_ZZINCL |
+//                        1 << LOOP_TTBAR | 1 << LOOP_WJETS | 1 << LOOP_TW |
+//                        1 << LOOP_DYEE | 1 << LOOP_DY20MM | 1 << LOOP_DYTT);
+//			  1 << LOOP_WWINCL | 
+			  1 << LOOP_DY20MM);
 }
 
 // use the inclusive WW, ZZ and WZ samples
@@ -205,6 +225,22 @@ int DYEstResults_ForWW_MET45_INCL ()
                         1 << LOOP_TTBAR | 1 << LOOP_WJETS | 1 << LOOP_TW |
                         1 << LOOP_DYEE | 1 << LOOP_DYMM | 1 << LOOP_DYTT);
 }
+
+// use the inclusive WW, ZZ and WZ samples 
+// AND the trigger selection
+int DYEstResults_ForWW_MET45_INCL_TRIG ()
+{
+     return run<DYEst>(baseline_cuts_nomet
+					| (CUT_BIT(CUT_PASS_TRIGGER))
+                                     | (CUT_BIT(CUT_MET_SIMPLE45))
+                                     | (CUT_BIT(CUT_MET_BALLANCE))
+                                     | (CUT_BIT(CUT_MET_PROJECTED)),
+                        "DYEstResults_ForWW_MET45_INCL_TRIG",
+                        1 << LOOP_WWINCL | 1 << LOOP_WZINCL | 1 << LOOP_ZZINCL |
+                        1 << LOOP_TTBAR | 1 << LOOP_WJETS | 1 << LOOP_TW |
+                        1 << LOOP_DYEE | 1 << LOOP_DYMM | 1 << LOOP_DYTT);
+}
+
 
 int DYEstResults_ForWW22X_ValStandard ()
 {
@@ -234,6 +270,19 @@ int DYEstResults_GetEMuEff ()
                                      & ~(CUT_BIT(CUT_PASS5_MET)),
                         "DYEstResults_GetEMuEff");
 
+}
+
+// inclusive samples 
+// AND the trigger
+int DYEstResults_GetEMuEff_TRIG ()
+{
+     return run<DYEst>(baseline_cuts_pass5
+                                        | (CUT_BIT(CUT_PASS_TRIGGER))
+                                     & ~(CUT_BIT(CUT_PASS5_MET)),
+                        "DYEstResults_GetEMuEff_TRIG",
+                        1 << LOOP_WWINCL | 1 << LOOP_WZINCL | 1 << LOOP_ZZINCL |
+                        1 << LOOP_TTBAR | 1 << LOOP_WJETS | 1 << LOOP_TW |
+                        1 << LOOP_DYEE | 1 << LOOP_DYMM | 1 << LOOP_DYTT);
 }
 
 

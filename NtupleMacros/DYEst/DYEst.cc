@@ -1,4 +1,5 @@
 #include <math.h>
+#include <string>
 #include "TVector3.h"
 #include "CORE/selections.h"
 #include "CORE/utilities.h"
@@ -28,12 +29,43 @@ void DYEst::BookHistos ()
 	// remove the straight met cut for this
 	// note: remove the z veto from all because this is handled elsewhere
         // remove the jet veto from the 1 and 2 jet hists as this is handled elsewhere
-     hnm1_met_0j_in_ = new NMinus1Hist(sample_, "met_0j_in", 200, 0, 200, cuts_, (CUT_BIT(CUT_PASS_ZVETO)) | simple_met_cuts);
-     hnm1_met_1j_in_ = new NMinus1Hist(sample_, "met_1j_in", 200, 0, 200, cuts_, (CUT_BIT(CUT_PASS_ZVETO)) | (CUT_BIT(CUT_PASS_JETVETO_JPT20)) | simple_met_cuts);
-     hnm1_met_2j_in_ = new NMinus1Hist(sample_, "met_2j_in", 200, 0, 200, cuts_, (CUT_BIT(CUT_PASS_ZVETO)) | (CUT_BIT(CUT_PASS_JETVETO_JPT20)) | simple_met_cuts);
-     hnm1_met_0j_out_ = new NMinus1Hist(sample_, "met_0j_out", 200, 0, 200, cuts_, (CUT_BIT(CUT_PASS_ZVETO)) |simple_met_cuts);
-     hnm1_met_1j_out_ = new NMinus1Hist(sample_, "met_1j_out", 200, 0, 200, cuts_, (CUT_BIT(CUT_PASS_ZVETO)) | (CUT_BIT(CUT_PASS_JETVETO_JPT20)) | simple_met_cuts);
-     hnm1_met_2j_out_ = new NMinus1Hist(sample_, "met_2j_out", 200, 0, 200, cuts_, (CUT_BIT(CUT_PASS_ZVETO)) | (CUT_BIT(CUT_PASS_JETVETO_JPT20)) | simple_met_cuts);
+     hnm1_met_in_0j_ = new NMinus1Hist(sample_, "met_in_0j", 200, 0, 200, cuts_, (CUT_BIT(CUT_PASS_ZVETO)) | simple_met_cuts);
+     hnm1_met_in_1j_ = new NMinus1Hist(sample_, "met_in_1j", 200, 0, 200, cuts_, (CUT_BIT(CUT_PASS_ZVETO)) | (CUT_BIT(CUT_PASS_JETVETO_JPT20)) | simple_met_cuts);
+     hnm1_met_in_2j_ = new NMinus1Hist(sample_, "met_in_2j", 200, 0, 200, cuts_, (CUT_BIT(CUT_PASS_ZVETO)) | (CUT_BIT(CUT_PASS_JETVETO_JPT20)) | simple_met_cuts);
+     hnm1_met_out_0j_ = new NMinus1Hist(sample_, "met_out_0j", 200, 0, 200, cuts_, (CUT_BIT(CUT_PASS_ZVETO)) |simple_met_cuts);
+     hnm1_met_out_1j_ = new NMinus1Hist(sample_, "met_out_1j", 200, 0, 200, cuts_, (CUT_BIT(CUT_PASS_ZVETO)) | (CUT_BIT(CUT_PASS_JETVETO_JPT20)) | simple_met_cuts);
+     hnm1_met_out_2j_ = new NMinus1Hist(sample_, "met_out_2j", 200, 0, 200, cuts_, (CUT_BIT(CUT_PASS_ZVETO)) | (CUT_BIT(CUT_PASS_JETVETO_JPT20)) | simple_met_cuts);
+
+	std::string logFileString = std::string(fname_);
+	std::string fileNameBase = logFileString.substr(0, logFileString.length() - 4);
+	std::string outFileName = "LooperTree_" + fileNameBase + "_" + sample_.name + ".root";
+
+//     std::string outFileName = "Looper_" + sample_.name + ".root";
+     outFile_ = new TFile(outFileName.c_str(), "RECREATE");
+     outFile_->cd();
+     outTree_ = new TTree("T1", "Tree");
+
+     // book the branches
+     outTree_->Branch("sample_id", &sample_id_, "sample_id/I");
+     outTree_->Branch("hyp_type", &hyp_type_, "hyp_type/I");
+     outTree_->Branch("weight", &weight_, "weight/F");
+
+     outTree_->Branch("evt_lumiblock", &evt_lumiblock_, "evt_lumiblock/I");
+     outTree_->Branch("evt_run", &evt_run_, "evt_run/I");
+     outTree_->Branch("evt_event", &evt_event_, "evt_event/I");
+
+     outTree_->Branch("tcmet", &tcmet_, "tcmet/F");
+     outTree_->Branch("phi_tcmet", &phi_tcmet_, "phi_tcmet/F");
+
+     outTree_->Branch("mll", &mll_, "mll/F");
+     outTree_->Branch("n_jptjets", &n_jptjets_, "n_jptjets/I");
+
+     outTree_->Branch("pt_ll_trk", &pt_ll_trk_, "pt_ll_trk/F");
+     outTree_->Branch("pt_ll_glb", &pt_ll_glb_, "pt_ll_glb/F");
+     outTree_->Branch("phi_ll", &phi_ll_, "phi_ll/F");
+     outTree_->Branch("pt_lt_trk", &pt_lt_trk_, "pt_lt_trk/F");
+     outTree_->Branch("pt_lt_glb", &pt_lt_glb_, "pt_lt_glb/F");
+     outTree_->Branch("phi_lt", &phi_lt_, "phi_lt/F");
 
 }
 
@@ -42,6 +74,10 @@ cuts_t DYEst::DilepSelect (int i_hyp)
 
      cuts_t ret = 0;
      //const enum DileptonHypType myType = hyp_typeToHypType(cms2.hyp_type()[i_hyp]);
+
+	// pass trigger?
+	if (passTriggersMu9orLisoE15(cms2.hyp_type()[i_hyp]))
+ 		ret |= CUT_BIT(CUT_PASS_TRIGGER);
 
      // enough tracks?
      if (cms2.trks_trk_p4().size() > 2)
@@ -291,7 +327,6 @@ void DYEst::FillDilepHistos (int i_hyp)
      // we specified in the constructor when we made the looper)
      // (*note: the parentheses are important*):
      if ((cuts_passed & cuts_) == cuts_) {
-
 	  // if the candidate passed, we count it
 	  cands_passing[myType] += weight;
 	  cands_passing_w2[myType] += weight * weight;
@@ -299,6 +334,42 @@ void DYEst::FillDilepHistos (int i_hyp)
 	  cands_passing[DILEPTON_ALL] += weight;
 	  cands_passing_w2[DILEPTON_ALL] += weight * weight;
 	  cands_count[DILEPTON_ALL]++;
+     }
+
+     if ((cuts_passed & baseline_cuts_nometsimple_nozveto) == baseline_cuts_nometsimple_nozveto) {
+
+          // fill tree branches
+
+	  evt_lumiblock_ = cms2.evt_lumiBlock();
+	  evt_run_ = cms2.evt_run();
+ 	  evt_event_ = cms2.evt_event();
+
+          sample_id_ = sample_.process;
+          hyp_type_ = myType;
+          weight_ = weight;
+          n_jptjets_ = nJPTs(i_hyp);
+          tcmet_ = cms2.evt_tcmet();
+          phi_tcmet_ = cms2.evt_tcmetPhi();
+          mll_ = cms2.hyp_p4()[i_hyp].M();
+
+          if (abs(cms2.hyp_ll_id()[i_hyp]) == 13) 
+		pt_ll_glb_ = cms2.mus_trk_p4()[cms2.hyp_ll_index()[i_hyp]].Pt();
+          else pt_ll_glb_ = cms2.hyp_ll_p4()[i_hyp].Pt();
+
+          if (abs(cms2.hyp_lt_id()[i_hyp]) == 13) 
+		pt_lt_glb_ = cms2.mus_trk_p4()[cms2.hyp_lt_index()[i_hyp]].Pt();
+          else pt_lt_glb_ = cms2.hyp_lt_p4()[i_hyp].Pt();
+      
+          pt_ll_trk_ = cms2.hyp_ll_p4()[i_hyp].Pt();
+          phi_ll_ = cms2.hyp_ll_p4()[i_hyp].Phi();
+
+          pt_lt_trk_ = cms2.hyp_lt_p4()[i_hyp].Pt();
+          phi_lt_ = cms2.hyp_lt_p4()[i_hyp].Phi();
+
+
+          // when everything is set
+          // fill this entry in the tree
+          outTree_->Fill();
      }
 
      // for the NMinus1Hist, the histogram checks the cuts for us
@@ -316,30 +387,36 @@ void DYEst::FillDilepHistos (int i_hyp)
 ////     if (cuts_passed & CUT_BIT(CUT_PASS_JETVETO_JPT20)) {
      	hnm1_mll_0j_->Fill(cuts_passed, myType, cms2.hyp_p4()[i_hyp].M(), weight);
 
-	if (isInWindow) hnm1_met_0j_in_->Fill(cuts_passed, myType, hyp_met.Pt(), weight);
-	else hnm1_met_0j_out_->Fill(cuts_passed, myType, hyp_met.Pt(), weight);
+	if (isInWindow) hnm1_met_in_0j_->Fill(cuts_passed, myType, hyp_met.Pt(), weight);
+	else hnm1_met_out_0j_->Fill(cuts_passed, myType, hyp_met.Pt(), weight);
 ////     }
 
      // one jet bin
      if (cms2.hyp_njets()[i_hyp] == 1) {
         hnm1_mll_1j_->Fill(cuts_passed, myType, cms2.hyp_p4()[i_hyp].M(), weight);
 
-        if (isInWindow) hnm1_met_1j_in_->Fill(cuts_passed, myType, hyp_met.Pt(), weight);
-        else hnm1_met_1j_out_->Fill(cuts_passed, myType, hyp_met.Pt(), weight);
+        if (isInWindow) hnm1_met_in_1j_->Fill(cuts_passed, myType, hyp_met.Pt(), weight);
+        else hnm1_met_out_1j_->Fill(cuts_passed, myType, hyp_met.Pt(), weight);
      }
 
      // two or more jet bin
      if (cms2.hyp_njets()[i_hyp] >= 2) {
         hnm1_mll_2j_->Fill(cuts_passed, myType, cms2.hyp_p4()[i_hyp].M(), weight);
 
-        if (isInWindow) hnm1_met_2j_in_->Fill(cuts_passed, myType, hyp_met.Pt(), weight);
-        else hnm1_met_2j_out_->Fill(cuts_passed, myType, hyp_met.Pt(), weight);
+        if (isInWindow) hnm1_met_in_2j_->Fill(cuts_passed, myType, hyp_met.Pt(), weight);
+        else hnm1_met_out_2j_->Fill(cuts_passed, myType, hyp_met.Pt(), weight);
      }
 
 }
 
 void DYEst::End ()
 {
+
+	// tidy up tree stuff
+        outFile_->cd();
+        outTree_->Write();
+        outFile_->Close();
+        delete outFile_; 
 
      int ret = fprintf(logfile_, 
 		       "Sample %10s: Total candidate count (ee em mm all): %8u %8u %8u %8u."

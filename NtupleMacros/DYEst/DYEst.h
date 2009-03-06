@@ -5,6 +5,9 @@
 
 #include "Tools/LooperBase.h"
 
+#include "TFile.h"
+#include "TTree.h"
+
 // List of all cuts that can be applied.  The cuts are handled as a
 // bitfield; these labels define which bit corresponds to which cut.
 // The cut are tested and the corresponding bits are set for each
@@ -71,6 +74,8 @@
      CUT_MET_BALLANCE,
      CUT_MET_PROJECTED,
      CUT_PASS5_MET,
+
+CUT_PASS_TRIGGER,
 
      };
 
@@ -153,6 +158,20 @@ const static cuts_t baseline_cuts_nomet =
 //      (CUT_BIT(CUT_PASS_ADDZVETO)     ) | 
 //      (CUT_BIT(CUT_PASS_JETVETO_CALO) ) |
 //      (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)    ) |  
+     (CUT_BIT(CUT_PASS_JETVETO_JPT20)   ) |
+     (CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT)       );
+
+const static cuts_t baseline_cuts_nometsimple_nozveto =
+     (CUT_BIT(CUT_LT_PT)                ) |
+     (CUT_BIT(CUT_LL_PT)                ) |
+     (CUT_BIT(CUT_OPP_SIGN)             ) |
+     (CUT_BIT(CUT_LT_GOOD)              ) |
+     (CUT_BIT(CUT_LL_GOOD)              ) |
+     (CUT_BIT(CUT_LT_CALOISO)   ) |
+     (CUT_BIT(CUT_LL_CALOISO)   ) |
+//     (CUT_BIT(CUT_PASS_ZVETO)   ) |
+                                     (CUT_BIT(CUT_MET_BALLANCE)) |
+                                     (CUT_BIT(CUT_MET_PROJECTED)) |
      (CUT_BIT(CUT_PASS_JETVETO_JPT20)   ) |
      (CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT)       );
 
@@ -354,13 +373,36 @@ protected:
      NMinus1Hist        *hnm1_mll_1j_;
      NMinus1Hist        *hnm1_mll_2j_;
 
-     NMinus1Hist        *hnm1_met_0j_in_;
-     NMinus1Hist        *hnm1_met_1j_in_;
-     NMinus1Hist        *hnm1_met_2j_in_;
+     NMinus1Hist        *hnm1_met_in_0j_;
+     NMinus1Hist        *hnm1_met_in_1j_;
+     NMinus1Hist        *hnm1_met_in_2j_;
 
-     NMinus1Hist        *hnm1_met_0j_out_;
-     NMinus1Hist        *hnm1_met_1j_out_;
-     NMinus1Hist        *hnm1_met_2j_out_;
+     NMinus1Hist        *hnm1_met_out_0j_;
+     NMinus1Hist        *hnm1_met_out_1j_;
+     NMinus1Hist        *hnm1_met_out_2j_;
+
+     // file and tree (necessary)
+     TFile *outFile_;
+     TTree *outTree_;
+
+     // variables (you choose)
+     Int_t sample_id_;
+     Int_t hyp_type_;
+     Int_t n_jptjets_;
+     Float_t weight_;
+     Float_t tcmet_;
+     Float_t phi_tcmet_;
+     Float_t mll_;
+     Float_t pt_ll_trk_;
+     Float_t pt_ll_glb_;
+     Float_t phi_ll_;
+     Float_t pt_lt_trk_;
+     Float_t pt_lt_glb_;
+     Float_t phi_lt_;    
+
+     Int_t evt_lumiblock_;
+     Int_t evt_run_;
+     Int_t evt_event_;
 
 protected:
      // count the (weighted and unweighted) number of candidates passing our cuts
