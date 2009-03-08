@@ -136,7 +136,6 @@ Hypothesis filterByHypothesis( int candidate ) {
 // MAKE SURE TO CAL SUMW2 FOR EACH 1D HISTOGRAM BEFORE FILLING!!!!!!
 
 TH1F* hnJet[4];       // Njet distributions
-TH1F* hnJetfkw[4];       // Njet distributions
 TH1F* helePt[4];      // electron Pt
 TH1F* hmuPt[4];       // muon Pt
 TH1F* hmuPtFromSilicon[4];    // muon Pt (from tracker)
@@ -158,7 +157,6 @@ TH2F* hmetVsDilepMass[4];  // MET vs dilepton Mass
 TH2F* hmetOverPtVsDphi[4]; // MET/Lepton Pt vs DeltaPhi between MET and Lepton Pt
 TH2F* hdphillvsmll[4]; // delta phi between leptons vs dilepton mass
 TH1F* hptJet1[4];   // Pt of 1st jet
-TH1F* hptJetfkw[4];   // Pt of 1st jet
 TH1F* hptJet2[4];   // Pt of 2nd jet
 TH1F* hptJet3[4];   // Pt of 3rd jet
 TH1F* hptJet4[4];   // Pt of 4th jet
@@ -208,6 +206,27 @@ TH1F* hemMuRelIso;  // muon relative iso for emu final selection
 // fkw September 2008 final hist used for muon tags estimate of top bkg
 TH2F* hextramuonsvsnjet[4];
 
+//fkw February 2009, hists for Z study 
+TH1F* hsumjetet[4]; // sumjetet of jpt jets with et>20GeV
+TH1F* hmeff[4]; // m-effective = sumjetet + met
+TH1F* hht[4]; // ht = meff + lep1 pt + lep2 pt
+TH1F* halphaz[4]; // ratio of Z pT divided by meff
+
+TH2F* hptZvsmeff[4]; // 2d hist of pT of the Z versus meff
+TH2F* halphazvsmeff[4]; // 2d hist of alphaz versus meff
+
+TH1F* hzptGen[4]; //generator level Z pT distribution
+TH1F* hzptNoIso[4]; //reconstruction level Z pT but without lepton isolation
+TH1F* hzptIso[4]; //reconstruction level after all lepton cuts, but no other.
+
+TH1F* hzmassGen[4]; //generator level Z mass distribution
+TH1F* hzmassNoIso[4]; //reconstruction level Z mass but without lepton isolation
+TH1F* hzmassIso[4]; //reconstruction level after all lepton cuts, but no other.
+
+TH2F* hdrvsptGen[4]; //dR vs Z pT within the Z mass window
+TH2F* hdrvsptNoIso[4]; //dR vs Z pT within the Z mass window
+TH2F* hdrvsptIso[4]; //dR vs Z pT within the Z mass window
+
 struct hypo_monitor{
   std::vector<std::pair<std::string,unsigned int> > counters;
   void count(unsigned int index, const char* name){
@@ -225,6 +244,7 @@ struct hypo_monitor{
     
 hypo_monitor monitor;
 
+/* not needed in this, just takes time to compile.
 void checkIsolation(int i_hyp, double weight){
   // LT
   if ( abs(cms2.hyp_lt_id()[i_hyp]) == 11 ) { 
@@ -336,6 +356,8 @@ void checkIsolationAfterSelections(int i_hyp, double weight){
     if ( goodElectronWithoutIsolation(iel) && goodMuonIsolated(imu) ) hemElRelIso->Fill( el_rel_iso(iel,true), weight );
     if ( goodElectronIsolated(iel,true) && goodMuonWithoutIsolation(imu) ) hemMuRelIso->Fill( mu_rel_iso(imu), weight );
   }
+
+*/
   /*
     unsigned int iLT = cms2.hyp_lt_index()[i_hyp];
     unsigned int iLL = cms2.hyp_ll_index()[i_hyp];
@@ -354,7 +376,7 @@ void checkIsolationAfterSelections(int i_hyp, double weight){
       }
     }
       */
-}
+//}
 
 void hypo (int i_hyp, double kFactor) 
 {
@@ -383,32 +405,25 @@ void hypo (int i_hyp, double kFactor)
      // check electron isolation and id (no selection at this point)
      //fkw checkIsolation(i_hyp, weight);
 
-     // Z mass veto using hyp_leptons for ee and mumu final states
-     if (cms2.hyp_type()[i_hyp] == 0 || cms2.hyp_type()[i_hyp] == 3) {
-       if (inZmassWindow(cms2.hyp_p4()[i_hyp].mass())) return;
-     }
-
      // Z veto using additional leptons in the event
      // if (additionalZveto()) return;
-     monitor.count(icounter++,"Total number of hypothesis after lepton pt + z vetos: ");
-     
-     // track corrected MET
-     const TVector3 trkCorr; // this is legacy bullshit. Needs to be an empty 3 vector now.
-     
-     if (!pass2Met(i_hyp, trkCorr)) return;
-     if (!pass4Met(i_hyp, trkCorr)) return;
-     monitor.count(icounter++,"Total number of hypothesis after lepton pt + z vetos + MET cuts: ");
-     
-     bool goodEvent = true;
 
-     unsigned int nJPT = nJPTs(i_hyp);
-     if (nJPT>0) goodEvent = false;
-     int countmus = numberOfExtraMuons(i_hyp,true);
-     // int countmus = numberOfExtraMuons(i_hyp);
-     int nExtraVetoMuons = numberOfExtraMuons(i_hyp);;
-     //fkw if (nExtraVetoMuons) goodEvent = false;
-     
-     //fkw if (goodEvent) checkIsolationAfterSelections(i_hyp, weight);
+     // only keep same flavor
+     if (!(cms2.hyp_type()[i_hyp] == 0 || cms2.hyp_type()[i_hyp] == 3)) return;
+
+     double dR = 0;
+     //Z pt plotted only if in Z-mass window
+     if (inZmassWindow(cms2.hyp_p4()[i_hyp].mass())) {
+	 hzptNoIso[myType]->Fill(cms2.hyp_p4()[i_hyp].pt(),weight);
+	 hzptNoIso[3]->Fill(cms2.hyp_p4()[i_hyp].pt(),weight);
+	 dR = dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.hyp_lt_p4()[i_hyp]);
+	 hdrvsptNoIso[myType]->Fill(dR,cms2.hyp_p4()[i_hyp].pt(),weight);
+	 hdrvsptNoIso[3]->Fill(dR,cms2.hyp_p4()[i_hyp].pt(),weight);
+     }
+     //Z mass plotted also outside Z mass window
+     hzmassNoIso[myType]->Fill(cms2.hyp_p4()[i_hyp].mass(),weight);
+     hzmassNoIso[3]->Fill(cms2.hyp_p4()[i_hyp].mass(),weight);
+
 
      // Muon quality cuts, including isolation
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) return;
@@ -417,17 +432,79 @@ void hypo (int i_hyp, double kFactor)
      // Electron quality cuts, including isolation
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_lt_index()[i_hyp],true) ) return;
      if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_ll_index()[i_hyp],true) ) return;
-     monitor.count(icounter++,"Total number of hypothesis after full lepton selection + z vetos + MET cuts: ");
-     
-     // trkjet veto
-     // if ( !passTrkJetVeto(i_hyp) ) return;
-     
-     // 2D hist for muon tag counting
-     hextramuonsvsnjet[myType]->Fill(countmus, nJPT, weight);
-     hextramuonsvsnjet[3]->Fill(countmus, nJPT, weight);
-     
-     if ( ! goodEvent ) return;
 
+     monitor.count(icounter++,"Total number of hypothesis after full lepton selection + z requirement: ");
+
+     //Z pt plotted only if in Z-mass window
+     if (inZmassWindow(cms2.hyp_p4()[i_hyp].mass())) {
+	 hzptIso[myType]->Fill(cms2.hyp_p4()[i_hyp].pt(),weight);
+	 hzptIso[3]->Fill(cms2.hyp_p4()[i_hyp].pt(),weight);
+	 dR = dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.hyp_lt_p4()[i_hyp]);
+	 hdrvsptIso[myType]->Fill(dR,cms2.hyp_p4()[i_hyp].pt(),weight);
+	 hdrvsptIso[3]->Fill(dR,cms2.hyp_p4()[i_hyp].pt(),weight);
+     }
+     //Z mass plotted also outside Z mass window
+     hzmassIso[myType]->Fill(cms2.hyp_p4()[i_hyp].mass(),weight);
+     hzmassIso[3]->Fill(cms2.hyp_p4()[i_hyp].mass(),weight);
+
+     // Z mass requirement 
+     if (!inZmassWindow(cms2.hyp_p4()[i_hyp].mass())) return;
+
+     monitor.count(icounter++,"Total number of hypothesis after lepton pt + z requirement: ");
+
+     //simple 50GeV met cut
+     if( cms2.evt_tcmet() < 50.0 ) return;
+     
+     monitor.count(icounter++,"Total number of hypothesis after full lepton selection + z requirement + MET 50GeV cut: ");
+     
+     //calculate sumJetET for JPT jets, excluding hypothesis electrons
+     double jetet = 20;
+     double jeteta = 3.0;
+     double sumJetEt = 0.0;
+     for (unsigned int jj=0; jj < cms2.jpts_p4().size(); ++jj) {
+
+       if ((abs(cms2.hyp_lt_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],cms2.jpts_p4()[jj]) < 0.4)||
+           (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.jpts_p4()[jj]) < 0.4)
+           ) continue;
+
+       TLorentzVector p(cms2.jpts_p4()[jj].Px(), cms2.jpts_p4()[jj].Py(), cms2.jpts_p4()[jj].Pz(), cms2.jpts_p4()[jj].E());
+       if (p.Perp() < jetet) continue;
+       if (fabs(p.Eta()) > jeteta) continue;
+       sumJetEt = sumJetEt+p.Perp();
+     }
+     double meff = sumJetEt+cms2.evt_tcmet();
+     double ht = meff+cms2.hyp_lt_p4()[i_hyp].pt()+cms2.hyp_ll_p4()[i_hyp].pt();
+     double alphaZ = cms2.hyp_p4()[i_hyp].pt()/meff;
+
+     //plot sumJetEt, meff, ht, alphaZ in 1D
+     hsumjetet[myType]->Fill(sumJetEt,weight);
+     hsumjetet[3]->Fill(sumJetEt,weight);
+     hmeff[myType]->Fill(meff,weight);
+     hmeff[3]->Fill(meff,weight);
+     hht[myType]->Fill(ht,weight);
+     hht[3]->Fill(ht,weight);
+
+     //plot pt of Z versus meff
+     hptZvsmeff[myType]->Fill(cms2.hyp_p4()[i_hyp].pt(),meff,weight);
+     hptZvsmeff[3]->Fill(cms2.hyp_p4()[i_hyp].pt(),meff,weight);
+     //plot alphaZ versus meff 
+     halphazvsmeff[myType]->Fill(alphaZ,meff,weight);
+     halphazvsmeff[3]->Fill(alphaZ,meff,weight);
+
+     if( meff < 400.0 ) return;
+     monitor.count(icounter++,"Total number of hypothesis after full lepton selection + z vetos + MET cut + meff cut : ");
+
+     halphaz[myType]->Fill(alphaZ,weight);
+     halphaz[3]->Fill(alphaZ,weight);
+
+     if( alphaZ > 0.5 ) return;
+     monitor.count(icounter++,"Total number of hypothesis after full lepton selection + z vetos + MET cut + meff cut + alphaZ cut: ");
+
+
+     // 2D hist for muon tag counting
+     //hextramuonsvsnjet[myType]->Fill(countmus, nJPT, weight);
+     //hextramuonsvsnjet[3]->Fill(countmus, nJPT, weight);
+     
      // -------------------------------------------------------------------//
      // If we made it to here, we passed all cuts and we are ready to fill //
      // -------------------------------------------------------------------//
@@ -440,14 +517,6 @@ void hypo (int i_hyp, double kFactor)
      // jet count
      hnJet[myType]->Fill(cms2.hyp_njets()[i_hyp], weight);
      hnJet[3]->Fill(cms2.hyp_njets()[i_hyp], weight);
-
-     vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > fkw_hyp_jets_p4(cms2.hyp_jets_p4()[i_hyp]);
-     hnJetfkw[myType]->Fill(fkw_hyp_jets_p4.size(), weight);
-     hnJetfkw[3]->Fill(fkw_hyp_jets_p4.size(), weight);
-     for ( unsigned int jj=0; jj<fkw_hyp_jets_p4.size(); ++jj) {
-	  hptJetfkw[myType]->Fill(fkw_hyp_jets_p4[jj].Pt(), weight);
-	  hptJetfkw[3]->Fill(fkw_hyp_jets_p4[jj].Pt(), weight);
-     }
      
      // lepton Pt
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) helePt[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
@@ -682,8 +751,6 @@ int ScanChain( TChain* chain, enum Sample sample ) {
 
     hnJet[i] = new TH1F(Form("%s_hnJet_%s",prefix,suffix[i]),Form("%s_nJet_%s",prefix,suffix[i]),
 			5,0.,5.);	
-    hnJetfkw[i] = new TH1F(Form("%s_hnJetfkw_%s",prefix,suffix[i]),Form("%s_nJetfkw_%s",prefix,suffix[i]),
-			5,0.,5.);	
     helePt[i] = new TH1F(Form("%s_helePt_%s",prefix,suffix[i]),Form("%s_elePt_%s",prefix,suffix[i]),
 			       150,0.,150.);
     hmuPt[i]  = new TH1F(Form("%s_hmuPt_%s",prefix,suffix[i]),Form("%s_muPt_%s",prefix,suffix[i]),
@@ -726,8 +793,6 @@ int ScanChain( TChain* chain, enum Sample sample ) {
     hdphillvsmll[i] = new TH2F(Form("%s_dphillvsmll_%s",prefix,suffix[i]),
 			       Form("%s_dphillvsmll_%s",prefix,suffix[i]),
 			       100,10.,210.,50,0., TMath::Pi());
-    hptJetfkw[i] = new TH1F(Form("%s_hptJetfkw_%s",prefix,suffix[i]),Form("%s_ptJetfkw_%s",prefix,suffix[i]),
-			  100, 0., 100.);
     hptJet1[i] = new TH1F(Form("%s_hptJet1_%s",prefix,suffix[i]),Form("%s_ptJet1_%s",prefix,suffix[i]),
 			  100, 0., 300.);
     hptJet2[i] = new TH1F(Form("%s_hptJet2_%s",prefix,suffix[i]),Form("%s_ptJet2_%s",prefix,suffix[i]),
@@ -763,9 +828,58 @@ int ScanChain( TChain* chain, enum Sample sample ) {
 			       Form("%s_extramuonsvsnjet_%s",prefix,suffix[i]),
 			       10,0.0,10.0,10,0.0,10.0);
 
+    // fkw February 2009 hists for Z study in LM
+    hsumjetet[i] = new TH1F(Form("%s_hsumjetet_%s",prefix,suffix[i]),Form("%s_hsumjetet_%s",prefix,suffix[i]),
+			     100, 0., 2000.);
+    hmeff[i] = new TH1F(Form("%s_hmeff_%s",prefix,suffix[i]),Form("%s_hmeff_%s",prefix,suffix[i]),
+			     100, 0., 2000.);
+    hht[i] = new TH1F(Form("%s_hht_%s",prefix,suffix[i]),Form("%s_hht_%s",prefix,suffix[i]),
+			     100, 0., 2000.);
+    halphaz[i] = new TH1F(Form("%s_halphaz_%s",prefix,suffix[i]),Form("%s_halphaz_%s",prefix,suffix[i]),
+			     100, 0., 1.);
+    hptZvsmeff[i] = new TH2F(Form("%s_hptZvsmeff_%s",prefix,suffix[i]),
+				Form("%s_ptZvsmeff_%s",prefix,suffix[i]),
+				100,0.,500.,100,0.,2000.);
+    halphazvsmeff[i] = new TH2F(Form("%s_halphazvsmeff_%s",prefix,suffix[i]),
+				Form("%s_alphazvsmeff_%s",prefix,suffix[i]),
+				100,0.,1.,100,0.,2000.);
+
+    hzptGen[i] = new TH1F(Form("%s_hzptGen_%s",prefix,suffix[i]),Form("%s_hzptGen_%s",prefix,suffix[i]),
+			     100, 0., 500.);
+    hzptNoIso[i] = new TH1F(Form("%s_hzptNoIso_%s",prefix,suffix[i]),Form("%s_hzptNoIso_%s",prefix,suffix[i]),
+			     100, 0., 500.);
+    hzptIso[i] = new TH1F(Form("%s_hzptIso_%s",prefix,suffix[i]),Form("%s_hzptIso_%s",prefix,suffix[i]),
+			     100, 0., 500.);
+
+    hzmassGen[i] = new TH1F(Form("%s_hzmassGen_%s",prefix,suffix[i]),Form("%s_hzmassGen_%s",prefix,suffix[i]),
+			     100, 30., 130.);
+    hzmassNoIso[i] = new TH1F(Form("%s_hzmassNoIso_%s",prefix,suffix[i]),Form("%s_hzmassNoIso_%s",prefix,suffix[i]),
+			     100, 30., 130.);
+    hzmassIso[i] = new TH1F(Form("%s_hzmassIso_%s",prefix,suffix[i]),Form("%s_hzmassIso_%s",prefix,suffix[i]),
+			     100, 30., 130.);
+    hdrvsptGen[i] = new TH2F(Form("%s_hdrvsptGen_%s",prefix,suffix[i]),
+				Form("%s_drvsptGen_%s",prefix,suffix[i]),
+				100,0.,3.15,100,0.,500.);
+    hdrvsptNoIso[i] = new TH2F(Form("%s_hdrvsptNoIso_%s",prefix,suffix[i]),
+				Form("%s_drvsptNoIso_%s",prefix,suffix[i]),
+				100,0.,3.15,100,0.,500.);
+    hdrvsptIso[i] = new TH2F(Form("%s_hdrvsptIso_%s",prefix,suffix[i]),
+				Form("%s_drvsptIso_%s",prefix,suffix[i]),
+				100,0.,3.15,100,0.,500.);
+
+    hsumjetet[i]->Sumw2();
+    hmeff[i]->Sumw2();
+    hht[i]->Sumw2();
+    halphaz[i]->Sumw2();
+
+    hzptGen[i]->Sumw2();
+    hzptNoIso[i]->Sumw2();
+    hzptIso[i]->Sumw2();
+    hzmassGen[i]->Sumw2();
+    hzmassNoIso[i]->Sumw2();
+    hzmassIso[i]->Sumw2();
 
     hnJet[i]->Sumw2();
-    hnJetfkw[i]->Sumw2();
     helePt[i]->Sumw2();
     hmuPt[i]->Sumw2();
     hmuPtFromSilicon[i]->Sumw2();
@@ -781,7 +895,6 @@ int ScanChain( TChain* chain, enum Sample sample ) {
     hdilPt[i]->Sumw2();
     hmet[i]->Sumw2();
     hmetPhi[i]->Sumw2();
-    hptJetfkw[i]->Sumw2();
     hptJet1[i]->Sumw2();
     hptJet2[i]->Sumw2();
     hptJet3[i]->Sumw2();
@@ -963,7 +1076,48 @@ int ScanChain( TChain* chain, enum Sample sample ) {
 	    //Note: top = +-6, W = +-24, b = +-5
 	    //cout << " Event = " << event << endl;
 	    // fkw, end of per event filling of histos.
-	    
+
+	    //fkw: here comes the generator plots -> before any cuts are applied !!!
+	    float weight = cms2.evt_scale1fb() * kFactor;
+	    double genzmass =0;
+	    double genzpt = 0;
+	    int lplus = 0;
+	    int lminus = 0;
+	    for (unsigned int i=0; i<cms2.genps_p4().size(); ++i){
+	      if (cms2.genps_id()[i] == -11) lplus = i;
+	      if (cms2.genps_id()[i] == 11) lminus = i;
+	      if (cms2.genps_id()[i] == -13) lplus = i;
+	      if (cms2.genps_id()[i] == 13) lminus = i;
+	      //if (cms2.genps_id()[i] == 23){//found the Z
+	      // genzmass = cms2.genps_p4()[i].mass();
+	      // genzpt = cms2.genps_p4()[i].pt();
+	      //}     
+	    }
+	    TLorentzVector p(cms2.genps_p4()[lplus].Px()+cms2.genps_p4()[lminus].Px(), 
+			     cms2.genps_p4()[lplus].Py()+cms2.genps_p4()[lminus].Py(), 
+			     cms2.genps_p4()[lplus].Pz()+cms2.genps_p4()[lminus].Pz(), 
+			     cms2.genps_p4()[lplus].E()+cms2.genps_p4()[lminus].E());
+	    genzpt = p.Perp();
+	    genzmass = p.M();
+	    double dR = dRbetweenVectors(cms2.genps_p4()[lplus],cms2.genps_p4()[lminus]);
+
+	    int myType = 99;
+	    if( abs(cms2.genps_id()[lplus]) == 11 ) myType = 0;
+	    if( abs(cms2.genps_id()[lplus]) == 13 ) myType = 1;
+	    if (myType == 99) {
+	      std::cout << "YUK:  unknown dilepton type = " << cms2.genps_id()[lplus] << std::endl;
+	      return -1;
+	    }
+ 
+	    hzmassGen[myType]->Fill(genzmass,weight);     
+	    hzmassGen[3]->Fill(genzmass,weight);     
+	    if( inZmassWindow(genzmass) ) {//pt and dr vs pt hists only fille dif in zmass window
+	      hzptGen[myType]->Fill(genzpt,weight);     
+	      hzptGen[3]->Fill(genzpt,weight);     
+	      hdrvsptGen[myType]->Fill(dR,genzpt,weight);
+	      hdrvsptGen[3]->Fill(dR,genzpt,weight);
+	    }
+
 	    // loop over hypothesis candidates
 	    unsigned int nHyps = cms2.hyp_type().size();
 	    for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {

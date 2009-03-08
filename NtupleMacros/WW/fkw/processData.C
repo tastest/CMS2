@@ -23,18 +23,21 @@
 //==============================================================
 {
 // Output file
-const char* outFile = "processed_data_tag.root";
+const char* outFile = "processed_data_tag_boostedZstudy.root";
 
 // Flags for files to run over
-bool runWW    = true;
-bool runWZ    = true;
-bool runZZ    = true;
-bool runWjets = true;
+bool runWW    = false;
+bool runWZ    = false;
+bool runZZ    = false;
+bool runWjets = false;
 bool runDYee  = true;
 bool runDYmm  = true;
 bool runDYtt  = true;
-bool runttbar = true;
-bool runtW    = true;
+bool runttbar = false;
+bool runtW    = false;
+bool runLM1   = false;
+bool runLM4   = false;
+bool runLM8   = false;
 
 // Load various tools
 gROOT->SetMacroPath((string(gROOT->GetMacroPath()) + ":" + "../../Tools/").c_str());
@@ -49,58 +52,74 @@ gROOT->ProcessLine(".x setup.C");
  }
  dataset = gSystem->Getenv("CMS2_NTUPLE_LOCATION");
  
+//LM1 file
+TChain *fLM1 = new TChain("Events");
+if (runLM1) {
+  fLM1->Add((dataset+"/cms2-V01-02-06/SUSY_LM1-sftsht/merged_ntuple*.root").c_str());
+}
+//LM4 file
+TChain *fLM4 = new TChain("Events");
+if (runLM4) {
+  fLM4->Add((dataset+"/cms2-V01-02-06/SUSY_LM4-sftsht/merged_ntuple*.root").c_str());
+}
+//LM8 file
+TChain *fLM8 = new TChain("Events");
+if (runLM8) {
+  fLM8->Add((dataset+"/cms2-V01-02-06/SUSY_LM8-sftsht/merged_ntuple*.root").c_str());
+}
+
 //WW file
 TChain *fWW = new TChain("Events");
 if (runWW) {
-  fWW->Add((dataset+"/cms2-V00-04-00/merge_WW.root").c_str());
+  fWW->Add((dataset+"/cms2-V01-02-06/WW_2l_Summer08_IDEAL_V9_v2/merged_ntuple.root").c_str());
 }
 
 //WZ file
 TChain *fWZ = new TChain("Events");
 if (runWZ) {
-  fWZ->Add((dataset+"/cms2-V00-05-00/merge_WZ.root").c_str());
+  fWZ->Add((dataset+"/cms2-V01-02-06/WZ_3l_Summer08_IDEAL_V9_v2/merged_ntuple.root").c_str());
 }
 
 //ZZ file
 TChain *fZZ = new TChain("Events");
 if (runZZ) {
-  fZZ->Add((dataset+"/cms2-V00-05-00/merge_ZZ.root").c_str());
+  fZZ->Add((dataset+"/cms2-V01-02-06/ZZ_2l2n_Summer08_IDEAL_V9_v2/merged_ntuple.root").c_str());
 }
 
 //Wjets file
 TChain *fWjets = new TChain("Events");
 if (runWjets) {
-  fWjets->Add((dataset+"/cms2-V00-04-01/merge_Wjet.root").c_str());
+  fWjets->Add((dataset+"/cms2-V01-02-06/WJets-madgraph_Fall08_IDEAL_V9_v1/merged_ntuple*.root").c_str());
 }
 
 //DYee file
 TChain *fDYee = new TChain("Events");
 if (runDYee) {
-  fDYee->Add((dataset+"/cms2-V00-04-01/merge_DY.root").c_str());
+  fDYee->Add((dataset+"/cms2-V01-02-06/ZJets-madgraph_Fall08_IDEAL_V9_v1/merged_ntuple*.root").c_str());
 }
 
 //DYmm file
 TChain *fDYmm = new TChain("Events");
 if (runDYmm) {
-  fDYmm->Add((dataset+"/cms2-V00-04-01/merge_DY.root").c_str());
+  fDYmm->Add((dataset+"/cms2-V01-02-06/ZJets-madgraph_Fall08_IDEAL_V9_v1/merged_ntuple*.root").c_str());
 }
 
 //DYtt file
 TChain *fDYtt = new TChain("Events");
 if (runDYtt) {
-  fDYtt->Add((dataset+"/cms2-V00-04-01/merge_DY.root").c_str());
+  fDYtt->Add((dataset+"/cms2-V01-02-06/ZJets-madgraph_Fall08_IDEAL_V9_v1/merged_ntuple*.root").c_str());
 }
 
 //ttbar file
 TChain *fttbar = new TChain("Events");
 if (runttbar) {
-  fttbar->Add((dataset+"/cms2-V00-04-01/merge_ttbar.root").c_str());
+  fttbar->Add((dataset+"/cms2-V01-02-06/TTJets-madgraph_Fall08_IDEAL_V9_v1/merged_ntuple*.root").c_str());
 }
 
 //tW file
 TChain *ftW = new TChain("Events");
 if (runtW) {
-  ftW->Add((dataset+"/cms2-V00-04-00/merge_tW.root").c_str());
+  ftW->Add((dataset+"/cms2-V01-02-06/SingleTop_tWChannel-madgraph-LHE/merged_ntuple.root").c_str());
 }
 
 // Define colors numbers:
@@ -108,6 +127,22 @@ gStyle->SetPalette(1);
 enum EColor { kWhite, kBlack, kRed, kGreen, kBlue, kYellow, kMagenta, kCyan };
 
 // Process files one at a time, and color them as needed
+if (runLM1) {
+  cout << "Processing LM1.."<< endl;
+  ScanChain(fLM1, LM1);
+  hist::color("LM1", kGreen);
+}
+if (runLM4) {
+  cout << "Processing LM4.."<< endl;
+  ScanChain(fLM4, LM4);
+  hist::color("LM4", 50);
+}
+if (runLM8) {
+  cout << "Processing LM8.."<< endl;
+  ScanChain(fLM8, LM8);
+  hist::color("LM8", 60);
+}
+
 if (runWW) {
   cout << "Processing WW.."<< endl;
   ScanChain(fWW, WW);
