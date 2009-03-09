@@ -1,7 +1,13 @@
 {
-
+  
+  gROOT->SetStyle("Plain");
   gStyle->SetOptStat(1111111);
+  gStyle->SetOptTitle(0);
   gStyle->SetPalette(1,0);
+
+  gStyle->SetPadLeftMargin(0.12);
+  gStyle->SetPadBottomMargin(0.12);
+
   gROOT->UseCurrentStyle();
 
   int rebinvalue_pt = 1;
@@ -361,6 +367,16 @@
   elPt_observed->Rebin(rebinvalue_pt);
   elPt_observed->SetLineColor(kRed);
   elPt_observed->SetLineWidth(2.);
+  elPt_observed->SetName("observed");
+  elPt_observed->GetYaxis()->SetTitle("Events");
+  elPt_observed->GetYaxis()->SetTitleOffset(1.2);
+  elPt_observed->GetYaxis()->SetTitleSize(0.04);
+  elPt_observed->GetXaxis()->SetTitle("p_{T}^{electron} (GeV)");
+  elPt_observed->GetXaxis()->SetTitleOffset(1.2);
+  elPt_observed->GetXaxis()->SetTitleSize(0.04);
+  elPt_observed->SetMarkerStyle(20);
+  elPt_observed->SetMarkerColor(kRed);
+  elPt_observed->SetMarkerSize(1.1);
   TH1F* elPt_predicted = (TH1F*) ((_file2->Get("QCDpt30to80_elPt"))->Clone("elPt_predicted"));
   elPt_predicted->Add(((TH1F*)(_file0->Get("QCDpt80to170_elPt"))));
   elPt_predicted->Add(((TH1F*)(_file0->Get("QCDpt170to300_elPt"))));
@@ -370,26 +386,51 @@
   elPt_predicted->Rebin(rebinvalue_pt);
   elPt_predicted->SetLineColor(kBlue);
   elPt_predicted->SetLineWidth(2.);
-  elPt_predicted->Draw();
-  elPt_observed->Draw("sames");
+  elPt_predicted->SetName("predicted");
+  elPt_predicted->SetMarkerStyle(28);
+  elPt_predicted->SetMarkerColor(kBlue);
+  elPt_predicted->SetMarkerSize(1.2);
+//   elPt_predicted->Draw();
+//   elPt_observed->Draw("sames");
+  double MaxBuffer = elPt_predicted->GetMaximum();
+  elPt_observed->SetMaximum(1.2*MaxBuffer);
+  elPt_observed->Draw();
+  elPt_predicted->Draw("sames");
   elept->Update();
   TPaveStats *stats_elpt = (TPaveStats*)(elPt_predicted->GetListOfFunctions()->FindObject("stats"));
-  stats_elpt->SetX1NDC(0.78);
-  stats_elpt->SetY1NDC(0.43);
-  stats_elpt->SetX2NDC(0.98);
-  stats_elpt->SetY2NDC(0.71);
+  stats_elpt->SetX1NDC(0.8 );
+  stats_elpt->SetY1NDC(0.5 );
+  stats_elpt->SetX2NDC(0.99);
+  stats_elpt->SetY2NDC(0.74);
+  TPaveStats *stats_elpt2 = (TPaveStats*)(elPt_observed->GetListOfFunctions()->FindObject("stats"));
+  stats_elpt2->SetX1NDC(0.8 );
+  stats_elpt2->SetY1NDC(0.75);
+  stats_elpt2->SetX2NDC(0.99);
+  stats_elpt2->SetY2NDC(0.99);
   elept->Update();
-  TLatex *   lable_ref = new TLatex(0.55,0.75,"Red: observed");
-  lable_ref->SetNDC();
-  lable_ref->SetTextSize(0.04);
-  lable_ref->SetTextColor(kRed);
-  TLatex *   lable_new = new TLatex(0.55,0.7,"Blue: predicted");
-  lable_new->SetNDC();
-  lable_new->SetTextSize(0.04);
-  lable_new->SetTextColor(kBlue);
-  lable_new->Draw();
-  lable_ref->Draw();
+//   TLatex *   lable_ref = new TLatex(0.55,0.75,"");
+//   lable_ref->SetNDC();
+//   lable_ref->SetTextSize(0.04);
+//   lable_ref->SetTextColor(kRed);
+//   TLatex *   lable_new = new TLatex(0.55,0.7,"");
+//   lable_new->SetNDC();
+//   lable_new->SetTextSize(0.04);
+//   lable_new->SetTextColor(kBlue);
+//   lable_new->Draw();
+//   lable_ref->Draw();
+  leg = new TLegend(0.5,0.75,0.79,0.99,NULL,"brNDC");
+  leg->SetLineColor(1);
+  leg->SetLineStyle(1);
+  leg->SetLineWidth(1);
+  leg->SetFillColor(10);
+  leg->SetBorderSize(1);
+  //  leg->SetHeader(                               "L1 CSC trigger efficiency - With ME42");
+  leg->AddEntry(elPt_observed,       "Observed","lpf");
+  leg->AddEntry(elPt_predicted,      "Predicted","lpf");
+  leg->Draw();
+
   elept->SaveAs("ele_pt.png");
+  elept->Print("ele_pt.pdf");
 
   // Plot eta comparison
   eleeta->cd();
@@ -403,6 +444,16 @@
   elEta_observed->Rebin(rebinvalue_eta);
   elEta_observed->SetLineColor(kRed);
   elEta_observed->SetLineWidth(2.);
+  elEta_observed->SetName("observed");
+  elEta_observed->GetYaxis()->SetTitle("Events");
+  elEta_observed->GetYaxis()->SetTitleOffset(1.2);
+  elEta_observed->GetYaxis()->SetTitleSize(0.04);
+  elEta_observed->GetXaxis()->SetTitle("p_{T}^{electron} (GeV)");
+  elEta_observed->GetXaxis()->SetTitleOffset(1.2);
+  elEta_observed->GetXaxis()->SetTitleSize(0.04);
+  elEta_observed->SetMarkerStyle(20);
+  elEta_observed->SetMarkerColor(kRed);
+  elEta_observed->SetMarkerSize(1.1);
   TH1F* elEta_predicted = (TH1F*) ((_file2->Get("QCDpt30to80_elEta"))->Clone("elEta_predicted"));
   elEta_predicted->Add(((TH1F*)(_file0->Get("QCDpt80to170_elEta"))));
   elEta_predicted->Add(((TH1F*)(_file0->Get("QCDpt170to300_elEta"))));
@@ -412,17 +463,37 @@
   elEta_predicted->Rebin(rebinvalue_eta);
   elEta_predicted->SetLineColor(kBlue);
   elEta_predicted->SetLineWidth(2.);
-  elEta_predicted->Draw();
-  elEta_observed->Draw("sames");
+  elEta_predicted->SetName("predicted");
+  elEta_predicted->SetMarkerStyle(28);
+  elEta_predicted->SetMarkerColor(kBlue);
+  elEta_predicted->SetMarkerSize(1.2);
+  elEta_observed->Draw();
+  elEta_predicted->Draw("sames");
   eleeta->Update();
-  TPaveStats *stats_eleeta = (TPaveStats*)(elEta_predicted->GetListOfFunctions()->FindObject("stats"));
-  stats_eleeta->SetX1NDC(0.78);
-  stats_eleeta->SetY1NDC(0.43);
-  stats_eleeta->SetX2NDC(0.98);
-  stats_eleeta->SetY2NDC(0.71);
+  TPaveStats *stats_eleta = (TPaveStats*)(elEta_predicted->GetListOfFunctions()->FindObject("stats"));
+  stats_eleta->SetX1NDC(0.8 );
+  stats_eleta->SetY1NDC(0.5 );
+  stats_eleta->SetX2NDC(0.99);
+  stats_eleta->SetY2NDC(0.74);
+  TPaveStats *stats_eleta2 = (TPaveStats*)(elEta_observed->GetListOfFunctions()->FindObject("stats"));
+  stats_eleta2->SetX1NDC(0.8 );
+  stats_eleta2->SetY1NDC(0.75);
+  stats_eleta2->SetX2NDC(0.99);
+  stats_eleta2->SetY2NDC(0.99);
   eleeta->Update();
-  lable_new->Draw();
-  lable_ref->Draw();
+//   lable_new->Draw();
+//   lable_ref->Draw();
+  leg2 = new TLegend(0.5,0.75,0.79,0.99,NULL,"brNDC");
+  leg2->SetLineColor(1);
+  leg2->SetLineStyle(1);
+  leg2->SetLineWidth(1);
+  leg2->SetFillColor(10);
+  leg2->SetBorderSize(1);
+  //  leg2->SetHeader(                               "L1 CSC trigger efficiency - With ME42");
+  leg2->AddEntry(elEta_observed,       "Observed","lpf");
+  leg2->AddEntry(elEta_predicted,      "Predicted","lpf");
+  leg2->Draw();
   eleeta->SaveAs("ele_eta.png");
+  eleeta->Print("ele_eta.pdf");
 
 }
