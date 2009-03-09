@@ -372,7 +372,7 @@
   muPt_observed->GetYaxis()->SetTitle("Events");
   muPt_observed->GetYaxis()->SetTitleOffset(1.2);
   muPt_observed->GetYaxis()->SetTitleSize(0.04);
-  muPt_observed->GetXaxis()->SetTitle("p_{T}^{electron} (GeV)");
+  muPt_observed->GetXaxis()->SetTitle("p_{T}^{muon} (GeV)");
   muPt_observed->GetXaxis()->SetTitleOffset(1.2);
   muPt_observed->GetXaxis()->SetTitleSize(0.04);
   muPt_observed->SetMarkerStyle(20);
@@ -451,7 +451,7 @@
   muEta_observed->GetYaxis()->SetTitle("Events");
   muEta_observed->GetYaxis()->SetTitleOffset(1.2);
   muEta_observed->GetYaxis()->SetTitleSize(0.04);
-  muEta_observed->GetXaxis()->SetTitle("p_{T}^{electron} (GeV)");
+  muEta_observed->GetXaxis()->SetTitle("#eta^{muon} (GeV)");
   muEta_observed->GetXaxis()->SetTitleOffset(1.2);
   muEta_observed->GetXaxis()->SetTitleSize(0.04);
   muEta_observed->SetMarkerStyle(20);

@@ -37,7 +37,7 @@
   wjets_hmuoPt_em_observed->GetYaxis()->SetTitle("Events");
   wjets_hmuoPt_em_observed->GetYaxis()->SetTitleOffset(1.2);
   wjets_hmuoPt_em_observed->GetYaxis()->SetTitleSize(0.04);
-  wjets_hmuoPt_em_observed->GetXaxis()->SetTitle("p_{T}^{muoctron} (GeV)");
+  wjets_hmuoPt_em_observed->GetXaxis()->SetTitle("p_{T}^{muon} (GeV)");
   wjets_hmuoPt_em_observed->GetXaxis()->SetTitleOffset(1.2);
   wjets_hmuoPt_em_observed->GetXaxis()->SetTitleSize(0.04);
   wjets_hmuoPt_em_observed->SetMarkerStyle(20);
@@ -111,7 +111,7 @@
   wjets_hmuoEta_em_observed->GetYaxis()->SetTitle("Events");
   wjets_hmuoEta_em_observed->GetYaxis()->SetTitleOffset(1.2);
   wjets_hmuoEta_em_observed->GetYaxis()->SetTitleSize(0.04);
-  wjets_hmuoEta_em_observed->GetXaxis()->SetTitle("#eta^{muoctron}");
+  wjets_hmuoEta_em_observed->GetXaxis()->SetTitle("#eta^{muon}");
   wjets_hmuoEta_em_observed->GetXaxis()->SetTitleOffset(1.2);
   wjets_hmuoEta_em_observed->GetXaxis()->SetTitleSize(0.04);
   wjets_hmuoEta_em_observed->SetMarkerStyle(20);

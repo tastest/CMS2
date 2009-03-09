@@ -451,7 +451,7 @@
   elEta_observed->GetYaxis()->SetTitle("Events");
   elEta_observed->GetYaxis()->SetTitleOffset(1.2);
   elEta_observed->GetYaxis()->SetTitleSize(0.04);
-  elEta_observed->GetXaxis()->SetTitle("p_{T}^{electron} (GeV)");
+  elEta_observed->GetXaxis()->SetTitle("#eta^{electron} (GeV)");
   elEta_observed->GetXaxis()->SetTitleOffset(1.2);
   elEta_observed->GetXaxis()->SetTitleSize(0.04);
   elEta_observed->SetMarkerStyle(20);
