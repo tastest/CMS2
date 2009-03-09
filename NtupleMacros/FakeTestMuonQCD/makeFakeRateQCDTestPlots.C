@@ -366,6 +366,7 @@
   muPt_observed->Add(((TH1F*)(_file0->Get("QCDpt800toInf_muPt"))));
   muPt_observed->Rebin(rebinvalue_pt);
   muPt_observed->SetLineColor(kRed);
+  muPt_observed->SetFillColor(kWhite);
   muPt_observed->SetLineWidth(2.);
   muPt_observed->SetName("observed");
   muPt_observed->GetYaxis()->SetTitle("Events");
@@ -385,6 +386,7 @@
   muPt_predicted->Add(((TH1F*)(_file0->Get("QCDpt800toInf_muPt"))));
   muPt_predicted->Rebin(rebinvalue_pt);
   muPt_predicted->SetLineColor(kBlue);
+  muPt_predicted->SetFillColor(kWhite);
   muPt_predicted->SetLineWidth(2.);
   muPt_predicted->SetName("predicted");
   muPt_predicted->SetMarkerStyle(28);
@@ -443,6 +445,7 @@
   muEta_observed->Add(((TH1F*)(_file0->Get("QCDpt800toInf_muEta"))));
   muEta_observed->Rebin(rebinvalue_eta);
   muEta_observed->SetLineColor(kRed);
+  muEta_observed->SetFillColor(kWhite);
   muEta_observed->SetLineWidth(2.);
   muEta_observed->SetName("observed");
   muEta_observed->GetYaxis()->SetTitle("Events");
@@ -462,6 +465,7 @@
   muEta_predicted->Add(((TH1F*)(_file0->Get("QCDpt800toInf_muEta"))));
   muEta_predicted->Rebin(rebinvalue_eta);
   muEta_predicted->SetLineColor(kBlue);
+  muEta_predicted->SetFillColor(kWhite);
   muEta_predicted->SetLineWidth(2.);
   muEta_predicted->SetName("predicted");
   muEta_predicted->SetMarkerStyle(28);

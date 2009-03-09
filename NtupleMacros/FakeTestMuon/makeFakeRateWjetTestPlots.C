@@ -31,6 +31,7 @@
   TH1F* wjets_hmuoPt_em_observed = (TH1F*) ((_file0->Get("wjets_muPt_em"))->Clone("wjets_hmuoPt_em_observed"));
   wjets_hmuoPt_em_observed->Rebin(rebinvalue_pt);
   wjets_hmuoPt_em_observed->SetLineColor(kRed);
+  wjets_hmuoPt_em_observed->SetFillColor(kWhite);
   wjets_hmuoPt_em_observed->SetLineWidth(2.);
   wjets_hmuoPt_em_observed->SetName("observed");
   wjets_hmuoPt_em_observed->GetYaxis()->SetTitle("Events");
@@ -48,6 +49,7 @@
   TH1F* wjets_hmuoPt_em_predicted = (TH1F*) ((_file2->Get("wjets_muPt_em"))->Clone("wjets_hmuoPt_em_predicted"));
   wjets_hmuoPt_em_predicted->Rebin(rebinvalue_pt);
   wjets_hmuoPt_em_predicted->SetLineColor(kBlue);
+  wjets_hmuoPt_em_predicted->SetFillColor(kWhite);
   wjets_hmuoPt_em_predicted->SetLineWidth(2.);
   wjets_hmuoPt_em_predicted->SetName("predicted");
   wjets_hmuoPt_em_predicted->SetMarkerStyle(28);
@@ -103,6 +105,7 @@
   TH1F* wjets_hmuoEta_em_observed = (TH1F*) ((_file0->Get("wjets_muEta_em"))->Clone("wjets_hmuoEta_em_observed"));
   wjets_hmuoEta_em_observed->Rebin(rebinvalue_eta);
   wjets_hmuoEta_em_observed->SetLineColor(kRed);
+  wjets_hmuoEta_em_observed->SetFillColor(kWhite);
   wjets_hmuoEta_em_observed->SetLineWidth(2.);
   wjets_hmuoEta_em_observed->SetName("observed");
   wjets_hmuoEta_em_observed->GetYaxis()->SetTitle("Events");
@@ -120,6 +123,7 @@
   TH1F* wjets_hmuoEta_em_predicted = (TH1F*) ((_file2->Get("wjets_muEta_em"))->Clone("wjets_hmuoEta_em_predicted"));
   wjets_hmuoEta_em_predicted->Rebin(rebinvalue_eta);
   wjets_hmuoEta_em_predicted->SetLineColor(kBlue);
+  wjets_hmuoEta_em_predicted->SetFillColor(kWhite);
   wjets_hmuoEta_em_predicted->SetLineWidth(2.);
   wjets_hmuoEta_em_predicted->SetName("predicted");
   wjets_hmuoEta_em_predicted->SetMarkerStyle(28);
@@ -165,6 +169,7 @@
   TH1F* wjets_hnJet_em_observed = (TH1F*) ((_file0->Get("wjets_nJet_em"))->Clone("wjets_hnJet_em_observed"));
   //  wjets_hnJet_em_observed->Rebin(5);
   wjets_hnJet_em_observed->SetLineColor(kRed);
+  wjets_hnJet_em_observed->SetFillColor(kWhite);
   wjets_hnJet_em_observed->SetLineWidth(2.);
   wjets_hnJet_em_observed->SetName("observed");
   wjets_hnJet_em_observed->GetYaxis()->SetTitle("Events");
@@ -181,6 +186,7 @@
   TH1F* wjets_hnJet_em_predicted = (TH1F*) ((_file2->Get("wjets_nJet_em"))->Clone("wjets_hnJet_em_predicted"));
   //  wjets_hnJet_em_predicted->Rebin(5);
   wjets_hnJet_em_predicted->SetLineColor(kBlue);
+  wjets_hnJet_em_predicted->SetFillColor(kWhite);
   wjets_hnJet_em_predicted->SetLineWidth(2.);
   wjets_hnJet_em_predicted->SetName("predicted");
   wjets_hnJet_em_predicted->SetMarkerStyle(28);
@@ -238,6 +244,7 @@
   TH1F* wjets_hMET_em_observed = (TH1F*) ((_file0->Get("wjets_met_em"))->Clone("wjets_hMET_em_observed"));
   //  wjets_hMET_em_observed->Rebin(5);
   wjets_hMET_em_observed->SetLineColor(kRed);
+  wjets_hMET_em_observed->SetFillColor(kWhite);
   wjets_hMET_em_observed->SetLineWidth(2.);
   wjets_hMET_em_observed->SetName("observed");
   wjets_hMET_em_observed->GetYaxis()->SetTitle("Events");
@@ -254,6 +261,7 @@
   TH1F* wjets_hMET_em_predicted = (TH1F*) ((_file2->Get("wjets_met_em"))->Clone("wjets_hMET_em_predicted"));
   //  wjets_hMET_em_predicted->Rebin(5);
   wjets_hMET_em_predicted->SetLineColor(kBlue);
+  wjets_hMET_em_predicted->SetFillColor(kWhite);
   wjets_hMET_em_predicted->SetLineWidth(2.);
   wjets_hMET_em_predicted->SetName("predicted");
   wjets_hMET_em_predicted->SetMarkerStyle(28);

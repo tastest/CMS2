@@ -366,6 +366,7 @@
   elPt_observed->Add(((TH1F*)(_file0->Get("QCDpt800toInf_elPt"))));
   elPt_observed->Rebin(rebinvalue_pt);
   elPt_observed->SetLineColor(kRed);
+  elPt_observed->SetFillColor(kWhite);
   elPt_observed->SetLineWidth(2.);
   elPt_observed->SetName("observed");
   elPt_observed->GetYaxis()->SetTitle("Events");
@@ -385,6 +386,7 @@
   elPt_predicted->Add(((TH1F*)(_file0->Get("QCDpt800toInf_elPt"))));
   elPt_predicted->Rebin(rebinvalue_pt);
   elPt_predicted->SetLineColor(kBlue);
+  elPt_predicted->SetFillColor(kWhite);
   elPt_predicted->SetLineWidth(2.);
   elPt_predicted->SetName("predicted");
   elPt_predicted->SetMarkerStyle(28);
@@ -443,6 +445,7 @@
   elEta_observed->Add(((TH1F*)(_file0->Get("QCDpt800toInf_elEta"))));
   elEta_observed->Rebin(rebinvalue_eta);
   elEta_observed->SetLineColor(kRed);
+  elEta_observed->SetFillColor(kWhite);
   elEta_observed->SetLineWidth(2.);
   elEta_observed->SetName("observed");
   elEta_observed->GetYaxis()->SetTitle("Events");
@@ -462,6 +465,7 @@
   elEta_predicted->Add(((TH1F*)(_file0->Get("QCDpt800toInf_elEta"))));
   elEta_predicted->Rebin(rebinvalue_eta);
   elEta_predicted->SetLineColor(kBlue);
+  elEta_predicted->SetFillColor(kWhite);
   elEta_predicted->SetLineWidth(2.);
   elEta_predicted->SetName("predicted");
   elEta_predicted->SetMarkerStyle(28);
