@@ -113,4 +113,10 @@ int genpCountPDGId(int id0, int id1=-1, int id2=-1);
 int genpDileptonType();
 int eventDilIndexByWeightTTDil08(const std::vector<unsigned int>& goodHyps, int& strasbourgDilType, bool printDebug = false);
 
+//TTDil08 fake rate functions
+bool isNumElTTDil08(int iEl);
+bool isFakeableElTTDil08(int iEl);
+bool isNumMuTTDil08(int iMu);
+bool isFakeableMuTTDil08(int iMu);
+
 #endif

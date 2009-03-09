@@ -1,4 +1,3 @@
-
 //===========================================================
 //
 // Various selection functions are kept here
@@ -1661,3 +1660,137 @@ int eventDilIndexByWeightTTDil08(const std::vector<unsigned int>& goodHyps, int&
 }
 
 
+//-------------------------------------------------------------
+// TTDil08 Fake Rate selections (FO, numerator selections)
+//-------------------------------------------------------------
+
+
+//Is the electron a Numerator electron? 
+//Same selections as the TTDil selections for electrons
+bool isNumElTTDil08(int iEl) {
+  
+  Double_t pt = cms2.els_p4()[iEl].Pt();
+  Double_t eta = cms2.els_p4()[iEl].Eta();
+  
+   if( pt < 20)
+    return false;
+  if( fabs( eta ) > 2.4 )  
+    return false;
+  //reject if electron is close to muon;
+  if( cms2.els_closestMuon()[iEl] > -1) 
+    return false;
+
+  //now the numerator cuts
+  //add in track isolation
+  if( pt/(pt + cms2.els_pat_trackIso()[iEl]) < 0.9)
+    return false;
+  //add in calo isolation
+  if( pt/(pt + cms2.els_pat_caloIso()[iEl]) < 0.8)
+    return false;
+  //corrected d0 cut
+  if( fabs(cms2.els_d0corr()[iEl]) > 0.04) 
+    return false;
+  //electron id cut
+  if( ! cms2.els_looseId()[iEl] )
+    return false;
+
+  return true;
+}
+//------------------------------------------------------------
+// is it a FO electron?
+//------------------------------------------------------------
+bool isFakeableElTTDil08(int iEl) {
+  
+  Double_t pt = cms2.els_p4()[iEl].Pt();
+  Double_t eta = cms2.els_p4()[iEl].Eta();
+  
+  //base selections:
+  //make up some loose electron selection for now
+  if( pt < 20)
+    return false;
+  if( fabs( eta ) > 2.4 )  
+    return false;
+  //reject if electron is close to muon;
+  if( cms2.els_closestMuon()[iEl] > -1) 
+    return false;
+        
+  //check if the electron passes the FO
+  //object selections
+  //add in track isolation
+  if( pt/(pt + cms2.els_pat_trackIso()[iEl]) < 0.7)   //0.7 
+    return false;
+  //add in calo isolation
+  if( pt/(pt + cms2.els_pat_caloIso()[iEl]) < 0.6)   //0.6 
+    return false;
+        
+  return true;
+}
+
+//------------------------------------------------------------
+//is numerator muon?
+//------------------------------------------------------------
+
+bool isNumMuTTDil08(int iMu) {
+
+  Double_t pt = cms2.mus_p4()[iMu].Pt();
+  Double_t eta = cms2.mus_p4()[iMu].Eta();
+
+  if(!(2 & cms2.mus_type()[iMu]))
+    return false;
+
+  if( pt < 20)
+    return false;
+  if( fabs( eta ) > 2.4 )  
+    return false;
+
+  //now the numerator cuts
+  if( cms2.mus_gfit_chi2()[iMu]/cms2.mus_gfit_ndof()[iMu] > 10)
+    return false;
+  //add in track isolation
+  if( pt/(pt + cms2.mus_pat_trackIso()[iMu]) < 0.9)
+    return false;
+  //add in calo isolation
+  if( pt/(pt + cms2.mus_pat_caloIso()[iMu]) < 0.9)
+    return false;
+
+  //nHits cut
+  if( cms2.mus_validHits()[iMu] < 11 )
+    return false;
+
+  return true;
+}
+                            
+//------------------------------------------------------------
+//   is FO Mu
+//------------------------------------------------------------
+
+bool isFakeableMuTTDil08(int iMu) {
+
+  Double_t pt = cms2.mus_p4()[iMu].Pt();
+  Double_t eta = cms2.mus_p4()[iMu].Eta();
+  
+  //base selections:
+  //loose muon selection
+  //only globalMuons
+  if(!(2 & cms2.mus_type()[iMu]))
+    return false;
+  
+  if( pt < 20)
+    return false;
+  if( fabs( eta ) > 2.4 )  
+    return false;
+  if( cms2.mus_gfit_chi2()[iMu]/cms2.mus_gfit_ndof()[iMu] > 20)
+    return false;
+  //check if the muon passes the FO
+  //object selections
+  //add in track isolation
+  if( pt/(pt + cms2.mus_pat_trackIso()[iMu]) < 0.7) 
+    return false;
+  //add in calo isolation
+  if( pt/(pt + cms2.mus_pat_caloIso()[iMu]) < 0.7) 
+    return false;
+
+  return true;
+}
+
+//------------------------------------------------------------
