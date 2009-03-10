@@ -59,12 +59,9 @@
 	  CUT_MUON_TAGGED_WITHOUT_PTCUT,
 	  CUT_PASS_EXTRALEPTON_VETO,
 	  CUT_EL_BARREL,
-	  CUT_ELFAKE_FAKEABLE_OBJECT,
-	  CUT_ELFAKE_NUMERATOR,
-	  CUT_ELFAKE_NOT_NUMERATOR,
-	  CUT_MUFAKE_FAKEABLE_OBJECT,
-	  CUT_MUFAKE_NUMERATOR,
-	  CUT_MUFAKE_NOT_NUMERATOR,
+	  CUT_ELFAKE_FAKEABLE_OBJECT, // these are
+	  CUT_ELFAKE_NUMERATOR,	      // here for
+	  CUT_ELFAKE_NOT_NUMERATOR,   // historical reasons
 	  CUT_MORE_THAN_TWO_TRACKS,
 	  CUT_PASS_TRIGGER,
      };
@@ -433,13 +430,13 @@ public:
      FakeRateLooper (Sample s, cuts_t cuts, const char *fname = 0);
      virtual double	CandsPassingSystHi (enum DileptonHypType i) const { return cands_passing_syst_hi[i]; }
      virtual double	CandsPassingSystLo (enum DileptonHypType i) const { return cands_passing_syst_lo[i]; }
-     virtual double	FakeSyst (enum DileptonHypType i) const;
+//      virtual double	FakeSyst (enum DileptonHypType i) const;
 protected:
      virtual void	BookHistos 	();
      virtual cuts_t	DilepSelect 	(int idx);
      virtual void	FillDilepHistos (int idx);
-     virtual double	Weight		(int idx);
-     virtual double	Weight		(int idx, int n_sig_syst);
+//      virtual double	Weight		(int idx);
+//      virtual double	Weight		(int idx, int n_sig_syst);
 
 protected:
      double		cands_passing_syst_hi[4];

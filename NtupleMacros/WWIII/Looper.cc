@@ -278,50 +278,53 @@ cuts_t Looper::DilepSelect (int i_hyp)
 //      }
 
      //*****************************************************************
-     // special handling for the fake rate cuts for now, because they
-     // only work for emu
-     //*****************************************************************
-     if (myType != DILEPTON_EMU)
-	  return ret;
-     // in addition, for the muons, check that they pass tight+iso
-     // (since the fake rate is electron only right now)
+     // this logic is here for historical curiosity (fake rate for emu
+     // that assumes the mu is real and the e is fakeable) (if you
+     // switch this logic on, bad things will probably happen in your
+     // looper)
+     // *****************************************************************
+#if 0
+     if (myType == DILEPTON_EMU) {
+	  // in addition, for the muons, check that they pass tight+iso
+	  // (since the fake rate is electron only right now)
 #if 1
-     if (abs(cms2.hyp_lt_id()[i_hyp]) == 13) {
-	  if ((ret & (CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LT_ISO))) != 
-	      (CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LT_ISO)))
-	       return ret;
-     }
-     if (abs(cms2.hyp_ll_id()[i_hyp]) == 13) {
-	  if ((ret & (CUT_BIT(CUT_LL_GOOD) | CUT_BIT(CUT_LL_ISO))) != 
-	      (CUT_BIT(CUT_LL_GOOD) | CUT_BIT(CUT_LL_ISO)))
-	       return ret;
-     }
+	  if (abs(cms2.hyp_lt_id()[i_hyp]) == 13) {
+	       if ((ret & (CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LT_ISO))) != 
+		   (CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LT_ISO)))
+		    return ret;
+	  }
+	  if (abs(cms2.hyp_ll_id()[i_hyp]) == 13) {
+	       if ((ret & (CUT_BIT(CUT_LL_GOOD) | CUT_BIT(CUT_LL_ISO))) != 
+		   (CUT_BIT(CUT_LL_GOOD) | CUT_BIT(CUT_LL_ISO)))
+		    return ret;
+	  }
 #else
-     // require MC truth mu from W instead
-  if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !trueMuonFromW_WJets(cms2.hyp_lt_index()[i_hyp]) )
-       return ret;
-
-  if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !trueMuonFromW_WJets(cms2.hyp_ll_index()[i_hyp]) )
-       return ret;
+	  // require MC truth mu from W instead
+	  if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !trueMuonFromW_WJets(cms2.hyp_lt_index()[i_hyp]) )
+	       return ret;
+	  
+	  if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !trueMuonFromW_WJets(cms2.hyp_ll_index()[i_hyp]) )
+	       return ret;
 #endif
-
-     // now set the fake flags for the electron
-     if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
-	  if (isFakeable(cms2.hyp_lt_index()[i_hyp]))
-	       ret |= CUT_BIT(CUT_ELFAKE_FAKEABLE_OBJECT);
-	  if (isNumeratorElectron(cms2.hyp_lt_index()[i_hyp]))
-	       ret |= CUT_BIT(CUT_ELFAKE_NUMERATOR);
-	  else ret |= CUT_BIT(CUT_ELFAKE_NOT_NUMERATOR);
-     } else {
-	  if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
-	       if (isFakeable(cms2.hyp_ll_index()[i_hyp]))
+	  
+	  // now set the fake flags for the electron
+	  if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
+	       if (isFakeable(cms2.hyp_lt_index()[i_hyp]))
 		    ret |= CUT_BIT(CUT_ELFAKE_FAKEABLE_OBJECT);
-	       if (isNumeratorElectron(cms2.hyp_ll_index()[i_hyp]))
+	       if (isNumeratorElectron(cms2.hyp_lt_index()[i_hyp]))
 		    ret |= CUT_BIT(CUT_ELFAKE_NUMERATOR);
 	       else ret |= CUT_BIT(CUT_ELFAKE_NOT_NUMERATOR);
+	  } else {
+	       if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
+		    if (isFakeable(cms2.hyp_ll_index()[i_hyp]))
+			 ret |= CUT_BIT(CUT_ELFAKE_FAKEABLE_OBJECT);
+		    if (isNumeratorElectron(cms2.hyp_ll_index()[i_hyp]))
+			 ret |= CUT_BIT(CUT_ELFAKE_NUMERATOR);
+		    else ret |= CUT_BIT(CUT_ELFAKE_NOT_NUMERATOR);
+	       }
 	  }
      }
-
+#endif
      return ret;
 }
 
@@ -569,7 +572,7 @@ void Looper::End ()
 
      int ret = fprintf(logfile_, 
 		       "Sample %10s: Total candidate count (ee em mm all): %8u %8u %8u %8u."
-		       " Total weight %10.1f +- %10.1f %10.1f +- %10.1f %10.1f +- %10.1f %10.1f +- %10.1f\n",   
+		       " Total weight %10.3f +- %10.3f %10.3f +- %10.3f %10.3f +- %10.3f %10.3f +- %10.3f\n",   
 		       sample_.name.c_str(),
 		       CandsCount(DILEPTON_EE), CandsCount(DILEPTON_EMU), CandsCount(DILEPTON_MUMU), CandsCount(DILEPTON_ALL), 
 		       CandsPassing(DILEPTON_EE)  , RMS(DILEPTON_EE),  

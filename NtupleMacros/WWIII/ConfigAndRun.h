@@ -105,13 +105,14 @@ void printTable (const Looper **hists, int n, const char *fname,
 			 hists[j]->RMS(DileptonHypType(i));
 	       }
 	       is_background++;
+#if 0
 	       const FakeRateLooper *looper = 
 		    dynamic_cast<const FakeRateLooper *>(hists[j]);
 	       if (looper != 0) {
 		    fprintf(f, "(stat) &plusmn; %5.1f (fake)", 
 			    looper->FakeSyst(DileptonHypType(i)));
 	       }
-	       
+#endif
 	  }
 #if defined(TWIKI_OUTPUT)
 	  fprintf(f, "|  %10.1f &plusmn; %10.1f|\n", cands, sqrt(w2));
@@ -164,7 +165,7 @@ void printTableVertically (const Looper **hists, int n, const char *fname,
 #if defined(LATEX_OUTPUT)
 	       const double n = hists[j]->CandsPassing(DileptonHypType(i));
 #if defined(SUMMARY_OUTPUT)
-	       if (n < 10000)
+	       if (n < 100000)
 		    fprintf(f, "& %18.0f\\\\\n", n);
 	       else {
 		    const double expo = log(n) / log(10);
@@ -185,13 +186,14 @@ void printTableVertically (const Looper **hists, int n, const char *fname,
 			 hists[j]->RMS(DileptonHypType(i));
 	       }
 	       is_background++;
+#if 0
 	       const FakeRateLooper *looper = 
 		    dynamic_cast<const FakeRateLooper *>(hists[j]);
 	       if (looper != 0) {
 		    fprintf(f, "(stat) &plusmn; %5.1f (fake)", 
 			    looper->FakeSyst(DileptonHypType(i)));
 	       }
-	       
+#endif	       
 	  }
 #if defined(TWIKI_OUTPUT)
 	  fprintf(f, "|  *%30s*  ", "total");
@@ -201,7 +203,7 @@ void printTableVertically (const Looper **hists, int n, const char *fname,
 #if defined(SUMMARY_OUTPUT)
 	  fprintf(f, "\\hline\n %-30s  ", "total");
 	  const double n = cands;
-	  if (n < 10000)
+	  if (n < 100000)
 	       fprintf(f, "& %18.0f\\\\\n", n);
 	  else {
 	       const double expo = log(n) / log(10);
@@ -235,7 +237,8 @@ void printTableVertically (const Looper **hists, int n, const char *fname,
 // run<Looper>(baseline_cuts, "Results", 1 << LOOP_WW)				// produce table with default cuts, WW only
 // run<Looper>(baseline_cuts, "Results", 1 << LOOP_WW | 1 << LOOP_WJETS)	// produce table with default cuts, WW and Wjets only
 // run<Looper>(baseline_cuts, "Results")					// produce table with default cuts, all samples
-template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones = default_samples)
+template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones = default_samples,
+			    void (*print)(const Looper **, int, const char *, uint32) = printTable)
 {
      const string hist = name + ".root";
      const string tbl = name + ".tbl";
@@ -285,7 +288,7 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
 	  &looper_singletop_tchan          ,
 	  &looper_singletop_schan          ,
      };
-     printTableVertically(loopers, sizeof(loopers) / sizeof(L *), tbl.c_str(), which_ones);
+     print(loopers, sizeof(loopers) / sizeof(L *), tbl.c_str(), which_ones);
      return 0;
 }
 
@@ -430,7 +433,12 @@ int Wjets_FOs_Not_Numerator ()
 
 int Wjets_Fakerate ()
 {
-     return run<FakeRateLooper>(fakerate_denominator_not_numerator_cuts, "Wjets_Fakerate");
+     return run<FakeRateLooper>(baseline_cuts & 
+				~(CUT_BIT(CUT_PASS_TRIGGER) |
+				  CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD) |
+				  CUT_BIT(CUT_LT_ISO) | CUT_BIT(CUT_LL_ISO) |
+				  CUT_BIT(CUT_LT_CALOISO) | CUT_BIT(CUT_LL_CALOISO)), 
+				"Wjets_Fakerate");
 }
 
 int Wjets_Oingo ()
@@ -475,40 +483,40 @@ int Wjets_SS_Fakerate ()
 
 int Efficiency_base ()
 {
-     return run<EventCountingLooper>(eff_base, "Efficiency_base");
+     return run<EventCountingLooper>(eff_base, "Efficiency_base", default_samples, printTableVertically);
 }
 
 int Efficiency_trigger ()
 {
-     return run<EventCountingLooper>(eff_trigger, "Efficiency_trigger");
+     return run<EventCountingLooper>(eff_trigger, "Efficiency_trigger", default_samples, printTableVertically);
 }
 
 int Efficiency_tcmet ()
 {
-     return run<EventCountingLooper>(eff_tcmet, "Efficiency_tcmet");
+     return run<EventCountingLooper>(eff_tcmet, "Efficiency_tcmet", default_samples, printTableVertically);
 }
 
 int Efficiency_id ()
 {
-     return run<EventCountingLooper>(eff_id, "Efficiency_id");
+     return run<EventCountingLooper>(eff_id, "Efficiency_id", default_samples, printTableVertically);
 }
 
 int Efficiency_iso ()
 {
-     return run<EventCountingLooper>(eff_iso, "Efficiency_iso");
+     return run<EventCountingLooper>(eff_iso, "Efficiency_iso", default_samples, printTableVertically);
 }
 
 int Efficiency_jet ()
 {
-     return run<EventCountingLooper>(eff_jet, "Efficiency_jet");
+     return run<EventCountingLooper>(eff_jet, "Efficiency_jet", default_samples, printTableVertically);
 }
 
 int Efficiency_zveto ()
 {
-     return run<EventCountingLooper>(eff_zveto, "Efficiency_zveto");
+     return run<EventCountingLooper>(eff_zveto, "Efficiency_zveto", default_samples, printTableVertically);
 }
 
 int Efficiency_muveto ()
 {
-     return run<EventCountingLooper>(eff_muveto, "Efficiency_muveto");
+     return run<EventCountingLooper>(eff_muveto, "Efficiency_muveto", default_samples, printTableVertically);
 }
