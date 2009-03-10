@@ -554,8 +554,8 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 
 
 	// jet count
-	hnJet[myType]->Fill(new_hyp_njets, weight);
-	hnJet[3]->Fill(new_hyp_njets, weight);
+	hnJet[myType]->Fill(min(new_hyp_njets,4), weight);
+	hnJet[3]->Fill(min(new_hyp_njets,4), weight);
 
 	// lepton Pt
 	if (abs(id_lt) == 11) helePt[myType][arrNjets]->Fill(pt_lt, weight);
