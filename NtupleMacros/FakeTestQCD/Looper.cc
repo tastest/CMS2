@@ -98,6 +98,9 @@ cuts_t Looper::EventSelect ()
     if (isNumeratorElectron(ele)) {
       ret |= CUT_BIT(CUT_EL_NUMERATOR);
     }
+    if ( !trueGammaFromMuon(ele) ) {
+      ret |= CUT_BIT(CUT_NOT_TRUE_GAMMA_FROM_MUON);
+    }
   }
 
   if ( cms2.genps_pthat() < sample_.upper_pthat )

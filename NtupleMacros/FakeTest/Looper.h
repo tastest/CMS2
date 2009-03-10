@@ -5,6 +5,8 @@
 
 #include "Tools/LooperBase.h"
 #include "TDatabasePDG.h"
+#include <vector>
+#include <string>
 
 // List of all cuts that can be applied.  The cuts are handled as a
 // bitfield; these labels define which bit corresponds to which cut.
@@ -71,7 +73,11 @@ enum {
   CUT_TRUE_LT_EL_FROM_W_WJETS,
   CUT_TRUE_LL_EL_FROM_W,
   CUT_TRUE_LL_EL_FROM_W_WJETS,
+  CUT_NOT_TRUE_GAMMA_FROM_MUON,
+  CUT_NOT_TRUE_LT_GAMMA_FROM_MUON,
+  CUT_NOT_TRUE_LL_GAMMA_FROM_MUON,
 };
+
 
 //----------------------------------------------------------------------
 // Cut combinations for selections.  These are examples that are used
@@ -108,13 +114,15 @@ const static cuts_t baseline_cuts =
   (CUT_BIT(CUT_LT_GOOD)		) | 
   (CUT_BIT(CUT_LL_GOOD)		) | 
   (CUT_BIT(CUT_LT_CALOISO)	) |  
-  (CUT_BIT(CUT_LL_CALOISO)	);   
+  (CUT_BIT(CUT_LL_CALOISO)	) |
+  (CUT_BIT(CUT_NOT_TRUE_GAMMA_FROM_MUON));   
 
 // denominator object cuts for the fake rate prediction 
 const static cuts_t fakerate_denominator_cuts = (baseline_cuts & 
 						 ~(CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD) |
 						   CUT_BIT(CUT_LT_ISO) | CUT_BIT(CUT_LL_ISO) |
-						   CUT_BIT(CUT_LT_CALOISO) | CUT_BIT(CUT_LL_CALOISO))) |
+						   CUT_BIT(CUT_LT_CALOISO) | CUT_BIT(CUT_LL_CALOISO) |
+						   (CUT_BIT(CUT_NOT_TRUE_GAMMA_FROM_MUON))) ) |
   CUT_BIT(CUT_ELFAKE_FAKEABLE_OBJECT) 
 //  | CUT_BIT(CUT_EL_GOOD) |  CUT_BIT(CUT_EL_ISO) // removed 090226 IBL
 ;
@@ -205,6 +213,8 @@ protected:
   double	cands_passing_[4];
   double	cands_passing_w2_[4];
   unsigned int	cands_count_[4];
+//   std::vector<std::string> mybits;
+  
 
 };
 

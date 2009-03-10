@@ -18,6 +18,63 @@ Looper::Looper (Sample s, cuts_t c, const char *fname)
   memset(cands_passing_w2_	, 0, sizeof(cands_passing_w2_    ));
   memset(cands_count_		, 0, sizeof(cands_count_         ));
 
+// mybits.push_back(std::string("CUT_LT_PT"));
+// mybits.push_back(std::string("CUT_LL_PT"));
+// mybits.push_back(std::string("CUT_SAME_SIGN"));
+// mybits.push_back(std::string("CUT_OPP_SIGN"));
+// mybits.push_back(std::string("CUT_PASS2_MET"));
+// mybits.push_back(std::string("CUT_PASS4_MET"));
+// mybits.push_back(std::string("CUT_PASS2_TCMET"));
+// mybits.push_back(std::string("CUT_PASS4_TCMET"));
+// mybits.push_back(std::string("CUT_LT_GOOD"));
+// mybits.push_back(std::string("CUT_LL_GOOD"));
+// mybits.push_back(std::string("CUT_EL_GOOD"));
+// mybits.push_back(std::string("CUT_MU_GOOD"));
+// mybits.push_back(std::string("CUT_LT_ISO"));
+// mybits.push_back(std::string("CUT_LL_ISO"));
+// mybits.push_back(std::string("CUT_ONE_ISO"));
+// mybits.push_back(std::string("CUT_TWO_ISO"));
+// mybits.push_back(std::string("CUT_EL_ISO"));
+// mybits.push_back(std::string("CUT_MU_ISO"));
+// mybits.push_back(std::string("CUT_LT_CALOISO"));
+// mybits.push_back(std::string("CUT_LL_CALOISO"));
+// mybits.push_back(std::string("CUT_ONE_CALOISO"));
+// mybits.push_back(std::string("CUT_TWO_CALOISO"));
+// mybits.push_back(std::string("CUT_EL_CALOISO"));
+// mybits.push_back(std::string("CUT_PASS_ZVETO"));
+// mybits.push_back(std::string("CUT_IN_Z_WINDOW"));
+// mybits.push_back(std::string("CUT_MUON_TAGGED"));
+// mybits.push_back(std::string("CUT_ELFAKE_FAKEABLE_OBJECT"));
+// mybits.push_back(std::string("CUT_ELFAKE_NUMERATOR"));
+// mybits.push_back(std::string("CUT_ELFAKE_NOT_NUMERATOR"));
+// mybits.push_back(std::string("CUT_MUFAKE_FAKEABLE_OBJECT"));
+// mybits.push_back(std::string("CUT_MUFAKE_NUMERATOR"));
+// mybits.push_back(std::string("CUT_MUFAKE_NOT_NUMERATOR"));
+// mybits.push_back(std::string("CUT_MUFAKE_LT_FAKEABLE_OBJECT"));
+// mybits.push_back(std::string("CUT_MUFAKE_LT_NUMERATOR"));
+// mybits.push_back(std::string("CUT_MUFAKE_LT_NOT_NUMERATOR"));
+// mybits.push_back(std::string("CUT_MUFAKE_LL_FAKEABLE_OBJECT"));
+// mybits.push_back(std::string("CUT_MUFAKE_LL_NUMERATOR"));
+// mybits.push_back(std::string("CUT_MUFAKE_LL_NOT_NUMERATOR"));
+// mybits.push_back(std::string("CUT_ELFAKE_LT_FAKEABLE_OBJECT"));
+// mybits.push_back(std::string("CUT_ELFAKE_LT_NUMERATOR"));
+// mybits.push_back(std::string("CUT_ELFAKE_LT_NOT_NUMERATOR"));
+// mybits.push_back(std::string("CUT_ELFAKE_LL_FAKEABLE_OBJECT"));
+// mybits.push_back(std::string("CUT_ELFAKE_LL_NUMERATOR"));
+// mybits.push_back(std::string("CUT_ELFAKE_LL_NOT_NUMERATOR"));
+// mybits.push_back(std::string("CUT_MORE_THAN_TWO_TRACKS"));
+// mybits.push_back(std::string("CUT_TRUE_MU_FROM_W"));
+// mybits.push_back(std::string("CUT_TRUE_MU_FROM_W_WJETS"));
+// mybits.push_back(std::string("CUT_TRUE_LT_MU_FROM_W"));
+// mybits.push_back(std::string("CUT_TRUE_LT_MU_FROM_W_WJETS"));
+// mybits.push_back(std::string("CUT_TRUE_LL_MU_FROM_W"));
+// mybits.push_back(std::string("CUT_TRUE_LL_MU_FROM_W_WJETS"));
+// mybits.push_back(std::string("CUT_TRUE_EL_FROM_W"));
+// mybits.push_back(std::string("CUT_TRUE_EL_FROM_W_WJETS"));
+// mybits.push_back(std::string("CUT_TRUE_LT_EL_FROM_W"));
+// mybits.push_back(std::string("CUT_TRUE_LT_EL_FROM_W_WJETS"));
+// mybits.push_back(std::string("CUT_TRUE_LL_EL_FROM_W"));
+// mybits.push_back(std::string("CUT_TRUE_LL_EL_FROM_W_WJETS"));
 }
 
 void Looper::BookHistos ()
@@ -282,6 +339,12 @@ cuts_t Looper::DilepSelect (int i_hyp)
   if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && trueElectronFromW_WJets(cms2.hyp_ll_index()[i_hyp]) )
     ret |= CUT_BIT(CUT_TRUE_EL_FROM_W_WJETS) | CUT_BIT(CUT_TRUE_LL_EL_FROM_W_WJETS);
 
+  if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !trueGammaFromMuon(cms2.hyp_lt_index()[i_hyp]) )
+    ret |= CUT_BIT(CUT_NOT_TRUE_LT_GAMMA_FROM_MUON) | CUT_BIT(CUT_NOT_TRUE_GAMMA_FROM_MUON);
+
+  if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !trueGammaFromMuon(cms2.hyp_ll_index()[i_hyp]) )
+    ret |= CUT_BIT(CUT_NOT_TRUE_LL_GAMMA_FROM_MUON) | CUT_BIT(CUT_NOT_TRUE_GAMMA_FROM_MUON);
+
   // *****************************************************************
   // special handling for the fake rate cuts for now, because they
   // only work for emu
@@ -356,6 +419,14 @@ void Looper::FillDilepHistos (int i_hyp)
   // these are the cuts that the candidate passes:
   cuts_t cuts_passed = DilepSelect(i_hyp);
 
+//   ostringstream stream;
+
+//   if ( cms2.evt_event() == 104 && cms2.evt_lumiBlock() == 11188 ) {
+//     for ( unsigned int i = 0; i < 64; ++i ) {
+//       if ((cuts_passed & ( CUT_BIT(i) ) ) == ( CUT_BIT(i))) stream << "fulfills: " << mybits[i] << endl;
+//     }
+//   }
+    
   if ((cuts_passed & cuts_) == cuts_) {
     // every histogram needs to know what hypothesis he is 
     const enum DileptonHypType myType = hyp_typeToHypType(cms2.hyp_type()[i_hyp]);
@@ -368,6 +439,9 @@ void Looper::FillDilepHistos (int i_hyp)
     cands_passing_[DILEPTON_ALL] += weight;
     cands_passing_w2_[DILEPTON_ALL] += weight * weight;
     cands_count_[DILEPTON_ALL]++;
+
+
+//     stream << "Run: " << cms2.evt_run() << " event: " << cms2.evt_event() << " lumi: " << cms2.evt_lumiBlock() << endl;
 
     // jet count
     hnJet_[myType]->Fill(cms2.hyp_njets()[i_hyp], weight);
@@ -390,6 +464,9 @@ void Looper::FillDilepHistos (int i_hyp)
     hmet_[myType]->Fill(cms2.hyp_met()[i_hyp], weight);      
     hmet_[DILEPTON_ALL]->Fill(cms2.hyp_met()[i_hyp], weight);      
   }
+//   cout << stream.str();
+
+//   int ret = fprintf(logfile_, stream.str().c_str());
 }
 
 void Looper::FillTrilepHistos (int i_hyp)

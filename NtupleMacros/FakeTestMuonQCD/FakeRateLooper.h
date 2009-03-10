@@ -17,7 +17,7 @@ public:
   virtual void	End		();
   bool fillErrorInPrediction(TH1F* prediction,
 			     TH3F* predictionError,
-			     bool addStatisticalError = true);
+			     bool addStatisticalError = false);
   bool extractBins(TAxis *axis, unsigned int nBins, float* bins);
 protected:
   virtual void	        BookHistos 	();

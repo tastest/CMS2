@@ -119,4 +119,6 @@ bool isFakeableElTTDil08(int iEl);
 bool isNumMuTTDil08(int iMu);
 bool isFakeableMuTTDil08(int iMu);
 
+bool trueGammaFromMuon(int electron);
+
 #endif

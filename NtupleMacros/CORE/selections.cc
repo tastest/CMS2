@@ -1794,3 +1794,12 @@ bool isFakeableMuTTDil08(int iMu) {
 }
 
 //------------------------------------------------------------
+
+bool trueGammaFromMuon(int electron) {
+  // true gamma reconstructed as electron 
+  // gamma coming from muon
+  if(cms2.els_mc_id()[electron] == 22 && cms2.els_mc_motherid()[electron] == 13)
+    return true;
+
+  return false;
+}

@@ -19,6 +19,7 @@ enum {
   CUT_QCD_BIN_UPPER_PTHAT,
   CUT_EVEN,
   CUT_ODD,
+  CUT_NOT_TRUE_GAMMA_FROM_MUON,
 };
 
 //----------------------------------------------------------------------
@@ -47,7 +48,8 @@ enum {
 // define useful cut combinations here
 
 const static cuts_t observation_cuts = 
-  (CUT_BIT(CUT_EL_NUMERATOR));   
+  (CUT_BIT(CUT_EL_NUMERATOR)) |
+  (CUT_BIT(CUT_NOT_TRUE_GAMMA_FROM_MUON));   
 
 const static cuts_t observation_cuts_qcd_bins = 
   observation_cuts | (CUT_BIT(CUT_QCD_BIN_UPPER_PTHAT));   
