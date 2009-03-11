@@ -28,9 +28,9 @@ void printNJets(){
       double n1E = h1F->GetBinError(2);
       int nBins = h1F->GetNbinsX();
       double n2 = 0; 
-      for (int i=3; i<= nBins; ++i) n2+= h1F->GetBinContent(i);
+      for (int i=3; i<= nBins+1; ++i) n2+= h1F->GetBinContent(i);
       double n2E = 0; 
-      for (int i=3; i<= nBins; ++i) n2E += h1F->GetBinError(i)*h1F->GetBinError(i);
+      for (int i=3; i<= nBins+1; ++i) n2E += h1F->GetBinError(i)*h1F->GetBinError(i);
       n2E = sqrt(n2E);
       std::cout<<" | "<<Form("%9s",sampleNs->At(0)->GetName())
 	       <<" | "<<Form("%6.1f",n0) <<" &plusmn; "<<Form("%6.1f",n0E)
