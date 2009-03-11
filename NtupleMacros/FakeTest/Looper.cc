@@ -419,7 +419,7 @@ void Looper::FillDilepHistos (int i_hyp)
   // these are the cuts that the candidate passes:
   cuts_t cuts_passed = DilepSelect(i_hyp);
 
-//   ostringstream stream;
+  //   ostringstream stream;
 
 //   if ( cms2.evt_event() == 104 && cms2.evt_lumiBlock() == 11188 ) {
 //     for ( unsigned int i = 0; i < 64; ++i ) {
@@ -440,9 +440,10 @@ void Looper::FillDilepHistos (int i_hyp)
     cands_passing_w2_[DILEPTON_ALL] += weight * weight;
     cands_count_[DILEPTON_ALL]++;
 
-
-//     stream << "Run: " << cms2.evt_run() << " event: " << cms2.evt_event() << " lumi: " << cms2.evt_lumiBlock() << endl;
-
+//      stream << "******************************* Passed all cuts - Run: " << cms2.evt_run() << " event: " << cms2.evt_event() << " lumi: " << cms2.evt_lumiBlock() << endl;
+//     if(trueGammaFromMuon(cms2.hyp_lt_index()[i_hyp])){
+//      stream << "Passed all cuts and has e from gamma from mu: Run: " << cms2.evt_run() << " event: " << cms2.evt_event() << " lumi: " << cms2.evt_lumiBlock() << endl;
+//     }
     // jet count
     hnJet_[myType]->Fill(cms2.hyp_njets()[i_hyp], weight);
     hnJet_[DILEPTON_ALL]->Fill(cms2.hyp_njets()[i_hyp], weight);
@@ -464,7 +465,7 @@ void Looper::FillDilepHistos (int i_hyp)
     hmet_[myType]->Fill(cms2.hyp_met()[i_hyp], weight);      
     hmet_[DILEPTON_ALL]->Fill(cms2.hyp_met()[i_hyp], weight);      
   }
-//   cout << stream.str();
+//    cout << stream.str();
 
 //   int ret = fprintf(logfile_, stream.str().c_str());
 }
