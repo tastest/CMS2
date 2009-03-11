@@ -101,6 +101,7 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
   float kWZ       = 1.;
   float kZZ       = 1.;
   float kWjets    = 1.; //11850 pb, 980000 events processed
+  float kWcharm   = 1.1;
   float kDYee     = 1.;  //1230 pb,  970360 events processed
   float kDYmm     = 1.;  //1230 pb,  970360 events processed
   float kDYtautau = 1.;  //1230 pb,  970360 events processed
@@ -116,6 +117,7 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
   int preWZ       = 1;
   int preZZ       = 1;
   int preWjets    = 1;
+  int preWcharm   = 1;
   int preDYee     = 1;
   int preDYmm     = 1;
   int preDYtautau = 1;
@@ -131,6 +133,7 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
   bool runWZ       = true;
   bool runZZ       = true;
   bool runWjets    = true;
+  bool runWcharm   = false;
   bool runDYee     = true;
   bool runDYmm     = true;
   bool runDYtautau = true;
@@ -159,6 +162,9 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
   
   TChain* chWjets = new  TChain("Events");
   pickSkimIfExists(chWjets, "data/WJets-madgraph_Fall08_IDEAL_V9_v1/merged*.root", "");
+
+  TChain* chWcharm = new TChain("Events");
+  pickSkimIfExists(chWcharm, "data/Wc-madgraph_Fall08_IDEAL_V9_reco-v1/merged*.root", "");
 
   TChain* chDYtautau = new  TChain("Events");
   pickSkimIfExists(chDYtautau, "data/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged*.root", "_skimSimple2020tautau");
@@ -241,6 +247,12 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
     cout << "Processing Wjets.."<<endl;
     looper->ScanChain(chWjets,"wjets", kWjets, preWjets, oldjet, bitmask);
     hist::color("wjets", 40);
+  }
+
+  if (runWcharm) {
+    cout << "Processing Wcharm.." << endl;
+    looper->ScanChain(chWcharm, "wcharm", kWcharm, preWcharm, oldjet, bitmask);
+    hist::color("wcharm", 50);
   }
   if (runDYtautau) {
     cout << "Processing DY->tautau" << endl;
