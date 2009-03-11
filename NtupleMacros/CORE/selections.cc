@@ -1174,6 +1174,26 @@ double muonCalIsolationPAT(int index){
   return  pt/(pt+sum); 
 } 
 
+// met cut for ttbar dilepton analysis...
+// includes a boolean to switch to tcmet
+bool passMet_OF20_SF30(int hypIdx, bool useTcMet) {
+  float mymet;
+  if (useTcMet) {
+    mymet = cms2.evt_tcmet();
+  } else {
+    mymet = cms2.met_pat_metCor();
+  }
+  if  (cms2.hyp_type().at(hypIdx) == 0 || cms2.hyp_type().at(hypIdx) == 3) {
+    if (mymet < 30) return false;
+  }
+  
+  if (cms2.hyp_type().at(hypIdx) == 1 || cms2.hyp_type().at(hypIdx) == 2) {
+    if (mymet < 20) return false;
+  }
+  return true;
+}  
+//  ***** The following two functions should be deprecated *********************
+//  ***** and substituted by the preceeding one            *********************
 // event-level pat-met: emu met >20, mm,em met>30
 bool passPatMet_OF20_SF30(float metx, float mety, int hypIdx){
   float mymet = sqrt(metx*metx + mety*mety);
@@ -1192,7 +1212,8 @@ bool passPatMet_OF20_SF30(int hypIdx){
 			      cms2.met_pat_metCor()*sin(cms2.met_pat_metPhiCor()),
 			      hypIdx);
 }
-
+//**************************************************************************
+//**************************************************************************
 
 //-----------------------------------------------------------------------------------------------
 //New selections for the common TTDil working group
