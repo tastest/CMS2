@@ -186,12 +186,27 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
      compactConfig = compactConfig;
    }
 
+   bool useTcMet = ((cutsMask>>25)&1);
+
    bool metBaselineSelectionTTDil08 = ((cutsMask>>18)&1);
    if (metBaselineSelectionTTDil08){
-     std::cout<<"Apply TTDil08 baseline MET selection: use corrected pat-met emu met >20, mm,em met>30"<<std::endl;
-     compactConfig = compactConfig + "_preMet08";
+     if (useTcMet) {
+       std::cout<<"Apply TTDil08 baseline MET selection: use tcMET emu met >20, mm,em met>30"<<std::endl;
+       compactConfig = compactConfig + "_preTcMet08";
+     } else {
+       std::cout<<"Apply TTDil08 baseline MET selection: use corrected pat-met emu met >20, mm,em met>30"<<std::endl;
+       compactConfig = compactConfig + "_preMet08";
+     }
    }
    
+   // careful: tcmet switch is only allowed for metBaselineSelectionTTDil08
+   if (useTcMet) {
+     if (!metBaselineSelectionTTDil08){
+       std::cout<<" ***** tcmet is only allowed in conjunction with the TTDil08 baseline MET selection *** STOP"<<std::endl;
+       return 1;
+     }
+   }
+
    bool dilepMassVetoCutTTDil08 = ((cutsMask>>19)&1);
    if (dilepMassVetoCutTTDil08){
      std::cout<<"Apply Z mass veto on same flavor dils, use TTDil08 selections"<<std::endl;
@@ -222,13 +237,13 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
    bool corJES10ptUp = ((cutsMask>>23)&1);
    if(corJES10ptUp) {
      cout << "Jets are scaled 10% up" << endl;
-     compactConfig = "_jets10Up";
+     compactConfig = compactConfig + "_jets10Up";
   }
    
    bool corJES10ptDn = ((cutsMask>>24)&1);
    if(corJES10ptDn) {
      cout << "Jets are scaled 10% down" << endl;
-     compactConfig = "_jets10Dn";
+     compactConfig = compactConfig + "_jets10Dn";
    }
    
    if (corJES10ptUp && corJES10ptDn){
@@ -236,11 +251,25 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
      return 99;
    }
 
+   if ((corJES10ptUp || corJES10ptDn) && useTcMet) {
+     std::cout<<"*********************************************************************" <<std::endl;
+     std::cout<<"CAUTION: You are rescaling the jets by 10%, and you want to use tcMet" <<std::endl;
+     std::cout<<"         The met will NOT be rescaled in any way"                      <<std::endl;
+     std::cout<<"*********************************************************************" <<std::endl;
+   }
 
   float globalJESscaleRescale = 1.;
   if (corJES10ptUp)  globalJESscaleRescale = 1.1;
   if (corJES10ptDn)  globalJESscaleRescale = 0.9;
 
+  bool useJPT = ((cutsMask>>26)&1);
+  if (useJPT) {
+    if (oldjets) {
+      std::cout<<"Inconsistent config: JPT and oldjets requested: bailing"<<std::endl;
+      return 99;
+    }
+    compactConfig = compactConfig + "_JPT";
+  }
 
   std::cout<<"Compact config string is "<<compactConfig.c_str()<<std::endl;
 
@@ -375,8 +404,8 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
       
 	// ! for TTDil analysis this should be made for the event-qualifying hyp only
 	if (!fillMaxWeightDilOnly && metBaselineSelectionTTDil08){
-	  if (globalJESscaleRescale == 1 && ! passPatMet_OF20_SF30(hypIdx)) continue;
-	  if (globalJESscaleRescale != 1.){
+	  if (globalJESscaleRescale == 1 && ! passMet_OF20_SF30(hypIdx,useTcMet)) continue;
+	  if (globalJESscaleRescale != 1. && (!useTcMet)) {
 	    float metx = cms2.met_pat_metCor()*cos(cms2.met_pat_metPhiCor());
 	    float mety = cms2.met_pat_metCor()*sin(cms2.met_pat_metPhiCor());
 	    unsigned int nJ = cms2.jets_p4().size();
@@ -435,8 +464,8 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 
 	// ! event level cut here, can reset the eventPassed to false
 	if (fillMaxWeightDilOnly && metBaselineSelectionTTDil08){
-	  if (globalJESscaleRescale == 1. && ! passPatMet_OF20_SF30(maxWeightIndex)) continue;
-	  if (globalJESscaleRescale != 1.){
+	  if (globalJESscaleRescale == 1. && ! passMet_OF20_SF30(maxWeightIndex,useTcMet)) continue;
+	  if (globalJESscaleRescale != 1. && (!useTcMet)){
 	    float metx = cms2.met_pat_metCor()*cos(cms2.met_pat_metPhiCor());
 	    float mety = cms2.met_pat_metCor()*sin(cms2.met_pat_metPhiCor());
 	    unsigned int nJ = cms2.jets_p4().size();
@@ -518,7 +547,7 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	    //FIXME : this should be combined the same way as below
 	    jp4.push_back(blah);
 	  }
-	} else {
+	} else if (!useJPT) {
 	  // Look among the hyp_jets
 	  for (unsigned int ijet=0; ijet<(unsigned int)(cms2.hyp_njets().at(hypIdx)); ijet++) {
 	    float thisJetRescale = cms2.hyp_jets_emFrac().at(hypIdx).at(ijet) < 0.9 ? globalJESscaleRescale : 1.;
@@ -537,7 +566,31 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	      new_hyp_njets++;
 	    }
 	  }
+	} else {       
+	  // This is with useJPT=true oldjets=false....
+	  // we need to remove electron jets
+	  // also: remove muon jets since the JPT is a bit buggy in their treatment
+	  for (unsigned int ijet=0; ijet< cms2.evt_njpts(); ijet++) {
+
+            double deta = cms2.jpts_p4().at(ijet).eta() - cms2.hyp_ll_p4().at(hypIdx).eta();
+            double dphi = fabs(cms2.jpts_p4().at(ijet).phi() - cms2.hyp_ll_p4().at(hypIdx).phi());
+	    if (dphi > TMath::Pi()) dphi = TMath::TwoPi() - dphi;
+	    if (sqrt(deta*deta+dphi*dphi) < 0.4) continue;
+
+            deta = cms2.jpts_p4().at(ijet).eta() - cms2.hyp_lt_p4().at(hypIdx).eta();
+            dphi = fabs(cms2.jpts_p4().at(ijet).phi() - cms2.hyp_lt_p4().at(hypIdx).phi());
+	    if (dphi > TMath::Pi()) dphi = TMath::TwoPi() - dphi;
+	    if (sqrt(deta*deta+dphi*dphi) < 0.4) continue;
+
+	    float thisJetRescale = globalJESscaleRescale;
+	    blah = cms2.jpts_p4().at(ijet) * thisJetRescale;
+	    if (blah.pt() > 30 && abs(blah.eta()) < 2.4) {
+	      jp4.push_back(blah);
+	      new_hyp_njets++;
+	    }
+	  }
 	}
+
 	VofP4* new_hyp_jets_p4 = &jp4;
 			   
 	//     // Last chance to reject...

@@ -70,8 +70,12 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
   //applyTriggersTTDil08JanTrial       -> 2**21 mm -> HLT_Mu15_L1Mu7 || HLT_DoubleMu3
   //                                            ee -> HLT_IsoEle18_L1R || HLT_DoubleIsoEle12_L1R
   //                                            em -> HLT_IsoEle18_L1R || HLT_Mu15_L1Mu7 || HLT_IsoEle10_Mu10_L1R
-
-
+  // dilepAdditionalMassVetoCutTTDil08 -> 2**22
+  // corJES10ptDn                      -> 2**23 rescale JES by 10% up
+  // corJES10ptUp                      -> 2**24 rescale JES by 10% up
+  // useTcMet                          -> 2**25 use tcmet
+  // useJPT                            -> 2**26 use JPT
+ 
   // Load various tools  
   gROOT->ProcessLine(Form(".x setup.C(%d)",skipFWLite));
 
