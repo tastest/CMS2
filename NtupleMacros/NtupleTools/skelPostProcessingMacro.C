@@ -33,32 +33,13 @@ void doPostProcessing(TString infname, TString outfile, Int_t events,
   }
         
   //-------------------------------------------------------------
-  // Removes the branches (if they exist) that we want to replace
+  // Removes all non *_CMS2.* branches
   //-------------------------------------------------------------`
-  //evt_xsec_excl
-  TString bName = t->GetAlias("evt_xsec_excl");
-  //cout << "evt_xsec_excl " << bName << endl;
-  if(bName != "") {
-    bName.ReplaceAll(".obj", "*");
-    t->SetBranchStatus(bName.Data(), 0); 
-  }
+  t->SetBranchStatus("*", 0);
+  t->SetBranchStatus("*_CMS2.*", 1);
 
-  //evt_xsec_incl
-  bName = t->GetAlias("evt_xsec_incl");
-  //cout << "evt_xsec_incl " << bName << endl;
-  if(bName != "") {
-    bName.ReplaceAll(".obj", "*");
-    t->SetBranchStatus(bName.Data(), 0);   
-  }
-  
-  //evt_kfactor
-  bName = t->GetAlias("evt_kfactor");
-  //cout << "evt_kfactor " << bName << endl;
-  if(bName != "") {
-    bName.ReplaceAll(".obj", "*");
-    t->SetBranchStatus(bName.Data(), 0); 
-  }
-
+ TFile *out = TFile::Open(outfile.Data(), "RECREATE");
+  TTree *clone = t->CloneTree(-1, "fast");
 
   //-------------------------------------------------------------
 
@@ -66,19 +47,19 @@ void doPostProcessing(TString infname, TString outfile, Int_t events,
   Float_t scale1fb = xsec*kfactor*1000*filt_eff/(Float_t)events;
   cout << "scale1fb: " << scale1fb << endl; 
 
-  TBranch* b1 = t->Branch("evtscale1fb", &scale1fb, "evt_scale1fb/F");
-  TBranch* b2 = t->Branch("evtxsecexcl", &xsec, "evt_xsec_excl/F");
-  TBranch* b3 = t->Branch("evtxsecincl", &xsec, "evt_xsec_incl/F");
-  TBranch* b4 = t->Branch("evtkfactor", &kfactor, "evt_kfactor/F");
-  TBranch* b5 = t->Branch("evtnEvts", &events, "evt_nEvts/I");
-  TBranch* b6 = t->Branch("evtfilteff", &filt_eff, "evt_filt_eff/F");
+  TBranch* b1 = clone->Branch("evtscale1fb", &scale1fb, "evt_scale1fb/F");
+  TBranch* b2 = clone->Branch("evtxsecexcl", &xsec, "evt_xsec_excl/F");
+  TBranch* b3 = clone->Branch("evtxsecincl", &xsec, "evt_xsec_incl/F");
+  TBranch* b4 = clone->Branch("evtkfactor", &kfactor, "evt_kfactor/F");
+  TBranch* b5 = clone->Branch("evtnEvts", &events, "evt_nEvts/I");
+  TBranch* b6 = clone->Branch("evtfilteff", &filt_eff, "evt_filt_eff/F");
    
-  t->SetAlias("evt_scale1fb",  "evtscale1fb");
-  t->SetAlias("evt_xsec_excl", "evtxsecexcl");
-  t->SetAlias("evt_xsec_incl",  "evtxsecincl");
-  t->SetAlias("evt_kfactor",   "evtkfactor");
-  t->SetAlias("evt_nEvts",     "evtnEvts");
-  t->SetAlias("evt_filt_eff",     "evtfilteff");
+  clone->SetAlias("evt_scale1fb",  "evtscale1fb");
+  clone->SetAlias("evt_xsec_excl", "evtxsecexcl");
+  clone->SetAlias("evt_xsec_incl",  "evtxsecincl");
+  clone->SetAlias("evt_kfactor",   "evtkfactor");
+  clone->SetAlias("evt_nEvts",     "evtnEvts");
+  clone->SetAlias("evt_filt_eff",     "evtfilteff");
 
   Int_t nentries = t->GetEntries();
   for(Int_t i = 0; i < nentries; i++) {
@@ -91,9 +72,6 @@ void doPostProcessing(TString infname, TString outfile, Int_t events,
   }
   //-------------------------------------------------------------
 
-
- TFile *out = TFile::Open(outfile.Data(), "RECREATE");
-  TTree *clone = t->CloneTree(-1, "fast");
   clone->Write(); 
   out->Close();
   f->Close();
