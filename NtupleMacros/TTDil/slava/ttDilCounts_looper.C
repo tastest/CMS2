@@ -268,6 +268,7 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
       std::cout<<"Inconsistent config: JPT and oldjets requested: bailing"<<std::endl;
       return 99;
     }
+    std::cout<<"Using JPT jets"<<std::endl;
     compactConfig = compactConfig + "_JPT";
   }
 
