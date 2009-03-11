@@ -343,7 +343,7 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, char * prefix,
 	  
 	}
       }
-      Float_t err = sqrt(err2 + pow(h_predictednJets[i]->GetBinError(iJet),2));
+      Float_t err = sqrt(err2);
       h_predictednJets[i]->SetBinError(iJet, err);
     }
     //cout << "******Error for " << suffix[i] << sqrt(totalErr) << endl;
