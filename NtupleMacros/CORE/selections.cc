@@ -55,9 +55,14 @@ bool goodElectronWithoutIsolation(int index) {
 // MC truth tag - Muon from W
 //----------------------------------------------------------------
 bool trueMuonFromW_WJets(int index) {
+
+  // added requirement for muon to have pt>20
+    double pt_cut = 20.;
+  //  double pt_cut = 0.;
+  
   // try to find out if there is a muon
   // from W. Currently valid ONLY on WJets!! 
-  if ( TMath::Abs(cms2.mus_mc_id()[index]) == 13 && ( TMath::Abs(cms2.mus_mc_motherid()[index]) == 24) ) {
+  if ( TMath::Abs(cms2.mus_mc_id()[index]) == 13 && ( TMath::Abs(cms2.mus_mc_motherid()[index]) == 24) && cms2.mus_p4().at(index).pt() > pt_cut ) {
     //    std::cout<<"best match - part id: "<<(cms2.mus_mc_id()[index])<<" mother: "<<(cms2.mus_mc_motherid()[index])<<std::endl;
     return true;
   }
@@ -67,12 +72,12 @@ bool trueMuonFromW_WJets(int index) {
   unsigned int nGen = cms2.genps_id().size();
   for( unsigned int iGen = 0; iGen < nGen; ++iGen){
     // just in case the mother link does work :)
-    if ( cms2.genps_status()[iGen] == 3 && TMath::Abs(cms2.genps_id()[iGen]) == 13 && TMath::Abs(cms2.genps_id_mother()[iGen]) == 24 ) {
+    if ( cms2.genps_status()[iGen] == 3 && TMath::Abs(cms2.genps_id()[iGen]) == 13 && TMath::Abs(cms2.genps_id_mother()[iGen]) == 24 && cms2.genps_p4()[iGen].pt() > pt_cut ) {
       //    std::cout<<"2nd best match part id: "<<cms2.genps_id()[iGen]<<" mother: "<<cms2.genps_id_mother()[iGen]<<std::endl;
       return true;
     }
     // also return true if there is a status 3 muon
-    if ( cms2.genps_status()[iGen] == 3 && TMath::Abs(cms2.genps_id()[iGen]) == 13 ) {
+    if ( cms2.genps_status()[iGen] == 3 && TMath::Abs(cms2.genps_id()[iGen]) == 13  && cms2.genps_p4()[iGen].pt() > pt_cut ) {
       //    std::cout<<"3rd best match part id: "<<cms2.genps_id()[iGen]<<" mother: NOT CHECKED"<<std::endl;
       return true;
     }
@@ -1819,8 +1824,19 @@ bool isFakeableMuTTDil08(int iMu) {
 bool trueGammaFromMuon(int electron) {
   // true gamma reconstructed as electron 
   // gamma coming from muon
-  if(cms2.els_mc_id()[electron] == 22 && cms2.els_mc_motherid()[electron] == 13)
+  if(TMath::Abs(cms2.els_mc_id()[electron]) == 22 && TMath::Abs(cms2.els_mc_motherid()[electron]) == 13) { // ok, abs of photon makes no sense ;)
+    //    std::cout<<"Gamma from muon event - r: " << cms2.evt_run() << " e: " << cms2.evt_event() << " l: " << cms2.evt_lumiBlock() << std::endl;
     return true;
+  }
+//   if( cms2.els_mc_motherid()[electron] == 22 ) {
+//     std::cout<<"Electron with gamma mother - r: " << cms2.evt_run() << " e: " << cms2.evt_event() << " l: " << cms2.evt_lumiBlock() << std::endl;
+//   }
+//   if( cms2.els_mc_id()[electron] == 22 ) {
+//     std::cout<<"***"<<std::endl;
+//     std::cout<<"Electron which is a really a gamma - r: " << cms2.evt_run() << " e: " << cms2.evt_event() << " l: " << cms2.evt_lumiBlock() << std::endl;
+//     std::cout<<"el mc id: "<<cms2.els_mc_id()[electron]<<" el mother id "<< cms2.els_mc_motherid()[electron]<<std::endl;
+//     std::cout<<"***"<<std::endl;
+//   }
 
   return false;
 }
