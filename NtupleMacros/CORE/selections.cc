@@ -1840,3 +1840,12 @@ bool trueGammaFromMuon(int electron) {
 
   return false;
 }
+//----------------------------------------------------
+// Utility function to calculate dR between vectors
+//-----------------------------------------------------
+double dRBetweenVectors(LorentzVector v1, LorentzVector v2) {
+    double deta = v1.eta() - v2.eta();
+    double dphi = fabs(v1.phi() - v2.phi());
+    if (dphi > TMath::Pi()) dphi = TMath::TwoPi() - dphi;
+    return sqrt(deta*deta+dphi*dphi);
+}
