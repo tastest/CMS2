@@ -272,6 +272,13 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
     compactConfig = compactConfig + "_JPT";
   }
 
+  bool muJetClean = ((cutsMask>>27)&1);
+  if (muJetClean) {
+    std::cout<<"Cleaning jets near muons"<<std::endl;
+    compactConfig = compactConfig + "_JmuCl";
+  }
+
+
   std::cout<<"Compact config string is "<<compactConfig.c_str()<<std::endl;
 
   // Check that prescale is OK
@@ -539,18 +546,42 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > blah; // temp variable
 	// First the case where we take the default hyp_jets
 	if (oldjets) {
-	  new_hyp_njets = cms2.hyp_njets().at(hypIdx);
 	  for (unsigned int ijet=0; 
 	       ijet<(unsigned int)(cms2.hyp_njets().at(hypIdx)); 
 	       ijet++) {
+	    // muon-jet cleaning
+	    if (muJetClean) {
+		LorentzVector vjet = cms2.hyp_jets_p4().at(hypIdx).at(ijet);
+		LorentzVector vlt  = cms2.hyp_lt_p4().at(hypIdx);
+		LorentzVector vll  = cms2.hyp_ll_p4().at(hypIdx);
+		if (abs(cms2.hyp_ll_id().at(hypIdx)) == 13) {
+		  if (dRBetweenVectors(vjet, vll) < 0.4) continue;
+		}
+		if (abs(cms2.hyp_lt_id().at(hypIdx)) == 13) {
+		  if (dRBetweenVectors(vjet, vlt) < 0.4) continue;
+		}
+	    }
 	    float thisJetRescale = cms2.hyp_jets_emFrac().at(hypIdx).at(ijet) < 0.9 ? globalJESscaleRescale : 1.;
 	    blah = cms2.hyp_jets_pat_noCorrF().at(hypIdx).at(ijet) * cms2.hyp_jets_p4().at(hypIdx).at(ijet) * thisJetRescale;
 	    //FIXME : this should be combined the same way as below
 	    jp4.push_back(blah);
+	    new_hyp_njets++;
 	  }
 	} else if (!useJPT) {
 	  // Look among the hyp_jets
 	  for (unsigned int ijet=0; ijet<(unsigned int)(cms2.hyp_njets().at(hypIdx)); ijet++) {
+	    // muon-jet cleaning
+	    if (muJetClean) {
+		LorentzVector vjet = cms2.hyp_jets_p4().at(hypIdx).at(ijet);
+		LorentzVector vlt  = cms2.hyp_lt_p4().at(hypIdx);
+		LorentzVector vll  = cms2.hyp_ll_p4().at(hypIdx);
+		if (abs(cms2.hyp_ll_id().at(hypIdx)) == 13) {
+		  if (dRBetweenVectors(vjet, vll) < 0.4) continue;
+		}
+		if (abs(cms2.hyp_lt_id().at(hypIdx)) == 13) {
+		  if (dRBetweenVectors(vjet, vlt) < 0.4) continue;
+		}
+	    }
 	    float thisJetRescale = cms2.hyp_jets_emFrac().at(hypIdx).at(ijet) < 0.9 ? globalJESscaleRescale : 1.;
 	    blah = cms2.hyp_jets_p4().at(hypIdx).at(ijet)* thisJetRescale;
 	    if (blah.pt() > 30 && abs(blah.eta()) < 2.4) {
@@ -560,6 +591,18 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	  }
 	  // Now look among the other jets
 	  for (unsigned int ijet=0; ijet<cms2.hyp_other_jets_p4().at(hypIdx).size(); ijet++) {
+	    // muon-jet cleaning
+	    if (muJetClean) {
+		LorentzVector vjet = cms2.hyp_other_jets_p4().at(hypIdx).at(ijet);
+		LorentzVector vlt  = cms2.hyp_lt_p4().at(hypIdx);
+		LorentzVector vll  = cms2.hyp_ll_p4().at(hypIdx);
+		if (abs(cms2.hyp_ll_id().at(hypIdx)) == 13) {
+		  if (dRBetweenVectors(vjet, vll) < 0.4) continue;
+		}
+		if (abs(cms2.hyp_lt_id().at(hypIdx)) == 13) {
+		  if (dRBetweenVectors(vjet, vlt) < 0.4) continue;
+		}
+	    }
 	    float thisJetRescale = cms2.hyp_other_jets_emFrac().at(hypIdx).at(ijet) < 0.9 ? globalJESscaleRescale : 1.;
 	    blah = cms2.hyp_other_jets_p4().at(hypIdx).at(ijet)* thisJetRescale;
 	    if (blah.pt() > 30 && abs(blah.eta()) < 2.4) {
@@ -569,19 +612,14 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	  }
 	} else {       
 	  // This is with useJPT=true oldjets=false....
-	  // we need to remove electron jets
-	  // also: remove muon jets since the JPT is a bit buggy in their treatment
+	  // We need to remove both electron and muon jets in this case
 	  for (unsigned int ijet=0; ijet< cms2.evt_njpts(); ijet++) {
-
-            double deta = cms2.jpts_p4().at(ijet).eta() - cms2.hyp_ll_p4().at(hypIdx).eta();
-            double dphi = fabs(cms2.jpts_p4().at(ijet).phi() - cms2.hyp_ll_p4().at(hypIdx).phi());
-	    if (dphi > TMath::Pi()) dphi = TMath::TwoPi() - dphi;
-	    if (sqrt(deta*deta+dphi*dphi) < 0.4) continue;
-
-            deta = cms2.jpts_p4().at(ijet).eta() - cms2.hyp_lt_p4().at(hypIdx).eta();
-            dphi = fabs(cms2.jpts_p4().at(ijet).phi() - cms2.hyp_lt_p4().at(hypIdx).phi());
-	    if (dphi > TMath::Pi()) dphi = TMath::TwoPi() - dphi;
-	    if (sqrt(deta*deta+dphi*dphi) < 0.4) continue;
+	    // jet cleaning (muons & electrons)
+	    LorentzVector vjet = cms2.jpts_p4().at(ijet);
+	    LorentzVector vlt  = cms2.hyp_lt_p4().at(hypIdx);
+	    LorentzVector vll  = cms2.hyp_ll_p4().at(hypIdx);
+	    if (dRBetweenVectors(vjet, vll) < 0.4) continue;
+	    if (dRBetweenVectors(vjet, vlt) < 0.4) continue;
 
 	    float thisJetRescale = globalJESscaleRescale;
 	    blah = cms2.jpts_p4().at(ijet) * thisJetRescale;

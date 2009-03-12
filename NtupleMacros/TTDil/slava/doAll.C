@@ -75,6 +75,7 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
   // corJES10ptUp                      -> 2**24 rescale JES by 10% up
   // useTcMet                          -> 2**25 use tcmet
   // useJPT                            -> 2**26 use JPT
+  // muJetClean                        -> 2**27 do not count jets within 0.4 of muons 
  
   // Load various tools  
   gROOT->ProcessLine(Form(".x setup.C(%d)",skipFWLite));
@@ -137,8 +138,8 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
   bool runDYee     = true;
   bool runDYmm     = true;
   bool runDYtautau = true;
-  bool runppMuX    = true;
-  bool runEM       = true;
+  bool runppMuX    = false;
+  bool runEM       = false;
   bool runtW       = true;
   bool runVQQ      = true;
 
