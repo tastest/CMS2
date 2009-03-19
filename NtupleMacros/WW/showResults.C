@@ -81,6 +81,10 @@ void showResults(const char* file = "processed_data_tag.root")
       double ttbar_yield_after(0.);
       double tw_yield_before(0.);
       double tw_yield_after(0.);
+      double ttbar_yield_before_noveto(0.);
+      double ttbar_yield_after_noveto(0.);
+      double tw_yield_before_noveto(0.);
+      double tw_yield_after_noveto(0.);
       double total_yield_before(0.);
       double total_yield_after(0.);
 
@@ -92,10 +96,14 @@ void showResults(const char* file = "processed_data_tag.root")
 	  if ( samples[sample] == "ttbar" ) {
 	    ttbar_yield_before = h->Integral(1,mbins+1,1,1);
 	    ttbar_yield_after  = h->Integral(1,1,1,1);
+	    ttbar_yield_before_noveto = h->Integral(1,mbins+1,1,jbins+1);
+	    ttbar_yield_after_noveto  = h->Integral(1,1,1,jbins+1);
 	  }
 	  if ( samples[sample] == "tw" ) {
 	    tw_yield_before = h->Integral(1,mbins+1,1,1);
 	    tw_yield_after  = h->Integral(1,1,1,1);
+	    tw_yield_before_noveto = h->Integral(1,mbins+1,1,jbins+1);
+	    tw_yield_after_noveto  = h->Integral(1,1,1,jbins+1);
 	  }
 	  total_yield_before += h->Integral(1,mbins+1,1,1);
 	  total_yield_after  += h->Integral(1,1,1,1);
@@ -111,6 +119,8 @@ void showResults(const char* file = "processed_data_tag.root")
       cout.precision(3);
       double top_tag_eff = 1-(tw_yield_after+ttbar_yield_after)/(tw_yield_before+ttbar_yield_before);
       double ttbar_tag_eff = 1-ttbar_yield_after/ttbar_yield_before;
+      cout << "\t ttbar tag eff (no jet veto): " << 1-ttbar_yield_after_noveto/ttbar_yield_before_noveto << "\n";
+      cout << "\t tw tag eff (no jet veto): " << 1-tw_yield_after_noveto/tw_yield_before_noveto << "\n";
       cout << "\t ttbar tag eff: " << ttbar_tag_eff << "\n";
       cout << "\t tw tag eff: " << 1-tw_yield_after/tw_yield_before << "\n";
       cout << "\t top tag eff: " << top_tag_eff << "\n";
@@ -120,7 +130,7 @@ void showResults(const char* file = "processed_data_tag.root")
       cout << "\t estimated top yield: " << (total_yield_before-total_yield_after)*(1/top_tag_eff-1) << endl;
       cout << "\t estimated top yield (ttbar eff): " << (total_yield_before-total_yield_after)*(1/ttbar_tag_eff-1) << endl;
     }
-    
+
     // W+jets background estimation
     cout << "Wjets sideband background estimation" << endl;
     double wjets_el_estatimate(0);
