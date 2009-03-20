@@ -58,6 +58,11 @@ Sample fLM9     ();
 Sample fLM10    ();
 Sample fLM11    ();
 
+// Pythia Drell-Yan samples with no filter
+Sample fDYee_nofilter    ();
+Sample fDYmm_nofilter    ();
+Sample fDYtt_nofilter    ();
+
 // QCD samples
 Sample fInclusiveMu5Pt50	();
 Sample fInclusiveMuPt15	        ();

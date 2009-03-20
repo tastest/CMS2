@@ -115,6 +115,40 @@ Sample fDYtt ()
      return ret;
 }
 
+
+// Pythia DY with no filtering when making ntuples
+// These samples also contain pdf_info and genlepdaughters
+//
+// DYee
+Sample fDYee_nofilter    ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "dlevans/cms2-V01-02-06-NoFilter/Zee_M20/merged_ntuple*.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, DYee, kMagenta, 1, "dyee", true, 0. };
+     return ret;
+}
+// DYmm
+Sample fDYmm_nofilter    ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "dlevans/cms2-V01-02-06-NoFilter/Zmm_M20/merged_ntuple*.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, DYmm, kCyan, 1, "dymm", true, 0. };
+     return ret;
+}
+// DYtt
+Sample fDYtt_nofilter    ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "dlevans/cms2-V01-02-06-NoFilter/Ztt_M20/merged_ntuple*.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, DYtt, kBlack, 1, "dytt", true, 0. };
+     return ret;
+}
+//
+//
+
 // low-mass DY sample
 Sample fAstar ()
 {
