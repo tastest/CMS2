@@ -26,9 +26,6 @@ protected:
 	vector<TString>	evt_L1_trigNames_;
 	TBranch *evt_L1_trigNames_branch;
 	bool evt_L1_trigNames_isLoaded;
-	double	genps_pthat_;
-	TBranch *genps_pthat_branch;
-	bool genps_pthat_isLoaded;
 	vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<double>,ROOT::Math::DefaultCoordinateSystemTag> >	scs_pos_;
 	TBranch *scs_pos_branch;
 	bool scs_pos_isLoaded;
@@ -89,6 +86,9 @@ protected:
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	genjets_p4_;
 	TBranch *genjets_p4_branch;
 	bool genjets_p4_isLoaded;
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	genps_lepdaughter_p4_;
+	TBranch *genps_lepdaughter_p4_branch;
+	bool genps_lepdaughter_p4_isLoaded;
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >	genps_p4_;
 	TBranch *genps_p4_branch;
 	bool genps_p4_isLoaded;
@@ -458,6 +458,15 @@ protected:
 	float	met_pat_metUncorMuon_;
 	TBranch *met_pat_metUncorMuon_branch;
 	bool met_pat_metUncorMuon_isLoaded;
+	float	pdfinfo_scale_;
+	TBranch *pdfinfo_scale_branch;
+	bool pdfinfo_scale_isLoaded;
+	float	pdfinfo_x1_;
+	TBranch *pdfinfo_x1_branch;
+	bool pdfinfo_x1_isLoaded;
+	float	pdfinfo_x2_;
+	TBranch *pdfinfo_x2_branch;
+	bool pdfinfo_x2_isLoaded;
 	float	evt_tcmet_;
 	TBranch *evt_tcmet_branch;
 	bool evt_tcmet_isLoaded;
@@ -1358,6 +1367,12 @@ protected:
 	int	evt_nl1mus_;
 	TBranch *evt_nl1mus_branch;
 	bool evt_nl1mus_isLoaded;
+	int	pdfinfo_id1_;
+	TBranch *pdfinfo_id1_branch;
+	bool pdfinfo_id1_isLoaded;
+	int	pdfinfo_id2_;
+	TBranch *pdfinfo_id2_branch;
+	bool pdfinfo_id2_isLoaded;
 	vector<int>	els_mc3_id_;
 	TBranch *els_mc3_id_branch;
 	bool els_mc3_id_isLoaded;
@@ -1484,6 +1499,12 @@ protected:
 	vector<int>	genps_id_mother_;
 	TBranch *genps_id_mother_branch;
 	bool genps_id_mother_isLoaded;
+	vector<int>	genps_lepdaughter_id_;
+	TBranch *genps_lepdaughter_id_branch;
+	bool genps_lepdaughter_id_isLoaded;
+	vector<int>	genps_lepdaughter_idx_;
+	TBranch *genps_lepdaughter_idx_branch;
+	bool genps_lepdaughter_idx_isLoaded;
 	vector<int>	genps_status_;
 	TBranch *genps_status_branch;
 	bool genps_status_isLoaded;
@@ -2112,6 +2133,14 @@ void Init(TTree *tree) {
 	if(genjets_p4_branch == 0 ) {
 	cout << "Branch genjets_p4 does not exist." << endl;
 	}
+	genps_lepdaughter_p4_branch = 0;
+	if (tree->GetAlias("genps_lepdaughter_p4") != 0) {
+		genps_lepdaughter_p4_branch = tree->GetBranch(tree->GetAlias("genps_lepdaughter_p4"));
+		genps_lepdaughter_p4_branch->SetAddress(&genps_lepdaughter_p4_);
+	}
+	if(genps_lepdaughter_p4_branch == 0 ) {
+	cout << "Branch genps_lepdaughter_p4 does not exist." << endl;
+	}
 	genps_p4_branch = 0;
 	if (tree->GetAlias("genps_p4") != 0) {
 		genps_p4_branch = tree->GetBranch(tree->GetAlias("genps_p4"));
@@ -2496,14 +2525,6 @@ void Init(TTree *tree) {
 	}
 	if(evt_L1_trigNames_branch == 0 ) {
 	cout << "Branch evt_L1_trigNames does not exist." << endl;
-	}
-	genps_pthat_branch = 0;
-	if (tree->GetAlias("genps_pthat") != 0) {
-		genps_pthat_branch = tree->GetBranch(tree->GetAlias("genps_pthat"));
-		genps_pthat_branch->SetAddress(&genps_pthat_);
-	}
-	if(genps_pthat_branch == 0 ) {
-	cout << "Branch genps_pthat does not exist." << endl;
 	}
 	scs_pos_branch = 0;
 	if (tree->GetAlias("scs_pos") != 0) {
@@ -3152,6 +3173,30 @@ void Init(TTree *tree) {
 	}
 	if(met_pat_metUncorMuon_branch == 0 ) {
 	cout << "Branch met_pat_metUncorMuon does not exist." << endl;
+	}
+	pdfinfo_scale_branch = 0;
+	if (tree->GetAlias("pdfinfo_scale") != 0) {
+		pdfinfo_scale_branch = tree->GetBranch(tree->GetAlias("pdfinfo_scale"));
+		pdfinfo_scale_branch->SetAddress(&pdfinfo_scale_);
+	}
+	if(pdfinfo_scale_branch == 0 ) {
+	cout << "Branch pdfinfo_scale does not exist." << endl;
+	}
+	pdfinfo_x1_branch = 0;
+	if (tree->GetAlias("pdfinfo_x1") != 0) {
+		pdfinfo_x1_branch = tree->GetBranch(tree->GetAlias("pdfinfo_x1"));
+		pdfinfo_x1_branch->SetAddress(&pdfinfo_x1_);
+	}
+	if(pdfinfo_x1_branch == 0 ) {
+	cout << "Branch pdfinfo_x1 does not exist." << endl;
+	}
+	pdfinfo_x2_branch = 0;
+	if (tree->GetAlias("pdfinfo_x2") != 0) {
+		pdfinfo_x2_branch = tree->GetBranch(tree->GetAlias("pdfinfo_x2"));
+		pdfinfo_x2_branch->SetAddress(&pdfinfo_x2_);
+	}
+	if(pdfinfo_x2_branch == 0 ) {
+	cout << "Branch pdfinfo_x2 does not exist." << endl;
 	}
 	evt_tcmet_branch = 0;
 	if (tree->GetAlias("evt_tcmet") != 0) {
@@ -5553,6 +5598,22 @@ void Init(TTree *tree) {
 	if(evt_nl1mus_branch == 0 ) {
 	cout << "Branch evt_nl1mus does not exist." << endl;
 	}
+	pdfinfo_id1_branch = 0;
+	if (tree->GetAlias("pdfinfo_id1") != 0) {
+		pdfinfo_id1_branch = tree->GetBranch(tree->GetAlias("pdfinfo_id1"));
+		pdfinfo_id1_branch->SetAddress(&pdfinfo_id1_);
+	}
+	if(pdfinfo_id1_branch == 0 ) {
+	cout << "Branch pdfinfo_id1 does not exist." << endl;
+	}
+	pdfinfo_id2_branch = 0;
+	if (tree->GetAlias("pdfinfo_id2") != 0) {
+		pdfinfo_id2_branch = tree->GetBranch(tree->GetAlias("pdfinfo_id2"));
+		pdfinfo_id2_branch->SetAddress(&pdfinfo_id2_);
+	}
+	if(pdfinfo_id2_branch == 0 ) {
+	cout << "Branch pdfinfo_id2 does not exist." << endl;
+	}
 	els_mc3_id_branch = 0;
 	if (tree->GetAlias("els_mc3_id") != 0) {
 		els_mc3_id_branch = tree->GetBranch(tree->GetAlias("els_mc3_id"));
@@ -5888,6 +5949,22 @@ void Init(TTree *tree) {
 	}
 	if(genps_id_mother_branch == 0 ) {
 	cout << "Branch genps_id_mother does not exist." << endl;
+	}
+	genps_lepdaughter_id_branch = 0;
+	if (tree->GetAlias("genps_lepdaughter_id") != 0) {
+		genps_lepdaughter_id_branch = tree->GetBranch(tree->GetAlias("genps_lepdaughter_id"));
+		genps_lepdaughter_id_branch->SetAddress(&genps_lepdaughter_id_);
+	}
+	if(genps_lepdaughter_id_branch == 0 ) {
+	cout << "Branch genps_lepdaughter_id does not exist." << endl;
+	}
+	genps_lepdaughter_idx_branch = 0;
+	if (tree->GetAlias("genps_lepdaughter_idx") != 0) {
+		genps_lepdaughter_idx_branch = tree->GetBranch(tree->GetAlias("genps_lepdaughter_idx"));
+		genps_lepdaughter_idx_branch->SetAddress(&genps_lepdaughter_idx_);
+	}
+	if(genps_lepdaughter_idx_branch == 0 ) {
+	cout << "Branch genps_lepdaughter_idx does not exist." << endl;
 	}
 	genps_status_branch = 0;
 	if (tree->GetAlias("genps_status") != 0) {
@@ -7202,7 +7279,6 @@ void GetEntry(unsigned int idx)
 		evt_dataset_isLoaded = false;
 		evt_HLT_trigNames_isLoaded = false;
 		evt_L1_trigNames_isLoaded = false;
-		genps_pthat_isLoaded = false;
 		scs_pos_isLoaded = false;
 		scs_vtx_isLoaded = false;
 		vtxs_position_isLoaded = false;
@@ -7223,6 +7299,7 @@ void GetEntry(unsigned int idx)
 		els_trk_p4_isLoaded = false;
 		els_vertex_p4_isLoaded = false;
 		genjets_p4_isLoaded = false;
+		genps_lepdaughter_p4_isLoaded = false;
 		genps_p4_isLoaded = false;
 		genps_prod_vtx_isLoaded = false;
 		hyp_ll_mc_p4_isLoaded = false;
@@ -7346,6 +7423,9 @@ void GetEntry(unsigned int idx)
 		met_pat_metUncor_isLoaded = false;
 		met_pat_metUncorJES_isLoaded = false;
 		met_pat_metUncorMuon_isLoaded = false;
+		pdfinfo_scale_isLoaded = false;
+		pdfinfo_x1_isLoaded = false;
+		pdfinfo_x2_isLoaded = false;
 		evt_tcmet_isLoaded = false;
 		evt_tcmetPhi_isLoaded = false;
 		evt_tcsumet_isLoaded = false;
@@ -7646,6 +7726,8 @@ void GetEntry(unsigned int idx)
 		evt_nl1jetsf_isLoaded = false;
 		evt_nl1jetst_isLoaded = false;
 		evt_nl1mus_isLoaded = false;
+		pdfinfo_id1_isLoaded = false;
+		pdfinfo_id2_isLoaded = false;
 		els_mc3_id_isLoaded = false;
 		els_mc3idx_isLoaded = false;
 		els_mc3_motherid_isLoaded = false;
@@ -7688,6 +7770,8 @@ void GetEntry(unsigned int idx)
 		els_validHits_isLoaded = false;
 		genps_id_isLoaded = false;
 		genps_id_mother_isLoaded = false;
+		genps_lepdaughter_id_isLoaded = false;
+		genps_lepdaughter_idx_isLoaded = false;
 		genps_status_isLoaded = false;
 		hyp_ll_charge_isLoaded = false;
 		hyp_ll_id_isLoaded = false;
@@ -7897,21 +7981,6 @@ void GetEntry(unsigned int idx)
 			evt_L1_trigNames_isLoaded = true;
 		}
 		return evt_L1_trigNames_;
-	}
-	double &genps_pthat()
-	{
-		if (not genps_pthat_isLoaded) {
-			if (genps_pthat_branch != 0) {
-				genps_pthat_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch genps_pthat_branch does not exist!\n");
-				exit(1);
-			}
-			genps_pthat_isLoaded = true;
-		}
-		return genps_pthat_;
 	}
 	vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<double>,ROOT::Math::DefaultCoordinateSystemTag> > &scs_pos()
 	{
@@ -8344,6 +8413,29 @@ void GetEntry(unsigned int idx)
 			genjets_p4_isLoaded = true;
 		}
 		return genjets_p4_;
+	}
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &genps_lepdaughter_p4()
+	{
+		if (not genps_lepdaughter_p4_isLoaded) {
+			if (genps_lepdaughter_p4_branch != 0) {
+				genps_lepdaughter_p4_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >::const_iterator i = genps_lepdaughter_p4_.begin(); i != genps_lepdaughter_p4_.end(); ++i) {
+					int e;
+					frexp(i->pt(), &e);
+					if (not isfinite(i->pt()) || e > 30) {
+						printf("branch genps_lepdaughter_p4_branch contains a bad float: %f\n", i->pt());
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch genps_lepdaughter_p4_branch does not exist!\n");
+				exit(1);
+			}
+			genps_lepdaughter_p4_isLoaded = true;
+		}
+		return genps_lepdaughter_p4_;
 	}
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > &genps_p4()
 	{
@@ -10925,6 +11017,63 @@ void GetEntry(unsigned int idx)
 			met_pat_metUncorMuon_isLoaded = true;
 		}
 		return met_pat_metUncorMuon_;
+	}
+	float &pdfinfo_scale()
+	{
+		if (not pdfinfo_scale_isLoaded) {
+			if (pdfinfo_scale_branch != 0) {
+				pdfinfo_scale_branch->GetEntry(index);
+				#ifdef PARANOIA
+				if (not isfinite(pdfinfo_scale_)) {
+					printf("branch pdfinfo_scale_branch contains a bad float: %f\n", pdfinfo_scale_);
+					exit(1);
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch pdfinfo_scale_branch does not exist!\n");
+				exit(1);
+			}
+			pdfinfo_scale_isLoaded = true;
+		}
+		return pdfinfo_scale_;
+	}
+	float &pdfinfo_x1()
+	{
+		if (not pdfinfo_x1_isLoaded) {
+			if (pdfinfo_x1_branch != 0) {
+				pdfinfo_x1_branch->GetEntry(index);
+				#ifdef PARANOIA
+				if (not isfinite(pdfinfo_x1_)) {
+					printf("branch pdfinfo_x1_branch contains a bad float: %f\n", pdfinfo_x1_);
+					exit(1);
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch pdfinfo_x1_branch does not exist!\n");
+				exit(1);
+			}
+			pdfinfo_x1_isLoaded = true;
+		}
+		return pdfinfo_x1_;
+	}
+	float &pdfinfo_x2()
+	{
+		if (not pdfinfo_x2_isLoaded) {
+			if (pdfinfo_x2_branch != 0) {
+				pdfinfo_x2_branch->GetEntry(index);
+				#ifdef PARANOIA
+				if (not isfinite(pdfinfo_x2_)) {
+					printf("branch pdfinfo_x2_branch contains a bad float: %f\n", pdfinfo_x2_);
+					exit(1);
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch pdfinfo_x2_branch does not exist!\n");
+				exit(1);
+			}
+			pdfinfo_x2_isLoaded = true;
+		}
+		return pdfinfo_x2_;
 	}
 	float &evt_tcmet()
 	{
@@ -17168,6 +17317,36 @@ void GetEntry(unsigned int idx)
 		}
 		return evt_nl1mus_;
 	}
+	int &pdfinfo_id1()
+	{
+		if (not pdfinfo_id1_isLoaded) {
+			if (pdfinfo_id1_branch != 0) {
+				pdfinfo_id1_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch pdfinfo_id1_branch does not exist!\n");
+				exit(1);
+			}
+			pdfinfo_id1_isLoaded = true;
+		}
+		return pdfinfo_id1_;
+	}
+	int &pdfinfo_id2()
+	{
+		if (not pdfinfo_id2_isLoaded) {
+			if (pdfinfo_id2_branch != 0) {
+				pdfinfo_id2_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch pdfinfo_id2_branch does not exist!\n");
+				exit(1);
+			}
+			pdfinfo_id2_isLoaded = true;
+		}
+		return pdfinfo_id2_;
+	}
 	vector<int> &els_mc3_id()
 	{
 		if (not els_mc3_id_isLoaded) {
@@ -17797,6 +17976,36 @@ void GetEntry(unsigned int idx)
 			genps_id_mother_isLoaded = true;
 		}
 		return genps_id_mother_;
+	}
+	vector<int> &genps_lepdaughter_id()
+	{
+		if (not genps_lepdaughter_id_isLoaded) {
+			if (genps_lepdaughter_id_branch != 0) {
+				genps_lepdaughter_id_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch genps_lepdaughter_id_branch does not exist!\n");
+				exit(1);
+			}
+			genps_lepdaughter_id_isLoaded = true;
+		}
+		return genps_lepdaughter_id_;
+	}
+	vector<int> &genps_lepdaughter_idx()
+	{
+		if (not genps_lepdaughter_idx_isLoaded) {
+			if (genps_lepdaughter_idx_branch != 0) {
+				genps_lepdaughter_idx_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch genps_lepdaughter_idx_branch does not exist!\n");
+				exit(1);
+			}
+			genps_lepdaughter_idx_isLoaded = true;
+		}
+		return genps_lepdaughter_idx_;
 	}
 	vector<int> &genps_status()
 	{
