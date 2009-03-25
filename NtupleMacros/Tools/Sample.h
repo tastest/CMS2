@@ -27,6 +27,7 @@ public:
 // helper functions that provide samples from their default locations
 // (takes the guesswork out of data access...)
 Sample fWW	();
+Sample fWW_excl	();
 Sample fWZ	();
 // Sample fWZ_incl	();
 Sample fZZ	();
@@ -39,6 +40,7 @@ Sample fVlqq	();
 Sample fVlqq	();
 Sample fAstar	();
 Sample fDY20tt	();
+Sample fDY20mm	();
 Sample fWgamma	();
 Sample fZgamma	();
 Sample fttbar	();

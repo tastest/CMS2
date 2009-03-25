@@ -35,6 +35,16 @@ Sample fWW ()
      return ret;
 }
 
+//WW file
+Sample fWW_excl ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "cms2-V01-02-06/WW_2l_Summer08_IDEAL_V9_v2/merged_ntuple*.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, WW, kRed, 1, "ww", true, 0. };
+     return ret;
+}
+
 //WZ file
 Sample fWZ ()
 {
@@ -166,6 +176,15 @@ Sample fDY20tt ()
      std::string sample = prefix + "cms2-V01-02-06/Ztautau_M20_Summer08_IDEAL_V9_v1/merged_ntuple*.root";
      c->Add(sample.c_str());
      Sample ret = { c, DYtt, kBlack, 1, "dy20tt", true };
+     return ret;
+}
+
+Sample fDY20mm ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "cms2-V01-02-06/Zmumu_M20_Summer08_IDEAL_V9_reco-v2/merged_ntuple**.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, DYmm, kCyan, 1, "dy20mm", true };
      return ret;
 }
 
