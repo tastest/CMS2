@@ -61,8 +61,13 @@ class ttDilCounts_looper {
   TH1F* heleSumPt[4][3];   // sumPt for electron isolation
   TH1F* hmuSumPt[4][3];   // sumPt for muon isolation
   TH1F* hmuSumIso[4][3];  // sum of trk pt, em et, had et in cone of 0.3
-  TH1F* heleRelIso[4][3]; //  Iso variable defined as pt/(pt+sum) for electron
+  TH1F* helSumIso[4][3];  // sum of trk pt, em et, had et in cone of 0.3
+  TH1F* helRelIso[4][3]; //  Iso variable defined as pt/(pt+sum) for electron
   TH1F* hmuRelIso[4][3]; //  Iso variable defined as pt/(pt+sum) for muons
+  TH1F* helRelIsoTrack[4][3]; //  Iso variable defined as pt/(pt+sum) for electron
+  TH1F* hmuRelIsoTrack[4][3]; //  Iso variable defined as pt/(pt+sum) for muons
+  TH1F* helRelIsoCalo[4][3]; //  Iso variable defined as pt/(pt+sum) for electron
+  TH1F* hmuRelIsoCalo[4][3]; //  Iso variable defined as pt/(pt+sum) for muons
 
   // Unfortunately, our ntuple has no info for electron isolation other than candidate electrons.
   // When counting electrons, we thus can not apply an isolation criteria at this point !!!
