@@ -123,19 +123,10 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
    int  isoLooseMode = 0;
    isoLooseMode = ((cutsMask>>8) & 3);
    if (isoLooseMode == 0){
-     cout << "Require both leptons to be isolated" << endl;
-     compactConfig = compactConfig + "_isoReg";
-  } else if( isoLooseMode == 1) {
-     cout << "Require one-only hyp lepton (electron in emu) with iso (0.6, 0.92)" << endl;
-     compactConfig = compactConfig + "_isoReg1";
-   } else if (isoLooseMode == 2 ) {
-     cout << "Require one-only hyp lepton (muon in emu) with iso (0.6, 0.92)" << endl;
-    compactConfig = compactConfig + "_isoReg2";
-   } else if (isoLooseMode == 3){
-     cout << "Require two hyp leptons  with iso (0.6, 0.92)" << endl;
-     compactConfig = compactConfig + "_isoReg3";
+     cout << ".............." << endl;
+   } else {
+     std::cout<< " This is a dummy setting: don't turn it on"<<std::endl;
    }
-
    
    bool looseDilSelectionTTDil08 = (cutsMask>>10) & 1;
    if (looseDilSelectionTTDil08 ){
@@ -278,6 +269,11 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
     compactConfig = compactConfig + "_JmuCl";
   }
 
+  bool dilTruthMatch = ((cutsMask>>28)&1);
+  if (dilTruthMatch){
+    std::cout<<"Dileptons are required to match to W/Z mother"<<std::endl;
+    compactConfig = compactConfig + "_MCtruth";
+  }
 
   std::cout<<"Compact config string is "<<compactConfig.c_str()<<std::endl;
 
@@ -454,6 +450,29 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 
 	if (osSelection){
 	  if ( id_lt * id_ll > 0 ) continue;
+	}
+
+	if (dilTruthMatch){
+	  //this better be in the selections.cc
+	  bool isTrueLepton_ll = false;
+	  bool isTrueLepton_lt = false;
+	  isTrueLepton_ll = ( (abs(cms2.hyp_ll_id()[hypIdx]) == abs(cms2.hyp_ll_mc_id()[hypIdx]) &&
+			       abs(cms2.hyp_ll_mc_motherid()[hypIdx]) < 50 //I wish I could match to W or Z explicitely, not in MGraph
+			       )
+			      || (cms2.hyp_ll_mc_id()[hypIdx]==22 && 
+				  TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[hypIdx],cms2.hyp_ll_mc_p4()[hypIdx])) <0.05
+				  && abs(cms2.hyp_ll_id()[hypIdx]) == abs(cms2.hyp_ll_mc_motherid()[hypIdx])
+				  )
+			      );
+	  isTrueLepton_lt = ( (abs(cms2.hyp_lt_id()[hypIdx]) == abs(cms2.hyp_lt_mc_id()[hypIdx]) &&
+			       abs(cms2.hyp_lt_mc_motherid()[hypIdx]) < 50 //I wish I could match to W or Z explicitely, not in MGraph
+			       )
+			      || (cms2.hyp_lt_mc_id()[hypIdx]==22 && 
+				  TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[hypIdx],cms2.hyp_lt_mc_p4()[hypIdx])) <0.05
+				  && abs(cms2.hyp_lt_id()[hypIdx]) == abs(cms2.hyp_lt_mc_motherid()[hypIdx])
+				  )
+			      );
+	  if (!isTrueLepton_lt && !isTrueLepton_ll) continue;
 	}
 
 	goodHyps.push_back(hypIdx);
@@ -728,58 +747,88 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
       
       
 	// muon trk+calo isolation
-	double combIso_lt = -1.;
-	double combIso_ll = -1.;
-	if (abs(id_lt) == 13)
-	  combIso_lt = cms2.mus_iso03_sumPt().at(i_lt)
-	    +cms2.mus_iso03_emEt().at(i_lt)
-	    +cms2.mus_iso03_hadEt().at(i_lt);
-	if (abs(id_ll) == 13)
-	  combIso_ll = cms2.mus_iso03_sumPt().at(i_ll)
-	    +cms2.mus_iso03_emEt().at(i_ll)
-	    +cms2.mus_iso03_hadEt().at(i_ll);
-	if (abs(id_lt) == 13) hmuSumIso[myType][arrNjets]->Fill(min(combIso_lt,24.99),weight);
-	if (abs(id_lt) == 13) hmuSumIso[3][arrNjets]->Fill(min(combIso_lt,24.99),weight);
-	if (abs(id_ll) == 13) hmuSumIso[myType][arrNjets]->Fill(min(combIso_ll,24.99),weight);
-	if (abs(id_ll) == 13) hmuSumIso[3][arrNjets]->Fill(min(combIso_ll,24.99),weight);
+	double combIsoSum_lt = -1.;
+	double combIsoSum_ll = -1.;
+	double relIsoComb_lt = -1.;
+	double relIsoComb_ll = -1.;
+	double relIsoTrack_lt = -1.;
+	double relIsoTrack_ll = -1.;
+	double relIsoCalo_lt = -1.;
+	double relIsoCalo_ll = -1.;
+	if (abs(id_lt) == 13){
+	  combIsoSum_lt = cms2.mus_pat_trackIso().at(i_lt)
+	    +cms2.mus_pat_ecalIso().at(i_lt)
+	    +cms2.mus_pat_hcalIso().at(i_lt);
+	  relIsoComb_lt = cms2.mus_p4()[i_lt].pt()/(cms2.mus_p4()[i_lt].pt() + combIsoSum_lt);
+	  relIsoTrack_lt = cms2.mus_p4()[i_lt].pt()/(cms2.mus_p4()[i_lt].pt() + cms2.mus_pat_trackIso().at(i_lt));
+	  relIsoCalo_lt = cms2.mus_p4()[i_lt].pt()/(cms2.mus_p4()[i_lt].pt() + cms2.mus_pat_ecalIso().at(i_lt)+cms2.mus_pat_hcalIso().at(i_lt));
+	}
+	if (abs(id_ll) == 13){
+	  combIsoSum_ll = cms2.mus_pat_trackIso().at(i_ll)
+	    +cms2.mus_pat_ecalIso().at(i_ll)
+	    +cms2.mus_pat_hcalIso().at(i_ll);
+	  relIsoComb_ll = cms2.mus_p4()[i_ll].pt()/(cms2.mus_p4()[i_ll].pt() + combIsoSum_ll);
+	  relIsoTrack_ll = cms2.mus_p4()[i_ll].pt()/(cms2.mus_p4()[i_ll].pt() + cms2.mus_pat_trackIso().at(i_ll));
+	  relIsoCalo_ll = cms2.mus_p4()[i_ll].pt()/(cms2.mus_p4()[i_ll].pt() + cms2.mus_pat_ecalIso().at(i_ll)+cms2.mus_pat_hcalIso().at(i_ll));
+	}
+	if (abs(id_lt) == 13) hmuSumIso[myType][arrNjets]->Fill(min(combIsoSum_lt,24.99),weight);
+	if (abs(id_lt) == 13) hmuSumIso[3][arrNjets]->Fill(min(combIsoSum_lt,24.99),weight);
+	if (abs(id_ll) == 13) hmuSumIso[myType][arrNjets]->Fill(min(combIsoSum_ll,24.99),weight);
+	if (abs(id_ll) == 13) hmuSumIso[3][arrNjets]->Fill(min(combIsoSum_ll,24.99),weight);
+	//relative combined
+	if (abs(id_lt) == 13) hmuRelIso[myType][arrNjets]->Fill(min(relIsoComb_lt,0.999),weight);
+	if (abs(id_lt) == 13) hmuRelIso[3][arrNjets]->Fill(min(relIsoComb_lt,0.999),weight);
+	if (abs(id_ll) == 13) hmuRelIso[myType][arrNjets]->Fill(min(relIsoComb_ll,0.999),weight);
+	if (abs(id_ll) == 13) hmuRelIso[3][arrNjets]->Fill(min(relIsoComb_ll,0.999),weight);
+	//relative tracker
+	if (abs(id_lt) == 13) hmuRelIsoTrack[myType][arrNjets]->Fill(min(relIsoTrack_lt,0.999),weight);
+	if (abs(id_lt) == 13) hmuRelIsoTrack[3][arrNjets]->Fill(min(relIsoTrack_lt,0.999),weight);
+	if (abs(id_ll) == 13) hmuRelIsoTrack[myType][arrNjets]->Fill(min(relIsoTrack_ll,0.999),weight);
+	if (abs(id_ll) == 13) hmuRelIsoTrack[3][arrNjets]->Fill(min(relIsoTrack_ll,0.999),weight);
+	//relative calo
+	if (abs(id_lt) == 13) hmuRelIsoCalo[myType][arrNjets]->Fill(min(relIsoCalo_lt,0.999),weight);
+	if (abs(id_lt) == 13) hmuRelIsoCalo[3][arrNjets]->Fill(min(relIsoCalo_lt,0.999),weight);
+	if (abs(id_ll) == 13) hmuRelIsoCalo[myType][arrNjets]->Fill(min(relIsoCalo_ll,0.999),weight);
+	if (abs(id_ll) == 13) hmuRelIsoCalo[3][arrNjets]->Fill(min(relIsoCalo_ll,0.999),weight);
+
+	//electrons now
+	if (abs(id_lt) == 11){
+	  combIsoSum_lt = cms2.els_pat_trackIso().at(i_lt)
+	    +cms2.els_pat_ecalIso().at(i_lt)
+	    +cms2.els_pat_hcalIso().at(i_lt);
+	  relIsoComb_lt = cms2.els_p4()[i_lt].pt()/(cms2.els_p4()[i_lt].pt() + combIsoSum_lt);
+	  relIsoTrack_lt = cms2.els_p4()[i_lt].pt()/(cms2.els_p4()[i_lt].pt() + cms2.els_pat_trackIso().at(i_lt));
+	  relIsoCalo_lt = cms2.els_p4()[i_lt].pt()/(cms2.els_p4()[i_lt].pt() + cms2.els_pat_ecalIso().at(i_lt)+cms2.els_pat_hcalIso().at(i_lt));
+	}
+	if (abs(id_ll) == 11){
+	  combIsoSum_ll = cms2.els_pat_trackIso().at(i_ll)
+	    +cms2.els_pat_ecalIso().at(i_ll)
+	    +cms2.els_pat_hcalIso().at(i_ll);
+	  relIsoComb_ll = cms2.els_p4()[i_ll].pt()/(cms2.els_p4()[i_ll].pt() + combIsoSum_ll);
+	  relIsoTrack_ll = cms2.els_p4()[i_ll].pt()/(cms2.els_p4()[i_ll].pt() + cms2.els_pat_trackIso().at(i_ll));
+	  relIsoCalo_ll = cms2.els_p4()[i_ll].pt()/(cms2.els_p4()[i_ll].pt() + cms2.els_pat_ecalIso().at(i_ll)+cms2.els_pat_hcalIso().at(i_ll));
+	}
+	if (abs(id_lt) == 11) helSumIso[myType][arrNjets]->Fill(min(combIsoSum_lt,24.99),weight);
+	if (abs(id_lt) == 11) helSumIso[3][arrNjets]->Fill(min(combIsoSum_lt,24.99),weight);
+	if (abs(id_ll) == 11) helSumIso[myType][arrNjets]->Fill(min(combIsoSum_ll,24.99),weight);
+	if (abs(id_ll) == 11) helSumIso[3][arrNjets]->Fill(min(combIsoSum_ll,24.99),weight);
+	//relative combined
+	if (abs(id_lt) == 11) helRelIso[myType][arrNjets]->Fill(min(relIsoComb_lt,0.999),weight);
+	if (abs(id_lt) == 11) helRelIso[3][arrNjets]->Fill(min(relIsoComb_lt,0.999),weight);
+	if (abs(id_ll) == 11) helRelIso[myType][arrNjets]->Fill(min(relIsoComb_ll,0.999),weight);
+	if (abs(id_ll) == 11) helRelIso[3][arrNjets]->Fill(min(relIsoComb_ll,0.999),weight);
+	//relative tracker
+	if (abs(id_lt) == 11) helRelIsoTrack[myType][arrNjets]->Fill(min(relIsoTrack_lt,0.999),weight);
+	if (abs(id_lt) == 11) helRelIsoTrack[3][arrNjets]->Fill(min(relIsoTrack_lt,0.999),weight);
+	if (abs(id_ll) == 11) helRelIsoTrack[myType][arrNjets]->Fill(min(relIsoTrack_ll,0.999),weight);
+	if (abs(id_ll) == 11) helRelIsoTrack[3][arrNjets]->Fill(min(relIsoTrack_ll,0.999),weight);
+	//relative calo
+	if (abs(id_lt) == 11) helRelIsoCalo[myType][arrNjets]->Fill(min(relIsoCalo_lt,0.999),weight);
+	if (abs(id_lt) == 11) helRelIsoCalo[3][arrNjets]->Fill(min(relIsoCalo_lt,0.999),weight);
+	if (abs(id_ll) == 11) helRelIsoCalo[myType][arrNjets]->Fill(min(relIsoCalo_ll,0.999),weight);
+	if (abs(id_ll) == 11) helRelIsoCalo[3][arrNjets]->Fill(min(relIsoCalo_ll,0.999),weight);
 
 
-	// Relative isolation... muons
-	if (abs(id_lt) == 13) {
-	  double thisSum =  cms2.mus_iso03_sumPt().at(i_lt) +  
-	    cms2.mus_iso03_emEt().at(i_lt)  +
-	    cms2.mus_iso03_hadEt().at(i_lt);
-	  double thisPt  = cms2.mus_p4().at(i_lt).pt();
-	  double temp    = thisPt / (thisPt+thisSum);
-	  hmuRelIso[myType][arrNjets]->Fill(temp, weight);
-	  hmuRelIso[3][arrNjets]->Fill(temp, weight);
-	}
-	if (abs(id_ll) == 13) {
-	  double thisSum =  cms2.mus_iso03_sumPt().at(i_ll) +  
-	    cms2.mus_iso03_emEt().at(i_ll)  +
-	    cms2.mus_iso03_hadEt().at(i_ll);
-	  double thisPt  = cms2.mus_p4().at(i_ll).pt();
-	  double temp    = thisPt / (thisPt+thisSum);
-	  hmuRelIso[myType][arrNjets]->Fill(temp, weight);
-	  hmuRelIso[3][arrNjets]->Fill(temp, weight);
-	}
-
-
-	// Relative isolation... electrons
-	if (abs(id_lt) == 11) {
-	  double thisSum =  cms2.hyp_lt_iso().at(hypIdx);
-	  double thisPt  = pt_lt;
-	  double temp    = thisPt / (thisPt+thisSum);
-	  heleRelIso[myType][arrNjets]->Fill(temp, weight);
-	  heleRelIso[3][arrNjets]->Fill(temp, weight);
-	}
-	if (abs(id_ll) == 11) {
-	  double thisSum =  cms2.hyp_ll_iso().at(hypIdx);
-	  double thisPt  = pt_ll;
-	  double temp    = thisPt / (thisPt+thisSum);
-	  heleRelIso[myType][arrNjets]->Fill(temp, weight);
-	  heleRelIso[3][arrNjets]->Fill(temp, weight);
-	}
       
 	// dilepton pt
 	hdilPt[myType][arrNjets]->Fill(cms2.hyp_p4().at(hypIdx).pt(), weight);
@@ -1131,16 +1180,36 @@ void ttDilCounts_looper::bookHistos(char *prefix) {
       hmuSumPt[i][j]->SetDirectory(rootdir);
       hmuSumPt[i][j]->GetXaxis()->SetTitle("#SigmaPt");
     
-      hmuSumIso[i][j] = new TH1F(Form("%s_hmuIsoSum_%s",prefix,suffix[i]),Form("%s_hmuIsoSum_%s",prefix,suffix[i]),
+      hmuSumIso[i][j] = new TH1F(Form("%s_hmuSumIso_%s",prefix,suffix[i]),Form("%s_hmuSumIso_%s",prefix,suffix[i]),
 				 100, 0., 25.);
       hmuSumIso[i][j]->SetDirectory(rootdir);
       hmuSumIso[i][j]->GetXaxis()->SetTitle("#SigmaPt");
+      helSumIso[i][j] = new TH1F(Form("%s_helSumIso_%s",prefix,suffix[i]),Form("%s_helSumIso_%s",prefix,suffix[i]),
+				 100, 0., 25.);
+      helSumIso[i][j]->SetDirectory(rootdir);
+      helSumIso[i][j]->GetXaxis()->SetTitle("#SigmaPt");
     
-      heleRelIso[i][j] = new TH1F(Form("%s_heleRelIso_%s",prefix,suffix[i]),Form("%s_heleRelIso_%s",prefix,suffix[i]),
-				  100, 0., 1.0001);
-      heleRelIso[i][j]->SetDirectory(rootdir);
       hmuRelIso[i][j] = new TH1F(Form("%s_hmuRelIso_%s",prefix,suffix[i]),Form("%s_hmuRelIso_%s",prefix,suffix[i]),
-				 100, 0., 1.0001);
+				  100, 0., 1.0001);
+      hmuRelIso[i][j]->SetDirectory(rootdir);
+      helRelIso[i][j] = new TH1F(Form("%s_helRelIso_%s",prefix,suffix[i]),Form("%s_helRelIso_%s",prefix,suffix[i]),
+				  100, 0., 1.0001);
+      helRelIso[i][j]->SetDirectory(rootdir);
+      // tracker
+      hmuRelIsoTrack[i][j] = new TH1F(Form("%s_hmuRelIsoTrack_%s",prefix,suffix[i]),Form("%s_hmuRelIsoTrack_%s",prefix,suffix[i]),
+				  100, 0., 1.0001);
+      hmuRelIsoTrack[i][j]->SetDirectory(rootdir);
+      helRelIsoTrack[i][j] = new TH1F(Form("%s_helRelIsoTrack_%s",prefix,suffix[i]),Form("%s_helRelIsoTrack_%s",prefix,suffix[i]),
+				  100, 0., 1.0001);
+      helRelIsoTrack[i][j]->SetDirectory(rootdir);
+      // calorimeter
+      hmuRelIsoCalo[i][j] = new TH1F(Form("%s_hmuRelIsoCalo_%s",prefix,suffix[i]),Form("%s_hmuRelIsoCalo_%s",prefix,suffix[i]),
+				  100, 0., 1.0001);
+      hmuRelIsoCalo[i][j]->SetDirectory(rootdir);
+      helRelIsoCalo[i][j] = new TH1F(Form("%s_helRelIsoCalo_%s",prefix,suffix[i]),Form("%s_helRelIsoCalo_%s",prefix,suffix[i]),
+				  100, 0., 1.0001);
+      helRelIsoCalo[i][j]->SetDirectory(rootdir);
+
 
       if (j==0){
 	hnJet[i]->Sumw2();
@@ -1174,9 +1243,16 @@ void ttDilCounts_looper::bookHistos(char *prefix) {
       hetaJet4[i][j]->Sumw2();
       heleSumPt[i][j]->Sumw2();
       hmuSumPt[i][j]->Sumw2();
+
       hmuSumIso[i][j]->Sumw2();
-      heleRelIso[i][j]->Sumw2(); 
-      hmuRelIso[i][j]->Sumw2(); 
+      helSumIso[i][j]->Sumw2();
+      hmuRelIso[i][j]->Sumw2();
+      helRelIso[i][j]->Sumw2();
+      hmuRelIsoTrack[i][j]->Sumw2();
+      helRelIsoTrack[i][j]->Sumw2();
+      hmuRelIsoCalo[i][j]->Sumw2();
+      helRelIsoCalo[i][j]->Sumw2();
+
     }
   }//channel loop
 }//CMS2::bookHistos()
