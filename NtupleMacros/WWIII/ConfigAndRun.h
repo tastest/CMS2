@@ -13,6 +13,7 @@ using std::string;
 // samples)
 enum {
      LOOP_WW	,
+     LOOP_WW_EXCL	,
      LOOP_WZ	,
      LOOP_ZZ	,
      LOOP_WJETS	,
@@ -38,6 +39,8 @@ uint32 default_samples = (1 <<      LOOP_WW)	|
      (1 << LOOP_DYTT	)	|
      (1 << LOOP_TTBAR	)	|
      (1 << LOOP_TW	);
+
+uint32 eff_samples = (default_samples & ~(1 << LOOP_WW)) | (1 << LOOP_WW_EXCL);
 
 // #define TWIKI_OUTPUT
 #define LATEX_OUTPUT
@@ -140,23 +143,23 @@ void printTableVertically (const Looper **hists, int n, const char *fname,
 	  perror("printing table");
 	  return;
      }
-     for (int i = 0; i < 1; ++i) {
-	  double cands = 0;
-	  double w2 = 0;
-	  int is_background = 0;
+     double cands[4] = {0, 0, 0, 0};
+     double w2[4] = {0, 0, 0, 0};
+     int is_background[4] = {0, 0, 0, 0};
 #if defined(LATEX_OUTPUT) && !defined(SUMMARY_OUTPUT)
-	  fprintf(f, "\\hline\\hline\n");
+     fprintf(f, "\\hline\\hline\n");
 #endif
-	  for (int j = 0; j < n; ++j) {
-	       if (not hists[j]->HasRun())
-		    continue;
+     for (int j = 0; j < n; ++j) {
+	  if (not hists[j]->HasRun())
+	       continue;
 #if defined(TWIKI_OUTPUT)
-	       fprintf(f, "|  *%30s*  ", hists[j]->SampleName().c_str());
+	  fprintf(f, "|  *%30s*  ", hists[j]->SampleName().c_str());
 #else 
 #if defined(LATEX_OUTPUT)
-	       fprintf(f, "\\%-30s  ", hists[j]->SampleName().c_str());
+	  fprintf(f, "\\%-30s  ", hists[j]->SampleName().c_str());
 #endif
 #endif
+	  for (int i = 0; i < 4; ++i) {
 #if defined(TWIKI_OUTPUT)
 	       fprintf(f, "|  %10.1f &plusmn; %10.1f  |\n", 
 		       hists[j]->CandsPassing(DileptonHypType(i)),
@@ -165,8 +168,8 @@ void printTableVertically (const Looper **hists, int n, const char *fname,
 #if defined(LATEX_OUTPUT)
 	       const double n = hists[j]->CandsPassing(DileptonHypType(i));
 #if defined(SUMMARY_OUTPUT)
-	       if (n < 100000)
-		    fprintf(f, "& %18.0f\\\\\n", n);
+	       if (n < 1000000)
+		    fprintf(f, "& %18.1f", n);
 	       else {
 		    const double expo = log(n) / log(10);
 		    const int log10 = (int)floor(expo);
@@ -180,12 +183,12 @@ void printTableVertically (const Looper **hists, int n, const char *fname,
 #endif
 #endif
 #endif
-	       if (is_background) {
-		    cands += hists[j]->CandsPassing(DileptonHypType(i));
-		    w2 += hists[j]->RMS(DileptonHypType(i)) * 
+	       if (is_background[i]) {
+		    cands[i] += hists[j]->CandsPassing(DileptonHypType(i));
+		    w2[i] += hists[j]->RMS(DileptonHypType(i)) * 
 			 hists[j]->RMS(DileptonHypType(i));
 	       }
-	       is_background++;
+	       is_background[i]++;
 #if 0
 	       const FakeRateLooper *looper = 
 		    dynamic_cast<const FakeRateLooper *>(hists[j]);
@@ -195,32 +198,40 @@ void printTableVertically (const Looper **hists, int n, const char *fname,
 	       }
 #endif	       
 	  }
+#if defined(LATEX_OUTPUT) && defined(SUMMARY_OUTPUT)
+	  fprintf(f, "\\\\\n", n);
+#endif
+     }
 #if defined(TWIKI_OUTPUT)
-	  fprintf(f, "|  *%30s*  ", "total");
-	  fprintf(f, "|  %10.1f &plusmn; %10.1f  |\n", cands, sqrt(w2));
+     fprintf(f, "|  *%30s*  ", "total");
+     for (int i = 0; i < 4; ++i) {
+	  fprintf(f, "|  %10.1f &plusmn; %10.1f  |\n", cands[i], sqrt(w2[i]));
+     }
 #else
 #if defined(LATEX_OUTPUT)
 #if defined(SUMMARY_OUTPUT)
-	  fprintf(f, "\\hline\n %-30s  ", "total");
-	  const double n = cands;
-	  if (n < 100000)
-	       fprintf(f, "& %18.0f\\\\\n", n);
+     fprintf(f, "\\hline\n %-30s  ", "total");
+     for (int i = 0; i < 4; ++i) {
+	  const double n = cands[i];
+	  if (n < 1000000)
+	       fprintf(f, "& %18.1f", n);
 	  else {
 	       const double expo = log(n) / log(10);
 	       const int log10 = (int)floor(expo);
 	       const int exp10 = pow(10.0, log10);
 	       fprintf(f, "& %3.1f$\\cdot$10$^{%d}$\\\\\n", n / exp10, log10);
 	  }
-#else
-	  fprintf(f, "\\hline\n %-30s  ", "total");
-	  fprintf(f, "&  %10.1f $\\pm$ %10.1f\\\\\n", cands, sqrt(w2));
-	  fprintf(f, "\\\\\n");
-#endif
-#endif
-#endif
      }
+     fprintf(f, "\\\\\n", n);
+#else
+     fprintf(f, "\\hline\n %-30s  ", "total");
+     fprintf(f, "&  %10.1f $\\pm$ %10.1f\\\\\n", cands[i], sqrt(w2[i]));
+     fprintf(f, "\\\\\n");
+#endif
+#endif
+#endif
 #if defined(LATEX_OUTPUT) && !defined(SUMMARY_OUTPUT)
-	  fprintf(f, "\\hline\\hline\n");
+     fprintf(f, "\\hline\\hline\n");
 #endif
      if (f != stdin) 
 	  fclose(f);
@@ -246,6 +257,7 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
      // by default, we run this list of samples; if we're told by the
      // which_ones bit field to skip a sample, we skip it
      L looper_ww		(fWW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WW    )) looper_ww          .Loop();
+     L looper_ww_excl		(fWW_excl()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WW_EXCL    )) looper_ww_excl          .Loop();
      L looper_wz		(fWZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WZ    )) looper_wz          .Loop();
 //      L looper_wz_incl		(fWZ_incl()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WZ    )) looper_wz_incl     .Loop();
      L looper_zz		(fZZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_ZZ    )) looper_zz          .Loop();
@@ -257,6 +269,7 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
      L looper_dytt		(fDYtt()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYTT  )) looper_dytt        .Loop();
      L looper_astar		(fAstar()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DY_AND_FRIENDS  )) looper_astar        .Loop();
      L looper_dy20tt		(fDY20tt()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DY_AND_FRIENDS  )) looper_dy20tt        .Loop();
+     L looper_dy20mm		(fDY20mm()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DY_AND_FRIENDS  )) looper_dy20mm        .Loop();
      L looper_wgamma		(fWgamma()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WGAMMA  )) looper_wgamma        .Loop();
      L looper_zgamma		(fZgamma()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_ZGAMMA  )) looper_zgamma        .Loop();
      L looper_ttbar		(fttbar()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_TTBAR )) looper_ttbar       .Loop();
@@ -269,6 +282,7 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
      // then we collect them all and print a table
      const Looper *loopers[] = { 
 	  &looper_ww          ,
+	  &looper_ww_excl     ,
 	  &looper_wz          ,
 // 	  &looper_wz_incl     ,
 	  &looper_zz          ,
@@ -280,6 +294,7 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
 	  &looper_dytt        ,
 	  &looper_astar        ,
 	  &looper_dy20tt        ,
+	  &looper_dy20mm        ,
 	  &looper_wgamma        ,
 	  &looper_zgamma        ,
 	  &looper_ttbar       ,
@@ -483,40 +498,40 @@ int Wjets_SS_Fakerate ()
 
 int Efficiency_base ()
 {
-     return run<EventCountingLooper>(eff_base, "Efficiency_base", default_samples, printTableVertically);
+     return run<EventCountingLooper>(eff_base, "Efficiency_base", eff_samples, printTableVertically);
 }
 
 int Efficiency_trigger ()
 {
-     return run<EventCountingLooper>(eff_trigger, "Efficiency_trigger", default_samples, printTableVertically);
+     return run<EventCountingLooper>(eff_trigger, "Efficiency_trigger", eff_samples, printTableVertically);
 }
 
 int Efficiency_tcmet ()
 {
-     return run<EventCountingLooper>(eff_tcmet, "Efficiency_tcmet", default_samples, printTableVertically);
+     return run<EventCountingLooper>(eff_tcmet, "Efficiency_tcmet", eff_samples, printTableVertically);
 }
 
 int Efficiency_id ()
 {
-     return run<EventCountingLooper>(eff_id, "Efficiency_id", default_samples, printTableVertically);
+     return run<EventCountingLooper>(eff_id, "Efficiency_id", eff_samples, printTableVertically);
 }
 
 int Efficiency_iso ()
 {
-     return run<EventCountingLooper>(eff_iso, "Efficiency_iso", default_samples, printTableVertically);
+     return run<EventCountingLooper>(eff_iso, "Efficiency_iso", eff_samples, printTableVertically);
 }
 
 int Efficiency_jet ()
 {
-     return run<EventCountingLooper>(eff_jet, "Efficiency_jet", default_samples, printTableVertically);
+     return run<EventCountingLooper>(eff_jet, "Efficiency_jet", eff_samples, printTableVertically);
 }
 
 int Efficiency_zveto ()
 {
-     return run<EventCountingLooper>(eff_zveto, "Efficiency_zveto", default_samples, printTableVertically);
+     return run<EventCountingLooper>(eff_zveto, "Efficiency_zveto", eff_samples, printTableVertically);
 }
 
 int Efficiency_muveto ()
 {
-     return run<EventCountingLooper>(eff_muveto, "Efficiency_muveto", default_samples, printTableVertically);
+     return run<EventCountingLooper>(eff_muveto, "Efficiency_muveto", eff_samples, printTableVertically);
 }

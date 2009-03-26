@@ -35,6 +35,16 @@ Sample fWW ()
      return ret;
 }
 
+//WW file
+Sample fWW_excl ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "cms2-V01-02-06/WW_2l_Summer08_IDEAL_V9_v2/merged_ntuple*.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, WW, kRed, 1, "ww", true, 0. };
+     return ret;
+}
+
 //WZ file
 Sample fWZ ()
 {
@@ -115,6 +125,40 @@ Sample fDYtt ()
      return ret;
 }
 
+
+// Pythia DY with no filtering when making ntuples
+// These samples also contain pdf_info and genlepdaughters
+//
+// DYee
+Sample fDYee_nofilter    ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "dlevans/cms2-V01-02-06-NoFilter/Zee_M20/merged_ntuple*.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, DYee, kMagenta, 1.14, "dyee_nofilter", true, 0. };
+     return ret;
+}
+// DYmm
+Sample fDYmm_nofilter    ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "dlevans/cms2-V01-02-06-NoFilter/Zmm_M20/merged_ntuple*.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, DYmm, kCyan, 1.14, "dymm_nofilter", true, 0. };
+     return ret;
+}
+// DYtt
+Sample fDYtt_nofilter    ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "dlevans/cms2-V01-02-06-NoFilter/Ztt_M20/merged_ntuple*.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, DYtt, kBlack, 1.14, "dytt_nofilter", true, 0. };
+     return ret;
+}
+//
+//
+
 // low-mass DY sample
 Sample fAstar ()
 {
@@ -132,6 +176,15 @@ Sample fDY20tt ()
      std::string sample = prefix + "cms2-V01-02-06/Ztautau_M20_Summer08_IDEAL_V9_v1/merged_ntuple*.root";
      c->Add(sample.c_str());
      Sample ret = { c, DYtt, kBlack, 1, "dy20tt", true };
+     return ret;
+}
+
+Sample fDY20mm ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "cms2-V01-02-06/Zmumu_M20_Summer08_IDEAL_V9_reco-v2/merged_ntuple**.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, DYmm, kCyan, 1, "dy20mm", true };
      return ret;
 }
 
