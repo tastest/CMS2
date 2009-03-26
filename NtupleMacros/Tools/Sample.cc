@@ -489,13 +489,3 @@ Sample fQCDpt800toInf ()
      Sample ret = { c, QCDpt800toInf, 28, 1, "QCDpt800toInf", true, 999999999 };
      return ret;
 }
-
-Sample fpythiaDYTT ()
-{
-     TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-02-06/Ztautau_M20_Summer08_IDEAL_V9_v1/*.root";
-     c->Add(sample.c_str());
-     Sample ret = { c, DYttp, kBlack, 1, "pythia_dy_tt", true };
-     return ret;
-}
-
