@@ -62,7 +62,6 @@
 	  CUT_ELFAKE_NUMERATOR,
 	  CUT_ELFAKE_NOT_NUMERATOR,
 	  CUT_MORE_THAN_TWO_TRACKS,
-
      CUT_MUON_RECO_CLEANING,
      CUT_MUON_RECO_CLEANING20,
      CUT_MET_SIMPLE20,
@@ -74,9 +73,7 @@
      CUT_MET_BALLANCE,
      CUT_MET_PROJECTED,
      CUT_PASS5_MET,
-
 CUT_PASS_TRIGGER,
-
      };
 
 
@@ -409,5 +406,12 @@ protected:
      double		cands_passing[4];
      double		cands_passing_w2[4];
      unsigned int	cands_count[4];
+
+     double cands_wz_all[4];
+     double cands_wz_zll[4];
+     double cands_wz_all_w2[4];
+     double cands_wz_zll_w2[4];
+
+
 };
 #endif

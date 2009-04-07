@@ -14,6 +14,12 @@ DYEst::DYEst (Sample s, cuts_t c, const char *fname)
      memset(cands_passing	, 0, sizeof(cands_passing       ));
      memset(cands_passing_w2	, 0, sizeof(cands_passing_w2    ));
      memset(cands_count		, 0, sizeof(cands_count         ));
+
+     memset(cands_wz_all       , 0, sizeof(cands_wz_all       ));
+     memset(cands_wz_zll       , 0, sizeof(cands_wz_zll       ));
+     memset(cands_wz_all_w2    , 0, sizeof(cands_wz_all_w2    ));
+     memset(cands_wz_zll_w2    , 0, sizeof(cands_wz_zll_w2    ));
+
 }
 
 void DYEst::BookHistos ()
@@ -326,6 +332,7 @@ void DYEst::FillDilepHistos (int i_hyp)
      // this is how to test that the candidate passes the cuts (which
      // we specified in the constructor when we made the looper)
      // (*note: the parentheses are important*):
+
      if ((cuts_passed & cuts_) == cuts_) {
 	  // if the candidate passed, we count it
 	  cands_passing[myType] += weight;
@@ -334,7 +341,26 @@ void DYEst::FillDilepHistos (int i_hyp)
 	  cands_passing[DILEPTON_ALL] += weight;
 	  cands_passing_w2[DILEPTON_ALL] += weight * weight;
 	  cands_count[DILEPTON_ALL]++;
+
+          cands_wz_all[myType] += weight;
+          cands_wz_all_w2[myType] += weight*weight;
+          if (cms2.hyp_ll_mc_motherid()[i_hyp] == 23
+              && cms2.hyp_lt_mc_motherid()[i_hyp] == 23) {
+          	cands_wz_zll[myType] += weight;
+		cands_wz_zll_w2[myType] += weight*weight;
+          }
+          
+	  // if both leptons come from Z
+	  if (myType == DILEPTON_MUMU) {
+		std::cout << "MM: " << cms2.hyp_ll_mc_motherid()[i_hyp] << ", " << cms2.hyp_lt_mc_motherid()[i_hyp] << std::endl;
+	  }
+          // if both leptons come from Z
+          if (myType == DILEPTON_EE) {
+                std::cout << "EE: " << cms2.hyp_ll_mc_motherid()[i_hyp] << ", " << cms2.hyp_lt_mc_motherid()[i_hyp] << std::endl;
+          }
+
      }
+
 
      if ((cuts_passed & baseline_cuts_nometsimple_nozveto) == baseline_cuts_nometsimple_nozveto) {
 
@@ -417,6 +443,17 @@ void DYEst::End ()
         outTree_->Write();
         outFile_->Close();
         delete outFile_; 
+
+     // mm
+     std::cout << "... mumu " << std::endl;
+     std::cout << "...... all " << cands_wz_all[DILEPTON_MUMU] << " $\\pm$ " << sqrt(cands_wz_all_w2[DILEPTON_MUMU]) << std::endl;
+     std::cout << "...... zll " << cands_wz_zll[DILEPTON_MUMU] << " $\\pm$ " << sqrt(cands_wz_zll_w2[DILEPTON_MUMU]) << std::endl;
+
+     // ee
+     std::cout << "... ee " << std::endl;
+     std::cout << "...... all " << cands_wz_all[DILEPTON_EE] << " $\\pm$ " << sqrt(cands_wz_all_w2[DILEPTON_EE]) << std::endl;
+     std::cout << "...... zll " << cands_wz_zll[DILEPTON_EE] << " $\\pm$ " << sqrt(cands_wz_zll_w2[DILEPTON_EE]) << std::endl;
+
 
      int ret = fprintf(logfile_, 
 		       "Sample %10s: Total candidate count (ee em mm all): %8u %8u %8u %8u."

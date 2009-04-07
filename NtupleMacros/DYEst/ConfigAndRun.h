@@ -231,7 +231,7 @@ int DYEstResults_ForWW_MET45_INCL ()
 int DYEstResults_ForWW_MET45_INCL_TRIG ()
 {
      return run<DYEst>(baseline_cuts_nomet
-					| (CUT_BIT(CUT_PASS_TRIGGER))
+//					| (CUT_BIT(CUT_PASS_TRIGGER))
                                      | (CUT_BIT(CUT_MET_SIMPLE45))
                                      | (CUT_BIT(CUT_MET_BALLANCE))
                                      | (CUT_BIT(CUT_MET_PROJECTED)),
@@ -276,13 +276,41 @@ int DYEstResults_GetEMuEff ()
 // AND the trigger
 int DYEstResults_GetEMuEff_TRIG ()
 {
-     return run<DYEst>(baseline_cuts_pass5
-                                        | (CUT_BIT(CUT_PASS_TRIGGER))
+     return run<DYEst>(		(baseline_cuts_pass5
+                                        | (CUT_BIT(CUT_PASS_TRIGGER)))
                                      & ~(CUT_BIT(CUT_PASS5_MET)),
                         "DYEstResults_GetEMuEff_TRIG",
                         1 << LOOP_WWINCL | 1 << LOOP_WZINCL | 1 << LOOP_ZZINCL |
                         1 << LOOP_TTBAR | 1 << LOOP_WJETS | 1 << LOOP_TW |
                         1 << LOOP_DYEE | 1 << LOOP_DYMM | 1 << LOOP_DYTT);
+}
+
+// use the inclusive WW, ZZ and WZ samples 
+// AND the trigger selection
+int DYEstResults_ForWW_MET45_INCL_TRIG_WZStudy ()
+{
+     return run<DYEst>((baseline_cuts_nomet
+//                                      | (CUT_BIT(CUT_PASS_TRIGGER))
+                                     | (CUT_BIT(CUT_MET_SIMPLE45))
+                                     | (CUT_BIT(CUT_MET_BALLANCE))
+                                     | (CUT_BIT(CUT_MET_PROJECTED)))
+
+					& ~(CUT_BIT(CUT_PASS_ZVETO)),
+
+
+                        "DYEstResults_ForWW_MET45_INCL_TRIG_WZStudy",
+                        //1 << LOOP_WWINCL | 
+			1 << LOOP_WZINCL);
+			//| 1 << LOOP_ZZINCL |
+                        //1 << LOOP_TTBAR | 1 << LOOP_WJETS | 1 << LOOP_TW |
+                        //1 << LOOP_DYEE | 1 << LOOP_DYMM | 1 << LOOP_DYTT);
+}
+
+// test
+int test ()
+{
+     return run<DYEst>(baseline_cuts_pass5, "test");
+
 }
 
 

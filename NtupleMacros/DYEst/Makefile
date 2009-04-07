@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.2 2009/02/19 19:48:29 dlevans Exp $
+# $Id: Makefile,v 1.3 2009/04/07 18:55:11 dlevans Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
@@ -30,27 +30,8 @@ TABLES = DYEstResults_ForWW_MET20.tbl \
          DYEstResults_ForWW_MET30.tbl  \
          DYEstResults_ForWW_MET35.tbl  \
          DYEstResults_ForWW_MET40.tbl  \
-         DYEstResults_ForWW_MET35.tbl  \
+         DYEstResults_ForWW_MET45.tbl  \
          DYEstResults_GetEMuEff.tbl
-
-#Results.tbl #Feb_Results.tbl Feb_Results_With_Ntrks.tbl		\
-#Feb_Results_With_Ntrks.tbl Feb_Results_With_TcMET.tbl			\
-Feb_Results_With_TrackJets.tbl Feb_Results_With_Btags.tbl		\
-Feb_Results_NoPass4MET.tbl Feb_Results_With_CaloIso.tbl			\
-Oct_Results.tbl Results_NoTcMET.tbl Results_NoTrackJets.tbl		\
-Results_NoBtags.tbl Results_NoCaloIso.tbl Results_NoPass4MET.tbl	\
-Results_NoNtrks.tbl Wjets_Numerator.tbl Wjets_FOs_Not_Numerator.tbl	\
-Wjets_Fakerate.tbl
-
-FAKETABLES = Wjets_Numerator.tbl Wjets_FOs_Not_Numerator.tbl	\
-Wjets_Fakerate.tbl Wjets_Oingo.tbl \
-Wjets_SS_Fakerate.tbl Wjets_SS_FOs_Not_Numerator.tbl Wjets_SS_Numerator.tbl
-
-NM1TABLES = Results_NoTcMET.tbl Results_NoTrackJets.tbl		\
-Results_NoBtags.tbl Results_NoCaloIso.tbl Results_NoPass4MET.tbl	\
-Results_NoNtrks.tbl
-
-RESULTTABLES = Results.tbl
 
 .PHONY: all
 all:	$(LIBS) 
@@ -61,8 +42,6 @@ libs:	$(LIBS)
 .PHONY: tables
 tables:	$(TABLES)
 
-
-
 $(TOOLSLIB):	$(TOOLSOBJECTS) 
 	$(LINKER) $(LINKERFLAGS) -shared $(TOOLSOBJECTS) -o $@ 
 
@@ -72,8 +51,8 @@ $(CORELIB):	$(COREOBJECTS)
 $(LOOPERLIB):	$(LOOPEROBJECTS) 
 	$(LINKER) $(LINKERFLAGS) -shared $(LOOPEROBJECTS) -o $@ 
 
-linkdef_out.cxx: ${CMS2_LOCATION}/NtupleMacros/linkdef.h ConfigAndRun.h
-	rootcint -f $@ -c $(INCLUDE) ConfigAndRun.h $<
+linkdef_out.cxx: ${CMS2_LOCATION}/NtupleMacros/linkdef.h ConfigAndRun.h processDYEstResults.h
+	rootcint -f $@ -c $(INCLUDE) ConfigAndRun.h processDYEstResults.h $<
 
 # General rule for making object files
 %.d:	%.cc

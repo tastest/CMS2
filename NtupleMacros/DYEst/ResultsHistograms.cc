@@ -17,7 +17,7 @@ ResultsHistograms::ResultsHistograms(Color_t bandColor,
         lg_estimate_ = new TLegend(0.2, 0.6, 0.6, 0.9);
         lg_estimate_->SetFillColor(kWhite);
         lg_estimate_->SetLineColor(kWhite);
-        lg_estimate_->AddEntry(h1_true_, "True" + title, "l");
+        //lg_estimate_->AddEntry(h1_true_, "True" + title, "l");
         lg_estimate_->AddEntry(h1_true_errHigh_, "True " + title + " #pm 1#sigma", "f");
         lg_estimate_->AddEntry(h1_est_, "Estimated " + title, "lp");	
 
@@ -37,7 +37,7 @@ TCanvas* ResultsHistograms::results(Float_t min, Float_t max) {
         c1->cd();
         h1_true_errHigh_->Draw("HIST");
         h1_true_errLow_->Draw("SAME HIST");
-        h1_true_->Draw("SAME");
+        //h1_true_->Draw("SAME");
         h1_est_->Draw("SAME E1");
 	h1_true_errHigh_->GetYaxis()->SetRangeUser(min, max);
 	lg_estimate_->Draw("SAME");
