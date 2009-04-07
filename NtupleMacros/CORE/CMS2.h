@@ -26,6 +26,9 @@ protected:
 	vector<TString>	evt_L1_trigNames_;
 	TBranch *evt_L1_trigNames_branch;
 	bool evt_L1_trigNames_isLoaded;
+	double	genps_pthat_;
+	TBranch *genps_pthat_branch;
+	bool genps_pthat_isLoaded;
 	vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<double>,ROOT::Math::DefaultCoordinateSystemTag> >	scs_pos_;
 	TBranch *scs_pos_branch;
 	bool scs_pos_isLoaded;
@@ -2525,6 +2528,14 @@ void Init(TTree *tree) {
 	}
 	if(evt_L1_trigNames_branch == 0 ) {
 	cout << "Branch evt_L1_trigNames does not exist." << endl;
+	}
+	genps_pthat_branch = 0;
+	if (tree->GetAlias("genps_pthat") != 0) {
+		genps_pthat_branch = tree->GetBranch(tree->GetAlias("genps_pthat"));
+		genps_pthat_branch->SetAddress(&genps_pthat_);
+	}
+	if(genps_pthat_branch == 0 ) {
+	cout << "Branch genps_pthat does not exist." << endl;
 	}
 	scs_pos_branch = 0;
 	if (tree->GetAlias("scs_pos") != 0) {
@@ -7279,6 +7290,7 @@ void GetEntry(unsigned int idx)
 		evt_dataset_isLoaded = false;
 		evt_HLT_trigNames_isLoaded = false;
 		evt_L1_trigNames_isLoaded = false;
+		genps_pthat_isLoaded = false;
 		scs_pos_isLoaded = false;
 		scs_vtx_isLoaded = false;
 		vtxs_position_isLoaded = false;
@@ -7981,6 +7993,21 @@ void GetEntry(unsigned int idx)
 			evt_L1_trigNames_isLoaded = true;
 		}
 		return evt_L1_trigNames_;
+	}
+	double &genps_pthat()
+	{
+		if (not genps_pthat_isLoaded) {
+			if (genps_pthat_branch != 0) {
+				genps_pthat_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch genps_pthat_branch does not exist!\n");
+				exit(1);
+			}
+			genps_pthat_isLoaded = true;
+		}
+		return genps_pthat_;
 	}
 	vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<double>,ROOT::Math::DefaultCoordinateSystemTag> > &scs_pos()
 	{
