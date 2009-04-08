@@ -27,6 +27,7 @@ public:
 // helper functions that provide samples from their default locations
 // (takes the guesswork out of data access...)
 Sample fWW	();
+Sample fWW_excl	();
 Sample fWZ	();
 // Sample fWZ_incl	();
 Sample fZZ	();
@@ -39,6 +40,8 @@ Sample fVlqq	();
 Sample fVlqq	();
 Sample fAstar	();
 Sample fDY20tt	();
+Sample fDY20mm	();
+Sample fDY20ee  ();
 Sample fWgamma	();
 Sample fZgamma	();
 Sample fttbar	();
@@ -57,6 +60,11 @@ Sample fLM8     ();
 Sample fLM9     ();
 Sample fLM10    ();
 Sample fLM11    ();
+
+// Pythia Drell-Yan samples with no filter
+Sample fDYee_nofilter    ();
+Sample fDYmm_nofilter    ();
+Sample fDYtt_nofilter    ();
 
 // QCD samples
 Sample fInclusiveMu5Pt50	();

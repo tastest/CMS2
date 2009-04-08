@@ -279,11 +279,11 @@ static const cuts_t eff_base =
      CUT_BIT(CUT_LT_PT) | 
      CUT_BIT(CUT_LL_PT);
 static const cuts_t eff_trigger = eff_base | CUT_BIT(CUT_PASS_TRIGGER);
-static const cuts_t eff_tcmet = eff_trigger | CUT_BIT(CUT_PASS2_TCMET) | CUT_BIT(CUT_PASS4_TCMET);
-static const cuts_t eff_id = eff_tcmet | CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD);
+static const cuts_t eff_id = eff_trigger | CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD);
 static const cuts_t eff_iso = eff_id | CUT_BIT(CUT_LT_CALOISO) | CUT_BIT(CUT_LL_CALOISO);
 static const cuts_t eff_jet = eff_iso | CUT_BIT(CUT_PASS_JETVETO_JPT20);
-static const cuts_t eff_zveto = eff_jet | CUT_BIT(CUT_PASS_ZVETO);
+static const cuts_t eff_tcmet = eff_jet | CUT_BIT(CUT_PASS2_TCMET) | CUT_BIT(CUT_PASS4_TCMET);
+static const cuts_t eff_zveto = eff_tcmet | CUT_BIT(CUT_PASS_ZVETO);
 static const cuts_t eff_muveto = eff_zveto | CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT);
 //----------------------------------------------------------------------
 // Loopers 
