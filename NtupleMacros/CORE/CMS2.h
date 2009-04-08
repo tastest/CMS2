@@ -1999,6 +1999,15 @@ protected:
 	vector<unsigned int>	mus_pat_flag_;
 	TBranch *mus_pat_flag_branch;
 	bool mus_pat_flag_isLoaded;
+	float	evt_scale1fb_;
+	TBranch *evt_scale1fb_branch;
+	bool evt_scale1fb_isLoaded;
+	int	evt_nEvts_;
+	TBranch *evt_nEvts_branch;
+	bool evt_nEvts_isLoaded;
+	float	evt_filt_eff_;
+	TBranch *evt_filt_eff_branch;
+	bool evt_filt_eff_isLoaded;
 public: 
 int ScanChain(class TChain* chain, int nEvents=-1);
 void Init(TTree *tree) {
@@ -7291,6 +7300,30 @@ void Init(TTree *tree) {
 	if(mus_pat_flag_branch == 0 ) {
 	cout << "Branch mus_pat_flag does not exist." << endl;
 	}
+	evt_scale1fb_branch = 0;
+	if (tree->GetAlias("evt_scale1fb") != 0) {
+		evt_scale1fb_branch = tree->GetBranch(tree->GetAlias("evt_scale1fb"));
+		evt_scale1fb_branch->SetAddress(&evt_scale1fb_);
+	}
+	if(evt_scale1fb_branch == 0 ) {
+	cout << "Branch evt_scale1fb does not exist." << endl;
+	}
+	evt_nEvts_branch = 0;
+	if (tree->GetAlias("evt_nEvts") != 0) {
+		evt_nEvts_branch = tree->GetBranch(tree->GetAlias("evt_nEvts"));
+		evt_nEvts_branch->SetAddress(&evt_nEvts_);
+	}
+	if(evt_nEvts_branch == 0 ) {
+	cout << "Branch evt_nEvts does not exist." << endl;
+	}
+	evt_filt_eff_branch = 0;
+	if (tree->GetAlias("evt_filt_eff") != 0) {
+		evt_filt_eff_branch = tree->GetBranch(tree->GetAlias("evt_filt_eff"));
+		evt_filt_eff_branch->SetAddress(&evt_filt_eff_);
+	}
+	if(evt_filt_eff_branch == 0 ) {
+	cout << "Branch evt_filt_eff does not exist." << endl;
+	}
   tree->SetMakeClass(0);
 }
 void GetEntry(unsigned int idx) 
@@ -7958,6 +7991,9 @@ void GetEntry(unsigned int idx)
 		els_pat_flag_isLoaded = false;
 		jets_pat_flag_isLoaded = false;
 		mus_pat_flag_isLoaded = false;
+		evt_scale1fb_isLoaded = false;
+		evt_nEvts_isLoaded = false;
+		evt_filt_eff_isLoaded = false;
 	}
 
 	TString &evt_dataset()
@@ -10162,10 +10198,6 @@ void GetEntry(unsigned int idx)
 			if (evt_kfactor_branch != 0) {
 				evt_kfactor_branch->GetEntry(index);
 				#ifdef PARANOIA
-				if (not isfinite(evt_kfactor_)) {
-					printf("branch evt_kfactor_branch contains a bad float: %f\n", evt_kfactor_);
-					exit(1);
-				}
 				#endif // #ifdef PARANOIA
 			} else { 
 				printf("branch evt_kfactor_branch does not exist!\n");
@@ -10200,10 +10232,6 @@ void GetEntry(unsigned int idx)
 			if (evt_xsec_excl_branch != 0) {
 				evt_xsec_excl_branch->GetEntry(index);
 				#ifdef PARANOIA
-				if (not isfinite(evt_xsec_excl_)) {
-					printf("branch evt_xsec_excl_branch contains a bad float: %f\n", evt_xsec_excl_);
-					exit(1);
-				}
 				#endif // #ifdef PARANOIA
 			} else { 
 				printf("branch evt_xsec_excl_branch does not exist!\n");
@@ -10219,10 +10247,6 @@ void GetEntry(unsigned int idx)
 			if (evt_xsec_incl_branch != 0) {
 				evt_xsec_incl_branch->GetEntry(index);
 				#ifdef PARANOIA
-				if (not isfinite(evt_xsec_incl_)) {
-					printf("branch evt_xsec_incl_branch contains a bad float: %f\n", evt_xsec_incl_);
-					exit(1);
-				}
 				#endif // #ifdef PARANOIA
 			} else { 
 				printf("branch evt_xsec_incl_branch does not exist!\n");
@@ -20539,6 +20563,51 @@ void GetEntry(unsigned int idx)
 		}
 		return mus_pat_flag_;
 	}
+	float &evt_scale1fb()
+	{
+		if (not evt_scale1fb_isLoaded) {
+			if (evt_scale1fb_branch != 0) {
+				evt_scale1fb_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch evt_scale1fb_branch does not exist!\n");
+				exit(1);
+			}
+			evt_scale1fb_isLoaded = true;
+		}
+		return evt_scale1fb_;
+	}
+	int &evt_nEvts()
+	{
+		if (not evt_nEvts_isLoaded) {
+			if (evt_nEvts_branch != 0) {
+				evt_nEvts_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch evt_nEvts_branch does not exist!\n");
+				exit(1);
+			}
+			evt_nEvts_isLoaded = true;
+		}
+		return evt_nEvts_;
+	}
+	float &evt_filt_eff()
+	{
+		if (not evt_filt_eff_isLoaded) {
+			if (evt_filt_eff_branch != 0) {
+				evt_filt_eff_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch evt_filt_eff_branch does not exist!\n");
+				exit(1);
+			}
+			evt_filt_eff_isLoaded = true;
+		}
+		return evt_filt_eff_;
+	}
 	bool passHLTTrigger(TString trigName) {
 		int trigIndx;
 		vector<TString>::const_iterator begin_it = evt_HLT_trigNames().begin();
@@ -21295,6 +21364,9 @@ namespace tas {
 	vector<unsigned int> &els_pat_flag() { return cms2.els_pat_flag(); }
 	vector<unsigned int> &jets_pat_flag() { return cms2.jets_pat_flag(); }
 	vector<unsigned int> &mus_pat_flag() { return cms2.mus_pat_flag(); }
+	float &evt_scale1fb() { return cms2.evt_scale1fb(); }
+	int &evt_nEvts() { return cms2.evt_nEvts(); }
+	float &evt_filt_eff() { return cms2.evt_filt_eff(); }
 	bool passHLTTrigger(TString trigName) { return cms2.passHLTTrigger(trigName); }
 	bool passL1Trigger(TString trigName) { return cms2.passL1Trigger(trigName); }
 }
