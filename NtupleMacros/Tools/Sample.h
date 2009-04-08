@@ -41,6 +41,7 @@ Sample fVlqq	();
 Sample fAstar	();
 Sample fDY20tt	();
 Sample fDY20mm	();
+Sample fDY20ee  ();
 Sample fWgamma	();
 Sample fZgamma	();
 Sample fttbar	();

@@ -188,6 +188,15 @@ Sample fDY20mm ()
      return ret;
 }
 
+Sample fDY20ee ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "cms2-V01-02-06/Zee_M20_Summer08_IDEAL_V9_reco-v3/merged_ntuple**.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, DYee, kMagenta, 1, "dy20ee", true };
+     return ret;
+}
+
 // Wgamma
 Sample fWgamma ()
 {
