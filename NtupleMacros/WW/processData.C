@@ -25,7 +25,7 @@
 // Output file
   const char* outFile = "processed_data_tag.root";
   const bool identifyVVEvents = false; // careful with this option. You don't need it for not mixed samples
-  const bool identifyDYEvents = true;
+  const bool identifyDYEvents = false;
 
 // Flags for files to run over
 bool runWW    = true;
@@ -87,22 +87,19 @@ if (runWjets) {
 //DYee file
 TChain *fDYee = new TChain("Events");
 if (runDYee) {
-  fDYee->Add((dataset+"/cms2-V01-02-06/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged_ntuple*.root").c_str());
-  fDYee->Add((dataset+"/cms2-V01-02-06/AstarJets-madgraph_Fall08_IDEAL_V9_v2/merged_ntuple*.root").c_str());
+  fDYee->Add((dataset+"/cms2-V01-02-06/Zee_M20_Summer08_IDEAL_V9_reco-v3/merged_ntuple*.root").c_str());
 }
 
 //DYmm file
 TChain *fDYmm = new TChain("Events");
 if (runDYmm) {
-  fDYmm->Add((dataset+"/cms2-V01-02-06/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged_ntuple*.root").c_str());
-  fDYmm->Add((dataset+"/cms2-V01-02-06/AstarJets-madgraph_Fall08_IDEAL_V9_v2/merged_ntuple*.root").c_str());
+  fDYmm->Add((dataset+"/cms2-V01-02-06/Zmumu_M20_Summer08_IDEAL_V9_reco-v2/merged_ntuple*.root").c_str());
 }
 
 //DYtt file
 TChain *fDYtt = new TChain("Events");
 if (runDYtt) {
-  fDYtt->Add((dataset+"/cms2-V01-02-06/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged_ntuple*.root").c_str());
-  fDYtt->Add((dataset+"/cms2-V01-02-06/AstarJets-madgraph_Fall08_IDEAL_V9_v2/merged_ntuple*.root").c_str());
+  fDYtt->Add((dataset+"/cms2-V01-02-06/Ztautau_M20_Summer08_IDEAL_V9_v1/merged_ntuple*.root").c_str());
 }
 
 //ttbar file
