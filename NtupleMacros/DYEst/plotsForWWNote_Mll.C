@@ -20,7 +20,7 @@ void plotsForWWNote_Mll(TString hyp_type)
 	gROOT->ProcessLine(".L HistogramUtilities.cc+");
 
 	// 1fb-1
-	HistogramUtilities *h1 = new HistogramUtilities("DYEstResults_ForWW_MET45_INCL.root", 20.0, true, 0.1);
+	HistogramUtilities *h1 = new HistogramUtilities("DYEstResults_ForWW_MET45_v2.root", 20.0, true, 0.1);
         gROOT->cd();
 
 	// test get a stack and legend

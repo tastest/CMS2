@@ -13,15 +13,15 @@ void plotsForWWNote_R(TString source)
 	gROOT->ProcessLine(".L HistogramUtilities.cc+");
 
 	// 1fb-1
-	HistogramUtilities *h1 = new HistogramUtilities("DYEstResults_ForWW_MET45_INCL.root", 20.0, true, 0.1);
+	HistogramUtilities *h1 = new HistogramUtilities("DYEstResults_ForWW_MET45_v2.root", 20.0, true, 0.1);
         gROOT->cd();
 
 	// R hists
 	DataSource *s_mm;
 	DataSource *s_ee;
 	if (source == "DY") {
-		s_mm = new DataSource("dymm", H_DYMM);
-        	s_ee = new DataSource("dyee", H_DYEE);
+		s_mm = new DataSource("dy20mm", H_DYMM);
+        	s_ee = new DataSource("dy20ee", H_DYEE);
 	}
 	else if (source == "ZZ") {
 		s_mm = new DataSource("zz", H_ZZ);
