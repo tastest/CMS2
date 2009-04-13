@@ -5,7 +5,8 @@
 #include <string>
 
 enum Process { WW, WZ, ZZ, Wjets, DYee, DYmm, DYtt, DY, Wgamma, Zgamma, ttbar, tW, 
-	       LM1, LM2, LM3, LM4, LM5, LM6, LM7, LM8, LM9, LM10, LM11,
+			   LM1, LM2, LM3, LM4, LM5, LM6, LM7, LM8, LM9, LM10, LM11,
+			   DYttp,
 	       InclusiveMu5Pt50, InclusiveMuPt15, 
 	       QCDBCtoEPt20to30, QCDBCtoEPt30to80, QCDBCtoEPt80to170, 
 	       QCDEMenrichedPt20to30, QCDEMenrichedPt30to80, QCDEMenrichedPt80to170, QCDpt30,
@@ -61,10 +62,15 @@ Sample fLM9     ();
 Sample fLM10    ();
 Sample fLM11    ();
 
+Sample fpythiaDYTT ();
+  
+
+
 // Pythia Drell-Yan samples with no filter
 Sample fDYee_nofilter    ();
 Sample fDYmm_nofilter    ();
 Sample fDYtt_nofilter    ();
+
 
 // QCD samples
 Sample fInclusiveMu5Pt50	();
