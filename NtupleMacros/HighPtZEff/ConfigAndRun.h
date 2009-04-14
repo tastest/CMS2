@@ -128,7 +128,7 @@ int Results ()
 {
   uint32 samples = 0;
   samples |= (1 << LOOP_DYEE_NF);
-  //samples |= (1 << LOOP_DYMM_NF);
+  samples |= (1 << LOOP_DYMM_NF);
   //samples |= (1 << LOOP_DYMM_NF);
   //samples |= (1 << LOOP_DYTT_NF);
   //return run<Looper>(baseline_cuts, "Results");

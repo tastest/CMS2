@@ -61,6 +61,7 @@ enum {
 	 CUT_MC_EL,
 	 CUT_MC_MU,
 	 CUT_ETA25,
+	 CUT_MU_GLOBAL,
 };
 
 //----------------------------------------------------------------------
@@ -113,10 +114,18 @@ const static cuts_t el_base =
 ( CUT_BIT(CUT_EL_GOOD) ) |
 ( CUT_BIT(CUT_EL_ISO) ) ;
 
+const static cuts_t mu_base =
+( CUT_BIT(CUT_OPP_SIGN) ) |
+( CUT_BIT(CUT_ETA25) ) |
+( CUT_BIT(CUT_PT20) ) |
+( CUT_BIT(CUT_IN_Z_WINDOW) ) |
+( CUT_BIT(CUT_MC_MU) ) |
+( CUT_BIT(CUT_MU_GOOD) ) |
+( CUT_BIT(CUT_MU_ISO) ) ;
   
-const static cuts_t stat1cuts =
-(CUT_BIT(CUT_IN_Z_WINDOW)) |
-(CUT_BIT(CUT_ETA25)) ;
+//const static cuts_t stat1cuts =
+//(CUT_BIT(CUT_IN_Z_WINDOW)) |
+//(CUT_BIT(CUT_ETA25)) ;
 
 //const static cuts_t pt20 = (CUT_BIT(CUT_PT20) );
 //const static cuts_t elgood = (CUT_BIT(CUT_EL_GOOD) );
@@ -127,12 +136,14 @@ struct counts {
   double total; //all events in sample
   double denom; //all denominator events
   double numer; //all numerator events
+  double geneta; //num evts which don't have 2 leptons in eta 2.5
   double opp_sign; //num which fail numerator because of this
   double same_flv;
   double pt20; //ie, this is num events which aren't in numerator b'c of pt cut
   double el_good;
   double bad_mom; //mc_motherid != 23
   double no_match_z; // (num leptons with mc_motherid == 23) != 2
+  double multihyp; //evt has more that two pairs of leptons passing denom
 };
 
 //----------------------------------------------------------------------
@@ -168,13 +179,13 @@ protected:
   // TrilepSelect() and QuadlepSelect() that check which cuts the
   // event, dilepton/trilepton/quadlepton candidate passes
   virtual cuts_t LepSelect(int i, int flv); //flav=0 for el, =1 for mu
-  virtual cuts_t PairSelect(cuts_t, cuts_t );
+  virtual cuts_t PairSelect(cuts_t, cuts_t, cuts_t, int );
   virtual cuts_t DenSelect(int i);
   virtual cuts_t Stat1Select(vector<int>);
   virtual cuts_t EventSelect();
 
   virtual void FillEventHistos();
-  virtual void FillStat1Histos( int zidx, vector<int> idx); 
+  virtual void FillStat1Histos( int , vector<int>, vector<int> ); 
   //virtual void FillStat1Histos();
   virtual void End		();
 
@@ -193,18 +204,35 @@ protected:
   //TH1F* hgen3lep_z_mass; //status 3 just z
   //const unsigned int nlepplots = 2;
 #define nlepplots 2
+  TH1F* hgen1_z_eta;
   TH1F* hgen1_lep_mass;
   TH1F* hgen1_lep_pt[nlepplots];
+  TH1F* hgen3_lep_pt[nlepplots];
   TH1F* hgen1_lep_eta[nlepplots];
   
   TH1F* hels_size;
+  TH1F* hmus_size;
+  TH1F* hmus_type;
 
   TH1F* hels_iso;
-  TH1F* heff_iso;
+  TH1F* hels_chg;
+  //TH1F* hmus_iso;
+  TH1F* heff_p_iso;
+  TH1F* heff_p_iso_numer;
+  TH1F* heff_p_iso_denom;
+  TH1F* heff_pt_iso;
+  TH1F* heff_pt_iso_numer;
+  TH1F* heff_pt_iso_denom;
+  TH1F* heff_p_reco;
+  TH1F* heff_p_reco_numer;
+  TH1F* heff_p_reco_denom;
+  TH1F* heff_pt_reco;
+  TH1F* heff_pt_reco_numer;
+  TH1F* heff_pt_reco_denom;
   //TH1F* heff_mc3match;
-  NMinus1Hist *heff_p_N1; //efficiency as function of momentum for electrons
+  //NMinus1Hist *heff_p_N1; //efficiency as function of momentum for electrons
   //NMinus1Hist *heff_pm_N1; // same for muons
-  NMinus1Hist *heff_pt_N1;// as function of pt
+  //NMinus1Hist *heff_pt_N1;// as function of pt
   //NMinus1Hist *heff_ptm_N1;
   //NMinus1Hist *heff_single;
   
@@ -213,9 +241,10 @@ protected:
   vector<cuts_t> els_cuts;
   vector<string> els_cuts_names;
 
-  counts count; //my struct, declared above Looper
+#define ncounts 2  
+  counts count[ncounts]; //my struct, declared above Looper
   double weight;
-  int numprint ;
+  int denomitr; 
 
   // count the (weighted and unweighted) number of candidates passing our cuts
   double		cands_passing_[4];
