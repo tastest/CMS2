@@ -116,7 +116,6 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true, std::string cl
   
   
   headerf << "public: " << endl;
-  headerf << "int ScanChain(class TChain* chain, int nEvents=-1);" << endl;
   headerf << "void Init(TTree *tree) {" << endl;
 
   // SetBranchAddresses for LorentzVectors
