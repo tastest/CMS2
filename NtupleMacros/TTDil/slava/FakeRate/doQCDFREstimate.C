@@ -25,47 +25,44 @@ void TestPrediction() {
   TH1F *WJets_numpt[2];
   TH1F *WJets_numeta[2];
 
-  TH3F *WJets_nJets3D[2];
-
-  TH1F *WJets_actualnJets[2];
-  TH1F *WJets_predictednJets[2];
-
   TH1F *WJets_predictedpt[2];
   TH1F *WJets_predictedeta[2];
   
   
   char *flavor[2] = {"el", "mu"};
-  for(unsigned int i = 0; i < 2; i++) {
-    QCD_FRpt[i] = (TH1F*)gDirectory->Get(Form("QCD_FRpt_%s", flavor[i]));
-    QCD_FReta[i] = (TH1F*)gDirectory->Get(Form("QCD_FReta_%s", flavor[i]));
+  
+    QCD_FRpt[0] = (TH1F*)gDirectory->Get(Form("QCD_FRpt_%s", flavor[0]));
+    QCD_FReta[0] = (TH1F*)gDirectory->Get(Form("QCD_FReta_%s", flavor[0]));
     
-    WJets_FOpt[i] = (TH1F*)gDirectory->Get(Form("WJets_FOpt_%s", flavor[i]));
-    WJets_FOeta[i] = (TH1F*)gDirectory->Get(Form("WJets_FOeta_%s", flavor[i]));
+    WJets_FOpt[0] = (TH1F*)gDirectory->Get(Form("WJets_FOpt_%s", flavor[0]));
+    WJets_FOeta[0] = (TH1F*)gDirectory->Get(Form("WJets_FOeta_%s", flavor[0]));
 
-    WJets_numpt[i] = (TH1F*)gDirectory->Get(Form("WJets_numpt_%s", flavor[i]));
-    WJets_numeta[i] = (TH1F*)gDirectory->Get(Form("WJets_numeta_%s", flavor[i]));
+    WJets_numpt[0] = (TH1F*)gDirectory->Get(Form("WJets_numpt_%s", flavor[0]));
+    WJets_numeta[0] = (TH1F*)gDirectory->Get(Form("WJets_numeta_%s", flavor[0]));
 
-    WJets_nJets3D[i] = (TH3F*)gDirectory->Get(Form("WJets_nJets3D_%s", flavor[i]));
-
-    WJets_actualnJets[i] = (TH1F*)gDirectory->Get(Form("WJets_actualnJets_%s", flavor[i]));
-    WJets_predictednJets[i] = (TH1F*)gDirectory->Get(Form("WJets_predictednJets_%s", flavor[i]));
-  }      
-  
-  WJets_predictedpt[0] = new TH1F(Form("WJets_predictedpt_%s", flavor[0]), 
-				  "Predicted Pt Distribution in WJets", 5,20,120);
-  WJets_predictedeta[0] = new TH1F(Form("WJets_predictedeta_%s", flavor[0]), 
-				   "Predicted Eta Distribution in WJets", 4, 0, 2.4);
-  
-  Float_t pt[3] = [3] = {0,60,120};
-  Float_t eta[3] = {0, 1.5, 2.4};
-  WJets_predictedpt[1] = new TH1F(Form("WJets_predictedpt_%s", flavor[1]), 
-				  "Predicted Pt Distribution in WJets", 2, pt);
-  WJets_predictedeta[1] = new TH1F(Form("WJets_predictedeta_%s", flavor[1]), 
-				   "Predicted Eta Distribution in WJets", 2, eta);
-  
-       
+    WJets_predictedpt[0] = new TH1F(Form("WJets_predictedpt_%s", flavor[0]), 
+				       "Predicted Pt Distribution in WJets", 5,20,120);
+    WJets_predictedeta[0] = new TH1F(Form("WJets_predictedeta_%s", flavor[0]), 
+					"Predicted Eta Distribution in WJets", 4, 0, 2.4);
     
-  for(unsigned int i = 0; i < 2 ; i++) {
+    
+    QCD_FRpt[1] = (TH1F*)gDirectory->Get(Form("QCD_FRpt_%s", flavor[1]));
+    QCD_FReta[1] = (TH1F*)gDirectory->Get(Form("QCD_FReta_%s", flavor[1]));
+    
+    WJets_FOpt[1] = (TH1F*)gDirectory->Get(Form("WJets_FOpt_%s", flavor[1]));
+    WJets_FOeta[1] = (TH1F*)gDirectory->Get(Form("WJets_FOeta_%s", flavor[1]));
+
+    WJets_numpt[1] = (TH1F*)gDirectory->Get(Form("WJets_numpt_%s", flavor[1]));
+    WJets_numeta[1] = (TH1F*)gDirectory->Get(Form("WJets_numeta_%s", flavor[1]));
+
+    Float_t pt[3] = [3] = {0,60,120};
+    Float_t eta[3] = {0, 1.5, 2.4};
+    WJets_predictedpt[1] = new TH1F(Form("WJets_predictedpt_%s", flavor[1]), 
+				    "Predicted Pt Distribution in WJets", 2, pt);
+    WJets_predictedeta[1] = new TH1F(Form("WJets_predictedeta_%s", flavor[1]), 
+				     "Predicted Eta Distribution in WJets", 2, eta);
+    
+    for(unsigned int i = 0; i < 2 ; i++) {
 
     for(int j = 1; j < QCD_FRpt[i]->GetNbinsX() + 1; j++) {
       Float_t qcd       = QCD_FRpt[i]->GetBinContent(j);
@@ -174,30 +171,7 @@ void TestPrediction() {
   TH1F *QCD_FRpt_mu = gDirectory->Get("QCD_FRpt_mu");
   QCD_FRpt_mu->Draw();
   c7->SaveAs("muFRpt.png");
-
-
-  //Print the actual and predicted numbers with errors
-  //do the errors for the WJets
-  float predictionError[2] = {0.0, 0.0};
-  for (unsigned int i=0; i < 2; i++) {
-    Float_t totalErr = 0.;
-    for(unsigned int ieta = 1; ieta < WJets_nJets3D[i]->GetNbinsY() + 1; ieta++) {
-      for(unsigned int ipt = 1; ipt < WJets_nJets3D[i]->GetNbinsZ() + 1; ipt++) {
-	Float_t temp23 = 0.;  
-	for(unsigned int iJet = 1; iJet < WJets_nJets3D[i]->GetNbinsX() + 1; iJet++) {
-	  temp23 = temp23 + WJets_nJets3D[i]->GetBinContent(iJet, ieta, ipt);
-	}
-	totalErr = pow(temp23,2) + totalErr;
-      }
-    }
-    predictionError[i] = sqrt(totalErr);
-  }
-  //output summary
-  cout << "Actual, predicted electron fakes, WJets: " << WJets_actualnJets[0]->GetEntries() 
-       << ", " << WJets_predictednJets[0]->Integral() << " +/- " << predictionError[0] << endl;
-  cout << "Actual, predicted muon fakes, WJets: " << WJets_actualnJets[1]->GetEntries() 
-       << ", " << WJets_predictednJets[1]->Integral() << " +/- " << predictionError[1] << endl;
-
+  
 }
     
 void doAll(){
