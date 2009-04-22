@@ -10197,6 +10197,10 @@ void GetEntry(unsigned int idx)
 			if (evt_kfactor_branch != 0) {
 				evt_kfactor_branch->GetEntry(index);
 				#ifdef PARANOIA
+				if (not isfinite(evt_kfactor_)) {
+					printf("branch evt_kfactor_branch contains a bad float: %f\n", evt_kfactor_);
+					exit(1);
+				}
 				#endif // #ifdef PARANOIA
 			} else { 
 				printf("branch evt_kfactor_branch does not exist!\n");
@@ -10231,6 +10235,10 @@ void GetEntry(unsigned int idx)
 			if (evt_xsec_excl_branch != 0) {
 				evt_xsec_excl_branch->GetEntry(index);
 				#ifdef PARANOIA
+				if (not isfinite(evt_xsec_excl_)) {
+					printf("branch evt_xsec_excl_branch contains a bad float: %f\n", evt_xsec_excl_);
+					exit(1);
+				}
 				#endif // #ifdef PARANOIA
 			} else { 
 				printf("branch evt_xsec_excl_branch does not exist!\n");
@@ -10246,6 +10254,10 @@ void GetEntry(unsigned int idx)
 			if (evt_xsec_incl_branch != 0) {
 				evt_xsec_incl_branch->GetEntry(index);
 				#ifdef PARANOIA
+				if (not isfinite(evt_xsec_incl_)) {
+					printf("branch evt_xsec_incl_branch contains a bad float: %f\n", evt_xsec_incl_);
+					exit(1);
+				}
 				#endif // #ifdef PARANOIA
 			} else { 
 				printf("branch evt_xsec_incl_branch does not exist!\n");
@@ -20568,6 +20580,10 @@ void GetEntry(unsigned int idx)
 			if (evt_scale1fb_branch != 0) {
 				evt_scale1fb_branch->GetEntry(index);
 				#ifdef PARANOIA
+				if (not isfinite(evt_scale1fb_)) {
+					printf("branch evt_scale1fb_branch contains a bad float: %f\n", evt_scale1fb_);
+					exit(1);
+				}
 				#endif // #ifdef PARANOIA
 			} else { 
 				printf("branch evt_scale1fb_branch does not exist!\n");
@@ -20598,6 +20614,10 @@ void GetEntry(unsigned int idx)
 			if (evt_filt_eff_branch != 0) {
 				evt_filt_eff_branch->GetEntry(index);
 				#ifdef PARANOIA
+				if (not isfinite(evt_filt_eff_)) {
+					printf("branch evt_filt_eff_branch contains a bad float: %f\n", evt_filt_eff_);
+					exit(1);
+				}
 				#endif // #ifdef PARANOIA
 			} else { 
 				printf("branch evt_filt_eff_branch does not exist!\n");

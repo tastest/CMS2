@@ -214,7 +214,7 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true, std::string cl
 			 << " contains a bad float: %f\\n\", *i);" << endl << "\t\t\t\t\t\t" << "exit(1);"
 			 << endl;
 		 headerf << "\t\t\t\t\t}\n\t\t\t\t}" << endl;
-	    } else if (classname == "float") {
+	    } else if (classname == "float" || title.EndsWith("/F")) {
 		 headerf << "\t\t\t\t" << "if (not isfinite(" << aliasname << "_)) {" << endl;
 		 headerf << "\t\t\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
 			 << " contains a bad float: %f\\n\", " << aliasname << "_);" << endl 
