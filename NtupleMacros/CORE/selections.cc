@@ -1560,7 +1560,7 @@ bool GoodSusyTrigger(int dilType){
 int numberOfExtraElectronsSUSY(int i_hyp){ 
   unsigned int nElec = 0; 
   for (int iel=0; iel < cms2.els_p4().size(); iel++) { 
-    if ( cms2.els_p4()[iel].pt() < 20 ) continue; 
+    if ( cms2.els_p4()[iel].pt() < 10 ) continue; 
     if (! GoodSusyElectronWithoutIsolation(iel)) continue; 
     if (! GoodSusyElectronWithIsolation(iel, true)) continue;
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && cms2.hyp_lt_index()[i_hyp] == iel ) continue; 
@@ -1573,7 +1573,7 @@ int numberOfExtraElectronsSUSY(int i_hyp){
 int numberOfExtraMuonsSUSY(int i_hyp){ 
   unsigned int nMuons = 0; 
   for (int imu=0; imu < cms2.mus_p4().size(); imu++) { 
-    if ( cms2.mus_p4()[imu].pt() < 20 ) continue; 
+    if ( cms2.mus_p4()[imu].pt() < 10 ) continue; 
     if (!GoodSusyMuonWithoutIsolation(imu)) continue;
     if (!GoodSusyMuonWithIsolation(imu)) continue; 
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == imu ) continue; 
