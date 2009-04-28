@@ -1359,7 +1359,250 @@ bool looseLeptonSelectionTTDil08(int id, int index){
   return false;
 }
 
+//-----------------------------------------------------------------------------------------------
+//New selections for the common SUSY Dilepton working group
+//-----------------------------------------------------------------------------------------------
+//
+double inv_mu_rel_iso(int index)
+{
+  double sum =  cms2.mus_iso03_sumPt().at(index) +
+    cms2.mus_iso03_emEt().at(index)  +
+    cms2.mus_iso03_hadEt().at(index);
+  double pt  = cms2.mus_p4().at(index).pt();
+  return sum/pt;
+}
+
+double inv_el_rel_iso(int index, bool use_calo_iso)
+{
+  double sum = cms2.els_pat_trackIso().at(index);
+  if (use_calo_iso)
+    sum += cms2.els_pat_ecalIso()[index] + cms2.els_pat_hcalIso()[index];
+  double pt  = cms2.els_p4().at(index).pt();
+  return sum/pt;
+}
+
+bool passMuonIsolationVJets09(int index)
+{
+  const double cut = 0.1;
+  return inv_mu_rel_iso(index) < cut;
+}
+
+bool passElectronIsolationVJets09(int index, bool use_calo_iso)
+{
+  const double cut = 0.1;
+  return inv_el_rel_iso(index, use_calo_iso) < cut;
+}
+
+bool passLeptonIsolationVJets09(int id, int index){
+  if (abs(id) == 11) return passElectronIsolationVJets09(index, true);
+  if (abs(id) == 13) return passMuonIsolationVJets09(index);
+  return false;
+}
+
+bool looseElectronSelectionVJets09(int index) {
+  if (fabs(cms2.els_p4().at(index).eta()) > 2.5) return false;
+  //  if ( cms2.els_tightId22XMinMatteo().at(index)     !=  1) return false;
+  //  if ( cms2.els_looseId().at(index)     !=  1) return false;
+  if ( cms2.els_pat_robustTightId().at(index)   < 0.5 ) return false; // SUSY group 
+
+  if ( fabs(cms2.els_d0corr().at(index)) >= 0.2)   return false; // check if it is 0.2
+  //  if ( cms2.els_closestMuon().at(index) != -1) return false;
+  return true;
+}
+
+bool looseMuonSelectionVJets09(int index) {
+  if (fabs(cms2.mus_p4().at(index).eta()) > 2.1) return false;
+  if (((cms2.mus_type().at(index)) & (1<<1)) == 0) return false;
+  if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; // should < 10
+  if (fabs(cms2.mus_d0corr().at(index))   >= 0.2) return false;
+  if (cms2.mus_validHits().at(index) < 11)    return false;
+  if (cms2.mus_pat_ecalvetoDep().at(index) >= 4) return false; // ECalE < 4
+  if (cms2.mus_pat_hcalvetoDep().at(index) >= 6) return false; // HCalE < 6
+  return true;
+}
+bool passLeptonIDVJets09(int id, int index){
+  if (abs(id) == 11) return looseElectronSelectionVJets09(index);
+  if (abs(id) == 13) return looseMuonSelectionVJets09(index);
+  return false;
+}
+
+bool passMetVJets09(float value, bool useTcMet) {
+  float mymet;
+  if (useTcMet) {
+    mymet = cms2.evt_tcmet();
+  } else {
+    mymet = cms2.met_pat_metCor();
+  }
+  if (mymet <= value) return false;
+  return true;
+}
+
+int numberOfExtraMuonsVJets09(int i_hyp){
+  unsigned int nMuons = 0;
+  for (int imu=0; imu < cms2.mus_p4().size(); imu++) {
+    // quality cuts
+    if ( cms2.mus_p4()[imu].pt() < 20 ) continue;
+    if ( fabs(cms2.mus_p4()[imu].eta()) >  2.1 ) continue;
+    if ((( cms2.mus_type()[imu]) & (1<<1)) == 0) continue;
+    if (cms2.mus_gfit_chi2()[imu]/cms2.mus_gfit_ndof()[imu] >= 10) continue;
+    if ( fabs(cms2.mus_d0corr()[imu]) >= 0.2) continue;
+    if ( cms2.mus_validHits()[imu] < 11) continue;
+    if (cms2.mus_pat_ecalvetoDep()[imu] >= 4) continue; 
+    if (cms2.mus_pat_hcalvetoDep()[imu] >= 6) continue; 
+    if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == imu ) continue;
+    if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == imu ) continue;
+    if ( inv_mu_rel_iso(imu) >= 0.1 ) continue;
+    nMuons++;
+  }
+  return nMuons;
+}
+
+
+int numberOfExtraElectronsVJets09(int i_hyp){
+  unsigned int nElec = 0;
+  for (int iel=0; iel < cms2.els_p4().size(); iel++) {
+    // quality cuts
+    if ( cms2.els_p4()[iel].pt() < 20 ) continue;
+    if ( fabs(cms2.els_p4()[iel].eta()) >  2.5 ) continue;
+    if ( cms2.els_pat_robustTightId()[iel]   < 0.5  ) continue; // check
+    if ( fabs(cms2.els_d0corr()[iel]) >= 0.2)  continue; 
+    if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && cms2.hyp_lt_index()[i_hyp] == iel ) continue;
+    if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && cms2.hyp_ll_index()[i_hyp] == iel ) continue;
+    if ( inv_el_rel_iso(iel, true) >= 0.1 ) continue;
+    nElec++;
+  }
+  return nElec;
+}
+
 //------------------------------------------------------------------------------------
+// SUSY dilepton cuts 09 for TAS
+
+bool compareEt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1, 
+                 ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv2) {
+  return lv1.Et() > lv2.Et();
+}
+
+
+bool GoodSusyElectronWithoutIsolation(int index) { 
+  if ( cms2.els_tightId22XMinMatteo().at(index)     !=  1) return false; 
+  if ( fabs(cms2.els_d0corr().at(index)) >= 0.02)   return false; 
+  if ( cms2.els_closestMuon().at(index) != -1) return false; 
+  return true; 
+} 
+ 
+bool GoodSusyMuonWithoutIsolation(int index) { 
+  if (((cms2.mus_type().at(index)) & (1<<1)) == 0) return false; // global muon
+  if (((cms2.mus_type().at(index)) & (1<<2)) == 0) return false; // tracker muon
+  if (cms2.mus_validHits().at(index) < 11)    return false; 
+  if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; 
+  if (fabs(cms2.mus_d0corr().at(index))   >= 0.02) return false; 
+  if (cms2.mus_pat_ecalvetoDep().at(index) >= 4) return false; // ECalE < 4 
+  if (cms2.mus_pat_hcalvetoDep().at(index) >= 6) return false; // HCalE < 6 
+  return true; 
+} 
+
+double inv_mu_relsusy_iso(int index)
+{
+  double sum =  cms2.mus_iso03_sumPt().at(index) +
+    cms2.mus_iso03_emEt().at(index)  +
+    cms2.mus_iso03_hadEt().at(index);
+  double pt  = cms2.mus_p4().at(index).pt();
+  return sum/max(pt,20.);
+}
+
+double inv_el_relsusy_iso(int index, bool use_calo_iso)
+{
+  double sum = cms2.els_pat_trackIso().at(index);
+  if (use_calo_iso)
+     sum += max(0., (cms2.els_pat_ecalIso().at(index) -2.)) + cms2.els_pat_hcalIso().at(index);
+  double pt  = cms2.els_p4().at(index).pt();
+  return sum/max(pt,20.);
+}
+
+bool GoodSusyMuonWithIsolation(int index)
+{
+  const double cut = 0.1;
+  return inv_mu_relsusy_iso(index) < cut;
+}
+
+bool GoodSusyElectronWithIsolation(int index, bool use_calo_iso)
+{
+  const double cut = 0.1;
+  return inv_el_relsusy_iso(index, use_calo_iso) < cut;
+}
+
+bool GoodSusyLeptonIsolation(int id, int index){
+  if (abs(id) == 11) return GoodSusyElectronWithIsolation(index, true);
+  if (abs(id) == 13) return GoodSusyMuonWithIsolation(index);
+  return false;
+}
+
+bool GoodSusyLeptonID(int id, int index){ 
+  if (abs(id) == 11) return GoodSusyElectronWithoutIsolation(index); 
+  if (abs(id) == 13) return GoodSusyMuonWithoutIsolation(index); 
+  return false; 
+}    
+
+bool GoodSusyTrigger(int dilType){
+  bool hlt_ele15_lw_l1r = cms2.passHLTTrigger("HLT_Ele15_SW_L1R");
+  bool hltMu9           = cms2.passHLTTrigger("HLT_Mu9");
+  bool hltdiMu3         = cms2.passHLTTrigger("HLT_DoubleMu3");
+  //  bool hltdiEle10       = cms2.passHLTTrigger("HLT_DoubleEle10_SWL1R");
+  // bool hltdiEle10       = cms2.passHLTTrigger("HLT_DoubleEle5_SW_L1R");
+
+  if (dilType == 0 && ! (hltMu9) ) return false;
+  if ((dilType == 1 || dilType == 2) && ! (hltMu9 || hlt_ele15_lw_l1r)) return false;
+  if (dilType == 3 && ! hlt_ele15_lw_l1r) return false;
+
+  return true;
+}
+
+int numberOfExtraElectronsSUSY(int i_hyp){ 
+  unsigned int nElec = 0; 
+  for (int iel=0; iel < cms2.els_p4().size(); iel++) { 
+    if ( cms2.els_p4()[iel].pt() < 20 ) continue; 
+    if (! GoodSusyElectronWithoutIsolation(iel)) continue; 
+    if (! GoodSusyElectronWithIsolation(iel, true)) continue;
+    if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && cms2.hyp_lt_index()[i_hyp] == iel ) continue; 
+    if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && cms2.hyp_ll_index()[i_hyp] == iel ) continue; 
+    nElec++; 
+  } 
+  return nElec; 
+} 
+
+int numberOfExtraMuonsSUSY(int i_hyp){ 
+  unsigned int nMuons = 0; 
+  for (int imu=0; imu < cms2.mus_p4().size(); imu++) { 
+    if ( cms2.mus_p4()[imu].pt() < 20 ) continue; 
+    if (!GoodSusyMuonWithoutIsolation(imu)) continue;
+    if (!GoodSusyMuonWithIsolation(imu)) continue; 
+    if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == imu ) continue; 
+    if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == imu ) continue; 
+    nMuons++; 
+  } 
+  return nMuons; 
+} 
+
+vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getCaloJets(int i_hyp) {
+  vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > calo_jets;
+  calo_jets.clear();
+  
+  for (unsigned int jj=0; jj < cms2.jets_pat_jet_p4().size(); ++jj) {
+    if ((dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],cms2.jets_pat_jet_p4()[jj]) < 0.4)||
+	(dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.jets_pat_jet_p4()[jj]) < 0.4)
+	) continue;
+    if (cms2.jets_pat_jet_p4()[jj].Et() < 30) continue;
+    if (fabs(cms2.jets_pat_jet_p4()[jj].Eta()) > 2.4) continue;
+    if (cms2.jets_emFrac()[jj] < 0.1) continue;
+    calo_jets.push_back(cms2.jets_pat_jet_p4()[jj]);
+  }
+  
+  if (calo_jets.size() > 1) {
+    sort(calo_jets.begin(), calo_jets.end(),  compareEt);
+  }
+  return calo_jets;
+}
+
 
 //--------------------------------------------------------------------
 // Veto events if there are two leptons in the 

@@ -113,6 +113,37 @@ int genpCountPDGId(int id0, int id1=-1, int id2=-1);
 int genpDileptonType();
 int eventDilIndexByWeightTTDil08(const std::vector<unsigned int>& goodHyps, int& strasbourgDilType, bool printDebug = false);
 
+// SUSY Dilepton group cuts (VJets09)
+
+double inv_mu_rel_iso(int index);
+double inv_el_rel_iso(int index, bool use_calo_iso);
+bool passMuonIsolationVJets09(int index);
+bool passElectronIsolationVJets09(int index, bool use_calo_iso);
+bool passLeptonIsolationVJets09(int id, int index);
+bool looseElectronSelectionVJets09(int index);
+bool looseMuonSelectionVJets09(int index);
+bool passLeptonIDVJets09(int id, int index);
+bool passMetVJets09(float value, bool useTcMet);
+int numberOfExtraMuonsVJets09(int i_hyp);
+int numberOfExtraElectronsVJets09(int i_hyp);
+
+//SUSY dilepton selection TAS group
+
+bool compareEt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1,  
+                 ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv2);
+bool GoodSusyElectronWithoutIsolation(int index);
+bool GoodSusyMuonWithoutIsolation(int index);
+double inv_mu_relsusy_iso(int index);
+double inv_el_relsusy_iso(int index, bool use_calo_iso);
+bool GoodSusyMuonWithIsolation(int index);
+bool GoodSusyElectronWithIsolation(int index, bool use_calo_iso);
+bool GoodSusyLeptonIsolation(int id, int index);
+bool GoodSusyLeptonID(int id, int index);
+bool GoodSusyTrigger(int dilType);
+int numberOfExtraElectronsSUSY(int i_hyp);
+int numberOfExtraMuonsSUSY(int i_hyp);
+vector <ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getCaloJets(int i_hyp); 
+
 //TTDil08 fake rate functions
 bool isNumElTTDil08(int iEl);
 bool isFakeableElTTDil08(int iEl);
