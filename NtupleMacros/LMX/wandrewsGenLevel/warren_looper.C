@@ -12,12 +12,13 @@
 using namespace std;
 
 #ifndef __CINT__
-#include "CMS2_V00_04_00.h"
+#include "../CORE/CMS2.h"
 CMS2 cms2;
 #endif
 
-#include "../Tools/selections.C"
-#include "../Tools/utilities.C"
+#include "../CORE/selections.cc"
+#include "../CORE/utilities.cc"
+#include "../Tools/tools.cc"
 #include "warren_functions.C"
 
 //wandrews: This was originally Oli's looper. I've changed it to be a dilepton Generator level looper for use in my susy stuff.
@@ -33,12 +34,14 @@ const char* print_cuts();
 bool EtaCut = true;
 double EtaCutValue = 2.5;
 bool TausAreLeptons = true;
-bool PtCut = false;  
-double PtCutValue = 50;  //for jets, not necessary for leptons
+bool JetPtCut = false;  
+double JetPtCutValue = 50;  //for jets
+bool LepPtCut = false;
+double LepPtCutValue = 10;  //for leptons
 
 //other global vars
-//LSP's mcid
-const Int_t LSP_mcid = 1000022; //chi_10
+//LSP's mcid: chi10 is NOT LSP in GMSB--~G is...
+//Int_t LSP_mcid = 1000022; //chi_10
 
 //define bucket vars--indicies in hist arrays
 const unsigned int lepBuckets = 12;//10e,u, 2tau
@@ -95,7 +98,7 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
   already_seen.clear();
   int duplicates_total_n = 0;
   double duplicates_total_weight = 0;
-  int i_permille_old = 0;
+  //int i_permille_old = 0;
 
   TObjArray *listOfFiles = chain->GetListOfFiles();
 
@@ -210,6 +213,7 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
   TH1F* hchgflv_MEff_zjet[numchgflv];
   TH1F* hchgflv_Ht_zjet[numchgflv];
   TH1F* hchgflv_Njets_zjet[numchgflv];
+  TH1F* hchgflv_Nlep_zjet[numchgflv];
   TH1F* hchgflv_alpha_zjet[numchgflv];
 
   //b:
@@ -218,6 +222,12 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
   TH1F* hchgflv_PtHadThird_b[numchgflv];
   TH1F* hchgflv_SumEt_b[numchgflv];
   TH1F* hchgflv_Njets_b[numchgflv];
+
+  //GMSB
+  TH1F* slepmass[3];
+  slepmass[0] = new TH1F("slepton_mass12","slepton_mass12", 60, 0, 300);
+  slepmass[1] = new TH1F("slepton_mass13","slepton_mass13", 60, 0, 300);
+  slepmass[2] = new TH1F("slepton_mass23","slepton_mass23", 60, 0, 300);
 
   for (unsigned int i=0; i < allBuckets; ++i) {
     //Lepton Pt
@@ -243,20 +253,21 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 							   nBinsS,lowBin,highBinS,"p_{T} [GeV]","");   
 	hMassLep[i]   = book1DHist(Form("%s_hMassLep_%s",prefix,suffix[i]),
 							   Form("%s_hMassLep_%s",prefix,suffix[i]),
-							   nBinsF,lowBin,highBinF,"Di-lep Mass [GeV]","");
+							   //nBinsF,lowBin,highBinF,"Di-lep Mass [GeV]","");
+							   60,lowBin,300,"Di-lep Mass [GeV]","");
 	
 	//Hadron Pt
     const float highBinG = 500;
     const int nBinsG = 100;
-    const float highBinH = 1000;
-    const int nBinsH = 100;
-    const float highBinB = 1200;
-    const int nBinsB = 120;
+    //const float highBinH = 1000;
+    //const int nBinsH = 100;
+    const float highBinT = 2000;
+    const int nBinsT = 100;
 
 	//new notation: sumet is just hadron (jet) pt
 	hSumEt[i]      = book1DHist(Form("%s_hSumEt_%s",prefix,suffix[i]),
 								Form("%s_hSumEt_%s",prefix,suffix[i]),
-								nBinsB,lowBin,highBinB,"SumEt (quark p_{T}) [GeV]","");
+								nBinsT,lowBin,highBinT,"SumEt (quark p_{T}) [GeV]","");
     hPtHadFirst[i] = book1DHist(Form("%s_hPtHadFirst_%s",prefix,suffix[i]),
 								Form("%s_hPtHadFirst_%s",prefix,suffix[i]),
 								nBinsG,lowBin,highBinG,"p_{T} [GeV]","");   
@@ -276,8 +287,10 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
     // Et, MET 
     const float highBinM = 600;
     const int nBinsM = 120;
-    const float highBinT = 2000;
-    const int nBinsT = 100;
+    const float highBinI = 1500;
+    const int nBinsI = 150;
+    const float highBinB = 3000;
+    const int nBinsB = 150;
 	
     hEtFirst[i] = book1DHist(Form("%s_hEtFirst_%s",prefix,suffix[i]),
 							 Form("%s_hEtFirst_%s",prefix,suffix[i]),
@@ -292,15 +305,15 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 	//MET = magnitude of Et(lsp + nu, vector sum)
     hMET[i]     = book1DHist(Form("%s_hMET_%s",prefix,suffix[i]),
 							 Form("%s_hMET_%s",prefix,suffix[i]),
-							 nBinsH,lowBin,highBinH,"MET [GeV]","");
+							 nBinsI,lowBin,highBinI,"MET [GeV]","");
 	//MEff = mag(MET) + SumEt
     hMEff[i]    = book1DHist(Form("%s_hMEff_%s",prefix,suffix[i]),
 							 Form("%s_hMEff_%s",prefix,suffix[i]),
-							 nBinsT,lowBin,highBinT,"MEff [GeV]","");
+							 nBinsB,lowBin,highBinB,"MEff [GeV]","");
 	//Ht = mag(MET) + PtLep + SumEt (scalar sum)
     hHt[i]      = book1DHist(Form("%s_hHt_%s",prefix,suffix[i]),
 							 Form("%s_hHt_%s",prefix,suffix[i]),
-							 nBinsT,lowBin,highBinT,"Ht [GeV]","");
+							 nBinsB,lowBin,highBinB,"Ht [GeV]","");
 
     // nJets, nLep
     const float highBinNjets = 15.;
@@ -329,6 +342,7 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 	hchgflv_MEff_zjet[i] = bookChgflv(hMEff[zjet], i);
 	hchgflv_Ht_zjet[i] = bookChgflv(hHt[zjet], i);
 	hchgflv_Njets_zjet[i] = bookChgflv(hNjets[zjet], i);
+	hchgflv_Nlep_zjet[i] = bookChgflv(hNLep[zjet], i);
 	hchgflv_alpha_zjet[i] = bookChgflv(halpha[zjet], i);
 	//b:
 	hchgflv_PtHadFirst_b[i] = bookChgflv(hPtHadFirst[b], i);
@@ -354,39 +368,50 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
     unsigned int nEvents = tree->GetEntries();
 	//unsigned int nEvents = 20;
     for( unsigned int event = 0; event < nEvents; ++event) {
+	  //cout << "First line in event loop\n";
       cms2.GetEntry(event);
+	  //cout << "done GetEntry\n";
       ++nEventsTotal;
 
-      DorkyEventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.trks_d0()[0],
-								  cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
+	  //if( event < 2 && cms2.hyp_lt_p4().size() > 0 ) {
+	  //	cout << cms2.evt_run() << endl; 
+	  //	cout << cms2.evt_event()<< endl;
+	  //	cout << cms2.trks_d0()[0]<< endl; //ok from here up...
+	  //	cout << cms2.hyp_lt_p4().at(0).pt()<< endl;
+	  //	cout << cms2.hyp_lt_p4().at(0).eta()<< endl;
+	  //	cout << cms2.hyp_lt_p4().at(0).phi() << endl;
+	  //}
+      DorkyEventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.trks_d0().at(0),
+	  							  //cms2.hyp_lt_p4().at(0).pt(), cms2.hyp_lt_p4().at(0).eta(), cms2.hyp_lt_p4().at(0).phi() };
+								  cms2.genps_p4().at(6).pt(), cms2.genps_p4().at(6).eta(), cms2.genps_p4().at(6).phi() };
       if (is_duplicate(id)) {
-		duplicates_total_n++;
-		duplicates_total_weight += cms2.evt_scale1fb();
-		continue;
+	  	duplicates_total_n++;
+	  	duplicates_total_weight += cms2.evt_scale1fb();
+	  	continue;
       }
 
+	  //cout << "done eventid\n";
       // Progress feedback to the user
       //progressBar(i_permille_old, nEventsTotal, nEventsChain);
 
       // The event weight including the kFactor (scaled to 1 fb-1)
       weight = cms2.evt_scale1fb() * kFactor;
-	  //if( cms2.evt_scale1fb() * kFactor != weight )
-	  //cout << "\n\nWARNING: Weight changed from original value\n\n";
+	  if( cms2.evt_scale1fb() * kFactor != weight )
+		cout << "\n\nWARNING: Weight changed from original value\n\n";
 
       // special handling for DY (Check if ntuples run on needs it)
-      bool processEvent=true;
-      if (specDY == 0) {
-		if ( !isDYee() ) processEvent = false;
-      } else if (specDY == 1) {
-		if ( !isDYmm() ) processEvent = false;
-      } else if (specDY == 2) {
-		if ( !isDYtt() ) processEvent = false;
-      }
-      if (!processEvent) { cout<<"\n\nDYERROR\n\n"; continue; }
+      //bool processEvent=true;
+      //if (specDY == 0) {
+	  //	if ( !isDYee() ) processEvent = false;
+      //} else if (specDY == 1) {
+	  //	if ( !isDYmm() ) processEvent = false;
+      //} else if (specDY == 2) {
+	  //	if ( !isDYtt() ) processEvent = false;
+      //}
+      //if (!processEvent) { cout<<"\n\nDYERROR\n\n"; continue; }
 
+	  //cout << "declare\n";
 	  vector<Int_t> list_id ;
-	  //for(int i=0;i<100;i++) { list_id[i]=0; } //array implementation
-
 	  double* id_lep = new double[3];
 	  double* idx_lep = new double[3]; //for 4-vectors
 	  double* id_tau = new double[3];
@@ -398,7 +423,6 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 	  double* pt_rank_b = new double[3]; 
       double* metlsp = new double[2]; //guaranteed to have 2 lsp in event
 	  double* metnu = new double[3]; //forget about the rest (if > 3)
-	  //vector<double> idx_alllep;
 	  for(int i=0;i<3;i++) {
 		id_lep[i]=0;
 		idx_lep[i]=0;
@@ -421,7 +445,7 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 	  int numb = 0; int numbfromt = 0; 
 	  int numh = 0; int numteta = 0; int numt = 0;
 	  int numz = 0; int numlepfromz = 0; int numtaufromz = 0;
-	  int numgluon = 0; int numnufromz = 0;
+	  int numgluon = 0; int numnufromz = 0; int numlsp = 0;
       double pthad = 0, ptlep = 0, pttau = 0, ptb = 0; 
 	  ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > vecEt;
 	  ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > vecEtlsp;
@@ -445,8 +469,8 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 	  b1.SetPx(0); b1.SetPy(0); b1.SetPz(0); b1.SetE(0);
 	  b2.SetPx(0); b2.SetPy(0); b2.SetPz(0); b2.SetE(0);
 
+	  //cout << "Starting genps loop\n";
 	  for( int i=0;i<6;i++) {
-		//list_id[i]=cms2.genps_id()[i];
 		list_id.push_back( cms2.genps_id()[i] );
 	  }
 	  //loop starts at 6 b'c 0,1 are protons, 2-5 are initial state in proton
@@ -454,6 +478,8 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 			par < cms2.genps_id().size(); ++par ) {
 
 		double id = cms2.genps_id()[par];
+		if( abs(id) != TMath::Abs(id) )
+		  cout << "\n\n ABS ERROR\n\n";
 		//cms2.genps_idmother()[par];
 		list_id.push_back( (Int_t)id );
 		
@@ -461,10 +487,10 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 		if( (abs(id) >= 1 && abs(id) <= 5) || abs(id) == 21  ) { 
 		  numhadeta++;//any eta range, any pt
 		  if( abs(cms2.genps_id_mother()[par]) == 6 && abs(id) == 5 )
-			  numbfromt++;
+			numbfromt++;
 		  if( EtaCut && abs(cms2.genps_p4()[par].Eta()) > EtaCutValue )
 			continue;
-		  if( PtCut && abs(cms2.genps_p4()[par].pt()) < PtCutValue )
+		  if( JetPtCut && abs(cms2.genps_p4()[par].pt()) < JetPtCutValue )
 			continue;
 
 		  //scalar sum of g,q!=t pt
@@ -489,15 +515,19 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 		  numteta++;
 		  if( EtaCut && abs(cms2.genps_p4()[par].Eta()) > EtaCutValue )
 			continue;
-		  if( PtCut && abs(cms2.genps_p4()[par].pt()) < PtCutValue )
+		  if( JetPtCut && abs(cms2.genps_p4()[par].pt()) < JetPtCutValue )
 			continue;
 		  numt++;
 		}
 		else if( abs(id) == 11 || abs(id) == 13 ) { //e,mu
 		  if( EtaCut && abs(cms2.genps_p4()[par].Eta()) > EtaCutValue )
 			continue;
+		  if( LepPtCut && abs(cms2.genps_p4()[par].pt()) < LepPtCutValue )
+			continue;
 		
 		  ptlep += cms2.genps_p4()[par].pt() ;
+		  if( ptlep == 0 )
+			cout << "error with ptlep\n";
 		  numlep++;
 
 		  //NOTE: these two lines MUST be before the get_pt_rank call
@@ -520,6 +550,8 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 		}
 		else if( abs(id) == 15 ) {  //tau
 		  if( EtaCut && abs(cms2.genps_p4()[par].Eta()) > EtaCutValue )
+			continue;
+		  if( LepPtCut && abs(cms2.genps_p4()[par].pt()) < LepPtCutValue )
 			continue;
 
 		  pttau += cms2.genps_p4()[par].pt();
@@ -555,16 +587,22 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 		  numh++;
 		}
 		else if( abs(id) == LSP_mcid ) {
+		  numlsp++;
 		  metlsp = get_Et_rank(metlsp, cms2.genps_p4()[par].Et() );
 		  vecEt += cms2.genps_p4()[par];
 		  vecEtlsp += cms2.genps_p4()[par];
 		  hPhi[LSP]->Fill(cms2.genps_p4()[par].Phi() , weight);
+		  //cout << cms2.genps_p4()[par].M() << endl; 
 		}
+		//else if( abs(id) == 1000011 || abs(id) == 1000013 || abs(id) == 1000015 ) { //slepton mass edge
+
+		
 		//in case I want to find tree w/ dave's cmssw filter
 		//cout << "event: " << cms2.evt_event() << " run: " << cms2.evt_run() << endl;
       }
 	  //end genps loop
 
+	  //cout << "end genps loop\n";
 	  //CUT: must have number leptons >= 2
       if(numlep < 2){
 		bool die = false;
@@ -572,6 +610,10 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 		  die = true;
 		else if( !TausAreLeptons )
 		  die = true;
+		else if( pt_rank_lep[0] == 0 ) {
+		  cout << "pt_rank_lep[0] == 0 \n";
+		  die = true;
+		}
 
 		//count taus which could be used if 1 e,mu, 1 tau: category B
 		if( numtau + numlep >= 2 && numlep == 1 ) {
@@ -622,6 +664,7 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 	  
 	  ++nCandidatesSelected;      	  
 
+	  bool printevt = false;
 	  //count particles of interest--decay products
 	  //int nother = numtaufromz + numlepfromz - numz;
 	  if( chgflv < 4 ) {
@@ -639,8 +682,9 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 		if( hd >= 0 ) {
 		  numdilept = count_particles(numdilept, numt-hd, hd, npartcat, weight);
 		}
-		else if( hd == -999 ) {
+		else if( hd == -999  ) { //cms2.evt_event() < 50000
 		  cout << "\n\nBad top daughter id\n\n";
+		  printevt = true;
 		}
 	  }
 	  else {
@@ -657,8 +701,9 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 		  //if( hd > 0 ) 
 		  //numtaut[3] += weight;
 		}
-		else if( hd == -999 ) {
+		else if( hd == -999 ) { //cms2.evt_event() < 30000 
 		  cout << "\n\nBad top daughter id\n\n";
+		  printevt = true;
 		}
 	  }
 	  numtotalgluon += numgluon*weight;
@@ -725,8 +770,62 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 			cout << "\nunknown initial state: " << cms2.genps_id()[i] << endl;
 		}
 	  }
-	  else if( sign == 999 ) //tau handeled now
+	  else if( sign == 999 ) //tau handled now
 		cout << "\n\nERROR: unknown intitial state sign"<<"\n\n";
+
+	  //CHECK FOR GMSB STUFF
+	  /*vector<Int_t> daus = make_daughter_list( list_id );
+	  for( unsigned int i=0; i<list_id.size(); i++ ) {
+		if( abs(list_id[i]) == 1000011 || abs(list_id[i]) == 1000013 
+		  || abs(list_id[i]) == 2000015 ) { //slepton_L
+		  //staus are flipped: more massive is 2000015=stau2
+		  int idx2 = daus[ daus[i] ] + 1;
+		  int idx3 = daus[ daus[ daus[i] ] ] + 1; //yes, really...
+		  if( abs(cms2.genps_id()[daus[i]+1]) == 23 ||
+			  abs(cms2.genps_id()[daus[i]+1]) == 25 )
+			continue; //stau->z/h+tau is ok, but don't want it
+		  if( ( (abs(cms2.genps_id()[daus[i]+1]) != 11 &&
+				 abs(cms2.genps_id()[daus[i]+1]) != 13 &&
+				 abs(cms2.genps_id()[daus[i]+1]) != 15) ||
+				(abs(cms2.genps_id()[idx2]) != 11 &&
+				 abs(cms2.genps_id()[idx2]) != 13 &&
+				 abs(cms2.genps_id()[idx2]) != 15 ) )
+			  && cms2.evt_event() > 0 ) {
+			cout << "Non leptonic daughter: " << daus[i]+1 << "  "
+				 << abs(cms2.genps_id()[daus[i]+1]) << "  " << idx2 << "  "
+				 << abs(cms2.genps_id()[idx2]) << "\n";
+			for(unsigned int j=0;j<list_id.size();j++) 
+			  cout << j << "  " << list_id[j] << endl;
+			for(unsigned int j=0;j<daus.size();j++) 
+			  cout << j << "  " << daus[j] << endl;			  
+		  }
+		  slepmass[0]->Fill( (cms2.genps_p4()[daus[i]+1] +
+							  cms2.genps_p4()[idx2]).M() , weight ); 
+		  slepmass[1]->Fill( (cms2.genps_p4()[daus[i]+1] +
+							  cms2.genps_p4()[idx3]).M() , weight ); //13
+		  slepmass[2]->Fill( (cms2.genps_p4()[idx2] +
+							  cms2.genps_p4()[idx3]).M() , weight ); //23
+		}
+	  }
+	  */
+	  double mass = (lep1+lep2).M();
+	  //if( mass > 168 && mass < 170 )
+	  //if( pt_rank_lep[0] < 2 )
+	  //printevt = true;
+	  if( (printevt || pt_rank_lep[0] < 0) && cms2.evt_event() < 500 ) {
+		cout << "\nrun: " << cms2.evt_run() << "  event: " << cms2.evt_event()
+		  //<< " lumi: " << cms2.evt_lumi()
+			 << endl;
+		cout << "bucket: " << bucket << " chgflv: " << chgflv << endl;
+		cout << "lep idxs: " << idx_lep[0] << "  " << idx_lep[1] << "  mass: " << mass << endl;
+		cout << "pt_rank_lep0,1,2: " << pt_rank_lep[0] << " "
+			 << pt_rank_lep[1] << " " << pt_rank_lep[2] << endl;
+		printf("%2s  %6s %7s %7s %7s\n","idx","mc id","pt","eta", "mass" );
+		for(unsigned int i=6; i<list_id.size(); i++ ) 
+		  //cout << i << "   " << list_id[i] << "   " << cms2.genps_p4()[i].M() << endl;
+		  printf("%2i  %8i %10f %9f %9f\n",i,list_id[i],cms2.genps_p4()[i].pt(),cms2.genps_p4()[i].eta(), cms2.genps_p4()[i].M() );
+		
+	  }
 
       //Lepton hists
 	  double sumptlep = 0;
@@ -735,16 +834,18 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 	  else
 		sumptlep = ptlep;
 
-	  //these bucket checks should NO LONGER BE NECESSARY
+	  //these bucket checks should no longer be necessary
 	  //if( bucket != 999 ) //contents of buckets shouldn't change!
-	  hPtLep[bucket]->Fill(sumptlep, weight );
+	  if( numlep > 0 ) //needed for nofilter samples
+		hPtLep[bucket]->Fill(sumptlep, weight );
 	  if( numtau > 0 )
 		hPtLep[tau]->Fill(pttau, weight );
 	  if( numhadeta == 0 ) {
 		hPtLep[zjet]->Fill(sumptlep, weight );
 		hchgflv_PtLep_zjet[chgflv]->Fill(sumptlep, weight);
 	  }
-	  hPtLep[allBuckets-1]->Fill(sumptlep, weight );
+	  if( numlep > 0 )
+		hPtLep[allBuckets-1]->Fill(sumptlep, weight );
 
 	  //always put lep(e,mu) in Fist hist
 	  hPtLepFirst[bucket]->Fill(pt_rank_lep[0], weight );
@@ -756,7 +857,13 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 	  }
 	  hPtLepFirst[allBuckets-1]->Fill(pt_rank_lep[0], weight );
 
-	  double* ptsecthr = pt_sec_thr(pt_rank_lep, pt_rank_tau, TausAreLeptons);
+	  double* ptsecthr = new double[2];
+	  if( chgflv > 3 ) //only include tau if tau bucket
+		ptsecthr = pt_sec_thr(pt_rank_lep, pt_rank_tau, TausAreLeptons);
+	  else {
+		ptsecthr[0] = pt_rank_lep[1];
+		ptsecthr[1] = pt_rank_lep[2];
+	  }
 
 	  hPtLepSecond[bucket]->Fill(ptsecthr[0], weight );
 	  if( pt_rank_tau[1] > 0 ) //tau bucket
@@ -867,15 +974,18 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 	  //in next iteration can calso do mass for bjets if desired
 
 	  //MET hists
-      hMET[LSP]->Fill(vecEtlsp.Et() , weight );
-      hMET[nu]->Fill(vecEtnu.Et() , weight );
-	  if( numhadeta == 0 )
-		hMET[zjet]->Fill(vecEt.Et(), weight );
-	  if ( bucket != 999 ) 
-		hMET[bucket]->Fill(vecEt.Et(), weight );
-	  if ( bucket != 999 && numhadeta == 0 )
-		hchgflv_MET_zjet[chgflv]->Fill(vecEt.Et(), weight );
-	  hMET[allBuckets-1]->Fill(vecEt.Et(), weight );
+	  //if( vecEtlsp.Et() != 0 && vecEtnu.Et() != 0 ) {
+	  if( numlsp != 0 && numnu != 0 ) {
+		hMET[LSP]->Fill(vecEtlsp.Et() , weight );
+		hMET[nu]->Fill(vecEtnu.Et() , weight );
+		if( numhadeta == 0 )
+		  hMET[zjet]->Fill(vecEt.Et(), weight );
+		if ( bucket != 999 ) 
+		  hMET[bucket]->Fill(vecEt.Et(), weight );
+		if ( bucket != 999 && numhadeta == 0 )
+		  hchgflv_MET_zjet[chgflv]->Fill(vecEt.Et(), weight );
+		hMET[allBuckets-1]->Fill(vecEt.Et(), weight );
+	  }
 
 	  //Et hists
 	  hEtFirst[LSP]->Fill(metlsp[0], weight );
@@ -884,7 +994,7 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 	  hEtSecond[nu]->Fill(metnu[1], weight );
 
 	  //MEff = mag(MET) + sumEt
-	  if( bucket != 999 )
+	  if( bucket != 999 && (numhadeta != 0 && (numlsp + numnu) > 0 ) )
 		hMEff[bucket]->Fill(vecEt.Et() + pthad, weight);
 	  if( numhadeta == 0 )
 		hMEff[zjet]->Fill(vecEt.Et() + pthad, weight);
@@ -935,6 +1045,7 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
   TH1F* hchgflv_MEff[numchgflv];
   TH1F* hchgflv_Ht[numchgflv];
   TH1F* hchgflv_Njets[numchgflv];
+  TH1F* hchgflv_Nlep[numchgflv];
   TH1F* hchgflv_alpha[numchgflv];
   
   //loop over numchgflv=(4||6 depending on tau) chgflv: 
@@ -949,6 +1060,7 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 	hchgflv_MEff[i] = chgflv_plots(hMEff, allBuckets, i);
 	hchgflv_Ht[i] = chgflv_plots(hHt, allBuckets, i);
 	hchgflv_Njets[i] = chgflv_plots(hNjets, allBuckets, i);
+	hchgflv_Nlep[i] = chgflv_plots(hNLep, allBuckets, i);
 	hchgflv_alpha[i] = chgflv_plots(halpha, allBuckets, i);
   }
 
@@ -991,8 +1103,9 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 	  hchgflv_MEff[j]->Write();
 	  hchgflv_Ht[j]->Write();
 	  hchgflv_Njets[j]->Write();
+	  hchgflv_Nlep[j]->Write();
 	  hchgflv_alpha[j]->Write();
-
+	  
 	  hchgflv_PtLepFirst_zjet[j]->Write();
 	  hchgflv_PtLepSecond_zjet[j]->Write();
 	  hchgflv_PtLepThird_zjet[j]->Write();
@@ -1007,6 +1120,8 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 	  hchgflv_PtHadThird_b[j]->Write();
 	  hchgflv_SumEt_b[j]->Write();
 	  hchgflv_Njets_b[j]->Write();
+	  if( j != 3 )
+		slepmass[j]->Write();
 	}
   }
 
@@ -1023,7 +1138,7 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
   file << print_hard_type(zjet_hard_type, zjet_hard_chgflv, susy_types, weight, numchgflv);
 
   //put 'all' bucket of variables for which I want 90% efficiency points
-  int numvars = 11;
+  int numvars = 12;
   TH1F allhists[numvars];
   allhists[0] = dilep_sum(hchgflv_PtLepFirst);
   allhists[1] = dilep_sum(hchgflv_PtLepSecond);
@@ -1035,7 +1150,8 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
   allhists[7] = dilep_sum(hchgflv_MEff);
   allhists[8] = dilep_sum(hchgflv_Ht);
   allhists[9] = dilep_sum(hchgflv_Njets);
-  allhists[10]= dilep_sum(hchgflv_alpha);
+  allhists[10]= dilep_sum(hchgflv_Nlep);
+  allhists[11]= dilep_sum(hchgflv_alpha);
 
   TH1F tauhists[numvars];
   if( TausAreLeptons ) {
@@ -1049,7 +1165,8 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 	tauhists[7] = tau_sum(hchgflv_MEff);
 	tauhists[8] = tau_sum(hchgflv_Ht);
 	tauhists[9] = tau_sum(hchgflv_Njets);
-	tauhists[10]= tau_sum(hchgflv_alpha);
+	tauhists[10]= tau_sum(hchgflv_Nlep);
+	tauhists[11]= tau_sum(hchgflv_alpha);
   }
   
   TH1F zjethists[numvars];
@@ -1063,7 +1180,8 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
   zjethists[7] = dilep_sum(hchgflv_MEff_zjet);
   zjethists[8] = dilep_sum(hchgflv_Ht_zjet);
   zjethists[9] = dilep_sum(hchgflv_Njets_zjet);
-  zjethists[10]= dilep_sum(hchgflv_alpha_zjet);
+  zjethists[10]= dilep_sum(hchgflv_Nlep_zjet);
+  zjethists[11]= dilep_sum(hchgflv_alpha_zjet);
 
   TH1F zjettauhists[numvars];
   if( TausAreLeptons ) {
@@ -1077,7 +1195,8 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 	zjettauhists[7] = tau_sum(hchgflv_MEff_zjet);
 	zjettauhists[8] = tau_sum(hchgflv_Ht_zjet);
 	zjettauhists[9] = tau_sum(hchgflv_Njets_zjet);
-	zjettauhists[10]= tau_sum(hchgflv_alpha_zjet);
+	zjettauhists[10]= tau_sum(hchgflv_Nlep_zjet);
+	zjettauhists[11]= tau_sum(hchgflv_alpha_zjet);
   }
 
   int numbvars = 5;
@@ -1148,6 +1267,7 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
   THStack* hs_MEff[2];
   THStack* hs_Ht[2];
   THStack* hs_Njets[2];
+  THStack* hs_Nlep[2];
   THStack* hs_alpha[2];
   
   THStack* hs_PtLepFirst_zjet[2];
@@ -1158,6 +1278,7 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
   THStack* hs_MET_zjet[2];
   THStack* hs_Ht_zjet[2];
   THStack* hs_alpha_zjet[2];
+  THStack* hs_Nlep_zjet[2];
   
   THStack* hs_PtHadFirst_b[2];
   THStack* hs_PtHadSecond_b[2];
@@ -1176,6 +1297,7 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 	hs_MEff[i] = make_stack(hchgflv_MEff, numchgflv, i); 
 	hs_Ht[i] = make_stack(hchgflv_Ht, numchgflv, i);	  
 	hs_Njets[i] = make_stack(hchgflv_Njets, numchgflv, i);
+	hs_Nlep[i] = make_stack(hchgflv_Nlep, numchgflv, i);
 	hs_alpha[i] = make_stack(hchgflv_alpha, numchgflv, i);
 
 	hs_PtLepFirst_zjet[i] = make_stack(hchgflv_PtLepFirst_zjet, numchgflv, i);
@@ -1186,6 +1308,7 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 	hs_MET_zjet[i] = make_stack(hchgflv_MET_zjet, numchgflv, i);
 	hs_Ht_zjet[i] = make_stack(hchgflv_Ht_zjet, numchgflv, i);	  
 	hs_alpha_zjet[i] = make_stack(hchgflv_alpha_zjet, numchgflv, i);
+	hs_Nlep_zjet[i] = make_stack(hchgflv_Nlep_zjet, numchgflv, i);
 
 	hs_PtHadFirst_b[i] = make_stack(hchgflv_PtHadFirst_b, numchgflv, i);
 	hs_PtHadSecond_b[i] = make_stack(hchgflv_PtHadSecond_b, numchgflv, i);
@@ -1204,6 +1327,7 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 	hs_MEff[i]->Write();
 	hs_Ht[i]->Write();
 	hs_Njets[i]->Write();
+	hs_Nlep[i]->Write();
 	hs_alpha[i]->Write();
 
 	hs_PtLepFirst_zjet[i]->Write();
@@ -1214,6 +1338,7 @@ char* ScanChain( TChain* chain, char * prefix="", char* tag="", int specDY=-1, f
 	hs_MET_zjet[i]->Write();
 	hs_Ht_zjet[i]->Write();
 	hs_alpha_zjet[i]->Write();
+	hs_Nlep_zjet[i]->Write();
 
 	hs_PtHadFirst_b[i]->Write();
 	hs_PtHadSecond_b[i]->Write();
@@ -1241,7 +1366,8 @@ const char* print_cuts() {
 
   stream << "Cuts: ";
   if( EtaCut ) stream << "Eta < " << round_char(EtaCutValue) << ",  ";
-  if( PtCut ) stream << "Pt(jets) > " << PtCutValue << ",  ";
+  if( JetPtCut ) stream << "Pt(jets) > " << JetPtCutValue << ",  ";
+  if( LepPtCut ) stream << "Pt(leptons) > " << LepPtCutValue << ",  ";
   if( TausAreLeptons ) stream << " including taus \n";
   else stream << " excluding taus \n";
 
@@ -1263,11 +1389,14 @@ char* name_from_cuts(char* prefix, char* tag){
 	else
 	  strcat(name, "_eta");
   }
-  if( PtCut ) {
-	if( PtCutValue == 50 )
-	  strcat(name, "_pt50");
-	else
-	  strcat(name, "_pt");
+  if( JetPtCut ) {
+	//if( PtCutValue == 50 )
+	//  strcat(name, "_pt50");
+	//else
+	  strcat(name, "_jetpt");
+  }
+  if( LepPtCut ) {
+	  strcat(name, "_leppt");
   }
   if( TausAreLeptons ) strcat(name, "_tau");
   //strcat(name, ".root");//put .filetype in looper

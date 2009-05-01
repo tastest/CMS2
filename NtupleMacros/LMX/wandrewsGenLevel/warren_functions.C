@@ -1,3 +1,4 @@
+#include <vector>
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -40,7 +41,7 @@ bool* susy_flavor(Int_t id) {
 	id_flav[slepton] = true;
   else if( id >= mill+22 && id <= mill+37 )
 	id_flav[gaugino] = true;
-  else if( id >=35 && id <= 37 )
+  else if( (id >=35 && id <= 37) || id == 25 )//25=SM higgs produced with other
 	id_flav[higgs] = true;
 
   if(!id_flav[squark] && !id_flav[slepton] && !id_flav[gaugino] && !id_flav[higgs] && id != mill+21)
@@ -181,8 +182,8 @@ int get_90_bin(TH1F hist ) {
 
 TString* init_var_desc(const int vars) {
   TString* desc = new TString[vars];
-  if( vars != 11 ) { //dummy proof b'c root won't tell me idx out of bounds
-	cout << "\nERROR: BAD INPUT TO init_var_desc\n";
+  if( vars != 12 ) { //dummy proof b'c root won't tell me idx out of bounds
+	cout << "\nERROR: BAD INPUT TO init_var_desc. see warren_functions.C\n";
 	return desc;
   }
 
@@ -196,7 +197,8 @@ TString* init_var_desc(const int vars) {
   desc[7] = "!SumEt + MET"; //twiki comment !
   desc[8] = "MEff + lepton pt";
   desc[9] = "Number jets";
-  desc[10] = "Etj(closest in phi to MET)/Mjj";
+  desc[10] = "Number leptons";
+  desc[11] = "Etj(closest in phi to MET)/Mjj";
 
   return desc;
 }
@@ -951,13 +953,15 @@ const char* print_particle_table( int npartcat, double part1_1[], double part1_2
 }
 //end print_particle_table
 
+//Int_t LSP_mcid = 1000022; //mSUGRA
+Int_t LSP_mcid = 1000039; //GMSB
 
 bool is_stable( Int_t id ) {
   if( abs(id) >= 1 && abs(id) <= 5 ) //stable quark
 	return true;
   else if( abs(id) >= 11 && abs(id) <= 16 ) //any lepton
 	return true;
-  else if( abs(id) == 22 || abs(id) == 21 || abs(id) == 1000022 ) 
+  else if( abs(id) == 22 || abs(id) == 21 || abs(id) == LSP_mcid ) 
 	//photon, gluon (both only from h decay), LSP
 	return true;
   else
@@ -966,6 +970,7 @@ bool is_stable( Int_t id ) {
 //end is_stable
 
 bool daughter_charge_mismatch( Int_t mother, Int_t daughter1, Int_t daughter2){
+  //this function is NOT sensitive to LSP b'c it is based on charge
   //for now, only chi0s, chi+s, gluino
   mother = abs(mother);
   daughter1 = abs(daughter1);
@@ -1007,9 +1012,10 @@ bool daughter_charge_mismatch( Int_t mother, Int_t daughter1, Int_t daughter2){
 //end daughter_charge_mismatch
 
 vector<Int_t> make_daughter_list( vector<Int_t> list_id ) {
+  //returns vector of indicies of the first daughter of each unstable particle
   vector<Int_t> list_daughter;
   for( unsigned int i=0; i<list_id.size(); i++ ) {
-	list_daughter.push_back(0);
+	list_daughter.push_back(0); //if stable, index is zero
   }
 
   Int_t beg_row = 6; //check for LSP, 3body decay of pair produced sparticle
@@ -1030,7 +1036,7 @@ vector<Int_t> make_daughter_list( vector<Int_t> list_id ) {
 	  rownum++;
 	  beg_row = i+1;
 	  end_row = end_row + rowunstable*2 + rowextra;
-	  rowunstable = 0; //
+	  rowunstable = 0; 
 	  rowextra = 0;
 	}
   }
