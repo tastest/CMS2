@@ -4,6 +4,8 @@
 #define LOOPER_H
 
 #include "Tools/LooperBase.h"
+#include "EffH1F.h"
+#include "EffH2F.h"
 
 // List of all cuts that can be applied.  The cuts are handled as a
 // bitfield; these labels define which bit corresponds to which cut.
@@ -59,8 +61,10 @@ enum {
      CUT_MORE_THAN_TWO_TRACKS,
 	 CUT_PT20,
 	 CUT_MC_EL,
+	 CUT_MC3_EL,
 	 CUT_MC_MU,
-	 CUT_ETA25,
+	 CUT_MC3_MU,
+	 CUT_ETA24,
 	 CUT_MU_GLOBAL,
 };
 
@@ -88,6 +92,7 @@ enum {
 //   cuts_t baseline_cuts_without_lt_pt = baseline_cuts & ~CUT_BIT(CUT_LT_PT);
  
 // baseline cuts
+/* //left over from ww
 const static cuts_t baseline_cuts = 
      (CUT_BIT(CUT_MORE_THAN_TWO_TRACKS)) |
      (CUT_BIT(CUT_LT_PT)		) | 
@@ -104,32 +109,89 @@ const static cuts_t baseline_cuts =
      (CUT_BIT(CUT_PASS_JETVETO_CALO)	) |
      (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)	) |  
      (CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT)	);   
+*/
 
 const static cuts_t el_base =
 ( CUT_BIT(CUT_OPP_SIGN) ) |
-( CUT_BIT(CUT_ETA25) ) |
+( CUT_BIT(CUT_ETA24) ) |
 ( CUT_BIT(CUT_PT20) ) |
 ( CUT_BIT(CUT_IN_Z_WINDOW) ) |
 ( CUT_BIT(CUT_MC_EL) ) |
+( CUT_BIT(CUT_MC3_EL) ) |
 ( CUT_BIT(CUT_EL_GOOD) ) |
 ( CUT_BIT(CUT_EL_ISO) ) ;
 
 const static cuts_t mu_base =
 ( CUT_BIT(CUT_OPP_SIGN) ) |
-( CUT_BIT(CUT_ETA25) ) |
+( CUT_BIT(CUT_ETA24) ) |
 ( CUT_BIT(CUT_PT20) ) |
 ( CUT_BIT(CUT_IN_Z_WINDOW) ) |
 ( CUT_BIT(CUT_MC_MU) ) |
+( CUT_BIT(CUT_MC3_MU) ) |
 ( CUT_BIT(CUT_MU_GOOD) ) |
 ( CUT_BIT(CUT_MU_ISO) ) ;
-  
-//const static cuts_t stat1cuts =
-//(CUT_BIT(CUT_IN_Z_WINDOW)) |
-//(CUT_BIT(CUT_ETA25)) ;
 
-//const static cuts_t pt20 = (CUT_BIT(CUT_PT20) );
-//const static cuts_t elgood = (CUT_BIT(CUT_EL_GOOD) );
-//const static cuts_t eliso = (CUT_BIT(CUT_EL_ISO) );
+//ISO CUTS
+const static cuts_t els_iso_denom =
+( CUT_BIT(CUT_OPP_SIGN) ) |
+( CUT_BIT(CUT_ETA24) ) |
+( CUT_BIT(CUT_PT20) ) |
+( CUT_BIT(CUT_IN_Z_WINDOW) ) |
+( CUT_BIT(CUT_MC_EL) ) |
+( CUT_BIT(CUT_EL_GOOD) );
+
+//const static cuts_t els_iso3_denom =
+//( CUT_BIT(CUT_OPP_SIGN) ) |
+//( CUT_BIT(CUT_ETA24) ) |
+//( CUT_BIT(CUT_PT20) ) |
+//( CUT_BIT(CUT_IN_Z_WINDOW) ) |
+//( CUT_BIT(CUT_MC3_EL) ) |
+//( CUT_BIT(CUT_EL_GOOD) );
+
+const static cuts_t els_iso_numer = ( els_iso_denom | CUT_BIT(CUT_EL_ISO) );
+//const static cuts_t els_iso3_numer = ( els_iso3_denom | CUT_BIT(CUT_EL_ISO) );
+
+const static cuts_t mus_iso_denom =
+( CUT_BIT(CUT_OPP_SIGN) ) |
+( CUT_BIT(CUT_ETA24) ) |
+( CUT_BIT(CUT_PT20) ) |
+( CUT_BIT(CUT_IN_Z_WINDOW) ) |
+( CUT_BIT(CUT_MC_MU) ) |
+( CUT_BIT(CUT_MU_GOOD) );
+
+//const static cuts_t mus_iso3_denom =
+//( CUT_BIT(CUT_OPP_SIGN) ) |
+//( CUT_BIT(CUT_ETA24) ) |
+//( CUT_BIT(CUT_PT20) ) |
+//( CUT_BIT(CUT_IN_Z_WINDOW) ) |
+//( CUT_BIT(CUT_MC3_MU) ) |
+//( CUT_BIT(CUT_MU_GOOD) );
+
+const static cuts_t mus_iso_numer = mus_iso_denom | CUT_BIT(CUT_MU_ISO);
+//const static cuts_t mus_iso3_numer = mus_iso3_denom | CUT_BIT(CUT_MU3_ISO);
+
+//RECO CUTS
+const static cuts_t els_reco_denom =
+( CUT_BIT(CUT_ETA24) ) |
+( CUT_BIT(CUT_PT20) ) |
+( CUT_BIT(CUT_IN_Z_WINDOW) );
+
+const static cuts_t els_reco_numer = els_reco_denom | CUT_BIT(CUT_MC_EL) ;
+
+const static cuts_t els_reco3_denom = els_reco_denom;
+
+const static cuts_t els_reco3_numer = els_reco3_denom | CUT_BIT(CUT_MC3_EL);
+
+const static cuts_t mus_reco_denom =
+( CUT_BIT(CUT_ETA24) ) |
+( CUT_BIT(CUT_PT20) ) |
+( CUT_BIT(CUT_IN_Z_WINDOW) ) ;
+
+const static cuts_t mus_reco_numer = mus_reco_denom | CUT_BIT(CUT_MC_MU);
+
+const static cuts_t mus_reco3_denom = mus_reco_denom;
+
+const static cuts_t mus_reco3_numer = mus_reco3_denom | CUT_BIT(CUT_MC3_MU);
 
 
 struct counts {
@@ -217,31 +279,33 @@ protected:
   TH1F* hels_iso;
   TH1F* hels_chg;
   //TH1F* hmus_iso;
-  TH1F* heff_p_iso;
-  TH1F* heff_p_iso_numer;
-  TH1F* heff_p_iso_denom;
-  TH1F* heff_pt_iso;
-  TH1F* heff_pt_iso_numer;
-  TH1F* heff_pt_iso_denom;
-  TH1F* heff_p_reco;
-  TH1F* heff_p_reco_numer;
-  TH1F* heff_p_reco_denom;
-  TH1F* heff_pt_reco;
-  TH1F* heff_pt_reco_numer;
-  TH1F* heff_pt_reco_denom;
-  //TH1F* heff_mc3match;
-  //NMinus1Hist *heff_p_N1; //efficiency as function of momentum for electrons
-  //NMinus1Hist *heff_pm_N1; // same for muons
-  //NMinus1Hist *heff_pt_N1;// as function of pt
-  //NMinus1Hist *heff_ptm_N1;
-  //NMinus1Hist *heff_single;
+  
+  EffH1F* eff_p_iso;
+  EffH1F* eff_pt_iso;
+  EffH1F* eff_p_reco;
+  EffH1F* eff_pt_reco;
+  EffH1F* eff_p_reco3;
+  EffH1F* eff_pt_reco3;
+
+  EffH2F* eff_p_eta_reco3;
+  EffH2F* eff_pt_eta_reco3;
+
+  //jet EffH's
+  EffH1F* eff_njets_reco3;
+  EffH1F* eff_jetEt_reco3;
+  EffH2F* eff_pt_njets_reco3;
+  EffH2F* eff_pt_jetEt_reco3;
+
+#define netabins 3
+  //EffH1F* eff_p_reco[netabins];
+  //EffH1F* eff_pt_reco[netabins];
   
 protected:
 
-  vector<cuts_t> els_cuts;
-  vector<string> els_cuts_names;
+  //vector<cuts_t> els_cuts;
+  //vector<string> els_cuts_names;
 
-#define ncounts 2  
+#define ncounts 3  //should be n cuts (not counting e,mu diffs)
   counts count[ncounts]; //my struct, declared above Looper
   double weight;
   int denomitr; 
@@ -252,3 +316,25 @@ protected:
   unsigned int	cands_count_[4];
 };
 #endif
+
+  
+  //TH1F* heff_p_iso;
+  //TH1F* heff_p_iso_numer;
+  //TH1F* heff_p_iso_denom;
+  //TH1F* heff_pt_iso;
+  //TH1F* heff_pt_iso_numer;
+  //TH1F* heff_pt_iso_denom;
+  //TH1F* heff_p_reco;
+  //TH1F* heff_p_reco_numer;
+  //TH1F* heff_p_reco_denom;
+  //TH1F* heff_pt_reco;
+  //TH1F* heff_pt_reco_numer;
+  //TH1F* heff_pt_reco_denom;
+
+  
+  //TH1F* heff_mc3match;
+  //NMinus1Hist *heff_p_N1; //efficiency as function of momentum for electrons
+  //NMinus1Hist *heff_pm_N1; // same for muons
+  //NMinus1Hist *heff_pt_N1;// as function of pt
+  //NMinus1Hist *heff_ptm_N1;
+  //NMinus1Hist *heff_single;

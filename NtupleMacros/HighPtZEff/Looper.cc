@@ -8,6 +8,8 @@
 //#include "Math/GenVector/LorentzVector.h"
 #include "TLorentzVector.h"
 
+//#include "EffH1F.h"
+
 using namespace std;
 
 
@@ -31,24 +33,6 @@ Looper::Looper (Sample s, cuts_t c, const char *fname)
   memset(cands_passing_	, 0, sizeof(cands_passing_       ));
   memset(cands_passing_w2_	, 0, sizeof(cands_passing_w2_    ));
   memset(cands_count_		, 0, sizeof(cands_count_         ));
-
-  //initialize cuts vector for N-1 hist: THESE ARE NUMERATOR CUTS
-  els_cuts.push_back( CUT_BIT(CUT_OPP_SIGN) );
-  els_cuts.push_back( CUT_BIT(CUT_ETA25) );
-  els_cuts.push_back( CUT_BIT(CUT_PT20) );
-  els_cuts.push_back( CUT_BIT(CUT_IN_Z_WINDOW) );
-  els_cuts.push_back( CUT_BIT(CUT_MC_EL) );
-  els_cuts.push_back( CUT_BIT(CUT_EL_GOOD) );
-  els_cuts.push_back( CUT_BIT(CUT_EL_ISO) );
-  //els_cuts.push_back( CUT_BIT(CUT_SAME_FLV) );
-
-  els_cuts_names.push_back( "_opp_sign" );
-  els_cuts_names.push_back( "_eta_2.5" );
-  els_cuts_names.push_back( "_pt20" );
-  els_cuts_names.push_back( "_z_window" );
-  els_cuts_names.push_back( "_mc_truth" );
-  els_cuts_names.push_back( "_elgood" );
-  els_cuts_names.push_back( "_eliso" );
 }
 
 void Looper::BookHistos ()
@@ -75,31 +59,6 @@ void Looper::BookHistos ()
   hels_chg = new TH1F( Form("%s_els_charge", SampleName().c_str()), "els_charge", 4, -2, 2 );
   hmus_size = new TH1F( Form("%s_mus_size", SampleName().c_str()), "mus_size", 10, 0, 10 );
   hmus_type = new TH1F( Form("%s_mus_type", SampleName().c_str()), "mus_type", 16, 0, 16 );
-
-  heff_p_iso = new TH1F( Form("%s_eff_p_iso", SampleName().c_str()), Form("%s_eff_p_iso", SampleName().c_str()), 80, 0, 800 );
-  heff_p_iso_numer = new TH1F( Form("%s_eff_p_iso_numer", SampleName().c_str()), Form("%s_eff_p_iso_numer", SampleName().c_str()), 80, 0, 800 );
-  heff_p_iso_denom = new TH1F( Form("%s_eff_p_iso_denom", SampleName().c_str()), Form("%s_eff_p_iso_denom", SampleName().c_str()), 80, 0, 800 );
-  heff_pt_iso = new TH1F( Form("%s_eff_pt_iso", SampleName().c_str()), Form("%s_eff_pt_iso", SampleName().c_str()), 100, 0, 200 );
-  heff_pt_iso_numer = new TH1F( Form("%s_eff_pt_iso_numer", SampleName().c_str()), Form("%s_eff_pt_iso_numer", SampleName().c_str()),100, 0, 200 );
-  heff_pt_iso_denom = new TH1F( Form("%s_eff_pt_iso_denom", SampleName().c_str()), Form("%s_eff_pt_iso_denom", SampleName().c_str()), 100, 0, 200 );
-
-  heff_p_reco = new TH1F( Form("%s_eff_p_reco", SampleName().c_str()), Form("%s_eff_p_reco", SampleName().c_str()), 80, 0, 800 );
-  heff_p_reco_numer = new TH1F( Form("%s_eff_p_reco_numer", SampleName().c_str()), Form("%s_eff_p_reco_numer", SampleName().c_str()), 80, 0, 800 );
-  heff_p_reco_denom = new TH1F( Form("%s_eff_p_reco_denom", SampleName().c_str()), Form("%s_eff_p_reco_denom", SampleName().c_str()), 80, 0, 800 );
-  heff_pt_reco = new TH1F( Form("%s_eff_pt_reco", SampleName().c_str()), Form("%s_eff_pt_reco", SampleName().c_str()), 100, 0, 200 );
-  heff_pt_reco_numer = new TH1F( Form("%s_eff_pt_reco_numer", SampleName().c_str()), Form("%s_eff_pt_reco_numer", SampleName().c_str()),100, 0, 200 );
-  heff_pt_reco_denom = new TH1F( Form("%s_eff_pt_reco_denom", SampleName().c_str()), Form("%s_eff_pt_reco_denom", SampleName().c_str()), 100, 0, 200 );
-
-  //heff_mc1match = new TH1F( Form("%s_MC1match_Z_Efficiency", SampleName().c_str()), "MC1match_Z_Efficiency", 50, 0, 500 );
-  //heff_mc3match = new TH1F( Form("%s_MC3match_Z_Efficiency", SampleName().c_str()), "MC3match_Z_Efficiency", 50, 0, 500 );
-
-  //CHANGE CUT VECTOR (NEW ONE) FOR MUS
-  //cut vectors for nminus1hist
-  //heff_p_N1 = new NMinus1Hist(sample_, "Z_Efficiency_vZp;", 80, 0, 800, el_base, els_cuts, els_cuts_names );
-  //heff_pm_N1 = new NMinus1Hist(sample_, "Z_Efficiency_vZp_mus;", 80, 0, 800, el_base, els_cuts, els_cuts_names );
-  //heff_pt_N1 = new NMinus1Hist(sample_, "Z_Efficiency_vZpt;", 80, 0, 800, el_base, els_cuts, els_cuts_names );
-  //heff_ptm_N1 = new NMinus1Hist(sample_, "Z_Efficiency_vZpt_mus;", 80, 0, 800, el_base, els_cuts, els_cuts_names );
-
   
   hgen_z_mass->Sumw2();
   hgen_z_p->Sumw2();
@@ -108,50 +67,40 @@ void Looper::BookHistos ()
   hgen1_lep_mass->Sumw2();
   hels_size->Sumw2();
   hels_iso->Sumw2();
-  heff_p_iso->Sumw2();
-  heff_p_iso_numer->Sumw2();
-  heff_p_iso_denom->Sumw2();
-  heff_pt_iso->Sumw2();
-  heff_pt_iso_numer->Sumw2();
-  heff_pt_iso_denom->Sumw2();
-  heff_p_reco->Sumw2();
-  heff_p_reco_numer->Sumw2();
-  heff_p_reco_denom->Sumw2();
-  heff_pt_reco->Sumw2();
-  heff_pt_reco_numer->Sumw2();
-  heff_pt_reco_denom->Sumw2();
-  //heff_mc1match->Sumw2();
-  //heff_mc3match->Sumw2();
-  
-  //hgen_z_mass->SetFillColor(sample_.histo_color);
-  //hgen_z_mass->SetLineColor(sample_.histo_color);
-  //hgen_z_mass->SetMarkerColor(sample_.histo_color);
-  //hgen_z_p->SetFillColor(sample_.histo_color);
-  //hgen_z_p->SetLineColor(sample_.histo_color);
-  //hgen_z_p->SetMarkerColor(sample_.histo_color);
-  //hels_size->SetFillColor(sample_.histo_color);
-  //hels_size->SetLineColor(sample_.histo_color);
-  //hels_size->SetMarkerColor(sample_.histo_color);
-  //hgen1lep_z_mass->SetFillColor(sample_.histo_color); // this is annoying...
-  //hgen1lep_z_mass->SetLineColor(sample_.histo_color);
-  //hgen1lep_z_mass->SetMarkerColor(sample_.histo_color);
-  //heff_mc1match->SetFillColor(sample_.histo_color);
-  //heff_mc1match->SetLineColor(sample_.histo_color);
-  //heff_mc1match->SetMarkerColor(sample_.histo_color);
-  //heff_mc3match->SetFillColor(sample_.histo_color);
-  //heff_mc3match->SetLineColor(sample_.histo_color);
-  //heff_mc3match->SetMarkerColor(sample_.histo_color);
+
+  eff_p_iso = new EffH1F( Form("%s_p_iso", SampleName().c_str()), Form("%s_p_iso", SampleName().c_str()), 80, 0, 800 );
+  eff_pt_iso = new EffH1F( Form("%s_pt_iso", SampleName().c_str()), Form("%s_pt_iso", SampleName().c_str()), 100, 0, 200 );
+  eff_p_reco = new EffH1F( Form("%s_p_reco", SampleName().c_str()), Form("%s_p_reco", SampleName().c_str()), 80, 0, 800 );
+  eff_pt_reco = new EffH1F( Form("%s_pt_reco", SampleName().c_str()), Form("%s_pt_reco", SampleName().c_str()), 100, 0, 200 );
+  eff_p_reco3 = new EffH1F( Form("%s_p_reco3", SampleName().c_str()), Form("%s_p_reco3", SampleName().c_str()), 80, 0, 800 );
+  eff_pt_reco3 = new EffH1F( Form("%s_pt_reco3", SampleName().c_str()), Form("%s_pt_reco3", SampleName().c_str()), 100, 0, 200 );
+
+  eff_p_eta_reco3 = new EffH2F( Form("%s_p_eta_reco3", SampleName().c_str()), Form("%s_p_eta_reco3", SampleName().c_str()), 80, 0, 800, 100, -5, 5 );
+  eff_pt_eta_reco3 = new EffH2F( Form("%s_pt_eta_reco3", SampleName().c_str()), Form("%s_pt_eta_reco3", SampleName().c_str()), 100, 0, 200, 100, -5, 5 );
+  //eff_p_eta_iso = new EffH2F( Form("%s_p_eta_iso", SampleName().c_str()), Form("%s_p_eta_iso", SampleName().c_str()), 80, 0, 800, 100, -5, 5 );
+  //eff_pt_eta_iso = new EffH2F( Form("%s_pt_eta_iso", SampleName().c_str()), Form("%s_pt_eta_iso", SampleName().c_str()), 100, 0, 200, 100, -5, 5 );
+
+  //jets plots
+  eff_njets_reco3 = new EffH1F( Form("%s_njets_reco3", SampleName().c_str()), Form("%s_njets_reco3", SampleName().c_str()), 20, 0, 20 );
+  eff_jetEt_reco3 = new EffH1F( Form("%s_jetEt_reco3", SampleName().c_str()), Form("%s_jetEt_reco3", SampleName().c_str()), 40, 0, 400 );
+
+  eff_pt_njets_reco3 = new EffH2F( Form("%s_pt_njets_reco3", SampleName().c_str()), Form("%s_pt_njets_reco3", SampleName().c_str()), 100, 0, 200, 20, 0, 20 );
+  eff_pt_jetEt_reco3 = new EffH2F( Form("%s_pt_jetEt_reco3", SampleName().c_str()), Form("%s_pt_jetEt_reco3", SampleName().c_str()), 100, 0, 200, 100, 0, 500 );
+
+  //for( int i=0; i<netabins; i++ ) {
+  //	eff_p_reco3 = new EffH1F( Form("%s_p_reco3", SampleName().c_str()), Form("%s_p_reco3", SampleName().c_str()), 80, 0, 800 );
+  //	eff_pt_reco3 = new EffH1F( Form("%s_pt_reco3", SampleName().c_str()), Form("%s_pt_reco3", SampleName().c_str()), 100, 0, 200 );
+  //} 
+
 }
 
 
-bool Looper::FilterEvent()
-{ 
+bool Looper::FilterEvent() { 
 
   return false; 
 }
 
 cuts_t Looper::Stat1Select(vector<int> idx) {
-  //this function should check all cuts in cuts_t stat1cuts (Looper.h)
   cuts_t ret = 0;
   
   if( idx.size() != 2 ) {
@@ -168,9 +117,9 @@ cuts_t Looper::Stat1Select(vector<int> idx) {
 	return ret;
   }
 	 
-  if( abs(cms2.genps_lepdaughter_p4()[idx[0]].eta()) < 2.5 &&
-	  abs(cms2.genps_lepdaughter_p4()[idx[1]].eta()) < 2.5 )
-	ret |= CUT_BIT(CUT_ETA25);
+  if( abs(cms2.genps_lepdaughter_p4()[idx[0]].eta()) < 2.4 &&
+	  abs(cms2.genps_lepdaughter_p4()[idx[1]].eta()) < 2.4 )
+	ret |= CUT_BIT(CUT_ETA24);
 
   if( cms2.genps_lepdaughter_p4()[idx[0]].pt() > 20. &&
 	  cms2.genps_lepdaughter_p4()[idx[1]].pt() > 20. )
@@ -195,9 +144,13 @@ cuts_t Looper::LepSelect(int i, int flv) {
 	  if( cms2.els_mc_motherid()[i] != 23 ) 
 		count[denomitr].bad_mom += weight;
 	}
+
+	if( abs(cms2.els_mc3_id()[i]) == 11 ) { //mc truth
+	  ret |= (CUT_BIT(CUT_MC3_EL));
+	}
 	
-	//if( abs(cms2.els_p4()[i].eta()) < 2.5 ) //checked at gen
-	//  ret |= CUT_BIT(CUT_ETA25);
+	//if( abs(cms2.els_p4()[i].eta()) < 2.4 ) //checked at gen
+	//  ret |= CUT_BIT(CUT_ETA24);
   
 	//if( cms2.els_p4()[i].pt() > 10 ) //MAKE SURE
 	//  ret |= (CUT_BIT(CUT_PT20));
@@ -218,8 +171,12 @@ cuts_t Looper::LepSelect(int i, int flv) {
 		count[denomitr].bad_mom += weight;
 	}
 
-	//if( abs(cms2.mus_p4()[i].eta()) < 2.5 ) //checked at gen
-	//  ret |= CUT_BIT(CUT_ETA25);
+	if( abs(cms2.mus_mc3_id()[i]) == 13 ) {
+	  ret |= (CUT_BIT(CUT_MC3_MU));
+	}
+
+	//if( abs(cms2.mus_p4()[i].eta()) < 2.4 ) //checked at gen
+	//  ret |= CUT_BIT(CUT_ETA24);
 
 	//if( cms2.mus_p4()[i].pt() > 10 ) //MAKE SURE
 	//  ret |= CUT_BIT(CUT_PT20);
@@ -332,7 +289,7 @@ cuts_t Looper::PairSelect(cuts_t numer, cuts_t denom, cuts_t gencuts, int flv){
 		nfailop++;
 	  if( (fail[i] & CUT_BIT(CUT_PT20)) == 0 )
 		nfailpt++;
-	  if( (fail[i] & CUT_BIT(CUT_ETA25)) == 0 )
+	  if( (fail[i] & CUT_BIT(CUT_ETA24)) == 0 )
 		nfaileta++;
 	  if( flv == 0 && (fail[i] & CUT_BIT(CUT_EL_GOOD)) == 0 )
 		nfailgd++;
@@ -406,15 +363,6 @@ void Looper::FillEventHistos ()
   weight = Weight(0);
   denomitr = 0;
 
-  cuts_t numer_els = el_base; //everything--see Looper.h
-  cuts_t denom_els = el_base & (~CUT_BIT(CUT_EL_ISO)); //switch off iso
-  cuts_t numer_mus = mu_base;
-  cuts_t denom_mus = mu_base & (~CUT_BIT(CUT_MU_ISO)); //switch off iso
-  cuts_t numer_reco_els = el_base & ~(CUT_BIT(CUT_EL_GOOD) | CUT_BIT(CUT_EL_ISO) | CUT_BIT(CUT_OPP_SIGN)); //require match, no quality or iso
-  cuts_t denom_reco_els = el_base & ~(CUT_BIT(CUT_MC_EL) | CUT_BIT(CUT_EL_GOOD) | CUT_BIT(CUT_EL_ISO) | CUT_BIT(CUT_OPP_SIGN)); //no match, quality, or iso
-  cuts_t numer_reco_mus = mu_base & ~(CUT_BIT(CUT_MU_GOOD) | CUT_BIT(CUT_MU_ISO) | CUT_BIT(CUT_OPP_SIGN)) | CUT_BIT(CUT_MU_GLOBAL); 
-  cuts_t denom_reco_mus = mu_base & ~(CUT_BIT(CUT_MC_MU) | CUT_BIT(CUT_MU_GOOD) | CUT_BIT(CUT_MU_ISO) | CUT_BIT(CUT_OPP_SIGN));
-
   //way i did lorentz in susy:
   //ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lep1;
   //ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lep2;
@@ -448,6 +396,7 @@ void Looper::FillEventHistos ()
   
   //get status 1 leps using lepdaughter--for denominator
   vector<int> idxlep1;
+  int idxeta;
   for(unsigned int i=0; i<cms2.genps_lepdaughter_id().size(); i++) {
 	if( abs(cms2.genps_lepdaughter_id()[i]) == 11 ||
 		abs(cms2.genps_lepdaughter_id()[i]) == 13  ) 
@@ -456,87 +405,133 @@ void Looper::FillEventHistos ()
   if( idxlep1.size() != 2 )
 	cout << "idxlep1 size !=2 : " << idxlep1.size() << endl;
 
+  if( abs(cms2.genps_lepdaughter_p4()[idxlep1[0]].eta()) > abs(cms2.genps_lepdaughter_p4()[idxlep1[1]].eta()) )
+	idxeta = idxlep1[0];
+  else
+	idxeta = idxlep1[1];
+  
   cuts_t stat1pass = Stat1Select(idxlep1);
   if( stat1pass & CUT_BIT(CUT_IN_Z_WINDOW) )
 	FillStat1Histos( zidx, idxlep1, idxlep3 );
 
-  if( stat1pass & CUT_BIT(CUT_ETA25) ) {
+  if( stat1pass & CUT_BIT(CUT_ETA24) ) {
 	hgen1_lep_mass->Fill( (cms2.genps_lepdaughter_p4()[idxlep1[0]] + cms2.genps_lepdaughter_p4()[idxlep1[1]]).M() , weight );
 	hgen_z_mass->Fill( cms2.genps_p4()[zidx].M(), weight );
   }
-	
-  //get reco els, mus
-  //cout << "reco\n";
-  //vector<int> idx1, idx3;
-  //vector<cuts_t> cuts_passed;
-  hels_size->Fill( cms2.els_p4().size() , weight );
-  hmus_size->Fill( cms2.mus_p4().size() , weight );
-  cuts_t pair_els = PairSelect(numer_els, denom_els, stat1pass, 0);
-  cuts_t pair_mus = PairSelect(numer_mus, denom_mus, stat1pass, 1);
-  denomitr++;
-  cuts_t pair_reco_els = PairSelect(numer_reco_els, denom_reco_els, stat1pass, 0);
-  cuts_t pair_reco_mus = PairSelect(numer_reco_mus, denom_reco_mus, stat1pass, 1);
 
-  //cout << "middle\n";
-  //check cuts, fill histos
-  if( (denom_els & pair_els) == denom_els || (denom_mus & pair_mus) == denom_mus ) {
-	heff_p_iso_denom->Fill( cms2.genps_p4()[zidx].P(), weight);
-	heff_pt_iso_denom->Fill( cms2.genps_p4()[zidx].pt(), weight);
-  }
-  if( (numer_els & pair_els) == numer_els || (numer_mus & pair_mus) == numer_mus ) {
-	heff_p_iso_numer->Fill( cms2.genps_p4()[zidx].P(), weight);
-	heff_pt_iso_numer->Fill( cms2.genps_p4()[zidx].pt(), weight);
+  double sumet = 0;
+  for( unsigned int i=0; i<cms2.jpts_p4().size(); i++ ) {
+	if( cms2.jpts_p4()[i].Et() > 20 )
+	  sumet += cms2.jpts_p4()[i].Et();
   }
   
-  if( (denom_reco_els & pair_reco_els) == denom_reco_els || (denom_reco_mus & pair_reco_mus) == denom_reco_mus ) {
-	heff_p_reco_denom->Fill( cms2.genps_p4()[zidx].P(), weight);
-	heff_pt_reco_denom->Fill( cms2.genps_p4()[zidx].pt(), weight);
-  }
-  if( (numer_reco_els & pair_reco_els) == numer_reco_els || (numer_reco_mus & pair_reco_mus) == numer_reco_mus ) {
-	heff_p_reco_numer->Fill( cms2.genps_p4()[zidx].P(), weight);
-	heff_pt_reco_numer->Fill( cms2.genps_p4()[zidx].pt(), weight);
+  int njets = 0;
+  for( unsigned int i=0; i<cms2.jpts_p4().size(); i++ ) {
+	if( cms2.jpts_p4()[i].Et() > 20 )
+	  njets++;
   }
 
-  //heff_p_N1->Fill(pair, DILEPTON_EE, cms2.genps_p4()[zidx].P(), weight);
-  //heff_pt_N1->Fill(pair, DILEPTON_EE, cms2.genps_p4()[zidx].pt(), weight);
-  //heff_mc1match_N1->Fill(pair, DILEPTON_EE, zp, weight);
+  //get reco els, mus   ***************************
+  //cout << "reco\n";
+  hels_size->Fill( cms2.els_p4().size() , weight );
+  hmus_size->Fill( cms2.mus_p4().size() , weight );
+  cuts_t pair_els = PairSelect(els_iso_numer, els_iso_denom, stat1pass, 0);
+  cuts_t pair_mus = PairSelect(mus_iso_numer, mus_iso_denom, stat1pass, 1);
+  denomitr++;
+  cuts_t pair_reco_els = PairSelect(els_reco_numer, els_reco_denom, stat1pass, 0);
+  cuts_t pair_reco_mus = PairSelect(mus_reco_numer, mus_reco_denom, stat1pass, 1);
+  denomitr++;
+  cuts_t pair_reco3_els = PairSelect(els_reco3_numer, els_reco3_denom, stat1pass, 0);
+  cuts_t pair_reco3_mus = PairSelect(mus_reco3_numer, mus_reco3_denom, stat1pass, 1);
 
-  //cout << "end\n";
+  //cout << "Done all Select\n";
+  //check cuts, fill histos
+  if( (els_iso_denom & pair_els) == els_iso_denom || (mus_iso_denom & pair_mus) == mus_iso_denom ) {
+	eff_p_iso->denom->Fill( cms2.genps_p4()[zidx].P(), weight);
+	eff_pt_iso->denom->Fill( cms2.genps_p4()[zidx].pt(), weight);
+  }
+  if( (els_iso_numer & pair_els) == els_iso_numer || (mus_iso_numer & pair_mus) == mus_iso_numer ) {
+	eff_p_iso->numer->Fill( cms2.genps_p4()[zidx].P(), weight);
+	eff_pt_iso->numer->Fill( cms2.genps_p4()[zidx].pt(), weight);
+	//heff_p_eta_iso->numer->Fill( cms2.genps_p4()[zidx].P(), cms2.genps_lepdaughter_p4()[idxeta].eta(), weight);
+  }
+
+  if( (els_reco_denom & pair_reco_els) == els_reco_denom || (mus_reco_denom & pair_reco_mus) == mus_reco_denom ) {
+	eff_p_reco->denom->Fill( cms2.genps_p4()[zidx].P(), weight);
+	eff_pt_reco->denom->Fill( cms2.genps_p4()[zidx].pt(), weight);
+	
+	//heff_p_eta_reco_denom->Fill( cms2.genps_p4()[zidx].P(), cms2.genps_lepdaughter_p4()[idxeta].eta(), weight);
+  }
+  if( (els_reco_numer & pair_reco_els) == els_reco_numer || (mus_reco_numer & pair_reco_mus) == mus_reco_numer ) {
+	eff_p_reco->numer->Fill( cms2.genps_p4()[zidx].P(), weight);
+	eff_pt_reco->numer->Fill( cms2.genps_p4()[zidx].pt(), weight);
+
+	//heff_p_eta_reco_numer->Fill( cms2.genps_p4()[zidx].P(), cms2.genps_lepdaughter_p4()[idxeta].eta(), weight);
+  }
+
+  if( (els_reco3_denom & pair_reco3_els) == els_reco3_denom || (mus_reco3_denom & pair_reco3_mus) == mus_reco3_denom ) {
+	eff_p_reco3->denom->Fill( cms2.genps_p4()[zidx].P(), weight);
+	eff_pt_reco3->denom->Fill( cms2.genps_p4()[zidx].pt(), weight);
+
+	eff_p_eta_reco3->denom->Fill( cms2.genps_p4()[zidx].P(), cms2.genps_lepdaughter_p4()[idxeta].eta(), weight);
+	eff_pt_eta_reco3->denom->Fill( cms2.genps_p4()[zidx].pt(), cms2.genps_lepdaughter_p4()[idxeta].eta(), weight);
+
+	eff_njets_reco3->denom->Fill( njets, weight);
+	eff_jetEt_reco3->denom->Fill( sumet, weight);
+	eff_pt_njets_reco3->denom->Fill( cms2.genps_p4()[zidx].pt(), njets, weight);
+	eff_pt_jetEt_reco3->denom->Fill( cms2.genps_p4()[zidx].pt(), sumet, weight);
+  }
+  if( (els_reco3_numer & pair_reco3_els) == els_reco3_numer || (mus_reco3_numer & pair_reco3_mus) == mus_reco3_numer ) {
+	eff_p_reco3->numer->Fill( cms2.genps_p4()[zidx].P(), weight);
+	eff_pt_reco3->numer->Fill( cms2.genps_p4()[zidx].pt(), weight);
+
+	eff_p_eta_reco3->numer->Fill( cms2.genps_p4()[zidx].P(), cms2.genps_lepdaughter_p4()[idxeta].eta(), weight);
+	eff_pt_eta_reco3->numer->Fill( cms2.genps_p4()[zidx].pt(), cms2.genps_lepdaughter_p4()[idxeta].eta(), weight);
+
+	eff_njets_reco3->numer->Fill( njets, weight);
+	eff_jetEt_reco3->numer->Fill( sumet, weight);
+	eff_pt_njets_reco3->numer->Fill( cms2.genps_p4()[zidx].pt(), njets, weight);
+	eff_pt_jetEt_reco3->numer->Fill( cms2.genps_p4()[zidx].pt(), sumet, weight);
+  }
+
+
 }
 
 void Looper::End ()
 {
-  heff_p_iso->Divide(heff_p_iso_numer, heff_p_iso_denom);
-  heff_pt_iso->Divide(heff_pt_iso_numer, heff_pt_iso_denom);
-  heff_p_reco->Divide(heff_p_reco_numer, heff_p_reco_denom);
-  heff_pt_reco->Divide(heff_pt_reco_numer, heff_pt_reco_denom);
+  //heff_p_iso->Divide(heff_p_iso_numer, heff_p_iso_denom);
+  //heff_pt_iso->Divide(heff_pt_iso_numer, heff_pt_iso_denom);
+  //heff_p_reco->Divide(heff_p_reco_numer, heff_p_reco_denom);
+  //heff_pt_reco->Divide(heff_pt_reco_numer, heff_pt_reco_denom);
+  //heff_p_eta_reco->Divide(heff_p_eta_reco_numer, heff_p_eta_reco_denom);
 
-  //divide by the z momentum to get efficiency
-  //hels_eff_iso->Divide( hgen_z_p );
-  //heff_mc1match->Divide( hgen_z_p );
-  //heff_mc3match->Divide( hgen_z_p );
+  eff_p_iso->MakeEff();
+  eff_pt_iso->MakeEff();
+  eff_p_reco->MakeEff();
+  eff_pt_reco->MakeEff();
+  eff_p_reco3->MakeEff();
+  eff_pt_reco3->MakeEff();
 
-  //heff_mc1match_N1->N()[DILEPTON_EE].Divide( hgen_z_p );
-  //DileptonHypType:DILEPTON_ALL, DILEPTON_MUMU, DILEPTON_EMU, DILEPTON_EE
-  for( unsigned int j=0; j<4; j++ ) {
-	//heff_mc1match_N1->N()[(DileptonHypType)j].Divide( hgen_z_p );
-	//heff_mc3match_N1->N()[(DileptonHypType)j].Divide( hgen_z_p );
-	//heff_p_N1->N()[(DileptonHypType)j].Divide( hgen_z_p );
-	//heff_pt_N1->N()[(DileptonHypType)j].Divide( hgen_z_pt );
-	for( unsigned int i=0;i<els_cuts.size(); i++ ) {
-	  //heff_mc1match_N1->NMinus1(i)[(DileptonHypType)j].Divide( hgen_z_p );
-	  //heff_mc3match_N1->NMinus1(i)[(DileptonHypType)j].Divide( hgen_z_p );
-	  //heff_p_N1->NMinus1(i)[(DileptonHypType)j].Divide( hgen_z_p );
-	  //heff_pt_N1->NMinus1(i)[(DileptonHypType)j].Divide( hgen_z_pt );
-	}
-  }
+  eff_p_eta_reco3->MakeEff();
+  eff_pt_eta_reco3->MakeEff();
+
+  eff_njets_reco3->MakeEff();
+  eff_jetEt_reco3->MakeEff();
+  eff_pt_njets_reco3->MakeEff();
+  eff_pt_jetEt_reco3->MakeEff();
 
   //print struct count content
   for( int i=0;i<ncounts;i++ ) {
-	cout << "\n\nTotal events run on: " << count[i].total
+	if( i == 0 )
+	  cout << "\n\nIso Efficiencies:";
+	else if ( i == 1 )
+	  cout << "\n\nReco(1) Efficiencies:";
+	else if ( i == 2 )
+	  cout << "\n\nReco(3) Efficiencies:";
+	cout << "\nTotal events run on: " << count[i].total
 		 << "\ntotal denominator events: " << count[i].denom
 		 << "\ntotal numerator events: " << count[i].numer
-		 << "\nnum events without two gen leptons in eta 2.5: " << count[i].geneta
+		 << "\nnum events without two gen leptons in eta 2.4: " << count[i].geneta
 		 << "\nnum events which fail opp sign: " << count[i].opp_sign
 		 << "\nnum events which fail same flv: " << count[i].same_flv
 		 << "\nnum events which fail pt > 20: " << count[i].pt20
@@ -562,95 +557,103 @@ void Looper::End ()
 }
 
 
+  //initialize cuts vector for N-1 hist: 
+  //els_cuts.push_back( CUT_BIT(CUT_OPP_SIGN) );
+  //els_cuts.push_back( CUT_BIT(CUT_ETA24) );
+  //els_cuts.push_back( CUT_BIT(CUT_PT20) );
+  //els_cuts.push_back( CUT_BIT(CUT_IN_Z_WINDOW) );
+  //els_cuts.push_back( CUT_BIT(CUT_MC_EL) );
+  //els_cuts.push_back( CUT_BIT(CUT_EL_GOOD) );
+  //els_cuts.push_back( CUT_BIT(CUT_EL_ISO) );
+  //
+  //els_cuts_names.push_back( "_opp_sign" );
+  //els_cuts_names.push_back( "_eta_2.4" );
+  //els_cuts_names.push_back( "_pt20" );
+  //els_cuts_names.push_back( "_z_window" );
+  //els_cuts_names.push_back( "_mc_truth" );
+  //els_cuts_names.push_back( "_elgood" );
+  //els_cuts_names.push_back( "_eliso" );
 
 
-///////////////////////////////////////////////////////////////
-// DEAD CODE
+  //heff_p_iso = new TH1F( Form("%s_eff_p_iso", SampleName().c_str()), Form("%s_eff_p_iso", SampleName().c_str()), 80, 0, 800 );
+  //heff_p_iso_numer = new TH1F( Form("%s_eff_p_iso_numer", SampleName().c_str()), Form("%s_eff_p_iso_numer", SampleName().c_str()), 80, 0, 800 );
+  //heff_p_iso_denom = new TH1F( Form("%s_eff_p_iso_denom", SampleName().c_str()), Form("%s_eff_p_iso_denom", SampleName().c_str()), 80, 0, 800 );
+  //heff_pt_iso = new TH1F( Form("%s_eff_pt_iso", SampleName().c_str()), Form("%s_eff_pt_iso", SampleName().c_str()), 100, 0, 200 );
+  //heff_pt_iso_numer = new TH1F( Form("%s_eff_pt_iso_numer", SampleName().c_str()), Form("%s_eff_pt_iso_numer", SampleName().c_str()),100, 0, 200 );
+  //heff_pt_iso_denom = new TH1F( Form("%s_eff_pt_iso_denom", SampleName().c_str()), Form("%s_eff_pt_iso_denom", SampleName().c_str()), 100, 0, 200 );
+  //
+  //heff_p_reco = new TH1F( Form("%s_eff_p_reco", SampleName().c_str()), Form("%s_eff_p_reco", SampleName().c_str()), 80, 0, 800 );
+  //heff_p_reco_numer = new TH1F( Form("%s_eff_p_reco_numer", SampleName().c_str()), Form("%s_eff_p_reco_numer", SampleName().c_str()), 80, 0, 800 );
+  //heff_p_reco_denom = new TH1F( Form("%s_eff_p_reco_denom", SampleName().c_str()), Form("%s_eff_p_reco_denom", SampleName().c_str()), 80, 0, 800 );
+  //heff_pt_reco = new TH1F( Form("%s_eff_pt_reco", SampleName().c_str()), Form("%s_eff_pt_reco", SampleName().c_str()), 100, 0, 200 );
+  //heff_pt_reco_numer = new TH1F( Form("%s_eff_pt_reco_numer", SampleName().c_str()), Form("%s_eff_pt_reco_numer", SampleName().c_str()),100, 0, 200 );
+  //heff_pt_reco_denom = new TH1F( Form("%s_eff_pt_reco_denom", SampleName().c_str()), Form("%s_eff_pt_reco_denom", SampleName().c_str()), 100, 0, 200 );
+  //
 
-/*
-  was in stat 3 loop for gen3 mass
-	else if( abs(cms2.genps_id()[i]) == 11 || abs(cms2.genps_id()[i]) == 13 ){ 
-	  nstat3lep++;
-	  if( lep1.Px() == 0 ){
-		lep1.SetPx( cms2.genps_p4()[i].Px() );
-		lep1.SetPy( cms2.genps_p4()[i].Py() );
-		lep1.SetPz( cms2.genps_p4()[i].Pz() );
-		lep1.SetE(  cms2.genps_p4()[i].E() );
-	  }
-	  else if( lep2.Px() == 0 ) {
-		lep2.SetPx( cms2.genps_p4()[i].Px() );
-		lep2.SetPy( cms2.genps_p4()[i].Py() );
-		lep2.SetPz( cms2.genps_p4()[i].Pz() );
-		lep2.SetE(  cms2.genps_p4()[i].E() );
-	  }
-	}
-  if( (lep1+lep2).M() > 0 )
-	hgen3lep_z_mass->Fill( (lep1+lep2).M(), weight );
-*/
-
-//was before stat1 loop
-  //if( cms2.evt_event() < 25 )
-  //if( numprint < 30 ) {
-	//cout << "evt:" << cms2.evt_event() << " lepdaughter size:" << cms2.genps_lepdaughter_id().size() << endl;
-	//numprint++;
-  //}
-
-//was in stat1 loop
-	//numlep++;
-	//stopping point: fill the histos
-	//if( !(abs(cms2.genps_lepdaughter_p4()[i].eta()) < 2.5) ) {
-	  //if( cms2.evt_event() < 5 )
-	  //if( numprint < 30 ) cout << "outside eta range\n";
-	  //continue;
-	//}
-
-	//if( cms2.genps_lepdaughter_p4()[i].pt() < 20. )
-	//continue;
-
-	//matchlep.push_back(true);
-/*
-  if( numlep < 2 ) {
-	if( numprint < 30 ) {
-	  cout << "less than two leptons in event at status 1\n";
-	  for(unsigned int i=0; i<10; i++) {
-		cout << i << " " << cms2.genps_id()[i] << " " << endl;
-	  }
-	  for(unsigned int i=0; i<cms2.genps_lepdaughter_id().size(); i++) {
-		cout << cms2.genps_lepdaughter_idx()[i] << " "
-			 << cms2.genps_lepdaughter_id()[i] << " "
-			 << cms2.genps_lepdaughter_p4()[i].pt() << endl;
-	  }
-	}
-	numprint++;
-  }
-*/
-/* from reco section
-  for( unsigned int i=0; i<cms2.els_mc3idx().size(); i++) {
-	if( cms2.els_mc3_motherid()[i] == 23 ) {
-	  idx3.push_back(i);
-	  //cuts_passed3.push_back( LepSelect(i, 0) );
-	}
-  }
-*/
-//also  from reco section
-  //if( have1 && have2 )
-  //numerator of mc1(3)match is reco matches two same flavor opp sign leptons
-  //if( idx1.size() == 2 && cms2.els_mc_id()[idx1[0]] == -1*cms2.els_mc_id()[idx1[1]] )
-  //	heff_mc1match->Fill( zp, weight );
-  //if( idx3.size() == 2 && cms2.els_mc3_id()[idx3[0]] == -1*cms2.els_mc3_id()[idx3[1]] )
-  // heff_mc3match->Fill( zp, weight );
+  //heff_p_eta_reco = new TH2F( Form("%s_eff_p_eta_reco", SampleName().c_str()), Form("%s_eff_p_eta_reco", SampleName().c_str()), 80, 0, 800, 100, -5, 5 );
+  //heff_p_eta_reco_numer = new TH2F( Form("%s_eff_p_eta_reco_numer", SampleName().c_str()), Form("%s_eff_p_eta_reco_numer", SampleName().c_str()), 80, 0, 800, 100, -5, 5 );
+  //heff_p_eta_reco_denom = new TH2F( Form("%s_eff_p_eta_reco_denom", SampleName().c_str()), Form("%s_eff_p_eta_reco_denom", SampleName().c_str()), 80, 0, 800, 100, -5, 5 );
 
 
-//was in pair select
-  //currently, cuts_passed.size is required to be two before this is called
-//ret |= (cuts_passed[0] & cuts_passed[1]);
-
-  //if( status == 1 ) { //useless?
-  //if( cuts_passed[0] & cuts_passed[1] & (CUT_BIT(CUT_IS_EL)) ) { //same flv
-  //}
-  //else if( cuts_passed[0] & cuts_passed[1] & (CUT_BIT(CUT_IS_MU)) ) {
-  //}
-  //else
-  //count.same_flv += weight;
+  //heff_p_iso->Sumw2();
+  //heff_p_iso_numer->Sumw2();
+  //heff_p_iso_denom->Sumw2();
+  //heff_pt_iso->Sumw2();
+  //heff_pt_iso_numer->Sumw2();
+  //heff_pt_iso_denom->Sumw2();
+  //heff_p_reco->Sumw2();
+  //heff_p_reco_numer->Sumw2();
+  //heff_p_reco_denom->Sumw2();
+  //heff_pt_reco->Sumw2();
+  //heff_pt_reco_numer->Sumw2();
+  //heff_pt_reco_denom->Sumw2();
+  //heff_mc1match->Sumw2();
+  //heff_mc3match->Sumw2();
   
-  //if( cms2.els_mc_id()[i1] == -1* cms2.els_mc_id()[i2] ) //opp sign
+  //hgen_z_mass->SetFillColor(sample_.histo_color);
+  //hgen_z_mass->SetLineColor(sample_.histo_color);
+  //hgen_z_mass->SetMarkerColor(sample_.histo_color);
+  //hgen_z_p->SetFillColor(sample_.histo_color);
+  //hgen_z_p->SetLineColor(sample_.histo_color);
+  //hgen_z_p->SetMarkerColor(sample_.histo_color);
+  //hels_size->SetFillColor(sample_.histo_color);
+  //hels_size->SetLineColor(sample_.histo_color);
+  //hels_size->SetMarkerColor(sample_.histo_color);
+  //hgen1lep_z_mass->SetFillColor(sample_.histo_color); // this is annoying...
+  //hgen1lep_z_mass->SetLineColor(sample_.histo_color);
+  //hgen1lep_z_mass->SetMarkerColor(sample_.histo_color);
+  //heff_mc1match->SetFillColor(sample_.histo_color);
+  //heff_mc1match->SetLineColor(sample_.histo_color);
+  //heff_mc1match->SetMarkerColor(sample_.histo_color);
+  //heff_mc3match->SetFillColor(sample_.histo_color);
+  //heff_mc3match->SetLineColor(sample_.histo_color);
+  //heff_mc3match->SetMarkerColor(sample_.histo_color);
+
+
+  //CHANGE CUT VECTOR (NEW ONE) FOR MUS
+  //cut vectors for nminus1hist
+  //heff_p_N1 = new NMinus1Hist(sample_, "Z_Efficiency_vZp;", 80, 0, 800, el_base, els_cuts, els_cuts_names );
+  //heff_pm_N1 = new NMinus1Hist(sample_, "Z_Efficiency_vZp_mus;", 80, 0, 800, el_base, els_cuts, els_cuts_names );
+  //heff_pt_N1 = new NMinus1Hist(sample_, "Z_Efficiency_vZpt;", 80, 0, 800, el_base, els_cuts, els_cuts_names );
+  //heff_ptm_N1 = new NMinus1Hist(sample_, "Z_Efficiency_vZpt_mus;", 80, 0, 800, el_base, els_cuts, els_cuts_names );
+
+
+  //divide by the z momentum to get efficiency
+  //hels_eff_iso->Divide( hgen_z_p );
+  //heff_mc1match->Divide( hgen_z_p );
+  //heff_mc3match->Divide( hgen_z_p );
+
+  //heff_mc1match_N1->N()[DILEPTON_EE].Divide( hgen_z_p );
+  //DileptonHypType:DILEPTON_ALL, DILEPTON_MUMU, DILEPTON_EMU, DILEPTON_EE
+  //for( unsigned int j=0; j<4; j++ ) {
+	//heff_mc1match_N1->N()[(DileptonHypType)j].Divide( hgen_z_p );
+	//heff_mc3match_N1->N()[(DileptonHypType)j].Divide( hgen_z_p );
+	//heff_p_N1->N()[(DileptonHypType)j].Divide( hgen_z_p );
+	//heff_pt_N1->N()[(DileptonHypType)j].Divide( hgen_z_pt );
+	//for( unsigned int i=0;i<els_cuts.size(); i++ ) {
+	  //heff_mc1match_N1->NMinus1(i)[(DileptonHypType)j].Divide( hgen_z_p );
+	  //heff_mc3match_N1->NMinus1(i)[(DileptonHypType)j].Divide( hgen_z_p );
+	  //heff_p_N1->NMinus1(i)[(DileptonHypType)j].Divide( hgen_z_p );
+	  //heff_pt_N1->NMinus1(i)[(DileptonHypType)j].Divide( hgen_z_pt );
+  //}
+  //}
