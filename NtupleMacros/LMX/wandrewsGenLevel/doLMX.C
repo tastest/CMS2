@@ -3,16 +3,21 @@
 
   // Flags for files to run over
   bool runLM1 = false;
-  bool runLM3 = true;
-  bool runLM4 = true;
-  bool runLM5 = true;
-  bool runLM6 = true;
-  bool runLM7 = true;
-  bool runLM8 = true;
-  bool runLM9 = true;
-  bool runLM10= true;
+  bool runLM3 = false;
+  bool runLM4 = false;
+  bool runLM5 = false;
+  bool runLM6 = false;
+  bool runLM7 = false;
+  bool runLM8 = false;
+  bool runLM9 = false;
+  bool runLM10= false;
   bool runLM2 = false;
   bool runLM11= false;
+  bool runGMSBBa = true;
+  bool runGMSBBb = false;
+  bool runGMSBCa = true;
+  bool runGMSBCb = true;
+  
 
   gStyle->SetOptStat(1110111);
   // Load various tools
@@ -119,6 +124,34 @@
 	tag = "V00-05-002";
   }
 
+  if (runGMSBBa) {
+    TChain *fGMSBBa = new TChain("Events");
+	fGMSBBa->Add("/data/tmp/wandrews/cms2-V01-02-11-NoFilter/GMSB_ModelBa_10Tev/merged_ntuple*.root");
+
+	tag = "V01-02-11";
+  }
+
+  if (runGMSBBb) {
+    TChain *fGMSBBb = new TChain("Events");
+	fGMSBBb->Add("/data/tmp/wandrews/cms2-V01-02-11-NoFilter/GMSB_ModelBb_10Tev/merged_ntuple*.root");
+
+	tag = "V01-02-11";
+  }
+
+  if (runGMSBCa) {
+    TChain *fGMSBCa = new TChain("Events");
+	fGMSBCa->Add("/data/tmp/wandrews/cms2-V01-02-11-NoFilter/GMSB_ModelCa_10Tev/merged_ntuple*.root");
+
+	tag = "V01-02-11";
+  }
+
+  if (runGMSBCb) {
+    TChain *fGMSBCb = new TChain("Events");
+	fGMSBCb->Add("/data/tmp/wandrews/cms2-V01-02-11-NoFilter/GMSB_ModelCb_10Tev/merged_ntuple*.root");
+
+	tag = "V01-02-11";
+  }
+
   
   // Define colors numbers:
   gStyle->SetPalette(1);
@@ -178,6 +211,26 @@
   if (runLM11) {
     cout << "\nProcessing LM11.." << endl;
 	ScanChain(fLM11, "LM11",tag,-1,1.0);
+  }
+
+  if (runGMSBBa) {
+    cout << "\nProcessing GMSBBa.." << endl;
+	ScanChain(fGMSBBa, "GMSBBa",tag,-1,1.0);
+  }
+
+  if (runGMSBBb) {
+    cout << "\nProcessing GMSBBb.." << endl;
+	ScanChain(fGMSBBb, "GMSBBb",tag,-1,1.0);
+  }
+
+  if (runGMSBCa) {
+    cout << "\nProcessing GMSBCa.." << endl;
+	ScanChain(fGMSBCa, "GMSBCa",tag,-1,1.0);
+  }
+
+  if (runGMSBCb) {
+    cout << "\nProcessing GMSBCb.." << endl;
+	ScanChain(fGMSBCb, "GMSBCb",tag,-1,1.0);
   }
 
 }
