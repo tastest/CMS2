@@ -19,6 +19,8 @@ class ttDilCounts_looper {
   int ScanChain ( TChain* chain, char * prefix="", float kFactor=1.0, int prescale=1, bool oldjets=true, unsigned int cutsMask=31);
 
   TH1F* hnJet[4];       // Njet distributions
+  TH1F* hnJetinZwindow[4];  //usefull for DY estimate
+  TH1F* hnJetoutZwindow[4]; //usefull for DY estimate
   TH1F* helePt[4][3];      // electron Pt
   TH1F* hmuPt[4][3];       // muon Pt
   TH1F* hmuPtFromSilicon[4][3];    // muon Pt (from tracker)

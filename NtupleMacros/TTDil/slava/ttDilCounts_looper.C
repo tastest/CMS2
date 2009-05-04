@@ -667,6 +667,13 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	// jet count
 	hnJet[myType]->Fill(min(new_hyp_njets,4), weight);
 	hnJet[3]->Fill(min(new_hyp_njets,4), weight);
+	if (inZmassWindow(cms2.hyp_p4().at(hypIdx).mass())) {
+	  hnJetinZwindow[myType]->Fill(min(new_hyp_njets,4), weight);
+	  hnJetinZwindow[3]->Fill(min(new_hyp_njets,4), weight);
+	} else {
+	  hnJetoutZwindow[myType]->Fill(min(new_hyp_njets,4), weight);
+	  hnJetoutZwindow[3]->Fill(min(new_hyp_njets,4), weight);
+	}
 
 	// lepton Pt
 	if (abs(id_lt) == 11) helePt[myType][arrNjets]->Fill(pt_lt, weight);
@@ -955,12 +962,29 @@ void ttDilCounts_looper::bookHistos(char *prefix) {
       if (j == 0){
 	hnJet[i] = new TH1F(Form("%s_hnJet_%s",prefix,suffixall[i]),Form("%s_nJet_%s",prefix,suffixall[i]),
 			    5,0.,5.);	
+	hnJetinZwindow[i] = new TH1F(Form("%s_hnJetinZwindow_%s",prefix,suffixall[i]),Form("%s_hnJetinZwindow_%s",prefix,suffixall[i]),
+				     5,0.,5.);	
+	hnJetoutZwindow[i] = new TH1F(Form("%s_hnJetoutZwindow_%s",prefix,suffixall[i]),Form("%s_hnJetoutZwindow_%s",prefix,suffixall[i]),
+				     5,0.,5.);	
+	
 	hnJet[i]->SetDirectory(rootdir);
 	hnJet[i]->GetXaxis()->SetTitle("nJets");
-	
+
+	hnJetinZwindow[i]->SetDirectory(rootdir);
+	hnJetinZwindow[i]->GetXaxis()->SetTitle("nJets");
+
+	hnJetoutZwindow[i]->SetDirectory(rootdir);
+	hnJetoutZwindow[i]->GetXaxis()->SetTitle("nJets");
+
 	for(int k = 0; k<5; k++) {
 	  hnJet[i]->GetXaxis()->SetBinLabel(k+1, jetbins[k]);
 	  hnJet[i]->GetXaxis()->SetLabelSize(0.07);
+	  
+	  hnJetinZwindow[i]->GetXaxis()->SetBinLabel(k+1, jetbins[k]);
+	  hnJetinZwindow[i]->GetXaxis()->SetLabelSize(0.07);
+	  
+	  hnJetoutZwindow[i]->GetXaxis()->SetBinLabel(k+1, jetbins[k]);
+	  hnJetoutZwindow[i]->GetXaxis()->SetLabelSize(0.07);
 	  
 	}
       }
@@ -1033,7 +1057,7 @@ void ttDilCounts_looper::bookHistos(char *prefix) {
       
  
       hdilMass[i][j] = new TH1F(Form("%s_hdilMass_%s",prefix,suffix[i]),Form("%s_dilMass_%s",prefix,suffix[i]),
-				100, 0., 300.);
+				300, 0., 300.);
       hdilMass[i][j]->SetDirectory(rootdir);
       hdilMass[i][j]->GetXaxis()->SetTitle("Mass_{ll} (GeV)");
       
@@ -1213,6 +1237,8 @@ void ttDilCounts_looper::bookHistos(char *prefix) {
 
       if (j==0){
 	hnJet[i]->Sumw2();
+	hnJetinZwindow[i]->Sumw2();
+	hnJetoutZwindow[i]->Sumw2();
       }
       helePt[i][j]->Sumw2();
       hmuPt[i][j]->Sumw2();
