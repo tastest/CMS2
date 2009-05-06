@@ -16,6 +16,9 @@ void setup(bool skipFWLite = false){
   gSystem->CompileMacro("histtools.C", "++k", "libhisttools");
   gSystem->CompileMacro("browseStacks.C", "++k", "libbrowseStacks");
 
+  gROOT->ProcessLine(".L tdrstyle.C");
+  setTDRStyle();
+
   std::string cms2Location = "";
   if (getenv("CMS2_LOCATION") ) cms2Location = Form("%s/NtupleMacros", getenv("CMS2_LOCATION"));
   else {
@@ -27,8 +30,5 @@ void setup(bool skipFWLite = false){
   }
 
   //punch in more quesses where NtupleMacros are -- don't keep multiple copies ;)
-  gSystem->AddIncludePath(Form(" -w -I./ -I./CORE -I%s/CORE -I../CMS2/NtupleMacros/CORE -I../../CMS2/NtupleMacros/CORE\
-  -I../../../CMS2/NtupleMacros/CORE -I../../../../CMS2/NtupleMacros/CORE\
-  -I%s -I../CMS2/NtupleMacros -I../../CMS2/NtupleMacros  -I../../../CMS2/NtupleMacros -I../../../../CMS2/NtupleMacros", 
-			       cms2Location.c_str(),cms2Location.c_str() ));
+  gSystem->AddIncludePath(Form(" -w -I./ -I./CORE -I%s", cms2Location.c_str() ));
 }
