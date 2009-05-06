@@ -1,9 +1,10 @@
-void printNJets( bool latex=false){
+void printNJets( bool latex=false, const char* formatS = "%6.1f"){
   char* suffix[4];
   suffix[0] = "ee";
   suffix[1] = "mm";
   suffix[2] = "em";
   suffix[3] = "all";
+
 
 
   if (latex) {
@@ -23,10 +24,17 @@ void printNJets( bool latex=false){
     int nHists = thisStack->GetHists()->GetSize();
     if (latex) {
       std::cout << "\\begin{minipage}{0.48\\textwidth}" << std::endl;
-      std::cout << "\\begin{tabular}{|l|c|c|c|} \\hline" << std::endl;
-      std::cout << "\\hline \\hline" << std::endl;
-      std::cout << "\\multicolumn{4}{|l|}{" << suffix[sample] << " final state} \\"<<"\\  " << std::endl;
-      std::cout << "   & $N_{jets}=0$       & $N_{jets}=1$      & $N_{jets} \\geq 2$ \\"<<"\\ \\hline" <<std::endl;
+      if (sample == 0 || sample == 2){
+	std::cout << "\\begin{tabular}{|l|c|c|c|} \\hline" << std::endl;
+	std::cout << "\\hline \\hline" << std::endl;
+	std::cout << "\\multicolumn{4}{|l|}{" << suffix[sample] << " final state} \\"<<"\\  " << std::endl;
+	std::cout << "   & $N_{jets}=0$       & $N_{jets}=1$      & $N_{jets} \\geq 2$ \\"<<"\\ \\hline" <<std::endl;
+      } else {
+	std::cout << "\\begin{tabular}{||c|c|c|} \\hline" << std::endl;
+	std::cout << "\\hline \\hline" << std::endl;
+	std::cout << "\\multicolumn{3}{|l|}{" << suffix[sample] << " final state} \\"<<"\\  " << std::endl;
+	std::cout << "   $N_{jets}=0$       & $N_{jets}=1$      & $N_{jets} \\geq 2$ \\"<<"\\ \\hline" <<std::endl;
+      }
     } else {
       std::cout<<"===================================================="<<std::endl;
       std::cout<<suffix[sample]<<std::endl;
@@ -61,26 +69,30 @@ void printNJets( bool latex=false){
       n2allE += n2E*n2E;
 
       if (latex) {
-	std::cout<<Form("%9s",sampleNs->At(0)->GetName()) 
-		 << " & $"<<Form("%6.1f",n0) <<" \\pm "<< Form("%6.1f",n0E) 
-		 <<"$ & $"<<Form("%6.1f",n1) <<" \\pm "<< Form("%6.1f",n1E) 
-		 <<"$ & $"<<Form("%6.1f",n2) <<" \\pm "<< Form("%6.1f",n2E) 
+	if (sample == 0 || sample ==2){
+	  std::cout<<Form("%9s & ",sampleNs->At(0)->GetName()) ;
+	}
+	std::cout<< "  $"<<Form(Form("%s", formatS),n0) <<" \\pm "<< Form(Form("%s", formatS),n0E) 
+		 <<"$ & $"<<Form(Form("%s", formatS),n1) <<" \\pm "<< Form(Form("%s", formatS),n1E) 
+		 <<"$ & $"<<Form(Form("%s", formatS),n2) <<" \\pm "<< Form(Form("%s", formatS),n2E) 
 		 <<"$ \\"<<"\\"  
 		 <<std::endl;
       } else {
 	std::cout<<" | "<<Form("%9s",sampleNs->At(0)->GetName())
-	         <<" | "<<Form("%6.1f",n0) <<" &plusmn; "<<Form("%6.1f",n0E)
-	         <<" | "<<Form("%6.1f",n1) <<" &plusmn; "<<Form("%6.1f",n1E)
-	         <<" | "<<Form("%6.1f",n2) <<" &plusmn; "<<Form("%6.1f",n2E)
+	         <<" | "<<Form(Form("%s", formatS),n0) <<" &plusmn; "<<Form(Form("%s", formatS),n0E)
+	         <<" | "<<Form(Form("%s", formatS),n1) <<" &plusmn; "<<Form(Form("%s", formatS),n1E)
+	         <<" | "<<Form(Form("%s", formatS),n2) <<" &plusmn; "<<Form(Form("%s", formatS),n2E)
 	         <<" | "<<std::endl;
       }
     }
     if (latex) {
       std::cout<<"\\hline"<<std::endl;
-      std::cout<<Form("%9s","Total") 
-	       << " & $"<<Form("%6.1f",n0all) <<" \\pm "<< Form("%6.1f",n0allE) 
-	       <<"$ & $"<<Form("%6.1f",n1all) <<" \\pm "<< Form("%6.1f",n1allE) 
-	       <<"$ & $"<<Form("%6.1f",n2all) <<" \\pm "<< Form("%6.1f",n2allE) 
+      if (sample == 0 || sample == 2){
+	std::cout<<Form("%9s & ","Total") ;
+      }
+      std::cout<< " $"<<Form(Form("%s", formatS),n0all) <<" \\pm "<< Form(Form("%s", formatS),n0allE) 
+	       <<"$ & $"<<Form(Form("%s", formatS),n1all) <<" \\pm "<< Form(Form("%s", formatS),n1allE) 
+	       <<"$ & $"<<Form(Form("%s", formatS),n2all) <<" \\pm "<< Form(Form("%s", formatS),n2allE) 
 	       <<"$ \\"<<"\\"  
 	       <<std::endl;
       std::cout << "\\hline " << std::endl;
@@ -88,9 +100,9 @@ void printNJets( bool latex=false){
       std::cout << "\\end{minipage}" << std::endl;
     } else {
       std::cout<<" | "<<Form("%9s","Total")
-	       <<" | "<<Form("%6.1f",n0all) <<" &plusmn; "<<Form("%6.1f",n0allE)
-	       <<" | "<<Form("%6.1f",n1all) <<" &plusmn; "<<Form("%6.1f",n1allE)
-	       <<" | "<<Form("%6.1f",n2all) <<" &plusmn; "<<Form("%6.1f",n2allE)
+	       <<" | "<<Form(Form("%s", formatS),n0all) <<" &plusmn; "<<Form(Form("%s", formatS),n0allE)
+	       <<" | "<<Form(Form("%s", formatS),n1all) <<" &plusmn; "<<Form(Form("%s", formatS),n1allE)
+	       <<" | "<<Form(Form("%s", formatS),n2all) <<" &plusmn; "<<Form(Form("%s", formatS),n2allE)
 	       <<" | "<<std::endl;
     }
     if(!latex)
@@ -234,13 +246,14 @@ void printN2JetsColumns( const std::vector<std::string>& pfxs, int nPfx, bool la
 }
 
 
-void getJESSyst(){
+void getJESSyst(const char* formatS = "% 4.f"){
+  //input the names of the files here
   hist::loadHist("sk_tdilgp032309/myHist_1957888__OS_noDupWt_isoDil08_preDil08noIso_preMet08_outZ08_hltMu9E15.root", 
-		 "mid", "*_hnJet_*");
+ 		 "mid", "*_hnJet_*");
   hist::loadHist("sk_tdilgp032309/myHist_10346496__OS_noDupWt_isoDil08_preDil08noIso_preMet08_outZ08_hltMu9E15_jets10Up.root", 
-		 "jup", "*_hnJet_*");
+ 		 "jup", "*_hnJet_*");
   hist::loadHist("sk_tdilgp032309/myHist_18735104__OS_noDupWt_isoDil08_preDil08noIso_preMet08_outZ08_hltMu9E15_jets10Dn.root", 
-		 "jdn", "*_hnJet_*");
+ 		 "jdn", "*_hnJet_*");
 
   char* suffix[4];
   suffix[0] = "ee";
@@ -323,15 +336,15 @@ void getJESSyst(){
   for (int iSam=0; iSam< 4; ++iSam){
     if (iSam == 3) std::cout<<"\\hline"<<std::endl;
     std::cout<<suffixLatex[iSam]<<" & ";
-    std::cout<< Form("$% 4.f$ & ", (ttdil_jdn[iSam]->Integral(0,2)/ttdil_mid[iSam]->Integral(0,2) - 1.)*100.);
-    std::cout<< Form("$% 4.f$ & ", (ttdil_jup[iSam]->Integral(0,2)/ttdil_mid[iSam]->Integral(0,2) - 1.)*100.);
-    std::cout<< Form("$% 4.f$ & ", (ttdil_jdn[iSam]->Integral(3,9)/ttdil_mid[iSam]->Integral(3,9) - 1.)*100.);
-    std::cout<< Form("$% 4.f$ & ", (ttdil_jup[iSam]->Integral(3,9)/ttdil_mid[iSam]->Integral(3,9) - 1.)*100.);
+    std::cout<< Form("$% 4.2f$ & ", (ttdil_jdn[iSam]->Integral(0,2)/ttdil_mid[iSam]->Integral(0,2) - 1.)*100.);
+    std::cout<< Form("$% 4.2f$ & ", (ttdil_jup[iSam]->Integral(0,2)/ttdil_mid[iSam]->Integral(0,2) - 1.)*100.);
+    std::cout<< Form("$% 4.2f$ & ", (ttdil_jdn[iSam]->Integral(3,9)/ttdil_mid[iSam]->Integral(3,9) - 1.)*100.);
+    std::cout<< Form("$% 4.2f$ & ", (ttdil_jup[iSam]->Integral(3,9)/ttdil_mid[iSam]->Integral(3,9) - 1.)*100.);
 
-    std::cout<< Form("$% 4.f$ & ", (tw_jdn[iSam]->Integral(0,2)/tw_mid[iSam]->Integral(0,2) - 1.)*100.);
-    std::cout<< Form("$% 4.f$ & ", (tw_jup[iSam]->Integral(0,2)/tw_mid[iSam]->Integral(0,2) - 1.)*100.);
-    std::cout<< Form("$% 4.f$ & ", (tw_jdn[iSam]->Integral(3,9)/tw_mid[iSam]->Integral(3,9) - 1.)*100.);
-    std::cout<< Form("$% 4.f$ & ", (tw_jup[iSam]->Integral(3,9)/tw_mid[iSam]->Integral(3,9) - 1.)*100.);
+    std::cout<< Form("$% 4.2f$ & ", (tw_jdn[iSam]->Integral(0,2)/tw_mid[iSam]->Integral(0,2) - 1.)*100.);
+    std::cout<< Form("$% 4.2f$ & ", (tw_jup[iSam]->Integral(0,2)/tw_mid[iSam]->Integral(0,2) - 1.)*100.);
+    std::cout<< Form("$% 4.2f$ & ", (tw_jdn[iSam]->Integral(3,9)/tw_mid[iSam]->Integral(3,9) - 1.)*100.);
+    std::cout<< Form("$% 4.2f$ & ", (tw_jup[iSam]->Integral(3,9)/tw_mid[iSam]->Integral(3,9) - 1.)*100.);
 
     //0,1
     double dyttVV_mid = DYtautau_mid[iSam]->Integral(0,2);
@@ -346,8 +359,8 @@ void getJESSyst(){
     dyttVV_jdn += ww_jdn[iSam]->Integral(0,2);
     dyttVV_jdn += wz_jdn[iSam]->Integral(0,2);
     dyttVV_jdn += zz_jdn[iSam]->Integral(0,2);
-    std::cout<< Form("$% 4.f$ & ", (dyttVV_jdn/dyttVV_mid - 1.)*100.);
-    std::cout<< Form("$% 4.f$ & ", (dyttVV_jup/dyttVV_mid - 1.)*100.);
+    std::cout<< Form("$% 4.2f$ & ", (dyttVV_jdn/dyttVV_mid - 1.)*100.);
+    std::cout<< Form("$% 4.2f$ & ", (dyttVV_jup/dyttVV_mid - 1.)*100.);
     //gt2
     dyttVV_mid = DYtautau_mid[iSam]->Integral(3,9);
     dyttVV_mid += ww_mid[iSam]->Integral(3,9);
@@ -361,8 +374,8 @@ void getJESSyst(){
     dyttVV_jdn += ww_jdn[iSam]->Integral(3,9);
     dyttVV_jdn += wz_jdn[iSam]->Integral(3,9);
     dyttVV_jdn += zz_jdn[iSam]->Integral(3,9);
-    std::cout<< Form("$% 4.f$ & ", (dyttVV_jdn/dyttVV_mid - 1.)*100.);
-    std::cout<< Form("$% 4.f$ \\\\ ", (dyttVV_jup/dyttVV_mid - 1.)*100.);
+    std::cout<< Form("$% 4.2f$ & ", (dyttVV_jdn/dyttVV_mid - 1.)*100.);
+    std::cout<< Form("$% 4.2f$ \\\\ ", (dyttVV_jup/dyttVV_mid - 1.)*100.);
 
     std::cout<<std::endl;
   }
