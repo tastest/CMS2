@@ -1218,6 +1218,45 @@ bool passPatMet_OF20_SF30(int hypIdx){
 			      hypIdx);
 }
 //**************************************************************************
+// met cut for ttbar dilepton analysis...
+// includes a boolean to switch to tcmet
+bool passMet_OF30_SF50(int hypIdx, bool useTcMet) {
+  float mymet;
+  if (useTcMet) {
+    mymet = cms2.evt_tcmet();
+  } else {
+    mymet = cms2.met_pat_metCor();
+  }
+  if  (cms2.hyp_type().at(hypIdx) == 0 || cms2.hyp_type().at(hypIdx) == 3) {
+    if (mymet < 50) return false;
+  }
+  
+  if (cms2.hyp_type().at(hypIdx) == 1 || cms2.hyp_type().at(hypIdx) == 2) {
+    if (mymet < 30) return false;
+  }
+  return true;
+}  
+//  ***** The following two functions should be deprecated *********************
+//  ***** and substituted by the preceeding one            *********************
+// event-level pat-met: emu met >20, mm,em met>30
+bool passPatMet_OF30_SF50(float metx, float mety, int hypIdx){
+  float mymet = sqrt(metx*metx + mety*mety);
+  if  (cms2.hyp_type().at(hypIdx) == 0 || cms2.hyp_type().at(hypIdx) == 3) {
+    if (mymet < 50) return false;
+  }
+  
+  if (cms2.hyp_type().at(hypIdx) == 1 || cms2.hyp_type().at(hypIdx) == 2) {
+    if (mymet < 30) return false;
+  }
+  return true;
+}
+// event-level pat-met: emu met >30, mm,em met>50
+bool passPatMet_OF30_SF50(int hypIdx){
+  return passPatMet_OF30_SF50(cms2.met_pat_metCor()*cos(cms2.met_pat_metPhiCor()), 
+			      cms2.met_pat_metCor()*sin(cms2.met_pat_metPhiCor()),
+			      hypIdx);
+}
+
 //**************************************************************************
 
 //-----------------------------------------------------------------------------------------------
@@ -1729,16 +1768,21 @@ bool passTriggersMu9orLisoE15(int dilType) {
 
 
 bool passTriggersTTDil08JanTrial(int dilType) {
-  bool hltIsoEle18_L1R = ((cms2.evt_HLT2() & (1<<(45-32))) != 0);
-  bool hltDoubleIsoEle12_L1R = ((cms2.evt_HLT2() & (1<<(54-32))) != 0); 
-  bool hltMu15_L1Mu7 = ((cms2.evt_HLT3() & (1<<(86-64))) != 0); 
-  bool hltDoubleMu3 = ((cms2.evt_HLT3() & (1<<(90-64))) != 0);
-  bool hltIsoEle10_Mu10_L1R = ((cms2.evt_HLT4() & (1<<(126-96))) != 0);
+  //trigger selections used in AN09/047 (at least as of v4 on 04-10-09
+  bool hlt_Mu15_L1Mu7 = cms2.passHLTTrigger("HLT_Mu15_L1Mu7");
+  bool hlt_DoubleMu3 = cms2.passHLTTrigger("HLT_DoubleMu3");
+  bool hlt_IsoEle10_Mu10_L1R = cms2.passHLTTrigger("HLT_IsoEle10_Mu10_L1R");
+  bool passMuMutriggers = (hlt_Mu15_L1Mu7 ||  hlt_DoubleMu3 ||  hlt_IsoEle10_Mu10_L1R);
   
-  if (dilType == 0 && ! (hltMu15_L1Mu7 || hltDoubleMu3) ) return false;
-  if ((dilType == 1 || dilType == 2) 
-      && ! (hltIsoEle18_L1R || hltMu15_L1Mu7 || hltIsoEle10_Mu10_L1R)) return false;
-  if (dilType == 3 && ! (hltIsoEle18_L1R || hltDoubleIsoEle12_L1R) ) return false; 
+  bool hlt_IsoEle18_L1R = cms2.passHLTTrigger("HLT_IsoEle18_L1R");
+  bool hlt_DoubleIsoEle12_L1R = cms2.passHLTTrigger("HLT_DoubleIsoEle12_L1R");
+  bool passEEtriggers = (hlt_IsoEle18_L1R || hlt_DoubleIsoEle12_L1R );
+
+  bool passEMutriggers = (hlt_Mu15_L1Mu7 || hlt_IsoEle18_L1R || hlt_IsoEle10_Mu10_L1R || hlt_DoubleMu3);
+
+  if (dilType == 0 && ! passMuMutriggers ) return false;
+  if ((dilType == 1 || dilType == 2)  && ! passEMutriggers ) return false;
+  if (dilType == 3 && ! passEEtriggers ) return false; 
   return true;
 }
 
