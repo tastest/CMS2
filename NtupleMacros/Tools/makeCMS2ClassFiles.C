@@ -26,27 +26,20 @@
 #include <fstream>
 #include <set>
 #include <algorithm>
+#include <vector>
 #include "Math/LorentzVector.h"
 
 using namespace std;
+ofstream headerf;
+ofstream codef;
+ofstream branchfile;
 
-void makeCMS2ClassFiles (std::string fname, bool paranoid = true, std::string className = "") {
-
-  using namespace std;
+//void makeHeaderFile(TFile *f, bool paranoid, string Classname, 
+//		    std::string branchNamesFile) {
+void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
+	
   
-  TFile *f = TFile::Open( fname.c_str() );
-  if(f->IsZombie()) { 
-    cout << "File is not a valid root file, or root file is corruped" << endl;
-    cout << "Exiting..." << endl;
-  }
   
-  //class is CMS2 by default
-  std::string Classname = className=="" ? "CMS2" : className;
-  
-  ofstream headerf;
-  ofstream codef;
-  headerf.open((Classname+".h").c_str());
-  codef.open("ScanChain.C");
   headerf << "// -*- C++ -*-" << endl;
   headerf << "#ifndef " << Classname << "_H" << endl;
   headerf << "#define " << Classname << "_H" << endl;
@@ -56,6 +49,7 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true, std::string cl
   headerf << "#include \"TBranch.h\"" << endl;
   headerf << "#include \"TTree.h\"" << endl;
   headerf << "#include \"TH1F.h\""  << endl;
+  headerf << "#include \"TFile.h\"" << endl;
   headerf << "#include <vector> " << endl << endl;
   if (paranoid)
        headerf << "#define PARANOIA" << endl << endl;
@@ -116,7 +110,11 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true, std::string cl
   
   
   headerf << "public: " << endl;
+  headerf << "int ScanChain(class TChain* chain, int nEvents=-1);" << endl;
+  // if(branchNamesFile!="") 
+//     headerf << "void InitSkimmedTree();" << endl;
   headerf << "void Init(TTree *tree) {" << endl;
+    
 
   // SetBranchAddresses for LorentzVectors
   for(Int_t i = 0; i< aliasarray->GetSize(); i++) {
@@ -214,7 +212,7 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true, std::string cl
 			 << " contains a bad float: %f\\n\", *i);" << endl << "\t\t\t\t\t\t" << "exit(1);"
 			 << endl;
 		 headerf << "\t\t\t\t\t}\n\t\t\t\t}" << endl;
-	    } else if (classname == "float" || title.EndsWith("/F")) {
+	    } else if (classname == "float") {
 		 headerf << "\t\t\t\t" << "if (not isfinite(" << aliasname << "_)) {" << endl;
 		 headerf << "\t\t\t\t\t" << "printf(\"branch " << Form("%s_branch",aliasname.Data()) 
 			 << " contains a bad float: %f\\n\", " << aliasname << "_);" << endl 
@@ -415,8 +413,59 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true, std::string cl
       //functions to return whether or not trigger fired - L1
       headerf << "\t" << "bool passL1Trigger(TString trigName) { return cms2.passL1Trigger(trigName); }" << endl;
   }//if(haveL1Info)
-  headerf << "}" << endl;
-  headerf << "#endif" << endl;
+ 
+
+//   if(branchNamesFile!="") {
+//     ifstream branchesF(branchNamesFile.c_str());
+//     std::vector<TString> v_branches;
+//     while(!branchesF.eof()) {
+//       string temp;
+//       getline(branchesF, temp);
+//       v_branches.push_back(temp);
+//     }
+//     branchesF.close();
+
+//     //now declare the names of the variables
+//     headerf << "//Private vars to be put into the ntuple" << endl;
+//     //headerf << 
+//     for(vector<TString>::const_iterator v_it = v_branches.begin();
+// 	v_it != v_branches.end(); v_it++) {
+      
+//       TBranch *branch = ev->GetBranch(ev->GetAlias((*v_it).Data()));
+//       if(branch==NULL)
+// 	continue;
+//       TString classname   = branch->GetClassName();
+//       TString branchtitle = branch->GetTitle();
+//       classname = classname(0,classname.Length()-1);
+//       classname.ReplaceAll("edm::Wrapper<","");
+//       if((*v_it).Contains("hyp_")) {
+// 	classname.ReplaceAll("std::", "");//paranoia
+// 	classname.ReplaceAll("vector<", "");
+// 	classname = classname(0,classname.Length()-1);
+//       }
+//       TString title     = branch->GetTitle();
+//       if(classname.Contains("vector") || classname.Contains("LoretzVector") )
+// 	headerf << "\t" << classname << " *" << TString(*v_it).ReplaceAll("_", "") + "_;" << endl;
+//       else if(branchtitle.EndsWith("/F"))
+// 	headerf << "\t" << "float " << " " << TString(*v_it).ReplaceAll("_", "") + "_;" << endl;
+//       else if(branchtitle.EndsWith("/I"))
+// 	headerf << "\t" << "int " << " " << TString(*v_it).ReplaceAll("_", "") + "_;" << endl;
+//       else if(branchtitle.EndsWith("/i"))
+// 	headerf << "\t" << "unsigned int " << " " << TString(*v_it).ReplaceAll("_", "") + "_;" << endl;
+//       else 
+// 	headerf << "\t" << classname << " " << TString(*v_it).ReplaceAll("_", "") + "_;" << endl;
+//     }
+//     headerf << "\tTFile *outFile_;" << endl;
+//     headerf << "\tTTree *outTree_;" << endl;
+//   }//if(branchNamesFile!="")
+}
+
+
+void makeSrcFile(TFile *f, bool paranoid, std::string Classname, std::string branchNamesFile) {
+
+  TTree *ev = (TTree*)f->Get("Events");
+  TList *fullarray =  ev->GetListOfAliases();
+  TList *aliasarray = new TList();
 
   codef << "/* Usage:" << endl;
   codef << "   root [0] .L ScanChain.C++" << endl;
@@ -445,8 +494,11 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true, std::string cl
   codef << "#include \"TROOT.h\"" << endl;
   codef << "" << endl;
   codef << "#include \"" + Classname+".h\"" << endl;
+  if(branchNamesFile!="")
+    codef << "#include \"branches.h\"" << endl;
   codef << Classname << " cms2;" << endl;
   codef << "/*" << endl;
+  
   codef << "#include \"CORE/CMS2.cc\"" << endl;
   codef << "#include \"CORE/selections.cc\"" << endl;
   codef << "#include \"CORE/utilities.cc\"" << endl;
@@ -464,6 +516,8 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true, std::string cl
   codef << "  nEventsChain = nEvents;" << endl;
   
   codef << "  unsigned int nEventsTotal = 0;" << endl;
+  if(branchNamesFile!="")
+    codef << "  InitSkimmedTree();" << endl;
   codef << "  TDirectory *rootdir = gDirectory->GetDirectory(\"Rint:\");" << endl << endl;
   codef << "  TH1F *samplehisto = new TH1F(\"samplehisto\", \"Example histogram\", 200,0,200);" << endl;
   codef << "  samplehisto->SetDirectory(rootdir);" << endl;
@@ -507,11 +561,210 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true, std::string cl
   codef << "    std::cout << \"ERROR: number of events from files is not equal to total number of events\" << std::endl;" << endl;
   codef << "  }" << endl;
   codef << "" << endl;
+  if(branchNamesFile!="") {
+    codef << "  outFile_->cd();" << endl;
+    codef << "  outTree_->Write();" << endl;
+    codef << "  outFile_->Close();" << endl;
+  }
   codef << "  samplehisto->Draw();" << endl;
   codef << "  return 0;" << endl;
   codef << "}" << endl;
-   
+
+
+//   if(branchNamesFile!="") {
+    
+//     ifstream branchesF(branchNamesFile.c_str());
+//     std::vector<TString> v_branches;
+//     while(!branchesF.eof()) {
+//       string temp;
+//       getline(branchesF, temp);
+//       v_branches.push_back(temp);
+//     }
+//     branchesF.close();
+
+//     codef << endl << endl << endl;
+//     codef << "void " << Classname << "::InitSkimmedTree() {" << endl << endl;
+//     codef << "   outFile_ = TFile::Open(\"skimmedTree.root\",\"RECREATE\"); "<< endl;
+//     codef << "   outFile_->cd();" << endl;
+//     codef << "   outTree_ = new TTree(\"Events\", \"\");" << endl << endl;
+//     codef << "   //book the branches" << endl;
+
+//      for(vector<TString>::const_iterator v_it = v_branches.begin();
+//         v_it != v_branches.end(); v_it++) {
+//        TBranch *branch = ev->GetBranch(ev->GetAlias((*v_it).Data()));
+//       if(branch==NULL)
+//         continue;
+//       TString classname = branch->GetClassName();
+//       TString temp = TString(*v_it).ReplaceAll("_", "")+"_";
+//       //classname = classname(0,classname.Length()-1);
+//       classname.ReplaceAll("edm::Wrapper<","");
+//       if(classname.Contains("int") ) {
+// 	codef << "   outTree_->Branch(\"" << temp << "\",  ";
+// 	if(classname.Contains("unsigned") )
+// 	  codef << "&" << temp << ", \"" << temp << "/i\");" << endl;
+// 	else 
+// 	  codef << "&" << temp << ", \"" << temp << "/I\");" << endl;
+//       }
+//       if(classname.Contains("float") ) {
+// 	codef << "   outTree_->Branch(\"" << temp << "\",  ";
+// 	codef << "&" << temp << ", \"" << temp << "/F\");" << endl;
+//       }
+//       if(classname.Contains("bool") ) {
+// 	codef << "   outTree_->Branch(\"" << temp << "\",  ";
+// 	codef << "&" << temp << ", \"" << temp << "/O\");" << endl;
+//       }
+//       if(classname.Contains("ector")) { //works either vector< or LorentzVector
+// 	classname.ReplaceAll("vector<", "std::vector<");
+// 	classname = classname(0,classname.Length()-2);
+// 	codef << "   outTree_->Branch(\"" << temp << "\",  ";
+// 	codef << "\"" << classname << "\", &" << temp << ");" <<endl; 
+//       }
+	
+//      }//iterator loop
+//      codef << "}" << endl;
+    
+//   }//if(branchNamesFile!="")
+  
+}
+
+void makeSkimHeader(TFile *f, std::string branchNamesFile) {
+  
+  ifstream branchesF(branchNamesFile.c_str());
+  std::vector<TString> v_branches;
+  while(!branchesF.eof()) {
+    string temp;
+    getline(branchesF, temp);
+    v_branches.push_back(temp);
+    cout << temp << endl;
+  }
+  branchesF.close();
+}
+  
+      
+void makeBranchFile(std::string branchNamesFile) {
+  
+  ifstream branchesF(branchNamesFile.c_str());
+  vector<TString> v_datatypes;
+  vector<TString> v_varNames;
+  while(!branchesF.eof()) {
+    string temp;
+    getline(branchesF, temp);
+    TString line(temp);
+    vector<TString> v_line;
+    TIter objIt((TObjArray*)line.Tokenize(" "));
+    TObject *obj=NULL;
+    while(obj = (TObject*)objIt.Next()) {
+      if(obj!=NULL) 
+	v_line.push_back(obj->GetName());
+    }
+    
+    if(v_line.size() == 0)
+      continue;
+    TString varName(v_line.at(v_line.size()-1));
+    varName.ReplaceAll(" ", "");
+    v_varNames.push_back(v_line.at(v_line.size()-1)); // last element is the var name
+    TString datatype("");
+    for(unsigned int i = 0; i < v_line.size()-1; i++) {
+      TString temp = v_line[i];
+      if(temp.Contains("vector") && !temp.Contains("std::"))
+	temp.ReplaceAll("vector", "std::vector");
+      if(temp.Contains("LorentzVector") && !temp.Contains("ROOT::Math::LorentzVector"))
+	temp.ReplaceAll("LorentzVector", "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >");
+      temp.ReplaceAll(">>", "> >");
+      temp.ReplaceAll(">>>", "> > >");
+      if(i!=0)
+	datatype = datatype+" " + temp;
+      else
+	datatype = datatype+temp;
+    }
+    v_datatypes.push_back(datatype);
+    
+  } 
+  branchfile.open("branches.h");
+  branchfile << "#ifndef BRANCHES_H" << endl << "#define BRANCHES_H" << endl;
+  branchfile << "#include <vector>" << endl;
+  branchfile << "#include \"TFile.h\"" << endl;
+  branchfile << "#include \"TTree.h\"" << endl << endl << endl << endl;
+
+  for(unsigned int i = 0; i < v_datatypes.size(); i++) {
+    TString temp(v_varNames.at(i));
+    branchfile << v_datatypes.at(i) << " " 
+	       << temp.ReplaceAll("_","")+"_;" << endl;
+  }
+
+
+  branchfile << "TFile *outFile_;" << endl;
+  branchfile << "TTree *outTree_;" << endl;
+
+  
+
+  //now declare the branches and set aliases in the InitSkimmedTree function
+  branchfile << "void InitSkimmedTree() {\n\n";
+  branchfile << "   outFile_ = TFile::Open(\"skimmednTuple.root\",\"RECREATE\");\n";
+  branchfile << "   outFile_->cd();" << endl;
+  branchfile << "   outTree_ = new TTree(\"Events\", \"\");\n\n";
+  branchfile << "   //book the branches\n";
+  for(unsigned int i = 0; i < v_datatypes.size(); i++) {
+    TString varName = v_varNames[i];
+    varName = varName.ReplaceAll("_", "") + "_";
+    TString varType = v_datatypes[i];
+    if(varType.BeginsWith("std::vector") 
+       || varType.BeginsWith("ROOT::Math") ) {
+      branchfile << "   outTree_->Branch(\"" << varName << "\",   \"" 
+		 << varType << "\",   &" << varName << ");" << endl;
+      branchfile << "   outTree_->SetAlias(\"" << v_varNames[i] << "\",   " 
+		 << "\"" << varName << "\");" << endl;
+      continue;
+    }
+    if(varType=="float" || varType == "Float_t") {
+      branchfile << "   outTree_->Branch(\"" << varName << "\",   &" << varName;
+      branchfile << ",   \"" << varName + "/F\");" << endl;
+      branchfile << "   outTree_->SetAlias(\"" << v_varNames[i] << "\",   " 
+		 << "\"" << varName << "\");" << endl;
+      continue;
+    }
+    if(varType=="unsigned int" || varType == "UInt_t") {
+      branchfile << "   outTree_->Branch(\"" << varName << "\",   &" << varName;
+      branchfile << ",   \"" << varName + "/i\");" << endl;
+      branchfile << "   outTree_->SetAlias(\"" << v_varNames[i] << "\",   " 
+		 << "\"" << varName << "\");" << endl;
+      continue;
+    }
+  }
+  branchfile << "} " <<  endl;
+  branchfile << "#endif" << endl;
+  
+  branchfile.close();
+}
+
+
+void makeCMS2ClassFiles (std::string fname, bool paranoid = true, 
+			 std::string branchNamesFile="", std::string className = "") {
+
+  using namespace std;
+  
+  TFile *f = TFile::Open( fname.c_str() );
+  if(f->IsZombie()) { 
+    cout << "File is not a valid root file, or root file is corruped" << endl;
+    cout << "Exiting..." << endl;
+  }
+  //class is CMS2 by default
+  std::string Classname = className=="" ? "CMS2" : className;
+  
+  headerf.open((Classname+".h").c_str());
+  codef.open("ScanChain.C");
+  
+  makeHeaderFile(f, paranoid, Classname);
+  makeSrcFile(f, paranoid, Classname, branchNamesFile);
+  if(branchNamesFile!="")
+    makeBranchFile(branchNamesFile);
+  
+  headerf << "}" << endl;
+  headerf << "#endif" << endl;
   headerf.close();
+
+  
   codef.close();
   f->Close();
 }
+  
