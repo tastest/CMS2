@@ -57,6 +57,10 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
   std::cout << "Starting " << prefix << " bitmask: " << cutsMask << std::endl;
   
   
+  //get the FR histogram
+  TH2F *h_FR_el = (TH2F*)getFRhisto("el");
+  TH2F *h_FR_mu = (TH2F*)getFRhisto("mu");
+  
   //book Histograms
   bookHistos(prefix);
 
@@ -123,10 +127,19 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
    int  isoLooseMode = 0;
    isoLooseMode = ((cutsMask>>8) & 3);
    if (isoLooseMode == 0){
-     cout << ".............." << endl;
-   } else {
-     std::cout<< " This is a dummy setting: don't turn it on"<<std::endl;
+     cout << "Require both leptons to be isolated" << endl;
+     compactConfig = compactConfig + "_isoReg";
+  } else if( isoLooseMode == 1) {
+     cout << "Require one-only hyp lepton (electron in emu) with iso (0.6, 0.92)" << endl;
+     compactConfig = compactConfig + "_isoReg1";
+   } else if (isoLooseMode == 2 ) {
+     cout << "Require one-only hyp lepton (muon in emu) with iso (0.6, 0.92)" << endl;
+    compactConfig = compactConfig + "_isoReg2";
+   } else if (isoLooseMode == 3){
+     cout << "Require two hyp leptons  with iso (0.6, 0.92)" << endl;
+     compactConfig = compactConfig + "_isoReg3";
    }
+
    
    bool looseDilSelectionTTDil08 = (cutsMask>>10) & 1;
    if (looseDilSelectionTTDil08 ){
@@ -177,27 +190,12 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
      compactConfig = compactConfig;
    }
 
-   bool useTcMet = ((cutsMask>>25)&1);
-
    bool metBaselineSelectionTTDil08 = ((cutsMask>>18)&1);
    if (metBaselineSelectionTTDil08){
-     if (useTcMet) {
-       std::cout<<"Apply TTDil08 baseline MET selection: use tcMET emu met >20, mm,ee met>30"<<std::endl;
-       compactConfig = compactConfig + "_preTcMet08";
-     } else {
-       std::cout<<"Apply TTDil08 baseline MET selection: use corrected pat-met emu met >20, mm,ee met>30"<<std::endl;
-       compactConfig = compactConfig + "_preMet08";
-     }
+     std::cout<<"Apply TTDil08 baseline MET selection: use corrected pat-met emu met >20, mm,em met>30"<<std::endl;
+     compactConfig = compactConfig + "_preMet08";
    }
    
-   // careful: tcmet switch is only allowed for metBaselineSelectionTTDil08
-   if (useTcMet) {
-     if (!metBaselineSelectionTTDil08){
-       std::cout<<" ***** tcmet is only allowed in conjunction with the TTDil08 baseline MET selection *** STOP"<<std::endl;
-       return 1;
-     }
-   }
-
    bool dilepMassVetoCutTTDil08 = ((cutsMask>>19)&1);
    if (dilepMassVetoCutTTDil08){
      std::cout<<"Apply Z mass veto on same flavor dils, use TTDil08 selections"<<std::endl;
@@ -228,52 +226,32 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
    bool corJES10ptUp = ((cutsMask>>23)&1);
    if(corJES10ptUp) {
      cout << "Jets are scaled 10% up" << endl;
-     compactConfig = compactConfig + "_jets10Uphyp";
+     compactConfig = "_jets10Up";
   }
    
    bool corJES10ptDn = ((cutsMask>>24)&1);
    if(corJES10ptDn) {
      cout << "Jets are scaled 10% down" << endl;
-     compactConfig = compactConfig + "_jets10Dnhyp";
+     compactConfig = "_jets10Dn";
    }
    
    if (corJES10ptUp && corJES10ptDn){
      std::cout<<"Inconsistent config: JES up and down requested at the same time: bailing"<<std::endl;
      return 99;
    }
-
-   if ((corJES10ptUp || corJES10ptDn) && useTcMet) {
-     std::cout<<"*********************************************************************" <<std::endl;
-     std::cout<<"CAUTION: You are rescaling the jets by 10%, and you want to use tcMet" <<std::endl;
-     std::cout<<"         The met will NOT be rescaled in any way"                      <<std::endl;
-     std::cout<<"*********************************************************************" <<std::endl;
-   }
+   
 
   float globalJESscaleRescale = 1.;
   if (corJES10ptUp)  globalJESscaleRescale = 1.1;
   if (corJES10ptDn)  globalJESscaleRescale = 0.9;
 
-  bool useJPT = ((cutsMask>>26)&1);
-  if (useJPT) {
-    if (oldjets) {
-      std::cout<<"Inconsistent config: JPT and oldjets requested: bailing"<<std::endl;
-      return 99;
-    }
-    std::cout<<"Using JPT jets"<<std::endl;
-    compactConfig = compactConfig + "_JPT";
+
+  bool invertZMassVeto = ((cutsMask>>28)&1);
+  if(invertZMassVeto) {
+    std::cout << "Inverting Z veto cut ->Require that events are in Z mass region" << endl;
+    compactConfig = compactConfig + "_inZ08";
   }
 
-  bool muJetClean = ((cutsMask>>27)&1);
-  if (muJetClean) {
-    std::cout<<"Cleaning jets near muons"<<std::endl;
-    compactConfig = compactConfig + "_JmuCl";
-  }
-
-  bool dilTruthMatch = ((cutsMask>>28)&1);
-  if (dilTruthMatch){
-    std::cout<<"Dileptons are required to match to W/Z mother"<<std::endl;
-    compactConfig = compactConfig + "_MCtruth";
-  }
 
   std::cout<<"Compact config string is "<<compactConfig.c_str()<<std::endl;
 
@@ -327,7 +305,6 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
       std::string prefixStr(prefix);
       if (prefixStr == "ttdil" && genpCountPDGId(11,13,15) != 2) continue;
       if (prefixStr == "ttotr" && genpCountPDGId(11,13,15) == 2) continue;
-      if (prefixStr == "DYeemm" && genpCountPDGId(11) != 2 && genpCountPDGId(13) != 2) continue;
       if (prefixStr == "DYee" && genpCountPDGId(11) != 2) continue;
       if (prefixStr == "DYmm" && genpCountPDGId(13) != 2) continue;
       if (prefixStr == "DYtautau" && genpCountPDGId(15) != 2) continue;
@@ -337,164 +314,397 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
       
 
       std::vector<unsigned int> goodHyps(0);
+      // *********************NEW*************************
+      // vector to store FR/(1-FR) weight per event
+      std::vector<Float_t> v_weights(0.0);
 
 
       for(unsigned int hypIdx = 0; hypIdx < cms2.hyp_p4().size(); hypIdx++) {
        
-	unsigned int i_lt = cms2.hyp_lt_index()[hypIdx];
-	unsigned int i_ll = cms2.hyp_ll_index()[hypIdx];
+	unsigned int i_lt = cms2.hyp_lt_index().at(hypIdx);
+	unsigned int i_ll = cms2.hyp_ll_index().at(hypIdx);
+	
+	int id_lt = cms2.hyp_lt_id().at(hypIdx);
+	int id_ll = cms2.hyp_ll_id().at(hypIdx);
+/*
+	//do truth matching
+	if(abs(cms2.hyp_lt_id()[hypIdx]) != abs(cms2.hyp_lt_mc_id()[hypIdx]))
+	  continue;
+	//comes from a W or a tau?
+	if(abs(cms2.hyp_lt_mc_motherid()[hypIdx]) != 24 && abs(cms2.hyp_lt_mc_motherid()[hypIdx]) !=15 )
+	  continue;
+	if(abs(cms2.hyp_ll_id()[hypIdx]) != abs(cms2.hyp_ll_mc_id()[hypIdx]))
+	  continue;
+	if(abs(cms2.hyp_ll_mc_motherid()[hypIdx]) != 24 && abs(cms2.hyp_ll_mc_motherid()[hypIdx]) != 15)
+	  continue;
+	
+*/	
+	//OS cut
+	if (osSelection){
+	  if ( id_lt * id_ll > 0 ) continue;
+	}
+	
 
-	int id_lt = cms2.hyp_lt_id()[hypIdx];
-	int id_ll = cms2.hyp_ll_id()[hypIdx];
-
-	{// scope out old/legacy selections
-	  if (applyZWindow && fabs(cms2.hyp_p4()[hypIdx].mass()-91)> 15) continue;
+	/* I HATE THIS SCOPING SHIT. DO NOT NEED THESE CUTS AT ALL!!!!!!
+	   {// scope out old/legacy selections
+	   if (applyZWindow && fabs(cms2.hyp_p4().at(hypIdx).mass()-91)> 15) continue;
 	  
-	  if(dilepMassVetoCut) {
-	    // Z mass veto using hyp_leptons for ee and mumu final states
-	    if (cms2.hyp_type()[hypIdx] == 0 || cms2.hyp_type()[hypIdx] == 3) {
-	      if (inZmassWindow(cms2.hyp_p4()[hypIdx].mass())) continue;
-	    }
+	   if(dilepMassVetoCut) {
+	   // Z mass veto using hyp_leptons for ee and mumu final states
+	   if (cms2.hyp_type().at(hypIdx) == 0 || cms2.hyp_type().at(hypIdx) == 3) {
+	   if (inZmassWindow(cms2.hyp_p4().at(hypIdx).mass())) continue;
+	   }
 	    
-	    // Z veto using additional leptons in the event
-	    if (additionalZveto()) continue;
-	  }
+	   // Z veto using additional leptons in the event
+	   if (additionalZveto()) continue;
+	   }
 	  
-	  // Dima's MET requirement
-	  TVector3 vecDummy;
-	  bool pass2MetPassed = pass2Met(hypIdx, vecDummy);
-	  if (! pass2MetPassed && METcut) continue;
-	  if ( pass2MetPassed && METveto ) continue;
+	   // Dima's MET requirement
+	   TVector3 vecDummy;
+	   bool pass2MetPassed = pass2Met(hypIdx, vecDummy);
+	   if (! pass2MetPassed && METcut) continue;
+	   if ( pass2MetPassed && METveto ) continue;
 
-	  if(idcuts) {
-	    // Muon quality cuts, excluding isolation
-	    if (abs(id_lt) == 13 && !goodMuonWithoutIsolation(i_lt) ) continue;
-	    if (abs(id_ll) == 13 && !goodMuonWithoutIsolation(i_ll) ) continue;
+	   if(idcuts) {
+	   // Muon quality cuts, excluding isolation
+	   if (abs(id_lt) == 13 && !goodMuonWithoutIsolation(i_lt) ) continue;
+	   if (abs(id_ll) == 13 && !goodMuonWithoutIsolation(i_ll) ) continue;
       
-	    // Electron quality cuts, excluding isolation
-	    if (abs(id_lt) == 11 && !goodElectronWithoutIsolation(i_lt) ) continue;
-	    if (abs(id_ll) == 11 && !goodElectronWithoutIsolation(i_ll) ) continue;
-	  }
+	   // Electron quality cuts, excluding isolation
+	   if (abs(id_lt) == 11 && !goodElectronWithoutIsolation(i_lt) ) continue;
+	   if (abs(id_ll) == 11 && !goodElectronWithoutIsolation(i_ll) ) continue;
+	   }
 
-	  if(isolationcuts) {
-	    if (!passLeptonIsolation(id_ll, i_ll, true)) continue; //use caloiso if it's ele
-	    if (!passLeptonIsolation(id_lt, i_lt, true)) continue; //use caloiso it it's ele
-	  }
+	   if(isolationcuts) {
+	   if (!passLeptonIsolation(id_ll, i_ll, true)) continue; //use caloiso if it's ele
+	   if (!passLeptonIsolation(id_lt, i_lt, true)) continue; //use caloiso it it's ele
+	   }
     
   
-	  if (applyMuTag && ! haveExtraMuon(hypIdx)) continue;
-	  if (applyMuTag5 && ! haveExtraMuon5(hypIdx)) continue;
+	   if (applyMuTag && ! haveExtraMuon(hypIdx)) continue;
+	   if (applyMuTag5 && ! haveExtraMuon5(hypIdx)) continue;
 
-	}// end scope-out of old selections
-
+	   }// end scope-out of old selections
+	*/
 	// this is for per-hypothesis choice
 	if (! fillMaxWeightDilOnly && applyTriggersMu9orLisoE15){
-	  if (! passTriggersMu9orLisoE15(cms2.hyp_type()[hypIdx]) ) continue;
+	  if (! passTriggersMu9orLisoE15(cms2.hyp_type().at(hypIdx)) ) continue;
 	}
 
 	if (! fillMaxWeightDilOnly && applyTriggersTTDil08JanTrial){
-	  if (! passTriggersTTDil08JanTrial(cms2.hyp_type()[hypIdx]) ) continue;
+	  if (! passTriggersTTDil08JanTrial(cms2.hyp_type().at(hypIdx)) ) continue;
 	}
 
         if(dilepMassVetoCutTTDil08) {
           // Z mass veto using hyp_leptons for ee and mumu final states
-          if (cms2.hyp_type()[hypIdx] == 0 || cms2.hyp_type()[hypIdx] == 3) {
-            if (inZmassWindow(cms2.hyp_p4()[hypIdx].mass())) continue;
+          if (cms2.hyp_type().at(hypIdx) == 0 || cms2.hyp_type().at(hypIdx) == 3) {
+            if (inZmassWindow(cms2.hyp_p4().at(hypIdx).mass())) continue;
           }    
         }
 	if(dilepAdditionalMassVetoCutTTDil08){
           // Z veto using additional leptons in the event
           if (additionalZvetoTTDil08()) continue; //"true" to use TTDil lepton selections                                                
 	}
+	
+      	if(invertZMassVeto) {
+	  if (cms2.hyp_type().at(hypIdx) == 0 || cms2.hyp_type().at(hypIdx) == 3) {
+            if ( ! inZmassWindow(cms2.hyp_p4().at(hypIdx).mass())) 
+	      continue;
+	  }
+	}
       
 	// ! for TTDil analysis this should be made for the event-qualifying hyp only
 	if (!fillMaxWeightDilOnly && metBaselineSelectionTTDil08){
-	  if (globalJESscaleRescale == 1 && useTcMet && ! passMet_OF20_SF30(hypIdx,useTcMet)) continue;
-	  if (globalJESscaleRescale != 1. && (!useTcMet)) {
+	  if (globalJESscaleRescale == 1 && ! passPatMet_OF20_SF30(hypIdx)) continue;
+	  if (globalJESscaleRescale != 1.){
 	    float metx = cms2.met_pat_metCor()*cos(cms2.met_pat_metPhiCor());
 	    float mety = cms2.met_pat_metCor()*sin(cms2.met_pat_metPhiCor());
-
-	    unsigned int nJused = 0;
-	    unsigned int nJ = cms2.hyp_jets_p4()[hypIdx].size();
+	    unsigned int nJ = cms2.jets_p4().size();
+	    //this isn't quite precise due to pt cuts in jet corrector and in the 
+	    // pat selectedLayer1Jets -- the cuts are not the same and available jets are not the same
 	    for (unsigned int iJ = 0; iJ < nJ; ++iJ){
-	      if (cms2.hyp_jets_p4()[hypIdx][iJ].pt() > 0 
-		  && fabs( cms2.hyp_jets_p4()[hypIdx][iJ].eta()) < 12.4){
-		metx -= cms2.hyp_jets_p4()[hypIdx][iJ].x()*(globalJESscaleRescale - 1.); 
-		mety -= cms2.hyp_jets_p4()[hypIdx][iJ].y()*(globalJESscaleRescale - 1.); 
-		nJused++;
-	      }
-	    }
-	    unsigned int nOJ = cms2.hyp_other_jets_p4()[hypIdx].size();
-	    for (unsigned int iJ = 0; iJ < nOJ; ++iJ){
-	      if (cms2.hyp_other_jets_p4()[hypIdx][iJ].pt() > 0 
-		  && fabs( cms2.hyp_other_jets_p4()[hypIdx][iJ].eta()) < 12.4){
-		metx -= cms2.hyp_other_jets_p4()[hypIdx][iJ].x()*(globalJESscaleRescale - 1.); 
-		mety -= cms2.hyp_other_jets_p4()[hypIdx][iJ].y()*(globalJESscaleRescale - 1.); 
-		nJused++;
+	      if (cms2.jets_emFrac().at(iJ) < 0.9){
+		metx -= cms2.jets_p4().at(iJ).x()*(globalJESscaleRescale - 1.); 
+		mety -= cms2.jets_p4().at(iJ).y()*(globalJESscaleRescale - 1.); 
 	      }
 	    }
 	    if (! passPatMet_OF20_SF30(metx, mety, hypIdx)) continue;
 	  }
 	}
 
-	if (lepton20Eta2p4DilSelection){
-	  //pt eta cuts
-	  if (! lepton20Eta2p4(id_lt, i_lt) ) continue;
-	  if (! lepton20Eta2p4(id_ll, i_ll) ) continue;
-	}
+	// **************************************** NEW *******************       
+	//ok, this is where we mess with the FR shit.
+	if(cms2.hyp_type()[hypIdx] == 1 || cms2.hyp_type()[hypIdx] == 2) {
+	  
+	  int iEl = 0;
+	  int iMu = 0;
+	  if(cms2.hyp_type()[hypIdx] == 2) {
+	    iEl = cms2.hyp_lt_index()[hypIdx];
+	    iMu = cms2.hyp_ll_index()[hypIdx];
+	  } 
+	  if (cms2.hyp_type()[hypIdx] == 1) {
+	    iEl = cms2.hyp_ll_index()[hypIdx];
+	    iMu = cms2.hyp_lt_index()[hypIdx];
+	} 
+	  
+	  bool isGoodEl = false;
+	  bool isFOEl   = false;
+	  bool isGoodMu = false;
+	  bool isFOMu   = false;
+	  
+	  /* does the electron pass all the analysis cuts?
+	     This is retarded btw....need to make *1* function that
+	     tells you if the electron passes your cuts.
+	     Same for the muon. Sigh
+	*/
+	  if( electron20Eta2p4(iEl) 
+	      && looseElectronSelectionNoIsoTTDil08(iEl) 
+	      && passElectronIsolationTTDil08(iEl) ) 
+	    isGoodEl = true;
+	  
+	  
+	  //is the el a FO?
+	  if(isFakeableElTTDil08(iEl))
+	    isFOEl = true;
+	  
+	  //now do  the same for muons
+	  if( muon20Eta2p4(iMu) 
+	      && looseMuonSelectionNoIsoTTDil08(iMu) 
+	      && passMuonIsolationTTDil08(iMu) ) 
+	    isGoodMu = true;
+	  
+	  
+	  if(isFakeableMuTTDil08(iMu))
+	    isFOMu = true;
+	
+	  
+	  //if both the electron and muon are good, then we have to continue to the next hypothesis!
+	  if(isGoodMu && isGoodEl)
+	    continue;
+	  
+	  //if the electron is good and the muon is not (but is a FO!!!) 
+	  // then we get the corresponding FR
+	  if(isGoodEl && !isGoodMu && isFOMu) {
+	    Float_t FR = GetValueTH2F(fabs(cms2.mus_p4()[iMu].Eta()),
+				      cms2.mus_p4()[iMu].Pt(), h_FR_mu);
+	    Float_t FRweight = FR/(1-FR);
+	    goodHyps.push_back(hypIdx);
+	    v_weights.push_back(FRweight);
+	    continue; 
+	  }
+	  
 
-	if (looseDilSelectionNoIsoTTDil08){
-	  // Muon quality cuts, no isolation
-	  if (! looseLeptonSelectionNoIsoTTDil08(id_lt, i_lt)) continue;
-	  if (! looseLeptonSelectionNoIsoTTDil08(id_ll, i_ll)) continue;
-	}
+	  //now do the electron fakes
+	  if(isGoodMu && !isGoodEl && isFOEl) {
+	    Float_t FR = GetValueTH2F(fabs(cms2.els_p4()[iEl].Eta()),
+				      cms2.els_p4()[iEl].Pt(), h_FR_el);
+	    Float_t FRweight = FR/(1-FR);
+	    goodHyps.push_back(hypIdx);
+	    v_weights.push_back(FRweight);
+	    continue; 
+	  }
+	} //emu case
+	  
+	 //  // ************************* ELECTRON FAKE APPLICATION ****************
+// 	  //ask that the muon pass all the cuts
+// 	  if(! muon20Eta2p4(iMu) )
+// 	  continue;
+// 	  if(! looseMuonSelectionNoIsoTTDil08(iMu))
+// 	  continue;
+// 	  if(! passMuonIsolationTTDil08(iMu) )
+// 	  continue;
+	  
+// 	  //now we see if the electron passes the FO object selection
+// 	  if( ! isFakeableElTTDil08(iEl) )
+// 	  continue;
+// 	  //now we have to continue if the electron passes the TTbar analysis cuts
+// 	  if( electron20Eta2p4(iEl) 
+// 	    && looseElectronSelectionNoIsoTTDil08(iEl) 
+// 	    && passElectronIsolationTTDil08(iEl) )
+// 	    continue;
+	    
+// 	    Float_t FR = GetValueTH2F(fabs(cms2.els_p4()[iEl].Eta()),
+// 	    cms2.els_p4()[iEl].Pt(), h_FR_el);
+	    
+// 	    // ********************** END ELECTRON FAKE APPLICATION ******************
+	    
+// 	    // ************************* Muon FAKE APPLICATION ****************
+// 	    //ask that the electron pass all the cuts
+// 	    if(! electron20Eta2p4(iEl) )
+// 	    continue;
+// 	    if(! looseElectronSelectionNoIsoTTDil08(iEl))
+// 	    continue;
+// 	    if(! passElectronIsolationTTDil08(iEl) )
+// 	    continue;
+	    
+// 	    //now we see if the muon passes the FO object selection
+// 	    if( ! isFakeableMuTTDil08(iMu) )
+// 	    continue;
+// 	    //now we have to continue if the muon passes the TTbar analysis cuts
+// 	    if( muon20Eta2p4(iMu) 
+// 	    && looseMuonSelectionNoIsoTTDil08(iMu) 
+// 	    && passMuonIsolationTTDil08(iMu) )
+// 	    continue;
+// 	    Float_t FR = GetValueTH2F(fabs(cms2.mus_p4()[iMu].Eta()),
+// 	    cms2.mus_p4()[iMu].Pt(), h_FR_mu);
+// 	    Float_t FRweight = FR/(1-FR);
+	    
+	
+	
+	
+	//now we do the ee case
+	if(cms2.hyp_type()[hypIdx] == 3) {
+	  
+	  unsigned int iElt = cms2.hyp_lt_index()[hypIdx];
+	  unsigned int iEll = cms2.hyp_ll_index()[hypIdx];
+	  
+	  bool isGoodElt = false;
+	  bool isGoodEll = false;
+	  bool isFOElt   = false;
+	  bool isFOEll   = false;
 
-	if (looseDilSelectionTTDil08){
-	  // Muon quality cuts, loose isolation
-	  if (! looseLeptonSelectionTTDil08(id_lt, i_lt)) continue;
-	  if (! looseLeptonSelectionTTDil08(id_ll, i_ll)) continue;
-	}
+	  
+	  if( electron20Eta2p4(iElt) 
+	      && looseElectronSelectionNoIsoTTDil08(iElt) 
+	      && passElectronIsolationTTDil08(iElt) )
+	    isGoodElt = true;
 
-	if (leptonIsolationDilSelectionTTDil08){
-	  if (! passLeptonIsolationTTDil08(id_lt, i_lt)) continue;
-	  if (! passLeptonIsolationTTDil08(id_ll, i_ll)) continue;
-	}
+	  if( electron20Eta2p4(iEll) 
+	      && looseElectronSelectionNoIsoTTDil08(iEll) 
+	      && passElectronIsolationTTDil08(iEll) )
+	    isGoodEll = true;
 
-	if (osSelection){
-	  if ( id_lt * id_ll > 0 ) continue;
-	}
+	  if(isFakeableElTTDil08(iElt) )
+	    isFOElt = true;
 
-	if (dilTruthMatch){
-	  //this better be in the selections.cc
-	  bool isTrueLepton_ll = false;
-	  bool isTrueLepton_lt = false;
-	  isTrueLepton_ll = ( (abs(cms2.hyp_ll_id()[hypIdx]) == abs(cms2.hyp_ll_mc_id()[hypIdx]) &&
-			       abs(cms2.hyp_ll_mc_motherid()[hypIdx]) < 50 //I wish I could match to W or Z explicitely, not in MGraph
-			       )
-			      || (cms2.hyp_ll_mc_id()[hypIdx]==22 && 
-				  TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[hypIdx],cms2.hyp_ll_mc_p4()[hypIdx])) <0.05
-				  && abs(cms2.hyp_ll_id()[hypIdx]) == abs(cms2.hyp_ll_mc_motherid()[hypIdx])
-				  )
-			      );
-	  isTrueLepton_lt = ( (abs(cms2.hyp_lt_id()[hypIdx]) == abs(cms2.hyp_lt_mc_id()[hypIdx]) &&
-			       abs(cms2.hyp_lt_mc_motherid()[hypIdx]) < 50 //I wish I could match to W or Z explicitely, not in MGraph
-			       )
-			      || (cms2.hyp_lt_mc_id()[hypIdx]==22 && 
-				  TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[hypIdx],cms2.hyp_lt_mc_p4()[hypIdx])) <0.05
-				  && abs(cms2.hyp_lt_id()[hypIdx]) == abs(cms2.hyp_lt_mc_motherid()[hypIdx])
-				  )
-			      );
-	  if (!isTrueLepton_lt && !isTrueLepton_ll) continue;
-	}
+	  if(isFakeableElTTDil08(iEll) )
+	    isFOEll = true;
 
-	goodHyps.push_back(hypIdx);
-	//done with cuts on hyps		   
+	  //if both are good, we continue
+	  if( isGoodElt && isGoodEll) 
+	    continue;
 
-	eventPassed = true;
+	  //if Elt is good, Ell must not be
+	  //good, but must pass FO cuts
+	  if( isGoodElt && !isGoodEll && isFOEll) {
+	    
+	    Float_t FR = GetValueTH2F(fabs(cms2.els_p4()[iEll].Eta()),
+				      cms2.els_p4()[iEll].Pt(), h_FR_el);
+	    Float_t FRweight = FR/(1-FR);
+	    goodHyps.push_back(hypIdx);
+	    v_weights.push_back(FRweight);
+	    continue; //forget about double counting for now!
+	  }
+
+	  //check the other electron
+	  if( isGoodEll && !isGoodElt && isFOElt) {
+	    
+	    Float_t FR = GetValueTH2F(fabs(cms2.els_p4()[iElt].Eta()),
+				      cms2.els_p4()[iElt].Pt(), h_FR_el);
+	    Float_t FRweight = FR/(1-FR);
+	    goodHyps.push_back(hypIdx);
+	    v_weights.push_back(FRweight);
+	    continue; //forget about double counting for now!
+	  }
+	  
+	}//ee case
+
+
+	if(cms2.hyp_type()[hypIdx] == 0) {
+	  
+	  unsigned int iMut = cms2.hyp_lt_index()[hypIdx];
+	  unsigned int iMul = cms2.hyp_ll_index()[hypIdx];
+	  
+	  bool isGoodMut = false;
+	  bool isGoodMul = false;
+	  bool isFOMut   = false;
+	  bool isFOMul   = false;
+
+	  
+	  if( muon20Eta2p4(iMut) 
+	      && looseMuonSelectionNoIsoTTDil08(iMut) 
+	      && passMuonIsolationTTDil08(iMut) )
+	    isGoodMut = true;
+
+	  if( muon20Eta2p4(iMul) 
+	      && looseMuonSelectionNoIsoTTDil08(iMul) 
+	      && passMuonIsolationTTDil08(iMul) )
+	    isGoodMul = true;
+
+	  if(isFakeableMuTTDil08(iMut) )
+	    isFOMut = true;
+
+	  if(isFakeableMuTTDil08(iMul) )
+	    isFOMul = true;
+
+	  //if both are good, we continue
+	  if( isGoodMut && isGoodMul) 
+	    continue;
+
+	  //if Elt is good, Ell must not be
+	  //good, but must pass FO cuts
+	  if( isGoodMut && !isGoodMul && isFOMul) {
+	    
+	    Float_t FR = GetValueTH2F(fabs(cms2.mus_p4()[iMul].Eta()),
+				      cms2.els_p4()[iMul].Pt(), h_FR_mu);
+	    Float_t FRweight = FR/(1-FR);
+	    goodHyps.push_back(hypIdx);
+	    v_weights.push_back(FRweight);
+	    continue; //forget about double counting for now!
+	  }
+
+	  //check the other muon
+	  if( isGoodMul && !isGoodMut && isFOMut) {
+	    
+	    Float_t FR = GetValueTH2F(fabs(cms2.mus_p4()[iMut].Eta()),
+				      cms2.mus_p4()[iMut].Pt(), h_FR_mu);
+	    Float_t FRweight = FR/(1-FR);
+	    goodHyps.push_back(hypIdx);
+	    v_weights.push_back(FRweight);
+	    continue; //forget about double counting for now!
+	  }
+	  
+	}//mumu case
+
+	  
+       
+	  
+	    
+	    
+	    // 	if (lepton20Eta2p4DilSelection){
+	    // 	  //pt eta cuts
+	    // 	  if (! lepton20Eta2p4(id_lt, i_lt) ) continue;
+	    // 	  if (! lepton20Eta2p4(id_ll, i_ll) ) continue;
+	    // 	}
+	    
+	    // 	if (looseDilSelectionNoIsoTTDil08){
+	    // 	  // Muon quality cuts, no isolation
+	    // 	  if (! looseLeptonSelectionNoIsoTTDil08(id_lt, i_lt)) continue;
+	    // 	  if (! looseLeptonSelectionNoIsoTTDil08(id_ll, i_ll)) continue;
+	    // 	}
+	    
+	    // 	if (looseDilSelectionTTDil08){
+	    // 	  // Muon quality cuts, loose isolation
+	    // 	  if (! looseLeptonSelectionTTDil08(id_lt, i_lt)) continue;
+	    // 	  if (! looseLeptonSelectionTTDil08(id_ll, i_ll)) continue;
+	    // 	}
+	    
+	    // 	if (leptonIsolationDilSelectionTTDil08){
+	    // 	  if (! passLeptonIsolationTTDil08(id_lt, i_lt)) continue;
+	    // 	  if (! passLeptonIsolationTTDil08(id_ll, i_ll)) continue;
+	    // 	}
+	    
+	    
+	
+	  
+	  
+	  
+	  //done with cuts on hyps		   
+	  
+	  eventPassed = true;
       }
       
       unsigned int nGoodHyps = goodHyps.size();
-
       unsigned int maxWeightIndex = 0;
       int strasbourgDilType = -1;
 
@@ -503,25 +713,17 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 
 	// ! event level cut here, can reset the eventPassed to false
 	if (fillMaxWeightDilOnly && metBaselineSelectionTTDil08){
-	  if (globalJESscaleRescale == 1. && useTcMet && ! passMet_OF20_SF30(maxWeightIndex,useTcMet)) continue;
-	  if ( (!useTcMet)){
+	  if (globalJESscaleRescale == 1. && ! passPatMet_OF20_SF30(maxWeightIndex)) continue;
+	  if (globalJESscaleRescale != 1.){
 	    float metx = cms2.met_pat_metCor()*cos(cms2.met_pat_metPhiCor());
 	    float mety = cms2.met_pat_metCor()*sin(cms2.met_pat_metPhiCor());
-
-	    unsigned int nJ = cms2.hyp_jets_p4()[maxWeightIndex].size();
+	    unsigned int nJ = cms2.jets_p4().size();
+	    //this isn't quite precise due to pt cuts in jet corrector and in the 
+	    // pat selectedLayer1Jets -- the cuts are not the same and available jets are not the same
 	    for (unsigned int iJ = 0; iJ < nJ; ++iJ){
-	      if (cms2.hyp_jets_p4()[maxWeightIndex][iJ].pt() > 0  
-		  && fabs( cms2.hyp_jets_p4()[maxWeightIndex][iJ].eta()) < 12.4){ 
-		metx -= cms2.hyp_jets_p4()[maxWeightIndex][iJ].x()*(globalJESscaleRescale - 1.); 
-		mety -= cms2.hyp_jets_p4()[maxWeightIndex][iJ].y()*(globalJESscaleRescale - 1.); 
-	      }
-	    }
-	    unsigned int nOJ = cms2.hyp_other_jets_p4()[maxWeightIndex].size();
-	    for (unsigned int iJ = 0; iJ < nOJ; ++iJ){
-	      if (cms2.hyp_other_jets_p4()[maxWeightIndex][iJ].pt() > 0  
-		  && fabs( cms2.hyp_other_jets_p4()[maxWeightIndex][iJ].eta()) < 12.4){ 
-		metx -= cms2.hyp_other_jets_p4()[maxWeightIndex][iJ].x()*(globalJESscaleRescale - 1.); 
-		mety -= cms2.hyp_other_jets_p4()[maxWeightIndex][iJ].y()*(globalJESscaleRescale - 1.); 
+	      if (cms2.jets_emFrac().at(iJ) < 0.9 ){ // this is what the jet corr requires for met corr type 1
+		metx -= cms2.jets_p4().at(iJ).x()*(globalJESscaleRescale - 1.); 
+		mety -= cms2.jets_p4().at(iJ).y()*(globalJESscaleRescale - 1.); 
 	      }
 	    }
 	    if (! passPatMet_OF20_SF30(metx, mety, maxWeightIndex)) continue;
@@ -530,11 +732,11 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 
 	// this is for per-hypothesis choice
 	if ( fillMaxWeightDilOnly && applyTriggersMu9orLisoE15){
-	  if (! passTriggersMu9orLisoE15(cms2.hyp_type()[maxWeightIndex]) ) continue;
+	  if (! passTriggersMu9orLisoE15(cms2.hyp_type().at(maxWeightIndex)) ) continue;
 	}
 
 	if ( fillMaxWeightDilOnly && applyTriggersTTDil08JanTrial){
-	  if (! passTriggersTTDil08JanTrial(cms2.hyp_type()[maxWeightIndex]) ) continue;
+	  if (! passTriggersTTDil08JanTrial(cms2.hyp_type().at(maxWeightIndex)) ) continue;
 	}
       }
 
@@ -552,21 +754,21 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	// The event weight including the kFactor (scaled to 1 fb-1) and the prescale
 	//float weight = cms2.evt_scale1fb * kFactor * prescale;
 	//float weight = CalculateWeight(evt_CSA07Process(), cms2.evt_scale1fb(), kFactor, prescale);
-	float weight = kFactor*cms2.evt_scale1fb()*0.01; // /100; //10pb^-1
-
-	if ( (prefixStr == "ppMuX" || prefixStr == "EM" || prefixStr == "QCD") 
-	     && (cms2.hyp_type()[hypIdx] == 1 || cms2.hyp_type()[hypIdx] == 2)) weight *= 0.5;//this isn't quite right :(
+	float weight = kFactor*cms2.evt_scale1fb()*0.01*v_weights[hypIdxL]; // /100; //10pb^-1
+	
+	if ( (prefixStr == "ppMuX" || prefixStr == "EM") 
+	     && (cms2.hyp_type().at(hypIdx) == 1 || cms2.hyp_type().at(hypIdx) == 2)) weight *= 0.5;//this isn't quite right :(
 	//and works only if both em and ppmux are in play
       
 	// If we made it to here, we passed all cuts and we are ready to fill
 	m_events.insert(pair<int,int>(cms2.evt_event(), 1));
 
 	int myType = 99;
-	if (cms2.hyp_type()[hypIdx] == 3) myType = 0;  // ee
-	if (cms2.hyp_type()[hypIdx] == 0) myType = 1;  // mm
-	if (cms2.hyp_type()[hypIdx] == 1 || cms2.hyp_type()[hypIdx] == 2) myType=2; // em
+	if (cms2.hyp_type().at(hypIdx) == 3) myType = 0;  // ee
+	if (cms2.hyp_type().at(hypIdx) == 0) myType = 1;  // mm
+	if (cms2.hyp_type().at(hypIdx) == 1 || cms2.hyp_type().at(hypIdx) == 2) myType=2; // em
 	if (myType == 99) {
-	  cout << "YUK:  unknown dilepton type = " << cms2.hyp_type()[hypIdx] << endl;
+	  cout << "YUK:  unknown dilepton type = " << cms2.hyp_type().at(hypIdx) << endl;
 	  continue;
 	}
 
@@ -585,115 +787,53 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > blah; // temp variable
 	// First the case where we take the default hyp_jets
 	if (oldjets) {
+	  new_hyp_njets = cms2.hyp_njets().at(hypIdx);
 	  for (unsigned int ijet=0; 
-	       ijet<(unsigned int)(cms2.hyp_njets()[hypIdx]); 
+	       ijet<(unsigned int)(cms2.hyp_njets().at(hypIdx)); 
 	       ijet++) {
-	    // muon-jet cleaning
-	    if (muJetClean) {
-		LorentzVector vjet = cms2.hyp_jets_p4()[hypIdx][ijet];
-		LorentzVector vlt  = cms2.hyp_lt_p4()[hypIdx];
-		LorentzVector vll  = cms2.hyp_ll_p4()[hypIdx];
-		if (abs(cms2.hyp_ll_id()[hypIdx]) == 13) {
-		  if (dRBetweenVectors(vjet, vll) < 0.4) continue;
-		}
-		if (abs(cms2.hyp_lt_id()[hypIdx]) == 13) {
-		  if (dRBetweenVectors(vjet, vlt) < 0.4) continue;
-		}
-	    }
-	    float thisJetRescale =  globalJESscaleRescale;
-	    blah = cms2.hyp_jets_pat_noCorrF()[hypIdx][ijet] * cms2.hyp_jets_p4()[hypIdx][ijet] * thisJetRescale;
+	    float thisJetRescale = cms2.hyp_jets_emFrac().at(hypIdx).at(ijet) < 0.9 ? globalJESscaleRescale : 1.;
+	    blah = cms2.hyp_jets_pat_noCorrF().at(hypIdx).at(ijet) * cms2.hyp_jets_p4().at(hypIdx).at(ijet) * thisJetRescale;
 	    //FIXME : this should be combined the same way as below
 	    jp4.push_back(blah);
-	    new_hyp_njets++;
 	  }
-	} else if (!useJPT) {
+	} else {
 	  // Look among the hyp_jets
-	  for (unsigned int ijet=0; ijet<(unsigned int)(cms2.hyp_njets()[hypIdx]); ijet++) {
-	    // muon-jet cleaning
-	    if (muJetClean) {
-		LorentzVector vjet = cms2.hyp_jets_p4()[hypIdx][ijet];
-		LorentzVector vlt  = cms2.hyp_lt_p4()[hypIdx];
-		LorentzVector vll  = cms2.hyp_ll_p4()[hypIdx];
-		if (abs(cms2.hyp_ll_id()[hypIdx]) == 13) {
-		  if (dRBetweenVectors(vjet, vll) < 0.4) continue;
-		}
-		if (abs(cms2.hyp_lt_id()[hypIdx]) == 13) {
-		  if (dRBetweenVectors(vjet, vlt) < 0.4) continue;
-		}
-	    }
-	    float thisJetRescale =  globalJESscaleRescale;
-	    blah = cms2.hyp_jets_p4()[hypIdx][ijet]* thisJetRescale;
-	    if (blah.pt() > 30 && fabs(blah.eta()) < 2.4) {
+	  for (unsigned int ijet=0; ijet<(unsigned int)(cms2.hyp_njets().at(hypIdx)); ijet++) {
+	    float thisJetRescale = cms2.hyp_jets_emFrac().at(hypIdx).at(ijet) < 0.9 ? globalJESscaleRescale : 1.;
+	    blah = cms2.hyp_jets_p4().at(hypIdx).at(ijet)* thisJetRescale;
+	    if (blah.pt() > 30 && abs(blah.eta()) < 2.4) {
 	      jp4.push_back(blah);
 	      new_hyp_njets++;
 	    }
 	  }
 	  // Now look among the other jets
-	  for (unsigned int ijet=0; ijet<cms2.hyp_other_jets_p4()[hypIdx].size(); ijet++) {
-	    // muon-jet cleaning
-	    if (muJetClean) {
-		LorentzVector vjet = cms2.hyp_other_jets_p4()[hypIdx][ijet];
-		LorentzVector vlt  = cms2.hyp_lt_p4()[hypIdx];
-		LorentzVector vll  = cms2.hyp_ll_p4()[hypIdx];
-		if (abs(cms2.hyp_ll_id()[hypIdx]) == 13) {
-		  if (dRBetweenVectors(vjet, vll) < 0.4) continue;
-		}
-		if (abs(cms2.hyp_lt_id()[hypIdx]) == 13) {
-		  if (dRBetweenVectors(vjet, vlt) < 0.4) continue;
-		}
-	    }
-	    float thisJetRescale = globalJESscaleRescale;
-	    blah = cms2.hyp_other_jets_p4()[hypIdx][ijet]* thisJetRescale;
-	    if (blah.pt() > 30 && fabs(blah.eta()) < 2.4) {
-	      jp4.push_back(blah);
-	      new_hyp_njets++;
-	    }
-	  }
-	} else {       
-	  // This is with useJPT=true oldjets=false....
-	  // We need to remove both electron and muon jets in this case
-	  for (unsigned int ijet=0; ijet< cms2.evt_njpts(); ijet++) {
-	    // jet cleaning (muons & electrons)
-	    LorentzVector vjet = cms2.jpts_p4()[ijet];
-	    LorentzVector vlt  = cms2.hyp_lt_p4()[hypIdx];
-	    LorentzVector vll  = cms2.hyp_ll_p4()[hypIdx];
-	    if (dRBetweenVectors(vjet, vll) < 0.4) continue;
-	    if (dRBetweenVectors(vjet, vlt) < 0.4) continue;
-
-	    float thisJetRescale = globalJESscaleRescale;
-	    blah = cms2.jpts_p4()[ijet] * thisJetRescale;
-	    if (blah.pt() > 30 && fabs(blah.eta()) < 2.4) {
+	  for (unsigned int ijet=0; ijet<cms2.hyp_other_jets_p4().at(hypIdx).size(); ijet++) {
+	    float thisJetRescale = cms2.hyp_other_jets_emFrac().at(hypIdx).at(ijet) < 0.9 ? globalJESscaleRescale : 1.;
+	    blah = cms2.hyp_other_jets_p4().at(hypIdx).at(ijet)* thisJetRescale;
+	    if (blah.pt() > 30 && abs(blah.eta()) < 2.4) {
 	      jp4.push_back(blah);
 	      new_hyp_njets++;
 	    }
 	  }
 	}
-
 	VofP4* new_hyp_jets_p4 = &jp4;
 			   
 	//     // Last chance to reject...
 	int arrNjets = min(new_hyp_njets, 2);
 
-	float pt_lt = cms2.hyp_lt_p4()[hypIdx].pt();
-	float pt_ll = cms2.hyp_ll_p4()[hypIdx].pt();
+	float pt_lt = cms2.hyp_lt_p4().at(hypIdx).pt();
+	float pt_ll = cms2.hyp_ll_p4().at(hypIdx).pt();
 
-	unsigned int i_lt = cms2.hyp_lt_index()[hypIdx];
-	unsigned int i_ll = cms2.hyp_ll_index()[hypIdx];
+	unsigned int i_lt = cms2.hyp_lt_index().at(hypIdx);
+	unsigned int i_ll = cms2.hyp_ll_index().at(hypIdx);
 
-	int id_lt = cms2.hyp_lt_id()[hypIdx];
-	int id_ll = cms2.hyp_ll_id()[hypIdx];
+	int id_lt = cms2.hyp_lt_id().at(hypIdx);
+	int id_ll = cms2.hyp_ll_id().at(hypIdx);
 
 
 	// jet count
 	hnJet[myType]->Fill(min(new_hyp_njets,4), weight);
 	hnJet[3]->Fill(min(new_hyp_njets,4), weight);
-	if (inZmassWindow(cms2.hyp_p4().at(hypIdx).mass())) {
-	  hnJetinZwindow[myType]->Fill(min(new_hyp_njets,4), weight);
-	  hnJetinZwindow[3]->Fill(min(new_hyp_njets,4), weight);
-	} else {
-	  hnJetoutZwindow[myType]->Fill(min(new_hyp_njets,4), weight);
-	  hnJetoutZwindow[3]->Fill(min(new_hyp_njets,4), weight);
-	}
 
 	// lepton Pt
 	if (abs(id_lt) == 11) helePt[myType][arrNjets]->Fill(pt_lt, weight);
@@ -701,9 +841,9 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	if (abs(id_lt) == 13) hmuPt[myType][arrNjets]->Fill(pt_lt, weight);
 	if (abs(id_ll) == 13) hmuPt[myType][arrNjets]->Fill(pt_ll, weight);
 	if (abs(id_lt) == 13) 
-	  hmuPtFromSilicon[myType][arrNjets]->Fill(cms2.mus_trk_p4()[i_lt].pt(), weight);
+	  hmuPtFromSilicon[myType][arrNjets]->Fill(cms2.mus_trk_p4().at(i_lt).pt(), weight);
 	if (abs(id_ll) == 13)
-	  hmuPtFromSilicon[myType][arrNjets]->Fill(cms2.mus_trk_p4()[i_ll].pt(), weight);
+	  hmuPtFromSilicon[myType][arrNjets]->Fill(cms2.mus_trk_p4().at(i_ll).pt(), weight);
 	hminLepPt[myType][arrNjets]->Fill(min(pt_ll, pt_lt), weight);
 	hmaxLepPt[myType][arrNjets]->Fill(max(pt_ll, pt_lt), weight );
     
@@ -712,55 +852,55 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	if (abs(id_lt) == 13) hmuPt[3][arrNjets]->Fill(pt_lt, weight);
 	if (abs(id_ll) == 13) hmuPt[3][arrNjets]->Fill(pt_ll, weight);
 	if (abs(id_lt) == 13) 
-	  hmuPtFromSilicon[3][arrNjets]->Fill(cms2.mus_trk_p4()[i_lt].pt(), weight);
+	  hmuPtFromSilicon[3][arrNjets]->Fill(cms2.mus_trk_p4().at(i_lt).pt(), weight);
 	if (abs(id_ll) == 13) 
-	  hmuPtFromSilicon[3][arrNjets]->Fill(cms2.mus_trk_p4()[i_ll].pt(), weight);
+	  hmuPtFromSilicon[3][arrNjets]->Fill(cms2.mus_trk_p4().at(i_ll).pt(), weight);
 	hminLepPt[3][arrNjets]->Fill(min(pt_ll, pt_lt), weight);
 	hmaxLepPt[3][arrNjets]->Fill(max(pt_ll, pt_lt), weight );
 
 
 	// lepton Phi
-	if (abs(id_lt) == 11) helePhi[myType][arrNjets]->Fill(cms2.hyp_lt_p4()[hypIdx].phi(), weight);
-	if (abs(id_ll) == 11) helePhi[myType][arrNjets]->Fill(cms2.hyp_ll_p4()[hypIdx].phi(), weight);
-	if (abs(id_lt) == 13) hmuPhi[myType][arrNjets]->Fill(cms2.hyp_lt_p4()[hypIdx].phi(), weight);
-	if (abs(id_ll) == 13) hmuPhi[myType][arrNjets]->Fill(cms2.hyp_ll_p4()[hypIdx].phi(), weight);
+	if (abs(id_lt) == 11) helePhi[myType][arrNjets]->Fill(cms2.hyp_lt_p4().at(hypIdx).phi(), weight);
+	if (abs(id_ll) == 11) helePhi[myType][arrNjets]->Fill(cms2.hyp_ll_p4().at(hypIdx).phi(), weight);
+	if (abs(id_lt) == 13) hmuPhi[myType][arrNjets]->Fill(cms2.hyp_lt_p4().at(hypIdx).phi(), weight);
+	if (abs(id_ll) == 13) hmuPhi[myType][arrNjets]->Fill(cms2.hyp_ll_p4().at(hypIdx).phi(), weight);
     
-	if (abs(id_lt) == 11) helePhi[3][arrNjets]->Fill(cms2.hyp_lt_p4()[hypIdx].phi(), weight);
-	if (abs(id_ll) == 11) helePhi[3][arrNjets]->Fill(cms2.hyp_ll_p4()[hypIdx].phi(), weight);
-	if (abs(id_lt) == 13) hmuPhi[3][arrNjets]->Fill(cms2.hyp_lt_p4()[hypIdx].phi(), weight);
-	if (abs(id_ll) == 13) hmuPhi[3][arrNjets]->Fill(cms2.hyp_ll_p4()[hypIdx].phi(), weight);
+	if (abs(id_lt) == 11) helePhi[3][arrNjets]->Fill(cms2.hyp_lt_p4().at(hypIdx).phi(), weight);
+	if (abs(id_ll) == 11) helePhi[3][arrNjets]->Fill(cms2.hyp_ll_p4().at(hypIdx).phi(), weight);
+	if (abs(id_lt) == 13) hmuPhi[3][arrNjets]->Fill(cms2.hyp_lt_p4().at(hypIdx).phi(), weight);
+	if (abs(id_ll) == 13) hmuPhi[3][arrNjets]->Fill(cms2.hyp_ll_p4().at(hypIdx).phi(), weight);
     
 	// dilepton mass
-	hdilMass[myType][arrNjets]->Fill(cms2.hyp_p4()[hypIdx].mass(), weight);
-	hdilMassTightWindow[myType][arrNjets]->Fill(cms2.hyp_p4()[hypIdx].mass(), weight);
-	hdilMass[3][arrNjets]->Fill(cms2.hyp_p4()[hypIdx].mass(), weight);
-	hdilMassTightWindow[3][arrNjets]->Fill(cms2.hyp_p4()[hypIdx].mass(), weight);
+	hdilMass[myType][arrNjets]->Fill(cms2.hyp_p4().at(hypIdx).mass(), weight);
+	hdilMassTightWindow[myType][arrNjets]->Fill(cms2.hyp_p4().at(hypIdx).mass(), weight);
+	hdilMass[3][arrNjets]->Fill(cms2.hyp_p4().at(hypIdx).mass(), weight);
+	hdilMassTightWindow[3][arrNjets]->Fill(cms2.hyp_p4().at(hypIdx).mass(), weight);
     
 	// delta phi btw leptons
-	double dphi = fabs(cms2.hyp_lt_p4()[hypIdx].phi() - cms2.hyp_ll_p4()[hypIdx].phi());
+	double dphi = fabs(cms2.hyp_lt_p4().at(hypIdx).phi() - cms2.hyp_ll_p4().at(hypIdx).phi());
 	if (dphi > TMath::Pi()) dphi = TMath::TwoPi() - dphi;
 	hdphiLep[myType][arrNjets]->Fill(dphi, weight);
 	hdphiLep[3][arrNjets]->Fill(dphi, weight);
 			   
 	// dphill vs mll, i.e. the 2d correlation between the previous two variables
-	hdphillvsmll[myType][arrNjets]->Fill(cms2.hyp_p4()[hypIdx].mass(), dphi, weight);
-	hdphillvsmll[3][arrNjets]->Fill(cms2.hyp_p4()[hypIdx].mass(), dphi, weight);
+	hdphillvsmll[myType][arrNjets]->Fill(cms2.hyp_p4().at(hypIdx).mass(), dphi, weight);
+	hdphillvsmll[3][arrNjets]->Fill(cms2.hyp_p4().at(hypIdx).mass(), dphi, weight);
  
 	// lepton Eta
-	if (abs(id_lt) == 11) heleEta[myType][arrNjets]->Fill(cms2.hyp_lt_p4()[hypIdx].eta(), weight);
-	if (abs(id_ll) == 11) heleEta[myType][arrNjets]->Fill(cms2.hyp_ll_p4()[hypIdx].eta(), weight);
-	if (abs(id_lt) == 13) hmuEta[myType][arrNjets]->Fill(cms2.hyp_lt_p4()[hypIdx].eta(), weight);
-	if (abs(id_ll) == 13) hmuEta[myType][arrNjets]->Fill(cms2.hyp_ll_p4()[hypIdx].eta(), weight);
+	if (abs(id_lt) == 11) heleEta[myType][arrNjets]->Fill(cms2.hyp_lt_p4().at(hypIdx).eta(), weight);
+	if (abs(id_ll) == 11) heleEta[myType][arrNjets]->Fill(cms2.hyp_ll_p4().at(hypIdx).eta(), weight);
+	if (abs(id_lt) == 13) hmuEta[myType][arrNjets]->Fill(cms2.hyp_lt_p4().at(hypIdx).eta(), weight);
+	if (abs(id_ll) == 13) hmuEta[myType][arrNjets]->Fill(cms2.hyp_ll_p4().at(hypIdx).eta(), weight);
     
-	if (abs(id_lt) == 11) heleEta[3][arrNjets]->Fill(cms2.hyp_lt_p4()[hypIdx].eta(), weight);
-	if (abs(id_ll) == 11) heleEta[3][arrNjets]->Fill(cms2.hyp_ll_p4()[hypIdx].eta(), weight);
-	if (abs(id_lt) == 13) hmuEta[3][arrNjets]->Fill(cms2.hyp_lt_p4()[hypIdx].eta(), weight);
-	if (abs(id_ll) == 13) hmuEta[3][arrNjets]->Fill(cms2.hyp_ll_p4()[hypIdx].eta(), weight);
+	if (abs(id_lt) == 11) heleEta[3][arrNjets]->Fill(cms2.hyp_lt_p4().at(hypIdx).eta(), weight);
+	if (abs(id_ll) == 11) heleEta[3][arrNjets]->Fill(cms2.hyp_ll_p4().at(hypIdx).eta(), weight);
+	if (abs(id_lt) == 13) hmuEta[3][arrNjets]->Fill(cms2.hyp_lt_p4().at(hypIdx).eta(), weight);
+	if (abs(id_ll) == 13) hmuEta[3][arrNjets]->Fill(cms2.hyp_ll_p4().at(hypIdx).eta(), weight);
        
       
 	// electron trk isolation 
-	double temp_lt_iso = cms2.hyp_lt_iso()[hypIdx];  // so that min works
-	double temp_ll_iso = cms2.hyp_ll_iso()[hypIdx];  // so that min works
+	double temp_lt_iso = cms2.hyp_lt_iso().at(hypIdx);  // so that min works
+	double temp_ll_iso = cms2.hyp_ll_iso().at(hypIdx);  // so that min works
 	if (abs(id_lt) == 11) heleSumPt[myType][arrNjets]->Fill(min(temp_lt_iso,24.99),weight);
 	if (abs(id_lt) == 11) heleSumPt[3][arrNjets]->Fill(min(temp_lt_iso,24.99),weight);
 	if (abs(id_ll) == 11) heleSumPt[myType][arrNjets]->Fill(min(temp_ll_iso,24.99),weight);
@@ -774,98 +914,68 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
       
       
 	// muon trk+calo isolation
-	double combIsoSum_lt = -1.;
-	double combIsoSum_ll = -1.;
-	double relIsoComb_lt = -1.;
-	double relIsoComb_ll = -1.;
-	double relIsoTrack_lt = -1.;
-	double relIsoTrack_ll = -1.;
-	double relIsoCalo_lt = -1.;
-	double relIsoCalo_ll = -1.;
-	if (abs(id_lt) == 13){
-	  combIsoSum_lt = cms2.mus_pat_trackIso()[i_lt]
-	    +cms2.mus_pat_ecalIso()[i_lt]
-	    +cms2.mus_pat_hcalIso()[i_lt];
-	  relIsoComb_lt = cms2.mus_p4()[i_lt].pt()/(cms2.mus_p4()[i_lt].pt() + combIsoSum_lt);
-	  relIsoTrack_lt = cms2.mus_p4()[i_lt].pt()/(cms2.mus_p4()[i_lt].pt() + cms2.mus_pat_trackIso()[i_lt]);
-	  relIsoCalo_lt = cms2.mus_p4()[i_lt].pt()/(cms2.mus_p4()[i_lt].pt() + cms2.mus_pat_ecalIso()[i_lt]+cms2.mus_pat_hcalIso()[i_lt]);
-	}
-	if (abs(id_ll) == 13){
-	  combIsoSum_ll = cms2.mus_pat_trackIso()[i_ll]
-	    +cms2.mus_pat_ecalIso()[i_ll]
-	    +cms2.mus_pat_hcalIso()[i_ll];
-	  relIsoComb_ll = cms2.mus_p4()[i_ll].pt()/(cms2.mus_p4()[i_ll].pt() + combIsoSum_ll);
-	  relIsoTrack_ll = cms2.mus_p4()[i_ll].pt()/(cms2.mus_p4()[i_ll].pt() + cms2.mus_pat_trackIso()[i_ll]);
-	  relIsoCalo_ll = cms2.mus_p4()[i_ll].pt()/(cms2.mus_p4()[i_ll].pt() + cms2.mus_pat_ecalIso()[i_ll]+cms2.mus_pat_hcalIso()[i_ll]);
-	}
-	if (abs(id_lt) == 13) hmuSumIso[myType][arrNjets]->Fill(min(combIsoSum_lt,24.99),weight);
-	if (abs(id_lt) == 13) hmuSumIso[3][arrNjets]->Fill(min(combIsoSum_lt,24.99),weight);
-	if (abs(id_ll) == 13) hmuSumIso[myType][arrNjets]->Fill(min(combIsoSum_ll,24.99),weight);
-	if (abs(id_ll) == 13) hmuSumIso[3][arrNjets]->Fill(min(combIsoSum_ll,24.99),weight);
-	//relative combined
-	if (abs(id_lt) == 13) hmuRelIso[myType][arrNjets]->Fill(min(relIsoComb_lt,0.999),weight);
-	if (abs(id_lt) == 13) hmuRelIso[3][arrNjets]->Fill(min(relIsoComb_lt,0.999),weight);
-	if (abs(id_ll) == 13) hmuRelIso[myType][arrNjets]->Fill(min(relIsoComb_ll,0.999),weight);
-	if (abs(id_ll) == 13) hmuRelIso[3][arrNjets]->Fill(min(relIsoComb_ll,0.999),weight);
-	//relative tracker
-	if (abs(id_lt) == 13) hmuRelIsoTrack[myType][arrNjets]->Fill(min(relIsoTrack_lt,0.999),weight);
-	if (abs(id_lt) == 13) hmuRelIsoTrack[3][arrNjets]->Fill(min(relIsoTrack_lt,0.999),weight);
-	if (abs(id_ll) == 13) hmuRelIsoTrack[myType][arrNjets]->Fill(min(relIsoTrack_ll,0.999),weight);
-	if (abs(id_ll) == 13) hmuRelIsoTrack[3][arrNjets]->Fill(min(relIsoTrack_ll,0.999),weight);
-	//relative calo
-	if (abs(id_lt) == 13) hmuRelIsoCalo[myType][arrNjets]->Fill(min(relIsoCalo_lt,0.999),weight);
-	if (abs(id_lt) == 13) hmuRelIsoCalo[3][arrNjets]->Fill(min(relIsoCalo_lt,0.999),weight);
-	if (abs(id_ll) == 13) hmuRelIsoCalo[myType][arrNjets]->Fill(min(relIsoCalo_ll,0.999),weight);
-	if (abs(id_ll) == 13) hmuRelIsoCalo[3][arrNjets]->Fill(min(relIsoCalo_ll,0.999),weight);
-
-	//electrons now
-	if (abs(id_lt) == 11){
-	  combIsoSum_lt = cms2.els_pat_trackIso()[i_lt]
-	    +cms2.els_pat_ecalIso()[i_lt]
-	    +cms2.els_pat_hcalIso()[i_lt];
-	  relIsoComb_lt = cms2.els_p4()[i_lt].pt()/(cms2.els_p4()[i_lt].pt() + combIsoSum_lt);
-	  relIsoTrack_lt = cms2.els_p4()[i_lt].pt()/(cms2.els_p4()[i_lt].pt() + cms2.els_pat_trackIso()[i_lt]);
-	  relIsoCalo_lt = cms2.els_p4()[i_lt].pt()/(cms2.els_p4()[i_lt].pt() + cms2.els_pat_ecalIso()[i_lt]+cms2.els_pat_hcalIso()[i_lt]);
-	}
-	if (abs(id_ll) == 11){
-	  combIsoSum_ll = cms2.els_pat_trackIso()[i_ll]
-	    +cms2.els_pat_ecalIso()[i_ll]
-	    +cms2.els_pat_hcalIso()[i_ll];
-	  relIsoComb_ll = cms2.els_p4()[i_ll].pt()/(cms2.els_p4()[i_ll].pt() + combIsoSum_ll);
-	  relIsoTrack_ll = cms2.els_p4()[i_ll].pt()/(cms2.els_p4()[i_ll].pt() + cms2.els_pat_trackIso()[i_ll]);
-	  relIsoCalo_ll = cms2.els_p4()[i_ll].pt()/(cms2.els_p4()[i_ll].pt() + cms2.els_pat_ecalIso()[i_ll]+cms2.els_pat_hcalIso()[i_ll]);
-	}
-	if (abs(id_lt) == 11) helSumIso[myType][arrNjets]->Fill(min(combIsoSum_lt,24.99),weight);
-	if (abs(id_lt) == 11) helSumIso[3][arrNjets]->Fill(min(combIsoSum_lt,24.99),weight);
-	if (abs(id_ll) == 11) helSumIso[myType][arrNjets]->Fill(min(combIsoSum_ll,24.99),weight);
-	if (abs(id_ll) == 11) helSumIso[3][arrNjets]->Fill(min(combIsoSum_ll,24.99),weight);
-	//relative combined
-	if (abs(id_lt) == 11) helRelIso[myType][arrNjets]->Fill(min(relIsoComb_lt,0.999),weight);
-	if (abs(id_lt) == 11) helRelIso[3][arrNjets]->Fill(min(relIsoComb_lt,0.999),weight);
-	if (abs(id_ll) == 11) helRelIso[myType][arrNjets]->Fill(min(relIsoComb_ll,0.999),weight);
-	if (abs(id_ll) == 11) helRelIso[3][arrNjets]->Fill(min(relIsoComb_ll,0.999),weight);
-	//relative tracker
-	if (abs(id_lt) == 11) helRelIsoTrack[myType][arrNjets]->Fill(min(relIsoTrack_lt,0.999),weight);
-	if (abs(id_lt) == 11) helRelIsoTrack[3][arrNjets]->Fill(min(relIsoTrack_lt,0.999),weight);
-	if (abs(id_ll) == 11) helRelIsoTrack[myType][arrNjets]->Fill(min(relIsoTrack_ll,0.999),weight);
-	if (abs(id_ll) == 11) helRelIsoTrack[3][arrNjets]->Fill(min(relIsoTrack_ll,0.999),weight);
-	//relative calo
-	if (abs(id_lt) == 11) helRelIsoCalo[myType][arrNjets]->Fill(min(relIsoCalo_lt,0.999),weight);
-	if (abs(id_lt) == 11) helRelIsoCalo[3][arrNjets]->Fill(min(relIsoCalo_lt,0.999),weight);
-	if (abs(id_ll) == 11) helRelIsoCalo[myType][arrNjets]->Fill(min(relIsoCalo_ll,0.999),weight);
-	if (abs(id_ll) == 11) helRelIsoCalo[3][arrNjets]->Fill(min(relIsoCalo_ll,0.999),weight);
+	double combIso_lt = -1.;
+	double combIso_ll = -1.;
+	if (abs(id_lt) == 13)
+	  combIso_lt = cms2.mus_iso03_sumPt().at(i_lt)
+	    +cms2.mus_iso03_emEt().at(i_lt)
+	    +cms2.mus_iso03_hadEt().at(i_lt);
+	if (abs(id_ll) == 13)
+	  combIso_ll = cms2.mus_iso03_sumPt().at(i_ll)
+	    +cms2.mus_iso03_emEt().at(i_ll)
+	    +cms2.mus_iso03_hadEt().at(i_ll);
+	if (abs(id_lt) == 13) hmuSumIso[myType][arrNjets]->Fill(min(combIso_lt,24.99),weight);
+	if (abs(id_lt) == 13) hmuSumIso[3][arrNjets]->Fill(min(combIso_lt,24.99),weight);
+	if (abs(id_ll) == 13) hmuSumIso[myType][arrNjets]->Fill(min(combIso_ll,24.99),weight);
+	if (abs(id_ll) == 13) hmuSumIso[3][arrNjets]->Fill(min(combIso_ll,24.99),weight);
 
 
+	// Relative isolation... muons
+	if (abs(id_lt) == 13) {
+	  double thisSum =  cms2.mus_iso03_sumPt().at(i_lt) +  
+	    cms2.mus_iso03_emEt().at(i_lt)  +
+	    cms2.mus_iso03_hadEt().at(i_lt);
+	  double thisPt  = cms2.mus_p4().at(i_lt).pt();
+	  double temp    = thisPt / (thisPt+thisSum);
+	  hmuRelIso[myType][arrNjets]->Fill(temp, weight);
+	  hmuRelIso[3][arrNjets]->Fill(temp, weight);
+	}
+	if (abs(id_ll) == 13) {
+	  double thisSum =  cms2.mus_iso03_sumPt().at(i_ll) +  
+	    cms2.mus_iso03_emEt().at(i_ll)  +
+	    cms2.mus_iso03_hadEt().at(i_ll);
+	  double thisPt  = cms2.mus_p4().at(i_ll).pt();
+	  double temp    = thisPt / (thisPt+thisSum);
+	  hmuRelIso[myType][arrNjets]->Fill(temp, weight);
+	  hmuRelIso[3][arrNjets]->Fill(temp, weight);
+	}
+
+
+	// Relative isolation... electrons
+	if (abs(id_lt) == 11) {
+	  double thisSum =  cms2.hyp_lt_iso().at(hypIdx);
+	  double thisPt  = pt_lt;
+	  double temp    = thisPt / (thisPt+thisSum);
+	  heleRelIso[myType][arrNjets]->Fill(temp, weight);
+	  heleRelIso[3][arrNjets]->Fill(temp, weight);
+	}
+	if (abs(id_ll) == 11) {
+	  double thisSum =  cms2.hyp_ll_iso().at(hypIdx);
+	  double thisPt  = pt_ll;
+	  double temp    = thisPt / (thisPt+thisSum);
+	  heleRelIso[myType][arrNjets]->Fill(temp, weight);
+	  heleRelIso[3][arrNjets]->Fill(temp, weight);
+	}
       
 	// dilepton pt
-	hdilPt[myType][arrNjets]->Fill(cms2.hyp_p4()[hypIdx].pt(), weight);
-	hdilPt[3][arrNjets]->Fill(cms2.hyp_p4()[hypIdx].pt(), weight);
+	hdilPt[myType][arrNjets]->Fill(cms2.hyp_p4().at(hypIdx).pt(), weight);
+	hdilPt[3][arrNjets]->Fill(cms2.hyp_p4().at(hypIdx).pt(), weight);
     
 	// Met and Met phi
-	hmet[myType][arrNjets]->Fill(cms2.hyp_met()[hypIdx], weight);      
-	hmetPhi[myType][arrNjets]->Fill(cms2.hyp_metPhi()[hypIdx], weight);      
-	hmet[3][arrNjets]->Fill(cms2.hyp_met()[hypIdx], weight);      
-	hmetPhi[3][arrNjets]->Fill(cms2.hyp_metPhi()[hypIdx], weight);      
+	hmet[myType][arrNjets]->Fill(cms2.hyp_met().at(hypIdx), weight);      
+	hmetPhi[myType][arrNjets]->Fill(cms2.hyp_metPhi().at(hypIdx), weight);      
+	hmet[3][arrNjets]->Fill(cms2.hyp_met().at(hypIdx), weight);      
+	hmetPhi[3][arrNjets]->Fill(cms2.hyp_metPhi().at(hypIdx), weight);      
 	// pat Met and Met phi
 	hpatmet[myType][arrNjets]->Fill(cms2.met_pat_metCor(), weight);      
 	hpatmetPhi[myType][arrNjets]->Fill(cms2.met_pat_metPhiCor(), weight);      
@@ -878,33 +988,33 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	htcmetPhi[3][arrNjets]->Fill(cms2.evt_tcmetPhi(), weight);      
     
 	// Met vs dilepton Pt
-	hmetVsDilepPt[myType][arrNjets]->Fill(cms2.hyp_met()[hypIdx], cms2.hyp_p4()[hypIdx].pt(), weight);
-	hmetVsDilepPt[3][arrNjets]->Fill(cms2.hyp_met()[hypIdx], cms2.hyp_p4()[hypIdx].pt(), weight);
+	hmetVsDilepPt[myType][arrNjets]->Fill(cms2.hyp_met().at(hypIdx), cms2.hyp_p4().at(hypIdx).pt(), weight);
+	hmetVsDilepPt[3][arrNjets]->Fill(cms2.hyp_met().at(hypIdx), cms2.hyp_p4().at(hypIdx).pt(), weight);
 	//pat  Met vs dilepton Pt
-	hpatmetVsDilepPt[myType][arrNjets]->Fill(cms2.met_pat_metCor(), cms2.hyp_p4()[hypIdx].pt(), weight);
-	hpatmetVsDilepPt[3][arrNjets]->Fill(cms2.met_pat_metCor(), cms2.hyp_p4()[hypIdx].pt(), weight);
+	hpatmetVsDilepPt[myType][arrNjets]->Fill(cms2.met_pat_metCor(), cms2.hyp_p4().at(hypIdx).pt(), weight);
+	hpatmetVsDilepPt[3][arrNjets]->Fill(cms2.met_pat_metCor(), cms2.hyp_p4().at(hypIdx).pt(), weight);
 	//tc  Met vs dilepton Pt
-	htcmetVsDilepPt[myType][arrNjets]->Fill(cms2.evt_tcmet(), cms2.hyp_p4()[hypIdx].pt(), weight);
-	htcmetVsDilepPt[3][arrNjets]->Fill(cms2.evt_tcmet(), cms2.hyp_p4()[hypIdx].pt(), weight);
+	htcmetVsDilepPt[myType][arrNjets]->Fill(cms2.evt_tcmet(), cms2.hyp_p4().at(hypIdx).pt(), weight);
+	htcmetVsDilepPt[3][arrNjets]->Fill(cms2.evt_tcmet(), cms2.hyp_p4().at(hypIdx).pt(), weight);
     
 	// Met over dilepton Pt vs deltaphi btw the two
-	double dphi2 = fabs(cms2.hyp_p4()[hypIdx].phi() - cms2.hyp_metPhi()[hypIdx]);
+	double dphi2 = fabs(cms2.hyp_p4().at(hypIdx).phi() - cms2.hyp_metPhi().at(hypIdx));
 	if (dphi2 > TMath::Pi()) dphi2 = TMath::TwoPi() - dphi2;
 	dphi2 = TMath::Pi() - dphi2;  // changed the definition CC 28 March 08
-	hmetOverPtVsDphi[myType][arrNjets]->Fill(cms2.hyp_met()[hypIdx]/cms2.hyp_p4()[hypIdx].pt(), dphi2, weight);
-	hmetOverPtVsDphi[3][arrNjets]->Fill(cms2.hyp_met()[hypIdx]/cms2.hyp_p4()[hypIdx].pt(), dphi2, weight);
+	hmetOverPtVsDphi[myType][arrNjets]->Fill(cms2.hyp_met().at(hypIdx)/cms2.hyp_p4().at(hypIdx).pt(), dphi2, weight);
+	hmetOverPtVsDphi[3][arrNjets]->Fill(cms2.hyp_met().at(hypIdx)/cms2.hyp_p4().at(hypIdx).pt(), dphi2, weight);
 	//pat Met over dilepton Pt vs deltaphi btw the two
-	dphi2 = fabs(cms2.hyp_p4()[hypIdx].phi() - cms2.met_pat_metPhiCor());
+	dphi2 = fabs(cms2.hyp_p4().at(hypIdx).phi() - cms2.met_pat_metPhiCor());
 	if (dphi2 > TMath::Pi()) dphi2 = TMath::TwoPi() - dphi2;
 	dphi2 = TMath::Pi() - dphi2;  // changed the definition CC 28 March 08
-	hpatmetOverPtVsDphi[myType][arrNjets]->Fill(cms2.met_pat_metCor()/cms2.hyp_p4()[hypIdx].pt(), dphi2, weight);
-	hpatmetOverPtVsDphi[3][arrNjets]->Fill(cms2.met_pat_metCor()/cms2.hyp_p4()[hypIdx].pt(), dphi2, weight);
+	hpatmetOverPtVsDphi[myType][arrNjets]->Fill(cms2.met_pat_metCor()/cms2.hyp_p4().at(hypIdx).pt(), dphi2, weight);
+	hpatmetOverPtVsDphi[3][arrNjets]->Fill(cms2.met_pat_metCor()/cms2.hyp_p4().at(hypIdx).pt(), dphi2, weight);
 	//tc Met over dilepton Pt vs deltaphi btw the two
-	dphi2 = fabs(cms2.hyp_p4()[hypIdx].phi() - cms2.evt_tcmetPhi());
+	dphi2 = fabs(cms2.hyp_p4().at(hypIdx).phi() - cms2.evt_tcmetPhi());
 	if (dphi2 > TMath::Pi()) dphi2 = TMath::TwoPi() - dphi2;
 	dphi2 = TMath::Pi() - dphi2;  // changed the definition CC 28 March 08
-	htcmetOverPtVsDphi[myType][arrNjets]->Fill(cms2.evt_tcmet()/cms2.hyp_p4()[hypIdx].pt(), dphi2, weight);
-	htcmetOverPtVsDphi[3][arrNjets]->Fill(cms2.evt_tcmet()/cms2.hyp_p4()[hypIdx].pt(), dphi2, weight);
+	htcmetOverPtVsDphi[myType][arrNjets]->Fill(cms2.evt_tcmet()/cms2.hyp_p4().at(hypIdx).pt(), dphi2, weight);
+	htcmetOverPtVsDphi[3][arrNjets]->Fill(cms2.evt_tcmet()/cms2.hyp_p4().at(hypIdx).pt(), dphi2, weight);
     
       
 
@@ -982,29 +1092,12 @@ void ttDilCounts_looper::bookHistos(char *prefix) {
       if (j == 0){
 	hnJet[i] = new TH1F(Form("%s_hnJet_%s",prefix,suffixall[i]),Form("%s_nJet_%s",prefix,suffixall[i]),
 			    5,0.,5.);	
-	hnJetinZwindow[i] = new TH1F(Form("%s_hnJetinZwindow_%s",prefix,suffixall[i]),Form("%s_hnJetinZwindow_%s",prefix,suffixall[i]),
-				     5,0.,5.);	
-	hnJetoutZwindow[i] = new TH1F(Form("%s_hnJetoutZwindow_%s",prefix,suffixall[i]),Form("%s_hnJetoutZwindow_%s",prefix,suffixall[i]),
-				     5,0.,5.);	
-	
 	hnJet[i]->SetDirectory(rootdir);
 	hnJet[i]->GetXaxis()->SetTitle("nJets");
-
-	hnJetinZwindow[i]->SetDirectory(rootdir);
-	hnJetinZwindow[i]->GetXaxis()->SetTitle("nJets");
-
-	hnJetoutZwindow[i]->SetDirectory(rootdir);
-	hnJetoutZwindow[i]->GetXaxis()->SetTitle("nJets");
-
+	
 	for(int k = 0; k<5; k++) {
 	  hnJet[i]->GetXaxis()->SetBinLabel(k+1, jetbins[k]);
 	  hnJet[i]->GetXaxis()->SetLabelSize(0.07);
-	  
-	  hnJetinZwindow[i]->GetXaxis()->SetBinLabel(k+1, jetbins[k]);
-	  hnJetinZwindow[i]->GetXaxis()->SetLabelSize(0.07);
-	  
-	  hnJetoutZwindow[i]->GetXaxis()->SetBinLabel(k+1, jetbins[k]);
-	  hnJetoutZwindow[i]->GetXaxis()->SetLabelSize(0.07);
 	  
 	}
       }
@@ -1077,7 +1170,7 @@ void ttDilCounts_looper::bookHistos(char *prefix) {
       
  
       hdilMass[i][j] = new TH1F(Form("%s_hdilMass_%s",prefix,suffix[i]),Form("%s_dilMass_%s",prefix,suffix[i]),
-				300, 0., 300.);
+				100, 0., 300.);
       hdilMass[i][j]->SetDirectory(rootdir);
       hdilMass[i][j]->GetXaxis()->SetTitle("Mass_{ll} (GeV)");
       
@@ -1224,41 +1317,19 @@ void ttDilCounts_looper::bookHistos(char *prefix) {
       hmuSumPt[i][j]->SetDirectory(rootdir);
       hmuSumPt[i][j]->GetXaxis()->SetTitle("#SigmaPt");
     
-      hmuSumIso[i][j] = new TH1F(Form("%s_hmuSumIso_%s",prefix,suffix[i]),Form("%s_hmuSumIso_%s",prefix,suffix[i]),
+      hmuSumIso[i][j] = new TH1F(Form("%s_hmuIsoSum_%s",prefix,suffix[i]),Form("%s_hmuIsoSum_%s",prefix,suffix[i]),
 				 100, 0., 25.);
       hmuSumIso[i][j]->SetDirectory(rootdir);
       hmuSumIso[i][j]->GetXaxis()->SetTitle("#SigmaPt");
-      helSumIso[i][j] = new TH1F(Form("%s_helSumIso_%s",prefix,suffix[i]),Form("%s_helSumIso_%s",prefix,suffix[i]),
-				 100, 0., 25.);
-      helSumIso[i][j]->SetDirectory(rootdir);
-      helSumIso[i][j]->GetXaxis()->SetTitle("#SigmaPt");
     
+      heleRelIso[i][j] = new TH1F(Form("%s_heleRelIso_%s",prefix,suffix[i]),Form("%s_heleRelIso_%s",prefix,suffix[i]),
+				  100, 0., 1.0001);
+      heleRelIso[i][j]->SetDirectory(rootdir);
       hmuRelIso[i][j] = new TH1F(Form("%s_hmuRelIso_%s",prefix,suffix[i]),Form("%s_hmuRelIso_%s",prefix,suffix[i]),
-				  100, 0., 1.0001);
-      hmuRelIso[i][j]->SetDirectory(rootdir);
-      helRelIso[i][j] = new TH1F(Form("%s_helRelIso_%s",prefix,suffix[i]),Form("%s_helRelIso_%s",prefix,suffix[i]),
-				  100, 0., 1.0001);
-      helRelIso[i][j]->SetDirectory(rootdir);
-      // tracker
-      hmuRelIsoTrack[i][j] = new TH1F(Form("%s_hmuRelIsoTrack_%s",prefix,suffix[i]),Form("%s_hmuRelIsoTrack_%s",prefix,suffix[i]),
-				  100, 0., 1.0001);
-      hmuRelIsoTrack[i][j]->SetDirectory(rootdir);
-      helRelIsoTrack[i][j] = new TH1F(Form("%s_helRelIsoTrack_%s",prefix,suffix[i]),Form("%s_helRelIsoTrack_%s",prefix,suffix[i]),
-				  100, 0., 1.0001);
-      helRelIsoTrack[i][j]->SetDirectory(rootdir);
-      // calorimeter
-      hmuRelIsoCalo[i][j] = new TH1F(Form("%s_hmuRelIsoCalo_%s",prefix,suffix[i]),Form("%s_hmuRelIsoCalo_%s",prefix,suffix[i]),
-				  100, 0., 1.0001);
-      hmuRelIsoCalo[i][j]->SetDirectory(rootdir);
-      helRelIsoCalo[i][j] = new TH1F(Form("%s_helRelIsoCalo_%s",prefix,suffix[i]),Form("%s_helRelIsoCalo_%s",prefix,suffix[i]),
-				  100, 0., 1.0001);
-      helRelIsoCalo[i][j]->SetDirectory(rootdir);
-
+				 100, 0., 1.0001);
 
       if (j==0){
 	hnJet[i]->Sumw2();
-	hnJetinZwindow[i]->Sumw2();
-	hnJetoutZwindow[i]->Sumw2();
       }
       helePt[i][j]->Sumw2();
       hmuPt[i][j]->Sumw2();
@@ -1289,16 +1360,33 @@ void ttDilCounts_looper::bookHistos(char *prefix) {
       hetaJet4[i][j]->Sumw2();
       heleSumPt[i][j]->Sumw2();
       hmuSumPt[i][j]->Sumw2();
-
       hmuSumIso[i][j]->Sumw2();
-      helSumIso[i][j]->Sumw2();
-      hmuRelIso[i][j]->Sumw2();
-      helRelIso[i][j]->Sumw2();
-      hmuRelIsoTrack[i][j]->Sumw2();
-      helRelIsoTrack[i][j]->Sumw2();
-      hmuRelIsoCalo[i][j]->Sumw2();
-      helRelIsoCalo[i][j]->Sumw2();
-
+      heleRelIso[i][j]->Sumw2(); 
+      hmuRelIso[i][j]->Sumw2(); 
     }
   }//channel loop
 }//CMS2::bookHistos()
+
+//------------------------------------------------------------
+
+TH2F* ttDilCounts_looper::getFRhisto(TString flavor) {
+
+  TFile *f = TFile::Open("QCDFRplots.root");
+  if(f == NULL)
+    return NULL;
+  TString hname = "QCD_FRptvseta_"+flavor;
+  TH2F* h = (TH2F*)f->Get(hname.Data());
+  if(h==NULL)
+    return NULL;
+  return h;
+  
+}
+//------------------------------------------------------------
+Float_t ttDilCounts_looper::GetValueTH2F(Float_t x, Float_t y, TH2F* h) {
+ 
+  Int_t binx = h->GetXaxis()->FindBin(x);
+  Int_t biny = h->GetYaxis()->FindBin(y);
+  return h->GetBinContent(binx, biny);
+ 
+}
+//------------------------------------------------------------

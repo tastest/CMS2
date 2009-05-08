@@ -19,8 +19,6 @@ class ttDilCounts_looper {
   int ScanChain ( TChain* chain, char * prefix="", float kFactor=1.0, int prescale=1, bool oldjets=true, unsigned int cutsMask=31);
 
   TH1F* hnJet[4];       // Njet distributions
-  TH1F* hnJetinZwindow[4];  //usefull for DY estimate
-  TH1F* hnJetoutZwindow[4]; //usefull for DY estimate
   TH1F* helePt[4][3];      // electron Pt
   TH1F* hmuPt[4][3];       // muon Pt
   TH1F* hmuPtFromSilicon[4][3];    // muon Pt (from tracker)
@@ -63,13 +61,8 @@ class ttDilCounts_looper {
   TH1F* heleSumPt[4][3];   // sumPt for electron isolation
   TH1F* hmuSumPt[4][3];   // sumPt for muon isolation
   TH1F* hmuSumIso[4][3];  // sum of trk pt, em et, had et in cone of 0.3
-  TH1F* helSumIso[4][3];  // sum of trk pt, em et, had et in cone of 0.3
-  TH1F* helRelIso[4][3]; //  Iso variable defined as pt/(pt+sum) for electron
+  TH1F* heleRelIso[4][3]; //  Iso variable defined as pt/(pt+sum) for electron
   TH1F* hmuRelIso[4][3]; //  Iso variable defined as pt/(pt+sum) for muons
-  TH1F* helRelIsoTrack[4][3]; //  Iso variable defined as pt/(pt+sum) for electron
-  TH1F* hmuRelIsoTrack[4][3]; //  Iso variable defined as pt/(pt+sum) for muons
-  TH1F* helRelIsoCalo[4][3]; //  Iso variable defined as pt/(pt+sum) for electron
-  TH1F* hmuRelIsoCalo[4][3]; //  Iso variable defined as pt/(pt+sum) for muons
 
   // Unfortunately, our ntuple has no info for electron isolation other than candidate electrons.
   // When counting electrons, we thus can not apply an isolation criteria at this point !!!
@@ -82,5 +75,8 @@ class ttDilCounts_looper {
 
   std::string compactConfig;
   void bookHistos(char *prefix);
+  TH2F* getFRhisto(TString flavor);
+  Float_t GetValueTH2F(Float_t x, Float_t y, TH2F* h);
+
 };
 #endif
