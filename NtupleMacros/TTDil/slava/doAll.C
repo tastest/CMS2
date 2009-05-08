@@ -43,6 +43,7 @@ void pickSkimIfExists(TChain* ch, const std::string& base, const std::string& sk
 void doAll(unsigned int bitmask, bool skipFWLite = false){
   //here is a list to the combinations of cuts useful for the analysis:
   // 1957888 -- baseline
+  // 35512320 -- baseline using tcmet
   // 1695744 -- baseline without MET
   // 1433600 -- baseline without zveto
   // 1926144 -- baseline without tight iso (only loose iso)
