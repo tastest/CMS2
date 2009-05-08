@@ -409,7 +409,7 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
       
 	// ! for TTDil analysis this should be made for the event-qualifying hyp only
 	if (!fillMaxWeightDilOnly && metBaselineSelectionTTDil08){
-	  if (globalJESscaleRescale == 1 && ! passMet_OF20_SF30(hypIdx,useTcMet)) continue;
+	  if (globalJESscaleRescale == 1 && useTcMet && ! passMet_OF20_SF30(hypIdx,useTcMet)) continue;
 	  if (globalJESscaleRescale != 1. && (!useTcMet)) {
 	    float metx = cms2.met_pat_metCor()*cos(cms2.met_pat_metPhiCor());
 	    float mety = cms2.met_pat_metCor()*sin(cms2.met_pat_metPhiCor());
@@ -503,7 +503,7 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 
 	// ! event level cut here, can reset the eventPassed to false
 	if (fillMaxWeightDilOnly && metBaselineSelectionTTDil08){
-	  //	  if (globalJESscaleRescale == 1. && ! passMet_OF20_SF30(maxWeightIndex,useTcMet)) continue;
+	  if (globalJESscaleRescale == 1. && useTcMet && ! passMet_OF20_SF30(maxWeightIndex,useTcMet)) continue;
 	  if ( (!useTcMet)){
 	    float metx = cms2.met_pat_metCor()*cos(cms2.met_pat_metPhiCor());
 	    float mety = cms2.met_pat_metCor()*sin(cms2.met_pat_metPhiCor());
