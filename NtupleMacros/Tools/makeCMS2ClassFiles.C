@@ -122,7 +122,7 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
     TBranch *branch = ev->GetBranch(ev->GetAlias(aliasname.Data()));
     TString classname = branch->GetClassName();
     if ( !classname.Contains("vector<vector") ) {
-      if ( classname.Contains("Lorentz") ) {
+      if ( classname.Contains("Lorentz") || classname.Contains("PositionVector") ) {
 	   headerf << "\t" << Form("%s_branch",aliasname.Data()) << " = 0;" << endl;
 	   headerf << "\t" << "if (tree->GetAlias(\"" << aliasname << "\") != 0) {" << endl;
 	   headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << " = tree->GetBranch(tree->GetAlias(\"" << aliasname << "\"));" << endl;
@@ -141,7 +141,7 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
     TString aliasname(aliasarray->At(i)->GetName());
     TBranch *branch = ev->GetBranch(ev->GetAlias(aliasname.Data()));
     TString classname = branch->GetClassName();
-    if ( !classname.Contains("Lorentz") || classname.Contains("vector<vector") ) {
+    if ( ! (classname.Contains("Lorentz") || classname.Contains("PositionVector")) || classname.Contains("vector<vector") ) {
 	 headerf << "\t" << Form("%s_branch",aliasname.Data()) << " = 0;" << endl;
 	 headerf << "\t" << "if (tree->GetAlias(\"" << aliasname << "\") != 0) {" << endl;
 	 headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << " = tree->GetBranch(tree->GetAlias(\"" << aliasname << "\"));" << endl;
@@ -164,6 +164,15 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
        headerf << "\t\t" << Form("%s_isLoaded",aliasname.Data()) << " = false;" << endl;
   }
   headerf << "\t}" << endl << endl;
+
+  // LoadAllBranches
+  headerf << "void LoadAllBranches() " << endl;
+  headerf << "\t// load all branches" << endl << "{" << endl;
+  for(Int_t i = 0; i< aliasarray->GetSize(); i++) {
+       TString aliasname(aliasarray->At(i)->GetName());
+       headerf << "\t" << "if (" << aliasname.Data() <<  "_branch != 0) " << Form("%s();",aliasname.Data()) << endl;
+  }
+  headerf << "}" << endl << endl;
 
   // accessor functions
   for (Int_t i = 0; i< aliasarray->GetSize(); i++) {
