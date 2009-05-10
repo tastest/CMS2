@@ -22,6 +22,12 @@ enum {
 	 LOOP_DYEE_NF,
      LOOP_DYMM_NF,
      LOOP_DYTT_NF,
+	 LOOP_ZEEJET80,
+	 LOOP_ZEEJET120,
+	 LOOP_ZEEJET170,
+	 LOOP_ZEEJET230,
+	 LOOP_ZEEJET300,	 
+	 LOOP_ZEEJETALL,	 
 };
 
 // helper function used to print yield tables
@@ -105,6 +111,24 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
      Looper looper_dytt_nf	(fDYtt_nofilter()	, cuts, log.c_str());
 	 if (which_ones & (1 << LOOP_DYTT_NF  )) looper_dytt_nf.Loop();
 
+     Looper looper_zeejet80_nf (fZeeJet80to120_nofilter(), cuts, log.c_str());
+	 if (which_ones & (1 << LOOP_ZEEJET80  )) looper_zeejet80_nf.Loop();
+
+     Looper looper_zeejet120_nf (fZeeJet120to170_nofilter(), cuts,log.c_str());
+	 if (which_ones & (1 << LOOP_ZEEJET120  )) looper_zeejet120_nf.Loop();
+
+     Looper looper_zeejet170_nf (fZeeJet170to230_nofilter(), cuts,log.c_str());
+	 if (which_ones & (1 << LOOP_ZEEJET170  )) looper_zeejet170_nf.Loop();
+
+     Looper looper_zeejet230_nf (fZeeJet230to300_nofilter(), cuts,log.c_str());
+	 if (which_ones & (1 << LOOP_ZEEJET230  )) looper_zeejet230_nf.Loop();
+
+     Looper looper_zeejet300_nf (fZeeJet300toInf_nofilter(), cuts,log.c_str(), false);
+	 if (which_ones & (1 << LOOP_ZEEJET300  )) looper_zeejet300_nf.Loop();
+
+     Looper looper_zeejetall_nf (fZeeJetALL80toInf_nofilter(), cuts,log.c_str());
+	 if (which_ones & (1 << LOOP_ZEEJETALL  )) looper_zeejetall_nf.Loop();
+
      // when all the loopers are done, we save the histograms to file
      saveHist(hist.c_str());
      // then we collect them all and print a table
@@ -127,11 +151,17 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 int Results ()
 {
   uint32 samples = 0;
-  samples |= (1 << LOOP_DYEE_NF);
-  samples |= (1 << LOOP_DYMM_NF);
+  //samples |= (1 << LOOP_DYEE_NF);
   //samples |= (1 << LOOP_DYMM_NF);
   //samples |= (1 << LOOP_DYTT_NF);
+  //samples |= (1 << LOOP_ZEEJET80);
+  //samples |= (1 << LOOP_ZEEJET120);
+  //samples |= (1 << LOOP_ZEEJET170);
+  //samples |= (1 << LOOP_ZEEJET230);
+  //samples |= (1 << LOOP_ZEEJET300);
+  samples |= (1 << LOOP_ZEEJETALL);
   //return run<Looper>(baseline_cuts, "Results");
-  return run<Looper>(baseline_cuts, "Results", samples );
-					 //(1<<LOOP_DYTT) | (1<<LOOP_DYMM) | (1<<LOOP_DYEE) );
+  //return run<Looper>(baseline_cuts, "Results", samples );
+  return run<Looper>(0, "Results", samples );
+
 }

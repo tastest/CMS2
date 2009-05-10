@@ -208,6 +208,13 @@ struct counts {
   double multihyp; //evt has more that two pairs of leptons passing denom
 };
 
+//this struct is so i can store cut bits and indexes of all combinations of leptons in an event
+struct event_cuts {
+  vector<cuts_t> cuts;
+  vector<int> idx1;
+  vector<int> idx2;
+};
+
 //----------------------------------------------------------------------
 // Loopers 
 //----------------------------------------------------------------------
@@ -226,7 +233,7 @@ public:
   // constructor; tell the looper what sample to loop on (see
   // Tools/Sample.h), what cuts candidates need to pass, and a file
   // name for dumping log messages
-  Looper (Sample, cuts_t cuts, const char *logfilename = 0);
+  Looper (Sample, cuts_t cuts, const char *logfilename = 0, bool usew = true);
   virtual ~Looper () { }
 
 protected:
@@ -240,11 +247,11 @@ protected:
   // we define an analysis-specific EventSelect(), DilepSelect(),
   // TrilepSelect() and QuadlepSelect() that check which cuts the
   // event, dilepton/trilepton/quadlepton candidate passes
-  virtual cuts_t LepSelect(int i, int flv); //flav=0 for el, =1 for mu
-  virtual cuts_t PairSelect(cuts_t, cuts_t, cuts_t, int );
-  virtual cuts_t DenSelect(int i);
+  virtual cuts_t LepSelect(int i, int flv); //flv=0 for el, =1 for mu
+  virtual void PairSelect( int flv );
   virtual cuts_t Stat1Select(vector<int>);
   virtual cuts_t EventSelect();
+  virtual cuts_t CutCount(cuts_t, cuts_t, cuts_t, int);
 
   virtual void FillEventHistos();
   virtual void FillStat1Histos( int , vector<int>, vector<int> ); 
@@ -286,24 +293,30 @@ protected:
   EffH1F* eff_pt_reco;
   EffH1F* eff_p_reco3;
   EffH1F* eff_pt_reco3;
+  EffH1F* eff_e1p_reco3; //eff as fn of leading e p
+  EffH1F* eff_e2p_reco3; // as fn of second
+  EffH1F* eff_e1pt_reco3; //pt 1,2
+  EffH1F* eff_e2pt_reco3;
 
   EffH2F* eff_p_eta_reco3;
   EffH2F* eff_pt_eta_reco3;
 
+#define netabins 3
+  EffH1F* eff_p_bineta_reco3[netabins];
+  EffH1F* eff_pt_bineta_reco3[netabins];
+  
   //jet EffH's
   EffH1F* eff_njets_reco3;
   EffH1F* eff_jetEt_reco3;
   EffH2F* eff_pt_njets_reco3;
   EffH2F* eff_pt_jetEt_reco3;
 
-#define netabins 3
-  //EffH1F* eff_p_reco[netabins];
-  //EffH1F* eff_pt_reco[netabins];
-  
 protected:
+  bool useweight;
 
-  //vector<cuts_t> els_cuts;
-  //vector<string> els_cuts_names;
+  event_cuts evt_cuts[2]; //struct defined above, one for e, mu
+#define lepeffs 2
+  int elsidx[lepeffs]; //idx of passing numerator, denominator--REUSE for different cuts!!! 
 
 #define ncounts 3  //should be n cuts (not counting e,mu diffs)
   counts count[ncounts]; //my struct, declared above Looper
@@ -317,24 +330,3 @@ protected:
 };
 #endif
 
-  
-  //TH1F* heff_p_iso;
-  //TH1F* heff_p_iso_numer;
-  //TH1F* heff_p_iso_denom;
-  //TH1F* heff_pt_iso;
-  //TH1F* heff_pt_iso_numer;
-  //TH1F* heff_pt_iso_denom;
-  //TH1F* heff_p_reco;
-  //TH1F* heff_p_reco_numer;
-  //TH1F* heff_p_reco_denom;
-  //TH1F* heff_pt_reco;
-  //TH1F* heff_pt_reco_numer;
-  //TH1F* heff_pt_reco_denom;
-
-  
-  //TH1F* heff_mc3match;
-  //NMinus1Hist *heff_p_N1; //efficiency as function of momentum for electrons
-  //NMinus1Hist *heff_pm_N1; // same for muons
-  //NMinus1Hist *heff_pt_N1;// as function of pt
-  //NMinus1Hist *heff_ptm_N1;
-  //NMinus1Hist *heff_single;

@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.1 2009/04/09 18:20:48 warren Exp $
+# $Id: Makefile,v 1.2 2009/05/10 03:45:29 warren Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
@@ -70,7 +70,7 @@ clean:
 $(TABLES): $(LIBS)
 
 %.tbl %.root %.log:	$(LIBS) #compile libs
-	rm -f $(@:.tbl=.log); \
+	rm -f $(@:.tbl=.log) Results2.root; \
 	echo $(@:.tbl=)"()" | root.exe -b setup.C
 #start root, execute setup.C, the pipe tells root to execute as a command the string which was piped in
 
