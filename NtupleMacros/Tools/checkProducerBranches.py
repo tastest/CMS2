@@ -32,7 +32,6 @@ for fname in filelist:
         print 'The file does not exist'
         sys.exist()
     
-    print 'Reading File ' + fname + ':'
     infile = open(fname, "r")
     lines = infile.readlines()
     infile.close()
@@ -46,7 +45,7 @@ for fname in filelist:
         
     if isEDProducer == False:
         continue
-    
+    print '***********  ' + fname + '  *************' 
     b_declared=[]
     b_put = []
     fileIsGood = True
@@ -78,11 +77,15 @@ for fname in filelist:
         if lines[line].find(".put(") == -1:
             continue;
         temp = lines[line].replace(' ','')
+        varname = (((temp.split("put("))[1]).split(",\""))[0].replace('_','')
         if temp.startswith('//'): #commented out lines
             continue
         blah = lines[line].split('\"')
         if len(blah) > 1:
             b_put.append(blah[1])
+            if varname.find(blah[1]) == -1:
+                print "Wrong put? BranchName is: " + blah[1] + ", variable name is: " + varname
+        
     
 
     for branch in range(0, len(b_declared)):
