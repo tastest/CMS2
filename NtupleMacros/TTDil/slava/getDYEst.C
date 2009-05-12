@@ -124,8 +124,6 @@ pair<Double_t, Double_t> getkFromAll(TString fname, int nJets, TString hyp_type)
   TList *l_keys = f->GetListOfKeys();
   for(int i = 0; i< l_keys->GetSize(); i++) {
     TString histoName(l_keys->At(i)->GetName());
-    if(histoName.Contains("WQQ")) continue;
-    if(histoName.Contains("wz")) continue;
     if(histoName.EndsWith("ee") && histoName.Contains("hnJetinZwindow"))
       vhistos_ee.push_back((TH1F*)f->Get(histoName.Data()));
     if(histoName.EndsWith("mm") && histoName.Contains("hnJetinZwindow"))
@@ -227,8 +225,6 @@ pair<Double_t, Double_t> getnEMuIn(TString fname, int nJets) {
   TList *l_keys = f->GetListOfKeys();
   for(int i = 0; i< l_keys->GetSize(); i++) {
     TString histoName(l_keys->At(i)->GetName());
-    if(histoName.Contains("WQQ")) continue;
-    if(histoName.Contains("wz")) continue;
     if(histoName.EndsWith("em") && histoName.Contains("hnJetinZwindow"))
       vhistos_em.push_back((TH1F*)f->Get(histoName.Data()));
     }
@@ -261,8 +257,6 @@ pair<Double_t, Double_t> getnLLIn(TString fname, int nJets, TString hyptype) {
   TList *l_keys = f->GetListOfKeys();
   for(int i = 0; i< l_keys->GetSize(); i++) {
     TString histoName(l_keys->At(i)->GetName());
-    if(histoName.Contains("WQQ")) continue;
-    if(histoName.Contains("wz")) continue;
     if(histoName.Contains(Form("hnJetinZwindow_%s", hyptype.Data()) ) )
       vhistos.push_back((TH1F*)f->Get(histoName.Data()));
     }
