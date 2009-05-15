@@ -23,10 +23,13 @@ int ScanChain( TChain* chain, const char* outputname) {
 
   // additional branches: declaration
   TBranch *anotherBranch = 0;
-
+  TBranch *DSGBucketBranch = 0;
+  
   // additional variables to be filled into an additional branch into the new tree
   int anotherVariable;
   std::vector<int> *anotherVector = new std::vector<int>;
+
+  std::vector<int> *DSGBucketVector = new std::vector<int>;
 
   // list of files
   TObjArray *listOfFiles = chain->GetListOfFiles();
@@ -56,6 +59,9 @@ int ScanChain( TChain* chain, const char* outputname) {
       anotherBranch = newtree->Branch("anothervector",&anotherVector);
       newtree->SetAlias("another_vector","anothervector");
 
+      DSGBucketBranch = newtree->Branch("DSGBucketvector",&DSGBucketVector);
+      newtree->SetAlias("DSGBucket_vector","DSGBucketvector");
+
     }
 
     // init
@@ -70,14 +76,44 @@ int ScanChain( TChain* chain, const char* outputname) {
 	cout << "Event: " << nEventsTotal << endl;
       }
 
+      //      if(nEventsTotal > 1000) continue;
+
       // reset additional variables
       anotherVariable = 0;
       anotherVector->clear();
 
+      DSGBucketVector->clear();
+
+      // VERSION 0
+      // inital DSGBucket definition for first strawman table
+      //                     |njet<=1 | 2<=njet<=4 | njet>=5      |
+      //=====================|========|============|==============|=
+      //         ss + (of/sf)|   11   |     12     |      13      |
+      //---------------------|--------|------------|--------------|-
+      //         ss - (of/sf)|   21   |     22     |      23      |
+      //---------------------|--------|------------|--------------|-
+      //         os of       |   31   |     32     |      33      |
+      //---------------------|--------|------------|--------------|-
+      //         os sf       |   41   |     42     |      43      |
+      //---------------------|--------|------------|--------------|-
+
+      // VERSION 1- chosen
+      // inital DSGBucket definition for first strawman table
+      //                     |njet<=1 | 2<=njet<=4 | njet>=5      |
+      //=====================|========|============|==============|=
+      //         ss+ (of/sf) |   1    |      2     |       3      |
+      //---------------------|--------|------------|--------------|-
+      //         ss- (of/sf) |   4    |      5     |       6      |
+      //---------------------|--------|------------|--------------|-
+      //         os of       |   7    |      8     |       9      |
+      //---------------------|--------|------------|--------------|-
+      //         os sf       |   10   |     11     |      12      |
+      //---------------------|--------|------------|--------------|-
+      
       cms2.GetEntry(event);
       cms2.LoadAllBranches();
 
-      // cut on njets >= 4
+      // cut on njets >= 4 - placeholder for skim TCut here!
       if ( evt_njets() < 4 ) continue;
 
       // fill additional variables
@@ -86,6 +122,63 @@ int ScanChain( TChain* chain, const char* outputname) {
       anotherVector->push_back(evt_njets()-3);
       anotherVector->push_back(evt_njets()-2);
       anotherVector->push_back(evt_njets()-1);
+
+      // loop the hypothesis, save a DSG bucket for each hyp
+      for (unsigned int i_hyp = 0, nHyps = hyp_type().size(); i_hyp < nHyps; ++i_hyp ) {
+        //dertermine DSGBucket
+        bool sameFlavour     = false;
+        bool sameSignPlus    = false;
+        bool sameSignMinus   = false;
+        bool oppSign         = false;
+
+        if( hyp_lt_id()[i_hyp] > 0 && hyp_ll_id()[i_hyp] > 0 ) {
+          sameSignPlus  = true;
+          sameSignMinus = false;
+          oppSign       = false;
+        }
+        else if( hyp_lt_id()[i_hyp] < 0 && hyp_ll_id()[i_hyp] < 0 ) {
+          sameSignPlus  = false;
+          sameSignMinus = true;
+          oppSign       = false;
+        }
+        else {
+          sameSignPlus  = false;
+          sameSignMinus = false;
+          oppSign       = true;
+        }
+        
+       if( 
+          ( TMath::Abs(hyp_lt_id()[i_hyp]) == 13 && TMath::Abs(hyp_ll_id()[i_hyp] ) == 13 )  ||
+          ( TMath::Abs(hyp_lt_id()[i_hyp]) == 11 && TMath::Abs(hyp_ll_id()[i_hyp] ) == 11 )  
+          ) {
+         sameFlavour = true;
+       }
+       else {
+         sameFlavour = false;
+       }
+
+       // these cuts need to be read from TCuts file!
+        if( sameSignPlus && evt_njets()<=1 )                                             DSGBucketVector->push_back(1);
+        else if( sameSignPlus && evt_njets()>=2 && evt_njets()<=4 )                      DSGBucketVector->push_back(2);
+        else if( sameSignPlus && evt_njets()>=5 )                                        DSGBucketVector->push_back(3);
+                                                                                         
+        else if( sameSignMinus && evt_njets()<=1 )                                       DSGBucketVector->push_back(4);
+        else if( sameSignMinus && evt_njets()>=2 && evt_njets()<=4 )                     DSGBucketVector->push_back(5);
+        else if( sameSignMinus && evt_njets()>=5 )                                       DSGBucketVector->push_back(6);
+
+        else if( oppSign && !sameFlavour && evt_njets()<=1 )                             DSGBucketVector->push_back(7);
+        else if( oppSign && !sameFlavour && evt_njets()>=2 && evt_njets()<=4 )           DSGBucketVector->push_back(8);
+        else if( oppSign && !sameFlavour && evt_njets()>=5 )                             DSGBucketVector->push_back(9);
+
+        else if( oppSign && sameFlavour && evt_njets()<=1 )                              DSGBucketVector->push_back(10);
+        else if( oppSign && sameFlavour && evt_njets()>=2 && evt_njets()<=4 )            DSGBucketVector->push_back(11);
+        else if( oppSign && sameFlavour && evt_njets()>=5 )                              DSGBucketVector->push_back(12);
+
+        else { // fallback, should never happen!
+          std::cout<<"ALARM! unknown bucket in DSGSkim - check!"<<std::endl;
+          DSGBucketVector->push_back(-999);
+        }
+      } // end hypothesis loop
 
       // fill the new tree
       newtree->Fill();
