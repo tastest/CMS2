@@ -1,0 +1,11 @@
+#cvs co -r V01-07-02      CondFormats/JetMETObjects
+# take the 2_2_10 default for the above...
+cvs co -r V05-13-02      DataFormats/HepMCCandidate   
+cvs co -r V00-06-02-09   DataFormats/METReco            
+cvs co -r V07-02-12-03   DataFormats/MuonReco         
+cvs co -r VB04-00-02-04  JetMETCorrections/Type1MET 
+cvs co -r V09-30-03      PhysicsTools/HepMCCandAlgos 
+cvs co -r V00-04-02-17   RecoMET/Configuration        
+cvs co -r V02-05-00-21   RecoMET/METAlgorithms       
+cvs co -r V02-08-02-17   RecoMET/METProducers
+
