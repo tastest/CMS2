@@ -128,7 +128,7 @@ int ScanChain( TChain* chain, const char* outputname) {
 
         // Do not use any hyp that does not fulfill the met1 criterion:
         const TVector3 trkCorr = correctMETforTracks();
-        if( met1(i_hyp, trkCorr) ) continue;
+        if( met1(i_hyp, trkCorr) < 175 ) continue; // met1() cut - use prperly from CORE...
 
         //dertermine DSGBucket
         bool sameFlavour     = false;
