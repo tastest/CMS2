@@ -114,7 +114,7 @@ int ScanChain( TChain* chain, const char* outputname) {
       cms2.LoadAllBranches();
 
       // cut on njets >= 4 - placeholder for skim TCut here!
-      if ( evt_njets() < 4 ) continue;
+      //      if ( evt_njets() < 4 ) continue;
 
       // fill additional variables
       anotherVariable = evt_njets()-2;
@@ -125,6 +125,11 @@ int ScanChain( TChain* chain, const char* outputname) {
 
       // loop the hypothesis, save a DSG bucket for each hyp
       for (unsigned int i_hyp = 0, nHyps = hyp_type().size(); i_hyp < nHyps; ++i_hyp ) {
+
+        // Do not use any hyp that does not fulfill the met1 criterion:
+        const TVector3 trkCorr = correctMETforTracks();
+        if( met1(i_hyp, trkCorr) ) continue;
+
         //dertermine DSGBucket
         bool sameFlavour     = false;
         bool sameSignPlus    = false;
