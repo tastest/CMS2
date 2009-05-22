@@ -1478,7 +1478,7 @@ bool passMetVJets09(float value, bool useTcMet) {
 
 int numberOfExtraMuonsVJets09(int i_hyp){
   unsigned int nMuons = 0;
-  for (int imu=0; imu < cms2.mus_p4().size(); imu++) {
+  for (int imu=0; imu < int(cms2.mus_p4().size()); imu++) {
     // quality cuts
     if ( cms2.mus_p4()[imu].pt() < 20 ) continue;
     if ( fabs(cms2.mus_p4()[imu].eta()) >  2.1 ) continue;
@@ -1499,7 +1499,7 @@ int numberOfExtraMuonsVJets09(int i_hyp){
 
 int numberOfExtraElectronsVJets09(int i_hyp){
   unsigned int nElec = 0;
-  for (int iel=0; iel < cms2.els_p4().size(); iel++) {
+  for (int iel=0; iel < int(cms2.els_p4().size()); iel++) {
     // quality cuts
     if ( cms2.els_p4()[iel].pt() < 20 ) continue;
     if ( fabs(cms2.els_p4()[iel].eta()) >  2.5 ) continue;
@@ -1585,7 +1585,7 @@ bool GoodSusyLeptonID(int id, int index){
 bool GoodSusyTrigger(int dilType){
   bool hlt_ele15_lw_l1r = cms2.passHLTTrigger("HLT_Ele15_SW_L1R");
   bool hltMu9           = cms2.passHLTTrigger("HLT_Mu9");
-  bool hltdiMu3         = cms2.passHLTTrigger("HLT_DoubleMu3");
+  // bool hltdiMu3         = cms2.passHLTTrigger("HLT_DoubleMu3");
   //  bool hltdiEle10       = cms2.passHLTTrigger("HLT_DoubleEle10_SWL1R");
   // bool hltdiEle10       = cms2.passHLTTrigger("HLT_DoubleEle5_SW_L1R");
 
@@ -1598,7 +1598,7 @@ bool GoodSusyTrigger(int dilType){
 
 int numberOfExtraElectronsSUSY(int i_hyp){ 
   unsigned int nElec = 0; 
-  for (int iel=0; iel < cms2.els_p4().size(); iel++) { 
+  for (int iel=0; iel < int(cms2.els_p4().size()); iel++) { 
     if ( cms2.els_p4()[iel].pt() < 10 ) continue; 
     if (! GoodSusyElectronWithoutIsolation(iel)) continue; 
     if (! GoodSusyElectronWithIsolation(iel, true)) continue;
@@ -1611,7 +1611,7 @@ int numberOfExtraElectronsSUSY(int i_hyp){
 
 int numberOfExtraMuonsSUSY(int i_hyp){ 
   unsigned int nMuons = 0; 
-  for (int imu=0; imu < cms2.mus_p4().size(); imu++) { 
+  for (int imu=0; imu < int(cms2.mus_p4().size()); imu++) { 
     if ( cms2.mus_p4()[imu].pt() < 10 ) continue; 
     if (!GoodSusyMuonWithoutIsolation(imu)) continue;
     if (!GoodSusyMuonWithIsolation(imu)) continue; 
