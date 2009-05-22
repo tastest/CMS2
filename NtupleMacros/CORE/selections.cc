@@ -1658,11 +1658,11 @@ bool additionalZvetoTTDil08() {
   bool veto=false;
 
   // first, look for Z->mumu
-  for (uint i=0; i<cms2.mus_p4().size(); i++) {
+  for (unsigned int i=0; i<cms2.mus_p4().size(); i++) {
     if (cms2.mus_p4().at(i).pt() < 20.)     continue;
     if (!looseMuonSelectionNoIsoTTDil08(i)) continue;
 
-    for (uint j=i+1; j<cms2.mus_p4().size(); j++) {
+    for (unsigned int j=i+1; j<cms2.mus_p4().size(); j++) {
       if (cms2.mus_p4().at(j).pt() < 20.) continue;
       if (!looseMuonSelectionNoIsoTTDil08(j)) continue;
 
@@ -1680,11 +1680,11 @@ bool additionalZvetoTTDil08() {
   }
 
   // now, look for Z->ee
-  for (uint i=0; i<cms2.evt_nels(); i++) {
+  for (unsigned int i=0; i<cms2.evt_nels(); i++) {
     if (cms2.els_p4().at(i).pt() < 20.)     continue;
     if (!looseElectronSelectionNoIsoTTDil08(i)) continue;
 
-    for (uint j=i+1; j<cms2.evt_nels(); j++) {
+    for (unsigned int j=i+1; j<cms2.evt_nels(); j++) {
       if (cms2.els_p4().at(j).pt() < 20.) continue;
       if (!looseElectronSelectionNoIsoTTDil08(j)) continue;
 
@@ -1737,7 +1737,7 @@ bool haveExtraMuon5(int hypIdx){
   }
 
   int nEvtMus = 0;
-  for (uint iMu = 0; iMu < cms2.mus_p4().size(); ++iMu){
+  for (unsigned int iMu = 0; iMu < cms2.mus_p4().size(); ++iMu){
     if (cms2.mus_p4().at(iMu).pt() > minPtCut) nEvtMus++;
   }
   result = (nEvtMus - nHMus) > 0;
@@ -1802,8 +1802,8 @@ int genpCountPDGId(int id0, int id1, int id2){
 int genpDileptonType(){
   //0 mumu; 1 emu; 2 ee
   
-  uint nmus = 0;
-  uint nels = 0;
+  unsigned int nmus = 0;
+  unsigned int nels = 0;
   int size = cms2.genps_id().size();
   for (int jj=0; jj<size; jj++) {
     if (abs(cms2.genps_id().at(jj)) == 11) nels++;
