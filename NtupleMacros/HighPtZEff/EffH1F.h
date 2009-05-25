@@ -16,7 +16,7 @@ public:
   EffH1F( char* name, char* title, Int_t nbinsx, Double_t xlow, Double_t xup);
   ~EffH1F ( );
 
-  void MakeEff(const Float_t n = 500);
+  void MakeEff(const double ymin = 0.7, const bool rebin = false, const Float_t n = 500);
 
   //data members  
   TH1F* numer;

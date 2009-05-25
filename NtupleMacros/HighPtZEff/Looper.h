@@ -111,33 +111,38 @@ const static cuts_t baseline_cuts =
      (CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT)	);   
 */
 
-const static cuts_t el_base =
-( CUT_BIT(CUT_OPP_SIGN) ) |
-( CUT_BIT(CUT_ETA24) ) |
-( CUT_BIT(CUT_PT20) ) |
-( CUT_BIT(CUT_IN_Z_WINDOW) ) |
-( CUT_BIT(CUT_MC_EL) ) |
-( CUT_BIT(CUT_MC3_EL) ) |
-( CUT_BIT(CUT_EL_GOOD) ) |
-( CUT_BIT(CUT_EL_ISO) ) ;
+//const static cuts_t el_base =
+//( CUT_BIT(CUT_OPP_SIGN) ) |
+//( CUT_BIT(CUT_ETA24) ) |
+//( CUT_BIT(CUT_PT20) ) |
+//( CUT_BIT(CUT_IN_Z_WINDOW) ) |
+//( CUT_BIT(CUT_MC_EL) ) |
+//( CUT_BIT(CUT_MC3_EL) ) |
+//( CUT_BIT(CUT_EL_GOOD) ) |
+//( CUT_BIT(CUT_EL_ISO) ) ;
 
-const static cuts_t mu_base =
-( CUT_BIT(CUT_OPP_SIGN) ) |
+//const static cuts_t mu_base =
+//( CUT_BIT(CUT_OPP_SIGN) ) |
+//( CUT_BIT(CUT_ETA24) ) |
+//( CUT_BIT(CUT_PT20) ) |
+//( CUT_BIT(CUT_IN_Z_WINDOW) ) |
+//( CUT_BIT(CUT_MC_MU) ) |
+//( CUT_BIT(CUT_MC3_MU) ) |
+//( CUT_BIT(CUT_MU_GOOD) ) |
+//( CUT_BIT(CUT_MU_ISO) ) ;
+
+const static cuts_t stat1cuts =
 ( CUT_BIT(CUT_ETA24) ) |
 ( CUT_BIT(CUT_PT20) ) |
-( CUT_BIT(CUT_IN_Z_WINDOW) ) |
-( CUT_BIT(CUT_MC_MU) ) |
-( CUT_BIT(CUT_MC3_MU) ) |
-( CUT_BIT(CUT_MU_GOOD) ) |
-( CUT_BIT(CUT_MU_ISO) ) ;
+( CUT_BIT(CUT_IN_Z_WINDOW) ) ;
 
 //ISO CUTS
 const static cuts_t els_iso_denom =
-( CUT_BIT(CUT_OPP_SIGN) ) |
-( CUT_BIT(CUT_ETA24) ) |
-( CUT_BIT(CUT_PT20) ) |
-( CUT_BIT(CUT_IN_Z_WINDOW) ) |
-( CUT_BIT(CUT_MC_EL) ) |
+//( CUT_BIT(CUT_OPP_SIGN) ) |
+//( CUT_BIT(CUT_ETA24) ) |
+//( CUT_BIT(CUT_PT20) ) |
+//( CUT_BIT(CUT_IN_Z_WINDOW) ) |
+//( CUT_BIT(CUT_MC_EL) ) |
 ( CUT_BIT(CUT_EL_GOOD) );
 
 //const static cuts_t els_iso3_denom =
@@ -171,27 +176,28 @@ const static cuts_t mus_iso_numer = mus_iso_denom | CUT_BIT(CUT_MU_ISO);
 //const static cuts_t mus_iso3_numer = mus_iso3_denom | CUT_BIT(CUT_MU3_ISO);
 
 //RECO CUTS
-const static cuts_t els_reco_denom =
-( CUT_BIT(CUT_ETA24) ) |
-( CUT_BIT(CUT_PT20) ) |
-( CUT_BIT(CUT_IN_Z_WINDOW) );
-
-const static cuts_t els_reco_numer = els_reco_denom | CUT_BIT(CUT_MC_EL) ;
-
-const static cuts_t els_reco3_denom = els_reco_denom;
-
-const static cuts_t els_reco3_numer = els_reco3_denom | CUT_BIT(CUT_MC3_EL);
-
-const static cuts_t mus_reco_denom =
-( CUT_BIT(CUT_ETA24) ) |
-( CUT_BIT(CUT_PT20) ) |
-( CUT_BIT(CUT_IN_Z_WINDOW) ) ;
-
-const static cuts_t mus_reco_numer = mus_reco_denom | CUT_BIT(CUT_MC_MU);
-
-const static cuts_t mus_reco3_denom = mus_reco_denom;
-
-const static cuts_t mus_reco3_numer = mus_reco3_denom | CUT_BIT(CUT_MC3_MU);
+//no need b'c it's just the stat1 plus dr match
+//const static cuts_t els_reco_denom =
+//( CUT_BIT(CUT_ETA24) ) |
+//( CUT_BIT(CUT_PT20) ) |
+//( CUT_BIT(CUT_IN_Z_WINDOW) );
+//
+//const static cuts_t els_reco_numer = els_reco_denom | CUT_BIT(CUT_MC_EL) ;
+//
+//const static cuts_t els_reco3_denom = els_reco_denom;
+//
+//const static cuts_t els_reco3_numer = els_reco3_denom | CUT_BIT(CUT_MC3_EL);
+//
+//const static cuts_t mus_reco_denom =
+//( CUT_BIT(CUT_ETA24) ) |
+//( CUT_BIT(CUT_PT20) ) |
+//( CUT_BIT(CUT_IN_Z_WINDOW) ) ;
+//
+//const static cuts_t mus_reco_numer = mus_reco_denom | CUT_BIT(CUT_MC_MU);
+//
+//const static cuts_t mus_reco3_denom = mus_reco_denom;
+//
+//const static cuts_t mus_reco3_numer = mus_reco3_denom | CUT_BIT(CUT_MC3_MU);
 
 
 struct counts {
@@ -199,6 +205,7 @@ struct counts {
   double denom; //all denominator events
   double numer; //all numerator events
   double geneta; //num evts which don't have 2 leptons in eta 2.5
+  double gencuts; //num evts which fail the gen cut
   double opp_sign; //num which fail numerator because of this
   double same_flv;
   double pt20; //ie, this is num events which aren't in numerator b'c of pt cut
@@ -206,14 +213,16 @@ struct counts {
   double bad_mom; //mc_motherid != 23
   double no_match_z; // (num leptons with mc_motherid == 23) != 2
   double multihyp; //evt has more that two pairs of leptons passing denom
+
+  //void fill //not sure about this: don't want a separate fill for each data member, but passing in a data member is dumb?
 };
 
 //this struct is so i can store cut bits and indexes of all combinations of leptons in an event
-struct event_cuts {
-  vector<cuts_t> cuts;
-  vector<int> idx1;
-  vector<int> idx2;
-};
+//struct event_cuts {
+//  vector<cuts_t> cuts;
+//  vector<int> idx1;
+//  vector<int> idx2;
+//};
 
 //----------------------------------------------------------------------
 // Loopers 
@@ -248,13 +257,13 @@ protected:
   // TrilepSelect() and QuadlepSelect() that check which cuts the
   // event, dilepton/trilepton/quadlepton candidate passes
   virtual cuts_t LepSelect(int i, int flv); //flv=0 for el, =1 for mu
-  virtual void PairSelect( int flv );
+  //virtual void PairSelect( int flv );
   virtual cuts_t Stat1Select(vector<int>);
   virtual cuts_t EventSelect();
-  virtual cuts_t CutCount(cuts_t, cuts_t, cuts_t, int);
+  //virtual cuts_t CutCount(cuts_t, cuts_t, cuts_t, int);
 
   virtual void FillEventHistos();
-  virtual void FillStat1Histos( int , vector<int>, vector<int> ); 
+  //virtual void FillStat1Histos( int , vector<int>, vector<int> ); 
   //virtual void FillStat1Histos();
   virtual void End		();
 
@@ -266,59 +275,59 @@ public:
 
 protected:
 
-  TH1F* hgen_z_mass;
-  TH1F* hgen_z_p;
-  TH1F* hgen_z_pt;
-  TH1F* hgen_z_eta;
+  //TH1F* hgen_z_mass;
+  //TH1F* hgen_z_p;
+  //TH1F* hgen_z_pt;
+  //TH1F* hgen_z_eta;
   //TH1F* hgen3lep_z_mass; //status 3 just z
   //const unsigned int nlepplots = 2;
-#define nlepplots 2
-  TH1F* hgen1_z_eta;
-  TH1F* hgen1_lep_mass;
-  TH1F* hgen1_lep_pt[nlepplots];
-  TH1F* hgen3_lep_pt[nlepplots];
-  TH1F* hgen1_lep_eta[nlepplots];
-  
-  TH1F* hels_size;
-  TH1F* hmus_size;
-  TH1F* hmus_type;
-
-  TH1F* hels_iso;
-  TH1F* hels_chg;
+  //#define nlepplots 2
+  //TH1F* hgen1_z_eta;
+  //TH1F* hgen1_lep_mass;
+  //TH1F* hgen1_lep_pt[nlepplots];
+  //TH1F* hgen3_lep_pt[nlepplots];
+  //TH1F* hgen1_lep_eta[nlepplots];
+  //
+  //TH1F* hels_size;
+  //TH1F* hmus_size;
+  //TH1F* hmus_type;
+  //
+  //TH1F* hels_iso;
+  //TH1F* hels_chg;
   //TH1F* hmus_iso;
+  TH1F* hels_dr_recostat1[2]; //one for each lepton from Z
   
   EffH1F* eff_p_iso;
   EffH1F* eff_pt_iso;
   EffH1F* eff_p_reco;
   EffH1F* eff_pt_reco;
-  EffH1F* eff_p_reco3;
-  EffH1F* eff_pt_reco3;
-  EffH1F* eff_e1p_reco3; //eff as fn of leading e p
-  EffH1F* eff_e2p_reco3; // as fn of second
-  EffH1F* eff_e1pt_reco3; //pt 1,2
-  EffH1F* eff_e2pt_reco3;
 
-  EffH2F* eff_p_eta_reco3;
-  EffH2F* eff_pt_eta_reco3;
+  EffH1F* eff_e1p_reco; //eff as fn of leading e p
+  EffH1F* eff_e2p_reco; // as fn of second
+  EffH1F* eff_e1pt_reco; //pt 1,2
+  EffH1F* eff_e2pt_reco;
 
-#define netabins 3
-  EffH1F* eff_p_bineta_reco3[netabins];
-  EffH1F* eff_pt_bineta_reco3[netabins];
+  //EffH2F* eff_p_eta_reco3;
+  //EffH2F* eff_pt_eta_reco3;
+  //
+  //#define netabins 3
+  //EffH1F* eff_p_bineta_reco3[netabins];
+  //EffH1F* eff_pt_bineta_reco3[netabins];
   
   //jet EffH's
-  EffH1F* eff_njets_reco3;
-  EffH1F* eff_jetEt_reco3;
-  EffH2F* eff_pt_njets_reco3;
-  EffH2F* eff_pt_jetEt_reco3;
+  //EffH1F* eff_njets_reco3;
+  //EffH1F* eff_jetEt_reco3;
+  //EffH2F* eff_pt_njets_reco3;
+  //EffH2F* eff_pt_jetEt_reco3;
 
 protected:
   bool useweight;
 
-  event_cuts evt_cuts[2]; //struct defined above, one for e, mu
+  //event_cuts evt_cuts[2]; //struct defined above, one for e, mu
 #define lepeffs 2
   int elsidx[lepeffs]; //idx of passing numerator, denominator--REUSE for different cuts!!! 
 
-#define ncounts 3  //should be n cuts (not counting e,mu diffs)
+#define ncounts 1  //should be n cuts (not counting e,mu diffs)
   counts count[ncounts]; //my struct, declared above Looper
   double weight;
   int denomitr; 
