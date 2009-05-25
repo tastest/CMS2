@@ -2136,3 +2136,11 @@ double dRBetweenVectors(LorentzVector v1, LorentzVector v2) {
     if (dphi > TMath::Pi()) dphi = TMath::TwoPi() - dphi;
     return sqrt(deta*deta+dphi*dphi);
 }
+
+bool conversionElectron(int electron) {
+  // true if electron is a conversion electron
+  if( fabs(cms2.els_conv_dist()[electron]) < 0.02 && fabs(cms2.els_conv_dcot()[electron]) < 0.02)
+    return true;
+
+  return false;
+}
