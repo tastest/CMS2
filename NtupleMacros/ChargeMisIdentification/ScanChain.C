@@ -128,7 +128,125 @@ int ScanChain( TChain* chain) {
 						     "Track ID",
 						     "Electrons");
 
+  TH1F *els_nValidPixelHits_corCharge	= book1DHist("els_nValidPixelHits_corCharge", 
+						     "Number of valid pixel hits, correct electron charge",
+						     8,
+						     0.,
+						     8.,
+						     "# valid pixel hits",
+						     "Electrons");
+  TH1F *els_nValidPixelHits_incorCharge	= book1DHist("els_nValidPixelHits_incorCharge", 
+						     "Number of valid pixel hits, incorrect electron charge",
+						     8,
+						     0.,
+						     8.,
+						     "# valid pixel hits",
+						     "Electrons");
+  TH1F *els_nValidPixelHits_corCharge_forward	= book1DHist("els_nValidPixelHits_corCharge_forward", 
+						     "Number of valid pixel hits, correct electron charge, forward",
+						     8,
+						     0.,
+						     8.,
+						     "# valid pixel hits",
+						     "Electrons");
+  TH1F *els_nValidPixelHits_incorCharge_forward	= book1DHist("els_nValidPixelHits_incorCharge_forward", 
+						     "Number of valid pixel hits, incorrect electron charge, forward",
+						     8,
+						     0.,
+						     8.,
+						     "# valid pixel hits",
+						     "Electrons");
 
+  TH1F *els_nValidPixelHits_corCharge_barrel	= book1DHist("els_nValidPixelHits_corCharge_barrel", 
+						     "Number of valid pixel hits, correct electron charge, barrel",
+						     8,
+						     0.,
+						     8.,
+						     "# valid pixel hits",
+						     "Electrons");
+  TH1F *els_nValidPixelHits_incorCharge_barrel	= book1DHist("els_nValidPixelHits_incorCharge_barrel", 
+						     "Number of valid pixel hits, incorrect electron charge, barrel",
+						     8,
+						     0.,
+						     8.,
+						     "# valid pixel hits",
+						     "Electrons");
+
+  TH1F *els_layerFirstPixelHit_corCharge	= book1DHist("els_layerFirstPixelHit_corCharge", 
+						     "layer of first valid pixel hit, correct electron charge",
+						     8,
+						     0.,
+						     8.,
+						     "layer",
+						     "Electrons");
+  TH1F *els_layerFirstPixelHit_incorCharge	= book1DHist("els_layerFirstPixelHit_incorCharge", 
+						     "layer of first valid pixel hit, incorrect electron charge",
+						     8,
+						     0.,
+						     8.,
+						     "layer",
+						     "Electrons");
+  TH1F *els_layerFirstPixelHit_corCharge_forward	= book1DHist("els_layerFirstPixelHit_corCharge_forward", 
+						     "layer of first valid pixel hit, correct electron charge, forward",
+						     8,
+						     0.,
+						     8.,
+						     "layer",
+						     "Electrons");
+  TH1F *els_layerFirstPixelHit_incorCharge_forward	= book1DHist("els_layerFirstPixelHit_incorCharge_forward", 
+						     "layer of first valid pixel hit, incorrect electron charge, forward",
+						     8,
+						     0.,
+						     8.,
+						     "layer",
+						     "Electrons");
+
+  TH1F *els_layerFirstPixelHit_corCharge_barrel	= book1DHist("els_layerFirstPixelHit_corCharge_barrel", 
+						     "layer of first valid pixel hit, correct electron charge, barrel",
+						     8,
+						     0.,
+						     8.,
+						     "layer",
+						     "Electrons");
+  TH1F *els_layerFirstPixelHit_incorCharge_barrel	= book1DHist("els_layerFirstPixelHit_incorCharge_barrel", 
+						     "layer of first valid pixel hit, incorrect electron charge, barrel",
+						     8,
+						     0.,
+						     8.,
+						     "layer",
+						     "Electrons");
+
+  TH1F *els_chargeFirstPixelHit_corCharge	= book1DHist("els_chargeFirstPixelHit_corCharge", 
+							     "Charge of first valid pixel hit, correct electron charge",
+							     200,0.,200000.,
+						     "charge",
+						     "Electrons");
+  TH1F *els_chargeFirstPixelHit_incorCharge	= book1DHist("els_chargeFirstPixelHit_incorCharge", 
+						     "Charge of first valid pixel hit, incorrect electron charge",
+							     200,0.,200000.,
+						     "charge",
+						     "Electrons");
+  TH1F *els_chargeFirstPixelHit_corCharge_forward	= book1DHist("els_chargeFirstPixelHit_corCharge_forward", 
+						     "Charge of first valid pixel hit, correct electron charge, forward",
+								     200,0.,200000.,
+						     "charge",
+						     "Electrons");
+  TH1F *els_chargeFirstPixelHit_incorCharge_forward	= book1DHist("els_chargeFirstPixelHit_incorCharge_forward", 
+						     "Charge of first valid pixel hit, incorrect electron charge, forward",
+								     200,0.,200000.,
+						     "charge",
+						     "Electrons");
+
+  TH1F *els_chargeFirstPixelHit_corCharge_barrel	= book1DHist("els_chargeFirstPixelHit_corCharge_barrel", 
+						     "Charge of first valid pixel hit, correct electron charge, barrel",
+								     200,0.,200000.,
+						     "charge",
+						     "Electrons");
+  TH1F *els_chargeFirstPixelHit_incorCharge_barrel	= book1DHist("els_chargeFirstPixelHit_incorCharge_barrel", 
+						     "Charge of first valid pixel hit, incorrect electron charge, barrel",
+								     200,0.,200000.,
+						     "charge",
+						     "Electrons");
 
   // file loop
   TIter fileIter(listOfFiles);
@@ -179,19 +297,25 @@ int ScanChain( TChain* chain) {
 	// check how many electrons don't have an associated track
 	els_trkId->Fill(els_trkidx().at(els));
 
-	// filter out all electrons which don't have an associated track
-	// if ( els_trkidx().at(els) < 0 ) continue;
+	// tmp charge variable
+	double charge = els_charge().at(els);
 
-	// filter all electrons that don't agree with the charge of the associated track
-	if ( (els_trkidx().at(els) >= 0) && (els_charge().at(els) != trks_charge().at(els_trkidx().at(els))) ) continue;
-
+	// if electron has associated track and track charge is not equal to electron charge, take electron charge
+// 	int trk = els_trkidx().at(els);
+// 	if ( (trk >= 0) && (charge != trks_charge().at(trk)) ) {
+// 	  if ( (trks_validHits().at(trk) >= 11) &&
+// 	       (trks_chi2().at(trk)/trks_ndof().at(trk) < 10) &&
+// 	       (trks_trk_p4().at(trk).pt() <= 1.) ) {
+// 	    charge = trks_charge().at(trk);
+// 	  }
+// 	}
 
 	// fill reco
 	els_pt_reco->Fill(els_p4().at(els).Pt());
 	els_eta_reco->Fill(els_p4().at(els).eta());
 
 	// fill reco_corCharge
-	if ( (els_charge().at(els) == -1 && els_mc_id().at(els) == 11) || (els_charge().at(els) == 1 && els_mc_id().at(els) == -11) ) {
+	if ( (charge == -1 && els_mc_id().at(els) == 11) || (charge == 1 && els_mc_id().at(els) == -11) ) {
 	  els_pt_reco_corCharge->Fill(els_p4().at(els).Pt());
 	  els_eta_reco_corCharge->Fill(els_p4().at(els).eta());
 	}
@@ -204,13 +328,37 @@ int ScanChain( TChain* chain) {
 	els_eta_recosim->Fill(els_mc_p4().at(els).eta());
 
 	// correct charge identified
-	if ( (els_charge().at(els) == -1 && els_mc_id().at(els) == 11) || (els_charge().at(els) == 1 && els_mc_id().at(els) == -11) ) {
+	if ( (charge == -1 && els_mc_id().at(els) == 11) || (charge == 1 && els_mc_id().at(els) == -11) ) {
 	  els_pt_recosim_corCharge->Fill(els_mc_p4().at(els).Pt());
 	  els_eta_recosim_corCharge->Fill(els_mc_p4().at(els).eta());
+	  els_nValidPixelHits_corCharge->Fill(els_valid_pixelhits().at(els));
+	  els_layerFirstPixelHit_corCharge->Fill(els_layer1_layer().at(els));
+	  els_chargeFirstPixelHit_corCharge->Fill(els_layer1_charge().at(els));
+	  if ( TMath::Abs(els_mc_p4().at(els).eta()) <= 1.479 ) {
+	    els_nValidPixelHits_corCharge_barrel->Fill(els_valid_pixelhits().at(els));
+	    els_layerFirstPixelHit_corCharge_barrel->Fill(els_layer1_layer().at(els));
+	    els_chargeFirstPixelHit_corCharge_barrel->Fill(els_layer1_charge().at(els));
+	  } else {
+	    els_nValidPixelHits_corCharge_forward->Fill(els_valid_pixelhits().at(els));
+	    els_layerFirstPixelHit_corCharge_forward->Fill(els_layer1_layer().at(els));
+	    els_chargeFirstPixelHit_corCharge_forward->Fill(els_layer1_charge().at(els));
+	  }
 	  // incorrect charge identified
 	} else {
 	  els_pt_recosim_incorCharge->Fill(els_mc_p4().at(els).Pt());
 	  els_eta_recosim_incorCharge->Fill(els_mc_p4().at(els).eta());
+	  els_nValidPixelHits_incorCharge->Fill(els_valid_pixelhits().at(els));
+	  els_layerFirstPixelHit_incorCharge->Fill(els_layer1_layer().at(els));
+	  els_chargeFirstPixelHit_incorCharge->Fill(els_layer1_charge().at(els));
+	  if ( TMath::Abs(els_mc_p4().at(els).eta()) <= 1.479 ) {
+	    els_nValidPixelHits_incorCharge_barrel->Fill(els_valid_pixelhits().at(els));
+	    els_layerFirstPixelHit_incorCharge_barrel->Fill(els_layer1_layer().at(els));
+	    els_chargeFirstPixelHit_incorCharge_barrel->Fill(els_layer1_charge().at(els));
+	  } else {
+	    els_nValidPixelHits_incorCharge_forward->Fill(els_valid_pixelhits().at(els));
+	    els_layerFirstPixelHit_incorCharge_forward->Fill(els_layer1_layer().at(els));
+	    els_chargeFirstPixelHit_incorCharge_forward->Fill(els_layer1_charge().at(els));
+	  }
 	}
 
       }

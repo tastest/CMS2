@@ -67,7 +67,7 @@
   els_eta_reco->SetMaximum(1.01);
   els_eta_reco->SetMinimum(0.);
   els_eta_reco->Draw();
-  box = new TPaveText(-1,0.3,1,0.5);
+  box = new TPaveText(-1.5,0.3,1.5,0.5);
   box->SetBorderSize(1);
   box->SetFillColor(0);
   box->InsertText(Form("reco eff barrel (|#eta| #leq 1.479): %2.1f %s",barrel_eff,"%"));
@@ -109,7 +109,7 @@
   els_eta_recosim_incorCharge->SetMaximum(0.1);
   els_eta_recosim_incorCharge->SetMinimum(0.);
   els_eta_recosim_incorCharge->Draw();
-  box = new TPaveText(-1,0.075,1,0.095);
+  box = new TPaveText(-1.5,0.075,1.5,0.095);
   box->SetBorderSize(1);
   box->SetFillColor(0);
   box->InsertText(Form("charge id ineff barrel (|#eta| #leq 1.479): %2.1f %s",barrel_eff,"%"));
