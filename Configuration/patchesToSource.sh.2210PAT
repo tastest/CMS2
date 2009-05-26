@@ -9,3 +9,8 @@ cvs co -r V00-04-02-17   RecoMET/Configuration
 cvs co -r V02-05-00-21   RecoMET/METAlgorithms       
 cvs co -r V02-08-02-17   RecoMET/METProducers
 
+cvs co -r CMSSW_2_2_10 PhysicsTools/PatAlgos/python
+#The following two files are from puneeth to patch the pat
+# this should be run while in CMSSW_2_2_10/src
+cp CMS2/Configuration/jetMETCorrections_cff.py PhysicsTools/PatAlgos/python/recoLayer0/jetMETCorrections_cff.py
+cp CMS2/Configuration/jetTools.py PhysicsTools/PatAlgos/python/tools/jetTools.py
