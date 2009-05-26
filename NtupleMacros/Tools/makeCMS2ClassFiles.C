@@ -399,28 +399,28 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
       if ( classname.Contains("vector") ) {
           classname = classname(0,classname.Length()-2);
           classname.ReplaceAll("edm::Wrapper<","");
-          headerf << "\t" << classname << " &" << aliasname << "()";
+          headerf << "\t static " << classname << " &" << aliasname << "()";
       } else {
           classname = classname(0,classname.Length()-1);
           classname.ReplaceAll("edm::Wrapper<","");
           if(classname != "" ) {
-              headerf << "\t" << classname << " &" << aliasname << "()";
+              headerf << "\t static " << classname << " &" << aliasname << "()";
           } else {
               if(title.EndsWith("/F"))
-                  headerf << "\tfloat &" << aliasname << "()";
+                  headerf << "\tstatic float &" << aliasname << "()";
               if(title.EndsWith("/I"))
-                  headerf << "\tint &" << aliasname << "()";
+                  headerf << "\tstatic int &" << aliasname << "()";
           }
       }
       headerf << " { return cms2." << aliasname << "(); }" << endl;
   }
   if(haveHLTInfo) {
       //functions to return whether or not trigger fired - HLT
-      headerf << "\t" << "bool passHLTTrigger(TString trigName) { return cms2.passHLTTrigger(trigName); }" << endl;
+      headerf << "\t" << "static bool passHLTTrigger(TString trigName) { return cms2.passHLTTrigger(trigName); }" << endl;
   }//if(haveHLTInfo) 
   if(haveL1Info) {
       //functions to return whether or not trigger fired - L1
-      headerf << "\t" << "bool passL1Trigger(TString trigName) { return cms2.passL1Trigger(trigName); }" << endl;
+      headerf << "\t" << "static bool passL1Trigger(TString trigName) { return cms2.passL1Trigger(trigName); }" << endl;
   }//if(haveL1Info)
  
 
