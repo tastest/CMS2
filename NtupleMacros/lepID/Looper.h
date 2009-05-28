@@ -65,17 +65,19 @@ protected:
 
      // variables (you choose)
      Int_t sampleId_;
+	Float_t evt_weight_;
 
      // event properties
 	Float_t z_pt_;
 	Float_t z_p_;
+	Float_t evt_tcmet_;
 
      // electron variables
      Int_t ele_count_;
      Float_t ele_pt_[MAXELE];
      Float_t ele_p_[MAXELE];
      Float_t ele_eta_[MAXELE];
-     Float_t ele_etaDet_[MAXELE];
+     //Float_t ele_etaDet_[MAXELE];
 
      Float_t ele_hOverE_[MAXELE];
      Float_t ele_dPhiIn_[MAXELE];

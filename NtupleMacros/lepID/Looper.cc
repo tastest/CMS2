@@ -30,10 +30,12 @@ void Looper::BookHistos ()
   
      // book the branches
      outTree_->Branch("sampleId", &sampleId_, "sampleId/I");
+     outTree_->Branch("evt_weight", &evt_weight_, "evt_weight/F");
 
 	// event properties
-     outTree_->Branch("z_pt", &z_pt_, "z_pt_/F");
-     outTree_->Branch("z_p", &z_p_, "z_p_/F");
+     outTree_->Branch("z_pt", &z_pt_, "z_pt/F");
+     outTree_->Branch("z_p", &z_p_, "z_p/F");
+     outTree_->Branch("evt_tcmet", &evt_tcmet_, "evt_tcmet/F");
 
 	// electron branches
      outTree_->Branch("ele_count", &ele_count_, "ele_count/I");
@@ -41,7 +43,7 @@ void Looper::BookHistos ()
      outTree_->Branch("ele_pt", &ele_pt_, "ele_pt[ele_count]/F");
      outTree_->Branch("ele_p", &ele_pt_, "ele_p[ele_count]/F");
      outTree_->Branch("ele_eta", &ele_eta_, "ele_eta[ele_count]/F");
-     outTree_->Branch("ele_etaDet", &ele_etaDet_, "ele_etaDet[ele_count]/F");
+     //outTree_->Branch("ele_etaDet", &ele_etaDet_, "ele_etaDet[ele_count]/F");
 
      outTree_->Branch("ele_hOverE", &ele_hOverE_, "ele_hOverE[ele_count]/F");
      outTree_->Branch("ele_dPhiIn", &ele_dPhiIn_, "ele_dPhiIn[ele_count]/F");
@@ -74,8 +76,9 @@ void Looper::FillEventHistos ()
      // In an event-based analysis, you would fill your histos here
      //------------------------------------------------------------
 
-	// fill the sampleId branch
+	// fill the sampleId and weight branch
 	sampleId_ = sample_.process;
+	evt_weight_ = cms2.evt_scale1fb() * sample_.kFactor;
 
 	// reset counters
 	ele_count_ = 0;
@@ -99,17 +102,19 @@ void Looper::FillEventHistos ()
 		z_pt_ = cms2.genps_p4()[zidx].Pt();
 	}
 
+	// met
+	evt_tcmet_ = cms2.evt_tcmet();
+
 	// loop on electrons
 	for (size_t i = 0; i < cms2.evt_nels(); ++i)
 	{
-		std::cout << "\t" << cms2.els_p4()[i].Pt() << std::endl;
 		if (cms2.els_p4()[i].Pt() > 5.0) 
 		{
 			// Incriment counter and add to tree
 			ele_pt_[ele_count_] = cms2.els_p4()[i].Pt();
 			ele_p_[ele_count_] = cms2.els_p4()[i].P();
 			ele_eta_[ele_count_] = cms2.els_p4()[i].Eta();
-			ele_etaDet_[ele_count_] = cms2.els_etaSC()[i];
+			//ele_etaDet_[ele_count_] = cms2.els_etaSC()[i];
 
 			ele_hOverE_[ele_count_] = cms2.els_hOverE()[i];
 			ele_sigmaIEtaIEta_[ele_count_] = cms2.els_sigmaIEtaIEta()[i];

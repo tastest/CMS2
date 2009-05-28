@@ -20,6 +20,11 @@ enum {
      LOOP_DYTT	,
      LOOP_TTBAR	,
      LOOP_TW	,
+
+	LOOP_EM20TO30,
+	LOOP_EM30TO80,
+	LOOP_EM80TO170,
+
 };
 
 // helper function used to print yield tables
@@ -75,6 +80,12 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
      const string log = name + ".log";
      // by default, we run this list of samples; if we're told by the
      // which_ones bit field to skip a sample, we skip it
+
+     Looper looper_20to30    (fQCDEMenrichedPt20to30(), cuts, log.c_str());   if (which_ones & (1 << LOOP_EM20TO30    )) looper_20to30.Loop();
+     Looper looper_30to80   (fQCDEMenrichedPt30to80(), cuts, log.c_str());   if (which_ones & (1 << LOOP_EM30TO80    )) looper_30to80.Loop();
+     Looper looper_80to170  (fQCDEMenrichedPt80to170(), cuts, log.c_str());   if (which_ones & (1 << LOOP_EM80TO170    )) looper_80to170.Loop();
+
+
      Looper looper_test           (fTest()          , cuts, log.c_str());   if (which_ones & (1 << LOOP_TEST    )) looper_test          .Loop();
      Looper looper_ww		(fWW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WW    )) looper_ww          .Loop();
      Looper looper_wz		(fWZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WZ    )) looper_wz          .Loop();
@@ -107,6 +118,8 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 // default yield table
 int Results ()
 {
-     return run<Looper>(baseline_cuts, "Results", 1 << LOOP_TEST);
+     return run<Looper>(baseline_cuts, "Results", 
+		//1 << LOOP_EM30TO80 | 1 << LOOP_EM20TO30 | 1 << LOOP_EM80TO170 | 
+		1 << LOOP_WJETS);
 }
 
