@@ -1,5 +1,5 @@
 /* 
-   This macro takes in 2 CMS2 ntuple files (they should be in the same directory),
+   This macro takes in the locations of 2 CMS2 ntuple files 
    and ouputs a macro, called compareFiles.C. The outputed macro will do a tree Draw
    for each branch in common to the two trees and will then subtract the 2 distributions.
    If there are distributions that are not the same, the subtracted histogram will have 
@@ -134,6 +134,8 @@ void makeValidationMacro(TString f1, TString f2) {
     
     TString suffix1 = f1.ReplaceAll(".root", "");
     TString suffix2 = f2.ReplaceAll(".root", "");
+    suffix1 = suffix1.Tokenize("/")->Last()->GetName();
+    suffix2 = suffix2.Tokenize("/")->Last()->GetName();
     
     TString histoname1 = "h_" + branch + "_" + suffix1;
     TString histoname2 = "h_" + branch + "_" + suffix2;
