@@ -24,6 +24,17 @@ bool filterByProcess (enum Process sample)
 
 static const std::string prefix = (getenv("CMS2_NTUPLE_LOCATION") != 0) ? 
      std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" : "/data/tmp/";
+
+// New test file
+Sample fTest ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = "/home/dlevans/eleID/CMSSW_2_2_10/src/CMS2/NtupleMaker/test/postprocessed_ntuple.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, TEST, kRed, 1, "test", true, 0. };
+     return ret;
+}
+
      
 //WW file
 Sample fWW ()
@@ -70,6 +81,16 @@ Sample fWjets ()
 {
      TChain *c = new TChain("Events");
      std::string sample = prefix + "cms2-V01-02-06/WJets-madgraph_Fall08_IDEAL_V9_v1/merged_ntuple*.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, Wjets, 40, 1, "wjets", true, 0. };
+     return ret;
+}
+
+//Wjets file (single lepton filter)
+Sample fWjetsSingle ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "cms2-V01-02-06/WJets-madgraph_Fall08_IDEAL_V9_v1_Single-lepton/merged_ntuple*.root";
      c->Add(sample.c_str());
      Sample ret = { c, Wjets, 40, 1, "wjets", true, 0. };
      return ret;
