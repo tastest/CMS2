@@ -34,8 +34,6 @@ ofstream headerf;
 ofstream codef;
 ofstream branchfile;
 
-//void makeHeaderFile(TFile *f, bool paranoid, string Classname, 
-//		    std::string branchNamesFile) {
 void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
 	
   
@@ -111,8 +109,6 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
   
   headerf << "public: " << endl;
   headerf << "int ScanChain(class TChain* chain, int nEvents=-1);" << endl;
-  // if(branchNamesFile!="") 
-//     headerf << "void InitSkimmedTree();" << endl;
   headerf << "void Init(TTree *tree) {" << endl;
     
 
@@ -423,59 +419,13 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
       headerf << "\t" << "static bool passL1Trigger(TString trigName) { return cms2.passL1Trigger(trigName); }" << endl;
   }//if(haveL1Info)
  
-
-//   if(branchNamesFile!="") {
-//     ifstream branchesF(branchNamesFile.c_str());
-//     std::vector<TString> v_branches;
-//     while(!branchesF.eof()) {
-//       string temp;
-//       getline(branchesF, temp);
-//       v_branches.push_back(temp);
-//     }
-//     branchesF.close();
-
-//     //now declare the names of the variables
-//     headerf << "//Private vars to be put into the ntuple" << endl;
-//     //headerf << 
-//     for(vector<TString>::const_iterator v_it = v_branches.begin();
-// 	v_it != v_branches.end(); v_it++) {
-      
-//       TBranch *branch = ev->GetBranch(ev->GetAlias((*v_it).Data()));
-//       if(branch==NULL)
-// 	continue;
-//       TString classname   = branch->GetClassName();
-//       TString branchtitle = branch->GetTitle();
-//       classname = classname(0,classname.Length()-1);
-//       classname.ReplaceAll("edm::Wrapper<","");
-//       if((*v_it).Contains("hyp_")) {
-// 	classname.ReplaceAll("std::", "");//paranoia
-// 	classname.ReplaceAll("vector<", "");
-// 	classname = classname(0,classname.Length()-1);
-//       }
-//       TString title     = branch->GetTitle();
-//       if(classname.Contains("vector") || classname.Contains("LoretzVector") )
-// 	headerf << "\t" << classname << " *" << TString(*v_it).ReplaceAll("_", "") + "_;" << endl;
-//       else if(branchtitle.EndsWith("/F"))
-// 	headerf << "\t" << "float " << " " << TString(*v_it).ReplaceAll("_", "") + "_;" << endl;
-//       else if(branchtitle.EndsWith("/I"))
-// 	headerf << "\t" << "int " << " " << TString(*v_it).ReplaceAll("_", "") + "_;" << endl;
-//       else if(branchtitle.EndsWith("/i"))
-// 	headerf << "\t" << "unsigned int " << " " << TString(*v_it).ReplaceAll("_", "") + "_;" << endl;
-//       else 
-// 	headerf << "\t" << classname << " " << TString(*v_it).ReplaceAll("_", "") + "_;" << endl;
-//     }
-//     headerf << "\tTFile *outFile_;" << endl;
-//     headerf << "\tTTree *outTree_;" << endl;
-//   }//if(branchNamesFile!="")
 }
 
 
 void makeSrcFile(TFile *f, bool paranoid, std::string Classname, std::string branchNamesFile) {
 
   TTree *ev = (TTree*)f->Get("Events");
-  TList *fullarray =  ev->GetListOfAliases();
-  TList *aliasarray = new TList();
-
+  
   codef << "/* Usage:" << endl;
   codef << "   root [0] .L ScanChain.C++" << endl;
   codef << "   root [1] TFile *_file0 = TFile::Open(\"merged_ntuple.root\")" << endl;
@@ -578,61 +528,6 @@ void makeSrcFile(TFile *f, bool paranoid, std::string Classname, std::string bra
   codef << "  samplehisto->Draw();" << endl;
   codef << "  return 0;" << endl;
   codef << "}" << endl;
-
-
-//   if(branchNamesFile!="") {
-    
-//     ifstream branchesF(branchNamesFile.c_str());
-//     std::vector<TString> v_branches;
-//     while(!branchesF.eof()) {
-//       string temp;
-//       getline(branchesF, temp);
-//       v_branches.push_back(temp);
-//     }
-//     branchesF.close();
-
-//     codef << endl << endl << endl;
-//     codef << "void " << Classname << "::InitSkimmedTree() {" << endl << endl;
-//     codef << "   outFile_ = TFile::Open(\"skimmedTree.root\",\"RECREATE\"); "<< endl;
-//     codef << "   outFile_->cd();" << endl;
-//     codef << "   outTree_ = new TTree(\"Events\", \"\");" << endl << endl;
-//     codef << "   //book the branches" << endl;
-
-//      for(vector<TString>::const_iterator v_it = v_branches.begin();
-//         v_it != v_branches.end(); v_it++) {
-//        TBranch *branch = ev->GetBranch(ev->GetAlias((*v_it).Data()));
-//       if(branch==NULL)
-//         continue;
-//       TString classname = branch->GetClassName();
-//       TString temp = TString(*v_it).ReplaceAll("_", "")+"_";
-//       //classname = classname(0,classname.Length()-1);
-//       classname.ReplaceAll("edm::Wrapper<","");
-//       if(classname.Contains("int") ) {
-// 	codef << "   outTree_->Branch(\"" << temp << "\",  ";
-// 	if(classname.Contains("unsigned") )
-// 	  codef << "&" << temp << ", \"" << temp << "/i\");" << endl;
-// 	else 
-// 	  codef << "&" << temp << ", \"" << temp << "/I\");" << endl;
-//       }
-//       if(classname.Contains("float") ) {
-// 	codef << "   outTree_->Branch(\"" << temp << "\",  ";
-// 	codef << "&" << temp << ", \"" << temp << "/F\");" << endl;
-//       }
-//       if(classname.Contains("bool") ) {
-// 	codef << "   outTree_->Branch(\"" << temp << "\",  ";
-// 	codef << "&" << temp << ", \"" << temp << "/O\");" << endl;
-//       }
-//       if(classname.Contains("ector")) { //works either vector< or LorentzVector
-// 	classname.ReplaceAll("vector<", "std::vector<");
-// 	classname = classname(0,classname.Length()-2);
-// 	codef << "   outTree_->Branch(\"" << temp << "\",  ";
-// 	codef << "\"" << classname << "\", &" << temp << ");" <<endl; 
-//       }
-	
-//      }//iterator loop
-//      codef << "}" << endl;
-    
-//   }//if(branchNamesFile!="")
   
 }
 
@@ -644,7 +539,6 @@ void makeSkimHeader(TFile *f, std::string branchNamesFile) {
     string temp;
     getline(branchesF, temp);
     v_branches.push_back(temp);
-    cout << temp << endl;
   }
   branchesF.close();
 }
@@ -663,15 +557,23 @@ void makeBranchFile(std::string branchNamesFile) {
     TIter objIt((TObjArray*)line.Tokenize(" "));
     TObject *obj=NULL;
     while(obj = (TObject*)objIt.Next()) {
-      if(obj!=NULL) 
-	v_line.push_back(obj->GetName());
+      if(obj==NULL) 
+	continue;
+      v_line.push_back(obj->GetName());
     }
     
     if(v_line.size() == 0)
       continue;
-    TString varName(v_line.at(v_line.size()-1));
-    varName.ReplaceAll(" ", "");
-    v_varNames.push_back(v_line.at(v_line.size()-1)); // last element is the var name
+    TString varName;
+    //loop over v_line until you get to the first element thats not a space
+    for(vector<TString>::iterator it = v_line.begin();
+	it != v_line.end(); it++) {
+      if( *it != " " ) {
+	varName = *it;
+      }
+    }
+    
+    v_varNames.push_back(varName.Strip());  //paranoid....strips trailing spaces
     TString datatype("");
     for(unsigned int i = 0; i < v_line.size()-1; i++) {
       TString temp = v_line[i];
@@ -697,6 +599,7 @@ void makeBranchFile(std::string branchNamesFile) {
 
   for(unsigned int i = 0; i < v_datatypes.size(); i++) {
     TString temp(v_varNames.at(i));
+    //cout << temp << "_" << endl;
     branchfile << v_datatypes.at(i) << " " 
 	       << temp.ReplaceAll("_","")+"_;" << endl;
   }
@@ -704,8 +607,6 @@ void makeBranchFile(std::string branchNamesFile) {
 
   branchfile << "TFile *outFile_;" << endl;
   branchfile << "TTree *outTree_;" << endl;
-
-  
 
   //now declare the branches and set aliases in the InitSkimmedTree function
   branchfile << "void InitSkimmedTree() {\n\n";
