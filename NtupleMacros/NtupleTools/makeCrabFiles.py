@@ -37,8 +37,8 @@ def makeCrabConfig():
     outFile.write('dbs_url_for_publication =  http://ming.ucsd.edu:8080/DBS1/servlet/DBSServlet\n\n')
     if ( mode == 'glite' ) :
         outFile.write('[GRID]\n')
-        outFile.write('##Changing max tarball size to 20MB')
-	outFile.write('maxtarballsize    =  20')
+        outFile.write('##Changing max tarball size to 20MB\n')
+	outFile.write('maxtarballsize    =  20\n')
         outFile.write('##here are some default sites that we \n')
         outFile.write('##run at. Comment/Uncomment at will\n')
         outFile.write('##UCSD \n')
