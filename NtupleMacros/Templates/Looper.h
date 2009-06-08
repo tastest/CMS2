@@ -47,10 +47,6 @@ enum {
      CUT_PASS_JETVETO_CALO,
      CUT_PASS_JETVETO_TRACKJETS,
      CUT_PASS_JETVETO_CALOTRACKJETS_COMBO,
-     CUT_PASS_MUON_B_VETO,	
-     CUT_MUON_TAGGED,
-     CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT,	
-     CUT_MUON_TAGGED_WITHOUT_PTCUT,
      CUT_PASS_EXTRALEPTON_VETO,
      CUT_EL_BARREL,
      CUT_ELFAKE_FAKEABLE_OBJECT,
@@ -97,8 +93,7 @@ const static cuts_t baseline_cuts =
      (CUT_BIT(CUT_PASS_ZVETO)	) | 
      (CUT_BIT(CUT_PASS_ADDZVETO)	) | 
      (CUT_BIT(CUT_PASS_JETVETO_CALO)	) |
-     (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)	) |  
-     (CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT)	);   
+  (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)	) ;
 
 // baseline + tight delta phi in
 const static cuts_t baseline_tight_dphiin_cuts = baseline_cuts | CUT_BIT(CUT_LT_TIGHT_DPHIIN) | CUT_BIT(CUT_LL_TIGHT_DPHIIN);
@@ -108,16 +103,11 @@ const static cuts_t baseline_metcorr_cuts = (baseline_cuts & ~(CUT_BIT(CUT_PASS4
 
 // these cuts are used to measure the mu tagging efficiency for top
 const static cuts_t baseline_mu_tageff_cuts = baseline_cuts & ~((CUT_BIT(CUT_PASS_JETVETO_CALO)	) | 
-								      (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)	) | 
-								      (CUT_BIT(CUT_PASS_EXTRALEPTON_VETO)	) | 
-								      (CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT)	) | 
-								      (CUT_BIT(CUT_PASS_MUON_B_VETO)));
+								(CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)	) | 
+								(CUT_BIT(CUT_PASS_EXTRALEPTON_VETO)	) );
 
 const static cuts_t baseline_no_trackjets_cuts = baseline_cuts & 
      ~(CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)); 
-
-const static cuts_t baseline_no_btags_cuts = baseline_cuts & 
-     ~(CUT_BIT(CUT_PASS_MUON_B_VETO) | CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT)); 
 
 const static cuts_t baseline_no_caloiso_cuts = (baseline_cuts & ~((CUT_BIT(CUT_LT_CALOISO)	) | (CUT_BIT(CUT_LL_CALOISO)	))) | 
      (CUT_BIT(CUT_LT_ISO)		) | (CUT_BIT(CUT_LL_ISO)		);
@@ -149,8 +139,8 @@ const static cuts_t dumbo_cuts =
      (CUT_BIT(CUT_MU_ISO)	) |  
      (CUT_BIT(CUT_PASS_ADDZVETO)	) | 
      (CUT_BIT(CUT_PASS_JETVETO_CALO)	) |
-     (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)	) |  
-     (CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT)	);   
+								(CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)	) ;
+
 
 const static cuts_t dumbo_cuts_nod0 = (dumbo_cuts & ~CUT_BIT(CUT_EL_GOOD)) | CUT_BIT(CUT_EL_GOOD_NO_D0);
 
@@ -252,7 +242,6 @@ protected:
      // a simple TH1/TH2, times four to split by hypothesis type:
      TH1F		*helPt_[4];
      TH1F		*hmuPt_[4];
-     TH2F		*hCaloEtaPt_[4];
 
      // NMinus1Hists take care of N - 1 plots and splitting by hypothesis automatically
      NMinus1Hist	*hltPt_;

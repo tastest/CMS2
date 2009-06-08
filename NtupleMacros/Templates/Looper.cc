@@ -25,20 +25,16 @@ void Looper::BookHistos ()
      for (int i = 0; i < 4; ++i) {
 	  helPt_[i] = new TH1F(Form("%s_%s_%s", SampleName().c_str(), "elPt", dilepton_hypo_names[i]), ";el pt", 100, 0, 100);
 	  hmuPt_[i] = new TH1F(Form("%s_%s_%s", SampleName().c_str(), "muPt", dilepton_hypo_names[i]), ";mu pt", 100, 0, 100);
-	  hCaloEtaPt_[i] = new TH2F(Form("%s_%s_%s", SampleName().c_str(), "CaloEtaPt", dilepton_hypo_names[i]), ";pt;eta", 100, 0, 100, 10, -5, 5);
 
 	  // call Sumw2 on all histograms
 	  helPt_[i]->Sumw2();
 	  hmuPt_[i]->Sumw2();
-	  hCaloEtaPt_[i]->Sumw2();
 
 	  // set histogram color according to definitions in Tools/Samples.cc
 	  helPt_[i]->SetFillColor(sample_.histo_color);
 	  helPt_[i]->SetLineColor(sample_.histo_color);
 	  hmuPt_[i]->SetFillColor(sample_.histo_color);
 	  hmuPt_[i]->SetLineColor(sample_.histo_color);
-	  hCaloEtaPt_[i]->SetFillColor(sample_.histo_color);
-	  hCaloEtaPt_[i]->SetLineColor(sample_.histo_color);
 
      }
      // or use the N - 1 technology (see NMinus1Hist.h)
@@ -222,14 +218,6 @@ cuts_t Looper::DilepSelect (int i_hyp)
      // track jets
      if (passTrkJetVeto(i_hyp))
 	  ret |= (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS));
-     // muon b tag, with 20 GeV upper cut on the muon pt
-     if (passMuonBVeto(i_hyp, true))
-	  ret |= (CUT_BIT(CUT_PASS_MUON_B_VETO));
-     else ret |= (CUT_BIT(CUT_MUON_TAGGED));
-     // muon b tag, with no upper cut on the muon pt
-     if (passMuonBVeto(i_hyp, false))
-	  ret |= (CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT));
-     else ret |= (CUT_BIT(CUT_MUON_TAGGED_WITHOUT_PTCUT));
      // Z veto
      if (cms2.hyp_type()[i_hyp] == 1 || cms2.hyp_type()[i_hyp] == 2)
 	  ret |= (CUT_BIT(CUT_PASS_ZVETO));
@@ -318,15 +306,6 @@ void Looper::FillDilepHistos (int i_hyp)
 	  } else {
 	       hmuPt_[DILEPTON_ALL]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
 	       hmuPt_[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
-	  }
-	  for (unsigned int i = 0; i < cms2.jets_p4().size(); ++i) {
-	       // histogram the eta and pt of all jets
-	       hCaloEtaPt_[DILEPTON_ALL]->Fill(cms2.jets_p4()[i].pt() * cms2.jets_tq_noCorrF()[i],
-					cms2.jets_p4()[i].eta(),
-					weight);
-	       hCaloEtaPt_[myType]->Fill(cms2.jets_p4()[i].pt() * cms2.jets_tq_noCorrF()[i],
-					cms2.jets_p4()[i].eta(),
-					weight);
 	  }
      }
 
