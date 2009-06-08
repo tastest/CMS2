@@ -1,6 +1,7 @@
 #ifndef SELECTION_H
 #define SELECTION_H
 #include "TLorentzVector.h"
+#include "Math/LorentzVector.h"
 #include <vector>
 
 bool inZmassWindow (float mass);
@@ -142,7 +143,7 @@ bool GoodSusyLeptonID(int id, int index);
 bool GoodSusyTrigger(int dilType);
 int numberOfExtraElectronsSUSY(int i_hyp);
 int numberOfExtraMuonsSUSY(int i_hyp);
-vector <ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getCaloJets(int i_hyp); 
+std::vector <ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getCaloJets(int i_hyp); 
 
 //TTDil08 fake rate functions
 bool isNumElTTDil08(int iEl);
