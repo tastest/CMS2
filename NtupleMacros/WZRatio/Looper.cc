@@ -53,10 +53,13 @@ void Looper::BookHistos ()
   hdilMass_	= new NMinus1Hist(sample_, "dilMass",	 100, 0, 300, cuts_, CUT_BIT(CUT_ZMASS) | CUT_BIT(CUT_ANTI_ZMASS));
   // for the dilepton mass plot, we relax any cut to do with the Z 
   hLepMetMass_	= new NMinus1Hist(sample_, "LepMetMass", 100, 0, 300, cuts_, CUT_BIT(CUT_ZMASS) | CUT_BIT(CUT_ANTI_ZMASS));
+  // njets plots are made with all cuts
+  hnjets_	= new NMinus1Hist(sample_, "njets", 11, -0.5, 10.5, cuts_, 0);
+  hnjptjets_	= new NMinus1Hist(sample_, "njptjets", 11, -0.5, 10.5, cuts_, 0);
   // eta distribution of "lost" lepton from drell yan decays
-  hGenLepEta_	= new NMinus1Hist(sample_, "GenLepEta", 100, -5, 5, cuts_, CUT_BIT(CUT_MET) | CUT_BIT(CUT_ANTI_MET));
+  hGenLepEta_	= new NMinus1Hist(sample_, "GenLepEta", 100, -5, 5, cuts_, CUT_BIT(CUT_MET) | CUT_BIT(CUT_ANTI_MET) | CUT_BIT(CUT_MT));
   // pt distribution of "lost" lepton from drell yan decays
-  hGenLepPt_	= new NMinus1Hist(sample_, "GenLepPt", 100, 0, 100, cuts_, CUT_BIT(CUT_MET) | CUT_BIT(CUT_ANTI_MET));
+  hGenLepPt_	= new NMinus1Hist(sample_, "GenLepPt", 100, 0, 100, cuts_, CUT_BIT(CUT_MET) | CUT_BIT(CUT_ANTI_MET) | CUT_BIT(CUT_MT));
 }
 
 
@@ -100,6 +103,8 @@ cuts_t Looper::EventSelect ()
   boson  = LorentzVector (0, 0, 0, 0);
   wp4_   = LorentzVector(0, 0, 0, 0);
   genp4_ = LorentzVector(0, 0, 0, 0);
+  int njpts = 0;
+  int njets = 0;
 
   // enough tracks?
   if (cms2.trks_trk_p4().size() > 2)
@@ -180,6 +185,40 @@ cuts_t Looper::EventSelect ()
       if( boson.M() > 76 && boson.M() < 106 )
 	ret |= CUT_BIT(CUT_ZMASS);
     }    
+    
+    njpts = 0;
+    njets = 0;
+    // count jets and jpts
+    for (unsigned int i = 0; i < cms2.jpts_p4().size(); ++i) {
+	 const double etaMax      = 2.4;
+	 const double vetoCone    = 0.4;
+	 const double etMin       = 20;
+	 const LorentzVector &jpt = cms2.jpts_p4()[i];
+	 if (jpt.Et() < etMin)
+	      continue;
+	 if (jpt.eta() > etaMax)
+	      continue;
+	 if (ROOT::Math::VectorUtil::DeltaR(lep1, jpt) < vetoCone)
+	      continue;
+	 if (ROOT::Math::VectorUtil::DeltaR(lep2, jpt) < vetoCone)
+	      continue;
+	 njpts++;
+    }
+    for (unsigned int i = 0; i < cms2.jets_p4().size(); ++i) {
+	 const double etaMax      = 2.4;
+	 const double vetoCone    = 0.4;
+	 const double etMin       = 15;
+	 const LorentzVector &jet = cms2.jets_p4()[i];
+	 if (jet.Et() < etMin * cms2.jets_pat_noCorrF()[i]) // remember to uncorrect!
+	      continue;
+	 if (jet.eta() > etaMax)
+	      continue;
+	 if (ROOT::Math::VectorUtil::DeltaR(lep1, jet) < vetoCone)
+	      continue;
+	 if (ROOT::Math::VectorUtil::DeltaR(lep2, jet) < vetoCone)
+	      continue;
+	 njets++;
+    }
   }
 
   if( lep_idx.size() == 1 ) {
@@ -205,11 +244,24 @@ cuts_t Looper::EventSelect ()
       }
 
       for( unsigned int gens = 0; gens < cms2.genps_p4().size(); gens++ ) {
-	if( cms2.genps_status()[gens] != 3) continue;
+//  	   printf("\nidx %3d stat %2d pdgid %6d (pt eta phi) (%6.1f %10.3f %6.3f)\t", 
+//  		  gens, cms2.genps_status()[gens], cms2.genps_id()[gens], 
+//  		  cms2.genps_p4()[gens].pt(), cms2.genps_p4()[gens].eta(), cms2.genps_p4()[gens].phi());
+	   if( cms2.genps_status()[gens] != 3) continue;
+	   
+	   if( abs( cms2.genps_id()[gens] ) != 13 ) continue;
 
-	if( abs( cms2.genps_id()[gens] ) != 13 ) continue;
-
-	if( cms2.mus_mcidx()[ lep_idx[0] % mu_shift ] != gens ) genp4_ = cms2.genps_p4()[gens];
+	   if (ROOT::Math::VectorUtil::DeltaR(cms2.mus_p4()[lep_idx[0] % mu_shift], 
+					      cms2.genps_p4()[gens]) > 0.1) {
+		genp4_ = cms2.genps_p4()[gens];
+// 		printf("not matched to (pt eta phi) (%6.1f %10.3f %6.3f), which wants idx %d\n",
+// 		       cms2.mus_p4()[lep_idx[0] % mu_shift].pt(), cms2.mus_p4()[lep_idx[0] % mu_shift].eta(), cms2.mus_p4()[lep_idx[0] % mu_shift].phi(),
+// 		       cms2.mus_mcidx()[ lep_idx[0] % mu_shift ]);
+	   } else {
+// 		printf("matched to (pt eta phi) (%6.1f %10.3f %6.3f), which wants idx %d\n",
+// 		       cms2.mus_p4()[lep_idx[0] % mu_shift].pt(), cms2.mus_p4()[lep_idx[0] % mu_shift].eta(), cms2.mus_p4()[lep_idx[0] % mu_shift].phi(),
+// 		       cms2.mus_mcidx()[ lep_idx[0] % mu_shift ]);
+	   }
       }
     }
 
@@ -238,8 +290,40 @@ cuts_t Looper::EventSelect ()
 
 	if( abs( cms2.genps_id()[gens] ) != 11 ) continue;
 
-	if( cms2.els_mcidx()[ lep_idx[0] % mu_shift ] != gens ) genp4_ = cms2.genps_p4()[gens];
+	if (ROOT::Math::VectorUtil::DeltaR(cms2.els_p4()[lep_idx[0] % mu_shift], 
+					   cms2.genps_p4()[gens]) > 0.1) {
+	     genp4_ = cms2.genps_p4()[gens];
+	}
       }
+    }
+    njpts = 0;
+    njets = 0;
+    // count jets and jpts
+    for (unsigned int i = 0; i < cms2.jpts_p4().size(); ++i) {
+	 const double etaMax      = 2.4;
+	 const double vetoCone    = 0.4;
+	 const double etMin       = 20;
+	 const LorentzVector &jpt = cms2.jpts_p4()[i];
+	 if (jpt.Et() < etMin)
+	      continue;
+	 if (jpt.eta() > etaMax)
+	      continue;
+	 if (ROOT::Math::VectorUtil::DeltaR(lep1, jpt) < vetoCone)
+	      continue;
+	 njpts++;
+    }
+    for (unsigned int i = 0; i < cms2.jets_p4().size(); ++i) {
+	 const double etaMax      = 2.4;
+	 const double vetoCone    = 0.4;
+	 const double etMin       = 15;
+	 const LorentzVector &jet = cms2.jets_p4()[i];
+	 if (jet.Et() < etMin * cms2.jets_pat_noCorrF()[i]) // remember to uncorrect!
+	      continue;
+	 if (jet.eta() > etaMax)
+	      continue;
+	 if (ROOT::Math::VectorUtil::DeltaR(lep1, jet) < vetoCone)
+	      continue;
+	 njets++;
     }
   }
 
@@ -248,6 +332,8 @@ cuts_t Looper::EventSelect ()
   hdilMass_->Fill(ret, DILEPTON_ALL, boson.M(), weight);
   hGenLepEta_->Fill(ret, DILEPTON_ALL, genp4_.eta(), weight);
   hGenLepPt_->Fill(ret, DILEPTON_ALL, genp4_.pt(), weight);
+  hnjptjets_->Fill(ret, DILEPTON_ALL, njpts);
+  hnjets_->Fill(ret, DILEPTON_ALL, njets);
 
   return ret;
 }
