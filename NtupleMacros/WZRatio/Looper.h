@@ -57,7 +57,7 @@ enum {
  
 //single electron cuts
 const static cuts_t baseline_single_electron_cuts = 
-  (CUT_BIT(CUT_MORE_THAN_TWO_TRACKS) ) |
+//   (CUT_BIT(CUT_MORE_THAN_TWO_TRACKS) ) |
   (CUT_BIT(CUT_E) ) |
   (CUT_BIT(CUT_ANTI_ZMASS) ) |
   (CUT_BIT(CUT_MET) ) |
@@ -65,7 +65,7 @@ const static cuts_t baseline_single_electron_cuts =
 
 //single muon cuts
 const static cuts_t baseline_single_muon_cuts = 
-  (CUT_BIT(CUT_MORE_THAN_TWO_TRACKS) ) |
+//   (CUT_BIT(CUT_MORE_THAN_TWO_TRACKS) ) |
   (CUT_BIT(CUT_M) ) |
   (CUT_BIT(CUT_ANTI_ZMASS) ) |
   (CUT_BIT(CUT_MET) ) |
@@ -73,7 +73,7 @@ const static cuts_t baseline_single_muon_cuts =
 
 //dielectron cuts
 const static cuts_t baseline_dielectron_cuts = 
-  (CUT_BIT(CUT_MORE_THAN_TWO_TRACKS) ) |
+//   (CUT_BIT(CUT_MORE_THAN_TWO_TRACKS) ) |
   (CUT_BIT(CUT_EE) ) |
   (CUT_BIT(CUT_ZMASS) ) |
   (CUT_BIT(CUT_ANTI_MET) ) |
@@ -81,7 +81,7 @@ const static cuts_t baseline_dielectron_cuts =
 
 //dimuon cuts
 const static cuts_t baseline_dimuon_cuts = 
-  (CUT_BIT(CUT_MORE_THAN_TWO_TRACKS) ) |
+//   (CUT_BIT(CUT_MORE_THAN_TWO_TRACKS) ) |
   (CUT_BIT(CUT_MM) ) |
   (CUT_BIT(CUT_ZMASS) ) |
   (CUT_BIT(CUT_ANTI_MET) ) |
@@ -89,7 +89,7 @@ const static cuts_t baseline_dimuon_cuts =
 
 //EM cuts
 const static cuts_t baseline_emu_cuts = 
-  (CUT_BIT(CUT_MORE_THAN_TWO_TRACKS) ) |
+//   (CUT_BIT(CUT_MORE_THAN_TWO_TRACKS) ) |
   (CUT_BIT(CUT_EM) ) |
   (CUT_BIT(CUT_ZMASS) ) |
   (CUT_BIT(CUT_ANTI_MET) ) |
@@ -211,6 +211,8 @@ protected:
   // NMinus1Hists take care of N - 1 plots and splitting by hypothesis automatically
   NMinus1Hist	*hmt_;
   NMinus1Hist	*hmet_;
+     NMinus1Hist	*hnjets_;
+     NMinus1Hist	*hnjptjets_;
   NMinus1Hist	*hdilMass_;
   NMinus1Hist	*hLepMetMass_;
   NMinus1Hist   *hGenLepEta_;
