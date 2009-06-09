@@ -21,9 +21,13 @@ enum {
      LOOP_TW	,
 };
 
+// #define TWIKI_OUTPUT
+#define LATEX_OUTPUT
+//#define SUMMARY_OUTPUT
+
 // helper function used to print yield tables
 void printTable (const Looper **hists, int n, const char *fname, 
-		 uint32 which_ones)
+		 uint32 which_ones) 
 {
      FILE *f = 0;
      if (fname == 0 || strlen(fname) == 0)
@@ -33,25 +37,179 @@ void printTable (const Looper **hists, int n, const char *fname,
 	  perror("printing table");
 	  return;
      }
+#if defined(TWIKI_OUTPUT)
      fprintf(f, "| %10s", "");
      for (int j = 0; j < n; ++j) {
+	  if (not hists[j]->HasRun())
+	       continue;
 	  fprintf(f, "|  *%30s*  ", hists[j]->SampleName().c_str());
      }
-     fprintf(f, "|%30s  |\n", "total");
+     fprintf(f, "|*%30s*  |\n", "total bg");
+#else 
+#if defined(LATEX_OUTPUT)
+     fprintf(f, "\\hline\\hline\n%10s", "");
+     for (int j = 0; j < n; ++j) {
+	  if (not hists[j]->HasRun())
+	       continue;
+	  fprintf(f, "&  \\%-30s  ", hists[j]->SampleName().c_str());
+     }
+     fprintf(f, "\\\\\\hline\n");
+#endif
+#endif
      for (int i = 0; i < 4; ++i) {
+#if defined(TWIKI_OUTPUT)
 	  fprintf(f, "|%10s  ", dilepton_hypo_names[i]);
+#else 
+#if defined(LATEX_OUTPUT)
+	  fprintf(f, "\\%-10s  ", dilepton_hypo_names[i]);
+#endif
+#endif
 	  double cands = 0;
 	  double w2 = 0;
+	  int is_background = 0;
 	  for (int j = 0; j < n; ++j) {
+	       if (not hists[j]->HasRun())
+		    continue;
+#if defined(TWIKI_OUTPUT)
 	       fprintf(f, "|  %10.1f &plusmn; %10.1f", 
 		       hists[j]->CandsPassing(DileptonHypType(i)),
 		       hists[j]->RMS(DileptonHypType(i)));
-	       cands += hists[j]->CandsPassing(DileptonHypType(i));
-	       w2 += hists[j]->RMS(DileptonHypType(i)) * 
-		    hists[j]->RMS(DileptonHypType(i));
+#else 
+#if defined(LATEX_OUTPUT)
+	       fprintf(f, "&  %10.1f $\\pm$ %10.1f", 
+		       hists[j]->CandsPassing(DileptonHypType(i)),
+		       hists[j]->RMS(DileptonHypType(i)));
+#endif
+#endif
+	       if (is_background) {
+		    cands += hists[j]->CandsPassing(DileptonHypType(i));
+		    w2 += hists[j]->RMS(DileptonHypType(i)) * 
+			 hists[j]->RMS(DileptonHypType(i));
+	       }
+	       is_background++;
+#if 0
+	       const FakeRateLooper *looper = 
+		    dynamic_cast<const FakeRateLooper *>(hists[j]);
+	       if (looper != 0) {
+		    fprintf(f, "(stat) &plusmn; %5.1f (fake)", 
+			    looper->FakeSyst(DileptonHypType(i)));
+	       }
+#endif
 	  }
+#if defined(TWIKI_OUTPUT)
 	  fprintf(f, "|  %10.1f &plusmn; %10.1f|\n", cands, sqrt(w2));
+#else
+#if defined(LATEX_OUTPUT)
+	  fprintf(f, "\\\\\n");
+#endif
+#endif
      }
+#if defined(LATEX_OUTPUT)
+	  fprintf(f, "\\hline\\hline\n");
+#endif
+     if (f != stdin) 
+	  fclose(f);
+}
+
+void printTableVertically (const Looper **hists, int n, const char *fname, 
+			   uint32 which_ones) 
+{
+     FILE *f = 0;
+     if (fname == 0 || strlen(fname) == 0)
+	  f = stdin;
+     else f = fopen(fname, "w");
+     if (f == 0) {
+	  perror("printing table");
+	  return;
+     }
+     double cands[4] = {0, 0, 0, 0};
+     double w2[4] = {0, 0, 0, 0};
+     int is_background[4] = {0, 0, 0, 0};
+#if defined(LATEX_OUTPUT) && !defined(SUMMARY_OUTPUT)
+     fprintf(f, "\\hline\\hline\n");
+#endif
+     for (int j = 0; j < n; ++j) {
+	  if (not hists[j]->HasRun())
+	       continue;
+#if defined(TWIKI_OUTPUT)
+	  fprintf(f, "|  *%30s*  ", hists[j]->SampleName().c_str());
+#else 
+#if defined(LATEX_OUTPUT)
+	  fprintf(f, "\\%-30s  ", hists[j]->SampleName().c_str());
+#endif
+#endif
+	  for (int i = 0; i < 4; ++i) {
+#if defined(TWIKI_OUTPUT)
+	       fprintf(f, "|  %10.1f &plusmn; %10.1f  |\n", 
+		       hists[j]->CandsPassing(DileptonHypType(i)),
+		       hists[j]->RMS(DileptonHypType(i)));
+#else 
+#if defined(LATEX_OUTPUT)
+	       const double n = hists[j]->CandsPassing(DileptonHypType(i));
+#if defined(SUMMARY_OUTPUT)
+	       if (n < 1000000)
+		    fprintf(f, "& %18.1f", n);
+	       else {
+		    const double expo = log(n) / log(10);
+		    const int log10 = (int)floor(expo);
+		    const int exp10 = pow(10.0, log10);
+		    fprintf(f, "& %3.1f$\\cdot$10$^{%d}$\\\\\n", n / exp10, log10);
+	       }
+#else
+	       fprintf(f, "&  %10.2f & %5.2f", 
+		       hists[j]->CandsPassing(DileptonHypType(i)),
+		       hists[j]->RMS(DileptonHypType(i)));
+#endif
+#endif
+#endif
+	       if (is_background[i]) {
+		    cands[i] += hists[j]->CandsPassing(DileptonHypType(i));
+		    w2[i] += hists[j]->RMS(DileptonHypType(i)) * 
+			 hists[j]->RMS(DileptonHypType(i));
+	       }
+	       is_background[i]++;
+#if 0
+	       const FakeRateLooper *looper = 
+		    dynamic_cast<const FakeRateLooper *>(hists[j]);
+	       if (looper != 0) {
+		    fprintf(f, "(stat) &plusmn; %5.1f (fake)", 
+			    looper->FakeSyst(DileptonHypType(i)));
+	       }
+#endif	       
+	  }
+#if defined(LATEX_OUTPUT) 
+	  fprintf(f, "\\\\\n", n);
+#endif
+     }
+#if defined(TWIKI_OUTPUT)
+     fprintf(f, "|  *%30s*  ", "total");
+     for (int i = 0; i < 4; ++i) {
+	  fprintf(f, "|  %10.1f &plusmn; %10.1f  |\n", cands[i], sqrt(w2[i]));
+     }
+#else
+#if defined(LATEX_OUTPUT)
+     fprintf(f, "\\hline\n %-30s  ", "total");
+     for (int i = 0; i < 4; ++i) {
+	  const double n = cands[i];
+#if defined(SUMMARY_OUTPUT)
+	  if (n < 1000000)
+	       fprintf(f, "& %18.1f", n);
+	  else {
+	       const double expo = log(n) / log(10);
+	       const int log10 = (int)floor(expo);
+	       const int exp10 = pow(10.0, log10);
+	       fprintf(f, "& %3.1f$\\cdot$10$^{%d}$\\\\\n", n / exp10, log10);
+	  }
+#else
+	  fprintf(f, "&  %10.2f & %5.2f", cands[i], sqrt(w2[i]));
+#endif
+     }
+     fprintf(f, "\\\\\n", n);
+#endif
+#endif
+#if defined(LATEX_OUTPUT) && !defined(SUMMARY_OUTPUT)
+     fprintf(f, "\\hline\\hline\n");
+#endif
      if (f != stdin) 
 	  fclose(f);
 }
@@ -74,28 +232,28 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
      const string log = name + ".log";
      // by default, we run this list of samples; if we're told by the
      // which_ones bit field to skip a sample, we skip it
-     Looper looper_ww		(fWW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WW    )) looper_ww          .Loop();
-     Looper looper_wz		(fWZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WZ    )) looper_wz          .Loop();
-     Looper looper_zz		(fZZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_ZZ    )) looper_zz          .Loop();
-     Looper looper_wjets	(fWjets()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS )) looper_wjets       .Loop();
+     Looper looper_ttbar	(fttbar()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_TTBAR )) looper_ttbar       .Loop();
+//      Looper looper_ww		(fWW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WW    )) looper_ww          .Loop();
+//      Looper looper_wz		(fWZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WZ    )) looper_wz          .Loop();
+//      Looper looper_zz		(fZZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_ZZ    )) looper_zz          .Loop();
      Looper looper_dyee		(fDYee()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYEE  )) looper_dyee        .Loop();
      Looper looper_dymm		(fDYmm()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYMM  )) looper_dymm        .Loop();
-     Looper looper_dytt		(fDYtt()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYTT  )) looper_dytt        .Loop();
-     Looper looper_ttbar	(fttbar()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_TTBAR )) looper_ttbar       .Loop();
-     Looper looper_tw		(ftW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_TW    )) looper_tw          .Loop();
+     Looper looper_wjets	(fWjets()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS )) looper_wjets       .Loop();
+//      Looper looper_dytt		(fDYtt()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYTT  )) looper_dytt        .Loop();
+//      Looper looper_tw		(ftW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_TW    )) looper_tw          .Loop();
      // when all the loopers are done, we save the histograms to file
      saveHist(hist.c_str());
      // then we collect them all and print a table
      const Looper *loopers[] = { 
-	  &looper_ww          ,
-	  &looper_wz          ,
-	  &looper_zz          ,
-	  &looper_wjets       ,
+// 	  &looper_ww          ,
+// 	  &looper_wz          ,
+// 	  &looper_zz          ,
+	  &looper_ttbar       ,
 	  &looper_dyee        ,
 	  &looper_dymm        ,
-	  &looper_dytt        ,
-	  &looper_ttbar       ,
-	  &looper_tw          ,
+	  &looper_wjets       ,
+// 	  &looper_dytt        ,
+// 	  &looper_tw          ,
      };
      printTable(loopers, sizeof(loopers) / sizeof(Looper *), tbl.c_str(), which_ones);
      return 0;
