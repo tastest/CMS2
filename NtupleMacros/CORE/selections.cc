@@ -999,7 +999,7 @@ bool passCaloTrkjetCombo ()
 //-------------------------------------------
 bool met10(int i_hyp, const TVector3& corr) {
   TVector3 hyp_met;
-  hyp_met.SetPtEtaPhi(cms2.hyp_met()[i_hyp], 0, cms2.hyp_metPhi()[i_hyp]);
+  hyp_met.SetPtEtaPhi(cms2.evt_metMuonJESCorr(), 0, cms2.evt_metMuonJESCorrPhi());
   hyp_met += corr;
   if ( hyp_met.Pt() < 110 ) return false;
   return true;
@@ -1011,7 +1011,7 @@ bool met10(int i_hyp, const TVector3& corr) {
 //-------------------------------------------
 bool met1(int i_hyp, const TVector3& corr) {
   TVector3 hyp_met;
-  hyp_met.SetPtEtaPhi(cms2.hyp_met()[i_hyp], 0, cms2.hyp_metPhi()[i_hyp]);
+  hyp_met.SetPtEtaPhi(cms2.evt_metMuonJESCorr(), 0, cms2.evt_metMuonJESCorrPhi());
   hyp_met += corr;
   if ( hyp_met.Pt() < 175 ) return false;
   return true;
