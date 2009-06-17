@@ -41,7 +41,7 @@ Sample fWW_excl ()
      TChain *c = new TChain("Events");
      std::string sample = prefix + "cms2-V01-02-06/WW_2l_Summer08_IDEAL_V9_v2/merged_ntuple*.root";
      c->Add(sample.c_str());
-     Sample ret = { c, WW, kRed, 1, "ww", true, 0. };
+     Sample ret = { c, WW, kRed, 1, "wwexcl", true, 0. };
      return ret;
 }
 
