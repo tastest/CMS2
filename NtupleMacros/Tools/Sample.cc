@@ -155,7 +155,7 @@ Sample fDYtt ()
 Sample fDY20ee    ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "dlevans/cms2-V01-03-01/Zee_M20_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root";
+     std::string sample = prefix + "cms2-V01-03-01/Zee_M20_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root";
      c->Add(sample.c_str());
      Sample ret = { c, DYee, kMagenta, 1, "dy20ee", true, 0. };
      return ret;
@@ -164,7 +164,7 @@ Sample fDY20ee    ()
 Sample fDY20mm    ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "dlevans/cms2-V01-03-01/Zmumu_M20_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root";
+     std::string sample = prefix + "cms2-V01-03-01/Zmumu_M20_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root";
      c->Add(sample.c_str());
      Sample ret = { c, DYmm, kCyan, 1, "dy20mm", true, 0. };
      return ret;
@@ -173,7 +173,7 @@ Sample fDY20mm    ()
 Sample fDY20tt    ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "dlevans/cms2-V01-03-01/Ztautau_M20_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root";
+     std::string sample = prefix + "cms2-V01-03-01/Ztautau_M20_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root";
      c->Add(sample.c_str());
      Sample ret = { c, DYtt, kBlack, 1, "dy20tt", true, 0. };
      return ret;
