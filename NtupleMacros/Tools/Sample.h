@@ -29,7 +29,7 @@ public:
 Sample fTest ();
 
 Sample fWW	();
-Sample fWW_excl	();
+// Sample fWW_excl	();
 Sample fWZ	();
 Sample fWZ_incl	();
 Sample fZZ	();

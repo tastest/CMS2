@@ -257,7 +257,7 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
      // by default, we run this list of samples; if we're told by the
      // which_ones bit field to skip a sample, we skip it
      L looper_ww		(fWW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WW    )) looper_ww          .Loop();
-     L looper_ww_excl		(fWW_excl()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WW_EXCL    )) looper_ww_excl          .Loop();
+//      L looper_ww_excl		(fWW_excl()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WW_EXCL    )) looper_ww_excl          .Loop();
      L looper_wz		(fWZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WZ    )) looper_wz          .Loop();
 //      L looper_wz_incl		(fWZ_incl()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WZ    )) looper_wz_incl     .Loop();
      L looper_zz		(fZZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_ZZ    )) looper_zz          .Loop();
@@ -270,8 +270,8 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
      L looper_astar		(fAstar()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DY_AND_FRIENDS  )) looper_astar        .Loop();
      L looper_dy20tt		(fDY20tt()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DY_AND_FRIENDS  )) looper_dy20tt        .Loop();
      L looper_dy20mm		(fDY20mm()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DY_AND_FRIENDS  )) looper_dy20mm        .Loop();
-     L looper_wgamma		(fWgamma()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WGAMMA  )) looper_wgamma        .Loop();
-     L looper_zgamma		(fZgamma()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_ZGAMMA  )) looper_zgamma        .Loop();
+//      L looper_wgamma		(fWgamma()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WGAMMA  )) looper_wgamma        .Loop();
+//      L looper_zgamma		(fZgamma()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_ZGAMMA  )) looper_zgamma        .Loop();
      L looper_ttbar		(fttbar()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_TTBAR )) looper_ttbar       .Loop();
      L looper_ttbar_tauola	(fttbar_taula()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_TTBAR_TAUOLA )) looper_ttbar_tauola.Loop();
      L looper_tw		(ftW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_TW    )) looper_tw          .Loop();
@@ -282,7 +282,7 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
      // then we collect them all and print a table
      const Looper *loopers[] = { 
 	  &looper_ww          ,
-	  &looper_ww_excl     ,
+// 	  &looper_ww_excl     ,
 	  &looper_wz          ,
 // 	  &looper_wz_incl     ,
 	  &looper_zz          ,
@@ -295,8 +295,8 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
 	  &looper_astar        ,
 	  &looper_dy20tt        ,
 	  &looper_dy20mm        ,
-	  &looper_wgamma        ,
-	  &looper_zgamma        ,
+// 	  &looper_wgamma        ,
+// 	  &looper_zgamma        ,
 	  &looper_ttbar       ,
 	  &looper_ttbar_tauola,
 	  &looper_tw          ,
