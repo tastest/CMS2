@@ -52,8 +52,8 @@ uint64 LooperBase::Loop ()
      duplicates_total_n_ = 0;
      duplicates_total_weight_ = 0.;
 
-     int evts_processed;
-     double weight_evts_processed;
+     int evts_processed = 0;
+     double weight_evts_processed = 0;
 
      int i_permille_old = 0;
      // file loop
