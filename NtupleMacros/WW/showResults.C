@@ -36,7 +36,7 @@ void showResults(const char* file = "processed_data_tag.root")
       
       cout << "|" << finalState[i] << "| ";
       cout.setf(ios::fixed,ios::floatfield);
-      cout.precision(1);
+      cout.precision(2);
       if (DYee) cout << DYee->GetBinContent(i+1) << pm << DYee->GetBinError(i+1);
       cout << " | ";
       if (DYmm) cout << DYmm->GetBinContent(i+1) << pm << DYmm->GetBinError(i+1);
