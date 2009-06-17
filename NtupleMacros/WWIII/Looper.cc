@@ -27,6 +27,7 @@ void Looper::BookHistos ()
        hnJet		= new NMinus1Hist(sample_, "nJet"            ,	 6	, -0.5, 5	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_CALO)) | (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)) 	);
        hnCaloJet	= new NMinus1Hist(sample_, "nCaloJet"        ,	 6	, -0.5, 5	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_CALO)) | (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS))	);
        hnTrackJet	= new NMinus1Hist(sample_, "nTrackJet"       ,	 6	, -0.5, 5	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_CALO)) | (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)) 	);
+       hnJPTJet		= new NMinus1Hist(sample_, "nJPTJet"       ,	 6	, -0.5, 5	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_CALO)) | (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)) 	);
        hcaloJetPt	= new NMinus1Hist(sample_, "caloJetPt"       ,	 6	, -0.5, 5	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_CALO)) 	);
        htrackJetPt	= new NMinus1Hist(sample_, "trackJetPt"      ,	 6	, -0.5, 5	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)) 	);
        hminLepPt	= new NMinus1Hist(sample_, "minLepPt"        ,	 150	, 0, 150	, cuts_, CUT_BIT(CUT_LL_PT)	);
@@ -379,6 +380,9 @@ void Looper::FillDilepHistos (int i_hyp)
      // Example dilepton histo filling; edit for your application
      //------------------------------------------------------------
 
+//      if (cms2.vtxs_position().size() != 0)
+// 	  printf("size %d\n", cms2.vtxs_position().size());
+
      // every histogram needs to know what hypothesis he is 
      const enum DileptonHypType myType = hyp_typeToHypType(cms2.hyp_type()[i_hyp]);
      // and what the event weight is 
@@ -412,6 +416,7 @@ void Looper::FillDilepHistos (int i_hyp)
      hnJet->Fill(cuts_passed, myType, cms2.hyp_njets()[i_hyp], weight);
      hnCaloJet	->Fill(cuts_passed, myType, cms2.hyp_njets()[i_hyp], weight);
      hnTrackJet	->Fill(cuts_passed, myType, nTrkJets(i_hyp), weight);
+     hnJPTJet	->Fill(cuts_passed, myType, nJPTs(i_hyp, 20), weight);
 
      // lepton pt's
      hminLepPt->Fill(cuts_passed, myType, std::min(cms2.hyp_ll_p4()[i_hyp].pt(), cms2.hyp_lt_p4()[i_hyp].pt()), weight);
