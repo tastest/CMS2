@@ -40,11 +40,12 @@ uint32 default_samples = (1 <<      LOOP_WW)	|
      (1 << LOOP_TTBAR	)	|
      (1 << LOOP_TW	);
 
-uint32 eff_samples = (default_samples & ~(1 << LOOP_WW)) | (1 << LOOP_WW_EXCL);
+uint32 eff_samples = default_samples | (1 << LOOP_WW_EXCL);
+// uint32 eff_samples = (default_samples & ~(1 << LOOP_WW)) | (1 << LOOP_WW_EXCL);
 
 // #define TWIKI_OUTPUT
 #define LATEX_OUTPUT
-#define SUMMARY_OUTPUT
+//#define SUMMARY_OUTPUT
 
 // helper function used to print yield tables
 void printTable (const Looper **hists, int n, const char *fname, 
@@ -177,7 +178,7 @@ void printTableVertically (const Looper **hists, int n, const char *fname,
 		    fprintf(f, "& %3.1f$\\cdot$10$^{%d}$\\\\\n", n / exp10, log10);
 	       }
 #else
-	       fprintf(f, "&  %10.1f $\\pm$ %10.1f\\\\\n", 
+	       fprintf(f, "&  %10.2f & %5.2f", 
 		       hists[j]->CandsPassing(DileptonHypType(i)),
 		       hists[j]->RMS(DileptonHypType(i)));
 #endif
@@ -198,7 +199,7 @@ void printTableVertically (const Looper **hists, int n, const char *fname,
 	       }
 #endif	       
 	  }
-#if defined(LATEX_OUTPUT) && defined(SUMMARY_OUTPUT)
+#if defined(LATEX_OUTPUT) 
 	  fprintf(f, "\\\\\n", n);
 #endif
      }
@@ -209,10 +210,10 @@ void printTableVertically (const Looper **hists, int n, const char *fname,
      }
 #else
 #if defined(LATEX_OUTPUT)
-#if defined(SUMMARY_OUTPUT)
      fprintf(f, "\\hline\n %-30s  ", "total");
      for (int i = 0; i < 4; ++i) {
 	  const double n = cands[i];
+#if defined(SUMMARY_OUTPUT)
 	  if (n < 1000000)
 	       fprintf(f, "& %18.1f", n);
 	  else {
@@ -221,13 +222,11 @@ void printTableVertically (const Looper **hists, int n, const char *fname,
 	       const int exp10 = pow(10.0, log10);
 	       fprintf(f, "& %3.1f$\\cdot$10$^{%d}$\\\\\n", n / exp10, log10);
 	  }
+#else
+	  fprintf(f, "&  %10.2f & %5.2f", cands[i], sqrt(w2[i]));
+#endif
      }
      fprintf(f, "\\\\\n", n);
-#else
-     fprintf(f, "\\hline\n %-30s  ", "total");
-     fprintf(f, "&  %10.1f $\\pm$ %10.1f\\\\\n", cands[i], sqrt(w2[i]));
-     fprintf(f, "\\\\\n");
-#endif
 #endif
 #endif
 #if defined(LATEX_OUTPUT) && !defined(SUMMARY_OUTPUT)
@@ -249,7 +248,7 @@ void printTableVertically (const Looper **hists, int n, const char *fname,
 // run<Looper>(baseline_cuts, "Results", 1 << LOOP_WW | 1 << LOOP_WJETS)	// produce table with default cuts, WW and Wjets only
 // run<Looper>(baseline_cuts, "Results")					// produce table with default cuts, all samples
 template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones = default_samples,
-			    void (*print)(const Looper **, int, const char *, uint32) = printTable)
+			    void (*print)(const Looper **, int, const char *, uint32) = printTableVertically)
 {
      const string hist = name + ".root";
      const string tbl = name + ".tbl";
@@ -264,9 +263,9 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
      L looper_wjets		(fWjets()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS )) looper_wjets       .Loop();
      L looper_wc		(fWc()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS_AND_FRIENDS )) looper_wc       .Loop();
      L looper_vlqq		(fVlqq()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS_AND_FRIENDS )) looper_vlqq       .Loop();
-     L looper_dyee		(fDYee()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYEE  )) looper_dyee        .Loop();
-     L looper_dymm		(fDYmm()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYMM  )) looper_dymm        .Loop();
-     L looper_dytt		(fDYtt()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYTT  )) looper_dytt        .Loop();
+     L looper_dyee		(fDY20ee()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYEE  )) looper_dyee        .Loop();
+     L looper_dymm		(fDY20mm()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYMM  )) looper_dymm        .Loop();
+     L looper_dytt		(fDY20tt()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYTT  )) looper_dytt        .Loop();
      L looper_astar		(fAstar()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DY_AND_FRIENDS  )) looper_astar        .Loop();
      L looper_dy20tt		(fDY20tt()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DY_AND_FRIENDS  )) looper_dy20tt        .Loop();
      L looper_dy20mm		(fDY20mm()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DY_AND_FRIENDS  )) looper_dy20mm        .Loop();
