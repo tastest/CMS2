@@ -302,14 +302,13 @@ cuts_t Looper::DilepSelect (int i_hyp)
      if (passTrkJetVeto(i_hyp))
 	  ret |= (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS));
      // muon b tag, with 20 GeV upper cut on the muon pt
-     if (passMuonBVeto(i_hyp, true))
-	  ret |= (CUT_BIT(CUT_PASS_MUON_B_VETO));
-     else ret |= (CUT_BIT(CUT_MUON_TAGGED));
+//      if (passMuonBVeto(i_hyp, true))
+// 	  ret |= (CUT_BIT(CUT_PASS_MUON_B_VETO));
+//      else ret |= (CUT_BIT(CUT_MUON_TAGGED));
      // muon b tag, with no upper cut on the muon pt
-     if (passMuonBVeto(i_hyp, false))
-	  ret |= (CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT));
-     else ret |= (CUT_BIT(CUT_MUON_TAGGED_WITHOUT_PTCUT));
-     // Z veto
+//      if (passMuonBVeto(i_hyp, false))
+// 	  ret |= (CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT));
+//      else ret |= (CUT_BIT(CUT_MUON_TAGGED_WITHOUT_PTCUT));
      if (cms2.hyp_type()[i_hyp] == 1 || cms2.hyp_type()[i_hyp] == 2)
 	  ret |= (CUT_BIT(CUT_PASS_ZVETO));
      else if (not inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))
