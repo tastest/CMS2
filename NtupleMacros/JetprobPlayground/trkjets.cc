@@ -4,7 +4,7 @@
 #include "Math/VectorUtil.h"
 //#include "KtJet/KtEvent.h"
 //#include "KtJet/KtLorentzVector.h"
-#include "Tools/signedImpact.h"
+#include "signedImpact.h"
 #include "CORE/CMS2.h"
 
 //using namespace KtJet;

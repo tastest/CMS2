@@ -4,7 +4,7 @@
 #define LOOPER_H
 
 #include "Tools/LooperBase.h"
-#include "Tools/signedImpact.h"
+#include "signedImpact.h"
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 
