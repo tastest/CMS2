@@ -89,6 +89,8 @@ def makeCMSSWConfig(cmsswSkelFile):
         if i.find('process.load(\"CMS2.NtupleMaker.eventMaker_cfi\")') != -1:
             outFile.write('process.eventMaker.datasetName = cms.string(\"' +
                           dataSet+'\")\n')
+            outFile.write('process.eventMaker.CMS2tag     = cms.string(\"' +
+                          tag+'\")\n')
     if foundOutNtupleFile == False:
         print 'The root file you are outputting has not been found in your skeleton CMSSW config file'
         print 'Please check the name of the output root file in your PoolOutputModule, and try again'
