@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
-import string
-import commands, re
+import string, random
+import commands, re, os
 import sys 
 import xml.dom.minidom
 from xml.dom.minidom import Node
@@ -103,23 +103,6 @@ def getGoodXMLFiles(crabpath):
 ###############################################################################################################
 ################### Get Number of Events Run ###################
 
-##eventsread = 0
-##for i in range(0,len(xmlfiles)):
-##    crabxmlfile = xmlfiles[i]
-##    print 'reading '+crabxmlfile
-##    #get the number of events processed
-##    #parse the xml file
-##    doc = xml.dom.minidom.parse(crabxmlfile)
-##    for node in doc.getElementsByTagName("EventsRead"):
-##        s = node.firstChild.data
-##        #s is in $!#%^& unicode
-##        #don't need to encode in ascii, but runs faster
-##        s.encode('ascii') 
-##        eventsread = eventsread+int(s)
-        
-##print str(eventsread)+' were processed \n'
-
-
 def getNumEventsRun(crabpath):
     global totalNumEventsRun
     global goodCrabXMLFiles
@@ -147,19 +130,25 @@ def getNumEventsRun(crabpath):
 def getGoodRootFiles(datapath):
     global goodCrabXMLFiles
     global goodRootFiles
-    #j = 0 # temp
+    global CMSSWpath
+    global dcachePrefix
     tempXMLFileList = []
     for i in goodCrabXMLFiles:
         #if j > 2:
             #break
         #j = j+1
-        path = datapath + i.split('/')[len(i.split('/'))-1].replace('crab_fjr_', 'ntuple_').replace('.xml', '.root')
+        path = ''
+        if commands.getstatusoutput('echo $HOSTNAME')[1].find('ucsd') !=-1:
+            path = datapath + i.split('/')[len(i.split('/'))-1].replace('crab_fjr_', 'ntuple_').replace('.xml', '.root')
+        elif commands.getstatusoutput('echo $HOSTNAME')[1].find('fnal') !=-1:
+            path = datapath.replace('pnfs', 'usr', 1) + i.split('/')[len(i.split('/'))-1].replace('crab_fjr_', 'ntuple_').replace('.xml', '.root')
         print 'Checking File ' + path + ' for integrity'
         cmd = ""
-        if path.find("pnfs") != -1:
-            cmd = "/home/users/kalavase/crabTools/sweepRoot -o Events dcap://dcap-2.t2.ucsd.edu:22136/" + path + ' 2> /dev/null'
+        if datapath.find("pnfs") != -1:
+            cmd = "./sweepRoot -o Events " + dcachePrefix + path + ' 2> /dev/null'
+            print cmd
         else:
-            cmd = "/home/users/kalavase/crabTools/sweepRoot -o Events " + path + ' 2> /dev/null'
+            cmd = "./sweepRoot -o Events " + path + ' 2> /dev/null'
         output = commands.getoutput(cmd).split('\n')
         for k in output:
             if k.find('SUMMARY') != -1:
@@ -174,6 +163,9 @@ def getGoodRootFiles(datapath):
     goodCrabXMLFiles = tempXMLFileList
 
 
+###########################################################################
+## Get the skeleton macro and use it to make the postProcessing file
+############################################################################
 def makeRootMacros(outpath):
     global goodRootFiles
     global totalNumEventsRun
@@ -214,10 +206,14 @@ if( len(sys.argv)!=7 ):
     print '                              -o [where you would like to put your final merged, dieted file]'
     sys.exit()
 
-
+##global variables here
 crabpath = ''
 datapath = ''
 outpath = ''
+dcachePrefix = ''     
+
+    
+CMSSWpath = commands.getstatusoutput('echo $CMSSW_BASE')[1]
 for i in range (0, len(sys.argv)):
     if(sys.argv[i] == "-c"):
         crabpath   = sys.argv[i+1] + "/"
@@ -239,8 +235,35 @@ if( commands.getstatusoutput('ls ' + datapath)[0] == 256):
 if( commands.getstatusoutput('ls ' + outpath)[0] == 256):
     print '*******************************************'
     print 'The directory where you want your final root files to end up does not exist'
-    print 'Program will run, but keep in mind that ' + outpath + 'does not exist'
+    sys.exit()
 
+if( CMSSWpath ==''):
+    print '$CMSSW_BASE not set. Please do eval `scramv1 runtime -sh` (or -csh for cshell) in the release you created the ntuples in'
+    sys.exit()
+##check if files in NtupleMacros exists
+makefilepath = CMSSWpath + '/src/CMS2/NtupleMacros/NtupleTools/Makefile'
+macropath    = CMSSWpath + '/src/CMS2/NtupleTools/NtupleTools/sweepRoot.C'
+if( commands.getstatusoutput('ls ' + makefilepath)[0] == 256 or os.path.isfile('ls ' + macropath) == 256):
+    print CMSSWpath + '/src/CMS2/NtupleMacros/NtupleTools/Makefile or ' + CMSSWpath + '/src/CMS2/NtupleMacros/NtupleTools/sweepRoot.C do not exist. Please check those files out from CVS and re-try'
+    sys.exit()
+
+
+#do some gymanstics depending on whether or not we're at ucsd
+#or FNAL
+if datapath.find("pnfs") != -1:
+    uname = commands.getstatusoutput('echo $USER')[1]
+    if( commands.getstatusoutput('echo $HOSTNAME')[1].find('ucsd') !=-1):
+        publicDoors = [22136, 22137, 22138, 22139, 22140]
+        if(uname == 'kalavase' or uname == 'fgolf'):
+            publicDoors += [22162]
+        #if at UCSD, get the personal dcache door
+        dcachePrefix = 'dcap://dcap-2.t2.ucsd.edu:' + str(publicDoors[random.randrange(0,len(publicDoors), 1)]) + '/'
+    if( commands.getstatusoutput('echo $HOSTNAME')[1].find('fnal') != -1):
+        dcachePrefix = 'dcap://cmsdca.fnal.gov:24125/pnfs/fnal.gov/'
+        
+
+
+    
 
 if datapath.find("pnfs") != -1:
     print "Files are on dcache. After some processing, will transfer them to " + outpath + "/preprocessing to speed up dieting/merging/weighting step"
@@ -260,6 +283,14 @@ if datapath.find("pnfs") != -1:
 
         
 
+##now make the sweeproot macro
+cmd = 'cp ' + CMSSWpath + '/src/CMS2/NtupleMacros/NtupleTools/Makefile .'
+commands.getstatusoutput(cmd)
+cmd = 'cp ' + CMSSWpath + '/src/CMS2/NtupleMacros/NtupleTools/sweepRoot.C .'
+commands.getstatusoutput(cmd)
+cmd = 'make '
+commands.getstatusoutput(cmd)
+
 goodCrabXMLFiles = []
 goodRootFiles = []
 totalNumEventsRun = 0
@@ -273,7 +304,7 @@ if datapath.find("pnfs") != -1:
     print "Moving files from dcache to " + outpath + "/preprocessing"
     for i in goodRootFiles:
         print i
-        cmd = "dccp dcap://dcap-2.t2.ucsd.edu:22136/" + i + " " + outpath + "/preprocessing"
+        cmd = "dccp " + dcachePrefix + i + " " + outpath + "/preprocessing"
         print cmd
         print commands.getoutput(cmd)
 
