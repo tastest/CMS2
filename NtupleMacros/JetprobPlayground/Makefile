@@ -1,8 +1,8 @@
-# $Id: Makefile,v 1.1 2009/06/17 16:40:46 jmuelmen Exp $
+# $Id: Makefile,v 1.2 2009/06/18 17:08:12 fgolf Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros -I$(CLHEP_PARAM_PATH)/include
-CFLAGS = -Wall -g -O2 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS) -DTOOLSLIB
+CFLAGS = -Wall -Wno-unused-function -g -O2 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS) -DTOOLSLIB
 
 LINKER = g++
 LINKERFLAGS = $(shell root-config --ldflags)
