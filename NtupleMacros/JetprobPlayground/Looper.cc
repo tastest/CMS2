@@ -154,9 +154,9 @@ bool Looper::FilterEvent()
      //
      // duplicate filter, based on trk information and dilepton hyp
      //
-     if (cms2.trks_d0().size() == 0)
+     if (cms2.trks_d0corr().size() == 0)
 	  return true;
-     DorkyEventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.trks_d0()[0], 
+     DorkyEventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.trks_d0corr()[0], 
 				 cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
      return is_duplicate(id); 
 }
@@ -690,13 +690,13 @@ void Looper::FillDilepHistos (int i_hyp)
 	  // 1 for 2 < // |ip sig| < 5; 
 	  // 2 for |ip sig| > 5
 	  int i_qual = 0;
-	  if (fabs(cms2.trks_d0()[i] / cms2.trks_d0Err()[i]) > 2)
+	  if (fabs(cms2.trks_d0corr()[i] / cms2.trks_d0Err()[i]) > 2)
 	       i_qual = 1;
-	  if (fabs(cms2.trks_d0()[i] / cms2.trks_d0Err()[i]) > 5)
+	  if (fabs(cms2.trks_d0corr()[i] / cms2.trks_d0Err()[i]) > 5)
 	       i_qual = 2;
 	  enum { D0, Z0, NCHI2, HITS };
 	  unsigned int trkcuts = 0;
-	  if (fabs(cms2.trks_d0()[i]) < 0.1)
+	  if (fabs(cms2.trks_d0corr()[i]) < 0.1)
 	       trkcuts |= 1 << D0;
 	  if (fabs(cms2.trks_z0()[i] - hyp_z0) < 0.3)
 	       trkcuts |= 1 << Z0;
@@ -706,7 +706,7 @@ void Looper::FillDilepHistos (int i_hyp)
 	       trkcuts |= 1 << HITS;
 	  const unsigned int all = 1 << D0 | 1 << Z0 | 1 << NCHI2 | 1 << HITS;
 	  if (((trkcuts | 1 << D0) & all) == all)
-	       htrkd0	[i_qual]->Fill(cuts_passed, myType, cms2.trks_d0()[i]	, weight);
+	       htrkd0	[i_qual]->Fill(cuts_passed, myType, cms2.trks_d0corr()[i]	, weight);
 	  if (((trkcuts | 1 << Z0) & all) == all)
 	       htrkDeltaz0	[i_qual]->Fill(cuts_passed, myType, cms2.trks_z0()[i] - hyp_z0	, weight);
 	  if (((trkcuts | 1 << Z0) & all) == all)

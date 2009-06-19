@@ -454,10 +454,10 @@ protected:
 };
 
 // looper that uses kt track jets for signed impact parameters
-class KtSipLooper : public Looper {
-public:
-     KtSipLooper (Sample s, cuts_t cuts, const char *fname = 0);
-protected:
-     virtual void	MakeTrackJets (int i_hyp);
-};
+// class KtSipLooper : public Looper {
+// public:
+//      KtSipLooper (Sample s, cuts_t cuts, const char *fname = 0);
+// protected:
+//      virtual void	MakeTrackJets (int i_hyp);
+// };
 #endif

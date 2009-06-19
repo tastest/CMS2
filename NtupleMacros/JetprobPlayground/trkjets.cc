@@ -14,19 +14,11 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 
 bool passTrkjetCuts (int i_trk)
 {
-#if 0
-     // oldschool
-     return  fabs(cms2.trks_d0()[i_trk]) < 0.1 &&
-	  cms2.trks_chi2()[i_trk]/cms2.trks_ndof()[i_trk] < 4 &&
-          cms2.trks_validHits()[i_trk]   > 6 &&
-//           cms2.trks_trk_p4()[i_trk].Pt() > 2.0 &&
-	  cms2.trks_trk_p4()[i_trk].Pt() < 200.0;
-#else
-     return  fabs(cms2.trks_d0()[i_trk]) < 0.1 &&
-	  cms2.trks_chi2()[i_trk] / cms2.trks_ndof()[i_trk] < 5 &&
-// 	  fabs(cms2.trks_z0()[i_trk] - hyp_z0) < 0.3 &&
-	  cms2.trks_trk_p4()[i_trk].Pt() < 200.0;
-#endif
+  return  fabs(cms2.trks_d0corr()[i_trk]) < 0.1 &&
+       cms2.trks_chi2()[i_trk] / cms2.trks_ndof()[i_trk] < 5 &&
+       cms2.trks_validHits()[i_trk]   > 10 &&
+       cms2.trks_trk_p4()[i_trk].Pt() > 1.0 &&
+       cms2.trks_trk_p4()[i_trk].Pt() < 200.0;
 }
 
 /*pair<vector<KtLorentzVector>, vector<unsigned int> > trkjetTracks (int i_hyp)

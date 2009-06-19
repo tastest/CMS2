@@ -263,10 +263,10 @@ int JetVetoSip ()
   return run<Looper>(baseline_plus_sip_cuts, "JetVetoSip", 1 << LOOP_WW | 1 << LOOP_TTBAR | 1 << LOOP_TW);
 }
 
-int KtResults ()
-{
-     return run<KtSipLooper>(baseline_no_trackjets_cuts & ~CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT), "KtResults", 1 << LOOP_WW | 1 << LOOP_TTBAR | 1 << LOOP_TW);
-}
+//int KtResults ()
+//{
+//     return run<KtSipLooper>(baseline_no_trackjets_cuts & ~CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT), "KtResults", 1 << LOOP_WW | 1 << LOOP_TTBAR | 1 << LOOP_TW);
+//}
 
 int ConeResults ()
 {
@@ -279,9 +279,9 @@ int ConeWithSipResults ()
 			"ConeWithSipResults", 1 << LOOP_WW | 1 << LOOP_TTBAR | 1 << LOOP_TW);
 }
 
-int KtWithSipResults ()
-{
-     return run<KtSipLooper>((baseline_no_trackjets_cuts & ~CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT)) | CUT_BIT(CUT_PASS_JETVETO_SIP), 
-			     "KtWithSipResults", 1 << LOOP_WW | 1 << LOOP_TTBAR | 1 << LOOP_TW);
-}
+//int KtWithSipResults ()
+//{
+//     return run<KtSipLooper>((baseline_no_trackjets_cuts & ~CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT)) | CUT_BIT(CUT_PASS_JETVETO_SIP), 
+//			     "KtWithSipResults", 1 << LOOP_WW | 1 << LOOP_TTBAR | 1 << LOOP_TW);
+//}
 

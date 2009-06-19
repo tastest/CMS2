@@ -10,7 +10,7 @@ std::pair<double, double> signedImpact (const LorentzVector &jet, unsigned int t
 {
      TVector3 pjet(jet.px(), jet.py(), jet.pz());
      TVector3 d0;
-     d0.SetPtEtaPhi(fabs(cms2.trks_d0()[trkidx]), 0, cms2.trks_vertexphi()[trkidx]);
+     d0.SetPtEtaPhi(fabs(cms2.trks_d0corr()[trkidx]), 0, cms2.trks_d0corrPhi()[trkidx]);
      double signedImpact = d0.Dot(pjet) / pjet.Mag();
      double signedImpactErr = fabs(signedImpact / d0.Mag()) * cms2.trks_d0Err()[trkidx];
      return std::pair<double, double>(signedImpact, signedImpactErr);
@@ -33,14 +33,14 @@ void getSignedImpact(std::pair<LorentzVector, std::vector<unsigned int> > &trkje
     if (trkJet.DeltaR(trk) < 0.5)
     {
       // This track matches the track jet, make some quality cuts
-      if (fabs( cms2.trks_d0()[trkIter])   < 0.1 &&
+      if (fabs( cms2.trks_d0corr()[trkIter])   < 0.1 &&
 	  cms2.trks_chi2()[trkIter]/cms2.trks_ndof()[trkIter] < 4 &&
           cms2.trks_validHits()[trkIter]   > 6   &&
           cms2.trks_trk_p4()[trkIter].Pt() > 2.0 &&
           cms2.trks_trk_p4()[trkIter].Pt() < 50.0 )
       {
-        TVector3 d0Vector(fabs(cms2.trks_d0()[trkIter]) * cos(cms2.trks_vertexphi()[trkIter]),
-                          fabs(cms2.trks_d0()[trkIter]) * sin(cms2.trks_vertexphi()[trkIter]),
+        TVector3 d0Vector(fabs(cms2.trks_d0corr()[trkIter]) * cos(cms2.trks_d0corrPhi()[trkIter]),
+                          fabs(cms2.trks_d0corr()[trkIter]) * sin(cms2.trks_d0corrPhi()[trkIter]),
                           0);
 
         TVector3 trkJet3Vec(trkJet.Px(), trkJet.Py(), 0);
