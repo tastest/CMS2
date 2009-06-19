@@ -778,16 +778,20 @@ void Looper::FillDilepHistos (int i_hyp)
      hdilPt->Fill(cuts_passed, myType, cms2.hyp_p4()[i_hyp].pt(), weight);
     
      // Met and Met special
-     hmet->Fill(cuts_passed, myType, cms2.hyp_met()[i_hyp], weight);      
+     //     hmet->Fill(cuts_passed, myType, cms2.hyp_met()[i_hyp], weight);      
+     hmet->Fill(cuts_passed, myType, cms2.evt_metMuonJESCorr(), weight);      
+//     hmetSpec->Fill(cuts_passed, myType, 
+//		   MetSpecial(cms2.hyp_met()[i_hyp], cms2.hyp_metPhi()[i_hyp], i_hyp),
+//		   weight);
      hmetSpec->Fill(cuts_passed, myType, 
-		   MetSpecial(cms2.hyp_met()[i_hyp], cms2.hyp_metPhi()[i_hyp], i_hyp),
+		   MetSpecial(cms2.evt_metMuonJESCorr(), cms2.evt_metMuonJESCorrPhi(), i_hyp),
 		   weight);
      // track correction to the met
-     const TVector3 trkCorr = correctMETforTracks();
-     TVector3 hyp_met;
-     hyp_met.SetPtEtaPhi(cms2.hyp_met()[i_hyp], 0, cms2.hyp_metPhi()[i_hyp]);
-     hyp_met += trkCorr;
-     hmetTrkCorr->Fill(cuts_passed, myType, hyp_met.Perp(), weight);
+//     const TVector3 trkCorr = correctMETforTracks();
+//     TVector3 hyp_met;
+//     hyp_met.SetPtEtaPhi(cms2.hyp_met()[i_hyp], 0, cms2.hyp_metPhi()[i_hyp]);
+//     hyp_met += trkCorr;
+     hmetTrkCorr->Fill(cuts_passed, myType, cms2.evt_tcmet(), weight);
 
      // tag muon pt and iso
      htagMuPt->Fill(cuts_passed, myType, tagMuonPt(i_hyp), weight);
