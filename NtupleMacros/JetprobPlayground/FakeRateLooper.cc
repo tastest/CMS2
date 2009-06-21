@@ -1,4 +1,5 @@
 #include <math.h>
+#include <sstream>
 #include "TVector3.h"
 #include "CORE/selections.h"
 #include "CORE/utilities.h"
@@ -37,65 +38,76 @@ void FakeRateLooper::FillDilepHistos (int i_hyp)
      if ((cuts_passed & cuts_) != cuts_)
 	  return;
 
-     const double weight_hi = Weight(i_hyp, 1);
-     const double weight_lo = Weight(i_hyp, -1);
-     cands_passing_syst_hi[myType] += weight_hi;
-     cands_passing_syst_lo[myType] += weight_lo;
-     cands_passing_syst_hi[DILEPTON_ALL] += weight_hi;
-     cands_passing_syst_lo[DILEPTON_ALL] += weight_lo;
-     const double weight = Looper::Weight(i_hyp);
-     // this doesn't work for ee, since it assumes only one of
-     // the hyp leptons is an electron
-     if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
-	  const double err = elFakeProb(cms2.hyp_lt_index()[i_hyp], 1) - 
-	       elFakeProb(cms2.hyp_lt_index()[i_hyp], 0);
-	  const double eta = cms2.els_p4()[cms2.hyp_lt_index()[i_hyp]].eta();
-	  const double pt = cms2.els_p4()[cms2.hyp_lt_index()[i_hyp]].pt();
-	  fake_syst->Fill(eta, pt, weight * err);
-     } else if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
-	  const double err = elFakeProb(cms2.hyp_ll_index()[i_hyp], 1) - 
-	       elFakeProb(cms2.hyp_ll_index()[i_hyp], 0);
-	  const double eta = cms2.els_p4()[cms2.hyp_ll_index()[i_hyp]].eta();
-	  const double pt = cms2.els_p4()[cms2.hyp_ll_index()[i_hyp]].pt();
-	  fake_syst->Fill(eta, pt, weight * err);
-     }
-     Looper::FillDilepHistos(i_hyp);
-}
+     // the logic is as follows:
+     //
+     // first, we assume the lt to be real (by testing whether it
+     // passes the reco cuts) and calculate the probability that the
+     // ll is fake.
+     //
+     // then we switch it around and assume the ll to be real (by
+     // testing whether it passes the reco cuts) and calculate the probability that the
+     // lt is fake.
+     //
+     // this neglects double fakes (but our W+jets shouldn't contain a
+     // lot of those anyway)
+     //
+     // it also neglects the horrible things that will happen if the
+     // trigger cuts are tighter than the denominator cuts 
 
-double FakeRateLooper::Weight (int i_hyp)
-{ 
-     return Weight(i_hyp, 0);
-}
-
-double FakeRateLooper::Weight (int i_hyp, int n_sig_syst)
-{
-     double weight = Looper::Weight(i_hyp);
-     double fr = 0;
-     // this doesn't work for ee, since it assumes only one of
-     // the hyp leptons is an electron
-     if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
-	  fr = elFakeProb(cms2.hyp_lt_index()[i_hyp], n_sig_syst);
-     } else if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
-	  fr = elFakeProb(cms2.hyp_ll_index()[i_hyp], n_sig_syst);
-     }
+     double weight = Weight(i_hyp);
      
-     return weight * fr / (1 - fr); 
-}
-
-double FakeRateLooper::FakeSyst (enum DileptonHypType i) const
-{
-     switch (i) {
-     case DILEPTON_EE: case DILEPTON_EMU:
-	  return 0;
-     default:
-	  break;
-     }
-     double err2 = 0;
-     for (int i = 0; i <= fake_syst->GetNbinsX() + 1; ++i) {
-	  for (int j = 0; j <= fake_syst->GetNbinsY() + 1; ++j) {
-	       double err = fake_syst->GetBinContent(i, j);
-	       err2 += err * err;
+     double fr_ll = 0;
+     if ((cuts_passed & (CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LT_CALOISO))) == 
+	 (CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LT_CALOISO))) {
+// 	  const double eta = cms2.hyp_ll_p4()[i_hyp].eta();
+// 	  const double pt = cms2.hyp_ll_p4()[i_hyp].pt();
+	  switch (abs(cms2.hyp_ll_id()[i_hyp])) {
+	  case 11:
+	       if (isFakeable(cms2.hyp_ll_index()[i_hyp]) &&
+		   not isNumeratorElectron(cms2.hyp_ll_index()[i_hyp]))
+		    fr_ll = elFakeProb(cms2.hyp_ll_index()[i_hyp], 0);
+	       break;
+	  case 13:
+	       if (isFakeableMuon(cms2.hyp_ll_index()[i_hyp]) &&
+		   not isNumeratorMuon(cms2.hyp_ll_index()[i_hyp]))
+		    fr_ll = muFakeProb(cms2.hyp_ll_index()[i_hyp], 0);
+	       break;
+	  default:
+	       assert(0);
 	  }
      }
-     return sqrt(err2);
+
+     double fr_lt = 0;
+     if ((cuts_passed & (CUT_BIT(CUT_LL_GOOD) | CUT_BIT(CUT_LL_CALOISO))) == 
+	 (CUT_BIT(CUT_LL_GOOD) | CUT_BIT(CUT_LL_CALOISO))) {
+// 	  const double eta = cms2.hyp_lt_p4()[i_hyp].eta();
+// 	  const double pt = cms2.hyp_lt_p4()[i_hyp].pt();
+	  switch (abs(cms2.hyp_lt_id()[i_hyp])) {
+	  case 11:
+	       if (isFakeable(cms2.hyp_lt_index()[i_hyp]) &&
+		   not isNumeratorElectron(cms2.hyp_lt_index()[i_hyp]))
+		    fr_lt = elFakeProb(cms2.hyp_lt_index()[i_hyp], 0);
+	       break;
+	  case 13:
+	       if (isFakeableMuon(cms2.hyp_lt_index()[i_hyp]) &&
+		   not isNumeratorMuon(cms2.hyp_lt_index()[i_hyp]))
+		    fr_lt = muFakeProb(cms2.hyp_lt_index()[i_hyp], 0);
+	       break;
+	  default:
+	       assert(0);
+	  }
+     }
+
+     weight *= fr_lt / (1 - fr_lt) + fr_ll / (1 - fr_ll);
+
+     // just to make sure: only one of fr_lt and fr_ll should ever be non-zero
+     printf("fr_lt = %g\tfr_ll = %g\n", fr_lt, fr_ll);
+     assert(not ((fr_lt != 0) && (fr_ll != 0)));
+
+     cands_passing_[myType] += weight;
+     cands_passing_w2_[myType] += weight * weight;
+     cands_count_[myType]++;
+     cands_passing_[DILEPTON_ALL] += weight;
+     cands_passing_w2_[DILEPTON_ALL] += weight * weight;
+     cands_count_[DILEPTON_ALL]++;
 }
