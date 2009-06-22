@@ -118,21 +118,21 @@ void Looper::BookHistos ()
        hminjetprob		= new NMinus1Hist(sample_, "minjetprob"              ,	120, 0, 1.2	, cuts_, 0);
        hmaxptjetprob		= new NMinus1Hist(sample_, "maxptjetprob"            ,	120, 0, 1.2	, cuts_, 0);
        for (int i = 0; i < 4; ++i) {
-	    htrackJetPt[i]	= new NMinus1Hist(sample_, Form("%s%d", "trackJetPt"	 , i)	      ,	100, 0, 100	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)) 	);
+	    htrackJetPt[i]	= new NMinus1Hist(sample_, Form("%s%d", "trackJetPt"	 , i)	      ,	100, 0, 100	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_JPT20)) 	);
 	    hjpJetPt[i]		= new NMinus1Hist(sample_, Form("%s%d", "jpJetPt"	 , i)	      ,	100, 0, 100	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_SIP)) 	);
-	    htrd0ByPt 	    [i]	= new NMinus1Hist(sample_, Form("%s%d", "trd0ByPt"       , i)         ,	100, -0.1, 0.1	, cuts_, 0);
-	    htrd0sigByPt    [i]	= new NMinus1Hist(sample_, Form("%s%d", "trd0sigByPt"    , i)         ,	100, -10, 10  	, cuts_, 0);
-	    htrd0ByNtrks    [i]	= new NMinus1Hist(sample_, Form("%s%d", "trd0ByNtrks"    , i)         ,	100, -0.1, 0.1	, cuts_, 0);
-	    htrd0sigByNtrks [i]	= new NMinus1Hist(sample_, Form("%s%d", "trd0sigByNtrks" , i)         ,	100, -10, 10  	, cuts_, 0);
-	    hjetd0ByPt 	    [i]	= new NMinus1Hist(sample_, Form("%s%d", "jetd0ByPt"      , i)         ,	100, -0.1, 0.1	, cuts_, 0);
-	    hjetd0sigByPt   [i]	= new NMinus1Hist(sample_, Form("%s%d", "jetd0sigByPt"   , i)         ,	100, -10, 10  	, cuts_, 0);
-	    hjetmaxd0sigByPt[i]	= new NMinus1Hist(sample_, Form("%s%d", "jetmaxd0sigByPt", i)         ,	100, 0, 10  	, cuts_, 0);
-	    hjetd0ByNtrks   [i]	= new NMinus1Hist(sample_, Form("%s%d", "jetd0ByNtrks"   , i)         ,	100, -0.1, 0.1	, cuts_, 0);
-	    hjetd0sigByNtrks[i]	= new NMinus1Hist(sample_, Form("%s%d", "jetd0sigByNtrks", i)         ,	100, -10, 10  	, cuts_, 0);
+	    htrd0ByPt 	    [i]	= new NMinus1Hist(sample_, Form("%s%d", "trd0ByPt"       , i)         ,	100, -0.1, 0.1	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_JPT20)) );
+	    htrd0sigByPt    [i]	= new NMinus1Hist(sample_, Form("%s%d", "trd0sigByPt"    , i)         ,	100, -10, 10  	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_JPT20)) );
+	    htrd0ByNtrks    [i]	= new NMinus1Hist(sample_, Form("%s%d", "trd0ByNtrks"    , i)         ,	100, -0.1, 0.1	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_JPT20)) );
+	    htrd0sigByNtrks [i]	= new NMinus1Hist(sample_, Form("%s%d", "trd0sigByNtrks" , i)         ,	100, -10, 10  	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_JPT20)) );
+	    hjetd0ByPt 	    [i]	= new NMinus1Hist(sample_, Form("%s%d", "jetd0ByPt"      , i)         ,	100, -0.1, 0.1	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_JPT20)) );
+	    hjetd0sigByPt   [i]	= new NMinus1Hist(sample_, Form("%s%d", "jetd0sigByPt"   , i)         ,	100, -10, 10  	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_JPT20)) );
+	    hjetmaxd0sigByPt[i]	= new NMinus1Hist(sample_, Form("%s%d", "jetmaxd0sigByPt", i)         ,	100, 0, 10  	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_JPT20)) );
+	    hjetd0ByNtrks   [i]	= new NMinus1Hist(sample_, Form("%s%d", "jetd0ByNtrks"   , i)         ,	100, -0.1, 0.1	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_JPT20)) );
+	    hjetd0sigByNtrks[i]	= new NMinus1Hist(sample_, Form("%s%d", "jetd0sigByNtrks", i)         ,	100, -10, 10  	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_JPT20)) );
 	    hjetmaxd0sigByNtrks[i]	= new NMinus1Hist(sample_, Form("%s%d", "jetmaxd0sigByNtrks", i)         ,	100, 0, 10  	, cuts_, 0);
-	    hjetprobByPt[i]	= new NMinus1Hist(sample_, Form("%s%d", "jetprobByPt", i)      ,	100, 0, 1	, cuts_, 0);
-	    hjetprobByNtrks[i]	= new NMinus1Hist(sample_, Form("%s%d", "jetprobByNtrks", i)      ,	100, 0, 1	, cuts_, 0);
-	    hmaxptjetprobByPt[i]= new NMinus1Hist(sample_, Form("%s%d", "maxptjetprobByPt", i)      ,	100, 0, 1	, cuts_, 0);
+	    hjetprobByPt[i]	= new NMinus1Hist(sample_, Form("%s%d", "jetprobByPt", i)      ,	100, 0, 1	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_JPT20)) );
+	    hjetprobByNtrks[i]	= new NMinus1Hist(sample_, Form("%s%d", "jetprobByNtrks", i)      ,	100, 0, 1	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_JPT20)) );
+	    hmaxptjetprobByPt[i]= new NMinus1Hist(sample_, Form("%s%d", "maxptjetprobByPt", i)      ,	100, 0, 1	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_JPT20)) );
        }
        hhypDeltaz0sig 	= new NMinus1Hist(sample_, "hypDeltaz0sig" , 100, -10, 10, cuts_, 0 );
        for (int i = 0; i < 3; ++i) {
@@ -467,32 +467,32 @@ bool compareJetpt (const std::pair<LorentzVector, std::vector<unsigned int> > &j
 void Looper::MakeTrackJets (int i_hyp)
 {
      trackjets_.clear();
-     for ( unsigned int itrkjet = 0; itrkjet < cms2.trkjets_p4().size(); ++itrkjet) {
-	  // get rid of trkjets that are hypothesis electrons
-	  if ((abs(cms2.hyp_lt_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],cms2.trkjets_p4()[itrkjet]) < 0.4) ||
-	      (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.trkjets_p4()[itrkjet]) < 0.4))
+     for ( unsigned int ijptjet = 0; ijptjet < cms2.jpts_p4().size(); ++ijptjet) {
+	  // get rid of jpts that are hypothesis electrons
+	  if ((abs(cms2.hyp_lt_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],cms2.jpts_p4()[ijptjet]) < 0.4) ||
+	      (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.jpts_p4()[ijptjet]) < 0.4))
 	       continue;
 	  // why not muons?
-	  TLorentzVector trkJet(cms2.trkjets_p4()[itrkjet].Px(), cms2.trkjets_p4()[itrkjet].Py(),
-				cms2.trkjets_p4()[itrkjet].Pz(), cms2.trkjets_p4()[itrkjet].E());
+	  TLorentzVector jptJet(cms2.jpts_p4()[ijptjet].Px(), cms2.jpts_p4()[ijptjet].Py(),
+				cms2.jpts_p4()[ijptjet].Pz(), cms2.jpts_p4()[ijptjet].E());
 
-	  vector<unsigned int> trkidx;
+	  vector<unsigned int> jptidx;
 	  // Loop over all tracks and match to the track jet
-	  for (unsigned int trkIter = 0; trkIter < cms2.trks_trk_p4().size(); ++trkIter)
+	  for (unsigned int jptIter = 0; jptIter < cms2.jpts_p4().size(); ++jptIter)
 	  {
-	       TLorentzVector trk(cms2.trks_trk_p4()[trkIter].Px(), cms2.trks_trk_p4()[trkIter].Py(),
-				  cms2.trks_trk_p4()[trkIter].Pz(), cms2.trks_trk_p4()[trkIter].E() );
+	       TLorentzVector jpt(cms2.jpts_p4()[jptIter].Px(), cms2.jpts_p4()[jptIter].Py(),
+				  cms2.jpts_p4()[jptIter].Pz(), cms2.jpts_p4()[jptIter].E() );
 	       
-	       if (trkJet.DeltaR(trk) < 0.5) {
+	       if (jptJet.DeltaR(jpt) < 0.5) {
 		    // This track matches the track jet, make some quality cuts
-		    if (passTrkjetCuts(trkIter)) {
-			 trkidx.push_back(trkIter);
+		    if (passTrkjetCuts(jptIter)) {
+			 jptidx.push_back(jptIter);
 		    }
 	       }
 	  }
-	  std::pair<LorentzVector, std::vector<unsigned int> > trkjet(cms2.trkjets_p4()[itrkjet],
-								      trkidx);
-	  trackjets_.push_back(trkjet);
+	  std::pair<LorentzVector, std::vector<unsigned int> > jptjet(cms2.jpts_p4()[ijptjet],
+								      jptidx);
+	  trackjets_.push_back(jptjet);
      }
      // sort track jets by pt
      sort(trackjets_.begin(), trackjets_.end(), compareJetpt);
@@ -579,11 +579,11 @@ void Looper::FillDilepHistos (int i_hyp)
      double jetprob_max_ptjet = 1.1;
      for (unsigned int itrkjet = 0; itrkjet < TrackJets().size(); ++itrkjet) {
 	  int i_pt;
-	  if (TrackJets()[itrkjet].first.pt() > 15)
+	  if (TrackJets()[itrkjet].first.pt() > 30)
 	       i_pt = 0;
-	  else if (TrackJets()[itrkjet].first.pt() > 10)
+	  else if (TrackJets()[itrkjet].first.pt() > 25)
 	       i_pt = 1;
-	  else if (TrackJets()[itrkjet].first.pt() > 5)
+	  else if (TrackJets()[itrkjet].first.pt() > 20)
 	       i_pt = 2;
 	  else i_pt = 3;
 	  hjetpt->Fill(cuts_passed, myType, TrackJets()[itrkjet].first.pt(), weight);
@@ -703,11 +703,11 @@ void Looper::FillDilepHistos (int i_hyp)
 	  unsigned int trkcuts = 0;
 	  if (fabs(cms2.trks_d0corr()[i]) < 0.1)
 	       trkcuts |= 1 << D0;
-	  if (fabs(cms2.trks_z0()[i] - hyp_z0) < 0.3)
+	  // 	  if (fabs(cms2.trks_z0()[i] - hyp_z0) < 0.3)
 	       trkcuts |= 1 << Z0;
-	  if (cms2.trks_chi2()[i] / cms2.trks_ndof()[i] < 4)
+	  if (cms2.trks_chi2()[i] / cms2.trks_ndof()[i] < 5)
 	       trkcuts |= 1 << NCHI2;
-	  if (cms2.trks_validHits()[i] > 6)
+	  if (cms2.trks_validHits()[i] > 10)
 	       trkcuts |= 1 << HITS;
 	  const unsigned int all = 1 << D0 | 1 << Z0 | 1 << NCHI2 | 1 << HITS;
 	  if (((trkcuts | 1 << D0) & all) == all)
