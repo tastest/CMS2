@@ -15,7 +15,7 @@ void browseStacks( bool makePictures=false, bool wait=true, const char* dir = "o
 // Find out what the names of the existing histograms are
 // The histogram names are XX_YY_ZZ, where XX is the sample,
 // eg, "tt", YY is the actual name, ZZ is the final state, eg, "ee"
-  TObjArray* myNames = getMyHistosNames("tt","ee",keep2D);
+  TObjArray* myNames = getMyHistosNames("ww","ee",keep2D);
 
 
 // Now loop over histograms, and make stacks

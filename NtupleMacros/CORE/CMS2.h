@@ -2472,6 +2472,14 @@ void Init(TTree *tree) {
 	if(trkjets_p4_branch == 0 ) {
 	cout << "Branch trkjets_p4 does not exist." << endl;
 	}
+	vtxs_position_branch = 0;
+	if (tree->GetAlias("vtxs_position") != 0) {
+		vtxs_position_branch = tree->GetBranch(tree->GetAlias("vtxs_position"));
+		vtxs_position_branch->SetAddress(&vtxs_position_);
+	}
+	if(vtxs_position_branch == 0 ) {
+	cout << "Branch vtxs_position does not exist." << endl;
+	}
   tree->SetMakeClass(1);
 	evt_dataset_branch = 0;
 	if (tree->GetAlias("evt_dataset") != 0) {
@@ -2520,14 +2528,6 @@ void Init(TTree *tree) {
 	}
 	if(scs_vtx_branch == 0 ) {
 	cout << "Branch scs_vtx does not exist." << endl;
-	}
-	vtxs_position_branch = 0;
-	if (tree->GetAlias("vtxs_position") != 0) {
-		vtxs_position_branch = tree->GetBranch(tree->GetAlias("vtxs_position"));
-		vtxs_position_branch->SetAddress(&vtxs_position_);
-	}
-	if(vtxs_position_branch == 0 ) {
-	cout << "Branch vtxs_position does not exist." << endl;
 	}
 	hyp_jets_mc_gp_p4_branch = 0;
 	if (tree->GetAlias("hyp_jets_mc_gp_p4") != 0) {

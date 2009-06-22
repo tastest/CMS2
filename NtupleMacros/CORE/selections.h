@@ -1,7 +1,10 @@
 #ifndef SELECTION_H
 #define SELECTION_H
 #include "TLorentzVector.h"
+#include "Math/LorentzVector.h"
 #include <vector>
+
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 
 bool inZmassWindow (float mass);
 bool supertightElectron (int index);
@@ -42,6 +45,7 @@ bool isDYmm();
 bool isDYtt();
 int nTrkJets(int i_hyp);
 bool passTrkJetVeto(int i_hyp);
+std::vector<LorentzVector> JPTs(int i_hyp, double etThreshold);
 unsigned int nJPTs(int i_hyp, double etThreshod);
 unsigned int nJPTs(int i_hyp); // with default threshold = 20
 // bool passCaloTrkjetCombo ();

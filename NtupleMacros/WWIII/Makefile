@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.9 2009/03/06 07:00:02 jmuelmen Exp $
+# $Id: Makefile,v 1.9.2.1 2009/06/22 12:15:23 jmuelmen Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
@@ -62,6 +62,9 @@ faketables: $(FAKETABLES)
 
 .PHONY: efftables
 efftables: $(EFFTABLES)
+
+.PHONY: nm1tables
+nm1tables: $(NM1TABLES)
 
 .PHONY: resulttables
 resulttables: $(RESULTTABLES)

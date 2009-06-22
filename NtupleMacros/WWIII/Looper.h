@@ -358,6 +358,7 @@ protected:
      NMinus1Hist	*hnJPTJet;
      NMinus1Hist	*hcaloJetPt;
      NMinus1Hist	*htrackJetPt;
+     NMinus1Hist	*hJPTJetPt;
      NMinus1Hist	*hminLepPt;
      NMinus1Hist	*hmaxLepPt;
      NMinus1Hist	*hltPt;
