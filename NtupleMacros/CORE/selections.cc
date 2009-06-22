@@ -866,20 +866,25 @@ unsigned int nJPTs (int i_hyp)
      return nJPTs(i_hyp, 20);
 }
 
+std::vector<LorentzVector> JPTs(int i_hyp, double etThreshold)
+{
+     std::vector<LorentzVector> ret;
+     const double etaMax      = 3.0;
+     const double vetoCone    = 0.4;
+     
+     for ( unsigned int i=0; i < cms2.jpts_p4().size(); ++i) {
+	  if ( cms2.jpts_p4()[i].Et() < etThreshold ) continue;
+	  if ( TMath::Abs(cms2.jpts_p4()[i].eta()) > etaMax ) continue;
+	  if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ||
+	       TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ) continue;
+	  ret.push_back(cms2.jpts_p4()[i]);
+     }
+     return ret;
+}
+
 unsigned int nJPTs(int i_hyp, double etThreshold)
 {
-  unsigned int njets(0);
-  const double etaMax      = 3.0;
-  const double vetoCone    = 0.4;
-
-  for ( unsigned int i=0; i < cms2.jpts_p4().size(); ++i) {
-    if ( cms2.jpts_p4()[i].Et() < etThreshold ) continue;
-    if ( TMath::Abs(cms2.jpts_p4()[i].eta()) > etaMax ) continue;
-    if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ||
-	 TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ) continue;
-    ++njets;
-  }
-  return njets;
+     return JPTs(i_hyp, etThreshold).size();
 }
 
 bool passTrkJetVeto(int i_hyp)
