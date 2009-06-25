@@ -395,17 +395,17 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
       if ( classname.Contains("vector") ) {
           classname = classname(0,classname.Length()-2);
           classname.ReplaceAll("edm::Wrapper<","");
-          headerf << "\t static " << classname << " &" << aliasname << "()";
+          headerf << "\t" << classname << " &" << aliasname << "()";
       } else {
           classname = classname(0,classname.Length()-1);
           classname.ReplaceAll("edm::Wrapper<","");
           if(classname != "" ) {
-              headerf << "\t static " << classname << " &" << aliasname << "()";
+              headerf << "\t" << classname << " &" << aliasname << "()";
           } else {
               if(title.EndsWith("/F"))
-                  headerf << "\tstatic float &" << aliasname << "()";
+                  headerf << "\tfloat &" << aliasname << "()";
               if(title.EndsWith("/I"))
-                  headerf << "\tstatic int &" << aliasname << "()";
+                  headerf << "\tint &" << aliasname << "()";
           }
       }
       headerf << " { return cms2." << aliasname << "(); }" << endl;
@@ -531,17 +531,6 @@ void makeSrcFile(TFile *f, bool paranoid, std::string Classname, std::string bra
   
 }
 
-void makeSkimHeader(TFile *f, std::string branchNamesFile) {
-  
-  ifstream branchesF(branchNamesFile.c_str());
-  std::vector<TString> v_branches;
-  while(!branchesF.eof()) {
-    string temp;
-    getline(branchesF, temp);
-    v_branches.push_back(temp);
-  }
-  branchesF.close();
-}
   
       
 void makeBranchFile(std::string branchNamesFile) {
@@ -553,6 +542,9 @@ void makeBranchFile(std::string branchNamesFile) {
     string temp;
     getline(branchesF, temp);
     TString line(temp);
+    // do not use commented lines
+    if(line.BeginsWith("//"))
+      continue;
     vector<TString> v_line;
     TIter objIt((TObjArray*)line.Tokenize(" "));
     TObject *obj=NULL;
@@ -577,7 +569,7 @@ void makeBranchFile(std::string branchNamesFile) {
     TString datatype("");
     for(unsigned int i = 0; i < v_line.size()-1; i++) {
       TString temp = v_line[i];
-      if(temp.Contains("vector") && !temp.Contains("std::"))
+      if(temp.Contains("vector") && !temp.Contains("std::")) 
 	temp.ReplaceAll("vector", "std::vector");
       if(temp.Contains("LorentzVector") && !temp.Contains("ROOT::Math::LorentzVector"))
 	temp.ReplaceAll("LorentzVector", "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >");
@@ -599,8 +591,12 @@ void makeBranchFile(std::string branchNamesFile) {
 
   for(unsigned int i = 0; i < v_datatypes.size(); i++) {
     TString temp(v_varNames.at(i));
-    //cout << temp << "_" << endl;
-    branchfile << v_datatypes.at(i) << " " 
+    if(v_datatypes.at(i).Contains("vector") || v_datatypes.at(i).Contains("LorentzVector")) {
+      branchfile << v_datatypes.at(i) << " *" 
+	       << temp.ReplaceAll("_","")+"_;" << endl;
+      continue;
+    }
+      branchfile << v_datatypes.at(i) << " " 
 	       << temp.ReplaceAll("_","")+"_;" << endl;
   }
 
