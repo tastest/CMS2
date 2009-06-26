@@ -54,9 +54,9 @@ void Looper::BookHistos ()
        hetaJet3		= new NMinus1Hist(sample_, "etaJet3"         ,	 50	, -4, 4		, cuts_, 0       	);
        hetaJet4		= new NMinus1Hist(sample_, "etaJet4"         ,	 50	, -4, 4		, cuts_, 0       	);
        hnumTightLep	= new NMinus1Hist(sample_, "numTightLep"     ,	 6	, -0.5, 5.5	, cuts_, 0             	);
-       heleRelIso	= new NMinus1Hist(sample_, "eleRelIso"       ,	 101	, 0, 1.01	, cuts_, 0		);
-       heleRelIsoTrk	= new NMinus1Hist(sample_, "eleRelIsoTrk"    ,	 101	, 0, 1.01	, cuts_, 0		);
-       hmuRelIso	= new NMinus1Hist(sample_, "muRelIso"        ,	 101	, 0, 1.01	, cuts_, (CUT_BIT(CUT_LT_ISO)) | (CUT_BIT(CUT_LL_ISO))	);
+       heleRelIso	= new NMinus1Hist(sample_, "eleRelIso"       ,	 101	, 0, 1.01	, cuts_, (CUT_BIT(CUT_LT_ISO)) | (CUT_BIT(CUT_LL_ISO)) | (CUT_BIT(CUT_LT_CALOISO)) | (CUT_BIT(CUT_LL_CALOISO)));
+       heleRelIsoTrk	= new NMinus1Hist(sample_, "eleRelIsoTrk"    ,	 101	, 0, 1.01	, cuts_, (CUT_BIT(CUT_LT_ISO)) | (CUT_BIT(CUT_LL_ISO)) | (CUT_BIT(CUT_LT_CALOISO)) | (CUT_BIT(CUT_LL_CALOISO)));
+       hmuRelIso	= new NMinus1Hist(sample_, "muRelIso"        ,	 101	, 0, 1.01	, cuts_, (CUT_BIT(CUT_LT_ISO)) | (CUT_BIT(CUT_LL_ISO)) | (CUT_BIT(CUT_LT_CALOISO)) | (CUT_BIT(CUT_LL_CALOISO))	);
        hminRelIso	= new NMinus1Hist(sample_, "minRelIso"       ,	 101	, 0, 1.01	, cuts_, (CUT_BIT(CUT_LT_ISO)) | (CUT_BIT(CUT_LL_ISO))	);
        hminRelIso_withCalo = new NMinus1Hist	(sample_, "minRelIso_withCalo", 101, 0, 1.01	, cuts_, (CUT_BIT(CUT_LT_ISO)) | (CUT_BIT(CUT_LL_ISO))	);
        htagMuPt		= new NMinus1Hist(sample_, "tagMuPt"	      ,	 100	, 0, 100	, cuts_ & ~((CUT_BIT(CUT_PASS_MUON_B_VETO)) | (CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT)) | (CUT_BIT(CUT_PASS_EXTRALEPTON_VETO))), (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)));
