@@ -18,6 +18,11 @@ EffH1F::EffH1F( char* name, char* title, Int_t nbinsx, Double_t xlow, Double_t x
   numer->Sumw2();
   denom->Sumw2();
   eff->Sumw2();
+
+  xmin = 0;
+  xmax = -1; //this acts as flag, if it's -1, no SetRange
+  ymin = 0; //defaults for y are ok
+  ymax = 1.0; //default in MakeEff is 1.0 anyway
 }
 
 EffH1F::~EffH1F() {
@@ -26,8 +31,10 @@ EffH1F::~EffH1F() {
   delete eff;
 }
 
-void EffH1F::MakeEff( const double ymin, const bool rebin, const Float_t n ) {
+void EffH1F::MakeEff( const double yminpar, const double ymaxpar, const bool rebin, const Float_t n ) {
   eff->Divide( numer, denom, 1,1,"B" );
+  ymin = yminpar;
+  ymax = ymaxpar;
 
   if( rebin ) {
 	// Dave's code
@@ -74,8 +81,29 @@ void EffH1F::MakeEff( const double ymin, const bool rebin, const Float_t n ) {
   //gr_eff->Draw("AP");
   //gr_eff->GetYaxis()->SetRangeUser(0.7, 1.05);
   eff->Draw();
-  eff->GetYaxis()->SetRangeUser(ymin, 1.0);
+  eff->GetYaxis()->SetRangeUser(ymin, ymax);
+  //if( xmin != -1 && xmax != -1 )
+  if( xmax != -1 )
+	eff->GetXaxis()->SetRangeUser(xmin, xmax);
   c1->Write();
   c1->SaveAs((TString)eff->GetName()+".png");
 }
 
+
+//This function should only be called after calling MakeEff because it uses the eff member hist
+void EffH1F::Rebin(const int factor) {
+
+  TCanvas *c1 = new TCanvas(eff->GetName(), eff->GetName());
+  //TH1F* hrebin = new TH1F();
+  //hrebin = (TH1F*)eff->Rebin( factor );
+  //rebin = (TH1F*)
+  eff->Rebin( factor );
+  //hrebin->Draw();
+  eff->Scale(1/double(factor));
+  eff->GetYaxis()->SetRangeUser(ymin, ymax);
+  eff->Draw();
+  //c1->Write();
+  c1->SaveAs((TString)eff->GetName()+"_rebin.png");
+  //c1->SaveAs((TString)hrebin->GetName()+"_rebin.png");
+  
+}
