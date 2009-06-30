@@ -70,8 +70,8 @@ void EffH1F::MakeEff( const double yminpar, const double ymaxpar, const bool reb
 	//gr_eff->SetMarkerSize(0.1);
 	gr_eff->BayesDivide(h1_numer_rebin, h1_denom_rebin);
   }
-  else
-	gr_eff->BayesDivide(numer, denom);
+  //else  //good if i want both, but it's not saved, so just a waste now
+  //gr_eff->BayesDivide(numer, denom);
 
   //TFile outf("Results2.root","RECREATE");
   TFile outf("Results2.root","UPDATE");
