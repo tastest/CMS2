@@ -28,6 +28,8 @@ void Looper::BookHistos ()
   e_hcal_iso = new TH1F( Form("%s_e_hcal_iso", SampleName().c_str()), Form("%s_e_hcal_iso", SampleName().c_str()), isobins, 0, isomax );
   e_ecal_iso = new TH1F( Form("%s_e_ecal_iso", SampleName().c_str()), Form("%s_e_ecal_iso", SampleName().c_str()), isobins, 0, isomax );
   e_trck_iso = new TH1F( Form("%s_e_trck_iso", SampleName().c_str()), Form("%s_e_trck_iso", SampleName().c_str()), isobins, 0, isomax );
+  e_trck_iso_match015 = new TH1F( Form("%s_e_trck_iso_match015", SampleName().c_str()), Form("%s_e_trck_iso_match015", SampleName().c_str()), isobins, 0, isomax );
+  e_trck_iso_recalc = new TH1F( Form("%s_e_trck_iso_recalc", SampleName().c_str()), Form("%s_e_trck_iso_recalc", SampleName().c_str()), isobins, 0, isomax );
   e_hcal_iso_dr05_1 = new TH1F( Form("%s_e_hcal_iso_dr05-1", SampleName().c_str()), Form("%s_e_hcal_iso_dr05-1", SampleName().c_str()), isobins, 0, isomax );
   e_ecal_iso_dr05_1 = new TH1F( Form("%s_e_ecal_iso_dr05-1", SampleName().c_str()), Form("%s_e_ecal_iso_dr05-1", SampleName().c_str()), isobins, 0, isomax );
   e_trck_iso_dr05_1 = new TH1F( Form("%s_e_trck_iso_dr05-1", SampleName().c_str()), Form("%s_e_trck_iso_dr05-1", SampleName().c_str()), isobins, 0, isomax );
@@ -129,6 +131,30 @@ cuts_t Looper::LepSelect(int i, int flv) {
 }
 //end Looper::LepSelect
 
+//reproduce pat track isolation
+double track_iso(int els_idx) {
+  //input is index of electron in els block
+  //return is the sum of the pt of all tracks in the range 0.015 < dR < 0.3 around the els
+
+  double isolation = 0;
+  //for( unsigned int i=0; i<cms2.trks_trk_p4().size(); i++ ) {
+  for( unsigned int i=0; i<cms2.trks_trk_p4().size(); i++ ) {
+	//cuts on track quality
+	if( cms2.trks_trk_p4()[i].pt() <= 1.0 )
+	//if( cms2.trks_trk_p4()[i].pt() <= 1.0 || abs( cms2.trks_z0corr()[i] ) >= 0.2 )
+	//if( cms2.trks_trk_p4()[i].pt() <= 1.0 || abs( cms2.els_vertex_p4()[i].z() - cms2.trks_vertex_p4()[i].z() ) >= 0.2 )
+	//if( cms2.trks_trk_p4()[i].pt() <= 1.0 || abs( cms2.els_z0corr()[i] - cms2.trks_z0corr()[i] ) > 0.2 )
+	//if( cms2.trks_trk_p4()[i].pt() <= 1.0 || abs( cms2.els_z0()[i] - cms2.trks_z0()[i] ) > 0.2 )
+	  continue;
+	//double dR = ROOT::Math::VectorUtil::DeltaR( cms2.els_trk_p4()[els_idx], cms2.trks_trk_p4()[i] );
+	double dR = ROOT::Math::VectorUtil::DeltaR( cms2.els_p4In()[els_idx], cms2.trks_trk_p4()[i] );
+	if( dR > 0.015 && dR < 0.3 )
+	//if( dR < 0.3 )
+	  isolation += cms2.trks_trk_p4()[i].pt();
+  }
+
+  return isolation;
+}
 
 cuts_t Looper::EventSelect ()
 {
@@ -192,6 +218,7 @@ void Looper::FillEventHistos ()
   // dr matching
   //cout << "dr matching\n";
   const double maxcone = 0.1;
+  const double maxcone_small = 0.015; //this is the inner cone for ele track iso in ww note
   double min_dr[2] = {999,999};
   unsigned int idxlepreco[2] = {999,999};
   for( unsigned int i=0;i<idxlep1.size();i++ ) {
@@ -213,6 +240,7 @@ void Looper::FillEventHistos ()
   double hcaliso[2] = {0,0};
   double ecaliso[2] = {0,0};
   double trckiso[2] = {0,0};
+  double trckiso_calc[2] = {0,0};
   //fill iso histos only for those reco els which match
   for( int i=0;i<2;i++ ) {
 	if( min_dr[i] < maxcone ) {
@@ -231,6 +259,13 @@ void Looper::FillEventHistos ()
 		e_ecal_iso_dr05_1->Fill( ecaliso[i], weight );
 		e_trck_iso_dr05_1->Fill( trckiso[i], weight );
 		//e_reco_cuts[i] |= CUT_BIT(CUT_EL_DR);
+	  }
+	  //another cone size, but leave the first
+	  if( min_dr[i] < maxcone_small ) {
+		trckiso_calc[i] = pt/(pt + track_iso(idxlepreco[i]) );
+		
+		e_trck_iso_match015->Fill( trckiso[i], weight );
+		e_trck_iso_recalc->Fill( trckiso_calc[i], weight );
 	  }
 	}
   }
@@ -289,6 +324,8 @@ void Looper::End ()
   e_hcal_iso->Draw(); c1->SaveAs((TString)e_hcal_iso->GetName()+".png");
   e_ecal_iso->Draw(); c1->SaveAs((TString)e_ecal_iso->GetName()+".png");
   e_trck_iso->Draw(); c1->SaveAs((TString)e_trck_iso->GetName()+".png");
+  e_trck_iso_match015->Draw(); c1->SaveAs((TString)e_trck_iso_match015->GetName()+".png");
+  e_trck_iso_recalc->Draw(); c1->SaveAs((TString)e_trck_iso_recalc->GetName()+".png");
 
   e_hcal_iso_dr05_1->Draw(); c1->SaveAs((TString)e_hcal_iso_dr05_1->GetName()+".png"); 
   e_ecal_iso_dr05_1->Draw(); c1->SaveAs((TString)e_ecal_iso_dr05_1->GetName()+".png");
