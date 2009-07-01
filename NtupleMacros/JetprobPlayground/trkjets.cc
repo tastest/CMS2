@@ -6,6 +6,7 @@
 //#include "KtJet/KtLorentzVector.h"
 #include "signedImpact.h"
 #include "CORE/CMS2.h"
+#include <math.h>
 
 //using namespace KtJet;
 using std::vector;
@@ -14,11 +15,13 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 
 bool passTrkjetCuts (int i_trk)
 {
+
   return  fabs(cms2.trks_d0corr()[i_trk]) < 0.1 &&
        cms2.trks_chi2()[i_trk] / cms2.trks_ndof()[i_trk] < 5 &&
        cms2.trks_validHits()[i_trk]   > 10 &&
        cms2.trks_trk_p4()[i_trk].Pt() > 1.0 &&
-       cms2.trks_trk_p4()[i_trk].Pt() < 200.0;
+    cms2.trks_trk_p4()[i_trk].Pt() < 200.0;
+    //    cms2.trks_d0Err()[i_trk] > 20e-4;
 }
 
 /*pair<vector<KtLorentzVector>, vector<unsigned int> > trkjetTracks (int i_hyp)
@@ -67,7 +70,7 @@ void calculateJetProb (const std::vector<std::pair<LorentzVector, std::vector<un
      jetprobs->clear();
      jetprobs->reserve(trackJets.size());
      for (unsigned int itrkjet = 0; itrkjet < trackJets.size(); ++itrkjet) {
-	  double jetprob = 1;
+	  double Pi = 1;
 	  int n_jetprob_trks = 0;
 	  for (unsigned int i = 0; i < trackJets[itrkjet].second.size(); ++i) {
 	       const std::pair<double, double> sip = 
@@ -76,11 +79,19 @@ void calculateJetProb (const std::vector<std::pair<LorentzVector, std::vector<un
 	       const double d0err = sip.second;
 	       const double sipsig = d0 / d0err;
 	       if (sipsig > 0) {
-		    jetprob *= exp(-0.5 * sipsig * sipsig);
+		 Pi *= exp(-0.5 * sipsig * sipsig / 1.1 / 1.1);
 		    n_jetprob_trks++;
 	       }
 	  }
-	  jetprobs->push_back(jetprob);
+	  double sum = 0;
+	  int fact = 1;
+	  for (unsigned int i = 0; i < trackJets[itrkjet].second.size(); fact *= ++i) {
+	    if (i > 1)
+	      //	      std::cout << "fact = " << fact << ", " << i << std::endl;
+	    sum += ( pow(-log(Pi), i) / fact );
+	  }
+	  double jetprob = Pi * sum;
+	  jetprobs->push_back(jetprob);	  
      }
 }
 

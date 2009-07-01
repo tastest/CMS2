@@ -112,8 +112,28 @@ const static cuts_t baseline_cuts =
   //      (CUT_BIT(CUT_PASS_JETVETO_CALO)	) |
   //      (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)	) |  
   (CUT_BIT(CUT_PASS_JETVETO_JPT20)	) |  
-  //  (CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT))	|
-  (CUT_BIT(CUT_PASS_TRIGGER));   
+  //(CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT))	|
+  (CUT_BIT(CUT_PASS_TRIGGER)) ;
+  //  (CUT_BIT(CUT_PASS_JETVETO_SIP) );
+
+const static cuts_t new_baseline_cuts = 
+  (CUT_BIT(CUT_LT_PT)		) | 
+  (CUT_BIT(CUT_LL_PT)		) | 
+  (CUT_BIT(CUT_OPP_SIGN)		) | 
+  (CUT_BIT(CUT_PASS4_TCMET)		) |  
+  (CUT_BIT(CUT_PASS2_TCMET)		) |  
+  (CUT_BIT(CUT_LT_GOOD)		) | 
+  (CUT_BIT(CUT_LL_GOOD)		) | 
+  (CUT_BIT(CUT_LT_CALOISO)	) |  
+  (CUT_BIT(CUT_LL_CALOISO)	) |  
+  (CUT_BIT(CUT_PASS_ZVETO)	) | 
+  //      (CUT_BIT(CUT_PASS_ADDZVETO)	) | 
+  //      (CUT_BIT(CUT_PASS_JETVETO_CALO)	) |
+  //      (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)	) |  
+  (CUT_BIT(CUT_PASS_JETVETO_JPT20)	) |  
+  (CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT))	|
+  (CUT_BIT(CUT_PASS_TRIGGER)) |
+  (CUT_BIT(CUT_PASS_JETVETO_SIP) );
 
 const static cuts_t calojet_veto_cuts = (baseline_cuts & ~CUT_BIT(CUT_PASS_JETVETO_JPT20))
   | CUT_BIT(CUT_PASS_JETVETO_CALO);
@@ -138,7 +158,7 @@ const static cuts_t feb_baseline_cuts =
   (CUT_BIT(CUT_LL_ISO)		) | 
   (CUT_BIT(CUT_PASS_ZVETO)	) | 
   (CUT_BIT(CUT_PASS_ADDZVETO)	) | 
-  (CUT_BIT(CUT_PASS_JETVETO_CALO)	); 
+  (CUT_BIT(CUT_PASS_JETVETO_CALO) ) ;
 
 // + fix for broken CSA07 alpgen events 
 const static cuts_t feb_baseline_with_ntrks_cuts = 
@@ -289,6 +309,15 @@ static const cuts_t eff_jet = eff_iso | CUT_BIT(CUT_PASS_JETVETO_JPT20);
 static const cuts_t eff_tcmet = eff_jet | CUT_BIT(CUT_PASS2_TCMET) | CUT_BIT(CUT_PASS4_TCMET);
 static const cuts_t eff_zveto = eff_tcmet | CUT_BIT(CUT_PASS_ZVETO);
 static const cuts_t eff_muveto = eff_zveto | CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT);
+
+static const cuts_t d0err_cuts =   (CUT_BIT(CUT_LT_PT)		) | 
+  (CUT_BIT(CUT_LL_PT)		) | 
+  (CUT_BIT(CUT_OPP_SIGN)	) | 
+  (CUT_BIT(CUT_LT_GOOD)		) | 
+  (CUT_BIT(CUT_LL_GOOD)		) | 
+  (CUT_BIT(CUT_LT_CALOISO)	) |  
+  (CUT_BIT(CUT_LL_CALOISO)	) ;
+
 //----------------------------------------------------------------------
 // Loopers 
 //----------------------------------------------------------------------
@@ -440,6 +469,8 @@ protected:
   NMinus1Hist *hsipsignm;
   // for the other signed impact parameter study
   NMinus1Hist	*htrd0;
+  NMinus1Hist   *htrd0errorBad;
+  NMinus1Hist   *htrd0errorGood;
   NMinus1Hist	*htrd0sig;
   NMinus1Hist	*htrd0ByPt[4];      
   NMinus1Hist	*htrd0sigByPt[4];   
@@ -473,6 +504,11 @@ protected:
   NMinus1Hist	*htrkDeltaz0sig[3];
   NMinus1Hist	*htrknchi2[3];
   NMinus1Hist	*htrkvalidhits[3];
+
+  NMinus1Hist   *hpromptMud0Err;
+  TH2D          *hntrksvsjptpt;
+  NMinus1Hist   *hmaxptjetprobNtrks5;
+  NMinus1Hist   *hmaxntrksPt10;
 
   // track jets: a track jet is a pair<LorentzVector, vector<track indices>>
   std::vector<std::pair<LorentzVector, std::vector<unsigned int> > > &TrackJets () { return trackjets_; }

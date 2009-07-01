@@ -103,8 +103,10 @@ void Looper::BookHistos ()
        hsipsigbj = new NMinus1Hist(sample_, "sipsigbj" , 100, -10, 10, cuts_, 0 );
        hsipsignm = new NMinus1Hist(sample_, "sipsignm" , 100, -10, 10, cuts_, 0 );
        
-       htrd0 			= new NMinus1Hist(sample_, "trd0"                    ,	100, -0.1, 0.1	, cuts_, 0);
-       htrd0sig 		= new NMinus1Hist(sample_, "trd0sig"                 ,	100, -10, 10  	, cuts_, 0);
+       htrd0 			= new NMinus1Hist(sample_, "trd0"                    ,	100, -0.1, 0.1	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_JPT20)) );
+       htrd0errorBad		= new NMinus1Hist(sample_, "trd0errorBad"            ,	20, 0, 40e-4	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_JPT20)) );
+       htrd0errorGood		= new NMinus1Hist(sample_, "trd0errorGood"           ,	20, 0, 40e-4	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_JPT20)) );
+       htrd0sig 		= new NMinus1Hist(sample_, "trd0sig"                 ,	100, -10, 10  	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_JPT20)) );
        htrd0Strange 		= new NMinus1Hist(sample_, "trd0Strange"             ,	100, -0.1, 0.1	, cuts_, 0); // mother is a Ks or Lambda
        htrd0sigStrange		= new NMinus1Hist(sample_, "trd0sigStrange" 	     ,	100, -10, 10  	, cuts_, 0); // mother is a Ks or Lambda
        hjetpt 			= new NMinus1Hist(sample_, "jetpt"                   ,	100, 0, 100	, cuts_, 0);
@@ -136,7 +138,7 @@ void Looper::BookHistos ()
        }
        hhypDeltaz0sig 	= new NMinus1Hist(sample_, "hypDeltaz0sig" , 100, -10, 10, cuts_, 0 );
        for (int i = 0; i < 3; ++i) {
-	    htrkd0	   [i] = new NMinus1Hist(sample_, Form("%s%d", "trkd0"        	, i), 100, -1, 1,	cuts_, 0);
+	    htrkd0   [i] = new NMinus1Hist(sample_, Form("%s%d", "trkd0"        	, i), 100, -1, 1,	cuts_, 0);
 	    htrkDeltaz0	   [i] = new NMinus1Hist(sample_, Form("%s%d", "trkDeltaz0"   	, i), 100, -1, 1,	cuts_, 0);
 	    htrkDeltaz0sig [i] = new NMinus1Hist(sample_, Form("%s%d", "trkDeltaz0sig"	, i), 100, -10, 10,	cuts_, 0);
 	    htrknchi2	   [i] = new NMinus1Hist(sample_, Form("%s%d", "trknchi2"     	, i), 100, 0, 10,	cuts_, 0);
@@ -151,6 +153,11 @@ void Looper::BookHistos ()
        hjpJetPt0trJetPt0	= new TH2D(Form("%s_jpJetPt0trJetPt0_all", sample_.name.c_str()), Form("%s_jpJetPt0trJetPt0_all", sample_.name.c_str()), 
 				   102, -2, 100, 102, -2, 100);
        hjpJetPt0trJetPt0->SetLineColor(sample_.histo_color);
+
+       hpromptMud0Err		= new NMinus1Hist(sample_, "promptMud0Err"            ,	50, 0, 100e-4	, cuts_, 0);
+       hmaxptjetprobNtrks5	= new NMinus1Hist(sample_, "maxptjetprobNtrks5"            ,	20, 0, 20	, cuts_, 0);
+       hntrksvsjptpt = new TH2D(Form("%s_ntrksvsjptpt_all", sample_.name.c_str()), Form("%s_ntrksvsjptpt_all", sample_.name.c_str()), 10, 0, 10, 102, -2, 100);
+       hmaxntrksPt10	= new NMinus1Hist(sample_, "maxntrksPt10"            ,	10, 0, 10	, cuts_, 0);
 }
 
 bool Looper::FilterEvent()
@@ -350,17 +357,24 @@ cuts_t Looper::DilepSelect (int i_hyp)
  //*****************************************************************
      // track jet veto with signed impact parameter 
      //*****************************************************************
-     bool pass_sip = true;
-     for (unsigned int itrkjet = 0; itrkjet < TrackJets().size(); ++itrkjet) {
-	  if (TrackJets()[itrkjet].first.pt() < 10)
-	       break;
-	  if (TrackJetProbs()[itrkjet] < 1e-2) {
-	       pass_sip = false;
-	       break;
-	  }
+
+     double max_pt = 0;
+     double jetprob = 1.1;
+
+     for (unsigned int itrkjet = 0; itrkjet < TrackJets().size(); ++itrkjet) { 
+       
+       jetprob = TrackJetProbs()[itrkjet];
+
+       if( TrackJets()[itrkjet].second.size() > 2 && TrackJets()[itrkjet].first.pt() > max_pt && jetprob < 1e-2 ) {
+	 max_pt = TrackJets()[itrkjet].first.pt();
+       }
      }
-     if (pass_sip)
-	  ret |= CUT_BIT(CUT_PASS_JETVETO_SIP);
+
+     if( max_pt < 10 ) {
+       ret |= (CUT_BIT(CUT_PASS_JETVETO_SIP));
+     }
+
+     
 
      //*****************************************************************
      // this logic is here for historical curiosity (fake rate for emu
@@ -476,22 +490,28 @@ void Looper::MakeTrackJets (int i_hyp)
 	  TLorentzVector jptJet(cms2.jpts_p4()[ijptjet].Px(), cms2.jpts_p4()[ijptjet].Py(),
 				cms2.jpts_p4()[ijptjet].Pz(), cms2.jpts_p4()[ijptjet].E());
 
-	  vector<unsigned int> jptidx;
+	  vector<unsigned int> trkidx;
 	  // Loop over all tracks and match to the track jet
-	  for (unsigned int jptIter = 0; jptIter < cms2.jpts_p4().size(); ++jptIter)
+	  for (unsigned int trkiter = 0; trkiter < cms2.trks_trk_p4().size(); ++trkiter)
 	  {
-	       TLorentzVector jpt(cms2.jpts_p4()[jptIter].Px(), cms2.jpts_p4()[jptIter].Py(),
-				  cms2.jpts_p4()[jptIter].Pz(), cms2.jpts_p4()[jptIter].E() );
+
+	    if (passTrkjetCuts(trkiter)) {
+	      TLorentzVector trk(cms2.trks_trk_p4()[trkiter].Px(), cms2.trks_trk_p4()[trkiter].Py(),
+				  cms2.trks_trk_p4()[trkiter].Pz(), cms2.trks_trk_p4()[trkiter].E() );
+
+	    //	       std::cout << "found track with eta " << jpt.eta() << " and phi " << jpt.phi() << std::endl;
 	       
-	       if (jptJet.DeltaR(jpt) < 0.5) {
+	      if (jptJet.DeltaR(trk) < 0.5) {
 		    // This track matches the track jet, make some quality cuts
-		    if (passTrkjetCuts(jptIter)) {
-			 jptidx.push_back(jptIter);
-		    }
-	       }
+
+		trkidx.push_back(trkiter);
+			 //			 std::cout << "found a track with pt " << jpt.pt() << std::endl;
+	      }
+	    }
 	  }
+	  
 	  std::pair<LorentzVector, std::vector<unsigned int> > jptjet(cms2.jpts_p4()[ijptjet],
-								      jptidx);
+								      trkidx);
 	  trackjets_.push_back(jptjet);
      }
      // sort track jets by pt
@@ -548,6 +568,11 @@ void Looper::FillDilepHistos (int i_hyp)
 
      hntracks->Fill(cuts_passed, myType, cms2.trks_trk_p4().size(), weight);
 
+     if( myType == 1 ){
+       hpromptMud0Err->Fill(cuts_passed, myType, cms2.hyp_lt_d0Err()[i_hyp], weight);
+       hpromptMud0Err->Fill(cuts_passed, myType, cms2.hyp_ll_d0Err()[i_hyp], weight);
+     }
+
    // sip jet properties
      int nsipjets = 0;
      double sippts[4] = { -1, -1, -1, -1 };
@@ -565,6 +590,9 @@ void Looper::FillDilepHistos (int i_hyp)
 	  }
 	  hjpJetNtr->Fill(cuts_passed, myType, TrackJets()[itrkjet].second.size(), weight);
 	  nsipjets++;
+
+	  if ((cuts_passed & cuts_) == cuts_)
+	    hntrksvsjptpt->Fill( TrackJets()[itrkjet].second.size(), TrackJets()[itrkjet].first.pt() );
      }
      hnjpJets->Fill(cuts_passed, myType, nsipjets, weight);
      if ((cuts_passed & cuts_) == cuts_) {
@@ -573,19 +601,21 @@ void Looper::FillDilepHistos (int i_hyp)
 	  hjpJetPt0trJetPt0->Fill(sippts[0], trjpts[0], weight);
      }
 
-    // signed impact parameter study (FG3 && J.MÃ¼.)
+    // signed impact parameter study (FG3 && J.Mü.)
      double min_jetprob = 1.1;
      double max_ptjet = 0;
      double jetprob_max_ptjet = 1.1;
+     int max_ntrks = 0;
      for (unsigned int itrkjet = 0; itrkjet < TrackJets().size(); ++itrkjet) {
 	  int i_pt;
-	  if (TrackJets()[itrkjet].first.pt() > 30)
+	  if (TrackJets()[itrkjet].first.pt() > 20)
 	       i_pt = 0;
-	  else if (TrackJets()[itrkjet].first.pt() > 25)
+	  else if (TrackJets()[itrkjet].first.pt() > 15)
 	       i_pt = 1;
-	  else if (TrackJets()[itrkjet].first.pt() > 20)
+	  else if (TrackJets()[itrkjet].first.pt() > 10)
 	       i_pt = 2;
-	  else i_pt = 3;
+	  else
+	    i_pt = 3;
 	  hjetpt->Fill(cuts_passed, myType, TrackJets()[itrkjet].first.pt(), weight);
 	  
 	  int i_ntr;
@@ -598,7 +628,6 @@ void Looper::FillDilepHistos (int i_hyp)
 	  else i_ntr = 3;
 	  hjetntr->Fill(cuts_passed, myType, TrackJets()[itrkjet].second.size(), weight);
 	  
-	  double jetprob = 1;
 	  int n_jetprob_trks = 0;
 	  double jet_sip = 0;
 	  double jet_sipsig = 0;
@@ -610,6 +639,15 @@ void Looper::FillDilepHistos (int i_hyp)
 	       double d0err = sip.second;
 	       const double sipsig = d0 / d0err;
 	       htrd0	->Fill(cuts_passed, myType, d0, weight);
+	       /*
+	       if( sipsig > 5 && fabs(d0) < 0.1) {
+		 htrd0errorBad->Fill(cuts_passed, myType, log(d0err), weight);
+		 //		 std::cout << "d0error = " << d0err << std::endl; 
+	       }
+	       if( sipsig< 2 && fabs(d0) < 0.1) {
+		 htrd0errorGood->Fill(cuts_passed, myType, log(d0err), weight);
+		 //		 std::cout << "d0error = " << d0err << std::endl; 
+		 }*/
 	       htrd0sig	->Fill(cuts_passed, myType, sipsig, weight);
 	       htrd0ByPt	[i_pt]->Fill(cuts_passed, myType, d0, weight);
 	       htrd0sigByPt	[i_pt]->Fill(cuts_passed, myType, sipsig, weight);
@@ -637,14 +675,15 @@ void Looper::FillDilepHistos (int i_hyp)
 	       if (sipsig > jet_maxsipsig)
 		    jet_maxsipsig = sipsig;
 	       if (sipsig > 0) {
-		    jetprob *= exp(-0.5 * sipsig * sipsig);
+		 //		    jetprob *= exp(-0.5 * sipsig * sipsig / 1.1 / 1.1);
 		    n_jetprob_trks++;
 		    if (TrackJets()[itrkjet].second.size() > 3 && 
 			TrackJets()[itrkjet].first.pt() > 10) {
-			 htrkprob->Fill(cuts_passed, myType, exp(-0.5 * sipsig * sipsig), weight);
+			 htrkprob->Fill(cuts_passed, myType, exp(-0.5 * sipsig * sipsig / 1.1 / 1.1), weight);
 		    }
 	       }
 	  }
+	  double jetprob = TrackJetProbs()[itrkjet];
 	  hjetd0		       ->Fill(cuts_passed, myType, jet_sip, 	weight);
 	  hjetd0sig	       ->Fill(cuts_passed, myType, jet_sipsig,	weight);
 	  hjetmaxd0sig	       ->Fill(cuts_passed, myType, jet_maxsipsig,	weight);
@@ -665,14 +704,27 @@ void Looper::FillDilepHistos (int i_hyp)
 	       if (jp < min_jetprob)
 		    min_jetprob = jp;
 	  }
-	  if (TrackJets()[itrkjet].second.size() > 3 && 
+	  //	  if (TrackJets()[itrkjet].second.size() > 3 && 
+	  /*
+	  if (TrackJets()[itrkjet].second.size() > 0 && 
 	      TrackJets()[itrkjet].first.pt() > max_ptjet) {
 	       max_ptjet = TrackJets()[itrkjet].first.pt();
 	       jetprob_max_ptjet = jetprob;
+	       }*/
+	  if (TrackJets()[itrkjet].second.size() > 1 && 
+	      TrackJets()[itrkjet].first.pt() > max_ptjet && jetprob < 1e-2) {
+	       max_ptjet = TrackJets()[itrkjet].first.pt();
+	       jetprob_max_ptjet = jetprob;
+	  }
+	  if (TrackJets()[itrkjet].first.pt() > 10 && jetprob < 1e-2) {
+	    if( TrackJets()[itrkjet].second.size() > max_ntrks )
+	      max_ntrks = TrackJets()[itrkjet].second.size();
 	  }
      }
      hminjetprob->Fill(cuts_passed, myType, min_jetprob, weight);
      hmaxptjetprob->Fill(cuts_passed, myType, jetprob_max_ptjet, weight);
+     hmaxptjetprobNtrks5->Fill(cuts_passed, myType, max_ptjet, weight);
+     hmaxntrksPt10->Fill(cuts_passed, myType, max_ntrks, weight);
      int i_pt;
      if (max_ptjet > 15)
 	  i_pt = 0;
@@ -699,30 +751,44 @@ void Looper::FillDilepHistos (int i_hyp)
 	       i_qual = 1;
 	  if (fabs(cms2.trks_d0corr()[i] / cms2.trks_d0Err()[i]) > 5)
 	       i_qual = 2;
-	  enum { D0, Z0, NCHI2, HITS };
+	  enum { D0, D0ERR, NCHI2, HITS };
 	  unsigned int trkcuts = 0;
 	  if (fabs(cms2.trks_d0corr()[i]) < 0.1)
 	       trkcuts |= 1 << D0;
 	  // 	  if (fabs(cms2.trks_z0()[i] - hyp_z0) < 0.3)
-	       trkcuts |= 1 << Z0;
+	  if( cms2.trks_d0Err()[i] > 20e-4 )
+	       trkcuts |= 1 << D0ERR;
 	  if (cms2.trks_chi2()[i] / cms2.trks_ndof()[i] < 5)
 	       trkcuts |= 1 << NCHI2;
 	  if (cms2.trks_validHits()[i] > 10)
 	       trkcuts |= 1 << HITS;
-	  const unsigned int all = 1 << D0 | 1 << Z0 | 1 << NCHI2 | 1 << HITS;
-	  if (((trkcuts | 1 << D0) & all) == all)
-	       htrkd0	[i_qual]->Fill(cuts_passed, myType, cms2.trks_d0corr()[i]	, weight);
-	  if (((trkcuts | 1 << Z0) & all) == all)
-	       htrkDeltaz0	[i_qual]->Fill(cuts_passed, myType, cms2.trks_z0()[i] - hyp_z0	, weight);
-	  if (((trkcuts | 1 << Z0) & all) == all)
-	       htrkDeltaz0sig[i_qual]->Fill(cuts_passed, myType, 
-					    (cms2.trks_z0()[i] - hyp_z0) / 
-					    sqrt(0.25 * hyp_delta_z0Err * hyp_delta_z0Err + 
-						 cms2.trks_z0Err()[i] * cms2.trks_z0Err()[i]), weight);
+	  const unsigned int all = 1 << D0 | 1 << D0ERR | 1 << NCHI2 | 1 << HITS;
+	  if (((trkcuts | 1 << D0) & all) == all) {
+	    htrkd0	[i_qual]->Fill(cuts_passed, myType, cms2.trks_d0corr()[i]	, weight);
+	    
+	  }
+	  
+	  if (((trkcuts | 1 << D0ERR) & all) == all) {
+	    if( i_qual == 2 ) {
+	      htrd0errorBad->Fill(cuts_passed, myType, cms2.trks_d0Err()[i], weight);
+	      //		 std::cout << "d0error = " << d0err << std::endl; 
+	    }
+	    if( i_qual == 0 ) {
+	      htrd0errorGood->Fill(cuts_passed, myType, cms2.trks_d0Err()[i], weight);
+	      //		 std::cout << "d0error = " << d0err << std::endl; 
+	    }
+	    //	       htrkDeltaz0	[i_qual]->Fill(cuts_passed, myType, cms2.trks_z0()[i] - hyp_z0	, weight);
+	  }
+	  /*
+	    if (((trkcuts | 1 << D0ERR) & all) == all)
+	    htrkDeltaz0sig[i_qual]->Fill(cuts_passed, myType, 
+	    (cms2.trks_z0()[i] - hyp_z0) / 
+	    sqrt(0.25 * hyp_delta_z0Err * hyp_delta_z0Err + 
+	    cms2.trks_z0Err()[i] * cms2.trks_z0Err()[i]), weight);*/
 	  if (((trkcuts | 1 << NCHI2) & all) == all)
-	       htrknchi2	[i_qual]->Fill(cuts_passed, myType, cms2.trks_chi2()[i] / cms2.trks_ndof()[i], weight);
+	    htrknchi2	[i_qual]->Fill(cuts_passed, myType, cms2.trks_chi2()[i] / cms2.trks_ndof()[i], weight);
 	  if (((trkcuts | 1 << HITS) & all) == all)
-	       htrkvalidhits	[i_qual]->Fill(cuts_passed, myType, cms2.trks_validHits()[i], weight);
+	    htrkvalidhits	[i_qual]->Fill(cuts_passed, myType, cms2.trks_validHits()[i], weight);
      }
 
      // jet count

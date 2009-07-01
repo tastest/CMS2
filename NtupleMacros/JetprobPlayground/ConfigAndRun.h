@@ -312,6 +312,16 @@ int Results ()
   return run<Looper>(baseline_cuts, "Results", 1 << LOOP_WW | 1 << LOOP_TTBAR);
 }
 
+int Results_new ()
+{
+  return run<Looper>(new_baseline_cuts, "Results_new", 1 << LOOP_WW | 1 << LOOP_TTBAR);
+}
+
+int Results_SIP ()
+{
+  return run<Looper>(baseline_cuts | CUT_BIT(CUT_PASS_JETVETO_SIP), "Results_SIPS", 1 << LOOP_WW | 1 << LOOP_TTBAR);
+}
+
 int Results_W ()
 {
      return run<Looper>(baseline_cuts, "Results_W", (1 << LOOP_WJETS) | (1 << LOOP_WJETS_AND_FRIENDS));
@@ -493,6 +503,11 @@ int Wjets_SS_FOs_Not_Numerator ()
 int Wjets_SS_Fakerate ()
 {
      return run<FakeRateLooper>(fakerate_ss_denominator_not_numerator_cuts, "Wjets_SS_Fakerate");
+}
+
+int PromptMu_d0Err ()
+{
+  return run<Looper>(d0err_cuts, "PromptMu_d0Err", 1 << LOOP_DYMM );
 }
 /*
 int Efficiency_base ()
