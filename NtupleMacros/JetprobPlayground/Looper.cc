@@ -33,6 +33,7 @@ void Looper::BookHistos ()
        hnTrackJet	= new NMinus1Hist(sample_, "nTrackJet"       ,	 6	, -0.5, 5	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_CALO)) | (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)) 	);
        hnJPTJet		= new NMinus1Hist(sample_, "nJPTJet"       ,	 6	, -0.5, 5	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_CALO)) | (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)) 	);
        hcaloJetPt	= new NMinus1Hist(sample_, "caloJetPt"       ,	 6	, -0.5, 5	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_CALO)) 	);
+       hJPTJetPt	= new NMinus1Hist(sample_, "JPTJetPt"      ,	 30	, 0, 150	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)) 	| (CUT_BIT(CUT_PASS_JETVETO_JPT20)));
 //        hjpJetPt		= new NMinus1Hist(sample_, "jpJetPt"         ,	 100	, 0, 100	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_SIP)) 	);
        hjpJetNtr	= new NMinus1Hist(sample_, "jpJetNtr"        ,	 11	, -0.5, 10.5	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_SIP)) 	);
        hnjpJets		= new NMinus1Hist(sample_, "njpJets"         ,	 6	, -0.5, 5.5	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_SIP)) 	);
@@ -796,6 +797,15 @@ void Looper::FillDilepHistos (int i_hyp)
      hnCaloJet	->Fill(cuts_passed, myType, cms2.hyp_njets()[i_hyp], weight);
      hnTrackJet	->Fill(cuts_passed, myType, nTrkJets(i_hyp), weight);
      hnJPTJet	->Fill(cuts_passed, myType, nJPTs(i_hyp, 20), weight);
+
+     // jet pt's (of the max jet) -- so much work we only do it for the ones we care about
+     std::vector<LorentzVector> allJpts = JPTs(i_hyp, 0);
+     double maxPtJPT = -1;
+     for (unsigned int i = 0; i < allJpts.size(); ++i) {
+	  if (allJpts[i].pt() > maxPtJPT)
+	       maxPtJPT = allJpts[i].pt();
+     }
+     hJPTJetPt->Fill(cuts_passed, myType, maxPtJPT, weight);
 
      // lepton pt's
      hminLepPt->Fill(cuts_passed, myType, std::min(cms2.hyp_ll_p4()[i_hyp].pt(), cms2.hyp_lt_p4()[i_hyp].pt()), weight);

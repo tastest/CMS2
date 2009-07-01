@@ -88,7 +88,7 @@ void calculateJetProb (const std::vector<std::pair<LorentzVector, std::vector<un
 	  for (unsigned int i = 0; i < trackJets[itrkjet].second.size(); fact *= ++i) {
 	    if (i > 1)
 	      //	      std::cout << "fact = " << fact << ", " << i << std::endl;
-	    sum += ( pow(-log(Pi), i) / fact );
+		 sum += ( ::pow(-log(Pi), i) / fact );
 	  }
 	  double jetprob = Pi * sum;
 	  jetprobs->push_back(jetprob);	  
