@@ -19,9 +19,9 @@ NMinus1Hist::NMinus1Hist (const Sample &s, const std::string &name,
      mask.push_back(cuts & ~cut_mask_);
      string local_name = name;
      if ( name.find_first_of(";") < name.size() ) {
-       local_name = name.substr(0,name.find_first_of(";")) + "-N-1" + name.substr(name.find_first_of(";"));
+	  local_name = name.substr(0,name.find_first_of(";")) + "N1" + name.substr(name.find_first_of(";"));
      } else {
-       local_name = name + "-N-1";
+	  local_name = name + "N1";
      }
      h_NMinus1[0] = new DileptonHist(s, local_name, bins, min, max);
 }
