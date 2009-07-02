@@ -139,8 +139,6 @@ void Looper::FillDilepHistos (int i_hyp)
 int Looper::Zcat (int i_hyp) const
 {
      // hypo in Z mass window
-     printf("%d %d %f\n", cms2.hyp_lt_id()[i_hyp], cms2.hyp_ll_id()[i_hyp],
-	    cms2.hyp_p4()[i_hyp].mass());
      if (abs(cms2.hyp_lt_id()[i_hyp]) == abs(cms2.hyp_ll_id()[i_hyp])
 	 && cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] < 0 &&
 	 inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))
@@ -171,12 +169,13 @@ int Looper::Jetcat (int i_hyp) const
 
 int Looper::Bucket (int i_hyp) const
 {
-     printf("%d %d\n", cms2.hyp_lt_id()[i_hyp], cms2.hyp_ll_id()[i_hyp]);
      if (cms2.hyp_lt_id()[i_hyp] == -11 && cms2.hyp_ll_id()[i_hyp] == -11)
 	  return 0;
      if (cms2.hyp_lt_id()[i_hyp] == -13 && cms2.hyp_ll_id()[i_hyp] == -13)
 	  return 1;
      if (cms2.hyp_lt_id()[i_hyp] == -11 && cms2.hyp_ll_id()[i_hyp] == -13)
+	  return 2;
+     if (cms2.hyp_lt_id()[i_hyp] == -13 && cms2.hyp_ll_id()[i_hyp] == -11)
 	  return 2;
      if (cms2.hyp_lt_id()[i_hyp] ==  11 && cms2.hyp_ll_id()[i_hyp] == 11)
 	  return 3;
@@ -184,13 +183,19 @@ int Looper::Bucket (int i_hyp) const
 	  return 4;
      if (cms2.hyp_lt_id()[i_hyp] ==  11 && cms2.hyp_ll_id()[i_hyp] == 13)
 	  return 5;
+     if (cms2.hyp_lt_id()[i_hyp] ==  13 && cms2.hyp_ll_id()[i_hyp] == 11)
+	  return 5;
      if (cms2.hyp_lt_id()[i_hyp] == -11 && cms2.hyp_ll_id()[i_hyp] == 13)
 	  return 6;
      if (cms2.hyp_lt_id()[i_hyp] ==  11 && cms2.hyp_ll_id()[i_hyp] == -13)
 	  return 7;
      if (cms2.hyp_lt_id()[i_hyp] == -11 && cms2.hyp_ll_id()[i_hyp] == 11)
 	  return 8;
+     if (cms2.hyp_lt_id()[i_hyp] ==  11 && cms2.hyp_ll_id()[i_hyp] == -11)
+	  return 8;
      if (cms2.hyp_lt_id()[i_hyp] == -13 && cms2.hyp_ll_id()[i_hyp] == 13)
+	  return 9;
+     if (cms2.hyp_lt_id()[i_hyp] ==  13 && cms2.hyp_ll_id()[i_hyp] == -13)
 	  return 9;
      assert(false);
 }
