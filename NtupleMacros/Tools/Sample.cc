@@ -261,7 +261,7 @@ Sample fSingleTop_sChannel ()
 Sample fLM1 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/SUSY_LM1-sftsht-Summer08-IDEAL_V11_redigi_v1/skim/*.root";
+     std::string sample = prefix + "cms2-V01-03-01/SUSY_LM1-sftsht_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root";
      c->Add(sample.c_str());
      Sample ret = { c, LM1, 37, 1, "LM1", false, 0. };
      return ret;
@@ -270,7 +270,7 @@ Sample fLM1 ()
 Sample fLM2 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/SUSY_LM2-sftsht-Summer08-IDEAL_V11_redigi_v1/merge*.root";
+     std::string sample = prefix + "cms2-V01-03-01/SUSY_LM2-sftsht_Summer08_IDEAL_V11_redigi_v1/merge*.root";
      c->Add(sample.c_str());
      Sample ret = { c, LM2, 37, 1, "LM2", false, 0. };
      return ret;
@@ -279,7 +279,7 @@ Sample fLM2 ()
 Sample fLM3 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/SUSY_LM3-sftsht-Summer08-IDEAL_V11_redigi_v1/merge*.root";
+     std::string sample = prefix + "cms2-V01-03-01/SUSY_LM3-sftsht_Summer08_IDEAL_V11_redigi_v1/merge*.root";
      c->Add(sample.c_str());
      Sample ret = { c, LM3, 37, 1, "LM3", false, 0. };
      return ret;
@@ -288,7 +288,7 @@ Sample fLM3 ()
 Sample fLM4 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/SUSY_LM4-sftsht-Summer08-IDEAL_V11_redigi_v1/merge*.root";
+     std::string sample = prefix + "cms2-V01-03-01/SUSY_LM4-sftsht_Summer08_IDEAL_V11_redigi_v1/merge*.root";
      c->Add(sample.c_str());
      Sample ret = { c, LM4, 37, 1, "LM4", false, 0. };
      return ret;
@@ -297,7 +297,7 @@ Sample fLM4 ()
 Sample fLM5 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/SUSY_LM5-sftsht-Summer08-IDEAL_V11_redigi_v1/merge*.root";
+     std::string sample = prefix + "cms2-V01-03-01/SUSY_LM5-sftsht_Summer08_IDEAL_V11_redigi_v1/merge*.root";
      c->Add(sample.c_str());
      Sample ret = { c, LM5, 37, 1, "LM5", false, 0. };
      return ret;
@@ -306,7 +306,7 @@ Sample fLM5 ()
 Sample fLM6 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/SUSY_LM6-sftsht-Summer08-IDEAL_V11_redigi_v1/merge*.root";
+     std::string sample = prefix + "cms2-V01-03-01/SUSY_LM6-sftsht_Summer08_IDEAL_V11_redigi_v1/merge*.root";
      c->Add(sample.c_str());
      Sample ret = { c, LM6, 37, 1, "LM6", false, 0. };
      return ret;
@@ -315,7 +315,7 @@ Sample fLM6 ()
 Sample fLM7 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/SUSY_LM7-sftsht-Summer08-IDEAL_V11_redigi_v1/merge*.root";
+     std::string sample = prefix + "cms2-V01-03-01/SUSY_LM7-sftsht_Summer08_IDEAL_V11_redigi_v1/merge*.root";
      c->Add(sample.c_str());
      Sample ret = { c, LM7, 37, 1, "LM7", false, 0. };
      return ret;
@@ -324,7 +324,7 @@ Sample fLM7 ()
 Sample fLM8 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/SUSY_LM8-sftsht-Summer08-IDEAL_V11_redigi_v1/merge*.root";
+     std::string sample = prefix + "cms2-V01-03-01/SUSY_LM8-sftsht_Summer08_IDEAL_V11_redigi_v1/merge*.root";
      c->Add(sample.c_str());
      Sample ret = { c, LM8, 37, 1, "LM8", false, 0. };
      return ret;
@@ -333,7 +333,7 @@ Sample fLM8 ()
 Sample fLM9 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/SUSY_LM9-sftsht-Summer08-IDEAL_V11_redigi_v1/merge*.root";
+     std::string sample = prefix + "cms2-V01-03-01/SUSY_LM9-sftsht_Summer08_IDEAL_V11_redigi_v1/merge*.root";
      c->Add(sample.c_str());
      Sample ret = { c, LM9, 37, 1, "LM9", false, 0. };
      return ret;
@@ -342,7 +342,7 @@ Sample fLM9 ()
 Sample fLM9p ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/SUSY_LM9p-sftsht-Summer08-IDEAL_V11_redigi_v1/merge*.root";
+     std::string sample = prefix + "cms2-V01-03-01/SUSY_LM9p-sftsht_Summer08_IDEAL_V11_redigi_v1/merge*.root";
      c->Add(sample.c_str());
      Sample ret = { c, LM9p, 37, 1, "LM9p", false, 0. };
      return ret;
@@ -351,7 +351,7 @@ Sample fLM9p ()
 Sample fLM10 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/SUSY_LM10-sftsht-Summer08-IDEAL_V11_redigi_v1/merge*.root";
+     std::string sample = prefix + "cms2-V01-03-01/SUSY_LM10-sftsht_Summer08_IDEAL_V11_redigi_v1/merge*.root";
      c->Add(sample.c_str());
      Sample ret = { c, LM10, 37, 1, "LM10", false, 0. };
      return ret;
@@ -360,7 +360,7 @@ Sample fLM10 ()
 Sample fLM11 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/SUSY_LM11-sftsht-Summer08-IDEAL_V11_redigi_v1/merge*.root";
+     std::string sample = prefix + "cms2-V01-03-01/SUSY_LM11-sftsht_Summer08_IDEAL_V11_redigi_v1/merge*.root";
      c->Add(sample.c_str());
      Sample ret = { c, LM11, 37, 1, "LM11", false, 0. };
      return ret;
