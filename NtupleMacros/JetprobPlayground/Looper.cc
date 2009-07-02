@@ -33,7 +33,7 @@ void Looper::BookHistos ()
        hnTrackJet	= new NMinus1Hist(sample_, "nTrackJet"       ,	 6	, -0.5, 5	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_CALO)) | (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)) 	);
        hnJPTJet		= new NMinus1Hist(sample_, "nJPTJet"       ,	 6	, -0.5, 5	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_CALO)) | (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)) 	);
        hcaloJetPt	= new NMinus1Hist(sample_, "caloJetPt"       ,	 6	, -0.5, 5	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_CALO)) 	);
-       hJPTJetPt	= new NMinus1Hist(sample_, "JPTJetPt"      ,	 30	, 0, 150	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)) 	| (CUT_BIT(CUT_PASS_JETVETO_JPT20)));
+       hJPTJetPt	= new NMinus1Hist(sample_, "JPTJetPt"      ,	 150	, 0, 150	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)) 	| (CUT_BIT(CUT_PASS_JETVETO_JPT20)));
 //        hjpJetPt		= new NMinus1Hist(sample_, "jpJetPt"         ,	 100	, 0, 100	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_SIP)) 	);
        hjpJetNtr	= new NMinus1Hist(sample_, "jpJetNtr"        ,	 11	, -0.5, 10.5	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_SIP)) 	);
        hnjpJets		= new NMinus1Hist(sample_, "njpJets"         ,	 6	, -0.5, 5.5	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_SIP)) 	);
@@ -137,6 +137,9 @@ void Looper::BookHistos ()
 	    hjetprobByNtrks[i]	= new NMinus1Hist(sample_, Form("%s%d", "jetprobByNtrks", i)      ,	100, 0, 1	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_JPT20)) );
 	    hmaxptjetprobByPt[i]= new NMinus1Hist(sample_, Form("%s%d", "maxptjetprobByPt", i)      ,	100, 0, 1	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_JPT20)) );
        }
+       for (int i = 0; i < 5; ++i) {
+	    hmaxptjetprobNtrks5[i]	= new NMinus1Hist(sample_, Form("%s%d", "maxptjetprobNtrks5", i)            ,	20, 0, 20	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_JPT20)));
+       }
        hhypDeltaz0sig 	= new NMinus1Hist(sample_, "hypDeltaz0sig" , 100, -10, 10, cuts_, 0 );
        for (int i = 0; i < 3; ++i) {
 	    htrkd0   [i] = new NMinus1Hist(sample_, Form("%s%d", "trkd0"        	, i), 100, -1, 1,	cuts_, 0);
@@ -156,9 +159,9 @@ void Looper::BookHistos ()
        hjpJetPt0trJetPt0->SetLineColor(sample_.histo_color);
 
        hpromptMud0Err		= new NMinus1Hist(sample_, "promptMud0Err"            ,	50, 0, 100e-4	, cuts_, 0);
-       hmaxptjetprobNtrks5	= new NMinus1Hist(sample_, "maxptjetprobNtrks5"            ,	20, 0, 20	, cuts_, 0);
        hntrksvsjptpt = new TH2D(Form("%s_ntrksvsjptpt_all", sample_.name.c_str()), Form("%s_ntrksvsjptpt_all", sample_.name.c_str()), 10, 0, 10, 102, -2, 100);
        hmaxntrksPt10	= new NMinus1Hist(sample_, "maxntrksPt10"            ,	10, 0, 10	, cuts_, 0);
+       hjetprobNtrks2Pt10	= new NMinus1Hist(sample_, "jetprobNtrks2Pt10"            ,	100, 0, 1	, cuts_, 0);
 }
 
 bool Looper::FilterEvent()
@@ -360,6 +363,7 @@ cuts_t Looper::DilepSelect (int i_hyp)
      //*****************************************************************
 
      double max_pt = 0;
+     int    max_ntrks = 0;
      double jetprob = 1.1;
 
      for (unsigned int itrkjet = 0; itrkjet < TrackJets().size(); ++itrkjet) { 
@@ -368,10 +372,13 @@ cuts_t Looper::DilepSelect (int i_hyp)
 
        if( TrackJets()[itrkjet].second.size() > 2 && TrackJets()[itrkjet].first.pt() > max_pt && jetprob < 1e-2 ) {
 	 max_pt = TrackJets()[itrkjet].first.pt();
+
+	 if( TrackJets()[itrkjet].second.size() > max_ntrks )
+	   max_ntrks = TrackJets()[itrkjet].second.size();
        }
      }
 
-     if( max_pt < 10 ) {
+     if( max_pt < 10 || max_ntrks > 5 ) {
        ret |= (CUT_BIT(CUT_PASS_JETVETO_SIP));
      }
 
@@ -604,9 +611,10 @@ void Looper::FillDilepHistos (int i_hyp)
 
     // signed impact parameter study (FG3 && J.Mü.)
      double min_jetprob = 1.1;
-     double max_ptjet = 0;
+     double max_ptjet[5] = {0, 0, 0, 0, 0};
      double jetprob_max_ptjet = 1.1;
      int max_ntrks = 0;
+     double tmp_max_ptjet = 0;
      for (unsigned int itrkjet = 0; itrkjet < TrackJets().size(); ++itrkjet) {
 	  int i_pt;
 	  if (TrackJets()[itrkjet].first.pt() > 20)
@@ -712,10 +720,18 @@ void Looper::FillDilepHistos (int i_hyp)
 	       max_ptjet = TrackJets()[itrkjet].first.pt();
 	       jetprob_max_ptjet = jetprob;
 	       }*/
-	  if (TrackJets()[itrkjet].second.size() > 1 && 
-	      TrackJets()[itrkjet].first.pt() > max_ptjet && jetprob < 1e-2) {
-	       max_ptjet = TrackJets()[itrkjet].first.pt();
-	       jetprob_max_ptjet = jetprob;
+	  
+
+	  if( TrackJets()[itrkjet].first.pt() > 10 && TrackJets()[itrkjet].second.size() > 2 ) {
+	    hjetprobNtrks2Pt10->Fill(cuts_passed, myType, jetprob, weight);
+	  }
+
+	  for( int numtrks = 1; numtrks < 6; numtrks++ ) {
+
+	    if (TrackJets()[itrkjet].second.size() > numtrks && TrackJets()[itrkjet].first.pt() > max_ptjet[numtrks-1] && jetprob < 1e-2) {
+	      max_ptjet[numtrks-1] = TrackJets()[itrkjet].first.pt();
+	      jetprob_max_ptjet = jetprob;
+	    }
 	  }
 	  if (TrackJets()[itrkjet].first.pt() > 10 && jetprob < 1e-2) {
 	    if( TrackJets()[itrkjet].second.size() > max_ntrks )
@@ -724,18 +740,22 @@ void Looper::FillDilepHistos (int i_hyp)
      }
      hminjetprob->Fill(cuts_passed, myType, min_jetprob, weight);
      hmaxptjetprob->Fill(cuts_passed, myType, jetprob_max_ptjet, weight);
-     hmaxptjetprobNtrks5->Fill(cuts_passed, myType, max_ptjet, weight);
      hmaxntrksPt10->Fill(cuts_passed, myType, max_ntrks, weight);
+
+     for( unsigned int i = 0; i < 5; i++ ) {
+       hmaxptjetprobNtrks5[i]->Fill(cuts_passed, myType, max_ptjet[i], weight);
+     }
+     
      int i_pt;
-     if (max_ptjet > 15)
+     if (max_ptjet[4] > 15)
 	  i_pt = 0;
-     else if (max_ptjet > 10)
+     else if (max_ptjet[4] > 10)
 	  i_pt = 1;
-     else if (max_ptjet > 5)
+     else if (max_ptjet[4] > 5)
 	  i_pt = 2;
      else i_pt = 3;
      hmaxptjetprobByPt[i_pt]->Fill(cuts_passed, myType, jetprob_max_ptjet, weight);
-
+     
    // track quality
      const double hyp_delta_z0 = cms2.hyp_lt_z0()[i_hyp] - cms2.hyp_ll_z0()[i_hyp];
      const double hyp_z0 = 0.5 * (cms2.hyp_lt_z0()[i_hyp] + cms2.hyp_ll_z0()[i_hyp]);

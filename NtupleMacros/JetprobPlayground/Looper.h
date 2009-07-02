@@ -508,7 +508,8 @@ protected:
 
   NMinus1Hist   *hpromptMud0Err;
   TH2D          *hntrksvsjptpt;
-  NMinus1Hist   *hmaxptjetprobNtrks5;
+  NMinus1Hist   *hmaxptjetprobNtrks5[5];
+  NMinus1Hist   *hjetprobNtrks2Pt10;
   NMinus1Hist   *hmaxntrksPt10;
 
   // track jets: a track jet is a pair<LorentzVector, vector<track indices>>

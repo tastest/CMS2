@@ -21,7 +21,6 @@ bool passTrkjetCuts (int i_trk)
        cms2.trks_validHits()[i_trk]   > 10 &&
        cms2.trks_trk_p4()[i_trk].Pt() > 1.0 &&
     cms2.trks_trk_p4()[i_trk].Pt() < 200.0;
-    //    cms2.trks_d0Err()[i_trk] > 20e-4;
 }
 
 /*pair<vector<KtLorentzVector>, vector<unsigned int> > trkjetTracks (int i_hyp)
