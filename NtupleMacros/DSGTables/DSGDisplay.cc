@@ -146,6 +146,7 @@ void DSGDisplay ()
 	  case 'h': case 'H':
 	  {
 	       static TCanvas *c = new TCanvas;
+	       c->Clear();
 	       c->Divide(2, 1);
 	       c->cd(1);
 	       dsgs[0]->hmet_[i][j][k][l]->Draw();

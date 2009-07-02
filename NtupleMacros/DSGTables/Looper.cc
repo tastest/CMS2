@@ -50,7 +50,7 @@ bool Looper::FilterEvent()
      if (is_duplicate(id)) {
 	  duplicates_total_n_++;
 	  duplicates_total_weight_ += cms2.evt_scale1fb();
-	  cout << "Filtered duplicate run: " << cms2.evt_run() << " event: " << cms2.evt_event() << endl;
+// 	  cout << "Filtered duplicate run: " << cms2.evt_run() << " event: " << cms2.evt_event() << endl;
 	  return true;
      }
      return false; 
@@ -126,6 +126,10 @@ void Looper::FillDilepHistos (int i_hyp)
 	  const int jetcat	= Jetcat(i_hyp);
 	  const int bucket	= Bucket(i_hyp);
 	  
+	  if (bucket == 4 && zcat == 1) {
+	       printf("What?\n"); 
+	       exit(1);
+	  }
 	  dsgTable.Increment(zcat, metcat, jetcat, bucket, weight);
 	  dsgTable.hmet_[zcat][metcat][jetcat][bucket]->Fill(cms2.evt_tcmet(), weight);
 	  dsgTable.hmll_[zcat][metcat][jetcat][bucket]->Fill(cms2.hyp_p4()[i_hyp].M(), weight);
@@ -135,10 +139,12 @@ void Looper::FillDilepHistos (int i_hyp)
 int Looper::Zcat (int i_hyp) const
 {
      // hypo in Z mass window
-     if (cms2.hyp_type()[i_hyp] == 0 || cms2.hyp_type()[i_hyp] == 3)
-	  if (cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] < 0 &&
-	      inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))
-	       return 1;
+     printf("%d %d %f\n", cms2.hyp_lt_id()[i_hyp], cms2.hyp_ll_id()[i_hyp],
+	    cms2.hyp_p4()[i_hyp].mass());
+     if (abs(cms2.hyp_lt_id()[i_hyp]) == abs(cms2.hyp_ll_id()[i_hyp])
+	 && cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] < 0 &&
+	 inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))
+	  return 1;
      return 0;
 }
 
@@ -165,6 +171,7 @@ int Looper::Jetcat (int i_hyp) const
 
 int Looper::Bucket (int i_hyp) const
 {
+     printf("%d %d\n", cms2.hyp_lt_id()[i_hyp], cms2.hyp_ll_id()[i_hyp]);
      if (cms2.hyp_lt_id()[i_hyp] == -11 && cms2.hyp_ll_id()[i_hyp] == -11)
 	  return 0;
      if (cms2.hyp_lt_id()[i_hyp] == -13 && cms2.hyp_ll_id()[i_hyp] == -13)
@@ -185,4 +192,5 @@ int Looper::Bucket (int i_hyp) const
 	  return 8;
      if (cms2.hyp_lt_id()[i_hyp] == -13 && cms2.hyp_ll_id()[i_hyp] == 13)
 	  return 9;
+     assert(false);
 }
