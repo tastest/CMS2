@@ -24,6 +24,8 @@ public:
      double             upper_pthat;
 };
 
+Sample operator + (const Sample &, const Sample &);
+
 // helper functions that provide samples from their default locations
 // (takes the guesswork out of data access...)
 Sample fTest ();

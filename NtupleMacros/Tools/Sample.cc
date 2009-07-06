@@ -22,6 +22,25 @@ bool filterByProcess (enum Process sample)
      return true;
 }
 
+Sample operator + (const Sample &a, const Sample &b)
+{
+     Sample ret = a;
+     a.chain->GetEntries();
+     ret.chain = dynamic_cast<TChain *>(a.chain->Clone());
+     ret.chain->GetEntries();
+//      printf("cloning chain: %llu (%d files) to %llu entries (%d files)\n", 
+// 	    a.chain->GetEntries(), a.chain->GetListOfFiles()->GetEntries(),
+// 	    ret.chain->GetEntries(), ret.chain->GetListOfFiles()->GetEntries());
+     b.chain->GetEntries();      // ha ha, if you don't do this, the
+				 // combined chain will have a random
+				 // number of entries.
+     ret.chain->Add(b.chain);
+//      printf("adding %llu (%d files), returned chain now has %llu entries (%d files)\n", 
+// 	    b.chain->GetEntries(), b.chain->GetListOfFiles()->GetEntries(),
+// 	    a.chain->GetEntries(), a.chain->GetListOfFiles()->GetEntries());
+     return ret;
+}
+
 static const std::string prefix = (getenv("CMS2_NTUPLE_LOCATION") != 0) ? 
      std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" : "/data/tmp/";
 
