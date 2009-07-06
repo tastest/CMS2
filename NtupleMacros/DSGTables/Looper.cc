@@ -7,6 +7,8 @@
 #include "Looper.h"
 
 ClassImp(DSGTable);
+ClassImp(DSGTables);
+
 const int DSGTable::nZcat 	;
 const int DSGTable::nMETcat 	;
 const int DSGTable::nJetcat 	;
@@ -40,13 +42,15 @@ void Looper::BookHistos ()
 
 bool Looper::FilterEvent()
 { 
+     return false;
      //
      // duplicate filter, based on trk information and dilepton hyp
      //
      if (cms2.trks_d0().size() == 0)
 	  return true;
      DorkyEventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.trks_d0()[0], 
-				 cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
+				 cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), 
+				 cms2.hyp_lt_p4()[0].phi() };
      if (is_duplicate(id)) {
 	  duplicates_total_n_++;
 	  duplicates_total_weight_ += cms2.evt_scale1fb();
@@ -165,6 +169,7 @@ int Looper::Jetcat (int i_hyp) const
      default:
 	  return 2;
      }
+     assert(false);
 }
 
 int Looper::Bucket (int i_hyp) const

@@ -29,6 +29,15 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
      const string hist = name + ".root";
      const string tbl = name + ".tbl";
      const string log = name + ".log";
+     Sample data = 
+	  fWW()          +
+	  fWZ()          +
+	  fZZ()          +
+	  fWjets()       +
+	  fDYee()        +
+	  fttbar()       +
+	  fLM8();         
+     data.name = "data";
      // by default, we run this list of samples; if we're told by the
      // which_ones bit field to skip a sample, we skip it
      Looper looper_ww		(fWW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WW    )) looper_ww          .Loop();
@@ -40,7 +49,7 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
      Looper looper_dytt		(fDYtt()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYTT  )) looper_dytt        .Loop();
      Looper looper_ttbar	(fttbar()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_TTBAR )) looper_ttbar       .Loop();
      Looper looper_tw		(ftW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_TW    )) looper_tw          .Loop();
-     Looper looper_data		(fLM2()		, cuts, log.c_str());	looper_data          .Loop();
+     Looper looper_data		(data		, cuts, log.c_str());	looper_data          .Loop();
      // then we collect them all and print a table
      const Looper *loopers[] = { 
 	  &looper_ww          ,
@@ -57,9 +66,12 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
      // when all the loopers are done, we save the histograms to file
 //      saveHist(hist.c_str());
      TFile *f = TFile::Open(hist.c_str(), "recreate");
+//      DSGTables *tables = new DSGTables("tables");
      for (unsigned int i = 0; i < sizeof(loopers) / sizeof(Looper *); ++i) {
+// 	  tables->tables_.push_back(loopers[i]->dsgTable);
 	  loopers[i]->dsgTable.Write();
      }
+//      tables->Write();
      f->Close();
      return 0;
 }

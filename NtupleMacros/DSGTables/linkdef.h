@@ -2,6 +2,7 @@
 #pragma link off all    globals;
 #pragma link off all    classes;
 #pragma link C++ class DSGTable+;
+#pragma link C++ class DSGTables+;
 #pragma link C++ all    functions;
 
 #pragma link off nestedclasses;
