@@ -105,8 +105,11 @@ protected:
   TH1F* e_hcal_iso;
   TH1F* e_ecal_iso;
   TH1F* e_trck_iso;
-  TH1F* e_trck_iso_match015;
+  //TH1F* e_trck_iso_match015;
   TH1F* e_trck_iso_recalc;
+  TH1F* e_trck_iso_recalc_dr05_1;
+  TH1F* e_trck_iso_affble;
+  TH1F* e_trck_iso_affble_dr05_1;
   TH1F* e_hcal_iso_dr05_1;
   TH1F* e_ecal_iso_dr05_1;
   TH1F* e_trck_iso_dr05_1;
@@ -115,6 +118,8 @@ protected:
   EffH1F* eff_edr_hcal_iso_dr05_1;
   EffH1F* eff_edr_ecal_iso_dr05_1;
   EffH1F* eff_edr_trck_iso_dr05_1;
+  EffH1F* eff_edr_trck_iso_recalc_dr05_1;
+  EffH1F* eff_edr_trck_iso_affble_dr05_1;
   
 
 protected:
