@@ -12,6 +12,7 @@
 #include "NMinus1Hist.h"
 #include "TH1.h"
 #include "TH2.h"
+#include "TVector3.h"
 
 // Base class for loopers.  Takes care of the looping, calls the
 // virtual functions for each event / dilep candidate / trilep
