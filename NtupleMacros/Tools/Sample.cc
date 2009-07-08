@@ -277,6 +277,15 @@ Sample fSingleTop_sChannel ()
      return ret;
 }
 
+Sample fLM0 ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "cms2-V01-03-01/SUSY_LM0-sftsht_Summer08_IDEAL_V11_v1/merge*.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, LM0, 37, 1, "LM0", false, 0. };
+     return ret;
+}
+
 Sample fLM1 ()
 {
      TChain *c = new TChain("Events");
