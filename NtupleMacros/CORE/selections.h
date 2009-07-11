@@ -147,6 +147,8 @@ bool GoodSusyTrigger(int dilType);
 int numberOfExtraElectronsSUSY(int i_hyp);
 int numberOfExtraMuonsSUSY(int i_hyp);
 std::vector <ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getCaloJets(int i_hyp); 
+std::vector <ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getJPTJets(int i_hyp); 
+int ttbarconstituents(int i_hyp);
 
 //TTDil08 fake rate functions
 bool isNumElTTDil08(int iEl);

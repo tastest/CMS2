@@ -1648,6 +1648,72 @@ vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getCaloJets(i
 }
 
 
+vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getJPTJets(int i_hyp) {
+  vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > jpt_jets;
+  jpt_jets.clear();
+  
+  for (unsigned int jj=0; jj < cms2.jpts_p4().size(); ++jj) {
+    if ((dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],cms2.jpts_p4()[jj]) < 0.4)||
+	(dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.jpts_p4()[jj]) < 0.4)
+	) continue;
+    if (cms2.jpts_p4()[jj].Et() < 30) continue;
+    if (fabs(cms2.jpts_p4()[jj].Eta()) > 2.4) continue;
+//    cout << cms2.jpts_emFrac()[jj] << endl;
+//    if (cms2.jpts_emFrac()[jj] < 0.1) continue;
+    jpt_jets.push_back(cms2.jpts_p4()[jj]);
+  }
+  
+  if (jpt_jets.size() > 1) {
+    sort(jpt_jets.begin(), jpt_jets.end(),  compareEt);
+  }
+  return jpt_jets;
+}
+
+int ttbarconstituents(int i_hyp){ 
+
+  // Catagories WW = 1, WO = 2, and OO = 3
+
+  bool isTrueLepton_ll = false;
+  bool isTrueLepton_lt = false;
+
+  isTrueLepton_ll = ( (abs(cms2.hyp_ll_id()[i_hyp]) == abs(cms2.hyp_ll_mc_id()[i_hyp]) &&
+		       abs(cms2.hyp_ll_mc_motherid()[i_hyp]) < 50 //I wish I could match to W or Z explicitely, not in MGraph
+		       )
+		      || (cms2.hyp_ll_mc_id()[i_hyp]==22 && 
+			  TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.hyp_ll_mc_p4()[i_hyp])) <0.05
+			  && abs(cms2.hyp_ll_id()[i_hyp]) == abs(cms2.hyp_ll_mc_motherid()[i_hyp])
+			  )
+		      );
+  isTrueLepton_lt = ( (abs(cms2.hyp_lt_id()[i_hyp]) == abs(cms2.hyp_lt_mc_id()[i_hyp]) &&
+		       abs(cms2.hyp_lt_mc_motherid()[i_hyp]) < 50 //I wish I could match to W or Z explicitely, not in MGraph
+		       )
+		      || (cms2.hyp_lt_mc_id()[i_hyp]==22 && 
+			  TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.hyp_lt_mc_p4()[i_hyp])) <0.05
+			  && abs(cms2.hyp_lt_id()[i_hyp]) == abs(cms2.hyp_lt_mc_motherid()[i_hyp])
+			  )
+		      );
+
+  bool isrealW_ll = false;
+  bool isrealW_lt = false;     
+
+  if (isTrueLepton_ll) {
+    if ( (abs(cms2.hyp_ll_mc_motherid()[i_hyp]) == 24) || (abs(cms2.els_mc3_motherid()[cms2.hyp_ll_index()[i_hyp]]) == 24) || (abs(cms2.mus_mc3_motherid()[cms2.hyp_ll_index()[i_hyp]]) == 24)) isrealW_ll = true;
+  }
+  if (isTrueLepton_lt) {
+    if ((abs(cms2.hyp_lt_mc_motherid()[i_hyp]) == 24) || (abs(cms2.els_mc3_motherid()[cms2.hyp_lt_index()[i_hyp]]) == 24) ||  (abs(cms2.mus_mc3_motherid()[cms2.hyp_lt_index()[i_hyp]]) == 24)) isrealW_lt = true;
+  }
+
+  if (isrealW_ll && isrealW_lt) {
+    return 1;
+  }  else if (isrealW_ll || isrealW_lt) {
+    return 2;
+  } else {
+    return 3;
+  }
+
+}
+
+
 //--------------------------------------------------------------------
 // Veto events if there are two leptons in the 
 // event that make the Z mass.  This uses the mus and els
