@@ -1696,12 +1696,30 @@ int ttbarconstituents(int i_hyp){
   bool isrealW_ll = false;
   bool isrealW_lt = false;     
 
-  if (isTrueLepton_ll) {
-    if ( (abs(cms2.hyp_ll_mc_motherid()[i_hyp]) == 24) || (abs(cms2.els_mc3_motherid()[cms2.hyp_ll_index()[i_hyp]]) == 24) || (abs(cms2.mus_mc3_motherid()[cms2.hyp_ll_index()[i_hyp]]) == 24)) isrealW_ll = true;
-  }
-  if (isTrueLepton_lt) {
-    if ((abs(cms2.hyp_lt_mc_motherid()[i_hyp]) == 24) || (abs(cms2.els_mc3_motherid()[cms2.hyp_lt_index()[i_hyp]]) == 24) ||  (abs(cms2.mus_mc3_motherid()[cms2.hyp_lt_index()[i_hyp]]) == 24)) isrealW_lt = true;
-  }
+     if (isTrueLepton_ll) { 
+       int els_mo = 0; 
+       int mus_mo = 0; 
+       int els_id = 0;
+       int mus_id = 0;
+       if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) els_mo = abs(cms2.els_mc3_motherid()[cms2.hyp_ll_index()[i_hyp]]); 
+       if (abs(cms2.hyp_ll_id()[i_hyp]) == 13) mus_mo = abs(cms2.mus_mc3_motherid()[cms2.hyp_ll_index()[i_hyp]]); 
+       if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) els_id = abs(cms2.els_mc3_id()[cms2.hyp_ll_index()[i_hyp]]);
+       if (abs(cms2.hyp_ll_id()[i_hyp]) == 13) mus_id = abs(cms2.mus_mc3_id()[cms2.hyp_ll_index()[i_hyp]]);
+
+       if ( (abs(cms2.hyp_ll_mc_motherid()[i_hyp]) == 24) || (els_mo == 24) || (mus_mo == 24) || (els_id == 24) || (mus_id == 24)) isrealW_ll = true; 
+     } 
+ 
+     if (isTrueLepton_lt) { 
+       int els_mo = 0;  
+       int mus_mo = 0;  
+       int els_id = 0;
+       int mus_id = 0;
+       if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) els_mo = abs(cms2.els_mc3_motherid()[cms2.hyp_lt_index()[i_hyp]]); 
+       if (abs(cms2.hyp_lt_id()[i_hyp]) == 13) mus_mo = abs(cms2.mus_mc3_motherid()[cms2.hyp_lt_index()[i_hyp]]); 
+       if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) els_id = abs(cms2.els_mc3_id()[cms2.hyp_lt_index()[i_hyp]]);
+       if (abs(cms2.hyp_lt_id()[i_hyp]) == 13) mus_id = abs(cms2.mus_mc3_id()[cms2.hyp_lt_index()[i_hyp]]);
+       if ((abs(cms2.hyp_lt_mc_motherid()[i_hyp]) == 24) || (els_mo == 24) || (mus_mo == 24) || (els_id == 24) || (mus_id == 24)) isrealW_lt = true; 
+     } 
 
   if (isrealW_ll && isrealW_lt) {
     return 1;
