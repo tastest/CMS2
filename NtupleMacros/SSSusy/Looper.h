@@ -75,8 +75,9 @@ const static cuts_t baseline_cuts =
      (CUT_BIT(CUT_TCMET)		) |  
      (CUT_BIT(CUT_LT_GOOD)		) | 
      (CUT_BIT(CUT_LL_GOOD)		) | 
-     (CUT_BIT(CUT_LT_ISO)	) |  
-     (CUT_BIT(CUT_LL_ISO)	) 
+     (CUT_BIT(CUT_LT_ISO)	        ) |  
+     (CUT_BIT(CUT_LL_ISO)        	) |
+     (CUT_BIT(CUT_TRUE_MU_FROM_W)	) 
   // |  
   //     (CUT_BIT(CUT_PASS_ZVETO)	) | 
   //     (CUT_BIT(CUT_PASS_TRIGGER))
