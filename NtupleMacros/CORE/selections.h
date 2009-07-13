@@ -135,14 +135,26 @@ int numberOfExtraElectronsVJets09(int i_hyp);
 
 bool compareEt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1,  
                  ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv2);
-bool GoodSusyElectronWithoutIsolation(int index);
+/* bool GoodSusyElectronWithoutIsolation(int index); */
+/* bool GoodSusyMuonWithoutIsolation(int index); */
+
+bool GoodSusyElectronWithIsolationLoose(int index, bool use_calo_iso); 
+bool GoodSusyElectronWithoutIsolation(int index); 
+bool PassSusyElectronIsolationLoose(int index, bool use_calo_iso);
 bool GoodSusyMuonWithoutIsolation(int index);
+
 double inv_mu_relsusy_iso(int index);
 double inv_el_relsusy_iso(int index, bool use_calo_iso);
-bool GoodSusyMuonWithIsolation(int index);
-bool GoodSusyElectronWithIsolation(int index, bool use_calo_iso);
-bool GoodSusyLeptonIsolation(int id, int index);
+/* bool GoodSusyMuonWithIsolation(int index); */
+bool GoodSusyElectronWithIsolation(int index, bool use_calo_iso); 
+/* bool GoodSusyLeptonIsolation(int id, int index); */
+/* bool GoodSusyLeptonID(int id, int index); */
+
+bool PassSusyMuonIsolation(int index);
+bool PassSusyElectronIsolation(int index, bool use_calo_iso);
+bool PassSusyLeptonIsolation(int id, int index);
 bool GoodSusyLeptonID(int id, int index);
+
 bool GoodSusyTrigger(int dilType);
 int numberOfExtraElectronsSUSY(int i_hyp);
 int numberOfExtraMuonsSUSY(int i_hyp);

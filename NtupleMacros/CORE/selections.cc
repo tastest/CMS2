@@ -57,8 +57,8 @@ bool goodElectronWithoutIsolation(int index) {
 bool trueMuonFromW_WJets(int index) {
 
   // added requirement for muon to have pt>20
-    double pt_cut = 20.;
-  //  double pt_cut = 0.;
+  //    double pt_cut = 20.;
+    double pt_cut = 0.;
   
   // try to find out if there is a muon
   // from W. Currently valid ONLY on WJets!! 
@@ -1565,19 +1565,44 @@ double inv_el_relsusy_iso(int index, bool use_calo_iso)
 
 bool GoodSusyMuonWithIsolation(int index)
 {
+  //  const double cut = 0.1;
+  return GoodSusyMuonWithoutIsolation(index) && PassSusyMuonIsolation(index);
+}
+
+bool PassSusyMuonIsolation(int index)
+{
   const double cut = 0.1;
   return inv_mu_relsusy_iso(index) < cut;
 }
 
 bool GoodSusyElectronWithIsolation(int index, bool use_calo_iso)
 {
+  //  const double cut = 0.1;
+  return GoodSusyElectronWithoutIsolation(index) && PassSusyElectronIsolation(index, use_calo_iso);
+}
+
+bool PassSusyElectronIsolation(int index, bool use_calo_iso)
+{
   const double cut = 0.1;
   return inv_el_relsusy_iso(index, use_calo_iso) < cut;
 }
 
-bool GoodSusyLeptonIsolation(int id, int index){
+bool PassSusyElectronIsolationLoose(int index, bool use_calo_iso)
+{
+  const double cut = 0.4; //v50_0
+  //  const double cut = 0.25; //v50_1
+  return inv_el_relsusy_iso(index, use_calo_iso) < cut;
+}
+
+bool GoodSusyLeptonWithIsolation(int id, int index){
   if (abs(id) == 11) return GoodSusyElectronWithIsolation(index, true);
   if (abs(id) == 13) return GoodSusyMuonWithIsolation(index);
+  return false;
+}
+
+bool PassSusyLeptonIsolation(int id, int index){
+  if (abs(id) == 11) return PassSusyElectronIsolation(index, true);
+  if (abs(id) == 13) return PassSusyMuonIsolation(index);
   return false;
 }
 
