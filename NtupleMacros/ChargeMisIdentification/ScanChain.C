@@ -292,6 +292,24 @@ int ScanChain( TChain* chain) {
 						     "DetId",
 						     "Electrons",2);
 
+  TH1F *els_validHits_corCharge_forward       = book1DHist("els_validHits_corCharge_forward", 
+							   "Number of valid hits, correct electron charge, forward",
+							   35,
+							   0.,
+							   35.,
+							   "#valid hits",
+							   "Electrons",2);
+
+  TH1F *els_validHits_incorCharge_forward       = book1DHist("els_validHits_incorCharge_forward", 
+							     "Number of valid hits, incorrect electron charge, forward",
+							     35,
+							     0.,
+							     35.,
+							     "#valid hits",
+							     "Electrons",2);
+
+
+
   // file loop
   TIter fileIter(listOfFiles);
   TFile *currentFile = 0;
@@ -307,9 +325,9 @@ int ScanChain( TChain* chain) {
       cms2.GetEntry(event);
       ++nEventsTotal;
       
-      if ( nEventsTotal%10000 == 0 ) {
+      //if ( nEventsTotal%10000 == 0 ) {
 	std::cout << "Event: " << nEventsTotal << endl;
-      }
+      //}
 
       // loop over true electrons
       for ( unsigned int els = 0;
@@ -381,6 +399,8 @@ int ScanChain( TChain* chain) {
 	  continue;
 	}
 
+	if ( TMath::Abs(els_mc_p4().at(els).eta()) > 1.479 && trk >= 0 && trks_validHits()[trk] <= 9 ) continue;
+	  
 	// fill reco
 	els_pt_reco->Fill(els_p4().at(els).Pt());
 	els_eta_reco->Fill(els_p4().at(els).eta());
@@ -426,6 +446,13 @@ int ScanChain( TChain* chain) {
 	    }
 	  }
 
+// 	  if ( TMath::Abs(els_mc_p4().at(els).eta()) > 1.479 && trk >= 0 && trks_validHits()[trk] <= 10 ) continue;
+
+	  if ( TMath::Abs(els_mc_p4().at(els).eta()) > 1.479 && trk >= 0 ) {
+	    els_validHits_corCharge_forward->Fill(trks_validHits()[trk]);
+	  }
+
+
 	  els_pt_recosim_corCharge->Fill(els_mc_p4().at(els).Pt());
 	  els_eta_recosim_corCharge->Fill(els_mc_p4().at(els).eta());
 
@@ -455,6 +482,12 @@ int ScanChain( TChain* chain) {
 		els_chargeFirstPixelHit_incorCharge_forward->Fill(els_layer1_charge().at(els));
 	      }
 	    }
+	  }
+
+// 	  if ( TMath::Abs(els_mc_p4().at(els).eta()) > 1.479 && trk >= 0 && trks_validHits()[trk] <= 10 ) continue;
+
+	  if ( TMath::Abs(els_mc_p4().at(els).eta()) > 1.479 && trk >= 0 ) {
+	    els_validHits_incorCharge_forward->Fill(trks_validHits()[trk]);
 	  }
 
 	  els_pt_recosim_incorCharge->Fill(els_mc_p4().at(els).Pt());
