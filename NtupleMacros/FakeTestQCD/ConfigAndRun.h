@@ -22,21 +22,21 @@ enum {
   LOOP_DYTT	,
   LOOP_TTBAR	,
   LOOP_TW	,
-  LOOP_InclusiveMu5Pt50,
-  LOOP_InclusiveMuPt15,
-  LOOP_QCDBCtoEPt20to30,
-  LOOP_QCDBCtoEPt30to80,
-  LOOP_QCDBCtoEPt80to170,
-  LOOP_QCDEMenrichedPt20to30,
-  LOOP_QCDEMenrichedPt30to80,
-  LOOP_QCDEMenrichedPt80to170,
+//   LOOP_InclusiveMu5Pt50,
+//   LOOP_InclusiveMuPt15,
+//   LOOP_QCDBCtoEPt20to30,
+//   LOOP_QCDBCtoEPt30to80,
+//   LOOP_QCDBCtoEPt80to170,
+//   LOOP_QCDEMenrichedPt20to30,
+//   LOOP_QCDEMenrichedPt30to80,
+//   LOOP_QCDEMenrichedPt80to170,
   LOOP_QCDpt30,
-  LOOP_QCDpt30to80,
-  LOOP_QCDpt80to170,
-  LOOP_QCDpt170to300,
-  LOOP_QCDpt300to470,
-  LOOP_QCDpt470to800,
-  LOOP_QCDpt800toInf,
+//   LOOP_QCDpt30to80,
+//   LOOP_QCDpt80to170,
+//   LOOP_QCDpt170to300,
+//   LOOP_QCDpt300to470,
+//   LOOP_QCDpt470to800,
+//   LOOP_QCDpt800toInf,
 };
 
 // helper function used to print yield tables
@@ -94,41 +94,41 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
   L looper_dytt		(fDYtt()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYTT  )) looper_dytt        .Loop();
   L looper_ttbar	(fttbar()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_TTBAR )) looper_ttbar       .Loop();
   L looper_tw		(ftW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_TW    )) looper_tw          .Loop();
-  L looper_InclusiveMu5Pt50		(fInclusiveMu5Pt50()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_InclusiveMu5Pt50          )) looper_InclusiveMu5Pt50       .Loop();
-  L looper_InclusiveMuPt15		        (fInclusiveMuPt15()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_InclusiveMuPt15           )) looper_InclusiveMuPt15        .Loop();
-  L looper_QCDBCtoEPt20to30		(fQCDBCtoEPt20to30()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_QCDBCtoEPt20to30          )) looper_QCDBCtoEPt20to30       .Loop();
-  L looper_QCDBCtoEPt30to80		(fQCDBCtoEPt30to80()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_QCDBCtoEPt30to80          )) looper_QCDBCtoEPt30to80       .Loop();
-  L looper_QCDBCtoEPt80to170		(fQCDBCtoEPt80to170()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_QCDBCtoEPt80to170         )) looper_QCDBCtoEPt80to170      .Loop();
-  L looper_QCDEMenrichedPt20to30		(fQCDEMenrichedPt20to30()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_QCDEMenrichedPt20to30     )) looper_QCDEMenrichedPt20to30  .Loop();
-  L looper_QCDEMenrichedPt30to80		(fQCDEMenrichedPt30to80()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_QCDEMenrichedPt30to80     )) looper_QCDEMenrichedPt30to80  .Loop();
-  L looper_QCDEMenrichedPt80to170	        (fQCDEMenrichedPt80to170()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_QCDEMenrichedPt80to170    )) looper_QCDEMenrichedPt80to170 .Loop();
+//   L looper_InclusiveMu5Pt50		(fInclusiveMu5Pt50()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_InclusiveMu5Pt50          )) looper_InclusiveMu5Pt50       .Loop();
+//   L looper_InclusiveMuPt15		        (fInclusiveMuPt15()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_InclusiveMuPt15           )) looper_InclusiveMuPt15        .Loop();
+//   L looper_QCDBCtoEPt20to30		(fQCDBCtoEPt20to30()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_QCDBCtoEPt20to30          )) looper_QCDBCtoEPt20to30       .Loop();
+//   L looper_QCDBCtoEPt30to80		(fQCDBCtoEPt30to80()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_QCDBCtoEPt30to80          )) looper_QCDBCtoEPt30to80       .Loop();
+//   L looper_QCDBCtoEPt80to170		(fQCDBCtoEPt80to170()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_QCDBCtoEPt80to170         )) looper_QCDBCtoEPt80to170      .Loop();
+//   L looper_QCDEMenrichedPt20to30		(fQCDEMenrichedPt20to30()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_QCDEMenrichedPt20to30     )) looper_QCDEMenrichedPt20to30  .Loop();
+//   L looper_QCDEMenrichedPt30to80		(fQCDEMenrichedPt30to80()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_QCDEMenrichedPt30to80     )) looper_QCDEMenrichedPt30to80  .Loop();
+//   L looper_QCDEMenrichedPt80to170	        (fQCDEMenrichedPt80to170()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_QCDEMenrichedPt80to170    )) looper_QCDEMenrichedPt80to170 .Loop();
   L looper_QCDpt30          (fQCDpt30()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt30    )) looper_QCDpt30 .Loop();
-  L looper_QCDpt30to80          (fQCDpt30to80()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt30to80    )) looper_QCDpt30to80 .Loop();
-  L looper_QCDpt80to170          (fQCDpt80to170()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt80to170    )) looper_QCDpt80to170 .Loop();
-  L looper_QCDpt170to300          (fQCDpt170to300()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt170to300    )) looper_QCDpt170to300 .Loop();
-  L looper_QCDpt300to470          (fQCDpt300to470()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt300to470    )) looper_QCDpt300to470 .Loop();
-  L looper_QCDpt470to800          (fQCDpt470to800()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt470to800    )) looper_QCDpt470to800 .Loop();
-  L looper_QCDpt800toInf          (fQCDpt800toInf()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt800toInf    )) looper_QCDpt800toInf .Loop();
+//   L looper_QCDpt30to80          (fQCDpt30to80()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt30to80    )) looper_QCDpt30to80 .Loop();
+//   L looper_QCDpt80to170          (fQCDpt80to170()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt80to170    )) looper_QCDpt80to170 .Loop();
+//   L looper_QCDpt170to300          (fQCDpt170to300()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt170to300    )) looper_QCDpt170to300 .Loop();
+//   L looper_QCDpt300to470          (fQCDpt300to470()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt300to470    )) looper_QCDpt300to470 .Loop();
+//   L looper_QCDpt470to800          (fQCDpt470to800()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt470to800    )) looper_QCDpt470to800 .Loop();
+//   L looper_QCDpt800toInf          (fQCDpt800toInf()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt800toInf    )) looper_QCDpt800toInf .Loop();
   // when all the loopers are done, we save the histograms to file
   saveHist(hist.c_str());
   // then we collect them all and print a table
   const Looper *loopers[] = { 
-    &looper_InclusiveMu5Pt50,
-    &looper_InclusiveMuPt15,
-    &looper_QCDBCtoEPt20to30,
-    &looper_QCDBCtoEPt30to80,
-    &looper_QCDBCtoEPt80to170,
-    &looper_QCDEMenrichedPt20to30,
-    &looper_QCDEMenrichedPt30to80,
-    &looper_QCDEMenrichedPt80to170,
-    &looper_QCDEMenrichedPt80to170,
+//     &looper_InclusiveMu5Pt50,
+//     &looper_InclusiveMuPt15,
+//     &looper_QCDBCtoEPt20to30,
+//     &looper_QCDBCtoEPt30to80,
+//     &looper_QCDBCtoEPt80to170,
+//     &looper_QCDEMenrichedPt20to30,
+//     &looper_QCDEMenrichedPt30to80,
+//     &looper_QCDEMenrichedPt80to170,
+//     &looper_QCDEMenrichedPt80to170,
     &looper_QCDpt30,
-    &looper_QCDpt30to80,
-    &looper_QCDpt80to170,
-    &looper_QCDpt170to300,
-    &looper_QCDpt300to470,
-    &looper_QCDpt470to800,
-    &looper_QCDpt800toInf,
+//     &looper_QCDpt30to80,
+//     &looper_QCDpt80to170,
+//     &looper_QCDpt170to300,
+//     &looper_QCDpt300to470,
+//     &looper_QCDpt470to800,
+//     &looper_QCDpt800toInf,
   };
   printTable(loopers, sizeof(loopers) / sizeof(L *), tbl.c_str(), which_ones);
   return 0;
@@ -139,38 +139,38 @@ int Observation ()
   return run<Looper>(observation_cuts, "Observation", 1 << LOOP_QCDpt30);
 }
 
-int ObservationQCDBins ()
-{
-  return run<Looper>(observation_cuts_qcd_bins, "ObservationQCDBins", 1 << LOOP_QCDpt30to80 | 1 << LOOP_QCDpt80to170 | 1 << LOOP_QCDpt170to300 | 1 << LOOP_QCDpt300to470 | 1 << LOOP_QCDpt470to800 | 1 << LOOP_QCDpt800toInf);
-}
+// int ObservationQCDBins ()
+// {
+//   return run<Looper>(observation_cuts_qcd_bins, "ObservationQCDBins", 1 << LOOP_QCDpt30to80 | 1 << LOOP_QCDpt80to170 | 1 << LOOP_QCDpt170to300 | 1 << LOOP_QCDpt300to470 | 1 << LOOP_QCDpt470to800 | 1 << LOOP_QCDpt800toInf);
+// }
 
 int Prediction ()
 {
   return run<FakeRateLooper>(prediction_cuts, "Prediction", 1 << LOOP_QCDpt30);
 }
 
-int PredictionQCDBins ()
-{
-  return run<FakeRateLooper>(prediction_cuts_qcd_bins, "PredictionQCDBins", 1 << LOOP_QCDpt30to80 | 1 << LOOP_QCDpt80to170 | 1 << LOOP_QCDpt170to300 | 1 << LOOP_QCDpt300to470 | 1 << LOOP_QCDpt470to800 | 1 << LOOP_QCDpt800toInf);
-}
+// int PredictionQCDBins ()
+// {
+//   return run<FakeRateLooper>(prediction_cuts_qcd_bins, "PredictionQCDBins", 1 << LOOP_QCDpt30to80 | 1 << LOOP_QCDpt80to170 | 1 << LOOP_QCDpt170to300 | 1 << LOOP_QCDpt300to470 | 1 << LOOP_QCDpt470to800 | 1 << LOOP_QCDpt800toInf);
+// }
 
 int ObservationQCDBinsEven ()
 {
-  return run<Looper>(observation_cuts_qcd_bins_even, "ObservationQCDBinsEven", 1 << LOOP_QCDpt30to80 | 1 << LOOP_QCDpt80to170 | 1 << LOOP_QCDpt170to300 | 1 << LOOP_QCDpt300to470 | 1 << LOOP_QCDpt470to800 | 1 << LOOP_QCDpt800toInf);
+  return run<Looper>(observation_cuts_qcd_bins_even, "ObservationQCDBinsEven", 1 << LOOP_QCDpt30);
 }
 
 int PredictionQCDBinsEven ()
 {
-  return run<FakeRateLooper>(prediction_cuts_qcd_bins_even, "PredictionQCDBinsEven", 1 << LOOP_QCDpt30to80 | 1 << LOOP_QCDpt80to170 | 1 << LOOP_QCDpt170to300 | 1 << LOOP_QCDpt300to470 | 1 << LOOP_QCDpt470to800 | 1 << LOOP_QCDpt800toInf);
+  return run<FakeRateLooper>(prediction_cuts_qcd_bins_even, "PredictionQCDBinsEven", 1 << LOOP_QCDpt30);
 }
 
-int ObservationQCDBinsOdd ()
-{
-  return run<Looper>(observation_cuts_qcd_bins_odd, "ObservationQCDBinsOdd", 1 << LOOP_QCDpt30to80 | 1 << LOOP_QCDpt80to170 | 1 << LOOP_QCDpt170to300 | 1 << LOOP_QCDpt300to470 | 1 << LOOP_QCDpt470to800 | 1 << LOOP_QCDpt800toInf);
-}
+// int ObservationQCDBinsOdd ()
+// {
+//   return run<Looper>(observation_cuts_qcd_bins_odd, "ObservationQCDBinsOdd", 1 << LOOP_QCDpt30to80 | 1 << LOOP_QCDpt80to170 | 1 << LOOP_QCDpt170to300 | 1 << LOOP_QCDpt300to470 | 1 << LOOP_QCDpt470to800 | 1 << LOOP_QCDpt800toInf);
+// }
 
-int PredictionQCDBinsOdd ()
-{
-  return run<FakeRateLooper>(prediction_cuts_qcd_bins_odd, "PredictionQCDBinsOdd", 1 << LOOP_QCDpt30to80 | 1 << LOOP_QCDpt80to170 | 1 << LOOP_QCDpt170to300 | 1 << LOOP_QCDpt300to470 | 1 << LOOP_QCDpt470to800 | 1 << LOOP_QCDpt800toInf);
-}
+// int PredictionQCDBinsOdd ()
+// {
+//   return run<FakeRateLooper>(prediction_cuts_qcd_bins_odd, "PredictionQCDBinsOdd", 1 << LOOP_QCDpt30to80 | 1 << LOOP_QCDpt80to170 | 1 << LOOP_QCDpt170to300 | 1 << LOOP_QCDpt300to470 | 1 << LOOP_QCDpt470to800 | 1 << LOOP_QCDpt800toInf);
+// }
 
