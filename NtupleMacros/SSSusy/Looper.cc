@@ -131,6 +131,20 @@ cuts_t Looper::DilepSelect (int i_hyp)
      if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !trueGammaFromMuon(cms2.hyp_ll_index()[i_hyp]) )
        ret |= CUT_BIT(CUT_NOT_TRUE_GAMMA_FROM_MUON);
 
+     // check ttbar type
+//      CUT_TTBAR_TYPE_WW,
+//        CUT_TTBAR_TYPE_WO,
+//        CUT_TTBAR_TYPE_OO,
+     if( ttbarconstituents( i_hyp) == 1 ) {
+       ret |= CUT_BIT(CUT_TTBAR_TYPE_WW);
+     }
+     if( ttbarconstituents( i_hyp) == 2 ) {
+       ret |= CUT_BIT(CUT_TTBAR_TYPE_WO);
+     }
+     if( ttbarconstituents( i_hyp) == 3 ) {
+       ret |= CUT_BIT(CUT_TTBAR_TYPE_OO);
+     }
+
      // pass trigger?
      if (passTriggersMu9orLisoE15(cms2.hyp_type()[i_hyp]))
 	  ret |= CUT_BIT(CUT_PASS_TRIGGER);
@@ -138,7 +152,7 @@ cuts_t Looper::DilepSelect (int i_hyp)
      if( TMath::Max(cms2.hyp_lt_p4()[i_hyp].pt(),cms2.hyp_ll_p4()[i_hyp].pt()) > 20. ) {
        ret |= (CUT_BIT(CUT_MAX_PT));
      }
-     if( TMath::Min(cms2.hyp_lt_p4()[i_hyp].pt(),cms2.hyp_ll_p4()[i_hyp].pt()) > 10.){
+     if( TMath::Min(cms2.hyp_lt_p4()[i_hyp].pt(),cms2.hyp_ll_p4()[i_hyp].pt()) > 10.) {
        ret |= (CUT_BIT(CUT_MIN_PT));
      }
      //      // pt cuts
@@ -297,6 +311,9 @@ void Looper::FillDilepHistos (int i_hyp)
 // 		      cms2.els_eOverPIn()[i]);
 // 	  }
 // 	  printf("\n");
+
+//Quick Test of SJ classification code
+          cout<<"TTbar type: "<<ttbarconstituents( i_hyp)<<endl;
      }
 
      // jet count

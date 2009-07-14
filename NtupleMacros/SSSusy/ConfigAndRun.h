@@ -333,7 +333,8 @@ int Wjets_Fakerate ()
 
 int Wjets_SS_Numerator ()
 {
-     return run<Looper>(fakerate_ss_numerator_cuts, "Wjets_SS_Numerator");
+  //  return run<Looper>(fakerate_ss_numerator_cuts, "Wjets_SS_Numerator", 1 << LOOP_TTBAR);
+  return run<Looper>(fakerate_ss_numerator_cuts, "Wjets_SS_Numerator");
 }
 
 int Wjets_SS_FOs_Not_Numerator ()
@@ -343,5 +344,6 @@ int Wjets_SS_FOs_Not_Numerator ()
 
 int Wjets_SS_Fakerate ()
 {
+  //     return run<FakeRateLooper>(fakerate_ss_denominator_not_numerator_cuts, "Wjets_SS_Fakerate", 1 << LOOP_TTBAR);
      return run<FakeRateLooper>(fakerate_ss_denominator_not_numerator_cuts, "Wjets_SS_Fakerate");
 }
