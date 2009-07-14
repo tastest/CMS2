@@ -131,7 +131,7 @@ void FakeRateLooper::FillDilepHistos (int i_hyp)
       hnJet3D_[myType]->Fill(cms2.hyp_njets()[i_hyp],eta,pt, weight * err);
       helPt3D_[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(),eta,pt, weight * err);
       helEta3D_[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].eta(),eta,pt, weight * err);
-      hmet3D_[myType]->Fill(cms2.hyp_met()[i_hyp],eta,pt, weight * err);
+      hmet3D_[myType]->Fill(cms2.evt_tcmet(),eta,pt, weight * err);
     } else if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
       const double err = elFakeProb(cms2.hyp_ll_index()[i_hyp], 1) - 
 	elFakeProb(cms2.hyp_ll_index()[i_hyp], 0);
@@ -141,7 +141,7 @@ void FakeRateLooper::FillDilepHistos (int i_hyp)
       hnJet3D_[myType]->Fill(cms2.hyp_njets()[i_hyp],eta,pt, weight * err);
       helPt3D_[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(),eta,pt, weight * err);
       helEta3D_[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].eta(),eta,pt, weight * err);
-      hmet3D_[myType]->Fill(cms2.hyp_met()[i_hyp],eta,pt, weight * err);
+      hmet3D_[myType]->Fill(cms2.evt_tcmet(),eta,pt, weight * err);
     }
 
   }

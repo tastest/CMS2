@@ -128,6 +128,16 @@ void Looper::BookHistos ()
 				  Form("%s_%s_%s",sample_.name.c_str(),"met",dilepton_hypo_names[bucket]),
 				  metNBins,metBins,
 				  "MET [GeV]","Events",sample_.histo_color);
+
+    helEtaPtBelow20_[bucket] = book1DVarHist(Form("%s_%s_%s",sample_.name.c_str(),"elEtaPtBelow20",dilepton_hypo_names[bucket]),
+				    Form("%s_%s_%s",sample_.name.c_str(),"elEtaPtBelow20",dilepton_hypo_names[bucket]),
+				    etaNBins,etaBins,
+				    "#eta^{e} [GeV]","Events",sample_.histo_color);
+    helEtaPtAbove20_[bucket] = book1DVarHist(Form("%s_%s_%s",sample_.name.c_str(),"elEtaPtAbove20",dilepton_hypo_names[bucket]),
+				    Form("%s_%s_%s",sample_.name.c_str(),"elEtaPtAbove20",dilepton_hypo_names[bucket]),
+				    etaNBins,etaBins,
+				    "#eta^{e} [GeV]","Events",sample_.histo_color);
+
   }
 }
 
@@ -138,6 +148,10 @@ bool Looper::FilterEvent()
   //
   if (cms2.trks_d0().size() == 0)
     return true;
+
+  // reject single lepton events (for Single samples)  
+  if(cms2.hyp_lt_p4().size() < 1) return true;
+  
   DorkyEventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.trks_d0()[0], 
 			      cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
   return is_duplicate(id); 
@@ -161,11 +175,26 @@ cuts_t Looper::DilepSelect (int i_hyp)
   // enough tracks?
   if (cms2.trks_trk_p4().size() > 2)
     ret |= CUT_BIT(CUT_MORE_THAN_TWO_TRACKS);
+
+  //   // pt cuts // UNFAIR comparison. Need mu pt >20 and ele pt > 10! ( as that corresponds to the 
+  // muon tag leg for the prediction.
+  //   if( TMath::Max(cms2.hyp_lt_p4()[i_hyp].pt(),cms2.hyp_ll_p4()[i_hyp].pt()) > 20. && TMath::Min(cms2.hyp_lt_p4()[i_hyp].pt(),cms2.hyp_ll_p4()[i_hyp].pt()) > 10. ) {
+  //     ret |= (CUT_BIT(CUT_LT_PT));
+  //     ret |= (CUT_BIT(CUT_LL_PT));
+  //   }
   // pt cuts
-  if (cms2.hyp_lt_p4()[i_hyp].pt() > 20.0) 
-    ret |= (CUT_BIT(CUT_LT_PT));
-  if (cms2.hyp_ll_p4()[i_hyp].pt() > 20.0) 
-    ret |= (CUT_BIT(CUT_LL_PT));
+  if( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_p4()[i_hyp].pt() > 20.) {
+  ret |= (CUT_BIT(CUT_LT_PT));
+  }
+  if( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_p4()[i_hyp].pt() > 20.) {
+  ret |= (CUT_BIT(CUT_LL_PT));
+  }
+  if( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && cms2.hyp_lt_p4()[i_hyp].pt() > 10.) {
+  ret |= (CUT_BIT(CUT_LT_PT));
+  }
+  if( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && cms2.hyp_ll_p4()[i_hyp].pt() > 10.) {
+  ret |= (CUT_BIT(CUT_LL_PT));
+  }
   // sign cuts
   if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] < 0 ) 
     ret |= (CUT_BIT(CUT_OPP_SIGN));
@@ -202,18 +231,26 @@ cuts_t Looper::DilepSelect (int i_hyp)
   }
   // electron quality
   int n_iso_el = 0;
-  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && goodElectronWithoutIsolation(cms2.hyp_lt_index()[i_hyp]) )
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && GoodSusyLeptonID(11, cms2.hyp_lt_index()[i_hyp]) )
     ret |= CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_EL_GOOD);
-  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && goodElectronWithoutIsolation(cms2.hyp_ll_index()[i_hyp]) )
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && GoodSusyLeptonID(11, cms2.hyp_ll_index()[i_hyp]) )
     ret |= CUT_BIT(CUT_LL_GOOD) | CUT_BIT(CUT_EL_GOOD);
-  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && passElectronIsolation(cms2.hyp_lt_index()[i_hyp], false)) {
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && PassSusyElectronIsolation(cms2.hyp_lt_index()[i_hyp], false)) {
     ret |= CUT_BIT(CUT_LT_ISO) | CUT_BIT(CUT_EL_ISO);
     n_iso_el++;
   }
-  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && passElectronIsolation(cms2.hyp_ll_index()[i_hyp], false)) {
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 &&  PassSusyElectronIsolation(cms2.hyp_ll_index()[i_hyp], false)) {
     ret |= CUT_BIT(CUT_LL_ISO) | CUT_BIT(CUT_EL_ISO);
     n_iso_el++;
   }     
+
+  //Numerator
+  //  goodLooseElectronWithoutIsolation(index) // old loose
+  //  GoodSusyLeptonID(11, index); // tight
+  //  GoodSusyElectronWithIsolation(index, use_calo_iso);
+  //Denominator Iso
+  //  GoodSusyElectronWithIsolationLoose(index,true);
+  
   if (n_iso_mu + n_iso_el >= 1)
     ret |= (CUT_BIT(CUT_ONE_ISO));
   if (n_iso_mu + n_iso_el >= 2)
@@ -269,11 +306,11 @@ cuts_t Looper::DilepSelect (int i_hyp)
     ret |= (CUT_BIT(CUT_LL_GOOD)) | (CUT_BIT(CUT_LL_CALOISO));
   }
   int n_caloiso_el = 0;
-  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && goodElectronIsolated(cms2.hyp_lt_index()[i_hyp], true)) {
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && GoodSusyElectronWithIsolation(cms2.hyp_lt_index()[i_hyp], true)) {
     ret |= CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LT_CALOISO) | CUT_BIT(CUT_EL_CALOISO);
     n_caloiso_el++;
   }
-  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && goodElectronIsolated(cms2.hyp_ll_index()[i_hyp], true)) {
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && GoodSusyElectronWithIsolation(cms2.hyp_ll_index()[i_hyp], true)) {
     ret |= CUT_BIT(CUT_LL_GOOD) | CUT_BIT(CUT_LL_CALOISO) | CUT_BIT(CUT_EL_CALOISO);
     n_caloiso_el++;
   }     
@@ -453,17 +490,34 @@ void Looper::FillDilepHistos (int i_hyp)
       helPt_[DILEPTON_ALL]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(), weight);
       helEta_[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].eta(), weight);
       helEta_[DILEPTON_ALL]->Fill(cms2.hyp_lt_p4()[i_hyp].eta(), weight);
+      if( cms2.hyp_lt_p4()[i_hyp].pt() < 20 ) {
+        helEtaPtBelow20_[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].eta(), weight);
+        helEtaPtBelow20_[DILEPTON_ALL]->Fill(cms2.hyp_lt_p4()[i_hyp].eta(), weight);
+      }
+      else{
+        helEtaPtAbove20_[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].eta(), weight);
+        helEtaPtAbove20_[DILEPTON_ALL]->Fill(cms2.hyp_lt_p4()[i_hyp].eta(), weight);
+      }
     }
     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
       helPt_[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
       helPt_[DILEPTON_ALL]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(), weight);
       helEta_[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].eta(), weight);
       helEta_[DILEPTON_ALL]->Fill(cms2.hyp_ll_p4()[i_hyp].eta(), weight);
+
+      if( cms2.hyp_ll_p4()[i_hyp].pt() < 20 ) {
+        helEtaPtBelow20_[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].eta(), weight);
+        helEtaPtBelow20_[DILEPTON_ALL]->Fill(cms2.hyp_ll_p4()[i_hyp].eta(), weight);
+      }
+      else {
+        helEtaPtAbove20_[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].eta(), weight);
+        helEtaPtAbove20_[DILEPTON_ALL]->Fill(cms2.hyp_ll_p4()[i_hyp].eta(), weight);
+      }
     }
     
     // Met and Met special
-    hmet_[myType]->Fill(cms2.hyp_met()[i_hyp], weight);      
-    hmet_[DILEPTON_ALL]->Fill(cms2.hyp_met()[i_hyp], weight);      
+    hmet_[myType]->Fill(cms2.evt_tcmet(), weight);      
+    hmet_[DILEPTON_ALL]->Fill(cms2.evt_tcmet(), weight);      
   }
 //    cout << stream.str();
 

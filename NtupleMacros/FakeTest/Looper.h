@@ -210,6 +210,8 @@ protected:
   TH1F	*helPt_[4];
   TH1F	*helEta_[4];
   TH1F	*hmet_[4];
+  TH1F	*helEtaPtBelow20_[4];
+  TH1F	*helEtaPtAbove20_[4];
   
 
 protected:
