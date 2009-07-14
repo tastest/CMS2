@@ -106,6 +106,67 @@ Sample fWjets ()
      return ret;
 }
 
+//WjetsAlpgen file
+Sample fWjetsAlpgenSingle ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "cms2-V01-03-01/W_0jet-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/W_1jet_Pt0to100-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/W_1jet_Pt100to300-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/W_1jet_Pt1600toInf-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/W_1jet_Pt300to800-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/W_1jet_Pt800to1600-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/W_2jet_Pt0to100-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/W_2jet_Pt100to300-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/W_2jet_Pt1600toInf-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/W_2jet_Pt300to800-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/W_2jet_Pt800to1600-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/W_3jet_Pt0to100-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/W_3jet_Pt100to300-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/W_3jet_Pt1600toInf-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/W_3jet_Pt300to800-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/W_3jet_Pt800to1600-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/W_4jet_Pt0to100-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/W_4jet_Pt100to300-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/W_4jet_Pt1600toInf-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/W_4jet_Pt300to800-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/W_4jet_Pt800to1600-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/W_5jet_Pt0to100-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/W_5jet_Pt100to300-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/W_5jet_Pt1600toInf-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/W_5jet_Pt300to800-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/W_5jet_Pt800to1600-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+
+     Sample ret = { c, Wjets, 40, 1, "wjetsAlpgen", true, 0. };
+     return ret;
+}
+
 //Wjets file (single lepton filter)
 /*
 Sample fWjetsSingle ()
@@ -394,6 +455,23 @@ Sample fLM11 ()
      return ret;
 }
 
+Sample fQCDpt30 ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "cms2-V01-03-01/QCDpt30_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merge*.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, QCDpt30, 28, 1, "QCDpt30", true, 999999999 };
+     return ret;
+}
+
+Sample fQCDpt80 ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "cms2-V01-03-01/QCDpt80_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merge*.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, QCDpt80, 28, 1, "QCDpt80", true, 0. };
+     return ret;
+}
 
 /*
 // QCD samples
@@ -469,14 +547,6 @@ Sample fQCDEMenrichedPt80to170 ()
      return ret;
 }
 
-Sample fQCDpt30 ()
-{
-     TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/QCDpt30_v2/*.root";
-     c->Add(sample.c_str());
-     Sample ret = { c, QCDpt30, 28, 1, "QCDpt30", true, 0. };
-     return ret;
-}
 
 Sample fQCDpt30to80 ()
 {

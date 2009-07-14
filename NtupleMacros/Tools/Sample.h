@@ -8,7 +8,7 @@ enum Process { TEST, WW, WZ, ZZ, Wjets, DYee, DYmm, DYtt, DY, Wgamma, Zgamma, tt
 	       LM0, LM1, LM2, LM3, LM4, LM5, LM6, LM7, LM8, LM9, LM9p, LM10, LM11,
 	       InclusiveMu5Pt50, InclusiveMuPt15, 
 	       QCDBCtoEPt20to30, QCDBCtoEPt30to80, QCDBCtoEPt80to170, 
-	       QCDEMenrichedPt20to30, QCDEMenrichedPt30to80, QCDEMenrichedPt80to170, QCDpt30,
+	       QCDEMenrichedPt20to30, QCDEMenrichedPt30to80, QCDEMenrichedPt80to170, QCDpt30, QCDpt80,
 	       QCDpt30to80,QCDpt80to170,QCDpt170to300,QCDpt300to470,QCDpt470to800,QCDpt800toInf};
 
 class TChain;
@@ -36,6 +36,7 @@ Sample fWZ	();
 Sample fWZ_incl	();
 Sample fZZ	();
 Sample fWjets	();
+Sample fWjetsAlpgenSingle();
 Sample fWjetsSingle ();
 Sample fWc	();
 Sample fDYee 	();
@@ -77,6 +78,7 @@ Sample fQCDEMenrichedPt20to30	();
 Sample fQCDEMenrichedPt30to80	();
 Sample fQCDEMenrichedPt80to170  ();
 Sample fQCDpt30  ();
+Sample fQCDpt80  ();
 Sample fQCDpt30to80  ();
 Sample fQCDpt80to170  ();
 Sample fQCDpt170to300  ();
