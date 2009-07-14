@@ -112,7 +112,8 @@ void Looper::BookHistos ()
   else {
 
     // set Pt bins
-//     binsPt.push_back(0.);
+    binsPt.push_back(0.); // back in 090711
+    binsPt.push_back(10.);
     binsPt.push_back(20.);
     binsPt.push_back(60.);
     binsPt.push_back(150.);

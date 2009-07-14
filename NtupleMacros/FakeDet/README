@@ -5,7 +5,7 @@ Use this code to prepare new electron fake rates
 
 #--------------------------------------------------------------------
 #--------------------------------------------------------------------
-I)   make -j 8 EleFakes.tbl
+I)   make -j 8 EleFakesInc.tbl
         this produces fake rates from the EMenriched and BCtoE QCD 
         (or incl. QCD) samples. Results are stored in the file 
         EleFakes.root 
