@@ -9,11 +9,11 @@ void makeSipPlots ()
      TFile *f_trkqual = TFile::Open("Results.root");
      assert(f_trkqual != 0);
      TH1 *h_ww_trkd0_good 		= (TH1 *)f_trkqual->Get("ww_trkd00_all");
-     TH1 *h_ww_trkDeltaz0_good 		= (TH1 *)f_trkqual->Get("ww_trd0errorGood_all");
+     TH1 *h_ww_trkDeltaz0_good 		= (TH1 *)f_trkqual->Get("ww_trkDeltaz00_all");
      TH1 *h_ww_trknchi2_good 		= (TH1 *)f_trkqual->Get("ww_trknchi20_all");
      TH1 *h_ww_trkvalidhits_good 	= (TH1 *)f_trkqual->Get("ww_trkvalidhits0_all");
      TH1 *h_ww_trkd0_bad 		= (TH1 *)f_trkqual->Get("ww_trkd02_all");
-     TH1 *h_ww_trkDeltaz0_bad 		= (TH1 *)f_trkqual->Get("ww_trd0errorBad_all");
+     TH1 *h_ww_trkDeltaz0_bad 		= (TH1 *)f_trkqual->Get("ww_trkDeltaz02_all");
      TH1 *h_ww_trknchi2_bad 		= (TH1 *)f_trkqual->Get("ww_trknchi22_all");
      TH1 *h_ww_trkvalidhits_bad 	= (TH1 *)f_trkqual->Get("ww_trkvalidhits2_all");
      h_ww_trkd0_good               ->SetLineColor(kBlack);

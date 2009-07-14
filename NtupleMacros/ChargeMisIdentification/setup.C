@@ -8,6 +8,10 @@ void setup(bool skipFWLite = false){
   gSystem->Load("libGui.so");
   gSystem->Load("libPhysics.so");
   
+  // Load and compile something to allow proper treatment of vectors
+  // Not clear that it is needed
+  gSystem->CompileMacro("loader.C", "++k", "libloader");
+
   gSystem->CompileMacro("getMyHistosNames.C", "++k", "libgetMyHistosNames");
   gSystem->CompileMacro("histtools.C", "++k", "libhisttools");
   gSystem->CompileMacro("browseStacks.C", "++k", "libbrowseStacks");
