@@ -216,3 +216,21 @@ http://omega.physics.ucsb.edu/twiki/bin/view/CMS/FakeRateIncQCDpt30FinalWWcutsSt
         Application:
         - not yet changed default to 7_1 -> decide in next TaS meeting.
 
+  
+v10_1:
+Twiki:
+http://omega.physics.ucsb.edu/twiki/bin/view/CMS/EloeFakeRateAndTestv10_1_cleaned
+   Determination: 
+   - selections a la cvs tag AN2009_042_v1 for FakeDet
+   - uses NO leading jet cut at 30 
+   - uses QCDpt30 sample v01-03-01
+   
+v50_0: Susy Baseline fakerates
+Twiki: http://omega.physics.ucsb.edu/twiki/bin/view/CMS/EleFakeRateAndTestv50_0_cleaned
+
+   Determination: 
+   - selections a la SusyGoodLepton
+   - relaxed Susy isolation cut from 0.1 to 0.4
+   - uses NO leading jet cut at 30 
+   - uses QCDpt30 sample v01-03-01
+   
