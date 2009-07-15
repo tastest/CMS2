@@ -1526,7 +1526,6 @@ bool compareEt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1,
   return lv1.Et() > lv2.Et();
 }
 
-
 bool GoodSusyElectronWithoutIsolation(int index) { 
   if ( cms2.els_tightId22XMinMatteo().at(index)     !=  1) return false; 
   if ( fabs(cms2.els_d0corr().at(index)) >= 0.02)   return false; 
@@ -1630,8 +1629,8 @@ int numberOfExtraElectronsSUSY(int i_hyp){
   unsigned int nElec = 0; 
   for (int iel=0; iel < int(cms2.els_p4().size()); iel++) { 
     if ( cms2.els_p4()[iel].pt() < 10 ) continue; 
-    if (! GoodSusyElectronWithoutIsolation(iel)) continue; 
-    if (! GoodSusyElectronWithIsolation(iel, true)) continue;
+    if (!GoodSusyElectronWithoutIsolation(iel)) continue; 
+    if (!PassSusyElectronIsolation(iel, true)) continue;
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && cms2.hyp_lt_index()[i_hyp] == iel ) continue; 
     if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && cms2.hyp_ll_index()[i_hyp] == iel ) continue; 
     nElec++; 
@@ -1644,7 +1643,7 @@ int numberOfExtraMuonsSUSY(int i_hyp){
   for (int imu=0; imu < int(cms2.mus_p4().size()); imu++) { 
     if ( cms2.mus_p4()[imu].pt() < 10 ) continue; 
     if (!GoodSusyMuonWithoutIsolation(imu)) continue;
-    if (!GoodSusyMuonWithIsolation(imu)) continue; 
+    if (!PassSusyMuonIsolation(imu)) continue; 
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == imu ) continue; 
     if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == imu ) continue; 
     nMuons++; 
@@ -1683,7 +1682,6 @@ vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getJPTJets(in
 	) continue;
     if (cms2.jpts_p4()[jj].Et() < 30) continue;
     if (fabs(cms2.jpts_p4()[jj].Eta()) > 2.4) continue;
-//    cout << cms2.jpts_emFrac()[jj] << endl;
 //    if (cms2.jpts_emFrac()[jj] < 0.1) continue;
     jpt_jets.push_back(cms2.jpts_p4()[jj]);
   }
@@ -1697,10 +1695,10 @@ vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getJPTJets(in
 int ttbarconstituents(int i_hyp){
 
   // Catagories WW = 1, WO = 2, and OO = 3
-  
+
   bool isTrueLepton_ll = false;
   bool isTrueLepton_lt = false;
-  
+
   isTrueLepton_ll = ( (abs(cms2.hyp_ll_id()[i_hyp]) == abs(cms2.hyp_ll_mc_id()[i_hyp]) &&
                        abs(cms2.hyp_ll_mc_motherid()[i_hyp]) < 50 //I wish I could match to W or Z explicitely, not in MGraph
                        )
@@ -1728,6 +1726,7 @@ int ttbarconstituents(int i_hyp){
 
   bool isrealW_ll = false;
   bool isrealW_lt = false;
+
   {
     int els_mo = 0;
     int mus_mo = 0;
@@ -1765,8 +1764,67 @@ int ttbarconstituents(int i_hyp){
   } else {
     return 3;
   }
-
 }
+
+bool additionalZvetoSUSY09(int i_hyp) {
+
+  // true if we want to veto this event
+  bool veto=false;
+
+  // first, look for Z->mumu
+  for (unsigned int i=0; i < cms2.mus_p4().size(); i++) {
+    bool hypLep1 = false;
+    bool hypLep2 = false;
+    if (cms2.mus_p4().at(i).pt() < 10.)     continue;
+    if (!GoodSusyMuonWithoutIsolation(i)) continue;
+    if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == i ) hypLep1 = true;
+    if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == i ) hypLep1 = true;
+
+    for (unsigned int j=i+1; j < cms2.mus_p4().size(); j++) {
+      if (cms2.mus_p4().at(j).pt() < 10.) continue;
+      if (!GoodSusyMuonWithoutIsolation(j)) continue;
+      if (cms2.mus_charge().at(i) == cms2.mus_charge().at(j)) continue;
+      if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == j ) hypLep2 = true;
+      if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == j ) hypLep2 = true;
+      // At least one of them has to pass isolation
+      if (!PassSusyMuonIsolation(i) && !PassSusyMuonIsolation(j)) continue;
+      if ( hypLep1 && hypLep2 ) continue;
+      // Make the invariant mass
+      ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >
+                vec = cms2.mus_p4().at(i) + cms2.mus_p4().at(j);
+      if ( inZmassWindow(vec.mass()) ) return true;
+
+    }
+  }
+
+  // now, look for Z->ee
+  for (unsigned int i=0; i < cms2.els_p4().size(); i++) {
+    bool hypLep1 = false;
+    bool hypLep2 = false;
+    if (cms2.els_p4().at(i).pt() < 10.)     continue;
+    if (! GoodSusyElectronWithoutIsolation(i)) continue;
+    if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && cms2.hyp_lt_index()[i_hyp] == i ) hypLep1 = true;
+    if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && cms2.hyp_ll_index()[i_hyp] == i ) hypLep1 = true;
+    for (unsigned int j=i+1; j<cms2.els_p4().size(); j++) {
+      if (cms2.els_p4().at(j).pt() < 10.) continue;
+      if (! GoodSusyElectronWithoutIsolation(j)) continue;
+      if (cms2.els_charge().at(i) == cms2.els_charge().at(j)) continue;
+      // At least one of them has to pass isolation
+      if (!PassSusyElectronIsolation(i, true) && ! PassSusyElectronIsolation(j, true)) continue;
+      if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && cms2.hyp_lt_index()[i_hyp] == j ) hypLep2 = true;
+      if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && cms2.hyp_ll_index()[i_hyp] == j ) hypLep2 = true;
+      if ( hypLep1 && hypLep2 ) continue;
+      // Make the invariant mass
+      ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >
+                vec = cms2.els_p4().at(i) + cms2.els_p4().at(j);
+      if ( inZmassWindow(vec.mass()) ) return true;
+
+    }
+  }
+  // done
+  return veto;
+}
+
 
 //--------------------------------------------------------------------
 // Veto events if there are two leptons in the 

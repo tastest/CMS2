@@ -135,9 +135,8 @@ int numberOfExtraElectronsVJets09(int i_hyp);
 
 bool compareEt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1,  
                  ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv2);
-/* bool GoodSusyElectronWithoutIsolation(int index); */
-/* bool GoodSusyMuonWithoutIsolation(int index); */
-
+bool GoodSusyElectronWithoutIsolation(int index);
+bool GoodSusyMuonWithoutIsolation(int index);
 bool GoodSusyElectronWithIsolationLoose(int index, bool use_calo_iso); 
 bool GoodSusyElectronWithoutIsolation(int index); 
 bool PassSusyElectronIsolationLoose(int index, bool use_calo_iso);
@@ -153,14 +152,16 @@ bool GoodSusyElectronWithIsolation(int index, bool use_calo_iso);
 bool PassSusyMuonIsolation(int index);
 bool PassSusyElectronIsolation(int index, bool use_calo_iso);
 bool PassSusyLeptonIsolation(int id, int index);
-bool GoodSusyLeptonID(int id, int index);
 
+bool GoodSusyLeptonID(int id, int index);
 bool GoodSusyTrigger(int dilType);
 int numberOfExtraElectronsSUSY(int i_hyp);
 int numberOfExtraMuonsSUSY(int i_hyp);
 std::vector <ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getCaloJets(int i_hyp); 
 std::vector <ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getJPTJets(int i_hyp); 
 int ttbarconstituents(int i_hyp);
+bool additionalZvetoSUSY09(int i_hyp);
+
 
 //TTDil08 fake rate functions
 bool isNumElTTDil08(int iEl);
