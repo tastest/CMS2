@@ -174,33 +174,39 @@ int Looper::Jetcat (int i_hyp) const
 
 int Looper::Bucket (int i_hyp) const
 {
-     if (cms2.hyp_lt_id()[i_hyp] == -11 && cms2.hyp_ll_id()[i_hyp] == -11)
+  if (cms2.hyp_lt_id()[i_hyp] == -11 && cms2.hyp_ll_id()[i_hyp] == -11) // e+e+
 	  return 0;
-     if (cms2.hyp_lt_id()[i_hyp] == -13 && cms2.hyp_ll_id()[i_hyp] == -13)
+  if (cms2.hyp_lt_id()[i_hyp] ==  11 && cms2.hyp_ll_id()[i_hyp] == 11) // e-e-
 	  return 1;
-     if (cms2.hyp_lt_id()[i_hyp] == -11 && cms2.hyp_ll_id()[i_hyp] == -13)
+
+ if (cms2.hyp_lt_id()[i_hyp] == -13 && cms2.hyp_ll_id()[i_hyp] == -13) // m+m+
 	  return 2;
-     if (cms2.hyp_lt_id()[i_hyp] == -13 && cms2.hyp_ll_id()[i_hyp] == -11)
-	  return 2;
-     if (cms2.hyp_lt_id()[i_hyp] ==  11 && cms2.hyp_ll_id()[i_hyp] == 11)
+  if (cms2.hyp_lt_id()[i_hyp] ==  13 && cms2.hyp_ll_id()[i_hyp] == 13) // m-m-
 	  return 3;
-     if (cms2.hyp_lt_id()[i_hyp] ==  13 && cms2.hyp_ll_id()[i_hyp] == 13)
+
+  if (cms2.hyp_lt_id()[i_hyp] == -11 && cms2.hyp_ll_id()[i_hyp] == -13) // e+m+
 	  return 4;
-     if (cms2.hyp_lt_id()[i_hyp] ==  11 && cms2.hyp_ll_id()[i_hyp] == 13)
+  if (cms2.hyp_lt_id()[i_hyp] == -13 && cms2.hyp_ll_id()[i_hyp] == -11) // m+e+
+	  return 4;
+ 
+  if (cms2.hyp_lt_id()[i_hyp] ==  11 && cms2.hyp_ll_id()[i_hyp] == 13) // e-m-
 	  return 5;
-     if (cms2.hyp_lt_id()[i_hyp] ==  13 && cms2.hyp_ll_id()[i_hyp] == 11)
+  if (cms2.hyp_lt_id()[i_hyp] ==  13 && cms2.hyp_ll_id()[i_hyp] == 11) // m-e-
 	  return 5;
-     if (cms2.hyp_lt_id()[i_hyp] == -11 && cms2.hyp_ll_id()[i_hyp] == 13)
+
+  if (cms2.hyp_lt_id()[i_hyp] == -11 && cms2.hyp_ll_id()[i_hyp] == 13) // e+m-
 	  return 6;
-     if (cms2.hyp_lt_id()[i_hyp] ==  11 && cms2.hyp_ll_id()[i_hyp] == -13)
+  if (cms2.hyp_lt_id()[i_hyp] ==  11 && cms2.hyp_ll_id()[i_hyp] == -13) // e-m+
 	  return 7;
-     if (cms2.hyp_lt_id()[i_hyp] == -11 && cms2.hyp_ll_id()[i_hyp] == 11)
+
+  if (cms2.hyp_lt_id()[i_hyp] == -11 && cms2.hyp_ll_id()[i_hyp] == 11) // e+e-
 	  return 8;
-     if (cms2.hyp_lt_id()[i_hyp] ==  11 && cms2.hyp_ll_id()[i_hyp] == -11)
+  if (cms2.hyp_lt_id()[i_hyp] ==  11 && cms2.hyp_ll_id()[i_hyp] == -11) // e-e+
 	  return 8;
-     if (cms2.hyp_lt_id()[i_hyp] == -13 && cms2.hyp_ll_id()[i_hyp] == 13)
+
+  if (cms2.hyp_lt_id()[i_hyp] == -13 && cms2.hyp_ll_id()[i_hyp] == 13) // m+m-
 	  return 9;
-     if (cms2.hyp_lt_id()[i_hyp] ==  13 && cms2.hyp_ll_id()[i_hyp] == -13)
+  if (cms2.hyp_lt_id()[i_hyp] ==  13 && cms2.hyp_ll_id()[i_hyp] == -13) // m-m+
 	  return 9;
      assert(false);
 }

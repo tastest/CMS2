@@ -10,27 +10,77 @@
 static const DSGTable **dsgs_;
 static int n_dsgs_;
 
-static void printNumbers (int i, int j, int k, int l)
+int nBucketsGroups[3] = {10, 6, 4};
+int nBucketsPerGroup[3][10] = {
+  {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, 
+  {2, 2, 2, 2, 1, 1},
+  {4, 2, 2, 2}
+};
+int buckets[3][10][10] = {
+  { {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9} },
+  { {0,1},    {2,3},    {4,5},    {6,7},    {8}, {9} },   
+  { {0,1,2,3},          {4,5},    {6,7},    {8,9} },    
+};
+const static char bucketStrs[3][10][1280] = {
+  {"e+e+", "e-e-", "m+m+", "m-m-", "e+m+", "e-m-", "e+m-", "m+e-", "e+e-", "m+m-"},
+  {"e+e+ e-e-",    "m+m+ m-m-",    "e+m+ e-m-",    "e+m- m+e-",    "e+e-", "m+m-"},
+  {"e+e+ e-e- m+m+ m-m-",          "e+m+ e-m-",    "e+m- m+e-",    "e+e- m+m-"},
+};
+
+static void printNumbers (int i, int j, int k, int l, int whichBucketGrouping)
 {
-     double sm = 0;
-     double smw2 = 0;
-     for (int m = 0; m < n_dsgs_ - 1; ++m) {
-	  sm += dsgs_[m]->events_[i][j][k][l];
-	  smw2 += dsgs_[m]->w2s_[i][j][k][l];
-     }
-     double data = dsgs_[n_dsgs_ - 1]->events_[i][j][k][l];
-     double dataw2 = dsgs_[n_dsgs_ - 1]->w2s_[i][j][k][l];
-     double sig = (data - sm) / sqrt(smw2 + dataw2);
-     if (sig > 3)
-	  attron(COLOR_PAIR(1));
-     mvprintw(3 + i * 25 + (l + 1) * 2,
-	      10 + j * 50 + (k + 1) * 10,
-	      "%6.2f ", sm);
-     mvprintw(4 + i * 25 + (l + 1) * 2,
-	      10 + j * 50 + (k + 1) * 10,
-	      "%6.2f", data);
-     if (sig > 3)
-	  attroff(COLOR_PAIR(1));
+  double sm = 0;
+  double smw2 = 0;
+  double data = 0; 
+  double dataw2 = 0;
+  for (int n = 0 ; n < nBucketsPerGroup[whichBucketGrouping][l]; n++) {
+    for (int m = 0; m < n_dsgs_ - 1; ++m) {
+      sm += dsgs_[m]->events_[i][j][k][buckets[whichBucketGrouping][l][n]];
+      smw2 += dsgs_[m]->w2s_[i][j][k][buckets[whichBucketGrouping][l][n]];
+    }
+    data += dsgs_[n_dsgs_ - 1]->events_[i][j][k][buckets[whichBucketGrouping][l][n]];
+    dataw2 += dsgs_[n_dsgs_ - 1]->w2s_[i][j][k][buckets[whichBucketGrouping][l][n]];
+  }
+  double sig = (data - sm) / sqrt(smw2 + dataw2);
+  if (sig > 3)
+    attron(COLOR_PAIR(1));
+  mvprintw(3 + i * 25 + (l + 1) * 2,
+	   10 + j * 50 + (k + 1) * 10,
+	   "%6.2f ", sm);
+  mvprintw(4 + i * 25 + (l + 1) * 2,
+	   10 + j * 50 + (k + 1) * 10,
+	   "%6.2f", data);
+  if (sig > 3)
+    attroff(COLOR_PAIR(1));
+}
+
+
+
+void printTable(int whichBucketGrouping)
+{
+     
+  clear();
+  mvprintw(0, 20, "MET > 0");
+  mvprintw(0, 70, "MET > 45");
+  mvprintw(0, 120, "MET > 175");
+  mvprintw(15, 0, "no Z");
+  mvprintw(40, 0, "Z");
+  for (int i = 0; i < DSGTable::nZcat; ++i) {
+    for (int j = 0; j < DSGTable::nMETcat; ++j) {
+      mvprintw(2 + i * 25, 30 + j * 50, "Njet");
+      mvprintw(3 + i * 25, 22 + j * 50, "<2        2-4       >4");
+      for (int k = 0; k < DSGTable::nJetcat; ++k) { 
+	for (int l = 0; l < nBucketsGroups[whichBucketGrouping]; ++l) { // # of elements in current grp: 10, 5, 4 elements
+	  printNumbers(i, j, k, l, whichBucketGrouping);
+	  if (k == 0) {
+	    mvprintw(3 + i * 25 + (l + 1) * 2,
+		     10 + j * 50, bucketStrs[whichBucketGrouping][l]);
+	  }
+	}
+      }
+    }
+  }
+  refresh();
 }
 
 void DSGDisplay ()
@@ -71,39 +121,16 @@ void DSGDisplay ()
      // print table
      start_color();
      init_pair(1, COLOR_RED, COLOR_BLACK);
-     mvprintw(0, 20, "MET > 0");
-     mvprintw(0, 70, "MET > 45");
-     mvprintw(0, 120, "MET > 175");
-     mvprintw(15, 0, "no Z");
-     mvprintw(40, 0, "Z");
-     for (int i = 0; i < DSGTable::nZcat; ++i) {
-	  for (int j = 0; j < DSGTable::nMETcat; ++j) {
-	       mvprintw(2 + i * 25, 30 + j * 50, "Njet");
-	       mvprintw(3 + i * 25, 22 + j * 50, "<2        2-4       >4");
-	       for (int k = 0; k < DSGTable::nJetcat; ++k) {
-		    for (int l = 0; l < DSGTable::nBuckets; ++l) {
-			 printNumbers(i, j, k, l);
-			 if (k == 0) {
-			      const static char bucketStr[10][1280] = {
-				   "e+e+", "m+m+", "e+m+",
-				   "e-e-", "m-m-", "e-m-",
-				   "e+m-", "m+e-",
-				   "e+e-", "m+m-"
-			      };
-			      mvprintw(3 + i * 25 + (l + 1) * 2,
-				       10 + j * 50, bucketStr[l]);
-			 }
-		    }
-	       }
-	  }
-     }
+     printTable(0);
+
      refresh();
      int i = 0;
      int j = 0;
      int k = 0;
      int l = 0;
+     int iBucketGrouping = 0;
      attron(A_REVERSE);
-     printNumbers(i, j, k, l);
+     printNumbers(i, j, k, l, iBucketGrouping);
      while (1) {
 	  // read input
 	  int ch = getch();
@@ -111,7 +138,7 @@ void DSGDisplay ()
 	       break;
 	  // unhighlight current cell
 	  attroff(A_REVERSE);
-	  printNumbers(i, j, k, l);
+	  printNumbers(i, j, k, l, iBucketGrouping );
 	  switch (ch) {
 	  case KEY_UP: case 'k': case 'K':
 	       if (l == 0) {
@@ -153,6 +180,12 @@ void DSGDisplay ()
 		    k++;
 	       }
 	       break;
+	  case 'b': case 'B':
+	    iBucketGrouping++;
+	    iBucketGrouping %= 3;
+	    printTable(iBucketGrouping);
+	       break;
+
 	  case '\n':
 	  {
 	       static TCanvas *c = new TCanvas;
@@ -189,10 +222,11 @@ void DSGDisplay ()
 	  }
 	  // highlight new cell
 	  attron(A_REVERSE);
-	  printNumbers(i, j, k, l);
+	  printNumbers(i, j, k, l, iBucketGrouping);
 	  attroff(A_REVERSE);
 	  refresh();
      } 
      endwin(); 
      return;
 }
+
