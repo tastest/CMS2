@@ -97,42 +97,51 @@ protected:
 public:
   // these functions are called by the table-printing code
   virtual double	CandsPassing (enum DileptonHypType i) const { return cands_passing_[i]; }
-  virtual int      	CandsCount (enum DileptonHypType i) const { return cands_count_[i]; }
+  virtual int       	CandsCount (enum DileptonHypType i) const { return cands_count_[i]; }
   virtual double	RMS (enum DileptonHypType i) const { return sqrt(cands_passing_w2_[i]); }
 
 protected:
 
   TH1F* e_hcal_iso;
+  TH1F* e_ecal_iso;
   TH1F* e_trck_iso;
-  TH1F* e_ecal_patiso;
-  TH1F* e_ecal_egmiso;
-  TH1F* e_ecal_affsciso;
-  TH1F* e_ecal_affjriso;
-  TH1F* e_ecal_affjrcutiso;
-
+  //TH1F* e_trck_iso_match015;
+  TH1F* e_trck_iso_recalc;
+  TH1F* e_trck_iso_recalc_dr05_1;
+  TH1F* e_trck_iso_affble;
+  TH1F* e_trck_iso_affble_dr05_1;
   TH1F* e_hcal_iso_dr05_1;
+  TH1F* e_ecal_iso_dr05_1;
   TH1F* e_trck_iso_dr05_1;
-  TH1F* e_ecal_patiso_dr05_1;
-  TH1F* e_ecal_egmiso_dr05_1;
-  TH1F* e_ecal_affsciso_dr05_1;
-  TH1F* e_ecal_affjriso_dr05_1;
-  TH1F* e_ecal_affjrcutiso_dr05_1;
 
-  //eff versus dr btwn two stat1 leps for each lep
+  //eff versus dr btwn two stat1 leps
   EffH1F* eff_edr_hcal_iso[2];
+  EffH1F* eff_edr_ecal_iso[2];
   EffH1F* eff_edr_trck_iso[2];
-  EffH1F* eff_edr_ecal_patiso[2];
-  EffH1F* eff_edr_ecal_egmiso[2];
-  EffH1F* eff_edr_ecal_affsciso[2];
-  EffH1F* eff_edr_ecal_affjriso[2];
-  EffH1F* eff_edr_ecal_affjrcutiso[2];
+  EffH1F* eff_edr_trck_iso_recalc[2];
+  EffH1F* eff_edr_trck_iso_affble[2];
+  //EffH1F* eff_edr_hcal_iso_dr05_1[2];
+  //EffH1F* eff_edr_ecal_iso_dr05_1[2];
+  //EffH1F* eff_edr_trck_iso_dr05_1[2];
+  //EffH1F* eff_edr_trck_iso_recalc_dr05_1[2];
+  //EffH1F* eff_edr_trck_iso_affble_dr05_1[2];
+  //pair
+  EffH1F* eff_edr_hcal_iso_pair;
+  EffH1F* eff_edr_ecal_iso_pair;
+  EffH1F* eff_edr_trck_iso_pair;
+  EffH1F* eff_edr_trck_iso_recalc_pair;
+  EffH1F* eff_edr_trck_iso_affble_pair;
+  //EffH1F* eff_edr_hcal_iso_dr05_1_pair;
+  //EffH1F* eff_edr_ecal_iso_dr05_1_pair;
+  //EffH1F* eff_edr_trck_iso_dr05_1_pair;
+  //EffH1F* eff_edr_trck_iso_recalc_dr05_1_pair;
+  //EffH1F* eff_edr_trck_iso_affble_dr05_1_pair;
   
 
 protected:
 
   bool useweight;
   double weight;
-  double oldweight;
   
   // count the (weighted and unweighted) number of candidates passing our cuts
   double		cands_passing_[4];
