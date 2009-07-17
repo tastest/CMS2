@@ -1,3 +1,4 @@
+
 #include <assert.h>
 #include <math.h>
 #include <ncurses.h>
@@ -144,14 +145,14 @@ void DSGDisplay ()
 	       if (l == 0) {
 		    if (i != 0) {
 			 i--;
-			 l = DSGTable::nBuckets - 1;
+			 l = nBucketsGroups[iBucketGrouping] - 1;
 		    }
 	       } else {
 		    l--;
 	       }
 	       break;
 	  case KEY_DOWN: case 'j': case 'J':
-	       if (l == DSGTable::nBuckets - 1) {
+	       if (l == nBucketsGroups[iBucketGrouping] - 1) {
 		    if (i != DSGTable::nZcat - 1) {
 			 i++;
 			 l = 0;
