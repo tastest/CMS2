@@ -39,6 +39,7 @@ bool passTriLepVeto (int i_dilep);
 int tagMuonIdx (int i_dilep);
 double tagMuonPt (int i_dilep);
 double tagMuonRelIso (int i_dilep);
+int additionalZcounter();
 bool additionalZveto();
 bool isDYee();
 bool isDYmm();

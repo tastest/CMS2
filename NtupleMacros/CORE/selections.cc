@@ -654,19 +654,30 @@ bool isZZ() {
   return false;
 }
 
+
+bool additionalZveto() {
 //--------------------------------------------------------------------
 // Veto events if there are two leptons in the 
+// event that make the Z mass.  This uses additionalZcounter below...
+//---------------------------------------------------------------------
+  bool veto = false;
+  if (additionalZcounter > 0) veto = true;
+  return veto;
+}
+
+
+//--------------------------------------------------------------------
+// Count Z candidets into two leptons in the 
 // event that make the Z mass.  This uses the mus and els
-// blocks, ie, it is a veto that can use the 3rd (4th,5th,..)
-// lepton in the event.
+// blocks,
 //
 // Both leptons must be 20 GeV, and pass the same cuts as 
 // the hypothesis leptons, except that one of them can be non-isolated
 //---------------------------------------------------------------------
-bool additionalZveto() {
+int additionalZcounter() {
 
   // true if we want to veto this event
-  bool veto=false;
+  int Zcount = 0;
 
   // first, look for Z->mumu
   for (unsigned int i=0; i < cms2.mus_p4().size(); i++) {
@@ -684,7 +695,7 @@ bool additionalZveto() {
       // Make the invariant mass
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
                 vec = cms2.mus_p4().at(i) + cms2.mus_p4().at(j);
-      if ( inZmassWindow(vec.mass()) ) return true;
+      if ( inZmassWindow(vec.mass()) ) Zcount++;
 
     }
   }
@@ -705,12 +716,12 @@ bool additionalZveto() {
       // Make the invariant mass
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
                 vec = cms2.els_p4().at(i) + cms2.els_p4().at(j);
-      if ( inZmassWindow(vec.mass()) ) return true;
+      if ( inZmassWindow(vec.mass()) ) Zcount++;
 
     }
   }
   // done
-  return veto;
+  return Zcount;
 }
 
 //------------------------------------------------------------
