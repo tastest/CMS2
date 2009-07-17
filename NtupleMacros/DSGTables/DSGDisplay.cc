@@ -55,6 +55,49 @@ static void printNumbers (int i, int j, int k, int l, int whichBucketGrouping)
     attroff(COLOR_PAIR(1));
 }
 
+static void displayHistos (int i, int j, int k, int l, int whichBucketGrouping)
+
+{
+  static TCanvas *c = new TCanvas;
+  c->Clear();
+  c->Divide(2, 1);
+  c->cd(1);
+  THStack *smet = new THStack("smet", "MET;MET");
+  for (int m = 0; m < n_dsgs_ - 1; ++m) {
+    TH1F *hmet = dynamic_cast<TH1F*> (dsgs_[m]->hmet_[i][j][k][buckets[whichBucketGrouping][l][0]]->Clone());
+    for (int n = 1 ; n < nBucketsPerGroup[whichBucketGrouping][l]; n++) {
+      hmet->Add(dsgs_[m]->hmet_[i][j][k][buckets[whichBucketGrouping][l][n]]);
+    }
+
+    smet->Add(hmet);
+  }
+  TH1F *dmet = dynamic_cast<TH1F*> (dsgs_[n_dsgs_ - 1]->hmet_[i][j][k][buckets[whichBucketGrouping][l][0]]->Clone());
+  for (int n = 1 ; n < nBucketsPerGroup[whichBucketGrouping][l]; n++) {
+    dmet->Add(dsgs_[n_dsgs_ - 1]->hmet_[i][j][k][buckets[whichBucketGrouping][l][n]]);
+  }
+
+  dmet->SetFillStyle(0);
+  dmet->SetMarkerStyle(30);
+  dmet->Draw("pee");
+  smet->Draw("same");
+  dmet->Draw("same pee");
+  c->cd(2);
+  /* 
+ THStack *smll = new THStack("smll", "MLL;Mll");
+  for (int m = 0; m < n_dsgs - 1; ++m) {
+    smll->Add(dsgs[m]->hmll_[i][j][k][l]);
+  }
+  smll->Draw();
+  TH1F *dmll = dsgs[n_dsgs - 1]->hmll_[i][j][k][l];
+  dmll->SetFillStyle(0);
+  dmll->SetMarkerStyle(30);
+  dmll->Draw("pee");
+  smll->Draw("same");
+  dmll->Draw("same pee");
+  */
+  c->Update();
+  return;
+}
 
 
 void printTable(int whichBucketGrouping)
@@ -185,39 +228,10 @@ void DSGDisplay ()
 	    iBucketGrouping++;
 	    iBucketGrouping %= 3;
 	    printTable(iBucketGrouping);
-	       break;
-
+	    break;
 	  case '\n':
-	  {
-	       static TCanvas *c = new TCanvas;
-	       c->Clear();
-	       c->Divide(2, 1);
-	       c->cd(1);
-	       THStack *smet = new THStack("smet", "MET;MET");
-	       for (int m = 0; m < n_dsgs - 1; ++m) {
-		    smet->Add(dsgs[m]->hmet_[i][j][k][l]);
-	       }
-	       TH1F *dmet = dsgs[n_dsgs - 1]->hmet_[i][j][k][l];
-	       dmet->SetFillStyle(0);
-	       dmet->SetMarkerStyle(30);
-	       dmet->Draw("pee");
-	       smet->Draw("same");
-	       dmet->Draw("same pee");
-	       c->cd(2);
-	       THStack *smll = new THStack("smll", "MLL;Mll");
-	       for (int m = 0; m < n_dsgs - 1; ++m) {
-		    smll->Add(dsgs[m]->hmll_[i][j][k][l]);
-	       }
-	       smll->Draw();
-	       TH1F *dmll = dsgs[n_dsgs - 1]->hmll_[i][j][k][l];
-	       dmll->SetFillStyle(0);
-	       dmll->SetMarkerStyle(30);
-	       dmll->Draw("pee");
-	       smll->Draw("same");
-	       dmll->Draw("same pee");
-	       c->Update();
-	       break;
-	  }
+	    displayHistos(i, j, k, l, iBucketGrouping);
+	    break;
 	  default:
 	       break;
 	  }
