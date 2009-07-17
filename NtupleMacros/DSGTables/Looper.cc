@@ -130,10 +130,6 @@ void Looper::FillDilepHistos (int i_hyp)
 	  const int jetcat	= Jetcat(i_hyp);
 	  const int bucket	= Bucket(i_hyp);
 	  
-	  if (bucket == 4 && zcat == 1) {
-	       printf("What?\n"); 
-	       exit(1);
-	  }
 	  dsgTable.Increment(zcat, metcat, jetcat, bucket, weight);
 	  dsgTable.hmet_[zcat][metcat][jetcat][bucket]->Fill(cms2.evt_tcmet(), weight);
 	  dsgTable.hmll_[zcat][metcat][jetcat][bucket]->Fill(cms2.hyp_p4()[i_hyp].M(), weight);
@@ -142,11 +138,14 @@ void Looper::FillDilepHistos (int i_hyp)
 
 int Looper::Zcat (int i_hyp) const
 {
+  if (additionalZcounter() > 0) return 1;
+  /*
      // hypo in Z mass window
      if (abs(cms2.hyp_lt_id()[i_hyp]) == abs(cms2.hyp_ll_id()[i_hyp])
 	 && cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] < 0 &&
 	 inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))
 	  return 1;
+  */
      return 0;
 }
 

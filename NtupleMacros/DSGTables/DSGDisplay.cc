@@ -227,6 +227,7 @@ void DSGDisplay ()
 	  case 'b': case 'B':
 	    iBucketGrouping++;
 	    iBucketGrouping %= 3;
+	    //    l = 
 	    printTable(iBucketGrouping);
 	    break;
 	  case '\n':
