@@ -661,7 +661,7 @@ bool additionalZveto() {
 // event that make the Z mass.  This uses additionalZcounter below...
 //---------------------------------------------------------------------
   bool veto = false;
-  if (additionalZcounter > 0) veto = true;
+  if (additionalZcounter() > 0) veto = true;
   return veto;
 }
 
