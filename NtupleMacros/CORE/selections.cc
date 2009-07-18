@@ -57,8 +57,8 @@ bool goodElectronWithoutIsolation(int index) {
 bool trueMuonFromW_WJets(int index) {
 
   // added requirement for muon to have pt>20
-  //    double pt_cut = 20.;
-    double pt_cut = 0.;
+      double pt_cut = 20.;
+  //    double pt_cut = 0.;
   
   // try to find out if there is a muon
   // from W. Currently valid ONLY on WJets!! 
