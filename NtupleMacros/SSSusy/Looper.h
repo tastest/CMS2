@@ -75,13 +75,14 @@ const static cuts_t baseline_cuts =
   (CUT_BIT(CUT_MIN_PT)		) | 
   (CUT_BIT(CUT_MAX_PT)		) | 
   (CUT_BIT(CUT_OPP_SIGN)        ) | 
-  (CUT_BIT(CUT_TCMET)		) |  
+  //  (CUT_BIT(CUT_TCMET)		) |   //temp out 090714
   (CUT_BIT(CUT_LT_GOOD)		) | 
   (CUT_BIT(CUT_LL_GOOD)		) | 
   (CUT_BIT(CUT_LT_ISO)	        ) |  
   (CUT_BIT(CUT_LL_ISO)        	) |
-  (CUT_BIT(CUT_TRUE_MU_FROM_W)	) |
-  (CUT_BIT(CUT_TTBAR_TYPE_WO)   )
+  ( CUT_BIT(CUT_NOT_TRUE_GAMMA_FROM_MUON) ) |
+  (CUT_BIT(CUT_TRUE_MU_FROM_W)	) //|
+  //  (CUT_BIT(CUT_TTBAR_TYPE_WO)   )   //temp out 090714
 // |  
 //     (CUT_BIT(CUT_PASS_ZVETO)	) | 
 //     (CUT_BIT(CUT_PASS_TRIGGER))
@@ -96,7 +97,8 @@ const static cuts_t fakerate_denominator_cuts = (baseline_cuts &
 
 // numerator object cuts for the fake rate prediction 
 const static cuts_t fakerate_numerator_cuts = 
-  fakerate_denominator_cuts | CUT_BIT(CUT_ELFAKE_NUMERATOR) | CUT_BIT(CUT_TTBAR_TYPE_WO);
+  //  fakerate_denominator_cuts | CUT_BIT(CUT_ELFAKE_NUMERATOR) | CUT_BIT(CUT_TTBAR_TYPE_WO); // remove - being suspicious of the WO cut 090715_17:39
+  fakerate_denominator_cuts | CUT_BIT(CUT_ELFAKE_NUMERATOR);
 
 // denominator and not numerator (this is the yield that should be
 // multiplied by FR / (1 - FR))

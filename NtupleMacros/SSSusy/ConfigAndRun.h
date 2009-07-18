@@ -260,7 +260,9 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
      L looper_wz		(fWZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WZ    )) looper_wz          .Loop();
 //      L looper_wz_incl		(fWZ_incl()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WZ    )) looper_wz_incl     .Loop();
      L looper_zz		(fZZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_ZZ    )) looper_zz          .Loop();
+     L looper_wjetsAlpgen	(fWjetsAlpgenSingle()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS )) looper_wjetsAlpgen       .Loop();
      L looper_wjets		(fWjets()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS )) looper_wjets       .Loop();
+     //     L looper_wjets		(fWjets()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS )) looper_wjets       .Loop();
      L looper_wc		(fWc()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS_AND_FRIENDS )) looper_wc       .Loop();
      L looper_vlqq		(fVlqq()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS_AND_FRIENDS )) looper_vlqq       .Loop();
      L looper_dyee		(fDY20ee()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYEE  )) looper_dyee        .Loop();
@@ -285,6 +287,7 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
 	  &looper_wz          ,
 // 	  &looper_wz_incl     ,
 	  &looper_zz          ,
+ 	  &looper_wjetsAlpgen ,
  	  &looper_wjets       ,
  	  &looper_wc       ,
  	  &looper_vlqq       ,
@@ -324,10 +327,13 @@ int Wjets_FOs_Not_Numerator ()
 
 int Wjets_Fakerate ()
 {
-     return run<FakeRateLooper>(baseline_cuts & 
-				~(CUT_BIT(CUT_PASS_TRIGGER) |
-				  CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD) |
-				  CUT_BIT(CUT_LT_ISO) | CUT_BIT(CUT_LL_ISO)), 
+  // had this crap til 090715 18:24
+//      return run<FakeRateLooper>(baseline_cuts & 
+// 				~(CUT_BIT(CUT_PASS_TRIGGER) |
+// 				  CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD) |
+// 				  CUT_BIT(CUT_LT_ISO) | CUT_BIT(CUT_LL_ISO)), 
+// 				"Wjets_Fakerate");
+  return run<FakeRateLooper>(fakerate_denominator_not_numerator_cuts,
 				"Wjets_Fakerate");
 }
 

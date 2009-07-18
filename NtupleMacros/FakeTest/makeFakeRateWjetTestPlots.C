@@ -30,7 +30,7 @@
   // plot Pt comparison
   
   elept_em->cd();
-  TH1F* wjets_helePt_em_observed = (TH1F*) ((_file0->Get("wjetsAlpgen_elPt_em"))->Clone("wjets_helePt_em_observed"));
+  TH1F* wjets_helePt_em_observed = (TH1F*) ((_file0->Get("wjets_elPt_em"))->Clone("wjets_helePt_em_observed"));
   wjets_helePt_em_observed->Rebin(rebinvalue_pt);
   wjets_helePt_em_observed->SetLineColor(kRed);
   wjets_helePt_em_observed->SetFillColor(kWhite);
@@ -47,7 +47,7 @@
   wjets_helePt_em_observed->SetMarkerSize(1.1);
 
 
-  TH1F* wjets_helePt_em_predicted = (TH1F*) ((_file2->Get("wjetsAlpgen_elPt_em"))->Clone("wjets_helePt_em_predicted"));
+  TH1F* wjets_helePt_em_predicted = (TH1F*) ((_file2->Get("wjets_elPt_em"))->Clone("wjets_helePt_em_predicted"));
   wjets_helePt_em_predicted->Rebin(rebinvalue_pt);
   wjets_helePt_em_predicted->SetLineColor(kBlue);
   wjets_helePt_em_predicted->SetFillColor(kWhite);
@@ -110,7 +110,7 @@
 
   // Plot eta comparison
   eleeta_em->cd();
-  TH1F* wjets_heleEta_em_observed = (TH1F*) ((_file0->Get("wjetsAlpgen_elEta_em"))->Clone("wjets_heleEta_em_observed"));
+  TH1F* wjets_heleEta_em_observed = (TH1F*) ((_file0->Get("wjets_elEta_em"))->Clone("wjets_heleEta_em_observed"));
   wjets_heleEta_em_observed->Rebin(rebinvalue_eta);
   wjets_heleEta_em_observed->SetLineColor(kRed);
   wjets_heleEta_em_observed->SetFillColor(kWhite);
@@ -127,7 +127,7 @@
   wjets_heleEta_em_observed->SetMarkerSize(1.1);
   wjets_heleEta_em_observed->Draw();
 
-  TH1F* wjets_heleEta_em_predicted = (TH1F*) ((_file2->Get("wjetsAlpgen_elEta_em"))->Clone("wjets_heleEta_em_predicted"));
+  TH1F* wjets_heleEta_em_predicted = (TH1F*) ((_file2->Get("wjets_elEta_em"))->Clone("wjets_heleEta_em_predicted"));
   wjets_heleEta_em_predicted->Rebin(rebinvalue_eta);
   wjets_heleEta_em_predicted->SetLineColor(kBlue);
   wjets_heleEta_em_predicted->SetFillColor(kWhite);
@@ -174,7 +174,7 @@
   //IBLB
   // Plot eta comparison
   eleEtaPtBelow20_em->cd();
-  TH1F* wjets_heleEtaPtBelow20_em_observed = (TH1F*) ((_file0->Get("wjetsAlpgen_elEtaPtBelow20_em"))->Clone("wjets_heleEtaPtBelow20_em_observed"));
+  TH1F* wjets_heleEtaPtBelow20_em_observed = (TH1F*) ((_file0->Get("wjets_elEtaPtBelow20_em"))->Clone("wjets_heleEtaPtBelow20_em_observed"));
   wjets_heleEtaPtBelow20_em_observed->Rebin(rebinvalue_eta);
   wjets_heleEtaPtBelow20_em_observed->SetLineColor(kRed);
   wjets_heleEtaPtBelow20_em_observed->SetFillColor(kWhite);
@@ -191,7 +191,7 @@
   wjets_heleEtaPtBelow20_em_observed->SetMarkerSize(1.1);
   wjets_heleEtaPtBelow20_em_observed->Draw();
 
-  TH1F* wjets_heleEtaPtBelow20_em_predicted = (TH1F*) ((_file2->Get("wjetsAlpgen_elEtaPtBelow20_em"))->Clone("wjets_heleEtaPtBelow20_em_predicted"));
+  TH1F* wjets_heleEtaPtBelow20_em_predicted = (TH1F*) ((_file2->Get("wjets_elEtaPtBelow20_em"))->Clone("wjets_heleEtaPtBelow20_em_predicted"));
   wjets_heleEtaPtBelow20_em_predicted->Rebin(rebinvalue_eta);
   wjets_heleEtaPtBelow20_em_predicted->SetLineColor(kBlue);
   wjets_heleEtaPtBelow20_em_predicted->SetFillColor(kWhite);
@@ -236,7 +236,7 @@
   //IBLE
   // Plot eta comparison
   eleEtaPtAbove20_em->cd();
-  TH1F* wjets_heleEtaPtAbove20_em_observed = (TH1F*) ((_file0->Get("wjetsAlpgen_elEtaPtAbove20_em"))->Clone("wjets_heleEtaPtAbove20_em_observed"));
+  TH1F* wjets_heleEtaPtAbove20_em_observed = (TH1F*) ((_file0->Get("wjets_elEtaPtAbove20_em"))->Clone("wjets_heleEtaPtAbove20_em_observed"));
   wjets_heleEtaPtAbove20_em_observed->Rebin(rebinvalue_eta);
   wjets_heleEtaPtAbove20_em_observed->SetLineColor(kRed);
   wjets_heleEtaPtAbove20_em_observed->SetFillColor(kWhite);
@@ -253,7 +253,7 @@
   wjets_heleEtaPtAbove20_em_observed->SetMarkerSize(1.1);
   wjets_heleEtaPtAbove20_em_observed->Draw();
 
-  TH1F* wjets_heleEtaPtAbove20_em_predicted = (TH1F*) ((_file2->Get("wjetsAlpgen_elEtaPtAbove20_em"))->Clone("wjets_heleEtaPtAbove20_em_predicted"));
+  TH1F* wjets_heleEtaPtAbove20_em_predicted = (TH1F*) ((_file2->Get("wjets_elEtaPtAbove20_em"))->Clone("wjets_heleEtaPtAbove20_em_predicted"));
   wjets_heleEtaPtAbove20_em_predicted->Rebin(rebinvalue_eta);
   wjets_heleEtaPtAbove20_em_predicted->SetLineColor(kBlue);
   wjets_heleEtaPtAbove20_em_predicted->SetFillColor(kWhite);
@@ -299,8 +299,8 @@
   //IBLE2
   // plot nJet comparison
   nJet_em->cd();
-  nJet_em->SetLogy();
-  TH1F* wjets_hnJet_em_observed = (TH1F*) ((_file0->Get("wjetsAlpgen_nJet_em"))->Clone("wjets_hnJet_em_observed"));
+  //  nJet_em->SetLogy();
+  TH1F* wjets_hnJet_em_observed = (TH1F*) ((_file0->Get("wjets_nJet_em"))->Clone("wjets_hnJet_em_observed"));
   //  wjets_hnJet_em_observed->Rebin(5);
   wjets_hnJet_em_observed->SetLineColor(kRed);
   wjets_hnJet_em_observed->SetFillColor(kWhite);
@@ -317,7 +317,7 @@
   wjets_hnJet_em_observed->SetMarkerSize(1.1);
   wjets_hnJet_em_observed->Draw();
 
-  TH1F* wjets_hnJet_em_predicted = (TH1F*) ((_file2->Get("wjetsAlpgen_nJet_em"))->Clone("wjets_hnJet_em_predicted"));
+  TH1F* wjets_hnJet_em_predicted = (TH1F*) ((_file2->Get("wjets_nJet_em"))->Clone("wjets_hnJet_em_predicted"));
   //  wjets_hnJet_em_predicted->Rebin(5);
   wjets_hnJet_em_predicted->SetLineColor(kBlue);
   wjets_hnJet_em_predicted->SetFillColor(kWhite);
@@ -375,7 +375,7 @@
 
   // plot MET comparison
   MET_em->cd();
-  TH1F* wjets_hMET_em_observed = (TH1F*) ((_file0->Get("wjetsAlpgen_met_em"))->Clone("wjets_hMET_em_observed"));
+  TH1F* wjets_hMET_em_observed = (TH1F*) ((_file0->Get("wjets_met_em"))->Clone("wjets_hMET_em_observed"));
   //  wjets_hMET_em_observed->Rebin(5);
   wjets_hMET_em_observed->SetLineColor(kRed);
   wjets_hMET_em_observed->SetFillColor(kWhite);
@@ -392,7 +392,7 @@
   wjets_hMET_em_observed->SetMarkerSize(1.1);
   wjets_hMET_em_observed->Draw();
 
-  TH1F* wjets_hMET_em_predicted = (TH1F*) ((_file2->Get("wjetsAlpgen_met_em"))->Clone("wjets_hMET_em_predicted"));
+  TH1F* wjets_hMET_em_predicted = (TH1F*) ((_file2->Get("wjets_met_em"))->Clone("wjets_hMET_em_predicted"));
   //  wjets_hMET_em_predicted->Rebin(5);
   wjets_hMET_em_predicted->SetLineColor(kBlue);
   wjets_hMET_em_predicted->SetFillColor(kWhite);

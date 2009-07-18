@@ -101,7 +101,7 @@ void FakeRateLooper::FillDilepHistos (int i_hyp)
      weight *= fr_lt / (1 - fr_lt) + fr_ll / (1 - fr_ll);
 
      // just to make sure: only one of fr_lt and fr_ll should ever be non-zero
-     printf("fr_lt = %g\tfr_ll = %g\n", fr_lt, fr_ll);
+     // printf("fr_lt = %g\tfr_ll = %g\n", fr_lt, fr_ll);
      assert(not ((fr_lt != 0) && (fr_ll != 0)));
 
      cands_passing_[myType] += weight;
@@ -116,6 +116,8 @@ void FakeRateLooper::FillDilepHistos (int i_hyp)
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
        helPt->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].pt(), weight);
        helEta->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].eta(), weight);
+       heleRelIso->Fill(cuts_passed, myType, inv_el_relsusy_iso(cms2.hyp_lt_index()[i_hyp], true), weight);
+       // 	  heleRelIsoTrk->Fill(cuts_passed, myType, reliso_lt(i_hyp, false), weight);
      } else {
        //        hmuPt->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].pt(), weight);
        //        hmuEta->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].eta(), weight);
@@ -123,6 +125,8 @@ void FakeRateLooper::FillDilepHistos (int i_hyp)
      if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
        helPt->Fill(cuts_passed, myType, cms2.hyp_ll_p4()[i_hyp].pt(), weight);
        helEta->Fill(cuts_passed, myType, cms2.hyp_ll_p4()[i_hyp].eta(), weight);
+       heleRelIso->Fill(cuts_passed, myType, inv_el_relsusy_iso(cms2.hyp_ll_index()[i_hyp], true), weight);
+       // 	  heleRelIsoTrk->Fill(cuts_passed, myType, reliso_ll(i_hyp, false), weight);
      } else {
        //        hmuPt->Fill(cuts_passed, myType, cms2.hyp_ll_p4()[i_hyp].pt(), weight);
        //        hmuEta->Fill(cuts_passed, myType, cms2.hyp_ll_p4()[i_hyp].eta(), weight);

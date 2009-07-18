@@ -124,8 +124,8 @@ const static cuts_t fakerate_denominator_cuts = (baseline_cuts &
 						 ~(CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD) |
 						   CUT_BIT(CUT_LT_ISO) | CUT_BIT(CUT_LL_ISO) |
 						   CUT_BIT(CUT_LT_CALOISO) | CUT_BIT(CUT_LL_CALOISO)
-                                                      |
-                                                      (CUT_BIT(CUT_NOT_TRUE_GAMMA_FROM_MUON))
+//                                                       |
+//                                                       (CUT_BIT(CUT_NOT_TRUE_GAMMA_FROM_MUON))
                                                    ) ) |
   CUT_BIT(CUT_ELFAKE_FAKEABLE_OBJECT) 
 //  | CUT_BIT(CUT_EL_GOOD) |  CUT_BIT(CUT_EL_ISO) // removed 090226 IBL

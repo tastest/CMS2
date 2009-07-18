@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.1 2009/07/13 14:10:31 ibloch Exp $
+# $Id: Makefile,v 1.2 2009/07/18 08:46:09 ibloch Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
@@ -25,14 +25,23 @@ LOOPERLIB = libCMS2NtupleMacrosLooper.so
 
 LIBS = $(CORELIB) $(TOOLSLIB) $(LOOPERLIB)
 
-TABLES = Results.tbl Feb_Results.tbl Feb_Results_With_Ntrks.tbl		\
-Feb_Results_With_Ntrks.tbl Feb_Results_With_TcMET.tbl			\
-Feb_Results_With_TrackJets.tbl Feb_Results_With_Btags.tbl		\
-Feb_Results_NoPass4MET.tbl Feb_Results_With_CaloIso.tbl			\
-Oct_Results.tbl Results_NoTcMET.tbl Results_NoTrackJets.tbl		\
-Results_NoBtags.tbl Results_NoCaloIso.tbl Results_NoPass4MET.tbl	\
-Results_NoNtrks.tbl Wjets_Numerator.tbl Wjets_FOs_Not_Numerator.tbl	\
-Wjets_Fakerate.tbl
+#TABLES = Results.tbl Feb_Results.tbl Feb_Results_With_Ntrks.tbl		\
+#Feb_Results_With_Ntrks.tbl Feb_Results_With_TcMET.tbl			\
+#Feb_Results_With_TrackJets.tbl Feb_Results_With_Btags.tbl		\
+#Feb_Results_NoPass4MET.tbl Feb_Results_With_CaloIso.tbl			\
+#Oct_Results.tbl Results_NoTcMET.tbl Results_NoTrackJets.tbl		\
+#Results_NoBtags.tbl Results_NoCaloIso.tbl Results_NoPass4MET.tbl	\
+#Results_NoNtrks.tbl Wjets_Numerator.tbl Wjets_FOs_Not_Numerator.tbl	\
+#Wjets_Fakerate.tbl
+
+TABLES = Wjets_SS_Fakerate.tbl\
+Wjets_FOs_Not_Numerator.tbl\
+Wjets_SS_Numerator.tbl\
+Wjets_SS_FOs_Not_Numerator.tbl\
+Wjets_Numerator.tbl\
+Wjets_Fakerate.tbl\
+Results.tbl
+
 
 FAKETABLES = Wjets_Numerator.tbl Wjets_FOs_Not_Numerator.tbl	\
 Wjets_Fakerate.tbl Wjets_Oingo.tbl \
@@ -55,7 +64,8 @@ all:	$(LIBS)
 libs:	$(LIBS)
 
 .PHONY: tables
-tables:	$(RESULTTABLES) $(NM1TABLES)  $(FAKETABLES) 
+#tables:	$(RESULTTABLES) $(NM1TABLES)  $(FAKETABLES) 
+tables:	$(TABLES)
 
 .PHONY: faketables
 faketables: $(FAKETABLES)

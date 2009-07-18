@@ -54,7 +54,7 @@ void Looper::BookHistos ()
 //        hetaJet3		= new NMinus1Hist(sample_, "etaJet3"         ,	 50	, -4, 4		, cuts_, 0       	);
 //        hetaJet4		= new NMinus1Hist(sample_, "etaJet4"         ,	 50	, -4, 4		, cuts_, 0       	);
 //        hnumTightLep	= new NMinus1Hist(sample_, "numTightLep"     ,	 6	, -0.5, 5.5	, cuts_, 0             	);
-//        heleRelIso	= new NMinus1Hist(sample_, "eleRelIso"       ,	 101	, 0, 1.01	, cuts_, (CUT_BIT(CUT_LT_ISO)) | (CUT_BIT(CUT_LL_ISO)) | (CUT_BIT(CUT_LT_CALOISO)) | (CUT_BIT(CUT_LL_CALOISO)));
+        heleRelIso	= new NMinus1Hist(sample_, "eleRelIso"       ,	 101	, 0, 1.01	, cuts_, (CUT_BIT(CUT_LT_ISO)) | (CUT_BIT(CUT_LL_ISO)) );
 //        heleRelIsoTrk	= new NMinus1Hist(sample_, "eleRelIsoTrk"    ,	 101	, 0, 1.01	, cuts_, (CUT_BIT(CUT_LT_ISO)) | (CUT_BIT(CUT_LL_ISO)) | (CUT_BIT(CUT_LT_CALOISO)) | (CUT_BIT(CUT_LL_CALOISO)));
 //        hmuRelIso	= new NMinus1Hist(sample_, "muRelIso"        ,	 101	, 0, 1.01	, cuts_, (CUT_BIT(CUT_LT_ISO)) | (CUT_BIT(CUT_LL_ISO)) | (CUT_BIT(CUT_LT_CALOISO)) | (CUT_BIT(CUT_LL_CALOISO))	);
 //        hminRelIso	= new NMinus1Hist(sample_, "minRelIso"       ,	 101	, 0, 1.01	, cuts_, (CUT_BIT(CUT_LT_ISO)) | (CUT_BIT(CUT_LL_ISO))	);
@@ -92,9 +92,14 @@ bool Looper::FilterEvent()
      //
      if (cms2.trks_d0().size() == 0)
 	  return true;
-     DorkyEventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.trks_d0()[0], 
-				 cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
-     return is_duplicate(id); 
+
+     // reject single lepton events (for Single samples)
+     if(cms2.hyp_lt_p4().size() < 1) return true;
+
+//      DorkyEventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.trks_d0()[0], 
+// 				 cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
+//      return is_duplicate(id); 
+     return false;
 }
 
 cuts_t Looper::EventSelect ()
@@ -313,9 +318,75 @@ void Looper::FillDilepHistos (int i_hyp)
 // 	  printf("\n");
 
 //Quick Test of SJ classification code
-          cout<<"TTbar type: "<<ttbarconstituents( i_hyp)<<endl;
+//          cout<<"TTbar type: "<<ttbarconstituents( i_hyp)<<endl;
+          if(42 != 42) { // dump MC true info for selected events
+            if(TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13) {
+              std::cout<<"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"<<std::endl;
+              std::cout<<"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"<<std::endl;
+              std::cout<<"We have a Numerator object "<<
+                " DS/lum/r/e: "<< cms2.evt_dataset()<<
+                " / "<< cms2.evt_lumiBlock() <<
+                " / "<<cms2.evt_run() <<
+                " / "<< cms2.evt_event()<<
+                " scale1fb "<<cms2.evt_scale1fb() <<std::endl;
+              std::cout<<" lt: Q "<<cms2.mus_charge()[cms2.hyp_lt_index()[i_hyp]]<<
+                " mcid "<<cms2.mus_mc_id()[cms2.hyp_lt_index()[i_hyp]]<<
+                " Mother "<<cms2.mus_mc_motherid()[cms2.hyp_lt_index()[i_hyp]]<<
+                " pt "<<cms2.hyp_lt_p4()[i_hyp].pt()<<
+                " mu phi "<<cms2.hyp_lt_p4()[i_hyp].phi()<<
+                " mu eta "<<cms2.hyp_lt_p4()[i_hyp].eta()<<std::endl<<
+                
+                " ll: Q "<<cms2.els_charge()[cms2.hyp_ll_index()[i_hyp]]<<
+                " mcid "<<cms2.els_mc_id()[cms2.hyp_ll_index()[i_hyp]]<<
+                " Mother "<<cms2.els_mc_motherid()[cms2.hyp_ll_index()[i_hyp]]<<
+                " pt "<<cms2.hyp_ll_p4()[i_hyp].pt()<<
+                " e phi "<<cms2.hyp_ll_p4()[i_hyp].phi()<<
+                " e eta "<<cms2.hyp_ll_p4()[i_hyp].eta()<<std::endl;
+              //               cout<<" MId lt "<<cms2.els_mc_motherid()[cms2.hyp_lt_index()[i_hyp]]<<
+              //                 " C? "<<idIsCharm(cms2.els_mc_motherid()[cms2.hyp_lt_index()[i_hyp]])<<
+              //                 " B? "<<idIsBeauty(cms2.els_mc_motherid()[cms2.hyp_lt_index()[i_hyp]])<<endl;
+              //               cout<<" MId ll "<<cms2.mus_mc_motherid()[cms2.hyp_ll_index()[i_hyp]]<<
+              //                 " C? "<<idIsCharm(cms2.mus_mc_motherid()[cms2.hyp_ll_index()[i_hyp]])<<
+              //                 " B? "<<idIsBeauty(cms2.mus_mc_motherid()[cms2.hyp_ll_index()[i_hyp]])<<endl;
+              dumpDocLines();
+              std::cout<<"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"<<std::endl;
+              std::cout<<"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"<<std::endl;
+            }
+            else if(TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
+              std::cout<<"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"<<std::endl;
+              std::cout<<"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"<<std::endl;
+              std::cout<<"We have a Numerator object "<<
+                " DS/lum/r/e: "<< cms2.evt_dataset()<<
+                " / "<< cms2.evt_lumiBlock() <<
+                " / "<<cms2.evt_run() <<
+                " / "<< cms2.evt_event()<<
+                " scale1fb "<<cms2.evt_scale1fb() <<std::endl;
+              std::cout<<" lt: Q "<<cms2.mus_charge()[cms2.hyp_lt_index()[i_hyp]]<<
+                " mcid "<<cms2.mus_mc_id()[cms2.hyp_lt_index()[i_hyp]]<<
+                " Mother "<<cms2.mus_mc_motherid()[cms2.hyp_lt_index()[i_hyp]]<<
+                " pt "<<cms2.hyp_lt_p4()[i_hyp].pt()<<
+                " e phi "<<cms2.hyp_lt_p4()[i_hyp].phi()<<
+                " e eta "<<cms2.hyp_lt_p4()[i_hyp].eta()<<std::endl<<
+                
+                " ll: Q "<<cms2.els_charge()[cms2.hyp_ll_index()[i_hyp]]<<
+                " mcid "<<cms2.els_mc_id()[cms2.hyp_ll_index()[i_hyp]]<<
+                " Mother "<<cms2.els_mc_motherid()[cms2.hyp_ll_index()[i_hyp]]<<
+                " pt "<<cms2.hyp_ll_p4()[i_hyp].pt()<<
+                " mu phi "<<cms2.hyp_ll_p4()[i_hyp].phi()<<
+                " mu eta "<<cms2.hyp_ll_p4()[i_hyp].eta()<<std::endl;
+              //               cout<<" MId lt "<<cms2.els_mc_motherid()[cms2.hyp_lt_index()[i_hyp]]<<
+              //                 " C? "<<idIsCharm(cms2.els_mc_motherid()[cms2.hyp_lt_index()[i_hyp]])<<
+              //                 " B? "<<idIsBeauty(cms2.els_mc_motherid()[cms2.hyp_lt_index()[i_hyp]])<<endl;
+              //               cout<<" MId ll "<<cms2.mus_mc_motherid()[cms2.hyp_ll_index()[i_hyp]]<<
+              //                 " C? "<<idIsCharm(cms2.mus_mc_motherid()[cms2.hyp_ll_index()[i_hyp]])<<
+              //                 " B? "<<idIsBeauty(cms2.mus_mc_motherid()[cms2.hyp_ll_index()[i_hyp]])<<endl;
+              dumpDocLines();
+              std::cout<<"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"<<std::endl;
+              std::cout<<"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"<<std::endl;
+            }
+          }
      }
-
+     
      // jet count
      hnJet->Fill(cuts_passed, myType, cms2.hyp_njets()[i_hyp], weight);
 //      hnCaloJet	->Fill(cuts_passed, myType, cms2.hyp_njets()[i_hyp], weight);
@@ -367,15 +438,15 @@ void Looper::FillDilepHistos (int i_hyp)
 // 	  hmuRelIso->Fill(cuts_passed, myType, reliso_ll(i_hyp), weight);
 //      }
 
-//      // Relative isolation... electrons
-//      if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
-// 	  heleRelIso->Fill(cuts_passed, myType, reliso_lt(i_hyp, true), weight);
-// 	  heleRelIsoTrk->Fill(cuts_passed, myType, reliso_lt(i_hyp, false), weight);
-//      }
-//      if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
-// 	  heleRelIso->Fill(cuts_passed, myType, reliso_ll(i_hyp, true), weight);
-// 	  heleRelIsoTrk->Fill(cuts_passed, myType, reliso_ll(i_hyp, false), weight);
-//      }
+      // Relative isolation... electrons
+      if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
+        heleRelIso->Fill(cuts_passed, myType, inv_el_relsusy_iso(cms2.hyp_lt_index()[i_hyp], true), weight);
+          // 	  heleRelIsoTrk->Fill(cuts_passed, myType, reliso_lt(i_hyp, false), weight);
+      }
+      if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
+ 	  heleRelIso->Fill(cuts_passed, myType, inv_el_relsusy_iso(cms2.hyp_ll_index()[i_hyp], true), weight);
+          // 	  heleRelIsoTrk->Fill(cuts_passed, myType, reliso_ll(i_hyp, false), weight);
+      }
 
 //      // lower of the two isolations, regardless of species (used for Dumbo method)
 //      hminRelIso->Fill(cuts_passed, myType, std::min(reliso_lt(i_hyp), reliso_ll(i_hyp)), weight);
