@@ -227,7 +227,12 @@ void DSGDisplay ()
 	  case 'b': case 'B':
 	    iBucketGrouping++;
 	    iBucketGrouping %= 3;
-	    //    l = 
+	    // for now, if we've gone beyond the end of the new
+	    // grouping, we get put at the new end; ideally, we would
+	    // be put into the bucket group that swallowed the old
+	    // bucket group
+	    if (l > nBucketsGroups[iBucketGrouping] - 1)
+		 l = nBucketsGroups[iBucketGrouping] - 1;
 	    printTable(iBucketGrouping);
 	    break;
 	  case '\n':
