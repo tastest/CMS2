@@ -36,11 +36,11 @@ static void printNumbers (int i, int j, int k, int l, int whichBucketGrouping)
   double dataw2 = 0;
   for (int n = 0 ; n < nBucketsPerGroup[whichBucketGrouping][l]; n++) {
     for (int m = 0; m < n_dsgs_ - 1; ++m) {
-      sm += dsgs_[m]->events_[i][j][k][buckets[whichBucketGrouping][l][n]];
-      smw2 += dsgs_[m]->w2s_[i][j][k][buckets[whichBucketGrouping][l][n]];
+      sm += dsgs_[m]->events_[i][j][0][k][buckets[whichBucketGrouping][l][n]];
+      smw2 += dsgs_[m]->w2s_[i][j][0][k][buckets[whichBucketGrouping][l][n]];
     }
-    data += dsgs_[n_dsgs_ - 1]->events_[i][j][k][buckets[whichBucketGrouping][l][n]];
-    dataw2 += dsgs_[n_dsgs_ - 1]->w2s_[i][j][k][buckets[whichBucketGrouping][l][n]];
+    data += dsgs_[n_dsgs_ - 1]->events_[i][j][0][k][buckets[whichBucketGrouping][l][n]];
+    dataw2 += dsgs_[n_dsgs_ - 1]->w2s_[i][j][0][k][buckets[whichBucketGrouping][l][n]];
   }
   double sig = (data - sm) / sqrt(smw2 + dataw2);
   if (sig > 3)
@@ -64,16 +64,16 @@ static void displayHistos (int i, int j, int k, int l, int whichBucketGrouping)
   c->cd(1);
   THStack *smet = new THStack("smet", "MET;MET");
   for (int m = 0; m < n_dsgs_ - 1; ++m) {
-    TH1F *hmet = dynamic_cast<TH1F*> (dsgs_[m]->hmet_[i][j][k][buckets[whichBucketGrouping][l][0]]->Clone());
+    TH1F *hmet = dynamic_cast<TH1F*> (dsgs_[m]->hmet_[i][j][0][k][buckets[whichBucketGrouping][l][0]]->Clone());
     for (int n = 1 ; n < nBucketsPerGroup[whichBucketGrouping][l]; n++) {
-      hmet->Add(dsgs_[m]->hmet_[i][j][k][buckets[whichBucketGrouping][l][n]]);
+      hmet->Add(dsgs_[m]->hmet_[i][j][0][k][buckets[whichBucketGrouping][l][n]]);
     }
 
     smet->Add(hmet);
   }
-  TH1F *dmet = dynamic_cast<TH1F*> (dsgs_[n_dsgs_ - 1]->hmet_[i][j][k][buckets[whichBucketGrouping][l][0]]->Clone());
+  TH1F *dmet = dynamic_cast<TH1F*> (dsgs_[n_dsgs_ - 1]->hmet_[i][j][0][k][buckets[whichBucketGrouping][l][0]]->Clone());
   for (int n = 1 ; n < nBucketsPerGroup[whichBucketGrouping][l]; n++) {
-    dmet->Add(dsgs_[n_dsgs_ - 1]->hmet_[i][j][k][buckets[whichBucketGrouping][l][n]]);
+    dmet->Add(dsgs_[n_dsgs_ - 1]->hmet_[i][j][0][k][buckets[whichBucketGrouping][l][n]]);
   }
 
   dmet->SetFillStyle(0);
@@ -85,10 +85,10 @@ static void displayHistos (int i, int j, int k, int l, int whichBucketGrouping)
   /* 
  THStack *smll = new THStack("smll", "MLL;Mll");
   for (int m = 0; m < n_dsgs - 1; ++m) {
-    smll->Add(dsgs[m]->hmll_[i][j][k][l]);
+    smll->Add(dsgs[m]->hmll_[i][j][0][k][l]);
   }
   smll->Draw();
-  TH1F *dmll = dsgs[n_dsgs - 1]->hmll_[i][j][k][l];
+  TH1F *dmll = dsgs[n_dsgs - 1]->hmll_[i][j][0][k][l];
   dmll->SetFillStyle(0);
   dmll->SetMarkerStyle(30);
   dmll->Draw("pee");
@@ -104,9 +104,9 @@ void printTable(int whichBucketGrouping)
 {
      
   clear();
-  mvprintw(0, 20, "MET > 0");
-  mvprintw(0, 70, "MET > 45");
-  mvprintw(0, 120, "MET > 175");
+  mvprintw(0, 20, "  MET > 35");
+  mvprintw(0, 70, "  MET > 100");
+  mvprintw(0, 120, "  MET > 175");
   mvprintw(15, 0, "no Z");
   mvprintw(40, 0, "Z");
   for (int i = 0; i < DSGTable::nZcat; ++i) {

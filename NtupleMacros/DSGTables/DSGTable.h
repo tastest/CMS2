@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// $Id: DSGTable.h,v 1.2 2009/07/06 12:57:08 jmuelmen Exp $
+// $Id: DSGTable.h,v 1.3 2009/07/19 11:25:55 avi Exp $
 
 #ifndef DSGTABLE_H
 #define DSGTABLE_H
@@ -14,6 +14,7 @@ class DSGTable : public TNamed {
 public:
      static const int	nZcat 		= 2;
      static const int	nMETcat 	= 3;
+     static const int	nSumJetcat	= 3;
      static const int	nJetcat 	= 3;
      static const int	nBuckets 	= 10;
 
@@ -24,16 +25,18 @@ public:
 	       memset(w2s_, 0, sizeof(w2s_));
 	       for (int i = 0; i < nZcat; ++i) {
 		    for (int j = 0; j < nMETcat; ++j) {
+		    for (int jj = 0; jj < nSumJetcat; ++jj) {
 			 for (int k = 0; k < nJetcat; ++k) {
 			      for (int l = 0; l < nBuckets; ++l) {
-				   hmet_[i][j][k][l] = new TH1F(Form("hmet%s%d%d%d%d", s.name.c_str(), i, j, k, l), "MET;MET", 10, 0, 500);
-				   hmet_[i][j][k][l]->SetFillColor(s.histo_color);
-				   hmet_[i][j][k][l]->SetFillStyle(1001);
-				   hmll_[i][j][k][l] = new TH1F(Form("hmll%s%d%d%d%d", s.name.c_str(), i, j, k, l), "Mll;Mll", 10, 0, 500);
-				   hmll_[i][j][k][l]->SetFillColor(s.histo_color);
-				   hmll_[i][j][k][l]->SetFillStyle(1001);
+				   hmet_[i][j][jj][k][l] = new TH1F(Form("hmet%s%d%d%d%d", s.name.c_str(), i, j, k, l), "MET;MET", 10, 0, 500);
+				   hmet_[i][j][jj][k][l]->SetFillColor(s.histo_color);
+				   hmet_[i][j][jj][k][l]->SetFillStyle(1001);
+				   hmll_[i][j][jj][k][l] = new TH1F(Form("hmll%s%d%d%d%d", s.name.c_str(), i, j, k, l), "Mll;Mll", 10, 0, 500);
+				   hmll_[i][j][jj][k][l]->SetFillColor(s.histo_color);
+				   hmll_[i][j][jj][k][l]->SetFillStyle(1001);
 			      }
 			 }
+		    }
 		    }
 	       }
 	  }
@@ -43,12 +46,14 @@ public:
 	       memset(w2s_, 0, sizeof(w2s_));
 	       for (int i = 0; i < nZcat; ++i) {
 		    for (int j = 0; j < nMETcat; ++j) {
+		    for (int jj = 0; jj < nSumJetcat; ++jj) {
 			 for (int k = 0; k < nJetcat; ++k) {
 			      for (int l = 0; l < nBuckets; ++l) {
-				   hmet_[i][j][k][l] = new TH1F(*other.hmet_[i][j][k][l]);
-				   hmll_[i][j][k][l] = new TH1F(*other.hmll_[i][j][k][l]);
+				   hmet_[i][j][jj][k][l] = new TH1F(*other.hmet_[i][j][jj][k][l]);
+				   hmll_[i][j][jj][k][l] = new TH1F(*other.hmll_[i][j][jj][k][l]);
 			      }
 			 }
+		    }
 		    }
 	       }
 	  }
@@ -58,20 +63,22 @@ public:
 	       memset(w2s_, 0, sizeof(w2s_));
 	       for (int i = 0; i < nZcat; ++i) {
 		    for (int j = 0; j < nMETcat; ++j) {
+		    for (int jj = 0; jj < nSumJetcat; ++jj) {
 			 for (int k = 0; k < nJetcat; ++k) {
 			      for (int l = 0; l < nBuckets; ++l) {
-				   hmet_[i][j][k][l] = new TH1F(Form("hmet%d%d%d%d", i, j, k, l), "MET;MET", 10, 0, 500);
-				   hmll_[i][j][k][l] = new TH1F(Form("hmll%d%d%d%d", i, j, k, l), "Mll;Mll", 10, 0, 500);
+				   hmet_[i][j][jj][k][l] = new TH1F(Form("hmet%d%d%d%d", i, j, k, l), "MET;MET", 10, 0, 500);
+				   hmll_[i][j][jj][k][l] = new TH1F(Form("hmll%d%d%d%d", i, j, k, l), "Mll;Mll", 10, 0, 500);
 			      }
 			 }
 		    }
+		    }
 	       }
 	  }
-     double 	Increment (int zcat, int metcat, int jetcat, int bucket, 
+     double 	Increment (int zcat, int metcat, int sumjetcat,  int jetcat, int bucket, 
 			   double weight)
 	  {
-	       w2s_[zcat][metcat][jetcat][bucket] += weight * weight;
-	       return events_[zcat][metcat][jetcat][bucket] += weight;
+	       w2s_[zcat][metcat][sumjetcat][jetcat][bucket] += weight * weight;
+	       return events_[zcat][metcat][sumjetcat][jetcat][bucket] += weight;
 	  }
 //      void	FillMET (int zcat, int metcat, int jetcat, int bucket, 
 // 			 double met, double weight) 
@@ -85,10 +92,10 @@ public:
 // 	  }
 
 public:
-     double		events_[nZcat   ][nMETcat ][nJetcat ][nBuckets];
-     double		w2s_   [nZcat   ][nMETcat ][nJetcat ][nBuckets];
-     TH1F		*hmet_ [nZcat   ][nMETcat ][nJetcat ][nBuckets];
-     TH1F		*hmll_ [nZcat   ][nMETcat ][nJetcat ][nBuckets];
+     double		events_[nZcat   ][nMETcat ][nSumJetcat][nJetcat ][nBuckets];
+     double		w2s_   [nZcat   ][nMETcat ][nSumJetcat][nJetcat ][nBuckets];
+     TH1F		*hmet_ [nZcat   ][nMETcat ][nSumJetcat][nJetcat ][nBuckets];
+     TH1F		*hmll_ [nZcat   ][nMETcat ][nSumJetcat][nJetcat ][nBuckets];
 
 public:
      ClassDef(DSGTable, 1)

@@ -11,6 +11,7 @@ ClassImp(DSGTables);
 
 const int DSGTable::nZcat 	;
 const int DSGTable::nMETcat 	;
+const int DSGTable::nSumJetcat  ;
 const int DSGTable::nJetcat 	;
 const int DSGTable::nBuckets 	;
 
@@ -128,11 +129,17 @@ void Looper::FillDilepHistos (int i_hyp)
 	  const int zcat 	= Zcat(i_hyp);
 	  const int metcat	= METcat(i_hyp);
 	  const int jetcat	= Jetcat(i_hyp);
+	  const int sumjetcat	= SumJetcat(i_hyp);
 	  const int bucket	= Bucket(i_hyp);
 	  
-	  dsgTable.Increment(zcat, metcat, jetcat, bucket, weight);
-	  dsgTable.hmet_[zcat][metcat][jetcat][bucket]->Fill(cms2.evt_tcmet(), weight);
-	  dsgTable.hmll_[zcat][metcat][jetcat][bucket]->Fill(cms2.hyp_p4()[i_hyp].M(), weight);
+	  for (int i = 0; i <= metcat; ++i) {
+	    for (int j = 0; j <= sumjetcat; ++j) {
+	      dsgTable.Increment(zcat, i, j, jetcat, bucket, weight);
+	      dsgTable.hmet_[zcat][i][j][jetcat][bucket]->Fill(cms2.evt_tcmet(), weight);
+	      dsgTable.hmll_[zcat][i][j][jetcat][bucket]->Fill(cms2.hyp_p4()[i_hyp].M(), weight);
+	    }
+	    
+	  }
      }
 }     
 
@@ -151,11 +158,29 @@ int Looper::Zcat (int i_hyp) const
 
 int Looper::METcat (int) const
 {
-     if (cms2.evt_tcmet() < 45)
-	  return 0;
-     if (cms2.evt_tcmet() < 175)
-	  return 1;
-     return 2;
+     if (cms2.evt_tcmet() > 175)
+       return 2; 
+    if (cms2.evt_tcmet() > 100)
+      return 1;
+     if (cms2.evt_tcmet()  > 35)
+       return 0;
+     return -1;
+}
+
+
+int Looper::SumJetcat (int i_hyp) const
+{
+  float SumJet=0;
+  for (int i = 0; i < cms2.hyp_jets_p4().at(i_hyp).size(); ++i) {
+    SumJet += cms2.hyp_jets_p4().at(i_hyp).at(i).pt(); }
+
+  if (SumJet > 500)
+    return 2; 
+  if (SumJet > 300)
+    return 1;
+  if (SumJet > 0)
+    return 0;
+  return -1;
 }
 
 int Looper::Jetcat (int i_hyp) const

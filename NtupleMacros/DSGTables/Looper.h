@@ -89,6 +89,7 @@ protected:
      // functions to classify a dilepton candidate
      int		Zcat (int) const;
      int		METcat (int) const;
+     int                SumJetcat (int) const;
      int		Jetcat (int) const;
      int		Bucket (int) const;
      
