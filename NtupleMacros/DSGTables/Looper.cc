@@ -137,6 +137,10 @@ void Looper::FillDilepHistos (int i_hyp)
 	      dsgTable.Increment(zcat, i, j, jetcat, bucket, weight);
 	      dsgTable.hmet_[zcat][i][j][jetcat][bucket]->Fill(cms2.evt_tcmet(), weight);
 	      dsgTable.hmll_[zcat][i][j][jetcat][bucket]->Fill(cms2.hyp_p4()[i_hyp].M(), weight);
+	      // also fill the Z or no Z row
+	      dsgTable.Increment(DSGTable::nZcat, i, j, jetcat, bucket, weight);
+	      dsgTable.hmet_[DSGTable::nZcat][i][j][jetcat][bucket]->Fill(cms2.evt_tcmet(), weight);
+	      dsgTable.hmll_[DSGTable::nZcat][i][j][jetcat][bucket]->Fill(cms2.hyp_p4()[i_hyp].M(), weight);
 	    }
 	    
 	  }

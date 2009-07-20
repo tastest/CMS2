@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// $Id: DSGTable.h,v 1.3 2009/07/19 11:25:55 avi Exp $
+// $Id: DSGTable.h,v 1.4 2009/07/20 13:03:34 jmuelmen Exp $
 
 #ifndef DSGTABLE_H
 #define DSGTABLE_H
@@ -23,7 +23,7 @@ public:
 	  {
 	       memset(events_, 0, sizeof(events_));
 	       memset(w2s_, 0, sizeof(w2s_));
-	       for (int i = 0; i < nZcat; ++i) {
+	       for (int i = 0; i <= nZcat; ++i) {
 		    for (int j = 0; j < nMETcat; ++j) {
 		    for (int jj = 0; jj < nSumJetcat; ++jj) {
 			 for (int k = 0; k < nJetcat; ++k) {
@@ -44,7 +44,7 @@ public:
 	  {
 	       memcpy(events_, other.events_, sizeof(events_));
 	       memset(w2s_, 0, sizeof(w2s_));
-	       for (int i = 0; i < nZcat; ++i) {
+	       for (int i = 0; i <= nZcat; ++i) {
 		    for (int j = 0; j < nMETcat; ++j) {
 		    for (int jj = 0; jj < nSumJetcat; ++jj) {
 			 for (int k = 0; k < nJetcat; ++k) {
@@ -61,7 +61,7 @@ public:
 	  {
 	       memset(events_, 0, sizeof(events_));
 	       memset(w2s_, 0, sizeof(w2s_));
-	       for (int i = 0; i < nZcat; ++i) {
+	       for (int i = 0; i <= nZcat; ++i) {
 		    for (int j = 0; j < nMETcat; ++j) {
 		    for (int jj = 0; jj < nSumJetcat; ++jj) {
 			 for (int k = 0; k < nJetcat; ++k) {
@@ -92,10 +92,10 @@ public:
 // 	  }
 
 public:
-     double		events_[nZcat   ][nMETcat ][nSumJetcat][nJetcat ][nBuckets];
-     double		w2s_   [nZcat   ][nMETcat ][nSumJetcat][nJetcat ][nBuckets];
-     TH1F		*hmet_ [nZcat   ][nMETcat ][nSumJetcat][nJetcat ][nBuckets];
-     TH1F		*hmll_ [nZcat   ][nMETcat ][nSumJetcat][nJetcat ][nBuckets];
+     double		events_[nZcat + 1   ][nMETcat ][nSumJetcat][nJetcat ][nBuckets];
+     double		w2s_   [nZcat + 1   ][nMETcat ][nSumJetcat][nJetcat ][nBuckets];
+     TH1F		*hmet_ [nZcat + 1   ][nMETcat ][nSumJetcat][nJetcat ][nBuckets];
+     TH1F		*hmll_ [nZcat + 1   ][nMETcat ][nSumJetcat][nJetcat ][nBuckets];
 
 public:
      ClassDef(DSGTable, 1)
