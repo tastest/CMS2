@@ -23,6 +23,7 @@
        CUT_NOT_TRUE_GAMMA_FROM_MUON,
        CUT_MAX_PT,
        CUT_MIN_PT,
+       CUT_MU_PT,
        CUT_SAME_SIGN,
        CUT_OPP_SIGN,
        // 	  CUT_PASS2_MET,
@@ -34,6 +35,8 @@
        CUT_LL_GOOD,
        CUT_LT_ISO,
        CUT_LL_ISO,
+       CUT_MU_GOOD,
+       CUT_MU_ISO,
        CUT_PASS_ZVETO,
        CUT_IN_Z_WINDOW,
        CUT_PASS_ADDZVETO,
@@ -80,6 +83,7 @@ const static cuts_t baseline_cuts =
   (CUT_BIT(CUT_LL_GOOD)		) | 
   (CUT_BIT(CUT_LT_ISO)	        ) |  
   (CUT_BIT(CUT_LL_ISO)        	) |
+  (CUT_BIT(CUT_MU_PT)		) |  // currently always require the muon to have pt>20
   ( CUT_BIT(CUT_NOT_TRUE_GAMMA_FROM_MUON) ) |
   (CUT_BIT(CUT_TRUE_MU_FROM_W)	) //|
   //  (CUT_BIT(CUT_TTBAR_TYPE_WO)   )   //temp out 090714
@@ -98,7 +102,11 @@ const static cuts_t fakerate_denominator_cuts = (baseline_cuts &
 // numerator object cuts for the fake rate prediction 
 const static cuts_t fakerate_numerator_cuts = 
   //  fakerate_denominator_cuts | CUT_BIT(CUT_ELFAKE_NUMERATOR) | CUT_BIT(CUT_TTBAR_TYPE_WO); // remove - being suspicious of the WO cut 090715_17:39
-  fakerate_denominator_cuts | CUT_BIT(CUT_ELFAKE_NUMERATOR);
+  fakerate_denominator_cuts | 
+  (CUT_BIT(CUT_ELFAKE_NUMERATOR)) |
+  (CUT_BIT(CUT_MU_PT)		) | 
+  (CUT_BIT(CUT_MU_GOOD)		) | 
+  (CUT_BIT(CUT_MU_ISO)	        ) ;
 
 // denominator and not numerator (this is the yield that should be
 // multiplied by FR / (1 - FR))

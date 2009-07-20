@@ -117,7 +117,9 @@ void FakeRateLooper::FillDilepHistos (int i_hyp)
        helPt->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].pt(), weight);
        helEta->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].eta(), weight);
        heleRelIso->Fill(cuts_passed, myType, inv_el_relsusy_iso(cms2.hyp_lt_index()[i_hyp], true), weight);
-       // 	  heleRelIsoTrk->Fill(cuts_passed, myType, reliso_lt(i_hyp, false), weight);
+       helPdgId->Fill(cuts_passed, myType, abs(cms2.els_mc_id()[ cms2.hyp_lt_index()[i_hyp] ]), weight);
+       helMoPdgId->Fill(cuts_passed, myType, abs(cms2.els_mc_motherid()[ cms2.hyp_lt_index()[i_hyp] ]), weight);
+        // 	  heleRelIsoTrk->Fill(cuts_passed, myType, reliso_lt(i_hyp, false), weight);
      } else {
        //        hmuPt->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].pt(), weight);
        //        hmuEta->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].eta(), weight);
@@ -126,6 +128,8 @@ void FakeRateLooper::FillDilepHistos (int i_hyp)
        helPt->Fill(cuts_passed, myType, cms2.hyp_ll_p4()[i_hyp].pt(), weight);
        helEta->Fill(cuts_passed, myType, cms2.hyp_ll_p4()[i_hyp].eta(), weight);
        heleRelIso->Fill(cuts_passed, myType, inv_el_relsusy_iso(cms2.hyp_ll_index()[i_hyp], true), weight);
+       helPdgId->Fill(cuts_passed, myType, abs(cms2.els_mc_id()[ cms2.hyp_ll_index()[i_hyp] ]), weight);
+       helMoPdgId->Fill(cuts_passed, myType, abs(cms2.els_mc_motherid()[ cms2.hyp_ll_index()[i_hyp] ]), weight);
        // 	  heleRelIsoTrk->Fill(cuts_passed, myType, reliso_ll(i_hyp, false), weight);
      } else {
        //        hmuPt->Fill(cuts_passed, myType, cms2.hyp_ll_p4()[i_hyp].pt(), weight);
