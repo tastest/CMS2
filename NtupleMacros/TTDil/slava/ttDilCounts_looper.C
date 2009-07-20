@@ -275,6 +275,22 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
     compactConfig = compactConfig + "_MCtruth";
   }
 
+  bool dilWeightMaxMass = ((cutsMask>>29)&1);
+  if (dilWeightMaxMass){
+    std::cout<<"Will order dileptons by highest mass and not by pt*iso weight"<<std::endl;
+    compactConfig = compactConfig + "_maxMass";
+  }
+  bool dilWeightMaxPt = ((cutsMask>>30)&1);
+  if (dilWeightMaxPt){
+    std::cout<<"Will order dileptons by highest pt"<<std::endl;
+    compactConfig = compactConfig + "_maxPt";
+  }
+
+  if (dilWeightMaxPt && dilWeightMaxMass){
+    std::cout<<"Inconsistent configuration of dilWeightMaxPt && dilWeightMaxMass: can not both be true"<<std::endl;
+    return 0;
+  }
+
   std::cout<<"Compact config string is "<<compactConfig.c_str()<<std::endl;
 
   // Check that prescale is OK
@@ -499,7 +515,16 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
       int strasbourgDilType = -1;
 
       if (nGoodHyps > 0){
-	maxWeightIndex = eventDilIndexByWeightTTDil08(goodHyps, strasbourgDilType);
+	bool debugPrintDispatch = (prefixStr == "ttdil" || prefixStr == "ttotr");
+	if (dilWeightMaxMass){
+	  maxWeightIndex = eventDilIndexByMaxMass(goodHyps, debugPrintDispatch);
+	} else if (dilWeightMaxPt) {
+	  bool usePtOnlyForWeighting = true;
+	  maxWeightIndex = eventDilIndexByWeightTTDil08(goodHyps, strasbourgDilType, debugPrintDispatch, usePtOnlyForWeighting);
+	} else {
+	  bool usePtOnlyForWeighting = false;
+	  maxWeightIndex = eventDilIndexByWeightTTDil08(goodHyps, strasbourgDilType, debugPrintDispatch, usePtOnlyForWeighting);
+	}
 
 	// ! event level cut here, can reset the eventPassed to false
 	if (fillMaxWeightDilOnly && metBaselineSelectionTTDil08){
