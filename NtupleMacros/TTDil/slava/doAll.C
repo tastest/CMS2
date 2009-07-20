@@ -319,7 +319,7 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
 
   //save all the histograms
     
-  const char* outFile = Form("myHist_%d_%s.root", bitmask, looper->compactConfig.c_str());
+  const char* outFile = Form("myHist_testfix_%d_%s.root", bitmask, looper->compactConfig.c_str());
   hist::saveHist(outFile);
   hist::deleteHistos();
 
@@ -333,6 +333,7 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
 void doAllCombined(unsigned int bitmask, bool skipFWLite = false){
   //here is a list to the combinations of cuts useful for the analysis:
   // 1957888 -- baseline
+  // 35512320 -- baseline using tcmet
   // 1695744 -- baseline without MET
   // 1433600 -- baseline without zveto
   // 1926144 -- baseline without tight iso (only loose iso)
@@ -342,8 +343,18 @@ void doAllCombined(unsigned int bitmask, bool skipFWLite = false){
   // 2220032 -- baseline without MET, without zveto, using AN09/047 (v<=4) trigger selection
 
   // 1941504 -- baseline without duplicate removal
+  // 1139712 -- baseline without MET, without zveto, no tight-iso (loose only) == "loose leptons"
+  // 1172480 -- baseline without MET, without zveto, with tight iso
+  // 538828800 -- baseline with dil dispatch by the highest mass
+  // 538042368 -- baseline without MET, without zveto, with dil dispatch by the highest mass
+  // 538010624 -- baseline without MET, without zveto, no tight-iso (loose only), with dil dispatch by the highest mass
+  // 538043392 -- baseline without MET, without zveto, with tight iso, with dil dispatch by the highest mass
+  // 1075699712 -- baseline with dil dispatch by the highest mass
+  // 1074913280 -- baseline without MET, without zveto, with dil dispatch by the highest pt
+  // 1074881536 -- baseline without MET, without zveto, no tight-iso (loose only), with dil dispatch by the highest pt
+  // 1074914304 -- baseline without MET, without zveto, with tight iso, with dil dispatch by the highest pt
 
-  
+
   //cut <-> bit mask
   //ID cuts               -> 2**0 (1)
   //Isolation cuts        -> 2**1 (2) (default is both legs are isolated. Using relative isolation, TRK+CALO)
@@ -412,6 +423,8 @@ void doAllCombined(unsigned int bitmask, bool skipFWLite = false){
   float kDYtautau = 1.;
   float kQCD      = 1.;
   float kt        = 1.;
+  float kVgamma   = 1.;
+  float kLM0      = 1.;
 
   // Prescales
   int prettdil    = 1;
@@ -422,6 +435,8 @@ void doAllCombined(unsigned int bitmask, bool skipFWLite = false){
   int preDYtautau = 1;
   int preQCD      = 1;
   int pret        = 1;
+  int preVgamma   = 1;
+  int preLM0      = 1;
 
   // Flags for files to run over
   bool runttdil    = true;
@@ -432,6 +447,8 @@ void doAllCombined(unsigned int bitmask, bool skipFWLite = false){
   bool runDYtautau = true;
   bool runQCD      = true;
   bool runt        = true;
+  bool runVgamma   = true;
+  bool runLM0      = true;
 
   TChain* chtopdil = new TChain("Events");
   pickSkimIfExists(chtopdil, "data/TTJets-madgraph_Fall08_IDEAL_V9_v2/merged*.root", "_skimSimple2020anydil");
@@ -477,6 +494,14 @@ void doAllCombined(unsigned int bitmask, bool skipFWLite = false){
   pickSkimIfExists(cht, "data/SingleTop_sChannel-madgraph-LHE/merged*.root", ""); 
   pickSkimIfExists(cht, "data/SingleTop_tChannel-madgraph-LHE/merged*.root", ""); 
   pickSkimIfExists(cht, "data/SingleTop_tWChannel-madgraph-LHE/merged*.root", ""); 
+
+  //Vgamma
+  TChain* chVgamma = new TChain("Events");
+  pickSkimIfExists(chVgamma, "data/AVJets-madgraph_Fall08_IDEAL_V9_v3/merged*.root", "_skimSimple2020");
+
+  //LM0
+  TChain* chLM0 = new TChain("Events");
+  pickSkimIfExists(chLM0, "data/SUSY_LM0_Single-lepton/merged*.root", "");
 
   // Define colors numbers:
   gStyle->SetPalette(1);
@@ -528,10 +553,22 @@ void doAllCombined(unsigned int bitmask, bool skipFWLite = false){
     looper->ScanChain(cht,"t", kt, pret, oldjet, bitmask);
     hist::color("t_", 63);
   }
+
+  if (runVgamma){
+    cout << "Processing Vgamma ... "<<endl;
+    looper->ScanChain(chVgamma, "Vgamma", kVgamma, preVgamma, oldjet, bitmask);
+  }
+    
+  if (runLM0){
+    cout << "Processing LM0 ... "<<endl;
+    looper->ScanChain(chLM0, "LM0", kLM0, preLM0, oldjet, bitmask);
+  }
     
   //save all the histograms
     
-  const char* outFile = Form("myHistComb_%d_%s.root", bitmask, looper->compactConfig.c_str());
+  const char* outFile = 0;
+  if (!runVgamma) outFile = Form("myHistComb_testfix_%d_%s.root", bitmask, looper->compactConfig.c_str());
+  else outFile = Form("myHistComb_wExtras_%d_%s.root", bitmask, looper->compactConfig.c_str());
   hist::saveHist(outFile);
   hist::deleteHistos();
 
