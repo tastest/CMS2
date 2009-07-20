@@ -32,7 +32,7 @@ namespace hist {
    void scale(const char* patORpfx, Double_t scale);
    void setrangey(TCanvas* canvas);
 
-   void stack(const char* stackHistName, const char* patORpfx, Bool_t addColor = kFALSE, Option_t* drawOption = "");
+   void stack(const char* stackHistName, const char* patORpfx, Bool_t addColor = kFALSE, Option_t* drawOption = "", Int_t orderScheme = 0);
    void xaxis(const char* patORpfx, const char* title);
 
    void yaxis(const char* patORpfx, const char* title);
