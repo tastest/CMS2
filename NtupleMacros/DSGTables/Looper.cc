@@ -132,15 +132,51 @@ void Looper::FillDilepHistos (int i_hyp)
 	  const int sumjetcat	= SumJetcat(i_hyp);
 	  const int bucket	= Bucket(i_hyp);
 	  
+	  float jsumet = 0;
+	  for (int i = 0; i < cms2.hyp_jets_p4()[i_hyp].size(); ++i) {
+	    jsumet += cms2.hyp_jets_p4()[i_hyp][i].pt();
+	  }
 	  for (int i = 0; i <= metcat; ++i) {
 	    for (int j = 0; j <= sumjetcat; ++j) {
 	      dsgTable.Increment(zcat, i, j, jetcat, bucket, weight);
 	      dsgTable.hmet_[zcat][i][j][jetcat][bucket]->Fill(cms2.evt_tcmet(), weight);
 	      dsgTable.hmll_[zcat][i][j][jetcat][bucket]->Fill(cms2.hyp_p4()[i_hyp].M(), weight);
+	      dsgTable.hht_[zcat][i][j][jetcat][bucket]
+		->Fill( (cms2.evt_tcmet() +
+		        cms2.hyp_lt_p4()[i_hyp].pt() + cms2.hyp_ll_p4()[i_hyp].pt() +
+			 jsumet),
+			weight);
+	      dsgTable.hjsumet_[zcat][i][j][jetcat][bucket]->Fill(jsumet, weight);
+	      if (cms2.hyp_jets_p4()[i_hyp].size() == 0) 
+		dsgTable.hmaxjetpt_[zcat][i][j][jetcat][bucket]->Fill(0.0, weight);
+	      else
+		dsgTable.hmaxjetpt_[zcat][i][j][jetcat][bucket]->Fill(cms2.hyp_jets_p4()[i_hyp][0].pt(), weight);
+	      
+	      dsgTable.hmaxleppt_[zcat][i][j][jetcat][bucket]
+		->Fill(std::max(cms2.hyp_lt_p4()[i_hyp].pt(),cms2.hyp_ll_p4()[i_hyp].pt()) , weight);
+	      dsgTable.hlepdphi_[zcat][i][j][jetcat][bucket]
+		->Fill(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_lt_p4()[i_hyp],cms2.hyp_ll_p4()[i_hyp]), weight);
+
+
 	      // also fill the Z or no Z row
 	      dsgTable.Increment(DSGTable::nZcat, i, j, jetcat, bucket, weight);
 	      dsgTable.hmet_[DSGTable::nZcat][i][j][jetcat][bucket]->Fill(cms2.evt_tcmet(), weight);
-	      dsgTable.hmll_[DSGTable::nZcat][i][j][jetcat][bucket]->Fill(cms2.hyp_p4()[i_hyp].M(), weight);
+	      dsgTable.hmll_[DSGTable::nZcat][i][j][jetcat][bucket]->Fill(cms2.hyp_p4()[i_hyp].M(), weight);    
+	      dsgTable.hht_[DSGTable::nZcat][i][j][jetcat][bucket]
+		->Fill( (cms2.evt_tcmet() +
+		        cms2.hyp_lt_p4()[i_hyp].pt() + cms2.hyp_ll_p4()[i_hyp].pt() +
+			 jsumet),
+			weight);
+	      dsgTable.hjsumet_[DSGTable::nZcat][i][j][jetcat][bucket]->Fill(jsumet, weight);
+	      if (cms2.hyp_jets_p4()[i_hyp].size() == 0) 
+		dsgTable.hmaxjetpt_[DSGTable::nZcat][i][j][jetcat][bucket]->Fill(0.0, weight);
+	      else
+		dsgTable.hmaxjetpt_[DSGTable::nZcat][i][j][jetcat][bucket]->Fill(cms2.hyp_jets_p4()[i_hyp][0].pt(), weight);
+	      
+	      dsgTable.hmaxleppt_[DSGTable::nZcat][i][j][jetcat][bucket]
+		->Fill(std::max(cms2.hyp_lt_p4()[i_hyp].pt(),cms2.hyp_ll_p4()[i_hyp].pt()) , weight);
+	      dsgTable.hlepdphi_[DSGTable::nZcat][i][j][jetcat][bucket]
+		->Fill(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_lt_p4()[i_hyp],cms2.hyp_ll_p4()[i_hyp]), weight);
 	    }
 	    
 	  }

@@ -85,49 +85,29 @@ static void displayHistos (int i, int j, int k, int l, int whichBucketGrouping)
 {
   static TCanvas *c = new TCanvas;
   c->Clear();
-  c->Divide(2, 1);
+  c->Divide(4, 2);
   c->cd(1);
-
   plotTheDistribution (&DSGTable::hmet_, i, j, k, l, whichBucketGrouping) ;
-  c->cd(2);
 
+  c->cd(2);
   plotTheDistribution (&DSGTable::hmll_, i, j, k, l, whichBucketGrouping) ;
 
-  /*
-  THStack *smet = new THStack("smet", "MET;MET");
-  for (int m = 0; m < n_dsgs_ - 1; ++m) {
-    TH1F *hmet = dynamic_cast<TH1F*> (dsgs_[m]->hmet_[i][j][0][k][buckets[whichBucketGrouping][l][0]]->Clone());
-    for (int n = 1 ; n < nBucketsPerGroup[whichBucketGrouping][l]; n++) {
-      hmet->Add(dsgs_[m]->hmet_[i][j][0][k][buckets[whichBucketGrouping][l][n]]);
-    }
+  c->cd(3);
+  plotTheDistribution (&DSGTable::hht_, i, j, k, l, whichBucketGrouping) ;
 
-    smet->Add(hmet);
-  }
-  TH1F *dmet = dynamic_cast<TH1F*> (dsgs_[n_dsgs_ - 1]->hmet_[i][j][0][k][buckets[whichBucketGrouping][l][0]]->Clone());
-  for (int n = 1 ; n < nBucketsPerGroup[whichBucketGrouping][l]; n++) {
-    dmet->Add(dsgs_[n_dsgs_ - 1]->hmet_[i][j][0][k][buckets[whichBucketGrouping][l][n]]);
-  }
+  c->cd(4);
+  plotTheDistribution (&DSGTable::hjsumet_, i, j, k, l, whichBucketGrouping) ;
 
-  dmet->SetFillStyle(0);
-  dmet->SetMarkerStyle(30);
-  dmet->Draw("pee");
-  smet->Draw("same");
-  dmet->Draw("same pee");
-  */  
-c->cd(2);
-  /* 
- THStack *smll = new THStack("smll", "MLL;Mll");
-  for (int m = 0; m < n_dsgs - 1; ++m) {
-    smll->Add(dsgs[m]->hmll_[i][j][0][k][l]);
-  }
-  smll->Draw();
-  TH1F *dmll = dsgs[n_dsgs - 1]->hmll_[i][j][0][k][l];
-  dmll->SetFillStyle(0);
-  dmll->SetMarkerStyle(30);
-  dmll->Draw("pee");
-  smll->Draw("same");
-  dmll->Draw("same pee");
-  */
+  c->cd(5);
+  plotTheDistribution (&DSGTable::hmaxjetpt_, i, j, k, l, whichBucketGrouping) ;
+
+  c->cd(6);
+  plotTheDistribution (&DSGTable::hmaxleppt_, i, j, k, l, whichBucketGrouping) ;
+
+  c->cd(7);
+  plotTheDistribution (&DSGTable::hlepdphi_, i, j, k, l, whichBucketGrouping) ;
+
+
   c->Update();
   return;
 }
