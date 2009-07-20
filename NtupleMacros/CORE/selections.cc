@@ -1798,6 +1798,18 @@ int genpCountPDGId(int id0, int id1, int id2){
   return count; 
 } 
 
+int genpCountPDGId_Pt20h24(int id0, int id1, int id2){ 
+  int count = 0; 
+  int size = cms2.genps_id().size(); 
+  for (int jj=0; jj<size; jj++) { 
+    if ( cms2.genps_p4()[jj].pt() < 20  ||  fabs(cms2.genps_p4()[jj].eta())>2.4) continue;
+    if (abs(cms2.genps_id()[jj]) == id0) count++; 
+    if (abs(cms2.genps_id()[jj]) == id1) count++; 
+    if (abs(cms2.genps_id()[jj]) == id2) count++; 
+  } 
+  return count; 
+} 
+
 
 int genpDileptonType(){
   //0 mumu; 1 emu; 2 ee
@@ -1822,8 +1834,91 @@ int genpDileptonType(){
 }
 
 
+bool matchesMCTruthDilExtended(unsigned int hypIdx){
+  //this better be in the selections.cc
+  bool isTrueLepton_ll = false;
+  bool isTrueLepton_lt = false;
+  isTrueLepton_ll = ( (abs(cms2.hyp_ll_id()[hypIdx]) == abs(cms2.hyp_ll_mc_id()[hypIdx]) &&
+		       abs(cms2.hyp_ll_mc_motherid()[hypIdx]) < 50 //I wish I could match to W or Z explicitely, not in MGraph
+		       )
+		      || (cms2.hyp_ll_mc_id()[hypIdx]==22 && 
+			  TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[hypIdx],cms2.hyp_ll_mc_p4()[hypIdx])) <0.05
+			  && abs(cms2.hyp_ll_id()[hypIdx]) == abs(cms2.hyp_ll_mc_motherid()[hypIdx])
+			  )
+		      );
+  isTrueLepton_lt = ( (abs(cms2.hyp_lt_id()[hypIdx]) == abs(cms2.hyp_lt_mc_id()[hypIdx]) &&
+		       abs(cms2.hyp_lt_mc_motherid()[hypIdx]) < 50 //I wish I could match to W or Z explicitely, not in MGraph
+		       )
+		      || (cms2.hyp_lt_mc_id()[hypIdx]==22 && 
+			  TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[hypIdx],cms2.hyp_lt_mc_p4()[hypIdx])) <0.05
+			  && abs(cms2.hyp_lt_id()[hypIdx]) == abs(cms2.hyp_lt_mc_motherid()[hypIdx])
+			  )
+		      );
+  return (isTrueLepton_lt && isTrueLepton_ll);  
+}
 
-int eventDilIndexByWeightTTDil08(const std::vector<unsigned int>& goodHyps, int& strasbourgDilType, bool printDebug){
+int eventDilIndexByMaxMass(const std::vector<unsigned int>& goodHyps, bool printDebug){
+  int result = -1;
+  int strasbourgDilType = -1;
+  unsigned int nGoodHyps = goodHyps.size();
+  if ( nGoodHyps == 0 ) return result;
+
+  float maxWeight = -1;
+  unsigned int maxWeightIndex = 9999;
+  
+  for (unsigned int hypIdxL=0; hypIdxL < nGoodHyps; ++hypIdxL){
+    unsigned int hypIdx = goodHyps[hypIdxL];
+    float hypWeight = cms2.hyp_p4()[hypIdx].mass();
+    if (hypWeight > maxWeight){
+      maxWeight = hypWeight;
+      maxWeightIndex = hypIdx;
+    }
+  }
+
+  if (printDebug){
+    int genpDilType = genpDileptonType();
+    if (genpDilType>=0 ){ std::cout<<"Dil type "<<genpDilType<<std::endl;
+      if (nGoodHyps > 1){
+	int maxWeightType = cms2.hyp_type()[maxWeightIndex];
+	if ((maxWeightType == 0 && genpDilType == 0)
+	    || ( (maxWeightType == 1 || maxWeightType == 2) && genpDilType == 1)
+	    || (maxWeightType == 3 && genpDilType == 2)){
+	  std::cout<<"Dil type "<<genpDilType<<" ; Strasbourg dil type "<<strasbourgDilType 
+		   <<" assigned correctly by maxWeight method";
+	  std::cout<<" out of"; for(unsigned int iih=0;iih<nGoodHyps;++iih)std::cout<<" "<<cms2.hyp_type()[goodHyps[iih]];
+	  std::cout<<std::endl;
+	} else {
+	  std::cout<<"Dil type "<<genpDilType<<" ; Strasbourg dil type "<<strasbourgDilType 
+		   <<" assigned incorrectly by maxWeight method";
+	  std::cout<<" out of"; for(unsigned int iih=0;iih<nGoodHyps;++iih)std::cout<<" "<<cms2.hyp_type()[goodHyps[iih]];
+	  std::cout<<std::endl;	    
+	}
+      }
+    } else{
+      if (genpCountPDGId(11,13,15) == 2){
+	std::cout<<"TauDil type "<<std::endl;
+      }
+    }
+    int nMCTruth = 0;
+    for(unsigned int iih=0;iih<nGoodHyps;++iih) if (matchesMCTruthDilExtended(goodHyps[iih])) nMCTruth++;
+    std::cout<<"Ne: "<<genpCountPDGId_Pt20h24(11)<<" nmu: "<<genpCountPDGId_Pt20h24(13)<<" ntau: "<<genpCountPDGId_Pt20h24(15)
+	     <<" ngood "<<nGoodHyps
+	     <<" hyp_typeM: "<<cms2.hyp_type()[maxWeightIndex]<<" matchMC "<<(matchesMCTruthDilExtended(maxWeightIndex)? 1 : 0)
+	     <<" nMatches "<<nMCTruth
+	     <<" ltid "<< cms2.hyp_lt_id()[maxWeightIndex]
+	     <<" ltmcid "<< cms2.hyp_lt_mc_id()[maxWeightIndex]<<" ltmcmid "<< cms2.hyp_lt_mc_motherid()[maxWeightIndex]
+	     <<" llid "<< cms2.hyp_ll_id()[maxWeightIndex]
+	     <<" llmcid "<< cms2.hyp_ll_mc_id()[maxWeightIndex]<<" llmcmid "<< cms2.hyp_ll_mc_motherid()[maxWeightIndex]
+	     <<std::endl;
+  }
+
+  result = maxWeightIndex;
+  return result;
+}
+
+
+
+int eventDilIndexByWeightTTDil08(const std::vector<unsigned int>& goodHyps, int& strasbourgDilType, bool printDebug, bool usePtOnlyForWeighting){
   int result = -1;
   unsigned int nGoodHyps = goodHyps.size();
   if ( nGoodHyps == 0 ) return result;
@@ -1853,29 +1948,33 @@ int eventDilIndexByWeightTTDil08(const std::vector<unsigned int>& goodHyps, int&
     if (abs(id_lt) == 11){
       //I want to select "trk & cal"-isolated ones
       hypWeight_iso += (isoTk_lt*isoCal_lt - 0.25); //shift by 0.25 to be positive-definite
-      if (cms2.els_tightId().at(i_lt)) hypWeight_lt += 0.2;
+      if (! usePtOnlyForWeighting && cms2.els_tightId().at(i_lt)) hypWeight_lt += 0.2;
     }
     if (abs(id_lt) == 13){
       //I want to select "trk & cal"-isolated ones	    
       hypWeight_iso += (isoTk_lt*isoCal_lt - 0.25);//shift by 0.25 to be positive-definite
-      hypWeight_lt += 0.4;
+      if (! usePtOnlyForWeighting) hypWeight_lt += 0.4;
     }
     if (abs(id_ll) == 11){
       //I want to select "trk & cal"-isolated ones
       hypWeight_iso *= (isoTk_ll*isoCal_ll - 0.25); //shift by 0.25 to be positive-definite
-      if (cms2.els_tightId().at(i_ll)) hypWeight_ll += 0.2;
+      if (! usePtOnlyForWeighting && cms2.els_tightId().at(i_ll)) hypWeight_ll += 0.2;
     }
     if (abs(id_ll) == 13){
       //I want to select "trk & cal"-isolated ones
       hypWeight_iso *= (isoTk_ll*isoCal_ll - 0.25); //shift by 0.25 to be positive-definite
-      hypWeight_ll += 0.4;
+      if (! usePtOnlyForWeighting) hypWeight_ll += 0.4;
     }
     float pt_lt = cms2.hyp_lt_p4().at(hypIdx).pt();
     float pt_ll = cms2.hyp_ll_p4().at(hypIdx).pt();
     hypWeight_lt += (1. - 20./pt_lt*20./pt_lt);
     hypWeight_ll += (1. - 20./pt_ll*20./pt_ll);
-
-    hypWeight = hypWeight_ll*hypWeight_lt*hypWeight_iso; //again, desire to have both good
+    
+    if (usePtOnlyForWeighting){
+      hypWeight = hypWeight_ll*hypWeight_lt; //again, desire to have both good
+    } else {
+      hypWeight = hypWeight_ll*hypWeight_lt*hypWeight_iso; //again, desire to have both good
+    }
 
     if (hypWeight > maxWeight){
       maxWeight = hypWeight;
@@ -1966,6 +2065,17 @@ int eventDilIndexByWeightTTDil08(const std::vector<unsigned int>& goodHyps, int&
 	}
       }
     }
+    int nMCTruth = 0;
+    for(unsigned int iih=0;iih<nGoodHyps;++iih) if (matchesMCTruthDilExtended(goodHyps[iih])) nMCTruth++;
+    std::cout<<"Ne: "<<genpCountPDGId_Pt20h24(11)<<" nmu: "<<genpCountPDGId_Pt20h24(13)<<" ntau: "<<genpCountPDGId_Pt20h24(15)
+	     <<" ngood "<<nGoodHyps<<" SBtype "<<strasbourgDilType
+	     <<" hyp_typeM: "<<cms2.hyp_type()[maxWeightIndex]<<" matchMC "<<(matchesMCTruthDilExtended(maxWeightIndex)? 1 : 0)
+	     <<" nMatches "<<nMCTruth
+	     <<" ltid "<< cms2.hyp_lt_id()[maxWeightIndex]
+	     <<" ltmcid "<< cms2.hyp_lt_mc_id()[maxWeightIndex]<<" ltmcmid "<< cms2.hyp_lt_mc_motherid()[maxWeightIndex]
+	     <<" llid "<< cms2.hyp_ll_id()[maxWeightIndex]
+	     <<" llmcid "<< cms2.hyp_ll_mc_id()[maxWeightIndex]<<" llmcmid "<< cms2.hyp_ll_mc_motherid()[maxWeightIndex]
+	     <<std::endl;    
   }
 
   result = maxWeightIndex;
