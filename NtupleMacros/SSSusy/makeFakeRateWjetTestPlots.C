@@ -11,24 +11,30 @@
 
   bool subtract_realE = false;
 
-  TString sample="wjetsAlpgen_";
-  //  TString sample="wjets_";
+  // use SameSign?
+  bool doSS = true; 
+
+      TString sample="wjetsAlpgen_";
+      //        TString sample="wjets_";
   //  TString sample="ttbar_";
   
   TString observed = "Observed (Numerator)";
-  TString predicted = "FO not Numerator";
+  //  TString predicted = "FO not Numerator";
+  TString predicted = "Predicted";
   
   int rebinvalue_pt = 1;
   int rebinvalue_eta = 1;
 
-//     TFile *_file0 = TFile::Open("Wjets_SS_Numerator.root");
-//     TFile *_file2 = TFile::Open("Wjets_SS_Fakerate.root");
-
-  TFile *_file0 = TFile::Open("Wjets_Numerator.root");
-    //    TFile *_file2 = TFile::Open("Wjets_Fakerate.root");
-
-//   TFile *_file0 = TFile::Open("Wjets_SS_FOs_Not_Numerator.root");
-  TFile *_file2 = TFile::Open("Wjets_FOs_Not_Numerator.root");
+  if(doSS) {
+    TFile *_file0 = TFile::Open("Wjets_SS_Numerator.root");
+    TFile *_file2 = TFile::Open("Wjets_SS_Fakerate.root");
+  }
+  else {
+    TFile *_file0 = TFile::Open("Wjets_Numerator.root");
+    TFile *_file2 = TFile::Open("Wjets_Fakerate.root");
+  }
+  //   TFile *_file0 = TFile::Open("Wjets_SS_FOs_Not_Numerator.root");
+  //  TFile *_file2 = TFile::Open("Wjets_FOs_Not_Numerator.root");
 
 //   TFile *_file0 = TFile::Open("Wjets_SS_Numerator.root");
 //   TFile *_file2 = TFile::Open("Wjets_Numerator.root");
@@ -42,6 +48,7 @@
   TCanvas * MET_em = new TCanvas("MET_em","MET_em");
   TCanvas * elPdgId_em = new TCanvas("elPdgId_em","elPdgId_em");
   TCanvas * elMoPdgId_em = new TCanvas("elMoPdgId_em","elMoPdgId_em");
+  TCanvas * elPdgIdCat_em = new TCanvas("elPdgIdCat_em","elPdgIdCat_em");
 
   //  TCanvas * elept_em_true = new TCanvas("elept_em_true","elept_em_true");
 
@@ -457,6 +464,92 @@
 
 
    //EEE222
+   if(42 == 42) {
+  // plot elPdgIdCat comparison
+  elPdgIdCat_em->cd();
+  //  elPdgIdCat_em->SetLogy();
+  TH1F* helPdgIdCat_em_observed = (TH1F*) ((_file0->Get(sample+"elPdgIdCat_em"))->Clone("helPdgIdCat_em_observed"));
+  //  helPdgIdCat_em_observed->Rebin(5);
+  helPdgIdCat_em_observed->SetLineColor(kRed);
+  helPdgIdCat_em_observed->SetFillColor(kWhite);
+  helPdgIdCat_em_observed->SetLineWidth(2.);
+  helPdgIdCat_em_observed->SetName(observed);
+  helPdgIdCat_em_observed->GetYaxis()->SetTitle("Events");
+  helPdgIdCat_em_observed->GetYaxis()->SetTitleOffset(1.2);
+  helPdgIdCat_em_observed->GetYaxis()->SetTitleSize(0.04);
+  helPdgIdCat_em_observed->GetXaxis()->SetTitle("electron Pdg ID");
+  helPdgIdCat_em_observed->GetXaxis()->SetTitleOffset(1.2);
+  helPdgIdCat_em_observed->GetXaxis()->SetTitleSize(0.04);
+  helPdgIdCat_em_observed->SetMarkerStyle(20);
+  helPdgIdCat_em_observed->SetMarkerColor(kRed);
+  helPdgIdCat_em_observed->SetMarkerSize(1.1);
+  //  helPdgIdCat_em_observed->Draw();
+
+  TH1F* helPdgIdCat_em_predicted = (TH1F*) ((_file2->Get(sample+"elPdgIdCat_em"))->Clone("helPdgIdCat_em_predicted"));
+  //  helPdgIdCat_em_predicted->Rebin(5);
+  helPdgIdCat_em_predicted->SetLineColor(kBlue);
+  helPdgIdCat_em_predicted->SetFillColor(kWhite);
+  helPdgIdCat_em_predicted->SetLineWidth(2.);
+  helPdgIdCat_em_predicted->SetName(predicted);
+  helPdgIdCat_em_predicted->SetMarkerStyle(28);
+  helPdgIdCat_em_predicted->SetMarkerColor(kBlue);
+  helPdgIdCat_em_predicted->SetMarkerSize(1.2);
+  //  helPdgIdCat_em_predicted->Draw("sames");
+  if(helPdgIdCat_em_observed->GetMaximum() >= helPdgIdCat_em_predicted->GetMaximum() ) {
+    helPdgIdCat_em_observed->Draw();
+    helPdgIdCat_em_predicted->Draw("sames");
+  }
+  else {
+    helPdgIdCat_em_predicted->Draw();
+    helPdgIdCat_em_observed->Draw("sames");
+  }
+
+//    lable_new->Draw();
+//    lable_ref->Draw();
+  elPdgIdCat_em->Update();
+  letelPdgIdCat = new TLegend(0.5,0.75,0.79,0.99,NULL,"brNDC");
+  letelPdgIdCat->SetLineColor(1);
+  letelPdgIdCat->SetLineStyle(1);
+  letelPdgIdCat->SetLineWidth(1);
+  letelPdgIdCat->SetFillColor(10);
+  letelPdgIdCat->SetBorderSize(1);
+  //  letelPdgIdCat->SetHeader(                               "L1 CSC trigger efficiency - With ME42");
+  letelPdgIdCat->AddEntry(helPdgIdCat_em_observed,       observed,"lpf");
+  letelPdgIdCat->AddEntry(helPdgIdCat_em_predicted,      predicted,"lpf");
+  letelPdgIdCat->Draw();
+
+
+  elPdgIdCat_em->Update();
+  //  elPdgIdCat_em->SetNDC();
+  TPaveStats *fake_rate_elIdstats1 = (TPaveStats*)(helPdgIdCat_em_observed->GetListOfFunctions()->FindObject("stats"));
+  if ( fake_rate_elIdstats1 != 0 ) {
+    fake_rate_elIdstats1->SetX1NDC(0.8);
+    fake_rate_elIdstats1->SetY1NDC(0.75);
+    fake_rate_elIdstats1->SetX2NDC(0.99);
+    fake_rate_elIdstats1->SetY2NDC(0.99);
+  }
+  TPaveStats *fake_rate_elPdgIdCatstats2 = (TPaveStats*)(helPdgIdCat_em_predicted->GetListOfFunctions()->FindObject("stats"));
+  if ( fake_rate_elPdgIdCatstats2 != 0 ) {
+    fake_rate_elPdgIdCatstats2->SetX1NDC(0.8);
+    fake_rate_elPdgIdCatstats2->SetY1NDC(0.5);
+    fake_rate_elPdgIdCatstats2->SetX2NDC(0.99);
+    fake_rate_elPdgIdCatstats2->SetY2NDC(0.74);
+  }
+  //  gPad->SetLeftMargin(0.17);
+
+  //  leg->Draw();
+  elPdgIdCat_em->Update();
+   TLatex *   lable_refelPdgIdCat = new TLatex(0.55,0.75,"");
+   lable_refelPdgIdCat->SetNDC();
+   lable_refelPdgIdCat->SetTextSize(0.04);
+   lable_refelPdgIdCat->SetTextColor(kRed);
+   TLatex *   lable_newelPdgIdCat = new TLatex(0.55,0.7,"");
+   lable_newelPdgIdCat->SetNDC();
+   lable_newelPdgIdCat->SetTextSize(0.04);
+   lable_newelPdgIdCat->SetTextColor(kBlue);
+   lable_newelPdgIdCat->Draw();
+   lable_refelPdgIdCat->Draw();
+   }
    //IBLPasteB
   // plot eleRelIso comparison
   celeRelIso_em->cd();
@@ -558,6 +651,7 @@
    celeRelIso_em->Print(sample+"eleRelIso_em.png");
    elMoPdgId_em->Print(sample+"elMoPdgId_em.png");
    elPdgId_em->Print(sample+"elPdgId_em.png");
+   elPdgIdCat_em->Print(sample+"elPdgIdCat_em.png");
    //   MET_em->Print("MET_em_em.png");
    
 

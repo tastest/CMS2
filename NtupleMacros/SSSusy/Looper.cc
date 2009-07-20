@@ -65,6 +65,7 @@ void Looper::BookHistos ()
         hmuMoPdgId	= new NMinus1Hist(sample_, "muMoPdgId", 	2301, -0.5, 2300.5, cuts_, 0);
         helPdgId	= new NMinus1Hist(sample_, "elPdgId", 		2301, -0.5, 2300.5, cuts_, 0);
         helMoPdgId	= new NMinus1Hist(sample_, "elMoPdgId", 	2301, -0.5, 2300.5, cuts_, 0);
+        helPdgIdCat	= new NMinus1Hist(sample_, "elPdgIdCat",        5, -0.5, 4.5, cuts_, 0);
 //        helEop      	= new NMinus1Hist(sample_, "elEop"	      ,  10	, 0, 10	, cuts_, (CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD) | CUT_BIT(CUT_LT_ISO) | CUT_BIT(CUT_LL_ISO) | CUT_BIT(CUT_LT_CALOISO) | CUT_BIT(CUT_LL_CALOISO)));
 //        held0    	= new NMinus1Hist(sample_, "eld0"	      ,  50	, 0, 0.1	, cuts_, (CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD) | CUT_BIT(CUT_LT_ISO) | CUT_BIT(CUT_LL_ISO) | CUT_BIT(CUT_LT_CALOISO) | CUT_BIT(CUT_LL_CALOISO)));
 //        helfbrem    	= new NMinus1Hist(sample_, "elfbrem"	      ,  11	, -0.1, 1	, cuts_, (CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD) | CUT_BIT(CUT_LT_ISO) | CUT_BIT(CUT_LL_ISO) | CUT_BIT(CUT_LT_CALOISO) | CUT_BIT(CUT_LL_CALOISO)));
@@ -409,6 +410,23 @@ void Looper::FillDilepHistos (int i_hyp)
        hmuMoPdgId->Fill(cuts_passed, myType, abs(cms2.mus_mc_motherid()[mu_idx]), weight);
        helPdgId->Fill(cuts_passed, myType, abs(cms2.els_mc_id()[el_idx]), weight);
        helMoPdgId->Fill(cuts_passed, myType, abs(cms2.els_mc_motherid()[el_idx]), weight);
+       if(
+          (abs(cms2.els_mc_id()[ el_idx ])==11 && abs(cms2.els_mc_motherid()[ el_idx ]) == 22) ||
+          (abs(cms2.els_mc_id()[ el_idx ])==22)                                                                    ||
+          (abs(cms2.els_mc_id()[ el_idx ]) > 100 && (abs(cms2.els_mc_id()[ el_idx ]) < 200))
+          ) {
+         helPdgIdCat->Fill(cuts_passed, myType, 1, weight);
+       }
+       else if((abs(cms2.els_mc_id()[ el_idx  ]) > 200 && (abs(cms2.els_mc_id()[ el_idx ]) < 400))){
+         helPdgIdCat->Fill(cuts_passed, myType, 2, weight);
+       }
+       else if((abs(cms2.els_mc_id()[ el_idx  ]) == 11 && abs(cms2.els_mc_motherid()[ el_idx ]) >=400 )){
+         helPdgIdCat->Fill(cuts_passed, myType, 3, weight);
+       }
+       else {
+         helPdgIdCat->Fill(cuts_passed, myType, 4, weight);
+       }
+ 
      }
 //      hnCaloJet	->Fill(cuts_passed, myType, cms2.hyp_njets()[i_hyp], weight);
 //      hnTrackJet	->Fill(cuts_passed, myType, nTrkJets(i_hyp), weight);

@@ -229,6 +229,7 @@ protected:
      NMinus1Hist	*hmuMoPdgId;
      NMinus1Hist	*helPdgId;
      NMinus1Hist	*helMoPdgId;
+     NMinus1Hist	*helPdgIdCat;
      // electron id variables
      NMinus1Hist	*helEop;
      NMinus1Hist	*held0;

@@ -119,6 +119,22 @@ void FakeRateLooper::FillDilepHistos (int i_hyp)
        heleRelIso->Fill(cuts_passed, myType, inv_el_relsusy_iso(cms2.hyp_lt_index()[i_hyp], true), weight);
        helPdgId->Fill(cuts_passed, myType, abs(cms2.els_mc_id()[ cms2.hyp_lt_index()[i_hyp] ]), weight);
        helMoPdgId->Fill(cuts_passed, myType, abs(cms2.els_mc_motherid()[ cms2.hyp_lt_index()[i_hyp] ]), weight);
+       if(
+          (abs(cms2.els_mc_id()[ cms2.hyp_lt_index()[i_hyp] ])==11 && abs(cms2.els_mc_motherid()[ cms2.hyp_lt_index()[i_hyp] ]) == 22) ||
+          (abs(cms2.els_mc_id()[ cms2.hyp_lt_index()[i_hyp] ])==22)                                                                    ||
+          (abs(cms2.els_mc_id()[ cms2.hyp_lt_index()[i_hyp] ]) > 100 && (abs(cms2.els_mc_id()[ cms2.hyp_lt_index()[i_hyp] ]) < 200))
+          ) {
+         helPdgIdCat->Fill(cuts_passed, myType, 1, weight);
+       }
+       else if((abs(cms2.els_mc_id()[ cms2.hyp_lt_index()[i_hyp] ]) > 200 && (abs(cms2.els_mc_id()[ cms2.hyp_lt_index()[i_hyp] ]) < 400))){
+         helPdgIdCat->Fill(cuts_passed, myType, 2, weight);
+       }
+       else if((abs(cms2.els_mc_id()[ cms2.hyp_lt_index()[i_hyp] ]) == 11 && abs(cms2.els_mc_motherid()[ cms2.hyp_lt_index()[i_hyp] ]) >=400 )){
+         helPdgIdCat->Fill(cuts_passed, myType, 3, weight);
+       }
+       else {
+         helPdgIdCat->Fill(cuts_passed, myType, 4, weight);
+       }
         // 	  heleRelIsoTrk->Fill(cuts_passed, myType, reliso_lt(i_hyp, false), weight);
      } else {
        //        hmuPt->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].pt(), weight);
@@ -130,6 +146,22 @@ void FakeRateLooper::FillDilepHistos (int i_hyp)
        heleRelIso->Fill(cuts_passed, myType, inv_el_relsusy_iso(cms2.hyp_ll_index()[i_hyp], true), weight);
        helPdgId->Fill(cuts_passed, myType, abs(cms2.els_mc_id()[ cms2.hyp_ll_index()[i_hyp] ]), weight);
        helMoPdgId->Fill(cuts_passed, myType, abs(cms2.els_mc_motherid()[ cms2.hyp_ll_index()[i_hyp] ]), weight);
+       if(
+          (abs(cms2.els_mc_id()[ cms2.hyp_ll_index()[i_hyp] ])==11 && abs(cms2.els_mc_motherid()[ cms2.hyp_ll_index()[i_hyp] ]) == 22) ||
+          (abs(cms2.els_mc_id()[ cms2.hyp_ll_index()[i_hyp] ])==22)                                                                    ||
+          (abs(cms2.els_mc_id()[ cms2.hyp_ll_index()[i_hyp] ]) > 100 && (abs(cms2.els_mc_id()[ cms2.hyp_ll_index()[i_hyp] ]) < 200))
+          ) {
+         helPdgIdCat->Fill(cuts_passed, myType, 1, weight);
+       }
+       else if((abs(cms2.els_mc_id()[ cms2.hyp_ll_index()[i_hyp] ]) > 200 && (abs(cms2.els_mc_id()[ cms2.hyp_ll_index()[i_hyp] ]) < 400))){
+         helPdgIdCat->Fill(cuts_passed, myType, 2, weight);
+       }
+       else if((abs(cms2.els_mc_id()[ cms2.hyp_ll_index()[i_hyp] ]) == 11 && abs(cms2.els_mc_motherid()[ cms2.hyp_ll_index()[i_hyp] ]) >=400 )){
+         helPdgIdCat->Fill(cuts_passed, myType, 3, weight);
+       }
+       else {
+         helPdgIdCat->Fill(cuts_passed, myType, 4, weight);
+       }
        // 	  heleRelIsoTrk->Fill(cuts_passed, myType, reliso_ll(i_hyp, false), weight);
      } else {
        //        hmuPt->Fill(cuts_passed, myType, cms2.hyp_ll_p4()[i_hyp].pt(), weight);
