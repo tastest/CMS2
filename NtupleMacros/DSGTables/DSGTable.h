@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// $Id: DSGTable.h,v 1.4 2009/07/20 13:03:34 jmuelmen Exp $
+// $Id: DSGTable.h,v 1.5 2009/07/20 13:53:21 avi Exp $
 
 #ifndef DSGTABLE_H
 #define DSGTABLE_H
@@ -92,6 +92,7 @@ public:
 // 	  }
 
 public:
+     typedef TH1F* table_t     [nZcat + 1   ][nMETcat ][nSumJetcat][nJetcat ][nBuckets];
      double		events_[nZcat + 1   ][nMETcat ][nSumJetcat][nJetcat ][nBuckets];
      double		w2s_   [nZcat + 1   ][nMETcat ][nSumJetcat][nJetcat ][nBuckets];
      TH1F		*hmet_ [nZcat + 1   ][nMETcat ][nSumJetcat][nJetcat ][nBuckets];

@@ -55,6 +55,31 @@ static void printNumbers (int i, int j, int k, int l, int whichBucketGrouping)
     attroff(COLOR_PAIR(1));
 }
 
+static void plotTheDistribution (DSGTable::table_t DSGTable::* h, 
+				 int i, int j, int k, int l, int whichBucketGrouping)
+{
+
+  THStack *stack = new THStack((dsgs_[0]->*h)[0][0][0][0][0]->GetName(), (dsgs_[0]->*h)[0][0][0][0][0]->GetTitle() );
+  
+  for (int m = 0; m < n_dsgs_ - 1; ++m) {
+    TH1F *hist = dynamic_cast<TH1F*> ((dsgs_[m]->*h)[i][j][0][k][buckets[whichBucketGrouping][l][0]]->Clone());
+    for (int n = 1 ; n < nBucketsPerGroup[whichBucketGrouping][l]; n++) {
+      hist->Add((dsgs_[m]->*h)[i][j][0][k][buckets[whichBucketGrouping][l][n]]);
+    }
+    stack->Add(hist);
+  }
+  TH1F *data = dynamic_cast<TH1F*> ((dsgs_[n_dsgs_ - 1]->*h)[i][j][0][k][buckets[whichBucketGrouping][l][0]]->Clone());
+  for (int n = 1 ; n < nBucketsPerGroup[whichBucketGrouping][l]; n++) {
+    data->Add((dsgs_[n_dsgs_ - 1]->*h)[i][j][0][k][buckets[whichBucketGrouping][l][n]]);
+  }
+  
+  data->SetFillStyle(0);
+  data->SetMarkerStyle(30);
+  data->Draw("pee");
+  stack->Draw("same");
+  data->Draw("same pee");
+}
+
 static void displayHistos (int i, int j, int k, int l, int whichBucketGrouping)
 
 {
@@ -62,6 +87,13 @@ static void displayHistos (int i, int j, int k, int l, int whichBucketGrouping)
   c->Clear();
   c->Divide(2, 1);
   c->cd(1);
+
+  plotTheDistribution (&DSGTable::hmet_, i, j, k, l, whichBucketGrouping) ;
+  c->cd(2);
+
+  plotTheDistribution (&DSGTable::hmll_, i, j, k, l, whichBucketGrouping) ;
+
+  /*
   THStack *smet = new THStack("smet", "MET;MET");
   for (int m = 0; m < n_dsgs_ - 1; ++m) {
     TH1F *hmet = dynamic_cast<TH1F*> (dsgs_[m]->hmet_[i][j][0][k][buckets[whichBucketGrouping][l][0]]->Clone());
@@ -81,7 +113,8 @@ static void displayHistos (int i, int j, int k, int l, int whichBucketGrouping)
   dmet->Draw("pee");
   smet->Draw("same");
   dmet->Draw("same pee");
-  c->cd(2);
+  */  
+c->cd(2);
   /* 
  THStack *smll = new THStack("smll", "MLL;Mll");
   for (int m = 0; m < n_dsgs - 1; ++m) {
