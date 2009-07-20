@@ -1,8 +1,21 @@
-void makeAllPlots(char* fname, bool logScale=false){
+void makeAllPlots(char* fname, bool logScale=false,char* hPatt = 0, char* refName, int titleStyle = 1, bool noLegend = false){
   gROOT->SetStyle("Plain");
   gROOT->ProcessLine(".x setup.C(true)"); //don't need FWLite to make plots
-  hist::loadHist(fname);
+  hist::loadHist(fname, 0, hPatt);
   
-  browseStacks(true, false, true, 1.1, logScale, logScale ? false : true);
+  if (refName!=0){
+    hist::loadHist(refName, "ref", hPatt);
+  }  
+
+  browseStacks(true,                         //makePictures
+	       false,                        //wait
+	       titleStyle,                   //addHistName
+	       1.1,                          // maxYrescale
+	       logScale,                     // logScale
+	       logScale ? false : true,      // set min to 0
+	       2,                            // color scheme (0 original tas, 1 as in pas 09-002, 2 almost like 1 from the wheel
+	       noLegend,                     // no legend on the plot
+	       2                             // order scheme
+	       );
   gSystem->Exit(0);
 }
