@@ -1532,9 +1532,9 @@ int numberOfExtraElectronsVJets09(int i_hyp){
 //------------------------------------------------------------------------------------
 // SUSY dilepton cuts 09 for TAS
 
-bool compareEt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1, 
+bool comparePt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1, 
                  ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv2) {
-  return lv1.Et() > lv2.Et();
+  return lv1.pt() > lv2.pt();
 }
 
 bool GoodSusyElectronWithoutIsolation(int index) { 
@@ -1679,7 +1679,7 @@ vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getCaloJets(i
   }
   
   if (calo_jets.size() > 1) {
-    sort(calo_jets.begin(), calo_jets.end(),  compareEt);
+    sort(calo_jets.begin(), calo_jets.end(),  comparePt);
   }
   return calo_jets;
 }
@@ -1700,7 +1700,7 @@ vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getJPTJets(in
   }
   
   if (jpt_jets.size() > 1) {
-    sort(jpt_jets.begin(), jpt_jets.end(),  compareEt);
+    sort(jpt_jets.begin(), jpt_jets.end(),  comparePt);
   }
   return jpt_jets;
 }

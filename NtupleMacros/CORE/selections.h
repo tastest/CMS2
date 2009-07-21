@@ -134,7 +134,7 @@ int numberOfExtraElectronsVJets09(int i_hyp);
 
 //SUSY dilepton selection TAS group
 
-bool compareEt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1,  
+bool comparePt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1,  
                  ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv2);
 bool GoodSusyElectronWithoutIsolation(int index);
 bool GoodSusyMuonWithoutIsolation(int index);
