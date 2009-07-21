@@ -1674,7 +1674,7 @@ vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getCaloJets(i
 	) continue;
     if (cms2.jets_pat_jet_p4()[jj].pt() < 30) continue;
     if (fabs(cms2.jets_pat_jet_p4()[jj].Eta()) > 2.4) continue;
-    if (cms2.jets_emFrac()[jj] < 0.1) continue;
+    //fkw July21 2009 if (cms2.jets_emFrac()[jj] < 0.1) continue;
     calo_jets.push_back(cms2.jets_pat_jet_p4()[jj]);
   }
   
