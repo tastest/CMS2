@@ -163,6 +163,9 @@ std::vector <ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getJPTJ
 int ttbarconstituents(int i_hyp);
 bool additionalZvetoSUSY09(int i_hyp);
 
+bool isFakeableElSUSY09(int iEl);
+bool isFakeableMuSUSY09(int iMu);
+
 
 //TTDil08 fake rate functions
 bool isNumElTTDil08(int iEl);
