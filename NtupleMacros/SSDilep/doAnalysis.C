@@ -27,6 +27,7 @@ using namespace std;
 #include "../CORE/CMS2.cc"
 #include "../CORE/utilities.cc"
 #include "../CORE/selections.cc"
+#include "../Tools/tools.cc"
 #endif
 
 TH1F* hypos_total;
@@ -34,72 +35,6 @@ TH1F* hypos_total_weighted;
 
 enum Sample {WW, WZ, ZZ, Wjets, DY, DYee, DYmm, DYtt, ttbar, tW, LM0x, LM1x, LM2x, LM3x, LM4x, LM5x, LM6x, LM7x, LM8x, LM9x}; // signal samples
 enum Hypothesis {MM, EM, EE, ALL}; // hypothesis types (em and me counted as same) and all
-
-
-// this is Jake's magic to sort jets by Pt
-Bool_t comparePt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1, 
-                 ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv2) {
-   return lv1.pt() > lv2.pt();
-}
-
-struct DorkyEventIdentifier {
-     // this is a workaround for not having unique event id's in MC
-     unsigned long int run, event, lumi;
-     float trks_d0;
-     float hyp_lt_pt, hyp_lt_eta, hyp_lt_phi;
-     bool operator < (const DorkyEventIdentifier &) const;
-     bool operator == (const DorkyEventIdentifier &) const;
-};
-
-bool DorkyEventIdentifier::operator < (const DorkyEventIdentifier &other) const
-{
-     if (run != other.run)
-	  return run < other.run;
-     if (event != other.event)
-	  return event < other.event;
-     // the floating point numbers are not easy, because we're
-     // comapring ones that are truncated (because they were written
-     // to file and read back in) with ones that are not truncated.
-     if (fabs(trks_d0 - other.trks_d0) > 1e-6 * trks_d0)
-	  return trks_d0 < other.trks_d0;
-     if (fabs(hyp_lt_pt - other.hyp_lt_pt) > 1e-6 * hyp_lt_pt)
-	  return hyp_lt_pt < other.hyp_lt_pt;
-     if (fabs(hyp_lt_eta - other.hyp_lt_eta) > 1e-6 * hyp_lt_eta)
-	  return hyp_lt_eta < other.hyp_lt_eta;
-     if (fabs(hyp_lt_phi - other.hyp_lt_phi) > 1e-6 * hyp_lt_phi)
-	  return hyp_lt_phi < other.hyp_lt_phi;
-     // if the records are exactly the same, then r1 is not less than
-     // r2.  Duh!
-     return false;
-}
-
-bool DorkyEventIdentifier::operator == (const DorkyEventIdentifier &other) const
-{
-     if (run != other.run)
-	  return false;
-     if (event != other.event)
-	  return false;
-     // the floating point numbers are not easy, because we're
-     // comapring ones that are truncated (because they were written
-     // to file and read back in) with ones that are not truncated.
-     if (fabs(trks_d0 - other.trks_d0) > 1e-6 * trks_d0)
-	  return false;
-     if (fabs(hyp_lt_pt - other.hyp_lt_pt) > 1e-6 * hyp_lt_pt)
-	  return false;
-     if (fabs(hyp_lt_eta - other.hyp_lt_eta) > 1e-6 * hyp_lt_eta)
-	  return false;
-     if (fabs(hyp_lt_phi - other.hyp_lt_phi) > 1e-6 * hyp_lt_phi)
-	  return false;
-     return true;
-}
-
-static std::set<DorkyEventIdentifier> already_seen;
-bool is_duplicate (const DorkyEventIdentifier &id)
-{
-     std::pair<std::set<DorkyEventIdentifier>::const_iterator, bool> ret = 
-	  already_seen.insert(id);
-     return !ret.second;
-}
 
 // filter events by process
 bool filterByProcess( enum Sample sample ) {
@@ -151,172 +86,6 @@ Hypothesis filterByHypothesis( int candidate ) {
   return MM;
 }
 
-
-// Meson Classification
-
-bool idIsCharm(int id) {
-  id = abs(id);
-  if (
-      id == 4       ||
-      id == 411     ||
-      id == 421     ||
-      id == 10411   ||
-      id == 10421   ||
-      id == 413     ||
-      id == 423     ||
-      id == 10413   ||
-      id == 10423   ||
-      id == 20413   ||
-      id == 20423   ||
-      id == 415     ||
-      id == 425     ||
-      id == 431     ||
-      id == 10431   ||
-      id == 433     ||
-      id == 10433   ||
-      id == 20433   ||
-      id == 435     ||
-      id == 441     ||
-      id == 10441   ||
-      id == 100441  ||
-      id == 443     ||
-      id == 10443   ||
-      id == 20443   ||
-      id == 100443  ||
-      id == 30443   ||
-      id == 9000443 ||
-      id == 9010443 ||
-      id == 9020443 ||
-      id == 445     ||
-      id == 9000445 ||
-      id == 4122    ||
-      id == 4222    ||
-      id == 4212    ||
-      id == 4112    ||
-      id == 4224    ||
-      id == 4214    ||
-      id == 4114    ||
-      id == 4232    ||
-      id == 4132    ||
-      id == 4322    ||
-      id == 4312    ||
-      id == 4324    ||
-      id == 4314    ||
-      id == 4332    ||
-      id == 4334    ||
-      id == 4412    ||
-      id == 4422    ||
-      id == 4414    ||
-      id == 4424    ||
-      id == 4432    ||
-      id == 4434    ||
-      id == 4444
-      ) {
-    return true;
-  }
-  else return false;
-}
-
-bool idIsBeauty(int id) {
-  id = abs(id);
-  if (
-      id == 5       ||
-      id == 511     ||
-      id == 521     ||
-      id == 10511   ||
-      id == 10521   ||
-      id == 513     ||
-      id == 523     ||
-      id == 10513   ||
-      id == 10523   ||
-      id == 20513   ||
-      id == 20523   ||
-      id == 515     ||
-      id == 525     ||
-      id == 531     ||
-      id == 10531   ||
-      id == 533     ||
-      id == 10533   ||
-      id == 20533   ||
-      id == 535     ||
-      id == 541     ||
-      id == 10541   ||
-      id == 543     ||
-      id == 10543   ||
-      id == 20543   ||
-      id == 545     ||
-      id == 551     ||
-      id == 10551   ||
-      id == 100551  ||
-      id == 110551  ||
-      id == 200551  ||
-      id == 210551  ||
-      id == 553     ||
-      id == 10553   ||
-      id == 20553   ||
-      id == 30553   ||
-      id == 100553  ||
-      id == 110553  ||
-      id == 120553  ||
-      id == 130553  ||
-      id == 200553  ||
-      id == 210553  ||
-      id == 220553  ||
-      id == 300553  ||
-      id == 9000553 ||
-      id == 9010553 ||
-      id == 555     ||
-      id == 10555   ||
-      id == 20555   ||
-      id == 100555  ||
-      id == 110555  ||
-      id == 120555  ||
-      id == 200555  ||
-      id == 557     ||
-      id == 100557  ||
-      id == 5122    || 
-      id == 5112    ||
-      id == 5212    ||
-      id == 5222    ||
-      id == 5114    ||
-      id == 5214    ||
-      id == 5224    ||
-      id == 5132    ||
-      id == 5232    ||
-      id == 5312    ||
-      id == 5322    ||
-      id == 5314    ||
-      id == 5324    ||
-      id == 5332    ||
-      id == 5334    ||
-      id == 5142    ||
-      id == 5242    ||
-      id == 5412    ||
-      id == 5422    ||
-      id == 5414    ||
-      id == 5424    ||
-      id == 5342    ||
-      id == 5432    ||
-      id == 5434    ||
-      id == 5442    ||
-      id == 5444    ||
-      id == 5512    ||
-      id == 5522    ||
-      id == 5514    ||
-      id == 5524    ||
-      id == 5532    ||
-      id == 5534    ||
-      id == 5542    ||
-      id == 5544    ||
-      id == 5554 
-      ) {
-    return true;
-  }
-  else return false;
-}
-
-
-
 //  Book histograms...
 //  Naming Convention:
 //  Prefix comes from the sample and it is passed to the scanning function
@@ -362,26 +131,6 @@ struct hypo_monitor{
     
 hypo_monitor monitor;
 
-void checkIsolation(int i_hyp, double weight){
-  // LT
-  if ( abs(cms2.hyp_lt_id()[i_hyp]) == 11 ) { 
-
-  }
-  // LL
-  if ( abs(cms2.hyp_ll_id()[i_hyp]) == 11 ) { 
-
-  }
-}
-
-void getIsolationSidebandsAfterSelections(int i_hyp, double weight, RooDataSet* dataset, bool passedAllLeptonRequirements){
-
-}
-
-void find_most_energetic_jets(int i_hyp, double weight)
-{
-
-}  
-
 void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0) 
 {
   int myType = 99;
@@ -408,6 +157,7 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
      if (cms2.hyp_ll_p4()[i_hyp].pt() < 10.0) return;
      if (max(cms2.hyp_ll_p4()[i_hyp].pt(), cms2.hyp_lt_p4()[i_hyp].pt()) < 20) return;
 
+     monitor.count(icounter++,"Total number of hypothesis after adding lepton pt cut: ");
 
      bool conversion = false;
      bool mischarge = false;
@@ -415,30 +165,26 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
      if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
        int elIndex = cms2.hyp_ll_index()[i_hyp];
        if ( conversionElectron(elIndex)) conversion = true;
-       if ((cms2.els_trkidx().at(elIndex) >= 0) && (cms2.els_charge().at(elIndex) != cms2.trks_charge().at(cms2.els_trkidx().at(elIndex)))) mischarge = true;
+       if ( isChargeFlip(elIndex)) mischarge = true;
      }
 
      if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
        int elIndex = cms2.hyp_lt_index()[i_hyp];
        if ( conversionElectron(elIndex)) conversion = true;
-       if ((cms2.els_trkidx().at(elIndex) >= 0) && (cms2.els_charge().at(elIndex) != cms2.trks_charge().at(cms2.els_trkidx().at(elIndex)))) mischarge = true;
+       if ( isChargeFlip(elIndex)) mischarge = true;
      }
 
      if (conversion) return;
      if (mischarge) return;
 
-
-     monitor.count(icounter++,"Total number of hypothesis after lepton pt and eta cut: ");
+     monitor.count(icounter++,"Total number of hypothesis after adding conversion and chargeflip cuts: ");
 
      // Require opposite sign
      //  if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) return;
      // Same Sign
      if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] < 0 ) return;
 
-     // check electron isolation and id (no selection at this point)
-     // checkIsolation(i_hyp, weight);
-     
-     monitor.count(icounter++,"Total number of hypothesis after lepton pt + z vetos: ");
+     monitor.count(icounter++,"Total number of hypothesis after adding charge cut: ");
      
      bool goodEvent = true;
      bool passedAllLeptonRequirements = true;
@@ -449,6 +195,9 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
      if (!GoodSusyLeptonID(cms2.hyp_ll_id()[i_hyp], cms2.hyp_ll_index()[i_hyp])) passedAllLeptonRequirements = false;
      if (!PassSusyLeptonIsolation(cms2.hyp_ll_id()[i_hyp], cms2.hyp_ll_index()[i_hyp])) passedAllLeptonRequirements = false;
      if (!PassSusyLeptonIsolation(cms2.hyp_lt_id()[i_hyp], cms2.hyp_lt_index()[i_hyp])) passedAllLeptonRequirements = false;
+
+     if ( !passedAllLeptonRequirements ) return;
+     monitor.count(icounter++,"Total number of hypothesis after adding lepton id and isolation, including eta cuts: ");     
 
      // Z mass veto using hyp_leptons for ee and mumu final states
      if (cms2.hyp_type()[i_hyp] == 0 || cms2.hyp_type()[i_hyp] == 3) {
@@ -461,19 +210,7 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
      bool useTcMet = true;
      if (!passMetVJets09(80., useTcMet)) return;
 
-     monitor.count(icounter++,"Total number of hypothesis after lepton pt + z vetos + MET cuts: ");     
-
-     if ( !passedAllLeptonRequirements ) return;
-     if ( additionalZvetoSUSY09(i_hyp)) return;
-
-     monitor.count(icounter++,"Total number of hypothesis after full lepton selection + z vetos + MET cuts: ");
-     
-     if ( ! goodEvent ) return;
-
-     // -------------------------------------------------------------------//
-     // If we made it to here, we passed all cuts and we are ready to fill //
-     // -------------------------------------------------------------------//
-
+     monitor.count(icounter++,"Total number of hypothesis after adding tcmet cut: ");     
 
      calo_jetsp4.clear();
 
@@ -482,19 +219,30 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
      calo_jetsp4 = getCaloJets(i_hyp);
      //    calo_jetsp4 = getJPTJets(i_hyp);
 
-
      for (unsigned int jj=0; jj < calo_jetsp4.size(); ++jj) {
-       if (calo_jetsp4[jj].Et() > etMax_calo) etMax_calo = calo_jetsp4[jj].Et();
-       sumet_calo += calo_jetsp4[jj].Et();
+       if (calo_jetsp4[jj].pt() > etMax_calo) etMax_calo = calo_jetsp4[jj].pt();
+       sumet_calo += calo_jetsp4[jj].pt();
      }
 
      int njets = 0;
      if (calo_jetsp4.size() > 0) njets = calo_jetsp4.size();
      // Final cuts on jets
      if (njets < 1) return;
-     if (calo_jetsp4[0].Et() < 100) return; 
+     if (calo_jetsp4[0].pt() < 100) return; 
      //     if (sumet_calo < 200) return;
      
+     monitor.count(icounter++,"Total number of hypothesis after adding jet cuts: ");
+
+     if ( additionalZvetoSUSY09(i_hyp)) return;
+
+     monitor.count(icounter++,"Total number of hypothesis after adding additionalZvetoSUSY09 cut: ");
+     
+     if ( ! goodEvent ) return;
+
+     // -------------------------------------------------------------------//
+     // If we made it to here, we passed all cuts and we are ready to fill //
+     // -------------------------------------------------------------------//
+
      // Semileptonic top - ala Claudio
      bool chargefake = false;
      bool semilep = false;
@@ -805,9 +553,7 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, bool identifyEvents ) 
 	    if (cms2.trks_d0().size() == 0)
 	      continue;
 	    
-	    DorkyEventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.evt_lumiBlock(), cms2.trks_d0()[0], 
-					cms2.trks_trk_p4()[0].pt(), cms2.trks_trk_p4()[0].eta(), cms2.trks_trk_p4()[0].phi() };
-
+	    DorkyEventIdentifier id(cms2);
 
 	    if (is_duplicate(id)) {
 	      duplicates_total_n++;
