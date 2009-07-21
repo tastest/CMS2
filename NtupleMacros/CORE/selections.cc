@@ -1663,19 +1663,19 @@ int numberOfExtraMuonsSUSY(int i_hyp){
   } 
   return nMuons; 
 } 
-
+//   jets_p4   
 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getCaloJets(int i_hyp) {
   vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > calo_jets;
   calo_jets.clear();
   
-  for (unsigned int jj=0; jj < cms2.jets_pat_jet_p4().size(); ++jj) {
-    if ((dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],cms2.jets_pat_jet_p4()[jj]) < 0.4)||
-	(dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.jets_pat_jet_p4()[jj]) < 0.4)
+  for (unsigned int jj=0; jj < cms2.jets_p4().size(); ++jj) {
+    if ((dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],cms2.jets_p4()[jj]) < 0.4)||
+	(dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.jets_p4()[jj]) < 0.4)
 	) continue;
-    if (cms2.jets_pat_jet_p4()[jj].pt() < 30) continue;
-    if (fabs(cms2.jets_pat_jet_p4()[jj].Eta()) > 2.4) continue;
+    if (cms2.jets_p4()[jj].pt() < 30) continue;
+    if (fabs(cms2.jets_p4()[jj].Eta()) > 2.4) continue;
     //fkw July21 2009 if (cms2.jets_emFrac()[jj] < 0.1) continue;
-    calo_jets.push_back(cms2.jets_pat_jet_p4()[jj]);
+    calo_jets.push_back(cms2.jets_p4()[jj]);
   }
   
   if (calo_jets.size() > 1) {
