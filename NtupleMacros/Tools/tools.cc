@@ -11,10 +11,10 @@
 #include "TList.h"
 #include "TRegexp.h"
 #include "TDirectory.h"
-#include "../CORE/selections.h"
+#include "CORE/selections.h"
 #include "tools.h"
 #include "DileptonHypType.h"
-#include "../CORE/CMS2.h"
+#include "CORE/CMS2.h"
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 
@@ -941,25 +941,36 @@ void correctMETmuons_crossedE(double& met, double& metPhi,
    metPhi = atan2(mety, metx);
 }
 
+DorkyEventIdentifier::DorkyEventIdentifier (CMS2 &cms2)
+     : run(cms2.evt_run()),
+       event(cms2.evt_event()),
+       lumi_section(cms2.evt_lumiBlock()),
+       trks_d0(cms2.trks_d0().at(0)), // use at() because that way we
+				      // get an exception if we are
+				      // out of bounds
+       trks_pt (cms2.trks_trk_p4().at(0).pt()),
+       trks_eta(cms2.trks_trk_p4().at(0).eta()),
+       trks_phi(cms2.trks_trk_p4().at(0).phi())
+{
+     
+}
+
 bool DorkyEventIdentifier::operator < (const DorkyEventIdentifier &other) const
 {
      if (run != other.run)
           return run < other.run;
      if (event != other.event)
           return event < other.event;
-     // the floating point numbers are not easy, because we're                                                                                        
-     // comapring ones that are truncated (because they were written                                                                                  
-     // to file and read back in) with ones that are not truncated.                                                                                   
-     if (TMath::Abs(trks_d0 - other.trks_d0) > 1e-6 * trks_d0)
+     if (lumi_section != other.lumi_section)
+          return lumi_section < other.lumi_section;
+     if (TMath::Abs(trks_d0 - other.trks_d0) > 1e-6 * fabs(trks_d0))
        return trks_d0 < other.trks_d0;
-     if (TMath::Abs(hyp_lt_pt - other.hyp_lt_pt) > 1e-6 * hyp_lt_pt)
-       return hyp_lt_pt < other.hyp_lt_pt;
-     if (TMath::Abs(hyp_lt_eta - other.hyp_lt_eta) > 1e-6 * hyp_lt_eta)
-       return hyp_lt_eta < other.hyp_lt_eta;
-     if (TMath::Abs(hyp_lt_phi - other.hyp_lt_phi) > 1e-6 * hyp_lt_phi)
-       return hyp_lt_phi < other.hyp_lt_phi;
-     // if the records are exactly the same, then r1 is not less than                                                                                 
-     // r2.  Duh!                                                                                                                                     
+     if (TMath::Abs(trks_pt - other.trks_pt) > 1e-6 * fabs(trks_pt))
+       return trks_pt < other.trks_pt;
+     if (TMath::Abs(trks_eta - other.trks_eta) > 1e-6 * fabs(trks_eta))
+       return trks_eta < other.trks_eta;
+     if (TMath::Abs(trks_phi - other.trks_phi) > 1e-6 * fabs(trks_phi))
+       return trks_phi < other.trks_phi;
      return false;
 }
 
@@ -969,16 +980,15 @@ bool DorkyEventIdentifier::operator == (const DorkyEventIdentifier &other) const
           return false;
      if (event != other.event)
           return false;
-     // the floating point numbers are not easy, because we're                                                                                        
-     // comapring ones that are truncated (because they were written                                                                                  
-     // to file and read back in) with ones that are not truncated.                                                                                   
-     if (TMath::Abs(trks_d0 - other.trks_d0) > 1e-6 * trks_d0)
+     if (lumi_section != other.lumi_section)
           return false;
-     if (TMath::Abs(hyp_lt_pt - other.hyp_lt_pt) > 1e-6 * hyp_lt_pt)
+     if (TMath::Abs(trks_d0 - other.trks_d0) > 1e-6 * fabs(trks_d0))
           return false;
-     if (TMath::Abs(hyp_lt_eta - other.hyp_lt_eta) > 1e-6 * hyp_lt_eta)
+     if (TMath::Abs(trks_pt - other.trks_pt) > 1e-6 * fabs(trks_pt))
           return false;
-     if (TMath::Abs(hyp_lt_phi - other.hyp_lt_phi) > 1e-6 * hyp_lt_phi)
+     if (TMath::Abs(trks_eta - other.trks_eta) > 1e-6 * fabs(trks_eta))
+          return false;
+     if (TMath::Abs(trks_phi - other.trks_phi) > 1e-6 * fabs(trks_phi))
           return false;
      return true;
 }

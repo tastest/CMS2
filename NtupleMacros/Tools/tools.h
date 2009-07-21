@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <vector>
 #include <set>
-#include "../CORE/selections.h"
+#include "CORE/selections.h"
 #include "Math/VectorUtil.h"
 
 using std::vector;
@@ -36,9 +36,10 @@ TString printCand(int bucket, int first, int second, int third);
 
 struct DorkyEventIdentifier {
      // this is a workaround for not having unique event id's in MC 
-     unsigned long int run, event;
+     DorkyEventIdentifier (class CMS2 &cms2);
+     unsigned long int run, event, lumi_section;
      float trks_d0;
-     float hyp_lt_pt, hyp_lt_eta, hyp_lt_phi;
+     float trks_pt, trks_eta, trks_phi;
      bool operator < (const DorkyEventIdentifier &) const;
      bool operator == (const DorkyEventIdentifier &) const;
 };
