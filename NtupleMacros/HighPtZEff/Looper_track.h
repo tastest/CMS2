@@ -104,6 +104,7 @@ protected:
 
   TH1F* e_hcal_iso;
   TH1F* e_ecal_iso;
+  TH1F* e_ecal_iso_bare[2];
   TH1F* e_trck_iso;
   //TH1F* e_trck_iso_match015;
   TH1F* e_trck_iso_recalc;
@@ -114,34 +115,41 @@ protected:
   TH1F* e_ecal_iso_dr05_1;
   TH1F* e_trck_iso_dr05_1;
 
-  //eff versus dr btwn two stat1 leps
+  //individual eff versus dr btwn two stat1 leps
   EffH1F* eff_edr_hcal_iso[2];
   EffH1F* eff_edr_ecal_iso[2];
+  EffH1F* eff_edr_ecal_iso_soft[2];
+  EffH1F* eff_edr_ecal_iso_subt[2];
   EffH1F* eff_edr_trck_iso[2];
   EffH1F* eff_edr_trck_iso_recalc[2];
   EffH1F* eff_edr_trck_iso_affble[2];
-  //EffH1F* eff_edr_hcal_iso_dr05_1[2];
-  //EffH1F* eff_edr_ecal_iso_dr05_1[2];
-  //EffH1F* eff_edr_trck_iso_dr05_1[2];
-  //EffH1F* eff_edr_trck_iso_recalc_dr05_1[2];
-  //EffH1F* eff_edr_trck_iso_affble_dr05_1[2];
+
   //pair
   EffH1F* eff_edr_hcal_iso_pair;
   EffH1F* eff_edr_ecal_iso_pair;
   EffH1F* eff_edr_trck_iso_pair;
   EffH1F* eff_edr_trck_iso_recalc_pair;
   EffH1F* eff_edr_trck_iso_affble_pair;
-  //EffH1F* eff_edr_hcal_iso_dr05_1_pair;
-  //EffH1F* eff_edr_ecal_iso_dr05_1_pair;
-  //EffH1F* eff_edr_trck_iso_dr05_1_pair;
-  //EffH1F* eff_edr_trck_iso_recalc_dr05_1_pair;
-  //EffH1F* eff_edr_trck_iso_affble_dr05_1_pair;
-  
+
+  //separate barrel and endcap
+  //EffH1F* eff_edr_ecal_iso_bb[2]; //both barrel
+  //EffH1F* eff_edr_ecal_iso_be[2]; //1 barrel, 1 endcap
+  //EffH1F* eff_edr_ecal_iso_ee[2]; //both endcap
+  #define etaregions 3
+  EffH1F* eff_edr_ecal_iso_reg[2][etaregions]; //bb = 0, be = 1, ee = 2
+
+  //njet distribution
+  TH1F* e_njets;
+  TH1F* e_njets_clean; //cleaned for dR matched electrons
+  //individual eff versus dr for njet bins
+  #define njetbins 5 //5 bins are 0,1,2,3,>3
+  EffH1F* eff_edr_ecal_iso_njet[2][njetbins];
 
 protected:
 
   bool useweight;
   double weight;
+  int numprint; //keep track of number of printed events
   
   // count the (weighted and unweighted) number of candidates passing our cuts
   double		cands_passing_[4];

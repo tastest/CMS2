@@ -1,4 +1,7 @@
 #include <math.h>
+#include <algorithm>
+#include "Math/LorentzVector.h"
+//#include "DataFormats/Math/interface/LorentzVector.h" //for cmssw....
 #include "TVector3.h"
 #include "CORE/selections.h"
 #include "CORE/utilities.h"
@@ -8,6 +11,9 @@
 #include "Looper.h"
 #include "/home/users/wandrews/macros/comparison.C"
 
+//typedef math::XYZTLorentzVector LorentzVector; //for cmssw...
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
+
 //Looper::Looper (Sample s, cuts_t c, const char *fname) 
 //     : LooperBase(s, c, fname)
 //{
@@ -15,6 +21,7 @@ Looper::Looper (Sample s, cuts_t c, const char *fname, bool usew)
   : LooperBase(s, c, fname)
 {
   useweight = usew;
+  numprint = 0;
 
   // zero out the candidate counters (don't comment this out)
   memset(cands_passing_	, 0, sizeof(cands_passing_       ));
@@ -29,6 +36,9 @@ void Looper::BookHistos ()
   e_hcal_iso = new TH1F( Form("%s_e_hcal_iso", SampleName().c_str()), Form("%s_e_hcal_iso", SampleName().c_str()), isobins, 0, isomax );
   e_hcal_iso_dr05_1 = new TH1F( Form("%s_e_hcal_iso_dr05_1", SampleName().c_str()), Form("%s_e_hcal_iso_dr05_1", SampleName().c_str()), isobins, 0, isomax );
   e_ecal_iso = new TH1F( Form("%s_e_ecal_iso", SampleName().c_str()), Form("%s_e_ecal_iso", SampleName().c_str()), isobins, 0, isomax );
+  for(int i=0;i<2;i++){
+	e_ecal_iso_bare[i] = new TH1F( Form("%s_e%i_ecal_iso_bare", SampleName().c_str(),i+1), Form("%s_e%i_ecal_iso_bare", SampleName().c_str(),i+1), 100, 0, 20 );
+  }
   e_ecal_iso_dr05_1 = new TH1F( Form("%s_e_ecal_iso_dr05_1", SampleName().c_str()), Form("%s_e_ecal_iso_dr05_1", SampleName().c_str()), isobins, 0, isomax );
   e_trck_iso = new TH1F( Form("%s_e_trck_iso", SampleName().c_str()), Form("%s_e_trck_iso", SampleName().c_str()), isobins, 0, isomax );
   e_trck_iso_dr05_1 = new TH1F( Form("%s_e_trck_iso_dr05_1", SampleName().c_str()), Form("%s_e_trck_iso_dr05_1", SampleName().c_str()), isobins, 0, isomax );
@@ -38,21 +48,28 @@ void Looper::BookHistos ()
   e_trck_iso_affble_dr05_1 = new TH1F( Form("%s_e_trck_iso_affable_dr05_1", SampleName().c_str()), Form("%s_e_trck_iso_affable_dr05_1", SampleName().c_str()), isobins, 0, isomax );
   //e_trck_iso_match015 = new TH1F( Form("%s_e_trck_iso_match015", SampleName().c_str()), Form("%s_e_trck_iso_match015", SampleName().c_str()), isobins, 0, isomax );
 
+  string etaregname[etaregions];
+  etaregname[0] = "bb";
+  etaregname[1] = "be";
+  etaregname[2] = "ee";
+
   double drmax = 3.5;
   int drbins = int(drmax/0.05); // bin width = 0.05, was 0.1
   //INDIVIDUAL--SEPARATELY FOR LEADING AND SUBLEADING
   for( int i=0; i<2; i++ ) {
 	eff_edr_hcal_iso[i] = new EffH1F( Form("%s_e%i_drstat1_hcal_iso", SampleName().c_str(), i+1), Form("%s_e%i_drstat1_hcal_iso", SampleName().c_str(), i+1), drbins, 0, drmax );
 	eff_edr_ecal_iso[i] = new EffH1F( Form("%s_e%i_drstat1_ecal_iso", SampleName().c_str(), i+1), Form("%s_e%i_drstat1_ecal_iso", SampleName().c_str(), i+1), drbins, 0, drmax );
+	eff_edr_ecal_iso_soft[i] = new EffH1F( Form("%s_e%i_drstat1_ecal_iso_soft", SampleName().c_str(), i+1), Form("%s_e%i_drstat1_ecal_iso_soft", SampleName().c_str(), i+1), drbins, 0, drmax );
+	eff_edr_ecal_iso_subt[i] = new EffH1F( Form("%s_e%i_drstat1_ecal_iso_subt", SampleName().c_str(), i+1), Form("%s_e%i_drstat1_ecal_iso_subt", SampleName().c_str(), i+1), drbins, 0, drmax );
 	eff_edr_trck_iso[i] = new EffH1F( Form("%s_e%i_drstat1_trck_iso", SampleName().c_str(), i+1), Form("%s_e%i_drstat1_trck_iso", SampleName().c_str(), i+1), drbins, 0, drmax );
 	eff_edr_trck_iso_recalc[i] = new EffH1F( Form("%s_e%i_drstat1_trck_iso_recalc", SampleName().c_str(), i+1), Form("%s_e%i_drstat1_trck_iso_recalc", SampleName().c_str(), i+1), drbins, 0, drmax );
 	eff_edr_trck_iso_affble[i] = new EffH1F( Form("%s_e%i_drstat1_trck_iso_affable", SampleName().c_str(), i+1), Form("%s_e%i_drstat1_trck_iso_affable", SampleName().c_str(), i+1), drbins, 0, drmax );
-	//ONLY IN DR RANGE 0.5 TO 1
-	//eff_edr_hcal_iso_dr05_1[i] = new EffH1F( Form("%s_e%i_drstat1_hcal_iso_dr05_1", SampleName().c_str(), i+1), Form("%s_e%i_drstat1_hcal_iso_dr05_1", SampleName().c_str(), i+1), drbins, 0, drmax );
-	//eff_edr_ecal_iso_dr05_1[i] = new EffH1F( Form("%s_e%i_drstat1_ecal_iso_dr05_1", SampleName().c_str(), i+1), Form("%s_e%i_drstat1_ecal_iso_dr05_1", SampleName().c_str(), i+1), drbins, 0, drmax );
-	//eff_edr_trck_iso_dr05_1[i] = new EffH1F( Form("%s_e%i_drstat1_trck_iso_dr05_1", SampleName().c_str(), i+1), Form("%s_e%i_drstat1_trck_iso_dr05_1", SampleName().c_str(), i+1), drbins, 0, drmax );
-	//eff_edr_trck_iso_recalc_dr05_1[i] = new EffH1F( Form("%s_e%i_drstat1_trck_iso_recalc_dr05_1", SampleName().c_str(), i+1), Form("%s_e%i_drstat1_trck_iso_recalc_dr05_1", SampleName().c_str(), i+1), drbins, 0, drmax );
-	//eff_edr_trck_iso_affble_dr05_1[i] = new EffH1F( Form("%s_e%i_drstat1_trck_iso_affable_dr05_1", SampleName().c_str(), i+1), Form("%s_e%i_drstat1_trck_iso_affable_dr05_1", SampleName().c_str(), i+1), drbins, 0, drmax );
+	//eff_edr_ecal_iso_bb[i] = new EffH1F( Form("%s_e%i_drstat1_ecal_iso_bb", SampleName().c_str(), i+1), Form("%s_e%i_drstat1_ecal_iso", SampleName().c_str(), i+1), drbins, 0, drmax );
+	//eff_edr_ecal_iso_be[i] = new EffH1F( Form("%s_e%i_drstat1_ecal_iso_be", SampleName().c_str(), i+1), Form("%s_e%i_drstat1_ecal_iso", SampleName().c_str(), i+1), drbins, 0, drmax );
+	//eff_edr_ecal_iso_ee[i] = new EffH1F( Form("%s_e%i_drstat1_ecal_iso_ee", SampleName().c_str(), i+1), Form("%s_e%i_drstat1_ecal_iso", SampleName().c_str(), i+1), drbins, 0, drmax );
+	for( int j=0; j<etaregions; j++ ) {
+	  eff_edr_ecal_iso_reg[i][j] = new EffH1F( Form("%s_e%i_drstat1_ecal_iso_%s", SampleName().c_str(), i+1, etaregname[j].c_str()), Form("%s_e%i_drstat1_ecal_iso_%s", SampleName().c_str(), i+1, etaregname[j].c_str()), drbins, 0, drmax );
+	}
   }
   //BOTH ELS HAVE TO BE ISOLATED FOR NUMERATOR (PAIR)
   eff_edr_hcal_iso_pair = new EffH1F( Form("%s_e_drstat1_hcal_iso_pair", SampleName().c_str()), Form("%s_e_drstat1_hcal_iso_pair", SampleName().c_str()), drbins, 0, drmax );
@@ -60,13 +77,25 @@ void Looper::BookHistos ()
   eff_edr_trck_iso_pair = new EffH1F( Form("%s_e_drstat1_trck_iso_pair", SampleName().c_str()), Form("%s_e_drstat1_trck_iso_pair", SampleName().c_str()), drbins, 0, drmax );
   eff_edr_trck_iso_recalc_pair = new EffH1F( Form("%s_e_drstat1_trck_iso_recalc_pair", SampleName().c_str()), Form("%s_e_drstat1_trck_iso_recalc_pair", SampleName().c_str()), drbins, 0, drmax );
   eff_edr_trck_iso_affble_pair = new EffH1F( Form("%s_e_drstat1_trck_iso_affable_pair", SampleName().c_str()), Form("%s_e_drstat1_trck_iso_affable_pair", SampleName().c_str()), drbins, 0, drmax );
-  //ONLY IN DR RANGE 0.5 TO 1
-  //eff_edr_hcal_iso_dr05_1_pair = new EffH1F( Form("%s_e_drstat1_hcal_iso_dr05_1_pair", SampleName().c_str()), Form("%s_e_drstat1_hcal_iso_dr05_1_pair", SampleName().c_str()), drbins, 0, drmax );
-  //eff_edr_ecal_iso_dr05_1_pair = new EffH1F( Form("%s_e_drstat1_ecal_iso_dr05_1_pair", SampleName().c_str()), Form("%s_e_drstat1_ecal_iso_dr05_1_pair", SampleName().c_str()), drbins, 0, drmax );
-  //eff_edr_trck_iso_dr05_1_pair = new EffH1F( Form("%s_e_drstat1_trck_iso_dr05_1_pair", SampleName().c_str()), Form("%s_e_drstat1_trck_iso_dr05_1_pair", SampleName().c_str()), drbins, 0, drmax );
-  //eff_edr_trck_iso_recalc_dr05_1_pair = new EffH1F( Form("%s_e_drstat1_trck_iso_recalc_dr05_1_pair", SampleName().c_str()), Form("%s_e_drstat1_trck_iso_recalc_dr05_1_pair", SampleName().c_str()), drbins, 0, drmax );
-  //eff_edr_trck_iso_affble_dr05_1_pair = new EffH1F( Form("%s_e_drstat1_trck_iso_affable_dr05_1_pair", SampleName().c_str()), Form("%s_e_drstat1_trck_iso_affable_dr05_1_pair", SampleName().c_str()), drbins, 0, drmax );
-  
+
+  int njetdistbins = 9; //for plotting njets, not iso
+  e_njets = new TH1F( Form("%s_njets", SampleName().c_str()), Form("%s_njets", SampleName().c_str()), njetdistbins, 0, njetdistbins );
+  e_njets->Sumw2();
+  e_njets_clean = new TH1F( Form("%s_njets_clean", SampleName().c_str()), Form("%s_njets_clean", SampleName().c_str()), njetdistbins, 0, njetdistbins );
+  e_njets_clean->Sumw2();
+  for( int i=0; i<2; i++ ) {
+	for( int j=0; j<njetbins; j++ ) {
+	  eff_edr_ecal_iso_njet[i][j] = new EffH1F( Form("%s_e%i_drstat1_ecal_iso_njet_%i", SampleName().c_str(), i+1, j), Form("%s_e%i_drstat1_ecal_iso_njet_%i", SampleName().c_str(), i+1, j), drbins, 0, drmax );
+	}
+  }
+
+
+  //print header for printing of evt and iso info
+  //else if( i == 1 && ftrcknumer && strcknumer && fecalnumer ) //first passed both ecal+trck, second passed trck, failed ecal
+  //cout << SampleName().c_str() << "   " << cms2.evt_run() << "   "
+  //<< cms2.evt_event() << "   " << cms2.evt_lumiBlock() << "   "
+  //<< ecaliso[i] << endl;
+  cout << "sample\t\t\tRun\tevent\tlumi\tecaliso2\n\n";
 }
 
 
@@ -95,6 +124,8 @@ cuts_t Looper::Stat1Select(vector<int> idx) {
 
   if( cms2.genps_lepdaughter_p4()[idx[0]].pt() > 20. &&
 	  cms2.genps_lepdaughter_p4()[idx[1]].pt() > 20. )
+  //if( cms2.genps_lepdaughter_p4()[idx[0]].pt() > 60. &&
+  //cms2.genps_lepdaughter_p4()[idx[1]].pt() > 60. )
 	ret |= CUT_BIT(CUT_PT20);
 
   double mass = ( cms2.genps_lepdaughter_p4()[idx[0]] + cms2.genps_lepdaughter_p4()[idx[1]] ).M();
@@ -174,8 +205,8 @@ double track_iso(int els_idx) {
   return isolation;
 }
 
-//improve upon pat track isolation (hopefully)
-double track_iso_affable(int eidx_pri, int eidx_sec) {
+//improve upon pat track isolation--old algorithm uses index in els block
+double track_iso_affable_old(int eidx_pri, int eidx_sec) {
   //input is index of both electrons in els block
   //return is the sum of the pt of all tracks in the range 0.015 < dR < 0.3 around the els, and this time, exclude cone around both els
 
@@ -191,6 +222,43 @@ double track_iso_affable(int eidx_pri, int eidx_sec) {
 	  cout << "\teidx_sec out of bounds  " << eidx_sec << "  " << cms2.els_p4In().size() << "   " << dR2 << endl;
 	if( dR1 > 0.015 && dR1 < 0.3 && dR2 > 0.015 )
 	  isolation += cms2.trks_trk_p4()[i].pt();
+  }
+
+  return isolation;
+}
+
+//new affable algorithm corrects for all electrons passing certain cuts
+//for now, these cuts are hard-coded to be same as what i did for ecal iso:
+// pt > 15, H/E < 0.1
+double track_iso_affable(int eidx_pri) {
+  //input is index of both electrons in els block
+  //return is the sum of the pt of all tracks in the range 0.015 < dR < 0.3 around the els, and this time, exclude cone around both els
+
+  vector<LorentzVector> els_p4_cln;
+  for( unsigned int i=0; i<cms2.els_p4().size(); i++ ) {
+	if( cms2.els_p4()[i].pt() > 15 && cms2.els_hOverE()[i] < 0.1 )
+	  els_p4_cln.push_back( cms2.els_p4()[i] );
+  }
+  
+  double isolation = 0;
+  for( unsigned int i=0; i<cms2.trks_trk_p4().size(); i++ ) {
+	//cuts on track quality
+	if( cms2.trks_trk_p4()[i].pt() <= 1.0 )
+	  continue;
+
+	double dR1 = ROOT::Math::VectorUtil::DeltaR( cms2.els_p4In()[eidx_pri], cms2.trks_trk_p4()[i] );
+	bool exclude = false;
+	for( unsigned int j=0; j < els_p4_cln.size(); j++ ) {
+	  double dR2 = ROOT::Math::VectorUtil::DeltaR( els_p4_cln[j], cms2.trks_trk_p4()[i] );
+
+	  if( ((dR1 < 0.015 || dR2 < 0.015) && dR1 < 0.3) || dR1 > 0.3 ) {
+		exclude = true;
+		break;
+	  }
+	  //MAKE SURE THIS ALGO IS RIGHT
+	}
+	if( exclude ) continue;
+	isolation += cms2.trks_trk_p4()[i].pt();
   }
 
   return isolation;
@@ -248,37 +316,40 @@ void Looper::FillEventHistos ()
 	return; //don't do anything if don't pass stat1cuts, just because i defined the denominator this way--should not bias results
   }
   //count[0].denom += weight;
-  double drstat1 = abs( ROOT::Math::VectorUtil::DeltaR(cms2.genps_lepdaughter_p4()[idxlep1[0]], cms2.genps_lepdaughter_p4()[idxlep1[1]]) );
+  const double drstat1 = ROOT::Math::VectorUtil::DeltaR(cms2.genps_lepdaughter_p4()[idxlep1[0]], cms2.genps_lepdaughter_p4()[idxlep1[1]]) ;
+  const double ptstat1[2] = { cms2.genps_lepdaughter_p4()[idxlep1[0]].pt(), cms2.genps_lepdaughter_p4()[idxlep1[1]].pt() };
   //bool drstat1_05_1 = false;
+  e_njets->Fill( cms2.evt_njets(), weight );
+  double eta0 = fabs( cms2.genps_lepdaughter_p4()[idxlep1[0]].eta() );
+  double eta1 = fabs( cms2.genps_lepdaughter_p4()[idxlep1[1]].eta() );
 
+  int etareg = -999; //bb = 0, be = 1, ee = 2
+  if( eta0 < 1.479 && eta1 < 1.479 )
+	etareg = 0;
+  else if( (eta0 < 1.479 && eta1 > 1.479) || (eta0 > 1.479 && eta1 < 1.479 ) )
+	etareg = 1;
+  else if( eta0 > 1.479 && eta1 > 1.479 )
+	etareg = 2;
+  else
+	cout << "\n\nBad etareg value. Check eta.\n\n";
+  
   //fill denom histos here
   //individual--fill each
   for( int i=0;i<2;i++ ){
 	eff_edr_hcal_iso[i]->denom->Fill( drstat1, weight );
 	eff_edr_ecal_iso[i]->denom->Fill( drstat1, weight );
+	eff_edr_ecal_iso_soft[i]->denom->Fill( drstat1, weight );
+	eff_edr_ecal_iso_subt[i]->denom->Fill( drstat1, weight );
 	eff_edr_trck_iso[i]->denom->Fill( drstat1, weight );
 	eff_edr_trck_iso_recalc[i]->denom->Fill( drstat1, weight );
 	eff_edr_trck_iso_affble[i]->denom->Fill( drstat1, weight );
-	//if( drstat1 >= 0.5 && drstat1 <= 1.0 ) {
-	//  eff_edr_hcal_iso_dr05_1[i]->denom->Fill( drstat1, weight );
-	//  eff_edr_ecal_iso_dr05_1[i]->denom->Fill( drstat1, weight );
-	//  eff_edr_trck_iso_dr05_1[i]->denom->Fill( drstat1, weight );
-	//  eff_edr_trck_iso_recalc_dr05_1[i]->denom->Fill( drstat1, weight );
-	//  eff_edr_trck_iso_affble_dr05_1[i]->denom->Fill( drstat1, weight );
-	//}
+	eff_edr_ecal_iso_reg[i][etareg]->denom->Fill( drstat1, weight ); 
   }
   eff_edr_hcal_iso_pair->denom->Fill( drstat1, weight );
   eff_edr_ecal_iso_pair->denom->Fill( drstat1, weight );
   eff_edr_trck_iso_pair->denom->Fill( drstat1, weight );
   eff_edr_trck_iso_recalc_pair->denom->Fill( drstat1, weight );
   eff_edr_trck_iso_affble_pair->denom->Fill( drstat1, weight );
-  //if( drstat1 >= 0.5 && drstat1 <= 1.0 ) {
-  //	eff_edr_hcal_iso_dr05_1_pair->denom->Fill( drstat1, weight );
-  //	eff_edr_ecal_iso_dr05_1_pair->denom->Fill( drstat1, weight );
-  //	eff_edr_trck_iso_dr05_1_pair->denom->Fill( drstat1, weight );
-  //	eff_edr_trck_iso_recalc_dr05_1_pair->denom->Fill( drstat1, weight );
-  //	eff_edr_trck_iso_affble_dr05_1_pair->denom->Fill( drstat1, weight );
-  //}
 
   // dr matching
   //cout << "dr matching\n";
@@ -305,6 +376,7 @@ void Looper::FillEventHistos ()
   //cuts_t e_reco_cuts[2] = {0,0};
   double hcaliso[2] = {0,0};
   double ecaliso[2] = {0,0};
+  double ecaliso_subt[2] = {0,0};
   double trckiso[2] = {0,0};
   double trckiso_calc[2] = {0,0};
   double trckiso_affa[2] = {0,0};
@@ -315,15 +387,19 @@ void Looper::FillEventHistos ()
 	  //return pt / (pt + sum + 1e-5); //from selections.cc
 	  hcaliso[i] = pt/(pt + cms2.els_pat_hcalIso().at(idxlepreco[i]) );
 	  ecaliso[i] = pt/(pt + cms2.els_pat_ecalIso().at(idxlepreco[i]) );
+	  ecaliso_subt[i] = pt/(pt + max(cms2.els_pat_ecalIso().at(idxlepreco[i])-2.0, 0.0) );
 	  trckiso[i] = pt/(pt + cms2.els_pat_trackIso().at(idxlepreco[i]) );
 	  trckiso_calc[i] = pt/(pt + track_iso(idxlepreco[i]) );
+	  trckiso_affa[i] = pt/(pt + track_iso_affable(idxlepreco[i]) ); //new one excludes all els (see above)
+	  //This is for old algorithm only
 	  //must check that the OTHER index is found, and in cone. If not, isolation is same as recalc
-	  if( idxlepreco[ i==0?1:0 ] > cms2.els_p4().size() || min_dr[ i==0?1:0 ] > maxcone ) {
-		//cout << "IDXLEPRECO OUT OF BOUNDS   " << idxlepreco[ i==0?1:0 ] << endl;
-		trckiso_affa[i] = trckiso_calc[i];
-	  }
-	  else //index is ok
-		trckiso_affa[i] = pt/(pt + track_iso_affable(idxlepreco[i], idxlepreco[ i==0?1:0 ]) );
+	  //if( idxlepreco[ i==0?1:0 ] > cms2.els_p4().size() || min_dr[ i==0?1:0 ] > maxcone ) {
+	  //	//cout << "IDXLEPRECO OUT OF BOUNDS   " << idxlepreco[ i==0?1:0 ] << endl;
+	  //	trckiso_affa[i] = trckiso_calc[i];
+	  //}
+	  //else { //index is ok
+	  //	trckiso_affa[i] = pt/(pt + track_iso_affable_old(idxlepreco[i], idxlepreco[ i==0?1:0 ]) ); //old one just excludes dR matched
+	  //}
 	  
 	  e_hcal_iso->Fill( hcaliso[i], weight );
 	  e_ecal_iso->Fill( ecaliso[i], weight );
@@ -348,44 +424,90 @@ void Looper::FillEventHistos ()
 	}
   }
 
-  //only require dR and individual iso
-  //e_reco_cuts[0] |= LepSelect(idxlepreco[0],0); //second arg is for flavor, el = 0
-  //e_reco_cuts[1] |= LepSelect(idxlepreco[1],0);
+  //clean jets
+  int jetsize = cms2.evt_njets();
+  for( unsigned int i=0; i<2; i++ ) { //loop over 2 electrons
+	if( min_dr[i] > maxcone ) continue; //only clean jets for dR matched els
 
+	for( unsigned int j=0; j<cms2.jets_p4().size(); j++ ) { //using 0.4 to match b'c it's jet cone size
+	  if( ROOT::Math::VectorUtil::DeltaR(cms2.els_p4()[idxlepreco[i]], cms2.jets_p4()[j]) < 0.4 ) { 
+		jetsize--;
+		break; //only allow each el to match to at most 1 jet
+	  }
+	}
+  }
+  e_njets_clean->Fill( jetsize, weight );
+
+  //cuts_t iso_cut = ( CUT_BIT(CUT_EL_DR) | CUT_BIT(CUT_EL_ISO) ); 
+  //if( (e_reco_cuts[0] & e_reco_cuts[1] & iso_cut) == iso_cut ) {
   //fill iso
   //define iso cuts: values taken from output of below
   double hcalcut = 0.985;
   double ecalcut = 0.95;
   double trckcut = 0.99;
-  //cuts_t iso_cut = ( CUT_BIT(CUT_EL_DR) | CUT_BIT(CUT_EL_ISO) ); 
-  //if( (e_reco_cuts[0] & e_reco_cuts[1] & iso_cut) == iso_cut ) {
+
+  //njet bin efficiencies
+  int jetbin = jetsize;
+  if( jetsize >= (njetbins-1) ) jetbin = (njetbins-1); //this is maximum bin: njetbins = 5
+
+  for( unsigned int i=0; i<2; i++ ) {
+	eff_edr_ecal_iso_njet[i][jetbin]->denom->Fill( drstat1, weight );
+	if( min_dr[i] < maxcone && ecaliso[i] > ecalcut ) { //numerator
+	  eff_edr_ecal_iso_njet[i][jetbin]->numer->Fill( drstat1, weight );
+	  eff_edr_ecal_iso_reg[i][etareg]->numer->Fill( drstat1, weight );
+	}
+  }
+
+  //bools for selecting events from event display--just care about
+  bool ftrcknumer = false; //first passed track numer
+  bool fecalnumer = false; //first passed ecal numer
+  bool strcknumer = false; //second passed track numer
+  //bool secalmatch = false; //second passed dr match -- no need b'c already have if for it
 
   //INDIVIDUAL EFFICIENCY
   for( int i=0;i<2;i++ ) {
 	if( min_dr[i] < maxcone ) {
 	  if( hcaliso[i] > hcalcut ) {
 		eff_edr_hcal_iso[i]->numer->Fill( drstat1, weight );
-		//if( drstat1_05_1 ) eff_edr_hcal_iso_dr05_1[i]->numer->Fill( drstat1, weight );
-	  }
-
-	  if( ecaliso[i] > ecalcut ) {
-		eff_edr_ecal_iso[i]->numer->Fill( drstat1, weight );
-		//if( drstat1_05_1 ) eff_edr_ecal_iso_dr05_1[i]->numer->Fill( drstat1, weight );
 	  }
 
 	  if( trckiso[i] > trckcut ) {
 		eff_edr_trck_iso[i]->numer->Fill( drstat1, weight );
-		//if( drstat1_05_1 ) eff_edr_trck_iso_dr05_1[i]->numer->Fill( drstat1, weight );
+		//plot the ecal iso variable here (not as ratio)--for those that pass track to see if pedestal
+		e_ecal_iso_bare[i]->Fill( cms2.els_pat_ecalIso().at(idxlepreco[i]), weight );
+		if( i==0 ) ftrcknumer = true;
+		else if( i == 1 ) strcknumer = true;
+	  }
+
+	  if( (ecaliso[i] > ecalcut && ptstat1[i] > 60) || (cms2.els_pat_ecalIso().at(idxlepreco[i]) < 3 && ptstat1[i] <= 60) ) {
+		eff_edr_ecal_iso_soft[i]->numer->Fill( drstat1, weight );
+	  }
+	  
+	  if( ecaliso_subt[i] > ecalcut ) {
+		eff_edr_ecal_iso_subt[i]->numer->Fill( drstat1, weight );
+	  }
+	  
+	  if( ecaliso[i] > ecalcut ) {
+		eff_edr_ecal_iso[i]->numer->Fill( drstat1, weight );
+		if( i==0 ) fecalnumer = true;
+	  }
+	  //first passed both ecal+trck, second passed trck, failed ecal
+	  else if( i == 1 && ftrcknumer && strcknumer && fecalnumer ) {
+		if( numprint < 200 ) {
+		  //cout << SampleName().c_str() << "   " << cms2.evt_run() << "   "
+		  //cout << cms2.evt_run() << "   "
+		  //   << cms2.evt_event() << "   " << cms2.evt_lumiBlock() << endl;
+		  //<< "   " << ecaliso[i] << endl;
+		}
+		numprint++;
 	  }
 	
 	  if( trckiso_calc[i] > trckcut ) {
 		eff_edr_trck_iso_recalc[i]->numer->Fill( drstat1, weight );
-		//if( drstat1_05_1 ) eff_edr_trck_iso_recalc_dr05_1[i]->numer->Fill( drstat1, weight );
 	  }
 
 	  if( trckiso_affa[i] > trckcut ) {
 		eff_edr_trck_iso_affble[i]->numer->Fill( drstat1, weight );
-		//if( drstat1_05_1 ) eff_edr_trck_iso_affble_dr05_1[i]->numer->Fill( drstat1, weight );
 	  }
 	}
   }
@@ -394,27 +516,22 @@ void Looper::FillEventHistos ()
   if( min_dr[0] < maxcone && min_dr[1] < maxcone ) {
 	if( hcaliso[0] > hcalcut && hcaliso[1] > hcalcut ) {
 	  eff_edr_hcal_iso_pair->numer->Fill( drstat1, weight );
-	  //if( drstat1_05_1 ) eff_edr_hcal_iso_dr05_1_pair->numer->Fill( drstat1, weight );
 	}
 
 	if( ecaliso[0] > ecalcut && ecaliso[1] > ecalcut ) {
 	  eff_edr_ecal_iso_pair->numer->Fill( drstat1, weight );
-	  //if( drstat1_05_1 ) eff_edr_ecal_iso_dr05_1_pair->numer->Fill( drstat1, weight );
 	}
 
 	if( trckiso[0] > trckcut && trckiso[1] > trckcut ) {
 	  eff_edr_trck_iso_pair->numer->Fill( drstat1, weight );
-	  //if( drstat1_05_1 ) eff_edr_trck_iso_dr05_1_pair->numer->Fill( drstat1, weight );
 	}
 	
 	if( trckiso_calc[0] > trckcut && trckiso_calc[1] > trckcut ) {
 	  eff_edr_trck_iso_recalc_pair->numer->Fill( drstat1, weight );
-	  //if( drstat1_05_1 ) eff_edr_trck_iso_recalc_dr05_1_pair->numer->Fill( drstat1, weight );
 	}
 
 	if( trckiso_affa[0] > trckcut && trckiso_affa[1] > trckcut ) {
 	  eff_edr_trck_iso_affble_pair->numer->Fill( drstat1, weight );
-	  //if( drstat1_05_1 ) eff_edr_trck_iso_affble_dr05_1_pair->numer->Fill( drstat1, weight );
 	}
   }
 
@@ -443,6 +560,8 @@ double get_90_bin_highedge(TH1F* hist) {
 
 void Looper::End ()
 {
+  cout << "\n\nNumber lines passed print:  " << numprint << "\n\n";
+
 
   TCanvas *c1 = new TCanvas();// eff->GetName(), eff->GetName());
 
@@ -462,18 +581,21 @@ void Looper::End ()
   e_trck_iso_affble->Draw(); c1->SaveAs((TString)e_trck_iso_affble->GetName()+".png");
   e_trck_iso_affble_dr05_1->Draw(); c1->SaveAs((TString)e_trck_iso_affble_dr05_1->GetName()+".png");
 
+  e_njets->Draw(); c1->SaveAs((TString)e_njets->GetName()+".png");
+  e_njets_clean->Draw(); c1->SaveAs((TString)e_njets_clean->GetName()+".png");
+
+  e_ecal_iso_bare[0]->Draw(); c1->SaveAs((TString)e_ecal_iso_bare[0]->GetName()+".png");
+  e_ecal_iso_bare[1]->Draw(); c1->SaveAs((TString)e_ecal_iso_bare[1]->GetName()+".png");
+
   //individual
   for( int i=0;i<2;i++ ) {
 	eff_edr_hcal_iso[i]->MakeEff( );
 	eff_edr_ecal_iso[i]->MakeEff( );
+	eff_edr_ecal_iso_soft[i]->MakeEff();
+	eff_edr_ecal_iso_subt[i]->MakeEff();
 	eff_edr_trck_iso[i]->MakeEff( );
 	eff_edr_trck_iso_recalc[i]->MakeEff( );
 	eff_edr_trck_iso_affble[i]->MakeEff( );
-	//eff_edr_hcal_iso_dr05_1[i]->MakeEff( );
-	//eff_edr_ecal_iso_dr05_1[i]->MakeEff( );
-	//eff_edr_trck_iso_dr05_1[i]->MakeEff( );
-	//eff_edr_trck_iso_recalc_dr05_1[i]->MakeEff( );
-	//eff_edr_trck_iso_affble_dr05_1[i]->MakeEff( );
   }
   //pair
   eff_edr_hcal_iso_pair->MakeEff( );
@@ -481,13 +603,20 @@ void Looper::End ()
   eff_edr_trck_iso_pair->MakeEff( );
   eff_edr_trck_iso_recalc_pair->MakeEff( );
   eff_edr_trck_iso_affble_pair->MakeEff( );
-  //eff_edr_hcal_iso_dr05_1_pair->MakeEff( );
-  //eff_edr_ecal_iso_dr05_1_pair->MakeEff( );
-  //eff_edr_trck_iso_dr05_1_pair->MakeEff( );
-  //eff_edr_trck_iso_recalc_dr05_1_pair->MakeEff( );
-  //eff_edr_trck_iso_affble_dr05_1_pair->MakeEff( );
 
+  //njet, etareg
+  for( int i=0; i<2; i++ ) {
+	for( int j=0; j<njetbins; j++ ) {
+	  eff_edr_ecal_iso_njet[i][j]->MakeEff();
+	}
+	for( int j=0; j<etaregions; j++ ) {
+	  eff_edr_ecal_iso_reg[i][j]->MakeEff();
+	}
+  }
+	
   //saves overlayed with legend and stuff...see #included file
+  over_save( e_ecal_iso_bare[0], e_ecal_iso_bare[1]);
+  over_save( e_ecal_iso_bare[0], e_ecal_iso_bare[1], true, true);
   over_save( e_trck_iso, e_trck_iso_recalc, true ); 
   over_save( e_trck_iso_dr05_1, e_trck_iso_recalc_dr05_1, true );
   over_save( e_trck_iso_recalc, e_trck_iso_affble, true );
@@ -497,7 +626,11 @@ void Looper::End ()
 	over_save( eff_edr_trck_iso[i]->eff, eff_edr_trck_iso_affble[i]->eff );
 	over_save( eff_edr_trck_iso_recalc[i]->eff, eff_edr_trck_iso_affble[i]->eff );
 	over_save( eff_edr_ecal_iso[i]->eff, eff_edr_trck_iso[i]->eff );
+	over_save( eff_edr_ecal_iso_soft[i]->eff, eff_edr_trck_iso[i]->eff );
+	over_save( eff_edr_ecal_iso_subt[i]->eff, eff_edr_trck_iso[i]->eff );
 	over_save( eff_edr_trck_iso[i]->eff, eff_edr_ecal_iso[i]->eff, eff_edr_hcal_iso[i]->eff, TString(Form("%s_e%i_drstat1_tri_iso_comp", SampleName().c_str(), i+1)) );
+	over_save( eff_edr_ecal_iso_njet[i][1]->eff, eff_edr_ecal_iso_njet[i][2]->eff, eff_edr_ecal_iso_njet[i][3]->eff, eff_edr_ecal_iso_njet[i][4]->eff, TString(Form("%s_e%i_drstat1_ecal_iso_njet_all_comp", SampleName().c_str(), i+1)) );
+	over_save( eff_edr_ecal_iso_reg[i][0]->eff, eff_edr_ecal_iso_reg[i][2]->eff );
 	//over_save( eff_edr_trck_iso_dr05_1[i]->eff, eff_edr_trck_iso_affble_dr05_1[i]->eff);
 	//over_save( eff_edr_trck_iso_recalc_dr05_1[i]->eff, eff_edr_trck_iso_affble_dr05_1[i]->eff);
   }
@@ -505,6 +638,7 @@ void Looper::End ()
   over_save( eff_edr_trck_iso_pair->eff, eff_edr_trck_iso_recalc_pair->eff );
   over_save( eff_edr_trck_iso_affble_pair->eff, eff_edr_trck_iso_pair->eff );
   over_save( eff_edr_trck_iso_recalc_pair->eff, eff_edr_trck_iso_affble_pair->eff );
+  over_save( e_njets, e_njets_clean );
 
   //print 90% points--90% is below this point
   // use up (high) edge of bin which get_90_bin returns + 1 because i actually want up edge of this bin
