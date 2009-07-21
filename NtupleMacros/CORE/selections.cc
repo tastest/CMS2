@@ -1772,7 +1772,7 @@ int ttbarconstituents(int i_hyp){
 
   if (isLepll && isLeplt && ttbarlep) {
     return 1;
-  }  else if ((isLepll || isLeplt ) && !ttbarother) {
+  }  else if (isLepll || isLeplt ) {
     return 2;
   } else {
     return 3;
@@ -1787,13 +1787,13 @@ bool additionalZvetoSUSY09(int i_hyp) {
   // first, look for Z->mumu
   for (unsigned int i=0; i < cms2.mus_p4().size(); i++) {
     bool hypLep1 = false;
-    bool hypLep2 = false;
     if (cms2.mus_p4().at(i).pt() < 10.)     continue;
     if (!GoodSusyMuonWithoutIsolation(i)) continue;
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == i ) hypLep1 = true;
     if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == i ) hypLep1 = true;
 
     for (unsigned int j=i+1; j < cms2.mus_p4().size(); j++) {
+      bool hypLep2 = false;
       if (cms2.mus_p4().at(j).pt() < 10.) continue;
       if (!GoodSusyMuonWithoutIsolation(j)) continue;
       if (cms2.mus_charge().at(i) == cms2.mus_charge().at(j)) continue;
@@ -1802,6 +1802,7 @@ bool additionalZvetoSUSY09(int i_hyp) {
       // At least one of them has to pass isolation
       if (!PassSusyMuonIsolation(i) && !PassSusyMuonIsolation(j)) continue;
       if ( hypLep1 && hypLep2 ) continue;
+      if ( !hypLep1 && !hypLep2 ) continue;
       // Make the invariant mass
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >
                 vec = cms2.mus_p4().at(i) + cms2.mus_p4().at(j);
@@ -1813,12 +1814,12 @@ bool additionalZvetoSUSY09(int i_hyp) {
   // now, look for Z->ee
   for (unsigned int i=0; i < cms2.els_p4().size(); i++) {
     bool hypLep1 = false;
-    bool hypLep2 = false;
     if (cms2.els_p4().at(i).pt() < 10.)     continue;
     if (! GoodSusyElectronWithoutIsolation(i)) continue;
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && cms2.hyp_lt_index()[i_hyp] == i ) hypLep1 = true;
     if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && cms2.hyp_ll_index()[i_hyp] == i ) hypLep1 = true;
     for (unsigned int j=i+1; j<cms2.els_p4().size(); j++) {
+      bool hypLep2 = false;
       if (cms2.els_p4().at(j).pt() < 10.) continue;
       if (! GoodSusyElectronWithoutIsolation(j)) continue;
       if (cms2.els_charge().at(i) == cms2.els_charge().at(j)) continue;
@@ -1827,6 +1828,7 @@ bool additionalZvetoSUSY09(int i_hyp) {
       if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && cms2.hyp_lt_index()[i_hyp] == j ) hypLep2 = true;
       if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && cms2.hyp_ll_index()[i_hyp] == j ) hypLep2 = true;
       if ( hypLep1 && hypLep2 ) continue;
+      if ( !hypLep1 && !hypLep2 ) continue;
       // Make the invariant mass
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >
                 vec = cms2.els_p4().at(i) + cms2.els_p4().at(j);
