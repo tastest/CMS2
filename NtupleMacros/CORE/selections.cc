@@ -1541,6 +1541,7 @@ bool GoodSusyElectronWithoutIsolation(int index) {
   if ( cms2.els_tightId22XMinMatteo().at(index)     !=  1) return false; 
   if ( fabs(cms2.els_d0corr().at(index)) >= 0.02)   return false; 
   if ( cms2.els_closestMuon().at(index) != -1) return false; 
+  if ( TMath::Abs(cms2.els_p4()[index].eta()) > 2.4) return false;
   return true; 
 } 
  
@@ -1552,6 +1553,7 @@ bool GoodSusyMuonWithoutIsolation(int index) {
   if (fabs(cms2.mus_d0corr().at(index))   >= 0.02) return false; 
   if (cms2.mus_pat_ecalvetoDep().at(index) >= 4) return false; // ECalE < 4 
   if (cms2.mus_pat_hcalvetoDep().at(index) >= 6) return false; // HCalE < 6 
+  if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4) return false;
   return true; 
 } 
 
@@ -1670,7 +1672,7 @@ vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getCaloJets(i
     if ((dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],cms2.jets_pat_jet_p4()[jj]) < 0.4)||
 	(dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.jets_pat_jet_p4()[jj]) < 0.4)
 	) continue;
-    if (cms2.jets_pat_jet_p4()[jj].Et() < 30) continue;
+    if (cms2.jets_pat_jet_p4()[jj].pt() < 30) continue;
     if (fabs(cms2.jets_pat_jet_p4()[jj].Eta()) > 2.4) continue;
     if (cms2.jets_emFrac()[jj] < 0.1) continue;
     calo_jets.push_back(cms2.jets_pat_jet_p4()[jj]);
@@ -1691,7 +1693,7 @@ vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getJPTJets(in
     if ((dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],cms2.jpts_p4()[jj]) < 0.4)||
 	(dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.jpts_p4()[jj]) < 0.4)
 	) continue;
-    if (cms2.jpts_p4()[jj].Et() < 30) continue;
+    if (cms2.jpts_p4()[jj].pt() < 30) continue;
     if (fabs(cms2.jpts_p4()[jj].Eta()) > 2.4) continue;
 //    if (cms2.jpts_emFrac()[jj] < 0.1) continue;
     jpt_jets.push_back(cms2.jpts_p4()[jj]);
@@ -2335,6 +2337,13 @@ bool conversionElectron(int electron) {
   // true if electron is a conversion electron
   if( fabs(cms2.els_conv_dist()[electron]) < 0.02 && fabs(cms2.els_conv_dcot()[electron]) < 0.02)
     return true;
+
+  return false;
+}
+
+bool isChargeFlip(int elIndex){
+  //true if electron is likely to be a charge flip
+  if ((cms2.els_trkidx().at(elIndex) >= 0) && (cms2.els_charge().at(elIndex) != cms2.trks_charge().at(cms2.els_trkidx().at(elIndex)))) return true;
 
   return false;
 }
