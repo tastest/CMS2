@@ -234,7 +234,7 @@ Twiki: http://omega.physics.ucsb.edu/twiki/bin/view/CMS/EleFakeRateAndTestv50_0_
    - uses NO leading jet cut at 30 
    - uses QCDpt30 sample v01-03-01
    
-v50_1: Susy Baseline (converged cuts) fakerates
+v51_0: Susy Baseline (converged cuts) fakerates
 Twiki: http://omega.physics.ucsb.edu/twiki/bin/view/CMS/EleFakeRateAndTestv51_0_cleaned
 
    Determination: 
@@ -245,4 +245,18 @@ Twiki: http://omega.physics.ucsb.edu/twiki/bin/view/CMS/EleFakeRateAndTestv51_0_
    - conversion-veto is applied to denominator AND numerator
    - uses NO leading jet cut at 30 
    - uses QCDpt30 sample v01-03-01
+
+v52_0: Susy Baseline (converged cuts) fakerates
+Twiki: http://omega.physics.ucsb.edu/twiki/bin/view/CMS/EleFakeRateAndTestv52_0_cleaned
+
+   Determination: 
+   - eta restricted to |eta| < 2.4 (was 2.5 before)
+   - selections a la SusyGoodLepton
+   - denominator has Susy electron ID applied WITHOUT the D0 cut
+   - denominator has relaxed Susy isolation cut from 0.1 to 0.4
+   - mischarge-veto is applied to denominator AND numerator
+   - conversion-veto is applied to denominator AND numerator
+   - uses NO leading jet cut at 30 
+   - uses QCDpt30 sample v01-03-01
+   
    
