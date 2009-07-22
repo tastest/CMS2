@@ -83,33 +83,31 @@ static void plotTheDistribution (DSGTable::table_t DSGTable::* h,
 static void displayHistos (int i, int j, int k, int l, int whichBucketGrouping)
 
 {
-  static TCanvas *c = new TCanvas;
-  c->Clear();
-  c->Divide(4, 2);
-  c->cd(1);
-  plotTheDistribution (&DSGTable::hmet_, i, j, k, l, whichBucketGrouping) ;
-
-  c->cd(2);
-  plotTheDistribution (&DSGTable::hmll_, i, j, k, l, whichBucketGrouping) ;
-
-  c->cd(3);
-  plotTheDistribution (&DSGTable::hht_, i, j, k, l, whichBucketGrouping) ;
-
-  c->cd(4);
-  plotTheDistribution (&DSGTable::hjsumet_, i, j, k, l, whichBucketGrouping) ;
-
-  c->cd(5);
-  plotTheDistribution (&DSGTable::hmaxjetpt_, i, j, k, l, whichBucketGrouping) ;
-
-  c->cd(6);
-  plotTheDistribution (&DSGTable::hmaxleppt_, i, j, k, l, whichBucketGrouping) ;
-
-  c->cd(7);
-  plotTheDistribution (&DSGTable::hlepdphi_, i, j, k, l, whichBucketGrouping) ;
-
-
-  c->Update();
-  return;
+     static TCanvas *c = 0;
+     if (c == 0) {
+	  c = new TCanvas("c", "c", 1200, 800);
+// 	  c->Update();
+// 	  c->SetWindowSize(c->GetWindowWidth() * 2, c->GetWindowHeight() * 2);
+// 	  c->Update();
+     }
+     c->Clear();
+     c->Divide(4, 2);
+     int i_pad = 0;
+     c->cd(++i_pad);
+     plotTheDistribution (&DSGTable::hmet_, i, j, k, l, whichBucketGrouping) ;
+     c->cd(++i_pad);
+     plotTheDistribution (&DSGTable::hmll_, i, j, k, l, whichBucketGrouping) ;
+     c->cd(++i_pad);
+     plotTheDistribution (&DSGTable::hht_, i, j, k, l, whichBucketGrouping) ;
+     c->cd(++i_pad);
+     plotTheDistribution (&DSGTable::hjsumet_, i, j, k, l, whichBucketGrouping) ;
+     c->cd(++i_pad);
+     plotTheDistribution (&DSGTable::hmaxjetpt_, i, j, k, l, whichBucketGrouping) ;
+     c->cd(++i_pad);
+     plotTheDistribution (&DSGTable::hmaxleppt_, i, j, k, l, whichBucketGrouping) ;
+     c->cd(++i_pad);
+     plotTheDistribution (&DSGTable::hlepdphi_, i, j, k, l, whichBucketGrouping) ;
+     c->Update();
 }
 
 
