@@ -1544,6 +1544,13 @@ bool GoodSusyElectronWithoutIsolation(int index) {
   if ( TMath::Abs(cms2.els_p4()[index].eta()) > 2.4) return false;
   return true; 
 } 
+
+bool GoodSusyElectronWithoutIsolationNoD0(int index) { 
+  if ( cms2.els_tightId22XMinMatteo().at(index)     !=  1) return false; 
+  if ( cms2.els_closestMuon().at(index) != -1) return false; 
+  if ( TMath::Abs(cms2.els_p4()[index].eta()) > 2.4) return false;
+  return true; 
+} 
  
 bool GoodSusyMuonWithoutIsolation(int index) { 
   if (((cms2.mus_type().at(index)) & (1<<1)) == 0) return false; // global muon
@@ -1780,6 +1787,133 @@ int ttbarconstituents(int i_hyp){
     return 3;
   }
 }
+
+//--------------------------------------------------------
+// Determines if the lepton in question is from W/Z
+// and if its charge is correct
+//
+// Note that if we have
+//     W->lepton->lepton gamma
+// where the gamma is at large angles and it is the
+// gamma that gives the lepton signature in the detector,
+// then this returns "not from W/Z".  This is by design.
+//
+// Note W->tau->lepton is tagged as "from W"
+//
+// Inputs:  idx   = index in the els or mus block
+//          id    = lepton ID (11 or 13 or -11 or -13)
+//          v     = 4-vector of reco lepton
+//
+// Output:  2 = from W/Z incorrect charge
+//          1 = from W/Z   correct charge
+//          0 = not matched to a lepton (= fake)
+//         -1 = lepton from b decay
+//         -2 = lepton from c decay
+//         -3 = lepton from some other source
+//        
+// Authors: Claudio in consultation with fkw 22-july-09    
+//---------------------------------------------------------
+int leptonIsFromW(int idx, int id, LorentzVector v) {
+
+  // get the matches to status=1 and status=3
+  int st1_id = 0;
+  int st3_id = 0;
+  int st1_motherid = 0;
+  if (abs(id) == 11) {
+    st1_id = cms2.els_mc_id()[idx];
+    st3_id = cms2.els_mc3_id()[idx];
+    st1_motherid = cms2.els_mc_motherid()[idx];
+  } else if (abs(id) == 13) {
+    st1_id = cms2.mus_mc_id()[idx];
+    st3_id = cms2.mus_mc3_id()[idx];
+    st1_motherid = cms2.mus_mc_motherid()[idx];
+  } else {
+    std::cout << "You fool.  Give me +/- 11 or +/- 13 please" << std::endl;
+    return false;
+  }
+
+  // Step 0
+  // The match to status=3 in DR<0.1 from the ntuple is too tight.
+  // If there is no match to status=3, we try the match again with DR<0.2
+  // But we only match to leptons
+  if (st3_id == -999) {
+    float drmin = 999.;
+    for (int j=0; j<cms2.genps_id().size(); j++) {
+      int genId = cms2.genps_id().at(j);
+      if (abs(genId) == 15 || abs(genId) == 13 || abs(genId) == 11) {
+        LorentzVector vgen = cms2.genps_p4().at(j);
+        float dr = dRbetweenVectors(v, vgen);
+        if (dr < 0.2 && dr < drmin) {
+          drmin = dr;
+          st3_id = genId;
+        }
+      }
+    }
+  }
+
+  // debug
+  // std::cout << "id=" << id << " st1_id=" << st1_id;
+  // std::cout << " st3_id=" << st3_id;
+  // std::cout << " st1_motherid=" << st1_motherid << std::endl;
+
+  // Step 1
+  // Look at status 1 match, it should be either a lepton or
+  // a photon if it comes from W/Z.
+  // The photon case takes care of collinear FSR
+  if ( !(abs(st1_id) == abs(id) || st1_id == 22)) return 0;
+
+  // Step 2
+  // If the status 1 match is a photon, its mother must be
+  // a lepton.  Otherwise it is not FSR
+  if (st1_id == 22) {
+    if (abs(st1_motherid) != abs(id)) return 0;
+  }
+
+  // At this point we are matched (perhaps via FSR) to
+  // a status 1 lepton.  This means that we are left with
+  // leptons from W, taus, bottom, charm, as well as dalitz decays
+
+  // Step 3
+  // A no-brainer: pick up vanilla W->lepton decays
+  // (should probably add Higgs, SUSY, W' etc...not for now)
+  if (st1_id ==  id && abs(st1_motherid) == 24) return 1; // W
+  if (st1_id == -id && abs(st1_motherid) == 24) return 2; // W
+  if (st1_id ==  id &&   st1_motherid    == 23) return 1; // Z
+  if (st1_id == -id &&   st1_motherid    == 23) return 2; // Z
+
+  // Step 4
+  // Another no-brainer: pick up leptons matched to status=3
+  // leptons.  This should take care of collinear FSR
+  if (st3_id ==  id) return 1;
+  if (st3_id == -id) return 2;
+
+  // Step 5
+  // Now we need to go after the W->tau->lepton.  
+  // We exploit the fact that in t->W->tau the tau shows up
+  // at status=3.  We also use the fact that the tau decay products
+  // are highly boosted, so the direction of the status=3 tau and
+  // the lepton from tau decays are about the same
+  //
+  // We do not use the status=1 links because there is not
+  // enough information to distinguish
+  // W->tau->lepton  or W->tau->lepton gamma
+  //  from
+  // B->tau->lepton or B->tau->lepton gamma
+  if (abs(st3_id) == 15 && id*st3_id > 0) return 1;
+  if (abs(st3_id) == 15 && id*st3_id < 0) return 2;
+
+  // Step 6
+  // If we get here, we have a non-W lepton
+  // Now we figure out if it is from b, c, or "other"
+  // There are a couple of caveats
+  // (a) b/c --> lepton --> lepton gamma (ie FSR) is labelled as "other"
+  // (b) b   --> tau --> lepton is labelled as "other"
+  if ( abs(st1_id) == abs(id) && idIsBeauty(st1_motherid)) return -1;
+  if ( abs(st1_id) == abs(id) && idIsCharm(st1_motherid))  return -2;
+  return -3;
+}
+//---------------------------------------------------------
+
 
 bool additionalZvetoSUSY09(int i_hyp) {
 

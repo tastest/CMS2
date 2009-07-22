@@ -140,6 +140,7 @@ int numberOfExtraElectronsVJets09(int i_hyp);
 bool comparePt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1,  
                  ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv2);
 bool GoodSusyElectronWithoutIsolation(int index);
+bool GoodSusyElectronWithoutIsolationNoD0(int index);
 bool GoodSusyElectronWithIsolationLoose(int index, bool use_calo_iso); 
 bool PassSusyElectronIsolationLoose(int index, bool use_calo_iso);
 
@@ -165,6 +166,8 @@ std::vector <ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getCalo
 std::vector <ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getJPTJets(int i_hyp); 
 int ttbarconstituents(int i_hyp);
 bool additionalZvetoSUSY09(int i_hyp);
+
+int leptonIsFromW(int idx, int id, LorentzVector v);
 
 bool isFakeableElSUSY09(int iEl);
 bool isFakeableMuSUSY09(int iMu);
