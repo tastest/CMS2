@@ -9,6 +9,10 @@
   double forward_den = 0.;
   double barrel_eff = 0.;
   double forward_eff = 0.;
+  double ineff = 0.;
+  double barrel_ineff = 0.;
+  double forward_ineff = 0.;
+  double trk_eff = 0.;
 
   double f_b_eta_divider = 1.479;
 
@@ -53,16 +57,12 @@
   canvas->Clear();
   canvas->SetLeftMargin(0.155);
   canvas->SetBottomMargin(0.155);
-  eff = els_eta_reco->Integral() / els_eta_sim->Integral() * 100;
-  cout << "efficiency: num: " << els_eta_reco->Integral() << " den: " << els_eta_sim->Integral() << " eff: " << eff << "%" << endl;
   barrel_num = els_eta_reco->Integral(els_eta_reco->FindBin(-1*f_b_eta_divider),els_eta_reco->FindBin(f_b_eta_divider));
   barrel_den = els_eta_sim->Integral(els_eta_sim->FindBin(-1*f_b_eta_divider),els_eta_sim->FindBin(f_b_eta_divider));
   barrel_eff = barrel_num / barrel_den * 100;
-  cout << "barrel efficiency: num: " << barrel_num << " den: " << barrel_den << " eff: " << barrel_eff << "%" << endl;
   forward_num = els_eta_reco->Integral(0,els_eta_reco->FindBin(-1*f_b_eta_divider)) + els_eta_reco->Integral(els_eta_reco->FindBin(f_b_eta_divider),els_eta_reco->GetNbinsX()+1);
   forward_den = els_eta_sim->Integral(0,els_eta_sim->FindBin(-1*f_b_eta_divider)) + els_eta_sim->Integral(els_eta_sim->FindBin(f_b_eta_divider),els_eta_sim->GetNbinsX()+1);
   forward_eff = forward_num / forward_den * 100;
-  cout << "forward efficiency: num: " << forward_num << " den: " << forward_den << " eff: " << forward_eff << "%" << endl;
   els_eta_reco->Divide(els_eta_sim);
   els_eta_reco->SetName("RecoEff");
   els_eta_reco->SetTitle("Reconstruction efficiency (reco/sim) in #eta");
@@ -81,54 +81,50 @@
   canvas->Clear();
   canvas->SetLeftMargin(0.155);
   canvas->SetBottomMargin(0.155);
-  eff = els_pt_recosim_incorCharge->Integral() / els_pt_recosim->Integral() * 100;
-  cout << "inefficiency: num: " << els_pt_recosim_incorCharge->Integral() << " den: " << els_pt_recosim->Integral() << " eff: " << eff << "%" << endl;
+  ineff = els_pt_recosim_incorCharge->Integral() / els_pt_recosim->Integral() * 100;
   els_pt_recosim_incorCharge->Divide(els_pt_recosim);
-  els_pt_recosim_incorCharge->SetName("ChargeIDIneff");
-  els_pt_recosim_incorCharge->SetTitle("Charge id inefficiency (recosim_incorCharge/recosim) in p_{T}");
-  els_pt_recosim_incorCharge->SetYTitle("Inefficiency");
+  els_pt_recosim_incorCharge->SetName("ChargeMisIDRate");
+  els_pt_recosim_incorCharge->SetTitle("Charge MisId rate (recosim_incorCharge/recosim) in p_{T}");
+  els_pt_recosim_incorCharge->SetYTitle("Charge MisId rate");
   els_pt_recosim_incorCharge->SetMaximum(0.1);
   els_pt_recosim_incorCharge->SetMinimum(0.);
   els_pt_recosim_incorCharge->Draw();
   box = new TPaveText(40,0.085,80,0.095);
   box->SetBorderSize(1);
   box->SetFillColor(0);
-  box->InsertText(Form("charge id ineff: %2.3f %s",eff,"%"));
+  box->InsertText(Form("charge MisId rate: %2.3f %s",ineff,"%"));
   box->Draw();
-  canvas->Print("ChargeIDInefficiencyPt.png");
+  canvas->Print("ChargeMisIdRatePt.png");
 
   canvas->Clear();
   canvas->SetLeftMargin(0.155);
   canvas->SetBottomMargin(0.155);
   barrel_num = els_eta_recosim_incorCharge->Integral(els_eta_recosim_incorCharge->FindBin(-1*f_b_eta_divider),els_eta_recosim_incorCharge->FindBin(f_b_eta_divider));
   barrel_den = els_eta_recosim->Integral(els_eta_recosim->FindBin(-1*f_b_eta_divider),els_eta_recosim->FindBin(f_b_eta_divider));
-  barrel_eff = barrel_num / barrel_den * 100;
+  barrel_ineff = barrel_num / barrel_den * 100;
   forward_num = els_eta_recosim_incorCharge->Integral(0,els_eta_recosim_incorCharge->FindBin(-1*f_b_eta_divider)) + els_eta_recosim_incorCharge->Integral(els_eta_recosim_incorCharge->FindBin(f_b_eta_divider),els_eta_recosim_incorCharge->GetNbinsX()+1);
   forward_den = els_eta_recosim->Integral(0,els_eta_recosim->FindBin(-1*f_b_eta_divider)) + els_eta_recosim->Integral(els_eta_recosim->FindBin(f_b_eta_divider),els_eta_recosim->GetNbinsX()+1);
-  forward_eff = forward_num / forward_den * 100;
-  cout << "barrel inefficiency: num: " << barrel_num << " den: " << barrel_den << " eff: " << barrel_eff << "%" << endl;
-  cout << "forward inefficiency: num: " << forward_num << " den: " << forward_den << " eff: " << forward_eff << "%" << endl;
-  cout << "consistency: " << els_eta_recosim->Integral() - barrel_den - forward_den << endl;
+  forward_ineff = forward_num / forward_den * 100;
   els_eta_recosim_incorCharge->Divide(els_eta_recosim);
-  els_eta_recosim_incorCharge->SetName("ChargeIDIneff");
-  els_eta_recosim_incorCharge->SetTitle("Charge id inefficiency (recosim_incorCharge/recosim) in #eta");
-  els_eta_recosim_incorCharge->SetYTitle("Inefficiency");
+  els_eta_recosim_incorCharge->SetName("ChargeMisIdRate");
+  els_eta_recosim_incorCharge->SetTitle("Charge MisId rate (recosim_incorCharge/recosim) in #eta");
+  els_eta_recosim_incorCharge->SetYTitle("Charge MisId rate");
   els_eta_recosim_incorCharge->SetMaximum(0.1);
   els_eta_recosim_incorCharge->SetMinimum(0.);
   els_eta_recosim_incorCharge->Draw();
   box = new TPaveText(-1.5,0.075,1.5,0.095);
   box->SetBorderSize(1);
   box->SetFillColor(0);
-  box->InsertText(Form("charge id ineff barrel (|#eta| #leq 1.479): %2.3f %s",barrel_eff,"%"));
-  box->InsertText(Form("charge id ineff forward (|#eta| > 1.479) : %2.3f %s",forward_eff,"%"));
+  box->InsertText(Form("charge MisId rate barrel (|#eta| #leq 1.479): %2.3f %s",barrel_ineff,"%"));
+  box->InsertText(Form("charge MisId rate forward (|#eta| > 1.479) : %2.3f %s",forward_ineff,"%"));
   box->Draw();
-  canvas->Print("ChargeIDInefficiencyEta.png");
+  canvas->Print("ChargeMisIdRateEta.png");
 
   canvas->Clear();
   canvas->SetLeftMargin(0.155);
   canvas->SetBottomMargin(0.155);
   canvas->SetTopMargin(0.14);
-  eff = els_trkId->Integral(0,10) / els_trkId->Integral(11,100) * 100;
+  trk_eff = els_trkId->Integral(0,10) / els_trkId->Integral(11,100) * 100;
   els_trkId->SetName("EleWOAssocTrk");
   els_trkId->SetTitle("Reconstructed electrons without associated track");
   els_trkId->SetYTitle("Electrons");
@@ -136,8 +132,12 @@
   box = new TPaveText(-800,600000,-200,800000);
   box->SetBorderSize(1);
   box->SetFillColor(0);
-  box->InsertText(Form("els wo assoc. trk: %2.3f %s",eff,"%"));
+  box->InsertText(Form("els wo assoc. trk: %2.3f %s",trk_eff,"%"));
   box->Draw();
   canvas->Print("TrkWithoutAssocTrk.png");
+
+  std::cout << "| *comment* | *reco efficiency [%]* | *barrel reco efficiency [%]* | *forward reco efficiency [%]* | *charge misidentification rate [%]* | *barrel charge misidentification rate [%]* | *forward charge misidentification rate [%]* |" << std::endl;
+  std::cout << "| | " << Form("%3.3f",eff) << " | " << Form("%3.3f",barrel_eff) << " | " << Form("%3.3f",forward_eff) << " | " << Form("%3.3f",ineff) << " | " << Form("%3.3f",barrel_ineff) << " | " << Form("%3.3f",forward_ineff) << " |" << std::endl;
+
 
 }
