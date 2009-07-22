@@ -1663,19 +1663,19 @@ int numberOfExtraMuonsSUSY(int i_hyp){
   } 
   return nMuons; 
 } 
-//   jets_p4   
+
 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getCaloJets(int i_hyp) {
   vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > calo_jets;
   calo_jets.clear();
   
-  for (unsigned int jj=0; jj < cms2.jets_p4().size(); ++jj) {
-    if ((dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],cms2.jets_p4()[jj]) < 0.4)||
-	(dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.jets_p4()[jj]) < 0.4)
+  for (unsigned int jj=0; jj < cms2.jets_pat_jet_p4().size(); ++jj) {
+    if ((dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],cms2.jets_pat_jet_p4()[jj]) < 0.4)||
+	(dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.jets_pat_jet_p4()[jj]) < 0.4)
 	) continue;
-    if (cms2.jets_p4()[jj].pt() < 30) continue;
-    if (fabs(cms2.jets_p4()[jj].Eta()) > 2.4) continue;
+    if (cms2.jets_pat_jet_p4()[jj].pt() < 30) continue;
+    if (fabs(cms2.jets_pat_jet_p4()[jj].Eta()) > 2.4) continue;
     //fkw July21 2009 if (cms2.jets_emFrac()[jj] < 0.1) continue;
-    calo_jets.push_back(cms2.jets_p4()[jj]);
+    calo_jets.push_back(cms2.jets_pat_jet_p4()[jj]);
   }
   
   if (calo_jets.size() > 1) {
@@ -1840,39 +1840,6 @@ bool additionalZvetoSUSY09(int i_hyp) {
   return veto;
 }
 
-// For Fake rates
-
-bool isFakeableElSUSY09(int iEl){
- 
-  Double_t pt = cms2.els_p4()[iEl].Pt();
-  Double_t eta = cms2.els_p4()[iEl].Eta();
- 
-  if( pt < 10)  return false;
-  if( fabs( eta ) > 2.4 )  return false;
-  //reject if electron is close to muon;
-  if ( cms2.els_closestMuon()[iEl] > -1)  return false;
-  // Isolation
-  if  (inv_el_relsusy_iso(iEl, true) > 0.4) return false;
-  // H/E
-  if ( cms2.els_hOverE()[iEl]   > 0.2 ) return false;
-  return true;
-}
-
-// Muons
-bool isFakeableMuSUSY09(int iMu) {
-
-  Double_t pt = cms2.mus_p4()[iMu].Pt();
-  Double_t eta = cms2.mus_p4()[iMu].Eta();
- 
-  //only globalMuons
-  if(!(2 & cms2.mus_type()[iMu])) return false; // global muons
-  if(!(4 & cms2.mus_type()[iMu])) return false; // tracker muons
-  if( pt < 10)  return false;
-  if( fabs( eta ) > 2.4 ) return false;
-  //  if( cms2.mus_gfit_chi2()[iMu]/cms2.mus_gfit_ndof()[iMu] > 20) return false;
-  if (inv_mu_relsusy_iso(iMu) > 0.4 ) return false;
-  return true;
-}
 
 //--------------------------------------------------------------------
 // Veto events if there are two leptons in the 

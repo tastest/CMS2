@@ -28,6 +28,10 @@ static TFile *el_fakeRateFile_v50 = 0;
 static TH2F  *el_fakeRate_v50 = 0;
 static TH2F  *el_fakeRate_err_v50 = 0;
 
+static TFile *el_fakeRateFile_v51 = 0;
+static TH2F  *el_fakeRate_v51 = 0;
+static TH2F  *el_fakeRate_err_v51 = 0;
+
 static TFile *mu_fakeRateFile_v1 = 0;
 static TH2F  *mu_fakeRate_v1 = 0;
 static TH2F  *mu_fakeRate_err_v1 = 0;
@@ -562,6 +566,37 @@ bool isFakeDenominatorElectron_v50 (int index)
 
 }
 
+double (*elFakeProb_v51)(int, int) = elFakeProb_v50;
+
+bool isFakeDenominatorElectron_v51 (int index) 
+{
+  //
+  // returns true if input fulfills certain cuts
+  //
+
+  // cut definition
+  float pt_cut        		= 10.;
+  float eta_cut       		= 2.4;
+  float hOverE_cut    		= 0.2;
+  //  bool  use_calo_iso            = false;
+
+  bool result = true;
+
+  if (cms2.els_closestMuon().at(index) != -1)		   result = false;
+  if ( cms2.els_p4()[index].Pt()  < pt_cut )               result = false;
+  if ( TMath::Abs(cms2.els_p4()[index].Eta()) > eta_cut )  result = false;
+  //  if ( !passElectronIsolation(index,use_calo_iso) )     	result = false;
+  //  if ( !passElectronIsolationLoose(index,true) )          	result = false; //v5_2
+  //  if ( !passElectronIsolationLoose2(index,true) )          	result = false; //v5_4
+  if ( !PassSusyElectronIsolationLoose(index,true) )       result = false; //v50_0: 0.4, v50_1: 0.25
+  if ( cms2.els_hOverE()[index]   > hOverE_cut )           result = false;
+  if ( conversionElectron(index))                             result  = false;
+  if ( isChargeFlip(index))                                   result  = false;
+
+  return result;
+
+}
+
 bool isFakeNumeratorElectron_v50 (int index, int type) 
 { 
   //
@@ -592,6 +627,47 @@ bool isFakeNumeratorElectron_v50 (int index, int type)
     // tight
     //    if ( !goodElectronWithoutIsolation(index) )                 result  = false;
     if ( !GoodSusyLeptonID(11, index) )                         result  = false;
+  } else {
+    cout << "WARNING: wrong electron type detected, please select loose (1) or tight (2)" << endl;
+  }
+
+  return result;
+  
+}
+
+bool isFakeNumeratorElectron_v51 (int index, int type) 
+{ 
+  //
+  // 1=loose, 2=tight
+  //
+  // returns true if input fulfills certain cuts
+  //
+  
+  // cut definition
+  float pt_cut        		= 10;
+  float eta_cut       		= 2.4;
+  bool  use_calo_iso            = true;
+
+  bool result = true;
+
+  // adjust to SUSY cuts!
+
+  if (cms2.els_closestMuon().at(index) != -1)		        result  = false;
+  if ( cms2.els_p4()[index].Pt()  < pt_cut )                    result  = false;
+  if ( TMath::Abs(cms2.els_p4()[index].Eta()) > eta_cut )       result  = false;
+  //  if ( !passElectronIsolation(index,use_calo_iso) )          	result  = false;
+  if ( !PassSusyElectronIsolation(index, use_calo_iso) )  	result  = false;
+  if ( type == 1 ) {
+    // loose
+    //    if ( !goodLooseElectronWithoutIsolation(index) )            result  = false;
+    if ( !goodLooseElectronWithoutIsolation(index) )            result  = false;
+  } else if ( type == 2 ) {
+    // tight
+    //    if ( !goodElectronWithoutIsolation(index) )                 result  = false;
+    if ( !GoodSusyLeptonID(11, index) )                         result  = false;
+    if ( conversionElectron(index))                             result  = false;
+    if ( isChargeFlip(index))                                   result  = false;
+
   } else {
     cout << "WARNING: wrong electron type detected, please select loose (1) or tight (2)" << endl;
   }
@@ -697,7 +773,8 @@ bool isFakeNumeratorMuon_v1 (int index, int type)
 
 //#define USE_V7
 //#define USE_V10
-#define USE_V50
+//#define USE_V50
+#define USE_V51
 
 bool isFakeable (int i_el)
 {
@@ -715,6 +792,9 @@ bool isFakeable (int i_el)
 #endif
 #ifdef USE_V50
   return isFakeDenominatorElectron_v50(i_el);
+#endif
+#ifdef USE_V51
+  return isFakeDenominatorElectron_v51(i_el);
 #else
   return isFakeable_v2_2(i_el);
 #endif
@@ -741,6 +821,9 @@ double elFakeProb (int i_el, int add_error_times)
 #endif
 #ifdef USE_V50
      return elFakeProb_v50(i_el, add_error_times);
+#endif
+#ifdef USE_V51
+     return elFakeProb_v51(i_el, add_error_times);
 #else
      return elFakeProb_v2_2(i_el, add_error_times);
 #endif
@@ -768,6 +851,9 @@ bool isNumeratorElectron (int index, int type)
 #endif
 #ifdef USE_V50
      return isFakeNumeratorElectron_v50(index, 2);
+#endif
+#ifdef USE_V51
+     return isFakeNumeratorElectron_v51(index, 2);
 #else
      return isNumeratorElectron_v2_2(index, type);
 #endif
@@ -849,6 +935,20 @@ TH2F &fakeRate ()
 	  el_fakeRate_err_v50 = dynamic_cast<TH2F *>(el_fakeRateFile_v50->Get("fakeRateTemplateError_elt_EleFakes"));
      }
      return *el_fakeRate_v50;
+#endif
+#ifdef USE_V51
+     if ( el_fakeRateFile_v51 == 0 ) {
+	  el_fakeRateFile_v51 = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/fakeRates-v51_0.root", "read"); 
+	  if ( el_fakeRateFile_v51 == 0 ) {
+	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v51_0.root could not be found!!" << std::endl;
+	       std::cout << "Please make sure that $CMS2_LOCATION points to your CMS2 directory and that" << std::endl;
+	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v51_0.root exists!" << std::endl;
+	       gSystem->Exit(1);
+	  }
+	  el_fakeRate_v51 = dynamic_cast<TH2F *>(el_fakeRateFile_v51->Get("fakeRateTemplate_elt_EleFakes"));
+	  el_fakeRate_err_v51 = dynamic_cast<TH2F *>(el_fakeRateFile_v51->Get("fakeRateTemplateError_elt_EleFakes"));
+     }
+     return *el_fakeRate_v51;
 #else
      if ( el_fakeRateFile_v2_2 == 0 ) {
 	  el_fakeRateFile_v2_2 = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/fakeRates-v2_2_allpt.root", "read");
@@ -935,6 +1035,20 @@ TH2F &fakeRateError ()
 	  el_fakeRate_err_v50 = dynamic_cast<TH2F *>(el_fakeRateFile_v50->Get("fakeRateTemplateError_elt_EleFakes"));
      }
      return *el_fakeRate_err_v50;
+#endif
+#ifdef USE_V51
+     if ( el_fakeRateFile_v51 == 0 ) {
+	  el_fakeRateFile_v51 = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/fakeRates-v51_0.root", "read"); 
+	  if ( el_fakeRateFile_v51 == 0 ) {
+	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v51_0.root could not be found!!" << std::endl;
+	       std::cout << "Please make sure that $CMS2_LOCATION points to your CMS2 directory and that" << std::endl;
+	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRates-v51_0.root exists!" << std::endl;
+	       gSystem->Exit(1);
+	  }
+	  el_fakeRate_v51 = dynamic_cast<TH2F *>(el_fakeRateFile_v51->Get("fakeRateTemplate_elt_EleFakes"));
+	  el_fakeRate_err_v51 = dynamic_cast<TH2F *>(el_fakeRateFile_v51->Get("fakeRateTemplateError_elt_EleFakes"));
+     }
+     return *el_fakeRate_err_v51;
 #else
      assert("use the bin errors in the fake rate histo instead of error histogram" && 0);
 #endif
