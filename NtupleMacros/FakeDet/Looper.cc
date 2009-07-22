@@ -84,7 +84,7 @@ void Looper::BookHistos ()
     binsPt.push_back(150.);
 
     // set eta bins
-    binsEta.push_back(-2.5);
+    binsEta.push_back(-2.4);
     //	binsEta.push_back(-2.1);
     binsEta.push_back(-1.9);
     //	binsEta.push_back(-1.7);
@@ -107,22 +107,22 @@ void Looper::BookHistos ()
     //	binsEta.push_back(1.7);
     binsEta.push_back(1.9);
     //	binsEta.push_back(2.1);
-    binsEta.push_back(2.5);
+    binsEta.push_back(2.4);
   }
   else {
 
     // set Pt bins
-    binsPt.push_back(0.); // back in 090711
+    //    binsPt.push_back(0.); // back in 090711, back out 090722 after successful test that this remains empty
     binsPt.push_back(10.);
     binsPt.push_back(20.);
     binsPt.push_back(60.);
     binsPt.push_back(150.);
 
     // set eta bins
-    binsEta.push_back(-2.5);
+    binsEta.push_back(-2.4); //changed 2.5 -> 2.4 090722
     binsEta.push_back(-1.479);
     binsEta.push_back(1.479);
-    binsEta.push_back(2.5);
+    binsEta.push_back(2.4);
   }
 
   pt_num_ell_  = book1DVarHist(Form("%s_hpt_num_ell",prefix),"p_{T} Numerator",binsPt,"p_{T} [GeV]","p_{T} Loose Electron Numerator",color);
@@ -219,30 +219,13 @@ bool Looper::FilterEvent()
   //
   // comment in following lines
   // 
-
-  if (cms2.els_p4().size() > 0 ) {
-    DorkyEventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.els_d0corr()[0], 
-				cms2.els_p4()[0].pt(), cms2.els_p4()[0].eta(), cms2.els_p4()[0].phi() };
+    DorkyEventIdentifier id(cms2);
     if (is_duplicate(id)) {
       duplicates_total_n_++;
       duplicates_total_weight_ += cms2.evt_scale1fb();
       //cout << "Filtered duplicate run: " << cms2.evt_run() << " event: " << cms2.evt_event() << endl;
       return true;
     }
-  } else if ( cms2.mus_p4().size() > 0 ) {
-    DorkyEventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.mus_d0corr()[0], 
-				cms2.mus_p4()[0].pt(), cms2.mus_p4()[0].eta(), cms2.mus_p4()[0].phi() };
-    if (is_duplicate(id)) {
-      duplicates_total_n_++;
-      duplicates_total_weight_ += cms2.evt_scale1fb();
-      //cout << "Filtered duplicate run: " << cms2.evt_run() << " event: " << cms2.evt_event() << endl;
-      return true;
-    }
-  } else {
-    return true;
-  }
-
-
   return false; 
 }
 
