@@ -153,11 +153,11 @@ int ScanChain( TChain* chain) {
 	    els < genps_p4().size();
 	    ++els ) {
 
-	// check that electron is final state electron
-	if ( genps_status()[els] != 1 ) continue;
-	
 	// check for true electron
 	if ( TMath::Abs(genps_id()[els]) != 11 ) continue;
+
+	// check for pT >= 10 GeV
+	if ( genps_p4()[els].pt() < 10. ) continue;
 
 	// fill true histrograms
 	els_pt_sim->Fill(genps_p4()[els].pt());
@@ -172,30 +172,29 @@ int ScanChain( TChain* chain) {
 
 	// cuts
 
-	// SUSY cuts, replace
-	// if ( !goodElectronIsolated(els) ) continue;
-	// with corresponding cuts
-        if ( !GoodSusyLeptonID(11,els) ) continue;
-	if ( !PassSusyLeptonIsolation(11,els) ) continue;
+	// check for pT >= 10 GeV
+	if ( els_p4()[els].pt() < 10. ) continue;
 
-	// SUSY cuts, replace
-	// if ( conversionElectron(els) ) continue;
-	// with corresponding cuts
+// 	if ( !goodElectronWithoutIsolation(els) ) continue;
+	if ( !goodElectronIsolated(els,true) ) continue;
 	if ( conversionElectron(els) ) continue;
+	// Yanjun's conversion removal
+// 	if ( conversionElectron_PIXHIT(els) ) continue;
 
 	// check how many electrons don't have an associated track
 	els_trkId->Fill(els_trkidx().at(els));
+
 	// tmp charge variable
 	double charge = els_charge().at(els);
-	
-	// SUSY cuts, replace
+
 	// if electron has associated track and track charge is not equal to electron charge, veto
- 	// int trk = els_trkidx().at(els);
-	// if ( (trk >= 0) && (charge != trks_charge().at(trk)) ) {
-	//  continue;
-	// }
-	// with corresponding cuts
-	if ( isChargeFlip(els) ) continue;
+ 	int trk = els_trkidx().at(els);
+	if ( (trk >= 0) && (charge != trks_charge().at(trk)) ) {
+	  continue;
+	}
+
+	// exclude reco electron which is not a true electron
+	if ( abs(els_mc_id()[els]) != 11 ) continue;
 
 	// fill reco
 	els_pt_reco->Fill(els_p4().at(els).Pt());
@@ -206,9 +205,6 @@ int ScanChain( TChain* chain) {
 	  els_pt_reco_corCharge->Fill(els_p4().at(els).Pt());
 	  els_eta_reco_corCharge->Fill(els_p4().at(els).eta());
 	}
-
-	// exclude reco which has no true electron match
-	if ( abs(els_mc_id()[els]) != 11 ) continue;
 
 	// fill recosim
 	els_pt_recosim->Fill(els_mc_p4().at(els).Pt());
