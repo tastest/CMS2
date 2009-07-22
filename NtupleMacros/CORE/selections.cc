@@ -1642,7 +1642,6 @@ int numberOfExtraElectronsSUSY(int i_hyp){
   unsigned int nElec = 0; 
   for (int iel=0; iel < int(cms2.els_p4().size()); iel++) { 
     if ( cms2.els_p4()[iel].pt() < 10 ) continue; 
-    if (fabs(cms2.els_p4()[iel].eta()) > 2.4 ) continue; 
     if (!GoodSusyElectronWithoutIsolation(iel)) continue; 
     if (!PassSusyElectronIsolation(iel, true)) continue;
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && cms2.hyp_lt_index()[i_hyp] == iel ) continue; 
@@ -1656,7 +1655,6 @@ int numberOfExtraMuonsSUSY(int i_hyp){
   unsigned int nMuons = 0; 
   for (int imu=0; imu < int(cms2.mus_p4().size()); imu++) { 
     if ( cms2.mus_p4()[imu].pt() < 10 ) continue; 
-    if ( fabs(cms2.mus_p4()[imu].eta()) > 2.4 ) continue; 
     if (!GoodSusyMuonWithoutIsolation(imu)) continue;
     if (!PassSusyMuonIsolation(imu)) continue; 
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == imu ) continue; 
@@ -1665,19 +1663,19 @@ int numberOfExtraMuonsSUSY(int i_hyp){
   } 
   return nMuons; 
 } 
-//   jets_p4   
+
 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getCaloJets(int i_hyp) {
   vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > calo_jets;
   calo_jets.clear();
   
-  for (unsigned int jj=0; jj < cms2.jets_p4().size(); ++jj) {
-    if ((dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],cms2.jets_p4()[jj]) < 0.4)||
-	(dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.jets_p4()[jj]) < 0.4)
+  for (unsigned int jj=0; jj < cms2.jets_pat_jet_p4().size(); ++jj) {
+    if ((dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],cms2.jets_pat_jet_p4()[jj]) < 0.4)||
+	(dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.jets_pat_jet_p4()[jj]) < 0.4)
 	) continue;
-    if (cms2.jets_p4()[jj].pt() < 30) continue;
-    if (fabs(cms2.jets_p4()[jj].Eta()) > 2.4) continue;
+    if (cms2.jets_pat_jet_p4()[jj].pt() < 30) continue;
+    if (fabs(cms2.jets_pat_jet_p4()[jj].Eta()) > 2.4) continue;
     //fkw July21 2009 if (cms2.jets_emFrac()[jj] < 0.1) continue;
-    calo_jets.push_back(cms2.jets_p4()[jj]);
+    calo_jets.push_back(cms2.jets_pat_jet_p4()[jj]);
   }
   
   if (calo_jets.size() > 1) {

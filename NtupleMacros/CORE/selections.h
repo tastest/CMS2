@@ -32,9 +32,6 @@ bool met1(int index, const class TVector3& corr);
 bool sumEt10(double sumEt);
 bool sumEt1(double sumEt);
 
-bool isChargeFlip(int elIndex);
-bool conversionElectron(int electron);
-
 int numberOfExtraMuons(int i_hyp, bool nonisolated);
 bool passMuonBVeto_1_6 (int i_dilep, bool soft_nonisolated);
 
