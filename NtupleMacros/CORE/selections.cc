@@ -1429,9 +1429,9 @@ double inv_mu_rel_iso(int index)
 
 double inv_el_rel_iso(int index, bool use_calo_iso)
 {
-  double sum = cms2.els_pat_trackIso().at(index);
+  double sum = cms2.els_tkIso().at(index);
   if (use_calo_iso)
-    sum += cms2.els_pat_ecalIso()[index] + cms2.els_pat_hcalIso()[index];
+    sum += cms2.els_ecalIso()[index] + cms2.els_hcalIso()[index];
   double pt  = cms2.els_p4().at(index).pt();
   return sum/pt;
 }
