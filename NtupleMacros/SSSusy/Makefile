@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.2 2009/07/18 08:46:09 ibloch Exp $
+# $Id: Makefile,v 1.3 2009/07/22 07:58:13 ibloch Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
@@ -40,7 +40,9 @@ Wjets_SS_Numerator.tbl\
 Wjets_SS_FOs_Not_Numerator.tbl\
 Wjets_Numerator.tbl\
 Wjets_Fakerate.tbl\
-Results.tbl
+OSSUSY.tbl\
+SSSUSY.tbl
+#Results.tbl\
 
 
 FAKETABLES = Wjets_Numerator.tbl Wjets_FOs_Not_Numerator.tbl	\

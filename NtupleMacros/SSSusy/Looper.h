@@ -15,26 +15,26 @@
 // #define PRETTY_PRINT(args ...) args
 // PRETTY_PRINT (
      enum {
-       CUT_TTBAR_TYPE_WW,
-       CUT_TTBAR_TYPE_WO,
-       CUT_TTBAR_TYPE_OO,
+       CUT_TTBAR_TYPE_WW, //1
+       CUT_TTBAR_TYPE_WO, 
+       CUT_TTBAR_TYPE_OO, 
        CUT_TRUE_MU_FROM_W,
        CUT_TRUE_EL_FROM_W,
        CUT_NOT_TRUE_GAMMA_FROM_MUON,
        CUT_MAX_PT,
        CUT_MIN_PT,
        CUT_MU_PT,
-       CUT_SAME_SIGN,
-       CUT_OPP_SIGN,
-       // 	  CUT_PASS2_MET,
-       // 	  CUT_PASS4_MET,
-       // 	  CUT_PASS2_TCMET,
-       // 	  CUT_PASS4_TCMET,
-       CUT_TCMET,
+       CUT_SAME_SIGN, //10
+       CUT_OPP_SIGN, 
+       CUT_PASS_CONVERSIONVETO,
+       CUT_PASS_WZVETO,
+       CUT_PASS_FLIPVETO,
+       CUT_TCMET,  //15
+       CUT_CALOJET,
        CUT_LT_GOOD,
        CUT_LL_GOOD,
        CUT_LT_ISO,
-       CUT_LL_ISO,
+       CUT_LL_ISO, //20
        CUT_MU_GOOD,
        CUT_MU_ISO,
        CUT_PASS_ZVETO,
@@ -72,6 +72,29 @@
 //   cuts_t baseline_cuts_without_lt_pt = baseline_cuts & ~CUT_BIT(CUT_LT_PT);
  
 // define useful cut combinations here
+
+// this is the SUSY baseline set of cuts
+const static cuts_t baselineOSSUSY_cuts = 
+  (CUT_BIT(CUT_MIN_PT)		) | 
+  (CUT_BIT(CUT_MAX_PT)		) | 
+  (CUT_BIT(CUT_OPP_SIGN)        ) | 
+  (CUT_BIT(CUT_TCMET)		) |  
+  (CUT_BIT(CUT_PASS_TRIGGER)    ) |  
+  (CUT_BIT(CUT_CALOJET)   	) |  
+  (CUT_BIT(CUT_PASS_CONVERSIONVETO) ) |
+  (CUT_BIT(CUT_PASS_WZVETO)     ) |
+  (CUT_BIT(CUT_PASS_FLIPVETO)   ) |
+  (CUT_BIT(CUT_LT_GOOD)		) | 
+  (CUT_BIT(CUT_LL_GOOD)		) | 
+  (CUT_BIT(CUT_LT_ISO)	        ) |  
+  (CUT_BIT(CUT_LL_ISO)        	) 
+  ;   
+
+// this is the SUSY baseline set of cuts
+const static cuts_t baselineSSSUSY_cuts = 
+  (baselineOSSUSY_cuts & ~CUT_BIT(CUT_OPP_SIGN) )
+  | CUT_BIT(CUT_SAME_SIGN)
+  ;
 
 // this is the current baseline set of cuts
 const static cuts_t baseline_cuts = 

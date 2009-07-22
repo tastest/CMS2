@@ -42,7 +42,7 @@ void Looper::BookHistos ()
 //        hdphiLep		= new NMinus1Hist(sample_, "dphiLep"         ,	 50	, 0, M_PI	, cuts_, 0	);
 //        hdilMass		= new NMinus1Hist(sample_, "dilMass"         ,	 30	, 0, 300	, cuts_, CUT_BIT(CUT_PASS_ZVETO) | CUT_BIT(CUT_PASS_ADDZVETO) | CUT_BIT(CUT_IN_Z_WINDOW));
 //        hdilPt		= new NMinus1Hist(sample_, "dilPt"           ,	 100	, 0, 300	, cuts_, 0	);
-//        hmet		= new NMinus1Hist(sample_, "met"             ,	 20	, 0, 100	, cuts_, CUT_BIT(CUT_PASS4_MET) | CUT_BIT(CUT_PASS2_MET) | CUT_BIT(CUT_PASS4_TCMET) | CUT_BIT(CUT_PASS2_TCMET)	);
+       hmet		= new NMinus1Hist(sample_, "met"             ,	 40	, 0, 200	, cuts_, CUT_BIT(CUT_TCMET)	);
 //        hmetSpec		= new NMinus1Hist(sample_, "metSpec"         ,	 20	, 0, 100	, cuts_, CUT_BIT(CUT_PASS4_MET) | CUT_BIT(CUT_PASS2_MET) | CUT_BIT(CUT_PASS4_TCMET) | CUT_BIT(CUT_PASS2_TCMET)  );
 //        hmetTrkCorr	= new NMinus1Hist(sample_, "metTrkCorr"      ,	 100	, 0, 200	, cuts_, CUT_BIT(CUT_PASS4_MET) | CUT_BIT(CUT_PASS2_MET) | CUT_BIT(CUT_PASS4_TCMET) | CUT_BIT(CUT_PASS2_TCMET)	);
 //        hptJet1		= new NMinus1Hist(sample_, "ptJet1"          ,	 100	, 0, 300	, cuts_, 0		);
@@ -151,9 +151,6 @@ cuts_t Looper::DilepSelect (int i_hyp)
        ret |= CUT_BIT(CUT_TTBAR_TYPE_OO);
      }
 
-     // pass trigger?
-     if (passTriggersMu9orLisoE15(cms2.hyp_type()[i_hyp]))
-	  ret |= CUT_BIT(CUT_PASS_TRIGGER);
      // pt cuts
      if( TMath::Max(cms2.hyp_lt_p4()[i_hyp].pt(),cms2.hyp_ll_p4()[i_hyp].pt()) > 20. ) {
        ret |= (CUT_BIT(CUT_MAX_PT));
@@ -170,17 +167,56 @@ cuts_t Looper::DilepSelect (int i_hyp)
      // 	  ret |= (CUT_BIT(CUT_LT_PT));
      //      if (cms2.hyp_ll_p4()[i_hyp].pt() > 20.0) 
      // 	  ret |= (CUT_BIT(CUT_LL_PT));
+
      // sign cuts
      if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] < 0 ) 
 	  ret |= (CUT_BIT(CUT_OPP_SIGN));
      if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) 
 	  ret |= (CUT_BIT(CUT_SAME_SIGN));
+
      // track corrected MET
-     const TVector3 trkCorr; // well, don't correct until the tcmet in
-			     // the 2_2 samples is figured out...
-     // const TVector3 trkCorr = correctMETforTracks();
      if (cms2.evt_tcmet() > 80.)
-	  ret |= (CUT_BIT(CUT_TCMET));
+       ret |= (CUT_BIT(CUT_TCMET));
+
+     // require a muon or electron trigger?
+     if( GoodSusyTrigger( cms2.hyp_type()[i_hyp] ) )
+       ret |= (CUT_BIT(CUT_PASS_TRIGGER));
+     //      // pass trigger?
+     //      if (passTriggersMu9orLisoE15(cms2.hyp_type()[i_hyp]))
+     // 	  ret |= CUT_BIT(CUT_PASS_TRIGGER);
+     
+     // this cuts at 80 on tcmet too...
+     //     if ( passMetVJets09(80., true) ) 
+     //	  ret |= (CUT_BIT(CUT_TCMET));
+
+     bool conversion = false;
+     bool mischarge  = false;
+     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
+       int elIndex = cms2.hyp_ll_index()[i_hyp];
+       if ( conversionElectron(elIndex))   conversion = true;
+       if ( isChargeFlip(elIndex))         mischarge = true;
+     }
+     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
+       int elIndex = cms2.hyp_lt_index()[i_hyp];
+       if ( conversionElectron(elIndex))   conversion = true;
+       if ( isChargeFlip(elIndex))         mischarge = true;
+     } 
+     if(!conversion)
+       ret |= CUT_BIT( CUT_PASS_CONVERSIONVETO);
+     if(!additionalZvetoSUSY09(i_hyp))
+       ret |= CUT_BIT( CUT_PASS_WZVETO);
+     if(!mischarge)
+       ret |= CUT_BIT( CUT_PASS_FLIPVETO);
+
+     // require at least 1 corrected CaloJet with >100 GeV pT
+     vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > caloJets;
+     caloJets.clear();
+     caloJets = getCaloJets(i_hyp) ;
+     if( caloJets.size() > 0 ) {
+       if ( caloJets[0].Pt() > 100. ) 
+         ret |= (CUT_BIT(CUT_CALOJET));
+     }
+
      // muon quality
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 13 && GoodSusyMuonWithoutIsolation(cms2.hyp_lt_index()[i_hyp]) ) 
        ret |= CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_MU_GOOD);
@@ -193,14 +229,20 @@ cuts_t Looper::DilepSelect (int i_hyp)
 	  ret |= CUT_BIT(CUT_LL_ISO) | CUT_BIT(CUT_MU_ISO);
      }
      // electron quality
-     if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && GoodSusyElectronWithoutIsolation(cms2.hyp_lt_index()[i_hyp]) )
+     if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && GoodSusyElectronWithoutIsolation(cms2.hyp_lt_index()[i_hyp]) )//&& isFakeable(cms2.hyp_lt_index()[i_hyp]) )
 	  ret |= CUT_BIT(CUT_LT_GOOD);
-     if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && GoodSusyElectronWithoutIsolation(cms2.hyp_ll_index()[i_hyp]) )
+     if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && GoodSusyElectronWithoutIsolation(cms2.hyp_ll_index()[i_hyp]) )//&& isFakeable(cms2.hyp_ll_index()[i_hyp]) )
 	  ret |= CUT_BIT(CUT_LL_GOOD);
-     if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && PassSusyElectronIsolation(cms2.hyp_lt_index()[i_hyp], false)) {
+//      if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && PassSusyElectronIsolation(cms2.hyp_lt_index()[i_hyp], false)) { // had calo iso disabled by accident 090722
+// 	  ret |= CUT_BIT(CUT_LT_ISO);
+//      }
+//      if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && PassSusyElectronIsolation(cms2.hyp_ll_index()[i_hyp], false)) { // had calo iso disabled by accident 090722
+// 	  ret |= CUT_BIT(CUT_LL_ISO);
+//      }     
+     if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && PassSusyElectronIsolation(cms2.hyp_lt_index()[i_hyp], true)) {
 	  ret |= CUT_BIT(CUT_LT_ISO);
      }
-     if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && PassSusyElectronIsolation(cms2.hyp_ll_index()[i_hyp], false)) {
+     if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && PassSusyElectronIsolation(cms2.hyp_ll_index()[i_hyp], true)) {
 	  ret |= CUT_BIT(CUT_LL_ISO);
      }     
      // Z veto
@@ -499,7 +541,7 @@ void Looper::FillDilepHistos (int i_hyp)
 //      hdilPt->Fill(cuts_passed, myType, cms2.hyp_p4()[i_hyp].pt(), weight);
     
 //      // Met and Met special
-//      hmet->Fill(cuts_passed, myType, cms2.evt_metMuonJESCorr(), weight);      
+      hmet->Fill(cuts_passed, myType, cms2.evt_tcmet(), weight);      
 //      hmetSpec->Fill(cuts_passed, myType, 
 // 		    MetSpecial(cms2.evt_metMuonJESCorr(), cms2.evt_metMuonJESCorrPhi(), i_hyp),
 // 		    weight);

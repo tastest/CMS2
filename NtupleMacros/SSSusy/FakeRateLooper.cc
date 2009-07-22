@@ -21,7 +21,45 @@ void FakeRateLooper::BookHistos 	()
      fake_syst = new TH2F("fake_syst", "fake syst uncertainty;#eta;pt", 
 			  fakeRate().GetNbinsX(), fakeRate().GetXaxis()->GetXbins()->GetArray(),
 			  fakeRate().GetNbinsY(), fakeRate().GetYaxis()->GetXbins()->GetArray());
+
      Looper::BookHistos();
+
+//      for (unsigned int bucket = 0;
+//           bucket < 4;
+//           ++bucket ) {
+//        hnJet3D_[bucket] = book3DVarHist(Form("%s_%s_%s",sample_.name.c_str(),"nJet3D",dilepton_hypo_names[bucket]),
+//                                         Form("%s_%s_%s",sample_.name.c_str(),"nJet3D",dilepton_hypo_names[bucket]),
+//                                         hnJet->GetNBinsX(), hnJet->GetXmin(), hnJet->GetXmax(),
+//                                         fakeRate().GetNbinsX(), fakeRate().GetXaxis()->GetXbins()->GetArray(),
+//                                         fakeRate().GetNbinsY(), fakeRate().GetYaxis()->GetYbins()->GetArray(),
+//                                         "n_{jet}","#eta", "p_{T} [GeV]", sample_.histo_color);
+
+//        helPt3D_[bucket] = book3DVarHist(Form("%s_%s_%s",sample_.name.c_str(),"elPt3D",dilepton_hypo_names[bucket]),
+//                                         Form("%s_%s_%s",sample_.name.c_str(),"elPt3D",dilepton_hypo_names[bucket]),
+//                                         helPt->GetNBinsX(), helPt->GetXmin(), helPt->GetXmax(),
+//                                         fakeRate().GetNbinsX(), fakeRate().GetXaxis()->GetXbins()->GetArray(),
+//                                         fakeRate().GetNbinsY(), fakeRate().GetYaxis()->GetYbins()->GetArray(),
+// //                                         ptNBins,ptBins,
+// //                                         fakeXNBins,fakeXBins,
+// //                                         fakeYNBins,fakeYBins,
+//                                         "p_{T}^{e} [GeV]","#eta", "p_{T} [GeV]",sample_.histo_color);
+//        helEta3D_[bucket] = book3DVarHist(Form("%s_%s_%s",sample_.name.c_str(),"elEta3D",dilepton_hypo_names[bucket]),
+//                                          Form("%s_%s_%s",sample_.name.c_str(),"elEta3D",dilepton_hypo_names[bucket]),
+//                                         helEta->GetNBinsX(), helEta->GetXmin(), helEta->GetXmax(),
+//                                         fakeRate().GetNbinsX(), fakeRate().GetXaxis()->GetXbins()->GetArray(),
+//                                         fakeRate().GetNbinsY(), fakeRate().GetYaxis()->GetYbins()->GetArray(),
+// //                                          etaNBins,etaBins,
+// //                                          fakeXNBins,fakeXBins,
+// //                                          fakeYNBins,fakeYBins,
+//                                          "#eta^{e} [GeV]","#eta", "p_{T} [GeV]",sample_.histo_color);
+//        //        hmet3D_[bucket] = book3DVarHist(Form("%s_%s_%s",sample_.name.c_str(),"met3D",dilepton_hypo_names[bucket]),
+//        //                                        Form("%s_%s_%s",sample_.name.c_str(),"met3D",dilepton_hypo_names[bucket]),
+//        //                                        metNBins,metBins,
+//        //                                        fakeXNBins,fakeXBins,
+//        //                                        fakeYNBins,fakeYBins,
+//        //                                        "MET [GeV]","#eta", "p_{T} [GeV]",sample_.histo_color);
+//      }
+
 }
 
 cuts_t FakeRateLooper::DilepSelect (int i_hyp)
@@ -113,12 +151,18 @@ void FakeRateLooper::FillDilepHistos (int i_hyp)
 
 
      hnJet->Fill(cuts_passed, myType, cms2.hyp_njets()[i_hyp], weight);
+     //     hnJet3D_[myType]->Fill(cms2.hyp_njets()[i_hyp],eta,pt, weight * err);
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
        helPt->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].pt(), weight);
        helEta->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].eta(), weight);
        heleRelIso->Fill(cuts_passed, myType, inv_el_relsusy_iso(cms2.hyp_lt_index()[i_hyp], true), weight);
        helPdgId->Fill(cuts_passed, myType, abs(cms2.els_mc_id()[ cms2.hyp_lt_index()[i_hyp] ]), weight);
        helMoPdgId->Fill(cuts_passed, myType, abs(cms2.els_mc_motherid()[ cms2.hyp_lt_index()[i_hyp] ]), weight);
+//        const double err = elFakeProb(cms2.hyp_lt_index()[i_hyp], 1) -
+//          elFakeProb(cms2.hyp_lt_index()[i_hyp], 0);
+//        helPt3D_[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].pt(),eta,pt, weight * err);
+//        helEta3D_[myType]->Fill(cms2.hyp_lt_p4()[i_hyp].eta(),eta,pt, weight * err);
+//      //     hmet3D_[myType]->Fill(cms2.evt_tcmet(),eta,pt, weight * err);
        if(
           (abs(cms2.els_mc_id()[ cms2.hyp_lt_index()[i_hyp] ])==11 && abs(cms2.els_mc_motherid()[ cms2.hyp_lt_index()[i_hyp] ]) == 22) ||
           (abs(cms2.els_mc_id()[ cms2.hyp_lt_index()[i_hyp] ])==22)                                                                    ||
@@ -146,6 +190,11 @@ void FakeRateLooper::FillDilepHistos (int i_hyp)
        heleRelIso->Fill(cuts_passed, myType, inv_el_relsusy_iso(cms2.hyp_ll_index()[i_hyp], true), weight);
        helPdgId->Fill(cuts_passed, myType, abs(cms2.els_mc_id()[ cms2.hyp_ll_index()[i_hyp] ]), weight);
        helMoPdgId->Fill(cuts_passed, myType, abs(cms2.els_mc_motherid()[ cms2.hyp_ll_index()[i_hyp] ]), weight);
+//        const double err = elFakeProb(cms2.hyp_ll_index()[i_hyp], 1) -
+//          elFakeProb(cms2.hyp_ll_index()[i_hyp], 0);
+//        helPt3D_[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].pt(),eta,pt, weight * err);
+//        helEta3D_[myType]->Fill(cms2.hyp_ll_p4()[i_hyp].eta(),eta,pt, weight * err);
+//      //     hmet3D_[myType]->Fill(cms2.evt_tcmet(),eta,pt, weight * err);
        if(
           (abs(cms2.els_mc_id()[ cms2.hyp_ll_index()[i_hyp] ])==11 && abs(cms2.els_mc_motherid()[ cms2.hyp_ll_index()[i_hyp] ]) == 22) ||
           (abs(cms2.els_mc_id()[ cms2.hyp_ll_index()[i_hyp] ])==22)                                                                    ||
@@ -169,3 +218,60 @@ void FakeRateLooper::FillDilepHistos (int i_hyp)
      }
 
 }
+
+// bool FakeRateLooper::fillErrorInPrediction(TH1F* prediction,
+//                                            TH3F* predictionError,
+//                                            bool addStatisticalError) {
+//   //
+//   // calculate error for prediction from predictionError
+//   //
+
+//   for (int predictionBin = 0;
+//        predictionBin <= prediction->GetNbinsX()+1;
+//        ++predictionBin ) {
+//     float err2 = 0;
+//     for ( int fakeXBin = 0;
+//           fakeXBin <= fakeRate().GetNbinsX()+1;
+//           ++fakeXBin ) {
+//       for ( int fakeYBin = 0;
+//             fakeYBin <= fakeRate().GetNbinsY()+1;
+//             ++fakeYBin ) {
+//         err2 += predictionError->GetBinContent(predictionBin,fakeXBin,fakeYBin) *
+//           predictionError->GetBinContent(predictionBin,fakeXBin,fakeYBin);
+//       }
+//     }
+//     float err = 0;
+//     if ( addStatisticalError ) {
+//       err = sqrt( prediction->GetBinError(predictionBin) *
+//                   prediction->GetBinError(predictionBin) +
+//                   err2 );
+//     } else {
+//       err = sqrt(err2);
+//     }
+
+//     prediction->SetBinError(predictionBin,err);
+//   }
+//   return true;
+// }
+
+
+// void FakeRateLooper::End ()
+// {
+//   //------------------------------------------------------------
+//   //Example status message at the end of a looper; edit for your
+//   //application
+//   //------------------------------------------------------------
+
+//   // treat errors correctly
+//   for (unsigned int bucket = 0;
+//        bucket < 4;
+//        ++bucket ) {
+//     fillErrorInPrediction(hnJet_[bucket],hnJet3D_[bucket]);
+//     fillErrorInPrediction(helPt_[bucket],helPt3D_[bucket]);
+//     fillErrorInPrediction(helEta_[bucket],helEta3D_[bucket]);
+//     fillErrorInPrediction(hmet_[bucket],hmet3D_[bucket]);
+//   }
+
+//   // finish with std End
+//   Looper::End();
+// }

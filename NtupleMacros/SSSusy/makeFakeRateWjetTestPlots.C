@@ -12,10 +12,10 @@
   bool subtract_realE = false;
 
   // use SameSign?
-  bool doSS = true; 
+  bool doSS = true;
 
-      TString sample="wjetsAlpgen_";
-      //        TString sample="wjets_";
+  TString sample="wjetsAlpgen_";
+  //TString sample="wjets_";
   //  TString sample="ttbar_";
   
   TString observed = "Observed (Numerator)";
