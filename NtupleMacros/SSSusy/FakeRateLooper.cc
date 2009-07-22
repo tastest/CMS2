@@ -95,45 +95,40 @@ void FakeRateLooper::FillDilepHistos (int i_hyp)
      double weight = Weight(i_hyp);
      
      double fr_ll = 0;
-     if ((cuts_passed & (CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LT_ISO))) == 
-	 (CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LT_ISO))) { // muon truth tag is already in global cuts
-// 	  const double eta = cms2.hyp_ll_p4()[i_hyp].eta();
-// 	  const double pt = cms2.hyp_ll_p4()[i_hyp].pt();
-	  switch (abs(cms2.hyp_ll_id()[i_hyp])) {
-	  case 11:
-	       if (isFakeable(cms2.hyp_ll_index()[i_hyp]) &&
-		   not isNumeratorElectron(cms2.hyp_ll_index()[i_hyp]))
-		    fr_ll = elFakeProb(cms2.hyp_ll_index()[i_hyp], 0);
-	       break;
- 	  case 13:
-// 	       if (isFakeableMuon(cms2.hyp_ll_index()[i_hyp]) &&
-// 		   not isNumeratorMuon(cms2.hyp_ll_index()[i_hyp]))
-// 		    fr_ll = muFakeProb(cms2.hyp_ll_index()[i_hyp], 0);
- 	       break;
-	  default:
-	       assert(0);
-	  }
+     // muon truth&ID/iso tags are already in global cuts
+     // 	  const double eta = cms2.hyp_ll_p4()[i_hyp].eta();
+     // 	  const double pt = cms2.hyp_ll_p4()[i_hyp].pt();
+     switch (abs(cms2.hyp_ll_id()[i_hyp])) {
+     case 11:
+       if (isFakeable(cms2.hyp_ll_index()[i_hyp]) &&
+           not isNumeratorElectron(cms2.hyp_ll_index()[i_hyp]))
+         fr_ll = elFakeProb(cms2.hyp_ll_index()[i_hyp], 0);
+       break;
+     case 13:
+       // 	       if (isFakeableMuon(cms2.hyp_ll_index()[i_hyp]) &&
+       // 		   not isNumeratorMuon(cms2.hyp_ll_index()[i_hyp]))
+       // 		    fr_ll = muFakeProb(cms2.hyp_ll_index()[i_hyp], 0);
+       break;
+     default:
+       assert(0);
      }
 
      double fr_lt = 0;
-     if ((cuts_passed & (CUT_BIT(CUT_LL_GOOD) | CUT_BIT(CUT_LL_ISO))) == 
-	 (CUT_BIT(CUT_LL_GOOD) | CUT_BIT(CUT_LL_ISO))) {
-// 	  const double eta = cms2.hyp_lt_p4()[i_hyp].eta();
-// 	  const double pt = cms2.hyp_lt_p4()[i_hyp].pt();
-	  switch (abs(cms2.hyp_lt_id()[i_hyp])) {
-	  case 11:
-	       if (isFakeable(cms2.hyp_lt_index()[i_hyp]) &&
-		   not isNumeratorElectron(cms2.hyp_lt_index()[i_hyp]))
-		    fr_lt = elFakeProb(cms2.hyp_lt_index()[i_hyp], 0);
-	       break;
-	  case 13:
-// 	       if (isFakeableMuon(cms2.hyp_lt_index()[i_hyp]) &&
-// 		   not isNumeratorMuon(cms2.hyp_lt_index()[i_hyp]))
-// 		    fr_lt = muFakeProb(cms2.hyp_lt_index()[i_hyp], 0);
-	       break;
-	  default:
-	       assert(0);
-	  }
+     // 	  const double eta = cms2.hyp_lt_p4()[i_hyp].eta();
+     // 	  const double pt = cms2.hyp_lt_p4()[i_hyp].pt();
+     switch (abs(cms2.hyp_lt_id()[i_hyp])) {
+     case 11:
+       if (isFakeable(cms2.hyp_lt_index()[i_hyp]) &&
+           not isNumeratorElectron(cms2.hyp_lt_index()[i_hyp]))
+         fr_lt = elFakeProb(cms2.hyp_lt_index()[i_hyp], 0);
+       break;
+     case 13:
+       // 	       if (isFakeableMuon(cms2.hyp_lt_index()[i_hyp]) &&
+       // 		   not isNumeratorMuon(cms2.hyp_lt_index()[i_hyp]))
+       // 		    fr_lt = muFakeProb(cms2.hyp_lt_index()[i_hyp], 0);
+       break;
+     default:
+       assert(0);
      }
 
      weight *= fr_lt / (1 - fr_lt) + fr_ll / (1 - fr_ll);

@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.3 2009/07/22 07:58:13 ibloch Exp $
+# $Id: Makefile,v 1.4 2009/07/22 18:14:42 ibloch Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
@@ -34,14 +34,18 @@ LIBS = $(CORELIB) $(TOOLSLIB) $(LOOPERLIB)
 #Results_NoNtrks.tbl Wjets_Numerator.tbl Wjets_FOs_Not_Numerator.tbl	\
 #Wjets_Fakerate.tbl
 
-TABLES = Wjets_SS_Fakerate.tbl\
-Wjets_FOs_Not_Numerator.tbl\
-Wjets_SS_Numerator.tbl\
-Wjets_SS_FOs_Not_Numerator.tbl\
+TABLES = \
+Ttbar_SS_Fakerate.tbl\
+Ttbar_SS_Numerator.tbl\
+Ttbar_SS_FOs_Not_Numerator.tbl\
 Wjets_Numerator.tbl\
 Wjets_Fakerate.tbl\
+Wjets_FOs_Not_Numerator.tbl\
 OSSUSY.tbl\
 SSSUSY.tbl
+#Wjets_SS_Numerator.tbl\
+#Wjets_SS_Fakerate.tbl\
+#Wjets_SS_FOs_Not_Numerator.tbl\
 #Results.tbl\
 
 

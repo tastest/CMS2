@@ -412,3 +412,18 @@ int Wjets_SS_Fakerate ()
   //     return run<FakeRateLooper>(fakerate_ss_denominator_not_numerator_cuts, "Wjets_SS_Fakerate", 1 << LOOP_TTBAR);
      return run<FakeRateLooper>(fakerate_ss_denominator_not_numerator_cuts, "Wjets_SS_Fakerate");
 }
+
+int Ttbar_SS_Numerator ()
+{
+  return run<Looper>(fakerate_ss_WO_numerator_cuts, "Ttbar_SS_Numerator");
+}
+
+int Ttbar_SS_FOs_Not_Numerator ()
+{
+     return run<Looper>(fakerate_ss_WO_denominator_not_numerator_cuts, "Ttbar_SS_FOs_Not_Numerator");
+}
+
+int Ttbar_SS_Fakerate ()
+{
+     return run<FakeRateLooper>(fakerate_ss_WO_denominator_not_numerator_cuts, "Ttbar_SS_Fakerate");
+}

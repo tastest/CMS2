@@ -12,10 +12,10 @@
   bool subtract_realE = false;
 
   // use SameSign?
-  bool doSS = true;
+  bool doSS = false;
 
-  TString sample="wjetsAlpgen_";
-  //TString sample="wjets_";
+  //  TString sample="wjetsAlpgen_";
+    TString sample="wjets_";
   //  TString sample="ttbar_";
   
   TString observed = "Observed (Numerator)";
@@ -25,13 +25,26 @@
   int rebinvalue_pt = 1;
   int rebinvalue_eta = 1;
 
-  if(doSS) {
-    TFile *_file0 = TFile::Open("Wjets_SS_Numerator.root");
-    TFile *_file2 = TFile::Open("Wjets_SS_Fakerate.root");
+  if( sample.Contains("wjets") ) {
+    if(doSS) {
+      TFile *_file0 = TFile::Open("Wjets_SS_Numerator.root");
+      TFile *_file2 = TFile::Open("Wjets_SS_Fakerate.root");
+    }
+    else {
+      TFile *_file0 = TFile::Open("Wjets_Numerator.root");
+      TFile *_file2 = TFile::Open("Wjets_Fakerate.root");
+    }
   }
   else {
-    TFile *_file0 = TFile::Open("Wjets_Numerator.root");
-    TFile *_file2 = TFile::Open("Wjets_Fakerate.root");
+    if(doSS) {
+      TFile *_file0 = TFile::Open("Ttbar_SS_Numerator.root");
+      TFile *_file2 = TFile::Open("Ttbar_SS_Fakerate.root");
+    }
+    else {
+      TFile *_file0 = TFile::Open("Ttbar_Numerator.root");
+      TFile *_file2 = TFile::Open("Ttbar_Fakerate.root");
+    }
+
   }
   //   TFile *_file0 = TFile::Open("Wjets_SS_FOs_Not_Numerator.root");
   //  TFile *_file2 = TFile::Open("Wjets_FOs_Not_Numerator.root");
