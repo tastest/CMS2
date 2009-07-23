@@ -1715,77 +1715,17 @@ vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getJPTJets(in
 }
 
 int ttbarconstituents(int i_hyp){
+  // Categories:
+  //WW = both leptons from W = 1
+  //WO = one of the two leptons from W and the other not = 2
+  //OO = neither of the two leptons is from a W = 3
 
-  // Catagories WW = 1, WO = 2, and OO = 3
-
-  bool isTrueLepton_ll = false;
-  bool isTrueLepton_lt = false;
-
-  isTrueLepton_ll = ( (abs(cms2.hyp_ll_id()[i_hyp]) == abs(cms2.hyp_ll_mc_id()[i_hyp]) &&
-                       abs(cms2.hyp_ll_mc_motherid()[i_hyp]) < 50 //I wish I could match to W or Z explicitely, not in MGraph
-                       )
-                      || (cms2.hyp_ll_mc_id()[i_hyp]==22 &&
-                          TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.hyp_ll_mc_p4()[i_hyp])) <0.05
-                          && abs(cms2.hyp_ll_id()[i_hyp]) == abs(cms2.hyp_ll_mc_motherid()[i_hyp])
-                          )
-                      );
-
-  isTrueLepton_lt = ( (abs(cms2.hyp_lt_id()[i_hyp]) == abs(cms2.hyp_lt_mc_id()[i_hyp]) &&
-                       abs(cms2.hyp_lt_mc_motherid()[i_hyp]) < 50 //I wish I could match to W or Z explicitely, not in MGraph
-                       )
-                      || (cms2.hyp_lt_mc_id()[i_hyp]==22 &&
-                          TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.hyp_lt_mc_p4()[i_hyp])) <0.05
-                          && abs(cms2.hyp_lt_id()[i_hyp]) == abs(cms2.hyp_lt_mc_motherid()[i_hyp])
-                          )
-                      );
-
-  bool ttbarlep = false;
-  bool ttbarother = false;
-
-  //  if (genpCountPDGId(11,13,15) == 1) ttbarother = true;
-  if (genpCountPDGId(11,13,15) == 2) ttbarlep = true;
-
-
-  bool isrealW_ll = false;
-  bool isrealW_lt = false;
-
-  {
-    int els_mo = 0;
-    int mus_mo = 0;
-    int els_id = 0;
-    int mus_id = 0;
-    if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) els_mo = abs(cms2.els_mc3_motherid()[cms2.hyp_ll_index()[i_hyp]]);
-    if (abs(cms2.hyp_ll_id()[i_hyp]) == 13) mus_mo = abs(cms2.mus_mc3_motherid()[cms2.hyp_ll_index()[i_hyp]]);
-    if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) els_id = abs(cms2.els_mc3_id()[cms2.hyp_ll_index()[i_hyp]]);
-    if (abs(cms2.hyp_ll_id()[i_hyp]) == 13) mus_id = abs(cms2.mus_mc3_id()[cms2.hyp_ll_index()[i_hyp]]);
-    if ( (abs(cms2.hyp_ll_mc_motherid()[i_hyp]) == 24) || (els_mo == 24) || (mus_mo == 24) || (els_id == 24) || (mus_id == 24)) isrealW_ll = true;
-  }
-
-  {
-    int els_mo = 0;
-    int mus_mo = 0;
-    int els_id = 0;
-    int mus_id = 0;
-    if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) els_mo = abs(cms2.els_mc3_motherid()[cms2.hyp_lt_index()[i_hyp]]);
-    if (abs(cms2.hyp_lt_id()[i_hyp]) == 13) mus_mo = abs(cms2.mus_mc3_motherid()[cms2.hyp_lt_index()[i_hyp]]);
-    if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) els_id = abs(cms2.els_mc3_id()[cms2.hyp_lt_index()[i_hyp]]);
-    if (abs(cms2.hyp_lt_id()[i_hyp]) == 13) mus_id = abs(cms2.mus_mc3_id()[cms2.hyp_lt_index()[i_hyp]]);
-    if ((abs(cms2.hyp_lt_mc_motherid()[i_hyp]) == 24) || (els_mo == 24) || (mus_mo == 24) || (els_id == 24) || (mus_id == 24)) isrealW_lt = true;
-  }
-
-  bool isLepll = false;
-  bool isLeplt = false;
-
-  if (isTrueLepton_ll || isrealW_ll) isLepll = true;
-  if (isTrueLepton_lt || isrealW_lt) isLeplt = true;
-
-  if (isLepll && isLeplt && ttbarlep) {
-    return 1;
-  }  else if (isLepll || isLeplt ) {
-    return 2;
-  } else {
-    return 3;
-  }
+  int lttype = leptonIsFromW(cms2.hyp_lt_index()[i_hyp],cms2.hyp_lt_id()[i_hyp],cms2.hyp_lt_p4()[i_hyp] );
+  int lltype = leptonIsFromW(cms2.hyp_ll_index()[i_hyp],cms2.hyp_ll_id()[i_hyp],cms2.hyp_ll_p4()[i_hyp] );
+  if (lltype > 0 && lttype > 0) return 1;
+  else if( (lltype >0 && lttype <= 0) || (lttype >0 && lltype <=0) ) return 2;
+  else if( (lltype <=0 && lttype <=0) )return 3;
+  else { cout << "bug in ttbarconstituents"; return -999;}
 }
 
 //--------------------------------------------------------
