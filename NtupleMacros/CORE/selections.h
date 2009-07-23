@@ -167,6 +167,9 @@ std::vector <ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getJPTJ
 int ttbarconstituents(int i_hyp);
 bool additionalZvetoSUSY09(int i_hyp);
 
+bool idIsBeauty(int id);
+bool idIsCharm(int id);
+
 int leptonIsFromW(int idx, int id, LorentzVector v);
 
 bool isFakeableElSUSY09(int iEl);
