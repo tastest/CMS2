@@ -143,21 +143,16 @@ bool GoodSusyElectronWithoutIsolation(int index);
 bool GoodSusyElectronWithoutIsolationNoD0(int index);
 bool GoodSusyElectronWithIsolationLoose(int index, bool use_calo_iso); 
 bool PassSusyElectronIsolationLoose(int index, bool use_calo_iso);
-
 bool GoodSusyMuonWithIsolation(int index); 
 bool GoodSusyMuonWithoutIsolation(int index);
-
 double inv_mu_relsusy_iso(int index);
 double inv_el_relsusy_iso(int index, bool use_calo_iso);
-
 bool GoodSusyElectronWithIsolation(int index, bool use_calo_iso); 
 bool GoodSusyLeptonWithIsolation(int id, int index);
 bool GoodSusyLeptonID(int id, int index);
-
 bool PassSusyMuonIsolation(int index);
 bool PassSusyElectronIsolation(int index, bool use_calo_iso);
 bool PassSusyLeptonIsolation(int id, int index);
-
 bool GoodSusyLeptonID(int id, int index);
 bool GoodSusyTrigger(int dilType);
 int numberOfExtraElectronsSUSY(int i_hyp);
@@ -166,15 +161,13 @@ std::vector <ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getCalo
 std::vector <ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getJPTJets(int i_hyp); 
 int ttbarconstituents(int i_hyp);
 bool additionalZvetoSUSY09(int i_hyp);
-
 bool idIsBeauty(int id);
 bool idIsCharm(int id);
-
 int leptonIsFromW(int idx, int id, LorentzVector v);
-
 bool isFakeableElSUSY09(int iEl);
 bool isFakeableMuSUSY09(int iMu);
-
+bool isNumElSUSY09(int iEl);
+bool isNumMuSUSY09(int iMu);
 
 //TTDil08 fake rate functions
 bool isNumElTTDil08(int iEl);
@@ -185,5 +178,4 @@ bool isFakeableMuTTDil08(int iMu);
 bool trueGammaFromMuon(int electron);
 
 bool conversionElectron(int electron);
-
 #endif

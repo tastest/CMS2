@@ -1542,6 +1542,10 @@ bool GoodSusyElectronWithoutIsolation(int index) {
   if ( fabs(cms2.els_d0corr().at(index)) >= 0.02)   return false; 
   if ( cms2.els_closestMuon().at(index) != -1) return false; 
   if ( TMath::Abs(cms2.els_p4()[index].eta()) > 2.4) return false;
+// New
+//  if ( conversionElectron(index)) return false;
+//  if ( isChargeFlip(index)) return false;
+
   return true; 
 } 
 
@@ -1563,6 +1567,23 @@ bool GoodSusyMuonWithoutIsolation(int index) {
   if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4) return false;
   return true; 
 } 
+
+bool isNumElSUSY09(int iEl) {
+  Double_t pt = cms2.els_p4()[iEl].Pt();
+  if( pt < 10) return false;
+  if (!GoodSusyElectronWithoutIsolation(iEl)) return false;
+  if (!PassSusyElectronIsolation(iEl, true)) return false;
+  return true;
+}
+
+bool isNumMuSUSY09(int iMu) {
+  Double_t pt = cms2.mus_p4()[iMu].Pt();
+  if (pt < 10)  return false;
+  if (!GoodSusyMuonWithoutIsolation(iMu)) return false;
+  if (!PassSusyMuonIsolation(iMu)) return false;
+
+  return true;
+}
 
 double inv_mu_relsusy_iso(int index)
 {
@@ -1925,12 +1946,17 @@ bool isFakeableElSUSY09(int iEl){
  
   if( pt < 10)  return false;
   if( fabs( eta ) > 2.4 )  return false;
+// New
+  if ( conversionElectron(iEl)) return false;
+  if ( isChargeFlip(iEl)) return false;
+     
   //reject if electron is close to muon;
   if ( cms2.els_closestMuon()[iEl] > -1)  return false;
   // Isolation
   if  (inv_el_relsusy_iso(iEl, true) > 0.4) return false;
   // H/E
   if ( cms2.els_hOverE()[iEl]   > 0.2 ) return false;
+
   return true;
 }
 
@@ -1939,15 +1965,15 @@ bool isFakeableMuSUSY09(int iMu) {
 
   Double_t pt = cms2.mus_p4()[iMu].Pt();
   Double_t eta = cms2.mus_p4()[iMu].Eta();
- 
-  //only globalMuons
-  if(!(2 & cms2.mus_type()[iMu])) return false; // global muons
-  if(!(4 & cms2.mus_type()[iMu])) return false; // tracker muons
+  if (!((cms2.mus_type().at(iMu)) & (1<<1)) ) return false; // global muon
+  if (!((cms2.mus_type().at(iMu)) & (1<<2)) ) return false; // tracker muon
   if( pt < 10)  return false;
   if( fabs( eta ) > 2.4 ) return false;
-  //  if( cms2.mus_gfit_chi2()[iMu]/cms2.mus_gfit_ndof()[iMu] > 20) return false;
+  if( cms2.mus_gfit_chi2()[iMu]/cms2.mus_gfit_ndof()[iMu] > 20) return false;
   if (inv_mu_relsusy_iso(iMu) > 0.4 ) return false;
+  if (fabs(cms2.mus_d0corr().at(iMu))   >= 0.02) return false; 
   return true;
+
 }
 
 //--------------------------------------------------------------------
