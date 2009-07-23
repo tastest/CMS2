@@ -103,13 +103,13 @@ double FakeProb_v1 (int i_el, int add_error_times, int id)
   if (prob>1.0 || prob<0.0) {
     std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob << std::endl;
   }
-  if (prob==0.0){
-    std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob
-	     <<" for Et = " << pt
-	     <<" and Eta = " << eta
-	     <<" and ID = " << id
-	     << std::endl;
-  }
+//  if (prob==0.0){
+//    std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob
+//	     <<" for Et = " << pt
+//	     <<" and Eta = " << eta
+//	     <<" and ID = " << id
+//	     << std::endl;
+//  }
   return prob+add_error_times*prob_error;
 }
 
