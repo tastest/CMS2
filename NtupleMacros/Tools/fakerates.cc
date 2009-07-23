@@ -40,6 +40,11 @@ static TFile *mu_fakeRateFile_v1 = 0;
 static TH2F  *mu_fakeRate_v1 = 0;
 static TH2F  *mu_fakeRate_err_v1 = 0;
 
+static TFile *mu_fakeRateFile_v52 = 0;
+static TH2F  *mu_fakeRate_v52 = 0;
+static TH2F  *mu_fakeRate_err_v52 = 0;
+
+
 double elFakeProb_v2_2 (int i_el, int add_error_times)
 {
      float prob = 0.0;
@@ -65,6 +70,49 @@ double elFakeProb_v2_2 (int i_el, int add_error_times)
      }
      return prob+add_error_times*prob_error;
 }
+
+
+double FakeProb_v1 (int i_el, int add_error_times, int id)
+{
+  float prob = 0.0;
+  float prob_error = 0.0;
+  float pt = 0.0;
+  float eta = 0.0;
+  TH2F *theFakeRate;
+  TH2F *theFakeRateErr;
+
+  if (abs(id) == 11) {
+    theFakeRate = &fakeRate();
+    theFakeRateErr = &fakeRateError();
+    pt = cms2.els_p4()[i_el].Pt();
+    eta = fabs(cms2.els_p4()[i_el].eta());
+  }  else if (abs(id) == 13) {
+    theFakeRate =  &fakeRateMuon();
+    theFakeRateErr = &fakeRateErrorMuon();
+    pt = cms2.mus_p4()[i_el].Pt();
+    eta = fabs(cms2.mus_p4()[i_el].eta());
+  }
+
+  float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
+  if ( pt > upperEdge )
+    pt = upperEdge;
+  prob = theFakeRate->GetBinContent(theFakeRate->FindBin(eta,pt));
+  prob_error =
+    theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(eta,pt));
+  
+  if (prob>1.0 || prob<0.0) {
+    std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob << std::endl;
+  }
+  if (prob==0.0){
+    std::cout<<"ERROR FROM FAKE RATE!!! prob = " << prob
+	     <<" for Et = " << pt
+	     <<" and Eta = " << eta
+	     <<" and ID = " << id
+	     << std::endl;
+  }
+  return prob+add_error_times*prob_error;
+}
+
 
 // Is the i-th electron in the electron block a fakeable object?
 // For now: return true
@@ -849,9 +897,10 @@ bool isFakeNumeratorMuon_v1 (int index, int type)
   
 }
 
-//#define USE_V7
+// #define USE_V7
 //#define USE_V10
 //#define USE_V50
+// #define USE_V51
 //#define USE_V51
 #define USE_V52
 
@@ -1037,7 +1086,7 @@ TH2F &fakeRate ()
 	  el_fakeRate_err_v51 = dynamic_cast<TH2F *>(el_fakeRateFile_v51->Get("fakeRateTemplateError_elt_EleFakes"));
      }
      return *el_fakeRate_v51;
-#endif
+#endif 
 #ifdef USE_V52
      if ( el_fakeRateFile_v52 == 0 ) {
 	  el_fakeRateFile_v52 = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/fakeRates-v52_0.root", "read"); 
@@ -1173,34 +1222,38 @@ TH2F &fakeRateError ()
 
 TH2F &fakeRateMuon ()
 {
-     if ( mu_fakeRateFile_v1 == 0 ) {
-	  mu_fakeRateFile_v1 = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/fakeRatesMuon-v1_0.root", "read"); 
-	  if ( mu_fakeRateFile_v1 == 0 ) {
-	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRatesMuon-v1_0.root could not be found!!" << std::endl;
-	       std::cout << "Please make sure that $CMS2_LOCATION points to your CMS2 directory and that" << std::endl;
-	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRatesMuon-v1_0.root exists!" << std::endl;
-	       gSystem->Exit(1);
-	  }
-	  mu_fakeRate_v1 = dynamic_cast<TH2F *>(mu_fakeRateFile_v1->Get("fakeRateTemplate_mlt_MuoFakes"));
-	  mu_fakeRate_err_v1 = dynamic_cast<TH2F *>(mu_fakeRateFile_v1->Get("fakeRateTemplateError_mlt_MuoFakes"));
-     }
-     return *mu_fakeRate_v1;
+#ifdef USE_V52
+  if ( mu_fakeRateFile_v52 == 0 ) {
+    mu_fakeRateFile_v52 = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/QCDFRplots-v52.root", "read"); 
+    if ( mu_fakeRateFile_v52 == 0 ) {
+      std::cout << "$CMS2_LOCATION/NtupleMacros/data/QCDFRplots-v52.root could not be found!!" << std::endl;
+      std::cout << "Please make sure that $CMS2_LOCATION points to your CMS2 directory and that" << std::endl;
+      std::cout << "$CMS2_LOCATION/NtupleMacros/data/QCDFRplots-v52.root exists!" << std::endl;
+      gSystem->Exit(1);
+    }
+    mu_fakeRate_v52 = dynamic_cast<TH2F *>(mu_fakeRateFile_v52->Get("QCD_FRptvseta_mu"));
+    mu_fakeRate_err_v52 = dynamic_cast<TH2F *>(mu_fakeRateFile_v52->Get("QCD_FRErrptvseta_mu"));
+  }
+  return *mu_fakeRate_v52;
+#endif
 }
 
 TH2F &fakeRateErrorMuon ()
 {
-     if ( mu_fakeRateFile_v1 == 0 ) {
-	  mu_fakeRateFile_v1 = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/fakeRatesMuon-v1_0.root", "read"); 
-	  if ( mu_fakeRateFile_v1 == 0 ) {
-	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRatesMuon-v1_0.root could not be found!!" << std::endl;
-	       std::cout << "Please make sure that $CMS2_LOCATION points to your CMS2 directory and that" << std::endl;
-	       std::cout << "$CMS2_LOCATION/NtupleMacros/data/fakeRatesMuon-v1_0.root exists!" << std::endl;
-	       gSystem->Exit(1);
-	  }
-	  mu_fakeRate_v1 = dynamic_cast<TH2F *>(mu_fakeRateFile_v1->Get("fakeRateTemplate_mlt_MuoFakes"));
-	  mu_fakeRate_err_v1 = dynamic_cast<TH2F *>(mu_fakeRateFile_v1->Get("fakeRateTemplateError_mlt_MuoFakes"));
-     }
-     return *mu_fakeRate_err_v1;
+#ifdef USE_V52 
+  if ( mu_fakeRateFile_v52 == 0 ) {
+    mu_fakeRateFile_v52 = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/QCDFRplots-v52.root", "read");
+    if ( mu_fakeRateFile_v52 == 0 ) {
+      std::cout << "$CMS2_LOCATION/NtupleMacros/data/QCDFRplots-v52.root could not be found!!" << std::endl;
+      std::cout << "Please make sure that $CMS2_LOCATION points to your CMS2 directory and that" << std::endl;
+      std::cout << "$CMS2_LOCATION/NtupleMacros/data/QCDFRplots-v52.root exists!" << std::endl;
+      gSystem->Exit(1);
+    }
+    mu_fakeRate_v52 = dynamic_cast<TH2F *>(mu_fakeRateFile_v52->Get("QCD_FRptvseta_mu"));
+    mu_fakeRate_err_v52 = dynamic_cast<TH2F *>(mu_fakeRateFile_v52->Get("QCD_FRErrptvseta_mu"));
+  }
+  return *mu_fakeRate_err_v52;
+#endif
 }
 
 
