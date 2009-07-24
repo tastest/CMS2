@@ -84,7 +84,7 @@ double getSingleEleNum(double el_pt, double el_eta) {
     if( el_pt > 90.0 )  return 198.0;
     if( el_pt > 80.0 )  return 232.0;
     if( el_pt > 70.0 )  return 201.0;
-    if( el_pt > 60.0 )  return 2060;
+    if( el_pt > 60.0 )  return 206.0;
     if( el_pt > 50.0 )  return 162.0;
     if( el_pt > 40.0 )  return 113.0;
     if( el_pt > 30.0 )  return 77.0;
