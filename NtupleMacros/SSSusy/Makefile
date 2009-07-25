@@ -1,8 +1,8 @@
-# $Id: Makefile,v 1.4 2009/07/22 18:14:42 ibloch Exp $
+# $Id: Makefile,v 1.5 2009/07/25 17:21:52 ibloch Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
-CFLAGS = -Wall -Wno-unused-function -g -O2 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS) -DTOOLSLIB
+CFLAGS = -Wall -Wno-unused-function -g -O0 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS) -DTOOLSLIB
 
 LINKER = g++
 LINKERFLAGS = $(shell root-config --ldflags)
@@ -25,43 +25,39 @@ LOOPERLIB = libCMS2NtupleMacrosLooper.so
 
 LIBS = $(CORELIB) $(TOOLSLIB) $(LOOPERLIB)
 
-#TABLES = Results.tbl Feb_Results.tbl Feb_Results_With_Ntrks.tbl		\
-#Feb_Results_With_Ntrks.tbl Feb_Results_With_TcMET.tbl			\
-#Feb_Results_With_TrackJets.tbl Feb_Results_With_Btags.tbl		\
-#Feb_Results_NoPass4MET.tbl Feb_Results_With_CaloIso.tbl			\
-#Oct_Results.tbl Results_NoTcMET.tbl Results_NoTrackJets.tbl		\
-#Results_NoBtags.tbl Results_NoCaloIso.tbl Results_NoPass4MET.tbl	\
-#Results_NoNtrks.tbl Wjets_Numerator.tbl Wjets_FOs_Not_Numerator.tbl	\
-#Wjets_Fakerate.tbl
+RESULTTABLES = \
+SSSUSY.tbl\
+OSSUSY.tbl\
+TtbarBaseline_SS_FlipPredicted.tbl\
+TtbarBaseline_SS_FlipObserved.tbl\
+FRPredOSSUSY.tbl\
+FRPredSSSUSY.tbl
 
-TABLES = \
-Ttbar_SS_Fakerate.tbl\
+FLIPTABLES = \
+TtbarLoose_SS_FlipPredicted.tbl\
+TtbarLoose_SS_FlipObserved.tbl\
+TtbarBaseline_SS_FlipPredicted.tbl\
+TtbarBaseline_SS_FlipObserved.tbl
+
+FAKETABLES = \
+Wjets_Numerator.tbl\
+Wjets_FOs_Not_Numerator.tbl\
+Wjets_Fakerate.tbl\
+Wjets_SS_Numerator.tbl\
+Wjets_SS_FOs_Not_Numerator.tbl\
+Wjets_SS_Fakerate.tbl\
 Ttbar_SS_Numerator.tbl\
 Ttbar_SS_FOs_Not_Numerator.tbl\
-Wjets_Numerator.tbl\
-Wjets_Fakerate.tbl\
-Wjets_FOs_Not_Numerator.tbl\
-OSSUSY.tbl\
-SSSUSY.tbl
-#Wjets_SS_Numerator.tbl\
-#Wjets_SS_Fakerate.tbl\
-#Wjets_SS_FOs_Not_Numerator.tbl\
-#Results.tbl\
-
-
-FAKETABLES = Wjets_Numerator.tbl Wjets_FOs_Not_Numerator.tbl	\
-Wjets_Fakerate.tbl Wjets_Oingo.tbl \
-Wjets_SS_Fakerate.tbl Wjets_SS_FOs_Not_Numerator.tbl Wjets_SS_Numerator.tbl \
-Wjets_Histat.tbl Wjets_Histat_Fakerate.tbl Wjets_Histat_SS.tbl Wjets_Histat_SS_Fakerate.tbl
-
-NM1TABLES = Results_NoBtags.tbl Results_NoCaloIso.tbl Results_CaloIso_1_6.tbl	\
-Calojet.tbl Calojet_Trkjet.tbl Results_NoJetVeto.tbl Results_NoPass4MET.tbl\
-Results_NoPass2MET.tbl Results_NoZVeto.tbl
-
-RESULTTABLES = Results.tbl Results_W.tbl Results_DY.tbl Results_Vgamma.tbl
-
-EFFTABLES = Efficiency_base.tbl Efficiency_trigger.tbl Efficiency_id.tbl Efficiency_iso.tbl \
-Efficiency_tcmet.tbl Efficiency_jet.tbl Efficiency_zveto.tbl Efficiency_muveto.tbl
+Ttbar_SS_Fakerate.tbl\
+Wjets_MuonNumerator.tbl\
+Wjets_FOs_Not_MuonNumerator.tbl\
+Wjets_MuonFakerate.tbl\
+Wjets_SS_MuonNumerator.tbl\
+Wjets_SS_FOs_Not_MuonNumerator.tbl\
+Wjets_SS_MuonFakerate.tbl\
+Ttbar_SS_MuonNumerator.tbl\
+Ttbar_SS_FOs_Not_MuonNumerator.tbl\
+Ttbar_SS_MuonFakerate.tbl
 
 .PHONY: all
 all:	$(LIBS) 
@@ -70,20 +66,17 @@ all:	$(LIBS)
 libs:	$(LIBS)
 
 .PHONY: tables
-#tables:	$(RESULTTABLES) $(NM1TABLES)  $(FAKETABLES) 
-tables:	$(TABLES)
+tables:	resulttables fliptables faketables
+
+.PHONY: resulttables
+resulttables: $(RESULTTABLES)
+
+.PHONY: fliptables
+fliptables: $(FLIPTABLES)
 
 .PHONY: faketables
 faketables: $(FAKETABLES)
 
-.PHONY: efftables
-efftables: $(EFFTABLES)
-
-.PHONY: nm1tables
-nm1tables: $(NM1TABLES)
-
-.PHONY: resulttables
-resulttables: $(RESULTTABLES)
 
 $(TOOLSLIB):	$(TOOLSOBJECTS) 
 	$(LINKER) $(LINKERFLAGS) -shared $(TOOLSOBJECTS) -o $@ 
