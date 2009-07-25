@@ -1,0 +1,1896 @@
+Sample         ww: Events processed (weight):    73920.0.  Events:   174722
+Sample         ww: Events before cut (weight):     8517.7.  Events:    20133
+Sample         ww: Duplicate events:     1128.  Weight      477.2
+Sample         ww: Total candidate count (ee em mm all):      171      219      103      493. Total weight      0.245 +-      0.123      0.422 +-      0.160      0.123 +-      0.052      0.790 +-      0.209
+Sample         ww: cands passing cut   0:        0.0
+Sample         ww: cands passing cut   1:        0.0
+Sample         ww: cands passing cut   2:        0.0
+Sample         ww: cands passing cut   3:        0.0
+Sample         ww: cands passing cut   4:        0.0
+Sample         ww: cands passing cut   5:        0.0
+Sample         ww: cands passing cut * 6:        0.0
+Sample         ww: cands passing cut * 7:        0.0
+Sample         ww: cands passing cut   8:        0.0
+Sample         ww: cands passing cut   9:        0.0
+Sample         ww: cands passing cut *10:        0.0
+Sample         ww: cands passing cut *11:        0.0
+Sample         ww: cands passing cut *12:        0.0
+Sample         ww: cands passing cut *13:        0.0
+Sample         ww: cands passing cut *14:        0.0
+Sample         ww: cands passing cut *15:        0.0
+Sample         ww: cands passing cut  16:        0.0
+Sample         ww: cands passing cut  17:        0.0
+Sample         ww: cands passing cut  18:        0.0
+Sample         ww: cands passing cut  19:        0.0
+Sample         ww: cands passing cut  20:        0.0
+Sample         ww: cands passing cut  21:        0.0
+Sample         ww: cands passing cut  22:        0.0
+Sample         ww: cands passing cut  23:        0.0
+Sample         ww: cands passing cut  24:        0.0
+Sample         ww: cands passing cut  25:        0.0
+Sample         ww: cands passing cut  26:        0.0
+Sample         ww: cands passing cut  27:        0.0
+Sample         ww: cands passing cut  28:        0.0
+Sample         ww: cands passing cut  29:        0.0
+Sample         ww: cands passing cut  30:        0.0
+Sample         ww: cands passing cut *31:        0.0
+Sample         ww: cands passing cut  32:        0.0
+Sample         ww: cands passing cut  33:        0.0
+Sample         ww: cands passing cut  34:        0.0
+Sample         ww: cands passing cut  35:        0.0
+Sample         ww: cands passing cut  36:        0.0
+Sample         ww: cands passing cut  37:        0.0
+Sample         ww: cands passing cut  38:        0.0
+Sample         ww: cands passing cut  39:        0.0
+Sample         ww: cands passing cut  40:        0.0
+Sample         ww: cands passing cut  41:        0.0
+Sample         ww: cands passing cut  42:        0.0
+Sample         ww: cands passing cut  43:        0.0
+Sample         ww: cands passing cut  44:        0.0
+Sample         ww: cands passing cut  45:        0.0
+Sample         ww: cands passing cut  46:        0.0
+Sample         ww: cands passing cut  47:        0.0
+Sample         ww: cands passing cut  48:        0.0
+Sample         ww: cands passing cut  49:        0.0
+Sample         ww: cands passing cut  50:        0.0
+Sample         ww: cands passing cut  51:        0.0
+Sample         ww: cands passing cut  52:        0.0
+Sample         ww: cands passing cut  53:        0.0
+Sample         ww: cands passing cut  54:        0.0
+Sample         ww: cands passing cut  55:        0.0
+Sample         ww: cands passing cut  56:        0.0
+Sample         ww: cands passing cut  57:        0.0
+Sample         ww: cands passing cut  58:        0.0
+Sample         ww: cands passing cut  59:        0.0
+Sample         ww: cands passing cut  60:        0.0
+Sample         ww: cands passing cut  61:        0.0
+Sample         ww: cands passing cut  62:        0.0
+Sample         ww: cands passing cut  63:        0.0
+Sample         ww: correlations
+Sample         ww:           * 6   * 7   *10   *11   *12   *13   *14   *15   *31  
+Sample         ww: * 6     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         ww: * 7     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         ww: *10     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         ww: *11     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         ww: *12     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         ww: *13     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         ww: *14     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         ww: *15     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         ww: *31     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      ttbar: Events processed (weight):   414000.0.  Events:   946644
+Sample      ttbar: Events before cut (weight):   161161.7.  Events:   368509
+Sample      ttbar: Duplicate events:    28382.  Weight    12412.4
+Sample      ttbar: Total candidate count (ee em mm all):    12028    16914     5881    34823. Total weight     16.404 +-      1.033     29.446 +-      1.356     12.596 +-      0.879     58.446 +-      1.918
+Sample      ttbar: cands passing cut   0:        0.0
+Sample      ttbar: cands passing cut   1:        0.0
+Sample      ttbar: cands passing cut   2:        0.0
+Sample      ttbar: cands passing cut   3:        0.0
+Sample      ttbar: cands passing cut   4:        0.0
+Sample      ttbar: cands passing cut   5:        0.0
+Sample      ttbar: cands passing cut * 6:        0.0
+Sample      ttbar: cands passing cut * 7:        0.0
+Sample      ttbar: cands passing cut   8:        0.0
+Sample      ttbar: cands passing cut   9:        0.0
+Sample      ttbar: cands passing cut *10:        0.0
+Sample      ttbar: cands passing cut *11:        0.0
+Sample      ttbar: cands passing cut *12:        0.0
+Sample      ttbar: cands passing cut *13:        0.0
+Sample      ttbar: cands passing cut *14:        0.0
+Sample      ttbar: cands passing cut *15:        0.0
+Sample      ttbar: cands passing cut  16:        0.0
+Sample      ttbar: cands passing cut  17:        0.0
+Sample      ttbar: cands passing cut  18:        0.0
+Sample      ttbar: cands passing cut  19:        0.0
+Sample      ttbar: cands passing cut  20:        0.0
+Sample      ttbar: cands passing cut  21:        0.0
+Sample      ttbar: cands passing cut  22:        0.0
+Sample      ttbar: cands passing cut  23:        0.0
+Sample      ttbar: cands passing cut  24:        0.0
+Sample      ttbar: cands passing cut  25:        0.0
+Sample      ttbar: cands passing cut  26:        0.0
+Sample      ttbar: cands passing cut  27:        0.0
+Sample      ttbar: cands passing cut  28:        0.0
+Sample      ttbar: cands passing cut  29:        0.0
+Sample      ttbar: cands passing cut  30:        0.0
+Sample      ttbar: cands passing cut *31:        0.0
+Sample      ttbar: cands passing cut  32:        0.0
+Sample      ttbar: cands passing cut  33:        0.0
+Sample      ttbar: cands passing cut  34:        0.0
+Sample      ttbar: cands passing cut  35:        0.0
+Sample      ttbar: cands passing cut  36:        0.0
+Sample      ttbar: cands passing cut  37:        0.0
+Sample      ttbar: cands passing cut  38:        0.0
+Sample      ttbar: cands passing cut  39:        0.0
+Sample      ttbar: cands passing cut  40:        0.0
+Sample      ttbar: cands passing cut  41:        0.0
+Sample      ttbar: cands passing cut  42:        0.0
+Sample      ttbar: cands passing cut  43:        0.0
+Sample      ttbar: cands passing cut  44:        0.0
+Sample      ttbar: cands passing cut  45:        0.0
+Sample      ttbar: cands passing cut  46:        0.0
+Sample      ttbar: cands passing cut  47:        0.0
+Sample      ttbar: cands passing cut  48:        0.0
+Sample      ttbar: cands passing cut  49:        0.0
+Sample      ttbar: cands passing cut  50:        0.0
+Sample      ttbar: cands passing cut  51:        0.0
+Sample      ttbar: cands passing cut  52:        0.0
+Sample      ttbar: cands passing cut  53:        0.0
+Sample      ttbar: cands passing cut  54:        0.0
+Sample      ttbar: cands passing cut  55:        0.0
+Sample      ttbar: cands passing cut  56:        0.0
+Sample      ttbar: cands passing cut  57:        0.0
+Sample      ttbar: cands passing cut  58:        0.0
+Sample      ttbar: cands passing cut  59:        0.0
+Sample      ttbar: cands passing cut  60:        0.0
+Sample      ttbar: cands passing cut  61:        0.0
+Sample      ttbar: cands passing cut  62:        0.0
+Sample      ttbar: cands passing cut  63:        0.0
+Sample      ttbar: correlations
+Sample      ttbar:           * 6   * 7   *10   *11   *12   *13   *14   *15   *31  
+Sample      ttbar: * 6     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      ttbar: * 7     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      ttbar: *10     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      ttbar: *11     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      ttbar: *12     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      ttbar: *13     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      ttbar: *14     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      ttbar: *15     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      ttbar: *31     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM11: Events processed (weight):     3240.0.  Events:   208314
+Sample       LM11: Events before cut (weight):     2588.9.  Events:   166453
+Sample       LM11: Duplicate events:    67279.  Weight     1046.4
+Sample       LM11: Total candidate count (ee em mm all):    41688    53085    20716   115489. Total weight      1.198 +-      0.052      1.809 +-      0.064      0.661 +-      0.037      3.668 +-      0.090
+Sample       LM11: cands passing cut   0:        0.0
+Sample       LM11: cands passing cut   1:        0.0
+Sample       LM11: cands passing cut   2:        0.0
+Sample       LM11: cands passing cut   3:        0.0
+Sample       LM11: cands passing cut   4:        0.0
+Sample       LM11: cands passing cut   5:        0.0
+Sample       LM11: cands passing cut * 6:        0.0
+Sample       LM11: cands passing cut * 7:        0.0
+Sample       LM11: cands passing cut   8:        0.0
+Sample       LM11: cands passing cut   9:        0.0
+Sample       LM11: cands passing cut *10:        0.0
+Sample       LM11: cands passing cut *11:        0.0
+Sample       LM11: cands passing cut *12:        0.0
+Sample       LM11: cands passing cut *13:        0.0
+Sample       LM11: cands passing cut *14:        0.0
+Sample       LM11: cands passing cut *15:        0.0
+Sample       LM11: cands passing cut  16:        0.0
+Sample       LM11: cands passing cut  17:        0.0
+Sample       LM11: cands passing cut  18:        0.0
+Sample       LM11: cands passing cut  19:        0.0
+Sample       LM11: cands passing cut  20:        0.0
+Sample       LM11: cands passing cut  21:        0.0
+Sample       LM11: cands passing cut  22:        0.0
+Sample       LM11: cands passing cut  23:        0.0
+Sample       LM11: cands passing cut  24:        0.0
+Sample       LM11: cands passing cut  25:        0.0
+Sample       LM11: cands passing cut  26:        0.0
+Sample       LM11: cands passing cut  27:        0.0
+Sample       LM11: cands passing cut  28:        0.0
+Sample       LM11: cands passing cut  29:        0.0
+Sample       LM11: cands passing cut  30:        0.0
+Sample       LM11: cands passing cut *31:        0.0
+Sample       LM11: cands passing cut  32:        0.0
+Sample       LM11: cands passing cut  33:        0.0
+Sample       LM11: cands passing cut  34:        0.0
+Sample       LM11: cands passing cut  35:        0.0
+Sample       LM11: cands passing cut  36:        0.0
+Sample       LM11: cands passing cut  37:        0.0
+Sample       LM11: cands passing cut  38:        0.0
+Sample       LM11: cands passing cut  39:        0.0
+Sample       LM11: cands passing cut  40:        0.0
+Sample       LM11: cands passing cut  41:        0.0
+Sample       LM11: cands passing cut  42:        0.0
+Sample       LM11: cands passing cut  43:        0.0
+Sample       LM11: cands passing cut  44:        0.0
+Sample       LM11: cands passing cut  45:        0.0
+Sample       LM11: cands passing cut  46:        0.0
+Sample       LM11: cands passing cut  47:        0.0
+Sample       LM11: cands passing cut  48:        0.0
+Sample       LM11: cands passing cut  49:        0.0
+Sample       LM11: cands passing cut  50:        0.0
+Sample       LM11: cands passing cut  51:        0.0
+Sample       LM11: cands passing cut  52:        0.0
+Sample       LM11: cands passing cut  53:        0.0
+Sample       LM11: cands passing cut  54:        0.0
+Sample       LM11: cands passing cut  55:        0.0
+Sample       LM11: cands passing cut  56:        0.0
+Sample       LM11: cands passing cut  57:        0.0
+Sample       LM11: cands passing cut  58:        0.0
+Sample       LM11: cands passing cut  59:        0.0
+Sample       LM11: cands passing cut  60:        0.0
+Sample       LM11: cands passing cut  61:        0.0
+Sample       LM11: cands passing cut  62:        0.0
+Sample       LM11: cands passing cut  63:        0.0
+Sample       LM11: correlations
+Sample       LM11:           * 6   * 7   *10   *11   *12   *13   *14   *15   *31  
+Sample       LM11: * 6     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM11: * 7     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM11: *10     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM11: *11     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM11: *12     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM11: *13     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM11: *14     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM11: *15     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM11: *31     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         ww: Events processed (weight):    73920.0.  Events:   174722
+Sample         ww: Events before cut (weight):     8517.7.  Events:    20133
+Sample         ww: Duplicate events:     1128.  Weight      477.2
+Sample         ww: Total candidate count (ee em mm all):      171      219      103      493. Total weight      0.245 +-      0.123      0.422 +-      0.160      0.123 +-      0.052      0.790 +-      0.209
+Sample         ww: cands passing cut   0:        0.0
+Sample         ww: cands passing cut   1:        0.0
+Sample         ww: cands passing cut   2:        0.0
+Sample         ww: cands passing cut   3:        0.0
+Sample         ww: cands passing cut   4:        0.0
+Sample         ww: cands passing cut   5:        0.0
+Sample         ww: cands passing cut * 6:        0.0
+Sample         ww: cands passing cut * 7:        0.0
+Sample         ww: cands passing cut   8:        0.0
+Sample         ww: cands passing cut   9:        0.0
+Sample         ww: cands passing cut *10:        0.0
+Sample         ww: cands passing cut *11:        0.0
+Sample         ww: cands passing cut *12:        0.0
+Sample         ww: cands passing cut *13:        0.0
+Sample         ww: cands passing cut *14:        0.0
+Sample         ww: cands passing cut *15:        0.0
+Sample         ww: cands passing cut  16:        0.0
+Sample         ww: cands passing cut  17:        0.0
+Sample         ww: cands passing cut  18:        0.0
+Sample         ww: cands passing cut  19:        0.0
+Sample         ww: cands passing cut  20:        0.0
+Sample         ww: cands passing cut  21:        0.0
+Sample         ww: cands passing cut  22:        0.0
+Sample         ww: cands passing cut  23:        0.0
+Sample         ww: cands passing cut  24:        0.0
+Sample         ww: cands passing cut  25:        0.0
+Sample         ww: cands passing cut  26:        0.0
+Sample         ww: cands passing cut  27:        0.0
+Sample         ww: cands passing cut  28:        0.0
+Sample         ww: cands passing cut  29:        0.0
+Sample         ww: cands passing cut  30:        0.0
+Sample         ww: cands passing cut *31:        0.0
+Sample         ww: cands passing cut  32:        0.0
+Sample         ww: cands passing cut  33:        0.0
+Sample         ww: cands passing cut  34:        0.0
+Sample         ww: cands passing cut  35:        0.0
+Sample         ww: cands passing cut  36:        0.0
+Sample         ww: cands passing cut  37:        0.0
+Sample         ww: cands passing cut  38:        0.0
+Sample         ww: cands passing cut  39:        0.0
+Sample         ww: cands passing cut  40:        0.0
+Sample         ww: cands passing cut  41:        0.0
+Sample         ww: cands passing cut  42:        0.0
+Sample         ww: cands passing cut  43:        0.0
+Sample         ww: cands passing cut  44:        0.0
+Sample         ww: cands passing cut  45:        0.0
+Sample         ww: cands passing cut  46:        0.0
+Sample         ww: cands passing cut  47:        0.0
+Sample         ww: cands passing cut  48:        0.0
+Sample         ww: cands passing cut  49:        0.0
+Sample         ww: cands passing cut  50:        0.0
+Sample         ww: cands passing cut  51:        0.0
+Sample         ww: cands passing cut  52:        0.0
+Sample         ww: cands passing cut  53:        0.0
+Sample         ww: cands passing cut  54:        0.0
+Sample         ww: cands passing cut  55:        0.0
+Sample         ww: cands passing cut  56:        0.0
+Sample         ww: cands passing cut  57:        0.0
+Sample         ww: cands passing cut  58:        0.0
+Sample         ww: cands passing cut  59:        0.0
+Sample         ww: cands passing cut  60:        0.0
+Sample         ww: cands passing cut  61:        0.0
+Sample         ww: cands passing cut  62:        0.0
+Sample         ww: cands passing cut  63:        0.0
+Sample         ww: correlations
+Sample         ww:           * 6   * 7   *10   *11   *12   *13   *14   *15   *31  
+Sample         ww: * 6     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         ww: * 7     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         ww: *10     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         ww: *11     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         ww: *12     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         ww: *13     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         ww: *14     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         ww: *15     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         ww: *31     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         wz: Events processed (weight):    32384.0.  Events:   216550
+Sample         wz: Events before cut (weight):     3653.8.  Events:    24433
+Sample         wz: Duplicate events:     1309.  Weight      195.8
+Sample         wz: Total candidate count (ee em mm all):      146      150       73      369. Total weight      0.021 +-      0.021      0.095 +-      0.045      0.101 +-      0.043      0.217 +-      0.066
+Sample         wz: cands passing cut   0:        0.0
+Sample         wz: cands passing cut   1:        0.0
+Sample         wz: cands passing cut   2:        0.0
+Sample         wz: cands passing cut   3:        0.0
+Sample         wz: cands passing cut   4:        0.0
+Sample         wz: cands passing cut   5:        0.0
+Sample         wz: cands passing cut * 6:        0.0
+Sample         wz: cands passing cut * 7:        0.0
+Sample         wz: cands passing cut   8:        0.0
+Sample         wz: cands passing cut   9:        0.0
+Sample         wz: cands passing cut *10:        0.0
+Sample         wz: cands passing cut *11:        0.0
+Sample         wz: cands passing cut *12:        0.0
+Sample         wz: cands passing cut *13:        0.0
+Sample         wz: cands passing cut *14:        0.0
+Sample         wz: cands passing cut *15:        0.0
+Sample         wz: cands passing cut  16:        0.0
+Sample         wz: cands passing cut  17:        0.0
+Sample         wz: cands passing cut  18:        0.0
+Sample         wz: cands passing cut  19:        0.0
+Sample         wz: cands passing cut  20:        0.0
+Sample         wz: cands passing cut  21:        0.0
+Sample         wz: cands passing cut  22:        0.0
+Sample         wz: cands passing cut  23:        0.0
+Sample         wz: cands passing cut  24:        0.0
+Sample         wz: cands passing cut  25:        0.0
+Sample         wz: cands passing cut  26:        0.0
+Sample         wz: cands passing cut  27:        0.0
+Sample         wz: cands passing cut  28:        0.0
+Sample         wz: cands passing cut  29:        0.0
+Sample         wz: cands passing cut  30:        0.0
+Sample         wz: cands passing cut *31:        0.0
+Sample         wz: cands passing cut  32:        0.0
+Sample         wz: cands passing cut  33:        0.0
+Sample         wz: cands passing cut  34:        0.0
+Sample         wz: cands passing cut  35:        0.0
+Sample         wz: cands passing cut  36:        0.0
+Sample         wz: cands passing cut  37:        0.0
+Sample         wz: cands passing cut  38:        0.0
+Sample         wz: cands passing cut  39:        0.0
+Sample         wz: cands passing cut  40:        0.0
+Sample         wz: cands passing cut  41:        0.0
+Sample         wz: cands passing cut  42:        0.0
+Sample         wz: cands passing cut  43:        0.0
+Sample         wz: cands passing cut  44:        0.0
+Sample         wz: cands passing cut  45:        0.0
+Sample         wz: cands passing cut  46:        0.0
+Sample         wz: cands passing cut  47:        0.0
+Sample         wz: cands passing cut  48:        0.0
+Sample         wz: cands passing cut  49:        0.0
+Sample         wz: cands passing cut  50:        0.0
+Sample         wz: cands passing cut  51:        0.0
+Sample         wz: cands passing cut  52:        0.0
+Sample         wz: cands passing cut  53:        0.0
+Sample         wz: cands passing cut  54:        0.0
+Sample         wz: cands passing cut  55:        0.0
+Sample         wz: cands passing cut  56:        0.0
+Sample         wz: cands passing cut  57:        0.0
+Sample         wz: cands passing cut  58:        0.0
+Sample         wz: cands passing cut  59:        0.0
+Sample         wz: cands passing cut  60:        0.0
+Sample         wz: cands passing cut  61:        0.0
+Sample         wz: cands passing cut  62:        0.0
+Sample         wz: cands passing cut  63:        0.0
+Sample         wz: correlations
+Sample         wz:           * 6   * 7   *10   *11   *12   *13   *14   *15   *31  
+Sample         wz: * 6     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         wz: * 7     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         wz: *10     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         wz: *11     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         wz: *12     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         wz: *13     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         wz: *14     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         wz: *15     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         wz: *31     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         zz: Events processed (weight):    10437.0.  Events:   169810
+Sample         zz: Events before cut (weight):     1471.8.  Events:    23947
+Sample         zz: Duplicate events:      960.  Weight       59.0
+Sample         zz: Total candidate count (ee em mm all):      116       82      116      314. Total weight      0.051 +-      0.021      0.036 +-      0.017      0.043 +-      0.014      0.130 +-      0.030
+Sample         zz: cands passing cut   0:        0.0
+Sample         zz: cands passing cut   1:        0.0
+Sample         zz: cands passing cut   2:        0.0
+Sample         zz: cands passing cut   3:        0.0
+Sample         zz: cands passing cut   4:        0.0
+Sample         zz: cands passing cut   5:        0.0
+Sample         zz: cands passing cut * 6:        0.0
+Sample         zz: cands passing cut * 7:        0.0
+Sample         zz: cands passing cut   8:        0.0
+Sample         zz: cands passing cut   9:        0.0
+Sample         zz: cands passing cut *10:        0.0
+Sample         zz: cands passing cut *11:        0.0
+Sample         zz: cands passing cut *12:        0.0
+Sample         zz: cands passing cut *13:        0.0
+Sample         zz: cands passing cut *14:        0.0
+Sample         zz: cands passing cut *15:        0.0
+Sample         zz: cands passing cut  16:        0.0
+Sample         zz: cands passing cut  17:        0.0
+Sample         zz: cands passing cut  18:        0.0
+Sample         zz: cands passing cut  19:        0.0
+Sample         zz: cands passing cut  20:        0.0
+Sample         zz: cands passing cut  21:        0.0
+Sample         zz: cands passing cut  22:        0.0
+Sample         zz: cands passing cut  23:        0.0
+Sample         zz: cands passing cut  24:        0.0
+Sample         zz: cands passing cut  25:        0.0
+Sample         zz: cands passing cut  26:        0.0
+Sample         zz: cands passing cut  27:        0.0
+Sample         zz: cands passing cut  28:        0.0
+Sample         zz: cands passing cut  29:        0.0
+Sample         zz: cands passing cut  30:        0.0
+Sample         zz: cands passing cut *31:        0.0
+Sample         zz: cands passing cut  32:        0.0
+Sample         zz: cands passing cut  33:        0.0
+Sample         zz: cands passing cut  34:        0.0
+Sample         zz: cands passing cut  35:        0.0
+Sample         zz: cands passing cut  36:        0.0
+Sample         zz: cands passing cut  37:        0.0
+Sample         zz: cands passing cut  38:        0.0
+Sample         zz: cands passing cut  39:        0.0
+Sample         zz: cands passing cut  40:        0.0
+Sample         zz: cands passing cut  41:        0.0
+Sample         zz: cands passing cut  42:        0.0
+Sample         zz: cands passing cut  43:        0.0
+Sample         zz: cands passing cut  44:        0.0
+Sample         zz: cands passing cut  45:        0.0
+Sample         zz: cands passing cut  46:        0.0
+Sample         zz: cands passing cut  47:        0.0
+Sample         zz: cands passing cut  48:        0.0
+Sample         zz: cands passing cut  49:        0.0
+Sample         zz: cands passing cut  50:        0.0
+Sample         zz: cands passing cut  51:        0.0
+Sample         zz: cands passing cut  52:        0.0
+Sample         zz: cands passing cut  53:        0.0
+Sample         zz: cands passing cut  54:        0.0
+Sample         zz: cands passing cut  55:        0.0
+Sample         zz: cands passing cut  56:        0.0
+Sample         zz: cands passing cut  57:        0.0
+Sample         zz: cands passing cut  58:        0.0
+Sample         zz: cands passing cut  59:        0.0
+Sample         zz: cands passing cut  60:        0.0
+Sample         zz: cands passing cut  61:        0.0
+Sample         zz: cands passing cut  62:        0.0
+Sample         zz: cands passing cut  63:        0.0
+Sample         zz: correlations
+Sample         zz:           * 6   * 7   *10   *11   *12   *13   *14   *15   *31  
+Sample         zz: * 6     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         zz: * 7     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         zz: *10     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         zz: *11     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         zz: *12     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         zz: *13     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         zz: *14     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         zz: *15     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         zz: *31     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      wjets: Events processed (weight): 45600001.3.  Events:  9715661
+Sample      wjets: Events before cut (weight):   551199.2.  Events:   117440
+Sample      wjets: Duplicate events:     7312.  Weight    34318.5
+Sample      wjets: Total candidate count (ee em mm all):      533      525      129     1187. Total weight      0.000 +-      0.000      3.475 +-      1.756      0.876 +-      0.876      4.351 +-      1.963
+Sample      wjets: cands passing cut   0:        0.0
+Sample      wjets: cands passing cut   1:        0.0
+Sample      wjets: cands passing cut   2:        0.0
+Sample      wjets: cands passing cut   3:        0.0
+Sample      wjets: cands passing cut   4:        0.0
+Sample      wjets: cands passing cut   5:        0.0
+Sample      wjets: cands passing cut * 6:        0.0
+Sample      wjets: cands passing cut * 7:        0.0
+Sample      wjets: cands passing cut   8:        0.0
+Sample      wjets: cands passing cut   9:        0.0
+Sample      wjets: cands passing cut *10:        0.0
+Sample      wjets: cands passing cut *11:        0.0
+Sample      wjets: cands passing cut *12:        0.0
+Sample      wjets: cands passing cut *13:        0.0
+Sample      wjets: cands passing cut *14:        0.0
+Sample      wjets: cands passing cut *15:        0.0
+Sample      wjets: cands passing cut  16:        0.0
+Sample      wjets: cands passing cut  17:        0.0
+Sample      wjets: cands passing cut  18:        0.0
+Sample      wjets: cands passing cut  19:        0.0
+Sample      wjets: cands passing cut  20:        0.0
+Sample      wjets: cands passing cut  21:        0.0
+Sample      wjets: cands passing cut  22:        0.0
+Sample      wjets: cands passing cut  23:        0.0
+Sample      wjets: cands passing cut  24:        0.0
+Sample      wjets: cands passing cut  25:        0.0
+Sample      wjets: cands passing cut  26:        0.0
+Sample      wjets: cands passing cut  27:        0.0
+Sample      wjets: cands passing cut  28:        0.0
+Sample      wjets: cands passing cut  29:        0.0
+Sample      wjets: cands passing cut  30:        0.0
+Sample      wjets: cands passing cut *31:        0.0
+Sample      wjets: cands passing cut  32:        0.0
+Sample      wjets: cands passing cut  33:        0.0
+Sample      wjets: cands passing cut  34:        0.0
+Sample      wjets: cands passing cut  35:        0.0
+Sample      wjets: cands passing cut  36:        0.0
+Sample      wjets: cands passing cut  37:        0.0
+Sample      wjets: cands passing cut  38:        0.0
+Sample      wjets: cands passing cut  39:        0.0
+Sample      wjets: cands passing cut  40:        0.0
+Sample      wjets: cands passing cut  41:        0.0
+Sample      wjets: cands passing cut  42:        0.0
+Sample      wjets: cands passing cut  43:        0.0
+Sample      wjets: cands passing cut  44:        0.0
+Sample      wjets: cands passing cut  45:        0.0
+Sample      wjets: cands passing cut  46:        0.0
+Sample      wjets: cands passing cut  47:        0.0
+Sample      wjets: cands passing cut  48:        0.0
+Sample      wjets: cands passing cut  49:        0.0
+Sample      wjets: cands passing cut  50:        0.0
+Sample      wjets: cands passing cut  51:        0.0
+Sample      wjets: cands passing cut  52:        0.0
+Sample      wjets: cands passing cut  53:        0.0
+Sample      wjets: cands passing cut  54:        0.0
+Sample      wjets: cands passing cut  55:        0.0
+Sample      wjets: cands passing cut  56:        0.0
+Sample      wjets: cands passing cut  57:        0.0
+Sample      wjets: cands passing cut  58:        0.0
+Sample      wjets: cands passing cut  59:        0.0
+Sample      wjets: cands passing cut  60:        0.0
+Sample      wjets: cands passing cut  61:        0.0
+Sample      wjets: cands passing cut  62:        0.0
+Sample      wjets: cands passing cut  63:        0.0
+Sample      wjets: correlations
+Sample      wjets:           * 6   * 7   *10   *11   *12   *13   *14   *15   *31  
+Sample      wjets: * 6     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      wjets: * 7     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      wjets: *10     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      wjets: *11     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      wjets: *12     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      wjets: *13     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      wjets: *14     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      wjets: *15     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      wjets: *31     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dyee: Events processed (weight):  4217999.8.  Events:  1252816
+Sample       dyee: Events before cut (weight):  1329450.9.  Events:   394869
+Sample       dyee: Duplicate events:      299.  Weight     1006.7
+Sample       dyee: Total candidate count (ee em mm all):        4        1        0        5. Total weight      0.000 +-      0.000      0.000 +-      0.000      0.000 +-      0.000      0.000 +-      0.000
+Sample       dyee: cands passing cut   0:        0.0
+Sample       dyee: cands passing cut   1:        0.0
+Sample       dyee: cands passing cut   2:        0.0
+Sample       dyee: cands passing cut   3:        0.0
+Sample       dyee: cands passing cut   4:        0.0
+Sample       dyee: cands passing cut   5:        0.0
+Sample       dyee: cands passing cut * 6:        0.0
+Sample       dyee: cands passing cut * 7:        0.0
+Sample       dyee: cands passing cut   8:        0.0
+Sample       dyee: cands passing cut   9:        0.0
+Sample       dyee: cands passing cut *10:        0.0
+Sample       dyee: cands passing cut *11:        0.0
+Sample       dyee: cands passing cut *12:        0.0
+Sample       dyee: cands passing cut *13:        0.0
+Sample       dyee: cands passing cut *14:        0.0
+Sample       dyee: cands passing cut *15:        0.0
+Sample       dyee: cands passing cut  16:        0.0
+Sample       dyee: cands passing cut  17:        0.0
+Sample       dyee: cands passing cut  18:        0.0
+Sample       dyee: cands passing cut  19:        0.0
+Sample       dyee: cands passing cut  20:        0.0
+Sample       dyee: cands passing cut  21:        0.0
+Sample       dyee: cands passing cut  22:        0.0
+Sample       dyee: cands passing cut  23:        0.0
+Sample       dyee: cands passing cut  24:        0.0
+Sample       dyee: cands passing cut  25:        0.0
+Sample       dyee: cands passing cut  26:        0.0
+Sample       dyee: cands passing cut  27:        0.0
+Sample       dyee: cands passing cut  28:        0.0
+Sample       dyee: cands passing cut  29:        0.0
+Sample       dyee: cands passing cut  30:        0.0
+Sample       dyee: cands passing cut *31:        0.0
+Sample       dyee: cands passing cut  32:        0.0
+Sample       dyee: cands passing cut  33:        0.0
+Sample       dyee: cands passing cut  34:        0.0
+Sample       dyee: cands passing cut  35:        0.0
+Sample       dyee: cands passing cut  36:        0.0
+Sample       dyee: cands passing cut  37:        0.0
+Sample       dyee: cands passing cut  38:        0.0
+Sample       dyee: cands passing cut  39:        0.0
+Sample       dyee: cands passing cut  40:        0.0
+Sample       dyee: cands passing cut  41:        0.0
+Sample       dyee: cands passing cut  42:        0.0
+Sample       dyee: cands passing cut  43:        0.0
+Sample       dyee: cands passing cut  44:        0.0
+Sample       dyee: cands passing cut  45:        0.0
+Sample       dyee: cands passing cut  46:        0.0
+Sample       dyee: cands passing cut  47:        0.0
+Sample       dyee: cands passing cut  48:        0.0
+Sample       dyee: cands passing cut  49:        0.0
+Sample       dyee: cands passing cut  50:        0.0
+Sample       dyee: cands passing cut  51:        0.0
+Sample       dyee: cands passing cut  52:        0.0
+Sample       dyee: cands passing cut  53:        0.0
+Sample       dyee: cands passing cut  54:        0.0
+Sample       dyee: cands passing cut  55:        0.0
+Sample       dyee: cands passing cut  56:        0.0
+Sample       dyee: cands passing cut  57:        0.0
+Sample       dyee: cands passing cut  58:        0.0
+Sample       dyee: cands passing cut  59:        0.0
+Sample       dyee: cands passing cut  60:        0.0
+Sample       dyee: cands passing cut  61:        0.0
+Sample       dyee: cands passing cut  62:        0.0
+Sample       dyee: cands passing cut  63:        0.0
+Sample       dyee: correlations
+Sample       dyee:           * 6   * 7   *10   *11   *12   *13   *14   *15   *31  
+Sample       dyee: * 6     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dyee: * 7     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dyee: *10     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dyee: *11     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dyee: *12     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dyee: *13     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dyee: *14     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dyee: *15     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dyee: *31     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dymm: Events processed (weight):  4217999.8.  Events:  1252816
+Sample       dymm: Events before cut (weight):  1329450.9.  Events:   394869
+Sample       dymm: Duplicate events:      400.  Weight     1346.7
+Sample       dymm: Total candidate count (ee em mm all):        2       30      128      160. Total weight      0.000 +-      0.000      0.000 +-      0.000      2.536 +-      0.780      2.536 +-      0.780
+Sample       dymm: cands passing cut   0:        0.0
+Sample       dymm: cands passing cut   1:        0.0
+Sample       dymm: cands passing cut   2:        0.0
+Sample       dymm: cands passing cut   3:        0.0
+Sample       dymm: cands passing cut   4:        0.0
+Sample       dymm: cands passing cut   5:        0.0
+Sample       dymm: cands passing cut * 6:        0.0
+Sample       dymm: cands passing cut * 7:        0.0
+Sample       dymm: cands passing cut   8:        0.0
+Sample       dymm: cands passing cut   9:        0.0
+Sample       dymm: cands passing cut *10:        0.0
+Sample       dymm: cands passing cut *11:        0.0
+Sample       dymm: cands passing cut *12:        0.0
+Sample       dymm: cands passing cut *13:        0.0
+Sample       dymm: cands passing cut *14:        0.0
+Sample       dymm: cands passing cut *15:        0.0
+Sample       dymm: cands passing cut  16:        0.0
+Sample       dymm: cands passing cut  17:        0.0
+Sample       dymm: cands passing cut  18:        0.0
+Sample       dymm: cands passing cut  19:        0.0
+Sample       dymm: cands passing cut  20:        0.0
+Sample       dymm: cands passing cut  21:        0.0
+Sample       dymm: cands passing cut  22:        0.0
+Sample       dymm: cands passing cut  23:        0.0
+Sample       dymm: cands passing cut  24:        0.0
+Sample       dymm: cands passing cut  25:        0.0
+Sample       dymm: cands passing cut  26:        0.0
+Sample       dymm: cands passing cut  27:        0.0
+Sample       dymm: cands passing cut  28:        0.0
+Sample       dymm: cands passing cut  29:        0.0
+Sample       dymm: cands passing cut  30:        0.0
+Sample       dymm: cands passing cut *31:        0.0
+Sample       dymm: cands passing cut  32:        0.0
+Sample       dymm: cands passing cut  33:        0.0
+Sample       dymm: cands passing cut  34:        0.0
+Sample       dymm: cands passing cut  35:        0.0
+Sample       dymm: cands passing cut  36:        0.0
+Sample       dymm: cands passing cut  37:        0.0
+Sample       dymm: cands passing cut  38:        0.0
+Sample       dymm: cands passing cut  39:        0.0
+Sample       dymm: cands passing cut  40:        0.0
+Sample       dymm: cands passing cut  41:        0.0
+Sample       dymm: cands passing cut  42:        0.0
+Sample       dymm: cands passing cut  43:        0.0
+Sample       dymm: cands passing cut  44:        0.0
+Sample       dymm: cands passing cut  45:        0.0
+Sample       dymm: cands passing cut  46:        0.0
+Sample       dymm: cands passing cut  47:        0.0
+Sample       dymm: cands passing cut  48:        0.0
+Sample       dymm: cands passing cut  49:        0.0
+Sample       dymm: cands passing cut  50:        0.0
+Sample       dymm: cands passing cut  51:        0.0
+Sample       dymm: cands passing cut  52:        0.0
+Sample       dymm: cands passing cut  53:        0.0
+Sample       dymm: cands passing cut  54:        0.0
+Sample       dymm: cands passing cut  55:        0.0
+Sample       dymm: cands passing cut  56:        0.0
+Sample       dymm: cands passing cut  57:        0.0
+Sample       dymm: cands passing cut  58:        0.0
+Sample       dymm: cands passing cut  59:        0.0
+Sample       dymm: cands passing cut  60:        0.0
+Sample       dymm: cands passing cut  61:        0.0
+Sample       dymm: cands passing cut  62:        0.0
+Sample       dymm: cands passing cut  63:        0.0
+Sample       dymm: correlations
+Sample       dymm:           * 6   * 7   *10   *11   *12   *13   *14   *15   *31  
+Sample       dymm: * 6     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dymm: * 7     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dymm: *10     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dymm: *11     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dymm: *12     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dymm: *13     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dymm: *14     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dymm: *15     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dymm: *31     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dytt: Events processed (weight):  4217999.8.  Events:  1252816
+Sample       dytt: Events before cut (weight):  1329450.9.  Events:   394869
+Sample       dytt: Duplicate events:      418.  Weight     1407.3
+Sample       dytt: Total candidate count (ee em mm all):       44       51       15      110. Total weight      1.044 +-      0.740      2.517 +-      1.221      1.256 +-      0.888      4.817 +-      1.682
+Sample       dytt: cands passing cut   0:        0.0
+Sample       dytt: cands passing cut   1:        0.0
+Sample       dytt: cands passing cut   2:        0.0
+Sample       dytt: cands passing cut   3:        0.0
+Sample       dytt: cands passing cut   4:        0.0
+Sample       dytt: cands passing cut   5:        0.0
+Sample       dytt: cands passing cut * 6:        0.0
+Sample       dytt: cands passing cut * 7:        0.0
+Sample       dytt: cands passing cut   8:        0.0
+Sample       dytt: cands passing cut   9:        0.0
+Sample       dytt: cands passing cut *10:        0.0
+Sample       dytt: cands passing cut *11:        0.0
+Sample       dytt: cands passing cut *12:        0.0
+Sample       dytt: cands passing cut *13:        0.0
+Sample       dytt: cands passing cut *14:        0.0
+Sample       dytt: cands passing cut *15:        0.0
+Sample       dytt: cands passing cut  16:        0.0
+Sample       dytt: cands passing cut  17:        0.0
+Sample       dytt: cands passing cut  18:        0.0
+Sample       dytt: cands passing cut  19:        0.0
+Sample       dytt: cands passing cut  20:        0.0
+Sample       dytt: cands passing cut  21:        0.0
+Sample       dytt: cands passing cut  22:        0.0
+Sample       dytt: cands passing cut  23:        0.0
+Sample       dytt: cands passing cut  24:        0.0
+Sample       dytt: cands passing cut  25:        0.0
+Sample       dytt: cands passing cut  26:        0.0
+Sample       dytt: cands passing cut  27:        0.0
+Sample       dytt: cands passing cut  28:        0.0
+Sample       dytt: cands passing cut  29:        0.0
+Sample       dytt: cands passing cut  30:        0.0
+Sample       dytt: cands passing cut *31:        0.0
+Sample       dytt: cands passing cut  32:        0.0
+Sample       dytt: cands passing cut  33:        0.0
+Sample       dytt: cands passing cut  34:        0.0
+Sample       dytt: cands passing cut  35:        0.0
+Sample       dytt: cands passing cut  36:        0.0
+Sample       dytt: cands passing cut  37:        0.0
+Sample       dytt: cands passing cut  38:        0.0
+Sample       dytt: cands passing cut  39:        0.0
+Sample       dytt: cands passing cut  40:        0.0
+Sample       dytt: cands passing cut  41:        0.0
+Sample       dytt: cands passing cut  42:        0.0
+Sample       dytt: cands passing cut  43:        0.0
+Sample       dytt: cands passing cut  44:        0.0
+Sample       dytt: cands passing cut  45:        0.0
+Sample       dytt: cands passing cut  46:        0.0
+Sample       dytt: cands passing cut  47:        0.0
+Sample       dytt: cands passing cut  48:        0.0
+Sample       dytt: cands passing cut  49:        0.0
+Sample       dytt: cands passing cut  50:        0.0
+Sample       dytt: cands passing cut  51:        0.0
+Sample       dytt: cands passing cut  52:        0.0
+Sample       dytt: cands passing cut  53:        0.0
+Sample       dytt: cands passing cut  54:        0.0
+Sample       dytt: cands passing cut  55:        0.0
+Sample       dytt: cands passing cut  56:        0.0
+Sample       dytt: cands passing cut  57:        0.0
+Sample       dytt: cands passing cut  58:        0.0
+Sample       dytt: cands passing cut  59:        0.0
+Sample       dytt: cands passing cut  60:        0.0
+Sample       dytt: cands passing cut  61:        0.0
+Sample       dytt: cands passing cut  62:        0.0
+Sample       dytt: cands passing cut  63:        0.0
+Sample       dytt: correlations
+Sample       dytt:           * 6   * 7   *10   *11   *12   *13   *14   *15   *31  
+Sample       dytt: * 6     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dytt: * 7     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dytt: *10     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dytt: *11     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dytt: *12     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dytt: *13     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dytt: *14     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dytt: *15     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       dytt: *31     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      ttbar: Events processed (weight):   414000.0.  Events:   946644
+Sample      ttbar: Events before cut (weight):   161161.7.  Events:   368509
+Sample      ttbar: Duplicate events:    28382.  Weight    12412.4
+Sample      ttbar: Total candidate count (ee em mm all):    12028    16914     5881    34823. Total weight     16.404 +-      1.033     29.446 +-      1.356     12.596 +-      0.879     58.446 +-      1.918
+Sample      ttbar: cands passing cut   0:        0.0
+Sample      ttbar: cands passing cut   1:        0.0
+Sample      ttbar: cands passing cut   2:        0.0
+Sample      ttbar: cands passing cut   3:        0.0
+Sample      ttbar: cands passing cut   4:        0.0
+Sample      ttbar: cands passing cut   5:        0.0
+Sample      ttbar: cands passing cut * 6:        0.0
+Sample      ttbar: cands passing cut * 7:        0.0
+Sample      ttbar: cands passing cut   8:        0.0
+Sample      ttbar: cands passing cut   9:        0.0
+Sample      ttbar: cands passing cut *10:        0.0
+Sample      ttbar: cands passing cut *11:        0.0
+Sample      ttbar: cands passing cut *12:        0.0
+Sample      ttbar: cands passing cut *13:        0.0
+Sample      ttbar: cands passing cut *14:        0.0
+Sample      ttbar: cands passing cut *15:        0.0
+Sample      ttbar: cands passing cut  16:        0.0
+Sample      ttbar: cands passing cut  17:        0.0
+Sample      ttbar: cands passing cut  18:        0.0
+Sample      ttbar: cands passing cut  19:        0.0
+Sample      ttbar: cands passing cut  20:        0.0
+Sample      ttbar: cands passing cut  21:        0.0
+Sample      ttbar: cands passing cut  22:        0.0
+Sample      ttbar: cands passing cut  23:        0.0
+Sample      ttbar: cands passing cut  24:        0.0
+Sample      ttbar: cands passing cut  25:        0.0
+Sample      ttbar: cands passing cut  26:        0.0
+Sample      ttbar: cands passing cut  27:        0.0
+Sample      ttbar: cands passing cut  28:        0.0
+Sample      ttbar: cands passing cut  29:        0.0
+Sample      ttbar: cands passing cut  30:        0.0
+Sample      ttbar: cands passing cut *31:        0.0
+Sample      ttbar: cands passing cut  32:        0.0
+Sample      ttbar: cands passing cut  33:        0.0
+Sample      ttbar: cands passing cut  34:        0.0
+Sample      ttbar: cands passing cut  35:        0.0
+Sample      ttbar: cands passing cut  36:        0.0
+Sample      ttbar: cands passing cut  37:        0.0
+Sample      ttbar: cands passing cut  38:        0.0
+Sample      ttbar: cands passing cut  39:        0.0
+Sample      ttbar: cands passing cut  40:        0.0
+Sample      ttbar: cands passing cut  41:        0.0
+Sample      ttbar: cands passing cut  42:        0.0
+Sample      ttbar: cands passing cut  43:        0.0
+Sample      ttbar: cands passing cut  44:        0.0
+Sample      ttbar: cands passing cut  45:        0.0
+Sample      ttbar: cands passing cut  46:        0.0
+Sample      ttbar: cands passing cut  47:        0.0
+Sample      ttbar: cands passing cut  48:        0.0
+Sample      ttbar: cands passing cut  49:        0.0
+Sample      ttbar: cands passing cut  50:        0.0
+Sample      ttbar: cands passing cut  51:        0.0
+Sample      ttbar: cands passing cut  52:        0.0
+Sample      ttbar: cands passing cut  53:        0.0
+Sample      ttbar: cands passing cut  54:        0.0
+Sample      ttbar: cands passing cut  55:        0.0
+Sample      ttbar: cands passing cut  56:        0.0
+Sample      ttbar: cands passing cut  57:        0.0
+Sample      ttbar: cands passing cut  58:        0.0
+Sample      ttbar: cands passing cut  59:        0.0
+Sample      ttbar: cands passing cut  60:        0.0
+Sample      ttbar: cands passing cut  61:        0.0
+Sample      ttbar: cands passing cut  62:        0.0
+Sample      ttbar: cands passing cut  63:        0.0
+Sample      ttbar: correlations
+Sample      ttbar:           * 6   * 7   *10   *11   *12   *13   *14   *15   *31  
+Sample      ttbar: * 6     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      ttbar: * 7     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      ttbar: *10     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      ttbar: *11     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      ttbar: *12     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      ttbar: *13     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      ttbar: *14     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      ttbar: *15     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample      ttbar: *31     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         tw: Events processed (weight):    28938.0.  Events:   162936
+Sample         tw: Events before cut (weight):     8808.4.  Events:    49596
+Sample         tw: Duplicate events:     3736.  Weight      663.5
+Sample         tw: Total candidate count (ee em mm all):      914     1196      406     2516. Total weight      0.608 +-      0.127      1.043 +-      0.164      0.637 +-      0.130      2.288 +-      0.245
+Sample         tw: cands passing cut   0:        0.0
+Sample         tw: cands passing cut   1:        0.0
+Sample         tw: cands passing cut   2:        0.0
+Sample         tw: cands passing cut   3:        0.0
+Sample         tw: cands passing cut   4:        0.0
+Sample         tw: cands passing cut   5:        0.0
+Sample         tw: cands passing cut * 6:        0.0
+Sample         tw: cands passing cut * 7:        0.0
+Sample         tw: cands passing cut   8:        0.0
+Sample         tw: cands passing cut   9:        0.0
+Sample         tw: cands passing cut *10:        0.0
+Sample         tw: cands passing cut *11:        0.0
+Sample         tw: cands passing cut *12:        0.0
+Sample         tw: cands passing cut *13:        0.0
+Sample         tw: cands passing cut *14:        0.0
+Sample         tw: cands passing cut *15:        0.0
+Sample         tw: cands passing cut  16:        0.0
+Sample         tw: cands passing cut  17:        0.0
+Sample         tw: cands passing cut  18:        0.0
+Sample         tw: cands passing cut  19:        0.0
+Sample         tw: cands passing cut  20:        0.0
+Sample         tw: cands passing cut  21:        0.0
+Sample         tw: cands passing cut  22:        0.0
+Sample         tw: cands passing cut  23:        0.0
+Sample         tw: cands passing cut  24:        0.0
+Sample         tw: cands passing cut  25:        0.0
+Sample         tw: cands passing cut  26:        0.0
+Sample         tw: cands passing cut  27:        0.0
+Sample         tw: cands passing cut  28:        0.0
+Sample         tw: cands passing cut  29:        0.0
+Sample         tw: cands passing cut  30:        0.0
+Sample         tw: cands passing cut *31:        0.0
+Sample         tw: cands passing cut  32:        0.0
+Sample         tw: cands passing cut  33:        0.0
+Sample         tw: cands passing cut  34:        0.0
+Sample         tw: cands passing cut  35:        0.0
+Sample         tw: cands passing cut  36:        0.0
+Sample         tw: cands passing cut  37:        0.0
+Sample         tw: cands passing cut  38:        0.0
+Sample         tw: cands passing cut  39:        0.0
+Sample         tw: cands passing cut  40:        0.0
+Sample         tw: cands passing cut  41:        0.0
+Sample         tw: cands passing cut  42:        0.0
+Sample         tw: cands passing cut  43:        0.0
+Sample         tw: cands passing cut  44:        0.0
+Sample         tw: cands passing cut  45:        0.0
+Sample         tw: cands passing cut  46:        0.0
+Sample         tw: cands passing cut  47:        0.0
+Sample         tw: cands passing cut  48:        0.0
+Sample         tw: cands passing cut  49:        0.0
+Sample         tw: cands passing cut  50:        0.0
+Sample         tw: cands passing cut  51:        0.0
+Sample         tw: cands passing cut  52:        0.0
+Sample         tw: cands passing cut  53:        0.0
+Sample         tw: cands passing cut  54:        0.0
+Sample         tw: cands passing cut  55:        0.0
+Sample         tw: cands passing cut  56:        0.0
+Sample         tw: cands passing cut  57:        0.0
+Sample         tw: cands passing cut  58:        0.0
+Sample         tw: cands passing cut  59:        0.0
+Sample         tw: cands passing cut  60:        0.0
+Sample         tw: cands passing cut  61:        0.0
+Sample         tw: cands passing cut  62:        0.0
+Sample         tw: cands passing cut  63:        0.0
+Sample         tw: correlations
+Sample         tw:           * 6   * 7   *10   *11   *12   *13   *14   *15   *31  
+Sample         tw: * 6     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         tw: * 7     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         tw: *10     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         tw: *11     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         tw: *12     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         tw: *13     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         tw: *14     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         tw: *15     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample         tw: *31     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM0: Events processed (weight):   110000.0.  Events:   202686
+Sample        LM0: Events before cut (weight):    84910.5.  Events:   156456
+Sample        LM0: Duplicate events:    73117.  Weight    39681.4
+Sample        LM0: Total candidate count (ee em mm all):    22374    25969    10077    58420. Total weight     26.143 +-      1.445     38.177 +-      1.726     21.580 +-      1.316     85.900 +-      2.607
+Sample        LM0: cands passing cut   0:        0.0
+Sample        LM0: cands passing cut   1:        0.0
+Sample        LM0: cands passing cut   2:        0.0
+Sample        LM0: cands passing cut   3:        0.0
+Sample        LM0: cands passing cut   4:        0.0
+Sample        LM0: cands passing cut   5:        0.0
+Sample        LM0: cands passing cut * 6:        0.0
+Sample        LM0: cands passing cut * 7:        0.0
+Sample        LM0: cands passing cut   8:        0.0
+Sample        LM0: cands passing cut   9:        0.0
+Sample        LM0: cands passing cut *10:        0.0
+Sample        LM0: cands passing cut *11:        0.0
+Sample        LM0: cands passing cut *12:        0.0
+Sample        LM0: cands passing cut *13:        0.0
+Sample        LM0: cands passing cut *14:        0.0
+Sample        LM0: cands passing cut *15:        0.0
+Sample        LM0: cands passing cut  16:        0.0
+Sample        LM0: cands passing cut  17:        0.0
+Sample        LM0: cands passing cut  18:        0.0
+Sample        LM0: cands passing cut  19:        0.0
+Sample        LM0: cands passing cut  20:        0.0
+Sample        LM0: cands passing cut  21:        0.0
+Sample        LM0: cands passing cut  22:        0.0
+Sample        LM0: cands passing cut  23:        0.0
+Sample        LM0: cands passing cut  24:        0.0
+Sample        LM0: cands passing cut  25:        0.0
+Sample        LM0: cands passing cut  26:        0.0
+Sample        LM0: cands passing cut  27:        0.0
+Sample        LM0: cands passing cut  28:        0.0
+Sample        LM0: cands passing cut  29:        0.0
+Sample        LM0: cands passing cut  30:        0.0
+Sample        LM0: cands passing cut *31:        0.0
+Sample        LM0: cands passing cut  32:        0.0
+Sample        LM0: cands passing cut  33:        0.0
+Sample        LM0: cands passing cut  34:        0.0
+Sample        LM0: cands passing cut  35:        0.0
+Sample        LM0: cands passing cut  36:        0.0
+Sample        LM0: cands passing cut  37:        0.0
+Sample        LM0: cands passing cut  38:        0.0
+Sample        LM0: cands passing cut  39:        0.0
+Sample        LM0: cands passing cut  40:        0.0
+Sample        LM0: cands passing cut  41:        0.0
+Sample        LM0: cands passing cut  42:        0.0
+Sample        LM0: cands passing cut  43:        0.0
+Sample        LM0: cands passing cut  44:        0.0
+Sample        LM0: cands passing cut  45:        0.0
+Sample        LM0: cands passing cut  46:        0.0
+Sample        LM0: cands passing cut  47:        0.0
+Sample        LM0: cands passing cut  48:        0.0
+Sample        LM0: cands passing cut  49:        0.0
+Sample        LM0: cands passing cut  50:        0.0
+Sample        LM0: cands passing cut  51:        0.0
+Sample        LM0: cands passing cut  52:        0.0
+Sample        LM0: cands passing cut  53:        0.0
+Sample        LM0: cands passing cut  54:        0.0
+Sample        LM0: cands passing cut  55:        0.0
+Sample        LM0: cands passing cut  56:        0.0
+Sample        LM0: cands passing cut  57:        0.0
+Sample        LM0: cands passing cut  58:        0.0
+Sample        LM0: cands passing cut  59:        0.0
+Sample        LM0: cands passing cut  60:        0.0
+Sample        LM0: cands passing cut  61:        0.0
+Sample        LM0: cands passing cut  62:        0.0
+Sample        LM0: cands passing cut  63:        0.0
+Sample        LM0: correlations
+Sample        LM0:           * 6   * 7   *10   *11   *12   *13   *14   *15   *31  
+Sample        LM0: * 6     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM0: * 7     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM0: *10     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM0: *11     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM0: *12     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM0: *13     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM0: *14     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM0: *15     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM0: *31     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM1: Events processed (weight):    16060.0.  Events:   104800
+Sample        LM1: Events before cut (weight):    11666.9.  Events:    76133
+Sample        LM1: Duplicate events:    37500.  Weight     5746.7
+Sample        LM1: Total candidate count (ee em mm all):    12287    13753     6731    32771. Total weight      7.361 +-      0.407      4.958 +-      0.337      5.348 +-      0.331     17.667 +-      0.624
+Sample        LM1: cands passing cut   0:        0.0
+Sample        LM1: cands passing cut   1:        0.0
+Sample        LM1: cands passing cut   2:        0.0
+Sample        LM1: cands passing cut   3:        0.0
+Sample        LM1: cands passing cut   4:        0.0
+Sample        LM1: cands passing cut   5:        0.0
+Sample        LM1: cands passing cut * 6:        0.0
+Sample        LM1: cands passing cut * 7:        0.0
+Sample        LM1: cands passing cut   8:        0.0
+Sample        LM1: cands passing cut   9:        0.0
+Sample        LM1: cands passing cut *10:        0.0
+Sample        LM1: cands passing cut *11:        0.0
+Sample        LM1: cands passing cut *12:        0.0
+Sample        LM1: cands passing cut *13:        0.0
+Sample        LM1: cands passing cut *14:        0.0
+Sample        LM1: cands passing cut *15:        0.0
+Sample        LM1: cands passing cut  16:        0.0
+Sample        LM1: cands passing cut  17:        0.0
+Sample        LM1: cands passing cut  18:        0.0
+Sample        LM1: cands passing cut  19:        0.0
+Sample        LM1: cands passing cut  20:        0.0
+Sample        LM1: cands passing cut  21:        0.0
+Sample        LM1: cands passing cut  22:        0.0
+Sample        LM1: cands passing cut  23:        0.0
+Sample        LM1: cands passing cut  24:        0.0
+Sample        LM1: cands passing cut  25:        0.0
+Sample        LM1: cands passing cut  26:        0.0
+Sample        LM1: cands passing cut  27:        0.0
+Sample        LM1: cands passing cut  28:        0.0
+Sample        LM1: cands passing cut  29:        0.0
+Sample        LM1: cands passing cut  30:        0.0
+Sample        LM1: cands passing cut *31:        0.0
+Sample        LM1: cands passing cut  32:        0.0
+Sample        LM1: cands passing cut  33:        0.0
+Sample        LM1: cands passing cut  34:        0.0
+Sample        LM1: cands passing cut  35:        0.0
+Sample        LM1: cands passing cut  36:        0.0
+Sample        LM1: cands passing cut  37:        0.0
+Sample        LM1: cands passing cut  38:        0.0
+Sample        LM1: cands passing cut  39:        0.0
+Sample        LM1: cands passing cut  40:        0.0
+Sample        LM1: cands passing cut  41:        0.0
+Sample        LM1: cands passing cut  42:        0.0
+Sample        LM1: cands passing cut  43:        0.0
+Sample        LM1: cands passing cut  44:        0.0
+Sample        LM1: cands passing cut  45:        0.0
+Sample        LM1: cands passing cut  46:        0.0
+Sample        LM1: cands passing cut  47:        0.0
+Sample        LM1: cands passing cut  48:        0.0
+Sample        LM1: cands passing cut  49:        0.0
+Sample        LM1: cands passing cut  50:        0.0
+Sample        LM1: cands passing cut  51:        0.0
+Sample        LM1: cands passing cut  52:        0.0
+Sample        LM1: cands passing cut  53:        0.0
+Sample        LM1: cands passing cut  54:        0.0
+Sample        LM1: cands passing cut  55:        0.0
+Sample        LM1: cands passing cut  56:        0.0
+Sample        LM1: cands passing cut  57:        0.0
+Sample        LM1: cands passing cut  58:        0.0
+Sample        LM1: cands passing cut  59:        0.0
+Sample        LM1: cands passing cut  60:        0.0
+Sample        LM1: cands passing cut  61:        0.0
+Sample        LM1: cands passing cut  62:        0.0
+Sample        LM1: cands passing cut  63:        0.0
+Sample        LM1: correlations
+Sample        LM1:           * 6   * 7   *10   *11   *12   *13   *14   *15   *31  
+Sample        LM1: * 6     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM1: * 7     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM1: *10     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM1: *11     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM1: *12     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM1: *13     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM1: *14     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM1: *15     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM1: *31     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM2: Events processed (weight):     2420.0.  Events:   130400
+Sample        LM2: Events before cut (weight):     1766.0.  Events:    95157
+Sample        LM2: Duplicate events:    44224.  Weight      820.7
+Sample        LM2: Total candidate count (ee em mm all):    17574    23081     9205    49860. Total weight      0.608 +-      0.041      0.682 +-      0.043      0.320 +-      0.029      1.611 +-      0.066
+Sample        LM2: cands passing cut   0:        0.0
+Sample        LM2: cands passing cut   1:        0.0
+Sample        LM2: cands passing cut   2:        0.0
+Sample        LM2: cands passing cut   3:        0.0
+Sample        LM2: cands passing cut   4:        0.0
+Sample        LM2: cands passing cut   5:        0.0
+Sample        LM2: cands passing cut * 6:        0.0
+Sample        LM2: cands passing cut * 7:        0.0
+Sample        LM2: cands passing cut   8:        0.0
+Sample        LM2: cands passing cut   9:        0.0
+Sample        LM2: cands passing cut *10:        0.0
+Sample        LM2: cands passing cut *11:        0.0
+Sample        LM2: cands passing cut *12:        0.0
+Sample        LM2: cands passing cut *13:        0.0
+Sample        LM2: cands passing cut *14:        0.0
+Sample        LM2: cands passing cut *15:        0.0
+Sample        LM2: cands passing cut  16:        0.0
+Sample        LM2: cands passing cut  17:        0.0
+Sample        LM2: cands passing cut  18:        0.0
+Sample        LM2: cands passing cut  19:        0.0
+Sample        LM2: cands passing cut  20:        0.0
+Sample        LM2: cands passing cut  21:        0.0
+Sample        LM2: cands passing cut  22:        0.0
+Sample        LM2: cands passing cut  23:        0.0
+Sample        LM2: cands passing cut  24:        0.0
+Sample        LM2: cands passing cut  25:        0.0
+Sample        LM2: cands passing cut  26:        0.0
+Sample        LM2: cands passing cut  27:        0.0
+Sample        LM2: cands passing cut  28:        0.0
+Sample        LM2: cands passing cut  29:        0.0
+Sample        LM2: cands passing cut  30:        0.0
+Sample        LM2: cands passing cut *31:        0.0
+Sample        LM2: cands passing cut  32:        0.0
+Sample        LM2: cands passing cut  33:        0.0
+Sample        LM2: cands passing cut  34:        0.0
+Sample        LM2: cands passing cut  35:        0.0
+Sample        LM2: cands passing cut  36:        0.0
+Sample        LM2: cands passing cut  37:        0.0
+Sample        LM2: cands passing cut  38:        0.0
+Sample        LM2: cands passing cut  39:        0.0
+Sample        LM2: cands passing cut  40:        0.0
+Sample        LM2: cands passing cut  41:        0.0
+Sample        LM2: cands passing cut  42:        0.0
+Sample        LM2: cands passing cut  43:        0.0
+Sample        LM2: cands passing cut  44:        0.0
+Sample        LM2: cands passing cut  45:        0.0
+Sample        LM2: cands passing cut  46:        0.0
+Sample        LM2: cands passing cut  47:        0.0
+Sample        LM2: cands passing cut  48:        0.0
+Sample        LM2: cands passing cut  49:        0.0
+Sample        LM2: cands passing cut  50:        0.0
+Sample        LM2: cands passing cut  51:        0.0
+Sample        LM2: cands passing cut  52:        0.0
+Sample        LM2: cands passing cut  53:        0.0
+Sample        LM2: cands passing cut  54:        0.0
+Sample        LM2: cands passing cut  55:        0.0
+Sample        LM2: cands passing cut  56:        0.0
+Sample        LM2: cands passing cut  57:        0.0
+Sample        LM2: cands passing cut  58:        0.0
+Sample        LM2: cands passing cut  59:        0.0
+Sample        LM2: cands passing cut  60:        0.0
+Sample        LM2: cands passing cut  61:        0.0
+Sample        LM2: cands passing cut  62:        0.0
+Sample        LM2: cands passing cut  63:        0.0
+Sample        LM2: correlations
+Sample        LM2:           * 6   * 7   *10   *11   *12   *13   *14   *15   *31  
+Sample        LM2: * 6     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM2: * 7     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM2: *10     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM2: *11     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM2: *12     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM2: *13     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM2: *14     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM2: *15     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM2: *31     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM3: Events processed (weight):    11790.0.  Events:   153000
+Sample        LM3: Events before cut (weight):     9404.0.  Events:   122037
+Sample        LM3: Duplicate events:    48923.  Weight     3769.9
+Sample        LM3: Total candidate count (ee em mm all):    29988    34535    13567    78090. Total weight      5.035 +-      0.237      5.200 +-      0.239      2.708 +-      0.156     12.944 +-      0.371
+Sample        LM3: cands passing cut   0:        0.0
+Sample        LM3: cands passing cut   1:        0.0
+Sample        LM3: cands passing cut   2:        0.0
+Sample        LM3: cands passing cut   3:        0.0
+Sample        LM3: cands passing cut   4:        0.0
+Sample        LM3: cands passing cut   5:        0.0
+Sample        LM3: cands passing cut * 6:        0.0
+Sample        LM3: cands passing cut * 7:        0.0
+Sample        LM3: cands passing cut   8:        0.0
+Sample        LM3: cands passing cut   9:        0.0
+Sample        LM3: cands passing cut *10:        0.0
+Sample        LM3: cands passing cut *11:        0.0
+Sample        LM3: cands passing cut *12:        0.0
+Sample        LM3: cands passing cut *13:        0.0
+Sample        LM3: cands passing cut *14:        0.0
+Sample        LM3: cands passing cut *15:        0.0
+Sample        LM3: cands passing cut  16:        0.0
+Sample        LM3: cands passing cut  17:        0.0
+Sample        LM3: cands passing cut  18:        0.0
+Sample        LM3: cands passing cut  19:        0.0
+Sample        LM3: cands passing cut  20:        0.0
+Sample        LM3: cands passing cut  21:        0.0
+Sample        LM3: cands passing cut  22:        0.0
+Sample        LM3: cands passing cut  23:        0.0
+Sample        LM3: cands passing cut  24:        0.0
+Sample        LM3: cands passing cut  25:        0.0
+Sample        LM3: cands passing cut  26:        0.0
+Sample        LM3: cands passing cut  27:        0.0
+Sample        LM3: cands passing cut  28:        0.0
+Sample        LM3: cands passing cut  29:        0.0
+Sample        LM3: cands passing cut  30:        0.0
+Sample        LM3: cands passing cut *31:        0.0
+Sample        LM3: cands passing cut  32:        0.0
+Sample        LM3: cands passing cut  33:        0.0
+Sample        LM3: cands passing cut  34:        0.0
+Sample        LM3: cands passing cut  35:        0.0
+Sample        LM3: cands passing cut  36:        0.0
+Sample        LM3: cands passing cut  37:        0.0
+Sample        LM3: cands passing cut  38:        0.0
+Sample        LM3: cands passing cut  39:        0.0
+Sample        LM3: cands passing cut  40:        0.0
+Sample        LM3: cands passing cut  41:        0.0
+Sample        LM3: cands passing cut  42:        0.0
+Sample        LM3: cands passing cut  43:        0.0
+Sample        LM3: cands passing cut  44:        0.0
+Sample        LM3: cands passing cut  45:        0.0
+Sample        LM3: cands passing cut  46:        0.0
+Sample        LM3: cands passing cut  47:        0.0
+Sample        LM3: cands passing cut  48:        0.0
+Sample        LM3: cands passing cut  49:        0.0
+Sample        LM3: cands passing cut  50:        0.0
+Sample        LM3: cands passing cut  51:        0.0
+Sample        LM3: cands passing cut  52:        0.0
+Sample        LM3: cands passing cut  53:        0.0
+Sample        LM3: cands passing cut  54:        0.0
+Sample        LM3: cands passing cut  55:        0.0
+Sample        LM3: cands passing cut  56:        0.0
+Sample        LM3: cands passing cut  57:        0.0
+Sample        LM3: cands passing cut  58:        0.0
+Sample        LM3: cands passing cut  59:        0.0
+Sample        LM3: cands passing cut  60:        0.0
+Sample        LM3: cands passing cut  61:        0.0
+Sample        LM3: cands passing cut  62:        0.0
+Sample        LM3: cands passing cut  63:        0.0
+Sample        LM3: correlations
+Sample        LM3:           * 6   * 7   *10   *11   *12   *13   *14   *15   *31  
+Sample        LM3: * 6     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM3: * 7     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM3: *10     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM3: *11     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM3: *12     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM3: *13     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM3: *14     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM3: *15     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM3: *31     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM4: Events processed (weight):     6700.0.  Events:   110400
+Sample        LM4: Events before cut (weight):     5103.4.  Events:    84092
+Sample        LM4: Duplicate events:    37000.  Weight     2245.5
+Sample        LM4: Total candidate count (ee em mm all):    17460    19241     7835    44536. Total weight      1.952 +-      0.131      1.548 +-      0.113      1.449 +-      0.097      4.949 +-      0.199
+Sample        LM4: cands passing cut   0:        0.0
+Sample        LM4: cands passing cut   1:        0.0
+Sample        LM4: cands passing cut   2:        0.0
+Sample        LM4: cands passing cut   3:        0.0
+Sample        LM4: cands passing cut   4:        0.0
+Sample        LM4: cands passing cut   5:        0.0
+Sample        LM4: cands passing cut * 6:        0.0
+Sample        LM4: cands passing cut * 7:        0.0
+Sample        LM4: cands passing cut   8:        0.0
+Sample        LM4: cands passing cut   9:        0.0
+Sample        LM4: cands passing cut *10:        0.0
+Sample        LM4: cands passing cut *11:        0.0
+Sample        LM4: cands passing cut *12:        0.0
+Sample        LM4: cands passing cut *13:        0.0
+Sample        LM4: cands passing cut *14:        0.0
+Sample        LM4: cands passing cut *15:        0.0
+Sample        LM4: cands passing cut  16:        0.0
+Sample        LM4: cands passing cut  17:        0.0
+Sample        LM4: cands passing cut  18:        0.0
+Sample        LM4: cands passing cut  19:        0.0
+Sample        LM4: cands passing cut  20:        0.0
+Sample        LM4: cands passing cut  21:        0.0
+Sample        LM4: cands passing cut  22:        0.0
+Sample        LM4: cands passing cut  23:        0.0
+Sample        LM4: cands passing cut  24:        0.0
+Sample        LM4: cands passing cut  25:        0.0
+Sample        LM4: cands passing cut  26:        0.0
+Sample        LM4: cands passing cut  27:        0.0
+Sample        LM4: cands passing cut  28:        0.0
+Sample        LM4: cands passing cut  29:        0.0
+Sample        LM4: cands passing cut  30:        0.0
+Sample        LM4: cands passing cut *31:        0.0
+Sample        LM4: cands passing cut  32:        0.0
+Sample        LM4: cands passing cut  33:        0.0
+Sample        LM4: cands passing cut  34:        0.0
+Sample        LM4: cands passing cut  35:        0.0
+Sample        LM4: cands passing cut  36:        0.0
+Sample        LM4: cands passing cut  37:        0.0
+Sample        LM4: cands passing cut  38:        0.0
+Sample        LM4: cands passing cut  39:        0.0
+Sample        LM4: cands passing cut  40:        0.0
+Sample        LM4: cands passing cut  41:        0.0
+Sample        LM4: cands passing cut  42:        0.0
+Sample        LM4: cands passing cut  43:        0.0
+Sample        LM4: cands passing cut  44:        0.0
+Sample        LM4: cands passing cut  45:        0.0
+Sample        LM4: cands passing cut  46:        0.0
+Sample        LM4: cands passing cut  47:        0.0
+Sample        LM4: cands passing cut  48:        0.0
+Sample        LM4: cands passing cut  49:        0.0
+Sample        LM4: cands passing cut  50:        0.0
+Sample        LM4: cands passing cut  51:        0.0
+Sample        LM4: cands passing cut  52:        0.0
+Sample        LM4: cands passing cut  53:        0.0
+Sample        LM4: cands passing cut  54:        0.0
+Sample        LM4: cands passing cut  55:        0.0
+Sample        LM4: cands passing cut  56:        0.0
+Sample        LM4: cands passing cut  57:        0.0
+Sample        LM4: cands passing cut  58:        0.0
+Sample        LM4: cands passing cut  59:        0.0
+Sample        LM4: cands passing cut  60:        0.0
+Sample        LM4: cands passing cut  61:        0.0
+Sample        LM4: cands passing cut  62:        0.0
+Sample        LM4: cands passing cut  63:        0.0
+Sample        LM4: correlations
+Sample        LM4:           * 6   * 7   *10   *11   *12   *13   *14   *15   *31  
+Sample        LM4: * 6     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM4: * 7     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM4: *10     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM4: *11     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM4: *12     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM4: *13     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM4: *14     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM4: *15     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM4: *31     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM5: Events processed (weight):     1940.0.  Events:   171600
+Sample        LM5: Events before cut (weight):     1514.0.  Events:   133915
+Sample        LM5: Duplicate events:    56781.  Weight      641.9
+Sample        LM5: Total candidate count (ee em mm all):    29938    38853    15575    84366. Total weight      0.375 +-      0.025      0.464 +-      0.027      0.236 +-      0.018      1.075 +-      0.041
+Sample        LM5: cands passing cut   0:        0.0
+Sample        LM5: cands passing cut   1:        0.0
+Sample        LM5: cands passing cut   2:        0.0
+Sample        LM5: cands passing cut   3:        0.0
+Sample        LM5: cands passing cut   4:        0.0
+Sample        LM5: cands passing cut   5:        0.0
+Sample        LM5: cands passing cut * 6:        0.0
+Sample        LM5: cands passing cut * 7:        0.0
+Sample        LM5: cands passing cut   8:        0.0
+Sample        LM5: cands passing cut   9:        0.0
+Sample        LM5: cands passing cut *10:        0.0
+Sample        LM5: cands passing cut *11:        0.0
+Sample        LM5: cands passing cut *12:        0.0
+Sample        LM5: cands passing cut *13:        0.0
+Sample        LM5: cands passing cut *14:        0.0
+Sample        LM5: cands passing cut *15:        0.0
+Sample        LM5: cands passing cut  16:        0.0
+Sample        LM5: cands passing cut  17:        0.0
+Sample        LM5: cands passing cut  18:        0.0
+Sample        LM5: cands passing cut  19:        0.0
+Sample        LM5: cands passing cut  20:        0.0
+Sample        LM5: cands passing cut  21:        0.0
+Sample        LM5: cands passing cut  22:        0.0
+Sample        LM5: cands passing cut  23:        0.0
+Sample        LM5: cands passing cut  24:        0.0
+Sample        LM5: cands passing cut  25:        0.0
+Sample        LM5: cands passing cut  26:        0.0
+Sample        LM5: cands passing cut  27:        0.0
+Sample        LM5: cands passing cut  28:        0.0
+Sample        LM5: cands passing cut  29:        0.0
+Sample        LM5: cands passing cut  30:        0.0
+Sample        LM5: cands passing cut *31:        0.0
+Sample        LM5: cands passing cut  32:        0.0
+Sample        LM5: cands passing cut  33:        0.0
+Sample        LM5: cands passing cut  34:        0.0
+Sample        LM5: cands passing cut  35:        0.0
+Sample        LM5: cands passing cut  36:        0.0
+Sample        LM5: cands passing cut  37:        0.0
+Sample        LM5: cands passing cut  38:        0.0
+Sample        LM5: cands passing cut  39:        0.0
+Sample        LM5: cands passing cut  40:        0.0
+Sample        LM5: cands passing cut  41:        0.0
+Sample        LM5: cands passing cut  42:        0.0
+Sample        LM5: cands passing cut  43:        0.0
+Sample        LM5: cands passing cut  44:        0.0
+Sample        LM5: cands passing cut  45:        0.0
+Sample        LM5: cands passing cut  46:        0.0
+Sample        LM5: cands passing cut  47:        0.0
+Sample        LM5: cands passing cut  48:        0.0
+Sample        LM5: cands passing cut  49:        0.0
+Sample        LM5: cands passing cut  50:        0.0
+Sample        LM5: cands passing cut  51:        0.0
+Sample        LM5: cands passing cut  52:        0.0
+Sample        LM5: cands passing cut  53:        0.0
+Sample        LM5: cands passing cut  54:        0.0
+Sample        LM5: cands passing cut  55:        0.0
+Sample        LM5: cands passing cut  56:        0.0
+Sample        LM5: cands passing cut  57:        0.0
+Sample        LM5: cands passing cut  58:        0.0
+Sample        LM5: cands passing cut  59:        0.0
+Sample        LM5: cands passing cut  60:        0.0
+Sample        LM5: cands passing cut  61:        0.0
+Sample        LM5: cands passing cut  62:        0.0
+Sample        LM5: cands passing cut  63:        0.0
+Sample        LM5: correlations
+Sample        LM5:           * 6   * 7   *10   *11   *12   *13   *14   *15   *31  
+Sample        LM5: * 6     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM5: * 7     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM5: *10     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM5: *11     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM5: *12     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM5: *13     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM5: *14     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM5: *15     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM5: *31     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM6: Events processed (weight):     1280.0.  Events:   134400
+Sample        LM6: Events before cut (weight):     1021.2.  Events:   107225
+Sample        LM6: Duplicate events:    44294.  Weight      421.8
+Sample        LM6: Total candidate count (ee em mm all):    23236    32723    17038    72997. Total weight      0.769 +-      0.033      0.673 +-      0.029      0.533 +-      0.025      1.975 +-      0.051
+Sample        LM6: cands passing cut   0:        0.0
+Sample        LM6: cands passing cut   1:        0.0
+Sample        LM6: cands passing cut   2:        0.0
+Sample        LM6: cands passing cut   3:        0.0
+Sample        LM6: cands passing cut   4:        0.0
+Sample        LM6: cands passing cut   5:        0.0
+Sample        LM6: cands passing cut * 6:        0.0
+Sample        LM6: cands passing cut * 7:        0.0
+Sample        LM6: cands passing cut   8:        0.0
+Sample        LM6: cands passing cut   9:        0.0
+Sample        LM6: cands passing cut *10:        0.0
+Sample        LM6: cands passing cut *11:        0.0
+Sample        LM6: cands passing cut *12:        0.0
+Sample        LM6: cands passing cut *13:        0.0
+Sample        LM6: cands passing cut *14:        0.0
+Sample        LM6: cands passing cut *15:        0.0
+Sample        LM6: cands passing cut  16:        0.0
+Sample        LM6: cands passing cut  17:        0.0
+Sample        LM6: cands passing cut  18:        0.0
+Sample        LM6: cands passing cut  19:        0.0
+Sample        LM6: cands passing cut  20:        0.0
+Sample        LM6: cands passing cut  21:        0.0
+Sample        LM6: cands passing cut  22:        0.0
+Sample        LM6: cands passing cut  23:        0.0
+Sample        LM6: cands passing cut  24:        0.0
+Sample        LM6: cands passing cut  25:        0.0
+Sample        LM6: cands passing cut  26:        0.0
+Sample        LM6: cands passing cut  27:        0.0
+Sample        LM6: cands passing cut  28:        0.0
+Sample        LM6: cands passing cut  29:        0.0
+Sample        LM6: cands passing cut  30:        0.0
+Sample        LM6: cands passing cut *31:        0.0
+Sample        LM6: cands passing cut  32:        0.0
+Sample        LM6: cands passing cut  33:        0.0
+Sample        LM6: cands passing cut  34:        0.0
+Sample        LM6: cands passing cut  35:        0.0
+Sample        LM6: cands passing cut  36:        0.0
+Sample        LM6: cands passing cut  37:        0.0
+Sample        LM6: cands passing cut  38:        0.0
+Sample        LM6: cands passing cut  39:        0.0
+Sample        LM6: cands passing cut  40:        0.0
+Sample        LM6: cands passing cut  41:        0.0
+Sample        LM6: cands passing cut  42:        0.0
+Sample        LM6: cands passing cut  43:        0.0
+Sample        LM6: cands passing cut  44:        0.0
+Sample        LM6: cands passing cut  45:        0.0
+Sample        LM6: cands passing cut  46:        0.0
+Sample        LM6: cands passing cut  47:        0.0
+Sample        LM6: cands passing cut  48:        0.0
+Sample        LM6: cands passing cut  49:        0.0
+Sample        LM6: cands passing cut  50:        0.0
+Sample        LM6: cands passing cut  51:        0.0
+Sample        LM6: cands passing cut  52:        0.0
+Sample        LM6: cands passing cut  53:        0.0
+Sample        LM6: cands passing cut  54:        0.0
+Sample        LM6: cands passing cut  55:        0.0
+Sample        LM6: cands passing cut  56:        0.0
+Sample        LM6: cands passing cut  57:        0.0
+Sample        LM6: cands passing cut  58:        0.0
+Sample        LM6: cands passing cut  59:        0.0
+Sample        LM6: cands passing cut  60:        0.0
+Sample        LM6: cands passing cut  61:        0.0
+Sample        LM6: cands passing cut  62:        0.0
+Sample        LM6: cands passing cut  63:        0.0
+Sample        LM6: correlations
+Sample        LM6:           * 6   * 7   *10   *11   *12   *13   *14   *15   *31  
+Sample        LM6: * 6     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM6: * 7     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM6: *10     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM6: *11     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM6: *12     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM6: *13     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM6: *14     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM6: *15     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM6: *31     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM7: Events processed (weight):     2900.0.  Events:    82400
+Sample        LM7: Events before cut (weight):     1940.3.  Events:    55130
+Sample        LM7: Duplicate events:    29303.  Weight     1031.3
+Sample        LM7: Total candidate count (ee em mm all):     9735     9773     3350    22858. Total weight      0.615 +-      0.056      0.468 +-      0.049      0.418 +-      0.041      1.501 +-      0.085
+Sample        LM7: cands passing cut   0:        0.0
+Sample        LM7: cands passing cut   1:        0.0
+Sample        LM7: cands passing cut   2:        0.0
+Sample        LM7: cands passing cut   3:        0.0
+Sample        LM7: cands passing cut   4:        0.0
+Sample        LM7: cands passing cut   5:        0.0
+Sample        LM7: cands passing cut * 6:        0.0
+Sample        LM7: cands passing cut * 7:        0.0
+Sample        LM7: cands passing cut   8:        0.0
+Sample        LM7: cands passing cut   9:        0.0
+Sample        LM7: cands passing cut *10:        0.0
+Sample        LM7: cands passing cut *11:        0.0
+Sample        LM7: cands passing cut *12:        0.0
+Sample        LM7: cands passing cut *13:        0.0
+Sample        LM7: cands passing cut *14:        0.0
+Sample        LM7: cands passing cut *15:        0.0
+Sample        LM7: cands passing cut  16:        0.0
+Sample        LM7: cands passing cut  17:        0.0
+Sample        LM7: cands passing cut  18:        0.0
+Sample        LM7: cands passing cut  19:        0.0
+Sample        LM7: cands passing cut  20:        0.0
+Sample        LM7: cands passing cut  21:        0.0
+Sample        LM7: cands passing cut  22:        0.0
+Sample        LM7: cands passing cut  23:        0.0
+Sample        LM7: cands passing cut  24:        0.0
+Sample        LM7: cands passing cut  25:        0.0
+Sample        LM7: cands passing cut  26:        0.0
+Sample        LM7: cands passing cut  27:        0.0
+Sample        LM7: cands passing cut  28:        0.0
+Sample        LM7: cands passing cut  29:        0.0
+Sample        LM7: cands passing cut  30:        0.0
+Sample        LM7: cands passing cut *31:        0.0
+Sample        LM7: cands passing cut  32:        0.0
+Sample        LM7: cands passing cut  33:        0.0
+Sample        LM7: cands passing cut  34:        0.0
+Sample        LM7: cands passing cut  35:        0.0
+Sample        LM7: cands passing cut  36:        0.0
+Sample        LM7: cands passing cut  37:        0.0
+Sample        LM7: cands passing cut  38:        0.0
+Sample        LM7: cands passing cut  39:        0.0
+Sample        LM7: cands passing cut  40:        0.0
+Sample        LM7: cands passing cut  41:        0.0
+Sample        LM7: cands passing cut  42:        0.0
+Sample        LM7: cands passing cut  43:        0.0
+Sample        LM7: cands passing cut  44:        0.0
+Sample        LM7: cands passing cut  45:        0.0
+Sample        LM7: cands passing cut  46:        0.0
+Sample        LM7: cands passing cut  47:        0.0
+Sample        LM7: cands passing cut  48:        0.0
+Sample        LM7: cands passing cut  49:        0.0
+Sample        LM7: cands passing cut  50:        0.0
+Sample        LM7: cands passing cut  51:        0.0
+Sample        LM7: cands passing cut  52:        0.0
+Sample        LM7: cands passing cut  53:        0.0
+Sample        LM7: cands passing cut  54:        0.0
+Sample        LM7: cands passing cut  55:        0.0
+Sample        LM7: cands passing cut  56:        0.0
+Sample        LM7: cands passing cut  57:        0.0
+Sample        LM7: cands passing cut  58:        0.0
+Sample        LM7: cands passing cut  59:        0.0
+Sample        LM7: cands passing cut  60:        0.0
+Sample        LM7: cands passing cut  61:        0.0
+Sample        LM7: cands passing cut  62:        0.0
+Sample        LM7: cands passing cut  63:        0.0
+Sample        LM7: correlations
+Sample        LM7:           * 6   * 7   *10   *11   *12   *13   *14   *15   *31  
+Sample        LM7: * 6     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM7: * 7     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM7: *10     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM7: *11     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM7: *12     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM7: *13     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM7: *14     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM7: *15     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM7: *31     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM8: Events processed (weight):     2860.0.  Events:   206302
+Sample        LM8: Events before cut (weight):     2456.7.  Events:   177209
+Sample        LM8: Duplicate events:    53432.  Weight      740.7
+Sample        LM8: Total candidate count (ee em mm all):    76110    91658    34293   202061. Total weight      1.950 +-      0.062      2.278 +-      0.066      1.185 +-      0.043      5.413 +-      0.100
+Sample        LM8: cands passing cut   0:        0.0
+Sample        LM8: cands passing cut   1:        0.0
+Sample        LM8: cands passing cut   2:        0.0
+Sample        LM8: cands passing cut   3:        0.0
+Sample        LM8: cands passing cut   4:        0.0
+Sample        LM8: cands passing cut   5:        0.0
+Sample        LM8: cands passing cut * 6:        0.0
+Sample        LM8: cands passing cut * 7:        0.0
+Sample        LM8: cands passing cut   8:        0.0
+Sample        LM8: cands passing cut   9:        0.0
+Sample        LM8: cands passing cut *10:        0.0
+Sample        LM8: cands passing cut *11:        0.0
+Sample        LM8: cands passing cut *12:        0.0
+Sample        LM8: cands passing cut *13:        0.0
+Sample        LM8: cands passing cut *14:        0.0
+Sample        LM8: cands passing cut *15:        0.0
+Sample        LM8: cands passing cut  16:        0.0
+Sample        LM8: cands passing cut  17:        0.0
+Sample        LM8: cands passing cut  18:        0.0
+Sample        LM8: cands passing cut  19:        0.0
+Sample        LM8: cands passing cut  20:        0.0
+Sample        LM8: cands passing cut  21:        0.0
+Sample        LM8: cands passing cut  22:        0.0
+Sample        LM8: cands passing cut  23:        0.0
+Sample        LM8: cands passing cut  24:        0.0
+Sample        LM8: cands passing cut  25:        0.0
+Sample        LM8: cands passing cut  26:        0.0
+Sample        LM8: cands passing cut  27:        0.0
+Sample        LM8: cands passing cut  28:        0.0
+Sample        LM8: cands passing cut  29:        0.0
+Sample        LM8: cands passing cut  30:        0.0
+Sample        LM8: cands passing cut *31:        0.0
+Sample        LM8: cands passing cut  32:        0.0
+Sample        LM8: cands passing cut  33:        0.0
+Sample        LM8: cands passing cut  34:        0.0
+Sample        LM8: cands passing cut  35:        0.0
+Sample        LM8: cands passing cut  36:        0.0
+Sample        LM8: cands passing cut  37:        0.0
+Sample        LM8: cands passing cut  38:        0.0
+Sample        LM8: cands passing cut  39:        0.0
+Sample        LM8: cands passing cut  40:        0.0
+Sample        LM8: cands passing cut  41:        0.0
+Sample        LM8: cands passing cut  42:        0.0
+Sample        LM8: cands passing cut  43:        0.0
+Sample        LM8: cands passing cut  44:        0.0
+Sample        LM8: cands passing cut  45:        0.0
+Sample        LM8: cands passing cut  46:        0.0
+Sample        LM8: cands passing cut  47:        0.0
+Sample        LM8: cands passing cut  48:        0.0
+Sample        LM8: cands passing cut  49:        0.0
+Sample        LM8: cands passing cut  50:        0.0
+Sample        LM8: cands passing cut  51:        0.0
+Sample        LM8: cands passing cut  52:        0.0
+Sample        LM8: cands passing cut  53:        0.0
+Sample        LM8: cands passing cut  54:        0.0
+Sample        LM8: cands passing cut  55:        0.0
+Sample        LM8: cands passing cut  56:        0.0
+Sample        LM8: cands passing cut  57:        0.0
+Sample        LM8: cands passing cut  58:        0.0
+Sample        LM8: cands passing cut  59:        0.0
+Sample        LM8: cands passing cut  60:        0.0
+Sample        LM8: cands passing cut  61:        0.0
+Sample        LM8: cands passing cut  62:        0.0
+Sample        LM8: cands passing cut  63:        0.0
+Sample        LM8: correlations
+Sample        LM8:           * 6   * 7   *10   *11   *12   *13   *14   *15   *31  
+Sample        LM8: * 6     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM8: * 7     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM8: *10     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM8: *11     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM8: *12     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM8: *13     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM8: *14     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM8: *15     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM8: *31     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM9: Events processed (weight):    11580.0.  Events:   200250
+Sample        LM9: Events before cut (weight):     7304.5.  Events:   126315
+Sample        LM9: Duplicate events:    61392.  Weight     3550.2
+Sample        LM9: Total candidate count (ee em mm all):    22682    26835    10998    60515. Total weight      2.935 +-      0.158      2.354 +-      0.141      2.137 +-      0.127      7.426 +-      0.247
+Sample        LM9: cands passing cut   0:        0.0
+Sample        LM9: cands passing cut   1:        0.0
+Sample        LM9: cands passing cut   2:        0.0
+Sample        LM9: cands passing cut   3:        0.0
+Sample        LM9: cands passing cut   4:        0.0
+Sample        LM9: cands passing cut   5:        0.0
+Sample        LM9: cands passing cut * 6:        0.0
+Sample        LM9: cands passing cut * 7:        0.0
+Sample        LM9: cands passing cut   8:        0.0
+Sample        LM9: cands passing cut   9:        0.0
+Sample        LM9: cands passing cut *10:        0.0
+Sample        LM9: cands passing cut *11:        0.0
+Sample        LM9: cands passing cut *12:        0.0
+Sample        LM9: cands passing cut *13:        0.0
+Sample        LM9: cands passing cut *14:        0.0
+Sample        LM9: cands passing cut *15:        0.0
+Sample        LM9: cands passing cut  16:        0.0
+Sample        LM9: cands passing cut  17:        0.0
+Sample        LM9: cands passing cut  18:        0.0
+Sample        LM9: cands passing cut  19:        0.0
+Sample        LM9: cands passing cut  20:        0.0
+Sample        LM9: cands passing cut  21:        0.0
+Sample        LM9: cands passing cut  22:        0.0
+Sample        LM9: cands passing cut  23:        0.0
+Sample        LM9: cands passing cut  24:        0.0
+Sample        LM9: cands passing cut  25:        0.0
+Sample        LM9: cands passing cut  26:        0.0
+Sample        LM9: cands passing cut  27:        0.0
+Sample        LM9: cands passing cut  28:        0.0
+Sample        LM9: cands passing cut  29:        0.0
+Sample        LM9: cands passing cut  30:        0.0
+Sample        LM9: cands passing cut *31:        0.0
+Sample        LM9: cands passing cut  32:        0.0
+Sample        LM9: cands passing cut  33:        0.0
+Sample        LM9: cands passing cut  34:        0.0
+Sample        LM9: cands passing cut  35:        0.0
+Sample        LM9: cands passing cut  36:        0.0
+Sample        LM9: cands passing cut  37:        0.0
+Sample        LM9: cands passing cut  38:        0.0
+Sample        LM9: cands passing cut  39:        0.0
+Sample        LM9: cands passing cut  40:        0.0
+Sample        LM9: cands passing cut  41:        0.0
+Sample        LM9: cands passing cut  42:        0.0
+Sample        LM9: cands passing cut  43:        0.0
+Sample        LM9: cands passing cut  44:        0.0
+Sample        LM9: cands passing cut  45:        0.0
+Sample        LM9: cands passing cut  46:        0.0
+Sample        LM9: cands passing cut  47:        0.0
+Sample        LM9: cands passing cut  48:        0.0
+Sample        LM9: cands passing cut  49:        0.0
+Sample        LM9: cands passing cut  50:        0.0
+Sample        LM9: cands passing cut  51:        0.0
+Sample        LM9: cands passing cut  52:        0.0
+Sample        LM9: cands passing cut  53:        0.0
+Sample        LM9: cands passing cut  54:        0.0
+Sample        LM9: cands passing cut  55:        0.0
+Sample        LM9: cands passing cut  56:        0.0
+Sample        LM9: cands passing cut  57:        0.0
+Sample        LM9: cands passing cut  58:        0.0
+Sample        LM9: cands passing cut  59:        0.0
+Sample        LM9: cands passing cut  60:        0.0
+Sample        LM9: cands passing cut  61:        0.0
+Sample        LM9: cands passing cut  62:        0.0
+Sample        LM9: cands passing cut  63:        0.0
+Sample        LM9: correlations
+Sample        LM9:           * 6   * 7   *10   *11   *12   *13   *14   *15   *31  
+Sample        LM9: * 6     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM9: * 7     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM9: *10     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM9: *11     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM9: *12     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM9: *13     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM9: *14     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM9: *15     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample        LM9: *31     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM10: Events processed (weight):     6550.0.  Events:   197860
+Sample       LM10: Events before cut (weight):     4770.8.  Events:   144114
+Sample       LM10: Duplicate events:    80013.  Weight     2648.8
+Sample       LM10: Total candidate count (ee em mm all):    18893    22824     8491    50208. Total weight      1.232 +-      0.076      1.702 +-      0.088      0.819 +-      0.054      3.753 +-      0.128
+Sample       LM10: cands passing cut   0:        0.0
+Sample       LM10: cands passing cut   1:        0.0
+Sample       LM10: cands passing cut   2:        0.0
+Sample       LM10: cands passing cut   3:        0.0
+Sample       LM10: cands passing cut   4:        0.0
+Sample       LM10: cands passing cut   5:        0.0
+Sample       LM10: cands passing cut * 6:        0.0
+Sample       LM10: cands passing cut * 7:        0.0
+Sample       LM10: cands passing cut   8:        0.0
+Sample       LM10: cands passing cut   9:        0.0
+Sample       LM10: cands passing cut *10:        0.0
+Sample       LM10: cands passing cut *11:        0.0
+Sample       LM10: cands passing cut *12:        0.0
+Sample       LM10: cands passing cut *13:        0.0
+Sample       LM10: cands passing cut *14:        0.0
+Sample       LM10: cands passing cut *15:        0.0
+Sample       LM10: cands passing cut  16:        0.0
+Sample       LM10: cands passing cut  17:        0.0
+Sample       LM10: cands passing cut  18:        0.0
+Sample       LM10: cands passing cut  19:        0.0
+Sample       LM10: cands passing cut  20:        0.0
+Sample       LM10: cands passing cut  21:        0.0
+Sample       LM10: cands passing cut  22:        0.0
+Sample       LM10: cands passing cut  23:        0.0
+Sample       LM10: cands passing cut  24:        0.0
+Sample       LM10: cands passing cut  25:        0.0
+Sample       LM10: cands passing cut  26:        0.0
+Sample       LM10: cands passing cut  27:        0.0
+Sample       LM10: cands passing cut  28:        0.0
+Sample       LM10: cands passing cut  29:        0.0
+Sample       LM10: cands passing cut  30:        0.0
+Sample       LM10: cands passing cut *31:        0.0
+Sample       LM10: cands passing cut  32:        0.0
+Sample       LM10: cands passing cut  33:        0.0
+Sample       LM10: cands passing cut  34:        0.0
+Sample       LM10: cands passing cut  35:        0.0
+Sample       LM10: cands passing cut  36:        0.0
+Sample       LM10: cands passing cut  37:        0.0
+Sample       LM10: cands passing cut  38:        0.0
+Sample       LM10: cands passing cut  39:        0.0
+Sample       LM10: cands passing cut  40:        0.0
+Sample       LM10: cands passing cut  41:        0.0
+Sample       LM10: cands passing cut  42:        0.0
+Sample       LM10: cands passing cut  43:        0.0
+Sample       LM10: cands passing cut  44:        0.0
+Sample       LM10: cands passing cut  45:        0.0
+Sample       LM10: cands passing cut  46:        0.0
+Sample       LM10: cands passing cut  47:        0.0
+Sample       LM10: cands passing cut  48:        0.0
+Sample       LM10: cands passing cut  49:        0.0
+Sample       LM10: cands passing cut  50:        0.0
+Sample       LM10: cands passing cut  51:        0.0
+Sample       LM10: cands passing cut  52:        0.0
+Sample       LM10: cands passing cut  53:        0.0
+Sample       LM10: cands passing cut  54:        0.0
+Sample       LM10: cands passing cut  55:        0.0
+Sample       LM10: cands passing cut  56:        0.0
+Sample       LM10: cands passing cut  57:        0.0
+Sample       LM10: cands passing cut  58:        0.0
+Sample       LM10: cands passing cut  59:        0.0
+Sample       LM10: cands passing cut  60:        0.0
+Sample       LM10: cands passing cut  61:        0.0
+Sample       LM10: cands passing cut  62:        0.0
+Sample       LM10: cands passing cut  63:        0.0
+Sample       LM10: correlations
+Sample       LM10:           * 6   * 7   *10   *11   *12   *13   *14   *15   *31  
+Sample       LM10: * 6     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM10: * 7     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM10: *10     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM10: *11     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM10: *12     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM10: *13     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM10: *14     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM10: *15     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM10: *31     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM11: Events processed (weight):     3240.0.  Events:   208314
+Sample       LM11: Events before cut (weight):     2588.9.  Events:   166453
+Sample       LM11: Duplicate events:    67279.  Weight     1046.4
+Sample       LM11: Total candidate count (ee em mm all):    41688    53085    20716   115489. Total weight      1.198 +-      0.052      1.809 +-      0.064      0.661 +-      0.037      3.668 +-      0.090
+Sample       LM11: cands passing cut   0:        0.0
+Sample       LM11: cands passing cut   1:        0.0
+Sample       LM11: cands passing cut   2:        0.0
+Sample       LM11: cands passing cut   3:        0.0
+Sample       LM11: cands passing cut   4:        0.0
+Sample       LM11: cands passing cut   5:        0.0
+Sample       LM11: cands passing cut * 6:        0.0
+Sample       LM11: cands passing cut * 7:        0.0
+Sample       LM11: cands passing cut   8:        0.0
+Sample       LM11: cands passing cut   9:        0.0
+Sample       LM11: cands passing cut *10:        0.0
+Sample       LM11: cands passing cut *11:        0.0
+Sample       LM11: cands passing cut *12:        0.0
+Sample       LM11: cands passing cut *13:        0.0
+Sample       LM11: cands passing cut *14:        0.0
+Sample       LM11: cands passing cut *15:        0.0
+Sample       LM11: cands passing cut  16:        0.0
+Sample       LM11: cands passing cut  17:        0.0
+Sample       LM11: cands passing cut  18:        0.0
+Sample       LM11: cands passing cut  19:        0.0
+Sample       LM11: cands passing cut  20:        0.0
+Sample       LM11: cands passing cut  21:        0.0
+Sample       LM11: cands passing cut  22:        0.0
+Sample       LM11: cands passing cut  23:        0.0
+Sample       LM11: cands passing cut  24:        0.0
+Sample       LM11: cands passing cut  25:        0.0
+Sample       LM11: cands passing cut  26:        0.0
+Sample       LM11: cands passing cut  27:        0.0
+Sample       LM11: cands passing cut  28:        0.0
+Sample       LM11: cands passing cut  29:        0.0
+Sample       LM11: cands passing cut  30:        0.0
+Sample       LM11: cands passing cut *31:        0.0
+Sample       LM11: cands passing cut  32:        0.0
+Sample       LM11: cands passing cut  33:        0.0
+Sample       LM11: cands passing cut  34:        0.0
+Sample       LM11: cands passing cut  35:        0.0
+Sample       LM11: cands passing cut  36:        0.0
+Sample       LM11: cands passing cut  37:        0.0
+Sample       LM11: cands passing cut  38:        0.0
+Sample       LM11: cands passing cut  39:        0.0
+Sample       LM11: cands passing cut  40:        0.0
+Sample       LM11: cands passing cut  41:        0.0
+Sample       LM11: cands passing cut  42:        0.0
+Sample       LM11: cands passing cut  43:        0.0
+Sample       LM11: cands passing cut  44:        0.0
+Sample       LM11: cands passing cut  45:        0.0
+Sample       LM11: cands passing cut  46:        0.0
+Sample       LM11: cands passing cut  47:        0.0
+Sample       LM11: cands passing cut  48:        0.0
+Sample       LM11: cands passing cut  49:        0.0
+Sample       LM11: cands passing cut  50:        0.0
+Sample       LM11: cands passing cut  51:        0.0
+Sample       LM11: cands passing cut  52:        0.0
+Sample       LM11: cands passing cut  53:        0.0
+Sample       LM11: cands passing cut  54:        0.0
+Sample       LM11: cands passing cut  55:        0.0
+Sample       LM11: cands passing cut  56:        0.0
+Sample       LM11: cands passing cut  57:        0.0
+Sample       LM11: cands passing cut  58:        0.0
+Sample       LM11: cands passing cut  59:        0.0
+Sample       LM11: cands passing cut  60:        0.0
+Sample       LM11: cands passing cut  61:        0.0
+Sample       LM11: cands passing cut  62:        0.0
+Sample       LM11: cands passing cut  63:        0.0
+Sample       LM11: correlations
+Sample       LM11:           * 6   * 7   *10   *11   *12   *13   *14   *15   *31  
+Sample       LM11: * 6     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM11: * 7     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM11: *10     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM11: *11     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM11: *12     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM11: *13     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM11: *14     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM11: *15     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+Sample       LM11: *31     ----- ----- ----- ----- ----- ----- ----- ----- ----- 
