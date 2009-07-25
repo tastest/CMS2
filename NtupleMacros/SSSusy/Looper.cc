@@ -36,11 +36,11 @@ void Looper::BookHistos ()
 //        hltPt		= new NMinus1Hist(sample_, "ltPt"            ,	 15	, 0, 150	, cuts_, (CUT_BIT(CUT_LT_PT))	);
 //        hllPt		= new NMinus1Hist(sample_, "llPt"            ,	 15	, 0, 150	, cuts_, (CUT_BIT(CUT_LL_PT))	);
        helPt		= new NMinus1Hist(sample_, "elPt"            ,	 16	, 0, 160	, cuts_, 0);
-//        hmuPt		= new NMinus1Hist(sample_, "muPt"            ,	 16	, 0, 160	, cuts_, CUT_BIT(CUT_LL_PT)	);
+       hmuPt		= new NMinus1Hist(sample_, "muPt"            ,	 16	, 0, 160	, cuts_, 0);
        helEta		= new NMinus1Hist(sample_, "elEta"           ,	 12	, -3, 3		, cuts_, 0);
-//        hmuEta		= new NMinus1Hist(sample_, "muEta"           ,	 12	, -3, 3		, cuts_, 0);
+       hmuEta		= new NMinus1Hist(sample_, "muEta"           ,	 12	, -3, 3		, cuts_, 0);
 //        hdphiLep		= new NMinus1Hist(sample_, "dphiLep"         ,	 50	, 0, M_PI	, cuts_, 0	);
-//        hdilMass		= new NMinus1Hist(sample_, "dilMass"         ,	 30	, 0, 300	, cuts_, CUT_BIT(CUT_PASS_ZVETO) | CUT_BIT(CUT_PASS_ADDZVETO) | CUT_BIT(CUT_IN_Z_WINDOW));
+       hdilMass		= new NMinus1Hist(sample_, "dilMass"         ,	 30	, 0, 300	, cuts_, CUT_BIT(CUT_PASS_ZVETO) | CUT_BIT(CUT_PASS_ADDZVETO) | CUT_BIT(CUT_IN_Z_WINDOW));
 //        hdilPt		= new NMinus1Hist(sample_, "dilPt"           ,	 100	, 0, 300	, cuts_, 0	);
        hmet		= new NMinus1Hist(sample_, "met"             ,	 40	, 0, 200	, cuts_, CUT_BIT(CUT_TCMET)	);
 //        hmetSpec		= new NMinus1Hist(sample_, "metSpec"         ,	 20	, 0, 100	, cuts_, CUT_BIT(CUT_PASS4_MET) | CUT_BIT(CUT_PASS2_MET) | CUT_BIT(CUT_PASS4_TCMET) | CUT_BIT(CUT_PASS2_TCMET)  );
@@ -56,16 +56,18 @@ void Looper::BookHistos ()
 //        hnumTightLep	= new NMinus1Hist(sample_, "numTightLep"     ,	 6	, -0.5, 5.5	, cuts_, 0             	);
         heleRelIso	= new NMinus1Hist(sample_, "eleRelIso"       ,	 101	, 0, 1.01	, cuts_, (CUT_BIT(CUT_LT_ISO)) | (CUT_BIT(CUT_LL_ISO)) );
 //        heleRelIsoTrk	= new NMinus1Hist(sample_, "eleRelIsoTrk"    ,	 101	, 0, 1.01	, cuts_, (CUT_BIT(CUT_LT_ISO)) | (CUT_BIT(CUT_LL_ISO)) | (CUT_BIT(CUT_LT_CALOISO)) | (CUT_BIT(CUT_LL_CALOISO)));
-//        hmuRelIso	= new NMinus1Hist(sample_, "muRelIso"        ,	 101	, 0, 1.01	, cuts_, (CUT_BIT(CUT_LT_ISO)) | (CUT_BIT(CUT_LL_ISO)) | (CUT_BIT(CUT_LT_CALOISO)) | (CUT_BIT(CUT_LL_CALOISO))	);
+        hmuRelIso	= new NMinus1Hist(sample_, "muRelIso"        ,	 101	, 0, 1.01	, cuts_, (CUT_BIT(CUT_LT_ISO)) | (CUT_BIT(CUT_LL_ISO)) );
 //        hminRelIso	= new NMinus1Hist(sample_, "minRelIso"       ,	 101	, 0, 1.01	, cuts_, (CUT_BIT(CUT_LT_ISO)) | (CUT_BIT(CUT_LL_ISO))	);
 //        hminRelIso_withCalo = new NMinus1Hist	(sample_, "minRelIso_withCalo", 101, 0, 1.01	, cuts_, (CUT_BIT(CUT_LT_ISO)) | (CUT_BIT(CUT_LL_ISO))	);
 //        htagMuPt		= new NMinus1Hist(sample_, "tagMuPt"	      ,	 100	, 0, 100	, cuts_ & ~((CUT_BIT(CUT_PASS_MUON_B_VETO)) | (CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT)) | (CUT_BIT(CUT_PASS_EXTRALEPTON_VETO))), (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)));
 //        htagMuRelIso	= new NMinus1Hist(sample_, "tagMuRelIso"     ,	 101	, 0, 1.01	, cuts_ & ~((CUT_BIT(CUT_PASS_MUON_B_VETO)) | (CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT)) | (CUT_BIT(CUT_PASS_EXTRALEPTON_VETO))), (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)));
         hmuPdgId	= new NMinus1Hist(sample_, "muPdgId", 		2301, -0.5, 2300.5, cuts_, 0);
         hmuMoPdgId	= new NMinus1Hist(sample_, "muMoPdgId", 	2301, -0.5, 2300.5, cuts_, 0);
+        hmuPdgIdCat	= new NMinus1Hist(sample_, "muPdgIdCat",        5, -0.5, 4.5, cuts_, 0);
         helPdgId	= new NMinus1Hist(sample_, "elPdgId", 		2301, -0.5, 2300.5, cuts_, 0);
         helMoPdgId	= new NMinus1Hist(sample_, "elMoPdgId", 	2301, -0.5, 2300.5, cuts_, 0);
         helPdgIdCat	= new NMinus1Hist(sample_, "elPdgIdCat",        5, -0.5, 4.5, cuts_, 0);
+        hnHyp		= new NMinus1Hist(sample_, "nHyp", 11, -0.5, 10.5, cuts_,0);
 //        helEop      	= new NMinus1Hist(sample_, "elEop"	      ,  10	, 0, 10	, cuts_, (CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD) | CUT_BIT(CUT_LT_ISO) | CUT_BIT(CUT_LL_ISO) | CUT_BIT(CUT_LT_CALOISO) | CUT_BIT(CUT_LL_CALOISO)));
 //        held0    	= new NMinus1Hist(sample_, "eld0"	      ,  50	, 0, 0.1	, cuts_, (CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD) | CUT_BIT(CUT_LT_ISO) | CUT_BIT(CUT_LL_ISO) | CUT_BIT(CUT_LT_CALOISO) | CUT_BIT(CUT_LL_CALOISO)));
 //        helfbrem    	= new NMinus1Hist(sample_, "elfbrem"	      ,  11	, -0.1, 1	, cuts_, (CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD) | CUT_BIT(CUT_LT_ISO) | CUT_BIT(CUT_LL_ISO) | CUT_BIT(CUT_LT_CALOISO) | CUT_BIT(CUT_LL_CALOISO)));
@@ -278,6 +280,24 @@ cuts_t Looper::DilepSelect (int i_hyp)
            else ret |= CUT_BIT(CUT_ELFAKE_NOT_NUMERATOR);
          }
        }
+
+       // now set the fake flags for the muon
+       if (abs(cms2.hyp_lt_id()[i_hyp]) == 13) {
+         if (isFakeableMuon(cms2.hyp_lt_index()[i_hyp]))
+           ret |= CUT_BIT(CUT_MUFAKE_FAKEABLE_OBJECT);
+         if (isNumeratorMuon(cms2.hyp_lt_index()[i_hyp]))
+           ret |= CUT_BIT(CUT_MUFAKE_NUMERATOR);
+         else ret |= CUT_BIT(CUT_MUFAKE_NOT_NUMERATOR);
+       } else {
+         if (abs(cms2.hyp_ll_id()[i_hyp]) == 13) {
+           if (isFakeableMuon(cms2.hyp_ll_index()[i_hyp]))
+             ret |= CUT_BIT(CUT_MUFAKE_FAKEABLE_OBJECT);
+           if (isNumeratorMuon(cms2.hyp_ll_index()[i_hyp]))
+             ret |= CUT_BIT(CUT_MUFAKE_NUMERATOR);
+           else ret |= CUT_BIT(CUT_MUFAKE_NOT_NUMERATOR);
+         }
+       }
+
      }
      return ret;
 }
@@ -436,6 +456,7 @@ void Looper::FillDilepHistos (int i_hyp)
      
      // jet count
      hnJet->Fill(cuts_passed, myType, cms2.hyp_njets()[i_hyp], weight);
+     hnHyp->Fill(cuts_passed, myType, cms2.hyp_p4().size(), weight);
      if (myType == DILEPTON_EMU) {
        int mu_idx = -1;
        int el_idx = -1;
@@ -448,13 +469,12 @@ void Looper::FillDilepHistos (int i_hyp)
          el_idx = cms2.hyp_lt_index()[i_hyp];
        }
        assert(el_idx != -1 && mu_idx != -1);
-       hmuPdgId->Fill(cuts_passed, myType, abs(cms2.mus_mc_id()[mu_idx]), weight);
-       hmuMoPdgId->Fill(cuts_passed, myType, abs(cms2.mus_mc_motherid()[mu_idx]), weight);
+       // els MC origin plots
        helPdgId->Fill(cuts_passed, myType, abs(cms2.els_mc_id()[el_idx]), weight);
        helMoPdgId->Fill(cuts_passed, myType, abs(cms2.els_mc_motherid()[el_idx]), weight);
-       if(
+       if( 
           (abs(cms2.els_mc_id()[ el_idx ])==11 && abs(cms2.els_mc_motherid()[ el_idx ]) == 22) ||
-          (abs(cms2.els_mc_id()[ el_idx ])==22)                                                                    ||
+          (abs(cms2.els_mc_id()[ el_idx ])==22) ||
           (abs(cms2.els_mc_id()[ el_idx ]) > 100 && (abs(cms2.els_mc_id()[ el_idx ]) < 200))
           ) {
          helPdgIdCat->Fill(cuts_passed, myType, 1, weight);
@@ -467,6 +487,23 @@ void Looper::FillDilepHistos (int i_hyp)
        }
        else {
          helPdgIdCat->Fill(cuts_passed, myType, 4, weight);
+       }
+       // mus MC origin plots
+       hmuPdgId->Fill(cuts_passed, myType, abs(cms2.mus_mc_id()[mu_idx]), weight);
+       hmuMoPdgId->Fill(cuts_passed, myType, abs(cms2.mus_mc_motherid()[mu_idx]), weight);
+       if( // punchthrough / sailthrough
+          (abs(cms2.mus_mc_id()[ mu_idx  ]) != 13 )
+          ) {
+         hmuPdgIdCat->Fill(cuts_passed, myType, 1, weight);
+       }
+       else if( (abs(cms2.mus_mc_id()[ mu_idx  ]) == 13) && abs(cms2.mus_mc_motherid()[mu_idx]) < 400 ){
+         hmuPdgIdCat->Fill(cuts_passed, myType, 2, weight);
+       }
+       else if(abs(cms2.mus_mc_id()[ mu_idx  ]) == 13 && (idIsBeauty( abs(cms2.mus_mc_motherid()[ mu_idx ])) || idIsCharm( abs(cms2.mus_mc_motherid()[ mu_idx ]))) ){
+         hmuPdgIdCat->Fill(cuts_passed, myType, 3, weight);
+       }
+       else {
+         hmuPdgIdCat->Fill(cuts_passed, myType, 4, weight);
        }
  
      }
@@ -489,23 +526,23 @@ void Looper::FillDilepHistos (int i_hyp)
 //      hltPt->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].pt(), weight);
 //      hllPt->Fill(cuts_passed, myType, cms2.hyp_ll_p4()[i_hyp].pt(), weight);
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
-	  helPt->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].pt(), weight);
-	  helEta->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].eta(), weight);
+       helPt->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].pt(), weight);
+       helEta->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].eta(), weight);
      } else {
-// 	  hmuPt->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].pt(), weight);
-// 	  hmuEta->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].eta(), weight);
+       hmuPt->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].pt(), weight);
+       hmuEta->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].eta(), weight);
      }
      if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
-	  helPt->Fill(cuts_passed, myType, cms2.hyp_ll_p4()[i_hyp].pt(), weight);
-	  helEta->Fill(cuts_passed, myType, cms2.hyp_ll_p4()[i_hyp].eta(), weight);
+       helPt->Fill(cuts_passed, myType, cms2.hyp_ll_p4()[i_hyp].pt(), weight);
+       helEta->Fill(cuts_passed, myType, cms2.hyp_ll_p4()[i_hyp].eta(), weight);
      } else {
-// 	  hmuPt->Fill(cuts_passed, myType, cms2.hyp_ll_p4()[i_hyp].pt(), weight);
-// 	  hmuEta->Fill(cuts_passed, myType, cms2.hyp_ll_p4()[i_hyp].eta(), weight);
+       hmuPt->Fill(cuts_passed, myType, cms2.hyp_ll_p4()[i_hyp].pt(), weight);
+       hmuEta->Fill(cuts_passed, myType, cms2.hyp_ll_p4()[i_hyp].eta(), weight);
      }
-    
-//      // dilepton mass
-//      hdilMass->Fill(cuts_passed, myType, cms2.hyp_p4()[i_hyp].mass(), weight);
-    
+     
+     //      // dilepton mass
+     hdilMass->Fill(cuts_passed, myType, cms2.hyp_p4()[i_hyp].mass(), weight);
+     
 //      // delta phi btw leptons
 //      double dphi = fabs(cms2.hyp_lt_p4()[i_hyp].phi() - cms2.hyp_ll_p4()[i_hyp].phi());
 //      if (dphi > TMath::Pi()) dphi = TMath::TwoPi() - dphi;
