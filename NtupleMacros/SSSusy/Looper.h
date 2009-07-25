@@ -15,7 +15,7 @@
 // #define PRETTY_PRINT(args ...) args
 // PRETTY_PRINT (
      enum {
-       CUT_TTBAR_TYPE_WW, //1
+       CUT_TTBAR_TYPE_WW,
        CUT_TTBAR_TYPE_WO, 
        CUT_TTBAR_TYPE_OO, 
        CUT_TRUE_MU_FROM_W,
@@ -24,17 +24,17 @@
        CUT_MAX_PT,
        CUT_MIN_PT,
        CUT_MU_PT,
-       CUT_SAME_SIGN, //10
+       CUT_SAME_SIGN,
        CUT_OPP_SIGN, 
        CUT_PASS_CONVERSIONVETO,
        CUT_PASS_WZVETO,
        CUT_PASS_FLIPVETO,
-       CUT_TCMET,  //15
+       CUT_TCMET, 
        CUT_CALOJET,
        CUT_LT_GOOD,
        CUT_LL_GOOD,
        CUT_LT_ISO,
-       CUT_LL_ISO, //20
+       CUT_LL_ISO,
        CUT_MU_GOOD,
        CUT_MU_ISO,
        CUT_PASS_ZVETO,
@@ -43,6 +43,9 @@
        CUT_ELFAKE_FAKEABLE_OBJECT, // these are
        CUT_ELFAKE_NUMERATOR,	      // here for
        CUT_ELFAKE_NOT_NUMERATOR,   // applying it to emu only first
+       CUT_MUFAKE_FAKEABLE_OBJECT, // these are
+       CUT_MUFAKE_NUMERATOR,	      // here for
+       CUT_MUFAKE_NOT_NUMERATOR,   // applying it to emu only first
        //	  CUT_MORE_THAN_TWO_TRACKS,
        CUT_PASS_TRIGGER,
      };
@@ -96,6 +99,29 @@ const static cuts_t baselineSSSUSY_cuts =
   | CUT_BIT(CUT_SAME_SIGN)
   ;
 
+// this is the SUSY loose set of cuts
+const static cuts_t looseOSSUSY_cuts = 
+  (CUT_BIT(CUT_MIN_PT)		) | 
+  (CUT_BIT(CUT_MAX_PT)		) | 
+  (CUT_BIT(CUT_OPP_SIGN)        ) | 
+  //  (CUT_BIT(CUT_TCMET)		) |  
+  //  (CUT_BIT(CUT_PASS_TRIGGER)    ) |  
+  //  (CUT_BIT(CUT_CALOJET)   	) |  
+  (CUT_BIT(CUT_PASS_CONVERSIONVETO) ) |
+  //  (CUT_BIT(CUT_PASS_WZVETO)     ) |
+  (CUT_BIT(CUT_PASS_FLIPVETO)   ) |
+  (CUT_BIT(CUT_LT_GOOD)		) | 
+  (CUT_BIT(CUT_LL_GOOD)		) | 
+  (CUT_BIT(CUT_LT_ISO)	        ) |  
+  (CUT_BIT(CUT_LL_ISO)        	) 
+  ;   
+
+// this is the SUSY loose set of cuts
+const static cuts_t looseSSSUSY_cuts = 
+  (looseOSSUSY_cuts & ~CUT_BIT(CUT_OPP_SIGN) )
+  | CUT_BIT(CUT_SAME_SIGN)
+  ;
+
 // this is the current baseline set of cuts
 const static cuts_t baseline_cuts = 
   (CUT_BIT(CUT_MIN_PT)		) | 
@@ -107,6 +133,22 @@ const static cuts_t baseline_cuts =
 //   (CUT_BIT(CUT_LL_ISO)        	) |
   ( CUT_BIT(CUT_NOT_TRUE_GAMMA_FROM_MUON) ) |
   (CUT_BIT(CUT_TRUE_MU_FROM_W)	) 
+//   (CUT_BIT(CUT_MU_PT)		) |  // currently always require the muon to have pt>20
+//   (CUT_BIT(CUT_MU_GOOD)		) | 
+//   (CUT_BIT(CUT_MU_ISO)	        ) 
+  ;   
+
+// this is the current muonbaseline set of cuts
+const static cuts_t muonbaseline_cuts = 
+  (CUT_BIT(CUT_MIN_PT)		) | 
+  (CUT_BIT(CUT_MAX_PT)		) | 
+  (CUT_BIT(CUT_OPP_SIGN)        ) | 
+//   (CUT_BIT(CUT_LT_GOOD)		) |  // out because muon is selected below and electrn via Fakeable/numerator selections
+//   (CUT_BIT(CUT_LL_GOOD)		) | 
+//   (CUT_BIT(CUT_LT_ISO)	        ) |  
+//   (CUT_BIT(CUT_LL_ISO)        	) |
+  ( CUT_BIT(CUT_NOT_TRUE_GAMMA_FROM_MUON) ) |
+  (CUT_BIT(CUT_TRUE_EL_FROM_W)	) 
 //   (CUT_BIT(CUT_MU_PT)		) |  // currently always require the muon to have pt>20
 //   (CUT_BIT(CUT_MU_GOOD)		) | 
 //   (CUT_BIT(CUT_MU_ISO)	        ) 
@@ -140,6 +182,63 @@ static const cuts_t fakerate_ss_WO_numerator_cuts =
 
 static const cuts_t fakerate_ss_WO_denominator_not_numerator_cuts = 
   fakerate_ss_denominator_not_numerator_cuts | CUT_BIT(CUT_TTBAR_TYPE_WO); 
+
+// muon fakerate tests
+// denominator object cuts for the fake rate prediction 
+const static cuts_t muonfakerate_denominator_cuts = muonbaseline_cuts  |
+  CUT_BIT(CUT_MUFAKE_FAKEABLE_OBJECT);
+
+// numerator object cuts for the fake rate prediction 
+const static cuts_t muonfakerate_numerator_cuts = 
+  //  muonfakerate_denominator_cuts | CUT_BIT(CUT_ELFAKE_NUMERATOR) | CUT_BIT(CUT_TTBAR_TYPE_WO); // remove - being suspicious of the WO cut 090715_17:39
+  muonfakerate_denominator_cuts | 
+  (CUT_BIT(CUT_MUFAKE_NUMERATOR)) 
+//  (CUT_BIT(CUT_ELFAKE_NUMERATOR)) 
+  ;
+
+// denominator and not numerator (this is the yield that should be
+// multiplied by FR / (1 - FR))
+const static cuts_t muonfakerate_denominator_not_numerator_cuts = 
+  muonfakerate_denominator_cuts | CUT_BIT(CUT_MUFAKE_NOT_NUMERATOR);
+//CUT_BIT(CUT_ELFAKE_NOT_NUMERATOR);
+
+static const cuts_t muonfakerate_ss_numerator_cuts = 
+  (muonfakerate_numerator_cuts & ~CUT_BIT(CUT_OPP_SIGN)) | CUT_BIT(CUT_SAME_SIGN);
+
+static const cuts_t muonfakerate_ss_denominator_not_numerator_cuts = 
+  (muonfakerate_denominator_not_numerator_cuts & ~CUT_BIT(CUT_OPP_SIGN) )
+  | CUT_BIT(CUT_SAME_SIGN);
+
+static const cuts_t muonfakerate_ss_WO_numerator_cuts = 
+  muonfakerate_ss_numerator_cuts | CUT_BIT(CUT_TTBAR_TYPE_WO);
+
+static const cuts_t muonfakerate_ss_WO_denominator_not_numerator_cuts = 
+  muonfakerate_ss_denominator_not_numerator_cuts | CUT_BIT(CUT_TTBAR_TYPE_WO); 
+
+// fliprate tests
+static const cuts_t loosefliprate_ss_predicted_cuts = 
+ looseOSSUSY_cuts ; 
+
+static const cuts_t loosefliprate_ss_observed_cuts = 
+ looseSSSUSY_cuts  | CUT_BIT(CUT_TTBAR_TYPE_WW); 
+
+static const cuts_t baselinefliprate_ss_predicted_cuts = 
+ baselineOSSUSY_cuts ; 
+
+static const cuts_t baselinefliprate_ss_observed_cuts = 
+ baselineSSSUSY_cuts  | CUT_BIT(CUT_TTBAR_TYPE_WW); 
+
+// fakerate application tests; GOOD and ISO are applied to the lt and
+// ll separately in the fakerate looper
+static const cuts_t baselineFRSSSUSY_cuts =
+  baselineSSSUSY_cuts &
+  ~(CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD) |
+    CUT_BIT(CUT_LT_ISO) | CUT_BIT(CUT_LL_ISO));
+static const cuts_t baselineFROSSUSY_cuts =
+  baselineOSSUSY_cuts &
+  ~(CUT_BIT(CUT_LT_GOOD) | CUT_BIT(CUT_LL_GOOD) |
+    CUT_BIT(CUT_LT_ISO) | CUT_BIT(CUT_LL_ISO));
+
 
 //----------------------------------------------------------------------
 // Loopers 
@@ -248,6 +347,7 @@ protected:
      // mc matches for fake studies
      NMinus1Hist 	*hmuPdgId;
      NMinus1Hist	*hmuMoPdgId;
+     NMinus1Hist	*hmuPdgIdCat;
      NMinus1Hist	*helPdgId;
      NMinus1Hist	*helMoPdgId;
      NMinus1Hist	*helPdgIdCat;
@@ -262,6 +362,7 @@ protected:
      NMinus1Hist	*heldphiin;
      NMinus1Hist	*heldetain;
      NMinus1Hist	*helEseedopin;
+  NMinus1Hist		*hnHyp;
      // for conversion killing
      NMinus1Hist	*helConvDeltaPhi_ss;
      NMinus1Hist	*helConvDeltaPhi_os;
@@ -287,6 +388,63 @@ protected:
 class FakeRateLooper : public Looper {
 public:
      FakeRateLooper (Sample s, cuts_t cuts, const char *fname = 0);
+     virtual double	CandsPassingSystHi (enum DileptonHypType i) const { return cands_passing_syst_hi[i]; }
+     virtual double	CandsPassingSystLo (enum DileptonHypType i) const { return cands_passing_syst_lo[i]; }
+//      virtual double	FakeSyst (enum DileptonHypType i) const;
+protected:
+     virtual void	BookHistos 	();
+     virtual cuts_t	DilepSelect 	(int idx);
+     virtual void	FillDilepHistos (int idx);
+//      virtual double	Weight		(int idx);
+//      virtual double	Weight		(int idx, int n_sig_syst);
+
+protected:
+     double		cands_passing_syst_hi[4];
+     double		cands_passing_syst_lo[4];
+     TH2F		*fake_syst;
+};
+
+class MuonFakeRateLooper : public Looper {
+public:
+     MuonFakeRateLooper (Sample s, cuts_t cuts, const char *fname = 0);
+     virtual double	CandsPassingSystHi (enum DileptonHypType i) const { return cands_passing_syst_hi[i]; }
+     virtual double	CandsPassingSystLo (enum DileptonHypType i) const { return cands_passing_syst_lo[i]; }
+//      virtual double	FakeSyst (enum DileptonHypType i) const;
+protected:
+     virtual void	BookHistos 	();
+     virtual cuts_t	DilepSelect 	(int idx);
+     virtual void	FillDilepHistos (int idx);
+//      virtual double	Weight		(int idx);
+//      virtual double	Weight		(int idx, int n_sig_syst);
+
+protected:
+     double		cands_passing_syst_hi[4];
+     double		cands_passing_syst_lo[4];
+     TH2F		*fake_syst;
+};
+
+class LeptonFakeRateLooper : public Looper {
+public:
+     LeptonFakeRateLooper (Sample s, cuts_t cuts, const char *fname = 0);
+     virtual double	CandsPassingSystHi (enum DileptonHypType i) const { return cands_passing_syst_hi[i]; }
+     virtual double	CandsPassingSystLo (enum DileptonHypType i) const { return cands_passing_syst_lo[i]; }
+//      virtual double	FakeSyst (enum DileptonHypType i) const;
+protected:
+     virtual void	BookHistos 	();
+     virtual cuts_t	DilepSelect 	(int idx);
+     virtual void	FillDilepHistos (int idx);
+//      virtual double	Weight		(int idx);
+//      virtual double	Weight		(int idx, int n_sig_syst);
+
+protected:
+     double		cands_passing_syst_hi[4];
+     double		cands_passing_syst_lo[4];
+     TH2F		*fake_syst;
+};
+
+class FlipRateLooper : public Looper {
+public:
+     FlipRateLooper (Sample s, cuts_t cuts, const char *fname = 0);
      virtual double	CandsPassingSystHi (enum DileptonHypType i) const { return cands_passing_syst_hi[i]; }
      virtual double	CandsPassingSystLo (enum DileptonHypType i) const { return cands_passing_syst_lo[i]; }
 //      virtual double	FakeSyst (enum DileptonHypType i) const;
