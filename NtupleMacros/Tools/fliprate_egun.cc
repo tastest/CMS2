@@ -16,6 +16,8 @@
 #include <stdio.h>
 #include <math.h>
 
+using namespace std;
+
 double getSingleEleNum(double el_pt, double el_eta) {
 
   el_eta = fabs(el_eta);
