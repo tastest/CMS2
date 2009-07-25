@@ -78,8 +78,8 @@ double FakeProb_v1 (int i_el, int add_error_times, int id)
   float prob_error = 0.0;
   float pt = 0.0;
   float eta = 0.0;
-  TH2F *theFakeRate;
-  TH2F *theFakeRateErr;
+  TH2F *theFakeRate = 0;
+  TH2F *theFakeRateErr = 0;
 
   if (abs(id) == 11) {
     theFakeRate = &fakeRate();
@@ -933,7 +933,8 @@ bool isFakeable (int i_el)
 
 bool isFakeableMuon (int i_mu)
 {
-  return  isFakeDenominatorMuon_v1(i_mu);
+  return isFakeableMuSUSY09(i_mu);
+  //  return  isFakeDenominatorMuon_v1(i_mu);
 }
 
 double elFakeProb (int i_el, int add_error_times)
@@ -965,7 +966,8 @@ double elFakeProb (int i_el, int add_error_times)
 
 double muFakeProb (int i_mu, int add_error_times)
 {
-     return muFakeProb_v1(i_mu, add_error_times);
+  return FakeProb_v1(i_mu, add_error_times, 13); 
+  //     return muFakeProb_v1(i_mu, add_error_times);
      //     return -999.99;
 }
 
@@ -998,7 +1000,8 @@ bool isNumeratorElectron (int index, int type)
 
 bool isNumeratorMuon (int index, int type)
 {
-     return isFakeNumeratorMuon_v1(index, 2);
+  return GoodSusyMuonWithIsolation(index);
+  //     return isFakeNumeratorMuon_v1(index, 2);
 }
 
 TH2F &fakeRate ()
