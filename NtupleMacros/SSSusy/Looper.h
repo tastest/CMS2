@@ -31,6 +31,8 @@
        CUT_PASS_FLIPVETO,
        CUT_TCMET, 
        CUT_CALOJET,
+       CUT_NCALOJET,
+       CUT_SUMJETPT,
        CUT_LT_GOOD,
        CUT_LL_GOOD,
        CUT_LT_ISO,
@@ -83,7 +85,9 @@ const static cuts_t baselineOSSUSY_cuts =
   (CUT_BIT(CUT_OPP_SIGN)        ) | 
   (CUT_BIT(CUT_TCMET)		) |  
   (CUT_BIT(CUT_PASS_TRIGGER)    ) |  
-  (CUT_BIT(CUT_CALOJET)   	) |  
+  //  (CUT_BIT(CUT_CALOJET)   	) |  //out for 2nd round of cuts
+  (CUT_BIT(CUT_NCALOJET)   	) |  //2nd round of cuts
+  (CUT_BIT(CUT_SUMJETPT)   	) |  //2nd round of cuts  
   (CUT_BIT(CUT_PASS_CONVERSIONVETO) ) |
   (CUT_BIT(CUT_PASS_WZVETO)     ) |
   (CUT_BIT(CUT_PASS_FLIPVETO)   ) |

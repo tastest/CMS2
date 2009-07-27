@@ -215,9 +215,17 @@ cuts_t Looper::DilepSelect (int i_hyp)
      caloJets.clear();
      caloJets = getCaloJets(i_hyp) ;
      if( caloJets.size() > 0 ) {
-       if ( caloJets[0].Pt() > 100. ) 
+       if ( caloJets[0].Pt() > 100. ) // converged cuts
          ret |= (CUT_BIT(CUT_CALOJET));
      }
+     double sumPtCalo = 0;
+     for (unsigned int jj=0; jj < caloJets.size(); ++jj) {
+       sumPtCalo += caloJets[jj].pt();
+     }
+     if ( sumPtCalo > 200. ) // 2nd round of cuts
+       ret |= (CUT_BIT(CUT_SUMJETPT));
+     if ( caloJets.size() > 2 ) // 2nd round of cuts
+       ret |= (CUT_BIT(CUT_NCALOJET));
 
      // muon quality
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 13 && GoodSusyMuonWithoutIsolation(cms2.hyp_lt_index()[i_hyp]) ) 
