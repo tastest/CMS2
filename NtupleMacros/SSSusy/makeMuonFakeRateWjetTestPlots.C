@@ -12,11 +12,11 @@
   bool subtract_realE = false;
 
   // use SameSign?
-  bool doSS = false;
+  bool doSS = true;
 
   //  TString sample="wjetsAlpgen_";
-    TString sample="wjets_";
-  //       TString sample="ttbar_";
+  //  TString sample="wjets_";
+  TString sample="ttbar_";
   
   TString observed = "Observed (Numerator)";
   //  TString predicted = "FO not Numerator";
@@ -78,7 +78,7 @@
   hmuoPt_em_observed->GetYaxis()->SetTitle("Events");
   hmuoPt_em_observed->GetYaxis()->SetTitleOffset(1.2);
   hmuoPt_em_observed->GetYaxis()->SetTitleSize(0.04);
-  hmuoPt_em_observed->GetXaxis()->SetTitle("p_{T}^{muoctron} (GeV)");
+  hmuoPt_em_observed->GetXaxis()->SetTitle("p_{T}^{muon} (GeV)");
   hmuoPt_em_observed->GetXaxis()->SetTitleOffset(1.2);
   hmuoPt_em_observed->GetXaxis()->SetTitleSize(0.04);
   hmuoPt_em_observed->SetMarkerStyle(20);
@@ -91,16 +91,18 @@
   hmuoPt_em_predicted->SetLineColor(kBlue);
   hmuoPt_em_predicted->SetFillColor(kWhite);
   hmuoPt_em_predicted->SetLineWidth(2.);
+  hmuoPt_em_predicted->GetYaxis()->SetTitle("Events");
+  hmuoPt_em_predicted->GetXaxis()->SetTitle("p_{T}^{muon} (GeV)");
   hmuoPt_em_predicted->SetName(predicted);
   hmuoPt_em_predicted->SetMarkerStyle(28);
   hmuoPt_em_predicted->SetMarkerColor(kBlue);
   hmuoPt_em_predicted->SetMarkerSize(1.2);
   if(hmuoPt_em_observed->GetMaximum() >= hmuoPt_em_predicted->GetMaximum() ) {
     hmuoPt_em_observed->Draw();
-    hmuoPt_em_predicted->Draw("sames");
+    hmuoPt_em_predicted->Draw("hist P sames");
   }
   else {
-    hmuoPt_em_predicted->Draw();
+    hmuoPt_em_predicted->Draw("hist P");
     hmuoPt_em_observed->Draw("sames");
   }
 
@@ -155,10 +157,10 @@
   hmuoEta_em_observed->SetFillColor(kWhite);
   hmuoEta_em_observed->SetLineWidth(2.);
   hmuoEta_em_observed->SetName(observed);
-  hmuoEta_em_observed->GetYaxis()->SetTitle("Events");
   hmuoEta_em_observed->GetYaxis()->SetTitleOffset(1.2);
   hmuoEta_em_observed->GetYaxis()->SetTitleSize(0.04);
-  hmuoEta_em_observed->GetXaxis()->SetTitle("#eta^{muoctron}");
+  hmuoEta_em_observed->GetYaxis()->SetTitle("Events");
+  hmuoEta_em_observed->GetXaxis()->SetTitle("#eta^{muon}");
   hmuoEta_em_observed->GetXaxis()->SetTitleOffset(1.2);
   hmuoEta_em_observed->GetXaxis()->SetTitleSize(0.04);
   hmuoEta_em_observed->SetMarkerStyle(20);
@@ -171,6 +173,8 @@
   hmuoEta_em_predicted->SetLineColor(kBlue);
   hmuoEta_em_predicted->SetFillColor(kWhite);
   hmuoEta_em_predicted->SetLineWidth(2.);
+  hmuoEta_em_predicted->GetYaxis()->SetTitle("Events");
+  hmuoEta_em_predicted->GetXaxis()->SetTitle("#eta^{muon}");
   hmuoEta_em_predicted->SetName(predicted);
   hmuoEta_em_predicted->SetMarkerStyle(28);
   hmuoEta_em_predicted->SetMarkerColor(kBlue);
@@ -178,10 +182,10 @@
   //  hmuoEta_em_predicted->Draw("sames");
   if(hmuoEta_em_observed->GetMaximum() >= hmuoEta_em_predicted->GetMaximum() ) {
     hmuoEta_em_observed->Draw();
-    hmuoEta_em_predicted->Draw("sames");
+    hmuoEta_em_predicted->Draw("hist P sames");
   }
   else {
-    hmuoEta_em_predicted->Draw();
+    hmuoEta_em_predicted->Draw("hist P");
     hmuoEta_em_observed->Draw("sames");
   }
 
@@ -227,9 +231,9 @@
   hnJet_em_observed->SetFillColor(kWhite);
   hnJet_em_observed->SetLineWidth(2.);
   hnJet_em_observed->SetName(observed);
-  hnJet_em_observed->GetYaxis()->SetTitle("Events");
   hnJet_em_observed->GetYaxis()->SetTitleOffset(1.2);
   hnJet_em_observed->GetYaxis()->SetTitleSize(0.04);
+  hnJet_em_observed->GetYaxis()->SetTitle("Events");
   hnJet_em_observed->GetXaxis()->SetTitle("Number of Jets");
   hnJet_em_observed->GetXaxis()->SetTitleOffset(1.2);
   hnJet_em_observed->GetXaxis()->SetTitleSize(0.04);
@@ -243,6 +247,8 @@
   hnJet_em_predicted->SetLineColor(kBlue);
   hnJet_em_predicted->SetFillColor(kWhite);
   hnJet_em_predicted->SetLineWidth(2.);
+  hnJet_em_predicted->GetYaxis()->SetTitle("Events");
+  hnJet_em_predicted->GetXaxis()->SetTitle("Number of Jets");
   hnJet_em_predicted->SetName(predicted);
   hnJet_em_predicted->SetMarkerStyle(28);
   hnJet_em_predicted->SetMarkerColor(kBlue);
@@ -250,10 +256,10 @@
   //  hnJet_em_predicted->Draw("sames");
   if(hnJet_em_observed->GetMaximum() >= hnJet_em_predicted->GetMaximum() ) {
     hnJet_em_observed->Draw();
-    hnJet_em_predicted->Draw("sames");
+    hnJet_em_predicted->Draw("hist P sames");
   }
   else {
-    hnJet_em_predicted->Draw();
+    hnJet_em_predicted->Draw("hist P");
     hnJet_em_observed->Draw("sames");
   }
 
@@ -313,10 +319,10 @@
   hmuPdgId_em_observed->SetFillColor(kWhite);
   hmuPdgId_em_observed->SetLineWidth(2.);
   hmuPdgId_em_observed->SetName(observed);
-  hmuPdgId_em_observed->GetYaxis()->SetTitle("Events");
   hmuPdgId_em_observed->GetYaxis()->SetTitleOffset(1.2);
   hmuPdgId_em_observed->GetYaxis()->SetTitleSize(0.04);
-  hmuPdgId_em_observed->GetXaxis()->SetTitle("muoctron Pdg ID");
+  hmuPdgId_em_observed->GetYaxis()->SetTitle("Events");
+  hmuPdgId_em_observed->GetXaxis()->SetTitle("muon Pdg ID");
   hmuPdgId_em_observed->GetXaxis()->SetTitleOffset(1.2);
   hmuPdgId_em_observed->GetXaxis()->SetTitleSize(0.04);
   hmuPdgId_em_observed->SetMarkerStyle(20);
@@ -330,16 +336,18 @@
   hmuPdgId_em_predicted->SetFillColor(kWhite);
   hmuPdgId_em_predicted->SetLineWidth(2.);
   hmuPdgId_em_predicted->SetName(predicted);
+  hmuPdgId_em_predicted->GetYaxis()->SetTitle("Events");
+  hmuPdgId_em_predicted->GetXaxis()->SetTitle("muon Pdg ID");
   hmuPdgId_em_predicted->SetMarkerStyle(28);
   hmuPdgId_em_predicted->SetMarkerColor(kBlue);
   hmuPdgId_em_predicted->SetMarkerSize(1.2);
   //  hmuPdgId_em_predicted->Draw("sames");
   if(hmuPdgId_em_observed->GetMaximum() >= hmuPdgId_em_predicted->GetMaximum() ) {
     hmuPdgId_em_observed->Draw();
-    hmuPdgId_em_predicted->Draw("sames");
+    hmuPdgId_em_predicted->Draw("P sames");
   }
   else {
-    hmuPdgId_em_predicted->Draw();
+    hmuPdgId_em_predicted->Draw("P");
     hmuPdgId_em_observed->Draw("sames");
   }
 
@@ -399,10 +407,10 @@
   hmuMoPdgId_em_observed->SetFillColor(kWhite);
   hmuMoPdgId_em_observed->SetLineWidth(2.);
   hmuMoPdgId_em_observed->SetName(observed);
-  hmuMoPdgId_em_observed->GetYaxis()->SetTitle("Events");
   hmuMoPdgId_em_observed->GetYaxis()->SetTitleOffset(1.2);
   hmuMoPdgId_em_observed->GetYaxis()->SetTitleSize(0.04);
-  hmuMoPdgId_em_observed->GetXaxis()->SetTitle("muoctron Mother Pdg ID");
+  hmuMoPdgId_em_observed->GetYaxis()->SetTitle("Events");
+  hmuMoPdgId_em_observed->GetXaxis()->SetTitle("muon Mother Pdg ID");
   hmuMoPdgId_em_observed->GetXaxis()->SetTitleOffset(1.2);
   hmuMoPdgId_em_observed->GetXaxis()->SetTitleSize(0.04);
   hmuMoPdgId_em_observed->SetMarkerStyle(20);
@@ -416,16 +424,18 @@
   hmuMoPdgId_em_predicted->SetFillColor(kWhite);
   hmuMoPdgId_em_predicted->SetLineWidth(2.);
   hmuMoPdgId_em_predicted->SetName(predicted);
+  hmuMoPdgId_em_predicted->GetYaxis()->SetTitle("Events");
+  hmuMoPdgId_em_predicted->GetXaxis()->SetTitle("muon Mother Pdg ID");
   hmuMoPdgId_em_predicted->SetMarkerStyle(28);
   hmuMoPdgId_em_predicted->SetMarkerColor(kBlue);
   hmuMoPdgId_em_predicted->SetMarkerSize(1.2);
   //  hmuMoPdgId_em_predicted->Draw("sames");
   if(hmuMoPdgId_em_observed->GetMaximum() >= hmuMoPdgId_em_predicted->GetMaximum() ) {
     hmuMoPdgId_em_observed->Draw();
-    hmuMoPdgId_em_predicted->Draw("sames");
+    hmuMoPdgId_em_predicted->Draw("P sames");
   }
   else {
-    hmuMoPdgId_em_predicted->Draw();
+    hmuMoPdgId_em_predicted->Draw("P");
     hmuMoPdgId_em_observed->Draw("sames");
   }
 
@@ -487,10 +497,10 @@
   hmuPdgIdCat_em_observed->SetFillColor(kWhite);
   hmuPdgIdCat_em_observed->SetLineWidth(2.);
   hmuPdgIdCat_em_observed->SetName(observed);
-  hmuPdgIdCat_em_observed->GetYaxis()->SetTitle("Events");
   hmuPdgIdCat_em_observed->GetYaxis()->SetTitleOffset(1.2);
   hmuPdgIdCat_em_observed->GetYaxis()->SetTitleSize(0.04);
-  hmuPdgIdCat_em_observed->GetXaxis()->SetTitle("muoctron Pdg ID");
+  hmuPdgIdCat_em_observed->GetYaxis()->SetTitle("Events");
+  hmuPdgIdCat_em_observed->GetXaxis()->SetTitle("muon Pdg ID Category");
   hmuPdgIdCat_em_observed->GetXaxis()->SetTitleOffset(1.2);
   hmuPdgIdCat_em_observed->GetXaxis()->SetTitleSize(0.04);
   hmuPdgIdCat_em_observed->SetMarkerStyle(20);
@@ -504,16 +514,18 @@
   hmuPdgIdCat_em_predicted->SetFillColor(kWhite);
   hmuPdgIdCat_em_predicted->SetLineWidth(2.);
   hmuPdgIdCat_em_predicted->SetName(predicted);
+  hmuPdgIdCat_em_predicted->GetYaxis()->SetTitle("Events");
+  hmuPdgIdCat_em_predicted->GetXaxis()->SetTitle("muon Pdg ID Category");
   hmuPdgIdCat_em_predicted->SetMarkerStyle(28);
   hmuPdgIdCat_em_predicted->SetMarkerColor(kBlue);
   hmuPdgIdCat_em_predicted->SetMarkerSize(1.2);
   //  hmuPdgIdCat_em_predicted->Draw("sames");
   if(hmuPdgIdCat_em_observed->GetMaximum() >= hmuPdgIdCat_em_predicted->GetMaximum() ) {
     hmuPdgIdCat_em_observed->Draw();
-    hmuPdgIdCat_em_predicted->Draw("sames");
+    hmuPdgIdCat_em_predicted->Draw("P sames");
   }
   else {
-    hmuPdgIdCat_em_predicted->Draw();
+    hmuPdgIdCat_em_predicted->Draw("P");
     hmuPdgIdCat_em_observed->Draw("sames");
   }
 
@@ -573,10 +585,10 @@
   hmuRelIso_em_observed->SetFillColor(kWhite);
   hmuRelIso_em_observed->SetLineWidth(2.);
   hmuRelIso_em_observed->SetName(observed);
-  hmuRelIso_em_observed->GetYaxis()->SetTitle("Events");
   hmuRelIso_em_observed->GetYaxis()->SetTitleOffset(1.2);
   hmuRelIso_em_observed->GetYaxis()->SetTitleSize(0.04);
-  hmuRelIso_em_observed->GetXaxis()->SetTitle("Number of Jets");
+  hmuRelIso_em_observed->GetYaxis()->SetTitle("Events");
+  hmuRelIso_em_observed->GetXaxis()->SetTitle("rel. Iso");
   hmuRelIso_em_observed->GetXaxis()->SetTitleOffset(1.2);
   hmuRelIso_em_observed->GetXaxis()->SetTitleSize(0.04);
   hmuRelIso_em_observed->SetMarkerStyle(20);
@@ -590,16 +602,18 @@
   hmuRelIso_em_predicted->SetFillColor(kWhite);
   hmuRelIso_em_predicted->SetLineWidth(2.);
   hmuRelIso_em_predicted->SetName(predicted);
+  hmuRelIso_em_predicted->GetYaxis()->SetTitle("Events");
+  hmuRelIso_em_predicted->GetXaxis()->SetTitle("rel. Iso");
   hmuRelIso_em_predicted->SetMarkerStyle(28);
   hmuRelIso_em_predicted->SetMarkerColor(kBlue);
   hmuRelIso_em_predicted->SetMarkerSize(1.2);
   //  hmuRelIso_em_predicted->Draw("sames");
   if(hmuRelIso_em_observed->GetMaximum() >= hmuRelIso_em_predicted->GetMaximum() ) {
     hmuRelIso_em_observed->Draw();
-    hmuRelIso_em_predicted->Draw("sames");
+    hmuRelIso_em_predicted->Draw("hist P sames");
   }
   else {
-    hmuRelIso_em_predicted->Draw();
+    hmuRelIso_em_predicted->Draw("hist P");
     hmuRelIso_em_observed->Draw("sames");
   }
 
@@ -681,7 +695,7 @@
 //   hmuoEtaPtBelow20_em_observed->GetYaxis()->SetTitle("Events");
 //   hmuoEtaPtBelow20_em_observed->GetYaxis()->SetTitleOffset(1.2);
 //   hmuoEtaPtBelow20_em_observed->GetYaxis()->SetTitleSize(0.04);
-//   hmuoEtaPtBelow20_em_observed->GetXaxis()->SetTitle("#eta^{muoctron}");
+//   hmuoEtaPtBelow20_em_observed->GetXaxis()->SetTitle("#eta^{muon}");
 //   hmuoEtaPtBelow20_em_observed->GetXaxis()->SetTitleOffset(1.2);
 //   hmuoEtaPtBelow20_em_observed->GetXaxis()->SetTitleSize(0.04);
 //   hmuoEtaPtBelow20_em_observed->SetMarkerStyle(20);
@@ -743,7 +757,7 @@
 //   hmuoEtaPtAbove20_em_observed->GetYaxis()->SetTitle("Events");
 //   hmuoEtaPtAbove20_em_observed->GetYaxis()->SetTitleOffset(1.2);
 //   hmuoEtaPtAbove20_em_observed->GetYaxis()->SetTitleSize(0.04);
-//   hmuoEtaPtAbove20_em_observed->GetXaxis()->SetTitle("#eta^{muoctron}");
+//   hmuoEtaPtAbove20_em_observed->GetXaxis()->SetTitle("#eta^{muon}");
 //   hmuoEtaPtAbove20_em_observed->GetXaxis()->SetTitleOffset(1.2);
 //   hmuoEtaPtAbove20_em_observed->GetXaxis()->SetTitleSize(0.04);
 //   hmuoEtaPtAbove20_em_observed->SetMarkerStyle(20);

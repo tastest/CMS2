@@ -12,11 +12,11 @@
   bool subtract_realE = false;
 
   // use SameSign?
-  bool doSS = false;
+  bool doSS = true;
 
   //  TString sample="wjetsAlpgen_";
-    TString sample="wjets_";
-  //  TString sample="ttbar_";
+  //        TString sample="wjets_";
+       TString sample="ttbar_";
   
   TString observed = "Observed (Numerator)";
   //  TString predicted = "FO not Numerator";
@@ -75,9 +75,9 @@
   helePt_em_observed->SetFillColor(kWhite);
   helePt_em_observed->SetLineWidth(2.);
   helePt_em_observed->SetName(observed);
-  helePt_em_observed->GetYaxis()->SetTitle("Events");
   helePt_em_observed->GetYaxis()->SetTitleOffset(1.2);
   helePt_em_observed->GetYaxis()->SetTitleSize(0.04);
+  helePt_em_observed->GetYaxis()->SetTitle("Events");
   helePt_em_observed->GetXaxis()->SetTitle("p_{T}^{electron} (GeV)");
   helePt_em_observed->GetXaxis()->SetTitleOffset(1.2);
   helePt_em_observed->GetXaxis()->SetTitleSize(0.04);
@@ -92,15 +92,17 @@
   helePt_em_predicted->SetFillColor(kWhite);
   helePt_em_predicted->SetLineWidth(2.);
   helePt_em_predicted->SetName(predicted);
+  helePt_em_predicted->GetYaxis()->SetTitle("Events");
+  helePt_em_predicted->GetXaxis()->SetTitle("p_{T}^{electron} (GeV)");
   helePt_em_predicted->SetMarkerStyle(28);
   helePt_em_predicted->SetMarkerColor(kBlue);
   helePt_em_predicted->SetMarkerSize(1.2);
   if(helePt_em_observed->GetMaximum() >= helePt_em_predicted->GetMaximum() ) {
     helePt_em_observed->Draw();
-    helePt_em_predicted->Draw("sames");
+    helePt_em_predicted->Draw("hist P sames");
   }
   else {
-    helePt_em_predicted->Draw();
+    helePt_em_predicted->Draw("hist P");
     helePt_em_observed->Draw("sames");
   }
 
@@ -155,9 +157,9 @@
   heleEta_em_observed->SetFillColor(kWhite);
   heleEta_em_observed->SetLineWidth(2.);
   heleEta_em_observed->SetName(observed);
-  heleEta_em_observed->GetYaxis()->SetTitle("Events");
   heleEta_em_observed->GetYaxis()->SetTitleOffset(1.2);
   heleEta_em_observed->GetYaxis()->SetTitleSize(0.04);
+  heleEta_em_observed->GetYaxis()->SetTitle("Events");
   heleEta_em_observed->GetXaxis()->SetTitle("#eta^{electron}");
   heleEta_em_observed->GetXaxis()->SetTitleOffset(1.2);
   heleEta_em_observed->GetXaxis()->SetTitleSize(0.04);
@@ -172,16 +174,18 @@
   heleEta_em_predicted->SetFillColor(kWhite);
   heleEta_em_predicted->SetLineWidth(2.);
   heleEta_em_predicted->SetName(predicted);
+  heleEta_em_predicted->GetYaxis()->SetTitle("Events");
+  heleEta_em_predicted->GetXaxis()->SetTitle("#eta^{electron}");
   heleEta_em_predicted->SetMarkerStyle(28);
   heleEta_em_predicted->SetMarkerColor(kBlue);
   heleEta_em_predicted->SetMarkerSize(1.2);
   //  heleEta_em_predicted->Draw("sames");
   if(heleEta_em_observed->GetMaximum() >= heleEta_em_predicted->GetMaximum() ) {
     heleEta_em_observed->Draw();
-    heleEta_em_predicted->Draw("sames");
+    heleEta_em_predicted->Draw("hist P sames");
   }
   else {
-    heleEta_em_predicted->Draw();
+    heleEta_em_predicted->Draw("hist P");
     heleEta_em_observed->Draw("sames");
   }
 
@@ -227,9 +231,9 @@
   hnJet_em_observed->SetFillColor(kWhite);
   hnJet_em_observed->SetLineWidth(2.);
   hnJet_em_observed->SetName(observed);
-  hnJet_em_observed->GetYaxis()->SetTitle("Events");
   hnJet_em_observed->GetYaxis()->SetTitleOffset(1.2);
   hnJet_em_observed->GetYaxis()->SetTitleSize(0.04);
+  hnJet_em_observed->GetYaxis()->SetTitle("Events");
   hnJet_em_observed->GetXaxis()->SetTitle("Number of Jets");
   hnJet_em_observed->GetXaxis()->SetTitleOffset(1.2);
   hnJet_em_observed->GetXaxis()->SetTitleSize(0.04);
@@ -244,16 +248,18 @@
   hnJet_em_predicted->SetFillColor(kWhite);
   hnJet_em_predicted->SetLineWidth(2.);
   hnJet_em_predicted->SetName(predicted);
+  hnJet_em_predicted->GetYaxis()->SetTitle("Events");
+  hnJet_em_predicted->GetXaxis()->SetTitle("Number of Jets");
   hnJet_em_predicted->SetMarkerStyle(28);
   hnJet_em_predicted->SetMarkerColor(kBlue);
   hnJet_em_predicted->SetMarkerSize(1.2);
   //  hnJet_em_predicted->Draw("sames");
   if(hnJet_em_observed->GetMaximum() >= hnJet_em_predicted->GetMaximum() ) {
     hnJet_em_observed->Draw();
-    hnJet_em_predicted->Draw("sames");
+    hnJet_em_predicted->Draw("hist P sames");
   }
   else {
-    hnJet_em_predicted->Draw();
+    hnJet_em_predicted->Draw("hist P");
     hnJet_em_observed->Draw("sames");
   }
 
@@ -313,9 +319,9 @@
   helPdgId_em_observed->SetFillColor(kWhite);
   helPdgId_em_observed->SetLineWidth(2.);
   helPdgId_em_observed->SetName(observed);
-  helPdgId_em_observed->GetYaxis()->SetTitle("Events");
   helPdgId_em_observed->GetYaxis()->SetTitleOffset(1.2);
   helPdgId_em_observed->GetYaxis()->SetTitleSize(0.04);
+  helPdgId_em_observed->GetYaxis()->SetTitle("Events");
   helPdgId_em_observed->GetXaxis()->SetTitle("electron Pdg ID");
   helPdgId_em_observed->GetXaxis()->SetTitleOffset(1.2);
   helPdgId_em_observed->GetXaxis()->SetTitleSize(0.04);
@@ -330,16 +336,18 @@
   helPdgId_em_predicted->SetFillColor(kWhite);
   helPdgId_em_predicted->SetLineWidth(2.);
   helPdgId_em_predicted->SetName(predicted);
+  helPdgId_em_predicted->GetYaxis()->SetTitle("Events");
+  helPdgId_em_predicted->GetXaxis()->SetTitle("electron Pdg ID");
   helPdgId_em_predicted->SetMarkerStyle(28);
   helPdgId_em_predicted->SetMarkerColor(kBlue);
   helPdgId_em_predicted->SetMarkerSize(1.2);
   //  helPdgId_em_predicted->Draw("sames");
   if(helPdgId_em_observed->GetMaximum() >= helPdgId_em_predicted->GetMaximum() ) {
     helPdgId_em_observed->Draw();
-    helPdgId_em_predicted->Draw("sames");
+    helPdgId_em_predicted->Draw("P sames");
   }
   else {
-    helPdgId_em_predicted->Draw();
+    helPdgId_em_predicted->Draw("P");
     helPdgId_em_observed->Draw("sames");
   }
 
@@ -399,9 +407,9 @@
   helMoPdgId_em_observed->SetFillColor(kWhite);
   helMoPdgId_em_observed->SetLineWidth(2.);
   helMoPdgId_em_observed->SetName(observed);
-  helMoPdgId_em_observed->GetYaxis()->SetTitle("Events");
   helMoPdgId_em_observed->GetYaxis()->SetTitleOffset(1.2);
   helMoPdgId_em_observed->GetYaxis()->SetTitleSize(0.04);
+  helMoPdgId_em_observed->GetYaxis()->SetTitle("Events");
   helMoPdgId_em_observed->GetXaxis()->SetTitle("electron Mother Pdg ID");
   helMoPdgId_em_observed->GetXaxis()->SetTitleOffset(1.2);
   helMoPdgId_em_observed->GetXaxis()->SetTitleSize(0.04);
@@ -416,16 +424,18 @@
   helMoPdgId_em_predicted->SetFillColor(kWhite);
   helMoPdgId_em_predicted->SetLineWidth(2.);
   helMoPdgId_em_predicted->SetName(predicted);
+  helMoPdgId_em_predicted->GetYaxis()->SetTitle("Events");
+  helMoPdgId_em_predicted->GetXaxis()->SetTitle("electron Mother Pdg ID");
   helMoPdgId_em_predicted->SetMarkerStyle(28);
   helMoPdgId_em_predicted->SetMarkerColor(kBlue);
   helMoPdgId_em_predicted->SetMarkerSize(1.2);
   //  helMoPdgId_em_predicted->Draw("sames");
   if(helMoPdgId_em_observed->GetMaximum() >= helMoPdgId_em_predicted->GetMaximum() ) {
     helMoPdgId_em_observed->Draw();
-    helMoPdgId_em_predicted->Draw("sames");
+    helMoPdgId_em_predicted->Draw("P sames");
   }
   else {
-    helMoPdgId_em_predicted->Draw();
+    helMoPdgId_em_predicted->Draw("P");
     helMoPdgId_em_observed->Draw("sames");
   }
 
@@ -487,10 +497,10 @@
   helPdgIdCat_em_observed->SetFillColor(kWhite);
   helPdgIdCat_em_observed->SetLineWidth(2.);
   helPdgIdCat_em_observed->SetName(observed);
-  helPdgIdCat_em_observed->GetYaxis()->SetTitle("Events");
   helPdgIdCat_em_observed->GetYaxis()->SetTitleOffset(1.2);
   helPdgIdCat_em_observed->GetYaxis()->SetTitleSize(0.04);
-  helPdgIdCat_em_observed->GetXaxis()->SetTitle("electron Pdg ID");
+  helPdgIdCat_em_observed->GetYaxis()->SetTitle("Events");
+  helPdgIdCat_em_observed->GetXaxis()->SetTitle("electron Pdg ID category");
   helPdgIdCat_em_observed->GetXaxis()->SetTitleOffset(1.2);
   helPdgIdCat_em_observed->GetXaxis()->SetTitleSize(0.04);
   helPdgIdCat_em_observed->SetMarkerStyle(20);
@@ -504,16 +514,18 @@
   helPdgIdCat_em_predicted->SetFillColor(kWhite);
   helPdgIdCat_em_predicted->SetLineWidth(2.);
   helPdgIdCat_em_predicted->SetName(predicted);
+  helPdgIdCat_em_predicted->GetYaxis()->SetTitle("Events");
+  helPdgIdCat_em_predicted->GetXaxis()->SetTitle("electron Pdg ID category");
   helPdgIdCat_em_predicted->SetMarkerStyle(28);
   helPdgIdCat_em_predicted->SetMarkerColor(kBlue);
   helPdgIdCat_em_predicted->SetMarkerSize(1.2);
   //  helPdgIdCat_em_predicted->Draw("sames");
   if(helPdgIdCat_em_observed->GetMaximum() >= helPdgIdCat_em_predicted->GetMaximum() ) {
     helPdgIdCat_em_observed->Draw();
-    helPdgIdCat_em_predicted->Draw("sames");
+    helPdgIdCat_em_predicted->Draw("P sames");
   }
   else {
-    helPdgIdCat_em_predicted->Draw();
+    helPdgIdCat_em_predicted->Draw("P");
     helPdgIdCat_em_observed->Draw("sames");
   }
 
@@ -573,10 +585,10 @@
   heleRelIso_em_observed->SetFillColor(kWhite);
   heleRelIso_em_observed->SetLineWidth(2.);
   heleRelIso_em_observed->SetName(observed);
-  heleRelIso_em_observed->GetYaxis()->SetTitle("Events");
   heleRelIso_em_observed->GetYaxis()->SetTitleOffset(1.2);
   heleRelIso_em_observed->GetYaxis()->SetTitleSize(0.04);
-  heleRelIso_em_observed->GetXaxis()->SetTitle("Number of Jets");
+  heleRelIso_em_observed->GetYaxis()->SetTitle("Events");
+  heleRelIso_em_observed->GetXaxis()->SetTitle("rel. Iso");
   heleRelIso_em_observed->GetXaxis()->SetTitleOffset(1.2);
   heleRelIso_em_observed->GetXaxis()->SetTitleSize(0.04);
   heleRelIso_em_observed->SetMarkerStyle(20);
@@ -590,16 +602,18 @@
   heleRelIso_em_predicted->SetFillColor(kWhite);
   heleRelIso_em_predicted->SetLineWidth(2.);
   heleRelIso_em_predicted->SetName(predicted);
+  heleRelIso_em_predicted->GetYaxis()->SetTitle("Events");
+  heleRelIso_em_predicted->GetXaxis()->SetTitle("rel. Iso");
   heleRelIso_em_predicted->SetMarkerStyle(28);
   heleRelIso_em_predicted->SetMarkerColor(kBlue);
   heleRelIso_em_predicted->SetMarkerSize(1.2);
   //  heleRelIso_em_predicted->Draw("sames");
   if(heleRelIso_em_observed->GetMaximum() >= heleRelIso_em_predicted->GetMaximum() ) {
     heleRelIso_em_observed->Draw();
-    heleRelIso_em_predicted->Draw("sames");
+    heleRelIso_em_predicted->Draw("hist P sames");
   }
   else {
-    heleRelIso_em_predicted->Draw();
+    heleRelIso_em_predicted->Draw("hist P");
     heleRelIso_em_observed->Draw("sames");
   }
 
