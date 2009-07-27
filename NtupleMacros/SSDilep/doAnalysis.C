@@ -30,7 +30,7 @@ using namespace std;
 #include "../Tools/tools.cc"
 #endif
 
-TH1F*hypos_total;
+TH1F* hypos_total;
 TH1F* hypos_total_weighted;
 
 enum Sample {WW, WZ, ZZ, Wjets, DY, DYee, DYmm, DYtt, ttbar, tW, LM0x, LM1x, LM2x, LM3x, LM4x, LM5x, LM6x, LM7x, LM8x, LM9x}; // signal samples
@@ -96,11 +96,16 @@ Hypothesis filterByHypothesis( int candidate ) {
 // MAKE SURE TO CAL SUMW2 FOR EACH 1D HISTOGRAM BEFORE FILLING!!!!!!
 
 TH1F* hnJet[4];       // Njet distributions
-TH1F* hnJetWW[4];
-TH1F* hnJetWO[4];
-TH1F* hnJetWOSemilep[4];       // Njet distributions
-TH1F* hnJetWOOther[4];       // Njet distributions
-TH1F* hnJetOO[4];       // Njet distributions
+TH1F* hnJetttbarother[4];
+TH1F* hnJetttbarlep[4];
+TH1F* hnJetfakeCharge[4];       // Njet distributions
+TH1F* hnJetSemiTop[4];       // Njet distributions
+TH1F* hnJetPlus[4];       // Njet distributions
+TH1F* hnJetMinus[4];       // Njet distributions
+TH1F* hnJetSemiWTop[4];       // Njet distributions
+TH1F* hnJetSemitrueTop[4];
+TH1F* hnJetSemiOtherTop[4];
+TH1F* hnJetfakeLep[4];       // Njet distributions
 
 TH1F* htcmetZveto[4];
 
@@ -222,9 +227,9 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
      int njets = 0;
      if (calo_jetsp4.size() > 0) njets = calo_jetsp4.size();
      // Final cuts on jets
-     if (njets < 3) return;
-     //if (calo_jetsp4[0].pt() < 100) return; 
-     if (sumet_calo < 200) return;
+     if (njets < 1) return;
+     if (calo_jetsp4[0].pt() < 100) return; 
+     //     if (sumet_calo < 200) return;
      
      monitor.count(icounter++,"Total number of hypothesis after adding jet cuts: ");
 
@@ -238,36 +243,113 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
      // If we made it to here, we passed all cuts and we are ready to fill //
      // -------------------------------------------------------------------//
 
+     // Semileptonic top - ala Claudio
+     bool chargefake = false;
+     bool semilep = false;
+     bool ttbarlep = true;
+     bool ttbarother = true;
+     int sumCh = 99999;
+
+     if ((abs(cms2.hyp_ll_id()[i_hyp]) == abs(cms2.hyp_ll_mc_id()[i_hyp])) || (abs(cms2.hyp_lt_id()[i_hyp]) == abs(cms2.hyp_lt_mc_id()[i_hyp]))) {
+       if (cms2.hyp_lt_id()[i_hyp] * cms2.hyp_lt_mc_id()[i_hyp] < 0 ) chargefake = true; 
+       if (cms2.hyp_ll_id()[i_hyp] * cms2.hyp_ll_mc_id()[i_hyp] < 0 ) chargefake = true; 
+       sumCh = cms2.hyp_lt_id()[i_hyp] + cms2.hyp_ll_id()[i_hyp];
+     } 
+
+     if ((cms2.hyp_ll_mc_id()[i_hyp]==22 && TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.hyp_ll_mc_p4()[i_hyp])) <0.05 
+	  && abs(cms2.hyp_ll_id()[i_hyp]) == abs(cms2.hyp_ll_mc_motherid()[i_hyp])) || 
+	 (cms2.hyp_lt_mc_id()[i_hyp]==22 && TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.hyp_lt_mc_p4()[i_hyp])) <0.05
+	  && abs(cms2.hyp_lt_id()[i_hyp]) == abs(cms2.hyp_lt_mc_motherid()[i_hyp]))) {
+       if (cms2.hyp_lt_id()[i_hyp] * cms2.hyp_lt_mc_motherid()[i_hyp] < 0 ) chargefake = true;  
+       if (cms2.hyp_ll_id()[i_hyp] * cms2.hyp_ll_mc_motherid()[i_hyp] < 0 ) chargefake = true;  
+       sumCh = cms2.hyp_lt_mc_motherid()[i_hyp] + cms2.hyp_ll_mc_motherid()[i_hyp];
+     }
+
+     if (cms2.hyp_lt_id()[i_hyp] * cms2.hyp_lt_mc_id()[i_hyp] < 0 ) chargefake = true;
+     if (cms2.hyp_ll_id()[i_hyp] * cms2.hyp_ll_mc_id()[i_hyp] < 0 ) chargefake = true;
+     
+     if (genpCountPDGId(11,13,15) != 2) ttbarlep = false;
+     if (genpCountPDGId(11,13,15) == 2) ttbarother = false;
+
+     { // ll hypothesis test the heavy flavor
+       int els_mo = 0; 
+       int mus_mo = 0; 
+       int els_id = 0;
+       int mus_id = 0;
+       if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) els_mo = cms2.els_mc3_motherid()[cms2.hyp_ll_index()[i_hyp]]; 
+       if (abs(cms2.hyp_ll_id()[i_hyp]) == 13) mus_mo = cms2.mus_mc3_motherid()[cms2.hyp_ll_index()[i_hyp]]; 
+       if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) els_id = cms2.els_mc3_id()[cms2.hyp_ll_index()[i_hyp]];
+       if (abs(cms2.hyp_ll_id()[i_hyp]) == 13) mus_id = cms2.mus_mc3_id()[cms2.hyp_ll_index()[i_hyp]];
+       if (idIsCharm(cms2.hyp_ll_mc_motherid()[i_hyp]) || idIsBeauty(cms2.hyp_ll_mc_motherid()[i_hyp])) semilep = true;
+       if (idIsCharm(els_mo) || idIsBeauty(els_mo)) semilep = true;
+       if (idIsCharm(mus_mo) || idIsBeauty(mus_mo)) semilep = true;
+       if (idIsCharm(els_id) || idIsBeauty(els_id)) semilep = true;
+       if (idIsCharm(mus_id) || idIsBeauty(mus_id)) semilep = true;
+     }
+
+     { // lt hypothesis test the heavy flavor
+       int els_mo = 0; 
+       int mus_mo = 0; 
+       int els_id = 0;
+       int mus_id = 0;
+       if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) els_mo = cms2.els_mc3_motherid()[cms2.hyp_lt_index()[i_hyp]]; 
+       if (abs(cms2.hyp_lt_id()[i_hyp]) == 13) mus_mo = cms2.mus_mc3_motherid()[cms2.hyp_lt_index()[i_hyp]]; 
+       if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) els_id = cms2.els_mc3_id()[cms2.hyp_lt_index()[i_hyp]];
+       if (abs(cms2.hyp_lt_id()[i_hyp]) == 13) mus_id = cms2.mus_mc3_id()[cms2.hyp_lt_index()[i_hyp]];
+       if (idIsCharm(cms2.hyp_lt_mc_motherid()[i_hyp]) || idIsBeauty(cms2.hyp_lt_mc_motherid()[i_hyp])) semilep = true;
+       if (idIsCharm(els_mo) || idIsBeauty(els_mo)) semilep = true;
+       if (idIsCharm(mus_mo) || idIsBeauty(mus_mo)) semilep = true;
+       if (idIsCharm(els_id) || idIsBeauty(els_id)) semilep = true;
+       if (idIsCharm(mus_id) || idIsBeauty(mus_id)) semilep = true;
+     }
+
+     int tttype = ttbarconstituents(i_hyp);
+
      //  Fill the distribution
-     // This hist is used in doTable.C to fill the results table for the twiki.
      hnJet[myType]->Fill(min(njets,4), weight);
      hnJet[3]->Fill(min(njets,4), weight);
      
-     //The only thing left to do now is to work out the composition of the ttbar bkg:
-
-     //To distinguish WW (=1), WO (=2), and OO (=3) 
-     int tttype = ttbarconstituents(i_hyp);
-
-     // Semileptonic
-     int lttype = leptonIsFromW(cms2.hyp_lt_index()[i_hyp],cms2.hyp_lt_id()[i_hyp],cms2.hyp_lt_p4()[i_hyp] );
-     int lltype = leptonIsFromW(cms2.hyp_ll_index()[i_hyp],cms2.hyp_ll_id()[i_hyp],cms2.hyp_ll_p4()[i_hyp] );
+     if (ttbarlep) {
+       hnJetttbarlep[myType]->Fill(min(njets,4), weight);
+       hnJetttbarlep[3]->Fill(min(njets,4), weight);
+     } else if (ttbarother) { 
+       hnJetttbarother[myType]->Fill(min(njets,4), weight);
+       hnJetttbarother[3]->Fill(min(njets,4), weight);
+     }
+     if (chargefake) {
+       hnJetfakeCharge[myType]->Fill(min(njets,4), weight);
+       hnJetfakeCharge[3]->Fill(min(njets,4), weight);
+     }
 
      if (tttype == 1) {
-       hnJetWW[myType]->Fill(min(njets,4), weight);
-       hnJetWW[3]->Fill(min(njets,4), weight);
+       hnJetSemiTop[myType]->Fill(min(njets,4), weight);
+       hnJetSemiTop[3]->Fill(min(njets,4), weight);
+       if (sumCh > 0 && sumCh != 99999) {
+         hnJetPlus[myType]->Fill(min(njets,4), weight);
+         hnJetPlus[3]->Fill(min(njets,4), weight);
+       } else if (sumCh < 0) {
+         hnJetMinus[myType]->Fill(min(njets,4), weight);
+         hnJetMinus[3]->Fill(min(njets,4), weight);
+       }
      } else if (tttype == 2) {
-       hnJetWO[myType]->Fill(min(njets,4), weight);
-       hnJetWO[3]->Fill(min(njets,4), weight);
-       if ( lttype == -1 || lttype == -2 || lltype == -1 || lltype == -2) {
-	 hnJetWOSemilep[myType]->Fill(min(njets,4), weight); 
-	 hnJetWOSemilep[3]->Fill(min(njets,4), weight); 
+       hnJetSemiWTop[myType]->Fill(min(njets,4), weight);
+       hnJetSemiWTop[3]->Fill(min(njets,4), weight);
+       if (semilep) {
+	 hnJetSemitrueTop[myType]->Fill(min(njets,4), weight); 
+	 hnJetSemitrueTop[3]->Fill(min(njets,4), weight); 
+	 //	 cout << cms2.hyp_lt_mc_motherid()[i_hyp] << "   " << cms2.hyp_ll_mc_motherid()[i_hyp] << "  " << cms2.hyp_lt_mc_id()[i_hyp] << "  " << cms2.hyp_ll_mc_id()[i_hyp] << endl;
+	 //	 if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) cout << " elec " <<  cms2.els_mc3_motherid()[cms2.hyp_ll_index()[i_hyp]] <<  "  " << cms2.els_mc3_id()[cms2.hyp_ll_index()[i_hyp]] << endl;
+	 //	 if (abs(cms2.hyp_ll_id()[i_hyp]) == 13) cout << " muon " << cms2.mus_mc3_motherid()[cms2.hyp_ll_index()[i_hyp]] << "  " << cms2.mus_mc3_id()[cms2.hyp_ll_index()[i_hyp]] << endl;
+	 //	 if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) cout << " elec lt " <<  cms2.els_mc3_motherid()[cms2.hyp_lt_index()[i_hyp]] <<  "  " << cms2.els_mc3_id()[cms2.hyp_lt_index()[i_hyp]] << endl;
+	 //	 if (abs(cms2.hyp_lt_id()[i_hyp]) == 13) cout << " muon lt " << cms2.mus_mc3_motherid()[cms2.hyp_lt_index()[i_hyp]] << "  " << cms2.mus_mc3_id()[cms2.hyp_lt_index()[i_hyp]] << endl;
+	 //	 cout << "ps gen " << genpCountPDGId(11,13,15) << endl;
        } else {
-	 hnJetWOOther[myType]->Fill(min(njets,4), weight); 
-	 hnJetWOOther[3]->Fill(min(njets,4), weight); 
+	 hnJetSemiOtherTop[myType]->Fill(min(njets,4), weight); 
+	 hnJetSemiOtherTop[3]->Fill(min(njets,4), weight); 
        }
      } else {
-       hnJetOO[myType]->Fill(min(njets,4), weight);
-       hnJetOO[3]->Fill(min(njets,4), weight);
+       hnJetfakeLep[myType]->Fill(min(njets,4), weight);
+       hnJetfakeLep[3]->Fill(min(njets,4), weight);
      }
 
      hypos_total->Fill(myType);
@@ -409,26 +491,30 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, bool identifyEvents ) 
       hnJet[i]->GetXaxis()->SetBinLabel(k+1, jetbins[k]);
       hnJet[i]->GetXaxis()->SetLabelSize(0.07);
     }
-    hnJetWW[i] = new TH1F(Form("%s_hnJetWW_%s",prefix,suffix[i]),Form("%s_hnJetWW_%s",prefix,suffix[i]),
+    hnJetttbarother[i] = new TH1F(Form("%s_hnJetttbarother_%s",prefix,suffix[i]),Form("%s_hnJetttbarother_%s",prefix,suffix[i]),
 			5,0.,5.);	
-    hnJetWO[i] = new TH1F(Form("%s_hnJetWO_%s",prefix,suffix[i]),Form("%s_hnJetWO_%s",prefix,suffix[i]),
+    hnJetttbarlep[i] = new TH1F(Form("%s_hnJetttbarlep_%s",prefix,suffix[i]),Form("%s_hnJetttbarlep_%s",prefix,suffix[i]),
 			5,0.,5.);	
-    hnJetWOSemilep[i] = new TH1F(Form("%s_hnJetWOSemilep_%s",prefix,suffix[i]),Form("%s_hnJetWOSemilep_%s",prefix,suffix[i]),
+    hnJetfakeCharge[i] = new TH1F(Form("%s_hnJetfakeCharge_%s",prefix,suffix[i]),Form("%s_hnJetfakeCharge_%s",prefix,suffix[i]),
 			5,0.,5.);	
-    hnJetWOOther[i] = new TH1F(Form("%s_hnJetWOOther_%s",prefix,suffix[i]),Form("%s_hnJetWOOther_%s",prefix,suffix[i]),
+    hnJetSemiWTop[i] = new TH1F(Form("%s_hnJetSemiWTop_%s",prefix,suffix[i]),Form("%s_hnJetSemiWTop_%s",prefix,suffix[i]),
 			5,0.,5.);	    
-    hnJetOO[i] = new TH1F(Form("%s_hnJetOO_%s",prefix,suffix[i]),Form("%s_hnJetOO_%s",prefix,suffix[i]),
+    hnJetPlus[i] = new TH1F(Form("%s_hnJetPlus_%s",prefix,suffix[i]),Form("%s_hnJetPlus_%s",prefix,suffix[i]),
+			5,0.,5.);	
+    hnJetMinus[i] = new TH1F(Form("%s_hnJetMinus_%s",prefix,suffix[i]),Form("%s_hnJetMinus_%s",prefix,suffix[i]),
+			5,0.,5.);	
+    hnJetSemiTop[i] = new TH1F(Form("%s_hnJetSemiTop_%s",prefix,suffix[i]),Form("%s_hnJetSemiTop_%s",prefix,suffix[i]),
+			5,0.,5.);	
+    hnJetSemitrueTop[i] = new TH1F(Form("%s_hnJetSemitrueTop_%s",prefix,suffix[i]),Form("%s_hnJetSemitrueTop_%s",prefix,suffix[i]),
+			5,0.,5.);	
+    hnJetSemiOtherTop[i] = new TH1F(Form("%s_hnJetSemiOtherTop_%s",prefix,suffix[i]),Form("%s_hnJetSemiOtherTop_%s",prefix,suffix[i]),
+			5,0.,5.);	
+    hnJetfakeLep[i] = new TH1F(Form("%s_hnJetfakeLep_%s",prefix,suffix[i]),Form("%s_hnJetfakeLep_%s",prefix,suffix[i]),
 			5,0.,5.);	
     htcmetZveto[i] = new TH1F(Form("%s_htcmetZveto_%s",prefix,suffix[i]),Form("%s_htcmetZveto_%s",prefix,suffix[i]),100,0.,200.);
 
 
     hnJet[i]->Sumw2();
-    hnJetWW[i]->Sumw2();
-    hnJetWO[i]->Sumw2();
-    hnJetWOSemilep[i]->Sumw2();
-    hnJetWOOther[i]->Sumw2();
-    hnJetOO[i]->Sumw2();
-    htcmetZveto[i]->Sumw2();
 
   }
   
