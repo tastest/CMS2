@@ -81,6 +81,12 @@ protected:
 	TH1F 	*h1_esJuraIso03_[2];
 	TH1F 	*h1_wwIso_[2];
 
+	// electron ID related
+	//
+	TH1F	*h1_dEtaIn_[2];
+	TH1F	*h1_dPhiIn_[2];
+	TH1F	*h1_hoe_[2];
+	TH1F	*h1_sigmaIEtaIEta_[2];
 
 protected:
      // count the (weighted and unweighted) number of candidates passing our cuts

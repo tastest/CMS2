@@ -5,7 +5,7 @@
 #include "TString.h"
 class HistogramUtilities;
 
-void plotEff(HistogramUtilities &h1, TString name, TString det);
+void plotEff(HistogramUtilities &h1, TString name, TString det, bool ascending);
 void plotResults(TString det);
 
 #endif
