@@ -70,7 +70,7 @@ void plotResults(TString det)
         THStack *st_ecalIso03 = h1.getStack(theSources, "h1_ecalIso03", "", det);
         THStack *st_hcalIso03 = h1.getStack(theSources, "h1_hcalIso03", "", det);
         THStack *st_tkIso03 = h1.getStack(theSources, "h1_tkIso03", "", det);
-        THStack *st_esJuraIso03 = h1.getStack(theSources, "h1_esJuraIso03", "", det);
+        //THStack *st_esJuraIso03 = h1.getStack(theSources, "h1_esJuraIso03", "", det);
         THStack *st_wwIso = h1.getStack(theSources, "h1_wwIso", "", det, 4);
 
 	//plotEff(h1, "h1_esJuraIso03", det, true);
