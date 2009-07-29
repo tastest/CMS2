@@ -13,7 +13,11 @@ using std::string;
 enum {
 	LOOP_WENU,
 	LOOP_EM30_80,
-	LOOP_BC30_80
+	LOOP_BC30_80,
+	
+	// 2_1_X
+	LOOP_QCD30
+
 };
 
 // helper function used to print yield tables
@@ -66,6 +70,10 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
      Looper looper_em30_80(fEM30_80(), cuts, log.c_str());
         if (which_ones & (1 << LOOP_EM30_80)) looper_em30_80.Loop();
 
+	// 2_2_1
+     Looper looper_qcd30(fQCDpt30(), cuts, log.c_str());
+        if (which_ones & (1 << LOOP_QCD30)) looper_qcd30.Loop();
+
 
      // when all the loopers are done, we save the histograms to file
      saveHist(hist.c_str());
@@ -74,7 +82,8 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
      const Looper *loopers[] = { 
 	  &looper_wenu,
 	&looper_em30_80,
-	&looper_bc30_80
+	&looper_bc30_80,
+	&looper_qcd30
      };
 
      printTable(loopers, sizeof(loopers) / sizeof(Looper *), tbl.c_str(), which_ones);
@@ -84,6 +93,6 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 // default yield table
 int Results ()
 {
-     return run<Looper>(event_cuts, "Results");
+     return run<Looper>(event_cuts, "Results", 1 << LOOP_QCD30);
 }
 

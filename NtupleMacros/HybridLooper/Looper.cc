@@ -47,11 +47,6 @@ void Looper::BookHistos ()
 			"h1_hcalIso03", 100, 0.0, 0.5);
      		FormatHist(h1_hcalIso03_[i]);
 
-                h1_hcalRaw03_[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), "h1_hcalRaw03", det.c_str()),
-                        "h1_hcalRaw03", 100, 0.0, 25);
-                FormatHist(h1_hcalRaw03_[i]);
-
-
     		h1_tkIso03_[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), "h1_tkIso03", det.c_str()), 
 			"h1_tkIso03", 100, 0.0, 0.5);
      		FormatHist(h1_tkIso03_[i]);
@@ -59,12 +54,6 @@ void Looper::BookHistos ()
                 h1_esJuraIso03_[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), "h1_esJuraIso03", det.c_str()), 
 			"h1_esJuraIso03", 100, 0.0, 1.0);
                 FormatHist(h1_esJuraIso03_[i]);
-                h1_esJuraRaw03_[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), "h1_esJuraRaw03", det.c_str()),
-                        "h1_esJuraRaw03", 100, 0.0, 25);
-                FormatHist(h1_esJuraRaw03_[i]);
-
-
-
 
      		h1_wwIso_[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), "h1_wwIso", det.c_str()), 
 			"h1_wwIso", 100, 0.0, 1.0);
@@ -147,10 +136,19 @@ void Looper::FillEventHistos ()
 		// 20 GeV electrons in the barrel and avoid -ve endcap
 		if (cms2.els_p4()[0].Pt() < 20.0 || cms2.els_etaSC()[0] < -1.5) return;
 
+		// determine what detector the electron is in
 		unsigned int det = 0;
 		if (cms2.els_etaSC()[0] > 1.5) det = 1;
 
-                float isoSum = cms2.els_tkIso03()[0] + cms2.els_hcalIso03()[0] + cms2.els_ecalIso03()[0];
+		// 3_1_X
+		//float ecalIso = cms2.els_tkIso03()[0];
+		//float hcalIso = cms2.els_tkIso03()[0];
+		//float tkIso = cms2.els_tkIso03()[0];
+		// 2_2_X
+                float ecalIso = cms2.els_ecalIso()[0];
+                float hcalIso = cms2.els_hcalIso()[0];
+                float tkIso = cms2.els_tkIso()[0];
+                float isoSum = ecalIso + hcalIso + tkIso;
 
 		// electron id related
 		//
@@ -171,16 +169,16 @@ void Looper::FillEventHistos ()
 	                h1_pt_[det]->Fill(cms2.els_p4()[0].Pt(), weight);
 			h1_eta_[det]->Fill(cms2.els_p4()[0].Eta(), weight);
 
-			h1_ecalIso03_[det]->Fill(cms2.els_ecalIso03()[0]/cms2.els_p4()[0].Pt(), weight);
-	                h1_hcalIso03_[det]->Fill(cms2.els_hcalIso03()[0]/cms2.els_p4()[0].Pt(), weight);
-	                h1_tkIso03_[det]->Fill(cms2.els_tkIso03()[0]/cms2.els_p4()[0].Pt(), weight);
+			h1_ecalIso03_[det]->Fill(ecalIso/cms2.els_p4()[0].Pt(), weight);
+	                h1_hcalIso03_[det]->Fill(hcalIso/cms2.els_p4()[0].Pt(), weight);
+	                h1_tkIso03_[det]->Fill(tkIso/cms2.els_p4()[0].Pt(), weight);
+			// for 3_1_X
         	        //h1_esJuraIso03_[det]->Fill(cms2.els_esJuraIso03()[0]/cms2.els_p4()[0].Pt(), weight);
-
 			h1_wwIso_[det]->Fill(isoSum / cms2.els_p4()[0].Pt(), weight);
+
 		}
 
 	} // end event level cuts passed
-
 
 }
 
