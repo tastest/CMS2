@@ -87,6 +87,10 @@ protected:
 	TH1F	*h1_dPhiIn_[2];
 	TH1F	*h1_hoe_[2];
 	TH1F	*h1_sigmaIEtaIEta_[2];
+        TH1F    *h1_sigmaIPhiIPhi_[2];
+	TH1F	*h1_E2x5Norm5x5_[2];
+	TH1F    *h1_E1x5Norm5x5_[2];
+	TH1F	*h1_eopIn_[2];
 
 protected:
      // count the (weighted and unweighted) number of candidates passing our cuts

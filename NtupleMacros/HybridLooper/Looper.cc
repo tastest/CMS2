@@ -80,6 +80,24 @@ void Looper::BookHistos ()
                         "h1_sigmaIEtaIEta", 100, 0.0, 0.1);
                 FormatHist(h1_sigmaIEtaIEta_[i]);
 
+                h1_sigmaIPhiIPhi_[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), "h1_sigmaIPhiIPhi", det.c_str()),
+                        "h1_sigmaIPhiIPhi", 100, 0.0, 0.1);
+                FormatHist(h1_sigmaIPhiIPhi_[i]);
+
+                h1_E2x5Norm5x5_[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), "h1_E2x5Norm5x5", det.c_str()),
+                        "h1_E2x5Norm5x5", 100, 0.0, 1.0);
+                FormatHist(h1_E2x5Norm5x5_[i]);
+
+                h1_E1x5Norm5x5_[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), "h1_E1x5Norm5x5", det.c_str()),
+                        "h1_E1x5Norm5x5", 100, 0.0, 1.0);
+                FormatHist(h1_E1x5Norm5x5_[i]);
+
+                h1_eopIn_[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), "h1_eopIn", det.c_str()),
+                        "h1_eopIn", 100, 0.0, 5.0);
+                FormatHist(h1_eopIn_[i]);
+
+
+
 
 	}
 
@@ -134,11 +152,12 @@ void Looper::FillEventHistos ()
 	if ((cuts_passed & cuts_) == cuts_) {
 
 		// 20 GeV electrons in the barrel and avoid -ve endcap
-		if (cms2.els_p4()[0].Pt() < 20.0 || cms2.els_etaSC()[0] < -1.5) return;
+		// NOTE: only need to avoid -ve endcap in 3_1_1
+		if (cms2.els_p4()[0].Pt() < 20.0);// || cms2.els_etaSC()[0] < -1.5) return;
 
 		// determine what detector the electron is in
 		unsigned int det = 0;
-		if (cms2.els_etaSC()[0] > 1.5) det = 1;
+		if (fabs(cms2.els_etaSC()[0]) > 1.5) det = 1;
 
 		// 3_1_X
 		//float ecalIso = cms2.els_tkIso03()[0];
@@ -158,6 +177,12 @@ void Looper::FillEventHistos ()
 			h1_dPhiIn_[det]->Fill(fabs(cms2.els_dPhiIn()[0]), weight);
 			h1_hoe_[det]->Fill(cms2.els_hOverE()[0], weight);
 			h1_sigmaIEtaIEta_[det]->Fill(cms2.els_sigmaIEtaIEta()[0], weight);
+                        h1_sigmaIPhiIPhi_[det]->Fill(cms2.els_sigmaIPhiIPhi()[0], weight);
+			h1_E2x5Norm5x5_[det]->Fill(cms2.els_e2x5Max()[0]/cms2.els_e5x5()[0], weight);
+                        h1_E1x5Norm5x5_[det]->Fill(cms2.els_e1x5()[0]/cms2.els_e5x5()[0], weight);
+                        h1_eopIn_[det]->Fill(cms2.els_eOverPIn()[0], weight);
+
+
 		}
 
 		// iso related
