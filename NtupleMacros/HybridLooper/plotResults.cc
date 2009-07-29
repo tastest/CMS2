@@ -6,20 +6,35 @@
 
 #include "TROOT.h"
 
-        const static sources_t theSources =
+        const static sources_t theSources_31X =
                 (1ll << H_WENU)          |
                 (1ll << H_EM30_80)       |
                 (1ll << H_BC30_80);
 
-        const static sources_t theSignal =
+        const static sources_t theSignal_31X =
                 (1ll << H_WENU);
 
-        const static sources_t theBackground =
+        const static sources_t theBackground_31X =
                 (1ll << H_EM30_80)       |
                 (1ll << H_BC30_80);
 
+        const static sources_t theSources_22X =
+                (1ll << H_QCD30);
+
+	const static sources_t theSignal_22X = 
+                (1ll << H_QCD30);
+
+	const static sources_t theBackground_22X = 
+                (1ll << H_QCD30);
+
+	// for 2_2_X
+	const static sources_t &theSignal = theSignal_22X;
+	const static sources_t &theBackground = theBackground_22X;
+	const static sources_t &theSources = theSources_22X;
+
 void plotEff(HistogramUtilities &h1, TString name, TString det, bool ascending)
 {
+
 	TH1F *h1_signal = h1.getHistogram(theSignal, name, "", det);
         TH1F *h1_background = h1.getHistogram(theBackground, name, "", det);
 
@@ -48,7 +63,6 @@ void plotResults(TString det)
 
 	// luminorm for 1pb-1
 	HistogramUtilities h1("Results.root", 0.001);
-	
 	THStack *st_pt = h1.getStack(theSources, "h1_pt", "", det, 2);
         THStack *st_eta = h1.getStack(theSources, "h1_eta", "", det);
 	TLegend *lg_all = h1.getLegend(theSources, "h1_pt", "", det);
@@ -58,8 +72,8 @@ void plotResults(TString det)
         THStack *st_tkIso03 = h1.getStack(theSources, "h1_tkIso03", "", det);
         THStack *st_esJuraIso03 = h1.getStack(theSources, "h1_esJuraIso03", "", det);
         THStack *st_wwIso = h1.getStack(theSources, "h1_wwIso", "", det, 4);
-	
-	plotEff(h1, "h1_esJuraIso03", det, true);
+
+	//plotEff(h1, "h1_esJuraIso03", det, true);
         plotEff(h1, "h1_ecalIso03", det, true);
         plotEff(h1, "h1_hcalIso03", det, true);
         plotEff(h1, "h1_tkIso03", det, true);
