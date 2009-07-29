@@ -3,6 +3,7 @@
 #define DATASOURCE_H
 
 #include "TString.h"
+#include "TColor.h"
 
 typedef UInt_t sources_t;
 
@@ -19,6 +20,9 @@ enum {
 	H_WENU,
 	H_EM30_80,
 	H_BC30_80,
+	H_QCD30,
+        H_QCD80,
+	H_WJET_ALP,
 };
 
 const static sources_t sources_all =
@@ -53,19 +57,21 @@ class DataSource {
 
         public:
 		DataSource() {}
-                DataSource(TString name, sources_t source) {
+                DataSource(TString name, sources_t source, Color_t color = 0) {
                         sourceName_ = name;
                         source_ = source;
+			color_ = color;
                 }
                 ~DataSource() {}
 
                 TString         getName()       { return sourceName_; }
                 sources_t       getSource()     { return source_; }
 		sources_t 	getBit()	{ return 1ll << source_; }
-
+		Color_t		getColor()	{ return color_; }
         private:
                 TString         sourceName_;
                 sources_t       source_;
+		Color_t		color_;
 
 };
 
@@ -83,6 +89,9 @@ DataSource fH_WENU();
 DataSource fH_EM30_80();
 DataSource fH_BC30_80();
 
+DataSource fH_QCD30();
+DataSource fH_QCD80();
+DataSource fH_WJET_ALP();
 
 #endif
 

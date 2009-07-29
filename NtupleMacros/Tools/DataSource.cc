@@ -15,4 +15,7 @@ DataSource fH_EM30_80()      { return DataSource("em30_80",       H_EM30_80);   
 DataSource fH_BC30_80()      { return DataSource("bc30_80",       H_BC30_80);          }
 DataSource fH_WENU()      { return DataSource("wenu",       H_WENU);          }
 
+DataSource fH_QCD30()      { return DataSource("QCDpt30",       H_QCD30, 14);          }
+DataSource fH_QCD80()      { return DataSource("QCDpt80",       H_QCD80, 17);          }
+DataSource fH_WJET_ALP()   { return DataSource("wjetsAlpgen", H_WJET_ALP, 9); }
 

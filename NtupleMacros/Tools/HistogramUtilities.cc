@@ -21,6 +21,10 @@ HistogramUtilities::HistogramUtilities(TString fileName, Double_t lumiNorm)
         sources_.push_back(     fH_EM30_80()         );
         sources_.push_back(     fH_BC30_80()         );
 
+        sources_.push_back(     fH_WJET_ALP()   );	
+	sources_.push_back(	fH_QCD30()	);
+        sources_.push_back(     fH_QCD80()      );
+
 	// open root file
 	file_ = new TFile(fileName, "READ");
 
@@ -59,6 +63,7 @@ THStack* HistogramUtilities::getStack(sources_t theSources, TString var, TString
                 if ((theSources & makeBit(sources_[i].getSource()) ) == makeBit(sources_[i].getSource()) ) {
 			std::cout << "getting " << sources_[i].getName() + histNameSuffix << std::endl;
 	                TH1F *h1_temp = ((TH1F*)(file_->Get(sources_[i].getName() + histNameSuffix)->Clone()));
+			if (sources_[i].getColor() != 0) h1_temp->SetFillColor(sources_[i].getColor());
 			h1_temp->Rebin(rebin);
         	        h1_temp->Scale(lumiNorm_);
                 	st_temp->Add(h1_temp);
@@ -81,8 +86,9 @@ TLegend* HistogramUtilities::getLegend(sources_t theSources, TString var, TStrin
         for (unsigned int i = 0; i < sources_.size(); ++i)
         {
                 if ((theSources & makeBit(sources_[i].getSource()) ) == makeBit(sources_[i].getSource()) ) {
-		        TH1F *h_temp = (TH1F*)file_->Get(sources_[i].getName() + histNameSuffix)->Clone();
-        		lg->AddEntry(h_temp, sources_[i].getName(), "f");
+		        TH1F *h1_temp = (TH1F*)file_->Get(sources_[i].getName() + histNameSuffix)->Clone();
+                        if (sources_[i].getColor() != 0) h1_temp->SetFillColor(sources_[i].getColor());
+        		lg->AddEntry(h1_temp, sources_[i].getName(), "f");
 		}
         }
         return lg;
