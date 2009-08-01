@@ -100,6 +100,6 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 // default yield table
 int Results ()
 {
-     return run<Looper>(event_cuts, "Results", 1 << LOOP_QCD30 | 1 << LOOP_QCD80 | 1 << LOOP_WJET_ALP);
+     return run<Looper>(event_cuts, "Results", 1 << LOOP_QCD30 | 1 << LOOP_WJET_ALP);
 }
 

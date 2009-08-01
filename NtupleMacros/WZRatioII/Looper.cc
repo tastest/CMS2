@@ -24,19 +24,36 @@ void Looper::FormatHist(TH1* hist)
 void Looper::BookHistos ()
 {
 
-     // book histograms the manual way:
-
-	for (unsigned int i = 0; i < 2; ++i)
+	// single lepton histograms (two + 1types)
+	for (unsigned int i = 0; i < 3; ++i)
 	{
+		std::string hyp = "e";
+		if (i == 1) hyp = "m";
+		if (i == 2) hyp = "all";
 
-		std::string det = "eb";
-		if (i == 1) det = "ee";
+     		h1_lep_pt_[i] = new TH1F(Form("%s_%s_%s", SampleName().c_str(), "lep_pt", hyp.c_str()), 
+			"lep_pt", 100, 0.0, 100.0);
+     		FormatHist(h1_lep_pt_[i]);
 
-     		h1_pt_[i] = new TH1F(Form("%s_%s_%s", SampleName().c_str(), "h1_pt", det.c_str()), 
-			"h1_pt", 100, 0.0, 100.0);
-     		FormatHist(h1_pt_[i]);
+                h1_lep_met_[i] = new TH1F(Form("%s_%s_%s", SampleName().c_str(), "lep_met", hyp.c_str()),
+                        "lep_met", 100, 0.0, 100.0);
+                FormatHist(h1_lep_met_[i]);
+
+
 	}
 
+	// di-lepton histograms (three + 1 types)
+        for (unsigned int i = 0; i < 4; ++i)
+        {
+                h1_dilep_0_pt_[i] = new TH1F(Form("%s_%s_%s", SampleName().c_str(), "dilep_0_pt", dilepton_hypo_names[i]),
+                        "dilep_0_pt", 100, 0.0, 100.0);
+                FormatHist(h1_dilep_0_pt_[i]);
+
+                h1_dilep_1_pt_[i] = new TH1F(Form("%s_%s_%s", SampleName().c_str(), "dilep_1_pt", dilepton_hypo_names[i]),
+                        "dilep_1_pt", 100, 0.0, 100.0);
+                FormatHist(h1_dilep_1_pt_[i]);
+
+        }
 	
 
 }
@@ -51,9 +68,17 @@ cuts_t Looper::EventSelect ()
 {
      cuts_t ret = 0;
 
-	// only one electron
-	if (cms2.evt_nels() == 1)
-		ret |= CUT_BIT(EVT_NELE_ONE);
+	// is this a single lepton event
+	// or a dilepton event?
+	// also which flavour
+
+
+	if (cms2.evt_nels() > 1 || cms2.mus_p4().size() > 1)
+		ret |= CUT_BIT(EVT_DILEP);
+
+	if ((cms2.evt_nels() == 0 && cms2.mus_p4().size() == 1) ||
+		(cms2.evt_nels() == 1 && cms2.mus_p4().size() == 0))
+		ret |= CUT_BIT(EVT_LEP);
 
 	return ret;
 
@@ -62,19 +87,48 @@ cuts_t Looper::EventSelect ()
 void Looper::FillEventHistos ()
 {
 
-	// get the event weight
-	float weight = cms2.evt_scale1fb() * sample_.kFactor;
+	// need to determine if this is a di-lepton
+	// or a single lepton event
 
-	// did the event pass the baseline cuts
 	cuts_t cuts_passed = EventSelect();
-	if ((cuts_passed & cuts_) == cuts_) {
+	if ((cuts_passed & CUT_BIT(EVT_LEP)) == CUT_BIT(EVT_LEP)) WEvent();
+        if ((cuts_passed & CUT_BIT(EVT_DILEP)) == CUT_BIT(EVT_LEP)) ZEvent();
 
-                // determine what detector the electron is in
-                unsigned int det = 0;
-                if (fabs(cms2.els_etaSC()[0]) > 1.5) det = 1;
-		h1_pt_[det]->Fill(cms2.els_p4()[0].Pt(), weight);
+}
 
-	} // end event level cuts passed
+void Looper::WEvent ()
+{
+
+        // get the event weight
+        float weight = cms2.evt_scale1fb() * sample_.kFactor; 
+
+	// histogram indices are e, m, all (0, 1, 2)
+	unsigned int hyp = 1;
+	if (cms2.mus_p4().size() == 0) {
+		hyp = 0;
+		h1_lep_pt_[hyp]->Fill(cms2.els_p4()[0].Pt(), weight);
+                h1_lep_pt_[2]->Fill(cms2.els_p4()[0].Pt(), weight);
+		
+		h1_lep_met_[hyp]->Fill(cms2.evt_tcmet(), weight);
+                h1_lep_met_[2]->Fill(cms2.evt_tcmet(), weight);
+
+	}
+
+        if (cms2.evt_nels() == 0) {
+                hyp = 1;
+                h1_lep_pt_[hyp]->Fill(cms2.mus_p4()[0].Pt(), weight);
+                h1_lep_pt_[2]->Fill(cms2.mus_p4()[0].Pt(), weight);
+
+                h1_lep_met_[hyp]->Fill(cms2.evt_tcmet(), weight);
+                h1_lep_met_[2]->Fill(cms2.evt_tcmet(), weight);
+        }
+
+
+
+}
+
+void Looper::ZEvent ()
+{
 
 }
 

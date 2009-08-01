@@ -24,6 +24,10 @@ protected:
      // further processing is done on this event
      virtual bool	FilterEvent();
      virtual cuts_t	EventSelect	();
+
+	void WEvent();
+	void ZEvent();
+
      virtual void	FillEventHistos ();
      virtual void	End		();
 
@@ -43,7 +47,11 @@ protected:
      // declare your histograms here:
      //----------------------------------------------------------------------
 
-     	TH1F	*h1_pt_[2];
+     	TH1F	*h1_lep_pt_[3];
+	TH1F	*h1_lep_met_[3];
+
+	TH1F	*h1_dilep_0_pt_[4];
+	TH1F	*h1_dilep_1_pt_[4];
 
 protected:
      // count the (weighted and unweighted) number of candidates passing our cuts

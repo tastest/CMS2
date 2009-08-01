@@ -21,7 +21,7 @@
 
         const static sources_t theSources_22X =
                 (1ll << H_QCD30) 	|
-                (1ll << H_QCD80)        |
+                //(1ll << H_QCD80)        |
 		(1ll << H_WJET_ALP);
 
 	const static sources_t theSignal_22X = 
@@ -37,7 +37,7 @@
 	const static sources_t &theSources = theSources_22X;
 
 
-void plotResults(TString det)
+void plotResults(TString hyp)
 {
 
 	gROOT->ProcessLine(".L ~/tdrStyle.C");
@@ -45,13 +45,24 @@ void plotResults(TString det)
 
 	// luminorm for 1pb-1
 	HistogramUtilities h1("Results.root", 0.001);
-	THStack *st_pt = h1.getStack(theSources, "h1_pt", "", det, 2);
-	TLegend *lg_all = h1.getLegend(theSources, "h1_pt", "", det);
+	TLegend *lg_all = h1.getLegend(theSources, "lep_pt", "", hyp);
+
+        THStack *st_pt = h1.getStack(theSources, "lep_pt", "", hyp);
+        THStack *st_met = h1.getStack(theSources, "lep_met", "", hyp);
+
 
 	TCanvas *c1 = new TCanvas();
 	c1->cd();
 	st_pt->Draw();
 	lg_all->Draw();
-	Utilities::saveCanvas(c1, "results/pt_" + det);	
+	Utilities::saveCanvas(c1, "results/lep_pt_" + hyp);	
+
+        TCanvas *c2 = new TCanvas();
+        c2->cd();
+        st_met->Draw();
+        lg_all->Draw();
+        Utilities::saveCanvas(c2, "results/lep_met_" + hyp);
+
+
 }
 
