@@ -10,6 +10,18 @@
 static const std::string prefix = (getenv("CMS2_NTUPLE_LOCATION") != 0) ?
      std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" : "/data/tmp/";
 
+
+// Z+0 jet
+Sample fZ_0Jet ()
+{    
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "cms2-V01-03-01/Z_0jet-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged*.root";  
+     c->Add(sample.c_str());
+     Sample ret = { c, OTHER, 42, 1, "z_0jet", true, 0. };
+	return ret;
+}
+
+
 // Wenu
 Sample fWenu ()
 {

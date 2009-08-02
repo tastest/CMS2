@@ -3,14 +3,16 @@
 #define CUTS_H
 
 enum {
-	EVT_LEP,
-	EVT_DILEP,
+	LEP_PT,
+	DILEP_PT,
+	DUMMY,
 };
 
 // baseline cuts
 // placeholder 
+// this does not do anything
 const static cuts_t event_cuts = 
-  (CUT_BIT(EVT_LEP) | CUT_BIT(EVT_DILEP) ) ;
+  (CUT_BIT(DUMMY)) ;
 
 
 
