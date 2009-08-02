@@ -49,6 +49,7 @@ void plotResults(TString hyp)
 
         THStack *st_pt = h1.getStack(theSources, "lep_pt", "", hyp);
         THStack *st_met = h1.getStack(theSources, "lep_met", "", hyp);
+        THStack *st_tkIso = h1.getStack(theSources, "lep_tkIso", "", hyp);
 
 
 	TCanvas *c1 = new TCanvas();
@@ -62,6 +63,12 @@ void plotResults(TString hyp)
         st_met->Draw();
         lg_all->Draw();
         Utilities::saveCanvas(c2, "results/lep_met_" + hyp);
+
+        TCanvas *c3 = new TCanvas();
+        c3->cd();
+        st_tkIso->Draw();
+        lg_all->Draw();
+        Utilities::saveCanvas(c3, "results/lep_tkIso_" + hyp);
 
 
 }

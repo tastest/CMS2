@@ -24,7 +24,7 @@ void Looper::FormatHist(TH1* hist)
 void Looper::BookHistos ()
 {
 
-	// single lepton histograms (two + 1types)
+	// single letkIsoon histograms (two + 1types)
 	for (unsigned int i = 0; i < 3; ++i)
 	{
 		std::string hyp = "e";
@@ -32,12 +32,16 @@ void Looper::BookHistos ()
 		if (i == 2) hyp = "all";
 
      		h1_lep_pt_[i] = new TH1F(Form("%s_%s_%s", SampleName().c_str(), "lep_pt", hyp.c_str()), 
-			"lep_pt", 100, 0.0, 100.0);
+			"lep_tkIso", 100, 0.0, 100.0);
      		FormatHist(h1_lep_pt_[i]);
 
                 h1_lep_met_[i] = new TH1F(Form("%s_%s_%s", SampleName().c_str(), "lep_met", hyp.c_str()),
                         "lep_met", 100, 0.0, 100.0);
                 FormatHist(h1_lep_met_[i]);
+
+                h1_lep_tkIso_[i] = new TH1F(Form("%s_%s_%s", SampleName().c_str(), "lep_tkIso", hyp.c_str()),
+                        "lep_tkIso", 100, 0.0, 100.0);
+                FormatHist(h1_lep_tkIso_[i]);
 
 
 	}
@@ -54,6 +58,12 @@ void Looper::BookHistos ()
                 FormatHist(h1_dilep_1_pt_[i]);
 
         }
+	
+
+	// event level histograms
+	h1_dilep_nhyp_ = new TH1F(Form("%s_%s_%s", SampleName().c_str(), "dilep_nhyp", "all"),
+		"dilep_nhyp", 10, -0.5, 9.5);
+	FormatHist(h1_dilep_nhyp_);
 	
 
 }
@@ -112,6 +122,8 @@ void Looper::WEvent ()
 		h1_lep_met_[hyp]->Fill(cms2.evt_tcmet(), weight);
                 h1_lep_met_[2]->Fill(cms2.evt_tcmet(), weight);
 
+                h1_lep_tkIso_[hyp]->Fill(cms2.els_tkIso()[0], weight);
+                h1_lep_tkIso_[2]->Fill(cms2.els_tkIso()[0], weight);
 	}
 
         if (cms2.evt_nels() == 0) {
@@ -121,15 +133,20 @@ void Looper::WEvent ()
 
                 h1_lep_met_[hyp]->Fill(cms2.evt_tcmet(), weight);
                 h1_lep_met_[2]->Fill(cms2.evt_tcmet(), weight);
+
+	      	h1_lep_tkIso_[hyp]->Fill(cms2.mus_iso03_sumPt()[0], weight);
+                h1_lep_tkIso_[2]->Fill(cms2.mus_iso03_sumPt()[0], weight);
         }
-
-
 
 }
 
 void Looper::ZEvent ()
 {
 
+        // get the event weight
+        float weight = cms2.evt_scale1fb() * sample_.kFactor;
+
+	h1_dilep_nhyp_->Fill(cms2.hyp_p4().size(), weight);
 }
 
 void Looper::End ()
