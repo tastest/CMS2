@@ -228,6 +228,127 @@ Sample fZjetsAlpgenSingle ()
      return ret;
 }
 
+Sample fZmmjetsAlpgenSingle ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "cms2-V01-03-01/Z_0jet-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_1jet_Pt0to100-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_1jet_Pt100to300-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_1jet_Pt1600toInf-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_1jet_Pt300to800-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_1jet_Pt800to1600-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_2jet_Pt0to100-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_2jet_Pt100to300-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_2jet_Pt1600toInf-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_2jet_Pt300to800-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_2jet_Pt800to1600-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_3jet_Pt0to100-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_3jet_Pt100to300-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_3jet_Pt1600toInf-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_3jet_Pt300to800-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_3jet_Pt800to1600-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_4jet_Pt0to100-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_4jet_Pt100to300-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_4jet_Pt1600toInf-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_4jet_Pt300to800-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_4jet_Pt800to1600-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_5jet_Pt0to100-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_5jet_Pt100to300-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_5jet_Pt1600toInf-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_5jet_Pt300to800-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_5jet_Pt800to1600-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+
+     Sample ret = { c, DYmm, 44, 1, "dymmAlpgen", true, 0. };
+     return ret;
+}
+
+Sample fZttjetsAlpgenSingle ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "cms2-V01-03-01/Z_0jet-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_1jet_Pt0to100-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_1jet_Pt100to300-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_1jet_Pt1600toInf-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_1jet_Pt300to800-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_1jet_Pt800to1600-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_2jet_Pt0to100-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_2jet_Pt100to300-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_2jet_Pt1600toInf-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_2jet_Pt300to800-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_2jet_Pt800to1600-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_3jet_Pt0to100-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_3jet_Pt100to300-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_3jet_Pt1600toInf-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_3jet_Pt300to800-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_3jet_Pt800to1600-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_4jet_Pt0to100-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_4jet_Pt100to300-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_4jet_Pt1600toInf-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_4jet_Pt300to800-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_4jet_Pt800to1600-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_5jet_Pt0to100-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_5jet_Pt100to300-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_5jet_Pt1600toInf-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_5jet_Pt300to800-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V01-03-01/Z_5jet_Pt800to1600-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
+     c->Add(sample.c_str());
+
+     Sample ret = { c, DYtt, 46, 1, "dyttAlpgen", true, 0. };
+     return ret;
+}
+
+
 
 //Wjets file (single lepton filter)
 /*

@@ -39,6 +39,9 @@ Sample fWjets	();
 Sample fWjetsAlpgenSingle();
 Sample fWjetsSingle ();
 Sample fZjetsAlpgenSingle();
+Sample fZmmjetsAlpgenSingle();
+Sample fZttjetsAlpgenSingle();
+
 Sample fWc	();
 Sample fDYee 	();
 Sample fDYmm 	();
