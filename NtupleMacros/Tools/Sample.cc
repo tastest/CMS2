@@ -224,7 +224,7 @@ Sample fZjetsAlpgenSingle ()
      sample = prefix + "cms2-V01-03-01/Z_5jet_Pt800to1600-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
      c->Add(sample.c_str());
 
-     Sample ret = { c, DYee, 40, 1, "dyeeAlpgen", true, 0. };
+     Sample ret = { c, DYee, 42, 1, "dyeeAlpgen", true, 0. };
      return ret;
 }
 
