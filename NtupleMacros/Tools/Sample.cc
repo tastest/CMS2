@@ -656,6 +656,16 @@ Sample fQCDpt80 ()
      return ret;
 }
 
+Sample fInclusiveMuPt15Single ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "cms2-V01-03-01/InclusiveMuPt15_Summer08_IDEAL_V11_redigi_v1-SingleLepton/*.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, InclusiveMuPt15, 28, 1, "InclusiveMuPt15", true, 0. };
+     return ret;
+}
+
+
 /*
 // QCD samples
 Sample fInclusiveMu5Pt50 ()

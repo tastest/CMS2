@@ -42,6 +42,8 @@ Sample fZjetsAlpgenSingle();
 Sample fZmmjetsAlpgenSingle();
 Sample fZttjetsAlpgenSingle();
 
+Sample fInclusiveMuPt15Single();
+
 Sample fWc	();
 Sample fDYee 	();
 Sample fDYmm 	();

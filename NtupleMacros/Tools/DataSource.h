@@ -27,6 +27,7 @@ enum {
 	H_ZEEJET_ALP,
         H_ZMMJET_ALP,
         H_ZTTJET_ALP,
+	H_MU15_SINGLE,
 
 };
 
@@ -105,6 +106,8 @@ DataSource fH_WJET_ALP();
 DataSource fH_ZEEJET_ALP();
 DataSource fH_ZMMJET_ALP();
 DataSource fH_ZTTJET_ALP();
+
+DataSource fH_MU15_SINGLE();
 
 #endif
 
