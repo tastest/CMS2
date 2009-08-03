@@ -4,6 +4,7 @@
 
 #include "TString.h"
 #include "TColor.h"
+#include <iostream>
 
 typedef UInt_t sources_t;
 
@@ -23,6 +24,10 @@ enum {
 	H_QCD30,
         H_QCD80,
 	H_WJET_ALP,
+	H_ZEEJET_ALP,
+        H_ZMMJET_ALP,
+        H_ZTTJET_ALP,
+
 };
 
 const static sources_t sources_all =
@@ -62,6 +67,11 @@ class DataSource {
                         source_ = source;
 			color_ = color;
                 }
+		DataSource::DataSource(const DataSource &rhs) {
+			sourceName_ = rhs.sourceName_;
+			source_ = rhs.source_;
+			color_ = rhs.color_;
+		}
                 ~DataSource() {}
 
                 TString         getName()       { return sourceName_; }
@@ -92,6 +102,9 @@ DataSource fH_BC30_80();
 DataSource fH_QCD30();
 DataSource fH_QCD80();
 DataSource fH_WJET_ALP();
+DataSource fH_ZEEJET_ALP();
+DataSource fH_ZMMJET_ALP();
+DataSource fH_ZTTJET_ALP();
 
 #endif
 

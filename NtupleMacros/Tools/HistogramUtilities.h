@@ -28,6 +28,9 @@ class HistogramUtilities {
 		THStack* getStack(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin = 1);
 		TLegend* getLegend(sources_t theSources, TString var, TString nJets, TString hyp_type);
 
+		void setOrder(std::vector<DataSource> potentialSources);
+
+
 	private:
 
 		sources_t makeBit(sources_t source) {

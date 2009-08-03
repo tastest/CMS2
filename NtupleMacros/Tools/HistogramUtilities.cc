@@ -22,6 +22,10 @@ HistogramUtilities::HistogramUtilities(TString fileName, Double_t lumiNorm)
         sources_.push_back(     fH_BC30_80()         );
 
         sources_.push_back(     fH_WJET_ALP()   );	
+	sources_.push_back(	fH_ZEEJET_ALP()	);
+        sources_.push_back(     fH_ZMMJET_ALP() );
+        sources_.push_back(     fH_ZTTJET_ALP() );
+
 	sources_.push_back(	fH_QCD30()	);
         sources_.push_back(     fH_QCD80()      );
 
@@ -31,6 +35,11 @@ HistogramUtilities::HistogramUtilities(TString fileName, Double_t lumiNorm)
 	// leave the luminosity norm as in the root file
 	lumiNorm_ = lumiNorm;
 
+}
+
+void HistogramUtilities::setOrder(std::vector<DataSource> potentialSources)
+{
+	sources_ = potentialSources;
 }
 
 TH1F* HistogramUtilities::getHistogram(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin) 
