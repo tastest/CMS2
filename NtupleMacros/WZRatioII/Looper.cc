@@ -102,6 +102,25 @@ cuts_t Looper::DilepSelect (int i_hyp)
 cuts_t Looper::LepSelect(int lep_type, int i)
 {
 	cuts_t ret = 0;
+
+        float ptcut = 20.0;
+
+	// e
+	if (lep_type == 0) {
+
+		if (cms2.els_p4()[i].pt() > ptcut)
+			ret |= CUT_BIT(LEP_PT);
+
+	}
+
+	// m
+	if (lep_type == 1) {
+
+                if (cms2.mus_p4()[i].pt() > ptcut)
+                        ret |= CUT_BIT(LEP_PT);
+
+	}
+
 	return ret;
 }
 
@@ -126,38 +145,48 @@ void Looper::WEvent ()
         float weight = cms2.evt_scale1fb() * sample_.kFactor; 
 
 	// histogram indices are e, m, all (0, 1, 2)
-	unsigned int hyp = 1;
-	if (cms2.mus_p4().size() == 0) hyp = 0;
+	unsigned int lep_type = 1;
+	if (cms2.mus_p4().size() == 0) lep_type = 0;
 
-	if (hyp == 0) {	
-		h1_lep_pt_[hyp]->Fill(cms2.els_p4()[0].pt(), weight);
-        	h1_lep_pt_[2]->Fill(cms2.els_p4()[0].pt(), weight);
+        // define the cuts to be used
+        cuts_t cuts = CUT_BIT(LEP_PT);
+
+	// find out what cuts passed
+	cuts_t cuts_passed = LepSelect(lep_type, 0);
+
+	if ((cuts_passed & cuts) == cuts) {
+
+		if (lep_type == 0) {	
+			h1_lep_pt_[lep_type]->Fill(cms2.els_p4()[0].pt(), weight);
+        		h1_lep_pt_[2]->Fill(cms2.els_p4()[0].pt(), weight);
 		
-		h1_lep_met_[hyp]->Fill(cms2.evt_tcmet(), weight);
-	        h1_lep_met_[2]->Fill(cms2.evt_tcmet(), weight);
+			h1_lep_met_[lep_type]->Fill(cms2.evt_tcmet(), weight);
+		        h1_lep_met_[2]->Fill(cms2.evt_tcmet(), weight);
 
-		float dphi = acos(cos(cms2.evt_tcmetPhi() - cms2.els_p4()[0].Phi() ));
-	        h1_lep_met_dphi_[hyp]->Fill(dphi, weight);
-        	h1_lep_met_dphi_[2]->Fill(dphi, weight);
+			float dphi = acos(cos(cms2.evt_tcmetPhi() - cms2.els_p4()[0].Phi() ));
+		        h1_lep_met_dphi_[lep_type]->Fill(dphi, weight);
+        		h1_lep_met_dphi_[2]->Fill(dphi, weight);
 
-	        h1_lep_tkIso_[hyp]->Fill(cms2.els_tkIso()[0], weight);
-		h1_lep_tkIso_[2]->Fill(cms2.els_tkIso()[0], weight);
-	}
-	if (hyp == 1) {
-                h1_lep_pt_[hyp]->Fill(cms2.mus_p4()[0].pt(), weight);
-                h1_lep_pt_[2]->Fill(cms2.mus_p4()[0].pt(), weight);
+		        h1_lep_tkIso_[lep_type]->Fill(cms2.els_tkIso()[0], weight);
+			h1_lep_tkIso_[2]->Fill(cms2.els_tkIso()[0], weight);
+		}
+		if (lep_type == 1) {
+	                h1_lep_pt_[lep_type]->Fill(cms2.mus_p4()[0].pt(), weight);
+        	        h1_lep_pt_[2]->Fill(cms2.mus_p4()[0].pt(), weight);
                 
-                h1_lep_met_[hyp]->Fill(cms2.evt_tcmet(), weight);
-                h1_lep_met_[2]->Fill(cms2.evt_tcmet(), weight);
+                	h1_lep_met_[lep_type]->Fill(cms2.evt_tcmet(), weight);
+	                h1_lep_met_[2]->Fill(cms2.evt_tcmet(), weight);
+	
+        	        float dphi = acos(cos(cms2.evt_tcmetPhi() - cms2.mus_p4()[0].Phi() ));
+                	h1_lep_met_dphi_[lep_type]->Fill(dphi, weight);
+	                h1_lep_met_dphi_[2]->Fill(dphi, weight);
+	
+        	        h1_lep_tkIso_[lep_type]->Fill(cms2.mus_iso03_sumPt()[0], weight);
+                	h1_lep_tkIso_[2]->Fill(cms2.mus_iso03_sumPt()[0], weight);
 
-                float dphi = acos(cos(cms2.evt_tcmetPhi() - cms2.mus_p4()[0].Phi() ));
-                h1_lep_met_dphi_[hyp]->Fill(dphi, weight);
-                h1_lep_met_dphi_[2]->Fill(dphi, weight);
+		}
 
-                h1_lep_tkIso_[hyp]->Fill(cms2.mus_iso03_sumPt()[0], weight);
-                h1_lep_tkIso_[2]->Fill(cms2.mus_iso03_sumPt()[0], weight);
-
-	}
+	} 
 
 }
 

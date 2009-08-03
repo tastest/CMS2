@@ -19,6 +19,9 @@ enum {
 	LOOP_QCD30,
 	LOOP_QCD80,
 	LOOP_WJET_ALP,
+        LOOP_ZEEJET_ALP,
+        LOOP_ZMMJET_ALP,
+        LOOP_ZTTJET_ALP,
 
 	LOOP_Z_0JET
 };
@@ -80,6 +83,14 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
         if (which_ones & (1 << LOOP_QCD80)) looper_qcd80.Loop();
      Looper looper_wjet_alp(fWjetsAlpgenSingle(), cuts, log.c_str());
         if (which_ones & (1 << LOOP_WJET_ALP)) looper_wjet_alp.Loop();
+     Looper looper_zeejet_alp(fZjetsAlpgenSingle(), cuts, log.c_str());
+        if (which_ones & (1 << LOOP_ZEEJET_ALP)) looper_zeejet_alp.Loop();
+     Looper looper_zmmjet_alp(fZmmjetsAlpgenSingle(), cuts, log.c_str());
+        if (which_ones & (1 << LOOP_ZMMJET_ALP)) looper_zmmjet_alp.Loop();
+     Looper looper_zttjet_alp(fZttjetsAlpgenSingle(), cuts, log.c_str());
+        if (which_ones & (1 << LOOP_ZTTJET_ALP)) looper_zttjet_alp.Loop();
+
+
      Looper looper_z_0jet(fZ_0Jet(), cuts, log.c_str());
         if (which_ones & (1 << LOOP_Z_0JET)) looper_z_0jet.Loop();
 
@@ -95,6 +106,9 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 	&looper_qcd30,
 	&looper_qcd80,
 	&looper_wjet_alp,
+        &looper_zeejet_alp,
+        &looper_zmmjet_alp,
+        &looper_zttjet_alp,
 	&looper_z_0jet
      };
 
@@ -105,7 +119,8 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 // default yield table
 int Results ()
 {
-     return run<Looper>(event_cuts, "Results", 1 << LOOP_Z_0JET);
+     return run<Looper>(event_cuts, "Results", 1 << LOOP_WJET_ALP | 
+				1 << LOOP_ZEEJET_ALP | 1 << LOOP_ZMMJET_ALP | 1 << LOOP_ZTTJET_ALP);
 		//1 << LOOP_WENU);
 		// 1 << LOOP_QCD30 | 1 << LOOP_WJET_ALP);
 }
