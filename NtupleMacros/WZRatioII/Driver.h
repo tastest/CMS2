@@ -117,7 +117,7 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 // default yield table
 int Results ()
 {
-     return run<Looper>(event_cuts, "Results", 1 << LOOP_WJET_ALP | 1 << LOOP_QCD30 |
+     return run<Looper>(event_cuts, "Results", 1 << LOOP_WJET_ALP | 1 << LOOP_QCD30 | 1 << LOOP_MU15_SINGLE |
 				1 << LOOP_ZEEJET_ALP | 1 << LOOP_ZMMJET_ALP | 1 << LOOP_ZTTJET_ALP);
 		//1 << LOOP_WENU);
 		// 1 << LOOP_QCD30 | 1 << LOOP_WJET_ALP);
