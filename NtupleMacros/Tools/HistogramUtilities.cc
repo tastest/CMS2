@@ -82,24 +82,25 @@ TH2F* HistogramUtilities::get2dHistogram(sources_t theSources, TString var, TStr
 //get a stack of single var, hyp for given sources
 THStack* HistogramUtilities::getStack(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin) 
 {
+  // create a new stack object
+  //THStack *st_temp = new THStack("st_temp", ""); //instead, use a sensible name:
+  TString name = var + nJets + "_" + hyp_type;
+  THStack *st_temp = new THStack(name, name);  
 
-	// create a new stack object
-	THStack *st_temp = new THStack("st_temp", "");
-
-	// get each constituent in turn and add to the stack
-        TString histNameSuffix = "_" + var + "_" + nJets + hyp_type;
-        for (int i = sources_.size() - 1; i >= 0; --i)
-        {
-                if ((theSources & makeBit(sources_[i].getSource()) ) == makeBit(sources_[i].getSource()) ) {
-			std::cout << "getting " << sources_[i].getName() + histNameSuffix << std::endl;
-	                TH1F *h1_temp = ((TH1F*)(file_->Get(sources_[i].getName() + histNameSuffix)->Clone()));
-			if (sources_[i].getColor() != 0) h1_temp->SetFillColor(sources_[i].getColor());
-			h1_temp->Rebin(rebin);
-        	        h1_temp->Scale(lumiNorm_);
-                	st_temp->Add(h1_temp);
-		}
-         }
-         return st_temp;
+  // get each constituent in turn and add to the stack
+  TString histNameSuffix = "_" + var + "_" + nJets + hyp_type;
+  for (int i = sources_.size() - 1; i >= 0; --i)
+	{
+	  if ((theSources & makeBit(sources_[i].getSource()) ) == makeBit(sources_[i].getSource()) ) {
+		//std::cout << "getting " << sources_[i].getName() + histNameSuffix << std::endl;
+		TH1F *h1_temp = ((TH1F*)(file_->Get(sources_[i].getName() + histNameSuffix)->Clone()));
+		if (sources_[i].getColor() != 0) h1_temp->SetFillColor(sources_[i].getColor());
+		h1_temp->Rebin(rebin);
+		h1_temp->Scale(lumiNorm_);
+		st_temp->Add(h1_temp);
+	  }
+	}
+  return st_temp;
 }
 
 //for combining two hyps (not two vars, if you'd ever want to do that anyway)
