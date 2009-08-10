@@ -17,32 +17,32 @@ void doTTconstituents() {
   }
   
   tt[0]=ttbar_hnJet_ee->Integral();
-  ttww[0] = ttbar_hnJetWW_ee->Integral();
-  ttwo[0]=ttbar_hnJetWO_ee->Integral();
-  ttwosemi[0]=ttbar_hnJetWOSemilep_ee->Integral();
-  ttwoother[0]= ttbar_hnJetWOOther_ee->Integral();
-  other[0]=ttbar_hnJetOO_ee->Integral();
+  ttww[0] = ttbar_hnJetSemiTop_ee->Integral();
+  ttwo[0]=ttbar_hnJetSemiWTop_ee->Integral();
+  ttwosemi[0]=ttbar_hnJetSemitrueTop_ee->Integral();
+  ttwoother[0]= ttbar_hnJetSemiOtherTop_ee->Integral();
+  other[0]=ttbar_hnJetfakeLep_ee->Integral();
 
   tt[1]=ttbar_hnJet_mm->Integral();
-  ttww[1] = ttbar_hnJetWW_mm->Integral();
-  ttwo[1]=ttbar_hnJetWO_mm->Integral();
-  ttwosemi[1]=ttbar_hnJetWOSemilep_mm->Integral();
-  ttwoother[1]= ttbar_hnJetWOOther_mm->Integral();
-  other[1]=ttbar_hnJetOO_mm->Integral();
+  ttww[1] = ttbar_hnJetSemiTop_mm->Integral();
+  ttwo[1]=ttbar_hnJetSemiWTop_mm->Integral();
+  ttwosemi[1]=ttbar_hnJetSemitrueTop_mm->Integral();
+  ttwoother[1]= ttbar_hnJetSemiOtherTop_mm->Integral();
+  other[1]=ttbar_hnJetfakeLep_mm->Integral();
 
   tt[2]=ttbar_hnJet_em->Integral();
-  ttww[2] = ttbar_hnJetWW_em->Integral();
-  ttwo[2]=ttbar_hnJetWO_em->Integral();
-  ttwosemi[2]=ttbar_hnJetWOSemilep_em->Integral();
-  ttwoother[2]= ttbar_hnJetWOOther_em->Integral();
-  other[2]=ttbar_hnJetOO_em->Integral();
+  ttww[2] = ttbar_hnJetSemiTop_em->Integral();
+  ttwo[2]=ttbar_hnJetSemiWTop_em->Integral();
+  ttwosemi[2]=ttbar_hnJetSemitrueTop_em->Integral();
+  ttwoother[2]= ttbar_hnJetSemiOtherTop_em->Integral();
+  other[2]=ttbar_hnJetfakeLep_em->Integral();
 
   tt[3]=ttbar_hnJet_all->Integral();
-  ttww[3] = ttbar_hnJetWW_all->Integral();
-  ttwo[3]=ttbar_hnJetWO_all->Integral();
-  ttwosemi[3]=ttbar_hnJetWOSemilep_all->Integral();
-  ttwoother[3]= ttbar_hnJetWOOther_all->Integral();
-  other[3]=ttbar_hnJetOO_all->Integral();
+  ttww[3] = ttbar_hnJetSemiTop_all->Integral();
+  ttwo[3]=ttbar_hnJetSemiWTop_all->Integral();
+  ttwosemi[3]=ttbar_hnJetSemitrueTop_all->Integral();
+  ttwoother[3]= ttbar_hnJetSemiOtherTop_all->Integral();
+  other[3]=ttbar_hnJetfakeLep_all->Integral();
 
   cout << "| Same Sign | Type I+II+III | Type-I | Type-II | Type-III | Type-II-SemiLep | Type-II-Fakes | " <<  endl;
   
