@@ -163,7 +163,8 @@ void LeptonFakeRateLooper::FillDilepHistos (int i_hyp)
      cands_count_[DILEPTON_ALL]++;
 
 
-     hnJet->Fill(cuts_passed, myType, cms2.hyp_njets()[i_hyp], weight);
+     //     hnJet->Fill(cuts_passed, myType, cms2.hyp_njets()[i_hyp], weight); //hyp jets
+     hnJet->Fill(cuts_passed, myType, caloJets.size() , weight); // change to plotting caloJets size
      //     hnJet3D_[myType]->Fill(cms2.hyp_njets()[i_hyp],eta,pt, weight * err);
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
        helPt->Fill(cuts_passed, myType, cms2.hyp_lt_p4()[i_hyp].pt(), weight);

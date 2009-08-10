@@ -50,19 +50,19 @@ uint32 default_samples = (1 <<      LOOP_WW)	|
      (1 << LOOP_DYMM	)	|
      (1 << LOOP_DYTT	)	|
      (1 << LOOP_TTBAR	)	|
-     (1 << LOOP_TW	)       |
-     (1 << LOOP_LM0     )       |
-     (1 << LOOP_LM1     )       |
-     (1 << LOOP_LM2     )       |
-     (1 << LOOP_LM3     )       |
-     (1 << LOOP_LM4     )       |
-     (1 << LOOP_LM5     )       |
-     (1 << LOOP_LM6     )       |
-     (1 << LOOP_LM7     )       |
-     (1 << LOOP_LM8     )       |
-     (1 << LOOP_LM9     )       |
-     (1 << LOOP_LM10    )       |
-     (1 << LOOP_LM11    )      
+     (1 << LOOP_TW	)       
+//     (1 << LOOP_LM0     )       |
+//     (1 << LOOP_LM1     )       |
+//     (1 << LOOP_LM2     )       |
+//     (1 << LOOP_LM3     )       |
+//     (1 << LOOP_LM4     )       |
+//     (1 << LOOP_LM5     )       |
+//     (1 << LOOP_LM6     )       |
+//     (1 << LOOP_LM7     )       |
+//     (1 << LOOP_LM8     )       |
+//     (1 << LOOP_LM9     )       |
+//     (1 << LOOP_LM10    )       |
+//     (1 << LOOP_LM11    )      
   ;
 
 uint32 eff_samples = default_samples | (1 << LOOP_WW_EXCL);

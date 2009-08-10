@@ -4,6 +4,11 @@
 #define LOOPER_H
 
 #include "Tools/LooperBase.h"
+#include <math.h>
+#include "TVector3.h"
+#include "CORE/selections.h"
+#include "CORE/utilities.h"
+#include "CORE/CMS2.h"
 
 // List of all cuts that can be applied.  The cuts are handled as a
 // bitfield; these labels define which bit corresponds to which cut.
@@ -312,6 +317,7 @@ protected:
      //----------------------------------------------------------------------
 
      NMinus1Hist 	*hnJet;
+     NMinus1Hist 	*hsumJetPt;
      NMinus1Hist	*hnCaloJet;
      NMinus1Hist	*hnTrackJet;
      NMinus1Hist	*hnJPTJet;
@@ -366,7 +372,7 @@ protected:
      NMinus1Hist	*heldphiin;
      NMinus1Hist	*heldetain;
      NMinus1Hist	*helEseedopin;
-  NMinus1Hist		*hnHyp;
+     NMinus1Hist	*hnHyp;
      // for conversion killing
      NMinus1Hist	*helConvDeltaPhi_ss;
      NMinus1Hist	*helConvDeltaPhi_os;
@@ -385,6 +391,8 @@ protected:
      unsigned int	cands_count_[4];
      double		count_cuts_[64];
      double		count_correlation_[64][64];
+     vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > caloJets;
+     double             sumJetPt;
 };
 
 // background estimate for W+jets from fake rates (only electrons in

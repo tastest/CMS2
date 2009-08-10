@@ -24,7 +24,8 @@ Looper::Looper (Sample s, cuts_t c, const char *fname)
 
 void Looper::BookHistos ()
 {
-     hnJet		= new NMinus1Hist(sample_, "nJet"            ,	 6	, -0.5, 5.5	, cuts_,0);
+     hnJet		= new NMinus1Hist(sample_, "nJet"            ,	 6	, -0.5, 5.5	, cuts_,(CUT_BIT(CUT_SUMJETPT)) | (CUT_BIT(CUT_NCALOJET)) );
+     hsumJetPt		= new NMinus1Hist(sample_, "sumJetPt"        ,	 5	, 0., 500.	, cuts_,(CUT_BIT(CUT_SUMJETPT)) | (CUT_BIT(CUT_TCMET)) | (CUT_BIT(CUT_NCALOJET)) );
 //      hnCaloJet		= new NMinus1Hist(sample_, "nCaloJet"        ,	 6	, -0.5, 5.5	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_CALO)) | (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS))	);
 //      hnTrackJet		= new NMinus1Hist(sample_, "nTrackJet"       ,	 6	, -0.5, 5.5	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_CALO)) | (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS)) 	);
 //      hnJPTJet		= new NMinus1Hist(sample_, "nJPTJet"       ,	 6	, -0.5, 5.5	, cuts_, (CUT_BIT(CUT_PASS_JETVETO_CALO)) | (CUT_BIT(CUT_PASS_JETVETO_TRACKJETS) | (CUT_BIT(CUT_PASS_JETVETO_JPT20))));
@@ -42,7 +43,7 @@ void Looper::BookHistos ()
 //        hdphiLep		= new NMinus1Hist(sample_, "dphiLep"         ,	 50	, 0, M_PI	, cuts_, 0	);
        hdilMass		= new NMinus1Hist(sample_, "dilMass"         ,	 30	, 0, 300	, cuts_, CUT_BIT(CUT_PASS_ZVETO) | CUT_BIT(CUT_PASS_ADDZVETO) | CUT_BIT(CUT_IN_Z_WINDOW));
 //        hdilPt		= new NMinus1Hist(sample_, "dilPt"           ,	 100	, 0, 300	, cuts_, 0	);
-       hmet		= new NMinus1Hist(sample_, "met"             ,	 40	, 0, 200	, cuts_, CUT_BIT(CUT_TCMET)	);
+       hmet		= new NMinus1Hist(sample_, "met"             ,	 10	, 0, 200	, cuts_, (CUT_BIT(CUT_TCMET)) | (CUT_BIT(CUT_SUMJETPT)) | (CUT_BIT(CUT_NCALOJET)) );
 //        hmetSpec		= new NMinus1Hist(sample_, "metSpec"         ,	 20	, 0, 100	, cuts_, CUT_BIT(CUT_PASS4_MET) | CUT_BIT(CUT_PASS2_MET) | CUT_BIT(CUT_PASS4_TCMET) | CUT_BIT(CUT_PASS2_TCMET)  );
 //        hmetTrkCorr	= new NMinus1Hist(sample_, "metTrkCorr"      ,	 100	, 0, 200	, cuts_, CUT_BIT(CUT_PASS4_MET) | CUT_BIT(CUT_PASS2_MET) | CUT_BIT(CUT_PASS4_TCMET) | CUT_BIT(CUT_PASS2_TCMET)	);
 //        hptJet1		= new NMinus1Hist(sample_, "ptJet1"          ,	 100	, 0, 300	, cuts_, 0		);
@@ -119,6 +120,17 @@ cuts_t Looper::DilepSelect (int i_hyp)
 {
      cuts_t ret = 0;
      const enum DileptonHypType myType = hyp_typeToHypType(cms2.hyp_type()[i_hyp]);
+
+     // get the calo jets for this hyp
+     caloJets.clear();
+     caloJets = getCaloJets(i_hyp) ;
+     // reset the calo sumPt
+     sumJetPt = 0;
+     // calculate the the calo sumPt for this hyp
+     for (unsigned int jj=0; jj < caloJets.size(); ++jj) {
+       sumJetPt += caloJets[jj].pt();
+     }
+
      // tag mu from w
      if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && trueMuonFromW(cms2.hyp_lt_index()[i_hyp]) )
        ret |= CUT_BIT(CUT_TRUE_MU_FROM_W);
@@ -211,18 +223,11 @@ cuts_t Looper::DilepSelect (int i_hyp)
        ret |= CUT_BIT( CUT_PASS_FLIPVETO);
 
      // require at least 1 corrected CaloJet with >100 GeV pT
-     vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > caloJets;
-     caloJets.clear();
-     caloJets = getCaloJets(i_hyp) ;
      if( caloJets.size() > 0 ) {
        if ( caloJets[0].Pt() > 100. ) // converged cuts
          ret |= (CUT_BIT(CUT_CALOJET));
      }
-     double sumPtCalo = 0;
-     for (unsigned int jj=0; jj < caloJets.size(); ++jj) {
-       sumPtCalo += caloJets[jj].pt();
-     }
-     if ( sumPtCalo > 200. ) // 2nd round of cuts
+     if ( sumJetPt > 200. ) // 2nd round of cuts
        ret |= (CUT_BIT(CUT_SUMJETPT));
      if ( caloJets.size() > 2 ) // 2nd round of cuts
        ret |= (CUT_BIT(CUT_NCALOJET));
@@ -312,7 +317,8 @@ cuts_t Looper::DilepSelect (int i_hyp)
 
 double Looper::Weight (int)
 {
-     return cms2.evt_scale1fb() * 1.0;
+  //     return cms2.evt_scale1fb() * 1.0; // scale for 1fb-1
+  return cms2.evt_scale1fb() * 0.1; // scale for 100 pb-1
 }
 
 cuts_t Looper::TrilepSelect (int i_hyp)
@@ -463,7 +469,9 @@ void Looper::FillDilepHistos (int i_hyp)
      }
      
      // jet count
-     hnJet->Fill(cuts_passed, myType, cms2.hyp_njets()[i_hyp], weight);
+     //     hnJet->Fill(cuts_passed, myType, cms2.hyp_njets()[i_hyp], weight); //hyp jets
+     hnJet->Fill(cuts_passed, myType, caloJets.size() , weight); // change to plotting caloJets size
+     hsumJetPt->Fill(cuts_passed, myType, sumJetPt, weight); 
      hnHyp->Fill(cuts_passed, myType, cms2.hyp_p4().size(), weight);
      if (myType == DILEPTON_EMU) {
        int mu_idx = -1;
