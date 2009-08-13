@@ -49,9 +49,7 @@ bool Looper::FilterEvent()
      //
      if (cms2.trks_d0().size() == 0)
 	  return true;
-     DorkyEventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.trks_d0()[0], 
-				 cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), 
-				 cms2.hyp_lt_p4()[0].phi() };
+     DorkyEventIdentifier id (cms2);
      if (is_duplicate(id)) {
 	  duplicates_total_n_++;
 	  duplicates_total_weight_ += cms2.evt_scale1fb();
