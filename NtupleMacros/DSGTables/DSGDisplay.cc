@@ -11,21 +11,24 @@
 static const DSGTable **dsgs_;
 static int n_dsgs_;
 
-int nBucketsGroups[3] = {10, 6, 4};
-int nBucketsPerGroup[3][10] = {
+int nBucketsGroups[4] = {10, 6, 4, 3};
+int nBucketsPerGroup[4][10] = {
   {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, 
   {2, 2, 2, 2, 1, 1},
-  {4, 2, 2, 2}
+  {4, 2, 2, 2},
+  {6, 2, 2}
 };
-int buckets[3][10][10] = {
+int buckets[4][10][10] = {
   { {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9} },
   { {0,1},    {2,3},    {4,5},    {6,7},    {8}, {9} },   
   { {0,1,2,3},          {4,5},    {6,7},    {8,9} },    
+  { {0,1,2,3,4,5},    {6,7},    {8,9} },   
 };
-const static char bucketStrs[3][10][1280] = {
+const static char bucketStrs[4][10][1280] = {
   {"e+e+", "e-e-", "m+m+", "m-m-", "e+m+", "e-m-", "e+m-", "m+e-", "e+e-", "m+m-"},
   {"e+e+ e-e-",    "m+m+ m-m-",    "e+m+ e-m-",    "e+m- m+e-",    "e+e-", "m+m-"},
-  {"e+e+ e-e- m+m+ m-m-",          "e+m+ e-m-",    "e+m- m+e-",    "e+e- m+m-"},
+  {"SS SF",    "SS OF",    "OS OF",    "OS SF"},
+  {"SS *F",    "OS OF",    "OS SF"},
 };
 
 static void printNumbers (int i, int j, int k, int l, int whichBucketGrouping)
@@ -237,7 +240,7 @@ void DSGDisplay ()
 	       break;
 	  case 'b': case 'B':
 	    iBucketGrouping++;
-	    iBucketGrouping %= 3;
+	    iBucketGrouping %= 4;
 	    // for now, if we've gone beyond the end of the new
 	    // grouping, we get put at the new end; ideally, we would
 	    // be put into the bucket group that swallowed the old
