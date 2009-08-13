@@ -1,0 +1,152 @@
+\section{Data driven Method for Fake Lepton backgrounds (Type-II)}
+\label{sec:leptonfake}
+
+In this analysis, the primary source of fake leptons are from Type-II 
+category. The major fraction of these events are expected to be from 
+the heavy flavor sources. As shown in Table~\ref{tab:fakeOrigin}, the
+background from fake leptons in this analysis is small (Type-II b)). This 
+intrinsically means that one need to be careful is defining the lepton fake rates, 
+which can be applicable to both Type-II a) and Type-II b) categories.
+
+In Reference [xx] we described a data-driven method to predict the fake 
+background in a dilepton analysis. This method is being applied by us also 
+in the WW analysis [xx] as well as \ttbar studies [xx]. Here we briefly
+summarize the method, and we apply it to the same sign dilepton study.
+
+\subsection{The fake rate definition}
+\label{subsec:fakeratedef}
+
+The method starts by defining a “fake rate” ($FR$) measured in QCD events. We use 
+the Pythia QCD sample with $\hat{P_T} > 30, 80 $ GeV. The fake rate is defined as 
+the probability for a lepton passing loose cuts (aka, “Fakeable Object”, $FO$) to pass the 
+analysis cuts as a function of $p_T$ and $\eta$. The basic idea is to then apply the $FR$ to 
+dilepton candidates passing loose cuts to obtain a prediction to the fake lepton contribution. 
+The details of the applications of the $FR$ are given in Section~\ref{subsec:fakerateapplication}. 
+
+Fakeable Objects are defined as follows:
+
+\begin{itemize}
+\item Electron Fakeable Object, $eFO$:
+\begin{itemize}
+\item PixelGSFElectron witb $p_T > 10$ GeV;
+\item $|\eta| < 2.4$;
+\item No reconstructed muon with $\Delta R < 0.1$;
+\item Electron ID and Conversion rejection as defined in Section~\ref{sec:electron};
+\item Iso $<$ 0.4, where Iso=Sum/Max(20 GeV, $P_T$), and Sum = tkIso + hcalIso +  Max(0 GeV, ecalIso - 2GeV).
+\end{itemize} 
+
+\item Muon Fakeable Object, $\mu FO$:
+\begin{itemize}
+\item Global and Tracker Muon with $p_T > 10$ GeV;
+\item $|\eta| < 2.4$;
+\item Global fit $\chi^2 /$ndof $ < 20 $;
+\item $|d_0| < 200~\mu m$ (from silicon track, corrected for beamspot);
+\item Iso $<$ 0.4, where Iso=Sum/Max(20 GeV, $P_T$), and Sum = tkIso + hcalIso +  ecalIso.
+\end{itemize} 
+\end{itemize} 
+
+The $FR$ for electrons and muons as determined from QCD sample are shown in Figure.xx [Need a figure]
+
+This should be noted that the absolute value of the $FR$ is meaningless. It is the probability for a
+fake lepton passing loose identification requirements as well as isolation to also pass a tighter
+selection. 
+\subsection{Application of lepton fake rate to our analysis}
+\label{subsec:fakerateapplication}
+
+We evaluate the $FR$ in \ttbar Monte Carlo events. This test is meant to demonstrate that the 
+$FR$ as determined from the QCD events can be applied to \ttbar. In order to perform this test we 
+define the following four event selections:
+
+\begin{itemize}
+\item \ttbar $\rightarrow Wb Wb \rightarrow \mu + e$  $ \nu \nu b b$:
+\begin{itemize}
+  \item Require a global muon with $p_T > 10$ GeV, truth matched to $W \rightarrow \mu$.
+  \item Require a same sign electron that passes all the standard identification and isolation requirements. 
+\end{itemize} 
+
+\item \ttbar $\rightarrow Wb Wb \rightarrow \mu + (eFO \times FR)$  $ \nu \nu b b$:
+\begin{itemize}
+  \item Require a global muon with $p_T > 10$ GeV, truth matched to $W \rightarrow \mu$.
+  \item Require a same sign $eFO$; weight each event by the $FR$ for the corresponding $eFO$.
+\end{itemize} 
+
+\item \ttbar $\rightarrow Wb Wb \rightarrow e + \mu  $  $ \nu \nu b b$:
+\begin{itemize}
+  \item Require an electron with $p_T > 10$ GeV, truth matched to $W \rightarrow e$.
+  \item Require a same sign muon that passes all the standard identification and isolation requirements. 
+\end{itemize} 
+
+\item \ttbar $\rightarrow Wb Wb \rightarrow e + (\mu FO \times  FR)$  $ \nu \nu b b$:
+\begin{itemize}
+  \item Require an electron with $p_T > 10$ GeV, truth matched to $W \rightarrow e$.
+  \item Require a same sign $\mu FO$; weight each event by the $FR$ for the corresponding $\mu FO$.
+\end{itemize} 
+\end{itemize} 
+
+\begin{table}[hbt]
+\begin{center}
+\begin{tabular}{|l|c|}\hline
+Sample & Event yield \\ \hline
+\ttbar with $\mu + e$ (Observed) & 2.1 $\pm$ 0.3 \\
+\ttbar with $\mu + (eFO \times FR)$ (Predicted) & 2.9 \\
+\hline
+\end{tabular}
+\caption{ Monte Carlo test of the electron fake rate. \label{tab:EleFR_Test}}
+\end{center}
+\end{table}
+\begin{table}[hbt]
+\begin{center}
+\begin{tabular}{|l|c|}\hline
+Sample & Event yield \\ \hline
+\ttbar with $e + \mu$ (Observed) & 2.4 $\pm$ 0.3 \\
+\ttbar with $e + (\mu DO \times FR)$ (Predicted) & 2.7 \\
+\hline
+\end{tabular}
+\caption{ Monte Carlo test of the muon fake rate. \label{tab:MuonFR_Test}}
+\end{center}
+\end{table}
+
+The Monte Carlo test for the electron $FR$ consists of comparing event yields and distributions for 
+$\mu + e $ and $\mu + (eFO \times FR)$. Similarly, for muon $FR$ it consists of comparing event yields 
+and distributions for $ e + \mu$  and $e + (\mu DO \times FR)$. 
+Results of the Monte Carlo tests for event yields are given in Tables~\ref{tab:EleFR_Test} and~\ref{tab:MuonFR_Test}.
+The errors are from the MC statistics. From these studies we conclude that the QCD $FR$ parametrization 
+does a good job of reproducing the rate of fake electrons and muons in \ttbar events.
+
+Our procedure to estimate the fake contribution to our analysis is the following:
+\begin{itemize}
+\item Select lepton $+ FO$ events where
+\begin{itemize}
+  \item one of the leptons passes all the standard identification and isolation requirements.
+  \item the other lepton is a $FO$ but fails the standard identification and isolation requirements.
+\end{itemize} 
+\item the event passes all the standard kinematical cuts as outlined in Section~\ref{sec:eventselection}
+\item weigh each event by $FR/(1 - FR)$, where $FR$ is the fake rate for the $FO$ under consideration.
+\item add up all the weights.
+\end{itemize} 
+
+\vspace{2mm}
+\begin{table}[hbt]
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|c|c|}\hline
+Same Sign leptons & Total &      Type-I &  Type-II & Type-II a) & Type-II b) & Type-III \\ \hline
+$ee$ (predicted) &	0.21 &	0.01 &	0.20 &	0.15 &	0.05 &	0.00 \\
+$\mu\mu$ (predicted) &	0.10 &	0.00 &	0.10 &	0.09 &	0.01 &	0.00 \\
+$e\mu$ (predicted) &	0.31 &	0.01 &	0.30 &	0.26 &	0.04 &	0.00 \\
+total (predicted) &	0.62 &	0.02 &	0.60 &	0.50 &	0.10 &	0.00 \\
+\hline
+\end{tabular}
+\caption{ The number of events predicted using lepton fake rate method in \ttbar events for various types. 
+Rates are normalized to 100 pb$^{-1}$.\label{tab:LeptonFakePredict}}
+\end{center}
+\end{table}
+ The results of the application of the procedure outlined above is summarized in Table~\ref{tab:LeptonFakePredict}. 
+We conclude the following in comparison with the observed events from Table~\ref{tab:fakeOrigin}:
+
+
+\begin{itemize}
+\item We predict $\approx 80 \%$ of the observed Type-II contributions.
+\item Within Type-II, the contributions with events from heavy flavor sources are largely predicted ($\approx 88 \%$).
+\item The method introduces an overestimate for the true leptons in Type-I, which is at $\approx 2 \%$ level, 
+this is negligible compared to the associated statistical as well as systematic uncertainties.
+\end{itemize}
