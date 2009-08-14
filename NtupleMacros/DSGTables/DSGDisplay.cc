@@ -1,4 +1,3 @@
-
 #include <assert.h>
 #include <math.h>
 #include <ncurses.h>
@@ -7,6 +6,17 @@
 #include "TH1.h"
 #include "THStack.h"
 #include "DSGTable.h"
+
+/*  cheat sheet ...
+i   Z/notZ     major row
+j   MET        major column
+jj  sumJetEt   alt major row
+k   njets      minor column
+l   bucket     minor row
+
+*/
+
+enum layout {ZMET, JETMET};
 
 static const DSGTable **dsgs_;
 static int n_dsgs_;
@@ -31,7 +41,7 @@ const static char bucketStrs[4][10][1280] = {
   {"SS *F",    "OS OF",    "OS SF"},
 };
 
-static void printNumbers (int i, int j, int k, int l, int whichBucketGrouping)
+static void printNumbers (int i, int j, int k, int l, enum layout ZJ, int whichBucketGrouping)
 {
   double sm = 0;
   double smw2 = 0;
@@ -39,11 +49,21 @@ static void printNumbers (int i, int j, int k, int l, int whichBucketGrouping)
   double dataw2 = 0;
   for (int n = 0 ; n < nBucketsPerGroup[whichBucketGrouping][l]; n++) {
     for (int m = 0; m < n_dsgs_ - 1; ++m) {
-      sm += dsgs_[m]->events_[i][j][0][k][buckets[whichBucketGrouping][l][n]];
-      smw2 += dsgs_[m]->w2s_[i][j][0][k][buckets[whichBucketGrouping][l][n]];
+      if (ZJ == ZMET) {
+	sm += dsgs_[m]->events_[i][j][0][k][buckets[whichBucketGrouping][l][n]];
+	smw2 += dsgs_[m]->w2s_[i][j][0][k][buckets[whichBucketGrouping][l][n]];
+      } else {
+	sm += dsgs_[m]->events_[2][j][i][k][buckets[whichBucketGrouping][l][n]];
+	smw2 += dsgs_[m]->w2s_[2][j][i][k][buckets[whichBucketGrouping][l][n]];
+      }
     }
-    data += dsgs_[n_dsgs_ - 1]->events_[i][j][0][k][buckets[whichBucketGrouping][l][n]];
-    dataw2 += dsgs_[n_dsgs_ - 1]->w2s_[i][j][0][k][buckets[whichBucketGrouping][l][n]];
+    if (ZJ == ZMET) {
+      data += dsgs_[n_dsgs_ - 1]->events_[i][j][0][k][buckets[whichBucketGrouping][l][n]];
+      dataw2 += dsgs_[n_dsgs_ - 1]->w2s_[i][j][0][k][buckets[whichBucketGrouping][l][n]];
+    } else {
+      data += dsgs_[n_dsgs_ - 1]->events_[2][j][i][k][buckets[whichBucketGrouping][l][n]];
+      dataw2 += dsgs_[n_dsgs_ - 1]->w2s_[2][j][i][k][buckets[whichBucketGrouping][l][n]];
+    }
   }
   double sig = (data - sm) / sqrt(smw2 + dataw2);
   if (sig > 3)
@@ -59,23 +79,40 @@ static void printNumbers (int i, int j, int k, int l, int whichBucketGrouping)
 }
 
 static void plotTheDistribution (DSGTable::table_t DSGTable::* h, 
-				 int i, int j, int k, int l, int whichBucketGrouping)
+				 int i, int j, int k, int l, enum layout ZJ, int whichBucketGrouping)
 {
 
   THStack *stack = new THStack((dsgs_[0]->*h)[0][0][0][0][0]->GetName(), (dsgs_[0]->*h)[0][0][0][0][0]->GetTitle() );
   
   for (int m = 0; m < n_dsgs_ - 1; ++m) {
-    TH1F *hist = dynamic_cast<TH1F*> ((dsgs_[m]->*h)[i][j][0][k][buckets[whichBucketGrouping][l][0]]->Clone());
+    TH1F *hist;
+    if (ZJ == ZMET) {
+      hist = dynamic_cast<TH1F*> ((dsgs_[m]->*h)[i][j][0][k][buckets[whichBucketGrouping][l][0]]->Clone());
+    } else {
+      hist = dynamic_cast<TH1F*> ((dsgs_[m]->*h)[2][j][i][k][buckets[whichBucketGrouping][l][0]]->Clone());
+    }
     for (int n = 1 ; n < nBucketsPerGroup[whichBucketGrouping][l]; n++) {
-      hist->Add((dsgs_[m]->*h)[i][j][0][k][buckets[whichBucketGrouping][l][n]]);
+      if (ZJ == ZMET) {
+	hist->Add((dsgs_[m]->*h)[i][j][0][k][buckets[whichBucketGrouping][l][n]]);
+      } else {
+	hist->Add((dsgs_[m]->*h)[2][j][i][k][buckets[whichBucketGrouping][l][n]]);
+      }
     }
     stack->Add(hist);
   }
-  TH1F *data = dynamic_cast<TH1F*> ((dsgs_[n_dsgs_ - 1]->*h)[i][j][0][k][buckets[whichBucketGrouping][l][0]]->Clone());
-  for (int n = 1 ; n < nBucketsPerGroup[whichBucketGrouping][l]; n++) {
-    data->Add((dsgs_[n_dsgs_ - 1]->*h)[i][j][0][k][buckets[whichBucketGrouping][l][n]]);
+  TH1F *data;
+  if (ZJ == ZMET) {
+    data = dynamic_cast<TH1F*> ((dsgs_[n_dsgs_ - 1]->*h)[i][j][0][k][buckets[whichBucketGrouping][l][0]]->Clone());
+  } else {
+    data = dynamic_cast<TH1F*> ((dsgs_[n_dsgs_ - 1]->*h)[2][j][i][k][buckets[whichBucketGrouping][l][0]]->Clone());
   }
-  
+  for (int n = 1 ; n < nBucketsPerGroup[whichBucketGrouping][l]; n++) {
+    if (ZJ == ZMET) {
+      data->Add((dsgs_[n_dsgs_ - 1]->*h)[i][j][0][k][buckets[whichBucketGrouping][l][n]]);
+    } else {
+      data->Add((dsgs_[n_dsgs_ - 1]->*h)[2][j][i][k][buckets[whichBucketGrouping][l][n]]);
+    }
+  }
   data->SetFillStyle(0);
   data->SetMarkerStyle(30);
   data->Draw("pee");
@@ -83,7 +120,7 @@ static void plotTheDistribution (DSGTable::table_t DSGTable::* h,
   data->Draw("same pee");
 }
 
-static void displayHistos (int i, int j, int k, int l, int whichBucketGrouping)
+static void displayHistos (int i, int j, int k, int l, enum layout ZJ, int whichBucketGrouping)
 
 {
      static TCanvas *c = 0;
@@ -97,42 +134,63 @@ static void displayHistos (int i, int j, int k, int l, int whichBucketGrouping)
      c->Divide(4, 2);
      int i_pad = 0;
      c->cd(++i_pad);
-     plotTheDistribution (&DSGTable::hmet_, i, j, k, l, whichBucketGrouping) ;
+     plotTheDistribution (&DSGTable::hmet_, i, j, k, l, ZJ, whichBucketGrouping) ;
      c->cd(++i_pad);
-     plotTheDistribution (&DSGTable::hmll_, i, j, k, l, whichBucketGrouping) ;
+     plotTheDistribution (&DSGTable::hmll_, i, j, k, l, ZJ, whichBucketGrouping) ;
      c->cd(++i_pad);
-     plotTheDistribution (&DSGTable::hht_, i, j, k, l, whichBucketGrouping) ;
+     plotTheDistribution (&DSGTable::hht_, i, j, k, l, ZJ, whichBucketGrouping) ;
      c->cd(++i_pad);
-     plotTheDistribution (&DSGTable::hjsumet_, i, j, k, l, whichBucketGrouping) ;
+     plotTheDistribution (&DSGTable::hjsumet_, i, j, k, l, ZJ, whichBucketGrouping) ;
      c->cd(++i_pad);
-     plotTheDistribution (&DSGTable::hmaxjetpt_, i, j, k, l, whichBucketGrouping) ;
+     plotTheDistribution (&DSGTable::hmaxjetpt_, i, j, k, l, ZJ, whichBucketGrouping) ;
      c->cd(++i_pad);
-     plotTheDistribution (&DSGTable::hmaxleppt_, i, j, k, l, whichBucketGrouping) ;
+     plotTheDistribution (&DSGTable::hmaxleppt_, i, j, k, l, ZJ, whichBucketGrouping) ;
      c->cd(++i_pad);
-     plotTheDistribution (&DSGTable::hlepdphi_, i, j, k, l, whichBucketGrouping) ;
+     plotTheDistribution (&DSGTable::hlepdphi_, i, j, k, l, ZJ, whichBucketGrouping) ;
      c->Update();
 }
 
 
-void printTable(int whichBucketGrouping)
+void printTable(enum layout ZJ, int whichBucketGrouping)
 {
      
   clear();
   mvprintw(0, 20, "  MET > 35");
   mvprintw(0, 70, "  MET > 100");
   mvprintw(0, 120, "  MET > 175");
-  mvprintw(15, 0, "no Z");
-  mvprintw(40, 0, "Z");
-  for (int i = 0; i < DSGTable::nZcat; ++i) {
-    for (int j = 0; j < DSGTable::nMETcat; ++j) {
-      mvprintw(2 + i * 25, 30 + j * 50, "Njet");
-      mvprintw(3 + i * 25, 22 + j * 50, "<2        2-4       >4");
-      for (int k = 0; k < DSGTable::nJetcat; ++k) { 
-	for (int l = 0; l < nBucketsGroups[whichBucketGrouping]; ++l) { // # of elements in current grp: 10, 5, 4 elements
-	  printNumbers(i, j, k, l, whichBucketGrouping);
-	  if (k == 0) {
-	    mvprintw(3 + i * 25 + (l + 1) * 2,
-		     10 + j * 50, bucketStrs[whichBucketGrouping][l]);
+  if (ZJ == ZMET) {  
+    mvprintw(15, 0, "no Z");
+    mvprintw(40, 0, "Z");
+    for (int i = 0; i < DSGTable::nZcat; ++i) {
+      for (int j = 0; j < DSGTable::nMETcat; ++j) {
+	mvprintw(2 + i * 25, 30 + j * 50, "Njet");
+	mvprintw(3 + i * 25, 22 + j * 50, "<2        2-4       >4");
+	for (int k = 0; k < DSGTable::nJetcat; ++k) { 
+	  for (int l = 0; l < nBucketsGroups[whichBucketGrouping]; ++l) { // # of elements in current grp: 10, 5, 4 elements
+	    printNumbers(i, j, k, l, ZJ, whichBucketGrouping);
+	    if (k == 0) {
+	      mvprintw(3 + i * 25 + (l + 1) * 2,
+		       10 + j * 50, bucketStrs[whichBucketGrouping][l]);
+	    }
+	  }
+	}
+      }
+    }
+  } else {
+    mvprintw(15, 0, "SJPT>0");
+    mvprintw(40, 0, "SJPT>300");
+    mvprintw(65, 0, "SJPT>500");
+    for (int i = 0; i < DSGTable::nSumJetcat; ++i) {
+      for (int j = 0; j < DSGTable::nMETcat; ++j) {
+	mvprintw(2 + i * 25, 30 + j * 50, "Njet");
+	mvprintw(3 + i * 25, 22 + j * 50, "<2        2-4       >4");
+	for (int k = 0; k < DSGTable::nJetcat; ++k) { 
+	  for (int l = 0; l < nBucketsGroups[whichBucketGrouping]; ++l) { // # of elements in current grp: 10, 5, 4 elements
+	    printNumbers(i, j, k, l, ZJ, whichBucketGrouping);
+	    if (k == 0) {
+	      mvprintw(3 + i * 25 + (l + 1) * 2,
+		       10 + j * 50, bucketStrs[whichBucketGrouping][l]);
+	    }
 	  }
 	}
       }
@@ -140,6 +198,7 @@ void printTable(int whichBucketGrouping)
   }
   refresh();
 }
+
 
 void DSGDisplay ()
 {       
@@ -179,16 +238,17 @@ void DSGDisplay ()
      // print table
      start_color();
      init_pair(1, COLOR_RED, COLOR_BLACK);
-     printTable(0);
+     printTable(JETMET, 0);
 
      refresh();
      int i = 0;
      int j = 0;
      int k = 0;
      int l = 0;
+     enum layout ZJ = JETMET;
      int iBucketGrouping = 0;
      attron(A_REVERSE);
-     printNumbers(i, j, k, l, iBucketGrouping);
+     printNumbers(i, j, k, l, ZJ, iBucketGrouping);
      while (1) {
 	  // read input
 	  int ch = getch();
@@ -196,7 +256,7 @@ void DSGDisplay ()
 	       break;
 	  // unhighlight current cell
 	  attroff(A_REVERSE);
-	  printNumbers(i, j, k, l, iBucketGrouping );
+	  printNumbers(i, j, k, l, ZJ, iBucketGrouping );
 	  switch (ch) {
 	  case KEY_UP: case 'k': case 'K':
 	       if (l == 0) {
@@ -210,7 +270,8 @@ void DSGDisplay ()
 	       break;
 	  case KEY_DOWN: case 'j': case 'J':
 	       if (l == nBucketsGroups[iBucketGrouping] - 1) {
-		    if (i != DSGTable::nZcat - 1) {
+		    if (ZJ == ZMET && i != DSGTable::nZcat - 1 ||
+			ZJ == JETMET && i != DSGTable::nSumJetcat - 1) {
 			 i++;
 			 l = 0;
 		    }
@@ -247,17 +308,31 @@ void DSGDisplay ()
 	    // bucket group
 	    if (l > nBucketsGroups[iBucketGrouping] - 1)
 		 l = nBucketsGroups[iBucketGrouping] - 1;
-	    printTable(iBucketGrouping);
+	    printTable(ZJ, iBucketGrouping);
+	    break;
+	  case 'z': case 'Z':
+	    if (ZJ == ZMET) {
+	      ZJ = JETMET;
+	    } else {
+	      ZJ = ZMET;
+	    }
+	    // if we are in the 3rd major row, switch to 2 major rows.
+	    if (ZJ == ZMET) {
+	      if (i == DSGTable::nSumJetcat - 1) {
+		i =  DSGTable::nZcat - 1;
+	      }
+	    }
+	    printTable(ZJ, iBucketGrouping);
 	    break;
 	  case '\n':
-	    displayHistos(i, j, k, l, iBucketGrouping);
+	    displayHistos(i, j, k, l, ZJ, iBucketGrouping);
 	    break;
 	  default:
 	       break;
 	  }
 	  // highlight new cell
 	  attron(A_REVERSE);
-	  printNumbers(i, j, k, l, iBucketGrouping);
+	  printNumbers(i, j, k, l, ZJ, iBucketGrouping);
 	  attroff(A_REVERSE);
 	  refresh();
      } 
