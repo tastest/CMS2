@@ -272,3 +272,33 @@ int Looper::Bucket (int i_hyp) const
 	  return 9;
      assert(false);
 }
+
+void overflow (TH1F* h)
+{
+  float overflowBin = h->GetBinContent(h->GetNbinsX()+1);
+  float lastBin = h->GetBinContent(h->GetNbinsX());
+  h->SetBinContent(h->GetNbinsX(),lastBin+overflowBin);
+  // consider zeroing out the ovflow...  h->SetBinContent(h->GetNbinsX()+1,0.0);
+}
+
+void Looper::End()
+{
+  for (int i = 0; i <= DSGTable::nZcat; ++i) {
+    for (int j = 0; j < DSGTable::nMETcat; ++j) {
+      for (int jj = 0; jj < DSGTable::nSumJetcat; ++jj) {
+	for (int k = 0; k < DSGTable::nJetcat; ++k) {
+	  for (int l = 0; l < DSGTable::nBuckets; ++l) {
+	    overflow(dsgTable.hmet_[i][j][jj][k][l]);
+	    overflow(dsgTable.hmll_[i][j][jj][k][l]);
+	    overflow(dsgTable.hht_[i][j][jj][k][l]);
+	    overflow(dsgTable.hjsumet_[i][j][jj][k][l]);
+	    overflow(dsgTable.hmaxjetpt_[i][j][jj][k][l]);
+	    overflow(dsgTable.hmaxleppt_[i][j][jj][k][l]);
+	    overflow(dsgTable.hlepdphi_[i][j][jj][k][l]);
+	  }
+	}
+      }
+    }
+  }
+}
+

@@ -84,7 +84,8 @@ protected:
      virtual bool	FilterEvent();
      virtual cuts_t	DilepSelect (int idx);
      virtual void	FillDilepHistos (int idx);
- 
+     virtual void	End ();
+
 protected:
      // functions to classify a dilepton candidate
      int		Zcat (int) const;
