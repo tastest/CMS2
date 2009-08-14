@@ -168,7 +168,7 @@ Sample fWjetsAlpgenSingle ()
 }
 
 
-Sample fZjetsAlpgenSingle ()
+Sample fZeejetsAlpgenSingle ()
 {
      TChain *c = new TChain("Events");
      std::string sample = prefix + "cms2-V01-03-01/Z_0jet-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
@@ -410,7 +410,6 @@ Sample fDYtt ()
      Sample ret = { c, DYtt, kBlack, 1, "dytt", true, 0. };
      return ret;
 }
-
 
 // Pythia DY ntuples
 //

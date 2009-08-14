@@ -38,7 +38,7 @@ Sample fZZ	();
 Sample fWjets	();
 Sample fWjetsAlpgenSingle();
 Sample fWjetsSingle ();
-Sample fZjetsAlpgenSingle();
+Sample fZeejetsAlpgenSingle();
 Sample fZmmjetsAlpgenSingle();
 Sample fZttjetsAlpgenSingle();
 
