@@ -10,6 +10,8 @@
 #include "Sample.h"
 #include "DileptonHist.h"
 #include "NMinus1Hist.h"
+#include "TrileptonHist.h"
+#include "TrilepNMinus1Hist.h"
 #include "TH1.h"
 #include "TH2.h"
 #include "TVector3.h"
