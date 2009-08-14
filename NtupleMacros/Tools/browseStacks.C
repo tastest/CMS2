@@ -57,7 +57,7 @@ void browseStacks( bool makePictures=false, bool wait=true, const char* dir = "o
    if (makePictures) c->Print(Form("%s/stacks.ps]",dir));
 }
 
-void browseStacksTrilep( bool makePictures=false, bool wait=true ) {
+void browseStacksTrilep( bool makePictures=false, bool wait=true, const char* dir = "out" ) {
 
   bool keep2D=false;
 
@@ -96,7 +96,7 @@ void browseStacksTrilep( bool makePictures=false, bool wait=true ) {
   if (makePictures) c->Print(Form("%s/stacks.ps[",dir));
    for (int i=0; i<myNames->GetEntries(); i++) {
      //  cout << myNames->At(i)->GetName() << endl;
-     for (int sample=0; sample<allBuckets; sample++) {
+     for (int sample=0; sample<=allBuckets; sample++) {
        hist::stack(Form("st_%s_%s",myNames->At(i)->GetName(),suffix[sample]),
                     Form("%s_%s$",myNames->At(i)->GetName(), suffix[sample]));
         THStack* thisStack = (THStack*) gROOT->FindObjectAny(
