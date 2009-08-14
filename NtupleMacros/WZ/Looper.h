@@ -171,9 +171,12 @@ protected:
   TrilepNMinus1Hist	*h_njets_;
 
   TrilepNMinus1Hist	*h_DeltaPhiMETNearestLepton_;
+  TrilepNMinus1Hist	*h_DeltaPhiMETNearestJet_;
 
   TrilepNMinus1Hist	*h_primZMass_;
   TrilepNMinus1Hist	*h_addZMass_;
+
+  TrilepNMinus1Hist	*h_genZMass_;
 
 protected:
   // count the (weighted and unweighted) number of candidates passing our cuts

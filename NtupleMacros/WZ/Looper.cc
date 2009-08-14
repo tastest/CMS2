@@ -57,9 +57,13 @@ void Looper::BookHistos ()
   h_njets_ = new TrilepNMinus1Hist(sample_, "nJets",	 10,-0.5,9.5, cuts_, 0);
 
   h_DeltaPhiMETNearestLepton_ = new TrilepNMinus1Hist(sample_, "DeltaPhiMETNearestLepton",	 20,0,TMath::Pi(), cuts_, CUT_BIT(CUT_TCMET_15));
+  h_DeltaPhiMETNearestJet_ = new TrilepNMinus1Hist(sample_, "DeltaPhiMETNearestJet",	 20,0,TMath::Pi(), cuts_, CUT_BIT(CUT_TCMET_15));
 
   h_primZMass_ = new TrilepNMinus1Hist(sample_, "ZMassPrim",	 200,0,200, cuts_, CUT_BIT(CUT_PRIM_Z) | CUT_BIT(CUT_NO_SEC_Z));
   h_addZMass_ = new TrilepNMinus1Hist(sample_, "ZMassAdd",	 200,0,200, cuts_, CUT_BIT(CUT_NO_SEC_Z));
+  h_genZMass_ = new TrilepNMinus1Hist(sample_, "ZMassGen",	 200,0,200, cuts_, baseline_cuts);
+
+//   h_genLepOutAccEta_
 }
 
 
@@ -74,8 +78,7 @@ bool Looper::FilterEvent()
 
   if (cms2.trks_d0().size() == 0)
     return true;
-  DorkyEventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.trks_d0()[0], 
- 			      cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
+  DorkyEventIdentifier id(cms2);
   if (is_duplicate(id)) {
     duplicates_total_n_++;
     duplicates_total_weight_ += cms2.evt_scale1fb();
@@ -313,6 +316,7 @@ void Looper::FillEventHistos ()
   //------------------------------------------------------------
   // In an event-based analysis, you would fill your histos here
   //------------------------------------------------------------
+
 }
 
 void Looper::FillDilepHistos (int i_hyp)
@@ -347,6 +351,7 @@ void Looper::FillTrilepHistos (int i_hyp)
     cands_passing_[TRILEPTON_ALL] += weight;
     cands_passing_w2_[TRILEPTON_ALL] += weight * weight;
     cands_count_[TRILEPTON_ALL]++;
+
   }
 
   // for the NMinus1Hist, the histogram checks the cuts for us
@@ -379,11 +384,23 @@ void Looper::FillTrilepHistos (int i_hyp)
 
   h_njets_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), nJPTsTrilep(i_hyp, 20.), weight);
   h_DeltaPhiMETNearestLepton_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), nearestDeltaPhiTrilep(cms2.evt_tcmetPhi(), i_hyp), weight);
+  h_DeltaPhiMETNearestJet_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), nearestDeltaPhiJet(cms2.evt_tcmetPhi(), i_hyp), weight);
 
 //   if ( !inZmassWindow(primZMass_) )
 //     std::cout << "mass: " << primZMass_ << std::endl;
   h_primZMass_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), primZMass_, weight);
   h_addZMass_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), addZMass_, weight);
+
+  for ( unsigned int gen = 0;
+	gen < cms2.genps_p4().size();
+	++gen ) {
+    if ( cms2.genps_id()[gen] == 23 )
+      h_genZMass_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), cms2.genps_p4()[gen].mass(), weight);
+  }
+
+  
+
+
 }
 
 void Looper::FillQuadlepHistos (int i_hyp)
