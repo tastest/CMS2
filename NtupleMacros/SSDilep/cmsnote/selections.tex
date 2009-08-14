@@ -1,21 +1,21 @@
 \section{Event Selection}
 \label{sec:eventselection}
 
-The event selection used is a ``reasonable'' event
-selection which is not optimized for any specific SUSY scenario.
+The event selection used is not optimized for any specific SUSY scenario.
 It is based on small modifications to the dilepton event selections 
 that we used in recently approved 
 $WW$\cite{ww} and \ttbar\cite{ttbar} cross-section
 analyses.  A quick summary of the event selection is:
 \begin{itemize}
-\item the event is required to pass the single $e$ or $\mu$  triggers.
-\item two isolated, same sign dileptons ($ee$, $e\mu$, and $\mu\mu$);  
-\item leptons must have $P_T > 10$ GeV and at least one of them must have $P_T > 20$ GeV;
-\item we veto the candidate lepton, if an extra lepton in the event, pairs with the candidate lepton
-to form a $Z$ within the mass range between $76 < m_{\ell\ell} $ (GeV) $< 106$; 
-\item at least three L2L3 corrected caloJets with $P_T > 30$ GeV and $|\eta|< 2.4$;
-\item the scalar sum of the $P_T$ of all jets passing the requirements above should be $>$ 200 GeV;
-\item we require \met~$>$ 80 GeV. Track Corrected MET (tcMET) \cite{tcmet} is used as a measure for \met.
+\item The event is required to pass the single $e$ or $\mu$  triggers.
+\item Two isolated, same sign leptons ($ee$, $e\mu$, and $\mu\mu$). 
+\item Leptons must have $P_T > 10$ GeV and at least one of them must have $P_T > 20$ GeV.
+\item We veto the candidate lepton, if an extra lepton in the event, pairs with the candidate lepton
+to form a $Z$ within the mass range between $76 < m_{\ell\ell} $ (GeV) $< 106$. This requirement is 
+designed to reject $WZ$ events.
+\item At least three L2L3 corrected caloJets with $P_T > 30$ GeV and $|\eta|< 2.4$.
+\item The scalar sum of the $P_T$ of all jets passing the requirements above should be $>$ 200 GeV.
+\item We require \met~$>$ 80 GeV. Track Corrected MET (tcMET) \cite{tcmet} is used as a measure for \met.
 \end{itemize}
 \noindent The details of the lepton and trigger selections are given below.
 
@@ -57,11 +57,16 @@ We use inclusive lepton triggers with no isolation, $i.e.$, the logical OR of {\
 The combined trigger efficiency is $\sim 99$\% for dilepton events that pass the event selection.
 %for electrons and muons are found at be XX\% and YY \% respectively. 
 These triggers are 
-expected to be present during data taking trigger table.
+expected to be present in the data taking trigger table.
 
 \subsection{Selection due to charge mis-reconstruction}
-
-In order to reduce the contribution of charge mis-reconstruction, we study the 
+\label{sec:gsfctf}
+One of the main backgrounds to the same sign isolated dilepton signature consists of 
+SM opposite sign dilepton events, where the charge of one of the leptons is misidentified.
+Monte Carlo studies show that the muon charge misidentification rate is negligible, up to very 
+high momenta.  On the other hand, because of brehmstrahlung in the tracker, electrons have a 
+significant probability of being reconstructed with the wrong sign. 
+In order to reduce the contribution of charge mis-reconstruction, we have studied the 
 charge mis-identification rates in a dedicated ``electron gun'' sample. The charge 
 mis-identification rate is defined as the ratio of electrons with wrong reconstructed
 charge compared to the true charge over all reconstructed and truth matched electron
@@ -76,11 +81,12 @@ electron using ``electron gun'' sample \label{fig:charge_misid}. The solid (blue
 the rate after the veto; if the reconstructed charge is not same for GSF and CTF tracks.}
 \end{center}
 \end{figure}
-
-The GSF and GeneralTracks (CTF) are then associated based on sharing of the hits in the silicon strip tracking detector. 
-The electrons are vetoed, if charge of the GSF track is not same as the charge of the associated 
-GeneralTrack. Figure~\ref{fig:charge_misid} shows the charge mis-identification rate as a function of 
-pseudorapidity ($\eta$) and transverse momentum ($p_T$) of the generated electron. The charge mis-identification rate
-is reduced by factor of $\approx 3.9$, with a moderate ($2.1\%$)  loss in electron reconstruction efficiency after the veto. 
-The rate after the veto is found to vary between $0.04\%$ to $1\%$ with increase in pseudorapidity. This selection is 
-applied as part of the standard selection for rest of this document.
+Electrons are selected with standard identification and isolation mentioned earlier. The GSF and GeneralTracks 
+(CTF) are associated based on sharing of the hits in the silicon strip tracking detector. 
+The electrons are vetoed, if the charge of GSF track associated with the electron is not same 
+as the charge of the associated GeneralTrack. The electron is considered valid if it has a matched
+to a GSF track, but with no associated GeneralTrack. Figure~\ref{fig:charge_misid} shows the charge mis-identification 
+rate as a function of pseudorapidity ($\eta$) and transverse momentum ($p_T$) of the generated electron. The charge 
+mis-identification rate is reduced by factor of $\sim 3.9$, with a moderate ($2.1\%$)  loss in electron reconstruction 
+efficiency after the veto. The rate after the veto is found to vary between $0.04\%$ to $1\%$ with increase in 
+pseudorapidity. This selection is applied as part of the standard selection for rest of this document.

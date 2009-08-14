@@ -17,8 +17,10 @@ P_{ChargeFlip} = \frac{N_{Wrong}(P_T, \eta)}{N_{Total}(P_T, \eta)}
 
 where $N_{Wrong}(P_T, \eta)$ is the number of wrongly charged electrons  and $N_{Total}(P_T, \eta)$ is 
 the total number of electrons in the sample. We select events with same sign $(SS)$ 
-and opposite sign $(OS)$ dielectrons within the $Z$ mass range. The number of wrongly 
-charged electrons can be obtained:
+and opposite sign $(OS)$ dielectrons within the $Z$ mass range, with both electrons passing the 
+selection described in sections~\ref{sec:electron} and~\ref{sec:gsfctf}. 
+
+The number of wrongly charged electrons in the barrel part of the detector can be obtained:
 
 \begin{equation}
   N_{Wrong}(P_T, \eta) = SS(P_T, \eta) - k(P_T, \eta) * OS(P_T, \eta) 
@@ -26,12 +28,15 @@ charged electrons can be obtained:
 
 The normalization $k(P_T, \eta)$ is given by the ratio of doubly charged $SS_{++/--}$ electrons to the 
 admixture of a distribution of correctly charge-identified electrons and incorrectly-charge 
-identified $OS$ electrons. The details of the procedure can be found in Ref.~\cite{chargefake}. 
+identified $OS$ electrons. Once we obtain the $P_{ChargeFlip}$ in the barrel, the procedure is to use
+the $P^{barrel}_{ChargeFlip}$ to obtain the rate for the endcap. The details of the procedure can be found 
+in Ref.~\cite{chargefake}. 
 
-In order to extrapolate to the $p_T$ and $\eta$ range covered by the \ttbar decays, we use a 
-large ``electron gun'' MC. The Charge-flip rate is determined for the MC sample. The 
-distribution is then validated to predict the charge-flip rate mentioned above 
-using the Drell-Yan sample.
+
+The Charge-flip rate obtained using the $Z$ sample has limited coverage in $p_T$ and $\eta$ with respect
+to the phase space covered by the \ttbar events. In order to extrapolate to the $p_T$ and $\eta$ 
+range covered by the \ttbar decays, we use a large ``electron gun'' MC. The Charge-flip rate is determined 
+for the MC sample. The distribution is then validated using the data driven method.
 
 \begin{figure}[htb]
 \begin{center}
@@ -43,7 +48,7 @@ distributions using data driven method from $Z$ (black histograms) as well as tr
 \end{figure}
 
 Figure~\ref{fig:charge_fliprate} shows the charge-flip rate as a function of $|\eta|$. The distribution from 
-validated ``electron gun'' sample agree reasonably well with the expectation from data driven method
+the ``electron gun'' sample agrees well with the expectation from data driven method
 using $Z$ as well as MC truth matched $Z$ events. It should be noted that the charge-flip rate roughly 
 reproduces the Charge mis-identification rate we observed earlier in Figure~\ref{fig:charge_misid} a).
 
@@ -52,7 +57,7 @@ reproduces the Charge mis-identification rate we observed earlier in Figure~\ref
 We now perform a rate test on \ttbar MC events by relaxing cuts on \met and jets. The test is meant
 to demonstrate that the Charge-flip rate as determined from the ``electron gun'' sample can be applied
 to \ttbar events. Dilepton events are selected without any \met and jet cuts using an integrated 
-luminosity of 100 pb$^{-1}$. The observed event yield is obtained by selecting same sign electrons.
+luminosity of 100 pb$^{-1}$. The observed event yield is obtained by selecting same sign electrons events.
 In order to get the estimation we use the following procedure:
 
 \begin{itemize}
@@ -73,7 +78,7 @@ Sample & Event yield \\ \hline
 \ttbar (Predicted) & 2.1 \\
 \hline
 \end{tabular}
-\caption{ Monte Carlo test of the electron Charge-flip rate. \label{tab:ChFlip_Test}}
+\caption{ Monte Carlo test of the electron Charge-flip rate.  Rates are normalized to 100 pb$^{-1}$ of integrated luminosity. \label{tab:ChFlip_Test}}
 \end{center}
 \end{table}
 
@@ -99,7 +104,7 @@ to 100 pb$^{-1}$.\label{tab:ChFakePredict}}
 Using Table~\ref{tab:fakeOrigin} as observed and Table~\ref{tab:ChFakePredict} as the 
 prediction, we find that the Charge-flip method predicts the bulk of the Type-I events. As expected,
 the method does not predict any contribution from Type-II events. 
-We consider the agreement quite satisfactory.
+We consider the agreement to be satisfactory.
 %This is quite satisfactory
 %assuming a large systematic uncertainty are involved on these predictions.
 
