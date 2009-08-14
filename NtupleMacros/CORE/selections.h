@@ -178,4 +178,12 @@ bool isFakeableMuTTDil08(int iMu);
 bool trueGammaFromMuon(int electron);
 
 bool conversionElectron(int electron);
+
+int findPrimTrilepZ(int i_hyp, double &mass);
+bool vetoAddZ(int i_hyp, int unusedLepton, double &mass);
+std::vector<LorentzVector> JPTsTrilep(int i_hyp, double etThreshold);
+unsigned int nJPTsTrilep(int i_hyp, double etThreshold);
+double nearestDeltaPhiTrilep(double Phi, int i_hyp);
+double nearestDeltaPhiJet(double Phi, int i_hyp);
+double MetSpecialTrilep(double MET, double MetPhi, int index);
 #endif

@@ -379,6 +379,23 @@ bool pass2Met (int i_hyp, const TVector3& corr) {
   return true;
 }
 
+double nearestDeltaPhiJet(double Phi, int i_hyp) {
+
+  double result = TMath::Pi();
+
+  std::vector<LorentzVector> jets = JPTsTrilep(i_hyp, 20);
+
+  for ( unsigned int jet = 0;
+	jet < jets.size();
+	++jet ) {
+    double delta = TMath::Min(TMath::Abs(jets[jet].Phi() - Phi), 2*TMath::Pi() - TMath::Abs(jets[jet].Phi() - Phi));
+    if ( delta < result ) 
+      result = delta;
+  }
+
+  return result;
+}
+
 double nearestDeltaPhi(double Phi, int i_hyp)
 {
   //WARNING!  This was designed to work in a dilepton environment - NOT a trilepton 
@@ -389,10 +406,50 @@ double nearestDeltaPhi(double Phi, int i_hyp)
 
 }//END nearest DeltaPhi                                                                                                                                 
 
+double nearestDeltaPhiTrilep(double Phi, int i_hyp)
+{
+  //WARNING!  This was designed to work in a trilepton environment - NOT a dilepton 
+
+  LorentzVector first,second,third;
+  if (abs(cms2.hyp_trilep_first_type()[i_hyp]) == 1) {
+    first = cms2.mus_p4()[cms2.hyp_trilep_first_index()[i_hyp]];
+  } else {
+    first = cms2.els_p4()[cms2.hyp_trilep_first_index()[i_hyp]];
+  }
+  if (abs(cms2.hyp_trilep_second_type()[i_hyp]) == 1) {
+    second = cms2.mus_p4()[cms2.hyp_trilep_second_index()[i_hyp]];
+  } else {
+    second = cms2.els_p4()[cms2.hyp_trilep_second_index()[i_hyp]];
+  }
+  if (abs(cms2.hyp_trilep_third_type()[i_hyp]) == 1) {
+    third = cms2.mus_p4()[cms2.hyp_trilep_third_index()[i_hyp]];
+  } else {
+    third = cms2.els_p4()[cms2.hyp_trilep_third_index()[i_hyp]];
+  }
+  
+  double firstDPhi = TMath::Min(TMath::Abs(first.Phi() - Phi), 2*TMath::Pi() - TMath::Abs(first.Phi() - Phi));
+  double secondDPhi = TMath::Min(TMath::Abs(second.Phi() - Phi), 2*TMath::Pi() - TMath::Abs(second.Phi() - Phi));
+  double thirdDPhi = TMath::Min(TMath::Abs(third.Phi() - Phi), 2*TMath::Pi() - TMath::Abs(third.Phi() - Phi));
+
+  return TMath::Min(TMath::Min(firstDPhi, secondDPhi),thirdDPhi);
+
+}//END nearest DeltaPhi                                                                                                                                 
+
 double MetSpecial(double Met, double MetPhi, int i_hyp)
 {
   //Warning, this was designed to work in a dilepton environment - NOT a trilepton  
   double DeltaPhi = nearestDeltaPhi(MetPhi,i_hyp);
+
+  if (DeltaPhi < TMath::Pi()/2) return Met*TMath::Sin(DeltaPhi);
+  else return Met;
+
+  return -1.0;
+}//END MetSpecial calculation  
+
+double MetSpecialTrilep(double Met, double MetPhi, int i_hyp)
+{
+  //Warning, this was designed to work in a trilepton environment - NOT a dilepton  
+  double DeltaPhi = nearestDeltaPhiTrilep(MetPhi,i_hyp);
 
   if (DeltaPhi < TMath::Pi()/2) return Met*TMath::Sin(DeltaPhi);
   else return Met;
@@ -896,6 +953,45 @@ std::vector<LorentzVector> JPTs(int i_hyp, double etThreshold)
 unsigned int nJPTs(int i_hyp, double etThreshold)
 {
      return JPTs(i_hyp, etThreshold).size();
+}
+
+std::vector<LorentzVector> JPTsTrilep(int i_hyp, double etThreshold)
+{
+     std::vector<LorentzVector> ret;
+     const double etaMax      = 3.0;
+     const double vetoCone    = 0.4;
+
+     LorentzVector first,second,third;
+     if (abs(cms2.hyp_trilep_first_type()[i_hyp]) == 1) {
+       first = cms2.mus_p4()[cms2.hyp_trilep_first_index()[i_hyp]];
+     } else {
+       first = cms2.els_p4()[cms2.hyp_trilep_first_index()[i_hyp]];
+     }
+     if (abs(cms2.hyp_trilep_second_type()[i_hyp]) == 1) {
+       second = cms2.mus_p4()[cms2.hyp_trilep_second_index()[i_hyp]];
+     } else {
+       second = cms2.els_p4()[cms2.hyp_trilep_second_index()[i_hyp]];
+     }
+     if (abs(cms2.hyp_trilep_third_type()[i_hyp]) == 1) {
+       third = cms2.mus_p4()[cms2.hyp_trilep_third_index()[i_hyp]];
+     } else {
+       third = cms2.els_p4()[cms2.hyp_trilep_third_index()[i_hyp]];
+     }
+     
+     for ( unsigned int i=0; i < cms2.jpts_p4().size(); ++i) {
+	  if ( cms2.jpts_p4()[i].Et() < etThreshold ) continue;
+	  if ( TMath::Abs(cms2.jpts_p4()[i].eta()) > etaMax ) continue;
+	  if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(first,cms2.jpts_p4()[i])) < vetoCone ||
+	       TMath::Abs(ROOT::Math::VectorUtil::DeltaR(second,cms2.jpts_p4()[i])) < vetoCone ||
+	       TMath::Abs(ROOT::Math::VectorUtil::DeltaR(third,cms2.jpts_p4()[i])) < vetoCone ) continue;
+	  ret.push_back(cms2.jpts_p4()[i]);
+     }
+     return ret;
+}
+
+unsigned int nJPTsTrilep(int i_hyp, double etThreshold)
+{
+     return JPTsTrilep(i_hyp, etThreshold).size();
 }
 
 bool passTrkJetVeto(int i_hyp)
@@ -2478,6 +2574,156 @@ bool conversionElectron(int electron) {
   return false;
 }
 
+int findPrimTrilepZ(int i_hyp, double &mass) {
+  // find primary Z candidate in trilepton hyp
+  //
+  // return: 1: first lepton was not used in Z candidate
+  //         2: second lepton was not used in Z candidate
+  //         3: second lepton was not used in Z candidate
+  //         999: no Z candidate could be found
+  //
+  //         900: error code, something went wrong
+
+  // z mass array, coding:
+  // index 0: first, second
+  // index 1: first, third
+  // index 2: second, third
+  double z_mass[3] = {0.,0.,0.};
+
+  // check if first and second lepton form Z candidate
+  if ( abs(cms2.hyp_trilep_first_type()[i_hyp]) == abs(cms2.hyp_trilep_second_type()[i_hyp]) ) {
+    if ( abs(cms2.hyp_trilep_first_type()[i_hyp]) == 1 ) {
+      if ( cms2.mus_charge()[cms2.hyp_trilep_first_index()[i_hyp]] !=  cms2.mus_charge()[cms2.hyp_trilep_second_index()[i_hyp]] ) {
+	LorentzVector z = cms2.mus_p4()[cms2.hyp_trilep_first_index()[i_hyp]] + cms2.mus_p4()[cms2.hyp_trilep_second_index()[i_hyp]];
+// 	if ( inZmassWindow(z.mass()) )
+	  z_mass[0] = z.mass();
+      }
+    } else {
+      if ( cms2.els_charge()[cms2.hyp_trilep_first_index()[i_hyp]] !=  cms2.els_charge()[cms2.hyp_trilep_second_index()[i_hyp]] ) {
+	LorentzVector z = cms2.els_p4()[cms2.hyp_trilep_first_index()[i_hyp]] + cms2.els_p4()[cms2.hyp_trilep_second_index()[i_hyp]];
+// 	if ( inZmassWindow(z.mass()) )
+	  z_mass[0] = z.mass();
+      }
+    }
+  }
+  // check if first and third lepton form Z candidate
+  if ( abs(cms2.hyp_trilep_first_type()[i_hyp]) == abs(cms2.hyp_trilep_third_type()[i_hyp]) ) {
+    if ( abs(cms2.hyp_trilep_first_type()[i_hyp]) == 1 ) {
+      if ( cms2.mus_charge()[cms2.hyp_trilep_first_index()[i_hyp]] !=  cms2.mus_charge()[cms2.hyp_trilep_third_index()[i_hyp]] ) {
+	LorentzVector z = cms2.mus_p4()[cms2.hyp_trilep_first_index()[i_hyp]] + cms2.mus_p4()[cms2.hyp_trilep_third_index()[i_hyp]];
+// 	if ( inZmassWindow(z.mass()) )
+	  z_mass[1] = z.mass();
+      }
+    } else {
+      if ( cms2.els_charge()[cms2.hyp_trilep_first_index()[i_hyp]] !=  cms2.els_charge()[cms2.hyp_trilep_third_index()[i_hyp]] ) {
+	LorentzVector z = cms2.els_p4()[cms2.hyp_trilep_first_index()[i_hyp]] + cms2.els_p4()[cms2.hyp_trilep_third_index()[i_hyp]];
+// 	if ( inZmassWindow(z.mass()) )
+	  z_mass[1] = z.mass();
+      }
+    }
+  }
+  // check if second and third lepton form Z candidate
+  if ( abs(cms2.hyp_trilep_second_type()[i_hyp]) == abs(cms2.hyp_trilep_third_type()[i_hyp]) ) {
+    if ( abs(cms2.hyp_trilep_second_type()[i_hyp]) == 1 ) {
+      if ( cms2.mus_charge()[cms2.hyp_trilep_second_index()[i_hyp]] !=  cms2.mus_charge()[cms2.hyp_trilep_third_index()[i_hyp]] ) {
+	LorentzVector z = cms2.mus_p4()[cms2.hyp_trilep_second_index()[i_hyp]] + cms2.mus_p4()[cms2.hyp_trilep_third_index()[i_hyp]];
+// 	if ( inZmassWindow(z.mass()) )
+	  z_mass[2] = z.mass();
+      }
+    } else {
+      if ( cms2.els_charge()[cms2.hyp_trilep_second_index()[i_hyp]] !=  cms2.els_charge()[cms2.hyp_trilep_third_index()[i_hyp]] ) {
+	LorentzVector z = cms2.els_p4()[cms2.hyp_trilep_second_index()[i_hyp]] + cms2.els_p4()[cms2.hyp_trilep_third_index()[i_hyp]];
+// 	if ( inZmassWindow(z.mass()) )
+	  z_mass[2] = z.mass();
+      }
+    }
+  }
+
+  // check which combination is nearest to Z mass and return unsused lepton
+//   if ( z_mass[0] == 0 && z_mass[1] == 0 && z_mass[2] == 0 )
+//     return 999;
+  int ret = 0;
+  if ( fabs( z_mass[0] - 91) <= fabs( z_mass[1] - 91) && fabs( z_mass[0] - 91) <= fabs( z_mass[2] - 91) ) {
+    mass = z_mass[0];
+    ret = 3;
+  } else if ( fabs( z_mass[1] - 91) <= fabs( z_mass[0] - 91) && fabs( z_mass[1] - 91) <= fabs( z_mass[2] - 91) ) {
+    mass = z_mass[1];
+    ret = 2;
+  } else if ( fabs( z_mass[2] - 91) <= fabs( z_mass[0] - 91) && fabs( z_mass[2] - 91) <= fabs( z_mass[1] - 91) ) {
+    mass = z_mass[2];
+    ret = 1;
+  }
+
+  if ( !inZmassWindow(mass) ) {
+    return 999;
+  } else {
+    return ret;
+  }
+
+  return 900;
+    
+}
+
+bool vetoAddZ(int i_hyp, int unusedLepton, double &mass) {
+  // veto event if unused lepton (not used to form primary Z) and a isolated track form a second Z, only for trilepton
+  LorentzVector lepton;
+  if ( unusedLepton == 1 ) {
+    if ( abs(cms2.hyp_trilep_first_type()[i_hyp]) == 1 ) 
+      lepton = cms2.mus_p4()[cms2.hyp_trilep_first_index()[i_hyp]];
+    else
+      lepton = cms2.els_p4()[cms2.hyp_trilep_first_index()[i_hyp]];
+  } else if ( unusedLepton == 2 ) {
+    if ( abs(cms2.hyp_trilep_second_type()[i_hyp]) == 1 ) 
+      lepton = cms2.mus_p4()[cms2.hyp_trilep_second_index()[i_hyp]];
+    else
+      lepton = cms2.els_p4()[cms2.hyp_trilep_second_index()[i_hyp]];
+  } else if ( unusedLepton == 3 ) {
+    if ( abs(cms2.hyp_trilep_third_type()[i_hyp]) == 1 ) 
+      lepton = cms2.mus_p4()[cms2.hyp_trilep_third_index()[i_hyp]];
+    else
+      lepton = cms2.els_p4()[cms2.hyp_trilep_third_index()[i_hyp]];
+  }
+
+  mass = -1.;
+
+  for ( int track = 0;
+	track < (int)cms2.trks_trk_p4().size();
+	++track ) {
+
+    // exclude track from first lepton
+    if ( abs(cms2.hyp_trilep_second_type()[i_hyp]) == 1 ) {
+      if ( cms2.mus_trkidx()[cms2.hyp_trilep_first_index()[i_hyp]] == track ) continue;
+    } else {
+      if ( cms2.els_trkidx()[cms2.hyp_trilep_first_index()[i_hyp]] == track ) continue;
+    }
+
+    // exclude track from second lepton
+    if ( abs(cms2.hyp_trilep_second_type()[i_hyp]) == 1 ) {
+      if ( cms2.mus_trkidx()[cms2.hyp_trilep_second_index()[i_hyp]] == track ) continue;
+    } else {
+      if ( cms2.els_trkidx()[cms2.hyp_trilep_second_index()[i_hyp]] == track ) continue;
+    }
+
+    // exclude track from third lepton
+    if ( abs(cms2.hyp_trilep_second_type()[i_hyp]) == 1 ) {
+      if ( cms2.mus_trkidx()[cms2.hyp_trilep_third_index()[i_hyp]] == track ) continue;
+    } else {
+      if ( cms2.els_trkidx()[cms2.hyp_trilep_third_index()[i_hyp]] == track ) continue;
+    }
+
+    if ( passTrackIsolation(track) && cms2.trks_trk_p4()[track].Pt() >= 20. ) {
+      LorentzVector z = lepton + cms2.trks_trk_p4()[track];
+      if ( fabs(z.mass() - 91) <= fabs(mass - 91 ) )
+	mass = z.mass();
+    }
+  }
+
+  if ( inZmassWindow(mass) ) return true;
+
+  return false;
+
+}
+
 bool isChargeFlip(int elIndex){
   //true if electron is likely to be a charge flip
   if ((cms2.els_trkidx().at(elIndex) >= 0) && (cms2.els_charge().at(elIndex) != cms2.trks_charge().at(cms2.els_trkidx().at(elIndex)))) return true;
@@ -2647,4 +2893,3 @@ bool idIsBeauty(int id) {
   }
   else return false;
 }
-
