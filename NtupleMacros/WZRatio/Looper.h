@@ -58,42 +58,42 @@ enum {
 //single electron cuts
 const static cuts_t baseline_single_electron_cuts = 
 //   (CUT_BIT(CUT_MORE_THAN_TWO_TRACKS) ) |
-  (CUT_BIT(CUT_E) ) |
-  (CUT_BIT(CUT_ANTI_ZMASS) ) |
-  (CUT_BIT(CUT_MET) ) |
-  (CUT_BIT(CUT_MT) );
+     (CUT_BIT(CUT_E) ) |
+//   (CUT_BIT(CUT_ANTI_ZMASS) ) |
+     (CUT_BIT(CUT_MET) ) ;
+//   (CUT_BIT(CUT_MT) );
 
 //single muon cuts
 const static cuts_t baseline_single_muon_cuts = 
 //   (CUT_BIT(CUT_MORE_THAN_TWO_TRACKS) ) |
-  (CUT_BIT(CUT_M) ) |
-  (CUT_BIT(CUT_ANTI_ZMASS) ) |
-  (CUT_BIT(CUT_MET) ) |
-  (CUT_BIT(CUT_MT) );
+     (CUT_BIT(CUT_M) ) |
+//   (CUT_BIT(CUT_ANTI_ZMASS) ) |
+     (CUT_BIT(CUT_MET) ) ;
+//   (CUT_BIT(CUT_MT) );
 
 //dielectron cuts
 const static cuts_t baseline_dielectron_cuts = 
 //   (CUT_BIT(CUT_MORE_THAN_TWO_TRACKS) ) |
-  (CUT_BIT(CUT_EE) ) |
-  (CUT_BIT(CUT_ZMASS) ) |
-  (CUT_BIT(CUT_ANTI_MET) ) |
-  (CUT_BIT(CUT_OS) );
+     (CUT_BIT(CUT_EE) ) |
+//      (CUT_BIT(CUT_ZMASS) ) |
+//      (CUT_BIT(CUT_ANTI_MET) ) |
+     (CUT_BIT(CUT_OS) );
 
 //dimuon cuts
 const static cuts_t baseline_dimuon_cuts = 
 //   (CUT_BIT(CUT_MORE_THAN_TWO_TRACKS) ) |
-  (CUT_BIT(CUT_MM) ) |
-  (CUT_BIT(CUT_ZMASS) ) |
-  (CUT_BIT(CUT_ANTI_MET) ) |
-  (CUT_BIT(CUT_OS) );
+     (CUT_BIT(CUT_MM) ) |
+//      (CUT_BIT(CUT_ZMASS) ) |
+//   (CUT_BIT(CUT_ANTI_MET) ) |
+     (CUT_BIT(CUT_OS) );
 
 //EM cuts
 const static cuts_t baseline_emu_cuts = 
 //   (CUT_BIT(CUT_MORE_THAN_TWO_TRACKS) ) |
-  (CUT_BIT(CUT_EM) ) |
-  (CUT_BIT(CUT_ZMASS) ) |
-  (CUT_BIT(CUT_ANTI_MET) ) |
-  (CUT_BIT(CUT_OS) );
+     (CUT_BIT(CUT_EM) ) |
+//      (CUT_BIT(CUT_ZMASS) ) |
+//      (CUT_BIT(CUT_ANTI_MET) ) |
+     (CUT_BIT(CUT_OS) );
 
 //single electron test cuts
 const static cuts_t test_single_electron_cuts = 
