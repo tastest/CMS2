@@ -124,7 +124,7 @@ cuts_t Looper::EventSelect ()
 
     if( cms2.mus_p4()[mus].pt() < 20 ) continue;
 
-    if( !goodMuonIsolated(mus) ) continue;
+    if( !GoodSusyMuonWithIsolation(mus) ) continue;
 
     lep_idx.push_back( mus + mu_shift);
 
@@ -134,7 +134,7 @@ cuts_t Looper::EventSelect ()
 
     if( cms2.els_p4()[els].pt() < 20 ) continue;
 
-    if( !goodElectronIsolated(els, true) ) continue;
+    if( !GoodSusyElectronWithIsolation(els, true) ) continue;
 
     lep_idx.push_back( els );
 
@@ -170,6 +170,17 @@ cuts_t Looper::EventSelect ()
 
       if( cms2.mus_charge()[ lep_idx[0] % mu_shift ] * cms2.els_charge()[ lep_idx[1] % mu_shift ] < 0 )
 	ret |= CUT_BIT(CUT_OS);
+
+      if (lep_idx[0] / mu_shift == 1)
+	   lep1 = cms2.mus_p4()[ lep_idx[0] % mu_shift ];
+      else lep1 = cms2.els_p4()[ lep_idx[0] ];
+      if (lep_idx[1] / mu_shift == 1)
+	   lep2 = cms2.mus_p4()[ lep_idx[1] % mu_shift ];
+      else lep2 = cms2.els_p4()[ lep_idx[1] ];
+      boson = lep1 + lep2;
+      
+      if( boson.M() > 76 && boson.M() < 106 )
+	   ret |= CUT_BIT(CUT_ZMASS);
     }
 
     else if( (lep_idx[0] + lep_idx[1]) / mu_shift == 2 ) {
