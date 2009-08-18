@@ -1,10 +1,8 @@
 \section{Data driven Method for Fake Lepton backgrounds (Type-II)}
 \label{sec:leptonfake}
 
-In this analysis, the primary source of fake leptons are from Type-II 
-category. 
-As shown in Table~\ref{tab:fakeOrigin},
-roughly 3/4 of these events are expected to be from 
+In this analysis, the primary source of events are from Type-II category. 
+As shown in Table~\ref{tab:fakeOrigin}, roughly 3/4 of these events are expected to be from 
 heavy flavor sources, while the remainder is from
 fake leptons (Type-II b)). This means that one needs to be careful in defining the lepton fake rates
 to make sure they predict both sources of fakes with sufficient accuracy.
@@ -20,7 +18,7 @@ summarize the method, and we apply it to the same sign dilepton study.
 The method starts by defining a fake rate ($FR$) measured in QCD events. We use 
 the Pythia QCD samples with $\hat{P_T} > 30, 80 $ GeV. The fake rate is defined as 
 the probability for a lepton passing loose cuts (Fakeable Object, $FO$) to pass the 
-analysis cuts as a function of $p_T$ and $\eta$. The idea is to then apply the $FR$ to 
+analysis cuts as a function of $p_T$ and $\eta$. The measured probability is then applied to 
 dilepton candidates passing loose cuts to obtain a prediction to the fake lepton contribution. 
 The details of the applications of the $FR$ are given in Section~\ref{subsec:fakerateapplication}. 
 
@@ -48,14 +46,14 @@ Fakeable Objects are defined as follows:
 
 The $FR$ for electrons and muons are determined from the QCD sample.
 % are shown in Figure.xx [Need a figure]
-We note that the absolute value of the $FR$ is meaningless. It is the probability for a
+The $FR$ does not give a direct measure for an absolute lepton fake rate. It is the probability for a
 fake lepton passing loose identification requirements as well as isolation to also pass a tighter
 selection. 
 
 \subsection{Application of lepton fake rate to our analysis}
 \label{subsec:fakerateapplication}
 
-We evaluate the $FR$ in \ttbar Monte Carlo events. This test is meant to demonstrate that the 
+We evaluate the $FR$ in \ttbar Monte Carlo events. This test is meant to check if the 
 $FR$ as determined from the QCD events can be applied to \ttbar. In order to perform this test we 
 define the following four event selections:
 
@@ -101,7 +99,7 @@ Sample & Event yield \\ \hline
 \begin{tabular}{|l|c|}\hline
 Sample & Event yield \\ \hline
 \ttbar with $e + \mu$ (Observed) & 2.4 $\pm$ 0.3 \\
-\ttbar with $e + (\mu DO \times FR)$ (Predicted) & 2.7 \\
+\ttbar with $e + (\mu FO \times FR)$ (Predicted) & 2.7 \\
 \hline
 \end{tabular}
 \caption{ Monte Carlo test of the muon fake rate using 100 pb$^{-1}$ of integrated luminosity. \label{tab:MuonFR_Test}}
@@ -115,7 +113,7 @@ Results of the Monte Carlo tests for event yields are given in Tables~\ref{tab:E
 The uncertainties are from the MC statistics. From these studies we conclude that the QCD $FR$ parametrization 
 does a good job of reproducing the rate of fake electrons and muons in \ttbar events.
 
-Our procedure to estimate the fake contribution to our analysis is the following:
+In order to obtain a prediction of the fake contribution to our analysis, we proceed in the following way:
 \begin{itemize}
 \item Select lepton $+ FO$ events where
 \begin{itemize}
@@ -148,7 +146,7 @@ We conclude the following in comparison with the observed events from Table~\ref
 
 \begin{itemize}
 \item We predict within $\sim 20 \%$ of the observed Type-II contributions.
-\item Within Type-II, the contributions with events from heavy flavor sources are largely predicted ($\sim 88 \%$).
-\item The method introduces an overestimate for the true leptons in Type-I, which is at $\sim 2 \%$ level, 
+\item Within Type-II, the contribution from events with heavy flavor sources are largely predicted ($\sim 88 \%$).
+\item The method introduces an overestimate for the true leptons in Type-I. This is at $\sim 2 \%$ level, 
 this is negligible compared to the associated statistical as well as systematic uncertainties.
 \end{itemize}

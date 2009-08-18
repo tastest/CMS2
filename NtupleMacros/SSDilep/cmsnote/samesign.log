@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159-1.10b (Web2C 7.4.5) (format=pdflatex 2008.8.14)  14 AUG 2009 18:37
+This is pdfTeX, Version 3.14159-1.10b (Web2C 7.4.5) (format=pdflatex 2008.8.14)  18 AUG 2009 19:00
 **samesign
 (./samesign.tex{/usr/share/texmf/pdftex/config/pdftex.cfg}
 LaTeX2e <2001/06/01>
@@ -168,15 +168,16 @@ File: figs/feyntypeIIb.png Graphic file (type png)
 <figs/fr_rate.pdf, id=56, 796.9775pt x 597.23125pt>
 File: figs/fr_rate.pdf Graphic file (type pdf)
  <use figs/fr_rate.pdf>
-[5]) (./leptonfake.tex [6 <./figs/fr_rate.pdf
+[5] [6 <./figs/fr_rate.pdf
 Warning: pdflatex (file ./figs/fr_rate.pdf): pdf inclusion: Page Group detected
  which pdfTeX can't handle. Ignoring it.
->] [7]) (./application.tex [8]
+>]) (./leptonfake.tex [7]) (./application.tex [8]
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <9> on input line 32.
+(Font)              <9> on input line 33.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 32.
- [9]) (./conclusion.tex) [10
+(Font)              <6> on input line 33.
+ [9]) (./conclusion.tex)
+[10
 
 ] (./bib.tex
 Overfull \hbox (66.91583pt too wide) in paragraph at lines 13--14
@@ -196,7 +197,7 @@ s&confId=64436/ptmr7t/.
 Here is how much of TeX's memory you used:
  1260 strings out of 95437
  15530 string characters out of 1190233
- 69714 words of memory out of 1000001
+ 69715 words of memory out of 1000001
  4236 multiletter control sequences out of 10000+50000
  23415 words of font info for 50 fonts, out of 500000 for 1000
  14 hyphenation exceptions out of 1000
@@ -212,4 +213,4 @@ ips/tetex/aae443f0.enc}</usr/share/texmf/fonts/type1/bluesky/cm/cmmi7.pfb></usr
 /share/texmf/fonts/type1/bluesky/cm/cmmi10.pfb></usr/share/texmf/fonts/type1/bl
 uesky/cm/cmr17.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmmi12.pfb></usr/sh
 are/texmf/fonts/type1/bluesky/cm/cmsy10.pfb>
-Output written on samesign.pdf (12 pages, 236995 bytes).
+Output written on samesign.pdf (12 pages, 238195 bytes).
