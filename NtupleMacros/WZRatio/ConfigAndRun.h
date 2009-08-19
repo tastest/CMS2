@@ -232,15 +232,15 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
      const string log = name + ".log";
      // by default, we run this list of samples; if we're told by the
      // which_ones bit field to skip a sample, we skip it
-     Looper looper_ttbar	(fttbar()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_TTBAR )) looper_ttbar       .Loop();
-//      Looper looper_ww		(fWW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WW    )) looper_ww          .Loop();
-//      Looper looper_wz		(fWZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WZ    )) looper_wz          .Loop();
-//      Looper looper_zz		(fZZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_ZZ    )) looper_zz          .Loop();
-     Looper looper_dyee		(fDYee()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYEE  )) looper_dyee        .Loop();
-     Looper looper_dymm		(fDYmm()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYMM  )) looper_dymm        .Loop();
-     Looper looper_wjets	(fWjets()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS )) looper_wjets       .Loop();
-//      Looper looper_dytt		(fDYtt()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYTT  )) looper_dytt        .Loop();
-//      Looper looper_tw		(ftW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_TW    )) looper_tw          .Loop();
+     Looper looper_ttbar	(fttbarSingle()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_TTBAR )) looper_ttbar       .Loop();
+	 //Looper looper_ww		(fWW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WW    )) looper_ww          .Loop();
+	 //Looper looper_wz		(fWZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WZ    )) looper_wz          .Loop();
+	 //Looper looper_zz		(fZZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_ZZ    )) looper_zz          .Loop();
+     Looper looper_dyee		(fZeejetsAlpgenSingle()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYEE  )) looper_dyee        .Loop();
+     Looper looper_dymm		(fZmmjetsAlpgenSingle()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYMM  )) looper_dymm        .Loop();
+     Looper looper_dytt		(fZttjetsAlpgenSingle()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYTT  )) looper_dytt        .Loop();
+     Looper looper_wjets	(fWjetsAlpgenSingle()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS )) looper_wjets       .Loop();
+	 //Looper looper_tw		(ftW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_TW    )) looper_tw          .Loop();
      // when all the loopers are done, we save the histograms to file
      saveHist(hist.c_str());
      // then we collect them all and print a table
@@ -251,8 +251,8 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 	  &looper_ttbar       ,
 	  &looper_dyee        ,
 	  &looper_dymm        ,
+ 	  &looper_dytt        ,
 	  &looper_wjets       ,
-// 	  &looper_dytt        ,
 // 	  &looper_tw          ,
      };
      printTable(loopers, sizeof(loopers) / sizeof(Looper *), tbl.c_str(), which_ones);
@@ -285,30 +285,3 @@ int Results_em ()
   return run<Looper>(baseline_emu_cuts, "Results_em", 1 << LOOP_WJETS | 1 << LOOP_DYEE | 1 << LOOP_DYMM | 1 << LOOP_DYTT | 1 << LOOP_TTBAR);
 }
 
-/*****************************/
-int Results_test_se ()
-{
-  return run<Looper>(test_single_electron_cuts, "Results_test_se", 1 << LOOP_DYEE );
-		     //1 << LOOP_WJETS | 1 << LOOP_DYEE | 1 << LOOP_DYMM | 1 << LOOP_DYTT | 1 << LOOP_TTBAR);
-}
-
-int Results_test_sm ()
-{
-  return run<Looper>(test_single_muon_cuts, "Results_test_sm", 1 << LOOP_DYMM );
-		     //1 << LOOP_WJETS | 1 << LOOP_DYEE | 1 << LOOP_DYMM | 1 << LOOP_DYTT | 1 << LOOP_TTBAR);
-}
-
-int Results_test_de ()
-{
-  return run<Looper>(test_dielectron_cuts, "Results_test_de", 1 << LOOP_WJETS | 1 << LOOP_DYEE | 1 << LOOP_DYMM | 1 << LOOP_DYTT | 1 << LOOP_TTBAR);
-}
-
-int Results_test_dm ()
-{
-  return run<Looper>(test_dimuon_cuts, "Results_test_dm", 1 << LOOP_WJETS | 1 << LOOP_DYEE | 1 << LOOP_DYMM | 1 << LOOP_DYTT | 1 << LOOP_TTBAR);
-}
-
-int Results_test_em ()
-{
-  return run<Looper>(test_emu_cuts, "Results_test_em", 1 << LOOP_WJETS | 1 << LOOP_DYEE | 1 << LOOP_DYMM | 1 << LOOP_DYTT | 1 << LOOP_TTBAR);
-}
