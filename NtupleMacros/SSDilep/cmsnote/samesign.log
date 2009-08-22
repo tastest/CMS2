@@ -1,24 +1,17 @@
-This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=pdflatex 2009.3.2)  18 AUG 2009 20:08
-entering extended mode
- %&-line parsing enabled.
+This is pdfTeX, Version 3.14159-1.10b (Web2C 7.4.5) (format=pdflatex 2008.8.14)  22 AUG 2009 16:57
 **samesign
-(./samesign.tex
-LaTeX2e <2005/12/01>
-Babel <v3.8h> and hyphenation patterns for english, usenglishmax, dumylang, noh
-yphenation, arabic, basque, bulgarian, coptic, welsh, czech, slovak, german, ng
-erman, danish, esperanto, spanish, catalan, galician, estonian, farsi, finnish,
- french, greek, monogreek, ancientgreek, croatian, hungarian, interlingua, ibyc
-us, indonesian, icelandic, italian, latin, mongolian, dutch, norsk, polish, por
-tuguese, pinyin, romanian, russian, slovenian, uppersorbian, serbian, swedish, 
-turkish, ukenglish, ukrainian, loaded.
+(./samesign.tex{/usr/share/texmf/pdftex/config/pdftex.cfg}
+LaTeX2e <2001/06/01>
+Babel <v3.7h> and hyphenation patterns for american, french, german, ngerman, n
+ohyphenation, loaded.
 (./cmspaper.cls
 CMS paper style Version <0.4>, <25 Nov. 1996>
 based on Document Style 'CERNART' Version <2.1>, <1 May 1995>
 Document Class: cmspaper 1996/11/25
 (/usr/share/texmf/tex/latex/base/article.cls
-Document Class: article 2005/09/16 v1.4f Standard LaTeX document class
+Document Class: article 2001/04/21 v1.4e Standard LaTeX document class
 (/usr/share/texmf/tex/latex/base/size10.clo
-File: size10.clo 2005/09/16 v1.4f Standard LaTeX file (size option)
+File: size10.clo 2001/04/21 v1.4e Standard LaTeX file (size option)
 )
 \c@part=\count79
 \c@section=\count80
@@ -35,18 +28,18 @@ File: size10.clo 2005/09/16 v1.4f Standard LaTeX file (size option)
 \c@instfoot=\count87
 
 (/usr/share/texmf/tex/latex/graphics/graphics.sty
-Package: graphics 2006/02/20 v1.0o Standard LaTeX Graphics (DPC,SPQR)
+Package: graphics 2001/07/07 v1.0n Standard LaTeX Graphics (DPC,SPQR)
 
 (/usr/share/texmf/tex/latex/graphics/trig.sty
 Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
 )
 (/usr/share/texmf/tex/latex/config/graphics.cfg
-File: graphics.cfg 2007/01/18 v1.5 graphics configuration of teTeX/TeXLive
+File: graphics.cfg 2001/08/31 v1.1 graphics configuration of teTeX/TeXLive
 )
-Package graphics Info: Driver file: pdftex.def on input line 90.
+Package graphics Info: Driver file: pdftex.def on input line 80.
 
-(/usr/share/texmf/tex/latex/pdftex-def/pdftex.def
-File: pdftex.def 2007/01/08 v0.04d Graphics/color for pdfTeX
+(/usr/share/texmf/tex/latex/graphics/pdftex.def
+File: pdftex.def 2002/06/19 v0.03k graphics/color for pdftex
 \Gread@gobject=\count88
 )))
 (/usr/share/texmf/tex/latex/graphics/graphicx.sty
@@ -59,12 +52,11 @@ Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
 \Gin@req@height=\dimen103
 \Gin@req@width=\dimen104
 )
-(/usr/share/texmf/tex/generic/dvips/rotate.sty
-\@rotdimen=\dimen105
-\@rotbox=\box26
+(/usr/share/texmf/tex/plain/dvips/rotate.tex
+\rotdimen=\dimen105
 )
-(/usr/share/texmf/tex/latex/ltxmisc/relsize.sty
-Package: relsize 2003/07/04 ver 3.1
+(/usr/share/texmf/tex/latex/misc/relsize.sty
+Package: relsize 1999/11/01 ver 2.0b
 ) (./samesign.aux)
 \openout1 = `samesign.aux'.
 
@@ -85,9 +77,36 @@ LaTeX Font Info:    Try loading font information for OT1+ptm on input line 10.
 (/usr/share/texmf/tex/latex/psnfss/ot1ptm.fd
 File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
 )
+(/usr/share/texmf/tex/context/base/supp-pdf.tex
+(/usr/share/texmf/tex/context/base/supp-mis.tex
+loading : Context Support Macros / Missing
+\protectiondepth=\count89
+\scratchcounter=\count90
+\scratchtoks=\toks15
+\scratchdimen=\dimen106
+\scratchskip=\skip43
+\scratchmuskip=\muskip10
+\scratchbox=\box26
+\scratchread=\read1
+\scratchwrite=\write3
+\zeropoint=\dimen107
+\minusone=\count91
+\thousandpoint=\dimen108
+\emptytoks=\toks16
+\nextbox=\box27
+\nextdepth=\dimen109
+\everyline=\toks17
+\!!counta=\count92
+\!!countb=\count93
+\recursecounter=\count94
+)
+loading : Context Support Macros / PDF
+\nofMPsegments=\count95
+\nofMParguments=\count96
+\everyMPtoPDFconversion=\toks18
+)
 LaTeX Font Info:    Try loading font information for OT1+phv on input line 16.
-
-(/usr/share/texmf/tex/latex/psnfss/ot1phv.fd
+ (/usr/share/texmf/tex/latex/psnfss/ot1phv.fd
 File: ot1phv.fd 2001/06/04 scalable font definitions for OT1/phv.
 )
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -105,7 +124,7 @@ LaTeX Font Info:    External font `cmex10' loaded for size
  [1
 
 
-{/usr/share/texmf/fonts/map/pdftex/updmap/pdftex.map}] (./intro.tex
+{/usr/share/texmf/dvips/config/pdftex.map}] (./intro.tex
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1.
 ) (./samples.tex
@@ -124,79 +143,76 @@ LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
  [1]
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 22.
-
-<figs/ChargeMisIdRateEta.png, id=21, 698.61pt x 473.77pt>
+ [2]
+<figs/ChargeMisIdRateEta.png, id=45, 698.61pt x 473.77pt>
 File: figs/ChargeMisIdRateEta.png Graphic file (type png)
 
 <use figs/ChargeMisIdRateEta.png>
-<figs/ChargeMisIdRatePt.png, id=22, 698.61pt x 473.77pt>
+<figs/ChargeMisIdRatePt.png, id=46, 698.61pt x 473.77pt>
 File: figs/ChargeMisIdRatePt.png Graphic file (type png)
 
-<use figs/ChargeMisIdRatePt.png>) (./yields.tex [2]) (./bkgtypes.tex [3 <./figs
-/ChargeMisIdRateEta.png> <./figs/ChargeMisIdRatePt.png>]
-<figs/feyntypeI.png, id=31, 997.7275pt x 404.51125pt>
+<use figs/ChargeMisIdRatePt.png>) (./yields.tex
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 15.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 15.
+) (./bkgtypes.tex [3 <./figs/ChargeMisIdRateEta.png> <./figs/ChargeMisIdRatePt.
+png>]
+<figs/feyntypeI.png, id=50, 997.7275pt x 404.51125pt>
 File: figs/feyntypeI.png Graphic file (type png)
  <use figs/feyntypeI.png>
-<figs/feyntypeIIa.png, id=32, 1012.78375pt x 484.81125pt>
+<figs/feyntypeIIa.png, id=51, 1012.78375pt x 484.81125pt>
 File: figs/feyntypeIIa.png Graphic file (type png)
 
 <use figs/feyntypeIIa.png>
-<figs/feyntypeIIb.png, id=33, 1006.76125pt x 390.45876pt>
+<figs/feyntypeIIb.png, id=52, 1006.76125pt x 390.45876pt>
 File: figs/feyntypeIIb.png Graphic file (type png)
 
-<use figs/feyntypeIIb.png> [4 <./figs/feyntypeI.png (PNG copy)> <./figs/feyntyp
-eIIa.png (PNG copy)> <./figs/feyntypeIIb.png (PNG copy)>]) (./chargeMisId.tex
-<figs/fr_rate.pdf, id=37, 796.9775pt x 597.23125pt>
+<use figs/feyntypeIIb.png> [4 <./figs/feyntypeI.png> <./figs/feyntypeIIa.png> <
+./figs/feyntypeIIb.png>]) (./chargeMisId.tex [5]
+<figs/fr_rate.pdf, id=68, 796.9775pt x 597.23125pt>
 File: figs/fr_rate.pdf Graphic file (type pdf)
  <use figs/fr_rate.pdf>
-[5] [6 <./figs/fr_rate.pdf
-
-pdfTeX warning: pdflatex (file ./figs/fr_rate.pdf): PDF inclusion: Page Group d
-etected which pdfTeX can't handle. Ignoring it.
->]) (./leptonfake.tex [7]) (./application.tex [8]
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <9> on input line 33.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 33.
- [9]) (./conclusion.tex)
-[10
+[6 <./figs/fr_rate.pdf
+Warning: pdflatex (file ./figs/fr_rate.pdf): pdf inclusion: Page Group detected
+ which pdfTeX can't handle. Ignoring it.
+>]) (./leptonfake.tex [7] [8]) (./application.tex [9] [10]) (./conclusion.tex)
+[11
 
 ] (./bib.tex
 Overfull \hbox (66.91583pt too wide) in paragraph at lines 13--14
-[]\OT1/pcr/m/n/10 http://indico.cern.ch/materialDisplay.py?contribId=3&material
-Id=slides&confId=58309\OT1/ptm/m/n/10 . 
+[]/pcrr7t/http://indico.cern.ch/materialDisplay.py?contribId=3&materialId=slide
+s&confId=58309/ptmr7t/. 
  []
 
 
 Overfull \hbox (66.91583pt too wide) in paragraph at lines 21--22
-[]\OT1/pcr/m/n/10 http://indico.cern.ch/materialDisplay.py?contribId=3&material
-Id=slides&confId=64436\OT1/ptm/m/n/10 . 
+[]/pcrr7t/http://indico.cern.ch/materialDisplay.py?contribId=3&materialId=slide
+s&confId=64436/ptmr7t/. 
  []
 
-) [11
+) [12
 
 ] (./samesign.aux) ) 
 Here is how much of TeX's memory you used:
- 983 strings out of 256216
- 12127 string characters out of 1917073
- 67709 words of memory out of 1500000
- 4247 multiletter control sequences out of 10000+200000
- 23415 words of font info for 50 fonts, out of 1200000 for 2000
- 645 hyphenation exceptions out of 8191
- 29i,10n,19p,420b,302s stack positions out of 5000i,500n,6000p,200000b,15000s
-{/usr/share/texmf/fonts/enc/dvips/base/8r.enc}</usr/share/t
-exmf/fonts/type1/bluesky/cm/cmmi10.pfb></usr/share/texmf/fonts/type1/bluesky/cm
-/cmmi12.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmmi7.pfb></usr/share/texm
-f/fonts/type1/bluesky/cm/cmr10.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmr
-17.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmr7.pfb></usr/share/texmf/font
-s/type1/bluesky/cm/cmsy10.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmsy7.pf
-b></usr/share/texmf/fonts/type1/urw/courier/ucrr8a.pfb></usr/share/texmf/fonts/
-type1/urw/helvetic/uhvr8a.pfb></usr/share/texmf/fonts/type1/urw/symbol/usyr.pfb
-></usr/share/texmf/fonts/type1/urw/times/utmb8a.pfb></usr/share/texmf/fonts/typ
-e1/urw/times/utmr8a.pfb></usr/share/texmf/fonts/type1/urw/times/utmri8a.pfb>
-Output written on samesign.pdf (12 pages, 333611 bytes).
-PDF statistics:
- 122 PDF objects out of 1000 (max. 8388607)
- 0 named destinations out of 1000 (max. 131072)
- 31 words of extra memory for PDF output out of 10000 (max. 10000000)
-
+ 1262 strings out of 95437
+ 15560 string characters out of 1190233
+ 70725 words of memory out of 1000001
+ 4238 multiletter control sequences out of 10000+50000
+ 23922 words of font info for 51 fonts, out of 500000 for 1000
+ 14 hyphenation exceptions out of 1000
+ 29i,10n,19p,420b,404s stack positions out of 1500i,500n,5000p,200000b,5000s
+ 110 PDF objects out of 300000
+ 0 named destinations out of 131072
+ 30 words of extra memory for PDF output out of 65536
+{/usr/share/texmf/dvips/tetex/bbad153f.enc}</usr/share/texm
+f/fonts/type1/bluesky/cm/cmsy8.pfb>{/usr/share/texmf/dvips/tetex/f7b6d320.enc}<
+/usr/share/texmf/fonts/type1/bluesky/cm/cmr8.pfb>{/usr/share/texmf/dvips/tetex/
+aae443f0.enc}</usr/share/texmf/fonts/type1/bluesky/cm/cmmi8.pfb>{/usr/share/tex
+mf/dvips/psnfss/8r.enc}</usr/share/texmf/fonts/type1/bluesky/cm/cmr7.pfb></usr/
+share/texmf/fonts/type1/bluesky/cm/cmsy7.pfb></usr/share/texmf/fonts/type1/blue
+sky/cm/cmr10.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmmi7.pfb></usr/share
+/texmf/fonts/type1/bluesky/cm/cmmi10.pfb></usr/share/texmf/fonts/type1/bluesky/
+cm/cmr17.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmmi12.pfb></usr/share/te
+xmf/fonts/type1/bluesky/cm/cmsy10.pfb>
+Output written on samesign.pdf (13 pages, 249680 bytes).

@@ -9,7 +9,7 @@ analyses.  A quick summary of the event selection is:
 \begin{itemize}
 \item The event is required to pass the single $e$ or $\mu$  triggers.
 \item Two isolated, same sign leptons ($ee$, $e\mu$, and $\mu\mu$). 
-\item Leptons must have $P_T > 10$ GeV and at least one of them must have $P_T > 20$ GeV.
+\item Leptons must have $P_T > 10$ GeV, $|\eta|< 2.4$ and at least one of them must have $P_T > 20$ GeV.
 \item We veto the candidate lepton, if an extra lepton in the event, pairs with the candidate lepton
 to form a $Z$ within the mass range between $76 < m_{\ell\ell} $ (GeV) $< 106$. This requirement is 
 designed to reject $WZ$ events.
@@ -35,6 +35,9 @@ All isolation sums are the standard sums used in release 2\_2\_X from the egamma
 \item $|\Delta \cot\theta| < 0.02$; the difference between cotangent azimuthal angles of tracks parallel to 
 each other.
 \item $|d_{2d}| < 0.02$ cm; the two dimensional distance between points within nearest tracks.
+\item The charge of the associated GSF and CTF tracks must be consistent.
+If the CTF track is not reconstructed, the electron is kept.
+This is discussed further in Section~\ref{sec:gsfctf}.
 \end{itemize} 
 \end{itemize}
 
@@ -66,6 +69,7 @@ SM opposite sign dilepton events, where the charge of one of the leptons is misi
 Monte Carlo studies show that the muon charge misidentification rate is negligible, up to very 
 high momenta.  On the other hand, because of curvature changes due to bremsstrahlung in the tracker, electrons have a 
 significant probability of being reconstructed with the wrong sign. 
+
 In order to reduce the contribution of charge mis-reconstruction, we have studied the 
 charge mis-identification rates in a dedicated ``electron gun'' sample. The charge 
 mis-identification rate is defined as the ratio of electrons with wrong reconstructed
@@ -81,12 +85,25 @@ electron using ``electron gun'' sample \label{fig:charge_misid}. The solid (blue
 the rate after the veto.}
 \end{center}
 \end{figure}
-Electrons are selected with standard identification and isolation mentioned earlier. The Gaussian Sum Filter (GSF) tracks 
-and GeneralTracks (CTF) are associated based on sharing of hits in the silicon strip tracking detector. 
-The electrons are vetoed if the charge of GSF track associated with the electron is not same 
-as the charge of the associated GeneralTrack. The electron is considered valid if it is matched
-to a GSF track, but with no associated GeneralTrack. Figure~\ref{fig:charge_misid} shows the charge mis-identification 
-rate as a function of pseudorapidity ($\eta$) and transverse momentum ($p_T$) of the generated electron. The charge 
-mis-identification rate is reduced by a factor of $\sim 3.9$, with a moderate ($2.1\%$)  loss in electron reconstruction 
-efficiency after the veto. The rate after the veto is found to vary between $0.04\%$ to $1\%$ with increase in 
-pseudorapidity. This selection is applied as part of the standard selection for rest of this document.
+
+Electrons are selected with the identification and isolation requirements
+mentioned earlier. 
+The standard way to define the charge of the electron is to use the
+charge of the corresponding Gaussian Sum Filter (GSF) track.
+We have found that the probability of misidentifying the charge can be reduced by 
+a factor of $\sim 3.9$ with a small $\sim 2.1\%$ loss in efficiency by vetoing electrons
+where the associated GeneralTrack (CTF track), if found, has a different charge.
+This is illustrated in Figure~\ref{fig:charge_misid}.
+The rate after the veto is found to vary between $0.04\%$ to $1\%$ with increase in 
+pseudorapidity. This selection is applied as part of the standard selection for 
+the rest of this document.
+
+The association of CTF tracks to electron objects is performed by counting the 
+number of shared valid hits between the CTF and GSF tracks in the pixels and TIB/TID.
+The associated CTF track is defined as the CTF track with the highest fraction of
+shared hits with the GSF track, with the further requirement that the fraction 
+of shared hits be $>$ 50\%.  The
+fraction of shared hits is defined as the number of shared hits divided by
+min($N_{CTF},N_{GSF}$), where $N_{CTF}$ and $N_{GSF}$ are the number of pixel $+$ 
+TIB/TID valid hits for the CTF and GSF tracks respectively.
+
