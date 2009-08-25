@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.1 2009/07/19 12:58:51 gutsche Exp $
+# $Id: Makefile,v 1.2 2009/08/25 22:40:21 gutsche Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
@@ -26,6 +26,8 @@ LOOPERLIB = libCMS2NtupleMacrosLooper.so
 LIBS = $(CORELIB) $(TOOLSLIB) $(LOOPERLIB)
 
 TABLES = Results.tbl
+
+OUTPUTDIR = "out_"$(shell date +%y%m%d_%H%M%S)
 
 .PHONY: all
 all:	$(LIBS) 
@@ -71,6 +73,12 @@ $(TABLES): $(LIBS)
 
 %.tbl %.root %.log:	$(LIBS)
 	echo $(@:.tbl=)"()" | root.exe -b setup.C
+
+plots:
+	mkdir -p $(OUTPUTDIR)
+	echo "loadHist(\"Results.root\"); browseStacksTrilep(true,false,\""$(OUTPUTDIR)"\")" | root.exe -b ../Tools/setup.C
+	ps2pdf $(OUTPUTDIR)/stacks.ps $(OUTPUTDIR)/stacks.pdf
+	cp Results.* $(OUTPUTDIR)
 
 -include $(TOOLSSOURCES:.cc=.d)
 -include $(CORESOURCES:.cc=.d)
