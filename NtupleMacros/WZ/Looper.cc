@@ -36,18 +36,18 @@ void Looper::BookHistos ()
 							(CUT_BIT(CUT_SECOND_HIGHEST_PT_LEP_PT20)) |
 							(CUT_BIT(CUT_THIRD_HIGHEST_PT_LEP_PT20)));
 
-  h_highest_lep_iso_	= new TrilepNMinus1Hist(sample_, "PtHighestLeptonIso",	 100,0.,1., cuts_,CUT_BIT(CUT_HIGHEST_PT_LEP_ISO));
-  h_second_highest_lep_iso_	= new TrilepNMinus1Hist(sample_, "PtSecondHighestLeptonIso",	 100,0.,1., cuts_,CUT_BIT(CUT_SECOND_HIGHEST_PT_LEP_ISO));
-  h_third_highest_lep_iso_	= new TrilepNMinus1Hist(sample_, "PtThirdHighestLeptonIso",	 100,0.,1., cuts_,CUT_BIT(CUT_THIRD_HIGHEST_PT_LEP_ISO));
+  h_highest_lep_iso_	= new TrilepNMinus1Hist(sample_, "PtHighestLeptonIso",	 140,0.,1.4, cuts_,CUT_BIT(CUT_HIGHEST_PT_LEP_ISO));
+  h_second_highest_lep_iso_	= new TrilepNMinus1Hist(sample_, "PtSecondHighestLeptonIso",	 140,0.,1.4, cuts_,CUT_BIT(CUT_SECOND_HIGHEST_PT_LEP_ISO));
+  h_third_highest_lep_iso_	= new TrilepNMinus1Hist(sample_, "PtThirdHighestLeptonIso",	 140,0.,1.4, cuts_,CUT_BIT(CUT_THIRD_HIGHEST_PT_LEP_ISO));
 
 
-  h_highest_iso_lep_iso_	= new TrilepNMinus1Hist(sample_, "IsoHighestLeptonIso",	 100,0.,1., cuts_, (CUT_BIT(CUT_HIGHEST_PT_LEP_ISO)) |
+  h_highest_iso_lep_iso_	= new TrilepNMinus1Hist(sample_, "IsoHighestLeptonIso",	 140,0.,1.4, cuts_, (CUT_BIT(CUT_HIGHEST_PT_LEP_ISO)) |
 							(CUT_BIT(CUT_SECOND_HIGHEST_PT_LEP_ISO)) |
 							(CUT_BIT(CUT_THIRD_HIGHEST_PT_LEP_ISO)));
-  h_second_highest_iso_lep_iso_	= new TrilepNMinus1Hist(sample_, "IsoSecondHighestLeptonIso",	 100,0.,1., cuts_, (CUT_BIT(CUT_HIGHEST_PT_LEP_ISO)) |
+  h_second_highest_iso_lep_iso_	= new TrilepNMinus1Hist(sample_, "IsoSecondHighestLeptonIso",	 140,0.,1.4, cuts_, (CUT_BIT(CUT_HIGHEST_PT_LEP_ISO)) |
 							(CUT_BIT(CUT_SECOND_HIGHEST_PT_LEP_ISO)) |
 							(CUT_BIT(CUT_THIRD_HIGHEST_PT_LEP_ISO)));
-  h_third_highest_iso_lep_iso_	= new TrilepNMinus1Hist(sample_, "IsoThirdHighestLeptonIso",	 100,0.,1., cuts_, (CUT_BIT(CUT_HIGHEST_PT_LEP_ISO)) |
+  h_third_highest_iso_lep_iso_	= new TrilepNMinus1Hist(sample_, "IsoThirdHighestLeptonIso",	 140,0.,1.4, cuts_, (CUT_BIT(CUT_HIGHEST_PT_LEP_ISO)) |
 							(CUT_BIT(CUT_SECOND_HIGHEST_PT_LEP_ISO)) |
 							(CUT_BIT(CUT_THIRD_HIGHEST_PT_LEP_ISO)));
 
@@ -59,7 +59,7 @@ void Looper::BookHistos ()
   h_DeltaPhiMETNearestLepton_ = new TrilepNMinus1Hist(sample_, "DeltaPhiMETNearestLepton",	 20,0,TMath::Pi(), cuts_, CUT_BIT(CUT_TCMET_15));
   h_DeltaPhiMETNearestJet_ = new TrilepNMinus1Hist(sample_, "DeltaPhiMETNearestJet",	 20,0,TMath::Pi(), cuts_, CUT_BIT(CUT_TCMET_15));
 
-  h_primZMass_ = new TrilepNMinus1Hist(sample_, "ZMassPrim",	 200,0,200, cuts_, CUT_BIT(CUT_PRIM_Z) | CUT_BIT(CUT_NO_SEC_Z));
+  h_primZMass_ = new TrilepNMinus1Hist(sample_, "ZMassPrim",	 32,40,120, cuts_, CUT_BIT(CUT_PRIM_Z) | CUT_BIT(CUT_NO_SEC_Z));
   h_addZMass_ = new TrilepNMinus1Hist(sample_, "ZMassAdd",	 200,0,200, cuts_, CUT_BIT(CUT_NO_SEC_Z));
   h_genZMass_ = new TrilepNMinus1Hist(sample_, "ZMassGen",	 200,0,200, cuts_, baseline_cuts);
 
@@ -334,7 +334,10 @@ void Looper::FillTrilepHistos (int i_hyp)
   //------------------------------------------------------------
 
   // event weight
-  const double weight = Weight(i_hyp);
+  double weight = Weight(i_hyp);
+
+  // scale to 300 pb-1
+  weight *= 3./10.;
 
   // these are the cuts that the candidate passes:
   cuts_t cuts_passed = TrilepSelect(i_hyp);
