@@ -56,6 +56,7 @@ Sample fDY20ee  ();
 Sample fWgamma	();
 Sample fZgamma	();
 Sample fttbar	();
+Sample fttbarSingle ();
 Sample fttbar_taula	();
 Sample ftW	();
 Sample fSingleTop_tChannel	();

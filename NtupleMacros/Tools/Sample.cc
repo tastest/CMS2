@@ -484,6 +484,16 @@ Sample fttbar ()
 }
 
 //ttbar file
+Sample fttbarSingle ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "cms2-V01-03-01/TTJets-madgraph_Fall08_IDEAL_V11_redigi_v10-SingleLepton/merged_ntuple*.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, ttbar, kYellow, 1, "ttbar", true, 0. };
+     return ret;
+}
+
+//ttbar file
 Sample fttbar_taula ()
 {
      TChain *c = new TChain("Events");
