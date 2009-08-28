@@ -17,19 +17,19 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 //  - quadlepton candidate in QuadlepSelect().
 enum {
   CUT_MORE_THAN_TWO_TRACKS,
-  CUT_NL,
-  CUT_E,
+  CUT_NL, //no lepton
+  CUT_E, //exactly one isolated e
   CUT_M,
-  CUT_EE,
+  CUT_EE, //exactly two isolated es
   CUT_EM,
   CUT_MM,
-  CUT_ML,
+  CUT_ML, //more than two isolated leptons
   CUT_OS,
   CUT_ZMASS,
   CUT_ANTI_ZMASS,
   CUT_MET,
   CUT_ANTI_MET,
-  CUT_MT,
+  CUT_MT, //transverse mass
 };
 
 //----------------------------------------------------------------------
@@ -94,33 +94,6 @@ const static cuts_t baseline_emu_cuts =
 //      (CUT_BIT(CUT_ZMASS) ) |
 //      (CUT_BIT(CUT_ANTI_MET) ) |
      (CUT_BIT(CUT_OS) );
-
-//single electron test cuts
-const static cuts_t test_single_electron_cuts = 
-  (CUT_BIT(CUT_MORE_THAN_TWO_TRACKS) ) |
-  (CUT_BIT(CUT_E) );
-
-//single muon test cuts
-const static cuts_t test_single_muon_cuts = 
-  (CUT_BIT(CUT_MORE_THAN_TWO_TRACKS) ) |
-  (CUT_BIT(CUT_M) );
-
-//dielectron test cuts
-const static cuts_t test_dielectron_cuts = 
-  (CUT_BIT(CUT_MORE_THAN_TWO_TRACKS) ) |
-  (CUT_BIT(CUT_OS) ) |
-  (CUT_BIT(CUT_EE) );
-
-//dimuon test cuts
-const static cuts_t test_dimuon_cuts = 
-  (CUT_BIT(CUT_MORE_THAN_TWO_TRACKS) ) |
-  (CUT_BIT(CUT_OS) ) |
-  (CUT_BIT(CUT_MM) );
-
-//emu test cuts
-const static cuts_t test_emu_cuts = 
-  (CUT_BIT(CUT_MORE_THAN_TWO_TRACKS) ) |
-  (CUT_BIT(CUT_EM) );
 
 //----------------------------------------------------------------------
 // Loopers 

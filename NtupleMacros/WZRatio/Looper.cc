@@ -196,10 +196,11 @@ cuts_t Looper::EventSelect ()
       if( boson.M() > 76 && boson.M() < 106 )
 	ret |= CUT_BIT(CUT_ZMASS);
     }    
-    
+
+    //count jets and clean for dilepton
     njpts = 0;
     njets = 0;
-    // count jets and jpts
+
     for (unsigned int i = 0; i < cms2.jpts_p4().size(); ++i) {
 	 const double etaMax      = 2.4;
 	 const double vetoCone    = 0.4;
@@ -232,6 +233,7 @@ cuts_t Looper::EventSelect ()
     }
   }
 
+  //single lepton case
   if( lep_idx.size() == 1 ) {
 
     if( lep_idx[0] / mu_shift ) {
@@ -242,16 +244,16 @@ cuts_t Looper::EventSelect ()
       wmt_ = TMath::Sqrt( 2. * lep1.pt() * cms2.evt_tcmet() * (1 - cos(cms2.evt_tcmetPhi() - lep1.phi() )));
       
       if( wmt_ > 40 && wmt_ < 100 )
-	ret |= CUT_BIT(CUT_MT);
+		ret |= CUT_BIT(CUT_MT);
 
       for( unsigned int trks = 0; trks < cms2.trks_trk_p4().size(); trks++ ) {
 
-	LorentzVector trkp4_ = cms2.trks_trk_p4()[trks];
+		LorentzVector trkp4_ = cms2.trks_trk_p4()[trks];
 
-	wp4_ = lep1 + trkp4_;
+		wp4_ = lep1 + trkp4_;
 
-	if( wp4_.M() < 76 || wp4_.M() > 106 )
-	  ret |= CUT_BIT(CUT_ANTI_ZMASS);
+		if( wp4_.M() < 76 || wp4_.M() > 106 )
+		  ret |= CUT_BIT(CUT_ANTI_ZMASS);
       }
 
       for( unsigned int gens = 0; gens < cms2.genps_p4().size(); gens++ ) {
@@ -264,7 +266,7 @@ cuts_t Looper::EventSelect ()
 
 	   if (ROOT::Math::VectorUtil::DeltaR(cms2.mus_p4()[lep_idx[0] % mu_shift], 
 					      cms2.genps_p4()[gens]) > 0.1) {
-		genp4_ = cms2.genps_p4()[gens];
+		 genp4_ = cms2.genps_p4()[gens];
 // 		printf("not matched to (pt eta phi) (%6.1f %10.3f %6.3f), which wants idx %d\n",
 // 		       cms2.mus_p4()[lep_idx[0] % mu_shift].pt(), cms2.mus_p4()[lep_idx[0] % mu_shift].eta(), cms2.mus_p4()[lep_idx[0] % mu_shift].phi(),
 // 		       cms2.mus_mcidx()[ lep_idx[0] % mu_shift ]);
@@ -275,7 +277,7 @@ cuts_t Looper::EventSelect ()
 	   }
       }
     }
-
+	//single el
     else if( !(lep_idx[0] / mu_shift) ) {
       ret |= CUT_BIT(CUT_E);
 
@@ -284,29 +286,31 @@ cuts_t Looper::EventSelect ()
       wmt_ = TMath::Sqrt( 2. * lep1.pt() * cms2.evt_tcmet() * (1 - cos(cms2.evt_tcmetPhi() - lep1.phi() )));
       
       if( wmt_ > 40 && wmt_ < 100 )
-	ret |= CUT_BIT(CUT_MT);
+		ret |= CUT_BIT(CUT_MT);
 
       for( unsigned int trks = 0; trks < cms2.trks_trk_p4().size(); trks++ ) {
 
-	LorentzVector trkp4_ = cms2.trks_trk_p4()[trks];
+		LorentzVector trkp4_ = cms2.trks_trk_p4()[trks];
 
-	wp4_ = lep1 + trkp4_;
+		wp4_ = lep1 + trkp4_;
 
-	if( wp4_.M() < 76 || wp4_.M() > 106 )
-	  ret |= CUT_BIT(CUT_ANTI_ZMASS);
+		if( wp4_.M() < 76 || wp4_.M() > 106 )
+		  ret |= CUT_BIT(CUT_ANTI_ZMASS);
       }
 
       for( unsigned int gens = 0; gens < cms2.genps_p4().size(); gens++ ) {
-	if( cms2.genps_status()[gens] != 3) continue;
+		if( cms2.genps_status()[gens] != 3) continue;
 
-	if( abs( cms2.genps_id()[gens] ) != 11 ) continue;
+		if( abs( cms2.genps_id()[gens] ) != 11 ) continue;
 
-	if (ROOT::Math::VectorUtil::DeltaR(cms2.els_p4()[lep_idx[0] % mu_shift], 
-					   cms2.genps_p4()[gens]) > 0.1) {
-	     genp4_ = cms2.genps_p4()[gens];
-	}
+		if (ROOT::Math::VectorUtil::DeltaR(cms2.els_p4()[lep_idx[0] % mu_shift], 
+										   cms2.genps_p4()[gens]) > 0.1) {
+		  genp4_ = cms2.genps_p4()[gens];
+		}
       }
     }
+
+    //count jets and clean for single lepton--need redundancy because it's redundant
     njpts = 0;
     njets = 0;
     // count jets and jpts
@@ -324,17 +328,17 @@ cuts_t Looper::EventSelect ()
 	 njpts++;
     }
     for (unsigned int i = 0; i < cms2.jets_p4().size(); ++i) {
-	 const double etaMax      = 2.4;
-	 const double vetoCone    = 0.4;
-	 const double etMin       = 15;
-	 const LorentzVector &jet = cms2.jets_p4()[i];
-	 if (jet.Et() < etMin * cms2.jets_pat_noCorrF()[i]) // remember to uncorrect!
-	      continue;
-	 if (jet.eta() > etaMax)
-	      continue;
-	 if (ROOT::Math::VectorUtil::DeltaR(lep1, jet) < vetoCone)
-	      continue;
-	 njets++;
+	  const double etaMax      = 2.4;
+	  const double vetoCone    = 0.4;
+	  const double etMin       = 15;
+	  const LorentzVector &jet = cms2.jets_p4()[i];
+	  if (jet.Et() < etMin * cms2.jets_pat_noCorrF()[i]) // remember to uncorrect!
+		continue;
+	  if (jet.eta() > etaMax)
+		continue;
+	  if (ROOT::Math::VectorUtil::DeltaR(lep1, jet) < vetoCone)
+		continue;
+	  njets++;
     }
   }
 
