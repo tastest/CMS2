@@ -27,17 +27,16 @@ void Looper::NewHist(TH1F*& h, char* name, char* title, int bins, double min, do
   h->Sumw2();
   h->SetFillColor(sample_.histo_color);
   h->SetLineColor(sample_.histo_color);
-  //h.Sumw2();
-  //h.SetFillColor(sample_.histo_color);
-  //h.SetLineColor(sample_.histo_color);
 }
 
-//void Looper::SetupHist(TH1F* h) { //, char* name, char* title, int bins, double min, double max) {
-//  //h = new TH1F(name, title, bins, min, max);
-//  h->Sumw2();
-//  h->SetFillColor(sample_.histo_color);
-//  h->SetLineColor(sample_.histo_color);
-//}
+//new profile (no, not new professor)
+void Looper::NewProf(TProfile*& h, char* name, char* title, int bins, double min, double max) {
+  h = new TProfile(name, title, bins, min, max);
+  //h->Sumw2();
+  h->SetFillColor(sample_.histo_color);
+  h->SetLineColor(sample_.histo_color);
+}
+//to use this sucker, do tprof->Fill(x,y,weight);--it automatically keeps the average of y values in each x bin
 
 void Looper::BookHistos ()
 {
@@ -47,7 +46,13 @@ void Looper::BookHistos ()
   double tcmcmax = 200; //will be +/- this
   int tcmcbin = 80; // width = nbins*binwidth
   int tcmbin = 40;
- 
+
+  double dphimax = 3.2;
+  int dphibin = 32;
+
+  double metmmax = 150;
+  int metmbin = 30;
+  
   // book histograms the manual way:
   for (int i = 0; i < 4; ++i) {
 	//hsumjetpt[i] = new TH1F(Form("%s_%s_%s", SampleName().c_str(), "sumJetPt", dilepton_hypo_names[i]), ";sum jet pt", sjpbin, 0, sjpmax);
@@ -75,6 +80,34 @@ void Looper::BookHistos ()
 			  Form("%s%i", ";tcMET_x+y_outz_sjp", j), tcmcbin, -tcmcmax, tcmcmax);;
 	  NewHist(htcmetinzxy_sjp[i][j], Form("%s_%s%i_%s", SampleName().c_str(), "tcMet_xy_inz_sjp", j, dilepton_hypo_names[i]),
 			  Form("%s%i", ";tcMET_x+y_inz_sjp", j), tcmcbin, -tcmcmax, tcmcmax);  ;
+
+	  NewHist(hdphi_sjp[i][j],    Form("%s_%s%i_%s", SampleName().c_str(), "dphi_tcMetl_sjp", j, dilepton_hypo_names[i]),
+			  Form("%s%i", ";dphi_tcMET_l_sjp", j), dphibin, -dphimax, dphimax);
+	  NewHist(hdphiouz_sjp[i][j], Form("%s_%s%i_%s", SampleName().c_str(), "dphi_tcMetl_outz_sjp", j, dilepton_hypo_names[i]),
+			  Form("%s%i", ";dphi_tcMET_l_outz_sjp", j), dphibin, -dphimax, dphimax);
+	  NewHist(hdphiinz_sjp[i][j], Form("%s_%s%i_%s", SampleName().c_str(), "dphi_tcMetl_inz_sjp", j, dilepton_hypo_names[i]),
+			  Form("%s%i", ";dphi_tcMET_l_inz_sjp", j), dphibin, -dphimax, dphimax);
+	  
+	  NewHist(hmetvmll_sjp[i][j],    Form("%s_%s%i_%s", SampleName().c_str(), "tcMet_mll_sjp", j, dilepton_hypo_names[i]),
+			  Form("%s%i", ";tcMET_mll_sjp", j), metmbin, 0, metmmax);
+	  //NewHist(hmetvmllouz_sjp[i][j], Form("%s_%s%i_%s", SampleName().c_str(), "tcMet_mll_outz_sjp", j, dilepton_hypo_names[i]),
+	  //		  Form("%s%i", ";tcMET_mll_outz_sjp", j), metmbin, 0, metmmax);
+	  //NewHist(hmetvmllinz_sjp[i][j], Form("%s_%s%i_%s", SampleName().c_str(), "tcMet_mll_inz_sjp", j, dilepton_hypo_names[i]),
+	  //		  Form("%s%i", ";tcMET_mll_inz_sjp", j), metmbin, 0, metmmax);
+
+	  NewHist(hmetvmllden_sjp[i][j],    Form("%s_%s%i_%s", SampleName().c_str(), "tcMet_mllden_sjp", j, dilepton_hypo_names[i]),
+			  Form("%s%i", ";tcMET_mll_sjp", j), metmbin, 0, metmmax);
+	  //NewHist(hmetvmllouzden_sjp[i][j], Form("%s_%s%i_%s", SampleName().c_str(), "tcMet_mllden_outz_sjp", j, dilepton_hypo_names[i]),
+	  //		  Form("%s%i", ";tcMET_mll_outz_sjp", j), metmbin, 0, metmmax);
+	  //NewHist(hmetvmllinzden_sjp[i][j], Form("%s_%s%i_%s", SampleName().c_str(), "tcMet_mllden_inz_sjp", j, dilepton_hypo_names[i]),
+	  //		  Form("%s%i", ";tcMET_mll_inz_sjp", j), metmbin, 0, metmmax);
+
+	  NewProf(pmetvmll_sjp[i][j],    Form("%s_%s%i_%s", SampleName().c_str(), "prof_tcMet_mll_sjp", j, dilepton_hypo_names[i]),
+			  Form("%s%i", ";tcMET_mll_sjp", j), metmbin, 0, metmmax);
+	  //NewProf(pmetvmllouz_sjp[i][j], Form("%s_%s%i_%s", SampleName().c_str(), "prof_tcMet_mll_outz_sjp", j, dilepton_hypo_names[i]),
+	  //		  Form("%s%i", ";tcMET_mll_outz_sjp", j), metmbin, 0, metmmax);
+	  //NewProf(pmetvmllinz_sjp[i][j], Form("%s_%s%i_%s", SampleName().c_str(), "prof_tcMet_mll_inz_sjp", j, dilepton_hypo_names[i]),
+	  //		  Form("%s%i", ";tcMET_mll_inz_sjp", j), metmbin, 0, metmmax);
 	}
 
 	NewHist(hsumjetpt[i],    Form("%s_%s_%s", SampleName().c_str(), "sumJetPt", dilepton_hypo_names[i]), ";sum jet pt", sjpbin, 0, sjpmax);
@@ -231,7 +264,18 @@ void Looper::FillDilepHistos (int i_hyp) {
 
   double tcmetx = cms2.evt_tcmet()*cos( cms2.evt_tcmetPhi() );
   double tcmety = cms2.evt_tcmet()*sin( cms2.evt_tcmetPhi() );
+  double mass = cms2.hyp_p4()[i_hyp].mass();
+  //double dphilt = ROOT::Math::VectorUtil::DeltaPhi( cms2.evt_tcmet(), cms2.hyp_lt_p4()[i_hyp] );
+  //double dphill = ROOT::Math::VectorUtil::DeltaPhi( cms2.evt_tcmet(), cms2.hyp_ll_p4()[i_hyp] );
+  double dphilt = ROOT::Math::VectorUtil::DeltaPhi( LorentzVector(tcmetx, tcmety, 0, cms2.evt_tcmet()), cms2.hyp_lt_p4()[i_hyp] );
+  double dphill = ROOT::Math::VectorUtil::DeltaPhi( LorentzVector(tcmetx, tcmety, 0, cms2.evt_tcmet()), cms2.hyp_ll_p4()[i_hyp] );
 
+  //check on the above way to get dphi--one of these will always be large, other should be tiny
+  if( abs(nearestDeltaPhi(cms2.evt_tcmetPhi(), i_hyp) - abs(dphilt)) > 0.0001 &&
+	  abs(nearestDeltaPhi(cms2.evt_tcmetPhi(), i_hyp) - abs(dphill)) > 0.0001 )
+	cout << "dphi disagreement  " << abs( nearestDeltaPhi(cms2.evt_tcmetPhi(), i_hyp) - dphilt ) << "  "
+		 << abs( nearestDeltaPhi(cms2.evt_tcmetPhi(), i_hyp) - dphill ) << endl;
+	  
   if( (cuts_passed & inz_metres) == inz_metres ) {
 	//cout << "tcmet " << cms2.evt_tcmet() << endl;
 	hsumjetptinZ[DILEPTON_ALL]->Fill( sumjetpt, weight );
@@ -256,6 +300,18 @@ void Looper::FillDilepHistos (int i_hyp) {
 	htcmetinzxy_sjp[myType][sjpbin]->Fill( tcmetx, weight );
 	htcmetinzxy_sjp[DILEPTON_ALL][sjpbin]->Fill( tcmety, weight );
 	htcmetinzxy_sjp[myType][sjpbin]->Fill( tcmety, weight );
+
+	hdphiinz_sjp[DILEPTON_ALL][sjpbin]->Fill( dphilt, weight );
+	hdphiinz_sjp[myType][sjpbin]->Fill( dphilt, weight );
+	hdphiinz_sjp[DILEPTON_ALL][sjpbin]->Fill( dphill, weight );
+	hdphiinz_sjp[myType][sjpbin]->Fill( dphill, weight );
+
+	//hmetvmllinz_sjp[DILEPTON_ALL][sjpbin]->Fill( mass, cms2.evt_tcmet() );
+	//hmetvmllinz_sjp[myType][sjpbin]->Fill( mass, cms2.evt_tcmet() );
+	//hmetvmllinzden_sjp[DILEPTON_ALL][sjpbin]->Fill( mass ); //denominator is just total num events
+	//hmetvmllinzden_sjp[myType][sjpbin]->Fill( mass );
+	//pmetvmllinz_sjp[DILEPTON_ALL][sjpbin]->Fill( mass, cms2.evt_tcmet(), weight );
+	//pmetvmllinz_sjp[myType][sjpbin]->Fill( mass, cms2.evt_tcmet(), weight );
   }
   else if( (cuts_passed & outerz_metres) == outerz_metres ) {
 	hsumjetptouZ[DILEPTON_ALL]->Fill( sumjetpt, weight );
@@ -280,6 +336,18 @@ void Looper::FillDilepHistos (int i_hyp) {
 	htcmetouzxy_sjp[myType][sjpbin]->Fill( tcmetx, weight );
 	htcmetouzxy_sjp[DILEPTON_ALL][sjpbin]->Fill( tcmety, weight );
 	htcmetouzxy_sjp[myType][sjpbin]->Fill( tcmety, weight );
+
+  	hdphiouz_sjp[DILEPTON_ALL][sjpbin]	->Fill( dphilt, weight );
+  	hdphiouz_sjp[myType][sjpbin]		->Fill( dphilt, weight );
+  	hdphiouz_sjp[DILEPTON_ALL][sjpbin]	->Fill( dphill, weight );
+  	hdphiouz_sjp[myType][sjpbin]		->Fill( dphill, weight );
+	
+	//hmetvmllouz_sjp[DILEPTON_ALL][sjpbin]->Fill( mass, cms2.evt_tcmet() );
+	//hmetvmllouz_sjp[myType][sjpbin]->Fill( mass, cms2.evt_tcmet() );
+	//hmetvmllouzden_sjp[DILEPTON_ALL][sjpbin]->Fill( mass );
+	//hmetvmllouzden_sjp[myType][sjpbin]->Fill( mass );
+	//pmetvmllouz_sjp[DILEPTON_ALL][sjpbin]->Fill( mass, cms2.evt_tcmet(), weight );
+	//pmetvmllouz_sjp[myType][sjpbin]->Fill( mass, cms2.evt_tcmet(), weight );
   }
   
   // for TH1/TH2, we have to check explicitly whether the candidate passes
@@ -310,6 +378,19 @@ void Looper::FillDilepHistos (int i_hyp) {
 	htcmetxvy[DILEPTON_ALL]->Fill( tcmetx, tcmety, weight ); //2d
 	htcmetxvy[myType]->Fill( tcmetx, tcmety, weight ); //2d
 	
+	hdphi_sjp[DILEPTON_ALL][sjpbin]		->Fill( dphilt, weight );
+	hdphi_sjp[myType][sjpbin]			->Fill( dphilt, weight );
+	hdphi_sjp[DILEPTON_ALL][sjpbin]		->Fill( dphill, weight );
+	hdphi_sjp[myType][sjpbin]			->Fill( dphill, weight );
+
+	hmetvmll_sjp[DILEPTON_ALL][sjpbin]->Fill( mass, cms2.evt_tcmet()*weight );
+	hmetvmll_sjp[myType][sjpbin]->Fill( mass, cms2.evt_tcmet()*weight );
+	hmetvmllden_sjp[DILEPTON_ALL][sjpbin]->Fill( mass*weight );
+	hmetvmllden_sjp[myType][sjpbin]->Fill( mass*weight );
+
+	pmetvmll_sjp[DILEPTON_ALL][sjpbin]->Fill( mass, cms2.evt_tcmet(), weight );
+	pmetvmll_sjp[myType][sjpbin]->Fill( mass, cms2.evt_tcmet(), weight );
+
 	//if( sumjetpt > 0 ) {
 	
 	// and then fill defaults

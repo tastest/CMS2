@@ -102,9 +102,9 @@ public:
 protected:
   // this is where we book our histograms
   virtual void	BookHistos ();
-  //virtual void NewHist(TH1F* h, char* name, char* title, int bins, double min, double max);
+
   virtual void NewHist(TH1F*& h, char* name, char* title, int bins, double min, double max);
-  //virtual void SetupHist(TH1F* h);//, char* name, char* title, int bins, double min, double max);
+  virtual void NewProf(TProfile*& h, char* name, char* title, int bins, double min, double max);
 
   // filter out this event.  If FilterEvent returns true, no
   // further processing is done on this event
@@ -173,6 +173,21 @@ protected:
   TH1F* htcmetxy_sjp[4][nsjpbins];
   TH1F* htcmetouzxy_sjp[4][nsjpbins];
   TH1F* htcmetinzxy_sjp[4][nsjpbins];
+
+  TH1F* hdphi_sjp[4][nsjpbins];
+  TH1F* hdphiouz_sjp[4][nsjpbins];
+  TH1F* hdphiinz_sjp[4][nsjpbins];
+
+  TH1F* hmetvmll_sjp[4][nsjpbins];
+  TH1F* hmetvmllouz_sjp[4][nsjpbins];
+  TH1F* hmetvmllinz_sjp[4][nsjpbins];
+  TH1F* hmetvmllden_sjp[4][nsjpbins];
+  TH1F* hmetvmllouzden_sjp[4][nsjpbins];
+  TH1F* hmetvmllinzden_sjp[4][nsjpbins];
+
+  TProfile* pmetvmll_sjp[4][nsjpbins];
+  TProfile* pmetvmllouz_sjp[4][nsjpbins];
+  TProfile* pmetvmllinz_sjp[4][nsjpbins];
 
   //2d
   TH2F* htcmetxvy[4];
