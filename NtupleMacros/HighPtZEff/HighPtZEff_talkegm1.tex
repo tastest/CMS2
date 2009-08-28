@@ -1,5 +1,6 @@
 \documentclass{beamer}
 \usepackage{graphicx}
+\usepackage{tikz}
 %\usepackage[pdftex]{graphicx}
 %\graphicspath{{./plots/}{./}} %{./figuresdir3/}}
 
@@ -45,7 +46,7 @@ L. Bauerdick, I. Bloch, K. Burkett, I. Fisk, O. Gutsche -- FNAL}
   \begin{itemize}
   \item Motivation: avoid dilepton isolation self-veto in case of low $dR$ between dileptons (fratricide)
     \begin{itemize}
-    \item Use case of boosted Zs because it's simple
+    \item Use case of \textcolor{red}{boosted Zs} because samples are easily available and physics is simple
     \item Consider electrons and muons seperately
     \end{itemize}
   \item Background: kinematic plots to show scale of problem
@@ -58,14 +59,15 @@ L. Bauerdick, I. Bloch, K. Burkett, I. Fisk, O. Gutsche -- FNAL}
     \end{itemize}
   \item \textbf{Track isolation fix} for electrons and muons
   \item \textbf{Ecal fix using jurassic isolation for electrons}
+  \item Correct all cases: ee, $\mu\mu$, e$\mu$, multi-lepton
   \end{itemize}
 \end{frame}
 
 
 \begin{frame}{Brief Statement of Problem}
   \begin{columns}
-    \begin{column}{5.5cm}
-      
+    %\begin{column}{5.5cm}
+    \begin{column}{0.5\linewidth}
       \begin{itemize}
       \item Goal is to avoid hypothesis dilepton self-veto (fratricide)
       \item For track isolation, if tracks are within each other's isolation cone, they will nearly always self veto
@@ -82,9 +84,10 @@ L. Bauerdick, I. Bloch, K. Burkett, I. Fisk, O. Gutsche -- FNAL}
       
     \end{column}
     
-    \begin{column}{7cm}
+    %\begin{column}{7cm}
+    \begin{column}{0.5\linewidth}
       \includegraphics[width=0.95\linewidth]{talk3/outside_cone.png}
-%change this picture
+%change this picture%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
       \includegraphics[width=0.95\linewidth]{talk3/cone_border.png}
     \end{column}
@@ -93,17 +96,20 @@ L. Bauerdick, I. Bloch, K. Burkett, I. Fisk, O. Gutsche -- FNAL}
 
 
 \begin{frame}{Kinematic Plots}
+  %\tikz \draw [overlay,help lines,blue] (0,0) grid (3,2);
+  %\tikz \draw [help lines] (3,2) grid (6,4);
+  %\tikz{\draw[green] (15,2) -- (15,3);}
+  %\tikz{\draw[cyan,overlay] (0,0) -- (5,5);}
+  %\tikz{\draw[red,overlay] (canvas cs:x=6cm,y=-2cm) -- (canvas cs:x=4cm,y=-3cm);}
+  %\tikz{\draw[red] (6cm,2cm) -- (6cm,3cm);}
+  %\tikz{\draw[red] (10cm,2cm) -- (10cm,5cm);}
   \begin{columns}
     \begin{column}{6cm}%{5.5cm} 
+      \vspace{-1cm}
       \begin{itemize}
         %\item Samples: $/ZeeJet\_Pt80to120/Summer08\_IDEAL\_V9\_v1/GEN-SIM-RECO$ ... $/ZeeJet\_Pt300toInf/Summer08\_IDEAL\_V9\_v1/GEN-SIM-RECO$
       \item Samples: \\ {\tiny{/ZeeJet\_Pt80to120/Summer08\_IDEAL\_V9\_v1/} \\ \normalsize{$\cdots$} \\ \vspace{-0.1cm}\tiny{/ZeeJet\_Pt300toInf/Summer08\_IDEAL\_V9\_v1/}}
         \\ {\tiny{/ZmumuJet\_Pt80to120/Summer08\_IDEAL\_V9\_v1/} \\ \normalsize{$\cdots$} \\ \vspace{-0.1cm}\tiny{/ZmumuJet\_Pt300toInf/Summer08\_IDEAL\_V9\_v1/}}
-        %\normalsize{\item Plotted for status 1 parameters (denominator of everything)}:
-        %\begin{itemize}
-        %\item Each lepton $p_T > 20$, $|\eta| < 2.4$
-        %\item Dilepton mass in 96 to 106
-        %\end{itemize}
         \bigskip
       \item These plots are meant to set the scale of the effect
         \begin{itemize}
@@ -117,49 +123,35 @@ L. Bauerdick, I. Bloch, K. Burkett, I. Fisk, O. Gutsche -- FNAL}
     
     \begin{column}{6cm}
       %put a blank line between the \includegraphics to make them align vertically
-      %\includegraphics[width=1.0\linewidth]{plots/ZeeJetALL80toInf_nofilter_e_drstat1.png}
       \includegraphics[width=1.0\linewidth]{plots/e_dr_final.png}
       \vspace{-0.cm}
       \includegraphics[width=1.0\linewidth]{plots/zpt_dr_final.png} %was zpt_2.png
     \end{column}
     
   \end{columns}
+  %drawing it down here puts it on top of the pictures
+  \tikz{\draw[->,red,overlay] (canvas cs:x=7.48cm,y=0.5cm) -- (canvas cs:x=7.48cm,y=3.55cm);}
 \end{frame}
 
-\begin{frame}{Isolation Efficiency}
-  %\begin{columns}
-  %\begin{column}{6cm}
-  %\begin{column}{0.5\textwidth}
-  %\small{
+
+%%%!!! one MUST use 'containsverbatim' with \verb
+\begin{frame}[containsverbatim]{Isolation Efficiency}
   \begin{itemize}
 
-  \item Isolation definition\\ ISO $\equiv$ $p_T/(p_T + iso\_var)$\\ \footnotesize{ $iso\_var =$ hcal iso + ecal iso + track iso} \\ For ecal iso only, use 2 GeV pedestal subtraction because iso calculated from hits
-    %put in the algorithm for pedestal subtraction
-  \item Denominator:\\ Two status = 1 leptons \\ $p_T > 20$\\ $|\eta| < 2.4$\\ $76 < m_{ll} < 106$
+  \item Isolation definition\\ ISO $\equiv$ $p_T/(p_T + iso\_var)$\\ \footnotesize{ $iso\_var =$ hcal iso ~OR~ ecal iso ~OR~ track iso} 
+    \\ For ecal iso only, use 2 GeV pedestal subtraction because iso calculated from hits
+    \\ Ex: ISO = \verb=pt/(pt + max( els_ecal_Iso - 2.0, 0.0 ) );=
+  \item \textcolor{red}{Denominator:}\\ Two status = 1 leptons \\ $p_T > 20$ GeV\\ $|\eta| < 2.4$\\ $76 < m_{ll} < 106$ GeV
     %\item Numerator:\\ $dR$ match (0.015) status 1 to reco\\ $p_T/(p_T + iso\_var) > 0.92$\\ \footnotesize{ $iso\_var =$ els\_pat\_hcalIso() + els\_pat\_ecalIso() + els\_pat\_trackIso()}
     %\item \textcolor{red}{put dr match in denominator???}
-  \item Numerator:\\ $dR$ match (0.015) status 1 to reco\\ ISO $> 0.92$
+  \item \textcolor{red}{Numerator:}\\ $dR$ match (0.015) status 1 to reco\\ ISO $> iso\_cut$
   \item Plot isolation efficiency (= Numerator divided by Denominator) versus $dR$
     %\begin{itemize}
     %\scriptsize{
     %}
     %\end{itemize}
-  \item This is used to define a control region: \textcolor{red}{$0.5 < dR < 1.0$} which is used for individual isolations
+  \item This is used to define a control region: $0.5 < dR < 1.0$ which is used for individual isolations to determine the value of $iso\_cut$.
   \end{itemize}
-  %}
-  %\end{column}
-
-  %\begin{column}{6.5cm}
-  %\begin{column}{0.55\textwidth}
-  %\centerline{
-  %put a blank line between the \includegraphics to make them align vertically
-  %\includegraphics[width=0.95\linewidth]{plots/ZeeJetALL80toInf_nofilter_e_drstat1_iso_eff_rebin.png}
-  %clean up plot--decided to remove
-  %\includegraphics[width=0.95\linewidth]{plots/ZeeJetALL80toInf_nofilter_e_drstat1_iso_eff.png}
-  %}
-  %\end{column}        
-
-  %\end{columns}
 \end{frame}
 
 
@@ -168,34 +160,31 @@ L. Bauerdick, I. Bloch, K. Burkett, I. Fisk, O. Gutsche -- FNAL}
 
   %\begin{column}{0.5\textwidth}
   \begin{itemize}
-  \item Study the three isolation components independently
+  \item Study the three isolation components (ecal, hcal, track) independently
+  \item Electrons
+    \begin{itemize}
+      %\item CandIsolatorFromDeposits
+    \item \scriptsize{EleIsoTrackExtractorBlock}
+    \item \scriptsize{EleIsoEcalFromHitsExtractorBlock}
+    \item \scriptsize{EleIsoHcalFromTowersExtractorBlock}
+    \end{itemize}
+  \item Muons
+    \begin{itemize}
+    \item \scriptsize{\texttt{edm::View<Muon> muon->isolationR03().sumPt}}
+    \item \texttt{edm::View<Muon> muon->isolationR03().emEt}
+    \item \texttt{edm::View<Muon> muon->isolationR03().hadEt}
+    \end{itemize}
   \item Set common isolation efficiency operating point: 
   \item that is, find a point for each such that each efficiency is roughly the same
     \begin{itemize}
-    \item Plot isolation components separately:
+    %\item Plot isolation components separately:
       %\begin{itemize}
         %\item $els\_pat\_hcalIso()$
         %\item $els\_pat\_ecalIso()$
         %\item $els\_pat\_trackIso()$
-      \item Electrons
-        \begin{itemize}
-          %\item CandIsolatorFromDeposits
-        \item EleIsoTrackExtractorBlock
-        \item EleIsoEcalFromHitsExtractorBlock
-        \item EleIsoHcalFromTowersExtractorBlock
-        \end{itemize}
-      \item Muons
-        \begin{itemize}
-        \item \texttt{edm::View<Muon> muon->isolationR03().sumPt}
-          %\item $edm::View<Muon> muon->isolationR03().sumPt$
-          %\item edm\:\:View\<Muon\> muon\-\>isolationR03\(\).emEt
-          %\item \verb*=edm::View<Muon> muon->isolationR03().sumPt=
-        \item \texttt{edm::View<Muon> muon->isolationR03().emEt}
-        \item \texttt{edm::View<Muon> muon->isolationR03().hadEt}
-        \end{itemize}
       %\end{itemize}
-    \item Plot only for status 1: \textcolor{red}{$0.5 < dR < 1.0$}
-    \item Find 90\% bin low edge
+    \item Plot only for status 1 leptons within $0.5 < dR < 1.0$
+    \item Find 90\% efficiency point
     \item This defines the cut for that isolation variable used in numerator of individual isolation efficiencies
     \end{itemize}
   \end{itemize}
@@ -218,7 +207,7 @@ L. Bauerdick, I. Bloch, K. Burkett, I. Fisk, O. Gutsche -- FNAL}
     %\includegraphics[width=0.95\linewidth]{plots/ZeeJetALL80toInf_nofilter_e1_drstat1_tri_iso_comp.png}
 \includegraphics[width=0.95\linewidth]{plots/ele_tri_iso_comp_final.png}
 
-    Track and ecal isolation need fix for low $dR$, hcal is ok as is
+    Track and ecal isolation need fix for low $dR$, hcal is ok as is.
   \end{center}
 \end{frame}
 
@@ -263,7 +252,8 @@ L. Bauerdick, I. Bloch, K. Burkett, I. Fisk, O. Gutsche -- FNAL}
     \item This is the fix to the \textcolor{red}{track} isolation.
     \item Same for electrons and muons (except for inner veto cone size)
     \item Still apply same numerator and denominator, but with the addition:
-    \item If second electron is within cone of first, then exclude all tracks within $dR$ of $0.015$ of the second electron from the tracks used to calculate isolation for the first electron
+    %\item If second electron (e2) is within cone of first (e1), then exclude all tracks within $dR$ of $0.015$ of the second electron (e2) from the tracks used to calculate isolation for the first electron (e1)
+    \item If a second electron (e2) is within the cone of first (e1), then exclude all tracks within $dR$ of $0.015$ of e2 from the tracks used to calculate isolation for e1.
     %\item Track and lepton quality cuts chosen by user (standard default)
     %\item if the second electron also $dR$ matched to status 1, exclude tracks within $dR$ of $0.015$ around electron momentum at vertex from the isolation.
     %\item In other words, add to numerator: \\
@@ -272,7 +262,11 @@ L. Bauerdick, I. Bloch, K. Burkett, I. Fisk, O. Gutsche -- FNAL}
   \end{itemize}
 
   \begin{center}
-    \includegraphics[width=0.4\linewidth]{talk3/cone_border.png}
+    %\vspace{-0.1cm} 
+    \scriptsize{e2} \hspace{1.75cm} \scriptsize{e1}\\
+    \vspace{-0.025cm} %\includegraphics[width=0.4\linewidth]{talk3/jurassic_border.png}\\
+    \includegraphics[width=0.4\linewidth]{talk3/cone_border.png} \\
+    Tracks in e2 inner \textcolor{red}{veto cone} are excluded from isolation of e1.
   \end{center}
 
 \end{frame}
@@ -297,33 +291,11 @@ L. Bauerdick, I. Bloch, K. Burkett, I. Fisk, O. Gutsche -- FNAL}
   \end{center}
 \end{frame}
 
-%same as above slide, put comment at bottom
+
 \begin{frame}{Improved Track Isolation Results: Muons}%{Muon Track Isolation Fix}
-  
   \begin{center}
     %Same as for electrons, except inner cone is $dR < 0.01$
-    %\end{center}
-    %\pause
-    
-    %\begin{columns}%[T]
-    
-    %\begin{column}{0.53\textwidth}
-    %\begin{center}
-    %{\footnotesize{Old}} \\
-    %Leading $p_T$ muon
-    %\includegraphics[width=1.0\linewidth]{plots/ZmmJetALL80toInf_nofilter_m1_drstat1_trck_iso_recalc_eff_comp.png}
     \vspace{-0.2cm}
-    %{\footnotesize{$dR$ between status 1 muons}}
-    %\end{center}
-    %\end{column}
-    
-    %\begin{column}{0.53\textwidth}
-    %\begin{center}
-    %{\footnotesize{This is the efficiency to isolate and $dR$ match both electrons.}} \\ \medskip
-    %{\footnotesize{\textcolor{red}{NEW}}} \\
-    %  \includegraphics[width=1.0\linewidth]{plots/ZeeJetALL80toInf_nofilter_e_drstat1_ecal_iso_pair_eff_comp.png}
-    %Sub-leading $p_T$ muon
-    %\includegraphics[width=0.95\linewidth]{plots/ZmmJetALL80toInf_nofilter_m2_drstat1_trck_iso_recalc_eff_comp.png}
     \includegraphics[width=0.95\linewidth]{plots/mus_track_isolation_final.png}
     \vspace{-0.1cm}
     Efficiency loss is again recovered.
@@ -334,8 +306,9 @@ L. Bauerdick, I. Bloch, K. Burkett, I. Fisk, O. Gutsche -- FNAL}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%move picture to previous slide, shade exclusion region, label e1, e2, caption ``shaded region excluded or something''
+% shade exclusion region
 \begin{frame}{An Improved \textcolor{red}{Ecal} Isolation Algorithm}
+  \vspace{-0.2cm}
   \begin{itemize}
     \item For electrons only
     \item The general idea is the same as the track algorithm: exclude second electron from isolation cone of first
@@ -350,7 +323,9 @@ L. Bauerdick, I. Bloch, K. Burkett, I. Fisk, O. Gutsche -- FNAL}
       %\item This is done only for the \textcolor{red}{ZeeJet\_Pt300toInf} sample% because I have to re-ntuple to change the code. But this is the only sample in which $dR$ gets down to 0.5 anyway.%{\footnotesize{}}
   \end{itemize}
   \begin{center}  
-    \includegraphics[width=0.4\linewidth]{talk3/jurassic_border.png}
+    \vspace{-0.2cm} \scriptsize{e2} \hspace{1.75cm} \scriptsize{e1}\\
+    \vspace{-0.025cm} \includegraphics[width=0.4\linewidth]{talk3/jurassic_border.png}\\
+    \vspace{-0.2cm} e2 jurassic region excluded from isolation of e1.
   \end{center}
 \end{frame}
 
@@ -370,7 +345,8 @@ L. Bauerdick, I. Bloch, K. Burkett, I. Fisk, O. Gutsche -- FNAL}
     %\end{column}
     %\end{columns}
 
-    For ecal also, the improved algorithm recovers much of the efficiency loss at low $dR$.
+    \footnotesize For ecal also, the improved algorithm recovers much of the efficiency loss at low $dR$. \\
+    Recall, isolation = pt/(pt + ecal\_iso), ecal\_iso includes 2GeV pedestal subtration
   \end{center}
 \end{frame}
 
@@ -386,6 +362,7 @@ L. Bauerdick, I. Bloch, K. Burkett, I. Fisk, O. Gutsche -- FNAL}
       %\item Change track algorithm slightly so that it has requirements more similar to ecal algorithm
     \item For track isolation, electrons and muons are treated identically (except for inner cone size)
     \item For ecal isolation, only electrons need fixing, use jurassic algorithm
+    \item Correct all cases: ee, $\mu\mu$, e$\mu$, multi-lepton
     \end{itemize}
   \item This recovers efficiency loss at low $dR$ for both tracker and ecal isolations
   %\item In the process, we have found another problem which is perhaps more worrisome, which is the efficiency at moderate to large $dR$. We will look into this now.
@@ -405,7 +382,7 @@ L. Bauerdick, I. Bloch, K. Burkett, I. Fisk, O. Gutsche -- FNAL}
 
     \begin{column}{0.6\textwidth}
       \includegraphics[width=0.95\linewidth]{plots/ZeeJetALL80toInf_nofilter_e_drstat1_e1_pt.png}
-
+      \vspace{-0.2cm}
       \includegraphics[width=0.95\linewidth]{plots/ZeeJetALL80toInf_nofilter_e_drstat1_e2_pt.png}
     \end{column}
   \end{columns}
