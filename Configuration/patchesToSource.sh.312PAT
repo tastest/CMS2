@@ -1,0 +1,11 @@
+# take the 3_1_2 default for the above...
+
+cvs co -r V01-08-01 JetMETCorrections/Algorithms
+cvs update -r 1.14 JetMETCorrections/Algorithms/interface/JetPlusTrackCorrector.h 
+cvs update -r 1.28 JetMETCorrections/Algorithms/src/JetPlusTrackCorrector.cc
+cvs update -r 1.9 JetMETCorrections/Algorithms/BuildFile
+cvs co -r V01-08-18 JetMETCorrections/Configuration
+cvs update -r 1.4 JetMETCorrections/Configuration/python/JetPlusTrackCorrections_cfi.py
+cvs update -r 1.15 JetMETCorrections/Configuration/python/JetPlusTrackCorrections_cff.py
+cvs co -r V03-02-07 JetMETCorrections/JetPlusTrack
+addpkg JetMETCorrections/Modules
