@@ -69,6 +69,7 @@ bool passTrackIsolation(int index);
 int passTrackZVeto(int hyp_index);
 
 int getDrellYanType();
+int getZZType ();
 void dumpDocLines();
 int NjetVeto(std::vector<TLorentzVector>& Jet, double min_et);
 bool trueElectron(int index);

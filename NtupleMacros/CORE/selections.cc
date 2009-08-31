@@ -788,6 +788,65 @@ bool isZZ() {
   return false;
 }
 
+//--------------------------------------------
+// ZZ type:
+// 0 for Z1 --> ee, mm; Z2 --> ee, mm
+// 1 for Z1 --> ee, mm; Z2 --> tt (and v.v.)
+// 2 for Z1 --> tt; Z2 --> tt
+// 995 to 999 otherwise
+//------------------------------------------
+int getZZType() 
+{
+     int foundEP = 0;
+     int foundEM = 0;
+     int foundMP = 0;
+     int foundMM = 0;
+     int foundTP = 0;
+     int foundTM = 0;
+     for (unsigned int i = 0; i < cms2.genps_id().size(); ++i) {
+	  switch ( cms2.genps_id().at(i) ){
+	  case 11:
+	       foundEM++;
+	       break;
+	  case -11:
+	       foundEP++;
+	       break;
+	  case 13:
+	       foundMM++;
+	       break;
+	  case -13:
+	       foundMP++;
+	       break;
+	  case 15:
+	       foundTM++;
+	       break;
+	  case -15:
+	       foundTP++;
+	       break;
+	  default:
+	       break;
+	  }
+     }
+  
+     if (foundEM == foundEP && foundMM == foundMP && (foundEM != 0 || foundMM != 0)) {
+	  // both Zs decay to e or mu
+	  if (foundEM + foundMM == 2)
+	       return 0;
+	  // one Z decays to e or mu
+	  else if (foundEM + foundMM == 1) 
+	       // other Z decays to tau
+	       if (foundTP == 1 && foundTM == 1)
+		    return 1;
+	       else return 995;
+	  else return 996;
+     } else if (foundEM == 0 && foundEP == 0 && foundMM == 0 && foundMP == 0) {
+	  // both Zs decay to tau
+	  if (foundTP == 2 && foundTM == 2)
+	       return 2;
+	  else return 997;
+     } else return 998;
+     return 999;
+}
 
 bool additionalZveto() {
 //--------------------------------------------------------------------
