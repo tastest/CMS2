@@ -14,17 +14,21 @@
 //  - trilepton candidate in TrilepSelect()
 //  - quadlepton candidate in QuadlepSelect().
 enum {
-  CUT_ALLLEP_PT20,
-  CUT_FIRSTLEP_PT20,
-  CUT_SECONDLEP_PT20,
-  CUT_THIRDLEP_PT20,
-  CUT_HIGHEST_PT_LEP_PT20,
-  CUT_SECOND_HIGHEST_PT_LEP_PT20,
-  CUT_THIRD_HIGHEST_PT_LEP_PT20,
+  CUT_ALLLEP,
+  CUT_FIRSTLEP,
+  CUT_SECONDLEP,
+  CUT_THIRDLEP,
+  CUT_HIGHEST_PT_LEP,
+  CUT_SECOND_HIGHEST_PT_LEP,
+  CUT_THIRD_HIGHEST_PT_LEP,
+  CUT_Z_LEP,
+  CUT_NON_Z_LEP,
   CUT_ALLLEP_GOOD,
   CUT_FIRSTLEP_GOOD,
   CUT_SECONDLEP_GOOD,
   CUT_THIRDLEP_GOOD,
+  CUT_Z_LEP_GOOD,
+  CUT_NON_Z_LEP_GOOD,
   CUT_ALLLEP_ISO,
   CUT_FIRSTLEP_ISO,
   CUT_SECONDLEP_ISO,
@@ -32,9 +36,11 @@ enum {
   CUT_HIGHEST_PT_LEP_ISO,
   CUT_SECOND_HIGHEST_PT_LEP_ISO,
   CUT_THIRD_HIGHEST_PT_LEP_ISO,
+  CUT_Z_LEP_ISO,
+  CUT_NON_Z_LEP_ISO,
   CUT_PRIM_Z,
-  CUT_TCMET_15,
-  CUT_PTCMET_15,
+  CUT_TCMET,
+  CUT_PTCMET,
   CUT_NO_SEC_Z,
   CUT_ADD_ELECTRONS_VETO_CUT,
   CUT_ADD_MUONS_VETO_CUT,
@@ -65,15 +71,21 @@ enum {
  
 // baseline cuts
 const static cuts_t baseline_cuts = 
-  (CUT_BIT(CUT_HIGHEST_PT_LEP_PT20)) |
-  (CUT_BIT(CUT_SECOND_HIGHEST_PT_LEP_PT20)) |
-  (CUT_BIT(CUT_THIRD_HIGHEST_PT_LEP_PT20)) |
-  (CUT_BIT(CUT_ALLLEP_GOOD)) |
-  (CUT_BIT(CUT_HIGHEST_PT_LEP_ISO)) |
-  (CUT_BIT(CUT_SECOND_HIGHEST_PT_LEP_ISO)) |
-  (CUT_BIT(CUT_THIRD_HIGHEST_PT_LEP_ISO)) |
+//   (CUT_BIT(CUT_HIGHEST_PT_LEP)) |
+//   (CUT_BIT(CUT_SECOND_HIGHEST_PT_LEP)) |
+//   (CUT_BIT(CUT_THIRD_HIGHEST_PT_LEP)) |
+  (CUT_BIT(CUT_Z_LEP)) |
+  (CUT_BIT(CUT_NON_Z_LEP)) |
+//   (CUT_BIT(CUT_ALLLEP_GOOD)) |
+  (CUT_BIT(CUT_Z_LEP_GOOD)) |
+  (CUT_BIT(CUT_NON_Z_LEP_GOOD)) |
+//   (CUT_BIT(CUT_HIGHEST_PT_LEP_ISO)) |
+//   (CUT_BIT(CUT_SECOND_HIGHEST_PT_LEP_ISO)) |
+//   (CUT_BIT(CUT_THIRD_HIGHEST_PT_LEP_ISO)) |
+  (CUT_BIT(CUT_Z_LEP_ISO)) |
+  (CUT_BIT(CUT_NON_Z_LEP_ISO)) |
   (CUT_BIT(CUT_PRIM_Z)) |
-  (CUT_BIT(CUT_TCMET_15)) |
+  (CUT_BIT(CUT_PTCMET)) |
   (CUT_BIT(CUT_NO_SEC_Z)) |
   (CUT_BIT(CUT_ADD_ELECTRONS_VETO_CUT)) |
   (CUT_BIT(CUT_ADD_MUONS_VETO_CUT)) ;
@@ -150,25 +162,33 @@ protected:
   // NMinus1Hists take care of N - 1 plots and splitting by hypothesis automatically
   TrilepNMinus1Hist	*htcmet_;
   TrilepNMinus1Hist	*hptcmet_;
+
   TrilepNMinus1Hist	*h_highest_lep_pt_;
   TrilepNMinus1Hist	*h_second_highest_lep_pt_;
   TrilepNMinus1Hist	*h_third_highest_lep_pt_;
+
+  TrilepNMinus1Hist	*h_z_lep_pt_;
+  TrilepNMinus1Hist	*h_non_z_lep_pt_;
+
+  TrilepNMinus1Hist	*h_z_lep_good_pt_;
+  TrilepNMinus1Hist	*h_non_z_lep_good_pt_;
+
   TrilepNMinus1Hist	*h_highest_lep_iso_;
   TrilepNMinus1Hist	*h_second_highest_lep_iso_;
   TrilepNMinus1Hist	*h_third_highest_lep_iso_;
+
   TrilepNMinus1Hist	*h_highest_iso_lep_iso_;
   TrilepNMinus1Hist	*h_second_highest_iso_lep_iso_;
   TrilepNMinus1Hist	*h_third_highest_iso_lep_iso_;
 
-//   TrilepNMinus1Hist	*h_additional_muon_pt_;
-//   TrilepNMinus1Hist	*h_additional_muon_iso_;
-//   TrilepNMinus1Hist	*h_additional_electron_pt_;
-//   TrilepNMinus1Hist	*h_additional_electron_iso_;
+  TrilepNMinus1Hist	*h_z_lep_iso_;
+  TrilepNMinus1Hist	*h_non_z_lep_iso_;
 
   TrilepNMinus1Hist	*h_counter_electrons_;
   TrilepNMinus1Hist	*h_counter_muons_;
 
   TrilepNMinus1Hist	*h_njets_;
+  TrilepNMinus1Hist	*h_njets_50_;
 
   TrilepNMinus1Hist	*h_DeltaPhiMETNearestLepton_;
   TrilepNMinus1Hist	*h_DeltaPhiMETNearestJet_;
@@ -182,15 +202,21 @@ protected:
   // count the (weighted and unweighted) number of candidates passing our cuts
   double		cands_passing_[21];
   double		cands_passing_w2_[21];
-  unsigned int	cands_count_[21];
+  unsigned int	        cands_count_[21];
   
   std::multimap<float,float,std::greater<float> > trileptonPt_;
   std::multimap<float,float,std::greater<float> > trileptonIso_;
+  std::vector<float> hypIso_;
+  std::vector<float> hypPt_;
+  std::vector<bool> hypGood_;
 
   unsigned int addElectronsCounter_;
   unsigned int addMuonsCounter_;
 
   double primZMass_;
   double addZMass_;
+  
+  int notUsedLepton_;
+
 };
 #endif

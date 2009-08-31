@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.2 2009/08/25 22:40:21 gutsche Exp $
+# $Id: Makefile,v 1.3 2009/08/31 18:38:24 gutsche Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
@@ -74,7 +74,7 @@ $(TABLES): $(LIBS)
 %.tbl %.root %.log:	$(LIBS)
 	echo $(@:.tbl=)"()" | root.exe -b setup.C
 
-plots:
+plots:  Results.tbl
 	mkdir -p $(OUTPUTDIR)
 	echo "loadHist(\"Results.root\"); browseStacksTrilep(true,false,\""$(OUTPUTDIR)"\")" | root.exe -b ../Tools/setup.C
 	ps2pdf $(OUTPUTDIR)/stacks.ps $(OUTPUTDIR)/stacks.pdf

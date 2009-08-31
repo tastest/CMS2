@@ -24,17 +24,24 @@ void Looper::BookHistos ()
   // or use the N - 1 technology (see NMinus1Hist.h)
   // arguments are as follows: sample, name, binning, required cuts, cuts that are relaxed for the N - 1 plot
   // for the lt N - 1 plot, we relax the lt pt requirement
-  htcmet_		= new TrilepNMinus1Hist(sample_, "tcMET"   ,	 40, 0, 200, cuts_,CUT_BIT(CUT_TCMET_15));
-  hptcmet_		= new TrilepNMinus1Hist(sample_, "tcMETP"   ,	 40, 0, 200, cuts_,CUT_BIT(CUT_TCMET_15));
-  h_highest_lep_pt_	= new TrilepNMinus1Hist(sample_, "PtHighestLeptonPt",	 50, 0, 100, cuts_,  (CUT_BIT(CUT_HIGHEST_PT_LEP_PT20)) |
-						(CUT_BIT(CUT_SECOND_HIGHEST_PT_LEP_PT20)) |
-						(CUT_BIT(CUT_THIRD_HIGHEST_PT_LEP_PT20)));
-  h_second_highest_lep_pt_	= new TrilepNMinus1Hist(sample_, "PtSecondHighestLeptonPt",	 50, 0, 100, cuts_,  (CUT_BIT(CUT_HIGHEST_PT_LEP_PT20)) |
-							(CUT_BIT(CUT_SECOND_HIGHEST_PT_LEP_PT20)) |
-							(CUT_BIT(CUT_THIRD_HIGHEST_PT_LEP_PT20)));
-  h_third_highest_lep_pt_	= new TrilepNMinus1Hist(sample_, "PtThirdHighestLeptonPt",	 50, 0, 100, cuts_,  (CUT_BIT(CUT_HIGHEST_PT_LEP_PT20)) |
-							(CUT_BIT(CUT_SECOND_HIGHEST_PT_LEP_PT20)) |
-							(CUT_BIT(CUT_THIRD_HIGHEST_PT_LEP_PT20)));
+  htcmet_		= new TrilepNMinus1Hist(sample_, "tcMET"   ,	 40, 0, 200, cuts_,CUT_BIT(CUT_PTCMET));
+  hptcmet_		= new TrilepNMinus1Hist(sample_, "tcMETP"   ,	 40, 0, 200, cuts_,CUT_BIT(CUT_PTCMET));
+
+  h_highest_lep_pt_	= new TrilepNMinus1Hist(sample_, "PtHighestLeptonPt",	 50, 0, 100, cuts_,  (CUT_BIT(CUT_HIGHEST_PT_LEP)) |
+						(CUT_BIT(CUT_SECOND_HIGHEST_PT_LEP)) |
+						(CUT_BIT(CUT_THIRD_HIGHEST_PT_LEP)));
+  h_second_highest_lep_pt_	= new TrilepNMinus1Hist(sample_, "PtSecondHighestLeptonPt",	 50, 0, 100, cuts_,  (CUT_BIT(CUT_HIGHEST_PT_LEP)) |
+							(CUT_BIT(CUT_SECOND_HIGHEST_PT_LEP)) |
+							(CUT_BIT(CUT_THIRD_HIGHEST_PT_LEP)));
+  h_third_highest_lep_pt_	= new TrilepNMinus1Hist(sample_, "PtThirdHighestLeptonPt",	 50, 0, 100, cuts_,  (CUT_BIT(CUT_HIGHEST_PT_LEP)) |
+							(CUT_BIT(CUT_SECOND_HIGHEST_PT_LEP)) |
+							(CUT_BIT(CUT_THIRD_HIGHEST_PT_LEP)));
+
+  h_z_lep_pt_	= new TrilepNMinus1Hist(sample_, "ZPt",	 50, 0, 100, cuts_,  (CUT_BIT(CUT_Z_LEP)));
+  h_non_z_lep_pt_	= new TrilepNMinus1Hist(sample_, "NonZPt",	 50, 0, 100, cuts_,  (CUT_BIT(CUT_NON_Z_LEP)));
+
+  h_z_lep_good_pt_	= new TrilepNMinus1Hist(sample_, "ZGoodPt",	 50, 0, 100, cuts_,  (CUT_BIT(CUT_Z_LEP_GOOD)));
+  h_non_z_lep_good_pt_	= new TrilepNMinus1Hist(sample_, "NonZGoodPt",	 50, 0, 100, cuts_,  (CUT_BIT(CUT_NON_Z_LEP_GOOD)));
 
   h_highest_lep_iso_	= new TrilepNMinus1Hist(sample_, "PtHighestLeptonIso",	 140,0.,1.4, cuts_,CUT_BIT(CUT_HIGHEST_PT_LEP_ISO));
   h_second_highest_lep_iso_	= new TrilepNMinus1Hist(sample_, "PtSecondHighestLeptonIso",	 140,0.,1.4, cuts_,CUT_BIT(CUT_SECOND_HIGHEST_PT_LEP_ISO));
@@ -51,13 +58,17 @@ void Looper::BookHistos ()
 							(CUT_BIT(CUT_SECOND_HIGHEST_PT_LEP_ISO)) |
 							(CUT_BIT(CUT_THIRD_HIGHEST_PT_LEP_ISO)));
 
+  h_z_lep_iso_	= new TrilepNMinus1Hist(sample_, "ZLeptonIso",	 140,0.,1.4, cuts_, CUT_BIT(CUT_Z_LEP_ISO));
+  h_non_z_lep_iso_	= new TrilepNMinus1Hist(sample_, "NonZLeptonIso",	 140,0.,1.4, cuts_, CUT_BIT(CUT_NON_Z_LEP_ISO));
+
   h_counter_electrons_ =  new TrilepNMinus1Hist(sample_, "counterElectrons",	 10,-0.5,9.5, cuts_, CUT_BIT(CUT_ADD_ELECTRONS_VETO_CUT));
   h_counter_muons_ =  new TrilepNMinus1Hist(sample_, "counterMuons",	 10,-0.5,9.5, cuts_, CUT_BIT(CUT_ADD_MUONS_VETO_CUT));
 
   h_njets_ = new TrilepNMinus1Hist(sample_, "nJets",	 10,-0.5,9.5, cuts_, 0);
+  h_njets_50_ = new TrilepNMinus1Hist(sample_, "n50Jets",	 10,-0.5,9.5, cuts_, 0);
 
-  h_DeltaPhiMETNearestLepton_ = new TrilepNMinus1Hist(sample_, "DeltaPhiMETNearestLepton",	 20,0,TMath::Pi(), cuts_, CUT_BIT(CUT_TCMET_15));
-  h_DeltaPhiMETNearestJet_ = new TrilepNMinus1Hist(sample_, "DeltaPhiMETNearestJet",	 20,0,TMath::Pi(), cuts_, CUT_BIT(CUT_TCMET_15));
+  h_DeltaPhiMETNearestLepton_ = new TrilepNMinus1Hist(sample_, "DeltaPhiMETNearestLepton",	 20,0,TMath::Pi(), cuts_, CUT_BIT(CUT_PTCMET));
+  h_DeltaPhiMETNearestJet_ = new TrilepNMinus1Hist(sample_, "DeltaPhiMETNearestJet",	 20,0,TMath::Pi(), cuts_, CUT_BIT(CUT_PTCMET));
 
   h_primZMass_ = new TrilepNMinus1Hist(sample_, "ZMassPrim",	 32,40,120, cuts_, CUT_BIT(CUT_PRIM_Z) | CUT_BIT(CUT_NO_SEC_Z));
   h_addZMass_ = new TrilepNMinus1Hist(sample_, "ZMassAdd",	 200,0,200, cuts_, CUT_BIT(CUT_NO_SEC_Z));
@@ -122,6 +133,9 @@ cuts_t Looper::TrilepSelect (int i_hyp)
 
   trileptonPt_.clear();
   trileptonIso_.clear();
+  hypIso_.clear();
+  hypPt_.clear();
+  hypGood_.clear();
 
   // check that trilepton types can only be 1 or 2
   assert(abs(cms2.hyp_trilep_first_type()[i_hyp]) == 1 || abs(cms2.hyp_trilep_first_type()[i_hyp]) == 2);
@@ -131,47 +145,65 @@ cuts_t Looper::TrilepSelect (int i_hyp)
   // first lepton has pt >= 20 GeV
   if ( abs(cms2.hyp_trilep_first_type()[i_hyp]) == 1 ) {
     if ( cms2.mus_p4()[cms2.hyp_trilep_first_index()[i_hyp]].Pt() >= 20. )
-      ret |= CUT_BIT(CUT_FIRSTLEP_PT20);
+      ret |= CUT_BIT(CUT_FIRSTLEP);
     trileptonPt_.insert(std::pair<float,float>(cms2.mus_p4()[cms2.hyp_trilep_first_index()[i_hyp]].Pt(),mu_rel_iso(cms2.hyp_trilep_first_index()[i_hyp])));
     trileptonIso_.insert(std::pair<float,float>(mu_rel_iso(cms2.hyp_trilep_first_index()[i_hyp]),cms2.mus_p4()[cms2.hyp_trilep_first_index()[i_hyp]].Pt()));
+    hypIso_.push_back(mu_rel_iso(cms2.hyp_trilep_first_index()[i_hyp]));
+    hypPt_.push_back(cms2.mus_p4()[cms2.hyp_trilep_first_index()[i_hyp]].Pt());
+    hypGood_.push_back(goodMuonWithoutIsolation(cms2.hyp_trilep_first_index()[i_hyp]));
   } else {
     if ( cms2.els_p4()[cms2.hyp_trilep_first_index()[i_hyp]].Pt() >= 20. )
-      ret |= CUT_BIT(CUT_FIRSTLEP_PT20);
+      ret |= CUT_BIT(CUT_FIRSTLEP);
     trileptonPt_.insert(std::pair<float,float>(cms2.els_p4()[cms2.hyp_trilep_first_index()[i_hyp]].Pt(),el_rel_iso(cms2.hyp_trilep_first_index()[i_hyp],true)));
     trileptonIso_.insert(std::pair<float,float>(el_rel_iso(cms2.hyp_trilep_first_index()[i_hyp],true),cms2.els_p4()[cms2.hyp_trilep_first_index()[i_hyp]].Pt()));
+    hypIso_.push_back(el_rel_iso(cms2.hyp_trilep_first_index()[i_hyp],true));
+    hypPt_.push_back(cms2.els_p4()[cms2.hyp_trilep_first_index()[i_hyp]].Pt());
+    hypGood_.push_back(goodElectronWithoutIsolation(cms2.hyp_trilep_first_index()[i_hyp]));
   }
 
   // second lepton has pt >= 20 GeV
   if ( abs(cms2.hyp_trilep_second_type()[i_hyp]) == 1 ) {
     if ( cms2.mus_p4()[cms2.hyp_trilep_second_index()[i_hyp]].Pt() >= 20. )
-      ret |= CUT_BIT(CUT_SECONDLEP_PT20);
+      ret |= CUT_BIT(CUT_SECONDLEP);
     trileptonPt_.insert(std::pair<float,float>(cms2.mus_p4()[cms2.hyp_trilep_second_index()[i_hyp]].Pt(),mu_rel_iso(cms2.hyp_trilep_second_index()[i_hyp])));
     trileptonIso_.insert(std::pair<float,float>(mu_rel_iso(cms2.hyp_trilep_second_index()[i_hyp]),cms2.mus_p4()[cms2.hyp_trilep_second_index()[i_hyp]].Pt()));
+    hypIso_.push_back(mu_rel_iso(cms2.hyp_trilep_second_index()[i_hyp]));
+    hypPt_.push_back(cms2.mus_p4()[cms2.hyp_trilep_second_index()[i_hyp]].Pt());
+    hypGood_.push_back(goodMuonWithoutIsolation(cms2.hyp_trilep_second_index()[i_hyp]));
   } else {
     if ( cms2.els_p4()[cms2.hyp_trilep_second_index()[i_hyp]].Pt() >= 20. )
-      ret |= CUT_BIT(CUT_SECONDLEP_PT20);
+      ret |= CUT_BIT(CUT_SECONDLEP);
     trileptonPt_.insert(std::pair<float,float>(cms2.els_p4()[cms2.hyp_trilep_second_index()[i_hyp]].Pt(),el_rel_iso(cms2.hyp_trilep_second_index()[i_hyp],true)));
     trileptonIso_.insert(std::pair<float,float>(el_rel_iso(cms2.hyp_trilep_second_index()[i_hyp],true),cms2.els_p4()[cms2.hyp_trilep_second_index()[i_hyp]].Pt()));
+    hypIso_.push_back(el_rel_iso(cms2.hyp_trilep_second_index()[i_hyp],true));
+    hypPt_.push_back(cms2.els_p4()[cms2.hyp_trilep_second_index()[i_hyp]].Pt());
+    hypGood_.push_back(goodElectronWithoutIsolation(cms2.hyp_trilep_second_index()[i_hyp]));
   }
 
   // third lepton has pt >= 20 GeV
   if ( abs(cms2.hyp_trilep_third_type()[i_hyp]) == 1 ) {
     if ( cms2.mus_p4()[cms2.hyp_trilep_third_index()[i_hyp]].Pt() >= 20. )
-      ret |= CUT_BIT(CUT_THIRDLEP_PT20);
+      ret |= CUT_BIT(CUT_THIRDLEP);
     trileptonPt_.insert(std::pair<float,float>(cms2.mus_p4()[cms2.hyp_trilep_third_index()[i_hyp]].Pt(),mu_rel_iso(cms2.hyp_trilep_third_index()[i_hyp])));
     trileptonIso_.insert(std::pair<float,float>(mu_rel_iso(cms2.hyp_trilep_third_index()[i_hyp]),cms2.mus_p4()[cms2.hyp_trilep_third_index()[i_hyp]].Pt()));
+    hypIso_.push_back(mu_rel_iso(cms2.hyp_trilep_third_index()[i_hyp]));
+    hypPt_.push_back(cms2.mus_p4()[cms2.hyp_trilep_third_index()[i_hyp]].Pt());
+    hypGood_.push_back(goodMuonWithoutIsolation(cms2.hyp_trilep_third_index()[i_hyp]));
   } else {
     if ( cms2.els_p4()[cms2.hyp_trilep_third_index()[i_hyp]].Pt() >= 20. )
-      ret |= CUT_BIT(CUT_THIRDLEP_PT20);
+      ret |= CUT_BIT(CUT_THIRDLEP);
     trileptonPt_.insert(std::pair<float,float>(cms2.els_p4()[cms2.hyp_trilep_third_index()[i_hyp]].Pt(),el_rel_iso(cms2.hyp_trilep_third_index()[i_hyp],true)));
     trileptonIso_.insert(std::pair<float,float>(el_rel_iso(cms2.hyp_trilep_third_index()[i_hyp],true),cms2.els_p4()[cms2.hyp_trilep_third_index()[i_hyp]].Pt()));
+    hypIso_.push_back(el_rel_iso(cms2.hyp_trilep_third_index()[i_hyp],true));
+    hypPt_.push_back(cms2.els_p4()[cms2.hyp_trilep_third_index()[i_hyp]].Pt());
+    hypGood_.push_back(goodElectronWithoutIsolation(cms2.hyp_trilep_third_index()[i_hyp]));
   }
 
   // all leptons >= 20 GeV
-  if ( (CUT_BIT(CUT_FIRSTLEP_PT20) & ret) &&
-       (CUT_BIT(CUT_SECONDLEP_PT20) & ret) &&
-       (CUT_BIT(CUT_THIRDLEP_PT20) & ret ) ) {
-    ret |= CUT_BIT(CUT_ALLLEP_PT20);
+  if ( (CUT_BIT(CUT_FIRSTLEP) & ret) &&
+       (CUT_BIT(CUT_SECONDLEP) & ret) &&
+       (CUT_BIT(CUT_THIRDLEP) & ret ) ) {
+    ret |= CUT_BIT(CUT_ALLLEP);
   }
      
   // muon quality
@@ -230,43 +262,97 @@ cuts_t Looper::TrilepSelect (int i_hyp)
   std::multimap<float,float,std::greater<float> >::iterator entry = trileptonPt_.begin();  
 
   if ( entry->first >= 20.)
-    ret |= CUT_BIT(CUT_HIGHEST_PT_LEP_PT20);
-  if ( entry->second > 0.9 )
+    ret |= CUT_BIT(CUT_HIGHEST_PT_LEP);
+  if ( entry->second > 0.9 ) {
     ret |= CUT_BIT(CUT_HIGHEST_PT_LEP_ISO);
+  }
   ++entry;
   if ( entry->first >= 10.)
-    ret |= CUT_BIT(CUT_SECOND_HIGHEST_PT_LEP_PT20);
-  if ( entry->second > 0.9 )
+    ret |= CUT_BIT(CUT_SECOND_HIGHEST_PT_LEP);
+  if ( entry->second > 0.9 ) {
     ret |= CUT_BIT(CUT_SECOND_HIGHEST_PT_LEP_ISO);
+  }
   ++entry;
   if ( entry->first >= 10.)
-    ret |= CUT_BIT(CUT_THIRD_HIGHEST_PT_LEP_PT20);
-  if ( entry->second > 0.9 )
+    ret |= CUT_BIT(CUT_THIRD_HIGHEST_PT_LEP);
+  if ( entry->second > 0.9 ) {
     ret |= CUT_BIT(CUT_THIRD_HIGHEST_PT_LEP_ISO);
+  }
     
   // primary Z
   primZMass_ = 0.;
-  int notUsedLepton = findPrimTrilepZ(i_hyp,primZMass_);
-  assert(notUsedLepton != 900);
+  notUsedLepton_ = 0;
+  notUsedLepton_ = findPrimTrilepZ(i_hyp,primZMass_);
+  assert(notUsedLepton_ != 900);
 
-  if ( notUsedLepton <= 3 )
+  if ( notUsedLepton_ <= 3 )
     ret |= CUT_BIT(CUT_PRIM_Z);
+
+  assert(hypIso_.size() == 3 );
+
+  // cut on Z or non Z leptons
+  if ( notUsedLepton_ == 1 ) {
+    if ( hypIso_[0] > 0.9 ) {
+      ret |= CUT_BIT(CUT_NON_Z_LEP_ISO);
+    }
+    if ( hypIso_[1] > 0.9 && hypIso_[2] > 0.9 ) {
+      ret |= CUT_BIT(CUT_Z_LEP_ISO);
+    }
+    if ( hypPt_[0] > 20. ) 
+      ret |= CUT_BIT(CUT_NON_Z_LEP);
+    if ( hypPt_[1] > 10. && hypPt_[2] > 10. )
+      ret |= CUT_BIT(CUT_Z_LEP);
+    if ( hypGood_[0] ) 
+      ret |= CUT_BIT(CUT_NON_Z_LEP_GOOD);
+    if ( hypGood_[1] && hypGood_[2] )
+      ret |= CUT_BIT(CUT_Z_LEP_GOOD);
+  } else if ( notUsedLepton_ == 2 ) {
+    if ( hypIso_[1] > 0.9 ) { 
+      ret |= CUT_BIT(CUT_NON_Z_LEP_ISO);
+    }
+    if ( hypIso_[0] > 0.9 && hypIso_[2] > 0.9 ) {
+      ret |= CUT_BIT(CUT_Z_LEP_ISO);
+    }
+    if ( hypPt_[1] > 20. ) 
+      ret |= CUT_BIT(CUT_NON_Z_LEP);
+    if ( hypPt_[0] > 10. && hypPt_[2] > 10. )
+      ret |= CUT_BIT(CUT_Z_LEP);
+    if ( hypGood_[1] ) 
+      ret |= CUT_BIT(CUT_NON_Z_LEP_GOOD);
+    if ( hypGood_[0] && hypGood_[2] )
+      ret |= CUT_BIT(CUT_Z_LEP_GOOD);
+  } else if ( notUsedLepton_ == 3 ) {
+    if ( hypIso_[2] > 0.9 ) { 
+      ret |= CUT_BIT(CUT_NON_Z_LEP_ISO);
+    }
+    if ( hypIso_[0] > 0.9 && hypIso_[1] > 0.9 ) {
+      ret |= CUT_BIT(CUT_Z_LEP_ISO);
+    }
+    if ( hypPt_[2] > 20. ) 
+      ret |= CUT_BIT(CUT_NON_Z_LEP);
+    if ( hypPt_[0] > 10. && hypPt_[1] > 10. )
+      ret |= CUT_BIT(CUT_Z_LEP);
+    if ( hypGood_[2] ) 
+      ret |= CUT_BIT(CUT_NON_Z_LEP_GOOD);
+    if ( hypGood_[0] && hypGood_[1] )
+      ret |= CUT_BIT(CUT_Z_LEP_GOOD);
+  }
 
   // additional Z veto (lepton + high pt isolated track (pt > 20 GeV)
   addZMass_ = -1;
-  if ( notUsedLepton != 999 )
-    if ( !vetoAddZ(i_hyp,notUsedLepton,addZMass_) )
+  if ( notUsedLepton_ != 999 )
+    if ( !vetoAddZ(i_hyp,notUsedLepton_,addZMass_) )
       ret |= CUT_BIT(CUT_NO_SEC_Z);     
 
   // Z veto using additional leptons in the event
 
   // MET >= 15
   if ( cms2.evt_tcmet() >= 15. ) 
-    ret |= CUT_BIT(CUT_TCMET_15);
+    ret |= CUT_BIT(CUT_TCMET);
 
-  // PMET >= 15
-  if ( MetSpecialTrilep(cms2.evt_tcmet(), cms2.evt_tcmetPhi(), i_hyp) >= 15. ) 
-    ret |= CUT_BIT(CUT_PTCMET_15);
+  // PMET >= 10.
+  if ( MetSpecialTrilep(cms2.evt_tcmet(), cms2.evt_tcmetPhi(), i_hyp) >= 10. ) 
+    ret |= CUT_BIT(CUT_PTCMET);
 
   // fourth lepton veto
   addElectronsCounter_ = 0;
@@ -379,18 +465,54 @@ void Looper::FillTrilepHistos (int i_hyp)
   h_third_highest_iso_lep_iso_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), entry_iso->first, weight);
 
   h_counter_electrons_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), addElectronsCounter_, weight);
-//   if ( (cuts_passed & cuts_) == cuts_ && sample_.name == "wz" && electron_counter > 0 )
-//     std::cout << "Additional electron: run: " << cms2.evt_run() << " event: " << cms2.evt_event() << " lumi: " << cms2.evt_lumiBlock() << std::endl;
   h_counter_muons_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), addMuonsCounter_, weight);
-//   if ( (cuts_passed & cuts_) == cuts_ && sample_.name == "wz" && muon_counter > 0 )
-//     std::cout << "Additional muon: run: " << cms2.evt_run() << " event: " << cms2.evt_event() << " lumi: " << cms2.evt_lumiBlock() << std::endl;
+
+  if ( notUsedLepton_ == 1 ) {
+    h_non_z_lep_iso_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypIso_[0], weight);
+    h_z_lep_iso_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypIso_[1], weight);
+    h_z_lep_iso_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypIso_[2], weight);
+
+    h_non_z_lep_pt_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypPt_[0], weight);
+    h_z_lep_pt_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypPt_[1], weight);
+    h_z_lep_pt_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypPt_[2], weight);
+
+    h_non_z_lep_good_pt_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypPt_[0], weight);
+    h_z_lep_good_pt_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypPt_[1], weight);
+    h_z_lep_good_pt_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypPt_[2], weight);
+
+  } else if ( notUsedLepton_ == 2 ) {
+    h_z_lep_iso_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypIso_[0], weight);
+    h_non_z_lep_iso_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypIso_[1], weight);
+    h_z_lep_iso_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypIso_[2], weight);
+
+    h_z_lep_pt_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypPt_[0], weight);
+    h_non_z_lep_pt_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypPt_[1], weight);
+    h_z_lep_pt_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypPt_[2], weight);
+
+    h_z_lep_good_pt_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypPt_[0], weight);
+    h_non_z_lep_good_pt_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypPt_[1], weight);
+    h_z_lep_good_pt_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypPt_[2], weight);
+
+  } else if ( notUsedLepton_ == 3 ) {
+    h_z_lep_iso_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypIso_[0], weight);
+    h_z_lep_iso_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypIso_[1], weight);
+    h_non_z_lep_iso_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypIso_[2], weight);
+
+    h_z_lep_pt_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypPt_[0], weight);
+    h_z_lep_pt_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypPt_[1], weight);
+    h_non_z_lep_pt_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypPt_[2], weight);
+
+    h_z_lep_good_pt_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypPt_[0], weight);
+    h_z_lep_good_pt_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypPt_[1], weight);
+    h_non_z_lep_good_pt_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), hypPt_[2], weight);
+
+  }
 
   h_njets_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), nJPTsTrilep(i_hyp, 20.), weight);
+  h_njets_50_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), nJPTsTrilep(i_hyp, 50.), weight);
   h_DeltaPhiMETNearestLepton_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), nearestDeltaPhiTrilep(cms2.evt_tcmetPhi(), i_hyp), weight);
   h_DeltaPhiMETNearestJet_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), nearestDeltaPhiJet(cms2.evt_tcmetPhi(), i_hyp), weight);
 
-//   if ( !inZmassWindow(primZMass_) )
-//     std::cout << "mass: " << primZMass_ << std::endl;
   h_primZMass_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), primZMass_, weight);
   h_addZMass_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), addZMass_, weight);
 
@@ -400,9 +522,6 @@ void Looper::FillTrilepHistos (int i_hyp)
     if ( cms2.genps_id()[gen] == 23 )
       h_genZMass_->Fill(cuts_passed, (TrileptonHypType)(cms2.hyp_trilep_bucket()[i_hyp]), cms2.genps_p4()[gen].mass(), weight);
   }
-
-  
-
 
 }
 

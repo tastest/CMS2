@@ -77,13 +77,14 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
      Looper looper_wz		(fWZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WZ    )) looper_wz          .Loop();
      Looper looper_ww		(fWW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WW    )) looper_ww          .Loop();
      Looper looper_zz		(fZZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_ZZ    )) looper_zz          .Loop();
-     Looper looper_wjets	(fWjetsAlpgenSingle()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS )) looper_wjets       .Loop();
-     Looper looper_dyee		(fZeejetsAlpgenSingle()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYEE  )) looper_dyee        .Loop();
-     Looper looper_dymm		(fZmmjetsAlpgenSingle()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYMM  )) looper_dymm        .Loop();
-     Looper looper_dytt		(fZttjetsAlpgenSingle()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYTT  )) looper_dytt        .Loop();
-//      Looper looper_dyee         (fDYee() , cuts, log.c_str());   if (which_ones & (1 << LOOP_DYEE  )) looper_dyee        .Loop();
-//      Looper looper_dymm         (fDYmm() , cuts, log.c_str());   if (which_ones & (1 << LOOP_DYMM  )) looper_dymm        .Loop();
-//      Looper looper_dytt         (fDYtt() , cuts, log.c_str());   if (which_ones & (1 << LOOP_DYTT  )) looper_dytt        .Loop();
+//      Looper looper_wjets	(fWjetsAlpgenSingle()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS )) looper_wjets       .Loop();
+//      Looper looper_dyee		(fZeejetsAlpgenSingle()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYEE  )) looper_dyee        .Loop();
+//      Looper looper_dymm		(fZmmjetsAlpgenSingle()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYMM  )) looper_dymm        .Loop();
+//      Looper looper_dytt		(fZttjetsAlpgenSingle()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYTT  )) looper_dytt        .Loop();
+     Looper looper_wjets	(fWjets()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS )) looper_wjets       .Loop();
+     Looper looper_dyee         (fDYee() , cuts, log.c_str());   if (which_ones & (1 << LOOP_DYEE  )) looper_dyee        .Loop();
+     Looper looper_dymm         (fDYmm() , cuts, log.c_str());   if (which_ones & (1 << LOOP_DYMM  )) looper_dymm        .Loop();
+     Looper looper_dytt         (fDYtt() , cuts, log.c_str());   if (which_ones & (1 << LOOP_DYTT  )) looper_dytt        .Loop();
      Looper looper_ttbar	(fttbar()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_TTBAR )) looper_ttbar       .Loop();
      Looper looper_tw		(ftW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_TW    )) looper_tw          .Loop();
      // when all the loopers are done, we save the histograms to file
