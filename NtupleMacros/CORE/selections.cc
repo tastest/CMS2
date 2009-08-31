@@ -675,6 +675,64 @@ int getVVType() {
   return 1;
 }
 
+//-------------------------------------------------
+// Auxiliary function to scan the doc line and 
+// identify DY-> ee vs mm vs tt
+//-------------------------------------------------
+int getWType() 
+{
+     bool foundE = false;
+     bool foundNuE = false;
+     bool foundM = false;
+     bool foundNuM = false;
+     bool foundT = false;
+     bool foundNuT = false;
+     for (unsigned int i = 0; i < cms2.genps_id().size(); ++i) {
+	  if ( abs(cms2.genps_id_mother().at(i)) == 24 ){
+	       switch ( TMath::Abs(cms2.genps_id().at(i)) ){
+	       case 11:
+		    return 0;
+		    break;
+	       case 13:
+		    return 1;
+		    break;
+	       case 15:
+		    return 2;
+		    break;
+	       default:
+		    break;
+	       }
+	  }
+	  switch ( abs(cms2.genps_id().at(i)) ){
+	  case 11:
+	       foundE = true;
+	       break;
+	  case 12:
+	       foundNuE = true;
+	       break;
+	  case 13:
+	       foundM = true;
+	       break;
+	  case 14:
+	       foundNuM = true;
+	       break;
+	  case 15:
+	       foundT = true;
+	       break;
+	  case 16:
+	       foundNuT = true;
+	       break;
+	  default:
+	       break;
+	  }
+     }
+     
+     if ( foundE && foundNuE ) return 0;  //W->e
+     if ( foundM && foundNuM ) return 1;  //W->m
+     if ( foundT && foundNuT ) return 2;  //W->t
+     std::cout << "Does not look like a W event" << std::endl;
+     return 999;
+}
 
 //--------------------------------------------
 // Booleans for DY
@@ -690,6 +748,25 @@ bool isDYmm() {
 bool isDYtt() {
   if (getDrellYanType() == 2) return true;
   return false;
+}
+
+//--------------------------------------------
+// Booleans for Wjets
+//------------------------------------------
+bool isWe() 
+{
+     if (getWType() == 0) return true;
+     return false;
+}
+bool isWm() 
+{
+     if (getWType() == 1) return true;
+     return false;
+}
+bool isWt() 
+{
+     if (getWType() == 2) return true;
+     return false;
 }
 
 //--------------------------------------------
