@@ -4,7 +4,7 @@
 
 #include <string>
 
-enum Process { OTHER, TEST, WW, WZ, ZZ, Wjets, DYee, DYmm, DYtt, DY, Wgamma, Zgamma, ttbar, tW, 
+enum Process { OTHER, TEST, WW, WZ, ZZ, Wjets, We, Wm, Wt, DYee, DYmm, DYtt, DY, Wgamma, Zgamma, ttbar, tW, 
 	       LM0, LM1, LM2, LM3, LM4, LM5, LM6, LM7, LM8, LM9, LM9p, LM10, LM11,
 	       InclusiveMu5Pt50, InclusiveMuPt15, 
 	       QCDBCtoEPt20to30, QCDBCtoEPt30to80, QCDBCtoEPt80to170, 
@@ -37,6 +37,9 @@ Sample fWZ_incl	();
 Sample fZZ	();
 Sample fWjets	();
 Sample fWjetsAlpgenSingle();
+Sample fWejetsAlpgenSingle();
+Sample fWmjetsAlpgenSingle();
+Sample fWtjetsAlpgenSingle();
 Sample fWjetsSingle ();
 Sample fZeejetsAlpgenSingle();
 Sample fZmmjetsAlpgenSingle();

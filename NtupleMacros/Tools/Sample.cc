@@ -16,6 +16,12 @@ bool filterByProcess (enum Process sample)
           return isDYmm();
      case DYtt:
           return isDYtt();
+     case We: 
+          return isWe();
+     case Wm:
+          return isWm();
+     case Wt:
+          return isWt();
      default:
 	  return true;
      }
@@ -167,6 +173,35 @@ Sample fWjetsAlpgenSingle ()
      return ret;
 }
 
+//WjetsAlpgen, enu only
+Sample fWejetsAlpgenSingle ()
+{
+     Sample ret = fWjetsAlpgenSingle();
+     ret.process = We;
+     ret.histo_color = 41;
+     ret.name = "wejetsAlpgen";
+     return ret;
+}
+
+//WjetsAlpgen, munu only
+Sample fWmjetsAlpgenSingle ()
+{
+     Sample ret = fWjetsAlpgenSingle();
+     ret.process = Wm;
+     ret.histo_color = 42;
+     ret.name = "wmjetsAlpgen";
+     return ret;
+}
+
+//WjetsAlpgen, munu only
+Sample fWtjetsAlpgenSingle ()
+{
+     Sample ret = fWjetsAlpgenSingle();
+     ret.process = Wt;
+     ret.histo_color = 43;
+     ret.name = "wtjetsAlpgen";
+     return ret;
+}
 
 Sample fZeejetsAlpgenSingle ()
 {
