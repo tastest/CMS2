@@ -35,8 +35,78 @@
 
 using namespace std;
 
+//if you just have one file, and you want to draw every branch
+void makeValidationMacro(TString f1) {
+
+  ofstream myfile;
+  myfile.open ("drawBranches.C");
+  myfile << "#include \"TH1F.h\"" << endl;
+  myfile << "#include \"TTree.h\"" << endl;
+  myfile << "#include \"TFile.h\"" << endl;
+  myfile << "#include <vector>"  << endl;
+  myfile << "using namespace std;" << endl;
+  myfile << "TCanvas *c = new TCanvas();" << endl;
+  myfile << "\nvoid drawBranches() {" << endl;
+  myfile << "   TFile *f1 = TFile::Open(\"" << f1 << "\", \"READ\");\n";
+  myfile << "   TTree *Events1 = dynamic_cast<TTree*>(f1->Get(\"Events\"));\n\n";
+  
+
+  TFile *file1 = new TFile(f1.Data(), "READ");
+  TTree *Events1 = dynamic_cast<TTree*>(file1->Get("Events"));
+  TList *list1   = Events1->GetListOfAliases();
+  TIterator *iter1 = list1->MakeIterator();
+  vector<TString> bNames1;
+  TKey *key;
+  while(key=(TKey*)iter1->Next()) {
+    TString name(key->GetName());
+    if(name.Contains("hyp_jets") ||
+       name.Contains("hyp_other_jets") )
+       continue;
+    bNames1.push_back(key->GetName());
+  }
+   //loop over the  branches and make histos
+  for(vector<TString>::iterator v_it = bNames1.begin();
+      v_it != bNames1.end(); v_it++) {
+    
+    TString branch(*v_it);
+    
+    TString suffix1 = f1.ReplaceAll(".root", "");
+    suffix1 = suffix1.Tokenize("/")->Last()->GetName();
+    
+    TString histoname1 = "h_" + branch + "_" + suffix1;
+    
+    if(branch.Contains("hyp_jets"))
+      continue;
+    if(branch.Contains("hyp_other_jets"))
+      continue;
+    if(branch.Contains("trigNames"))
+      continue;
+    if(branch.Contains("evt_dataset"))
+      continue;
+    if(branch.Contains("vtxs_position"))
+      continue;
 
 
+    if(branch.Contains("p4") || branch.Contains("P4") ) {
+      myfile << "   Events1->Draw(\"" << branch << ".Pt()>>" << histoname1 << "Pt\");" << endl;
+    } else {
+      myfile << "   Events1->Draw(\"" << branch << ">>" << histoname1 << "\");" << endl;
+    }
+
+    if(v_it + 1 != bNames1.end())
+      myfile << "   c->SaveAs(\"" << f1.ReplaceAll(".root","") << "_histos.eps(\");" << endl;
+  }
+  
+  myfile << "   c->SaveAs(\"" << f1.ReplaceAll(".root","") << "_histos.eps)\");" << endl;
+  myfile << "}";
+  myfile.close();
+  file1->Close();
+  
+    
+}
+
+//if you have 2 files and want to compare the common branches 
+//in the two files
 void makeValidationMacro(TString f1, TString f2) {
 
 
