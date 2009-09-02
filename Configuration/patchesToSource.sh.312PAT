@@ -3,3 +3,4 @@
 cvs co -r V01-08-01-01 JetMETCorrections/Algorithms
 cvs co -r V01-08-18-03 JetMETCorrections/Configuration
 addpkg JetMETCorrections/Modules
+cvs co -r V10-00-02      PhysicsTools/HepMCCandAlgos
