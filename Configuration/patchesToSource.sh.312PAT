@@ -3,4 +3,6 @@
 cvs co -r V01-08-01-01 JetMETCorrections/Algorithms
 cvs co -r V01-08-18-03 JetMETCorrections/Configuration
 addpkg JetMETCorrections/Modules
-cvs co -r V10-00-02      PhysicsTools/HepMCCandAlgos
+cvs co -r V10-00-02     PhysicsTools/HepMCCandAlgos
+cvs co -r CMSSW_3_1_2   PhysicsTools/PatAlgos/python
+cvs update -r V07-08-15 PhysicsTools/PatAlgos/python/tools/jetTools.py
