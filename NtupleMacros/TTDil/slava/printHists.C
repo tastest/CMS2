@@ -16,7 +16,7 @@ void printNJets( bool latex=false, const char* formatS = "%6.1f"){
      
   for (int sample=0; sample<4; sample++) {
     
-    hist::stack(Form("st_hnJet_%s", suffix[sample]), Form("hnJet_%s$", suffix[sample]));
+    hist::stack(Form("st_hnJet_%s", suffix[sample]), Form("^[^_]+_hnJet_%s$", suffix[sample]));
     THStack* thisStack = (THStack*) 
       gROOT->FindObjectAny(Form("st_hnJet_%s", suffix[sample]));
     //    std::cout<<"Found "<<thisStack->GetName()<<std::endl;
@@ -53,11 +53,12 @@ void printNJets( bool latex=false, const char* formatS = "%6.1f"){
       double n0E = h1F->GetBinError(1);
       n0all += n0;
       n0allE += n0E*n0E;
+      n0allE = sqrt(n0allE*n0allE + n0E*n0E);
 
       double n1 = h1F->GetBinContent(2);
       double n1E = h1F->GetBinError(2);
       n1all += n1;
-      n1allE += n1E*n1E;
+      n1allE = sqrt(n1allE*n1allE + n1E*n1E);
 
       int nBins = h1F->GetNbinsX();
       double n2 = 0; 
@@ -66,7 +67,7 @@ void printNJets( bool latex=false, const char* formatS = "%6.1f"){
       for (int i=3; i<= nBins+1; ++i) n2E += h1F->GetBinError(i)*h1F->GetBinError(i);
       n2E = sqrt(n2E);
       n2all += n2;
-      n2allE += n2E*n2E;
+      n2allE = sqrt(n2allE*n2allE + n2E*n2E);
 
       if (latex) {
 	if (sample == 0 || sample ==2){
