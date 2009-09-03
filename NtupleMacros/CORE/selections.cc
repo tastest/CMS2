@@ -1427,14 +1427,106 @@ double muonCalIsolationPAT(int index){
   return  pt/(pt+sum); 
 } 
 
+// hyp-dependent met variables: make sure that the MET is corrected for the muon used in the hypothesis
+// in case it's not: return corrected value
+double met_pat_metCor_hyp(unsigned int hypIdx){
+  if (cms2.hyp_type()[hypIdx] ==3) return cms2.met_pat_metCor();
+  double lmetx = cms2.met_pat_metCor()*cos(cms2.met_pat_metPhiCor());
+  double lmety = cms2.met_pat_metCor()*sin(cms2.met_pat_metPhiCor());
+
+  unsigned int i_lt = cms2.hyp_lt_index()[hypIdx];
+  unsigned int i_ll = cms2.hyp_ll_index()[hypIdx];
+  if (abs(cms2.hyp_lt_id()[hypIdx])==13 && cms2.mus_met_flag()[i_lt] == 0){
+    lmetx+= - cms2.mus_met_deltax()[i_lt] - cms2.mus_p4()[i_lt].x();
+    lmety+= - cms2.mus_met_deltay()[i_lt] - cms2.mus_p4()[i_lt].y();
+  }
+  if (abs(cms2.hyp_ll_id()[hypIdx])==13 && cms2.mus_met_flag()[i_ll] == 0){
+    lmetx+= - cms2.mus_met_deltax()[i_ll] - cms2.mus_p4()[i_ll].x();
+    lmety+= - cms2.mus_met_deltay()[i_ll] - cms2.mus_p4()[i_ll].y();
+  }
+  return sqrt(lmetx*lmetx+lmety*lmety);
+}
+double met_pat_metPhiCor_hyp(unsigned int hypIdx){
+  if (cms2.hyp_type()[hypIdx] ==3) return cms2.met_pat_metPhiCor();
+  double lmetx = cms2.met_pat_metCor()*cos(cms2.met_pat_metPhiCor());
+  double lmety = cms2.met_pat_metCor()*sin(cms2.met_pat_metPhiCor());
+
+  unsigned int i_lt = cms2.hyp_lt_index()[hypIdx];
+  unsigned int i_ll = cms2.hyp_ll_index()[hypIdx];
+  if (abs(cms2.hyp_lt_id()[hypIdx])==13 && cms2.mus_met_flag()[i_lt] == 0){
+    lmetx+= - cms2.mus_met_deltax()[i_lt] - cms2.mus_p4()[i_lt].x();
+    lmety+= - cms2.mus_met_deltay()[i_lt] - cms2.mus_p4()[i_lt].y();
+  }
+  if (abs(cms2.hyp_ll_id()[hypIdx])==13 && cms2.mus_met_flag()[i_ll] == 0){
+    lmetx+= - cms2.mus_met_deltax()[i_ll] - cms2.mus_p4()[i_ll].x();
+    lmety+= - cms2.mus_met_deltay()[i_ll] - cms2.mus_p4()[i_lt].y();
+  }
+  return atan2(lmety,lmetx);
+}
+// do the same with tcmet now
+double evt_tcmet_hyp(unsigned int hypIdx){
+  if (cms2.hyp_type()[hypIdx] ==3) return cms2.evt_tcmet();
+  double lmetx = cms2.evt_tcmet()*cos(cms2.evt_tcmetPhi());
+  double lmety = cms2.evt_tcmet()*sin(cms2.evt_tcmetPhi());
+
+  unsigned int i_lt = cms2.hyp_lt_index()[hypIdx];
+  unsigned int i_ll = cms2.hyp_ll_index()[hypIdx];
+  if (abs(cms2.hyp_lt_id()[hypIdx])==13){
+    if(cms2.mus_tcmet_flag()[i_lt] == 0){
+      lmetx+= - cms2.mus_met_deltax()[i_lt] - cms2.mus_p4()[i_lt].x();
+      lmety+= - cms2.mus_met_deltay()[i_lt] - cms2.mus_p4()[i_lt].y();
+    } else if (cms2.mus_tcmet_flag()[i_lt] == 4){
+      lmetx+= - cms2.mus_tcmet_deltax()[i_lt] - cms2.mus_met_deltax()[i_lt] - cms2.mus_p4()[i_lt].x(); 
+      lmety+= - cms2.mus_tcmet_deltay()[i_lt] - cms2.mus_met_deltay()[i_lt] - cms2.mus_p4()[i_lt].y(); 
+    }
+  }
+  if (abs(cms2.hyp_ll_id()[hypIdx])==13){
+    if(cms2.mus_tcmet_flag()[i_ll] == 0){ 
+      lmetx+= - cms2.mus_met_deltax()[i_ll] - cms2.mus_p4()[i_ll].x(); 
+      lmety+= - cms2.mus_met_deltay()[i_ll] - cms2.mus_p4()[i_ll].y(); 
+    } else if (cms2.mus_tcmet_flag()[i_ll] == 4){ 
+      lmetx+= - cms2.mus_tcmet_deltax()[i_ll] - cms2.mus_met_deltax()[i_ll] - cms2.mus_p4()[i_ll].x();  
+      lmety+= - cms2.mus_tcmet_deltay()[i_ll] - cms2.mus_met_deltay()[i_ll] - cms2.mus_p4()[i_ll].y();  
+    } 
+  }
+  return sqrt(lmetx*lmetx+lmety*lmety);
+}
+double evt_tcmetPhi_hyp(unsigned int hypIdx){
+  if (cms2.hyp_type()[hypIdx] ==3) return cms2.evt_tcmetPhi();
+  double lmetx = cms2.evt_tcmet()*cos(cms2.evt_tcmetPhi());
+  double lmety = cms2.evt_tcmet()*sin(cms2.evt_tcmetPhi());
+
+  unsigned int i_lt = cms2.hyp_lt_index()[hypIdx];
+  unsigned int i_ll = cms2.hyp_ll_index()[hypIdx];
+  if (abs(cms2.hyp_lt_id()[hypIdx])==13){
+    if(cms2.mus_tcmet_flag()[i_lt] == 0){
+      lmetx+= - cms2.mus_met_deltax()[i_lt] - cms2.mus_p4()[i_lt].x();
+      lmety+= - cms2.mus_met_deltay()[i_lt] - cms2.mus_p4()[i_lt].y();
+    } else if (cms2.mus_tcmet_flag()[i_lt] == 4){
+      lmetx+= - cms2.mus_tcmet_deltax()[i_lt] - cms2.mus_met_deltax()[i_lt] - cms2.mus_p4()[i_lt].x(); 
+      lmety+= - cms2.mus_tcmet_deltay()[i_lt] - cms2.mus_met_deltay()[i_lt] - cms2.mus_p4()[i_lt].y(); 
+    }
+  }
+  if (abs(cms2.hyp_ll_id()[hypIdx])==13){
+    if(cms2.mus_tcmet_flag()[i_ll] == 0){ 
+      lmetx+= - cms2.mus_met_deltax()[i_ll] - cms2.mus_p4()[i_ll].x(); 
+      lmety+= - cms2.mus_met_deltay()[i_ll] - cms2.mus_p4()[i_ll].y(); 
+    } else if (cms2.mus_tcmet_flag()[i_ll] == 4){ 
+      lmetx+= - cms2.mus_tcmet_deltax()[i_ll] - cms2.mus_met_deltax()[i_ll] - cms2.mus_p4()[i_ll].x();  
+      lmety+= - cms2.mus_tcmet_deltay()[i_ll] - cms2.mus_met_deltay()[i_ll] - cms2.mus_p4()[i_ll].y();  
+    } 
+  }
+  return atan2(lmety,lmetx);
+}
+
 // met cut for ttbar dilepton analysis...
 // includes a boolean to switch to tcmet
 bool passMet_OF20_SF30(int hypIdx, bool useTcMet) {
   float mymet;
   if (useTcMet) {
-    mymet = cms2.evt_tcmet();
+    mymet = evt_tcmet_hyp(hypIdx);
   } else {
-    mymet = cms2.met_pat_metCor();
+    mymet = met_pat_metCor_hyp(hypIdx);
   }
   if  (cms2.hyp_type().at(hypIdx) == 0 || cms2.hyp_type().at(hypIdx) == 3) {
     if (mymet < 30) return false;
@@ -1461,8 +1553,8 @@ bool passPatMet_OF20_SF30(float metx, float mety, int hypIdx){
 }
 // event-level pat-met: emu met >20, mm,em met>30
 bool passPatMet_OF20_SF30(int hypIdx){
-  return passPatMet_OF20_SF30(cms2.met_pat_metCor()*cos(cms2.met_pat_metPhiCor()), 
-			      cms2.met_pat_metCor()*sin(cms2.met_pat_metPhiCor()),
+  return passPatMet_OF20_SF30(met_pat_metCor_hyp(hypIdx)*cos(met_pat_metPhiCor_hyp(hypIdx)), 
+			      met_pat_metCor_hyp(hypIdx)*sin(met_pat_metPhiCor_hyp(hypIdx)),
 			      hypIdx);
 }
 //**************************************************************************
@@ -1471,9 +1563,9 @@ bool passPatMet_OF20_SF30(int hypIdx){
 bool passMet_OF30_SF50(int hypIdx, bool useTcMet) {
   float mymet;
   if (useTcMet) {
-    mymet = cms2.evt_tcmet();
+    mymet = evt_tcmet_hyp(hypIdx);
   } else {
-    mymet = cms2.met_pat_metCor();
+    mymet = met_pat_metCor_hyp(hypIdx);
   }
   if  (cms2.hyp_type().at(hypIdx) == 0 || cms2.hyp_type().at(hypIdx) == 3) {
     if (mymet < 50) return false;
@@ -1500,8 +1592,8 @@ bool passPatMet_OF30_SF50(float metx, float mety, int hypIdx){
 }
 // event-level pat-met: emu met >30, mm,em met>50
 bool passPatMet_OF30_SF50(int hypIdx){
-  return passPatMet_OF30_SF50(cms2.met_pat_metCor()*cos(cms2.met_pat_metPhiCor()), 
-			      cms2.met_pat_metCor()*sin(cms2.met_pat_metPhiCor()),
+  return passPatMet_OF30_SF50(met_pat_metCor_hyp(hypIdx)*cos(met_pat_metPhiCor_hyp(hypIdx)), 
+			      met_pat_metCor_hyp(hypIdx)*sin(met_pat_metPhiCor_hyp(hypIdx)),
 			      hypIdx);
 }
 
@@ -2363,6 +2455,19 @@ int genpCountPDGId(int id0, int id1, int id2){
   return count; 
 } 
 
+int genpCountPDGId_Pt20h24(int id0, int id1, int id2){ 
+  int count = 0; 
+  int size = cms2.genps_id().size(); 
+  for (int jj=0; jj<size; jj++) { 
+    if ( cms2.genps_p4()[jj].pt() < 20  ||  fabs(cms2.genps_p4()[jj].eta())>2.4) continue;
+    if (abs(cms2.genps_id()[jj]) == id0) count++; 
+    if (abs(cms2.genps_id()[jj]) == id1) count++; 
+    if (abs(cms2.genps_id()[jj]) == id2) count++; 
+  } 
+  return count; 
+} 
+
+
 
 int genpDileptonType(){
   //0 mumu; 1 emu; 2 ee
@@ -2387,8 +2492,90 @@ int genpDileptonType(){
 }
 
 
+bool matchesMCTruthDilExtended(unsigned int hypIdx){
+  //this better be in the selections.cc
+  bool isTrueLepton_ll = false;
+  bool isTrueLepton_lt = false;
+  isTrueLepton_ll = ( (abs(cms2.hyp_ll_id()[hypIdx]) == abs(cms2.hyp_ll_mc_id()[hypIdx]) &&
+		       abs(cms2.hyp_ll_mc_motherid()[hypIdx]) < 50 //I wish I could match to W or Z explicitely, not in MGraph
+		       )
+		      || (cms2.hyp_ll_mc_id()[hypIdx]==22 && 
+			  TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[hypIdx],cms2.hyp_ll_mc_p4()[hypIdx])) <0.05
+			  && abs(cms2.hyp_ll_id()[hypIdx]) == abs(cms2.hyp_ll_mc_motherid()[hypIdx])
+			  )
+		      );
+  isTrueLepton_lt = ( (abs(cms2.hyp_lt_id()[hypIdx]) == abs(cms2.hyp_lt_mc_id()[hypIdx]) &&
+		       abs(cms2.hyp_lt_mc_motherid()[hypIdx]) < 50 //I wish I could match to W or Z explicitely, not in MGraph
+		       )
+		      || (cms2.hyp_lt_mc_id()[hypIdx]==22 && 
+			  TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[hypIdx],cms2.hyp_lt_mc_p4()[hypIdx])) <0.05
+			  && abs(cms2.hyp_lt_id()[hypIdx]) == abs(cms2.hyp_lt_mc_motherid()[hypIdx])
+			  )
+		      );
+  return (isTrueLepton_lt && isTrueLepton_ll);  
+}
 
-int eventDilIndexByWeightTTDil08(const std::vector<unsigned int>& goodHyps, int& strasbourgDilType, bool printDebug){
+
+int eventDilIndexByMaxMass(const std::vector<unsigned int>& goodHyps, bool printDebug){
+  int result = -1;
+  int strasbourgDilType = -1;
+  unsigned int nGoodHyps = goodHyps.size();
+  if ( nGoodHyps == 0 ) return result;
+
+  float maxWeight = -1;
+  unsigned int maxWeightIndex = 9999;
+  
+  for (unsigned int hypIdxL=0; hypIdxL < nGoodHyps; ++hypIdxL){
+    unsigned int hypIdx = goodHyps[hypIdxL];
+    float hypWeight = cms2.hyp_p4()[hypIdx].mass();
+    if (hypWeight > maxWeight){
+      maxWeight = hypWeight;
+      maxWeightIndex = hypIdx;
+    }
+  }
+
+  if (printDebug){
+    int genpDilType = genpDileptonType();
+    if (genpDilType>=0 ){ std::cout<<"Dil type "<<genpDilType<<std::endl;
+      if (nGoodHyps > 1){
+	int maxWeightType = cms2.hyp_type()[maxWeightIndex];
+	if ((maxWeightType == 0 && genpDilType == 0)
+	    || ( (maxWeightType == 1 || maxWeightType == 2) && genpDilType == 1)
+	    || (maxWeightType == 3 && genpDilType == 2)){
+	  std::cout<<"Dil type "<<genpDilType<<" ; Strasbourg dil type "<<strasbourgDilType 
+		   <<" assigned correctly by maxWeight method";
+	  std::cout<<" out of"; for(unsigned int iih=0;iih<nGoodHyps;++iih)std::cout<<" "<<cms2.hyp_type()[goodHyps[iih]];
+	  std::cout<<std::endl;
+	} else {
+	  std::cout<<"Dil type "<<genpDilType<<" ; Strasbourg dil type "<<strasbourgDilType 
+		   <<" assigned incorrectly by maxWeight method";
+	  std::cout<<" out of"; for(unsigned int iih=0;iih<nGoodHyps;++iih)std::cout<<" "<<cms2.hyp_type()[goodHyps[iih]];
+	  std::cout<<std::endl;	    
+	}
+      }
+    } else{
+      if (genpCountPDGId(11,13,15) == 2){
+	std::cout<<"TauDil type "<<std::endl;
+      }
+    }
+    int nMCTruth = 0;
+    for(unsigned int iih=0;iih<nGoodHyps;++iih) if (matchesMCTruthDilExtended(goodHyps[iih])) nMCTruth++;
+    std::cout<<"Ne: "<<genpCountPDGId_Pt20h24(11)<<" nmu: "<<genpCountPDGId_Pt20h24(13)<<" ntau: "<<genpCountPDGId_Pt20h24(15)
+	     <<" ngood "<<nGoodHyps
+	     <<" hyp_typeM: "<<cms2.hyp_type()[maxWeightIndex]<<" matchMC "<<(matchesMCTruthDilExtended(maxWeightIndex)? 1 : 0)
+	     <<" nMatches "<<nMCTruth
+	     <<" ltid "<< cms2.hyp_lt_id()[maxWeightIndex]
+	     <<" ltmcid "<< cms2.hyp_lt_mc_id()[maxWeightIndex]<<" ltmcmid "<< cms2.hyp_lt_mc_motherid()[maxWeightIndex]
+	     <<" llid "<< cms2.hyp_ll_id()[maxWeightIndex]
+	     <<" llmcid "<< cms2.hyp_ll_mc_id()[maxWeightIndex]<<" llmcmid "<< cms2.hyp_ll_mc_motherid()[maxWeightIndex]
+	     <<std::endl;
+  }
+
+  result = maxWeightIndex;
+  return result;
+}
+
+int eventDilIndexByWeightTTDil08(const std::vector<unsigned int>& goodHyps, int& strasbourgDilType, bool printDebug, bool usePtOnlyForWeighting){
   int result = -1;
   unsigned int nGoodHyps = goodHyps.size();
   if ( nGoodHyps == 0 ) return result;
@@ -2418,29 +2605,33 @@ int eventDilIndexByWeightTTDil08(const std::vector<unsigned int>& goodHyps, int&
     if (abs(id_lt) == 11){
       //I want to select "trk & cal"-isolated ones
       hypWeight_iso += (isoTk_lt*isoCal_lt - 0.25); //shift by 0.25 to be positive-definite
-      if (cms2.els_tightId().at(i_lt)) hypWeight_lt += 0.2;
+      if (! usePtOnlyForWeighting && cms2.els_tightId().at(i_lt)) hypWeight_lt += 0.2;
     }
     if (abs(id_lt) == 13){
       //I want to select "trk & cal"-isolated ones	    
       hypWeight_iso += (isoTk_lt*isoCal_lt - 0.25);//shift by 0.25 to be positive-definite
-      hypWeight_lt += 0.4;
+      if (! usePtOnlyForWeighting) hypWeight_lt += 0.4;
     }
     if (abs(id_ll) == 11){
       //I want to select "trk & cal"-isolated ones
       hypWeight_iso *= (isoTk_ll*isoCal_ll - 0.25); //shift by 0.25 to be positive-definite
-      if (cms2.els_tightId().at(i_ll)) hypWeight_ll += 0.2;
+      if (! usePtOnlyForWeighting && cms2.els_tightId().at(i_ll)) hypWeight_ll += 0.2;
     }
     if (abs(id_ll) == 13){
       //I want to select "trk & cal"-isolated ones
       hypWeight_iso *= (isoTk_ll*isoCal_ll - 0.25); //shift by 0.25 to be positive-definite
-      hypWeight_ll += 0.4;
+      if (! usePtOnlyForWeighting) hypWeight_ll += 0.4;
     }
     float pt_lt = cms2.hyp_lt_p4().at(hypIdx).pt();
     float pt_ll = cms2.hyp_ll_p4().at(hypIdx).pt();
     hypWeight_lt += (1. - 20./pt_lt*20./pt_lt);
     hypWeight_ll += (1. - 20./pt_ll*20./pt_ll);
-
-    hypWeight = hypWeight_ll*hypWeight_lt*hypWeight_iso; //again, desire to have both good
+    
+    if (usePtOnlyForWeighting){
+      hypWeight = hypWeight_ll*hypWeight_lt; //again, desire to have both good
+    } else {
+      hypWeight = hypWeight_ll*hypWeight_lt*hypWeight_iso; //again, desire to have both good
+    }
 
     if (hypWeight > maxWeight){
       maxWeight = hypWeight;
@@ -2531,11 +2722,23 @@ int eventDilIndexByWeightTTDil08(const std::vector<unsigned int>& goodHyps, int&
 	}
       }
     }
+    int nMCTruth = 0;
+    for(unsigned int iih=0;iih<nGoodHyps;++iih) if (matchesMCTruthDilExtended(goodHyps[iih])) nMCTruth++;
+    std::cout<<"Ne: "<<genpCountPDGId_Pt20h24(11)<<" nmu: "<<genpCountPDGId_Pt20h24(13)<<" ntau: "<<genpCountPDGId_Pt20h24(15)
+	     <<" ngood "<<nGoodHyps<<" SBtype "<<strasbourgDilType
+	     <<" hyp_typeM: "<<cms2.hyp_type()[maxWeightIndex]<<" matchMC "<<(matchesMCTruthDilExtended(maxWeightIndex)? 1 : 0)
+	     <<" nMatches "<<nMCTruth
+	     <<" ltid "<< cms2.hyp_lt_id()[maxWeightIndex]
+	     <<" ltmcid "<< cms2.hyp_lt_mc_id()[maxWeightIndex]<<" ltmcmid "<< cms2.hyp_lt_mc_motherid()[maxWeightIndex]
+	     <<" llid "<< cms2.hyp_ll_id()[maxWeightIndex]
+	     <<" llmcid "<< cms2.hyp_ll_mc_id()[maxWeightIndex]<<" llmcmid "<< cms2.hyp_ll_mc_motherid()[maxWeightIndex]
+	     <<std::endl;    
   }
 
   result = maxWeightIndex;
   return result;
 }
+
 
 
 //-------------------------------------------------------------
@@ -2709,6 +2912,46 @@ bool conversionElectron(int electron) {
 
   return false;
 }
+
+// false if below ptcut, aboveabsEtaCut, below dRCut wrt hypothesis
+bool isGoodDilHypJet(unsigned int jetIdx, unsigned int hypIdx, double ptCut, double absEtaCut, double dRCut, bool muJetClean){
+  if (cms2.jets_p4()[jetIdx].pt()< ptCut || fabs(cms2.jets_p4()[jetIdx].eta())> absEtaCut) return false;
+  double dR_ll = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[hypIdx],cms2.jets_p4()[jetIdx]);
+  double dR_lt = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[hypIdx],cms2.jets_p4()[jetIdx]);
+  
+  if (abs(cms2.hyp_ll_id()[hypIdx]) == 11){
+    if (dR_ll < dRCut) return false;
+  }
+  if (abs(cms2.hyp_lt_id()[hypIdx]) == 11){
+    if (dR_lt < dRCut) return false;
+  }
+
+  if (muJetClean){
+    if (abs(cms2.hyp_ll_id()[hypIdx]) == 13){
+      if (dR_ll < dRCut) return false;
+    }
+    if (abs(cms2.hyp_lt_id()[hypIdx]) == 13){
+      if (dR_lt < dRCut) return false;
+    }
+  }
+
+  return true;
+
+}
+
+// false if below ptcut, aboveabsEtaCut, below dRCut wrt hypothesis
+bool isGoodDilHypJPTJet(unsigned int jetIdx, unsigned int hypIdx, double ptCut, double absEtaCut, double dRCut){
+  if (cms2.jpts_p4()[jetIdx].pt()< ptCut || fabs(cms2.jpts_p4()[jetIdx].eta())> absEtaCut) return false;
+  double dR_ll = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[hypIdx],cms2.jpts_p4()[jetIdx]);
+  double dR_lt = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[hypIdx],cms2.jpts_p4()[jetIdx]);
+  
+  if (dR_ll < dRCut) return false;
+  if (dR_lt < dRCut) return false;
+
+  return true;
+
+}
+
 
 int findPrimTrilepZ(int i_hyp, double &mass) {
   // find primary Z candidate in trilepton hyp
