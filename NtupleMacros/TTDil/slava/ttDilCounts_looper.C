@@ -38,10 +38,10 @@
 typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >  VofP4;
 
 // this is Jake's magic to sort jets by Pt
-Bool_t comparePt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1,
-                 ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv2) {
-  return lv1.pt() > lv2.pt();
-}
+//Bool_t comparePt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1,
+//                 ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv2) {
+//  return lv1.pt() > lv2.pt();
+//}
 
 void ttDilCounts_looper::fill1D(TH1F* h, double v, double w){
   unsigned int nB = h->GetNbinsX();
