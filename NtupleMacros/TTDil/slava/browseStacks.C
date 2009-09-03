@@ -49,9 +49,53 @@ void hatch(const char* patORpfx,  Int_t hatch) {
 
 
 
-void browseStacks( bool makePictures=false, bool wait=true , bool addHistName = false, Double_t maxYScaleF = 1., 
-                  bool logScale = false, bool setMinZero = true) {
+void browseStacks( bool makePictures=false, bool wait=true , int addHistName = 1, Double_t maxYScaleF = 1., 
+		   bool logScale = false, bool setMinZero = true, int colorScheme = 0, bool noLegend = false, int orderScheme = 0,
+		   char* bsmName = "") {
+  //addHistName =
+  // 0 -- no name
+  // 1 -- native name
+  // 2 -- CMS Preliminary
+  // 3 -- CMS Simulation
+  // 4 -- CMS Preliminary, L = 10 pb-1
+  // 5 -- CMS Simulation, L =  10 pb-1
+  // 6 -- CMS Preliminary, L = 100 pb-1
+  // 7 -- CMS Simulation, L = 100 pb-1
 
+  // colorScheme = 
+  // 0 -- do nothing, use defaults
+  // 1 -- french style: 
+  /*
+    TTbar signal: 3
+    TTbar background: 24
+    Z+jets: 2
+    W+jets: 9
+    dibosons: 33
+    Vqq: 42
+    single top (tW, t-channel, s-channel): 46 
+  */
+  if (colorScheme ==1){
+    hist::color("^ttdil_", 3);
+    hist::color("^ttotr_", 24);
+    hist::color("^DYeemm_", 2);
+    hist::color("^DYtautau_", 1);
+    hist::color("^VV_", 33);
+    hist::color("^wjets_", 9);
+    hist::color("^QCD_", 51); //use the same as in doAll
+    hist::color("^t_", 46);      
+  }
+  if (colorScheme ==2){ //based on the style in the PAS
+    hist::color("^ttdil_", kGreen);
+    hist::color("^ttotr_", kYellow);
+    hist::color("^DYeemm_", kRed);
+    hist::color("^DYtautau_", kBlack);
+    hist::color("^VV_", kGray);
+    hist::color("^wjets_", kViolet);
+    hist::color("^QCD_", kViolet+3); //use the same as in doAll
+    hist::color("^t_", kRed-3);      
+    hist::color("^Vgamma_", kViolet-4);      
+    hist::color(Form("^%s_",bsmName), kBlue);
+  }
 
   gStyle->SetOptTitle(0);
 
@@ -62,25 +106,30 @@ void browseStacks( bool makePictures=false, bool wait=true , bool addHistName = 
   TIterator *iter = list->MakeIterator();
   TObject *obj = 0;
   while(obj = iter->Next()) {
-  
-    if(TString(obj->GetName()).Contains("hnJet") && obj->InheritsFrom(TH1::Class())) {
-      
-      int nbins = ((TH1F*)obj)->GetNbinsX();
-      float overflow = ((TH1F*)obj)->GetBinContent(nbins+1);
-      float lastbinval = ((TH1F*)obj)->GetBinContent(nbins);
-      ((TH1F*)obj)->SetBinContent(nbins, overflow+lastbinval);
-      ((TH1F*)obj)->GetXaxis()->SetBinLabel(nbins, "#geq4");
+    if (obj->InheritsFrom(TH1::Class())){
+      TH1F* hobj = (TH1F*)obj;
+      hobj->SetLineColor(1);
+      hobj->SetLineWidth(1);
+      if(TString(obj->GetName()).Contains("hnJet") ) {
+	int nbins = hobj->GetNbinsX();
+	float overflow = hobj->GetBinContent(nbins+1);
+	float lastbinval = hobj->GetBinContent(nbins);
+	hobj->SetBinContent(nbins, overflow+lastbinval);
+	hobj->GetXaxis()->SetBinLabel(nbins, "#geq4");
+      }
+      if (TString(obj->GetName()).Contains("hpatmet_")){
+	hobj->GetYaxis()->SetTitle("events/(10 GeV)");
+      }
     }
   }
   
-    
-    
-    
+ 
   // Find out what the names of the existing histograms are
   // The histogram names are XX_YY_ZZ, where XX is the sample,
   // eg, "tt", YY is the actual name, ZZ is the final state, eg, "ee"
   TObjArray* myNames = getMyHistosNames("ttdil","ee",keep2D);
     
+  bool haveRefHistograms = gROOT->FindObjectAny(Form("ref_ttdil_%s_ee",myNames->At(0)->GetName())) != 0;
 
   // Now loop over histograms, and make stacks
   TCanvas *c = new TCanvas();
@@ -97,11 +146,19 @@ void browseStacks( bool makePictures=false, bool wait=true , bool addHistName = 
        
        
       hist::stack(Form("st_%s_%s",myNames->At(i)->GetName(),suffix[sample]),
-		  Form("%s_%s$",myNames->At(i)->GetName(), suffix[sample]));
+		  Form("^[^_]+_%s_%s$",myNames->At(i)->GetName(), suffix[sample]), false, "",orderScheme, bsmName,haveRefHistograms);
       THStack* thisStack = (THStack*) gROOT->FindObjectAny(
 							   Form("st_%s_%s", myNames->At(i)->GetName(), suffix[sample]));
-       
-      thisStack->SetMaximum(thisStack->GetMaximum()*maxYScaleF);
+      THStack* refStack = 0;
+      if (haveRefHistograms){
+	hist::stack(Form("st_ref_%s_%s",myNames->At(i)->GetName(),suffix[sample]),
+		    Form("^ref_[^_]+_%s_%s$",myNames->At(i)->GetName(), suffix[sample]), false, "",orderScheme, bsmName,haveRefHistograms);
+	refStack = (THStack*) gROOT->FindObjectAny(
+						   Form("st_ref_%s_%s", myNames->At(i)->GetName(), suffix[sample]));
+      }
+      double thisMaximum = refStack ? refStack->GetMaximum()*maxYScaleF : thisStack->GetMaximum()*maxYScaleF;
+      thisStack->SetMaximum(thisMaximum);
+
       if(TString(myNames->At(i)->GetName()).Contains("hnJet")) {
 	TList* histolist = thisStack->GetHists();
 	int hatchcount = 0;
@@ -114,8 +171,8 @@ void browseStacks( bool makePictures=false, bool wait=true , bool addHistName = 
 	// 	}
       }
 	 
-	 
-      TLegend* thisLeg = hist::legend(thisStack, "lpf", 0, 0, 0.75, 0.65, 0.99, 0.99);
+      TLegend* thisLeg = hist::legend(thisStack, "f", 0, 0, 0.725, 0.605, 0.99, 0.99);
+      thisLeg->SetBorderSize(1);
       c->cd(sample+1);
       if (logScale) gPad->SetLogy(); else gPad->SetLogy(0);
       double stackMax = ((TH1*)thisStack->GetHists()->At(0))->GetMaximum();
@@ -134,9 +191,10 @@ void browseStacks( bool makePictures=false, bool wait=true , bool addHistName = 
 	if(hname.Contains("hnJet")) {
 	  thisStack->GetXaxis()->SetLabelSize(0.075);
 	  thisStack->GetYaxis()->SetLabelSize(0.05);
-	  thisStack->GetXaxis()->SetTitle("N_{jets}");
+	  thisStack->GetXaxis()->SetTitle("#font[12]{N}_{jets}");
+	  thisStack->GetXaxis()->SetTitleOffset(1.05);
 	}
-        thisLeg->Draw();
+        if (!noLegend) thisLeg->Draw();
 	
 	TPaveText *pt1 = new TPaveText(0.1, 0.95, 0.4, 0.999, "brNDC");
 	pt1->SetName("pt1name");
@@ -144,8 +202,23 @@ void browseStacks( bool makePictures=false, bool wait=true , bool addHistName = 
 	pt1->SetFillStyle(0);
 	
 	TText *blah;
-	if (addHistName) blah = pt1->AddText(hname);
-	else blah = pt1->AddText("CMS Preliminary");
+	if (addHistName == 0){
+	  blah = pt1->AddText("");
+	} else if (addHistName == 1){
+	  blah = pt1->AddText(hname);
+	} else if (addHistName == 2){
+	  blah = pt1->AddText("CMS Preliminary");
+	} else if (addHistName == 3){
+	  blah = pt1->AddText("CMS Simulation");
+	} else if (addHistName == 4){
+	  blah = pt1->AddText("CMS Preliminary  10 pb^{-1}");
+	} else if (addHistName == 5){
+	  blah = pt1->AddText("CMS Simulation   10 pb^{-1}");
+	} else if (addHistName == 6){
+	  blah = pt1->AddText("CMS Preliminary 100 pb^{-1}");
+	} else if (addHistName == 7){
+	  blah = pt1->AddText("CMS Simulation  100 pb^{-1}");
+	}
 	blah->SetTextSize(0.05);
         pt1->Draw();
         c->Modified();
@@ -154,10 +227,11 @@ void browseStacks( bool makePictures=false, bool wait=true , bool addHistName = 
       }
     }
     if (makePictures) {
+      std::cout<<myNames->At(i)->GetName()<<std::endl;
       c->Print("out/stacks.ps");
       //       c->Print(Form("out/stacks_%d.png",i+1));
       //c->Print(Form("out/stacks_%s.png",myNames->At(i)->GetName()));
-      c->Print(Form("out/stacks_%s.eps",myNames->At(i)->GetName()));
+      //      c->Print(Form("out/stacks_%s.eps",myNames->At(i)->GetName()));
     }
     if (wait) {
       cout << "Enter carriage return for the next set of plots....q to quit" << endl;
