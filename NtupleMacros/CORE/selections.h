@@ -122,8 +122,10 @@ bool haveExtraMuon5(int hypIdx);
 bool passTriggersMu9orLisoE15(int dilType) ;
 bool passTriggersTTDil08JanTrial(int dilType) ;
 int genpCountPDGId(int id0, int id1=-1, int id2=-1); 
+int genpCountPDGId_Pt20h24(int id0, int id1=-1, int id2=-1);  
 int genpDileptonType();
-int eventDilIndexByWeightTTDil08(const std::vector<unsigned int>& goodHyps, int& strasbourgDilType, bool printDebug = false);
+int eventDilIndexByWeightTTDil08(const std::vector<unsigned int>& goodHyps, int& strasbourgDilType, bool printDebug = false,
+				 bool usePtOnlyForWeighting = false);
 
 // SUSY Dilepton group cuts (VJets09)
 
