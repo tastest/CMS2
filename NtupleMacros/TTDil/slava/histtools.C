@@ -9,6 +9,7 @@
 #include "TRegexp.h"
 #include "TKey.h"
 #include <iostream>
+#include <vector>
 
 #include "histtools.h"
 namespace hist {
@@ -180,7 +181,6 @@ namespace hist {
       obj = list->At(i);
       if (! obj->InheritsFrom(TH1::Class())) continue;
       TString name(obj->GetName());
-//       if(name.Contains("ppMuX")) continue;
       if (addColor) {
 	hist::color(obj->GetName(), colorIt);
 	++colorIt;
@@ -191,20 +191,26 @@ namespace hist {
       else {
 	TString name(obj->GetName());
 	TObjArray* a = name.Tokenize("_");
-	if (a->GetEntries() <= token) {
-	  //leg->AddEntry(obj, obj->GetName(), option);
-	  TString entry(obj->GetName());
+	TString entry(a->GetEntries() <= token ? obj->GetName() : a->At(token)->GetName());
+	if (entry == "t"){
+	  entry = "Single top";
+	} else if (entry == "ttdil"){
+	  entry = "#font[12]{t#bar{t}}#rightarrow  #font[12]{ll}";
+	} else if (entry == "ttotr"){
+	  entry = "#font[12]{t#bar{t}} #rightarrow not #font[12]{ll}";
+	} else if (entry == "VV"){
+	  entry = "#font[12]{WW}, #font[12]{WZ}, #font[12]{ZZ}";
+	} else if (entry == "DYtautau"){
+	  entry = "DY#rightarrow #tau#tau";
+	} else if (entry == "DYeemm"){
+	  entry = "DY#rightarrow #font[12]{ee}, #mu#mu";
+	} else if (entry == "wjets"){
+	  entry = "#font[12]{W}+jets";
+	}else {
 	  entry.ReplaceAll("tautau", "#tau#tau");
 	  entry.ReplaceAll("mm", "#mu#mu");
-	  leg->AddEntry(obj, entry, option);
 	}
-	else {
-	  //leg->AddEntry(obj, a->At(token)->GetName(), option);
-	  TString entry(a->At(token)->GetName());
-	  entry.ReplaceAll("tautau", "#tau#tau");
-	  entry.ReplaceAll("mm", "#mu#mu");
-	  leg->AddEntry(obj, entry, option);
-	}
+	leg->AddEntry(obj, entry, option);
       }
     }
 
@@ -313,11 +319,11 @@ namespace hist {
   //want to stack, to "hist" to display histograms without errors, to "histe"
   //to display histograms with errors, etc.
 
-  void stack(const char* stackHistName, const char* patORpfx, Bool_t addColor, Option_t* drawOption) {
-    TRegexp reg(patORpfx, kFALSE);
+  void stack(const char* stackHistName, const char* patORpfx, Bool_t addColor, Option_t* drawOption, Int_t orderScheme,
+	     const char* bsmName, bool doRefPats) {
+    TRegexp reg(patORpfx, kTRUE);
       
     TList* list = gDirectory->GetList() ;
-    TIterator* iter = list->MakeIterator();
 
     TObject* obj = 0;
     TObject* stack = 0;
@@ -330,28 +336,88 @@ namespace hist {
     //Hist color iterator
     Int_t colorIt = 1;
 
-    while (obj = iter->Next()) {
-      if (! obj->InheritsFrom(TH1::Class())) continue;
+    vector<TString*>  pats(0);
+    if (orderScheme == 0){
+      pats.push_back(new TString(""));
+    } else if (orderScheme == 1) {
+      //this requires some care: only the histograms beginning with what's in the pattern will be processed
+      pats.push_back(new TString("ttdil_"));
+      pats.push_back(new TString("ttotr_"));
+      pats.push_back(new TString("t_"));
+      pats.push_back(new TString("VV_"));
+      pats.push_back(new TString("DYtautau_"));
+      pats.push_back(new TString("DYeemm_"));
+      pats.push_back(new TString("wjets_"));
+      pats.push_back(new TString("QCD_"));
+      //      pats.push_back(new TString("Vgamma_"));
 
-      TString name = obj->GetName();
-//       if(name.Contains("ppMuX") ) continue;
-      if (TString(patORpfx).MaybeRegexp()) {
-	if (TString(obj->GetName()).Index(reg) < 0 ) continue;
-      } else if (! name.BeginsWith(patORpfx)) continue;
-
-      if (makeStackHist) {
-	stack = new THStack(stackHistName, stackHistName);
-	makeStackHist = false;
+      if (doRefPats){
+	pats.push_back(new TString("ref_ttdil_"));
+	pats.push_back(new TString("ref_ttotr_"));
+	pats.push_back(new TString("ref_t_"));
+	pats.push_back(new TString("ref_VV_"));
+	pats.push_back(new TString("ref_DYtautau_"));
+	pats.push_back(new TString("ref_DYeemm_"));
+	pats.push_back(new TString("ref_wjets_"));
+	pats.push_back(new TString("ref_QCD_"));
+	//      pats.push_back(new TString("ref_Vgamma_"));
       }
+    } else if (orderScheme == 2) {
+      //this requires some care: only the histograms beginning with what's in the pattern will be processed
+      pats.push_back(new TString("ttdil_"));
+      pats.push_back(new TString("ttotr_"));
+      pats.push_back(new TString("t_"));
+      pats.push_back(new TString("VV_"));
+      pats.push_back(new TString("DYtautau_"));
+      pats.push_back(new TString("DYeemm_"));
+      pats.push_back(new TString("wjets_"));
+      pats.push_back(new TString("QCD_"));
+      pats.push_back(new TString("Vgamma_"));
+      if (bsmName!=0) pats.push_back(new TString(Form("%s_",bsmName)));
 
-      if (addColor) {
-	hist::color(obj->GetName(), colorIt);
-	++colorIt;
+      if (doRefPats){
+	pats.push_back(new TString("ref_ttdil_"));
+	pats.push_back(new TString("ref_ttotr_"));
+	pats.push_back(new TString("ref_t_"));
+	pats.push_back(new TString("ref_VV_"));
+	pats.push_back(new TString("ref_DYtautau_"));
+	pats.push_back(new TString("ref_DYeemm_"));
+	pats.push_back(new TString("ref_wjets_"));
+	pats.push_back(new TString("ref_QCD_"));
+	pats.push_back(new TString("ref_Vgamma_"));
+	if(bsmName!=0) pats.push_back(new TString(Form("ref_%s_",bsmName)));
       }
-	 
-      ((THStack*)stack)->Add((TH1*)obj, drawOption);
-	 
+    } else {
+      pats.push_back(new TString(""));
     }
+
+    for (int iPat = 0; iPat < pats.size(); ++iPat){
+      TIterator* iter = list->MakeIterator();
+      while (obj = iter->Next()) {
+	if (! obj->InheritsFrom(TH1::Class())) continue;
+	
+	TString name = obj->GetName();
+	if (!( name.BeginsWith(pats[iPat]->Data()))) continue;
+	
+	if (TString(patORpfx).MaybeRegexp()) {
+	  if (TString(obj->GetName()).Index(reg) < 0 ) continue;
+	} else if (! name.BeginsWith(patORpfx)) continue;
+	
+	if (makeStackHist) {
+	  stack = new THStack(stackHistName, stackHistName);
+	  makeStackHist = false;
+	}
+	
+	if (addColor) {
+	  hist::color(obj->GetName(), colorIt);
+	  ++colorIt;
+	}
+	((THStack*)stack)->Add((TH1*)obj, drawOption);
+	
+      }
+      //      delete pats[iPat];//cleanup
+    }
+  
 
     // Currently breaks .ls
     //gDirectory->Append(stack);

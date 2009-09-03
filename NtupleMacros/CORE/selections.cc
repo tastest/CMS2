@@ -379,6 +379,23 @@ bool pass2Met (int i_hyp, const TVector3& corr) {
   return true;
 }
 
+double nearestDeltaPhiJet(double Phi, int i_hyp) {
+
+  double result = TMath::Pi();
+
+  std::vector<LorentzVector> jets = JPTsTrilep(i_hyp, 20);
+
+  for ( unsigned int jet = 0;
+	jet < jets.size();
+	++jet ) {
+    double delta = TMath::Min(TMath::Abs(jets[jet].Phi() - Phi), 2*TMath::Pi() - TMath::Abs(jets[jet].Phi() - Phi));
+    if ( delta < result ) 
+      result = delta;
+  }
+
+  return result;
+}
+
 double nearestDeltaPhi(double Phi, int i_hyp)
 {
   //WARNING!  This was designed to work in a dilepton environment - NOT a trilepton 
@@ -389,10 +406,50 @@ double nearestDeltaPhi(double Phi, int i_hyp)
 
 }//END nearest DeltaPhi                                                                                                                                 
 
+double nearestDeltaPhiTrilep(double Phi, int i_hyp)
+{
+  //WARNING!  This was designed to work in a trilepton environment - NOT a dilepton 
+
+  LorentzVector first,second,third;
+  if (abs(cms2.hyp_trilep_first_type()[i_hyp]) == 1) {
+    first = cms2.mus_p4()[cms2.hyp_trilep_first_index()[i_hyp]];
+  } else {
+    first = cms2.els_p4()[cms2.hyp_trilep_first_index()[i_hyp]];
+  }
+  if (abs(cms2.hyp_trilep_second_type()[i_hyp]) == 1) {
+    second = cms2.mus_p4()[cms2.hyp_trilep_second_index()[i_hyp]];
+  } else {
+    second = cms2.els_p4()[cms2.hyp_trilep_second_index()[i_hyp]];
+  }
+  if (abs(cms2.hyp_trilep_third_type()[i_hyp]) == 1) {
+    third = cms2.mus_p4()[cms2.hyp_trilep_third_index()[i_hyp]];
+  } else {
+    third = cms2.els_p4()[cms2.hyp_trilep_third_index()[i_hyp]];
+  }
+  
+  double firstDPhi = TMath::Min(TMath::Abs(first.Phi() - Phi), 2*TMath::Pi() - TMath::Abs(first.Phi() - Phi));
+  double secondDPhi = TMath::Min(TMath::Abs(second.Phi() - Phi), 2*TMath::Pi() - TMath::Abs(second.Phi() - Phi));
+  double thirdDPhi = TMath::Min(TMath::Abs(third.Phi() - Phi), 2*TMath::Pi() - TMath::Abs(third.Phi() - Phi));
+
+  return TMath::Min(TMath::Min(firstDPhi, secondDPhi),thirdDPhi);
+
+}//END nearest DeltaPhi                                                                                                                                 
+
 double MetSpecial(double Met, double MetPhi, int i_hyp)
 {
   //Warning, this was designed to work in a dilepton environment - NOT a trilepton  
   double DeltaPhi = nearestDeltaPhi(MetPhi,i_hyp);
+
+  if (DeltaPhi < TMath::Pi()/2) return Met*TMath::Sin(DeltaPhi);
+  else return Met;
+
+  return -1.0;
+}//END MetSpecial calculation  
+
+double MetSpecialTrilep(double Met, double MetPhi, int i_hyp)
+{
+  //Warning, this was designed to work in a trilepton environment - NOT a dilepton  
+  double DeltaPhi = nearestDeltaPhiTrilep(MetPhi,i_hyp);
 
   if (DeltaPhi < TMath::Pi()/2) return Met*TMath::Sin(DeltaPhi);
   else return Met;
@@ -618,6 +675,64 @@ int getVVType() {
   return 1;
 }
 
+//-------------------------------------------------
+// Auxiliary function to scan the doc line and 
+// identify DY-> ee vs mm vs tt
+//-------------------------------------------------
+int getWType() 
+{
+     bool foundE = false;
+     bool foundNuE = false;
+     bool foundM = false;
+     bool foundNuM = false;
+     bool foundT = false;
+     bool foundNuT = false;
+     for (unsigned int i = 0; i < cms2.genps_id().size(); ++i) {
+	  if ( abs(cms2.genps_id_mother().at(i)) == 24 ){
+	       switch ( TMath::Abs(cms2.genps_id().at(i)) ){
+	       case 11:
+		    return 0;
+		    break;
+	       case 13:
+		    return 1;
+		    break;
+	       case 15:
+		    return 2;
+		    break;
+	       default:
+		    break;
+	       }
+	  }
+	  switch ( abs(cms2.genps_id().at(i)) ){
+	  case 11:
+	       foundE = true;
+	       break;
+	  case 12:
+	       foundNuE = true;
+	       break;
+	  case 13:
+	       foundM = true;
+	       break;
+	  case 14:
+	       foundNuM = true;
+	       break;
+	  case 15:
+	       foundT = true;
+	       break;
+	  case 16:
+	       foundNuT = true;
+	       break;
+	  default:
+	       break;
+	  }
+     }
+     
+     if ( foundE && foundNuE ) return 0;  //W->e
+     if ( foundM && foundNuM ) return 1;  //W->m
+     if ( foundT && foundNuT ) return 2;  //W->t
+     std::cout << "Does not look like a W event" << std::endl;
+     return 999;
+}
 
 //--------------------------------------------
 // Booleans for DY
@@ -633,6 +748,25 @@ bool isDYmm() {
 bool isDYtt() {
   if (getDrellYanType() == 2) return true;
   return false;
+}
+
+//--------------------------------------------
+// Booleans for Wjets
+//------------------------------------------
+bool isWe() 
+{
+     if (getWType() == 0) return true;
+     return false;
+}
+bool isWm() 
+{
+     if (getWType() == 1) return true;
+     return false;
+}
+bool isWt() 
+{
+     if (getWType() == 2) return true;
+     return false;
 }
 
 //--------------------------------------------
@@ -654,6 +788,65 @@ bool isZZ() {
   return false;
 }
 
+//--------------------------------------------
+// ZZ type:
+// 0 for Z1 --> ee, mm; Z2 --> ee, mm
+// 1 for Z1 --> ee, mm; Z2 --> tt (and v.v.)
+// 2 for Z1 --> tt; Z2 --> tt
+// 995 to 999 otherwise
+//------------------------------------------
+int getZZType() 
+{
+     int foundEP = 0;
+     int foundEM = 0;
+     int foundMP = 0;
+     int foundMM = 0;
+     int foundTP = 0;
+     int foundTM = 0;
+     for (unsigned int i = 0; i < cms2.genps_id().size(); ++i) {
+	  switch ( cms2.genps_id().at(i) ){
+	  case 11:
+	       foundEM++;
+	       break;
+	  case -11:
+	       foundEP++;
+	       break;
+	  case 13:
+	       foundMM++;
+	       break;
+	  case -13:
+	       foundMP++;
+	       break;
+	  case 15:
+	       foundTM++;
+	       break;
+	  case -15:
+	       foundTP++;
+	       break;
+	  default:
+	       break;
+	  }
+     }
+  
+     if (foundEM == foundEP && foundMM == foundMP && (foundEM != 0 || foundMM != 0)) {
+	  // both Zs decay to e or mu
+	  if (foundEM + foundMM == 2)
+	       return 0;
+	  // one Z decays to e or mu
+	  else if (foundEM + foundMM == 1) 
+	       // other Z decays to tau
+	       if (foundTP == 1 && foundTM == 1)
+		    return 1;
+	       else return 995;
+	  else return 996;
+     } else if (foundEM == 0 && foundEP == 0 && foundMM == 0 && foundMP == 0) {
+	  // both Zs decay to tau
+	  if (foundTP == 2 && foundTM == 2)
+	       return 2;
+	  else return 997;
+     } else return 998;
+     return 999;
+}
 
 bool additionalZveto() {
 //--------------------------------------------------------------------
@@ -896,6 +1089,45 @@ std::vector<LorentzVector> JPTs(int i_hyp, double etThreshold)
 unsigned int nJPTs(int i_hyp, double etThreshold)
 {
      return JPTs(i_hyp, etThreshold).size();
+}
+
+std::vector<LorentzVector> JPTsTrilep(int i_hyp, double etThreshold)
+{
+     std::vector<LorentzVector> ret;
+     const double etaMax      = 3.0;
+     const double vetoCone    = 0.4;
+
+     LorentzVector first,second,third;
+     if (abs(cms2.hyp_trilep_first_type()[i_hyp]) == 1) {
+       first = cms2.mus_p4()[cms2.hyp_trilep_first_index()[i_hyp]];
+     } else {
+       first = cms2.els_p4()[cms2.hyp_trilep_first_index()[i_hyp]];
+     }
+     if (abs(cms2.hyp_trilep_second_type()[i_hyp]) == 1) {
+       second = cms2.mus_p4()[cms2.hyp_trilep_second_index()[i_hyp]];
+     } else {
+       second = cms2.els_p4()[cms2.hyp_trilep_second_index()[i_hyp]];
+     }
+     if (abs(cms2.hyp_trilep_third_type()[i_hyp]) == 1) {
+       third = cms2.mus_p4()[cms2.hyp_trilep_third_index()[i_hyp]];
+     } else {
+       third = cms2.els_p4()[cms2.hyp_trilep_third_index()[i_hyp]];
+     }
+     
+     for ( unsigned int i=0; i < cms2.jpts_p4().size(); ++i) {
+	  if ( cms2.jpts_p4()[i].Et() < etThreshold ) continue;
+	  if ( TMath::Abs(cms2.jpts_p4()[i].eta()) > etaMax ) continue;
+	  if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(first,cms2.jpts_p4()[i])) < vetoCone ||
+	       TMath::Abs(ROOT::Math::VectorUtil::DeltaR(second,cms2.jpts_p4()[i])) < vetoCone ||
+	       TMath::Abs(ROOT::Math::VectorUtil::DeltaR(third,cms2.jpts_p4()[i])) < vetoCone ) continue;
+	  ret.push_back(cms2.jpts_p4()[i]);
+     }
+     return ret;
+}
+
+unsigned int nJPTsTrilep(int i_hyp, double etThreshold)
+{
+     return JPTsTrilep(i_hyp, etThreshold).size();
 }
 
 bool passTrkJetVeto(int i_hyp)
@@ -1429,9 +1661,9 @@ double inv_mu_rel_iso(int index)
 
 double inv_el_rel_iso(int index, bool use_calo_iso)
 {
-  double sum = cms2.els_pat_trackIso().at(index);
+  double sum = cms2.els_tkIso().at(index);
   if (use_calo_iso)
-    sum += cms2.els_pat_ecalIso()[index] + cms2.els_pat_hcalIso()[index];
+    sum += cms2.els_ecalIso()[index] + cms2.els_hcalIso()[index];
   double pt  = cms2.els_p4().at(index).pt();
   return sum/pt;
 }
@@ -1532,15 +1764,27 @@ int numberOfExtraElectronsVJets09(int i_hyp){
 //------------------------------------------------------------------------------------
 // SUSY dilepton cuts 09 for TAS
 
-bool compareEt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1, 
+bool comparePt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1, 
                  ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv2) {
-  return lv1.Et() > lv2.Et();
+  return lv1.pt() > lv2.pt();
 }
 
 bool GoodSusyElectronWithoutIsolation(int index) { 
   if ( cms2.els_tightId22XMinMatteo().at(index)     !=  1) return false; 
   if ( fabs(cms2.els_d0corr().at(index)) >= 0.02)   return false; 
   if ( cms2.els_closestMuon().at(index) != -1) return false; 
+  if ( TMath::Abs(cms2.els_p4()[index].eta()) > 2.4) return false;
+// New
+//  if ( conversionElectron(index)) return false;
+//  if ( isChargeFlip(index)) return false;
+
+  return true; 
+} 
+
+bool GoodSusyElectronWithoutIsolationNoD0(int index) { 
+  if ( cms2.els_tightId22XMinMatteo().at(index)     !=  1) return false; 
+  if ( cms2.els_closestMuon().at(index) != -1) return false; 
+  if ( TMath::Abs(cms2.els_p4()[index].eta()) > 2.4) return false;
   return true; 
 } 
  
@@ -1552,8 +1796,26 @@ bool GoodSusyMuonWithoutIsolation(int index) {
   if (fabs(cms2.mus_d0corr().at(index))   >= 0.02) return false; 
   if (cms2.mus_pat_ecalvetoDep().at(index) >= 4) return false; // ECalE < 4 
   if (cms2.mus_pat_hcalvetoDep().at(index) >= 6) return false; // HCalE < 6 
+  if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4) return false;
   return true; 
 } 
+
+bool isNumElSUSY09(int iEl) {
+  Double_t pt = cms2.els_p4()[iEl].Pt();
+  if( pt < 10) return false;
+  if (!GoodSusyElectronWithoutIsolation(iEl)) return false;
+  if (!PassSusyElectronIsolation(iEl, true)) return false;
+  return true;
+}
+
+bool isNumMuSUSY09(int iMu) {
+  Double_t pt = cms2.mus_p4()[iMu].Pt();
+  if (pt < 10)  return false;
+  if (!GoodSusyMuonWithoutIsolation(iMu)) return false;
+  if (!PassSusyMuonIsolation(iMu)) return false;
+
+  return true;
+}
 
 double inv_mu_relsusy_iso(int index)
 {
@@ -1640,6 +1902,7 @@ int numberOfExtraElectronsSUSY(int i_hyp){
   unsigned int nElec = 0; 
   for (int iel=0; iel < int(cms2.els_p4().size()); iel++) { 
     if ( cms2.els_p4()[iel].pt() < 10 ) continue; 
+    if (fabs(cms2.els_p4()[iel].eta()) > 2.4 ) continue; 
     if (!GoodSusyElectronWithoutIsolation(iel)) continue; 
     if (!PassSusyElectronIsolation(iel, true)) continue;
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && cms2.hyp_lt_index()[i_hyp] == iel ) continue; 
@@ -1653,6 +1916,7 @@ int numberOfExtraMuonsSUSY(int i_hyp){
   unsigned int nMuons = 0; 
   for (int imu=0; imu < int(cms2.mus_p4().size()); imu++) { 
     if ( cms2.mus_p4()[imu].pt() < 10 ) continue; 
+    if ( fabs(cms2.mus_p4()[imu].eta()) > 2.4 ) continue; 
     if (!GoodSusyMuonWithoutIsolation(imu)) continue;
     if (!PassSusyMuonIsolation(imu)) continue; 
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == imu ) continue; 
@@ -1661,23 +1925,23 @@ int numberOfExtraMuonsSUSY(int i_hyp){
   } 
   return nMuons; 
 } 
-
+//   jets_p4   
 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getCaloJets(int i_hyp) {
   vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > calo_jets;
   calo_jets.clear();
   
-  for (unsigned int jj=0; jj < cms2.jets_pat_jet_p4().size(); ++jj) {
-    if ((dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],cms2.jets_pat_jet_p4()[jj]) < 0.4)||
-	(dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.jets_pat_jet_p4()[jj]) < 0.4)
+  for (unsigned int jj=0; jj < cms2.jets_p4().size(); ++jj) {
+    if ((dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],cms2.jets_p4()[jj]) < 0.4)||
+	(dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.jets_p4()[jj]) < 0.4)
 	) continue;
-    if (cms2.jets_pat_jet_p4()[jj].Et() < 30) continue;
-    if (fabs(cms2.jets_pat_jet_p4()[jj].Eta()) > 2.4) continue;
-    if (cms2.jets_emFrac()[jj] < 0.1) continue;
-    calo_jets.push_back(cms2.jets_pat_jet_p4()[jj]);
+    if (cms2.jets_p4()[jj].pt() < 30) continue;
+    if (fabs(cms2.jets_p4()[jj].Eta()) > 2.4) continue;
+    //fkw July21 2009 if (cms2.jets_emFrac()[jj] < 0.1) continue;
+    calo_jets.push_back(cms2.jets_p4()[jj]);
   }
   
   if (calo_jets.size() > 1) {
-    sort(calo_jets.begin(), calo_jets.end(),  compareEt);
+    sort(calo_jets.begin(), calo_jets.end(),  comparePt);
   }
   return calo_jets;
 }
@@ -1691,91 +1955,158 @@ vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getJPTJets(in
     if ((dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],cms2.jpts_p4()[jj]) < 0.4)||
 	(dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.jpts_p4()[jj]) < 0.4)
 	) continue;
-    if (cms2.jpts_p4()[jj].Et() < 30) continue;
+    if (cms2.jpts_p4()[jj].pt() < 30) continue;
     if (fabs(cms2.jpts_p4()[jj].Eta()) > 2.4) continue;
 //    if (cms2.jpts_emFrac()[jj] < 0.1) continue;
     jpt_jets.push_back(cms2.jpts_p4()[jj]);
   }
   
   if (jpt_jets.size() > 1) {
-    sort(jpt_jets.begin(), jpt_jets.end(),  compareEt);
+    sort(jpt_jets.begin(), jpt_jets.end(),  comparePt);
   }
   return jpt_jets;
 }
 
 int ttbarconstituents(int i_hyp){
+  // Categories:
+  //WW = both leptons from W = 1
+  //WO = one of the two leptons from W and the other not = 2
+  //OO = neither of the two leptons is from a W = 3
 
-  // Catagories WW = 1, WO = 2, and OO = 3
-
-  bool isTrueLepton_ll = false;
-  bool isTrueLepton_lt = false;
-
-  isTrueLepton_ll = ( (abs(cms2.hyp_ll_id()[i_hyp]) == abs(cms2.hyp_ll_mc_id()[i_hyp]) &&
-                       abs(cms2.hyp_ll_mc_motherid()[i_hyp]) < 50 //I wish I could match to W or Z explicitely, not in MGraph
-                       )
-                      || (cms2.hyp_ll_mc_id()[i_hyp]==22 &&
-                          TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.hyp_ll_mc_p4()[i_hyp])) <0.05
-                          && abs(cms2.hyp_ll_id()[i_hyp]) == abs(cms2.hyp_ll_mc_motherid()[i_hyp])
-                          )
-                      );
-
-  isTrueLepton_lt = ( (abs(cms2.hyp_lt_id()[i_hyp]) == abs(cms2.hyp_lt_mc_id()[i_hyp]) &&
-                       abs(cms2.hyp_lt_mc_motherid()[i_hyp]) < 50 //I wish I could match to W or Z explicitely, not in MGraph
-                       )
-                      || (cms2.hyp_lt_mc_id()[i_hyp]==22 &&
-                          TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.hyp_lt_mc_p4()[i_hyp])) <0.05
-                          && abs(cms2.hyp_lt_id()[i_hyp]) == abs(cms2.hyp_lt_mc_motherid()[i_hyp])
-                          )
-                      );
-
-  bool ttbarlep = false;
-  bool ttbarother = false;
-
-  //  if (genpCountPDGId(11,13,15) == 1) ttbarother = true;
-  if (genpCountPDGId(11,13,15) == 2) ttbarlep = true;
-
-
-  bool isrealW_ll = false;
-  bool isrealW_lt = false;
-
-  {
-    int els_mo = 0;
-    int mus_mo = 0;
-    int els_id = 0;
-    int mus_id = 0;
-    if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) els_mo = abs(cms2.els_mc3_motherid()[cms2.hyp_ll_index()[i_hyp]]);
-    if (abs(cms2.hyp_ll_id()[i_hyp]) == 13) mus_mo = abs(cms2.mus_mc3_motherid()[cms2.hyp_ll_index()[i_hyp]]);
-    if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) els_id = abs(cms2.els_mc3_id()[cms2.hyp_ll_index()[i_hyp]]);
-    if (abs(cms2.hyp_ll_id()[i_hyp]) == 13) mus_id = abs(cms2.mus_mc3_id()[cms2.hyp_ll_index()[i_hyp]]);
-    if ( (abs(cms2.hyp_ll_mc_motherid()[i_hyp]) == 24) || (els_mo == 24) || (mus_mo == 24) || (els_id == 24) || (mus_id == 24)) isrealW_ll = true;
-  }
-
-  {
-    int els_mo = 0;
-    int mus_mo = 0;
-    int els_id = 0;
-    int mus_id = 0;
-    if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) els_mo = abs(cms2.els_mc3_motherid()[cms2.hyp_lt_index()[i_hyp]]);
-    if (abs(cms2.hyp_lt_id()[i_hyp]) == 13) mus_mo = abs(cms2.mus_mc3_motherid()[cms2.hyp_lt_index()[i_hyp]]);
-    if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) els_id = abs(cms2.els_mc3_id()[cms2.hyp_lt_index()[i_hyp]]);
-    if (abs(cms2.hyp_lt_id()[i_hyp]) == 13) mus_id = abs(cms2.mus_mc3_id()[cms2.hyp_lt_index()[i_hyp]]);
-    if ((abs(cms2.hyp_lt_mc_motherid()[i_hyp]) == 24) || (els_mo == 24) || (mus_mo == 24) || (els_id == 24) || (mus_id == 24)) isrealW_lt = true;
-  }
-
-  bool isLepll = false;
-  bool isLeplt = false;
-
-  if (isTrueLepton_ll || isrealW_ll) isLepll = true;
-  if (isTrueLepton_lt || isrealW_lt) isLeplt = true;
-
-  if (isLepll && isLeplt && ttbarlep) {
-    return 1;
-  }  else if ((isLepll || isLeplt ) && !ttbarother) {
-    return 2;
-  } else {
-    return 3;
-  }
+  int lttype = leptonIsFromW(cms2.hyp_lt_index()[i_hyp],cms2.hyp_lt_id()[i_hyp],cms2.hyp_lt_p4()[i_hyp] );
+  int lltype = leptonIsFromW(cms2.hyp_ll_index()[i_hyp],cms2.hyp_ll_id()[i_hyp],cms2.hyp_ll_p4()[i_hyp] );
+  if (lltype > 0 && lttype > 0) return 1;
+  else if( (lltype >0 && lttype <= 0) || (lttype >0 && lltype <=0) ) return 2;
+  else if( (lltype <=0 && lttype <=0) )return 3;
+  else { cout << "bug in ttbarconstituents"; return -999;}
 }
+
+//--------------------------------------------------------
+// Determines if the lepton in question is from W/Z
+// and if its charge is correct
+//
+// Note that if we have
+//     W->lepton->lepton gamma
+// where the gamma is at large angles and it is the
+// gamma that gives the lepton signature in the detector,
+// then this returns "not from W/Z".  This is by design.
+//
+// Note W->tau->lepton is tagged as "from W"
+//
+// Inputs:  idx   = index in the els or mus block
+//          id    = lepton ID (11 or 13 or -11 or -13)
+//          v     = 4-vector of reco lepton
+//
+// Output:  2 = from W/Z incorrect charge
+//          1 = from W/Z   correct charge
+//          0 = not matched to a lepton (= fake)
+//         -1 = lepton from b decay
+//         -2 = lepton from c decay
+//         -3 = lepton from some other source
+//        
+// Authors: Claudio in consultation with fkw 22-july-09    
+//---------------------------------------------------------
+int leptonIsFromW(int idx, int id, LorentzVector v) {
+
+  // get the matches to status=1 and status=3
+  int st1_id = 0;
+  int st3_id = 0;
+  int st1_motherid = 0;
+  if (abs(id) == 11) {
+    st1_id = cms2.els_mc_id()[idx];
+    st3_id = cms2.els_mc3_id()[idx];
+    st1_motherid = cms2.els_mc_motherid()[idx];
+  } else if (abs(id) == 13) {
+    st1_id = cms2.mus_mc_id()[idx];
+    st3_id = cms2.mus_mc3_id()[idx];
+    st1_motherid = cms2.mus_mc_motherid()[idx];
+  } else {
+    std::cout << "You fool.  Give me +/- 11 or +/- 13 please" << std::endl;
+    return false;
+  }
+
+  // Step 0
+  // The match to status=3 in DR<0.1 from the ntuple is too tight.
+  // If there is no match to status=3, we try the match again with DR<0.2
+  // But we only match to leptons
+  if (st3_id == -999) {
+    float drmin = 999.;
+    for (int j=0; j<cms2.genps_id().size(); j++) {
+      int genId = cms2.genps_id().at(j);
+      if (abs(genId) == 15 || abs(genId) == 13 || abs(genId) == 11) {
+        LorentzVector vgen = cms2.genps_p4().at(j);
+        float dr = dRbetweenVectors(v, vgen);
+        if (dr < 0.2 && dr < drmin) {
+          drmin = dr;
+          st3_id = genId;
+        }
+      }
+    }
+  }
+
+  // debug
+  // std::cout << "id=" << id << " st1_id=" << st1_id;
+  // std::cout << " st3_id=" << st3_id;
+  // std::cout << " st1_motherid=" << st1_motherid << std::endl;
+
+  // Step 1
+  // Look at status 1 match, it should be either a lepton or
+  // a photon if it comes from W/Z.
+  // The photon case takes care of collinear FSR
+  if ( !(abs(st1_id) == abs(id) || st1_id == 22)) return 0;
+
+  // Step 2
+  // If the status 1 match is a photon, its mother must be
+  // a lepton.  Otherwise it is not FSR
+  if (st1_id == 22) {
+    if (abs(st1_motherid) != abs(id)) return 0;
+  }
+
+  // At this point we are matched (perhaps via FSR) to
+  // a status 1 lepton.  This means that we are left with
+  // leptons from W, taus, bottom, charm, as well as dalitz decays
+
+  // Step 3
+  // A no-brainer: pick up vanilla W->lepton decays
+  // (should probably add Higgs, SUSY, W' etc...not for now)
+  if (st1_id ==  id && abs(st1_motherid) == 24) return 1; // W
+  if (st1_id == -id && abs(st1_motherid) == 24) return 2; // W
+  if (st1_id ==  id &&   st1_motherid    == 23) return 1; // Z
+  if (st1_id == -id &&   st1_motherid    == 23) return 2; // Z
+
+  // Step 4
+  // Another no-brainer: pick up leptons matched to status=3
+  // leptons.  This should take care of collinear FSR
+  if (st3_id ==  id) return 1;
+  if (st3_id == -id) return 2;
+
+  // Step 5
+  // Now we need to go after the W->tau->lepton.  
+  // We exploit the fact that in t->W->tau the tau shows up
+  // at status=3.  We also use the fact that the tau decay products
+  // are highly boosted, so the direction of the status=3 tau and
+  // the lepton from tau decays are about the same
+  //
+  // We do not use the status=1 links because there is not
+  // enough information to distinguish
+  // W->tau->lepton  or W->tau->lepton gamma
+  //  from
+  // B->tau->lepton or B->tau->lepton gamma
+  if (abs(st3_id) == 15 && id*st3_id > 0) return 1;
+  if (abs(st3_id) == 15 && id*st3_id < 0) return 2;
+
+  // Step 6
+  // If we get here, we have a non-W lepton
+  // Now we figure out if it is from b, c, or "other"
+  // There are a couple of caveats
+  // (a) b/c --> lepton --> lepton gamma (ie FSR) is labelled as "other"
+  // (b) b   --> tau --> lepton is labelled as "other"
+  if ( abs(st1_id) == abs(id) && idIsBeauty(st1_motherid)) return -1;
+  if ( abs(st1_id) == abs(id) && idIsCharm(st1_motherid))  return -2;
+  return -3;
+}
+//---------------------------------------------------------
+
 
 bool additionalZvetoSUSY09(int i_hyp) {
 
@@ -1785,13 +2116,13 @@ bool additionalZvetoSUSY09(int i_hyp) {
   // first, look for Z->mumu
   for (unsigned int i=0; i < cms2.mus_p4().size(); i++) {
     bool hypLep1 = false;
-    bool hypLep2 = false;
     if (cms2.mus_p4().at(i).pt() < 10.)     continue;
     if (!GoodSusyMuonWithoutIsolation(i)) continue;
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == i ) hypLep1 = true;
     if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == i ) hypLep1 = true;
 
     for (unsigned int j=i+1; j < cms2.mus_p4().size(); j++) {
+      bool hypLep2 = false;
       if (cms2.mus_p4().at(j).pt() < 10.) continue;
       if (!GoodSusyMuonWithoutIsolation(j)) continue;
       if (cms2.mus_charge().at(i) == cms2.mus_charge().at(j)) continue;
@@ -1800,6 +2131,7 @@ bool additionalZvetoSUSY09(int i_hyp) {
       // At least one of them has to pass isolation
       if (!PassSusyMuonIsolation(i) && !PassSusyMuonIsolation(j)) continue;
       if ( hypLep1 && hypLep2 ) continue;
+      if ( !hypLep1 && !hypLep2 ) continue;
       // Make the invariant mass
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >
                 vec = cms2.mus_p4().at(i) + cms2.mus_p4().at(j);
@@ -1811,12 +2143,12 @@ bool additionalZvetoSUSY09(int i_hyp) {
   // now, look for Z->ee
   for (unsigned int i=0; i < cms2.els_p4().size(); i++) {
     bool hypLep1 = false;
-    bool hypLep2 = false;
     if (cms2.els_p4().at(i).pt() < 10.)     continue;
     if (! GoodSusyElectronWithoutIsolation(i)) continue;
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && cms2.hyp_lt_index()[i_hyp] == i ) hypLep1 = true;
     if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && cms2.hyp_ll_index()[i_hyp] == i ) hypLep1 = true;
     for (unsigned int j=i+1; j<cms2.els_p4().size(); j++) {
+      bool hypLep2 = false;
       if (cms2.els_p4().at(j).pt() < 10.) continue;
       if (! GoodSusyElectronWithoutIsolation(j)) continue;
       if (cms2.els_charge().at(i) == cms2.els_charge().at(j)) continue;
@@ -1825,6 +2157,7 @@ bool additionalZvetoSUSY09(int i_hyp) {
       if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && cms2.hyp_lt_index()[i_hyp] == j ) hypLep2 = true;
       if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && cms2.hyp_ll_index()[i_hyp] == j ) hypLep2 = true;
       if ( hypLep1 && hypLep2 ) continue;
+      if ( !hypLep1 && !hypLep2 ) continue;
       // Make the invariant mass
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >
                 vec = cms2.els_p4().at(i) + cms2.els_p4().at(j);
@@ -1836,6 +2169,44 @@ bool additionalZvetoSUSY09(int i_hyp) {
   return veto;
 }
 
+// For Fake rates
+
+bool isFakeableElSUSY09(int iEl){
+ 
+  Double_t pt = cms2.els_p4()[iEl].Pt();
+  Double_t eta = cms2.els_p4()[iEl].Eta();
+ 
+  if( pt < 10)  return false;
+  if( fabs( eta ) > 2.4 )  return false;
+// New
+  if ( conversionElectron(iEl)) return false;
+  if ( isChargeFlip(iEl)) return false;
+     
+  //reject if electron is close to muon;
+  if ( cms2.els_closestMuon()[iEl] > -1)  return false;
+  // Isolation
+  if  (inv_el_relsusy_iso(iEl, true) > 0.4) return false;
+  // H/E
+  if ( cms2.els_hOverE()[iEl]   > 0.2 ) return false;
+
+  return true;
+}
+
+// Muons
+bool isFakeableMuSUSY09(int iMu) {
+
+  Double_t pt = cms2.mus_p4()[iMu].Pt();
+  Double_t eta = cms2.mus_p4()[iMu].Eta();
+  if (!((cms2.mus_type().at(iMu)) & (1<<1)) ) return false; // global muon
+  if (!((cms2.mus_type().at(iMu)) & (1<<2)) ) return false; // tracker muon
+  if( pt < 10)  return false;
+  if( fabs( eta ) > 2.4 ) return false;
+  if( cms2.mus_gfit_chi2()[iMu]/cms2.mus_gfit_ndof()[iMu] > 20) return false;
+  if (inv_mu_relsusy_iso(iMu) > 0.4 ) return false;
+  if (fabs(cms2.mus_d0corr().at(iMu))   >= 0.02) return false; 
+  return true;
+
+}
 
 //--------------------------------------------------------------------
 // Veto events if there are two leptons in the 
@@ -2337,4 +2708,324 @@ bool conversionElectron(int electron) {
     return true;
 
   return false;
+}
+
+int findPrimTrilepZ(int i_hyp, double &mass) {
+  // find primary Z candidate in trilepton hyp
+  //
+  // return: 1: first lepton was not used in Z candidate
+  //         2: second lepton was not used in Z candidate
+  //         3: second lepton was not used in Z candidate
+  //         999: no Z candidate could be found
+  //
+  //         900: error code, something went wrong
+
+  // z mass array, coding:
+  // index 0: first, second
+  // index 1: first, third
+  // index 2: second, third
+  double z_mass[3] = {0.,0.,0.};
+
+  // check if first and second lepton form Z candidate
+  if ( abs(cms2.hyp_trilep_first_type()[i_hyp]) == abs(cms2.hyp_trilep_second_type()[i_hyp]) ) {
+    if ( abs(cms2.hyp_trilep_first_type()[i_hyp]) == 1 ) {
+      if ( cms2.mus_charge()[cms2.hyp_trilep_first_index()[i_hyp]] !=  cms2.mus_charge()[cms2.hyp_trilep_second_index()[i_hyp]] ) {
+	LorentzVector z = cms2.mus_p4()[cms2.hyp_trilep_first_index()[i_hyp]] + cms2.mus_p4()[cms2.hyp_trilep_second_index()[i_hyp]];
+// 	if ( inZmassWindow(z.mass()) )
+	  z_mass[0] = z.mass();
+      }
+    } else {
+      if ( cms2.els_charge()[cms2.hyp_trilep_first_index()[i_hyp]] !=  cms2.els_charge()[cms2.hyp_trilep_second_index()[i_hyp]] ) {
+	LorentzVector z = cms2.els_p4()[cms2.hyp_trilep_first_index()[i_hyp]] + cms2.els_p4()[cms2.hyp_trilep_second_index()[i_hyp]];
+// 	if ( inZmassWindow(z.mass()) )
+	  z_mass[0] = z.mass();
+      }
+    }
+  }
+  // check if first and third lepton form Z candidate
+  if ( abs(cms2.hyp_trilep_first_type()[i_hyp]) == abs(cms2.hyp_trilep_third_type()[i_hyp]) ) {
+    if ( abs(cms2.hyp_trilep_first_type()[i_hyp]) == 1 ) {
+      if ( cms2.mus_charge()[cms2.hyp_trilep_first_index()[i_hyp]] !=  cms2.mus_charge()[cms2.hyp_trilep_third_index()[i_hyp]] ) {
+	LorentzVector z = cms2.mus_p4()[cms2.hyp_trilep_first_index()[i_hyp]] + cms2.mus_p4()[cms2.hyp_trilep_third_index()[i_hyp]];
+// 	if ( inZmassWindow(z.mass()) )
+	  z_mass[1] = z.mass();
+      }
+    } else {
+      if ( cms2.els_charge()[cms2.hyp_trilep_first_index()[i_hyp]] !=  cms2.els_charge()[cms2.hyp_trilep_third_index()[i_hyp]] ) {
+	LorentzVector z = cms2.els_p4()[cms2.hyp_trilep_first_index()[i_hyp]] + cms2.els_p4()[cms2.hyp_trilep_third_index()[i_hyp]];
+// 	if ( inZmassWindow(z.mass()) )
+	  z_mass[1] = z.mass();
+      }
+    }
+  }
+  // check if second and third lepton form Z candidate
+  if ( abs(cms2.hyp_trilep_second_type()[i_hyp]) == abs(cms2.hyp_trilep_third_type()[i_hyp]) ) {
+    if ( abs(cms2.hyp_trilep_second_type()[i_hyp]) == 1 ) {
+      if ( cms2.mus_charge()[cms2.hyp_trilep_second_index()[i_hyp]] !=  cms2.mus_charge()[cms2.hyp_trilep_third_index()[i_hyp]] ) {
+	LorentzVector z = cms2.mus_p4()[cms2.hyp_trilep_second_index()[i_hyp]] + cms2.mus_p4()[cms2.hyp_trilep_third_index()[i_hyp]];
+// 	if ( inZmassWindow(z.mass()) )
+	  z_mass[2] = z.mass();
+      }
+    } else {
+      if ( cms2.els_charge()[cms2.hyp_trilep_second_index()[i_hyp]] !=  cms2.els_charge()[cms2.hyp_trilep_third_index()[i_hyp]] ) {
+	LorentzVector z = cms2.els_p4()[cms2.hyp_trilep_second_index()[i_hyp]] + cms2.els_p4()[cms2.hyp_trilep_third_index()[i_hyp]];
+// 	if ( inZmassWindow(z.mass()) )
+	  z_mass[2] = z.mass();
+      }
+    }
+  }
+
+  // check which combination is nearest to Z mass and return unsused lepton
+//   if ( z_mass[0] == 0 && z_mass[1] == 0 && z_mass[2] == 0 )
+//     return 999;
+  int ret = 0;
+  if ( fabs( z_mass[0] - 91) <= fabs( z_mass[1] - 91) && fabs( z_mass[0] - 91) <= fabs( z_mass[2] - 91) ) {
+    mass = z_mass[0];
+    ret = 3;
+  } else if ( fabs( z_mass[1] - 91) <= fabs( z_mass[0] - 91) && fabs( z_mass[1] - 91) <= fabs( z_mass[2] - 91) ) {
+    mass = z_mass[1];
+    ret = 2;
+  } else if ( fabs( z_mass[2] - 91) <= fabs( z_mass[0] - 91) && fabs( z_mass[2] - 91) <= fabs( z_mass[1] - 91) ) {
+    mass = z_mass[2];
+    ret = 1;
+  }
+
+  if ( !inZmassWindow(mass) ) {
+    return 999;
+  } else {
+    return ret;
+  }
+
+  return 900;
+    
+}
+
+bool vetoAddZ(int i_hyp, int unusedLepton, double &mass) {
+  // veto event if unused lepton (not used to form primary Z) and a isolated track form a second Z, only for trilepton
+  LorentzVector lepton;
+  if ( unusedLepton == 1 ) {
+    if ( abs(cms2.hyp_trilep_first_type()[i_hyp]) == 1 ) 
+      lepton = cms2.mus_p4()[cms2.hyp_trilep_first_index()[i_hyp]];
+    else
+      lepton = cms2.els_p4()[cms2.hyp_trilep_first_index()[i_hyp]];
+  } else if ( unusedLepton == 2 ) {
+    if ( abs(cms2.hyp_trilep_second_type()[i_hyp]) == 1 ) 
+      lepton = cms2.mus_p4()[cms2.hyp_trilep_second_index()[i_hyp]];
+    else
+      lepton = cms2.els_p4()[cms2.hyp_trilep_second_index()[i_hyp]];
+  } else if ( unusedLepton == 3 ) {
+    if ( abs(cms2.hyp_trilep_third_type()[i_hyp]) == 1 ) 
+      lepton = cms2.mus_p4()[cms2.hyp_trilep_third_index()[i_hyp]];
+    else
+      lepton = cms2.els_p4()[cms2.hyp_trilep_third_index()[i_hyp]];
+  }
+
+  mass = -1.;
+
+  for ( int track = 0;
+	track < (int)cms2.trks_trk_p4().size();
+	++track ) {
+
+    // exclude track from first lepton
+    if ( abs(cms2.hyp_trilep_second_type()[i_hyp]) == 1 ) {
+      if ( cms2.mus_trkidx()[cms2.hyp_trilep_first_index()[i_hyp]] == track ) continue;
+    } else {
+      if ( cms2.els_trkidx()[cms2.hyp_trilep_first_index()[i_hyp]] == track ) continue;
+    }
+
+    // exclude track from second lepton
+    if ( abs(cms2.hyp_trilep_second_type()[i_hyp]) == 1 ) {
+      if ( cms2.mus_trkidx()[cms2.hyp_trilep_second_index()[i_hyp]] == track ) continue;
+    } else {
+      if ( cms2.els_trkidx()[cms2.hyp_trilep_second_index()[i_hyp]] == track ) continue;
+    }
+
+    // exclude track from third lepton
+    if ( abs(cms2.hyp_trilep_second_type()[i_hyp]) == 1 ) {
+      if ( cms2.mus_trkidx()[cms2.hyp_trilep_third_index()[i_hyp]] == track ) continue;
+    } else {
+      if ( cms2.els_trkidx()[cms2.hyp_trilep_third_index()[i_hyp]] == track ) continue;
+    }
+
+    if ( passTrackIsolation(track) && cms2.trks_trk_p4()[track].Pt() >= 20. ) {
+      LorentzVector z = lepton + cms2.trks_trk_p4()[track];
+      if ( fabs(z.mass() - 91) <= fabs(mass - 91 ) )
+	mass = z.mass();
+    }
+  }
+
+  if ( inZmassWindow(mass) ) return true;
+
+  return false;
+
+}
+
+bool isChargeFlip(int elIndex){
+  //true if electron is likely to be a charge flip
+  if ((cms2.els_trkidx().at(elIndex) >= 0) && (cms2.els_charge().at(elIndex) != cms2.trks_charge().at(cms2.els_trkidx().at(elIndex)))) return true;
+
+  return false;
+}
+
+// heavy flavor Classification
+
+bool idIsCharm(int id) {
+  id = abs(id);
+  if (
+      id == 4       ||
+      id == 411     ||
+      id == 421     ||
+      id == 10411   ||
+      id == 10421   ||
+      id == 413     ||
+      id == 423     ||
+      id == 10413   ||
+      id == 10423   ||
+      id == 20413   ||
+      id == 20423   ||
+      id == 415     ||
+      id == 425     ||
+      id == 431     ||
+      id == 10431   ||
+      id == 433     ||
+      id == 10433   ||
+      id == 20433   ||
+      id == 435     ||
+      id == 441     ||
+      id == 10441   ||
+      id == 100441  ||
+      id == 443     ||
+      id == 10443   ||
+      id == 20443   ||
+      id == 100443  ||
+      id == 30443   ||
+      id == 9000443 ||
+      id == 9010443 ||
+      id == 9020443 ||
+      id == 445     ||
+      id == 9000445 ||
+      id == 4122    ||
+      id == 4222    ||
+      id == 4212    ||
+      id == 4112    ||
+      id == 4224    ||
+      id == 4214    ||
+      id == 4114    ||
+      id == 4232    ||
+      id == 4132    ||
+      id == 4322    ||
+      id == 4312    ||
+      id == 4324    ||
+      id == 4314    ||
+      id == 4332    ||
+      id == 4334    ||
+      id == 4412    ||
+      id == 4422    ||
+      id == 4414    ||
+      id == 4424    ||
+      id == 4432    ||
+      id == 4434    ||
+      id == 4444
+      ) {
+    return true;
+  }
+  else return false;
+}
+
+bool idIsBeauty(int id) {
+  id = abs(id);
+  if (
+      id == 5       ||
+      id == 511     ||
+      id == 521     ||
+      id == 10511   ||
+      id == 10521   ||
+      id == 513     ||
+      id == 523     ||
+      id == 10513   ||
+      id == 10523   ||
+      id == 20513   ||
+      id == 20523   ||
+      id == 515     ||
+      id == 525     ||
+      id == 531     ||
+      id == 10531   ||
+      id == 533     ||
+      id == 10533   ||
+      id == 20533   ||
+      id == 535     ||
+      id == 541     ||
+      id == 10541   ||
+      id == 543     ||
+      id == 10543   ||
+      id == 20543   ||
+      id == 545     ||
+      id == 551     ||
+      id == 10551   ||
+      id == 100551  ||
+      id == 110551  ||
+      id == 200551  ||
+      id == 210551  ||
+      id == 553     ||
+      id == 10553   ||
+      id == 20553   ||
+      id == 30553   ||
+      id == 100553  ||
+      id == 110553  ||
+      id == 120553  ||
+      id == 130553  ||
+      id == 200553  ||
+      id == 210553  ||
+      id == 220553  ||
+      id == 300553  ||
+      id == 9000553 ||
+      id == 9010553 ||
+      id == 555     ||
+      id == 10555   ||
+      id == 20555   ||
+      id == 100555  ||
+      id == 110555  ||
+      id == 120555  ||
+      id == 200555  ||
+      id == 557     ||
+      id == 100557  ||
+      id == 5122    || 
+      id == 5112    ||
+      id == 5212    ||
+      id == 5222    ||
+      id == 5114    ||
+      id == 5214    ||
+      id == 5224    ||
+      id == 5132    ||
+      id == 5232    ||
+      id == 5312    ||
+      id == 5322    ||
+      id == 5314    ||
+      id == 5324    ||
+      id == 5332    ||
+      id == 5334    ||
+      id == 5142    ||
+      id == 5242    ||
+      id == 5412    ||
+      id == 5422    ||
+      id == 5414    ||
+      id == 5424    ||
+      id == 5342    ||
+      id == 5432    ||
+      id == 5434    ||
+      id == 5442    ||
+      id == 5444    ||
+      id == 5512    ||
+      id == 5522    ||
+      id == 5514    ||
+      id == 5524    ||
+      id == 5532    ||
+      id == 5534    ||
+      id == 5542    ||
+      id == 5544    ||
+      id == 5554 
+      ) {
+    return true;
+  }
+  else return false;
 }

@@ -32,6 +32,9 @@ bool met1(int index, const class TVector3& corr);
 bool sumEt10(double sumEt);
 bool sumEt1(double sumEt);
 
+bool isChargeFlip(int elIndex);
+bool conversionElectron(int electron);
+
 int numberOfExtraMuons(int i_hyp, bool nonisolated);
 bool passMuonBVeto_1_6 (int i_dilep, bool soft_nonisolated);
 
@@ -44,6 +47,9 @@ bool additionalZveto();
 bool isDYee();
 bool isDYmm();
 bool isDYtt();
+bool isWe();
+bool isWm();
+bool isWt();
 int nTrkJets(int i_hyp);
 bool passTrkJetVeto(int i_hyp);
 std::vector<LorentzVector> JPTs(int i_hyp, double etThreshold);
@@ -63,6 +69,7 @@ bool passTrackIsolation(int index);
 int passTrackZVeto(int hyp_index);
 
 int getDrellYanType();
+int getZZType ();
 void dumpDocLines();
 int NjetVeto(std::vector<TLorentzVector>& Jet, double min_et);
 bool trueElectron(int index);
@@ -134,26 +141,22 @@ int numberOfExtraElectronsVJets09(int i_hyp);
 
 //SUSY dilepton selection TAS group
 
-bool compareEt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1,  
+bool comparePt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1,  
                  ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv2);
 bool GoodSusyElectronWithoutIsolation(int index);
-bool GoodSusyMuonWithoutIsolation(int index);
+bool GoodSusyElectronWithoutIsolationNoD0(int index);
 bool GoodSusyElectronWithIsolationLoose(int index, bool use_calo_iso); 
-bool GoodSusyElectronWithoutIsolation(int index); 
 bool PassSusyElectronIsolationLoose(int index, bool use_calo_iso);
+bool GoodSusyMuonWithIsolation(int index); 
 bool GoodSusyMuonWithoutIsolation(int index);
-
 double inv_mu_relsusy_iso(int index);
 double inv_el_relsusy_iso(int index, bool use_calo_iso);
-/* bool GoodSusyMuonWithIsolation(int index); */
 bool GoodSusyElectronWithIsolation(int index, bool use_calo_iso); 
-/* bool GoodSusyLeptonIsolation(int id, int index); */
-/* bool GoodSusyLeptonID(int id, int index); */
-
+bool GoodSusyLeptonWithIsolation(int id, int index);
+bool GoodSusyLeptonID(int id, int index);
 bool PassSusyMuonIsolation(int index);
 bool PassSusyElectronIsolation(int index, bool use_calo_iso);
 bool PassSusyLeptonIsolation(int id, int index);
-
 bool GoodSusyLeptonID(int id, int index);
 bool GoodSusyTrigger(int dilType);
 int numberOfExtraElectronsSUSY(int i_hyp);
@@ -162,7 +165,13 @@ std::vector <ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getCalo
 std::vector <ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getJPTJets(int i_hyp); 
 int ttbarconstituents(int i_hyp);
 bool additionalZvetoSUSY09(int i_hyp);
-
+bool idIsBeauty(int id);
+bool idIsCharm(int id);
+int leptonIsFromW(int idx, int id, LorentzVector v);
+bool isFakeableElSUSY09(int iEl);
+bool isFakeableMuSUSY09(int iMu);
+bool isNumElSUSY09(int iEl);
+bool isNumMuSUSY09(int iMu);
 
 //TTDil08 fake rate functions
 bool isNumElTTDil08(int iEl);
@@ -174,4 +183,11 @@ bool trueGammaFromMuon(int electron);
 
 bool conversionElectron(int electron);
 
+int findPrimTrilepZ(int i_hyp, double &mass);
+bool vetoAddZ(int i_hyp, int unusedLepton, double &mass);
+std::vector<LorentzVector> JPTsTrilep(int i_hyp, double etThreshold);
+unsigned int nJPTsTrilep(int i_hyp, double etThreshold);
+double nearestDeltaPhiTrilep(double Phi, int i_hyp);
+double nearestDeltaPhiJet(double Phi, int i_hyp);
+double MetSpecialTrilep(double MET, double MetPhi, int index);
 #endif
