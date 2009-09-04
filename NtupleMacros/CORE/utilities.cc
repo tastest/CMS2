@@ -59,8 +59,12 @@ TVector3 correctMETforTracks()
 
   for( unsigned int trkCount = 0; trkCount < cms2.trks_trk_p4().size(); ++trkCount ) {
     // skip track if matched to a global muon
-    if( cms2.trk_musidx()[trkCount] != -999 && cms2.trk_musdr()[trkCount] < 0.1) {
-      if( cms2.mus_trkidx()[cms2.trk_musidx()[trkCount]]  == int(trkCount) && cms2.mus_trkdr()[cms2.trk_musidx()[trkCount]] < 0.1 ) continue;
+    if( cms2.trk_musidx()[trkCount] != -999 &&  
+	ROOT::Math::VectorUtil::DeltaR(cms2.trks_trk_p4()[trkCount],
+				       cms2.mus_trk_p4()[cms2.trk_musidx()[trkCount]]) < 0.1) {
+      if( cms2.mus_trkidx()[cms2.trk_musidx()[trkCount]]  == int(trkCount) 
+	  // useless && cms2.mus_trkdr()[cms2.trk_musidx()[trkCount]] < 0.1 
+	  ) continue;
     }
 
     // skip track if matched to an "electron"
@@ -84,15 +88,15 @@ TVector3 correctMETforTracks()
     }
 
     // skip any remaining tracks that don't have outerEta, outerPhi information
-    if( cms2.trks_outerEta()[trkCount] == -999 || cms2.trks_outerPhi()[trkCount] == -999 ) continue;
+    if( cms2.trks_outer_p4()[trkCount].x() == -999 || cms2.trks_outer_p4()[trkCount].y() == -999 ) continue;
 
     // if we've made it this far, get the response from the histogram
     int bin   = rfhist->FindBin( cms2.trks_trk_p4()[trkCount].eta(), cms2.trks_trk_p4()[trkCount].pt() );
     double rf = rfhist->GetBinContent( bin );
 
     // now, correct MET for track using RF
-    met_x +=  ( rf * cms2.trks_trk_p4()[trkCount].P() * ( 1 / cosh( cms2.trks_outerEta()[trkCount] ) ) * cos( cms2.trks_outerPhi()[trkCount] ) - cms2.trks_trk_p4()[trkCount].pt() * cos( cms2.trks_trk_p4()[trkCount].phi() ) );
-    met_y +=  ( rf * cms2.trks_trk_p4()[trkCount].P() * ( 1 / cosh( cms2.trks_outerEta()[trkCount] ) ) * sin( cms2.trks_outerPhi()[trkCount] ) - cms2.trks_trk_p4()[trkCount].pt() * sin( cms2.trks_trk_p4()[trkCount].phi() ) );
+    met_x +=  ( rf * cms2.trks_trk_p4()[trkCount].P() * ( 1 / cosh( cms2.trks_outer_p4()[trkCount].Eta() ) ) * cos( cms2.trks_outer_p4()[trkCount].Phi() ) - cms2.trks_trk_p4()[trkCount].pt() * cos( cms2.trks_trk_p4()[trkCount].phi() ) );
+    met_y +=  ( rf * cms2.trks_trk_p4()[trkCount].P() * ( 1 / cosh( cms2.trks_outer_p4()[trkCount].Eta() ) ) * sin( cms2.trks_outer_p4()[trkCount].phi() ) - cms2.trks_trk_p4()[trkCount].pt() * sin( cms2.trks_trk_p4()[trkCount].phi() ) );
   }
 
   // fill MET vector
