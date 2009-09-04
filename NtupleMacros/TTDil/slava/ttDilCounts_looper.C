@@ -339,7 +339,7 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
       nAllEvents++;
       // Progress feedback to the user
       int iz = nAllEvents/10000;
-      if (nAllEvents-10000*iz == 0) cout << "Processing event " << nAllEvents+1 
+      if (nAllEvents-10000*iz == 0 || 1< 2) cout << "Processing event " << nAllEvents+1 
 				       << " of sample " << prefix << endl;
        
       // Prescale
@@ -379,7 +379,6 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
       } else {
 	evId.push_back(eid);
       }
-
 
       for(unsigned int hypIdx = 0; hypIdx < cms2.hyp_p4().size(); hypIdx++) {
        
@@ -434,9 +433,11 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	  if (! passTriggersMu9orLisoE15(cms2.hyp_type()[hypIdx]) ) continue;
 	}
 
+
 	if (! fillMaxWeightDilOnly && applyTriggersTTDil08JanTrial){
 	  if (! passTriggersTTDil08JanTrial(cms2.hyp_type()[hypIdx]) ) continue;
 	}
+
 
         if(dilepMassVetoCutTTDil08) {
           // Z mass veto using hyp_leptons for ee and mumu final states
@@ -444,11 +445,14 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
             if (inZmassWindow(cms2.hyp_p4()[hypIdx].mass())) continue;
           }    
         }
+
+
 	if(dilepAdditionalMassVetoCutTTDil08){
           // Z veto using additional leptons in the event
           if (additionalZvetoTTDil08()) continue; //"true" to use TTDil lepton selections                                                
 	}
       
+
 	// ! for TTDil analysis this should be made for the event-qualifying hyp only
 	if (!fillMaxWeightDilOnly && metBaselineSelectionTTDil08){
 	  if (globalJESscaleRescale == 1 && useTcMet && ! passMet_OF20_SF30(hypIdx,useTcMet)) continue;
@@ -469,11 +473,13 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	  }
 	}
 
+
 	if (lepton20Eta2p4DilSelection){
 	  //pt eta cuts
 	  if (! lepton20Eta2p4(id_lt, i_lt) ) continue;
 	  if (! lepton20Eta2p4(id_ll, i_ll) ) continue;
 	}
+
 
 	if (looseDilSelectionNoIsoTTDil08){
 	  // Muon quality cuts, no isolation
@@ -481,20 +487,24 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	  if (! looseLeptonSelectionNoIsoTTDil08(id_ll, i_ll)) continue;
 	}
 
+
 	if (looseDilSelectionTTDil08){
 	  // Muon quality cuts, loose isolation
 	  if (! looseLeptonSelectionTTDil08(id_lt, i_lt)) continue;
 	  if (! looseLeptonSelectionTTDil08(id_ll, i_ll)) continue;
 	}
 
+
 	if (leptonIsolationDilSelectionTTDil08){
 	  if (! passLeptonIsolationTTDil08(id_lt, i_lt)) continue;
 	  if (! passLeptonIsolationTTDil08(id_ll, i_ll)) continue;
 	}
 
+
 	if (osSelection){
 	  if ( id_lt * id_ll > 0 ) continue;
 	}
+
 
 	if (dilTruthMatch){
 	  //this better be in the selections.cc
@@ -526,6 +536,7 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
       }
       
       unsigned int nGoodHyps = goodHyps.size();
+
 
       unsigned int maxWeightIndex = 0;
       int strasbourgDilType = -1;
@@ -570,6 +581,7 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	}
       }
 
+      
       //=============================================================================================
 
       //now fill the histograms
@@ -751,21 +763,6 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	  if (abs(id_ll) == 11) fill1D(heleEta[3][arrNjets], cms2.hyp_ll_p4()[hypIdx].eta(), weight);
 	  if (abs(id_lt) == 13) fill1D(hmuEta[3][arrNjets], cms2.hyp_lt_p4()[hypIdx].eta(), weight);
 	  if (abs(id_ll) == 13) fill1D(hmuEta[3][arrNjets], cms2.hyp_ll_p4()[hypIdx].eta(), weight);
-	  
-	  
-	  // electron trk isolation 
-	  double temp_lt_iso = cms2.hyp_lt_iso()[hypIdx];  // so that min works
-	  double temp_ll_iso = cms2.hyp_ll_iso()[hypIdx];  // so that min works
-	  if (abs(id_lt) == 11) fill1D(heleSumPt[myType][arrNjets], min(temp_lt_iso,24.99),weight);
-	  if (abs(id_lt) == 11) fill1D(heleSumPt[3][arrNjets], min(temp_lt_iso,24.99),weight);
-	  if (abs(id_ll) == 11) fill1D(heleSumPt[myType][arrNjets], min(temp_ll_iso,24.99),weight);
-	  if (abs(id_ll) == 11) fill1D(heleSumPt[3][arrNjets], min(temp_ll_iso,24.99),weight);
-	  
-	  // muon trk isolation
-	  if (abs(id_lt) == 13) fill1D(hmuSumPt[myType][arrNjets], min(temp_lt_iso,24.99),weight);
-	  if (abs(id_lt) == 13) fill1D(hmuSumPt[3][arrNjets], min(temp_lt_iso,24.99),weight);
-	  if (abs(id_ll) == 13) fill1D(hmuSumPt[myType][arrNjets], min(temp_ll_iso,24.99),weight);
-	  if (abs(id_ll) == 13) fill1D(hmuSumPt[3][arrNjets], min(temp_ll_iso,24.99),weight);
 	  
 	  
 	  // muon trk+calo isolation
@@ -1279,16 +1276,6 @@ void ttDilCounts_looper::bookHistos(char *prefix) {
       hvecSumJSmLLptVstcmet[i][j]->GetYaxis()->SetTitle("pat MET");
 
 
-      heleSumPt[i][j] = new TH1F(Form("%s_heleSumPt_%s",prefix,suffixS.c_str()),Form("%s_heleSumPt_%s",prefix,suffixS.c_str()),
-				 100, 0., 25.);
-      heleSumPt[i][j]->SetDirectory(rootdir);
-      heleSumPt[i][j]->GetXaxis()->SetTitle("#SigmaPt");
-    
-      hmuSumPt[i][j] = new TH1F(Form("%s_hmuSumPt_%s",prefix,suffixS.c_str()),Form("%s_hmuSumPt_%s",prefix,suffixS.c_str()),
-				100, 0., 25.);
-      hmuSumPt[i][j]->SetDirectory(rootdir);
-      hmuSumPt[i][j]->GetXaxis()->SetTitle("#SigmaPt");
-    
       hmuSumIso[i][j] = new TH1F(Form("%s_hmuSumIso_%s",prefix,suffixS.c_str()),Form("%s_hmuSumIso_%s",prefix,suffixS.c_str()),
 				 100, 0., 25.);
       hmuSumIso[i][j]->SetDirectory(rootdir);
@@ -1362,9 +1349,6 @@ void ttDilCounts_looper::bookHistos(char *prefix) {
       hvecSumJSmLLpt[i][j]->Sumw2();
       hvecSumJSmLLptVspatmet[i][j]->Sumw2();
       hvecSumJSmLLptVstcmet[i][j]->Sumw2();
-
-      heleSumPt[i][j]->Sumw2();
-      hmuSumPt[i][j]->Sumw2();
 
       hmuSumIso[i][j]->Sumw2();
       helSumIso[i][j]->Sumw2();

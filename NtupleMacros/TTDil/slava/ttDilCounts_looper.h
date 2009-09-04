@@ -77,8 +77,6 @@ class ttDilCounts_looper {
  
 
   TH1F* numTightLep[4][6]; // number of tight leptons per event.
-  TH1F* heleSumPt[4][6];   // sumPt for electron isolation
-  TH1F* hmuSumPt[4][6];   // sumPt for muon isolation
   TH1F* hmuSumIso[4][6];  // sum of trk pt, em et, had et in cone of 0.3
   TH1F* helSumIso[4][6];  // sum of trk pt, em et, had et in cone of 0.3
   TH1F* helRelIso[4][6]; //  Iso variable defined as pt/(pt+sum) for electron
