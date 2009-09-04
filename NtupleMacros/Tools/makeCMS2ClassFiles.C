@@ -328,20 +328,23 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
 
   bool haveHLTInfo = false;
   bool haveL1Info  = false;
+  bool haveHLT8E29Info = false;
   for(int i = 0; i < aliasarray->GetSize(); i++) {
     TString aliasname(aliasarray->At(i)->GetName());
-    if(aliasname=="evt_HLT_trigNames") 
+    if(aliasname=="hlt_trigNames") 
       haveHLTInfo = true;
-    if(aliasname=="evt_L1_trigNames") 
+    if(aliasname=="l1_trigNames") 
       haveL1Info = true;
+    if(aliasname=="hlt8e29_trigNames") 
+      haveHLT8E29Info = true;
   }
    
   if(haveHLTInfo) {
     //functions to return whether or not trigger fired - HLT
     headerf << "\t" << "bool passHLTTrigger(TString trigName) {" << endl;
     headerf << "\t\t" << "int trigIndx;" << endl;
-    headerf << "\t\t" << "vector<TString>::const_iterator begin_it = evt_HLT_trigNames().begin();" << endl;
-    headerf << "\t\t" << "vector<TString>::const_iterator end_it = evt_HLT_trigNames().end();" << endl;
+    headerf << "\t\t" << "vector<TString>::const_iterator begin_it = hlt_trigNames().begin();" << endl;
+    headerf << "\t\t" << "vector<TString>::const_iterator end_it = hlt_trigNames().end();" << endl;
     headerf << "\t\t" << "vector<TString>::const_iterator found_it = find(begin_it, end_it, trigName);" << endl;
     headerf << "\t\t" << "if(found_it != end_it)" << endl;
     headerf << "\t\t\t" << "trigIndx = found_it - begin_it;" << endl;
@@ -357,7 +360,7 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
       TString aliasname(aliasarray->At(j)->GetName());
       TBranch *branch = ev->GetBranch(ev->GetAlias(aliasname.Data()));
       TString classname = branch->GetClassName();
-      if(aliasname.Contains("evt_HLT") && classname.Contains("int")) {
+      if(aliasname.Contains("hlt_bits") && classname.Contains("int")) {
 	s_HLTbitmasks.insert(aliasname);
       }
      
@@ -384,13 +387,61 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
     headerf << "\t" << "}" << endl;
   }//if(haveHLTInfo) 
 
+  if(haveHLT8E29Info) {
+    //functions to return whether or not trigger fired - HLT
+    headerf << "\t" << "bool passHLT8E29Trigger(TString trigName) {" << endl;
+    headerf << "\t\t" << "int trigIndx;" << endl;
+    headerf << "\t\t" << "vector<TString>::const_iterator begin_it = hlt8e29_trigNames().begin();" << endl;
+    headerf << "\t\t" << "vector<TString>::const_iterator end_it = hlt8e29_trigNames().end();" << endl;
+    headerf << "\t\t" << "vector<TString>::const_iterator found_it = find(begin_it, end_it, trigName);" << endl;
+    headerf << "\t\t" << "if(found_it != end_it)" << endl;
+    headerf << "\t\t\t" << "trigIndx = found_it - begin_it;" << endl;
+    headerf << "\t\t" << "else {" << endl;
+    headerf << "\t\t\t" << "cout << \"Cannot find Trigger \" << trigName << endl; " << endl;
+    headerf << "\t\t\t" << "return 0;" << endl;
+    headerf << "\t\t"   << "}" << endl << endl;
+    //get the list of branches that hold the HLT bitmasks
+    //store in a set 'cause its automatically sorted
+    set<TString> s_HLTbitmasks;
+    set<TString> s_L1bitmasks;
+    for(int j = 0; j < aliasarray->GetSize(); j++) {
+      TString aliasname(aliasarray->At(j)->GetName());
+      TBranch *branch = ev->GetBranch(ev->GetAlias(aliasname.Data()));
+      TString classname = branch->GetClassName();
+      if(aliasname.Contains("hlt8e29_bits") && classname.Contains("int")) {
+	s_HLTbitmasks.insert(aliasname);
+      }
+     
+    }
+    int i = 0;
+    for(set<TString>::const_iterator s_it = s_HLTbitmasks.begin();
+	s_it != s_HLTbitmasks.end(); s_it++, i++) {
+      
+      if(i==0) {
+	headerf << "\t\t" << "if(trigIndx <= 31) {" << endl;
+	headerf << "\t\t\t" << "unsigned int bitmask = 1;" << endl;
+	headerf << "\t\t\t" << "bitmask <<= trigIndx;" << endl;	
+	headerf << "\t\t\t" << "return " << *s_it << "() & bitmask;" << endl;
+	headerf << "\t\t" << "}" << endl;
+	continue;
+      }
+      headerf << "\t\t" << "if(trigIndx >= " << Form("%d && trigIndx <= %d", 32*i, 32*i+31) << ") {" << endl;
+      headerf << "\t\t\t" << "unsigned int bitmask = 1;" << endl;
+      headerf << "\t\t\t" << "bitmask <<= (trigIndx - " << Form("%d",32*i) << "); " << endl;	
+      headerf << "\t\t\t" << "return " << *s_it << "() & bitmask;" << endl;
+      headerf << "\t\t" << "}" << endl;
+    }
+    headerf << "\t" << "return 0;" << endl;
+    headerf << "\t" << "}" << endl;
+  }//if(haveHLT8E29Info) 
+
 
   if(haveL1Info) {
     //functions to return whether or not trigger fired - L1
     headerf << "\t" << "bool passL1Trigger(TString trigName) {" << endl;
     headerf << "\t\t" << "int trigIndx;" << endl;
-    headerf << "\t\t" << "vector<TString>::const_iterator begin_it = evt_L1_trigNames().begin();" << endl;
-    headerf << "\t\t" << "vector<TString>::const_iterator end_it = evt_L1_trigNames().end();" << endl;
+    headerf << "\t\t" << "vector<TString>::const_iterator begin_it = l1_trigNames().begin();" << endl;
+    headerf << "\t\t" << "vector<TString>::const_iterator end_it = l1_trigNames().end();" << endl;
     headerf << "\t\t" << "vector<TString>::const_iterator found_it = find(begin_it, end_it, trigName);" << endl;
     headerf << "\t\t" << "if(found_it != end_it)" << endl;
     headerf << "\t\t\t" << "trigIndx = found_it - begin_it;" << endl;
@@ -405,7 +456,7 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
       TString aliasname(aliasarray->At(j)->GetName());
       TBranch *branch = ev->GetBranch(ev->GetAlias(aliasname.Data()));
       TString classname = branch->GetClassName();
-      if(aliasname.Contains("evt_L1") && classname.Contains("int")) {
+      if(aliasname.Contains("l1_bits") && classname.Contains("int")) {
 	s_L1bitmasks.insert(aliasname);
       }
      
@@ -476,6 +527,10 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
     //functions to return whether or not trigger fired - HLT
     headerf << "\t" << "static bool passHLTTrigger(TString trigName) { return cms2.passHLTTrigger(trigName); }" << endl;
   }//if(haveHLTInfo) 
+  if(haveHLT8E29Info) {
+    //functions to return whether or not trigger fired - HLT
+    headerf << "\t" << "static bool passHLT8E29Trigger(TString trigName) { return cms2.passHLT8E29Trigger(trigName); }" << endl;
+  }//if(haveHLT8E29Info) 
   if(haveL1Info) {
     //functions to return whether or not trigger fired - L1
     headerf << "\t" << "static bool passL1Trigger(TString trigName) { return cms2.passL1Trigger(trigName); }" << endl;
