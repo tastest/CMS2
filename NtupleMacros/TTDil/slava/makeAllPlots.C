@@ -13,9 +13,9 @@ void makeAllPlots(char* fname, bool logScale=false,char* hPatt = 0, char* refNam
 	       1.1,                          // maxYrescale
 	       logScale,                     // logScale
 	       logScale ? false : true,      // set min to 0
-	       2,                            // color scheme (0 original tas, 1 as in pas 09-002, 2 almost like 1 from the wheel
+	       0,//mod                            // color scheme (0 original tas, 1 as in pas 09-002, 2 almost like 1 from the wheel
 	       noLegend,                     // no legend on the plot
-	       2,                             // order scheme
+	       0,//mod                             // order scheme
 	       bsmName);
   gSystem->Exit(0);
 }
