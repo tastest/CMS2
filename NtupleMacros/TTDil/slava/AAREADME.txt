@@ -1,3 +1,15 @@
+# GENERAL COMMENT HOW TO DEAL WITH THE CODE HERE
+# checkout the code either based on the prescribed tag
+
+#########
+cd ../../
+cvs -nq update  -rPUTATAGHERE CORE TTDil NtupleTools Tools Templates |\
+  grep -v "root$\|log$\|^\? [^$]*file\|^\?[^$]*eventsCMS2\|\.d$\|\_o$\|_b$\|\.list$\|\.tmp$\|^\? [^$]*out$" 
+then commit what's still missing or update wrt whateve someone else inserted in these packs
+cvs tag [-b]TAGNAME CORE TTDil NtupleTools Tools Templates
+
+######################################
+
 To run the looper
 root
 // load FWLite stuff
