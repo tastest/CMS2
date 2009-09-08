@@ -11,6 +11,9 @@
 using std::string;
 
 enum {
+
+	LOOP_VALIDATION,
+
 	LOOP_WENU,
 	LOOP_EM30_80,
 	LOOP_BC30_80,
@@ -62,6 +65,9 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
      const string tbl = name + ".tbl";
      const string log = name + ".log";
 
+     Looper looper_validation(fValidation(), cuts, log.c_str());
+        if (which_ones & (1 << LOOP_VALIDATION)) looper_validation.Loop();
+
      Looper looper_wenu(fWenu(), cuts, log.c_str());
 	if (which_ones & (1 << LOOP_WENU)) looper_wenu.Loop();
 
@@ -85,6 +91,7 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 
      // then we collect them all and print a table
      const Looper *loopers[] = { 
+	&looper_validation,
 	  &looper_wenu,
 	&looper_em30_80,
 	&looper_bc30_80,
@@ -100,6 +107,7 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 // default yield table
 int Results ()
 {
-     return run<Looper>(event_cuts, "Results", 1 << LOOP_QCD30 | 1 << LOOP_QCD80 | 1 << LOOP_WJET_ALP);
+     return run<Looper>(event_cuts, "Results", 1 << LOOP_VALIDATION);
+//LOOP_QCD30 | 1 << LOOP_QCD80 | 1 << LOOP_WJET_ALP);
 }
 

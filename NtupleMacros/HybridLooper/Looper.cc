@@ -188,8 +188,8 @@ void Looper::FillEventHistos ()
 		// iso related
 		//
 
-		// min matteo tight
-		if (cms2.els_tightId22XMinMatteo()[0] == 1) {
+		// catagory based tight
+		if (cms2.els_egamma_tightId()[0] == 1) {
 
 	                h1_pt_[det]->Fill(cms2.els_p4()[0].Pt(), weight);
 			h1_eta_[det]->Fill(cms2.els_p4()[0].Eta(), weight);
@@ -202,7 +202,6 @@ void Looper::FillEventHistos ()
 			h1_wwIso_[det]->Fill(isoSum / cms2.els_p4()[0].Pt(), weight);
 
 		}
-
 	} // end event level cuts passed
 
 }

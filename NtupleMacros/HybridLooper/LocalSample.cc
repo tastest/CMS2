@@ -10,6 +10,17 @@
 static const std::string prefix = (getenv("CMS2_NTUPLE_LOCATION") != 0) ?
      std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" : "/data/tmp/";
 
+
+// validation sample
+Sample fValidation()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = "/store/disk02/dlevans/ttbar_postprocessed.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, OTHER, kYellow, 1, "ttbar", true, 0. };
+     return ret;
+}
+
 // Wenu
 Sample fWenu ()
 {
