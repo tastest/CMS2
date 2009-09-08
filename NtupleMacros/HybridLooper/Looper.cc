@@ -9,8 +9,8 @@
 // CMS2 related
 #include "../../NtupleMaker/interface/EgammaFiduciality.h"
 
-	Looper::Looper (Sample s, cuts_t c, const char *fname) 
-: LooperBase(s, c, fname)
+Looper::Looper (Sample s, cuts_t c, const char *fname) 
+			: LooperBase(s, c, fname)
 {
 	// zero out the candidate counters (don't comment this out)
 	memset(cands_passing_	, 0, sizeof(cands_passing_       ));
@@ -18,93 +18,47 @@
 	memset(cands_count_		, 0, sizeof(cands_count_         ));
 }
 
-void Looper::FormatHist(TH1* hist)
+void Looper::FormatHist(TH1F** hist, std::string name, Int_t n, Float_t min, Float_t max)
 {
-	hist->SetFillColor(sample_.histo_color);
+	// loop on EB, EE
+	for (unsigned int i = 0; i < 2; ++i)
+	{
+		std::string det = "eb";
+		if (i == 1) det = "ee";
+		hist[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), name.c_str(), det.c_str()), 
+				name.c_str(), n, min, max);
+		hist[i]->SetFillColor(sample_.histo_color);
+	}
 }
 
 void Looper::BookHistos ()
 {
 
-	// book histograms the manual way:
+	// General
+	//
+	FormatHist(h1_pt_, "h1_pt", 100, 0, 100);
+	FormatHist(h1_eta_, "h1_eta", 100, -3, 3);
+	FormatHist(h1_wwIsoAll_, "h1_wwIsoAll", 100, 0.0, 1.0);
 
-	for (unsigned int i = 0; i < 2; ++i)
-	{
+	// Isolation related
+	//
+	FormatHist(h1_ecalIso03_, "h1_ecalIso03", 100, 0, 1);
+	FormatHist(h1_hcalIso03_, "h1_hcalIso03", 100, 0, 1);
+	FormatHist(h1_tkIso03_, "h1_tkIso03", 100, 0, 1);
+	FormatHist(h1_wwIso_, "h1_wwIso", 100, 0, 1);
 
-		std::string det = "eb";
-		if (i == 1) det = "ee";
-
-		h1_pt_[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), "h1_pt", det.c_str()), 
-				"h1_pt", 100, 0.0, 100.0);
-		FormatHist(h1_pt_[i]);
-
-		h1_eta_[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), "h1_eta", det.c_str()), 
-				"h1_eta", 60, -3.0, 3.0);
-		FormatHist(h1_eta_[i]);
-
-		h1_ecalIso03_[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), "h1_ecalIso03", det.c_str()), 
-				"h1_ecalIso03", 100, 0.0, 1.0);
-		FormatHist(h1_ecalIso03_[i]);
-
-		h1_hcalIso03_[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), "h1_hcalIso03", det.c_str()), 
-				"h1_hcalIso03", 100, 0.0, 0.5);
-		FormatHist(h1_hcalIso03_[i]);
-
-		h1_tkIso03_[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), "h1_tkIso03", det.c_str()), 
-				"h1_tkIso03", 100, 0.0, 0.5);
-		FormatHist(h1_tkIso03_[i]);
-
-		h1_esJuraIso03_[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), "h1_esJuraIso03", det.c_str()), 
-				"h1_esJuraIso03", 100, 0.0, 1.0);
-		FormatHist(h1_esJuraIso03_[i]);
-
-		h1_wwIso_[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), "h1_wwIso", det.c_str()), 
-				"h1_wwIso", 100, 0.0, 1.0);
-		FormatHist(h1_wwIso_[i]);
-
-
-		//
-		// electron ID related
-		//
-
-		h1_dEtaIn_[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), "h1_dEtaIn", det.c_str()),
-				"h1_dEtaIn", 100, 0.0, 0.1);
-		FormatHist(h1_dEtaIn_[i]);
-
-		h1_dPhiIn_[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), "h1_dPhiIn", det.c_str()),
-				"h1_dPhiIn", 100, 0.0, 0.1);
-		FormatHist(h1_dPhiIn_[i]);
-
-		h1_hoe_[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), "h1_hoe", det.c_str()),
-				"h1_hoe", 100, 0.0, 0.2);
-		FormatHist(h1_hoe_[i]);
-
-		h1_sigmaIEtaIEta_[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), "h1_sigmaIEtaIEta", det.c_str()),
-				"h1_sigmaIEtaIEta", 100, 0.0, 0.1);
-		FormatHist(h1_sigmaIEtaIEta_[i]);
-
-		h1_sigmaIPhiIPhi_[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), "h1_sigmaIPhiIPhi", det.c_str()),
-				"h1_sigmaIPhiIPhi", 100, 0.0, 0.1);
-		FormatHist(h1_sigmaIPhiIPhi_[i]);
-
-		h1_E2x5Norm5x5_[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), "h1_E2x5Norm5x5", det.c_str()),
-				"h1_E2x5Norm5x5", 100, 0.0, 1.0);
-		FormatHist(h1_E2x5Norm5x5_[i]);
-
-		h1_E1x5Norm5x5_[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), "h1_E1x5Norm5x5", det.c_str()),
-				"h1_E1x5Norm5x5", 100, 0.0, 1.0);
-		FormatHist(h1_E1x5Norm5x5_[i]);
-
-		h1_eopIn_[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), "h1_eopIn", det.c_str()),
-				"h1_eopIn", 100, 0.0, 5.0);
-		FormatHist(h1_eopIn_[i]);
-
-
-
-
-	}
-
-
+	// electron ID related
+	//
+	FormatHist(h1_dEtaIn_, "h1_dEtaIn", 100, 0.0, 0.1);
+	FormatHist(h1_dPhiIn_, "h1_dPhiIn", 100, 0.0, 0.1);
+	FormatHist(h1_hoe_, "h1_hoe", 100, 0.0, 0.2);
+	FormatHist(h1_sigmaIEtaIEta_, "h1_sigmaIEtaIEta", 100, 0.0, 0.1);
+	FormatHist(h1_sigmaIPhiIPhi_, "h1_sigmaIPhiIPhi", 100, 0.0, 0.1);
+	FormatHist(h1_E2x5Norm5x5_, "h1_E2x5Norm5x5", 100, 0.0, 1.0);
+	FormatHist(h1_E1x5Norm5x5_, "h1_E1x5Norm5x5", 100, 0.0, 1.0);
+	FormatHist(h1_eopIn_, "h1_eopIn", 100, 0.0, 5.0);
+	FormatHist(h1_d0corr_, "h1_d0corr", 100, -0.2, 0.2);
+	FormatHist(h1_closestMuon_, "h1_closestMuon", 100, -1, 5);
 
 }
 
@@ -158,7 +112,7 @@ void Looper::FillEventHistos ()
 		for (size_t i = 0; i < cms2.evt_nels(); ++i)
 		{
 
-					// matched to an mc electron	
+			// matched to an mc electron	
 			if (		abs(cms2.els_mc_id()[i]) == 11
 					// 20 GeV Pt
 					&& cms2.els_p4()[i].Pt() < 20.0 
@@ -183,6 +137,9 @@ void Looper::FillEventHistos ()
 
 			// electron id related
 			//
+			h1_pt_[det]->Fill(cms2.els_p4()[i].Pt(), weight);
+			h1_eta_[det]->Fill(cms2.els_p4()[i].Eta(), weight);
+			h1_wwIsoAll_[det]->Fill(isoSum / cms2.els_p4()[i].Pt(), weight);
 			if (isoSum / cms2.els_p4()[i].Pt() < 0.15) {
 
 				h1_dEtaIn_[det]->Fill(fabs(cms2.els_dEtaIn()[i]), weight);
@@ -193,6 +150,8 @@ void Looper::FillEventHistos ()
 				h1_E2x5Norm5x5_[det]->Fill(cms2.els_e2x5Max()[i]/cms2.els_e5x5()[i], weight);
 				h1_E1x5Norm5x5_[det]->Fill(cms2.els_e1x5()[i]/cms2.els_e5x5()[i], weight);
 				h1_eopIn_[det]->Fill(cms2.els_eOverPIn()[i], weight);
+				h1_d0corr_[det]->Fill(cms2.els_d0corr()[i], weight);
+				h1_closestMuon_[det]->Fill(cms2.els_closestMuon()[i], weight);
 			}
 
 			// iso related
@@ -200,10 +159,6 @@ void Looper::FillEventHistos ()
 
 			// catagory based tight
 			if (cms2.els_egamma_tightId()[i] == 1) {
-
-				h1_pt_[det]->Fill(cms2.els_p4()[i].Pt(), weight);
-				h1_eta_[det]->Fill(cms2.els_p4()[i].Eta(), weight);
-
 				h1_ecalIso03_[det]->Fill(ecalIso/cms2.els_p4()[i].Pt(), weight);
 				h1_hcalIso03_[det]->Fill(hcalIso/cms2.els_p4()[i].Pt(), weight);
 				h1_tkIso03_[det]->Fill(tkIso/cms2.els_p4()[i].Pt(), weight);

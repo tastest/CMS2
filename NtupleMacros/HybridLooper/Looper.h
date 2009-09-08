@@ -58,9 +58,7 @@ protected:
      virtual void	End		();
 
 	// do stuff with histogram
-	void FormatHist(TH1* hist);
-
-
+	void FormatHist(TH1F** hist, std::string name, Int_t n, Float_t min, Float_t max);
 
 public:
      // these functions are called by the table-printing code
@@ -73,12 +71,17 @@ protected:
      // declare your histograms here:
      //----------------------------------------------------------------------
 
-     	TH1F	*h1_pt_[2];
-	TH1F 	*h1_eta_[2];
+	// general
+	//
+        TH1F    *h1_pt_[2];
+        TH1F    *h1_eta_[2];
+        TH1F    *h1_wwIsoAll_[2];
+
+	// isolation
+	//
 	TH1F	*h1_ecalIso03_[2];
         TH1F    *h1_hcalIso03_[2];
         TH1F    *h1_tkIso03_[2];
-	TH1F 	*h1_esJuraIso03_[2];
 	TH1F 	*h1_wwIso_[2];
 
 	// electron ID related
@@ -91,6 +94,8 @@ protected:
 	TH1F	*h1_E2x5Norm5x5_[2];
 	TH1F    *h1_E1x5Norm5x5_[2];
 	TH1F	*h1_eopIn_[2];
+	TH1F 	*h1_d0corr_[2];
+	TH1F	*h1_closestMuon_[2];
 
 protected:
      // count the (weighted and unweighted) number of candidates passing our cuts
