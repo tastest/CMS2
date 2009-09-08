@@ -1,8 +1,17 @@
 # take the 3_1_2 default for the above...
 
-cvs co -r V01-08-01-01 JetMETCorrections/Algorithms
-cvs co -r V01-08-18-03 JetMETCorrections/Configuration
-addpkg JetMETCorrections/Modules
+cvs co -r V01-08-08      CondFormats/JetMETObjects
+cvs co -r V05-06-03      DataFormats/PatCandidates
+cvs co -r V01-08-04-01   JetMETCorrections/Algorithms
+cvs co -r V01-08-21      JetMETCorrections/Configuration
+cvs co -r V03-02-08      JetMETCorrections/JetPlusTrack
+cvs co -r V02-09-05      JetMETCorrections/Modules
+cvs co -r V10-00-02      PhysicsTools/HepMCCandAlgos
+cvs co -r V07-08-18      PhysicsTools/PatAlgos
+cvs co -r V03-07-05      PhysicsTools/PatUtils
+cvs co -r V02-10-01      RecoJets/JetAlgorithms
+
+#Sal's flavor history
 cvs co -r V10-00-02     PhysicsTools/HepMCCandAlgos
-cvs co -r CMSSW_3_1_2   PhysicsTools/PatAlgos/python
-cvs update -r V07-08-15 PhysicsTools/PatAlgos/python/tools/jetTools.py
+
+
