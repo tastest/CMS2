@@ -15,9 +15,9 @@ static const std::string prefix = (getenv("CMS2_NTUPLE_LOCATION") != 0) ?
 Sample fValidation()
 {
      TChain *c = new TChain("Events");
-     std::string sample = "/store/disk02/dlevans/ttbar_postprocessed.root";
+     std::string sample = "/store/disk02/dlevans/wenu_postprocessed.root";
      c->Add(sample.c_str());
-     Sample ret = { c, OTHER, kYellow, 1, "ttbar", true, 0. };
+     Sample ret = { c, OTHER, kBlue, 1, "wenu", true, 0. };
      return ret;
 }
 
