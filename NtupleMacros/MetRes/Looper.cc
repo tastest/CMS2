@@ -44,7 +44,9 @@ void Looper::BookHistos ()
   int sjpbin = 80; //bins of 5
   
   double tcmcmax = 200; //will be +/- this
+  double tcmcnar = 50; //narrow--1gev bins (given also 80 bins)
   int tcmcbin = 80; // width = nbins*binwidth
+  int tcmcbinnar = 100;
   int tcmbin = 40;
 
   double dphimax = 3.2;
@@ -64,6 +66,11 @@ void Looper::BookHistos ()
 	NewHist(htcmetxy[i],    Form("%s_%s_%s", SampleName().c_str(), "tcMet_xy", dilepton_hypo_names[i]), ";tcMET_x+y", tcmcbin, -tcmcmax, tcmcmax);
 	NewHist(htcmetouzxy[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_xy_outz", dilepton_hypo_names[i]), ";tcMET_x+y_outz", tcmcbin, -tcmcmax, tcmcmax);
 	NewHist(htcmetinzxy[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_xy_inz", dilepton_hypo_names[i]), ";tcMET_x+y_inz", tcmcbin, -tcmcmax, tcmcmax);  
+	//combined x component + y component
+	NewHist(hgnmetxy[i],    Form("%s_%s_%s", SampleName().c_str(), "genMet_xy", dilepton_hypo_names[i]), ";genMET_x+y", tcmcbin, -tcmcmax, tcmcmax);
+	NewHist(hgnmetouzxy[i], Form("%s_%s_%s", SampleName().c_str(), "genMet_xy_outz", dilepton_hypo_names[i]), ";genMET_x+y_outz", tcmcbin, -tcmcmax, tcmcmax);
+	NewHist(hgnmetinzxy[i], Form("%s_%s_%s", SampleName().c_str(), "genMet_xy_inz", dilepton_hypo_names[i]), ";genMET_x+y_inz", tcmcbin, -tcmcmax, tcmcmax);  
+
 	//individual components
 	NewHist(htcmetx[i],    Form("%s_%s_%s", SampleName().c_str(), "tcMet_x", dilepton_hypo_names[i]), ";tcMET_x", tcmcbin, -tcmcmax, tcmcmax);
 	NewHist(htcmetouzx[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_x_outz", dilepton_hypo_names[i]), ";tcMET_x_outz", tcmcbin, -tcmcmax, tcmcmax);
@@ -73,6 +80,15 @@ void Looper::BookHistos ()
 	NewHist(htcmetouzy[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_y_outz", dilepton_hypo_names[i]), ";tcMET_y_outz", tcmcbin, -tcmcmax, tcmcmax);
 	NewHist(htcmetinzy[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_y_inz", dilepton_hypo_names[i]), ";tcMET_y_inz", tcmcbin, -tcmcmax, tcmcmax);
 
+	//individual components--narrow binning
+	NewHist(htcmetxnar[i],    Form("%s_%s_%s", SampleName().c_str(), "tcMet_x_nar", dilepton_hypo_names[i]), ";tcMET_x", tcmcbinnar, -tcmcnar, tcmcnar);
+	NewHist(htcmetouzxnar[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_x_outz_nar", dilepton_hypo_names[i]), ";tcMET_x_outz", tcmcbinnar, -tcmcnar, tcmcnar);
+	NewHist(htcmetinzxnar[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_x_inz_nar", dilepton_hypo_names[i]), ";tcMET_x_inz", tcmcbinnar, -tcmcnar, tcmcnar);
+
+	NewHist(htcmetynar[i],    Form("%s_%s_%s", SampleName().c_str(), "tcMet_y_nar", dilepton_hypo_names[i]), ";tcMET_y", tcmcbinnar, -tcmcnar, tcmcnar);
+	NewHist(htcmetouzynar[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_y_outz_nar", dilepton_hypo_names[i]), ";tcMET_y_outz", tcmcbinnar, -tcmcnar, tcmcnar);
+	NewHist(htcmetinzynar[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_y_inz_nar", dilepton_hypo_names[i]), ";tcMET_y_inz", tcmcbinnar, -tcmcnar, tcmcnar);
+
 	for(int j=0;j<nsjpbins;j++) {
 	  NewHist(htcmetxy_sjp[i][j],    Form("%s_%s%i_%s", SampleName().c_str(), "tcMet_xy_sjp", j, dilepton_hypo_names[i]),
 			  Form("%s%i", ";tcMET_x+y_sjp", j), tcmcbin, -tcmcmax, tcmcmax);	
@@ -80,6 +96,13 @@ void Looper::BookHistos ()
 			  Form("%s%i", ";tcMET_x+y_outz_sjp", j), tcmcbin, -tcmcmax, tcmcmax);;
 	  NewHist(htcmetinzxy_sjp[i][j], Form("%s_%s%i_%s", SampleName().c_str(), "tcMet_xy_inz_sjp", j, dilepton_hypo_names[i]),
 			  Form("%s%i", ";tcMET_x+y_inz_sjp", j), tcmcbin, -tcmcmax, tcmcmax);  ;
+
+	  NewHist(hgnmetxy_sjp[i][j],    Form("%s_%s%i_%s", SampleName().c_str(), "genMet_xy_sjp", j, dilepton_hypo_names[i]),
+			  Form("%s%i", ";genMET_x+y_sjp", j), tcmcbin, -tcmcmax, tcmcmax);	
+	  NewHist(hgnmetouzxy_sjp[i][j], Form("%s_%s%i_%s", SampleName().c_str(), "genMet_xy_outz_sjp", j, dilepton_hypo_names[i]),
+			  Form("%s%i", ";genMET_x+y_outz_sjp", j), tcmcbin, -tcmcmax, tcmcmax);;
+	  NewHist(hgnmetinzxy_sjp[i][j], Form("%s_%s%i_%s", SampleName().c_str(), "genMet_xy_inz_sjp", j, dilepton_hypo_names[i]),
+			  Form("%s%i", ";genMET_x+y_inz_sjp", j), tcmcbin, -tcmcmax, tcmcmax);  ;
 
 	  NewHist(hdphi_sjp[i][j],    Form("%s_%s%i_%s", SampleName().c_str(), "dphi_tcMetl_sjp", j, dilepton_hypo_names[i]),
 			  Form("%s%i", ";dphi_tcMET_l_sjp", j), dphibin, -dphimax, dphimax);
@@ -115,6 +138,7 @@ void Looper::BookHistos ()
 	NewHist(hsumjetptouZ[i], Form("%s_%s_%s", SampleName().c_str(), "sumJetPt_outz", dilepton_hypo_names[i]), ";sum jet pt out Z", sjpbin, 0, sjpmax);
 
 	htcmetxvy[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "tcMet_xvy", dilepton_hypo_names[i]), ";tcMET_x;tcMET_y", tcmcbin, -tcmcmax, tcmcmax, tcmcbin, -tcmcmax, tcmcmax);
+	hgnmetxvy[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "genMet_xvy", dilepton_hypo_names[i]), ";genMET_x;genMET_y", tcmcbin, -tcmcmax, tcmcmax, tcmcbin, -tcmcmax, tcmcmax);
 
 	helPt_[i] = new TH1F(Form("%s_%s_%s", SampleName().c_str(), "elPt", dilepton_hypo_names[i]), ";el pt", 100, 0, 100);
 	hmuPt_[i] = new TH1F(Form("%s_%s_%s", SampleName().c_str(), "muPt", dilepton_hypo_names[i]), ";mu pt", 100, 0, 100);
@@ -219,15 +243,20 @@ cuts_t Looper::DilepSelect( int i_hyp ) {
 	sumjetpt += calojets[i].pt(); //made this a private member so can use in filldilephistos
 
   //get right sjpbin--default is zero bin = 0 sumjetpt (all jets below threshold)
-  //right now nsjpbins is 4
-  if( sumjetpt >= 30. && sumjetpt < 100. ) //30.0 will be kept
+  //right now nsjpbins is 6
+  if( sumjetpt >= 30. && sumjetpt < 60. ) //30.0 will be kept
 	sjpbin = 1;
-  else if( sumjetpt >= 100. && sumjetpt < 200. )
+  else if( sumjetpt >= 60. && sumjetpt < 100. )
 	sjpbin = 2;
-  else if( sumjetpt >= 200. )
+  else if( sumjetpt >= 100. && sumjetpt < 150. )
 	sjpbin = 3;
+  else if( sumjetpt >= 150. && sumjetpt < 200. )
+	sjpbin = 4;
+  else if( sumjetpt >= 200. )
+	sjpbin = 5;
 
-  //remove both below
+
+  //remove both below (from cut bit--leave here)
   if( sumjetpt > 200 )
 	ret |= CUT_BIT(CUT_SUMJETPT200);
 
@@ -257,13 +286,15 @@ void Looper::FillDilepHistos (int i_hyp) {
   // everybody histogram needs to know what hypothesis he is 
   const enum DileptonHypType myType = hyp_typeToHypType(cms2.hyp_type()[i_hyp]);
   // and what the event weight is 
-  const double weight = Weight(i_hyp);
+  const double weight = Weight(i_hyp)/10; //divide by 10 to get 100pb instead of 1fb
 
   // these are the cuts that the candidate passes:
   cuts_t cuts_passed = DilepSelect(i_hyp);
 
   double tcmetx = cms2.evt_tcmet()*cos( cms2.evt_tcmetPhi() );
   double tcmety = cms2.evt_tcmet()*sin( cms2.evt_tcmetPhi() );
+  double gnmetx = cms2.gen_met()*cos( cms2.gen_metPhi() );
+  double gnmety = cms2.gen_met()*sin( cms2.gen_metPhi() );
   double mass = cms2.hyp_p4()[i_hyp].mass();
   //double dphilt = ROOT::Math::VectorUtil::DeltaPhi( cms2.evt_tcmet(), cms2.hyp_lt_p4()[i_hyp] );
   //double dphill = ROOT::Math::VectorUtil::DeltaPhi( cms2.evt_tcmet(), cms2.hyp_ll_p4()[i_hyp] );
@@ -290,6 +321,12 @@ void Looper::FillDilepHistos (int i_hyp) {
 	htcmetinzy[DILEPTON_ALL]->Fill( tcmety, weight );
 	htcmetinzy[myType]->Fill( tcmety, weight );
 
+	htcmetinzxnar[DILEPTON_ALL]->Fill( tcmetx, weight );
+	htcmetinzxnar[myType]->Fill( tcmetx, weight );
+
+	htcmetinzynar[DILEPTON_ALL]->Fill( tcmety, weight );
+	htcmetinzynar[myType]->Fill( tcmety, weight );
+
 	//the xy histogram is for each x and y components, so fill twice
 	htcmetinzxy[DILEPTON_ALL]->Fill( tcmetx, weight );
 	htcmetinzxy[myType]->Fill( tcmetx, weight );
@@ -300,6 +337,17 @@ void Looper::FillDilepHistos (int i_hyp) {
 	htcmetinzxy_sjp[myType][sjpbin]->Fill( tcmetx, weight );
 	htcmetinzxy_sjp[DILEPTON_ALL][sjpbin]->Fill( tcmety, weight );
 	htcmetinzxy_sjp[myType][sjpbin]->Fill( tcmety, weight );
+
+	//gen met is filled same as tcmet
+	hgnmetinzxy[DILEPTON_ALL]->Fill( gnmetx, weight );
+	hgnmetinzxy[myType]->Fill( gnmetx, weight );
+	hgnmetinzxy[DILEPTON_ALL]->Fill( gnmety, weight );
+	hgnmetinzxy[myType]->Fill( gnmety, weight );
+
+	hgnmetinzxy_sjp[DILEPTON_ALL][sjpbin]->Fill( gnmetx, weight );
+	hgnmetinzxy_sjp[myType][sjpbin]->Fill( gnmetx, weight );
+	hgnmetinzxy_sjp[DILEPTON_ALL][sjpbin]->Fill( gnmety, weight );
+	hgnmetinzxy_sjp[myType][sjpbin]->Fill( gnmety, weight );
 
 	hdphiinz_sjp[DILEPTON_ALL][sjpbin]->Fill( dphilt, weight );
 	hdphiinz_sjp[myType][sjpbin]->Fill( dphilt, weight );
@@ -326,6 +374,12 @@ void Looper::FillDilepHistos (int i_hyp) {
 	htcmetouzy[DILEPTON_ALL]->Fill( tcmety, weight );
 	htcmetouzy[myType]->Fill( tcmety, weight );
 
+	htcmetouzxnar[DILEPTON_ALL]->Fill( tcmetx, weight );
+	htcmetouzxnar[myType]->Fill( tcmetx, weight );
+
+	htcmetouzynar[DILEPTON_ALL]->Fill( tcmety, weight );
+	htcmetouzynar[myType]->Fill( tcmety, weight );
+
 	//the xy histogram is for each x and y components, so fill twice
 	htcmetouzxy[DILEPTON_ALL]->Fill( tcmetx, weight );
 	htcmetouzxy[myType]->Fill( tcmetx, weight );
@@ -336,6 +390,17 @@ void Looper::FillDilepHistos (int i_hyp) {
 	htcmetouzxy_sjp[myType][sjpbin]->Fill( tcmetx, weight );
 	htcmetouzxy_sjp[DILEPTON_ALL][sjpbin]->Fill( tcmety, weight );
 	htcmetouzxy_sjp[myType][sjpbin]->Fill( tcmety, weight );
+
+	//gen met
+	hgnmetouzxy[DILEPTON_ALL]->Fill( gnmetx, weight );
+	hgnmetouzxy[myType]->Fill( gnmetx, weight );
+	hgnmetouzxy[DILEPTON_ALL]->Fill( gnmety, weight );
+	hgnmetouzxy[myType]->Fill( gnmety, weight );
+
+	hgnmetouzxy_sjp[DILEPTON_ALL][sjpbin]->Fill( gnmetx, weight );
+	hgnmetouzxy_sjp[myType][sjpbin]->Fill( gnmetx, weight );
+	hgnmetouzxy_sjp[DILEPTON_ALL][sjpbin]->Fill( gnmety, weight );
+	hgnmetouzxy_sjp[myType][sjpbin]->Fill( gnmety, weight );
 
   	hdphiouz_sjp[DILEPTON_ALL][sjpbin]	->Fill( dphilt, weight );
   	hdphiouz_sjp[myType][sjpbin]		->Fill( dphilt, weight );
@@ -350,7 +415,7 @@ void Looper::FillDilepHistos (int i_hyp) {
 	//pmetvmllouz_sjp[myType][sjpbin]->Fill( mass, cms2.evt_tcmet(), weight );
   }
   
-  // for TH1/TH2, we have to check explicitly whether the candidate passes
+
   if( (cuts_passed & cuts_) == cuts_ ) {
 	hsumjetpt[DILEPTON_ALL]->Fill( sumjetpt, weight );
 	hsumjetpt[myType]->Fill( sumjetpt, weight );
@@ -363,6 +428,12 @@ void Looper::FillDilepHistos (int i_hyp) {
 	
 	htcmety[DILEPTON_ALL]->Fill( tcmety, weight );
 	htcmety[myType]->Fill( tcmety, weight );
+
+	htcmetxnar[DILEPTON_ALL]->Fill( tcmetx, weight );
+	htcmetxnar[myType]->Fill( tcmetx, weight );
+	
+	htcmetynar[DILEPTON_ALL]->Fill( tcmety, weight );
+	htcmetynar[myType]->Fill( tcmety, weight );
 	
 	//the xy histogram is for each x and y components, so fill twice
 	htcmetxy[DILEPTON_ALL]->Fill( tcmetx, weight );
@@ -378,6 +449,20 @@ void Looper::FillDilepHistos (int i_hyp) {
 	htcmetxvy[DILEPTON_ALL]->Fill( tcmetx, tcmety, weight ); //2d
 	htcmetxvy[myType]->Fill( tcmetx, tcmety, weight ); //2d
 	
+	//gen met
+	hgnmetxy[DILEPTON_ALL]->Fill( gnmetx, weight );
+	hgnmetxy[myType]->Fill( gnmetx, weight );
+	hgnmetxy[DILEPTON_ALL]->Fill( gnmety, weight );
+	hgnmetxy[myType]->Fill( gnmety, weight );
+
+	hgnmetxy_sjp[DILEPTON_ALL][sjpbin]->Fill( gnmetx, weight );
+	hgnmetxy_sjp[myType][sjpbin]->Fill( gnmetx, weight );
+	hgnmetxy_sjp[DILEPTON_ALL][sjpbin]->Fill( gnmety, weight );
+	hgnmetxy_sjp[myType][sjpbin]->Fill( gnmety, weight );
+	
+	hgnmetxvy[DILEPTON_ALL]->Fill( gnmetx, gnmety, weight ); //2d
+	hgnmetxvy[myType]->Fill( gnmetx, gnmety, weight ); //2d
+	
 	hdphi_sjp[DILEPTON_ALL][sjpbin]		->Fill( dphilt, weight );
 	hdphi_sjp[myType][sjpbin]			->Fill( dphilt, weight );
 	hdphi_sjp[DILEPTON_ALL][sjpbin]		->Fill( dphill, weight );
@@ -385,8 +470,8 @@ void Looper::FillDilepHistos (int i_hyp) {
 
 	hmetvmll_sjp[DILEPTON_ALL][sjpbin]->Fill( mass, cms2.evt_tcmet()*weight );
 	hmetvmll_sjp[myType][sjpbin]->Fill( mass, cms2.evt_tcmet()*weight );
-	hmetvmllden_sjp[DILEPTON_ALL][sjpbin]->Fill( mass*weight );
-	hmetvmllden_sjp[myType][sjpbin]->Fill( mass*weight );
+	hmetvmllden_sjp[DILEPTON_ALL][sjpbin]->Fill( mass, weight );
+	hmetvmllden_sjp[myType][sjpbin]->Fill( mass, weight );
 
 	pmetvmll_sjp[DILEPTON_ALL][sjpbin]->Fill( mass, cms2.evt_tcmet(), weight );
 	pmetvmll_sjp[myType][sjpbin]->Fill( mass, cms2.evt_tcmet(), weight );

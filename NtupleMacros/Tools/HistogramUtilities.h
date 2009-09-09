@@ -27,12 +27,12 @@ public:
   HistogramUtilities(TString fileName, TString fileName2, TString fileName3, Double_t lumiNorm = 1.0);
   ~HistogramUtilities() { delete file_; }
 
-  TH1F* getHistogram(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin = 1);
+  TH1F* getHistogram(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin = 1, TString nameprefix="");
   //TH1F* getHistogramSum(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin = 1);
   TH2F* get2dHistogram(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin = 1);
 
   THStack* getStack(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin = 1);
-  THStack* getSumStack(sources_t theSources, TString var, TString nJets, TString hyp1, TString hyp2, Int_t rebin = 1);
+  THStack* getSumStack(sources_t theSources, TString var, TString nJets, TString hyp1, TString hyp2, Int_t rebin = 1, TString var2="", double scale=1);
   THStack* get2fileStack(sources_t theSources, TString var, TString nJets, TString hyp1, Int_t rebin = 1);
   THStack* getSumDifStack(sources_t theSources, TString var, TString nJets, TString hyp1, TString hyp2, TString hyp3, Int_t rebin = 1);
 
@@ -40,6 +40,7 @@ public:
 
   void setOrder(std::vector<DataSource> potentialSources);
 
+  void setVerbose( bool set = false ) { verbose_ = set; }
 
 private:
 
@@ -55,6 +56,7 @@ private:
   
   std::vector<DataSource> sources_;
   Double_t lumiNorm_;
+  bool verbose_;
 };
 
 #endif

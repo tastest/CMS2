@@ -1,6 +1,8 @@
 
 #include "Tools/HistogramUtilities.h"
 
+using namespace std;
+
 HistogramUtilities::HistogramUtilities(TString fileName, Double_t lumiNorm) 
 {
   setSources();
@@ -12,6 +14,7 @@ HistogramUtilities::HistogramUtilities(TString fileName, Double_t lumiNorm)
 
   // leave the luminosity norm as in the root file
   lumiNorm_ = lumiNorm;
+  verbose_ = false;
 }
 
 HistogramUtilities::HistogramUtilities(TString fileName, TString fileName2, Double_t lumiNorm) 
@@ -24,6 +27,7 @@ HistogramUtilities::HistogramUtilities(TString fileName, TString fileName2, Doub
 
   // leave the luminosity norm as in the root file
   lumiNorm_ = lumiNorm;
+  verbose_ = false;
 }
 
 HistogramUtilities::HistogramUtilities(TString fileName, TString fileName2, TString fileName3, Double_t lumiNorm) 
@@ -37,6 +41,7 @@ HistogramUtilities::HistogramUtilities(TString fileName, TString fileName2, TStr
 
   // leave the luminosity norm as in the root file
   lumiNorm_ = lumiNorm;
+  verbose_ = false;
 }
 
 //I made this so that each constructor can call it
@@ -91,7 +96,7 @@ void HistogramUtilities::setOrder(std::vector<DataSource> potentialSources)
 	sources_ = potentialSources;
 }
 
-TH1F* HistogramUtilities::getHistogram(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin) 
+TH1F* HistogramUtilities::getHistogram(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin, TString nameprefix) 
 {
   TString histNameSuffix = "_" + var + "_" + nJets + hyp_type;
 
@@ -106,7 +111,7 @@ TH1F* HistogramUtilities::getHistogram(sources_t theSources, TString var, TStrin
 	}       
   h1_data->Scale(lumiNorm_);
   //h1_data->Rebin(rebin);
-  h1_data->SetName( var + "_" + hyp_type );
+  h1_data->SetName( nameprefix + var + "_" + hyp_type );
   h1_data->SetFillColor( 0 );
   return h1_data;
 }
@@ -161,18 +166,21 @@ THStack* HistogramUtilities::getStack(sources_t theSources, TString var, TString
   return st_temp;
 }
 
-//for combining two hyps (not two vars, if you'd ever want to do that anyway)
-THStack* HistogramUtilities::getSumStack(sources_t theSources, TString var, TString nJets, TString hyp1, TString hyp2, Int_t rebin) {
+//for combining two hyps or two vars, and scaling one--scale by -1 to subtract
+THStack* HistogramUtilities::getSumStack(sources_t theSources, TString var1, TString nJets, TString hyp1, TString hyp2, Int_t rebin, TString var2, double scale) {
 
+  if( var2 == "" ) var2 = var1; //default is same var
+  
   // create a new stack object
-  TString name = var + nJets + "_" + hyp1 + hyp2; //name includes both
-  THStack *st_temp = new THStack(name, name);
+  TString name1 = var1 + nJets + "_" + hyp1 + hyp2; //name includes both
+  //TString name2 = var2 + nJets + "_" + hyp1 + hyp2;
+  THStack *st_temp = new THStack(name1, name1);
 
   // get each constituent in turn and add to the stack
   //TString histNameSuffix = "_" + var + "_" + nJets + hyp_type;
-  TString histNameSuffix1 = "_" + var + nJets + "_" + hyp1;
-  TString histNameSuffix2 = "_" + var + nJets + "_" + hyp2;
-  
+  TString histNameSuffix1 = "_" + var1 + nJets + "_" + hyp1;
+  TString histNameSuffix2 = "_" + var2 + nJets + "_" + hyp2;
+
   for (int i = sources_.size() - 1; i >= 0; --i) {
 	if ((theSources & makeBit(sources_[i].getSource()) ) == makeBit(sources_[i].getSource()) ) {
 	  //std::cout << "getting " << sources_[i].getName() + histNameSuffix << std::endl;
@@ -189,7 +197,7 @@ THStack* HistogramUtilities::getSumStack(sources_t theSources, TString var, TStr
 	  //h2_temp->Rebin(rebin);
 	  h2_temp->Scale(lumiNorm_);
 
-	  h1_temp->Add(h2_temp); //now h1 is h1+h2
+	  h1_temp->Add(h2_temp, scale); //now h1 is h1+h2
 	  st_temp->Add(h1_temp); //put the sum in the stack
 	}
   }
@@ -294,14 +302,25 @@ THStack* HistogramUtilities::getSumDifStack(sources_t theSources, TString var, T
 	  if (sources_[i].getColor() != 0) h2_temp->SetFillColor(sources_[i].getColor());
 	  if (sources_[i].getColor() != 0) h3_temp->SetFillColor(sources_[i].getColor());
 	  //h1_temp->Rebin(rebin);
-	  h1_temp->Scale(lumiNorm_);
+	  //h1_temp->Scale(lumiNorm_);
 	  //h2_temp->Rebin(rebin);
-	  h2_temp->Scale(lumiNorm_);
+	  //h2_temp->Scale(lumiNorm_);
 	  //h3_temp->Rebin(rebin);
-	  h3_temp->Scale(lumiNorm_);
+	  //h3_temp->Scale(lumiNorm_);
+
+	  if( verbose_ && sources_[i].getName() == "dytt" ) {
+		int bin = 40; //80 bins, the 0 bin should be 40, this should be -5 to 0
+		//cout << h1_temp->GetName() << "  " << sources_[i].getName() << "  bin " << bin << "  bincenter " << h1_temp->GetXaxis()->GetBinCenter(bin) << "  content " << h1_temp->GetBinContent( bin ) << endl;
+		cout << sources_[i].getName() << "  bin " << bin << "  bincenter " << h1_temp->GetXaxis()->GetBinCenter(bin) << endl;
+		cout << h1_temp->GetName() << "  content " << h1_temp->GetBinContent( bin ) << endl;
+		cout << h2_temp->GetName() << "  content " << h2_temp->GetBinContent( bin ) << endl;
+		cout << h3_temp->GetName() << "  content " << h3_temp->GetBinContent( bin ) << endl;
+		cout << "  1+2-3 " << h1_temp->GetBinContent( bin ) + h2_temp->GetBinContent( bin ) - h3_temp->GetBinContent( bin ) << endl;
+	  }
 
 	  h1_temp->Add(h2_temp); //now h1 is h1+h2
 	  h1_temp->Add(h3_temp, -1.0); //this adds -1*h3, ie, subtracts h3
+
 	  st_temp->Add(h1_temp); //put the sum in the stack
 	}
   }

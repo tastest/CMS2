@@ -163,16 +163,31 @@ protected:
   TH1F* htcmety[4];
   TH1F* htcmetinzy[4];
   TH1F* htcmetouzy[4];
+  TH1F* htcmetxnar[4];
+  TH1F* htcmetouzxnar[4];
+  TH1F* htcmetinzxnar[4];
+  TH1F* htcmetynar[4];
+  TH1F* htcmetouzynar[4];
+  TH1F* htcmetinzynar[4];
   //both components together (not sum, two entries per hyp)
   TH1F* htcmetxy[4];
   TH1F* htcmetouzxy[4];
   TH1F* htcmetinzxy[4];
+  //gen met
+  TH1F* hgnmetxy[4];
+  TH1F* hgnmetouzxy[4];
+  TH1F* hgnmetinzxy[4];
 
+  //new sumjetpt bins: 0, 30-60, 60-100, 100-150, 150-200, 200+
   //number sumjetpt bins: 0,30-100, 100-200, 200+ (note, nothing btwn 0 and 30 b'c min jet pt is 30)
-#define nsjpbins 4 
+#define nsjpbins 6
   TH1F* htcmetxy_sjp[4][nsjpbins];
   TH1F* htcmetouzxy_sjp[4][nsjpbins];
   TH1F* htcmetinzxy_sjp[4][nsjpbins];
+
+  TH1F* hgnmetxy_sjp[4][nsjpbins];
+  TH1F* hgnmetouzxy_sjp[4][nsjpbins];
+  TH1F* hgnmetinzxy_sjp[4][nsjpbins];
 
   TH1F* hdphi_sjp[4][nsjpbins];
   TH1F* hdphiouz_sjp[4][nsjpbins];
@@ -191,6 +206,7 @@ protected:
 
   //2d
   TH2F* htcmetxvy[4];
+  TH2F* hgnmetxvy[4];
 
   TH1F* hsumjetpt[4];
   TH1F* hsumjetptinZ[4];

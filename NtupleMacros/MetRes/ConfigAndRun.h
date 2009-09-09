@@ -109,11 +109,11 @@ int Results ()
 {
   cuts_t baseline_cuts = 0;
   baseline_cuts = baseline_metres;
-  uint32 which_ones = 0;
+  //uint32 which_ones = 0;
   //which_ones |= (1 << LOOP_DYEE);
   //which_ones |= (1 << LOOP_DYMM);
   //which_ones |= (1 << LOOP_DYTT);
-  which_ones |= (1 << LOOP_TTBAR);
+  //which_ones |= (1 << LOOP_TTBAR);
   //return run<Looper>(baseline_cuts, "Results", which_ones);
   return run<Looper>(baseline_cuts, "Results");
 }
