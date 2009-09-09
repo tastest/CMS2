@@ -58,9 +58,9 @@ void drawAll( TTree* tree1,
   vars.push_back( variable("Electron d0 corrected for beam spot (pt>20)", "els_d0corr", "els_p4.pt()>20", 400, -0.1, 0.1 ) );
   vars.push_back( variable("Electron d0 corrected for beam spot (pt>20) vs phi", "els_d0corr", "els_p4.pt()>20", 100, -3.14, 3.14, "els_p4.phi()",0,-.1,.1 ) );
   vars.push_back( variable("Electron MC match PDG id (no ID,pt>20)", "abs(els_mc_id)", "els_p4.pt()>20", 350, 0, 350 ) );
-  vars.push_back( variable("Electron MC match PDG id (robust ID,pt>20)", "abs(els_mc_id)", "els_robustId&&els_p4.pt()>20", 350, 0, 350 ) );
-  vars.push_back( variable("Electron MC match PDG id (loose ID,pt>20)", "abs(els_mc_id)", "els_looseId&&els_p4.pt()>20", 350, 0, 350 ) );
-  vars.push_back( variable("Electron MC match PDG id (tight ID,pt>20)", "abs(els_mc_id)", "els_tightId&&els_p4.pt()>20", 350, 0, 350 ) );
+  vars.push_back( variable("Electron MC match PDG id (robust ID,pt>20)", "abs(els_mc_id)", "els_egamma_robustId&&els_p4.pt()>20", 350, 0, 350 ) );
+  vars.push_back( variable("Electron MC match PDG id (loose ID,pt>20)", "abs(els_mc_id)", "els_egamma_looseId&&els_p4.pt()>20", 350, 0, 350 ) );
+  vars.push_back( variable("Electron MC match PDG id (tight ID,pt>20)", "abs(els_mc_id)", "els_egamma_tightId&&els_p4.pt()>20", 350, 0, 350 ) );
   vars.push_back( variable("Electron trk iso (pt>20,zeros are not shown)", "els_tkIso", "els_p4.pt()>20", 100, 0.001, 20 ) );
   vars.push_back( variable("Electron PAT trk iso (pt>20,zeros are not shown)", "els_pat_trackIso", "els_p4.pt()>20", 100, 0.001, 20 ) );
   vars.push_back( variable("Electron ECAL Jurassic basic cluster iso (pt>20,zeros are not shown)", "els_ecalJuraIso", "els_p4.pt()>20", 100, 0.001, 20 ) );
@@ -83,7 +83,6 @@ void drawAll( TTree* tree1,
 
   vars.push_back( variable("Raw uncorrected MET", "evt_met", "", 100, 0, 100 ) );
   vars.push_back( variable("tcMET", "evt_tcmet", "", 100, 0, 100 ) );
-  vars.push_back( variable("Hypothesis muon corrected MET", "hyp_met", "", 100, 0, 100 ) );
   vars.push_back( variable("Dilepton mass (no cuts)", "hyp_p4.M()", "", 150, 0, 150 ) );
 
   vars.push_back( variable("Hypothesis jet count", "hyp_njets", "", 10, 0, 10 ) );
