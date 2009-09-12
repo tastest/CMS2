@@ -70,22 +70,23 @@ void printTable (const Looper **hists, int n, const char *fname,
 // run<Looper>(baseline_cuts, "Results", 1 << LOOP_WW)				// produce table with default cuts, WW only
 // run<Looper>(baseline_cuts, "Results", 1 << LOOP_WW | 1 << LOOP_WJETS)	// produce table with default cuts, WW and Wjets only
 // run<Looper>(baseline_cuts, "Results")					// produce table with default cuts, all samples
-template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_ones = 0xffffffff)
+//last argument added by me (Warren) for using narrow bins, axis range
+template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_ones = 0xffffffff, bool usenar=false)
 {
      const string hist = name + ".root";
      const string tbl = name + ".tbl";
      const string log = name + ".log";
      // by default, we run this list of samples; if we're told by the
      // which_ones bit field to skip a sample, we skip it
-     Looper looper_ww		(fWW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WW    )) looper_ww          .Loop();
-     Looper looper_wz		(fWZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WZ    )) looper_wz          .Loop();
-     Looper looper_zz		(fZZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_ZZ    )) looper_zz          .Loop();
-     Looper looper_wjets	(fWjets()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS )) looper_wjets       .Loop();
-     Looper looper_dyee		(fDYee()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYEE  )) looper_dyee        .Loop();
-     Looper looper_dymm		(fDYmm()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYMM  )) looper_dymm        .Loop();
-     Looper looper_dytt		(fDYtt()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYTT  )) looper_dytt        .Loop();
-     Looper looper_ttbar	(fttbar()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_TTBAR )) looper_ttbar       .Loop();
-     Looper looper_tw		(ftW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_TW    )) looper_tw          .Loop();
+     Looper looper_ww	(fWW()		, cuts, log.c_str(), usenar);	if (which_ones & (1 << LOOP_WW    )) looper_ww          .Loop();
+     Looper looper_wz	(fWZ()		, cuts, log.c_str(), usenar);	if (which_ones & (1 << LOOP_WZ    )) looper_wz          .Loop();
+     Looper looper_zz	(fZZ()		, cuts, log.c_str(), usenar);	if (which_ones & (1 << LOOP_ZZ    )) looper_zz          .Loop();
+     Looper looper_wjets(fWjets()	, cuts, log.c_str(), usenar);	if (which_ones & (1 << LOOP_WJETS )) looper_wjets       .Loop();
+     Looper looper_dyee	(fDYee()	, cuts, log.c_str(), usenar);	if (which_ones & (1 << LOOP_DYEE  )) looper_dyee        .Loop();
+     Looper looper_dymm	(fDYmm()	, cuts, log.c_str(), usenar);	if (which_ones & (1 << LOOP_DYMM  )) looper_dymm        .Loop();
+     Looper looper_dytt	(fDYtt()	, cuts, log.c_str(), usenar);	if (which_ones & (1 << LOOP_DYTT  )) looper_dytt        .Loop();
+     Looper looper_ttbar(fttbar()	, cuts, log.c_str(), usenar);	if (which_ones & (1 << LOOP_TTBAR )) looper_ttbar       .Loop();
+     Looper looper_tw	(ftW()		, cuts, log.c_str(), usenar);	if (which_ones & (1 << LOOP_TW    )) looper_tw          .Loop();
      // when all the loopers are done, we save the histograms to file
      saveHist(hist.c_str());
      // then we collect them all and print a table
@@ -118,6 +119,14 @@ int Results ()
   return run<Looper>(baseline_cuts, "Results");
 }
 
+int Results_Nar()
+{
+  cuts_t baseline_cuts = 0;
+  baseline_cuts = baseline_metres;
+  return run<Looper>(baseline_cuts, "Results_Nar", 0xffffffff, true);
+}
+  
+//don't use below two
 int Susy_Results ()
 {
   cuts_t susy_baseline_cuts = baseline_susy;

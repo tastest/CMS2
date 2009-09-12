@@ -8,13 +8,14 @@
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 
-Looper::Looper (Sample s, cuts_t c, const char *fname) 
+Looper::Looper (Sample s, cuts_t c, const char *fname, bool usenar) 
      : LooperBase(s, c, fname)
 {
   printevt = false;
   sumjetpt = 0;
   sjpbin = 0;
   counttt = 0;
+  usenarrow = usenar;
 
   // zero out the candidate counters (don't comment this out)
   memset(cands_passing_	, 0, sizeof(cands_passing_       ));
@@ -43,11 +44,22 @@ void Looper::BookHistos ()
   double sjpmax = 400;
   int sjpbin = 80; //bins of 5
   
-  double tcmcmax = 200; //will be +/- this
-  double tcmcnar = 50; //narrow--1gev bins (given also 80 bins)
-  int tcmcbin = 80; // width = nbins*binwidth
-  int tcmcbinnar = 100;
+  //double tcmmax; //0 to this
+  double tcmcmax; //will be +/- this
+  //double tcmcnar = 50; //narrow--1gev bins (given also 80 bins)
+  int tcmcbin; // width = nbins*binwidth
+  //int tcmcbinnar = 100;
   int tcmbin = 40;
+  if( usenarrow ) {
+	//tcmmax = 100;
+	tcmcmax = 50;
+	tcmcbin = 100;
+  }
+  else {
+	//tcmmax = 300;
+	tcmcmax = 200;
+	tcmcbin = 80;
+  }
 
   double dphimax = 3.2;
   int dphibin = 32;
@@ -57,39 +69,45 @@ void Looper::BookHistos ()
   
   // book histograms the manual way:
   for (int i = 0; i < 4; ++i) {
-	//hsumjetpt[i] = new TH1F(Form("%s_%s_%s", SampleName().c_str(), "sumJetPt", dilepton_hypo_names[i]), ";sum jet pt", sjpbin, 0, sjpmax);
 	NewHist(htcmet[i],    Form("%s_%s_%s", SampleName().c_str(), "tcMet",      dilepton_hypo_names[i]), ";tcMET",      tcmbin, 0, tcmcmax);
 	NewHist(htcmetouz[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_outz", dilepton_hypo_names[i]), ";tcMET_outz", tcmbin, 0, tcmcmax);
 	NewHist(htcmetinz[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_inz",  dilepton_hypo_names[i]), ";tcMET_inz",  tcmbin, 0, tcmcmax);
 
-	//combined x component + y component
+	//tcmet: combined x component + y component
 	NewHist(htcmetxy[i],    Form("%s_%s_%s", SampleName().c_str(), "tcMet_xy", dilepton_hypo_names[i]), ";tcMET_x+y", tcmcbin, -tcmcmax, tcmcmax);
 	NewHist(htcmetouzxy[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_xy_outz", dilepton_hypo_names[i]), ";tcMET_x+y_outz", tcmcbin, -tcmcmax, tcmcmax);
-	NewHist(htcmetinzxy[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_xy_inz", dilepton_hypo_names[i]), ";tcMET_x+y_inz", tcmcbin, -tcmcmax, tcmcmax);  
-	//combined x component + y component
+	NewHist(htcmetinzxy[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_xy_inz", dilepton_hypo_names[i]), ";tcMET_x+y_inz", tcmcbin, -tcmcmax, tcmcmax);
+	
+	//genmet: combined x component + y component
 	NewHist(hgnmetxy[i],    Form("%s_%s_%s", SampleName().c_str(), "genMet_xy", dilepton_hypo_names[i]), ";genMET_x+y", tcmcbin, -tcmcmax, tcmcmax);
 	NewHist(hgnmetouzxy[i], Form("%s_%s_%s", SampleName().c_str(), "genMet_xy_outz", dilepton_hypo_names[i]), ";genMET_x+y_outz", tcmcbin, -tcmcmax, tcmcmax);
 	NewHist(hgnmetinzxy[i], Form("%s_%s_%s", SampleName().c_str(), "genMet_xy_inz", dilepton_hypo_names[i]), ";genMET_x+y_inz", tcmcbin, -tcmcmax, tcmcmax);  
 
-	//individual components
+	//individual components:x
 	NewHist(htcmetx[i],    Form("%s_%s_%s", SampleName().c_str(), "tcMet_x", dilepton_hypo_names[i]), ";tcMET_x", tcmcbin, -tcmcmax, tcmcmax);
 	NewHist(htcmetouzx[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_x_outz", dilepton_hypo_names[i]), ";tcMET_x_outz", tcmcbin, -tcmcmax, tcmcmax);
 	NewHist(htcmetinzx[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_x_inz", dilepton_hypo_names[i]), ";tcMET_x_inz", tcmcbin, -tcmcmax, tcmcmax);
-
+	//y
 	NewHist(htcmety[i],    Form("%s_%s_%s", SampleName().c_str(), "tcMet_y", dilepton_hypo_names[i]), ";tcMET_y", tcmcbin, -tcmcmax, tcmcmax);
 	NewHist(htcmetouzy[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_y_outz", dilepton_hypo_names[i]), ";tcMET_y_outz", tcmcbin, -tcmcmax, tcmcmax);
 	NewHist(htcmetinzy[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_y_inz", dilepton_hypo_names[i]), ";tcMET_y_inz", tcmcbin, -tcmcmax, tcmcmax);
 
-	//individual components--narrow binning
-	NewHist(htcmetxnar[i],    Form("%s_%s_%s", SampleName().c_str(), "tcMet_x_nar", dilepton_hypo_names[i]), ";tcMET_x", tcmcbinnar, -tcmcnar, tcmcnar);
-	NewHist(htcmetouzxnar[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_x_outz_nar", dilepton_hypo_names[i]), ";tcMET_x_outz", tcmcbinnar, -tcmcnar, tcmcnar);
-	NewHist(htcmetinzxnar[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_x_inz_nar", dilepton_hypo_names[i]), ";tcMET_x_inz", tcmcbinnar, -tcmcnar, tcmcnar);
-
-	NewHist(htcmetynar[i],    Form("%s_%s_%s", SampleName().c_str(), "tcMet_y_nar", dilepton_hypo_names[i]), ";tcMET_y", tcmcbinnar, -tcmcnar, tcmcnar);
-	NewHist(htcmetouzynar[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_y_outz_nar", dilepton_hypo_names[i]), ";tcMET_y_outz", tcmcbinnar, -tcmcnar, tcmcnar);
-	NewHist(htcmetinzynar[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_y_inz_nar", dilepton_hypo_names[i]), ";tcMET_y_inz", tcmcbinnar, -tcmcnar, tcmcnar);
+	//individual components--narrow binning: replace with new table, looper member
+	//NewHist(htcmetxnar[i],    Form("%s_%s_%s", SampleName().c_str(), "tcMet_x_nar", dilepton_hypo_names[i]), ";tcMET_x", tcmcbinnar, -tcmcnar, tcmcnar);
+	//NewHist(htcmetouzxnar[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_x_outz_nar", dilepton_hypo_names[i]), ";tcMET_x_outz", tcmcbinnar, -tcmcnar, tcmcnar);
+	//NewHist(htcmetinzxnar[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_x_inz_nar", dilepton_hypo_names[i]), ";tcMET_x_inz", tcmcbinnar, -tcmcnar, tcmcnar);
+	//NewHist(htcmetynar[i],    Form("%s_%s_%s", SampleName().c_str(), "tcMet_y_nar", dilepton_hypo_names[i]), ";tcMET_y", tcmcbinnar, -tcmcnar, tcmcnar);
+	//NewHist(htcmetouzynar[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_y_outz_nar", dilepton_hypo_names[i]), ";tcMET_y_outz", tcmcbinnar, -tcmcnar, tcmcnar);
+	//NewHist(htcmetinzynar[i], Form("%s_%s_%s", SampleName().c_str(), "tcMet_y_inz_nar", dilepton_hypo_names[i]), ";tcMET_y_inz", tcmcbinnar, -tcmcnar, tcmcnar);
 
 	for(int j=0;j<nsjpbins;j++) {
+	  NewHist(htcmet_sjp[i][j],    Form("%s_%s%i_%s", SampleName().c_str(), "tcMet_sjp", j, dilepton_hypo_names[i]),
+			  Form("%s%i", ";tcMET_sjp", j), tcmcbin, 0, tcmcmax);	
+	  NewHist(htcmetouz_sjp[i][j], Form("%s_%s%i_%s", SampleName().c_str(), "tcMet_outz_sjp", j, dilepton_hypo_names[i]),
+			  Form("%s%i", ";tcMET_outz_sjp", j), tcmcbin, 0, tcmcmax);;
+	  NewHist(htcmetinz_sjp[i][j], Form("%s_%s%i_%s", SampleName().c_str(), "tcMet_inz_sjp", j, dilepton_hypo_names[i]),
+			  Form("%s%i", ";tcMET_inz_sjp", j), tcmcbin, 0, tcmcmax);  ;
+
 	  NewHist(htcmetxy_sjp[i][j],    Form("%s_%s%i_%s", SampleName().c_str(), "tcMet_xy_sjp", j, dilepton_hypo_names[i]),
 			  Form("%s%i", ";tcMET_x+y_sjp", j), tcmcbin, -tcmcmax, tcmcmax);	
 	  NewHist(htcmetouzxy_sjp[i][j], Form("%s_%s%i_%s", SampleName().c_str(), "tcMet_xy_outz_sjp", j, dilepton_hypo_names[i]),
@@ -321,17 +339,21 @@ void Looper::FillDilepHistos (int i_hyp) {
 	htcmetinzy[DILEPTON_ALL]->Fill( tcmety, weight );
 	htcmetinzy[myType]->Fill( tcmety, weight );
 
-	htcmetinzxnar[DILEPTON_ALL]->Fill( tcmetx, weight );
-	htcmetinzxnar[myType]->Fill( tcmetx, weight );
-
-	htcmetinzynar[DILEPTON_ALL]->Fill( tcmety, weight );
-	htcmetinzynar[myType]->Fill( tcmety, weight );
+	//htcmetinzxnar[DILEPTON_ALL]->Fill( tcmetx, weight );
+	//htcmetinzxnar[myType]->Fill( tcmetx, weight );
+	//htcmetinzynar[DILEPTON_ALL]->Fill( tcmety, weight );
+	//htcmetinzynar[myType]->Fill( tcmety, weight );
 
 	//the xy histogram is for each x and y components, so fill twice
 	htcmetinzxy[DILEPTON_ALL]->Fill( tcmetx, weight );
 	htcmetinzxy[myType]->Fill( tcmetx, weight );
 	htcmetinzxy[DILEPTON_ALL]->Fill( tcmety, weight );
 	htcmetinzxy[myType]->Fill( tcmety, weight );
+
+	htcmetinz_sjp[DILEPTON_ALL][sjpbin]->Fill( tcmetx, weight );
+	htcmetinz_sjp[myType][sjpbin]->Fill( tcmetx, weight );
+	htcmetinz_sjp[DILEPTON_ALL][sjpbin]->Fill( tcmety, weight );
+	htcmetinz_sjp[myType][sjpbin]->Fill( tcmety, weight );
 
 	htcmetinzxy_sjp[DILEPTON_ALL][sjpbin]->Fill( tcmetx, weight );
 	htcmetinzxy_sjp[myType][sjpbin]->Fill( tcmetx, weight );
@@ -374,11 +396,13 @@ void Looper::FillDilepHistos (int i_hyp) {
 	htcmetouzy[DILEPTON_ALL]->Fill( tcmety, weight );
 	htcmetouzy[myType]->Fill( tcmety, weight );
 
-	htcmetouzxnar[DILEPTON_ALL]->Fill( tcmetx, weight );
-	htcmetouzxnar[myType]->Fill( tcmetx, weight );
+	//htcmetouzxnar[DILEPTON_ALL]->Fill( tcmetx, weight );
+	//htcmetouzxnar[myType]->Fill( tcmetx, weight );
+	//htcmetouzynar[DILEPTON_ALL]->Fill( tcmety, weight );
+	//htcmetouzynar[myType]->Fill( tcmety, weight );
 
-	htcmetouzynar[DILEPTON_ALL]->Fill( tcmety, weight );
-	htcmetouzynar[myType]->Fill( tcmety, weight );
+	htcmetouz_sjp[DILEPTON_ALL][sjpbin]->Fill( cms2.evt_tcmet(), weight );
+	htcmetouz_sjp[myType][sjpbin]->Fill( cms2.evt_tcmet(), weight );
 
 	//the xy histogram is for each x and y components, so fill twice
 	htcmetouzxy[DILEPTON_ALL]->Fill( tcmetx, weight );
@@ -429,11 +453,13 @@ void Looper::FillDilepHistos (int i_hyp) {
 	htcmety[DILEPTON_ALL]->Fill( tcmety, weight );
 	htcmety[myType]->Fill( tcmety, weight );
 
-	htcmetxnar[DILEPTON_ALL]->Fill( tcmetx, weight );
-	htcmetxnar[myType]->Fill( tcmetx, weight );
-	
-	htcmetynar[DILEPTON_ALL]->Fill( tcmety, weight );
-	htcmetynar[myType]->Fill( tcmety, weight );
+	//htcmetxnar[DILEPTON_ALL]->Fill( tcmetx, weight );
+	//htcmetxnar[myType]->Fill( tcmetx, weight );
+	//htcmetynar[DILEPTON_ALL]->Fill( tcmety, weight );
+	//htcmetynar[myType]->Fill( tcmety, weight );
+
+	htcmet_sjp[DILEPTON_ALL][sjpbin]->Fill( cms2.evt_tcmet(), weight );
+	htcmet_sjp[myType][sjpbin]->Fill( cms2.evt_tcmet(), weight );
 	
 	//the xy histogram is for each x and y components, so fill twice
 	htcmetxy[DILEPTON_ALL]->Fill( tcmetx, weight );

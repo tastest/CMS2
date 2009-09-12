@@ -90,13 +90,14 @@ const static cuts_t outerz_metres = baseline_metres | CUT_BIT(CUT_IN_OUTER_Z);
      //CUT_ELFAKE_NUMERATOR,
      //CUT_ELFAKE_NOT_NUMERATOR,
 
+
 class Looper : public LooperBase {
 
 public:
      // constructor; tell the looper what sample to loop on (see
      // Tools/Sample.h), what cuts candidates need to pass, and a file
      // name for dumping log messages
-     Looper (Sample, cuts_t cuts, const char *logfilename = 0);
+     Looper (Sample, cuts_t cuts, const char *logfilename = 0, bool usenar=false);
      virtual ~Looper () { }
 
 protected:
@@ -151,6 +152,8 @@ protected:
   int sjpbin; //from 0 to nsjpbins-1
   double counttt;
   bool printevt;
+  bool usenarrow; //narrow binning? Default is no.
+
   
   // TH1/TH2s, times four to split by hypothesis type:
   TH1F* htcmet[4];
@@ -163,12 +166,12 @@ protected:
   TH1F* htcmety[4];
   TH1F* htcmetinzy[4];
   TH1F* htcmetouzy[4];
-  TH1F* htcmetxnar[4];
-  TH1F* htcmetouzxnar[4];
-  TH1F* htcmetinzxnar[4];
-  TH1F* htcmetynar[4];
-  TH1F* htcmetouzynar[4];
-  TH1F* htcmetinzynar[4];
+  //TH1F* htcmetxnar[4]; //these are replaced with another Results: Results_Nar.root
+  //TH1F* htcmetouzxnar[4];
+  //TH1F* htcmetinzxnar[4];
+  //TH1F* htcmetynar[4];
+  //TH1F* htcmetouzynar[4];
+  //TH1F* htcmetinzynar[4];
   //both components together (not sum, two entries per hyp)
   TH1F* htcmetxy[4];
   TH1F* htcmetouzxy[4];
@@ -181,6 +184,10 @@ protected:
   //new sumjetpt bins: 0, 30-60, 60-100, 100-150, 150-200, 200+
   //number sumjetpt bins: 0,30-100, 100-200, 200+ (note, nothing btwn 0 and 30 b'c min jet pt is 30)
 #define nsjpbins 6
+  TH1F* htcmet_sjp[4][nsjpbins];
+  TH1F* htcmetouz_sjp[4][nsjpbins];
+  TH1F* htcmetinz_sjp[4][nsjpbins];
+
   TH1F* htcmetxy_sjp[4][nsjpbins];
   TH1F* htcmetouzxy_sjp[4][nsjpbins];
   TH1F* htcmetinzxy_sjp[4][nsjpbins];

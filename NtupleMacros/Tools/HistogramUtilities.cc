@@ -280,7 +280,12 @@ THStack* HistogramUtilities::get3fileStack(sources_t theSources, TString var, TS
 */
 
 //for combining three hyps, sum of the first two minus the third
-THStack* HistogramUtilities::getSumDifStack(sources_t theSources, TString var, TString nJets, TString hyp1, TString hyp2, TString hyp3, Int_t rebin) {
+//note: last argument (Int_t posneg) is my hack for fixing the negative histogram stacking bug in root:
+// root doesn't stack properly if there is a mixture of positive and negative bin content for teh same bin,
+// so i'm making one of two hists for each hist--one with only positive bins, other only negative.
+// Obviously, this is after subtraction. Return a stack of either positive (1), negative(-1), or normal(0)
+// based on the value of posneg
+THStack* HistogramUtilities::getSumDifStack(sources_t theSources, TString var, TString nJets, TString hyp1, TString hyp2, TString hyp3, Int_t rebin, Int_t posneg) {
 
   // create a new stack object
   TString name = var + nJets + "_" + hyp1 + hyp2 + "-" + hyp3; //name includes all
@@ -320,6 +325,8 @@ THStack* HistogramUtilities::getSumDifStack(sources_t theSources, TString var, T
 
 	  h1_temp->Add(h2_temp); //now h1 is h1+h2
 	  h1_temp->Add(h3_temp, -1.0); //this adds -1*h3, ie, subtracts h3
+
+	  h1_temp = GetPosNeg( h1_temp, posneg );
 
 	  st_temp->Add(h1_temp); //put the sum in the stack
 	}
@@ -377,3 +384,22 @@ TLegend* HistogramUtilities::getLegend(sources_t theSources, TString var, TStrin
   return lg;
 }
 
+//if posneg is -1, set all positive bins to zero, keep all negative
+//if posneg is +1, set all negative bins to zero, keep all positive
+TH1F* GetPosNeg( TH1F* h1_temp, Int_t posneg ) {
+
+  if( posneg != 0 && posneg != 1 && posneg != -1 )
+	cout << "HistogramUtilities Error: bad posneg value: give either -1, 0, or 1." << endl;
+  else if( posneg == 0 )
+	return h1_temp; //no change if arg is 0
+
+  TH1F* cpy = new TH1F( *h1_temp ); //copy may not be necessary...
+  for( int i=0; i < h1_temp->GetNbinsX(); i++ ) {
+	if( posneg == -1 && h1_temp->GetBinContent( i ) > 0 )
+	  cpy->SetBinContent( i, 0 ); //kill bin
+	else if( posneg == 1 && h1_temp->GetBinContent( i ) < 0 )
+	  cpy->SetBinContent( i, 0 ); //kill bin
+  }
+
+  return cpy;
+}

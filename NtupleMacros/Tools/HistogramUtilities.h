@@ -34,7 +34,7 @@ public:
   THStack* getStack(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin = 1);
   THStack* getSumStack(sources_t theSources, TString var, TString nJets, TString hyp1, TString hyp2, Int_t rebin = 1, TString var2="", double scale=1);
   THStack* get2fileStack(sources_t theSources, TString var, TString nJets, TString hyp1, Int_t rebin = 1);
-  THStack* getSumDifStack(sources_t theSources, TString var, TString nJets, TString hyp1, TString hyp2, TString hyp3, Int_t rebin = 1);
+  THStack* getSumDifStack(sources_t theSources, TString var, TString nJets, TString hyp1, TString hyp2, TString hyp3, Int_t rebin = 1, Int_t posneg=0);
 
   TLegend* getLegend(sources_t theSources, TString var, TString nJets, TString hyp_type);
 
@@ -58,6 +58,11 @@ private:
   Double_t lumiNorm_;
   bool verbose_;
 };
+
+
+//This standalone function is utility for separating positive or negative bin contents
+TH1F* GetPosNeg( TH1F* h1_temp, Int_t posneg );
+
 
 #endif
 
