@@ -10,6 +10,7 @@
 #include "TString.h"
 #include "TF1.h"
 #include "/home/users/wandrews/macros/comparison.C"
+//#include "comparison.C"
 
 bool verbose = false;
 
@@ -121,10 +122,21 @@ void makeHistOverlay( HistogramUtilities* h, sources_t theSources1,  sources_t t
 
 //fit functions
 
-double getHistSigma( TH1F* h ) {
-  h->Fit("gaus", "Q");
-  TF1 *f = h->GetFunction("gaus"); //Q for quiet
-  return f->GetParameter(2); // 0 is a scale constant, 1 is mean, 2 is sigma
+//if you use either low or high, you must use both
+double getHistSigma( TH1F* h, double low=0, double high=0 ) {
+  //TF1 f = new TF1("f", "gaus");
+  //TF1 *f;
+  if( low == 0 && high == 0 ) //don't use range--full range of hist is default
+	//f = new TF1("f", "gaus");
+	h->Fit("gaus", "Q"); //Q for quiet
+  else
+	//f = new TF1("f", "gaus", low, high);
+	h->Fit("gaus", "Q", "", low, high); //Q for quiet
+	
+  //h->Fit("gaus", "Q"); //Q for quiet
+  //h->Fit( "f", "RQ"); //Q for quiet
+  TF1 *f2 = h->GetFunction("gaus"); 
+  return f2->GetParameter(2); // 0 is a scale constant, 1 is mean, 2 is sigma
   //return {f->GetParameter(2), f->GetParError(2)}; 
 	//f->GetChisquare(); //this is useless for now
 }
@@ -252,6 +264,17 @@ void plotResults() {
   TH1F* hres_ratio3 = new TH1F( "Ratio_150+_over_50-100", "Ratio_150+_over_50-100", nsjpbins, 0, nsjpbins );
   hres_ratio3->Sumw2();
 
+  //sigma vs sjp
+  double sigma1[nsjpbins];
+  TH1F* hsigma1 = new TH1F( "Sigma_full", "Sigma_full", nsjpbins, 0, nsjpbins );
+  hsigma1->Sumw2();
+  double sigma2[nsjpbins];
+  TH1F* hsigma2 = new TH1F( "Sigma_pm1sigma", "Sigma_pm1sigma", nsjpbins, 0, nsjpbins );
+  hsigma2->Sumw2();
+  double sigma3[nsjpbins];
+  TH1F* hsigma3 = new TH1F( "Sigma_pm2sigma", "Sigma_pm2sigma", nsjpbins, 0, nsjpbins );
+  hsigma3->Sumw2();
+
   for(int i=0; i<nsjpbins; i++) {
 	
 	makeStack(h1, lg_all, theSources, Form("%s%i", "tcMet_sjp", i), "", all, true);
@@ -298,17 +321,35 @@ void plotResults() {
 	makeStack(h1, lg_all, theSources, Form("%s%i", "tcMet_mllden_sjp", i), "", all, true);
 
 	//integral ratio
+	TH1F* h_int_ratio = h1->getHistogram(theSources, Form("%s%i", "tcMet_sjp", i), "", all);
+
 	res_ratio1[i] = 0; //initialize here
-	res_ratio1[i] = getIntegralRatio( h1->getHistogram(theSources, Form("%s%i", "tcMet_sjp", i), "", all), 50, 100, 200 );
+	res_ratio1[i] = getIntegralRatio( h_int_ratio, 50, 100, 200 );
 	hres_ratio1->Fill( i, res_ratio1[i] );
 
 	res_ratio2[i] = 0; //initialize here
-	res_ratio2[i] = getIntegralRatio( h1->getHistogram(theSources, Form("%s%i", "tcMet_sjp", i), "", all), 0, 50, 100 );
+	res_ratio2[i] = getIntegralRatio( h_int_ratio, 0, 50, 100 );
 	hres_ratio2->Fill( i, res_ratio2[i] );
 
 	res_ratio3[i] = 0; //initialize here
-	res_ratio3[i] = getIntegralRatio( h1->getHistogram(theSources, Form("%s%i", "tcMet_sjp", i), "", all), 50, 100, 150 );
+	res_ratio3[i] = getIntegralRatio( h_int_ratio, 50, 100, 150 );
 	hres_ratio3->Fill( i, res_ratio3[i] );
+
+	//sigma hists
+	TH1F* h_sigma = h2->getHistogram(theSources, Form("%s%i", "tcMet_xy_sjp", i), "", all);
+
+	sigma1[i] = 0; //initialize here
+	sigma1[i] = getHistSigma( h_sigma );
+	hsigma1->Fill( i, sigma1[i] );
+
+	sigma2[i] = 0; //initialize here
+	sigma2[i] = getHistSigma( h_sigma, -sigma1[i], sigma1[i] ); //range of fit is +/- 1 sigma using sigma of full range
+	hsigma2->Fill( i, sigma2[i] );
+
+	sigma3[i] = 0; //initialize here
+	sigma3[i] = getHistSigma( h_sigma, -2*sigma1[i], 2*sigma1[i] ); //range of fit is +/- 2 sigma using sigma of full range
+	hsigma3->Fill( i, sigma3[i] );
+	cout << sigma1[i] << "  " << sigma2[i] << "  " << sigma3[i] << "  " << endl;
   }
 
   //save integral ratio
