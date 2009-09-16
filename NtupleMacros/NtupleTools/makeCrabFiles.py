@@ -32,6 +32,7 @@ def makeCrabConfig():
     outFile.write('copy_data              = 1\n')
     outFile.write('storage_element        = ' + storageElement + '\n')
     outFile.write('ui_working_dir         = ' + outFileName + '\n')
+    outFile.write('user_remote_dir        = ' + outFileName + '\n')
     outFile.write('publish_data          = 0\n')
     outFile.write('publish_data_name     = CMS_' + tag + '\n')
     outFile.write('dbs_url_for_publication =  http://ming.ucsd.edu:8080/DBS1/servlet/DBSServlet\n\n')
