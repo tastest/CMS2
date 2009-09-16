@@ -35,12 +35,23 @@ namespace edm
     class History {};
     class LuminosityBlockID {};
     class ModuleDescription {};
-    class ProcessConfiguration {};
+    class Parentage {
+        public:
+            struct Transients {};
+    };
+    class ProcessConfiguration {
+        public:
+            struct Transients {};
+    };
     class ProcessHistory {
         public:
             struct Transients {};
     };
     class ProductID {};
+    class ProductProvenance {
+        public:
+            struct Transients {};
+    };
     class ProductRegistry {
         public:
             struct Transients {};

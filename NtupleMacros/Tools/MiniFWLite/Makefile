@@ -10,7 +10,7 @@ all:	libMiniFWLite.so
 
 libMiniFWLite.so: MiniFWLiteLinkDef.h
 		@rootcint -v3 -f MiniFWLiteDict.cc -c -p $(MINIFWLITEH) MiniFWLiteLinkDef.h
-		$(LD) $(LDFLAGS) -Wno-deprecated $(SOFLAGS) -I$(ROOTINCDIR) MiniFWLiteDict.cc -o $@
+		$(LD) $(LDFLAGS) -Wno-deprecated $(SOFLAGS) -I$(ROOTINCDIR) MiniFWLiteDict.cc TaSBanner.cc -o $@
 
 clean:
 		@rm -f core *.o *.so MiniFWLiteDict.*

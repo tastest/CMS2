@@ -2,8 +2,6 @@
 #define Wrapper_h
 
 #include <typeinfo>
-#include <RQ_OBJECT.h>
-
 #include "EDProduct.h"
 
 namespace edm
@@ -27,8 +25,6 @@ namespace edm
 
                 bool present;
                 T obj;
-
-                ClassDef(Wrapper, 2);
         };
 }
 
