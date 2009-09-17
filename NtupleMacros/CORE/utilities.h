@@ -8,10 +8,12 @@
 #include <set>
 #include "Math/VectorUtil.h"
 
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
+
 TVector3 correctMETforTracks() ;
 double trkIsolation(int trk_index);
-double dRbetweenVectors(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > vec1, 
-			ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > vec2 );
+double dRbetweenVectors(const LorentzVector & vec1, 
+			const LorentzVector & vec2 );
 
 extern TH2D *rfhist;
 

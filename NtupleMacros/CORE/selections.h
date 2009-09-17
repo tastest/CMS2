@@ -4,7 +4,7 @@
 #include "Math/LorentzVector.h"
 #include <vector>
 
-typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 bool inZmassWindow (float mass);
 bool supertightElectron (int index);
@@ -143,8 +143,8 @@ int numberOfExtraElectronsVJets09(int i_hyp);
 
 //SUSY dilepton selection TAS group
 
-bool comparePt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1,  
-                 ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv2);
+bool comparePt(const LorentzVector &lv1,  
+	       const LorentzVector &lv2);
 bool GoodSusyElectronWithoutIsolation(int index);
 bool GoodSusyElectronWithoutIsolationNoD0(int index);
 bool GoodSusyElectronWithIsolationLoose(int index, bool use_calo_iso); 
@@ -163,8 +163,8 @@ bool GoodSusyLeptonID(int id, int index);
 bool GoodSusyTrigger(int dilType);
 int numberOfExtraElectronsSUSY(int i_hyp);
 int numberOfExtraMuonsSUSY(int i_hyp);
-std::vector <ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getCaloJets(int i_hyp); 
-std::vector <ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getJPTJets(int i_hyp); 
+std::vector<LorentzVector> getCaloJets(int i_hyp); 
+std::vector<LorentzVector> getJPTJets(int i_hyp); 
 int ttbarconstituents(int i_hyp);
 bool additionalZvetoSUSY09(int i_hyp);
 bool idIsBeauty(int id);

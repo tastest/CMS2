@@ -4,6 +4,7 @@
 //
 //============================================================
 #include <assert.h>
+#include <algorithm>
 #include "Math/LorentzVector.h"
 #include "Math/VectorUtil.h"
 #include "TMath.h"
@@ -15,7 +16,7 @@
 #include "CMS2.h"
 #include "utilities.h"
 
-typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 //----------------------------------------------------------------
 // A ridicolusly simple function, but since the Z veto is used 
@@ -886,8 +887,7 @@ int additionalZcounter() {
       if (!passMuonIsolation(i) && !passMuonIsolation(j)) continue;
 
       // Make the invariant mass
-      ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
-                vec = cms2.mus_p4().at(i) + cms2.mus_p4().at(j);
+      LorentzVector vec = cms2.mus_p4().at(i) + cms2.mus_p4().at(j);
       if ( inZmassWindow(vec.mass()) ) Zcount++;
 
     }
@@ -907,8 +907,7 @@ int additionalZcounter() {
       if (!passElectronIsolation(i, false) && !passElectronIsolation(j, false)) continue;
 
       // Make the invariant mass
-      ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
-                vec = cms2.els_p4().at(i) + cms2.els_p4().at(j);
+      LorentzVector vec = cms2.els_p4().at(i) + cms2.els_p4().at(j);
       if ( inZmassWindow(vec.mass()) ) Zcount++;
 
     }
@@ -1338,8 +1337,7 @@ int passTrackZVeto(int hyp_index) {
 	  double dR = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[hyp_index], cms2.trks_trk_p4()[trk1]);
 	  if ( dR > 0.1 ) {
 	    // if inv. mass of candidate within z mass window, veto event
-	    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
-	      vec = cms2.hyp_lt_p4()[hyp_index] + cms2.trks_trk_p4()[trk1];
+	    LorentzVector vec = cms2.hyp_lt_p4()[hyp_index] + cms2.trks_trk_p4()[trk1];
 	    if ( inZmassWindow(vec.mass()) ) {
 	      mode1 = true;
 	    }
@@ -1355,8 +1353,7 @@ int passTrackZVeto(int hyp_index) {
 	  double dR = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[hyp_index], cms2.trks_trk_p4()[trk1]);
 	  if ( dR > 0.1 ) {
 	    // if inv. mass of candidate within z mass window, veto event
-	    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
-	      vec = cms2.hyp_ll_p4()[hyp_index] + cms2.trks_trk_p4()[trk1];
+	    LorentzVector vec = cms2.hyp_ll_p4()[hyp_index] + cms2.trks_trk_p4()[trk1];
 	    if ( inZmassWindow(vec.mass()) ) {
 	      mode1 = true;
 	    }
@@ -1378,8 +1375,7 @@ int passTrackZVeto(int hyp_index) {
 	    double dR = ROOT::Math::VectorUtil::DeltaR(cms2.trks_trk_p4()[trk2], cms2.trks_trk_p4()[trk1]);
 	    if ( dR > 0.1 ) {
 	      // if inv. mass of candidate within z mass window, veto event
-	      ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
-		vec = cms2.trks_trk_p4()[trk2] + cms2.trks_trk_p4()[trk1];
+	      LorentzVector vec = cms2.trks_trk_p4()[trk2] + cms2.trks_trk_p4()[trk1];
 	      if ( inZmassWindow(vec.mass()) ) {
 		mode2 = true;
 	      }
@@ -1856,9 +1852,10 @@ int numberOfExtraElectronsVJets09(int i_hyp){
 //------------------------------------------------------------------------------------
 // SUSY dilepton cuts 09 for TAS
 
-bool comparePt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1, 
-                 ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv2) {
-  return lv1.pt() > lv2.pt();
+bool comparePt (const LorentzVector &lv1, 
+		const LorentzVector &lv2) 
+{
+     return lv1.pt() > lv2.pt();
 }
 
 bool GoodSusyElectronWithoutIsolation(int index) { 
@@ -2018,8 +2015,8 @@ int numberOfExtraMuonsSUSY(int i_hyp){
   return nMuons; 
 } 
 //   jets_p4   
-vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getCaloJets(int i_hyp) {
-  vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > calo_jets;
+std::vector<LorentzVector> getCaloJets(int i_hyp) {
+  std::vector<LorentzVector> calo_jets;
   calo_jets.clear();
   
   for (unsigned int jj=0; jj < cms2.jets_p4().size(); ++jj) {
@@ -2033,14 +2030,14 @@ vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getCaloJets(i
   }
   
   if (calo_jets.size() > 1) {
-    sort(calo_jets.begin(), calo_jets.end(),  comparePt);
+       sort(calo_jets.begin(), calo_jets.end(),  comparePt);
   }
   return calo_jets;
 }
 
 
-vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > getJPTJets(int i_hyp) {
-  vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > jpt_jets;
+std::vector<LorentzVector> getJPTJets(int i_hyp) {
+  std::vector<LorentzVector> jpt_jets;
   jpt_jets.clear();
   
   for (unsigned int jj=0; jj < cms2.jpts_p4().size(); ++jj) {
@@ -2225,8 +2222,7 @@ bool additionalZvetoSUSY09(int i_hyp) {
       if ( hypLep1 && hypLep2 ) continue;
       if ( !hypLep1 && !hypLep2 ) continue;
       // Make the invariant mass
-      ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >
-                vec = cms2.mus_p4().at(i) + cms2.mus_p4().at(j);
+      LorentzVector vec = cms2.mus_p4().at(i) + cms2.mus_p4().at(j);
       if ( inZmassWindow(vec.mass()) ) return true;
 
     }
@@ -2251,8 +2247,7 @@ bool additionalZvetoSUSY09(int i_hyp) {
       if ( hypLep1 && hypLep2 ) continue;
       if ( !hypLep1 && !hypLep2 ) continue;
       // Make the invariant mass
-      ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >
-                vec = cms2.els_p4().at(i) + cms2.els_p4().at(j);
+      LorentzVector vec = cms2.els_p4().at(i) + cms2.els_p4().at(j);
       if ( inZmassWindow(vec.mass()) ) return true;
 
     }
@@ -2329,8 +2324,7 @@ bool additionalZvetoTTDil08() {
       if (!passMuonIsolationTTDil08(i) && !passMuonIsolationTTDil08(j)) continue;
 
       // Make the invariant mass
-      ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
-	vec = cms2.mus_p4().at(i) + cms2.mus_p4().at(j);
+      LorentzVector vec = cms2.mus_p4().at(i) + cms2.mus_p4().at(j);
       if ( inZmassWindow(vec.mass()) ) return true;
 
     }
@@ -2351,8 +2345,7 @@ bool additionalZvetoTTDil08() {
       if (!passElectronIsolationTTDil08(i) && !passElectronIsolationTTDil08(j)) continue;
 
       // Make the invariant mass
-      ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
-	vec = cms2.els_p4().at(i) + cms2.els_p4().at(j);
+      LorentzVector vec = cms2.els_p4().at(i) + cms2.els_p4().at(j);
       if ( inZmassWindow(vec.mass()) ) return true;
 
     }

@@ -21,7 +21,6 @@
 #include "CMS2.h"
 #include "utilities.h"
 
-typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 using std::vector;
 TH2D* rfhist = 0;
 
@@ -106,16 +105,16 @@ TVector3 correctMETforTracks()
   return metvec;
 }
 
-double dRbetweenVectors(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > vec1, 
-			ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > vec2 ){ 
+double dRbetweenVectors(const LorentzVector &vec1, 
+			const LorentzVector &vec2 ){ 
 
-  double dphi = TMath::Min(TMath::Abs(vec1.Phi() - vec2.Phi()), 2*TMath::Pi() - TMath::Abs(vec1.Phi() - vec2.Phi()));
+  double dphi = std::min(::fabs(vec1.Phi() - vec2.Phi()), 2 * M_PI - fabs(vec1.Phi() - vec2.Phi()));
   double deta = vec1.Eta() - vec2.Eta();
   return sqrt(dphi*dphi + deta*deta);
 }
 
-int match4vector(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lvec, 
-		 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > vec, 
+int match4vector(const LorentzVector &lvec, 
+		 const vector<LorentzVector> &vec, 
 		 double cut=10.0 ){
 
   if( vec.size() == 0 ) return -1;
@@ -145,12 +144,11 @@ int match4vector(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lvec,
 }
 */
 
-vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > 
-p4sInCone( ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > refvec, 
-	       vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > invec, 
-	       double coneSize=0.5 ) {
-
-  vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > result;
+std::vector<LorentzVector> p4sInCone(const LorentzVector &refvec, 
+				     const std::vector<LorentzVector> &invec, 
+				     double coneSize=0.5 ) 
+{
+  vector<LorentzVector> result;
   if ( invec.size() == 0 ) return result;
 
   double dR = coneSize; 
@@ -162,10 +160,10 @@ p4sInCone( ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > refvec,
   return result;
 }
 
-vector<unsigned int> idxInCone( ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > refvec, 
-	       vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > invec, 
-	       double coneSize=0.5 ) {
-
+std::vector<unsigned int> idxInCone(const LorentzVector &refvec, 
+				    const std::vector<LorentzVector> &invec, 
+				    double coneSize=0.5 ) 
+{
   vector<unsigned int > result;
   if ( invec.size() == 0 ) return result;
 
