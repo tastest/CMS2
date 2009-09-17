@@ -16,8 +16,6 @@
 #include "DileptonHypType.h"
 #include "CORE/CMS2.h"
 
-typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
-
 // use this directory to store our histograms (so they can be written to file in one fell swoop)
 TDirectory *histo_directory = new TDirectory("histo_directory", "directory for all our histograms");
 
@@ -279,10 +277,10 @@ TH3F* book3DVarHist(const char* name, const char* title,
   return hist;
 }
 
-float mee(int i, int j){
+float mee(int i, int j)
+{
   if ( cms2.els_charge()[i] * cms2.els_charge()[j] < 0 ) {
-    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
-      vec = cms2.els_p4()[i] + cms2.els_p4()[j];
+    LorentzVector vec = cms2.els_p4()[i] + cms2.els_p4()[j];
     return vec.mass();
   } else {
     cout << "ERROR: mee tries to calculate Z mass from same charge leptons" << endl;
@@ -290,10 +288,10 @@ float mee(int i, int j){
   }
 }
 
-float mmm(int i, int j){
+float mmm(int i, int j)
+{
   if ( cms2.mus_charge()[i] * cms2.mus_charge()[j] < 0 ) {
-    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > 
-      vec = cms2.mus_p4()[i] + cms2.mus_p4()[j];
+    LorentzVector vec = cms2.mus_p4()[i] + cms2.mus_p4()[j];
     return vec.mass();
   } else {
     cout << "ERROR: mmm tries to calculate Z mass from same charge leptons" << endl;
