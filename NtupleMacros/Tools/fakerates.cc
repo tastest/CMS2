@@ -214,7 +214,7 @@ bool isNumeratorElectron_v2_2 (int index, int type) { // 0=loose, 1=tight, for p
      
      // _pass4 has 3 types - 0=robust, 1=loose, 2=tight
      // - need to adjust in all places here
-     bool IdCuts = cms2.els_tightId()[index];
+     bool IdCuts = cms2.els_egamma_tightId()[index];
      if (!IdCuts) result = false;
      
      return result;
