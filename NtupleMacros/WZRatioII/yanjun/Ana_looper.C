@@ -251,10 +251,17 @@ int Ana_looper::ScanChain( TChain* chain, int nEvents ,char* sample, float kFact
 	}
       }
 
-      if(kOneEleBit && kPassWMETBit && kPassWMassBit && kPassZVetoBit   )   channel =0; 
-      if(kOneMuonBit && kPassWMETBit && kPassWMassBit && kPassZVetoBit  )   channel =1; 
-      if(kTwoEleBit  && kPassZMETBit && kPassZMassBit  && kOppChargeBit )   channel =2;
-      if(kTwoMuonBit  && kPassZMETBit && kPassZMassBit  && kOppChargeBit)   channel =3;
+      int we_id = kOneEleBit | kPassWMETBit | kPassWMassBit | kPassZVetoBit ;
+      int wm_id = kOneMuonBit | kPassWMETBit | kPassWMassBit | kPassZVetoBit ;
+      int zee_id = kTwoEleBit  | kPassZMETBit | kPassZMassBit  | kOppChargeBit;
+      int zmm_id = kTwoMuonBit  | kPassZMETBit | kPassZMassBit  | kOppChargeBit;
+
+      
+      if((idword & we_id)==we_id    )   channel =0; 
+      if((idword & wm_id)==wm_id    )   channel =1; 
+      if((idword & zee_id)==zee_id  )   channel =2; 
+      if((idword & zmm_id)==zmm_id  )   channel =3; 
+      
       if(channel >= 0){
 	njets[channel][0]->Fill( ngoodjpts, weight);
 	
