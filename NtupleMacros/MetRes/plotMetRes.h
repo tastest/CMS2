@@ -123,7 +123,7 @@ void makeHistOverlay( HistogramUtilities* h, sources_t theSources1,  sources_t t
 //fit functions
 
 //if you use either low or high, you must use both
-double getHistSigma( TH1F* h, double low=0, double high=0 ) {
+double* getHistSigma( TH1F* h, double low=0, double high=0 ) {
   //TF1 f = new TF1("f", "gaus");
   //TF1 *f;
   if( low == 0 && high == 0 ) //don't use range--full range of hist is default
@@ -135,12 +135,17 @@ double getHistSigma( TH1F* h, double low=0, double high=0 ) {
 	
   //h->Fit("gaus", "Q"); //Q for quiet
   //h->Fit( "f", "RQ"); //Q for quiet
-  TF1 *f2 = h->GetFunction("gaus"); 
-  return f2->GetParameter(2); // 0 is a scale constant, 1 is mean, 2 is sigma
+  TF1 *f2 = h->GetFunction("gaus");
+  double* ret = new double[2]; //need new b'c it's returned
+  ret[0] = f2->GetParameter(2);
+  ret[1] = f2->GetParError(2);
+  return ret;
+  //return f2->GetParameter(2); // 0 is a scale constant, 1 is mean, 2 is sigma
   //return {f->GetParameter(2), f->GetParError(2)}; 
 	//f->GetChisquare(); //this is useless for now
 }
 
+//for gaussians
 double getTailRatio( TH1F* h ) {
   h->Fit("gaus");
   TF1 *f = h->GetFunction("gaus");
@@ -157,10 +162,20 @@ double getTailRatio( TH1F* h ) {
   return intsigma/(inttaillow + inttailhgh);
 }
 
+//I need this function bc root doesn't do integrals with x-axis values, only with bins...fucking root...
+double getIntegral( TH1F* h, double low1, double hgh1=0 ) {
+  int binlow1 = h->GetXaxis()->FindFixBin( low1 );
+  if( hgh1 != 0 ) {
+	int binhgh1 = h->GetXaxis()->FindFixBin( hgh1 );
+	return h->Integral( binlow1, binhgh1 );
+  }
+  else 
+	return h->Integral( binlow1, h->GetNbinsX()+1 );
+}
 
 //ratio function : return ratio of integral(low2,hgh2)/integral(low1,hgh1)
 //hgh2=0 is for infinity as up range
-double getIntegralRatio( TH1F* h, double low1, double hgh1, double low2, double hgh2=0 ) { 
+double* getIntegralRatio( TH1F* h, double low1, double hgh1, double low2, double hgh2=0 ) { 
   int binlow1 = h->GetXaxis()->FindFixBin( low1 );
   int binhgh1 = h->GetXaxis()->FindFixBin( hgh1 );
   int binlow2 = h->GetXaxis()->FindFixBin( low2 );
@@ -176,8 +191,22 @@ double getIntegralRatio( TH1F* h, double low1, double hgh1, double low2, double 
 
   if( int1 == 0 )
 	return 0;
-  else
-	return int2/int1;
+  else {
+	// f = x/y, err_f/f = sqrt( err_x^2/x^2 + err_y^2/y^2 ) -->> err_f^2 = x/y^2 + x^2/y^3 -->> (f/y)(1+f)
+	double itg = int2/int1;
+	double *err = new double[2];
+	//err = {itg, (itg/int1)*(1 + itg) };
+	err[0] = itg;
+	err[1] = sqrt( (itg/int1)*(1 + itg) );
+	return err;
+  }
+}
+
+
+//HSqrt: takes sq root of each bin--since takes ref, changes argument
+void HSqrt( TH1F*& h ) {
+  for( int i=0; i<h->GetNbinsX(); i++ ) 
+	h->SetBinContent( i, sqrt( h->GetBinContent(i) ) );
 }
 
 
@@ -203,7 +232,7 @@ void plotResults() {
   //makeStack(h1, theSources, "tcMet", "", all);
   
   TLegend *lg_all = h1->getLegend(theSources, "sumJetPt_outz", "", all);
-  // 
+
   makeStack(h1, lg_all, theSources, "sumJetPt", "", all, true);
   makeStack(h1, lg_all, theSources, "sumJetPt_outz", "", all, true);
   makeStack(h1, lg_all, theSources, "sumJetPt_inz", "", all, true);
@@ -251,32 +280,74 @@ void plotResults() {
   //cout << "setting verbose = false" << endl;
   //h1->setVerbose( false );
 
+  //integral hists
+  TH1F* h_int_ratio[nsjpbins];
   //this value actually comes from looper.h via preprocessor directive...kind of scary, kind of cool
   //int nsjpbins = 6; //nsjpbins is set as 6 here (was 4)
   //nsjpbins = 6;
-  double res_ratio1[nsjpbins];
-  TH1F* hres_ratio1 = new TH1F( "Ratio_200+_over_50-100", "Ratio_200+_over_50-100", nsjpbins, 0, nsjpbins );
+  double* res_ratio1[nsjpbins];
+  TString name_ratio1 = "Ratio_200+_over_50-100_tcMet_inz_eemm-em";
+  TH1F* hres_ratio1 = new TH1F(name_ratio1 , name_ratio1, nsjpbins, 0, nsjpbins );
   hres_ratio1->Sumw2();
-  double res_ratio2[nsjpbins];
-  TH1F* hres_ratio2 = new TH1F( "Ratio_100+_over_0-50", "Ratio_100+_over_0-50", nsjpbins, 0, nsjpbins );
+  
+  double* res_ratio2[nsjpbins];
+  TString name_ratio2 = "Ratio_100+_over_0-50_tcMet_inz_eemm-em";
+  TH1F* hres_ratio2 = new TH1F( name_ratio2, name_ratio2, nsjpbins, 0, nsjpbins );
   hres_ratio2->Sumw2();
-  double res_ratio3[nsjpbins];
-  TH1F* hres_ratio3 = new TH1F( "Ratio_150+_over_50-100", "Ratio_150+_over_50-100", nsjpbins, 0, nsjpbins );
+  
+  double* res_ratio3[nsjpbins];
+  TString name_ratio3 = "Ratio_150+_over_50-100_tcMet_inz_eemm-em";
+  TH1F* hres_ratio3 = new TH1F( name_ratio3, name_ratio3, nsjpbins, 0, nsjpbins );
   hres_ratio3->Sumw2();
 
-  //sigma vs sjp
-  double sigma1[nsjpbins];
-  TH1F* hsigma1 = new TH1F( "Sigma_full", "Sigma_full", nsjpbins, 0, nsjpbins );
+  //table of integral heading
+  cout << "|*sjp bin*|*0-50*|*0-100*|*50-100*|*100-150*|*100+*|*150+*|*200+*|" << endl;
+
+  //sigma vs sjp -- sigma from fit
+  double* sigma1[nsjpbins];
+  TH1F* hsigma1 = new TH1F( "Sigma_fit_full", "Sigma_fit_full", nsjpbins, 0, nsjpbins );
   hsigma1->Sumw2();
-  double sigma2[nsjpbins];
-  TH1F* hsigma2 = new TH1F( "Sigma_pm1sigma", "Sigma_pm1sigma", nsjpbins, 0, nsjpbins );
+  double* sigma2[nsjpbins];
+  TH1F* hsigma2 = new TH1F( "Sigma_fit_pm1sigma", "Sigma_fit_pm1sigma", nsjpbins, 0, nsjpbins );
   hsigma2->Sumw2();
-  double sigma3[nsjpbins];
-  TH1F* hsigma3 = new TH1F( "Sigma_pm2sigma", "Sigma_pm2sigma", nsjpbins, 0, nsjpbins );
+  //double* sigma3[nsjpbins];
+  TH1F* hsigma3 = new TH1F( "Sigma_fit_itr", "Sigma_fit_itr", nsjpbins, 0, nsjpbins );
   hsigma3->Sumw2();
 
+  //stat error hists -- sigma from yield only, no fit
+  TCanvas *c3 = new TCanvas();
+  //TH1F* hsigma_stat = new TH1F( "Sigma_stat_tcMet", "Sigma_stat_tcMet",
+  //TH1F* hsigma_stat = h1->getHistogramSum(theSources, "tcMet_inz", "", ee, mm);
+  //TH1F* hsigma_stat->Add( h1->getHistogram(theSources, "tcMet_inz", "", em) );
+  TH1F* hsigma_stat = h1->getHistogram(theSources, "tcMet_inz", "", all);
+  hsigma_stat->Draw();
+  c3->SaveAs( (TString)hsigma_stat->GetName()+"_hist.png" );
+  HSqrt( hsigma_stat );
+  c3->SaveAs( (TString)hsigma_stat->GetName()+"_sqrt.png" );
+
+  TH1F* h_sigma_stat_den = h1->getHistogramSum(theSources, "tcMet_inz", "", ee, mm);
+  h_sigma_stat_den->Add( h1->getHistogram(theSources, "tcMet_inz", "", em), -1. ); //subtract em
+  hsigma_stat->Divide( h_sigma_stat_den );
+  hsigma_stat->Draw();
+  c3->SaveAs( "Sigma_stat_tcMet_inz.png" );
+
+  //syst error hists -- sigma from yield only, no fit
+  TH1F* hsigma_syst = h1->getHistogramSum(sources_nody, "tcMet_inz", "", ee, mm);
+  hsigma_syst->Add( h1->getHistogram(sources_nody, "tcMet_inz", "", em), -1. );
+  hsigma_syst->Divide( h_sigma_stat_den ); //stat and syst have same denominator
+  hsigma_syst->Draw();
+  c3->SaveAs( "Sigma_syst_tcMet_inz.png" );
+
+  //stat, syst error from yield vs sjp
+  //double sigmastat[nsjpbins];
+  TH1F* hsigma_stat_vsjp = new TH1F( "Sigma_stat_tcMet_inz_vsjp", "Sigma_stat_tcMet_inz_vsjp", nsjpbins, 0, nsjpbins );
+  hsigma_stat_vsjp->Sumw2();
+  //double sigmasyst[nsjpbins];
+  TH1F* hsigma_syst_vsjp = new TH1F( "Sigma_syst_tcMet_inz_vsjp", "Sigma_syst_tcMet_inz_vsjp", nsjpbins, 0, nsjpbins );
+  hsigma_syst_vsjp->Sumw2();
+
   for(int i=0; i<nsjpbins; i++) {
-	
+
 	makeStack(h1, lg_all, theSources, Form("%s%i", "tcMet_sjp", i), "", all, true);
 	makeStack(h1, lg_all, theSources, Form("%s%i", "tcMet_outz_sjp", i), "", all, true);
 	makeStack(h1, lg_all, theSources, Form("%s%i", "tcMet_inz_sjp", i), "", all, true);
@@ -313,6 +384,10 @@ void plotResults() {
 	makeSumDifStack(h1, lg_all, sources_nody, nmtcousjp, "", ee, mm, em, true, "nody_" + nmtcousjp + "_eemm-em");
 	makeSumDifStack(h1, lg_all, sources_nody, nmtcinsjp, "", ee, mm, em, true, "nody_" + nmtcinsjp + "_eemm-em");
 
+	makeSumDifStack(h1, lg_all, theSources, Form("%s%i", "tcMet_sjp", i)     , "", ee, mm, em, true);
+	makeSumDifStack(h1, lg_all, theSources, Form("%s%i", "tcMet_outz_sjp", i), "", ee, mm, em, true);
+	makeSumDifStack(h1, lg_all, theSources, Form("%s%i", "tcMet_inz_sjp", i) , "", ee, mm, em, true);
+
 	makeStack(h1, lg_all, theSources, Form("%s%i", "dphi_tcMetl_sjp", i), "", all, true);
 	makeStack(h1, lg_all, theSources, Form("%s%i", "dphi_tcMetl_outz_sjp", i), "", all, true);
 	makeStack(h1, lg_all, theSources, Form("%s%i", "dphi_tcMetl_inz_sjp", i), "", all, true);
@@ -321,40 +396,124 @@ void plotResults() {
 	makeStack(h1, lg_all, theSources, Form("%s%i", "tcMet_mllden_sjp", i), "", all, true);
 
 	//integral ratio
-	TH1F* h_int_ratio = h1->getHistogram(theSources, Form("%s%i", "tcMet_sjp", i), "", all);
+	//TH1F* h_int_ratio = h1->getHistogram(theSources, Form("%s%i", "tcMet_sjp", i), "", all);
+	//new ratio plots use inz, after subtraction only. since it's integral, just use hists, not stack
+	//TH1F* h_int_ratio = h1->getHistogramSum(theSources, Form("%s%i", "tcMet_inz_sjp", i), "", ee, mm);
+	h_int_ratio[i] = h1->getHistogramSum(theSources, Form("%s%i", "tcMet_inz_sjp", i), "", ee, mm);
+	TH1F* h_int_ratio_em = h1->getHistogram(theSources, Form("%s%i", "tcMet_inz_sjp", i), "", em);
+	h_int_ratio[i]->Add( h_int_ratio_em, -1. ); //subtract em
+	TCanvas *c2 = new TCanvas();
+	//h_int_ratio->Draw();
+	//c2->SaveAs( (TString)h_int_ratio->GetName()+".png" );
+	//c2->SaveAs( (TString)Form("%s%i", "tcMet_inz_sjp", i, "_eemm-em_hist")+".png" );
 
-	res_ratio1[i] = 0; //initialize here
-	res_ratio1[i] = getIntegralRatio( h_int_ratio, 50, 100, 200 );
-	hres_ratio1->Fill( i, res_ratio1[i] );
+	//res_ratio1[i] = 0; //initialize here
+	res_ratio1[i] = getIntegralRatio( h_int_ratio[i], 50, 100, 200 );
+	hres_ratio1->Fill( i, res_ratio1[i][0] );
+	hres_ratio1->SetBinError( i, res_ratio1[i][1] ); //bin # = axis value
 
-	res_ratio2[i] = 0; //initialize here
-	res_ratio2[i] = getIntegralRatio( h_int_ratio, 0, 50, 100 );
-	hres_ratio2->Fill( i, res_ratio2[i] );
+	//res_ratio2[i] = 0; //initialize here
+	res_ratio2[i] = getIntegralRatio( h_int_ratio[i], 0, 50, 100 );
+	hres_ratio2->Fill( i, res_ratio2[i][0] );
+	hres_ratio2->SetBinError( i, res_ratio1[i][1] ); //bin # = axis value
 
-	res_ratio3[i] = 0; //initialize here
-	res_ratio3[i] = getIntegralRatio( h_int_ratio, 50, 100, 150 );
-	hres_ratio3->Fill( i, res_ratio3[i] );
+	//res_ratio3[i] = 0; //initialize here
+	res_ratio3[i] = getIntegralRatio( h_int_ratio[i], 50, 100, 150 );
+	hres_ratio3->Fill( i, res_ratio3[i][0] );
+	hres_ratio3->SetBinError( i, res_ratio1[i][1] ); //bin # = axis value
 
-	//sigma hists
-	TH1F* h_sigma = h2->getHistogram(theSources, Form("%s%i", "tcMet_xy_sjp", i), "", all);
+	//table of integrals
+	//cout << "|*sjp bin*|0-50|0-100|50-100|100-150|100+|150+|200+|" << endl;
+	cout << "|*" << i << "*|"
+		 << getIntegral( h_int_ratio[i], 0, 50 ) << "|"
+		 << getIntegral( h_int_ratio[i], 0, 100 ) << "|"
+		 << getIntegral( h_int_ratio[i], 50, 100 ) << "|"
+		 << getIntegral( h_int_ratio[i], 100, 150 ) << "|"
+		 << getIntegral( h_int_ratio[i], 100 ) << "|"
+		 << getIntegral( h_int_ratio[i], 150 ) << "|"
+		 << getIntegral( h_int_ratio[i], 200 ) << "|"
+		 << endl;
 
-	sigma1[i] = 0; //initialize here
+	//sigma fit hists
+	TH1F* h_sigma = h1->getHistogramSum(theSources, Form("%s%i", "tcMet_xy_inz_sjp", i), "", ee, mm);
+	h_sigma->Add( h1->getHistogram(theSources, Form("%s%i", "tcMet_xy_inz_sjp", i), "", em), -1. ); //subtract em
+	//TH1F* h_sigma = h2->getHistogram(theSources, Form("%s%i", "tcMet_xy_sjp", i), "", all);
+
+	//sigma1[i] = 0; //initialize here
 	sigma1[i] = getHistSigma( h_sigma );
-	hsigma1->Fill( i, sigma1[i] );
+	hsigma1->Fill( i, sigma1[i][0] );
+	hsigma1->SetBinError( i, sigma1[i][1] );
 
-	sigma2[i] = 0; //initialize here
-	sigma2[i] = getHistSigma( h_sigma, -sigma1[i], sigma1[i] ); //range of fit is +/- 1 sigma using sigma of full range
-	hsigma2->Fill( i, sigma2[i] );
+	//sigma2[i] = 0; //initialize here
+	sigma2[i] = getHistSigma( h_sigma, -sigma1[i][0], sigma1[i][0] ); //range of fit is +/- 1 sigma using sigma of full range
+	hsigma2->Fill( i, sigma2[i][0] );
+	hsigma2->SetBinError( i, sigma2[i][1] );
 
-	sigma3[i] = 0; //initialize here
-	sigma3[i] = getHistSigma( h_sigma, -2*sigma1[i], 2*sigma1[i] ); //range of fit is +/- 2 sigma using sigma of full range
-	hsigma3->Fill( i, sigma3[i] );
-	cout << sigma1[i] << "  " << sigma2[i] << "  " << sigma3[i] << "  " << endl;
+	//iterative fitting
+	//double* sigma_itr[] = {sigma2[i][0],sigma2[i][1]}; //error is irrelevant...
+	double* sigma_itr = sigma1[i];
+	for( int j=0; j<2; j++ ) { //two iterations are enough
+	  sigma_itr = getHistSigma( h_sigma, -sigma_itr[0], sigma_itr[0] ); //range of fit is +/- 1 sigma using sigma of full range
+	  //cout << sigma_itr[0] << "  " ;
+	}
+	//cout << endl;
+
+	//put iterative fitting results in sigma3
+	//sigma3[i] = 0; //initialize here
+	//sigma3[i] = getHistSigma( h_sigma, -2*sigma1[i][0], 2*sigma1[i][0] ); //range of fit is +/- 2 sigma using sigma of full range
+	hsigma3->Fill( i, sigma_itr[0] );
+	hsigma3->SetBinError( i, sigma_itr[1] );
+	//cout << sigma1[i] << "  " << sigma2[i] << "  " << sigma3[i] << "  " << endl; //put in hist
+	//cout << sigma1[i][0] << "  ";// << sigma2[i][0] << "  " ; //put in hist
+	
+	//sigma stat hists
+	TH1F* hsigma_stat_sjp = h1->getHistogram(theSources, Form("%s%i", "tcMet_inz_sjp", i), "", all);
+	double stat_num = sqrt( hsigma_stat_sjp->Integral() );
+	//TCanvas *c3 = new TCanvas();
+	//hsigma_stat->Draw();
+	//c3->SaveAs( (TString)hsigma_stat->GetName()+"_hist.png" );
+	HSqrt( hsigma_stat_sjp );
+	//c3->SaveAs( (TString)hsigma_stat->GetName()+"_sqrt.png" );
+
+	TH1F* hsigma_stat_sjp_den = h1->getHistogramSum(theSources, Form("%s%i", "tcMet_inz_sjp", i), "", ee, mm);
+	hsigma_stat_sjp_den->Add( h1->getHistogram(theSources, Form("%s%i", "tcMet_inz_sjp", i), "", em), -1. ); //subtract em
+	double stat_den = hsigma_stat_sjp_den->Integral();
+	hsigma_stat_sjp->Divide( hsigma_stat_sjp_den );
+	hsigma_stat_sjp->Draw("hist"); //"hist" option turns off error bars (because that's the most sensible thing to call it)
+	c2->SaveAs( (TString)Form("%s%i", "Sigma_stat_tcMet_inz_sjp", i)+".png" ); 
+
+	//syst error hists -- sigma from yield only, no fit
+	TH1F* hsigma_syst_sjp = h1->getHistogramSum(sources_nody, Form("%s%i", "tcMet_inz_sjp", i), "", ee, mm);
+	hsigma_syst_sjp->Add( h1->getHistogram(sources_nody, Form("%s%i", "tcMet_inz_sjp", i), "", em), -1. );
+	double syst_num = hsigma_syst_sjp->Integral();
+	hsigma_syst_sjp->Divide( hsigma_stat_sjp_den ); //stat and syst have same denominator
+	hsigma_syst_sjp->Draw();
+	c2->SaveAs( (TString)Form("%s%i", "Sigma_syst_tcMet_inz_sjp", i)+".png" ); 
+
+	//sigma stat, syst from yield vs sjp
+	// f = x/y, err_f/f = sqrt( err_x^2/x^2 + err_y^2/y^2 ) -->> err_f^2 = x/y^2 + x^2/y^3 = (f/y)(1+f)
+	double ratio = stat_num/stat_den;
+	hsigma_stat_vsjp->Fill( i, ratio );
+	hsigma_stat_vsjp->SetBinError( i, sqrt( (ratio/stat_den)*(1+ratio) ) );
+	ratio = syst_num/stat_den;
+	hsigma_syst_vsjp->Fill( i, ratio );
+	hsigma_syst_vsjp->SetBinError( i, sqrt( (ratio/stat_den)*(1+ratio) ) );
   }
 
+
   //save integral ratio
-  gStyle->SetOptStat(0);
   TCanvas *c1 = new TCanvas();
+  gStyle->SetOptStat(0);
+
+  h_int_ratio[0]->GetYaxis()->SetRangeUser( -1.0, 1.0 );
+  for( int i=0; i<nsjpbins; i++ ) {
+	h_int_ratio[i]->SetLineColor( i );
+	h_int_ratio[i]->Draw("same");
+  }
+  //c1->SaveAs( (TString)Form("%s%i", "tcMet_inz_sjp", i, "_eemm-em_hist")+".png" );
+  //gPad->SetLogy();
+  c1->SaveAs( "tcMet_inz_sjpall_eemm-em.png" );
+  //gPad->SetLogy(0);
   hres_ratio1->Draw();
   c1->SaveAs((TString)hres_ratio1->GetName()+".png");
   hres_ratio2->Draw();
@@ -362,7 +521,22 @@ void plotResults() {
   hres_ratio3->Draw();
   c1->SaveAs((TString)hres_ratio3->GetName()+".png");
   gStyle->SetOptStat(1110111);
+
+  //save sigma_fit
+  hsigma1->Draw();
+  c1->SaveAs((TString)hsigma1->GetName()+".png");
+  hsigma2->Draw();
+  c1->SaveAs((TString)hsigma2->GetName()+".png");
+  hsigma3->Draw();
+  c1->SaveAs((TString)hsigma3->GetName()+".png");
   
+  //save sigma stat, syst vs sjp
+  hsigma_stat_vsjp->Draw();
+  c1->SaveAs((TString)hsigma_stat_vsjp->GetName()+".png");
+  hsigma_syst_vsjp->Draw();
+  c1->SaveAs((TString)hsigma_syst_vsjp->GetName()+".png");
+
+
   //do 2d hist
   TH2F* metxy = h1->get2dHistogram(theSources, "tcMet_xvy", "", all);
   //TString filename = "Results_plot.root";
@@ -430,36 +604,36 @@ void plotResults() {
 
   //tcMet_xy
   TH1F* tcMet_xy_all = h2->getHistogram(theSources, "tcMet_xy", "", all);
-  double sigma_xy_all = getHistSigma( tcMet_xy_all );
+  double* sigma_xy_all = getHistSigma( tcMet_xy_all );
   double trato_xy_all = getTailRatio( tcMet_xy_all );
-  cout << "name " << tcMet_xy_all->GetName() << "  sigma " << sigma_xy_all << "  ratio core/tail " << trato_xy_all << endl;
+  cout << "name " << tcMet_xy_all->GetName() << "  sigma " << sigma_xy_all[0] << "  ratio core/tail " << trato_xy_all << endl;
 
   //tcMet_x
   TH1F* tcMet_x_all = h2->getHistogram(theSources, "tcMet_x", "", all);
-  double sigma_x_all = getHistSigma( tcMet_x_all );
+  double* sigma_x_all = getHistSigma( tcMet_x_all );
   double trato_x_all = getTailRatio( tcMet_x_all );
-  cout << "name " << tcMet_x_all->GetName() << "  sigma " << sigma_x_all << "  ratio core/tail " << trato_x_all << endl;
+  cout << "name " << tcMet_x_all->GetName() << "  sigma " << sigma_x_all[0] << "  ratio core/tail " << trato_x_all << endl;
 
   //tcMet_y
   TH1F* tcMet_y_all = h2->getHistogram(theSources, "tcMet_y", "", all);
-  double sigma_y_all = getHistSigma( tcMet_y_all );
+  double* sigma_y_all = getHistSigma( tcMet_y_all );
   double trato_y_all = getTailRatio( tcMet_y_all );
-  cout << "name " << tcMet_y_all->GetName() << "  sigma " << sigma_y_all << "  ratio core/tail " << trato_y_all << endl;
+  cout << "name " << tcMet_y_all->GetName() << "  sigma " << sigma_y_all[0] << "  ratio core/tail " << trato_y_all << endl;
 
   //for dyee+mm
   TH1F* dy_tcMet_xy_all = h2->getHistogram(sources_dy, "tcMet_xy", "", all);
-  double dy_sigma_xy_all = getHistSigma( dy_tcMet_xy_all );
+  double* dy_sigma_xy_all = getHistSigma( dy_tcMet_xy_all );
   double dy_trato_xy_all = getTailRatio( dy_tcMet_xy_all );
-  cout << "name " << dy_tcMet_xy_all->GetName() << "  sigma " << dy_sigma_xy_all << "  ratio core/tail " << dy_trato_xy_all << endl;
+  cout << "name " << dy_tcMet_xy_all->GetName() << "  sigma " << dy_sigma_xy_all[0] << "  ratio core/tail " << dy_trato_xy_all << endl;
 
   cout << endl << endl;
 
   //twiki table
   cout << "Fit results for met xy distribution\n";
   cout << "||*DYee+DYmm*|*All Samples*|\n";
-  cout << "|*sigma*|" << dy_sigma_xy_all << "|" << sigma_xy_all << "|\n";
+  cout << "|*sigma*|" << dy_sigma_xy_all[0] << "|" << sigma_xy_all[0] << "|\n";
   cout << "|*ratio*|" << dy_trato_xy_all << "|" << trato_xy_all << "|\n";
   //add note on twiki on definition of all samples, and ratio
-  
+
 }
 

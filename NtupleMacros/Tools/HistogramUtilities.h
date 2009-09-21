@@ -28,7 +28,7 @@ public:
   ~HistogramUtilities() { delete file_; }
 
   TH1F* getHistogram(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin = 1, TString nameprefix="");
-  //TH1F* getHistogramSum(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin = 1);
+  TH1F* getHistogramSum(sources_t theSources, TString var, TString nJets, TString hyp1, TString hyp2, Int_t rebin = 1);
   TH2F* get2dHistogram(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin = 1);
 
   THStack* getStack(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin = 1);
