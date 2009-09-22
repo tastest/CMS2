@@ -25,6 +25,7 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 using std::vector;
 TH2D* rfhist = 0;
 
+/*
 TVector3 correctMETforTracks()
 {
   if ( ! rfhist ){
@@ -113,6 +114,7 @@ double dRbetweenVectors(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> 
   double deta = vec1.Eta() - vec2.Eta();
   return sqrt(dphi*dphi + deta*deta);
 }
+*/
 
 int match4vector(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lvec, 
 		 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > vec, 
