@@ -3,6 +3,8 @@
 #include "TLorentzVector.h"
 #include "Math/LorentzVector.h"
 #include <vector>
+#include <iostream>
+#include <utility>
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
@@ -33,7 +35,17 @@ bool sumEt10(double sumEt);
 bool sumEt1(double sumEt);
 
 bool isChargeFlip(int elIndex);
+//old cuts on conversions
 bool conversionElectron(int electron);
+//new conversion stuff...cut on shared fraction of hits implemented
+//when looking for electron's ctf track
+bool isconversionElectron09(int elIdx);
+std::pair<float, float> getConversionInfo(LorentzVector trk1_p4, 
+					  int trk1_q, float trk1_d0, 
+					  LorentzVector trk2_p4,
+					  int trk2_q, float trk2_d0,
+					  float bField);
+
 
 int numberOfExtraMuons(int i_hyp, bool nonisolated);
 bool passMuonBVeto_1_6 (int i_dilep, bool soft_nonisolated);
@@ -182,8 +194,6 @@ bool isNumMuTTDil08(int iMu);
 bool isFakeableMuTTDil08(int iMu);
 
 bool trueGammaFromMuon(int electron);
-
-bool conversionElectron(int electron);
 
 int findPrimTrilepZ(int i_hyp, double &mass);
 bool vetoAddZ(int i_hyp, int unusedLepton, double &mass);

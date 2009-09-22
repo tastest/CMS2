@@ -2897,7 +2897,11 @@ double dRBetweenVectors(LorentzVector v1, LorentzVector v2) {
     if (dphi > TMath::Pi()) dphi = TMath::TwoPi() - dphi;
     return sqrt(deta*deta+dphi*dphi);
 }
+//----------------------------------------------------
+// Conversions stuff
+//----------------------------------------------------
 
+//old cut to find conversions
 bool conversionElectron(int electron) {
   // true if electron is a conversion electron
   if( fabs(cms2.els_conv_dist()[electron]) < 0.02 && fabs(cms2.els_conv_dcot()[electron]) < 0.02)
@@ -2905,6 +2909,65 @@ bool conversionElectron(int electron) {
 
   return false;
 }
+
+//utility function to get the dist and delta cot theta
+std::pair<float, float> getConversionInfo(LorentzVector trk1_p4, 
+					  int trk1_q, float trk1_d0, 
+					  LorentzVector trk2_p4,
+					  int trk2_q, float trk2_d0,
+					  float bField) {
+  
+  
+  double tk1Curvature = -0.3*bField*(trk1_q/trk1_p4.pt())/100.;
+  double rTk1 = fabs(1./tk1Curvature);
+  double xTk1 = (1./tk1Curvature - trk1_d0)*cos(trk1_p4.phi());
+  double yTk1 = (1./tk1Curvature - trk1_d0)*sin(trk1_p4.phi());
+    
+  double tk2Curvature = -0.3*bField*(trk2_q/trk2_p4.pt())/100.;
+  double rTk2 = fabs(1./tk2Curvature);
+  double xTk2 = (1./tk2Curvature - trk2_d0)*cos(trk2_p4.phi());
+  double yTk2 = (1./tk2Curvature - trk2_d0)*sin(trk2_p4.phi());
+	 
+  double dist = sqrt(pow(xTk1-xTk2, 2) + pow(yTk1-yTk2 , 2));
+  dist = dist - (rTk1 + rTk2);
+
+  double dcot = 1/tan(trk1_p4.theta()) - 1/tan(trk2_p4.theta());
+
+  return make_pair(dist, dcot);
+  
+}
+
+//new conversion loop to determine if the electron is from a conversion or not
+bool isconversionElectron09(int elIdx) {
+
+  for(unsigned int tkIdx = 0; tkIdx < cms2.trks_trk_p4().size(); tkIdx++) {
+    if(dRBetweenVectors(cms2.els_trk_p4()[elIdx], cms2.trks_trk_p4()[tkIdx]) > 0.5)
+      continue;
+    //skip the electron's track
+    if(cms2.els_trkidx()[elIdx] == tkIdx && cms2.els_trkshFrac()[elIdx] > 0.45)
+      continue;
+    //ship non-opp sign candidates
+    if(cms2.trks_charge()[tkIdx] + cms2.els_charge()[elIdx] != 0)
+      continue;
+    
+    std::pair<float, float> temp = getConversionInfo(cms2.els_trk_p4()[elIdx], cms2.els_charge()[elIdx], cms2.els_d0()[elIdx], 
+						     cms2.trks_trk_p4()[tkIdx], cms2.trks_charge()[tkIdx], cms2.trks_d0()[tkIdx],
+						     cms2.evt_bField());
+    
+    if(fabs(temp.first) < 0.02 && fabs(temp.second) < 0.02)
+      return true;
+    
+  }//track loop
+  
+  return false;
+  
+}
+//---------------------------------------------------
+//End conversion functions
+//---------------------------------------------------
+
+
+
 
 // false if below ptcut, aboveabsEtaCut, below dRCut wrt hypothesis
 bool isGoodDilHypJet(unsigned int jetIdx, unsigned int hypIdx, double ptCut, double absEtaCut, double dRCut, bool muJetClean){
