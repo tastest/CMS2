@@ -81,8 +81,10 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 	// 2_2_1
      Looper looper_qcd30(fQCDpt30(), cuts, log.c_str()); if (which_ones & (1 << LOOP_QCD30)) looper_qcd30.Loop();
      Looper looper_qcd80(fQCDpt80(), cuts, log.c_str()); if (which_ones & (1 << LOOP_QCD80)) looper_qcd80.Loop();
-     Looper looper_wjet_alp(fWjetsAlpgenSingle(), cuts, log.c_str()); if (which_ones & (1 << LOOP_WJET_ALP)) looper_wjet_alp.Loop();
-     Looper looper_zeejet_alp(fZjetsAlpgenSingle(), cuts, log.c_str()); if (which_ones & (1 << LOOP_ZEEJET_ALP)) looper_zeejet_alp.Loop();
+     Looper looper_wejet_alp(fWejetsAlpgenSingle(), cuts, log.c_str()); if (which_ones & (1 << LOOP_WJET_ALP)) looper_wejet_alp.Loop();
+     Looper looper_wmjet_alp(fWmjetsAlpgenSingle(), cuts, log.c_str()); if (which_ones & (1 << LOOP_WJET_ALP)) looper_wmjet_alp.Loop();
+     Looper looper_wtjet_alp(fWtjetsAlpgenSingle(), cuts, log.c_str()); if (which_ones & (1 << LOOP_WJET_ALP)) looper_wtjet_alp.Loop();
+     Looper looper_zeejet_alp(fZeejetsAlpgenSingle(), cuts, log.c_str()); if (which_ones & (1 << LOOP_ZEEJET_ALP)) looper_zeejet_alp.Loop();
      Looper looper_zmmjet_alp(fZmmjetsAlpgenSingle(), cuts, log.c_str());if (which_ones & (1 << LOOP_ZMMJET_ALP)) looper_zmmjet_alp.Loop();
      Looper looper_zttjet_alp(fZttjetsAlpgenSingle(), cuts, log.c_str()); if (which_ones & (1 << LOOP_ZTTJET_ALP)) looper_zttjet_alp.Loop();
      Looper looper_mu15_alp(fInclusiveMuPt15Single(), cuts, log.c_str()); if (which_ones & (1 << LOOP_MU15_SINGLE)) looper_mu15_alp.Loop();
@@ -102,7 +104,9 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 	&looper_bc30_80,
 	&looper_qcd30,
 	&looper_qcd80,
-	&looper_wjet_alp,
+	&looper_wejet_alp,
+	&looper_wmjet_alp,
+	&looper_wtjet_alp,
         &looper_zeejet_alp,
         &looper_zmmjet_alp,
         &looper_zttjet_alp,
