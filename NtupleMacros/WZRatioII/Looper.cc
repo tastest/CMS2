@@ -50,21 +50,40 @@ void Looper::BookHistos ()
 	if (i == 2) hyp = "all";
 
 	h1_lep_pt_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "lep_pt", hyp.c_str()), 
-							  "lep_tkIso", 100, 0.0, 100.0);
+                                  "lep_tkIso", 100, 0.0, 100.0);
 	FormatHist(h1_lep_pt_[i]);
-
+        
 	h1_lep_met_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "lep_met", hyp.c_str()),
-							   "lep_met", 100, 0.0, 100.0);
+                                   "lep_met", 100, 0.0, 100.0);
 	FormatHist(h1_lep_met_[i]);
-
+        
 	h1_lep_met_dphi_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "lep_met_dphi", hyp.c_str()),
-									"lep_met_dphi", 100, 0, 2 * 3.14159);
+                                        "lep_met_dphi", 100, 0, 2 * 3.14159);
 	FormatHist(h1_lep_met_dphi_[i]);
-
+        
 	h1_lep_tkIso_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "lep_tkIso", hyp.c_str()),
-								 "lep_tkIso", 100, 0.0, 100.0);
+                                     "lep_tkIso", 100, 0.0, 100.0);
 	FormatHist(h1_lep_tkIso_[i]);
-
+        
+        h1_lep_Highpt_[i] = new TH1F(
+                                     Form("%s_%s_%s", SampleName().c_str(), "Highlep_pt", hyp.c_str()), 
+                                     "Highlep_pt", 100, 0.0, 100.0);
+        FormatHist(h1_lep_Highpt_[i]);
+        
+        h1_lep_HighptMet_[i] = new TH1F(
+                                        Form("%s_%s_%s", SampleName().c_str(), "Highlep_Met", hyp.c_str()), 
+                                        "Highlep_Met", 100, 0.0, 100.0);
+        FormatHist(h1_lep_HighptMet_[i]);
+        
+        h1_lep_HighptRelIso_[i] = new TH1F(
+                                           Form("%s_%s_%s", SampleName().c_str(), "Highlep_RelIso", hyp.c_str()), 
+                                           "Highlep_RelIso", 120, -0.1, 1.1);
+        FormatHist(h1_lep_HighptRelIso_[i]);
+        
+        h1_lep_HighptRelIsoPtLg20_[i] = new TH1F(
+                                                 Form("%s_%s_%s", SampleName().c_str(), "Highlep_RelIsoPtLg20", hyp.c_str()), 
+                                                 "Highlep_RelIsoPtLg20", 120, -0.1, 1.1);
+        FormatHist(h1_lep_HighptRelIsoPtLg20_[i]);
   }
 
   // di-lepton histograms (three + 1 types)
@@ -177,6 +196,44 @@ cuts_t Looper::LepSelect(int lep_type, int i)
 void Looper::FillEventHistos ()
 {
 
+  // a first loop over the most energetic 
+  // muon and electron to determine a good cut 
+  // in pT and iso
+  // get the event weight
+  float weight = cms2.evt_scale1fb() * sample_.kFactor; 
+  int   hiPtIdx    = -1;
+  float hiPtmax    = -1.;
+  
+  
+  // have a look at the highest pt electron
+  for(uint ele = 0; ele < cms2.els_p4().size(); ++ele) {
+    if(cms2.els_p4()[ele].pt() > hiPtmax && GoodSusyElectronWithoutIsolation(ele) ) hiPtIdx = ele;
+  }
+  
+  // histogram indices are e, m, all (0, 1, 2)
+  if(hiPtIdx != -1)  {
+    h1_lep_Highpt_[0]   ->Fill(cms2.els_p4()[hiPtIdx].pt(), weight);
+    h1_lep_HighptMet_[0]->Fill(cms2.evt_tcmet(), weight);
+    h1_lep_HighptRelIso_[0]->Fill(inv_el_relsusy_iso(hiPtIdx, true), weight);
+    if(cms2.els_p4()[hiPtIdx].pt() > 20. ) h1_lep_HighptRelIsoPtLg20_[0]->Fill(inv_el_relsusy_iso(hiPtIdx, true), weight);
+  }
+  
+  // have a look at the highest pt muon
+  // reset highpt index
+  hiPtIdx    = -1;
+  hiPtmax    = -1.;
+  for(uint muo = 0; muo < cms2.mus_p4().size(); ++muo) {
+    if(cms2.mus_p4()[muo].pt() > hiPtmax && GoodSusyMuonWithoutIsolation(muo) ) hiPtIdx = muo;
+  }
+  
+  // histogram indices are e, m, all (0, 1, 2)
+  if(hiPtIdx != -1)  {
+    h1_lep_Highpt_[1]   ->Fill(cms2.mus_p4()[hiPtIdx].pt(), weight);
+    h1_lep_HighptMet_[1]->Fill(cms2.evt_tcmet(), weight);
+    h1_lep_HighptRelIso_[1]->Fill(inv_mu_relsusy_iso(hiPtIdx), weight);
+    if(cms2.mus_p4()[hiPtIdx].pt() > 20. ) h1_lep_HighptRelIsoPtLg20_[1]->Fill(inv_mu_relsusy_iso(hiPtIdx), weight);
+  }
+  
   // need to determine if this is a di-lepton
   // or a single lepton event
   int nels = 0;
