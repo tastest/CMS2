@@ -26,6 +26,8 @@ protected:
   void WEvent();
   void ZEvent();
 
+  virtual void NewHist(TH1F*& h, char* name, char* title, int bins, double min, double max);
+
   virtual void	FillEventHistos ();
   virtual void	End		();
 
@@ -48,10 +50,28 @@ protected:
   // declare your histograms here:
   //----------------------------------------------------------------------
 
-  TH1F	*h1_lep_pt_[3];
-  TH1F	*h1_lep_met_[3];
-  TH1F  *h1_lep_met_dphi_[3];
-  TH1F  *h1_lep_tkIso_[3];
+  TH1F *hlep_pt[3];
+  TH1F *hlep_met[3];
+  TH1F *hlep_met_dphi[3];
+  TH1F *hlep_mass[3];
+  TH1F *hlep_trckIso[3];
+  TH1F *hlep_ecalIso[3];
+  TH1F *hlep_nlep[3];
+  TH1F *hlep_njet20[3];
+  TH1F *hlep_njet30[3];
+	   
+  TH1F *hdilep_0_pt[4];
+  TH1F *hdilep_1_pt[4];
+  TH1F *hdilep_pt[4];
+  TH1F *hdilep_mass[4];
+  TH1F *hdilep_met[4];
+  //TH1F *hdilep_nlep[4]; //dumb
+  TH1F *hdilep_njet20[4];
+  TH1F *hdilep_njet30[4];
+  
+  //TH1F *hdilep_nhyp;
+  //TH1F *hdilep_nlep;
+  //TH1F *hdilep_njet;
   TH1F	*h1_lep_Highpt_[3];
   TH1F	*h1_lep_HighptMet_[3];
   TH1F	*h1_lep_HighptRelIso_[3];
@@ -64,12 +84,8 @@ protected:
   TH1F	*h1_lep_LowptNLepGt10Lt20_[3];
   TH1F	*h1_lep_LowptNLepGt20_[3];
 
-  TH1F	*h1_dilep_0_pt_[4];
-  TH1F	*h1_dilep_1_pt_[4];
-  TH1F 	*h1_dilep_mass_[4];
-  TH1F	*h1_dilep_met_[4];
-  TH1F	*h1_dilep_nhyp_;
-
+  //int njets;//need to do differently for W,Z anyway
+  double weight;
   int elidxs[2];
   int muidxs[2];
 

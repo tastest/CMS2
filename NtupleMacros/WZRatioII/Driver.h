@@ -40,39 +40,39 @@ void printTable (const Looper **hists, int n, const char *fname,
 	perror("printing table");
 	return;
   }
-  fprintf(f, "| %5s", "");
+  fprintf(f, "| %6s", "");
   for (int j = 0; j < n; ++j) {
-	fprintf(f, "|  *%30s*  ", hists[j]->SampleName().c_str());
+	fprintf(f, "|  *%10s*  ", hists[j]->SampleName().c_str());
   }
-  fprintf(f, "|%30s  |\n", "total");
+  fprintf(f, "|%10s  |\n", "total");
   //dilep
   for (int i = 0; i < 4; ++i) {
-	fprintf(f, "|%5s  ", dilepton_hypo_names[i]);
+	fprintf(f, "|%6s ", dilepton_hypo_names[i]);
 	double cands = 0;
 	double w2 = 0;
 	for (int j = 0; j < n; ++j) {
-	  fprintf(f, "|  %5.1f &plusmn; %5.1f", 
+	  fprintf(f, "|  %6.1f +- %6.1f", 
 			  hists[j]->DCandsPassing(DileptonHypType(i)),
 			  hists[j]->DRMS(DileptonHypType(i)));
 	  cands += hists[j]->DCandsPassing(DileptonHypType(i));
 	  w2 += hists[j]->DRMS(DileptonHypType(i)) * hists[j]->DRMS(DileptonHypType(i));
 	}
-	fprintf(f, "|  %5.1f &plusmn; %5.1f|\n", cands, sqrt(w2));
+	fprintf(f, "|  %6.1f +- %6.1f|\n", cands, sqrt(w2));
   }
   //single lep
   char* slepnames[3] = {"e", "m", "all"};
   for (int i = 0; i < 3; ++i) {
-	fprintf(f, "|%5s  ", slepnames[i]);
+	fprintf(f, "|%6s  ", slepnames[i]);
 	double cands = 0;
 	double w2 = 0;
 	for (int j = 0; j < n; ++j) {
-	  fprintf(f, "|  %5.1f &plusmn; %5.1f", 
+	  fprintf(f, "|  %6.1f +- %6.1f", 
 			  hists[j]->SCandsPassing(DileptonHypType(i)),
 			  hists[j]->SRMS(DileptonHypType(i)));
 	  cands += hists[j]->SCandsPassing(DileptonHypType(i));
 	  w2 += hists[j]->SRMS(DileptonHypType(i)) * hists[j]->SRMS(DileptonHypType(i));
 	}
-	fprintf(f, "|  %5.1f &plusmn; %5.1f|\n", cands, sqrt(w2));
+	fprintf(f, "|  %6.1f +- %6.1f|\n", cands, sqrt(w2));
   }
 
   if (f != stdin) 

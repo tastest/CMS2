@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.1 2009/08/01 08:55:15 dlevans Exp $
+# $Id: Makefile,v 1.1.2.1 2009/09/25 01:40:47 warren Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
@@ -70,7 +70,7 @@ clean:
 $(TABLES): $(LIBS)
 
 %.tbl %.root %.log:	$(LIBS)
-	echo $(@:.tbl=)"()" | root.exe -b setup.C
+	echo $(@:.tbl=)"()" | root.exe -b -l setup.C
 
 -include $(TOOLSSOURCES:.cc=.d)
 -include $(CORESOURCES:.cc=.d)

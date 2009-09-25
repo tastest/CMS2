@@ -1,5 +1,6 @@
-# include <math.h>
+#include <math.h>
 #include "TVector3.h"
+//#include "Math/VectorUtil.h"
 #include "CORE/utilities.h"
 #include "CORE/CMS2.h"
 #include "Tools/tools.h"
@@ -18,6 +19,7 @@ Looper::Looper (Sample s, cuts_t c, const char *fname)
      memset(scands_passing_w2_	, 0, sizeof(scands_passing_w2_    ));
      memset(scands_count_		, 0, sizeof(scands_count_         ));
 
+	 weight = 0;
 	 //initialize indicies
 	 elidxs[0] = -1;
 	 elidxs[1] = -1;
@@ -30,14 +32,14 @@ void Looper::FormatHist(TH1* hist)
 {
 	hist->SetFillColor(sample_.histo_color);
 }
-/*
+
 void Looper::NewHist(TH1F*& h, char* name, char* title, int bins, double min, double max) {
   h = new TH1F(name, title, bins, min, max);
   h->Sumw2();
   h->SetFillColor(sample_.histo_color);
   h->SetLineColor(sample_.histo_color);
 }
-*/
+
 
 //to add: mass, transverse mass, njets
 void Looper::BookHistos ()
@@ -47,24 +49,8 @@ void Looper::BookHistos ()
   for (unsigned int i = 0; i < 3; ++i) {
 	std::string hyp = "e";
 	if (i == 1) hyp = "m";
-	if (i == 2) hyp = "all";
+	else if (i == 2) hyp = "all";
 
-	h1_lep_pt_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "lep_pt", hyp.c_str()), 
-                                  "lep_tkIso", 100, 0.0, 100.0);
-	FormatHist(h1_lep_pt_[i]);
-        
-	h1_lep_met_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "lep_met", hyp.c_str()),
-                                   "lep_met", 100, 0.0, 100.0);
-	FormatHist(h1_lep_met_[i]);
-        
-	h1_lep_met_dphi_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "lep_met_dphi", hyp.c_str()),
-                                        "lep_met_dphi", 100, 0, 2 * 3.14159);
-	FormatHist(h1_lep_met_dphi_[i]);
-        
-	h1_lep_tkIso_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "lep_tkIso", hyp.c_str()),
-                                     "lep_tkIso", 100, 0.0, 100.0);
-	FormatHist(h1_lep_tkIso_[i]);
-        
         h1_lep_Highpt_[i] = new TH1F(
                                      Form("%s_%s_%s", SampleName().c_str(), "Highlep_pt", hyp.c_str()), 
                                      "Highlep_pt", 100, 0.0, 100.0);
@@ -116,33 +102,35 @@ void Looper::BookHistos ()
                                                  "Lowlep_NLepGt20", 21, -0.5, 20.5);
         FormatHist(h1_lep_LowptNLepGt20_[i]);
 
+	NewHist( hlep_pt[i], Form("%s_%s_%s", SampleName().c_str(), "lep_pt", hyp.c_str()), "lep_pt", 100, 0.0, 100.0);
+	NewHist( hlep_mass[i], Form("%s_%s_%s", SampleName().c_str(), "lep_transmass", hyp.c_str()), "lep_transmass", 200, 0.0, 200.0);
+	NewHist( hlep_met[i], Form("%s_%s_%s", SampleName().c_str(), "lep_met", hyp.c_str()), "lep_met", 100, 0.0, 100.0);
+	NewHist( hlep_met_dphi[i], Form("%s_%s_%s", SampleName().c_str(), "lep_met_dphi", hyp.c_str()), "lep_met_dphi", 100, 0, 2 * 3.14159);
+	NewHist( hlep_trckIso[i], Form("%s_%s_%s", SampleName().c_str(), "lep_trckIso", hyp.c_str()), "lep_trckIso", 100, 0.0, 100.0);
+	NewHist( hlep_ecalIso[i], Form("%s_%s_%s", SampleName().c_str(), "lep_ecalIso", hyp.c_str()), "lep_ecalIso", 100, 0.0, 100.0);
+
+	//for nlep, fill before cutting on it--same for W,Z
+	NewHist( hlep_nlep[i], Form("%s_%s_%s", SampleName().c_str(), "lep_nlep", hyp.c_str()), "lep_nlep", 10, -0.5, 9.5);
+	NewHist( hlep_njet20[i], Form("%s_%s_%s", SampleName().c_str(), "lep_njet20", hyp.c_str()), "lep_njet20", 10, -0.5, 9.5);
+	NewHist( hlep_njet30[i], Form("%s_%s_%s", SampleName().c_str(), "lep_njet30", hyp.c_str()), "lep_njet30", 10, -0.5, 9.5);
   }
 
   // di-lepton histograms (three + 1 types)
   for (unsigned int i = 0; i < 4; ++i) {
-	h1_dilep_0_pt_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "dilep_0_pt", dilepton_hypo_names[i]),
-								  "dilep_0_pt", 100, 0.0, 100.0);
-	FormatHist(h1_dilep_0_pt_[i]);
-
-	h1_dilep_1_pt_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "dilep_1_pt", dilepton_hypo_names[i]),
-								  "dilep_1_pt", 100, 0.0, 100.0);
-	FormatHist(h1_dilep_1_pt_[i]);
-
-	h1_dilep_mass_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "dilep_mass", dilepton_hypo_names[i]),
-								  "dilep_mass", 200, 0.0, 200.0);
-	FormatHist(h1_dilep_mass_[i]);
-
-	h1_dilep_met_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "dilep_met", dilepton_hypo_names[i]),
-								 "lep_met", 100, 0.0, 100.0);
-	FormatHist(h1_dilep_met_[i]);
-
+	NewHist( hdilep_0_pt[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_0_pt", dilepton_hypo_names[i]), "dilep_0_pt", 100, 0.0, 100.0);
+	NewHist( hdilep_1_pt[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_1_pt", dilepton_hypo_names[i]), "dilep_1_pt", 100, 0.0, 100.0);
+	NewHist( hdilep_pt[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_pt", dilepton_hypo_names[i]), "dilep_pt", 100, 0.0, 100.0);
+	NewHist( hdilep_mass[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_mass", dilepton_hypo_names[i]), "dilep_mass", 200, 0.0, 200.0);
+	NewHist( hdilep_met[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_met", dilepton_hypo_names[i]), "dilep_met", 100, 0.0, 100.0);
+	//nlep is just single
+	//NewHist( hdilep_nlep[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_nlep", hyp.c_str()), "lep_nlep", 10, -0.5, 9.5);
+	NewHist( hdilep_njet20[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_njet20", dilepton_hypo_names[i]), "dilep_njet20", 10, -0.5, 9.5);
+	NewHist( hdilep_njet30[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_njet30", dilepton_hypo_names[i]), "dilep_njet30", 10, -0.5, 9.5);
 
   }
 	
   // event level histograms
-  h1_dilep_nhyp_ = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "dilep_nhyp", "all"),
-							"dilep_nhyp", 10, -0.5, 9.5);
-  FormatHist(h1_dilep_nhyp_);
+  //NewHist( hdilep_nhyp, Form("%s_%s_%s", SampleName().c_str(), "dilep_nhyp", "all"), "dilep_nhyp", 10, -0.5, 9.5);
 
 }
 
@@ -301,19 +289,22 @@ void Looper::FillEventHistos ()
   
   // need to determine if this is a di-lepton
   // or a single lepton event
-  int nels = 0;
-  int nmus = 0;
+  int nels = 0, nmus = 0;
+  int nels_nopt = 0, nmus_nopt = 0;
   elidxs[0] = elidxs[1] = -1;
   muidxs[0] = muidxs[1] = -1;
+  int elidxs_nopt[] = {-1, -1}; //this one can be local--still just 2
+  int muidxs_nopt[] = {-1, -1};
   cuts_t lepcuts = (CUT_BIT(LEP_PT)
 					| CUT_BIT(LEP_GOOD)
 					| CUT_BIT(LEP_ISO)
 					);
+  cuts_t lepcuts_nopt = (CUT_BIT(LEP_GOOD) | CUT_BIT(LEP_ISO));
 
-
+  //select els
   for( unsigned int i=0; i<cms2.els_p4().size(); i++ ) {
 	cuts_t elcut = LepSelect(0, i); //0 for els
-	if( (elcut & lepcuts) == lepcuts ) {
+	if( (elcut & lepcuts) == lepcuts ) { //all cuts
 	  nels++;
 	  if( elidxs[0] == -1 )
 		elidxs[0] = i;
@@ -321,17 +312,75 @@ void Looper::FillEventHistos ()
 		elidxs[1] = i;
 	  //if > 2 els, ignore the rest--should be sorted by pt already
 	}
+	if( (elcut & lepcuts_nopt) == lepcuts_nopt ) { //no pt cut
+	  nels_nopt++;
+	  if( elidxs_nopt[0] == -1 )
+		elidxs_nopt[0] = i;
+	  else if( elidxs_nopt[1] == -1 )
+		elidxs_nopt[1] = i;
+	}
   }
 
+  //select mus
   for( unsigned int i=0; i<cms2.mus_p4().size(); i++ ) {
 	cuts_t mucut = LepSelect(1, i); //1 for mus
-	if( (mucut & lepcuts) == lepcuts ) {
+	if( (mucut & lepcuts) == lepcuts ) { //all cuts
 	  nmus++;
 	  if( muidxs[0] == -1 )
 		muidxs[0] = i;
 	  else if( muidxs[1] == -1 )
 		muidxs[1] = i;
 	}
+	if( (mucut & lepcuts_nopt) == lepcuts_nopt ) { //no pt cut
+	  nmus_nopt++;
+	  if( muidxs_nopt[0] == -1 )
+		muidxs_nopt[0] = i;
+	  else if( muidxs_nopt[1] == -1 )
+		muidxs_nopt[1] = i;
+	}
+  }
+
+  // get the event weight
+  weight = cms2.evt_scale1fb() * sample_.kFactor / 1000; //1pb
+
+  //fill nlep cut before checking nels, nmus
+  //0=el, 1=mu, 2=all
+  //if( nels > 0 )
+  hlep_nlep[0]->Fill( nels, weight );
+  //if( nmus > 0 )
+  hlep_nlep[1]->Fill( nmus, weight );
+  //if( nels > 0 || nmus > 0 )
+  hlep_nlep[2]->Fill( nels+nmus, weight );
+
+  //fill lep pt hists based on n nopt--single leps (each flavor independent of other)
+  if( nels_nopt == 1 ) { //allow mus
+	hlep_pt[0]->Fill( cms2.els_p4()[elidxs_nopt[0]].pt(), weight );
+	hlep_pt[2]->Fill( cms2.els_p4()[elidxs_nopt[0]].pt(), weight );
+  }
+  if( nmus_nopt == 1 ) {
+	hlep_pt[1]->Fill( cms2.mus_p4()[muidxs_nopt[0]].pt(), weight );
+	hlep_pt[2]->Fill( cms2.mus_p4()[muidxs_nopt[0]].pt(), weight );
+  }
+  //now for N leps  //DILEPTON_ALL,     DILEPTON_MUMU,     DILEPTON_EMU,     DILEPTON_EE
+  if( nels_nopt > 1 ) { //allow mus
+	hdilep_pt[DILEPTON_EE]->Fill( cms2.els_p4()[elidxs_nopt[0]].pt(), weight );
+	hdilep_pt[DILEPTON_ALL]->Fill( cms2.els_p4()[elidxs_nopt[0]].pt(), weight );
+	hdilep_pt[DILEPTON_EE]->Fill( cms2.els_p4()[elidxs_nopt[1]].pt(), weight );
+	hdilep_pt[DILEPTON_ALL]->Fill( cms2.els_p4()[elidxs_nopt[1]].pt(), weight );
+	hdilep_0_pt[DILEPTON_EE]->Fill( cms2.els_p4()[elidxs_nopt[0]].pt(), weight );
+	hdilep_0_pt[DILEPTON_ALL]->Fill( cms2.els_p4()[elidxs_nopt[0]].pt(), weight );
+	hdilep_1_pt[DILEPTON_EE]->Fill( cms2.els_p4()[elidxs_nopt[1]].pt(), weight );
+	hdilep_1_pt[DILEPTON_ALL]->Fill( cms2.els_p4()[elidxs_nopt[1]].pt(), weight );
+  }
+  if( nmus_nopt > 1 ) {
+	hdilep_pt[DILEPTON_MUMU]->Fill( cms2.mus_p4()[muidxs_nopt[0]].pt(), weight );
+	hdilep_pt[DILEPTON_ALL]->Fill( cms2.mus_p4()[muidxs_nopt[0]].pt(), weight );
+	hdilep_pt[DILEPTON_MUMU]->Fill( cms2.mus_p4()[muidxs_nopt[1]].pt(), weight );
+	hdilep_pt[DILEPTON_ALL]->Fill( cms2.mus_p4()[muidxs_nopt[1]].pt(), weight );
+	hdilep_0_pt[DILEPTON_MUMU]->Fill( cms2.mus_p4()[muidxs_nopt[0]].pt(), weight );
+	hdilep_0_pt[DILEPTON_ALL]->Fill( cms2.mus_p4()[muidxs_nopt[0]].pt(), weight );
+	hdilep_1_pt[DILEPTON_MUMU]->Fill( cms2.mus_p4()[muidxs_nopt[1]].pt(), weight );
+	hdilep_1_pt[DILEPTON_ALL]->Fill( cms2.mus_p4()[muidxs_nopt[1]].pt(), weight );
   }
   
   //enforce exactly two leptons and SF requirement
@@ -347,26 +396,38 @@ void Looper::FillEventHistos ()
 	WEvent();
 
 }
+//end FillEventHistos
 
-void Looper::WEvent()
-{
+void Looper::WEvent() {
+  
+  // histogram indices are e, m, all (0, 1, 2)
+  // get lep_type, lep_p4
+  unsigned int lep_type = 0; //default el
+  LorentzVector lep_p4;
+  if( elidxs[0] == -1 ) { //no els
+	lep_type = 1;
+	lep_p4 = cms2.mus_p4()[muidxs[0]];
+  }
+  else 
+	lep_p4 = cms2.els_p4()[elidxs[0]];
+	
+  hlep_met[lep_type]->Fill(cms2.evt_tcmet(), weight);
+  hlep_met[2]->Fill(cms2.evt_tcmet(), weight);
+
   //put the event-ish cuts here
   if( cms2.evt_tcmet() <= 20 )
 	return;
 
-  // histogram indices are e, m, all (0, 1, 2)
-  unsigned int lep_type = 0; //default el
-  if( elidxs[0] == -1 ) //no els
-	lep_type = 1;
-
   //this is xyze
   double masst = ( LorentzVector(cms2.evt_tcmet()*cos(cms2.evt_tcmetPhi()), cms2.evt_tcmet()*sin(cms2.evt_tcmetPhi()), 0, cms2.evt_tcmet())
-				   + (lep_type == 0 ? cms2.els_p4()[elidxs[0]] : cms2.mus_p4()[muidxs[0]]) ).mt();
+				   + lep_p4 ).mt();
+				   //+ (lep_type == 0 ? cms2.els_p4()[elidxs[0]] : cms2.mus_p4()[muidxs[0]]) ).mt();
+
+  hlep_mass[lep_type]->Fill( masst, weight ); //check all cuts but mass for mass plot (n-1)
+  hlep_mass[2]->Fill( masst, weight );
+
   if( masst <= 40 || masst >= 100 )
 	return;
-
-  // get the event weight
-  float weight = cms2.evt_scale1fb() * sample_.kFactor / 1000; //1pb
 
   //if (cms2.mus_p4().size() == 0) lep_type = 0;
 
@@ -378,33 +439,61 @@ void Looper::WEvent()
 
   //if ((cuts_passed & cuts) == cuts) {
 
-  if( lep_type == 0 ) {	
-	h1_lep_pt_[lep_type]->Fill(cms2.els_p4()[elidxs[0]].pt(), weight);
-	h1_lep_pt_[2]->Fill(cms2.els_p4()[elidxs[0]].pt(), weight);
-		
-	h1_lep_met_[lep_type]->Fill(cms2.evt_tcmet(), weight);
-	h1_lep_met_[2]->Fill(cms2.evt_tcmet(), weight);
+  //jet vars--single lepton
+  int njets_20 = 0;
+  int njets_30 = 0;
+  //this code ripped from selections.cc->getCaloJets
+  //vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > calo_jets;
+  //calo_jets.clear();
+  
+  for( unsigned int jj=0; jj < cms2.jets_p4().size(); ++jj) {
+    //if( dRbetweenVectors(lep_p4, cms2.jets_p4()[jj]) < 0.4 )
+	if(  ROOT::Math::VectorUtil::DeltaR(lep_p4, cms2.jets_p4()[jj]) < 0.4 )
+		//(dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.jets_p4()[jj]) < 0.4)
+	  continue;
+    if (fabs(cms2.jets_p4()[jj].Eta()) > 2.4)
+	  continue;
+    //if (cms2.jets_emFrac()[jj] < 0.1) continue;
+	//count
+    if (cms2.jets_p4()[jj].pt() > 20)
+	  njets_20++;
+    if (cms2.jets_p4()[jj].pt() > 30)
+	  njets_30++;
+    //calo_jets.push_back(cms2.jets_p4()[jj]);
+  }
+  
+  //if (calo_jets.size() > 1) {
+  //sort(calo_jets.begin(), calo_jets.end(),  comparePt);
+  //}
+  //return calo_jets;
+
+  hlep_njet20[lep_type]->Fill(njets_20, weight);
+  hlep_njet20[2]->Fill(njets_20, weight);
+  hlep_njet30[lep_type]->Fill(njets_30, weight);
+  hlep_njet30[2]->Fill(njets_30, weight);
+
+  if( lep_type == 0 ) {
+	//fill lep pt before/during lep selection
+	//hlep_pt[lep_type]->Fill(cms2.els_p4()[elidxs[0]].pt(), weight);
+	//hlep_pt[2]->Fill(cms2.els_p4()[elidxs[0]].pt(), weight);
 
 	float dphi = acos(cos(cms2.evt_tcmetPhi() - cms2.els_p4()[elidxs[0]].Phi() ));
-	h1_lep_met_dphi_[lep_type]->Fill(dphi, weight);
-	h1_lep_met_dphi_[2]->Fill(dphi, weight);
+	hlep_met_dphi[lep_type]->Fill(dphi, weight);
+	hlep_met_dphi[2]->Fill(dphi, weight);
 
-	h1_lep_tkIso_[lep_type]->Fill(cms2.els_tkIso()[elidxs[0]], weight);
-	h1_lep_tkIso_[2]->Fill(cms2.els_tkIso()[elidxs[0]], weight);
+	hlep_trckIso[lep_type]->Fill(cms2.els_tkIso()[elidxs[0]], weight);
+	hlep_trckIso[2]->Fill(cms2.els_tkIso()[elidxs[0]], weight);
   }
-  if (lep_type == 1) {
-	h1_lep_pt_[lep_type]->Fill(cms2.mus_p4()[muidxs[0]].pt(), weight);
-	h1_lep_pt_[2]->Fill(cms2.mus_p4()[muidxs[0]].pt(), weight);
-                
-	h1_lep_met_[lep_type]->Fill(cms2.evt_tcmet(), weight);
-	h1_lep_met_[2]->Fill(cms2.evt_tcmet(), weight);
+  else if (lep_type == 1) {
+	//hlep_pt[lep_type]->Fill(cms2.mus_p4()[muidxs[0]].pt(), weight);
+	//hlep_pt[2]->Fill(cms2.mus_p4()[muidxs[0]].pt(), weight);
 	
 	float dphi = acos(cos(cms2.evt_tcmetPhi() - cms2.mus_p4()[muidxs[0]].Phi() ));
-	h1_lep_met_dphi_[lep_type]->Fill(dphi, weight);
-	h1_lep_met_dphi_[2]->Fill(dphi, weight);
+	hlep_met_dphi[lep_type]->Fill(dphi, weight);
+	hlep_met_dphi[2]->Fill(dphi, weight);
 	
-	h1_lep_tkIso_[lep_type]->Fill(cms2.mus_iso03_sumPt()[muidxs[0]], weight);
-	h1_lep_tkIso_[2]->Fill(cms2.mus_iso03_sumPt()[muidxs[0]], weight);
+	hlep_trckIso[lep_type]->Fill(cms2.mus_iso03_sumPt()[muidxs[0]], weight);
+	hlep_trckIso[2]->Fill(cms2.mus_iso03_sumPt()[muidxs[0]], weight);
 
   }
 
@@ -421,10 +510,7 @@ void Looper::WEvent()
 
 void Looper::ZEvent ()
 {
-
-  // get the event weight
-  float weight = cms2.evt_scale1fb() * sample_.kFactor / 1000; //1pb
-  h1_dilep_nhyp_->Fill(cms2.hyp_p4().size(), weight);
+  //hdilep_nhyp_->Fill(cms2.hyp_p4().size(), weight);
 
   // define the cuts to be used
   cuts_t cuts = (CUT_BIT(DILEP_PT)
@@ -433,6 +519,7 @@ void Looper::ZEvent ()
 				 //| CUT_BIT(LEP_GOOD) //these already checked
 				 //| CUT_BIT(LEP_ISO)
 				 );
+  cuts_t cuts_nomass = (CUT_BIT(DILEP_PT) | CUT_BIT(DILEP_OS));
 
   //get leptons from indicies, not hyps
   //for( unsigned int i = 0; i < cms2.hyp_p4().size(); ++i) {
@@ -451,40 +538,90 @@ void Looper::ZEvent ()
   //cuts_passed |= LepSelect( abs(cms2.hyp_lt_id()[i]) == 11 ? 0 : 1, cms2.hyp_lt_index()[i] );
   //cuts_passed |= LepSelect( abs(cms2.hyp_ll_id()[i]) == 11 ? 0 : 1, cms2.hyp_ll_index()[i] );
 
+  //lep vars
+  LorentzVector lep1_p4, lep2_p4;	
+  double pt1=0, pt2=0, mass=0;
+  if( elidxs[0] != -1 && elidxs[1] != -1 ) {
+	lep1_p4 = cms2.els_p4()[elidxs[0]];
+	lep2_p4 = cms2.els_p4()[elidxs[1]];
+	pt1 = cms2.els_p4()[elidxs[0]].pt();
+	pt2 = cms2.els_p4()[elidxs[1]].pt();
+	mass = (cms2.els_p4()[elidxs[0]] + cms2.els_p4()[elidxs[1]]).mass();
+  }
+  else if( muidxs[0] != -1 && muidxs[1] != -1 ) {
+	lep1_p4 = cms2.mus_p4()[muidxs[0]];
+	lep2_p4 = cms2.mus_p4()[muidxs[1]];
+	pt1 = cms2.mus_p4()[muidxs[0]].pt();
+	pt2 = cms2.mus_p4()[muidxs[1]].pt();
+	mass = (cms2.mus_p4()[muidxs[0]] + cms2.mus_p4()[muidxs[1]]).mass();
+  }
+  else {
+	cout << "BAD LEP INDXS IN ZEVENT\n" << endl;
+	exit(1);
+  }
+
+  //fill pt hists before/during lep selection
+  // fill histograms for the 0th lepton
+  //hdilep_0_pt[myType]->Fill(cms2.hyp_lt_p4()[i].pt(), weight);
+  //hdilep_0_pt[DILEPTON_ALL]->Fill(cms2.hyp_lt_p4()[i].pt(), weight);
+  //hdilep_0_pt[myType]->Fill(pt1, weight);
+  //hdilep_0_pt[DILEPTON_ALL]->Fill(pt1, weight);
+	
+  // fill histograms for the 1th lepton
+  //hdilep_1_pt[myType]->Fill(cms2.hyp_ll_p4()[i].pt(), weight);
+  //hdilep_1_pt[DILEPTON_ALL]->Fill(cms2.hyp_ll_p4()[i].pt(), weight);
+  //hdilep_1_pt[myType]->Fill(pt2, weight);
+  //hdilep_1_pt[DILEPTON_ALL]->Fill(pt2, weight);
+	
+  // fill hypothesis level histograms
+  //hdilep_mass[myType]->Fill(cms2.hyp_p4()[i].mass(), weight);
+  //hdilep_mass[DILEPTON_ALL]->Fill(cms2.hyp_p4()[i].mass(), weight);
+  if( (cuts_passed & cuts_nomass) == cuts_nomass ) {
+	hdilep_mass[myType]->Fill(mass, weight);
+	hdilep_mass[DILEPTON_ALL]->Fill(mass, weight);
+  }
+
   if( (cuts_passed & cuts) == cuts ) {
 
-	double pt1=0, pt2=0, mass=0;
-	if( elidxs[0] != -1 ) {
-	  pt1 = cms2.els_p4()[elidxs[0]].pt();
-	  pt2 = cms2.els_p4()[elidxs[1]].pt();
-	  mass = (cms2.els_p4()[elidxs[0]] + cms2.els_p4()[elidxs[1]]).mass();
+	//jet vars--dilep case
+	int njets_20 = 0;
+	int njets_30 = 0;
+	//this code ripped from selections.cc->getCaloJets
+	//vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > calo_jets;
+	//calo_jets.clear();
+  
+	for( unsigned int jj=0; jj < cms2.jets_p4().size(); ++jj) {
+	  //if( dRbetweenVectors(lep1_p4, cms2.jets_p4()[jj]) < 0.4 ||
+	  //  dRbetweenVectors(lep2_p4, cms2.jets_p4()[jj]) < 0.4 )
+	  if(  ROOT::Math::VectorUtil::DeltaR(lep1_p4, cms2.jets_p4()[jj]) < 0.4 ||
+		   ROOT::Math::VectorUtil::DeltaR(lep2_p4, cms2.jets_p4()[jj]) < 0.4 )
+		  continue;
+	  if (fabs(cms2.jets_p4()[jj].Eta()) > 2.4)
+		continue;
+	  //if (cms2.jets_emFrac()[jj] < 0.1) continue;
+	  //count
+	  if (cms2.jets_p4()[jj].pt() > 20)
+		njets_20++;
+	  if (cms2.jets_p4()[jj].pt() > 30)
+		njets_30++;
+	  //calo_jets.push_back(cms2.jets_p4()[jj]);
 	}
-	else {
-	  pt1 = cms2.mus_p4()[muidxs[0]].pt();
-	  pt2 = cms2.mus_p4()[muidxs[1]].pt();
-	  mass = (cms2.mus_p4()[muidxs[0]] + cms2.mus_p4()[muidxs[1]]).mass();
-	}
+  
+	//if (calo_jets.size() > 1) {
+	//sort(calo_jets.begin(), calo_jets.end(),  comparePt);
+	//}
+	//return calo_jets;
 	
-	// fill histograms for the 0th lepton
-	//h1_dilep_0_pt_[myType]->Fill(cms2.hyp_lt_p4()[i].pt(), weight);
-	//h1_dilep_0_pt_[DILEPTON_ALL]->Fill(cms2.hyp_lt_p4()[i].pt(), weight);
-	h1_dilep_0_pt_[myType]->Fill(pt1, weight);
-	h1_dilep_0_pt_[DILEPTON_ALL]->Fill(pt1, weight);
-	
-	// fill histograms for the 1th lepton
-	//h1_dilep_1_pt_[myType]->Fill(cms2.hyp_ll_p4()[i].pt(), weight);
-	//h1_dilep_1_pt_[DILEPTON_ALL]->Fill(cms2.hyp_ll_p4()[i].pt(), weight);
-	h1_dilep_1_pt_[myType]->Fill(pt2, weight);
-	h1_dilep_1_pt_[DILEPTON_ALL]->Fill(pt2, weight);
-	
-	// fill hypothesis level histograms
-	//h1_dilep_mass_[myType]->Fill(cms2.hyp_p4()[i].mass(), weight);
-	//h1_dilep_mass_[DILEPTON_ALL]->Fill(cms2.hyp_p4()[i].mass(), weight);
-	h1_dilep_mass_[myType]->Fill(mass, weight);
-	h1_dilep_mass_[DILEPTON_ALL]->Fill(mass, weight);
+	hdilep_njet20[myType]->Fill(njets_20, weight);
+	hdilep_njet20[DILEPTON_ALL]->Fill(njets_20, weight);
+	hdilep_njet30[myType]->Fill(njets_30, weight);
+	hdilep_njet30[DILEPTON_ALL]->Fill(njets_30, weight);
 
-	h1_dilep_met_[myType]->Fill(cms2.evt_tcmet(), weight);
-	h1_dilep_met_[DILEPTON_ALL]->Fill(cms2.evt_tcmet(), weight);
+	//no met cut, so require all cuts for met plot
+	hdilep_met[myType]->Fill(cms2.evt_tcmet(), weight);
+	hdilep_met[DILEPTON_ALL]->Fill(cms2.evt_tcmet(), weight);
+
+	//all other hists need to fill before checking cuts
 
 	dcands_passing_[myType] += weight;
 	dcands_passing_w2_[myType] += weight * weight;
