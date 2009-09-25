@@ -84,6 +84,38 @@ void Looper::BookHistos ()
                                                  Form("%s_%s_%s", SampleName().c_str(), "Highlep_RelIsoPtLg20", hyp.c_str()), 
                                                  "Highlep_RelIsoPtLg20", 120, -0.1, 1.1);
         FormatHist(h1_lep_HighptRelIsoPtLg20_[i]);
+
+        ////
+        h1_lep_Lowpt_[i] = new TH1F(
+                                     Form("%s_%s_%s", SampleName().c_str(), "Lowlep_pt", hyp.c_str()), 
+                                     "Lowlep_pt", 100, 0.0, 100.0);
+        FormatHist(h1_lep_Lowpt_[i]);
+        
+        h1_lep_LowptMet_[i] = new TH1F(
+                                        Form("%s_%s_%s", SampleName().c_str(), "Lowlep_Met", hyp.c_str()), 
+                                        "Lowlep_Met", 100, 0.0, 100.0);
+        FormatHist(h1_lep_LowptMet_[i]);
+        
+        h1_lep_LowptRelIso_[i] = new TH1F(
+                                           Form("%s_%s_%s", SampleName().c_str(), "Lowlep_RelIso", hyp.c_str()), 
+                                           "Lowlep_RelIso", 120, -0.1, 1.1);
+        FormatHist(h1_lep_LowptRelIso_[i]);
+        
+        h1_lep_LowptRelIsoPtLg20_[i] = new TH1F(
+                                                 Form("%s_%s_%s", SampleName().c_str(), "Lowlep_RelIsoPtLg20", hyp.c_str()), 
+                                                 "Lowlep_RelIsoPtLg20", 120, -0.1, 1.1);
+        FormatHist(h1_lep_LowptRelIsoPtLg20_[i]);
+
+        h1_lep_LowptNLepGt10Lt20_[i] = new TH1F(
+                                                 Form("%s_%s_%s", SampleName().c_str(), "Lowlep_NLepGt10Lt20", hyp.c_str()), 
+                                                 "Lowlep_NLepGt10Lt20", 21, -0.5, 20.5);
+        FormatHist(h1_lep_LowptNLepGt10Lt20_[i]);
+
+        h1_lep_LowptNLepGt20_[i] = new TH1F(
+                                                 Form("%s_%s_%s", SampleName().c_str(), "Lowlep_NLepGt20", hyp.c_str()), 
+                                                 "Lowlep_NLepGt20", 21, -0.5, 20.5);
+        FormatHist(h1_lep_LowptNLepGt20_[i]);
+
   }
 
   // di-lepton histograms (three + 1 types)
@@ -206,33 +238,66 @@ void Looper::FillEventHistos ()
   
   
   // have a look at the highest pt electron
-  for(uint ele = 0; ele < cms2.els_p4().size(); ++ele) {
+  for(int ele = 0; ele < (int)cms2.els_p4().size(); ++ele) {
     if(cms2.els_p4()[ele].pt() > hiPtmax && GoodSusyElectronWithoutIsolation(ele) ) hiPtIdx = ele;
   }
-  
+
   // histogram indices are e, m, all (0, 1, 2)
   if(hiPtIdx != -1)  {
-    h1_lep_Highpt_[0]   ->Fill(cms2.els_p4()[hiPtIdx].pt(), weight);
-    h1_lep_HighptMet_[0]->Fill(cms2.evt_tcmet(), weight);
-    h1_lep_HighptRelIso_[0]->Fill(inv_el_relsusy_iso(hiPtIdx, true), weight);
-    if(cms2.els_p4()[hiPtIdx].pt() > 20. ) h1_lep_HighptRelIsoPtLg20_[0]->Fill(inv_el_relsusy_iso(hiPtIdx, true), weight);
+    h1_lep_Highpt_[0]                                                    ->Fill(cms2.els_p4()[hiPtIdx].pt(), weight);
+    h1_lep_HighptMet_[0]                                                 ->Fill(cms2.evt_tcmet(), weight);
+    h1_lep_HighptRelIso_[0]                                              ->Fill(inv_el_relsusy_iso(hiPtIdx, true), weight);
+    if(cms2.els_p4()[hiPtIdx].pt() > 20. ) h1_lep_HighptRelIsoPtLg20_[0] ->Fill(inv_el_relsusy_iso(hiPtIdx, true), weight);
   }
-  
+
+ // have a look at all but the highest pt electron
+  uint nEleGt10Lt20 = 0;
+  uint nEleGt20     = 0;
+  for(int ele = 0; ele <  (int)cms2.els_p4().size(); ++ele) {
+    if(hiPtIdx != -1 && hiPtIdx != ele) {
+      h1_lep_Lowpt_[0]                                                ->Fill(cms2.els_p4()[ele].pt(), weight);
+      h1_lep_LowptMet_[0]                                             ->Fill(cms2.evt_tcmet(), weight);
+      h1_lep_LowptRelIso_[0]                                          ->Fill(inv_el_relsusy_iso(ele, true), weight);
+      if(cms2.els_p4()[ele].pt() > 20. ) h1_lep_LowptRelIsoPtLg20_[0] ->Fill(inv_el_relsusy_iso(hiPtIdx, true), weight);
+      if(cms2.els_p4()[ele].pt() > 10. && (cms2.els_p4()[ele].pt() < 20. )) ++nEleGt10Lt20;
+      if(cms2.els_p4()[ele].pt() > 20. )                                    ++nEleGt20;
+    }
+  }
+  h1_lep_LowptNLepGt10Lt20_[0]->Fill(nEleGt10Lt20, weight);
+  h1_lep_LowptNLepGt20_[0]    ->Fill(nEleGt20, weight);
+
   // have a look at the highest pt muon
   // reset highpt index
   hiPtIdx    = -1;
   hiPtmax    = -1.;
-  for(uint muo = 0; muo < cms2.mus_p4().size(); ++muo) {
+  for(int muo = 0; muo <  (int)cms2.mus_p4().size(); ++muo) {
     if(cms2.mus_p4()[muo].pt() > hiPtmax && GoodSusyMuonWithoutIsolation(muo) ) hiPtIdx = muo;
   }
   
   // histogram indices are e, m, all (0, 1, 2)
   if(hiPtIdx != -1)  {
-    h1_lep_Highpt_[1]   ->Fill(cms2.mus_p4()[hiPtIdx].pt(), weight);
-    h1_lep_HighptMet_[1]->Fill(cms2.evt_tcmet(), weight);
-    h1_lep_HighptRelIso_[1]->Fill(inv_mu_relsusy_iso(hiPtIdx), weight);
-    if(cms2.mus_p4()[hiPtIdx].pt() > 20. ) h1_lep_HighptRelIsoPtLg20_[1]->Fill(inv_mu_relsusy_iso(hiPtIdx), weight);
+    h1_lep_Highpt_[1]                                                    ->Fill(cms2.mus_p4()[hiPtIdx].pt(), weight);
+    h1_lep_HighptMet_[1]                                                 ->Fill(cms2.evt_tcmet(), weight);
+    h1_lep_HighptRelIso_[1]                                              ->Fill(inv_mu_relsusy_iso(hiPtIdx), weight);
+    if(cms2.mus_p4()[hiPtIdx].pt() > 20. ) h1_lep_HighptRelIsoPtLg20_[1] ->Fill(inv_mu_relsusy_iso(hiPtIdx), weight);
   }
+
+  // have a look at all but the highest pt muoctron
+  uint nMuoGt10Lt20 = 0;
+  uint nMuoGt20     = 0;
+  for(int muo = 0; muo <  (int)cms2.mus_p4().size(); ++muo) {
+    if(hiPtIdx != -1 && hiPtIdx != muo) {
+      h1_lep_Lowpt_[1]                                                ->Fill(cms2.mus_p4()[muo].pt(), weight);
+      h1_lep_LowptMet_[1]                                             ->Fill(cms2.evt_tcmet(), weight);
+      h1_lep_LowptRelIso_[1]                                          ->Fill(inv_mu_relsusy_iso(muo), weight);
+      if(cms2.mus_p4()[muo].pt() > 20. ) h1_lep_LowptRelIsoPtLg20_[1] ->Fill(inv_mu_relsusy_iso(muo), weight);
+      if(cms2.mus_p4()[muo].pt() > 10. && (cms2.mus_p4()[muo].pt() < 20. )) ++nMuoGt10Lt20;
+      if(cms2.mus_p4()[muo].pt() > 20. )                                    ++nMuoGt20;
+    }
+  }
+  h1_lep_LowptNLepGt10Lt20_[1]->Fill(nMuoGt10Lt20, weight);
+  h1_lep_LowptNLepGt20_[1]    ->Fill(nMuoGt20, weight);
+
   
   // need to determine if this is a di-lepton
   // or a single lepton event

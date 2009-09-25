@@ -57,6 +57,13 @@ protected:
   TH1F	*h1_lep_HighptRelIso_[3];
   TH1F	*h1_lep_HighptRelIsoPtLg20_[3];
 
+  TH1F	*h1_lep_Lowpt_[3];
+  TH1F	*h1_lep_LowptMet_[3];
+  TH1F	*h1_lep_LowptRelIso_[3];
+  TH1F	*h1_lep_LowptRelIsoPtLg20_[3];
+  TH1F	*h1_lep_LowptNLepGt10Lt20_[3];
+  TH1F	*h1_lep_LowptNLepGt20_[3];
+
   TH1F	*h1_dilep_0_pt_[4];
   TH1F	*h1_dilep_1_pt_[4];
   TH1F 	*h1_dilep_mass_[4];
