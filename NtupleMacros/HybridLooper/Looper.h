@@ -6,6 +6,8 @@
 #include "Tools/LooperBase.h"
 
 #include "Cuts.h"
+#include "EffMulti.h"
+
 
 //----------------------------------------------------------------------
 // Loopers 
@@ -59,6 +61,8 @@ protected:
 
 	// do stuff with histogram
 	void FormatHist(TH1F** hist, std::string name, Int_t n, Float_t min, Float_t max);
+	void FormatEffHist(EffMulti** hist, bool lessThan, 
+				float thresholdEB, float ThresholdEE, std::string name);
 
 public:
      // these functions are called by the table-printing code
@@ -75,6 +79,7 @@ protected:
 	//
         TH1F    *h1_pt_[2];
         TH1F    *h1_eta_[2];
+	TH1F	*h1_phi_[2];
         TH1F    *h1_wwIsoAll_[2];
 
 	// isolation
@@ -96,6 +101,11 @@ protected:
 	TH1F	*h1_eopIn_[2];
 	TH1F 	*h1_d0corr_[2];
 	TH1F	*h1_closestMuon_[2];
+
+        EffMulti *em_dEtaIn_[2];
+        EffMulti *em_dPhiIn_[2];
+        EffMulti *em_hoe_[2];           
+        EffMulti *em_sieie_[2];
 
 protected:
      // count the (weighted and unweighted) number of candidates passing our cuts

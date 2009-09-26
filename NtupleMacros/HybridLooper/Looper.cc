@@ -9,8 +9,8 @@
 // CMS2 related
 #include "../../NtupleMaker/interface/EgammaFiduciality.h"
 
-Looper::Looper (Sample s, cuts_t c, const char *fname) 
-			: LooperBase(s, c, fname)
+	Looper::Looper (Sample s, cuts_t c, const char *fname) 
+: LooperBase(s, c, fname)
 {
 	// zero out the candidate counters (don't comment this out)
 	memset(cands_passing_	, 0, sizeof(cands_passing_       ));
@@ -31,6 +31,17 @@ void Looper::FormatHist(TH1F** hist, std::string name, Int_t n, Float_t min, Flo
 	}
 }
 
+void Looper::FormatEffHist(EffMulti** hist, bool lessThan, float thresholdEB, float thresholdEE, std::string name)
+{
+        // loop on EB, EE
+        for (unsigned int i = 0; i < 2; ++i)
+        {
+                std::string det = "eb";
+                if (i == 1) det = "ee";
+	        hist[i] = new EffMulti(lessThan, thresholdEB, thresholdEE, SampleName(), name, det);
+        }
+}
+
 void Looper::BookHistos ()
 {
 
@@ -38,6 +49,7 @@ void Looper::BookHistos ()
 	//
 	FormatHist(h1_pt_, "h1_pt", 100, 0, 100);
 	FormatHist(h1_eta_, "h1_eta", 100, -3, 3);
+        FormatHist(h1_phi_, "h1_phi", 100, -4, 4);
 	FormatHist(h1_wwIsoAll_, "h1_wwIsoAll", 100, 0.0, 1.0);
 
 	// Isolation related
@@ -60,8 +72,14 @@ void Looper::BookHistos ()
 	FormatHist(h1_d0corr_, "h1_d0corr", 100, -0.2, 0.2);
 	FormatHist(h1_closestMuon_, "h1_closestMuon", 100, -1, 5);
 
-}
+	// The "Egamma robust tight V1 (2_2_X tune)"
+	//
+	FormatEffHist(em_dEtaIn_, true, 0.0040, 0.0066, "dEtaIn");
+	FormatEffHist(em_dPhiIn_, true, 0.025, 0.020, "dPhiIn");
+        FormatEffHist(em_hoe_, true, 0.01, 0.01, "hoe");
+        FormatEffHist(em_sieie_, true, 0.0099, 0.028, "sieie");
 
+}
 
 bool Looper::FilterEvent()
 { 
@@ -113,17 +131,19 @@ void Looper::FillEventHistos ()
 		{
 
 			// matched to an mc electron	
-			if (		abs(cms2.els_mc_id()[i]) == 11
-					// 20 GeV Pt
-					&& cms2.els_p4()[i].Pt() < 20.0 
-					// Is a regular 'Egamma' electron - not PFlow!
-					&& (cms2.els_type()[i] & (1<<ISECALDRIVEN)));
+			if (	
+//	abs(cms2.els_mc3_id()[i]) != 11
+//					// 20 GeV Pt
+					 cms2.els_p4()[i].Pt() < 20.0 ) 
+//					// Is a regular 'Egamma' electron - not PFlow!
+//					 (! (cms2.els_type()[i] & (1<<ISECALDRIVEN))) )
+				continue;
+
 
 			// determine what detector the electron is in
 			int det = -1;
 			if (cms2.els_fiduciality()[i] & (1<<ISEB)) det = 0;
 			else if (cms2.els_fiduciality()[i] & (1<<ISEE)) det = 1;
-
 			// check that electron is in either EE or EB
 			if (det == -1) {
 				std::cout << "Not fiducial: " << cms2.els_etaSC()[i] << std::endl;
@@ -138,8 +158,11 @@ void Looper::FillEventHistos ()
 			// electron id related
 			//
 			h1_pt_[det]->Fill(cms2.els_p4()[i].Pt(), weight);
-			h1_eta_[det]->Fill(cms2.els_p4()[i].Eta(), weight);
+			h1_eta_[det]->Fill(cms2.els_etaSC()[i], weight);
+			std::cout << "eta, phi: " << cms2.els_p4()[i].Eta() << ", " <<  cms2.els_p4()[i].Phi() << std::endl;
+			h1_phi_[det]->Fill(cms2.els_phiSC()[i], weight);
 			h1_wwIsoAll_[det]->Fill(isoSum / cms2.els_p4()[i].Pt(), weight);
+
 			if (isoSum / cms2.els_p4()[i].Pt() < 0.15) {
 
 				h1_dEtaIn_[det]->Fill(fabs(cms2.els_dEtaIn()[i]), weight);
@@ -152,6 +175,21 @@ void Looper::FillEventHistos ()
 				h1_eopIn_[det]->Fill(cms2.els_eOverPIn()[i], weight);
 				h1_d0corr_[det]->Fill(cms2.els_d0corr()[i], weight);
 				h1_closestMuon_[det]->Fill(cms2.els_closestMuon()[i], weight);
+
+				// Efficiency histograms for the Egamma robust tight V1 (2_2_X) tune...
+				//
+				em_dEtaIn_[det]->Fill(fabs(cms2.els_dEtaIn()[i]),
+					cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+
+				em_dPhiIn_[det]->Fill(fabs(cms2.els_dPhiIn()[i]),
+					cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+
+				em_hoe_[det]->Fill(fabs(cms2.els_hOverE()[i]),
+					cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+
+				em_sieie_[det]->Fill(fabs(cms2.els_sigmaIEtaIEta()[i]),
+					cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+
 			}
 
 			// iso related
@@ -164,6 +202,7 @@ void Looper::FillEventHistos ()
 				h1_tkIso03_[det]->Fill(tkIso/cms2.els_p4()[i].Pt(), weight);
 				h1_wwIso_[det]->Fill(isoSum / cms2.els_p4()[i].Pt(), weight);
 			}
+
 
 		} // end loop on electrons
 

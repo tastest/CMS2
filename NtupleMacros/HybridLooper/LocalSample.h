@@ -6,6 +6,7 @@
 #include <string>
 
 Sample fValidation();
+Sample fZZ_7TeV();
 
 Sample fWenu ();
 Sample fBC30_80 ();

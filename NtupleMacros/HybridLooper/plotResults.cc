@@ -58,6 +58,78 @@ void plotEff(HistogramUtilities &h1, TString name, TString det, bool ascending)
 
 }
 
+void plotEffVar(HistogramUtilities &h1, TString name, Int_t rebin = 1)
+{
+
+        TCanvas *c = new TCanvas();
+        TH1F *h1_eff = 0;
+        TH1F *h1_total = 0;
+        TH1F *h1_pass = 0;
+
+        h1_total = h1.getHistogram(theSignal, name, "", "denom", rebin);
+        h1_pass = h1.getHistogram(theSignal, name, "", "numer", rebin);
+        h1_eff = (TH1F*)h1_pass->Clone();
+        h1_eff->Reset();
+        h1_eff->Divide(h1_pass, h1_total, 1.0, 1.0, "B");
+        h1_eff->SetName(h1_pass->GetName());
+        c->SetName(TString("c_s_") + h1_pass->GetName());
+        c->cd();
+        h1_eff->Draw();
+        Utilities::saveCanvas(c, "results/effVar_s_" + name);
+
+
+        h1_total = h1.getHistogram(theBackground, name, "", "denom", rebin);
+        h1_pass = h1.getHistogram(theBackground, name, "", "numer", rebin);
+        h1_eff->Reset();
+        h1_eff->Divide(h1_pass, h1_total, 1.0, 1.0, "B");
+        h1_eff->SetName(h1_pass->GetName());
+        c->SetName(TString("c_bg_") + h1_pass->GetName());
+        c->cd();
+        h1_eff->Draw();
+        Utilities::saveCanvas(c, "results/effVar_bg_" + name);
+
+        delete c;
+        delete h1_eff;
+        delete h1_pass;
+        delete h1_total;
+}
+
+void test()
+{
+        TString det = "eb";
+        gROOT->ProcessLine(".L ~/tdrStyle.C");
+        gROOT->ProcessLine("setTDRStyle()");
+        HistogramUtilities h1("Results.root", 0.001);
+
+        plotEffVar(h1, "dEtaIn_pt_ee");
+        plotEffVar(h1, "dEtaIn_eta_ee");
+        plotEffVar(h1, "dEtaIn_phi_ee");
+        plotEffVar(h1, "dEtaIn_pt_eb");
+        plotEffVar(h1, "dEtaIn_eta_eb");
+        plotEffVar(h1, "dEtaIn_phi_eb");
+
+        plotEffVar(h1, "dPhiIn_pt_ee", 4);
+        plotEffVar(h1, "dPhiIn_eta_ee");
+        plotEffVar(h1, "dPhiIn_phi_ee");
+        plotEffVar(h1, "dPhiIn_pt_eb", 4);
+        plotEffVar(h1, "dPhiIn_eta_eb");
+        plotEffVar(h1, "dPhiIn_phi_eb");
+
+        plotEffVar(h1, "hoe_pt_ee", 4);
+        plotEffVar(h1, "hoe_eta_ee");
+        plotEffVar(h1, "hoe_phi_ee");
+        plotEffVar(h1, "hoe_pt_eb", 4);
+        plotEffVar(h1, "hoe_eta_eb");
+        plotEffVar(h1, "hoe_phi_eb");
+
+        plotEffVar(h1, "sieie_pt_ee", 4);
+        plotEffVar(h1, "sieie_eta_ee");
+        plotEffVar(h1, "sieie_phi_ee");
+        plotEffVar(h1, "sieie_pt_eb", 4);
+        plotEffVar(h1, "sieie_eta_eb");
+        plotEffVar(h1, "sieie_phi_eb");
+}
+
 void plotResults(TString det)
 {
 
