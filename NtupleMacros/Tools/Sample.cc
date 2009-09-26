@@ -169,7 +169,7 @@ Sample fWjetsAlpgenSingle ()
      sample = prefix + "cms2-V01-03-01/W_5jet_Pt800to1600-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
      c->Add(sample.c_str());
 
-     Sample ret = { c, Wjets, 40, 1, "wjetsAlpgen", true, 0. };
+     Sample ret = { c, Wjets, 34, 1, "wjetsAlpgen", true, 0. };
      return ret;
 }
 
@@ -178,7 +178,7 @@ Sample fWejetsAlpgenSingle ()
 {
      Sample ret = fWjetsAlpgenSingle();
      ret.process = We;
-     ret.histo_color = 41;
+     ret.histo_color = 33;
      ret.name = "wejetsAlpgen";
      return ret;
 }
@@ -188,7 +188,7 @@ Sample fWmjetsAlpgenSingle ()
 {
      Sample ret = fWjetsAlpgenSingle();
      ret.process = Wm;
-     ret.histo_color = 42;
+     ret.histo_color = 36;
      ret.name = "wmjetsAlpgen";
      return ret;
 }
@@ -198,7 +198,7 @@ Sample fWtjetsAlpgenSingle ()
 {
      Sample ret = fWjetsAlpgenSingle();
      ret.process = Wt;
-     ret.histo_color = 43;
+     ret.histo_color = 39;
      ret.name = "wtjetsAlpgen";
      return ret;
 }
@@ -319,7 +319,7 @@ Sample fZmmjetsAlpgenSingle ()
      sample = prefix + "cms2-V01-03-01/Z_5jet_Pt800to1600-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
      c->Add(sample.c_str());
 
-     Sample ret = { c, DYmm, 44, 1, "dymmAlpgen", true, 0. };
+     Sample ret = { c, DYmm, 46, 1, "dymmAlpgen", true, 0. };
      return ret;
 }
 
@@ -379,7 +379,7 @@ Sample fZttjetsAlpgenSingle ()
      sample = prefix + "cms2-V01-03-01/Z_5jet_Pt800to1600-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merge*root";
      c->Add(sample.c_str());
 
-     Sample ret = { c, DYtt, 46, 1, "dyttAlpgen", true, 0. };
+     Sample ret = { c, DYtt, 49, 1, "dyttAlpgen", true, 0. };
      return ret;
 }
 
@@ -687,7 +687,7 @@ Sample fQCDpt30 ()
      TChain *c = new TChain("Events");
      std::string sample = prefix + "cms2-V01-03-01/QCDpt30_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merge*.root";
      c->Add(sample.c_str());
-     Sample ret = { c, QCDpt30, 28, 1, "QCDpt30", true, 999999999 };
+     Sample ret = { c, QCDpt30, 29, 1, "QCDpt30", true, 999999999 };
      return ret;
 }
 
@@ -696,7 +696,7 @@ Sample fQCDpt80 ()
      TChain *c = new TChain("Events");
      std::string sample = prefix + "cms2-V01-03-01/QCDpt80_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merge*.root";
      c->Add(sample.c_str());
-     Sample ret = { c, QCDpt80, 28, 1, "QCDpt80", true, 0. };
+     Sample ret = { c, QCDpt80, 29, 1, "QCDpt80", true, 0. };
      return ret;
 }
 
@@ -705,7 +705,7 @@ Sample fInclusiveMuPt15Single ()
      TChain *c = new TChain("Events");
      std::string sample = prefix + "cms2-V01-03-01/InclusiveMuPt15_Summer08_IDEAL_V11_redigi_v1-SingleLepton/*.root";
      c->Add(sample.c_str());
-     Sample ret = { c, InclusiveMuPt15, 28, 1, "InclusiveMuPt15", true, 0. };
+     Sample ret = { c, InclusiveMuPt15, 30, 1, "InclusiveMuPt15", true, 0. };
      return ret;
 }
 
