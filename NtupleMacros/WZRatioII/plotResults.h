@@ -5,6 +5,9 @@
 #include "TString.h"
 class HistogramUtilities;
 
+
+void plotResults();
+
 void plotResultsDilep(TString hyp);
 void plotResultsLep(TString hyp);
 

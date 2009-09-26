@@ -9,25 +9,28 @@
 typedef UInt_t sources_t;
 
 enum {
-        H_WW      ,
-        H_TTBAR   ,
-        H_DYMM    ,
-        H_DYEE    ,
-        H_DYTT    ,
-        H_WJETS   ,
-        H_TW      ,
-        H_ZZ      ,
-        H_WZ,
-	H_WENU,
-	H_EM30_80,
-	H_BC30_80,
-	H_QCD30,
-        H_QCD80,
-	H_WJET_ALP,
-	H_ZEEJET_ALP,
-        H_ZMMJET_ALP,
-        H_ZTTJET_ALP,
-	H_MU15_SINGLE,
+  H_WW      ,
+  H_TTBAR   ,
+  H_DYMM    ,
+  H_DYEE    ,
+  H_DYTT    ,
+  H_WJETS   ,
+  H_TW      ,
+  H_ZZ      ,
+  H_WZ,
+  H_WENU,
+  H_EM30_80,
+  H_BC30_80,
+  H_QCD30,
+  H_QCD80,
+  H_WJET_ALP,
+  H_WEJET_ALP,
+  H_WMJET_ALP,
+  H_WTJET_ALP,
+  H_ZEEJET_ALP,
+  H_ZMMJET_ALP,
+  H_ZTTJET_ALP,
+  H_MU15_SINGLE,
 
 };
 
@@ -103,6 +106,9 @@ DataSource fH_BC30_80();
 DataSource fH_QCD30();
 DataSource fH_QCD80();
 DataSource fH_WJET_ALP();
+DataSource fH_WEJET_ALP();
+DataSource fH_WMJET_ALP();
+DataSource fH_WTJET_ALP();
 DataSource fH_ZEEJET_ALP();
 DataSource fH_ZMMJET_ALP();
 DataSource fH_ZTTJET_ALP();

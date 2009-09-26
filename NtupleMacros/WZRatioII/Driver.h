@@ -11,21 +11,22 @@
 using std::string;
 
 enum {
-	LOOP_WENU,
-	LOOP_EM30_80,
-	LOOP_BC30_80,
+  LOOP_TTBAR,
+  LOOP_WENU,
+  LOOP_EM30_80,
+  LOOP_BC30_80,
 	
-	// 2_1_X
-	LOOP_QCD30,
-	LOOP_QCD80,
-	LOOP_WJET_ALP,
-        LOOP_ZEEJET_ALP,
-        LOOP_ZMMJET_ALP,
-        LOOP_ZTTJET_ALP,
+  // 2_1_X
+  LOOP_QCD30,
+  LOOP_QCD80,
+  LOOP_WJET_ALP,
+  LOOP_ZEEJET_ALP,
+  LOOP_ZMMJET_ALP,
+  LOOP_ZTTJET_ALP,
 
-	LOOP_MU15_SINGLE,
-
-	LOOP_Z_0JET
+  LOOP_MU15_SINGLE,
+	
+  LOOP_Z_0JET
 };
 
 // helper function used to print yield tables
@@ -62,7 +63,7 @@ void printTable (const Looper **hists, int n, const char *fname,
   //single lep
   char* slepnames[3] = {"e", "m", "all"};
   for (int i = 0; i < 3; ++i) {
-	fprintf(f, "|%6s  ", slepnames[i]);
+	fprintf(f, "| %6s", slepnames[i]);
 	double cands = 0;
 	double w2 = 0;
 	for (int j = 0; j < n; ++j) {
@@ -142,7 +143,9 @@ int Results ()
 	| 1 << LOOP_MU15_SINGLE
 	| 1 << LOOP_ZEEJET_ALP
 	| 1 << LOOP_ZMMJET_ALP
-	| 1 << LOOP_ZTTJET_ALP;
+	| 1 << LOOP_ZTTJET_ALP
+	//| 1 << LOOP_TTBAR
+	;
 
   return run<Looper>(0, "Results", samples );
   //return run<Looper>(event_cuts, "Results", samples );

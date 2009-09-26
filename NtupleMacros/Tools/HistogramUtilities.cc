@@ -74,16 +74,19 @@ void HistogramUtilities::setSources() {
   sources_.push_back(   fH_EM30_80()         );
   sources_.push_back(   fH_BC30_80()         );
 
-  //sources_.push_back(   fH_WJET_ALP()   );	
+  sources_.push_back(   fH_WJET_ALP()   );	
+  sources_.push_back(   fH_WEJET_ALP()   );	
+  sources_.push_back(   fH_WMJET_ALP()   );	
+  sources_.push_back(   fH_WTJET_ALP()   );	
   //sources_.push_back(   fH_ZJET_ALP()   );	
-  //sources_.push_back(	fH_ZEEJET_ALP()	);
-  //sources_.push_back(   fH_ZMMJET_ALP() );
-  //sources_.push_back(   fH_ZTTJET_ALP() );
+  sources_.push_back(	fH_ZEEJET_ALP()	);
+  sources_.push_back(   fH_ZMMJET_ALP() );
+  sources_.push_back(   fH_ZTTJET_ALP() );
   //sources_.push_back(   fH_TTBAR_SINGLE() );
 
   sources_.push_back(	fH_QCD30()	);
   sources_.push_back(   fH_QCD80()      );
-
+  sources_.push_back(   fH_MU15_SINGLE() );
   //sources_.push_back(	 fttbarSingle()   );
   //sources_.push_back(	 fZeejetsAlpgenSingle()	  );
   //sources_.push_back(	 fZmmjetsAlpgenSingle()	  );

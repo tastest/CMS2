@@ -1,8 +1,8 @@
-# $Id: Makefile,v 1.1.2.1 2009/09/25 01:40:47 warren Exp $
+# $Id: Makefile,v 1.1.2.2 2009/09/26 03:30:45 warren Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
-CFLAGS = -Wall -Wno-unused-function -g -O2 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS) -DTOOLSLIB
+CFLAGS = -Wall -Wno-unused-function -g -O0 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS) -DTOOLSLIB
 
 LINKER = g++
 LINKERFLAGS = $(shell root-config --ldflags)
