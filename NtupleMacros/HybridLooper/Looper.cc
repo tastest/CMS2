@@ -25,7 +25,7 @@ void Looper::FormatHist(TH1F** hist, std::string name, Int_t n, Float_t min, Flo
 	{
 		std::string det = "eb";
 		if (i == 1) det = "ee";
-		hist[i] = new TH1F(Form("%s_%s_%s_", SampleName().c_str(), name.c_str(), det.c_str()), 
+		hist[i] = new TH1F(Form("%s_%s_%s", SampleName().c_str(), name.c_str(), det.c_str()), 
 				name.c_str(), n, min, max);
 		hist[i]->SetFillColor(sample_.histo_color);
 	}

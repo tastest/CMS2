@@ -7,16 +7,19 @@
 #include "TROOT.h"
 
         const static sources_t theSources_31X =
-                (1ll << H_WENU)          |
-                (1ll << H_EM30_80)       |
-                (1ll << H_BC30_80);
+		(1ll << H_ZZ);
+//                (1ll << H_WENU)          |
+//                (1ll << H_EM30_80)       |
+//                (1ll << H_BC30_80);
 
         const static sources_t theSignal_31X =
-                (1ll << H_WENU);
+		(1ll << H_ZZ);
+//                (1ll << H_WENU);
 
         const static sources_t theBackground_31X =
-                (1ll << H_EM30_80)       |
-                (1ll << H_BC30_80);
+		(1ll << H_ZZ);
+//                (1ll << H_EM30_80)       |
+//                (1ll << H_BC30_80);
 
         const static sources_t theSources_22X =
                 (1ll << H_QCD30) 	|
@@ -31,9 +34,9 @@
                 (1ll << H_QCD80);
 
 	// for 2_2_X
-	const static sources_t &theSignal = theSignal_22X;
-	const static sources_t &theBackground = theBackground_22X;
-	const static sources_t &theSources = theSources_22X;
+	const static sources_t &theSignal = theSignal_31X;
+	const static sources_t &theBackground = theBackground_31X;
+	const static sources_t &theSources = theSources_31X;
 
 void plotEff(HistogramUtilities &h1, TString name, TString det, bool ascending)
 {
@@ -66,8 +69,11 @@ void plotEffVar(HistogramUtilities &h1, TString name, Int_t rebin = 1)
         TH1F *h1_total = 0;
         TH1F *h1_pass = 0;
 
-        h1_total = h1.getHistogram(theSignal, name, "", "denom", rebin);
-        h1_pass = h1.getHistogram(theSignal, name, "", "numer", rebin);
+
+        h1_total = h1.getHistogram(theSignal, name, "", "denom", 1, "");
+        h1_pass = h1.getHistogram(theSignal, name, "", "numer", 1, "");
+        h1_total->Rebin(rebin);
+        h1_pass->Rebin(rebin);
         h1_eff = (TH1F*)h1_pass->Clone();
         h1_eff->Reset();
         h1_eff->Divide(h1_pass, h1_total, 1.0, 1.0, "B");
@@ -78,8 +84,10 @@ void plotEffVar(HistogramUtilities &h1, TString name, Int_t rebin = 1)
         Utilities::saveCanvas(c, "results/effVar_s_" + name);
 
 
-        h1_total = h1.getHistogram(theBackground, name, "", "denom", rebin);
-        h1_pass = h1.getHistogram(theBackground, name, "", "numer", rebin);
+        h1_total = h1.getHistogram(theBackground, name, "", "denom", 1, "");
+        h1_pass = h1.getHistogram(theBackground, name, "", "numer", 1, "");
+	h1_total->Rebin(rebin);
+	h1_pass->Rebin(rebin);
         h1_eff->Reset();
         h1_eff->Divide(h1_pass, h1_total, 1.0, 1.0, "B");
         h1_eff->SetName(h1_pass->GetName());
@@ -101,10 +109,10 @@ void test()
         gROOT->ProcessLine("setTDRStyle()");
         HistogramUtilities h1("Results.root", 0.001);
 
-        plotEffVar(h1, "dEtaIn_pt_ee");
+        plotEffVar(h1, "dEtaIn_pt_ee", 4);
         plotEffVar(h1, "dEtaIn_eta_ee");
         plotEffVar(h1, "dEtaIn_phi_ee");
-        plotEffVar(h1, "dEtaIn_pt_eb");
+        plotEffVar(h1, "dEtaIn_pt_eb", 4);
         plotEffVar(h1, "dEtaIn_eta_eb");
         plotEffVar(h1, "dEtaIn_phi_eb");
 
@@ -138,7 +146,10 @@ void plotResults(TString det)
 
 	// luminorm for 1pb-1
 	HistogramUtilities h1("Results.root", 0.001);
+	std::cout << "getting" << std::endl;
 	THStack *st_pt = h1.getStack(theSources, "h1_pt", "", det, 2);
+	std::cout << "got" << std::endl;
+
         THStack *st_eta = h1.getStack(theSources, "h1_eta", "", det);
 	TLegend *lg_all = h1.getLegend(theSources, "h1_pt", "", det);
 

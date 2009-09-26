@@ -7,6 +7,7 @@ class HistogramUtilities;
 
 void plotEff(HistogramUtilities &h1, TString name, TString det, bool ascending);
 void plotResults(TString det);
+void test();
 
 #endif
 
