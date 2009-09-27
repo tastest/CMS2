@@ -130,14 +130,18 @@ void Looper::FillEventHistos ()
 		for (size_t i = 0; i < cms2.evt_nels(); ++i)
 		{
 
+			std::cout << "px, py, pz: " << cms2.els_p4()[i].Px() 
+							<< ", " << cms2.els_p4()[i].Py()
+                                                        << ", " << cms2.els_p4()[i].Pz() << std::endl;
+
 			// matched to an mc electron	
 			if (	
-//	abs(cms2.els_mc3_id()[i]) != 11
-//					// 20 GeV Pt
-					 cms2.els_p4()[i].Pt() < 20.0 ) 
-//					// Is a regular 'Egamma' electron - not PFlow!
-//					 (! (cms2.els_type()[i] & (1<<ISECALDRIVEN))) )
-				continue;
+				abs(cms2.els_mc3_id()[i]) != 11
+				// 20 GeV Pt
+				|| cms2.els_p4()[i].Pt() < 20.0
+				// Is a regular 'Egamma' electron - not PFlow!
+				|| (! (cms2.els_type()[i] & (1<<ISECALDRIVEN))) )
+			continue;
 
 
 			// determine what detector the electron is in
@@ -159,7 +163,6 @@ void Looper::FillEventHistos ()
 			//
 			h1_pt_[det]->Fill(cms2.els_p4()[i].Pt(), weight);
 			h1_eta_[det]->Fill(cms2.els_etaSC()[i], weight);
-			std::cout << "eta, phi: " << cms2.els_p4()[i].Eta() << ", " <<  cms2.els_p4()[i].Phi() << std::endl;
 			h1_phi_[det]->Fill(cms2.els_phiSC()[i], weight);
 			h1_wwIsoAll_[det]->Fill(isoSum / cms2.els_p4()[i].Pt(), weight);
 

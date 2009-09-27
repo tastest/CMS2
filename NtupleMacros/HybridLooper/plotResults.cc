@@ -146,9 +146,7 @@ void plotResults(TString det)
 
 	// luminorm for 1pb-1
 	HistogramUtilities h1("Results.root", 0.001);
-	std::cout << "getting" << std::endl;
 	THStack *st_pt = h1.getStack(theSources, "h1_pt", "", det, 2);
-	std::cout << "got" << std::endl;
 
         THStack *st_eta = h1.getStack(theSources, "h1_eta", "", det);
 	TLegend *lg_all = h1.getLegend(theSources, "h1_pt", "", det);
@@ -224,9 +222,10 @@ void plotResults(TString det)
         c_id1->cd();
         st_dEtaIn->Draw();
         lg_all->Draw();
+	c_id1->Update();
         Utilities::saveCanvas(c_id1, "results/dEtaIn_" + det);
-
-        TCanvas *c_id2 = new TCanvas();
+        
+	TCanvas *c_id2 = new TCanvas();
         c_id2->cd();
         st_dPhiIn->Draw();
         lg_all->Draw();
@@ -268,12 +267,5 @@ void plotResults(TString det)
         lg_all->Draw();
         Utilities::saveCanvas(c_id8, "results/E1x5Norm5x5_" + det);
 
-
-
-
-
-
-
 }
-
 
