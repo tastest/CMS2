@@ -3,7 +3,7 @@
 #define Ana_looper_H
 #include "TH1F.h"
 #define NCHANNELS 4
-#define NHISTS 2
+#define NHISTS 1
 
 using namespace std;
 
@@ -24,7 +24,11 @@ enum {
 	kZmmGenBit              = 0x1 <<  11,  // 0x00000800 
 	kWenuGenBit             = 0x1 <<  12,  // 0x00001000 
 	kWmnuGenBit             = 0x1 <<  13,  // 0x00002000 
-	kZttGenBit              = 0x1 <<  14  // 0x00004000 
+	kZttGenBit              = 0x1 <<  14,  // 0x00004000 
+	kTLEleBit               = 0x1 <<  15, // 0x00008000                                                                                                          
+	kTLMuonBit              = 0x1 <<  16, // 0x00010000 
+	kPassZVeto1Bit          = 0x1 <<  17,   //0x00020000 
+	kPassTriggBit           = 0x1 <<  18   //0x00040000  
   };   
 class Ana_looper{
  public:
@@ -37,7 +41,12 @@ class Ana_looper{
   double Trans_W_Mass(TVector3& tcMET, ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > & p4);
  
   TH1F* els_pt[NCHANNELS][NHISTS];
+  TH1F* mus_pt[NCHANNELS][NHISTS];
   TH1F* njets[NCHANNELS][NHISTS];
-
+  TH1F* wmass[NCHANNELS][NHISTS];
+  TH1F* zmass[NCHANNELS][NHISTS];
+  TH1F* tcMET[NCHANNELS][NHISTS];
+  TH1F* dphi_metlp[NCHANNELS][NHISTS];
+ 
 };
 #endif

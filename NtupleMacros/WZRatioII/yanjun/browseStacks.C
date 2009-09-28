@@ -55,17 +55,17 @@ void browseStacks( bool makePictures=false, bool wait=true , bool addHistName = 
 
   gStyle->SetOptTitle(0);
   
-  hist::color("^ttdil_", kGreen);
-  hist::color("^ttotr_", kYellow);
+  hist::color("^TTBar_", kBlue);
   hist::color("^DYee_", kMagenta);
   hist::color("^DYmm_", kCyan);
   hist::color("^DYtautau_", kBlack);
   hist::color("^VV_", kGray);
-  hist::color("^wjets_", kViolet);
+  hist::color("^WJets_", kViolet);
+  hist::color("^ZJets_", kGreen);
   hist::color("^QCD_", kViolet+3); //use the same as in doAll
   hist::color("^t_", kRed-3);      
   hist::color("^Vgamma_", kViolet-4);      
-  hist::color("^LM0_", kBlue);
+  hist::color("^LM0_", kBlue-5);
 
   bool keep2D=false;
 
@@ -92,25 +92,28 @@ void browseStacks( bool makePictures=false, bool wait=true , bool addHistName = 
   // Find out what the names of the existing histograms are
   // The histogram names are XX_YY_ZZ, where XX is the sample,
   // eg, "tt", YY is the actual name, ZZ is the final state, eg, "ee"
-  TObjArray* myNames = getMyHistosNames("DYee","Ch0H0",keep2D);
-    
+  
+  //TObjArray* myNames = getMyHistosNames("DYee","Ch0H0",keep2D);
+  TObjArray* myNames = getMyHistosNames("ZJets","e0",keep2D);
 
   // Now loop over histograms, and make stacks
   TCanvas *c = new TCanvas();
  
   
-  c->Divide(1,2);
-  char* suffix[2];
-  suffix[0] = "Ch0H0";
-  suffix[1] = "Ch1H0";
-  // suffix[2] = "Ch0H1";
-//   suffix[3] = "Ch1H1";
+  // c->Divide(1,2);
+  c->Divide(2,2);
+  //char* suffix[2];
+  char* suffix[4];
+  suffix[0] = "e0";
+  suffix[1] = "m0";
+  suffix[2] = "ee0";
+  suffix[3] = "mm0";
   if (makePictures) c->Print("out/stacks.ps[");
   for (int i=0; i<myNames->GetEntries(); i++) {
  
-    for (int sample=0; sample<2; sample++) {
-    
-       
+    //for (int sample=0; sample<2; sample++) {
+  
+    for (int sample=0; sample<4; sample++) { 
       hist::stack(Form("%s_%s",myNames->At(i)->GetName(),suffix[sample]),
 		  Form("%s_%s$",myNames->At(i)->GetName(), suffix[sample]));
       // cout << myNames->At(i)->GetName() <<endl; 
@@ -144,14 +147,20 @@ void browseStacks( bool makePictures=false, bool wait=true , bool addHistName = 
       if ( makePictures || wait ) {
 
 	thisStack->Draw("hist");
-	string xtitle( ((TH1*)gROOT->FindObjectAny(Form("DYee_%s_%s", myNames->At(i)->GetName(), suffix[sample])))->GetXaxis()->GetTitle());
-	string ytitle( ((TH1*)gROOT->FindObjectAny(Form("DYee_%s_%s", myNames->At(i)->GetName(), suffix[sample])))->GetYaxis()->GetTitle());
+// 	string xtitle( ((TH1*)gROOT->FindObjectAny(Form("DYee_%s_%s", myNames->At(i)->GetName(), suffix[sample])))->GetXaxis()->GetTitle());
+// 	string ytitle( ((TH1*)gROOT->FindObjectAny(Form("DYee_%s_%s", myNames->At(i)->GetName(), suffix[sample])))->GetYaxis()->GetTitle());
+	string xtitle( ((TH1*)gROOT->FindObjectAny(Form("ZJets_%s_%s", myNames->At(i)->GetName(), suffix[sample])))->GetXaxis()->GetTitle());
+	string ytitle( ((TH1*)gROOT->FindObjectAny(Form("ZJets_%s_%s", myNames->At(i)->GetName(), suffix[sample])))->GetYaxis()->GetTitle());
 	thisStack->GetXaxis()->SetTitle(xtitle.c_str());
 	thisStack->GetYaxis()->SetTitle(ytitle.c_str());
+	TAxis *axisX = 	thisStack->GetXaxis();
+	TAxis *axisY = 	thisStack->GetYaxis();
+	axisX->SetTitleOffset(1.20);
+	axisY->SetTitleOffset(1.20);
 	TString hname = thisStack->GetName();
 
 	if(hname.Contains("nJets")) {
-	 
+	
 	  thisStack->GetXaxis()->SetLabelSize(0.075);
 	  thisStack->GetYaxis()->SetLabelSize(0.05);
 	  thisStack->GetXaxis()->SetTitle("N_{jets}");
@@ -176,9 +185,11 @@ void browseStacks( bool makePictures=false, bool wait=true , bool addHistName = 
     }
     if (makePictures) {
       c->Print("out/stacks.ps");
-      //c->Print(Form("out/stacks_%d.png",i+1));
-      //c->Print(Form("out/stacks_%s.png",myNames->At(i)->GetName()));
+      
       c->Print(Form("out/stacks_%s.eps",myNames->At(i)->GetName()));
+    
+      c->Print(Form("out/stacks_%d.gif",i+1));
+      c->Print(Form("out/stacks_%s.gif",myNames->At(i)->GetName()));
     }
     if (wait) {
       cout << "Enter carriage return for the next set of plots....q to quit" << endl;
