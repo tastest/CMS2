@@ -6,18 +6,21 @@
 
 #include "TROOT.h"
 
+#include "TGraphAsymmErrors.h"
+
         const static sources_t theSources_31X =
-		(1ll << H_ZZ);
-//                (1ll << H_WENU)          |
+//		(1ll << H_ZZ);
+                (1ll << H_WENU_7TeV);        
 //                (1ll << H_EM30_80)       |
 //                (1ll << H_BC30_80);
 
         const static sources_t theSignal_31X =
-		(1ll << H_ZZ);
-//                (1ll << H_WENU);
+//		(1ll << H_ZZ);
+                (1ll << H_WENU_7TeV);
 
         const static sources_t theBackground_31X =
-		(1ll << H_ZZ);
+		(1ll << H_WENU_7TeV);
+//		(1ll << H_ZZ);
 //                (1ll << H_EM30_80)       |
 //                (1ll << H_BC30_80);
 
@@ -68,19 +71,25 @@ void plotEffVar(HistogramUtilities &h1, TString name, Int_t rebin = 1)
         TH1F *h1_eff = 0;
         TH1F *h1_total = 0;
         TH1F *h1_pass = 0;
-
+	//TGraphAsymmErrors *gr_eff = new TGraphAsymmErrors();
 
         h1_total = h1.getHistogram(theSignal, name, "", "denom", 1, "");
         h1_pass = h1.getHistogram(theSignal, name, "", "numer", 1, "");
         h1_total->Rebin(rebin);
         h1_pass->Rebin(rebin);
+	//gr_eff->BayesDivide(h1_pass, h1_total);
         h1_eff = (TH1F*)h1_pass->Clone();
         h1_eff->Reset();
         h1_eff->Divide(h1_pass, h1_total, 1.0, 1.0, "B");
         h1_eff->SetName(h1_pass->GetName());
         c->SetName(TString("c_s_") + h1_pass->GetName());
         c->cd();
-        h1_eff->Draw();
+        h1_eff->SetLineWidth(2);
+        h1_eff->SetMarkerStyle(20);
+	h1_eff->GetYaxis()->SetRangeUser(0, 1.1);
+        h1_eff->Draw("E1");
+	//gr_eff->Draw("AP");
+        //gr_eff->GetYaxis()->SetRangeUser(0, 1.1);
         Utilities::saveCanvas(c, "results/effVar_s_" + name);
 
 
@@ -88,23 +97,29 @@ void plotEffVar(HistogramUtilities &h1, TString name, Int_t rebin = 1)
         h1_pass = h1.getHistogram(theBackground, name, "", "numer", 1, "");
 	h1_total->Rebin(rebin);
 	h1_pass->Rebin(rebin);
+        //gr_eff->BayesDivide(h1_pass, h1_total);
         h1_eff->Reset();
         h1_eff->Divide(h1_pass, h1_total, 1.0, 1.0, "B");
         h1_eff->SetName(h1_pass->GetName());
         c->SetName(TString("c_bg_") + h1_pass->GetName());
         c->cd();
-        h1_eff->Draw();
+	h1_eff->SetLineWidth(2);
+	h1_eff->SetMarkerStyle(20);
+        h1_eff->GetYaxis()->SetRangeUser(0, 1.1);
+        h1_eff->Draw("E1");
+	//gr_eff->Draw("AP");
+        //gr_eff->GetYaxis()->SetRangeUser(0, 1.1);
         Utilities::saveCanvas(c, "results/effVar_bg_" + name);
 
         delete c;
         delete h1_eff;
         delete h1_pass;
         delete h1_total;
+	//delete gr_eff;
 }
 
 void test()
 {
-        TString det = "eb";
         gROOT->ProcessLine(".L ~/tdrStyle.C");
         gROOT->ProcessLine("setTDRStyle()");
         HistogramUtilities h1("Results.root", 0.001);

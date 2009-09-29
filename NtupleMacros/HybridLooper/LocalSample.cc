@@ -11,6 +11,15 @@ static const std::string prefix = (getenv("CMS2_NTUPLE_LOCATION") != 0) ?
      std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" : "/data/tmp/";
 
 
+Sample fWenu_7TeV()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = "/store/disk02/cms2-V02-00-08/Wenu_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, OTHER, kBlue, 1, "wenu", true, 0. };
+     return ret;
+}
+
 Sample fZZ_7TeV()
 {
      TChain *c = new TChain("Events");

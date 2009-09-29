@@ -130,15 +130,16 @@ void Looper::FillEventHistos ()
 		for (size_t i = 0; i < cms2.evt_nels(); ++i)
 		{
 
-			std::cout << "px, py, pz: " << cms2.els_p4()[i].Px() 
-							<< ", " << cms2.els_p4()[i].Py()
-                                                        << ", " << cms2.els_p4()[i].Pz() << std::endl;
+
+//			std::cout << "px, py, pz: " << cms2.els_p4()[i].Px() 
+//							<< ", " << cms2.els_p4()[i].Py()
+//                                                        << ", " << cms2.els_p4()[i].Pz() << std::endl;
 
 			// matched to an mc electron	
 			if (	
 				abs(cms2.els_mc3_id()[i]) != 11
 				// 20 GeV Pt
-				|| cms2.els_p4()[i].Pt() < 20.0
+				//|| cms2.els_p4()[i].Pt() < 20.0
 				// Is a regular 'Egamma' electron - not PFlow!
 				|| (! (cms2.els_type()[i] & (1<<ISECALDRIVEN))) )
 			continue;
@@ -200,6 +201,10 @@ void Looper::FillEventHistos ()
 
 			// catagory based tight
 			if (cms2.els_egamma_tightId()[i] == 1) {
+
+				// only for 20 GeV pT
+				if (cms2.els_p4()[i].Pt() < 20.0) continue;
+
 				h1_ecalIso03_[det]->Fill(ecalIso/cms2.els_p4()[i].Pt(), weight);
 				h1_hcalIso03_[det]->Fill(hcalIso/cms2.els_p4()[i].Pt(), weight);
 				h1_tkIso03_[det]->Fill(tkIso/cms2.els_p4()[i].Pt(), weight);

@@ -7,6 +7,7 @@
 
 Sample fValidation();
 Sample fZZ_7TeV();
+Sample fWenu_7TeV();
 
 Sample fWenu ();
 Sample fBC30_80 ();

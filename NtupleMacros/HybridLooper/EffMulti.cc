@@ -23,8 +23,10 @@ EffMulti::~EffMulti()
 void EffMulti::Fill(float value, float pt, float eta, float phi, float weight)
 {
 	e1_pt_->denom->Fill(pt, weight);
-	if (pt > 20.0) e1_eta_->denom->Fill(eta, weight);
-	e1_phi_->denom->Fill(phi, weight);
+	if (pt > 20.0) {
+		e1_eta_->denom->Fill(eta, weight);
+		e1_phi_->denom->Fill(phi, weight);
+	}
 
 	float threshold = thresholdEB_;
 	if (fabs(eta) > 1.5) threshold = thresholdEE_;

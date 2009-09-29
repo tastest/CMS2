@@ -17,13 +17,14 @@ enum {
 	LOOP_WENU,
 	LOOP_EM30_80,
 	LOOP_BC30_80,
-
 	LOOP_ZZ_7TeV,
+	LOOP_WENU_7TeV,
 	
 	// 2_1_X
 	LOOP_QCD30,
 	LOOP_QCD80,
-	LOOP_WJET_ALP
+	LOOP_WJET_ALP,
+	LOOP_WEJET_ALP
 };
 
 // helper function used to print yield tables
@@ -82,6 +83,9 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
      Looper looper_ZZ_7TeV(fZZ_7TeV(), cuts, log.c_str());
         if (which_ones & (1 << LOOP_ZZ_7TeV)) looper_ZZ_7TeV.Loop();
 
+     Looper looper_wenu_7TeV(fWenu_7TeV(), cuts, log.c_str());
+        if (which_ones & (1 << LOOP_WENU_7TeV)) looper_wenu_7TeV.Loop();
+
 
 	// 2_2_1
      Looper looper_qcd30(fQCDpt30(), cuts, log.c_str());
@@ -90,6 +94,9 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
         if (which_ones & (1 << LOOP_QCD80)) looper_qcd80.Loop();
      Looper looper_wjet_alp(fWjetsAlpgenSingle(), cuts, log.c_str());
         if (which_ones & (1 << LOOP_WJET_ALP)) looper_wjet_alp.Loop();
+
+     Looper looper_wejetsAlpgen(fWejetsAlpgenSingle(), cuts, log.c_str());
+        if (which_ones & (1 << LOOP_WEJET_ALP)) looper_wejetsAlpgen.Loop();
 
 
      // when all the loopers are done, we save the histograms to file
@@ -105,7 +112,11 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 	&looper_qcd80,
 	&looper_wjet_alp,
 
-	&looper_ZZ_7TeV
+	&looper_ZZ_7TeV,
+
+	&looper_wenu_7TeV,
+	&looper_wejetsAlpgen
+
      };
 
      printTable(loopers, sizeof(loopers) / sizeof(Looper *), tbl.c_str(), which_ones);
@@ -115,7 +126,7 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 // default yield table
 int Results ()
 {
-     return run<Looper>(event_cuts, "Results", 1 << LOOP_ZZ_7TeV);
+     return run<Looper>(event_cuts, "Results", 1 << LOOP_WENU_7TeV);
 //LOOP_QCD30 | 1 << LOOP_QCD80 | 1 << LOOP_WJET_ALP);
 }
 
