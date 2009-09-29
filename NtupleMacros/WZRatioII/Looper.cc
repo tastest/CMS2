@@ -19,7 +19,6 @@ Looper::Looper (Sample s, cuts_t c, const char *fname)
      memset(scands_passing_w2_	, 0, sizeof(scands_passing_w2_    ));
      memset(scands_count_		, 0, sizeof(scands_count_         ));
 
-	 weight = 0;
 	 //initialize indicies
 	 elidxs[0] = -1;
 	 elidxs[1] = -1;
@@ -94,10 +93,12 @@ void Looper::BookHistos ()
 
 	NewHist( hlep_pt[i], Form("%s_%s_%s", SampleName().c_str(), "lep_pt", hyp.c_str()), "lep_pt", 100, 0.0, 100.0);
 	NewHist( hlep_mass[i], Form("%s_%s_%s", SampleName().c_str(), "lep_transmass", hyp.c_str()), "lep_transmass", 200, 0.0, 200.0);
-	NewHist( hlep_met[i], Form("%s_%s_%s", SampleName().c_str(), "lep_met", hyp.c_str()), "lep_met", 100, 0.0, 100.0);
+	NewHist( hlep_tcmet[i], Form("%s_%s_%s", SampleName().c_str(), "lep_tcmet", hyp.c_str()), "lep_met", 100, 0.0, 100.0);
+	NewHist( hlep_clmumet[i], Form("%s_%s_%s", SampleName().c_str(), "lep_calomet_muon", hyp.c_str()), "lep_calomet_muon", 100, 0.0, 100.0);
 	NewHist( hlep_met_dphi[i], Form("%s_%s_%s", SampleName().c_str(), "lep_met_dphi", hyp.c_str()), "lep_met_dphi", 100, 0, 2 * 3.14159);
-	NewHist( hlep_trckIso[i], Form("%s_%s_%s", SampleName().c_str(), "lep_trckIso", hyp.c_str()), "lep_trckIso", 100, 0.0, 100.0);
-	NewHist( hlep_ecalIso[i], Form("%s_%s_%s", SampleName().c_str(), "lep_ecalIso", hyp.c_str()), "lep_ecalIso", 100, 0.0, 100.0);
+	NewHist( hlep_trckIso[i], Form("%s_%s_%s", SampleName().c_str(), "lep_trckIso", hyp.c_str()), "lep_trckIso", 100, 0.0, 10.0);
+	NewHist( hlep_ecalIso[i], Form("%s_%s_%s", SampleName().c_str(), "lep_ecalIso", hyp.c_str()), "lep_ecalIso", 100, 0.0, 20.0);
+	NewHist( hlep_relIso[i], Form("%s_%s_%s", SampleName().c_str(), "lep_relIso", hyp.c_str()), "lep_relIso", 100, 0.0, 5.0);
 
 	//for nlep, fill before cutting on it--same for W,Z
 	NewHist( hlep_nlep[i], Form("%s_%s_%s", SampleName().c_str(), "lep_nlep", hyp.c_str()), "lep_nlep", 10, -0.5, 9.5);
@@ -112,7 +113,8 @@ void Looper::BookHistos ()
 	NewHist( hdilep_1_pt[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_1_pt", dilepton_hypo_names[i]), "dilep_1_pt", 100, 0.0, 100.0);
 	NewHist( hdilep_pt[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_pt", dilepton_hypo_names[i]), "dilep_pt", 100, 0.0, 100.0);
 	NewHist( hdilep_mass[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_mass", dilepton_hypo_names[i]), "dilep_mass", 200, 0.0, 200.0);
-	NewHist( hdilep_met[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_met", dilepton_hypo_names[i]), "dilep_met", 100, 0.0, 100.0);
+	NewHist( hdilep_tcmet[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_tcmet", dilepton_hypo_names[i]), "dilep_tcmet", 100, 0.0, 100.0);
+	NewHist( hdilep_clmumet[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_calomet_muon", dilepton_hypo_names[i]), "dilep_calomet_muon", 100, 0.0, 100.0);
 	NewHist( hdilep_njet20[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_njet20", dilepton_hypo_names[i]), "dilep_njet20", 10, -0.5, 9.5);
 	NewHist( hdilep_njet30[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_njet30", dilepton_hypo_names[i]), "dilep_njet30", 10, -0.5, 9.5);
 
@@ -213,7 +215,7 @@ void Looper::FillEventHistos ()
   
   // get the event weight
   if( sample_.kFactor != 1 ) cout << "kFactor non-unity " << sample_.kFactor << endl;
-  weight = cms2.evt_scale1fb() * sample_.kFactor / 1000; //1pb
+  double weight = Looper::Weight();
   
   // have a look at the highest pt electron
   for(int ele = 0; ele < (int)cms2.els_p4().size(); ++ele) {
@@ -311,8 +313,10 @@ void Looper::FillEventHistos ()
 		elidxs_nopt[1] = i;
 	}
 	if( (elcut & lepcuts_noiso) == lepcuts_noiso ) {
-	  hlep_ecalIso[0]->Fill( cms2.els_ecalIso()[i], weight );
-	  hlep_ecalIso[2]->Fill( cms2.els_ecalIso()[i], weight );
+	  hlep_ecalIso[0]->Fill( cms2.els_pat_ecalIso()[i], weight );
+	  hlep_ecalIso[2]->Fill( cms2.els_pat_ecalIso()[i], weight );
+	  hlep_relIso[0]->Fill( inv_el_relsusy_iso(i, true), weight );
+	  hlep_relIso[2]->Fill( inv_el_relsusy_iso(i, true), weight );
 	}
   }
 
@@ -336,6 +340,8 @@ void Looper::FillEventHistos ()
 	if( (mucut & lepcuts_noiso) == lepcuts_noiso ) {
 	  hlep_ecalIso[1]->Fill( cms2.mus_iso03_emEt()[i], weight );
 	  hlep_ecalIso[2]->Fill( cms2.mus_iso03_emEt()[i], weight );
+	  hlep_relIso[1]->Fill( inv_mu_relsusy_iso(i), weight );
+	  hlep_relIso[2]->Fill( inv_mu_relsusy_iso(i), weight );
 	}
   }
 
@@ -396,6 +402,8 @@ void Looper::FillEventHistos ()
 
 void Looper::WEvent() {
   
+  double weight = Looper::Weight();
+
   // histogram indices are e, m, all (0, 1, 2)
   // get lep_type, lep_p4
   unsigned int lep_type = 0; //default el
@@ -407,37 +415,37 @@ void Looper::WEvent() {
   else 
 	lep_p4 = cms2.els_p4()[elidxs[0]];
 	
-  hlep_met[lep_type]->Fill(cms2.evt_tcmet(), weight);
-  hlep_met[2]->Fill(cms2.evt_tcmet(), weight);
+  hlep_tcmet[lep_type]->Fill(cms2.evt_tcmet(), weight);
+  hlep_tcmet[2]->Fill(cms2.evt_tcmet(), weight);
+  hlep_clmumet[lep_type]->Fill(cms2.evt_metMuonCorr(), weight);
+  hlep_clmumet[2]->Fill(cms2.evt_metMuonCorr(), weight);
 
   //put the event-ish cuts here
   if( cms2.evt_tcmet() <= 20 )
 	return;
 
+  //transverse mass
+  double dphi = ROOT::Math::VectorUtil::DeltaPhi( LorentzVector( cms2.evt_tcmet()*cos(cms2.evt_tcmetPhi()),
+																 cms2.evt_tcmet()*sin(cms2.evt_tcmetPhi()),
+																 0, cms2.evt_tcmet())
+												  , lep_p4 );
+  double masst = sqrt( 2 * cms2.evt_tcmet() * lep_p4.Et() * ( 1 - cos(dphi) ) );
+  
   //check yanjun's code:
   TVector3 tcMET;
   tcMET.SetPtEtaPhi(cms2.evt_tcmet(), 0, cms2.evt_tcmetPhi());
-  double masst = sqrt( ( tcMET.Pt() + lep_p4.Et())*( tcMET.Pt() + lep_p4.Et())
-						//double massyj = sqrt( ( tcMET.Pt() + lep_p4.E() )*( tcMET.Pt() + lep_p4.E() )
+  double massyj = sqrt( ( tcMET.Pt() + lep_p4.Et())*( tcMET.Pt() + lep_p4.Et())
 					   - ( tcMET.Pt()*cos(tcMET.Phi()) + lep_p4.Px() )*( tcMET.Pt()*cos(tcMET.Phi()) + lep_p4.Px() )
 					   - ( tcMET.Pt()*sin(tcMET.Phi()) + lep_p4.Py() )*( tcMET.Pt()*sin(tcMET.Phi()) + lep_p4.Py() ) );
-
-  //this is xyze
-  //lep_p4.SetPz(0); //set z comp to zero so can use .mass because .mt isn't what we want
-  //double masst = ( LorentzVector(cms2.evt_tcmet()*cos(cms2.evt_tcmetPhi()), cms2.evt_tcmet()*sin(cms2.evt_tcmetPhi()), 0, cms2.evt_tcmet())
-  //			   + lep_p4 ).mass();
-  //+ (lep_type == 0 ? cms2.els_p4()[elidxs[0]] : cms2.mus_p4()[muidxs[0]]) ).mt();
-
-  hlep_mass[lep_type]->Fill( masst, weight ); //check all cuts but mass for mass plot (n-1)
-  hlep_mass[2]->Fill( masst, weight );
-
-  //masst = massyj; //Now, I get agreement w/ YJ if she uses E, but NOT if she uses Et, which she does. Her mt's are less, so fewer fail cut.
 
   if( fabs( tcMET.Phi() - cms2.evt_tcmetPhi() ) > 0.01 )
 	cout << "Phi error " << tcMET.Phi() << "   " << cms2.evt_tcmetPhi() << endl;
 
-  //if( fabs( massyj - masst ) > 0.1 )
-  //cout << "Mass disagreement " << masst << "   " << massyj << endl;
+  if( fabs( massyj - masst ) > 0.1 )
+	cout << "Mass disagreement " << masst << "   " << massyj << endl;
+
+  hlep_mass[lep_type]->Fill( masst, weight ); //check all cuts but mass for mass plot (n-1)
+  hlep_mass[2]->Fill( masst, weight );
 
   if( masst <= 40 || masst >= 100 )
 	return;
@@ -450,13 +458,8 @@ void Looper::WEvent() {
   
   //if (cms2.mus_p4().size() == 0) lep_type = 0;
 
-  //for W, all checking is done
-  // define the cuts to be used
+  //for W, all checking is done for following cuts:
   //cuts_t cuts = (CUT_BIT(LEP_PT) | CUT_BIT(LEP_GOOD) | CUT_BIT(LEP_ISO) );
-  // find out what cuts passed
-  //cuts_t cuts_passed = LepSelect(lep_type, 0);
-
-  //if ((cuts_passed & cuts) == cuts) {
 
   //jet vars--single lepton
   int njets_20 = 0;
@@ -529,6 +532,8 @@ void Looper::WEvent() {
 
 void Looper::ZEvent ()
 {
+  double weight = Looper::Weight();
+
   //hdilep_nhyp_->Fill(cms2.hyp_p4().size(), weight);
 
   // define the cuts to be used
@@ -642,8 +647,10 @@ void Looper::ZEvent ()
 	hdilep_njet30[DILEPTON_ALL]->Fill(njets_30, weight);
 
 	//no met cut, so require all cuts for met plot
-	hdilep_met[myType]->Fill(cms2.evt_tcmet(), weight);
-	hdilep_met[DILEPTON_ALL]->Fill(cms2.evt_tcmet(), weight);
+	hdilep_tcmet[myType]->Fill(cms2.evt_tcmet(), weight);
+	hdilep_tcmet[DILEPTON_ALL]->Fill(cms2.evt_tcmet(), weight);
+	hdilep_clmumet[myType]->Fill(cms2.evt_metMuonCorr(), weight);
+	hdilep_clmumet[DILEPTON_ALL]->Fill(cms2.evt_metMuonCorr(), weight);
 
 	//all other hists need to fill before checking cuts
 

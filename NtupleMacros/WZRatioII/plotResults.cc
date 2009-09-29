@@ -94,36 +94,49 @@ void makeStack(HistogramUtilities* h, TLegend* leg, sources_t theSources, TStrin
 void plotResults() {
 
   HistogramUtilities* h1 = new HistogramUtilities("Results.root");  //normalization is in weight
-  TLegend *lg_all = h1->getLegend(theSources, "lep_met", "", "all");
+  TLegend *lg_all = h1->getLegend(theSources, "lep_pt", "", "all");
 
 
-  makeStack(h1, lg_all, theSources, "Highlep_pt", 				"", "all", true);
-  makeStack(h1, lg_all, theSources, "Highlep_Met", 				"", "all", true);
-  makeStack(h1, lg_all, theSources, "Highlep_RelIso", 			"", "all", true);
-  makeStack(h1, lg_all, theSources, "Highlep_RelIsoPtLg20", 	"", "all", true);
-  makeStack(h1, lg_all, theSources, "Lowlep_pt",			 	"", "all", true);
-  makeStack(h1, lg_all, theSources, "Lowlep_Met",			 	"", "all", true);
-  makeStack(h1, lg_all, theSources, "Lowlep_RelIso",		 	"", "all", true);
-  makeStack(h1, lg_all, theSources, "Lowlep_RelIsoPtLg20",	 	"", "all", true);
-  makeStack(h1, lg_all, theSources, "Lowlep_NLepGt10Lt20",	 	"", "all", true);
-  makeStack(h1, lg_all, theSources, "Lowlep_NLepGt20",		 	"", "all", true);
-  makeStack(h1, lg_all, theSources, "lep_pt",				 	"", "all", true);
-  makeStack(h1, lg_all, theSources, "lep_transmass",		 	"", "all", true);
-  makeStack(h1, lg_all, theSources, "lep_met",				 	"", "all", true);
-  makeStack(h1, lg_all, theSources, "lep_met_dphi",			 	"", "all", true);
-  makeStack(h1, lg_all, theSources, "lep_trckIso",			 	"", "all", true);
-  makeStack(h1, lg_all, theSources, "lep_ecalIso",			 	"", "all", true);
-  makeStack(h1, lg_all, theSources, "lep_nlep",				 	"", "all", true);
-  makeStack(h1, lg_all, theSources, "lep_njet20",			 	"", "all", true);
-  makeStack(h1, lg_all, theSources, "lep_njet30",			 	"", "all", true);
-  makeStack(h1, lg_all, theSources, "lep_conversions",		 	"", "all", true);
-  makeStack(h1, lg_all, theSources, "dilep_0_pt",			 	"", "all", true);
-  makeStack(h1, lg_all, theSources, "dilep_1_pt",			 	"", "all", true);
-  makeStack(h1, lg_all, theSources, "dilep_pt",				 	"", "all", true);
-  makeStack(h1, lg_all, theSources, "dilep_mass",			 	"", "all", true);
-  makeStack(h1, lg_all, theSources, "dilep_met",			 	"", "all", true);
-  makeStack(h1, lg_all, theSources, "dilep_njet20",			 	"", "all", true);
-  makeStack(h1, lg_all, theSources, "dilep_njet30",			 	"", "all", true);
+  makeStack(h1, lg_all, theSources, "Highlep_pt", 			"", "all", true);
+  makeStack(h1, lg_all, theSources, "Highlep_Met", 			"", "all", true);
+  makeStack(h1, lg_all, theSources, "Highlep_RelIso", 		"", "all", true);
+  makeStack(h1, lg_all, theSources, "Highlep_RelIsoPtLg20", "", "all", true);
+  makeStack(h1, lg_all, theSources, "Lowlep_pt",			"", "all", true);
+  makeStack(h1, lg_all, theSources, "Lowlep_Met",			"", "all", true);
+  makeStack(h1, lg_all, theSources, "Lowlep_RelIso",		"", "all", true);
+  makeStack(h1, lg_all, theSources, "Lowlep_RelIsoPtLg20",	"", "all", true);
+  makeStack(h1, lg_all, theSources, "Lowlep_NLepGt10Lt20",	"", "all", true);
+  makeStack(h1, lg_all, theSources, "Lowlep_NLepGt20",		"", "all", true);
+  makeStack(h1, lg_all, theSources, "lep_pt",				"", "all", true);
+  makeStack(h1, lg_all, theSources, "lep_transmass",		"", "all", true);
+  makeStack(h1, lg_all, theSources, "lep_tcmet",			"", "all", true);
+  makeStack(h1, lg_all, theSources, "lep_calomet_muon",		"", "all", true);
+  makeStack(h1, lg_all, theSources, "lep_met_dphi",			"", "all", true);
+  //isos
+  makeStack(h1, lg_all, theSources, "lep_trckIso",			"", "all", true);
+  makeStack(h1, lg_all, theSources, "lep_ecalIso",			"", "all", true);
+  makeStack(h1, lg_all, theSources, "lep_relIso",			"", "all", true);
+  //els
+  makeStack(h1, lg_all, theSources, "lep_trckIso",			"", "e", true);
+  makeStack(h1, lg_all, theSources, "lep_ecalIso",			"", "e", true);
+  makeStack(h1, lg_all, theSources, "lep_relIso",			"", "e", true);
+  //mus
+  makeStack(h1, lg_all, theSources, "lep_trckIso",			"", "m", true);
+  makeStack(h1, lg_all, theSources, "lep_ecalIso",			"", "m", true);
+  makeStack(h1, lg_all, theSources, "lep_relIso",			"", "m", true);
+
+  makeStack(h1, lg_all, theSources, "lep_nlep",				"", "all", true);
+  makeStack(h1, lg_all, theSources, "lep_njet20",			"", "all", true);
+  makeStack(h1, lg_all, theSources, "lep_njet30",			"", "all", true);
+  makeStack(h1, lg_all, theSources, "lep_conversions",		"", "all", true);
+  makeStack(h1, lg_all, theSources, "dilep_0_pt",			"", "all", true);
+  makeStack(h1, lg_all, theSources, "dilep_1_pt",			"", "all", true);
+  makeStack(h1, lg_all, theSources, "dilep_pt",				"", "all", true);
+  makeStack(h1, lg_all, theSources, "dilep_mass",			"", "all", true);
+  makeStack(h1, lg_all, theSources, "dilep_tcmet",			"", "all", true);
+  makeStack(h1, lg_all, theSources, "dilep_calomet_muon",	"", "all", true);
+  makeStack(h1, lg_all, theSources, "dilep_njet20",			"", "all", true);
+  makeStack(h1, lg_all, theSources, "dilep_njet30",			"", "all", true);
 
 }
 

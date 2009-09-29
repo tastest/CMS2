@@ -5,6 +5,7 @@
 
 #include "Tools/LooperBase.h"
 #include "Cuts.h"
+#include "CORE/CMS2.h"
 
 //----------------------------------------------------------------------
 // Loopers 
@@ -26,12 +27,15 @@ protected:
   void WEvent();
   void ZEvent();
 
-  virtual void NewHist(TH1F*& h, char* name, char* title, int bins, double min, double max);
-
   virtual void	FillEventHistos ();
   virtual void	End		();
 
+  // Weight for WZ analysis is pb
+  double Weight() { return cms2.evt_scale1fb() * sample_.kFactor / 1000; }
+
   // do stuff with histogram
+  virtual void NewHist(TH1F*& h, char* name, char* title, int bins, double min, double max);
+
   void FormatHist(TH1* hist);
 
 
@@ -51,11 +55,13 @@ protected:
   //----------------------------------------------------------------------
 
   TH1F *hlep_pt[3];
-  TH1F *hlep_met[3];
-  TH1F *hlep_met_dphi[3];
   TH1F *hlep_mass[3];
+  TH1F *hlep_tcmet[3];
+  TH1F *hlep_clmumet[3];
+  TH1F *hlep_met_dphi[3];
   TH1F *hlep_trckIso[3];
   TH1F *hlep_ecalIso[3];
+  TH1F *hlep_relIso[3];
   TH1F *hlep_nlep[3];
   TH1F *hlep_njet20[3];
   TH1F *hlep_njet30[3];
@@ -65,14 +71,13 @@ protected:
   TH1F *hdilep_1_pt[4];
   TH1F *hdilep_pt[4];
   TH1F *hdilep_mass[4];
-  TH1F *hdilep_met[4];
-  //TH1F *hdilep_nlep[4]; //dumb
+  TH1F *hdilep_tcmet[4];
+  TH1F *hdilep_clmumet[4];
   TH1F *hdilep_njet20[4];
   TH1F *hdilep_njet30[4];
   
   //TH1F *hdilep_nhyp;
   //TH1F *hdilep_nlep;
-  //TH1F *hdilep_njet;
   TH1F	*h1_lep_Highpt_[3];
   TH1F	*h1_lep_HighptMet_[3];
   TH1F	*h1_lep_HighptRelIso_[3];
@@ -86,7 +91,6 @@ protected:
   TH1F	*h1_lep_LowptNLepGt20_[3];
 
   //int njets;//need to do differently for W,Z anyway
-  double weight;
   int elidxs[2];
   int muidxs[2];
 

@@ -43,11 +43,12 @@ void printTable (const Looper **hists, int n, const char *fname,
   }
   fprintf(f, "| %6s", "");
   for (int j = 0; j < n; ++j) {
-	fprintf(f, "|  *%10s*  ", hists[j]->SampleName().c_str());
+	fprintf(f, "|  *%12s*  ", hists[j]->SampleName().c_str());
   }
-  fprintf(f, "|%10s  |\n", "total");
+  fprintf(f, "|%12s  |\n", "total");
   //dilep
-  for (int i = 0; i < 4; ++i) {
+  //for (int i = 0; i < 4; ++i) {
+  for (int i = 3; i >= 0; --i) {
 	fprintf(f, "|%6s ", dilepton_hypo_names[i]);
 	double cands = 0;
 	double w2 = 0;
@@ -63,7 +64,7 @@ void printTable (const Looper **hists, int n, const char *fname,
   //single lep
   char* slepnames[3] = {"e", "m", "all"};
   for (int i = 0; i < 3; ++i) {
-	fprintf(f, "| %6s", slepnames[i]);
+	fprintf(f, "|%6s ", slepnames[i]);
 	double cands = 0;
 	double w2 = 0;
 	for (int j = 0; j < n; ++j) {
@@ -98,6 +99,7 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
   // 2_2_1
   Looper looper_qcd30(fQCDpt30() + fQCDpt80(), cuts, log.c_str()); if (which_ones & (1 << LOOP_QCD30)) looper_qcd30.Loop();
   Looper looper_qcd80(fQCDpt80(), cuts, log.c_str()); if (which_ones & (1 << LOOP_QCD80)) looper_qcd80.Loop();
+  Looper looper_ttbar(fttbarSingle(), cuts, log.c_str()); if (which_ones & (1 << LOOP_TTBAR)) looper_ttbar.Loop();
   Looper looper_wejet_alp(fWejetsAlpgenSingle(), cuts, log.c_str()); if (which_ones & (1 << LOOP_WJET_ALP)) looper_wejet_alp.Loop();
   Looper looper_wmjet_alp(fWmjetsAlpgenSingle(), cuts, log.c_str()); if (which_ones & (1 << LOOP_WJET_ALP)) looper_wmjet_alp.Loop();
   Looper looper_wtjet_alp(fWtjetsAlpgenSingle(), cuts, log.c_str()); if (which_ones & (1 << LOOP_WJET_ALP)) looper_wtjet_alp.Loop();
@@ -106,9 +108,7 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
   Looper looper_zttjet_alp(fZttjetsAlpgenSingle(), cuts, log.c_str()); if (which_ones & (1 << LOOP_ZTTJET_ALP)) looper_zttjet_alp.Loop();
   Looper looper_mu15_alp(fInclusiveMuPt15Single(), cuts, log.c_str()); if (which_ones & (1 << LOOP_MU15_SINGLE)) looper_mu15_alp.Loop();
 
-
-  Looper looper_z_0jet(fZ_0Jet(), cuts, log.c_str());
-  if (which_ones & (1 << LOOP_Z_0JET)) looper_z_0jet.Loop();
+  Looper looper_z_0jet(fZ_0Jet(), cuts, log.c_str()); if (which_ones & (1 << LOOP_Z_0JET)) looper_z_0jet.Loop();
 
 
   // when all the loopers are done, we save the histograms to file
@@ -121,6 +121,7 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 	//&looper_bc30_80,
 	&looper_qcd30,
 	//&looper_qcd80,
+	&looper_ttbar,
 	&looper_wejet_alp,
 	&looper_wmjet_alp,
 	&looper_wtjet_alp,
@@ -139,12 +140,12 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 int Results ()
 {
   uint32 samples = 1 << LOOP_WJET_ALP
-        | 1 << LOOP_QCD30
+	| 1 << LOOP_QCD30
 	| 1 << LOOP_MU15_SINGLE
 	| 1 << LOOP_ZEEJET_ALP
 	| 1 << LOOP_ZMMJET_ALP
 	| 1 << LOOP_ZTTJET_ALP
-	//| 1 << LOOP_TTBAR
+	| 1 << LOOP_TTBAR
 	;
 
   return run<Looper>(0, "Results", samples );
