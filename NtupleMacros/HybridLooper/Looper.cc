@@ -79,6 +79,9 @@ void Looper::BookHistos ()
         FormatEffHist(em_hoe_, true, 0.01, 0.01, "hoe");
         FormatEffHist(em_sieie_, true, 0.0099, 0.028, "sieie");
 
+	FormatEffHist(em_classBasedTight_, false, 0, 0, "classBasedTight");	
+        FormatEffHist(em_robustTight_, false, 0, 0, "robustTight");
+
 }
 
 bool Looper::FilterEvent()
@@ -193,6 +196,14 @@ void Looper::FillEventHistos ()
 
 				em_sieie_[det]->Fill(fabs(cms2.els_sigmaIEtaIEta()[i]),
 					cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+
+                                em_classBasedTight_[det]->Fill(cms2.els_egamma_tightId()[i],
+                                        cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+
+                                em_robustTight_[det]->Fill(cms2.els_egamma_robustTightId()[i],
+                                        cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+
+
 
 			}
 

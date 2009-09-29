@@ -107,6 +107,10 @@ protected:
         EffMulti *em_hoe_[2];           
         EffMulti *em_sieie_[2];
 
+        EffMulti *em_classBasedTight_[2];
+        EffMulti *em_robustTight_[2];
+
+
 protected:
      // count the (weighted and unweighted) number of candidates passing our cuts
      double		cands_passing_[4];

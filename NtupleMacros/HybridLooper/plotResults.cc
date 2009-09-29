@@ -151,6 +151,13 @@ void test()
         plotEffVar(h1, "sieie_pt_eb", 4);
         plotEffVar(h1, "sieie_eta_eb");
         plotEffVar(h1, "sieie_phi_eb");
+
+        plotEffVar(h1, "robustTight_pt_eb");
+        plotEffVar(h1, "robustTight_pt_ee");
+
+        plotEffVar(h1, "classBasedTight_pt_eb");
+        plotEffVar(h1, "classBasedTight_pt_ee");
+
 }
 
 void plotResults(TString det)
