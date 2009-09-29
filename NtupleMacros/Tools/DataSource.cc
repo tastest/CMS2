@@ -24,3 +24,6 @@ DataSource fH_ZTTJET_ALP()   { return DataSource("dyttAlpgen", H_ZTTJET_ALP, 46)
 
 DataSource fH_MU15_SINGLE() { return DataSource("InclusiveMuPt15", H_MU15_SINGLE, 28); }
 
+DataSource fH_WENU_7TeV()      { return DataSource("wenu",       H_WENU_7TeV);          }
+
+
