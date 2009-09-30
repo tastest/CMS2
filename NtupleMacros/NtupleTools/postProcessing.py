@@ -262,11 +262,13 @@ if datapath.find("pnfs") != -1:
         dcachePrefix = 'dcap://cmsdca.fnal.gov:24125/pnfs/fnal.gov/'
         
 
-
+if datapath.find("hadooop") != -1:
+        #if at UCSD, get the personal dcache door
+        dcachePrefix = ''
     
 
-if datapath.find("pnfs") != -1:
-    print "Files are on dcache. After some processing, will transfer them to " + outpath + "/preprocessing to speed up dieting/merging/weighting step"
+if datapath.find("pnfs") != -1 or datapath.find("hadoop") != -1:
+    print "Files are in the se. After some processing, will transfer them to " + outpath + "/preprocessing to speed up dieting/merging/weighting step"
     cmd = "mkdir " + outpath + "/preprocessing"
     if commands.getstatusoutput(cmd)[0] == 256 and commands.getstatusoutput("ls " + outpath + "/preprocessing")[1]!="":
         print "The directory " + outpath + "/preprocessing already exists and is not empty!. Exiting!"
@@ -307,6 +309,15 @@ if datapath.find("pnfs") != -1:
         cmd = "dccp " + dcachePrefix + i + " " + outpath + "/preprocessing"
         print cmd
         print commands.getoutput(cmd)
+
+if datapath.find("hadoop") != -1:
+    print "Moving files from hadoop to " + outpath + "/preprocessing"
+    for i in goodRootFiles:
+        print i
+        cmd = "cp " + dcachePrefix + i + " " + outpath + "/preprocessing"
+        print cmd
+        print commands.getoutput(cmd)
+
 
 getNumEventsRun(crabpath)
 
