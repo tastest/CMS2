@@ -97,7 +97,8 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
   if (which_ones & (1 << LOOP_EM30_80)) looper_em30_80.Loop();
 
   // 2_2_1
-  Looper looper_qcd30(fQCDpt30() + fQCDpt80(), cuts, log.c_str()); if (which_ones & (1 << LOOP_QCD30)) looper_qcd30.Loop();
+  //  Looper looper_qcd30(fQCDpt30() + fQCDpt80(), cuts, log.c_str()); if (which_ones & (1 << LOOP_QCD30)) looper_qcd30.Loop();
+  Looper looper_qcd30(fQCDpt30(), cuts, log.c_str()); if (which_ones & (1 << LOOP_QCD30)) looper_qcd30.Loop();
   Looper looper_qcd80(fQCDpt80(), cuts, log.c_str()); if (which_ones & (1 << LOOP_QCD80)) looper_qcd80.Loop();
   Looper looper_ttbar(fttbarSingle(), cuts, log.c_str()); if (which_ones & (1 << LOOP_TTBAR)) looper_ttbar.Loop();
   Looper looper_wejet_alp(fWejetsAlpgenSingle(), cuts, log.c_str()); if (which_ones & (1 << LOOP_WJET_ALP)) looper_wejet_alp.Loop();

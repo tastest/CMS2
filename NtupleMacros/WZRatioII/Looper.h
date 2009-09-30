@@ -89,6 +89,32 @@ protected:
   TH1F	*h1_lep_LowptRelIsoPtLg20_[3];
   TH1F	*h1_lep_LowptNLepGt10Lt20_[3];
   TH1F	*h1_lep_LowptNLepGt20_[3];
+  TH1F	*h1_lep_LowptNLepGt20tightIDIso0_1_[3];
+  TH1F	*h1_lep_LowptNLepGt20looseIDIso0_1_[3];
+  TH1F	*h1_lep_LowptNLepGt20vlooseIDIso0_1_[3];
+  TH1F	*h1_lep_LowptNLepGt20NOIDIso0_1_[3];
+
+  TH1F* h1_lep_LowpthOverE_[3];
+  TH1F* h1_lep_lowpteOverPIn_[3];
+//            TH1F*      h1_lep_lowpteSeedOverPOut_[3];
+//            TH1F*      h1_lep_lowpteSeedOverPIn_[3];
+  TH1F* h1_lep_lowptfBrem_[3];
+  TH1F* h1_lep_lowptdEtaIn_[3];
+  TH1F* h1_lep_lowptdEtaOut_[3];
+  TH1F* h1_lep_lowptdPhiIn_[3];
+  TH1F* h1_lep_lowptdPhiInPhiOut_[3];
+  TH1F* h1_lep_lowptdPhiOut_[3];
+
+  TH1F* h1_lep_lowptsigmaPhiPhi_[3];
+  TH1F* h1_lep_lowptsigmaIPhiIPhi_[3];
+  TH1F* h1_lep_lowptsigmaEtaEta_[3];
+  TH1F* h1_lep_lowptsigmaIEtaIEta_[3];
+
+  TH1F* h1_lep_lowptegamma_robustLooseId_[3];
+  TH1F* h1_lep_lowptegamma_robustTightId_[3];
+  TH1F* h1_lep_lowptegamma_looseId_[3];
+  TH1F* h1_lep_lowptegamma_tightId_[3];
+  TH1F* h1_lep_lowptegamma_robustHighEnergy_[3];
 
   //int njets;//need to do differently for W,Z anyway
   int elidxs[2];

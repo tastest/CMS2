@@ -67,30 +67,86 @@ void Looper::BookHistos ()
 	FormatHist(h1_lep_HighptRelIsoPtLg20_[i]);
 
 	////
-	h1_lep_Lowpt_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "Lowlep_pt", hyp.c_str()), 
-								 "Lowlep_pt", 100, 0.0, 100.0);
+	h1_lep_Lowpt_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_pt", hyp.c_str()), 
+								 "LowLep_pt", 100, 0.0, 100.0);
 	FormatHist(h1_lep_Lowpt_[i]);
         
-	h1_lep_LowptMet_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "Lowlep_Met", hyp.c_str()), 
-									"Lowlep_Met", 100, 0.0, 100.0);
+	h1_lep_LowptMet_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_Met", hyp.c_str()), 
+									"LowLep_Met", 100, 0.0, 100.0);
 	FormatHist(h1_lep_LowptMet_[i]);
         
-	h1_lep_LowptRelIso_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "Lowlep_RelIso", hyp.c_str()), 
-									   "Lowlep_RelIso", 120, -0.1, 1.1);
+	h1_lep_LowptRelIso_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_RelIso", hyp.c_str()), 
+									   "LowLep_RelIso", 120, -0.1, 1.1);
 	FormatHist(h1_lep_LowptRelIso_[i]);
         
-	h1_lep_LowptRelIsoPtLg20_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "Lowlep_RelIsoPtLg20", hyp.c_str()), 
-											 "Lowlep_RelIsoPtLg20", 120, -0.1, 1.1);
+	h1_lep_LowptRelIsoPtLg20_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_RelIsoPtLg20", hyp.c_str()), 
+											 "LowLep_RelIsoPtLg20", 120, -0.1, 1.1);
 	FormatHist(h1_lep_LowptRelIsoPtLg20_[i]);
 
-	h1_lep_LowptNLepGt10Lt20_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "Lowlep_NLepGt10Lt20", hyp.c_str()), 
-											 "Lowlep_NLepGt10Lt20", 21, -0.5, 20.5);
+	h1_lep_LowptNLepGt10Lt20_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt10Lt20", hyp.c_str()), 
+											 "LowLep_NLepGt10Lt20", 21, -0.5, 20.5);
 	FormatHist(h1_lep_LowptNLepGt10Lt20_[i]);
 
-	h1_lep_LowptNLepGt20_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "Lowlep_NLepGt20", hyp.c_str()), 
-										 "Lowlep_NLepGt20", 21, -0.5, 20.5);
+	h1_lep_LowptNLepGt20_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20", hyp.c_str()), 
+										 "LowLep_NLepGt20", 21, -0.5, 20.5);
 	FormatHist(h1_lep_LowptNLepGt20_[i]);
 
+        h1_lep_LowptNLepGt20tightIDIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20tightIDIso0_1", hyp.c_str()), 
+                                                          "LowLep_NLepGt20tightIDIso0_1", 21, -0.5, 20.5);
+	FormatHist(h1_lep_LowptNLepGt20tightIDIso0_1_[i]);
+
+        h1_lep_LowptNLepGt20looseIDIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20looseIDIso0_1", hyp.c_str()), 
+                                                          "LowLep_NLepGt20looseIDIso0_1", 21, -0.5, 20.5);
+	FormatHist(h1_lep_LowptNLepGt20looseIDIso0_1_[i]);
+
+        h1_lep_LowptNLepGt20vlooseIDIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20vlooseIDIso0_1", hyp.c_str()), 
+                                                          "LowLep_NLepGt20vlooseIDIso0_1", 21, -0.5, 20.5);
+	FormatHist(h1_lep_LowptNLepGt20vlooseIDIso0_1_[i]);
+
+        h1_lep_LowptNLepGt20NOIDIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20NOIDIso0_1", hyp.c_str()), 
+                                                          "LowLep_NLepGt20NOIDIso0_1", 21, -0.5, 20.5);
+	FormatHist(h1_lep_LowptNLepGt20NOIDIso0_1_[i]);
+
+
+        h1_lep_LowpthOverE_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_hOverE", hyp.c_str()), "LowLep_hOverE", 150, -0.1, .2);
+        FormatHist( h1_lep_LowpthOverE_[i]);
+        h1_lep_lowpteOverPIn_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_eOverPIn", hyp.c_str()), "LowLep_eOverPIn", 160, -0.1, 1.5);
+        FormatHist( h1_lep_lowpteOverPIn_[i]);
+        //	      h1_lep_lowpteSeedOverPOut_[i], Form("%s_%s_%s", SampleName().c_str(), "lep_pt", hyp.c_str()), "lep_pt", 100, 0.0, 100.0);
+        //	      h1_lep_lowpteSeedOverPIn_[i], Form("%s_%s_%s", SampleName().c_str(), "lep_pt", hyp.c_str()), "lep_pt", 100, 0.0, 100.0);
+        h1_lep_lowptfBrem_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_fBrem", hyp.c_str()), "LowLep_fBrem", 200, -2.0, 2.0);
+        FormatHist(      h1_lep_lowptfBrem_[i]);
+        h1_lep_lowptdEtaIn_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_dEtaIn", hyp.c_str()), "LowLep_dEtaIn", 200, -0.1, 0.1);
+        FormatHist( h1_lep_lowptdEtaIn_[i]);
+        h1_lep_lowptdEtaOut_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_dEtaOut", hyp.c_str()), "LowLep_dEtaOut", 200, -0.1, 0.1);
+        FormatHist( h1_lep_lowptdEtaOut_[i]);
+        h1_lep_lowptdPhiIn_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_dPhiIn", hyp.c_str()), "LowLep_dPhiIn", 100, -0.5, 0.5);
+        FormatHist( h1_lep_lowptdPhiIn_[i]);
+        h1_lep_lowptdPhiInPhiOut_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_dPhiInPhiOut", hyp.c_str()), "LowLep_dPhiInPhiOut", 100, -0.5, 0.5);
+        FormatHist(  h1_lep_lowptdPhiInPhiOut_[i]);
+        h1_lep_lowptdPhiOut_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_dPhiOut", hyp.c_str()), "LowLep_dPhiOut", 100, -0.5, 0.5);
+        FormatHist( h1_lep_lowptdPhiOut_[i]);
+        
+        h1_lep_lowptsigmaPhiPhi_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_sigmaPhiPhi", hyp.c_str()), "LowLep_sigmaPhiPhi", 200, -0.2, 0.2);
+        FormatHist( h1_lep_lowptsigmaPhiPhi_[i]);
+        h1_lep_lowptsigmaIPhiIPhi_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_sigmaIPhiIPhi", hyp.c_str()), "LowLep_sigmaIPhiIPhi",  200, -0.2, 0.2);
+        FormatHist( h1_lep_lowptsigmaIPhiIPhi_[i]);
+        h1_lep_lowptsigmaEtaEta_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_sigmaEtaEta", hyp.c_str()), "LowLep_sigmaEtaEta", 200, -0.2, 0.2);
+        FormatHist(  h1_lep_lowptsigmaEtaEta_[i]);
+        h1_lep_lowptsigmaIEtaIEta_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_sigmaIEtaIEta", hyp.c_str()), "LowLep_sigmaIEtaIEta", 200, -0.2, 0.2);
+        FormatHist(  h1_lep_lowptsigmaIEtaIEta_[i]);
+        
+        h1_lep_lowptegamma_robustLooseId_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_egammarobustLooseId", hyp.c_str()), "LowLep_egammarobustLooseId", 2, -0.5, 1.5);
+        FormatHist(   h1_lep_lowptegamma_robustLooseId_[i]);
+        h1_lep_lowptegamma_robustTightId_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_egammarobustTightId", hyp.c_str()), "LowLep_egammarobustTightId", 2, -0.5, 1.5);
+        FormatHist(  h1_lep_lowptegamma_robustTightId_[i]);
+        h1_lep_lowptegamma_looseId_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_egammalooseId", hyp.c_str()), "LowLep_egammalooseId", 2, -0.5, 1.5);
+        FormatHist( h1_lep_lowptegamma_looseId_[i]);
+        h1_lep_lowptegamma_tightId_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_egammatightId", hyp.c_str()), "LowLep_egammatightId", 2, -0.5, 1.5);
+        FormatHist( h1_lep_lowptegamma_tightId_[i]);
+        h1_lep_lowptegamma_robustHighEnergy_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_egammarobustHighEnergy", hyp.c_str()), "LowLep_egammarobustHighEnergy",  2, -0.5, 1.5);
+        FormatHist(   h1_lep_lowptegamma_robustHighEnergy_[i]);
+        
 	NewHist( hlep_pt[i], Form("%s_%s_%s", SampleName().c_str(), "lep_pt", hyp.c_str()), "lep_pt", 100, 0.0, 100.0);
 	NewHist( hlep_mass[i], Form("%s_%s_%s", SampleName().c_str(), "lep_transmass", hyp.c_str()), "lep_transmass", 200, 0.0, 200.0);
 	NewHist( hlep_tcmet[i], Form("%s_%s_%s", SampleName().c_str(), "lep_tcmet", hyp.c_str()), "lep_met", 100, 0.0, 100.0);
@@ -212,7 +268,7 @@ void Looper::FillEventHistos ()
   // in pT and iso
   int   hiPtIdx    = -1;
   float hiPtmax    = -1.;
-  
+
   // get the event weight
   if( sample_.kFactor != 1 ) cout << "kFactor non-unity " << sample_.kFactor << endl;
   double weight = Looper::Weight();
@@ -233,18 +289,58 @@ void Looper::FillEventHistos ()
  // have a look at all but the highest pt electron
   uint nEleGt10Lt20 = 0;
   uint nEleGt20     = 0;
+  uint nEleGt20tightIDIso0_1     = 0;
+  uint nEleGt20looseIDIso0_1     = 0;
+  uint nEleGt20vlooseIDIso0_1     = 0;
+  uint nEleGt20NOIDIso0_1     = 0;
   for(int ele = 0; ele <  (int)cms2.els_p4().size(); ++ele) {
     if(hiPtIdx != -1 && hiPtIdx != ele) {
       h1_lep_Lowpt_[0]                                                ->Fill(cms2.els_p4()[ele].pt(), weight);
       h1_lep_LowptMet_[0]                                             ->Fill(cms2.evt_tcmet(), weight);
       h1_lep_LowptRelIso_[0]                                          ->Fill(inv_el_relsusy_iso(ele, true), weight);
-      if(cms2.els_p4()[ele].pt() > 20. ) h1_lep_LowptRelIsoPtLg20_[0] ->Fill(inv_el_relsusy_iso(hiPtIdx, true), weight);
+      if(cms2.els_p4()[ele].pt() > 20. ) h1_lep_LowptRelIsoPtLg20_[0] ->Fill(inv_el_relsusy_iso(ele, true), weight); // was buggy until 090928
       if(cms2.els_p4()[ele].pt() > 10. && (cms2.els_p4()[ele].pt() < 20. )) ++nEleGt10Lt20;
       if(cms2.els_p4()[ele].pt() > 20. )                                    ++nEleGt20;
+      if(cms2.els_p4()[ele].pt() > 20. && cms2.els_egamma_tightId()[ele] && inv_el_relsusy_iso(ele, true) < 0.1 )         ++nEleGt20tightIDIso0_1;
+      if(cms2.els_p4()[ele].pt() > 20. && cms2.els_egamma_looseId()[ele] && inv_el_relsusy_iso(ele, true) < 0.1 )         ++nEleGt20looseIDIso0_1;
+      if(cms2.els_p4()[ele].pt()        > 20. && 
+         fabs(cms2.els_dEtaOut()[ele])  < 0.02 && 
+         cms2.els_eOverPIn()[ele]       > 0.4 &&  
+         fabs(cms2.els_hOverE()[ele])   < 0.03 && 
+         inv_el_relsusy_iso(ele, true)  < 0.1 )         ++nEleGt20vlooseIDIso0_1;
+      if(cms2.els_p4()[ele].pt()        > 20. && 
+         inv_el_relsusy_iso(ele, true)  < 0.1 )         ++nEleGt20NOIDIso0_1;
+
+      h1_lep_LowpthOverE_[0]->Fill(cms2.els_hOverE()[ele], weight);
+      h1_lep_lowpteOverPIn_[0]->Fill(cms2.els_eOverPIn()[ele], weight);
+//       h1_lep_lowpteSeedOverPOut_[0]->Fill(cms2.els_eSeedOverPOut()[ele], weight);
+//       h1_lep_lowpteSeedOverPIn_[0]->Fill(cms2.els_eSeedOverPIn()[ele], weight);
+      h1_lep_lowptfBrem_[0]->Fill(cms2.els_fBrem()[ele], weight);
+      h1_lep_lowptdEtaIn_[0]->Fill(cms2.els_dEtaIn()[ele], weight);
+      h1_lep_lowptdEtaOut_[0]->Fill(cms2.els_dEtaOut()[ele], weight);
+      h1_lep_lowptdPhiIn_[0]->Fill(cms2.els_dPhiIn()[ele], weight);
+      h1_lep_lowptdPhiInPhiOut_[0]->Fill(cms2.els_dPhiInPhiOut()[ele], weight);
+      h1_lep_lowptdPhiOut_[0]->Fill(cms2.els_dPhiOut()[ele], weight);
+
+      h1_lep_lowptsigmaPhiPhi_[0]->Fill(cms2.els_sigmaPhiPhi()[ele], weight);  
+      h1_lep_lowptsigmaIPhiIPhi_[0]->Fill(cms2.els_sigmaIPhiIPhi()[ele], weight);  
+      h1_lep_lowptsigmaEtaEta_[0]->Fill(cms2.els_sigmaEtaEta()[ele], weight);  
+      h1_lep_lowptsigmaIEtaIEta_[0]->Fill(cms2.els_sigmaIEtaIEta()[ele], weight);  
+
+      h1_lep_lowptegamma_robustLooseId_[0]->Fill(cms2.els_egamma_robustLooseId()[ele], weight);  
+      h1_lep_lowptegamma_robustTightId_[0]->Fill(cms2.els_egamma_robustTightId()[ele], weight);  
+      h1_lep_lowptegamma_looseId_[0]->Fill(cms2.els_egamma_looseId()[ele], weight);  
+      h1_lep_lowptegamma_tightId_[0]->Fill(cms2.els_egamma_tightId()[ele], weight);  
+      h1_lep_lowptegamma_robustHighEnergy_[0]->Fill(cms2.els_egamma_robustHighEnergy()[ele], weight);  
+ 
     }
   }
   h1_lep_LowptNLepGt10Lt20_[0]->Fill(nEleGt10Lt20, weight);
   h1_lep_LowptNLepGt20_[0]    ->Fill(nEleGt20, weight);
+  h1_lep_LowptNLepGt20tightIDIso0_1_[0]    ->Fill(nEleGt20tightIDIso0_1, weight);
+  h1_lep_LowptNLepGt20looseIDIso0_1_[0]    ->Fill(nEleGt20looseIDIso0_1, weight);
+  h1_lep_LowptNLepGt20vlooseIDIso0_1_[0]   ->Fill(nEleGt20vlooseIDIso0_1, weight);
+  h1_lep_LowptNLepGt20NOIDIso0_1_[0]       ->Fill(nEleGt20NOIDIso0_1, weight);
 
   // have a look at the highest pt muon
   // reset highpt index
