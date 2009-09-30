@@ -35,13 +35,8 @@
 #include "CORE/selections.cc"
 #include "CORE/utilities.cc"
 
-typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >  VofP4;
-
-// this is Jake's magic to sort jets by Pt
-//Bool_t comparePt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1,
-//                 ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv2) {
-//  return lv1.pt() > lv2.pt();
-//}
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > P4;
+typedef std::vector<P4 >  VofP4;
 
 void ttDilCounts_looper::fill1D(TH1F* h, double v, double w){
   unsigned int nB = h->GetNbinsX();
@@ -339,7 +334,7 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
       nAllEvents++;
       // Progress feedback to the user
       int iz = nAllEvents/10000;
-      if (nAllEvents-10000*iz == 0 || 1< 2) cout << "Processing event " << nAllEvents+1 
+      if (nAllEvents-10000*iz == 0) cout << "Processing event " << nAllEvents+1 
 				       << " of sample " << prefix << endl;
        
       // Prescale
@@ -620,7 +615,7 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	//
 	int new_hyp_njets=0;  // jet count
 	VofP4 jp4;            // vector of jets 
-	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > blah; // temp variable
+	P4 blah; // temp variable
 	// First the case where we take the default hyp_jets
 	if (oldjets) {
 	  unsigned int nJ = cms2.jets_p4().size();
@@ -930,7 +925,7 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 
 	  // Make a vector of sorted jets, fill jet histograms
 	  if (new_hyp_njets > 0) {
-	    vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > my_hyp_jets_p4(*new_hyp_jets_p4);
+	    VofP4 my_hyp_jets_p4(*new_hyp_jets_p4);
 	    sort(my_hyp_jets_p4.begin(), my_hyp_jets_p4.end(), comparePt);   // sort them by Pt
 	    
 	    fill1D(hptJet1[myType][arrNjets], my_hyp_jets_p4[0].Pt(), weight);
