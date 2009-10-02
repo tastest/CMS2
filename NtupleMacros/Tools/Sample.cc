@@ -40,7 +40,7 @@ Sample operator + (const Sample &a, const Sample &b)
      b.chain->GetEntries();      // ha ha, if you don't do this, the
 				 // combined chain will have a random
 				 // number of entries.
-     ret.chain->Add(b.chain);
+     ret.chain->Add(b.chain->Clone());
 //      printf("adding %llu (%d files), returned chain now has %llu entries (%d files)\n", 
 // 	    b.chain->GetEntries(), b.chain->GetListOfFiles()->GetEntries(),
 // 	    a.chain->GetEntries(), a.chain->GetListOfFiles()->GetEntries());
