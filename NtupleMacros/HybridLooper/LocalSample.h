@@ -7,7 +7,10 @@
 
 Sample fValidation();
 Sample fZZ_7TeV();
+
 Sample fWenu_7TeV();
+Sample fQCD_Pt30_7TeV();
+Sample fPhotonJet_7TeV();
 
 Sample fWenu ();
 Sample fBC30_80 ();

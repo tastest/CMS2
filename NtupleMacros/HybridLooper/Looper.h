@@ -59,6 +59,12 @@ protected:
      // printing a status message
      virtual void	End		();
 
+	// get subdetector for histogram filling
+	int getSubdet(int eleIndex);
+
+	// w efficiency studies
+	void wEfficiency();
+
 	// do stuff with histogram
 	void FormatHist(TH1F** hist, std::string name, Int_t n, Float_t min, Float_t max);
 	void FormatEffHist(EffMulti** hist, bool lessThan, 
@@ -101,6 +107,15 @@ protected:
 	TH1F	*h1_eopIn_[2];
 	TH1F 	*h1_d0corr_[2];
 	TH1F	*h1_closestMuon_[2];
+
+	// W effciency studies related
+        TH1F *h1_weff_pt_[2];
+	TH1F *h1_weff_iso_[2];
+	TH1F *h1_weff_tcmet_[2];
+	TH1F *h1_weff_jptpt_[2];
+	TH1F *h1_weff_tcmet_after_iso_[2];
+	TH1F *h1_weff_jptpt_after_iso_[2];
+	TH1F *h1_weff_tcmet_after_iso_jetveto_[2];
 
         EffMulti *em_dEtaIn_[2];
         EffMulti *em_dPhiIn_[2];
