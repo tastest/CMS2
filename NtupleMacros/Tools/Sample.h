@@ -6,7 +6,7 @@
 
 enum Process { OTHER, TEST, WW, WZ, ZZ, Wjets, We, Wm, Wt, DYee, DYmm, DYtt, DY, Wgamma, Zgamma, ttbar, tW, 
 	       LM0, LM1, LM2, LM3, LM4, LM5, LM6, LM7, LM8, LM9, LM9p, LM10, LM11,
-	       InclusiveMu5Pt50, InclusiveMuPt15, 
+	       InclusiveMu5Pt50, InclusiveMuPt15, PhotonJet,
 	       QCDBCtoEPt20to30, QCDBCtoEPt30to80, QCDBCtoEPt80to170, 
 	       QCDEMenrichedPt20to30, QCDEMenrichedPt30to80, QCDEMenrichedPt80to170, QCDpt30, QCDpt80,
 	       QCDpt30to80,QCDpt80to170,QCDpt170to300,QCDpt300to470,QCDpt470to800,QCDpt800toInf};
@@ -95,7 +95,11 @@ Sample fQCDpt170to300  ();
 Sample fQCDpt300to470  ();
 Sample fQCDpt470to800  ();
 Sample fQCDpt800toInf  ();
-
+Sample fPhotonJetPt15to20 ();
+Sample fPhotonJetPt20to25 ();
+Sample fPhotonJetPt25to30 ();
+Sample fPhotonJetPt30to35 ();
+Sample fPhotonJetPt35 ();
 
 // filter events by process
 bool filterByProcess (enum Process sample);

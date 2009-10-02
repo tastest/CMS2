@@ -383,20 +383,7 @@ Sample fZttjetsAlpgenSingle ()
      return ret;
 }
 
-
-
-//Wjets file (single lepton filter)
-/*
-Sample fWjetsSingle ()
-{
-     TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/WJets-madgraph_Fall08_IDEAL_V11_redigi_v1_Single-lepton/merged_ntuple*.root";
-     c->Add(sample.c_str());
-     Sample ret = { c, Wjets, 40, 1, "wjets", true, 0. };
-     return ret;
-}
-*/
-//Wjets file
+// Wc file
 Sample fWc ()
 {
      TChain *c = new TChain("Events");
@@ -487,8 +474,8 @@ Sample fAstar ()
      Sample ret = { c, DY, kBlack, 1, "astar", true };
      return ret;
 }
+
 /*
-// Wgamma
 Sample fWgamma ()
 {
      TChain *c = new TChain("Events");
@@ -498,7 +485,6 @@ Sample fWgamma ()
      return ret;
 }
 
-// Zgamma
 Sample fZgamma ()
 {
      TChain *c = new TChain("Events");
@@ -508,6 +494,7 @@ Sample fZgamma ()
      return ret;
 }
 */
+
 //ttbar file
 Sample fttbar ()
 {
@@ -703,19 +690,19 @@ Sample fQCDpt80 ()
 Sample fInclusiveMuPt15Single ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/InclusiveMuPt15_Summer08_IDEAL_V11_redigi_v1-SingleLepton/*.root";
+     std::string sample = prefix + "cms2-V01-03-01/InclusiveMuPt15_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merged*.root";
      c->Add(sample.c_str());
      Sample ret = { c, InclusiveMuPt15, 30, 1, "InclusiveMuPt15", true, 0. };
      return ret;
 }
 
 
-/*
 // QCD samples
+/*
 Sample fInclusiveMu5Pt50 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/InclusiveMu5Pt50/*.root";
+     std::string sample = prefix + "cms2-V01-03-01/InclusiveMu5Pt50/merged*.root";
      c->Add(sample.c_str());
      Sample ret = { c, InclusiveMu5Pt50, 28, 1, "InclusiveMu5Pt50", true, 0. };
      return ret;
@@ -724,7 +711,7 @@ Sample fInclusiveMu5Pt50 ()
 Sample fInclusiveMuPt15 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/InclusiveMuPt15/*.root";
+     std::string sample = prefix + "cms2-V01-03-01/InclusiveMuPt15/merged*.root";
      c->Add(sample.c_str());
      Sample ret = { c, InclusiveMuPt15, 28, 1, "InclusiveMuPt15", true, 0. };
      return ret;
@@ -733,7 +720,7 @@ Sample fInclusiveMuPt15 ()
 Sample fQCDBCtoEPt20to30 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/QCD_BCtoE_Pt20to30/*.root";
+     std::string sample = prefix + "cms2-V01-03-01/QCD_BCtoE_Pt20to30/merged*.root";
      c->Add(sample.c_str());
      Sample ret = { c, QCDBCtoEPt20to30, 28, 1, "QCDBCtoEPt20to30", true, 0. };
      return ret;
@@ -742,7 +729,7 @@ Sample fQCDBCtoEPt20to30 ()
 Sample fQCDBCtoEPt30to80 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/QCD_BCtoE_Pt30to80/*.root";
+     std::string sample = prefix + "cms2-V01-03-01/QCD_BCtoE_Pt30to80/merged*.root";
      c->Add(sample.c_str());
      Sample ret = { c, QCDBCtoEPt30to80, 28, 1, "QCDBCtoEPt30to80", true, 0. };
      return ret;
@@ -751,16 +738,17 @@ Sample fQCDBCtoEPt30to80 ()
 Sample fQCDBCtoEPt80to170 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/QCD_BCtoE_Pt80to170/*.root";
+     std::string sample = prefix + "cms2-V01-03-01/QCD_BCtoE_Pt80to170/merged*.root";
      c->Add(sample.c_str());
      Sample ret = { c, QCDBCtoEPt80to170, 28, 1, "QCDBCtoEPt80to170", true, 0. };
      return ret;
 }
+*/
 
 Sample fQCDEMenrichedPt20to30 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/QCD_EMenriched_Pt20to30/*.root";
+     std::string sample = prefix + "cms2-V01-03-01/QCD_EMenriched_Pt20to30_singlelepton/merged*.root";
      c->Add(sample.c_str());
      Sample ret = { c, QCDEMenrichedPt20to30, 28, 1, "QCDEMenrichedPt20to30", true, 0. };
      return ret;
@@ -769,7 +757,7 @@ Sample fQCDEMenrichedPt20to30 ()
 Sample fQCDEMenrichedPt30to80 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/QCD_EMenriched_Pt30to80/*.root";
+     std::string sample = prefix + "cms2-V01-03-01/QCD_EMenriched_Pt30to80_singlelepton/merged*.root";
      c->Add(sample.c_str());
      Sample ret = { c, QCDEMenrichedPt30to80, 28, 1, "QCDEMenrichedPt30to80", true, 0. };
      return ret;
@@ -778,17 +766,63 @@ Sample fQCDEMenrichedPt30to80 ()
 Sample fQCDEMenrichedPt80to170 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/QCD_EMenriched_Pt80to170/*.root";
+     std::string sample = prefix + "cms2-V01-03-01/QCD_EMenriched_Pt80to170_singlelepton/merged*.root";
      c->Add(sample.c_str());
      Sample ret = { c, QCDEMenrichedPt80to170, 28, 1, "QCDEMenrichedPt80to170", true, 0. };
      return ret;
 }
 
+// photon + jet samples
+Sample fPhotonJetPt15to20 ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "cms2-V01-03-01/PYTHIA8PhotonJetPt15to20_singlelepton/merged*.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, PhotonJet, 28, 1, "PhotonJetPt15to20", true, 0. };
+     return ret;
+}
 
+Sample fPhotonJetPt20to25 ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "cms2-V01-03-01/PYTHIA8PhotonJetPt20to25_singlelepton/merged*.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, PhotonJet, 28, 1, "PhotonJetPt20to25", true, 0. };
+     return ret;
+}
+
+Sample fPhotonJetPt25to30 ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "cms2-V01-03-01/PYTHIA8PhotonJetPt25to30_singlelepton/merged*.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, PhotonJet, 28, 1, "PhotonJetPt25to30", true, 0. };
+     return ret;
+}
+
+Sample fPhotonJetPt30to35 ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "cms2-V01-03-01/PYTHIA8PhotonJetPt30to35_singlelepton/merged*.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, PhotonJet, 28, 1, "PhotonJetPt30to35", true, 0. };
+     return ret;
+}
+
+Sample fPhotonJetPt35 ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "cms2-V01-03-01/PYTHIA8PhotonJetPt35_singlelepton/merged*.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, PhotonJet, 28, 1, "PhotonJetPt35", true, 0. };
+     return ret;
+}
+
+/*
 Sample fQCDpt30to80 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/QCDpt30_v2/*.root";
+     std::string sample = prefix + "cms2-V01-03-01/QCDpt30_v2/merged*.root";
      c->Add(sample.c_str());
      Sample ret = { c, QCDpt30to80, 28, 1, "QCDpt30to80", true, 80. };
      return ret;
@@ -797,7 +831,7 @@ Sample fQCDpt30to80 ()
 Sample fQCDpt80to170 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/QCDpt80/*.root";
+     std::string sample = prefix + "cms2-V01-03-01/QCDpt80/merged*.root";
      c->Add(sample.c_str());
      Sample ret = { c, QCDpt80to170, 28, 1, "QCDpt80to170", true, 170 };
      return ret;
@@ -806,7 +840,7 @@ Sample fQCDpt80to170 ()
 Sample fQCDpt170to300 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/QCDpt170/*.root";
+     std::string sample = prefix + "cms2-V01-03-01/QCDpt170/merged*.root";
      c->Add(sample.c_str());
      Sample ret = { c, QCDpt170to300, 28, 1, "QCDpt170to300", true, 300 };
      return ret;
@@ -814,7 +848,7 @@ Sample fQCDpt170to300 ()
 Sample fQCDpt300to470 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/QCDpt300/*.root";
+     std::string sample = prefix + "cms2-V01-03-01/QCDpt300/merged*.root";
      c->Add(sample.c_str());
      Sample ret = { c, QCDpt300to470, 28, 1, "QCDpt300to470", true, 470 };
      return ret;
@@ -822,7 +856,7 @@ Sample fQCDpt300to470 ()
 Sample fQCDpt470to800 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/QCDpt470/*.root";
+     std::string sample = prefix + "cms2-V01-03-01/QCDpt470/merged*.root";
      c->Add(sample.c_str());
      Sample ret = { c, QCDpt470to800, 28, 1, "QCDpt470to800", true, 800 };
      return ret;
@@ -830,7 +864,7 @@ Sample fQCDpt470to800 ()
 Sample fQCDpt800toInf ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/QCDpt800/*.root";
+     std::string sample = prefix + "cms2-V01-03-01/QCDpt800/merged*.root";
      c->Add(sample.c_str());
      Sample ret = { c, QCDpt800toInf, 28, 1, "QCDpt800toInf", true, 999999999 };
      return ret;
