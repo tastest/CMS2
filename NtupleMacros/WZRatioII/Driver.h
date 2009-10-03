@@ -118,6 +118,7 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 	//&looper_qcd80,
 	&looper_qcd_mu15,
 	&looper_qcd_em,
+	&looper_qcd_photon,
 	&looper_wejet_alp,
 	&looper_wmjet_alp,
 	&looper_wtjet_alp,
