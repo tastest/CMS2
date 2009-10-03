@@ -16,13 +16,13 @@ mode = 'glidein'
 email = 'slava77@cern.ch'
 
 def makeCrabConfig():
-    outFileName = dataSet.split('/')[1]+'_'+dataSet.split('/')[2]
+    outFileName = dataSet.split('/')[1]+'_'+dataSet.split('/')[2]+'--'+tag
     outFile = open(outFileName + '.cfg', 'w')
     print 'Writing CRAB config file: ' + outFileName + '.cfg'
     outFile.write('[CRAB]\n')
     outFile.write('jobtype   = cmssw\n')
     outFile.write('scheduler = ' + mode + '\n')
-    outFile.write('server = ucsd\n')    
+    outFile.write('server_name = ucsd\n')    
     outFile.write('[CMSSW]\n')
     outFile.write('datasetpath            = ' + dataSet + '\n')
     outFile.write('pset                   = ' + outFileName + '_cfg.py \n')
@@ -44,8 +44,8 @@ def makeCrabConfig():
         outFile.write('##here are some default sites that we \n')
         outFile.write('##run at. Comment/Uncomment at will\n')
         outFile.write('##UCSD \n')
-        outFile.write('CE_white_list = T2_US_UCSD\n')
-        outFile.write('SE_white_list = T2_US_UCSD\n')
+#        outFile.write('CE_white_list = T2_US_UCSD\n')
+#        outFile.write('SE_white_list = T2_US_UCSD\n')
         outFile.write('rb                 = CERN\n')
         outFile.write('proxy_server            = myproxy.cern.ch\n')
         outFile.write('retry_count             = 0\n')
@@ -54,7 +54,7 @@ def makeCrabConfig():
 def makeCMSSWConfig(cmsswSkelFile):
     foundOutNtupleFile = False
     inFile = open(cmsswSkelFile, 'r').read().split('\n')
-    outFileName = dataSet.split('/')[1]+'_'+dataSet.split('/')[2] + '_cfg.py'
+    outFileName = dataSet.split('/')[1]+'_'+dataSet.split('/')[2] + '--'+tag+'_cfg.py'
     outFile = open(outFileName, 'w')
     print 'Writing CMS2 python config file : ' + outFileName
     for i in inFile:
