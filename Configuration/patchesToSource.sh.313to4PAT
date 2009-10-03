@@ -1,0 +1,41 @@
+# as of Oct 2 3.29PM PST the list of tags for 314
+cvs co -r V06-02-07 AnalysisDataFormats/TopObjects
+cvs co -r V00-00-06 CommonTools/CandAlgos
+cvs co -r V00-00-08-02 CommonTools/Utils
+cvs co -r V00-02-01-01 CondCore/BTauPlugins
+cvs co -r V00-00-03-01 CondCore/PhysicsToolsPlugins
+cvs co -r V01-03-00 CondFormats/BTauObjects
+cvs co -r V06-07-03-01 CondFormats/DataRecord
+cvs co -r V01-02-07-01 CondFormats/PhysicsToolsObjects
+cvs co -r V01-03-42-00 Configuration/Generator
+cvs co -r V05-07-12-02 DataFormats/Provenance
+cvs co -r V00-00-06 ElectroWeakAnalysis/Utilities
+cvs co -r V00-05-02 ElectroWeakAnalysis/WMuNu
+cvs co -r V03-05-03 ElectroWeakAnalysis/ZReco
+cvs co -r V07-09-08-01 FWCore/Framework
+cvs co -r V03-14-11-01 FWCore/MessageLogger
+cvs co -r V00-36-19-01 FWCore/Utilities
+cvs co -r V05-05-11 FastSimulation/CaloRecHitsProducer
+cvs co -r V02-02-03 FastSimulation/Calorimetry
+cvs co -r V01-04-14 FastSimulation/TrajectoryManager
+cvs co -r V10-07-07-01 IOPool/Input
+cvs co -r V00-13-02-01 PhysicsTools/JetMCAlgos
+cvs co -r V07-08-25 PhysicsTools/PatAlgos
+cvs co -r V03-08-03 PhysicsTools/PatUtils
+cvs co -r V00-02-06 PhysicsTools/PythonAnalysis
+cvs co -r V07-01-03 PhysicsTools/Utilities
+cvs co -r V00-01-00 RecoBTag/PerformanceDB
+cvs co -r V00-01-00 RecoBTag/Records
+cvs co -r V00-01-03 RecoMuon/Records
+cvs co -r V06-02-07 TopQuarkAnalysis/Examples
+cvs co -r V06-02-07 TopQuarkAnalysis/TopEventProducers
+cvs co -r V06-02-07 TopQuarkAnalysis/TopEventSelection
+cvs co -r V06-02-07 TopQuarkAnalysis/TopJetCombination
+cvs co -r V06-02-07 TopQuarkAnalysis/TopKinFitter
+cvs co -r V06-02-07 TopQuarkAnalysis/TopObjectResolutions
+cvs co -r V06-02-07 TopQuarkAnalysis/TopSkimming
+cvs co -r V06-02-07 TopQuarkAnalysis/TopTools
+cvs co -r V00-05-06 Validation/RecoPixelVertexing
+
+
+
