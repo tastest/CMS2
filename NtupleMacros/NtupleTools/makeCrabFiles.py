@@ -39,7 +39,7 @@ def makeCrabConfig():
     outFile.write('publish_data          = 0\n')
     outFile.write('publish_data_name     = CMS_' + tag + '\n')
     outFile.write('dbs_url_for_publication =  http://ming.ucsd.edu:8080/DBS1/servlet/DBSServlet\n\n')
-    if ( mode == 'glite' || mode == 'glidein' ) :
+    if ( mode == 'glite' or mode == 'glidein' ) :
         outFile.write('[GRID]\n')
         outFile.write('##here are some default sites that we \n')
         outFile.write('##run at. Comment/Uncomment at will\n')
