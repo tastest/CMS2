@@ -11,8 +11,9 @@ numEvtsTotal = -1
 numEvtsPerJob = 5000
 outNtupleName = 'ntuple.root'
 storageElement = 'T2_US_UCSD'
-tag = 'V01-02-06'
-mode = 'glite'
+tag = 'V01-02-09_100309-1546'
+mode = 'glidein'
+email = 'slava77@cern.ch'
 
 def makeCrabConfig():
     outFileName = dataSet.split('/')[1]+'_'+dataSet.split('/')[2]
@@ -20,7 +21,8 @@ def makeCrabConfig():
     print 'Writing CRAB config file: ' + outFileName + '.cfg'
     outFile.write('[CRAB]\n')
     outFile.write('jobtype   = cmssw\n')
-    outFile.write('scheduler = ' + mode + '\n\n')
+    outFile.write('scheduler = ' + mode + '\n')
+    outFile.write('server = ucsd\n')    
     outFile.write('[CMSSW]\n')
     outFile.write('datasetpath            = ' + dataSet + '\n')
     outFile.write('pset                   = ' + outFileName + '_cfg.py \n')
@@ -28,6 +30,7 @@ def makeCrabConfig():
     outFile.write('events_per_job         = ' + str(numEvtsPerJob) + '\n')
     outFile.write('output_file            = ' + outNtupleName + '\n\n\n')
     outFile.write('[USER]\n')
+    outFile.write('email                  = ' + email +'\n')
     outFile.write('return_data            = 0\n')
     outFile.write('copy_data              = 1\n')
     outFile.write('storage_element        = ' + storageElement + '\n')
@@ -36,45 +39,17 @@ def makeCrabConfig():
     outFile.write('publish_data          = 0\n')
     outFile.write('publish_data_name     = CMS_' + tag + '\n')
     outFile.write('dbs_url_for_publication =  http://ming.ucsd.edu:8080/DBS1/servlet/DBSServlet\n\n')
-    if ( mode == 'glite' ) :
+    if ( mode == 'glite' || mode == 'glidein' ) :
         outFile.write('[GRID]\n')
-        outFile.write('##Changing max tarball size to 20MB\n')
-	outFile.write('maxtarballsize    =  20\n')
         outFile.write('##here are some default sites that we \n')
         outFile.write('##run at. Comment/Uncomment at will\n')
         outFile.write('##UCSD \n')
-        outFile.write('CE_white_list = osg-gw-4.t2.ucsd.edu\n')
-        outFile.write('SE_white_list = srm-3.t2.ucsd.edu\n')
-        outFile.write('##WISC\n')
-        outFile.write('#CE_white_list = cmsgrid02.hep.wisc.edu\n')
-        outFile.write('#SE_white_list = cmssrm.hep.wisc.edu\n')
-        outFile.write('##DESY\n')
-        outFile.write('#CE_white_list = grid-ce3.desy.de\n')
-        outFile.write('#SE_white_list = dcache-se-cms.desy.de\n')
-        outFile.write('##Purdue\n')
-        outFile.write('#CE_white_list = osg.rcac.purdue.edu \n')
-        outFile.write('#SE_white_list = dcache.rcac.purdue.edu\n')
-        outFile.write('##MIT\n')
-        outFile.write('#CE_white_list = ce01.cmsaf.mit.edu\n')
-        outFile.write('#SE_white_list = se01.cmsaf.mit.edu\n')
-        outFile.write('##Nebraska\n')
-        outFile.write('#CE_white_list = red.unl.edu,gpn-husker.unl.edu\n')
-        outFile.write('#SE_white_list = srm.unl.edu\n')
-        outFile.write('##IFCA\n')
-        outFile.write('#CE_white_list = egeece01.ifca.es\n')
-        outFile.write('#SE_white_list = storm.ifca.es\n')
-        outFile.write('##Lyon\n')
-        outFile.write('#CE_white_list = cclcgceli06.in2p3.fr or cclcgceli05.in2p3.fr \n')
-        outFile.write('#SE_white_list = ccsrm.in2p3.fr\n')
-        outFile.write('##CIEMAT\n')
-        outFile.write('#CE_white_list = lcg02.ciemat.es\n')
-        outFile.write('#SE_white_list = srm.ciemat.es\n')
-        outFile.write('##IIHE\n')
-        outFile.write('#CE_white_list = gridce.iihe.ac.be\n')
-        outFile.write('#SE_white_list = maite.iihe.ac.be\n')
-        outFile.write('##Aachen\n')
-        outFile.write('#CE_white_list = grid-ce.physik.rwth-aachen.de\n')
-        outFile.write('#SE_white_list = grid-srm.physik.rwth-aachen.de\n')
+        outFile.write('CE_white_list = T2_US_UCSD\n')
+        outFile.write('SE_white_list = T2_US_UCSD\n')
+        outFile.write('rb                 = CERN\n')
+        outFile.write('proxy_server            = myproxy.cern.ch\n')
+        outFile.write('retry_count             = 0\n')
+        
 
 def makeCMSSWConfig(cmsswSkelFile):
     foundOutNtupleFile = False
