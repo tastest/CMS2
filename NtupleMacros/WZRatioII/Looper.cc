@@ -19,7 +19,8 @@ Looper::Looper (Sample s, cuts_t c, const char *fname)
      memset(scands_passing_w2_	, 0, sizeof(scands_passing_w2_    ));
      memset(scands_count_		, 0, sizeof(scands_count_         ));
 
-	 //initialize indicies
+	 //initialize data members
+	 transmass = 0;
 	 elidxs[0] = -1;
 	 elidxs[1] = -1;
 	 muidxs[0] = -1;
@@ -153,14 +154,28 @@ void Looper::BookHistos ()
 	NewHist( hlep_clmumet[i], Form("%s_%s_%s", SampleName().c_str(), "lep_calomet_muon", hyp.c_str()), "lep_calomet_muon", 100, 0.0, 100.0);
 	NewHist( hlep_met_dphi[i], Form("%s_%s_%s", SampleName().c_str(), "lep_met_dphi", hyp.c_str()), "lep_met_dphi", 100, 0, 2 * 3.14159);
 	NewHist( hlep_trckIso[i], Form("%s_%s_%s", SampleName().c_str(), "lep_trckIso", hyp.c_str()), "lep_trckIso", 100, 0.0, 10.0);
-	NewHist( hlep_ecalIso[i], Form("%s_%s_%s", SampleName().c_str(), "lep_ecalIso", hyp.c_str()), "lep_ecalIso", 100, 0.0, 20.0);
-	NewHist( hlep_relIso[i], Form("%s_%s_%s", SampleName().c_str(), "lep_relIso", hyp.c_str()), "lep_relIso", 100, 0.0, 5.0);
+	NewHist( hlep_ecalIso[i], Form("%s_%s_%s", SampleName().c_str(), "lep_ecalIso", hyp.c_str()), "lep_ecalIso", 100, 0.0, 10.0);
+	NewHist( hlep_relIso[i], Form("%s_%s_%s", SampleName().c_str(), "lep_relIso", hyp.c_str()), "lep_relIso", 100, 0.0, 1.0);
+	NewHist( hlep_d0[i], Form("%s_%s_%s", SampleName().c_str(), "lep_d0", hyp.c_str()), "lep_d0", 100, 0.0, 1.0);
 
 	//for nlep, fill before cutting on it--same for W,Z
+	NewHist( hlep_nlep_nod0iso[i], Form("%s_%s_%s", SampleName().c_str(), "lep_nlep_nod0iso", hyp.c_str()), "lep_nlep_nod0iso", 10, -0.5, 9.5);
+	NewHist( hlep_nlep_nometiso[i], Form("%s_%s_%s", SampleName().c_str(), "lep_nlep_nometiso", hyp.c_str()), "lep_nlep_nometiso", 10, -0.5, 9.5);
 	NewHist( hlep_nlep[i], Form("%s_%s_%s", SampleName().c_str(), "lep_nlep", hyp.c_str()), "lep_nlep", 10, -0.5, 9.5);
 	NewHist( hlep_njet20[i], Form("%s_%s_%s", SampleName().c_str(), "lep_njet20", hyp.c_str()), "lep_njet20", 10, -0.5, 9.5);
 	NewHist( hlep_njet30[i], Form("%s_%s_%s", SampleName().c_str(), "lep_njet30", hyp.c_str()), "lep_njet30", 10, -0.5, 9.5);
 	NewHist( hlep_conv[i], Form("%s_%s_%s", SampleName().c_str(), "lep_conversions", hyp.c_str()), "lep_conversions", 2, -0.5, 1.5);
+
+	//TH2F's for ABCD
+	hlep_d0_trckIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_d0_trckIso", hyp.c_str()), "lep_d0_trckIso", 100, 0.0, 1.0, 100, 0.0, 10.0);
+	hlep_d0_ecalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_d0_ecalIso", hyp.c_str()), "lep_d0_ecalIso", 100, 0.0, 1.0, 100, 0.0, 10.0);
+	hlep_d0_hcalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_d0_hcalIso", hyp.c_str()), "lep_d0_hcalIso", 100, 0.0, 1.0, 100, 0.0, 10.0);
+	hlep_d0_relIso[i]  = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_d0_relIso",  hyp.c_str()), "lep_d0_relIso", 100, 0.0, 1.0, 100, 0.0, 1.0);
+	
+	hlep_met_trckIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_tcMet_trckIso", hyp.c_str()), "lep_tcMet_trckIso", 100, 0.0, 50.0, 100, 0.0, 10.0);
+	hlep_met_ecalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_tcMet_ecalIso", hyp.c_str()), "lep_tcMet_ecalIso", 100, 0.0, 50.0, 100, 0.0, 10.0);
+	hlep_met_hcalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_tcMet_hcalIso", hyp.c_str()), "lep_tcMet_hcalIso", 100, 0.0, 50.0, 100, 0.0, 10.0);
+	hlep_met_relIso[i]  = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_tcMet_relIso",  hyp.c_str()), "lep_tcMet_relIso",  100, 0.0, 50.0, 100, 0.0, 1.0);
   }
 
   // di-lepton histograms (three + 1 types)
@@ -226,11 +241,13 @@ cuts_t Looper::DilepSelect() //(int i_hyp), no hyp, just idxs
 cuts_t Looper::LepSelect(int lep_type, int i)
 {
   cuts_t ret = 0;
-
   float ptcut = 20.0;
-
+  LorentzVector lep_p4;
+  
   // e
-  if (lep_type == 0) {
+  if( lep_type == 0 ) {
+
+	lep_p4 = cms2.els_p4()[i];
 
 	if (cms2.els_p4()[i].pt() >= ptcut)
 	  ret |= CUT_BIT(LEP_PT);
@@ -240,11 +257,27 @@ cuts_t Looper::LepSelect(int lep_type, int i)
 
 	if( PassSusyElectronIsolation(i, true) ) //bool is for use calo
 	  ret |= CUT_BIT(LEP_ISO);
-	
+
+	//put in all cuts from GoodSusyElectronWithoutIsolation
+	//if ( cms2.els_egamma_tightId().at(index)     !=  1) return false; 
+	//if ( fabs(cms2.els_d0corr().at(index)) >= 0.02)   return false;
+	//if ( cms2.els_closestMuon().at(index) != -1) return false; 
+	//if ( TMath::Abs(cms2.els_p4()[index].eta()) > 2.4) return false;
+
+	if ( cms2.els_egamma_tightId().at(i) ==  1
+		 && cms2.els_closestMuon().at(i) == -1
+		 && TMath::Abs(cms2.els_p4()[i].eta()) < 2.4 )
+	  ret |= CUT_BIT(LEP_GOOD_NOD0);
+
+	if ( fabs(cms2.els_d0corr().at(i)) <= 0.02)
+	  ret |= CUT_BIT(LEP_D0);
+
   }
 
   // m
-  else if (lep_type == 1) {
+  else if( lep_type == 1 ) {
+
+	lep_p4 = cms2.mus_p4()[i];
 
 	if (cms2.mus_p4()[i].pt() >= ptcut)
 	  ret |= CUT_BIT(LEP_PT);
@@ -254,8 +287,57 @@ cuts_t Looper::LepSelect(int lep_type, int i)
 
 	if( PassSusyMuonIsolation(i) )
 	  ret |= CUT_BIT(LEP_ISO);
+
+	//put in all cuts from GoodSusyMuonWithoutIsolation
+	//if (((cms2.mus_type().at(index)) & (1<<1)) == 0) return false; // global muon
+	//if (((cms2.mus_type().at(index)) & (1<<2)) == 0) return false; // tracker muon
+	//if (cms2.mus_validHits().at(index) < 11)    return false; 
+	//if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; 
+	//if (fabs(cms2.mus_d0corr().at(index))   >= 0.02) return false;
+	//if (cms2.mus_pat_ecalvetoDep().at(index) >= 4) return false; // ECalE < 4 
+	//if (cms2.mus_pat_hcalvetoDep().at(index) >= 6) return false; // HCalE < 6 
+	//if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4) return false;
+	
+	if( (cms2.mus_type().at(i) & (1<<1)) == (1<<1) // global muon
+		&& (cms2.mus_type().at(i) & (1<<2)) == (1<<2) // tracker muon
+		&& cms2.mus_validHits().at(i) >= 11
+		&& cms2.mus_gfit_chi2().at(i)/cms2.mus_gfit_ndof().at(i) < 10
+		&& cms2.mus_pat_ecalvetoDep().at(i) < 4 // ECalE < 4 
+		&& cms2.mus_pat_hcalvetoDep().at(i) < 6 // HCalE < 6 
+		&& TMath::Abs(cms2.mus_p4()[i].eta()) < 2.4)
+	  ret |= CUT_BIT(LEP_GOOD_NOD0);
+	
+	if (fabs(cms2.mus_d0corr().at(i)) <= 0.02) 
+	  ret |= CUT_BIT(LEP_D0);
 	
   }
+
+  //transverse mass
+  double dphi = ROOT::Math::VectorUtil::DeltaPhi( LorentzVector( cms2.evt_tcmet()*cos(cms2.evt_tcmetPhi()),
+																 cms2.evt_tcmet()*sin(cms2.evt_tcmetPhi()),
+																 0, cms2.evt_tcmet())
+												  , lep_p4 );
+  double masst = sqrt( 2 * cms2.evt_tcmet() * lep_p4.Et() * ( 1 - cos(dphi) ) );
+  
+  //check yanjun's code:
+  TVector3 tcMET;
+  tcMET.SetPtEtaPhi(cms2.evt_tcmet(), 0, cms2.evt_tcmetPhi());
+  double massyj = sqrt( ( tcMET.Pt() + lep_p4.Et())*( tcMET.Pt() + lep_p4.Et())
+					   - ( tcMET.Pt()*cos(tcMET.Phi()) + lep_p4.Px() )*( tcMET.Pt()*cos(tcMET.Phi()) + lep_p4.Px() )
+					   - ( tcMET.Pt()*sin(tcMET.Phi()) + lep_p4.Py() )*( tcMET.Pt()*sin(tcMET.Phi()) + lep_p4.Py() ) );
+
+  if( fabs( tcMET.Phi() - cms2.evt_tcmetPhi() ) > 0.01 )
+	cout << "Phi error " << tcMET.Phi() << "   " << cms2.evt_tcmetPhi() << endl;
+
+  if( fabs( massyj - masst ) > 0.1 && masst > 2 && massyj > 2 )
+	cout << "Mass disagreement " << masst << "   " << massyj << endl;
+
+  //set looper member
+  transmass = masst;
+
+  if( masst > 40 && masst < 100 )
+	ret |= CUT_BIT(TMASS);
+
 
   return ret;
 }
@@ -378,23 +460,46 @@ void Looper::FillEventHistos ()
   // need to determine if this is a di-lepton
   // or a single lepton event
   int nels = 0, nmus = 0;
+  int nels_nod0iso = 0, nels_nometiso = 0;
+  int nmus_nod0iso = 0, nmus_nometiso = 0;
   int nels_nopt = 0, nmus_nopt = 0;
+  cuts_t pass_lep_cut = 0; //cuts of lepton which passes lepcuts--only good for single lepton
   elidxs[0] = elidxs[1] = -1;
   muidxs[0] = muidxs[1] = -1;
   int elidxs_nopt[] = {-1, -1}; //this one can be local--still just 2
   int muidxs_nopt[] = {-1, -1};
+  //DEFINE CUTS
+  //cut for counting good, isolated leptons: no mass, met reqmnts
   cuts_t lepcuts = (CUT_BIT(LEP_PT)
 					| CUT_BIT(LEP_GOOD)
 					| CUT_BIT(LEP_ISO)
 					);
-  cuts_t lepcuts_nopt = (CUT_BIT(LEP_GOOD) | CUT_BIT(LEP_ISO));
-  cuts_t lepcuts_noiso = (CUT_BIT(LEP_PT) | CUT_BIT(LEP_GOOD));
+
+  cuts_t w_evt_sel = (CUT_BIT(TCMET) | CUT_BIT(TMASS));
+  //cut for pt plot, also no mass, met cuts
+  cuts_t lepcuts_nopt  = ( CUT_BIT(LEP_GOOD) | CUT_BIT(LEP_ISO));
+  //for (d0,iso) plots, relax (d0,iso), apply everything else including tmass, tcmet
+  cuts_t lepcuts_nod0  = ( CUT_BIT(LEP_PT) | CUT_BIT(LEP_ISO) | CUT_BIT(LEP_GOOD_NOD0) | w_evt_sel );
+  cuts_t lepcuts_noiso = ( CUT_BIT(LEP_PT) | CUT_BIT(LEP_GOOD) | w_evt_sel );
+  cuts_t lepcuts_notm  = ( CUT_BIT(LEP_PT) | CUT_BIT(LEP_ISO) | CUT_BIT(LEP_GOOD) | CUT_BIT(TCMET));
+
+  //cuts for ABCD: CUT ON TMASS, MET
+  cuts_t lepcuts_nod0iso = ( CUT_BIT(LEP_PT) | CUT_BIT(LEP_GOOD_NOD0) | w_evt_sel );
+  cuts_t lepcuts_nometiso = ( CUT_BIT(LEP_PT) | CUT_BIT(LEP_GOOD) | CUT_BIT(TMASS) );
+
+  //check tcMET here b'c no point doing for every lepton--don't use for Z
+  cuts_t tcmetcut = 0;
+  if( cms2.evt_tcmet() > 20 )
+	tcmetcut |= CUT_BIT(TCMET);
 
   //select els
   for( unsigned int i=0; i<cms2.els_p4().size(); i++ ) {
+	transmass = 0;
 	cuts_t elcut = LepSelect(0, i); //0 for els
+	elcut |= tcmetcut;
 	if( (elcut & lepcuts) == lepcuts ) { //all cuts
 	  nels++;
+	  pass_lep_cut = elcut;
 	  if( elidxs[0] == -1 )
 		elidxs[0] = i;
 	  else if( elidxs[1] == -1 )
@@ -409,18 +514,56 @@ void Looper::FillEventHistos ()
 		elidxs_nopt[1] = i;
 	}
 	if( (elcut & lepcuts_noiso) == lepcuts_noiso ) {
+	  hlep_trckIso[0]->Fill( cms2.els_tkIso()[i], weight );
+	  hlep_trckIso[2]->Fill( cms2.els_tkIso()[i], weight );
 	  hlep_ecalIso[0]->Fill( cms2.els_pat_ecalIso()[i], weight );
 	  hlep_ecalIso[2]->Fill( cms2.els_pat_ecalIso()[i], weight );
 	  hlep_relIso[0]->Fill( inv_el_relsusy_iso(i, true), weight );
 	  hlep_relIso[2]->Fill( inv_el_relsusy_iso(i, true), weight );
 	}
+	if( (elcut & lepcuts_nod0) == lepcuts_nod0 ) {
+	  hlep_d0[0]->Fill( cms2.els_d0corr()[i], weight );
+	  hlep_d0[2]->Fill( cms2.els_d0corr()[i], weight );
+	}
+	//for mass plots, check all but mass
+	if( (elcut && lepcuts_notm) == lepcuts_notm ) {
+	  hlep_mass[0]->Fill( transmass, weight ); //check all cuts but mass for mass plot (n-1)
+	  hlep_mass[2]->Fill( transmass, weight );
+	}
+	//ABCD in d0, Iso
+	if( (elcut & lepcuts_nod0iso) == lepcuts_nod0iso ) {
+	  nels_nod0iso++;
+	  hlep_d0_trckIso[0]->Fill( cms2.els_d0corr()[i], cms2.els_tkIso()[i], weight );
+	  hlep_d0_trckIso[2]->Fill( cms2.els_d0corr()[i], cms2.els_tkIso()[i], weight );
+	  hlep_d0_ecalIso[0]->Fill( cms2.els_d0corr()[i], cms2.els_pat_ecalIso()[i], weight );
+	  hlep_d0_ecalIso[2]->Fill( cms2.els_d0corr()[i], cms2.els_pat_ecalIso()[i], weight );
+	  hlep_d0_hcalIso[0]->Fill( cms2.els_d0corr()[i], cms2.els_pat_hcalIso()[i], weight );
+	  hlep_d0_hcalIso[2]->Fill( cms2.els_d0corr()[i], cms2.els_pat_hcalIso()[i], weight );
+	  hlep_d0_relIso[0] ->Fill( cms2.els_d0corr()[i], inv_el_relsusy_iso(i, true), weight );
+	  hlep_d0_relIso[2] ->Fill( cms2.els_d0corr()[i], inv_el_relsusy_iso(i, true), weight );
+	}
+	//ABCD in tcmet, Iso
+	if( (elcut & lepcuts_nometiso) == lepcuts_nometiso ) {
+	  nels_nometiso++;
+	  hlep_met_trckIso[0]->Fill( cms2.evt_tcmet(), cms2.els_tkIso()[i], weight );		
+	  hlep_met_trckIso[2]->Fill( cms2.evt_tcmet(), cms2.els_tkIso()[i], weight );		
+	  hlep_met_ecalIso[0]->Fill( cms2.evt_tcmet(), cms2.els_pat_ecalIso()[i], weight );	
+	  hlep_met_ecalIso[2]->Fill( cms2.evt_tcmet(), cms2.els_pat_ecalIso()[i], weight );	
+	  hlep_met_hcalIso[0]->Fill( cms2.evt_tcmet(), cms2.els_pat_hcalIso()[i], weight );	
+	  hlep_met_hcalIso[2]->Fill( cms2.evt_tcmet(), cms2.els_pat_hcalIso()[i], weight );	
+	  hlep_met_relIso[0] ->Fill( cms2.evt_tcmet(), inv_el_relsusy_iso(i, true), weight );
+	  hlep_met_relIso[2] ->Fill( cms2.evt_tcmet(), inv_el_relsusy_iso(i, true), weight );
+	}
   }
 
   //select mus
   for( unsigned int i=0; i<cms2.mus_p4().size(); i++ ) {
+	transmass = 0;
 	cuts_t mucut = LepSelect(1, i); //1 for mus
+	mucut |= tcmetcut;
 	if( (mucut & lepcuts) == lepcuts ) { //all cuts
 	  nmus++;
+	  pass_lep_cut = mucut;
 	  if( muidxs[0] == -1 )
 		muidxs[0] = i;
 	  else if( muidxs[1] == -1 )
@@ -434,21 +577,60 @@ void Looper::FillEventHistos ()
 		muidxs_nopt[1] = i;
 	}
 	if( (mucut & lepcuts_noiso) == lepcuts_noiso ) {
+	  hlep_trckIso[1]->Fill( cms2.mus_iso03_sumPt()[i], weight);
+	  hlep_trckIso[2]->Fill( cms2.mus_iso03_sumPt()[i], weight);
 	  hlep_ecalIso[1]->Fill( cms2.mus_iso03_emEt()[i], weight );
 	  hlep_ecalIso[2]->Fill( cms2.mus_iso03_emEt()[i], weight );
 	  hlep_relIso[1]->Fill( inv_mu_relsusy_iso(i), weight );
 	  hlep_relIso[2]->Fill( inv_mu_relsusy_iso(i), weight );
 	}
+	if( (mucut & lepcuts_nod0) == lepcuts_nod0 ) {
+	  hlep_d0[1]->Fill( cms2.mus_d0corr()[i], weight );
+	  hlep_d0[2]->Fill( cms2.mus_d0corr()[i], weight );
+	}
+	//for mass plots, check all but mass
+	if( (mucut && lepcuts_notm) == lepcuts_notm ) {
+	  hlep_mass[1]->Fill( transmass, weight ); //check all cuts but mass for mass plot (n-1)
+	  hlep_mass[2]->Fill( transmass, weight );
+	}
+	//ABCD in d0, Iso
+	if( (mucut & lepcuts_nod0iso) == lepcuts_nod0iso ) {
+	  nmus_nod0iso++;
+	  hlep_d0_trckIso[1]->Fill( cms2.mus_d0corr()[i], cms2.mus_iso03_sumPt()[i], weight );
+	  hlep_d0_trckIso[2]->Fill( cms2.mus_d0corr()[i], cms2.mus_iso03_sumPt()[i], weight );
+	  hlep_d0_ecalIso[1]->Fill( cms2.mus_d0corr()[i], cms2.mus_iso03_emEt()[i], weight );
+	  hlep_d0_ecalIso[2]->Fill( cms2.mus_d0corr()[i], cms2.mus_iso03_emEt()[i], weight );
+	  hlep_d0_hcalIso[1]->Fill( cms2.mus_d0corr()[i], cms2.mus_iso03_hadEt()[i], weight );
+	  hlep_d0_hcalIso[2]->Fill( cms2.mus_d0corr()[i], cms2.mus_iso03_hadEt()[i], weight );
+	  hlep_d0_relIso[1] ->Fill( cms2.mus_d0corr()[i], inv_mu_relsusy_iso(i), weight );
+	  hlep_d0_relIso[2] ->Fill( cms2.mus_d0corr()[i], inv_mu_relsusy_iso(i), weight );
+	}
+	//ABCD in tcmet, Iso
+	if( (mucut & lepcuts_nometiso) == lepcuts_nometiso ) {
+	  nmus_nometiso++;
+	  hlep_met_trckIso[1]->Fill( cms2.evt_tcmet(), cms2.mus_iso03_sumPt()[i], weight );		
+	  hlep_met_trckIso[2]->Fill( cms2.evt_tcmet(), cms2.mus_iso03_sumPt()[i], weight );		
+	  hlep_met_ecalIso[1]->Fill( cms2.evt_tcmet(), cms2.mus_iso03_emEt()[i], weight );	
+	  hlep_met_ecalIso[2]->Fill( cms2.evt_tcmet(), cms2.mus_iso03_emEt()[i], weight );	
+	  hlep_met_hcalIso[1]->Fill( cms2.evt_tcmet(), cms2.mus_iso03_hadEt()[i], weight );	
+	  hlep_met_hcalIso[2]->Fill( cms2.evt_tcmet(), cms2.mus_iso03_hadEt()[i], weight );	
+	  hlep_met_relIso[1] ->Fill( cms2.evt_tcmet(), inv_mu_relsusy_iso(i), weight );
+	  hlep_met_relIso[2] ->Fill( cms2.evt_tcmet(), inv_mu_relsusy_iso(i), weight );
+	}
   }
 
   //fill nlep cut before checking nels, nmus
   //0=el, 1=mu, 2=all
-  //if( nels > 0 )
   hlep_nlep[0]->Fill( nels, weight );
-  //if( nmus > 0 )
   hlep_nlep[1]->Fill( nmus, weight );
-  //if( nels > 0 || nmus > 0 )
   hlep_nlep[2]->Fill( nels+nmus, weight );
+
+  hlep_nlep_nod0iso[0]->Fill( nels_nod0iso, weight );
+  hlep_nlep_nod0iso[1]->Fill( nmus_nod0iso, weight );
+  hlep_nlep_nod0iso[2]->Fill( nels_nod0iso + nmus_nod0iso, weight );
+  hlep_nlep_nometiso[0]->Fill( nels_nometiso, weight );
+  hlep_nlep_nometiso[1]->Fill( nmus_nometiso, weight );
+  hlep_nlep_nometiso[2]->Fill( nels_nometiso + nmus_nometiso, weight );
 
   //fill lep pt hists based on n nopt--single leps (each flavor independent of other)
   if( nels_nopt == 1 ) { //allow mus
@@ -482,16 +664,24 @@ void Looper::FillEventHistos ()
   }
   
   //enforce exactly two leptons and SF requirement
-  //if( cms2.evt_nels() == 2 || cms2.mus_p4().size() == 2 )
-  //if( cms2.evt_nels() > 1 || cms2.mus_p4().size() > 1 )
+  //remember, nels, nmus require NO MET, NOR MASS CUTS
   if( (nels == 2 && nmus == 0)
 	  || (nmus == 2 && nels == 0) )
 	ZEvent();
-  //else if( (cms2.evt_nels() == 0 && cms2.mus_p4().size() == 1) ||
-  //	   (cms2.evt_nels() == 1 && cms2.mus_p4().size() == 0))
-  else if( (nels == 1 && nmus == 0)
-		   || (nmus == 1 && nels == 0) )
-	WEvent();
+
+  else if( (nels == 1 && nmus == 0) || (nmus == 1 && nels == 0) ) {
+	unsigned int lep_type = (nels == 1 ? 0 : 1);
+	//for met plots, only need to pass tmass (all lep cuts are passed via nels, nmus if)
+	if( (pass_lep_cut && CUT_BIT(TMASS)) == CUT_BIT(TMASS) ) {
+	  hlep_tcmet[lep_type]->Fill(cms2.evt_tcmet(), weight);
+	  hlep_tcmet[2]->Fill(cms2.evt_tcmet(), weight);
+	  hlep_clmumet[lep_type]->Fill(cms2.evt_metMuonCorr(), weight);
+	  hlep_clmumet[2]->Fill(cms2.evt_metMuonCorr(), weight);
+	}
+	//for WEvent, need to pass tmass, met
+	if( (pass_lep_cut && w_evt_sel) == w_evt_sel ) 
+	  WEvent();
+  }
 
 }
 //end FillEventHistos
@@ -510,52 +700,6 @@ void Looper::WEvent() {
   }
   else 
 	lep_p4 = cms2.els_p4()[elidxs[0]];
-	
-  hlep_tcmet[lep_type]->Fill(cms2.evt_tcmet(), weight);
-  hlep_tcmet[2]->Fill(cms2.evt_tcmet(), weight);
-  hlep_clmumet[lep_type]->Fill(cms2.evt_metMuonCorr(), weight);
-  hlep_clmumet[2]->Fill(cms2.evt_metMuonCorr(), weight);
-
-  //put the event-ish cuts here
-  if( cms2.evt_tcmet() <= 20 )
-	return;
-
-  //transverse mass
-  double dphi = ROOT::Math::VectorUtil::DeltaPhi( LorentzVector( cms2.evt_tcmet()*cos(cms2.evt_tcmetPhi()),
-																 cms2.evt_tcmet()*sin(cms2.evt_tcmetPhi()),
-																 0, cms2.evt_tcmet())
-												  , lep_p4 );
-  double masst = sqrt( 2 * cms2.evt_tcmet() * lep_p4.Et() * ( 1 - cos(dphi) ) );
-  
-  //check yanjun's code:
-  TVector3 tcMET;
-  tcMET.SetPtEtaPhi(cms2.evt_tcmet(), 0, cms2.evt_tcmetPhi());
-  double massyj = sqrt( ( tcMET.Pt() + lep_p4.Et())*( tcMET.Pt() + lep_p4.Et())
-					   - ( tcMET.Pt()*cos(tcMET.Phi()) + lep_p4.Px() )*( tcMET.Pt()*cos(tcMET.Phi()) + lep_p4.Px() )
-					   - ( tcMET.Pt()*sin(tcMET.Phi()) + lep_p4.Py() )*( tcMET.Pt()*sin(tcMET.Phi()) + lep_p4.Py() ) );
-
-  if( fabs( tcMET.Phi() - cms2.evt_tcmetPhi() ) > 0.01 )
-	cout << "Phi error " << tcMET.Phi() << "   " << cms2.evt_tcmetPhi() << endl;
-
-  if( fabs( massyj - masst ) > 0.1 )
-	cout << "Mass disagreement " << masst << "   " << massyj << endl;
-
-  hlep_mass[lep_type]->Fill( masst, weight ); //check all cuts but mass for mass plot (n-1)
-  hlep_mass[2]->Fill( masst, weight );
-
-  if( masst <= 40 || masst >= 100 )
-	return;
-
-  //conversion plot has ALL cuts applied
-  if( lep_type == 0 ) {
-	hlep_conv[lep_type]->Fill( conversionElectron(elidxs[0]), weight );
-	hlep_conv[2]->Fill( conversionElectron(elidxs[0]), weight );
-  }
-  
-  //if (cms2.mus_p4().size() == 0) lep_type = 0;
-
-  //for W, all checking is done for following cuts:
-  //cuts_t cuts = (CUT_BIT(LEP_PT) | CUT_BIT(LEP_GOOD) | CUT_BIT(LEP_ISO) );
 
   //jet vars--single lepton
   int njets_20 = 0;
@@ -590,29 +734,20 @@ void Looper::WEvent() {
   hlep_njet30[lep_type]->Fill(njets_30, weight);
   hlep_njet30[2]->Fill(njets_30, weight);
 
+
   if( lep_type == 0 ) {
-	//fill lep pt before/during lep selection
-	//hlep_pt[lep_type]->Fill(cms2.els_p4()[elidxs[0]].pt(), weight);
-	//hlep_pt[2]->Fill(cms2.els_p4()[elidxs[0]].pt(), weight);
+	//conversion plot has ALL cuts applied
+	hlep_conv[lep_type]->Fill( conversionElectron(elidxs[0]), weight );
+	hlep_conv[2]->Fill( conversionElectron(elidxs[0]), weight );
 
 	float dphi = acos(cos(cms2.evt_tcmetPhi() - cms2.els_p4()[elidxs[0]].Phi() ));
 	hlep_met_dphi[lep_type]->Fill(dphi, weight);
 	hlep_met_dphi[2]->Fill(dphi, weight);
-
-	hlep_trckIso[lep_type]->Fill(cms2.els_tkIso()[elidxs[0]], weight);
-	hlep_trckIso[2]->Fill(cms2.els_tkIso()[elidxs[0]], weight);
   }
   else if (lep_type == 1) {
-	//hlep_pt[lep_type]->Fill(cms2.mus_p4()[muidxs[0]].pt(), weight);
-	//hlep_pt[2]->Fill(cms2.mus_p4()[muidxs[0]].pt(), weight);
-	
 	float dphi = acos(cos(cms2.evt_tcmetPhi() - cms2.mus_p4()[muidxs[0]].Phi() ));
 	hlep_met_dphi[lep_type]->Fill(dphi, weight);
 	hlep_met_dphi[2]->Fill(dphi, weight);
-	
-	hlep_trckIso[lep_type]->Fill(cms2.mus_iso03_sumPt()[muidxs[0]], weight);
-	hlep_trckIso[2]->Fill(cms2.mus_iso03_sumPt()[muidxs[0]], weight);
-
   }
 
   scands_passing_[lep_type] += weight;

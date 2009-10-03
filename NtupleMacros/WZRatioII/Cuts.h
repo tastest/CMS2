@@ -11,6 +11,11 @@ enum {
 	LEP_PT,
 	LEP_GOOD,
 	LEP_ISO,
+	LEP_GOOD_NOD0,
+	LEP_D0,
+	TCMET,
+	TMASS, //transverse mass for W selection
+	ZMASS,
 	//DUMMY,
 };
 

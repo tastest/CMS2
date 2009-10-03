@@ -24,12 +24,13 @@ enum {
 };
 
 const uint32 default_samples =
-     1 << LOOP_QCD		| 
-     1 << LOOP_QCD_MU15		| 
-     1 << LOOP_QCD_EM		| 
-     1 << LOOP_QCD_PHOTON	| 
-     1 << LOOP_WJET_ALP		| 
-     1 << LOOP_ZJET_ALP 	;
+//1 << LOOP_QCD		| 
+1 << LOOP_QCD_MU15		| 
+1 << LOOP_QCD_EM		| 
+1 << LOOP_QCD_PHOTON	| 
+1 << LOOP_WJET_ALP		| 
+1 << LOOP_ZJET_ALP 	|
+1 << LOOP_TTBAR;
 
 // helper function used to print yield tables
 void printTable (const Looper **hists, int n, const char *fname, 
@@ -113,8 +114,8 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 
   // then we collect them all and print a table
   const Looper *loopers[] = { 
-	&looper_qcd30,
-	&looper_qcd80,
+	//&looper_qcd30,
+	//&looper_qcd80,
 	&looper_qcd_mu15,
 	&looper_qcd_em,
 	&looper_wejet_alp,

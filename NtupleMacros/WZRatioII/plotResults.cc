@@ -19,7 +19,8 @@ const static sources_t theSources =
 //(1ll << H_WJET_ALP) |
 (1ll << H_WEJET_ALP) |
 (1ll << H_WMJET_ALP) |
-(1ll << H_WTJET_ALP) 
+(1ll << H_WTJET_ALP) |
+(1ll << H_TTBAR)     
   ;
 
 // for 2_2_X
@@ -94,8 +95,22 @@ void makeStack(HistogramUtilities* h, TLegend* leg, sources_t theSources, TStrin
 void plotResults() {
 
   HistogramUtilities* h1 = new HistogramUtilities("Results.root");  //normalization is in weight
-  TLegend *lg_all = h1->getLegend(theSources, "lep_pt", "", "all");
 
+  vector<DataSource> vSources;
+  vSources.push_back(   fH_WEJET_ALP()   );	
+  vSources.push_back(   fH_WMJET_ALP()   );	
+  vSources.push_back(   fH_WTJET_ALP()   );	
+  vSources.push_back(	fH_ZEEJET_ALP()	);
+  vSources.push_back(   fH_ZMMJET_ALP() );
+  vSources.push_back(   fH_ZTTJET_ALP() );
+  vSources.push_back(	fH_QCD30()	);
+  vSources.push_back(   fH_QCD80()      );
+  vSources.push_back(   fH_MU15_SINGLE() );
+  vSources.push_back(	fH_TTBAR()	);
+  //sources_.push_back(   fH_TTBAR_SINGLE() ); //it's single, but not called that
+  h1->setOrder(vSources);
+  
+  TLegend *lg_all = h1->getLegend(theSources, "lep_pt", "", "all");
 
   makeStack(h1, lg_all, theSources, "Highlep_pt", 			"", "all", true);
   makeStack(h1, lg_all, theSources, "Highlep_Met", 			"", "all", true);

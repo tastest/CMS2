@@ -63,9 +63,21 @@ protected:
   TH1F *hlep_ecalIso[3];
   TH1F *hlep_relIso[3];
   TH1F *hlep_nlep[3];
+  TH1F *hlep_nlep_nod0iso[3];
+  TH1F *hlep_nlep_nometiso[3];
   TH1F *hlep_njet20[3];
   TH1F *hlep_njet30[3];
   TH1F *hlep_conv[3];
+  TH1F *hlep_d0[3];
+  //TH2Fs for ABCD
+  TH2F* hlep_d0_trckIso[3]; 
+  TH2F* hlep_d0_ecalIso[3]; 
+  TH2F* hlep_d0_hcalIso[3]; 
+  TH2F* hlep_d0_relIso[3];  
+  TH2F* hlep_met_trckIso[3];
+  TH2F* hlep_met_ecalIso[3];
+  TH2F* hlep_met_hcalIso[3];
+  TH2F* hlep_met_relIso[3]; 
 	   
   TH1F *hdilep_0_pt[4];
   TH1F *hdilep_1_pt[4];
@@ -117,6 +129,7 @@ protected:
   TH1F* h1_lep_lowptegamma_robustHighEnergy_[3];
 
   //int njets;//need to do differently for W,Z anyway
+  double transmass;
   int elidxs[2];
   int muidxs[2];
 
