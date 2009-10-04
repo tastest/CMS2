@@ -5,7 +5,7 @@ process = cms.Process("CMS2")
 from Configuration.EventContent.EventContent_cff import *
 
 process.configurationMetadata = cms.untracked.PSet(
-        version = cms.untracked.string('$Revision: 1.1.2.2 $'),
+        version = cms.untracked.string('$Revision: 1.1.2.3 $'),
         annotation = cms.untracked.string('CMS2'),
         name = cms.untracked.string('CMS2 test configuration')
 )
@@ -170,6 +170,10 @@ process.bFlavorHistoryProducer.matchedSrc = cms.InputTag("antikt5StGenJets")
 process.cFlavorHistoryProducer.matchedSrc = cms.InputTag("antikt5StGenJets")
 process.genJetSequence.replace(process.sisCone5StGenJets, process.antikt5StGenJets)
 process.jetMaker.L2L3JetCorrectorName =cms.string("L2L3JetCorrectorAK5Calo")
+process.metMuonJESCorAK5CMS2 = process.metMuonJESCorSC5CMS2.clone()
+process.metMuonJESCorAK5CMS2.corrector = "L2L3JetCorrectorAK5Calo"
+process.metCorSequence += process.metMuonJESCorAK5CMS2
+process.metMaker.MuonJEScorMET_tag_ = cms.InputTag("metMuonJESCorAK5CMS2")
 
 #switchJetCollection(process, cms.InputTag('prunedUncorrectedCMS2Jets'), doJTA = True, doBTagging = True, jetCorrLabel = ('SC5', 'Calo'), doType1MET = True, genJetCollection = cms.InputTag("sisCone5GenJets") )
 
