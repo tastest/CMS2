@@ -116,6 +116,46 @@ TH1F* HistogramUtilities::getHistogram(sources_t theSources, TString var, TStrin
   return h1_data;
 }
 
+//hyp2 is a required argument. Ex. use case: get sum of all samples ee + mm
+TH1F* HistogramUtilities::getHistogramSum(sources_t theSources, TString var, TString nJets, TString hyp1, TString hyp2, Int_t rebin) 
+{
+  //create a new histogram object
+  //TString histNameSuffix = "_" + var + "_" + nJets + hyp_type;
+  TString histNameSuffix1 = "_" + var + nJets + "_" + hyp1;
+  TString histNameSuffix2 = "_" + var + nJets + "_" + hyp2;
+
+  //TH1F *h_temp = (TH1F*)(file_->Get(sources_[0].getName() + histNameSuffix)->Clone());
+  //TH1F *st_temp = new TH1F(var, var, h_temp->GetNbinsX(), h_temp->GetXaxis()->GetXmin(), h_temp->GetXaxis()->GetXmax());
+  TH1F* h_result = 0;
+
+  // get each constituent in turn and add to the stack
+  for (int i = sources_.size() - 1; i >= 0; --i) {
+	if ((theSources & makeBit(sources_[i].getSource()) ) == makeBit(sources_[i].getSource()) ) {
+	  //std::cout << "getting " << sources_[i].getName() + histNameSuffix << std::endl;
+	  //TH1F *h1_temp = (TH1F*)(file_->Get(sources_[i].getName() + histNameSuffix1)->Clone());
+	  if( !h_result )	  
+		h_result = (TH1F*)(file_->Get(sources_[i].getName() + histNameSuffix1)->Clone());
+	  else
+		h_result->Add( (TH1F*)file_->Get(sources_[i].getName() + histNameSuffix1) );
+	  TH1F *h2_temp = (TH1F*)(file_->Get(sources_[i].getName() + histNameSuffix2)->Clone());
+	  //if (sources_[i].getColor() != 0) h1_temp->SetFillColor(sources_[i].getColor());
+	  //h1_temp->Rebin(rebin);
+	  if( lumiNorm_ != 1 ) {
+		//h1_temp->Scale(lumiNorm_);
+		h2_temp->Scale(lumiNorm_);
+	  }
+	  //if( !h_result )
+	  //	h_result = h1_temp;
+	  //else
+	  //	h_result->Add(h1_temp);
+	  h_result->Add(h2_temp);
+	  //h_result->Integral(); //stupid test
+	}
+  }
+  return h_result;
+}
+
+
 TH2F* HistogramUtilities::get2dHistogram(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin) 
 {
   //TString histNameSuffix = "_" + var + "_" + nJets + hyp_type;
@@ -334,30 +374,6 @@ THStack* HistogramUtilities::getSumDifStack(sources_t theSources, TString var, T
   return st_temp;
 }
 
-/*
-TH1F* HistogramUtilities::getHistogramSum(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin) 
-{
-  //create a new histogram object
-  //TString histNameSuffix = "_" + var + "_" + nJets + hyp_type;
-  TString histNameSuffix = "_" + var + nJets + "_" + hyp_type;
-
-  TH1F *h_temp = (TH1F*)(file_->Get(sources_[0].getName() + histNameSuffix)->Clone());
-  TH1F *st_temp = new TH1F(var, var, h_temp->GetNbinsX(), h_temp->GetXaxis()->GetXmin(), h_temp->GetXaxis()->GetXmax());
-
-  // get each constituent in turn and add to the stack
-  for (int i = sources_.size() - 1; i >= 0; --i) {
-	if ((theSources & makeBit(sources_[i].getSource()) ) == makeBit(sources_[i].getSource()) ) {
-	  //std::cout << "getting " << sources_[i].getName() + histNameSuffix << std::endl;
-	  TH1F *h1_temp = (TH1F*)(file_->Get(sources_[i].getName() + histNameSuffix)->Clone());
-	  if (sources_[i].getColor() != 0) h1_temp->SetFillColor(sources_[i].getColor());
-	  //h1_temp->Rebin(rebin);
-	  h1_temp->Scale(lumiNorm_);
-	  st_temp->Add(h1_temp);
-	}
-  }
-  return st_temp;
-}
-*/
 
 TLegend* HistogramUtilities::getLegend(sources_t theSources, TString var, TString nJets, TString hyp_type) 
 {
