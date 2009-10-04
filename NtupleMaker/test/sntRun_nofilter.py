@@ -5,7 +5,7 @@ process = cms.Process("CMS2")
 from Configuration.EventContent.EventContent_cff import *
 
 process.configurationMetadata = cms.untracked.PSet(
-        version = cms.untracked.string('$Revision: 1.1.2.1 $'),
+        version = cms.untracked.string('$Revision: 1.1.2.2 $'),
         annotation = cms.untracked.string('CMS2'),
         name = cms.untracked.string('CMS2 test configuration')
 )
@@ -66,15 +66,6 @@ process.load("CMS2.NtupleMaker.elToMuAssMaker_cfi")
 process.load("CMS2.NtupleMaker.eventMaker_cfi")
 process.load("CMS2.NtupleMaker.flavorHistorySequence_cfi")
 process.load("CMS2.NtupleMaker.genJetSequence_cff")
-process.load("RecoJets.JetProducers.antikt5GenJets_cff")
-process.antikt5StGenJets = process.antikt5GenJets.clone()
-process.antikt5StGenJets.src  = cms.InputTag("genParticlesAllStables")
-process.antikt5StGenJets.jetPtMin       = cms.double(0.)
-process.antikt5StGenJets.alias = "ANTIKT5StGenJet"
-process.genJetMaker.genJetsInputTag = cms.InputTag("antikt5StGenJets")
-process.bFlavorHistoryProducer.matchedSrc = cms.InputTag("antikt5StGenJets")
-process.cFlavorHistoryProducer.matchedSrc = cms.InputTag("antikt5StGenJets")
-process.genJetSequence.replace(process.sisCone5StGenJets, process.antikt5StGenJets)
 
 process.load("CMS2.NtupleMaker.genMaker_cfi")
 process.load("CMS2.NtupleMaker.hltMaker_cff")
@@ -169,6 +160,16 @@ switchJetCollection(process,
                     )
 
 
+process.load("RecoJets.JetProducers.antikt5GenJets_cff")
+process.antikt5StGenJets = process.antikt5GenJets.clone()
+process.antikt5StGenJets.src  = cms.InputTag("genParticlesAllStables")
+process.antikt5StGenJets.jetPtMin       = cms.double(0.)
+process.antikt5StGenJets.alias = "ANTIKT5StGenJet"
+process.genJetMaker.genJetsInputTag = cms.InputTag("antikt5StGenJets")
+process.bFlavorHistoryProducer.matchedSrc = cms.InputTag("antikt5StGenJets")
+process.cFlavorHistoryProducer.matchedSrc = cms.InputTag("antikt5StGenJets")
+process.genJetSequence.replace(process.sisCone5StGenJets, process.antikt5StGenJets)
+process.jetMaker.L2L3JetCorrectorName =cms.string("L2L3JetCorrectorAK5Calo")
 
 #switchJetCollection(process, cms.InputTag('prunedUncorrectedCMS2Jets'), doJTA = True, doBTagging = True, jetCorrLabel = ('SC5', 'Calo'), doType1MET = True, genJetCollection = cms.InputTag("sisCone5GenJets") )
 
