@@ -46,9 +46,13 @@ def makeCrabConfig():
         outFile.write('##UCSD \n')
 #        outFile.write('CE_white_list = T2_US_UCSD\n')
 #        outFile.write('SE_white_list = T2_US_UCSD\n')
+        outFile.write('CE_black_list = T2_FR_CCIN2P3\n')
         outFile.write('SE_black_list = T2_FR_CCIN2P3\n')
+        outFile.write('CE_black_list = T2_FR_GRIF_IRFU\n')
         outFile.write('SE_black_list = T2_FR_GRIF_IRFU\n')
+        outFile.write('CE_black_list = T2_FR_GRIF_LLR\n')
         outFile.write('SE_black_list = T2_FR_GRIF_LLR\n')
+        outFile.write('CE_black_list = T2_FR_IPHC\n')
         outFile.write('SE_black_list = T2_FR_IPHC\n')
 
         outFile.write('rb                 = CERN\n')
