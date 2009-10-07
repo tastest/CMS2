@@ -93,12 +93,18 @@ protected:
 	TH1F	*h1_ecalIso03_[2];
         TH1F    *h1_hcalIso03_[2];
         TH1F    *h1_tkIso03_[2];
+
 	TH1F 	*h1_wwIso_[2];
+	TH1F	*h1_tkIso03All_[2];
+	TH1F	*h1_ecalIso03All_[2];
+        TH1F    *h1_ecalIsoMod03All_[2];
+	TH1F	*h1_hcalIso03All_[2];
 
 	// electron ID related
 	//
 	TH1F	*h1_dEtaIn_[2];
 	TH1F	*h1_dPhiIn_[2];
+	TH1F	*h1_dPhiInSigned_[2];
 	TH1F	*h1_hoe_[2];
 	TH1F	*h1_sigmaIEtaIEta_[2];
         TH1F    *h1_sigmaIPhiIPhi_[2];
@@ -108,14 +114,23 @@ protected:
 	TH1F 	*h1_d0corr_[2];
 	TH1F	*h1_closestMuon_[2];
 
+	EffMulti	*em_tasElectronV1_[2];
+
 	// W effciency studies related
         TH1F *h1_weff_pt_[2];
 	TH1F *h1_weff_iso_[2];
 	TH1F *h1_weff_tcmet_[2];
 	TH1F *h1_weff_jptpt_[2];
-	TH1F *h1_weff_tcmet_after_iso_[2];
-	TH1F *h1_weff_jptpt_after_iso_[2];
-	TH1F *h1_weff_tcmet_after_iso_jetveto_[2];
+	TH1F *h1_weff_tcmet_after_iso15_[2];
+	TH1F *h1_weff_jptpt_after_iso15_[2];
+        TH1F *h1_weff_tcmet_after_iso10_[2];
+        TH1F *h1_weff_jptpt_after_iso10_[2];
+
+        TH1F *h1_weff_tcmet_after_iso10_jpt25_[2];
+        TH1F *h1_weff_tcmet_after_iso15_jpt25_[2];
+
+	TH1F *h1_weff_jptptphi_after_iso15_[2];
+        TH1F *h1_weff_jptptphi_after_iso10_[2];
 
         EffMulti *em_dEtaIn_[2];
         EffMulti *em_dPhiIn_[2];
@@ -125,8 +140,18 @@ protected:
         EffMulti *em_classBasedTight_[2];
         EffMulti *em_robustTight_[2];
 
+        EffMulti *em_eopInLT30_[2];
+        EffMulti *em_eopInGT05_[2];
+
 
 protected:
+
+     double		wEfficiencyEvents_iso10_[2];
+     double             wEfficiencyEvents_iso15_[2];
+     double             wEfficiencyEvents_iso10_jpt25_[2];
+     double             wEfficiencyEvents_iso15_jpt25_[2];
+
+
      // count the (weighted and unweighted) number of candidates passing our cuts
      double		cands_passing_[4];
      double		cands_passing_w2_[4];
