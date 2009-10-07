@@ -21,6 +21,9 @@ enum {
   H_WENU,
   H_EM30_80,
   H_BC30_80,
+  H_PHOTONJET,
+  H_QCDEM,
+  H_QCDBCTOE,
   H_QCD30,
   H_QCD80,
   H_WJET_ALP,
@@ -100,6 +103,10 @@ DataSource fH_ZZ();
 DataSource fH_WZ();
 
 DataSource fH_WENU();
+
+DataSource fH_PHOTONJET();
+DataSource fH_QCDEM();
+DataSource fH_QCDBCTOE();
 DataSource fH_EM30_80();
 DataSource fH_BC30_80();
 

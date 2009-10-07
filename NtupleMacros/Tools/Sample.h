@@ -79,8 +79,8 @@ Sample fLM10    ();
 Sample fLM11    ();
   
 // QCD samples
-Sample fInclusiveMu5Pt50	();
-Sample fInclusiveMuPt15	        ();
+//Sample fInclusiveMu5Pt50	();
+//Sample fInclusiveMuPt15	        ();
 Sample fQCDBCtoEPt20to30	();
 Sample fQCDBCtoEPt30to80	();
 Sample fQCDBCtoEPt80to170	();

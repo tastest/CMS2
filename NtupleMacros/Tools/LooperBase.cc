@@ -31,7 +31,7 @@ double LooperBase::Weight (int i_hyp)
 
 uint64 LooperBase::Loop ()
 {
-     printf("Processing %s\n", sample_.name.c_str());
+     printf("\n\nProcessing %s\n", sample_.name.c_str());
      // change to histogram directory
      TDirectory *old_gDirectory = gDirectory;
      gDirectory = histo_directory;

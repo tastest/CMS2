@@ -119,7 +119,7 @@ TH1F* HistogramUtilities::getHistogram(sources_t theSources, TString var, TStrin
   return h1_data;
 }
 
-TH2F* HistogramUtilities::get2dHistogram(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin) 
+TH2F* HistogramUtilities::get2dHistogram(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin, TString namesuffix) 
 {
   //TString histNameSuffix = "_" + var + "_" + nJets + hyp_type;
   TString histNameSuffix = "_" + var + nJets + "_" + hyp_type;
@@ -135,6 +135,7 @@ TH2F* HistogramUtilities::get2dHistogram(sources_t theSources, TString var, TStr
 	}       
   //h_data->Scale(lumiNorm_);
   //h_data->Rebin(rebin);
+  h_data->SetName( var + "_" + hyp_type + namesuffix);
   return h_data;
 }
 

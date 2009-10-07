@@ -29,7 +29,7 @@ public:
 
   TH1F* getHistogram(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin = 1, TString nameprefix="");
   //TH1F* getHistogramSum(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin = 1);
-  TH2F* get2dHistogram(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin = 1);
+  TH2F* get2dHistogram(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin = 1, TString namesuffix="");
 
   THStack* getStack(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin = 1);
   THStack* getSumStack(sources_t theSources, TString var, TString nJets, TString hyp1, TString hyp2, Int_t rebin = 1, TString var2="", double scale=1);

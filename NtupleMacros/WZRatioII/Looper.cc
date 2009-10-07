@@ -92,61 +92,63 @@ void Looper::BookHistos ()
 										 "LowLep_NLepGt20", 21, -0.5, 20.5);
 	FormatHist(h1_lep_LowptNLepGt20_[i]);
 
-        h1_lep_LowptNLepGt20tightIDIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20tightIDIso0_1", hyp.c_str()), 
-                                                          "LowLep_NLepGt20tightIDIso0_1", 21, -0.5, 20.5);
+	h1_lep_LowptNLepGt20tightIDIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20tightIDIso0_1", hyp.c_str()), 
+													  "LowLep_NLepGt20tightIDIso0_1", 21, -0.5, 20.5);
 	FormatHist(h1_lep_LowptNLepGt20tightIDIso0_1_[i]);
 
-        h1_lep_LowptNLepGt20looseIDIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20looseIDIso0_1", hyp.c_str()), 
-                                                          "LowLep_NLepGt20looseIDIso0_1", 21, -0.5, 20.5);
+	h1_lep_LowptNLepGt20looseIDIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20looseIDIso0_1", hyp.c_str()), 
+													  "LowLep_NLepGt20looseIDIso0_1", 21, -0.5, 20.5);
 	FormatHist(h1_lep_LowptNLepGt20looseIDIso0_1_[i]);
 
-        h1_lep_LowptNLepGt20vlooseIDIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20vlooseIDIso0_1", hyp.c_str()), 
-                                                          "LowLep_NLepGt20vlooseIDIso0_1", 21, -0.5, 20.5);
+	h1_lep_LowptNLepGt20vlooseIDIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20vlooseIDIso0_1", hyp.c_str()), 
+													   "LowLep_NLepGt20vlooseIDIso0_1", 21, -0.5, 20.5);
 	FormatHist(h1_lep_LowptNLepGt20vlooseIDIso0_1_[i]);
 
-        h1_lep_LowptNLepGt20NOIDIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20NOIDIso0_1", hyp.c_str()), 
-                                                          "LowLep_NLepGt20NOIDIso0_1", 21, -0.5, 20.5);
+	h1_lep_LowptNLepGt20NOIDIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20NOIDIso0_1", hyp.c_str()), 
+												   "LowLep_NLepGt20NOIDIso0_1", 21, -0.5, 20.5);
 	FormatHist(h1_lep_LowptNLepGt20NOIDIso0_1_[i]);
 
 
-        h1_lep_LowpthOverE_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_hOverE", hyp.c_str()), "LowLep_hOverE", 150, -0.1, .2);
-        FormatHist( h1_lep_LowpthOverE_[i]);
-        h1_lep_lowpteOverPIn_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_eOverPIn", hyp.c_str()), "LowLep_eOverPIn", 160, -0.1, 1.5);
-        FormatHist( h1_lep_lowpteOverPIn_[i]);
-        //	      h1_lep_lowpteSeedOverPOut_[i], Form("%s_%s_%s", SampleName().c_str(), "lep_pt", hyp.c_str()), "lep_pt", 100, 0.0, 100.0);
-        //	      h1_lep_lowpteSeedOverPIn_[i], Form("%s_%s_%s", SampleName().c_str(), "lep_pt", hyp.c_str()), "lep_pt", 100, 0.0, 100.0);
-        h1_lep_lowptfBrem_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_fBrem", hyp.c_str()), "LowLep_fBrem", 200, -2.0, 2.0);
-        FormatHist(      h1_lep_lowptfBrem_[i]);
-        h1_lep_lowptdEtaIn_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_dEtaIn", hyp.c_str()), "LowLep_dEtaIn", 200, -0.1, 0.1);
-        FormatHist( h1_lep_lowptdEtaIn_[i]);
-        h1_lep_lowptdEtaOut_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_dEtaOut", hyp.c_str()), "LowLep_dEtaOut", 200, -0.1, 0.1);
-        FormatHist( h1_lep_lowptdEtaOut_[i]);
-        h1_lep_lowptdPhiIn_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_dPhiIn", hyp.c_str()), "LowLep_dPhiIn", 100, -0.5, 0.5);
-        FormatHist( h1_lep_lowptdPhiIn_[i]);
-        h1_lep_lowptdPhiInPhiOut_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_dPhiInPhiOut", hyp.c_str()), "LowLep_dPhiInPhiOut", 100, -0.5, 0.5);
-        FormatHist(  h1_lep_lowptdPhiInPhiOut_[i]);
-        h1_lep_lowptdPhiOut_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_dPhiOut", hyp.c_str()), "LowLep_dPhiOut", 100, -0.5, 0.5);
-        FormatHist( h1_lep_lowptdPhiOut_[i]);
+	h1_lep_LowpthOverE_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_hOverE", hyp.c_str()), "LowLep_hOverE", 150, -0.1, .2);
+	FormatHist( h1_lep_LowpthOverE_[i]);
+	h1_lep_lowpteOverPIn_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_eOverPIn", hyp.c_str()), "LowLep_eOverPIn", 160, -0.1, 1.5);
+	FormatHist( h1_lep_lowpteOverPIn_[i]);
+	//	      h1_lep_lowpteSeedOverPOut_[i], Form("%s_%s_%s", SampleName().c_str(), "lep_pt", hyp.c_str()), "lep_pt", 100, 0.0, 100.0);
+	//	      h1_lep_lowpteSeedOverPIn_[i], Form("%s_%s_%s", SampleName().c_str(), "lep_pt", hyp.c_str()), "lep_pt", 100, 0.0, 100.0);
+	h1_lep_lowptfBrem_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_fBrem", hyp.c_str()), "LowLep_fBrem", 200, -2.0, 2.0);
+	FormatHist(      h1_lep_lowptfBrem_[i]);
+	h1_lep_lowptdEtaIn_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_dEtaIn", hyp.c_str()), "LowLep_dEtaIn", 200, -0.1, 0.1);
+	FormatHist( h1_lep_lowptdEtaIn_[i]);
+	h1_lep_lowptdEtaOut_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_dEtaOut", hyp.c_str()), "LowLep_dEtaOut", 200, -0.1, 0.1);
+	FormatHist( h1_lep_lowptdEtaOut_[i]);
+	h1_lep_lowptdPhiIn_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_dPhiIn", hyp.c_str()), "LowLep_dPhiIn", 100, -0.5, 0.5);
+	FormatHist( h1_lep_lowptdPhiIn_[i]);
+	h1_lep_lowptdPhiInPhiOut_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_dPhiInPhiOut", hyp.c_str()), "LowLep_dPhiInPhiOut", 100, -0.5, 0.5);
+	FormatHist(  h1_lep_lowptdPhiInPhiOut_[i]);
+	h1_lep_lowptdPhiOut_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_dPhiOut", hyp.c_str()), "LowLep_dPhiOut", 100, -0.5, 0.5);
+	FormatHist( h1_lep_lowptdPhiOut_[i]);
         
-        h1_lep_lowptsigmaPhiPhi_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_sigmaPhiPhi", hyp.c_str()), "LowLep_sigmaPhiPhi", 200, -0.2, 0.2);
-        FormatHist( h1_lep_lowptsigmaPhiPhi_[i]);
-        h1_lep_lowptsigmaIPhiIPhi_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_sigmaIPhiIPhi", hyp.c_str()), "LowLep_sigmaIPhiIPhi",  200, -0.2, 0.2);
-        FormatHist( h1_lep_lowptsigmaIPhiIPhi_[i]);
-        h1_lep_lowptsigmaEtaEta_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_sigmaEtaEta", hyp.c_str()), "LowLep_sigmaEtaEta", 200, -0.2, 0.2);
-        FormatHist(  h1_lep_lowptsigmaEtaEta_[i]);
-        h1_lep_lowptsigmaIEtaIEta_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_sigmaIEtaIEta", hyp.c_str()), "LowLep_sigmaIEtaIEta", 200, -0.2, 0.2);
-        FormatHist(  h1_lep_lowptsigmaIEtaIEta_[i]);
+	h1_lep_lowptsigmaPhiPhi_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_sigmaPhiPhi", hyp.c_str()), "LowLep_sigmaPhiPhi", 200, -0.2, 0.2);
+	FormatHist( h1_lep_lowptsigmaPhiPhi_[i]);
+	h1_lep_lowptsigmaIPhiIPhi_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_sigmaIPhiIPhi", hyp.c_str()), "LowLep_sigmaIPhiIPhi",  200, -0.2, 0.2);
+	FormatHist( h1_lep_lowptsigmaIPhiIPhi_[i]);
+	h1_lep_lowptsigmaEtaEta_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_sigmaEtaEta", hyp.c_str()), "LowLep_sigmaEtaEta", 200, -0.2, 0.2);
+	FormatHist(  h1_lep_lowptsigmaEtaEta_[i]);
+	h1_lep_lowptsigmaIEtaIEta_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_sigmaIEtaIEta", hyp.c_str()), "LowLep_sigmaIEtaIEta", 200, -0.2, 0.2);
+	FormatHist(  h1_lep_lowptsigmaIEtaIEta_[i]);
         
-        h1_lep_lowptegamma_robustLooseId_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_egammarobustLooseId", hyp.c_str()), "LowLep_egammarobustLooseId", 2, -0.5, 1.5);
-        FormatHist(   h1_lep_lowptegamma_robustLooseId_[i]);
-        h1_lep_lowptegamma_robustTightId_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_egammarobustTightId", hyp.c_str()), "LowLep_egammarobustTightId", 2, -0.5, 1.5);
-        FormatHist(  h1_lep_lowptegamma_robustTightId_[i]);
-        h1_lep_lowptegamma_looseId_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_egammalooseId", hyp.c_str()), "LowLep_egammalooseId", 2, -0.5, 1.5);
-        FormatHist( h1_lep_lowptegamma_looseId_[i]);
-        h1_lep_lowptegamma_tightId_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_egammatightId", hyp.c_str()), "LowLep_egammatightId", 2, -0.5, 1.5);
-        FormatHist( h1_lep_lowptegamma_tightId_[i]);
-        h1_lep_lowptegamma_robustHighEnergy_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_egammarobustHighEnergy", hyp.c_str()), "LowLep_egammarobustHighEnergy",  2, -0.5, 1.5);
-        FormatHist(   h1_lep_lowptegamma_robustHighEnergy_[i]);
+	h1_lep_lowptegamma_robustLooseId_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_egammarobustLooseId", hyp.c_str()), "LowLep_egammarobustLooseId", 2, -0.5, 1.5);
+	FormatHist(   h1_lep_lowptegamma_robustLooseId_[i]);
+	h1_lep_lowptegamma_robustTightId_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_egammarobustTightId", hyp.c_str()), "LowLep_egammarobustTightId", 2, -0.5, 1.5);
+	FormatHist(  h1_lep_lowptegamma_robustTightId_[i]);
+	h1_lep_lowptegamma_looseId_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_egammalooseId", hyp.c_str()), "LowLep_egammalooseId", 2, -0.5, 1.5);
+	FormatHist( h1_lep_lowptegamma_looseId_[i]);
+	h1_lep_lowptegamma_tightId_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_egammatightId", hyp.c_str()), "LowLep_egammatightId", 2, -0.5, 1.5);
+	FormatHist( h1_lep_lowptegamma_tightId_[i]);
+	h1_lep_lowptegamma_robustHighEnergy_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_egammarobustHighEnergy", hyp.c_str()), "LowLep_egammarobustHighEnergy",  2, -0.5, 1.5);
+	FormatHist(   h1_lep_lowptegamma_robustHighEnergy_[i]);
+
+	double d0max = 0.1;
         
 	NewHist( hlep_pt[i], Form("%s_%s_%s", SampleName().c_str(), "lep_pt", hyp.c_str()), "lep_pt", 100, 0.0, 100.0);
 	NewHist( hlep_mass[i], Form("%s_%s_%s", SampleName().c_str(), "lep_transmass", hyp.c_str()), "lep_transmass", 200, 0.0, 200.0);
@@ -156,7 +158,7 @@ void Looper::BookHistos ()
 	NewHist( hlep_trckIso[i], Form("%s_%s_%s", SampleName().c_str(), "lep_trckIso", hyp.c_str()), "lep_trckIso", 100, 0.0, 10.0);
 	NewHist( hlep_ecalIso[i], Form("%s_%s_%s", SampleName().c_str(), "lep_ecalIso", hyp.c_str()), "lep_ecalIso", 100, 0.0, 10.0);
 	NewHist( hlep_relIso[i], Form("%s_%s_%s", SampleName().c_str(), "lep_relIso", hyp.c_str()), "lep_relIso", 100, 0.0, 1.0);
-	NewHist( hlep_d0[i], Form("%s_%s_%s", SampleName().c_str(), "lep_d0", hyp.c_str()), "lep_d0", 100, 0.0, 1.0);
+	NewHist( hlep_d0[i], Form("%s_%s_%s", SampleName().c_str(), "lep_d0", hyp.c_str()), "lep_d0", 100, 0.0, d0max);
 
 	//for nlep, fill before cutting on it--same for W,Z
 	NewHist( hlep_nlep_nod0iso[i], Form("%s_%s_%s", SampleName().c_str(), "lep_nlep_nod0iso", hyp.c_str()), "lep_nlep_nod0iso", 10, -0.5, 9.5);
@@ -167,10 +169,10 @@ void Looper::BookHistos ()
 	NewHist( hlep_conv[i], Form("%s_%s_%s", SampleName().c_str(), "lep_conversions", hyp.c_str()), "lep_conversions", 2, -0.5, 1.5);
 
 	//TH2F's for ABCD
-	hlep_d0_trckIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_d0_trckIso", hyp.c_str()), "lep_d0_trckIso", 100, 0.0, 1.0, 100, 0.0, 10.0);
-	hlep_d0_ecalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_d0_ecalIso", hyp.c_str()), "lep_d0_ecalIso", 100, 0.0, 1.0, 100, 0.0, 10.0);
-	hlep_d0_hcalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_d0_hcalIso", hyp.c_str()), "lep_d0_hcalIso", 100, 0.0, 1.0, 100, 0.0, 10.0);
-	hlep_d0_relIso[i]  = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_d0_relIso",  hyp.c_str()), "lep_d0_relIso", 100, 0.0, 1.0, 100, 0.0, 1.0);
+	hlep_d0_trckIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_d0_trckIso", hyp.c_str()), "lep_d0_trckIso", 100, 0.0, d0max, 100, 0.0, 10.0);
+	hlep_d0_ecalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_d0_ecalIso", hyp.c_str()), "lep_d0_ecalIso", 100, 0.0, d0max, 100, 0.0, 10.0);
+	hlep_d0_hcalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_d0_hcalIso", hyp.c_str()), "lep_d0_hcalIso", 100, 0.0, d0max, 100, 0.0, 10.0);
+	hlep_d0_relIso[i]  = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_d0_relIso",  hyp.c_str()), "lep_d0_relIso", 100, 0.0, d0max, 100, 0.0, 1.0);
 	
 	hlep_met_trckIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_tcMet_trckIso", hyp.c_str()), "lep_tcMet_trckIso", 100, 0.0, 50.0, 100, 0.0, 10.0);
 	hlep_met_ecalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_tcMet_ecalIso", hyp.c_str()), "lep_tcMet_ecalIso", 100, 0.0, 50.0, 100, 0.0, 10.0);
@@ -475,13 +477,13 @@ void Looper::FillEventHistos ()
 					| CUT_BIT(LEP_ISO)
 					);
 
-  cuts_t w_evt_sel = (CUT_BIT(TCMET) | CUT_BIT(TMASS));
+  cuts_t w_evt_sel = ( CUT_BIT(TCMET) | CUT_BIT(TMASS) );
   //cut for pt plot, also no mass, met cuts
-  cuts_t lepcuts_nopt  = ( CUT_BIT(LEP_GOOD) | CUT_BIT(LEP_ISO));
+  cuts_t lepcuts_nopt  = ( CUT_BIT(LEP_GOOD) | CUT_BIT(LEP_ISO) );
   //for (d0,iso) plots, relax (d0,iso), apply everything else including tmass, tcmet
   cuts_t lepcuts_nod0  = ( CUT_BIT(LEP_PT) | CUT_BIT(LEP_ISO) | CUT_BIT(LEP_GOOD_NOD0) | w_evt_sel );
   cuts_t lepcuts_noiso = ( CUT_BIT(LEP_PT) | CUT_BIT(LEP_GOOD) | w_evt_sel );
-  cuts_t lepcuts_notm  = ( CUT_BIT(LEP_PT) | CUT_BIT(LEP_ISO) | CUT_BIT(LEP_GOOD) | CUT_BIT(TCMET));
+  cuts_t lepcuts_notm  = ( CUT_BIT(LEP_PT) | CUT_BIT(LEP_ISO) | CUT_BIT(LEP_GOOD) | CUT_BIT(TCMET) );
 
   //cuts for ABCD: CUT ON TMASS, MET
   cuts_t lepcuts_nod0iso = ( CUT_BIT(LEP_PT) | CUT_BIT(LEP_GOOD_NOD0) | w_evt_sel );
@@ -526,7 +528,7 @@ void Looper::FillEventHistos ()
 	  hlep_d0[2]->Fill( cms2.els_d0corr()[i], weight );
 	}
 	//for mass plots, check all but mass
-	if( (elcut && lepcuts_notm) == lepcuts_notm ) {
+	if( (elcut & lepcuts_notm) == lepcuts_notm ) {
 	  hlep_mass[0]->Fill( transmass, weight ); //check all cuts but mass for mass plot (n-1)
 	  hlep_mass[2]->Fill( transmass, weight );
 	}
@@ -589,7 +591,7 @@ void Looper::FillEventHistos ()
 	  hlep_d0[2]->Fill( cms2.mus_d0corr()[i], weight );
 	}
 	//for mass plots, check all but mass
-	if( (mucut && lepcuts_notm) == lepcuts_notm ) {
+	if( (mucut & lepcuts_notm) == lepcuts_notm ) {
 	  hlep_mass[1]->Fill( transmass, weight ); //check all cuts but mass for mass plot (n-1)
 	  hlep_mass[2]->Fill( transmass, weight );
 	}
@@ -672,14 +674,14 @@ void Looper::FillEventHistos ()
   else if( (nels == 1 && nmus == 0) || (nmus == 1 && nels == 0) ) {
 	unsigned int lep_type = (nels == 1 ? 0 : 1);
 	//for met plots, only need to pass tmass (all lep cuts are passed via nels, nmus if)
-	if( (pass_lep_cut && CUT_BIT(TMASS)) == CUT_BIT(TMASS) ) {
+	if( (pass_lep_cut & CUT_BIT(TMASS)) == CUT_BIT(TMASS) ) {
 	  hlep_tcmet[lep_type]->Fill(cms2.evt_tcmet(), weight);
 	  hlep_tcmet[2]->Fill(cms2.evt_tcmet(), weight);
 	  hlep_clmumet[lep_type]->Fill(cms2.evt_metMuonCorr(), weight);
 	  hlep_clmumet[2]->Fill(cms2.evt_metMuonCorr(), weight);
 	}
 	//for WEvent, need to pass tmass, met
-	if( (pass_lep_cut && w_evt_sel) == w_evt_sel ) 
+	if( (pass_lep_cut & w_evt_sel) == w_evt_sel ) 
 	  WEvent();
   }
 

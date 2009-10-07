@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.1.2.2 2009/09/26 03:30:45 warren Exp $
+# $Id: Makefile,v 1.1.2.3 2009/10/07 21:11:15 warren Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
@@ -42,8 +42,10 @@ $(CORELIB):	$(COREOBJECTS)
 $(LOOPERLIB):	$(LOOPEROBJECTS) 
 	$(LINKER) $(LINKERFLAGS) -shared $(LOOPEROBJECTS) -o $@ 
 
-linkdef_out.cxx: ${CMS2_LOCATION}/NtupleMacros/linkdef.h Driver.h plotResults.h
-	rootcint -f $@ -c $(INCLUDE) Driver.h plotResults.h $<
+linkdef_out.cxx: ${CMS2_LOCATION}/NtupleMacros/linkdef.h Driver.h
+	rootcint -f $@ -c $(INCLUDE) Driver.h $<
+#linkdef_out.cxx: ${CMS2_LOCATION}/NtupleMacros/linkdef.h Driver.h plotResults.h
+#rootcint -f $@ -c $(INCLUDE) Driver.h plotResults.h $<
 
 # General rule for making object files
 %.d:	%.cc

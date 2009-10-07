@@ -716,7 +716,7 @@ Sample fInclusiveMuPt15 ()
      Sample ret = { c, InclusiveMuPt15, 28, 1, "InclusiveMuPt15", true, 0. };
      return ret;
 }
-
+*/
 Sample fQCDBCtoEPt20to30 ()
 {
      TChain *c = new TChain("Events");
@@ -743,7 +743,7 @@ Sample fQCDBCtoEPt80to170 ()
      Sample ret = { c, QCDBCtoEPt80to170, 28, 1, "QCDBCtoEPt80to170", true, 0. };
      return ret;
 }
-*/
+//* /
 
 Sample fQCDEMenrichedPt20to30 ()
 {

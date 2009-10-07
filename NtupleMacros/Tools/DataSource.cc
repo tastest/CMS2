@@ -15,18 +15,22 @@ DataSource fH_EM30_80()      { return DataSource("em30_80",       H_EM30_80);   
 DataSource fH_BC30_80()      { return DataSource("bc30_80",       H_BC30_80);          }
 DataSource fH_WENU()      { return DataSource("wenu",       H_WENU);          }
 
+DataSource fH_PHOTONJET()  { return DataSource("PhotonJet", H_PHOTONJET, 8); }
+DataSource fH_QCDEM()      { return DataSource("QCDEMEnriched", H_QCDEM, 12); }
+DataSource fH_QCDBCTOE()   { return DataSource("QCDBCtoE",      H_QCDBCTOE, 15); }
 DataSource fH_QCD30()      { return DataSource("QCDpt30",       H_QCD30, 14);          }
 DataSource fH_QCD80()      { return DataSource("QCDpt80",       H_QCD80, 17);          }
+
 DataSource fH_WJET_ALP()   { return DataSource("wjetsAlpgen", H_WJET_ALP); }
 DataSource fH_WEJET_ALP()   { return DataSource("wejetsAlpgen", H_WEJET_ALP); }
 DataSource fH_WMJET_ALP()   { return DataSource("wmjetsAlpgen", H_WMJET_ALP); }
 DataSource fH_WTJET_ALP()   { return DataSource("wtjetsAlpgen", H_WTJET_ALP); }
-//DataSource fH_ZEEJET_ALP()   { return DataSource("dyeeAlpgen", H_ZEEJET_ALP, 42); }
-//DataSource fH_ZMMJET_ALP()   { return DataSource("dymmAlpgen", H_ZMMJET_ALP, 44); }
-//DataSource fH_ZTTJET_ALP()   { return DataSource("dyttAlpgen", H_ZTTJET_ALP, 46); }
-DataSource fH_ZEEJET_ALP()   { return DataSource("dyeeAlpgen", H_ZEEJET_ALP); }
-DataSource fH_ZMMJET_ALP()   { return DataSource("dymmAlpgen", H_ZMMJET_ALP); }
-DataSource fH_ZTTJET_ALP()   { return DataSource("dyttAlpgen", H_ZTTJET_ALP); }
+DataSource fH_ZEEJET_ALP()   { return DataSource("dyeeAlpgen", H_ZEEJET_ALP, 42); }
+DataSource fH_ZMMJET_ALP()   { return DataSource("dymmAlpgen", H_ZMMJET_ALP, 44); }
+DataSource fH_ZTTJET_ALP()   { return DataSource("dyttAlpgen", H_ZTTJET_ALP, 41); }
+//DataSource fH_ZEEJET_ALP()   { return DataSource("dyeeAlpgen", H_ZEEJET_ALP); }
+//DataSource fH_ZMMJET_ALP()   { return DataSource("dymmAlpgen", H_ZMMJET_ALP); }
+//DataSource fH_ZTTJET_ALP()   { return DataSource("dyttAlpgen", H_ZTTJET_ALP); }
 
 DataSource fH_MU15_SINGLE() { return DataSource("InclusiveMuPt15", H_MU15_SINGLE, 28); }
 

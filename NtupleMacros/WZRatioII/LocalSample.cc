@@ -1,16 +1,16 @@
-#include "TChain.h"
+//#include "TChain.h"
 #include "LocalSample.h"
-#include "../Tools/tools.h"
-#include "../CORE/selections.h"
-#include "../CORE/CMS2.h"
-#include <cstdlib>
+//#include "../Tools/tools.h"
+//#include "../CORE/selections.h"
+//#include "../CORE/CMS2.h"
+//#include <cstdlib>
 #include <string>
 #include <iostream>
 
 static const std::string prefix = (getenv("CMS2_NTUPLE_LOCATION") != 0) ?
      std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" : "/data/tmp/";
 
-
+/*
 // Z+0 jet
 Sample fZ_0Jet ()
 {    
@@ -53,3 +53,4 @@ Sample fBC30_80 ()
 }
 
 
+*/
