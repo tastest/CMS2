@@ -720,7 +720,7 @@ Sample fInclusiveMuPt15 ()
 Sample fQCDBCtoEPt20to30 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/QCD_BCtoE_Pt20to30/merged*.root";
+     std::string sample = prefix + "cms2-V01-03-01/QCD_BCtoE_Pt20to30_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merged*.root";
      c->Add(sample.c_str());
      Sample ret = { c, QCDBCtoEPt20to30, 28, 1, "QCDBCtoEPt20to30", true, 0. };
      return ret;
@@ -729,7 +729,7 @@ Sample fQCDBCtoEPt20to30 ()
 Sample fQCDBCtoEPt30to80 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/QCD_BCtoE_Pt30to80/merged*.root";
+     std::string sample = prefix + "cms2-V01-03-01/QCD_BCtoE_Pt30to80_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merged*.root";
      c->Add(sample.c_str());
      Sample ret = { c, QCDBCtoEPt30to80, 28, 1, "QCDBCtoEPt30to80", true, 0. };
      return ret;
@@ -738,7 +738,7 @@ Sample fQCDBCtoEPt30to80 ()
 Sample fQCDBCtoEPt80to170 ()
 {
      TChain *c = new TChain("Events");
-     std::string sample = prefix + "cms2-V01-03-01/QCD_BCtoE_Pt80to170/merged*.root";
+     std::string sample = prefix + "cms2-V01-03-01/QCD_BCtoE_Pt80to170_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merged*.root";
      c->Add(sample.c_str());
      Sample ret = { c, QCDBCtoEPt80to170, 28, 1, "QCDBCtoEPt80to170", true, 0. };
      return ret;
