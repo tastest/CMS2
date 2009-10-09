@@ -10,7 +10,10 @@
   The first two arguments are self-explanatory - the files that you want to compare.
   The last 2 arguments are true by default. The third argument, if set false, will save 
   every canvas, even if the two histograms that are the result of the Tree Draw are 
-  identical. If the
+  identical. The last argument, if true, draws all histos with error bars.
+
+  The output is an eps file, diff.eps. If no files are found to disagree, then nothing 
+  is outputted (if the third argument above is true)
 */
   
 
