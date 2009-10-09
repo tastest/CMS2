@@ -108,6 +108,189 @@ void Looper::BookHistos ()
 												   "LowLep_NLepGt20NOIDIso0_1", 21, -0.5, 20.5);
 	FormatHist(h1_lep_LowptNLepGt20NOIDIso0_1_[i]);
 
+        h1_lep_LowptNLepGt20tightIDNoIso_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20tightIDNoIso", hyp.c_str()), 
+                                                          "LowLep_NLepGt20tightIDNoIso", 21, -0.5, 20.5);
+	FormatHist(h1_lep_LowptNLepGt20tightIDNoIso_[i]);
+
+        h1_lep_LowptNLepGt20looseIDNoIso_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20looseIDNoIso", hyp.c_str()), 
+                                                          "LowLep_NLepGt20looseIDNoIso", 21, -0.5, 20.5);
+	FormatHist(h1_lep_LowptNLepGt20looseIDNoIso_[i]);
+
+        h1_lep_LowptNLepGt20vlooseIDNoIso_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20vlooseIDNoIso", hyp.c_str()), 
+                                                          "LowLep_NLepGt20vlooseIDNoIso", 21, -0.5, 20.5);
+	FormatHist(h1_lep_LowptNLepGt20vlooseIDNoIso_[i]);
+
+        h1_lep_LowptNLepGt20tightIDConvRIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20tightIDConvRIso0_1", hyp.c_str()), 
+                                                          "LowLep_NLepGt20tightIDConvRIso0_1", 21, -0.5, 20.5);
+	FormatHist(h1_lep_LowptNLepGt20tightIDConvRIso0_1_[i]);
+
+        h1_lep_LowptNLepGt20looseIDConvRIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20looseIDConvRIso0_1", hyp.c_str()), 
+                                                          "LowLep_NLepGt20looseIDConvRIso0_1", 21, -0.5, 20.5);
+	FormatHist(h1_lep_LowptNLepGt20looseIDConvRIso0_1_[i]);
+
+        h1_lep_LowptNLepGt20vlooseIDConvRIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20vlooseIDConvRIso0_1", hyp.c_str()), 
+                                                          "LowLep_NLepGt20vlooseIDConvRIso0_1", 21, -0.5, 20.5);
+	FormatHist(h1_lep_LowptNLepGt20vlooseIDConvRIso0_1_[i]);
+
+        h1_lep_LowptNLepGt20NOIDConvRIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20NOIDConvRIso0_1", hyp.c_str()), 
+                                                          "LowLep_NLepGt20NOIDConvRIso0_1", 21, -0.5, 20.5);
+	FormatHist(h1_lep_LowptNLepGt20NOIDConvRIso0_1_[i]);
+
+
+//         h1_lep_LowptNLepGt20NOIDIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20NOIDIso0_1", hyp.c_str()), 
+//                                                           "LowLep_NLepGt20NOIDIso0_1", 21, -0.5, 20.5);
+// 	FormatHist(h1_lep_LowptNLepGt20NOIDIso0_1_[i]);
+
+        h1_lep_LowptNLepGt20ID0Iso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20ID0Iso0_1", hyp.c_str()), 
+                                                          "LowLep_NLepGt20ID0Iso0_1", 21, -0.5, 20.5);
+	FormatHist(h1_lep_LowptNLepGt20ID0Iso0_1_[i]);
+        h1_lep_LowptNLepGt20ID1Iso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20ID1Iso0_1", hyp.c_str()), 
+                                                          "LowLep_NLepGt20ID1Iso0_1", 21, -0.5, 20.5);
+	FormatHist(h1_lep_LowptNLepGt20ID1Iso0_1_[i]);
+        h1_lep_LowptNLepGt20ID2Iso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20ID2Iso0_1", hyp.c_str()), 
+                                                          "LowLep_NLepGt20ID2Iso0_1", 21, -0.5, 20.5);
+	FormatHist(h1_lep_LowptNLepGt20ID2Iso0_1_[i]);
+        h1_lep_LowptNLepGt20ID3Iso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20ID3Iso0_1", hyp.c_str()), 
+                                                          "LowLep_NLepGt20ID3Iso0_1", 21, -0.5, 20.5);
+	FormatHist(h1_lep_LowptNLepGt20ID3Iso0_1_[i]);
+        h1_lep_LowptNLepGt20ID4Iso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20ID4Iso0_1", hyp.c_str()), 
+                                                          "LowLep_NLepGt20ID4Iso0_1", 21, -0.5, 20.5);
+	FormatHist(h1_lep_LowptNLepGt20ID4Iso0_1_[i]);
+        h1_lep_LowptNLepGt20ID5Iso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20ID5Iso0_1", hyp.c_str()), 
+                                                          "LowLep_NLepGt20ID5Iso0_1", 21, -0.5, 20.5);
+	FormatHist(h1_lep_LowptNLepGt20ID5Iso0_1_[i]);
+        h1_lep_LowptNLepGt20ID6Iso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20ID6Iso0_1", hyp.c_str()), 
+                                                          "LowLep_NLepGt20ID6Iso0_1", 21, -0.5, 20.5);
+	FormatHist(h1_lep_LowptNLepGt20ID6Iso0_1_[i]);
+
+        h1_lep_LowptNLepGt20ID0NOIso_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20ID0NOIso", hyp.c_str()), 
+                                                          "LowLep_NLepGt20ID0NOIso", 21, -0.5, 20.5);
+	FormatHist(h1_lep_LowptNLepGt20ID0NOIso_[i]);
+        h1_lep_LowptNLepGt20ID1NOIso_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20ID1NOIso", hyp.c_str()), 
+                                                          "LowLep_NLepGt20ID1NOIso", 21, -0.5, 20.5);
+	FormatHist(h1_lep_LowptNLepGt20ID1NOIso_[i]);
+        h1_lep_LowptNLepGt20ID2NOIso_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20ID2NOIso", hyp.c_str()), 
+                                                          "LowLep_NLepGt20ID2NOIso", 21, -0.5, 20.5);
+	FormatHist(h1_lep_LowptNLepGt20ID2NOIso_[i]);
+        h1_lep_LowptNLepGt20ID3NOIso_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20ID3NOIso", hyp.c_str()), 
+                                                          "LowLep_NLepGt20ID3NOIso", 21, -0.5, 20.5);
+	FormatHist(h1_lep_LowptNLepGt20ID3NOIso_[i]);
+        h1_lep_LowptNLepGt20ID4NOIso_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20ID4NOIso", hyp.c_str()), 
+                                                          "LowLep_NLepGt20ID4NOIso", 21, -0.5, 20.5);
+	FormatHist(h1_lep_LowptNLepGt20ID4NOIso_[i]);
+        h1_lep_LowptNLepGt20ID5NOIso_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20ID5NOIso", hyp.c_str()), 
+                                                          "LowLep_NLepGt20ID5NOIso", 21, -0.5, 20.5);
+	FormatHist(h1_lep_LowptNLepGt20ID5NOIso_[i]);
+        h1_lep_LowptNLepGt20ID6NOIso_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_NLepGt20ID6NOIso", hyp.c_str()), 
+                                                          "LowLep_NLepGt20ID6NOIso", 21, -0.5, 20.5);
+	FormatHist(h1_lep_LowptNLepGt20ID6NOIso_[i]);
+
+
+        // ibl paste begin;
+        //wo ID/iso
+	h1_lep_LowptmLepGt10Lt20_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt10Lt20", hyp.c_str()), 
+                                                 "LowLep_mLepGt10Lt20", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt10Lt20_[i]);
+	h1_lep_LowptmLepGt20_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20", hyp.c_str()), 
+                                             "LowLep_mLepGt20", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20_[i]);
+        //w ID/iso
+        h1_lep_LowptmLepGt20NOIDIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20NOIDIso0_1", hyp.c_str()), 
+                                                       "LowLep_mLepGt20NOIDIso0_1", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20NOIDIso0_1_[i]);
+        h1_lep_LowptmLepGt20ID0Iso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20ID0Iso0_1", hyp.c_str()), 
+                                                          "LowLep_mLepGt20ID0Iso0_1", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20ID0Iso0_1_[i]);
+        h1_lep_LowptmLepGt20ID1Iso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20ID1Iso0_1", hyp.c_str()), 
+                                                          "LowLep_mLepGt20ID1Iso0_1", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20ID1Iso0_1_[i]);
+        h1_lep_LowptmLepGt20ID2Iso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20ID2Iso0_1", hyp.c_str()), 
+                                                          "LowLep_mLepGt20ID2Iso0_1", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20ID2Iso0_1_[i]);
+        h1_lep_LowptmLepGt20ID3Iso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20ID3Iso0_1", hyp.c_str()), 
+                                                          "LowLep_mLepGt20ID3Iso0_1", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20ID3Iso0_1_[i]);
+        h1_lep_LowptmLepGt20ID4Iso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20ID4Iso0_1", hyp.c_str()), 
+                                                          "LowLep_mLepGt20ID4Iso0_1", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20ID4Iso0_1_[i]);
+        h1_lep_LowptmLepGt20ID5Iso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20ID5Iso0_1", hyp.c_str()), 
+                                                          "LowLep_mLepGt20ID5Iso0_1", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20ID5Iso0_1_[i]);
+        h1_lep_LowptmLepGt20ID6Iso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20ID6Iso0_1", hyp.c_str()), 
+                                                          "LowLep_mLepGt20ID6Iso0_1", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20ID6Iso0_1_[i]);
+
+        h1_lep_LowptmLepGt20ID0NOIso_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20ID0NOIso", hyp.c_str()), 
+                                                          "LowLep_mLepGt20ID0NOIso", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20ID0NOIso_[i]);
+        h1_lep_LowptmLepGt20ID1NOIso_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20ID1NOIso", hyp.c_str()), 
+                                                          "LowLep_mLepGt20ID1NOIso", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20ID1NOIso_[i]);
+        h1_lep_LowptmLepGt20ID2NOIso_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20ID2NOIso", hyp.c_str()), 
+                                                          "LowLep_mLepGt20ID2NOIso", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20ID2NOIso_[i]);
+        h1_lep_LowptmLepGt20ID3NOIso_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20ID3NOIso", hyp.c_str()), 
+                                                          "LowLep_mLepGt20ID3NOIso", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20ID3NOIso_[i]);
+        h1_lep_LowptmLepGt20ID4NOIso_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20ID4NOIso", hyp.c_str()), 
+                                                          "LowLep_mLepGt20ID4NOIso", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20ID4NOIso_[i]);
+        h1_lep_LowptmLepGt20ID5NOIso_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20ID5NOIso", hyp.c_str()), 
+                                                          "LowLep_mLepGt20ID5NOIso", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20ID5NOIso_[i]);
+        h1_lep_LowptmLepGt20ID6NOIso_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20ID6NOIso", hyp.c_str()), 
+                                                          "LowLep_mLepGt20ID6NOIso", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20ID6NOIso_[i]);
+
+        // ibl paste end;
+        //ibl paste resume
+        h1_lep_LowptmLepGt20tightIDIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20tightIDIso0_1", hyp.c_str()), 
+                                                          "LowLep_mLepGt20tightIDIso0_1", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20tightIDIso0_1_[i]);
+
+        h1_lep_LowptmLepGt20looseIDIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20looseIDIso0_1", hyp.c_str()), 
+                                                          "LowLep_mLepGt20looseIDIso0_1", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20looseIDIso0_1_[i]);
+
+        h1_lep_LowptmLepGt20vlooseIDIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20vlooseIDIso0_1", hyp.c_str()), 
+                                                          "LowLep_mLepGt20vlooseIDIso0_1", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20vlooseIDIso0_1_[i]);
+
+//         h1_lep_LowptmLepGt20NOIDIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20NOIDIso0_1", hyp.c_str()), 
+//                                                           "LowLep_mLepGt20NOIDIso0_1", 200, 0., 200.);
+// 	FormatHist(h1_lep_LowptmLepGt20NOIDIso0_1_[i]);
+
+        h1_lep_LowptmLepGt20tightIDNoIso_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20tightIDNoIso", hyp.c_str()), 
+                                                          "LowLep_mLepGt20tightIDNoIso", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20tightIDNoIso_[i]);
+
+        h1_lep_LowptmLepGt20looseIDNoIso_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20looseIDNoIso", hyp.c_str()), 
+                                                          "LowLep_mLepGt20looseIDNoIso", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20looseIDNoIso_[i]);
+
+        h1_lep_LowptmLepGt20vlooseIDNoIso_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20vlooseIDNoIso", hyp.c_str()), 
+                                                          "LowLep_mLepGt20vlooseIDNoIso", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20vlooseIDNoIso_[i]);
+
+        h1_lep_LowptmLepGt20tightIDConvRIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20tightIDConvRIso0_1", hyp.c_str()), 
+                                                          "LowLep_mLepGt20tightIDConvRIso0_1", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20tightIDConvRIso0_1_[i]);
+
+        h1_lep_LowptmLepGt20looseIDConvRIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20looseIDConvRIso0_1", hyp.c_str()), 
+                                                          "LowLep_mLepGt20looseIDConvRIso0_1", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20looseIDConvRIso0_1_[i]);
+
+        h1_lep_LowptmLepGt20vlooseIDConvRIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20vlooseIDConvRIso0_1", hyp.c_str()), 
+                                                          "LowLep_mLepGt20vlooseIDConvRIso0_1", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20vlooseIDConvRIso0_1_[i]);
+
+        h1_lep_LowptmLepGt20NOIDConvRIso0_1_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_mLepGt20NOIDConvRIso0_1", hyp.c_str()), 
+                                                          "LowLep_mLepGt20NOIDConvRIso0_1", 200, 0., 200.);
+	FormatHist(h1_lep_LowptmLepGt20NOIDConvRIso0_1_[i]);
+
+        //ibl paste really end
+
+
 
 	h1_lep_LowpthOverE_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_hOverE", hyp.c_str()), "LowLep_hOverE", 150, -0.1, .2);
 	FormatHist( h1_lep_LowpthOverE_[i]);
@@ -377,23 +560,107 @@ void Looper::FillEventHistos ()
   uint nEleGt20looseIDIso0_1     = 0;
   uint nEleGt20vlooseIDIso0_1     = 0;
   uint nEleGt20NOIDIso0_1     = 0;
+  uint nEleGt20tightIDNoIso     = 0;
+  uint nEleGt20looseIDNoIso     = 0;
+  uint nEleGt20vlooseIDNoIso     = 0;
+
+  uint nEleGt20tightIDConvRIso0_1     = 0;
+  uint nEleGt20looseIDConvRIso0_1     = 0;
+  uint nEleGt20vlooseIDConvRIso0_1     = 0;
+  uint nEleGt20NOIDConvRIso0_1     = 0;
+
+  double iblmass = -1.0;
+
   for(int ele = 0; ele <  (int)cms2.els_p4().size(); ++ele) {
     if(hiPtIdx != -1 && hiPtIdx != ele) {
+
+      iblmass = (cms2.els_p4()[hiPtIdx] + cms2.els_p4()[ele]).mass();
+
       h1_lep_Lowpt_[0]                                                ->Fill(cms2.els_p4()[ele].pt(), weight);
       h1_lep_LowptMet_[0]                                             ->Fill(cms2.evt_tcmet(), weight);
       h1_lep_LowptRelIso_[0]                                          ->Fill(inv_el_relsusy_iso(ele, true), weight);
       if(cms2.els_p4()[ele].pt() > 20. ) h1_lep_LowptRelIsoPtLg20_[0] ->Fill(inv_el_relsusy_iso(ele, true), weight); // was buggy until 090928
-      if(cms2.els_p4()[ele].pt() > 10. && (cms2.els_p4()[ele].pt() < 20. )) ++nEleGt10Lt20;
-      if(cms2.els_p4()[ele].pt() > 20. )                                    ++nEleGt20;
-      if(cms2.els_p4()[ele].pt() > 20. && cms2.els_egamma_tightId()[ele] && inv_el_relsusy_iso(ele, true) < 0.1 )         ++nEleGt20tightIDIso0_1;
-      if(cms2.els_p4()[ele].pt() > 20. && cms2.els_egamma_looseId()[ele] && inv_el_relsusy_iso(ele, true) < 0.1 )         ++nEleGt20looseIDIso0_1;
-      if(cms2.els_p4()[ele].pt()        > 20. && 
+
+      if(cms2.els_p4()[ele].pt() > 10. && 
+         (cms2.els_p4()[ele].pt() < 20. )) {       
+        ++nEleGt10Lt20;
+        h1_lep_LowptmLepGt10Lt20_[0]->Fill(iblmass, weight); 
+      }
+      if(cms2.els_p4()[ele].pt() > 20. ) {
+        ++nEleGt20;
+        h1_lep_LowptmLepGt20_[0]->Fill(iblmass, weight); 
+      }
+      if(cms2.els_p4()[ele].pt() > 20. && 
+         cms2.els_egamma_tightId()[ele] && 
+         inv_el_relsusy_iso(ele, true) < 0.1 ) {
+        ++nEleGt20tightIDIso0_1;
+        h1_lep_LowptmLepGt20tightIDIso0_1_[0]->Fill(iblmass, weight); 
+      }
+      if(cms2.els_p4()[ele].pt() > 20. && 
+         cms2.els_egamma_looseId()[ele] && 
+         inv_el_relsusy_iso(ele, true) < 0.1 ) {
+        ++nEleGt20looseIDIso0_1;
+        h1_lep_LowptmLepGt20looseIDIso0_1_[0]->Fill(iblmass, weight); 
+      }
+      if(cms2.els_p4()[ele].pt()        > 20.  && 
          fabs(cms2.els_dEtaOut()[ele])  < 0.02 && 
-         cms2.els_eOverPIn()[ele]       > 0.4 &&  
+         cms2.els_eOverPIn()[ele]       > 0.4  &&  
          fabs(cms2.els_hOverE()[ele])   < 0.03 && 
-         inv_el_relsusy_iso(ele, true)  < 0.1 )         ++nEleGt20vlooseIDIso0_1;
-      if(cms2.els_p4()[ele].pt()        > 20. && 
-         inv_el_relsusy_iso(ele, true)  < 0.1 )         ++nEleGt20NOIDIso0_1;
+         inv_el_relsusy_iso(ele, true)  < 0.1 ) {
+        ++nEleGt20vlooseIDIso0_1;
+        h1_lep_LowptmLepGt20vlooseIDIso0_1_[0]->Fill(iblmass, weight); 
+      }
+      if(cms2.els_p4()[ele].pt()        > 20.  && 
+         inv_el_relsusy_iso(ele, true)  < 0.1 ) {
+        ++nEleGt20NOIDIso0_1;
+        h1_lep_LowptmLepGt20NOIDIso0_1_[0]->Fill(iblmass, weight); 
+      }
+      if(cms2.els_p4()[ele].pt() > 20. && 
+         cms2.els_egamma_tightId()[ele] ) {
+        ++nEleGt20tightIDNoIso;
+        h1_lep_LowptmLepGt20tightIDNoIso_[0]->Fill(iblmass, weight); 
+      }
+      if(cms2.els_p4()[ele].pt() > 20. && 
+         cms2.els_egamma_looseId()[ele] ) {
+        ++nEleGt20looseIDNoIso;
+        h1_lep_LowptmLepGt20looseIDNoIso_[0]->Fill(iblmass, weight); 
+      }
+      if(cms2.els_p4()[ele].pt()        > 20.  && 
+         fabs(cms2.els_dEtaOut()[ele])  < 0.02 && 
+         cms2.els_eOverPIn()[ele]       > 0.4  &&  
+         fabs(cms2.els_hOverE()[ele])   < 0.03 ) {
+        ++nEleGt20vlooseIDNoIso;
+        h1_lep_LowptmLepGt20vlooseIDNoIso_[0]->Fill(iblmass, weight); 
+      }
+      if(cms2.els_p4()[ele].pt() > 20. && 
+         cms2.els_egamma_tightId()[ele] &&
+         !conversionElectron(ele) && 
+         inv_el_relsusy_iso(ele, true) < 0.1 ) {
+        ++nEleGt20tightIDConvRIso0_1;
+        h1_lep_LowptmLepGt20tightIDConvRIso0_1_[0]->Fill(iblmass, weight); 
+      }
+      if(cms2.els_p4()[ele].pt() > 20. && 
+         cms2.els_egamma_looseId()[ele] && 
+         !conversionElectron(ele) && 
+         inv_el_relsusy_iso(ele, true) < 0.1 ) {
+        ++nEleGt20looseIDConvRIso0_1;
+        h1_lep_LowptmLepGt20looseIDConvRIso0_1_[0]->Fill(iblmass, weight); 
+      }
+      if(cms2.els_p4()[ele].pt()        > 20.  && 
+         fabs(cms2.els_dEtaOut()[ele])  < 0.02 && 
+         cms2.els_eOverPIn()[ele]       > 0.4  &&  
+         fabs(cms2.els_hOverE()[ele])   < 0.03 && 
+         !conversionElectron(ele)              &&
+         inv_el_relsusy_iso(ele, true)  < 0.1 ) {
+        ++nEleGt20vlooseIDConvRIso0_1;
+        h1_lep_LowptmLepGt20vlooseIDConvRIso0_1_[0]->Fill(iblmass, weight); 
+      }
+      if(cms2.els_p4()[ele].pt()        > 20.  && 
+         !conversionElectron(ele)              &&
+         inv_el_relsusy_iso(ele, true)  < 0.1 ) {
+        ++nEleGt20NOIDConvRIso0_1;
+        h1_lep_LowptmLepGt20NOIDConvRIso0_1_[0]->Fill(iblmass, weight); 
+      }
 
       h1_lep_LowpthOverE_[0]->Fill(cms2.els_hOverE()[ele], weight);
       h1_lep_lowpteOverPIn_[0]->Fill(cms2.els_eOverPIn()[ele], weight);
@@ -425,6 +692,14 @@ void Looper::FillEventHistos ()
   h1_lep_LowptNLepGt20looseIDIso0_1_[0]    ->Fill(nEleGt20looseIDIso0_1, weight);
   h1_lep_LowptNLepGt20vlooseIDIso0_1_[0]   ->Fill(nEleGt20vlooseIDIso0_1, weight);
   h1_lep_LowptNLepGt20NOIDIso0_1_[0]       ->Fill(nEleGt20NOIDIso0_1, weight);
+  h1_lep_LowptNLepGt20tightIDNoIso_[0]    ->Fill(nEleGt20tightIDNoIso, weight);
+  h1_lep_LowptNLepGt20looseIDNoIso_[0]    ->Fill(nEleGt20looseIDNoIso, weight);
+  h1_lep_LowptNLepGt20vlooseIDNoIso_[0]   ->Fill(nEleGt20vlooseIDNoIso, weight);
+
+  h1_lep_LowptNLepGt20tightIDConvRIso0_1_[0]    ->Fill(nEleGt20tightIDConvRIso0_1, weight);
+  h1_lep_LowptNLepGt20looseIDConvRIso0_1_[0]    ->Fill(nEleGt20looseIDConvRIso0_1, weight);
+  h1_lep_LowptNLepGt20vlooseIDConvRIso0_1_[0]   ->Fill(nEleGt20vlooseIDConvRIso0_1, weight);
+  h1_lep_LowptNLepGt20NOIDConvRIso0_1_[0]       ->Fill(nEleGt20NOIDConvRIso0_1, weight);
 
   // have a look at the highest pt muon
   // reset highpt index
@@ -442,22 +717,170 @@ void Looper::FillEventHistos ()
     if(cms2.mus_p4()[hiPtIdx].pt() > 20. ) h1_lep_HighptRelIsoPtLg20_[1] ->Fill(inv_mu_relsusy_iso(hiPtIdx), weight);
   }
 
-  // have a look at all but the highest pt muoctron
+  // have a look at all but the highest pt muoctron ;)
   uint nMuoGt10Lt20 = 0;
   uint nMuoGt20     = 0;
+
+  uint nMuoGt20NOIDIso0_1     = 0;
+
+  uint nMuoGt20ID0Iso0_1     = 0;
+  uint nMuoGt20ID1Iso0_1     = 0;
+  uint nMuoGt20ID2Iso0_1     = 0;
+  uint nMuoGt20ID3Iso0_1     = 0;
+  uint nMuoGt20ID4Iso0_1     = 0;
+  uint nMuoGt20ID5Iso0_1     = 0;
+  uint nMuoGt20ID6Iso0_1     = 0;
+
+  uint nMuoGt20ID0NOIso     = 0;
+  uint nMuoGt20ID1NOIso     = 0;
+  uint nMuoGt20ID2NOIso     = 0;
+  uint nMuoGt20ID3NOIso     = 0;
+  uint nMuoGt20ID4NOIso     = 0;
+  uint nMuoGt20ID5NOIso     = 0;
+  uint nMuoGt20ID6NOIso     = 0;
+
+  iblmass = -1.0;
+
   for(int muo = 0; muo <  (int)cms2.mus_p4().size(); ++muo) {
     if(hiPtIdx != -1 && hiPtIdx != muo) {
+      
+      iblmass = (cms2.mus_p4()[hiPtIdx] + cms2.mus_p4()[muo]).mass();
+
       h1_lep_Lowpt_[1]                                                ->Fill(cms2.mus_p4()[muo].pt(), weight);
       h1_lep_LowptMet_[1]                                             ->Fill(cms2.evt_tcmet(), weight);
       h1_lep_LowptRelIso_[1]                                          ->Fill(inv_mu_relsusy_iso(muo), weight);
       if(cms2.mus_p4()[muo].pt() > 20. ) h1_lep_LowptRelIsoPtLg20_[1] ->Fill(inv_mu_relsusy_iso(muo), weight);
-      if(cms2.mus_p4()[muo].pt() > 10. && (cms2.mus_p4()[muo].pt() < 20. )) ++nMuoGt10Lt20;
-      if(cms2.mus_p4()[muo].pt() > 20. )                                    ++nMuoGt20;
-    }
+      if(cms2.mus_p4()[muo].pt() > 10. && 
+         (cms2.mus_p4()[muo].pt() < 20. ))       {
+        ++nMuoGt10Lt20;
+        h1_lep_LowptmLepGt10Lt20_[1]->Fill(iblmass, weight); 
+      }
+      if(cms2.mus_p4()[muo].pt() > 20. ) {
+        ++nMuoGt20;
+        h1_lep_LowptmLepGt20_[1]->Fill(iblmass, weight); 
+      }
+
+      // GoodTMTestMuonWithoutIsolation(int index, int mode)
+      //   //modes:
+      // mode = 1: TMLS tight, d0, ecal, hcal, eta
+      // mode = 2: TMLS tight, d0, eta
+      // mode = 3: TMLS loose, d0, ecal, hcal, eta
+      // mode = 4: TMLS loose, d0, eta
+      // mode = 5: TMC2D tight, d0, eta
+      // mode = 6: TMC2D loose, d0, eta
+
+      // require any Global or Tracker muon
+      bool isGlobalMu  = true;
+      bool isTrackerMu = true;
+      if (((cms2.mus_type().at(muo)) & (1<<1)) == 0) isGlobalMu  = false; // global muon
+      if (((cms2.mus_type().at(muo)) & (1<<2)) == 0) isTrackerMu = false; // tracker muon
+
+      if(cms2.mus_p4()[muo].pt() > 20. && 
+         ( isGlobalMu || isTrackerMu ) &&
+         inv_mu_relsusy_iso(muo) < 0.1 ) {        
+        ++nMuoGt20NOIDIso0_1;
+        h1_lep_LowptmLepGt20NOIDIso0_1_[1]->Fill(iblmass, weight); 
+      }
+      if(cms2.mus_p4()[muo].pt() > 20. && 
+         GoodSusyMuonWithoutIsolation(muo) && 
+         inv_mu_relsusy_iso(muo) < 0.1 ) {
+        ++nMuoGt20ID0Iso0_1;
+        h1_lep_LowptmLepGt20ID0Iso0_1_[1]->Fill(iblmass, weight); 
+      }
+      if(cms2.mus_p4()[muo].pt() > 20. && 
+         GoodTMTestMuonWithoutIsolation(muo, 1) && 
+         inv_mu_relsusy_iso(muo) < 0.1 ) {
+        ++nMuoGt20ID1Iso0_1;
+      h1_lep_LowptmLepGt20ID1Iso0_1_[1]->Fill(iblmass, weight); 
+      }
+      if(cms2.mus_p4()[muo].pt() > 20. && 
+         GoodTMTestMuonWithoutIsolation(muo, 2) && 
+         inv_mu_relsusy_iso(muo) < 0.1 ) {
+        ++nMuoGt20ID2Iso0_1;
+      h1_lep_LowptmLepGt20ID2Iso0_1_[1]->Fill(iblmass, weight); 
+      }
+      if(cms2.mus_p4()[muo].pt() > 20. && 
+         GoodTMTestMuonWithoutIsolation(muo, 3) && 
+         inv_mu_relsusy_iso(muo) < 0.1 ) {
+        ++nMuoGt20ID3Iso0_1;
+      h1_lep_LowptmLepGt20ID3Iso0_1_[1]->Fill(iblmass, weight); 
+      }
+      if(cms2.mus_p4()[muo].pt() > 20. && 
+         GoodTMTestMuonWithoutIsolation(muo, 4) && 
+         inv_mu_relsusy_iso(muo) < 0.1 ) {
+        ++nMuoGt20ID4Iso0_1;
+      h1_lep_LowptmLepGt20ID4Iso0_1_[1]->Fill(iblmass, weight); 
+      }
+      if(cms2.mus_p4()[muo].pt() > 20. && 
+         GoodTMTestMuonWithoutIsolation(muo, 5) && 
+         inv_mu_relsusy_iso(muo) < 0.1 ) {
+        ++nMuoGt20ID5Iso0_1;
+      h1_lep_LowptmLepGt20ID5Iso0_1_[1]->Fill(iblmass, weight); 
+      }
+      if(cms2.mus_p4()[muo].pt() > 20. && 
+         GoodTMTestMuonWithoutIsolation(muo, 6) && 
+         inv_mu_relsusy_iso(muo) < 0.1 ) {
+        ++nMuoGt20ID6Iso0_1;
+      h1_lep_LowptmLepGt20ID6Iso0_1_[1]->Fill(iblmass, weight); 
+      }
+
+      if(cms2.mus_p4()[muo].pt() > 20. && 
+         GoodSusyMuonWithoutIsolation(muo) ) {
+        ++nMuoGt20ID0NOIso;
+        h1_lep_LowptmLepGt20ID0NOIso_[1]->Fill(iblmass, weight); 
+      }
+      if(cms2.mus_p4()[muo].pt() > 20. && 
+         GoodTMTestMuonWithoutIsolation(muo, 1) ) {
+        ++nMuoGt20ID1NOIso;
+        h1_lep_LowptmLepGt20ID1NOIso_[1]->Fill(iblmass, weight); 
+      }
+      if(cms2.mus_p4()[muo].pt() > 20. && 
+         GoodTMTestMuonWithoutIsolation(muo, 2) ) {
+        ++nMuoGt20ID2NOIso;
+        h1_lep_LowptmLepGt20ID2NOIso_[1]->Fill(iblmass, weight); 
+      }
+      if(cms2.mus_p4()[muo].pt() > 20. && 
+         GoodTMTestMuonWithoutIsolation(muo, 3) ) {
+        ++nMuoGt20ID3NOIso;
+        h1_lep_LowptmLepGt20ID3NOIso_[1]->Fill(iblmass, weight); 
+      }
+      if(cms2.mus_p4()[muo].pt() > 20. && 
+         GoodTMTestMuonWithoutIsolation(muo, 4) ) {
+        ++nMuoGt20ID4NOIso;
+        h1_lep_LowptmLepGt20ID4NOIso_[1]->Fill(iblmass, weight); 
+      }
+      if(cms2.mus_p4()[muo].pt() > 20. && 
+         GoodTMTestMuonWithoutIsolation(muo, 5) ) {
+        ++nMuoGt20ID5NOIso;
+        h1_lep_LowptmLepGt20ID5NOIso_[1]->Fill(iblmass, weight); 
+      }
+      if(cms2.mus_p4()[muo].pt() > 20. && 
+         GoodTMTestMuonWithoutIsolation(muo, 6) ) {
+        ++nMuoGt20ID6NOIso;
+        h1_lep_LowptmLepGt20ID6NOIso_[1]->Fill(iblmass, weight); 
+      }
+     }
   }
   h1_lep_LowptNLepGt10Lt20_[1]->Fill(nMuoGt10Lt20, weight);
   h1_lep_LowptNLepGt20_[1]    ->Fill(nMuoGt20, weight);
 
+  h1_lep_LowptNLepGt20NOIDIso0_1_[1]    ->Fill(nMuoGt20NOIDIso0_1, weight);
+
+  h1_lep_LowptNLepGt20ID0Iso0_1_[1]    ->Fill(nMuoGt20ID0Iso0_1, weight);
+  h1_lep_LowptNLepGt20ID1Iso0_1_[1]    ->Fill(nMuoGt20ID1Iso0_1, weight);
+  h1_lep_LowptNLepGt20ID2Iso0_1_[1]    ->Fill(nMuoGt20ID2Iso0_1, weight);
+  h1_lep_LowptNLepGt20ID3Iso0_1_[1]    ->Fill(nMuoGt20ID3Iso0_1, weight);
+  h1_lep_LowptNLepGt20ID4Iso0_1_[1]    ->Fill(nMuoGt20ID4Iso0_1, weight);
+  h1_lep_LowptNLepGt20ID5Iso0_1_[1]    ->Fill(nMuoGt20ID5Iso0_1, weight);
+  h1_lep_LowptNLepGt20ID6Iso0_1_[1]    ->Fill(nMuoGt20ID6Iso0_1, weight);
+
+  h1_lep_LowptNLepGt20ID0NOIso_[1]    ->Fill(nMuoGt20ID0NOIso, weight);
+  h1_lep_LowptNLepGt20ID1NOIso_[1]    ->Fill(nMuoGt20ID1NOIso, weight);
+  h1_lep_LowptNLepGt20ID2NOIso_[1]    ->Fill(nMuoGt20ID2NOIso, weight);
+  h1_lep_LowptNLepGt20ID3NOIso_[1]    ->Fill(nMuoGt20ID3NOIso, weight);
+  h1_lep_LowptNLepGt20ID4NOIso_[1]    ->Fill(nMuoGt20ID4NOIso, weight);
+  h1_lep_LowptNLepGt20ID5NOIso_[1]    ->Fill(nMuoGt20ID5NOIso, weight);
+  h1_lep_LowptNLepGt20ID6NOIso_[1]    ->Fill(nMuoGt20ID6NOIso, weight);
   
   // need to determine if this is a di-lepton
   // or a single lepton event
@@ -896,6 +1319,134 @@ void Looper::ZEvent ()
 
   }
   //} //end loop on hyp
+
+}
+
+
+bool Looper::GoodTMTestMuonWithoutIsolation(int index, int mode) {
+  //modes:
+  // mode = 1: TMLS tight, d0, ecal, hcal, eta
+  // mode = 2: TMLS tight, d0, eta
+  // mode = 3: TMLS loose, d0, ecal, hcal, eta
+  // mode = 4: TMLS loose, d0, eta
+  // mode = 5: TMC2D tight, d0, eta
+  // mode = 6: TMC2D loose, d0, eta
+
+  if (((cms2.mus_type().at(index)) & (1<<2)) == 0) return false; // not a tracker muon - skip further consideration
+
+  bool isGoodMu = true;
+  if(mode == 1) {
+    if (!cms2.mus_pid_TMLastStationTight().at(index))     isGoodMu = false;
+    if (fabs(cms2.mus_d0corr().at(index))   >= 0.02) isGoodMu = false;
+    if (cms2.mus_pat_ecalvetoDep().at(index) >= 4)   isGoodMu = false; // ECalE < 4
+    if (cms2.mus_pat_hcalvetoDep().at(index) >= 6)   isGoodMu = false; // HCalE < 6
+   if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4) isGoodMu = false;
+  }
+  else if(mode == 2) {
+    if (!cms2.mus_pid_TMLastStationTight().at(index))     isGoodMu = false;
+    if (fabs(cms2.mus_d0corr().at(index))   >= 0.02) isGoodMu = false;
+   if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4) isGoodMu = false;
+  }
+  else if(mode == 3) {
+    if (!cms2.mus_pid_TMLastStationLoose().at(index))     isGoodMu = false;
+    if (fabs(cms2.mus_d0corr().at(index))   >= 0.02) isGoodMu = false;
+    if (cms2.mus_pat_ecalvetoDep().at(index) >= 4)   isGoodMu = false; // ECalE < 4
+    if (cms2.mus_pat_hcalvetoDep().at(index) >= 6)   isGoodMu = false; // HCalE < 6
+   if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4) isGoodMu = false;
+  }
+  else if(mode == 4) {
+    if (!cms2.mus_pid_TMLastStationLoose().at(index))     isGoodMu = false;
+    if (fabs(cms2.mus_d0corr().at(index))   >= 0.02) isGoodMu = false;
+   if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4) isGoodMu = false;
+  }
+  else if(mode == 5) {
+    if (!cms2.mus_pid_TM2DCompatibilityTight().at(index)) isGoodMu = false;
+    if (fabs(cms2.mus_d0corr().at(index))   >= 0.02) isGoodMu = false;
+   if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4) isGoodMu = false;
+  }
+  else if(mode == 6) {
+    if (!cms2.mus_pid_TM2DCompatibilityLoose().at(index)) isGoodMu = false;
+    if (fabs(cms2.mus_d0corr().at(index))   >= 0.02) isGoodMu = false;
+    if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4) isGoodMu = false;
+  }
+
+  else isGoodMu = false;
+
+  return isGoodMu;
+
+
+// mus_type
+// mus_goodmask
+// mus_p4
+// mus_trk_p4
+// mus_d0
+// mus_z0
+// mus_d0corr
+// mus_z0corr
+// mus_vertexphi
+// mus_chi2
+// mus_ndof
+// mus_validHits
+// mus_lostHits
+// mus_d0Err
+// mus_z0Err
+// mus_ptErr
+// nchAlias(
+// mus_phiErr
+// mus_charge
+// mus_trk_charge
+  
+// mus_qoverp
+  
+// mus_qoverpError
+  
+// mus_outerPhi
+// mus_outerEta
+// mus_trkrefkey
+
+// mus_nmatches
+// mus_e_em
+// mus_e_had
+// mus_e_ho
+// mus_e_emS9
+// mus_e_hadS9
+// mus_e_hoS9
+// mus_iso
+// mus_iso03_sumPt
+// mus_iso03_emEt
+// mus_iso03_hadEt
+// mus_iso03_hoEt
+// mus_iso03_ntrk
+// mus_iso05_sumPt
+// mus_iso05_emEt
+// mus_iso05_hadEt
+// mus_iso05_hoEt
+// mus_iso05_ntrk
+        
+// mus_gfit_chi2
+// mus_gfit_ndof
+// mus_gfit_validHits
+// mus_pid_TMLastStationLoose
+// mus_pid_TMLastStationTight
+// mus_pid_TM2DCompatibilityLoose
+// mus_pid_TM2DCompatibilityTight
+// mus_caloCompatibility
+// mus_vertex_p4
+// mus_gfit_outerPos_p4
+
+// mus_pid_TMLastStationLoose
+// mus_pid_TMLastStationTight
+// mus_pid_TM2DCompatibilityLoose
+// mus_pid_TM2DCompatibilityTight
+// mus_caloCompatibility
+//   if (((cms2.mus_type().at(index)) & (1<<1)) == 0) isGoodMu = false; // global muon
+//   if (((cms2.mus_type().at(index)) & (1<<2)) == 0) isGoodMu = false; // tracker muon
+//   if (cms2.mus_validHits().at(index) < 11)    isGoodMu = false;
+//   if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) isGoodMu = false;
+//   if (fabs(cms2.mus_d0corr().at(index))   >= 0.02) isGoodMu = false;
+//   if (cms2.mus_pat_ecalvetoDep().at(index) >= 4) isGoodMu = false; // ECalE < 4
+//   if (cms2.mus_pat_hcalvetoDep().at(index) >= 6) isGoodMu = false; // HCalE < 6
+//   if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4) isGoodMu = false;
 
 }
 

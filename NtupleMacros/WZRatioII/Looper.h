@@ -38,6 +38,7 @@ protected:
 
   void FormatHist(TH1* hist);
 
+  bool GoodTMTestMuonWithoutIsolation(int index, int mode);
 
 
 public:
@@ -105,6 +106,61 @@ protected:
   TH1F	*h1_lep_LowptNLepGt20looseIDIso0_1_[3];
   TH1F	*h1_lep_LowptNLepGt20vlooseIDIso0_1_[3];
   TH1F	*h1_lep_LowptNLepGt20NOIDIso0_1_[3];
+  TH1F	*h1_lep_LowptNLepGt20tightIDNoIso_[3];
+  TH1F	*h1_lep_LowptNLepGt20looseIDNoIso_[3];
+  TH1F	*h1_lep_LowptNLepGt20vlooseIDNoIso_[3];
+  TH1F	*h1_lep_LowptNLepGt20tightIDConvRIso0_1_[3];
+  TH1F	*h1_lep_LowptNLepGt20looseIDConvRIso0_1_[3];
+  TH1F	*h1_lep_LowptNLepGt20vlooseIDConvRIso0_1_[3];
+  TH1F	*h1_lep_LowptNLepGt20NOIDConvRIso0_1_[3];
+
+  TH1F	*h1_lep_LowptmLepGt20tightIDIso0_1_[3];
+  TH1F	*h1_lep_LowptmLepGt20looseIDIso0_1_[3];
+  TH1F	*h1_lep_LowptmLepGt20vlooseIDIso0_1_[3];
+  //  TH1F	*h1_lep_LowptmLepGt20NOIDIso0_1_[3];
+  TH1F	*h1_lep_LowptmLepGt20tightIDNoIso_[3];
+  TH1F	*h1_lep_LowptmLepGt20looseIDNoIso_[3];
+  TH1F	*h1_lep_LowptmLepGt20vlooseIDNoIso_[3];
+  TH1F	*h1_lep_LowptmLepGt20tightIDConvRIso0_1_[3];
+  TH1F	*h1_lep_LowptmLepGt20looseIDConvRIso0_1_[3];
+  TH1F	*h1_lep_LowptmLepGt20vlooseIDConvRIso0_1_[3];
+  TH1F	*h1_lep_LowptmLepGt20NOIDConvRIso0_1_[3];
+
+  //  TH1F	*h1_lep_LowptNLepGt20NOIDIso0_1_[3]; // already above
+
+  TH1F	*h1_lep_LowptmLepGt10Lt20_[3];
+  TH1F	*h1_lep_LowptmLepGt20_[3];
+  TH1F	*h1_lep_LowptmLepGt20NOIDIso0_1_[3];
+  TH1F	*h1_lep_LowptmLepGt20ID0Iso0_1_[3];
+  TH1F	*h1_lep_LowptmLepGt20ID1Iso0_1_[3];
+  TH1F	*h1_lep_LowptmLepGt20ID2Iso0_1_[3];
+  TH1F	*h1_lep_LowptmLepGt20ID3Iso0_1_[3];
+  TH1F	*h1_lep_LowptmLepGt20ID4Iso0_1_[3];
+  TH1F	*h1_lep_LowptmLepGt20ID5Iso0_1_[3];
+  TH1F	*h1_lep_LowptmLepGt20ID6Iso0_1_[3];
+  TH1F	*h1_lep_LowptmLepGt20ID0NOIso_[3];
+  TH1F	*h1_lep_LowptmLepGt20ID1NOIso_[3];
+  TH1F	*h1_lep_LowptmLepGt20ID2NOIso_[3];
+  TH1F	*h1_lep_LowptmLepGt20ID3NOIso_[3];
+  TH1F	*h1_lep_LowptmLepGt20ID4NOIso_[3];
+  TH1F	*h1_lep_LowptmLepGt20ID5NOIso_[3];
+  TH1F	*h1_lep_LowptmLepGt20ID6NOIso_[3];
+
+  TH1F	*h1_lep_LowptNLepGt20ID0Iso0_1_[3];
+  TH1F	*h1_lep_LowptNLepGt20ID1Iso0_1_[3];
+  TH1F	*h1_lep_LowptNLepGt20ID2Iso0_1_[3];
+  TH1F	*h1_lep_LowptNLepGt20ID3Iso0_1_[3];
+  TH1F	*h1_lep_LowptNLepGt20ID4Iso0_1_[3];
+  TH1F	*h1_lep_LowptNLepGt20ID5Iso0_1_[3];
+  TH1F	*h1_lep_LowptNLepGt20ID6Iso0_1_[3];
+
+  TH1F	*h1_lep_LowptNLepGt20ID0NOIso_[3];
+  TH1F	*h1_lep_LowptNLepGt20ID1NOIso_[3];
+  TH1F	*h1_lep_LowptNLepGt20ID2NOIso_[3];
+  TH1F	*h1_lep_LowptNLepGt20ID3NOIso_[3];
+  TH1F	*h1_lep_LowptNLepGt20ID4NOIso_[3];
+  TH1F	*h1_lep_LowptNLepGt20ID5NOIso_[3];
+  TH1F	*h1_lep_LowptNLepGt20ID6NOIso_[3];
 
   TH1F* h1_lep_LowpthOverE_[3];
   TH1F* h1_lep_lowpteOverPIn_[3];
