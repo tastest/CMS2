@@ -76,6 +76,10 @@ public:
      virtual int       	CandsCount (enum DileptonHypType i) const { return cands_count_[i]; }
      virtual double	RMS (enum DileptonHypType i) const { return sqrt(cands_passing_w2_[i]); }
 
+     virtual double     CandsPassingW (unsigned int i) const { return wEvents_passing_[i]; }
+     virtual int        CandsCountW (unsigned int i) const { return wEvents_count_[i]; }
+     virtual double     RMSW (unsigned int i) const { return sqrt(wEvents_passing_w2_[i]); }
+
 protected:
      //----------------------------------------------------------------------
      // declare your histograms here:
@@ -114,23 +118,23 @@ protected:
 	TH1F 	*h1_d0corr_[2];
 	TH1F	*h1_closestMuon_[2];
 
-	EffMulti	*em_tasElectronV1_[2];
+	//EffMulti	*em_tasElectronV1_[2];
 
 	// W effciency studies related
         TH1F *h1_weff_pt_[2];
 	TH1F *h1_weff_iso_[2];
 	TH1F *h1_weff_tcmet_[2];
 	TH1F *h1_weff_jptpt_[2];
-	TH1F *h1_weff_tcmet_after_iso15_[2];
-	TH1F *h1_weff_jptpt_after_iso15_[2];
-        TH1F *h1_weff_tcmet_after_iso10_[2];
-        TH1F *h1_weff_jptpt_after_iso10_[2];
+	TH1F *h1_weff_tcmet_after_iso_[2];
+	TH1F *h1_weff_jptpt_after_iso_[2];
+	TH1F *h1_weff_jptptphi_after_iso_[2];
 
-        TH1F *h1_weff_tcmet_after_iso10_jpt25_[2];
-        TH1F *h1_weff_tcmet_after_iso15_jpt25_[2];
+        TH1F *h1_weff_tcmet_after_iso_jpt_[2];
+        TH1F *h1_weff_jptptphi_after_iso_jpt_[2];
 
-	TH1F *h1_weff_jptptphi_after_iso15_[2];
-        TH1F *h1_weff_jptptphi_after_iso10_[2];
+        TH1F *h1_weff_jptptphi_after_iso_jpt_tcmet_[2];
+
+
 
         EffMulti *em_dEtaIn_[2];
         EffMulti *em_dPhiIn_[2];
@@ -146,11 +150,9 @@ protected:
 
 protected:
 
-     double		wEfficiencyEvents_iso10_[2];
-     double             wEfficiencyEvents_iso15_[2];
-     double             wEfficiencyEvents_iso10_jpt25_[2];
-     double             wEfficiencyEvents_iso15_jpt25_[2];
-
+     unsigned int	wEvents_count_[3];
+     double 		wEvents_passing_[3];
+     double		wEvents_passing_w2_[3];
 
      // count the (weighted and unweighted) number of candidates passing our cuts
      double		cands_passing_[4];

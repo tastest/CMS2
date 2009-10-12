@@ -7,6 +7,7 @@
 #include "TROOT.h"
 
 #include "TGraphAsymmErrors.h"
+#include "TArrow.h"
 
         const static sources_t theSources_31X =
 //		(1ll << H_ZZ);
@@ -43,30 +44,118 @@
 	const static sources_t &theBackground = theBackground_31X;
 	const static sources_t &theSources = theSources_31X;
 
-void plotEff(HistogramUtilities &h1, TString name, TString det, bool ascending)
+TArrow *getArrow(THStack *st, TString det, float cutValEB, float cutValEE)
 {
 
-	TH1F *h1_signal = h1.getHistogram(theSignal, name, "", det);
-        TH1F *h1_background = h1.getHistogram(theBackground, name, "", det);
+        float cutVal; 
+        if (det == "eb") cutVal = cutValEB;
+        else cutVal = cutValEE;
+        TArrow *arr_cut = new TArrow(cutVal, st->GetMaximum()/2.0, cutVal, 0, 0.05, "|>");
+        arr_cut->SetLineWidth(2.0);
+	return arr_cut;
+}
 
+void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det, bool ascending, int rebin, bool legendOnRight, float cutValEB, float cutValEE)
+{
+
+	std::cout << "[plotEff]" << std::endl;
+	TH1F *h1_signal = h1.getHistogram(theSignal, name, "", det, rebin, "");
+        TH1F *h1_background = h1.getHistogram(theBackground, name, "", det, rebin, "");
+	TH1F *h1_both = h1.getHistogram(theBackground | theSignal, name, "", det, rebin, "");
 	// latter bool is "ascending"
-        TGraph *gr = (TGraph*)(eff_rej(*h1_signal, *h1_background, true, ascending).Clone());
+	bool normalise = true;
+        TGraph *gr = (TGraph*)(eff_rej(*h1_signal, *h1_background, normalise, ascending).Clone());
         gr->SetTitle(name + ";Signal;Background");
 	gr->SetMarkerStyle(23);
 
         TCanvas *c = new TCanvas();
         c->cd();
         gr->Draw("AP");
-	Utilities::saveCanvas(c, "results/eff_" + name + "_" + det);
+	gr->GetXaxis()->SetRangeUser(0, 1.1);
+	gr->GetYaxis()->SetRangeUser(0, 1.1);
+	Utilities::saveCanvas(c, "results/" + saveName + "_eff_" + name + "_" + det);
+
+        h1_signal->SetLineWidth(2);
+	h1_signal->SetLineColor(kBlue);
+	h1_signal->SetLineStyle(kDashed);
+        h1_background->SetLineWidth(2);
+	h1_background->SetLineColor(kGreen);
+	TLegend *lg = 0;
+	if (! legendOnRight) lg = new TLegend(0.2, 0.75, 0.5, 0.9);
+	else lg = new TLegend(0.55, 0.7, 0.9, 0.9);
+
+	float cutVal;
+	if (det == "eb") cutVal = cutValEB;
+	else cutVal = cutValEE;
+	TArrow *arr_cut = new TArrow(cutVal, h1_both->GetMaximum()/2.0, cutVal, 0, 0.05, "|>");
+	arr_cut->SetLineWidth(2.0);
+
+  	lg->SetFillColor(kWhite);
+  	lg->SetLineColor(kWhite);
+  	lg->SetShadowColor(kWhite);
+	TString upperDet = det;
+	upperDet.ToUpper();
+	lg->AddEntry(h1_signal, "Signal (" + upperDet + ")", "l");
+	lg->AddEntry(h1_background, "Background (" + upperDet + ")", "l");
+	TCanvas *c_sb = new TCanvas();
+	c_sb->cd();
+	if (h1_signal->GetMaximum() > h1_background->GetMaximum()) {
+		h1_signal->Draw();
+		h1_signal->GetYaxis()->SetRangeUser(0, h1_signal->GetMaximum() 
+							+ h1_signal->GetMaximum()*0.1);
+		h1_background->Draw("SAME");
+	}
+	else {
+        	h1_background->Draw();
+                h1_background->GetYaxis()->SetRangeUser(0, h1_background->GetMaximum() 
+								+ h1_background->GetMaximum()*0.1);
+        	h1_signal->Draw("SAME");
+	}
+	if (cutVal > 0.0) arr_cut->Draw();
+	lg->Draw();
+        Utilities::saveCanvas(c_sb, "results/" + saveName + "_sb_lin" + name + "_" + det);
+
+	h1_signal->Draw();
+        Utilities::saveCanvas(c_sb, "results/" + saveName + "_s_lin" + name + "_" + det);
+
+
+	TCanvas *c_sb_log = new TCanvas();
+	c_sb_log->cd();
+	c_sb_log->SetLogy();
+        if (h1_signal->GetMaximum() > h1_background->GetMaximum()) {
+                h1_signal->Draw();
+                h1_signal->GetYaxis()->SetRangeUser(0.1, h1_signal->GetMaximum() 
+                                                        + h1_signal->GetMaximum());
+                h1_background->Draw("SAME");
+        }
+        else {
+                h1_background->Draw();
+                h1_background->GetYaxis()->SetRangeUser(0.1, h1_background->GetMaximum() 
+                                                                + h1_background->GetMaximum());
+                h1_signal->Draw("SAME");
+        }
+        if (cutVal > 0.0) arr_cut->Draw();
+        lg->Draw();
+	Utilities::saveCanvas(c_sb_log, "results/" + saveName + "_sb_log" + name + "_" + det);
+
+        h1_signal->Draw();
+        Utilities::saveCanvas(c_sb_log, "results/" + saveName + "_s_log" + name + "_" + det);
 
 	delete gr;
 	delete h1_signal;
 	delete h1_background;
 	delete c;
-
+	delete c_sb;
+	delete c_sb_log;
+	delete lg;
+	delete arr_cut;
+	delete h1_both;
+	std::cout << "[plotEff] Done" << std::endl;
 }
 
-void plotEffVar(HistogramUtilities &h1, TString name, Int_t rebin = 1)
+
+
+void plotEffVar(HistogramUtilities &h1, TString name, TString saveName, Int_t rebin = 1)
 {
 
         TCanvas *c = new TCanvas();
@@ -92,7 +181,7 @@ void plotEffVar(HistogramUtilities &h1, TString name, Int_t rebin = 1)
         h1_eff->Draw("E1");
 	//gr_eff->Draw("AP");
         //gr_eff->GetYaxis()->SetRangeUser(0, 1.1);
-        Utilities::saveCanvas(c, "results/effVar_s_" + name);
+        Utilities::saveCanvas(c, "results/" + saveName + "_effVar_s_" + name);
 
 
         h1_total = h1.getHistogram(theBackground, name, "", "denom", rebin, "");
@@ -111,7 +200,7 @@ void plotEffVar(HistogramUtilities &h1, TString name, Int_t rebin = 1)
         h1_eff->Draw("E1");
 	//gr_eff->Draw("AP");
         //gr_eff->GetYaxis()->SetRangeUser(0, 1.1);
-        Utilities::saveCanvas(c, "results/effVar_bg_" + name);
+        Utilities::saveCanvas(c, "results/" + saveName + "_effVar_bg_" + name);
 
         delete c;
         delete h1_eff;
@@ -120,45 +209,117 @@ void plotEffVar(HistogramUtilities &h1, TString name, Int_t rebin = 1)
 	//delete gr_eff;
 }
 
+void plotStack(HistogramUtilities &h1, TString name, TString saveName, TString det, int rebin, float cutValEB, float cutValEE)
+{
+
+        THStack *st = h1.getStack(theSources, name, "", det, rebin);
+        TLegend *lg_all = h1.getLegend(theSources, name, "", det);
+
+        TCanvas *c1 = new TCanvas();
+        c1->cd();
+        st->Draw(); 
+        lg_all->Draw();
+	if (det == "ee" && cutValEE != -1) getArrow(st, det, cutValEB, cutValEE)->Draw();
+        if (det == "eb" && cutValEB != -1) getArrow(st, det, cutValEB, cutValEE)->Draw();
+        Utilities::saveCanvas(c1, "results/" + saveName  + "_lin_" + name + "_" + det);
+
+	c1->SetLogy();
+        Utilities::saveCanvas(c1, "results/" + saveName  + "_log_" + name + "_" + det);
+
+
+	delete c1;
+	delete st;
+	delete lg_all;
+
+}
+
 void test()
 {
         gROOT->ProcessLine(".L ~/tdrStyle.C");
         gROOT->ProcessLine("setTDRStyle()");
         HistogramUtilities h1("Results.root", 0.001);
 
-        plotEffVar(h1, "dEtaIn_pt_ee", 4);
-        plotEffVar(h1, "dEtaIn_eta_ee");
-        plotEffVar(h1, "dEtaIn_phi_ee");
-        plotEffVar(h1, "dEtaIn_pt_eb", 4);
-        plotEffVar(h1, "dEtaIn_eta_eb");
-        plotEffVar(h1, "dEtaIn_phi_eb");
+        plotEffVar(h1, "dEtaIn_pt_ee", "", 4);
+        plotEffVar(h1, "dEtaIn_eta_ee", "");
+        plotEffVar(h1, "dEtaIn_phi_ee", "");
+        plotEffVar(h1, "dEtaIn_pt_eb", "", 4);
+        plotEffVar(h1, "dEtaIn_eta_eb", "");
+        plotEffVar(h1, "dEtaIn_phi_eb", "");
 
-        plotEffVar(h1, "dPhiIn_pt_ee", 4);
-        plotEffVar(h1, "dPhiIn_eta_ee");
-        plotEffVar(h1, "dPhiIn_phi_ee");
-        plotEffVar(h1, "dPhiIn_pt_eb", 4);
-        plotEffVar(h1, "dPhiIn_eta_eb");
-        plotEffVar(h1, "dPhiIn_phi_eb");
+        plotEffVar(h1, "dPhiIn_pt_ee", "", 4);
+        plotEffVar(h1, "dPhiIn_eta_ee", "");
+        plotEffVar(h1, "dPhiIn_phi_ee", "");
+        plotEffVar(h1, "dPhiIn_pt_eb", "", 4);
+        plotEffVar(h1, "dPhiIn_eta_eb", "");
+        plotEffVar(h1, "dPhiIn_phi_eb", "");
 
-        plotEffVar(h1, "hoe_pt_ee", 4);
-        plotEffVar(h1, "hoe_eta_ee");
-        plotEffVar(h1, "hoe_phi_ee");
-        plotEffVar(h1, "hoe_pt_eb", 4);
-        plotEffVar(h1, "hoe_eta_eb");
-        plotEffVar(h1, "hoe_phi_eb");
+        plotEffVar(h1, "hoe_pt_ee", "", 4);
+        plotEffVar(h1, "hoe_eta_ee", "");
+        plotEffVar(h1, "hoe_phi_ee", "");
+        plotEffVar(h1, "hoe_pt_eb", "", 4);
+        plotEffVar(h1, "hoe_eta_eb", "");
+        plotEffVar(h1, "hoe_phi_eb", "");
 
-        plotEffVar(h1, "sieie_pt_ee", 4);
-        plotEffVar(h1, "sieie_eta_ee");
-        plotEffVar(h1, "sieie_phi_ee");
-        plotEffVar(h1, "sieie_pt_eb", 4);
-        plotEffVar(h1, "sieie_eta_eb");
-        plotEffVar(h1, "sieie_phi_eb");
+        plotEffVar(h1, "sieie_pt_ee", "", 4);
+        plotEffVar(h1, "sieie_eta_ee", "");
+        plotEffVar(h1, "sieie_phi_ee", "");
+        plotEffVar(h1, "sieie_pt_eb", "", 4);
+        plotEffVar(h1, "sieie_eta_eb", "");
+        plotEffVar(h1, "sieie_phi_eb", "");
 
-        plotEffVar(h1, "robustTight_pt_eb");
-        plotEffVar(h1, "robustTight_pt_ee");
+        plotEffVar(h1, "robustTight_pt_eb", "");
+        plotEffVar(h1, "robustTight_pt_ee", "");
 
-        plotEffVar(h1, "classBasedTight_pt_eb");
-        plotEffVar(h1, "classBasedTight_pt_ee");
+        plotEffVar(h1, "classBasedTight_pt_eb", "");
+        plotEffVar(h1, "classBasedTight_pt_ee", "");
+
+        plotEffVar(h1, "eopInGT05_pt_ee", "", 4);
+        plotEffVar(h1, "eopInGT05_pt_eb", "", 4);
+
+        plotEffVar(h1, "eopInLT30_pt_ee", "", 4);
+        plotEffVar(h1, "eopInLT30_pt_eb", "", 4);
+
+}
+
+void plotAllResults()
+{
+	plotResults("ee");
+	plotResults("eb");
+}
+
+void plotAllResultsW()
+{
+        plotResultsW("ee", "iso10_jpt25_tcmet30");
+        plotResultsW("eb", "iso10_jpt25_tcmet30");
+}
+
+void plotResultsW(TString det, TString fileStamp)
+{
+
+        gROOT->ProcessLine(".L ~/tdrStyle.C");
+        gROOT->ProcessLine("setTDRStyle()");
+
+        // luminorm for 1pb-1
+        // luminosity is already normalised to 1pb-1 in the looper
+        HistogramUtilities h1("Results_" + fileStamp + ".root", 1.0);
+
+        // W studies related
+        //
+        plotStack(h1, "weff_pt", fileStamp, det, 2);
+        plotStack(h1, "weff_iso", fileStamp, det, 2);
+        plotStack(h1, "weff_tcmet", fileStamp, det, 2);
+        plotStack(h1, "weff_jptpt", fileStamp, det, 2);
+        plotStack(h1, "weff_tcmet_after_iso", fileStamp, det, 2);
+        plotStack(h1, "weff_jptpt_after_iso", fileStamp, det, 2);
+        plotStack(h1, "weff_jptptphi_after_iso", fileStamp, det, 2);
+        plotStack(h1, "weff_tcmet_after_iso_jpt", fileStamp, det, 2);
+        plotStack(h1, "weff_jptptphi_after_iso_jpt", fileStamp, det, 2);
+        plotStack(h1, "weff_jptptphi_after_iso_jpt_tcmet", fileStamp, det, 2);
+
+        plotEff(h1, "weff_jptptphi_after_iso", fileStamp, det, true, 2);
+        plotEff(h1, "weff_jptpt_after_iso", fileStamp, det, true, 2);
+        plotEff(h1, "weff_jptptphi_after_iso_jpt", fileStamp, det, true, 2);
+        plotEff(h1, "weff_jptptphi_after_iso_jpt_tcmet", fileStamp, det, true, 2);
 
 }
 
@@ -171,186 +332,27 @@ void plotResults(TString det)
 	// luminorm for 1pb-1
 	// luminosity is already normalised to 1pb-1 in the looper
 	HistogramUtilities h1("Results.root", 1.0);
-	THStack *st_pt = h1.getStack(theSources, "pt", "", det, 2);
-
-        THStack *st_eta = h1.getStack(theSources, "eta", "", det);
-	TLegend *lg_all = h1.getLegend(theSources, "pt", "", det);
-
-        THStack *st_ecalIso03 = h1.getStack(theSources, "ecalIso03", "", det);
-        THStack *st_hcalIso03 = h1.getStack(theSources, "hcalIso03", "", det);
-        THStack *st_tkIso03 = h1.getStack(theSources, "tkIso03", "", det);
-        //THStack *st_esJuraIso03 = h1.getStack(theSources, "esJuraIso03", "", det);
-        THStack *st_wwIso = h1.getStack(theSources, "wwIsoAll", "", det, 4);
-
-	//plotEff(h1, "esJuraIso03", det, true);
-        //plotEff(h1, "ecalIso03", det, true);
-        //plotEff(h1, "hcalIso03", det, true);
-        //plotEff(h1, "tkIso03", det, true);
-	//plotEff(h1, "wwIso", det, false);
-
-	TCanvas *c1 = new TCanvas();
-	c1->cd();
-	st_pt->Draw();
-	lg_all->Draw();
-	Utilities::saveCanvas(c1, "results/pt_" + det);	
-
-        TCanvas *c2 = new TCanvas();
-        c2->cd();
-        st_eta->Draw();
-        lg_all->Draw();
-        Utilities::saveCanvas(c2, "results/eta_" + det);
-
-        TCanvas *c3 = new TCanvas();
-        c3->cd();
-        st_ecalIso03->Draw();
-        lg_all->Draw();
-        Utilities::saveCanvas(c3, "results/ecalIso03_" + det);
-
-        TCanvas *c4 = new TCanvas();
-        c4->cd();
-        st_hcalIso03->Draw();
-        lg_all->Draw();
-        Utilities::saveCanvas(c4, "results/hcalIso03_" + det);
-
-        TCanvas *c5 = new TCanvas();
-        c5->cd();
-        st_tkIso03->Draw();
-        lg_all->Draw();
-        Utilities::saveCanvas(c5, "results/tkIso03_" + det);
-
-        TCanvas *c6 = new TCanvas();
-        c6->cd();
-        st_wwIso->Draw();
-        lg_all->Draw();
-        Utilities::saveCanvas(c6, "results/wwIso_" + det);
-
-        //TCanvas *c7 = new TCanvas();
-        //c7->cd();
-        //st_esJuraIso03->Draw();
-        //lg_all->Draw();
-        //Utilities::saveCanvas(c7, "results/esJuraIso_" + det);
-
-	// W studies related
-	//
-        THStack *st_weff_pt = h1.getStack(theSources, "weff_pt", "", det, 2);
-        THStack *st_weff_iso = h1.getStack(theSources, "weff_iso", "", det, 2);
-        THStack *st_weff_tcmet = h1.getStack(theSources, "weff_tcmet", "", det, 2);
-        THStack *st_weff_jptpt = h1.getStack(theSources, "weff_jptpt", "", det, 2);
-        THStack *st_weff_tcmet_after_iso = h1.getStack(theSources, "weff_tcmet_after_iso", "", det, 2);
-        THStack *st_weff_jptpt_after_iso = h1.getStack(theSources, "weff_jptpt_after_iso", "", det, 2);
-        THStack *st_weff_tcmet_after_iso_jetveto = h1.getStack(theSources, "weff_tcmet_after_iso_jetveto", "", det, 2);
-
-        TCanvas *c_w1 = new TCanvas();
-        c_w1->cd();
-        st_weff_iso->Draw();
-        lg_all->Draw();
-        c_w1->Update();
-        Utilities::saveCanvas(c_w1, "results/weff_iso_" + det);
-
-        TCanvas *c_w2 = new TCanvas();
-        c_w2->cd();
-        st_weff_tcmet->Draw();
-        lg_all->Draw();
-        c_w2->Update();
-        Utilities::saveCanvas(c_w2, "results/weff_tcmet_" + det);
-
-        TCanvas *c_w3 = new TCanvas();
-        c_w3->cd();
-        st_weff_tcmet_after_iso->Draw();
-        lg_all->Draw();
-        c_w3->Update();
-        Utilities::saveCanvas(c_w3, "results/weff_tcmet_after_iso" + det);
-
-        TCanvas *c_w4 = new TCanvas();
-        c_w4->cd();
-        st_weff_pt->Draw();
-        lg_all->Draw();
-        c_w4->Update();
-        Utilities::saveCanvas(c_w4, "results/weff_pt_" + det);
-
-        TCanvas *c_w5 = new TCanvas();
-        c_w5->cd();
-        st_weff_jptpt->Draw();
-        lg_all->Draw();
-        c_w5->Update();
-        Utilities::saveCanvas(c_w5, "results/weff_jptpt_" + det);
-
-        TCanvas *c_w6 = new TCanvas();
-        c_w6->cd();
-        st_weff_jptpt_after_iso->Draw();
-        lg_all->Draw();
-        c_w6->Update();
-        Utilities::saveCanvas(c_w6, "results/weff_jptpt_after_iso_" + det);
-
-        TCanvas *c_w7 = new TCanvas();
-        c_w7->cd();
-        st_weff_tcmet_after_iso_jetveto->Draw();
-        lg_all->Draw();
-        c_w7->Update();
-        Utilities::saveCanvas(c_w7, "results/weff_tcmet_after_iso_jetveto" + det);
-
 
 	// electron id related
 	//
-        THStack *st_dEtaIn = h1.getStack(theSources, "dEtaIn", "", det, 2);
-        THStack *st_dPhiIn = h1.getStack(theSources, "dPhiIn", "", det, 2);
-        THStack *st_hoe = h1.getStack(theSources, "hoe", "", det, 4);
-        THStack *st_eopIn = h1.getStack(theSources, "eopIn", "", det, 4);
-        THStack *st_sigmaIEtaIEta = h1.getStack(theSources, "sigmaIEtaIEta", "", det, 4);
-        THStack *st_sigmaIPhiIPhi = h1.getStack(theSources, "sigmaIPhiIPhi", "", det, 4);
-        THStack *st_E2x5Norm5x5 = h1.getStack(theSources, "E2x5Norm5x5", "", det, 4);
-        THStack *st_E1x5Norm5x5 = h1.getStack(theSources, "E1x5Norm5x5", "", det, 4);
 
-        //plotEff(h1, "hoe", det, true);
-	
-        TCanvas *c_id1 = new TCanvas();
-        c_id1->cd();
-        st_dEtaIn->Draw();
-        //lg_all->Draw();
-	c_id1->Update();
-        Utilities::saveCanvas(c_id1, "results/dEtaIn_" + det);
-        
-	TCanvas *c_id2 = new TCanvas();
-        c_id2->cd();
-        st_dPhiIn->Draw();
-        //lg_all->Draw();
-        Utilities::saveCanvas(c_id2, "results/dPhiIn_" + det);
+        plotEff(h1, "dEtaIn", "", det, true, 2, true, 0.007, 0.010);
+        plotEff(h1, "dPhiIn", "", det, true, 2, true, 0.020, 0.025);
+        plotEff(h1, "dPhiInSigned", "", det, true, 2, true);
+        plotEff(h1, "hoe", det, "", true, 2, true, 0.01, 0.01);
+        plotEff(h1, "eopIn", det, "", false, 4, true, 0.5, 0.5);
+        plotEff(h1, "sigmaIEtaIEta", "", det, true, 2, true, -1, 0.03);
+        plotEff(h1, "sigmaIPhiIPhi", "", det, true, 4, true);
+        plotEff(h1, "E2x5Norm5x5", "", det, false, 4, false, 0.90, -1);
+        plotEff(h1, "E1x5Norm5x5", "", det, false, 4, false);
+        plotEff(h1, "d0corr", det, "", true, 4, true, 0.025, 0.035);
 
-        TCanvas *c_id3 = new TCanvas();
-        c_id3->cd();
-        st_hoe->Draw();
-        //lg_all->Draw();
-        Utilities::saveCanvas(c_id3, "results/hoe_" + det);
-
-        TCanvas *c_id4 = new TCanvas();
-        c_id4->cd();
-        st_sigmaIEtaIEta->Draw();
-        //lg_all->Draw();
-        Utilities::saveCanvas(c_id4, "results/sigmaIEtaIEta_" + det);
-
-        TCanvas *c_id5 = new TCanvas();
-        c_id5->cd();
-        st_sigmaIPhiIPhi->Draw();
-        //lg_all->Draw();
-        Utilities::saveCanvas(c_id5, "results/sigmaIPhiIPhi_" + det);
-
-        TCanvas *c_id6 = new TCanvas();
-        c_id6->cd();
-        st_eopIn->Draw();
-        //lg_all->Draw();
-        Utilities::saveCanvas(c_id6, "results/eopIn_" + det);
-
-        TCanvas *c_id7 = new TCanvas();
-        c_id7->cd();
-        st_E2x5Norm5x5->Draw();
-        //lg_all->Draw();
-        Utilities::saveCanvas(c_id7, "results/E2x5Norm5x5_" + det);
-
-        TCanvas *c_id8 = new TCanvas();
-        c_id8->cd();
-        st_E1x5Norm5x5->Draw();
-        //lg_all->Draw();
-        Utilities::saveCanvas(c_id8, "results/E1x5Norm5x5_" + det);
+	// the isolation part
+        plotEff(h1, "wwIsoAll", "", det, true, 1, true);
+        plotEff(h1, "tkIso03All", "", det, true, 1, true);
+        plotEff(h1, "ecalIso03All", "", det, true, 1, true);
+        plotEff(h1, "ecalIsoMod03All", "", det, true, 1, true);
+        plotEff(h1, "hcalIso03All", "", det, true, 1, true);
 
 }
 

@@ -14,11 +14,9 @@
 : LooperBase(s, c, fname)
 {
 	// zero out the candidate counters (don't comment this out)
-	memset(wEfficiencyEvents_iso10_, 0, sizeof(wEfficiencyEvents_iso10_ ));
-        memset(wEfficiencyEvents_iso15_, 0, sizeof(wEfficiencyEvents_iso15_ ));
-        memset(wEfficiencyEvents_iso10_jpt25_, 0, sizeof(wEfficiencyEvents_iso10_jpt25_ ));
-        memset(wEfficiencyEvents_iso15_jpt25_, 0, sizeof(wEfficiencyEvents_iso15_jpt25_ ));
-
+	memset(wEvents_passing_, 0, sizeof(wEvents_passing_));
+        memset(wEvents_passing_w2_, 0, sizeof(wEvents_passing_w2_));
+        memset(wEvents_count_, 0, sizeof(wEvents_count_));
 
 	memset(cands_passing_	, 0, sizeof(cands_passing_       ));
 	memset(cands_passing_w2_	, 0, sizeof(cands_passing_w2_    ));
@@ -71,18 +69,18 @@ void Looper::BookHistos ()
 	FormatHist(h1_weff_iso_, "weff_iso", 100, 0, 1);
 	FormatHist(h1_weff_tcmet_, "weff_tcmet", 100, 0, 100);
 	FormatHist(h1_weff_jptpt_, "weff_jptpt", 100, 0, 100);
-	FormatHist(h1_weff_tcmet_after_iso15_, "weff_tcmet_after_iso15", 100, 0, 100);
-        FormatHist(h1_weff_jptpt_after_iso15_, "weff_jptpt_after_iso15", 100, 0, 100);
-        FormatHist(h1_weff_tcmet_after_iso10_, "weff_tcmet_after_iso10", 100, 0, 100);
-        FormatHist(h1_weff_jptpt_after_iso10_, "weff_jptpt_after_iso10", 100, 0, 100);
+	FormatHist(h1_weff_tcmet_after_iso_, "weff_tcmet_after_iso", 100, 0, 100);
+        FormatHist(h1_weff_jptpt_after_iso_, "weff_jptpt_after_iso", 100, 0, 100);
+        FormatHist(h1_weff_jptptphi_after_iso_, "weff_jptptphi_after_iso", 100, 0, 180);
 
-        FormatHist(h1_weff_tcmet_after_iso10_jpt25_, "weff_tcmet_after_iso10_jpt25", 100, 0, 100);
-        FormatHist(h1_weff_tcmet_after_iso15_jpt25_, "weff_tcmet_after_iso15_jpt25", 100, 0, 100);
+        FormatHist(h1_weff_tcmet_after_iso_jpt_, "weff_tcmet_after_iso_jpt", 100, 0, 100);
+        FormatHist(h1_weff_jptptphi_after_iso_jpt_, "weff_jptptphi_after_iso_jpt", 100, 0, 180);
 
-        FormatHist(h1_weff_jptptphi_after_iso15_, "weff_jptptphi_after_iso15", 100, 0, 180);
-        FormatHist(h1_weff_jptptphi_after_iso10_, "weff_jptptphi_after_iso10", 100, 0, 180);
+        FormatHist(h1_weff_jptptphi_after_iso_jpt_tcmet_, "weff_jptptphi_after_iso_jpt_tcmet", 100, 0, 180);
 
-	// Isolation related
+
+
+	// Ismlation related
 	//
 	FormatHist(h1_ecalIso03_, "ecalIso03", 100, 0, 1);
 	FormatHist(h1_hcalIso03_, "hcalIso03", 100, 0, 1);
@@ -102,8 +100,6 @@ void Looper::BookHistos ()
 	FormatHist(h1_eopIn_, "eopIn", 100, 0.0, 5.0);
 	FormatHist(h1_d0corr_, "d0corr", 100, 0.0, 0.2);
 	FormatHist(h1_closestMuon_, "closestMuon", 100, -1, 5);
-
-	FormatEffHist(em_tasElectronV1_, false, 0, 0, "h1_tasElectronV1")
 
 	// The "Egamma robust tight V1 (2_2_X tune)"
 	//
@@ -173,91 +169,109 @@ void Looper::wEfficiency()
         float weight = cms2.evt_scale1fb() * sample_.kFactor;
         weight /= 1000;
 
-        // did the event pass the baseline cuts
-	// e.g. require one electron exactly
-        cuts_t cuts_passed = EventSelect();
-        if ((cuts_passed & cuts_) == cuts_) {
+	//
+	// apply preselection cuts are always the same
+	//
 
-		// construct the isolation variable
-                float ecalIso = cms2.els_ecalIso()[0];
-                float hcalIso = cms2.els_hcalIso()[0];
-                float tkIso = cms2.els_tkIso()[0];
-                float isoSum = ecalIso + hcalIso + tkIso;
-
-		// require egamma electron
-		if (! cms2.els_type()[0] & (1<<ISECALDRIVEN)) return;
-		int det = getSubdet(0);
-
-                h1_weff_pt_[det]->Fill(cms2.els_p4()[0].Pt(), weight);
-
-		// 20 GeV Pt cut
-		if (cms2.els_p4()[0].Pt() < 20.0) return;
-
-             	h1_weff_iso_[det]->Fill(isoSum / cms2.els_p4()[0].Pt(), weight);
-                h1_weff_tcmet_[det]->Fill(cms2.evt_tcmet(), weight);
-
-		float leadingJPT = 0.0;
-		int leadingJPTIndex = 0;
-		for (size_t j = 0; j < cms2.jpts_p4().size(); ++j)
-		{
-         	 	if ( TMath::Abs(cms2.jpts_p4()[j].eta()) > 2.5 ) continue;
-        	  	if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.els_p4()[0], cms2.jpts_p4()[j])) < 0.4) continue;
-			if (cms2.jpts_p4()[j].Et() > leadingJPT) {
-				leadingJPT = cms2.jpts_p4()[j].Et();
-				leadingJPTIndex = j;
-			}
-		}
-
-		h1_weff_jptpt_[det]->Fill(leadingJPT, weight);
-
-		// isolation cut
-                if (isoSum / cms2.els_p4()[0].Pt() < 0.15) {
-			h1_weff_tcmet_after_iso15_[det]->Fill(cms2.evt_tcmet(), weight);
-	                h1_weff_jptpt_after_iso15_[det]->Fill(leadingJPT, weight);
-
-			// if there is a JPT then plot dPhi with electron
-			if (leadingJPT > 0 && cms2.evt_tcmet() > 30.0) {
-				h1_weff_jptptphi_after_iso15_[det]->Fill(180.0 * acos(cos(cms2.els_p4()[0].Phi() 
-									- cms2.jpts_p4()[leadingJPTIndex].Phi())) / 3.14159265358979312, weight);
-			}
-
-			if (leadingJPT < 25.0) {
-				h1_weff_tcmet_after_iso15_jpt25_[det]->Fill(cms2.evt_tcmet(), weight);
-				if (cms2.evt_tcmet() > 30.0) wEfficiencyEvents_iso15_jpt25_[det] += weight;
-			}
-			if (cms2.evt_tcmet() > 30.0)
-				wEfficiencyEvents_iso15_[det] += weight;
-		}
-
-                if (isoSum / cms2.els_p4()[0].Pt() < 0.10) {
-
-                        h1_weff_tcmet_after_iso10_[det]->Fill(cms2.evt_tcmet(), weight);
-                        h1_weff_jptpt_after_iso10_[det]->Fill(leadingJPT, weight);
-
-                        // if there is a JPT then plot dPhi with electron
-                        if (leadingJPT > 0 && cms2.evt_tcmet() > 30.0) {
-                                h1_weff_jptptphi_after_iso10_[det]->Fill(180.0 * acos(cos(cms2.els_p4()[0].Phi()
-                                                                        - cms2.jpts_p4()[leadingJPTIndex].Phi())) / 3.14159265358979312, weight);
-                        }
+	// one egamma electron
+	if (cms2.evt_nels() != 1) return;
+	// 
+	// electron is egamma type
+	if (! cms2.els_type()[0] & (1<<ISECALDRIVEN)) return;
+	//
+	// get the subdestector (EE or EB)
+        int det = getSubdet(0);
+        //
+        // 20 GeV Pt cut
+        h1_weff_pt_[det]->Fill(cms2.els_p4()[0].Pt(), weight);
+        if (cms2.els_p4()[0].Pt() < 20.0) return;
 
 
-                        if (leadingJPT < 25.0) {
-                                h1_weff_tcmet_after_iso10_jpt25_[det]->Fill(cms2.evt_tcmet(), weight);
-				if (cms2.evt_tcmet() > 30.0) wEfficiencyEvents_iso10_jpt25_[det] += weight;
-                        }
-			// COUNTEVENTS
-			//
-			if (cms2.evt_tcmet() > 30.0)
-				wEfficiencyEvents_iso10_[det] += weight;	
-			//
-			//
-		}
+	//
+     	// construct variables that are not already in ntuple
+	//
 
-		// jet veto
-		//if (leadingJPT > 30.0) return;
-		//h1_weff_tcmet_after_iso_jetveto_[det]->Fill(cms2.evt_tcmet(), weight);
+	// isolation
+       	const float &ecalIso = cms2.els_ecalIso()[0];
+      	const float &hcalIso = cms2.els_hcalIso()[0];
+      	const float &tkIso = cms2.els_tkIso()[0];
+     	float isoSum = ecalIso + hcalIso + tkIso;
 
-	}
+        // leading pT JPT jet
+        // that is dR > 0.4 from the nearest electron
+        float leadingJPT = 0.0;
+        int leadingJPTIndex = 0;
+        for (size_t j = 0; j < cms2.jpts_p4().size(); ++j)
+        {
+        	if ( TMath::Abs(cms2.jpts_p4()[j].eta()) > 2.5 ) continue;
+                if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.els_p4()[0], cms2.jpts_p4()[j])) < 0.4) continue;
+                if (cms2.jpts_p4()[j].Et() > leadingJPT) {
+                	leadingJPT = cms2.jpts_p4()[j].Et();
+                        leadingJPTIndex = j;
+                }
+      	}
+
+	// distance in degrees of the leading JPT from the electron
+	float leadingJPTAngle = 0.0;
+	if (leadingJPT > 0.0)
+		leadingJPTAngle = (180.0 * acos(cos(cms2.els_p4()[0].Phi()
+                	- cms2.jpts_p4()[leadingJPTIndex].Phi())) / 3.14159265358979312);
+
+	// 
+	// set up the selections to apply
+	//
+
+	float isolationThreshold = 0;
+	if ((cuts_ & (CUT_BIT(ELE_ISO_15))) == (CUT_BIT(ELE_ISO_15))) isolationThreshold = 0.15;
+        if ((cuts_ & (CUT_BIT(ELE_ISO_10))) == (CUT_BIT(ELE_ISO_10))) isolationThreshold = 0.10;
+	float jptThreshold = 0;
+        if ((cuts_ & (CUT_BIT(EVT_JPT_25))) == (CUT_BIT(EVT_JPT_25))) jptThreshold = 25.0;
+	float tcMetThreshold = 0;
+        if ((cuts_ & (CUT_BIT(EVT_TCMET_30))) == (CUT_BIT(EVT_TCMET_30))) tcMetThreshold = 25.0;
+
+        //
+        // plots of key quantities before selection applied
+        h1_weff_iso_[det]->Fill(isoSum / cms2.els_p4()[0].Pt(), weight);
+        h1_weff_tcmet_[det]->Fill(cms2.evt_tcmet(), weight);
+        h1_weff_jptpt_[det]->Fill(leadingJPT, weight);
+
+	//
+	// apply selections
+	//
+
+	// isolation cut
+        if (isoSum / cms2.els_p4()[0].Pt() > isolationThreshold) return;
+	//
+
+	// plots of tcmet and leading jpt pt
+	h1_weff_tcmet_after_iso_[det]->Fill(cms2.evt_tcmet(), weight);
+       	h1_weff_jptpt_after_iso_[det]->Fill(leadingJPT, weight);
+	// angle between leading JPT and electron
+	h1_weff_jptptphi_after_iso_[det]->Fill(leadingJPTAngle, weight); 
+
+	// leading JPT cut
+	if (leadingJPT > jptThreshold) return;
+	//
+
+	// plot of tcmet after isolation and jpt veto applied
+	h1_weff_tcmet_after_iso_jpt_[det]->Fill(cms2.evt_tcmet(), weight);
+	// plot of angle between leading JPT and electron
+        h1_weff_jptptphi_after_iso_jpt_[det]->Fill(leadingJPTAngle, weight);
+
+	// tcMet cut
+	if (cms2.evt_tcmet() < tcMetThreshold) return;
+	//
+
+        // plot of angle between leading JPT and electron
+        h1_weff_jptptphi_after_iso_jpt_tcmet_[det]->Fill(leadingJPTAngle, weight);
+
+	// add to count of events passing all cuts
+	wEvents_passing_[det] += weight;
+        wEvents_passing_w2_[det] += weight;
+        wEvents_count_[det] ++;
+        wEvents_passing_[2] += weight;
+        wEvents_passing_w2_[2] += weight;
+        wEvents_count_[2] ++;
 
 }
 
@@ -267,14 +281,15 @@ void Looper::FillEventHistos ()
 	// do the W efficiency studies
 	wEfficiency();
 
-
 	// get the event weight (for 1 pb^{-1})
 	float weight = cms2.evt_scale1fb() * sample_.kFactor;
 	weight /= 1000;	
 
 	// did the event pass the baseline cuts
-	cuts_t cuts_passed = EventSelect();
-	if ((cuts_passed & cuts_) == cuts_) {
+	//cuts_t cuts_passed = EventSelect();
+	//if ((cuts_passed & cuts_) == cuts_) {
+	if (cms2.evt_nels() == 1) {
+
 
 		for (size_t i = 0; i < cms2.evt_nels(); ++i)
 		{
@@ -361,8 +376,8 @@ void Looper::FillEventHistos ()
                                 em_eopInLT30_[det]->Fill(cms2.els_eOverPIn()[i],
                                                 cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
 
-				em_tasElectronV1_[det]->Fill(tasElectron_v1(i),
-                                                cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+				//em_tasElectronV1_[det]->Fill(tasElectron_v1(i),
+                                //                cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
                         
 
 			}
@@ -403,21 +418,22 @@ void Looper::FillQuadlepHistos (int i_hyp)
 
 void Looper::End ()
 {
-	std::cout << sample_.name << " iso 0.10, jpt25 " << std::endl;
-	std::cout << "| EB | EE |" << std::endl;
-	std::cout << "| " << wEfficiencyEvents_iso10_jpt25_[0] << " | " << wEfficiencyEvents_iso10_jpt25_[1] << " | " << std::endl;
 
-	std::cout << sample_.name << " iso 0.15, jpt25 " << std::endl;
-        std::cout << "| " << wEfficiencyEvents_iso15_jpt25_[0] << " | " << wEfficiencyEvents_iso15_jpt25_[1] << " | " << std::endl;
+        int ret = fprintf(logfile_,
+                        "Sample %10s: Total candidate count (EB EE ALL): %8u %8u %8u"
+                        " Total weight %10.1f +- %10.1f %10.1f +- %10.1f %10.1f +- %10.1f \n",
+                        sample_.name.c_str(),
+                        CandsCountW(0), CandsCountW(1), CandsCountW(2),
+                        CandsPassingW(0)  , RMSW(0),
+                        CandsPassingW(1) , RMSW(1),
+                        CandsPassingW(2) , RMSW(2));
 
-        std::cout << sample_.name << " iso 0.10 " << std::endl;
-        std::cout << "| " << wEfficiencyEvents_iso10_[0] << " | " << wEfficiencyEvents_iso10_[1] << " | " << std::endl;
-
-        std::cout << sample_.name << " iso 0.15 " << std::endl;
-        std::cout << "| " << wEfficiencyEvents_iso15_[0] << " | " << wEfficiencyEvents_iso15_[1] << " | " << std::endl;
+        if (ret < 0)
+                perror("HybridLooper: writing w study to log file");
 
 
-	int ret = fprintf(logfile_, 
+
+	ret = fprintf(logfile_, 
 			"Sample %10s: Total candidate count (ee em mm all): %8u %8u %8u %8u."
 			" Total weight %10.1f +- %10.1f %10.1f +- %10.1f %10.1f +- %10.1f %10.1f +- %10.1f\n",   
 			sample_.name.c_str(),

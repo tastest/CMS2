@@ -46,6 +46,8 @@ void printTable (const Looper **hists, int n, const char *fname,
      for (int j = 0; j < n; ++j) {
 	  fprintf(f, "|  *%30s*  ", hists[j]->SampleName().c_str());
      }
+
+/*
      fprintf(f, "|%30s  |\n", "total");
      for (int i = 0; i < 4; ++i) {
 	  fprintf(f, "|%10s  ", dilepton_hypo_names[i]);
@@ -61,6 +63,27 @@ void printTable (const Looper **hists, int n, const char *fname,
 	  }
 	  fprintf(f, "|  %10.1f &plusmn; %10.1f|\n", cands, sqrt(w2));
      }
+*/
+
+     const char detectorNames[][128] = {"EB", "EE", "ALL"};
+
+     fprintf(f, "|%30s  |\n", "total");
+     for (int i = 0; i < 3; ++i) {
+          fprintf(f, "|%10s  ", detectorNames[i]);
+          double cands = 0;
+          double w2 = 0;
+          for (int j = 0; j < n; ++j) {
+               fprintf(f, "|  %10.1f &plusmn; %10.1f", 
+                       hists[j]->CandsPassingW(i),
+                       hists[j]->RMSW(i));
+               cands += hists[j]->CandsPassingW(i);
+               w2 += hists[j]->RMSW(i) * 
+                    hists[j]->RMSW(i);
+          }
+          fprintf(f, "|  %10.1f &plusmn; %10.1f|\n", cands, sqrt(w2));
+     }
+
+
      if (f != stdin) 
 	  fclose(f);
 }
@@ -71,6 +94,7 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
      const string tbl = name + ".tbl";
      const string log = name + ".log";
 
+/*
      Looper looper_validation(fValidation(), cuts, log.c_str());
         if (which_ones & (1 << LOOP_VALIDATION)) looper_validation.Loop();
 
@@ -85,6 +109,7 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 
      Looper looper_ZZ_7TeV(fZZ_7TeV(), cuts, log.c_str());
         if (which_ones & (1 << LOOP_ZZ_7TeV)) looper_ZZ_7TeV.Loop();
+*/
 
      Looper looper_wenu_7TeV(fWenu_7TeV(), cuts, log.c_str());
         if (which_ones & (1 << LOOP_WENU_7TeV)) looper_wenu_7TeV.Loop();
@@ -97,6 +122,7 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 
 
 	// 2_2_1
+/*
      Looper looper_qcd30(fQCDpt30(), cuts, log.c_str());
         if (which_ones & (1 << LOOP_QCD30)) looper_qcd30.Loop();
      Looper looper_qcd80(fQCDpt80(), cuts, log.c_str());
@@ -106,28 +132,27 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 
      Looper looper_wejetsAlpgen(fWejetsAlpgenSingle(), cuts, log.c_str());
         if (which_ones & (1 << LOOP_WEJET_ALP)) looper_wejetsAlpgen.Loop();
-
+*/
 
      // when all the loopers are done, we save the histograms to file
      saveHist(hist.c_str());
 
      // then we collect them all and print a table
      const Looper *loopers[] = { 
-	&looper_validation,
-	  &looper_wenu,
-	&looper_em30_80,
-	&looper_bc30_80,
-	&looper_qcd30,
-	&looper_qcd80,
-	&looper_wjet_alp,
-
-	&looper_ZZ_7TeV,
+//	&looper_validation,
+//	  &looper_wenu,
+//	&looper_em30_80,
+//	&looper_bc30_80,
+//	&looper_qcd30,
+//	&looper_qcd80,
+//	&looper_wjet_alp,
+//	&looper_ZZ_7TeV,
 
 	&looper_wenu_7TeV,
 	&looper_qcd30_7TeV,
 	&looper_photonjet_7TeV,
 
-	&looper_wejetsAlpgen
+//	&looper_wejetsAlpgen
 
      };
 
@@ -138,7 +163,9 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 // default yield table
 int Results ()
 {
-     return run<Looper>(event_cuts, "Results", 1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
-//LOOP_QCD30 | 1 << LOOP_QCD80 | 1 << LOOP_WJET_ALP);
+     return run<Looper>( (CUT_BIT(ELE_ISO_10) | CUT_BIT(EVT_JPT_25) | CUT_BIT(EVT_TCMET_30)),
+	"Results_iso10_jpt25_tcmet30", 
+1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
+
 }
 
