@@ -120,7 +120,9 @@ protected:
 
 	//EffMulti	*em_tasElectronV1_[2];
 
+	//
 	// W effciency studies related
+	//
         TH1F *h1_weff_pt_[2];
 	TH1F *h1_weff_iso_[2];
 	TH1F *h1_weff_tcmet_[2];
@@ -130,12 +132,13 @@ protected:
 	TH1F *h1_weff_leadjptphi_after_iso_[2];
         TH1F *h1_weff_jptphimax_after_iso_[2];
 
-
         TH1F *h1_weff_tcmet_after_iso_jpt_[2];
         TH1F *h1_weff_leadjptphi_after_iso_jpt_[2];
         TH1F *h1_weff_leadjptphi_after_iso_jpt_tcmet_[2];
 
-
+	// the actual distributions
+	TH1F *h1_weffs_sigmaIEtaIEta_[2];
+        TH1F *h1_weffbg_sigmaIEtaIEta_[2];
 
         EffMulti *em_dEtaIn_[2];
         EffMulti *em_dPhiIn_[2];

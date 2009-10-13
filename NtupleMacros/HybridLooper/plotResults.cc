@@ -292,8 +292,8 @@ void plotAllResultsW()
         plotResultsW("ee", "iso10_jpt25_tcmet30");
         plotResultsW("eb", "iso10_jpt25_tcmet30");
 
-        plotResultsW("ee", "iso10_jpt25_tcmet20");
-        plotResultsW("eb", "iso10_jpt25_tcmet20");
+        //plotResultsW("ee", "iso10_jpt25_tcmet20");
+        //plotResultsW("eb", "iso10_jpt25_tcmet20");
 
 
 }
@@ -330,6 +330,10 @@ void plotResultsW(TString det, TString fileStamp)
         plotEff(h1, "weff_leadjptphi_after_iso_jpt_tcmet", fileStamp, det, true, 2);
 
         plotEff(h1, "weff_jptphimax_after_iso", fileStamp, det, true, 2);
+
+	// distributions selected
+	plotStack(h1, "weffs_sigmaIEtaIEta", "sigmaIEtaIEta", fileStamp, det);
+        plotStack(h1, "weffbg_sigmaIEtaIEta", "sigmaIEtaIEta", fileStamp, det);
 
 }
 
