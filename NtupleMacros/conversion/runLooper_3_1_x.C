@@ -20,10 +20,10 @@ TCut ww_baseline_1 = ww_baseline_0 && d0corr250;
 //TCut ww_baseline_2 = ww_baseline_1 && !conversion_1;
 TCut ww_baseline_2 = ww_baseline_1 ;
 
-TCut susy_baseline_0 = susy_eta&& pt20 && tightid && notmuon && susy_iso;
+TCut susy_baseline_0 = susy_eta&& pt20 && tightid && notmuon;
 TCut susy_baseline_1 = susy_baseline_0 && d0corr200;
 //TCut susy_baseline_2 = susy_baseline_1 && !conversion_1;
-TCut susy_baseline_2 = susy_baseline_1 ;  
+TCut susy_baseline_2 = susy_baseline_0 ;  
 
 // total electrons = 1.33213e+06
 // total electrons in the forward region = 437081
