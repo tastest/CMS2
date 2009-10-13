@@ -12,7 +12,9 @@ enum {
 	EVT_TCMET_30,
 	EVT_TCMET_20,
 	EVT_JPT_25,
-
+	EVT_JPT_PHIMAX_100,
+	EVT_JPT_PHIMAX_110,
+	ELE_NOCONV,
 };
 
 // baseline cuts

@@ -131,9 +131,15 @@ protected:
 	TH1F *h1_weff_jptpt_after_iso_[2];
 	TH1F *h1_weff_leadjptphi_after_iso_[2];
         TH1F *h1_weff_jptphimax_after_iso_[2];
+        TH1F *h1_weff_d0corr_after_iso_[2];
 
         TH1F *h1_weff_tcmet_after_iso_jpt_[2];
+        TH1F *h1_weff_tcmet_after_iso_jpt_conv_[2];
+
+
         TH1F *h1_weff_leadjptphi_after_iso_jpt_[2];
+        TH1F *h1_weff_d0corr_after_iso_jpt_[2];
+
         TH1F *h1_weff_leadjptphi_after_iso_jpt_tcmet_[2];
 
 	// the actual distributions

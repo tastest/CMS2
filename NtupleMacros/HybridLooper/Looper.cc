@@ -73,6 +73,8 @@ void Looper::BookHistos ()
 	FormatHist(h1_weff_jptpt_after_iso_, "weff_jptpt_after_iso", 100, 0, 100);
 	FormatHist(h1_weff_leadjptphi_after_iso_, "weff_leadjptphi_after_iso", 100, 0, 180);
 	FormatHist(h1_weff_jptphimax_after_iso_, "weff_jptphimax_after_iso", 100, 0, 180);
+        FormatHist(h1_weff_d0corr_after_iso_, "weff_d0corr_after_iso", 100, 0, 0.2);
+        FormatHist(h1_weff_d0corr_after_iso_jpt_, "weff_d0corr_after_iso_jpt", 100, 0, 0.2);
 
 	FormatHist(h1_weff_tcmet_after_iso_jpt_, "weff_tcmet_after_iso_jpt", 100, 0, 100);
 	FormatHist(h1_weff_leadjptphi_after_iso_jpt_, "weff_leadjptphi_after_iso_jpt", 100, 0, 180);
@@ -80,6 +82,9 @@ void Looper::BookHistos ()
 
 	FormatHist(h1_weffs_sigmaIEtaIEta_, "weffs_sigmaIEtaIEta", 100, 0.0, 0.06);
 	FormatHist(h1_weffbg_sigmaIEtaIEta_, "weffbg_sigmaIEtaIEta", 100, 0.0, 0.06);
+
+        FormatHist(h1_weff_tcmet_after_iso_jpt_conv_, "weff_tcmet_after_iso_jpt_conv", 100, 0, 100);
+
 
 	// Ismlation related
 	//
@@ -244,7 +249,11 @@ void Looper::wEfficiency()
 	float tcMetThreshold = 0;
 	if ((cuts_ & (CUT_BIT(EVT_TCMET_30))) == (CUT_BIT(EVT_TCMET_30))) tcMetThreshold = 30.0;
 	if ((cuts_ & (CUT_BIT(EVT_TCMET_20))) == (CUT_BIT(EVT_TCMET_20))) tcMetThreshold = 20.0;
-
+	float jptPhiThreshold = 180.0;
+        if ((cuts_ & (CUT_BIT(EVT_JPT_PHIMAX_100))) == (CUT_BIT(EVT_JPT_PHIMAX_100))) jptPhiThreshold = 100.0;
+        if ((cuts_ & (CUT_BIT(EVT_JPT_PHIMAX_100))) == (CUT_BIT(EVT_JPT_PHIMAX_100))) jptPhiThreshold = 110.0;
+	bool rejectConversions = false;
+	if ((cuts_ & (CUT_BIT(ELE_NOCONV))) == (CUT_BIT(ELE_NOCONV))) rejectConversions = true;
 
 	//
 	// plots of key quantities before selection applied
@@ -267,15 +276,30 @@ void Looper::wEfficiency()
 	h1_weff_leadjptphi_after_iso_[det]->Fill(leadingJPTAngle, weight); 
 	// angle between electron and JPT that is most back to back to it
 	h1_weff_jptphimax_after_iso_[det]->Fill(mostBackToBackJPTAngle, weight);
+	// d0 corrected
+	h1_weff_d0corr_after_iso_[det]->Fill(fabs(cms2.els_d0corr()[0]), weight);
 
 	// leading JPT cut
 	if (leadingJPT > jptThreshold) return;
 	//
 
+        // JPT phimax cut
+        if (mostBackToBackJPTAngle > jptPhiThreshold) return;
+        //
+
+
 	// plot of tcmet after isolation and jpt veto applied
 	h1_weff_tcmet_after_iso_jpt_[det]->Fill(cms2.evt_tcmet(), weight);
 	// plot of angle between leading JPT and electron
 	h1_weff_leadjptphi_after_iso_jpt_[det]->Fill(leadingJPTAngle, weight);
+        // d0 corrected
+        h1_weff_d0corr_after_iso_jpt_[det]->Fill(fabs(cms2.els_d0corr()[0]), weight);
+
+	// conversion rejection cut
+	if (rejectConversions && isconversionElectron09(0)) return;
+	//
+
+	h1_weff_tcmet_after_iso_jpt_conv_[det]->Fill(cms2.evt_tcmet(), weight);
 
 	// BACKGROUND
 	// plots of electron ID quantities

@@ -225,6 +225,8 @@ void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString sav
         Utilities::saveCanvas(c1, "results/" + saveName  + "_lin_" + name + "_" + det);
 
 	c1->SetLogy();
+	st->SetMinimum(1.0);
+        st->Draw();	
         Utilities::saveCanvas(c1, "results/" + saveName  + "_log_" + name + "_" + det);
 
 	delete c1;
@@ -292,10 +294,8 @@ void plotAllResultsW()
         plotResultsW("ee", "iso10_jpt25_tcmet30");
         plotResultsW("eb", "iso10_jpt25_tcmet30");
 
-        //plotResultsW("ee", "iso10_jpt25_tcmet20");
-        //plotResultsW("eb", "iso10_jpt25_tcmet20");
-
-
+        plotResultsW("ee", "iso10_jptphimax110_tcmet30");
+        plotResultsW("eb", "iso10_jptphimax110_tcmet30");
 }
 
 void plotResultsW(TString det, TString fileStamp)
@@ -317,12 +317,18 @@ void plotResultsW(TString det, TString fileStamp)
         plotStack(h1, "weff_jptpt", "Lead JPT p_{T} (GeV)", fileStamp, det, 2);
         plotStack(h1, "weff_tcmet_after_iso", "tcMET (GeV)", fileStamp, det, 2);
         plotStack(h1, "weff_jptpt_after_iso", "Lead JPT p_{T} (GeV)", fileStamp, det, 2);
+
+        plotStack(h1, "weff_d0corr_after_iso", "d0corr", fileStamp, det, 2);
+        plotStack(h1, "weff_d0corr_after_iso_jpt", "d0corr", fileStamp, det, 2);
+
+
         plotStack(h1, "weff_leadjptphi_after_iso", "#Delta#phi{Lead JPT, electron}  (Degrees)", fileStamp, det, 2);
         plotStack(h1, "weff_tcmet_after_iso_jpt", "tcMET (GeV)", fileStamp, det, 2);
         plotStack(h1, "weff_leadjptphi_after_iso_jpt", "#Delta#phi{Lead JPT, electron}  (Degrees)", fileStamp, det, 2);
         plotStack(h1, "weff_leadjptphi_after_iso_jpt_tcmet", "#Delta#phi{Lead JPT, electron}  (Degrees)", fileStamp, det, 2);
 
         plotStack(h1, "weff_jptphimax_after_iso", "#Delta#phi_{Max}{JPT, electron}  (Degrees)", fileStamp, det, 2);
+        plotStack(h1, "weff_tcmet_after_iso_jpt_conv", "tcMET (GeV)", fileStamp, det, 2);
 
         plotEff(h1, "weff_leadjptphi_after_iso", fileStamp, det, true, 2);
         plotEff(h1, "weff_jptpt_after_iso", fileStamp, det, true, 2);
