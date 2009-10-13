@@ -10,6 +10,7 @@ enum {
 	ELE_ISO_15,
 	ELE_ISO_10,
 	EVT_TCMET_30,
+	EVT_TCMET_20,
 	EVT_JPT_25,
 
 };

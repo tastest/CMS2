@@ -71,14 +71,12 @@ void Looper::BookHistos ()
 	FormatHist(h1_weff_jptpt_, "weff_jptpt", 100, 0, 100);
 	FormatHist(h1_weff_tcmet_after_iso_, "weff_tcmet_after_iso", 100, 0, 100);
         FormatHist(h1_weff_jptpt_after_iso_, "weff_jptpt_after_iso", 100, 0, 100);
-        FormatHist(h1_weff_jptptphi_after_iso_, "weff_jptptphi_after_iso", 100, 0, 180);
+        FormatHist(h1_weff_leadjptphi_after_iso_, "weff_leadjptphi_after_iso", 100, 0, 180);
+        FormatHist(h1_weff_jptphimax_after_iso_, "weff_jptphimax_after_iso", 100, 0, 180);
 
         FormatHist(h1_weff_tcmet_after_iso_jpt_, "weff_tcmet_after_iso_jpt", 100, 0, 100);
-        FormatHist(h1_weff_jptptphi_after_iso_jpt_, "weff_jptptphi_after_iso_jpt", 100, 0, 180);
-
-        FormatHist(h1_weff_jptptphi_after_iso_jpt_tcmet_, "weff_jptptphi_after_iso_jpt_tcmet", 100, 0, 180);
-
-
+        FormatHist(h1_weff_leadjptphi_after_iso_jpt_, "weff_leadjptphi_after_iso_jpt", 100, 0, 180);
+        FormatHist(h1_weff_leadjptphi_after_iso_jpt_tcmet_, "weff_leadjptphi_after_iso_jpt_tcmet", 100, 0, 180);
 
 	// Ismlation related
 	//
@@ -200,7 +198,9 @@ void Looper::wEfficiency()
         // leading pT JPT jet
         // that is dR > 0.4 from the nearest electron
         float leadingJPT = 0.0;
+	float mostBackToBackJPT = 0.0;
         int leadingJPTIndex = 0;
+        int mostBackToBackJPTIndex = 0;
         for (size_t j = 0; j < cms2.jpts_p4().size(); ++j)
         {
         	if ( TMath::Abs(cms2.jpts_p4()[j].eta()) > 2.5 ) continue;
@@ -209,13 +209,25 @@ void Looper::wEfficiency()
                 	leadingJPT = cms2.jpts_p4()[j].Et();
                         leadingJPTIndex = j;
                 }
+		float dPhi = acos(cos(cms2.els_p4()[0].Phi() - cms2.jpts_p4()[j].Phi()));
+		if (dPhi > mostBackToBackJPT) {
+			mostBackToBackJPT = dPhi;
+			mostBackToBackJPTIndex = j;
+		}
+
       	}
 
 	// distance in degrees of the leading JPT from the electron
 	float leadingJPTAngle = 0.0;
-	if (leadingJPT > 0.0)
+	float mostBackToBackJPTAngle = 0.0;
+	if (leadingJPT > 0.0) {
+		// angle between the electron and the highest pT JPT
 		leadingJPTAngle = (180.0 * acos(cos(cms2.els_p4()[0].Phi()
                 	- cms2.jpts_p4()[leadingJPTIndex].Phi())) / 3.14159265358979312);
+		// angle between the electron and the JPT that is most back to back to it
+		mostBackToBackJPTAngle = (180.0 * acos(cos(cms2.els_p4()[0].Phi()
+                        - cms2.jpts_p4()[mostBackToBackJPTIndex].Phi())) / 3.14159265358979312);	
+	}
 
 	// 
 	// set up the selections to apply
@@ -227,7 +239,9 @@ void Looper::wEfficiency()
 	float jptThreshold = 0;
         if ((cuts_ & (CUT_BIT(EVT_JPT_25))) == (CUT_BIT(EVT_JPT_25))) jptThreshold = 25.0;
 	float tcMetThreshold = 0;
-        if ((cuts_ & (CUT_BIT(EVT_TCMET_30))) == (CUT_BIT(EVT_TCMET_30))) tcMetThreshold = 25.0;
+        if ((cuts_ & (CUT_BIT(EVT_TCMET_30))) == (CUT_BIT(EVT_TCMET_30))) tcMetThreshold = 30.0;
+        if ((cuts_ & (CUT_BIT(EVT_TCMET_20))) == (CUT_BIT(EVT_TCMET_20))) tcMetThreshold = 20.0;
+
 
         //
         // plots of key quantities before selection applied
@@ -247,7 +261,9 @@ void Looper::wEfficiency()
 	h1_weff_tcmet_after_iso_[det]->Fill(cms2.evt_tcmet(), weight);
        	h1_weff_jptpt_after_iso_[det]->Fill(leadingJPT, weight);
 	// angle between leading JPT and electron
-	h1_weff_jptptphi_after_iso_[det]->Fill(leadingJPTAngle, weight); 
+	h1_weff_leadjptphi_after_iso_[det]->Fill(leadingJPTAngle, weight); 
+	// angle between electron and JPT that is most back to back to it
+        h1_weff_jptphimax_after_iso_[det]->Fill(mostBackToBackJPTAngle, weight);
 
 	// leading JPT cut
 	if (leadingJPT > jptThreshold) return;
@@ -256,14 +272,14 @@ void Looper::wEfficiency()
 	// plot of tcmet after isolation and jpt veto applied
 	h1_weff_tcmet_after_iso_jpt_[det]->Fill(cms2.evt_tcmet(), weight);
 	// plot of angle between leading JPT and electron
-        h1_weff_jptptphi_after_iso_jpt_[det]->Fill(leadingJPTAngle, weight);
+        h1_weff_leadjptphi_after_iso_jpt_[det]->Fill(leadingJPTAngle, weight);
 
 	// tcMet cut
 	if (cms2.evt_tcmet() < tcMetThreshold) return;
 	//
 
         // plot of angle between leading JPT and electron
-        h1_weff_jptptphi_after_iso_jpt_tcmet_[det]->Fill(leadingJPTAngle, weight);
+        h1_weff_leadjptphi_after_iso_jpt_tcmet_[det]->Fill(leadingJPTAngle, weight);
 
 	// add to count of events passing all cuts
 	wEvents_passing_[det] += weight;

@@ -161,10 +161,17 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 }
 
 // default yield table
-int Results ()
+int Results_tcmet30 ()
 {
      return run<Looper>( (CUT_BIT(ELE_ISO_10) | CUT_BIT(EVT_JPT_25) | CUT_BIT(EVT_TCMET_30)),
 	"Results_iso10_jpt25_tcmet30", 
+1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
+}
+
+int Results_tcmet20 ()
+{
+     return  run<Looper>( (CUT_BIT(ELE_ISO_10) | CUT_BIT(EVT_JPT_25) | CUT_BIT(EVT_TCMET_20)),
+        "Results_iso10_jpt25_tcmet20",
 1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
 
 }

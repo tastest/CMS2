@@ -209,7 +209,7 @@ void plotEffVar(HistogramUtilities &h1, TString name, TString saveName, Int_t re
 	//delete gr_eff;
 }
 
-void plotStack(HistogramUtilities &h1, TString name, TString saveName, TString det, int rebin, float cutValEB, float cutValEE)
+void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString saveName, TString det, int rebin, float cutValEB, float cutValEE)
 {
 
         THStack *st = h1.getStack(theSources, name, "", det, rebin);
@@ -217,7 +217,8 @@ void plotStack(HistogramUtilities &h1, TString name, TString saveName, TString d
 
         TCanvas *c1 = new TCanvas();
         c1->cd();
-        st->Draw(); 
+        st->Draw();
+	st->GetXaxis()->SetTitle(titleX); 
         lg_all->Draw();
 	if (det == "ee" && cutValEE != -1) getArrow(st, det, cutValEB, cutValEE)->Draw();
         if (det == "eb" && cutValEB != -1) getArrow(st, det, cutValEB, cutValEE)->Draw();
@@ -225,7 +226,6 @@ void plotStack(HistogramUtilities &h1, TString name, TString saveName, TString d
 
 	c1->SetLogy();
         Utilities::saveCanvas(c1, "results/" + saveName  + "_log_" + name + "_" + det);
-
 
 	delete c1;
 	delete st;
@@ -291,6 +291,11 @@ void plotAllResultsW()
 {
         plotResultsW("ee", "iso10_jpt25_tcmet30");
         plotResultsW("eb", "iso10_jpt25_tcmet30");
+
+        plotResultsW("ee", "iso10_jpt25_tcmet20");
+        plotResultsW("eb", "iso10_jpt25_tcmet20");
+
+
 }
 
 void plotResultsW(TString det, TString fileStamp)
@@ -305,21 +310,26 @@ void plotResultsW(TString det, TString fileStamp)
 
         // W studies related
         //
-        plotStack(h1, "weff_pt", fileStamp, det, 2);
-        plotStack(h1, "weff_iso", fileStamp, det, 2);
-        plotStack(h1, "weff_tcmet", fileStamp, det, 2);
-        plotStack(h1, "weff_jptpt", fileStamp, det, 2);
-        plotStack(h1, "weff_tcmet_after_iso", fileStamp, det, 2);
-        plotStack(h1, "weff_jptpt_after_iso", fileStamp, det, 2);
-        plotStack(h1, "weff_jptptphi_after_iso", fileStamp, det, 2);
-        plotStack(h1, "weff_tcmet_after_iso_jpt", fileStamp, det, 2);
-        plotStack(h1, "weff_jptptphi_after_iso_jpt", fileStamp, det, 2);
-        plotStack(h1, "weff_jptptphi_after_iso_jpt_tcmet", fileStamp, det, 2);
 
-        plotEff(h1, "weff_jptptphi_after_iso", fileStamp, det, true, 2);
+        plotStack(h1, "weff_pt", "p_{T} (GeV)", fileStamp, det, 2);
+        plotStack(h1, "weff_iso", "Isolation", fileStamp, det, 2);
+        plotStack(h1, "weff_tcmet", "tcMET (GeV)", fileStamp, det, 2);
+        plotStack(h1, "weff_jptpt", "Lead JPT p_{T} (GeV)", fileStamp, det, 2);
+        plotStack(h1, "weff_tcmet_after_iso", "tcMET (GeV)", fileStamp, det, 2);
+        plotStack(h1, "weff_jptpt_after_iso", "Lead JPT p_{T} (GeV)", fileStamp, det, 2);
+        plotStack(h1, "weff_leadjptphi_after_iso", "#Delta#phi{Lead JPT, electron}  (Degrees)", fileStamp, det, 2);
+        plotStack(h1, "weff_tcmet_after_iso_jpt", "tcMET (GeV)", fileStamp, det, 2);
+        plotStack(h1, "weff_leadjptphi_after_iso_jpt", "#Delta#phi{Lead JPT, electron}  (Degrees)", fileStamp, det, 2);
+        plotStack(h1, "weff_leadjptphi_after_iso_jpt_tcmet", "#Delta#phi{Lead JPT, electron}  (Degrees)", fileStamp, det, 2);
+
+        plotStack(h1, "weff_jptphimax_after_iso", "#Delta#phi_{Max}{JPT, electron}  (Degrees)", fileStamp, det, 2);
+
+        plotEff(h1, "weff_leadjptphi_after_iso", fileStamp, det, true, 2);
         plotEff(h1, "weff_jptpt_after_iso", fileStamp, det, true, 2);
-        plotEff(h1, "weff_jptptphi_after_iso_jpt", fileStamp, det, true, 2);
-        plotEff(h1, "weff_jptptphi_after_iso_jpt_tcmet", fileStamp, det, true, 2);
+        plotEff(h1, "weff_leadjptphi_after_iso_jpt", fileStamp, det, true, 2);
+        plotEff(h1, "weff_leadjptphi_after_iso_jpt_tcmet", fileStamp, det, true, 2);
+
+        plotEff(h1, "weff_jptphimax_after_iso", fileStamp, det, true, 2);
 
 }
 
