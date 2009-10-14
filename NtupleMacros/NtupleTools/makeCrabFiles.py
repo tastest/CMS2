@@ -35,7 +35,7 @@ def makeCrabConfig():
     outFile.write('user_remote_dir        = CMS_' + tag + '/' + outFileName + '\n')
     outFile.write('publish_data          = 0\n')
     outFile.write('publish_data_name     = CMS_' + tag + '\n')
-    outFile.write('dbs_url_for_publication =  http://ming.ucsd.edu:8080/DBS1/servlet/DBSServlet\n\n')
+    outFile.write('dbs_url_for_publication =  http://ming.ucsd.edu:8080/DBS2/servlet/DBSServlet\n\n')
     if ( mode == 'glite' ) :
         outFile.write('[GRID]\n')
         outFile.write('##Changing max tarball size to 20MB\n')
@@ -44,7 +44,7 @@ def makeCrabConfig():
         outFile.write('##run at. Comment/Uncomment at will\n')
         outFile.write('##UCSD \n')
         outFile.write('CE_white_list = osg-gw-4.t2.ucsd.edu\n')
-        outFile.write('SE_white_list = srm-3.t2.ucsd.edu\n')
+        outFile.write('SE_white_list = bsrm-1.t2.ucsd.edu\n')
         outFile.write('##WISC\n')
         outFile.write('#CE_white_list = cmsgrid02.hep.wisc.edu\n')
         outFile.write('#SE_white_list = cmssrm.hep.wisc.edu\n')
