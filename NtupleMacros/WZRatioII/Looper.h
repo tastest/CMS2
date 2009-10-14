@@ -38,8 +38,8 @@ protected:
 
   void FormatHist(TH1* hist);
 
-  bool GoodTMTestMuonWithoutIsolation(int index, int mode);
-
+  bool   GoodTMTestMuonWithoutIsolation(int index, int mode);
+  double transverseMass(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >  lep_p4);
 
 public:
   // these functions are called by the table-printing code
@@ -95,6 +95,12 @@ protected:
   TH1F	*h1_lep_HighptMet_[3];
   TH1F	*h1_lep_HighptRelIso_[3];
   TH1F	*h1_lep_HighptRelIsoPtLg20_[3];
+
+  TH1F	*h1_lep_HighptTMassWindow_[3];
+  TH1F	*h1_lep_HighptTMassWindowPtLg20_[3];
+  TH1F	*h1_lep_HighptTMassWindowPtLg20IdIso_[3];
+  TH1F	*h1_lep_HighptTMassWindowPtLg20IdIsoMet_[3];
+  TH1F  *h1_lep_HighptTMassWindowDaveCuts_[3];
 
   TH1F	*h1_lep_Lowpt_[3];
   TH1F	*h1_lep_LowptMet_[3];

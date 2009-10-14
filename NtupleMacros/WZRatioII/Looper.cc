@@ -67,6 +67,26 @@ void Looper::BookHistos ()
 											  "Highlep_RelIsoPtLg20", 120, -0.1, 1.1);
 	FormatHist(h1_lep_HighptRelIsoPtLg20_[i]);
 
+	h1_lep_HighptTMassWindow_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "Highlep_TMassWindow", hyp.c_str()), 
+										"Highlep_TMassWindow", 200, 0., 200.);
+	FormatHist(h1_lep_HighptTMassWindow_[i]);
+        
+	h1_lep_HighptTMassWindowPtLg20_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "Highlep_TMassWindowPtLg20", hyp.c_str()), 
+											  "Highlep_TMassWindowPtLg20",  200, 0., 200.);
+	FormatHist(h1_lep_HighptTMassWindowPtLg20_[i]);
+
+	h1_lep_HighptTMassWindowPtLg20IdIso_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "Highlep_TMassWindowPtLg20IdIso", hyp.c_str()), 
+											  "Highlep_TMassWindowPtLg20IdIso",  200, 0., 200.);
+	FormatHist(h1_lep_HighptTMassWindowPtLg20IdIso_[i]);
+
+	h1_lep_HighptTMassWindowPtLg20IdIsoMet_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "Highlep_TMassWindowPtLg20IdIsoMet", hyp.c_str()), 
+											  "Highlep_TMassWindowPtLg20IdIsoMet",  200, 0., 200.);
+	FormatHist(h1_lep_HighptTMassWindowPtLg20IdIsoMet_[i]);
+
+	h1_lep_HighptTMassWindowDaveCuts_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "Highlep_TMassWindowDaveCuts", hyp.c_str()), 
+											  "Highlep_TMassWindowDaveCuts",  200, 0., 200.);
+	FormatHist(h1_lep_HighptTMassWindowDaveCuts_[i]);
+
 	////
 	h1_lep_Lowpt_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "LowLep_pt", hyp.c_str()), 
 								 "LowLep_pt", 100, 0.0, 100.0);
@@ -498,10 +518,12 @@ cuts_t Looper::LepSelect(int lep_type, int i)
   }
 
   //transverse mass
-  double dphi = ROOT::Math::VectorUtil::DeltaPhi( LorentzVector( cms2.evt_tcmet()*cos(cms2.evt_tcmetPhi()),
-																 cms2.evt_tcmet()*sin(cms2.evt_tcmetPhi()),
-																 0, cms2.evt_tcmet())
-												  , lep_p4 );
+  double dphi = ROOT::Math::VectorUtil::DeltaPhi( 
+                                                 LorentzVector( cms2.evt_tcmet()*cos(cms2.evt_tcmetPhi()),
+                                                                cms2.evt_tcmet()*sin(cms2.evt_tcmetPhi()),
+                                                                0, cms2.evt_tcmet())
+                                                 , lep_p4 );
+
   double masst = sqrt( 2 * cms2.evt_tcmet() * lep_p4.Et() * ( 1 - cos(dphi) ) );
   
   //check yanjun's code:
@@ -547,10 +569,75 @@ void Looper::FillEventHistos ()
 
   // histogram indices are e, m, all (0, 1, 2)
   if(hiPtIdx != -1)  {
+    
+    double ibltmass = transverseMass(cms2.els_p4()[hiPtIdx]);
+    
+    // calculate the Dave angle:
+    // leading pT JPT jet
+    // that is dR > 0.4 from the nearest electron
+    float leadingJPT = 0.0;
+    float mostBackToBackJPT = 0.0;
+    int leadingJPTIndex = 0;
+    int mostBackToBackJPTIndex = 0;
+    for (size_t j = 0; j < cms2.jets_p4().size(); ++j)
+      {
+        if ( TMath::Abs(cms2.jets_p4()[j].eta()) > 2.5 ) continue;
+        if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.els_p4()[hiPtIdx], cms2.jets_p4()[j])) < 0.4) continue;
+        if (cms2.jets_p4()[j].Et() > leadingJPT) {
+          leadingJPT = cms2.jets_p4()[j].Et();
+          leadingJPTIndex = j;
+        }
+        float dPhi = acos(cos(cms2.els_p4()[hiPtIdx].Phi() - cms2.jets_p4()[j].Phi()));
+        if (dPhi > mostBackToBackJPT) {
+          mostBackToBackJPT = dPhi;
+          mostBackToBackJPTIndex = j;
+        }
+        
+      }
+    // distance in degrees of the leading JPT from the electron
+    float leadingJPTAngle = 0.0;
+    float mostBackToBackJPTAngle = 0.0;
+    if (leadingJPT > 0.0) {
+      // angle between the electron and the highest pT JPT
+      leadingJPTAngle = (180.0 * acos(cos(cms2.els_p4()[hiPtIdx].Phi()
+                                          - cms2.jets_p4()[leadingJPTIndex].Phi())) / 3.14159265358979312);
+      // angle between the electron and the JPT that is most back to back to it
+      mostBackToBackJPTAngle = (180.0 * acos(cos(cms2.els_p4()[hiPtIdx].Phi()
+                                                 - cms2.jets_p4()[mostBackToBackJPTIndex].Phi())) / 3.14159265358979312);
+    }
+
     h1_lep_Highpt_[0]                                                    ->Fill(cms2.els_p4()[hiPtIdx].pt(), weight);
     h1_lep_HighptMet_[0]                                                 ->Fill(cms2.evt_tcmet(), weight);
     h1_lep_HighptRelIso_[0]                                              ->Fill(inv_el_relsusy_iso(hiPtIdx, true), weight);
     if(cms2.els_p4()[hiPtIdx].pt() > 20. ) h1_lep_HighptRelIsoPtLg20_[0] ->Fill(inv_el_relsusy_iso(hiPtIdx, true), weight);
+    h1_lep_HighptTMassWindow_[0]                                         ->Fill(ibltmass, weight);
+    if( cms2.els_p4()[hiPtIdx].pt() > 20. && 
+        ibltmass > 40. && 
+        ibltmass < 100. 
+        ) {
+      h1_lep_HighptTMassWindowPtLg20_[0] ->Fill(ibltmass, weight);
+    }
+    if( cms2.els_p4()[hiPtIdx].pt() > 20. && 
+        ibltmass > 40. && 
+        ibltmass < 100. &&
+        inv_el_relsusy_iso(hiPtIdx, true) < 0.1 &&
+        cms2.els_egamma_tightId()[hiPtIdx] 
+        ) {
+      h1_lep_HighptTMassWindowPtLg20IdIso_[0] ->Fill(ibltmass, weight);
+      // on top of this apply tcMET cut at 20 GeV 
+      // - recall: Z will still be in these plots - they 
+      // should not appear once Z and W events are properly separated.:
+      if(cms2.evt_tcmet() > 20.) h1_lep_HighptTMassWindowPtLg20IdIsoMet_[0] ->Fill(ibltmass, weight);
+    }
+
+    if( cms2.els_p4().size() == 1 &&
+        cms2.els_p4()[hiPtIdx].pt() > 20. && 
+        inv_el_relsusy_iso(hiPtIdx, true) < 0.1 &&
+        cms2.evt_tcmet() > 30. &&
+        mostBackToBackJPTAngle <= 110.
+        ) {
+      h1_lep_HighptTMassWindowDaveCuts_[0]->Fill(ibltmass, weight);
+    }
   }
 
  // have a look at all but the highest pt electron
@@ -711,11 +798,79 @@ void Looper::FillEventHistos ()
   
   // histogram indices are e, m, all (0, 1, 2)
   if(hiPtIdx != -1)  {
+    double ibltmass = transverseMass(cms2.mus_p4()[hiPtIdx]);
+
+    // calculate the Dave angle:
+    // leading pT JPT jet
+    // that is dR > 0.4 from the nearest electron
+    float leadingJPT = 0.0;
+    float mostBackToBackJPT = 0.0;
+    int leadingJPTIndex = 0;
+    int mostBackToBackJPTIndex = 0;
+    for (size_t j = 0; j < cms2.jets_p4().size(); ++j)
+      {
+        if ( TMath::Abs(cms2.jets_p4()[j].eta()) > 2.5 ) continue;
+        if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.mus_p4()[hiPtIdx], cms2.jets_p4()[j])) < 0.4) continue;
+        if (cms2.jets_p4()[j].Et() > leadingJPT) {
+          leadingJPT = cms2.jets_p4()[j].Et();
+          leadingJPTIndex = j;
+        }
+        float dPhi = acos(cos(cms2.mus_p4()[hiPtIdx].Phi() - cms2.jets_p4()[j].Phi()));
+        if (dPhi > mostBackToBackJPT) {
+          mostBackToBackJPT = dPhi;
+          mostBackToBackJPTIndex = j;
+        }
+        
+      }
+    // distance in degrees of the leading JPT from the electron
+    float leadingJPTAngle = 0.0;
+    float mostBackToBackJPTAngle = 0.0;
+    if (leadingJPT > 0.0) {
+      // angle between the electron and the highest pT JPT
+      leadingJPTAngle = (180.0 * acos(cos(cms2.mus_p4()[hiPtIdx].Phi()
+                                          - cms2.jets_p4()[leadingJPTIndex].Phi())) / 3.14159265358979312);
+      // angle between the electron and the JPT that is most back to back to it
+      mostBackToBackJPTAngle = (180.0 * acos(cos(cms2.mus_p4()[hiPtIdx].Phi()
+                                                 - cms2.jets_p4()[mostBackToBackJPTIndex].Phi())) / 3.14159265358979312);
+    }
+
+    //    std::cout<<"to check: backtoback angle is: "<<mostBackToBackJPTAngle<<std::endl;
+
     h1_lep_Highpt_[1]                                                    ->Fill(cms2.mus_p4()[hiPtIdx].pt(), weight);
     h1_lep_HighptMet_[1]                                                 ->Fill(cms2.evt_tcmet(), weight);
     h1_lep_HighptRelIso_[1]                                              ->Fill(inv_mu_relsusy_iso(hiPtIdx), weight);
     if(cms2.mus_p4()[hiPtIdx].pt() > 20. ) h1_lep_HighptRelIsoPtLg20_[1] ->Fill(inv_mu_relsusy_iso(hiPtIdx), weight);
+    h1_lep_HighptTMassWindow_[1]                                         ->Fill(ibltmass, weight);
+    if( cms2.mus_p4()[hiPtIdx].pt() > 20. && 
+        ibltmass > 40. && 
+        ibltmass < 100.
+        ) {
+      h1_lep_HighptTMassWindowPtLg20_[1] ->Fill(ibltmass, weight);
+    }
+    if( cms2.mus_p4()[hiPtIdx].pt() > 20. && 
+        ibltmass > 40. && 
+        ibltmass < 100. &&
+        inv_mu_relsusy_iso(hiPtIdx) < 0.1 &&
+        GoodSusyMuonWithoutIsolation(hiPtIdx) 
+        ) {
+      h1_lep_HighptTMassWindowPtLg20IdIso_[1] ->Fill(ibltmass, weight);
+      // on top of this apply tcMET cut at 20 GeV 
+      // - recall: Z will still be in these plots - they 
+      // should not appear once Z and W events are properly separated.:
+      if(cms2.evt_tcmet() > 20.) h1_lep_HighptTMassWindowPtLg20IdIsoMet_[1] ->Fill(ibltmass, weight);
+    }
+    if( cms2.mus_p4().size() == 1 &&
+        cms2.mus_p4()[hiPtIdx].pt() > 20. && 
+        inv_mu_relsusy_iso(hiPtIdx) < 0.1 &&
+        cms2.evt_tcmet() > 30.  &&
+        mostBackToBackJPTAngle <= 110.
+        ) {
+      // did not have the angle cut in the first run... 091014_1600
+      h1_lep_HighptTMassWindowDaveCuts_[1]->Fill(ibltmass, weight);
+    }
+
   }
+
 
   // have a look at all but the highest pt muoctron ;)
   uint nMuoGt10Lt20 = 0;
@@ -1322,6 +1477,18 @@ void Looper::ZEvent ()
 
 }
 
+double Looper::transverseMass(LorentzVector lep_p4) {
+  //transverse mass
+  double dphi = ROOT::Math::VectorUtil::DeltaPhi(
+                                                 LorentzVector( cms2.evt_tcmet()*cos(cms2.evt_tcmetPhi()),
+                                                                cms2.evt_tcmet()*sin(cms2.evt_tcmetPhi()),
+                                                                0, cms2.evt_tcmet())
+                                                 , lep_p4 );
+
+  double masst = sqrt( 2 * cms2.evt_tcmet() * lep_p4.Et() * ( 1 - cos(dphi) ) );
+
+  return masst;
+}
 
 bool Looper::GoodTMTestMuonWithoutIsolation(int index, int mode) {
   //modes:
