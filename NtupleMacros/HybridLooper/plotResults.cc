@@ -327,7 +327,12 @@ void plotResultsAN2009_098(TString det, TString fileStamp)
         plotStack(h1, "AN2009_098_tkIso", "Track Iso", fileStamp, det, 2, 2.2, 1.1);
         plotStack(h1, "AN2009_098_tcmet_after_selection", "tcMet (GeV)", fileStamp, det, 2, 30.0, 30.0);
 
-        plotEff(h1, "AN2009_098_eta1", fileStamp, det, true, 2); // slightly clearer view of eta distribution
+	// clearer versions of plots...
+        plotEff(h1, "AN2009_098_pt2", fileStamp, det, true, 2, true, 20.0, 20.0);
+        plotEff(h1, "AN2009_098_eta1", fileStamp, det, true, 2); 
+        plotEff(h1, "AN2009_098_ecalIso", fileStamp, det, true, 2, true, 4.2, 3.4);
+        plotEff(h1, "AN2009_098_hcalIso", fileStamp, det, true, 2, true, 2.0, 1.3);
+        plotEff(h1, "AN2009_098_tkIso", fileStamp, det, true, 2, true, 2.2, 1.1);
 
 
 }
