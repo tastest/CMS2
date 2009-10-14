@@ -65,6 +65,10 @@ protected:
 	// w efficiency studies
 	void wEfficiency();
 
+	// results of AN2009_98 comparison
+	// well... related
+	void AN2009_98();
+
 	// do stuff with histogram
 	void FormatHist(TH1F** hist, std::string name, Int_t n, Float_t min, Float_t max);
 	void FormatEffHist(EffMulti** hist, bool lessThan, 
@@ -79,6 +83,11 @@ public:
      virtual double     CandsPassingW (unsigned int i) const { return wEvents_passing_[i]; }
      virtual int        CandsCountW (unsigned int i) const { return wEvents_count_[i]; }
      virtual double     RMSW (unsigned int i) const { return sqrt(wEvents_passing_w2_[i]); }
+
+     virtual double     CandsPassingAN2009_98 (unsigned int i) const { return AN2009_98Events_passing_[i]; }
+     virtual int        CandsCountAN2009_98 (unsigned int i) const { return AN2009_98Events_count_[i]; }
+     virtual double     RMSAN2009_98 (unsigned int i) const { return sqrt(AN2009_98Events_passing_w2_[i]); }
+
 
 protected:
      //----------------------------------------------------------------------
@@ -158,7 +167,26 @@ protected:
         EffMulti *em_eopInGT05_[2];
 
 
+	//
+	// AN2009-98 studies related
+	//
+
+	TH1F *h1_AN2009_098_pt2_[2];
+        TH1F *h1_AN2009_098_eta1_[2];
+
+        TH1F *h1_AN2009_098_tkIso_[2];
+        TH1F *h1_AN2009_098_ecalIso_[2];
+        TH1F *h1_AN2009_098_hcalIso_[2];
+        TH1F *h1_AN2009_098_tcmet_[2];
+
+        TH1F *h1_AN2009_098_tcmet_after_selection_[2];	
+
 protected:
+
+     unsigned int       AN2009_98Events_count_[3];
+     double             AN2009_98Events_passing_[3];
+     double             AN2009_98Events_passing_w2_[3];
+
 
      unsigned int	wEvents_count_[3];
      double 		wEvents_passing_[3];

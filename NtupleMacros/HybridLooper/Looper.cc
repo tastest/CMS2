@@ -14,6 +14,10 @@
 : LooperBase(s, c, fname)
 {
 	// zero out the candidate counters (don't comment this out)
+        memset(AN2009_98Events_passing_, 0, sizeof(AN2009_98Events_passing_));
+        memset(AN2009_98Events_passing_w2_, 0, sizeof(AN2009_98Events_passing_w2_));
+        memset(AN2009_98Events_count_, 0, sizeof(AN2009_98Events_count_));
+
 	memset(wEvents_passing_, 0, sizeof(wEvents_passing_));
 	memset(wEvents_passing_w2_, 0, sizeof(wEvents_passing_w2_));
 	memset(wEvents_count_, 0, sizeof(wEvents_count_));
@@ -120,6 +124,17 @@ void Looper::BookHistos ()
 	FormatEffHist(em_eopInLT30_, true, 3.0, 3.0, "eopInLT30");
 	FormatEffHist(em_eopInGT05_, true, 3.0, 3.0, "eopInGT05");
 
+	// AN2009-98 related
+	//
+        FormatHist(h1_AN2009_098_pt2_, "AN2009_098_pt2", 100, 0, 100);
+        FormatHist(h1_AN2009_098_eta1_, "AN2009_098_eta1", 100, -3, 3);
+
+        FormatHist(h1_AN2009_098_ecalIso_, "AN2009_098_ecalIso", 100, 0, 10.0);
+        FormatHist(h1_AN2009_098_hcalIso_, "AN2009_098_hcalIso", 100, 0, 10.0);
+        FormatHist(h1_AN2009_098_tkIso_, "AN2009_098_tkIso", 100, 0, 10.0);
+
+        FormatHist(h1_AN2009_098_tcmet_, "AN2009_098_tcmet", 100, 0, 100);
+        FormatHist(h1_AN2009_098_tcmet_after_selection_, "AN2009_098_tcmet_after_selection", 100, 0, 100);
 
 }
 
@@ -168,6 +183,103 @@ int Looper::getSubdet(int eleIndex)
 	return -1;
 }
 
+void Looper::AN2009_98()
+{
+
+        // get the event weight (for 1 pb^{-1})
+        float weight = cms2.evt_scale1fb() * sample_.kFactor;
+        weight /= 1000;
+
+	// find candidate electron
+	// assumes electrons are sorted by pT descending
+	int eleIndex = 0;
+	int eleSecondIndex = 0;
+	bool foundFirst = false;
+	bool foundSecond = false;
+	for (size_t i = 0; i < cms2.evt_nels(); ++i)
+	{
+		// no particle flow
+	        if (! cms2.els_type()[i] & (1<<ISECALDRIVEN)) continue;
+
+		if (foundFirst && !foundSecond) {
+			eleSecondIndex = i;
+			foundSecond = true;
+			break;
+		}
+                if (!foundFirst) {
+                        eleIndex = i;
+                        foundFirst = true;
+                }
+	}
+
+	// get isolation
+        const float &ecalIso = cms2.els_ecalIso()[0];
+        const float &hcalIso = cms2.els_hcalIso()[0];
+        const float &tkIso = cms2.els_tkIso()[0];
+
+	// get subdetector (for histogramming)
+        int det = getSubdet(eleIndex);
+
+	//
+	// Apply cuts here
+	//
+
+	// require highest pT electron to have pT > 30.0 GeV
+	//
+	if (cms2.els_p4()[eleIndex].Pt() < 30.0) return;
+	//
+
+	if (foundSecond) h1_AN2009_098_pt2_[det]->Fill(cms2.els_p4()[eleSecondIndex].Pt(), weight);
+	else h1_AN2009_098_pt2_[det]->Fill(0.0, weight);
+
+        h1_AN2009_098_eta1_[det]->Fill(cms2.els_etaSC()[eleIndex], weight);
+
+	// don't allow events with a second electron above 20.0 GeV
+	//
+	if (foundSecond && cms2.els_p4()[eleSecondIndex].Pt() > 20.0) return;
+	//
+
+	// impose fiducial cuts in Eta
+	// veto barrel-endcap gap
+	if (fabs(cms2.els_etaSC()[eleIndex]) > 1.4442 && fabs(cms2.els_etaSC()[eleIndex]) < 1.560) return;
+	// veto high eta endcap
+	if (fabs(cms2.els_etaSC()[eleIndex]) > 2.500) return;
+	//
+
+        h1_AN2009_098_tkIso_[det]->Fill(tkIso, weight);
+        h1_AN2009_098_ecalIso_[det]->Fill(ecalIso, weight);
+        h1_AN2009_098_hcalIso_[det]->Fill(hcalIso, weight);
+	h1_AN2009_098_tcmet_[det]->Fill(cms2.evt_tcmet(), weight);
+
+	// isolations cuts
+	//
+	if (det == 0) {		// EB
+		if (tkIso > 2.2) return;
+		if (ecalIso > 4.2) return;
+		if (hcalIso > 2.0) return;
+	}
+	else if (det == 1) {	// EE
+                if (tkIso > 1.1) return;
+                if (ecalIso > 3.4) return;
+                if (hcalIso > 1.3) return;
+	}
+	else std::cout << "Error! Not in barrel or endcap - something is wrong" << std::endl;
+	//
+
+	h1_AN2009_098_tcmet_after_selection_[det]->Fill(cms2.evt_tcmet(), weight);
+
+	if (cms2.evt_tcmet() < 30.0) return;
+
+        AN2009_98Events_passing_[det] += weight;
+        AN2009_98Events_passing_w2_[det] += weight;
+        AN2009_98Events_count_[det] ++;
+        AN2009_98Events_passing_[2] += weight;
+        AN2009_98Events_passing_w2_[2] += weight;
+        AN2009_98Events_count_[2] ++;
+
+}
+
+
 void Looper::wEfficiency()
 {
 
@@ -191,7 +303,6 @@ void Looper::wEfficiency()
 	// 20 GeV Pt cut
 	h1_weff_pt_[det]->Fill(cms2.els_p4()[0].Pt(), weight);
 	if (cms2.els_p4()[0].Pt() < 20.0) return;
-
 
 	//
 	// construct variables that are not already in ntuple
@@ -244,7 +355,7 @@ void Looper::wEfficiency()
 	float isolationThreshold = 0;
 	if ((cuts_ & (CUT_BIT(ELE_ISO_15))) == (CUT_BIT(ELE_ISO_15))) isolationThreshold = 0.15;
 	if ((cuts_ & (CUT_BIT(ELE_ISO_10))) == (CUT_BIT(ELE_ISO_10))) isolationThreshold = 0.10;
-	float jptThreshold = 0;
+	float jptThreshold = 999999.99;
 	if ((cuts_ & (CUT_BIT(EVT_JPT_25))) == (CUT_BIT(EVT_JPT_25))) jptThreshold = 25.0;
 	float tcMetThreshold = 0;
 	if ((cuts_ & (CUT_BIT(EVT_TCMET_30))) == (CUT_BIT(EVT_TCMET_30))) tcMetThreshold = 30.0;
@@ -337,6 +448,9 @@ void Looper::FillEventHistos ()
 
 	// do the W efficiency studies
 	wEfficiency();
+
+	// do the AN2009-98 studies
+	AN2009_98();
 
 	// get the event weight (for 1 pb^{-1})
 	float weight = cms2.evt_scale1fb() * sample_.kFactor;
@@ -488,6 +602,17 @@ void Looper::End ()
 	if (ret < 0)
 		perror("HybridLooper: writing w study to log file");
 
+        ret = fprintf(logfile_,
+                        "Sample %10s: Total candidate count (EB EE ALL): %8u %8u %8u"
+                        " Total weight %10.1f +- %10.1f %10.1f +- %10.1f %10.1f +- %10.1f \n",
+                        sample_.name.c_str(),
+                        CandsCountAN2009_98(0), CandsCountAN2009_98(1), CandsCountAN2009_98(2),
+                        CandsPassingAN2009_98(0)  , RMSAN2009_98(0),
+                        CandsPassingAN2009_98(1) , RMSAN2009_98(1),
+                        CandsPassingAN2009_98(2) , RMSAN2009_98(2));
+
+        if (ret < 0)
+                perror("HybridLooper: writing AN2009_98 study to log file");
 
 
 	ret = fprintf(logfile_, 

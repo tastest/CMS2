@@ -18,9 +18,10 @@ TArrow *getArrow(TString det, THStack *st,float cutValEB, float cutValEE);
 
 void plotAllResults();
 void plotResults(TString det);
-
+void plotAllResultsAN2009_098();
 void plotAllResultsW();
 void plotResultsW(TString det, TString fileStamp);
+void plotResultsAN2009_098(TString det, TString fileStamp);
 
 
 void test();

@@ -227,6 +227,9 @@ void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString sav
 	c1->SetLogy();
 	st->SetMinimum(1.0);
         st->Draw();	
+	lg_all->Draw();
+        if (det == "ee" && cutValEE != -1) getArrow(st, det, cutValEB, cutValEE)->Draw();
+        if (det == "eb" && cutValEB != -1) getArrow(st, det, cutValEB, cutValEE)->Draw();
         Utilities::saveCanvas(c1, "results/" + saveName  + "_log_" + name + "_" + det);
 
 	delete c1;
@@ -296,6 +299,36 @@ void plotAllResultsW()
 
         plotResultsW("ee", "iso10_jptphimax110_tcmet30");
         plotResultsW("eb", "iso10_jptphimax110_tcmet30");
+}
+
+void plotAllResultsAN2009_098()
+{
+        plotResultsW("ee", "AN2009_098_studies");
+        plotResultsW("eb", "AN2009_098_studies");
+
+        plotResultsAN2009_098("ee", "AN2009_098_studies");
+        plotResultsAN2009_098("eb", "AN2009_098_studies");
+}
+
+void plotResultsAN2009_098(TString det, TString fileStamp)
+{
+
+        gROOT->ProcessLine(".L ~/tdrStyle.C");
+        gROOT->ProcessLine("setTDRStyle()");
+
+        // luminorm for 1pb-1
+        // luminosity is already normalised to 1pb-1 in the looper
+        HistogramUtilities h1("Results_" + fileStamp + ".root", 1.0);
+
+//void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString saveName, TString det, int rebin, float cutValEB, float cutValEE)
+
+        plotStack(h1, "AN2009_098_pt2", "Second p_{T} (GeV)", fileStamp, det, 2, 20.0, 20.0);
+        plotStack(h1, "AN2009_098_eta1", "Electron #eta", fileStamp, det, 2);
+        plotStack(h1, "AN2009_098_ecalIso", "Ecal Iso", fileStamp, det, 2, 4.2, 3.4);
+        plotStack(h1, "AN2009_098_hcalIso", "Hcal Iso", fileStamp, det, 2, 2.0, 1.3);
+        plotStack(h1, "AN2009_098_tkIso", "Track Iso", fileStamp, det, 2, 2.2, 1.1);
+        plotStack(h1, "AN2009_098_tcmet_after_selection", "tcMet (GeV)", fileStamp, det, 2, 30.0, 30.0);
+
 }
 
 void plotResultsW(TString det, TString fileStamp)

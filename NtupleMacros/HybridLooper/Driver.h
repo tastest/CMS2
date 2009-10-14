@@ -67,6 +67,7 @@ void printTable (const Looper **hists, int n, const char *fname,
 
      const char detectorNames[][128] = {"EB", "EE", "ALL"};
 
+     fprintf(f, "WEfficiency Results");
      fprintf(f, "|%30s  |\n", "total");
      for (int i = 0; i < 3; ++i) {
           fprintf(f, "|%10s  ", detectorNames[i]);
@@ -82,6 +83,25 @@ void printTable (const Looper **hists, int n, const char *fname,
           }
           fprintf(f, "|  %10.1f &plusmn; %10.1f|\n", cands, sqrt(w2));
      }
+
+
+     fprintf(f, "AN2009-98 Results");
+     fprintf(f, "|%30s  |\n", "total");
+     for (int i = 0; i < 3; ++i) {
+          fprintf(f, "|%10s  ", detectorNames[i]);
+          double cands = 0;
+          double w2 = 0;
+          for (int j = 0; j < n; ++j) {
+               fprintf(f, "|  %10.1f &plusmn; %10.1f",
+                       hists[j]->CandsPassingAN2009_98(i),
+                       hists[j]->RMSAN2009_98(i));
+               cands += hists[j]->CandsPassingAN2009_98(i);
+               w2 += hists[j]->RMSAN2009_98(i) *
+                    hists[j]->RMSAN2009_98(i);
+          }
+          fprintf(f, "|  %10.1f &plusmn; %10.1f|\n", cands, sqrt(w2));
+     }
+	
 
 
      if (f != stdin) 
@@ -157,6 +177,7 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
      };
 
      printTable(loopers, sizeof(loopers) / sizeof(Looper *), tbl.c_str(), which_ones);
+
      return 0;
 }
 
@@ -165,6 +186,15 @@ int Results_tcmet30 ()
 {
      return run<Looper>( (CUT_BIT(ELE_ISO_10) | CUT_BIT(EVT_JPT_25) | CUT_BIT(EVT_TCMET_30)),
 	"Results_iso10_jpt25_tcmet30", 
+1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
+}
+
+
+// default yield table
+int Results_AN2009_098_studies ()
+{    
+     return run<Looper>( (CUT_BIT(ELE_ISO_10) | CUT_BIT(EVT_TCMET_30)),
+        "Results_AN2009_098_studies", 
 1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
 }
 
