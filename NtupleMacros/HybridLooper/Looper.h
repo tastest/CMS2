@@ -34,29 +34,12 @@ protected:
      // TrilepSelect() and QuadlepSelect() that check which cuts the
      // event, dilepton/trilepton/quadlepton candidate passes
      virtual cuts_t	EventSelect	();
-     virtual cuts_t	DilepSelect 	(int idx);
-     virtual cuts_t	TrilepSelect 	(int idx);
-     virtual cuts_t	QuadlepSelect 	(int idx);
      // we define an analysis-specific set of FillEventHistos(),
      // FillDilepHistos(), FillTrilepHistos() and FillQuadlepHistos()
      // that fill our histograms.  
      // 
      // the framework calls our FillEventHistos() function for every event
      virtual void	FillEventHistos ();
-     // the framework calls our FillDilepHistos() function for every
-     // dilepton candidate; the argument is the index of the candidate
-     // in the dilepton block
-     virtual void	FillDilepHistos (int idx);
-     // the framework calls our FillTrilepHistos() function for every
-     // trilepton candidate; the argument is the index of the candidate
-     // in the trilepton block
-     virtual void	FillTrilepHistos (int idx);
-     // the framework calls our FillQuadlepHistos() function for every
-     // quadlepton candidate; the argument is the index of the candidate
-     // in the quadlepton block
-     virtual void	FillQuadlepHistos (int idx);
-     // at the end of the loop, we get a callback to do things like
-     // printing a status message
      virtual void	End		();
 
 	// get subdetector for histogram filling
@@ -70,6 +53,8 @@ protected:
 	void AN2009_98();
 
 	// do stuff with histogram
+	void Format2DHist(TH2F** hist, std::string name, Int_t nx, Float_t minx, Float_t maxx,
+                                Int_t ny, Float_t miny, Float_t maxy);
 	void FormatHist(TH1F** hist, std::string name, Int_t n, Float_t min, Float_t max);
 	void FormatEffHist(EffMulti** hist, bool lessThan, 
 				float thresholdEB, float ThresholdEE, std::string name);
@@ -103,15 +88,15 @@ protected:
 
 	// isolation
 	//
-	TH1F	*h1_ecalIso03_[2];
-        TH1F    *h1_hcalIso03_[2];
-        TH1F    *h1_tkIso03_[2];
-
 	TH1F 	*h1_wwIso_[2];
 	TH1F	*h1_tkIso03All_[2];
 	TH1F	*h1_ecalIso03All_[2];
-        TH1F    *h1_ecalIsoMod03All_[2];
 	TH1F	*h1_hcalIso03All_[2];
+
+	TH2F	*h2_tkIso03All_[2];
+        TH2F    *h2_ecalIso03All_[2];
+        TH2F    *h2_hcalIso03All_[2];
+		
 
 	// electron ID related
 	//

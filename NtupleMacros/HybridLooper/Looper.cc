@@ -27,6 +27,20 @@
 	memset(cands_count_		, 0, sizeof(cands_count_         ));
 }
 
+void Looper::Format2DHist(TH2F** hist, std::string name, Int_t nx, Float_t minx, Float_t maxx,
+				Int_t ny, Float_t miny, Float_t maxy)
+{       
+        // loop on EB, EE
+        for (unsigned int i = 0; i < 2; ++i)
+        {
+                std::string det = "eb";
+                if (i == 1) det = "ee";
+
+                hist[i] = new TH2F(Form("%s_%s_%s", SampleName().c_str(), name.c_str(), det.c_str()),
+                                name.c_str(), nx, minx, maxx, ny, miny, maxy);
+        }
+}  
+
 void Looper::FormatHist(TH1F** hist, std::string name, Int_t n, Float_t min, Float_t max)
 {
 	// loop on EB, EE
@@ -61,13 +75,6 @@ void Looper::BookHistos ()
 	FormatHist(h1_eta_, "eta", 100, -3, 3);
 	FormatHist(h1_phi_, "phi", 100, -4, 4);
 
-	FormatHist(h1_wwIsoAll_, "wwIsoAll", 100, 0.0, 1.0);
-	FormatHist(h1_tkIso03All_, "tkIso03All", 100, 0.0, 10);
-	FormatHist(h1_ecalIso03All_, "ecalIso03All", 100, 0.0, 10);
-	FormatHist(h1_ecalIsoMod03All_, "ecalIsoMod03All", 100, 0.0, 10);
-	FormatHist(h1_hcalIso03All_, "hcalIso03All", 100, 0.0, 10);
-
-
 	// for "W eff studies"
 	FormatHist(h1_weff_pt_, "weff_pt", 100, 0, 100);
 	FormatHist(h1_weff_iso_, "weff_iso", 100, 0, 1);
@@ -89,19 +96,11 @@ void Looper::BookHistos ()
 
         FormatHist(h1_weff_tcmet_after_iso_jpt_conv_, "weff_tcmet_after_iso_jpt_conv", 100, 0, 100);
 
-
-	// Ismlation related
-	//
-	FormatHist(h1_ecalIso03_, "ecalIso03", 100, 0, 1);
-	FormatHist(h1_hcalIso03_, "hcalIso03", 100, 0, 1);
-	FormatHist(h1_tkIso03_, "tkIso03", 100, 0, 1);
-	FormatHist(h1_wwIso_, "wwIso", 100, 0, 1);
-
 	// electron ID related
 	//
 	FormatHist(h1_dEtaIn_, "dEtaIn", 100, 0.0, 0.04);
-	FormatHist(h1_dPhiIn_, "dPhiIn", 100, 0.0, 0.1);
-	FormatHist(h1_dPhiInSigned_, "dPhiInSigned", 125, -0.1, 0.15);
+	FormatHist(h1_dPhiIn_, "dPhiIn", 100, 0.0, 0.15);
+	FormatHist(h1_dPhiInSigned_, "dPhiInSigned", 200, -0.15, 0.15);
 	FormatHist(h1_hoe_, "hoe", 100, 0.0, 0.2);
 	FormatHist(h1_sigmaIEtaIEta_, "sigmaIEtaIEta", 100, 0.0, 0.06);
 	FormatHist(h1_sigmaIPhiIPhi_, "sigmaIPhiIPhi", 100, 0.0, 0.04);
@@ -110,6 +109,17 @@ void Looper::BookHistos ()
 	FormatHist(h1_eopIn_, "eopIn", 100, 0.0, 5.0);
 	FormatHist(h1_d0corr_, "d0corr", 100, 0.0, 0.2);
 	FormatHist(h1_closestMuon_, "closestMuon", 100, -1, 5);
+
+        // Isolation
+        //
+        FormatHist(h1_wwIsoAll_, "wwIsoAll", 100, 0.0, 1.0);
+        FormatHist(h1_tkIso03All_, "tkIso03All", 100, 0.0, 10);
+        FormatHist(h1_ecalIso03All_, "ecalIso03All", 100, 0.0, 10);
+        FormatHist(h1_hcalIso03All_, "hcalIso03All", 100, 0.0, 10);
+
+	Format2DHist(h2_tkIso03All_, "tkIso03All2D", 30, 0.0, 150.0, 30, 0.0, 15.0);
+        Format2DHist(h2_ecalIso03All_, "ecalIso03All2D", 30, 0.0, 150.0, 30, 0.0, 15.0);
+        Format2DHist(h2_hcalIso03All_, "hcalIso03All2D", 30, 0.0, 150.0, 30, 0.0, 15.0);
 
 	// The "Egamma robust tight V1 (2_2_X tune)"
 	//
@@ -153,24 +163,6 @@ cuts_t Looper::EventSelect ()
 
 	return ret;
 
-}
-
-cuts_t Looper::DilepSelect (int i_hyp)
-{
-	cuts_t ret = 0;
-	return ret;
-}
-
-cuts_t Looper::TrilepSelect (int i_hyp)
-{
-	cuts_t ret = 0;
-	return ret;
-}
-
-cuts_t Looper::QuadlepSelect (int i_hyp)
-{
-	cuts_t ret = 0;
-	return ret;
 }
 
 // to decdie if to fill the EB histo (zero in the array)
@@ -491,17 +483,18 @@ void Looper::FillEventHistos ()
 			h1_eta_[det]->Fill(cms2.els_etaSC()[i], weight);
 			h1_phi_[det]->Fill(cms2.els_phiSC()[i], weight);
 
+			// for isolation optimisation
+			//
 			if (cms2.els_p4()[i].Pt() > 20.0) {
 				h1_wwIsoAll_[det]->Fill(isoSum / cms2.els_p4()[i].Pt(), weight);
 				h1_ecalIso03All_[det]->Fill(ecalIso, weight);
-				float ecalIsoMod = ecalIso;
-				if (det == 0) {
-					if (ecalIso - 1.0 > 0) ecalIsoMod = ecalIso - 1.0;
-					else ecalIsoMod = 0;
-				}
-				h1_ecalIsoMod03All_[det]->Fill(ecalIsoMod, weight);
 				h1_hcalIso03All_[det]->Fill(hcalIso, weight);
 				h1_tkIso03All_[det]->Fill(tkIso, weight);
+
+				h2_tkIso03All_[det]->Fill(cms2.els_p4()[i].Pt(), tkIso, weight);
+                                h2_ecalIso03All_[det]->Fill(cms2.els_p4()[i].Pt(), ecalIso, weight);
+                                h2_hcalIso03All_[det]->Fill(cms2.els_p4()[i].Pt(), hcalIso, weight);
+
 			}
 
 			if (isoSum / cms2.els_p4()[i].Pt() < 0.15) {
@@ -510,7 +503,7 @@ void Looper::FillEventHistos ()
 
 					h1_dEtaIn_[det]->Fill(fabs(cms2.els_dEtaIn()[i]), weight);
 					h1_dPhiIn_[det]->Fill(fabs(cms2.els_dPhiIn()[i]), weight);
-					h1_dPhiInSigned_[det]->Fill(fabs(cms2.els_dPhiIn()[i])*cms2.els_charge()[i], weight);
+					h1_dPhiInSigned_[det]->Fill(cms2.els_dPhiIn()[i]*cms2.els_charge()[i], weight);
 					h1_hoe_[det]->Fill(cms2.els_hOverE()[i], weight);
 					h1_sigmaIEtaIEta_[det]->Fill(cms2.els_sigmaIEtaIEta()[i], weight);
 					h1_sigmaIPhiIPhi_[det]->Fill(cms2.els_sigmaIPhiIPhi()[i], weight);
@@ -553,38 +546,10 @@ void Looper::FillEventHistos ()
 
 			}
 
-			// iso related
-			//
-
-			// catagory based tight
-			if (cms2.els_egamma_tightId()[i] == 1) {
-
-				// only for 20 GeV pT
-				if (cms2.els_p4()[i].Pt() < 20.0) continue;
-
-				h1_ecalIso03_[det]->Fill(ecalIso/cms2.els_p4()[i].Pt(), weight);
-				h1_hcalIso03_[det]->Fill(hcalIso/cms2.els_p4()[i].Pt(), weight);
-				h1_tkIso03_[det]->Fill(tkIso/cms2.els_p4()[i].Pt(), weight);
-				h1_wwIso_[det]->Fill(isoSum / cms2.els_p4()[i].Pt(), weight);
-			}
-
-
 		} // end loop on electrons
 
 	} // end event level cuts passed
 
-}
-
-void Looper::FillDilepHistos (int i_hyp)
-{
-}
-
-void Looper::FillTrilepHistos (int i_hyp)
-{
-}
-
-void Looper::FillQuadlepHistos (int i_hyp)
-{
 }
 
 void Looper::End ()
