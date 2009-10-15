@@ -16,12 +16,14 @@ void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString sav
 TArrow *getArrow(TString det, THStack *st,float cutValEB, float cutValEE);
 
 
-void plotAllResults();
-void plotResults(TString det);
+void plotAllResultsID();
+void plotResultsID(TString det, TString fileStamp);
+
 void plotAllResultsAN2009_098();
-void plotAllResultsW();
-void plotResultsW(TString det, TString fileStamp);
 void plotResultsAN2009_098(TString det, TString fileStamp);
+
+void plotResultsW(TString det, TString fileStamp);
+void plotAllResultsW();
 
 
 void test();

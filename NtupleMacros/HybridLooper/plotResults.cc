@@ -286,10 +286,10 @@ void test()
 
 }
 
-void plotAllResults()
+void plotAllResultsID()
 {
-	plotResults("ee");
-	plotResults("eb");
+	plotResultsID("ee", "AN2009_098_studies");
+	plotResultsID("eb", "AN2009_098_studies");
 }
 
 void plotAllResultsW()
@@ -382,7 +382,7 @@ void plotResultsW(TString det, TString fileStamp)
 
 }
 
-void plotResults(TString det)
+void plotResultsID(TString det, TString fileStamp)
 {
 
 	gROOT->ProcessLine(".L ~/tdrStyle.C");
@@ -390,28 +390,27 @@ void plotResults(TString det)
 
 	// luminorm for 1pb-1
 	// luminosity is already normalised to 1pb-1 in the looper
-	HistogramUtilities h1("Results.root", 1.0);
+	HistogramUtilities h1("Results_" + fileStamp + ".root", 1.0);
 
 	// electron id related
 	//
 
-        plotEff(h1, "dEtaIn", "", det, true, 2, true, 0.007, 0.010);
-        plotEff(h1, "dPhiIn", "", det, true, 2, true, 0.020, 0.025);
-        plotEff(h1, "dPhiInSigned", "", det, true, 2, true);
-        plotEff(h1, "hoe", det, "", true, 2, true, 0.01, 0.01);
-        plotEff(h1, "eopIn", det, "", false, 4, true, 0.5, 0.5);
-        plotEff(h1, "sigmaIEtaIEta", "", det, true, 2, true, -1, 0.03);
-        plotEff(h1, "sigmaIPhiIPhi", "", det, true, 4, true);
-        plotEff(h1, "E2x5Norm5x5", "", det, false, 4, false, 0.90, -1);
-        plotEff(h1, "E1x5Norm5x5", "", det, false, 4, false);
-        plotEff(h1, "d0corr", det, "", true, 4, true, 0.025, 0.035);
+        plotEff(h1, "dEtaIn", "IDStudy", det, true, 2, true, 0.007, 0.010);
+        plotEff(h1, "dPhiIn", "IDStudy", det, true, 2, true, 0.020, 0.025);
+        plotEff(h1, "dPhiInSigned", "IDStudy", det, true, 2, false);
+        plotEff(h1, "hoe", "IDStudy", det, true, 2, true, 0.01, 0.01);
+        plotEff(h1, "eopIn", "IDStudy", det, false, 4, true, 0.5, 0.5);
+        plotEff(h1, "sigmaIEtaIEta", "IDStudy", det, true, 2, true, -1, 0.03);
+        plotEff(h1, "sigmaIPhiIPhi", "IDStudy", det, true, 4, true);
+        plotEff(h1, "E2x5Norm5x5","IDStudy", det, false, 4, false, 0.90, -1);
+        plotEff(h1, "E1x5Norm5x5", "IDStudy", det, false, 4, false);
+        plotEff(h1, "d0corr", "IDStudy", det, true, 4, true, 0.025, 0.035);
 
 	// the isolation part
-        plotEff(h1, "wwIsoAll", "", det, true, 1, true);
-        plotEff(h1, "tkIso03All", "", det, true, 1, true);
-        plotEff(h1, "ecalIso03All", "", det, true, 1, true);
-        plotEff(h1, "ecalIsoMod03All", "", det, true, 1, true);
-        plotEff(h1, "hcalIso03All", "", det, true, 1, true);
+        plotEff(h1, "wwIsoAll", "IDStudy", det, true, 1, true);
+        plotEff(h1, "tkIso03All", "IDStudy", det, true, 1, true);
+        plotEff(h1, "ecalIso03All", "IDStudy", det, true, 1, true);
+        plotEff(h1, "hcalIso03All", "IDStudy", det, true, 1, true);
 
 }
 
