@@ -251,16 +251,15 @@ void Looper::AN2009_98()
 
 	// isolations cuts
 	//
-	if (det == 0) {		// EB
-		if (tkIso > 2.2) return;
-		if (ecalIso > 4.2) return;
-		if (hcalIso > 2.0) return;
-	}
-	else if (det == 1) {	// EE
-                if (tkIso > 1.1) return;
-                if (ecalIso > 3.4) return;
-                if (hcalIso > 1.3) return;
-	}
+        // some candidate thresholds to look at N-1 with
+        float tkThresholds[2] = {2.2, 1.1};
+        float ecalThresholds[2] = {4.2, 3.4};
+        float hcalThresholds[2] = {2.0, 1.3};
+
+	if (tkIso > tkThresholds[det]) return;
+	if (ecalIso > ecalThresholds[det]) return;
+	if (hcalIso > hcalThresholds[det]) return;
+
 	else std::cout << "Error! Not in barrel or endcap - something is wrong" << std::endl;
 	//
 
