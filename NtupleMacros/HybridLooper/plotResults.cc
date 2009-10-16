@@ -62,18 +62,89 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
 	TH1F *h1_signal = h1.getHistogram(theSignal, name, "", det, rebin, "");
         TH1F *h1_background = h1.getHistogram(theBackground, name, "", det, rebin, "");
 	TH1F *h1_both = h1.getHistogram(theBackground | theSignal, name, "", det, rebin, "");
-	// latter bool is "ascending"
-	bool normalise = true;
-        TGraph *gr = (TGraph*)(eff_rej(*h1_signal, *h1_background, normalise, ascending).Clone());
-        gr->SetTitle(name + ";Signal;Background");
-	gr->SetMarkerStyle(23);
+
+
+	//
+	// S/B plots
+	//
+
+	TH1F *h1_signal_cumulated = (TH1F*)(cumulate(*h1_signal, ascending).Clone());
+        TH1F *h1_background_cumulated = (TH1F*)(cumulate(*h1_background, ascending).Clone());
+	TH1F *h1_sob = (TH1F*)h1_signal_cumulated->Clone();
+	float sTotal = h1_signal->Integral(0, h1_signal_cumulated->GetNbinsX() + 1);
+	int bin_eff99 = 0;
+	int bin_eff98 = 0;
+	int bin_eff95 = 0;
+	for (Int_t bin = 0; bin < h1_signal_cumulated->GetNbinsX() + 1; ++bin)
+	{
+		float s = h1_signal_cumulated->GetBinContent(bin);
+		float b = h1_background_cumulated->GetBinContent(bin);
+		float sob = 0;
+		if (b > 0.0) { 
+			sob = s/b;
+		}
+		h1_sob->SetBinContent(bin, sob);
+		std::cout << s/sTotal << std::endl;
+		if (s/sTotal >= 0.99 && bin_eff99 == 0) bin_eff99 = bin;
+                if (s/sTotal >= 0.98 && bin_eff98 == 0) bin_eff98 = bin;
+                if (s/sTotal >= 0.95 && bin_eff95 == 0) bin_eff95 = bin;
+	}
+
+        TArrow *arr_eff99 = new TArrow(h1_signal->GetBinCenter(bin_eff99), h1_both->GetMaximum()/2.0, h1_signal->GetBinCenter(bin_eff99), 0, 0.05, "|>");
+	arr_eff99->SetLineColor(kGreen);
+	arr_eff99->SetFillColor(kGreen);
+	arr_eff99->SetLineWidth(2);
+        TArrow *arr_99 = new TArrow(0.99, 1.0, 0.99, 0, 0.05, "|>");
+        arr_99->SetLineColor(kGreen);
+        arr_99->SetFillColor(kGreen);
+        arr_99->SetLineWidth(2);
+
+        TArrow *arr_eff98 = new TArrow(h1_signal->GetBinCenter(bin_eff98), h1_both->GetMaximum()/2.0, h1_signal->GetBinCenter(bin_eff98), 0, 0.05, "|>");
+        arr_eff98->SetLineColor(kBlue);
+        arr_eff98->SetFillColor(kBlue);
+        arr_eff98->SetLineWidth(2);
+        TArrow *arr_98 = new TArrow(0.98, 1.0, 0.98, 0, 0.05, "|>");
+        arr_98->SetLineColor(kBlue);
+        arr_98->SetFillColor(kBlue);
+        arr_98->SetLineWidth(2);
+
+        TArrow *arr_eff95 = new TArrow(h1_signal->GetBinCenter(bin_eff95), h1_both->GetMaximum()/2.0, h1_signal->GetBinCenter(bin_eff95), 0, 0.05, "|>");
+        arr_eff95->SetLineColor(kRed);
+        arr_eff95->SetFillColor(kRed);
+        arr_eff95->SetLineWidth(2);
+        TArrow *arr_95 = new TArrow(0.95, 1.0, 0.95, 0, 0.05, "|>");
+        arr_95->SetLineColor(kRed);
+        arr_95->SetFillColor(kRed);
+        arr_95->SetLineWidth(2);
+
 
         TCanvas *c = new TCanvas();
+	c->cd();	
+	h1_sob->Draw();
+        Utilities::saveCanvas(c, "results/" + saveName + "_sob_" + name + "_" + det);	
+
+        //
+        // Acceptance rejection curves
+        //
+
+        // latter bool is "ascending"
+        bool normalise = true;
+        TGraph *gr = (TGraph*)(eff_rej(*h1_signal, *h1_background, normalise, ascending).Clone());
+        gr->SetTitle(name + ";Signal;Background");
+        gr->SetMarkerStyle(23);
+
         c->cd();
         gr->Draw("AP");
-	gr->GetXaxis()->SetRangeUser(0, 1.1);
-	gr->GetYaxis()->SetRangeUser(0, 1.1);
-	Utilities::saveCanvas(c, "results/" + saveName + "_eff_" + name + "_" + det);
+        gr->GetXaxis()->SetRangeUser(0.80, 1.1);
+        gr->GetYaxis()->SetRangeUser(0.00, 1.1); 
+        arr_99->Draw();
+        arr_98->Draw();
+        arr_95->Draw();
+        Utilities::saveCanvas(c, "results/" + saveName + "_eff_" + name + "_" + det);
+
+	//
+	// S and B overlays
+	//
 
         h1_signal->SetLineWidth(2);
 	h1_signal->SetLineColor(kBlue);
@@ -112,6 +183,9 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
         	h1_signal->Draw("SAME");
 	}
 	if (cutVal > 0.0) arr_cut->Draw();
+	if (bin_eff99 != 0) arr_eff99->Draw();
+        if (bin_eff98 != 0) arr_eff98->Draw();
+        if (bin_eff95 != 0) arr_eff95->Draw();
 	lg->Draw();
         Utilities::saveCanvas(c_sb, "results/" + saveName + "_sb_lin" + name + "_" + det);
 
@@ -135,6 +209,9 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
                 h1_signal->Draw("SAME");
         }
         if (cutVal > 0.0) arr_cut->Draw();
+        if (bin_eff99 != 0) arr_eff99->Draw();
+        if (bin_eff98 != 0) arr_eff98->Draw();
+        if (bin_eff95 != 0) arr_eff95->Draw();
         lg->Draw();
 	Utilities::saveCanvas(c_sb_log, "results/" + saveName + "_sb_log" + name + "_" + det);
 
@@ -150,6 +227,9 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
 	delete lg;
 	delete arr_cut;
 	delete h1_both;
+	delete arr_eff99;
+	delete arr_eff98;
+	delete arr_eff95;
 	std::cout << "[plotEff] Done" << std::endl;
 }
 
@@ -407,10 +487,17 @@ void plotResultsID(TString det, TString fileStamp)
         plotEff(h1, "d0corr", "IDStudy", det, true, 4, true, 0.025, 0.035);
 
 	// the isolation part
+	//
         plotEff(h1, "wwIsoAll", "IDStudy", det, true, 1, true);
         plotEff(h1, "tkIso03All", "IDStudy", det, true, 1, true);
         plotEff(h1, "ecalIso03All", "IDStudy", det, true, 1, true);
         plotEff(h1, "hcalIso03All", "IDStudy", det, true, 1, true);
+
+	// N-1
+        plotEff(h1, "tkIso03AllNM1", "IDStudy", det, true, 1, true);
+        plotEff(h1, "ecalIso03AllNM1", "IDStudy", det, true, 1, true);
+        plotEff(h1, "hcalIso03AllNM1", "IDStudy", det, true, 1, true);
+
 
 }
 

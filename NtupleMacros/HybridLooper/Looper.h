@@ -96,6 +96,12 @@ protected:
 	TH2F	*h2_tkIso03All_[2];
         TH2F    *h2_ecalIso03All_[2];
         TH2F    *h2_hcalIso03All_[2];
+
+	// N-1
+        TH1F    *h1_tkIso03AllNM1_[2];
+        TH1F    *h1_ecalIso03AllNM1_[2];
+        TH1F    *h1_hcalIso03AllNM1_[2];
+
 		
 
 	// electron ID related

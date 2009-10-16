@@ -121,6 +121,12 @@ void Looper::BookHistos ()
         Format2DHist(h2_ecalIso03All_, "ecalIso03All2D", 30, 0.0, 150.0, 30, 0.0, 15.0);
         Format2DHist(h2_hcalIso03All_, "hcalIso03All2D", 30, 0.0, 150.0, 30, 0.0, 15.0);
 
+	// N-1
+        FormatHist(h1_tkIso03AllNM1_, "tkIso03AllNM1", 100, 0.0, 10);
+        FormatHist(h1_ecalIso03AllNM1_, "ecalIso03AllNM1", 100, 0.0, 10);
+        FormatHist(h1_hcalIso03AllNM1_, "hcalIso03AllNM1", 100, 0.0, 10);
+
+
 	// The "Egamma robust tight V1 (2_2_X tune)"
 	//
 	FormatEffHist(em_dEtaIn_, true, 0.0040, 0.0066, "dEtaIn");
@@ -485,6 +491,11 @@ void Looper::FillEventHistos ()
 
 			// for isolation optimisation
 			//
+			// some candidate thresholds to look at N-1 with
+			float tkThresholdsNM1[2] = {4.5, 6.0};
+			float ecalThresholdsNM1[2] = {2.5, 2.0};
+			float hcalThresholdsNM1[2] = {1.0, 1.0};
+			//
 			if (cms2.els_p4()[i].Pt() > 20.0) {
 				h1_wwIsoAll_[det]->Fill(isoSum / cms2.els_p4()[i].Pt(), weight);
 				h1_ecalIso03All_[det]->Fill(ecalIso, weight);
@@ -494,6 +505,14 @@ void Looper::FillEventHistos ()
 				h2_tkIso03All_[det]->Fill(cms2.els_p4()[i].Pt(), tkIso, weight);
                                 h2_ecalIso03All_[det]->Fill(cms2.els_p4()[i].Pt(), ecalIso, weight);
                                 h2_hcalIso03All_[det]->Fill(cms2.els_p4()[i].Pt(), hcalIso, weight);
+
+				// N-1
+				if (ecalIso < ecalThresholdsNM1[det] && hcalIso < hcalThresholdsNM1[det])
+					h1_tkIso03AllNM1_[det]->Fill(tkIso, weight);
+                                if (tkIso < tkThresholdsNM1[det] && hcalIso < hcalThresholdsNM1[det])
+					h1_ecalIso03AllNM1_[det]->Fill(ecalIso, weight);
+                                if (tkIso < tkThresholdsNM1[det] && ecalIso < ecalThresholdsNM1[det])
+					h1_hcalIso03AllNM1_[det]->Fill(hcalIso, weight);
 
 			}
 
