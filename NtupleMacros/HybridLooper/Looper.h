@@ -45,6 +45,10 @@ protected:
 	// get subdetector for histogram filling
 	int getSubdet(int eleIndex);
 
+	// study of track isolation
+	//	- why is the tail so long for signal?
+	void trackIsolationStudy(int eleIndex, int det);
+
 	// w efficiency studies
 	void wEfficiency();
 
@@ -92,17 +96,35 @@ protected:
 	TH1F	*h1_tkIso03All_[2];
 	TH1F	*h1_ecalIso03All_[2];
 	TH1F	*h1_hcalIso03All_[2];
+	TH1F	*h1_caloIso03All_[2];
+	TH1F	*h1_tkIso03AllMod1_[2];
+        TH1F    *h1_tkIso03AllMod2_[2];
 
 	TH2F	*h2_tkIso03All_[2];
         TH2F    *h2_ecalIso03All_[2];
         TH2F    *h2_hcalIso03All_[2];
+	TH2F	*h2_caloIso03All_[2];
 
 	// N-1
         TH1F    *h1_tkIso03AllNM1_[2];
         TH1F    *h1_ecalIso03AllNM1_[2];
         TH1F    *h1_hcalIso03AllNM1_[2];
 
-		
+	// track isolation investigation
+        TH1F    *h1_tkIso03AllRe_[2];
+        TH1F    *h1_tkIso03AllReRel_[2];
+	TH1F	*h1_tkIso03Alld0corr_[2];
+
+        TH1F    *h1_tkIso03AllReJura01In015_[2];
+	
+
+	TH1F 	*h1_tkIso03AllReJura01_[2];
+        TH1F    *h1_tkIso03AllReJura02_[2];
+        TH1F    *h1_tkIso03AllReJura03_[2];
+
+	TH1F	*h1_tkIso03AllRedEta_[2];
+	TH1F    *h1_tkIso03AllRedPhi_[2];
+	TH2F	*h2_tkIso03AllRedR2D_[2];
 
 	// electron ID related
 	//

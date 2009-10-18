@@ -113,18 +113,34 @@ void Looper::BookHistos ()
         // Isolation
         //
         FormatHist(h1_wwIsoAll_, "wwIsoAll", 100, 0.0, 1.0);
-        FormatHist(h1_tkIso03All_, "tkIso03All", 100, 0.0, 10);
-        FormatHist(h1_ecalIso03All_, "ecalIso03All", 100, 0.0, 10);
-        FormatHist(h1_hcalIso03All_, "hcalIso03All", 100, 0.0, 10);
+        FormatHist(h1_tkIso03All_, "tkIso03All", 150, 0.0, 15);
+        FormatHist(h1_ecalIso03All_, "ecalIso03All", 150, 0.0, 15);
+        FormatHist(h1_hcalIso03All_, "hcalIso03All", 150, 0.0, 15);
+	FormatHist(h1_caloIso03All_, "caloIso03All", 150, 0.0, 15);
 
 	Format2DHist(h2_tkIso03All_, "tkIso03All2D", 30, 0.0, 150.0, 30, 0.0, 15.0);
         Format2DHist(h2_ecalIso03All_, "ecalIso03All2D", 30, 0.0, 150.0, 30, 0.0, 15.0);
         Format2DHist(h2_hcalIso03All_, "hcalIso03All2D", 30, 0.0, 150.0, 30, 0.0, 15.0);
+        Format2DHist(h2_caloIso03All_, "caloIso03All2D", 30, 0.0, 150.0, 30, 0.0, 15.0);
+        FormatHist(h1_tkIso03AllMod1_, "tkIso03AllMod1", 100, 0.0, 3.0);
+        FormatHist(h1_tkIso03AllMod2_, "tkIso03AllMod2", 100, 0.0, 3.0);
 
 	// N-1
-        FormatHist(h1_tkIso03AllNM1_, "tkIso03AllNM1", 100, 0.0, 10);
-        FormatHist(h1_ecalIso03AllNM1_, "ecalIso03AllNM1", 100, 0.0, 10);
-        FormatHist(h1_hcalIso03AllNM1_, "hcalIso03AllNM1", 100, 0.0, 10);
+        FormatHist(h1_tkIso03AllNM1_, "tkIso03AllNM1", 150, 0.0, 15);
+        FormatHist(h1_ecalIso03AllNM1_, "ecalIso03AllNM1", 150, 0.0, 15);
+        FormatHist(h1_hcalIso03AllNM1_, "hcalIso03AllNM1", 150, 0.0, 15);
+
+	// track iso studies
+        FormatHist(h1_tkIso03Alld0corr_, "tkIso03Alld0corr", 100, 0.0, 0.2);
+        FormatHist(h1_tkIso03AllRe_, "tkIso03AllRe", 150, 0.0, 15.0);
+        FormatHist(h1_tkIso03AllReRel_, "tkIso03AllReRel", 150, 0.0, 1.5);
+        FormatHist(h1_tkIso03AllReJura01_, "tkIso03AllReJura01", 150, 0.0, 15.0);
+        FormatHist(h1_tkIso03AllReJura02_, "tkIso03AllReJura02", 150, 0.0, 15.0);
+        FormatHist(h1_tkIso03AllReJura03_, "tkIso03AllReJura03", 150, 0.0, 15.0);
+	FormatHist(h1_tkIso03AllReJura01In015_, "tkIso03AllReJura01In015", 150, 0.0, 15.0);
+        FormatHist(h1_tkIso03AllRedEta_, "tkIso03AllRedEta", 80, -0.4, 0.4);
+        FormatHist(h1_tkIso03AllRedPhi_, "tkIso03AllRedPhi", 80, -0.4, 0.4);
+        Format2DHist(h2_tkIso03AllRedR2D_, "tkIso03AllRedR2D", 80, -0.4, 0.4, 80, -0.4, 0.4);
 
 
 	// The "Egamma robust tight V1 (2_2_X tune)"
@@ -179,6 +195,67 @@ int Looper::getSubdet(int eleIndex)
 	if (cms2.els_fiduciality()[eleIndex] & (1<<ISEB)) return 0;
 	else if (cms2.els_fiduciality()[eleIndex] & (1<<ISEE)) return 1;
 	return -1;
+}
+
+void Looper::trackIsolationStudy(int eleIndex, int det)
+{
+
+        // get the event weight (for 1 pb^{-1})
+        float weight = cms2.evt_scale1fb() * sample_.kFactor;
+        weight /= 1000;
+
+	float isoSum = 0.0;
+	float isoSumJura01 = 0.0;
+        float isoSumJura02 = 0.0;
+        float isoSumJura03 = 0.0;
+	float isoSumJura01In015 = 0.0;
+
+	for (size_t i = 0; i < cms2.trks_trk_p4().size(); ++i)
+	{
+
+		float dEta = cms2.trks_trk_p4()[i].Eta() - cms2.els_p4()[eleIndex].Eta();
+		float dPhi = acos(cos(cms2.trks_trk_p4()[i].Phi() - cms2.els_p4()[eleIndex].Phi()));
+		float dR = sqrt(dEta*dEta + dPhi*dPhi);
+		const float &pT = cms2.trks_trk_p4()[i].Pt();
+
+		if (pT < 0.7) continue;
+		if (dR > 0.3) continue;
+		if (fabs(cms2.trks_z0()[i] - cms2.els_z0()[eleIndex]) > 0.2) continue;
+
+                h2_tkIso03AllRedR2D_[det]->Fill(dEta, dPhi, weight);
+
+		if (dR > 0.015 && fabs(dEta) > 0.01)
+			isoSumJura01In015 += pT;
+
+		// standard inner veto
+                if (dR < 0.04) continue;
+
+                h1_tkIso03AllRedEta_[det]->Fill(dEta, weight);
+                h1_tkIso03AllRedPhi_[det]->Fill(dPhi, weight);
+
+		isoSum += pT;
+
+                if (fabs(dEta) > 0.01)
+                        isoSumJura01 += pT;
+		if (fabs(dEta) > 0.02)
+			isoSumJura02 += pT;
+                if (fabs(dEta) > 0.03)
+                        isoSumJura03 += pT;
+
+		h1_tkIso03AllRedEta_[det]->Fill(dEta, weight);
+		h1_tkIso03AllRedPhi_[det]->Fill(dPhi, weight);
+		h2_tkIso03AllRedR2D_[det]->Fill(dEta, dPhi, weight);
+
+	}
+
+	h1_tkIso03AllRe_[det]->Fill(isoSum, weight);
+	h1_tkIso03AllReRel_[det]->Fill(isoSum/cms2.els_p4()[eleIndex].Pt(), weight);
+        h1_tkIso03AllReJura01_[det]->Fill(isoSumJura01, weight);
+        h1_tkIso03AllReJura02_[det]->Fill(isoSumJura02, weight);
+        h1_tkIso03AllReJura03_[det]->Fill(isoSumJura03, weight);
+	h1_tkIso03AllReJura01In015_[det]->Fill(isoSumJura01In015, weight);
+
+
 }
 
 void Looper::AN2009_98()
@@ -260,7 +337,7 @@ void Looper::AN2009_98()
 	if (ecalIso > ecalThresholds[det]) return;
 	if (hcalIso > hcalThresholds[det]) return;
 
-	else std::cout << "Error! Not in barrel or endcap - something is wrong" << std::endl;
+	if (det != 0 && det != 1) std::cout << "Error! Not in barrel or endcap - something is wrong" << std::endl;
 	//
 
 	h1_AN2009_098_tcmet_after_selection_[det]->Fill(cms2.evt_tcmet(), weight);
@@ -349,10 +426,12 @@ void Looper::wEfficiency()
 	// set up the selections to apply
 	//
 
-	float isolationThreshold = 0;
+	float isolationThreshold = 999;
+	bool applyIsoV0 = false;
 	if ((cuts_ & (CUT_BIT(ELE_ISO_15))) == (CUT_BIT(ELE_ISO_15))) isolationThreshold = 0.15;
 	if ((cuts_ & (CUT_BIT(ELE_ISO_10))) == (CUT_BIT(ELE_ISO_10))) isolationThreshold = 0.10;
-	float jptThreshold = 999999.99;
+	if ((cuts_ & (CUT_BIT(ELE_ISO_V0))) == (CUT_BIT(ELE_ISO_V0))) applyIsoV0 = true;
+	float jptThreshold = 999;
 	if ((cuts_ & (CUT_BIT(EVT_JPT_25))) == (CUT_BIT(EVT_JPT_25))) jptThreshold = 25.0;
 	float tcMetThreshold = 0;
 	if ((cuts_ & (CUT_BIT(EVT_TCMET_30))) == (CUT_BIT(EVT_TCMET_30))) tcMetThreshold = 30.0;
@@ -374,7 +453,16 @@ void Looper::wEfficiency()
 	//
 
 	// isolation cut
-	if (isoSum / cms2.els_p4()[0].Pt() > isolationThreshold) return;
+	if (isoSum / cms2.els_p4()[0].Pt() > isolationThreshold && isolationThreshold != 999) return;
+	if (applyIsoV0) {
+	        float tkThresholds[2] = {4.5, 6.0};
+        	float ecalThresholds[2] = {2.5, 2.0};
+	        float hcalThresholds[2] = {1.0, 1.0};
+        
+	        if (tkIso > tkThresholds[det]) return;
+	        if (ecalIso > ecalThresholds[det]) return;
+	        if (hcalIso > hcalThresholds[det]) return;
+	}
 	//
 
 	// plots of tcmet and leading jpt pt
@@ -388,11 +476,11 @@ void Looper::wEfficiency()
 	h1_weff_d0corr_after_iso_[det]->Fill(fabs(cms2.els_d0corr()[0]), weight);
 
 	// leading JPT cut
-	if (leadingJPT > jptThreshold) return;
+	if (leadingJPT > jptThreshold && jptThreshold != 999) return;
 	//
 
         // JPT phimax cut
-        if (mostBackToBackJPTAngle > jptPhiThreshold) return;
+        if (mostBackToBackJPTAngle > jptPhiThreshold && jptPhiThreshold != 180.0) return;
         //
 
 
@@ -500,10 +588,21 @@ void Looper::FillEventHistos ()
 				h1_ecalIso03All_[det]->Fill(ecalIso, weight);
 				h1_hcalIso03All_[det]->Fill(hcalIso, weight);
 				h1_tkIso03All_[det]->Fill(tkIso, weight);
+				h1_caloIso03All_[det]->Fill(ecalIso + hcalIso, weight);
 
 				h2_tkIso03All_[det]->Fill(cms2.els_p4()[i].Pt(), tkIso, weight);
                                 h2_ecalIso03All_[det]->Fill(cms2.els_p4()[i].Pt(), ecalIso, weight);
                                 h2_hcalIso03All_[det]->Fill(cms2.els_p4()[i].Pt(), hcalIso, weight);
+				h2_caloIso03All_[det]->Fill(cms2.els_p4()[i].Pt(), ecalIso + hcalIso, weight);
+
+				float tkIsoMod1 = tkIso - 0.1 * cms2.els_p4()[i].Pt();
+				if (tkIsoMod1 < 0.0) tkIsoMod1 = 0.0;
+				h1_tkIso03AllMod1_[det]->Fill(tkIsoMod1, weight);
+
+                                float tkIsoMod2 = tkIso - 0.2 * cms2.els_p4()[i].Pt();
+                                if (tkIsoMod2 < 0.0) tkIsoMod2 = 0.0;
+                                h1_tkIso03AllMod2_[det]->Fill(tkIsoMod2, weight);
+
 
 				// N-1
 				if (ecalIso < ecalThresholdsNM1[det] && hcalIso < hcalThresholdsNM1[det])
@@ -512,6 +611,8 @@ void Looper::FillEventHistos ()
 					h1_ecalIso03AllNM1_[det]->Fill(ecalIso, weight);
                                 if (tkIso < tkThresholdsNM1[det] && ecalIso < ecalThresholdsNM1[det])
 					h1_hcalIso03AllNM1_[det]->Fill(hcalIso, weight);
+
+				trackIsolationStudy(i, det);
 
 			}
 

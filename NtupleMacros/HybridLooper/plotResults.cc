@@ -55,6 +55,28 @@ TArrow *getArrow(THStack *st, TString det, float cutValEB, float cutValEE)
 	return arr_cut;
 }
 
+void plot2DSB(HistogramUtilities &h1, TString name, TString xTitle, TString yTitle, TString saveName, TString det)
+{
+
+        TH2F *h2_signal = h1.get2dHistogram(theSignal, name, "", det, 1);
+	h2_signal->SetTitle(";" + xTitle + ";" + yTitle);
+        TH2F *h2_background = h1.get2dHistogram(theBackground, name, "", det, 1);
+        h2_background->SetTitle(";" + xTitle + ";" + yTitle);
+	TCanvas *c1 = new TCanvas();
+	c1->SetCanvasSize(600, 300);
+	c1->Divide(2, 1);
+	c1->cd(1);
+	h2_signal->Draw("COL");
+	c1->cd(2);
+	h2_background->Draw("COL");
+        Utilities::saveCanvas(c1, "results/" + saveName + "_2D_" + name + "_" + det);
+
+	delete c1;
+	delete h2_signal;
+	delete h2_background;
+
+}
+
 void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det, bool ascending, int rebin, bool legendOnRight, float cutValEB, float cutValEE)
 {
 
@@ -84,7 +106,6 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
 			sob = s/b;
 		}
 		h1_sob->SetBinContent(bin, sob);
-		std::cout << s/sTotal << std::endl;
 		if (s/sTotal >= 0.99 && bin_eff99 == 0) bin_eff99 = bin;
                 if (s/sTotal >= 0.98 && bin_eff98 == 0) bin_eff98 = bin;
                 if (s/sTotal >= 0.95 && bin_eff95 == 0) bin_eff95 = bin;
@@ -368,8 +389,8 @@ void test()
 
 void plotAllResultsID()
 {
-	plotResultsID("ee", "AN2009_098_studies");
-	plotResultsID("eb", "AN2009_098_studies");
+	plotResultsID("ee", "isoV0_studies");
+	plotResultsID("eb", "isoV0_studies");
 }
 
 void plotAllResultsW()
@@ -467,6 +488,7 @@ void plotResultsID(TString det, TString fileStamp)
 
 	gROOT->ProcessLine(".L ~/tdrStyle.C");
 	gROOT->ProcessLine("setTDRStyle()");
+        gROOT->ProcessLine("gStyle->SetPalette(1)");
 
 	// luminorm for 1pb-1
 	// luminosity is already normalised to 1pb-1 in the looper
@@ -492,6 +514,19 @@ void plotResultsID(TString det, TString fileStamp)
         plotEff(h1, "tkIso03All", "IDStudy", det, true, 1, true);
         plotEff(h1, "ecalIso03All", "IDStudy", det, true, 1, true);
         plotEff(h1, "hcalIso03All", "IDStudy", det, true, 1, true);
+
+        plotEff(h1, "tkIso03AllReRel", "IDStudy", det, true, 1, true);
+        plotEff(h1, "caloIso03All", "IDStudy", det, true, 1, true);
+        plotEff(h1, "tkIso03AllMod1", "IDStudy", det, true, 1, true);
+        plotEff(h1, "tkIso03AllMod2", "IDStudy", det, true, 1, true);
+        plotEff(h1, "tkIso03AllReJura01", "IDStudy", det, true, 1, true);
+        plotEff(h1, "tkIso03AllReJura02", "IDStudy", det, true, 1, true);
+        plotEff(h1, "tkIso03AllReJura03", "IDStudy", det, true, 1, true);
+	plotEff(h1, "tkIso03AllReJura01In015", "IDStudy", det, true, 1, true);
+
+	// 2D stuff
+	plot2DSB(h1, "tkIso03All2D", "p_{T} (GeV/c)", "tkIso03All", "IDStudy", det);
+        plot2DSB(h1, "caloIso03All2D", "E_{T} (GeV)", "caloIso03All", "IDStudy", det);
 
 	// N-1
         plotEff(h1, "tkIso03AllNM1", "IDStudy", det, true, 1, true);

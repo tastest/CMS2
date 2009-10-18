@@ -199,6 +199,14 @@ int Results_AN2009_098_studies ()
 }
 
 
+int Results_isoV0_studies ()
+{
+     return run<Looper>( (CUT_BIT(ELE_ISO_V0) | CUT_BIT(EVT_TCMET_30)),
+        "Results_isoV0_studies",
+1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
+}
+
+
 // default yield table
 int Results_tcmet30_conv ()
 {

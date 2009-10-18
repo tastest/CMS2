@@ -16,6 +16,8 @@ void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString sav
 TArrow *getArrow(TString det, THStack *st,float cutValEB, float cutValEE);
 
 
+void plot2DSB(HistogramUtilities &h1, TString name, TString xTitle, TString yTitle, TString saveName, TString det);
+
 void plotAllResultsID();
 void plotResultsID(TString det, TString fileStamp);
 
