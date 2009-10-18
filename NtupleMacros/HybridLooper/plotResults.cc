@@ -66,10 +66,18 @@ void plot2DSB(HistogramUtilities &h1, TString name, TString xTitle, TString yTit
 	c1->SetCanvasSize(600, 300);
 	c1->Divide(2, 1);
 	c1->cd(1);
-	h2_signal->Draw("COL");
+	h2_signal->Draw("COLZ");
 	c1->cd(2);
-	h2_background->Draw("COL");
-        Utilities::saveCanvas(c1, "results/" + saveName + "_2D_" + name + "_" + det);
+	h2_background->Draw("COLZ");
+        Utilities::saveCanvas(c1, "results/" + saveName + "_2D_linz_" + name + "_" + det);
+
+        c1->cd(1);
+	c1->cd(1)->SetLogz();
+        h2_signal->Draw("COLZ");
+        c1->cd(2);
+	c1->cd(2)->SetLogz();
+        h2_background->Draw("COLZ");
+        Utilities::saveCanvas(c1, "results/" + saveName + "_2D_logz_" + name + "_" + det);
 
 	delete c1;
 	delete h2_signal;
@@ -515,6 +523,7 @@ void plotResultsID(TString det, TString fileStamp)
         plotEff(h1, "ecalIso03All", "IDStudy", det, true, 1, true);
         plotEff(h1, "hcalIso03All", "IDStudy", det, true, 1, true);
 
+        plotEff(h1, "tkIso03AllRe", "IDStudy", det, true, 1, true);
         plotEff(h1, "tkIso03AllReRel", "IDStudy", det, true, 1, true);
         plotEff(h1, "caloIso03All", "IDStudy", det, true, 1, true);
         plotEff(h1, "tkIso03AllMod1", "IDStudy", det, true, 1, true);
@@ -527,6 +536,7 @@ void plotResultsID(TString det, TString fileStamp)
 	// 2D stuff
 	plot2DSB(h1, "tkIso03All2D", "p_{T} (GeV/c)", "tkIso03All", "IDStudy", det);
         plot2DSB(h1, "caloIso03All2D", "E_{T} (GeV)", "caloIso03All", "IDStudy", det);
+        plot2DSB(h1, "tkIso03AllRedR2D", "dEta", "dPhi", "IDStudy", det);
 
 	// N-1
         plotEff(h1, "tkIso03AllNM1", "IDStudy", det, true, 1, true);
