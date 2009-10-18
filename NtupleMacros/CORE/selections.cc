@@ -2941,7 +2941,7 @@ std::pair<float, float> getConversionInfo(LorentzVector trk1_p4,
 bool isconversionElectron09(int elIdx) {
 
   for(unsigned int tkIdx = 0; tkIdx < cms2.trks_trk_p4().size(); tkIdx++) {
-    if(dRBetweenVectors(cms2.els_trk_p4()[elIdx], cms2.trks_trk_p4()[tkIdx]) > 0.5)
+    if(dRBetweenVectors(cms2.els_trk_p4()[elIdx], cms2.trks_trk_p4()[tkIdx]) > 0.3)
       continue;
     //skip the electron's track
     if(cms2.els_trkidx()[elIdx] == tkIdx && cms2.els_trkshFrac()[elIdx] > 0.45)
