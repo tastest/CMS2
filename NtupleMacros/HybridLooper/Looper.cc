@@ -210,11 +210,10 @@ float Looper::recomputeTrackIsolation(int eleIndex, float strip, float dRIn, flo
                 const float &pT = cms2.trks_trk_p4()[i].Pt();
 
                 if (pT < 0.7) continue;
-                if (dR > 0.3) continue;
                 if (fabs(cms2.trks_z0()[i] - cms2.els_z0()[eleIndex]) > 0.2) continue;
                 if (dR < dRIn) continue;
 		if (dR > dROut) continue;
-		if (dEta < strip) continue;
+		if (fabs(dEta) < strip) continue;
 
                 isoSum += pT;
 	}
