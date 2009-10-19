@@ -205,6 +205,13 @@ int Results_AN2009_098_studies_30v1 ()
 1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
 }
 
+int Results_AN2009_098_studies_30v2 ()
+{
+     return run<Looper>( (CUT_BIT(ELE_PT_30)) | (CUT_BIT(ELE_ISO_V2) | CUT_BIT(EVT_TCMET_30)),
+        "Results_AN2009_098_studies_30v1",
+1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
+}
+
 int Results_AN2009_098_studies_20v1 ()
 {
      return run<Looper>( (CUT_BIT(ELE_PT_20)) | (CUT_BIT(ELE_ISO_V1) | CUT_BIT(EVT_TCMET_30)),

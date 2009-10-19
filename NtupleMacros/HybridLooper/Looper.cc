@@ -494,10 +494,12 @@ void Looper::wEfficiency()
 	float isolationThreshold = 999;
 	bool applyIsoV0 = false;
 	bool applyIsoV1 = false;
+	bool applyIsoV2 = false;
 	if ((cuts_ & (CUT_BIT(ELE_ISO_15))) == (CUT_BIT(ELE_ISO_15))) isolationThreshold = 0.15;
 	if ((cuts_ & (CUT_BIT(ELE_ISO_10))) == (CUT_BIT(ELE_ISO_10))) isolationThreshold = 0.10;
 	if ((cuts_ & (CUT_BIT(ELE_ISO_V0))) == (CUT_BIT(ELE_ISO_V0))) applyIsoV0 = true;
         if ((cuts_ & (CUT_BIT(ELE_ISO_V1))) == (CUT_BIT(ELE_ISO_V1))) applyIsoV1 = true;
+        if ((cuts_ & (CUT_BIT(ELE_ISO_V2))) == (CUT_BIT(ELE_ISO_V2))) applyIsoV2 = true;
 	float jptThreshold = 999;
 	if ((cuts_ & (CUT_BIT(EVT_JPT_25))) == (CUT_BIT(EVT_JPT_25))) jptThreshold = 25.0;
 	float tcMetThreshold = 0;
@@ -538,6 +540,13 @@ void Looper::wEfficiency()
                 if (ecalIso > ecalThresholds[det]) return;
                 if (hcalIso > hcalThresholds[det]) return;
         }
+        if (applyIsoV2) {
+                float tkIsoJura01In015 = recomputeTrackIsolation(eleIndex, 0.01, 0.015, 0.3);
+                float tkThresholds[2] = {2.5, 2.0};
+                float caloThresholds[2] = {3.0, 2.5};
+                if (tkIsoJura01In015 > tkThresholds[det]) return;
+                if ((ecalIso+hcalIso) > caloThresholds[det]) return;
+        }    
 	//
 
 	// plots of tcmet and leading jpt pt
