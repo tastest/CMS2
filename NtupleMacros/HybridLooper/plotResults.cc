@@ -411,11 +411,18 @@ void plotAllResultsW()
 
 void plotAllResultsAN2009_098()
 {
-        plotResultsW("ee", "AN2009_098_studies");
-        plotResultsW("eb", "AN2009_098_studies");
+//        plotResultsW("ee", "AN2009_098_studies");
+//        plotResultsW("eb", "AN2009_098_studies");
 
-        plotResultsAN2009_098("ee", "AN2009_098_studies");
-        plotResultsAN2009_098("eb", "AN2009_098_studies");
+        plotResultsW("ee", "AN2009_098_studies_30v1");
+        plotResultsW("eb", "AN2009_098_studies_30v1");
+
+//        plotResultsAN2009_098("ee", "AN2009_098_studies");
+//        plotResultsAN2009_098("eb", "AN2009_098_studies");
+
+        plotResultsAN2009_098("ee", "AN2009_098_studies_30v1");
+        plotResultsAN2009_098("eb", "AN2009_098_studies_30v1");
+
 }
 
 void plotResultsAN2009_098(TString det, TString fileStamp)
