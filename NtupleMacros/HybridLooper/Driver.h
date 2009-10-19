@@ -184,24 +184,37 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 // default yield table
 int Results_tcmet30 ()
 {
-     return run<Looper>( (CUT_BIT(ELE_ISO_10) | CUT_BIT(EVT_JPT_25) | CUT_BIT(EVT_TCMET_30)),
+     return run<Looper>( (CUT_BIT(ELE_PT_20)) | (CUT_BIT(ELE_ISO_10) | CUT_BIT(EVT_JPT_25) | CUT_BIT(EVT_TCMET_30)),
 	"Results_iso10_jpt25_tcmet30", 
 1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
 }
 
 
 // default yield table
-int Results_AN2009_098_studies ()
+int Results_AN2009_098_studies_30v0 ()
 {    
-     return run<Looper>( (CUT_BIT(ELE_ISO_10) | CUT_BIT(EVT_TCMET_30)),
-        "Results_AN2009_098_studies", 
+     return run<Looper>( (CUT_BIT(ELE_PT_30)) | (CUT_BIT(ELE_ISO_V0) | CUT_BIT(EVT_TCMET_30)),
+        "Results_AN2009_098_studies_30v0", 
 1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
 }
 
+int Results_AN2009_098_studies_30v1 ()
+{ 
+     return run<Looper>( (CUT_BIT(ELE_PT_30)) | (CUT_BIT(ELE_ISO_V1) | CUT_BIT(EVT_TCMET_30)),
+        "Results_AN2009_098_studies_30v1", 
+1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
+}
+
+int Results_AN2009_098_studies_20v1 ()
+{
+     return run<Looper>( (CUT_BIT(ELE_PT_20)) | (CUT_BIT(ELE_ISO_V1) | CUT_BIT(EVT_TCMET_30)),
+        "Results_AN2009_098_studies_20v1",
+1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
+}
 
 int Results_isoV0_studies ()
 {
-     return run<Looper>( (CUT_BIT(ELE_ISO_V0) | CUT_BIT(EVT_TCMET_30)),
+     return run<Looper>(  (CUT_BIT(ELE_PT_20)) | (CUT_BIT(ELE_ISO_V0) | CUT_BIT(EVT_TCMET_30)),
         "Results_isoV0_studies",
 1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
 }
@@ -210,21 +223,21 @@ int Results_isoV0_studies ()
 // default yield table
 int Results_tcmet30_conv ()
 {
-     return run<Looper>( (CUT_BIT(ELE_ISO_10) | CUT_BIT(EVT_JPT_25) | CUT_BIT(EVT_TCMET_30) | CUT_BIT(ELE_NOCONV)),
+     return run<Looper>(  (CUT_BIT(ELE_PT_20)) | (CUT_BIT(ELE_ISO_10) | CUT_BIT(EVT_JPT_25) | CUT_BIT(EVT_TCMET_30) | CUT_BIT(ELE_NOCONV)),
         "Results_iso10_jpt25_tcmet30_conv",
 1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
 }
 
 int Results_tcmet30_phimax110 ()
 {
-     return run<Looper>( (CUT_BIT(ELE_ISO_10) | CUT_BIT(EVT_JPT_PHIMAX_110) | CUT_BIT(EVT_TCMET_30)),
+     return run<Looper>(  (CUT_BIT(ELE_PT_20)) | (CUT_BIT(ELE_ISO_10) | CUT_BIT(EVT_JPT_PHIMAX_110) | CUT_BIT(EVT_TCMET_30)),
         "Results_iso10_jptphimax110_tcmet30",
 1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
 }
 
 int Results_tcmet30_phimax100_conv ()
 {
-     return run<Looper>( (CUT_BIT(ELE_ISO_10) | CUT_BIT(EVT_JPT_PHIMAX_100) | CUT_BIT(EVT_TCMET_30) | CUT_BIT(ELE_NOCONV)),
+     return run<Looper>(  (CUT_BIT(ELE_PT_20)) | (CUT_BIT(ELE_ISO_10) | CUT_BIT(EVT_JPT_PHIMAX_100) | CUT_BIT(EVT_TCMET_30) | CUT_BIT(ELE_NOCONV)),
         "Results_iso10_jptphimax100_tcmet30_conv",
 1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
 }

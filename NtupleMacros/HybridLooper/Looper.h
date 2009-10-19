@@ -49,6 +49,9 @@ protected:
 	//	- why is the tail so long for signal?
 	void trackIsolationStudy(int eleIndex, int det);
 
+	// function to recompute track iso
+	float recomputeTrackIsolation(int eleIndex, float strip, float dRIn, float dROut);
+
 	// w efficiency studies
 	void wEfficiency();
 

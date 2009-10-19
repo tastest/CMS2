@@ -89,10 +89,9 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
 {
 
 	std::cout << "[plotEff]" << std::endl;
-	TH1F *h1_signal = h1.getHistogram(theSignal, name, "", det, rebin, "");
-        TH1F *h1_background = h1.getHistogram(theBackground, name, "", det, rebin, "");
+	TH1F *h1_signal = h1.getHistogram(theSignal, name, "", det, rebin, "s_");
+        TH1F *h1_background = h1.getHistogram(theBackground, name, "", det, rebin, "b_");
 	TH1F *h1_both = h1.getHistogram(theBackground | theSignal, name, "", det, rebin, "");
-
 
 	//
 	// S/B plots

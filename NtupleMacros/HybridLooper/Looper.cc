@@ -140,7 +140,7 @@ void Looper::BookHistos ()
 	FormatHist(h1_tkIso03AllReJura01In015_, "tkIso03AllReJura01In015", 150, 0.0, 15.0);
         FormatHist(h1_tkIso03AllRedEta_, "tkIso03AllRedEta", 80, -0.4, 0.4);
         FormatHist(h1_tkIso03AllRedPhi_, "tkIso03AllRedPhi", 80, -0.4, 0.4);
-        Format2DHist(h2_tkIso03AllRedR2D_, "tkIso03AllRedR2D", 80, -0.4, 0.4, 80, -0.4, 0.4);
+        Format2DHist(h2_tkIso03AllRedR2D_, "tkIso03AllRedR2D", 80, -0.4, 0.4, 50, -0.1, 0.4);
 
 
 	// The "Egamma robust tight V1 (2_2_X tune)"
@@ -197,6 +197,32 @@ int Looper::getSubdet(int eleIndex)
 	return -1;
 }
 
+float Looper::recomputeTrackIsolation(int eleIndex, float strip, float dRIn, float dROut)
+{
+        
+        float isoSum = 0.0;
+        for (size_t i = 0; i < cms2.trks_trk_p4().size(); ++i)
+        {
+
+                float dEta = cms2.trks_trk_p4()[i].Eta() - cms2.els_p4()[eleIndex].Eta();
+                float dPhi = acos(cos(cms2.trks_trk_p4()[i].Phi() - cms2.els_p4()[eleIndex].Phi()));
+                float dR = sqrt(dEta*dEta + dPhi*dPhi);
+                const float &pT = cms2.trks_trk_p4()[i].Pt();
+
+                if (pT < 0.7) continue;
+                if (dR > 0.3) continue;
+                if (fabs(cms2.trks_z0()[i] - cms2.els_z0()[eleIndex]) > 0.2) continue;
+                if (dR < dRIn) continue;
+		if (dR > dROut) continue;
+		if (dEta < strip) continue;
+
+                isoSum += pT;
+	}
+
+	return isoSum;
+
+}
+
 void Looper::trackIsolationStudy(int eleIndex, int det)
 {
 
@@ -222,7 +248,8 @@ void Looper::trackIsolationStudy(int eleIndex, int det)
 		if (dR > 0.3) continue;
 		if (fabs(cms2.trks_z0()[i] - cms2.els_z0()[eleIndex]) > 0.2) continue;
 
-                h2_tkIso03AllRedR2D_[det]->Fill(dEta, dPhi, weight);
+		// use weight of 1.0 when filling the 2d hist
+                h2_tkIso03AllRedR2D_[det]->Fill(dEta, dPhi, 1.0);
 
 		if (dR > 0.015 && fabs(dEta) > 0.01)
 			isoSumJura01In015 += pT;
@@ -286,6 +313,8 @@ void Looper::AN2009_98()
                         foundFirst = true;
                 }
 	}
+
+	if (!foundFirst) return;
 
 	// get isolation
         const float &ecalIso = cms2.els_ecalIso()[0];
@@ -365,27 +394,64 @@ void Looper::wEfficiency()
 	// apply preselection cuts are always the same
 	//
 
-	// one egamma electron
-	if (cms2.evt_nels() != 1) return;
-	// 
-	// electron is egamma type
-	if (! cms2.els_type()[0] & (1<<ISECALDRIVEN)) return;
+        // find candidate electron
+        // assumes electrons are sorted by pT descending
+        int eleIndex = 0;
+        int eleSecondIndex = 0;
+        bool foundFirst = false;
+        bool foundSecond = false;
+        for (size_t i = 0; i < cms2.evt_nels(); ++i)
+        {
+                // no particle flow
+                if (! cms2.els_type()[i] & (1<<ISECALDRIVEN)) continue;
+                
+                if (foundFirst && !foundSecond) {
+                        eleSecondIndex = i;
+                        foundSecond = true;
+                        break;
+                }       
+                if (!foundFirst) {
+                        eleIndex = i;
+                        foundFirst = true;
+                }       
+        }    
+
+	// must have found first electron
+	if (!foundFirst) return;
+
+        // don't allow events with a second electron above 20.0 GeV
+        //
+        if (foundSecond && cms2.els_p4()[eleSecondIndex].Pt() > 20.0) return;
+        //
+
+        // impose fiducial cuts in Eta
+        // veto barrel-endcap gap
+        if (fabs(cms2.els_etaSC()[eleIndex]) > 1.4442 && fabs(cms2.els_etaSC()[eleIndex]) < 1.560) return;
+        // veto high eta endcap
+        if (fabs(cms2.els_etaSC()[eleIndex]) > 2.500) return;
+        //
+
 	//
 	// get the subdestector (EE or EB)
-	int det = getSubdet(0);
+	int det = getSubdet(eleIndex);
+
 	//
-	// 20 GeV Pt cut
-	h1_weff_pt_[det]->Fill(cms2.els_p4()[0].Pt(), weight);
-	if (cms2.els_p4()[0].Pt() < 20.0) return;
+	// Pt cut
+        float ptThreshold = 0.0;
+        if ((cuts_ & (CUT_BIT(ELE_PT_20))) == (CUT_BIT(ELE_PT_20))) ptThreshold = 20.0;
+        if ((cuts_ & (CUT_BIT(ELE_PT_30))) == (CUT_BIT(ELE_PT_30))) ptThreshold = 30.0;
+
+	h1_weff_pt_[det]->Fill(cms2.els_p4()[eleIndex].Pt(), weight);
+	if (cms2.els_p4()[eleIndex].Pt() < ptThreshold) return;
 
 	//
 	// construct variables that are not already in ntuple
 	//
 
 	// isolation
-	const float &ecalIso = cms2.els_ecalIso()[0];
-	const float &hcalIso = cms2.els_hcalIso()[0];
-	const float &tkIso = cms2.els_tkIso()[0];
+	const float &ecalIso = cms2.els_ecalIso()[eleIndex];
+	const float &hcalIso = cms2.els_hcalIso()[eleIndex];
+	const float &tkIso = cms2.els_tkIso()[eleIndex];
 	float isoSum = ecalIso + hcalIso + tkIso;
 
 	// leading pT JPT jet
@@ -397,12 +463,12 @@ void Looper::wEfficiency()
 	for (size_t j = 0; j < cms2.jpts_p4().size(); ++j)
 	{
 		if ( TMath::Abs(cms2.jpts_p4()[j].eta()) > 2.5 ) continue;
-		if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.els_p4()[0], cms2.jpts_p4()[j])) < 0.4) continue;
+		if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.els_p4()[eleIndex], cms2.jpts_p4()[j])) < 0.4) continue;
 		if (cms2.jpts_p4()[j].Et() > leadingJPT) {
 			leadingJPT = cms2.jpts_p4()[j].Et();
 			leadingJPTIndex = j;
 		}
-		float dPhi = acos(cos(cms2.els_p4()[0].Phi() - cms2.jpts_p4()[j].Phi()));
+		float dPhi = acos(cos(cms2.els_p4()[eleIndex].Phi() - cms2.jpts_p4()[j].Phi()));
 		if (dPhi > mostBackToBackJPT) {
 			mostBackToBackJPT = dPhi;
 			mostBackToBackJPTIndex = j;
@@ -415,10 +481,10 @@ void Looper::wEfficiency()
 	float mostBackToBackJPTAngle = 0.0;
 	if (leadingJPT > 0.0) {
 		// angle between the electron and the highest pT JPT
-		leadingJPTAngle = (180.0 * acos(cos(cms2.els_p4()[0].Phi()
+		leadingJPTAngle = (180.0 * acos(cos(cms2.els_p4()[eleIndex].Phi()
 						- cms2.jpts_p4()[leadingJPTIndex].Phi())) / 3.14159265358979312);
 		// angle between the electron and the JPT that is most back to back to it
-		mostBackToBackJPTAngle = (180.0 * acos(cos(cms2.els_p4()[0].Phi()
+		mostBackToBackJPTAngle = (180.0 * acos(cos(cms2.els_p4()[eleIndex].Phi()
 						- cms2.jpts_p4()[mostBackToBackJPTIndex].Phi())) / 3.14159265358979312);	
 	}
 
@@ -428,9 +494,11 @@ void Looper::wEfficiency()
 
 	float isolationThreshold = 999;
 	bool applyIsoV0 = false;
+	bool applyIsoV1 = false;
 	if ((cuts_ & (CUT_BIT(ELE_ISO_15))) == (CUT_BIT(ELE_ISO_15))) isolationThreshold = 0.15;
 	if ((cuts_ & (CUT_BIT(ELE_ISO_10))) == (CUT_BIT(ELE_ISO_10))) isolationThreshold = 0.10;
 	if ((cuts_ & (CUT_BIT(ELE_ISO_V0))) == (CUT_BIT(ELE_ISO_V0))) applyIsoV0 = true;
+        if ((cuts_ & (CUT_BIT(ELE_ISO_V1))) == (CUT_BIT(ELE_ISO_V1))) applyIsoV1 = true;
 	float jptThreshold = 999;
 	if ((cuts_ & (CUT_BIT(EVT_JPT_25))) == (CUT_BIT(EVT_JPT_25))) jptThreshold = 25.0;
 	float tcMetThreshold = 0;
@@ -444,7 +512,7 @@ void Looper::wEfficiency()
 
 	//
 	// plots of key quantities before selection applied
-	h1_weff_iso_[det]->Fill(isoSum / cms2.els_p4()[0].Pt(), weight);
+	h1_weff_iso_[det]->Fill(isoSum / cms2.els_p4()[eleIndex].Pt(), weight);
 	h1_weff_tcmet_[det]->Fill(cms2.evt_tcmet(), weight);
 	h1_weff_jptpt_[det]->Fill(leadingJPT, weight);
 
@@ -458,11 +526,19 @@ void Looper::wEfficiency()
 	        float tkThresholds[2] = {4.5, 6.0};
         	float ecalThresholds[2] = {2.5, 2.0};
 	        float hcalThresholds[2] = {1.0, 1.0};
-        
 	        if (tkIso > tkThresholds[det]) return;
 	        if (ecalIso > ecalThresholds[det]) return;
 	        if (hcalIso > hcalThresholds[det]) return;
 	}
+        if (applyIsoV1) {
+		float tkIsoJura01In015 = recomputeTrackIsolation(eleIndex, 0.01, 0.015, 0.3);
+                float tkThresholds[2] = {3.0, 3.0};
+                float ecalThresholds[2] = {2.5, 2.0};
+                float hcalThresholds[2] = {1.0, 1.0};
+                if (tkIsoJura01In015 > tkThresholds[det]) return;
+                if (ecalIso > ecalThresholds[det]) return;
+                if (hcalIso > hcalThresholds[det]) return;
+        }
 	//
 
 	// plots of tcmet and leading jpt pt
@@ -473,7 +549,7 @@ void Looper::wEfficiency()
 	// angle between electron and JPT that is most back to back to it
 	h1_weff_jptphimax_after_iso_[det]->Fill(mostBackToBackJPTAngle, weight);
 	// d0 corrected
-	h1_weff_d0corr_after_iso_[det]->Fill(fabs(cms2.els_d0corr()[0]), weight);
+	h1_weff_d0corr_after_iso_[det]->Fill(fabs(cms2.els_d0corr()[eleIndex]), weight);
 
 	// leading JPT cut
 	if (leadingJPT > jptThreshold && jptThreshold != 999) return;
@@ -489,10 +565,10 @@ void Looper::wEfficiency()
 	// plot of angle between leading JPT and electron
 	h1_weff_leadjptphi_after_iso_jpt_[det]->Fill(leadingJPTAngle, weight);
         // d0 corrected
-        h1_weff_d0corr_after_iso_jpt_[det]->Fill(fabs(cms2.els_d0corr()[0]), weight);
+        h1_weff_d0corr_after_iso_jpt_[det]->Fill(fabs(cms2.els_d0corr()[eleIndex]), weight);
 
 	// conversion rejection cut
-	if (rejectConversions && isconversionElectron09(0)) return;
+	if (rejectConversions && isconversionElectron09(eleIndex)) return;
 	//
 
 	h1_weff_tcmet_after_iso_jpt_conv_[det]->Fill(cms2.evt_tcmet(), weight);
@@ -501,7 +577,7 @@ void Looper::wEfficiency()
 	// plots of electron ID quantities
 	//
         if (cms2.evt_tcmet() < 15.0) {
-		h1_weffbg_sigmaIEtaIEta_[det]->Fill(cms2.els_sigmaIEtaIEta()[0], weight); 
+		h1_weffbg_sigmaIEtaIEta_[det]->Fill(cms2.els_sigmaIEtaIEta()[eleIndex], weight); 
 	}
 
 	// tcMet cut
@@ -514,7 +590,7 @@ void Looper::wEfficiency()
 		// SIGNAL
 		// plots of electron ID quantities
 		//
-		h1_weffs_sigmaIEtaIEta_[det]->Fill(cms2.els_sigmaIEtaIEta()[0], weight);	
+		h1_weffs_sigmaIEtaIEta_[det]->Fill(cms2.els_sigmaIEtaIEta()[eleIndex], weight);	
 
 		// add to count of events passing all cuts
 		wEvents_passing_[det] += weight;
