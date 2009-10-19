@@ -112,6 +112,7 @@ protected:
         TH1F    *h1_tkIso03AllNM1_[2];
         TH1F    *h1_ecalIso03AllNM1_[2];
         TH1F    *h1_hcalIso03AllNM1_[2];
+	TH1F	*h1_tkIso03AllReJura01In015NM1_[2];
 
 	// track isolation investigation
         TH1F    *h1_tkIso03AllRe_[2];

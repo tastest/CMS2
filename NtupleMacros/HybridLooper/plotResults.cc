@@ -541,7 +541,7 @@ void plotResultsID(TString det, TString fileStamp)
         plotEff(h1, "tkIso03AllNM1", "IDStudy", det, true, 1, true);
         plotEff(h1, "ecalIso03AllNM1", "IDStudy", det, true, 1, true);
         plotEff(h1, "hcalIso03AllNM1", "IDStudy", det, true, 1, true);
-
+	plotEff(h1, "tkIso03AllReJura01In015NM1", "IDStudy", det, true, 1, true);
 
 }
 

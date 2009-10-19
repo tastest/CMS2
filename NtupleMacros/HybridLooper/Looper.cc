@@ -129,6 +129,7 @@ void Looper::BookHistos ()
         FormatHist(h1_tkIso03AllNM1_, "tkIso03AllNM1", 150, 0.0, 15);
         FormatHist(h1_ecalIso03AllNM1_, "ecalIso03AllNM1", 150, 0.0, 15);
         FormatHist(h1_hcalIso03AllNM1_, "hcalIso03AllNM1", 150, 0.0, 15);
+	FormatHist(h1_tkIso03AllReJura01In015NM1_, "tkIso03AllReJura01In015NM1", 150, 0.0, 15);
 
 	// track iso studies
         FormatHist(h1_tkIso03Alld0corr_, "tkIso03Alld0corr", 100, 0.0, 0.2);
@@ -356,7 +357,6 @@ void Looper::AN2009_98()
 
 	// isolations cuts
 	//
-        // some candidate thresholds to look at N-1 with
         float tkThresholds[2] = {2.2, 1.1};
         float ecalThresholds[2] = {4.2, 3.4};
         float hcalThresholds[2] = {2.0, 1.3};
@@ -531,7 +531,7 @@ void Looper::wEfficiency()
 	}
         if (applyIsoV1) {
 		float tkIsoJura01In015 = recomputeTrackIsolation(eleIndex, 0.01, 0.015, 0.3);
-                float tkThresholds[2] = {3.0, 3.0};
+                float tkThresholds[2] = {2.5, 2.0};
                 float ecalThresholds[2] = {2.5, 2.0};
                 float hcalThresholds[2] = {1.0, 1.0};
                 if (tkIsoJura01In015 > tkThresholds[det]) return;
@@ -680,8 +680,11 @@ void Looper::FillEventHistos ()
 
 
 				// N-1
-				if (ecalIso < ecalThresholdsNM1[det] && hcalIso < hcalThresholdsNM1[det])
+				if (ecalIso < ecalThresholdsNM1[det] && hcalIso < hcalThresholdsNM1[det]) {
 					h1_tkIso03AllNM1_[det]->Fill(tkIso, weight);
+					float tkIsoJura01In015 = recomputeTrackIsolation(i, 0.01, 0.015, 0.3);
+					h1_tkIso03AllReJura01In015NM1_[det]->Fill(tkIsoJura01In015, weight);
+				}
                                 if (tkIso < tkThresholdsNM1[det] && hcalIso < hcalThresholdsNM1[det])
 					h1_ecalIso03AllNM1_[det]->Fill(ecalIso, weight);
                                 if (tkIso < tkThresholdsNM1[det] && ecalIso < ecalThresholdsNM1[det])
