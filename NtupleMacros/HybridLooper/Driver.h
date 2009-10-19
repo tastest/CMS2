@@ -208,7 +208,7 @@ int Results_AN2009_098_studies_30v1 ()
 int Results_AN2009_098_studies_30v2 ()
 {
      return run<Looper>( (CUT_BIT(ELE_PT_30)) | (CUT_BIT(ELE_ISO_V2) | CUT_BIT(EVT_TCMET_30)),
-        "Results_AN2009_098_studies_30v1",
+        "Results_AN2009_098_studies_30v2",
 1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
 }
 
