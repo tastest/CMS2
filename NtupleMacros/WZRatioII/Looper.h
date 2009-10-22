@@ -100,6 +100,9 @@ protected:
   TH1F	*h1_lep_HighptTMassWindowPtLg20_[3];
   TH1F	*h1_lep_HighptTMassWindowPtLg20IdIso_[3];
   TH1F	*h1_lep_HighptTMassWindowPtLg20IdIsoMet_[3];
+  TH1F	*h1_lep_HighptTMassWindowPtLg20IdIsoHiMet_[3];
+  TH1F  *h1_lep_HighptTMassNoCutPtLg20IdIsoHighMetBBJet_[3];
+  TH1F	*h1_lep_HighptTMassWindowPtLg20IdIsoHighMetBBJet_[3];
   TH1F  *h1_lep_HighptTMassWindowDaveCuts_[3];
 
   TH1F	*h1_lep_Lowpt_[3];

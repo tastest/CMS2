@@ -83,6 +83,18 @@ void Looper::BookHistos ()
 											  "Highlep_TMassWindowPtLg20IdIsoMet",  200, 0., 200.);
 	FormatHist(h1_lep_HighptTMassWindowPtLg20IdIsoMet_[i]);
 
+	h1_lep_HighptTMassWindowPtLg20IdIsoHiMet_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "Highlep_TMassWindowPtLg20IdIsoHiMet", hyp.c_str()), 
+											  "Highlep_TMassWindowPtLg20IdIsoHiMet",  200, 0., 200.);
+	FormatHist(h1_lep_HighptTMassWindowPtLg20IdIsoHiMet_[i]);
+
+	h1_lep_HighptTMassNoCutPtLg20IdIsoHighMetBBJet_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "Highlep_TMassNoCutPtLg20IdIsoHighMetBBJet", hyp.c_str()), 
+											  "Highlep_TMassNoCutPtLg20IdIsoHighMetBBJet",  200, 0., 200.);
+	FormatHist(h1_lep_HighptTMassNoCutPtLg20IdIsoHighMetBBJet_[i]);
+
+	h1_lep_HighptTMassWindowPtLg20IdIsoHighMetBBJet_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "Highlep_TMassWindowPtLg20IdIsoHighMetBBJet", hyp.c_str()), 
+											  "Highlep_TMassWindowPtLg20IdIsoHighMetBBJet",  200, 0., 200.);
+	FormatHist(h1_lep_HighptTMassWindowPtLg20IdIsoHighMetBBJet_[i]);
+
 	h1_lep_HighptTMassWindowDaveCuts_[i] = new TH1F( Form("%s_%s_%s", SampleName().c_str(), "Highlep_TMassWindowDaveCuts", hyp.c_str()), 
 											  "Highlep_TMassWindowDaveCuts",  200, 0., 200.);
 	FormatHist(h1_lep_HighptTMassWindowDaveCuts_[i]);
@@ -412,7 +424,7 @@ cuts_t Looper::DilepSelect() //(int i_hyp), no hyp, just idxs
   if( elidxs[0] != -1 && elidxs[1] != -1 ) {
 	 
 	//if (cms2.hyp_lt_p4()[i_hyp].pt() > ptcut && cms2.hyp_ll_p4()[i_hyp].pt() > ptcut)
-	if( cms2.els_p4()[elidxs[0]].pt() >= ptcut && cms2.els_p4()[elidxs[1]].pt() >= ptcut)
+	if( cms2.els_p4()[elidxs[0]].pt() >= ptcut && ptcut && cms2.els_p4()[elidxs[1]].pt() >= ptcut)
 	  ret |= CUT_BIT(DILEP_PT);
 
 	//if( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] < 0 )
@@ -469,6 +481,7 @@ cuts_t Looper::LepSelect(int lep_type, int i)
 	//if ( cms2.els_closestMuon().at(index) != -1) return false; 
 	//if ( TMath::Abs(cms2.els_p4()[index].eta()) > 2.4) return false;
 
+        // rather use:        GoodSusyElectronWithoutIsolationNoD0()
 	if ( cms2.els_egamma_tightId().at(i) ==  1
 		 && cms2.els_closestMuon().at(i) == -1
 		 && TMath::Abs(cms2.els_p4()[i].eta()) < 2.4 )
@@ -476,6 +489,9 @@ cuts_t Looper::LepSelect(int lep_type, int i)
 
 	if ( fabs(cms2.els_d0corr().at(i)) <= 0.02)
 	  ret |= CUT_BIT(LEP_D0);
+
+        //  if ( conversionElectron(index)) return false;
+        //  if ( isChargeFlip(index)) return false;
 
   }
 
@@ -628,6 +644,25 @@ void Looper::FillEventHistos ()
       // - recall: Z will still be in these plots - they 
       // should not appear once Z and W events are properly separated.:
       if(cms2.evt_tcmet() > 20.) h1_lep_HighptTMassWindowPtLg20IdIsoMet_[0] ->Fill(ibltmass, weight);
+      if(cms2.evt_tcmet() > 30.) h1_lep_HighptTMassWindowPtLg20IdIsoHiMet_[0] ->Fill(ibltmass, weight);
+      if(
+         cms2.evt_tcmet() > 30. &&
+         mostBackToBackJPTAngle <= 110.
+         ) {
+        h1_lep_HighptTMassWindowPtLg20IdIsoHighMetBBJet_[0] ->Fill(ibltmass, weight);
+      }
+    }
+
+    if( 
+       cms2.els_p4()[hiPtIdx].pt() > 20. && 
+       //        ibltmass > 40. && 
+       //        ibltmass < 100. &&
+       inv_el_relsusy_iso(hiPtIdx, true) < 0.1 &&
+       cms2.els_egamma_tightId()[hiPtIdx] &&
+       cms2.evt_tcmet() > 30. &&
+       mostBackToBackJPTAngle <= 110.
+       ) {
+      h1_lep_HighptTMassNoCutPtLg20IdIsoHighMetBBJet_[0] ->Fill(ibltmass, weight);
     }
 
     if( cms2.els_p4().size() == 1 &&
@@ -659,7 +694,11 @@ void Looper::FillEventHistos ()
   double iblmass = -1.0;
 
   for(int ele = 0; ele <  (int)cms2.els_p4().size(); ++ele) {
-    if(hiPtIdx != -1 && hiPtIdx != ele) {
+    if(hiPtIdx != -1 && hiPtIdx != ele ) {
+
+      // id is required on hard leg to get a hiPtIdx in the first place
+      if( cms2.els_charge()[ele] == cms2.els_charge()[hiPtIdx] ) continue;
+      if( inv_el_relsusy_iso(hiPtIdx, true) > 0.1 ) continue;
 
       iblmass = (cms2.els_p4()[hiPtIdx] + cms2.els_p4()[ele]).mass();
 
@@ -798,6 +837,7 @@ void Looper::FillEventHistos ()
   
   // histogram indices are e, m, all (0, 1, 2)
   if(hiPtIdx != -1)  {
+    
     double ibltmass = transverseMass(cms2.mus_p4()[hiPtIdx]);
 
     // calculate the Dave angle:
@@ -858,7 +898,27 @@ void Looper::FillEventHistos ()
       // - recall: Z will still be in these plots - they 
       // should not appear once Z and W events are properly separated.:
       if(cms2.evt_tcmet() > 20.) h1_lep_HighptTMassWindowPtLg20IdIsoMet_[1] ->Fill(ibltmass, weight);
+      if(cms2.evt_tcmet() > 30.) h1_lep_HighptTMassWindowPtLg20IdIsoHiMet_[1] ->Fill(ibltmass, weight);
+      if(
+         cms2.evt_tcmet() > 30. &&
+         mostBackToBackJPTAngle <= 110.
+         ) {
+        h1_lep_HighptTMassWindowPtLg20IdIsoHighMetBBJet_[1] ->Fill(ibltmass, weight);
+      }
     }
+
+    if( 
+       cms2.mus_p4()[hiPtIdx].pt() > 20. && 
+       //        ibltmass > 40. && 
+       //        ibltmass < 100. &&
+       inv_mu_relsusy_iso(hiPtIdx) < 0.1 &&
+       GoodSusyMuonWithoutIsolation(hiPtIdx) &&
+       cms2.evt_tcmet() > 30. &&
+       mostBackToBackJPTAngle <= 110.
+       ) {
+      h1_lep_HighptTMassNoCutPtLg20IdIsoHighMetBBJet_[1] ->Fill(ibltmass, weight);
+    }
+
     if( cms2.mus_p4().size() == 1 &&
         cms2.mus_p4()[hiPtIdx].pt() > 20. && 
         inv_mu_relsusy_iso(hiPtIdx) < 0.1 &&
@@ -868,7 +928,6 @@ void Looper::FillEventHistos ()
       // did not have the angle cut in the first run... 091014_1600
       h1_lep_HighptTMassWindowDaveCuts_[1]->Fill(ibltmass, weight);
     }
-
   }
 
 
@@ -898,7 +957,11 @@ void Looper::FillEventHistos ()
 
   for(int muo = 0; muo <  (int)cms2.mus_p4().size(); ++muo) {
     if(hiPtIdx != -1 && hiPtIdx != muo) {
-      
+
+      // id is required on hard leg to get a hiPtIdx in the first place
+      if( inv_mu_relsusy_iso(hiPtIdx) > 0.1 ) continue;      
+      if( cms2.mus_charge()[muo] == cms2.mus_charge()[hiPtIdx] ) continue;
+
       iblmass = (cms2.mus_p4()[hiPtIdx] + cms2.mus_p4()[muo]).mass();
 
       h1_lep_Lowpt_[1]                                                ->Fill(cms2.mus_p4()[muo].pt(), weight);
@@ -1620,18 +1683,18 @@ bool Looper::GoodTMTestMuonWithoutIsolation(int index, int mode) {
 
 void Looper::End ()
 {
-  /*
-  int ret = fprintf(logfile_, 
-					"Sample %10s: Total candidate count (ee em mm all): %8u %8u %8u %8u."
-					" Total weight %10.1f +- %10.1f %10.1f +- %10.1f %10.1f +- %10.1f %10.1f +- %10.1f\n",   
-					sample_.name.c_str(),
-					CandsCount(DILEPTON_EE), CandsCount(DILEPTON_EMU), CandsCount(DILEPTON_MUMU), CandsCount(DILEPTON_ALL), 
-					CandsPassing(DILEPTON_EE)  , RMS(DILEPTON_EE),  
-					CandsPassing(DILEPTON_EMU) , RMS(DILEPTON_EMU),  
-					CandsPassing(DILEPTON_MUMU), RMS(DILEPTON_MUMU), 
-					CandsPassing(DILEPTON_ALL) , RMS(DILEPTON_ALL));
-  if (ret < 0)
-	perror("writing to log file");
-  */
+
+//   int ret = fprintf(logfile_, 
+// 					"Sample %10s: Total candidate count (ee em mm all): %8u %8u %8u %8u."
+// 					" Total weight %10.1f +- %10.1f %10.1f +- %10.1f %10.1f +- %10.1f %10.1f +- %10.1f\n",   
+// 					sample_.name.c_str(),
+// 					CandsCount(DILEPTON_EE), CandsCount(DILEPTON_EMU), CandsCount(DILEPTON_MUMU), CandsCount(DILEPTON_ALL), 
+// 					CandsPassing(DILEPTON_EE)  , RMS(DILEPTON_EE),  
+// 					CandsPassing(DILEPTON_EMU) , RMS(DILEPTON_EMU),  
+// 					CandsPassing(DILEPTON_MUMU), RMS(DILEPTON_MUMU), 
+// 					CandsPassing(DILEPTON_ALL) , RMS(DILEPTON_ALL));
+//   if (ret < 0)
+// 	perror("writing to log file");
+
 }
 
