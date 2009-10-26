@@ -677,7 +677,7 @@ void Looper::FillEventHistos ()
 	wEfficiency();
 
 	// do the AN2009-98 studies
-	AN2009_98();
+	//AN2009_98();
 
 	// get the event weight (for 1 pb^{-1})
 	float weight = cms2.evt_scale1fb() * sample_.kFactor;
