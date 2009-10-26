@@ -190,6 +190,7 @@ protected:
         EffMulti *em_eopInLT30_[2];
         EffMulti *em_eopInGT05_[2];
 
+	EffMulti *em_tasElectronV1_[2];
 
 	//
 	// AN2009-98 studies related

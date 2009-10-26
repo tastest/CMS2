@@ -191,6 +191,19 @@ int Results_tcmet30 ()
 
 
 //
+// electron id (note that here cut bits don't really do anything
+// ... probably should add one that is "do electron id study" or something
+// ... like that)
+//
+
+int Results_isoV0_studies ()
+{
+     return run<Looper>(  (CUT_BIT(ELE_PT_20)) | (CUT_BIT(ELE_ISO_V0) | CUT_BIT(EVT_TCMET_30)),
+        "Results_isoV0_studies",
+1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
+}
+
+//
 // studies related to jet veto
 //
 
@@ -258,14 +271,6 @@ int Results_AN2009_098_studies_20v1 ()
         "Results_AN2009_098_studies_20v1",
 1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
 }
-
-int Results_isoV0_studies ()
-{
-     return run<Looper>(  (CUT_BIT(ELE_PT_20)) | (CUT_BIT(ELE_ISO_V0) | CUT_BIT(EVT_TCMET_30)),
-        "Results_isoV0_studies",
-1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
-}
-
 
 // default yield table
 int Results_tcmet30_conv ()

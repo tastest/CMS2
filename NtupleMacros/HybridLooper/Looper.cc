@@ -166,6 +166,8 @@ void Looper::BookHistos ()
 	FormatEffHist(em_eopInLT30_, true, 3.0, 3.0, "eopInLT30");
 	FormatEffHist(em_eopInGT05_, true, 3.0, 3.0, "eopInGT05");
 
+	FormatEffHist(em_tasElectronV1_, false, 0, 0, "tasElectronV1");
+
 	// AN2009-98 related
 	//
         FormatHist(h1_AN2009_098_pt2_, "AN2009_098_pt2", 100, 0, 100);
@@ -624,7 +626,8 @@ void Looper::wEfficiency()
         //
 
         // tas electron 
-        if (use_tasElectron_v1 && !ele::tasElectron_v1(eleIndex)) return;
+	cuts_t eleIdResult = ele::tasElectron_v1(eleIndex);
+        if (use_tasElectron_v1 && !((eleIdResult & eleid_tasElectron_v1) == eleid_tasElectron_v1)) return;
 
 	// plot of tcmet after isolation and jpt veto applied
 	h1_weff_tcmet_after_iso_jpt_[det]->Fill(cms2.evt_tcmet(), weight);
@@ -810,8 +813,11 @@ void Looper::FillEventHistos ()
 				em_eopInLT30_[det]->Fill(cms2.els_eOverPIn()[i],
 						cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
 
-				//em_tasElectronV1_[det]->Fill(tasElectron_v1(i),
-				//                cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+				cuts_t eleIdResult = ele::tasElectron_v1(i);
+				bool pass_tasElectron_v1 = false;
+				if ((eleIdResult & eleid_tasElectron_v1) == eleid_tasElectron_v1) pass_tasElectron_v1 = true;
+				em_tasElectronV1_[det]->Fill(pass_tasElectron_v1,
+				                cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
 
 
 			}
