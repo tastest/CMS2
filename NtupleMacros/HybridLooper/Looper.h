@@ -100,8 +100,6 @@ protected:
 	TH1F	*h1_ecalIso03All_[2];
 	TH1F	*h1_hcalIso03All_[2];
 	TH1F	*h1_caloIso03All_[2];
-	TH1F	*h1_tkIso03AllMod1_[2];
-        TH1F    *h1_tkIso03AllMod2_[2];
 
 	TH2F	*h2_tkIso03All_[2];
         TH2F    *h2_ecalIso03All_[2];

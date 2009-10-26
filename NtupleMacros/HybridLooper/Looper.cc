@@ -122,8 +122,6 @@ void Looper::BookHistos ()
         Format2DHist(h2_ecalIso03All_, "ecalIso03All2D", 30, 0.0, 150.0, 30, 0.0, 15.0);
         Format2DHist(h2_hcalIso03All_, "hcalIso03All2D", 30, 0.0, 150.0, 30, 0.0, 15.0);
         Format2DHist(h2_caloIso03All_, "caloIso03All2D", 30, 0.0, 150.0, 30, 0.0, 15.0);
-        FormatHist(h1_tkIso03AllMod1_, "tkIso03AllMod1", 100, 0.0, 3.0);
-        FormatHist(h1_tkIso03AllMod2_, "tkIso03AllMod2", 100, 0.0, 3.0);
 
 	// N-1
         FormatHist(h1_tkIso03AllNM1_, "tkIso03AllNM1", 150, 0.0, 15);
@@ -714,15 +712,6 @@ void Looper::FillEventHistos ()
                                 h2_hcalIso03All_[det]->Fill(cms2.els_p4()[i].Pt(), hcalIso, weight);
 				h2_caloIso03All_[det]->Fill(cms2.els_p4()[i].Pt(), ecalIso + hcalIso, weight);
 
-				float tkIsoMod1 = tkIso - 0.1 * cms2.els_p4()[i].Pt();
-				if (tkIsoMod1 < 0.0) tkIsoMod1 = 0.0;
-				h1_tkIso03AllMod1_[det]->Fill(tkIsoMod1, weight);
-
-                                float tkIsoMod2 = tkIso - 0.2 * cms2.els_p4()[i].Pt();
-                                if (tkIsoMod2 < 0.0) tkIsoMod2 = 0.0;
-                                h1_tkIso03AllMod2_[det]->Fill(tkIsoMod2, weight);
-
-
 				// N-1
 				if (ecalIso < ecalThresholdsNM1[det] && hcalIso < hcalThresholdsNM1[det]) {
 					float shCutSum = 0.0;
@@ -749,7 +738,7 @@ void Looper::FillEventHistos ()
                                 if (tkIso < tkThresholdsNM1[det] && ecalIso < ecalThresholdsNM1[det])
 					h1_hcalIso03AllNM1_[det]->Fill(hcalIso, weight);
 
-				trackIsolationStudy(i, det);
+				//trackIsolationStudy(i, det);
 
 			}
 
