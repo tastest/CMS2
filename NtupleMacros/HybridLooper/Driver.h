@@ -190,7 +190,37 @@ int Results_tcmet30 ()
 }
 
 
-// default yield table
+//
+// studies related to jet veto
+//
+
+// iso v1 is ecal, hcal, tkJura
+int Results_pt30_isoV1_tcmet30 ()
+{    
+     return run<Looper>( (CUT_BIT(ELE_PT_30)) | (CUT_BIT(ELE_ISO_V1) | CUT_BIT(EVT_TCMET_30)),
+        "Results_pt30_isoV1_tcmet30", 
+1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
+}
+
+int Results_pt20_isoV1_tcmet30 ()
+{
+     return run<Looper>( (CUT_BIT(ELE_PT_20)) | (CUT_BIT(ELE_ISO_V1) | CUT_BIT(EVT_TCMET_30)),
+        "Results_pt20_isoV1_tcmet30",
+1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
+}
+
+int Results_pt20_isoV1_phimax130_tcmet30 ()
+{
+     return run<Looper>( (CUT_BIT(ELE_PT_20)) | (CUT_BIT(ELE_ISO_V1) | CUT_BIT(EVT_JPT_PHIMAX_130) | CUT_BIT(EVT_TCMET_30)),
+        "Results_pt20_isoV1_phimax130_tcmet30",
+1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
+}
+
+
+//
+//
+//
+
 int Results_AN2009_098_studies_30v0 ()
 {    
      return run<Looper>( (CUT_BIT(ELE_PT_30)) | (CUT_BIT(ELE_ISO_V0) | CUT_BIT(EVT_TCMET_30)),
@@ -205,6 +235,9 @@ int Results_AN2009_098_studies_30v1 ()
 1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
 }
 
+
+// note: v2 is combined Ecal-Hcal iso
+//
 int Results_AN2009_098_studies_30v2 ()
 {
      return run<Looper>( (CUT_BIT(ELE_PT_30)) | (CUT_BIT(ELE_ISO_V2) | CUT_BIT(EVT_TCMET_30)),

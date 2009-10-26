@@ -172,8 +172,8 @@ protected:
 
         TH1F *h1_weff_leadjptphi_after_iso_jpt_[2];
         TH1F *h1_weff_d0corr_after_iso_jpt_[2];
-
         TH1F *h1_weff_leadjptphi_after_iso_jpt_tcmet_[2];
+	TH1F *h1_weff_leastemjpt_after_iso_[2];
 
 	// the actual distributions
 	TH1F *h1_weffs_sigmaIEtaIEta_[2];

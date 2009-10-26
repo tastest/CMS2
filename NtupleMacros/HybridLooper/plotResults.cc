@@ -101,9 +101,13 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
         TH1F *h1_background_cumulated = (TH1F*)(cumulate(*h1_background, ascending).Clone());
 	TH1F *h1_sob = (TH1F*)h1_signal_cumulated->Clone();
 	float sTotal = h1_signal->Integral(0, h1_signal_cumulated->GetNbinsX() + 1);
+        float bTotal = h1_background->Integral(0, h1_background_cumulated->GetNbinsX() + 1);
+
+	int bin_bg50 = 0;
 	int bin_eff99 = 0;
 	int bin_eff98 = 0;
 	int bin_eff95 = 0;
+	int bin_eff80 = 0;
 	for (Int_t bin = 0; bin < h1_signal_cumulated->GetNbinsX() + 1; ++bin)
 	{
 		float s = h1_signal_cumulated->GetBinContent(bin);
@@ -116,6 +120,9 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
 		if (s/sTotal >= 0.99 && bin_eff99 == 0) bin_eff99 = bin;
                 if (s/sTotal >= 0.98 && bin_eff98 == 0) bin_eff98 = bin;
                 if (s/sTotal >= 0.95 && bin_eff95 == 0) bin_eff95 = bin;
+                if (s/sTotal >= 0.80 && bin_eff80 == 0) bin_eff80 = bin;
+
+		if (b/bTotal >= 0.50 && bin_bg50 == 0) bin_bg50 = bin;
 	}
 
         TArrow *arr_eff99 = new TArrow(h1_signal->GetBinCenter(bin_eff99), h1_both->GetMaximum()/2.0, h1_signal->GetBinCenter(bin_eff99), 0, 0.05, "|>");
@@ -145,6 +152,22 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
         arr_95->SetFillColor(kRed);
         arr_95->SetLineWidth(2);
 
+        TArrow *arr_eff80 = new TArrow(h1_signal->GetBinCenter(bin_eff80), h1_both->GetMaximum()/2.0, h1_signal->GetBinCenter(bin_eff80), 0, 0.05, "|>");
+        arr_eff80->SetLineColor(kMagenta);
+        arr_eff80->SetFillColor(kMagenta);
+        arr_eff80->SetLineWidth(2);
+        TArrow *arr_80 = new TArrow(0.80, 1.0, 0.80, 0, 0.05, "|>");
+        arr_80->SetLineColor(kMagenta);
+        arr_80->SetFillColor(kMagenta);
+        arr_80->SetLineWidth(2);
+
+
+        TArrow *arr_bg50 = new TArrow(h1_background->GetBinCenter(bin_bg50), h1_both->GetMaximum()/2.0, h1_background->GetBinCenter(bin_bg50), 0, 0.05, "|>");
+        arr_bg50->SetLineColor(kBlack);
+        arr_bg50->SetFillColor(kBlack);
+        arr_bg50->SetLineWidth(2);
+
+
 
         TCanvas *c = new TCanvas();
 	c->cd();	
@@ -169,6 +192,12 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
         arr_98->Draw();
         arr_95->Draw();
         Utilities::saveCanvas(c, "results/" + saveName + "_eff_" + name + "_" + det);
+
+        gr->GetXaxis()->SetRangeUser(0.00, 1.1);
+        gr->GetYaxis()->SetRangeUser(0.00, 1.1);
+        arr_80->Draw();
+        Utilities::saveCanvas(c, "results/" + saveName + "_effzoomout_" + name + "_" + det);
+
 
 	//
 	// S and B overlays
@@ -214,6 +243,9 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
 	if (bin_eff99 != 0) arr_eff99->Draw();
         if (bin_eff98 != 0) arr_eff98->Draw();
         if (bin_eff95 != 0) arr_eff95->Draw();
+	if (bin_eff80 != 0) arr_eff80->Draw();
+	if (bin_bg50 != 0) arr_bg50->Draw();
+
 	lg->Draw();
         Utilities::saveCanvas(c_sb, "results/" + saveName + "_sb_lin" + name + "_" + det);
 
@@ -240,6 +272,9 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
         if (bin_eff99 != 0) arr_eff99->Draw();
         if (bin_eff98 != 0) arr_eff98->Draw();
         if (bin_eff95 != 0) arr_eff95->Draw();
+	if (bin_eff80 != 0) arr_eff80->Draw();
+        if (bin_bg50 != 0) arr_bg50->Draw();
+
         lg->Draw();
 	Utilities::saveCanvas(c_sb_log, "results/" + saveName + "_sb_log" + name + "_" + det);
 
@@ -258,6 +293,7 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
 	delete arr_eff99;
 	delete arr_eff98;
 	delete arr_eff95;
+	delete arr_bg50;
 	std::cout << "[plotEff] Done" << std::endl;
 }
 
@@ -402,11 +438,22 @@ void plotAllResultsID()
 
 void plotAllResultsW()
 {
-        plotResultsW("ee", "iso10_jpt25_tcmet30");
-        plotResultsW("eb", "iso10_jpt25_tcmet30");
+        //plotResultsW("ee", "iso10_jpt25_tcmet30");
+        //plotResultsW("eb", "iso10_jpt25_tcmet30");
 
-        plotResultsW("ee", "iso10_jptphimax110_tcmet30");
-        plotResultsW("eb", "iso10_jptphimax110_tcmet30");
+        //plotResultsW("ee", "iso10_jptphimax110_tcmet30");
+        //plotResultsW("eb", "iso10_jptphimax110_tcmet30");
+
+        plotResultsW("ee", "pt20_isoV1_tcmet30");
+        plotResultsW("eb", "pt20_isoV1_tcmet30");
+
+        plotResultsW("ee", "pt30_isoV1_tcmet30");
+        plotResultsW("eb", "pt30_isoV1_tcmet30");
+
+        plotResultsW("ee", "pt20_isoV1_phimax130_tcmet30");
+        plotResultsW("eb", "pt20_isoV1_phimax130_tcmet30");
+
+
 }
 
 void plotAllResultsAN2009_098()
@@ -471,6 +518,7 @@ void plotResultsW(TString det, TString fileStamp)
         plotStack(h1, "weff_jptpt", "Lead JPT p_{T} (GeV)", fileStamp, det, 2);
         plotStack(h1, "weff_tcmet_after_iso", "tcMET (GeV)", fileStamp, det, 2);
         plotStack(h1, "weff_jptpt_after_iso", "Lead JPT p_{T} (GeV)", fileStamp, det, 2);
+	plotStack(h1, "weff_leastemjpt_after_iso", "Lowest EMFrac JPT", fileStamp, det, 2);
 
         plotStack(h1, "weff_d0corr_after_iso", "d0corr", fileStamp, det, 2);
         plotStack(h1, "weff_d0corr_after_iso_jpt", "d0corr", fileStamp, det, 2);
@@ -490,6 +538,7 @@ void plotResultsW(TString det, TString fileStamp)
         plotEff(h1, "weff_leadjptphi_after_iso_jpt_tcmet", fileStamp, det, true, 2);
 
         plotEff(h1, "weff_jptphimax_after_iso", fileStamp, det, true, 2);
+        plotEff(h1, "weff_jptpt_after_iso", fileStamp, det, true, 2);
 
 	// distributions selected
 	plotStack(h1, "weffs_sigmaIEtaIEta", "sigmaIEtaIEta", fileStamp, det);

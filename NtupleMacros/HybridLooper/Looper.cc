@@ -84,6 +84,8 @@ void Looper::BookHistos ()
 	FormatHist(h1_weff_jptpt_after_iso_, "weff_jptpt_after_iso", 100, 0, 100);
 	FormatHist(h1_weff_leadjptphi_after_iso_, "weff_leadjptphi_after_iso", 100, 0, 180);
 	FormatHist(h1_weff_jptphimax_after_iso_, "weff_jptphimax_after_iso", 100, 0, 180);
+	FormatHist(h1_weff_leastemjpt_after_iso_, "weff_leastemjpt_after_iso", 100, 0, 1.0);
+
         FormatHist(h1_weff_d0corr_after_iso_, "weff_d0corr_after_iso", 100, 0, 0.2);
         FormatHist(h1_weff_d0corr_after_iso_jpt_, "weff_d0corr_after_iso_jpt", 100, 0, 0.2);
 
@@ -137,7 +139,7 @@ void Looper::BookHistos ()
         FormatHist(h1_tkIso03AllReJura01In015ConvIDNM1_, "tkIso03AllReJura01In015ConvIDNM1", 150, 0.0, 15);
 	FormatHist(h1_tkIso03AllReShCutNM1_, "tkIso03AllReShCutNM1", 150, 0.0, 15);
 
-	// tramk iso studies
+	// track iso studies
         FormatHist(h1_tkIso03Alld0corr_, "tkIso03Alld0corr", 100, 0.0, 0.2);
         FormatHist(h1_tkIso03AllRe_, "tkIso03AllRe", 150, 0.0, 15.0);
         FormatHist(h1_tkIso03AllReShVeto_, "tkIso03AllReShVeto", 220, -1.1, 1.1);
@@ -489,21 +491,34 @@ void Looper::wEfficiency()
 	// that is dR > 0.4 from the nearest electron
 	float leadingJPT = 0.0;
 	float mostBackToBackJPT = 0.0;
+	float leastEMJPT = 999.9;
+	int leastEMJPTIndex = 0;
 	int leadingJPTIndex = 0;
 	int mostBackToBackJPTIndex = 0;
 	for (size_t j = 0; j < cms2.jpts_p4().size(); ++j)
 	{
 		if ( TMath::Abs(cms2.jpts_p4()[j].eta()) > 2.5 ) continue;
 		if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.els_p4()[eleIndex], cms2.jpts_p4()[j])) < 0.4) continue;
+
+		// find leading pT JPT
 		if (cms2.jpts_p4()[j].Et() > leadingJPT) {
 			leadingJPT = cms2.jpts_p4()[j].Et();
 			leadingJPTIndex = j;
 		}
+
+		// find most back to back JPT from the electron
 		float dPhi = acos(cos(cms2.els_p4()[eleIndex].Phi() - cms2.jpts_p4()[j].Phi()));
 		if (dPhi > mostBackToBackJPT) {
 			mostBackToBackJPT = dPhi;
 			mostBackToBackJPTIndex = j;
 		}
+
+		// find the JPT with the lowest EM fraction
+		if (cms2.jpts_emFrac()[j] < leastEMJPT) {
+			leastEMJPT = cms2.jpts_emFrac()[j];
+			leastEMJPTIndex = j;
+		}
+
 
 	}
 
@@ -539,7 +554,8 @@ void Looper::wEfficiency()
 	if ((cuts_ & (CUT_BIT(EVT_TCMET_20))) == (CUT_BIT(EVT_TCMET_20))) tcMetThreshold = 20.0;
 	float jptPhiThreshold = 180.0;
         if ((cuts_ & (CUT_BIT(EVT_JPT_PHIMAX_100))) == (CUT_BIT(EVT_JPT_PHIMAX_100))) jptPhiThreshold = 100.0;
-        if ((cuts_ & (CUT_BIT(EVT_JPT_PHIMAX_100))) == (CUT_BIT(EVT_JPT_PHIMAX_100))) jptPhiThreshold = 110.0;
+        if ((cuts_ & (CUT_BIT(EVT_JPT_PHIMAX_110))) == (CUT_BIT(EVT_JPT_PHIMAX_110))) jptPhiThreshold = 110.0;
+        if ((cuts_ & (CUT_BIT(EVT_JPT_PHIMAX_130))) == (CUT_BIT(EVT_JPT_PHIMAX_130))) jptPhiThreshold = 130.0;
 	bool rejectConversions = false;
 	if ((cuts_ & (CUT_BIT(ELE_NOCONV))) == (CUT_BIT(ELE_NOCONV))) rejectConversions = true;
 
@@ -591,6 +607,10 @@ void Looper::wEfficiency()
 	h1_weff_jptphimax_after_iso_[det]->Fill(mostBackToBackJPTAngle, weight);
 	// d0 corrected
 	h1_weff_d0corr_after_iso_[det]->Fill(fabs(cms2.els_d0corr()[eleIndex]), weight);
+
+	// emFraction of JPT with lowest emFraction
+	h1_weff_leastemjpt_after_iso_[det]->Fill(leastEMJPT, weight);
+
 
 	// leading JPT cut
 	if (leadingJPT > jptThreshold && jptThreshold != 999) return;
