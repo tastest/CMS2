@@ -50,7 +50,7 @@ protected:
 	void trackIsolationStudy(int eleIndex, int det);
 
 	// function to recompute track iso
-	float recomputeTrackIsolation(int eleIndex, float strip, float dRIn, float dROut);
+	float recomputeTrackIsolation(int eleIndex, float strip, float dRIn, float dROut, float &shCutSum);
 
 	// w efficiency studies
 	void wEfficiency();
@@ -110,21 +110,30 @@ protected:
 
 	// N-1
         TH1F    *h1_tkIso03AllNM1_[2];
+        TH1F    *h1_tkIso03AllIDNM1_[2];
+        TH1F    *h1_tkIso03AllConvNM1_[2];
+        TH1F    *h1_tkIso03AllConvIDNM1_[2];
+
         TH1F    *h1_ecalIso03AllNM1_[2];
         TH1F    *h1_hcalIso03AllNM1_[2];
 	TH1F	*h1_tkIso03AllReJura01In015NM1_[2];
+        TH1F    *h1_tkIso03AllReJura01In015IDNM1_[2];
+        TH1F    *h1_tkIso03AllReJura01In015ConvNM1_[2];
+        TH1F    *h1_tkIso03AllReJura01In015ConvIDNM1_[2];
+	TH1F	*h1_tkIso03AllReShCutNM1_[2];
 
 	// track isolation investigation
         TH1F    *h1_tkIso03AllRe_[2];
+	TH1F	*h1_tkIso03AllReShVeto_[2];
         TH1F    *h1_tkIso03AllReRel_[2];
 	TH1F	*h1_tkIso03Alld0corr_[2];
 
         TH1F    *h1_tkIso03AllReJura01In015_[2];
-	
 
 	TH1F 	*h1_tkIso03AllReJura01_[2];
         TH1F    *h1_tkIso03AllReJura02_[2];
         TH1F    *h1_tkIso03AllReJura03_[2];
+
 
 	TH1F	*h1_tkIso03AllRedEta_[2];
 	TH1F    *h1_tkIso03AllRedPhi_[2];

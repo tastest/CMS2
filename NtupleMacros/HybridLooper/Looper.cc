@@ -127,13 +127,22 @@ void Looper::BookHistos ()
 
 	// N-1
         FormatHist(h1_tkIso03AllNM1_, "tkIso03AllNM1", 150, 0.0, 15);
+        FormatHist(h1_tkIso03AllIDNM1_, "tkIso03AllIDNM1", 150, 0.0, 15);
+        FormatHist(h1_tkIso03AllConvNM1_, "tkIso03AllConvNM1", 150, 0.0, 15);
+        FormatHist(h1_tkIso03AllConvIDNM1_, "tkIso03AllConvIDNM1", 150, 0.0, 15);
+
         FormatHist(h1_ecalIso03AllNM1_, "ecalIso03AllNM1", 150, 0.0, 15);
         FormatHist(h1_hcalIso03AllNM1_, "hcalIso03AllNM1", 150, 0.0, 15);
 	FormatHist(h1_tkIso03AllReJura01In015NM1_, "tkIso03AllReJura01In015NM1", 150, 0.0, 15);
+        FormatHist(h1_tkIso03AllReJura01In015IDNM1_, "tkIso03AllReJura01In015IDNM1", 150, 0.0, 15);
+        FormatHist(h1_tkIso03AllReJura01In015ConvNM1_, "tkIso03AllReJura01In015ConvNM1", 150, 0.0, 15);
+        FormatHist(h1_tkIso03AllReJura01In015ConvIDNM1_, "tkIso03AllReJura01In015ConvIDNM1", 150, 0.0, 15);
+	FormatHist(h1_tkIso03AllReShCutNM1_, "tkIso03AllReShCutNM1", 150, 0.0, 15);
 
-	// track iso studies
+	// tramk iso studies
         FormatHist(h1_tkIso03Alld0corr_, "tkIso03Alld0corr", 100, 0.0, 0.2);
         FormatHist(h1_tkIso03AllRe_, "tkIso03AllRe", 150, 0.0, 15.0);
+        FormatHist(h1_tkIso03AllReShVeto_, "tkIso03AllReShVeto", 220, -1.1, 1.1);
         FormatHist(h1_tkIso03AllReRel_, "tkIso03AllReRel", 150, 0.0, 1.5);
         FormatHist(h1_tkIso03AllReJura01_, "tkIso03AllReJura01", 150, 0.0, 15.0);
         FormatHist(h1_tkIso03AllReJura02_, "tkIso03AllReJura02", 150, 0.0, 15.0);
@@ -198,10 +207,11 @@ int Looper::getSubdet(int eleIndex)
 	return -1;
 }
 
-float Looper::recomputeTrackIsolation(int eleIndex, float strip, float dRIn, float dROut)
+float Looper::recomputeTrackIsolation(int eleIndex, float strip, float dRIn, float dROut, float &shCutSum)
 {
         
         float isoSum = 0.0;
+	shCutSum = 0.0;
         for (size_t i = 0; i < cms2.trks_trk_p4().size(); ++i)
         {
 
@@ -214,9 +224,16 @@ float Looper::recomputeTrackIsolation(int eleIndex, float strip, float dRIn, flo
                 if (fabs(cms2.trks_z0()[i] - cms2.els_z0()[eleIndex]) > 0.2) continue;
                 if (dR < dRIn) continue;
 		if (dR > dROut) continue;
-		if (fabs(dEta) < strip) continue;
 
-                isoSum += pT;
+		// jurassic isolation
+		if (fabs(dEta) > strip) isoSum += pT;
+
+		// hit sharing
+		// if the ctf track is the one that shares the most hits
+		// only add it to the sum if the shared fraction is < 0.45.
+		if (cms2.els_trkidx()[eleIndex] == i && cms2.els_trkshFrac()[eleIndex] < 0.45) shCutSum += pT;
+		else shCutSum += pT;
+
 	}
 
 	return isoSum;
@@ -251,8 +268,25 @@ void Looper::trackIsolationStudy(int eleIndex, int det)
 		// use weight of 1.0 when filling the 2d hist
                 h2_tkIso03AllRedR2D_[det]->Fill(dEta, dPhi, 1.0);
 
-		if (dR > 0.015 && fabs(dEta) > 0.01)
+		if (dR > 0.015 && fabs(dEta) > 0.01) {
 			isoSumJura01In015 += pT;
+			// if the ctf track is the one with the highest number of 
+			// shared hits with the electron, then plot the number of shared hits.
+			if (cms2.els_trkidx()[eleIndex] == i) 
+				h1_tkIso03AllReShVeto_[det]->Fill(cms2.els_trkshFrac()[eleIndex], weight);
+			else 
+				h1_tkIso03AllReShVeto_[det]->Fill(-1.0, weight);
+		}
+
+                if (dR > 0.015 && fabs(dEta) < 0.01) {
+                        // if the ctf track is the one with the highest number of 
+                        // shared hits with the electron, then plot the number of shared hits.
+                        if (cms2.els_trkidx()[eleIndex] == i)
+                                h1_tkIso03AllReShVeto_[det]->Fill(cms2.els_trkshFrac()[eleIndex], weight);
+                        else
+                                h1_tkIso03AllReShVeto_[det]->Fill(-1.0, weight);
+                }
+
 
 		// standard inner veto
                 if (dR < 0.04) continue;
@@ -522,6 +556,7 @@ void Looper::wEfficiency()
 	//
 
 	// isolation cut
+	float dummy = 0.0;
 	if (isoSum / cms2.els_p4()[0].Pt() > isolationThreshold && isolationThreshold != 999) return;
 	if (applyIsoV0) {
 	        float tkThresholds[2] = {4.5, 6.0};
@@ -532,7 +567,7 @@ void Looper::wEfficiency()
 	        if (hcalIso > hcalThresholds[det]) return;
 	}
         if (applyIsoV1) {
-		float tkIsoJura01In015 = recomputeTrackIsolation(eleIndex, 0.01, 0.015, 0.3);
+		float tkIsoJura01In015 = recomputeTrackIsolation(eleIndex, 0.01, 0.015, 0.3, dummy);
                 float tkThresholds[2] = {2.5, 2.0};
                 float ecalThresholds[2] = {2.5, 2.0};
                 float hcalThresholds[2] = {1.0, 1.0};
@@ -541,7 +576,7 @@ void Looper::wEfficiency()
                 if (hcalIso > hcalThresholds[det]) return;
         }
         if (applyIsoV2) {
-                float tkIsoJura01In015 = recomputeTrackIsolation(eleIndex, 0.01, 0.015, 0.3);
+                float tkIsoJura01In015 = recomputeTrackIsolation(eleIndex, 0.01, 0.015, 0.3, dummy);
                 float tkThresholds[2] = {2.5, 2.0};
                 float caloThresholds[2] = {3.0, 2.5};
                 if (tkIsoJura01In015 > tkThresholds[det]) return;
@@ -690,9 +725,24 @@ void Looper::FillEventHistos ()
 
 				// N-1
 				if (ecalIso < ecalThresholdsNM1[det] && hcalIso < hcalThresholdsNM1[det]) {
+					float shCutSum = 0.0;
+                                        float tkIsoJura01In015 = recomputeTrackIsolation(i, 0.01, 0.015, 0.3, shCutSum);
 					h1_tkIso03AllNM1_[det]->Fill(tkIso, weight);
-					float tkIsoJura01In015 = recomputeTrackIsolation(i, 0.01, 0.015, 0.3);
 					h1_tkIso03AllReJura01In015NM1_[det]->Fill(tkIsoJura01In015, weight);
+					h1_tkIso03AllReShCutNM1_[det]->Fill(shCutSum, weight);				
+	
+					if (cms2.els_egamma_tightId()[i]) {
+						h1_tkIso03AllIDNM1_[det]->Fill(tkIso, weight);
+						h1_tkIso03AllReJura01In015IDNM1_[det]->Fill(tkIsoJura01In015, weight);	
+					}
+                                        if (!isconversionElectron09(i)) {
+                                                h1_tkIso03AllConvNM1_[det]->Fill(tkIso, weight);
+                                                h1_tkIso03AllReJura01In015ConvNM1_[det]->Fill(tkIsoJura01In015, weight);
+					}                  
+                                        if (!isconversionElectron09(i) && cms2.els_egamma_tightId()[i]) {
+                                                h1_tkIso03AllConvIDNM1_[det]->Fill(tkIso, weight);
+                                                h1_tkIso03AllReJura01In015ConvIDNM1_[det]->Fill(tkIsoJura01In015, weight);
+					}
 				}
                                 if (tkIso < tkThresholdsNM1[det] && hcalIso < hcalThresholdsNM1[det])
 					h1_ecalIso03AllNM1_[det]->Fill(ecalIso, weight);

@@ -530,6 +530,7 @@ void plotResultsID(TString det, TString fileStamp)
         plotEff(h1, "hcalIso03All", "IDStudy", det, true, 1, true);
 
         plotEff(h1, "tkIso03AllRe", "IDStudy", det, true, 1, true);
+        plotEff(h1, "tkIso03AllReShVeto", "IDStudy", det, true, 1, true);
         plotEff(h1, "tkIso03AllReRel", "IDStudy", det, true, 1, true);
         plotEff(h1, "caloIso03All", "IDStudy", det, true, 1, true);
         plotEff(h1, "tkIso03AllMod1", "IDStudy", det, true, 1, true);
@@ -546,9 +547,20 @@ void plotResultsID(TString det, TString fileStamp)
 
 	// N-1
         plotEff(h1, "tkIso03AllNM1", "IDStudy", det, true, 1, true);
+        plotEff(h1, "tkIso03AllIDNM1", "IDStudy", det, true, 1, true);
+        plotEff(h1, "tkIso03AllConvNM1", "IDStudy", det, true, 1, true);
+        plotEff(h1, "tkIso03AllConvIDNM1", "IDStudy", det, true, 1, true);
+
         plotEff(h1, "ecalIso03AllNM1", "IDStudy", det, true, 1, true);
         plotEff(h1, "hcalIso03AllNM1", "IDStudy", det, true, 1, true);
+
 	plotEff(h1, "tkIso03AllReJura01In015NM1", "IDStudy", det, true, 1, true);
+        plotEff(h1, "tkIso03AllReJura01In015IDNM1", "IDStudy", det, true, 1, true);
+        plotEff(h1, "tkIso03AllReJura01In015ConvNM1", "IDStudy", det, true, 1, true);
+        plotEff(h1, "tkIso03AllReJura01In015ConvIDNM1", "IDStudy", det, true, 1, true);
+
+        plotEff(h1, "tkIso03AllReShCutNM1", "IDStudy", det, true, 1, true);
+
 
 }
 
