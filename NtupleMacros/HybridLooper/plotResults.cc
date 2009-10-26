@@ -444,6 +444,11 @@ void plotAllResultsW()
         //plotResultsW("ee", "iso10_jptphimax110_tcmet30");
         //plotResultsW("eb", "iso10_jptphimax110_tcmet30");
 
+
+	//
+	// jet veto studies
+	//
+	/*
         plotResultsW("ee", "pt20_isoV1_tcmet30");
         plotResultsW("eb", "pt20_isoV1_tcmet30");
 
@@ -452,7 +457,14 @@ void plotAllResultsW()
 
         plotResultsW("ee", "pt20_isoV1_phimax130_tcmet30");
         plotResultsW("eb", "pt20_isoV1_phimax130_tcmet30");
+	*/
 
+	//
+	// try to apply candidate electron id
+	// tasElectron_v0
+	//
+	plotResultsW("ee", "pt20_isoV1_phimax130_tasv1_tcmet30");
+        plotResultsW("eb", "pt20_isoV1_phimax130_tasv1_tcmet30");
 
 }
 

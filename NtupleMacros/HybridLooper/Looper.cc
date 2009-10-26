@@ -559,6 +559,9 @@ void Looper::wEfficiency()
 	bool rejectConversions = false;
 	if ((cuts_ & (CUT_BIT(ELE_NOCONV))) == (CUT_BIT(ELE_NOCONV))) rejectConversions = true;
 
+	bool use_tasElectron_v1 = false;
+	if ((cuts_ & (CUT_BIT(ELE_TAS_V1))) == (CUT_BIT(ELE_TAS_V1))) use_tasElectron_v1 = true;
+
 	//
 	// plots of key quantities before selection applied
 	h1_weff_iso_[det]->Fill(isoSum / cms2.els_p4()[eleIndex].Pt(), weight);
@@ -620,6 +623,8 @@ void Looper::wEfficiency()
         if (mostBackToBackJPTAngle > jptPhiThreshold && jptPhiThreshold != 180.0) return;
         //
 
+        // tas electron 
+        if (use_tasElectron_v1 && !ele::tasElectron_v1(eleIndex)) return;
 
 	// plot of tcmet after isolation and jpt veto applied
 	h1_weff_tcmet_after_iso_jpt_[det]->Fill(cms2.evt_tcmet(), weight);
