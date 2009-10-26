@@ -112,6 +112,23 @@ void Looper::BookHistos ()
 	FormatHist(h1_d0corr_, "d0corr", 100, 0.0, 0.2);
 	FormatHist(h1_closestMuon_, "closestMuon", 100, -1, 5);
 
+	// efficiencies in pt for the tas ID, N-1 etc.
+        FormatHist(h1_dEtaInTasV1NM1_, "dEtaInTasV1NM1", 100, 0.0, 0.04);	
+        FormatEffHist(em_dEtaInTasV1NM1_, true, 0.007, 0.010, "dEtaInTasV1NM1");
+
+        FormatHist(h1_dPhiInTasV1NM1_, "dPhiInTasV1NM1", 100, 0.0, 0.15);       
+        FormatEffHist(em_dPhiInTasV1NM1_, true, 0.020, 0.025, "dPhiInTasV1NM1");
+
+        FormatHist(h1_hoeTasV1NM1_, "hoeTasV1NM1", 100, 0.0, 0.2);
+        FormatEffHist(em_hoeTasV1NM1_, true, 0.01, 0.01, "hoeTasV1NM1");
+
+        FormatHist(h1_sigmaIEtaIEtaTasV1NM1_, "sigmaIEtaIEtaTasV1NM1", 100, 0.0, 0.06);
+        FormatEffHist(em_sigmaIEtaIEtaTasV1NM1_, true, 0.0, 0.03, "sigmaIEtaIEtaTasV1NM1");
+
+        FormatHist(h1_E2x5Norm5x5TasV1NM1_, "E2x5Norm5x5TasV1NM1", 100, 0.0, 1.0);
+        FormatEffHist(em_E2x5Norm5x5TasV1NM1_, false, 0.9, 0.0, "E2x5Norm5x5TasV1NM1");
+
+
         // Isolation
         //
         FormatHist(h1_wwIsoAll_, "wwIsoAll", 100, 0.0, 1.0);
@@ -814,10 +831,44 @@ void Looper::FillEventHistos ()
 						cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
 
 				cuts_t eleIdResult = ele::tasElectron_v1(i);
-				bool pass_tasElectron_v1 = false;
-				if ((eleIdResult & eleid_tasElectron_v1) == eleid_tasElectron_v1) pass_tasElectron_v1 = true;
-				em_tasElectronV1_[det]->Fill(pass_tasElectron_v1,
+				
+				em_tasElectronV1_[det]->Fill(CheckCuts(eleid_tasElectron_v1, eleIdResult),
 				                cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+
+				// N-1 for dEtaIn
+				if (CheckCutsNM1(eleid_tasElectron_v1, CUT_BIT(ELEID_TAS_DETAIN), eleIdResult)) {
+					em_dEtaInTasV1NM1_[det]->Fill(fabs(cms2.els_dEtaIn()[i]),
+                                                cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);			
+					h1_dEtaInTasV1NM1_[det]->Fill(fabs(cms2.els_dEtaIn()[i]), weight);
+				}
+
+                                // N-1 for dPhiIn
+                                if (CheckCutsNM1(eleid_tasElectron_v1, CUT_BIT(ELEID_TAS_DPHIIN), eleIdResult)) {
+                                        em_dPhiInTasV1NM1_[det]->Fill(fabs(cms2.els_dPhiIn()[i]),
+                                                cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+                                        h1_dPhiInTasV1NM1_[det]->Fill(fabs(cms2.els_dPhiIn()[i]), weight);
+                                }
+
+                                // N-1 for hoe
+                                if (CheckCutsNM1(eleid_tasElectron_v1, CUT_BIT(ELEID_TAS_HOE), eleIdResult)) {
+                                        em_hoeTasV1NM1_[det]->Fill(cms2.els_hOverE()[i],
+                                                cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+                                        h1_hoeTasV1NM1_[det]->Fill(cms2.els_hOverE()[i], weight);
+                                }
+
+                                // N-1 for sigmaIEtaIEta
+                                if (CheckCutsNM1(eleid_tasElectron_v1, CUT_BIT(ELEID_TAS_LSHAPE), eleIdResult)) {
+                                        em_sigmaIEtaIEtaTasV1NM1_[det]->Fill(cms2.els_sigmaIEtaIEta()[i],
+                                                cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+                                        h1_sigmaIEtaIEtaTasV1NM1_[det]->Fill(cms2.els_sigmaIEtaIEta()[i], weight);
+                                }
+
+                                // N-1 for E2x5Max/E5x5
+                                if (CheckCutsNM1(eleid_tasElectron_v1, CUT_BIT(ELEID_TAS_LSHAPE), eleIdResult)) {
+                                        em_E2x5Norm5x5TasV1NM1_[det]->Fill(cms2.els_e2x5Max()[i]/cms2.els_e5x5()[i],
+                                                cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+                                        h1_E2x5Norm5x5TasV1NM1_[det]->Fill(cms2.els_e2x5Max()[i]/cms2.els_e5x5()[i], weight);
+                                }
 
 
 			}
@@ -826,6 +877,18 @@ void Looper::FillEventHistos ()
 
 	} // end event level cuts passed
 
+}
+
+bool Looper::CheckCutsNM1(cuts_t apply, cuts_t remove, cuts_t passed)
+{
+	if ((passed & (apply & (~remove))) == (apply & (~remove))) return true;
+	return false;
+}
+
+bool Looper::CheckCuts(cuts_t apply, cuts_t passed)
+{
+	if ((apply & passed) == apply) return true;
+	return false;
 }
 
 void Looper::End ()

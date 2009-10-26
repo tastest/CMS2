@@ -103,7 +103,7 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
 	float sTotal = h1_signal->Integral(0, h1_signal_cumulated->GetNbinsX() + 1);
         float bTotal = h1_background->Integral(0, h1_background_cumulated->GetNbinsX() + 1);
 
-	int bin_bg50 = 0;
+	//int bin_bg50 = 0;
 	int bin_eff99 = 0;
 	int bin_eff98 = 0;
 	int bin_eff95 = 0;
@@ -122,7 +122,7 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
                 if (s/sTotal >= 0.95 && bin_eff95 == 0) bin_eff95 = bin;
                 if (s/sTotal >= 0.80 && bin_eff80 == 0) bin_eff80 = bin;
 
-		if (b/bTotal >= 0.50 && bin_bg50 == 0) bin_bg50 = bin;
+		//if (b/bTotal >= 0.50 && bin_bg50 == 0) bin_bg50 = bin;
 	}
 
         TArrow *arr_eff99 = new TArrow(h1_signal->GetBinCenter(bin_eff99), h1_both->GetMaximum()/2.0, h1_signal->GetBinCenter(bin_eff99), 0, 0.05, "|>");
@@ -161,13 +161,10 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
         arr_80->SetFillColor(kMagenta);
         arr_80->SetLineWidth(2);
 
-
-        TArrow *arr_bg50 = new TArrow(h1_background->GetBinCenter(bin_bg50), h1_both->GetMaximum()/2.0, h1_background->GetBinCenter(bin_bg50), 0, 0.05, "|>");
-        arr_bg50->SetLineColor(kBlack);
-        arr_bg50->SetFillColor(kBlack);
-        arr_bg50->SetLineWidth(2);
-
-
+        //TArrow *arr_bg50 = new TArrow(h1_background->GetBinCenter(bin_bg50), h1_both->GetMaximum()/2.0, h1_background->GetBinCenter(bin_bg50), 0, 0.05, "|>");
+        //arr_bg50->SetLineColor(kBlack);
+        //arr_bg50->SetFillColor(kBlack);
+        //arr_bg50->SetLineWidth(2);
 
         TCanvas *c = new TCanvas();
 	c->cd();	
@@ -244,7 +241,7 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
         if (bin_eff98 != 0) arr_eff98->Draw();
         if (bin_eff95 != 0) arr_eff95->Draw();
 	if (bin_eff80 != 0) arr_eff80->Draw();
-	if (bin_bg50 != 0) arr_bg50->Draw();
+	//if (bin_bg50 != 0) arr_bg50->Draw();
 
 	lg->Draw();
         Utilities::saveCanvas(c_sb, "results/" + saveName + "_sb_lin" + name + "_" + det);
@@ -273,7 +270,7 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
         if (bin_eff98 != 0) arr_eff98->Draw();
         if (bin_eff95 != 0) arr_eff95->Draw();
 	if (bin_eff80 != 0) arr_eff80->Draw();
-        if (bin_bg50 != 0) arr_bg50->Draw();
+        //if (bin_bg50 != 0) arr_bg50->Draw();
 
         lg->Draw();
 	Utilities::saveCanvas(c_sb_log, "results/" + saveName + "_sb_log" + name + "_" + det);
@@ -293,7 +290,7 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
 	delete arr_eff99;
 	delete arr_eff98;
 	delete arr_eff95;
-	delete arr_bg50;
+	//delete arr_bg50;
 	std::cout << "[plotEff] Done" << std::endl;
 }
 
@@ -583,6 +580,21 @@ void plotResultsID(TString det, TString fileStamp)
         plotEff(h1, "E1x5Norm5x5", "IDStudy", det, false, 4, false);
         plotEff(h1, "d0corr", "IDStudy", det, true, 4, true, 0.025, 0.035);
 
+	// N-1 with respect to TasV1
+	//
+	// the distributions
+        plotEff(h1, "dEtaInTasV1NM1", "IDStudy", det, true, 2, true, 0.007, 0.010);
+        plotEff(h1, "dPhiInTasV1NM1", "IDStudy", det, true, 2, true, 0.020, 0.025);
+        plotEff(h1, "hoeTasV1NM1", "IDStudy", det, true, 2, true, 0.01, 0.01);
+        plotEff(h1, "sigmaIEtaIEtaTasV1NM1", "IDStudy", det, true, 2, true, -1, 0.03);
+        plotEff(h1, "E2x5Norm5x5TasV1NM1","IDStudy", det, false, 4, false, 0.90, -1);
+	// and the efficiency curves
+        plotEffVar(h1, "dEtaInTasV1NM1_pt_" + det, "IDStudy", 4);
+        plotEffVar(h1, "dPhiInTasV1NM1_pt_" + det, "IDStudy", 4);
+        plotEffVar(h1, "hoeTasV1NM1_pt_" + det, "IDStudy", 4);
+        plotEffVar(h1, "sigmaIEtaIEtaTasV1NM1_pt_" + det, "IDStudy", 4);
+        plotEffVar(h1, "E2x5Norm5x5TasV1NM1_pt_" + det, "IDStudy", 4);
+
 	// the isolation part
 	//
         plotEff(h1, "wwIsoAll", "IDStudy", det, true, 1, true);
@@ -594,8 +606,6 @@ void plotResultsID(TString det, TString fileStamp)
         plotEff(h1, "tkIso03AllReShVeto", "IDStudy", det, true, 1, true);
         plotEff(h1, "tkIso03AllReRel", "IDStudy", det, true, 1, true);
         plotEff(h1, "caloIso03All", "IDStudy", det, true, 1, true);
-        plotEff(h1, "tkIso03AllMod1", "IDStudy", det, true, 1, true);
-        plotEff(h1, "tkIso03AllMod2", "IDStudy", det, true, 1, true);
         plotEff(h1, "tkIso03AllReJura01", "IDStudy", det, true, 1, true);
         plotEff(h1, "tkIso03AllReJura02", "IDStudy", det, true, 1, true);
         plotEff(h1, "tkIso03AllReJura03", "IDStudy", det, true, 1, true);

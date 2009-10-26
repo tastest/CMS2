@@ -59,6 +59,16 @@ protected:
 	// well... related
 	void AN2009_98();
 
+	// N-1
+	// return true if the cuts to apply - the cuts to remove were passed
+	// in the cuts that "passed"
+	bool CheckCutsNM1(cuts_t apply, cuts_t remove, cuts_t passed);
+
+	// Simple check if the desired cuts to apply are set in the 
+	// cuts that "passed"
+	bool CheckCuts(cuts_t apply, cuts_t passed);
+
+
 	// do stuff with histogram
 	void Format2DHist(TH2F** hist, std::string name, Int_t nx, Float_t minx, Float_t maxx,
                                 Int_t ny, Float_t miny, Float_t maxy);
@@ -151,7 +161,22 @@ protected:
 	TH1F 	*h1_d0corr_[2];
 	TH1F	*h1_closestMuon_[2];
 
-	//EffMulti	*em_tasElectronV1_[2];
+        TH1F 		*h1_dEtaInTasV1NM1_[2];
+        EffMulti 	*em_dEtaInTasV1NM1_[2];
+
+	TH1F     	*h1_dPhiInTasV1NM1_[2];
+	EffMulti        *em_dPhiInTasV1NM1_[2];
+
+	TH1F     	*h1_hoeTasV1NM1_[2];
+	EffMulti        *em_hoeTasV1NM1_[2];
+	
+	TH1F     	*h1_sigmaIEtaIEtaTasV1NM1_[2];
+	EffMulti        *em_sigmaIEtaIEtaTasV1NM1_[2];
+
+	TH1F     	*h1_E2x5Norm5x5TasV1NM1_[2];
+	EffMulti        *em_E2x5Norm5x5TasV1NM1_[2];
+
+	EffMulti	*em_tasElectronV1_[2];
 
 	//
 	// W effciency studies related
@@ -189,8 +214,6 @@ protected:
 
         EffMulti *em_eopInLT30_[2];
         EffMulti *em_eopInGT05_[2];
-
-	EffMulti *em_tasElectronV1_[2];
 
 	//
 	// AN2009-98 studies related
