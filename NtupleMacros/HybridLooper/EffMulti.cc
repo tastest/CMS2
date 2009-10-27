@@ -7,9 +7,9 @@ EffMulti::EffMulti(bool lessThan, float thresholdEB, float thresholdEE,
 	std::string source, std::string var, std::string det) 
 	: lessThan_(lessThan), thresholdEB_(thresholdEB), thresholdEE_(thresholdEE)
 {
-	e1_pt_ = new EffH1F(source + "_" + var + "_pt_" + det, var + ";p_{T} (GeV)", 100, 0, 200);
-        e1_eta_ = new EffH1F(source + "_" + var + "_eta_" + det, var + ";#eta", 24, -3, 3);
-        e1_phi_ = new EffH1F(source + "_" + var + "_phi_" + det, var + ";#phi (radians)", 72, -3.14159, 3.14159);
+	e1_pt_ = new EffH1F(source + "_" + var + "_pt_" + det, var + ";p_{T} (GeV);", 100, 0, 200);
+        e1_eta_ = new EffH1F(source + "_" + var + "_eta_" + det, var + ";#eta;", 24, -3, 3);
+        e1_phi_ = new EffH1F(source + "_" + var + "_phi_" + det, var + ";#phi (radians);", 72, -3.14159, 3.14159);
 }
 
 

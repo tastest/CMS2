@@ -367,6 +367,7 @@ void plotEffVar(HistogramUtilities &h1, TString name, TString det, TString saveN
         TLegend *lg = new TLegend(0.5, 0.2, 0.9, 0.5);
         lg->SetFillColor(kWhite);
         lg->SetLineColor(kWhite);
+	lg->SetFillStyle(0);
         lg->SetShadowColor(kWhite);
         TString upperDet = det;
         upperDet.ToUpper();
