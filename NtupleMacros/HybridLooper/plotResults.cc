@@ -88,7 +88,7 @@ void plot2DSB(HistogramUtilities &h1, TString name, TString xTitle, TString yTit
 void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det, bool ascending, int rebin, bool legendOnRight, float cutValEB, float cutValEE)
 {
 
-	std::cout << "[plotEff]" << std::endl;
+	std::cout << "[plotEff] " << name << std::endl;
 	TH1F *h1_signal = h1.getHistogram(theSignal, name, "", det, rebin, "s_");
         TH1F *h1_background = h1.getHistogram(theBackground, name, "", det, rebin, "b_");
 	TH1F *h1_both = h1.getHistogram(theBackground | theSignal, name, "", det, rebin, "");
@@ -117,10 +117,19 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
 			sob = s/b;
 		}
 		h1_sob->SetBinContent(bin, sob);
-		if (s/sTotal >= 0.99 && bin_eff99 == 0) bin_eff99 = bin;
-                if (s/sTotal >= 0.98 && bin_eff98 == 0) bin_eff98 = bin;
-                if (s/sTotal >= 0.95 && bin_eff95 == 0) bin_eff95 = bin;
-                if (s/sTotal >= 0.80 && bin_eff80 == 0) bin_eff80 = bin;
+		//std::cout << s/sTotal << std::endl;
+		if (ascending) {
+			if (s/sTotal >= 0.99 && bin_eff99 == 0) bin_eff99 = bin;
+                	if (s/sTotal >= 0.98 && bin_eff98 == 0) bin_eff98 = bin;
+                	if (s/sTotal >= 0.95 && bin_eff95 == 0) bin_eff95 = bin;
+                	if (s/sTotal >= 0.80 && bin_eff80 == 0) bin_eff80 = bin;
+		}
+		else {
+                        if (s/sTotal <= 0.99 && bin_eff99 == 0) bin_eff99 = bin;
+                        if (s/sTotal <= 0.98 && bin_eff98 == 0) bin_eff98 = bin;
+                        if (s/sTotal <= 0.95 && bin_eff95 == 0) bin_eff95 = bin;
+                        if (s/sTotal <= 0.80 && bin_eff80 == 0) bin_eff80 = bin;
+		}
 
 		//if (b/bTotal >= 0.50 && bin_bg50 == 0) bin_bg50 = bin;
 	}
@@ -310,6 +319,8 @@ void plotEffVar(HistogramUtilities &h1, TString name, TString saveName, Int_t re
         //h1_total->Rebin(rebin);
         //h1_pass->Rebin(rebin);
 	gr_eff->BayesDivide(h1_pass, h1_total);
+        gr_eff->SetMarkerColor(kBlue);
+        gr_eff->SetLineColor(kBlue);
         //h1_eff = (TH1F*)h1_pass->Clone();
         //h1_eff->Reset();
         //h1_eff->Divide(h1_pass, h1_total, 1.0, 1.0, "B");
@@ -322,15 +333,19 @@ void plotEffVar(HistogramUtilities &h1, TString name, TString saveName, Int_t re
 	//h1_eff->GetXaxis()->SetRangeUser(0, 100.0);
         //h1_eff->Draw("E1");
 	gr_eff->Draw("AP");
+	gr_eff->GetXaxis()->SetRangeUser(0, 100.0);
         gr_eff->GetYaxis()->SetRangeUser(0, 1.1);
+	gr_eff->GetXaxis()->SetTitle(h1_total->GetXaxis()->GetTitle());
+        gr_eff->GetYaxis()->SetTitle("Efficiency");
         Utilities::saveCanvas(c, "results/" + saveName + "_effVar_s_" + name);
-
 
         h1_total = h1.getHistogram(theBackground, name, "", "denom", rebin, "");
         h1_pass = h1.getHistogram(theBackground, name, "", "numer", rebin, "");
-	h1_total->Rebin(rebin);
-	h1_pass->Rebin(rebin);
-        //gr_eff->BayesDivide(h1_pass, h1_total);
+	//h1_total->Rebin(rebin);
+	//h1_pass->Rebin(rebin);
+        gr_eff->BayesDivide(h1_pass, h1_total);
+	gr_eff->SetMarkerColor(kGreen);
+	gr_eff->SetLineColor(kGreen);
         //h1_eff->Reset();
         //h1_eff->Divide(h1_pass, h1_total, 1.0, 1.0, "B");
         //h1_eff->SetName(h1_pass->GetName());
@@ -342,7 +357,10 @@ void plotEffVar(HistogramUtilities &h1, TString name, TString saveName, Int_t re
         //h1_eff->GetXaxis()->SetRangeUser(0, 100.0);
         //h1_eff->Draw("E1");
 	gr_eff->Draw("AP");
+        gr_eff->GetXaxis()->SetRangeUser(0, 100.0);
         gr_eff->GetYaxis()->SetRangeUser(0, 1.1);
+        gr_eff->GetXaxis()->SetTitle(h1_total->GetXaxis()->GetTitle());
+	gr_eff->GetYaxis()->SetTitle("Efficiency");
         Utilities::saveCanvas(c, "results/" + saveName + "_effVar_bg_" + name);
 
         delete c;
@@ -578,7 +596,7 @@ void plotResultsID(TString det, TString fileStamp)
         plotEff(h1, "eopIn", "IDStudy", det, false, 4, true, 0.5, 0.5);
         plotEff(h1, "sigmaIEtaIEta", "IDStudy", det, true, 2, true, -1, 0.03);
         plotEff(h1, "sigmaIPhiIPhi", "IDStudy", det, true, 4, true);
-        plotEff(h1, "E2x5Norm5x5","IDStudy", det, false, 4, false, 0.90, -1);
+        plotEff(h1, "E2x5Norm5x5","IDStudy", det, false, 1, false, 0.90, -1);
         plotEff(h1, "E1x5Norm5x5", "IDStudy", det, false, 4, false);
         plotEff(h1, "d0corr", "IDStudy", det, true, 4, true, 0.025, 0.035);
 
@@ -589,7 +607,7 @@ void plotResultsID(TString det, TString fileStamp)
         plotEff(h1, "dPhiInTasV1NM1", "IDStudy", det, true, 2, true, 0.020, 0.025);
         plotEff(h1, "hoeTasV1NM1", "IDStudy", det, true, 2, true, 0.01, 0.01);
         plotEff(h1, "sigmaIEtaIEtaTasV1NM1", "IDStudy", det, true, 2, true, -1, 0.03);
-        plotEff(h1, "E2x5Norm5x5TasV1NM1","IDStudy", det, false, 4, false, 0.90, -1);
+        plotEff(h1, "E2x5Norm5x5TasV1NM1","IDStudy", det, false, 1, false, 0.90, -1);
 	// and the efficiency curves
         plotEffVar(h1, "dEtaInTasV1NM1_pt_" + det, "IDStudy", 4);
         plotEffVar(h1, "dPhiInTasV1NM1_pt_" + det, "IDStudy", 4);
