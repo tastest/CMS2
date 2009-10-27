@@ -338,7 +338,7 @@ void plotEffVar(HistogramUtilities &h1, TString name, TString det, TString saveN
         gr_eff_s->GetYaxis()->SetRangeUser(0, 1.1);
 	gr_eff_s->GetXaxis()->SetTitle(h1_total->GetXaxis()->GetTitle());
         gr_eff_s->GetYaxis()->SetTitle("Efficiency");
-        Utilities::saveCanvas(c, "results/" + saveName + "_effVar_s_" + name);
+        Utilities::saveCanvas(c, "results/" + saveName + "_effVar_s_" + name + "_" + det);
 
         h1_total = h1.getHistogram(theBackground, name, "", det + "_denom", rebin, "");
         h1_pass = h1.getHistogram(theBackground, name, "", det + "_numer", rebin, "");
@@ -362,7 +362,7 @@ void plotEffVar(HistogramUtilities &h1, TString name, TString det, TString saveN
         gr_eff_bg->GetYaxis()->SetRangeUser(0, 1.1);
         gr_eff_bg->GetXaxis()->SetTitle(h1_total->GetXaxis()->GetTitle());
 	gr_eff_bg->GetYaxis()->SetTitle("Efficiency");
-        Utilities::saveCanvas(c, "results/" + saveName + "_effVar_bg_" + name);
+        Utilities::saveCanvas(c, "results/" + saveName + "_effVar_bg_" + name + "_" + det);
 
         TLegend *lg = new TLegend(0.5, 0.2, 0.9, 0.5);
         lg->SetFillColor(kWhite);
@@ -379,7 +379,7 @@ void plotEffVar(HistogramUtilities &h1, TString name, TString det, TString saveN
         gr_eff_bg->Draw("AP");
         gr_eff_s->Draw("P");
 	lg->Draw();
-        Utilities::saveCanvas(c, "results/" + saveName + "_effVar_sb_" + name);
+        Utilities::saveCanvas(c, "results/" + saveName + "_effVar_sb_" + name + "_" + det);
 
         delete c;
 	delete lg;
@@ -581,19 +581,19 @@ void plotResultsID(TString det, TString fileStamp)
         plotEff(h1, "sigmaIEtaIEtaTasV1NM1", "IDStudy", det, true, 2, true, -1, 0.03);
         plotEff(h1, "E2x5Norm5x5TasV1NM1","IDStudy", det, false, 1, false, 0.90, -1);
 	// and the efficiency curves
-        plotEffVar(h1, "dEtaInTasV1NM1_pt_", det, "IDStudy", 4);
-        plotEffVar(h1, "dPhiInTasV1NM1_pt_", det, "IDStudy", 4);
-        plotEffVar(h1, "hoeTasV1NM1_pt_", det, "IDStudy", 4);
-        plotEffVar(h1, "sigmaIEtaIEtaTasV1NM1_pt_", det, "IDStudy", 4);
-        plotEffVar(h1, "E2x5Norm5x5TasV1NM1_pt_", det, "IDStudy", 4);
-        plotEffVar(h1, "tasElectronV1_pt_", det, "IDStudy", 4);
+        plotEffVar(h1, "dEtaInTasV1NM1_pt", det, "IDStudy", 4);
+        plotEffVar(h1, "dPhiInTasV1NM1_pt", det, "IDStudy", 4);
+        plotEffVar(h1, "hoeTasV1NM1_pt", det, "IDStudy", 4);
+        plotEffVar(h1, "sigmaIEtaIEtaTasV1NM1_pt", det, "IDStudy", 4);
+        plotEffVar(h1, "E2x5Norm5x5TasV1NM1_pt", det, "IDStudy", 4);
+        plotEffVar(h1, "tasElectronV1_pt", det, "IDStudy", 4);
 
-        plotEffVar(h1, "dEtaInTasV1NM1_eta_", det, "IDStudy", 4);
-        plotEffVar(h1, "dPhiInTasV1NM1_eta_", det, "IDStudy", 4);
-        plotEffVar(h1, "hoeTasV1NM1_eta_", det, "IDStudy", 4);
-        plotEffVar(h1, "sigmaIEtaIEtaTasV1NM1_eta_", det, "IDStudy", 4);
-        plotEffVar(h1, "E2x5Norm5x5TasV1NM1_eta_", det, "IDStudy", 4);
-        plotEffVar(h1, "tasElectronV1_eta_", det, "IDStudy", 4);
+        plotEffVar(h1, "dEtaInTasV1NM1_eta", det, "IDStudy", 4);
+        plotEffVar(h1, "dPhiInTasV1NM1_eta", det, "IDStudy", 4);
+        plotEffVar(h1, "hoeTasV1NM1_eta", det, "IDStudy", 4);
+        plotEffVar(h1, "sigmaIEtaIEtaTasV1NM1_eta", det, "IDStudy", 4);
+        plotEffVar(h1, "E2x5Norm5x5TasV1NM1_eta", det, "IDStudy", 4);
+        plotEffVar(h1, "tasElectronV1_eta", det, "IDStudy", 4);
 
 
 	// the isolation part
