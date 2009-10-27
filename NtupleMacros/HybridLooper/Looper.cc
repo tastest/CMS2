@@ -156,6 +156,9 @@ void Looper::BookHistos ()
         FormatHist(h1_tkIso03AllReJura01In015ConvIDNM1_, "tkIso03AllReJura01In015ConvIDNM1", 150, 0.0, 15);
 	FormatHist(h1_tkIso03AllReShCutNM1_, "tkIso03AllReShCutNM1", 150, 0.0, 15);
 
+        FormatEffHist(em_tkIso03AllNM1_, true, 4.5, 6.0, "tkIso03AllNM1");
+        FormatEffHist(em_tkIso03AllReJura01In015NM1_, true, 2.5, 2.0, "tkIso03AllReJura01In015NM1");
+
 	// track iso studies
         FormatHist(h1_tkIso03Alld0corr_, "tkIso03Alld0corr", 100, 0.0, 0.2);
         FormatHist(h1_tkIso03AllRe_, "tkIso03AllRe", 150, 0.0, 15.0);
@@ -764,6 +767,13 @@ void Looper::FillEventHistos ()
 					h1_tkIso03AllNM1_[det]->Fill(tkIso, weight);
 					h1_tkIso03AllReJura01In015NM1_[det]->Fill(tkIsoJura01In015, weight);
 					h1_tkIso03AllReShCutNM1_[det]->Fill(shCutSum, weight);				
+
+					em_tkIso03AllNM1_[det]->Fill(tkIso,
+                                                cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], 1);
+
+					em_tkIso03AllReJura01In015NM1_[det]->Fill(tkIsoJura01In015,
+                                                cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], 1);
+
 	
 					if (cms2.els_egamma_tightId()[i]) {
 						h1_tkIso03AllIDNM1_[det]->Fill(tkIso, weight);

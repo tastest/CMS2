@@ -377,8 +377,8 @@ void plotEffVar(HistogramUtilities &h1, TString name, TString det, TString saveN
         c->SetName(TString("c_sb_") + h1_pass->GetName());
         c->cd();
 	c->Clear();
-        gr_eff_bg->Draw("AP");
-        gr_eff_s->Draw("P");
+        gr_eff_s->Draw("AP");
+        gr_eff_bg->Draw("P");
 	lg->Draw();
         Utilities::saveCanvas(c, "results/" + saveName + "_effVar_sb_" + name + "_" + det);
 
@@ -631,9 +631,13 @@ void plotResultsID(TString det, TString fileStamp)
         plotEff(h1, "tkIso03AllReJura01In015IDNM1", "IDStudy", det, true, 1, true);
         plotEff(h1, "tkIso03AllReJura01In015ConvNM1", "IDStudy", det, true, 1, true);
         plotEff(h1, "tkIso03AllReJura01In015ConvIDNM1", "IDStudy", det, true, 1, true);
-
         plotEff(h1, "tkIso03AllReShCutNM1", "IDStudy", det, true, 1, true);
 
+        plotEffVar(h1, "tkIso03AllNM1_eta", det, "IDStudy", 1);
+        plotEffVar(h1, "tkIso03AllNM1_pt", det, "IDStudy", 1);
+
+        plotEffVar(h1, "tkIso03AllReJura01In015NM1_eta", det, "IDStudy", 1);
+        plotEffVar(h1, "tkIso03AllReJura01In015NM1_pt", det, "IDStudy", 1);
 
 }
 

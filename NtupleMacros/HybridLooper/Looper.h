@@ -130,6 +130,9 @@ protected:
         TH1F    *h1_tkIso03AllReJura01In015ConvIDNM1_[2];
 	TH1F	*h1_tkIso03AllReShCutNM1_[2];
 
+	EffMulti	*em_tkIso03AllNM1_[2];
+	EffMulti	*em_tkIso03AllReJura01In015NM1_[2];
+
 	// track isolation investigation
         TH1F    *h1_tkIso03AllRe_[2];
 	TH1F	*h1_tkIso03AllReShVeto_[2];
