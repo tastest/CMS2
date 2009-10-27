@@ -807,66 +807,66 @@ void Looper::FillEventHistos ()
 				// Efficiency histograms for the Egamma robust tight V1 (2_2_X) tune...
 				// ... note that all histograms except pt have a pt cut of 20.0
 				em_dEtaIn_[det]->Fill(fabs(cms2.els_dEtaIn()[i]),
-						cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+						cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], 1);
 
 				em_dPhiIn_[det]->Fill(fabs(cms2.els_dPhiIn()[i]),
-						cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+						cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], 1);
 
 				em_hoe_[det]->Fill(fabs(cms2.els_hOverE()[i]),
-						cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+						cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], 1);
 
 				em_sieie_[det]->Fill(fabs(cms2.els_sigmaIEtaIEta()[i]),
-						cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+						cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], 1);
 
 				em_classBasedTight_[det]->Fill(cms2.els_egamma_tightId()[i],
-						cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+						cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], 1);
 
 				em_robustTight_[det]->Fill(cms2.els_egamma_robustTightId()[i],
-						cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+						cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], 1);
 
 				em_eopInGT05_[det]->Fill(cms2.els_eOverPIn()[i],
-						cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+						cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], 1);
 
 				em_eopInLT30_[det]->Fill(cms2.els_eOverPIn()[i],
-						cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+						cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], 1);
 
 				cuts_t eleIdResult = ele::tasElectron_v1(i);
 				
 				em_tasElectronV1_[det]->Fill(CheckCuts(eleid_tasElectron_v1, eleIdResult),
-				                cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+				                cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], 1);
 
 				// N-1 for dEtaIn
 				if (CheckCutsNM1(eleid_tasElectron_v1, CUT_BIT(ELEID_TAS_DETAIN), eleIdResult)) {
 					em_dEtaInTasV1NM1_[det]->Fill(fabs(cms2.els_dEtaIn()[i]),
-                                                cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);			
+                                                cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], 1);			
 					h1_dEtaInTasV1NM1_[det]->Fill(fabs(cms2.els_dEtaIn()[i]), weight);
 				}
 
                                 // N-1 for dPhiIn
                                 if (CheckCutsNM1(eleid_tasElectron_v1, CUT_BIT(ELEID_TAS_DPHIIN), eleIdResult)) {
                                         em_dPhiInTasV1NM1_[det]->Fill(fabs(cms2.els_dPhiIn()[i]),
-                                                cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+                                                cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], 1);
                                         h1_dPhiInTasV1NM1_[det]->Fill(fabs(cms2.els_dPhiIn()[i]), weight);
                                 }
 
                                 // N-1 for hoe
                                 if (CheckCutsNM1(eleid_tasElectron_v1, CUT_BIT(ELEID_TAS_HOE), eleIdResult)) {
                                         em_hoeTasV1NM1_[det]->Fill(cms2.els_hOverE()[i],
-                                                cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+                                                cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], 1);
                                         h1_hoeTasV1NM1_[det]->Fill(cms2.els_hOverE()[i], weight);
                                 }
 
                                 // N-1 for sigmaIEtaIEta
                                 if (CheckCutsNM1(eleid_tasElectron_v1, CUT_BIT(ELEID_TAS_LSHAPE), eleIdResult)) {
                                         em_sigmaIEtaIEtaTasV1NM1_[det]->Fill(cms2.els_sigmaIEtaIEta()[i],
-                                                cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+                                                cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], 1);
                                         h1_sigmaIEtaIEtaTasV1NM1_[det]->Fill(cms2.els_sigmaIEtaIEta()[i], weight);
                                 }
 
                                 // N-1 for E2x5Max/E5x5
                                 if (CheckCutsNM1(eleid_tasElectron_v1, CUT_BIT(ELEID_TAS_LSHAPE), eleIdResult)) {
                                         em_E2x5Norm5x5TasV1NM1_[det]->Fill(cms2.els_e2x5Max()[i]/cms2.els_e5x5()[i],
-                                                cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], weight);
+                                                cms2.els_p4()[i].Pt(), cms2.els_etaSC()[i], cms2.els_phiSC()[i], 1);
                                         h1_E2x5Norm5x5TasV1NM1_[det]->Fill(cms2.els_e2x5Max()[i]/cms2.els_e5x5()[i], weight);
                                 }
 

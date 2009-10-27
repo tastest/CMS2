@@ -303,51 +303,53 @@ void plotEffVar(HistogramUtilities &h1, TString name, TString saveName, Int_t re
         TH1F *h1_eff = 0;
         TH1F *h1_total = 0;
         TH1F *h1_pass = 0;
-	//TGraphAsymmErrors *gr_eff = new TGraphAsymmErrors();
+	TGraphAsymmErrors *gr_eff = new TGraphAsymmErrors();
 
         h1_total = h1.getHistogram(theSignal, name, "", "denom", rebin, "");
         h1_pass = h1.getHistogram(theSignal, name, "", "numer", rebin, "");
         //h1_total->Rebin(rebin);
         //h1_pass->Rebin(rebin);
-	//gr_eff->BayesDivide(h1_pass, h1_total);
-        h1_eff = (TH1F*)h1_pass->Clone();
-        h1_eff->Reset();
-        h1_eff->Divide(h1_pass, h1_total, 1.0, 1.0, "B");
-        h1_eff->SetName(h1_pass->GetName());
+	gr_eff->BayesDivide(h1_pass, h1_total);
+        //h1_eff = (TH1F*)h1_pass->Clone();
+        //h1_eff->Reset();
+        //h1_eff->Divide(h1_pass, h1_total, 1.0, 1.0, "B");
+        //h1_eff->SetName(h1_pass->GetName());
         c->SetName(TString("c_s_") + h1_pass->GetName());
         c->cd();
-        h1_eff->SetLineWidth(2);
-        h1_eff->SetMarkerStyle(20);
-	h1_eff->GetYaxis()->SetRangeUser(0, 1.1);
-        h1_eff->Draw("E1");
-	//gr_eff->Draw("AP");
-        //gr_eff->GetYaxis()->SetRangeUser(0, 1.1);
+        //h1_eff->SetLineWidth(2);
+        //h1_eff->SetMarkerStyle(20);
+	//h1_eff->GetYaxis()->SetRangeUser(0, 1.1);
+	//h1_eff->GetXaxis()->SetRangeUser(0, 100.0);
+        //h1_eff->Draw("E1");
+	gr_eff->Draw("AP");
+        gr_eff->GetYaxis()->SetRangeUser(0, 1.1);
         Utilities::saveCanvas(c, "results/" + saveName + "_effVar_s_" + name);
 
 
         h1_total = h1.getHistogram(theBackground, name, "", "denom", rebin, "");
         h1_pass = h1.getHistogram(theBackground, name, "", "numer", rebin, "");
-	//h1_total->Rebin(rebin);
-	//h1_pass->Rebin(rebin);
+	h1_total->Rebin(rebin);
+	h1_pass->Rebin(rebin);
         //gr_eff->BayesDivide(h1_pass, h1_total);
-        h1_eff->Reset();
-        h1_eff->Divide(h1_pass, h1_total, 1.0, 1.0, "B");
-        h1_eff->SetName(h1_pass->GetName());
+        //h1_eff->Reset();
+        //h1_eff->Divide(h1_pass, h1_total, 1.0, 1.0, "B");
+        //h1_eff->SetName(h1_pass->GetName());
         c->SetName(TString("c_bg_") + h1_pass->GetName());
         c->cd();
-	h1_eff->SetLineWidth(2);
-	h1_eff->SetMarkerStyle(20);
-        h1_eff->GetYaxis()->SetRangeUser(0, 1.1);
-        h1_eff->Draw("E1");
-	//gr_eff->Draw("AP");
-        //gr_eff->GetYaxis()->SetRangeUser(0, 1.1);
+	//h1_eff->SetLineWidth(2);
+	//h1_eff->SetMarkerStyle(20);
+        //h1_eff->GetYaxis()->SetRangeUser(0, 1.1);
+        //h1_eff->GetXaxis()->SetRangeUser(0, 100.0);
+        //h1_eff->Draw("E1");
+	gr_eff->Draw("AP");
+        gr_eff->GetYaxis()->SetRangeUser(0, 1.1);
         Utilities::saveCanvas(c, "results/" + saveName + "_effVar_bg_" + name);
 
         delete c;
-        delete h1_eff;
+        //delete h1_eff;
         delete h1_pass;
         delete h1_total;
-	//delete gr_eff;
+	delete gr_eff;
 }
 
 void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString saveName, TString det, int rebin, float cutValEB, float cutValEE)
