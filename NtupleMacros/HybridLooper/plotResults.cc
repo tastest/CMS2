@@ -305,22 +305,23 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
 
 
 
-void plotEffVar(HistogramUtilities &h1, TString name, TString saveName, Int_t rebin = 1)
+void plotEffVar(HistogramUtilities &h1, TString name, TString det, TString saveName, Int_t rebin = 1)
 {
 
         TCanvas *c = new TCanvas();
         TH1F *h1_eff = 0;
         TH1F *h1_total = 0;
         TH1F *h1_pass = 0;
-	TGraphAsymmErrors *gr_eff = new TGraphAsymmErrors();
+	TGraphAsymmErrors *gr_eff_s = new TGraphAsymmErrors();
+        TGraphAsymmErrors *gr_eff_bg = new TGraphAsymmErrors();
 
-        h1_total = h1.getHistogram(theSignal, name, "", "denom", rebin, "");
-        h1_pass = h1.getHistogram(theSignal, name, "", "numer", rebin, "");
+        h1_total = h1.getHistogram(theSignal, name, "", det + "_denom", rebin, "");
+        h1_pass = h1.getHistogram(theSignal, name, "", det + "_numer", rebin, "");
         //h1_total->Rebin(rebin);
         //h1_pass->Rebin(rebin);
-	gr_eff->BayesDivide(h1_pass, h1_total);
-        gr_eff->SetMarkerColor(kBlue);
-        gr_eff->SetLineColor(kBlue);
+	gr_eff_s->BayesDivide(h1_pass, h1_total);
+        gr_eff_s->SetMarkerColor(kBlue);
+        gr_eff_s->SetLineColor(kBlue);
         //h1_eff = (TH1F*)h1_pass->Clone();
         //h1_eff->Reset();
         //h1_eff->Divide(h1_pass, h1_total, 1.0, 1.0, "B");
@@ -332,20 +333,20 @@ void plotEffVar(HistogramUtilities &h1, TString name, TString saveName, Int_t re
 	//h1_eff->GetYaxis()->SetRangeUser(0, 1.1);
 	//h1_eff->GetXaxis()->SetRangeUser(0, 100.0);
         //h1_eff->Draw("E1");
-	gr_eff->Draw("AP");
-	gr_eff->GetXaxis()->SetRangeUser(0, 100.0);
-        gr_eff->GetYaxis()->SetRangeUser(0, 1.1);
-	gr_eff->GetXaxis()->SetTitle(h1_total->GetXaxis()->GetTitle());
-        gr_eff->GetYaxis()->SetTitle("Efficiency");
+	gr_eff_s->Draw("AP");
+	gr_eff_s->GetXaxis()->SetRangeUser(0, 100.0);
+        gr_eff_s->GetYaxis()->SetRangeUser(0, 1.1);
+	gr_eff_s->GetXaxis()->SetTitle(h1_total->GetXaxis()->GetTitle());
+        gr_eff_s->GetYaxis()->SetTitle("Efficiency");
         Utilities::saveCanvas(c, "results/" + saveName + "_effVar_s_" + name);
 
-        h1_total = h1.getHistogram(theBackground, name, "", "denom", rebin, "");
-        h1_pass = h1.getHistogram(theBackground, name, "", "numer", rebin, "");
+        h1_total = h1.getHistogram(theBackground, name, "", det + "_denom", rebin, "");
+        h1_pass = h1.getHistogram(theBackground, name, "", det + "_numer", rebin, "");
 	//h1_total->Rebin(rebin);
 	//h1_pass->Rebin(rebin);
-        gr_eff->BayesDivide(h1_pass, h1_total);
-	gr_eff->SetMarkerColor(kGreen);
-	gr_eff->SetLineColor(kGreen);
+        gr_eff_bg->BayesDivide(h1_pass, h1_total);
+	gr_eff_bg->SetMarkerColor(kGreen);
+	gr_eff_bg->SetLineColor(kGreen);
         //h1_eff->Reset();
         //h1_eff->Divide(h1_pass, h1_total, 1.0, 1.0, "B");
         //h1_eff->SetName(h1_pass->GetName());
@@ -356,18 +357,37 @@ void plotEffVar(HistogramUtilities &h1, TString name, TString saveName, Int_t re
         //h1_eff->GetYaxis()->SetRangeUser(0, 1.1);
         //h1_eff->GetXaxis()->SetRangeUser(0, 100.0);
         //h1_eff->Draw("E1");
-	gr_eff->Draw("AP");
-        gr_eff->GetXaxis()->SetRangeUser(0, 100.0);
-        gr_eff->GetYaxis()->SetRangeUser(0, 1.1);
-        gr_eff->GetXaxis()->SetTitle(h1_total->GetXaxis()->GetTitle());
-	gr_eff->GetYaxis()->SetTitle("Efficiency");
+	gr_eff_bg->Draw("AP");
+        gr_eff_bg->GetXaxis()->SetRangeUser(0, 100.0);
+        gr_eff_bg->GetYaxis()->SetRangeUser(0, 1.1);
+        gr_eff_bg->GetXaxis()->SetTitle(h1_total->GetXaxis()->GetTitle());
+	gr_eff_bg->GetYaxis()->SetTitle("Efficiency");
         Utilities::saveCanvas(c, "results/" + saveName + "_effVar_bg_" + name);
 
+        TLegend *lg = new TLegend(0.5, 0.2, 0.9, 0.5);
+        lg->SetFillColor(kWhite);
+        lg->SetLineColor(kWhite);
+        lg->SetShadowColor(kWhite);
+        TString upperDet = det;
+        upperDet.ToUpper();
+        lg->AddEntry(gr_eff_s, "Signal (" + upperDet + ")", "lp");
+        lg->AddEntry(gr_eff_bg, "Background (" + upperDet + ")", "lp");
+
+        c->SetName(TString("c_sb_") + h1_pass->GetName());
+        c->cd();
+	c->Clear();
+        gr_eff_bg->Draw("AP");
+        gr_eff_s->Draw("P");
+	lg->Draw();
+        Utilities::saveCanvas(c, "results/" + saveName + "_effVar_sb_" + name);
+
         delete c;
+	delete lg;
         //delete h1_eff;
         delete h1_pass;
         delete h1_total;
-	delete gr_eff;
+	delete gr_eff_s;
+	delete gr_eff_bg;
 }
 
 void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString saveName, TString det, int rebin, float cutValEB, float cutValEE)
@@ -396,54 +416,6 @@ void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString sav
 	delete c1;
 	delete st;
 	delete lg_all;
-
-}
-
-void test()
-{
-        gROOT->ProcessLine(".L ~/tdrStyle.C");
-        gROOT->ProcessLine("setTDRStyle()");
-        HistogramUtilities h1("Results.root", 0.001);
-
-        plotEffVar(h1, "dEtaIn_pt_ee", "", 4);
-        plotEffVar(h1, "dEtaIn_eta_ee", "");
-        plotEffVar(h1, "dEtaIn_phi_ee", "");
-        plotEffVar(h1, "dEtaIn_pt_eb", "", 4);
-        plotEffVar(h1, "dEtaIn_eta_eb", "");
-        plotEffVar(h1, "dEtaIn_phi_eb", "");
-
-        plotEffVar(h1, "dPhiIn_pt_ee", "", 4);
-        plotEffVar(h1, "dPhiIn_eta_ee", "");
-        plotEffVar(h1, "dPhiIn_phi_ee", "");
-        plotEffVar(h1, "dPhiIn_pt_eb", "", 4);
-        plotEffVar(h1, "dPhiIn_eta_eb", "");
-        plotEffVar(h1, "dPhiIn_phi_eb", "");
-
-        plotEffVar(h1, "hoe_pt_ee", "", 4);
-        plotEffVar(h1, "hoe_eta_ee", "");
-        plotEffVar(h1, "hoe_phi_ee", "");
-        plotEffVar(h1, "hoe_pt_eb", "", 4);
-        plotEffVar(h1, "hoe_eta_eb", "");
-        plotEffVar(h1, "hoe_phi_eb", "");
-
-        plotEffVar(h1, "sieie_pt_ee", "", 4);
-        plotEffVar(h1, "sieie_eta_ee", "");
-        plotEffVar(h1, "sieie_phi_ee", "");
-        plotEffVar(h1, "sieie_pt_eb", "", 4);
-        plotEffVar(h1, "sieie_eta_eb", "");
-        plotEffVar(h1, "sieie_phi_eb", "");
-
-        plotEffVar(h1, "robustTight_pt_eb", "");
-        plotEffVar(h1, "robustTight_pt_ee", "");
-
-        plotEffVar(h1, "classBasedTight_pt_eb", "");
-        plotEffVar(h1, "classBasedTight_pt_ee", "");
-
-        plotEffVar(h1, "eopInGT05_pt_ee", "", 4);
-        plotEffVar(h1, "eopInGT05_pt_eb", "", 4);
-
-        plotEffVar(h1, "eopInLT30_pt_ee", "", 4);
-        plotEffVar(h1, "eopInLT30_pt_eb", "", 4);
 
 }
 
@@ -609,11 +581,20 @@ void plotResultsID(TString det, TString fileStamp)
         plotEff(h1, "sigmaIEtaIEtaTasV1NM1", "IDStudy", det, true, 2, true, -1, 0.03);
         plotEff(h1, "E2x5Norm5x5TasV1NM1","IDStudy", det, false, 1, false, 0.90, -1);
 	// and the efficiency curves
-        plotEffVar(h1, "dEtaInTasV1NM1_pt_" + det, "IDStudy", 4);
-        plotEffVar(h1, "dPhiInTasV1NM1_pt_" + det, "IDStudy", 4);
-        plotEffVar(h1, "hoeTasV1NM1_pt_" + det, "IDStudy", 4);
-        plotEffVar(h1, "sigmaIEtaIEtaTasV1NM1_pt_" + det, "IDStudy", 4);
-        plotEffVar(h1, "E2x5Norm5x5TasV1NM1_pt_" + det, "IDStudy", 4);
+        plotEffVar(h1, "dEtaInTasV1NM1_pt_", det, "IDStudy", 4);
+        plotEffVar(h1, "dPhiInTasV1NM1_pt_", det, "IDStudy", 4);
+        plotEffVar(h1, "hoeTasV1NM1_pt_", det, "IDStudy", 4);
+        plotEffVar(h1, "sigmaIEtaIEtaTasV1NM1_pt_", det, "IDStudy", 4);
+        plotEffVar(h1, "E2x5Norm5x5TasV1NM1_pt_", det, "IDStudy", 4);
+        plotEffVar(h1, "tasElectronV1_pt_", det, "IDStudy", 4);
+
+        plotEffVar(h1, "dEtaInTasV1NM1_eta_", det, "IDStudy", 4);
+        plotEffVar(h1, "dPhiInTasV1NM1_eta_", det, "IDStudy", 4);
+        plotEffVar(h1, "hoeTasV1NM1_eta_", det, "IDStudy", 4);
+        plotEffVar(h1, "sigmaIEtaIEtaTasV1NM1_eta_", det, "IDStudy", 4);
+        plotEffVar(h1, "E2x5Norm5x5TasV1NM1_eta_", det, "IDStudy", 4);
+        plotEffVar(h1, "tasElectronV1_eta_", det, "IDStudy", 4);
+
 
 	// the isolation part
 	//

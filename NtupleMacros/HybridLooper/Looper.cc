@@ -106,7 +106,7 @@ void Looper::BookHistos ()
 	FormatHist(h1_hoe_, "hoe", 100, 0.0, 0.2);
 	FormatHist(h1_sigmaIEtaIEta_, "sigmaIEtaIEta", 100, 0.0, 0.06);
 	FormatHist(h1_sigmaIPhiIPhi_, "sigmaIPhiIPhi", 100, 0.0, 0.04);
-	FormatHist(h1_E2x5Norm5x5_, "E2x5Norm5x5", 100, 0.4, 1.0);
+	FormatHist(h1_E2x5Norm5x5_, "E2x5Norm5x5", 80, 0.6, 1.0);
 	FormatHist(h1_E1x5Norm5x5_, "E1x5Norm5x5", 100, 0.0, 1.0);
 	FormatHist(h1_eopIn_, "eopIn", 100, 0.0, 5.0);
 	FormatHist(h1_d0corr_, "d0corr", 100, 0.0, 0.2);
@@ -125,7 +125,7 @@ void Looper::BookHistos ()
         FormatHist(h1_sigmaIEtaIEtaTasV1NM1_, "sigmaIEtaIEtaTasV1NM1", 100, 0.0, 0.06);
         FormatEffHist(em_sigmaIEtaIEtaTasV1NM1_, true, 0.0, 0.03, "sigmaIEtaIEtaTasV1NM1");
 
-        FormatHist(h1_E2x5Norm5x5TasV1NM1_, "E2x5Norm5x5TasV1NM1", 100, 0.0, 1.0);
+        FormatHist(h1_E2x5Norm5x5TasV1NM1_, "E2x5Norm5x5TasV1NM1", 80, 0.6, 1.0);
         FormatEffHist(em_E2x5Norm5x5TasV1NM1_, false, 0.9, 0.0, "E2x5Norm5x5TasV1NM1");
 
 
