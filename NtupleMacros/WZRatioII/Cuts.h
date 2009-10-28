@@ -13,6 +13,8 @@ enum {
 	LEP_ISO,
 	LEP_GOOD_NOD0,
 	LEP_D0,
+	JET_VETO_20, //if njet_20 > 0, this cut fails
+	JET_VETO_30,
 	TCMET,
 	TMASS, //transverse mass for W selection
 	ZMASS,

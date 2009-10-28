@@ -2,7 +2,7 @@
 
 #include <unistd.h>
 #include <string>
-#include "Looper.h"
+#include "ABCDLooper.h"
 #include "Tools/Sample.h"
 //#include "LocalSample.h"
 
@@ -25,7 +25,7 @@ enum {
 };
 
 const uint32 default_samples =
-//1 << LOOP_QCD		| 
+1 << LOOP_QCD		| 
 1 << LOOP_QCD_MU15		| 
 1 << LOOP_QCD_EM		| 
 1 << LOOP_QCD_PHOTON	| 
@@ -34,11 +34,15 @@ const uint32 default_samples =
 1 << LOOP_ZJET_ALP 	|
 1 << LOOP_TTBAR;
 
+const uint32 sig_samples =
+1 << LOOP_WJET_ALP		| 
+1 << LOOP_ZJET_ALP ;
+
 // helper function used to print yield tables
-void printTable (const Looper **hists, int n, const char *fname, 
+void printTable (const ABCDLooper **hists, int n, const char *fname, 
 				 uint32 which_ones)
 {
-  /*
+
   FILE *f = 0;
   if (fname == 0 || strlen(fname) == 0)
 	f = stdin;
@@ -49,7 +53,7 @@ void printTable (const Looper **hists, int n, const char *fname,
   }
   fprintf(f, "| %6s", "");
   for (int j = 0; j < n; ++j) {
-	fprintf(f, "|  *%12s*  ", hists[j]->SampleName().c_str());
+	fprintf(f, "|*%14s*", hists[j]->SampleName().c_str());
   }
   fprintf(f, "|%12s  |\n", "total");
   //dilep
@@ -85,7 +89,7 @@ void printTable (const Looper **hists, int n, const char *fname,
 
   if (f != stdin) 
 	fclose(f);
-  */
+
 }
 
 template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_ones = 0xffffffff)
@@ -102,8 +106,8 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
   Sample qcd_bctoe = fQCDBCtoEPt20to30() + fQCDBCtoEPt30to80() + fQCDBCtoEPt80to170();
   qcd_bctoe.name = "QCDBCtoE";
 
-  //Looper looper_qcd30(fQCDpt30()			, cuts, log.c_str()); if (which_ones & (1 << LOOP_QCD)) 	looper_qcd30.Loop();
-  //Looper looper_qcd80(fQCDpt80()			, cuts, log.c_str()); if (which_ones & (1 << LOOP_QCD)) 	looper_qcd80.Loop();
+  Looper looper_qcd30(fQCDpt30()			, cuts, log.c_str()); if (which_ones & (1 << LOOP_QCD)) 	looper_qcd30.Loop();
+  Looper looper_qcd80(fQCDpt80()			, cuts, log.c_str()); if (which_ones & (1 << LOOP_QCD)) 	looper_qcd80.Loop();
   Looper looper_wejet_alp(fWejetsAlpgenSingle()		, cuts, log.c_str()); if (which_ones & (1 << LOOP_WJET_ALP)) 	looper_wejet_alp.Loop();
   Looper looper_wmjet_alp(fWmjetsAlpgenSingle()		, cuts, log.c_str()); if (which_ones & (1 << LOOP_WJET_ALP)) 	looper_wmjet_alp.Loop();
   Looper looper_wtjet_alp(fWtjetsAlpgenSingle()		, cuts, log.c_str()); if (which_ones & (1 << LOOP_WJET_ALP)) 	looper_wtjet_alp.Loop();
@@ -121,8 +125,8 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 
   // then we collect them all and print a table
   const Looper *loopers[] = { 
-	//&looper_qcd30,
-	//&looper_qcd80,
+	&looper_qcd30,
+	&looper_qcd80,
 	&looper_qcd_mu15,
 	&looper_qcd_em,
 	&looper_qcd_photon,
@@ -143,9 +147,17 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 // default yield table
 int Results ()
 {
-  return run<Looper>(0, "Results", default_samples );
-  //return run<Looper>(event_cuts, "Results", samples );
-  //1 << LOOP_WENU);
-  // 1 << LOOP_QCD30 | 1 << LOOP_WJET_ALP);
+  //return run<Looper>(0, "Results", default_samples );
+  //return run<Looper>(0, "Results_sig", sig_samples );
+  //return run<Looper>(0, "Results", samples );
+
+}
+
+int ABCDResults ()
+{
+  //return run<ABCDLooper>(0, "ABCDResults", default_samples );
+  return run<ABCDLooper>(0, "ABCDResults_sig", sig_samples );
+  //return run<ABCDLooper>(0, "ABCDResults", samples );
+
 }
 

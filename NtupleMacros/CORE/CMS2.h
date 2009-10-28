@@ -10,7 +10,7 @@
 #include "TFile.h"
 #include <vector> 
 
-#define PARANOIA
+//#define PARANOIA
 
 using namespace std; 
 class CMS2 {
