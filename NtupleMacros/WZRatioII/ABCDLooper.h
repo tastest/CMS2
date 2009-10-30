@@ -58,6 +58,8 @@ protected:
   TH1F *hlep_pt_f[3];
   TH1F *hlep_mass[3];
   TH1F *hlep_tcmet[3];
+  TH1F *hlep_genmet[3];
+  TH1F *hlep_accgenmet[3];
   TH1F *hlep_clmumet[3];
   TH1F *hlep_met_dphi[3];
   TH1F *hlep_trckIso[3];

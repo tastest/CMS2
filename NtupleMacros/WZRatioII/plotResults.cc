@@ -52,73 +52,11 @@ const static sources_t sigdSources =
 
 TString rootfilename = "wzratio.root";
 
-void saveStack(THStack* st, TLegend* leg, bool cpylog, double ymin, double ymax, TString name="", THStack* st2=0) {
-
-  //double oldymax = st->GetMaximum();
-  //double oldymin = st->GetMinimum();
-  TCanvas *c = new TCanvas();
-  TString usename;
-  if( name != "" ) {
-	usename = name;//+".png";
-	//st->SetName(name);
-	st->SetTitle(name);
-  }
-  else
-	usename = (TString)st->GetName();//+".png";
-
-  //for the y axis won't give me a max...just gives 1--don't use GetYaxis for stacks, use GetMaximum
-  //cout << "ymin " << ymin << "  ymax " << ymax << "  st y max " << st->GetYaxis()->GetXmax() << "  max " << st->GetMaximum() << endl;
-  if( ymax != -999 ) {
-	//st->SetMinimum( ymin );
-	st->SetMaximum( ymax );
-  }
-  //else
-  //st->SetMinimum( ymin );
-  //st->GetYaxis()->SetRangeUser( ymin, st->GetMaximum()+0.01*st->GetMaximum() );
-
-  st->Draw("hist"); //must draw before the axis range is defined...(uh, don't ask me)
-  if( st2 != 0 ) {
-	st->SetMinimum( st2->GetMinimum() );
-	st2->Draw("same,hist");
-  }
-
-  //if( verbose )
-  //cout << "stack " << usename << "  max " << st->GetMaximum() << "  " << oldymax << "  min " << st->GetMinimum() << endl;
-  //c->Update();
-  //getc(stdin);
-  leg->Draw();
-  c->SaveAs(usename+".png");
-  c->SaveAs(rootfilename);
-
-  if(cpylog) {
-	gPad->SetLogy();
-
-	//st->SetMaximum( oldymax );
-	//if( st2 == 0 ) { //don't reset min if st2 exists--this is wrong
-	st->SetMinimum( ymin ); //need to reset regardless
-	//cout << "set min to ymin " << ymin << endl;
-	//}
-  
-	st->Draw("hist");
- 	leg->Draw();
-	c->Update();
-	//c->SaveAs((TString)st->GetName()+"_log.png");
-	c->SaveAs(usename+"_log.png");
-	c->SaveAs(rootfilename);
-  }
-  
-}
-
-void makeStack(HistogramUtilities* h, TLegend* leg, sources_t theSources, TString title, TString subtitle, TString suffix, bool cpylog=false, double ymin=1., double ymax=-999, TString name="") {
-  THStack *st = h->getStack(theSources, title, subtitle, suffix);
-  saveStack( st, leg, cpylog, ymin, ymax, name );
-}
-
-
 
 void plotResults() {
 
-  HistogramUtilities* h1 = new HistogramUtilities("Results.root");  //normalization is in weight
+  //HistogramUtilities* h1 = new HistogramUtilities("Results.root");  //normalization is in weight
+  HistogramUtilities* h1 = new HistogramUtilities("ABCDResults.root");  //normalization is in weight
 
   vector<DataSource> vSources;
   vSources.push_back(   fH_WEJET_ALP()   );	
@@ -286,7 +224,7 @@ void plotResults() {
   TH2F* zlt_pt_eta_z_e   = getTH2F(h1, sigdSources, "dilep_lt_pt_eta", "", "ee", 1, "_z", opt); 
 
   TH2F* zlt_ll20_pt_eta_all_e = getTH2F(h1, theSources, "dilep_lt_ll20_pt_eta", "", "ee", 1, "_all", opt); 
-  TH2F* zlt_ll20_pt_eta_z_e  = getTH2F(h1, sigdSources, "dilep_lt_ll20_pt_eta", "", "ee", 1, "_z", opt); 
+  //TH2F* zlt_ll20_pt_eta_z_e  = getTH2F(h1, sigdSources, "dilep_lt_ll20_pt_eta", "", "ee", 1, "_z", opt); 
 
   TH2F* zlpt_reliso_all_e = getTH2F(h1, theSources, "dilep_lepPt_relIso", "", "ee", 1, "_all", opt); 
   TH2F* zlpt_reliso_z_e = getTH2F(h1, sigdSources, "dilep_lepPt_relIso", "", "ee", 1, "_z", opt); 
@@ -300,7 +238,7 @@ void plotResults() {
   //the ones that matter are below here
   TH2F* zmet_reliso_scl_all_e 			= getTH2F(h1, theSources, "dilep_lepMet_Scl_relIso", "", "ee", 1, "_all", opt); 
   TH2F* zmet_reliso_rscl_all_e 			= getTH2F(h1, theSources, "dilep_lepMet_rScl_relIso", "", "ee", 1, "_all", opt); 
-  TH2F* zmet_reliso_scl_z_e 			= getTH2F(h1, sigdSources, "dilep_lepMet_Scl_relIso", "", "ee", 1, "_z", opt); 
+  TH2F* zmet_reliso_scl_z_e 			= getTH2F(h1, sigdSources,"dilep_lepMet_Scl_relIso", "", "ee", 1, "_z", opt); 
 
   TH2F* zmet_reliso_sclt_all_e 			= getTH2F(h1, theSources, "dilep_lepMet_Scl_trth_relIso", "", "ee", 1, "_all", opt); 
   TH2F* zmet_reliso_rsclt_all_e 		= getTH2F(h1, theSources, "dilep_lepMet_rScl_trth_relIso", "", "ee", 1, "_all", opt); 
@@ -318,20 +256,6 @@ void plotResults() {
   TH2F* zmet_reliso_rscltmtm_all_e 		= getTH2F(h1, theSources, "dilep_lepMet_rScl_tmastmes_relIso", "", "ee", 1, "_all", opt); 
   TH2F* zmet_reliso_scltmtm_z_e 		= getTH2F(h1, sigdSources, "dilep_lepMet_Scl_tmastmes_relIso", "", "ee", 1, "_z", opt); 
 
-
-  TH2F* hists[] = {
-	tcmet_reliso_all_e,
-	tcmet_reliso_sig_e,
-	tcmet_reliso_bkg_e,
-	//tcmet_reliso_mu15_e,
-	//tcmet_reliso_qcdem_e,
-	//tcmet_reliso_qcdbc_e,
-	//tcmet_reliso_photn_e,
-	//tcmet_reliso_ttbar_e,
-	//tcmet_reliso_qcd30_e,
-	//tcmet_reliso_qcd80_e,
-  };
-  const int N = sizeof(hists)/sizeof(TH2F*);
 
   TCanvas* c1 = new TCanvas();
   //save gen plots
@@ -363,14 +287,16 @@ void plotResults() {
   TH1D* proj_zmetrsctmtm= new TH1D( *(zmet_reliso_rscltmtm_all_e->ProjectionX( (TString)zmet_reliso_rscltmtm_all_e->GetName()+"_projx", 0, 101)) );  
 
   //only in iso 0.1--iso signal region
+  /*
   TH1D* proj_zlpt_is1	= new TH1D( *(zlpt_reliso_all_e			->ProjectionX( (TString)zlpt_reliso_all_e->GetName()+"_projx", 0, 10)) );  
   TH1D* proj_zmet_is1	= new TH1D( *(zmet_reliso_all_e			->ProjectionX( (TString)zmet_reliso_all_e->GetName()+"_projx", 0, 10)) );  
   TH1D* proj_zmetsc_is1	= new TH1D( *(zmet_reliso_scl_all_e		->ProjectionX( (TString)zmet_reliso_scl_all_e->GetName()+"_projx", 0, 10)) );  
   TH1D* proj_zmetsct_is1= new TH1D( *(zmet_reliso_sclt_all_e	->ProjectionX( (TString)zmet_reliso_sclt_all_e->GetName()+"_projx", 0, 10)) );  
   TH1D* proj_wmet_is1	= new TH1D( *(tcmet_reliso_sig_e		->ProjectionX( (TString)tcmet_reliso_sig_e->GetName()+"_projx", 0, 10)) );
   TH1D* proj_wmetnu_is1	= new TH1D( *(tcmetacc_reliso_sig_e		->ProjectionX( (TString)tcmetacc_reliso_sig_e->GetName()+"_projx", 0, 10)) );
+  */
   //only signal for Zs
-  TH1D* proj_zlpt_sig	= new TH1D( *(zlpt_reliso_z_e			->ProjectionX( (TString)zlpt_reliso_z_e->GetName()+"_projx", 0, 101)) );  
+  //TH1D* proj_zlpt_sig	= new TH1D( *(zlpt_reliso_z_e			->ProjectionX( (TString)zlpt_reliso_z_e->GetName()+"_projx", 0, 101)) );  
   TH1D* proj_zmet_sig	= new TH1D( *(zmet_reliso_z_e			->ProjectionX( (TString)zmet_reliso_z_e->GetName()+"_projx", 0, 101)) );  
   TH1D* proj_zmetsc_sig	= new TH1D( *(zmet_reliso_scl_z_e		->ProjectionX( (TString)zmet_reliso_scl_z_e->GetName()+"_projx", 0, 101)) );  
   TH1D* proj_zmetsct_sig= new TH1D( *(zmet_reliso_sclt_z_e  	->ProjectionX( (TString)zmet_reliso_sclt_z_e->GetName()+"_projx", 0, 101)) );  
@@ -406,21 +332,55 @@ void plotResults() {
   proj_lt_ll20_pteta_alle->Draw();
   c1->SaveAs( (TString)proj_lt_ll20_pteta_alle->GetName()+".png" );
 
+  //some simple hist stats
+  //way this fn works is the last number printed is ratio of integral in bin range of last two args to total integral
+  cout << "\nname\t\t\t\tmean\tintegral\t\% below 20\n";
+  printHistStats(proj_zlpt,0,20);
+  printHistStats(proj_zlpt		,0,20);
+  printHistStats(proj_zmet		,0,20);
+  printHistStats(proj_zmetsc	,0,20);
+  printHistStats(proj_zmetsct	,0,20);
+  printHistStats(proj_zmetsctm	,0,20);
+  printHistStats(proj_wmet		,0,20);
+  printHistStats(proj_wmetnu	,0,20);
+  printHistStats(dilep_genpt	,0,20);
+  printHistStats(lep_genpt		,0,20);
+  cout << endl << endl;
 
-  //proj_wmet													->Draw();
-  //c1->SaveAs("Compare_test.png");
-  //cout << proj_zlpt->Integral() << "  " << proj_zlpt->Integral(0, 101) << endl;
-  //cout << proj_zmet->Integral() << "  " << proj_zmet->Integral(0, 101) << endl;
-  //WARNING: nbins = 100 (if i change it, will have to change this)
-  cout << proj_zlpt->GetName() << 		" \t\t " << proj_zlpt->GetMean()    << "  " << proj_zlpt->Integral() << endl;
-  cout << proj_zmet->GetName() << 		" \t\t " << proj_zmet->GetMean()    << "  " << proj_zmet->Integral() << endl;
-  cout << proj_zmetsc->GetName() << 	" \t\t " << proj_zmetsc->GetMean()  << "  " << proj_zmetsc->Integral() << endl;
-  cout << proj_zmetsct->GetName() << 	" \t\t " << proj_zmetsct->GetMean() << "  " << proj_zmetsct->Integral()<< endl;
-  cout << proj_zmetsctm->GetName() << 	" \t\t " << proj_zmetsctm->GetMean() << "  " << proj_zmetsctm->Integral()<< endl;
-  cout << proj_wmet->GetName() << 		" \t\t " << proj_wmet->GetMean()    << "  " << proj_wmet->Integral() << endl;
-  cout << proj_wmetnu->GetName() << 	" \t\t " << proj_wmetnu->GetMean()  << "  " << proj_wmetnu->Integral() << endl;
-  cout << dilep_genpt->GetName() << 	" \t\t " << dilep_genpt->GetMean()  << "  " << dilep_genpt->Integral() << endl;
-  cout << lep_genpt->GetName() << 	" \t\t " << lep_genpt->GetMean()  << "  " << lep_genpt->Integral() << endl;
+  //mc nu acceptance correction for z
+  TH1F* zcorr = getAccCorr( proj_wmet, proj_wmetnu, proj_zmetsc );
+  zcorr->Scale( proj_wmet->Integral()/zcorr->Integral() );
+  zcorr->SetLineColor(2); //red
+  zcorr->Draw();
+  proj_wmet->Draw("same");
+  c1->SaveAs("Compare_zcorr_wmet.png");
+
+  //again with transverse mass cut on z
+  TH1F* zcorrtm = getAccCorr( proj_wmet, proj_wmetnu, proj_zmetsctm );
+  zcorrtm->SetLineColor(2); //red
+  //use it before scaling/saving
+  printHistStats(zcorrtm		,0,20);
+
+  //get th2s with correction--no transmass cut
+  TH2F* zmetcorr_reliso_scl_all_e = corrTH2F( zmet_reliso_scl_all_e, proj_wmet, proj_wmetnu ); //the last arg must be the ratio hist, not the scaled hist
+  zmetcorr_reliso_scl_all_e->Draw(opt);
+  c1->SaveAs("dilep_lepmetcorr_Scl_reliso_ee_all.png"); //th2 alone
+  //with tm cut
+  TH2F* zmetcorr_reliso_scltm_all_e = corrTH2F( zmet_reliso_scltm_all_e, proj_wmet, proj_wmetnu ); //the last arg must be the ratio hist, not the scaled hist
+  zmetcorr_reliso_scltm_all_e->Draw(opt);
+  c1->SaveAs("dilep_lepmetcorr_Scl_tmas_reliso_ee_all.png"); //th2 alone
+
+  //compare projection after scaling to projection scaled--should be exact agreement (same scale for both)
+  zmetcorr_reliso_scltm_all_e->ProjectionX( (TString)zmetcorr_reliso_scltm_all_e->GetName()+"_projx", 0, 101)->Draw();
+  zcorrtm->Draw("same");
+  c1->SaveAs("Compare_zcorrtmproj_wmet.png");
+
+  zcorrtm->Scale( proj_wmet->Integral()/zcorrtm->Integral() );
+  zcorrtm->Draw();
+  proj_wmet->Draw("same");
+  c1->SaveAs("Compare_zcorrtm_wmet.png");
+
+
 
 
   //proj_zlpt->Scale( proj_wmet->Integral(0,101)/proj_zlpt->Integral(0,101) );
@@ -431,9 +391,45 @@ void plotResults() {
   //proj_zmet->Scale( proj_wmetnu->Integral()/proj_zmet->Integral() );
   //proj_zmet->SetLineColor(2); //red
   //proj_zmet->Draw("same");
-  proj_zmetsct->Scale( proj_wmetnu->Integral()/proj_zmetsct->Integral() ); //new baseline
+  TH1D* proj_zmetsc2 = new TH1D( *proj_zmetsc );
+
+  //1
+  proj_zmetsc->Scale( proj_wmet->Integral()/proj_zmetsc->Integral() );
+  proj_zmetsc->SetLineColor(2); //red
+  proj_zmetsc->Draw();
+  proj_wmet->SetLineColor(3); //green
+  proj_wmet->Draw("same");
+  c1->SaveAs("Compare_zmet_wmet.png");
+
+  //2
+  proj_zmetsc2->Scale( proj_wmetnu->Integral()/proj_zmetsc2->Integral() );
+  proj_zmetsc2->SetLineColor(2); //red
+  proj_zmetsc2->Draw();
+  proj_wmetnu->SetLineColor(3); //green
+  proj_wmetnu->Draw("same");
+  c1->SaveAs("Compare_zmet_wmetnu.png");
+
+  //3
+  proj_zmetsctm->Scale( proj_wmet->Integral()/proj_zmetsctm->Integral() ); 
+  proj_zmetsctm->SetLineColor(2); //red
+  proj_zmetsctm->Draw();
+  proj_wmet->Draw("same");
+  c1->SaveAs("Compare_zmettm_wmet.png");
+
+  //4
+  proj_zmetsctmtm->Scale( proj_wmetnu->Integral()/proj_zmetsctmtm->Integral() ); 
+  proj_zmetsctmtm->SetLineColor(2); //red
+  proj_zmetsctmtm->Draw();
+  proj_zmetsctmt->Scale( proj_wmetnu->Integral()/proj_zmetsctmt->Integral() ); 
+  proj_zmetsctmt->SetLineColor(4); //blue
+  proj_zmetsctmt->Draw("same");
+  proj_wmetnu->Draw("same");
+  c1->SaveAs("Compare_zmettmtm_wmetnu.png");
+
+  /*
+  proj_zmetsct->Scale( proj_wmetnu->Integral()/proj_zmetsct->Integral() ); 
   proj_zmetsct->Draw();
-  proj_zmetsctm->Scale( proj_wmetnu->Integral()/proj_zmetsctm->Integral() ); //new baseline
+  proj_zmetsctm->Scale( proj_wmetnu->Integral()/proj_zmetsctm->Integral() );
   proj_zmetsctm->SetLineColor(4); //blue
   proj_zmetsctm->Draw("same");
   proj_zmetsc->Scale( proj_wmetnu->Integral()/proj_zmetsc->Integral() );
@@ -446,14 +442,7 @@ void plotResults() {
   proj_wmetnu->Draw("same");
   //c1->SaveAs("Compare_zlpt_zmet_wmet.png");
   c1->SaveAs("Compare_zmett_zmet_wmet.png");
-
-  //plots for talk
-  proj_zmetsctm->Draw(); //already normalized to wmetnu--blue
-  proj_zmetsctmtm->Scale( proj_wmetnu->Integral()/proj_zmetsctmtm->Integral() ); //new baseline
-  proj_zmetsctmtm->SetLineColor(2); //red
-  proj_zmetsctmtm->Draw("same");
-  proj_wmetnu->Draw("same"); //green
-  
+  */  
 
   //again, for signal samples only
   proj_zmetsct_sig->Scale( proj_wmetnu->Integral()/proj_zmetsct_sig->Integral() ); //new baseline
@@ -467,7 +456,7 @@ void plotResults() {
   proj_wmetnu->Draw("same"); //compare to same--this is just w signal
   c1->SaveAs("Compare_zsig_zmett_zmet_wmet.png");
 
-  //for iso 0.1
+  /*  //for iso 0.1
   proj_zmetsct_is1->Scale( proj_wmetnu->Integral()/proj_zmetsct_is1->Integral() ); //new baseline
   proj_zmetsct_is1->Draw();
   proj_zmetsc_is1 ->Scale( proj_wmetnu->Integral()/proj_zmetsc_is1->Integral() );
@@ -475,22 +464,38 @@ void plotResults() {
   proj_zmetsc_is1 ->Draw("same");
   proj_wmetnu->Draw("same"); //compare to same--this is just w signal
   c1->SaveAs("Compare_iso1_zmett_zmet_wmet.png");
+  */
 
-
+  //ABCD results
   double metmax = 80.;
-  double x1 = 20.;
+
+  TH2F* hists[] = {
+	tcmet_reliso_all_e,
+	tcmet_reliso_sig_e,
+	tcmet_reliso_bkg_e,
+	//tcmet_reliso_mu15_e,
+	//tcmet_reliso_qcdem_e,
+	//tcmet_reliso_qcdbc_e,
+	//tcmet_reliso_photn_e,
+	//tcmet_reliso_ttbar_e,
+	//tcmet_reliso_qcd30_e,
+	//tcmet_reliso_qcd80_e,
+  };
+  const int N = sizeof(hists)/sizeof(TH2F*);
+
+  /*  double x1 = 20.;
   double x2 = metmax;
   double x3 = 0.;
   double x4 = 20.;
   double y1 = 0.1;
   double y2 = 1.;
   double y3 = 0.;
-  double y4 = 0.1;
+  double y4 = 0.1; */
   //cout << abcd(tcmet_reliso_bkg, x1, x2, x3, x4, y1, y2, y3, y4) << endl;
   //cout << abcd(tcmet_reliso_bkg_e, x1, x2, x3, x4, y1, y2, y3, y4) << endl;
   //cout << abcd(tcmet_reliso_bkg_m, x1, x2, x3, x4, y1, y2, y3, y4) << endl;
-  cout << "Full range\n";
-  Nabcd( hists, N, x1, x2, x3, x4, y1, y2, y3, y4);
+  //cout << "Full range\n";
+  //Nabcd( hists, N, x1, x2, x3, x4, y1, y2, y3, y4);
   
   //change x region only  //x4 = 15.;
   //cout << "5 border in x\n";
@@ -515,6 +520,9 @@ void plotResults() {
   //lower iso upper limit, same met  
   cout << "Best iso range: 0-0.1, 0.1-0.2, full met no border\n";
   Nabcd( hists, N, 20., metmax, 0., 20., 0.1, 0.2, 0., 0.1);
+
+  cout << "Iso range: 0-0.1, 0.3-0.4, increased met, 5 border\n";
+  Nabcd( hists, N, 25., metmax, 0., 20., 0.3, 0.4, 0., 0.1);
 
   //cout << "exclude lowest iso bin: 0.01-0.1, 0.1-0.2, full met no border\n";
   //Nabcd( hists, N, 20., metmax, 0., 20., 0.1, 0.2, 0.01, 0.1);
@@ -556,9 +564,29 @@ void plotResults() {
 
   //make a third copy for each z category for cut on neutrino acceptance?
 
-  cout << "\nUsing lep pt + met as met: baseline\n";
+  cout << "\nUsing lep pt + met as met: baseline, orig regions\n";
   aviCDtable( tcmet_reliso_all_e, zmet_reliso_scl_all_e, tcmet_reliso_sig_e, 20., metmax, -0.1, 20., 0.1, 0.2, 0., 0.1);
 
+  cout << "\nUsing lep pt + met as met: baseline, sig met 25, iso 0.3-0.4\n";
+  aviCDtable( tcmet_reliso_all_e, zmet_reliso_scl_all_e, tcmet_reliso_sig_e, 25., metmax, -0.1, 20., 0.3, 0.4, 0., 0.1);
+
+  cout << "\n******************************************\n";
+
+  cout << "\nUsing lep pt + met corrected for nu: orig regions\n";
+  aviCDtable( tcmet_reliso_all_e, zmetcorr_reliso_scl_all_e, tcmet_reliso_sig_e, 20., metmax, -0.1, 20., 0.1, 0.2, 0., 0.1);
+
+  cout << "\nUsing lep pt + met corrected for nu: sig met 25, iso 0.3-0.4\n";
+  aviCDtable( tcmet_reliso_all_e, zmetcorr_reliso_scl_all_e, tcmet_reliso_sig_e, 25., metmax, -0.1, 20., 0.3, 0.4, 0., 0.1);
+
+  cout << "\n******************************************\n";
+
+  cout << "\nUsing lep pt + met corrected for nu w/ tmass: orig regions\n";
+  aviCDtable( tcmet_reliso_all_e, zmetcorr_reliso_scltm_all_e, tcmet_reliso_sig_e, 20., metmax, -0.1, 20., 0.1, 0.2, 0., 0.1);
+
+  cout << "\nUsing lep pt + met corrected for nu w/ tmass: sig met 25, iso 0.3-0.4\n";
+  aviCDtable( tcmet_reliso_all_e, zmetcorr_reliso_scltm_all_e, tcmet_reliso_sig_e, 25., metmax, -0.1, 20., 0.3, 0.4, 0., 0.1);
+
+  /*
   cout << "\nUsing lep pt + met as met: baseline rescaled\n";
   aviCDtable( tcmet_reliso_all_e, zmet_reliso_rscl_all_e, tcmet_reliso_sig_e, 20., metmax, -0.1, 20., 0.1, 0.2, 0., 0.1);
 
@@ -584,26 +612,10 @@ void plotResults() {
   aviCDtable( tcmet_reliso_all_e, zmet_reliso_scltmtm_all_e, tcmet_reliso_sig_e, 20., metmax, -0.1, 20., 0.1, 0.2, 0., 0.1);
 
   cout << "\nUsing lep pt + met as met, z tmass cut + truth + measure pt to 10\% rescale\n";
-  aviCDtable( tcmet_reliso_all_e, zmet_reliso_rscltmtm_all_e, tcmet_reliso_sig_e, 20., metmax, -0.1, 20., 0.1, 0.2, 0., 0.1);
-
+  aviCDtable( tcmetacc_reliso_all_e, zmet_reliso_rscltmtm_all_e, tcmetacc_reliso_sig_e, 20., metmax, -0.1, 20., 0.1, 0.2, 0., 0.1);
+*/
 }
 //end plotResults
-
-void aviCD( TH2F* single, TH2F* di, double x1, double x2, double x3, double x4, double y1, double y2, double y3, double y4) {
-  double a = integrateTH2F(single, x1, x2, y3, y4);
-  double b = integrateTH2F(single, x3, x4, y3, y4);
-  double c = integrateTH2F(single, x1, x2, y1, y2);
-  double d = integrateTH2F(single, x3, x4, y1, y2);
-  double A = integrateTH2F(di, x1, x2, y3, y4);
-  double B = integrateTH2F(di, x3, x4, y3, y4);
-  double C = integrateTH2F(di, x1, x2, y1, y2);
-  double D = integrateTH2F(di, x3, x4, y1, y2);
-
-  double bpr = b - a*B/A;
-  double cpr = c - a*C/A;
-  double dpr = d - a*D/A;
-  cout << "prediction for a:  " << bpr*cpr/dpr << endl;
-}
 
 void aviCDtable( TH2F* data, TH2F* di, TH2F* ssig, double x1, double x2, double x3, double x4, double y1, double y2, double y3, double y4) {
   double a = integrateTH2F(data, x1, x2, y3, y4);
@@ -621,11 +633,15 @@ void aviCDtable( TH2F* data, TH2F* di, TH2F* ssig, double x1, double x2, double 
   //note: 80. is metmax above--same as upper edge of th2 in looper.cc
   double ditot = integrateTH2F(di, 0, 80., 0, 1);
   double sitot = integrateTH2F(ssig, 0, 80., 0, 1);
-
+  
   double bpr = b - a*B/A;
   double cpr = c - a*C/A;
   double dpr = d - a*D/A;
-
+  /*
+  double bpr = b - a*B/ditot;
+  double cpr = c - a*C/ditot;
+  double dpr = d - a*D/ditot;
+  */
   //next iteration--take the estimate of the bkg in a (bpr*cpr/dpr), subtract from a, and get bpr,cpr,dpr again, new ratio
   double a2 = a - bpr*cpr/dpr;
   double bpr2 = b - a2*B/A;
@@ -646,6 +662,26 @@ void aviCDtable( TH2F* data, TH2F* di, TH2F* ssig, double x1, double x2, double 
   cout << "zjet     " << A/ditot << "  " << B/ditot << "  " << C/ditot << "  " << D/ditot << endl << endl;
 }
 //end aviCDtable
+
+template <class TH> TH2F* corrTH2F( TH2F* h, TH* met, TH* metacc) {
+  TH2F* newh = new TH2F( *h );
+  TH1F* ratio = new TH1F( *(TH1F*)met ); //make the correction hist
+  ratio->Divide( metacc );
+  for( int i=0;i<h->GetNbinsX();i++ ) { //x values: pt/met
+	for( int j=0;j<h->GetNbinsY();j++ ) { //do for all y==iso
+	  newh->SetBinContent( i, j, h->GetBinContent(i,j) * ratio->GetBinContent(i) );
+	}
+  }
+  return newh;
+}
+
+template <class TH> TH1F* getAccCorr( TH* met, TH* metacc, TH* z ) { //returns th1f even though args are templated
+//TH1F* accCorr( TH1F* met, TH1F* metacc, TH1F* z ) {
+  TH1F* ratio = new TH1F( *(TH1F*)met );
+  ratio->Divide( metacc );
+  ratio->Multiply( z );
+  return ratio;
+}
 
 void projectX(TH2F* h, const unsigned int n) {
   TCanvas* c = new TCanvas();
@@ -751,6 +787,14 @@ void printTH2F(TH2F* h) {
 
 }
 
+template <class TH> void printHistStats(TH* h, double xlow, double xhgh) {
+  int hghbin = 0;
+  if( xhgh == -1. ) hghbin = h->GetXaxis()->GetNbins() + 1; //include overflow
+  else hghbin = h->GetXaxis()->FindFixBin( xhgh );
+  cout << h->GetName() << " \t\t " << h->GetMean() << "  " << h->Integral()
+	   << "  " << h->Integral( h->GetXaxis()->FindFixBin( xlow ), hghbin )/h->Integral() << endl;
+}
+
 //when shift is positive, the new one is old shifted up by shift
 void HShift( TH1D*& h, int shift ) {
   TH1D* hnew = new TH1D( *h );
@@ -773,6 +817,69 @@ TH2F* getTH2F( HistogramUtilities* h, sources_t theSources, TString var, TString
   c->SaveAs((TString)hnew->GetName()+".png");
   return hnew;
 }
+
+void saveStack(THStack* st, TLegend* leg, bool cpylog, double ymin, double ymax, TString name="", THStack* st2=0) {
+
+  //double oldymax = st->GetMaximum();
+  //double oldymin = st->GetMinimum();
+  TCanvas *c = new TCanvas();
+  TString usename;
+  if( name != "" ) {
+	usename = name;//+".png";
+	//st->SetName(name);
+	st->SetTitle(name);
+  }
+  else
+	usename = (TString)st->GetName();//+".png";
+
+  //for the y axis won't give me a max...just gives 1--don't use GetYaxis for stacks, use GetMaximum
+  //cout << "ymin " << ymin << "  ymax " << ymax << "  st y max " << st->GetYaxis()->GetXmax() << "  max " << st->GetMaximum() << endl;
+  if( ymax != -999 ) {
+	//st->SetMinimum( ymin );
+	st->SetMaximum( ymax );
+  }
+  //else
+  //st->SetMinimum( ymin );
+  //st->GetYaxis()->SetRangeUser( ymin, st->GetMaximum()+0.01*st->GetMaximum() );
+
+  st->Draw("hist"); //must draw before the axis range is defined...(uh, don't ask me)
+  if( st2 != 0 ) {
+	st->SetMinimum( st2->GetMinimum() );
+	st2->Draw("same,hist");
+  }
+
+  //if( verbose )
+  //cout << "stack " << usename << "  max " << st->GetMaximum() << "  " << oldymax << "  min " << st->GetMinimum() << endl;
+  //c->Update();
+  //getc(stdin);
+  leg->Draw();
+  c->SaveAs(usename+".png");
+  c->SaveAs(rootfilename);
+
+  if(cpylog) {
+	gPad->SetLogy();
+
+	//st->SetMaximum( oldymax );
+	//if( st2 == 0 ) { //don't reset min if st2 exists--this is wrong
+	st->SetMinimum( ymin ); //need to reset regardless
+	//cout << "set min to ymin " << ymin << endl;
+	//}
+  
+	st->Draw("hist");
+ 	leg->Draw();
+	c->Update();
+	//c->SaveAs((TString)st->GetName()+"_log.png");
+	c->SaveAs(usename+"_log.png");
+	c->SaveAs(rootfilename);
+  }
+  
+}
+
+void makeStack(HistogramUtilities* h, TLegend* leg, sources_t theSources, TString title, TString subtitle, TString suffix, bool cpylog, double ymin, double ymax, TString name) {
+  THStack *st = h->getStack(theSources, title, subtitle, suffix);
+  saveStack( st, leg, cpylog, ymin, ymax, name );
+}
+
 
 void plotResultsLep(TString hyp)
 {
@@ -919,3 +1026,25 @@ bin 60,90   first 0.000927268   second 0
   //proj_wmet->Draw("same");
   //proj_wmetnu->Draw("same");
   //c1->SaveAs("Compare_shift_zlpt_zmet_wmet.png");
+
+
+/*
+void aviCD( TH2F* single, TH2F* di, double x1, double x2, double x3, double x4, double y1, double y2, double y3, double y4) {
+  double a = integrateTH2F(single, x1, x2, y3, y4);
+  double b = integrateTH2F(single, x3, x4, y3, y4);
+  double c = integrateTH2F(single, x1, x2, y1, y2);
+  double d = integrateTH2F(single, x3, x4, y1, y2);
+  double A = integrateTH2F(di, x1, x2, y3, y4);
+  double B = integrateTH2F(di, x3, x4, y3, y4);
+  double C = integrateTH2F(di, x1, x2, y1, y2);
+  double D = integrateTH2F(di, x3, x4, y1, y2);
+
+  double bpr = b - a*B/A;
+  double cpr = c - a*C/A;
+  double dpr = d - a*D/A;
+  cout << "prediction for a:  " << bpr*cpr/dpr << endl;
+}
+*/
+
+
+

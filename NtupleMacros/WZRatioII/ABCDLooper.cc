@@ -59,7 +59,9 @@ void ABCDLooper::BookHistos ()
 	NewHist( hlep_genpt_mch[i], Form("%s_%s_%s", SampleName().c_str(), "lep_genpt_mch", hyp.c_str()), "lep_genpt_mch", 100, 0.0, 100.0);
 	NewHist( hlep_pt_f[i], Form("%s_%s_%s", SampleName().c_str(), "lep_pt_f", hyp.c_str()), "lep_pt_f", 100, 0.0, 100.0);
 	NewHist( hlep_mass[i], Form("%s_%s_%s", SampleName().c_str(), "lep_transmass", hyp.c_str()), "lep_transmass", 200, 0.0, 200.0);
-	NewHist( hlep_tcmet[i], Form("%s_%s_%s", SampleName().c_str(), "lep_tcmet", hyp.c_str()), "lep_met", 100, 0.0, 100.0);
+	NewHist( hlep_tcmet[i], Form("%s_%s_%s", SampleName().c_str(), "lep_tcmet", hyp.c_str()), "lep_tcmet", 100, 0.0, 100.0);
+	NewHist( hlep_genmet[i], Form("%s_%s_%s", SampleName().c_str(), "lep_genmet", hyp.c_str()), "lep_genmet", 100, 0.0, 100.0);
+	NewHist( hlep_accgenmet[i], Form("%s_%s_%s", SampleName().c_str(), "lep_accgenmet", hyp.c_str()), "lep_accgenmet", 100, 0.0, 100.0);
 	NewHist( hlep_clmumet[i], Form("%s_%s_%s", SampleName().c_str(), "lep_calomet_muon", hyp.c_str()), "lep_calomet_muon", 100, 0.0, 100.0);
 	NewHist( hlep_met_dphi[i], Form("%s_%s_%s", SampleName().c_str(), "lep_met_dphi", hyp.c_str()), "lep_met_dphi", 100, 0, 2 * 3.14159);
 	NewHist( hlep_trckIso[i], Form("%s_%s_%s", SampleName().c_str(), "lep_trckIso", hyp.c_str()), "lep_trckIso", 100, 0.0, 10.0);
@@ -853,6 +855,8 @@ void ABCDLooper::FillEventHistos ()
 	  if( abs(cms2.els_mc3_id()[elidxs_noptiso[1]]) == 11 ) { //truth match met leg of z
 		hdilep_lepmet_scl_trth_relIso[3]		   ->Fill( scale*lepmet, inv_el_relsusy_iso(elidxs_noptiso[0], true), weight );
 		hdilep_lepmet_scl_trth_relIso[DILEPTON_ALL]->Fill( scale*lepmet, inv_el_relsusy_iso(elidxs_noptiso[0], true), weight );
+		hdilep_lepmet_rscl_trth_relIso[3]		   ->Fill( scale*lepmet, inv_el_relsusy_iso(elidxs_noptiso[0], true), weight );
+		hdilep_lepmet_rscl_trth_relIso[DILEPTON_ALL]->Fill( scale*lepmet, inv_el_relsusy_iso(elidxs_noptiso[0], true), weight );
 		if( scale*pt < 20 ) { //loose leg is in the low pt range
 		  double ptgen = cms2.genps_p4()[cms2.els_mc3idx()[elidxs_noptiso[1]]].pt();
 		  hdilep_pt_mgen[3]->Fill( (cms2.els_p4()[elidxs_noptiso[1]].pt()-ptgen)/ptgen, weight );
@@ -992,11 +996,18 @@ void ABCDLooper::FillEventHistos ()
 	  hlep_met_relIso[0] ->Fill( cms2.evt_tcmet(), inv_el_relsusy_iso(elidxs_noiso[0], true), weight );
 	  hlep_met_relIso[2] ->Fill( cms2.evt_tcmet(), inv_el_relsusy_iso(elidxs_noiso[0], true), weight );
 	  for( unsigned int i=0;i<cms2.genps_p4().size();i++ ) {
-		if( abs( cms2.genps_id()[i] ) == 12 ) nuidx = i; //el nu only 
+		if( abs( cms2.genps_id()[i] ) == 12 && nuidx == -1 ) nuidx = i; //el nu only
+		//else if( abs( cms2.genps_id()[i] ) == 12 && nuidx != -1 ) cout << "more than 1 gen nu \n";
 	  }
 	  if( nuidx != -1 && fabs( cms2.genps_p4()[nuidx].eta() ) < 2.4 ) {
 		hlep_accmet_relIso[0]->Fill( cms2.evt_tcmet(), inv_el_relsusy_iso(elidxs_noiso[0], true), weight );
 		hlep_accmet_relIso[2]->Fill( cms2.evt_tcmet(), inv_el_relsusy_iso(elidxs_noiso[0], true), weight );
+		hlep_accgenmet[0]->Fill( cms2.genps_p4()[nuidx].pt(), weight ); 
+		hlep_accgenmet[2]->Fill( cms2.genps_p4()[nuidx].pt(), weight );
+	  }
+	  if( nuidx != -1 ) {
+		hlep_genmet[0]->Fill( cms2.genps_p4()[nuidx].pt(), weight ); 
+		hlep_genmet[2]->Fill( cms2.genps_p4()[nuidx].pt(), weight );
 	  }
 	  hlep_genpt_mch[0]->Fill( gen_lt_pt, weight);
 	  hlep_genpt_mch[2]->Fill( gen_lt_pt, weight);
@@ -1012,11 +1023,18 @@ void ABCDLooper::FillEventHistos ()
 	  hlep_met_relIso[1] ->Fill( cms2.evt_tcmet(), inv_mu_relsusy_iso(muidxs_noiso[0]), weight );
 	  hlep_met_relIso[2] ->Fill( cms2.evt_tcmet(), inv_mu_relsusy_iso(muidxs_noiso[0]), weight );
 	  for( unsigned int i=0;i<cms2.genps_p4().size();i++ ) {
-		if( abs( cms2.genps_id()[i] ) == 14 ) nuidx = i;
+		if( abs( cms2.genps_id()[i] ) == 14 && nuidx == -1 ) nuidx = i; //mu nu
+		//else if( abs( cms2.genps_id()[i] ) == 14 && nuidx != -1 ) cout << "more than 1 gen nu \n"; //this is legit for ttbar
 	  }
 	  if( nuidx != -1 && fabs( cms2.genps_p4()[nuidx].eta() ) < 2.4 ) {
 		hlep_accmet_relIso[1]->Fill( cms2.evt_tcmet(), inv_mu_relsusy_iso(muidxs_noiso[0]), weight );
 		hlep_accmet_relIso[2]->Fill( cms2.evt_tcmet(), inv_mu_relsusy_iso(muidxs_noiso[0]), weight );
+		hlep_accgenmet[1]->Fill( cms2.genps_p4()[nuidx].pt(), weight ); 
+		hlep_accgenmet[2]->Fill( cms2.genps_p4()[nuidx].pt(), weight );
+	  }
+	  if( nuidx != -1 ) {
+		hlep_genmet[1]->Fill( cms2.genps_p4()[nuidx].pt(), weight ); 
+		hlep_genmet[2]->Fill( cms2.genps_p4()[nuidx].pt(), weight );
 	  }
 	  hlep_genpt_mch[1]->Fill( gen_lt_pt, weight);
 	  hlep_genpt_mch[2]->Fill( gen_lt_pt, weight);
