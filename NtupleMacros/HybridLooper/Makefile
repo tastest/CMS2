@@ -1,11 +1,11 @@
-# $Id: Makefile,v 1.4 2009/10/26 11:06:32 dlevans Exp $
+# $Id: Makefile,v 1.5 2009/11/03 00:54:00 dlevans Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
 CFLAGS = -Wall -Wno-unused-function -g -O2 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS) -DTOOLSLIB
 
 LINKER = g++
-LINKERFLAGS = $(shell root-config --ldflags)
+LINKERFLAGS = $(shell root-config --ldflags) -z muldefs
 ifeq ($(shell root-config --platform),macosx)
 	# linker option for Mac OS X, got it from old project, seems to work ;-)
 	LINKERFLAGS = -bundle -undefined suppress -Wl,-x -O -Xlinker -bind_at_load -flat_namespace $(shell root-config --libs) -lEG -lGenVector
