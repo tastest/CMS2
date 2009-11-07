@@ -20,7 +20,8 @@ def makeCrabConfig():
     print 'Writing CRAB config file: ' + outFileName + '.cfg'
     outFile.write('[CRAB]\n')
     outFile.write('jobtype   = cmssw\n')
-    outFile.write('scheduler = ' + mode + '\n\n')
+    outFile.write('scheduler = ' + mode + '\n')
+    outFile.write('server_name = cern \n\n')
     outFile.write('[CMSSW]\n')
     outFile.write('datasetpath            = ' + dataSet + '\n')
     outFile.write('pset                   = ' + outFileName + '_cfg.py \n')
