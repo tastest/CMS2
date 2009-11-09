@@ -14,15 +14,15 @@ static const std::string prefix = (getenv("CMS2_NTUPLE_LOCATION") != 0) ?
 Sample fPhotonJet_7TeV()
 {
      TChain *c = new TChain("Events");
-     std::string sample = "/store/disk02/cms2-V02-00-08/PhotonJet_Pt20to30_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
+     std::string sample = prefix + "/cms2-V02-00-08/PhotonJet_Pt20to30_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
      c->Add(sample.c_str());
-     sample = "/store/disk02/cms2-V02-00-08/PhotonJet_Pt30to50_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
+     sample = prefix + "/cms2-V02-00-08/PhotonJet_Pt30to50_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
      c->Add(sample.c_str());
-     sample = "/store/disk02/cms2-V02-00-08/PhotonJet_Pt50to80_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
+     sample = prefix + "/cms2-V02-00-08/PhotonJet_Pt50to80_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
      c->Add(sample.c_str());
-     sample = "/store/disk02/cms2-V02-00-08/PhotonJet_Pt80to120_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
+     sample = prefix + "/cms2-V02-00-08/PhotonJet_Pt80to120_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
      c->Add(sample.c_str());
-     sample = "/store/disk02/cms2-V02-00-08/PhotonJet_Pt120to170_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
+     sample = prefix + "/cms2-V02-00-08/PhotonJet_Pt120to170_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
      c->Add(sample.c_str());
      Sample ret = { c, OTHER, kMagenta, 1, "photonjet", true, 0. };
      return ret;
@@ -31,7 +31,7 @@ Sample fPhotonJet_7TeV()
 Sample fQCD_Pt30_7TeV()
 {
      TChain *c = new TChain("Events");
-     std::string sample = "/store/disk02/cms2-V02-00-08/QCD_Pt30_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
+     std::string sample = prefix + "/cms2-V02-00-08/QCD_Pt30_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
      c->Add(sample.c_str());
      Sample ret = { c, OTHER, kGreen, 1, "qcd_pt30", true, 0. };
      return ret;
@@ -40,7 +40,7 @@ Sample fQCD_Pt30_7TeV()
 Sample fWenu_7TeV()
 {
      TChain *c = new TChain("Events");
-     std::string sample = "/store/disk02/cms2-V02-00-08/Wenu_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
+     std::string sample = prefix + "/cms2-V02-00-08/Wenu_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
      c->Add(sample.c_str());
      Sample ret = { c, OTHER, kBlue, 1, "wenu", true, 0. };
      return ret;
@@ -49,7 +49,7 @@ Sample fWenu_7TeV()
 Sample fZZ_7TeV()
 {
      TChain *c = new TChain("Events");
-     std::string sample = "/store/disk02/cms2-V02-00-08/ZZ_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
+     std::string sample = prefix + "/cms2-V02-00-08/ZZ_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
      c->Add(sample.c_str());
      Sample ret = { c, OTHER, kBlue, 1, "zz", true, 0. };
      return ret;
@@ -60,7 +60,7 @@ Sample fZZ_7TeV()
 Sample fValidation()
 {
      TChain *c = new TChain("Events");
-     std::string sample = "/store/disk02/dlevans/wenu_postprocessed.root";
+     std::string sample = prefix + "/dlevans/wenu_postprocessed.root";
      c->Add(sample.c_str());
      Sample ret = { c, OTHER, kBlue, 1, "wenu", true, 0. };
      return ret;

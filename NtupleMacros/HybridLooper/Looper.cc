@@ -84,6 +84,7 @@ void Looper::BookHistos ()
 	FormatHist(h1_weff_jptpt_after_iso_, "weff_jptpt_after_iso", 100, 0, 100);
 	FormatHist(h1_weff_leadjptphi_after_iso_, "weff_leadjptphi_after_iso", 100, 0, 180);
 	FormatHist(h1_weff_jptphimax_after_iso_, "weff_jptphimax_after_iso", 100, 0, 180);
+        FormatHist(h1_weff_jptphimaxid_after_iso_, "weff_jptphimaxid_after_iso", 100, 0, 180);
 	FormatHist(h1_weff_leastemjpt_after_iso_, "weff_leastemjpt_after_iso", 100, 0, 1.0);
 
         FormatHist(h1_weff_d0corr_after_iso_, "weff_d0corr_after_iso", 100, 0, 0.2);
@@ -151,6 +152,7 @@ void Looper::BookHistos ()
         FormatHist(h1_ecalIso03AllNM1_, "ecalIso03AllNM1", 150, 0.0, 15);
         FormatHist(h1_hcalIso03AllNM1_, "hcalIso03AllNM1", 150, 0.0, 15);
 	FormatHist(h1_tkIso03AllReJura01In015NM1_, "tkIso03AllReJura01In015NM1", 150, 0.0, 15);
+        FormatHist(h1_tkIso03AllReJura01In000NM1_, "tkIso03AllReJura01In000NM1", 150, 0.0, 15);
         FormatHist(h1_tkIso03AllReJura01In015IDNM1_, "tkIso03AllReJura01In015IDNM1", 150, 0.0, 15);
         FormatHist(h1_tkIso03AllReJura01In015ConvNM1_, "tkIso03AllReJura01In015ConvNM1", 150, 0.0, 15);
         FormatHist(h1_tkIso03AllReJura01In015ConvIDNM1_, "tkIso03AllReJura01In015ConvIDNM1", 150, 0.0, 15);
@@ -513,10 +515,12 @@ void Looper::wEfficiency()
 	// that is dR > 0.4 from the nearest electron
 	float leadingJPT = 0.0;
 	float mostBackToBackJPT = 0.0;
+	float mostBackToBackJPTId = 0.0;
 	float leastEMJPT = 999.9;
 	int leastEMJPTIndex = 0;
 	int leadingJPTIndex = 0;
 	int mostBackToBackJPTIndex = 0;
+	int mostBackToBackJPTIdIndex = 0;
 	for (size_t j = 0; j < cms2.jpts_p4().size(); ++j)
 	{
 		if ( TMath::Abs(cms2.jpts_p4()[j].eta()) > 2.5 ) continue;
@@ -535,6 +539,14 @@ void Looper::wEfficiency()
 			mostBackToBackJPTIndex = j;
 		}
 
+                // find most back to back JPT from the electron
+		// that passes recommended jet id (em fraction < 0.01)
+                if (dPhi > mostBackToBackJPTId && cms2.jpts_emFrac()[j] > 0.01) {
+                        mostBackToBackJPTId = dPhi;
+                        mostBackToBackJPTIdIndex = j;
+                }
+
+
 		// find the JPT with the lowest EM fraction
 		if (cms2.jpts_emFrac()[j] < leastEMJPT) {
 			leastEMJPT = cms2.jpts_emFrac()[j];
@@ -547,14 +559,15 @@ void Looper::wEfficiency()
 	// distance in degrees of the leading JPT from the electron
 	float leadingJPTAngle = 0.0;
 	float mostBackToBackJPTAngle = 0.0;
+	float mostBackToBackJPTIdAngle = 0.0;
 	if (leadingJPT > 0.0) {
 		// angle between the electron and the highest pT JPT
 		leadingJPTAngle = (180.0 * acos(cos(cms2.els_p4()[eleIndex].Phi()
 						- cms2.jpts_p4()[leadingJPTIndex].Phi())) / 3.14159265358979312);
-		// angle between the electron and the JPT that is most back to back to it
-		mostBackToBackJPTAngle = (180.0 * acos(cos(cms2.els_p4()[eleIndex].Phi()
-						- cms2.jpts_p4()[mostBackToBackJPTIndex].Phi())) / 3.14159265358979312);	
 	}
+
+	mostBackToBackJPTAngle = 180 * mostBackToBackJPT / 3.14159265358979312;
+	mostBackToBackJPTIdAngle = 180 * mostBackToBackJPTId / 3.14159265358979312;
 
 	// 
 	// set up the selections to apply
@@ -630,6 +643,8 @@ void Looper::wEfficiency()
 	h1_weff_leadjptphi_after_iso_[det]->Fill(leadingJPTAngle, weight); 
 	// angle between electron and JPT that is most back to back to it
 	h1_weff_jptphimax_after_iso_[det]->Fill(mostBackToBackJPTAngle, weight);
+	h1_weff_jptphimaxid_after_iso_[det]->Fill(mostBackToBackJPTIdAngle, weight);
+
 	// d0 corrected
 	h1_weff_d0corr_after_iso_[det]->Fill(fabs(cms2.els_d0corr()[eleIndex]), weight);
 
@@ -764,8 +779,11 @@ void Looper::FillEventHistos ()
 				if (ecalIso < ecalThresholdsNM1[det] && hcalIso < hcalThresholdsNM1[det]) {
 					float shCutSum = 0.0;
                                         float tkIsoJura01In015 = recomputeTrackIsolation(i, 0.01, 0.015, 0.3, shCutSum);
+					float tkIsoJura01In000 = recomputeTrackIsolation(i, 0.01, 0.000, 0.3, shCutSum);
 					h1_tkIso03AllNM1_[det]->Fill(tkIso, weight);
 					h1_tkIso03AllReJura01In015NM1_[det]->Fill(tkIsoJura01In015, weight);
+                                        h1_tkIso03AllReJura01In000NM1_[det]->Fill(tkIsoJura01In000, weight);
+
 					h1_tkIso03AllReShCutNM1_[det]->Fill(shCutSum, weight);				
 
 					em_tkIso03AllNM1_[det]->Fill(tkIso,
