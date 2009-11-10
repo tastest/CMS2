@@ -30,7 +30,7 @@ enum {
      LOOP_TTBAR ,
      LOOP_QCD30,
      LOOP_MU30,
-     LOOP_PHOTONJET20_170.
+     LOOP_PHOTONJET20_170,
      LOOP_PHOTONJET20_30,
      LOOP_PHOTONJET30_50,
      LOOP_PHOTONJET50_80,
@@ -40,11 +40,10 @@ enum {
      LOOP_EM20_30,
      LOOP_EM30_80,
      LOOP_EM80_170,
-     LOOP_BCE20_170,
+     LOOP_BC20_170,
      LOOP_BC20_30,
      LOOP_BC30_80,
      LOOP_BC80_170,
-     LOOP_BC20_170,
 
 };
 
@@ -264,7 +263,7 @@ uint32 all_samples_w =
      (1<<LOOP_QCD30) |
      (1<<LOOP_PHOTONJET20_170) |
      (1<<LOOP_EM20_170) |
-     (1<<LOOP_BC20_170) |
+     (1<<LOOP_BC20_170);
 
 uint32 all_samples = (1<<LOOP_WW) |
      (1<<LOOP_WZ    ) |
@@ -290,7 +289,7 @@ uint32 all_samples = (1<<LOOP_WW) |
      (1<<LOOP_BC30_80) |
      (1<<LOOP_BC80_170);
 
-int Results312_pt20_isoV0_tcmet30 ()
+int Results312_pt20_isoV1_tcmet30 ()
 {
      return run<Looper>(
         // control
