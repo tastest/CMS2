@@ -712,7 +712,12 @@ void Looper::FillEventHistos ()
 {
 
 	// do the W efficiency studies
-	wEfficiency();
+        // use cut bit to control behavior of looper
+	 if ( (cuts_ & (CUT_BIT(CONTROL_STUDYW)))  == (CUT_BIT(CONTROL_STUDYW))) {    
+		wEfficiency();
+		return;
+	}
+
 
 	// do the AN2009-98 studies
 	//AN2009_98();
