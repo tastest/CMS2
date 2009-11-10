@@ -30,17 +30,21 @@ enum {
      LOOP_TTBAR ,
      LOOP_QCD30,
      LOOP_MU30,
+     LOOP_PHOTONJET20_170.
      LOOP_PHOTONJET20_30,
      LOOP_PHOTONJET30_50,
      LOOP_PHOTONJET50_80,
      LOOP_PHOTONJET80_120,
      LOOP_PHOTONJET120_170,
+     LOOP_EM20_170,
      LOOP_EM20_30,
      LOOP_EM30_80,
      LOOP_EM80_170,
+     LOOP_BCE20_170,
      LOOP_BC20_30,
      LOOP_BC30_80,
      LOOP_BC80_170,
+     LOOP_BC20_170,
 
 };
 
@@ -146,12 +150,17 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
      Looper looper_ttbar(fttbar(), cuts, log.c_str()); 
 	if (which_ones & (1 << LOOP_TTBAR)) looper_ttbar.Loop();
 
+     Looper looper_bc20_170(fQCDBCtoEPt20to170(), cuts, log.c_str());
+        if (which_ones & (1 << LOOP_BC20_170)) looper_bc20_170.Loop();
      Looper looper_bc20_30(fQCDBCtoEPt20to30(), cuts, log.c_str()); 
 	if (which_ones & (1 << LOOP_BC20_30)) looper_bc20_30.Loop();
      Looper looper_bc30_80(fQCDBCtoEPt30to80(), cuts, log.c_str()); 
 	if (which_ones & (1 << LOOP_BC30_80)) looper_bc30_80.Loop();
      Looper looper_bc80_170(fQCDBCtoEPt80to170(), cuts, log.c_str()); 
 	if (which_ones & (1 << LOOP_BC80_170)) looper_bc80_170.Loop();
+
+     Looper looper_em20_170(fQCDEMenrichedPt20to170(), cuts, log.c_str());
+        if (which_ones & (1 << LOOP_EM20_170)) looper_em20_170.Loop();
      Looper looper_em20_30(fQCDEMenrichedPt20to30(), cuts, log.c_str()); 
 	if (which_ones & (1 << LOOP_EM20_30)) looper_em20_30.Loop();
      Looper looper_em30_80(fQCDEMenrichedPt30to80(), cuts, log.c_str()); 
@@ -178,6 +187,8 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
      Looper looper_dytt(fDYtt(), cuts, log.c_str());
         if (which_ones & (1 << LOOP_DYTT)) looper_dytt.Loop();
 
+     Looper looper_photonjet20_170(fPhotonJetPt20to170(), cuts, log.c_str());
+        if (which_ones & (1 << LOOP_PHOTONJET20_170)) looper_photonjet20_170.Loop();
      Looper looper_photonjet20_30(fPhotonJetPt20to30(), cuts, log.c_str());
         if (which_ones & (1 << LOOP_PHOTONJET20_30)) looper_photonjet20_30.Loop();
      Looper looper_photonjet30_50(fPhotonJetPt30to50(), cuts, log.c_str());
@@ -213,14 +224,17 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 	&looper_ttbar,
 	&looper_qcd30,
 	&looper_mu30,
+        &looper_photonjet20_170,
 	&looper_photonjet20_30,
         &looper_photonjet30_50,
         &looper_photonjet50_80,
         &looper_photonjet80_120,
         &looper_photonjet120_170,
+        &looper_em20_170,
 	&looper_em20_30,
         &looper_em30_80,
         &looper_em80_170,
+        &looper_bc20_170,
         &looper_bc20_30,
         &looper_bc30_80,
         &looper_bc80_170,
@@ -245,6 +259,13 @@ int Results_tcmet30 ()
 // Run all
 //
 
+uint32 all_samples_w = 
+     (1<<LOOP_WE ) |
+     (1<<LOOP_QCD30) |
+     (1<<LOOP_PHOTONJET20_170) |
+     (1<<LOOP_EM20_170) |
+     (1<<LOOP_BC20_170) |
+
 uint32 all_samples = (1<<LOOP_WW) |
      (1<<LOOP_WZ    ) |
      (1<<LOOP_ZZ    ) |
@@ -268,6 +289,16 @@ uint32 all_samples = (1<<LOOP_WW) |
      (1<<LOOP_BC20_30) |
      (1<<LOOP_BC30_80) |
      (1<<LOOP_BC80_170);
+
+int Results312_pt20_isoV0_tcmet30 ()
+{
+     return run<Looper>(
+        // control
+        (CUT_BIT(CONTROL_STUDYW)) |
+        // cuts
+        (CUT_BIT(ELE_PT_20)) | (CUT_BIT(ELE_ISO_V0) | CUT_BIT(EVT_TCMET_30)),
+        "Results_ntupletest", all_samples_w);
+}
 
 int Results_ntupletest ()
 {
