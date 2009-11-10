@@ -3,8 +3,8 @@
 
 	gROOT->ProcessLine(".L ~/tdrStyle.C");
 	gROOT->ProcessLine("setTDRStyle()");
-	TString det = "eb";
-	TString DET = "EB";
+	TString det = "ee";
+	TString DET = "EE";
 
 	gROOT->ProcessLine(".x results/IDStudy_eff_tkIso03All_" + det + ".C");
 	TGraph *gr_tkIso03All = (TGraph*)graph->Clone("gr_tkIso03All");
@@ -113,7 +113,7 @@
         lg2->SetFillColor(kWhite);
         lg2->SetLineColor(kWhite);
         lg2->SetShadowColor(kWhite);
-        lg2->AddEntry(gr_tkIso03All, "Standard N-1 (" + DET + ")", "lp");
+        lg2->AddEntry(gr_tkIso03AllNM1, "Standard N-1 (" + DET + ")", "lp");
         lg2->AddEntry(gr_tkIso03AllReJura01In015NM1, "#Delta#eta #pm 0.01, #DeltaR > 0.015 N-1 (" + DET + ")", "lp");
         gr_tkIso03AllNM1->GetXaxis()->SetRangeUser(0.0, 1.05);
         gr_tkIso03AllNM1->GetYaxis()->SetRangeUser(0.0, 1.05);
@@ -127,7 +127,7 @@
         lg2_2->SetFillColor(kWhite);
         lg2_2->SetLineColor(kWhite);
         lg2_2->SetShadowColor(kWhite);
-        lg2_2->AddEntry(gr_tkIso03All, "Standard N-1 (" + DET + ")", "lp");
+        lg2_2->AddEntry(gr_tkIso03AllNM1, "Standard N-1 (" + DET + ")", "lp");
         lg2_2->AddEntry(gr_tkIso03AllReJura01In015NM1, "#Delta#eta #pm 0.01, #DeltaR > 0.015 N-1 (" + DET + ")", "lp");
         lg2_2->AddEntry(gr_tkIso03AllReJura01In000NM1, "#Delta#eta #pm 0.01 N-1 (" + DET + ")", "lp");
         gr_tkIso03AllNM1->GetXaxis()->SetRangeUser(0.0, 1.05);
@@ -138,7 +138,7 @@
         lg2_2->Draw();
 
         c1->SaveAs("results/effrej_tkIso03AllNM1_comparison2_" + det + ".png");
-
+        c1->SaveAs("results/effrej_tkIso03AllNM1_comparison2_" + det + ".root");
 
 	c1->Clear();
 	c1->Divide(2, 1);
