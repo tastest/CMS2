@@ -168,6 +168,20 @@ Sample fInclusiveMu5Pt30 ()
 }
 
 
+Sample fQCDBCtoEPt20to170 ()
+{    
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "cms2-V02-00-12/QCD_BCtoE_Pt20to30_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V02-00-12/QCD_BCtoE_Pt30to80_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V02-00-12/QCD_BCtoE_Pt80to170_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, QCDBCtoEPt20to170, 28, 1, "QCDBCtoEPt20to170", true, 0. };
+     return ret;
+}    
+
+
 Sample fQCDBCtoEPt20to30 ()
 {
      TChain *c = new TChain("Events");
@@ -192,6 +206,19 @@ Sample fQCDBCtoEPt80to170 ()
      std::string sample = prefix + "cms2-V02-00-12/QCD_BCtoE_Pt80to170_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
      c->Add(sample.c_str());
      Sample ret = { c, QCDBCtoEPt80to170, 28, 1, "QCDBCtoEPt80to170", true, 0. };
+     return ret;
+}
+
+Sample fQCDEMenrichedPt20to170 ()
+{     
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "cms2-V02-00-12/QCD_EMEnriched_Pt20to30_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V02-00-12/QCD_EMEnriched_Pt30to80_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V02-00-12/QCD_EMEnriched_Pt80to170_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, QCDEMenrichedPt20to170, 28, 1, "QCDEMenrichedPt20to170", true, 0. };
      return ret;
 }
 
@@ -223,6 +250,24 @@ Sample fQCDEMenrichedPt80to170 ()
 }
 
 // photon + jet samples
+
+Sample fPhotonJetPt20to170 ()
+{    
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "cms2-V02-00-12/PhotonJet_Pt20to30_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V02-00-12/PhotonJet_Pt30to50_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V02-00-12/PhotonJet_Pt50to80_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V02-00-12/PhotonJet_Pt80to120_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V02-00-12/PhotonJet_Pt120to170_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, PhotonJet, 28, 1, "PhotonJetPt20to170", true, 0. };
+     return ret;
+}    
+
 Sample fPhotonJetPt20to30 ()
 {
      TChain *c = new TChain("Events");
