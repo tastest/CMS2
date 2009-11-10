@@ -167,6 +167,16 @@ Sample fInclusiveMu5Pt30 ()
      return ret;
 }
 
+Sample fQCDBCtoEPt30to170 ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "cms2-V02-00-12/QCD_BCtoE_Pt30to80_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V02-00-12/QCD_BCtoE_Pt80to170_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, QCDBCtoEPt30to170, 28, 1, "QCDBCtoEPt30to170", true, 0. };
+     return ret;
+}
 
 Sample fQCDBCtoEPt20to170 ()
 {    
@@ -206,6 +216,17 @@ Sample fQCDBCtoEPt80to170 ()
      std::string sample = prefix + "cms2-V02-00-12/QCD_BCtoE_Pt80to170_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
      c->Add(sample.c_str());
      Sample ret = { c, QCDBCtoEPt80to170, 28, 1, "QCDBCtoEPt80to170", true, 0. };
+     return ret;
+}
+
+Sample fQCDEMenrichedPt30to170 ()
+{
+     TChain *c = new TChain("Events");
+     std::string sample = prefix + "cms2-V02-00-12/QCD_EMEnriched_Pt30to80_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
+     c->Add(sample.c_str());
+     sample = prefix + "cms2-V02-00-12/QCD_EMEnriched_Pt80to170_Summer09-MC_31X_V3_7TeV-v1/merged*.root";
+     c->Add(sample.c_str());
+     Sample ret = { c, QCDEMenrichedPt30to170, 28, 1, "QCDEMenrichedPt30to170", true, 0. };
      return ret;
 }
 
