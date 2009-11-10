@@ -9,7 +9,8 @@ enum Process { OTHER, TEST, WW, WZ, ZZ, Wjets, We, Wm, Wt, DYee, DYmm, DYtt, DY,
 	       InclusiveMu5Pt50, InclusiveMuPt15, 
 	       QCDBCtoEPt20to30, QCDBCtoEPt30to80, QCDBCtoEPt80to170, 
 	       QCDEMenrichedPt20to30, QCDEMenrichedPt30to80, QCDEMenrichedPt80to170, QCDpt30, QCDpt80,
-	       QCDpt30to80,QCDpt80to170,QCDpt170to300,QCDpt300to470,QCDpt470to800,QCDpt800toInf};
+	       QCDpt30to80,QCDpt80to170,QCDpt170to300,QCDpt300to470,QCDpt470to800,QCDpt800toInf,
+	       PhotonJet};
 
 class TChain;
 // struct that contains all the necessary information about a sample
