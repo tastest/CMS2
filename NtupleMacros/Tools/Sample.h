@@ -48,6 +48,10 @@ Sample fZttjetsAlpgenSingle();
 
 Sample fInclusiveMuPt15Single();
 
+Sample fWe      ();
+Sample fWm      ();
+Sample fWt      ();
+
 Sample fWc	();
 Sample fDYee 	();
 Sample fDYmm 	();
@@ -80,6 +84,7 @@ Sample fLM10    ();
 Sample fLM11    ();
   
 // QCD samples
+Sample fInclusiveMu5Pt30	();
 Sample fInclusiveMu5Pt50	();
 Sample fInclusiveMuPt15	        ();
 Sample fQCDBCtoEPt20to30	();
@@ -97,6 +102,12 @@ Sample fQCDpt300to470  ();
 Sample fQCDpt470to800  ();
 Sample fQCDpt800toInf  ();
 
+// photon jets
+Sample fPhotonJetPt20to30 ();
+Sample fPhotonJetPt30to50 ();
+Sample fPhotonJetPt50to80 ();
+Sample fPhotonJetPt80to120 ();
+Sample fPhotonJetPt120to170 ();
 
 // filter events by process
 bool filterByProcess (enum Process sample);
