@@ -715,12 +715,22 @@ void Looper::FillEventHistos ()
         // use cut bit to control behavior of looper
 	 if ( (cuts_ & (CUT_BIT(CONTROL_STUDYW)))  == (CUT_BIT(CONTROL_STUDYW))) {    
 		wEfficiency();
-		return;
 	}
 
+        // do the W efficiency studies
+        // use cut bit to control behavior of looper
+         if ( (cuts_ & (CUT_BIT(CONTROL_ELEID)))  == (CUT_BIT(CONTROL_ELEID))) {
+                electronId();
+        }
 
-	// do the AN2009-98 studies
-	//AN2009_98();
+        // do the AN2009-98 studies
+        //AN2009_98();
+
+
+}
+
+void Looper::electronId()
+{	
 
 	// get the event weight (for 1 pb^{-1})
 	float weight = cms2.evt_scale1fb() * sample_.kFactor;

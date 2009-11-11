@@ -267,6 +267,7 @@ int Results_tcmet30 ()
 //
 
 uint32 all_samples_qcdval = 
+     (1<<LOOP_WE) |
      (1<<LOOP_QCD30) |
      (1<<LOOP_EM30_170) |
      (1<<LOOP_BC30_170);
@@ -299,7 +300,8 @@ int Results312_pt20_isoV1_tcmet30 ()
 {
      return run<Looper>(
         // control
-        (CUT_BIT(CONTROL_STUDYW)) |
+        //(CUT_BIT(CONTROL_STUDYW)) |
+	(CUT_BIT(CONTROL_ELEID)) |
         // cuts
         (CUT_BIT(ELE_PT_20)) | (CUT_BIT(ELE_ISO_V0) | CUT_BIT(EVT_TCMET_30)),
         "Results312_pt20_isoV1_tcmet30", all_samples_qcdval);
