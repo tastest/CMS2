@@ -3,9 +3,9 @@
 
 using namespace std;
 
-HistogramUtilities::HistogramUtilities(TString fileName, Double_t lumiNorm) 
+HistogramUtilities::HistogramUtilities(TString fileName, std::vector<DataSource> potentialSources, Double_t lumiNorm) 
 {
-  setSources();
+  setOrder(potentialSources);
   
   // open root file
   file_ = new TFile(fileName, "READ");
@@ -17,9 +17,9 @@ HistogramUtilities::HistogramUtilities(TString fileName, Double_t lumiNorm)
   verbose_ = false;
 }
 
-HistogramUtilities::HistogramUtilities(TString fileName, TString fileName2, Double_t lumiNorm) 
+HistogramUtilities::HistogramUtilities(TString fileName, TString fileName2, std::vector<DataSource> potentialSources, Double_t lumiNorm) 
 {
-  setSources();
+  setOrder(potentialSources);
   
   // open root file
   file_  = new TFile(fileName , "READ");
@@ -30,71 +30,12 @@ HistogramUtilities::HistogramUtilities(TString fileName, TString fileName2, Doub
   verbose_ = false;
 }
 
-HistogramUtilities::HistogramUtilities(TString fileName, TString fileName2, TString fileName3, Double_t lumiNorm) 
-{
-  setSources();
-  
-  // open root file
-  file_  = new TFile(fileName , "READ");
-  file2_ = new TFile(fileName2, "READ");
-  file3_ = new TFile(fileName3, "READ");
-
-  // leave the luminosity norm as in the root file
-  lumiNorm_ = lumiNorm;
-  verbose_ = false;
-}
-
-//I made this so that each constructor can call it
-void HistogramUtilities::setSources() {
-  
-  // define the data source names
-  // input root files will contain
-  // a histogram for each source...
-  sources_.push_back(	fH_DYMM()	);
-  sources_.push_back(	fH_DYEE()	);
-  sources_.push_back(	fH_DYTT()	);
-  sources_.push_back(	fH_TTBAR()	);
-  sources_.push_back(	fH_WJETS()	);
-  sources_.push_back(	fH_TW()		);
-  sources_.push_back(	fH_WW()		);
-  sources_.push_back(	fH_WZ()		);
-  sources_.push_back(	fH_ZZ()		);
-  
-  //sources_.push_back(	fH_WW()		);
-  //sources_.push_back(	fH_TTBAR()	);
-  //sources_.push_back(	fH_DYMM()	);
-  //sources_.push_back(	fH_DYEE()	);
-  //sources_.push_back(	fH_DYTT()	);
-  //sources_.push_back(	fH_WJETS()	);
-  //sources_.push_back(	fH_TW()		);
-  //sources_.push_back(	fH_ZZ()		);
-  //sources_.push_back(	fH_WZ()		);
-
-  sources_.push_back(   fH_WENU()         );
-  sources_.push_back(   fH_EM30_80()         );
-  sources_.push_back(   fH_BC30_80()         );
-
-  //sources_.push_back(   fH_WJET_ALP()   );	
-  //sources_.push_back(   fH_ZJET_ALP()   );	
-  //sources_.push_back(	fH_ZEEJET_ALP()	);
-  //sources_.push_back(   fH_ZMMJET_ALP() );
-  //sources_.push_back(   fH_ZTTJET_ALP() );
-  //sources_.push_back(   fH_TTBAR_SINGLE() );
-
-  sources_.push_back(	fH_QCD30()	);
-  sources_.push_back(   fH_QCD80()      );
-
-  //sources_.push_back(	 fttbarSingle()   );
-  //sources_.push_back(	 fZeejetsAlpgenSingle()	  );
-  //sources_.push_back(	 fZmmjetsAlpgenSingle()	  );
-  //sources_.push_back(	 fZttjetsAlpgenSingle()	  );
-  //sources_.push_back(	 fWjetsAlpgenSingle()  );
-}	
 
 void HistogramUtilities::setOrder(std::vector<DataSource> potentialSources)
 {
 	sources_ = potentialSources;
 }
+
 
 TH1F* HistogramUtilities::getHistogram(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin, TString nameprefix) 
 {
@@ -110,7 +51,8 @@ TH1F* HistogramUtilities::getHistogram(sources_t theSources, TString var, TStrin
 	  }
 	}       
   h1_data->Scale(lumiNorm_);
-  //h1_data->Rebin(rebin);
+  if( rebin != 1 )
+	h1_data->Rebin(rebin);
   h1_data->SetName( nameprefix + var + "_" + hyp_type );
   h1_data->SetFillColor( 0 );
   return h1_data;
@@ -119,39 +61,26 @@ TH1F* HistogramUtilities::getHistogram(sources_t theSources, TString var, TStrin
 //hyp2 is a required argument. Ex. use case: get sum of all samples ee + mm
 TH1F* HistogramUtilities::getHistogramSum(sources_t theSources, TString var, TString nJets, TString hyp1, TString hyp2, Int_t rebin) 
 {
-  //create a new histogram object
-  //TString histNameSuffix = "_" + var + "_" + nJets + hyp_type;
   TString histNameSuffix1 = "_" + var + nJets + "_" + hyp1;
   TString histNameSuffix2 = "_" + var + nJets + "_" + hyp2;
 
-  //TH1F *h_temp = (TH1F*)(file_->Get(sources_[0].getName() + histNameSuffix)->Clone());
-  //TH1F *st_temp = new TH1F(var, var, h_temp->GetNbinsX(), h_temp->GetXaxis()->GetXmin(), h_temp->GetXaxis()->GetXmax());
   TH1F* h_result = 0;
-
-  // get each constituent in turn and add to the stack
   for (int i = sources_.size() - 1; i >= 0; --i) {
 	if ((theSources & makeBit(sources_[i].getSource()) ) == makeBit(sources_[i].getSource()) ) {
 	  //std::cout << "getting " << sources_[i].getName() + histNameSuffix << std::endl;
-	  //TH1F *h1_temp = (TH1F*)(file_->Get(sources_[i].getName() + histNameSuffix1)->Clone());
 	  if( !h_result )	  
 		h_result = (TH1F*)(file_->Get(sources_[i].getName() + histNameSuffix1)->Clone());
 	  else
 		h_result->Add( (TH1F*)file_->Get(sources_[i].getName() + histNameSuffix1) );
 	  TH1F *h2_temp = (TH1F*)(file_->Get(sources_[i].getName() + histNameSuffix2)->Clone());
-	  //if (sources_[i].getColor() != 0) h1_temp->SetFillColor(sources_[i].getColor());
-	  //h1_temp->Rebin(rebin);
-	  if( lumiNorm_ != 1 ) {
-		//h1_temp->Scale(lumiNorm_);
-		h2_temp->Scale(lumiNorm_);
-	  }
-	  //if( !h_result )
-	  //	h_result = h1_temp;
-	  //else
-	  //	h_result->Add(h1_temp);
 	  h_result->Add(h2_temp);
-	  //h_result->Integral(); //stupid test
 	}
   }
+  if( lumiNorm_ != 1. )
+	h_result->Scale(lumiNorm_);
+  if( rebin != 1 )
+	h_result->Rebin(rebin);
+
   return h_result;
 }
 
@@ -170,8 +99,10 @@ TH2F* HistogramUtilities::get2dHistogram(sources_t theSources, TString var, TStr
 		else h_data->Add((TH2F*)file_->Get(sources_[i].getName() + histNameSuffix));
 	  }
 	}       
-  //h_data->Scale(lumiNorm_);
-  //h_data->Rebin(rebin);
+  if( lumiNorm_ != 1. )
+	h_data->Scale(lumiNorm_);
+  if( rebin != 1 )
+	h_data->Rebin(rebin);
   return h_data;
 }
 
@@ -190,7 +121,7 @@ THStack* HistogramUtilities::getStack(sources_t theSources, TString var, TString
 	  if ((theSources & makeBit(sources_[i].getSource()) ) == makeBit(sources_[i].getSource()) ) {
 		//std::cout << "getting " << sources_[i].getName() + histNameSuffix << std::endl;
 		//std::cout << "reading file " << file_->GetName() << std::endl;
-		//file_->cd();
+		//file_->cd(); //we used this at one point to debug why we couldn't find a hist
 		//gDirectory->ls();
 		TH1F *h1_temp = ((TH1F*)(file_->Get(sources_[i].getName() + histNameSuffix)->Clone()));
 		//std::cout << h1_temp->GetBinContent(1) << std::endl;
@@ -198,8 +129,10 @@ THStack* HistogramUtilities::getStack(sources_t theSources, TString var, TString
 		  h1_temp->SetFillColor(sources_[i].getColor());
 		  h1_temp->SetLineColor(sources_[i].getColor());
 		}
-		//h1_temp->Rebin(rebin);
-		h1_temp->Scale(lumiNorm_);
+		if( lumiNorm_ != 1. )
+		  h1_temp->Scale(lumiNorm_);
+		if( rebin != 1 )
+		  h1_temp->Rebin(rebin);
 		st_temp->Add(h1_temp);
 	  }
 	}
@@ -213,11 +146,9 @@ THStack* HistogramUtilities::getSumStack(sources_t theSources, TString var1, TSt
   
   // create a new stack object
   TString name1 = var1 + nJets + "_" + hyp1 + hyp2; //name includes both
-  //TString name2 = var2 + nJets + "_" + hyp1 + hyp2;
   THStack *st_temp = new THStack(name1, name1);
 
   // get each constituent in turn and add to the stack
-  //TString histNameSuffix = "_" + var + "_" + nJets + hyp_type;
   TString histNameSuffix1 = "_" + var1 + nJets + "_" + hyp1;
   TString histNameSuffix2 = "_" + var2 + nJets + "_" + hyp2;
 
@@ -232,11 +163,14 @@ THStack* HistogramUtilities::getSumStack(sources_t theSources, TString var1, TSt
 		h2_temp->SetFillColor(sources_[i].getColor());
 		h2_temp->SetLineColor(sources_[i].getColor());
 	  }
-	  //h1_temp->Rebin(rebin);
-	  h1_temp->Scale(lumiNorm_);
-	  //h2_temp->Rebin(rebin);
-	  h2_temp->Scale(lumiNorm_);
-
+	  if( lumiNorm_ != 1. ) {
+		h1_temp->Scale(lumiNorm_);
+		h2_temp->Scale(lumiNorm_);
+	  }
+	  if( rebin != 1 ) {
+		h1_temp->Rebin(rebin);
+		h2_temp->Rebin(rebin);
+	  }
 	  h1_temp->Add(h2_temp, scale); //now h1 is h1+h2
 	  st_temp->Add(h1_temp); //put the sum in the stack
 	}
@@ -252,9 +186,7 @@ THStack* HistogramUtilities::get2fileStack(sources_t theSources, TString var, TS
   THStack *st_temp = new THStack(name, name);
 
   // get each constituent in turn and add to the stack
-  //TString histNameSuffix = "_" + var + "_" + nJets + hyp_type;
   TString histNameSuffix1 = "_" + var + nJets + "_" + hyp1;
-  //TString histNameSuffix2 = "_" + var + nJets + "_" + hyp2;
   
   for (int i = sources_.size() - 1; i >= 0; --i) {
 	if ((theSources & makeBit(sources_[i].getSource()) ) == makeBit(sources_[i].getSource()) ) {
@@ -267,57 +199,21 @@ THStack* HistogramUtilities::get2fileStack(sources_t theSources, TString var, TS
 		h2_temp->SetFillColor(sources_[i].getColor());
 		h2_temp->SetLineColor(sources_[i].getColor());
 	  }
-	  //h1_temp->Rebin(rebin);
-	  h1_temp->Scale(lumiNorm_);
-	  //h2_temp->Rebin(rebin);
-	  h2_temp->Scale(lumiNorm_);
-
-	  h1_temp->Add(h2_temp); //now h1 is h1+h2
-	  st_temp->Add(h1_temp); //put the sum in the stack
-	}
-  }
-  return st_temp;
-}
-
-//for combining same hists from three files in one stack--note had to add third tfile to class--don't actually need this (yet)
-/*
-THStack* HistogramUtilities::get3fileStack(sources_t theSources, TString var, TString nJets, TString hyp1, Int_t rebin) {
-
-  // create a new stack object
-  TString name = var + nJets + "_" + hyp1;
-  THStack *st_temp = new THStack(name, name);
-
-  // get each constituent in turn and add to the stack
-  TString histNameSuffix1 = "_" + var + nJets + "_" + hyp1;
-  
-  for (int i = sources_.size() - 1; i >= 0; --i) {
-	if ((theSources & makeBit(sources_[i].getSource()) ) == makeBit(sources_[i].getSource()) ) {
-	  std::cout << "getting " << sources_[i].getName() + histNameSuffix1 << std::endl;
-	  TH1F *h1_temp = ((TH1F*)(file_ ->Get(sources_[i].getName() + histNameSuffix1)->Clone()));
-	  TH1F *h2_temp = ((TH1F*)(file2_->Get(sources_[i].getName() + histNameSuffix1)->Clone())); //suffix1
-	  TH1F *h3_temp = ((TH1F*)(file3_->Get(sources_[i].getName() + histNameSuffix1)->Clone())); //suffix1
-	  if (sources_[i].getColor() != 0) {
-		h1_temp->SetFillColor(sources_[i].getColor());
-		h1_temp->SetLineColor(sources_[i].getColor());
-		h2_temp->SetFillColor(sources_[i].getColor());
-		h2_temp->SetLineColor(sources_[i].getColor());
-		h3_temp->SetFillColor(sources_[i].getColor());
-		h3_temp->SetLineColor(sources_[i].getColor());
+	  if( lumiNorm_ != 1. ) {
+		h1_temp->Scale(lumiNorm_);
+		h2_temp->Scale(lumiNorm_);
 	  }
-	  //h1_temp->Rebin(rebin);
-	  h1_temp->Scale(lumiNorm_);
-	  //h2_temp->Rebin(rebin);
-	  h2_temp->Scale(lumiNorm_);
-	  h3_temp->Scale(lumiNorm_);
-
+	  if( rebin != 1 ) {
+		h1_temp->Rebin(rebin);
+		h2_temp->Rebin(rebin);
+	  }
 	  h1_temp->Add(h2_temp); //now h1 is h1+h2
-	  h1_temp->Add(h3_temp); //now h1 is h1+h3
 	  st_temp->Add(h1_temp); //put the sum in the stack
 	}
   }
   return st_temp;
 }
-*/
+
 
 //for combining three hyps, sum of the first two minus the third
 //note: last argument (Int_t posneg) is my hack for fixing the negative histogram stacking bug in root:
@@ -346,12 +242,16 @@ THStack* HistogramUtilities::getSumDifStack(sources_t theSources, TString var, T
 	  if (sources_[i].getColor() != 0) h1_temp->SetFillColor(sources_[i].getColor());
 	  if (sources_[i].getColor() != 0) h2_temp->SetFillColor(sources_[i].getColor());
 	  if (sources_[i].getColor() != 0) h3_temp->SetFillColor(sources_[i].getColor());
-	  //h1_temp->Rebin(rebin);
-	  //h1_temp->Scale(lumiNorm_);
-	  //h2_temp->Rebin(rebin);
-	  //h2_temp->Scale(lumiNorm_);
-	  //h3_temp->Rebin(rebin);
-	  //h3_temp->Scale(lumiNorm_);
+	  if( lumiNorm_ != 1. ) {
+		h1_temp->Scale(lumiNorm_);
+		h2_temp->Scale(lumiNorm_);
+		h3_temp->Scale(lumiNorm_);
+	  }
+	  if( rebin != 1 ) {
+		h1_temp->Rebin(rebin);
+		h2_temp->Rebin(rebin);
+		h3_temp->Rebin(rebin);
+	  }
 
 	  if( verbose_ && sources_[i].getName() == "dytt" ) {
 		int bin = 40; //80 bins, the 0 bin should be 40, this should be -5 to 0
