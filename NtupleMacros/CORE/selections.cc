@@ -191,7 +191,8 @@ bool passLeptonIsolation(int id, int index, bool use_ele_calo_iso){
 //
 // electron isolation tk Jura
 
-float recomputeTrackIsolation(int eleIndex, float strip = 0.01, float dRIn = 0.015, float dROut = 0.3)
+float recomputeTrackIsolation(int eleIndex, float pTCut = 0.7, float z0Cut = 0.2, 
+				float strip = 0.01, float dRIn = 0.015, float dROut = 0.3)
 {
  
         float isoSum = 0.0;
@@ -203,8 +204,8 @@ float recomputeTrackIsolation(int eleIndex, float strip = 0.01, float dRIn = 0.0
                 float dR = sqrt(dEta*dEta + dPhi*dPhi);
                 const float &pT = cms2.trks_trk_p4()[i].Pt();
                 
-                if (pT < 0.7) continue;
-                if (fabs(cms2.trks_z0()[i] - cms2.els_z0()[eleIndex]) > 0.2) continue;
+                if (pT < pTCut) continue;
+                if (fabs(cms2.trks_z0()[i] - cms2.els_z0()[eleIndex]) > z0Cut) continue;
                 if (dR < dRIn) continue;
                 if (dR > dROut) continue;
                 
