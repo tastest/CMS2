@@ -188,6 +188,36 @@ bool passLeptonIsolation(int id, int index, bool use_ele_calo_iso){
   return false;
 }
 
+//
+// electron isolation tk Jura
+
+float recomputeTrackIsolation(int eleIndex, float strip = 0.01, float dRIn = 0.015, float dROut = 0.3)
+{
+ 
+        float isoSum = 0.0;
+        for (size_t i = 0; i < cms2.trks_trk_p4().size(); ++i)
+        {
+        
+                float dEta = cms2.trks_trk_p4()[i].Eta() - cms2.els_trk_p4()[eleIndex].Eta();
+                float dPhi = acos(cos(cms2.trks_trk_p4()[i].Phi() - cms2.els_trk_p4()[eleIndex].Phi()));
+                float dR = sqrt(dEta*dEta + dPhi*dPhi);
+                const float &pT = cms2.trks_trk_p4()[i].Pt();
+                
+                if (pT < 0.7) continue;
+                if (fabs(cms2.trks_z0()[i] - cms2.els_z0()[eleIndex]) > 0.2) continue;
+                if (dR < dRIn) continue;
+                if (dR > dROut) continue;
+                
+                // jurassic isolation
+                if (fabs(dEta) > strip) isoSum += pT;
+
+        }
+
+        return isoSum;
+
+}
+
+
 //-----------------------------------------------------------
 // Electron Isolation using ECAL clusters
 //-----------------------------------------------------------
