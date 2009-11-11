@@ -5,6 +5,5 @@ void doPlots(char* fname ="myHist.root", bool logScale=false){
   hist::loadHist(fname);
   
   browseStacks(true, false, true, 1.1, logScale, logScale ? false : true);
-  // browseStacks(true, false, true, 1.1, true, logScale ? false : true);
   gSystem->Exit(0);
 }

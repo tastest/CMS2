@@ -17,11 +17,11 @@ void doAll_oneFile(const char* fileName){
   // 269615104  truthmatch && pt20Eta2.4 && trigger
   // 269647872  truthmatch && pt20Eta2.4 && trigger && isolation
 
-  unsigned int bitms[14] = {   1957888  ,  35512320 ,    1695744,       1433600,     1926144, 
-			       1171456  ,          0,  269606912,     268435456,      122880,
-			       268566528,  269615104,  269647872,     269647872};
+  unsigned int bitms[12] = { 1957888, 35512320 , 1695744, 1433600, 1926144, 
+			     1171456, 0, 269606912, 268435456, 122880,
+			     268566528, 269615104};
   
-  for (unsigned int iM=0; iM< 14; ++iM){
+  for (unsigned int iM=0; iM< 12; ++iM){
     TChain* ch = new TChain("Events");
     ch->Add(fileName);
     ttDilCounts_looper* looper = new ttDilCounts_looper();

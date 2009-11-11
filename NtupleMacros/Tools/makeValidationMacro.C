@@ -60,17 +60,7 @@ void makeValidationMacro(TString f1) {
   while(key=(TKey*)iter1->Next()) {
     TString name(key->GetName());
     if(name.Contains("hyp_jets") ||
-       name.Contains("hyp_other_jets") 
-       || name.Contains("genps_lepdaughter_p4") 
-       || name.Contains("hlt8e29_trigObjs_p4") 
-       || name.Contains("hlt_trigObjs_p4") 
-       || name.Contains("taus_pf_isochargecand_p4") 
-       || name.Contains("taus_pf_isogammacand_p4") 
-       || name.Contains("taus_pf_isoneutrcand_p4") 
-       || name.Contains("taus_pf_sigchargecand_p4") 
-       || name.Contains("taus_pf_siggammacand_p4") 
-       || name.Contains("taus_pf_signeutrcand_p4") 
-       )
+       name.Contains("hyp_other_jets") )
        continue;
     bNames1.push_back(key->GetName());
   }
@@ -131,31 +121,24 @@ void makeValidationMacro(TString f1, TString f2) {
   myfile << "vector<TString> v_badhistos;" << endl; 
   myfile << "TCanvas *c = new TCanvas();" << endl;
   myfile << "bool compareHistos(TH1F *h1, TH1F *h2, TString diffHistoName) {" << endl;
-  myfile << "   bool res = true;" << endl;
   myfile << "   int nbins1 = h1->GetNbinsX();" << endl;
   myfile << "   int nbins2 = h2->GetNbinsX();" << endl;
   myfile << "   if(nbins1 != nbins2) {" << endl;
   myfile << "      v_badhistos.push_back(h1->GetTitle());" << endl;
-  myfile << "      res = false; " << endl;
+  myfile << "      return 0; " << endl;
   myfile << "   }" << endl;
-  myfile << "   if (res){" << endl;
-  myfile << "      for(int i = 0; i < nbins1; i++) { " << endl;
-  myfile << "         if(h1->GetBinContent(i) - h2->GetBinContent(i) != 0) {" << endl;
-  myfile << "            v_badhistos.push_back(h1->GetTitle());" << endl;
-  myfile << "            res =  false; " << endl;
-  myfile << "         }" << endl;
+  myfile << "   TH1F *h = dynamic_cast<TH1F*>(h1->Clone());" << endl;
+  myfile << "   h->SetName((diffHistoName+\"_diff\").Data());" << endl;
+  myfile << "   h->Add(h1, h2, 1, -1);" << endl;
+  myfile << "   h->Draw();" << endl;
+  myfile << "   c->SaveAs(\"diff.eps(\");";
+  myfile << "   for(int i = 0; i < nbins1; i++) { " << endl;
+  myfile << "      if(h1->GetBinContent(i) - h2->GetBinContent(i) != 0) {" << endl;
+  myfile << "         v_badhistos.push_back(h1->GetTitle());" << endl;
+  myfile << "         return 0; " << endl;
   myfile << "      }" << endl;
   myfile << "   }" << endl;
-  myfile << "   if (!res){" << endl;
-  myfile << "      //TH1F *h = dynamic_cast<TH1F*>(h1->Clone());" << endl;
-  myfile << "      //h->SetName((diffHistoName+\"_diff\").Data());" << endl;
-  myfile << "      //h->Add(h1, h2, 1, -1);" << endl;
-  myfile << "      h1->Draw();" << endl;
-  myfile << "      h2->Draw(\"sames\");" << endl;
-  myfile << "      c->SaveAs(\"diff.eps(\");";
-  myfile << "      cout << \"  ERRORDIFF: \"<< h1->GetName() << \"    \"<< h2->GetName() <<endl;" << endl;
-  myfile << "   }" << endl;
-  myfile << "   return res;" << endl;
+  myfile << "   return 1;" << endl;
   myfile << "} " << endl;
   
    
@@ -177,17 +160,7 @@ void makeValidationMacro(TString f1, TString f2) {
   while(key=(TKey*)iter1->Next()) {
     TString name(key->GetName());
     if(name.Contains("hyp_jets") ||
-       name.Contains("hyp_other_jets") 
-       || name.Contains("genps_lepdaughter_p4") 
-       || name.Contains("hlt8e29_trigObjs_p4") 
-       || name.Contains("hlt_trigObjs_p4") 
-       || name.Contains("taus_pf_isochargecand_p4") 
-       || name.Contains("taus_pf_isogammacand_p4") 
-       || name.Contains("taus_pf_isoneutrcand_p4") 
-       || name.Contains("taus_pf_sigchargecand_p4") 
-       || name.Contains("taus_pf_siggammacand_p4") 
-       || name.Contains("taus_pf_signeutrcand_p4") 
-       )
+       name.Contains("hyp_other_jets") )
       continue;
     bNames1.push_back(key->GetName());
   }
@@ -195,17 +168,7 @@ void makeValidationMacro(TString f1, TString f2) {
   while(key=(TKey*)iter2->Next()) {
     TString name(key->GetName());
     if(name.Contains("hyp_jets") ||
-       name.Contains("hyp_other_jets") 
-       || name.Contains("genps_lepdaughter_p4") 
-       || name.Contains("hlt8e29_trigObjs_p4") 
-       || name.Contains("hlt_trigObjs_p4") 
-       || name.Contains("taus_pf_isochargecand_p4") 
-       || name.Contains("taus_pf_isogammacand_p4") 
-       || name.Contains("taus_pf_isoneutrcand_p4") 
-       || name.Contains("taus_pf_sigchargecand_p4") 
-       || name.Contains("taus_pf_siggammacand_p4") 
-       || name.Contains("taus_pf_signeutrcand_p4") 
-       )
+       name.Contains("hyp_other_jets") )
       continue;
     
     bNames2.push_back(key->GetName());
@@ -244,8 +207,8 @@ void makeValidationMacro(TString f1, TString f2) {
     suffix1 = suffix1.Tokenize("/")->Last()->GetName();
     suffix2 = suffix2.Tokenize("/")->Last()->GetName();
     
-    TString histoname1 = "h1_" + branch + "_" + suffix1;
-    TString histoname2 = "h2_" + branch + "_" + suffix2;
+    TString histoname1 = "h_" + branch + "_" + suffix1;
+    TString histoname2 = "h_" + branch + "_" + suffix2;
 
     if(branch.Contains("hyp_jets"))
       continue;

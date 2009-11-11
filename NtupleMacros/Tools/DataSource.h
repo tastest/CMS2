@@ -29,8 +29,6 @@ enum {
         H_ZTTJET_ALP,
 	H_MU15_SINGLE,
 
-	H_WENU_7TeV,
-
 };
 
 const static sources_t sources_all =
@@ -110,8 +108,6 @@ DataSource fH_ZMMJET_ALP();
 DataSource fH_ZTTJET_ALP();
 
 DataSource fH_MU15_SINGLE();
-
-DataSource fH_WENU_7TeV();
 
 #endif
 

@@ -33,6 +33,8 @@ enum {
 	ELEID_TAS_HOE,
 	ELEID_TAS_LSHAPE,
 
+	CONTROL_ELEID,
+	CONTROL_STUDYW,
 };
 
 // baseline cuts

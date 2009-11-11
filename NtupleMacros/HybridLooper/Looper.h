@@ -55,6 +55,9 @@ protected:
 	// w efficiency studies
 	void wEfficiency();
 
+	// ele id studies
+	void electronId();
+
 	// results of AN2009_98 comparison
 	// well... related
 	void AN2009_98();

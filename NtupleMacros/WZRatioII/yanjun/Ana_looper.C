@@ -43,32 +43,11 @@ using namespace std;
 void Ana_looper::bookHistos(char* sample, int nchannels, int nhistsets){
  
   for (int i_ch=0; i_ch<nchannels; i_ch++) {
+    for (int j_hist=0; j_hist<nhistsets; j_hist++) {  
+      els_pt[i_ch][j_hist] = book1DHist(Form("%s_%s_%s%i%s%i",sample,"elsPt","Ch",i_ch,"H",j_hist),Form("%s_%s_%s%i%s%i",sample,"elsPt","Ch",i_ch,"H",j_hist),50,0,100,"Electron Pt", "Events", kBlue);  
 
-    char* ch;
-  
-    if(i_ch==0)ch = "e";
-    else if(i_ch==1)ch = "m";
-    else if(i_ch==2)ch = "ee";
-    else if(i_ch==3)ch = "mm";
-   
-
-    for (int j_hist=0; j_hist<nhistsets; j_hist++) {
+      njets[i_ch][j_hist] = book1DHist(Form("%s_%s_%s%i%s%i",sample,"nJets","Ch",i_ch,"H",j_hist),Form("%s_%s_%s%i%s%i",sample,"nJets","Ch",i_ch,"H",j_hist),10,0,10,"Number of Jets", "Events", kBlue);  
       
-      
-      els_pt[i_ch][j_hist] = book1DHist(Form("%s_%s_%s%i",sample,"elsPt",ch, j_hist),Form("%s_%s_%s%i",sample,"elsPt",ch, j_hist),50,0,100,"Electron Pt", "Events", kBlue);  
-
-      mus_pt[i_ch][j_hist] = book1DHist(Form("%s_%s_%s%i",sample,"musPt",ch, j_hist),Form("%s_%s_%s%i",sample,"musPt",ch, j_hist),50,0,100,"Muon Pt", "Events", kBlue);  
-
-      njets[i_ch][j_hist] = book1DHist(Form("%s_%s_%s%i",sample,"nJets",ch, j_hist),Form("%s_%s_%s%i",sample,"nJets",ch, j_hist),10,0,10,"Number of Jets", "Events", kBlue);  
-
-      wmass[i_ch][j_hist] = book1DHist(Form("%s_%s_%s%i",sample,"WMass",ch, j_hist),Form("%s_%s_%s%i",sample,"WMass",ch, j_hist),120,20,120,"W Trans Mass", "Events", kBlue); 
-      
-      zmass[i_ch][j_hist] = book1DHist(Form("%s_%s_%s%i",sample,"ZMass",ch, j_hist),Form("%s_%s_%s%i",sample,"ZMass",ch, j_hist),120,20,120,"Z Mass", "Events", kBlue); 
-      
-      tcMET[i_ch][j_hist] = book1DHist(Form("%s_%s_%s%i",sample,"tcMET",ch, j_hist),Form("%s_%s_%s%i",sample,"tcMET",ch, j_hist),80,0,80,"tcMET", "Events", kBlue); 
-      dphi_metlp[i_ch][j_hist] = book1DHist(Form("%s_%s_%s%i",sample,"dphi_metlp",ch, j_hist),Form("%s_%s_%s%i",sample,"dphi_metlp",ch, j_hist),100,0,3.14,"dphi_metlp", "Events", kBlue); 
-      
-      //tcmet[i_ch][j_hist] = book1DHist(Form("%s_%s_%s%i",sample,"tcMET",ch, j_hist),Form("%s_%s_%s%i",sample,"tcMET",ch, j_hist),100,0,100,"tcMET", "Events", kBlue); 
     }
   }
 }
@@ -76,7 +55,7 @@ void Ana_looper::bookHistos(char* sample, int nchannels, int nhistsets){
 double Ana_looper::Trans_W_Mass(TVector3& tcMET, ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >&  p4){
   double mass = sqrt((tcMET.Pt()+p4.Et())*(tcMET.Pt()+p4.Et())
 		     -(tcMET.Pt()*cos(tcMET.Phi())+ p4.Px())*(tcMET.Pt()*cos(tcMET.Phi())+ p4.Px())
-		     -(tcMET.Pt()*sin(tcMET.Phi())+ p4.Py())*(tcMET.Pt()*sin(tcMET.Phi())+ p4.Py()));
+		     -(tcMET.Pt()*sin(tcMET.Phi())+ p4.Py())*(tcMET.Pt()*cos(tcMET.Phi())+ p4.Py()));
   return mass;
 }
 
@@ -111,7 +90,7 @@ int Ana_looper::ScanChain( TChain* chain, int nEvents ,char* sample, float kFact
     for( unsigned int event = 0; event < nEvents; ++event) {
       cms2.GetEntry(event);
      
-      float weight = (kFactor*cms2.evt_scale1fb())/1000.0;  //scale to 1 pb-1
+      float weight = kFactor*cms2.evt_scale1fb();  //scale to 1 fb-1
       int channel = -1;
       int hist  = 0;
       int nels =   cms2.els_p4().size();
@@ -129,9 +108,7 @@ int Ana_looper::ScanChain( TChain* chain, int nEvents ,char* sample, float kFact
       ///loop over electrons
       for(int i_els=0; i_els<nels; i_els++){
         if(cms2.els_p4()[i_els].pt() <20) continue;
-        //if(!goodElectronIsolated(i_els,1)) continue;
-	if(!GoodSusyElectronWithoutIsolation(i_els)) continue;
-	if(!PassSusyElectronIsolation(i_els,1)) continue;
+        if(!goodElectronIsolated(i_els,1)) continue;
 	//if(!conversionElectron(i_els)) continue; 
 	
         good_els_idx.push_back(i_els);
@@ -143,9 +120,7 @@ int Ana_looper::ScanChain( TChain* chain, int nEvents ,char* sample, float kFact
       ///loop over muons
       for(int i_mus=0; i_mus<nmus; i_mus++){
         if(cms2.mus_p4()[i_mus].pt()< 20) continue;
-        //if(!goodMuonIsolated(i_mus)) continue;
-	if(!GoodSusyMuonWithoutIsolation(i_mus)) continue;
-	if(!PassSusyMuonIsolation(i_mus)) continue;
+        if(!goodMuonIsolated(i_mus)) continue;
 	good_mus_idx.push_back(i_mus);
       }
       ngoodmus = good_mus_idx.size();
@@ -198,8 +173,6 @@ int Ana_looper::ScanChain( TChain* chain, int nEvents ,char* sample, float kFact
       }
       ngoodjpts = good_jpts_idx.size();
       
-
-      
       
 
       /////event selection; just a example, you can change it;
@@ -211,9 +184,7 @@ int Ana_looper::ScanChain( TChain* chain, int nEvents ,char* sample, float kFact
       if(tcmet.Pt() < 30) idword |= kPassZMETBit;
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > vec;
     
-      double w_trans_mass = 999.;
-      double z_mass = 999.;
-      float dphi_lm= 999.; 
+      double w_trans_mass;
       if(ngoodels==1 &&  ngoodmus==0){
 	idword |= kOneEleBit;
 	w_trans_mass =  Trans_W_Mass(tcmet, cms2.els_p4()[good_els_idx.at(0)]);
@@ -223,30 +194,16 @@ int Ana_looper::ScanChain( TChain* chain, int nEvents ,char* sample, float kFact
 	
 
 	bool z_hyp=false;
-// 	for(int i=0; i<ngoodtrks; i++){
+	for(int i=0; i<ngoodtrks; i++){
 	 
-// 	  vec = cms2.trks_trk_p4()[good_trks_idx.at(i)]+cms2.els_p4()[good_els_idx.at(0)];
-// 	  if(inZmassWindow(vec.mass()) )  z_hyp = true; 
-// 	  //       else printf("%s, %f \n", "Z mass  ",  vec.mass());
-// 	}
-
-// 	for(int i=0; i<nels; i++){
-	 
-// 	  vec = cms2.els_p4()[i]+cms2.els_p4()[good_els_idx.at(0)];
-// 	  if(inZmassWindow(vec.mass())  && (cms2.els_charge()[i]*cms2.els_charge()[good_els_idx.at(0)])!=1)  z_hyp = true; 
-// 	  //       else printf("%s, %f \n", "Z mass  ",  vec.mass());
-// 	}
-
-// 	if(z_hyp ==false) idword |= kPassZVetoBit;
-
-	if(additionalZcounter() == false) idword |= kPassZVetoBit;
-	
-	dphi_lm = TMath::Abs(cms2.evt_tcmetPhi() - cms2.els_p4()[good_els_idx.at(0)].phi());
+	  vec = cms2.trks_trk_p4()[good_trks_idx.at(i)]+cms2.els_p4()[good_els_idx.at(0)];
+	  if(inZmassWindow(vec.mass()) )  z_hyp = true; 
+	  //       else printf("%s, %f \n", "Z mass  ",  vec.mass());
+	}
+	if(z_hyp ==false) idword |= kPassZVetoBit;
       }
       
       if(ngoodels==0 &&  ngoodmus==1){
-
-
 	idword |= kOneMuonBit;
 	w_trans_mass =  Trans_W_Mass(tcmet, cms2.mus_p4()[good_mus_idx.at(0)]);
 	
@@ -255,23 +212,13 @@ int Ana_looper::ScanChain( TChain* chain, int nEvents ,char* sample, float kFact
 	
 
 	bool z_hyp=false;
-// 	for(int i=0; i<ngoodtrks; i++){
+	for(int i=0; i<ngoodtrks; i++){
 	 
-// 	  vec = cms2.trks_trk_p4()[good_trks_idx.at(i)]+cms2.mus_p4()[good_mus_idx.at(0)];
-// 	  if(inZmassWindow(vec.mass()) )  z_hyp = true; 
-// 	  //       else printf("%s, %f \n", "Z mass  ",  vec.mass());
-// 	}
-
-// 	for(int i=0; i<nmus; i++){
-	 
-// 	  vec = cms2.mus_p4()[i]+cms2.mus_p4()[good_mus_idx.at(0)];
-// 	  if(inZmassWindow(vec.mass())  && (cms2.mus_charge()[i]*cms2.mus_charge()[good_mus_idx.at(0)])!=1)  z_hyp = true; 
-// 	  //       else printf("%s, %f \n", "Z mass  ",  vec.mass());
-// 	}
-// 	if(z_hyp ==false) idword |= kPassZVetoBit;
-
-	if(additionalZcounter() == false) idword |= kPassZVetoBit;
-	dphi_lm =  TMath::Abs(cms2.evt_tcmetPhi() - cms2.mus_p4()[good_mus_idx.at(0)].phi());
+	  vec = cms2.trks_trk_p4()[good_trks_idx.at(i)]+cms2.mus_p4()[good_mus_idx.at(0)];
+	  if(inZmassWindow(vec.mass()) )  z_hyp = true; 
+	  //       else printf("%s, %f \n", "Z mass  ",  vec.mass());
+	}
+	if(z_hyp ==false) idword |= kPassZVetoBit;
       }
    
       if (ngoodels==2 &&  ngoodmus==0){
@@ -279,7 +226,6 @@ int Ana_looper::ScanChain( TChain* chain, int nEvents ,char* sample, float kFact
 	for(int i=0; i<ngoodels; i++){
 	  for(int j=i+1; j<ngoodels; j++){
 	    vec = cms2.els_p4()[good_els_idx.at(i)]+cms2.els_p4()[good_els_idx.at(j)];
-	    z_mass=vec.mass(); 
 	    if(inZmassWindow(vec.mass()) ) {
 	      idword |= kPassZMassBit;
 	    }
@@ -295,7 +241,6 @@ int Ana_looper::ScanChain( TChain* chain, int nEvents ,char* sample, float kFact
 	for(int i=0; i<ngoodmus; i++){
 	  for(int j=i+1; j<ngoodmus; j++){
 	    vec = cms2.mus_p4()[good_mus_idx.at(i)]+cms2.mus_p4()[good_mus_idx.at(j)];
-	    z_mass=vec.mass(); 
 	    if(inZmassWindow(vec.mass()) ) {
 	      idword |= kPassZMassBit;
 	    }
@@ -306,51 +251,25 @@ int Ana_looper::ScanChain( TChain* chain, int nEvents ,char* sample, float kFact
 	}
       }
 
-    //   int we_id = kOneEleBit | kPassWMETBit | kPassWMassBit | kPassZVetoBit ;
-//       int wm_id = kOneMuonBit | kPassWMETBit | kPassWMassBit | kPassZVetoBit ;
-//       int zee_id = kTwoEleBit  | kPassZMETBit | kPassZMassBit  | kOppChargeBit;
-//       int zmm_id = kTwoMuonBit  | kPassZMETBit | kPassZMassBit  | kOppChargeBit;
-
-      int we_id = kOneEleBit | kPassWMETBit | kPassWMassBit ;
-      int wm_id = kOneMuonBit | kPassWMETBit | kPassWMassBit;
-   
-      int zee_id = kTwoEleBit  | kPassZMassBit  | kOppChargeBit;
-      int zmm_id = kTwoMuonBit | kPassZMassBit  | kOppChargeBit;
-
-      
-      if((idword & we_id)==we_id    )   channel =0; 
-      if((idword & wm_id)==wm_id    )   channel =1; 
-      if((idword & zee_id)==zee_id  )   channel =2; 
-      if((idword & zmm_id)==zmm_id  )   channel =3; 
-      
-      
-      
+      if(kOneEleBit && kPassWMETBit && kPassWMassBit && kPassZVetoBit   )   channel =0; 
+      if(kOneMuonBit && kPassWMETBit && kPassWMassBit && kPassZVetoBit  )   channel =1; 
+      if(kTwoEleBit  && kPassZMETBit && kPassZMassBit  && kOppChargeBit )   channel =2;
+      if(kTwoMuonBit  && kPassZMETBit && kPassZMassBit  && kOppChargeBit)   channel =3;
       if(channel >= 0){
-	dphi_metlp[channel][0]->Fill(dphi_lm, weight);
 	njets[channel][0]->Fill( ngoodjpts, weight);
-	wmass[channel][0]->Fill( w_trans_mass, weight);
-	zmass[channel][0]->Fill( z_mass, weight);
-	tcMET[channel][0]->Fill( tcmet.Pt(), weight);
 	
 	for(int i_els=0; i_els<ngoodels; i_els++){
 	  if(channel < 0 || hist <0 || channel > NCHANNELS || hist > NHISTS)
 	    std::cout << "ERROR: number of channels or histograms exceeds the maximum values" <<std::endl;
-	  els_pt[channel][0]->Fill(cms2.els_p4().at(good_els_idx.at(i_els)).pt(), weight);
+	  els_pt[channel][0]->Fill(cms2.els_p4().at(i_els).pt(), weight);
 	}
-
-	for(int i_mus=0; i_mus<ngoodmus; i_mus++){
-	  if(channel < 0 || hist <0 || channel > NCHANNELS || hist > NHISTS)
-	    std::cout << "ERROR: number of channels or histograms exceeds the maximum values" <<std::endl;
-	  mus_pt[channel][0]->Fill(cms2.mus_p4().at(good_mus_idx.at(i_mus)).pt(), weight);
-	}
-
       }
 
       ++nEventsTotal;
       if(nEventsTotal%10000 ==0)std::cout << "number of events processed " << nEventsTotal<<std::endl;
     }
   }
-  std::cout << "number of events processed " << nEventsTotal<<std::endl;
+
   if ( nEventsChain != nEventsTotal ) {
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
     std::cout << "number of events processed " << nEventsTotal<<std::endl;

@@ -9,7 +9,8 @@ enum Process { OTHER, TEST, WW, WZ, ZZ, Wjets, We, Wm, Wt, DYee, DYmm, DYtt, DY,
 	       InclusiveMu5Pt50, InclusiveMuPt15, 
 	       QCDBCtoEPt20to30, QCDBCtoEPt30to80, QCDBCtoEPt80to170, 
 	       QCDEMenrichedPt20to30, QCDEMenrichedPt30to80, QCDEMenrichedPt80to170, QCDpt30, QCDpt80,
-	       QCDpt30to80,QCDpt80to170,QCDpt170to300,QCDpt300to470,QCDpt470to800,QCDpt800toInf};
+	       QCDpt30to80,QCDpt80to170,QCDpt170to300,QCDpt300to470,QCDpt470to800,QCDpt800toInf,
+	       PhotonJet, QCDEMenrichedPt20to170, QCDBCtoEPt20to170, QCDEMenrichedPt30to170, QCDBCtoEPt30to170};
 
 class TChain;
 // struct that contains all the necessary information about a sample
@@ -47,6 +48,10 @@ Sample fZttjetsAlpgenSingle();
 
 Sample fInclusiveMuPt15Single();
 
+Sample fWe      ();
+Sample fWm      ();
+Sample fWt      ();
+
 Sample fWc	();
 Sample fDYee 	();
 Sample fDYmm 	();
@@ -79,14 +84,21 @@ Sample fLM10    ();
 Sample fLM11    ();
   
 // QCD samples
+Sample fInclusiveMu5Pt30	();
 Sample fInclusiveMu5Pt50	();
 Sample fInclusiveMuPt15	        ();
 Sample fQCDBCtoEPt20to30	();
 Sample fQCDBCtoEPt30to80	();
 Sample fQCDBCtoEPt80to170	();
+Sample fQCDBCtoEPt20to170	();
+Sample fQCDBCtoEPt30to170       ();
+
 Sample fQCDEMenrichedPt20to30	();
 Sample fQCDEMenrichedPt30to80	();
 Sample fQCDEMenrichedPt80to170  ();
+Sample fQCDEMenrichedPt20to170 	();
+Sample fQCDEMenrichedPt30to170  ();
+
 Sample fQCDpt30  ();
 Sample fQCDpt80  ();
 Sample fQCDpt30to80  ();
@@ -96,6 +108,13 @@ Sample fQCDpt300to470  ();
 Sample fQCDpt470to800  ();
 Sample fQCDpt800toInf  ();
 
+// photon jets
+Sample fPhotonJetPt20to170();
+Sample fPhotonJetPt20to30 ();
+Sample fPhotonJetPt30to50 ();
+Sample fPhotonJetPt50to80 ();
+Sample fPhotonJetPt80to120 ();
+Sample fPhotonJetPt120to170 ();
 
 // filter events by process
 bool filterByProcess (enum Process sample);

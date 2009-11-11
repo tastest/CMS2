@@ -3,14 +3,15 @@
 
 	gROOT->ProcessLine(".L ~/tdrStyle.C");
 	gROOT->ProcessLine("setTDRStyle()");
-	TString det = "eb";
-	TString DET = "EB";
+	TString det = "ee";
+	TString DET = "EE";
 
 	gROOT->ProcessLine(".x results/IDStudy_eff_tkIso03All_" + det + ".C");
 	TGraph *gr_tkIso03All = (TGraph*)graph->Clone("gr_tkIso03All");
 	gr_tkIso03All->SetMarkerColor(kBlack);
 	gr_tkIso03All->SetMarkerStyle(22);
 
+/*
         gROOT->ProcessLine(".x results/IDStudy_eff_tkIso03AllReJura01_" + det + ".C");
         TGraph *gr_tkIso03AllReJura01 = (TGraph*)graph->Clone("gr_tkIso03AllReJura01");
         gr_tkIso03AllReJura01->SetMarkerColor(kRed);
@@ -30,6 +31,8 @@
         TGraph *gr_tkIso03AllReJura01In015 = (TGraph*)graph->Clone("gr_tkIso03AllReJura01In015");
         gr_tkIso03AllReJura01In015->SetMarkerColor(kMagenta);
         gr_tkIso03AllReJura01In015->SetMarkerStyle(25);
+
+*/
 
         gROOT->ProcessLine(".x results/IDStudy_eff_tkIso03AllNM1_" + det + ".C");
         TGraph *gr_tkIso03AllNM1 = (TGraph*)graph->Clone("gr_tkIso03AllNM1");
@@ -56,6 +59,11 @@
         gr_tkIso03AllReJura01In015NM1->SetMarkerColor(kMagenta);
         gr_tkIso03AllReJura01In015NM1->SetMarkerStyle(25);
 
+        gROOT->ProcessLine(".x results/IDStudy_eff_tkIso03AllReJura01In000NM1_" + det + ".C");
+        TGraph *gr_tkIso03AllReJura01In000NM1 = (TGraph*)graph->Clone("gr_tkIso03AllReJura01In000NM1");
+        gr_tkIso03AllReJura01In000NM1->SetMarkerColor(kBlack);
+        gr_tkIso03AllReJura01In000NM1->SetMarkerStyle(26);
+
         gROOT->ProcessLine(".x results/IDStudy_eff_tkIso03AllReJura01In015IDNM1_" + det + ".C");
         TGraph *gr_tkIso03AllReJura01In015IDNM1 = (TGraph*)graph->Clone("gr_tkIso03AllReJura01In015IDNM1");
         gr_tkIso03AllReJura01In015IDNM1->SetMarkerColor(kRed);
@@ -79,15 +87,16 @@
 	TCanvas *c1 = new TCanvas();
 	c1->cd();
 
+/*
         TLegend *lg = new TLegend(0.2, 0.4, 0.7, 0.9);
         lg->SetFillColor(kWhite);
         lg->SetLineColor(kWhite);
         lg->SetShadowColor(kWhite);
         lg->AddEntry(gr_tkIso03All, "Standard (" + DET + ")", "lp");
-        lg->AddEntry(gr_tkIso03AllReJura01, "#Delta#eta #pm 0.1, #DeltaR > 0.04 (" + DET + ")", "lp");
-        lg->AddEntry(gr_tkIso03AllReJura02, "#Delta#eta #pm 0.2, #DeltaR > 0.04 (" + DET + ")", "lp");
-        lg->AddEntry(gr_tkIso03AllReJura03, "#Delta#eta #pm 0.3, #DeltaR > 0.04 (" + DET + ")", "lp");
-        lg->AddEntry(gr_tkIso03AllReJura01In015, "#Delta#eta #pm 0.1, #DeltaR > 0.015 (" + DET + ")", "lp");
+        lg->AddEntry(gr_tkIso03AllReJura01, "#Delta#eta #pm 0.01, #DeltaR > 0.04 (" + DET + ")", "lp");
+        lg->AddEntry(gr_tkIso03AllReJura02, "#Delta#eta #pm 0.02, #DeltaR > 0.04 (" + DET + ")", "lp");
+        lg->AddEntry(gr_tkIso03AllReJura03, "#Delta#eta #pm 0.03, #DeltaR > 0.04 (" + DET + ")", "lp");
+        lg->AddEntry(gr_tkIso03AllReJura01In015, "#Delta#eta #pm 0.01, #DeltaR > 0.015 (" + DET + ")", "lp");
 	gr_tkIso03All->GetXaxis()->SetRangeUser(0.0, 1.05);
 	gr_tkIso03All->GetYaxis()->SetRangeUser(0.0, 1.05);
 	gr_tkIso03All->Draw("AP");
@@ -98,13 +107,14 @@
 	lg->Draw();
 
 	c1->SaveAs("results/effrej_tkIso03AllReJura_comparison_" + det + ".png");
+*/
 
         TLegend *lg2 = new TLegend(0.2, 0.7, 0.7, 0.9);
         lg2->SetFillColor(kWhite);
         lg2->SetLineColor(kWhite);
         lg2->SetShadowColor(kWhite);
-        lg2->AddEntry(gr_tkIso03All, "Standard N-1 (" + DET + ")", "lp");
-        lg2->AddEntry(gr_tkIso03AllReJura01In015NM1, "#Delta#eta #pm 0.1, #DeltaR > 0.015 N-1 (" + DET + ")", "lp");
+        lg2->AddEntry(gr_tkIso03AllNM1, "Standard N-1 (" + DET + ")", "lp");
+        lg2->AddEntry(gr_tkIso03AllReJura01In015NM1, "#Delta#eta #pm 0.01, #DeltaR > 0.015 N-1 (" + DET + ")", "lp");
         gr_tkIso03AllNM1->GetXaxis()->SetRangeUser(0.0, 1.05);
         gr_tkIso03AllNM1->GetYaxis()->SetRangeUser(0.0, 1.05);
         gr_tkIso03AllNM1->Draw("AP");
@@ -112,6 +122,23 @@
         lg2->Draw();
 
         c1->SaveAs("results/effrej_tkIso03AllNM1_comparison_" + det + ".png");
+
+        TLegend *lg2_2 = new TLegend(0.2, 0.7, 0.7, 0.9);
+        lg2_2->SetFillColor(kWhite);
+        lg2_2->SetLineColor(kWhite);
+        lg2_2->SetShadowColor(kWhite);
+        lg2_2->AddEntry(gr_tkIso03AllNM1, "Standard N-1 (" + DET + ")", "lp");
+        lg2_2->AddEntry(gr_tkIso03AllReJura01In015NM1, "#Delta#eta #pm 0.01, #DeltaR > 0.015 N-1 (" + DET + ")", "lp");
+        lg2_2->AddEntry(gr_tkIso03AllReJura01In000NM1, "#Delta#eta #pm 0.01 N-1 (" + DET + ")", "lp");
+        gr_tkIso03AllNM1->GetXaxis()->SetRangeUser(0.0, 1.05);
+        gr_tkIso03AllNM1->GetYaxis()->SetRangeUser(0.0, 1.05);
+        gr_tkIso03AllNM1->Draw("AP");
+        gr_tkIso03AllReJura01In015NM1->Draw("P");
+        gr_tkIso03AllReJura01In000NM1->Draw("P");
+        lg2_2->Draw();
+
+        c1->SaveAs("results/effrej_tkIso03AllNM1_comparison2_" + det + ".png");
+        c1->SaveAs("results/effrej_tkIso03AllNM1_comparison2_" + det + ".root");
 
 	c1->Clear();
 	c1->Divide(2, 1);
@@ -226,7 +253,5 @@
 
         c1->SaveAs("results/effrej_tkIso03AllShCut_comparison_" + det + ".png");
 
-
 }
-
 
