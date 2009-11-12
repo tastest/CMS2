@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // Package:    NtupleMaker
-// Class:      EventMaker
+// Class:      EventTrigMaker
 // 
-/**\class NtupleMaker NtupleMaker.cc CMS2/NtupleMaker/src/EventMaker.cc
+/**\class NtupleMaker NtupleMaker.cc CMS2/NtupleMaker/src/EventTrigMaker.cc
 
  Description: <one line class summary>
 
@@ -13,11 +13,11 @@
 //
 // Original Author:  pts/4
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: EventMaker.h,v 1.8.4.1 2009/11/12 19:31:19 slava77 Exp $
+// $Id: EventTrigMaker.h,v 1.1.2.1 2009/11/12 19:31:19 slava77 Exp $
 //
 //
-#ifndef NTUPLEMAKER_EVENTMAKER_H
-#define NTUPLEMAKER_EVENTMAKER_H
+#ifndef NTUPLEMAKER_EVENTTRIGMAKER_H
+#define NTUPLEMAKER_EVENTTRIGMAKER_H
 
 // system include files
 #include <memory>
@@ -37,26 +37,28 @@
 // class decleration
 //
 
-class EventMaker : public edm::EDProducer {
+class EventTrigMaker : public edm::EDProducer {
 public:
-     explicit EventMaker (const edm::ParameterSet&);
-      ~EventMaker();
+     explicit EventTrigMaker (const edm::ParameterSet&);
+      ~EventTrigMaker();
 
 private:
      virtual void beginJob(const edm::EventSetup&) ;
      virtual void produce(edm::Event&, const edm::EventSetup&);
      virtual void endJob() ;
 
-   edm::InputTag electronsInputTag;
-   edm::InputTag tracksInputTag;
-   edm::InputTag genParticlesInputTag;
       // ----------member data ---------------------------
   
   
-  double inclusiveCrossSectionValue;
-  double exclusiveCrossSectionValue;
-  double kfactorValue;
-  std::string datasetName_;
+  void fillHLTInfo(const edm::Event&, 
+		   int*, int*,int*, int*,
+		   int*, int*,int*, int*, 
+		   std::vector<TString>&);
+  void fillL1Info(const edm::Event&, int*, 
+		  int*, int*, int*, std::vector<TString>&,
+		  const L1GtTriggerMenu* menu);
+  
+  bool haveTriggerInfo_;
 };
 
 
