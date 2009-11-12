@@ -13,7 +13,7 @@
 //
 // Original Author:  Puneeth Kalavase
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: L1DigiMaker.h,v 1.1 2008/06/20 23:51:19 kalavase Exp $
+// $Id: L1DigiMaker.h,v 1.1.6.1 2009/11/12 19:29:53 slava77 Exp $
 //
 //
 #ifndef NTUPLEMAKER_L1DIGIMAKER_H
@@ -47,7 +47,7 @@ private:
 
   
       // ----------member data ---------------------------
-  
+  std::string l1extraModName_;
 };
 
 
