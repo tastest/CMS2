@@ -46,7 +46,7 @@ private:
      virtual void endJob() ;
 
   // ----------member data ---------------------------
-
+  edm::InputTag sourceHepMCTag_;
 
 };
 

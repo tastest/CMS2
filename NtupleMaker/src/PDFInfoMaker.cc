@@ -44,6 +44,7 @@ using namespace std;
 //
 
 PDFInfoMaker::PDFInfoMaker(const edm::ParameterSet& iConfig) {
+  sourceHepMCTag_ = iConfig.getParameter<edm::InputTag>("sourceHepMCTag");
 
   produces<float> ("pdfinfox1" ).setBranchAlias("pdfinfo_x1" );
   produces<float> ("pdfinfox2" ).setBranchAlias("pdfinfo_x2" );
@@ -75,9 +76,10 @@ void PDFInfoMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
    // get MC particle collection
   edm::Handle<edm::HepMCProduct> hepmcHandle;
 
-  iEvent.getByType( hepmcHandle ); //not getByLabel
+  //  iEvent.getByType( hepmcHandle ); //not getByLabel
   try {
-     iEvent.getByType( hepmcHandle ); //not getByLabel
+    //     iEvent.getByType( hepmcHandle ); //not getByLabel
+    iEvent.getByLabel(sourceHepMCTag_, hepmcHandle);
   }
   catch ( cms::Exception& ex ) {
      edm::LogError("PDFInfoMakerError") << "Error! can't get the gen product";
