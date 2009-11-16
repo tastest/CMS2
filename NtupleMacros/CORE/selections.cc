@@ -19,6 +19,14 @@
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 //----------------------------------------------------------------
+// Simple function that tells you whether or not a track passed 
+// a particular quality flag.
+//----------------------------------------------------------------
+bool isTrackQuality( int index, int cuts ) {
+     return ( ( cms2.trks_qualityMask().at(index) & cuts ) == cuts );
+}
+
+//----------------------------------------------------------------
 // A ridicolusly simple function, but since the Z veto is used 
 // in two places, might as well centralize it to keep consistency
 //----------------------------------------------------------------
