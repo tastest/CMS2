@@ -105,6 +105,7 @@ protected:
         TH1F    *h1_eta_[2];
 	TH1F	*h1_phi_[2];
         TH1F    *h1_wwIsoAll_[2];
+	TH1F	*h1_wwIsoV1All_[2];
 
 	// isolation
 	//

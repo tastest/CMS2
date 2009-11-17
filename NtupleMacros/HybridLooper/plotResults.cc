@@ -27,6 +27,16 @@
 //                (1ll << H_EM30_80)       |
 //                (1ll << H_BC30_80);
 
+
+        const static sources_t theSignal_312 =
+                (1ll << H_WENU);
+        const static sources_t theBackground_312 =
+                (1ll << H_QCD30);
+        const static sources_t theSources_312 =
+                (1ll << H_QCD30) |
+                (1ll << H_WENU);
+
+
         const static sources_t theSources_22X =
                 (1ll << H_QCD30) 	|
                 (1ll << H_QCD80)        |
@@ -40,9 +50,9 @@
                 (1ll << H_QCD80);
 
 	// for 2_2_X
-	const static sources_t &theSignal = theSignal_31X;
-	const static sources_t &theBackground = theBackground_31X;
-	const static sources_t &theSources = theSources_31X;
+	const static sources_t &theSignal = theSignal_312;
+	const static sources_t &theBackground = theBackground_312;
+	const static sources_t &theSources = theSources_312;
 
 TArrow *getArrow(THStack *st, TString det, float cutValEB, float cutValEE)
 {
@@ -422,8 +432,8 @@ void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString sav
 
 void plotAllResultsID()
 {
-	plotResultsID("ee", "isoV0_studies");
-	plotResultsID("eb", "isoV0_studies");
+	plotResultsID("ee", "Results312_eleIdW");
+	plotResultsID("eb", "Results312_eleIdW");
 }
 
 void plotAllResultsW()
@@ -635,7 +645,8 @@ void plotResultsID(TString det, TString fileStamp)
 	// luminosity is already normalised to 1pb-1 in the looper
 	std::vector<DataSource> sources;
         sources.push_back( fH_WENU() );
-	HistogramUtilities h1("Results_" + fileStamp + ".root", sources, 1.0);
+        sources.push_back( fH_QCD30() );
+	HistogramUtilities h1(fileStamp + ".root", sources, 1.0);
 
 	// electron id related
 	//
@@ -678,6 +689,7 @@ void plotResultsID(TString det, TString fileStamp)
 	// the isolation part
 	//
         plotEff(h1, "wwIsoAll", "IDStudy", det, true, 1, true);
+        plotEff(h1, "wwIsoV1All", "IDStudy", det, true, 1, true);
         plotEff(h1, "tkIso03All", "IDStudy", det, true, 1, true);
         plotEff(h1, "ecalIso03All", "IDStudy", det, true, 1, true);
         plotEff(h1, "hcalIso03All", "IDStudy", det, true, 1, true);
@@ -706,7 +718,7 @@ void plotResultsID(TString det, TString fileStamp)
         plotEff(h1, "hcalIso03AllNM1", "IDStudy", det, true, 1, true);
 
 	plotEff(h1, "tkIso03AllReJura01In015NM1", "IDStudy", det, true, 1, true);
-        plotEff(h1, "tkIso03AllReJura01In000NM1", "IDStudy", det, true, 1, true);
+//        plotEff(h1, "tkIso03AllReJura01In000NM1", "IDStudy", det, true, 1, true);
 
         plotEff(h1, "tkIso03AllReJura01In015IDNM1", "IDStudy", det, true, 1, true);
         plotEff(h1, "tkIso03AllReJura01In015ConvNM1", "IDStudy", det, true, 1, true);

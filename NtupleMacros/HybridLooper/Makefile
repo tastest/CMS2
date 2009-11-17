@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.5 2009/11/03 00:54:00 dlevans Exp $
+# $Id: Makefile,v 1.6 2009/11/17 15:14:29 dlevans Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
@@ -25,7 +25,8 @@ LOOPERLIB = libCMS2NtupleMacrosLooper.so
 
 LIBS = $(CORELIB) $(TOOLSLIB) $(LOOPERLIB)
 
-TABLES = Results_pt30_isoV1_tcmet30.tbl Results_pt20_isoV1_tcmet30.tbl
+TABLES = Results312_eleIdW_pt30.tbl Results312_eleIdW_pt20.tbl Results312_eleIdW_pt20_jetVeto.tbl
+#Results_pt30_isoV1_tcmet30.tbl Results_pt20_isoV1_tcmet30.tbl
 #Results_tcmet30.tbl Results_tcmet30_phimax110.tbl 
 
 .PHONY: tables

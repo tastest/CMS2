@@ -86,7 +86,7 @@ void printTable (const Looper **hists, int n, const char *fname,
 
      const char detectorNames[][128] = {"EB", "EE", "ALL"};
 
-     fprintf(f, "WEfficiency Results");
+     fprintf(f, "WEfficiency Results\n\n");
      fprintf(f, "|%30s  |\n", "total");
      for (int i = 0; i < 3; ++i) {
           fprintf(f, "|%10s  ", detectorNames[i]);
@@ -104,7 +104,7 @@ void printTable (const Looper **hists, int n, const char *fname,
      }
 
 
-     fprintf(f, "AN2009-98 Results");
+     fprintf(f, "AN2009-98 Results\n\n");
      fprintf(f, "|%30s  |\n", "total");
      for (int i = 0; i < 3; ++i) {
           fprintf(f, "|%10s  ", detectorNames[i]);
@@ -212,39 +212,39 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
      const Looper *loopers[] = { 
 
 	// V02-00-08
-	&looper_wenu_7TeV,
-	&looper_qcd30_7TeV,
-	&looper_photonjet_7TeV,
+	//&looper_wenu_7TeV,
+	//&looper_qcd30_7TeV,
+	//&looper_photonjet_7TeV,
 
 	// V02-00-12
-	&looper_ww,
-	&looper_wz,
-	&looper_zz,
+	//&looper_ww,
+	//&looper_wz,
+	//&looper_zz,
 	&looper_we,
-	&looper_wm,
-	&looper_wt,
-	&looper_dyee,
-	&looper_dymm,
-	&looper_dytt,
-	&looper_ttbar,
+	//&looper_wm,
+	//&looper_wt,
+	//&looper_dyee,
+	//&looper_dymm,
+	//&looper_dytt,
+	//&looper_ttbar,
 	&looper_qcd30,
-	&looper_mu30,
+	//&looper_mu30,
         &looper_photonjet20_170,
-	&looper_photonjet20_30,
-        &looper_photonjet30_50,
-        &looper_photonjet50_80,
-        &looper_photonjet80_120,
-        &looper_photonjet120_170,
-        &looper_em20_170,
-        &looper_em30_170,
-	&looper_em20_30,
-        &looper_em30_80,
-        &looper_em80_170,
-        &looper_bc20_170,
-        &looper_bc30_170,
-        &looper_bc20_30,
-        &looper_bc30_80,
-        &looper_bc80_170,
+	//&looper_photonjet20_30,
+        //&looper_photonjet30_50,
+        //&looper_photonjet50_80,
+        //&looper_photonjet80_120,
+        //&looper_photonjet120_170,
+        //&looper_em20_170,
+        //&looper_em30_170,
+	//&looper_em20_30,
+        //&looper_em30_80,
+        //&looper_em80_170,
+        //&looper_bc20_170,
+        //&looper_bc30_170,
+        //&looper_bc20_30,
+        //&looper_bc30_80,
+        //&looper_bc80_170,
 
      };
 
@@ -265,6 +265,11 @@ int Results_tcmet30 ()
 //
 // Run all
 //
+
+uint32 all_samples_eleid =
+     (1<<LOOP_WE) |
+     (1<<LOOP_QCD30) |
+     (1<<LOOP_PHOTONJET20_170);
 
 uint32 all_samples_qcdval = 
      (1<<LOOP_WE) |
@@ -296,6 +301,41 @@ uint32 all_samples = (1<<LOOP_WW) |
      (1<<LOOP_BC30_80) |
      (1<<LOOP_BC80_170);
 
+
+int Results312_eleIdW_pt20_jetVeto ()
+{
+     return run<Looper>(
+        // control
+        (CUT_BIT(CONTROL_STUDYW)) |
+        //(CUT_BIT(CONTROL_ELEID)) |
+        // cuts
+        (CUT_BIT(ELE_PT_20)) | (CUT_BIT(ELE_ISO_V1) | CUT_BIT(EVT_TCMET_30) | CUT_BIT(EVT_JPT_PHIMAX_130)),
+        "Results312_eleIdW_pt20_jetVeto", all_samples_eleid);
+}
+
+int Results312_eleIdW_pt20 ()
+{
+     return run<Looper>(
+        // control
+        (CUT_BIT(CONTROL_STUDYW)) |
+        //(CUT_BIT(CONTROL_ELEID)) |
+        // cuts
+        (CUT_BIT(ELE_PT_20)) | (CUT_BIT(ELE_ISO_V1) | CUT_BIT(EVT_TCMET_30)),
+        "Results312_eleIdW_pt20", all_samples_eleid);
+}
+
+int Results312_eleIdW_pt30 ()
+{
+     return run<Looper>(
+        // control
+        (CUT_BIT(CONTROL_STUDYW)) |
+        //(CUT_BIT(CONTROL_ELEID)) |
+        // cuts
+        (CUT_BIT(ELE_PT_30)) | (CUT_BIT(ELE_ISO_V1) | CUT_BIT(EVT_TCMET_30)),
+        "Results312_eleIdW_pt30", all_samples_eleid);
+}
+
+
 int Results312_QCDVal ()
 {
      return run<Looper>(
@@ -323,7 +363,7 @@ int Results_ntupletest ()
 // ... probably should add one that is "do electron id study" or something
 // ... like that)
 //
-
+/*
 int Results_isoV0_studies ()
 {
      return run<Looper>(  (CUT_BIT(ELE_PT_20)) | (CUT_BIT(ELE_ISO_V0) | CUT_BIT(EVT_TCMET_30)),
@@ -420,7 +460,9 @@ int Results_tcmet30_phimax100_conv ()
      return run<Looper>(  (CUT_BIT(ELE_PT_20)) | (CUT_BIT(ELE_ISO_10) | CUT_BIT(EVT_JPT_PHIMAX_100) | CUT_BIT(EVT_TCMET_30) | CUT_BIT(ELE_NOCONV)),
         "Results_iso10_jptphimax100_tcmet30_conv",
 1 << LOOP_WENU_7TeV | 1 << LOOP_QCD30_7TeV | 1 << LOOP_PHOTONJET_7TeV);
-}
 
+
+}
+*/
 
 

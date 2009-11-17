@@ -1,10 +1,11 @@
 
+plot_tkiso_comparison(TString det)
 {
 
 	gROOT->ProcessLine(".L ~/tdrStyle.C");
 	gROOT->ProcessLine("setTDRStyle()");
-	TString det = "ee";
-	TString DET = "EE";
+	TString DET = det;
+	DET = DET.ToUpper();
 
 	gROOT->ProcessLine(".x results/IDStudy_eff_tkIso03All_" + det + ".C");
 	TGraph *gr_tkIso03All = (TGraph*)graph->Clone("gr_tkIso03All");
@@ -33,6 +34,22 @@
         gr_tkIso03AllReJura01In015->SetMarkerStyle(25);
 
 */
+
+	//
+	//
+
+        gROOT->ProcessLine(".x results/IDStudy_eff_wwIsoAll_" + det + ".C");
+        TGraph *gr_wwIsoAll = (TGraph*)graph->Clone("gr_wwIsoAll");
+        gr_wwIsoAll->SetMarkerColor(kBlack);
+        gr_wwIsoAll->SetMarkerStyle(22);
+
+        gROOT->ProcessLine(".x results/IDStudy_eff_wwIsoV1All_" + det + ".C");
+        TGraph *gr_wwIsoV1All = (TGraph*)graph->Clone("gr_wwIsoV1All");
+        gr_wwIsoV1All->SetMarkerColor(kMagenta);
+        gr_wwIsoV1All->SetMarkerStyle(25);
+
+	//
+	//
 
         gROOT->ProcessLine(".x results/IDStudy_eff_tkIso03AllNM1_" + det + ".C");
         TGraph *gr_tkIso03AllNM1 = (TGraph*)graph->Clone("gr_tkIso03AllNM1");
@@ -252,6 +269,23 @@
         lg8->Draw();
 
         c1->SaveAs("results/effrej_tkIso03AllShCut_comparison_" + det + ".png");
+
+	c1->Clear();
+	c1->cd();
+        TLegend *lg9 = new TLegend(0.2, 0.7, 0.75, 0.9);
+        lg9->SetFillColor(kWhite);
+        lg9->SetFillStyle(0);
+        lg9->SetLineColor(kWhite);
+        lg9->SetShadowColor(kWhite);
+        lg9->AddEntry(gr_wwIsoAll, "RelIso (" + DET + ")", "lp");
+        lg9->AddEntry(gr_wwIsoV1All, "RelIso(Jura 0.015, 0.01) (" + DET + ")", "lp"); 
+	gr_wwIsoAll->Draw("AP");
+	gr_wwIsoAll->GetYaxis()->SetRangeUser(0, 0.8);
+	gr_wwIsoAll->GetXaxis()->SetRangeUser(0.9, 1.0);
+	gr_wwIsoV1All->Draw("P");
+	lg9->Draw();
+
+        c1->SaveAs("results/effrej_relIsoComparison_" + det + ".png");
 
 }
 

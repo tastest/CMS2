@@ -133,6 +133,7 @@ void Looper::BookHistos ()
         // Isolation
         //
         FormatHist(h1_wwIsoAll_, "wwIsoAll", 100, 0.0, 1.0);
+	FormatHist(h1_wwIsoV1All_, "wwIsoV1All", 100, 0.0, 1.0);
         FormatHist(h1_tkIso03All_, "tkIso03All", 150, 0.0, 15);
         FormatHist(h1_ecalIso03All_, "ecalIso03All", 150, 0.0, 15);
         FormatHist(h1_hcalIso03All_, "hcalIso03All", 150, 0.0, 15);
@@ -619,7 +620,8 @@ void Looper::wEfficiency()
 	        if (hcalIso > hcalThresholds[det]) return;
 	}
         if (applyIsoV1) {
-		float tkIsoJura01In015 = recomputeTrackIsolation(eleIndex, 0.01, 0.015, 0.3, dummy);
+		//float tkIsoJura01In015 = recomputeTrackIsolation(eleIndex, 0.01, 0.015, 0.3, dummy);
+                float tkIsoJura01In015 = cms2.els_tkJuraIso()[eleIndex];
                 float tkThresholds[2] = {2.5, 2.0};
                 float ecalThresholds[2] = {2.5, 2.0};
                 float hcalThresholds[2] = {1.0, 1.0};
@@ -628,7 +630,8 @@ void Looper::wEfficiency()
                 if (hcalIso > hcalThresholds[det]) return;
         }
         if (applyIsoV2) {
-                float tkIsoJura01In015 = recomputeTrackIsolation(eleIndex, 0.01, 0.015, 0.3, dummy);
+                //float tkIsoJura01In015 = recomputeTrackIsolation(eleIndex, 0.01, 0.015, 0.3, dummy);
+	        float tkIsoJura01In015 = cms2.els_tkJuraIso()[eleIndex];
                 float tkThresholds[2] = {2.5, 2.0};
                 float caloThresholds[2] = {3.0, 2.5};
                 if (tkIsoJura01In015 > tkThresholds[det]) return;
@@ -765,6 +768,7 @@ void Looper::electronId()
 			float tkIso = cms2.els_tkIso()[i];
 			float tkIsoJura01In015 = cms2.els_tkJuraIso()[i];
 			float isoSum = ecalIso + hcalIso + tkIso;
+			float isoSumV1 = ecalIso + hcalIso + tkIsoJura01In015;
 
 			// electron id related
 			//
@@ -779,8 +783,9 @@ void Looper::electronId()
 			float ecalThresholdsNM1[2] = {2.5, 2.0};
 			float hcalThresholdsNM1[2] = {1.0, 1.0};
 			//
-			if (cms2.els_p4()[i].Pt() > 10.0) {
+			if (cms2.els_p4()[i].Pt() > 20.0) {
 				h1_wwIsoAll_[det]->Fill(isoSum / cms2.els_p4()[i].Pt(), weight);
+				h1_wwIsoV1All_[det]->Fill(isoSumV1 / cms2.els_p4()[i].Pt(), weight);
 				h1_ecalIso03All_[det]->Fill(ecalIso, weight);
 				h1_hcalIso03All_[det]->Fill(hcalIso, weight);
 				h1_tkIso03All_[det]->Fill(tkIso, weight);
