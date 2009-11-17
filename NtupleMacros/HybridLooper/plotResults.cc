@@ -458,6 +458,77 @@ void plotAllResultsW()
 
 }
 
+
+void plotAllResultsQCDVal()
+{
+	plotResultsQCDVal("ee", "Results312_pt20_isoV1_tcmet30");
+        plotResultsQCDVal("eb", "Results312_pt20_isoV1_tcmet30");
+}
+
+void plotResultsQCDVal(TString det, TString fileStamp)
+{
+
+        gROOT->ProcessLine(".L ~/tdrStyle.C");
+        gROOT->ProcessLine("setTDRStyle()");
+	gROOT->ForceStyle(1);
+
+        const static sources_t enriched =
+                (1ll << H_EM30_170)   |
+                (1ll << H_BC30_170);
+
+        const static sources_t qcd30 =
+                (1ll << H_QCD30);
+
+        std::vector<DataSource> sources;
+        sources.push_back( fH_QCD30() );
+	sources.push_back( fH_EM30_170() );
+        sources.push_back( fH_BC30_170() );
+        HistogramUtilities h1(fileStamp + ".root", sources, 1.0);
+
+        TCanvas *c1 = new TCanvas();
+        c1->cd();
+        TLegend *lg_all = h1.getLegend(enriched, "ecalIso03All", "", det);
+
+//
+//
+        THStack *st_ecalIso03All = h1.getStack(enriched, "ecalIso03All", "", det, 2);
+        TH1F *h1_qcd30 = h1.getHistogram(qcd30, "ecalIso03All", "", det, 2);
+        lg_all->AddEntry(h1_qcd30, "QCDpt30", "lp");	
+
+	c1->Clear();
+        st_ecalIso03All->Draw("HIST");
+	h1_qcd30->Draw("SAME E1");
+	st_ecalIso03All->SetMaximum(h1_qcd30->GetMaximum()*1.1);
+        lg_all->Draw();
+        Utilities::saveCanvas(c1, "results/QCDVal_ecalIso03All_" + det);
+
+
+//
+//
+        THStack *st_ecalIso03AllNM1 = h1.getStack(enriched, "ecalIso03AllNM1", "", det, 2);
+        TH1F *h1_qcd30NM1 = h1.getHistogram(qcd30, "ecalIso03AllNM1", "", det, 2);
+        c1->Clear();
+        st_ecalIso03AllNM1->Draw("HIST");
+        h1_qcd30NM1->Draw("SAME E1");
+        st_ecalIso03AllNM1->SetMaximum(h1_qcd30NM1->GetMaximum()*1.1);
+        lg_all->Draw();
+        Utilities::saveCanvas(c1, "results/QCDVal_ecalIso03AllNM1_" + det);
+
+
+
+
+
+	delete c1;
+	delete lg_all;
+	delete st_ecalIso03All;
+	delete h1_qcd30;
+
+        delete st_ecalIso03AllNM1;
+        delete h1_qcd30NM1;
+
+}
+
+
 void plotAllResultsAN2009_098()
 {
 //        plotResultsW("ee", "AN2009_098_studies");
@@ -482,7 +553,10 @@ void plotResultsAN2009_098(TString det, TString fileStamp)
 
         // luminorm for 1pb-1
         // luminosity is already normalised to 1pb-1 in the looper
-        HistogramUtilities h1("Results_" + fileStamp + ".root", 1.0);
+
+	std::vector<DataSource> sources;
+	sources.push_back( fH_WENU() );
+        HistogramUtilities h1("Results_" + fileStamp + ".root", sources, 1.0);
 
         plotStack(h1, "AN2009_098_pt2", "Second p_{T} (GeV)", fileStamp, det, 2, 20.0, 20.0);
         plotStack(h1, "AN2009_098_eta1", "Electron #eta", fileStamp, det, 2);
@@ -509,7 +583,9 @@ void plotResultsW(TString det, TString fileStamp)
 
         // luminorm for 1pb-1
         // luminosity is already normalised to 1pb-1 in the looper
-        HistogramUtilities h1("Results_" + fileStamp + ".root", 1.0);
+        std::vector<DataSource> sources;
+        sources.push_back( fH_WENU() );
+        HistogramUtilities h1("Results_" + fileStamp + ".root", sources, 1.0);
 
         // W studies related
         //
@@ -557,7 +633,9 @@ void plotResultsID(TString det, TString fileStamp)
 
 	// luminorm for 1pb-1
 	// luminosity is already normalised to 1pb-1 in the looper
-	HistogramUtilities h1("Results_" + fileStamp + ".root", 1.0);
+	std::vector<DataSource> sources;
+        sources.push_back( fH_WENU() );
+	HistogramUtilities h1("Results_" + fileStamp + ".root", sources, 1.0);
 
 	// electron id related
 	//

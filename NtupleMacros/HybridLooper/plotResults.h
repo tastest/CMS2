@@ -28,6 +28,10 @@ void plotResultsW(TString det, TString fileStamp);
 void plotAllResultsW();
 
 
+void plotAllResultsQCDVal();
+void plotResultsQCDVal(TString det, TString fileStamp);
+
+
 void test();
 
 #endif

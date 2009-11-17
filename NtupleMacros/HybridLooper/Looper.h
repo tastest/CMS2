@@ -128,7 +128,7 @@ protected:
         TH1F    *h1_ecalIso03AllNM1_[2];
         TH1F    *h1_hcalIso03AllNM1_[2];
 	TH1F	*h1_tkIso03AllReJura01In015NM1_[2];
-	TH1F	*h1_tkIso03AllReJura01In000NM1_[2];
+	//TH1F	*h1_tkIso03AllReJura01In000NM1_[2];
         TH1F    *h1_tkIso03AllReJura01In015IDNM1_[2];
         TH1F    *h1_tkIso03AllReJura01In015ConvNM1_[2];
         TH1F    *h1_tkIso03AllReJura01In015ConvIDNM1_[2];

@@ -296,7 +296,7 @@ uint32 all_samples = (1<<LOOP_WW) |
      (1<<LOOP_BC30_80) |
      (1<<LOOP_BC80_170);
 
-int Results312_pt20_isoV1_tcmet30 ()
+int Results312_QCDVal ()
 {
      return run<Looper>(
         // control

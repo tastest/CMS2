@@ -152,7 +152,7 @@ void Looper::BookHistos ()
         FormatHist(h1_ecalIso03AllNM1_, "ecalIso03AllNM1", 150, 0.0, 15);
         FormatHist(h1_hcalIso03AllNM1_, "hcalIso03AllNM1", 150, 0.0, 15);
 	FormatHist(h1_tkIso03AllReJura01In015NM1_, "tkIso03AllReJura01In015NM1", 150, 0.0, 15);
-        FormatHist(h1_tkIso03AllReJura01In000NM1_, "tkIso03AllReJura01In000NM1", 150, 0.0, 15);
+        //FormatHist(h1_tkIso03AllReJura01In000NM1_, "tkIso03AllReJura01In000NM1", 150, 0.0, 15);
         FormatHist(h1_tkIso03AllReJura01In015IDNM1_, "tkIso03AllReJura01In015IDNM1", 150, 0.0, 15);
         FormatHist(h1_tkIso03AllReJura01In015ConvNM1_, "tkIso03AllReJura01In015ConvNM1", 150, 0.0, 15);
         FormatHist(h1_tkIso03AllReJura01In015ConvIDNM1_, "tkIso03AllReJura01In015ConvIDNM1", 150, 0.0, 15);
@@ -763,6 +763,7 @@ void Looper::electronId()
 			float ecalIso = cms2.els_ecalIso()[i];
 			float hcalIso = cms2.els_hcalIso()[i];
 			float tkIso = cms2.els_tkIso()[i];
+			float tkIsoJura01In015 = cms2.els_tkJuraIso()[i];
 			float isoSum = ecalIso + hcalIso + tkIso;
 
 			// electron id related
@@ -774,11 +775,11 @@ void Looper::electronId()
 			// for isolation optimisation
 			//
 			// some candidate thresholds to look at N-1 with
-			float tkThresholdsNM1[2] = {4.5, 6.0};
+			float tkThresholdsNM1[2] = {2.5, 2.0};
 			float ecalThresholdsNM1[2] = {2.5, 2.0};
 			float hcalThresholdsNM1[2] = {1.0, 1.0};
 			//
-			if (cms2.els_p4()[i].Pt() > 20.0) {
+			if (cms2.els_p4()[i].Pt() > 10.0) {
 				h1_wwIsoAll_[det]->Fill(isoSum / cms2.els_p4()[i].Pt(), weight);
 				h1_ecalIso03All_[det]->Fill(ecalIso, weight);
 				h1_hcalIso03All_[det]->Fill(hcalIso, weight);
@@ -793,11 +794,11 @@ void Looper::electronId()
 				// N-1
 				if (ecalIso < ecalThresholdsNM1[det] && hcalIso < hcalThresholdsNM1[det]) {
 					float shCutSum = 0.0;
-                                        float tkIsoJura01In015 = recomputeTrackIsolation(i, 0.01, 0.015, 0.3, shCutSum);
-					float tkIsoJura01In000 = recomputeTrackIsolation(i, 0.01, 0.000, 0.3, shCutSum);
+                                        //float tkIsoJura01In015 = recomputeTrackIsolation(i, 0.01, 0.015, 0.3, shCutSum);
+					//float tkIsoJura01In000 = recomputeTrackIsolation(i, 0.01, 0.000, 0.3, shCutSum);
 					h1_tkIso03AllNM1_[det]->Fill(tkIso, weight);
 					h1_tkIso03AllReJura01In015NM1_[det]->Fill(tkIsoJura01In015, weight);
-                                        h1_tkIso03AllReJura01In000NM1_[det]->Fill(tkIsoJura01In000, weight);
+                                        //h1_tkIso03AllReJura01In000NM1_[det]->Fill(tkIsoJura01In000, weight);
 
 					h1_tkIso03AllReShCutNM1_[det]->Fill(shCutSum, weight);				
 
@@ -821,6 +822,7 @@ void Looper::electronId()
                                                 h1_tkIso03AllReJura01In015ConvIDNM1_[det]->Fill(tkIsoJura01In015, weight);
 					}
 				}
+
                                 if (tkIso < tkThresholdsNM1[det] && hcalIso < hcalThresholdsNM1[det])
 					h1_ecalIso03AllNM1_[det]->Fill(ecalIso, weight);
                                 if (tkIso < tkThresholdsNM1[det] && ecalIso < ecalThresholdsNM1[det])
@@ -914,7 +916,9 @@ void Looper::electronId()
                                 }
 
 
-			}
+			} // end pass isolation selection
+
+
 
 		} // end loop on electrons
 
