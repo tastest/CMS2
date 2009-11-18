@@ -7,13 +7,44 @@
 #include "Tools/HistogramUtilities.h"
 #include "Tools/DataSource.h"
 
-//class HistogramUtilities;
+
+const static sources_t theSources =
+//(1ll << H_QCD30)	|
+//(1ll << H_QCD80)	|
+(1ll << H_ZEEJET_ALP) 	|
+(1ll << H_ZMMJET_ALP)   |
+(1ll << H_ZTTJET_ALP)   |
+(1ll << H_WJET_ALP) |
+(1ll << H_WEJET_ALP) |
+(1ll << H_WMJET_ALP) |
+(1ll << H_WTJET_ALP) |
+(1ll << H_MU15_SINGLE)	|
+(1ll << H_QCDEM)	|
+(1ll << H_QCDBCTOE) |
+(1ll << H_PHOTONJET)	|
+(1ll << H_TTBAR)     
+  ;
+
+const static sources_t bkgSources =
+(1ll << H_MU15_SINGLE)	|
+(1ll << H_QCDEM)	|
+(1ll << H_QCDBCTOE)	|
+(1ll << H_PHOTONJET)	|
+(1ll << H_TTBAR)       ;
+
+const static sources_t sigsSources = 
+(1ll << H_WEJET_ALP) |
+(1ll << H_WMJET_ALP) ;
+//(1ll << H_WTJET_ALP) ; //does tau count as signal or bkg?
+
+const static sources_t sigdSources =
+(1ll << H_ZEEJET_ALP) 	|
+(1ll << H_ZMMJET_ALP)   ;
+//(1ll << H_ZTTJET_ALP)   ;
 
 
 void plotResults();
-
-void plotResultsDilep(TString hyp);
-void plotResultsLep(TString hyp);
+void plotMuResults();
 
 void projectX(TH2F* h, const unsigned int n);
 //void doabcd(TH2F* h, double x1=0., double x2=0., double x3=0., double x4=0., double y1=0., double y2=0., double y3=0., double y4=0.);

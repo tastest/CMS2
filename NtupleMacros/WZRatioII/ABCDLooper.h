@@ -3,6 +3,7 @@
 #ifndef ABCDLOOPER_H
 #define ABCDLOOPER_H
 
+#include "Math/Point3D.h"
 #include "Tools/LooperBase.h"
 #include "Cuts.h"
 #include "CORE/CMS2.h"
@@ -11,10 +12,13 @@
 // Loopers 
 //----------------------------------------------------------------------
 
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
+typedef ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<double>,ROOT::Math::DefaultCoordinateSystemTag> Point;
+
 class ABCDLooper : public LooperBase {
 
 public:
-  ABCDLooper (Sample, cuts_t cuts, const char *logfilename = 0);
+  ABCDLooper (Sample, cuts_t wcuts, const char *logfilename = 0, cuts_t zcuts = 0);
   virtual ~ABCDLooper () { }
 
 protected:
@@ -33,7 +37,12 @@ protected:
   // Weight for WZ analysis is pb
   double Weight() { return cms2.evt_scale1fb() * sample_.kFactor / 1000; }
 
-  // do stuff with histogram
+  
+  double getCorrd0(const Point& myBeamSpot, const LorentzVector &p, const LorentzVector &v) const { 
+	return ( -(v.x() - myBeamSpot.x())*p.y() + (v.y() - myBeamSpot.y())*p.x() ) / p.pt(); 
+  }
+
+
   virtual void NewHist(TH1F*& h, char* name, char* title, int bins, double min, double max);
 
   void FormatHist(TH1* hist);
@@ -49,6 +58,12 @@ public:
   virtual int      	SCandsCount (enum DileptonHypType i) const 			{ return scands_count_[i]; }
   virtual double	SRMS (enum DileptonHypType i) const 				{ return sqrt(scands_passing_w2_[i]); }
 
+  virtual bool isSsignal() const { return isssignal_; } //single lep signal
+  virtual bool isDsignal() const { return isdsignal_; } //single dilep signal
+
+  virtual void setSsignal(bool val) { isssignal_ = val; } //single lep signal
+  virtual void setDsignal(bool val) { isdsignal_ = val; } //single dilep signal
+
 protected:
 
   //W
@@ -56,7 +71,7 @@ protected:
   TH1F *hlep_genpt[3];
   TH1F *hlep_genpt_mch[3];
   TH1F *hlep_pt_f[3];
-  TH1F *hlep_mass[3];
+  TH1F *hlep_tmass[3];
   TH1F *hlep_tcmet[3];
   TH1F *hlep_genmet[3];
   TH1F *hlep_accgenmet[3];
@@ -73,12 +88,31 @@ protected:
   TH1F *hlep_njet30[3];
   TH1F *hlep_conv[3];
   TH1F *hlep_d0[3];
+  TH1F *hlep_d0err[3];
   TH1F *hlep_d0Sig[3];
+  TH1F *hlep_d0Sigtest[3];
+  TH1F *hlep_vtxd0[3];
+  //TH1F *hlep_vtxd0err[3];
+  TH1F *hlep_vtxd0Sig[3];
   //TH2Fs for ABCD
+  TH2F* hlep_d0_d0err[3];  
   TH2F* hlep_d0_trckIso[3]; 
   TH2F* hlep_d0_ecalIso[3]; 
   TH2F* hlep_d0_hcalIso[3]; 
   TH2F* hlep_d0_relIso[3];  
+  TH2F* hlep_d0sig_trckIso[3]; 
+  TH2F* hlep_d0sig_ecalIso[3]; 
+  TH2F* hlep_d0sig_hcalIso[3]; 
+  TH2F* hlep_d0sig_relIso[3];  
+  TH2F* hlep_vtxd0_d0err[3];  
+  TH2F* hlep_vtxd0_trckIso[3]; 
+  TH2F* hlep_vtxd0_ecalIso[3]; 
+  TH2F* hlep_vtxd0_hcalIso[3]; 
+  TH2F* hlep_vtxd0_relIso[3];  
+  TH2F* hlep_vtxd0sig_trckIso[3]; 
+  TH2F* hlep_vtxd0sig_ecalIso[3]; 
+  TH2F* hlep_vtxd0sig_hcalIso[3]; 
+  TH2F* hlep_vtxd0sig_relIso[3];  
   TH2F* hlep_met_trckIso[3];
   TH2F* hlep_met_ecalIso[3];
   TH2F* hlep_met_hcalIso[3];
@@ -102,7 +136,9 @@ protected:
   TH1F *hdilep_clmumet[4];
   TH1F *hdilep_njet20[4];
   TH1F *hdilep_njet30[4];
+  TH1F *hdilep_reliso_lt[4];  
   TH1F *hdilep_reliso_ll[4];  
+  TH1F *hdilep_nopt_reliso_ll[4];  
 
   //Z TH2Fs for supplemental ABCD 
   TH2F* hdilep_ll_pt_eta[4];
@@ -142,48 +178,8 @@ protected:
   TH2F* hdilep_lepmet_rscl_tmastmes_relIso[4];
 
 
-  /*
   //TH1F *hdilep_nhyp;
   //TH1F *hdilep_nlep;
-  TH1F	*h1_lep_Highpt_[3];
-  TH1F	*h1_lep_HighptMet_[3];
-  TH1F	*h1_lep_HighptRelIso_[3];
-  TH1F	*h1_lep_HighptRelIsoPtLg20_[3];
-
-  TH1F	*h1_lep_Lowpt_[3];
-  TH1F	*h1_lep_LowptMet_[3];
-  TH1F	*h1_lep_LowptRelIso_[3];
-  TH1F	*h1_lep_LowptRelIsoPtLg20_[3];
-  TH1F	*h1_lep_LowptNLepGt10Lt20_[3];
-  TH1F	*h1_lep_LowptNLepGt20_[3];
-  TH1F	*h1_lep_LowptNLepGt20tightIDIso0_1_[3];
-  TH1F	*h1_lep_LowptNLepGt20looseIDIso0_1_[3];
-  TH1F	*h1_lep_LowptNLepGt20vlooseIDIso0_1_[3];
-  TH1F	*h1_lep_LowptNLepGt20NOIDIso0_1_[3];
-
-  TH1F* h1_lep_LowpthOverE_[3];
-  TH1F* h1_lep_lowpteOverPIn_[3];
-//            TH1F*      h1_lep_lowpteSeedOverPOut_[3];
-//            TH1F*      h1_lep_lowpteSeedOverPIn_[3];
-  TH1F* h1_lep_lowptfBrem_[3];
-  TH1F* h1_lep_lowptdEtaIn_[3];
-  TH1F* h1_lep_lowptdEtaOut_[3];
-  TH1F* h1_lep_lowptdPhiIn_[3];
-  TH1F* h1_lep_lowptdPhiInPhiOut_[3];
-  TH1F* h1_lep_lowptdPhiOut_[3];
-
-  TH1F* h1_lep_lowptsigmaPhiPhi_[3];
-  TH1F* h1_lep_lowptsigmaIPhiIPhi_[3];
-  TH1F* h1_lep_lowptsigmaEtaEta_[3];
-  TH1F* h1_lep_lowptsigmaIEtaIEta_[3];
-
-  TH1F* h1_lep_lowptegamma_robustLooseId_[3];
-  TH1F* h1_lep_lowptegamma_robustTightId_[3];
-  TH1F* h1_lep_lowptegamma_looseId_[3];
-  TH1F* h1_lep_lowptegamma_tightId_[3];
-  TH1F* h1_lep_lowptegamma_robustHighEnergy_[3];
-  */
-  //int njets;//need to do differently for W,Z anyway
   double transmass;
   int njets_20;
   int njets_30;
@@ -192,7 +188,13 @@ protected:
   int dil_njets_20;
   int dil_njets_30;
 
+  cuts_t wcuts_;
+  cuts_t zcuts_;
+
 protected:
+  bool isssignal_; //single lep signal  
+  bool isdsignal_; //single dilep signal
+
   // count the (weighted and unweighted) number of candidates passing our cuts
   //these are for dilepton (Z)
   double		dcands_passing_[4];

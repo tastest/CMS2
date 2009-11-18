@@ -6,10 +6,9 @@
 #include "Tools/tools.h"
 #include "ABCDLooper.h"
 
-typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 
-ABCDLooper::ABCDLooper (Sample s, cuts_t c, const char *fname) 
-     : LooperBase(s, c, fname)
+ABCDLooper::ABCDLooper (Sample s, cuts_t wcuts, const char *fname, cuts_t zcuts) 
+     : LooperBase(s, wcuts, fname)
 {
   // zero out the candidate counters (don't comment this out)
   memset(dcands_passing_	    , 0, sizeof(dcands_passing_       ));
@@ -30,6 +29,11 @@ ABCDLooper::ABCDLooper (Sample s, cuts_t c, const char *fname)
   muidxs[0] = -1;
   muidxs[1] = -1;
 
+  isssignal_ = false; //default is bkg for both
+  isdsignal_ = false;
+
+  wcuts_ = wcuts; //in this looper, these aren't used. prep for RLooper
+  zcuts_ = zcuts; 
 }
 
 
@@ -46,30 +50,39 @@ void ABCDLooper::BookHistos ()
 {
   double metmax = 80.;
   int metbins = 80;
+  double d0max = 0.05;
+  double d0sigmax = 10.;
 
   // single lepton histograms (two + 1 types)
   for (unsigned int i = 0; i < 3; ++i) {
 	std::string hyp = "e";
 	if (i == 1) hyp = "m";
 	else if (i == 2) hyp = "all";
-	double d0max = 0.1;
         
 	NewHist( hlep_pt[i], Form("%s_%s_%s", SampleName().c_str(), "lep_pt", hyp.c_str()), "lep_pt", 100, 0.0, 100.0);
 	NewHist( hlep_genpt[i], Form("%s_%s_%s", SampleName().c_str(), "lep_genpt", hyp.c_str()), "lep_genpt", 100, 0.0, 100.0);
 	NewHist( hlep_genpt_mch[i], Form("%s_%s_%s", SampleName().c_str(), "lep_genpt_mch", hyp.c_str()), "lep_genpt_mch", 100, 0.0, 100.0);
 	NewHist( hlep_pt_f[i], Form("%s_%s_%s", SampleName().c_str(), "lep_pt_f", hyp.c_str()), "lep_pt_f", 100, 0.0, 100.0);
-	NewHist( hlep_mass[i], Form("%s_%s_%s", SampleName().c_str(), "lep_transmass", hyp.c_str()), "lep_transmass", 200, 0.0, 200.0);
-	NewHist( hlep_tcmet[i], Form("%s_%s_%s", SampleName().c_str(), "lep_tcmet", hyp.c_str()), "lep_tcmet", 100, 0.0, 100.0);
-	NewHist( hlep_genmet[i], Form("%s_%s_%s", SampleName().c_str(), "lep_genmet", hyp.c_str()), "lep_genmet", 100, 0.0, 100.0);
-	NewHist( hlep_accgenmet[i], Form("%s_%s_%s", SampleName().c_str(), "lep_accgenmet", hyp.c_str()), "lep_accgenmet", 100, 0.0, 100.0);
-	NewHist( hlep_clmumet[i], Form("%s_%s_%s", SampleName().c_str(), "lep_calomet_muon", hyp.c_str()), "lep_calomet_muon", 100, 0.0, 100.0);
+	NewHist( hlep_tmass[i], Form("%s_%s_%s", SampleName().c_str(), "lep_transmass", hyp.c_str()), "lep_transmass", 200, 0.0, 200.0);
+
+	NewHist( hlep_tcmet[i], Form("%s_%s_%s", SampleName().c_str(), "lep_tcmet", hyp.c_str()), "lep_tcmet", metbins, 0.0, metmax);
+	NewHist( hlep_genmet[i], Form("%s_%s_%s", SampleName().c_str(), "lep_genmet", hyp.c_str()), "lep_genmet", metbins, 0.0, metmax);
+	NewHist( hlep_accgenmet[i], Form("%s_%s_%s", SampleName().c_str(), "lep_accgenmet", hyp.c_str()), "lep_accgenmet", metbins, 0.0, metmax);
+	NewHist( hlep_clmumet[i], Form("%s_%s_%s", SampleName().c_str(), "lep_calomet_muon", hyp.c_str()), "lep_calomet_muon", metbins, 0.0, metmax);
 	NewHist( hlep_met_dphi[i], Form("%s_%s_%s", SampleName().c_str(), "lep_met_dphi", hyp.c_str()), "lep_met_dphi", 100, 0, 2 * 3.14159);
+
 	NewHist( hlep_trckIso[i], Form("%s_%s_%s", SampleName().c_str(), "lep_trckIso", hyp.c_str()), "lep_trckIso", 100, 0.0, 10.0);
 	NewHist( hlep_ecalIso[i], Form("%s_%s_%s", SampleName().c_str(), "lep_ecalIso", hyp.c_str()), "lep_ecalIso", 100, 0.0, 10.0);
 	NewHist( hlep_hcalIso[i], Form("%s_%s_%s", SampleName().c_str(), "lep_hcalIso", hyp.c_str()), "lep_hcalIso", 100, 0.0, 10.0);
 	NewHist( hlep_relIso[i], Form("%s_%s_%s", SampleName().c_str(), "lep_relIso", hyp.c_str()), "lep_relIso", 100, 0.0, 1.0);
+
 	NewHist( hlep_d0[i], Form("%s_%s_%s", SampleName().c_str(), "lep_d0", hyp.c_str()), "lep_d0", 100, 0.0, d0max);
-	NewHist( hlep_d0Sig[i], Form("%s_%s_%s", SampleName().c_str(), "lep_d0Sig", hyp.c_str()), "lep_d0Sig", 100, 0.0, 100*d0max);
+	NewHist( hlep_d0err[i], Form("%s_%s_%s", SampleName().c_str(), "lep_d0err", hyp.c_str()), "lep_d0err", 100, 0.0, d0max);
+	NewHist( hlep_d0Sig[i], Form("%s_%s_%s", SampleName().c_str(), "lep_d0Sig", hyp.c_str()), "lep_d0Sig", 100, 0.0, d0sigmax);
+	NewHist( hlep_d0Sigtest[i], Form("%s_%s_%s", SampleName().c_str(), "lep_d0Sigtest", hyp.c_str()), "lep_d0Sigtest", 100, 0.0, d0sigmax);
+	NewHist( hlep_vtxd0[i], Form("%s_%s_%s", SampleName().c_str(), "lep_vtxd0", hyp.c_str()), "lep_vtxd0", 100, -d0max, d0max);
+	//NewHist( hlep_vtxd0err[i], Form("%s_%s_%s", SampleName().c_str(), "lep_vtxd0err", hyp.c_str()), "lep_vtxd0err", 100, 0.0, d0max); //use same error
+	NewHist( hlep_vtxd0Sig[i], Form("%s_%s_%s", SampleName().c_str(), "lep_vtxd0Sig", hyp.c_str()), "lep_vtxd0Sig", 100, -d0sigmax, d0sigmax);
 
 	//for nlep, fill before cutting on it--same for W,Z
 	NewHist( hlep_nlep_nod0iso[i], Form("%s_%s_%s", SampleName().c_str(), "lep_nlep_nod0iso", hyp.c_str()), "lep_nlep_nod0iso", 10, -0.5, 9.5);
@@ -80,10 +93,26 @@ void ABCDLooper::BookHistos ()
 	NewHist( hlep_conv[i], Form("%s_%s_%s", SampleName().c_str(), "lep_conversions", hyp.c_str()), "lep_conversions", 2, -0.5, 1.5);
 
 	//TH2F's for ABCD
+	hlep_d0_d0err[i]   = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_d0_d0err", hyp.c_str()), "lep_d0_d0err", 100, 0.0, d0max, 100, 0.0, d0max);
+
 	hlep_d0_trckIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_d0_trckIso", hyp.c_str()), "lep_d0_trckIso", 100, 0.0, d0max, 100, 0.0, 10.0);
 	hlep_d0_ecalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_d0_ecalIso", hyp.c_str()), "lep_d0_ecalIso", 100, 0.0, d0max, 100, 0.0, 10.0);
 	hlep_d0_hcalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_d0_hcalIso", hyp.c_str()), "lep_d0_hcalIso", 100, 0.0, d0max, 100, 0.0, 10.0);
 	hlep_d0_relIso[i]  = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_d0_relIso",  hyp.c_str()), "lep_d0_relIso", 100, 0.0, d0max, 100, 0.0, 1.0);
+	hlep_d0sig_trckIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_d0sig_trckIso", hyp.c_str()), "lep_d0sig_trckIso", 100, 0.0, d0sigmax, 100, 0.0, 10.0);
+	hlep_d0sig_ecalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_d0sig_ecalIso", hyp.c_str()), "lep_d0sig_ecalIso", 100, 0.0, d0sigmax, 100, 0.0, 10.0);
+	hlep_d0sig_hcalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_d0sig_hcalIso", hyp.c_str()), "lep_d0sig_hcalIso", 100, 0.0, d0sigmax, 100, 0.0, 10.0);
+	hlep_d0sig_relIso[i]  = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_d0sig_relIso",  hyp.c_str()), "lep_d0sig_relIso",  100, 0.0, d0sigmax, 100, 0.0, 1.0);
+	//d0 wrt vertex
+	hlep_vtxd0_trckIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_vtxd0_trckIso", hyp.c_str()), "lep_vtxd0_trckIso", 100, 0.0, d0max, 100, 0.0, 10.0);
+	hlep_vtxd0_ecalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_vtxd0_ecalIso", hyp.c_str()), "lep_vtxd0_ecalIso", 100, 0.0, d0max, 100, 0.0, 10.0);
+	hlep_vtxd0_hcalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_vtxd0_hcalIso", hyp.c_str()), "lep_vtxd0_hcalIso", 100, 0.0, d0max, 100, 0.0, 10.0);
+	hlep_vtxd0_relIso[i]  = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_vtxd0_relIso",  hyp.c_str()), "lep_vtxd0_relIso", 100, -d0max, d0max, 100, 0.0, 1.0);
+	hlep_vtxd0sig_trckIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_vtxd0sig_trckIso", hyp.c_str()), "lep_vtxd0sig_trckIso", 100, 0.0, d0sigmax, 100, 0.0, 10.0);
+	hlep_vtxd0sig_ecalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_vtxd0sig_ecalIso", hyp.c_str()), "lep_vtxd0sig_ecalIso", 100, 0.0, d0sigmax, 100, 0.0, 10.0);
+	hlep_vtxd0sig_hcalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_vtxd0sig_hcalIso", hyp.c_str()), "lep_vtxd0sig_hcalIso", 100, 0.0, d0sigmax, 100, 0.0, 10.0);
+	hlep_vtxd0sig_relIso[i]  = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_vtxd0sig_relIso",  hyp.c_str()), "lep_vtxd0sig_relIso",  100, 0.0, d0sigmax, 100, 0.0, 1.0);
+
 	hlep_met_trckIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_tcMet_trckIso", hyp.c_str()), "lep_tcMet_trckIso", metbins, 0.0, metmax, 100, 0.0, 10.0);
 	hlep_met_ecalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_tcMet_ecalIso", hyp.c_str()), "lep_tcMet_ecalIso", metbins, 0.0, metmax, 100, 0.0, 10.0);
 	hlep_met_hcalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "lep_tcMet_hcalIso", hyp.c_str()), "lep_tcMet_hcalIso", metbins, 0.0, metmax, 100, 0.0, 10.0);
@@ -103,14 +132,18 @@ void ABCDLooper::BookHistos ()
 	NewHist( hdilep_1_genpt_mch[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_1_genpt_mch", dilepton_hypo_names[i]), "dilep_1_genpt_mch", 100, 0.0, 100.0);
 	NewHist( hdilep_pt[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_pt", dilepton_hypo_names[i]), "dilep_pt", 100, 0.0, 100.0);
 	NewHist( hdilep_pt_mgen[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_pt_mgen", dilepton_hypo_names[i]), "dilep_pt_mgen", 200, -1.0, 1.0);
+
 	NewHist( hdilep_mass[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_mass", dilepton_hypo_names[i]), "dilep_mass", 200, 0.0, 200.0);
 	NewHist( hdilep_mass_ll20[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_mass_ll20", dilepton_hypo_names[i]), "dilep_mass_ll20", 200, 0.0, 200.0);
 	NewHist( hdilep_tmass[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_tmass", dilepton_hypo_names[i]), "dilep_tmass", 200, 0.0, 200.0);
 	NewHist( hdilep_tcmet[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_tcmet", dilepton_hypo_names[i]), "dilep_tcmet", 100, 0.0, 100.0);
 	NewHist( hdilep_clmumet[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_calomet_muon", dilepton_hypo_names[i]), "dilep_calomet_muon", 100, 0.0, 100.0);
+
 	NewHist( hdilep_njet20[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_njet20", dilepton_hypo_names[i]), "dilep_njet20", 10, -0.5, 9.5);
 	NewHist( hdilep_njet30[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_njet30", dilepton_hypo_names[i]), "dilep_njet30", 10, -0.5, 9.5);
+	NewHist( hdilep_reliso_lt[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_reliso_lt", dilepton_hypo_names[i]), "dilep_reliso_lt", 100, 0., 1.);
 	NewHist( hdilep_reliso_ll[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_reliso_ll", dilepton_hypo_names[i]), "dilep_reliso_ll", 100, 0., 1.);
+	NewHist( hdilep_nopt_reliso_ll[i], Form("%s_%s_%s", SampleName().c_str(), "dilep_nopt_reliso_ll", dilepton_hypo_names[i]), "dilep_nopt_reliso_ll", 100, 0., 1.); //abcd
 
 	//Z TH2F's for supp ABCD
 	hdilep_ll_pt_eta[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_ll_pt_eta", dilepton_hypo_names[i]), "dilep_ll_pt_eta", metbins, 0.0, metmax, 48, -2.4, 2.4);
@@ -121,20 +154,20 @@ void ABCDLooper::BookHistos ()
 	//hdilep_d0_ecalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_d0_ecalIso", dilepton_hypo_names[i]), "dilep_d0_ecalIso", 100, 0.0, d0max, 100, 0.0, 10.0);
 	//hdilep_d0_hcalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_d0_hcalIso", dilepton_hypo_names[i]), "dilep_d0_hcalIso", 100, 0.0, d0max, 100, 0.0, 10.0);
 	//hdilep_d0_relIso[i]  = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_d0_relIso",  dilepton_hypo_names[i]), "dilep_d0_relIso", 100, 0.0, d0max, 100, 0.0, 1.0);
-	hdilep_lpt_trckIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepPt_trckIso", dilepton_hypo_names[i]), "dilep_lepPt_trckIso", metbins, 0.0, metmax, 100, 0.0, 10.0);
-	hdilep_lpt_ecalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepPt_ecalIso", dilepton_hypo_names[i]), "dilep_lepPt_ecalIso", metbins, 0.0, metmax, 100, 0.0, 10.0);
-	hdilep_lpt_hcalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepPt_hcalIso", dilepton_hypo_names[i]), "dilep_lepPt_hcalIso", metbins, 0.0, metmax, 100, 0.0, 10.0);
-	hdilep_lpt_relIso[i]  = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepPt_relIso",  dilepton_hypo_names[i]), "dilep_lepPt_relIso",  metbins, 0.0, metmax, 100, 0.0, 1.0);
-	//x-axis is met+lepPt
-	hdilep_lepmet_trckIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepMet_trckIso", dilepton_hypo_names[i]), "dilep_lepMet_trckIso", metbins, 0.0, metmax, 100, 0.0, 10.0);
-	hdilep_lepmet_ecalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepMet_ecalIso", dilepton_hypo_names[i]), "dilep_lepMet_ecalIso", metbins, 0.0, metmax, 100, 0.0, 10.0);
-	hdilep_lepmet_hcalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepMet_hcalIso", dilepton_hypo_names[i]), "dilep_lepMet_hcalIso", metbins, 0.0, metmax, 100, 0.0, 10.0);
-	hdilep_lepmet_relIso[i]  = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepMet_relIso",  dilepton_hypo_names[i]), "dilep_lepMet_relIso",  metbins, 0.0, metmax, 100, 0.0, 1.0);
-	//same as above, only scale the pt by mw/mz
-	hdilep_lpt_scl_trckIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepPt_Scl_trckIso", dilepton_hypo_names[i]), "dilep_lepPt_Scl_trckIso", metbins, 0.0, metmax, 100, 0.0, 10.0);
-	hdilep_lpt_scl_ecalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepPt_Scl_ecalIso", dilepton_hypo_names[i]), "dilep_lepPt_Scl_ecalIso", metbins, 0.0, metmax, 100, 0.0, 10.0);
-	hdilep_lpt_scl_hcalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepPt_Scl_hcalIso", dilepton_hypo_names[i]), "dilep_lepPt_Scl_hcalIso", metbins, 0.0, metmax, 100, 0.0, 10.0);
-	hdilep_lpt_scl_relIso[i]  = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepPt_Scl_relIso",  dilepton_hypo_names[i]), "dilep_lepPt_Scl_relIso",  metbins, 0.0, metmax, 100, 0.0, 1.0);
+	//hdilep_lpt_trckIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepPt_trckIso", dilepton_hypo_names[i]), "dilep_lepPt_trckIso", metbins, 0.0, metmax, 100, 0.0, 10.0);
+	//hdilep_lpt_ecalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepPt_ecalIso", dilepton_hypo_names[i]), "dilep_lepPt_ecalIso", metbins, 0.0, metmax, 100, 0.0, 10.0);
+	//hdilep_lpt_hcalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepPt_hcalIso", dilepton_hypo_names[i]), "dilep_lepPt_hcalIso", metbins, 0.0, metmax, 100, 0.0, 10.0);
+	//hdilep_lpt_relIso[i]  = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepPt_relIso",  dilepton_hypo_names[i]), "dilep_lepPt_relIso",  metbins, 0.0, metmax, 100, 0.0, 1.0);
+	////x-axis is met+lepPt
+	//hdilep_lepmet_trckIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepMet_trckIso", dilepton_hypo_names[i]), "dilep_lepMet_trckIso", metbins, 0.0, metmax, 100, 0.0, 10.0);
+	//hdilep_lepmet_ecalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepMet_ecalIso", dilepton_hypo_names[i]), "dilep_lepMet_ecalIso", metbins, 0.0, metmax, 100, 0.0, 10.0);
+	//hdilep_lepmet_hcalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepMet_hcalIso", dilepton_hypo_names[i]), "dilep_lepMet_hcalIso", metbins, 0.0, metmax, 100, 0.0, 10.0);
+	//hdilep_lepmet_relIso[i]  = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepMet_relIso",  dilepton_hypo_names[i]), "dilep_lepMet_relIso",  metbins, 0.0, metmax, 100, 0.0, 1.0);
+	////same as above, only scale the pt by mw/mz
+	//hdilep_lpt_scl_trckIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepPt_Scl_trckIso", dilepton_hypo_names[i]), "dilep_lepPt_Scl_trckIso", metbins, 0.0, metmax, 100, 0.0, 10.0);
+	//hdilep_lpt_scl_ecalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepPt_Scl_ecalIso", dilepton_hypo_names[i]), "dilep_lepPt_Scl_ecalIso", metbins, 0.0, metmax, 100, 0.0, 10.0);
+	//hdilep_lpt_scl_hcalIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepPt_Scl_hcalIso", dilepton_hypo_names[i]), "dilep_lepPt_Scl_hcalIso", metbins, 0.0, metmax, 100, 0.0, 10.0);
+	//hdilep_lpt_scl_relIso[i]  = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepPt_Scl_relIso",  dilepton_hypo_names[i]), "dilep_lepPt_Scl_relIso",  metbins, 0.0, metmax, 100, 0.0, 1.0);
 	//hdilep_lpt_rscl_relIso[i]  = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepPt_rScl_relIso",  dilepton_hypo_names[i]), "dilep_lepPt_rScl_relIso",  metbins, 0.0, metmax, 100, 0.0, 1.0);
 	//x-axis is met+lepPt
 	hdilep_lepmet_scl_trckIso[i] = new TH2F( Form("%s_%s_%s", SampleName().c_str(), "dilep_lepMet_Scl_trckIso", dilepton_hypo_names[i]), "dilep_lepMet_Scl_trckIso", metbins, 0.0, metmax, 100, 0.0, 10.0);
@@ -233,12 +266,15 @@ cuts_t ABCDLooper::LepSelect(int lep_type, int i)
 {
   cuts_t ret = 0;
   float ptcut = 20.0;
+  double vtx_d0 = -1.;
   LorentzVector lep_p4;
     
   // e
   if( lep_type == 0 ) {
 
 	lep_p4 = cms2.els_p4()[i];
+	//will hve to figure out which vtx this is--cut on delta z0
+ 	vtx_d0 = getCorrd0( cms2.vtxs_position()[0], cms2.els_p4()[i], cms2.els_vertex_p4()[i]);
 
 	if( cms2.els_p4()[i].pt() >= ptcut )
 	  ret |= CUT_BIT(LEP_PT);
@@ -268,6 +304,8 @@ cuts_t ABCDLooper::LepSelect(int lep_type, int i)
   else if( lep_type == 1 ) {
 
 	lep_p4 = cms2.mus_p4()[i];
+	//will hve to figure out which vtx this is--cut on delta z0
+ 	vtx_d0 = getCorrd0( cms2.vtxs_position()[0], cms2.mus_p4()[i], cms2.mus_vertex_p4()[i]);
 
 	if( cms2.mus_p4()[i].pt() >= ptcut )
 	  ret |= CUT_BIT(LEP_PT);
@@ -327,10 +365,6 @@ cuts_t ABCDLooper::LepSelect(int lep_type, int i)
 	  njets_30++;
     //calo_jets.push_back(cms2.jets_p4()[jj]);
   }
-  //if (calo_jets.size() > 1) {
-  //sort(calo_jets.begin(), calo_jets.end(),  comparePt);
-  //}
-  //return calo_jets;
 
   if( njets_20 == 0 )
 	ret |= CUT_BIT(JET_VETO_20); //if njets_20 > 0, this cut fails
@@ -377,29 +411,34 @@ void ABCDLooper::FillEventHistos ()
   // need to determine if this is a di-lepton
   // or a single lepton event
   int nels = 0, nmus = 0;
+  int nels_notmass = 0, nmus_notmass = 0;
   int nels_nopt = 0, nmus_nopt = 0;
   int nels_noiso = 0, nmus_noiso = 0;
   int nels_nod0iso = 0, nmus_nod0iso = 0;
   int nels_noptiso = 0, nmus_noptiso = 0;
-  //int nels_nojets20 = 0, nmus_nojets20 = 0;
   int njetels_20 = 0, njetmus_20 = 0;
+  int njetels_30 = 0, njetmus_30 = 0;
+  //int nels_nojets20 = 0, nmus_nojets20 = 0;
   //int nels_nojets30 = 0, nmus_nojets30 = 0; //just count 20 for now
+  double els_tmass = 0., mus_tmass = 0.; //store tmass for after lepton loops
   elidxs[0] = elidxs[1] = -1;
   muidxs[0] = muidxs[1] = -1;
   int elidxs_nopt[] = {-1, -1}; 
   int muidxs_nopt[] = {-1, -1};
   int elidxs_noiso[] = {-1, -1};
   int muidxs_noiso[] = {-1, -1};
-  //int elidxs_nod0iso[] = {-1, -1};
-  //int muidxs_nod0iso[] = {-1, -1};
+  int elidxs_nod0iso[] = {-1, -1};
+  int muidxs_nod0iso[] = {-1, -1};
   int elidxs_noptiso[] = {-1, -1};
   int muidxs_noptiso[] = {-1, -1};
   cuts_t pass_lep_cut = 0; //cuts of lepton which passes lepcuts--only good for single lepton
   cuts_t pass_nlep_cuts = 0; //cuts of all leptons which pass lepcuts: & of individual
-  int pass_elcuts_noptiso[] = {0, 0}; //fill based on baselepcuts_noptiso for aviBCD
-  int pass_mucuts_noptiso[] = {0, 0};
-  int pass_elcuts_noiso[] = {0, 0}; //fill based on baselepcuts_noiso w abcd
-  int pass_mucuts_noiso[] = {0, 0};
+  cuts_t pass_elcuts_noptiso[] = {0, 0}; //fill based on baselepcuts_noptiso for aviBCD
+  cuts_t pass_mucuts_noptiso[] = {0, 0};
+  cuts_t pass_elcuts_nod0iso[] = {0, 0}; //fill based on baselepcuts_noptiso for aviBCD
+  cuts_t pass_mucuts_nod0iso[] = {0, 0};
+  cuts_t pass_elcuts_noiso[] = {0, 0}; //fill based on baselepcuts_noiso w abcd
+  cuts_t pass_mucuts_noiso[] = {0, 0};
   //DEFINE CUTS
   //put a jet veto on everything
   // need to count leps before jets: if this cut gives 1 lep, use its cut bit already set in LepSelect for jet reqmnt. If 2 leps, don't fill W abcd
@@ -413,7 +452,7 @@ void ABCDLooper::FillEventHistos ()
   cuts_t w_cuts_nod0    = ( w_evt_sel | CUT_BIT(LEP_PT) | CUT_BIT(LEP_ISO) | CUT_BIT(LEP_GOOD_NOD0) );
   cuts_t w_cuts_noiso   = ( w_evt_sel | CUT_BIT(LEP_PT) | CUT_BIT(LEP_GOOD) );
   cuts_t w_cuts_nod0iso = ( w_evt_sel | CUT_BIT(LEP_PT) | CUT_BIT(LEP_GOOD_NOD0) );
-  cuts_t w_cuts_notm    = ( CUT_BIT(LEP_PT) | CUT_BIT(LEP_ISO) | CUT_BIT(LEP_GOOD) | CUT_BIT(TCMET) | CUT_BIT(JET_VETO_20) );
+  cuts_t w_cuts_notmass = ( CUT_BIT(LEP_PT) | CUT_BIT(LEP_ISO) | CUT_BIT(LEP_GOOD) | CUT_BIT(TCMET) | CUT_BIT(JET_VETO_20) );
   cuts_t w_cuts_nomet   = ( CUT_BIT(LEP_PT) | CUT_BIT(LEP_ISO) | CUT_BIT(LEP_GOOD) | CUT_BIT(TMASS) | CUT_BIT(JET_VETO_20) );
   cuts_t w_cuts_nojet20 = ( CUT_BIT(LEP_PT) | CUT_BIT(LEP_ISO) | CUT_BIT(LEP_GOOD) | CUT_BIT(TCMET) | CUT_BIT(TMASS) ); 
 
@@ -442,6 +481,7 @@ void ABCDLooper::FillEventHistos ()
 	  nels++;
 	  pass_lep_cut = elcut;
 	  njetels_20 = njets_20; //njets_20 is set in LepSelect
+	  njetels_30 = njets_30;
 	  if( elidxs[0] == -1 ) {
 		elidxs[0] = i;
 		pass_nlep_cuts = pass_lep_cut;
@@ -481,44 +521,23 @@ void ABCDLooper::FillEventHistos ()
 		pass_elcuts_noptiso[1] = elcut;
 	  }
 	}
-	if( (elcut & w_cuts_noiso) == w_cuts_noiso ) {
-	  hlep_trckIso[0]->Fill( cms2.els_tkIso()[i], weight );
-	  hlep_trckIso[2]->Fill( cms2.els_tkIso()[i], weight );
-	  hlep_ecalIso[0]->Fill( cms2.els_pat_ecalIso()[i], weight );
-	  hlep_ecalIso[2]->Fill( cms2.els_pat_ecalIso()[i], weight );
-	  hlep_hcalIso[0]->Fill( cms2.els_pat_hcalIso()[i], weight );
-	  hlep_hcalIso[2]->Fill( cms2.els_pat_hcalIso()[i], weight );
-	  hlep_relIso[0]->Fill( inv_el_relsusy_iso(i, true), weight );
-	  hlep_relIso[2]->Fill( inv_el_relsusy_iso(i, true), weight );
-	}
-	if( (elcut & w_cuts_nod0) == w_cuts_nod0 ) {
-	  hlep_d0[0]->Fill( fabs(cms2.els_d0corr()[i]), weight );
-	  hlep_d0[2]->Fill( fabs(cms2.els_d0corr()[i]), weight );
-	  hlep_d0Sig[0]->Fill( fabs(cms2.els_d0corr()[i]/cms2.els_d0Err()[i]), weight );
-	  hlep_d0Sig[2]->Fill( fabs(cms2.els_d0corr()[i]/cms2.els_d0Err()[i]), weight );
-	}
-	//for mass plots, check all but mass
-	if( (elcut & w_cuts_notm) == w_cuts_notm ) {
-	  hlep_mass[0]->Fill( transmass, weight ); //check all cuts but mass for mass plot (n-1)
-	  hlep_mass[2]->Fill( transmass, weight );
-	}
-	//ABCD in d0, Iso
-	if( (elcut & baselepcuts_nod0iso) == baselepcuts_nod0iso ) {
+	if( (elcut & baselepcuts_nod0iso) == baselepcuts_nod0iso ) { //ABCD in d0, Iso
 	  nels_nod0iso++;
-	  hlep_d0_trckIso[0]->Fill( fabs(cms2.els_d0corr()[i]), cms2.els_tkIso()[i], weight );
-	  hlep_d0_trckIso[2]->Fill( fabs(cms2.els_d0corr()[i]), cms2.els_tkIso()[i], weight );
-	  hlep_d0_ecalIso[0]->Fill( fabs(cms2.els_d0corr()[i]), cms2.els_pat_ecalIso()[i], weight );
-	  hlep_d0_ecalIso[2]->Fill( fabs(cms2.els_d0corr()[i]), cms2.els_pat_ecalIso()[i], weight );
-	  hlep_d0_hcalIso[0]->Fill( fabs(cms2.els_d0corr()[i]), cms2.els_pat_hcalIso()[i], weight );
-	  hlep_d0_hcalIso[2]->Fill( fabs(cms2.els_d0corr()[i]), cms2.els_pat_hcalIso()[i], weight );
-	  hlep_d0_relIso[0] ->Fill( fabs(cms2.els_d0corr()[i]), inv_el_relsusy_iso(i, true), weight );
-	  hlep_d0_relIso[2] ->Fill( fabs(cms2.els_d0corr()[i]), inv_el_relsusy_iso(i, true), weight );
+	  if( elidxs_nod0iso[0] == -1 ) {
+		elidxs_nod0iso[0] = i;
+		pass_elcuts_nod0iso[0] = elcut;
+	  }
+	  else if( elidxs_nod0iso[1] == -1 ) {
+		elidxs_nod0iso[1] = i;
+		pass_elcuts_nod0iso[1] = elcut;
+	  }
 	}
-	//if( (elcut & w_cuts_nojet20) == w_cuts_nojets20 ) {
-	//  nels_nojets20++;
-	//  njetels_20 = njets_20;
-	//}
+	if( (elcut & w_cuts_notmass) == w_cuts_notmass ) { //for mass plots, check all but mass
+	  nels_notmass++;
+	  els_tmass = transmass;
+	}
   }
+
 
   //select mus
   for( unsigned int i=0; i<cms2.mus_p4().size(); i++ ) {
@@ -529,6 +548,7 @@ void ABCDLooper::FillEventHistos ()
 	  nmus++;
 	  pass_lep_cut = mucut;
 	  njetmus_20 = njets_20;
+	  njetmus_30 = njets_30;
 	  if( muidxs[0] == -1 ) {
 		muidxs[0] = i;
 		pass_nlep_cuts = pass_lep_cut;
@@ -567,45 +587,31 @@ void ABCDLooper::FillEventHistos ()
 		pass_mucuts_noptiso[1] = mucut;
 	  }
 	}
-	if( (mucut & w_cuts_noiso) == w_cuts_noiso ) {
-	  hlep_trckIso[1]->Fill( cms2.mus_iso03_sumPt()[i], weight);
-	  hlep_trckIso[2]->Fill( cms2.mus_iso03_sumPt()[i], weight);
-	  hlep_ecalIso[1]->Fill( cms2.mus_iso03_emEt()[i], weight );
-	  hlep_ecalIso[2]->Fill( cms2.mus_iso03_emEt()[i], weight );
-	  hlep_hcalIso[1]->Fill( cms2.mus_iso03_hadEt()[i], weight );
-	  hlep_hcalIso[2]->Fill( cms2.mus_iso03_hadEt()[i], weight );
-	  hlep_relIso[1]->Fill( inv_mu_relsusy_iso(i), weight );
-	  hlep_relIso[2]->Fill( inv_mu_relsusy_iso(i), weight );
+	if( (mucut & w_cuts_notmass) == w_cuts_notmass ) { //for mass plots, check all but mass
+	  nmus_notmass++;
+	  mus_tmass = transmass;
 	}
-	if( (mucut & w_cuts_nod0) == w_cuts_nod0 ) {
-	  hlep_d0[1]->Fill( fabs(cms2.mus_d0corr()[i]), weight );
-	  hlep_d0[2]->Fill( fabs(cms2.mus_d0corr()[i]), weight );
-	  hlep_d0Sig[1]->Fill( fabs(cms2.mus_d0corr()[i]/cms2.mus_d0Err()[i]), weight );
-	  hlep_d0Sig[2]->Fill( fabs(cms2.mus_d0corr()[i]/cms2.mus_d0Err()[i]), weight );
-	  //correct formula for d0 sig:
-	  //els_d0corr / sqrt(els_d0Err*els_d0Err + evt_bs_width *evt_bs_width)
-	}
-	//for mass plots, check all but mass
-	if( (mucut & w_cuts_notm) == w_cuts_notm ) {
-	  hlep_mass[1]->Fill( transmass, weight ); //check all cuts but mass for mass plot (n-1)
-	  hlep_mass[2]->Fill( transmass, weight );
-	}
-	//ABCD in d0, Iso
-	if( (mucut & w_cuts_nod0iso) == w_cuts_nod0iso ) {
+	if( (mucut & w_cuts_nod0iso) == w_cuts_nod0iso ) { //ABCD in d0, Iso
 	  nmus_nod0iso++;
-	  hlep_d0_trckIso[1]->Fill( fabs(cms2.mus_d0corr()[i]), cms2.mus_iso03_sumPt()[i], weight );
-	  hlep_d0_trckIso[2]->Fill( fabs(cms2.mus_d0corr()[i]), cms2.mus_iso03_sumPt()[i], weight );
-	  hlep_d0_ecalIso[1]->Fill( fabs(cms2.mus_d0corr()[i]), cms2.mus_iso03_emEt()[i], weight );
-	  hlep_d0_ecalIso[2]->Fill( fabs(cms2.mus_d0corr()[i]), cms2.mus_iso03_emEt()[i], weight );
-	  hlep_d0_hcalIso[1]->Fill( fabs(cms2.mus_d0corr()[i]), cms2.mus_iso03_hadEt()[i], weight );
-	  hlep_d0_hcalIso[2]->Fill( fabs(cms2.mus_d0corr()[i]), cms2.mus_iso03_hadEt()[i], weight );
-	  hlep_d0_relIso[1] ->Fill( fabs(cms2.mus_d0corr()[i]), inv_mu_relsusy_iso(i), weight );
-	  hlep_d0_relIso[2] ->Fill( fabs(cms2.mus_d0corr()[i]), inv_mu_relsusy_iso(i), weight );
+	  if( muidxs_nod0iso[0] == -1 ) {
+		muidxs_nod0iso[0] = i;
+		pass_mucuts_nod0iso[0] = mucut;
+	  }
+	  else if( muidxs_nod0iso[1] == -1 ) {
+		muidxs_nod0iso[1] = i;
+		pass_mucuts_nod0iso[1] = mucut;
+	  }
 	}
-	//if( (mucut & w_cuts_nojets20) == w_cuts_nojets20 ) {
-	//  nmus_nojets20++;
-	//  njetmus_20 = njets_20;
-	//}
+  }
+
+  //tmass plot -- exclude multi-lepton events
+  if( nels_notmass == 1 && nmus_notmass == 0 ) {
+	hlep_tmass[0]->Fill( els_tmass, weight ); //check all cuts but mass for mass plot (n-1)
+	hlep_tmass[2]->Fill( els_tmass, weight );
+  }
+  else if( nels_notmass == 0 && nmus_notmass == 1 ) {
+	hlep_tmass[1]->Fill( mus_tmass, weight ); //check all cuts but mass for mass plot (n-1)
+	hlep_tmass[2]->Fill( mus_tmass, weight );
   }
 
   //fill nlep cut before checking nels, nmus
@@ -621,17 +627,17 @@ void ABCDLooper::FillEventHistos ()
   //hlep_nlep_nometiso[1]->Fill( nmus_nometiso, weight );
   //hlep_nlep_nometiso[2]->Fill( nels_nometiso + nmus_nometiso, weight );
 
-  //fill lep pt hists based on n nopt--single leps (each flavor independent of other)
-  if( nels_nopt == 1 ) { //allow mus
+  //fill lep pt hists based on nxxs_nopt--single leps
+  if( nels_nopt == 1 && nmus_nopt == 0 ) {
 	hlep_pt[0]->Fill( cms2.els_p4()[elidxs_nopt[0]].pt(), weight );
 	hlep_pt[2]->Fill( cms2.els_p4()[elidxs_nopt[0]].pt(), weight );
   }
-  if( nmus_nopt == 1 ) {
+  if( nmus_nopt == 1 && nels_nopt == 0 ) {
 	hlep_pt[1]->Fill( cms2.mus_p4()[muidxs_nopt[0]].pt(), weight );
 	hlep_pt[2]->Fill( cms2.mus_p4()[muidxs_nopt[0]].pt(), weight );
   }
   //now for N leps  //DILEPTON_ALL,     DILEPTON_MUMU,     DILEPTON_EMU,     DILEPTON_EE
-  if( nels_nopt > 1 ) { //allow mus
+  if( nels_nopt > 1 && nmus_nopt == 0 ) { // > 1 bc if one is < cut, but 2 are above, will keep the event
 	hdilep_pt[DILEPTON_EE]->Fill( cms2.els_p4()[elidxs_nopt[0]].pt(), weight );
 	hdilep_pt[DILEPTON_ALL]->Fill( cms2.els_p4()[elidxs_nopt[0]].pt(), weight );
 	hdilep_pt[DILEPTON_EE]->Fill( cms2.els_p4()[elidxs_nopt[1]].pt(), weight );
@@ -641,7 +647,7 @@ void ABCDLooper::FillEventHistos ()
 	hdilep_1_pt[DILEPTON_EE]->Fill( cms2.els_p4()[elidxs_nopt[1]].pt(), weight );
 	hdilep_1_pt[DILEPTON_ALL]->Fill( cms2.els_p4()[elidxs_nopt[1]].pt(), weight );
   }
-  if( nmus_nopt > 1 ) {
+  if( nmus_nopt > 1 && nels_nopt == 0 ) {
 	hdilep_pt[DILEPTON_MUMU]->Fill( cms2.mus_p4()[muidxs_nopt[0]].pt(), weight );
 	hdilep_pt[DILEPTON_ALL]->Fill( cms2.mus_p4()[muidxs_nopt[0]].pt(), weight );
 	hdilep_pt[DILEPTON_MUMU]->Fill( cms2.mus_p4()[muidxs_nopt[1]].pt(), weight );
@@ -651,6 +657,171 @@ void ABCDLooper::FillEventHistos ()
 	hdilep_1_pt[DILEPTON_MUMU]->Fill( cms2.mus_p4()[muidxs_nopt[1]].pt(), weight );
 	hdilep_1_pt[DILEPTON_ALL]->Fill( cms2.mus_p4()[muidxs_nopt[1]].pt(), weight );
   }
+
+  //z iso plots (require pt on both) (w iso are in met-iso abcd)
+  if( nels_noiso == 2 && nmus_noiso == 0 ) { //are the muidxs_noiso sorted by pt????
+	hdilep_reliso_lt[DILEPTON_EE]->Fill( inv_el_relsusy_iso(elidxs_noiso[0], true), weight );
+	hdilep_reliso_lt[DILEPTON_ALL]->Fill( inv_el_relsusy_iso(elidxs_noiso[0], true), weight );
+	hdilep_reliso_ll[DILEPTON_EE]->Fill( inv_el_relsusy_iso(elidxs_noiso[1], true), weight );
+	hdilep_reliso_ll[DILEPTON_ALL]->Fill( inv_el_relsusy_iso(elidxs_noiso[1], true), weight );
+  }
+  else if( nels_noiso == 0 && nmus_noiso == 2 ) {
+	hdilep_reliso_lt[DILEPTON_MUMU]->Fill( inv_mu_relsusy_iso(muidxs_noiso[0]), weight );
+	hdilep_reliso_lt[DILEPTON_ALL]->Fill( inv_mu_relsusy_iso(muidxs_noiso[0]), weight );
+	hdilep_reliso_ll[DILEPTON_MUMU]->Fill( inv_mu_relsusy_iso(muidxs_noiso[1]), weight );
+	hdilep_reliso_ll[DILEPTON_ALL]->Fill( inv_mu_relsusy_iso(muidxs_noiso[1]), weight );
+  }
+
+  //d0 iso ABCD : W
+  cuts_t wd0iso = 0;
+  int lep_type = -1;
+  if( nels_nod0iso == 1 && nmus_nod0iso == 0 ) {
+	wd0iso = pass_elcuts_nod0iso[0];
+	lep_type = 0;
+  }
+  else if( nels_nod0iso == 0 && nmus_nod0iso == 1 ) {
+	wd0iso = pass_mucuts_nod0iso[0];
+	lep_type = 1;
+  }
+
+  if( (wd0iso & w_cuts_nod0iso) == w_cuts_nod0iso ) {
+	if( lep_type == 0 ) {
+	  int i = elidxs_nod0iso[0];
+	  double d0sig = fabs(cms2.els_d0corr()[i])/sqrt( cms2.els_d0Err()[i]*cms2.els_d0Err()[i] + cms2.evt_bs_width()*cms2.evt_bs_width() );
+  	  double vtx_d0 = getCorrd0( cms2.vtxs_position()[0], cms2.els_p4()[i], cms2.els_vertex_p4()[i] );
+	  double vtx_d0sig = fabs(vtx_d0)/sqrt(  cms2.els_d0Err()[i]*cms2.els_d0Err()[i] + cms2.vtxs_xError()[0]*cms2.vtxs_xError()[0]
+											 + cms2.vtxs_yError()[0]*cms2.vtxs_yError()[0] );
+	  hlep_d0_trckIso[0]->Fill( fabs(cms2.els_d0corr()[i]), cms2.els_tkIso()[i], weight );
+	  hlep_d0_trckIso[2]->Fill( fabs(cms2.els_d0corr()[i]), cms2.els_tkIso()[i], weight );
+	  hlep_d0_ecalIso[0]->Fill( fabs(cms2.els_d0corr()[i]), cms2.els_pat_ecalIso()[i], weight );
+	  hlep_d0_ecalIso[2]->Fill( fabs(cms2.els_d0corr()[i]), cms2.els_pat_ecalIso()[i], weight );
+	  hlep_d0_hcalIso[0]->Fill( fabs(cms2.els_d0corr()[i]), cms2.els_pat_hcalIso()[i], weight );
+	  hlep_d0_hcalIso[2]->Fill( fabs(cms2.els_d0corr()[i]), cms2.els_pat_hcalIso()[i], weight );
+	  hlep_d0_relIso[0] ->Fill( fabs(cms2.els_d0corr()[i]), inv_el_relsusy_iso(i, true), weight );
+	  hlep_d0_relIso[2] ->Fill( fabs(cms2.els_d0corr()[i]), inv_el_relsusy_iso(i, true), weight );
+
+	  hlep_d0sig_trckIso[0]->Fill( d0sig, cms2.els_tkIso()[i], weight );
+	  hlep_d0sig_trckIso[2]->Fill( d0sig, cms2.els_tkIso()[i], weight );
+	  hlep_d0sig_ecalIso[0]->Fill( d0sig, cms2.els_pat_ecalIso()[i], weight );
+	  hlep_d0sig_ecalIso[2]->Fill( d0sig, cms2.els_pat_ecalIso()[i], weight );
+	  hlep_d0sig_hcalIso[0]->Fill( d0sig, cms2.els_pat_hcalIso()[i], weight );
+	  hlep_d0sig_hcalIso[2]->Fill( d0sig, cms2.els_pat_hcalIso()[i], weight );
+	  hlep_d0sig_relIso[0] ->Fill( d0sig, inv_el_relsusy_iso(i, true), weight );
+	  hlep_d0sig_relIso[2] ->Fill( d0sig, inv_el_relsusy_iso(i, true), weight );
+
+	  hlep_vtxd0_trckIso[0]->Fill( vtx_d0, cms2.els_tkIso()[i], weight );
+	  hlep_vtxd0_trckIso[2]->Fill( vtx_d0, cms2.els_tkIso()[i], weight );
+	  hlep_vtxd0_ecalIso[0]->Fill( vtx_d0, cms2.els_pat_ecalIso()[i], weight );
+	  hlep_vtxd0_ecalIso[2]->Fill( vtx_d0, cms2.els_pat_ecalIso()[i], weight );
+	  hlep_vtxd0_hcalIso[0]->Fill( vtx_d0, cms2.els_pat_hcalIso()[i], weight );
+	  hlep_vtxd0_hcalIso[2]->Fill( vtx_d0, cms2.els_pat_hcalIso()[i], weight );
+	  hlep_vtxd0_relIso[0] ->Fill( vtx_d0, inv_el_relsusy_iso(i, true), weight );
+	  hlep_vtxd0_relIso[2] ->Fill( vtx_d0, inv_el_relsusy_iso(i, true), weight );
+		   
+	  hlep_vtxd0sig_trckIso[0]->Fill( vtx_d0sig, cms2.els_tkIso()[i], weight );
+	  hlep_vtxd0sig_trckIso[2]->Fill( vtx_d0sig, cms2.els_tkIso()[i], weight );
+	  hlep_vtxd0sig_ecalIso[0]->Fill( vtx_d0sig, cms2.els_pat_ecalIso()[i], weight );
+	  hlep_vtxd0sig_ecalIso[2]->Fill( vtx_d0sig, cms2.els_pat_ecalIso()[i], weight );
+	  hlep_vtxd0sig_hcalIso[0]->Fill( vtx_d0sig, cms2.els_pat_hcalIso()[i], weight );
+	  hlep_vtxd0sig_hcalIso[2]->Fill( vtx_d0sig, cms2.els_pat_hcalIso()[i], weight );
+	  hlep_vtxd0sig_relIso[0] ->Fill( vtx_d0sig, inv_el_relsusy_iso(i, true), weight );
+	  hlep_vtxd0sig_relIso[2] ->Fill( vtx_d0sig, inv_el_relsusy_iso(i, true), weight );
+
+	  if( (wd0iso & w_cuts_nod0) == w_cuts_nod0 ) { //require iso just for these two
+		hlep_d0[0]->Fill( fabs(cms2.els_d0corr()[i]), weight );
+		hlep_d0[2]->Fill( fabs(cms2.els_d0corr()[i]), weight );
+		hlep_d0err[0]->Fill( fabs(cms2.els_d0Err()[i]), weight );
+		hlep_d0err[2]->Fill( fabs(cms2.els_d0Err()[i]), weight );
+		hlep_d0_d0err[0]->Fill( fabs(cms2.els_d0corr()[i]), fabs(cms2.els_d0Err()[i]), weight );
+		hlep_d0_d0err[2]->Fill( fabs(cms2.els_d0corr()[i]), fabs(cms2.els_d0Err()[i]), weight );
+		hlep_d0Sig[0]->Fill( d0sig, weight );
+		hlep_d0Sig[2]->Fill( d0sig, weight );
+
+		hlep_vtxd0[0]			->Fill( vtx_d0, weight );
+		hlep_vtxd0[2]			->Fill( vtx_d0, weight );
+		//hlep_vtxd0_d0err[0]		->Fill( fabs(cms2.els_d0corr()[i]), fabs(cms2.els_d0Err()[i]), weight );
+		//hlep_vtxd0_d0err[2]		->Fill( fabs(cms2.els_d0corr()[i]), fabs(cms2.els_d0Err()[i]), weight );
+		hlep_vtxd0Sig[0]		->Fill( vtx_d0sig, weight );
+		hlep_vtxd0Sig[2]		->Fill( vtx_d0sig, weight );
+	  }
+	}
+	else if( lep_type == 1 ) {
+	  int i = muidxs_nod0iso[0];
+	  double d0sig = fabs(cms2.mus_d0corr()[i])/sqrt( cms2.mus_d0Err()[i]*cms2.mus_d0Err()[i] + cms2.evt_bs_width()*cms2.evt_bs_width() );
+
+	  Point bs( cms2.evt_bsp4().x(), cms2.evt_bsp4().y(), cms2.evt_bsp4().z() );
+	  //LorentzVector vtx( cms2.vtxs_position()[0].x(), cms2.vtxs_position()[0].y(), cms2.vtxs_position()[0].z(), 0 ); //xyzt
+
+	  //getCorrd0( Point& myBeamSpot, LorentzVector &p, const LorentzVector &vertex) 
+ 	  //printf("d0corr mus_vertex: %8f  d0corr vtxs_position %8f",
+ 	  //		 getCorrd0( bs, cms2.mus_p4()[i], cms2.mus_vertex_p4()[i] ), getCorrd0( vtx, cms2.mus_p4()[i], cms2.mus_vertex_p4()[i] )  );
+ 	  //printf("   d0corr: %8f  d0corr bs only %8f\n", cms2.mus_d0corr()[i],
+ 	  //		 getCorrd0( Point(0,0,0), cms2.mus_p4()[i], cms2.mus_vertex_p4()[i] ) );
+	  //these are just testing that we can reproduce what is already in mus_d0corr
+  	  double d0test = getCorrd0( bs, cms2.mus_p4()[i], cms2.mus_vertex_p4()[i]);
+	  double d0sigtest = fabs(d0test)/sqrt( cms2.mus_d0Err()[i]*cms2.mus_d0Err()[i] + cms2.evt_bs_width()*cms2.evt_bs_width() );
+
+	  double vtx_d0 = getCorrd0( cms2.vtxs_position()[0], cms2.mus_p4()[i], cms2.mus_vertex_p4()[i]);
+	  double vtx_d0sig = vtx_d0/sqrt(  cms2.mus_d0Err()[i]*cms2.mus_d0Err()[i] + cms2.vtxs_xError()[0]*cms2.vtxs_xError()[0]
+											 + cms2.vtxs_yError()[0]*cms2.vtxs_yError()[0] );
+ 	  //double vtx_d0sig = fabs(vtx_d0)/sqrt(  cms2.mus_d0Err()[i]*cms2.mus_d0Err()[i] + cms2.evt_bs_width()*cms2.evt_bs_width());
+
+	  hlep_d0_trckIso[1]->Fill( fabs(cms2.mus_d0corr()[i]), cms2.mus_iso03_sumPt()[i], weight );
+	  hlep_d0_trckIso[2]->Fill( fabs(cms2.mus_d0corr()[i]), cms2.mus_iso03_sumPt()[i], weight );
+	  hlep_d0_ecalIso[1]->Fill( fabs(cms2.mus_d0corr()[i]), cms2.mus_iso03_emEt()[i], weight );
+	  hlep_d0_ecalIso[2]->Fill( fabs(cms2.mus_d0corr()[i]), cms2.mus_iso03_emEt()[i], weight );
+	  hlep_d0_hcalIso[1]->Fill( fabs(cms2.mus_d0corr()[i]), cms2.mus_iso03_hadEt()[i], weight );
+	  hlep_d0_hcalIso[2]->Fill( fabs(cms2.mus_d0corr()[i]), cms2.mus_iso03_hadEt()[i], weight );
+	  hlep_d0_relIso[1] ->Fill( fabs(cms2.mus_d0corr()[i]), inv_mu_relsusy_iso(i), weight );
+	  hlep_d0_relIso[2] ->Fill( fabs(cms2.mus_d0corr()[i]), inv_mu_relsusy_iso(i), weight );
+
+	  hlep_d0sig_trckIso[1]->Fill( d0sig, cms2.mus_iso03_sumPt()[i], weight );
+	  hlep_d0sig_trckIso[2]->Fill( d0sig, cms2.mus_iso03_sumPt()[i], weight );
+	  hlep_d0sig_ecalIso[1]->Fill( d0sig, cms2.mus_iso03_emEt()[i], weight );
+	  hlep_d0sig_ecalIso[2]->Fill( d0sig, cms2.mus_iso03_emEt()[i], weight );
+	  hlep_d0sig_hcalIso[1]->Fill( d0sig, cms2.mus_iso03_hadEt()[i], weight );
+	  hlep_d0sig_hcalIso[2]->Fill( d0sig, cms2.mus_iso03_hadEt()[i], weight );
+	  hlep_d0sig_relIso[1] ->Fill( d0sig, inv_mu_relsusy_iso(i), weight );
+	  hlep_d0sig_relIso[2] ->Fill( d0sig, inv_mu_relsusy_iso(i), weight );
+
+	  hlep_vtxd0_trckIso[1]->Fill( vtx_d0, cms2.mus_iso03_sumPt()[i], weight );
+	  hlep_vtxd0_trckIso[2]->Fill( vtx_d0, cms2.mus_iso03_sumPt()[i], weight );
+	  hlep_vtxd0_ecalIso[1]->Fill( vtx_d0, cms2.mus_iso03_emEt()[i], weight );
+	  hlep_vtxd0_ecalIso[2]->Fill( vtx_d0, cms2.mus_iso03_emEt()[i], weight );
+	  hlep_vtxd0_hcalIso[1]->Fill( vtx_d0, cms2.mus_iso03_hadEt()[i], weight );
+	  hlep_vtxd0_hcalIso[2]->Fill( vtx_d0, cms2.mus_iso03_hadEt()[i], weight );
+	  hlep_vtxd0_relIso[1] ->Fill( vtx_d0, inv_mu_relsusy_iso(i), weight );
+	  hlep_vtxd0_relIso[2] ->Fill( vtx_d0, inv_mu_relsusy_iso(i), weight );
+		   
+	  hlep_vtxd0sig_trckIso[1]->Fill( vtx_d0sig, cms2.mus_iso03_sumPt()[i], weight );
+	  hlep_vtxd0sig_trckIso[2]->Fill( vtx_d0sig, cms2.mus_iso03_sumPt()[i], weight );
+	  hlep_vtxd0sig_ecalIso[1]->Fill( vtx_d0sig, cms2.mus_iso03_emEt()[i], weight );
+	  hlep_vtxd0sig_ecalIso[2]->Fill( vtx_d0sig, cms2.mus_iso03_emEt()[i], weight );
+	  hlep_vtxd0sig_hcalIso[1]->Fill( vtx_d0sig, cms2.mus_iso03_hadEt()[i], weight );
+	  hlep_vtxd0sig_hcalIso[2]->Fill( vtx_d0sig, cms2.mus_iso03_hadEt()[i], weight );
+	  hlep_vtxd0sig_relIso[1] ->Fill( vtx_d0sig, inv_mu_relsusy_iso(i), weight );
+	  hlep_vtxd0sig_relIso[2] ->Fill( vtx_d0sig, inv_mu_relsusy_iso(i), weight );
+
+	  if( (wd0iso & w_cuts_nod0) == w_cuts_nod0 ) { //require iso just for these two
+		hlep_d0[1]->Fill( fabs(cms2.mus_d0corr()[i]), weight );
+		hlep_d0[2]->Fill( fabs(cms2.mus_d0corr()[i]), weight );
+		hlep_d0err[1]->Fill( fabs(cms2.mus_d0Err()[i]), weight );
+		hlep_d0err[2]->Fill( fabs(cms2.mus_d0Err()[i]), weight );
+		hlep_d0_d0err[1]->Fill( fabs(cms2.mus_d0corr()[i]), fabs(cms2.mus_d0Err()[i]), weight );
+		hlep_d0_d0err[2]->Fill( fabs(cms2.mus_d0corr()[i]), fabs(cms2.mus_d0Err()[i]), weight );
+		hlep_d0Sig[1]->Fill( fabs(cms2.mus_d0corr()[i])/sqrt(cms2.mus_d0Err()[i]*cms2.mus_d0Err()[i] + cms2.evt_bs_width()*cms2.evt_bs_width()), weight );
+		hlep_d0Sig[2]->Fill( fabs(cms2.mus_d0corr()[i])/sqrt(cms2.mus_d0Err()[i]*cms2.mus_d0Err()[i] + cms2.evt_bs_width()*cms2.evt_bs_width()), weight );
+		hlep_d0Sigtest[1]->Fill( d0sigtest, weight );
+		hlep_d0Sigtest[2]->Fill( d0sigtest, weight ); 
+
+		hlep_vtxd0[1]->Fill( vtx_d0, weight );
+		hlep_vtxd0[2]->Fill( vtx_d0, weight );
+		hlep_vtxd0Sig[1]->Fill( vtx_d0sig, weight );
+		hlep_vtxd0Sig[2]->Fill( vtx_d0sig, weight );
+	  }
+	}
+  }
+
 
   //find tight leg of Z for avi abcd
   cuts_t zabcd = 0;
@@ -775,8 +946,7 @@ void ABCDLooper::FillEventHistos ()
 	}
   }
   
-  //ABCD for Zs
-  //apply gen level mass cut
+  //MET-ISO ABCD for Zs
   if( (zabcd & z_cuts_nometiso) == z_cuts_nometiso ) {
 	if( nels_noptiso == 2 && nmus_noptiso == 0 ) {
 	  //met is from idx 1, iso is from idx 0 b'c this is the lep
@@ -784,31 +954,6 @@ void ABCDLooper::FillEventHistos ()
 	  double lepmet = (LorentzVector( cms2.evt_tcmet()*cos(cms2.evt_tcmetPhi()),
 									  cms2.evt_tcmet()*sin(cms2.evt_tcmetPhi()),
 									  0, cms2.evt_tcmet()) + cms2.els_p4()[elidxs_noptiso[1]] ).pt();
-	  hdilep_lpt_trckIso[3]				->Fill( pt, cms2.els_tkIso()[elidxs_noptiso[0]], weight );		
-	  hdilep_lpt_trckIso[DILEPTON_ALL]	->Fill( pt, cms2.els_tkIso()[elidxs_noptiso[0]], weight );		
-	  hdilep_lpt_ecalIso[3]				->Fill( pt, cms2.els_pat_ecalIso()[elidxs_noptiso[0]], weight );	
-	  hdilep_lpt_ecalIso[DILEPTON_ALL]	->Fill( pt, cms2.els_pat_ecalIso()[elidxs_noptiso[0]], weight );	
-	  hdilep_lpt_hcalIso[3]				->Fill( pt, cms2.els_pat_hcalIso()[elidxs_noptiso[0]], weight );	
-	  hdilep_lpt_hcalIso[DILEPTON_ALL]	->Fill( pt, cms2.els_pat_hcalIso()[elidxs_noptiso[0]], weight );	
-	  hdilep_lpt_relIso[3] 				->Fill( pt, inv_el_relsusy_iso(elidxs_noptiso[0], true), weight );
-	  hdilep_lpt_relIso[DILEPTON_ALL] 	->Fill( pt, inv_el_relsusy_iso(elidxs_noptiso[0], true), weight );
-	  hdilep_lepmet_trckIso[3]				->Fill( lepmet, cms2.els_tkIso()[elidxs_noptiso[0]], weight );		
-	  hdilep_lepmet_trckIso[DILEPTON_ALL]	->Fill( lepmet, cms2.els_tkIso()[elidxs_noptiso[0]], weight );		
-	  hdilep_lepmet_ecalIso[3]				->Fill( lepmet, cms2.els_pat_ecalIso()[elidxs_noptiso[0]], weight );	
-	  hdilep_lepmet_ecalIso[DILEPTON_ALL]	->Fill( lepmet, cms2.els_pat_ecalIso()[elidxs_noptiso[0]], weight );	
-	  hdilep_lepmet_hcalIso[3]				->Fill( lepmet, cms2.els_pat_hcalIso()[elidxs_noptiso[0]], weight );	
-	  hdilep_lepmet_hcalIso[DILEPTON_ALL]	->Fill( lepmet, cms2.els_pat_hcalIso()[elidxs_noptiso[0]], weight );	
-	  hdilep_lepmet_relIso[3] 				->Fill( lepmet, inv_el_relsusy_iso(elidxs_noptiso[0], true), weight );
-	  hdilep_lepmet_relIso[DILEPTON_ALL] 	->Fill( lepmet, inv_el_relsusy_iso(elidxs_noptiso[0], true), weight );
-	  //plots with scale factor
-	  hdilep_lpt_scl_trckIso[3]				->Fill( scale*pt, cms2.els_tkIso()[elidxs_noptiso[0]], weight );		
-	  hdilep_lpt_scl_trckIso[DILEPTON_ALL]	->Fill( scale*pt, cms2.els_tkIso()[elidxs_noptiso[0]], weight );		
-	  hdilep_lpt_scl_ecalIso[3]				->Fill( scale*pt, cms2.els_pat_ecalIso()[elidxs_noptiso[0]], weight );	
-	  hdilep_lpt_scl_ecalIso[DILEPTON_ALL]	->Fill( scale*pt, cms2.els_pat_ecalIso()[elidxs_noptiso[0]], weight );	
-	  hdilep_lpt_scl_hcalIso[3]				->Fill( scale*pt, cms2.els_pat_hcalIso()[elidxs_noptiso[0]], weight );	
-	  hdilep_lpt_scl_hcalIso[DILEPTON_ALL]	->Fill( scale*pt, cms2.els_pat_hcalIso()[elidxs_noptiso[0]], weight );	
-	  hdilep_lpt_scl_relIso[3] 				->Fill( scale*pt, inv_el_relsusy_iso(elidxs_noptiso[0], true), weight );
-	  hdilep_lpt_scl_relIso[DILEPTON_ALL] 	->Fill( scale*pt, inv_el_relsusy_iso(elidxs_noptiso[0], true), weight );
 	  hdilep_lepmet_scl_trckIso[3]				->Fill( scale*lepmet, cms2.els_tkIso()[elidxs_noptiso[0]], weight );		
 	  hdilep_lepmet_scl_trckIso[DILEPTON_ALL]	->Fill( scale*lepmet, cms2.els_tkIso()[elidxs_noptiso[0]], weight );		
 	  hdilep_lepmet_scl_ecalIso[3]				->Fill( scale*lepmet, cms2.els_pat_ecalIso()[elidxs_noptiso[0]], weight );	
@@ -833,8 +978,8 @@ void ABCDLooper::FillEventHistos ()
 		hdilep_ll_pt_eta[DILEPTON_ALL]->Fill( scale*pt, cms2.els_p4()[elidxs_noptiso[1]].eta(), weight );
 		hdilep_lt_pt_eta[3]           ->Fill( scale*cms2.els_p4()[elidxs_noptiso[0]].pt(), cms2.els_p4()[elidxs_noptiso[0]].eta(), weight );
 		hdilep_lt_pt_eta[DILEPTON_ALL]->Fill( scale*cms2.els_p4()[elidxs_noptiso[0]].pt(), cms2.els_p4()[elidxs_noptiso[0]].eta(), weight );
-		hdilep_reliso_ll[3]           ->Fill( inv_el_relsusy_iso(elidxs_noptiso[1], true), weight );
-		hdilep_reliso_ll[DILEPTON_ALL]->Fill( inv_el_relsusy_iso(elidxs_noptiso[1], true), weight );
+		hdilep_nopt_reliso_ll[3]           ->Fill( inv_el_relsusy_iso(elidxs_noptiso[1], true), weight );
+		hdilep_nopt_reliso_ll[DILEPTON_ALL]->Fill( inv_el_relsusy_iso(elidxs_noptiso[1], true), weight );
 		hdilep_0_genpt_mch[3]           ->Fill( scale*gen_lt_pt, weight);
 		hdilep_0_genpt_mch[DILEPTON_ALL]->Fill( scale*gen_lt_pt, weight);
 		hdilep_1_genpt_mch[3]           ->Fill( scale*gen_ll_pt, weight);
@@ -876,31 +1021,6 @@ void ABCDLooper::FillEventHistos ()
 	  double lepmet = (LorentzVector( cms2.evt_tcmet()*cos(cms2.evt_tcmetPhi()),
 									  cms2.evt_tcmet()*sin(cms2.evt_tcmetPhi()),
 									  0, cms2.evt_tcmet()) + cms2.mus_p4()[muidxs_noptiso[1]] ).pt();
-	  hdilep_lpt_trckIso[1]				->Fill( pt, cms2.mus_iso03_sumPt()[muidxs_noptiso[0]], weight );		
-	  hdilep_lpt_trckIso[DILEPTON_ALL]	->Fill( pt, cms2.mus_iso03_sumPt()[muidxs_noptiso[0]], weight );		
-	  hdilep_lpt_ecalIso[1]				->Fill( pt, cms2.mus_iso03_emEt()[muidxs_noptiso[0]], weight );	
-	  hdilep_lpt_ecalIso[DILEPTON_ALL]	->Fill( pt, cms2.mus_iso03_emEt()[muidxs_noptiso[0]], weight );	
-	  hdilep_lpt_hcalIso[1]				->Fill( pt, cms2.mus_iso03_hadEt()[muidxs_noptiso[0]], weight );	
-	  hdilep_lpt_hcalIso[DILEPTON_ALL]	->Fill( pt, cms2.mus_iso03_hadEt()[muidxs_noptiso[0]], weight );	
-	  hdilep_lpt_relIso[1] 				->Fill( pt, inv_mu_relsusy_iso(muidxs_noptiso[0]), weight );
-	  hdilep_lpt_relIso[DILEPTON_ALL] 	->Fill( pt, inv_mu_relsusy_iso(muidxs_noptiso[0]), weight );
-	  hdilep_lepmet_trckIso[1]				->Fill( lepmet, cms2.mus_iso03_sumPt()[muidxs_noptiso[0]], weight );		
-	  hdilep_lepmet_trckIso[DILEPTON_ALL]	->Fill( lepmet, cms2.mus_iso03_sumPt()[muidxs_noptiso[0]], weight );		
-	  hdilep_lepmet_ecalIso[1]				->Fill( lepmet, cms2.mus_iso03_emEt()[muidxs_noptiso[0]], weight );	
-	  hdilep_lepmet_ecalIso[DILEPTON_ALL]	->Fill( lepmet, cms2.mus_iso03_emEt()[muidxs_noptiso[0]], weight );	
-	  hdilep_lepmet_hcalIso[1]				->Fill( lepmet, cms2.mus_iso03_hadEt()[muidxs_noptiso[0]], weight );	
-	  hdilep_lepmet_hcalIso[DILEPTON_ALL]	->Fill( lepmet, cms2.mus_iso03_hadEt()[muidxs_noptiso[0]], weight );	
-	  hdilep_lepmet_relIso[1] 				->Fill( lepmet, inv_mu_relsusy_iso(muidxs_noptiso[0]), weight );
-	  hdilep_lepmet_relIso[DILEPTON_ALL] 	->Fill( lepmet, inv_mu_relsusy_iso(muidxs_noptiso[0]), weight );
-	  //scale plots
-	  hdilep_lpt_scl_trckIso[1]				->Fill( scale*pt, cms2.mus_iso03_sumPt()[muidxs_noptiso[0]], weight );		
-	  hdilep_lpt_scl_trckIso[DILEPTON_ALL]	->Fill( scale*pt, cms2.mus_iso03_sumPt()[muidxs_noptiso[0]], weight );		
-	  hdilep_lpt_scl_ecalIso[1]				->Fill( scale*pt, cms2.mus_iso03_emEt()[muidxs_noptiso[0]], weight );	
-	  hdilep_lpt_scl_ecalIso[DILEPTON_ALL]	->Fill( scale*pt, cms2.mus_iso03_emEt()[muidxs_noptiso[0]], weight );	
-	  hdilep_lpt_scl_hcalIso[1]				->Fill( scale*pt, cms2.mus_iso03_hadEt()[muidxs_noptiso[0]], weight );	
-	  hdilep_lpt_scl_hcalIso[DILEPTON_ALL]	->Fill( scale*pt, cms2.mus_iso03_hadEt()[muidxs_noptiso[0]], weight );	
-	  hdilep_lpt_scl_relIso[1] 				->Fill( scale*pt, inv_mu_relsusy_iso(muidxs_noptiso[0]), weight );
-	  hdilep_lpt_scl_relIso[DILEPTON_ALL] 	->Fill( scale*pt, inv_mu_relsusy_iso(muidxs_noptiso[0]), weight );
 	  hdilep_lepmet_scl_trckIso[1]				->Fill( scale*lepmet, cms2.mus_iso03_sumPt()[muidxs_noptiso[0]], weight );		
 	  hdilep_lepmet_scl_trckIso[DILEPTON_ALL]	->Fill( scale*lepmet, cms2.mus_iso03_sumPt()[muidxs_noptiso[0]], weight );		
 	  hdilep_lepmet_scl_ecalIso[1]				->Fill( scale*lepmet, cms2.mus_iso03_emEt()[muidxs_noptiso[0]], weight );	
@@ -925,8 +1045,8 @@ void ABCDLooper::FillEventHistos ()
 		hdilep_ll_pt_eta[DILEPTON_ALL]->Fill( scale*pt, cms2.mus_p4()[muidxs_noptiso[1]].eta(), weight );
 		hdilep_lt_pt_eta[1]           ->Fill( scale*cms2.mus_p4()[muidxs_noptiso[0]].pt(), cms2.mus_p4()[muidxs_noptiso[0]].eta(), weight );
 		hdilep_lt_pt_eta[DILEPTON_ALL]->Fill( scale*cms2.mus_p4()[muidxs_noptiso[0]].pt(), cms2.mus_p4()[muidxs_noptiso[0]].eta(), weight );
-		hdilep_reliso_ll[1]           ->Fill( inv_mu_relsusy_iso(muidxs_noptiso[1]), weight );
-		hdilep_reliso_ll[DILEPTON_ALL]->Fill( inv_mu_relsusy_iso(muidxs_noptiso[1]), weight );
+		hdilep_nopt_reliso_ll[1]           ->Fill( inv_mu_relsusy_iso(muidxs_noptiso[1]), weight );
+		hdilep_nopt_reliso_ll[DILEPTON_ALL]->Fill( inv_mu_relsusy_iso(muidxs_noptiso[1]), weight );
 		hdilep_0_genpt_mch[1]           ->Fill( gen_lt_pt, weight);
 		hdilep_0_genpt_mch[DILEPTON_ALL]->Fill( gen_lt_pt, weight);
 		hdilep_1_genpt_mch[1]           ->Fill( gen_ll_pt, weight);
@@ -967,21 +1087,20 @@ void ABCDLooper::FillEventHistos ()
 	  cout << "ERROR IN Z ABCD SELECT\n\n";
   }
 
-  //ABCD for Ws
+  //MET-ISO ABCD for Ws
   //NOTE: since the counting for zs is done for id only, and for ws for id+pt, can get event which satisfies both (one lep for z fails pt, other passes) But tmass, zmass, and met will help you
-  cuts_t wabcd = 0;
-  int lep_type = -1;
+  cuts_t wmetiso = 0;
+  lep_type = -1;
   if( nels_noiso == 1 && nmus_noiso == 0 ) {
-	wabcd = pass_elcuts_noiso[0];
+	wmetiso = pass_elcuts_noiso[0];
 	lep_type = 0;
   }
   else if( nels_noiso == 0 && nmus_noiso == 1 ) {
-	wabcd = pass_mucuts_noiso[0];
+	wmetiso = pass_mucuts_noiso[0];
 	lep_type = 1;
   }
 
-
-  if( (w_cuts_nometiso & wabcd) == w_cuts_nometiso ) { // && gen_boson_mass > 65 && gen_boson_mass < 95
+  if( (w_cuts_nometiso & wmetiso) == w_cuts_nometiso ) { // && gen_boson_mass > 65 && gen_boson_mass < 95
 	//for plot with neutrino eta cut: find neutrino
 	int nuidx = -1;
 	//ABCD in tcmet, Iso
@@ -1011,6 +1130,16 @@ void ABCDLooper::FillEventHistos ()
 	  }
 	  hlep_genpt_mch[0]->Fill( gen_lt_pt, weight);
 	  hlep_genpt_mch[2]->Fill( gen_lt_pt, weight);
+	  if( (wmetiso & w_cuts_noiso) == w_cuts_noiso ) { //require met for iso plots
+		hlep_trckIso[0]->Fill( cms2.els_tkIso()[elidxs_noiso[0]], weight );
+		hlep_trckIso[2]->Fill( cms2.els_tkIso()[elidxs_noiso[0]], weight );
+		hlep_ecalIso[0]->Fill( cms2.els_pat_ecalIso()[elidxs_noiso[0]], weight );
+		hlep_ecalIso[2]->Fill( cms2.els_pat_ecalIso()[elidxs_noiso[0]], weight );
+		hlep_hcalIso[0]->Fill( cms2.els_pat_hcalIso()[elidxs_noiso[0]], weight );
+		hlep_hcalIso[2]->Fill( cms2.els_pat_hcalIso()[elidxs_noiso[0]], weight );
+		hlep_relIso[0]->Fill( inv_el_relsusy_iso(elidxs_noiso[0], true), weight );
+		hlep_relIso[2]->Fill( inv_el_relsusy_iso(elidxs_noiso[0], true), weight );
+	  }
 	}
 	else if( lep_type == 1) {
 	  //nmus_nometiso++;
@@ -1038,6 +1167,16 @@ void ABCDLooper::FillEventHistos ()
 	  }
 	  hlep_genpt_mch[1]->Fill( gen_lt_pt, weight);
 	  hlep_genpt_mch[2]->Fill( gen_lt_pt, weight);
+	  if( (wmetiso & w_cuts_noiso) == w_cuts_noiso ) {
+		hlep_trckIso[1]->Fill( cms2.mus_iso03_sumPt()[muidxs_noiso[0]], weight);
+		hlep_trckIso[2]->Fill( cms2.mus_iso03_sumPt()[muidxs_noiso[0]], weight);
+		hlep_ecalIso[1]->Fill( cms2.mus_iso03_emEt()[muidxs_noiso[0]], weight );
+		hlep_ecalIso[2]->Fill( cms2.mus_iso03_emEt()[muidxs_noiso[0]], weight );
+		hlep_hcalIso[1]->Fill( cms2.mus_iso03_hadEt()[muidxs_noiso[0]], weight );
+		hlep_hcalIso[2]->Fill( cms2.mus_iso03_hadEt()[muidxs_noiso[0]], weight );
+		hlep_relIso[1]->Fill( inv_mu_relsusy_iso(muidxs_noiso[0]), weight );
+		hlep_relIso[2]->Fill( inv_mu_relsusy_iso(muidxs_noiso[0]), weight );
+	  }
 	}
 	else
 	  cout << "ERROR IN SELECTING W ABCD\n"; //since cuts are checked, must be e or mu 
@@ -1075,10 +1214,12 @@ void ABCDLooper::FillEventHistos ()
 	}
 
 	//don't check njet cut for njet histo
-	int njet = (elidxs[0] != -1 ? njetels_20 : njetmus_20 );
+	//int njet = (elidxs[0] != -1 ? njetels_20 : njetmus_20 ); //for z, the data members are correct since filled in DilepSelect
 	if( (pass_nlep_cuts & z_cuts_nojet20) == z_cuts_nojet20 ) {
-	  hdilep_njet20[myType]->Fill(njet, weight);
-	  hdilep_njet20[DILEPTON_ALL]->Fill(njet, weight);
+	  hdilep_njet20[myType]->Fill(dil_njets_20, weight);
+	  hdilep_njet20[DILEPTON_ALL]->Fill(dil_njets_20, weight);
+	  hdilep_njet30[myType]->Fill(dil_njets_30, weight);
+	  hdilep_njet30[DILEPTON_ALL]->Fill(dil_njets_30, weight);
 	}
 
 	if( (pass_nlep_cuts & z_cuts) == z_cuts )
@@ -1096,14 +1237,17 @@ void ABCDLooper::FillEventHistos ()
 	}
 
 	//don't check njet cut for njet histo
-	int njet = (elidxs[0] != -1 ? njetels_20 : njetmus_20 );
 	if( (pass_lep_cut & w_cuts_nojet20) == w_cuts_nojet20 ) {
+	  int njet = (elidxs[0] != -1 ? njetels_20 : njetmus_20 );
 	  hlep_njet20[lep_type]->Fill(njet, weight);
 	  hlep_njet20[2]->Fill(njet, weight);
+	  njet = (elidxs[0] != -1 ? njetels_30 : njetmus_30 );
+	  hlep_njet30[lep_type]->Fill(njet, weight);
+	  hlep_njet30[2]->Fill(njet, weight);
 	}
 
 	//for WEvent, need to pass tmass, met
-	if( (pass_lep_cut & w_cuts) == w_cuts ) //new, counting excludes iso, met, njet
+	if( (pass_lep_cut & w_cuts) == w_cuts )
 	  WEvent();
   }
 
@@ -1206,3 +1350,58 @@ void ABCDLooper::End ()
   */
 }
 
+
+/* //histos no longer needed
+	  hdilep_lpt_trckIso[3]				->Fill( pt, cms2.els_tkIso()[elidxs_noptiso[0]], weight );		
+	  hdilep_lpt_trckIso[DILEPTON_ALL]	->Fill( pt, cms2.els_tkIso()[elidxs_noptiso[0]], weight );		
+	  hdilep_lpt_ecalIso[3]				->Fill( pt, cms2.els_pat_ecalIso()[elidxs_noptiso[0]], weight );	
+	  hdilep_lpt_ecalIso[DILEPTON_ALL]	->Fill( pt, cms2.els_pat_ecalIso()[elidxs_noptiso[0]], weight );	
+	  hdilep_lpt_hcalIso[3]				->Fill( pt, cms2.els_pat_hcalIso()[elidxs_noptiso[0]], weight );	
+	  hdilep_lpt_hcalIso[DILEPTON_ALL]	->Fill( pt, cms2.els_pat_hcalIso()[elidxs_noptiso[0]], weight );	
+	  hdilep_lpt_relIso[3] 				->Fill( pt, inv_el_relsusy_iso(elidxs_noptiso[0], true), weight );
+	  hdilep_lpt_relIso[DILEPTON_ALL] 	->Fill( pt, inv_el_relsusy_iso(elidxs_noptiso[0], true), weight );
+	  hdilep_lepmet_trckIso[3]				->Fill( lepmet, cms2.els_tkIso()[elidxs_noptiso[0]], weight );		
+	  hdilep_lepmet_trckIso[DILEPTON_ALL]	->Fill( lepmet, cms2.els_tkIso()[elidxs_noptiso[0]], weight );		
+	  hdilep_lepmet_ecalIso[3]				->Fill( lepmet, cms2.els_pat_ecalIso()[elidxs_noptiso[0]], weight );	
+	  hdilep_lepmet_ecalIso[DILEPTON_ALL]	->Fill( lepmet, cms2.els_pat_ecalIso()[elidxs_noptiso[0]], weight );	
+	  hdilep_lepmet_hcalIso[3]				->Fill( lepmet, cms2.els_pat_hcalIso()[elidxs_noptiso[0]], weight );	
+	  hdilep_lepmet_hcalIso[DILEPTON_ALL]	->Fill( lepmet, cms2.els_pat_hcalIso()[elidxs_noptiso[0]], weight );	
+	  hdilep_lepmet_relIso[3] 				->Fill( lepmet, inv_el_relsusy_iso(elidxs_noptiso[0], true), weight );
+	  hdilep_lepmet_relIso[DILEPTON_ALL] 	->Fill( lepmet, inv_el_relsusy_iso(elidxs_noptiso[0], true), weight );
+	  //plots with scale factor
+	  hdilep_lpt_scl_trckIso[3]				->Fill( scale*pt, cms2.els_tkIso()[elidxs_noptiso[0]], weight );		
+	  hdilep_lpt_scl_trckIso[DILEPTON_ALL]	->Fill( scale*pt, cms2.els_tkIso()[elidxs_noptiso[0]], weight );		
+	  hdilep_lpt_scl_ecalIso[3]				->Fill( scale*pt, cms2.els_pat_ecalIso()[elidxs_noptiso[0]], weight );	
+	  hdilep_lpt_scl_ecalIso[DILEPTON_ALL]	->Fill( scale*pt, cms2.els_pat_ecalIso()[elidxs_noptiso[0]], weight );	
+	  hdilep_lpt_scl_hcalIso[3]				->Fill( scale*pt, cms2.els_pat_hcalIso()[elidxs_noptiso[0]], weight );	
+	  hdilep_lpt_scl_hcalIso[DILEPTON_ALL]	->Fill( scale*pt, cms2.els_pat_hcalIso()[elidxs_noptiso[0]], weight );	
+	  hdilep_lpt_scl_relIso[3] 				->Fill( scale*pt, inv_el_relsusy_iso(elidxs_noptiso[0], true), weight );
+	  hdilep_lpt_scl_relIso[DILEPTON_ALL] 	->Fill( scale*pt, inv_el_relsusy_iso(elidxs_noptiso[0], true), weight );
+*/
+/*
+	  hdilep_lpt_trckIso[1]				->Fill( pt, cms2.mus_iso03_sumPt()[muidxs_noptiso[0]], weight );		
+	  hdilep_lpt_trckIso[DILEPTON_ALL]	->Fill( pt, cms2.mus_iso03_sumPt()[muidxs_noptiso[0]], weight );		
+	  hdilep_lpt_ecalIso[1]				->Fill( pt, cms2.mus_iso03_emEt()[muidxs_noptiso[0]], weight );	
+	  hdilep_lpt_ecalIso[DILEPTON_ALL]	->Fill( pt, cms2.mus_iso03_emEt()[muidxs_noptiso[0]], weight );	
+	  hdilep_lpt_hcalIso[1]				->Fill( pt, cms2.mus_iso03_hadEt()[muidxs_noptiso[0]], weight );	
+	  hdilep_lpt_hcalIso[DILEPTON_ALL]	->Fill( pt, cms2.mus_iso03_hadEt()[muidxs_noptiso[0]], weight );	
+	  hdilep_lpt_relIso[1] 				->Fill( pt, inv_mu_relsusy_iso(muidxs_noptiso[0]), weight );
+	  hdilep_lpt_relIso[DILEPTON_ALL] 	->Fill( pt, inv_mu_relsusy_iso(muidxs_noptiso[0]), weight );
+	  hdilep_lepmet_trckIso[1]				->Fill( lepmet, cms2.mus_iso03_sumPt()[muidxs_noptiso[0]], weight );		
+	  hdilep_lepmet_trckIso[DILEPTON_ALL]	->Fill( lepmet, cms2.mus_iso03_sumPt()[muidxs_noptiso[0]], weight );		
+	  hdilep_lepmet_ecalIso[1]				->Fill( lepmet, cms2.mus_iso03_emEt()[muidxs_noptiso[0]], weight );	
+	  hdilep_lepmet_ecalIso[DILEPTON_ALL]	->Fill( lepmet, cms2.mus_iso03_emEt()[muidxs_noptiso[0]], weight );	
+	  hdilep_lepmet_hcalIso[1]				->Fill( lepmet, cms2.mus_iso03_hadEt()[muidxs_noptiso[0]], weight );	
+	  hdilep_lepmet_hcalIso[DILEPTON_ALL]	->Fill( lepmet, cms2.mus_iso03_hadEt()[muidxs_noptiso[0]], weight );	
+	  hdilep_lepmet_relIso[1] 				->Fill( lepmet, inv_mu_relsusy_iso(muidxs_noptiso[0]), weight );
+	  hdilep_lepmet_relIso[DILEPTON_ALL] 	->Fill( lepmet, inv_mu_relsusy_iso(muidxs_noptiso[0]), weight );
+	  //scale plots
+	  hdilep_lpt_scl_trckIso[1]				->Fill( scale*pt, cms2.mus_iso03_sumPt()[muidxs_noptiso[0]], weight );		
+	  hdilep_lpt_scl_trckIso[DILEPTON_ALL]	->Fill( scale*pt, cms2.mus_iso03_sumPt()[muidxs_noptiso[0]], weight );		
+	  hdilep_lpt_scl_ecalIso[1]				->Fill( scale*pt, cms2.mus_iso03_emEt()[muidxs_noptiso[0]], weight );	
+	  hdilep_lpt_scl_ecalIso[DILEPTON_ALL]	->Fill( scale*pt, cms2.mus_iso03_emEt()[muidxs_noptiso[0]], weight );	
+	  hdilep_lpt_scl_hcalIso[1]				->Fill( scale*pt, cms2.mus_iso03_hadEt()[muidxs_noptiso[0]], weight );	
+	  hdilep_lpt_scl_hcalIso[DILEPTON_ALL]	->Fill( scale*pt, cms2.mus_iso03_hadEt()[muidxs_noptiso[0]], weight );	
+	  hdilep_lpt_scl_relIso[1] 				->Fill( scale*pt, inv_mu_relsusy_iso(muidxs_noptiso[0]), weight );
+	  hdilep_lpt_scl_relIso[DILEPTON_ALL] 	->Fill( scale*pt, inv_mu_relsusy_iso(muidxs_noptiso[0]), weight );
+*/

@@ -11,40 +11,6 @@
 
 using namespace std;
 
-//const static sources_t theSources_22X =
-const static sources_t theSources =
-//(1ll << H_QCD30)	|
-//(1ll << H_QCD80)	|
-(1ll << H_ZEEJET_ALP) 	|
-(1ll << H_ZMMJET_ALP)   |
-(1ll << H_ZTTJET_ALP)   |
-(1ll << H_WJET_ALP) |
-(1ll << H_WEJET_ALP) |
-(1ll << H_WMJET_ALP) |
-(1ll << H_WTJET_ALP) |
-(1ll << H_MU15_SINGLE)	|
-(1ll << H_QCDEM)	|
-(1ll << H_QCDBCTOE) |
-(1ll << H_PHOTONJET)	|
-(1ll << H_TTBAR)     
-  ;
-
-const static sources_t bkgSources =
-(1ll << H_MU15_SINGLE)	|
-(1ll << H_QCDEM)	|
-(1ll << H_QCDBCTOE)	|
-(1ll << H_PHOTONJET)	|
-(1ll << H_TTBAR)       ;
-
-const static sources_t sigsSources = 
-(1ll << H_WEJET_ALP) |
-(1ll << H_WMJET_ALP) |
-(1ll << H_WTJET_ALP) ; //does tau count as signal or bkg?
-
-const static sources_t sigdSources =
-(1ll << H_ZEEJET_ALP) 	|
-(1ll << H_ZMMJET_ALP)   |
-(1ll << H_ZTTJET_ALP)   ;
 
 
 // for 2_2_X
@@ -76,18 +42,6 @@ void plotResults() {
   h1->setOrder(vSources);
   
   TLegend *lg_all = h1->getLegend(theSources, "lep_pt", "", "all");
-  /*
-  makeStack(h1, lg_all, theSources, "Highlep_pt", 			"", "all", true);
-  makeStack(h1, lg_all, theSources, "Highlep_Met", 			"", "all", true);
-  makeStack(h1, lg_all, theSources, "Highlep_RelIso", 		"", "all", true);
-  makeStack(h1, lg_all, theSources, "Highlep_RelIsoPtLg20", "", "all", true);
-  makeStack(h1, lg_all, theSources, "Lowlep_pt",			"", "all", true);
-  makeStack(h1, lg_all, theSources, "Lowlep_Met",			"", "all", true);
-  makeStack(h1, lg_all, theSources, "Lowlep_RelIso",		"", "all", true);
-  makeStack(h1, lg_all, theSources, "Lowlep_RelIsoPtLg20",	"", "all", true);
-  makeStack(h1, lg_all, theSources, "Lowlep_NLepGt10Lt20",	"", "all", true);
-  makeStack(h1, lg_all, theSources, "Lowlep_NLepGt20",		"", "all", true);
-  */
   /*
   makeStack(h1, lg_all, theSources, "lep_pt",				"", "all", true);
   makeStack(h1, lg_all, theSources, "lep_transmass",		"", "all", true);
@@ -145,11 +99,10 @@ void plotResults() {
   TH1F* dilep_genpt = h1->getHistogram( sigdSources, "dilep_genpt", "", "ee");
   //TH1F* dilep_1_genpt = h1->getHistogram( sigdSources, "dilep_1_genpt", "", "ee");
   TH1F* lep_genpt = h1->getHistogram( sigsSources, "lep_genpt", "", "e");
+  TH1F* lep_genmet = h1->getHistogram( sigsSources, "lep_genmet", "", "e");
+  TH1F* lep_accgenmet = h1->getHistogram( sigsSources, "lep_accgenmet", "", "e");
 
-  //TCanvas* c1 = new TCanvas();
   TString opt = "colz";
-
-  //overlay z pt with 
 
   //ABCD
   //tcmet vs reliso
@@ -166,27 +119,15 @@ void plotResults() {
   c1->SaveAs((TString)tcmet_reliso_bkg->GetName()+".png");
   */
 
-  //m
-  /*
-  TH2F* tcmet_reliso_sig_m = h1->get2dHistogram(sigsSources, "lep_tcMet_relIso", "", "m", 1, "_sig"); 
-  //tcmet_reliso_sig_m->SetName("tcMet_relIso_signal_m");
-  tcmet_reliso_sig_m->Draw(opt);
-  c1->SaveAs((TString)tcmet_reliso_sig_m->GetName()+".png");
-
-  TH2F* tcmet_reliso_bkg_m = h1->get2dHistogram(bkgSources, "lep_tcMet_relIso", "", "m", 1, "_bkg");
-  //tcmet_reliso_bkg->SetName("tcMet_relIso_background_m");
-  tcmet_reliso_bkg_m->Draw(opt);
-  c1->SaveAs((TString)tcmet_reliso_bkg_m->GetName()+".png");
-  */
-
   //e
-
   TH2F* tcmet_reliso_all_e = getTH2F(h1, theSources,  "lep_tcMet_relIso", "", "e", 1, "_alls", opt);
   TH2F* tcmet_reliso_sig_e = getTH2F(h1, sigsSources, "lep_tcMet_relIso", "", "e", 1, "_sigs", opt);
   //this one has neutrino acceptance: require nu.eta to be in 2.4 to see if changes shape more similiar to z lep pt
-  TH2F* tcmetacc_reliso_all_e = getTH2F(h1, theSources,  "lep_acc_tcMet_relIso", "", "e", 1, "_alls", opt);
+  //TH2F* tcmetacc_reliso_all_e = getTH2F(h1, theSources,  "lep_acc_tcMet_relIso", "", "e", 1, "_alls", opt);
   TH2F* tcmetacc_reliso_sig_e = getTH2F(h1, sigsSources, "lep_acc_tcMet_relIso", "", "e", 1, "_sigs", opt);
   TH2F* tcmet_reliso_bkg_e = getTH2F(h1,bkgSources, "lep_tcMet_relIso", "", "e", 1, "_bkg", opt);
+  TH2F* tcmet_reliso_zfake_e = getTH2F(h1, sigdSources, "lep_tcMet_relIso", "", "e", 1, "_zbkg", opt);
+
   /*
   TH2F* tcmet_reliso_mu15_e = h1->get2dHistogram((1ll << H_MU15_SINGLE), "lep_tcMet_relIso", "", "e", 1, "_mu15");
   tcmet_reliso_mu15_e->Draw(opt);
@@ -221,40 +162,40 @@ void plotResults() {
   TH2F* zll_pt_eta_z_e   = getTH2F(h1, sigdSources, "dilep_ll_pt_eta", "", "ee", 1, "_z", opt); 
 
   TH2F* zlt_pt_eta_all_e = getTH2F(h1, theSources, "dilep_lt_pt_eta", "", "ee", 1, "_all", opt); 
-  TH2F* zlt_pt_eta_z_e   = getTH2F(h1, sigdSources, "dilep_lt_pt_eta", "", "ee", 1, "_z", opt); 
+  //TH2F* zlt_pt_eta_z_e   = getTH2F(h1, sigdSources, "dilep_lt_pt_eta", "", "ee", 1, "_z", opt); 
 
   TH2F* zlt_ll20_pt_eta_all_e = getTH2F(h1, theSources, "dilep_lt_ll20_pt_eta", "", "ee", 1, "_all", opt); 
   //TH2F* zlt_ll20_pt_eta_z_e  = getTH2F(h1, sigdSources, "dilep_lt_ll20_pt_eta", "", "ee", 1, "_z", opt); 
 
-  TH2F* zlpt_reliso_all_e = getTH2F(h1, theSources, "dilep_lepPt_relIso", "", "ee", 1, "_all", opt); 
-  TH2F* zlpt_reliso_z_e = getTH2F(h1, sigdSources, "dilep_lepPt_relIso", "", "ee", 1, "_z", opt); 
+  //TH2F* zlpt_reliso_all_e = getTH2F(h1, theSources, "dilep_lepPt_relIso", "", "ee", 1, "_all", opt); 
+  //TH2F* zlpt_reliso_z_e = getTH2F(h1, sigdSources, "dilep_lepPt_relIso", "", "ee", 1, "_z", opt); 
 
-  TH2F* zlpt_reliso_scl_all_e = getTH2F(h1, theSources, "dilep_lepPt_Scl_relIso", "", "ee", 1, "_all", opt); 
-  TH2F* zlpt_reliso_scl_z_e = getTH2F(h1, sigdSources, "dilep_lepPt_Scl_relIso", "", "ee", 1, "_z", opt); 
+  //TH2F* zlpt_reliso_scl_all_e = getTH2F(h1, theSources, "dilep_lepPt_Scl_relIso", "", "ee", 1, "_all", opt); 
+  //TH2F* zlpt_reliso_scl_z_e = getTH2F(h1, sigdSources, "dilep_lepPt_Scl_relIso", "", "ee", 1, "_z", opt); 
 
-  TH2F* zmet_reliso_all_e = getTH2F(h1, theSources, "dilep_lepMet_relIso", "", "ee", 1, "_all", opt); 
-  TH2F* zmet_reliso_z_e = getTH2F(h1, sigdSources, "dilep_lepMet_relIso", "", "ee", 1, "_z", opt); 
+  //TH2F* zmet_reliso_all_e = getTH2F(h1, theSources, "dilep_lepMet_relIso", "", "ee", 1, "_all", opt); 
+  //TH2F* zmet_reliso_z_e = getTH2F(h1, sigdSources, "dilep_lepMet_relIso", "", "ee", 1, "_z", opt); 
 
   //the ones that matter are below here
   TH2F* zmet_reliso_scl_all_e 			= getTH2F(h1, theSources, "dilep_lepMet_Scl_relIso", "", "ee", 1, "_all", opt); 
-  TH2F* zmet_reliso_rscl_all_e 			= getTH2F(h1, theSources, "dilep_lepMet_rScl_relIso", "", "ee", 1, "_all", opt); 
+  //TH2F* zmet_reliso_rscl_all_e 			= getTH2F(h1, theSources, "dilep_lepMet_rScl_relIso", "", "ee", 1, "_all", opt); 
   TH2F* zmet_reliso_scl_z_e 			= getTH2F(h1, sigdSources,"dilep_lepMet_Scl_relIso", "", "ee", 1, "_z", opt); 
 
   TH2F* zmet_reliso_sclt_all_e 			= getTH2F(h1, theSources, "dilep_lepMet_Scl_trth_relIso", "", "ee", 1, "_all", opt); 
-  TH2F* zmet_reliso_rsclt_all_e 		= getTH2F(h1, theSources, "dilep_lepMet_rScl_trth_relIso", "", "ee", 1, "_all", opt); 
+  //TH2F* zmet_reliso_rsclt_all_e 		= getTH2F(h1, theSources, "dilep_lepMet_rScl_trth_relIso", "", "ee", 1, "_all", opt); 
   TH2F* zmet_reliso_sclt_z_e 			= getTH2F(h1, sigdSources, "dilep_lepMet_Scl_trth_relIso", "", "ee", 1, "_z", opt); 
 
   TH2F* zmet_reliso_scltm_all_e 		= getTH2F(h1, theSources, "dilep_lepMet_Scl_tmas_relIso", "", "ee", 1, "_all", opt); 
-  TH2F* zmet_reliso_rscltm_all_e 		= getTH2F(h1, theSources, "dilep_lepMet_rScl_tmas_relIso", "", "ee", 1, "_all", opt); 
+  //TH2F* zmet_reliso_rscltm_all_e 		= getTH2F(h1, theSources, "dilep_lepMet_rScl_tmas_relIso", "", "ee", 1, "_all", opt); 
   TH2F* zmet_reliso_scltm_z_e 			= getTH2F(h1, sigdSources, "dilep_lepMet_Scl_tmas_relIso", "", "ee", 1, "_z", opt); 
 
   TH2F* zmet_reliso_scltmt_all_e 		= getTH2F(h1, theSources, "dilep_lepMet_Scl_tmast_relIso", "", "ee", 1, "_all", opt); 
-  TH2F* zmet_reliso_rscltmt_all_e 		= getTH2F(h1, theSources, "dilep_lepMet_rScl_tmast_relIso", "", "ee", 1, "_all", opt); 
-  TH2F* zmet_reliso_scltmt_z_e 			= getTH2F(h1, sigdSources, "dilep_lepMet_Scl_tmast_relIso", "", "ee", 1, "_z", opt); 
+  //TH2F* zmet_reliso_rscltmt_all_e 		= getTH2F(h1, theSources, "dilep_lepMet_rScl_tmast_relIso", "", "ee", 1, "_all", opt); 
+  //TH2F* zmet_reliso_scltmt_z_e 			= getTH2F(h1, sigdSources, "dilep_lepMet_Scl_tmast_relIso", "", "ee", 1, "_z", opt); 
 
   TH2F* zmet_reliso_scltmtm_all_e 		= getTH2F(h1, theSources, "dilep_lepMet_Scl_tmastmes_relIso", "", "ee", 1, "_all", opt); 
-  TH2F* zmet_reliso_rscltmtm_all_e 		= getTH2F(h1, theSources, "dilep_lepMet_rScl_tmastmes_relIso", "", "ee", 1, "_all", opt); 
-  TH2F* zmet_reliso_scltmtm_z_e 		= getTH2F(h1, sigdSources, "dilep_lepMet_Scl_tmastmes_relIso", "", "ee", 1, "_z", opt); 
+  //TH2F* zmet_reliso_rscltmtm_all_e 		= getTH2F(h1, theSources, "dilep_lepMet_rScl_tmastmes_relIso", "", "ee", 1, "_all", opt); 
+  //TH2F* zmet_reliso_scltmtm_z_e 		= getTH2F(h1, sigdSources, "dilep_lepMet_Scl_tmastmes_relIso", "", "ee", 1, "_z", opt); 
 
 
   TCanvas* c1 = new TCanvas();
@@ -271,8 +212,9 @@ void plotResults() {
   //plot z lep pt from th2, met in w, zleppt+zmet.
   TH1D* proj_wmet 		= new TH1D( *(tcmet_reliso_sig_e		->ProjectionX( (TString)tcmet_reliso_sig_e->GetName()+"_projx", 0, 101)) );
   TH1D* proj_wmetnu 	= new TH1D( *(tcmetacc_reliso_sig_e		->ProjectionX( (TString)tcmetacc_reliso_sig_e->GetName()+"_projx", 0, 101)) );
-  TH1D* proj_zlpt 		= new TH1D( *(zlpt_reliso_all_e			->ProjectionX( (TString)zlpt_reliso_all_e->GetName()+"_projx", 0, 101)) );  
-  TH1D* proj_zmet 		= new TH1D( *(zmet_reliso_all_e			->ProjectionX( (TString)zmet_reliso_all_e->GetName()+"_projx", 0, 101)) );  
+  //TH1D* proj_zlpt 		= new TH1D( *(zlpt_reliso_all_e			->ProjectionX( (TString)zlpt_reliso_all_e->GetName()+"_projx", 0, 101)) );  
+  //TH1D* proj_zmet 		= new TH1D( *(zmet_reliso_all_e			->ProjectionX( (TString)zmet_reliso_all_e->GetName()+"_projx", 0, 101)) );  
+  //TH1D* proj_zfakemet	= new TH1D( *(tcmet_reliso_zfake_e		->ProjectionX( (TString)tcmet_reliso_zfake_e->GetName()+"_projx", 0, 101)) );
   //the ones that matter are below here
   TH1D* proj_zmetsc 	= new TH1D( *(zmet_reliso_scl_all_e		->ProjectionX( (TString)zmet_reliso_scl_all_e->GetName()+"_projx", 0, 101)) );  
   TH1D* proj_zmetsct 	= new TH1D( *(zmet_reliso_sclt_all_e	->ProjectionX( (TString)zmet_reliso_sclt_all_e->GetName()+"_projx", 0, 101)) );  
@@ -280,11 +222,11 @@ void plotResults() {
   TH1D* proj_zmetsctmt 	= new TH1D( *(zmet_reliso_scltmt_all_e	->ProjectionX( (TString)zmet_reliso_scltmt_all_e->GetName()+"_projx", 0, 101)) );  
   TH1D* proj_zmetsctmtm	= new TH1D( *(zmet_reliso_scltmtm_all_e	->ProjectionX( (TString)zmet_reliso_scltmtm_all_e->GetName()+"_projx", 0, 101)) );  
   //same with 'refined' ('readjusted' 'retarded') scale
-  TH1D* proj_zmetrsc 	= new TH1D( *(zmet_reliso_rscl_all_e	->ProjectionX( (TString)zmet_reliso_rscl_all_e->GetName()+"_projx", 0, 101)) );  
-  TH1D* proj_zmetrsct 	= new TH1D( *(zmet_reliso_rsclt_all_e	->ProjectionX( (TString)zmet_reliso_rsclt_all_e->GetName()+"_projx", 0, 101)) );  
-  TH1D* proj_zmetrsctm 	= new TH1D( *(zmet_reliso_rscltm_all_e	->ProjectionX( (TString)zmet_reliso_rscltm_all_e->GetName()+"_projx", 0, 101)) );  
-  TH1D* proj_zmetrsctmt = new TH1D( *(zmet_reliso_rscltmt_all_e	->ProjectionX( (TString)zmet_reliso_rscltmt_all_e->GetName()+"_projx", 0, 101)) );  
-  TH1D* proj_zmetrsctmtm= new TH1D( *(zmet_reliso_rscltmtm_all_e->ProjectionX( (TString)zmet_reliso_rscltmtm_all_e->GetName()+"_projx", 0, 101)) );  
+  //TH1D* proj_zmetrsc 	= new TH1D( *(zmet_reliso_rscl_all_e	->ProjectionX( (TString)zmet_reliso_rscl_all_e->GetName()+"_projx", 0, 101)) );  
+  //TH1D* proj_zmetrsct 	= new TH1D( *(zmet_reliso_rsclt_all_e	->ProjectionX( (TString)zmet_reliso_rsclt_all_e->GetName()+"_projx", 0, 101)) );  
+  //TH1D* proj_zmetrsctm 	= new TH1D( *(zmet_reliso_rscltm_all_e	->ProjectionX( (TString)zmet_reliso_rscltm_all_e->GetName()+"_projx", 0, 101)) );  
+  //TH1D* proj_zmetrsctmt = new TH1D( *(zmet_reliso_rscltmt_all_e	->ProjectionX( (TString)zmet_reliso_rscltmt_all_e->GetName()+"_projx", 0, 101)) );  
+  //TH1D* proj_zmetrsctmtm= new TH1D( *(zmet_reliso_rscltmtm_all_e->ProjectionX( (TString)zmet_reliso_rscltmtm_all_e->GetName()+"_projx", 0, 101)) );  
 
   //only in iso 0.1--iso signal region
   /*
@@ -297,7 +239,7 @@ void plotResults() {
   */
   //only signal for Zs
   //TH1D* proj_zlpt_sig	= new TH1D( *(zlpt_reliso_z_e			->ProjectionX( (TString)zlpt_reliso_z_e->GetName()+"_projx", 0, 101)) );  
-  TH1D* proj_zmet_sig	= new TH1D( *(zmet_reliso_z_e			->ProjectionX( (TString)zmet_reliso_z_e->GetName()+"_projx", 0, 101)) );  
+  //TH1D* proj_zmet_sig	= new TH1D( *(zmet_reliso_z_e			->ProjectionX( (TString)zmet_reliso_z_e->GetName()+"_projx", 0, 101)) );  
   TH1D* proj_zmetsc_sig	= new TH1D( *(zmet_reliso_scl_z_e		->ProjectionX( (TString)zmet_reliso_scl_z_e->GetName()+"_projx", 0, 101)) );  
   TH1D* proj_zmetsct_sig= new TH1D( *(zmet_reliso_sclt_z_e  	->ProjectionX( (TString)zmet_reliso_sclt_z_e->GetName()+"_projx", 0, 101)) );  
   TH1D* proj_zmetsctm_sig= new TH1D( *(zmet_reliso_scltm_z_e  	->ProjectionX( (TString)zmet_reliso_scltm_z_e->GetName()+"_projx", 0, 101)) );  
@@ -335,9 +277,9 @@ void plotResults() {
   //some simple hist stats
   //way this fn works is the last number printed is ratio of integral in bin range of last two args to total integral
   cout << "\nname\t\t\t\tmean\tintegral\t\% below 20\n";
-  printHistStats(proj_zlpt,0,20);
-  printHistStats(proj_zlpt		,0,20);
-  printHistStats(proj_zmet		,0,20);
+  //printHistStats(proj_zlpt		,0,20);
+  //printHistStats(proj_zmet		,0,20);
+  //printHistStats(proj_zfakemet	,0,20);
   printHistStats(proj_zmetsc	,0,20);
   printHistStats(proj_zmetsct	,0,20);
   printHistStats(proj_zmetsctm	,0,20);
@@ -361,22 +303,50 @@ void plotResults() {
   //use it before scaling/saving
   printHistStats(zcorrtm		,0,20);
 
+  //plot correction hists
+  TH1D* wcorrhist = new TH1D( *proj_wmet );
+  wcorrhist->Divide( proj_wmetnu );
+  wcorrhist->SetLineColor(2); //red
+  wcorrhist->Draw();
+  TH1F* wgencorrhist = new TH1F( *lep_genmet );
+  wgencorrhist->Divide( lep_accgenmet );
+  wgencorrhist->Draw("same");
+  c1->SaveAs("Compare_corrfactors.png");
+
   //get th2s with correction--no transmass cut
-  TH2F* zmetcorr_reliso_scl_all_e = corrTH2F( zmet_reliso_scl_all_e, proj_wmet, proj_wmetnu ); //the last arg must be the ratio hist, not the scaled hist
+  TH2F* zmetcorr_reliso_scl_all_e = corrTH2F( zmet_reliso_scl_all_e, proj_wmet, proj_wmetnu ); //the 2 last args are the hists for ratio
   zmetcorr_reliso_scl_all_e->Draw(opt);
   c1->SaveAs("dilep_lepmetcorr_Scl_reliso_ee_all.png"); //th2 alone
   //with tm cut
-  TH2F* zmetcorr_reliso_scltm_all_e = corrTH2F( zmet_reliso_scltm_all_e, proj_wmet, proj_wmetnu ); //the last arg must be the ratio hist, not the scaled hist
+  TH2F* zmetcorr_reliso_scltm_all_e = corrTH2F( zmet_reliso_scltm_all_e, proj_wmet, proj_wmetnu );
   zmetcorr_reliso_scltm_all_e->Draw(opt);
   c1->SaveAs("dilep_lepmetcorr_Scl_tmas_reliso_ee_all.png"); //th2 alone
+  //with tm from gen
+  TH2F* zgenmetcorr_reliso_scltm_all_e = corrTH2F( zmet_reliso_scltm_all_e, lep_genmet, lep_accgenmet );
+  zgenmetcorr_reliso_scltm_all_e->Draw(opt);
+  c1->SaveAs("dilep_lepgenmetcorr_Scl_tmas_reliso_ee_all.png"); //th2 alone
+  
 
   //compare projection after scaling to projection scaled--should be exact agreement (same scale for both)
   zmetcorr_reliso_scltm_all_e->ProjectionX( (TString)zmetcorr_reliso_scltm_all_e->GetName()+"_projx", 0, 101)->Draw();
   zcorrtm->Draw("same");
   c1->SaveAs("Compare_zcorrtmproj_wmet.png");
 
+  //compare gen with w, z scaled--have the th2s, so can scale th1s freely
+  TH1D* zgencorrtm = zgenmetcorr_reliso_scltm_all_e->ProjectionX( (TString)zgenmetcorr_reliso_scltm_all_e->GetName()+"_projx", 0, 101);
+  cout << "zgencorrtm = " << zgencorrtm->GetName() << endl;
+  printHistStats(zgencorrtm		,0,20);
+  zgencorrtm->Scale( proj_wmet->Integral()/zgencorrtm->Integral() );
+  zgencorrtm->Draw();
+  //lep_genmet->Scale( proj_wmet->Integral()/lep_genmet->Integral() );
+  //lep_genmet->SetLineColor( 6 ); //magenta
+  //lep_genmet->Draw("same");
+  //lep_accgenmet->Scale( proj_wmet->Integral()/lep_accgenmet->Integral() );
+  //lep_accgenmet->SetLineColor( 7 ); //cyan (light blue)
+  //lep_accgenmet->Draw("same");
   zcorrtm->Scale( proj_wmet->Integral()/zcorrtm->Integral() );
-  zcorrtm->Draw();
+  zcorrtm->Draw("same");
+  proj_wmet->SetLineColor(3); //green
   proj_wmet->Draw("same");
   c1->SaveAs("Compare_zcorrtm_wmet.png");
 
@@ -473,6 +443,7 @@ void plotResults() {
 	tcmet_reliso_all_e,
 	tcmet_reliso_sig_e,
 	tcmet_reliso_bkg_e,
+	tcmet_reliso_zfake_e,
 	//tcmet_reliso_mu15_e,
 	//tcmet_reliso_qcdem_e,
 	//tcmet_reliso_qcdbc_e,
@@ -569,7 +540,7 @@ void plotResults() {
 
   cout << "\nUsing lep pt + met as met: baseline, sig met 25, iso 0.3-0.4\n";
   aviCDtable( tcmet_reliso_all_e, zmet_reliso_scl_all_e, tcmet_reliso_sig_e, 25., metmax, -0.1, 20., 0.3, 0.4, 0., 0.1);
-
+  /*
   cout << "\n******************************************\n";
 
   cout << "\nUsing lep pt + met corrected for nu: orig regions\n";
@@ -577,7 +548,7 @@ void plotResults() {
 
   cout << "\nUsing lep pt + met corrected for nu: sig met 25, iso 0.3-0.4\n";
   aviCDtable( tcmet_reliso_all_e, zmetcorr_reliso_scl_all_e, tcmet_reliso_sig_e, 25., metmax, -0.1, 20., 0.3, 0.4, 0., 0.1);
-
+  */
   cout << "\n******************************************\n";
 
   cout << "\nUsing lep pt + met corrected for nu w/ tmass: orig regions\n";
@@ -585,6 +556,14 @@ void plotResults() {
 
   cout << "\nUsing lep pt + met corrected for nu w/ tmass: sig met 25, iso 0.3-0.4\n";
   aviCDtable( tcmet_reliso_all_e, zmetcorr_reliso_scltm_all_e, tcmet_reliso_sig_e, 25., metmax, -0.1, 20., 0.3, 0.4, 0., 0.1);
+
+  cout << "\n******************************************\n";
+
+  cout << "\nUsing lep pt + genmet corrected for nu w/ tmass: orig regions\n";
+  aviCDtable( tcmet_reliso_all_e, zgenmetcorr_reliso_scltm_all_e, tcmet_reliso_sig_e, 20., metmax, -0.1, 20., 0.1, 0.2, 0., 0.1);
+
+  cout << "\nUsing lep pt + genmet corrected for nu w/ tmass: sig met 25, iso 0.3-0.4\n";
+  aviCDtable( tcmet_reliso_all_e, zgenmetcorr_reliso_scltm_all_e, tcmet_reliso_sig_e, 25., metmax, -0.1, 20., 0.3, 0.4, 0., 0.1);
 
   /*
   cout << "\nUsing lep pt + met as met: baseline rescaled\n";
@@ -633,7 +612,7 @@ void aviCDtable( TH2F* data, TH2F* di, TH2F* ssig, double x1, double x2, double 
   //note: 80. is metmax above--same as upper edge of th2 in looper.cc
   double ditot = integrateTH2F(di, 0, 80., 0, 1);
   double sitot = integrateTH2F(ssig, 0, 80., 0, 1);
-  
+
   double bpr = b - a*B/A;
   double cpr = c - a*C/A;
   double dpr = d - a*D/A;
@@ -669,7 +648,8 @@ template <class TH> TH2F* corrTH2F( TH2F* h, TH* met, TH* metacc) {
   ratio->Divide( metacc );
   for( int i=0;i<h->GetNbinsX();i++ ) { //x values: pt/met
 	for( int j=0;j<h->GetNbinsY();j++ ) { //do for all y==iso
-	  newh->SetBinContent( i, j, h->GetBinContent(i,j) * ratio->GetBinContent(i) );
+	  if( ratio->GetBinContent(i) < 5. ) //protect against large scale factors
+		newh->SetBinContent( i, j, h->GetBinContent(i,j) * ratio->GetBinContent(i) );
 	}
   }
   return newh;
@@ -878,102 +858,6 @@ void saveStack(THStack* st, TLegend* leg, bool cpylog, double ymin, double ymax,
 void makeStack(HistogramUtilities* h, TLegend* leg, sources_t theSources, TString title, TString subtitle, TString suffix, bool cpylog, double ymin, double ymax, TString name) {
   THStack *st = h->getStack(theSources, title, subtitle, suffix);
   saveStack( st, leg, cpylog, ymin, ymax, name );
-}
-
-
-void plotResultsLep(TString hyp)
-{
-
-  gROOT->ProcessLine(".L ~/tdrStyle.C");
-  gROOT->ProcessLine("setTDRStyle()");
-
-  // sources/ordering for Z stack plots
-  std::vector<DataSource> zSources;
-
-  if (hyp == "e") {
-	zSources.push_back(     fH_WJET_ALP()   );
-	zSources.push_back(     fH_QCD30()	);
-	zSources.push_back(     fH_ZEEJET_ALP()   );
-	zSources.push_back(     fH_ZTTJET_ALP()   );
-	zSources.push_back(     fH_ZMMJET_ALP()   );
-	
-  } else if (hyp == "m") {
-	zSources.push_back(     fH_WJET_ALP()   );
-	zSources.push_back(     fH_MU15_SINGLE()      );
-	zSources.push_back(     fH_ZMMJET_ALP()   );
-	zSources.push_back(     fH_ZTTJET_ALP()   );
-	zSources.push_back(     fH_ZEEJET_ALP()   );
-  }
-  
-  // luminorm for 1pb-1
-  HistogramUtilities h1("Results.root", 0.001);
-  h1.setOrder(zSources);
-  
-  TLegend *lg_all = h1.getLegend(theSources, "lep_met", "", hyp);
-  THStack *st_lep_met = h1.getStack(theSources, "lep_met", "", hyp);
-  THStack *st_lep_met_dphi = h1.getStack(theSources, "lep_met_dphi", "", hyp);
-  
-  TCanvas *c1 = new TCanvas();
-  c1->cd();
-  st_lep_met->Draw();
-  lg_all->Draw();
-  Utilities::saveCanvas(c1, "results/lep_met_" + hyp);
-  
-  TCanvas *c2 = new TCanvas();
-  c2->cd();
-  st_lep_met_dphi->Draw();
-  lg_all->Draw();
-  Utilities::saveCanvas(c2, "results/lep_met_dphi_" + hyp);
-  
-}
-
-
-void plotResultsDilep(TString hyp)
-{
-
-  gROOT->ProcessLine(".L ~/tdrStyle.C");
-  gROOT->ProcessLine("setTDRStyle()");
-
-  // sources/ordering for Z stack plots
-  std::vector<DataSource> zSources;
-
-  if (hyp == "ee") {
-	zSources.push_back(     fH_ZEEJET_ALP()   );
-	zSources.push_back(     fH_QCD30()      );
-	zSources.push_back(     fH_WJET_ALP()   );
-	zSources.push_back(     fH_ZTTJET_ALP()   );
-	zSources.push_back(     fH_ZMMJET_ALP()   );
-
-  } else if (hyp == "mm") {
-	zSources.push_back(     fH_ZMMJET_ALP()   );
-	zSources.push_back(     fH_MU15_SINGLE()      );
-	zSources.push_back(     fH_WJET_ALP()   );
-	zSources.push_back(     fH_ZTTJET_ALP()   );
-	zSources.push_back(     fH_ZEEJET_ALP()   );
-  }
-
-  // luminorm for 1pb-1
-  //HistogramUtilities h1("Results.root", 0.001);
-  HistogramUtilities h1("Results.root");
-  h1.setOrder(zSources);
-
-  TLegend *lg_all = h1.getLegend(theSources, "dilep_mass", "", hyp);
-  THStack *st_dilep_mass = h1.getStack(theSources, "dilep_mass", "", hyp, 4);
-  THStack *st_dilep_met = h1.getStack(theSources, "dilep_met", "", hyp);
-
-  TCanvas *c1 = new TCanvas();
-  c1->cd();
-  st_dilep_mass->Draw();
-  lg_all->Draw();
-  Utilities::saveCanvas(c1, "results/dilep_mass_" + hyp);	
-
-  TCanvas *c2 = new TCanvas();
-  c2->cd();
-  st_dilep_met->Draw();
-  lg_all->Draw();
-  Utilities::saveCanvas(c2, "results/dilep_met_" + hyp);
-
-
 }
 
 
