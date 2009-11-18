@@ -689,7 +689,7 @@ void makeBranchFile(std::string branchNamesFile) {
       if(temp.Contains("vector") && !temp.Contains("std::")) 
 	temp.ReplaceAll("vector", "std::vector");
       if(temp.Contains("LorentzVector") && !temp.Contains("ROOT::Math::LorentzVector"))
-	temp.ReplaceAll("LorentzVector", "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >");
+	temp.ReplaceAll("LorentzVector", "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >");
       temp.ReplaceAll(">>", "> >");
       temp.ReplaceAll(">>>", "> > >");
       if(i!=0)
@@ -743,11 +743,11 @@ void makeBranchFile(std::string branchNamesFile) {
       if(varType.BeginsWith("std::vector<unsigned int>") ) 
         prefix = "uints";
       if(varType.BeginsWith("ROOT::Math::LorentzVector<") )
-        prefix = "doubleROOTMathPxPyPzE4DROOTMathLorentzVector";
+        prefix = "floatROOTMathPxPyPzE4DROOTMathLorentzVector";
       if(varType.BeginsWith("std::vector<ROOT::Math::LorentzVector<") )
-        prefix = "doubleROOTMathPxPyPzE4DROOTMathLorentzVectors";
+        prefix = "floatROOTMathPxPyPzE4DROOTMathLorentzVectors";
       if(varType.Contains("std::vector<std::vector<ROOT::Math::LorentzVector<") )
-        prefix = "doubleROOTMathPxPyPzE4DROOTMathLorentzVectorss";
+        prefix = "floatROOTMathPxPyPzE4DROOTMathLorentzVectorss";
       branchfile << "   outTree_->Branch(\"" << prefix + "_" +varName << "\",   \"" 
 		 << varType << "\",   &" << varName << ");" << endl;
       branchfile << "   outTree_->SetAlias(\"" << v_varNames[i] << "\",   " 
