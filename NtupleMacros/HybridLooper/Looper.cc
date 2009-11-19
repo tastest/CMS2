@@ -97,6 +97,17 @@ void Looper::BookHistos ()
 	FormatHist(h1_weffs_sigmaIEtaIEta_, "weffs_sigmaIEtaIEta", 100, 0.0, 0.06);
 	FormatHist(h1_weffbg_sigmaIEtaIEta_, "weffbg_sigmaIEtaIEta", 100, 0.0, 0.06);
 
+
+        FormatHist(h1_weffs_met20_sigmaIEtaIEta_, "weffs_met20_sigmaIEtaIEta", 100, 0.0, 0.06);
+        FormatHist(h1_weffs_met25_sigmaIEtaIEta_, "weffs_met25_sigmaIEtaIEta", 100, 0.0, 0.06);
+        FormatHist(h1_weffs_met30_sigmaIEtaIEta_, "weffs_met30_sigmaIEtaIEta", 100, 0.0, 0.06);
+        FormatHist(h1_weffs_met35_sigmaIEtaIEta_, "weffs_met35_sigmaIEtaIEta", 100, 0.0, 0.06);
+
+        FormatEffHist(em_weffs_met20_sigmaIEtaIEta_, true, 0.0, 0.03, "weffs_met20_sigmaIEtaIEta");
+        FormatEffHist(em_weffs_met25_sigmaIEtaIEta_, true, 0.0, 0.03, "weffs_met25_sigmaIEtaIEta");
+        FormatEffHist(em_weffs_met30_sigmaIEtaIEta_, true, 0.0, 0.03, "weffs_met30_sigmaIEtaIEta");
+        FormatEffHist(em_weffs_met35_sigmaIEtaIEta_, true, 0.0, 0.03, "weffs_met35_sigmaIEtaIEta");
+
         FormatHist(h1_weff_tcmet_after_iso_jpt_conv_, "weff_tcmet_after_iso_jpt_conv", 100, 0, 100);
 
 	// electron ID related
@@ -138,6 +149,8 @@ void Looper::BookHistos ()
         FormatHist(h1_ecalIso03All_, "ecalIso03All", 150, 0.0, 15);
         FormatHist(h1_hcalIso03All_, "hcalIso03All", 150, 0.0, 15);
 	FormatHist(h1_caloIso03All_, "caloIso03All", 150, 0.0, 15);
+
+        FormatHist(h1_ecalTowerIso03AllNM1_, "ecalTowerIso03AllNM1", 150, 0.0, 15); 
 
 	Format2DHist(h2_tkIso03All_, "tkIso03All2D", 30, 0.0, 150.0, 30, 0.0, 15.0);
         Format2DHist(h2_ecalIso03All_, "ecalIso03All2D", 30, 0.0, 150.0, 30, 0.0, 15.0);
@@ -585,6 +598,7 @@ void Looper::wEfficiency()
         if ((cuts_ & (CUT_BIT(ELE_ISO_V2))) == (CUT_BIT(ELE_ISO_V2))) applyIsoV2 = true;
 	float jptThreshold = 999;
 	if ((cuts_ & (CUT_BIT(EVT_JPT_25))) == (CUT_BIT(EVT_JPT_25))) jptThreshold = 25.0;
+        if ((cuts_ & (CUT_BIT(EVT_JPT_20))) == (CUT_BIT(EVT_JPT_20))) jptThreshold = 20.0;
 	float tcMetThreshold = 0;
 	if ((cuts_ & (CUT_BIT(EVT_TCMET_30))) == (CUT_BIT(EVT_TCMET_30))) tcMetThreshold = 30.0;
 	if ((cuts_ & (CUT_BIT(EVT_TCMET_20))) == (CUT_BIT(EVT_TCMET_20))) tcMetThreshold = 20.0;
@@ -686,6 +700,27 @@ void Looper::wEfficiency()
         if (cms2.evt_tcmet() < 15.0) {
 		h1_weffbg_sigmaIEtaIEta_[det]->Fill(cms2.els_sigmaIEtaIEta()[eleIndex], weight); 
 	}
+
+	if (cms2.evt_tcmet() > 20.0) {
+		h1_weffs_met20_sigmaIEtaIEta_[det]->Fill(cms2.els_sigmaIEtaIEta()[eleIndex], weight);
+                em_weffs_met20_sigmaIEtaIEta_[det]->Fill(cms2.els_sigmaIEtaIEta()[eleIndex],
+                	cms2.els_p4()[eleIndex].Pt(), cms2.els_etaSC()[eleIndex], cms2.els_phiSC()[eleIndex], 1);
+	}
+        if (cms2.evt_tcmet() > 25.0) {
+                h1_weffs_met25_sigmaIEtaIEta_[det]->Fill(cms2.els_sigmaIEtaIEta()[eleIndex], weight);
+                em_weffs_met25_sigmaIEtaIEta_[det]->Fill(cms2.els_sigmaIEtaIEta()[eleIndex],
+                        cms2.els_p4()[eleIndex].Pt(), cms2.els_etaSC()[eleIndex], cms2.els_phiSC()[eleIndex], 1);
+        }
+        if (cms2.evt_tcmet() > 30.0) {
+                h1_weffs_met30_sigmaIEtaIEta_[det]->Fill(cms2.els_sigmaIEtaIEta()[eleIndex], weight);
+                em_weffs_met30_sigmaIEtaIEta_[det]->Fill(cms2.els_sigmaIEtaIEta()[eleIndex],
+                        cms2.els_p4()[eleIndex].Pt(), cms2.els_etaSC()[eleIndex], cms2.els_phiSC()[eleIndex], 1);
+        }
+        if (cms2.evt_tcmet() > 35.0) {
+                h1_weffs_met35_sigmaIEtaIEta_[det]->Fill(cms2.els_sigmaIEtaIEta()[eleIndex], weight);
+                em_weffs_met35_sigmaIEtaIEta_[det]->Fill(cms2.els_sigmaIEtaIEta()[eleIndex],
+                        cms2.els_p4()[eleIndex].Pt(), cms2.els_etaSC()[eleIndex], cms2.els_phiSC()[eleIndex], 1);
+        }
 
 	// tcMet cut
 	if (cms2.evt_tcmet() > tcMetThreshold) {
@@ -828,9 +863,11 @@ void Looper::electronId()
 					}
 				}
 
-                                if (tkIso < tkThresholdsNM1[det] && hcalIso < hcalThresholdsNM1[det])
+                                if (tkIsoJura01In015 < tkThresholdsNM1[det] && hcalIso < hcalThresholdsNM1[det]) {
 					h1_ecalIso03AllNM1_[det]->Fill(ecalIso, weight);
-                                if (tkIso < tkThresholdsNM1[det] && ecalIso < ecalThresholdsNM1[det])
+					h1_ecalTowerIso03AllNM1_[det]->Fill(cms2.els_ecalJuraTowerIso()[i], weight);
+				}
+                                if (tkIsoJura01In015 < tkThresholdsNM1[det] && ecalIso < ecalThresholdsNM1[det])
 					h1_hcalIso03AllNM1_[det]->Fill(hcalIso, weight);
 
 				//trackIsolationStudy(i, det);

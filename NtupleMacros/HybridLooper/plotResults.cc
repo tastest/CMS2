@@ -34,8 +34,8 @@
                 (1ll << H_QCD30);
         const static sources_t theSources_312 =
                 (1ll << H_QCD30) |
-                (1ll << H_WENU);
-
+                (1ll << H_WENU) |
+		(1ll << H_PHOTONJET);
 
         const static sources_t theSources_22X =
                 (1ll << H_QCD30) 	|
@@ -202,7 +202,7 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
 
         c->cd();
         gr->Draw("AP");
-        gr->GetXaxis()->SetRangeUser(0.80, 1.1);
+        gr->GetXaxis()->SetRangeUser(0.95, 1.1);
         gr->GetYaxis()->SetRangeUser(0.00, 1.1); 
         arr_99->Draw();
         arr_98->Draw();
@@ -392,6 +392,23 @@ void plotEffVar(HistogramUtilities &h1, TString name, TString det, TString saveN
 	lg->Draw();
         Utilities::saveCanvas(c, "results/" + saveName + "_effVar_sb_" + name + "_" + det);
 
+	//
+	// like "data" (use all sources)
+	//
+
+        h1_total = h1.getHistogram(theSources, name, "", det + "_denom", rebin, "");
+        h1_pass = h1.getHistogram(theSources, name, "", det + "_numer", rebin, "");
+        gr_eff_s->BayesDivide(h1_pass, h1_total);
+        gr_eff_s->SetMarkerColor(kBlue);
+        gr_eff_s->SetLineColor(kBlue);
+        c->SetName(TString("c_data_") + h1_pass->GetName());
+        c->cd();
+        gr_eff_s->Draw("AP");
+        gr_eff_s->GetYaxis()->SetRangeUser(0, 1.1);
+        gr_eff_s->GetXaxis()->SetTitle(h1_total->GetXaxis()->GetTitle());
+        gr_eff_s->GetYaxis()->SetTitle("Efficiency");
+        Utilities::saveCanvas(c, "results/" + saveName + "_effVar_data_" + name + "_" + det);
+
         delete c;
 	delete lg;
         //delete h1_eff;
@@ -406,6 +423,7 @@ void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString sav
 
         THStack *st = h1.getStack(theSources, name, "", det, rebin);
         TLegend *lg_all = h1.getLegend(theSources, name, "", det);
+	lg_all->SetX1(0.4);
 
         TCanvas *c1 = new TCanvas();
         c1->cd();
@@ -432,8 +450,8 @@ void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString sav
 
 void plotAllResultsID()
 {
-	plotResultsID("ee", "Results312_eleIdW");
-	plotResultsID("eb", "Results312_eleIdW");
+	plotResultsID("ee", "Results312_eleId");
+	plotResultsID("eb", "Results312_eleId");
 }
 
 void plotAllResultsW()
@@ -463,8 +481,19 @@ void plotAllResultsW()
 	// try to apply candidate electron id
 	// tasElectron_v0
 	//
-	plotResultsW("ee", "pt20_isoV1_phimax130_tasv1_tcmet30");
-        plotResultsW("eb", "pt20_isoV1_phimax130_tasv1_tcmet30");
+	//plotResultsW("ee", "pt20_isoV1_phimax130_tasv1_tcmet30");
+        //plotResultsW("eb", "pt20_isoV1_phimax130_tasv1_tcmet30");
+
+	//
+	// efficiency curves "from data"
+	//
+        plotResultsW("ee", "Results312_eleIdW_pt20_jetVeto");
+        plotResultsW("eb", "Results312_eleIdW_pt20_jetVeto");
+        plotResultsW("ee", "Results312_eleIdW_pt20");
+        plotResultsW("eb", "Results312_eleIdW_pt20");
+        plotResultsW("ee", "Results312_eleIdW_pt30");
+        plotResultsW("eb", "Results312_eleIdW_pt30");
+
 
 }
 
@@ -595,7 +624,9 @@ void plotResultsW(TString det, TString fileStamp)
         // luminosity is already normalised to 1pb-1 in the looper
         std::vector<DataSource> sources;
         sources.push_back( fH_WENU() );
-        HistogramUtilities h1("Results_" + fileStamp + ".root", sources, 1.0);
+        sources.push_back( fH_QCD30() );
+        sources.push_back( fH_PHOTONJET() );
+        HistogramUtilities h1(fileStamp + ".root", sources, 1.0);
 
         // W studies related
         //
@@ -620,17 +651,32 @@ void plotResultsW(TString det, TString fileStamp)
         plotStack(h1, "weff_jptphimax_after_iso", "#Delta#phi_{Max}{JPT, electron}  (Degrees)", fileStamp, det, 2);
         plotStack(h1, "weff_tcmet_after_iso_jpt_conv", "tcMET (GeV)", fileStamp, det, 2);
 
-        plotEff(h1, "weff_leadjptphi_after_iso", fileStamp, det, true, 2);
-        plotEff(h1, "weff_jptpt_after_iso", fileStamp, det, true, 2);
-        plotEff(h1, "weff_leadjptphi_after_iso_jpt", fileStamp, det, true, 2);
-        plotEff(h1, "weff_leadjptphi_after_iso_jpt_tcmet", fileStamp, det, true, 2);
+        plotEff(h1, "weff_leadjptphi_after_iso", fileStamp, det, true, 2, true);
+        plotEff(h1, "weff_jptpt_after_iso", fileStamp, det, true, 2, true);
+        plotEff(h1, "weff_leadjptphi_after_iso_jpt", fileStamp, det, true, 2, true);
+        plotEff(h1, "weff_leadjptphi_after_iso_jpt_tcmet", fileStamp, det, true, 2, true);
 
-        plotEff(h1, "weff_jptphimax_after_iso", fileStamp, det, true, 2);
-        plotEff(h1, "weff_jptpt_after_iso", fileStamp, det, true, 2);
+        plotEff(h1, "weff_jptphimax_after_iso", fileStamp, det, true, 2, true);
+        plotEff(h1, "weff_jptpt_after_iso", fileStamp, det, true, 2, true);
 
 	// distributions selected
 	plotStack(h1, "weffs_sigmaIEtaIEta", "sigmaIEtaIEta", fileStamp, det);
         plotStack(h1, "weffbg_sigmaIEtaIEta", "sigmaIEtaIEta", fileStamp, det);
+
+	// efficiency curves as a function of pt
+        plotStack(h1, "weffs_met20_sigmaIEtaIEta", "sigmaIEtaIEta", fileStamp, det);
+        plotEffVar(h1, "weffs_met20_sigmaIEtaIEta_pt", det, "eleIdW", 4);
+
+        plotStack(h1, "weffs_met25_sigmaIEtaIEta", "sigmaIEtaIEta", fileStamp, det);
+        plotEffVar(h1, "weffs_met25_sigmaIEtaIEta_pt", det, "eleIdW", 4);
+
+        plotStack(h1, "weffs_met30_sigmaIEtaIEta", "sigmaIEtaIEta", fileStamp, det);
+        plotEffVar(h1, "weffs_met30_sigmaIEtaIEta_pt", det, "eleIdW", 4);
+
+        plotStack(h1, "weffs_met35_sigmaIEtaIEta", "sigmaIEtaIEta", fileStamp, det);
+        plotEffVar(h1, "weffs_met35_sigmaIEtaIEta_pt", det, "eleIdW", 4);
+
+
 
 }
 
@@ -648,7 +694,7 @@ void plotResultsID(TString det, TString fileStamp)
         sources.push_back( fH_QCD30() );
 	HistogramUtilities h1(fileStamp + ".root", sources, 1.0);
 
-	// electron id related
+	// electron id red
 	//
 
         plotEff(h1, "dEtaIn", "IDStudy", det, true, 2, true, 0.007, 0.010);
@@ -713,6 +759,8 @@ void plotResultsID(TString det, TString fileStamp)
         plotEff(h1, "tkIso03AllIDNM1", "IDStudy", det, true, 1, true);
         plotEff(h1, "tkIso03AllConvNM1", "IDStudy", det, true, 1, true);
         plotEff(h1, "tkIso03AllConvIDNM1", "IDStudy", det, true, 1, true);
+
+        plotEff(h1, "ecalTowerIso03AllNM1", "IDStudy", det, true, 1, true);
 
         plotEff(h1, "ecalIso03AllNM1", "IDStudy", det, true, 1, true);
         plotEff(h1, "hcalIso03AllNM1", "IDStudy", det, true, 1, true);

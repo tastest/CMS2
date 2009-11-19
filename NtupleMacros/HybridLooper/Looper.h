@@ -125,7 +125,7 @@ protected:
         TH1F    *h1_tkIso03AllIDNM1_[2];
         TH1F    *h1_tkIso03AllConvNM1_[2];
         TH1F    *h1_tkIso03AllConvIDNM1_[2];
-
+	TH1F 	*h1_ecalTowerIso03AllNM1_[2];
         TH1F    *h1_ecalIso03AllNM1_[2];
         TH1F    *h1_hcalIso03AllNM1_[2];
 	TH1F	*h1_tkIso03AllReJura01In015NM1_[2];
@@ -211,7 +211,18 @@ protected:
 
 	// the actual distributions
 	TH1F *h1_weffs_sigmaIEtaIEta_[2];
+        TH1F *h1_weffs_met20_sigmaIEtaIEta_[2];
+        TH1F *h1_weffs_met25_sigmaIEtaIEta_[2];
+        TH1F *h1_weffs_met30_sigmaIEtaIEta_[2];
+        TH1F *h1_weffs_met35_sigmaIEtaIEta_[2];
+
         TH1F *h1_weffbg_sigmaIEtaIEta_[2];
+
+	EffMulti *em_weffs_met20_sigmaIEtaIEta_[2];
+        EffMulti *em_weffs_met25_sigmaIEtaIEta_[2];
+        EffMulti *em_weffs_met30_sigmaIEtaIEta_[2];
+        EffMulti *em_weffs_met35_sigmaIEtaIEta_[2];
+
 
         EffMulti *em_dEtaIn_[2];
         EffMulti *em_dPhiIn_[2];

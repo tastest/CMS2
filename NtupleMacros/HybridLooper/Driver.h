@@ -309,7 +309,7 @@ int Results312_eleIdW_pt20_jetVeto ()
         (CUT_BIT(CONTROL_STUDYW)) |
         //(CUT_BIT(CONTROL_ELEID)) |
         // cuts
-        (CUT_BIT(ELE_PT_20)) | (CUT_BIT(ELE_ISO_V1) | CUT_BIT(EVT_TCMET_30) | CUT_BIT(EVT_JPT_PHIMAX_130)),
+        (CUT_BIT(ELE_PT_20)) | (CUT_BIT(ELE_ISO_V1) | CUT_BIT(EVT_TCMET_30) | CUT_BIT(EVT_JPT_20)),
         "Results312_eleIdW_pt20_jetVeto", all_samples_eleid);
 }
 
@@ -333,6 +333,18 @@ int Results312_eleIdW_pt30 ()
         // cuts
         (CUT_BIT(ELE_PT_30)) | (CUT_BIT(ELE_ISO_V1) | CUT_BIT(EVT_TCMET_30)),
         "Results312_eleIdW_pt30", all_samples_eleid);
+}
+
+//
+// ele id routine only
+// cuts are hard coded
+//
+int Results312_eleId ()
+{
+     return run<Looper>(
+        // control
+        (CUT_BIT(CONTROL_ELEID)),
+        "Results312_eleId", all_samples_eleid);
 }
 
 
