@@ -35,6 +35,8 @@ enum {
         H_BC20_170,
         H_BC30_170,
 
+	H_PHOTONJET,
+
 	H_QCD30,
         H_QCD80,
 	H_MU30,
@@ -134,6 +136,8 @@ DataSource fH_BC30_80();
 DataSource fH_BC80_170();
 DataSource fH_BC30_170();
 DataSource fH_BC20_170();
+
+DataSource fH_PHOTONJET();
 
 DataSource fH_QCD30();
 DataSource fH_MU30();

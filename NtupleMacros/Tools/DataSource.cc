@@ -24,11 +24,13 @@ DataSource fH_EM80_170()      { return DataSource("QCDEMenrichedPt80to170",     
 DataSource fH_EM30_170()      { return DataSource("QCDEMenrichedPt30to170",       H_EM30_170);          }
 DataSource fH_EM20_170()      { return DataSource("QCDEMenrichedPt20to170",       H_EM20_170);          }
 
-DataSource fH_WENU()      { return DataSource("we",       H_WENU);          }
+DataSource fH_PHOTONJET() { return DataSource("PhotonJetPt20to170", H_PHOTONJET, kMagenta); }
+
+DataSource fH_WENU()      { return DataSource("we",       H_WENU, kBlue);          }
 DataSource fH_WMUNU()      { return DataSource("wm",       H_WMUNU);          }
 DataSource fH_WTAUNU()      { return DataSource("wt",       H_WTAUNU);          }
 
-DataSource fH_QCD30()      { return DataSource("QCDpt30",       H_QCD30);          }
+DataSource fH_QCD30()      { return DataSource("QCDpt30",       H_QCD30, kGreen);          }
 DataSource fH_MU30()       { return DataSource("InclusiveMuPt15",       H_MU30);          };
 
 // 7 TeV V02-00-08 - probably only used by DLE
