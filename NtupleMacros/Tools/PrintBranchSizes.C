@@ -55,12 +55,12 @@ void PrintBranchSizes(TTree* tree) {
     cout << setiosflags(ios::fixed);
     for(unsigned int i = 0; i < padding; i++) 
       aliasname = aliasname + " ";
-    cout << aliasname << " " << -1*it->first/1024. << " kB (" 
+    cout << aliasname << " " << -1*it->first/1000. << " kB (" 
 	 <<-100*(it->first)/sumBranchSize << "%)" << endl;
         
   }
   
-  cout << "Total size of branches: " << sumBranchSize/(1024.*1024.) << " MB" << endl;
+  cout << "Total size of branches: " << sumBranchSize/(1000.*1000.) << " MB" << endl;
  
   //now report by maker
   TString prevMakerName(m_sortByMakerName.begin()->first);
@@ -95,11 +95,11 @@ void PrintBranchSizes(TTree* tree) {
     sumMakerSize = sumMakerSize + it->first;
     for(unsigned int i = 0; i < padding; i++) 
       temp = temp + " ";
-    cout << temp << " " << -1*it->first/1024. << " kB (" 
+    cout << temp << " " << -1*it->first/1000. << " kB (" 
 	 << -100.*it->first/(sumBranchSize) << "%)" <<endl;
   }
 
-  cout << "Total size of Makers: " << -1*sumMakerSize/(1024.*1024.) << " MB" << endl;
+  cout << "Total size of Makers: " << -1*sumMakerSize/(1000.*1000.) << " MB" << endl;
 
 }
 
