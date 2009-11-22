@@ -30,10 +30,6 @@ void PrintBranchSizes(TTree* tree) {
     if(aliasname.size() > maxAliasNameSize)
       maxAliasNameSize = aliasname.size();
     TBranch *b = tree->GetBranch(tree->GetAlias(aliasname.c_str()));
-    if(TString(b->GetName()) == "EventAuxiliary") {
-      cout << "LKSDJFLKDSFJSF" << endl;
-      continue;
-    }
     //only want branches made by us
     float size = b->GetZipBytes("*");
     sumBranchSize = sumBranchSize + size;
@@ -44,10 +40,17 @@ void PrintBranchSizes(TTree* tree) {
     m_sortByMakerName[string(strppedbName.Data())] = size; 
   }
 
+  string heading = "Branch Name";
+  int padding = maxAliasNameSize - 11;
+  for(unsigned int i = 0; i < padding; i++) 
+    heading = heading + " ";
+  cout << heading << "     Size      Percentage " << endl;
+
+  
   for(map<float, string>::iterator it = m_sortBySize.begin();
       it != m_sortBySize.end(); it++) {
 
-    int padding = maxAliasNameSize - string(it->second).size();
+    padding = maxAliasNameSize - string(it->second).size();
     string aliasname = it->second;
     cout << setiosflags(ios::fixed);
     for(unsigned int i = 0; i < padding; i++) 
@@ -83,6 +86,7 @@ void PrintBranchSizes(TTree* tree) {
 
   
   float sumMakerSize = 0.0;
+  cout << "Organized according to Producer:" << endl;
   for(map<float, string>::iterator it = m_sizeByMaker.begin(); 
       it != m_sizeByMaker.end(); it++) {
 
@@ -92,7 +96,7 @@ void PrintBranchSizes(TTree* tree) {
     for(unsigned int i = 0; i < padding; i++) 
       temp = temp + " ";
     cout << temp << " " << -0.001*it->first << " kB (" 
-	 << -0.001*it->first/(sumBranchSize) << "%)" <<endl;
+	 << -100.*it->first/(sumBranchSize) << "%)" <<endl;
   }
 
   cout << "Total size of Makers: " << -1*sumMakerSize/(1024*1024) << " MB" << endl;
