@@ -20,7 +20,7 @@ process.load('FastSimulation/Configuration/CommonInputs_cff')
 process.load('FastSimulation/Configuration/EventContent_cff')
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.1.2.1 $'),
+    version = cms.untracked.string('$Revision: 1.1.2.2 $'),
     annotation = cms.untracked.string('LHE nevts:10'),
     name = cms.untracked.string('PyCMS2')
 )
@@ -315,7 +315,10 @@ process.cms2          = cms.Sequence(process.eventLevelMakers * process.trigmmak
 #process.cms2          = cms.Sequence(process.trigmmakers * process.genmakers * process.makers * process.assmakers * process.othermakers * process.hypmakers)
 
 process.load("CMS2.NtupleMaker.aSkimFilter_cfi")
-process.path_cms2             = cms.Path(process.CMS2Reco * process.cms2 * process.pflowmakers * process.caloJetMetGen*process.patDefaultSequence * process.patmakers * process.aSkimFilter)
+process.path_cms2             = cms.Path(process.CMS2Reco * process.cms2 * process.pflowmakers
+#                                         * process.caloJetMetGen
+                                         * (process.genMETParticles+process.recoGenMET)
+                                         * process.patDefaultSequence * process.patmakers * process.aSkimFilter)
 
 process.outpath       = cms.EndPath(process.lepPt9Filter*process.eventTrigMaker*process.out_CMS2)
 
