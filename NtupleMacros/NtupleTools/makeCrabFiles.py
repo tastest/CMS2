@@ -35,7 +35,7 @@ def makeCrabConfig():
     outFile.write('ui_working_dir         = ' + outFileName + '\n')
     outFile.write('user_remote_dir        = CMS_' + tag + '/' + outFileName + '\n')
     outFile.write('publish_data          = 0\n')
-    outFile.write('publish_data_name     = CMS_' + tag + '\n')
+    outFile.write('publish_data_name     = CMS2_' + tag + '\n')
     outFile.write('dbs_url_for_publication =  http://ming.ucsd.edu:8080/DBS2/servlet/DBSServlet\n\n')
     if ( mode == 'glite' ) :
         outFile.write('[GRID]\n')
@@ -44,38 +44,27 @@ def makeCrabConfig():
         outFile.write('##here are some default sites that we \n')
         outFile.write('##run at. Comment/Uncomment at will\n')
         outFile.write('##UCSD \n')
-        outFile.write('#CE_white_list = osg-gw-4.t2.ucsd.edu\n')
-        outFile.write('#SE_white_list = bsrm-1.t2.ucsd.edu\n')
+        outFile.write('#SE_white_list = T2_US_UCSD\n')
         outFile.write('##WISC\n')
-        outFile.write('#CE_white_list = cmsgrid02.hep.wisc.edu\n')
-        outFile.write('#SE_white_list = cmssrm.hep.wisc.edu\n')
+        outFile.write('#SE_white_list = T2_US_Wisconsin\n')
         outFile.write('##DESY\n')
-        outFile.write('#CE_white_list = grid-ce3.desy.de\n')
-        outFile.write('#SE_white_list = dcache-se-cms.desy.de\n')
+        outFile.write('#SE_white_list = T2_DE_DESY\n')
         outFile.write('##Purdue\n')
-        outFile.write('#CE_white_list = osg.rcac.purdue.edu \n')
-        outFile.write('#SE_white_list = dcache.rcac.purdue.edu\n')
+        outFile.write('#SE_white_list = T2_US_Purdue\n')
         outFile.write('##MIT\n')
-        outFile.write('#CE_white_list = ce01.cmsaf.mit.edu\n')
-        outFile.write('#SE_white_list = se01.cmsaf.mit.edu\n')
+        outFile.write('#SE_white_list = T2_US_MIT\n')
         outFile.write('##Nebraska\n')
-        outFile.write('#CE_white_list = red.unl.edu,gpn-husker.unl.edu\n')
-        outFile.write('#SE_white_list = srm.unl.edu\n')
+        outFile.write('#SE_white_list = T2_US_Nebraska\n')
         outFile.write('##IFCA\n')
-        outFile.write('#CE_white_list = egeece01.ifca.es\n')
-        outFile.write('#SE_white_list = storm.ifca.es\n')
+        outFile.write('#SE_white_list = T2_ES_IFCA\n')
         outFile.write('##Lyon\n')
-        outFile.write('#CE_white_list = cclcgceli06.in2p3.fr or cclcgceli05.in2p3.fr \n')
-        outFile.write('#SE_white_list = ccsrm.in2p3.fr\n')
+        outFile.write('#SE_white_list = T2_FR_CCIN2P3\n')
         outFile.write('##CIEMAT\n')
-        outFile.write('#CE_white_list = lcg02.ciemat.es\n')
-        outFile.write('#SE_white_list = srm.ciemat.es\n')
+        outFile.write('#SE_white_list = T2_ES_CIEMAT\n')
         outFile.write('##IIHE\n')
-        outFile.write('#CE_white_list = gridce.iihe.ac.be\n')
-        outFile.write('#SE_white_list = maite.iihe.ac.be\n')
+        outFile.write('#SE_white_list = T2_BE_IIHE\n')
         outFile.write('##Aachen\n')
-        outFile.write('#CE_white_list = grid-ce.physik.rwth-aachen.de\n')
-        outFile.write('#SE_white_list = grid-srm.physik.rwth-aachen.de\n')
+        outFile.write('#SE_white_list = T2_DE_RWTH\n')
 
 def makeCMSSWConfig(cmsswSkelFile):
     foundOutNtupleFile = False
@@ -88,7 +77,7 @@ def makeCMSSWConfig(cmsswSkelFile):
             foundOutNtupleFile = True
         
         outFile.write(i+'\n')
-        if i.find('process.load(\"CMS2.NtupleMaker.eventMaker_cfi\")') != -1:
+        if i.find('cms.Path') != -1:
             outFile.write('process.eventMaker.datasetName = cms.string(\"' +
                           dataSet+'\")\n')
             outFile.write('process.eventMaker.CMS2tag     = cms.string(\"' +
