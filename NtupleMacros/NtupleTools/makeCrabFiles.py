@@ -13,6 +13,9 @@ outNtupleName = 'ntuple.root'
 storageElement = 'T2_US_UCSD'
 tag = 'V01-02-06'
 mode = 'glite'
+server = 'cern';
+dbs_url = 'http://ming.ucsd.edu:8080/DBS2/servlet/DBSServlet';
+
 
 def makeCrabConfig():
     outFileName = dataSet.split('/')[1]+'_'+dataSet.split('/')[2]
@@ -21,26 +24,27 @@ def makeCrabConfig():
     outFile.write('[CRAB]\n')
     outFile.write('jobtype   = cmssw\n')
     outFile.write('scheduler = ' + mode + '\n')
-    outFile.write('server_name = cern \n\n')
-    outFile.write('[CMSSW]\n')
-    outFile.write('datasetpath            = ' + dataSet + '\n')
-    outFile.write('pset                   = ' + outFileName + '_cfg.py \n')
-    outFile.write('total_number_of_events = ' + str(numEvtsTotal) + '\n')
-    outFile.write('events_per_job         = ' + str(numEvtsPerJob) + '\n')
-    outFile.write('output_file            = ' + outNtupleName + '\n\n\n')
+    if ( server != '' ) :
+        outFile.write('server_name = ' + server + '\n')
+    outFile.write('\n[CMSSW]\n')
+    outFile.write('datasetpath             = ' + dataSet + '\n')
+    outFile.write('pset                    = ' + outFileName + '_cfg.py \n')
+    outFile.write('total_number_of_events  = ' + str(numEvtsTotal) + '\n')
+    outFile.write('events_per_job          = ' + str(numEvtsPerJob) + '\n')
+    outFile.write('output_file             = ' + outNtupleName + '\n\n\n')
     outFile.write('[USER]\n')
-    outFile.write('return_data            = 0\n')
-    outFile.write('copy_data              = 1\n')
-    outFile.write('storage_element        = ' + storageElement + '\n')
-    outFile.write('ui_working_dir         = ' + outFileName + '\n')
-    outFile.write('user_remote_dir        = CMS_' + tag + '/' + outFileName + '\n')
-    outFile.write('publish_data          = 0\n')
-    outFile.write('publish_data_name     = CMS2_' + tag + '\n')
-    outFile.write('dbs_url_for_publication =  http://ming.ucsd.edu:8080/DBS2/servlet/DBSServlet\n\n')
+    outFile.write('return_data             = 0\n')
+    outFile.write('copy_data               = 1\n')
+    outFile.write('storage_element         = ' + storageElement + '\n')
+    outFile.write('ui_working_dir          = ' + outFileName + '\n')
+    outFile.write('user_remote_dir         = CMS2_' + tag + '/' + outFileName + '\n')
+    outFile.write('publish_data            = 0\n')
+    outFile.write('publish_data_name       = CMS2_' + tag + '\n')
+    outFile.write('dbs_url_for_publication = ' + dbs_url + '\n\n')
+    outFile.write('[GRID]\n')
+    outFile.write('maxtarballsize = 20\n')
+
     if ( mode == 'glite' ) :
-        outFile.write('[GRID]\n')
-        outFile.write('##Changing max tarball size to 20MB\n')
-	outFile.write('maxtarballsize    =  20\n')
         outFile.write('##here are some default sites that we \n')
         outFile.write('##run at. Comment/Uncomment at will\n')
         outFile.write('##UCSD \n')
@@ -96,16 +100,18 @@ def makeCMSSWConfig(cmsswSkelFile):
 
 if len(sys.argv) < 5 :
     print 'Usage: makeCrabFiles.py [OPTIONS]'
-    print 'Where the required options are: '
-    print '\t-CMS2cfg name of the skeleton CMS2 config file '
-    print '\t-d name of dataset'
-    print '\t-t CMS2 tag, will be added to publish_data_name'
-    print 'Optional arguments:'
-    print '\t-strElem preferred storage element. Default is T2_US_UCSD if left unspecified'
-    print '\t-nEvts Number of events you want to run on. Default is -1'
-    print '\t-evtsPerJob Number of events per job. Default is 5000'
-    print '\t-n Name of output Ntuple file. Default is ntuple.root'
-    print '\t-m submission mode (possible: condor_g, condor, glite). Default is glite'
+    print '\nWhere the required options are: '
+    print '\t-CMS2cfg\tname of the skeleton CMS2 config file '
+    print '\t-d\t\tname of dataset'
+    print '\t-t\t\tCMS2 tag, will be added to publish_data_name'
+    print '\nOptional arguments:'
+    print '\t-strElem\tpreferred storage element. Default is T2_US_UCSD if left unspecified'
+    print '\t-nEvts\t\tNumber of events you want to run on. Default is -1'
+    print '\t-evtsPerJob\tNumber of events per job. Default is 5000'
+    print '\t-n\t\tName of output Ntuple file. Default is ntuple.root'
+    print '\t-m\t\tsubmission mode (possible: condor_g, condor, glite). Default is glite'
+    print '\t-s\t\tserver name. Default is cern'
+    print '\t-dbs\t\tdbs url for publication. Default is http://ming.ucsd.edu:8080/DBS2/servlet/DBSServlet'
     sys.exit()
 
 
@@ -126,6 +132,10 @@ for i in range(0, len(sys.argv)):
         tag  = str(sys.argv[i+1])
     if sys.argv[i] == '-m':
         mode  = str(sys.argv[i+1])
+    if sys.argv[i] == '-s':
+        server  = str(sys.argv[i+1])
+    if sys.argv[i] == '-dbs':
+        dbs_url = str(sys.argv[i+1])
 
 ##if os.path.exists(crabSkelFile) == False:
 ##    print 'Crab skeleton file does not exist. Exiting'
