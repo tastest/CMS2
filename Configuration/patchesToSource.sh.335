@@ -1,1 +1,6 @@
 cvs co -r V00-03-04 RecoEgamma/EgammaTools
+cvs co -r V03-00-12-10 RecoMET/METProducers
+cvs co -r V00-02-07-12 RecoMET/METAlgorithms
+cvs co -r V00-06-10-02 RecoMET/Configuration
+cvs co -r V03-01-01-04 DataFormats/METReco
+cvs co -r V00-05-38 RecoEcal/EgammaCoreTools
