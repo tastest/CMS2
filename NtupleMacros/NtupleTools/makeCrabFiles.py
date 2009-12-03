@@ -15,7 +15,7 @@ tag = 'V01-02-06'
 mode = 'glite'
 server = 'cern';
 dbs_url = 'http://ming.ucsd.edu:8080/DBS2/servlet/DBSServlet';
-
+report_every = 1000;
 
 def makeCrabConfig():
     outFileName = dataSet.split('/')[1]+'_'+dataSet.split('/')[2]
@@ -72,9 +72,12 @@ def makeCrabConfig():
 
 def makeCMSSWConfig(cmsswSkelFile):
     foundOutNtupleFile = False
+    foundreportEvery = False
     inFile = open(cmsswSkelFile, 'r').read().split('\n')
     for i in inFile:
         if i.find(outNtupleName) != -1:
+            foundOutNtupleFile = True
+        if i.find('reportEvery') != -1:
             foundOutNtupleFile = True
     if foundOutNtupleFile == False:
         print 'The root file you are outputting is not named ntuple.root as it should be for a CMS2 job.'
@@ -85,6 +88,10 @@ def makeCMSSWConfig(cmsswSkelFile):
     print 'Writing CMS2 CMSSW python config file : ' + outFileName
     outFile = open(outFileName, 'w')
     for i in inFile:
+
+        if i.find('reportEvery') != -1:
+            outFile.write('process.MessageLogger.cerr.FwkReport.reportEvery = ' + str(report_every) + '\n'); continue
+
         outFile.write(i+'\n')
         
         if i.find('cms.Path') != -1:
@@ -92,7 +99,7 @@ def makeCMSSWConfig(cmsswSkelFile):
                           dataSet+'\")\n')
             outFile.write('process.eventMaker.CMS2tag     = cms.string(\"' +
                           tag+'\")\n')
-    
+
     outFile.close()
 
 
@@ -114,6 +121,7 @@ if len(sys.argv) < 5 :
     print '\t-m\t\tsubmission mode (possible: condor_g, condor, glite). Default is glite'
     print '\t-s\t\tserver name. Default is cern'
     print '\t-dbs\t\tdbs url for publication. Default is http://ming.ucsd.edu:8080/DBS2/servlet/DBSServlet'
+    print '\t-re\t\tMessage Logger modulus for error reporting. Default is 1000'
     sys.exit()
 
 
@@ -138,6 +146,8 @@ for i in range(0, len(sys.argv)):
         server  = str(sys.argv[i+1])
     if sys.argv[i] == '-dbs':
         dbs_url = str(sys.argv[i+1])
+    if sys.argv[i] == '-re':
+        report_every = str(sys.argv[i+1])
 
 if os.path.exists(cmsswSkelFile) == False:
     print 'CMSSW skeleton file does not exist. Exiting'
