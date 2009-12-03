@@ -73,29 +73,28 @@ def makeCrabConfig():
 def makeCMSSWConfig(cmsswSkelFile):
     foundOutNtupleFile = False
     inFile = open(cmsswSkelFile, 'r').read().split('\n')
-    outFileName = dataSet.split('/')[1]+'_'+dataSet.split('/')[2] + '_cfg.py'
-    outFile = open(outFileName, 'w')
-    print 'Writing CMS2 python config file : ' + outFileName
     for i in inFile:
         if i.find(outNtupleName) != -1:
             foundOutNtupleFile = True
-        
-        outFile.write(i+'\n')
-        if i.find('cms.Path') != -1:
-            outFile.write('process.eventMaker.datasetName = cms.string(\"' +
-                          dataSet+'\")\n')
-            outFile.write('process.eventMaker.CMS2tag     = cms.string(\"' +
-                          tag+'\")\n')
     if foundOutNtupleFile == False:
-        print 'The root file you are outputting has not been found in your skeleton CMSSW config file'
+        print 'The root file you are outputting is not named ntuple.root as it should be for a CMS2 job.'
         print 'Please check the name of the output root file in your PoolOutputModule, and try again'
         print 'Exiting!'
         sys.exit()
+    print 'Writing CMS2 CMSSW python config file : ' + outFileName
+    outFileName = dataSet.split('/')[1]+'_'+dataSet.split('/')[2] + '_cfg.py'
+    outFile = open(outFileName, 'w')
+    outFile.write(i+'\n')
+    if i.find('cms.Path') != -1:
+        outFile.write('process.eventMaker.datasetName = cms.string(\"' +
+                      dataSet+'\")\n')
+        outFile.write('process.eventMaker.CMS2tag     = cms.string(\"' +
+                      tag+'\")\n')
     outFile.close()
 
-            
-    
-        
+
+
+       
 
 
 if len(sys.argv) < 5 :
@@ -137,13 +136,10 @@ for i in range(0, len(sys.argv)):
     if sys.argv[i] == '-dbs':
         dbs_url = str(sys.argv[i+1])
 
-##if os.path.exists(crabSkelFile) == False:
-##    print 'Crab skeleton file does not exist. Exiting'
-##    sys.exit()
-
 if os.path.exists(cmsswSkelFile) == False:
     print 'CMSSW skeleton file does not exist. Exiting'
     sys.exit()
 
 makeCMSSWConfig(cmsswSkelFile)
-makeCrabConfig()
+makeCrabConfig()    
+
