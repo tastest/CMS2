@@ -107,7 +107,7 @@ if len(sys.argv) < 5 :
     print '\t-strElem\tpreferred storage element. Default is T2_US_UCSD if left unspecified'
     print '\t-nEvts\t\tNumber of events you want to run on. Default is -1'
     print '\t-evtsPerJob\tNumber of events per job. Default is 5000'
-    print '\t-n\t\tName of output Ntuple file. Default is ntuple.root'
+    #print '\t-n\t\tName of output Ntuple file. Default is ntuple.root'
     print '\t-m\t\tsubmission mode (possible: condor_g, condor, glite). Default is glite'
     print '\t-s\t\tserver name. Default is cern'
     print '\t-dbs\t\tdbs url for publication. Default is http://ming.ucsd.edu:8080/DBS2/servlet/DBSServlet'
@@ -125,8 +125,8 @@ for i in range(0, len(sys.argv)):
         numEvtsPerJob = sys.argv[i+1]
     if sys.argv[i] == '-strElem':
         storageElement = sys.argv[i+1]
-    if sys.argv[i] == '-n':
-        outNtupleName  = sys.argv[i+1]
+    #if sys.argv[i] == '-n':
+    #    outNtupleName  = sys.argv[i+1]
     if sys.argv[i] == '-t':
         tag  = str(sys.argv[i+1])
     if sys.argv[i] == '-m':
