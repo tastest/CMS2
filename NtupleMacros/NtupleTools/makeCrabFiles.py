@@ -81,8 +81,9 @@ def makeCMSSWConfig(cmsswSkelFile):
         print 'Please check the name of the output root file in your PoolOutputModule, and try again'
         print 'Exiting!'
         sys.exit()
-    print 'Writing CMS2 CMSSW python config file : ' + outFileName
+    print dataSet
     outFileName = dataSet.split('/')[1]+'_'+dataSet.split('/')[2] + '_cfg.py'
+    print 'Writing CMS2 CMSSW python config file : ' + outFileName
     outFile = open(outFileName, 'w')
     outFile.write(i+'\n')
     if i.find('cms.Path') != -1:
