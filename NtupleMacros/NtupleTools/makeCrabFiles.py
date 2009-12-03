@@ -81,16 +81,18 @@ def makeCMSSWConfig(cmsswSkelFile):
         print 'Please check the name of the output root file in your PoolOutputModule, and try again'
         print 'Exiting!'
         sys.exit()
-    print dataSet
     outFileName = dataSet.split('/')[1]+'_'+dataSet.split('/')[2] + '_cfg.py'
     print 'Writing CMS2 CMSSW python config file : ' + outFileName
     outFile = open(outFileName, 'w')
-    outFile.write(i+'\n')
-    if i.find('cms.Path') != -1:
-        outFile.write('process.eventMaker.datasetName = cms.string(\"' +
-                      dataSet+'\")\n')
-        outFile.write('process.eventMaker.CMS2tag     = cms.string(\"' +
-                      tag+'\")\n')
+    for i in inFile:
+        outFile.write(i+'\n')
+        
+        if i.find('cms.Path') != -1:
+            outFile.write('process.eventMaker.datasetName = cms.string(\"' +
+                          dataSet+'\")\n')
+            outFile.write('process.eventMaker.CMS2tag     = cms.string(\"' +
+                          tag+'\")\n')
+    
     outFile.close()
 
 
