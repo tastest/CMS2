@@ -171,7 +171,11 @@ for i in lines.readlines():
 	global_tag = i
 	global_tag = re.sub('\n', '', global_tag)
 if( global_tag != '' and global_tag_flag == ''):
-	print '\nUsing global tag from DBS:\t\'' + global_tag + '\'\n'
+	print '\nUse global tag from DBS:\t\'' + global_tag + '\' ?\n'
+	answer = raw_input('[y/n]?')
+	if(answer != 'y'): 
+		print 'Exiting...\n'
+		sys.exit()
 if( global_tag != '' and global_tag_flag != ''):
 	print '\nGlobal tag \'' + global_tag + '\' found in DBS, using \'' + global_tag_flag + '\' specified by -gtag flag instead.\n'
 	global_tag = global_tag_flag
