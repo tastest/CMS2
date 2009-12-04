@@ -16,7 +16,8 @@ mode = 'glite'
 server = 'cern';
 dbs_url = 'http://ming.ucsd.edu:8080/DBS2/servlet/DBSServlet';
 report_every = 1000;
-global_tag = 'MC_31X_V3::All';
+global_tag_flag = '';
+
 
 
 def makeCrabConfig():
@@ -155,11 +156,31 @@ for i in range(0, len(sys.argv)):
     if sys.argv[i] == '-re':
         report_every = str(sys.argv[i+1])
     if sys.argv[i] == '-gtag':
-        global_tag = str(sys.argv[i+1])
+        global_tag_flag = str(sys.argv[i+1])
 
 if os.path.exists(cmsswSkelFile) == False:
     print 'CMSSW skeleton file does not exist. Exiting'
     sys.exit()
+
+
+#print '\nGetting global tag from DBS...'
+global_tag = '';
+command = 'dbsql find config.name,config.content where dataset=' + dataSet + '>config.content; while read line; do globaltag=`echo $line | sed -n \'s/^.*process.GlobalTag.globaltag = \([^p]*\).*$/\\1/p\'`; if [ "$globaltag" != "" ]; then echo $globaltag; break; fi; done <config.content; rm config.content';
+lines = os.popen(command);
+for i in lines.readlines():
+	global_tag = i
+	global_tag = re.sub('\n', '', global_tag)
+if( global_tag != '' and global_tag_flag == ''):
+	print '\nUsing global tag from DBS:\t\'' + global_tag + '\'\n'
+if( global_tag != '' and global_tag_flag != ''):
+	print '\nGlobal tag \'' + global_tag + '\' found in DBS, using \'' + global_tag_flag + '\' specified by -gtag flag instead.\n'
+	global_tag = global_tag_flag
+if( global_tag == '' and global_tag_flag != '' ):
+	print '\nGlobal tag not found in DBS. Using \'' + global_tag_flag + '\' specified by -gtag flag.\n'
+	global_tag = global_tag_flag
+if( global_tag == '' and global_tag_flag == '' ):
+	print '\nGlobal tag not found in DBS. Use -gtag to set global tag. Exiting...\n'
+	sys.exit()
 
 makeCMSSWConfig(cmsswSkelFile)
 makeCrabConfig()    
