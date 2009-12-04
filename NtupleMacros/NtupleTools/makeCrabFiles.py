@@ -16,6 +16,8 @@ mode = 'glite'
 server = 'cern';
 dbs_url = 'http://ming.ucsd.edu:8080/DBS2/servlet/DBSServlet';
 report_every = 1000;
+global_tag = 'MC_31X_V3::All';
+
 
 def makeCrabConfig():
     outFileName = dataSet.split('/')[1]+'_'+dataSet.split('/')[2]
@@ -92,6 +94,9 @@ def makeCMSSWConfig(cmsswSkelFile):
         if i.find('reportEvery') != -1:
             outFile.write('process.MessageLogger.cerr.FwkReport.reportEvery = ' + str(report_every) + '\n'); continue
 
+        if i.find('globaltag') != -1:
+            outFile.write('process.GlobalTag.globaltag = "' + global_tag + '"\n'); continue
+
         outFile.write(i+'\n')
         
         if i.find('cms.Path') != -1:
@@ -122,6 +127,7 @@ if len(sys.argv) < 5 :
     print '\t-s\t\tserver name. Default is cern'
     print '\t-dbs\t\tdbs url for publication. Default is http://ming.ucsd.edu:8080/DBS2/servlet/DBSServlet'
     print '\t-re\t\tMessage Logger modulus for error reporting. Default is 1000'
+    print '\t-gtag\t\tglobal tag. Default is MC_31X_V3::All'
     sys.exit()
 
 
@@ -148,6 +154,8 @@ for i in range(0, len(sys.argv)):
         dbs_url = str(sys.argv[i+1])
     if sys.argv[i] == '-re':
         report_every = str(sys.argv[i+1])
+    if sys.argv[i] == '-gtag':
+        global_tag = str(sys.argv[i+1])
 
 if os.path.exists(cmsswSkelFile) == False:
     print 'CMSSW skeleton file does not exist. Exiting'
