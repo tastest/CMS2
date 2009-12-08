@@ -7,6 +7,7 @@
 #include "Tools/HistogramUtilities.h"
 #include "Tools/DataSource.h"
 
+using namespace std;
 
 const static sources_t theSources =
 //(1ll << H_QCD30)	|
@@ -44,8 +45,10 @@ const static sources_t sigdSources =
 
 
 void plotResults();
+void plotElResults();
 void plotMuResults();
 
+vector<DataSource> getSources(); //initialize vector of DataSource
 void projectX(TH2F* h, const unsigned int n);
 //void doabcd(TH2F* h, double x1=0., double x2=0., double x3=0., double x4=0., double y1=0., double y2=0., double y3=0., double y4=0.);
 void oneabcd(TH2F* h, TString title, double x1=0., double x2=0., double x3=0., double x4=0., double y1=0., double y2=0., double y3=0., double y4=0.);

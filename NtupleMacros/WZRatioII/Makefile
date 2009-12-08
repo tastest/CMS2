@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.1.2.4 2009/10/28 19:42:13 warren Exp $
+# $Id: Makefile,v 1.1.2.5 2009/12/08 01:05:47 warren Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
@@ -44,8 +44,8 @@ $(LOOPERLIB):	$(LOOPEROBJECTS)
 
 #linkdef_out.cxx: ${CMS2_LOCATION}/NtupleMacros/linkdef.h Driver.h
 #	rootcint -f $@ -c $(INCLUDE) Driver.h $<
-linkdef_out.cxx: ${CMS2_LOCATION}/NtupleMacros/linkdef.h Driver.h plotResults.h
-	rootcint -f $@ -c $(INCLUDE) Driver.h plotResults.h $<
+linkdef_out.cxx: ${CMS2_LOCATION}/NtupleMacros/linkdef.h Driver.h plotResults.h Cuts.h
+	rootcint -f $@ -c $(INCLUDE) Driver.h plotResults.h Cuts.h $<
 
 # General rule for making object files
 %.d:	%.cc
@@ -72,7 +72,8 @@ clean:
 $(TABLES): $(LIBS)
 
 %.tbl %.root %.log:	$(LIBS)
-	echo $(@:.tbl=)"()" | root.exe -b -l setup.C
+	echo $(@:.tbl=) | root.exe -b -l setup.C
+#	echo $(@) | root.exe -b -l setup.C
 
 -include $(TOOLSSOURCES:.cc=.d)
 -include $(CORESOURCES:.cc=.d)

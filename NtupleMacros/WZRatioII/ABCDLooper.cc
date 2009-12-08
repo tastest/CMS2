@@ -395,7 +395,7 @@ cuts_t ABCDLooper::LepSelect(int lep_type, int i)
   transmass = masst;
 
   if( masst > 40 && masst < 100 )
-	ret |= CUT_BIT(TMASS);
+	ret |= CUT_BIT(TMASS_100);
 
 
   return ret;
@@ -448,13 +448,13 @@ void ABCDLooper::FillEventHistos ()
   cuts_t baselepcuts_nod0iso    = ( CUT_BIT(LEP_PT) | CUT_BIT(LEP_GOOD_NOD0) );
   cuts_t baselepcuts_noptiso  	= ( CUT_BIT(LEP_GOOD) ); //for z abcd lep counting
   //N-1 plots for single leptons: require w cuts--for (d0,iso) plots, relax (d0,iso), apply everything else including tmass, tcmet
-  cuts_t w_evt_sel      = ( CUT_BIT(TCMET) | CUT_BIT(TMASS) | CUT_BIT(JET_VETO_20) );
+  cuts_t w_evt_sel      = ( CUT_BIT(TCMET) | CUT_BIT(TMASS_100) | CUT_BIT(JET_VETO_20) );
   cuts_t w_cuts_nod0    = ( w_evt_sel | CUT_BIT(LEP_PT) | CUT_BIT(LEP_ISO) | CUT_BIT(LEP_GOOD_NOD0) );
   cuts_t w_cuts_noiso   = ( w_evt_sel | CUT_BIT(LEP_PT) | CUT_BIT(LEP_GOOD) );
   cuts_t w_cuts_nod0iso = ( w_evt_sel | CUT_BIT(LEP_PT) | CUT_BIT(LEP_GOOD_NOD0) );
   cuts_t w_cuts_notmass = ( CUT_BIT(LEP_PT) | CUT_BIT(LEP_ISO) | CUT_BIT(LEP_GOOD) | CUT_BIT(TCMET) | CUT_BIT(JET_VETO_20) );
-  cuts_t w_cuts_nomet   = ( CUT_BIT(LEP_PT) | CUT_BIT(LEP_ISO) | CUT_BIT(LEP_GOOD) | CUT_BIT(TMASS) | CUT_BIT(JET_VETO_20) );
-  cuts_t w_cuts_nojet20 = ( CUT_BIT(LEP_PT) | CUT_BIT(LEP_ISO) | CUT_BIT(LEP_GOOD) | CUT_BIT(TCMET) | CUT_BIT(TMASS) ); 
+  cuts_t w_cuts_nomet   = ( CUT_BIT(LEP_PT) | CUT_BIT(LEP_ISO) | CUT_BIT(LEP_GOOD) | CUT_BIT(TMASS_100) | CUT_BIT(JET_VETO_20) );
+  cuts_t w_cuts_nojet20 = ( CUT_BIT(LEP_PT) | CUT_BIT(LEP_ISO) | CUT_BIT(LEP_GOOD) | CUT_BIT(TCMET) | CUT_BIT(TMASS_100) ); 
 
   cuts_t w_cuts = ( CUT_BIT(LEP_PT) | CUT_BIT(LEP_GOOD) | w_evt_sel | CUT_BIT(LEP_ISO) | CUT_BIT(JET_VETO_20) ); //ALL W CUTS
 
@@ -464,7 +464,7 @@ void ABCDLooper::FillEventHistos ()
   cuts_t z_cuts_nojet20 = ( CUT_BIT(LEP_PT) | CUT_BIT(LEP_GOOD) | z_basecuts | CUT_BIT(LEP_ISO) ); //all Z cuts but njet
 
   //cuts for ABCD: CUT ON TMASS, MET
-  cuts_t w_cuts_nometiso = ( CUT_BIT(LEP_PT) | CUT_BIT(LEP_GOOD) | CUT_BIT(TMASS) | CUT_BIT(JET_VETO_20) ); //for W only
+  cuts_t w_cuts_nometiso = ( CUT_BIT(LEP_PT) | CUT_BIT(LEP_GOOD) | CUT_BIT(TMASS_100) | CUT_BIT(JET_VETO_20) ); //for W only
   cuts_t z_cuts_nometiso = ( CUT_BIT(LEP_GOOD) | CUT_BIT(DILEP_MASS) | CUT_BIT(DILEP_OS) | CUT_BIT(JET_VETO_20) ); //for Z only : met means lep pt here
 
   //check tcMET here b'c no point doing for every lepton--don't use for Z

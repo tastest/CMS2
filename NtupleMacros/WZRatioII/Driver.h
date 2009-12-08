@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <string>
 #include "ABCDLooper.h"
+#include "RLooper.h"
 #include "Tools/Sample.h"
 //#include "LocalSample.h"
 
@@ -106,7 +107,7 @@ template <class Looper> void printR( const Looper **loopers, int n, FILE* f, int
   double Fw = 0, Fz = 0; //fake yield
   //double Fwrms = 0, Fzrms = 0;
   double et = 0, siget = 0.; //tight efficiencies
-  //double el = 0, sigel = 0.; //loose efficiencies--don't use for now
+  double el = 0, sigel = 0.; //loose efficiencies
   double enu = 0.99, sigenu = 0.01; //neutrino efficiencies
   double accz = 0.4, sigaccz = 0.02; //acceptance z
   double accw = 0.5, sigaccw = 0.01; //acceptance w
@@ -117,12 +118,16 @@ template <class Looper> void printR( const Looper **loopers, int n, FILE* f, int
 	didx = DILEPTON_EE;
 	et = 0.85;
 	siget = 0.02;
+	el = 0.90;
+	sigel = 0.02;
   }
   else if( flv == 1 ) { //muons
 	sidx = DileptonHypType(1);
 	didx = DILEPTON_MUMU;
 	et = 0.87;
 	siget = 0.02;
+	el = 0.92;
+	sigel = 0.02;
   }
   else {
 	cout << "printR: only e, mu individually supported now\n";
@@ -155,17 +160,21 @@ template <class Looper> void printR( const Looper **loopers, int n, FILE* f, int
   double R = Nw*accz*et/(Nz*accw*enu);
 
   //calculate sigma^2(R)
-  //not sure about the rms--ignore them for now
   double signwnz2 = (1/(Nz*Nz))*(Nw + 2*Fw + Fw*Fw/4) + ((Nw*Nw)/(Nz*Nz*Nz*Nz))*(Nz + 2*Fz + Fz*Fz/4);
-  // sigma^2(ez/ew) -- ignore tight v loose now--just tight-tight
-  double sigezew2 = siget*siget/(enu*enu) + sigenu*sigenu*et*et/(enu*enu*enu*enu);
+  // sigma^2(ez/ew)
+  double sigezew2 = siget*siget*(1-2*el)*(1-2*el)/(enu*enu) + sigel*sigel*4*(1-et)*(1-et)/(enu*enu) + sigenu*sigenu*(et+2*el*(1-et))*(et+2*el*(1-et))/(enu*enu*enu*enu);
+  //double sigezew2 = siget*siget/(enu*enu) + sigenu*sigenu*et*et/(enu*enu*enu*enu); // tight-tight formula
   // sigma^2(accz/accw)
   double sigazaw2 = sigaccz*sigaccz/(accw*accw) + sigaccw*sigaccw*accz*accz/(accw*accw*accw*accw);
 
-  double sigR = sqrt( signwnz2*accz*accz*et*et/(accw*accw*enu*enu) + sigazaw2*Nw*Nw*et*et/(Nz*Nz*enu*enu)
-				   + sigezew2*Nw*Nw*accz*accz/(Nz*Nz*accw*accw) );
+  double t1 = signwnz2*accz*accz*et*et/(accw*accw*enu*enu);
+  double t2 = sigazaw2*Nw*Nw*et*et/(Nz*Nz*enu*enu);
+  double t3 = sigezew2*Nw*Nw*accz*accz/(Nz*Nz*accw*accw);
+  double sigR = sqrt( t1 + t2 + t3 );
 
   fprintf(f, "R = %f +- %f\n", R, sigR);
+  //fprintf(f, "\nsignwnz = %f, sigezew = %f, sigazaw = %f\n", sqrt(signwnz2), sqrt(sigezew2), sqrt(sigazaw2));
+  fprintf(f, "\nt1 = %f, t2 = %f, t3 = %f\n", t1, t2, t3);
   cout << "R = " << R << " +- " << sigR << endl;
 }
 
@@ -225,6 +234,7 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
   looper_zmmjet_alp.setDsignal( true );
   looper_zttjet_alp.setDsignal( true );
 
+  cout << name << endl;
   printTable(loopers, sizeof(loopers) / sizeof(Looper *), tbl.c_str(), which_ones);
   return 0;
 }
@@ -247,3 +257,8 @@ int ABCDResults(cuts_t cut1 = 0, cuts_t cut2 = 0)
 
 }
 
+int RResults(cuts_t cut1 = 0, cuts_t cut2 = 0, string name="RResults")
+{
+  return run<RLooper>(cut1, name, default_samples, cut2 );
+  //return run<RLooper>(cut1, name, (1<<LOOP_ZJET_ALP), cut2 );
+}
