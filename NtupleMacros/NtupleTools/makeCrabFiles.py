@@ -19,7 +19,6 @@ report_every = 1000;
 global_tag_flag = '';
 
 
-
 def makeCrabConfig():
     outFileName = dataSet.split('/')[1]+'_'+dataSet.split('/')[2]
     outFile = open(outFileName + '.cfg', 'w')
@@ -46,33 +45,33 @@ def makeCrabConfig():
     outFile.write('dbs_url_for_publication = ' + dbs_url + '\n\n')
     outFile.write('[GRID]\n')
     outFile.write('maxtarballsize = 20\n')
-
-    if ( mode == 'glite' ) :
-        outFile.write('##here are some default sites that we \n')
-        outFile.write('##run at. Comment/Uncomment at will\n')
-        outFile.write('##UCSD \n')
-        outFile.write('#SE_white_list = T2_US_UCSD\n')
-        outFile.write('##WISC\n')
-        outFile.write('#SE_white_list = T2_US_Wisconsin\n')
-        outFile.write('##DESY\n')
-        outFile.write('#SE_white_list = T2_DE_DESY\n')
-        outFile.write('##Purdue\n')
-        outFile.write('#SE_white_list = T2_US_Purdue\n')
-        outFile.write('##MIT\n')
-        outFile.write('#SE_white_list = T2_US_MIT\n')
-        outFile.write('##Nebraska\n')
-        outFile.write('#SE_white_list = T2_US_Nebraska\n')
-        outFile.write('##IFCA\n')
-        outFile.write('#SE_white_list = T2_ES_IFCA\n')
-        outFile.write('##Lyon\n')
-        outFile.write('#SE_white_list = T2_FR_CCIN2P3\n')
-        outFile.write('##CIEMAT\n')
-        outFile.write('#SE_white_list = T2_ES_CIEMAT\n')
-        outFile.write('##IIHE\n')
-        outFile.write('#SE_white_list = T2_BE_IIHE\n')
-        outFile.write('##Aachen\n')
-        outFile.write('#SE_white_list = T2_DE_RWTH\n')
-
+    
+	 
+    outFile.write('##here are some default sites that we \n')
+    outFile.write('##run at. Comment/Uncomment at will\n')
+    outFile.write('##UCSD \n')
+    outFile.write('#SE_white_list = T2_US_UCSD\n')
+    outFile.write('##WISC\n')
+    outFile.write('#SE_white_list = T2_US_Wisconsin\n')
+    outFile.write('##DESY\n')
+    outFile.write('#SE_white_list = T2_DE_DESY\n')
+    outFile.write('##Purdue\n')
+    outFile.write('#SE_white_list = T2_US_Purdue\n')
+    outFile.write('##MIT\n')
+    outFile.write('#SE_white_list = T2_US_MIT\n')
+    outFile.write('##Nebraska\n')
+    outFile.write('#SE_white_list = T2_US_Nebraska\n')
+    outFile.write('##IFCA\n')
+    outFile.write('#SE_white_list = T2_ES_IFCA\n')
+    outFile.write('##Lyon\n')
+    outFile.write('#SE_white_list = T2_FR_CCIN2P3\n')
+    outFile.write('##CIEMAT\n')
+    outFile.write('#SE_white_list = T2_ES_CIEMAT\n')
+    outFile.write('##IIHE\n')
+    outFile.write('#SE_white_list = T2_BE_IIHE\n')
+    outFile.write('##Aachen\n')
+    outFile.write('#SE_white_list = T2_DE_RWTH\n')
+#
 def makeCMSSWConfig(cmsswSkelFile):
     foundOutNtupleFile = False
     foundreportEvery = False
@@ -164,28 +163,27 @@ if os.path.exists(cmsswSkelFile) == False:
 
 
 #print '\nGetting global tag from DBS...'
-global_tag = '';
-command = 'dbsql find config.name,config.content where dataset=' + dataSet + '>config.content; while read line; do globaltag=`echo $line | sed -n \'s/^.*process.GlobalTag.globaltag = \([^p]*\).*$/\\1/p\'`; if [ "$globaltag" != "" ]; then echo $globaltag; break; fi; done <config.content; rm config.content';
-lines = os.popen(command);
-for i in lines.readlines():
-	global_tag = i
-	global_tag = re.sub('\n', '', global_tag)
-if( global_tag != '' and global_tag_flag == ''):
-	print '\nUse global tag from DBS:\t\'' + global_tag + '\' ?\n'
-	answer = raw_input('[y/n]?')
-	if(answer != 'y'): 
-		print 'Exiting...\n'
-		sys.exit()
-if( global_tag != '' and global_tag_flag != ''):
-	print '\nGlobal tag \'' + global_tag + '\' found in DBS, using \'' + global_tag_flag + '\' specified by -gtag flag instead.\n'
+if( global_tag_flag != '' ):
+	print '\nUsing \'' + global_tag_flag + '\' specified by -gtag flag.\n'
 	global_tag = global_tag_flag
-if( global_tag == '' and global_tag_flag != '' ):
-	print '\nGlobal tag not found in DBS. Using \'' + global_tag_flag + '\' specified by -gtag flag.\n'
-	global_tag = global_tag_flag
-if( global_tag == '' and global_tag_flag == '' ):
-	print '\nGlobal tag not found in DBS. Use -gtag to set global tag. Exiting...\n'
-	sys.exit()
-
+else :
+    global_tag = '';
+    dbs_result = '';
+    command = 'dbsql find config.name,config.content where dataset=' + dataSet + '>config.content; while read line; do globaltag=`echo $line | sed -n \'s/^.*process.GlobalTag.globaltag = \([^p]*\).*$/\\1/p\'`; if [ "$globaltag" != "" ]; then echo $globaltag; break; fi; done <config.content; rm config.content';
+    lines = os.popen(command);
+    for i in lines.readlines():
+      dbs_result = re.sub('\n', '', i)
+      global_tag = re.sub('#.+$', '', dbs_result)
+    if( global_tag != '' and global_tag_flag == ''):
+    	print '\nDBS Query results:\t\'' + dbs_result + '\' ?\n'
+    	print 'Use global tag from DBS:\t\'' + global_tag + '\' ?\n'
+    	answer = raw_input('[y/n]?')
+    	if(answer != 'y'): 
+    		print 'Exiting...\n'
+    		sys.exit()
+    if( global_tag == '' and global_tag_flag == '' ):
+    	print '\nGlobal tag not found in DBS. Use -gtag to set global tag. Exiting...\n'
+    	sys.exit()
 makeCMSSWConfig(cmsswSkelFile)
 makeCrabConfig()    
 
