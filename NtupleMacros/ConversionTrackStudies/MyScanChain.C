@@ -47,6 +47,9 @@ int ScanChain(bool isData, TChain* chain, int nEvents = -1, std::string skimFile
 	unsigned int nEventsTotal = 0;
 	TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
 
+	// Book histograms
+	//
+
 	TH1F *h1_l1_techbits2_pass = new TH1F("h1_l1_techbits2_pass", "l1_techbits2", 32, -0.5, 31.5);
 
 	// file loop
