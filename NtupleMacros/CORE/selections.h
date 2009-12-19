@@ -21,6 +21,37 @@ enum TrackAlgorithm { undefAlgorithm=0, ctf=1, rs=2, cosmics=3, iter0=4,
 
 enum TrackQuality { undefQuality=-1, loose=0, tight=1, highPurity=2, confirmed=3, goodIterative=4, qualitySize=5};
 
+enum SubDetector
+{
+  EBp         =     0,
+  EBm         =     1,
+  EEp         =     2,
+  EEm         =     3,
+  HBHEa       =     5,
+  HBHEb       =     6,
+  HBHEc       =     7,
+  HF          =     8,
+  HO          =     9,
+  RPC         =    12,
+  DT0         =    13,
+  DTp         =    14,
+  DTm         =    15,
+  CSCp        =    16,
+  CSCm        =    17,
+  CASTOR      =    20,
+  TIBTID      =    24,
+  TOB         =    25,
+  TECp        =    26,
+  TECm        =    27,
+  BPIX        =    28,
+  FPIX        =    29,
+  ESp         =    30,
+  ESm         =    31,
+  nPartitions =    24
+};
+
+bool isSubDetectorGood( int cuts );
+
 bool isTrackQuality( int index, int cuts);
 
 bool inZmassWindow (float mass);

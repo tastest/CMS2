@@ -19,6 +19,14 @@
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 //----------------------------------------------------------------
+// Simple function that tells you whether or not a given set of 
+// subdetectors were valid
+//----------------------------------------------------------------
+bool isSubDetectorGood( int cuts ) {
+     return ( ( cms2.evt_detectorStatus() & cuts ) == cuts );
+}
+
+//----------------------------------------------------------------
 // Simple function that tells you whether or not a track passed 
 // a particular quality flag.
 //----------------------------------------------------------------
