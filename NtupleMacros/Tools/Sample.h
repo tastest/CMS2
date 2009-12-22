@@ -31,6 +31,11 @@ Sample operator + (const Sample &, const Sample &);
 // (takes the guesswork out of data access...)
 Sample fTest ();
 
+// make a sample from a shell glob (for example, /data/tmp/cms2/*/*.root)
+TChain *makeChain (const char *sample_glob, const char *name = "Events");
+Sample fFreeForm (const char *sample_glob, enum Process = OTHER, int histo_color = kBlack, 
+		  double kFactor = 1, std::string = "other", bool = 1, double = -1);
+
 Sample fWW	();
 // Sample fWW_excl	();
 Sample fWZ	();

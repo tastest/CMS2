@@ -47,6 +47,15 @@ Sample operator + (const Sample &a, const Sample &b)
      return ret;
 }
 
+Sample fFreeForm (const char *sample_glob, enum Process p, int histo_color, 
+		  double kFactor, std::string name, bool sm, double pthat)
+{
+     TChain *c = makeChain(sample_glob);
+     Sample ret = { c, p, histo_color, kFactor, name, sm, pthat };
+     return ret;
+     
+}
+
 static const std::string prefix = (getenv("CMS2_NTUPLE_LOCATION") != 0) ? 
      std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" : "/data/tmp/";
 
