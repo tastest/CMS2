@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.12 2008/12/05 16:28:49 jmuelmen Exp $
+# $Id: Makefile,v 1.13 2009/12/26 12:56:32 jmuelmen Exp $
 
 .PHONY: all
 all:	help
@@ -29,3 +29,17 @@ analysis:
 		echo "To make a table, add a rule in ConfigAndRun.h and run:" | tee -a $(NAME)/AAAREADME.txt ;\
 		echo "   make -j 8 <your table name>.tbl" | tee -a $(NAME)/AAAREADME.txt ;\
 	fi; fi
+
+CORE/CMS2.h: FORCE
+	@if [ -z $(NTUPLE) ] ; \
+	then echo "usage: make CORE/CMS2.h NTUPLE=<ntuple from which to generate CMS2.h>" ; \
+	else if ! [ -e $(NTUPLE) ] ; \
+		then echo "$(NTUPLE) does not exist" ; \
+	else \
+	echo "gROOT->ProcessLine(\".L Tools/makeCMS2ClassFiles.C+\"); makeCMS2ClassFiles(\"$(NTUPLE)\");" \
+		| root.exe -b ; \
+	mv CMS2.h $@ ; \
+	fi ; fi
+
+FORCE:
+	
