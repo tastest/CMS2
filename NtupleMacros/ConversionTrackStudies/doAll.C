@@ -17,7 +17,25 @@ void doAll() {
   ch_data->Add(datapath3.Data());
   TChain *ch_mc = new TChain("Events");
   ch_mc->Add("/data/tmp/cms2-V03-00-19/MinBias_Summer09-STARTUP3X_V8I_900GeV-v2/merged_ntuple_1.root");
-  //  ch_mc->Add("/data/tmp/cms2-V03-00-19/MinBias_Summer09-STARTUP3X_V8I_900GeV-v2/merged_ntuple_2.root");
+  ch_mc->Add("/data/tmp/cms2-V03-00-19/MinBias_Summer09-STARTUP3X_V8I_900GeV-v2/merged_ntuple_2.root");
+  ch_mc->Add("/data/tmp/cms2-V03-00-19/MinBias_Summer09-STARTUP3X_V8I_900GeV-v2/merged_ntuple_3.root");
+  ch_mc->Add("/data/tmp/cms2-V03-00-19/MinBias_Summer09-STARTUP3X_V8I_900GeV-v2/merged_ntuple_4.root");
+  ch_mc->Add("/data/tmp/cms2-V03-00-19/MinBias_Summer09-STARTUP3X_V8I_900GeV-v2/merged_ntuple_5.root");
+  ch_mc->Add("/data/tmp/cms2-V03-00-19/MinBias_Summer09-STARTUP3X_V8I_900GeV-v2/merged_ntuple_6.root");
+  ch_mc->Add("/data/tmp/cms2-V03-00-19/MinBias_Summer09-STARTUP3X_V8I_900GeV-v2/merged_ntuple_7.root");
+  ch_mc->Add("/data/tmp/cms2-V03-00-19/MinBias_Summer09-STARTUP3X_V8I_900GeV-v2/merged_ntuple_8.root");
+  ch_mc->Add("/data/tmp/cms2-V03-00-19/MinBias_Summer09-STARTUP3X_V8I_900GeV-v2/merged_ntuple_9.root");
+  ch_mc->Add("/data/tmp/cms2-V03-00-19/MinBias_Summer09-STARTUP3X_V8I_900GeV-v2/merged_ntuple_10.root");
+  ch_mc->Add("/data/tmp/cms2-V03-00-19/MinBias_Summer09-STARTUP3X_V8I_900GeV-v2/merged_ntuple_11.root");
+  ch_mc->Add("/data/tmp/cms2-V03-00-19/MinBias_Summer09-STARTUP3X_V8I_900GeV-v2/merged_ntuple_12.root");
+  ch_mc->Add("/data/tmp/cms2-V03-00-19/MinBias_Summer09-STARTUP3X_V8I_900GeV-v2/merged_ntuple_13.root");
+  ch_mc->Add("/data/tmp/cms2-V03-00-19/MinBias_Summer09-STARTUP3X_V8I_900GeV-v2/merged_ntuple_14.root");
+  ch_mc->Add("/data/tmp/cms2-V03-00-19/MinBias_Summer09-STARTUP3X_V8I_900GeV-v2/merged_ntuple_15.root");
+  ch_mc->Add("/data/tmp/cms2-V03-00-19/MinBias_Summer09-STARTUP3X_V8I_900GeV-v2/merged_ntuple_16.root");
+  ch_mc->Add("/data/tmp/cms2-V03-00-19/MinBias_Summer09-STARTUP3X_V8I_900GeV-v2/merged_ntuple_17.root");
+  ch_mc->Add("/data/tmp/cms2-V03-00-19/MinBias_Summer09-STARTUP3X_V8I_900GeV-v2/merged_ntuple_18.root");
+  ch_mc->Add("/data/tmp/cms2-V03-00-19/MinBias_Summer09-STARTUP3X_V8I_900GeV-v2/merged_ntuple_19.root");
+  ch_mc->Add("/data/tmp/cms2-V03-00-19/MinBias_Summer09-STARTUP3X_V8I_900GeV-v2/merged_ntuple_20.root");
   
   
   std::vector<unsigned int> goodRuns;
@@ -49,9 +67,8 @@ void doAll() {
   goodRuns.push_back(124230);
   goodRuns.push_back(124275);
 
-
   bool runningonGEN = false;
-  bool requireTrackCuts  = false;
+  bool requireTrackCuts  = true;
   TString description;
   description = ScanChain(ch_data, runningonGEN, requireTrackCuts, goodRuns);
   
@@ -69,7 +86,8 @@ void doAll() {
 
   outfname = outfname + ".root";
   //saveHist("Run124120_"+outfname);
-  saveHist("Run123591_"+outfname);
+  //saveHist("Data_"+outfname);
+  saveHist("ExclSpike_"+outfname);
   //  deleteHistos(); 
   //  makePlots("Run123734_"+outfname, description);
   
