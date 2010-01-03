@@ -10,5 +10,5 @@ cvs co -r  V00-06-17 RecoMET/Configuration
 #JEC corrections for 900 and 2360 GeV
 cvs co -r CMSSW_3_4_1 JetMETCorrections/Configuration
 cvs co -r V01-08-23-05 JetMETCorrections/Configuration/python/L2L3Corrections_900GeV_cff.py
-cvs co -r V01-08-23-05 JetMETCorrections/Configuration/python/L2L3Corrections_2300GeV_cff.py
+cvs co -r V01-08-23-05 JetMETCorrections/Configuration/python/L2L3Corrections_2360GeV_cff.py
 cvs co -r V01-08-08-09 CondFormats/JetMETObjects
