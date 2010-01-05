@@ -2,6 +2,7 @@
 import FWCore.ParameterSet.Config as cms
 
 from CMS2.NtupleMaker.aSkimFilter_cfi import *
+from CMS2.NtupleMaker.beamHaloSequence_cff import *
 from CMS2.NtupleMaker.beamSpotMaker_cfi import *
 from CMS2.NtupleMaker.bTaggingSequence_cfi import *
 from CMS2.NtupleMaker.bTaggingTrkSequence_cfi import *
@@ -38,6 +39,7 @@ from CMS2.NtupleMaker.pfJetMaker_cfi import *
 from CMS2.NtupleMaker.pfmetMaker_cfi import *
 from CMS2.NtupleMaker.pftauMaker_cfi import *
 from CMS2.NtupleMaker.photonMaker_cfi import *
+from CMS2.NtupleMaker.randomConeIsoMaker_cfi import *
 from CMS2.NtupleMaker.scMaker_cfi import *
 from CMS2.NtupleMaker.tcmetMaker_cfi import *
 from CMS2.NtupleMaker.trackMaker_cfi import *
@@ -50,11 +52,11 @@ from CMS2.NtupleMaker.vertexMaker_cfi import *
 from CMS2.NtupleMaker.caloTowerMaker_cfi import *
 from CMS2.NtupleMaker.hcalNoiseSummaryMaker_cfi import *
 
-CMS2Reco      = cms.Sequence(egammaElectronIDCMS2 * cms2CaloJetSequence * cms2scCaloJetSequence * cms2TrkJetSequence * metCorSequence * CMS2Btagging * CMS2TrkBtagging)
+CMS2Reco      = cms.Sequence(egammaElectronIDCMS2 * cms2CaloJetSequence * cms2scCaloJetSequence * cms2TrkJetSequence * metCorSequence * CMS2Btagging * CMS2TrkBtagging * cms2beamHaloSequence)
 
 eventmakers   = cms.Sequence(beamSpotMaker * vertexMaker * eventMaker * hcalNoiseSummaryMaker)
 
-trigmakers   = cms.Sequence(l1Maker * hltMakerSequence)
+trigmakers    = cms.Sequence(l1Maker * hltMakerSequence)
 
 makers        = cms.Sequence(trackMaker * muonMaker * electronMaker * scMaker * jetMaker * scjetMaker * JPTCorrections * trkJetMaker * metMaker * tcmetMaker * calotauMaker * photonMaker * caloTowerMaker)
 
@@ -66,4 +68,6 @@ othermakers   = cms.Sequence(elCaloIsoSequence * elTkJuraIsoMaker * bTagMaker * 
 
 pflowmakers   = cms.Sequence(pfmetMaker * pfJetMaker * pftauMaker)
 
-coreCMS2Sequence      = cms.Sequence(CMS2Reco * eventmakers * trigmakers * makers * assmakers * othermakers * hypmakers * pflowmakers)
+randomConeIso = cms.Sequence(randomConeIsoMaker)
+
+coreCMS2Sequence      = cms.Sequence(CMS2Reco * eventmakers * trigmakers * makers * assmakers * othermakers * hypmakers * pflowmakers * randomConeIso)
