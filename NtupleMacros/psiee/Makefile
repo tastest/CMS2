@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.1 2009/12/22 18:56:39 jmuelmen Exp $
+# $Id: Makefile,v 1.2 2010/01/07 20:56:44 dlevans Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
@@ -9,9 +9,10 @@ LINKERFLAGS = $(shell root-config --ldflags) -Wl,-z -Wl,muldefs
 ifeq ($(shell root-config --platform),macosx)
 	# linker option for Mac OS X, got it from old project, seems to work ;-)
 	LINKERFLAGS = -bundle -undefined suppress -Wl,-x -O -Xlinker -bind_at_load -flat_namespace $(shell root-config --libs) -lEG -lGenVector
+
 endif
 
-CORESOURCES = $(wildcard ${CMS2_LOCATION}/NtupleMacros/CORE/CMS2.cc) 
+CORESOURCES = $(wildcard ${CMS2_LOCATION}/NtupleMacros/CORE/*.cc) 
 COREOBJECTS = $(CORESOURCES:.cc=.o) 
 CORELIB = libCMS2NtupleMacrosCORE.so
 

@@ -214,5 +214,22 @@ protected:
      TH1F		*h_m_els;
      TH1F		*h_m_eltrks;
      TH1F		*h_m_sctrks;
+
+     TH1F		*h_m_elsctrk;
+
+     TH1F 		*h_m_els_pt_ee;
+     TH1F		*h_m_els_pt_eb;
+     TH1F               *h_m_els_et_ee;
+     TH1F               *h_m_els_et_eb;
+
+     TH1F               *h_m_elspf_pt_ee;
+     TH1F               *h_m_elspf_pt_eb;
+     TH1F               *h_m_elspf_et_ee;
+     TH1F               *h_m_elspf_et_eb;
+
+	TH1F	*h1_mass_eltrkeltrk_;
+        TH1F    *h1_mass_sctrkeltrk_;
+        TH1F    *h1_mass_sctrksctrk_;
+
 };
 #endif
