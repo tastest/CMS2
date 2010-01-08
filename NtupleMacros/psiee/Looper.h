@@ -214,5 +214,13 @@ protected:
      TH1F		*h_m_els;
      TH1F		*h_m_eltrks;
      TH1F		*h_m_sctrks;
+     TH1F		*h_m_esc;
+     TH1F		*h_m_esctrks;
+     TH1F		*h_m_esctrks_elmatched;
+     TH1F		*h_m_esctrks_elnotmatched;
+     TH1F		*h_scs_elsidx;
+     TH1F		*h_ncands;
+     int		n_scs_el_matched;
+     int		n_scs_el_not_matched;
 };
 #endif

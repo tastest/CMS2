@@ -75,7 +75,8 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
      const string log = name + ".log";
      // by default, we run this list of samples; if we're told by the
      // which_ones bit field to skip a sample, we skip it
-     Looper looper_psi		(fFreeForm("/data/tmp/cms2/JPsiEE_Summer09-DESIGN_3X_V8A_2360GeV-v1/V03-00-23/merged_ntuple.root"), 0, log.c_str());
+      Looper looper_psi		(fFreeForm("/data/tmp/cms2/JPsiEE_Summer09-DESIGN_3X_V8A_2360GeV-v1/V03-00-23/merged_ntuple.root"), 0, log.c_str()); 
+//     Looper looper_psi		(fFreeForm("/data/tmp/cms2/MinBias_Summer09-STARTUP3X_V8D_2360GeV-v2/V03-00-20/merged*.root"), 0, log.c_str());
      gDirectory = new TDirectory;
      looper_psi.Loop();
      // when all the loopers are done, we save the histograms to file
