@@ -132,8 +132,8 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
   TH1F *h_scs_eratmaxCut[aSize];			//(e3x3-eMax)/eMax for superclusters
   TH1F *h_scs_erat3x3[aSize];				//(e3x3-eMax)/eMax for superclusters
   TH1F *h_scs_erat3x3Cut[aSize];			//(e3x3-eMax)/eMax for superclusters
-  TH1F *h_scs_eratrat[aSize];				//(e3x3-eMax)/eMax for superclusters
-  TH1F *h_scs_eratratCut[aSize];			//(e3x3-eMax)/eMax for superclusters
+  TH1F *h_scs_rnine[aSize];				//(e3x3-eMax)/eMax for superclusters
+  TH1F *h_scs_rnineCut[aSize];			//(e3x3-eMax)/eMax for superclusters
 
   TH2F *h_scs_emaxvsediff[aSize];		//eMax vs eMax-e3x3 for superclusters
 
@@ -141,15 +141,15 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
   TH2F *h_scs_emaxvseratmaxZoom[aSize];	//eMax vs (e3x3-eMax)/eMax for superclusters
   TH2F *h_scs_emaxvserat3x3[aSize];		//eMax vs (e3x3-eMax)/eMax for superclusters
   TH2F *h_scs_emaxvserat3x3Zoom[aSize];	//eMax vs (e3x3-eMax)/eMax for superclusters
-  TH2F *h_scs_emaxvseratrat[aSize];		//eMax vs (e3x3-eMax)/eMax for superclusters
-  TH2F *h_scs_emaxvseratratZoom[aSize];	//eMax vs (e3x3-eMax)/eMax for superclusters
+  TH2F *h_scs_emaxvsrnine[aSize];		//eMax vs (e3x3-eMax)/eMax for superclusters
+  TH2F *h_scs_emaxvsrnineZoom[aSize];	//eMax vs (e3x3-eMax)/eMax for superclusters
 
   TH2F *h_scs_etmaxvseratmax[aSize];		//eMax vs (e3x3-eMax)/eMax for superclusters
   TH2F *h_scs_etmaxvseratmaxZoom[aSize];	//eMax vs (e3x3-eMax)/eMax for superclusters
   TH2F *h_scs_etmaxvserat3x3[aSize];		//eMax vs (e3x3-eMax)/eMax for superclusters
   TH2F *h_scs_etmaxvserat3x3Zoom[aSize];	//eMax vs (e3x3-eMax)/eMax for superclusters
-  TH2F *h_scs_etmaxvseratrat[aSize];		//eMax vs (e3x3-eMax)/eMax for superclusters
-  TH2F *h_scs_etmaxvseratratZoom[aSize];	//eMax vs (e3x3-eMax)/eMax for superclusters
+  TH2F *h_scs_etmaxvsrnine[aSize];		//eMax vs (e3x3-eMax)/eMax for superclusters
+  TH2F *h_scs_etmaxvsrnineZoom[aSize];	//eMax vs (e3x3-eMax)/eMax for superclusters
 
   TH1F *h_scs_emax[aSize];				//eMax for superclusters
   TH1F *h_scs_emaxCut[aSize];			//eMax for superclusters with erat < eratcut (0.006 or so)
@@ -161,10 +161,13 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
   TH2F *h_scs_etavsphiNar[aSize];//eta vs phi of spikes above 10GeV in energy
   TH2F *h_scs_etavsphiHotNar[aSize];//eta vs phi of spikes above 10GeV in energy--include hot cell
   
+  TH1F *h_cmetCutCorr[aSize];//met for events with cut on erat and emax after correction
   TH1F *h_cmetCut[aSize];//met for events with cut on erat and emax
   TH1F *h_cmet[aSize];//met 
+  TH1F *h_tcmetCutCorr[aSize];//met for events with cut on erat and emax after correction
   TH1F *h_tcmetCut[aSize];//met for events with cut on erat and emax
   TH1F *h_tcmet[aSize];//met 
+  TH1F *h_pfmetCutCorr[aSize];//met for events with cut on erat and emax after correction
   TH1F *h_pfmetCut[aSize];//met for events with cut on erat and emax
   TH1F *h_pfmet[aSize];//met 
 
@@ -182,6 +185,10 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
   TH2F *h_scs_etmaxvspfmet[aSize]; //eMax_t of sc vs met
   TH2F *h_scs_phivspfmetphi[aSize]; //sc_phi vs met_phi
   TH1F *h_scs_dphipfmet[aSize]; //sc_phi - phi_met
+
+  TH1F *h_scs_spikeFlags[aSize];//reco flags for ECAL spikes
+  TH1F *h_scs_notspikeFlags[aSize];//reco flags for ECAL !spikes
+  TH1F *h_scs_allFlags[aSize];//reco flags for ECAL !spikes
   
   //book histos
   //fkw's new histos come first
@@ -261,10 +268,10 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 							 ("scs_erat3x3" + v_title.at(i)).c_str(), 220, -0.2, 2.0);
     h_scs_erat3x3Cut[i] = new TH1F((v_prefix.at(i)+"scs_erat3x3Cut").c_str(), 
 								("scs_erat3x3Cut" + v_title.at(i)).c_str(), 220, -0.2, 2.0);
-	h_scs_eratrat[i] = new TH1F((v_prefix.at(i)+"scs_eratrat").c_str(), 
-							 ("scs_eratrat" + v_title.at(i)).c_str(), 220, -0.2, 2.0);
-    h_scs_eratratCut[i] = new TH1F((v_prefix.at(i)+"scs_eratratCut").c_str(), 
-								("scs_eratratCut" + v_title.at(i)).c_str(), 220, -0.2, 2.0);
+	h_scs_rnine[i] = new TH1F((v_prefix.at(i)+"scs_rnine").c_str(), 
+							 ("scs_rnine" + v_title.at(i)).c_str(), 220, -0.2, 2.0);
+    h_scs_rnineCut[i] = new TH1F((v_prefix.at(i)+"scs_rnineCut").c_str(), 
+								("scs_rnineCut" + v_title.at(i)).c_str(), 220, -0.2, 2.0);
 
     h_scs_emaxvsediff[i] = new TH2F((v_prefix.at(i)+"scs_emaxvsediff").c_str(), 
 			    ("scs_emaxvsediff" + v_title.at(i)).c_str(), 40, 0.0, 4.0, 40, 0.0, 10.0 );
@@ -277,10 +284,10 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 			    ("scs_emaxvserat3x3" + v_title.at(i)).c_str(), 41, -0.025, 1.0, 40, 0.0, 40.0 );
     h_scs_emaxvserat3x3Zoom[i] = new TH2F((v_prefix.at(i)+"scs_emaxvserat3x3Zoom").c_str(), 
 			    ("scs_emaxvserat3x3Zoom" + v_title.at(i)).c_str(), 40, -0.05, 0.05, 40, 0.0, 40.0 );
-    h_scs_emaxvseratrat[i] = new TH2F((v_prefix.at(i)+"scs_emaxvseratrat").c_str(), 
-			    ("scs_emaxvseratrat" + v_title.at(i)).c_str(), 41, -0.025, 1.0, 40, 0.0, 40.0 );
-    h_scs_emaxvseratratZoom[i] = new TH2F((v_prefix.at(i)+"scs_emaxvseratratZoom").c_str(), 
-			    ("scs_emaxvseratratZoom" + v_title.at(i)).c_str(), 40, 0.95, 1.05, 40, 0.0, 40.0 );
+    h_scs_emaxvsrnine[i] = new TH2F((v_prefix.at(i)+"scs_emaxvsrnine").c_str(), 
+			    ("scs_emaxvsrnine" + v_title.at(i)).c_str(), 41, -0.025, 1.0, 40, 0.0, 40.0 );
+    h_scs_emaxvsrnineZoom[i] = new TH2F((v_prefix.at(i)+"scs_emaxvsrnineZoom").c_str(), 
+			    ("scs_emaxvsrnineZoom" + v_title.at(i)).c_str(), 40, 0.95, 1.05, 40, 0.0, 40.0 );
 
     h_scs_etmaxvseratmax[i] = new TH2F((v_prefix.at(i)+"scs_emaxvseratmax").c_str(), 
 			    ("scs_emaxvseratmax" + v_title.at(i)).c_str(), 41, -0.025, 1.0, 40, 0.0, 40.0 );
@@ -290,10 +297,10 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 			    ("scs_emaxvserat3x3" + v_title.at(i)).c_str(), 41, -0.025, 1.0, 40, 0.0, 40.0 );
     h_scs_etmaxvserat3x3Zoom[i] = new TH2F((v_prefix.at(i)+"scs_emaxvserat3x3Zoom").c_str(), 
 			    ("scs_emaxvserat3x3Zoom" + v_title.at(i)).c_str(), 40, -0.05, 0.05, 40, 0.0, 40.0 );
-    h_scs_etmaxvseratrat[i] = new TH2F((v_prefix.at(i)+"scs_emaxvseratrat").c_str(), 
-			    ("scs_emaxvseratrat" + v_title.at(i)).c_str(), 41, -0.025, 1.0, 40, 0.0, 40.0 );
-    h_scs_etmaxvseratratZoom[i] = new TH2F((v_prefix.at(i)+"scs_emaxvseratratZoom").c_str(), 
-			    ("scs_emaxvseratratZoom" + v_title.at(i)).c_str(), 40, 0.95, 1.05, 40, 0.0, 40.0 );
+    h_scs_etmaxvsrnine[i] = new TH2F((v_prefix.at(i)+"scs_etmaxvsrnine").c_str(), 
+			    ("scs_etmaxvsrnine" + v_title.at(i)).c_str(), 41, -0.025, 1.0, 40, 0.0, 40.0 );
+    h_scs_etmaxvsrnineZoom[i] = new TH2F((v_prefix.at(i)+"scs_etmaxvsrnineZoom").c_str(), 
+			    ("scs_etmaxvsrnineZoom" + v_title.at(i)).c_str(), 40, 0.95, 1.05, 40, 0.0, 40.0 );
 
     h_scs_emax[i] = new TH1F((v_prefix.at(i)+"scs_emax").c_str(), 
 			     ("scs_emax" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
@@ -313,10 +320,13 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
     h_scs_etavsphiHotNar[i] = new TH2F((v_prefix.at(i)+"scs_etavsphiHotNar").c_str(), 
 			    ("scs_etavsphiHotNar" + v_title.at(i)).c_str(), 420, -TMath::Pi(), TMath::Pi(), 400, -3.0, 3.0);
 
+    h_cmetCutCorr[i]  = new TH1F((v_prefix.at(i)+"cmetCutCorr").c_str(), ("cmetCutCorr" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
     h_cmetCut[i]  = new TH1F((v_prefix.at(i)+"cmetCut").c_str(), ("cmetCut" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
     h_cmet[i]     = new TH1F((v_prefix.at(i)+"cmet").c_str(), ("cmet" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
+    h_tcmetCutCorr[i]  = new TH1F((v_prefix.at(i)+"tcmetCutCorr").c_str(), ("tcmetCutCorr" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
     h_tcmetCut[i] = new TH1F((v_prefix.at(i)+"tcmetCut").c_str(), ("tcmetCut" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
     h_tcmet[i]    = new TH1F((v_prefix.at(i)+"tcmet").c_str(), ("tcmet" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
+    h_pfmetCutCorr[i]  = new TH1F((v_prefix.at(i)+"pfmetCutCorr").c_str(), ("pfmetCutCorr" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
     h_pfmetCut[i] = new TH1F((v_prefix.at(i)+"pfmetCut").c_str(), ("pfmetCut" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
     h_pfmet[i]    = new TH1F((v_prefix.at(i)+"pfmet").c_str(), ("pfmet" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
 
@@ -334,6 +344,14 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 	h_scs_etmaxvspfmet[i] = new TH2F((v_prefix.at(i)+"scetmax_vs_pfmet").c_str(), ("scetmax_vs_pfmet" + v_title.at(i)).c_str(), 100, 0.0, 50.0, 100, 0.0, 50.0);
 	h_scs_phivspfmetphi[i] = new TH2F((v_prefix.at(i)+"scphi_vs_pfmetphi").c_str(), ("scphi_vs_pfmetphi" + v_title.at(i)).c_str(), 100, -TMath::Pi(), TMath::Pi(), 100, -TMath::Pi(), TMath::Pi() );
 	h_scs_dphipfmet[i] = new TH1F((v_prefix.at(i)+"dphi_sc_pfmet").c_str(), ("dphi_sc_pfmet" + v_title.at(i)).c_str(), 100, -TMath::Pi(), TMath::Pi() );
+
+
+    h_scs_allFlags[i] = new TH1F((v_prefix.at(i)+"scs_allFlags").c_str(), 
+								("scs_allFlags" + v_title.at(i)).c_str(), 20, 0.0, 20.0);
+    h_scs_spikeFlags[i] = new TH1F((v_prefix.at(i)+"scs_spikeFlags").c_str(), 
+								("scs_spikeFlags" + v_title.at(i)).c_str(), 20, 0.0, 20.0);
+    h_scs_notspikeFlags[i] = new TH1F((v_prefix.at(i)+"scs_notspikeFlags").c_str(), 
+								("scs_notspikeFlags" + v_title.at(i)).c_str(), 20, 0.0, 20.0);
 
     h_trks_innerlayers[i]-> TH1F::Sumw2();
     h_trks_outerlayers[i]-> TH1F::Sumw2();
@@ -376,30 +394,36 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
     h_scs_emaxvseratmaxZoom[i]->TH2F::Sumw2();
     h_scs_emaxvserat3x3[i]->TH2F::Sumw2();
     h_scs_emaxvserat3x3Zoom[i]->TH2F::Sumw2();
-    h_scs_emaxvseratrat[i]->TH2F::Sumw2();
-    h_scs_emaxvseratratZoom[i]->TH2F::Sumw2();
+    h_scs_emaxvsrnine[i]->TH2F::Sumw2();
+    h_scs_emaxvsrnineZoom[i]->TH2F::Sumw2();
 
     h_scs_eratmax[i]->TH1F::Sumw2();
     h_scs_eratmaxCut[i]->TH1F::Sumw2();
     h_scs_erat3x3[i]->TH1F::Sumw2();
     h_scs_erat3x3Cut[i]->TH1F::Sumw2();
-    h_scs_eratrat[i]->TH1F::Sumw2();
-    h_scs_eratratCut[i]->TH1F::Sumw2();
+    h_scs_rnine[i]->TH1F::Sumw2();
+    h_scs_rnineCut[i]->TH1F::Sumw2();
+    h_scs_allFlags[i]->TH1F::Sumw2();
+    h_scs_spikeFlags[i]->TH1F::Sumw2();
+    h_scs_notspikeFlags[i]->TH1F::Sumw2();
 
     h_scs_emax[i]->TH1F::Sumw2();
     h_scs_ediff[i]->TH1F::Sumw2();
     h_scs_eta[i]->TH1F::Sumw2();
     h_scs_etavsphi[i]->TH2F::Sumw2();
     h_cmet[i]->TH1F::Sumw2();
+    h_cmetCutCorr[i]->TH1F::Sumw2();
     h_cmetCut[i]->TH1F::Sumw2();
     h_tcmet[i]->TH1F::Sumw2();
+    h_tcmetCutCorr[i]->TH1F::Sumw2();
     h_tcmetCut[i]->TH1F::Sumw2();
     h_pfmet[i]->TH1F::Sumw2();
+    h_pfmetCutCorr[i]->TH1F::Sumw2();
     h_pfmetCut[i]->TH1F::Sumw2();
 
-	h_scs_dphicmet[i]->TH1F::Sumw2();
-	h_scs_dphitcmet[i]->TH1F::Sumw2();
-	h_scs_dphipfmet[i]->TH1F::Sumw2();
+    h_scs_dphicmet[i]->TH1F::Sumw2();
+    h_scs_dphitcmet[i]->TH1F::Sumw2();
+    h_scs_dphipfmet[i]->TH1F::Sumw2();
   }
     
   TFile *currentFile = 0;
@@ -439,34 +463,33 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
       //fkw: Here's what the next line does. As input argument of ScanChain we have a list of run numbers.
       //fkw: If the present run number is not in this set then find returns the end of the iterator, i.e. one
       //fkw: beyond the last index. In that case we give up right here.
-      if(!runningonGEN && find(v_goodRuns.begin(), v_goodRuns.end(), evt_run()) == v_goodRuns.end())
-		continue;
+      if(!runningonGEN && find(v_goodRuns.begin(), v_goodRuns.end(), evt_run()) == v_goodRuns.end()) continue;
       nGoodEvents++;
       
       if( thisRun != (int)evt_run() ) {
-		thisRun = evt_run();
-		cout << "Reached run " << thisRun << endl; 
+	thisRun = evt_run();
+	cout << "Reached run " << thisRun << endl; 
       }
 
-      if(!passesTrackCuts() && requireTrackCuts) 
-		continue;
+      if(!passesTrackCuts() && requireTrackCuts) continue;
+      //fkw if(passesTrackCuts() && requireTrackCuts) continue;
       nPassTrackingCuts++;
       
       int index = (int)(!passesTrigger(runningonGEN));//index is used for histo booking
       if(passesTrigger(runningonGEN))
-		nPassTriggers++;
+	nPassTriggers++;
 
-	  //count total good events per run
-	  for( unsigned int j=0; j<v_goodRuns.size(); j++ ) {
-		if( v_goodRuns.at(j) == evt_run() ) { //match run from runlist with spike's run
-		  nGoodEventsPerRun.at(j)++;
-		}
-	  }
+      //count total good events per run
+      for( unsigned int j=0; j<v_goodRuns.size(); j++ ) {
+	if( v_goodRuns.at(j) == evt_run() ) { //match run from runlist with spike's run
+	  nGoodEventsPerRun.at(j)++;
+	}
+      }
 
       //first comes fkw's new stuff
-
-	  /*
-	  //////////////////////////////////////////////////////////////////////////start block
+      
+      /*
+         //////////////////////////////////////////////////////////////////////////start block
 
 
       for (unsigned int i=0; i< trks_exp_innerlayers().size(); i++){//loop over tracks
@@ -546,20 +569,6 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
       h_nvtxsbad[index]->Fill(min((double)(vtxs_isFake().size()-nGoodVtxs),4.9));  
       h_nvtxsbad[2]->Fill(min((double)(vtxs_isFake().size()-nGoodVtxs),4.9));  
 
-      //make some simple tracking plots
-      int nGoodTrks = 0;
-      for(unsigned int i = 0; i < trks_trk_p4().size(); i++) {
-		if(trks_qualityMask().at(i) & 4)
-		  nGoodTrks++;
-      }
-      double rat = 0;
-      if (trks_trk_p4().size() == 0) rat = 0.0;
-      else rat = ((double)nGoodTrks)/((double)trks_trk_p4().size());
-      h_ratioGoodTracks[index]->Fill(rat);
-      h_numGoodTracks[index]->Fill(min((double)nGoodTrks,99.9));
-      h_ratioGoodTracks[2]->Fill(rat);
-      h_numGoodTracks[2]->Fill(min((double)nGoodTrks,99.9));
-
       //if( thisRun == 123970) cout << "now starting conversions" << endl;
 
       //look for conversions
@@ -635,19 +644,40 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 		}
       }
 
+      //if( thisRun == 123970) cout << "passed the electron block" << endl;
+
 */
 	  //////////////////////////////////////////////////////////////////////////end block
 
-      //if( thisRun == 123970) cout << "passed the electron block" << endl;
+      //make some simple tracking plots
+      int nGoodTrks = 0;
+      for(unsigned int i = 0; i < trks_trk_p4().size(); i++) {
+		if(trks_qualityMask().at(i) & 4)
+		  nGoodTrks++;
+      }
+      double rat = 0;
+      if (trks_trk_p4().size() == 0) rat = 0.0;
+      else rat = ((double)nGoodTrks)/((double)trks_trk_p4().size());
+      h_ratioGoodTracks[index]->Fill(rat);
+      h_numGoodTracks[index]->Fill(min((double)nGoodTrks,99.9));
+      h_ratioGoodTracks[2]->Fill(rat);
+      h_numGoodTracks[2]->Fill(min((double)nGoodTrks,99.9));
 
-	  //scs superclusters info
-	  const float metmax = 49.9;
-	  const float scdiff = 9.99;
-	  const float emaxmax = 39.9;
-	  const float emaxcut = 10.0;
-	  const float cmet  = min(evt_met(), metmax);
-	  const float tcmet = min(evt_tcmet(), metmax);
-	  const float pfmet = min(evt_pfmet(), metmax);
+      //scs superclusters info
+      const float metmax = 49.9;
+      const float scdiff = 9.99;
+      const float emaxmax = 39.9;
+      const float emaxcut = 10.0;
+      const float scetmaxcut = 5.0;
+      const float cmet  = min(evt_met(), metmax);
+      const float tcmet = min(evt_tcmet(), metmax);
+      const float pfmet = min(evt_pfmet(), metmax);
+      float cmetcx  = evt_met()*cos( evt_metPhi() );
+      float tcmetcx = evt_tcmet()*cos( evt_tcmetPhi() );
+      float pfmetcx = evt_pfmet()*cos( evt_pfmetPhi() );
+      float cmetcy  = evt_met()*sin( evt_metPhi() );
+      float tcmetcy = evt_tcmet()*sin( evt_tcmetPhi() );
+      float pfmetcy = evt_pfmet()*sin( evt_pfmetPhi() );
       h_cmet[index]		->Fill(cmet);
       h_cmet[2]			->Fill(cmet);
       h_tcmet[index]	->Fill(tcmet);
@@ -656,154 +686,190 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
       h_pfmet[2]		->Fill(pfmet);
       bool passed = false;
       bool failed = false;
-	  int nspikes = 0;
+      int nspikes = 0;
       for( unsigned int i=0; i < scs_eMax().size(); i++ ) {
-		const float eratmax = (scs_e3x3().at(i)-scs_eMax().at(i))/scs_eMax().at(i);
-		const float erat3x3 = (scs_e3x3().at(i)-scs_eMax().at(i))/scs_e3x3().at(i);
-		const float eratrat = scs_eMax().at(i)/scs_e3x3().at(i);
-		const float emax    = min( scs_eMax().at(i), emaxmax );
-		const float scet    = min( scs_energy().at(i)*sin( scs_pos_p4().at(i).Theta() ), metmax );
-		const float scetmax = min( scs_eMax().at(i)  *sin( scs_pos_p4().at(i).Theta() ), metmax );
-		h_scs_etavsphiHot[index]->Fill(scs_phi().at(i),scs_eta().at(i));
-		h_scs_etavsphiHot[2]    ->Fill(scs_phi().at(i),scs_eta().at(i));
-		h_scs_etavsphiHotNar[index]->Fill(scs_phi().at(i),scs_eta().at(i));
-		h_scs_etavsphiHotNar[2]    ->Fill(scs_phi().at(i),scs_eta().at(i));
-		//if( fabs(scs_eta().at(i) - 1.5) < 0.0500001 && fabs(scs_phi().at(i) - 1.57) < 0.11 //eta phi of hot cell--fkw
-		if( fabs(scs_eta().at(i) - 1.53) < 0.016 && fabs(scs_phi().at(i) - 1.66) < 0.016 //eta phi of hot cell--warren
-			&& fabs(eratmax) < 0.006 && emax > emaxcut ) { //eratX, emax of hot cell
-		  failed = true; //flag event with hot cell
-		  continue; //skip hot cell
-		}
+	const float eratmax = (scs_e3x3().at(i)-scs_eMax().at(i))/scs_eMax().at(i);
+	const float erat3x3 = (scs_e3x3().at(i)-scs_eMax().at(i))/scs_e3x3().at(i);
+	const float rnine = scs_eMax().at(i)/scs_e3x3().at(i);
+	const float emax    = min( scs_eMax().at(i), emaxmax );
+	const float scet    = min( scs_energy().at(i)*sin( scs_pos_p4().at(i).Theta() ), metmax );
+	const float scetmax = scs_eMax().at(i)  *sin( scs_pos_p4().at(i).Theta() );
+	const bool isSpike = fabs(1-rnine) < 0.01 ;
+	const bool isHigh = scetmax > scetmaxcut ;
+	h_scs_etavsphiHot[index]->Fill(scs_phi().at(i),scs_eta().at(i));
+	h_scs_etavsphiHot[2]    ->Fill(scs_phi().at(i),scs_eta().at(i));
+	h_scs_etavsphiHotNar[index]->Fill(scs_phi().at(i),scs_eta().at(i));
+	h_scs_etavsphiHotNar[2]    ->Fill(scs_phi().at(i),scs_eta().at(i));
+	//if( fabs(scs_eta().at(i) - 1.5) < 0.0500001 && fabs(scs_phi().at(i) - 1.57) < 0.11 //eta phi of hot cell--fkw
+	if( fabs(scs_eta().at(i) - 1.53) < 0.016 && fabs(scs_phi().at(i) - 1.66) < 0.016 //eta phi of hot cell--warren
+	    && isSpike && isHigh ) { //is high spike and hot cell
+	  failed = true; //flag event with hot cell
+	  continue; //skip hot cell
+	}
 
-		h_scs_emax[index]->Fill( min(scs_eMax().at(i), metmax) );
-		h_scs_emax[2]    ->Fill( min(scs_eMax().at(i), metmax) );
-		if( fabs(eratmax) < 0.006 ) {
-		  h_scs_emaxCut[index]->Fill( min(scs_eMax().at(i), metmax) );
-		  h_scs_emaxCut[2]    ->Fill( min(scs_eMax().at(i), metmax) );
-		}
-		h_scs_ediff[index]->Fill( min( scs_e3x3().at(i)-scs_eMax().at(i), scdiff ) );
-		h_scs_ediff[2]    ->Fill( min( scs_e3x3().at(i)-scs_eMax().at(i), scdiff ) );
-		h_scs_emaxvsediff[index]->Fill( scs_e3x3().at(i)-scs_eMax().at(i), scs_eMax().at(i));
-		h_scs_emaxvsediff[2]    ->Fill( scs_e3x3().at(i)-scs_eMax().at(i), scs_eMax().at(i));
+	h_scs_emax[index]->Fill( min(scs_eMax().at(i), metmax) );
+	h_scs_emax[2]    ->Fill( min(scs_eMax().at(i), metmax) );
+	if( isSpike ) {
+	  h_scs_emaxCut[index]->Fill( min(scs_eMax().at(i), metmax) );
+	  h_scs_emaxCut[2]    ->Fill( min(scs_eMax().at(i), metmax) );
+	}
+	h_scs_ediff[index]->Fill( min( scs_e3x3().at(i)-scs_eMax().at(i), scdiff ) );
+	h_scs_ediff[2]    ->Fill( min( scs_e3x3().at(i)-scs_eMax().at(i), scdiff ) );
+	h_scs_emaxvsediff[index]->Fill( scs_e3x3().at(i)-scs_eMax().at(i), scs_eMax().at(i));
+	h_scs_emaxvsediff[2]    ->Fill( scs_e3x3().at(i)-scs_eMax().at(i), scs_eMax().at(i));
+	
+	h_scs_eratmax[index]	->Fill(eratmax);
+	h_scs_eratmax[2]		->Fill(eratmax);
+	h_scs_erat3x3[index]	->Fill(erat3x3);
+	h_scs_erat3x3[2]		->Fill(erat3x3);
+	h_scs_rnine[index]	->Fill(rnine);
+	h_scs_rnine[2]		->Fill(rnine);
+	if( isHigh ) {
+	  h_scs_eratmaxCut[index]	->Fill(eratmax);
+	  h_scs_eratmaxCut[2]		->Fill(eratmax);
+	  h_scs_erat3x3Cut[index]	->Fill(erat3x3);
+	  h_scs_erat3x3Cut[2]		->Fill(erat3x3);
+	  h_scs_rnineCut[index]	->Fill(rnine);
+	  h_scs_rnineCut[2]		->Fill(rnine);
+	}
+	if( isHigh && !isSpike ) {
+	  //fill recoflags histogram for high ECAL that are not spikes
+	  h_scs_notspikeFlags[index]->Fill(scs_severitySeed().at(i));
+	  h_scs_notspikeFlags[2]->Fill(scs_severitySeed().at(i));
+	}
+	h_scs_allFlags[index]->Fill(scs_severitySeed().at(i));
+	h_scs_allFlags[2]->Fill(scs_severitySeed().at(i));
 
-		h_scs_eratmax[index]	->Fill(eratmax);
-		h_scs_eratmax[2]		->Fill(eratmax);
-		h_scs_erat3x3[index]	->Fill(erat3x3);
-		h_scs_erat3x3[2]		->Fill(erat3x3);
-		h_scs_eratrat[index]	->Fill(eratrat);
-		h_scs_eratrat[2]		->Fill(eratrat);
-		if( emax > emaxcut ) {
-		  h_scs_eratmaxCut[index]	->Fill(eratmax);
-		  h_scs_eratmaxCut[2]		->Fill(eratmax);
-		  h_scs_erat3x3Cut[index]	->Fill(erat3x3);
-		  h_scs_erat3x3Cut[2]		->Fill(erat3x3);
-		  h_scs_eratratCut[index]	->Fill(eratrat);
-		  h_scs_eratratCut[2]		->Fill(eratrat);
-		}
-		h_scs_emaxvseratmaxZoom[index]		->Fill(eratmax, emax);
-		h_scs_emaxvseratmaxZoom[2]			->Fill(eratmax, emax);
-		h_scs_emaxvserat3x3Zoom[index]		->Fill(erat3x3, emax);
-		h_scs_emaxvserat3x3Zoom[2]			->Fill(erat3x3, emax);
-		h_scs_emaxvseratratZoom[index]		->Fill(eratrat, emax);
-		h_scs_emaxvseratratZoom[2]			->Fill(eratrat, emax);
-		h_scs_etmaxvseratmaxZoom[index]		->Fill(eratmax, scetmax);
-		h_scs_etmaxvseratmaxZoom[2]			->Fill(eratmax, scetmax);
-		h_scs_etmaxvserat3x3Zoom[index]		->Fill(erat3x3, scetmax);
-		h_scs_etmaxvserat3x3Zoom[2]			->Fill(erat3x3, scetmax);
-		h_scs_etmaxvseratratZoom[index]		->Fill(eratrat, scetmax);
-		h_scs_etmaxvseratratZoom[2]			->Fill(eratrat, scetmax);
-		const float eratmaxmod = min( max( eratmax, (float)-0.02499) , (float)0.99 );
-		const float erat3x3mod = min( max( erat3x3, (float)-0.02499) , (float)0.99 );
-		const float eratratmod = min( max( eratrat, (float)-0.02499) , (float)0.99 );
-		h_scs_emaxvseratmax[index]		->Fill(eratmaxmod, emax);
-		h_scs_emaxvseratmax[2]			->Fill(eratmaxmod, emax);
-		h_scs_emaxvserat3x3[index]		->Fill(erat3x3mod, emax);
-		h_scs_emaxvserat3x3[2]			->Fill(erat3x3mod, emax);
-		h_scs_emaxvseratrat[index]		->Fill(eratratmod, emax);
-		h_scs_emaxvseratrat[2]			->Fill(eratratmod, emax);
-		h_scs_etmaxvseratmax[index]		->Fill(eratmaxmod, scetmax);
-		h_scs_etmaxvseratmax[2]			->Fill(eratmaxmod, scetmax);
-		h_scs_etmaxvserat3x3[index]		->Fill(erat3x3mod, scetmax);
-		h_scs_etmaxvserat3x3[2]			->Fill(erat3x3mod, scetmax);
-		h_scs_etmaxvseratrat[index]		->Fill(eratratmod, scetmax);
-		h_scs_etmaxvseratrat[2]			->Fill(eratratmod, scetmax);
+	h_scs_emaxvseratmaxZoom[index]		->Fill(eratmax, emax);
+	h_scs_emaxvseratmaxZoom[2]			->Fill(eratmax, emax);
+	h_scs_emaxvserat3x3Zoom[index]		->Fill(erat3x3, emax);
+	h_scs_emaxvserat3x3Zoom[2]			->Fill(erat3x3, emax);
+	h_scs_emaxvsrnineZoom[index]		->Fill(rnine, emax);
+	h_scs_emaxvsrnineZoom[2]			->Fill(rnine, emax);
+	h_scs_etmaxvseratmaxZoom[index]		->Fill(eratmax, scetmax);
+	h_scs_etmaxvseratmaxZoom[2]			->Fill(eratmax, scetmax);
+	h_scs_etmaxvserat3x3Zoom[index]		->Fill(erat3x3, scetmax);
+	h_scs_etmaxvserat3x3Zoom[2]			->Fill(erat3x3, scetmax);
+	h_scs_etmaxvsrnineZoom[index]		->Fill(rnine, min(scetmax,emaxmax));
+	h_scs_etmaxvsrnineZoom[2]			->Fill(rnine, min(scetmax,emaxmax));
+	const float eratmaxmod = min( max( eratmax, (float)-0.02499) , (float)0.99 );
+	const float erat3x3mod = min( max( erat3x3, (float)-0.02499) , (float)0.99 );
+	const float rninemod = min( max( rnine, (float)-0.02499) , (float)0.99 );
+	h_scs_emaxvseratmax[index]		->Fill(eratmaxmod, emax);
+	h_scs_emaxvseratmax[2]			->Fill(eratmaxmod, emax);
+	h_scs_emaxvserat3x3[index]		->Fill(erat3x3mod, emax);
+	h_scs_emaxvserat3x3[2]			->Fill(erat3x3mod, emax);
+	h_scs_emaxvsrnine[index]		->Fill(rninemod, emax);
+	h_scs_emaxvsrnine[2]			->Fill(rninemod, emax);
+	h_scs_etmaxvseratmax[index]		->Fill(eratmaxmod, scetmax);
+	h_scs_etmaxvseratmax[2]			->Fill(eratmaxmod, scetmax);
+	h_scs_etmaxvserat3x3[index]		->Fill(erat3x3mod, scetmax);
+	h_scs_etmaxvserat3x3[2]			->Fill(erat3x3mod, scetmax);
+	h_scs_etmaxvsrnine[index]		->Fill(rninemod, min(scetmax,emaxmax));
+	h_scs_etmaxvsrnine[2]			->Fill(rninemod, min(scetmax,emaxmax));
+	
+	//select only spiking cells
+	if( isSpike && isHigh ){
+	  passed = true;
+	  if( failed ) failed = false;
+	  nspikes++;
+	  v_erat.push_back(eratmax);
+	  v_emax.push_back(emax);
+	  v_eta.push_back(scs_eta().at(i));
+	  v_phi.push_back(scs_phi().at(i));
+	  v_cmet.push_back(evt_met());
+	  v_run.push_back(thisRun);
+	  
+	  h_scs_eta[index]->Fill(scs_eta().at(i));
+	  h_scs_eta[2]    ->Fill(scs_eta().at(i));
+	  h_scs_etavsphi[index]->Fill(scs_phi().at(i),scs_eta().at(i));
+	  h_scs_etavsphi[2]    ->Fill(scs_phi().at(i),scs_eta().at(i));
+	  h_scs_etavsphiNar[index]->Fill(scs_phi().at(i),scs_eta().at(i));
+	  h_scs_etavsphiNar[2]    ->Fill(scs_phi().at(i),scs_eta().at(i));
+	  
+	  h_scs_etvscmet[index]    ->Fill( scet,    cmet );
+	  h_scs_etvscmet[2]        ->Fill( scet,    cmet );
+	  h_scs_etmaxvscmet[index] ->Fill( min(scetmax,metmax), cmet );
+	  h_scs_etmaxvscmet[2]     ->Fill( min(scetmax,metmax), cmet );
+	  h_scs_etvstcmet[index]   ->Fill( scet,    tcmet );
+	  h_scs_etvstcmet[2]       ->Fill( scet,    tcmet );
+	  h_scs_etmaxvstcmet[index]->Fill( min(scetmax,metmax), tcmet );
+	  h_scs_etmaxvstcmet[2]    ->Fill( min(scetmax,metmax), tcmet );
+	  h_scs_etvspfmet[index]   ->Fill( scet,    pfmet );
+	  h_scs_etvspfmet[2]       ->Fill( scet,    pfmet );
+	  h_scs_etmaxvspfmet[index]->Fill( min(scetmax,metmax), pfmet );
+	  h_scs_etmaxvspfmet[2]    ->Fill( min(scetmax,metmax), pfmet );
+	  
+	  //correct the met for high spikes:
+	  cmetcx = cmetcx + scetmax*cos( scs_phi().at(i) );
+	  cmetcy = cmetcy + scetmax*sin( scs_phi().at(i) );
+	  tcmetcx = tcmetcx + scetmax*cos( scs_phi().at(i) );
+	  tcmetcy = tcmetcy + scetmax*sin( scs_phi().at(i) );
+	  pfmetcx = pfmetcx + scetmax*cos( scs_phi().at(i) );
+	  pfmetcy = pfmetcy + scetmax*sin( scs_phi().at(i) );
 
-		//select only spiking cells
-		if( fabs(eratmax) < 0.006 && emax > emaxcut ){
-		  passed = true;
-		  if( failed ) failed = false;
-		  nspikes++;
-		  v_erat.push_back(eratmax);
-		  v_emax.push_back(emax);
-		  v_eta.push_back(scs_eta().at(i));
-		  v_phi.push_back(scs_phi().at(i));
-		  v_cmet.push_back(evt_met());
-		  v_run.push_back(thisRun);
-		  
-		  h_scs_eta[index]->Fill(scs_eta().at(i));
-		  h_scs_eta[2]    ->Fill(scs_eta().at(i));
-		  h_scs_etavsphi[index]->Fill(scs_phi().at(i),scs_eta().at(i));
-		  h_scs_etavsphi[2]    ->Fill(scs_phi().at(i),scs_eta().at(i));
-		  h_scs_etavsphiNar[index]->Fill(scs_phi().at(i),scs_eta().at(i));
-		  h_scs_etavsphiNar[2]    ->Fill(scs_phi().at(i),scs_eta().at(i));
+	  const float cmetx  = evt_met()*cos( cms2.evt_metPhi() );
+	  const float cmety  = evt_met()*sin( cms2.evt_metPhi() );
+	  const float tcmetx = evt_tcmet()*cos( cms2.evt_tcmetPhi() );
+	  const float tcmety = evt_tcmet()*sin( cms2.evt_tcmetPhi() );
+	  const float pfmetx = evt_pfmet()*cos( cms2.evt_pfmetPhi() );
+	  const float pfmety = evt_pfmet()*sin( cms2.evt_pfmetPhi() );
+	  const float dphicmet  = ROOT::Math::VectorUtil::DeltaPhi( LorentzVector(cmetx, cmety, 0, evt_met()), scs_pos_p4().at(i) );
+	  const float dphitcmet = ROOT::Math::VectorUtil::DeltaPhi( LorentzVector(tcmetx, tcmety, 0, evt_met()), scs_pos_p4().at(i) );
+	  const float dphipfmet = ROOT::Math::VectorUtil::DeltaPhi( LorentzVector(pfmetx, pfmety, 0, evt_met()), scs_pos_p4().at(i) );
+	  h_scs_dphicmet[index]			->Fill( dphicmet );
+	  h_scs_dphicmet[2]			->Fill( dphicmet );
+	  h_scs_phivscmetphi[index]		->Fill( scs_phi().at(i), atan2( -cmety, -cmetx ) );
+	  h_scs_phivscmetphi[2]			->Fill( scs_phi().at(i), atan2( -cmety, -cmetx ) );
+	  h_scs_dphitcmet[index]		->Fill( dphitcmet );
+	  h_scs_dphitcmet[2]			->Fill( dphitcmet );
+	  h_scs_phivstcmetphi[index]	->Fill( scs_phi().at(i), atan2( -tcmety, -tcmetx ) );
+	  h_scs_phivstcmetphi[2]		->Fill( scs_phi().at(i), atan2( -tcmety, -tcmetx ) );
+	  h_scs_dphipfmet[index]		->Fill( dphipfmet );
+	  h_scs_dphipfmet[2]			->Fill( dphipfmet );
+	  h_scs_phivspfmetphi[index]	->Fill( scs_phi().at(i), atan2( -pfmety, -pfmetx ) );
+	  h_scs_phivspfmetphi[2]		->Fill( scs_phi().at(i), atan2( -pfmety, -pfmetx ) );
+	  //track matching
+	  int nmatch = 0;
+	  for( unsigned int j=0; j<trks_outer_position().size(); j++ ) {
+	    if( ROOT::Math::VectorUtil::DeltaR(trks_outer_position().at(j), scs_pos_p4().at(i)) < 0.1 ) {
+	      cout << "Track Match" << endl;
+	      nmatch++;
+	    }
+	  }
+	  v_trkmch.push_back(nmatch);
+	  //fill recoflags histogram for high ECAL spikes
+	  h_scs_spikeFlags[index]->Fill(scs_severitySeed().at(i));
+	  h_scs_spikeFlags[2]->Fill(scs_severitySeed().at(i));
+	  //cout << " spike flag = " << scs_severitySeed().at(i) << endl;
 
-		  h_scs_etvscmet[index]    ->Fill( scet,    cmet );
-		  h_scs_etvscmet[2]        ->Fill( scet,    cmet );
-		  h_scs_etmaxvscmet[index] ->Fill( scetmax, cmet );
-		  h_scs_etmaxvscmet[2]     ->Fill( scetmax, cmet );
-		  h_scs_etvstcmet[index]   ->Fill( scet,    tcmet );
-		  h_scs_etvstcmet[2]       ->Fill( scet,    tcmet );
-		  h_scs_etmaxvstcmet[index]->Fill( scetmax, tcmet );
-		  h_scs_etmaxvstcmet[2]    ->Fill( scetmax, tcmet );
-		  h_scs_etvspfmet[index]   ->Fill( scet,    pfmet );
-		  h_scs_etvspfmet[2]       ->Fill( scet,    pfmet );
-		  h_scs_etmaxvspfmet[index]->Fill( scetmax, pfmet );
-		  h_scs_etmaxvspfmet[2]    ->Fill( scetmax, pfmet );
-		  
-		  const float cmetx  = evt_met()*cos( cms2.evt_metPhi() );
-		  const float cmety  = evt_met()*sin( cms2.evt_metPhi() );
-		  const float tcmetx = evt_tcmet()*cos( cms2.evt_tcmetPhi() );
-		  const float tcmety = evt_tcmet()*sin( cms2.evt_tcmetPhi() );
-		  const float pfmetx = evt_pfmet()*cos( cms2.evt_pfmetPhi() );
-		  const float pfmety = evt_pfmet()*sin( cms2.evt_pfmetPhi() );
-		  const float dphicmet  = ROOT::Math::VectorUtil::DeltaPhi( LorentzVector(cmetx, cmety, 0, evt_met()), scs_pos_p4().at(i) );
-		  const float dphitcmet = ROOT::Math::VectorUtil::DeltaPhi( LorentzVector(tcmetx, tcmety, 0, evt_met()), scs_pos_p4().at(i) );
-		  const float dphipfmet = ROOT::Math::VectorUtil::DeltaPhi( LorentzVector(pfmetx, pfmety, 0, evt_met()), scs_pos_p4().at(i) );
-		  h_scs_dphicmet[index]			->Fill( dphicmet );
-		  h_scs_dphicmet[2]				->Fill( dphicmet );
-		  h_scs_phivscmetphi[index]		->Fill( scs_phi().at(i), atan2( -cmety, -cmetx ) );
-		  h_scs_phivscmetphi[2]			->Fill( scs_phi().at(i), atan2( -cmety, -cmetx ) );
-		  h_scs_dphitcmet[index]		->Fill( dphitcmet );
-		  h_scs_dphitcmet[2]			->Fill( dphitcmet );
-		  h_scs_phivstcmetphi[index]	->Fill( scs_phi().at(i), atan2( -tcmety, -tcmetx ) );
-		  h_scs_phivstcmetphi[2]		->Fill( scs_phi().at(i), atan2( -tcmety, -tcmetx ) );
-		  h_scs_dphipfmet[index]		->Fill( dphipfmet );
-		  h_scs_dphipfmet[2]			->Fill( dphipfmet );
-		  h_scs_phivspfmetphi[index]	->Fill( scs_phi().at(i), atan2( -pfmety, -pfmetx ) );
-		  h_scs_phivspfmetphi[2]		->Fill( scs_phi().at(i), atan2( -pfmety, -pfmetx ) );
-		  //track matching
-		  int nmatch = 0;
-		  for( unsigned int j=0; j<trks_outer_position().size(); j++ ) {
-			if( ROOT::Math::VectorUtil::DeltaR(trks_outer_position().at(j), scs_pos_p4().at(i)) < 0.1 ) {
-			  cout << "Track Match" << endl;
-			  nmatch++;
-			}
-		  }
-		  v_trkmch.push_back(nmatch);
-		} 
-		
+	} 
+	
       } //end loop on SCs
 	  
       if( passed && !failed ) {
-		h_cmetCut[index] ->Fill(cmet);
-		h_cmetCut[2]     ->Fill(cmet);
-		h_tcmetCut[index]->Fill(tcmet);
-		h_tcmetCut[2]    ->Fill(tcmet);
-		h_pfmetCut[index]->Fill(pfmet);
-		h_pfmetCut[2]    ->Fill(pfmet);
+	h_cmetCut[index] ->Fill(cmet);
+	h_cmetCut[2]     ->Fill(cmet);
+	h_tcmetCut[index]->Fill(tcmet);
+	h_tcmetCut[2]    ->Fill(tcmet);
+	h_pfmetCut[index]->Fill(pfmet);
+	h_pfmetCut[2]    ->Fill(pfmet);
+	//fill corrected met:
+	h_cmetCutCorr[index] ->Fill(sqrt(cmetcx*cmetcx + cmetcy*cmetcy));
+	h_cmetCutCorr[2] ->Fill(sqrt(cmetcx*cmetcx + cmetcy*cmetcy));
+	h_tcmetCutCorr[index] ->Fill(sqrt(tcmetcx*tcmetcx + tcmetcy*tcmetcy));
+	h_tcmetCutCorr[2] ->Fill(sqrt(tcmetcx*tcmetcx + tcmetcy*tcmetcy));
+	h_pfmetCutCorr[index] ->Fill(sqrt(pfmetcx*pfmetcx + pfmetcy*pfmetcy));
+	h_pfmetCutCorr[2] ->Fill(sqrt(pfmetcx*pfmetcx + pfmetcy*pfmetcy));
       }
-	  if( nspikes > 1 ) //multi-spike events
-		cout << "Multi Spike Event ****    " << evt_run() << evt_event() << endl;
+      if( nspikes > 1 ) //multi-spike events
+	cout << "Multi Spike Event ****    " << evt_run() << evt_event() << endl;
+
+      //now take a look at HCAL noise
+      //start with a simple dump of stuff:
+      if( evt_met() > 15.0 ){
+	//cout << " hcalnoise_FilterStatus = " << 
+      }      
 
       //now comes all of what was there before      
       
