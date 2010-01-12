@@ -6,3 +6,4 @@ cvs co -r V03-01-01-04 DataFormats/METReco
 cvs co -r V00-05-38 RecoEcal/EgammaCoreTools
 cvs co -r V01-08-23-05 JetMETCorrections/Configuration
 cvs co -r  V01-08-08-09 CondFormats/JetMETObjects
+cvs co -r V02-06-03 HLTrigger/HLTcore
