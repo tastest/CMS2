@@ -4,9 +4,12 @@ void doAll() {
   
   //TString datapath = "/data/tmp/cms2/MinimumBias_BeamCommissioning09-Dec9thReReco-v1/V03-00-19/123734/*ntuple*.root";
   //TString datapath = "/data/tmp/cms2/ExpressPhysics_BeamCommissioning09-Express-v2/V03-00-20/124230/*ntuple*.root";
-  TString datapath1 = "/data/tmp/cms2/MinimumBias_BeamCommissioning09-Dec14thReReco-v1/V03-00-23/all_900GeV/*ntuple*.root";
-  TString datapath2 = "/data/tmp/cms2/MinimumBias_BeamCommissioning09-PromptReco-v2/V03-00-23/124230_124275/*ntuple*.root";
-  TString datapath3 = "/data/tmp/cms2/MinimumBias_BeamCommissioning09-Dec14thReReco-v1/V03-00-23/124120/*ntuple*.root";
+  //TString datapath1 = "/data/tmp/cms2/MinimumBias_BeamCommissioning09-Dec14thReReco-v1/V03-00-23/all_900GeV/*ntuple*.root";
+  //TString datapath2 = "/data/tmp/cms2/MinimumBias_BeamCommissioning09-PromptReco-v2/V03-00-23/124230_124275/*ntuple*.root";
+  //TString datapath3 = "/data/tmp/cms2/MinimumBias_BeamCommissioning09-Dec14thReReco-v1/V03-00-23/124120/*ntuple*.root";
+  TString datapath1 = "/data/tmp/cms2/MinimumBias_BeamCommissioning09-Dec14thReReco-v1/V03-00-23/all_900GeV/skimGood/skim*.root";
+  TString datapath2 = "/data/tmp/cms2/MinimumBias_BeamCommissioning09-PromptReco-v2/V03-00-23/124230_124275/skimGood/skim*.root";
+  TString datapath3 = "/data/tmp/cms2/MinimumBias_BeamCommissioning09-Dec14thReReco-v1/V03-00-23/124120/skimGood/skim*.root";
 
   gROOT->ProcessLine(".L ScanChain.C++");
   gROOT->ProcessLine(".L histtools.C++");
@@ -14,7 +17,7 @@ void doAll() {
   TChain *ch_data = new TChain("Events");
   ch_data->Add(datapath1.Data());
   ch_data->Add(datapath2.Data());
-  ch_data->Add(datapath3.Data());
+  //fkw ch_data->Add(datapath3.Data());
   TChain *ch_mc = new TChain("Events");
   ch_mc->Add("/data/tmp/cms2-V03-00-19/MinBias_Summer09-STARTUP3X_V8I_900GeV-v2/merged_ntuple_1.root");
   ch_mc->Add("/data/tmp/cms2-V03-00-19/MinBias_Summer09-STARTUP3X_V8I_900GeV-v2/merged_ntuple_2.root");
@@ -70,10 +73,10 @@ void doAll() {
   bool runningonGEN = false;
   bool requireTrackCuts  = true;
   TString description;
-  description = ScanChain(ch_data, runningonGEN, requireTrackCuts, goodRuns);
+  //description = ScanChain(ch_data, runningonGEN, requireTrackCuts, goodRuns);
   
   bool runningonGEN=true;
-  //ScanChain(ch_mc, runningonGEN, requireTrackCuts);
+  ScanChain(ch_mc, runningonGEN, requireTrackCuts);
 
   TString outfname = "Runs";
   for(unsigned int i = 0; i < goodRuns.size(); i++)
@@ -87,7 +90,7 @@ void doAll() {
   outfname = outfname + ".root";
   //saveHist("Run124120_"+outfname);
   //saveHist("Data_"+outfname);
-  saveHist("ExclSpike_"+outfname);
+  saveHist("Test900GeVMC_"+outfname);
   //  deleteHistos(); 
   //  makePlots("Run123734_"+outfname, description);
   

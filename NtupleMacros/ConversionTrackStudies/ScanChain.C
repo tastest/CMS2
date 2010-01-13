@@ -189,6 +189,16 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
   TH1F *h_scs_spikeFlags[aSize];//reco flags for ECAL spikes
   TH1F *h_scs_notspikeFlags[aSize];//reco flags for ECAL !spikes
   TH1F *h_scs_allFlags[aSize];//reco flags for ECAL !spikes
+
+  TH1F *h_hf_asym[aSize];//HF asymetry
+  TH1F *h_hf_asymCut[aSize];//HF asymetry after ET cut
+  TH2F *h_hf_etaphiSpikes[aSize];//HF etaphi for stuff we cut out from MET
+  TH1F *h_cmet_afterEcalAndHFCleanup[aSize];//title says it
+  TH1F *h_tcmet_afterEcalAndHFCleanup[aSize];//title says it
+  TH1F *h_tcmet_afterHFCleanup[aSize];//title says it
+  TH1F *h_pfmet_afterEcalAndHFCleanup[aSize];//title says it
+  TH1F *h_tcmet_ofHFSpikesBefore[aSize];//title says it
+  TH1F *h_tcmet_ofHFSpikesAfter[aSize];//title says it
   
   //book histos
   //fkw's new histos come first
@@ -323,9 +333,9 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
     h_cmetCutCorr[i]  = new TH1F((v_prefix.at(i)+"cmetCutCorr").c_str(), ("cmetCutCorr" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
     h_cmetCut[i]  = new TH1F((v_prefix.at(i)+"cmetCut").c_str(), ("cmetCut" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
     h_cmet[i]     = new TH1F((v_prefix.at(i)+"cmet").c_str(), ("cmet" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
-    h_tcmetCutCorr[i]  = new TH1F((v_prefix.at(i)+"tcmetCutCorr").c_str(), ("tcmetCutCorr" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
-    h_tcmetCut[i] = new TH1F((v_prefix.at(i)+"tcmetCut").c_str(), ("tcmetCut" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
-    h_tcmet[i]    = new TH1F((v_prefix.at(i)+"tcmet").c_str(), ("tcmet" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
+    h_tcmetCutCorr[i]  = new TH1F((v_prefix.at(i)+"tcmetCutCorr").c_str(), ("tcmetCutCorr" + v_title.at(i)).c_str(), 20, 0.0, 20.0);
+    h_tcmetCut[i] = new TH1F((v_prefix.at(i)+"tcmetCut").c_str(), ("tcmetCut" + v_title.at(i)).c_str(), 20, 0.0, 20.0);
+    h_tcmet[i]    = new TH1F((v_prefix.at(i)+"tcmet").c_str(), ("tcmet" + v_title.at(i)).c_str(), 20, 0.0, 20.0);
     h_pfmetCutCorr[i]  = new TH1F((v_prefix.at(i)+"pfmetCutCorr").c_str(), ("pfmetCutCorr" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
     h_pfmetCut[i] = new TH1F((v_prefix.at(i)+"pfmetCut").c_str(), ("pfmetCut" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
     h_pfmet[i]    = new TH1F((v_prefix.at(i)+"pfmet").c_str(), ("pfmet" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
@@ -352,6 +362,20 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 								("scs_spikeFlags" + v_title.at(i)).c_str(), 20, 0.0, 20.0);
     h_scs_notspikeFlags[i] = new TH1F((v_prefix.at(i)+"scs_notspikeFlags").c_str(), 
 								("scs_notspikeFlags" + v_title.at(i)).c_str(), 20, 0.0, 20.0);
+
+
+    h_hf_asym[i] = new TH1F((v_prefix.at(i)+"hf_asym").c_str(),("hf_asym" + v_title.at(i)).c_str(), 200, -1.0, 1.0); 
+    h_hf_asymCut[i] = new TH1F((v_prefix.at(i)+"hf_asymCut").c_str(),("hf_asymCut" + v_title.at(i)).c_str(), 200, -1.0, 1.0); 
+    h_hf_etaphiSpikes[i] = new TH2F((v_prefix.at(i)+"hf_etaphiSpikes").c_str(), 
+			    ("hf_etaphiSpikes" + v_title.at(i)).c_str(), 30, -TMath::Pi(), TMath::Pi(), 100, -5.0, 5.0);
+								
+    h_tcmet_ofHFSpikesAfter[i]    = new TH1F((v_prefix.at(i)+"tcmet_ofHFSpikesAfter").c_str(), ("tcmet_ofHFSpikesAfter" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
+    h_tcmet_ofHFSpikesBefore[i]    = new TH1F((v_prefix.at(i)+"tcmet_ofHFSpikesBefore").c_str(), ("tcmet_ofHFSpikesBefore" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
+    h_tcmet_afterHFCleanup[i]    = new TH1F((v_prefix.at(i)+"tcmet_afterHFCleanup").c_str(), ("tcmet_afterHFCleanup" + v_title.at(i)).c_str(), 20, 0.0, 20.0);
+
+    h_cmet_afterEcalAndHFCleanup[i]    = new TH1F((v_prefix.at(i)+"cmet_afterEcalAndHFCleanup").c_str(), ("cmet_afterEcalAndHFCleanup" + v_title.at(i)).c_str(), 20, 0.0, 20.0);
+    h_tcmet_afterEcalAndHFCleanup[i]    = new TH1F((v_prefix.at(i)+"tcmet_afterEcalAndHFCleanup").c_str(), ("tcmet_afterEcalAndHFCleanup" + v_title.at(i)).c_str(), 20, 0.0, 20.0);
+    h_pfmet_afterEcalAndHFCleanup[i]    = new TH1F((v_prefix.at(i)+"pfmet_afterEcalAndHFCleanup").c_str(), ("pfmet_afterEcalAndHFCleanup" + v_title.at(i)).c_str(), 20, 0.0, 20.0);
 
     h_trks_innerlayers[i]-> TH1F::Sumw2();
     h_trks_outerlayers[i]-> TH1F::Sumw2();
@@ -424,6 +448,17 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
     h_scs_dphicmet[i]->TH1F::Sumw2();
     h_scs_dphitcmet[i]->TH1F::Sumw2();
     h_scs_dphipfmet[i]->TH1F::Sumw2();
+
+    h_hf_asym[i]->TH1F::Sumw2();
+    h_hf_asymCut[i]->TH1F::Sumw2();
+    h_hf_etaphiSpikes[i]->TH2F::Sumw2();
+    h_tcmet_ofHFSpikesAfter[i]->TH1F::Sumw2();
+    h_tcmet_ofHFSpikesBefore[i]->TH1F::Sumw2();
+    h_tcmet_afterHFCleanup[i]->TH1F::Sumw2();
+    h_cmet_afterEcalAndHFCleanup[i]->TH1F::Sumw2();
+    h_tcmet_afterEcalAndHFCleanup[i]->TH1F::Sumw2();
+    h_pfmet_afterEcalAndHFCleanup[i]->TH1F::Sumw2();
+
   }
     
   TFile *currentFile = 0;
@@ -445,6 +480,15 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
   std::vector<float> v_cmet;  
   std::vector<int> v_run;
   std::vector<int> v_trkmch;
+
+  //containers for event lists
+  std::vector<int> v_runnum;
+  std::vector<int> v_lumisec;
+  std::vector<int> v_eventnum;
+  std::vector<float> v_tcmet;
+  std::vector<float> v_tcmetcorr;
+  std::vector<int> v_flag;
+
     
   int thisRun = 0;
 
@@ -476,13 +520,13 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
       nPassTrackingCuts++;
       
       int index = (int)(!passesTrigger(runningonGEN));//index is used for histo booking
-      if(passesTrigger(runningonGEN))
+      if(passesTrigger(runningonGEN)){
 	nPassTriggers++;
-
-      //count total good events per run
-      for( unsigned int j=0; j<v_goodRuns.size(); j++ ) {
-	if( v_goodRuns.at(j) == evt_run() ) { //match run from runlist with spike's run
-	  nGoodEventsPerRun.at(j)++;
+	//count total good events per run
+	for( unsigned int j=0; j<v_goodRuns.size(); j++ ) {
+	  if( v_goodRuns.at(j) == evt_run() ) { //match run from runlist with spike's run
+	    nGoodEventsPerRun.at(j)++;
+	  }
 	}
       }
 
@@ -664,7 +708,8 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
       h_numGoodTracks[2]->Fill(min((double)nGoodTrks,99.9));
 
       //scs superclusters info
-      const float metmax = 49.9;
+      //fkw const float metmax = 49.9;
+      const float metmax = 19.9;
       const float scdiff = 9.99;
       const float emaxmax = 39.9;
       const float emaxcut = 10.0;
@@ -861,6 +906,12 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 	h_tcmetCutCorr[2] ->Fill(sqrt(tcmetcx*tcmetcx + tcmetcy*tcmetcy));
 	h_pfmetCutCorr[index] ->Fill(sqrt(pfmetcx*pfmetcx + pfmetcy*pfmetcy));
 	h_pfmetCutCorr[2] ->Fill(sqrt(pfmetcx*pfmetcx + pfmetcy*pfmetcy));
+	v_runnum.push_back(thisRun);
+	v_lumisec.push_back(evt_lumiBlock());
+	v_eventnum.push_back(evt_event());
+	v_tcmet.push_back(evt_tcmet());
+	v_tcmetcorr.push_back(sqrt(tcmetcx*tcmetcx + tcmetcy*tcmetcy));
+	v_flag.push_back(1);
       }
       if( nspikes > 1 ) //multi-spike events
 	cout << "Multi Spike Event ****    " << evt_run() << evt_event() << endl;
@@ -868,8 +919,88 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
       //now take a look at HCAL noise
       //start with a simple dump of stuff:
       if( evt_met() > 15.0 ){
-	//cout << " hcalnoise_FilterStatus = " << 
+	cout << " hcalnoise_noiseFilterStatus = " << hcalnoise_noiseFilterStatus() << endl;
+	cout << " hcalnoise_passLooseNoiseFilter = " << hcalnoise_passLooseNoiseFilter() << endl;
+	cout << " hcalnoise_passTightNoiseFilter = " << hcalnoise_passTightNoiseFilter() << endl;
+	cout << " hcalnoise_passHighLevelNoiseFilter = " << hcalnoise_passHighLevelNoiseFilter() << endl;
       }      
+
+
+      //now take a look at the HF
+      float ntcmetcx = evt_tcmet()*cos( evt_tcmetPhi() );
+      float ntcmetcy = evt_tcmet()*sin( evt_tcmetPhi() );
+      bool hasHFspike = false;
+      for( unsigned int i=0; i < twrs_eta().size(); i++ ) {
+	if( fabs(twrs_eta().at(i)) < 3.0 ) continue; //only look at HF
+	float asym = twrs_emEnergy().at(i)/(twrs_emEnergy().at(i)+twrs_hadEnergy().at(i));
+	float ettot = twrs_emEt().at(i)+twrs_hadEt().at(i);
+	h_hf_asym[index]->Fill(asym);
+	h_hf_asym[2]->Fill(asym);
+	if( abs(asym) > 0.98 && ettot>5.0 ) {//found an HF spike candidate
+	  h_hf_asymCut[index]->Fill(asym);
+	  h_hf_asymCut[2]->Fill(asym);
+	  h_hf_etaphiSpikes[index]->Fill(twrs_phi().at(i),twrs_eta().at(i));
+	  h_hf_etaphiSpikes[2]->Fill(twrs_phi().at(i),twrs_eta().at(i));
+	  hasHFspike = true;
+	  cmetcx = cmetcx + ettot*cos( twrs_phi().at(i) );
+	  cmetcy = cmetcy + ettot*sin( twrs_phi().at(i) );
+	  tcmetcx = tcmetcx + ettot*cos( twrs_phi().at(i) );
+	  tcmetcy = tcmetcy + ettot*sin( twrs_phi().at(i) );
+	  pfmetcx = pfmetcx + ettot*cos( twrs_phi().at(i) );
+	  pfmetcy = pfmetcy + ettot*sin( twrs_phi().at(i) );
+	  ntcmetcx = ntcmetcx + ettot*cos( twrs_phi().at(i) );
+	  ntcmetcy = ntcmetcy + ettot*sin( twrs_phi().at(i) );
+	}
+      }
+
+      if( hasHFspike ){
+	h_tcmet_ofHFSpikesAfter[index]->Fill(sqrt(tcmetcx*tcmetcx + tcmetcy*tcmetcy));
+	h_tcmet_ofHFSpikesBefore[index]->Fill(evt_tcmet());
+	h_tcmet_ofHFSpikesAfter[2]->Fill(sqrt(tcmetcx*tcmetcx + tcmetcy*tcmetcy));
+	h_tcmet_ofHFSpikesBefore[2]->Fill(evt_tcmet());
+	v_runnum.push_back(thisRun);
+	v_lumisec.push_back(evt_lumiBlock());
+	v_eventnum.push_back(evt_event());
+	v_tcmet.push_back(evt_tcmet());
+	v_tcmetcorr.push_back(sqrt(ntcmetcx*ntcmetcx + ntcmetcy*ntcmetcy));
+	v_flag.push_back(2);
+      }
+
+      if( hasHFspike || (passed && !failed) ){
+	v_runnum.push_back(thisRun);
+	v_lumisec.push_back(evt_lumiBlock());
+	v_eventnum.push_back(evt_event());
+	v_tcmet.push_back(evt_tcmet());
+	v_tcmetcorr.push_back(sqrt(tcmetcx*tcmetcx + tcmetcy*tcmetcy));
+	v_flag.push_back(3);
+      }
+
+      if( sqrt(tcmetcx*tcmetcx + tcmetcy*tcmetcy) > 18.0){
+	v_runnum.push_back(thisRun);
+	v_lumisec.push_back(evt_lumiBlock());
+	v_eventnum.push_back(evt_event());
+	v_tcmet.push_back(evt_tcmet());
+	v_tcmetcorr.push_back(sqrt(tcmetcx*tcmetcx + tcmetcy*tcmetcy));
+	v_flag.push_back(4);
+      }
+
+      if( failed ){
+	v_runnum.push_back(thisRun);
+	v_lumisec.push_back(evt_lumiBlock());
+	v_eventnum.push_back(evt_event());
+	v_tcmet.push_back(evt_tcmet());
+	v_tcmetcorr.push_back(sqrt(tcmetcx*tcmetcx + tcmetcy*tcmetcy));
+	v_flag.push_back(5);
+      }
+
+      h_tcmet_afterHFCleanup[index]->Fill(sqrt(ntcmetcx*ntcmetcx + ntcmetcy*ntcmetcy));
+      h_tcmet_afterHFCleanup[2]->Fill(sqrt(ntcmetcx*ntcmetcx + ntcmetcy*ntcmetcy));
+      h_cmet_afterEcalAndHFCleanup[index]->Fill(min(sqrt(cmetcx*cmetcx + cmetcy*cmetcy),metmax));
+      h_cmet_afterEcalAndHFCleanup[2]->Fill(min(sqrt(cmetcx*cmetcx + cmetcy*cmetcy),metmax));
+      h_tcmet_afterEcalAndHFCleanup[index]->Fill(min(sqrt(tcmetcx*tcmetcx + tcmetcy*tcmetcy),metmax));
+      h_tcmet_afterEcalAndHFCleanup[2]->Fill(min(sqrt(tcmetcx*tcmetcx + tcmetcy*tcmetcy),metmax));
+      h_pfmet_afterEcalAndHFCleanup[index]->Fill(min(sqrt(pfmetcx*pfmetcx + pfmetcy*pfmetcy),metmax));
+      h_pfmet_afterEcalAndHFCleanup[2]->Fill(min(sqrt(pfmetcx*pfmetcx + pfmetcy*pfmetcy),metmax));
 
       //now comes all of what was there before      
       
@@ -918,6 +1049,9 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
   }
   cout << "tot spikes   " << totspikes << "   " << v_erat.size() << endl << endl;
 
+  for ( unsigned int i=0; i < v_runnum.size(); i++){
+    cout << "flag = " << v_flag.at(i) << " " << v_runnum.at(i) << " " << v_lumisec.at(i) << " " << v_eventnum.at(i) << " " << v_tcmet.at(i) << " " << v_tcmetcorr.at(i) << endl;
+  }
 
   TString cutDescription = "";
   if(requireTrackCuts)
