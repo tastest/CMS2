@@ -12,3 +12,7 @@ cvs co -r CMSSW_3_4_1 JetMETCorrections/Configuration
 cvs co -r V01-08-23-05 JetMETCorrections/Configuration/python/L2L3Corrections_900GeV_cff.py
 cvs co -r V01-08-23-05 JetMETCorrections/Configuration/python/L2L3Corrections_2360GeV_cff.py
 cvs co -r V01-08-08-09 CondFormats/JetMETObjects
+
+#JetID patch
+cvs co -r V03-09-08-03   PhysicsTools/PatUtils                            
+cvs co -r V07-04-00-01   PhysicsTools/Utilities
