@@ -5,7 +5,7 @@ process = cms.Process("CMS2")
 from Configuration.EventContent.EventContent_cff import *
 
 process.configurationMetadata = cms.untracked.PSet(
-        version = cms.untracked.string('$Revision: 1.1.2.1 $'),
+        version = cms.untracked.string('$Revision: 1.1.2.2 $'),
         annotation = cms.untracked.string('CMS2'),
         name = cms.untracked.string('CMS2 test configuration')
 )
@@ -135,6 +135,10 @@ process.outRecoOrGenSingleFilt_CMS2 = cms.OutputModule(
 
 process.out_CMS2.outputCommands = cms.untracked.vstring( 'drop *' )
 process.out_CMS2.outputCommands.extend(cms.untracked.vstring('keep *_*Maker*_*_CMS2*'))
+process.outHypOrGenDilFilt_CMS2.outputCommands = cms.untracked.vstring( 'drop *' )
+process.outHypOrGenDilFilt_CMS2.outputCommands.extend(cms.untracked.vstring('keep *_*Maker*_*_CMS2*'))
+process.outRecoOrGenSingleFilt_CMS2.outputCommands = cms.untracked.vstring( 'drop *' )
+process.outRecoOrGenSingleFilt_CMS2.outputCommands.extend(cms.untracked.vstring('keep *_*Maker*_*_CMS2*'))
 
 process.load("TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAny_cfi")
 process.load("TrackingTools.TrackAssociator.DetIdAssociatorESProducer_cff")
@@ -187,6 +191,7 @@ process.cms2WithEverything             = cms.Sequence( process.coreCMS2Sequence
 
 #since filtering is done in the last step, there is no reason to remove these paths
 #just comment out/remove an output which is not needed
+process.load('CMS2.NtupleMaker.hypFilter_cfi')
 process.pWithHyps       = cms.Path(process.cms2WithEverything * process.hypFilter     )
 process.pWithGenDil     = cms.Path(process.cms2WithEverything * process.dilepGenFilter)
 process.pWithRecoLepton = cms.Path(process.cms2WithEverything * process.aSkimFilter   )
