@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/4
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: RandomConeIsoMaker.h,v 1.1 2009/12/10 05:03:49 yanjuntu Exp $
+// $Id: RandomConeIsoMaker.h,v 1.1.2.1 2010/01/19 07:38:37 slava77 Exp $
 //
 //
 #ifndef NTUPLEMAKER_EVENTMAKER_H
@@ -87,7 +87,8 @@ private:
   TrackDetectorAssociator trackAssociator_;
 
 
-  CLHEP::HepJamesRandom 	*jamesRandom_;	
+  CLHEP::HepJamesRandom 	*jamesRandom_;
+  edm::InputTag primaryVertexInputTag_;	
 
   double signedRnd(double number, const double &min, const double &max);
   std::pair<int, double> getTrackIso(const reco::TrackBase::Point &beamspot,
