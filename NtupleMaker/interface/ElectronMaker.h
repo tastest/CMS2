@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/4
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: ElectronMaker.h,v 1.14 2009/12/11 01:10:48 kalavase Exp $
+// $Id: ElectronMaker.h,v 1.14.2.1 2010/01/20 01:55:03 kalavase Exp $
 //
 //
 #ifndef NTUPLEMAKER_ELECTRONMAKER_H
@@ -58,6 +58,21 @@ class ElectronMaker : public edm::EDProducer {
 public:
   explicit ElectronMaker (const edm::ParameterSet&);
   ~ElectronMaker();
+//struct just for 312 to compute the SC charge and the results of the Egamma charge 
+  // Complementary struct. From DataFormats/EgammaCandidates/interface/GsfElectron.h
+  // rev 1.32
+  struct ChargeInfo
+  {
+    int scPixCharge ;
+    bool isGsfCtfScPixConsistent ;
+    bool isGsfScPixConsistent ;
+    bool isGsfCtfConsistent ;
+    ChargeInfo()
+      : scPixCharge(0), isGsfCtfScPixConsistent(false),
+	isGsfScPixConsistent(false), isGsfCtfConsistent(false)
+    {}
+  } ;
+
 
 private:
   virtual void beginJob(const edm::EventSetup&) ;
@@ -66,6 +81,10 @@ private:
   
   int classify(const edm::RefToBase<reco::GsfElectron> &);
   template<typename T> const edm::ValueMap<T>& getValueMap(const edm::Event& iEvent, edm::InputTag& inputTag);
+  void computeCharge(  const reco::GsfTrack& gsftk, const reco::TrackRef ctf, 
+		       const reco::SuperClusterRef sc, const math::XYZPoint & bs, 
+		       int & charge, ChargeInfo & info );
+
   
   // ----------member data ---------------------------
   edm::InputTag electronsInputTag_;
