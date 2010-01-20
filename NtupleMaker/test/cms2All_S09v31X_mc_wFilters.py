@@ -5,7 +5,7 @@ process = cms.Process("CMS2")
 from Configuration.EventContent.EventContent_cff import *
 
 process.configurationMetadata = cms.untracked.PSet(
-        version = cms.untracked.string('$Revision: 1.1.2.2 $'),
+        version = cms.untracked.string('$Revision: 1.1.2.3 $'),
         annotation = cms.untracked.string('CMS2'),
         name = cms.untracked.string('CMS2 test configuration')
 )
@@ -166,7 +166,7 @@ process.prunedUncorrectedCMS2Jets.inputUncorrectedJetCollection = cms.InputTag("
 process.pfJetMaker.pfJetsInputTag = cms.InputTag("antikt5PFJets")
 process.load("JetMETCorrections.Configuration.L2L3Corrections_Summer09_7TeV_cff")
 process.jetMaker.correctionTags   = cms.string("Summer09_7TeV_L2Relative_AK5Calo:Summer09_7TeV_L3Absolute_AK5Calo")
-process.scjetMaker.correctionTags   = cms.string("Summer09_7TeV_L2Relative_AK5Calo:Summer09_7TeV_L3Absolute_AK5Calo")
+process.scjetMaker.correctionTags   = cms.string("Summer09_7TeV_L2Relative_SC5Calo:Summer09_7TeV_L3Absolute_SC5Calo")
 switchJECSet(process,"Summer09_7TeV")
 
 # don't forget 8e29
