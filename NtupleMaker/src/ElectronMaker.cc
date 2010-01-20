@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Puneeth Kalavase
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: ElectronMaker.cc,v 1.41.2.1 2010/01/20 01:55:16 kalavase Exp $
+// $Id: ElectronMaker.cc,v 1.41.2.2 2010/01/20 23:26:58 kalavase Exp $
 //
 //
 
@@ -526,10 +526,13 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 						    + pz*pz*(el_track->covariance(1,1) ) ) : -9999.;
 
     int defaultCharge;
-    ChargeInfo chargeinfo;
-    computeCharge(*(el->gsfTrack().get()), el->closestCtfTrackRef(), el->superCluster(),
-		  beamSpot, defaultCharge, chargeinfo);
-
+    int sccharge = el->scPixCharge();
+    if(sccharge == 0) {
+      ChargeInfo chargeinfo;
+      computeCharge(*(el->gsfTrack().get()), el->closestCtfTrackRef(), el->superCluster(),
+		    beamSpot, defaultCharge, chargeinfo);
+      sccharge = chargeinfo.scPixCharge;
+    }
             
     els_chi2                  ->push_back( el_track->chi2()                          );
     els_ndof                  ->push_back( el_track->ndof()                          );
@@ -543,8 +546,7 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     
     els_charge                ->push_back( el->charge()                              );
     els_trk_charge            ->push_back( el_track->charge()                        );
-    els_sccharge              ->push_back( el->scPixCharge() == 0 ? 
-					   chargeinfo.scPixCharge : el->scPixCharge());
+    els_sccharge              ->push_back( sccharge                                  );
     els_d0                    ->push_back( el_track->d0()                            );
     els_z0                    ->push_back( el_track->dz()                            );		
     els_d0corr                ->push_back( -1*(el_track->dxy(beamSpot))              );
