@@ -5,7 +5,7 @@ process = cms.Process("CMS2")
 from Configuration.EventContent.EventContent_cff import *
 
 process.configurationMetadata = cms.untracked.PSet(
-        version = cms.untracked.string('$Revision: 1.1.2.2 $'),
+        version = cms.untracked.string('$Revision: 1.1.2.3 $'),
         annotation = cms.untracked.string('CMS2'),
         name = cms.untracked.string('CMS2 test configuration')
 )
@@ -91,7 +91,7 @@ process.outHypOrGenDilFilt_CMS2 = cms.OutputModule(
         process.EventSelectionDilFilt,
         verbose = cms.untracked.bool(True),
         dropMetaData = cms.untracked.string("NONE"),
-        fileName = cms.untracked.string('ntuple_dil.root')
+        fileName = cms.untracked.string('ntuple.root')
 )
 
 process.outHypOrGenDilFilt_CMS2.outputCommands = cms.untracked.vstring( 'drop *' )
