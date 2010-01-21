@@ -24,16 +24,18 @@
 #include "TFile.h"
 #include "TDirectory.h"
 #include "TROOT.h"
-
-//#include "CMS2.h"
+#include "Math/LorentzVector.h"
+#include "Math/VectorUtil.h"
+#include "TMath.h"
+#include "CMS2.h"
 //#include "branches.h"
 
 
 
-#include "CORE/CMS2.h"
-#include "CORE/selections.cc"
-#include "CORE/utilities.cc"
-#include "Tools/tools.cc"
+//#include "CORE/CMS2.h"
+// #include "CORE/selections.cc"
+// #include "CORE/utilities.cc"
+//#include "Tools/tools.cc"
 #include "Ana_looper.h"
 
 CMS2 cms2;
@@ -44,16 +46,39 @@ void Ana_looper::bookHistos(char* sample, int nchannels, int nhistsets){
  
   for (int i_ch=0; i_ch<nchannels; i_ch++) {
     for (int j_hist=0; j_hist<nhistsets; j_hist++) {  
-      els_pt[i_ch][j_hist] = book1DHist(Form("%s_%s_%s%i%s%i",sample,"elsPt","Ch",i_ch,"H",j_hist),Form("%s_%s_%s%i%s%i",sample,"elsPt","Ch",i_ch,"H",j_hist),50,0,100,"Electron Pt", "Events", kBlue);  
+      //  els_pt[i_ch][j_hist] = book1DHist(Form("%s_%s_%s%i%s%i",sample,"elsPt","Ch",i_ch,"H",j_hist),Form("%s_%s_%s%i%s%i",sample,"elsPt","Ch",i_ch,"H",j_hist),50,0,100,"Electron Pt", "Events", kBlue);  
 
-      njets[i_ch][j_hist] = book1DHist(Form("%s_%s_%s%i%s%i",sample,"nJets","Ch",i_ch,"H",j_hist),Form("%s_%s_%s%i%s%i",sample,"nJets","Ch",i_ch,"H",j_hist),10,0,10,"Number of Jets", "Events", kBlue);  
-      
+      // njets[i_ch][j_hist] = book1DHist(Form("%s_%s_%s%i%s%i",sample,"nJets","Ch",i_ch,"H",j_hist),Form("%s_%s_%s%i%s%i",sample,"nJets","Ch",i_ch,"H",j_hist),10,0,10,"Number of Jets", "Events", kBlue);  
+      trkIso03[i_ch][j_hist] = new TH1F(Form("%s_%s_%s%i%s%i",sample,"ran_trkIso03_mu","",i_ch,"",j_hist), Form("%s_%s_%s%i%s%i",sample,"ran_trkIso03_mu","",i_ch,"",j_hist), 50,-0.5, 2);
+      //      trkIso03[i_ch][j_hist] = new TH1F("ran_trkIso03_mu","ran_trkIso03_mu", 50,-0.5,2);
     }
   }
 }
 
-int Ana_looper::ScanChain( TChain* chain, int nEvents ,char* sample, float kFactor , int prescale) {
+Ana_looper::Ana_looper(){
+  ran_trksp4_=0;
+  trks_trk_p4_=0;
+  ran_isoTrk03_mu_=0;
+ 
+}
+Ana_looper::~Ana_looper(){
+}
 
+
+int Ana_looper::ScanChain( TChain* chain, int nEvents ,char* sample, float kFactor , int prescale,  std::string  skimFilePrefix) {
+  if(skimFilePrefix != "")outFile_ = TFile::Open(string( skimFilePrefix+ "_skimmednTuple.root").c_str(),"RECREATE");
+  else outFile_ = TFile::Open("skimmednTuple.root", "RECREATE");
+  outFile_->cd();
+  outTree_ = new TTree("Events", "");
+  //book the branches
+ 
+  outTree_->Branch("ran_trksp4",   "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >",   &ran_trksp4_);
+  outTree_->Branch("trks_trk_p4",   "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >",   &trks_trk_p4_);
+  outTree_->Branch("ran_trkIso03_mu",   "std::vector<float>",   &ran_isoTrk03_mu_);
+  
+
+
+  
   TObjArray *listOfFiles = chain->GetListOfFiles();
 
   unsigned int nEventsChain=0;
@@ -81,101 +106,56 @@ int Ana_looper::ScanChain( TChain* chain, int nEvents ,char* sample, float kFact
     for( unsigned int event = 0; event < nEvents; ++event) {
       cms2.GetEntry(event);
      
-      float weight = kFactor*cms2.evt_scale1fb();  //scale to 1 fb-1
-      int channel = -1;
-      int hist  = 0;
-      int nels =   cms2.els_p4().size();
-      int nmus =   cms2.mus_p4().size();
-      int ntrks =  cms2.trks_trk_p4().size();
-      int njpts =  cms2.jpts_p4().size();
-      vector<int>  good_els_idx;
-      vector<int>  good_mus_idx;
-      vector<int>  good_trks_idx;
-      vector<int>  good_jpts_idx;
-      int ngoodels = 0;
-      int ngoodmus = 0;
-      int ngoodtrks = 0;
-      int ngoodjpts = 0;
-      ///loop over electrons
-      for(int i_els=0; i_els<nels; i_els++){
-        if(cms2.els_p4()[i_els].pt() <20) continue;
-        if(!goodElectronIsolated(i_els,1)) continue;
-	if(!conversionElectron(i_els)) continue; 
-	
-        good_els_idx.push_back(i_els);
+      ran_isoTrk03_mu_->clear();
 
-      }
-      ngoodels = good_els_idx.size();
-
-      
-      ///loop over muons
-      for(int i_mus=0; i_mus<nmus; i_mus++){
-        if(cms2.mus_p4()[i_mus].pt()< 20) continue;
-        if(!goodMuonIsolated(i_mus)) continue;
-	good_mus_idx.push_back(i_mus);
-      }
-      ngoodmus = good_mus_idx.size();
+      ran_trksp4_= &(cms2.ran_trksp4());
+      trks_trk_p4_= &(cms2.trks_trk_p4());
+      int ntrks = 0;
+      int npsuedo = 0;
+      int channel =0;
+      ntrks = cms2.trks_trk_p4().size();
+      npsuedo = cms2.ran_trksp4().size();
+      for(int i_psuedo=0; i_psuedo<npsuedo; i_psuedo++){
       ///loop over tracks
-      for(int i_trks=0; i_trks<ntrks; i_trks++){
-        bool pass_trk = true;
-        if(cms2.trks_trk_p4()[i_trks].pt()< 10) continue;
-        if(!passTrackIsolation(i_trks)) continue;
-        for(int i_els=0; i_els<ngoodels; i_els++){
-          if ( (TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.els_p4()[i_els],cms2.trks_trk_p4()[i_trks])) < 0.15) )
-          {
-            pass_trk = false;
-            break;
-          }
-        }
-	for(int i_mus=0; i_mus<ngoodmus; i_mus++){
-          if ( (TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.mus_p4()[i_mus],cms2.trks_trk_p4()[i_trks])) < 0.15) )
-          {
-            pass_trk = false;
-            break;
-          }
-        }
-        if(pass_trk){
-	  good_trks_idx.push_back(i_trks);
-        }
-      }
-      ///loop over jpt jets
-      for ( int i_jpts=0; i_jpts < njpts; i_jpts++) {
-        bool pass_jpt = true;
-        if ( cms2.jpts_p4()[i_jpts].Et() < 20. ) continue;
-        if ( TMath::Abs(cms2.jpts_p4()[i_jpts].eta()) > 2.4 ) continue;
-        for(int i_els=0; i_els< ngoodels; i_els++){
-          if ( (TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.els_p4()[i_els],cms2.jpts_p4()[i_jpts])) < 0.4) )
-          {
-            pass_jpt = false;
-            break;
-          }
-        }
-
-        for(int i_mus=0; i_mus<ngoodmus; i_mus++){
-          if ( (TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.mus_p4()[i_mus],cms2.jpts_p4()[i_jpts])) < 0.4) )
-          {
-            pass_jpt = false;
-            break;
-          }
-        }
-        if(pass_jpt) good_jpts_idx.push_back(i_jpts);
-      }
-      ngoodjpts = good_jpts_idx.size();
-      /////event selection; just a example, you can change it;
-    
-      if(ngoodels == 1)channel = 0;
-      if(ngoodels == 2)channel = 1;
-     
-      if(channel >= 0){
-	njets[channel][0]->Fill( ngoodjpts, weight);
+	double ptSum =0.0;
 	
-	for(int i_els=0; i_els<ngoodels; i_els++){
-	  if(channel < 0 || hist <0 || channel > NCHANNELS || hist > NHISTS)
-	    std::cout << "ERROR: number of channels or histograms exceeds the maximum values" <<std::endl;
-	  els_pt[channel][0]->Fill(cms2.els_p4().at(i_els).pt(), weight);
-	}
-      }
+	for(int i_trks=0; i_trks<ntrks; i_trks++){
+	
+	  // note that pseudo directions are with respect to a 0, 0, 0 vertex
 
+	  double this_pt  = cms2.trks_trk_p4().at(i_trks).pt();
+	  if ( this_pt < 0 ) 
+	    continue;
+	  //upstream filter require at least 1 non-fake vertex. 
+	  
+	  // double this_dz = cms2.trks_z0().at(i_trks)- cms2.vtxs_position().at(0).z()  ;
+
+	  double this_dz = cms2.trks_z0corr().at(i_trks)+ cms2.evt_bsp4().z()- cms2.vtxs_position().at(0).z()  ;
+	  
+	 
+	  //std::cout <<cms2.vtxs_position().at(0).z() <<std::endl;
+	  if (fabs( this_dz )> 0.2 )
+	  // if (fabs( this_dz )> 1 )
+	    continue;
+	   if (fabs(cms2.trks_d0corr().at(i_trks) ) > 0.1   )
+	 
+	    continue;
+	  // double dr = ROOT::Math::VectorUtil::DeltaR(cms2.trks_vertex_p4().at(i_trks),cms2.ran_trksp4().at(i_psuedo)) ;
+	  double dr = ROOT::Math::VectorUtil::DeltaR(cms2.trks_trk_p4().at(i_trks),cms2.ran_trksp4().at(i_psuedo)) ;
+	  if ( fabs(dr) < 0.3 && fabs(dr) >= 0.01  )
+	  
+	    {
+
+	      ptSum += this_pt;
+	    }
+	  
+	}
+	trkIso03[0][0]->Fill(ptSum);
+	ran_isoTrk03_mu_->push_back(ptSum);
+      }
+     
+
+      outTree_->Fill();  
       ++nEventsTotal;
       if(nEventsTotal%10000 ==0)std::cout << "number of events processed " << nEventsTotal<<std::endl;
     }
@@ -185,6 +165,9 @@ int Ana_looper::ScanChain( TChain* chain, int nEvents ,char* sample, float kFact
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
     std::cout << "number of events processed " << nEventsTotal<<std::endl;
   }
- 
+  //  delete trkIso03[0][0];
+  outFile_->cd();
+  outTree_->Write();
+  outFile_->Close();
   return 0;
 }

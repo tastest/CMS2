@@ -56,23 +56,34 @@ using namespace std;
  }
  dataset = gSystem->Getenv("CMS2_NTUPLE_LOCATION");
 
+ TChain *MinBias_skimdata = new TChain("Events");
+ TChain *MinBias_skimdata_2360 = new TChain("Events");
+ TChain *MinBias_mc_2360 = new TChain("Events");
+ TChain *MinBias_mc = new TChain("Events");
  
- TChain *chDYtautau = new TChain("Events");
- chDYtautau->Add((dataset+"/cms2-V01-03-01/Ztautau_M20_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root").c_str());
- TChain *chDYee = new TChain("Events");
- chDYee->Add((dataset+"/cms2-V01-03-01/Zee_M20_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merged_ntuple*.root").c_str());
+ MinBias_skimdata->Add("/data/tmp/yanjuntu/cms2/cms2-V03-00-23/MinimumBias_BeamCommissioning09-BSCNOBEAMHALO-Dec14thSkim_v1/filtered*900.root"); 
+ MinBias_mc->Add("/data/tmp/yanjuntu/cms2/cms2-V03-00-20/MinBias_Summer09-STARTUP3X_V8I_900GeV-v2/filtered*.root"); 
+ MinBias_mc_2360->Add("/data/tmp/yanjuntu/cms2/cms2-V03-00-23/MinBias_Summer09-STARTUP3X_V8D_2360GeV-v2/filtered*.root"); 
+ MinBias_skimdata_2360->Add("/data/tmp/yanjuntu/cms2/cms2-V03-00-23/MinimumBias_BeamCommissioning09-BSCNOBEAMHALO-Dec14thSkim_v1/filtered*2360.root"); 
 
  Ana_looper* looper = new Ana_looper();
- if (runDYtautau) {
-    cout << "Processing DY->tautau" << endl;
-    looper->ScanChain(chDYtautau, -1, "DYtautau",kDYtautau,  preDYtautau);
-    hist::color("DYtautau", kBlack);
-  }
-  if (runDYee) {
-    cout << "Processing DY->ee" << endl;
-    looper->ScanChain(chDYee, -1, "DYee",  kDYee,  preDYee);
-    hist::color("DYee", kMagenta);
-  }
+
+ cout << "Processing MinBias_skimdata" << endl;
+ // looper->ScanChain(MinBias_skimdata, -1, "Data",1,  1, "DataCorrZ");
+ hist::color("Data", kBlack);
+ 
+ cout << "Processing MinBias_skimdata at 2360 GeV" << endl;
+ looper->ScanChain(MinBias_skimdata_2360, -1, "Data",1,  1, "DataCorrZ2360");
+ hist::color("Data_2360", kBlack);
+ 
+ cout << "Processing MinBias_mc" << endl;
+ //looper->ScanChain(MinBias_mc, -1, "MC",  1,  1, "MCCorrZ");
+ hist::color("MinBias_mc", kMagenta);
+
+ cout << "Processing MinBias_mc at 2360 GeV" << endl;
+ //looper->ScanChain(MinBias_mc_2360, -1, "MC",  1,  1, "MCCorrZ2360");
+ hist::color("MinBias_mc_2360", kMagenta);
+ 
  const char* outFile = "myHist.root";
  hist::saveHist(outFile);
  hist::deleteHistos();
