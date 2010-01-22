@@ -26,10 +26,10 @@ TGraph eff_rej (const H &signal, H &background, bool normalize, bool increasing)
 {
      H sig = signal;
      if (normalize)
-	  sig.Scale(1 / sig.Integral(0, sig.GetNbinsX() + 1));
+	  sig.Scale(1 / sig.Integral(1, sig.GetNbinsX()));
      H bg = background;
      if (normalize)
-	  bg.Scale(1 / bg.Integral(0, bg.GetNbinsX() + 1));
+	  bg.Scale(1 / bg.Integral(1, bg.GetNbinsX()));
      H sig_cum = cumulate(sig, increasing);
      H bg_cum = cumulate(bg, increasing);
      TGraph ret(signal.GetNbinsX());
