@@ -22,6 +22,7 @@
 // keep2D=false to skip the annoying 2D histograms
 //
 
+using namespace std;
 Int_t FavoriteHatches[10] = {3003,3004,3005,3006,3002,3244,3290,3315,3351,3025};
 
 void hatch(const char* patORpfx,  Int_t hatch) {
