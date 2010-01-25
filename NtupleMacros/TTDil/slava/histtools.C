@@ -1,3 +1,4 @@
+#include "TClass.h"
 #include "TList.h"
 #include "TObjArray.h"
 #include "TH1.h"
@@ -10,8 +11,11 @@
 #include "TKey.h"
 #include <iostream>
 #include <vector>
+#include <cmath>
 
 #include "histtools.h"
+
+using namespace std;
 namespace hist {
 
   //Add all histograms whose names match the given regular expression pattern
