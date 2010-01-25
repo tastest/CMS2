@@ -1619,6 +1619,31 @@ bool looseElectronSelectionNoIsoTTDil08(int index) {
   return true;
 }
 
+//return the index of a matching muon in cone dR, with muon type mask msk
+int els_closestMuonWQual(int index, float dRMax, int msk){
+  int resMatch = -1;
+  unsigned int nMus = cms2.mus_type().size();
+  float dR = 9999.;
+  for (unsigned int iMu = 0; iMu < nMus; ++iMu){
+    if ((cms2.mus_type()[iMu] & msk)==msk){
+      float muDr = TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.els_p4()[index],cms2.mus_p4()[iMu]));
+      if (muDr < dR && muDr < dRMax){ dR = muDr; resMatch = iMu; }
+    }
+  }
+  return resMatch;
+}
+
+// as befor, only making additional quality on the overlapping muon
+// used in October 09 TOPANA exercise
+bool looseElectronSelectionNoIsoTTDilOcX09(int index) {
+  if ( ! electron20Eta2p4(index) ) return false;
+  if ( cms2.els_egamma_looseId()[index]     !=  1) return false;
+  if ( fabs(cms2.els_d0corr()[index]) > 0.040)   return false;
+  if ( els_closestMuonWQual(index, 0.1, 2) != -1) return false; 
+
+  return true;
+}
+
 //
 double electronTrkIsolationPAT(int index){ 
   double sum = cms2.els_pat_trackIso().at(index); 
@@ -2416,6 +2441,22 @@ bool passTriggersMu9orLisoE15(int dilType) {
   return true;
 }
 
+bool passTriggers8E29Mu9orE15LW(int dilType) {
+  //old bit based method
+  //bool hlt_ele15_lw_l1r = ((cms2.evt_HLT2() & (1<<(50-32))) != 0);
+  //bool hltMu9 = ((cms2.evt_HLT3() & (1<<(82-64))) != 0);
+  
+  //TString method
+  bool hlt_ele15_lw_l1r = cms2.passHLT8E29Trigger("HLT_Ele15_LW_L1R");
+  bool hltMu9           = cms2.passHLT8E29Trigger("HLT_Mu9");
+  
+  if (dilType == 0 && ! (hltMu9) ) return false;
+  if ((dilType == 1 || dilType == 2) && ! (hltMu9 || hlt_ele15_lw_l1r)) return false;
+  if (dilType == 3 && ! hlt_ele15_lw_l1r) return false;     
+
+  return true;
+}
+
 
 bool passTriggersTTDil08JanTrial(int dilType) {
   //trigger selections used in AN09/047 (at least as of v4 on 04-10-09
@@ -2621,7 +2662,7 @@ int eventDilIndexByWeightTTDil08(const std::vector<unsigned int>& goodHyps, int&
     hypWeight_ll += (1. - 20./pt_ll*20./pt_ll);
     
     if (usePtOnlyForWeighting){
-      hypWeight = hypWeight_ll*hypWeight_lt; //again, desire to have both good
+      hypWeight = hypWeight_ll+hypWeight_lt; //again, desire to have both good
     } else {
       hypWeight = hypWeight_ll*hypWeight_lt*hypWeight_iso; //again, desire to have both good
     }
