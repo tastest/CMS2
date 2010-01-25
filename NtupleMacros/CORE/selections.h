@@ -224,6 +224,17 @@ int numberOfExtraMuonsSUSY(int i_hyp);
 std::vector<LorentzVector> getCaloJets(int i_hyp); 
 std::vector<LorentzVector> getJPTJets(int i_hyp); 
 int ttbarconstituents(int i_hyp);
+<<<<<<< selections.h
+bool additionalZvetoSUSY09(int i_hyp);
+bool PassSusyElectronIsolationLoose(int index, bool use_calo_iso);
+bool PassSusyElectronIsolation(int index, bool use_calo_iso);
+
+// Fake rate
+bool isFakeableElSUSY09(int iEl);
+bool isNumElSUSY09(int iEl);
+bool isFakeableMuSUSY09(int iMu);
+bool isNumMuSUSY09(int iMu);
+=======
 bool additionalZvetoSUSY09(int i_hyp);
 bool idIsBeauty(int id);
 bool idIsCharm(int id);
@@ -232,6 +243,7 @@ bool isFakeableElSUSY09(int iEl);
 bool isFakeableMuSUSY09(int iMu);
 bool isNumElSUSY09(int iEl);
 bool isNumMuSUSY09(int iMu);
+>>>>>>> 1.37
 
 //TTDil08 fake rate functions
 bool isNumElTTDil08(int iEl);
