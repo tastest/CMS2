@@ -35,6 +35,7 @@ float electronIsolation_relsusy(const unsigned int index, bool use_calo_iso);
 // conversion rejection
 //
 bool isFromConversionHitPattern(const unsigned int index);
+bool isFromConversionPartnerTrack(const unsigned int index);
 
 #endif
 
