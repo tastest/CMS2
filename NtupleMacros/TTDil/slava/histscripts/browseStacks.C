@@ -194,7 +194,7 @@ void browseStacks( bool makePictures=false, bool wait=true , int addHistName = 1
 	  thisStack->GetXaxis()->SetTitle("#font[12]{N}_{jets}");
 	  thisStack->GetXaxis()->SetTitleOffset(1.05);
 	}
-        if (!noLegend) thisLeg->Draw();
+        if (!noLegend && sample ==3) thisLeg->Draw();
 	
 	TPaveText *pt1 = new TPaveText(0.1, 0.95, 0.4, 0.999, "brNDC");
 	pt1->SetName("pt1name");
