@@ -661,7 +661,8 @@ namespace hist {
     TIterator* iter = list->MakeIterator();
 
     TRegexp re(pat,kTRUE) ;
-    cout << "pat = " << pat << endl ;
+    if (pat!=0) cout << "pat = " << pat << endl ;
+    else cout<<"no pattern: read all"<<endl;
 
     gDirectory->cd("Rint:") ;
 
@@ -671,9 +672,13 @@ namespace hist {
     cout << "loadHist: reading." ;
     while(key=(TKey*)iter->Next()) {
 
-      Int_t ridx = TString(key->GetName()).Index(re) ;
-      if (ridx==-1) {
-	continue ;
+      //      Int_t ridx = TString(key->GetName()).Index(re) ;
+      //      cout<<"reading "<<key->GetName()<<std::endl;
+      if (pat!=0){
+	//	cout<<"Check patt "<<pat<<endl;
+	if (TString(key->GetName()).Index(re)==-1) {
+	  continue ;
+	}
       }
 
       obj = inf.Get(key->GetName()) ;
