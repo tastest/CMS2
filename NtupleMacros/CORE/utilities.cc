@@ -67,7 +67,8 @@ TVector3 correctMETforTracks()
     }
 
     // skip track if matched to an "electron"
-    if( cms2.trks_elsidx()[trkCount] != -999 && cms2.trks_elsdr()[trkCount] < 0.1) {
+    // now why is this not redundant?
+    if( cms2.trks_elsidx()[trkCount] != -999 && cms2.els_trkdr()[cms2.trks_elsidx()[trkCount]] < 0.1) {
       if( cms2.els_hOverE()[ cms2.trks_elsidx()[trkCount] ] < hoe_cut ) {
 	if( cms2.els_trkidx()[cms2.trks_elsidx()[trkCount]]  == int(trkCount) && cms2.els_trkdr()[cms2.trks_elsidx()[trkCount]] < 0.1 ) continue;
       }
