@@ -127,7 +127,7 @@ def getNumEventsRun(crabpath):
 ###############################################################################################################
 ################### Get List Of Root Files which are not corrupted and have the Events tree ###################
                 
-def getGoodRootFiles(datapath):
+def getGoodRootFiles(datapath,outpath):
     global goodCrabXMLFiles
     global goodRootFiles
     global CMSSWpath
@@ -138,26 +138,38 @@ def getGoodRootFiles(datapath):
             #break
         #j = j+1
         path = ''
+        fname = i.split('/')[len(i.split('/'))-1].replace('crab_fjr_', 'ntuple_').replace('.xml', '.root')
         if commands.getstatusoutput('echo $HOSTNAME')[1].find('ucsd') !=-1:
-            path = datapath + i.split('/')[len(i.split('/'))-1].replace('crab_fjr_', 'ntuple_').replace('.xml', '.root')
+            path = datapath + fname
         elif commands.getstatusoutput('echo $HOSTNAME')[1].find('fnal') !=-1:
-            path = datapath.replace('pnfs', 'usr', 1) + i.split('/')[len(i.split('/'))-1].replace('crab_fjr_', 'ntuple_').replace('.xml', '.root')
-        print 'Checking File ' + path + ' for integrity'
+            path = datapath.replace('pnfs', 'usr', 1) + fname
+        
+        if datapath.find('pnfs') != -1:
+            print 'Moving ' + fname + ' from dcache to ' + outpath + '/temp'
+            cmd = 'dccp ' + dcachePrefix + path + ' ' + outpath + '/temp'
+        if datapath.find('hadoop') != -1:
+            print 'Moving ' + fname + ' from hadoop to ' + outpath + '/temp'
+            cmd = 'cp ' + dcachePrefix + path + ' ' + outpath + '/temp'
+        print commands.getoutput(cmd)
+        
+        print 'Checking File ' + outpath + '/temp/' + fname + ' for integrity'
         cmd = ""
         if datapath.find("pnfs") != -1:
-            cmd = "./sweepRoot -o Events " + dcachePrefix + path + ' 2> /dev/null'
+            cmd = "./sweepRoot -o Events " + outpath + '/temp/' + fname +  ' 2> /dev/null'
             print cmd
         else:
-            cmd = "./sweepRoot -o Events " + path + ' 2> /dev/null'
+            cmd = "./sweepRoot -o Events " + outpath + '/temp/' + fname + ' 2> /dev/null'
         output = commands.getoutput(cmd).split('\n')
         for k in output:
             if k.find('SUMMARY') != -1:
                 print k
             if k.find('SUMMARY: 1 bad, 0 good') != -1:
-                print 'File: ' + path + 'does not seem to be good!!!!'
+                print 'File: ' + outpath + '/temp/' + fname + ' does not seem to be good!!!!'
+                commands.getoutput('rm ' + outpath+'/temp/' + fname)
             elif k.find('SUMMARY: 0 bad, 1 good') != -1:
-                print 'File: ' + path + ' looks just fine!'
-                goodRootFiles.append(path)
+                print 'File: ' + outpath + '/temp/' + fname + ' looks just fine!'
+                commands.getoutput('mv ' + outpath + '/temp/' + fname + ' ' + outpath + '/preprocessing/')
+                goodRootFiles.append(outpath + '/preprocessing/' + fname)
                 tempXMLFileList.append(i)
     
     goodCrabXMLFiles = tempXMLFileList
@@ -277,10 +289,9 @@ if datapath.find("pnfs") != -1 or datapath.find("hadoop") != -1:
     if commands.getstatusoutput(cmd)[0] == 256 and commands.getstatusoutput("ls " + outpath + "/postprocessing")[1] != "":
         print "The directory " + outpath + "/postprocessing already exists and is not empty!. Exiting!"
         sys.exit()
-    cmd = "voms-proxy-info"
-    if commands.getstatusoutput(cmd)[0] == 256:
-        print "Your environment is not set up correctly"
-        print "Please get your voms-proxy and source the right CRAB scripts. Exiting!"
+    cmd = "mkdir " + outpath + "/temp"
+    if commands.getstatusoutput(cmd)[0] == 256 and commands.getstatusoutput("ls " + outpath + "/temp")[1] != "":
+        print "The directory " + outpath + "/temp which will be a temp area for ntuples already exists and is not empty!. Exiting!"
         sys.exit()
 
         
@@ -299,24 +310,7 @@ totalNumEventsRun = 0
 rootFilesToMerge = []
 
 getGoodXMLFiles(crabpath)
-getGoodRootFiles(datapath)        
-
-
-if datapath.find("pnfs") != -1:
-    print "Moving files from dcache to " + outpath + "/preprocessing"
-    for i in goodRootFiles:
-        print i
-        cmd = "dccp " + dcachePrefix + i + " " + outpath + "/preprocessing"
-        print cmd
-        print commands.getoutput(cmd)
-
-if datapath.find("hadoop") != -1:
-    print "Moving files from hadoop to " + outpath + "/preprocessing"
-    for i in goodRootFiles:
-        print i
-        cmd = "cp " + dcachePrefix + i + " " + outpath + "/preprocessing"
-        print cmd
-        print commands.getoutput(cmd)
+getGoodRootFiles(datapath,outpath)        
 
 
 getNumEventsRun(crabpath)
