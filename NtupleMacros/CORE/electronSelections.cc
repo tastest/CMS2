@@ -49,3 +49,10 @@ bool electronHcalIsolation(const unsigned int index, const float threshold)
         return false;
 }
 
+//conversion rejection
+bool isFromConversionHitPattern(const unsigned int index){
+
+  if(cms2.els_exp_innerlayers().at(index) > 1) return true;
+  return false;
+
+}

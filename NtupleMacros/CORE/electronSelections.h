@@ -28,5 +28,7 @@ bool electronTkIsolation(const unsigned int index, const float threshold);
 bool electronEcalIsolation(const unsigned int index, const float threshold);
 bool electronHcalIsolation(const unsigned int index, const float threshold);
 
+// conversion rejection
+bool isFromConversionHitPattern(const unsigned int index);
 #endif
 
