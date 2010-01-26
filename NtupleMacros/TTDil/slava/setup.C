@@ -12,13 +12,14 @@ void setup(bool skipFWLite = false){
   // Not clear that it is needed
   gSystem->CompileMacro("loader.C", "++k", "libloader");
 
-  gSystem->CompileMacro("getMyHistosNames.C", "++k", "libgetMyHistosNames");
-  gSystem->CompileMacro("histtools.C", "++k", "libhisttools");
-  gSystem->CompileMacro("browseStacks.C", "++k", "libbrowseStacks");
+  gSystem->CompileMacro("histscripts/getMyHistosNames.C", "++k", "libgetMyHistosNames");
+  gSystem->CompileMacro("histscripts/histtools.C", "++k", "libhisttools");
+  gSystem->CompileMacro("histscripts/browseStacks.C", "++k", "libbrowseStacks");
 
   gROOT->ProcessLine(".L tdrstyle.C");
   setTDRStyle();
 
+  /*
   std::string cms2Location = "";
   if (getenv("CMS2_LOCATION") ) cms2Location = Form("%s/NtupleMacros", getenv("CMS2_LOCATION"));
   else if (1>2){
@@ -28,7 +29,8 @@ void setup(bool skipFWLite = false){
       std::cout<<"You have CMSSW_BASE -- will try "<<cms2Location.c_str()<<std::endl;
     }
   }
+  */
 
   //punch in more guesses where NtupleMacros are -- don't keep multiple copies ;)
-  gSystem->AddIncludePath(Form(" -w -I./ -I../../" ));
+  gSystem->AddIncludePath(Form(" -w -I./ " ));
 }
