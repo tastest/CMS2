@@ -1,8 +1,24 @@
 // -*- C++ -*-
 #ifndef ttDilCounts_looper_H
 #define ttDilCounts_looper_H
-#include "CORE/CMS2.h"
+//#include "CORE/CMS2.h"
 #include "TH1F.h"
+#include "TH2F.h"
+#include <vector>
+#include "TChain.h"
+
+#ifndef ProcDSChain_H
+#define ProcDSChain_H
+struct ProcDSChain {
+  ProcDSChain(TChain* ch, float sc = 1, bool doW = true, bool chDup = false): events(ch), scale1fb(sc),  useWeigtFromBranch(doW), 
+									      checkDuplicates(chDup) {}
+  TChain* events;
+  float scale1fb;
+  bool useWeigtFromBranch;
+  bool checkDuplicates;
+};
+#endif
+
 
 class ttDilCounts_looper {
 
@@ -17,12 +33,17 @@ class ttDilCounts_looper {
     EIDiif():i0(0),i1(0),f0(0) {}
     EIDiif(int ai0, int ai1, float af0):i0(ai0),i1(ai1),f0(af0) {}
     bool operator==(const EIDiif& rhs) const {return (i0==rhs.i0 && i1==rhs.i1 && f0==rhs.f0);}
+    bool operator<(const EIDiif& rhs) const {
+      return (i0 != rhs.i0 ? i0 < rhs.i0 : (i1 != rhs.i1 ? i1 < rhs.i1 : (f0 != rhs.f0 ? f0 < rhs.f0 : false)));
+    }
     int i0;
     int i1;
     float f0;
   };
 
-  int ScanChain ( TChain* chain, char * prefix="", float kFactor=1.0, int prescale=1, bool oldjets=true, unsigned int cutsMask=31);
+  int ScanChain ( std::string fName, std::string prefix, float kFactor=1.0, int prescale=1, unsigned int cutsMask=31);
+  int ScanChain ( TChain* chain, std::string prefix, float kFactor=1.0, int prescale=1, unsigned int cutsMask=31);
+  int ScanChain ( std::vector<ProcDSChain>& pds, std::string prefix, float kFactor=1.0, int prescale=1, unsigned int cutsMask=31);
   void fill1D(TH1F* h, double val, double weight);
 
   TH1F* hnJet[4];       // Njet distributions
@@ -91,11 +112,12 @@ class ttDilCounts_looper {
   // For muons we only count good isolated muons.
   TH1F* hnJetLepVeto[4]; //njet distribution after requiring numTightLep < 3.
 
+  int bigBlob[8000000];
   // The statement below should work but does not work due to bug in root when TH2 are also used
   // Rene Brun promised a fix.
   //TH1::SetDefaultSumw2(kTRUE); // do errors properly based on weights
 
   std::string compactConfig;
-  void bookHistos(char *prefix);
+  void bookHistos(std::string& prefix);
 };
 #endif
