@@ -8,27 +8,33 @@
 
 //
 // candidate electron id function
+// see http://www.t2.ucsd.edu/tastwiki/bin/view/CMS/ElectronID
 //
-bool electronId_cand01();
+bool electronId_cand01(const unsigned int index);
+bool electronImpact_cand01(const unsigned int index);
+
+//
+// candidate electron isolation function
+// see http://www.t2.ucsd.edu/tastwiki/bin/view/CMS/EfficiencyMeasurement
+//
+bool electronIsolation_cand01(const unsigned int index);
 
 //
 // class based electron id that we have used before
 //
-bool electronId_classBased();
+bool electronId_classBasedLoose(const unsigned int index);
+bool electronId_classBasedTight(const unsigned int index);
 
 //
-// candidate electron isolation function
+// electron isolation definitions that we have used before
 //
-bool electronIsolation_cand01();
+float electronIsolation_rel(const unsigned int index, bool use_calo_iso);
+float electronIsolation_relsusy(const unsigned int index, bool use_calo_iso);
 
 //
-// functions for individual subdet electron isolations
-//
-bool electronTkIsolation(const unsigned int index, const float threshold);
-bool electronEcalIsolation(const unsigned int index, const float threshold);
-bool electronHcalIsolation(const unsigned int index, const float threshold);
-
 // conversion rejection
+//
 bool isFromConversionHitPattern(const unsigned int index);
+
 #endif
 
