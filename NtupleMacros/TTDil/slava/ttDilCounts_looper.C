@@ -30,7 +30,7 @@
 #include "TRandom2.h"
 #include <fstream>
 
-#include "CORE/CMS2.cc"
+#include "CORE/CMS2.h"
 #include "ttDilCounts_looper.h"
 #include "CORE/selections.cc"
 #include "CORE/utilities.cc"
@@ -48,10 +48,28 @@ void ttDilCounts_looper::fill1D(TH1F* h, double v, double w){
   h->Fill(min(max(v,hMin+bminw*0.01),hMax-bmaxw*0.01),w);
 }
 
-int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor, int prescale, bool oldjets, unsigned int cutsMask){
-  
-  TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
-  rootdir->cd();
+int ttDilCounts_looper::ScanChain (std::string fName, std::string prefix, float kFactor, int prescale, unsigned int cutsMask){
+  TChain* chain = new TChain("Events");
+  chain->Add(fName.c_str()); //chain->GetEntries("mus_p4.pt()");
+  return ScanChain(chain, prefix, kFactor, prescale, cutsMask);
+}
+int ttDilCounts_looper::ScanChain (TChain* chain, std::string prefix, float kFactor, int prescale, unsigned int cutsMask){
+  std::vector<ProcDSChain> pds(1, ProcDSChain(chain));
+  return ScanChain(pds, prefix, kFactor, prescale, cutsMask);
+}
+int ttDilCounts_looper::ScanChain (std::vector<ProcDSChain>& pds, std::string prefix, float kFactor, int prescale, unsigned int cutsMask){
+  TDirectory *rootdir = gROOT->GetDirectory("root:");
+  if (rootdir)  rootdir->cd();
+  else {
+    std::cout<<"Cant find root: . Current dir is "<<gDirectory->GetName()<<std::endl;
+    rootdir = gROOT->GetDirectory("Rint:");
+    if (rootdir){
+      std::cout<<"OK, got Rint: "<<std::endl;
+      rootdir->cd();
+    } else {
+      std::cout<<"Cant find Rint: either . Current dir is "<<gDirectory->GetName()<<std::endl;
+    }
+  }
 
   using namespace std;
   
@@ -76,47 +94,53 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
   // Eventually the DEFINE_CUT piece will move outside ScanChain to smth like SetConfig
   // and compactConfig will be usable as a part of the output file name
   // so that instead of currrent, e.g.,  myHist_2122752.root you get myHist_preDil08_OS_noDupWt_hltTry08.root
-  bool idcuts =  cutsMask & 1;
-  if( cutsMask & 1) {
-    idcuts = true;
-    cout << "Id cuts enabled" << endl;
-    compactConfig = compactConfig+ "_idOld";
+  bool idcuts = false;
+  bool ocxS1 =  cutsMask & 1;
+  if( ocxS1) {
+    cout << "OctoberX step1" << endl;
+    compactConfig = compactConfig+ "_ocxS1";
   }
 
-  bool isolationcuts = (cutsMask>>1) & 1;
-  if( isolationcuts ) {
-    cout << "Isolation cuts enabled" << endl;
-    compactConfig = compactConfig + "_isoOld";
+  bool isolationcuts = false;
+  bool ocxS2 = (cutsMask>>1) & 1;
+  if( ocxS2 ) {
+    cout << "OctoberX step2" << endl;
+    compactConfig = compactConfig + "_ocxS2";
   }
 
-  bool dilepMassVetoCut =  (cutsMask>>2) & 1;
-  if( dilepMassVetoCut ) {
-    cout << "DiLeptonMassVetoCut enabled" << endl;
-    compactConfig = compactConfig + "_zVetoOld";
+  bool dilepMassVetoCut = false;
+  bool ocxS3 =  (cutsMask>>2) & 1;
+  if( ocxS3 ) {
+    cout << "OctoberX step3" << endl;
+    compactConfig = compactConfig + "_ocxS3";
   }
   
-  bool METcut =  (cutsMask>>3) & 1;
-   if( METcut ) {
-     cout << "METCut enabled" << endl;
-    compactConfig = compactConfig + "_wMET";
+  bool METcut =  false;
+  bool ocxS4 = (cutsMask>>3) & 1;
+   if( ocxS4 ) {
+     cout << "OctoberX step4" << endl;
+    compactConfig = compactConfig + "_ocxS4";
   } 
 
-   bool nJets2 =  (cutsMask>>4) & 1; 
-   if( nJets2 ) {
-     cout << "NJets>=2 cut enabled" << endl;
-     compactConfig = compactConfig + "_nJets2";
+   bool nJets2 = false;
+   bool ocxS5 = (cutsMask>>4) & 1; 
+   if( ocxS5 ) {
+     cout << "OctoberX step5" << endl;
+     compactConfig = compactConfig + "_ocxS5";
    }
 
-   bool applyMuTag = (cutsMask>>5) & 1;
-   if( applyMuTag ) {
-     cout << "Extra Muon tag cut enabled" << endl;
-     compactConfig = compactConfig + "_muTag";
+   bool applyMuTag = false; 
+   bool ocxS6 = (cutsMask>>5) & 1;
+   if( ocxS6 ) {
+     cout << "OctoberX step6" << endl;
+     compactConfig = compactConfig + "_ocxS6";
    } 
    
-   bool METveto = (cutsMask>>6) & 1;
-   if ( METveto ){
-     cout << "MET veto is enabled" << endl;
-     compactConfig = compactConfig + "_vetoMET";
+   bool METveto = false;
+   bool ocxS7 = (cutsMask>>6) & 1;
+   if ( ocxS7 ){
+     cout << "OctoberX step7" << endl;
+     compactConfig = compactConfig + "_ocxS7";
    } 
 
    bool applyMuTag5 =  (cutsMask>>7) & 1;
@@ -179,7 +203,7 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
    bool lepton20Eta2p4DilSelection = ((cutsMask>>17)&1);
    if (lepton20Eta2p4DilSelection){
      std::cout<<"Two leptons pt>20 and |eta|<2.4 are selected -- bare minimum"<<std::endl;
-     compactConfig = compactConfig;
+     compactConfig = compactConfig + "_2Lpt20E2p4";
    }
 
    bool useTcMet = ((cutsMask>>25)&1);
@@ -260,10 +284,6 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 
   bool useJPT = ((cutsMask>>26)&1);
   if (useJPT) {
-    if (oldjets) {
-      std::cout<<"Inconsistent config: JPT and oldjets requested: bailing"<<std::endl;
-      return 99;
-    }
     std::cout<<"Using JPT jets"<<std::endl;
     compactConfig = compactConfig + "_JPT";
   }
@@ -310,45 +330,56 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 
   //Event Loop
   int nAfterPrescale = 0;
-  TObjArray *listOfFiles = chain->GetListOfFiles();
-
-  unsigned int nEventsChain=chain->GetEntries();
   unsigned int nEventsTotal = 0;
-
-  std::vector<EIDiif> evId;
-  
-  // file loop
-  TIter fileIter(listOfFiles);
   int nAllEvents = 0;
   map<int,int> m_events;
-  while(TChainElement *currentFile = (TChainElement*)fileIter.Next() ) {
-    TFile f(currentFile->GetTitle());
-    TTree *tree = (TTree*)f.Get("Events");
-    cms2.Init(tree);
-    unsigned int nEntries = tree->GetEntries();
-    unsigned int nLoop = nEntries;
 
-    unsigned int z;
 
-    for( z = 0; z < nLoop; z++) {
-      nAllEvents++;
-      // Progress feedback to the user
-      int iz = nAllEvents/10000;
-      if (nAllEvents-10000*iz == 0) cout << "Processing event " << nAllEvents+1 
-				       << " of sample " << prefix << endl;
-       
-      // Prescale
-      if (prescale != 1) {
-	if (r->Uniform(1) > probOfKeeping) continue;
-      }
-      nAfterPrescale++;
-      cms2.GetEntry(z);
-      ++nEventsTotal;
+  for(unsigned int iPDS = 0; iPDS<pds.size(); ++iPDS){
+    TChain* chain = pds[iPDS].events;
+    bool useWeigtFromBranch = pds[iPDS].useWeigtFromBranch;
+    float scale1fb = pds[iPDS].scale1fb;
+
+    TObjArray *listOfFiles = chain->GetListOfFiles();
+    unsigned int nEventsChain=chain->GetEntries();
+    
+    std::map<EIDiif,bool> evId;
+    bool doCheckDuplicateEvents = pds[iPDS].checkDuplicates;
+    
+    bool printEvents = (ocxS1 ||ocxS2 ||ocxS3 ||ocxS4 ||ocxS5 ||ocxS6 ||ocxS7);
+    
+    // file loop
+    TIter fileIter(listOfFiles);
+    while(TChainElement *currentFile = (TChainElement*)fileIter.Next() ) {
+      TFile f(currentFile->GetTitle());
+      TTree *tree = (TTree*)f.Get("Events");
+      cms2.Init(tree);
+      unsigned int nEntries = tree->GetEntries();
+      unsigned int nLoop = nEntries;
+      
+      unsigned int z;
+      
+      for( z = 0; z < nLoop; z++) {
+	nAllEvents++;
+	// Progress feedback to the user
+	int iz = nAllEvents/10000;
+	if (nAllEvents-10000*iz == 0) cout << "Processing event " << nAllEvents+1 
+					   << " of sample " << prefix << endl;
+	
+	// Prescale
+	if (prescale != 1) {
+	  if (r->Uniform(1) > probOfKeeping) continue;
+	}
+	nAfterPrescale++;
+	cms2.GetEntry(z);
+	++nEventsTotal;
 
 
       //check if it's a correct genp-event
       std::string prefixStr(prefix);
+      if (!(ocxS1 ||ocxS2 ||ocxS3 ||ocxS4 ||ocxS5 ||ocxS6 ||ocxS7))
       if (prefixStr == "ttdil" && genpCountPDGId(11,13,15) != 2) continue;
+
       if (prefixStr == "ttotr" && genpCountPDGId(11,13,15) == 2) continue;
       if (prefixStr == "DYeemm" && genpCountPDGId(11) != 2 && genpCountPDGId(13) != 2) continue;
       if (prefixStr == "DYee" && genpCountPDGId(11) != 2) continue;
@@ -361,20 +392,27 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 
       std::vector<unsigned int> goodHyps(0);
 
-      EIDiif eid(cms2.evt_run(),cms2.evt_event(),cms2.evt_met());
-      std::vector<EIDiif>::const_iterator oID = std::find(evId.begin(),evId.end(),eid);
-      if (oID != evId.end() 
-	  ){
-	std::cout<<prefixStr<<" Duplicate evt: "<<cms2.evt_run()<<":"<<cms2.evt_event()
-		 <<" "<<cms2.evt_met()
-		 <<" ::: "<<oID->i0<<" "<<oID->i1<<" "<<oID->f0
-		 <<" ::: "<<eid.i0<<" "<<eid.i1<<" "<<eid.f0
-		 <<std::endl;
-	continue;
-      } else {
-	evId.push_back(eid);
+      if (doCheckDuplicateEvents){
+	EIDiif eid(cms2.evt_run(),cms2.evt_event(),cms2.evt_met());
+	if (evId[eid]){
+	  std::cout<<prefixStr<<" Duplicate evt: "
+		   <<" ::: "<<eid.i0<<" "<<eid.i1<<" "<<eid.f0
+		   <<std::endl;
+	  continue;
+	} else {
+	  evId[eid] = true;
+	}
+	if (evId.size()%100000 == 0)std::cout<<evId.size()<<" unique events read"<<std::endl;
       }
 
+      int irun = cms2.evt_run();
+      int ilum = cms2.evt_lumiBlock();
+      int ievt = cms2.evt_event();
+      if (printEvents){
+	std::cout<<irun<<":"<<ilum<<":"<<ievt<<":all"<<":passPreStep"  
+		 <<std::endl;
+      }
+      
       for(unsigned int hypIdx = 0; hypIdx < cms2.hyp_p4().size(); hypIdx++) {
        
 	unsigned int i_lt = cms2.hyp_lt_index()[hypIdx];
@@ -383,6 +421,8 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	int id_lt = cms2.hyp_lt_id()[hypIdx];
 	int id_ll = cms2.hyp_ll_id()[hypIdx];
 
+	int hyp_type = cms2.hyp_type()[hypIdx];
+	/*
 	{// scope out old/legacy selections
 	  if (applyZWindow && fabs(cms2.hyp_p4()[hypIdx].mass()-91)> 15) continue;
 	  
@@ -422,6 +462,131 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	  if (applyMuTag5 && ! haveExtraMuon5(hypIdx)) continue;
 
 	}// end scope-out of old selections
+	*/
+	std::string sMode = "mumu";
+	if (hyp_type == 1 || hyp_type == 2) sMode = "emu";
+	if (hyp_type == 3) sMode = "ee";
+	std::string passS = "passStep0";
+	if (printEvents){
+	  std::cout<<irun<<":"<<ilum<<":"<<ievt<<":"<<sMode.c_str()<<":"<<passS.c_str()  
+		   <<":pt1="<<cms2.hyp_lt_p4()[hypIdx].pt()
+		   <<":pt2="<<cms2.hyp_ll_p4()[hypIdx].pt()
+		   <<":eta1="<<cms2.hyp_lt_p4()[hypIdx].eta()
+		   <<":eta2="<<cms2.hyp_ll_p4()[hypIdx].eta()
+		   <<":hlt="<<passTriggers8E29Mu9orE15LW(hyp_type);
+	  if (abs(id_lt)==13) std::cout<<":muIsGlob1="<<((cms2.mus_type()[i_lt]&2)!=2);
+	  if (abs(id_ll)==13) std::cout<<":muIsGlob2="<<((cms2.mus_type()[i_ll]&2)!=2);
+	  std::cout<<std::endl;
+	}
+
+	if (ocxS1){
+	  if (!lepton20Eta2p4(id_lt, i_lt) ) continue;
+	  if (!lepton20Eta2p4(id_ll, i_ll) ) continue;
+	  if (!passTriggers8E29Mu9orE15LW(hyp_type))continue;
+	  if (abs(id_lt)==13 && (cms2.mus_type()[i_lt]&2)!=2) continue; //has to be a global muon
+	  if (abs(id_ll)==13 && (cms2.mus_type()[i_ll]&2)!=2) continue; //has to be a global muon
+	  passS = "passStep1";
+	  std::cout<<irun<<":"<<ilum<<":"<<ievt<<":"<<sMode.c_str()<<":"<<passS.c_str();
+	  if (abs(id_lt)==11) std::cout<<":looseEle1="<<looseElectronSelectionNoIsoTTDilOcX09(i_lt)
+				       <<"==id="<<cms2.els_egamma_looseId()[i_lt]<<"&d0="<<cms2.els_d0corr()[i_lt]
+                                       <<"&mu="<<(els_closestMuonWQual(i_lt,0.1, 2) == -1? -1 :cms2.mus_type()[els_closestMuonWQual(i_lt,0.1, 2)]);
+	  if (abs(id_ll)==11) std::cout<<":looseEle1="<<looseElectronSelectionNoIsoTTDilOcX09(i_ll)
+                                       <<"==id="<<cms2.els_egamma_looseId()[i_ll]<<"&d0="<<cms2.els_d0corr()[i_ll]
+                                       <<"&mu="<<(els_closestMuonWQual(i_ll,0.1, 2) == -1? -1 :cms2.mus_type()[els_closestMuonWQual(i_ll,0.1, 2)]);
+	  if (abs(id_lt)==13) std::cout<<":muGChi2N1="<<cms2.mus_gfit_chi2()[i_lt]/cms2.mus_gfit_ndof()[i_lt];
+	  if (abs(id_ll)==13) std::cout<<":muGChi2N2="<<cms2.mus_gfit_chi2()[i_ll]/cms2.mus_gfit_ndof()[i_ll];
+	  if (abs(id_lt)==13) std::cout<<":muGMPT1="<<((cms2.mus_goodmask()[i_lt]&(1<<6))!=0);
+	  if (abs(id_ll)==13) std::cout<<":muGMPT2="<<((cms2.mus_goodmask()[i_ll]&(1<<6))!=0);
+	  if (abs(id_lt)==13) std::cout<<":muD0t1="<<cms2.mus_d0corr()[i_lt];
+	  if (abs(id_ll)==13) std::cout<<":muD0t2="<<cms2.mus_d0corr()[i_ll];
+	  if (abs(id_lt)==13) std::cout<<":muD0UCt1="<<cms2.mus_d0()[i_lt];
+	  if (abs(id_ll)==13) std::cout<<":muD0UCt2="<<cms2.mus_d0()[i_ll];
+	  if (abs(id_lt)==13) std::cout<<":muD0g1="<<cms2.mus_gfit_d0corr()[i_lt];
+	  if (abs(id_ll)==13) std::cout<<":muD0g2="<<cms2.mus_gfit_d0corr()[i_ll];
+	  std::cout<<std::endl;
+	}
+
+	double sum_lt = 0;
+	double sum_ll = 0;
+	double relI_lt = 0;
+	double relI_ll = 0;
+	if(abs(id_lt)==11){
+	  sum_lt = cms2.els_pat_trackIso()[i_lt] 
+	    + cms2.els_pat_ecalIso()[i_lt] + cms2.els_pat_hcalIso()[i_lt];
+	  relI_lt = sum_lt/cms2.els_p4()[i_lt].pt();
+	}
+	if(abs(id_ll)==11){
+	  sum_ll = cms2.els_pat_trackIso()[i_ll] 
+	    + cms2.els_pat_ecalIso()[i_ll] + cms2.els_pat_hcalIso()[i_ll];
+	  relI_ll = sum_ll/cms2.els_p4()[i_ll].pt();
+	}
+	if(abs(id_lt)==13){
+	  sum_lt = cms2.mus_pat_trackIso()[i_lt] 
+	    + cms2.mus_pat_ecalIso()[i_lt] + cms2.mus_pat_hcalIso()[i_lt];
+	  relI_lt = sum_lt/cms2.mus_p4()[i_lt].pt();
+	}
+	if(abs(id_ll)==13){
+	  sum_ll = cms2.mus_pat_trackIso()[i_ll] 
+	    + cms2.mus_pat_ecalIso()[i_ll] + cms2.mus_pat_hcalIso()[i_ll];
+	  relI_ll = sum_ll/cms2.mus_p4()[i_ll].pt();
+	}
+	if (ocxS2){
+	  if (abs(id_lt)==11 && ! looseElectronSelectionNoIsoTTDilOcX09(i_lt)) continue; //uses egamma_looseId
+	  if (abs(id_ll)==11 && ! looseElectronSelectionNoIsoTTDilOcX09(i_ll)) continue; //uses egamma_looseId
+	  if (abs(id_lt)==13 &&  ( (cms2.mus_goodmask()[i_lt]&(1<<6)) == 0 
+				   || fabs(cms2.mus_d0corr()[i_lt]) > 0.04) ) continue;  // bit 6 (from 0) is GMprompt tight
+	  if (abs(id_ll)==13 &&  ( (cms2.mus_goodmask()[i_ll]&(1<<6)) == 0
+				   || fabs(cms2.mus_d0corr()[i_ll]) > 0.04) ) continue;  // bit 6 (from 0) is GMprompt tight
+	  //	  continue;
+	  passS = "passStep2";
+	  std::cout<<irun<<":"<<ilum<<":"<<ievt<<":"<<sMode.c_str()<<":"<<passS.c_str()  
+		   <<":relI1="<<relI_lt<<":relI2"<<relI_ll
+		   <<std::endl;
+	}
+	
+	if (ocxS3){
+	  if(abs(id_lt)==11 && relI_lt > 0.1) continue;
+	  if(abs(id_ll)==11 && relI_ll > 0.1) continue;
+	  if(abs(id_lt)==13 && relI_lt > 0.1) continue;
+	  if(abs(id_ll)==13 && relI_ll > 0.1) continue;
+
+	  //	  continue;
+	  passS = "passStep3";
+	  std::cout<<irun<<":"<<ilum<<":"<<ievt<<":"<<sMode.c_str()<<":"<<passS.c_str()  
+		   <<std::endl;
+	}
+	
+	/*
+	if (ocxS4){
+	  //this is where per-hypothesis selection stops
+	  continue;
+	  passS = "passStep4";
+	  std::cout<<irun<<":"<<ilum<<":"<<ievt<<":"<<sMode.c_str()<<":"<<passS.c_str()  
+		   <<std::endl;
+	}
+	
+	if (ocxS5){
+	  continue;
+	  passS = "passStep5";
+	  std::cout<<irun<<":"<<ilum<<":"<<ievt<<":"<<sMode.c_str()<<":"<<passS.c_str()  
+		   <<std::endl;
+	}
+	
+	if (ocxS6){
+	  continue;
+	  passS = "passStep6";
+	  std::cout<<irun<<":"<<ilum<<":"<<ievt<<":"<<sMode.c_str()<<":"<<passS.c_str()  
+		   <<std::endl;
+	}
+	
+	if (ocxS7){
+	  continue;
+	  passS = "passStep7";
+	  std::cout<<irun<<":"<<ilum<<":"<<ievt<<":"<<sMode.c_str()<<":"<<passS.c_str()  
+		   <<std::endl;
+	}
+	
+	*/
 
 	// this is for per-hypothesis choice
 	if (! fillMaxWeightDilOnly && applyTriggersMu9orLisoE15){
@@ -459,8 +624,8 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	    unsigned int nJ = cms2.jets_p4().size();
 	    for (unsigned int iJ = 0; iJ < nJ; ++iJ){
 	      if (isGoodDilHypJet(iJ, hypIdx, 0, 12.4, 0.4,muJetClean)){
-		metx -= cms2.jets_p4()[iJ].x()*(globalJESscaleRescale - 1.); 
-		mety -= cms2.jets_p4()[iJ].y()*(globalJESscaleRescale - 1.); 
+		metx -= cms2.jets_cor()[iJ]*cms2.jets_p4()[iJ].x()*(globalJESscaleRescale - 1.); 
+		mety -= cms2.jets_cor()[iJ]*cms2.jets_p4()[iJ].y()*(globalJESscaleRescale - 1.); 
 		nJused++;
 	      }
 	    }
@@ -532,7 +697,7 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
       
       unsigned int nGoodHyps = goodHyps.size();
 
-
+      //      std::cout<<"Found "<<nGoodHyps<<" do by selected hyp now"<<std::endl;
       unsigned int maxWeightIndex = 0;
       int strasbourgDilType = -1;
 
@@ -558,8 +723,8 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	    unsigned int nJ = cms2.jets_p4().size();
 	    for (unsigned int iJ = 0; iJ < nJ; ++iJ){
 	      if (isGoodDilHypJet(iJ, maxWeightIndex, 0, 12.4, 0.4,muJetClean)){ 
-		metx -= cms2.jets_p4()[iJ].x()*(globalJESscaleRescale - 1.); 
-		mety -= cms2.jets_p4()[iJ].y()*(globalJESscaleRescale - 1.); 
+		metx -= cms2.jets_cor()[iJ]*cms2.jets_p4()[iJ].x()*(globalJESscaleRescale - 1.); 
+		mety -= cms2.jets_cor()[iJ]*cms2.jets_p4()[iJ].y()*(globalJESscaleRescale - 1.); 
 	      }
 	    }
 	    if (! passPatMet_OF20_SF30(metx, mety, maxWeightIndex)) continue;
@@ -574,6 +739,58 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	if ( fillMaxWeightDilOnly && applyTriggersTTDil08JanTrial){
 	  if (! passTriggersTTDil08JanTrial(cms2.hyp_type()[maxWeightIndex]) ) continue;
 	}
+
+	int hyp_type = -1;
+	std::string sMode = "bad";
+	std::string passS = "passBAD";
+	if (ocxS4){
+	  //this is where per-hypothesis selection stops
+	  bool usePtOnlyForWeighting = true;
+          maxWeightIndex = eventDilIndexByWeightTTDil08(goodHyps, strasbourgDilType, debugPrintDispatch, usePtOnlyForWeighting);
+	  hyp_type = cms2.hyp_type()[maxWeightIndex];
+	  //	  continue;
+	  if (hyp_type == 0) sMode = "mumu";
+	  if (hyp_type == 1 || hyp_type == 2) sMode = "emu";
+	  if (hyp_type == 3) sMode = "ee";
+	  passS = "passStep4";
+	  std::cout<<irun<<":"<<ilum<<":"<<ievt<<":"<<sMode.c_str()<<":"<<passS.c_str()  
+		   <<std::endl;
+	}
+	
+	if (ocxS5){	  
+	  if ( (hyp_type == 0 || hyp_type ==3) && inZmassWindow(cms2.hyp_p4()[maxWeightIndex].mass())) continue;
+	  //	  continue;
+	  passS = "passStep5";
+	  std::cout<<irun<<":"<<ilum<<":"<<ievt<<":"<<sMode.c_str()<<":"<<passS.c_str()  
+		   <<std::endl;
+	}
+	
+	int nJets = 0;
+	unsigned int nJ = cms2.jets_p4().size();
+	for (unsigned int ijet=0; ijet < nJ; ijet++) {
+	  bool muJetClean = true;
+	  if (!isGoodDilHypJet(ijet, maxWeightIndex, 30, 2.4, 0.4, muJetClean)) continue;
+	  //don't count jets close to electrons and muons within dR=0.4
+	  nJets++;
+	}
+	if (ocxS6){
+	  //	  continue;
+	  if (nJets < 2) continue;
+	  passS = "passStep6";
+	  std::cout<<irun<<":"<<ilum<<":"<<ievt<<":"<<sMode.c_str()<<":"<<passS.c_str()  
+		   <<std::endl;
+	}
+	
+	if (ocxS7){
+	  float metx = met_pat_metCor_hyp(maxWeightIndex)*cos(met_pat_metPhiCor_hyp(maxWeightIndex));
+	  float mety = met_pat_metCor_hyp(maxWeightIndex)*sin(met_pat_metPhiCor_hyp(maxWeightIndex));
+	  if (! passPatMet_OF20_SF30(metx, mety, maxWeightIndex)) continue;
+	  passS = "passStep7";
+	  std::cout<<irun<<":"<<ilum<<":"<<ievt<<":"<<sMode.c_str()<<":"<<passS.c_str()  
+		   <<std::endl;
+	}
+	
+
       }
 
       
@@ -591,14 +808,14 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	// The event weight including the kFactor (scaled to 1 fb-1) and the prescale
 	//float weight = cms2.evt_scale1fb * kFactor * prescale;
 	//float weight = CalculateWeight(evt_CSA07Process(), cms2.evt_scale1fb(), kFactor, prescale);
-	float weight = kFactor*cms2.evt_scale1fb()*0.01; // /100; //10pb^-1
+	float weight = useWeigtFromBranch? kFactor*cms2.evt_scale1fb()*0.01 : scale1fb*0.01; // /100; //10pb^-1
 
 	if ( (prefixStr == "ppMuX" || prefixStr == "EM" || prefixStr == "QCD") 
 	     && (cms2.hyp_type()[hypIdx] == 1 || cms2.hyp_type()[hypIdx] == 2)) weight *= 0.5;//this isn't quite right :(
 	//and works only if both em and ppmux are in play
       
 	// If we made it to here, we passed all cuts and we are ready to fill
-	m_events.insert(pair<int,int>(cms2.evt_event(), 1));
+	//	m_events.insert(pair<int,int>(cms2.evt_event(), 1));
 
 	int myType = 99;
 	if (cms2.hyp_type()[hypIdx] == 3) myType = 0;  // ee
@@ -611,35 +828,23 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 
 	// Now we have to manipulate the jets.
 	// For the old jet selection (odjets=true) we use uncorrected jets
-	// for oldjets=false we use corrected jets. If required use jptjets
 	//
 	int new_hyp_njets=0;  // jet count
 	VofP4 jp4;            // vector of jets 
 	P4 blah; // temp variable
-	// First the case where we take the default hyp_jets
-	if (oldjets) {
-	  unsigned int nJ = cms2.jets_p4().size();
-	  for (unsigned int ijet=0; ijet < nJ; ijet++) {
-	    if (!isGoodDilHypJet(ijet, hypIdx, 15./cms2.jets_pat_noCorrF()[ijet]/globalJESscaleRescale, 2.4, 0.4, muJetClean)) continue;
-
-	    float thisJetRescale =  globalJESscaleRescale;
-	    blah = cms2.jets_pat_noCorrF()[ijet] * cms2.jets_p4()[ijet] * thisJetRescale;
-	    jp4.push_back(blah);
-	    new_hyp_njets++;
-	  }
-	} else if (!useJPT) {
+	if (!useJPT) {
 	  // Look among the hyp_jets
 	  unsigned int nJ = cms2.jets_p4().size(); 
 	  for (unsigned int ijet=0; ijet<nJ; ijet++) {
 	    if (!isGoodDilHypJet(ijet, hypIdx, 30./globalJESscaleRescale, 2.4, 0.4, muJetClean)) continue; 
 
 	    float thisJetRescale =  globalJESscaleRescale;
-	    blah = cms2.jets_p4()[ijet]* thisJetRescale;
+	    blah = cms2.jets_cor()[ijet]*cms2.jets_p4()[ijet]* thisJetRescale;
 	    jp4.push_back(blah);
 	    new_hyp_njets++;
 	  }
 	} else {       
-	  // This is with useJPT=true oldjets=false....
+	  // This is with useJPT=true
 	  // We need to remove both electron and muon jets in this case
 	  unsigned int nJ = cms2.jpts_p4().size();
 	  for (unsigned int ijet=0; ijet< nJ; ijet++) {
@@ -955,17 +1160,27 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	}
       }//hypothesis loop
     }//event loop
-  }//file loop
-
-  if ( nEventsChain != nEventsTotal ) {
-    std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
-  }
+    }//file loop
+  }//pds loop
+  //  if ( nEventsChain != nEventsTotal ) {
+  //    std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
+  //  }
 
   std::cout<<"Done with "<<prefix<<std::endl;
   outf.close();
   std::cout<<"Closed outf "<<std::endl;
-  rootdir = gDirectory->GetDirectory("Rint:"); 
-  rootdir->cd(); 
+  rootdir = gROOT->GetDirectory("root:"); 
+  if (rootdir) rootdir->cd(); 
+  else{
+    std::cout<<"Cant find root: . Current dir is "<<gDirectory->GetName()<<std::endl;
+    rootdir = gROOT->GetDirectory("Rint:");
+    if (rootdir){
+      std::cout<<"OK, got Rint: "<<std::endl;
+      rootdir->cd();
+    } else {
+      std::cout<<"Cant find Rint: either . Current dir is "<<gDirectory->GetName()<<std::endl;
+    }
+  }
 
   return 0;
 }
@@ -973,7 +1188,7 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 
 
 
-void ttDilCounts_looper::bookHistos(char *prefix) {
+void ttDilCounts_looper::bookHistos(std::string& prefixS) {
 
   //  Book histograms...
   //  Naming Convention:
@@ -983,24 +1198,31 @@ void ttDilCounts_looper::bookHistos(char *prefix) {
   //  for the ee final state in the ttbar sample.
   
   // MAKE SURE TO CAL SUMW2 FOR EACH 1D HISTOGRAM BEFORE FILLING!!!!!!
-  
-  char *jetbins[5] = {"0", "1", "2", "3", "#geq 4"};
-  TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
+  //  const char* prefix = prefixS.c_str();
+  std::string jetbins[5] = {"0", "1", "2", "3", "#geq 4"};
+  TDirectory *rootdir = gROOT->GetDirectory("root:");
+  std::cout<<"Current dir is "<<gDirectory->GetName()<<std::endl;
+  if (rootdir == 0){
+    std::cout<<"Head directory root: not found. Try Rint: ..."<<std::endl;
+    rootdir = gROOT->GetDirectory("Rint:");
+    if (rootdir){
+      std::cout<<"OK: Got Rint:"<<std::endl;
+    } else {
+      std::cout<<"ERROR: no root: or Rint: found. Histograms will likely be lost"<<std::endl;
+    }
+  }
+
   for (int i=0; i<4; i++) {
     for (int j=0; j<6; j++) { //6 jet regions
-      char *suffixall[4];
-      suffixall[0] = "ee";
-      suffixall[1] = "mm";
-      suffixall[2] = "em";
-      suffixall[3] = "all";
-      char *suffix[4];
+      std::string suffixall[4] = { "ee",  "mm", "em",  "all"};
+      //      char *suffix[4];
   
       if (j == 0){
-	hnJet[i] = new TH1F(Form("%s_hnJet_%s",prefix,suffixall[i]),Form("%s_nJet_%s",prefix,suffixall[i]),
+	hnJet[i] = new TH1F(Form("%s_hnJet_%s",prefixS.c_str(),suffixall[i].c_str()),Form("%s_nJet_%s",prefixS.c_str(),suffixall[i].c_str()),
 			    5,0.,5.);	
-	hnJetinZwindow[i] = new TH1F(Form("%s_hnJetinZwindow_%s",prefix,suffixall[i]),Form("%s_hnJetinZwindow_%s",prefix,suffixall[i]),
+	hnJetinZwindow[i] = new TH1F(Form("%s_hnJetinZwindow_%s",prefixS.c_str(),suffixall[i].c_str()),Form("%s_hnJetinZwindow_%s",prefixS.c_str(),suffixall[i].c_str()),
 				     5,0.,5.);	
-	hnJetoutZwindow[i] = new TH1F(Form("%s_hnJetoutZwindow_%s",prefix,suffixall[i]),Form("%s_hnJetoutZwindow_%s",prefix,suffixall[i]),
+	hnJetoutZwindow[i] = new TH1F(Form("%s_hnJetoutZwindow_%s",prefixS.c_str(),suffixall[i].c_str()),Form("%s_hnJetoutZwindow_%s",prefixS.c_str(),suffixall[i].c_str()),
 				     5,0.,5.);	
 	
 	hnJet[i]->SetDirectory(rootdir);
@@ -1013,19 +1235,19 @@ void ttDilCounts_looper::bookHistos(char *prefix) {
 	hnJetoutZwindow[i]->GetXaxis()->SetTitle("nJets");
 
 	for(int k = 0; k<5; k++) {
-	  hnJet[i]->GetXaxis()->SetBinLabel(k+1, jetbins[k]);
+	  hnJet[i]->GetXaxis()->SetBinLabel(k+1, jetbins[k].c_str());
 	  hnJet[i]->GetXaxis()->SetLabelSize(0.07);
 	  
-	  hnJetinZwindow[i]->GetXaxis()->SetBinLabel(k+1, jetbins[k]);
+	  hnJetinZwindow[i]->GetXaxis()->SetBinLabel(k+1, jetbins[k].c_str());
 	  hnJetinZwindow[i]->GetXaxis()->SetLabelSize(0.07);
 	  
-	  hnJetoutZwindow[i]->GetXaxis()->SetBinLabel(k+1, jetbins[k]);
+	  hnJetoutZwindow[i]->GetXaxis()->SetBinLabel(k+1, jetbins[k].c_str());
 	  hnJetoutZwindow[i]->GetXaxis()->SetLabelSize(0.07);
 	  
 	}
       }
     
-      char* njetCh;
+      std::string njetCh;
       if(j==0)njetCh = "0j";
       if(j==1)njetCh = "1j";
       if(j==2)njetCh = "ge2j";
@@ -1033,152 +1255,152 @@ void ttDilCounts_looper::bookHistos(char *prefix) {
       if(j==4)njetCh = "ge3j";
       if(j==5)njetCh = "ge4j";
 
-      std::string suffixS = Form("%s_%s",njetCh, suffixall[i]);
+      std::string suffixS = Form("%s_%s",njetCh.c_str(), suffixall[i].c_str());
 
-      helePt[i][j] = new TH1F(Form("%s_helePt_%s",prefix,suffixS.c_str()),Form("%s_elePt_%s",prefix,suffixS.c_str()),
+      helePt[i][j] = new TH1F(Form("%s_helePt_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_elePt_%s",prefixS.c_str(),suffixS.c_str()),
 			      150,0.,150.);
       helePt[i][j]->SetDirectory(rootdir);
       helePt[i][j]->GetXaxis()->SetTitle("Pt (GeV)");
       
     
-      hmuPt[i][j]  = new TH1F(Form("%s_hmuPt_%s",prefix,suffixS.c_str()),Form("%s_muPt_%s",prefix,suffixS.c_str()),
+      hmuPt[i][j]  = new TH1F(Form("%s_hmuPt_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_muPt_%s",prefixS.c_str(),suffixS.c_str()),
 			      150,0.,150.);
       hmuPt[i][j]->SetDirectory(rootdir);
       hmuPt[i][j]->GetXaxis()->SetTitle("Pt (GeV)");
       
     
-      hmuPtFromSilicon[i][j]  = new TH1F(Form("%s_hmuPtFromSilicon_%s",prefix,suffixS.c_str()),
-					 Form("%s_muPtFromSilicon_%s",prefix,suffixS.c_str()),150,0.,150.);
+      hmuPtFromSilicon[i][j]  = new TH1F(Form("%s_hmuPtFromSilicon_%s",prefixS.c_str(),suffixS.c_str()),
+					 Form("%s_muPtFromSilicon_%s",prefixS.c_str(),suffixS.c_str()),150,0.,150.);
       hmuPtFromSilicon[i][j]->SetDirectory(rootdir);
       hmuPtFromSilicon[i][j]->GetXaxis()->SetTitle("Pt (GeV)");
       
     
-      hminLepPt[i][j]  = new TH1F(Form("%s_hminLepPt_%s",prefix,suffixS.c_str()),
-				  Form("%s_minLepPt_%s",prefix,suffixS.c_str()),150,0.,150.);
+      hminLepPt[i][j]  = new TH1F(Form("%s_hminLepPt_%s",prefixS.c_str(),suffixS.c_str()),
+				  Form("%s_minLepPt_%s",prefixS.c_str(),suffixS.c_str()),150,0.,150.);
       hminLepPt[i][j]->SetDirectory(rootdir);
       hminLepPt[i][j]->GetXaxis()->SetTitle("Pt (GeV)");
 
     
-      hmaxLepPt[i][j]  = new TH1F(Form("%s_hmaxLepPt_%s",prefix,suffixS.c_str()),
-				  Form("%s_maxLepPt_%s",prefix,suffixS.c_str()),150,0.,150.);
+      hmaxLepPt[i][j]  = new TH1F(Form("%s_hmaxLepPt_%s",prefixS.c_str(),suffixS.c_str()),
+				  Form("%s_maxLepPt_%s",prefixS.c_str(),suffixS.c_str()),150,0.,150.);
       hmaxLepPt[i][j]->SetDirectory(rootdir);
       hmaxLepPt[i][j]->GetXaxis()->SetTitle("Pt (GeV)");
 
     
-      helePhi[i][j] = new TH1F(Form("%s_helePhi_%s",prefix,suffixS.c_str()),Form("%s_elePhi_%s",prefix,suffixS.c_str()),
+      helePhi[i][j] = new TH1F(Form("%s_helePhi_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_elePhi_%s",prefixS.c_str(),suffixS.c_str()),
 			       50,-1*TMath::Pi(), TMath::Pi());
       helePhi[i][j]->SetDirectory(rootdir);
       helePhi[i][j]->GetXaxis()->SetTitle("#phi");
 
 
-      hmuPhi[i][j]  = new TH1F(Form("%s_hmuPhi_%s",prefix,suffixS.c_str()),Form("%s_muPhi_%s",prefix,suffixS.c_str()),
+      hmuPhi[i][j]  = new TH1F(Form("%s_hmuPhi_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_muPhi_%s",prefixS.c_str(),suffixS.c_str()),
 			       50,-1*TMath::Pi(), TMath::Pi());
       hmuPhi[i][j]->SetDirectory(rootdir);
       hmuPhi[i][j]->GetXaxis()->SetTitle("#phi");
 
     
-      hdphiLep[i][j]  = new TH1F(Form("%s_hdphiLep_%s",prefix,suffixS.c_str()),Form("%s_dphiLep_%s",prefix,suffixS.c_str()),
+      hdphiLep[i][j]  = new TH1F(Form("%s_hdphiLep_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_dphiLep_%s",prefixS.c_str(),suffixS.c_str()),
 				 50,0., TMath::Pi());
       hdphiLep[i][j]->SetDirectory(rootdir);
       hdphiLep[i][j]->GetXaxis()->SetTitle("#delta#phi_{ll}");
       
       
-      heleEta[i][j] = new TH1F(Form("%s_heleEta_%s",prefix,suffixS.c_str()),Form("%s_eleEta_%s",prefix,suffixS.c_str()),
+      heleEta[i][j] = new TH1F(Form("%s_heleEta_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_eleEta_%s",prefixS.c_str(),suffixS.c_str()),
 			       60, -3., 3.);
       heleEta[i][j]->SetDirectory(rootdir);
       heleEta[i][j]->GetXaxis()->SetTitle("#eta");
       
 	
-      hmuEta[i][j]  = new TH1F(Form("%s_hmuEta_%s",prefix,suffixS.c_str()),Form("%s_muEta_%s",prefix,suffixS.c_str()),
+      hmuEta[i][j]  = new TH1F(Form("%s_hmuEta_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_muEta_%s",prefixS.c_str(),suffixS.c_str()),
 			       60, -3., 3.);
       hmuEta[i][j]->SetDirectory(rootdir);
       hmuEta[i][j]->GetXaxis()->SetTitle("#eta");
       
  
-      hdilMass[i][j] = new TH1F(Form("%s_hdilMass_%s",prefix,suffixS.c_str()),Form("%s_dilMass_%s",prefix,suffixS.c_str()),
+      hdilMass[i][j] = new TH1F(Form("%s_hdilMass_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_dilMass_%s",prefixS.c_str(),suffixS.c_str()),
 				300, 0., 300.);
       hdilMass[i][j]->SetDirectory(rootdir);
       hdilMass[i][j]->GetXaxis()->SetTitle("Mass_{ll} (GeV)");
       
 
-      hdilMassTightWindow[i][j] = new TH1F(Form("%s_hdilMassTightWindow_%s",prefix,suffixS.c_str()),
-					   Form("%s_dilMassTightWindow_%s",prefix,suffixS.c_str()),
+      hdilMassTightWindow[i][j] = new TH1F(Form("%s_hdilMassTightWindow_%s",prefixS.c_str(),suffixS.c_str()),
+					   Form("%s_dilMassTightWindow_%s",prefixS.c_str(),suffixS.c_str()),
 					   120, 60., 120.);
       hdilMassTightWindow[i][j]->SetDirectory(rootdir);
       hdilMassTightWindow[i][j]->GetXaxis()->SetTitle("Mass_{ll} (GeV)");
       
     
-      hdilPt[i][j] = new TH1F(Form("%s_hdilPt_%s",prefix,suffixS.c_str()),Form("%s_dilPt_%s",prefix,suffixS.c_str()),
+      hdilPt[i][j] = new TH1F(Form("%s_hdilPt_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_dilPt_%s",prefixS.c_str(),suffixS.c_str()),
 			      100, 0., 300.);
       hdilPt[i][j]->SetDirectory(rootdir);
       hdilPt[i][j]->GetXaxis()->SetTitle("Pt (GeV)");
 
       //changed binning from 2 GeV to 10 GeV
-      hmet[i][j] = new TH1F(Form("%s_hmet_%s",prefix,suffixS.c_str()),Form("%s_met_%s",prefix,suffixS.c_str()),20,0.,200.);
+      hmet[i][j] = new TH1F(Form("%s_hmet_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_met_%s",prefixS.c_str(),suffixS.c_str()),20,0.,200.);
       hmet[i][j]->SetDirectory(rootdir);
       hmet[i][j]->GetXaxis()->SetTitle("MET (GeV)");
 
-      hmetPhi[i][j] = new TH1F(Form("%s_hmetPhi_%s",prefix,suffixS.c_str()),Form("%s_metPhi_%s",prefix,suffixS.c_str()),
+      hmetPhi[i][j] = new TH1F(Form("%s_hmetPhi_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_metPhi_%s",prefixS.c_str(),suffixS.c_str()),
 			       50,-1*TMath::Pi(), TMath::Pi());
       hmetPhi[i][j]->SetDirectory(rootdir);
       hmetPhi[i][j]->GetXaxis()->SetTitle("#phi");
 
-      hmetVsDilepPt[i][j] = new TH2F(Form("%s_hmetVsDilepPt_%s",prefix,suffixS.c_str()),
-				     Form("%s_metVsDilepPt_%s",prefix,suffixS.c_str()),
+      hmetVsDilepPt[i][j] = new TH2F(Form("%s_hmetVsDilepPt_%s",prefixS.c_str(),suffixS.c_str()),
+				     Form("%s_metVsDilepPt_%s",prefixS.c_str(),suffixS.c_str()),
 				     100,0.,200.,100,0.,200.);
       hmetVsDilepPt[i][j]->SetDirectory(rootdir);
       hmetVsDilepPt[i][j]->GetXaxis()->SetTitle("Pt_{ll} (GeV)");
       hmetVsDilepPt[i][j]->GetYaxis()->SetTitle("Met (GeV)");
     
-      hmetOverPtVsDphi[i][j] = new TH2F(Form("%s_hmetOverPtVsDphi_%s",prefix,suffixS.c_str()),
-					Form("%s_metOverPtVsDphi_%s",prefix,suffixS.c_str()),
+      hmetOverPtVsDphi[i][j] = new TH2F(Form("%s_hmetOverPtVsDphi_%s",prefixS.c_str(),suffixS.c_str()),
+					Form("%s_metOverPtVsDphi_%s",prefixS.c_str(),suffixS.c_str()),
 					30,0.,3.,25,0.,TMath::Pi());
       hmetOverPtVsDphi[i][j]->SetDirectory(rootdir);
       hmetVsDilepPt[i][j]->GetXaxis()->SetTitle("#Delta#Phi");
       hmetVsDilepPt[i][j]->GetYaxis()->SetTitle("MET/Pt_{ll}");
       //pat
-      hpatmet[i][j] = new TH1F(Form("%s_hpatmet_%s",prefix,suffixS.c_str()),Form("%s_patmet_%s",prefix,suffixS.c_str()),20,0.,200.);
+      hpatmet[i][j] = new TH1F(Form("%s_hpatmet_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_patmet_%s",prefixS.c_str(),suffixS.c_str()),20,0.,200.);
       hpatmet[i][j]->SetDirectory(rootdir);
       hpatmet[i][j]->GetXaxis()->SetTitle("MET (GeV)");
 
-      hpatmetPhi[i][j] = new TH1F(Form("%s_hpatmetPhi_%s",prefix,suffixS.c_str()),Form("%s_patmetPhi_%s",prefix,suffixS.c_str()),
+      hpatmetPhi[i][j] = new TH1F(Form("%s_hpatmetPhi_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_patmetPhi_%s",prefixS.c_str(),suffixS.c_str()),
 			       50,-1*TMath::Pi(), TMath::Pi());
       hpatmetPhi[i][j]->SetDirectory(rootdir);
       hpatmetPhi[i][j]->GetXaxis()->SetTitle("#phi");
 
-      hpatmetVsDilepPt[i][j] = new TH2F(Form("%s_hpatmetVsDilepPt_%s",prefix,suffixS.c_str()),
-				     Form("%s_patmetVsDilepPt_%s",prefix,suffixS.c_str()),
+      hpatmetVsDilepPt[i][j] = new TH2F(Form("%s_hpatmetVsDilepPt_%s",prefixS.c_str(),suffixS.c_str()),
+				     Form("%s_patmetVsDilepPt_%s",prefixS.c_str(),suffixS.c_str()),
 				     100,0.,200.,100,0.,200.);
       hpatmetVsDilepPt[i][j]->SetDirectory(rootdir);
       hpatmetVsDilepPt[i][j]->GetXaxis()->SetTitle("Pt_{ll} (GeV)");
       hpatmetVsDilepPt[i][j]->GetYaxis()->SetTitle("Met (GeV)");
     
-      hpatmetOverPtVsDphi[i][j] = new TH2F(Form("%s_hpatmetOverPtVsDphi_%s",prefix,suffixS.c_str()),
-					Form("%s_patmetOverPtVsDphi_%s",prefix,suffixS.c_str()),
+      hpatmetOverPtVsDphi[i][j] = new TH2F(Form("%s_hpatmetOverPtVsDphi_%s",prefixS.c_str(),suffixS.c_str()),
+					Form("%s_patmetOverPtVsDphi_%s",prefixS.c_str(),suffixS.c_str()),
 					30,0.,3.,25,0.,TMath::Pi());
       hpatmetOverPtVsDphi[i][j]->SetDirectory(rootdir);
       hpatmetVsDilepPt[i][j]->GetXaxis()->SetTitle("#Delta#Phi");
       hpatmetVsDilepPt[i][j]->GetYaxis()->SetTitle("MET/Pt_{ll}");
     
       //tc
-      htcmet[i][j] = new TH1F(Form("%s_htcmet_%s",prefix,suffixS.c_str()),Form("%s_tcmet_%s",prefix,suffixS.c_str()),20,0.,200.);
+      htcmet[i][j] = new TH1F(Form("%s_htcmet_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_tcmet_%s",prefixS.c_str(),suffixS.c_str()),20,0.,200.);
       htcmet[i][j]->SetDirectory(rootdir);
       htcmet[i][j]->GetXaxis()->SetTitle("MET (GeV)");
 
-      htcmetPhi[i][j] = new TH1F(Form("%s_htcmetPhi_%s",prefix,suffixS.c_str()),Form("%s_tcmetPhi_%s",prefix,suffixS.c_str()),
+      htcmetPhi[i][j] = new TH1F(Form("%s_htcmetPhi_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_tcmetPhi_%s",prefixS.c_str(),suffixS.c_str()),
 			       50,-1*TMath::Pi(), TMath::Pi());
       htcmetPhi[i][j]->SetDirectory(rootdir);
       htcmetPhi[i][j]->GetXaxis()->SetTitle("#phi");
 
-      htcmetVsDilepPt[i][j] = new TH2F(Form("%s_htcmetVsDilepPt_%s",prefix,suffixS.c_str()),
-				     Form("%s_tcmetVsDilepPt_%s",prefix,suffixS.c_str()),
+      htcmetVsDilepPt[i][j] = new TH2F(Form("%s_htcmetVsDilepPt_%s",prefixS.c_str(),suffixS.c_str()),
+				     Form("%s_tcmetVsDilepPt_%s",prefixS.c_str(),suffixS.c_str()),
 				     100,0.,200.,100,0.,200.);
       htcmetVsDilepPt[i][j]->SetDirectory(rootdir);
       htcmetVsDilepPt[i][j]->GetXaxis()->SetTitle("Pt_{ll} (GeV)");
       htcmetVsDilepPt[i][j]->GetYaxis()->SetTitle("Met (GeV)");
     
-      htcmetOverPtVsDphi[i][j] = new TH2F(Form("%s_htcmetOverPtVsDphi_%s",prefix,suffixS.c_str()),
-					Form("%s_tcmetOverPtVsDphi_%s",prefix,suffixS.c_str()),
+      htcmetOverPtVsDphi[i][j] = new TH2F(Form("%s_htcmetOverPtVsDphi_%s",prefixS.c_str(),suffixS.c_str()),
+					Form("%s_tcmetOverPtVsDphi_%s",prefixS.c_str(),suffixS.c_str()),
 					30,0.,3.,25,0.,TMath::Pi());
       htcmetOverPtVsDphi[i][j]->SetDirectory(rootdir);
       htcmetVsDilepPt[i][j]->GetXaxis()->SetTitle("#Delta#Phi");
@@ -1186,120 +1408,120 @@ void ttDilCounts_looper::bookHistos(char *prefix) {
     
     
 
-      hdphillvsmll[i][j] = new TH2F(Form("%s_dphillvsmll_%s",prefix,suffixS.c_str()),
-				    Form("%s_dphillvsmll_%s",prefix,suffixS.c_str()),
+      hdphillvsmll[i][j] = new TH2F(Form("%s_dphillvsmll_%s",prefixS.c_str(),suffixS.c_str()),
+				    Form("%s_dphillvsmll_%s",prefixS.c_str(),suffixS.c_str()),
 				    100,10.,210.,50,0., TMath::Pi());
       hdphillvsmll[i][j]->SetDirectory(rootdir);
       hdphillvsmll[i][j]->GetXaxis()->SetTitle("Mass_{ll} (GeV)");
       hdphillvsmll[i][j]->GetYaxis()->SetTitle("#delta#phi_{ll}");
 
-      hptJet1[i][j] = new TH1F(Form("%s_hptJet1_%s",prefix,suffixS.c_str()),Form("%s_ptJet1_%s",prefix,suffixS.c_str()),
+      hptJet1[i][j] = new TH1F(Form("%s_hptJet1_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_ptJet1_%s",prefixS.c_str(),suffixS.c_str()),
 			       100, 0., 300.);
       hptJet1[i][j]->SetDirectory(rootdir);
       hptJet1[i][j]->GetXaxis()->SetTitle("Pt (GeV)");
 
-      hptJet2[i][j] = new TH1F(Form("%s_hptJet2_%s",prefix,suffixS.c_str()),Form("%s_ptJet2_%s",prefix,suffixS.c_str()),
+      hptJet2[i][j] = new TH1F(Form("%s_hptJet2_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_ptJet2_%s",prefixS.c_str(),suffixS.c_str()),
 			       100, 0., 300.);
       hptJet2[i][j]->SetDirectory(rootdir);
       hptJet2[i][j]->GetXaxis()->SetTitle("Pt (GeV)");
   
-      hptJet3[i][j] = new TH1F(Form("%s_hptJet3_%s",prefix,suffixS.c_str()),Form("%s_ptJet3_%s",prefix,suffixS.c_str()),
+      hptJet3[i][j] = new TH1F(Form("%s_hptJet3_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_ptJet3_%s",prefixS.c_str(),suffixS.c_str()),
 			       100, 0., 300.);
       hptJet3[i][j]->SetDirectory(rootdir);
       hptJet3[i][j]->GetXaxis()->SetTitle("Pt (GeV)");
     
-      hptJet4[i][j] = new TH1F(Form("%s_hptJet4_%s",prefix,suffixS.c_str()),Form("%s_ptJet4_%s",prefix,suffixS.c_str()),
+      hptJet4[i][j] = new TH1F(Form("%s_hptJet4_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_ptJet4_%s",prefixS.c_str(),suffixS.c_str()),
 			       100, 0., 300.);
       hptJet4[i][j]->SetDirectory(rootdir);
       hptJet4[i][j]->GetXaxis()->SetTitle("Pt (GeV)");
     
-      hetaJet1[i][j] = new TH1F(Form("%s_hetaJet1_%s",prefix,suffixS.c_str()),Form("%s_etaJet1_%s",prefix,suffixS.c_str()),
+      hetaJet1[i][j] = new TH1F(Form("%s_hetaJet1_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_etaJet1_%s",prefixS.c_str(),suffixS.c_str()),
 				50, -4., 4.);
       hetaJet1[i][j]->SetDirectory(rootdir);
       hetaJet1[i][j]->GetXaxis()->SetTitle("#eta");
 
-      hetaJet2[i][j] = new TH1F(Form("%s_hetaJet2_%s",prefix,suffixS.c_str()),Form("%s_etaJet2_%s",prefix,suffixS.c_str()),
+      hetaJet2[i][j] = new TH1F(Form("%s_hetaJet2_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_etaJet2_%s",prefixS.c_str(),suffixS.c_str()),
 				50, -4., 4.);
       hetaJet2[i][j]->SetDirectory(rootdir);
       hetaJet2[i][j]->GetXaxis()->SetTitle("#eta");
  
-      hetaJet3[i][j] = new TH1F(Form("%s_hetaJet3_%s",prefix,suffixS.c_str()),Form("%s_etaJet3_%s",prefix,suffixS.c_str()),
+      hetaJet3[i][j] = new TH1F(Form("%s_hetaJet3_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_etaJet3_%s",prefixS.c_str(),suffixS.c_str()),
 				50, -4., 4.);
       hetaJet3[i][j]->SetDirectory(rootdir);
       hetaJet3[i][j]->GetXaxis()->SetTitle("#eta");
     
-      hetaJet4[i][j] = new TH1F(Form("%s_hetaJet4_%s",prefix,suffixS.c_str()),Form("%s_etaJet4_%s",prefix,suffixS.c_str()),
+      hetaJet4[i][j] = new TH1F(Form("%s_hetaJet4_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_etaJet4_%s",prefixS.c_str(),suffixS.c_str()),
 				50, -4., 4.);
       hetaJet4[i][j]->SetDirectory(rootdir);
       hetaJet4[i][j]->GetXaxis()->SetTitle("#eta");
     
-      hSumJSpt[i][j] = new TH1F(Form("%s_hSumJSpt_%s",prefix,suffixS.c_str()),Form("%s_hSumJSpt_%s",prefix,suffixS.c_str()), 
+      hSumJSpt[i][j] = new TH1F(Form("%s_hSumJSpt_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_hSumJSpt_%s",prefixS.c_str(),suffixS.c_str()), 
                                 100, 0, 500.);
       hSumJSpt[i][j]->SetDirectory(rootdir); 
       hSumJSpt[i][j]->GetXaxis()->SetTitle("#Sigma p_{T}^{jets}");
 
-      hSumJSMTpt[i][j] = new TH1F(Form("%s_hSumJSMTpt_%s",prefix,suffixS.c_str()),Form("%s_hSumJSMTpt_%s",prefix,suffixS.c_str()), 
+      hSumJSMTpt[i][j] = new TH1F(Form("%s_hSumJSMTpt_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_hSumJSMTpt_%s",prefixS.c_str(),suffixS.c_str()), 
                                 100, 0, 500.);
       hSumJSMTpt[i][j]->SetDirectory(rootdir); 
       hSumJSMTpt[i][j]->GetXaxis()->SetTitle("#Sigma p_{T}^{jets,MET}");
 
-      hSumJStcMTpt[i][j] = new TH1F(Form("%s_hSumJStcMTpt_%s",prefix,suffixS.c_str()),Form("%s_hSumJStcMTpt_%s",prefix,suffixS.c_str()), 
+      hSumJStcMTpt[i][j] = new TH1F(Form("%s_hSumJStcMTpt_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_hSumJStcMTpt_%s",prefixS.c_str(),suffixS.c_str()), 
                                 100, 0, 500.);
       hSumJStcMTpt[i][j]->SetDirectory(rootdir); 
       hSumJStcMTpt[i][j]->GetXaxis()->SetTitle("#Sigma p_{T}^{jets,MET}");
 
-      hvecSumJSpt[i][j] = new TH1F(Form("%s_hvecSumJSpt_%s",prefix,suffixS.c_str()),Form("%s_hvecSumJSpt_%s",prefix,suffixS.c_str()), 
+      hvecSumJSpt[i][j] = new TH1F(Form("%s_hvecSumJSpt_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_hvecSumJSpt_%s",prefixS.c_str(),suffixS.c_str()), 
                                 100, 0, 500.);
       hvecSumJSpt[i][j]->SetDirectory(rootdir); 
       hvecSumJSpt[i][j]->GetXaxis()->SetTitle("vector #Sigma p_{T}^{jets}");
 
-      hvecSumJSmLLpt[i][j] = new TH1F(Form("%s_hvecSumJSmLLpt_%s",prefix,suffixS.c_str()),Form("%s_hvecSumJSmLLpt_%s",prefix,suffixS.c_str()), 
+      hvecSumJSmLLpt[i][j] = new TH1F(Form("%s_hvecSumJSmLLpt_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_hvecSumJSmLLpt_%s",prefixS.c_str(),suffixS.c_str()), 
                                 100, -250, 250.);
       hvecSumJSmLLpt[i][j]->SetDirectory(rootdir); 
       hvecSumJSmLLpt[i][j]->GetXaxis()->SetTitle("vector #Sigma p_{T}^{jets}-p_{T}^{ll}");
 
-      hvecSumJSmLLptVspatmet[i][j] = new TH2F(Form("%s_hvecSumJSmLLptVspatmet_%s",prefix,suffixS.c_str()),Form("%s_hvecSumJSmLLptVspatmet_%s",prefix,suffixS.c_str()), 
+      hvecSumJSmLLptVspatmet[i][j] = new TH2F(Form("%s_hvecSumJSmLLptVspatmet_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_hvecSumJSmLLptVspatmet_%s",prefixS.c_str(),suffixS.c_str()), 
 					      50, -250, 250., 50, 0, 150);
       hvecSumJSmLLptVspatmet[i][j]->SetDirectory(rootdir); 
       hvecSumJSmLLptVspatmet[i][j]->GetXaxis()->SetTitle("vector #Sigma p_{T}^{jets}-p_{T}^{ll}");
       hvecSumJSmLLptVspatmet[i][j]->GetYaxis()->SetTitle("pat MET");
 
-      hvecSumJSmLLptVstcmet[i][j] = new TH2F(Form("%s_hvecSumJSmLLptVstcmet_%s",prefix,suffixS.c_str()),Form("%s_hvecSumJSmLLptVstcmet_%s",prefix,suffixS.c_str()), 
+      hvecSumJSmLLptVstcmet[i][j] = new TH2F(Form("%s_hvecSumJSmLLptVstcmet_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_hvecSumJSmLLptVstcmet_%s",prefixS.c_str(),suffixS.c_str()), 
 					      50, -250, 250., 50, 0, 150);
       hvecSumJSmLLptVstcmet[i][j]->SetDirectory(rootdir); 
       hvecSumJSmLLptVstcmet[i][j]->GetXaxis()->SetTitle("vector #Sigma p_{T}^{jets}-p_{T}^{ll}");
       hvecSumJSmLLptVstcmet[i][j]->GetYaxis()->SetTitle("pat MET");
 
 
-      hmuSumIso[i][j] = new TH1F(Form("%s_hmuSumIso_%s",prefix,suffixS.c_str()),Form("%s_hmuSumIso_%s",prefix,suffixS.c_str()),
+      hmuSumIso[i][j] = new TH1F(Form("%s_hmuSumIso_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_hmuSumIso_%s",prefixS.c_str(),suffixS.c_str()),
 				 100, 0., 25.);
       hmuSumIso[i][j]->SetDirectory(rootdir);
       hmuSumIso[i][j]->GetXaxis()->SetTitle("#SigmaPt");
-      helSumIso[i][j] = new TH1F(Form("%s_helSumIso_%s",prefix,suffixS.c_str()),Form("%s_helSumIso_%s",prefix,suffixS.c_str()),
+      helSumIso[i][j] = new TH1F(Form("%s_helSumIso_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_helSumIso_%s",prefixS.c_str(),suffixS.c_str()),
 				 100, 0., 25.);
       helSumIso[i][j]->SetDirectory(rootdir);
       helSumIso[i][j]->GetXaxis()->SetTitle("#SigmaPt");
 
-      hmuRelIso[i][j] = new TH1F(Form("%s_hmuRelIso_%s",prefix,suffixS.c_str()),Form("%s_hmuRelIso_%s",prefix,suffixS.c_str()),
+      hmuRelIso[i][j] = new TH1F(Form("%s_hmuRelIso_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_hmuRelIso_%s",prefixS.c_str(),suffixS.c_str()),
 				  100, 0., 1.0001);
       hmuRelIso[i][j]->SetDirectory(rootdir);
-      helRelIso[i][j] = new TH1F(Form("%s_helRelIso_%s",prefix,suffixS.c_str()),Form("%s_helRelIso_%s",prefix,suffixS.c_str()),
+      helRelIso[i][j] = new TH1F(Form("%s_helRelIso_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_helRelIso_%s",prefixS.c_str(),suffixS.c_str()),
 				  100, 0., 1.0001);
       helRelIso[i][j]->SetDirectory(rootdir);
 
       // tracker
-      hmuRelIsoTrack[i][j] = new TH1F(Form("%s_hmuRelIsoTrack_%s",prefix,suffixS.c_str()),Form("%s_hmuRelIsoTrack_%s",prefix,suffixS.c_str()),
+      hmuRelIsoTrack[i][j] = new TH1F(Form("%s_hmuRelIsoTrack_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_hmuRelIsoTrack_%s",prefixS.c_str(),suffixS.c_str()),
 				  100, 0., 1.0001);
       hmuRelIsoTrack[i][j]->SetDirectory(rootdir);
-      helRelIsoTrack[i][j] = new TH1F(Form("%s_helRelIsoTrack_%s",prefix,suffixS.c_str()),Form("%s_helRelIsoTrack_%s",prefix,suffixS.c_str()),
+      helRelIsoTrack[i][j] = new TH1F(Form("%s_helRelIsoTrack_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_helRelIsoTrack_%s",prefixS.c_str(),suffixS.c_str()),
 				  100, 0., 1.0001);
       helRelIsoTrack[i][j]->SetDirectory(rootdir);
 
       // calorimeter
-      hmuRelIsoCalo[i][j] = new TH1F(Form("%s_hmuRelIsoCalo_%s",prefix,suffixS.c_str()),Form("%s_hmuRelIsoCalo_%s",prefix,suffixS.c_str()),
+      hmuRelIsoCalo[i][j] = new TH1F(Form("%s_hmuRelIsoCalo_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_hmuRelIsoCalo_%s",prefixS.c_str(),suffixS.c_str()),
 				  100, 0., 1.0001);
       hmuRelIsoCalo[i][j]->SetDirectory(rootdir);
-      helRelIsoCalo[i][j] = new TH1F(Form("%s_helRelIsoCalo_%s",prefix,suffixS.c_str()),Form("%s_helRelIsoCalo_%s",prefix,suffixS.c_str()),
+      helRelIsoCalo[i][j] = new TH1F(Form("%s_helRelIsoCalo_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_helRelIsoCalo_%s",prefixS.c_str(),suffixS.c_str()),
 				  100, 0., 1.0001);
       helRelIsoCalo[i][j]->SetDirectory(rootdir);
 
@@ -1356,4 +1578,7 @@ void ttDilCounts_looper::bookHistos(char *prefix) {
 
     }
   }//channel loop
+  //  gDirectory->ls();
+  //  tmpFile_->ls();
+  //  tmpFile_->Print();
 }//CMS2::bookHistos()
