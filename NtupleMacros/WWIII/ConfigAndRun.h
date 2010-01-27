@@ -260,7 +260,9 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
      L looper_wz		(fWZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WZ    )) looper_wz          .Loop();
 //      L looper_wz_incl		(fWZ_incl()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WZ    )) looper_wz_incl     .Loop();
      L looper_zz		(fZZ()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_ZZ    )) looper_zz          .Loop();
-     L looper_wjets		(fWjets()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS )) looper_wjets       .Loop();
+     L looper_we		(fWe()				, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS_AND_FRIENDS     	)) looper_we    	.Loop();
+     L looper_wm		(fWm()				, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS_AND_FRIENDS     	)) looper_wm    	.Loop();
+     L looper_wt		(fWt()				, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS_AND_FRIENDS     	)) looper_wt    	.Loop();
      L looper_wc		(fWc()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS_AND_FRIENDS )) looper_wc       .Loop();
      L looper_vlqq		(fVlqq()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS_AND_FRIENDS )) looper_vlqq       .Loop();
      L looper_dyee		(fDY20ee()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DYEE  )) looper_dyee        .Loop();
@@ -285,7 +287,9 @@ template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones =
 	  &looper_wz          ,
 // 	  &looper_wz_incl     ,
 	  &looper_zz          ,
- 	  &looper_wjets       ,
+	  &looper_we           ,
+	  &looper_wm           ,
+	  &looper_wt           ,
  	  &looper_wc       ,
  	  &looper_vlqq       ,
 	  &looper_dyee        ,

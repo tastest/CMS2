@@ -92,8 +92,7 @@ bool Looper::FilterEvent()
      //
      if (cms2.trks_d0().size() == 0)
 	  return true;
-     DorkyEventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.trks_d0()[0], 
-				 cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
+     DorkyEventIdentifier id = cms2;
      return is_duplicate(id); 
 }
 
@@ -262,9 +261,11 @@ cuts_t Looper::DilepSelect (int i_hyp)
 	  ret |= (CUT_BIT(CUT_PASS_MUON_B_VETO_WITHOUT_PTCUT));
      else ret |= (CUT_BIT(CUT_MUON_TAGGED_WITHOUT_PTCUT));
      // Z veto
+     const double hyp_mass_2 = cms2.hyp_p4()[i_hyp].M2();
+     const double hyp_mass = hyp_mass_2 > 0 ? sqrt(hyp_mass_2) : -sqrt(-hyp_mass_2);
      if (cms2.hyp_type()[i_hyp] == 1 || cms2.hyp_type()[i_hyp] == 2)
 	  ret |= (CUT_BIT(CUT_PASS_ZVETO));
-     else if (not inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))
+     else if (not inZmassWindow(hyp_mass))
 	  ret |= (CUT_BIT(CUT_PASS_ZVETO));
      else ret |= (CUT_BIT(CUT_IN_Z_WINDOW));
      // Z veto using additional leptons in the event
@@ -449,7 +450,9 @@ void Looper::FillDilepHistos (int i_hyp)
      }
     
      // dilepton mass
-     hdilMass->Fill(cuts_passed, myType, cms2.hyp_p4()[i_hyp].mass(), weight);
+     const double hyp_mass_2 = cms2.hyp_p4()[i_hyp].M2();
+     const double hyp_mass = hyp_mass_2 > 0 ? sqrt(hyp_mass_2) : -sqrt(-hyp_mass_2);
+     hdilMass->Fill(cuts_passed, myType, hyp_mass, weight);
     
      // delta phi btw leptons
      double dphi = fabs(cms2.hyp_lt_p4()[i_hyp].phi() - cms2.hyp_ll_p4()[i_hyp].phi());
@@ -522,7 +525,7 @@ void Looper::FillDilepHistos (int i_hyp)
 		    heldphiinvsRelIsoMCgamma->Fill(cms2.els_charge	()[el_idx] * cms2.els_dPhiIn	()[el_idx], el_rel_iso(el_idx, true), weight);
 	       }
 	  }
-	  helfbrem    ->Fill(cuts_passed, myType, cms2.els_fBrem		()[el_idx], weight);
+	  helfbrem    ->Fill(cuts_passed, myType, cms2.els_fbrem		()[el_idx], weight);
 	  helHE       ->Fill(cuts_passed, myType, cms2.els_hOverE	()[el_idx], weight);
 	  helsee      ->Fill(cuts_passed, myType, cms2.els_sigmaEtaEta	()[el_idx], weight);
 	  if (cuts_passed & CUT_BIT(CUT_EL_BARREL))
