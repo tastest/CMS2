@@ -175,8 +175,8 @@ bool isFromConversionHitPattern(const unsigned int index)
 
 bool isFromConversionPartnerTrack(const unsigned int index) {
 
-  if(fabs(cms2.els_dist().at(index)) < 0.02 &&
-     fabs(cms2.els_dcot().at(index)) < 0.02)
+  if(fabs(cms2.els_conv_dist().at(index)) < 0.02 &&
+     fabs(cms2.els_conv_dcot().at(index)) < 0.02)
     return true;
 
   return false;
