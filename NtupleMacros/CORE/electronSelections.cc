@@ -79,11 +79,11 @@ bool electronImpact_cand01(const unsigned int index)
         // apply cut
         //
         if (cms2.els_fiduciality()[index] & (1<<ISEB)) {
-		if (cms2.cms2.els_d0corr()[index] > d0Thresholds[0]) return false;
+		if (cms2.els_d0corr()[index] > d0Thresholds[0]) return false;
                 return true;
         }
         if (cms2.els_fiduciality()[index] & (1<<ISEE)) {
-                if (cms2.cms2.els_d0corr()[index] > d0Thresholds[1]) return false;
+                if (cms2.els_d0corr()[index] > d0Thresholds[1]) return false;
                 return true;
         }
 
