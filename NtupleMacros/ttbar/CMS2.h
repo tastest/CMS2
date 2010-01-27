@@ -2658,7 +2658,7 @@ protected:
 	TBranch *evt_filt_eff_branch;
 	bool evt_filt_eff_isLoaded;
 public: 
-int ScanChain(class TChain* chain, int nEvents=-1, std::string skimFilePrefix="");
+//int ScanChain(class TChain* chain, int nEvents=-1, std::string skimFilePrefix="");
 void Init(TTree *tree) {
 	evt_bsp4_branch = 0;
 	if (tree->GetAlias("evt_bsp4") != 0) {
