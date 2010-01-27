@@ -52,15 +52,15 @@ void TestPrediction() {
     WJets_predictednJets[i] = (TH1F*)gDirectory->Get(Form("WJets_predictednJets_%s", flavor[i]));
   }      
   
+  Float_t pt[4] = {10,20,60,150};
+  Float_t eta[3] = {0, 1.479, 2.4};
   WJets_predictedpt[0] = new TH1F(Form("WJets_predictedpt_%s", flavor[0]), 
-				  "Predicted Pt Distribution in WJets", 5,10,110);
+				  "Predicted Pt Distribution in WJets", 3, pt);
   WJets_predictedeta[0] = new TH1F(Form("WJets_predictedeta_%s", flavor[0]), 
-				   "Predicted Eta Distribution in WJets", 4, 0, 2.4);
+				   "Predicted Eta Distribution in WJets", 2, eta);
   
-  Float_t pt[3] = [3] = {0,60,110};
-  Float_t eta[3] = {0, 1.5, 2.4};
   WJets_predictedpt[1] = new TH1F(Form("WJets_predictedpt_%s", flavor[1]), 
-				  "Predicted Pt Distribution in WJets", 2, pt);
+				  "Predicted Pt Distribution in WJets", 3, pt);
   WJets_predictedeta[1] = new TH1F(Form("WJets_predictedeta_%s", flavor[1]), 
 				   "Predicted Eta Distribution in WJets", 2, eta);
   

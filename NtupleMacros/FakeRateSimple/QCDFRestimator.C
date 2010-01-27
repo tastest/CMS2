@@ -98,44 +98,46 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix,
 
   using namespace std;
   
+  // bins
+  Float_t nbins[6] = {0,1,2,3,4,5};
+  Float_t pt[4] = {10,20,60,150};
+  Float_t eta[3] = {0, 1.479, 2.4};
+
   //book Histograms
   bookHistos(prefix.Data());
   //also book the nJet histo
   char *suffix[2] =  {"el", "mu"};
 
   h_predictednJets[0]  = new TH1F(Form("WJets_predictednJets_%s", suffix[0]),
-				  "predicted NJet distribution, FO object", 5, 0, 5);
+				  "predicted NJet distribution, FO object", 5, nbins);
   h_actualnJets[0]     = new TH1F(Form("WJets_actualnJets_%s", suffix[0]), 
-				  "actual NJet distribution", 5, 0, 5);
+				  "actual NJet distribution", 5, nbins);
   h_nJets3D[0]          = new TH3F(Form("WJets_nJets3D_%s", suffix[0]),
 				   "3D histo to store error info", 
-				   5, 0, 5, 
-				   4, 0, 2.4,
-				   5, 10, 110);
+				   5, nbins, 
+				   2, eta,
+				   3, pt);
 
   h_FOnJets[0] = new TH1F(Form("WJets_FOnJets_%s", suffix[0]),
 			  Form("NJet distribution, FO. %s", suffix[0]),
-			  5, 0, 5);
+			  5, nbins);
 
   
   
-  Float_t nbins[6] = {0,1,2,3,4,5};
-  Float_t pt[3] = {0, 60,110};
-  Float_t eta[3] = {0, 1.5, 2.4};
   h_predictednJets[1]  = new TH1F(Form("WJets_predictednJets_%s", suffix[1]),
-				  "predicted NJet distribution, FO object", 5, 0, 5);
+				  "predicted NJet distribution, FO object", 5, nbins);
   h_actualnJets[1]     = new TH1F(Form("WJets_actualnJets_%s", suffix[1]), 
-				  "actual NJet distribution", 5, 0, 5);
+				  "actual NJet distribution", 5, nbins);
   h_nJets3D[1]          = new TH3F(Form("WJets_nJets3D_%s", suffix[1]),
 				   "3D histo to store error info", 
 				   5, nbins, 
 				   2, eta,
-				   2, pt);
+				   3, pt);
 
 
   h_FOnJets[1] = new TH1F(Form("WJets_FOnJets_%s", suffix[1]),
 			  Form("NJet distribution, FO. %s",suffix[1]),
-			  5, 0, 5);
+			  5, nbins);
 			  
   //DR plot btw el and mu
   TH1F *h_dRelmu = new TH1F("h_dRelmu", "DR, el mu", 20, 0, 2.0);
