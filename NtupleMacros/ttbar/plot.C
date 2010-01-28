@@ -1,7 +1,8 @@
 
+void plot(TString fileName)
 {
 
-	TFile f("histos_mc_2x.root", "READ");
+	TFile f(fileName, "READ");
 	TH1F *h1_numerator = (TH1F*)f.Get("ttbar_hyp_lt_pt_ee");
 	TH1F *h1_denom_old = (TH1F*)f.Get("ttbar_hyp_lt_pt_idold_ee");
 
