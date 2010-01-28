@@ -2,6 +2,9 @@
 void plot(TString fileName)
 {
 
+	gROOT->ProcessLine(".L tdrStyle.C");
+	gROOT->ProcessLine("setTDRStyle()");
+
 	TFile f(fileName, "READ");
 	TH1F *h1_numerator = (TH1F*)f.Get("ttbar_hyp_lt_pt_ee");
 	TH1F *h1_denom_old = (TH1F*)f.Get("ttbar_hyp_lt_pt_idold_ee");
@@ -23,10 +26,19 @@ void plot(TString fileName)
 	gr_eff_new->SetMarkerColor(kBlue);
 	gr_eff_new->SetLineColor(kBlue);
 
+	TLegend *lg = new TLegend(0.5, 0.2, 0.9, 0.4);
+	lg->SetFillColor(kWhite);
+	lg->SetLineColor(kWhite);
+	lg->SetShadowColor(kWhite);
+	lg->AddEntry(gr_eff_old, "egamma_looseId", "lp");
+	lg->AddEntry(gr_eff_new, "cand01", "lp");
+
 	TCanvas *c1 = new TCanvas();
 	c1->cd();
 	gr_eff_old->Draw("AP");
 	gr_eff_new->Draw("P");
+	lg->Draw();
+	c1->SaveAs("eff_mc.png");
 
 }
 
