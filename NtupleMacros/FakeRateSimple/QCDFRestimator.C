@@ -108,6 +108,7 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix,
   for ( unsigned int suf = 0; suf < 2; ++suf ) {
     h_predictednJets[suf]  = new TH1F(Form("WJets_predictednJets_%s", suffix[suf]),
 				    "predicted NJet distribution, FO object", 6, nbins);
+    h_predictednJets[suf]->Sumw2();
     h_actualnJets[suf]     = new TH1F(Form("WJets_actualnJets_%s", suffix[suf]), 
 				    "actual NJet distribution", 6, nbins);
     h_actualnJets[suf]->Sumw2();
@@ -116,6 +117,7 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix,
 				     6, nbins, 
 				     12, eta,
 				     16, pt);
+    h_nJets3D[suf]->Sumw2();
   }
   
   
@@ -162,13 +164,13 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix,
       ++nEventsTotal;
 
       float weight = kFactor*cms2.evt_scale1fb();
-      // weight = 1.0;
+      weight = 1.0;
       
      
       for(unsigned int iHyp = 0; iHyp < cms2.hyp_p4().size(); iHyp++) {
 	
 	//opposite sign - Oli + Ingo
-	if( cms2.hyp_lt_id()[iHyp]*cms2.hyp_ll_id()[iHyp] > 0)
+	if( cms2.hyp_lt_id()[iHyp]*cms2.hyp_ll_id()[iHyp] < 0)
 	  continue;
         
 	int nJets = cms2.hyp_jets_p4()[iHyp].size();
@@ -229,15 +231,17 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix,
 	}//is muon from W?
       
       
-	if(trueElectronFromW_WJets(iEl) && cms2.els_p4()[iEl].Pt() > 10.) {
-	  
+	if(trueElectronFromW(iEl) && cms2.els_p4()[iEl].Pt() > 10.) {
+
+	  if(!isNumElSUSY09(iEl))  continue; // Require the electron to be isolated and good
+
 	  Double_t pt = cms2.mus_p4()[iMu].Pt();
 	  Double_t eta = cms2.mus_p4()[iMu].Eta();
 	  
 	  if(!isFakeableMuSUSY09(iMu))
 	    continue;
 	    
-	  if(trueMuonFromW_WJets(iMu) )
+	  if(trueMuonFromW(iMu) )
 	    cout << "SHOULD NEVER GET HERE!!!!!!" << endl;
 
 	  Float_t FR    = GetValueTH2F(fabs(eta), pt, h_FR[1]);
