@@ -123,9 +123,9 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 	// define histograms
 	//
 
-//	TH1F *h1_hyp_lt_pt[4];
+	TH1F *h1_hyp_lt_pt[4];
 //	TH1F *h1_hyp_ll_pt[4];
-//        FormatHist(h1_hyp_lt_pt, sampleName, "hyp_lt_pt", 20, 0.0, 100.0);
+        FormatHist(h1_hyp_lt_pt, sampleName, "hyp_lt_pt", 20, 0.0, 100.0);
 //        FormatHist(h1_hyp_ll_pt, sampleName, "hyp_ll_pt", 20, 0.0, 100.0);
 
 //        TH1F *h1_hyp_lt_pt_idnew[4];
@@ -165,13 +165,34 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 			std::vector<unsigned int> hyp_index_selected;
 			for (size_t h = 0; h < cms2.hyp_type().size(); ++h) {
 
+                                DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[h]);
+
+                                // apply isolation
+                                if (!passLeptonIsolationTTDil08(cms2.hyp_lt_id()[h], cms2.hyp_lt_index()[h])) continue;
+                                if (!passLeptonIsolationTTDil08(cms2.hyp_ll_id()[h], cms2.hyp_ll_index()[h])) continue;
+
+				// apply truth match
+				if (abs(cms2.hyp_lt_id()[h]) == 11 && !(abs(cms2.hyp_lt_mc_id()[h]) == 11));
+
+				//
+				// fill numerator histograms
+				//
+                                Fill(h1_hyp_lt_pt, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+				//
+				//
+				//
+
 				// apply lepton id
 				if (!looseLeptonSelectionNoIsoTTDil08(cms2.hyp_lt_id()[h], cms2.hyp_lt_index()[h])) continue;
                                 if (!looseLeptonSelectionNoIsoTTDil08(cms2.hyp_ll_id()[h], cms2.hyp_ll_index()[h])) continue;
 
-				// apply isolation
-				if (!passLeptonIsolationTTDil08(cms2.hyp_lt_id()[h], cms2.hyp_lt_index()[h])) continue;
-                                if (!passLeptonIsolationTTDil08(cms2.hyp_ll_id()[h], cms2.hyp_ll_index()[h])) continue;
+                                //
+                                // fill denominator histograms
+                                //
+                                Fill(h1_hyp_lt_pt_idold, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+				//
+				//
+				//
 
 				// opposite charge
 				if (cms2.hyp_lt_charge()[h] * cms2.hyp_ll_charge()[h] > 0) continue;
@@ -220,9 +241,6 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
                                 cands_passing[DILEPTON_ALL] += weight;
                                 cands_passing_w2[DILEPTON_ALL] += weight * weight;
                                 cands_count[DILEPTON_ALL] ++;
-
-				Fill(h1_hyp_lt_pt_idold, hypType, cms2.hyp_lt_p4()[hyp].Pt(), weight);
-
 
 			}
 
