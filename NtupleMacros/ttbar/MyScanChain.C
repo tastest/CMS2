@@ -128,11 +128,11 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
         FormatHist(h1_hyp_lt_pt, sampleName, "hyp_lt_pt", 20, 0.0, 100.0);
 //        FormatHist(h1_hyp_ll_pt, sampleName, "hyp_ll_pt", 20, 0.0, 100.0);
 
-//        TH1F *h1_hyp_lt_pt_idnew[4];
+        TH1F *h1_hyp_lt_pt_idnew[4];
 //        TH1F *h1_hyp_ll_pt_idnew[4];
         TH1F *h1_hyp_lt_pt_idold[4];
 //        TH1F *h1_hyp_ll_pt_idold[4];
-//        FormatHist(h1_hyp_lt_pt_idnew, sampleName, "hyp_lt_pt_idnew", 20, 0.0, 100.0);
+        FormatHist(h1_hyp_lt_pt_idnew, sampleName, "hyp_lt_pt_idnew", 20, 0.0, 100.0);
 //        FormatHist(h1_hyp_ll_pt_idnew, sampleName, "hyp_ll_pt_idnew", 20, 0.0, 100.0);
         FormatHist(h1_hyp_lt_pt_idold, sampleName, "hyp_lt_pt_idold", 20, 0.0, 100.0);
 //        FormatHist(h1_hyp_ll_pt_idold, sampleName, "hyp_ll_pt_idold", 20, 0.0, 100.0);
@@ -182,17 +182,28 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 				//
 				//
 
-				// apply lepton id
-				if (!looseLeptonSelectionNoIsoTTDil08(cms2.hyp_lt_id()[h], cms2.hyp_lt_index()[h])) continue;
-                                if (!looseLeptonSelectionNoIsoTTDil08(cms2.hyp_ll_id()[h], cms2.hyp_ll_index()[h])) continue;
+				// apply lepton id to lt
+				bool ltPassOld = false;
+				bool ltPassNew = false;
+				if (looseLeptonSelectionNoIsoTTDil08(cms2.hyp_lt_id()[h], cms2.hyp_lt_index()[h])) ltPassOld = true;
+
+				if (abs(cms2.hyp_lt_id()[h]) == 11)
+					if (electronId_cand01(cms2.hyp_lt_index()[h])) ltPassNew = true;
 
                                 //
                                 // fill denominator histograms
                                 //
-                                Fill(h1_hyp_lt_pt_idold, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+                                if (ltPassOld) Fill(h1_hyp_lt_pt_idold, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+                                if (ltPassNew) Fill(h1_hyp_lt_pt_idnew, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+
 				//
 				//
 				//
+
+
+				if (!ltPassOld) continue;
+				// apply lepton id to ll
+                                if (!looseLeptonSelectionNoIsoTTDil08(cms2.hyp_ll_id()[h], cms2.hyp_ll_index()[h])) continue;
 
 				// opposite charge
 				if (cms2.hyp_lt_charge()[h] * cms2.hyp_ll_charge()[h] > 0) continue;
