@@ -211,7 +211,19 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 			//	
 
 			std::vector<LorentzVector> corCaloJets = getCorCaloJets(hyp);
-			std::cout << corCaloJets.size() << std::endl;
+
+			if (corCaloJets.size() >= 2) {
+
+				DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[hyp]);
+
+				cands_passing[hypType] += weight;
+				cands_passing_w2[hypType] += weight * weight;
+				cands_count[hypType] ++;
+                                cands_passing[DILEPTON_ALL] += weight;
+                                cands_passing_w2[DILEPTON_ALL] += weight * weight;
+                                cands_count[DILEPTON_ALL] ++;
+
+			}
 
 
 		} // end loop on files
@@ -221,6 +233,18 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 	if ( nEventsChain != nEventsTotal ) {
 		std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
 	}
+
+	std::cout << "sampleName \t";
+        for (unsigned int i = 0; i < 4; ++i) {
+                std::string str = dilepton_hypo_names[i];
+		std::cout << dilepton_hypo_names[i] << "\t";
+	}
+	std::cout << std::endl;
+        std::cout << sampleName << "\t";
+	for (unsigned int i = 0; i < 4; ++i) {
+		std::cout << cands_passing[i] << " $\pm$ " << sqrt(cands_passing_w2[i]) << "\t";
+	}
+	std::cout << std::endl;
 
 	return 0;
 }
