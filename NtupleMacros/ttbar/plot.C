@@ -1,14 +1,14 @@
 
-void plot(TString fileName)
+void plot(TString fileName, TString det)
 {
 
 	gROOT->ProcessLine(".L tdrStyle.C");
 	gROOT->ProcessLine("setTDRStyle()");
 
 	TFile f(fileName, "READ");
-	TH1F *h1_numerator = (TH1F*)f.Get("ttbar_hyp_lt_pt_ee");
-	TH1F *h1_denom_old = (TH1F*)f.Get("ttbar_hyp_lt_pt_idold_ee");
-        TH1F *h1_denom_new = (TH1F*)f.Get("ttbar_hyp_lt_pt_idnew_ee");
+	TH1F *h1_numerator = (TH1F*)f.Get("ttbar_hyp_lt_" + det + "_pt_ee");
+	TH1F *h1_denom_old = (TH1F*)f.Get("ttbar_hyp_lt_" + det + "_pt_idold_ee");
+        TH1F *h1_denom_new = (TH1F*)f.Get("ttbar_hyp_lt_" + det + "_pt_idnew_ee");
 
 	TGraphAsymmErrors *gr_eff_old = new TGraphAsymmErrors();
 	gr_eff_old->BayesDivide(h1_denom_old, h1_numerator);
@@ -38,7 +38,7 @@ void plot(TString fileName)
 	gr_eff_old->Draw("AP");
 	gr_eff_new->Draw("P");
 	lg->Draw();
-	c1->SaveAs("eff_mc.png");
+	c1->SaveAs("eff_mc_" + det + ".png");
 
 }
 
