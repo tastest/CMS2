@@ -16,9 +16,9 @@ void doAll3X() {
 	//
 	gROOT->ProcessLine(".L CMS2.cc+");
 
-	gROOT->ProcessLine(".L ../CORE/electronSelections.cc+");
-	gROOT->ProcessLine(".L ../CORE/utilities.cc+");
-	gROOT->ProcessLine(".L ../CORE/selections.cc+");
+	gROOT->ProcessLine(".L ../../CORE/electronSelections.cc+");
+	gROOT->ProcessLine(".L ../../CORE/utilities.cc+");
+	gROOT->ProcessLine(".L ../../CORE/selections.cc+");
 
 	//
 	// the looper
