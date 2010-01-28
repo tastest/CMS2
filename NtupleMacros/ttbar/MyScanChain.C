@@ -16,7 +16,17 @@
 #include "TH1F.h"
 
 // CMS2 includes
+
+//#include "version.h"
+//#ifdef VERSION3X
+//#include "CMS2_3X.h"
+//#endif
+//#ifdef VERSION2X
+//#include "CMS2_2X.h"
+//#endif
+
 #include "CMS2.h"
+
 #include "../CORE/electronSelections.h"
 #include "../CORE/selections.h"
 
@@ -122,22 +132,20 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 	//
 	// define histograms
 	//
-	TH1F *h1_nhyp[4];
-	FormatHist(h1_nhyp, sampleName, "nhyp", 10, -0.5, 9.5);
 
-	TH1F *h1_hyp_lt_pt[4];
-	TH1F *h1_hyp_ll_pt[4];
-        FormatHist(h1_hyp_lt_pt, sampleName, "hyp_lt_pt", 20, 0.0, 100.0);
-        FormatHist(h1_hyp_ll_pt, sampleName, "hyp_ll_pt", 20, 0.0, 100.0);
+//	TH1F *h1_hyp_lt_pt[4];
+//	TH1F *h1_hyp_ll_pt[4];
+//        FormatHist(h1_hyp_lt_pt, sampleName, "hyp_lt_pt", 20, 0.0, 100.0);
+//        FormatHist(h1_hyp_ll_pt, sampleName, "hyp_ll_pt", 20, 0.0, 100.0);
 
-        TH1F *h1_hyp_lt_pt_idnew[4];
-        TH1F *h1_hyp_ll_pt_idnew[4];
+//        TH1F *h1_hyp_lt_pt_idnew[4];
+//        TH1F *h1_hyp_ll_pt_idnew[4];
         TH1F *h1_hyp_lt_pt_idold[4];
-        TH1F *h1_hyp_ll_pt_idold[4];
-        FormatHist(h1_hyp_lt_pt_idnew, sampleName, "hyp_lt_pt_idnew", 20, 0.0, 100.0);
-        FormatHist(h1_hyp_ll_pt_idnew, sampleName, "hyp_ll_pt_idnew", 20, 0.0, 100.0);
+//        TH1F *h1_hyp_ll_pt_idold[4];
+//        FormatHist(h1_hyp_lt_pt_idnew, sampleName, "hyp_lt_pt_idnew", 20, 0.0, 100.0);
+//        FormatHist(h1_hyp_ll_pt_idnew, sampleName, "hyp_ll_pt_idnew", 20, 0.0, 100.0);
         FormatHist(h1_hyp_lt_pt_idold, sampleName, "hyp_lt_pt_idold", 20, 0.0, 100.0);
-        FormatHist(h1_hyp_ll_pt_idold, sampleName, "hyp_ll_pt_idold", 20, 0.0, 100.0);
+//        FormatHist(h1_hyp_ll_pt_idold, sampleName, "hyp_ll_pt_idold", 20, 0.0, 100.0);
 
 	// file loop
 
@@ -155,7 +163,7 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 			++nEventsTotal;
 
 			// print out event being processed
-			if (nEventsTotal % 1000 == 0)
+			if (nEventsTotal % 1 == 0)
 				std::cout << "Event: " << nEventsTotal << std::endl;
 
 			// work out event weight
@@ -167,17 +175,23 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 			std::vector<unsigned int> hyp_index_selected;
 			for (size_t h = 0; h < cms2.hyp_type().size(); ++h) {
 
-				// apply electron id
+	std::cout << cms2.hyp_lt_id()[h] << std::endl;
+	std::cout << "applying id" << std::endl;
+				// apply lepton id
 				if (!looseLeptonSelectionNoIsoTTDil08(cms2.hyp_lt_id()[h], cms2.hyp_lt_index()[h])) continue;
+	std::cout << "and the other one" << std::endl;
                                 if (!looseLeptonSelectionNoIsoTTDil08(cms2.hyp_ll_id()[h], cms2.hyp_ll_index()[h])) continue;
 
+	std::cout << "applying iso" << std::endl;
 				// apply isolation
 				if (!passLeptonIsolationTTDil08(cms2.hyp_lt_id()[h], cms2.hyp_lt_index()[h])) continue;
                                 if (!passLeptonIsolationTTDil08(cms2.hyp_ll_id()[h], cms2.hyp_ll_index()[h])) continue;
 
+	std::cout << "applying charge" << std::endl;
 				// opposite charge
 				if (cms2.hyp_lt_charge()[h] * cms2.hyp_ll_charge()[h] > 0) continue;
 
+	std::cout << "applying mass" << std::endl;
 				// z mass window
 				if (inZmassWindow(cms2.hyp_p4()[h].M())) continue;
 			
@@ -187,6 +201,7 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 				hyp_index_selected.push_back(h);
 
 			} // end loop on hypothesis
+std::cout << "did a loop on hyps" << std::endl;
 
 			//
 			// perform hypothesis disambiguation
@@ -199,6 +214,7 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 			//
 			// make requirements of the selected hypothesis
 			//
+std::cout << "got a little further" << std::endl;
 
 			// trigger
 			if (!passTriggersMu9orLisoE15(cms2.hyp_type()[hyp])) continue;
@@ -222,6 +238,9 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
                                 cands_passing[DILEPTON_ALL] += weight;
                                 cands_passing_w2[DILEPTON_ALL] += weight * weight;
                                 cands_count[DILEPTON_ALL] ++;
+
+				Fill(h1_hyp_lt_pt_idold, hypType, cms2.hyp_lt_p4()[hyp].Pt(), weight);
+
 
 			}
 
