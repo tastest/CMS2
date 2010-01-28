@@ -15,6 +15,9 @@
 #include "TROOT.h"
 #include "TH1F.h"
 
+#include "Math/LorentzVector.h"
+
+
 // CMS2 includes
 #include "CMS2.h"
 #include "../CORE/electronSelections.h"
@@ -123,19 +126,54 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 	// define histograms
 	//
 
-	TH1F *h1_hyp_lt_pt[4];
-//	TH1F *h1_hyp_ll_pt[4];
-        FormatHist(h1_hyp_lt_pt, sampleName, "hyp_lt_pt", 20, 0.0, 100.0);
-//        FormatHist(h1_hyp_ll_pt, sampleName, "hyp_ll_pt", 20, 0.0, 100.0);
+	TH1F *h1_hyp_lt_ee_pt[4];
+        TH1F *h1_hyp_lt_eb_pt[4];
+        FormatHist(h1_hyp_lt_ee_pt, sampleName, "hyp_lt_ee_pt", 20, 0.0, 100.0);
+        FormatHist(h1_hyp_lt_eb_pt, sampleName, "hyp_lt_eb_pt", 20, 0.0, 100.0);
 
-        TH1F *h1_hyp_lt_pt_idnew[4];
-//        TH1F *h1_hyp_ll_pt_idnew[4];
-        TH1F *h1_hyp_lt_pt_idold[4];
-//        TH1F *h1_hyp_ll_pt_idold[4];
-        FormatHist(h1_hyp_lt_pt_idnew, sampleName, "hyp_lt_pt_idnew", 20, 0.0, 100.0);
-//        FormatHist(h1_hyp_ll_pt_idnew, sampleName, "hyp_ll_pt_idnew", 20, 0.0, 100.0);
-        FormatHist(h1_hyp_lt_pt_idold, sampleName, "hyp_lt_pt_idold", 20, 0.0, 100.0);
-//        FormatHist(h1_hyp_ll_pt_idold, sampleName, "hyp_ll_pt_idold", 20, 0.0, 100.0);
+	// basic selection quantities
+	//
+	TH1F *h1_hyp_lt_eb_hoe[4];
+        TH1F *h1_hyp_lt_eb_sigmaIEtaIEta[4];
+        TH1F *h1_hyp_lt_eb_dEtaIn[4];
+        TH1F *h1_hyp_lt_eb_dPhiIn[4];
+        TH1F *h1_hyp_lt_eb_d0[4];
+        TH1F *h1_hyp_lt_eb_E2x5MaxOver5x5[4];
+
+        TH1F *h1_hyp_lt_ee_hoe[4];
+        TH1F *h1_hyp_lt_ee_sigmaIEtaIEta[4];
+        TH1F *h1_hyp_lt_ee_dEtaIn[4];
+        TH1F *h1_hyp_lt_ee_dPhiIn[4];
+        TH1F *h1_hyp_lt_ee_d0[4];
+        TH1F *h1_hyp_lt_ee_E2x5MaxOver5x5[4];
+
+        FormatHist(h1_hyp_lt_eb_hoe, sampleName, "hyp_lt_eb_hoe", 50, 0.0, 0.05);
+        FormatHist(h1_hyp_lt_ee_hoe, sampleName, "hyp_lt_eb_hoe", 50, 0.0, 0.05);
+
+        FormatHist(h1_hyp_lt_eb_sigmaIEtaIEta, sampleName, "hyp_lt_eb_sigmaIEtaIEta", 50, 0.0, 0.05);
+        FormatHist(h1_hyp_lt_ee_sigmaIEtaIEta, sampleName, "hyp_lt_eb_sigmaIEtaIEta", 50, 0.0, 0.05);
+
+        FormatHist(h1_hyp_lt_eb_dEtaIn, sampleName, "hyp_lt_eb_dEtaIn", 100, -0.05, 0.05);
+        FormatHist(h1_hyp_lt_ee_dEtaIn, sampleName, "hyp_lt_eb_dEtaIn", 100, -0.05, 0.05);
+
+        FormatHist(h1_hyp_lt_eb_dPhiIn, sampleName, "hyp_lt_eb_dPhiIn", 100, -0.05, 0.05);
+        FormatHist(h1_hyp_lt_ee_dPhiIn, sampleName, "hyp_lt_eb_dPhiIn", 100, -0.05, 0.05);
+
+        FormatHist(h1_hyp_lt_eb_d0, sampleName, "hyp_lt_eb_d0", 100, -0.05, 0.05);
+        FormatHist(h1_hyp_lt_ee_d0, sampleName, "hyp_lt_eb_d0", 100, -0.05, 0.05);
+
+        FormatHist(h1_hyp_lt_eb_E2x5MaxOver5x5, sampleName, "hyp_lt_eb_E2x5MaxOver5x5", 110, 0.0, 1.1);
+        FormatHist(h1_hyp_lt_ee_E2x5MaxOver5x5, sampleName, "hyp_lt_eb_E2x5MaxOver5x5", 110, 0.0, 1.1);
+
+        TH1F *h1_hyp_lt_eb_pt_idnew[4];
+        TH1F *h1_hyp_lt_ee_pt_idnew[4];
+        TH1F *h1_hyp_lt_eb_pt_idold[4];
+        TH1F *h1_hyp_lt_ee_pt_idold[4];
+        FormatHist(h1_hyp_lt_eb_pt_idnew, sampleName, "hyp_lt_eb_pt_idnew", 20, 0.0, 100.0);
+        FormatHist(h1_hyp_lt_eb_pt_idold, sampleName, "hyp_lt_eb_pt_idold", 20, 0.0, 100.0);
+
+        FormatHist(h1_hyp_lt_ee_pt_idnew, sampleName, "hyp_lt_ee_pt_idnew", 20, 0.0, 100.0);
+        FormatHist(h1_hyp_lt_ee_pt_idold, sampleName, "hyp_lt_ee_pt_idold", 20, 0.0, 100.0);
 
 	// file loop
 
@@ -176,7 +214,27 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 				//
 				// fill numerator histograms
 				//
-                                Fill(h1_hyp_lt_pt, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+                                if (abs(cms2.hyp_lt_p4()[h].eta()) > 1.5 && abs(cms2.hyp_lt_id()[h]) == 11) {
+					Fill(h1_hyp_lt_ee_pt, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+                                        Fill(h1_hyp_lt_ee_hoe, hypType, cms2.els_hOverE()[cms2.hyp_lt_index()[h]], weight);
+                                        Fill(h1_hyp_lt_ee_d0, hypType, cms2.els_d0corr()[cms2.hyp_lt_index()[h]], weight);
+                                        Fill(h1_hyp_lt_ee_dPhiIn, hypType, cms2.els_dPhiIn()[cms2.hyp_lt_index()[h]], weight);
+                                        Fill(h1_hyp_lt_ee_dEtaIn, hypType, cms2.els_dEtaIn()[cms2.hyp_lt_index()[h]], weight);
+                                        Fill(h1_hyp_lt_ee_sigmaIEtaIEta, hypType, cms2.els_sigmaIEtaIEta()[cms2.hyp_lt_index()[h]], weight);
+					float E2x5MaxOver5x5 = cms2.els_e2x5Max()[cms2.hyp_lt_index()[h]] / cms2.els_e5x5()[cms2.hyp_lt_index()[h]];
+                                        Fill(h1_hyp_lt_ee_E2x5MaxOver5x5, hypType, E2x5MaxOver5x5, weight);
+				}
+
+                                if (abs(cms2.hyp_lt_p4()[h].eta()) < 1.5 && abs(cms2.hyp_lt_id()[h]) == 11) {
+					Fill(h1_hyp_lt_eb_pt, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+                                        Fill(h1_hyp_lt_eb_hoe, hypType, cms2.els_hOverE()[cms2.hyp_lt_index()[h]], weight);
+                                        Fill(h1_hyp_lt_eb_d0, hypType, cms2.els_d0corr()[cms2.hyp_lt_index()[h]], weight);
+                                        Fill(h1_hyp_lt_eb_dPhiIn, hypType, cms2.els_dPhiIn()[cms2.hyp_lt_index()[h]], weight);
+                                        Fill(h1_hyp_lt_eb_dEtaIn, hypType, cms2.els_dEtaIn()[cms2.hyp_lt_index()[h]], weight);
+                                        Fill(h1_hyp_lt_eb_sigmaIEtaIEta, hypType, cms2.els_sigmaIEtaIEta()[cms2.hyp_lt_index()[h]], weight);
+                                        float E2x5MaxOver5x5 = cms2.els_e2x5Max()[cms2.hyp_lt_index()[h]] / cms2.els_e5x5()[cms2.hyp_lt_index()[h]];
+                                        Fill(h1_hyp_lt_eb_E2x5MaxOver5x5, hypType, E2x5MaxOver5x5, weight);
+				}
 				//
 				//
 				//
@@ -192,9 +250,13 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
                                 //
                                 // fill denominator histograms
                                 //
-                                if (ltPassOld) Fill(h1_hyp_lt_pt_idold, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
-                                if (ltPassNew) Fill(h1_hyp_lt_pt_idnew, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
-
+				if (abs(cms2.hyp_lt_p4()[h].eta()) > 1.5) {
+                                	if (ltPassOld) Fill(h1_hyp_lt_ee_pt_idold, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+                                	if (ltPassNew) Fill(h1_hyp_lt_ee_pt_idnew, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+				} else {
+                                        if (ltPassOld) Fill(h1_hyp_lt_eb_pt_idold, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+                                        if (ltPassNew) Fill(h1_hyp_lt_eb_pt_idnew, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+				}
 				//
 				//
 				//
