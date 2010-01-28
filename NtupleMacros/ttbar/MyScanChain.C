@@ -211,8 +211,17 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 				// apply truth match
 				if (abs(cms2.hyp_lt_id()[h]) == 11 && !(abs(cms2.hyp_lt_mc_id()[h]) == 11));
 
+				// apply part of electron denominator first here
+				if (abs(cms2.hyp_lt_id()[h]) == 11)
+					if (!electron20Eta2p4(cms2.hyp_lt_index()[h])) continue;
+                                if (abs(cms2.hyp_ll_id()[h]) == 11)
+                                        if (!electron20Eta2p4(cms2.hyp_ll_index()[h])) continue;
+
 				//
-				// fill numerator histograms
+				//
+			
+				//
+				// fill denominator histograms
 				//
                                 if (abs(cms2.hyp_lt_p4()[h].eta()) > 1.5 && abs(cms2.hyp_lt_id()[h]) == 11) {
 					Fill(h1_hyp_lt_ee_pt, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
@@ -242,28 +251,28 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 				// apply lepton id to lt
 				bool ltPassOld = false;
 				bool ltPassNew = false;
-				if (looseLeptonSelectionNoIsoTTDil08(cms2.hyp_lt_id()[h], cms2.hyp_lt_index()[h])) ltPassOld = true;
-
-				if (abs(cms2.hyp_lt_id()[h]) == 11)
+				if (abs(cms2.hyp_lt_id()[h]) == 11) {
+					if (cms2.els_egamma_looseId().at(cms2.hyp_lt_index()[h])) ltPassOld = true;
 					if (electronId_cand01(cms2.hyp_lt_index()[h])) ltPassNew = true;
+				}
 
                                 //
-                                // fill denominator histograms
+                                // fill numerator histograms
                                 //
 				if (abs(cms2.hyp_lt_p4()[h].eta()) > 1.5) {
-                                	if (ltPassOld) Fill(h1_hyp_lt_ee_pt_idold, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
-                                	if (ltPassNew) Fill(h1_hyp_lt_ee_pt_idnew, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
-				} else {
-                                        if (ltPassOld) Fill(h1_hyp_lt_eb_pt_idold, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
-                                        if (ltPassNew) Fill(h1_hyp_lt_eb_pt_idnew, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+                               		if (ltPassOld) Fill(h1_hyp_lt_ee_pt_idold, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+                               		if (ltPassNew) Fill(h1_hyp_lt_ee_pt_idnew, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+				}
+				if (abs(cms2.hyp_lt_p4()[h].eta()) < 1.5)  {
+                                       	if (ltPassOld) Fill(h1_hyp_lt_eb_pt_idold, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+                               		if (ltPassNew) Fill(h1_hyp_lt_eb_pt_idnew, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
 				}
 				//
 				//
 				//
 
-
-				if (!ltPassOld) continue;
 				// apply lepton id to ll
+                                if (!looseLeptonSelectionNoIsoTTDil08(cms2.hyp_lt_id()[h], cms2.hyp_lt_index()[h])) continue;
                                 if (!looseLeptonSelectionNoIsoTTDil08(cms2.hyp_ll_id()[h], cms2.hyp_ll_index()[h])) continue;
 
 				// apply isolation to ll
