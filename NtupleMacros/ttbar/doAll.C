@@ -1,16 +1,26 @@
 
 {
 
+	// from slavas code
+	gSystem->Load("libGui.so");
+	gSystem->Load("libPhysics.so");
+
+	// Load and compile something to allow proper treatment of vectors
+	// Not clear that it is needed
+	gSystem->CompileMacro("loader.C", "++k", "libloader");
+	// end from slava
+
 	//
 	// utilities
 	//
 	gROOT->ProcessLine(".L CMS2.cc+");
 	gROOT->ProcessLine(".L ../CORE/electronSelections.cc+");
+	gROOT->ProcessLine(".L ../CORE/selections.cc+");
 
 	//
 	// the looper
 	//
-        gROOT->ProcessLine(".L MyScanChain.C+");
+	gROOT->ProcessLine(".L MyScanChain.C+");
 
 	//
 	// output file for histograms
@@ -22,8 +32,8 @@
 	// chains for input files
 	//
 	// ttbar
-        TChain *chain_ttbar = new TChain("Events");
-        chain_ttbar->Add("/store/disk02/cms2/TTbar_Summer09-MC_31X_V3_7TeV-v1/V03-00-34/merged_ntuple*.root");
+	TChain *chain_ttbar = new TChain("Events");
+	chain_ttbar->Add("/store/disk02/cms2/TTbar_Summer09-MC_31X_V3_7TeV-v1/V03-00-34/merged_ntuple*.root");
 
 	// 
 	// do looping

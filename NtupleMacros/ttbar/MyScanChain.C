@@ -18,12 +18,44 @@
 // CMS2 includes
 #include "CMS2.h"
 #include "../CORE/electronSelections.h"
+#include "../CORE/selections.h"
+
 #include "../Tools/DileptonHypType.h"
 
 //
 // Namespaces
 //
 using namespace tas;
+
+double dRbetweenVectors(const LorentzVector &vec1,
+                        const LorentzVector &vec2 ){
+
+  double dphi = std::min(::fabs(vec1.Phi() - vec2.Phi()), 2 * M_PI - fabs(vec1.Phi() - vec2.Phi()));
+  double deta = vec1.Eta() - vec2.Eta();
+  return sqrt(dphi*dphi + deta*deta);
+} 
+
+//   jets_p4   
+std::vector<LorentzVector> getCorCaloJets(int i_hyp) {
+  std::vector<LorentzVector> calo_jets;
+  calo_jets.clear();
+
+  for (unsigned int jj=0; jj < cms2.jets_p4().size(); ++jj) {
+    if ((dRbetweenVectors(cms2.hyp_lt_p4()[i_hyp],cms2.jets_p4()[jj]) < 0.4)||
+        (dRbetweenVectors(cms2.hyp_ll_p4()[i_hyp],cms2.jets_p4()[jj]) < 0.4)
+        ) continue;
+    if (cms2.jets_p4()[jj].pt()*cms2.jets_cor()[jj] < 30) continue;
+    if (fabs(cms2.jets_p4()[jj].Eta()) > 2.4) continue;
+    //fkw July21 2009 if (cms2.jets_emFrac()[jj] < 0.1) continue;
+    calo_jets.push_back(cms2.jets_p4()[jj]*cms2.jets_cor()[jj]);
+  }
+
+  if (calo_jets.size() > 1) {
+       sort(calo_jets.begin(), calo_jets.end(),  comparePt);
+  }
+  return calo_jets;
+}
+
 
 enum DileptonHypType hyp_typeToHypType (int hyp_type)
 {
@@ -129,37 +161,58 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 			// work out event weight
 		        float weight = cms2.evt_scale1fb();
 
-			// apply event level cuts
-			if (cms2.evt_tcmet() < 30.0) continue;
-
+			//
 			// loop on hypothesis
+			//
+			std::vector<unsigned int> hyp_index_selected;
 			for (size_t h = 0; h < cms2.hyp_type().size(); ++h) {
 
-				DileptonHypType hyp = hyp_typeToHypType(cms2.hyp_type()[h]);
-				hyp_count[hyp] ++;
+				// apply electron id
+				if (!looseLeptonSelectionNoIsoTTDil08(cms2.hyp_lt_id()[h], cms2.hyp_lt_index()[h])) continue;
+                                if (!looseLeptonSelectionNoIsoTTDil08(cms2.hyp_ll_id()[h], cms2.hyp_ll_index()[h])) continue;
+
+				// apply isolation
+				if (!passLeptonIsolationTTDil08(cms2.hyp_lt_id()[h], cms2.hyp_lt_index()[h])) continue;
+                                if (!passLeptonIsolationTTDil08(cms2.hyp_ll_id()[h], cms2.hyp_ll_index()[h])) continue;
+
+				// opposite charge
+				if (cms2.hyp_lt_charge()[h] * cms2.hyp_ll_charge()[h] > 0) continue;
+
+				// z mass window
+				if (inZmassWindow(cms2.hyp_p4()[h].M())) continue;
 			
-				Fill(h1_hyp_lt_pt, hyp, cms2.hyp_lt_p4()[h].Pt(), weight);
-                               	Fill(h1_hyp_ll_pt, hyp, cms2.hyp_ll_p4()[h].Pt(), weight);
-
-				if (hyp == DILEPTON_EE) {
-					// new ID
-					if (electronId_cand01(cms2.hyp_lt_index()[h])) Fill(h1_hyp_lt_pt_idnew, hyp, cms2.hyp_lt_p4()[h].Pt(), weight);
-					if (electronId_cand01(cms2.hyp_lt_index()[h])) Fill(h1_hyp_ll_pt_idnew, hyp, cms2.hyp_ll_p4()[h].Pt(), weight);
-					// old ID
-                                        if (electronId_classBasedTight(cms2.hyp_lt_index()[h])) Fill(h1_hyp_lt_pt_idold, hyp, cms2.hyp_lt_p4()[h].Pt(), weight);
-                                        if (electronId_classBasedTight(cms2.hyp_lt_index()[h])) Fill(h1_hyp_ll_pt_idold, hyp, cms2.hyp_ll_p4()[h].Pt(), weight);
-				}
-
+				//
+				// store indices of hypothesese that pass this preselection
+				//	
+				hyp_index_selected.push_back(h);
 
 			} // end loop on hypothesis
 
+			//
+			// perform hypothesis disambiguation
+			//
 
-			// fill histograms of number of hypothesis found
-			for (unsigned int i = 0; i < 4; ++i) {
-				Fill(h1_nhyp, i, hyp_count[i], 1);
-				hyp_count[i] = 0;
-			}
-	
+			int strasbourgDilType = 0;
+			if (!hyp_index_selected.size()) continue;
+			int hyp = eventDilIndexByWeightTTDil08(hyp_index_selected, strasbourgDilType, false, false);
+		
+			//
+			// make requirements of the selected hypothesis
+			//
+
+			// trigger
+			if (!passTriggersMu9orLisoE15(cms2.hyp_type()[hyp])) continue;
+
+			// met
+			if (!passMet_OF20_SF30(hyp, true)) continue;
+
+			//
+			// If we got to here then classify the event according to nJets
+			//	
+
+			std::vector<LorentzVector> corCaloJets = getCorCaloJets(hyp);
+			std::cout << corCaloJets.size() << std::endl;
+
 
 		} // end loop on files
 
