@@ -79,6 +79,7 @@ bool met10(int index, const class TVector3& corr);
 bool met1(int index, const class TVector3& corr);
 bool sumEt10(double sumEt);
 bool sumEt1(double sumEt);
+bool passMet_OF20_SF30(int hypIdx, bool useTcMet);
 
 bool isChargeFlip(int elIndex);
 //old cuts on conversions
