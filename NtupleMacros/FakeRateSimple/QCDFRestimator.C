@@ -363,7 +363,8 @@ int QCDFRestimator::ScanChainQCD ( TChain* chain, TString prefix, float kFactor,
 	continue;
       
       float weight = kFactor*cms2.evt_scale1fb()*0.1;
-      // weight = 1.0; //weights are the same, screws the Binomial errors up
+      // 
+		weight = 1.0; //weights are the same, screws the Binomial errors up
       
       
       //this is for ttbar. Skip events with a lepton in the 
@@ -740,32 +741,32 @@ void QCDFRestimator::bookHistos(const char *sample) {
   
 
   //FO --> muons
-  Float_t pt[3] = {0,60,110};
+  Float_t pt[4] = {10,20,60,150};
   Float_t eta[3] = {0, 1.5, 2.4};
   h_FOptvseta[1] = new TH2F(Form("%s_FOptvseta_%s", sample, flavor[1]),
 			    Form("%s pt vs eta of FO, %s", flavor[1], sample),
-			    2, eta, 2, pt);
+			    2, eta, 3, pt);
   h_FOpt[1] = new TH1F(Form("%s_FOpt_%s", sample, flavor[1]), 
 		       Form("%s pt of FO, %s", flavor[1], sample), 
-		       2, pt);
+		       3, pt);
   h_FOeta[1] = new TH1F(Form("%s_FOeta_%s", sample, flavor[1]), 
 			Form("%s eta of FO, %s", flavor[1], sample), 
 			2, eta);
   h_FOhfpt[1] = new TH1F(Form("%s_FOhfpt_%s", sample, flavor[1]), 
 		       Form("%s pt of FO matched to HF, %s", flavor[1], sample), 
-		       2, pt);
+		       3, pt);
   h_FOhfeta[1] = new TH1F(Form("%s_FOhfeta_%s", sample, flavor[1]), 
 			Form("%s eta of FO matched to HF, %s", flavor[1], sample), 
 			2, eta);
   h_FOlqpt[1] = new TH1F(Form("%s_FOlqpt_%s", sample, flavor[1]), 
 		       Form("%s pt of FO matched to Light quarks, %s", flavor[1], sample), 
-		       2, pt);
+		       3, pt);
   h_FOlqeta[1] = new TH1F(Form("%s_FOlqeta_%s", sample, flavor[1]), 
 			Form("%s eta of FO matched to Light quarks, %s", flavor[1], sample), 
 			2, eta);
   h_FOgpt[1] = new TH1F(Form("%s_FOgpt_%s", sample, flavor[1]), 
 		       Form("%s pt of FO matched to gluons, %s", flavor[1], sample), 
-		       2, pt);
+		       3, pt);
   h_FOgeta[1] = new TH1F(Form("%s_FOgeta_%s", sample, flavor[1]), 
 			Form("%s eta of FO matched to gluons, %s", flavor[1], sample), 
 			2, eta);
@@ -780,28 +781,28 @@ void QCDFRestimator::bookHistos(const char *sample) {
   //tight selection info
   h_numptvseta[1] = new TH2F(Form("%s_numptvseta_%s", sample, flavor[1]), 
 			     Form("%s pt vs eta of num, %s",flavor[1], sample),
-			     2, eta, 2, pt);
+			     2, eta, 3, pt);
   h_numpt[1] = new TH1F(Form("%s_numpt_%s", sample, flavor[1]), 
 			Form("%s pt of num, %s",flavor[1], sample),
-			2, pt);
+			3, pt);
   h_numeta[1] = new TH1F(Form("%s_numeta_%s", sample, flavor[1]), 
 			 Form("%s eta of num, %s", flavor[1], sample),
 			 2, eta);
   h_numhfpt[1] = new TH1F(Form("%s_numhfpt_%s", sample, flavor[1]), 
 		       Form("%s pt of num matched to HF, %s", flavor[1], sample), 
-		       2, pt);
+		       3, pt);
   h_numhfeta[1] = new TH1F(Form("%s_numhfeta_%s", sample, flavor[1]), 
 			Form("%s eta of num matched to HF, %s", flavor[1], sample), 
 			2, eta);
   h_numlqpt[1] = new TH1F(Form("%s_numlqpt_%s", sample, flavor[1]), 
 		       Form("%s pt of num matched to Light quarks, %s", flavor[1], sample), 
-		       2, pt);
+		       3, pt);
   h_numlqeta[1] = new TH1F(Form("%s_numlqeta_%s", sample, flavor[1]), 
 			Form("%s eta of num matched to Light quarks, %s", flavor[1], sample), 
 			2, eta);
   h_numgpt[1] = new TH1F(Form("%s_numgpt_%s", sample, flavor[1]), 
 		       Form("%s pt of num matched to gluons, %s", flavor[1], sample), 
-		       2, pt);
+		       3, pt);
   h_numgeta[1] = new TH1F(Form("%s_numgeta_%s", sample, flavor[1]), 
 			Form("%s eta of num matched to gluons, %s", flavor[1], sample), 
 			2, eta);
@@ -817,31 +818,31 @@ void QCDFRestimator::bookHistos(const char *sample) {
    //FR --> muon
   h_FRptvseta[1] = new TH2F(Form("%s_FRptvseta_%s", sample, flavor[1]), 
 			    Form("%s pt vs eta of num, %s", flavor[1], sample),
-			    2, eta, 2, pt);
+			    2, eta, 3, pt);
   h_FRErrptvseta[1] = new TH2F(Form("%s_FRErrptvseta_%s", sample, flavor[1]), 
 			       Form("%s, FRErr(pt, eta) of num, %s", flavor[1], sample),
-			       2, eta, 2, pt);
+			       2, eta, 3, pt);
   h_FRpt[1] = new TH1F(Form("%s_FRpt_%s", sample, flavor[1]), 
 		       Form("%s pt of FR, %s", flavor[1], sample),
-		       2, pt);
+		       3, pt);
   h_FReta[1] = new TH1F(Form("%s_FReta_%s", sample, flavor[1]), 
 			Form("%s eta of FR, %s", flavor[1], sample),
 			2, eta);
   h_FRhfpt[1] = new TH1F(Form("%s_FRhfpt_%s", sample, flavor[1]), 
 		       Form("%s pt of FR matched to HF, %s", flavor[1], sample), 
-		       2, pt);
+		       3, pt);
   h_FRhfeta[1] = new TH1F(Form("%s_FRhfeta_%s", sample, flavor[1]), 
 			Form("%s eta of FR matched to HF, %s", flavor[1], sample), 
 			2, eta);
   h_FRlqpt[1] = new TH1F(Form("%s_FRlqpt_%s", sample, flavor[1]), 
 		       Form("%s pt of FR matched to Light quarks, %s", flavor[1], sample), 
-		       2, pt);
+		       3, pt);
   h_FRlqeta[1] = new TH1F(Form("%s_FRlqeta_%s", sample, flavor[1]), 
 			Form("%s eta of FR matched to Light quarks, %s", flavor[1], sample), 
 			2, eta);
   h_FRgpt[1] = new TH1F(Form("%s_FRgpt_%s", sample, flavor[1]), 
 		       Form("%s pt of FR matched to gluons, %s", flavor[1], sample), 
-		       2, pt);
+		       3, pt);
   h_FRgeta[1] = new TH1F(Form("%s_FRgeta_%s", sample, flavor[1]), 
 			Form("%s eta of FR matched to gluons, %s", flavor[1], sample), 
 			2, eta);

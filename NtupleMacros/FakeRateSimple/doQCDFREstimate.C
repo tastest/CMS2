@@ -171,7 +171,8 @@ void doAll(){
 
   TChain *ch_pthat30to80 = new TChain("Events");
   ch_pthat30to80->Add(Form("%s/%s",location,"cms2-V01-03-01/QCDpt30_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merged_ntuple*.root"));
-  //  ch_pthat30to80->Add(Form("%s/%s",location,"cms2-V01-03-01/QCDpt80_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merged_ntuple*.root"));
+  //  
+	ch_pthat30to80->Add(Form("%s/%s",location,"cms2-V01-03-01/QCDpt80_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merged_ntuple*.root"));
 
 //  TChain *ch_pthat80 = new TChain("Events");
 //  ch_pthat80->Add("/data/tmp/cms2-V01-03-01/QCDpt80_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merged_ntuple*.root");

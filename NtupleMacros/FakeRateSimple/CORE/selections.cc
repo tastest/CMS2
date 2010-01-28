@@ -1572,14 +1572,16 @@ bool isFakeableMuSUSY09(int iMu) {
 
   Double_t pt = cms2.mus_p4()[iMu].Pt();
   Double_t eta = cms2.mus_p4()[iMu].Eta();
-  
-  //only globalMuons
-  if(!(2 & cms2.mus_type()[iMu])) return false;
+  if (!((cms2.mus_type().at(iMu)) & (1<<1)) ) return false; // global muon
+  if (!((cms2.mus_type().at(iMu)) & (1<<2)) ) return false; // tracker muon
   if( pt < 10)  return false;
   if( fabs( eta ) > 2.4 ) return false;
-  //  if( cms2.mus_gfit_chi2()[iMu]/cms2.mus_gfit_ndof()[iMu] > 20) return false;
+  if( cms2.mus_gfit_chi2()[iMu]/cms2.mus_gfit_ndof()[iMu] > 20) return false;
   if (inv_mu_relsusy_iso(iMu) > 0.4 ) return false;
+  if (fabs(cms2.mus_d0corr().at(iMu))   >= 0.02) return false;
   return true;
+
+
 }
 
 bool isNumMuSUSY09(int iMu) {
