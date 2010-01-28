@@ -219,14 +219,16 @@ bool Looper::FilterEvent()
   //
   // comment in following lines
   // 
-    DorkyEventIdentifier id(cms2);
-    if (is_duplicate(id)) {
-      duplicates_total_n_++;
-      duplicates_total_weight_ += cms2.evt_scale1fb();
-      //cout << "Filtered duplicate run: " << cms2.evt_run() << " event: " << cms2.evt_event() << endl;
-      return true;
-    }
-  return false; 
+     if (sample_.upper_pthat > 0 && cms2.genps_pthat() > sample_.upper_pthat)
+	  return true;
+     DorkyEventIdentifier id(cms2);
+     if (is_duplicate(id)) {
+	  duplicates_total_n_++;
+	  duplicates_total_weight_ += cms2.evt_scale1fb();
+	  //cout << "Filtered duplicate run: " << cms2.evt_run() << " event: " << cms2.evt_event() << endl;
+	  return true;
+     }
+     return false; 
 }
 
 

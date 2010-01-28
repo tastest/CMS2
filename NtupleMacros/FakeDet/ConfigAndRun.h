@@ -66,7 +66,7 @@ void printTable (const Looper **hists, int n, const char *fname,
 // run<Looper>(baseline_cuts, "Results", 1 << LOOP_WW)				// produce table with default cuts, WW only
 // run<Looper>(baseline_cuts, "Results", 1 << LOOP_WW | 1 << LOOP_WJETS)	// produce table with default cuts, WW and Wjets only
 // run<Looper>(baseline_cuts, "Results")					// produce table with default cuts, all samples
-template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_ones = 0xffffffff)
+template <class L> int run (cuts_t cuts, const string &name, uint32 which_ones = 0xffffffff)
 {
   const string hist = name + ".root";
   const string tbl = name + ".tbl";
@@ -82,8 +82,8 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 /*   Looper looper_QCDEMenrichedPt20to30		(fQCDEMenrichedPt20to30()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_QCDEMenrichedPt20to30     )) looper_QCDEMenrichedPt20to30  .Loop(); */
 /*   Looper looper_QCDEMenrichedPt30to80		(fQCDEMenrichedPt30to80()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_QCDEMenrichedPt30to80     )) looper_QCDEMenrichedPt30to80  .Loop(); */
 /*   Looper looper_QCDEMenrichedPt80to170	        (fQCDEMenrichedPt80to170()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_QCDEMenrichedPt80to170    )) looper_QCDEMenrichedPt80to170 .Loop(); */
-  Looper looper_QCDpt30          (fQCDpt30()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt30    )) looper_QCDpt30 .Loop();
-  Looper looper_QCDpt80          (fQCDpt80()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt80    )) looper_QCDpt80 .Loop();
+  L looper_QCDpt30          (fQCDpt30()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt30    )) looper_QCDpt30 .Loop();
+  L looper_QCDpt80          (fQCDpt80()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt80    )) looper_QCDpt80 .Loop();
 /*   Looper looper_QCDpt30to80          (fQCDpt30to80()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt30to80    )) looper_QCDpt30to80 .Loop(); */
 /*   Looper looper_QCDpt80to170          (fQCDpt80to170()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt80to170    )) looper_QCDpt80to170 .Loop(); */
 /*   Looper looper_QCDpt170to300          (fQCDpt170to300()      , cuts, log.c_str());   if (which_ones & (1 << LOOP_QCDpt170to300    )) looper_QCDpt170to300 .Loop(); */
@@ -126,6 +126,12 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
 int EleFakesInc ()
 {
     return run<Looper>(ele_fakes_cuts, "EleFakes", 1 << LOOP_QCDpt30);
+  //  return run<Looper>(ele_fakes_cuts, "EleFakes", 1 << LOOP_QCDpt80);
+}
+
+int MuFakesInc ()
+{
+    return run<MuonLooper>(ele_fakes_cuts, "MuonFakes", 0xffffffff);
   //  return run<Looper>(ele_fakes_cuts, "EleFakes", 1 << LOOP_QCDpt80);
 }
 

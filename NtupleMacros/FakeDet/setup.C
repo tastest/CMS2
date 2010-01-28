@@ -1,5 +1,6 @@
 //
 {
+	TH1::AddDirectory(true);
 	gSystem->Load("libTree.so");
 	gSystem->Load("libPhysics.so");
 	gSystem->Load("libEG.so");

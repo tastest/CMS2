@@ -522,7 +522,7 @@ Sample fQCDpt30 ()
      TChain *c = new TChain("Events");
      std::string sample = prefix + "cms2-V01-03-01/QCDpt30_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merge*.root";
      c->Add(sample.c_str());
-     Sample ret = { c, QCDpt30, 28, 1, "QCDpt30", true, 999999999 };
+     Sample ret = { c, QCDpt30, 28, 1, "QCDpt30", true, 80 };
      return ret;
 }
 

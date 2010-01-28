@@ -246,4 +246,89 @@ protected:
   double                nNumerator_lt_wo_second_leading_weighted_w2_;
 
 };
+
+class MuonLooper : public Looper {
+
+public:
+  // constructor; tell the looper what sample to loop on (see
+  // Tools/Sample.h), what cuts candidates need to pass, and a file
+  // name for dumping log messages
+     MuonLooper (Sample, cuts_t cuts, const char *logfilename = 0);
+     virtual ~MuonLooper () { }
+
+protected:
+  // this is where we book our histograms
+  virtual void	BookHistos ();
+
+  // we define an analysis-specific EventSelect(), DilepSelect(),
+  // TrilepSelect() and QuadlepSelect() that check which cuts the
+  // event, dilepton/trilepton/quadlepton candidate passes
+  virtual cuts_t	EventSelect	();
+  // we define an analysis-specific set of FillEventHistos(),
+  // FillDilepHistos(), FillTrilepHistos() and FillQuadlepHistos()
+  // that fill our histograms.  
+  // 
+  // the framework calls our FillEventHistos() function for every event
+  virtual void	FillEventHistos ();
+  // at the end of the loop, we get a callback to do things like
+  // printing a status message
+  virtual void	End		();
+
+public:
+  // these functions are called by the table-printing code
+  virtual double	EventsPassing () const { return events_passing_; }
+  virtual int       	EventsCount () const { return events_count_; }
+  virtual double	RMS () const { return sqrt(events_passing_w2_); }
+
+  virtual double calculateFakeRateError(unsigned int nNum, unsigned int nDen);
+  virtual double calculateWeightedFakeRateError(double nNum, double nNumErr2, double nDen, double nDenErr2);
+
+protected:
+  //----------------------------------------------------------------------
+  // declare your histograms here:
+  //----------------------------------------------------------------------
+
+  TH1F *pt_num_mu_;
+  TH1F *eta_num_mu_;
+  TH2F *num_mu_;
+  TH1F *pt_den_mu_;
+  TH1F *eta_den_mu_;
+  TH2F *den_mu_;
+
+  TH1F *mu_n_;
+
+//   TH1F *njets_;
+
+//   TH1F *jetpt_;
+
+//   TH1F *jeteta_;
+
+//   TH1F *deltaR_;
+
+//   TH1F *tkIso_;
+//   TH1F *tkIso_uncut_;
+
+//   TH1F *EOverp_;
+//   TH1F *EOverp_uncut_;
+
+//   TH1F *HOverE_;
+//   TH1F *HOverE_uncut_;
+
+protected:
+  // count the (weighted and unweighted) number of candidates passing our cuts
+  unsigned int          events_;
+  double                events_weighted_;
+  double		events_passing_;
+  double		events_passing_w2_;
+  unsigned int		events_count_;
+
+  unsigned int          nDenominator_;
+  unsigned int          nNumerator_;
+
+  double                nDenominator_weighted_;
+  double                nNumerator_weighted_;
+
+  double                nDenominator_weighted_w2_;
+  double                nNumerator_weighted_w2_;
+};
 #endif
