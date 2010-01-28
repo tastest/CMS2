@@ -169,7 +169,6 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 
                                 // apply isolation
                                 if (!passLeptonIsolationTTDil08(cms2.hyp_lt_id()[h], cms2.hyp_lt_index()[h])) continue;
-                                if (!passLeptonIsolationTTDil08(cms2.hyp_ll_id()[h], cms2.hyp_ll_index()[h])) continue;
 
 				// apply truth match
 				if (abs(cms2.hyp_lt_id()[h]) == 11 && !(abs(cms2.hyp_lt_mc_id()[h]) == 11));
@@ -204,6 +203,9 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 				if (!ltPassOld) continue;
 				// apply lepton id to ll
                                 if (!looseLeptonSelectionNoIsoTTDil08(cms2.hyp_ll_id()[h], cms2.hyp_ll_index()[h])) continue;
+
+				// apply isolation to ll
+                                if (!passLeptonIsolationTTDil08(cms2.hyp_ll_id()[h], cms2.hyp_ll_index()[h])) continue;
 
 				// opposite charge
 				if (cms2.hyp_lt_charge()[h] * cms2.hyp_ll_charge()[h] > 0) continue;
