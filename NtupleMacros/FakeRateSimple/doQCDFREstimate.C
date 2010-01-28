@@ -17,107 +17,47 @@ void TestPrediction() {
   hist::deleteHistos();
   hist::loadHist("QCDFRplots.root");
    
-  TH1F *QCD_FRpt[2];
-  TH1F *QCD_FReta[2];
-  
-  TH1F *WJets_FOpt[2];
-  TH1F *WJets_FOeta[2];
-
-  TH1F *WJets_numpt[2];
-  TH1F *WJets_numeta[2];
-
   TH3F *WJets_nJets3D[2];
 
   TH1F *WJets_actualnJets[2];
   TH1F *WJets_predictednJets[2];
-
-  TH1F *WJets_predictedpt[2];
-  TH1F *WJets_predictedeta[2];
-  
   
   char *flavor[2] = {"el", "mu"};
   for(unsigned int i = 0; i < 2; i++) {
-    QCD_FRpt[i] = (TH1F*)gDirectory->Get(Form("QCD_FRpt_%s", flavor[i]));
-    QCD_FReta[i] = (TH1F*)gDirectory->Get(Form("QCD_FReta_%s", flavor[i]));
-    
-    WJets_FOpt[i] = (TH1F*)gDirectory->Get(Form("WJets_FOpt_%s", flavor[i]));
-    WJets_FOeta[i] = (TH1F*)gDirectory->Get(Form("WJets_FOeta_%s", flavor[i]));
-
-    WJets_numpt[i] = (TH1F*)gDirectory->Get(Form("WJets_numpt_%s", flavor[i]));
-    WJets_numeta[i] = (TH1F*)gDirectory->Get(Form("WJets_numeta_%s", flavor[i]));
-
     WJets_nJets3D[i] = (TH3F*)gDirectory->Get(Form("WJets_nJets3D_%s", flavor[i]));
 
     WJets_actualnJets[i] = (TH1F*)gDirectory->Get(Form("WJets_actualnJets_%s", flavor[i]));
     WJets_predictednJets[i] = (TH1F*)gDirectory->Get(Form("WJets_predictednJets_%s", flavor[i]));
   }      
   
-  Float_t pt[4] = {10,20,60,150};
-  Float_t eta[3] = {0, 1.479, 2.4};
-  WJets_predictedpt[0] = new TH1F(Form("WJets_predictedpt_%s", flavor[0]), 
-				  "Predicted Pt Distribution in WJets", 3, pt);
-  WJets_predictedeta[0] = new TH1F(Form("WJets_predictedeta_%s", flavor[0]), 
-				   "Predicted Eta Distribution in WJets", 2, eta);
-  
-  WJets_predictedpt[1] = new TH1F(Form("WJets_predictedpt_%s", flavor[1]), 
-				  "Predicted Pt Distribution in WJets", 3, pt);
-  WJets_predictedeta[1] = new TH1F(Form("WJets_predictedeta_%s", flavor[1]), 
-				   "Predicted Eta Distribution in WJets", 2, eta);
-  
-       
-    
-  for(unsigned int i = 0; i < 2 ; i++) {
-
-    for(int j = 1; j < QCD_FRpt[i]->GetNbinsX() + 1; j++) {
-      Float_t qcd       = QCD_FRpt[i]->GetBinContent(j);
-      Float_t qcd_err   = QCD_FRpt[i]->GetBinError(j);
-      Float_t wjets     = WJets_FOpt[i]->GetBinContent(j);
-      Float_t wjets_err = WJets_FOpt[i]->GetBinError(j);
-      Float_t temp = qcd*wjets;
-      float err2 = pow(qcd*wjets_err,2) + pow(qcd_err*wjets,2);
-      WJets_predictedpt[i]->SetBinContent(j, temp);
-      WJets_predictedpt[i]->SetBinError(j, sqrt(err2));
-    }
-    for(int j = 1; j < QCD_FReta[i]->GetNbinsX() + 1; j++) {
-      Float_t qcd       = QCD_FReta[i]->GetBinContent(j);
-      Float_t qcd_err   = QCD_FReta[i]->GetBinError(j);
-      Float_t wjets     = WJets_FOeta[i]->GetBinContent(j);
-      Float_t wjets_err = WJets_FOeta[i]->GetBinError(j);
-      Float_t temp = qcd*wjets;
-      float err2 = pow(qcd*wjets_err,2) + pow(qcd_err*wjets,2);
-      WJets_predictedeta[i]->SetBinContent(j, temp);
-      WJets_predictedeta[i]->SetBinError(j, sqrt(err2));
-    }
-    
-  }//flavor loop
   hist::color("WJets_actual", kRed);
   hist::color("WJets_num", kRed);
 
     
-  TCanvas *c1 = new TCanvas();
-  WJets_numeta[0]->Draw("e");
-  WJets_predictedeta[0]->Draw("samese");
-  hist::setrangey(c1);
-  c1->SaveAs("elPredictedeta.png");
+  //TCanvas *c1 = new TCanvas();
+  //WJets_numeta[0]->Draw("e");
+  //WJets_predictedeta[0]->Draw("samese");
+  //hist::setrangey(c1);
+  //c1->SaveAs("elPredictedeta.png");
   
-  TCanvas *c2 = new TCanvas();
-  WJets_numpt[0]->Draw("e");
-  WJets_predictedpt[0]->Draw("sames");
-  hist::setrangey(c2);
-  c2->SaveAs("elPredictedpt.png");
+  //TCanvas *c2 = new TCanvas();
+  //WJets_numpt[0]->Draw("e");
+  //WJets_predictedpt[0]->Draw("sames");
+  //hist::setrangey(c2);
+  //c2->SaveAs("elPredictedpt.png");
 
 
-  TCanvas *c21 = new TCanvas();
-  WJets_numeta[1]->Draw("e");
-  WJets_predictedeta[1]->Draw("samese");
-  hist::setrangey(c21);
-  c21->SaveAs("muPredictedeta.png");
+  //TCanvas *c21 = new TCanvas();
+  //WJets_numeta[1]->Draw("e");
+  //WJets_predictedeta[1]->Draw("samese");
+  //hist::setrangey(c21);
+  //c21->SaveAs("muPredictedeta.png");
 
-  TCanvas *c22 = new TCanvas();
-  WJets_numpt[1]->Draw("e");
-  WJets_predictedpt[1]->Draw("sames");
-  hist::setrangey(c22);
-  c22->SaveAs("muPredictedpt.png");
+  //TCanvas *c22 = new TCanvas();
+  //WJets_numpt[1]->Draw("e");
+  //WJets_predictedpt[1]->Draw("sames");
+  //hist::setrangey(c22);
+  //c22->SaveAs("muPredictedpt.png");
 
   TCanvas *c3 = new TCanvas();
   ((TH1F*)gDirectory->Get("WJets_actualnJets_el"))->SetMarkerStyle(3);
@@ -156,15 +96,15 @@ void TestPrediction() {
   QCD_FRpt_el->Draw();
   c7->SaveAs("elFRpt.png");
 
-  TCanvas *c8 = new TCanvas();
-  WJets_numeta[0]->Draw("e");
-  WJets_predictedeta[0]->Draw("samese");
-  c8->SaveAs("elPredictedeta.png");
+  //TCanvas *c8 = new TCanvas();
+  //WJets_numeta[0]->Draw("e");
+  //WJets_predictedeta[0]->Draw("samese");
+  //c8->SaveAs("elPredictedeta.png");
   
-  TCanvas *c9 = new TCanvas();
-  WJets_numpt[0]->Draw("e");
-  WJets_predictedpt[0]->Draw("sames");
-  c9->SaveAs("elPredictedpt.png");
+  //TCanvas *c9 = new TCanvas();
+  //WJets_numpt[0]->Draw("e");
+  //WJets_predictedpt[0]->Draw("sames");
+  //c9->SaveAs("elPredictedpt.png");
 
   TCanvas *c10 = new TCanvas();
   ((TH1F*)gDirectory->Get("WJets_actualnJets_mu"))->SetMarkerStyle(3);
@@ -175,7 +115,10 @@ void TestPrediction() {
   c10->SaveAs("munJetsPredicted.png");
 
   TCanvas *c11 = new TCanvas();
-  (TH1F*)gDirectory->Get("QCD_FRptvseta_mu")->Draw("LEGO2");
+  TH2F *QCDFRptvseta_mu = (TH2F*)gDirectory->Get("QCD_FRptvseta_mu");
+  QCDFRptvseta_mu->SetMinimum(0.);
+  QCDFRptvseta_mu->SetMaximum(0.2);
+  QCDFRptvseta_mu->Draw("LEGO2");
   c11->SaveAs("muFR2D.png");
 
   TCanvas *c12 = new TCanvas();
@@ -188,7 +131,6 @@ void TestPrediction() {
   TH1F *QCD_FReta_mu = (TH1F*)gDirectory->Get("QCD_FReta_mu");
   QCD_FReta_mu->Draw();
   c13->SaveAs("muFReta.png");
-
 
   TCanvas *c14 = new TCanvas();
   TH1F *QCD_FRpt_mu = gDirectory->Get("QCD_FRpt_mu");

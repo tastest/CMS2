@@ -99,49 +99,26 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix,
   using namespace std;
   
   // bins
-  Float_t nbins[6] = {0,1,2,3,4,5};
-  Float_t pt[4] = {10,20,60,150};
-  Float_t eta[3] = {0, 1.479, 2.4};
+  Float_t nbins[7] = {-0.5,0.5,1.5,2.5,3.5,4.5,5.5};
+  Float_t pt[17] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160};
+  Float_t eta[13] = {-3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3};
 
   //book Histograms
-  bookHistos(prefix.Data());
-  //also book the nJet histo
   char *suffix[2] =  {"el", "mu"};
-
-  h_predictednJets[0]  = new TH1F(Form("WJets_predictednJets_%s", suffix[0]),
-				  "predicted NJet distribution, FO object", 5, nbins);
-  h_actualnJets[0]     = new TH1F(Form("WJets_actualnJets_%s", suffix[0]), 
-				  "actual NJet distribution", 5, nbins);
-  h_nJets3D[0]          = new TH3F(Form("WJets_nJets3D_%s", suffix[0]),
-				   "3D histo to store error info", 
-				   5, nbins, 
-				   2, eta,
-				   3, pt);
-
-  h_FOnJets[0] = new TH1F(Form("WJets_FOnJets_%s", suffix[0]),
-			  Form("NJet distribution, FO. %s", suffix[0]),
-			  5, nbins);
-
+  for ( unsigned int suf = 0; suf < 2; ++suf ) {
+    h_predictednJets[suf]  = new TH1F(Form("WJets_predictednJets_%s", suffix[suf]),
+				    "predicted NJet distribution, FO object", 6, nbins);
+    h_actualnJets[suf]     = new TH1F(Form("WJets_actualnJets_%s", suffix[suf]), 
+				    "actual NJet distribution", 6, nbins);
+    h_actualnJets[suf]->Sumw2();
+    h_nJets3D[suf]          = new TH3F(Form("WJets_nJets3D_%s", suffix[suf]),
+				     "3D histo to store error info", 
+				     6, nbins, 
+				     12, eta,
+				     16, pt);
+  }
   
   
-  h_predictednJets[1]  = new TH1F(Form("WJets_predictednJets_%s", suffix[1]),
-				  "predicted NJet distribution, FO object", 5, nbins);
-  h_actualnJets[1]     = new TH1F(Form("WJets_actualnJets_%s", suffix[1]), 
-				  "actual NJet distribution", 5, nbins);
-  h_nJets3D[1]          = new TH3F(Form("WJets_nJets3D_%s", suffix[1]),
-				   "3D histo to store error info", 
-				   5, nbins, 
-				   2, eta,
-				   3, pt);
-
-
-  h_FOnJets[1] = new TH1F(Form("WJets_FOnJets_%s", suffix[1]),
-			  Form("NJet distribution, FO. %s",suffix[1]),
-			  5, nbins);
-			  
-  //DR plot btw el and mu
-  TH1F *h_dRelmu = new TH1F("h_dRelmu", "DR, el mu", 20, 0, 2.0);
-
   float probOfKeeping = 1./prescale;
 
   // Initialize the random number generator for the prescale
@@ -159,7 +136,6 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix,
   TIter fileIter(listOfFiles);
   int nAllEvents = 0;
   map<int,int> m_events;
-  Float_t counter = 0;
   while(TChainElement *currentFile = (TChainElement*)fileIter.Next() ) {
     TFile f(currentFile->GetTitle());
     TTree *tree = (TTree*)f.Get("Events");
@@ -168,8 +144,6 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix,
     unsigned int nLoop = nEntries;
     
     unsigned int z;
-
-    
 
     for( z = 0; z < nLoop; z++) {
 
@@ -187,8 +161,8 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix,
       cms2.GetEntry(z);
       ++nEventsTotal;
 
-      float weight = kFactor*cms2.evt_scale1fb()*0.1;
-      weight = 1.0;
+      float weight = kFactor*cms2.evt_scale1fb();
+      // weight = 1.0;
       
      
       for(unsigned int iHyp = 0; iHyp < cms2.hyp_p4().size(); iHyp++) {
@@ -198,13 +172,19 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix,
 	  continue;
         
 	int nJets = cms2.hyp_jets_p4()[iHyp].size();
+	//vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > caloJets;
+	// get the calo jets for this hyp
+	//caloJets.clear();
+	//caloJets = getCaloJets(iHyp) ;
+	
+	//int nJets = caloJets.size();
+
 	nJets = min(nJets, 5);
 	int hyp_type = cms2.hyp_type()[iHyp];
 
 	//emu case
 	if(hyp_type == 0 || hyp_type == 3)
 	  continue;
-	
 	
 	int iEl = 0;
 	int iMu = 0;
@@ -223,87 +203,52 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix,
 	//if(isTrueLeptonfromW(13)) {
 	//look only at global mus!
 	//don't look at cases where the electron comes from a mu (mu->mu+gamma->electron)
-	if(isTrueMuFromW(iMu) && (2 & cms2.mus_type()[iMu]) && cms2.mus_p4()[iMu].Pt() > 10.) {
+	//	if(trueMuonFromW_WJets(iMu) && (2 & cms2.mus_type()[iMu]) && cms2.mus_p4()[iMu].Pt() > 10.) {
+	if(trueMuonFromW(iMu)) {
 	  
-	  //for(int iEl = 0 ; iEl < cms2.els_p4().size(); iEl++) {
+	  if( TMath::Max(cms2.hyp_lt_p4()[iHyp].pt(),cms2.hyp_ll_p4()[iHyp].pt()) > 20. ) {
+	    if( TMath::Min(cms2.hyp_lt_p4()[iHyp].pt(),cms2.hyp_ll_p4()[iHyp].pt()) > 10.) {
 	  
-	  Double_t pt = cms2.els_p4()[iEl].Pt();
-	  Double_t eta = cms2.els_p4()[iEl].Eta();
+	      Double_t pt = cms2.els_p4()[iEl].Pt();
+	      Double_t eta = cms2.els_p4()[iEl].Eta();
 	  
-	  if(isElFromMu(iEl)) {
-//	    if(isNumElTTDil08(iEl)) {
-	    if(isNumElSUSY09(iEl)) {
-	      Double_t deta = cms2.mus_p4()[iMu].Eta() - eta;
-	      Double_t dphi = fabs(cms2.mus_p4()[iMu].Phi() - cms2.els_p4()[iEl].Phi());
-	      if(dphi > TMath::Pi())
-		dphi = 2*TMath::Pi() - dphi;
-	      h_dRelmu->Fill(sqrt(deta*deta + dphi*dphi) );
-	    }
-	    continue;
-	  }
-	  
-//	  if(!isFakeableElTTDil08(iEl))
-	  if(!isFakeableElSUSY09(iEl))
-	     continue;
+	      if(isElFromMu(iEl))
+		continue;
 
-	  h_FOptvseta[0]->Fill(fabs(eta), min(pt,149.0), weight);
-	  h_FOpt[0]     ->Fill(min(pt,149.0), weight);
-	  h_FOeta[0]    ->Fill(fabs(eta), weight);
-	  h_FOnJets[0]  ->Fill(nJets, weight);
-	  
-	  
-	  Float_t FR    = GetValueTH2F(fabs(eta), pt, h_FR[0]);
-	  Float_t FRErr = GetValueTH2F(fabs(eta), pt, h_FRErr[0]);
-	  h_predictednJets[0]->Fill(nJets, weight*FR);
-	  h_nJets3D[0]        ->Fill(nJets, fabs(eta), pt, weight*FRErr);
-	  if(nJets == 1 && pt < 40 && fabs(eta) < 0.6 )
-	    counter++;
-	  
-//	  if(!isNumElTTDil08 (iEl))
-	  if(!isNumElSUSY09(iEl))
-	    continue;
-	
-	  h_numptvseta[0]->Fill(fabs(eta), min(pt,149.0), weight);
-	  h_numpt[0]     ->Fill(min(pt,149.0), weight);
-	  h_numeta[0]    ->Fill(fabs(eta), weight);
-	  
-	  h_actualnJets[0]->Fill(nJets, weight);
-	  
+	      if(isFakeableElSUSY09(iEl) && !isNumElSUSY09(iEl)) {
+		Float_t FR    = GetValueTH2F(fabs(eta), min(pt,149.0), h_FR[0]);
+		Float_t FRErr = GetValueTH2F(fabs(eta), pt, h_FRErr[0]);
+		h_predictednJets[0]->Fill(nJets, weight*FR/(1-FR));
+		h_nJets3D[0]        ->Fill(nJets, fabs(eta), pt, weight*FRErr);
+	      }
+	      if(isNumElSUSY09(iEl)) {
+		h_actualnJets[0]->Fill(nJets, weight);
+	      }
+	    }
+	  }
 	}//is muon from W?
       
       
-	if(isTrueElFromW(iEl) && cms2.els_p4()[iEl].Pt() > 10.) {
+	if(trueElectronFromW_WJets(iEl) && cms2.els_p4()[iEl].Pt() > 10.) {
 	  
 	  Double_t pt = cms2.mus_p4()[iMu].Pt();
-	    Double_t eta = cms2.mus_p4()[iMu].Eta();
+	  Double_t eta = cms2.mus_p4()[iMu].Eta();
 	  
-	//    if(!isFakeableMuTTDil08(iMu))
-	    if(!isFakeableMuSUSY09(iMu))
-	      continue;
+	  if(!isFakeableMuSUSY09(iMu))
+	    continue;
 	    
-	     if(isTrueMuFromW(iMu) )
+	  if(trueMuonFromW_WJets(iMu) )
 	    cout << "SHOULD NEVER GET HERE!!!!!!" << endl;
 
-	    
-	    //if we get here, fill the FO histos
-	    h_FOptvseta[1]->Fill(fabs(eta), min(pt,149.0), weight);
-	    h_FOpt[1]     ->Fill(min(pt,149.0), weight);
-	    h_FOeta[1]    ->Fill(fabs(eta), weight);
-	    h_FOnJets[1]  ->Fill(nJets);
-
-	    Float_t FR    = GetValueTH2F(fabs(eta), pt, h_FR[1]);
-	    Float_t FRErr = GetValueTH2F(fabs(eta), pt, h_FRErr[1]);
-	    h_predictednJets[1]->Fill(nJets, weight*FR);
-	    h_nJets3D[1]        ->Fill(nJets, fabs(eta), pt, weight*FRErr);
-	//    if( !isNumMuTTDil08(iMu) )
-	    if( !isNumMuSUSY09(iMu) )
-	      continue;
+	  Float_t FR    = GetValueTH2F(fabs(eta), pt, h_FR[1]);
+	  Float_t FRErr = GetValueTH2F(fabs(eta), pt, h_FRErr[1]);
+	  h_predictednJets[1]->Fill(nJets, weight*FR);
+	  h_nJets3D[1]        ->Fill(nJets, fabs(eta), pt, weight*FRErr);
+	  
+	  if( !isNumMuSUSY09(iMu) )
+	    continue;
 	  		
-	    h_numptvseta[1]->Fill(fabs(eta), min(pt,149.0), weight);
-	    h_numpt[1]     ->Fill(min(pt,149.0), weight);
-	    h_numeta[1]    ->Fill(fabs(eta), weight);
-
-	    h_actualnJets[1]->Fill(nJets, weight);
+	  h_actualnJets[1]->Fill(nJets, weight);
 
 	}//is true electron from W
       }//hyp loop
@@ -317,26 +262,6 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix,
 
   for(unsigned int i = 0; i < 2; i++) {
     
-    h_FOptvseta[i]->Sumw2();
-    h_FOeta[i]->Sumw2();
-    h_FOpt[i]->Sumw2();
-    
-    h_numptvseta[i]->Sumw2();
-    h_numeta[i]->Sumw2();
-    h_numpt[i]->Sumw2();
-
-    h_FRptvseta[i]->Divide(h_numptvseta[i], h_FOptvseta[i], 1.,1.,"B");
-    h_FRpt[i]->Divide(h_numpt[i], h_FOpt[i], 1., 1., "B");
-    h_FReta[i]->Divide(h_numeta[i], h_FOeta[i], 1., 1., "B");
-    
-    //fill the FR errors                  
-    for(unsigned int ptbin = 1; ptbin < h_FRpt[i]->GetNbinsX()+1; ptbin++) {
-      for(unsigned int etabin = 1; etabin < h_FReta[i]->GetNbinsX() + 1; etabin++) {
-	Float_t err = h_FRptvseta[i]->GetBinError(etabin, ptbin);
-	h_FRErrptvseta[i]->SetBinContent(etabin, ptbin, err);
-      }//eta loop
-    }//pt loop
-
     //do the errors for the WJets
     Float_t totalErr = 0.;
     for(unsigned int ieta = 1; ieta < h_nJets3D[i]->GetNbinsY() + 1; ieta++) {
