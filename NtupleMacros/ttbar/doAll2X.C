@@ -17,6 +17,7 @@ void doAll2X() {
 	gROOT->ProcessLine(".L CMS2.cc+");
 
 	gROOT->ProcessLine(".L ../CORE/electronSelections.cc+");
+	gROOT->ProcessLine(".L ../CORE/utilities.cc+");
 	gROOT->ProcessLine(".L ../CORE/selections.cc+");
 
 	//
@@ -35,7 +36,7 @@ void doAll2X() {
 	//
 	// ttbar
 	TChain *chain_ttbar = new TChain("Events");
-	chain_ttbar->Add("/store/disk02/cms2-V02-00-08/TTbar_Summer09-MC_31X_V3_7TeV-v1/merged_ntuple*.root");
+	chain_ttbar->Add("/store/disk02/cms2-V02-00-12/TTBar_Summer09-MC_31X_V3_7TeV-v1/merged_ntuple*.root");
 
 	// 
 	// do looping
