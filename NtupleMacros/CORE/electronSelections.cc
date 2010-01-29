@@ -175,6 +175,18 @@ float electronIsolation_relsusy(const unsigned int index, bool use_calo_iso)
 	return sum/max(pt, 20.);
 }
 
+float electronIsolation_relsusy_cand0(const unsigned int index, bool use_calo_iso)
+{
+        float sum = cms2.els_tkIso().at(index);
+        if (use_calo_iso) {
+                if (abs(cms2.els_etaSC().at(index)) > 1.5) sum += max(0., (cms2.els_ecalIso().at(index) -1.));
+                if (abs(cms2.els_etaSC().at(index)) <= 1.5) sum += max(0., (cms2.els_ecalIso().at(index) -1.));
+                sum += cms2.els_hcalIso().at(index);
+        }
+        double pt = cms2.els_p4().at(index).pt();
+        return sum/max(pt, 20.);
+}
+
 //
 //conversion rejection
 //
