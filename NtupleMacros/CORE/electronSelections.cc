@@ -50,7 +50,7 @@ bool electronId_cand01(const unsigned int index)
 	//
 	// apply cuts
 	//
-        if (abs(cms2.els_etaSC()[index]) < 1.5)
+        if (abs(cms2.els_etaSC()[index]) < 1.5) {
 	//if (cms2.els_fiduciality()[index] & (1<<ISEB)) {
 		if (fabs(cms2.els_dEtaIn()[index] > dEtaInThresholds[0])) 	return false;
 		if (fabs(cms2.els_dPhiIn()[index] > dPhiInThresholds[0])) 	return false;
@@ -58,7 +58,7 @@ bool electronId_cand01(const unsigned int index)
 		if ((cms2.els_e2x5Max()[index]/cms2.els_e5x5()[index]) < e2x5Over5x5Thresholds[0]) return false;
 		return true;
 	}
-        if (abs(cms2.els_etaSC()[index]) > 1.5)
+        if (abs(cms2.els_etaSC()[index]) > 1.5) {
 	//if (cms2.els_fiduciality()[index] & (1<<ISEE)) {
 		if (fabs(cms2.els_dEtaIn()[index] > dEtaInThresholds[0])) 	return false;
 		if (fabs(cms2.els_dPhiIn()[index] > dPhiInThresholds[0])) 	return false;
@@ -80,12 +80,12 @@ bool electronImpact_cand01(const unsigned int index)
         //
         // apply cut
         //
-        if (abs(cms2.els_etaSC()[index]) < 1.5)
+        if (abs(cms2.els_etaSC()[index]) < 1.5) {
         //if (cms2.els_fiduciality()[index] & (1<<ISEB)) {
 		if (cms2.els_d0corr()[index] > d0Thresholds[0]) return false;
                 return true;
         }
-        if (abs(cms2.els_etaSC()[index]) > 1.5)
+        if (abs(cms2.els_etaSC()[index]) > 1.5) {
         //if (cms2.els_fiduciality()[index] & (1<<ISEE)) {
                 if (cms2.els_d0corr()[index] > d0Thresholds[1]) return false;
                 return true;
@@ -114,7 +114,7 @@ bool electronIsolation_cand01(const unsigned int index)
 	//
 
 
-	if (abs(cms2.els_etaSC()[index]) < 1.5)
+	if (abs(cms2.els_etaSC()[index]) < 1.5) {
 	//if (cms2.els_fiduciality()[index] & (1<<ISEB)) {
                 if (cms2.els_tkIso()[index] > tkThresholds[0])    return false;
 		//if (cms2.els_tkJuraIso()[index] > tkThresholds[0]) 	return false;
@@ -122,7 +122,7 @@ bool electronIsolation_cand01(const unsigned int index)
 		if (cms2.els_ecalIso()[index] 	> hcalThresholds[0]) 	return false;
 		return true;
 	}
-        if (abs(cms2.els_etaSC()[index]) > 1.5)
+        if (abs(cms2.els_etaSC()[index]) > 1.5) {
 	//if (cms2.els_fiduciality()[index] & (1<<ISEE)) {
                 if (cms2.els_tkIso()[index] > tkThresholds[0])      return false;
 		//if (cms2.els_tkJuraIso()[index] > tkThresholds[0])      return false;
