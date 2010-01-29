@@ -31,9 +31,14 @@
 #include <fstream>
 #include "TChain.h"
 
-#include "CORE/CMS2.cc"
-#include "CORE/selections.cc"
-#include "CORE/utilities.cc"
+//#include "CORE/CMS2.cc"
+//#include "CORE/selections.cc"
+//#include "CORE/utilities.cc"
+
+#include "../CORE/CMS2.cc"
+#include "../CORE/selections.cc"
+#include "../CORE/utilities.cc"
+
 //#include "Tools/fakerates.cc"
 #include "QCDFRestimator.h"
 
@@ -42,10 +47,10 @@
 typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >  VofP4;
 
 // this is Jake's magic to sort jets by Pt
-Bool_t comparePt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1,
-                 ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv2) {
-  return lv1.pt() > lv2.pt();
-}
+//Bool_t comparePt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1,
+//                 ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv2) {
+//  return lv1.pt() > lv2.pt();
+//}
 
 
 //------------------------------------------------------------
