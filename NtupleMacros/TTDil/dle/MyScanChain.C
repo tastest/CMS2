@@ -20,7 +20,7 @@
 
 // CMS2 includes
 #include "CMS2.h"
-//#include "../../CORE/electronSelections.h"
+#include "../../CORE/electronSelections.h"
 #include "../../CORE/selections.h"
 
 #include "../../Tools/DileptonHypType.h"
