@@ -41,6 +41,9 @@ bool additionalZveto();
 bool isDYee();
 bool isDYmm();
 bool isDYtt();
+bool isWW();
+bool isWZ();
+bool isZZ();
 int nTrkJets(int i_hyp);
 bool passTrkJetVeto(int i_hyp);
 unsigned int nJPTs(int i_hyp, double etThreshod);
@@ -154,5 +157,5 @@ bool isFakeableMuTTDil08(int iMu);
 bool trueGammaFromMuon(int electron);
 
 bool conversionElectron(int electron);
-
+int getVVType();
 #endif
