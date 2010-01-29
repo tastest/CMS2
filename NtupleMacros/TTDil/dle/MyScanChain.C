@@ -20,7 +20,7 @@
 
 // CMS2 includes
 #include "CMS2.h"
-#include "../../CORE/electronSelections.h"
+//#include "../../CORE/electronSelections.h"
 #include "../../CORE/selections.h"
 
 #include "../../Tools/DileptonHypType.h"
@@ -39,6 +39,7 @@ double dRbetweenVectors(const LorentzVector &vec1,
 } 
 
 //   jets_p4   
+/*
 std::vector<LorentzVector> getCorCaloJets(int i_hyp) {
   std::vector<LorentzVector> calo_jets;
   calo_jets.clear();
@@ -58,7 +59,7 @@ std::vector<LorentzVector> getCorCaloJets(int i_hyp) {
   }
   return calo_jets;
 }
-
+*/
 
 enum DileptonHypType hyp_typeToHypType (int hyp_type)
 {
@@ -148,31 +149,31 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
         TH1F *h1_hyp_lt_ee_E2x5MaxOver5x5[4];
 
         FormatHist(h1_hyp_lt_eb_hoe, sampleName, "hyp_lt_eb_hoe", 50, 0.0, 0.05);
-        FormatHist(h1_hyp_lt_ee_hoe, sampleName, "hyp_lt_eb_hoe", 50, 0.0, 0.05);
+        FormatHist(h1_hyp_lt_ee_hoe, sampleName, "hyp_lt_ee_hoe", 50, 0.0, 0.05);
 
         FormatHist(h1_hyp_lt_eb_sigmaIEtaIEta, sampleName, "hyp_lt_eb_sigmaIEtaIEta", 50, 0.0, 0.05);
-        FormatHist(h1_hyp_lt_ee_sigmaIEtaIEta, sampleName, "hyp_lt_eb_sigmaIEtaIEta", 50, 0.0, 0.05);
+        FormatHist(h1_hyp_lt_ee_sigmaIEtaIEta, sampleName, "hyp_lt_ee_sigmaIEtaIEta", 50, 0.0, 0.05);
 
         FormatHist(h1_hyp_lt_eb_dEtaIn, sampleName, "hyp_lt_eb_dEtaIn", 100, -0.05, 0.05);
-        FormatHist(h1_hyp_lt_ee_dEtaIn, sampleName, "hyp_lt_eb_dEtaIn", 100, -0.05, 0.05);
+        FormatHist(h1_hyp_lt_ee_dEtaIn, sampleName, "hyp_lt_ee_dEtaIn", 100, -0.05, 0.05);
 
         FormatHist(h1_hyp_lt_eb_dPhiIn, sampleName, "hyp_lt_eb_dPhiIn", 100, -0.05, 0.05);
-        FormatHist(h1_hyp_lt_ee_dPhiIn, sampleName, "hyp_lt_eb_dPhiIn", 100, -0.05, 0.05);
+        FormatHist(h1_hyp_lt_ee_dPhiIn, sampleName, "hyp_lt_ee_dPhiIn", 100, -0.05, 0.05);
 
         FormatHist(h1_hyp_lt_eb_d0, sampleName, "hyp_lt_eb_d0", 100, -0.05, 0.05);
-        FormatHist(h1_hyp_lt_ee_d0, sampleName, "hyp_lt_eb_d0", 100, -0.05, 0.05);
+        FormatHist(h1_hyp_lt_ee_d0, sampleName, "hyp_lt_ee_d0", 100, -0.05, 0.05);
 
         FormatHist(h1_hyp_lt_eb_E2x5MaxOver5x5, sampleName, "hyp_lt_eb_E2x5MaxOver5x5", 110, 0.0, 1.1);
-        FormatHist(h1_hyp_lt_ee_E2x5MaxOver5x5, sampleName, "hyp_lt_eb_E2x5MaxOver5x5", 110, 0.0, 1.1);
+        FormatHist(h1_hyp_lt_ee_E2x5MaxOver5x5, sampleName, "hyp_lt_ee_E2x5MaxOver5x5", 110, 0.0, 1.1);
 
         TH1F *h1_hyp_lt_eb_pt_idnew[4];
         TH1F *h1_hyp_lt_ee_pt_idnew[4];
         TH1F *h1_hyp_lt_eb_pt_idold[4];
         TH1F *h1_hyp_lt_ee_pt_idold[4];
         FormatHist(h1_hyp_lt_eb_pt_idnew, sampleName, "hyp_lt_eb_pt_idnew", 20, 0.0, 100.0);
-        FormatHist(h1_hyp_lt_eb_pt_idold, sampleName, "hyp_lt_eb_pt_idold", 20, 0.0, 100.0);
-
         FormatHist(h1_hyp_lt_ee_pt_idnew, sampleName, "hyp_lt_ee_pt_idnew", 20, 0.0, 100.0);
+
+        FormatHist(h1_hyp_lt_eb_pt_idold, sampleName, "hyp_lt_eb_pt_idold", 20, 0.0, 100.0);
         FormatHist(h1_hyp_lt_ee_pt_idold, sampleName, "hyp_lt_ee_pt_idold", 20, 0.0, 100.0);
 
 	// file loop
@@ -250,7 +251,7 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 				bool ltPassNew = false;
 				if (abs(cms2.hyp_lt_id()[h]) == 11) {
 					if (cms2.els_egamma_looseId().at(cms2.hyp_lt_index()[h])) ltPassOld = true;
-					if (electronId_cand01(cms2.hyp_lt_index()[h])) ltPassNew = true;
+					//if (electronId_cand01(cms2.hyp_lt_index()[h])) ltPassNew = true;
 				}
 
                                 //
@@ -293,6 +294,7 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 			// perform hypothesis disambiguation
 			//
 
+/*
 			int strasbourgDilType = 0;
 			if (!hyp_index_selected.size()) continue;
 			int hyp = eventDilIndexByWeightTTDil08(hyp_index_selected, strasbourgDilType, false, false);
@@ -325,6 +327,7 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
                                 cands_count[DILEPTON_ALL] ++;
 
 			}
+*/
 
 
 		} // end loop on files
