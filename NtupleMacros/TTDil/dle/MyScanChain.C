@@ -190,14 +190,28 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
         FormatHist(h1_hyp_lt_eb_pt_idold, sampleName, "hyp_lt_eb_pt_idold", 20, 0.0, 100.0);
         FormatHist(h1_hyp_lt_ee_pt_idold, sampleName, "hyp_lt_ee_pt_idold", 20, 0.0, 100.0);
 
+        TH1F *h1_hyp_lt_eb_pt_conv[4];
+        TH1F *h1_hyp_lt_ee_pt_conv[4];
+        TH1F *h1_hyp_lt_eb_pt_isonew_cand1[4];
+        TH1F *h1_hyp_lt_ee_pt_isonew_cand1[4];
         TH1F *h1_hyp_lt_eb_pt_isonew[4];
         TH1F *h1_hyp_lt_ee_pt_isonew[4];
         TH1F *h1_hyp_lt_eb_pt_isoold[4];
         TH1F *h1_hyp_lt_ee_pt_isoold[4];
+        FormatHist(h1_hyp_lt_eb_pt_isonew_cand1, sampleName, "hyp_lt_eb_pt_isonew_cand1", 20, 0.0, 100.0);
+        FormatHist(h1_hyp_lt_ee_pt_isonew_cand1, sampleName, "hyp_lt_ee_pt_isonew_cand1", 20, 0.0, 100.0);
         FormatHist(h1_hyp_lt_eb_pt_isonew, sampleName, "hyp_lt_eb_pt_isonew", 20, 0.0, 100.0);
         FormatHist(h1_hyp_lt_ee_pt_isonew, sampleName, "hyp_lt_ee_pt_isonew", 20, 0.0, 100.0);
         FormatHist(h1_hyp_lt_eb_pt_isoold, sampleName, "hyp_lt_eb_pt_isoold", 20, 0.0, 100.0);
         FormatHist(h1_hyp_lt_ee_pt_isoold, sampleName, "hyp_lt_ee_pt_isoold", 20, 0.0, 100.0);
+        FormatHist(h1_hyp_lt_eb_pt_conv, sampleName, "hyp_lt_eb_pt_conv", 20, 0.0, 100.0);
+        FormatHist(h1_hyp_lt_ee_pt_conv, sampleName, "hyp_lt_ee_pt_conv", 20, 0.0, 100.0);
+
+
+        TH1F *h1_hyp_lt_eb_pt_id1_iso1_conv[4];
+        TH1F *h1_hyp_lt_ee_pt_id1_iso1_conv[4];
+        FormatHist(h1_hyp_lt_eb_pt_id1_iso1_conv, sampleName, "hyp_lt_eb_pt_id1_iso1_conv", 20, 0.0, 100.0);
+        FormatHist(h1_hyp_lt_ee_pt_id1_iso1_conv, sampleName, "hyp_lt_ee_pt_id1_iso1_conv", 20, 0.0, 100.0);
 
 	// file loop
 	//
@@ -283,11 +297,15 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 				bool ltPassNew = false;
 				bool relSusyIso = false;
 				bool relSusyIso_cand0 = false;
+				bool relSusyIso_cand1 = false;
+				bool isConv = false;
 				if (abs(cms2.hyp_lt_id()[h]) == 11) {
 					if (cms2.els_egamma_looseId().at(cms2.hyp_lt_index()[h])) ltPassOld = true;
 					if (electronId_cand01(cms2.hyp_lt_index()[h])) ltPassNew = true;
 					if (electronIsolation_relsusy(cms2.hyp_lt_index()[h], true) < 0.10) relSusyIso = true;
                                         if (electronIsolation_relsusy_cand0(cms2.hyp_lt_index()[h], true) < 0.10) relSusyIso_cand0 = true;
+                                        if (electronIsolation_relsusy_cand1(cms2.hyp_lt_index()[h], true) < 0.10) relSusyIso_cand1 = true;
+					if (isFromConversionPartnerTrack(cms2.hyp_lt_index()[h])) isConv = true;
 				}
 
                                 //
@@ -298,12 +316,18 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
                                		if (ltPassNew) Fill(h1_hyp_lt_ee_pt_idnew, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
 					if (relSusyIso) Fill(h1_hyp_lt_ee_pt_isoold, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
                                         if (relSusyIso_cand0) Fill(h1_hyp_lt_ee_pt_isonew, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+                                        if (relSusyIso_cand1) Fill(h1_hyp_lt_ee_pt_isonew_cand1, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+                                        if (relSusyIso_cand1 && ltPassNew && !isConv) Fill(h1_hyp_lt_ee_pt_id1_iso1_conv, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+					if (!isConv) Fill(h1_hyp_lt_ee_pt_conv, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
 				}
 				if (abs(cms2.hyp_lt_p4()[h].eta()) < 1.5)  {
                                        	if (ltPassOld) Fill(h1_hyp_lt_eb_pt_idold, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
                                		if (ltPassNew) Fill(h1_hyp_lt_eb_pt_idnew, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
                                         if (relSusyIso) Fill(h1_hyp_lt_eb_pt_isoold, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
                                         if (relSusyIso_cand0) Fill(h1_hyp_lt_eb_pt_isonew, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+                                        if (relSusyIso_cand1) Fill(h1_hyp_lt_eb_pt_isonew_cand1, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+					if (relSusyIso_cand1 && ltPassNew && !isConv) Fill(h1_hyp_lt_eb_pt_id1_iso1_conv, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+                                        if (!isConv) Fill(h1_hyp_lt_eb_pt_conv, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
 				}
 				//
 				//
