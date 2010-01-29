@@ -230,7 +230,8 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
                                 DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[h]);
 
 				// apply truth match
-				if (abs(cms2.hyp_lt_id()[h]) == 11 && !(abs(cms2.hyp_lt_mc_id()[h]) == 11));
+				if (abs(cms2.hyp_lt_id()[h]) == 11 && 
+					!((abs(cms2.hyp_lt_mc_id()[h]) == 11) &&abs(cms2.hyp_lt_mc_motherid()[h]) == 24) );
 
 				// apply part of electron denominator first here
 				if (abs(cms2.hyp_lt_id()[h]) == 11)
