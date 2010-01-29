@@ -172,11 +172,11 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
         FormatHist(h1_hyp_lt_eb_E2x5MaxOver5x5, sampleName, "hyp_lt_eb_E2x5MaxOver5x5", 110, 0.0, 1.1);
         FormatHist(h1_hyp_lt_ee_E2x5MaxOver5x5, sampleName, "hyp_lt_ee_E2x5MaxOver5x5", 110, 0.0, 1.1);
 
-        FormatHist(h1_hyp_lt_eb_ecalIso, sampleName, "hyp_lt_eb_ecalIso", 100, 0, 25);
+        FormatHist(h1_hyp_lt_eb_ecalIso, sampleName, "hyp_lt_eb_ecalIso", 100, 0, 10);
         FormatHist(h1_hyp_lt_eb_hcalIso, sampleName, "hyp_lt_eb_hcalIso", 100, 0, 25);
         FormatHist(h1_hyp_lt_eb_tkIso, sampleName, "hyp_lt_eb_tkIso", 100, 0, 25);
 
-        FormatHist(h1_hyp_lt_ee_ecalIso, sampleName, "hyp_lt_ee_ecalIso", 100, 0, 25);
+        FormatHist(h1_hyp_lt_ee_ecalIso, sampleName, "hyp_lt_ee_ecalIso", 100, 0, 10);
         FormatHist(h1_hyp_lt_ee_hcalIso, sampleName, "hyp_lt_ee_hcalIso", 100, 0, 25);
         FormatHist(h1_hyp_lt_ee_tkIso, sampleName, "hyp_lt_ee_tkIso", 100, 0, 25);
 
