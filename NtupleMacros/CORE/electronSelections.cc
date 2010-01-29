@@ -179,7 +179,7 @@ float electronIsolation_relsusy_cand0(const unsigned int index, bool use_calo_is
 {
         float sum = cms2.els_tkIso().at(index);
         if (use_calo_iso) {
-                if (abs(cms2.els_etaSC().at(index)) > 1.5) sum += max(0., (cms2.els_ecalIso().at(index) -1.));
+                if (abs(cms2.els_etaSC().at(index)) > 1.5) sum += cms2.els_ecalIso().at(index);
                 if (abs(cms2.els_etaSC().at(index)) <= 1.5) sum += max(0., (cms2.els_ecalIso().at(index) -1.));
                 sum += cms2.els_hcalIso().at(index);
         }
