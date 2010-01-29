@@ -274,7 +274,7 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 				bool ltPassNew = false;
 				if (abs(cms2.hyp_lt_id()[h]) == 11) {
 					if (cms2.els_egamma_looseId().at(cms2.hyp_lt_index()[h])) ltPassOld = true;
-					//if (electronId_cand01(cms2.hyp_lt_index()[h])) ltPassNew = true;
+					if (electronId_cand01(cms2.hyp_lt_index()[h])) ltPassNew = true;
 				}
 
                                 //
