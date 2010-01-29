@@ -231,7 +231,7 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 
 				// apply truth match
 				if (abs(cms2.hyp_lt_id()[h]) == 11 && 
-					!((abs(cms2.hyp_lt_mc_id()[h]) == 11) &&abs(cms2.hyp_lt_mc_motherid()[h]) == 24) );
+					!((abs(cms2.hyp_lt_mc_id()[h]) == 11) && abs(cms2.hyp_lt_mc_motherid()[h]) == 24) ) continue;
 
 				// apply part of electron denominator first here
 				if (abs(cms2.hyp_lt_id()[h]) == 11)
