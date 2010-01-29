@@ -1,4 +1,5 @@
 //now make the source file
+#include "doAnalysis.h"
 #include <algorithm>
 #include <iostream>
 #include <fstream>
@@ -24,72 +25,15 @@
 using namespace std;
 
 #ifndef __CINT__
-#include "../CORE/CMS2.cc"
-#include "../CORE/utilities.cc"
-#include "../CORE/selections.cc"
+#include "CORE/CMS2.h"
+#include "CORE/utilities.h"
+#include "CORE/selections.h"
 #endif
-
-TH1F* hypos_total;
-TH1F* hypos_total_weighted;
-
-enum Sample {WW, WZ, ZZ, Wjets, DYee, DYmm, DYtt, ttbar, tW}; // signal samples
-enum Hypothesis {MM, EM, EE, ALL}; // hypothesis types (em and me counted as same) and all
 
 // this is Jake's magic to sort jets by Pt
 Bool_t comparePt(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv1, 
                  ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lv2) {
    return lv1.pt() > lv2.pt();
-}
-
-struct DorkyEventIdentifier {
-     // this is a workaround for not having unique event id's in MC
-     unsigned long int run, event, lumi;
-     float trks_d0;
-     float hyp_lt_pt, hyp_lt_eta, hyp_lt_phi;
-     bool operator < (const DorkyEventIdentifier &) const;
-     bool operator == (const DorkyEventIdentifier &) const;
-};
-
-bool DorkyEventIdentifier::operator < (const DorkyEventIdentifier &other) const
-{
-     if (run != other.run)
-	  return run < other.run;
-     if (event != other.event)
-	  return event < other.event;
-     // the floating point numbers are not easy, because we're
-     // comapring ones that are truncated (because they were written
-     // to file and read back in) with ones that are not truncated.
-     if (fabs(trks_d0 - other.trks_d0) > 1e-6 * trks_d0)
-	  return trks_d0 < other.trks_d0;
-     if (fabs(hyp_lt_pt - other.hyp_lt_pt) > 1e-6 * hyp_lt_pt)
-	  return hyp_lt_pt < other.hyp_lt_pt;
-     if (fabs(hyp_lt_eta - other.hyp_lt_eta) > 1e-6 * hyp_lt_eta)
-	  return hyp_lt_eta < other.hyp_lt_eta;
-     if (fabs(hyp_lt_phi - other.hyp_lt_phi) > 1e-6 * hyp_lt_phi)
-	  return hyp_lt_phi < other.hyp_lt_phi;
-     // if the records are exactly the same, then r1 is not less than
-     // r2.  Duh!
-     return false;
-}
-
-bool DorkyEventIdentifier::operator == (const DorkyEventIdentifier &other) const
-{
-     if (run != other.run)
-	  return false;
-     if (event != other.event)
-	  return false;
-     // the floating point numbers are not easy, because we're
-     // comapring ones that are truncated (because they were written
-     // to file and read back in) with ones that are not truncated.
-     if (fabs(trks_d0 - other.trks_d0) > 1e-6 * trks_d0)
-	  return false;
-     if (fabs(hyp_lt_pt - other.hyp_lt_pt) > 1e-6 * hyp_lt_pt)
-	  return false;
-     if (fabs(hyp_lt_eta - other.hyp_lt_eta) > 1e-6 * hyp_lt_eta)
-	  return false;
-     if (fabs(hyp_lt_phi - other.hyp_lt_phi) > 1e-6 * hyp_lt_phi)
-	  return false;
-     return true;
 }
 
 static std::set<DorkyEventIdentifier> already_seen;
@@ -100,55 +44,8 @@ bool is_duplicate (const DorkyEventIdentifier &id)
      return !ret.second;
 }
 
-// filter events by process
-bool filterByProcess( enum Sample sample ) {
-  switch (sample) {
-  case DYee: 
-    return isDYee();
-  case DYmm:
-    return isDYmm();
-  case DYtt:
-    return isDYtt();
-  case WW:
-    return isWW();
-  case WZ:
-    return isWZ();
-  case ZZ:
-    return isZZ();
-  default:
-    return true;
-  }
-}
-
-bool isIdentified( enum Sample sample ) {
-  switch (sample) {
-  case DYee:
-  case DYmm:
-  case DYtt:
-    return getDrellYanType()!=999;
-  case WW:
-  case WZ:
-  case ZZ:
-    return getVVType()!=999;
-  default:
-    return true;
-  }
-}
-
-// filter candidates by hypothesis
-Hypothesis filterByHypothesis( int candidate ) {
-  switch (candidate) {
-  case 0:
-    return MM;
-  case 1: case 2:
-    return EM;
-  case 3:
-    return EE;
-  }
-  cout << "Unknown type: " << candidate << "Abort" << endl;
-  assert(0);
-  return MM;
-}
+TH1F* hypos_total;
+TH1F* hypos_total_weighted;
 
 //  Book histograms...
 //  Naming Convention:
@@ -239,21 +136,6 @@ TH1F* hForwardBquarkEtaAfterVeto;
 // fkw September 2008 final hist used for muon tags estimate of top bkg
 TH2F* hextramuonsvsnjet[4];
 
-struct hypo_monitor{
-  std::vector<std::pair<std::string,unsigned int> > counters;
-  void count(unsigned int index, const char* name){
-    unsigned int current_size = counters.size();
-    for ( unsigned int i=current_size; i<=index; ++i ) 
-      counters.push_back( std::pair<std::string,unsigned int>("",0) );
-    counters[index].first = name;
-    counters[index].second++;
-  }
-  void print(){
-    for ( unsigned int i=0; i<counters.size(); ++i ) 
-      std::cout << counters[i].first << "\t" << counters[i].second << std::endl;
-  }
-};
-    
 hypo_monitor monitor;
 
 void checkIsolation(int i_hyp, double weight){
@@ -484,7 +366,7 @@ void find_most_energetic_jets(int i_hyp, double weight)
   }
 }  
 
-void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0) 
+void hypo (int i_hyp, double kFactor, RooDataSet* dataset) 
 {
      int myType = 99;
      if (cms2.hyp_type()[i_hyp] == 3) myType = 0;  // ee
@@ -795,15 +677,15 @@ RooDataSet* MakeNewDataset(const char* name)
   set_sample_type.defineType("data_relaxed_iso",0);  // full sample with final selection 
   set_sample_type.defineType("control_sample_signal_iso",1);
 
-  RooDataSet* dataset = new RooDataSet(name, name,
+  RooDataSet* dataset = new RooDataSet(name, "N-1 dataset",
 				       RooArgSet(set_event,set_run,set_lumi,
 						 set_iso,set_selected,set_weight,
-						 set_hyp_type,set_fake_type,set_sample_type) );
-  dataset->setWeightVar(set_weight);
+						 set_hyp_type,set_fake_type,set_sample_type),
+				       RooFit::WeightVar(set_weight) );
   return dataset;
 }
 
-void AddIsoSignalControlSample( int i_hyp, double kFactor, RooDataSet* dataset = 0 ) {
+void AddIsoSignalControlSample( int i_hyp, double kFactor, RooDataSet* dataset) {
   if ( !dataset ) return;
   // The event weight including the kFactor (scaled to 1 fb-1)
   float weight = cms2.evt_scale1fb() * kFactor;
@@ -852,14 +734,15 @@ void AddIsoSignalControlSample( int i_hyp, double kFactor, RooDataSet* dataset =
 }
 
 RooDataSet* ScanChain( TChain* chain, enum Sample sample, bool identifyEvents ) {
-  
+  gErrorIgnoreLevel = 3000; // suppress warnings about missing dictionaries 
   unsigned int nEventsChain = chain->GetEntries();  // number of entries in chain --> number of events from all files
+  gErrorIgnoreLevel = -1;
   unsigned int nEventsTotal = 0;
 
   // const unsigned int numHypTypes = 4;  // number of hypotheses: MM, EM, EE, ALL
 
  // declare and create array of histograms
-  const char sample_names[][1024] = { "ww", "wz", "zz", "wjets", "dyee", "dymm", "dytt", "ttbar", "tw" };
+  const char sample_names[][1024] = { "ww", "wz", "zz", "wjets", "dyee", "dymm", "dytt", "ttbar", "tw", "qcd", "data" };
   const char *prefix = sample_names[sample];
   RooDataSet* dataset = MakeNewDataset(sample_names[sample]);
   double kFactor = .1; // 100pb-1
@@ -1144,10 +1027,12 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, bool identifyEvents ) 
        // necessarily a plain TFile (TNetFile, TDcacheFile, etc)
 //        printf("current file: %s (%s), %s\n", currentFile->GetName(), 
 // 	      currentFile->GetTitle(), currentFile->IsA()->GetName());
+       
        TFile *f = TFile::Open(currentFile->GetTitle()); 
        assert(f);
        TTree *tree = (TTree*)f->Get("Events");
-       
+       assert(tree);
+
        cms2.Init(tree);  // set branch addresses for TTree tree
 
        TStopwatch t;
@@ -1229,3 +1114,79 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, bool identifyEvents ) 
   return dataset;
 }
 
+bool DorkyEventIdentifier::operator < (const DorkyEventIdentifier &other) const
+{
+     if (run != other.run)
+	  return run < other.run;
+     if (event != other.event)
+	  return event < other.event;
+     // the floating point numbers are not easy, because we're
+     // comapring ones that are truncated (because they were written
+     // to file and read back in) with ones that are not truncated.
+     if (fabs(trks_d0 - other.trks_d0) > 1e-6 * trks_d0)
+	  return trks_d0 < other.trks_d0;
+     if (fabs(hyp_lt_pt - other.hyp_lt_pt) > 1e-6 * hyp_lt_pt)
+	  return hyp_lt_pt < other.hyp_lt_pt;
+     if (fabs(hyp_lt_eta - other.hyp_lt_eta) > 1e-6 * hyp_lt_eta)
+	  return hyp_lt_eta < other.hyp_lt_eta;
+     if (fabs(hyp_lt_phi - other.hyp_lt_phi) > 1e-6 * hyp_lt_phi)
+	  return hyp_lt_phi < other.hyp_lt_phi;
+     // if the records are exactly the same, then r1 is not less than
+     // r2.  Duh!
+     return false;
+}
+
+bool DorkyEventIdentifier::operator == (const DorkyEventIdentifier &other) const
+{
+     if (run != other.run)
+	  return false;
+     if (event != other.event)
+	  return false;
+     // the floating point numbers are not easy, because we're
+     // comapring ones that are truncated (because they were written
+     // to file and read back in) with ones that are not truncated.
+     if (fabs(trks_d0 - other.trks_d0) > 1e-6 * trks_d0)
+	  return false;
+     if (fabs(hyp_lt_pt - other.hyp_lt_pt) > 1e-6 * hyp_lt_pt)
+	  return false;
+     if (fabs(hyp_lt_eta - other.hyp_lt_eta) > 1e-6 * hyp_lt_eta)
+	  return false;
+     if (fabs(hyp_lt_phi - other.hyp_lt_phi) > 1e-6 * hyp_lt_phi)
+	  return false;
+     return true;
+}
+
+// filter events by process
+bool filterByProcess( enum Sample sample ) {
+  switch (sample) {
+  case DYee: 
+    return isDYee();
+  case DYmm:
+    return isDYmm();
+  case DYtt:
+    return isDYtt();
+  case WW:
+    return isWW();
+  case WZ:
+    return isWZ();
+  case ZZ:
+    return isZZ();
+  default:
+    return true;
+  }
+}
+  
+bool isIdentified( enum Sample sample ) {
+  switch (sample) {
+  case DYee:
+  case DYmm:
+  case DYtt:
+    return getDrellYanType()!=999;
+  case WW:
+  case WZ:
+  case ZZ:
+    return getVVType()!=999;
+  default:
+    return true;
+  }
+}
