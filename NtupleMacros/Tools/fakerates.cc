@@ -44,6 +44,76 @@ static TFile *mu_fakeRateFile_v52 = 0;
 static TH2F  *mu_fakeRate_v52 = 0;
 static TH2F  *mu_fakeRate_err_v52 = 0;
 
+int elFakeMCCategory(int i_el) {
+  int category = -1;
+       if(
+          (abs(cms2.els_mc_id()[i_el])       == 11  && 
+	   abs(cms2.els_mc_motherid()[i_el]) == 22) ||
+          (abs(cms2.els_mc_id()[i_el])       == 22) ||
+          (abs(cms2.els_mc_id()[i_el])        > 100 && 
+	   abs(cms2.els_mc_id()[i_el])        < 200) 
+          ) {
+	 // electrons from gamma (conversion)
+	 category = 1;
+       }
+       else if(
+	       (abs(cms2.els_mc_id()[i_el]) > 200     && 
+		abs(cms2.els_mc_id()[i_el]) < 400  )  ||
+	       (abs(cms2.els_mc_id()[i_el]) > 2000    && 
+		abs(cms2.els_mc_id()[i_el]) < 4000 )
+	       ) {
+	 // light hadrons
+	 category = 2;
+       }
+       else if( ( abs(cms2.els_mc_id()[i_el]) == 11 
+		  && abs(cms2.els_mc_motherid()[i_el]) >=400
+		  && abs(cms2.els_mc_motherid()[i_el]) <=600 )  || 
+		( abs(cms2.els_mc_id()[i_el]) == 11 
+		  && abs(cms2.els_mc_motherid()[i_el]) >=4000
+		  && abs(cms2.els_mc_motherid()[i_el]) <=6000 )
+	       ) {
+	 // heavy hadrons
+	 category = 3;
+       }
+       else {
+	 // the rest
+	 category = 4;
+       }
+       return category;
+}
+
+int muFakeMCCategory(int i_mu) {
+  int category = -1;
+
+       if( // punchthrough / sailthrough
+          (abs(cms2.mus_mc_id()[i_mu]) != 13 )
+          ) {
+	 category = 1;
+       }
+       else if( 
+	       abs(cms2.mus_mc_id()[i_mu]) == 13 && 
+	       abs(cms2.mus_mc_motherid()[i_mu]) < 400 
+	       ) {
+	 // light hadrons
+	 category = 2;
+       }
+       else if(
+	       ( abs(cms2.mus_mc_id()[i_mu]) == 13          &&
+		  abs(cms2.mus_mc_motherid()[i_mu]) >=400   &&
+		  abs(cms2.mus_mc_motherid()[i_mu]) <=600 ) || 
+	       ( abs(cms2.mus_mc_id()[i_mu]) == 13          &&
+		 abs(cms2.mus_mc_motherid()[i_mu]) >=4000   &&
+		 abs(cms2.mus_mc_motherid()[i_mu]) <=6000 )
+	       ) {
+	 // heavy hadrons
+	 category = 3;
+       }
+       else {
+	 // the rest
+	 category = 4;
+       }
+       return category;
+}
 
 double elFakeProb_v2_2 (int i_el, int add_error_times)
 {
