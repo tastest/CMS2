@@ -281,10 +281,12 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 				bool ltPassOld = false;
 				bool ltPassNew = false;
 				bool relSusyIso = false;
+				bool relSusyIso_cand0 = false;
 				if (abs(cms2.hyp_lt_id()[h]) == 11) {
 					if (cms2.els_egamma_looseId().at(cms2.hyp_lt_index()[h])) ltPassOld = true;
 					if (electronId_cand01(cms2.hyp_lt_index()[h])) ltPassNew = true;
 					if (electronIsolation_relsusy(cms2.hyp_lt_index()[h], true) < 0.10) relSusyIso = true;
+                                        if (electronIsolation_relsusy_cand0(cms2.hyp_lt_index()[h], true) < 0.10) relSusyIso_cand0 = true;
 				}
 
                                 //
@@ -294,11 +296,13 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
                                		if (ltPassOld) Fill(h1_hyp_lt_ee_pt_idold, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
                                		if (ltPassNew) Fill(h1_hyp_lt_ee_pt_idnew, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
 					if (relSusyIso) Fill(h1_hyp_lt_ee_pt_isoold, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+                                        if (relSusyIso_cand0) Fill(h1_hyp_lt_ee_pt_isonew, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
 				}
 				if (abs(cms2.hyp_lt_p4()[h].eta()) < 1.5)  {
                                        	if (ltPassOld) Fill(h1_hyp_lt_eb_pt_idold, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
                                		if (ltPassNew) Fill(h1_hyp_lt_eb_pt_idnew, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
-                                        if (relSusyIso) Fill(h1_hyp_lt_ee_pt_isoold, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+                                        if (relSusyIso) Fill(h1_hyp_lt_eb_pt_isoold, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+                                        if (relSusyIso_cand0) Fill(h1_hyp_lt_eb_pt_isonew, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
 				}
 				//
 				//
