@@ -72,6 +72,35 @@ void compareRelease(TString fileName2X, TString fileName3X, TString det)
         formatHist(h1_dPhiIn_2x, false);
         formatHist(h1_dPhiIn_3x, true);
 
+        TH1F *h1_sigmaIEtaIEta_2x = (TH1F*)f2X.Get("ttbar_hyp_lt_" + det + "_sigmaIEtaIEta_ee");
+        TH1F *h1_sigmaIEtaIEta_3x = (TH1F*)f3X.Get("ttbar_hyp_lt_" + det + "_sigmaIEtaIEta_ee");
+        formatHist(h1_sigmaIEtaIEta_2x, false);
+        formatHist(h1_sigmaIEtaIEta_3x, true);
+
+        TH1F *h1_d0_2x = (TH1F*)f2X.Get("ttbar_hyp_lt_" + det + "_d0_ee");
+        TH1F *h1_d0_3x = (TH1F*)f3X.Get("ttbar_hyp_lt_" + det + "_d0_ee");
+        formatHist(h1_d0_2x, false);
+        formatHist(h1_d0_3x, true);
+
+        TH1F *h1_E2x5MaxOver5x5_2x = (TH1F*)f2X.Get("ttbar_hyp_lt_" + det + "_E2x5MaxOver5x5_ee"); 
+        TH1F *h1_E2x5MaxOver5x5_3x = (TH1F*)f3X.Get("ttbar_hyp_lt_" + det + "_E2x5MaxOver5x5_ee"); 
+        formatHist(h1_E2x5MaxOver5x5_2x, false);
+        formatHist(h1_E2x5MaxOver5x5_3x, true);
+
+        TH1F *h1_ecalIso_2x = (TH1F*)f2X.Get("ttbar_hyp_lt_" + det + "_ecalIso_ee");
+        TH1F *h1_ecalIso_3x = (TH1F*)f3X.Get("ttbar_hyp_lt_" + det + "_ecalIso_ee");
+        formatHist(h1_ecalIso_2x, false);
+        formatHist(h1_ecalIso_3x, true);
+
+        TH1F *h1_hcalIso_2x = (TH1F*)f2X.Get("ttbar_hyp_lt_" + det + "_hcalIso_ee");
+        TH1F *h1_hcalIso_3x = (TH1F*)f3X.Get("ttbar_hyp_lt_" + det + "_hcalIso_ee");
+        formatHist(h1_hcalIso_2x, false);
+        formatHist(h1_hcalIso_3x, true);
+
+        TH1F *h1_tkIso_2x = (TH1F*)f2X.Get("ttbar_hyp_lt_" + det + "_tkIso_ee");
+        TH1F *h1_tkIso_3x = (TH1F*)f3X.Get("ttbar_hyp_lt_" + det + "_tkIso_ee");
+        formatHist(h1_tkIso_2x, false);
+        formatHist(h1_tkIso_3x, true);
 
 
 	//
@@ -116,6 +145,54 @@ void compareRelease(TString fileName2X, TString fileName3X, TString det)
         lg->Draw();
         saveCanvas(c1, "comparison_dPhiIn_" + det, false);
         saveCanvas(c1, "comparison_dPhiIn_" + det, true);
+
+        h1_sigmaIEtaIEta_2x->Scale(h1_sigmaIEtaIEta_3x->Integral()/h1_sigmaIEtaIEta_2x->Integral());
+        h1_sigmaIEtaIEta_2x->GetYaxis()->SetRangeUser(0.01, histMax(h1_sigmaIEtaIEta_2x, h1_sigmaIEtaIEta_3x));
+        h1_sigmaIEtaIEta_2x->Draw("HIST");
+        h1_sigmaIEtaIEta_3x->Draw("SAME E1");
+        lg->Draw();
+        saveCanvas(c1, "comparison_sigmaIEtaIEta_" + det, false);
+        saveCanvas(c1, "comparison_sigmaIEtaIEta_" + det, true);
+
+        h1_d0_2x->Scale(h1_d0_3x->Integral()/h1_d0_2x->Integral());
+        h1_d0_2x->GetYaxis()->SetRangeUser(0.01, histMax(h1_d0_2x, h1_d0_3x));
+        h1_d0_2x->Draw("HIST");
+        h1_d0_3x->Draw("SAME E1");
+        lg->Draw();
+        saveCanvas(c1, "comparison_d0_" + det, false);
+        saveCanvas(c1, "comparison_d0_" + det, true);
+
+        h1_E2x5MaxOver5x5_2x->Scale(h1_E2x5MaxOver5x5_3x->Integral()/h1_E2x5MaxOver5x5_2x->Integral());
+        h1_E2x5MaxOver5x5_2x->GetYaxis()->SetRangeUser(0.01, histMax(h1_E2x5MaxOver5x5_2x, h1_E2x5MaxOver5x5_3x));
+        h1_E2x5MaxOver5x5_2x->Draw("HIST");
+        h1_E2x5MaxOver5x5_3x->Draw("SAME E1");
+        lg->Draw();
+        saveCanvas(c1, "comparison_E2x5MaxOver5x5_" + det, false);
+        saveCanvas(c1, "comparison_E2x5MaxOver5x5_" + det, true);
+
+        h1_ecalIso_2x->Scale(h1_ecalIso_3x->Integral()/h1_ecalIso_2x->Integral());
+        h1_ecalIso_2x->GetYaxis()->SetRangeUser(0.01, histMax(h1_ecalIso_2x, h1_ecalIso_3x));
+        h1_ecalIso_2x->Draw("HIST");
+        h1_ecalIso_3x->Draw("SAME E1");
+        lg->Draw();
+        saveCanvas(c1, "comparison_ecalIso_" + det, false);
+        saveCanvas(c1, "comparison_ecalIso_" + det, true);
+
+        h1_hcalIso_2x->Scale(h1_hcalIso_3x->Integral()/h1_hcalIso_2x->Integral());
+        h1_hcalIso_2x->GetYaxis()->SetRangeUser(0.01, histMax(h1_hcalIso_2x, h1_hcalIso_3x));
+        h1_hcalIso_2x->Draw("HIST");
+        h1_hcalIso_3x->Draw("SAME E1");
+        lg->Draw();
+        saveCanvas(c1, "comparison_hcalIso_" + det, false);
+        saveCanvas(c1, "comparison_hcalIso_" + det, true); 
+
+        h1_tkIso_2x->Scale(h1_tkIso_3x->Integral()/h1_tkIso_2x->Integral());
+        h1_tkIso_2x->GetYaxis()->SetRangeUser(0.01, histMax(h1_tkIso_2x, h1_tkIso_3x));
+        h1_tkIso_2x->Draw("HIST");
+        h1_tkIso_3x->Draw("SAME E1");
+        lg->Draw();
+        saveCanvas(c1, "comparison_tkIso_" + det, false);
+        saveCanvas(c1, "comparison_tkIso_" + det, true); 
 
 
 }

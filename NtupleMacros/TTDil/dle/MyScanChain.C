@@ -140,6 +140,9 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
         TH1F *h1_hyp_lt_eb_dPhiIn[4];
         TH1F *h1_hyp_lt_eb_d0[4];
         TH1F *h1_hyp_lt_eb_E2x5MaxOver5x5[4];
+	TH1F *h1_hyp_lt_eb_ecalIso[4];
+        TH1F *h1_hyp_lt_eb_hcalIso[4];
+        TH1F *h1_hyp_lt_eb_tkIso[4];
 
         TH1F *h1_hyp_lt_ee_hoe[4];
         TH1F *h1_hyp_lt_ee_sigmaIEtaIEta[4];
@@ -147,6 +150,9 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
         TH1F *h1_hyp_lt_ee_dPhiIn[4];
         TH1F *h1_hyp_lt_ee_d0[4];
         TH1F *h1_hyp_lt_ee_E2x5MaxOver5x5[4];
+        TH1F *h1_hyp_lt_eb_ecalIso[4];
+        TH1F *h1_hyp_lt_eb_hcalIso[4];
+        TH1F *h1_hyp_lt_eb_tkIso[4];
 
         FormatHist(h1_hyp_lt_eb_hoe, sampleName, "hyp_lt_eb_hoe", 50, 0.0, 0.05);
         FormatHist(h1_hyp_lt_ee_hoe, sampleName, "hyp_lt_ee_hoe", 50, 0.0, 0.05);
@@ -165,6 +171,15 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 
         FormatHist(h1_hyp_lt_eb_E2x5MaxOver5x5, sampleName, "hyp_lt_eb_E2x5MaxOver5x5", 110, 0.0, 1.1);
         FormatHist(h1_hyp_lt_ee_E2x5MaxOver5x5, sampleName, "hyp_lt_ee_E2x5MaxOver5x5", 110, 0.0, 1.1);
+
+        FormatHist(h1_hyp_lt_eb_ecalIso, sampleName, "hyp_lt_eb_ecalIso", 100, 0, 25);
+        FormatHist(h1_hyp_lt_eb_hcalIso, sampleName, "hyp_lt_eb_hcalIso", 100, 0, 25);
+        FormatHist(h1_hyp_lt_eb_tkIso, sampleName, "hyp_lt_eb_tkIso", 100, 0, 25);
+
+        FormatHist(h1_hyp_lt_ee_ecalIso, sampleName, "hyp_lt_ee_ecalIso", 100, 0, 25);
+        FormatHist(h1_hyp_lt_ee_hcalIso, sampleName, "hyp_lt_ee_hcalIso", 100, 0, 25);
+        FormatHist(h1_hyp_lt_ee_tkIso, sampleName, "hyp_lt_ee_tkIso", 100, 0, 25);
+
 
         TH1F *h1_hyp_lt_eb_pt_idnew[4];
         TH1F *h1_hyp_lt_ee_pt_idnew[4];
@@ -230,6 +245,9 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
                                         Fill(h1_hyp_lt_ee_sigmaIEtaIEta, hypType, cms2.els_sigmaIEtaIEta()[cms2.hyp_lt_index()[h]], weight);
 					float E2x5MaxOver5x5 = cms2.els_e2x5Max()[cms2.hyp_lt_index()[h]] / cms2.els_e5x5()[cms2.hyp_lt_index()[h]];
                                         Fill(h1_hyp_lt_ee_E2x5MaxOver5x5, hypType, E2x5MaxOver5x5, weight);
+                                        Fill(h1_hyp_lt_ee_ecalIso, hypType, cms2.els_ecalIso()[h], weight);
+                                        Fill(h1_hyp_lt_ee_hcalIso, hypType, cms2.els_hcalIso()[h], weight);
+                                        Fill(h1_hyp_lt_ee_tkIso, hypType, cms2.els_tkIso()[h], weight);
 				}
 
                                 if (abs(cms2.hyp_lt_p4()[h].eta()) < 1.5 && abs(cms2.hyp_lt_id()[h]) == 11) {
@@ -241,6 +259,11 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
                                         Fill(h1_hyp_lt_eb_sigmaIEtaIEta, hypType, cms2.els_sigmaIEtaIEta()[cms2.hyp_lt_index()[h]], weight);
                                         float E2x5MaxOver5x5 = cms2.els_e2x5Max()[cms2.hyp_lt_index()[h]] / cms2.els_e5x5()[cms2.hyp_lt_index()[h]];
                                         Fill(h1_hyp_lt_eb_E2x5MaxOver5x5, hypType, E2x5MaxOver5x5, weight);
+					Fill(h1_hyp_lt_eb_ecalIso, hypType, cms2.els_ecalIso()[h], weight);
+                                        Fill(h1_hyp_lt_eb_hcalIso, hypType, cms2.els_hcalIso()[h], weight);
+                                        Fill(h1_hyp_lt_eb_tkIso, hypType, cms2.els_tkIso()[h], weight);
+
+
 				}
 				//
 				//
