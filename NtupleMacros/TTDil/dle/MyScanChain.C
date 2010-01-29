@@ -187,12 +187,20 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
         TH1F *h1_hyp_lt_ee_pt_idold[4];
         FormatHist(h1_hyp_lt_eb_pt_idnew, sampleName, "hyp_lt_eb_pt_idnew", 20, 0.0, 100.0);
         FormatHist(h1_hyp_lt_ee_pt_idnew, sampleName, "hyp_lt_ee_pt_idnew", 20, 0.0, 100.0);
-
         FormatHist(h1_hyp_lt_eb_pt_idold, sampleName, "hyp_lt_eb_pt_idold", 20, 0.0, 100.0);
         FormatHist(h1_hyp_lt_ee_pt_idold, sampleName, "hyp_lt_ee_pt_idold", 20, 0.0, 100.0);
 
-	// file loop
+        TH1F *h1_hyp_lt_eb_pt_isonew[4];
+        TH1F *h1_hyp_lt_ee_pt_isonew[4];
+        TH1F *h1_hyp_lt_eb_pt_isoold[4];
+        TH1F *h1_hyp_lt_ee_pt_isoold[4];
+        FormatHist(h1_hyp_lt_eb_pt_isonew, sampleName, "hyp_lt_eb_pt_isonew", 20, 0.0, 100.0);
+        FormatHist(h1_hyp_lt_ee_pt_isonew, sampleName, "hyp_lt_ee_pt_isonew", 20, 0.0, 100.0);
+        FormatHist(h1_hyp_lt_eb_pt_isoold, sampleName, "hyp_lt_eb_pt_isoold", 20, 0.0, 100.0);
+        FormatHist(h1_hyp_lt_ee_pt_isoold, sampleName, "hyp_lt_ee_pt_isoold", 20, 0.0, 100.0);
 
+	// file loop
+	//
 	TIter fileIter(listOfFiles);
 	TFile *currentFile = 0;
 	while ( currentFile = (TFile*)fileIter.Next() ) {
@@ -262,9 +270,9 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 					Fill(h1_hyp_lt_eb_ecalIso, hypType, cms2.els_ecalIso()[h], weight);
                                         Fill(h1_hyp_lt_eb_hcalIso, hypType, cms2.els_hcalIso()[h], weight);
                                         Fill(h1_hyp_lt_eb_tkIso, hypType, cms2.els_tkIso()[h], weight);
-
-
 				}
+
+
 				//
 				//
 				//
@@ -272,9 +280,11 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 				// apply lepton id to lt
 				bool ltPassOld = false;
 				bool ltPassNew = false;
+				bool relSusyIso = false;
 				if (abs(cms2.hyp_lt_id()[h]) == 11) {
 					if (cms2.els_egamma_looseId().at(cms2.hyp_lt_index()[h])) ltPassOld = true;
 					if (electronId_cand01(cms2.hyp_lt_index()[h])) ltPassNew = true;
+					if (electronIsolation_relsusy(cms2.hyp_lt_index()[h], true) < 0.10) relSusyIso = true;
 				}
 
                                 //
@@ -283,10 +293,12 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 				if (abs(cms2.hyp_lt_p4()[h].eta()) > 1.5) {
                                		if (ltPassOld) Fill(h1_hyp_lt_ee_pt_idold, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
                                		if (ltPassNew) Fill(h1_hyp_lt_ee_pt_idnew, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+					if (relSusyIso) Fill(h1_hyp_lt_ee_pt_isoold, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
 				}
 				if (abs(cms2.hyp_lt_p4()[h].eta()) < 1.5)  {
                                        	if (ltPassOld) Fill(h1_hyp_lt_eb_pt_idold, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
                                		if (ltPassNew) Fill(h1_hyp_lt_eb_pt_idnew, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+                                        if (relSusyIso) Fill(h1_hyp_lt_ee_pt_isoold, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
 				}
 				//
 				//
