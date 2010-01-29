@@ -187,12 +187,25 @@ float electronIsolation_relsusy_cand0(const unsigned int index, bool use_calo_is
         return sum/max(pt, 20.);
 }
 
+float electronIsolation_relsusy_cand1(const unsigned int index, bool use_calo_iso)
+{
+        float sum = cms2.els_tkJuraIso().at(index);
+        if (use_calo_iso) {
+                if (abs(cms2.els_etaSC().at(index)) > 1.5) sum += cms2.els_ecalIso().at(index);
+                if (abs(cms2.els_etaSC().at(index)) <= 1.5) sum += max(0., (cms2.els_ecalIso().at(index) -1.));
+                sum += cms2.els_hcalIso().at(index);
+        }
+        double pt = cms2.els_p4().at(index).pt();
+        return sum/max(pt, 20.);
+}
+
+
 //
 //conversion rejection
 //
 bool isFromConversionHitPattern(const unsigned int index)
 {
-	//if(cms2.els_exp_innerlayers().at(index) > 1) return true;
+	if(cms2.els_exp_innerlayers().at(index) > 1) return true;
 	return false;
 }
 
