@@ -57,6 +57,29 @@ int CaloTwr_iphi( int detid );
 
 TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = true, std::vector<unsigned int> v_goodRuns = std::vector<unsigned int>(), int nEvents = -1) {
 
+  //new tree
+  TTree *outTree_ ;
+  std::string fileName = "FlatTree.root";
+  TFile *outFile_ = new TFile(fileName.c_str(), "RECREATE");
+  outFile_->cd();
+  outTree_ = new TTree("T1", "Tree");
+
+  Float_t sumet_;
+  Float_t tcsumet_;
+  Float_t MET_;
+  Float_t METPhi_;
+  Float_t tcMET_;
+  Float_t tcMETPhi_;
+
+  outTree_->Branch("sumet", &sumet_, "sumet/F");
+  outTree_->Branch("tcsumet", &tcsumet_, "tcsumet/F");
+
+  outTree_->Branch("met", &MET_, "met/F");
+  outTree_->Branch("metphi", &METPhi_, "metphi/F");
+
+  outTree_->Branch("tcmet", &tcMET_, "tcmet/F");
+  outTree_->Branch("tcmetphi", &tcMETPhi_, "tcmetphi/F");
+
   //cout << "starting" << endl;
   TObjArray *listOfFiles = chain->GetListOfFiles();
 
@@ -95,45 +118,7 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 
   unsigned int aSize = v_prefix.size();
 
-  /* //get rid of these
-  //fkw's new histos for hit patterns and conversion study
-  TH1F *h_trks_innerlayers[aSize];
-  TH1F *h_trks_outerlayers[aSize];
-  TH1F *h_els_innerlayers[aSize];
-  TH1F *h_els_outerlayers[aSize];
-  TH1F *h_els_ecalEnergy[aSize];
-  TH1F *h_els_type[aSize];
-
-  TH1F *h_els_ecalEnergy_EcalDriven[aSize];
-  TH1F *h_els_ecalEnergy_TrkDriven[aSize];
-  TH1F *h_els_ecalEnergy_TrkEcalDriven[aSize];
-
-  TH1F *h_els_innerlayers_EcalDriven[aSize];
-  TH1F *h_els_innerlayers_TrkDriven[aSize];
-  TH1F *h_els_innerlayers_TrkDrivenLowEt[aSize];
-  TH1F *h_els_innerlayers_TrkDrivenHiEt[aSize];
-  TH1F *h_els_innerlayers_TrkEcalDriven[aSize];
-
-  TH2F *h_nvtxs[aSize];
-  TH1F *h_nvtxsgood[aSize];
-  TH1F *h_nvtxsbad[aSize];
-  TH1F *h_ratioGoodTracks[aSize];
-  TH1F *h_numGoodTracks[aSize];
-  TH1F *h_numTracksVtx[aSize];
-  TH1F *h_zvtx[aSize];
-  TH1F *h_rvtx[aSize];
-
-  TH2F *h_dcotvsdistElectrons[aSize];//looking for conversion partner to an electron
-  TH2F *h_dcotvsdistEcalElectrons[aSize];//looking for conversion partner to an electron
-  TH2F *h_dcotvsdistTrackElectrons[aSize];//looking for conversion partner to an electron
-  TH2F *h_dcotvsdistTracks[aSize];//looking for conversion partner to a track
-
-  TH1F *h_dcotElectrons[aSize];//looking for conversion partner to an electron
-  TH1F *h_dcotEcalElectrons[aSize];//looking for conversion partner to an electron
-  TH1F *h_dcotTrackElectrons[aSize];//looking for conversion partner to an electron
-  TH1F *h_dcotTracks[aSize];//looking for conversion partner to a track
-  TH1F *h_dcotTracksMissInn[aSize];//looking for conversion partner to a track
-  TH1F *h_dcotTracksNoMissInn[aSize];//looking for conversion partner to a track
+  /* //get rid of these--track plots
   //remove old unused histsos
 */
 
@@ -190,6 +175,8 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
   
   TH1F *h_cmetCut[aSize];       //met for events with cut on erat and emax
   TH1F *h_cmet[aSize];          //met 
+  TH1F *h_cmetHFCorr[aSize];          //met 
+  TH1F *h_cmetAllCorr[aSize];          //met 
   TH1F *h_cmetCutCorr[aSize];   //met for events with cut on erat and emax
   //TH1F *h_cmetCorr[aSize];//met 
   TH1F *h_tcmet[aSize];//met 
@@ -229,12 +216,22 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
   TH1F *h_scs_spikeFlags[aSize];//reco flags for ECAL spikes
   TH1F *h_scs_notspikeFlags[aSize];//reco flags for ECAL !spikes
   TH1F *h_scs_allFlags[aSize];//reco flags for ECAL !spikes
+  TH1F *h_scs_er4[aSize]; //compare r4 from scs to r4 from twrs
 
-  TH1F *h_twrs_eswiss[aSize];              //ecal swiss, aka r4
-  TH1F *h_twrs_eswissMet[aSize];
-  TH1F *h_twrs_eswissCut[aSize];
-  TH2F *h_twrs_etmaxvseswissZoom[aSize];	    
-
+  TH1F *h_twrs_er4[aSize];              //ecal swiss, aka r4
+  TH1F *h_twrs_er4Met[aSize];
+  TH1F *h_twrs_er4Cut[aSize];
+  TH1F *h_twrs_er4CutL[aSize];
+  TH2F *h_twrs_etmaxvser4Zoom[aSize];	    
+  TH2F *h_twrsec_etmaxvstcmet[aSize];
+  TH2F *h_twrsec_phivstcmetphi[aSize];
+  TH2F *h_twrshf_etmaxvstcmet[aSize];
+  TH2F *h_twrshf_phivstcmetphi[aSize];
+  TH2F *h_twrsec_etmaxvsclmet[aSize];
+  TH2F *h_twrsec_phivsclmetphi[aSize];
+  TH2F *h_twrshf_etmaxvsclmet[aSize];
+  TH2F *h_twrshf_phivsclmetphi[aSize];
+ 
   TH1F *h_twrs_ass[aSize];
   TH1F *h_twrs_timeseed_all  [aSize];    
   TH1F *h_twrs_timeseed_spike[aSize];  
@@ -243,77 +240,15 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
   TH1F *h_twrs_adc_spike[aSize];
   TH1F *h_twrs_adc_goodt[aSize];
 
+  float metmax = 40;
+  int metbins = 40;
+  float metmaxN = 30;
+  int metbinsN = 30;
   
   //book histos
   //fkw's new histos come first
   for(unsigned int i = 0; i < v_prefix.size(); i++) {
 	/* //get rid of unused histos
-    h_trks_innerlayers[i] = new TH1F((v_prefix.at(i)+"trks_innerlayers").c_str(), 
-									 ("trks_innerlayers" + v_title.at(i)).c_str(), 10, 0, 10);
-    h_trks_outerlayers[i] = new TH1F((v_prefix.at(i)+"trks_outerlayers").c_str(), 
-									 ("trks_outerlayers" + v_title.at(i)).c_str(), 10, 0, 10);
-    h_els_innerlayers[i] = new TH1F((v_prefix.at(i)+"els_innerlayers").c_str(), 
-									("els_innerlayers" + v_title.at(i)).c_str(), 10, 0, 10);
-    h_els_innerlayers_EcalDriven[i] = new TH1F((v_prefix.at(i)+"els_innerlayers_EcalDriven").c_str(), 
-											   ("els_innerlayers_EcalDriven" + v_title.at(i)).c_str(), 10, 0, 10);
-    h_els_innerlayers_TrkDriven[i] = new TH1F((v_prefix.at(i)+"els_innerlayers_TrkDriven").c_str(), 
-											  ("els_innerlayers_TrkDriven" + v_title.at(i)).c_str(), 10, 0, 10);
-    h_els_innerlayers_TrkDrivenLowEt[i] = new TH1F((v_prefix.at(i)+"els_innerlayers_TrkDrivenLowEt").c_str(), 
-												   ("els_innerlayers_TrkDrivenLowEt" + v_title.at(i)).c_str(), 10, 0, 10);
-    h_els_innerlayers_TrkDrivenHiEt[i] = new TH1F((v_prefix.at(i)+"els_innerlayers_TrkDrivenHiEt").c_str(), 
-												  ("els_innerlayers_TrkDrivenHiEt" + v_title.at(i)).c_str(), 10, 0, 10);
-    h_els_innerlayers_TrkEcalDriven[i] = new TH1F((v_prefix.at(i)+"els_innerlayers_TrkEcalDriven").c_str(), 
-												  ("els_innerlayers_TrkEcalDriven" + v_title.at(i)).c_str(), 10, 0, 10);
-    h_els_outerlayers[i] = new TH1F((v_prefix.at(i)+"els_outerlayers").c_str(), 
-									("els_outerlayers" + v_title.at(i)).c_str(), 10, 0, 10);
-    h_els_ecalEnergy[i] = new TH1F((v_prefix.at(i)+"els_ecalEnergy").c_str(), 
-								   ("els_ecalEnergy" + v_title.at(i)).c_str(), 100, 0, 40);
-    h_els_ecalEnergy_EcalDriven[i] = new TH1F((v_prefix.at(i)+"els_ecalEnergy_EcalDriven").c_str(), 
-											  ("els_ecalEnergy_EcalDriven" + v_title.at(i)).c_str(), 100, 0, 40);
-    h_els_ecalEnergy_TrkDriven[i] = new TH1F((v_prefix.at(i)+"els_ecalEnergy_TrkDriven").c_str(), 
-											 ("els_ecalEnergy_TrkDriven" + v_title.at(i)).c_str(), 100, 0, 40);
-    h_els_ecalEnergy_TrkEcalDriven[i] = new TH1F((v_prefix.at(i)+"els_ecalEnergy_TrkEcalDriven").c_str(), 
-												 ("els_ecalEnergy_TrkEcalDriven" + v_title.at(i)).c_str(), 100, 0, 40);
-    h_els_type[i] = new TH1F((v_prefix.at(i)+"els_type").c_str(), 
-							 ("els_type" + v_title.at(i)).c_str(), 20, 0, 20);
-    h_nvtxs[i] = new TH2F((v_prefix.at(i)+"nvtx").c_str(), 
-						  ("nvtx" + v_title.at(i)).c_str(), 5, 0, 5, 5,0,5);
-    h_nvtxsgood[i] = new TH1F((v_prefix.at(i)+"nvtxgood").c_str(), 
-							  ("nvtxgood" + v_title.at(i)).c_str(), 15, 0, 5.0);
-    h_nvtxsbad[i] = new TH1F((v_prefix.at(i)+"nvtxbad").c_str(), 
-							 ("nvtxbad" + v_title.at(i)).c_str(), 15, 0, 5.0);
-    h_ratioGoodTracks[i] = new TH1F((v_prefix.at(i)+"ratioGoodTracks").c_str(), 
-									("ratioGoodTracks" + v_title.at(i)).c_str(), 101, 0, 1.01);
-    h_numGoodTracks[i] = new TH1F((v_prefix.at(i)+"numGoodTracks").c_str(), 
-								  ("numGoodTracks" + v_title.at(i)).c_str(), 100, 0, 100);
-    h_numTracksVtx[i] = new TH1F((v_prefix.at(i)+"numTracksVtx").c_str(), 
-								 ("numTracksVtx" + v_title.at(i)).c_str(), 50, 0, 50);
-    h_zvtx[i] = new TH1F((v_prefix.at(i)+"zvtx").c_str(), 
-						 ("zvtx" + v_title.at(i)).c_str(), 100, -50, 50);
-    h_rvtx[i] = new TH1F((v_prefix.at(i)+"rvtx").c_str(), 
-						 ("rvtx" + v_title.at(i)).c_str(), 400, 0, 4.0);
-
-    h_dcotvsdistElectrons[i] = new TH2F((v_prefix.at(i)+"dcotvsdistElectron").c_str(), 
-										("dcotvsdistElectron" + v_title.at(i)).c_str(), 40, -0.2, 0.2, 40, -0.2, 0.2 );
-    h_dcotvsdistEcalElectrons[i] = new TH2F((v_prefix.at(i)+"dcotvsdistEcalElectron").c_str(), 
-											("dcotvsdistEcalElectron" + v_title.at(i)).c_str(), 40, -0.2, 0.2, 40, -0.2, 0.2 );
-    h_dcotvsdistTrackElectrons[i] = new TH2F((v_prefix.at(i)+"dcotvsdistTrackElectron").c_str(), 
-											 ("dcotvsdistTrackElectron" + v_title.at(i)).c_str(), 40, -0.2, 0.2, 40, -0.2, 0.2 );
-    h_dcotvsdistTracks[i] = new TH2F((v_prefix.at(i)+"dcotvsdistTrack").c_str(), 
-									 ("dcotvsdistTrack" + v_title.at(i)).c_str(), 40, -0.2, 0.2, 40, -0.2, 0.2 );
-
-    h_dcotElectrons[i] = new TH1F((v_prefix.at(i)+"dcotElectron").c_str(), 
-								  ("dcotElectron" + v_title.at(i)).c_str(), 40, -0.2, 0.2 );
-    h_dcotEcalElectrons[i] = new TH1F((v_prefix.at(i)+"dcotEcalElectron").c_str(), 
-									  ("dcotEcalElectron" + v_title.at(i)).c_str(), 40, -0.2, 0.2 );
-    h_dcotTrackElectrons[i] = new TH1F((v_prefix.at(i)+"dcotTrackElectron").c_str(), 
-									   ("dcotTrackElectron" + v_title.at(i)).c_str(), 40, -0.2, 0.2 );
-    h_dcotTracks[i] = new TH1F((v_prefix.at(i)+"dcotTrack").c_str(), 
-							   ("dcotTrack" + v_title.at(i)).c_str(), 40, -0.2, 0.2 );
-    h_dcotTracksMissInn[i] = new TH1F((v_prefix.at(i)+"dcotTrackMissInn").c_str(), 
-									  ("dcotTrackMissInn" + v_title.at(i)).c_str(), 40, -0.2, 0.2 );
-    h_dcotTracksNoMissInn[i] = new TH1F((v_prefix.at(i)+"dcotTrackNoMissInn").c_str(), 
-										("dcotTrackNoMissInn" + v_title.at(i)).c_str(), 40, -0.2, 0.2 );
 	*/ //remove old
 
 	h_scs_eratmax[i] = new TH1F((v_prefix.at(i)+"scs_eratmax").c_str(), 
@@ -412,18 +347,21 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 	h_twrs_twrr9vinvE[i]  = new TH2F((v_prefix.at(i)+"twrs_twrr9vinvE").c_str(), 
 									("twrs_twrr9vinvE" + v_title.at(i)).c_str(), 200, 0., 0.05, 400, 0., 0.2); 
 
-    h_cmetCut[i]  = new TH1F((v_prefix.at(i)+"cmetCut").c_str(), ("cmetCut" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
-    h_cmet[i]     = new TH1F((v_prefix.at(i)+"cmet").c_str(), ("cmet" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
-    h_tcmetCut[i] = new TH1F((v_prefix.at(i)+"tcmetCut").c_str(), ("tcmetCut" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
-    h_tcmetHF[i] = new TH1F((v_prefix.at(i)+"tcmetHF").c_str(), ("tcmetHF" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
-    h_tcmet[i]    = new TH1F((v_prefix.at(i)+"tcmet").c_str(), ("tcmet" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
-    h_pfmetCut[i] = new TH1F((v_prefix.at(i)+"pfmetCut").c_str(), ("pfmetCut" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
-    h_pfmet[i]    = new TH1F((v_prefix.at(i)+"pfmet").c_str(), ("pfmet" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
-    h_cmetCutCorr[i]  = new TH1F((v_prefix.at(i)+"cmetCutCorr").c_str(), ("cmetCutCorr" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
-    //h_cmetCorr[i]     = new TH1F((v_prefix.at(i)+"cmetCorr").c_str(), ("cmetCorr" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
-    h_tcmetCorr[i]    = new TH1F((v_prefix.at(i)+"tcmetCorr").c_str(), ("tcmetCorr" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
-    h_tcmetHFCorr[i]    = new TH1F((v_prefix.at(i)+"tcmetHFCorr").c_str(), ("tcmetHFCorr" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
-    h_tcmetAllCorr[i]    = new TH1F((v_prefix.at(i)+"tcmetAllCorr").c_str(), ("tcmetAllCorr" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
+    h_pfmetCut[i] 		= new TH1F((v_prefix.at(i)+"pfmetCut").c_str(), ("pfmetCut" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
+    h_pfmet[i]    		= new TH1F((v_prefix.at(i)+"pfmet").c_str(), ("pfmet" + v_title.at(i)).c_str(), 100, 0.0, 50.0);
+
+    h_cmetCut[i]  		= new TH1F((v_prefix.at(i)+"cmetCut").c_str(), ("cmetCut" + v_title.at(i)).c_str(), metbinsN, 0.0, metmaxN);
+    h_cmet[i]     		= new TH1F((v_prefix.at(i)+"cmet").c_str(), ";calo MET", metbinsN, 0.0, metmaxN);
+    h_cmetCutCorr[i]  	= new TH1F((v_prefix.at(i)+"cmetCutCorr").c_str(), ("cmetCutCorr" + v_title.at(i)).c_str(), metbinsN, 0.0, metmaxN);
+	h_cmetHFCorr[i]     = new TH1F((v_prefix.at(i)+"cmetHFCorr").c_str(), ";calo MET", metbinsN, 0.0, metmaxN);
+	h_cmetAllCorr[i]    = new TH1F((v_prefix.at(i)+"cmetAllCorr").c_str(), ";calo MET", metbinsN, 0.0, metmaxN);
+
+    h_tcmetCut[i] 		= new TH1F((v_prefix.at(i)+"tcmetCut").c_str(), ("tcmetCut" + v_title.at(i)).c_str(), metbins, 0.0, metmax);
+    h_tcmetHF[i] 		= new TH1F((v_prefix.at(i)+"tcmetHF").c_str(), ("tcmetHF" + v_title.at(i)).c_str(), metbins, 0.0, metmax);
+    h_tcmet[i]    		= new TH1F((v_prefix.at(i)+"tcmet").c_str(), ";tcMET", metbins, 0.0, metmax);
+    h_tcmetCorr[i]    	= new TH1F((v_prefix.at(i)+"tcmetCorr").c_str(), ("tcmetCorr" + v_title.at(i)).c_str(), metbins, 0.0, metmax);
+    h_tcmetHFCorr[i]    = new TH1F((v_prefix.at(i)+"tcmetHFCorr").c_str(), ";tcMET", metbins, 0.0, metmax);
+    h_tcmetAllCorr[i]   = new TH1F((v_prefix.at(i)+"tcmetAllCorr").c_str(), ";tcMET", metbins, 0.0, metmax);
 
 	h_scs_etvscmet[i] = new TH2F((v_prefix.at(i)+"scet_vs_cmet").c_str(), ("scet_vs_cmet" + v_title.at(i)).c_str(), 100, 0.0, 50.0, 100, 0.0, 50.0);
 	h_scs_etmaxvscmet[i] = new TH2F((v_prefix.at(i)+"scetmax_vs_cmet").c_str(), ("scetmax_vs_cmet" + v_title.at(i)).c_str(), 100, 0.0, 50.0, 100, 0.0, 50.0);
@@ -456,8 +394,10 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 								   ("scs_spikeFlags" + v_title.at(i)).c_str(), 20, 0.0, 20.0);
     h_scs_notspikeFlags[i] = new TH1F((v_prefix.at(i)+"scs_notspikeFlags").c_str(), 
 									  ("scs_notspikeFlags" + v_title.at(i)).c_str(), 20, 0.0, 20.0);
+	h_scs_er4[i] = new TH1F((v_prefix.at(i)+"scs_er4").c_str(), 
+							("scs_er4" + v_title.at(i)).c_str(), 220, -0.2, 2.0);
 
-	h_twrs_ass[i] = new TH1F((v_prefix.at(i)+"twrs_ass").c_str(), ("twrs_ass" + v_title.at(i)).c_str(), 201, -1.0, 1.01); 
+	h_twrs_ass[i] = new TH1F((v_prefix.at(i)+"twrs_ass").c_str(), ";#alpha", 201, -1.0, 1.01); 
 	h_twrs_timeseed_all[i]   = new TH1F((v_prefix.at(i)+"twrs_timeseed_all").c_str(),   ("twrs_timeseed_all" + v_title.at(i)).c_str()  , 50, -25.0, 25.); 
 	h_twrs_timeseed_spike[i] = new TH1F((v_prefix.at(i)+"twrs_timeseed_spike").c_str(), ("twrs_timeseed_spike" + v_title.at(i)).c_str(), 50, -25.0, 25.); 
 	h_twrs_timeseed_goodt[i] = new TH1F((v_prefix.at(i)+"twrs_timeseed_goodt").c_str(), ("twrs_timeseed_goodt" + v_title.at(i)).c_str(), 50, -25.0, 25.); 
@@ -465,51 +405,37 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 	h_twrs_adc_spike[i] = new TH1F((v_prefix.at(i)+"twrs_adc_spike").c_str(), ("twrs_adc_spike" + v_title.at(i)).c_str(), 10, 0, 10); 
 	h_twrs_adc_goodt[i] = new TH1F((v_prefix.at(i)+"twrs_adc_goodt").c_str(), ("twrs_adc_goodt" + v_title.at(i)).c_str(), 10, 0, 10); 
 
-	h_twrs_eswiss[i]    = new TH1F((v_prefix.at(i)+"twrs_eswiss").c_str(), 
-								  ("twrs_eswiss" + v_title.at(i)).c_str(), 220, -0.2, 2.0);
-	h_twrs_eswissMet[i] = new TH1F((v_prefix.at(i)+"twrs_eswissMet").c_str(), 
-								  ("twrs_eswissMet" + v_title.at(i)).c_str(), 220, -0.2, 2.0);
-	h_twrs_eswissCut[i] = new TH1F((v_prefix.at(i)+"twrs_eswissCut").c_str(), 
-								  ("twrs_eswissCut" + v_title.at(i)).c_str(), 220, -0.2, 2.0);
-	h_twrs_etmaxvseswissZoom[i] = new TH2F((v_prefix.at(i)+"twrs_etmaxvseswiss").c_str(), 
-										  ("twrs_etmaxvseswiss" + v_title.at(i)).c_str(), 41, -0.025, 1.0, 40, 0.0, 40.0 );
+	h_twrs_er4[i]    = new TH1F((v_prefix.at(i)+"twrs_er4").c_str(), 
+								";R4", 220, -0.2, 2.0);
+	h_twrs_er4Met[i] = new TH1F((v_prefix.at(i)+"twrs_er4Met").c_str(), 
+								  ("twrs_er4Met" + v_title.at(i)).c_str(), 220, -0.2, 2.0);
+	h_twrs_er4Cut[i] = new TH1F((v_prefix.at(i)+"twrs_er4Cut").c_str(), 
+								";R4 (Emax_T > 5)", 220, -0.2, 2.0);
+	h_twrs_er4CutL[i] = new TH1F((v_prefix.at(i)+"twrs_er4CutL").c_str(), 
+								";R4 (E > 1)", 220, -0.2, 2.0);
+	h_twrs_etmaxvser4Zoom[i] = new TH2F((v_prefix.at(i)+"twrs_etmaxvser4").c_str(), 
+										//("twrs_etmaxvser4" + v_title.at(i)).c_str(), 100, -0.2, 0.2, 20, 0.0, 20.0 );
+										";R4;Tower E_{T}", 120, -0.2, 1, 20, 0.0, 20.0 );
+	h_twrsec_etmaxvstcmet[i] = new TH2F((v_prefix.at(i)+"twrsec_etmax_vs_tcmet").c_str(),
+									  ";Tower Emax_{T};tcMET", 100, 0.0, 50.0, 100, 0.0, 50.0);
+	h_twrsec_phivstcmetphi[i] = new TH2F((v_prefix.at(i)+"twrsec_phivstcmetphi").c_str(), 
+									   ";Tower Phi;tcMET phi",  100, -TMath::Pi(), TMath::Pi(), 100, -TMath::Pi(), TMath::Pi());
+	h_twrshf_etmaxvstcmet[i] = new TH2F((v_prefix.at(i)+"twrshf_etmax_vs_tcmet").c_str(),
+									  ";Tower E_{T};tcMET", 100, 0.0, 50.0, 100, 0.0, 50.0);
+	h_twrshf_phivstcmetphi[i] = new TH2F((v_prefix.at(i)+"twrshf_phivstcmetphi").c_str(), 
+									   ";Tower Phi;tcMET phi",  100, -TMath::Pi(), TMath::Pi(), 100, -TMath::Pi(), TMath::Pi());
+	h_twrsec_etmaxvsclmet[i] = new TH2F((v_prefix.at(i)+"twrsec_etmax_vs_clmet").c_str(),
+									  ";Tower Emax_{T};clmet", 100, 0.0, 50.0, 100, 0.0, 50.0);
+	h_twrsec_phivsclmetphi[i] = new TH2F((v_prefix.at(i)+"twrsec_phivsclmetphi").c_str(), 
+									   ";Tower Phi;clmet phi",  100, -TMath::Pi(), TMath::Pi(), 100, -TMath::Pi(), TMath::Pi());
+	h_twrshf_etmaxvsclmet[i] = new TH2F((v_prefix.at(i)+"twrshf_etmax_vs_clmet").c_str(),
+									  ";Tower E_{T};clmet", 100, 0.0, 50.0, 100, 0.0, 50.0);
+	h_twrshf_phivsclmetphi[i] = new TH2F((v_prefix.at(i)+"twrshf_phivsclmetphi").c_str(), 
+									   ";Tower Phi;clmet phi",  100, -TMath::Pi(), TMath::Pi(), 100, -TMath::Pi(), TMath::Pi());
+
 
 	/* //old
-    h_trks_innerlayers[i]-> TH1F::Sumw2();
-    h_trks_outerlayers[i]-> TH1F::Sumw2();
-    h_els_innerlayers[i]-> TH1F::Sumw2();
-    h_els_innerlayers_EcalDriven[i]-> TH1F::Sumw2();
-    h_els_innerlayers_TrkDriven[i]-> TH1F::Sumw2();
-    h_els_innerlayers_TrkDrivenLowEt[i]-> TH1F::Sumw2();
-    h_els_innerlayers_TrkDrivenHiEt[i]-> TH1F::Sumw2();
-    h_els_innerlayers_TrkEcalDriven[i]-> TH1F::Sumw2();
-    h_els_outerlayers[i]-> TH1F::Sumw2();
-    h_els_ecalEnergy[i]-> TH1F::Sumw2();
-    h_els_ecalEnergy_EcalDriven[i]-> TH1F::Sumw2();
-    h_els_ecalEnergy_TrkDriven[i]-> TH1F::Sumw2();
-    h_els_ecalEnergy_TrkEcalDriven[i]-> TH1F::Sumw2();
-    h_els_type[i]-> TH1F::Sumw2();
-    h_nvtxs[i]->TH2F::Sumw2();
-    h_nvtxsgood[i]->TH1F::Sumw2();
-    h_nvtxsbad[i]->TH1F::Sumw2();
-    h_ratioGoodTracks[i]->TH1F::Sumw2();
-    h_numGoodTracks[i]->TH1F::Sumw2();
-    h_numTracksVtx[i]->TH1F::Sumw2();
-    h_zvtx[i]->TH1F::Sumw2();
-    h_rvtx[i]->TH1F::Sumw2();
-
-    h_dcotvsdistElectrons[i]->TH2F::Sumw2();
-    h_dcotvsdistEcalElectrons[i]->TH2F::Sumw2();
-    h_dcotvsdistTrackElectrons[i]->TH2F::Sumw2();
-    h_dcotvsdistTracks[i]->TH2F::Sumw2();
-
-    h_dcotElectrons[i]->TH1F::Sumw2();
-    h_dcotEcalElectrons[i]->TH1F::Sumw2();
-    h_dcotTrackElectrons[i]->TH1F::Sumw2();
-    h_dcotTracks[i]->TH1F::Sumw2();
-    h_dcotTracksMissInn[i]->TH1F::Sumw2();
-    h_dcotTracksNoMissInn[i]->TH1F::Sumw2();
-	*/ //old
+	 */ //old
 
     h_scs_emaxvsediff[i]->TH2F::Sumw2();
 
@@ -541,6 +467,8 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
     h_scs_etavsphi[i]->TH2F::Sumw2();
     h_cmet[i]->TH1F::Sumw2();
     h_cmetCut[i]->TH1F::Sumw2();
+    h_cmetHFCorr[i]->TH1F::Sumw2();
+    h_cmetAllCorr[i]->TH1F::Sumw2();
     h_cmetCutCorr[i]->TH1F::Sumw2();
     h_tcmet[i]->TH1F::Sumw2();
     h_tcmetCut[i]->TH1F::Sumw2();
@@ -565,14 +493,16 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
     h_scs_allFlags[i]->TH1F::Sumw2();
     h_scs_spikeFlags[i]->TH1F::Sumw2();
     h_scs_notspikeFlags[i]->TH1F::Sumw2();
+	h_scs_er4[i]->TH1F::Sumw2();
 
 	h_twrs_ass[i]->TH1F::Sumw2();
 	h_twrs_timeseed_all[i]->TH1F::Sumw2();
 	h_twrs_timeseed_spike[i]->TH1F::Sumw2();
 	h_twrs_timeseed_goodt[i]->TH1F::Sumw2();
-	h_twrs_eswiss[i]   ->TH1F::Sumw2();
-	h_twrs_eswissMet[i]->TH1F::Sumw2();
-	h_twrs_eswissCut[i]->TH1F::Sumw2();
+	h_twrs_er4[i]   ->TH1F::Sumw2();
+	h_twrs_er4Met[i]->TH1F::Sumw2();
+	h_twrs_er4Cut[i]->TH1F::Sumw2();
+	h_twrs_er4CutL[i]->TH1F::Sumw2();
   }
     
   TFile *currentFile = 0;
@@ -659,185 +589,19 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
       //first comes fkw's new stuff
 	  passgoodrun = false;
 	  //insert jmu's goodrun fn + yj's list
-	  if( goodrun( evt_run(), evt_lumiBlock() ) ){
+	  if( runningonGEN || goodrun( evt_run(), evt_lumiBlock() ) ){
 	    npassgoodrun++;
 		passgoodrun = true;
-		//continue;
 	  }
+	  else
+		continue;
+
 	  //cout << "Done header of event loop" << endl;
 
 	  /*
 	  //////////////////////////////////////////////////////////////////////////start block
-
-
-      for (unsigned int i=0; i< trks_exp_innerlayers().size(); i++){//loop over tracks
-
-		if( trks_trk_p4().at(i).pt() < 4.0 ) continue;
-		if(!(trks_qualityMask().at(i) & 4)) continue;
-		h_trks_innerlayers[index]->Fill(min((double)trks_exp_innerlayers().at(i),9.9));
-		h_trks_innerlayers[2]->Fill(min((double)trks_exp_innerlayers().at(i),9.9));
-		h_trks_outerlayers[index]->Fill(min((double)trks_exp_outerlayers().at(i),9.9));
-		h_trks_outerlayers[2]->Fill(min((double)trks_exp_outerlayers().at(i),9.9));
-
-      }
-
-      for (unsigned int i=0; i< els_exp_innerlayers().size(); i++){//loop over electrons
-
-		h_els_ecalEnergy[index]->Fill(min((double)els_ecalEnergy().at(i),39.99));
-		h_els_ecalEnergy[2]->Fill(min((double)els_ecalEnergy().at(i),39.99));
-		h_els_innerlayers[index]->Fill(min((double)els_exp_innerlayers().at(i),9.9));
-		h_els_innerlayers[2]->Fill(min((double)els_exp_innerlayers().at(i),9.9));
-		h_els_outerlayers[index]->Fill(min((double)els_exp_outerlayers().at(i),9.9));
-		h_els_outerlayers[2]->Fill(min((double)els_exp_outerlayers().at(i),9.9));
-		h_els_type[index]->Fill(min((double)els_type().at(i),19.9));
-		h_els_type[2]->Fill(min((double)els_type().at(i),19.9));
-
-		if( els_type().at(i) & (1 << 2) ) {
-		  h_els_ecalEnergy_EcalDriven[index]->Fill(min((double)els_ecalEnergy().at(i),39.99));
-		  h_els_ecalEnergy_EcalDriven[2]->Fill(min((double)els_ecalEnergy().at(i),39.99));
-		  h_els_innerlayers_EcalDriven[index]->Fill(min((double)els_exp_innerlayers().at(i),9.9));
-		  h_els_innerlayers_EcalDriven[2]->Fill(min((double)els_exp_innerlayers().at(i),9.9));
-		}
-		if( els_type().at(i) & (1 << 3) ) {
-		  if( els_p4().at(i).pt() > 4.0){
-			h_els_innerlayers_TrkDrivenHiEt[index]->Fill(min((double)els_exp_innerlayers().at(i),9.9));
-			h_els_innerlayers_TrkDrivenHiEt[2]->Fill(min((double)els_exp_innerlayers().at(i),9.9));
-		  } else {
-			h_els_innerlayers_TrkDrivenLowEt[index]->Fill(min((double)els_exp_innerlayers().at(i),9.9));
-			h_els_innerlayers_TrkDrivenLowEt[2]->Fill(min((double)els_exp_innerlayers().at(i),9.9));
-		  }
-		}
-		if( els_type().at(i) & (1 << 3) && !(els_type().at(i) & (1 << 2)) ) {
-		  h_els_ecalEnergy_TrkDriven[index]->Fill(min((double)els_ecalEnergy().at(i),39.99));
-		  h_els_ecalEnergy_TrkDriven[2]->Fill(min((double)els_ecalEnergy().at(i),39.99));
-		  h_els_innerlayers_TrkDriven[index]->Fill(min((double)els_exp_innerlayers().at(i),9.9));
-		  h_els_innerlayers_TrkDriven[2]->Fill(min((double)els_exp_innerlayers().at(i),9.9));
-		}
-		if( (els_type().at(i) & (1 << 3)) && (els_type().at(i) & (1 << 2)) ) {
-		  h_els_ecalEnergy_TrkEcalDriven[index]->Fill(min((double)els_ecalEnergy().at(i),39.99));
-		  h_els_ecalEnergy_TrkEcalDriven[2]->Fill(min((double)els_ecalEnergy().at(i),39.99));
-		  h_els_innerlayers_TrkEcalDriven[index]->Fill(min((double)els_exp_innerlayers().at(i),9.9));
-		  h_els_innerlayers_TrkEcalDriven[2]->Fill(min((double)els_exp_innerlayers().at(i),9.9));
-		}
-      }
-
-      //loop over primary vertices
-      int nGoodVtxs = 0;
-      for(unsigned int i = 0; i < vtxs_isFake().size(); i++) {
-		if(vtxs_isFake().at(i))
-		  continue;
-		h_numTracksVtx[index]->Fill(min((double)vtxs_tracksSize().at(i),49.9));
-		h_numTracksVtx[2]->Fill(min((double)vtxs_tracksSize().at(i),49.9));
-		h_zvtx[index]->Fill(vtxs_position().at(i).z());
-		h_zvtx[2]->Fill(vtxs_position().at(i).z());
-		h_rvtx[index]->Fill(vtxs_position().at(i).pt());
-		h_rvtx[2]->Fill(vtxs_position().at(i).pt());
-		if(vtxs_tracksSize().at(i) < 4 )
-		  continue;
-		if( fabs( vtxs_position().at(i).z() ) > 15 )
-		  continue;
-		if( vtxs_position().at(i).pt() > 2 )
-		  continue;
-		nGoodVtxs++;
-      }
-      h_nvtxs[index]->Fill(min((double)nGoodVtxs,4.9),min((double)(vtxs_isFake().size()-nGoodVtxs),4.9));  
-      h_nvtxs[2]->Fill(min((double)nGoodVtxs,4.9),min((double)(vtxs_isFake().size()-nGoodVtxs),4.9));  
-      h_nvtxsgood[index]->Fill(min((double)nGoodVtxs,4.9));  
-      h_nvtxsgood[2]->Fill(min((double)nGoodVtxs,4.9));  
-      h_nvtxsbad[index]->Fill(min((double)(vtxs_isFake().size()-nGoodVtxs),4.9));  
-      h_nvtxsbad[2]->Fill(min((double)(vtxs_isFake().size()-nGoodVtxs),4.9));  
-
-      //make some simple tracking plots
-      int nGoodTrks = 0;
-      for(unsigned int i = 0; i < trks_trk_p4().size(); i++) {
-		if(trks_qualityMask().at(i) & 4)
-		  nGoodTrks++;
-      }
-      double rat = 0;
-      if (trks_trk_p4().size() == 0) rat = 0.0;
-      else rat = ((double)nGoodTrks)/((double)trks_trk_p4().size());
-      h_ratioGoodTracks[index]->Fill(rat);
-      h_numGoodTracks[index]->Fill(min((double)nGoodTrks,99.9));
-      h_ratioGoodTracks[2]->Fill(rat);
-      h_numGoodTracks[2]->Fill(min((double)nGoodTrks,99.9));
-
-      //if( thisRun == 123970) cout << "now starting conversions" << endl;
-
-      //look for conversions
-
-      //tracks on tracks first
-      float dcot = 1.0;
-      float dist = 1.0;
-      for(unsigned int i1 = 0; i1 < trks_trk_p4().size(); i1++) {
-		if( trks_trk_p4().at(i1).pt() < 1.0 ) continue;
-		if(!(trks_qualityMask().at(i1) & 4)) continue;
-		dcot = 1.0;
-		dist = 1.0;
-		for(unsigned int i2 = i1+1; i2 < trks_trk_p4().size(); i2++) {
-		  if(!(trks_qualityMask().at(i2) & 4)) continue;
-		  if( trks_charge().at(i1)*trks_charge().at(i2) > 0 ) continue;//skip same sign track pairs
-		  std::pair<float, float> temp = getConversionInfo(i1, i2, evt_bField());
-		  if( fabs(temp.second) < fabs(dcot) ){//find pair with smalles abs(dcot)
-			dcot = temp.second;
-			dist = temp.first;
-		  }
-		}
-		h_dcotvsdistTracks[index]->Fill(dist,dcot);
-		h_dcotvsdistTracks[2]->Fill(dist,dcot);
-		if( dist > -0.07 && dist < 0.01) {
-		  h_dcotTracks[index]->Fill(dcot);
-		  h_dcotTracks[2]->Fill(dcot);
-		  if ( trks_exp_innerlayers().at(i1) > 0) {
-			h_dcotTracksMissInn[index]->Fill(dcot);
-			h_dcotTracksMissInn[2]->Fill(dcot);
-		  } else {
-			h_dcotTracksNoMissInn[index]->Fill(dcot);
-			h_dcotTracksNoMissInn[2]->Fill(dcot);
-		  }
-		}
-      }
-
-      //if( thisRun == 123970) cout << "passed the track block " << nGoodEvents << endl;
-
-      //tracks on electrons next
-      for(int i1 = 0; i1 < (int)els_trk_p4().size(); i1++) {
-		if( els_trkidx().at(i1) < 0 ) {
-		  //cout << " els not matched to any track " << endl;
-		  nUnmatchedElectrons++;
-		  continue;
-		}
-		if(!(trks_qualityMask().at(els_trkidx().at(i1)) & 4)) continue;
-		dcot = 1.0;
-		dist = 1.0;
-		for(int i2 = 0; i2 < (int)trks_trk_p4().size(); i2++) {
-		  if(!(trks_qualityMask().at(i2) & 4)) continue;
-		  if(els_trkidx().at(i1) == i2 && els_trkshFrac().at(i1) > 0.45 ) continue;//ignore trk if same as els trk
-		  if( els_charge().at(i1)*trks_charge().at(i2) > 0 ) continue;//skip same sign track pairs
-		  std::pair<float, float> temp = getConversionInfo(els_trkidx().at(i1), i2, evt_bField());
-		  if( fabs(temp.second) < fabs(dcot) ){//find pair with smalles abs(dcot)
-			dcot = temp.second;
-			dist = temp.first;
-		  }
-		}
-		h_dcotvsdistElectrons[index]->Fill(dist,dcot);
-		h_dcotvsdistElectrons[2]->Fill(dist,dcot);
-		h_dcotElectrons[index]->Fill(dcot);
-		h_dcotElectrons[2]->Fill(dcot);
-		if( (els_type().at(i1) & (1 << 3)) && !(els_type().at(i1) & (1 << 2)) ) {//track but not ecal
-		  h_dcotvsdistTrackElectrons[index]->Fill(dist,dcot);
-		  h_dcotvsdistTrackElectrons[2]->Fill(dist,dcot);
-		  h_dcotTrackElectrons[index]->Fill(dcot);
-		  h_dcotTrackElectrons[2]->Fill(dcot);
-		} else if( (els_type().at(i1) & (1 << 2)) ) {//ecal, including those that are track as well
-		  h_dcotvsdistEcalElectrons[index]->Fill(dist,dcot);
-		  h_dcotvsdistEcalElectrons[2]->Fill(dist,dcot);
-		  h_dcotEcalElectrons[index]->Fill(dcot);
-		  h_dcotEcalElectrons[2]->Fill(dcot);
-		}
-      }
-
-*/
 	  //////////////////////////////////////////////////////////////////////////end block
+	  */
 
       //if( thisRun == 123970) cout << "passed the electron block" << endl;
 
@@ -849,7 +613,6 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 	  const float cmet  = min(evt_met(), metmax);
 	  const float tcmet = min(evt_tcmet(), metmax);
 	  const float pfmet = min(evt_pfmet(), metmax);
-	  float tcmetallcorr = evt_tcmet();
       h_cmet[index]		->Fill(cmet);
       h_cmet[2]			->Fill(cmet);
       h_tcmet[index]	->Fill(tcmet);
@@ -951,6 +714,10 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 		  h_scs_eratratCut[index]	->Fill(eratrat);
 		  h_scs_eratratCut[2]		->Fill(eratrat);
 		}
+		//make latest r4 for scs to compare to twrs
+		float r4 = (scs_e1x3().at(i) + scs_e3x1().at(i) - scs_eMax().at(i))/scs_eMax().at(i);
+		h_scs_er4[index]->Fill(r4);
+		h_scs_er4[2]->Fill(r4);
 		//const float eratratmin = min( eratrat, (float)39.99 ); //this isn't necessary
 		const float scetmaxmin = min( scetmax, (float)39.99 );
 		h_scs_emaxvseratmaxZoom[index]		->Fill(eratmax, emax);
@@ -1032,8 +799,8 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 		  const float dphitcmet = ROOT::Math::VectorUtil::DeltaPhi( LorentzVector(tcmetx, tcmety, 0, evt_met()), scs_pos_p4().at(i) );
 		  const float dphipfmet = ROOT::Math::VectorUtil::DeltaPhi( LorentzVector(pfmetx, pfmety, 0, evt_met()), scs_pos_p4().at(i) );
 		  const float scmaxetcorr = scs_eMax().at(i)*sin( scs_pos_p4().at(i).Theta() );
-		  const float tcmetcorrx = scmaxetcorr*cos(scs_phi().at(i)) + tcmetx;
-		  const float tcmetcorry = scmaxetcorr*sin(scs_phi().at(i)) + tcmety;
+		  //const float tcmetcorrx = scmaxetcorr*cos(scs_phi().at(i)) + tcmetx;
+		  //const float tcmetcorry = scmaxetcorr*sin(scs_phi().at(i)) + tcmety;
 		  const float cmetcorrx  = scmaxetcorr*cos(scs_phi().at(i)) + cmetx;
 		  const float cmetcorry  = scmaxetcorr*sin(scs_phi().at(i)) + cmety;
 		  const float cmetcorr   = sqrt( cmetcorrx*cmetcorrx + cmetcorry*cmetcorry );
@@ -1065,7 +832,7 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 			}
 		  }
 		  v_trkmch.push_back(nmatch);
-		  tcmetallcorr = sqrt( tcmetcorrx*tcmetcorrx + tcmetcorry*tcmetcorry );
+		  //tcmetallcorr = sqrt( tcmetcorrx*tcmetcorrx + tcmetcorry*tcmetcorry );
 		}
 		else if( fabs(eratrat-1) > 0.01 && scetmax > etmaxcut ) { //"good scs"
 		  if( havetimeseed ) {
@@ -1126,34 +893,28 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 	  //	   << twrs_emMaxTime().size() << "  "
 	  //   << endl;
 	  //loop on calo towers
-	  double tcmethf = evt_tcmet();
+	  int nhfspikes = 0;
+	  float tcmetallcorr    = evt_tcmet();
+	  float tcmetallcorrphi = evt_tcmetPhi();
+	  float tcmethfcorr     = evt_tcmet();
+	  float tcmethfcorrphi  = evt_tcmetPhi();
+	  float cmetallcorr    = evt_met();
+	  float cmetallcorrphi = evt_metPhi();
+	  float cmethfcorr     = evt_met();
+	  float cmethfcorrphi  = evt_metPhi();
 	  for( unsigned int i=0; i<twrs_emEnergy().size(); i++ ) {
-		h_twrs_etavsphiNar[index]->Fill( twrs_phi()[i], twrs_eta()[i] );
-		h_twrs_etavsphiNar[2]    ->Fill( twrs_phi()[i], twrs_eta()[i] );
-		h_twrs_ietavsiphiNar[index]->Fill( CaloTwr_iphi( twrs_detid()[i] ), CaloTwr_ieta( twrs_detid()[i] ) );
-		h_twrs_ietavsiphiNar[2]    ->Fill( CaloTwr_iphi( twrs_detid()[i] ), CaloTwr_ieta( twrs_detid()[i] ) );
+		if( havetimeseed ) {
+		  //h_twrs_etavsphiNar[index]->Fill( twrs_phi()[i], twrs_eta()[i] );
+		  //h_twrs_etavsphiNar[2]    ->Fill( twrs_phi()[i], twrs_eta()[i] );
+		  //h_twrs_ietavsiphiNar[index]->Fill( CaloTwr_iphi( twrs_detid()[i] ), CaloTwr_ieta( twrs_detid()[i] ) );
+		  //h_twrs_ietavsiphiNar[2]    ->Fill( CaloTwr_iphi( twrs_detid()[i] ), CaloTwr_ieta( twrs_detid()[i] ) );
+		}
 
 		//if( fabs(scs_eta().at(i) - 1.5) < 0.0500001 && fabs(scs_phi().at(i) - 1.57) < 0.11 //eta phi of hot cell--fkw
 		if( fabs(twrs_eta().at(i) - 1.53) < 0.016 && fabs(twrs_phi().at(i) - 1.66) < 0.016 ) { //eta phi of hot cell--warren
 		  //&& fabs(eratrat-1) < 0.01 && scetmax > etmaxcut ) { //eratX, emax of hot cell
 		  //failed = true; //flag event with hot cell
 		  continue; //skip hot cell
-		}
-
-		const float emmaxet = twrs_emMax().at(i)/cosh(twrs_eta().at(i));
-		const float r4      = twrs_emSwiss().at(i)/twrs_emMax().at(i);
-
-		h_twrs_etmaxvseswissZoom[index]->Fill(r4, emmaxet);
-		h_twrs_etmaxvseswissZoom[2]    ->Fill(r4, emmaxet);
-		h_twrs_eswiss[index]          ->Fill(r4);
-		h_twrs_eswiss[2]              ->Fill(r4);
-		if( evt_tcmet() > 15 ) {
-		  h_twrs_eswissMet[index]     ->Fill(r4);
-		  h_twrs_eswissMet[2]         ->Fill(r4);
-		  if( emmaxet > 5. ) {
-			h_twrs_eswissCut[index]   ->Fill(r4);
-			h_twrs_eswissCut[2]       ->Fill(r4);
-		  }
 		}
 					   
 		if( fabs(twrs_eta().at(i)) > 3. ) {
@@ -1163,19 +924,36 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 			h_twrs_ass[2]->Fill( ass );
 		  }
 		  //double twret = (twrs_emEnergy().at(i) + twrs_hadEnergy().at(i))*sin( twrs_;
-		  if( fabs(ass) > 0.98 && twrs_emEt().at(i) + twrs_hadEt().at(i) > 5. ) {
+		  if( (ass <= -0.8 || ass >= 0.99) && twrs_emEt().at(i) + twrs_hadEt().at(i) > 5. ) {
 			tothfspikes++;
-			const float tcmetx = evt_tcmet()*cos( cms2.evt_tcmetPhi() );
-			const float tcmety = evt_tcmet()*sin( cms2.evt_tcmetPhi() );
-			const float twretcorr = twrs_emEt().at(i) + twrs_hadEt().at(i); 
-			const float cmetcorrx = twretcorr*cos(twrs_phi().at(i)) + tcmetx;
-			const float cmetcorry = twretcorr*sin(twrs_phi().at(i)) + tcmety;
-			const float cmetcorr  = sqrt( cmetcorrx*cmetcorrx + cmetcorry*cmetcorry );
-			tcmethf = cmetcorr;
-			tcmetallcorr = cmetcorr;
-			
-			h_tcmetCorr[index]->Fill( cmetcorr );
-			h_tcmetCorr[2]->Fill( cmetcorr );
+			nhfspikes++;
+			const float twretcorr  = twrs_emEt().at(i) + twrs_hadEt().at(i); 
+			const float methfcorrx  = twretcorr*cos(twrs_phi().at(i)) + tcmethfcorr* cos(tcmethfcorrphi);
+			const float methfcorry  = twretcorr*sin(twrs_phi().at(i)) + tcmethfcorr* sin(tcmethfcorrphi);
+			const float metallcorrx = twretcorr*cos(twrs_phi().at(i)) + tcmetallcorr*cos(tcmetallcorrphi);
+			const float metallcorry = twretcorr*sin(twrs_phi().at(i)) + tcmetallcorr*sin(tcmetallcorrphi);
+			tcmethfcorr  = sqrt( methfcorrx*methfcorrx   + methfcorry* methfcorry );
+			tcmetallcorr = sqrt( metallcorrx*metallcorrx + metallcorry*metallcorry );
+			tcmetallcorrphi = atan2( metallcorry, metallcorrx ); 
+
+			const float cmethfcorrx  = twretcorr*cos(twrs_phi().at(i)) + cmethfcorr* cos(cmethfcorrphi);
+			const float cmethfcorry  = twretcorr*sin(twrs_phi().at(i)) + cmethfcorr* sin(cmethfcorrphi);
+			const float cmetallcorrx = twretcorr*cos(twrs_phi().at(i)) + cmetallcorr*cos(cmetallcorrphi);
+			const float cmetallcorry = twretcorr*sin(twrs_phi().at(i)) + cmetallcorr*sin(cmetallcorrphi);
+			cmethfcorr  = sqrt( cmethfcorrx*cmethfcorrx   + cmethfcorry* cmethfcorry );
+			cmetallcorr = sqrt( cmetallcorrx*cmetallcorrx + cmetallcorry*cmetallcorry );
+			cmetallcorrphi = atan2( cmetallcorry, cmetallcorrx ); 
+
+			h_twrshf_phivstcmetphi[index]->Fill( twrs_phi().at(i), atan2( evt_tcmet()*sin(evt_tcmetPhi()), evt_tcmet()*cos(evt_tcmetPhi()) ) );
+			h_twrshf_phivstcmetphi[2]    ->Fill( twrs_phi().at(i), atan2( evt_tcmet()*sin(evt_tcmetPhi()), evt_tcmet()*cos(evt_tcmetPhi()) ) );
+			h_twrshf_etmaxvstcmet[index]->Fill( twretcorr, evt_tcmet() );
+			h_twrshf_etmaxvstcmet[2]    ->Fill( twretcorr, evt_tcmet() );
+			h_twrshf_phivsclmetphi[index]->Fill( twrs_phi().at(i), atan2( evt_met()*sin(evt_metPhi()), evt_met()*cos(evt_metPhi()) ) );
+			h_twrshf_phivsclmetphi[2]    ->Fill( twrs_phi().at(i), atan2( evt_met()*sin(evt_metPhi()), evt_met()*cos(evt_metPhi()) ) );
+			h_twrshf_etmaxvsclmet[index]->Fill( twretcorr, evt_met() );
+			h_twrshf_etmaxvsclmet[2]    ->Fill( twretcorr, evt_met() );
+			h_tcmetCorr[index]->Fill( tcmethfcorr );
+			h_tcmetCorr[2]->Fill( tcmethfcorr );
 			h_tcmetHF[index]->Fill( evt_tcmet() );
 			h_tcmetHF[2]    ->Fill( evt_tcmet() );
 		  }
@@ -1192,6 +970,53 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 		else {
 		  //cout << "starting eta < 3 i = " << i << endl;
 
+		  //r4 is (the four neighbors not including max) over max
+		  //definition of spike is now r4<0.05 && et>5
+		  const float emmaxet = twrs_emMax().at(i)/cosh(twrs_eta().at(i));
+		  const float r4      = (twrs_emSwiss().at(i) - twrs_emMax().at(i))/twrs_emMax().at(i);
+
+		  //temporary measure to check if border events are causing discontinuity
+		  //if( fabs(twrs_eta().at(i)) > 1.3 ) continue; //barrel only //&& fabs(twrs_eta().at(i)) < 1.7
+
+		  //overflow positive
+		  h_twrs_etmaxvser4Zoom[index]->Fill(r4, emmaxet);
+		  h_twrs_etmaxvser4Zoom[2]    ->Fill(r4, emmaxet);
+		  h_twrs_er4[index]          ->Fill(r4);
+		  h_twrs_er4[2]              ->Fill(r4);
+		  if( twrs_emMax().at(i) > 1. ) { //loose cut on energy, not et
+			h_twrs_er4CutL[index]   ->Fill(r4);
+			h_twrs_er4CutL[2]       ->Fill(r4);
+		  }
+		  if( emmaxet > 5. ) {
+			h_twrs_er4Cut[index]   ->Fill(r4);
+			h_twrs_er4Cut[2]       ->Fill(r4);
+		  }
+		  if( evt_tcmet() > 15 ) {
+			h_twrs_er4Met[index]     ->Fill(r4);
+			h_twrs_er4Met[2]         ->Fill(r4);
+		  }
+
+		  //this if for spikes
+		  if( emmaxet > 5. && r4 < 0.05 ) {
+			const float metallcorrx = emmaxet*cos(twrs_phi().at(i)) + tcmetallcorr*cos(tcmetallcorrphi);
+			const float metallcorry = emmaxet*sin(twrs_phi().at(i)) + tcmetallcorr*sin(tcmetallcorrphi);
+			tcmetallcorr = sqrt( metallcorrx*metallcorrx + metallcorry*metallcorry );
+			const float cmetallcorrx = emmaxet*cos(twrs_phi().at(i)) + cmetallcorr*cos(cmetallcorrphi);
+			const float cmetallcorry = emmaxet*sin(twrs_phi().at(i)) + cmetallcorr*sin(cmetallcorrphi);
+			cmetallcorr = sqrt( cmetallcorrx*cmetallcorrx + cmetallcorry*cmetallcorry );
+			cmetallcorrphi = atan2( cmetallcorry, cmetallcorrx );
+			
+			h_twrsec_phivstcmetphi[index]->Fill( twrs_phi().at(i), atan2( evt_tcmet()*sin(evt_tcmetPhi()), evt_tcmet()*cos(evt_tcmetPhi()) ) );
+			h_twrsec_phivstcmetphi[2]    ->Fill( twrs_phi().at(i), atan2( evt_tcmet()*sin(evt_tcmetPhi()), evt_tcmet()*cos(evt_tcmetPhi()) ) );
+			h_twrsec_etmaxvstcmet[index]->Fill( emmaxet, evt_tcmet() );
+			h_twrsec_etmaxvstcmet[2]    ->Fill( emmaxet, evt_tcmet() );
+			h_twrsec_phivsclmetphi[index]->Fill( twrs_phi().at(i), atan2( evt_met()*sin(evt_metPhi()), evt_met()*cos(evt_metPhi()) ) );
+			h_twrsec_phivsclmetphi[2]    ->Fill( twrs_phi().at(i), atan2( evt_met()*sin(evt_metPhi()), evt_met()*cos(evt_metPhi()) ) );
+			h_twrsec_etmaxvsclmet[index]->Fill( emmaxet, evt_met() );
+			h_twrsec_etmaxvsclmet[2]    ->Fill( emmaxet, evt_met() );
+		  }
+
+		  //this if for fancy time/adc stuff
 		  if( emmaxet > 5. && havetimeseed ) {
 			//cout << "r l e: " << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
 			if( twrs_em3x3().at(i) == 0 || !isfinite(twrs_em3x3().at(i)) 
@@ -1200,7 +1025,7 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 			  continue;
 			}
 
-			const float r9 = twrs_emMax().at(i)/twrs_em3x3().at(i);
+			//const float r9 = twrs_emMax().at(i)/twrs_em3x3().at(i);
 			ntwrs_eta3_5gev_all++;
 			h_twrs_timeseed_all[index]->Fill( twrs_emMaxTime().at(i) );
 			h_twrs_timeseed_all[2]->Fill( twrs_emMaxTime().at(i) );
@@ -1211,7 +1036,8 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 			  h_twrs_adc_all[2]    ->Fill(s, cms2.twrs_emMaxEcalMGPASampleADC()[i][s]);
 			}
 
-			if( fabs(r9-1) < 0.01 ) { //spike
+			//if( fabs(r9-1) < 0.01 ) { //spike
+			if( r4 < 0.05 ) {
 			  h_twrs_timeseed_spike[index]->Fill( twrs_emMaxTime().at(i) );
 			  h_twrs_timeseed_spike[2]->Fill( twrs_emMaxTime().at(i) );
 			  ntwrs_eta3_5gev_spike++;
@@ -1236,10 +1062,28 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 		}//end eta if (else)
 
 	  } //end loop on towers
-	  h_tcmetHFCorr[index]->Fill( tcmethf );
-	  h_tcmetHFCorr[2]    ->Fill( tcmethf );
+	  if( nhfspikes > 1 )
+		cout << "More one HF spike  " << nhfspikes << endl;
+
+	  h_tcmetHFCorr[index]->Fill( tcmethfcorr );
+	  h_tcmetHFCorr[2]    ->Fill( tcmethfcorr );
 	  h_tcmetAllCorr[index]->Fill( tcmetallcorr );
 	  h_tcmetAllCorr[2]    ->Fill( tcmetallcorr );
+	  h_cmetHFCorr[index]->Fill( cmethfcorr );
+	  h_cmetHFCorr[2]    ->Fill( cmethfcorr );
+	  h_cmetAllCorr[index]->Fill( cmetallcorr );
+	  h_cmetAllCorr[2]    ->Fill( cmetallcorr );
+
+
+	  sumet_   = evt_sumet();
+	  tcsumet_ = evt_tcsumet();
+	  MET_     = cmetallcorr;
+	  METPhi_  = cmetallcorrphi;
+	  tcMET_   = tcmetallcorr;
+	  tcMETPhi_= tcmetallcorrphi;
+
+      outTree_->Fill();
+
 
       //now comes all of what was there before      
       //cout << "end of event loop" << endl;
@@ -1470,7 +1314,7 @@ float getTwrHFSwiss( int seedidx, bool em ) {
   const int maxiphibarrel = 72;
   const int maxiphiendcap = 71;
 
-  cout << evt_run() << "  " << evt_lumiBlock() << "  " << evt_event() << endl;
+  //cout << evt_run() << "  " << evt_lumiBlock() << "  " << evt_event() << endl;
 
   for( unsigned int i=0; i<twrs_eta().size(); i++ ) {
 	if( int(i) == seedidx )
@@ -1501,13 +1345,14 @@ float getTwrHFSwiss( int seedidx, bool em ) {
 	if( ( seediphi == thisiphi && etaneighbors ) || //same phi, neighbors in eta
 		( phineighbors && seedieta == thisieta ) ) { //same eta, neighbors in phi
 	  result += twrs_emEnergy()[i] + twrs_hadEnergy()[i];
-	  if( added == 0 )
-		cout << "seed " << seedieta << "  " << seediphi << endl;
+	  //if( added == 0 )
+		//cout << "seed " << seedieta << "  " << seediphi << endl;
 	  added++;
-	  cout << "added " << thisieta << "  " << thisiphi << endl;
+	  //cout << "added " << thisieta << "  " << thisiphi << endl;
 	}
 
-	/*
+	/* ///////////////////////////////////////////
+	//DON"T USE THIS---IT"S BROKEN
 	//float dphi = ROOT::Math::VectorUtil::DeltaPhi( LorentzVector(, , , ),  );
 	float dphi = deltaPhi( twrs_phi()[seedidx], twrs_phi()[i] );
 	float deta = twrs_eta()[seedidx] - twrs_eta()[i];
@@ -1523,7 +1368,7 @@ float getTwrHFSwiss( int seedidx, bool em ) {
 	*/
   }
 
-  cout << endl;
+  //cout << endl;
   if( added > 4 )
 	cout << "added too many towers--fix" << endl;
 
