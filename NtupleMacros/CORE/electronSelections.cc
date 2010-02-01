@@ -75,10 +75,10 @@ bool electronImpact_cand01(const unsigned int index)
         //
         // define thresholds for EB, EE
         //
-        float d0Thresholds[2]               = {0.25, 0.35};
+        float d0Thresholds[2]               = {0.20, 0.20};
 
         //
-        // apply cut
+        // apply cutç
         //
         if (abs(cms2.els_etaSC()[index]) < 1.5) {
         //if (cms2.els_fiduciality()[index] & (1<<ISEB)) {
