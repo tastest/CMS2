@@ -32,6 +32,7 @@
 using namespace std;
 ofstream headerf;
 ofstream codef;
+ofstream implf;
 ofstream branchfile;
 
 void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
@@ -494,6 +495,7 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
   // Does not include cms2.Init and cms2.GetEntry because I think
   // it is healthy to leave those methods as they are
   headerf << "namespace tas {" << endl;
+  implf   << "namespace tas {" << endl;
   for (Int_t i = 0; i< aliasarray->GetSize(); i++) {
     TString aliasname(aliasarray->At(i)->GetName());
     TBranch *branch = ev->GetBranch(ev->GetAlias(aliasname.Data()));
@@ -505,6 +507,7 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
 	classname.ReplaceAll("edm::Wrapper<","");
       }
       headerf << "\t" << classname << " &" << aliasname << "()";
+      implf   << "\t" << classname << " &" << aliasname << "()";
     } else {
       if(classname.Contains("edm::Wrapper<") ) {
 	classname = classname(0,classname.Length()-1);
@@ -512,36 +515,48 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
       }
       if(classname != "" ) {
 	headerf << "\t" << classname << " &" << aliasname << "()";
+	implf   << "\t" << classname << " &" << aliasname << "()";
       } else {
-	if(title.EndsWith("/i"))
+	if(title.EndsWith("/i")){
 	  headerf << "\tunsigned int &" << aliasname << "()";
-	if(title.EndsWith("/F"))
+	  implf   << "\tunsigned int &" << aliasname << "()";
+	}
+	if(title.EndsWith("/F")){
 	  headerf << "\tfloat &" << aliasname << "()";
-	if(title.EndsWith("/I"))
+	  implf   << "\tfloat &" << aliasname << "()";
+	}
+	if(title.EndsWith("/I")){
 	  headerf << "\tint &" << aliasname << "()";
+	  implf   << "\tint &" << aliasname << "()";
+	}
       }
     }
-    headerf << " { return cms2." << aliasname << "(); }" << endl;
+    headerf << ";" << endl;
+    implf   << " { return cms2." << aliasname << "(); }" << endl;
   }
   if(haveHLTInfo) {
     //functions to return whether or not trigger fired - HLT
-    headerf << "\t" << "static bool passHLTTrigger(TString trigName) { return cms2.passHLTTrigger(trigName); }" << endl;
+    headerf << "\t" << "bool passHLTTrigger(TString trigName);" << endl;
+    implf   << "\t" << "bool passHLTTrigger(TString trigName) { return cms2.passHLTTrigger(trigName); }" << endl;
   }//if(haveHLTInfo) 
   if(haveHLT8E29Info) {
     //functions to return whether or not trigger fired - HLT
-    headerf << "\t" << "static bool passHLT8E29Trigger(TString trigName) { return cms2.passHLT8E29Trigger(trigName); }" << endl;
+    headerf << "\t" << "bool passHLT8E29Trigger(TString trigName);" << endl;
+    implf   << "\t" << "bool passHLT8E29Trigger(TString trigName) { return cms2.passHLT8E29Trigger(trigName); }" << endl;
   }//if(haveHLT8E29Info) 
   if(haveL1Info) {
     //functions to return whether or not trigger fired - L1
-    headerf << "\t" << "static bool passL1Trigger(TString trigName) { return cms2.passL1Trigger(trigName); }" << endl;
+    headerf << "\t" << "bool passL1Trigger(TString trigName);" << endl;
+    implf   << "\t" << "bool passL1Trigger(TString trigName) { return cms2.passL1Trigger(trigName); }" << endl;
   }//if(haveL1Info)
     
 }
   
   
-void makeSrcFile(TFile *f, bool paranoid, std::string Classname, std::string branchNamesFile) {
+// void makeSrcFile(TFile *f, bool paranoid, std::string Classname, std::string branchNamesFile) {
+void makeSrcFile(std::string Classname, std::string branchNamesFile) {
 
-  TTree *ev = (TTree*)f->Get("Events");
+  // TTree *ev = (TTree*)f->Get("Events");
   
   codef << "/* Usage:" << endl;
   codef << "   root [0] .L ScanChain.C++" << endl;
@@ -664,8 +679,7 @@ void makeBranchFile(std::string branchNamesFile) {
       continue;
     vector<TString> v_line;
     TIter objIt((TObjArray*)line.Tokenize(" "));
-    TObject *obj=NULL;
-    while(obj = (TObject*)objIt.Next()) {
+    while(TObject *obj = (TObject*)objIt.Next()) {
       if(obj==NULL) 
 	continue;
       v_line.push_back(obj->GetName());
@@ -797,13 +811,17 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true,
   //std::string Classname = className=="" ? "CMS2" : className;
   
   headerf.open((className+".h").c_str());
+  implf.open((className+".cc").c_str());
   codef.open("ScanChain.C");
   
+  implf << "#include \"" << className+".h" << "\"\nCMS2 cms;" << endl;
   makeHeaderFile(f, paranoid, className);
-  makeSrcFile(f, paranoid, className, branchNamesFile);
+  makeSrcFile(className, branchNamesFile);
   if(branchNamesFile!="")
     makeBranchFile(branchNamesFile);
   
+  implf << "}" << endl;
+  implf.close();
   headerf << "}" << endl;
   headerf << "#endif" << endl;
   headerf.close();
