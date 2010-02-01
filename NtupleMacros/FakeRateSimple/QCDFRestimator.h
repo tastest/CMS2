@@ -1,7 +1,7 @@
 // -*- C++ -*-
 #ifndef QCDFRestimator_H
 #define QCDFRestimator_H
-#include "CORE/CMS2.h"
+#include "CMS2.h"
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TH3F.h"

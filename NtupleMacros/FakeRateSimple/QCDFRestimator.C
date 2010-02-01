@@ -35,9 +35,9 @@
 //#include "CORE/selections.cc"
 //#include "CORE/utilities.cc"
 
-#include "../CORE/CMS2.cc"
+#include "CMS2.cc"
 #include "../CORE/selections.cc"
-#include "../CORE/utilities.cc"
+#include "utilities.cc"
 
 //#include "Tools/fakerates.cc"
 #include "QCDFRestimator.h"
@@ -104,9 +104,11 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix,
   using namespace std;
   
   // bins
-  Float_t nbins[7] = {-0.5,0.5,1.5,2.5,3.5,4.5,5.5};
+  //Float_t nbins[7] = {-0.5,0.5,1.5,2.5,3.5,4.5,5.5};
   Float_t pt[17] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160};
   Float_t eta[13] = {-3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3};
+
+  Float_t nbins[7] = {0,1,2,3,4,5,6};
 
   //book Histograms
   char *suffix[2] =  {"el", "mu"};
@@ -366,16 +368,23 @@ int QCDFRestimator::ScanChainQCD ( TChain* chain, TString prefix, float kFactor,
       cms2.GetEntry(z);
       ++nEventsTotal;
  
+
+
+		//cout << pthatmin << " " << cms2.genps_pthat() << " " << pthatmax << endl;
+
       //if the pthat of the event is not within acceptable limits, quit
       //carefull.....WJets doesn't have the genps_pthat variable
-      if(cms2.genps_pthat() < pthatmin || cms2.genps_pthat() > pthatmax)
-	continue;
+      //if(cms2.genps_pthat() < pthatmin || cms2.genps_pthat() > pthatmax){
+      if(cms2.genps_qScale() < pthatmin || cms2.genps_qScale() > pthatmax){
+			continue;
+		}
       
       float weight = kFactor*cms2.evt_scale1fb()*0.1;
       // 
 		weight = 1.0; //weights are the same, screws the Binomial errors up
       
       
+
       //this is for ttbar. Skip events with a lepton in the 
       //doc. line
       bool haslepton = false;
@@ -388,6 +397,7 @@ int QCDFRestimator::ScanChainQCD ( TChain* chain, TString prefix, float kFactor,
 	  }
 	}
       }
+
       if(haslepton)
         continue;
 
@@ -408,6 +418,7 @@ int QCDFRestimator::ScanChainQCD ( TChain* chain, TString prefix, float kFactor,
 	h_FOptvseta[0]->Fill(fabs(eta), min(pt,149.0), weight);
 	h_FOpt[0]     ->Fill(min(pt,149.0), weight);
 	h_FOeta[0]    ->Fill(fabs(eta), weight);
+
 
 	//figure out the mcid of the closest status==3 particle
 	Double_t dR = 5.0;
@@ -446,6 +457,7 @@ int QCDFRestimator::ScanChainQCD ( TChain* chain, TString prefix, float kFactor,
 	  h_FOmc3Id[0]->Fill(matchedId, weight);
 	h_FOmc3dR[0]->Fill(dR, weight);
 	  
+
 //	if(!isNumElTTDil08(iEl))
 	if(!isNumElSUSY09(iEl))
 	  continue;
@@ -494,6 +506,7 @@ int QCDFRestimator::ScanChainQCD ( TChain* chain, TString prefix, float kFactor,
 	h_FOpt[1]     ->Fill(min(pt,149.0), weight);
 	h_FOeta[1]    ->Fill(fabs(eta), weight);
 	
+
 	//figure out the mcid of the closest status==3 particle
 	Double_t dR = 5.0;
 	unsigned int matchedId = 99999;
