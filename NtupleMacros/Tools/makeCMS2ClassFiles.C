@@ -814,7 +814,7 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true,
   implf.open((className+".cc").c_str());
   codef.open("ScanChain.C");
   
-  implf << "#include \"" << className+".h" << "\"\nCMS2 cms;" << endl;
+  implf << "#include \"" << className+".h" << "\"\nCMS2 cms2;" << endl;
   makeHeaderFile(f, paranoid, className);
   makeSrcFile(className, branchNamesFile);
   if(branchNamesFile!="")
