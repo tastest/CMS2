@@ -13,7 +13,10 @@ endif
 
 CC = g++
 CMSROOT = ../
-ROOFITINCLUDE = $(shell scramv1 tool info roofitcore | grep INCLUDE | sed 's/^INCLUDE=/-I/')
+ROOFITINCLUDE = 
+ifdef CMSSW_VERSION
+	ROOFITINCLUDE = $(shell scramv1 tool info roofitcore | grep INCLUDE | sed 's/^INCLUDE=/-I/')
+endif
 INCLUDE = -I$(CMSROOT) $(ROOFITINCLUDE)
 CFLAGS = -Wall -Wno-unused-function -g -O2 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS)
 
