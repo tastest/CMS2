@@ -584,16 +584,10 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile) {
   codef << "#include \"TDirectory.h\"" << endl;
   codef << "#include \"TROOT.h\"" << endl;
   codef << "" << endl;
-  codef << "#include \"" + Classname+".h\"" << endl;
+  codef << "#include \"" + Classname+".cc\"" << endl;
   if(branchNamesFile!="")
     codef << "#include \"branches.h\"" << endl;
-  codef << Classname << " cms2;" << endl;
-  codef << "/*" << endl;
   
-  codef << "#include \"CORE/CMS2.cc\"" << endl;
-  codef << "#include \"CORE/selections.cc\"" << endl;
-  codef << "#include \"CORE/utilities.cc\"" << endl;
-  codef << "*/" << endl;
   codef << endl;
   codef << "using namespace tas;" << endl;
   codef << endl;
