@@ -111,33 +111,52 @@ TH1F* makeFakeIsoControlSample(const char* files, const char* name, const char* 
   
   TChain *chain = new TChain("Events");
   chain->Add((dataset+files).c_str());
+  if (chain->GetEntries() == 0 ){
+    std::cout << "ERROR: chain is empty for sample: " << name << std::endl;
+    return 0;
+  }
   return ScanChain( chain, name, type );
 }
 
 void makeFakeIsoControlSamples()
 {
-  TFile* f = TFile::Open("fakeIsoControlSamples.root","RECREATE");
-  TH1F* h(0);
-  h = makeFakeIsoControlSample("/cms2-V01-02-06/QCDpt30_v2/merged_ntuple*root","qcd30","electron");
-  f->cd(); h->Write();
-  h = makeFakeIsoControlSample("/cms2-V01-02-06/QCDpt30_v2/merged_ntuple*root","qcd30","muon");
-  f->cd(); h->Write();
+  TH1F* h_qcd30_e = 
+    makeFakeIsoControlSample("/cms2-V01-02-06/QCDpt30_v2/merged_ntuple*root","qcd30","electron");
+  TH1F* h_qcd30_m =
+    makeFakeIsoControlSample("/cms2-V01-02-06/QCDpt30_v2/merged_ntuple*root","qcd30","muon");
 
-  h = makeFakeIsoControlSample("/cms2-V01-02-06/QCDpt80/merged_ntuple*root","qcd80","electron");
-  f->cd(); h->Write();
-  h = makeFakeIsoControlSample("/cms2-V01-02-06/QCDpt80/merged_ntuple*root","qcd80","muon");
-  f->cd(); h->Write();
+  TH1F* h_qcd80_e =
+    makeFakeIsoControlSample("/cms2-V01-02-06/QCDpt80/merged_ntuple*root","qcd80","electron");
+  TH1F* h_qcd80_m =
+    makeFakeIsoControlSample("/cms2-V01-02-06/QCDpt80/merged_ntuple*root","qcd80","muon");
 
-  h = makeFakeIsoControlSample("/cms2-V01-02-06/QCDpt170/merged_ntuple*root","qcd170","electron");
-  f->cd(); h->Write();
-  h = makeFakeIsoControlSample("/cms2-V01-02-06/QCDpt170/merged_ntuple*root","qcd170","muon");
-  f->cd(); h->Write();
+  TH1F* h_qcd170_e =
+    makeFakeIsoControlSample("/cms2-V01-02-06/QCDpt170/merged_ntuple*root","qcd170","electron");
+  TH1F* h_qcd170_m =
+    makeFakeIsoControlSample("/cms2-V01-02-06/QCDpt170/merged_ntuple*root","qcd170","muon");
   
-  h = makeFakeIsoControlSample("/cms2-V01-02-06/QCDpt300/merged_ntuple*root","qcd300","electron");
-  f->cd(); h->Write();
-  h = makeFakeIsoControlSample("/cms2-V01-02-06/QCDpt300/merged_ntuple*root","qcd300","muon");
-  f->cd(); h->Write();
+  TH1F* h_qcd300_e =
+    makeFakeIsoControlSample("/cms2-V01-02-06/QCDpt300/merged_ntuple*root","qcd300","electron");
+  TH1F* h_qcd300_m =
+    makeFakeIsoControlSample("/cms2-V01-02-06/QCDpt300/merged_ntuple*root","qcd300","muon");
 
-  f->Close();
+  if ( h_qcd30_e && h_qcd30_m && h_qcd80_e && h_qcd80_m && 
+       h_qcd170_e && h_qcd170_m && h_qcd300_e && h_qcd300_m ) {
+    
+    TFile* f = TFile::Open("fakeIsoControlSamples.root","RECREATE");
 
+    h_qcd30_e->Write();
+    h_qcd30_m->Write();
+    h_qcd80_e->Write();
+    h_qcd80_m->Write();
+    h_qcd170_e->Write();
+    h_qcd170_m->Write();
+    h_qcd300_e->Write();
+    h_qcd300_m->Write();
+
+    f->Close();
+  } else {
+    std::cout << "Failed to make fake control sample histograms. Abort" << std::endl;
+    exit(1);
+  }
 }

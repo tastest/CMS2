@@ -22,32 +22,32 @@
 //
 //==============================================================
 {
+  using namespace std;
 // Output file
-  const char* outFile = "processed_data_tag.root";
+  const char* outFile = "processed_data.root";
   const bool identifyVVEvents = false; // careful with this option. You don't need it for not mixed samples
   const bool identifyDYEvents = false;
 
 // Flags for files to run over
-bool runWW    = true;
-bool runWZ    = true;
-bool runZZ    = true;
-bool runWjets = true;
-bool runDYee  = true;
-bool runDYmm  = true;
-bool runDYtt  = true;
-bool runttbar = true;
-bool runtW    = true;
-
-bool runWjetBackground1 = false;
-bool runWjetBackground2 = false;
+  bool runWW    = true;
+  bool runWZ    = false;
+  bool runZZ    = false;
+  bool runWjets = false;
+  bool runDYee  = false;
+  bool runDYmm  = false;
+  bool runDYtt  = false;
+  bool runttbar = false;
+  bool runtW    = true;
+  bool runQCD   = false; 
 
 // Load various tools
- string old_path = gROOT->GetMacroPath();
- gROOT->SetMacroPath((string(gROOT->GetMacroPath()) + ":" + "../Tools/").c_str());
-
- gROOT->ProcessLine(".x setup.C");
- gROOT->SetMacroPath(old_path.c_str());
- gROOT->ProcessLine(".L fitWjets.C+");
+ gROOT->ProcessLine(".x init.C");
+ gSystem->Load("libCMS2NtupleMacrosCORE");
+ gSystem->Load("libRooFit.so");
+ gSystem->Load("libCMS2NtupleMacrosLooper");
+ gROOT->LoadMacro("../Tools/getMyHistosNames.C");
+ gROOT->LoadMacro("../Tools/histtools.C+");
+ gROOT->LoadMacro("../Tools/browseStacks.C");
 
 // read dataset prefix
  string dataset;
@@ -112,6 +112,19 @@ if (runttbar) {
 TChain *ftW = new TChain("Events");
 if (runtW) {
   ftW->Add((dataset+"/cms2-V01-02-06/SingleTop_tWChannel-madgraph-LHE/merged_ntuple.root").c_str());
+}
+
+//QCD file
+TChain *fqcd = new TChain("Events");
+if (runQCD) {
+  fqcd->Add((dataset+"/cms2-V01-02-06/InclusiveMuPt15/merged_ntuple*.root").c_str());
+  fqcd->Add((dataset+"/cms2-V01-02-06/InclusiveMu5Pt50/merged_ntuple*.root").c_str());
+  fqcd->Add((dataset+"/cms2-V01-02-06/QCD_EMenriched_Pt20to30/merged_ntuple*.root").c_str());
+  fqcd->Add((dataset+"/cms2-V01-02-06/QCD_EMenriched_Pt30to80/merged_ntuple*.root").c_str());
+  fqcd->Add((dataset+"/cms2-V01-02-06/QCD_EMenriched_Pt80to170/merged_ntuple*.root").c_str());
+  fqcd->Add((dataset+"/cms2-V01-02-06/QCD_BCtoE_Pt20to30/merged_ntuple*.root").c_str());
+  fqcd->Add((dataset+"/cms2-V01-02-06/QCD_BCtoE_Pt30to80/merged_ntuple*.root").c_str());
+  fqcd->Add((dataset+"/cms2-V01-02-06/QCD_BCtoE_Pt80to170/merged_ntuple*.root").c_str());
 }
 
 // Define colors numbers:
@@ -229,6 +242,18 @@ if (runtW) {
   hist::color("tw", 63);
 }
 
+if (runQCD) {
+  cout << "Processing QCD.."<<endl;
+  RooDataSet* data = ScanChain(fWjets, qcd, false);
+  if ( data ){
+    if ( fullDataSet )
+      fullDataSet->append(*data);
+    else
+      fullDataSet=data;
+  }
+  hist::color("qcd", 40);
+}
+
 //save all the histograms
 //saveHist(outFile);
  cout << "got up to here" << endl;
@@ -246,39 +271,24 @@ if (runtW) {
    }
  }
  cout << endl ;
+ if (fullDataSet) {
+   std::string description("Full N-1 dataset:");
+   if (runWW)     description+=" WW";
+   if (runWZ)     description+=" WZ";
+   if (runZZ)     description+=" ZZ";
+   if (runWjets)  description+=" Wjets";
+   if (runDYee)   description+=" DYee";
+   if (runDYmm)   description+=" DYmm";
+   if (runDYtt)   description+=" DYtt";
+   if (runttbar)  description+=" ttbar";
+   if (runtW)     description+=" tW";
+   if (runQCD)    description+=" QCD";
+   fullDataSet->SetName("fulldataset");
+   fullDataSet->SetTitle(description.c_str());
+   fullDataSet->Write();
+ }
  outf.Close() ;
  
  delete iter ;
 
- if ( runWjetBackground1 ){ 
-   TCanvas* c1 = new TCanvas("wjetsBackgroundEstimates_sidebandfit","",800,800);
-   c1->Divide(2,2);
-   c1->cd(1);
-   fit_isolation(fullDataSet,0,2,"Wjets e-fake background (pdf2)");
-   c1->cd(2);
-   fit_isolation(fullDataSet,0,1,"Wjets e-fake background (pdf1)");
-   c1->cd(3);
-   fit_isolation(fullDataSet,1,2,"Wjets mu-fake background (pdf2)");
-   c1->cd(4);
-   fit_isolation(fullDataSet,1,1,"Wjets mu-fake background (pdf1)");
- }
- if ( runWjetBackground2 ){ 
-   TFile* fcs = TFile::Open("fakeIsoControlSamples.root");
-   if ( fcs ){
-     TCanvas* c2 = new TCanvas("wjetsBackgroundEstimates_qcd_sideband","",600,900);
-     c2->Divide(2,3);
-     c2->cd(1);
-     fit_isolation(fullDataSet,0,3,"Wjets e-fake background (QCD30)",h_electron_qcd30);
-     c2->cd(2);
-     fit_isolation(fullDataSet,1,3,"Wjets mu-fake background (QCD30)",h_muon_qcd30);
-     c2->cd(3);
-     fit_isolation(fullDataSet,0,3,"Wjets e-fake background (QCD80)",h_electron_qcd80);
-     c2->cd(4);
-     fit_isolation(fullDataSet,1,3,"Wjets mu-fake background (QCD80)",h_muon_qcd80);
-     c2->cd(5);
-     fit_isolation(fullDataSet,0,3,"Wjets e-fake background (QCD170)",h_electron_qcd170);
-     c2->cd(6);
-     fit_isolation(fullDataSet,1,3,"Wjets mu-fake background (QCD170)",h_muon_qcd170);
-   }
- }
 }

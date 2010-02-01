@@ -4,7 +4,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-void showResults(const char* file = "processed_data_tag.root")
+void showResults(const char* file = "processed_data.root")
 {
   using namespace std;
   
