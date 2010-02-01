@@ -37,7 +37,7 @@
   bool runDYmm  = false;
   bool runDYtt  = false;
   bool runttbar = false;
-  bool runtW    = true;
+  bool runtW    = false;
   bool runQCD   = false; 
 
 // Load various tools
@@ -60,8 +60,8 @@
 //WW file
 TChain *fWW = new TChain("Events");
 if (runWW) {
-  fWW->Add((dataset+"/cms2-V01-02-06/WW_Summer08_IDEAL_V9_v1/merged_ntuple*.root").c_str());
-  // fWW->Add("/data/tmp/cms2-V01-02-06/VVJets/merged_vvjets.root");
+  // fWW->Add((dataset+"/cms2-V01-02-06/WW_Summer08_IDEAL_V9_v1/merged_ntuple*.root").c_str());
+  fWW->Add("/Users/dmytro/CMS/TnS/new/WW_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple.root");
 }
 
 //WZ file

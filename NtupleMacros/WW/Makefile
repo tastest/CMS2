@@ -13,7 +13,8 @@ endif
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
-CFLAGS = -Wall -Wno-unused-function -g -O2 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS) -DTOOLSLIB
+# CFLAGS = -Wall -Wno-unused-function -g -O2 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS) -DTOOLSLIB
+CFLAGS = -Wall -Wno-unused-function -g -O2 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS)
 
 LINKER = g++
 LINKERFLAGS = $(shell root-config --ldflags)
@@ -22,7 +23,8 @@ LINKERFLAGS = $(shell root-config --ldflags)
 # endif
 
 ifeq ($(shell root-config --platform),macosx)
-	LINKERFLAGS = -dynamiclib -undefined suppress -Wl,-x -O -Xlinker -bind_at_load -flat_namespace $(shell root-config --libs) -lEG -lGenVector
+#	LINKERFLAGS = -dynamiclib -undefined suppress -Wl,-x -O -Xlinker -bind_at_load -flat_namespace $(shell root-config --libs) -lEG -lGenVector
+	LINKERFLAGS = -dynamiclib -undefined dynamic_lookup -Wl,-x -O -Xlinker -bind_at_load -flat_namespace $(shell root-config --libs) -lEG -lGenVector
 endif
 
 CORESOURCES = $(wildcard ${CMS2_LOCATION}/NtupleMacros/CORE/*.cc) 
@@ -37,7 +39,8 @@ SOURCES = $(wildcard *.cc)
 OBJECTS = $(SOURCES:.cc=.o) LinkDef_out.o
 LIB = libCMS2NtupleMacrosLooper.so
 
-LIBS = $(CORELIB) $(TOOLSLIB) $(LIB)
+# LIBS = $(CORELIB) $(TOOLSLIB) $(LIB)
+LIBS = $(CORELIB) $(LIB)
 
 
 .PHONY: all help compile clean cms2env rootenv
