@@ -12,44 +12,32 @@ ifndef VERBOSE
 endif
 
 CC = g++
-INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
-# CFLAGS = -Wall -Wno-unused-function -g -O2 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS) -DTOOLSLIB
+CMSROOT = ../
+ROOFITINCLUDE = $(shell scramv1 tool info roofitcore | grep INCLUDE | sed 's/^INCLUDE=/-I/')
+INCLUDE = -I$(CMSROOT) $(ROOFITINCLUDE)
 CFLAGS = -Wall -Wno-unused-function -g -O2 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS)
 
 LINKER = g++
 LINKERFLAGS = $(shell root-config --ldflags)
-# ifeq ($(shell root-config --platform),macosx)
-# 	LINKERFLAGS = -bundle -undefined suppress -Wl,-x -O -Xlinker -bind_at_load -flat_namespace $(shell root-config --libs) -lEG -lGenVector
-# endif
 
 ifeq ($(shell root-config --platform),macosx)
-#	LINKERFLAGS = -dynamiclib -undefined suppress -Wl,-x -O -Xlinker -bind_at_load -flat_namespace $(shell root-config --libs) -lEG -lGenVector
 	LINKERFLAGS = -dynamiclib -undefined dynamic_lookup -Wl,-x -O -Xlinker -bind_at_load -flat_namespace $(shell root-config --libs) -lEG -lGenVector
 endif
 
-CORESOURCES = $(wildcard ${CMS2_LOCATION}/NtupleMacros/CORE/*.cc) 
+CORESOURCES = $(wildcard $(CMSROOT)/CORE/*.cc) 
 COREOBJECTS = $(CORESOURCES:.cc=.o) 
 CORELIB = libCMS2NtupleMacrosCORE.so
-
-TOOLSSOURCES = $(wildcard ${CMS2_LOCATION}/NtupleMacros/Tools/*.cc) 
-TOOLSOBJECTS = $(TOOLSSOURCES:.cc=.o) 
-TOOLSLIB = libCMS2NtupleMacrosTools.so
 
 SOURCES = $(wildcard *.cc) 
 OBJECTS = $(SOURCES:.cc=.o) LinkDef_out.o
 LIB = libCMS2NtupleMacrosLooper.so
 
-# LIBS = $(CORELIB) $(TOOLSLIB) $(LIB)
 LIBS = $(CORELIB) $(LIB)
 
 
 .PHONY: all help compile clean cms2env rootenv
 
 libs:	$(LIBS)
-
-$(TOOLSLIB):	$(TOOLSOBJECTS) 
-	$(QUIET) echo "Linking $(TOOLSLIB)"; \
-	$(LINKER) $(LINKERFLAGS) -shared $(TOOLSOBJECTS) -o $@ 2>&1|perl -ne 'print if(!/skipping incompatible/)'
 
 $(CORELIB):	$(COREOBJECTS) 
 	$(QUIET) echo "Linking $(CORELIB)"; \
@@ -79,9 +67,6 @@ LinkDef_out.cxx: LinkDef.h
 	$(CC) $(CFLAGS) $< -c -o $@
 
 cms2env:
-ifndef CMS2_LOCATION
-	@echo "Please set CMS2_LOCATION"; echo; exit 1
-endif
 
 rootenv:
 ifndef ROOTSYS
@@ -89,9 +74,6 @@ ifndef ROOTSYS
 endif
 
 processed_data.root: processData.C $(LIB) $(CORELIB)
-ifndef CMS2_NTUPLE_LOCATION
-	@echo "Please set CMS2_NTUPLE_LOCATION"; echo; exit 1
-endif
 ifndef ROOTSYS
 	@echo "ROOTSYS is not set. Please set ROOT environment properly"; echo; exit 1
 else
@@ -113,13 +95,10 @@ build: rootenv cms2env $(LIBS) # compile code
 
 clean: cms2env # clean up 
 	$(QUIET) rm -f \
-	${CMS2_LOCATION}/NtupleMacros/Tools/*.o \
-	${CMS2_LOCATION}/NtupleMacros/Tools/*.d \
-	${CMS2_LOCATION}/NtupleMacros/Tools/*.so \
-	${CMS2_LOCATION}/NtupleMacros/CORE/*.o \
-	${CMS2_LOCATION}/NtupleMacros/CORE/*.d \
-	${CMS2_LOCATION}/NtupleMacros/CORE/*.so \
-	$(TOOLSLIB) $(CORELIB) $(LOOPERLIB) \
+	$(CMSROOT)/CORE/*.o \
+	$(CMSROOT)/CORE/*.d \
+	$(CMSROOT)/CORE/*.so \
+	$(CORELIB) $(LOOPERLIB) \
 	*.o *.d *.so LinkDef_out*; echo "Done"
 
 table: processed_data.root # show results
