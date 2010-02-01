@@ -38,6 +38,55 @@ void doPostProcessing(TString infname, TString outfile, Int_t events,
   t->SetBranchStatus("*", 0);
   t->SetBranchStatus("*_CMS2.*", 1);
 
+  // Removes the branches (if they exist) that we want to replace
+  //evt_xsec_excl
+  TString bName = t->GetAlias("evt_xsec_excl");
+  //cout << "evt_xsec_excl " << bName << endl;
+  if(bName != "") {
+    bName.ReplaceAll(".obj", "*");
+    t->SetBranchStatus(bName.Data(), 0); 
+  }
+
+  //evt_xsec_incl
+  bName = t->GetAlias("evt_xsec_incl");
+  //cout << "evt_xsec_incl " << bName << endl;
+  if(bName != "") {
+    bName.ReplaceAll(".obj", "*");
+    t->SetBranchStatus(bName.Data(), 0);   
+  }
+  
+  //evt_kfactor
+  bName = t->GetAlias("evt_kfactor");
+  //cout << "evt_kfactor " << bName << endl;
+  if(bName != "") {
+    bName.ReplaceAll(".obj", "*");
+    t->SetBranchStatus(bName.Data(), 0); 
+  }
+
+  //evt_nEvts
+  bName = t->GetAlias("evt_nEvts");
+  //cout << "evt_nEvts " << bName << endl;
+  if(bName != "") {
+    bName.ReplaceAll(".obj", "*");
+    t->SetBranchStatus(bName.Data(), 0); 
+  }
+
+  //evt_filt_eff
+  bName = t->GetAlias("evt_filt_eff");
+  //cout << "evt_filt_eff " << bName << endl;
+  if(bName != "") {
+    bName.ReplaceAll(".obj", "*");
+    t->SetBranchStatus(bName.Data(), 0); 
+  }
+
+  //evt_scale1fb
+  bName = t->GetAlias("evt_scale1fb");
+  //cout << "evt_scale1fb " << bName << endl;
+  if(bName != "") {
+    bName.ReplaceAll(".obj", "*");
+    t->SetBranchStatus(bName.Data(), 0); 
+  }
+
  TFile *out = TFile::Open(outfile.Data(), "RECREATE");
   TTree *clone = t->CloneTree(-1, "fast");
 
