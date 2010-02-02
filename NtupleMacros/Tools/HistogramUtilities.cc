@@ -1,5 +1,5 @@
 
-#include "Tools/HistogramUtilities.h"
+#include "HistogramUtilities.h"
 
 using namespace std;
 

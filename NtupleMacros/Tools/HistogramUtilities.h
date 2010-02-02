@@ -16,8 +16,8 @@
 #include "TString.h"
 
 // local utilities
-#include "Tools/Utilities.h"
-#include "Tools/DataSource.h"
+#include "Utilities.h"
+#include "DataSource.h"
 
 class HistogramUtilities {
 
