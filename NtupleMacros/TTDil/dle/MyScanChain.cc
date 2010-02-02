@@ -56,7 +56,7 @@ void MyScanChain::Fill(TH1F** hist, unsigned int hyp, float val, float weight)
 	hist[DILEPTON_ALL]->Fill(val, weight);
 }
 
-void MyScanChain::FormatHist(TDirectory *rootdir, TH1F** hist, std::string sampleName, std::string name, int n, float min, float max)
+void MyScanChain::FormatHist(TH1F** hist, std::string sampleName, std::string name, int n, float min, float max)
 {       
 	// loop on EB, EE
 	for (unsigned int i = 0; i < 4; ++i)
@@ -66,10 +66,150 @@ void MyScanChain::FormatHist(TDirectory *rootdir, TH1F** hist, std::string sampl
 		hist[i] = new TH1F(Form("%s_%s_%s", sampleName.c_str(), name.c_str(), str.c_str()),
 				title.c_str(), n, min, max);
 		hist[i]->GetXaxis()->SetTitle(name.c_str());
-		hist[i]->SetDirectory(rootdir);
 		hist[i]->Sumw2();
 	}
 }    
+
+void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
+{
+
+    FormatHist(h1_hyp_lt_eb_pt_, sampleName, "hyp_lt_eb_pt", 20, 0.0, 100.0);
+    FormatHist(h1_hyp_lt_ee_pt_, sampleName, "hyp_lt_ee_pt", 20, 0.0, 100.0);
+
+	FormatHist(h1_hyp_lt_eb_hoe_, sampleName, "hyp_lt_eb_hoe", 50, 0.0, 0.05);
+	FormatHist(h1_hyp_lt_ee_hoe_, sampleName, "hyp_lt_ee_hoe", 50, 0.0, 0.05);
+
+	FormatHist(h1_hyp_lt_eb_sigmaIEtaIEta_, sampleName, "hyp_lt_eb_sigmaIEtaIEta", 50, 0.0, 0.05);
+	FormatHist(h1_hyp_lt_ee_sigmaIEtaIEta_, sampleName, "hyp_lt_ee_sigmaIEtaIEta", 50, 0.0, 0.05);
+
+	FormatHist(h1_hyp_lt_eb_dEtaIn_, sampleName, "hyp_lt_eb_dEtaIn", 100, -0.05, 0.05);
+	FormatHist(h1_hyp_lt_ee_dEtaIn_, sampleName, "hyp_lt_ee_dEtaIn", 100, -0.05, 0.05);
+
+	FormatHist(h1_hyp_lt_eb_dPhiIn_, sampleName, "hyp_lt_eb_dPhiIn", 100, -0.05, 0.05);
+	FormatHist(h1_hyp_lt_ee_dPhiIn_, sampleName, "hyp_lt_ee_dPhiIn", 100, -0.05, 0.05);
+
+	FormatHist(h1_hyp_lt_eb_d0_, sampleName, "hyp_lt_eb_d0", 100, -0.05, 0.05);
+	FormatHist(h1_hyp_lt_ee_d0_, sampleName, "hyp_lt_ee_d0", 100, -0.05, 0.05);
+
+	FormatHist(h1_hyp_lt_eb_E2x5MaxOver5x5_, sampleName, "hyp_lt_eb_E2x5MaxOver5x5", 110, 0.0, 1.1);
+	FormatHist(h1_hyp_lt_ee_E2x5MaxOver5x5_, sampleName, "hyp_lt_ee_E2x5MaxOver5x5", 110, 0.0, 1.1);
+
+	FormatHist(h1_hyp_lt_eb_ecalIso_, sampleName, "hyp_lt_eb_ecalIso", 100, 0, 10);
+	FormatHist(h1_hyp_lt_eb_hcalIso_, sampleName, "hyp_lt_eb_hcalIso", 100, 0, 25);
+	FormatHist(h1_hyp_lt_eb_tkIso_, sampleName, "hyp_lt_eb_tkIso", 100, 0, 25);
+
+	FormatHist(h1_hyp_lt_ee_ecalIso_, sampleName, "hyp_lt_ee_ecalIso", 100, 0, 10);
+	FormatHist(h1_hyp_lt_ee_hcalIso_, sampleName, "hyp_lt_ee_hcalIso", 100, 0, 25);
+	FormatHist(h1_hyp_lt_ee_tkIso_, sampleName, "hyp_lt_ee_tkIso", 100, 0, 25);
+
+	FormatHist(h1_hyp_lt_eb_pt_idnew_, sampleName, "hyp_lt_eb_pt_idnew", 20, 0.0, 100.0);
+	FormatHist(h1_hyp_lt_ee_pt_idnew_, sampleName, "hyp_lt_ee_pt_idnew", 20, 0.0, 100.0);
+	FormatHist(h1_hyp_lt_eb_pt_idold_, sampleName, "hyp_lt_eb_pt_idold", 20, 0.0, 100.0);
+	FormatHist(h1_hyp_lt_ee_pt_idold_, sampleName, "hyp_lt_ee_pt_idold", 20, 0.0, 100.0);
+
+	FormatHist(h1_hyp_lt_eb_pt_isonew_cand1_, sampleName, "hyp_lt_eb_pt_isonew_cand1", 20, 0.0, 100.0);
+	FormatHist(h1_hyp_lt_ee_pt_isonew_cand1_, sampleName, "hyp_lt_ee_pt_isonew_cand1", 20, 0.0, 100.0);
+	FormatHist(h1_hyp_lt_eb_pt_isonew_, sampleName, "hyp_lt_eb_pt_isonew", 20, 0.0, 100.0);
+	FormatHist(h1_hyp_lt_ee_pt_isonew_, sampleName, "hyp_lt_ee_pt_isonew", 20, 0.0, 100.0);
+	FormatHist(h1_hyp_lt_eb_pt_isoold_, sampleName, "hyp_lt_eb_pt_isoold", 20, 0.0, 100.0);
+	FormatHist(h1_hyp_lt_ee_pt_isoold_, sampleName, "hyp_lt_ee_pt_isoold", 20, 0.0, 100.0);
+	FormatHist(h1_hyp_lt_eb_pt_conv_, sampleName, "hyp_lt_eb_pt_conv", 20, 0.0, 100.0);
+	FormatHist(h1_hyp_lt_ee_pt_conv_, sampleName, "hyp_lt_ee_pt_conv", 20, 0.0, 100.0);
+
+	FormatHist(h1_hyp_lt_eb_pt_id1_iso1_conv_, sampleName, "hyp_lt_eb_pt_id1_iso1_conv", 20, 0.0, 100.0);
+	FormatHist(h1_hyp_lt_ee_pt_id1_iso1_conv_, sampleName, "hyp_lt_ee_pt_id1_iso1_conv", 20, 0.0, 100.0);
+}
+
+void MyScanChain::FormatAllAnaHistograms(std::string sampleName)
+{
+	FormatHist(h1_njets_, sampleName, "hyp_njets", 10, -0.5, 9.5);
+}
+
+void MyScanChain::FillAllEleIdHistograms(const unsigned int h, const float &weight)
+{
+
+	DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[h]);
+
+	// apply truth match
+	if (abs(cms2.hyp_lt_id()[h]) == 11 && 
+			!((abs(cms2.hyp_lt_mc_id()[h]) == 11) && abs(cms2.hyp_lt_mc_motherid()[h]) == 24) ) return;
+
+	// apply part of electron denominator first here
+	if (abs(cms2.hyp_lt_id()[h]) == 11)
+		if (!electron20Eta2p4(cms2.hyp_lt_index()[h])) return;
+	if (abs(cms2.hyp_ll_id()[h]) == 11)
+		if (!electron20Eta2p4(cms2.hyp_ll_index()[h])) return;
+
+	//
+	// fill denominator histograms
+	//
+	if (abs(cms2.hyp_lt_p4()[h].eta()) > 1.5 && abs(cms2.hyp_lt_id()[h]) == 11) {
+		Fill(h1_hyp_lt_ee_pt_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+		Fill(h1_hyp_lt_ee_hoe_, hypType, cms2.els_hOverE()[cms2.hyp_lt_index()[h]], weight);
+		Fill(h1_hyp_lt_ee_d0_, hypType, cms2.els_d0corr()[cms2.hyp_lt_index()[h]], weight);
+		Fill(h1_hyp_lt_ee_dPhiIn_, hypType, cms2.els_dPhiIn()[cms2.hyp_lt_index()[h]], weight);
+		Fill(h1_hyp_lt_ee_dEtaIn_, hypType, cms2.els_dEtaIn()[cms2.hyp_lt_index()[h]], weight);
+		Fill(h1_hyp_lt_ee_sigmaIEtaIEta_, hypType, cms2.els_sigmaIEtaIEta()[cms2.hyp_lt_index()[h]], weight);
+		float E2x5MaxOver5x5 = cms2.els_e2x5Max()[cms2.hyp_lt_index()[h]] / cms2.els_e5x5()[cms2.hyp_lt_index()[h]];
+		Fill(h1_hyp_lt_ee_E2x5MaxOver5x5_, hypType, E2x5MaxOver5x5, weight);
+		Fill(h1_hyp_lt_ee_ecalIso_, hypType, cms2.els_ecalIso()[h], weight);
+		Fill(h1_hyp_lt_ee_hcalIso_, hypType, cms2.els_hcalIso()[h], weight);
+		Fill(h1_hyp_lt_ee_tkIso_, hypType, cms2.els_tkIso()[h], weight);
+	}
+
+	if (abs(cms2.hyp_lt_p4()[h].eta()) < 1.5 && abs(cms2.hyp_lt_id()[h]) == 11) {
+		Fill(h1_hyp_lt_eb_pt_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+		Fill(h1_hyp_lt_eb_hoe_, hypType, cms2.els_hOverE()[cms2.hyp_lt_index()[h]], weight);
+		Fill(h1_hyp_lt_eb_d0_, hypType, cms2.els_d0corr()[cms2.hyp_lt_index()[h]], weight);
+		Fill(h1_hyp_lt_eb_dPhiIn_, hypType, cms2.els_dPhiIn()[cms2.hyp_lt_index()[h]], weight);
+		Fill(h1_hyp_lt_eb_dEtaIn_, hypType, cms2.els_dEtaIn()[cms2.hyp_lt_index()[h]], weight);
+		Fill(h1_hyp_lt_eb_sigmaIEtaIEta_, hypType, cms2.els_sigmaIEtaIEta()[cms2.hyp_lt_index()[h]], weight);
+		float E2x5MaxOver5x5 = cms2.els_e2x5Max()[cms2.hyp_lt_index()[h]] / cms2.els_e5x5()[cms2.hyp_lt_index()[h]];
+		Fill(h1_hyp_lt_eb_E2x5MaxOver5x5_, hypType, E2x5MaxOver5x5, weight);
+		Fill(h1_hyp_lt_eb_ecalIso_, hypType, cms2.els_ecalIso()[h], weight);
+		Fill(h1_hyp_lt_eb_hcalIso_, hypType, cms2.els_hcalIso()[h], weight);
+		Fill(h1_hyp_lt_eb_tkIso_, hypType, cms2.els_tkIso()[h], weight);
+	}
+
+	// find out what passed
+	bool ltPassOld = false;
+	bool ltPassNew = false;
+	bool relSusyIso = false;
+	bool relSusyIso_cand0 = false;
+	bool relSusyIso_cand1 = false;
+	bool isConv = false;
+	if (abs(cms2.hyp_lt_id()[h]) == 11) {
+		if (cms2.els_egamma_looseId().at(cms2.hyp_lt_index()[h])) ltPassOld = true;
+		if (electronId_cand01(cms2.hyp_lt_index()[h])) ltPassNew = true;
+		if (electronIsolation_relsusy(cms2.hyp_lt_index()[h], true) < 0.10) relSusyIso = true;
+		if (electronIsolation_relsusy_cand0(cms2.hyp_lt_index()[h], true) < 0.10) relSusyIso_cand0 = true;
+		if (electronIsolation_relsusy_cand1(cms2.hyp_lt_index()[h], true) < 0.10) relSusyIso_cand1 = true;
+		if (isFromConversionPartnerTrack(cms2.hyp_lt_index()[h])) isConv = true;
+	}
+
+	//
+	// fill numerator histograms
+	//
+	if (abs(cms2.hyp_lt_p4()[h].eta()) > 1.5) {
+		if (ltPassOld) Fill(h1_hyp_lt_ee_pt_idold_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+		if (ltPassNew) Fill(h1_hyp_lt_ee_pt_idnew_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+		if (relSusyIso) Fill(h1_hyp_lt_ee_pt_isoold_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+		if (relSusyIso_cand0) Fill(h1_hyp_lt_ee_pt_isonew_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+		if (relSusyIso_cand1) Fill(h1_hyp_lt_ee_pt_isonew_cand1_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+		if (relSusyIso_cand1 && ltPassNew && !isConv) Fill(h1_hyp_lt_ee_pt_id1_iso1_conv_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+		if (!isConv) Fill(h1_hyp_lt_ee_pt_conv_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+	}
+	if (abs(cms2.hyp_lt_p4()[h].eta()) < 1.5)  {
+		if (ltPassOld) Fill(h1_hyp_lt_eb_pt_idold_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+		if (ltPassNew) Fill(h1_hyp_lt_eb_pt_idnew_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+		if (relSusyIso) Fill(h1_hyp_lt_eb_pt_isoold_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+		if (relSusyIso_cand0) Fill(h1_hyp_lt_eb_pt_isonew_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+		if (relSusyIso_cand1) Fill(h1_hyp_lt_eb_pt_isonew_cand1_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+		if (relSusyIso_cand1 && ltPassNew && !isConv) Fill(h1_hyp_lt_eb_pt_id1_iso1_conv_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+		if (!isConv) Fill(h1_hyp_lt_eb_pt_conv_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+	}
+
+}
 
 //
 // Main function
@@ -84,11 +224,9 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 	float             cands_passing[4];
 	float             cands_passing_w2[4];
 	unsigned int       cands_count[4];
-	unsigned int 	   hyp_count[4];
 	memset(cands_passing   , 0, sizeof(cands_passing       ));
 	memset(cands_passing_w2        , 0, sizeof(cands_passing_w2    ));
 	memset(cands_count             , 0, sizeof(cands_count         ));
-	memset(hyp_count             , 0, sizeof(hyp_count         ));
 
 	//
 	//
@@ -104,7 +242,11 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 		}
 	} 
 
-	FormatHist(rootdir, h1_njets_, sampleName, "hyp_njets", 10, -0.5, 9.5);
+	//
+	// format histograms
+	//
+	FormatAllEleIdHistograms(sampleName);
+	FormatAllAnaHistograms(sampleName);
 
 	// file loop
 	//
@@ -150,6 +292,11 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 			std::vector<unsigned int> hyp_index_selected;
 			hyp_index_selected.clear();
 			for (size_t h = 0; h < cms2.hyp_type().size(); ++h) {
+
+				//
+				// fill basic electron ID histograms
+				//
+				FillAllEleIdHistograms(h, weight);
 
 				// apply lepton id 
 				if (!looseLeptonSelectionNoIsoTTDil08(cms2.hyp_lt_id()[h], cms2.hyp_lt_index()[h])) continue;
@@ -204,8 +351,16 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 				corCaloJets.push_back(j);
 			}
 
+			//
+			// get hypothesis type and fill analysis results histograms
+			//
+
 			DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[hyp]);
 			Fill(h1_njets_, hypType, corCaloJets.size(), weight);
+
+			//
+			// count...
+			//
 
 			if (corCaloJets.size() >= 2) {
 
