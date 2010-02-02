@@ -29,7 +29,7 @@ bool muonId(unsigned int index, SelectionType type = Nominal);
 // In order to caclulate the impact parameter we need to define
 // the reference point. 
 //
-bool muond0(unsigned int index, ReferencePointType type = BeamSpot, double cut = 0.2);
+bool muond0(unsigned int index, ReferencePointType type = BeamSpot, double cut = 0.02);
 
 //
 // relative isolation
