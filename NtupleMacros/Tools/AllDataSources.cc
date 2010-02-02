@@ -1,14 +1,14 @@
 
 #include "AllDataSources.h"
 
-DataSource fH_DYMM()    { return DataSource("dymm",     H_DYMM);    }
-DataSource fH_DYEE()    { return DataSource("dyee",     H_DYEE);    }
-DataSource fH_DYTT()    { return DataSource("dytt",     H_DYTT);    }
+DataSource fH_DYMM()    { return DataSource("dymm",     H_DYMM, kCyan);    }
+DataSource fH_DYEE()    { return DataSource("dyee",     H_DYEE, kMagenta);    }
+DataSource fH_DYTT()    { return DataSource("dytt",     H_DYTT, kBlack);    }
 
-DataSource fH_TTBAR()   { return DataSource("ttbar",    H_TTBAR);       }
-DataSource fH_ZZ()  { return DataSource("zz",   H_ZZ);      }
-DataSource fH_WZ()  { return DataSource("wz",   H_WZ);      }
-DataSource fH_WW()      { return DataSource("ww",       H_WW);          }
+DataSource fH_TTBAR()   { return DataSource("ttbar",    H_TTBAR, kYellow);       }
+DataSource fH_ZZ()  { return DataSource("zz",   H_ZZ, kGreen);      }
+DataSource fH_WZ()  { return DataSource("wz",   H_WZ, kBlue);      }
+DataSource fH_WW()      { return DataSource("ww",       H_WW, kRed);          }
 
 DataSource fH_BC20_30()      { return DataSource("QCDBCtoEPt20to30",       H_BC20_30);          }
 DataSource fH_BC30_80()      { return DataSource("QCDBCtoEPt30to80",       H_BC30_80);          }
@@ -22,13 +22,13 @@ DataSource fH_EM80_170()      { return DataSource("QCDEMenrichedPt80to170",     
 DataSource fH_EM30_170()      { return DataSource("QCDEMenrichedPt30to170",       H_EM30_170);          }
 DataSource fH_EM20_170()      { return DataSource("QCDEMenrichedPt20to170",       H_EM20_170);          }
 
-DataSource fH_PHOTONJET() { return DataSource("PhotonJetPt20to170", H_PHOTONJET, kMagenta); }
+DataSource fH_PHOTONJET() { return DataSource("PhotonJetPt20to170", H_PHOTONJET); }
 
-DataSource fH_WENU()      { return DataSource("we",       H_WENU, kBlue);          }
+DataSource fH_WENU()      { return DataSource("we",       H_WENU);          }
 DataSource fH_WMUNU()      { return DataSource("wm",       H_WMUNU);          }
 DataSource fH_WTAUNU()      { return DataSource("wt",       H_WTAUNU);          }
 
-DataSource fH_QCD30()      { return DataSource("QCDpt30",       H_QCD30, kGreen);          }
+DataSource fH_QCD30()      { return DataSource("QCDpt30",       H_QCD30);          }
 DataSource fH_MU30()       { return DataSource("InclusiveMuPt15",       H_MU30);          };
 
 // 7 TeV V02-00-08 - probably only used by DLE
