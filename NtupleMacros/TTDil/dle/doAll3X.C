@@ -38,6 +38,17 @@ void doAll3X() {
 	// ttbar
 	TChain *chain_ttbar = new TChain("Events");
 	chain_ttbar->Add("/store/disk02/cms2/TTbar_Summer09-MC_31X_V3_7TeV-v1/V03-00-34/merged_ntuple*.root");
+	// ww
+	TChain *chain_ww = new TChain("Events");
+	chain_ww->Add("/store/disk02/cms2/WW_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+    // wz
+    TChain *chain_wz = new TChain("Events");
+    chain_wz->Add("/store/disk02/cms2/WZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+    // zz
+    TChain *chain_zz = new TChain("Events");
+    chain_zz->Add("/store/disk02/cms2/ZZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+
+
 
 	// BSM
 	// LM0
@@ -49,8 +60,9 @@ void doAll3X() {
 	//
 
 	looper->ScanChain(false, "ttbar", chain_ttbar);
-
-	looper->ScanChain(false, "lm0", chain_lm0);
+	looper->ScanChain(false, "ww", chain_ww);
+	looper->ScanChain(false, "wz", chain_wz);
+	looper->ScanChain(false, "zz", chain_zz);
 
 	//
 	// write histograms
@@ -66,6 +78,7 @@ void doAll3X() {
 	delete looper;
 
 	delete chain_ttbar;
+	delete chain_ww;
 	delete chain_lm0;
 }
 

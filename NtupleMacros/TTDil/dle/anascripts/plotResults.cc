@@ -11,7 +11,10 @@
 #include "TArrow.h"
 
 const static sources_t theSources =
-	(1ll << H_TTBAR);
+	(1ll << H_TTBAR) |
+	(1ll << H_WW) |
+	(1ll << H_WZ) |
+	(1ll << H_ZZ);
 
 // placeholders
 const static sources_t theSignal = 0;
@@ -294,7 +297,7 @@ void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString sav
 	Utilities::saveCanvas(c1, "results/" + saveName  + "_lin_" + name + "_" + det);
 
 	c1->SetLogy();
-	st->SetMinimum(1.0);
+	st->SetMinimum(0.1);
 	st->Draw("HIST");	
 	lg_all->Draw();
 	if (det == "ee" && cutValEE != -1) getArrow(st, det, cutValEB, cutValEE)->Draw();
@@ -319,6 +322,10 @@ void plotResults(TString hyp, TString fileStamp)
 
 	std::vector<DataSource> sources;
 	sources.push_back( fH_TTBAR() );
+	sources.push_back( fH_WW()	);
+	sources.push_back( fH_WZ() );
+	sources.push_back( fH_ZZ() );
+
 	HistogramUtilities h1("../" + fileStamp + ".root", sources, 1.0);
 
 	plotStack(h1, "hyp_njets", "nJets", fileStamp, hyp);
