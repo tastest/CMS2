@@ -114,6 +114,7 @@ std::vector<LorentzVector> JPTs(int i_hyp, double etThreshold);
 unsigned int nJPTs(int i_hyp, double etThreshod);
 unsigned int nJPTs(int i_hyp); // with default threshold = 20
 // bool passCaloTrkjetCombo ();
+bool isGoodDilHypJet(unsigned int jetIdx, unsigned int hypIdx, double ptCut, double absEtaCut, double dRCut, bool muJetClean);
 
 double mu_rel_iso (int index);
 double el_rel_iso (int index, bool use_calo_iso);
@@ -147,6 +148,8 @@ bool metSimple (float threshold, const TVector3& corr);
 bool metBalance (int i_hyp, const TVector3& corr);
 bool metProjected (int i_hyp, const TVector3& corr);
 bool pass5Met (int i_hyp, const TVector3& corr);
+bool passMet_OF20_SF30(int hypIdx, bool useTcMet);
+
 //
 
 
@@ -205,7 +208,7 @@ bool comparePt(const LorentzVector &lv1,
 	       const LorentzVector &lv2);
 bool GoodSusyElectronWithoutIsolation(int index);
 bool GoodSusyElectronWithoutIsolationNoD0(int index);
-bool GoodSusyElectronWithIsolationLoose(int index, bool use_calo_iso); 
+//bool GoodSusyElectronWithIsolationLoose(int index, bool use_calo_iso); 
 bool PassSusyElectronIsolationLoose(int index, bool use_calo_iso);
 bool GoodSusyMuonWithIsolation(int index); 
 bool GoodSusyMuonWithoutIsolation(int index);
