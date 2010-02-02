@@ -1125,7 +1125,7 @@ void AddIsoSignalControlSample( int i_hyp, double kFactor, RooDataSet* dataset) 
   }
 }
 
-RooDataSet* ScanChain( TChain* chain, enum Sample sample, bool identifyEvents ) {
+RooDataSet* ScanChain( TChain* chain, enum Sample sample, double kFactor, bool identifyEvents ) {
   gErrorIgnoreLevel = 3000; // suppress warnings about missing dictionaries 
   unsigned int nEventsChain = chain->GetEntries();  // number of entries in chain --> number of events from all files
   gErrorIgnoreLevel = -1;
@@ -1134,7 +1134,7 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, bool identifyEvents ) 
  // declare and create array of histograms
   const char *prefix = SampleName(sample);
   RooDataSet* dataset = MakeNewDataset(prefix);
-  double kFactor = .1; // 100pb-1
+  kFactor *= .1; // 100pb-1
 //   switch (sample) {
 //   case WW:
 //        evt_scale1fb = 0.1538;
@@ -1457,5 +1457,64 @@ bool isIdentified( enum Sample sample ) {
     return getVVType()!=999;
   default:
     return true;
+  }
+}
+
+void ProcessSample( std::string file_pattern, 
+		    Sample sample, 
+		    double kFactor,
+		    RooDataSet* output_dataset, 
+		    Color_t color, 
+		    bool identifyEvents )
+{
+  std::vector<string> vec;
+  vec.push_back(file_pattern);
+  ProcessSample(vec,sample,kFactor,output_dataset,color,identifyEvents);
+}
+
+void ProcessSample( std::vector<std::string> file_patterns, 
+		    Sample sample, 
+		    double kFactor,
+		    RooDataSet* output_dataset, 
+		    Color_t color, 
+		    bool identifyEvents )
+{
+  TChain *tchain = new TChain("Events");
+  for ( std::vector<std::string>::const_iterator pattern = file_patterns.begin();
+	pattern != file_patterns.end(); ++pattern )
+    tchain->Add(pattern->c_str());
+  std::cout << "Processing " << SampleName(sample) << ".." << std::endl;
+  RooDataSet* data = ScanChain(tchain, sample, kFactor, identifyEvents);
+  if( data ){
+    if ( output_dataset )
+      output_dataset->append(*data);
+    else
+      output_dataset=data;
+  }
+  
+  const char* sampleName = SampleName(sample);
+  TRegexp reg(sampleName, kFALSE);
+
+  TList* list = gDirectory->GetList() ;
+  if (!list) {
+    cout << "Failed to set color for " << sampleName << endl;
+    return;
+  }
+  TIterator* iter = list->MakeIterator();
+
+  TObject* obj = 0;
+
+  while (obj = iter->Next()) {
+    if (! obj->InheritsFrom(TH1::Class())) continue;
+
+    TString name = obj->GetName();
+
+    if (TString(sampleName).MaybeRegexp()) {
+      if (TString(obj->GetName()).Index(reg) < 0 ) continue;
+    } else if (! name.BeginsWith(sampleName)) continue;
+
+    ((TH1*)obj)->SetFillColor(color);
+    ((TH1*)obj)->SetLineColor(color);
+    ((TH1*)obj)->SetMarkerColor(color);
   }
 }

@@ -153,6 +153,19 @@ RooDataSet* MakeNewDataset(const char* name);
 
 void AddIsoSignalControlSample( int i_hyp, double kFactor, RooDataSet* dataset = 0 );
 class TChain;
-RooDataSet* ScanChain( TChain* chain, Sample sample, bool identifyEvents );
+RooDataSet* ScanChain( TChain* chain, Sample sample, double kFactor,  bool identifyEvents );
+
+void ProcessSample( std::string file_pattern, 
+		    Sample sample, 
+		    double kFactor,
+		    RooDataSet* output_dataset, 
+		    Color_t color, 
+		    bool identifyEvents = false);
+void ProcessSample( std::vector<std::string> file_patterns, 
+		    Sample sample,
+		    double kFactor,
+		    RooDataSet* output_dataset, 
+		    Color_t color, 
+		    bool identifyEvents = false);
 
 #endif

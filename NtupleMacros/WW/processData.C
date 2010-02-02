@@ -30,14 +30,14 @@
 
 // Flags for files to run over
   bool runWW    = true;
-  bool runWZ    = false;
+  bool runWZ    = true;
   bool runZZ    = false;
   bool runWjets = false;
   bool runDYee  = false;
   bool runDYmm  = false;
   bool runDYtt  = false;
   bool runttbar = false;
-  bool runtW    = false;
+  bool runtW    = true;
   bool runQCD   = false; 
 
 // Load various tools
@@ -48,73 +48,44 @@
  gROOT->LoadMacro("../Tools/getMyHistosNames.C");
  gROOT->LoadMacro("../Tools/histtools.C+");
  gROOT->LoadMacro("../Tools/browseStacks.C");
+ 
+ // Define colors numbers:
+ gStyle->SetPalette(1);
+ enum EColor { kWhite, kBlack, kRed, kGreen, kBlue, kYellow, kMagenta, kCyan };
+
+ RooDataSet *fullDataSet(0);
 
 // read dataset prefix
- string dataset;
- if ( ! gSystem->Getenv("CMS2_NTUPLE_LOCATION") ){
-   cout << "ERROR: Dataset location is not set. Please set CMS2_NTUPLE_LOCATION." <<endl;
-   return;
- }
- dataset = gSystem->Getenv("CMS2_NTUPLE_LOCATION");
+ string dataset = "data";
  
-//WW file
-TChain *fWW = new TChain("Events");
-if (runWW) {
-  // fWW->Add((dataset+"/cms2-V01-02-06/WW_Summer08_IDEAL_V9_v1/merged_ntuple*.root").c_str());
-  fWW->Add("/Users/dmytro/CMS/TnS/new/WW_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple.root");
-}
+ if (runWW)
+   ProcessSample(dataset+"/WW_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple.root", WW, 1.65, fullDataSet, kRed);
 
-//WZ file
-TChain *fWZ = new TChain("Events");
-if (runWZ) {
-  fWZ->Add((dataset+"/cms2-V01-02-06/WZ_incl_Summer08_IDEAL_V9_v2/merged_ntuple*.root").c_str());
-  // fWZ->Add("/data/tmp/cms2-V01-02-06/VVJets/merged_vvjets.root");
-}
+ if (runWZ)
+   ProcessSample(dataset+"/WZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple.root", WZ, 1.84, fullDataSet, kBlue);
 
-//ZZ file
-TChain *fZZ = new TChain("Events");
-if (runZZ) {
-  fZZ->Add((dataset+"/cms2-V01-02-06/ZZ_Summer08_IDEAL_V9_v1/merged_ntuple*.root").c_str());
-  // fZZ->Add("/data/tmp/cms2-V01-02-06/VVJets/merged_vvjets.root");
-}
+ if (runZZ)
+   ProcessSample(dataset+"/ZZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple.root", ZZ, 1.47, fullDataSet, kGreen);
+ 
+ if (runWjets)
+   ProcessSample(dataset+"/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root", Wjets, 1.0, fullDataSet, 40);
 
-//Wjets file
-TChain *fWjets = new TChain("Events");
-if (runWjets) {
-  fWjets->Add((dataset+"/cms2-V01-02-06/WJets-madgraph_Fall08_IDEAL_V9_v1/merged_ntuple*.root").c_str());
-}
+ if (runDYee)
+   ProcessSample(dataset+"/Zee_Summer09-MC_31X_V3_7TeV_TrackingParticles-v1/V03-00-35/merged_ntuple*.root", DYee, 1.14, fullDataSet, kMagenta, identifyDYEvents);
+ 
+ if (runDYmm)
+   ProcessSample(dataset+"/Zmumu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root", DYmm, 1.14, fullDataSet, kCyan, identifyDYEvents);
+ 
+ if (runDYtt)
+   ProcessSample(dataset+"/Ztautau_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root", DYtt, 1.14, fullDataSet, kBlack, identifyDYEvents);
 
-//DYee file
-TChain *fDYee = new TChain("Events");
-if (runDYee) {
-  fDYee->Add((dataset+"/cms2-V01-02-06/Zee_M20_Summer08_IDEAL_V9_reco-v3/merged_ntuple*.root").c_str());
-}
+ if (runttbar)
+   ProcessSample(dataset+"/TTbarJets-madgraph_Summer09-MC_31X_V3_7TeV-v2/V03-00-35/merged_ntuple*.root", ttbar, 1.0, fullDataSet, kYellow);
+ 
+ if (runtW)
+   ProcessSample(dataset+"/SingleTop_tWChannel-madgraph_Summer09-MC_31X_V3_7TeV-v2/V03-00-35/merged_ntuple*.root", tW, 1.0, fullDataSet, 63);
 
-//DYmm file
-TChain *fDYmm = new TChain("Events");
-if (runDYmm) {
-  fDYmm->Add((dataset+"/cms2-V01-02-06/Zmumu_M20_Summer08_IDEAL_V9_reco-v2/merged_ntuple*.root").c_str());
-}
-
-//DYtt file
-TChain *fDYtt = new TChain("Events");
-if (runDYtt) {
-  fDYtt->Add((dataset+"/cms2-V01-02-06/Ztautau_M20_Summer08_IDEAL_V9_v1/merged_ntuple*.root").c_str());
-}
-
-//ttbar file
-TChain *fttbar = new TChain("Events");
-if (runttbar) {
-  fttbar->Add((dataset+"/cms2-V01-02-06/TTJets-madgraph_Fall08_IDEAL_V9_v1/merged_ntuple*.root").c_str());
-}
-
-//tW file
-TChain *ftW = new TChain("Events");
-if (runtW) {
-  ftW->Add((dataset+"/cms2-V01-02-06/SingleTop_tWChannel-madgraph-LHE/merged_ntuple.root").c_str());
-}
-
-//QCD file
+ //QCD file
 TChain *fqcd = new TChain("Events");
 if (runQCD) {
   fqcd->Add((dataset+"/cms2-V01-02-06/InclusiveMuPt15/merged_ntuple*.root").c_str());
@@ -127,120 +98,6 @@ if (runQCD) {
   fqcd->Add((dataset+"/cms2-V01-02-06/QCD_BCtoE_Pt80to170/merged_ntuple*.root").c_str());
 }
 
-// Define colors numbers:
-gStyle->SetPalette(1);
-enum EColor { kWhite, kBlack, kRed, kGreen, kBlue, kYellow, kMagenta, kCyan };
-
- RooDataSet *fullDataSet(0);
-
-// Process files one at a time, and color them as needed
-if (runWW) {
-  cout << "Processing WW.."<< endl;
-  RooDataSet* data = ScanChain(fWW, WW, identifyVVEvents);
-  if( data ){
-    if ( fullDataSet )
-      fullDataSet->append(*data);
-    else
-      fullDataSet=data;
-  }
-  hist::color("ww", kRed);
-}
-
-if (runWZ) {
-  cout << "Processing WZ.."<< endl;
-  RooDataSet* data = ScanChain(fWZ, WZ, identifyVVEvents);
-  if ( data ){
-    if ( fullDataSet )
-      fullDataSet->append(*data);
-    else
-      fullDataSet=data;
-  }
-  hist::color("wz", kBlue);
-}
-
-if (runZZ) {
-  cout << "Processing ZZ.."<< endl;
-  RooDataSet* data = ScanChain(fZZ, ZZ, identifyVVEvents);
-  if ( data ){
-    if ( fullDataSet )
-      fullDataSet->append(*data);
-    else
-      fullDataSet=data;
-  }
-  hist::color("zz", kGreen);
-}
-
-if (runWjets) {
-  cout << "Processing Wjets.."<<endl;
-  RooDataSet* data = ScanChain(fWjets, Wjets, false);
-  if ( data ){
-    if ( fullDataSet )
-      fullDataSet->append(*data);
-    else
-      fullDataSet=data;
-  }
-  hist::color("wjets", 40);
-}
-
-if (runDYee) {
-  cout << "Processing DYee.."<<endl;
-  RooDataSet* data = ScanChain(fDYee, DYee, identifyDYEvents);
-  if ( data ){
-    if ( fullDataSet )
-      fullDataSet->append(*data);
-    else
-      fullDataSet=data;
-  }
-  hist::color("dyee", kMagenta);
-}
-
-if (runDYmm) {
-  cout << "Processing DYmm.."<<endl;
-  RooDataSet* data = ScanChain(fDYmm, DYmm, identifyDYEvents);
-  if ( data ){
-    if ( fullDataSet )
-      fullDataSet->append(*data);
-    else
-      fullDataSet=data;
-  }
-  hist::color("dymm", kCyan);
-}
-
-if (runDYtt) {
-  cout << "Processing DYtt.."<<endl;
-  RooDataSet* data = ScanChain(fDYtt, DYtt, identifyDYEvents);
-  if ( data ){
-    if ( fullDataSet )
-      fullDataSet->append(*data);
-    else
-      fullDataSet=data;
-  }
-  hist::color("dytt", kBlack);
-}
-
-if (runttbar) {
-  cout << "Processing ttbar.."<<endl;
-  RooDataSet* data = ScanChain(fttbar, ttbar, false);
-  if ( data ){
-    if ( fullDataSet )
-      fullDataSet->append(*data);
-    else
-      fullDataSet=data;
-  }
-  hist::color("ttbar", kYellow);
-}
-
-if (runtW) {
-  cout << "Processing tW.."<<endl;
-  RooDataSet* data = ScanChain(ftW, tW, false);
-  if ( data ){
-    if ( fullDataSet )
-      fullDataSet->append(*data);
-    else
-      fullDataSet=data;
-  }
-  hist::color("tw", 63);
-}
 
 if (runQCD) {
   cout << "Processing QCD.."<<endl;
