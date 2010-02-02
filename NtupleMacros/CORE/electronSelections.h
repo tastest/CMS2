@@ -30,6 +30,8 @@ bool electronId_classBasedTight(const unsigned int index);
 //
 float electronIsolation_rel(const unsigned int index, bool use_calo_iso);
 float electronIsolation_relsusy(const unsigned int index, bool use_calo_iso);
+float electronIsolation_relsusy_cand0(const unsigned int index, bool use_calo_iso);
+float electronIsolation_relsusy_cand1(const unsigned int index, bool use_calo_iso);
 
 //
 // conversion rejection

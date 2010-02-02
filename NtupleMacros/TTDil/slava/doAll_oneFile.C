@@ -27,7 +27,7 @@ void doAll_oneFile(const char* fileName){
     ttDilCounts_looper* looper = new ttDilCounts_looper();
     unsigned int bitmask =  bitms[iM];
     looper->ScanChain(ch,"ttdil", 1, 1, false, bitmask);
-    hist::saveHist(Form("testTTHists_%d.root", bitmask));
+    hist::saveHist(Form("testTTHists_%d_%s.root", bitmask, looper->compactConfig.c_str()));
     hist::deleteHistos();
     cout << "Finished with bitmask "<<bitmask << endl;
     delete looper;
