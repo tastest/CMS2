@@ -39,5 +39,8 @@ float electronIsolation_relsusy_cand1(const unsigned int index, bool use_calo_is
 bool isFromConversionHitPattern(const unsigned int index);
 bool isFromConversionPartnerTrack(const unsigned int index);
 
+//electron charge using the majority logic of the egamma group
+int getChargeUsingMajorityLogic(int elIdx, float minFracSharedHits = 0.45);
+
 #endif
 

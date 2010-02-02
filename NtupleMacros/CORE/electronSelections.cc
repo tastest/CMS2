@@ -6,7 +6,6 @@
 // CMS2 includes
 #include "electronSelections.h"
 #include "CMS2.h"
-
 //
 // enums and typedefs
 //
@@ -216,5 +215,16 @@ bool isFromConversionPartnerTrack(const unsigned int index) {
     return true;
 
   return false;
+
+}
+
+
+int getChargeUsingMajorityLogic(int elIdx, float minFracSharedHits) {
+  
+  
+  if(cms2.els_sccharge()[elIdx]*cms2.els_trk_charge()[elIdx] > 0 || (cms2.els_trkidx()[elIdx] < 0 || cms2.els_trkshFrac()[elIdx] < minFracSharedHits))
+    return cms2.els_sccharge()[elIdx];
+  else 
+    return cms2.els_trk_charge()[elIdx];
 
 }
