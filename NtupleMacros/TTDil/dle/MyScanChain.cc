@@ -4,12 +4,11 @@
 // Dave "the one but not the only" Evans 
 //
 
-// C++ includes
-#include <iostream>
-#include <vector>
+#include "MyScanChain.h"
 
 // ROOT includes
 #include "TChain.h"
+#include "TChainElement.h"
 #include "TFile.h"
 #include "TDirectory.h"
 #include "TROOT.h"
@@ -17,12 +16,10 @@
 
 #include "Math/LorentzVector.h"
 
-
 // CMS2 includes
 #include "CMS2.h"
 #include "../../CORE/electronSelections.h"
 #include "../../CORE/selections.h"
-
 #include "../../Tools/DileptonHypType.h"
 
 //
@@ -53,13 +50,13 @@ enum DileptonHypType hyp_typeToHypType (int hyp_type)
 	return DILEPTON_ALL;
 }
 
-void Fill(TH1F** hist, unsigned int hyp, float val, float weight)
+void MyScanChain::Fill(TH1F** hist, unsigned int hyp, float val, float weight)
 {
 	hist[hyp]->Fill(val, weight);
 	hist[DILEPTON_ALL]->Fill(val, weight);
 }
 
-void FormatHist(TH1F** hist, std::string sampleName, std::string name, Int_t n, Float_t min, Float_t max)
+void MyScanChain::FormatHist(TDirectory *rootdir, TH1F** hist, std::string sampleName, std::string name, int n, float min, float max)
 {       
 	// loop on EB, EE
 	for (unsigned int i = 0; i < 4; ++i)
@@ -69,22 +66,15 @@ void FormatHist(TH1F** hist, std::string sampleName, std::string name, Int_t n, 
 		hist[i] = new TH1F(Form("%s_%s_%s", sampleName.c_str(), name.c_str(), str.c_str()),
 				title.c_str(), n, min, max);
 		hist[i]->GetXaxis()->SetTitle(name.c_str());
+		hist[i]->SetDirectory(rootdir);
+		hist[i]->Sumw2();
 	}
 }    
 
 //
 // Main function
 //
-int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = -1, std::string skimFilePrefix="") {
-
-	TObjArray *listOfFiles = chain->GetListOfFiles();
-
-	unsigned int nEventsChain=0;
-	if(nEvents==-1) 
-		nEvents = chain->GetEntries();
-	nEventsChain = nEvents;
-	unsigned int nEventsTotal = 0;
-	TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
+int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents, std::string skimFilePrefix) {
 
 	//
 	// define counters
@@ -103,32 +93,56 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 	//
 	//
 	//
-	TH1F *h1_njets[4];
-        FormatHist(h1_njets, sampleName, "hyp_njets", 10, -0.5, 9.5);
+	TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
+	if (rootdir == 0){
+		std::cout<<"Head directory root: not found. Try Rint: ..."<<std::endl;
+		rootdir = gROOT->GetDirectory("Rint:");
+		if (rootdir){
+			std::cout<<"OK: Got Rint:"<<std::endl;
+		} else {
+			std::cout<<"ERROR: no root: or Rint: found. Histograms will likely be lost"<<std::endl;
+		}
+	} 
+
+	FormatHist(rootdir, h1_njets_, sampleName, "hyp_njets", 10, -0.5, 9.5);
 
 	// file loop
 	//
+
+	unsigned int nEventsChain=0;
+	if(nEvents == -1) nEvents = chain->GetEntries();
+	nEventsChain = nEvents;
+	unsigned int nEventsTotal = 0;
+	int i_permille_old = 0;
+
+	TObjArray *listOfFiles = chain->GetListOfFiles();
 	TIter fileIter(listOfFiles);
 	TFile *currentFile = 0;
-	while ( currentFile = (TFile*)fileIter.Next() ) {
-		TFile f(currentFile->GetTitle());
-		TTree *tree = (TTree*)f.Get("Events");
+	while (TChainElement *currentFile = (TChainElement*)fileIter.Next()) {
+		TFile *f = TFile::Open(currentFile->GetTitle());
+		TTree *tree = (TTree*)f->Get("Events");
 		cms2.Init(tree);
 
 		//Event Loop
-		unsigned int nEvents = tree->GetEntries();
-		for( unsigned int event = 0; event < nEvents; ++event) {
+		ULong64_t nEvents = tree->GetEntries();
+		for(ULong64_t event = 0; event < nEvents; ++event) {
 			cms2.GetEntry(event);
 			++nEventsTotal;
 
-			// print out event being processed
-			//if (nEventsTotal % 1000 == 0)
-			//	std::cout << "Event: " << nEventsTotal << std::endl;
+			// Progress feedback to the user
+			int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
+			if (i_permille != i_permille_old) {
+				// xterm magic from L. Vacavant and A. Cerri
+				if (isatty(1)) {
+					printf("\015\033[32m ---> \033[1m\033[31m%4.1f%%"
+							"\033[0m\033[32m <---\033[0m\015", i_permille/10.);
+					fflush(stdout);
+				}
+				i_permille_old = i_permille;
+			}
 
 			// work out event weight
 			float weight = cms2.evt_scale1fb()*0.01;
-
-			// does this event contain two generated leptons with mother as W?
 
 			//
 			// loop on hypothesis
@@ -149,7 +163,7 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 				if (cms2.hyp_lt_id()[h] * cms2.hyp_ll_id()[h] > 0) continue;
 
 				// z mass window
-            			if (cms2.hyp_type()[h] == 0 || cms2.hyp_type()[h] == 3) {
+				if (cms2.hyp_type()[h] == 0 || cms2.hyp_type()[h] == 3) {
 					if (inZmassWindow(cms2.hyp_p4()[h].mass())) continue;
 				}
 
@@ -190,8 +204,8 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 				corCaloJets.push_back(j);
 			}
 
-                        DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[hyp]);
-			Fill(h1_njets, hypType, corCaloJets.size(), weight);
+			DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[hyp]);
+			Fill(h1_njets_, hypType, corCaloJets.size(), weight);
 
 			if (corCaloJets.size() >= 2) {
 
@@ -216,27 +230,39 @@ int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = 
 		std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
 	}
 
-	std::cout << "sampleName \t" << dilepton_hypo_names[3] << "\t" << dilepton_hypo_names[1] << "\t" << dilepton_hypo_names[2] << "\t" << dilepton_hypo_names[0] << std::endl;
-	//        for (unsigned int i = 0; i < 4; ++i) {
-	//                std::string str = dilepton_hypo_names[i];
-	//		std::cout << dilepton_hypo_names[i] << "\t";
-	//	}
-	//	std::cout << std::endl;
-	//        std::cout << sampleName << "\t";
+	//
+	// print table entry
+	//
 
-
-	std::cout << cands_passing[3] << " $\pm$ " << sqrt(cands_passing_w2[3]) << "\t & ";
-	std::cout << cands_passing[1] << " $\pm$ " << sqrt(cands_passing_w2[1]) << "\t & ";
-	std::cout << cands_passing[2] << " $\pm$ " << sqrt(cands_passing_w2[2]) << "\t & ";
-	std::cout << cands_passing[0] << " $\pm$ " << sqrt(cands_passing_w2[0]) << "\t & ";
+	std::cout.flush();
 	std::cout << std::endl;
+	for (unsigned int i = 0; i < 4; ++i) {
+		std::string str = dilepton_hypo_names[i];
+		std::cout << " & " << dilepton_hypo_names[i] << "\t";
+	}
+	std::cout << "\\\\ \\hline" << std::endl;
+	std::cout << sampleName << "\t";
+	for (unsigned int i = 0; i < 4; ++i) {
+		std::cout << " & " << cands_passing[i] << " $\\pm$ " << sqrt(cands_passing_w2[i]) << "\t";
+	}
+	std::cout << "\\\\ \\hline" << std::endl;
 
-	//	for (unsigned int i = 0; i < 4; ++i) {
+	//
+	// make sure we're back in the right root dir
+	//
 
-	//		std::cout << cands_passing[i] << " $\pm$ " << sqrt(cands_passing_w2[i]) << "\t &";
-
-	//	}
-	//	std::cout << "\\\\ \\hline" << std::endl;
+	rootdir = gROOT->GetDirectory("root:");
+	if (rootdir) rootdir->cd();
+	else{
+		std::cout<<"Cant find root: . Current dir is "<<gDirectory->GetName()<<std::endl;
+		rootdir = gROOT->GetDirectory("Rint:");
+		if (rootdir){
+			std::cout<<"OK, got Rint: "<<std::endl;
+			rootdir->cd();
+		} else {
+			std::cout<<"Cant find Rint: either . Current dir is "<<gDirectory->GetName()<<std::endl;
+		}
+	}
 
 	return 0;
 }
