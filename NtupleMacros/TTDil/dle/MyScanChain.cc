@@ -122,7 +122,7 @@ void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
 
 void MyScanChain::FormatAllAnaHistograms(std::string sampleName)
 {
-	FormatHist(h1_njets_, sampleName, "hyp_njets", 10, -0.5, 9.5);
+	FormatHist(h1_hyp_njets_, sampleName, "hyp_njets", 10, -0.5, 9.5);
 }
 
 void MyScanChain::FillAllEleIdHistograms(const unsigned int h, const float &weight)
@@ -356,7 +356,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 			//
 
 			DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[hyp]);
-			Fill(h1_njets_, hypType, corCaloJets.size(), weight);
+			Fill(h1_hyp_njets_, hypType, corCaloJets.size(), weight);
 
 			//
 			// count...

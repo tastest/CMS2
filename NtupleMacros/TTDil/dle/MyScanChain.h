@@ -35,7 +35,7 @@ class MyScanChain {
 		// ttbar analysis plots
 		//
 
-		TH1F *h1_njets_[4];
+		TH1F *h1_hyp_njets_[4];
 
 		//
 		// ele ID plots
