@@ -31,13 +31,9 @@
 #include <fstream>
 #include "TChain.h"
 
-//#include "CORE/CMS2.cc"
-//#include "CORE/selections.cc"
-//#include "CORE/utilities.cc"
-
 #include "CMS2.cc"
 #include "../CORE/selections.cc"
-#include "utilities.cc"
+#include "../CORE/utilities.cc"
 
 //#include "Tools/fakerates.cc"
 #include "QCDFRestimator.h"
