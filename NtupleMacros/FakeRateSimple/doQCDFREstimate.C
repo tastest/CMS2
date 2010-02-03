@@ -198,68 +198,13 @@ void doAll(){
   const char* location = gSystem->Getenv("CMS2_NTUPLE_LOCATION");
 
   TChain *ch_pthat30to80 = new TChain("Events");
+  ch_pthat30to80->Add(Form("%s/%s",location,"cms2/QCD_Pt30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root"));
+  ch_pthat30to80->Add(Form("%s/%s",location,"cms2/QCD_Pt80_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root"));
 
-	//dbarge
-  	//ch_pthat30to80->Add(Form("%s/%s",location,"cms2-V01-03-01/QCDpt30_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merged_ntuple*.root"));
-  	//ch_pthat30to80->Add(Form("%s/%s",location,"cms2-V01-03-01/QCDpt80_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merged_ntuple*.root"));
-	ch_pthat30to80->Add("/storage/local/data2/cms2/QCD_Pt30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
-	ch_pthat30to80->Add("/storage/local/data2/cms2/QCD_Pt80_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
-
-//  TChain *ch_pthat80 = new TChain("Events");
-//  ch_pthat80->Add("/data/tmp/cms2-V01-03-01/QCDpt80_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merged_ntuple*.root");
-  
   //WJets chain
   TChain *ch_WJets = new TChain("Events");
+  ch_WJets->Add(Form("%s/%s",location,"cms2/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root"));
 
-	//dbarge
-  	//ch_WJets->Add(Form("%s/%s",location,"cms2-V01-03-01/WJets-madgraph_Summer08_IDEAL_V11_redigi_v1/merged*.root"));
-  	ch_WJets->Add("/storage/local/data2/cms2/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
-
-/*
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_0jet-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple_10.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_0jet-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple_11.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_0jet-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple_12.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_0jet-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple_13.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_0jet-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple_14.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_0jet-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple_1.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_0jet-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple_2.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_0jet-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple_3.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_0jet-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple_4.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_0jet-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple_5.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_0jet-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple_6.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_0jet-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple_7.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_0jet-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple_8.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_0jet-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple_9.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_0jet-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_1jet_Pt0to100-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple_1.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_1jet_Pt0to100-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple_2.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_1jet_Pt0to100-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_1jet_Pt100to300-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_1jet_Pt1600toInf-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_1jet_Pt300to800-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_1jet_Pt800to1600-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_2jet_Pt0to100-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple_1.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_2jet_Pt0to100-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_2jet_Pt100to300-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_2jet_Pt1600toInf-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_2jet_Pt300to800-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_2jet_Pt800to1600-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_3jet_Pt0to100-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_3jet_Pt100to300-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_3jet_Pt1600toInf-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_3jet_Pt300to800-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_3jet_Pt800to1600-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_4jet_Pt0to100-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_4jet_Pt100to300-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_4jet_Pt1600toInf-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_4jet_Pt300to800-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_4jet_Pt800to1600-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_5jet_Pt0to100-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_5jet_Pt100to300-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_5jet_Pt1600toInf-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_5jet_Pt300to800-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-ch_WJets->Add("/data/tmp/cms2-V01-03-01/W_5jet_Pt800to1600-alpgen_Summer08_IDEAL_V12_RECOSIM_v1-SingleLepton/merged_ntuple.root ");
-*/
   QCDFRestimator *looper = new QCDFRestimator();
   
   looper->ScanChainQCD(ch_pthat30to80, "QCD", 1.0, 1.0, 0.0, 99999999999999999999999999999.);
