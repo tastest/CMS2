@@ -77,7 +77,9 @@ void EstimateFakes(unsigned int bitmask, bool skipFWLite = false){
 
 
   // Load various tools  
-  gROOT->ProcessLine(Form(".x ../setup.C(%d)",skipFWLite));
+  //gROOT->ProcessLine(Form(".x setup.C(%d)",skipFWLite));
+gROOT->ProcessLine(".L setup.C");
+  gROOT->ProcessLine("setup(true)");
 
   // Load and compile the looping code
   gSystem->CompileMacro("ttDilCounts_looper.C", "++k", "libttDilCounts_looper");
