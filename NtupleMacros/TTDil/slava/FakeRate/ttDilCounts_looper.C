@@ -786,19 +786,23 @@ int ttDilCounts_looper::ScanChain ( TChain* chain, char * prefix, float kFactor,
 	VofP4 jp4;            // vector of jets 
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > blah; // temp variable
 	// First the case where we take the default hyp_jets
-	if (oldjets) {
-	  new_hyp_njets = cms2.hyp_njets().at(hypIdx);
-	  for (unsigned int ijet=0; 
-	       ijet<(unsigned int)(cms2.hyp_njets().at(hypIdx)); 
-	       ijet++) {
-	    float thisJetRescale = cms2.hyp_jets_emFrac().at(hypIdx).at(ijet) < 0.9 ? globalJESscaleRescale : 1.;
-	    blah = cms2.hyp_jets_pat_noCorrF().at(hypIdx).at(ijet) * cms2.hyp_jets_p4().at(hypIdx).at(ijet) * thisJetRescale;
-	    //FIXME : this should be combined the same way as below
-	    jp4.push_back(blah);
-	  }
-	} else {
+
+	//ADDED - PDK Removed the option to use the old jets. We'll see where we go with it.
+	
+	//if (oldjets) {
+	  // 	  new_hyp_njets = cms2.hyp_njets().at(hypIdx);
+// 	  for (unsigned int ijet=0; 
+// 	       ijet<(unsigned int)(cms2.hyp_njets().at(hypIdx)); 
+// 	       ijet++) {
+// 	    unsigned int jptidx = hyp_jets_idx()[hypIdx][ijet];
+// 	    float thisJetRescale = cms2.jpts_emFrac().at(jptidx) < 0.9 ? globalJESscaleRescale : 1.;
+// 	    blah = cms2.hyp_jets_pat_noCorrF().at(hypIdx).at(ijet) * cms2.hyp_jets_p4().at(hypIdx).at(ijet) * thisJetRescale;
+// 	    //FIXME : this should be combined the same way as below
+// 	    jp4.push_back(blah);
+// 	  }
+// 	} else {
 	  // Look among the hyp_jets
-	  for (unsigned int ijet=0; ijet<(unsigned int)(cms2.hyp_njets().at(hypIdx)); ijet++) {
+	  for (unsigned int ijet=0; ijet<(unsigned int)(cms2.hyp_njets().at(hypIdx)); ijet++) 
 	    float thisJetRescale = cms2.hyp_jets_emFrac().at(hypIdx).at(ijet) < 0.9 ? globalJESscaleRescale : 1.;
 	    blah = cms2.hyp_jets_p4().at(hypIdx).at(ijet)* thisJetRescale;
 	    if (blah.pt() > 30 && abs(blah.eta()) < 2.4) {
