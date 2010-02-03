@@ -67,7 +67,12 @@ Float_t QCDFRestimator::GetValueTH2F(Float_t x, Float_t y, TH2F* h) {
 
 // dbarge
 bool isNumEl(int iEl){
+  Double_t pt = cms2.els_p4()[iEl].Pt();
+  Double_t eta = cms2.els_p4()[iEl].Eta();
+
   if(
+     (pt >= 10.) &&
+     (fabs(eta)<=2.4) &&
      // dEtaIn < 0.007, 0.010 (EB, EE)
      // dPhiIn < 0.020, 0.025 (EB, EE)
      // hoe < 0.01, 0.01 (EB, EE)
@@ -84,7 +89,11 @@ bool isNumEl(int iEl){
   }
 }
 bool isDenomEl(int iEl){
+  Double_t pt = cms2.els_p4()[iEl].Pt();
+  Double_t eta = cms2.els_p4()[iEl].Eta();
   if(
+     (pt >= 10.) &&
+     (fabs(eta)<=2.4) &&
      electronImpact_cand01(iEl) &&             	// d0corr > .02
      electronIsolation_relsusy_cand1(iEl,true) && // relative isolation < .1
      isFromConversionPartnerTrack(iEl)         	// dist < .02 dcot < .02
@@ -291,9 +300,9 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix, float kFacto
 	      //dbarge
 	      if( isNumEl(iEl) ){	// if a numerator electron
 		h_actualnJets[0]->Fill(nJets, weight);
-		h_actualTrueCat[0]->Fill(elFakeMCCategory(iEl), weight);
-		h_el_truecomposition_WJnum->Fill( elFakeMCCategory(iEl), weight);
 		int cat = elFakeMCCategory(iEl);
+		h_actualTrueCat[0]->Fill(cat, weight);
+		h_el_truecomposition_WJnum->Fill( cat, weight);
 		if( cat == 4 ){
 		  logfile << "WJnum:\t" << cms2.els_mc_id().at(iEl) << "\t" << cms2.els_mc_motherid().at(iEl) << endl;
 		}
@@ -303,10 +312,10 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix, float kFacto
 		  Float_t FRErr = GetValueTH2F(fabs(eta), pt, h_FRErr[0]);
 		  h_predictednJets[0]->Fill(nJets, weight*FR/(1-FR));
 		  h_nJets3D[0]        ->Fill(nJets, fabs(eta), pt, weight*FRErr);
-		  h_el_truecomposition_WJdenom->Fill( elFakeMCCategory(iEl), weight);
-		  h_predictedTrueCat[0]->Fill(elFakeMCCategory(iEl), weight*FR/(1-FR));
-		  h_TrueCat3D[0]        ->Fill(elFakeMCCategory(iEl), fabs(eta), pt, weight*FRErr);
 		  int cat = elFakeMCCategory(iEl);
+		  h_el_truecomposition_WJdenom->Fill( cat, weight);
+		  h_predictedTrueCat[0]->Fill(cat, weight*FR/(1-FR));
+		  h_TrueCat3D[0]        ->Fill(cat, fabs(eta), pt, weight*FRErr);
 		  if( cat == 4 ){
 		    logfile << "WJden:\t" << cms2.els_mc_id().at(iEl) << "\t" << cms2.els_mc_motherid().at(iEl) << endl;
 		  }
@@ -509,30 +518,17 @@ int QCDFRestimator::ScanChainQCD ( TChain* chain, TString prefix, float kFactor,
 
       for(int iEl = 0 ; iEl < cms2.els_p4().size(); iEl++) {
 
-	// dbarge
-	if( isNumEl(iEl) ) {	// is numerator electron
-	  h_el_truecomposition_QCDnum->Fill( elFakeMCCategory(iEl), weight);
-	  int cat = elFakeMCCategory(iEl);
-	  if( cat == 4 ){
-	    logfile << "QCDnum:\t" << cms2.els_mc_id().at(iEl) << "\t" << cms2.els_mc_motherid().at(iEl) << endl;
-	  }
-	} else {	// not a numerator electron
-	  if( cms2.els_p4().at(iEl).pt() > 10. ){ // why is this here?
-	    if( isDenomEl(iEl) ) { // is a fakeable object
-	      h_el_truecomposition_QCDdenom->Fill( elFakeMCCategory(iEl), weight);
-	      int cat = elFakeMCCategory(iEl);
-	      if( cat == 4 ){
-		logfile 	<< "QCDden:\t" << cms2.els_mc_id().at(iEl) << "\t" 
-				<< cms2.els_mc_motherid().at(iEl) << endl;
-	      }
-	    }
-	  }
-	}
-
-	if(!isFakeableElSUSY09(iEl)) continue;
+	if(!isDenomEl(iEl)) continue;
 	Double_t pt = cms2.els_p4()[iEl].Pt();
 	Double_t eta = cms2.els_p4()[iEl].Eta();
 	Double_t phi = cms2.els_p4()[iEl].Phi();
+
+	int cat = elFakeMCCategory(iEl);
+	h_el_truecomposition_QCDdenom->Fill( cat, weight);
+	if( cat == 4 ){
+	  logfile 	<< "QCDden:\t" << cms2.els_mc_id().at(iEl) << "\t" 
+			<< cms2.els_mc_motherid().at(iEl) << endl;
+	}
 	h_FOptvseta[0]->Fill(fabs(eta), min(pt,149.0), weight);
 	h_FOpt[0]     ->Fill(min(pt,149.0), weight);
 	h_FOeta[0]    ->Fill(fabs(eta), weight);
@@ -571,7 +567,15 @@ int QCDFRestimator::ScanChainQCD ( TChain* chain, TString prefix, float kFactor,
 	h_FOmc3dR[0]->Fill(dR, weight);
 	  
 
-	if(!isNumElSUSY09(iEl)) continue;
+	if(!isNumEl(iEl)) continue;
+
+	// int cat = elFakeMCCategory(iEl);
+	// cat already defined above
+	h_el_truecomposition_QCDnum->Fill( cat, weight);
+	if( cat == 4 ){
+	  logfile << "QCDnum:\t" << cms2.els_mc_id().at(iEl) << "\t" << cms2.els_mc_motherid().at(iEl) << endl;
+	}
+
 	h_numptvseta[0]->Fill(fabs(eta), min(pt,149.0), weight);
 	h_numpt[0]     ->Fill(min(pt,149.0), weight);
 	h_numeta[0]    ->Fill(fabs(eta), weight);
