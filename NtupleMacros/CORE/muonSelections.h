@@ -1,16 +1,10 @@
 #ifndef MUON_SELECTIONS_H
 #define MUON_SELECTIONS_H
-#include "CORE/CMS2.h"
+// #include "CMS2.h"
 //
 // muon id
-// see http://www.t2.ucsd.edu/tastwiki/bin/view/CMS/MuonID
+// see http://www.t2.ucsd.edu/tastwiki/bin/view/CMS/MuonID2010
 //
-
-enum ReferencePointType { 
-  ZeroZeroZero = 0, 
-  BeamSpot = 1, 
-  PrimaryVertex = 2 
-};
 
 enum SelectionType { 
   FakableObject = 0, 
@@ -26,18 +20,9 @@ enum SelectionType {
 bool muonId(unsigned int index, SelectionType type = Nominal);
 
 //
-// In order to caclulate the impact parameter we need to define
-// the reference point. 
-//
-bool muond0(unsigned int index, ReferencePointType type = BeamSpot, double cut = 0.02);
-
-//
 // relative isolation
 //
 double muonIsoValue(unsigned int index);
-bool muonIso(unsigned int index, double cut = 0.1){
-  return muonIsoValue(index) < cut;
-}
 
 //
 // Trigger
