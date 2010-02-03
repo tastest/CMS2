@@ -16,7 +16,7 @@ using namespace std;
 
 void doPostProcessing(TString infname, TString outfile, Int_t events, 
 		      Float_t xsec, Float_t kfactor,
-		      Float_t filt_eff=1) {
+		      Float_t filt_eff, bool SortBasketsByEntry = false) {
   
   cout << "Processing File " << infname << endl;
   
@@ -87,12 +87,17 @@ void doPostProcessing(TString infname, TString outfile, Int_t events,
     t->SetBranchStatus(bName.Data(), 0); 
   }
 
- TFile *out = TFile::Open(outfile.Data(), "RECREATE");
-  TTree *clone = t->CloneTree(-1, "fast");
+  TFile *out = TFile::Open(outfile.Data(), "RECREATE");
+  TTree *clone;
+  if(SortBasketsByEntry)
+    clone = t->CloneTree(-1, "fastSortBasketsByEntry");
+  else 
+    clone = t->CloneTree(-1, "fast");
+   
 
   //-------------------------------------------------------------
 
- //Calculate scaling factor and put variables into tree 
+  //Calculate scaling factor and put variables into tree 
   Float_t scale1fb = xsec*kfactor*1000*filt_eff/(Float_t)events;
   cout << "scale1fb: " << scale1fb << endl; 
 
