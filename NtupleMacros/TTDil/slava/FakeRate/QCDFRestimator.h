@@ -11,7 +11,7 @@ class QCDFRestimator {
 public: 
   
   int ScanChainQCD ( TChain* chain, TString prefix="", float kFactor=1.0, 
-		     int prescale=1, float pthatmin = 0, float pthatmax = 999999999.9);
+		     int prescale=1, float pthatmin = -99999999.0, float pthatmax = 999999999.9);
   int ScanChainWJets( TChain* chain, TString prefix="", float kFactor=1.0, 
 		      int prescale=1);
   
