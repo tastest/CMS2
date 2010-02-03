@@ -189,6 +189,7 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix, float kFacto
   //book Histograms
   char *suffix[2] =  {"el", "mu"};
   for ( unsigned int suf = 0; suf < 2; ++suf ) {
+    // nJet plot
     h_predictednJets[suf]  = new TH1F( Form("WJets_predictednJets_%s", suffix[suf]),
 				       "predicted NJet distribution, FO object", 6, nbins);
     h_predictednJets[suf]->Sumw2();
@@ -198,6 +199,18 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix, float kFacto
     h_nJets3D[suf]          = new TH3F(Form("WJets_nJets3D_%s", suffix[suf]),
 				       "3D histo to store error info", 6, nbins, 12, eta, 16, pt);
     h_nJets3D[suf]->Sumw2();
+
+    // MC category plot
+    h_predictedTrueCat[suf]  = new TH1F( Form("WJets_predictedTrueCat_%s", suffix[suf]),
+					 "predicted MC category distribution, FO object", 6, nbins);
+    h_predictedTrueCat[suf]->Sumw2();
+    h_actualTrueCat[suf]     = new TH1F(	Form("WJets_actualTrueCat_%s", suffix[suf]), 
+						"actual MC category distribution", 6, nbins);
+    h_actualTrueCat[suf]->Sumw2();
+    h_TrueCat3D[suf]          = new TH3F(Form("WJets_TrueCat3D_%s", suffix[suf]),
+					 "3D histo to store error info", 6, nbins, 12, eta, 16, pt);
+    h_TrueCat3D[suf]->Sumw2();
+
   }
 
   //dbarge
@@ -278,6 +291,7 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix, float kFacto
 	      //dbarge
 	      if( isNumEl(iEl) ){	// if a numerator electron
 		h_actualnJets[0]->Fill(nJets, weight);
+		h_actualTrueCat[0]->Fill(elFakeMCCategory(iEl), weight);
 		h_el_truecomposition_WJnum->Fill( elFakeMCCategory(iEl), weight);
 		int cat = elFakeMCCategory(iEl);
 		if( cat == 4 ){
@@ -290,6 +304,8 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix, float kFacto
 		  h_predictednJets[0]->Fill(nJets, weight*FR/(1-FR));
 		  h_nJets3D[0]        ->Fill(nJets, fabs(eta), pt, weight*FRErr);
 		  h_el_truecomposition_WJdenom->Fill( elFakeMCCategory(iEl), weight);
+		  h_predictedTrueCat[0]->Fill(elFakeMCCategory(iEl), weight*FR/(1-FR));
+		  h_TrueCat3D[0]        ->Fill(elFakeMCCategory(iEl), fabs(eta), pt, weight*FRErr);
 		  int cat = elFakeMCCategory(iEl);
 		  if( cat == 4 ){
 		    logfile << "WJden:\t" << cms2.els_mc_id().at(iEl) << "\t" << cms2.els_mc_motherid().at(iEl) << endl;
@@ -314,6 +330,8 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix, float kFacto
 	  Float_t FRErr = GetValueTH2F(fabs(eta), pt, h_FRErr[1]);
 	  h_predictednJets[1]->Fill(nJets, weight*FR);
 	  h_nJets3D[1]->Fill(nJets, fabs(eta), pt, weight*FRErr);
+	  h_predictedTrueCat[1]->Fill(elFakeMCCategory(iEl), weight*FR);
+	  h_TrueCat3D[1]->Fill(elFakeMCCategory(iEl), fabs(eta), pt, weight*FRErr);
 
 	  //dbarge
 	  h_mu_truecomposition_WJdenom->Fill( muFakeMCCategory(iEl), weight);
@@ -321,6 +339,7 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix, float kFacto
 	  //if( !isNumMuSUSY09(iMu) ) continue;
 	  if( !isNumMu(iMu) ) continue;
 	  h_actualnJets[1]->Fill(nJets, weight);
+	  h_actualTrueCat[1]->Fill(elFakeMCCategory(iEl), weight);
 				
 	  //dbarge
 	  h_mu_truecomposition_WJnum->Fill( muFakeMCCategory(iEl), weight);
@@ -358,6 +377,30 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix, float kFacto
       Float_t err = sqrt(err2);
       h_predictednJets[i]->SetBinError(iJet, err);
     }
+	
+    //ibl b
+    for(unsigned int ieta = 1; ieta < h_TrueCat3D[i]->GetNbinsY() + 1; ieta++) {
+      for(unsigned int ipt = 1; ipt < h_TrueCat3D[i]->GetNbinsZ() + 1; ipt++) {
+	Float_t temp23 = 0.;  
+	for(unsigned int iMainBin = 1; iMainBin < h_TrueCat3D[i]->GetNbinsX() + 1; iMainBin++) {
+	  temp23 = temp23 + h_TrueCat3D[i]->GetBinContent(iMainBin, ieta, ipt);
+	}
+	totalErr = pow(temp23,2) + totalErr;
+      }
+    }
+    cout << "****** Error for  " << suffix[i] << sqrt(totalErr) << endl;
+    for(unsigned int iMainBin = 1; iMainBin < h_TrueCat3D[i]->GetNbinsX() + 1; iMainBin++) {
+      Float_t err2 = 0.;
+      for(unsigned int ieta = 1; ieta < h_TrueCat3D[i]->GetNbinsY() + 1; ieta++) {
+	for(unsigned int ipt = 1; ipt < h_TrueCat3D[i]->GetNbinsZ() + 1; ipt++) {
+	  Float_t temp = h_TrueCat3D[i]->GetBinContent(iMainBin, ieta, ipt);
+	  err2 = err2 + pow(temp,2);
+	}
+      }
+      Float_t err = sqrt(err2);
+      h_predictedTrueCat[i]->SetBinError(iMainBin, err);
+    }
+    //ibl e
     //cout << "******Error for " << suffix[i] << sqrt(totalErr) << endl;
   }//lepton flavor loop
       

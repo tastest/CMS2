@@ -79,5 +79,14 @@ public:
 
   //nJets for FO object
   TH1F *h_FOnJets[2];
+
+  //TrueCat
+  TH1F *h_predictedTrueCat[2];
+  TH1F *h_actualTrueCat[2];  
+  TH3F *h_TrueCat3D[2];
+
+  //TrueCat for FO object
+  TH1F *h_FOTrueCat[2];
+
 };
 #endif

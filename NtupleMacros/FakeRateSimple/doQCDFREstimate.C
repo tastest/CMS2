@@ -33,6 +33,23 @@ void TestPrediction() {
   hist::color("WJets_actual", kRed);
   hist::color("WJets_num", kRed);
 
+
+  TH3F *WJets_TrueCat3D[2];
+
+  TH1F *WJets_actualTrueCat[2];
+  TH1F *WJets_predictedTrueCat[2];
+  
+  char *flavor[2] = {"el", "mu"};
+  for(unsigned int i = 0; i < 2; i++) {
+    WJets_TrueCat3D[i] = (TH3F*)gDirectory->Get(Form("WJets_TrueCat3D_%s", flavor[i]));
+
+    WJets_actualTrueCat[i] = (TH1F*)gDirectory->Get(Form("WJets_actualTrueCat_%s", flavor[i]));
+    WJets_predictedTrueCat[i] = (TH1F*)gDirectory->Get(Form("WJets_predictedTrueCat_%s", flavor[i]));
+  }      
+  
+  hist::color("WJets_actual", kRed);
+  hist::color("WJets_num", kRed);
+
     
   //TCanvas *c1 = new TCanvas();
   //WJets_numeta[0]->Draw("e");
@@ -66,6 +83,15 @@ void TestPrediction() {
   (TH1F*)gDirectory->Get("WJets_predictednJets_el")->Draw("samese");
   hist::setrangey(c3);
   c3->SaveAs("elnJetsPredicted.png");
+
+
+  TCanvas *c3a = new TCanvas();
+  ((TH1F*)gDirectory->Get("WJets_actualTrueCat_el"))->SetMarkerStyle(3);
+  (TH1F*)gDirectory->Get("WJets_actualTrueCat_el")->Draw("e");
+  ((TH1F*)gDirectory->Get("WJets_predictedTrueCat_el"))->SetMarkerStyle(25);
+  (TH1F*)gDirectory->Get("WJets_predictedTrueCat_el")->Draw("samese");
+  hist::setrangey(c3a);
+  c3->SaveAs("elTrueCatPredicted.png");
 
   TCanvas *c4 = new TCanvas();
   TH2F *QCDFRptvseta_el = (TH2F*)gDirectory->Get("QCD_FRptvseta_el");
