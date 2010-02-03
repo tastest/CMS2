@@ -314,9 +314,17 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix, float kFacto
 	  Float_t FRErr = GetValueTH2F(fabs(eta), pt, h_FRErr[1]);
 	  h_predictednJets[1]->Fill(nJets, weight*FR);
 	  h_nJets3D[1]->Fill(nJets, fabs(eta), pt, weight*FRErr);
+
+	  //dbarge
+	  h_mu_truecomposition_WJdenom->Fill( muFakeMCCategory(iEl), weight);
+
 	  //if( !isNumMuSUSY09(iMu) ) continue;
 	  if( !isNumMu(iMu) ) continue;
 	  h_actualnJets[1]->Fill(nJets, weight);
+				
+	  //dbarge
+	  h_mu_truecomposition_WJnum->Fill( muFakeMCCategory(iEl), weight);
+
 	}//is true electron from W
       }//hyp loop
     }//event loop
