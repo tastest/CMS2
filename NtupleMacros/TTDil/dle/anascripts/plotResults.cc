@@ -330,5 +330,21 @@ void plotResults(TString hyp, TString fileStamp)
 
 	plotStack(h1, "hyp_njets", "nJets", fileStamp, hyp);
 
+	//
+	// dy est related
+	//
+	plotStack(h1, "dyest_mll_0j", "Mass", fileStamp, hyp);
+    plotStack(h1, "dyest_mll_1j", "Mass", fileStamp, hyp);
+    plotStack(h1, "dyest_mll_2j", "Mass", fileStamp, hyp);
+
+    plotStack(h1, "dyest_met_in_0j", "Met (in)", fileStamp, hyp);
+    plotStack(h1, "dyest_met_in_1j", "Met (in)", fileStamp, hyp);
+    plotStack(h1, "dyest_met_in_2j", "Met (in)", fileStamp, hyp);
+
+    plotStack(h1, "dyest_met_out_0j", "Met (out)", fileStamp, hyp);
+    plotStack(h1, "dyest_met_out_1j", "Met (out)", fileStamp, hyp);
+    plotStack(h1, "dyest_met_out_2j", "Met (out)", fileStamp, hyp);
+
+
 }
 

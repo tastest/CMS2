@@ -24,12 +24,15 @@ class MyScanChain {
 	private:
 
 
-		void Fill(TH1F** hist, unsigned int hyp, float val, float weight);
+		void Fill(TH1F** hist, const unsigned int hyp, const float &val, const float &weight);
 		void FillAllEleIdHistograms(const unsigned int h, const float &weight);
+		void FillAllDYEstHistograms(const unsigned int h, const float &weight, const unsigned int njet);
 
 		void FormatHist(TH1F** hist, std::string sampleName, std::string name, int n, float min, float max);
+
 		void FormatAllEleIdHistograms(std::string sampleName);
 		void FormatAllAnaHistograms(std::string sampleName);
+		void FormatAllDYEstHistograms(std::string sampleName);
 
 		//
 		// ttbar analysis plots
@@ -38,9 +41,16 @@ class MyScanChain {
 		TH1F *h1_hyp_njets_[4];
 
 		//
-		// ele ID plots
+		// DY estimate plots
 		//
 
+		TH1F *h1_dyest_mll_[3][4];
+		TH1F *h1_dyest_met_in_[3][4];
+		TH1F *h1_dyest_met_out_[3][4];
+
+		//
+		// ele ID plots
+		//
 		// basic selection quantities
 		//
 

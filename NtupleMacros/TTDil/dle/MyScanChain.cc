@@ -27,6 +27,16 @@
 //
 using namespace tas;
 
+//
+// for jets
+//
+
+static const char jetbin_names[][128] = { "0j", "1j", "2j"};
+
+//
+// for hyps
+//
+
 double dRbetweenVectors(const LorentzVector &vec1,
 		const LorentzVector &vec2 ){
 
@@ -50,7 +60,7 @@ enum DileptonHypType hyp_typeToHypType (int hyp_type)
 	return DILEPTON_ALL;
 }
 
-void MyScanChain::Fill(TH1F** hist, unsigned int hyp, float val, float weight)
+void MyScanChain::Fill(TH1F** hist, const unsigned int hyp, const float &val, const float &weight)
 {
 	hist[hyp]->Fill(val, weight);
 	hist[DILEPTON_ALL]->Fill(val, weight);
@@ -73,8 +83,8 @@ void MyScanChain::FormatHist(TH1F** hist, std::string sampleName, std::string na
 void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
 {
 
-    FormatHist(h1_hyp_lt_eb_pt_, sampleName, "hyp_lt_eb_pt", 20, 0.0, 100.0);
-    FormatHist(h1_hyp_lt_ee_pt_, sampleName, "hyp_lt_ee_pt", 20, 0.0, 100.0);
+	FormatHist(h1_hyp_lt_eb_pt_, sampleName, "hyp_lt_eb_pt", 20, 0.0, 100.0);
+	FormatHist(h1_hyp_lt_ee_pt_, sampleName, "hyp_lt_ee_pt", 20, 0.0, 100.0);
 
 	FormatHist(h1_hyp_lt_eb_hoe_, sampleName, "hyp_lt_eb_hoe", 50, 0.0, 0.05);
 	FormatHist(h1_hyp_lt_ee_hoe_, sampleName, "hyp_lt_ee_hoe", 50, 0.0, 0.05);
@@ -123,6 +133,42 @@ void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
 void MyScanChain::FormatAllAnaHistograms(std::string sampleName)
 {
 	FormatHist(h1_hyp_njets_, sampleName, "hyp_njets", 10, -0.5, 9.5);
+}
+
+void MyScanChain::FormatAllDYEstHistograms(std::string sampleName)
+{
+
+	for (unsigned int j = 0; j < 3; ++j) {
+		std::string jetbin = jetbin_names[j];
+    	FormatHist(h1_dyest_mll_[j], sampleName, "dyest_mll_" + jetbin, 40, 0.0, 200.0);
+		FormatHist(h1_dyest_met_in_[j], sampleName, "dyest_met_in_" + jetbin, 40, 0.0, 200.0);
+        FormatHist(h1_dyest_met_out_[j], sampleName, "dyest_met_out_" + jetbin, 40, 0.0, 200.0);
+	}
+
+}
+
+void MyScanChain::FillAllDYEstHistograms(const unsigned int h, const float &weight, const unsigned int njet)
+{
+
+	// which hypothesis type
+    DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[h]); 
+
+	// which jet bin to fill
+	unsigned int jetbin = 0;
+	if (njet == 1) jetbin = 1;
+	if (njet >= 2) jetbin = 2;
+
+	// fill the mass histogram
+	float mass = cms2.hyp_p4()[h].mass();
+	Fill(h1_dyest_mll_[jetbin], hypType, mass, weight);
+
+	// fill the met histograms for "in" and "out" regions
+	float mymet = met_pat_metCor_hyp(h);
+	if (inZmassWindow(mass)) {
+		Fill(h1_dyest_met_in_[jetbin], hypType, mymet, weight);
+	}
+	else Fill(h1_dyest_met_out_[jetbin], hypType, mymet, weight);
+
 }
 
 void MyScanChain::FillAllEleIdHistograms(const unsigned int h, const float &weight)
@@ -247,6 +293,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 	//
 	FormatAllEleIdHistograms(sampleName);
 	FormatAllAnaHistograms(sampleName);
+	FormatAllDYEstHistograms(sampleName);
 
 	// file loop
 	//
@@ -309,11 +356,6 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 				// opposite charge
 				if (cms2.hyp_lt_id()[h] * cms2.hyp_ll_id()[h] > 0) continue;
 
-				// z mass window
-				if (cms2.hyp_type()[h] == 0 || cms2.hyp_type()[h] == 3) {
-					if (inZmassWindow(cms2.hyp_p4()[h].mass())) continue;
-				}
-
 				//
 				// store indices of hypothesese that pass this preselection
 				//	
@@ -337,9 +379,6 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 			// trigger
 			if (!passTriggersMu9orLisoE15(cms2.hyp_type()[hyp])) continue;
 
-			// met
-			if (!passMet_OF20_SF30(hyp, false)) continue;
-
 			//
 			// If we got to here then classify the event according to nJets
 			//	
@@ -350,6 +389,24 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 				if (!isGoodDilHypJet(j, hyp, 30.0, 2.4, 0.4, false)) continue;
 				corCaloJets.push_back(j);
 			}
+
+            //
+            // estimate the DY background before the z veto and MET cuts are applied
+            //
+
+            FillAllDYEstHistograms(hyp, weight, corCaloJets.size());
+
+			//
+			// apply remaining requirements
+			//
+
+            // met
+            if (!passMet_OF20_SF30(hyp, false)) continue;
+
+            // z mass window
+            if (cms2.hyp_type()[hyp] == 0 || cms2.hyp_type()[hyp] == 3) {
+                if (inZmassWindow(cms2.hyp_p4()[hyp].mass())) continue;
+            }
 
 			//
 			// get hypothesis type and fill analysis results histograms
