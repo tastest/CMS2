@@ -12,6 +12,6 @@ void setup(){
   gSystem->CompileMacro("../histscripts/getMyHistosNames.C", "++k", "libgetMyHistosNames");
   gSystem->CompileMacro("../histscripts/histtools.C", "++k", "libhisttools");
   gSystem->CompileMacro("../histscripts/browseStacks.C", "++k", "libbrowseStacks");
-  gSystem->CompileMacro("../CORE/CMS2.cc", "++k", "libCMS2");
+  gSystem->CompileMacro("CORE/CMS2.cc", "++k", "libCMS2");
 
 }
