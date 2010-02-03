@@ -11,9 +11,9 @@
 
 void TestPrediction() {
   
-//  gROOT->ProcessLine(".L setup.C");
-//  gROOT->ProcessLine("setup()");
-//  gROOT->ProcessLine(Form(".x setup.C(%d)", 1));
+  //  gROOT->ProcessLine(".L setup.C");
+  //  gROOT->ProcessLine("setup()");
+  //  gROOT->ProcessLine(Form(".x setup.C(%d)", 1));
   hist::deleteHistos();
   hist::loadHist("QCDFRplots.root");
    
@@ -137,31 +137,31 @@ void TestPrediction() {
   QCD_FRpt_mu->Draw();
   c14->SaveAs("muFRpt.png");
 
-  	TCanvas *c15 = new TCanvas();
-	c15->Divide(3,2);
+  TCanvas *c15 = new TCanvas();
+  c15->Divide(3,2);
 
-	c15->cd(1);
-  	TH1F *h_el_WJnum = gDirectory->Get("el_truecomposition_WJnum");
-  	h_el_WJnum->Draw();
-	c15->cd(2);
-  	TH1F *h_el_WJdenom = gDirectory->Get("el_truecomposition_WJdenom");
-  	h_el_WJdenom->Draw();
-	c15->cd(3);
-  	TH1F *h_el_WJratio = gDirectory->Get("el_truecomposition_WJratio");
-  	h_el_WJratio->Draw();
+  c15->cd(1);
+  TH1F *h_el_WJnum = gDirectory->Get("el_truecomposition_WJnum");
+  h_el_WJnum->Draw();
+  c15->cd(2);
+  TH1F *h_el_WJdenom = gDirectory->Get("el_truecomposition_WJdenom");
+  h_el_WJdenom->Draw();
+  c15->cd(3);
+  TH1F *h_el_WJratio = gDirectory->Get("el_truecomposition_WJratio");
+  h_el_WJratio->Draw();
 
-	c15->cd(4);
-  	TH1F *h_el_QCDnum = gDirectory->Get("el_truecomposition_QCDnum");
-  	h_el_QCDnum->Draw();
-	c15->cd(5);
-  	TH1F *h_el_QCDdenom = gDirectory->Get("el_truecomposition_QCDdenom");
-  	h_el_QCDdenom->Draw();
-	c15->cd(6);
-  	TH1F *h_el_QCDratio = gDirectory->Get("el_truecomposition_QCDratio");
-  	h_el_QCDratio->Draw();
+  c15->cd(4);
+  TH1F *h_el_QCDnum = gDirectory->Get("el_truecomposition_QCDnum");
+  h_el_QCDnum->Draw();
+  c15->cd(5);
+  TH1F *h_el_QCDdenom = gDirectory->Get("el_truecomposition_QCDdenom");
+  h_el_QCDdenom->Draw();
+  c15->cd(6);
+  TH1F *h_el_QCDratio = gDirectory->Get("el_truecomposition_QCDratio");
+  h_el_QCDratio->Draw();
 
-	c15->Draw();
-  	c15->SaveAs("eFakeComposition.png");
+  c15->Draw();
+  c15->SaveAs("eFakeComposition.png");
 
 
 
@@ -218,7 +218,6 @@ void doAll(){
   delete looper;
 
   TestPrediction();
-
 
   TCanvas* c = new TCanvas();
   c->Divide(2,2);
