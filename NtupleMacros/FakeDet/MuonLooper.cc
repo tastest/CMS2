@@ -59,15 +59,15 @@ void MuonLooper::BookHistos ()
   binsEta.push_back(2.4);
 
 
-  pt_num_mu_  = book1DVarHist(Form("%s_hpt_num_mu",prefix),"p_{T} Numerator",binsPt,"p_{T} [GeV]","p_{T} Loose Electron Numerator",color);
-  eta_num_mu_ = book1DVarHist(Form("%s_heta_num_mu",prefix),"#eta Numerator",binsEta,"#eta","#eta Loose Electron Numerator",color);
-  num_mu_ = book2DVarHist(Form("%s_hnum_mu",prefix),"Numerator",binsEta,binsPt,"#eta","p_{T} [GeV]","Loose Electron Numerator",color);
+  pt_num_mu_  	= book1DVarHist(Form("%s_hpt_num_mu",prefix),"p_{T} Numerator",binsPt,"p_{T} [GeV]","p_{T} Muon Numerator",color);
+  eta_num_mu_ 	= book1DVarHist(Form("%s_heta_num_mu",prefix),"#eta Numerator",binsEta,"#eta","#eta Muon Numerator",color);
+  num_mu_ 	= book2DVarHist(Form("%s_hnum_mu",prefix),"Numerator",binsEta,binsPt,"#eta","p_{T} [GeV]","Muon Numerator",color);
 
-  pt_den_mu_  = book1DVarHist(Form("%s_hpt_den_mu",prefix),"p_{T} Denerator",binsPt,"p_{T} [GeV]","p_{T} Loose Electron Denerator",color);
-  eta_den_mu_ = book1DVarHist(Form("%s_heta_den_mu",prefix),"#eta Denerator",binsEta,"#eta","#eta Loose Electron Denerator",color);
-  den_mu_ = book2DVarHist(Form("%s_hden_mu",prefix),"Denerator",binsEta,binsPt,"#eta","p_{T} [GeV]","Loose Electron Denerator",color);
+  pt_den_mu_  	= book1DVarHist(Form("%s_hpt_den_mu",prefix),"p_{T} Denominator",binsPt,"p_{T} [GeV]","p_{T} Muon Denominator",color);
+  eta_den_mu_ 	= book1DVarHist(Form("%s_heta_den_mu",prefix),"#eta Denominator",binsEta,"#eta","#eta Muon Denominator",color);
+  den_mu_ 	= book2DVarHist(Form("%s_hden_mu",prefix),"Denominator",binsEta,binsPt,"#eta","p_{T} [GeV]","Muon Denominator",color);
 	
-  mu_n_   = book1DHist(Form("%s_hmu_n",prefix),"number of electrons per event",15,0.,15.,"n_{e}","Events",color);
+  mu_n_   	= book1DHist(Form("%s_hmu_n",prefix),"number of muons per event",15,0.,15.,"n_{e}","Events",color);
 }
 
 cuts_t MuonLooper::EventSelect ()
