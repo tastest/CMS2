@@ -50,6 +50,7 @@ enum {
 	H_PHOTONJET_7TeV,
 };
 
+/*
 const static sources_t sources_all =
 (1ll << H_WW)          |
 (1ll << H_TTBAR)       |
@@ -77,6 +78,7 @@ const static sources_t sources_nonpeaking =
 (1ll << H_DYTT)        |
 (1ll << H_WJETS)       |
 (1ll << H_TW);
+*/
 
 // consistent set of 7 TeV ntuples
 // are available with V02-00-12
