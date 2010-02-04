@@ -79,9 +79,10 @@ bool isNumEl(int iEl){
      // sigmaIEtaIEta < N/A , 0.03 (EB, EE)
      // E2x5Max /E5x5 > 0.90, N/A (EB, EE) 
      electronId_cand01(iEl) &&
-     electronImpact_cand01(iEl) &&             	// d0corr > .02
-     electronIsolation_relsusy_cand1(iEl,true) && // relative isolation < .1
-     !isFromConversionPartnerTrack(iEl)         	// dist < .02 dcot < .02
+     electronImpact_cand01(iEl) &&             	    // d0corr < .02
+     electronIsolation_relsusy_cand1(iEl,true) &&   // relative isolation < .1
+     !isFromConversionPartnerTrack(iEl) &&        	// dist < .02 dcot < .02
+      electronId_noMuon(iEl)
      ){
     return true;
   } else {
@@ -94,9 +95,10 @@ bool isDenomEl(int iEl){
   if(
      (pt >= 10.) &&
      (fabs(eta)<=2.4) &&
-     electronImpact_cand01(iEl) &&             	// d0corr > .02
-     electronIsolation_relsusy_cand1(iEl,true) && // relative isolation < .1
-     !isFromConversionPartnerTrack(iEl)         	// dist < .02 dcot < .02
+     electronImpact_cand01(iEl) &&             	    // d0corr < .02
+     electronIsolation_relsusy_cand1(iEl,true) &&   // relative isolation < .1
+     !isFromConversionPartnerTrack(iEl) &&       	  // dist < .02 dcot < .02
+      electronId_noMuon(iEl)
      ){
     return true;
   } else{
@@ -105,42 +107,58 @@ bool isDenomEl(int iEl){
 }
 
 // dbarge
+/* muon numerator aka selection definition */
 bool isNumMu(int iMu){
+  // Pt & Eta cuts
+  Double_t pt   = cms2.mus_p4().at(iMu).Pt();
+  Double_t eta  = cms2.mus_p4().at(iMu).Eta();
+  if( pt < 10.0 || fabs(eta) > 2.4 ) return false;
+  /* muonId cuts - numerator */
   if(
-     // abs(eta) <= 2.4
-     // global chisq per degree of freedom < 10
-     // global muon
-     // tracker muon
-     // # of valid hits in silicon fit >= 11
-     // ECalE < 4
-     // HcalE < 6
-     // glb fit has hits
-     // d0 from beamspot <= .02
-     // ISO < 0.2
-     muonId(iMu, Nominal)
+      // abs(eta) <= 2.4
+      // global chisq per degree of freedom < 10
+      // global muon
+      // tracker muon
+      // # of valid hits in silicon fit >= 11
+      // ECalE < 4
+      // HcalE < 6
+      // glb fit has hits
+      // d0 from beamspot <= .02
+      // ISO < 0.2
+      muonId(iMu, Nominal)
      ){
     return true;
   } else {
     return false;
   }
 }
+  
+/* muon denominator aka fakeable object definition */
 bool isDenomMu(int iMu){
+  // Pt & Eta cuts
+  Double_t pt   = cms2.mus_p4().at(iMu).Pt();
+  Double_t eta  = cms2.mus_p4().at(iMu).Eta();
+  if( pt < 10.0 || fabs(eta) > 2.4 ) return false;
+  /* muonId cuts - denomintor */
   if(
-     // relax chisq/N to 20
-     // remove requirement on silicon hits
-     // relax isolation
 
-     TMath::Abs(cms2.mus_p4()[iMu].eta()) <= 2.4 &&								//eta
-     //cms2.mus_gfit_chi2().at(iMu)/cms2.mus_gfit_ndof().at(iMu) < 10 &&		//glb fit chisq
-     cms2.mus_gfit_chi2().at(iMu)/cms2.mus_gfit_ndof().at(iMu) < 20 &&		//glb fit chisq
-     (	( (cms2.mus_type().at(iMu) ) & (1<<1) ) != 0	) &&						// global muon
-     (	( (cms2.mus_type().at(iMu) ) & (1<<2)) != 0 ) &&						// tracker muon
-     //cms2.mus_validHits().at(iMu) >= 11 &&											// # of tracker hits
-     cms2.mus_iso_ecalvetoDep().at(iMu) <= 4 &&									// ECalE < 4 
-     cms2.mus_iso_hcalvetoDep().at(iMu) <= 6 &&									// HCalE < 6 
-     cms2.mus_gfit_validSTAHits().at(iMu) > 0 &&									// Glb fit must have hits in mu chambers
-     TMath::Abs(cms2.mus_d0corr().at(iMu)) <= 0.02 &&							// d0 from beamspot
-     muonIsoValue(iMu) <= 0.1															// Isolation cut
+      /* dummy muon denominator definition */
+      // what was done in AN 2009/041:
+      // relax chisq/N to 20
+      // remove requirement on # silicon hits
+      // relax isolation
+
+      TMath::Abs(cms2.mus_p4()[iMu].eta()) <= 2.4 &&								        //eta
+      //cms2.mus_gfit_chi2().at(iMu)/cms2.mus_gfit_ndof().at(iMu) < 10 &&		//glb fit chisq
+      cms2.mus_gfit_chi2().at(iMu)/cms2.mus_gfit_ndof().at(iMu) < 20 &&		  //glb fit chisq
+      (	( (cms2.mus_type().at(iMu) ) & (1<<1) ) != 0	) &&						      // global muon
+      (	( (cms2.mus_type().at(iMu) ) & (1<<2)) != 0 ) &&						        // tracker muon
+      //cms2.mus_validHits().at(iMu) >= 11 &&											          // # of tracker hits
+      cms2.mus_iso_ecalvetoDep().at(iMu) <= 4 &&									          // ECalE < 4 
+      cms2.mus_iso_hcalvetoDep().at(iMu) <= 6 &&									          // HCalE < 6 
+      cms2.mus_gfit_validSTAHits().at(iMu) > 0 &&									          // Glb fit must have hits in mu chambers
+      TMath::Abs(cms2.mus_d0corr().at(iMu)) <= 0.02 &&							        // d0 from beamspot
+      muonIsoValue(iMu) <= 0.1															                // Isolation cut
      ){
     return true;
   } else{
@@ -220,11 +238,14 @@ int QCDFRestimator::ScanChainAppTest ( TChain* chain, TString prefix, float kFac
                                          "3D histo to store error info", 6, nbins, 12, eta, 16, pt);
     h_TrueCat3D[suf]->Sumw2();
 
-    h_truecomposition_num[suf] = new TH1F(Form("%s_truecomposition_num_%s",prefix.Data(), suffix[suf]),"truecomposition_num",5, -0.5, 4.5);
+    h_truecomposition_num[suf] = new TH1F(  Form("%s_truecomposition_num_%s",prefix.Data(), suffix[suf]),
+                                            Form("%s_truecomposition_num_%s",prefix.Data(), suffix[suf]), 5, -0.5, 4.5);
     h_truecomposition_num[suf]->Sumw2();
-    h_truecomposition_denom[suf] = new TH1F(Form("%s_truecomposition_denom_%s",prefix.Data(), suffix[suf]),"truecomposition_denom",5, -0.5, 4.5);
+    h_truecomposition_denom[suf] = new TH1F(  Form("%s_truecomposition_denom_%s",prefix.Data(), suffix[suf]),
+                                              Form("%s_truecomposition_denom_%s",prefix.Data(), suffix[suf]), 5, -0.5, 4.5);
     h_truecomposition_denom[suf]->Sumw2();
-    h_truecomposition_ratio[suf] = new TH1F(Form("%s_truecomposition_ratio_%s",prefix.Data(), suffix[suf]),"truecomposition_ratio",5, -0.5, 4.5);
+    h_truecomposition_ratio[suf] = new TH1F(  Form("%s_truecomposition_ratio_%s",prefix.Data(), suffix[suf]),
+                                              Form("%s_truecomposition_ratio_%s",prefix.Data(), suffix[suf]), 5, -0.5, 4.5);
     h_truecomposition_ratio[suf]->Sumw2();
   }
 
@@ -248,8 +269,9 @@ int QCDFRestimator::ScanChainAppTest ( TChain* chain, TString prefix, float kFac
     for( z = 0; z < nLoop; z++) {
       nAllEvents++;
       // Progress feedback to the user
-      int iz = nAllEvents/10000;
-      if (nAllEvents-10000*iz == 0) cout << "Processing event " << nAllEvents+1 << " of sample " << prefix << endl;
+      int mod = 1000000;
+      int iz = nAllEvents/mod;
+      if (nAllEvents-mod*iz == 0) cout << "Processing event " << nAllEvents+1 << " of sample " << prefix << endl;
       cms2.GetEntry(z);
       ++nEventsTotal;
 
@@ -323,39 +345,43 @@ int QCDFRestimator::ScanChainAppTest ( TChain* chain, TString prefix, float kFac
 		
             } // ll pt > 10
           } // lt pt > 20 
-        } //is muon from W?
+        } // is true muon from W
+        /* end electrons */
 
         /* muons */
-		      
-        if(trueElectronFromW(iEl) && cms2.els_p4().at(iEl).Pt() > 10.) {
-          if( !isNumEl(iEl) )  continue; // Require the electron to be isolated and good
-          Double_t pt = cms2.mus_p4()[iMu].Pt();
-          Double_t eta = cms2.mus_p4()[iMu].Eta();
+        if(trueElectronFromW(iEl) && cms2.els_p4().at(iEl).Pt() > 10.) {  // electron from W with Pt >= 10
+          //if(!isNumElSUSY09(iEl))  continue; // Require the electron to be isolated and good
+          if( !isNumEl(iEl) )  continue;  // electron passes selection 
+
           //if(!isFakeableMuSUSY09(iMu)) continue;
-          if( !isDenomMu(iMu) ) continue;
+          if( !isDenomMu(iMu) ) continue; // denomintaor aka fakeable object muons
           if(trueMuonFromW(iMu) )	cout << "SHOULD NEVER GET HERE!!!!!!" << endl;
+
+          // fill denominators aka fakeable objects
+          Double_t pt = cms2.mus_p4().at(iMu).Pt();
+          Double_t eta = cms2.mus_p4().at(iMu).Eta();
           Float_t FR    = GetValueTH2F(fabs(eta), pt, h_FR[1]);
           Float_t FRErr = GetValueTH2F(fabs(eta), pt, h_FRErr[1]);
           h_predictednJets[1]->Fill(nJets, weight*FR);
           h_nJets3D[1]->Fill(nJets, fabs(eta), pt, weight*FRErr);
           h_predictedTrueCat[1]->Fill(elFakeMCCategory(iEl), weight*FR);
           h_TrueCat3D[1]->Fill(elFakeMCCategory(iEl), fabs(eta), pt, weight*FRErr);
-
-          //dbarge
-          h_truecomposition_denom[1]->Fill( muFakeMCCategory(iEl), weight);
+          //h_truecomposition_denom[1]->Fill( muFakeMCCategory(iMu), weight); // true composition
 
           //if( !isNumMuSUSY09(iMu) ) continue;
-          if( !isNumMu(iMu) ) continue;
+          if( !isNumMu(iMu) ) continue; // numerator aka selected muons
+
+          // fill
           h_actualnJets[1]->Fill(nJets, weight);
           h_actualTrueCat[1]->Fill(elFakeMCCategory(iEl), weight);
-				
-          //dbarge
-          h_truecomposition_num[1]->Fill( muFakeMCCategory(iEl), weight);
+          //h_truecomposition_num[1]->Fill( muFakeMCCategory(iMu), weight); // true composition
+        } // is true electron from W
+        /* end muons */
 
-        }//is true electron from W
-      }//hyp loop
-    }//event loop
-  }//file loop
+
+      } // end hyp loop
+    } // end event loop
+  } // end file loop
 
   if ( nEventsChain != nEventsTotal ) {
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
@@ -464,8 +490,9 @@ int QCDFRestimator::ScanChainQCD ( TChain* chain, TString prefix, float kFactor,
     for( z = 0; z < nLoop; z++) {
       nAllEvents++;
       // Progress feedback to the user
-      int iz = nAllEvents/10000;
-      if (nAllEvents-10000*iz == 0) cout << "Processing event " << nAllEvents+1 << " of sample " << prefix << endl;
+      int mod = 1000000;
+      int iz = nAllEvents/mod;
+      if (nAllEvents-mod*iz == 0) cout << "Processing event " << nAllEvents+1 << " of sample " << prefix << endl;
       cms2.GetEntry(z);
       ++nEventsTotal;
 
@@ -581,27 +608,22 @@ int QCDFRestimator::ScanChainQCD ( TChain* chain, TString prefix, float kFactor,
         h_nummc3dR[0]->Fill(dR, weight);
 	
       } //electron loop
-      
 
-
-
-      //do the muons
-      for(int iMu = 0 ; iMu < cms2.mus_p4().size(); iMu++) {
-	  
+      /* muons */
+      for(int iMu = 0 ; iMu < cms2.mus_p4().size(); iMu++) {  // loop on muons
+        //if(!isFakeableMuSUSY09(iMu)) continue;
+        if( !isDenomMu(iMu) ) continue; // denominator muons aka fakeable objects
+        // fill denominators aka fakeable objects
         Double_t pt = cms2.mus_p4()[iMu].Pt();
         Double_t eta = cms2.mus_p4()[iMu].Eta();
         Double_t phi = cms2.mus_p4()[iMu].Phi();
-	
-
-        //if(!isFakeableMuSUSY09(iMu)) continue;
-        if( !isDenomMu(iMu) ) continue;
-	  
-        //if we get here, fill the FO histos
         h_FOptvseta[1]->Fill(fabs(eta), min(pt,149.0), weight);
         h_FOpt[1]     ->Fill(min(pt,149.0), weight);
         h_FOeta[1]    ->Fill(fabs(eta), weight);
+        int cat = muFakeMCCategory(iMu);
+        h_truecomposition_denom[1]->Fill( cat, weight); // true composition of muon denominator aka fakeable object
 
-        //figure out the mcid of the closest status==3 particle
+        // figure out the mcid of the closest status==3 particle
         Double_t dR = 5.0;
         unsigned int matchedId = 99999;
         for(int genIdx = 0; genIdx < cms2.genps_id().size(); genIdx++) {
@@ -636,8 +658,9 @@ int QCDFRestimator::ScanChainQCD ( TChain* chain, TString prefix, float kFactor,
         h_FOmc3dR[1]->Fill(dR, weight);
 	
         //if( !isNumMuSUSY09(iMu) ) continue;
-        if( !isNumMu(iMu) ) continue;
-			  		
+        if( !isNumMu(iMu) ) continue; // numerator muons aka selection muons
+
+        // fill numerators aka selections
         h_numptvseta[1]->Fill(fabs(eta), min(pt,149.0), weight);
         h_numpt[1]     ->Fill(min(pt,149.0), weight);
         h_numeta[1]    ->Fill(fabs(eta), weight);
@@ -653,11 +676,11 @@ int QCDFRestimator::ScanChainQCD ( TChain* chain, TString prefix, float kFactor,
           h_numgpt[1]->Fill(min(pt,149.0), weight);
           h_numgeta[1]->Fill(fabs(eta), weight);
         }
-        if(dR < 1.0)
-          h_nummc3Id[1]->Fill(matchedId, weight);
+        if(dR < 1.0) h_nummc3Id[1]->Fill(matchedId, weight);
         h_nummc3dR[1]->Fill(dR, weight);
-	
-      }//muon loop
+        h_truecomposition_num[1]->Fill( cat, weight); // true composition of muon numerator aka selection muons
+      } // end loop on muons
+
     }//event loop
   }//file loop
   
@@ -740,19 +763,25 @@ void QCDFRestimator::bookHistos(const char *sample) {
   //FO --> electron
 
   int suf = 0;
-  h_truecomposition_num[suf] = new TH1F(Form("%s_truecomposition_num_%s",sample, flavor[suf]),"truecomposition_num",5, -0.5, 4.5);
+  h_truecomposition_num[suf] = new TH1F(  Form("%s_truecomposition_num_%s",sample, flavor[suf]),
+                                          Form("%s_truecomposition_num_%s",sample, flavor[suf]), 5, -0.5, 4.5);
   h_truecomposition_num[suf]->Sumw2();
-  h_truecomposition_denom[suf] = new TH1F(Form("%s_truecomposition_denom_%s",sample, flavor[suf]),"truecomposition_denom",5, -0.5, 4.5);
+  h_truecomposition_denom[suf] = new TH1F(  Form("%s_truecomposition_denom_%s",sample, flavor[suf]),
+                                            Form("%s_truecomposition_denom_%s",sample, flavor[suf]), 5, -0.5, 4.5);
   h_truecomposition_denom[suf]->Sumw2();
-  h_truecomposition_ratio[suf] = new TH1F(Form("%s_truecomposition_ratio_%s",sample, flavor[suf]),"truecomposition_ratio",5, -0.5, 4.5);
+  h_truecomposition_ratio[suf] = new TH1F(  Form("%s_truecomposition_ratio_%s",sample, flavor[suf]),
+                                            Form("%s_truecomposition_ratio_%s",sample, flavor[suf]), 5, -0.5, 4.5);
   h_truecomposition_ratio[suf]->Sumw2();
 
   suf = 1;
-  h_truecomposition_num[suf] = new TH1F(Form("%s_truecomposition_num_%s",sample, flavor[suf]),"truecomposition_num",5, -0.5, 4.5);
+  h_truecomposition_num[suf] = new TH1F(  Form("%s_truecomposition_num_%s",sample, flavor[suf]),
+                                          Form("%s_truecomposition_num_%s",sample, flavor[suf]), 5, -0.5, 4.5);
   h_truecomposition_num[suf]->Sumw2();
-  h_truecomposition_denom[suf] = new TH1F(Form("%s_truecomposition_denom_%s",sample, flavor[suf]),"truecomposition_denom",5, -0.5, 4.5);
+  h_truecomposition_denom[suf] = new TH1F(  Form("%s_truecomposition_denom_%s",sample, flavor[suf]),
+                                            Form("%s_truecomposition_denom_%s",sample, flavor[suf]), 5, -0.5, 4.5);
   h_truecomposition_denom[suf]->Sumw2();
-  h_truecomposition_ratio[suf] = new TH1F(Form("%s_truecomposition_ratio_%s",sample, flavor[suf]),"truecomposition_ratio",5, -0.5, 4.5);
+  h_truecomposition_ratio[suf] = new TH1F(  Form("%s_truecomposition_ratio_%s",sample, flavor[suf]),
+                                            Form("%s_truecomposition_ratio_%s",sample, flavor[suf]), 5, -0.5, 4.5);
   h_truecomposition_ratio[suf]->Sumw2();
 
   Float_t ptel[4] = {10,20,60,150};

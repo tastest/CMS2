@@ -175,37 +175,33 @@ void TestPrediction() {
 
   TCanvas *c15 = new TCanvas();
   c15->Divide(3,3);
-
   c15->cd(1);
   TH1F *h_el_WJnum = gDirectory->Get("WJets_truecomposition_num_el");
-  h_el_WJnum->Draw();
+  h_el_WJnum->DrawNormalized();
   c15->cd(2);
   TH1F *h_el_WJdenom = gDirectory->Get("WJets_truecomposition_denom_el");
-  h_el_WJdenom->Draw();
+  h_el_WJdenom->DrawNormalized();
   c15->cd(3);
   TH1F *h_el_WJratio = gDirectory->Get("WJets_truecomposition_ratio_el");
   h_el_WJratio->Draw();
-
   c15->cd(4);
   TH1F *h_el_TTnum = gDirectory->Get("TTbar_truecomposition_num_el");
-  h_el_TTnum->Draw();
+  h_el_TTnum->DrawNormalized();
   c15->cd(5);
   TH1F *h_el_TTdenom = gDirectory->Get("TTbar_truecomposition_denom_el");
-  h_el_TTdenom->Draw();
+  h_el_TTdenom->DrawNormalized();
   c15->cd(6);
   TH1F *h_el_TTratio = gDirectory->Get("TTbar_truecomposition_ratio_el");
   h_el_TTratio->Draw();
-
   c15->cd(7);
   TH1F *h_el_QCDnum = gDirectory->Get("QCD_truecomposition_num_el");
-  h_el_QCDnum->Draw();
+  h_el_QCDnum->DrawNormalized();
   c15->cd(8);
   TH1F *h_el_QCDdenom = gDirectory->Get("QCD_truecomposition_denom_el");
-  h_el_QCDdenom->Draw();
+  h_el_QCDdenom->DrawNormalized();
   c15->cd(9);
   TH1F *h_el_QCDratio = gDirectory->Get("QCD_truecomposition_ratio_el");
   h_el_QCDratio->Draw();
-
   c15->Draw();
   c15->SaveAs("eFakeComposition.png");
 
