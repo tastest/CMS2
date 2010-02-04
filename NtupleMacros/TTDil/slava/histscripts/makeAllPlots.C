@@ -3,7 +3,7 @@ void makeAllPlots(char* fname, bool logScale=false,char* hPatt = 0, char* refNam
 		  bool noLegend = false, char* bsmName=0){
   gROOT->SetStyle("Plain");
   ROOT->gErrorIgnoreLevel = 0;
-  gROOT->ProcessLine(".x setup.C(true)"); //don't need FWLite to make plots
+  gROOT->ProcessLine(".x setup.C"); //don't need FWLite to make plots
   hist::loadHist(fname, 0, hPatt);
   
   if (refName!=0){
