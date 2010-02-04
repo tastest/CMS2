@@ -14,6 +14,11 @@ bool electronId_cand01(const unsigned int index);
 bool electronImpact_cand01(const unsigned int index);
 
 //
+// remove electrons that are overlapping with a muon
+//
+bool electronId_noMuon(const unsigned int index);
+
+//
 // candidate electron isolation function
 // see http://www.t2.ucsd.edu/tastwiki/bin/view/CMS/EfficiencyMeasurement
 //
