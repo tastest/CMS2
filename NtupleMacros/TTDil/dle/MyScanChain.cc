@@ -162,7 +162,7 @@ void MyScanChain::FillAllDYEstHistograms(const unsigned int h, const float &weig
 	// fill the mass histogram
 	float mass = cms2.hyp_p4()[h].mass();
 	Fill(h1_dyest_mll_nomet_[jetbin], hypType, mass, weight);
-    if (passMet_OF20_SF30(hyp, false)) Fill(h1_dyest_mll_met_[jetbin], hypType, mass, weight);
+    if (passMet_OF20_SF30(h, false)) Fill(h1_dyest_mll_met_[jetbin], hypType, mass, weight);
 
 	// fill the met histograms for "in" and "out" regions
 	float mymet = met_pat_metCor_hyp(h);
