@@ -295,7 +295,7 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix, float kFacto
 	    if( TMath::Min(cms2.hyp_lt_p4()[iHyp].pt(),cms2.hyp_ll_p4()[iHyp].pt()) > 10.) {
 	      Double_t pt = cms2.els_p4()[iEl].Pt();
 	      Double_t eta = cms2.els_p4()[iEl].Eta();
-	      if(isElFromMu(iEl))	continue;
+	      if(trueGammaFromMuon(iEl))	continue;
 		
 	      //dbarge
 	      if( isNumEl(iEl) ){	// if a numerator electron
@@ -989,52 +989,6 @@ void QCDFRestimator::bookHistos(const char *sample) {
 
 
  
-//------------------------------------------------------------
-
-bool QCDFRestimator::isElFromMu(int iEl) {
-   
-  if(cms2.els_mc_id()[iEl] == 22 &&
-     abs(cms2.els_mc_motherid()[iEl]) == 13)
-    return true;
-  
-  return false;
-
-}
-
-//------------------------------------------------------------
-
-bool QCDFRestimator::isTrueLeptonfromW(int pid) {
-  
-  for(int i = 0; i < cms2.genps_p4().size(); i++) {
-    if(abs(cms2.genps_id().at(i)) == pid && 
-       abs(cms2.genps_id_mother().at(i)) == 24 )
-      return true;
-  }
-  return false;
-  
-}
- 
-//------------------------------------------------------------
-
-bool QCDFRestimator::isTrueMuFromW(Int_t iMu) {
-  
-  if(abs(cms2.mus_mc_id()[iMu]) == 13 &&
-     abs(cms2.mus_mc_motherid()[iMu]) == 24 )
-    return true;
-  
-  return false;
-}
-  
-//------------------------------------------------------------
-
-bool QCDFRestimator::isTrueElFromW(Int_t iEl) {
-  
-  if(abs(cms2.els_mc_id()[iEl]) == 11 &&
-     abs(cms2.els_mc_motherid()[iEl]) == 24 )
-    return true;
-  
-  return false;
-}
 //------------------------------------------------------------  
 
 bool QCDFRestimator::passFakeJetTrigger(float unCorrJetPtCut) {

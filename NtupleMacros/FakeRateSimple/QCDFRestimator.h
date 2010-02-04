@@ -17,11 +17,7 @@ public:
   
   Float_t GetValueTH2F(Float_t x, Float_t y, TH2F* hist);
   void bookHistos(const char *prefix);
-    
-  bool isTrueMuFromW(int iMu);
-  bool isTrueElFromW(int iEl);
-  bool isTrueLeptonfromW(int pid);
-  bool isElFromMu(int iEl);
+
   bool passFakeJetTrigger(float unCorrJetPtCut);
   //bool isFakeableEl(int iEl);
   //bool isNumEl(int iEl);
