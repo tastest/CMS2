@@ -306,17 +306,21 @@ void processDYEstResults(TString fileName)
 	estimate(hUtil, J1, "ee", estResults_ee, nonpeakResults_ee);
 	estimate(hUtil, J2, "ee", estResults_ee, nonpeakResults_ee);
 
-	TCanvas *c1 = (TCanvas*)estResults_mm.results(0.0, 5.0);
+	TCanvas *c1 = (TCanvas*)estResults_mm.results(0.0, 25.0);
 	c1->Draw();
+    Utilities::saveCanvas(c1, "results/est_mm");
 
-	TCanvas *c2 = (TCanvas*)nonpeakResults_mm.results(0.0, 30.0);
+	TCanvas *c2 = (TCanvas*)nonpeakResults_mm.results(0.0, 10.0);
 	c2->Draw();
+    Utilities::saveCanvas(c2, "results/nopeak_mm");
 
-	TCanvas *c3 = (TCanvas*)estResults_ee.results(0.0, 5.0);
+	TCanvas *c3 = (TCanvas*)estResults_ee.results(0.0, 25.0);
 	c3->Draw();
+    Utilities::saveCanvas(c3, "results/est_ee");
 
-	TCanvas *c4 = (TCanvas*)nonpeakResults_ee.results(0.0, 30.0);
+	TCanvas *c4 = (TCanvas*)nonpeakResults_ee.results(0.0, 10.0);
 	c4->Draw();
+    Utilities::saveCanvas(c4, "results/nopeak_ee");
 
     TLegend *lg_R = new TLegend(0.2, 0.6, 0.6, 0.9);
     lg_R->SetFillColor(kWhite);
@@ -340,6 +344,8 @@ void processDYEstResults(TString fileName)
     h1_R_DY_ee->Draw("E1");
     h1_R_DY_mm->Draw("SAME E1");
 	lg_R->Draw();
+    h1_R_DY_ee->GetYaxis()->SetRangeUser(0, 1.0);
+    Utilities::saveCanvas(c5, "results/R_DY");
 
 	TH1F *h1_R_ZZ_ee = getRHist(hUtil, (1ll<<H_ZZ), "0j", "ee");
 	h1_R_ZZ_ee->SetLineColor(kBlue);
@@ -358,6 +364,8 @@ void processDYEstResults(TString fileName)
 	h1_R_ZZ_ee->Draw("E1");
 	h1_R_ZZ_mm->Draw("SAME E1");
 	lg_R->Draw();
+	h1_R_ZZ_ee->GetYaxis()->SetRangeUser(0, 1.0);
+    Utilities::saveCanvas(c6, "results/R_ZZ");
 
 	delete hUtil;
 
