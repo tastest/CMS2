@@ -12,8 +12,8 @@ public:
   
   int ScanChainQCD ( TChain* chain, TString prefix="", float kFactor=1.0, 
 		     int prescale=1, float pthatmin = 0, float pthatmax = 999999999.9);
-  int ScanChainWJets( TChain* chain, TString prefix="", float kFactor=1.0, 
-		      int prescale=1);
+  int ScanChainAppTest( TChain* chain, TString prefix="", float kFactor=1.0, 
+			int prescale=1);
   
   Float_t GetValueTH2F(Float_t x, Float_t y, TH2F* hist);
   void bookHistos(const char *prefix);
@@ -80,6 +80,11 @@ public:
   TH1F *h_predictedTrueCat[2];
   TH1F *h_actualTrueCat[2];  
   TH3F *h_TrueCat3D[2];
+
+  //true composition
+  TH1F *h_truecomposition_num[2];
+  TH1F *h_truecomposition_denom[2];
+  TH1F *h_truecomposition_ratio[2];
 
   //TrueCat for FO object
   TH1F *h_FOTrueCat[2];

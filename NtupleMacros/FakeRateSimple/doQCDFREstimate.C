@@ -49,6 +49,8 @@ void TestPrediction() {
   
   hist::color("WJets_actual", kRed);
   hist::color("WJets_num", kRed);
+  hist::color("TTbar_actual", kRed);
+  hist::color("TTbar_num", kRed);
 
     
   //TCanvas *c1 = new TCanvas();
@@ -92,6 +94,14 @@ void TestPrediction() {
   (TH1F*)gDirectory->Get("WJets_predictedTrueCat_el")->Draw("samese");
   hist::setrangey(c3a);
   c3a->SaveAs("elTrueCatPredicted.png");
+
+  TCanvas *c3b = new TCanvas();
+  ((TH1F*)gDirectory->Get("TTbar_actualTrueCat_el"))->SetMarkerStyle(3);
+  (TH1F*)gDirectory->Get("TTbar_actualTrueCat_el")->Draw("e");
+  ((TH1F*)gDirectory->Get("TTbar_predictedTrueCat_el"))->SetMarkerStyle(25);
+  (TH1F*)gDirectory->Get("TTbar_predictedTrueCat_el")->Draw("samese");
+  hist::setrangey(c3b);
+  c3b->SaveAs("elTrueCatPredicted.png");
 
   TCanvas *c4 = new TCanvas();
   TH2F *QCDFRptvseta_el = (TH2F*)gDirectory->Get("QCD_FRptvseta_el");
@@ -164,26 +174,36 @@ void TestPrediction() {
   c14->SaveAs("muFRpt.png");
 
   TCanvas *c15 = new TCanvas();
-  c15->Divide(3,2);
+  c15->Divide(3,3);
 
   c15->cd(1);
-  TH1F *h_el_WJnum = gDirectory->Get("el_truecomposition_WJnum");
+  TH1F *h_el_WJnum = gDirectory->Get("WJets_truecomposition_num_el");
   h_el_WJnum->Draw();
   c15->cd(2);
-  TH1F *h_el_WJdenom = gDirectory->Get("el_truecomposition_WJdenom");
+  TH1F *h_el_WJdenom = gDirectory->Get("WJets_truecomposition_denom_el");
   h_el_WJdenom->Draw();
   c15->cd(3);
-  TH1F *h_el_WJratio = gDirectory->Get("el_truecomposition_WJratio");
+  TH1F *h_el_WJratio = gDirectory->Get("WJets_truecomposition_ratio_el");
   h_el_WJratio->Draw();
 
   c15->cd(4);
-  TH1F *h_el_QCDnum = gDirectory->Get("el_truecomposition_QCDnum");
-  h_el_QCDnum->Draw();
+  TH1F *h_el_TTnum = gDirectory->Get("TTbar_truecomposition_num_el");
+  h_el_TTnum->Draw();
   c15->cd(5);
-  TH1F *h_el_QCDdenom = gDirectory->Get("el_truecomposition_QCDdenom");
-  h_el_QCDdenom->Draw();
+  TH1F *h_el_TTdenom = gDirectory->Get("TTbar_truecomposition_denom_el");
+  h_el_TTdenom->Draw();
   c15->cd(6);
-  TH1F *h_el_QCDratio = gDirectory->Get("el_truecomposition_QCDratio");
+  TH1F *h_el_TTratio = gDirectory->Get("TTbar_truecomposition_ratio_el");
+  h_el_TTratio->Draw();
+
+  c15->cd(7);
+  TH1F *h_el_QCDnum = gDirectory->Get("QCD_truecomposition_num_el");
+  h_el_QCDnum->Draw();
+  c15->cd(8);
+  TH1F *h_el_QCDdenom = gDirectory->Get("QCD_truecomposition_denom_el");
+  h_el_QCDdenom->Draw();
+  c15->cd(9);
+  TH1F *h_el_QCDratio = gDirectory->Get("QCD_truecomposition_ratio_el");
   h_el_QCDratio->Draw();
 
   c15->Draw();
@@ -231,14 +251,23 @@ void doAll(){
   TChain *ch_WJets = new TChain("Events");
   ch_WJets->Add(Form("%s/%s",location,"cms2/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root"));
 
+  //TTbar chain
+  TChain *ch_TTbar = new TChain("Events");
+  ch_TTbar->Add(Form("%s/%s",location,"cms2/TTbar_Summer09-MC_31X_V3_7TeV-v1/V03-00-34/merged_ntuple*.root"));
+
   QCDFRestimator *looper = new QCDFRestimator();
   
   looper->ScanChainQCD(ch_pthat30to80, "QCD", 1.0, 1.0, 0.0, 99999999999999999999999999999.);
   cout << "Done QCD" << endl;
 
   //do WJets
-  looper->ScanChainWJets(ch_WJets, "WJets", 1.0, 1.0);
+  looper->ScanChainAppTest(ch_WJets, "WJets", 1.0, 1.0);
   cout << "Done WJets" << endl;
+
+  //do TTbar
+  looper->ScanChainAppTest(ch_TTbar, "TTbar", 1.0, 1.0);
+  cout << "Done TTbar" << endl;
+
   hist::saveHist("QCDFRplots.root");
   cout << "Done saving hists" << endl;
   delete looper;
