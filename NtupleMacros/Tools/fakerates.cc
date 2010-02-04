@@ -1,4 +1,4 @@
-// $Id: fakerates.cc,v 1.27 2010/02/04 00:57:53 jmuelmen Exp $
+// $Id: fakerates.cc,v 1.28 2010/02/04 01:10:45 jmuelmen Exp $
 
 #include "TFile.h"
 #include "TSystem.h"
@@ -68,8 +68,7 @@ int elFakeMCCategory(int i_el) {
 		abs(cms2.els_mc_motherid()[i_el]) < 400  )  || 
 	       (abs(cms2.els_mc_id()[i_el]) == 11 && 
 		abs(cms2.els_mc_motherid()[i_el]) > 2000    && 
-		abs(cms2.els_mc_motherid()[i_el]) < 4000 )  ||
-	       
+		abs(cms2.els_mc_motherid()[i_el]) < 4000 )  
 	       ) {
 	 // electron candidate or its mother is a light hadron
 	 category = 2;
