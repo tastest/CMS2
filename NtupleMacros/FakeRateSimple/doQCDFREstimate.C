@@ -84,7 +84,7 @@ void TestPrediction() {
   ((TH1F*)gDirectory->Get("WJets_predictednJets_el"))->SetMarkerStyle(25);
   (TH1F*)gDirectory->Get("WJets_predictednJets_el")->Draw("samese");
   hist::setrangey(c3);
-  c3->SaveAs("elnJetsPredicted.png");
+  c3->SaveAs("elWJetsnJetsPredicted.png");
 
 
   TCanvas *c3a = new TCanvas();
@@ -93,7 +93,15 @@ void TestPrediction() {
   ((TH1F*)gDirectory->Get("WJets_predictedTrueCat_el"))->SetMarkerStyle(25);
   (TH1F*)gDirectory->Get("WJets_predictedTrueCat_el")->Draw("samese");
   hist::setrangey(c3a);
-  c3a->SaveAs("elTrueCatPredicted.png");
+  c3a->SaveAs("elWJetTrueCatPredicted.png");
+
+  TCanvas *c3aa = new TCanvas();
+  ((TH1F*)gDirectory->Get("TTbar_actualnJets_el"))->SetMarkerStyle(3);
+  (TH1F*)gDirectory->Get("TTbar_actualnJets_el")->Draw("e");
+  ((TH1F*)gDirectory->Get("TTbar_predictednJets_el"))->SetMarkerStyle(25);
+  (TH1F*)gDirectory->Get("TTbar_predictednJets_el")->Draw("samese");
+  hist::setrangey(c3aa);
+  c3aa->SaveAs("elTTbarnJetsPredicted.png");
 
   TCanvas *c3b = new TCanvas();
   ((TH1F*)gDirectory->Get("TTbar_actualTrueCat_el"))->SetMarkerStyle(3);
@@ -101,7 +109,7 @@ void TestPrediction() {
   ((TH1F*)gDirectory->Get("TTbar_predictedTrueCat_el"))->SetMarkerStyle(25);
   (TH1F*)gDirectory->Get("TTbar_predictedTrueCat_el")->Draw("samese");
   hist::setrangey(c3b);
-  c3b->SaveAs("elTrueCatPredicted.png");
+  c3b->SaveAs("elTTbarTrueCatPredicted.png");
 
   TCanvas *c4 = new TCanvas();
   TH2F *QCDFRptvseta_el = (TH2F*)gDirectory->Get("QCD_FRptvseta_el");
