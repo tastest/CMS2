@@ -32,7 +32,7 @@ void hatch(const char* patORpfx,  Int_t hatch) {
       
   TObject* obj = 0;
       
-  while (obj = iter->Next()) {
+  while ( (obj = iter->Next()) ) {
     if (! obj->InheritsFrom(TH1::Class())) continue;
 
     TString name = obj->GetName();
@@ -61,7 +61,7 @@ void browseStacks( bool makePictures=false, bool wait=true , bool addHistName = 
   TList *list = gDirectory->GetList();
   TIterator *iter = list->MakeIterator();
   TObject *obj = 0;
-  while(obj = iter->Next()) {
+  while( (obj = iter->Next()) ) {
   
     if(TString(obj->GetName()).Contains("hnJet") && obj->InheritsFrom(TH1::Class())) {
       
@@ -103,8 +103,8 @@ void browseStacks( bool makePictures=false, bool wait=true , bool addHistName = 
        
       thisStack->SetMaximum(thisStack->GetMaximum()*maxYScaleF);
       if(TString(myNames->At(i)->GetName()).Contains("hnJet")) {
-	TList* histolist = thisStack->GetHists();
-	int hatchcount = 0;
+	//TList* histolist = thisStack->GetHists();
+	//int hatchcount = 0;
 	// 	for(int j = 0; j<histolist->GetSize();j++) {
 	// 	  if(TString(histolist->At(j)->GetName()).Contains("tt") ||
 	// 	     TString(histolist->At(j)->GetName()).Contains("tautau") ||

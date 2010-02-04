@@ -7,7 +7,7 @@
 #include "histools.h"
 #include "QCDFRestimator.h"
 #endif __CINT__
-
+#include "overlay.C"
 
 void TestPrediction() {
   
@@ -78,38 +78,15 @@ void TestPrediction() {
   //hist::setrangey(c22);
   //c22->SaveAs("muPredictedpt.png");
 
-  TCanvas *c3 = new TCanvas("c3","c3",1280,960);
-  ((TH1F*)gDirectory->Get("WJets_actualnJets_el"))->SetMarkerStyle(3);
-  (TH1F*)gDirectory->Get("WJets_actualnJets_el")->Draw("e");
-  ((TH1F*)gDirectory->Get("WJets_predictednJets_el"))->SetMarkerStyle(25);
-  (TH1F*)gDirectory->Get("WJets_predictednJets_el")->Draw("samese");
-  hist::setrangey(c3);
-  c3->SaveAs("elWJetsnJetsPredicted.png");
-
-
-  TCanvas *c3a = new TCanvas("c3a","c3a",1280,960);
-  ((TH1F*)gDirectory->Get("WJets_actualTrueCat_el"))->SetMarkerStyle(3);
-  (TH1F*)gDirectory->Get("WJets_actualTrueCat_el")->Draw("e");
-  ((TH1F*)gDirectory->Get("WJets_predictedTrueCat_el"))->SetMarkerStyle(25);
-  (TH1F*)gDirectory->Get("WJets_predictedTrueCat_el")->Draw("samese");
-  hist::setrangey(c3a);
-  c3a->SaveAs("elWJetTrueCatPredicted.png");
-
-  TCanvas *c3aa = new TCanvas("c3aa","c3aa",1280,960);
-  ((TH1F*)gDirectory->Get("TTbar_actualnJets_el"))->SetMarkerStyle(3);
-  (TH1F*)gDirectory->Get("TTbar_actualnJets_el")->Draw("e");
-  ((TH1F*)gDirectory->Get("TTbar_predictednJets_el"))->SetMarkerStyle(25);
-  (TH1F*)gDirectory->Get("TTbar_predictednJets_el")->Draw("samese");
-  hist::setrangey(c3aa);
-  c3aa->SaveAs("elTTbarnJetsPredicted.png");
-
-  TCanvas *c3b = new TCanvas("c3b","c3b",1280,960);
-  ((TH1F*)gDirectory->Get("TTbar_actualTrueCat_el"))->SetMarkerStyle(3);
-  (TH1F*)gDirectory->Get("TTbar_actualTrueCat_el")->Draw("e");
-  ((TH1F*)gDirectory->Get("TTbar_predictedTrueCat_el"))->SetMarkerStyle(25);
-  (TH1F*)gDirectory->Get("TTbar_predictedTrueCat_el")->Draw("samese");
-  hist::setrangey(c3b);
-  c3b->SaveAs("elTTbarTrueCatPredicted.png");
+  // dbarge
+  overlay2( (TH1F*)gDirectory->Get("WJets_actualnJets_el"), 
+            (TH1F*)gDirectory->Get("WJets_predictednJets_el"), "elWJetsnJetsPredicted.png");
+  overlay2( (TH1F*)gDirectory->Get("WJets_actualTrueCat_el"), 
+            (TH1F*)gDirectory->Get("WJets_predictedTrueCat_el"), "elWJetTrueCatPredicted.png");
+  overlay2( (TH1F*)gDirectory->Get("TTbar_actualnJets_el"), 
+            (TH1F*)gDirectory->Get("TTbar_predictednJets_el"), "elTTbarnJetsPredicted.png");
+  overlay2( (TH1F*)gDirectory->Get("TTbar_actualTrueCat_el"), 
+            (TH1F*)gDirectory->Get("TTbar_predictedTrueCat_el"), "elTTbarTrueCatPredicted.png");
 
   TCanvas *c4 = new TCanvas("c4","c4",1280,960);
   TH2F *QCDFRptvseta_el = (TH2F*)gDirectory->Get("QCD_FRptvseta_el");
@@ -155,7 +132,7 @@ void TestPrediction() {
   (TH1F*)gDirectory->Get("WJets_actualnJets_mu")->Draw("e");
   ((TH1F*)gDirectory->Get("WJets_predictednJets_mu"))->SetMarkerStyle(25);
   (TH1F*)gDirectory->Get("WJets_predictednJets_mu")->Draw("samese");
-  hist::setrangey(c3);
+  //hist::setrangey(c3);
   c10->SaveAs("munJetsPredicted.png");
 
   TCanvas *c11 = new TCanvas("c11","c11",1280,960);
@@ -185,69 +162,39 @@ void TestPrediction() {
   c15->Divide(3,3);
   c15->cd(1);
   TH1F *h_el_WJnum = gDirectory->Get("WJets_truecomposition_num_el");
-  h_el_WJnum->DrawNormalized();
+  h_el_WJnum->SetMaximum(1.1);
+  h_el_WJnum->DrawNormalized("9");
   c15->cd(2);
   TH1F *h_el_WJdenom = gDirectory->Get("WJets_truecomposition_denom_el");
-  h_el_WJdenom->DrawNormalized();
+  h_el_WJdenom->SetMaximum(1.1);
+  h_el_WJdenom->DrawNormalized("9");
   c15->cd(3);
   TH1F *h_el_WJratio = gDirectory->Get("WJets_truecomposition_ratio_el");
-  h_el_WJratio->Draw();
+  h_el_WJratio->Draw("9");
   c15->cd(4);
   TH1F *h_el_TTnum = gDirectory->Get("TTbar_truecomposition_num_el");
-  h_el_TTnum->DrawNormalized();
+  h_el_TTnum->SetMaximum(1.1);
+  h_el_TTnum->DrawNormalized("9");
   c15->cd(5);
   TH1F *h_el_TTdenom = gDirectory->Get("TTbar_truecomposition_denom_el");
-  h_el_TTdenom->DrawNormalized();
+  h_el_TTdenom->SetMaximum(1.1);
+  h_el_TTdenom->DrawNormalized("9");
   c15->cd(6);
   TH1F *h_el_TTratio = gDirectory->Get("TTbar_truecomposition_ratio_el");
-  h_el_TTratio->Draw();
+  h_el_TTratio->Draw("9");
   c15->cd(7);
   TH1F *h_el_QCDnum = gDirectory->Get("QCD_truecomposition_num_el");
-  h_el_QCDnum->DrawNormalized();
+  h_el_QCDnum->SetMaximum(1.1);
+  h_el_QCDnum->DrawNormalized("9");
   c15->cd(8);
   TH1F *h_el_QCDdenom = gDirectory->Get("QCD_truecomposition_denom_el");
-  h_el_QCDdenom->DrawNormalized();
+  h_el_QCDdenom->SetMaximum(1.1);
+  h_el_QCDdenom->DrawNormalized("9");
   c15->cd(9);
   TH1F *h_el_QCDratio = gDirectory->Get("QCD_truecomposition_ratio_el");
-  h_el_QCDratio->Draw();
-  c15->Draw();
+  h_el_QCDratio->Draw("9");
+  c15->Draw("9");
   c15->SaveAs("eFakeComposition.png");
-
-
-
-//  TCanvas *c16 = new TCanvas();
-//  c16->Divide(3,3);
-//  c16->cd(1);
-//  TH1F *h_mu_WJnum = gDirectory->Get("WJets_truecomposition_num_mu");
-//  h_mu_WJnum->DrawNormalized();
-//  c16->cd(2);
-//  TH1F *h_mu_WJdenom = gDirectory->Get("WJets_truecomposition_denom_mu");
-//  h_mu_WJdenom->DrawNormalized();
-//  c16->cd(3);
-//  TH1F *h_mu_WJratio = gDirectory->Get("WJets_truecomposition_ratio_mu");
-//  h_mu_WJratio->Draw();
-//  c16->cd(4);
-//  TH1F *h_mu_TTnum = gDirectory->Get("TTbar_truecomposition_num_mu");
-//  h_mu_TTnum->DrawNormalized();
-//  c16->cd(5);
-//  TH1F *h_mu_TTdenom = gDirectory->Get("TTbar_truecomposition_denom_mu");
-//  h_mu_TTdenom->DrawNormalized();
-//  c16->cd(6);
-//  TH1F *h_mu_TTratio = gDirectory->Get("TTbar_truecomposition_ratio_mu");
-//  h_mu_TTratio->Draw();
-//  c16->cd(7);
-//  TH1F *h_mu_QCDnum = gDirectory->Get("QCD_truecomposition_num_mu");
-//  h_mu_QCDnum->DrawNormalized();
-//  c16->cd(8);
-//  TH1F *h_mu_QCDdenom = gDirectory->Get("QCD_truecomposition_denom_mu");
-//  h_mu_QCDdenom->DrawNormalized();
-//  c16->cd(9);
-//  TH1F *h_mu_QCDratio = gDirectory->Get("QCD_truecomposition_ratio_mu");
-//  h_mu_QCDratio->Draw();
-//  c16->Draw();
-//  c16->SaveAs("eFakeComposition.png");
-
-
 
 
 
