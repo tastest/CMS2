@@ -74,7 +74,7 @@ bool electronImpact_cand01(const unsigned int index)
         //
         // define thresholds for EB, EE
         //
-        float d0Thresholds[2]               = {0.20, 0.20};
+        float d0Thresholds[2]               = {0.02, 0.02};
 
         //
         // apply cutç
@@ -103,8 +103,8 @@ bool electronIsolation_cand01(const unsigned int index)
 	//
 	// define thresholds for EB, EE
 	//
-        float tkThresholds[2]         =       {4.5, 6.0};
-	//float tkThresholds[2] 	= 	{2.5, 2.0};
+    //float tkThresholds[2]         =       {4.5, 6.0};
+	float tkThresholds[2] 	= 	{2.5, 2.0};
 	float ecalThresholds[2] = 	{2.5, 2.0};
 	float hcalThresholds[2] = 	{1.0, 1.0};
 
@@ -115,16 +115,16 @@ bool electronIsolation_cand01(const unsigned int index)
 
 	if (fabs(cms2.els_etaSC()[index]) < 1.5) {
 	//if (cms2.els_fiduciality()[index] & (1<<ISEB)) {
-                if (cms2.els_tkIso()[index] > tkThresholds[0])    return false;
-		//if (cms2.els_tkJuraIso()[index] > tkThresholds[0]) 	return false;
+        // if (cms2.els_tkIso()[index] > tkThresholds[0])    return false;
+		if (cms2.els_tkJuraIso()[index] > tkThresholds[0]) 	return false;
 		if (cms2.els_ecalIso()[index] 	> ecalThresholds[0]) 	return false;
 		if (cms2.els_hcalIso()[index] 	> hcalThresholds[0]) 	return false;
 		return true;
 	}
-        if (fabs(cms2.els_etaSC()[index]) > 1.5) {
+    if (fabs(cms2.els_etaSC()[index]) > 1.5) {
 	//if (cms2.els_fiduciality()[index] & (1<<ISEE)) {
-                if (cms2.els_tkIso()[index] > tkThresholds[1])      return false;
-		//if (cms2.els_tkJuraIso()[index] > tkThresholds[1])      return false;
+        //if (cms2.els_tkIso()[index] > tkThresholds[1])      return false;
+		if (cms2.els_tkJuraIso()[index] > tkThresholds[1])      return false;
 		if (cms2.els_ecalIso()[index]   > ecalThresholds[1])    return false;
 		if (cms2.els_hcalIso()[index]   > hcalThresholds[1])    return false;
 		return true;
