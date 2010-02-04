@@ -33,7 +33,7 @@ void doAll3X() {
 
 	//
 	// chains for input files
-	// 
+	//
 	// SM
 	// ttbar
 	TChain *chain_ttbar = new TChain("Events");

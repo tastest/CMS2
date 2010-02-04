@@ -44,7 +44,8 @@ class MyScanChain {
 		// DY estimate plots
 		//
 
-		TH1F *h1_dyest_mll_[3][4];
+		TH1F *h1_dyest_mll_met_[3][4];
+        TH1F *h1_dyest_mll_nomet_[3][4];
 		TH1F *h1_dyest_met_in_[3][4];
 		TH1F *h1_dyest_met_out_[3][4];
 

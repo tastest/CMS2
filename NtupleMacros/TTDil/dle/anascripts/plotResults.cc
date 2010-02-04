@@ -14,7 +14,9 @@ const static sources_t theSources =
 	(1ll << H_TTBAR) |
 	(1ll << H_WW) |
 	(1ll << H_WZ) |
-	(1ll << H_ZZ);
+	(1ll << H_ZZ) |
+	(1ll << H_DYMM) |
+	(1ll << H_DYEE);
 
 // placeholders
 const static sources_t theSignal = 0;
@@ -325,6 +327,8 @@ void plotResults(TString hyp, TString fileStamp)
 	sources.push_back( fH_WW()	);
 	sources.push_back( fH_WZ() );
 	sources.push_back( fH_ZZ() );
+    sources.push_back( fH_DYMM() );
+    sources.push_back( fH_DYEE() );
 
 	HistogramUtilities h1("../" + fileStamp + ".root", sources, 1.0);
 
@@ -333,9 +337,13 @@ void plotResults(TString hyp, TString fileStamp)
 	//
 	// dy est related
 	//
-	plotStack(h1, "dyest_mll_0j", "Mass", fileStamp, hyp);
-    plotStack(h1, "dyest_mll_1j", "Mass", fileStamp, hyp);
-    plotStack(h1, "dyest_mll_2j", "Mass", fileStamp, hyp);
+	plotStack(h1, "dyest_mll_met_0j", "Mass", fileStamp, hyp);
+    plotStack(h1, "dyest_mll_met_1j", "Mass", fileStamp, hyp);
+    plotStack(h1, "dyest_mll_met_2j", "Mass", fileStamp, hyp);
+
+    plotStack(h1, "dyest_mll_nomet_0j", "Mass", fileStamp, hyp);
+    plotStack(h1, "dyest_mll_nomet_1j", "Mass", fileStamp, hyp);
+    plotStack(h1, "dyest_mll_nomet_2j", "Mass", fileStamp, hyp);
 
     plotStack(h1, "dyest_met_in_0j", "Met (in)", fileStamp, hyp);
     plotStack(h1, "dyest_met_in_1j", "Met (in)", fileStamp, hyp);

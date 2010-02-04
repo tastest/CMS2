@@ -140,7 +140,8 @@ void MyScanChain::FormatAllDYEstHistograms(std::string sampleName)
 
 	for (unsigned int j = 0; j < 3; ++j) {
 		std::string jetbin = jetbin_names[j];
-    	FormatHist(h1_dyest_mll_[j], sampleName, "dyest_mll_" + jetbin, 40, 0.0, 200.0);
+    	FormatHist(h1_dyest_mll_met_[j], sampleName, "dyest_mll_met_" + jetbin, 40, 0.0, 200.0);
+        FormatHist(h1_dyest_mll_nomet_[j], sampleName, "dyest_mll_nomet_" + jetbin, 40, 0.0, 200.0);
 		FormatHist(h1_dyest_met_in_[j], sampleName, "dyest_met_in_" + jetbin, 40, 0.0, 200.0);
         FormatHist(h1_dyest_met_out_[j], sampleName, "dyest_met_out_" + jetbin, 40, 0.0, 200.0);
 	}
@@ -160,7 +161,8 @@ void MyScanChain::FillAllDYEstHistograms(const unsigned int h, const float &weig
 
 	// fill the mass histogram
 	float mass = cms2.hyp_p4()[h].mass();
-	Fill(h1_dyest_mll_[jetbin], hypType, mass, weight);
+	Fill(h1_dyest_mll_nomet_[jetbin], hypType, mass, weight);
+    if (passMet_OF20_SF30(hyp, false)) Fill(h1_dyest_mll_met_[jetbin], hypType, mass, weight);
 
 	// fill the met histograms for "in" and "out" regions
 	float mymet = met_pat_metCor_hyp(h);
