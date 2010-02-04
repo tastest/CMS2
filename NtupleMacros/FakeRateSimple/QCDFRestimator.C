@@ -80,7 +80,7 @@ bool isNumEl(int iEl){
      // E2x5Max /E5x5 > 0.90, N/A (EB, EE) 
      electronId_cand01(iEl) &&
      electronImpact_cand01(iEl) &&             	    // d0corr < .02
-     electronIsolation_relsusy_cand1(iEl,true) &&   // relative isolation < .1
+     electronIsolation_relsusy_cand1(iEl,true) < 0.1 &&   // relative isolation < .1
      !isFromConversionPartnerTrack(iEl) &&        	// dist < .02 dcot < .02
 		 electronId_noMuon(iEl)
      ){
@@ -95,8 +95,8 @@ bool isDenomEl(int iEl){
   if(
      (pt >= 10.) &&
      (fabs(eta)<=2.4) &&
-     //electronImpact_cand01(iEl) &&             	    // d0corr < .02
-     electronIsolation_relsusy_cand1(iEl,true) &&   // relative isolation < .1
+     electronImpact_cand01(iEl) &&             	    // d0corr < .02
+     electronIsolation_relsusy_cand1(iEl,true) < 0.1 &&   // relative isolation < .1
      !isFromConversionPartnerTrack(iEl) &&       	  // dist < .02 dcot < .02
 		 electronId_noMuon(iEl)
      ){
