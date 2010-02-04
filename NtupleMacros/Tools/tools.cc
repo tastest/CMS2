@@ -1043,17 +1043,3 @@ double correctd0Phi(int trk_idx)
      return 0;
 //   return atan2( -1 * trks_d0corr * sin( trks_trk_p4->phi() ), trks_d0corr * cos( trks_trk_p4->phi() ) );
 }
-
-
-//port of code from CaloTowerDetId.h
-int CaloTwr_ieta( int detid ) {
-  int zside = (detid & 0x2000) ? 1 : -1 ;
-  //warning: multiplication has higher precendnce than bitwise anding
-  return zside * ((detid >> 7) & 0x3f);
-}
-
-int CaloTwr_iphi( int detid ) {
-  return detid & 0x7F;
-}
-
-
