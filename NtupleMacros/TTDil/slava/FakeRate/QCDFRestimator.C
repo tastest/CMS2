@@ -307,6 +307,7 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix,
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
   }
   
+
   for(unsigned int i = 0; i < 2; i++) {
     
     h_FOptvseta[i]->Sumw2();
@@ -358,7 +359,6 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix,
     //cout << "******Error for " << suffix[i] << sqrt(totalErr) << endl;
   }//lepton flavor loop
       
-  
   
   std::cout<<"Done with "<<prefix<<std::endl;
   rootdir = gDirectory->GetDirectory("Rint:"); 
@@ -426,8 +426,8 @@ int QCDFRestimator::ScanChainQCD ( TChain* chain, TString prefix, float kFactor,
 
       //if the pthat of the event is not within acceptable limits, quit
       //carefull.....WJets doesn't have the genps_pthat variable
-      //if(cms2.genps_pthat() < pthatmin || cms2.genps_pthat() > pthatmax)
-      //continue;
+      if(cms2.genps_pthat() < pthatmin || cms2.genps_pthat() > pthatmax)
+	continue;
       
       float weight = kFactor*cms2.evt_scale1fb()*0.01;
       weight = 1.0; //weights are the same, screws the Binomial errors up

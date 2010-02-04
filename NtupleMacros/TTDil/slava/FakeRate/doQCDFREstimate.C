@@ -202,8 +202,8 @@ void TestPrediction() {
     
 void doAll(){
   
-  gROOT->ProcessLine(".L setup.C");
-  gROOT->ProcessLine("setup(true)");
+  gROOT->ProcessLine(".L ../setup.C");
+  gROOT->ProcessLine("setup()");
   gSystem->CompileMacro("QCDFRestimator.C","++k", "libQCDFRestimator");
   
   TChain *ch_pthat30to80 = new TChain("Events");

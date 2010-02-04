@@ -32,9 +32,9 @@ bool runWW    = true;
 bool runWZ    = true;
 bool runZZ    = true;
 bool runWjets = true;
-bool runDYee  = false;
-bool runDYmm  = false;
-bool runDYtt  = false;
+bool runDYee  = true;
+bool runDYmm  = true;
+bool runDYtt  = true;
 bool runDY  = true;
 bool runttbar = true;
 bool runtW    = true;
@@ -62,9 +62,7 @@ bool runWjetBackground2 = false;
 
  gROOT->ProcessLine(Form(".x setup.C(%d)", 1));
  gSystem->CompileMacro("doAnalysis.C", "++k", "libsusyosdiltp");
-// gSystem->CompileMacro("doAnalysisttbar.C", "++k", "libsusyttdiltp");
 // gSystem->CompileMacro("doFakeAnalysis.C", "++k", "libsusyosdiltp");
-// gSystem->CompileMacro("doAnalysisCompare.C", "++k", "libsusyosdiltp");
 
 // read dataset prefix
  string dataset;
@@ -77,36 +75,32 @@ bool runWjetBackground2 = false;
 //WW file
 TChain *fWW = new TChain("Events");
 if (runWW) {
-  fWW->Add((dataset+"/WW_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
+  fWW->Add((dataset+"/cms2-V01-03-01/WW_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root").c_str());
 }
 
 //WZ file
 TChain *fWZ = new TChain("Events");
 if (runWZ) {
-  fWZ->Add((dataset+"/WZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
+  fWZ->Add((dataset+"/cms2-V01-03-01/WZ_incl_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root").c_str());
 }
 
 //ZZ file
 TChain *fZZ = new TChain("Events");
 if (runZZ) {
-  fZZ->Add((dataset+"/ZZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
+  fZZ->Add((dataset+"/cms2-V01-03-01/ZZ_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root").c_str());
 }
 
 //Wjets file
 TChain *fWjets = new TChain("Events");
 if (runWjets) {
-  fWjets->Add((dataset+"/Wenu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
-  fWjets->Add((dataset+"/Wmunu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
-  fWjets->Add((dataset+"/Wtaunu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
+  fWjets->Add((dataset+"/cms2-V01-03-01/WJets-madgraph_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root").c_str());
 }
 
 // DY file
 
 TChain *fDY = new TChain("Events");
 if (runDY) {
-  fDY->Add((dataset+"/Zee_Summer09-MC_31X_V3_7TeV_TrackingParticles-v1/V03-00-35/merged_ntuple*.root").c_str());
-  fDY->Add((dataset+"/Zmumu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
-  fDY->Add((dataset+"/Ztautau_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
+  fDY->Add((dataset+"/cms2-V01-03-01/ZJets-madgraph_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root").c_str());
 }
 
 
@@ -119,87 +113,86 @@ if (runDYee) {
 //DYmm file
 TChain *fDYmm = new TChain("Events");
 if (runDYmm) {
-  fDYmm->Add((dataset+"/Zmumu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
+  fDYmm->Add((dataset+"/cms2-V01-03-01/Zmumu_M20_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root").c_str());
 }
 
 //DYtt file
 TChain *fDYtt = new TChain("Events");
 if (runDYtt) {
-  fDYtt->Add((dataset+"/Ztautau_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
+  fDYtt->Add((dataset+"/cms2-V01-03-01/Ztautau_M20_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root").c_str());
 }
 
 //ttbar file
 TChain *fttbar = new TChain("Events");
 if (runttbar) {
-  fttbar->Add((dataset+"/TTbar_Summer09-MC_31X_V3_7TeV-v1/V03-00-34/merged_ntuple*.root").c_str());
+  fttbar->Add((dataset+"/cms2-V01-03-01/TTJets-madgraph_Fall08_IDEAL_V11_redigi_v10/merged_ntuple*.root").c_str());
 }
 
 //tW file
 TChain *ftW = new TChain("Events");
 if (runtW) {
-  ftW->Add((dataset+"/SingleTop_sChannel-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple.root").c_str());
-  ftW->Add((dataset+"/SingleTop_tChannel-madgraph_Summer09-MC_31X_V3_7TeV-v2/V03-00-35/merged_ntuple.root").c_str());
-  ftW->Add((dataset+"/SingleTop_tWChannel-madgraph_Summer09-MC_31X_V3_7TeV-v2/V03-00-35/merged_ntuple.root").c_str());
+  ftW->Add((dataset+"/cms2-V01-03-01/SingleTop_tWChannel_Summer08_IDEAL_V11_redigi_v3/merged_ntuple.root").c_str());
 }
 
 //LM0
 TChain *flm0x = new TChain("Events");
 if (runLM0x) {
-   flm0x->Add((dataset+"/LM0_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
+   flm0x->Add((dataset+"/cms2-V01-03-01/SUSY_LM0-sftsht_Summer08_IDEAL_V11_v1/merged_ntuple*.root").c_str());
 }
 
 //LM1
 TChain *flm1x = new TChain("Events");
 if (runLM1x) {
-  flm1x->Add((dataset+"/LM1_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
+  flm1x->Add((dataset+"/cms2-V01-03-01/SUSY_LM1-sftsht_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root").c_str());
 }
 
 //LM2
 TChain *flm2x = new TChain("Events");
 if (runLM2x) {
-  flm2x->Add((dataset+"/LM2_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
+  flm2x->Add((dataset+"/cms2-V01-03-01/SUSY_LM2-sftsht_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root").c_str());
 }
 
 //LM3
 TChain *flm3x = new TChain("Events");
 if (runLM3x) {
-  flm3x->Add((dataset+"/LM3_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
+  flm3x->Add((dataset+"/cms2-V01-03-01/SUSY_LM3-sftsht_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root").c_str());
 }
 
 //LM4
 TChain *flm4x = new TChain("Events");
 if (runLM4x) {
-  flm4x->Add((dataset+"/LM4_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
+  flm4x->Add((dataset+"/cms2-V01-03-01/SUSY_LM4-sftsht_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root").c_str());
 }
 
 //LM5
 TChain *flm5x = new TChain("Events");
 if (runLM5x) {
-  flm5x->Add((dataset+"/LM5_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
+  flm5x->Add((dataset+"/cms2-V01-03-01/SUSY_LM5-sftsht_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root").c_str());
 }
 
 //LM6
 TChain *flm6x = new TChain("Events");
 if (runLM6x) {
-  flm6x->Add((dataset+"/LM6_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
+  flm6x->Add((dataset+"/cms2-V01-03-01/SUSY_LM6-sftsht_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root").c_str());
 }
 
 //LM7
 TChain *flm7x = new TChain("Events");
 if (runLM7x) {
-  flm7x->Add((dataset+"/LM7_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
+  flm7x->Add((dataset+"/cms2-V01-03-01/SUSY_LM7-sftsht_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root").c_str());
 }
 
 //LM8
 TChain *flm8x = new TChain("Events");
 if (runLM8x) {
-  flm8x->Add((dataset+"/LM8_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
+  flm8x->Add((dataset+"/cms2-V01-03-01/SUSY_LM8-sftsht_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root").c_str());
 }
 
 //LM9
 TChain *flm9x = new TChain("Events");
 if (runLM9x) {
-  flm9x->Add((dataset+"/LM9_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
+  flm9x->Add((dataset+"/cms2-V01-03-01/SUSY_LM9-sftsht_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root").c_str());
+//  flm9x->Add((dataset+"/cms2-V01-03-01/SUSY_LM9p-sftsht_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root").c_str());
 }
 
 
