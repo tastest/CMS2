@@ -46,7 +46,8 @@ void pickSkimIfExists(TChain* ch, const std::string& base, const std::string& sk
   //be a bit paranoid here
   if (nFiles == 0) {
     std::cout<<"ERROR: expected to read files "<<base.c_str()<<" \n\t but found none"<<std::endl;
-    assert(0);
+    gSystem->Exit(33);
+    //    assert(0);
   }
   return;
   
@@ -80,7 +81,10 @@ void pickSkimIfExists(std::vector<ProcDSChain>& pds, const std::string& base, co
 }
 
 
-void doAll(unsigned int bitmask, bool skipFWLite = false){
+void doAll(unsigned int bitmask){
+  std::cout<<"THIS IS NOT UPDATED"<<std::endl;
+  gSystem->Exit(0);
+
   using namespace std;
   //here is a list to the combinations of cuts useful for the analysis:
   // 1957888 -- baseline
@@ -138,7 +142,7 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
   // dilTruthMatch                     -> 2**28 require the lepton to be MCtruth matched (coming off a hard-scattering lepton)
  
   // Load various tools  
-  gROOT->ProcessLine(Form(".x setup.C(%d)",skipFWLite));
+  //  gROOT->ProcessLine(".x setup.C");
 
   // Load and compile the looping code
   //  gSystem->CompileMacro("ttDilCounts_looper.C", "++k", "libttDilCounts_looper");
@@ -363,7 +367,7 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
 
 }
   
-void doAllCombined(unsigned int bitmask, bool skipFWLite = false){
+void doAllCombined(unsigned int bitmask){
   using namespace std;
   //here is a list to the combinations of cuts useful for the analysis:
   // 1957888 -- baseline
@@ -390,19 +394,16 @@ void doAllCombined(unsigned int bitmask, bool skipFWLite = false){
 
 
   //cut <-> bit mask
-  //ID cuts               -> 2**0 (1)
-  //Isolation cuts        -> 2**1 (2) (default is both legs are isolated. Using relative isolation, TRK+CALO)
-  //                       2**8+2**1 (Require one-only hyp lepton to be isolated. In emu, that will mean that the muon
-  //                                  will have rel iso > 0.92 and the el will have 0.6 < relIso < 0.92)
-  //                       2**9+2**1 (Require one-only hyp lepton to be isolated. In emu, that will mean that the el
-  //                                  will have rel iso > 0.92 and the mu will have 0.6 < relIso < 0.92)
-  //                       2**9+2**8+2**1 (require both leptons to have 0.6 < relIso < 0.92)
-  //DileptonMassVeto      -> 2**2 (4)
-  //METcut                -> 2**3 (8)
-  //nJets                 -> 2**4 (16)
-  //extra MuTag           -> 2**5 (32)
-  //METveto               -> 2**6 (64)
-  //Extra MuTag (pt>5)    -> 2**7 (128)
+  //                      -> 2**0 (1)
+  //                      -> 2**1 (2) (default is both legs are isolated. Using relative isolation, TRK+CALO)
+  //                      -> 2**2 (4)
+  //                      -> 2**3 (8)
+  //                      -> 2**4 (16)
+  //                      -> 2**5 (32)
+  //                      -> 2**6 (64)
+  //                      -> 2**7 (128)
+  //                      -> 2**8 (256)
+  //usePfMet              -> 2**9 (512)
   //looseDileptonSelection, TTdil note 2008
   //                      -> 2**10 (1024)
   //fullMultipleHypsOnly  -> 2**11 (2048) !!!!! Not implemented, so does nothing right now !!!!!!!
@@ -431,10 +432,10 @@ void doAllCombined(unsigned int bitmask, bool skipFWLite = false){
   // dilTruthMatch                     -> 2**28 require the lepton to be MCtruth matched (coming off a hard-scattering lepton)
  
   // Load various tools  
-  gROOT->ProcessLine(Form(".x setup.C(%d)",skipFWLite));
+  //  gROOT->ProcessLine(Form(".x setup.C(%d)",skipFWLite));
 
   // Load and compile the looping code
-  gSystem->CompileMacro("ttDilCounts_looper.C", "++k", "libttDilCounts_looper");
+  //  gSystem->CompileMacro("ttDilCounts_looper.C", "++k", "libttDilCounts_looper");
   
 
   // K-factors
@@ -452,6 +453,7 @@ void doAllCombined(unsigned int bitmask, bool skipFWLite = false){
   float kDYtautau = 1.;
   float kQCD      = 1.;
   float kt        = 1.;
+  float ktotr     = 1.;
   float kVgamma   = 1.;
   float kLM0      = 1.;
 
@@ -464,6 +466,7 @@ void doAllCombined(unsigned int bitmask, bool skipFWLite = false){
   int preDYtautau = 1;
   int preQCD      = 1;
   int pret        = 1;
+  int pretotr     = 1;
   int preVgamma   = 1;
   int preLM0      = 1;
 
@@ -471,57 +474,87 @@ void doAllCombined(unsigned int bitmask, bool skipFWLite = false){
   bool runttdil    = true;
   bool runttotr    = true;
   bool runVV       = true;
-  bool runWjets    = false;
+  bool runWjets    = true;
   bool runDYeemm   = true;
   bool runDYtautau = true;
-  bool runQCD      = false;
+  bool runQCD      = true;
   bool runt        = true;
+  bool runtotr     = true;
   bool runVgamma   = false;
   bool runLM0      = true;
 
   std::vector<ProcDSChain> chtopdil;
-  pickSkimIfExists(chtopdil, "/data/tmp/cms2/TTbar_Summer09-MC_31X_V3_7TeV-v1/V03-00-34/merged*.root", "_skimSimple2020anydil", 1., true, true);
+  pickSkimIfExists(chtopdil, "/data/tmp/slava77/cms2/TTbar_Summer09-MC_31X_V3_7TeV-v1/V03-00-34/merged*.root", "", 1., true, false);
 
   std::vector<ProcDSChain> chtopotr;
-  pickSkimIfExists(chtopotr, "/data/tmp/cms2/TTbar_Summer09-MC_31X_V3_7TeV-v1/V03-00-34/merged*.root", "_skimSimple2020nodil", 1., true, true);
+  pickSkimIfExists(chtopotr, "/data/tmp/slava77/cms2/TTbar_Summer09-MC_31X_V3_7TeV-v1/V03-00-34/merged*.root", "", 1., true, false);
 
   std::vector<ProcDSChain> chVV;
-  //  pickSkimIfExists(chVV, "/data/tmp/cms2/WW_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, true);
-  //  pickSkimIfExists(chVV, "/data/tmp/cms2/WZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, true); // can try WZ_3l-Pythia
-  pickSkimIfExists(chVV, "/data/tmp/cms2/ZZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, true);
+  pickSkimIfExists(chVV, "/data/tmp/slava77/cms2/WW_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, false);
+  pickSkimIfExists(chVV, "/data/tmp/slava77/cms2/WZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, false); // can try WZ_3l-Pythia
+  pickSkimIfExists(chVV, "/data/tmp/slava77/cms2/ZZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, false);
   
   std::vector<ProcDSChain> chWjets;
-  pickSkimIfExists(chWjets, "/data/tmp/cms2/Wmunu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, true);
-  //  pickSkimIfExists(chWjets, "/data/tmp/cms2/Wtaunu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, true);
-    //    pickSkimIfExists(chWjets, "/merged*.root", "", 1., true, true);
+  pickSkimIfExists(chWjets, "/data/tmp/slava77/cms2/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimDil20.10", 2.4390652, false, false);
+  //  pickSkimIfExists(chWjets, "/data/tmp/slava77/cms2/Wmunu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, false);
+  //  pickSkimIfExists(chWjets, "/data/tmp/slava77/cms2/Wtaunu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, false);
+  //    pickSkimIfExists(chWjets, "/merged*.root", "", 1., true, false);
 
   std::vector<ProcDSChain> chDYtautau;
-  pickSkimIfExists(chDYtautau, "/data/tmp/cms2/Ztautau_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimSimple2020tautau", 1., true, true);
+  pickSkimIfExists(chDYtautau, "/data/tmp/slava77/cms2/Ztautau_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimSimple2020tautau", 1., true, false);
   
   std::vector<ProcDSChain> chDYeemm;
-  pickSkimIfExists(chDYeemm, "/data/tmp/cms2/Zmumu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, true);
+  pickSkimIfExists(chDYeemm, "/data/tmp/slava77/cms2/Zmumu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, false);
+  pickSkimIfExists(chDYeemm, "/data/tmp/slava77/cms2/Zee_Summer09-MC_31X_V3_7TeV_TrackingParticles-v1/V03-00-35/merged*.root", "", 1., true, false);
   
   //ppMuX
   std::vector<ProcDSChain> chQCD;
-  //ppMuX here  pickSkimIfExists(chQCD, "/merged*.root", "_skimSimple2020", 1., true, true); 
-  //  pickSkimIfExists(chQCD, "/data/tmp/cms2/QCD_BCtoE_Pt20to30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimSimple2020", 1., true, true);
-  pickSkimIfExists(chQCD, "/data/tmp/cms2/QCD_BCtoE_Pt30to80_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimSimple2020", 1., true, true);
-  pickSkimIfExists(chQCD, "/data/tmp/cms2/QCD_BCtoE_Pt80to170_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimSimple2020", 1., true, true);
-  pickSkimIfExists(chQCD, "/data/tmp/cms2/QCD_EMEnriched_Pt20to30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimSimple2020", 1., true, true);
-  //  pickSkimIfExists(chQCD, "/merged*.root", "_skimSimple2020", 1., true, true);
-  //  pickSkimIfExists(chQCD, "/merged*.root", "_skimSimple2020", 1., true, true);
+  //ppMuX here  
+  pickSkimIfExists(chQCD, "/data/tmp/cms2/InclusiveMu15_Summer09-MC_31X_V3_7TeV-v1_dilepfilt/merged*.root", "", 1., true, false); 
+  pickSkimIfExists(chQCD, "/data/tmp/slava77/cms2/QCD_BCtoE_Pt20to30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimDil20.10", 1., true, false);
+  pickSkimIfExists(chQCD, "/data/tmp/slava77/cms2/QCD_BCtoE_Pt30to80_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimDil20.10", 56.700382, false, false);
+  pickSkimIfExists(chQCD, "/data/tmp/slava77/cms2/QCD_BCtoE_Pt80to170_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimDil20.10", 8.0148010, false, false);
+  pickSkimIfExists(chQCD, "/data/tmp/slava77/cms2/QCD_EMEnriched_Pt20to30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimDil20.10", 235.5E9/33545633.*0.0073, false, false);
+  pickSkimIfExists(chQCD, "/data/tmp/slava77/cms2/QCD_EMEnriched_Pt30to80_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimDil20.10", 1., true, false);
+  pickSkimIfExists(chQCD, "/data/tmp/slava77/cms2/QCD_EMEnriched_Pt80to170_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimDil20.10", 24.373495, false, false);
 
   //tW
   std::vector<ProcDSChain> cht;
-  //  pickSkimIfExists(cht, "/data/tmp/cms2/SingleTop_sChannel-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, true); 
-  //  pickSkimIfExists(cht, "/data/tmp/cms2/SingleTop_tChannel-madgraph_Summer09-MC_31X_V3_7TeV-v2/V03-00-35/merged*.root", "", 1., true, true); 
-  //tW here  pickSkimIfExists(cht, "merged*.root", "", 1., true, true); 
+  pickSkimIfExists(cht, "/data/tmp/slava77/cms2/SingleTop_tWChannel-madgraph_Summer09-MC_31X_V3_7TeV-v2/V03-00-35/merged*.root", "", 1., true, false); 
+
+  std::vector<ProcDSChain> chtotr;
+  pickSkimIfExists(chtotr, "/data/tmp/slava77/cms2/SingleTop_sChannel-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, false); 
+  pickSkimIfExists(chtotr, "/data/tmp/slava77/cms2/SingleTop_tChannel-madgraph_Summer09-MC_31X_V3_7TeV-v2/V03-00-35/merged*.root", "", 1., true, false); 
 
   //Vgamma
   std::vector<ProcDSChain> chVgamma;
-  //  pickSkimIfExists(chVgamma, "data/AVJets-madgraph_Fall08_IDEAL_V9_v3/merged*.root", "_skimSimple2020", 1., true, true);
+  //  pickSkimIfExists(chVgamma, "data/AVJets-madgraph_Fall08_IDEAL_V9_v3/merged*.root", "_skimDil20.10", 1., true, false);
 
   //LMs are run and loaded at the same time
+  std::vector<TString> lmEs;
+  std::vector<TString> lmEds;
+  if (runLM0){
+    lmEs.push_back("LM0"); lmEds.push_back("LM0_Summer09-MC_31X_V3_7TeV-v1");
+    lmEs.push_back("LM1"); lmEds.push_back("LM1_Summer09-MC_31X_V3_7TeV-v1");
+    lmEs.push_back("LM2"); lmEds.push_back("LM2_Summer09-MC_31X_V3_7TeV-v1");
+    lmEs.push_back("LM2m"); lmEds.push_back("LM2mhfeq360_Summer09-MC_31X_V3_7TeV-v1");
+    lmEs.push_back("LM3"); lmEds.push_back("LM3_Summer09-MC_31X_V3_7TeV-v1");
+    lmEs.push_back("LM4"); lmEds.push_back("LM4_Summer09-MC_31X_V3_7TeV-v1");
+    lmEs.push_back("LM5"); lmEds.push_back("LM5_Summer09-MC_31X_V3_7TeV-v1");
+    lmEs.push_back("LM6"); lmEds.push_back("LM6_Summer09-MC_31X_V3_7TeV-v1");
+    lmEs.push_back("LM7"); lmEds.push_back("LM7_Summer09-MC_31X_V3_7TeV-v1");
+    lmEs.push_back("LM8"); lmEds.push_back("LM8_Summer09-MC_31X_V3_7TeV-v1");
+    lmEs.push_back("LM9"); lmEds.push_back("LM9_Summer09-MC_31X_V3_7TeV-v1");
+    lmEs.push_back("LM9p"); lmEds.push_back("LM9p_Summer09-MC_31X_V3_7TeV-v1");
+    lmEs.push_back("LM9t"); lmEds.push_back("LM9t175_Summer09-MC_31X_V3_7TeV-v1");
+    lmEs.push_back("LM10"); lmEds.push_back("LM10_Summer09-MC_31X_V3_7TeV-v1");
+    lmEs.push_back("LM12"); lmEds.push_back("LM12_Summer09-MC_31X_V3_7TeV-v1");
+    for(unsigned int iLm=0; iLm < lmEs.size(); ++iLm){
+      cout << "Loading to test presence of files  ... "<<lmEs[iLm].Data()<<endl;
+      std::vector<ProcDSChain> chLM;
+      pickSkimIfExists(chLM, Form("/data/tmp/slava77/cms2/%s/V03-00-35/merged*.root",lmEds[iLm].Data()), "", 1., true, false);
+    }
+  }
 
   // Define colors numbers:
   gStyle->SetPalette(1);
@@ -573,6 +606,11 @@ void doAllCombined(unsigned int bitmask, bool skipFWLite = false){
     looper->ScanChain(cht,"t", kt, pret, bitmask);
     hist::color("t_", 63);
   }
+  if (runtotr) {
+    cout << "Processing totr"<<endl;
+    looper->ScanChain(chtotr,"totr", ktotr, pretotr, bitmask);
+    hist::color("totr_", 67);
+  }
 
   if (runVgamma){
     cout << "Processing Vgamma ... "<<endl;
@@ -580,24 +618,10 @@ void doAllCombined(unsigned int bitmask, bool skipFWLite = false){
   }
     
   if (runLM0){
-    std::vector<TString> lmEs;
-    std::vector<TString> lmEds;
-    lmEs.push_back("LM0"); lmEds.push_back("LM0_Summer09-MC_31X_V3_7TeV-v1");
-    lmEs.push_back("LM1"); lmEds.push_back("LM1_Summer09-MC_31X_V3_7TeV-v1");
-    lmEs.push_back("LM2"); lmEds.push_back("LM2_Summer09-MC_31X_V3_7TeV-v1");
-    lmEs.push_back("LM3"); lmEds.push_back("LM3_Summer09-MC_31X_V3_7TeV-v1");
-    lmEs.push_back("LM4"); lmEds.push_back("LM4_Summer09-MC_31X_V3_7TeV-v1");
-    lmEs.push_back("LM5"); lmEds.push_back("LM5_Summer09-MC_31X_V3_7TeV-v1");
-    lmEs.push_back("LM6"); lmEds.push_back("LM6_Summer09-MC_31X_V3_7TeV-v1");
-    lmEs.push_back("LM7"); lmEds.push_back("LM7_Summer09-MC_31X_V3_7TeV-v1");
-    lmEs.push_back("LM8"); lmEds.push_back("LM8_Summer09-MC_31X_V3_7TeV-v1");
-    lmEs.push_back("LM9"); lmEds.push_back("LM9_Summer09-MC_31X_V3_7TeV-v1");
-    //    lmEs.push_back("LM9p"); lmEds.push_back("LM9p_Summer09-MC_31X_V3_7TeV-v1");
-    lmEs.push_back("LM12"); lmEds.push_back("LM12_Summer09-MC_31X_V3_7TeV-v1");
     for(unsigned int iLm=0; iLm < lmEs.size(); ++iLm){
       cout << "Processing  ... "<<lmEs[iLm].Data()<<endl;
       std::vector<ProcDSChain> chLM;
-      pickSkimIfExists(chLM, Form("/data/tmp/cms2/%s/V03-00-35/merged*.root",lmEds[iLm].Data()), "", 1., true, true);
+      pickSkimIfExists(chLM, Form("/data/tmp/slava77/cms2/%s/V03-00-35/merged*.root",lmEds[iLm].Data()), "", 1., true, false);
       looper->ScanChain(chLM, lmEs[iLm].Data(), kLM0, preLM0, bitmask);
     }
   }
@@ -618,19 +642,19 @@ void doAllCombined(unsigned int bitmask, bool skipFWLite = false){
 }
   
 
-void doDYandTT_PY(unsigned int bitmask, bool skipFWLite = false){
+void doDYandTT_PY(unsigned int bitmask){
   using namespace std;
   //see cuts written up above in the doAll()
  
   // Load various tools  
-  gROOT->ProcessLine(Form(".x setup.C(%d)",skipFWLite));
+  //  gROOT->ProcessLine(Form(".x setup.C(%d)",skipFWLite));
 
   // Load and compile the looping code
-  gSystem->CompileMacro("ttDilCounts_looper.C", "++k", "libttDilCounts_looper");
+  //  gSystem->CompileMacro("ttDilCounts_looper.C", "++k", "libttDilCounts_looper");
   
   // K-factors
   //these have been k-factors NLO/LO before
-  //now using them as sample normalizations to NLO
+  //now using them as sample normalizations to something other than in the evt_scale1fb
   
   //these two are taken from Ceballos's pdf. 
   //It looks like the top x-section is for mtop = 175 GeV
@@ -720,15 +744,15 @@ void doDYandTT_PY(unsigned int bitmask, bool skipFWLite = false){
 
 }
   
-void doDYandTT_MG(unsigned int bitmask, bool skipFWLite = false){
+void doDYandTT_MG(unsigned int bitmask){
   using namespace std;
   //see cuts written up above in the doAll()
  
   // Load various tools  
-  gROOT->ProcessLine(Form(".x setup.C(%d)",skipFWLite));
+  //  gROOT->ProcessLine(Form(".x setup.C(%d)",skipFWLite));
 
   // Load and compile the looping code
-  gSystem->CompileMacro("ttDilCounts_looper.C", "++k", "libttDilCounts_looper");
+  //  gSystem->CompileMacro("ttDilCounts_looper.C", "++k", "libttDilCounts_looper");
   
   // K-factors
   //these have been k-factors NLO/LO before
