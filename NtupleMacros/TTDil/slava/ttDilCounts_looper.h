@@ -68,6 +68,8 @@ class ttDilCounts_looper {
   TH1F* hpatmetPhi[4][6];       // pat MET phi
   TH1F* htcmet[4][6];       // tc MET
   TH1F* htcmetPhi[4][6];       // tc MET phi
+  TH1F* hpfmet[4][6];       // pf MET
+  TH1F* hpfmetPhi[4][6];       // pf MET phi
 
   TH2F* hmetVsDilepPt[4][6];  // MET vs dilepton Pt
   TH2F* hmetOverPtVsDphi[4][6]; // MET/Lepton Pt vs DeltaPhi between MET and Lepton Pt
@@ -77,6 +79,8 @@ class ttDilCounts_looper {
 
   TH2F* htcmetVsDilepPt[4][6];  // tc MET vs dilepton Pt
   TH2F* htcmetOverPtVsDphi[4][6]; // tc MET/Lepton Pt vs DeltaPhi between MET and Lepton Pt
+  TH2F* hpfmetVsDilepPt[4][6];  // pf MET vs dilepton Pt
+  TH2F* hpfmetOverPtVsDphi[4][6]; // pf MET/Lepton Pt vs DeltaPhi between MET and Lepton Pt
 
   TH2F* hdphillvsmll[4][6]; // delta phi between leptons vs dilepton mass
   TH1F* hptJet1[4][6];   // Pt of 1st jet
@@ -95,6 +99,7 @@ class ttDilCounts_looper {
   TH1F* hvecSumJSmLLpt[4][6]; 
   TH2F* hvecSumJSmLLptVspatmet[4][6]; 
   TH2F* hvecSumJSmLLptVstcmet[4][6]; 
+  TH2F* hvecSumJSmLLptVspfmet[4][6]; 
  
 
   TH1F* numTightLep[4][6]; // number of tight leptons per event.
