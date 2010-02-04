@@ -207,6 +207,42 @@ void TestPrediction() {
 
 
 
+//  TCanvas *c16 = new TCanvas();
+//  c16->Divide(3,3);
+//  c16->cd(1);
+//  TH1F *h_mu_WJnum = gDirectory->Get("WJets_truecomposition_num_mu");
+//  h_mu_WJnum->DrawNormalized();
+//  c16->cd(2);
+//  TH1F *h_mu_WJdenom = gDirectory->Get("WJets_truecomposition_denom_mu");
+//  h_mu_WJdenom->DrawNormalized();
+//  c16->cd(3);
+//  TH1F *h_mu_WJratio = gDirectory->Get("WJets_truecomposition_ratio_mu");
+//  h_mu_WJratio->Draw();
+//  c16->cd(4);
+//  TH1F *h_mu_TTnum = gDirectory->Get("TTbar_truecomposition_num_mu");
+//  h_mu_TTnum->DrawNormalized();
+//  c16->cd(5);
+//  TH1F *h_mu_TTdenom = gDirectory->Get("TTbar_truecomposition_denom_mu");
+//  h_mu_TTdenom->DrawNormalized();
+//  c16->cd(6);
+//  TH1F *h_mu_TTratio = gDirectory->Get("TTbar_truecomposition_ratio_mu");
+//  h_mu_TTratio->Draw();
+//  c16->cd(7);
+//  TH1F *h_mu_QCDnum = gDirectory->Get("QCD_truecomposition_num_mu");
+//  h_mu_QCDnum->DrawNormalized();
+//  c16->cd(8);
+//  TH1F *h_mu_QCDdenom = gDirectory->Get("QCD_truecomposition_denom_mu");
+//  h_mu_QCDdenom->DrawNormalized();
+//  c16->cd(9);
+//  TH1F *h_mu_QCDratio = gDirectory->Get("QCD_truecomposition_ratio_mu");
+//  h_mu_QCDratio->Draw();
+//  c16->Draw();
+//  c16->SaveAs("eFakeComposition.png");
+
+
+
+
+
 
   //Print the actual and predicted numbers with errors
   //do the errors for the WJets
