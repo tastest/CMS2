@@ -11,9 +11,9 @@ class QCDFRestimator {
 public: 
   
   int ScanChainQCD ( TChain* chain, TString prefix="", float kFactor=1.0, 
-		     int prescale=1, float pthatmin = 0, float pthatmax = 999999999.9);
+                     int prescale=1, float pthatmin = 0, float pthatmax = 999999999.9);
   int ScanChainAppTest( TChain* chain, TString prefix="", float kFactor=1.0, 
-			int prescale=1);
+                        int prescale=1);
   
   Float_t GetValueTH2F(Float_t x, Float_t y, TH2F* hist);
   void bookHistos(const char *prefix);
