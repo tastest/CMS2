@@ -82,7 +82,7 @@ bool isNumEl(int iEl){
      electronImpact_cand01(iEl) &&             	    // d0corr < .02
      electronIsolation_relsusy_cand1(iEl,true) &&   // relative isolation < .1
      !isFromConversionPartnerTrack(iEl) &&        	// dist < .02 dcot < .02
-      electronId_noMuon(iEl)
+		 electronId_noMuon(iEl)
      ){
     return true;
   } else {
@@ -98,7 +98,7 @@ bool isDenomEl(int iEl){
      //electronImpact_cand01(iEl) &&             	    // d0corr < .02
      electronIsolation_relsusy_cand1(iEl,true) &&   // relative isolation < .1
      !isFromConversionPartnerTrack(iEl) &&       	  // dist < .02 dcot < .02
-      electronId_noMuon(iEl)
+		 electronId_noMuon(iEl)
      ){
     return true;
   } else{
@@ -269,7 +269,7 @@ int QCDFRestimator::ScanChainAppTest ( TChain* chain, TString prefix, float kFac
     for( z = 0; z < nLoop; z++) {
       nAllEvents++;
       // Progress feedback to the user
-      int mod = 1000000;
+      int mod = 100000;
       int iz = nAllEvents/mod;
       if (nAllEvents-mod*iz == 0) cout << "Processing event " << nAllEvents+1 << " of sample " << prefix << endl;
       cms2.GetEntry(z);
@@ -478,7 +478,22 @@ int QCDFRestimator::ScanChainQCD ( TChain* chain, TString prefix, float kFactor,
   int nAllEvents = 0;
   map<int,int> m_events;
   while(TChainElement *currentFile = (TChainElement*)fileIter.Next() ) {
-    TFile f(currentFile->GetTitle());
+		//
+		// hardcoded QCD bin pthat treatment
+		// based on filename
+		// kind of a hack
+		// if more qcd bins are added
+		// enlarge treatment here
+		TString filename = currentFile->GetTitle();
+		if ( filename.Contains("_Pt30_") ) {
+			pthatmin = 0.0;
+			pthatmax = 80.0;
+		} else if ( filename.Contains("_Pt80_") ) {
+			pthatmin = 30.0;
+			pthatmax = 99999999999999999999999999999.;
+		}
+
+    TFile f(filename.Data());
     TTree *tree = (TTree*)f.Get("Events");
     cms2.Init(tree);
     unsigned int nEntries = tree->GetEntries();
@@ -490,7 +505,7 @@ int QCDFRestimator::ScanChainQCD ( TChain* chain, TString prefix, float kFactor,
     for( z = 0; z < nLoop; z++) {
       nAllEvents++;
       // Progress feedback to the user
-      int mod = 1000000;
+      int mod = 100000;
       int iz = nAllEvents/mod;
       if (nAllEvents-mod*iz == 0) cout << "Processing event " << nAllEvents+1 << " of sample " << prefix << endl;
       cms2.GetEntry(z);
