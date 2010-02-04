@@ -33,43 +33,43 @@ void doAll3X() {
 
 	//
 	// chains for input files
-	//
+	TString ntuple_location = "/data/tmp/";
 	// SM
 	// ttbar
 	TChain *chain_ttbar = new TChain("Events");
-	chain_ttbar->Add("/store/disk02/cms2/TTbar_Summer09-MC_31X_V3_7TeV-v1/V03-00-34/merged_ntuple*.root");
+	chain_ttbar->Add(ntuple_location + "/cms2/TTbar_Summer09-MC_31X_V3_7TeV-v1/V03-00-34/merged_ntuple*.root");
 	// ww
 	TChain *chain_ww = new TChain("Events");
-	chain_ww->Add("/store/disk02/cms2/WW_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
-    // wz
-    TChain *chain_wz = new TChain("Events");
-    chain_wz->Add("/store/disk02/cms2/WZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
-    // zz
-    TChain *chain_zz = new TChain("Events");
-    chain_zz->Add("/store/disk02/cms2/ZZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+	chain_ww->Add(ntuple_location + "/cms2/WW_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+	// wz
+	TChain *chain_wz = new TChain("Events");
+	chain_wz->Add(ntuple_location + "/cms2/WZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+	// zz
+	TChain *chain_zz = new TChain("Events");
+	chain_zz->Add(ntuple_location + "/cms2/ZZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
 	// dyee
-    TChain *chain_dyee = new TChain("Events");
-    chain_dyee->Add("/store/disk02/cms2/Zee_Summer09-MC_31X_V3_7TeV_TrackingParticles-v1/V03-00-35/merged_ntuple*.root");
+	TChain *chain_dyee = new TChain("Events");
+	chain_dyee->Add(ntuple_location + "/cms2/Zee_Summer09-MC_31X_V3_7TeV_TrackingParticles-v1/V03-00-35/merged_ntuple*.root");
 	// dymm
-    TChain *chain_dymm = new TChain("Events");
-    chain_dymm->Add("/store/disk02/cms2/Zmumu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+	TChain *chain_dymm = new TChain("Events");
+	chain_dymm->Add(ntuple_location + "/cms2/Zmumu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
 
 
 	// BSM
 	// LM0
 	TChain *chain_lm0 = new TChain("Events");
-	chain_lm0->Add("/store/disk02/cms2/LM0_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+	chain_lm0->Add(ntuple_location + "/cms2/LM0_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
 
 	// 
 	// do looping
 	//
 
 	looper->ScanChain(false, "ttbar", chain_ttbar);
-	//looper->ScanChain(false, "ww", chain_ww);
-	//looper->ScanChain(false, "wz", chain_wz);
-	//looper->ScanChain(false, "zz", chain_zz);
-	//looper->ScanChain(false, "dyee", chain_dyee);
-	//looper->ScanChain(false, "dymm", chain_dymm);
+	looper->ScanChain(false, "ww", chain_ww);
+	looper->ScanChain(false, "wz", chain_wz);
+	looper->ScanChain(false, "zz", chain_zz);
+	looper->ScanChain(false, "dyee", chain_dyee);
+	looper->ScanChain(false, "dymm", chain_dymm);
 
 	//
 	// write histograms
