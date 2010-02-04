@@ -65,17 +65,17 @@ void doAll3X() {
 	//
 
 	looper->ScanChain(false, "ttbar", chain_ttbar);
-	looper->ScanChain(false, "ww", chain_ww);
-	looper->ScanChain(false, "wz", chain_wz);
-	looper->ScanChain(false, "zz", chain_zz);
-	looper->ScanChain(false, "dyee", chain_dyee);
-	looper->ScanChain(false, "dymm", chain_dymm);
+	//looper->ScanChain(false, "ww", chain_ww);
+	//looper->ScanChain(false, "wz", chain_wz);
+	//looper->ScanChain(false, "zz", chain_zz);
+	//looper->ScanChain(false, "dyee", chain_dyee);
+	//looper->ScanChain(false, "dymm", chain_dymm);
 
 	//
 	// write histograms
 	// 
 
-	const char* outFile = "histos_mc_3x.root";
+	const char* outFile = "histos_mc_3x_tmp.root";
 	hist::saveHist(outFile); 
 	hist::deleteHistos();
 

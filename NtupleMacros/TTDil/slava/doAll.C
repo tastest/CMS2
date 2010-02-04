@@ -13,9 +13,21 @@
 #include "TStyle.h"
 #include "TChain.h"
 #include <iostream>
-#include "histtools.h"
+#include "histscripts/histtools.h"
 #include "ttDilCounts_looper.h"
 #endif //__CINT__
+
+#ifndef ProcDSChain_H
+#define ProcDSChain_H
+struct ProcDSChain {
+  ProcDSChain(TChain* ch, float sc = 1, bool doW = true, bool chDup = false): events(ch), scale1fb(sc),  useWeigtFromBranch(doW),
+                                                                              checkDuplicates(chDup) {}
+  TChain* events;
+  float scale1fb;
+  bool useWeigtFromBranch;
+  bool checkDuplicates;
+};
+#endif
 
 void pickSkimIfExists(TChain* ch, const std::string& base, const std::string& skimExt){
   TChain* dummy = new TChain("Events");
@@ -40,7 +52,36 @@ void pickSkimIfExists(TChain* ch, const std::string& base, const std::string& sk
   
 }
 
+
+void pickSkimIfExists(std::vector<ProcDSChain>& pds, const std::string& base, const std::string& skimExt,
+                      float scale = 1., bool useWeigtFromBranch = true, bool checkDups = false){
+  TChain* dummy = new TChain("Events");
+  TChain* ch = new TChain("Events");
+  pds.push_back(ProcDSChain(ch, scale, useWeigtFromBranch, checkDups ));
+  if (skimExt != ""){
+    std::string skimName = base+skimExt;
+    if (dummy->Add(skimName.c_str())){
+      int nFiles = ch->Add(skimName.c_str());
+      std::cout<<"Skim "<<skimName.c_str()<<" exists: use it. Loaded "<<nFiles<<" files"<<std::endl;
+      return;
+    } else {
+      std::cout<<"Skim "<<skimName.c_str()<<" does not exist ==> will use "<<base.c_str()<<std::endl;
+    }
+  }
+  int nFiles = ch->Add(base.c_str());
+  std::cout<<"Main "<<base.c_str()<<" exists: use it. Loaded "<<nFiles<<" files"<<std::endl;
+  //be a bit paranoid here
+  if (nFiles == 0) {
+    std::cout<<"ERROR: expected to read files "<<base.c_str()<<" \n\t but found none"<<std::endl;
+    assert(0);
+  }
+  return;
+
+}
+
+
 void doAll(unsigned int bitmask, bool skipFWLite = false){
+  using namespace std;
   //here is a list to the combinations of cuts useful for the analysis:
   // 1957888 -- baseline
   // 35512320 -- baseline using tcmet
@@ -100,13 +141,8 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
   gROOT->ProcessLine(Form(".x setup.C(%d)",skipFWLite));
 
   // Load and compile the looping code
-  gSystem->CompileMacro("ttDilCounts_looper.C", "++k", "libttDilCounts_looper");
+  //  gSystem->CompileMacro("ttDilCounts_looper.C", "++k", "libttDilCounts_looper");
   
-
-  // Flag for jet selection
-  // true  = hyp_jet selection (15 GeV uncorrectedm eta<3)
-  // false = 30 GeV corrected, eta<2.4
-  bool oldjet=false;
 
   // K-factors
   //these have been k-factors NLO/LO before
@@ -162,51 +198,51 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
   bool runtW       = true;
   bool runVQQ      = true;
 
-  TChain* chtopdil = new TChain("Events");
+  std::vector<ProcDSChain> chtopdil;
   pickSkimIfExists(chtopdil, "data/TTJets-madgraph_Fall08_IDEAL_V11_redigi_v10/merged*.root", "_skimSimple2020anydil");
 
-  TChain* chtopotr = new TChain("Events");
+  std::vector<ProcDSChain> chtopotr;
   pickSkimIfExists(chtopotr, "data/TTJets-madgraph_Fall08_IDEAL_V11_redigi_v10/merged*.root", "_skimSimple2020nodil");
 
-  TChain* chww = new TChain("Events");
+  std::vector<ProcDSChain> chww;
   pickSkimIfExists(chww, "data/WW_Summer08_IDEAL_V11_redigi_v1/merged*.root", "");
 
-  TChain* chWZ = new TChain("Events");
+  std::vector<ProcDSChain> chWZ;
   pickSkimIfExists(chWZ, "data/WZ_incl_Summer08_IDEAL_V11_redigi_v1/merged*.root", ""); // can try WZ_3l-Pythia
 
-  TChain* chZZ = new TChain("Events");
+  std::vector<ProcDSChain> chZZ;
   pickSkimIfExists(chZZ, "data/ZZ_Summer08_IDEAL_V11_redigi_v1/merged*.root", "");
   
-  TChain* chWjets = new  TChain("Events");
+  std::vector<ProcDSChain> chWjets;
   pickSkimIfExists(chWjets, "data/WJets-madgraph_Summer08_IDEAL_V11_redigi_v1/merged*.root", "");
 
-  TChain* chWcharm = new TChain("Events");
+  std::vector<ProcDSChain> chWcharm;
   pickSkimIfExists(chWcharm, "data/Wc-madgraph_Fall08_IDEAL_V11_redigi_v1/merged*.root", "");
 
-  TChain* chDYtautau = new  TChain("Events");
+  std::vector<ProcDSChain> chDYtautau;
   pickSkimIfExists(chDYtautau, "data/ZJets-madgraph_Summer08_IDEAL_V11_redigi_v1/merged*.root", "_skimSimple2020tautau");
   //the low-mass splice has no choice other than the skim
   pickSkimIfExists(chDYtautau, "data/Ztautau_M20_Summer08_IDEAL_V11_redigi_v1/merged*.root_skimSimple2020_20m50", "");
   
-  TChain* chDYee = new  TChain("Events");
+  std::vector<ProcDSChain> chDYee;
   pickSkimIfExists(chDYee, "data/ZJets-madgraph_Summer08_IDEAL_V11_redigi_v1/merged*.root", "_skimSimple2020ee");
   //the low-mass splice has no choice other than the skim
   pickSkimIfExists(chDYee, "data/Zee_M20_Summer08_IDEAL_V11_redigi_v1/merged*.root_skimSimple2020_20m50", "");
 
-  TChain* chDYmm = new  TChain("Events");
+  std::vector<ProcDSChain> chDYmm;
   pickSkimIfExists(chDYmm, "data/ZJets-madgraph_Summer08_IDEAL_V11_redigi_v1/merged*.root", "_skimSimple2020mm");
   //the low-mass splice has no choice other than the skim
   pickSkimIfExists(chDYmm, "data/Zmumu_M20_Summer08_IDEAL_V11_redigi_v1/merged*.root_skimSimple2020_20m50", "");
   
   //ppMuX
-  TChain* chppMuX = new  TChain("Events");
+  std::vector<ProcDSChain> chppMuX;
   if (runppMuX) {
     pickSkimIfExists(chppMuX, "data/InclusiveMuPt15_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merged*.root", "_skimSimple2020"); 
     //can try InclusiveMu5Pt50 .. figure out how to merge later
   }
   
   //ppEM
-  TChain* chEM =  new  TChain("Events");
+  std::vector<ProcDSChain> chEM;
   if (runEM) {
     pickSkimIfExists(chEM, "data/QCD_EMenriched_Pt20to30_Summer08_IDEAL_V11_redigi_v2-SingleLepton/merged*.root", "_skimSimple2020");
     pickSkimIfExists(chEM, "data/QCD_EMenriched_Pt30to80_Summer08_IDEAL_V11_redigi_v2-SingleLepton/merged*.root", "_skimSimple2020");
@@ -217,7 +253,7 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
   }
 
   //tW
-  TChain* chtW = new  TChain("Events");
+  std::vector<ProcDSChain> chtW;
   if (runtW) {
     pickSkimIfExists(chtW, "data/SingleTop_sChannel_Summer08_IDEAL_V11_redigi_v3/merged*.root", ""); 
     pickSkimIfExists(chtW, "data/SingleTop_tChannel_Summer08_IDEAL_V11_redigi_v3/merged*.root", ""); 
@@ -225,7 +261,7 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
   }
 
   //VQQ
-  TChain* chVQQ = new TChain("Events");
+  std::vector<ProcDSChain> chVQQ;
   if (runVQQ) {
     pickSkimIfExists(chVQQ, "data/VQQ-madgraph_Fall08_IDEAL_V9_v1/merged*.root", "");
   }
@@ -242,75 +278,75 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
   // Process files one at a time, and color them as needed
   if (runttdil) {
     cout << "Processing ttbar dileptonic.. "<<endl;
-    looper->ScanChain(chtopdil,"ttdil", kttdil, prettdil, oldjet, bitmask);
+    looper->ScanChain(chtopdil,"ttdil", kttdil, prettdil, bitmask);
     cout << "Done Processing ttbar dileptonic.. "<<endl;
     hist::color("ttdil", kYellow);
   }
   if (runttotr) {
     cout << "Processing ttbar no-dileptons.. "<<endl;
-    looper->ScanChain(chtopotr,"ttotr", kttotr, prettotr, oldjet, bitmask);
+    looper->ScanChain(chtopotr,"ttotr", kttotr, prettotr, bitmask);
     hist::color("ttotr", 30);
   }
   if (runWW) {
     cout << "Processing WW.."<<endl;
-    looper->ScanChain(chww,"ww", kWW, preWW, oldjet, bitmask);
+    looper->ScanChain(chww,"ww", kWW, preWW, bitmask);
     hist::color("ww", kRed);
   }
   if (runWZ) {
     cout << "Processing WZ.."<<endl;
-    looper->ScanChain(chWZ,"wz", kWZ, preWZ, oldjet, bitmask);
+    looper->ScanChain(chWZ,"wz", kWZ, preWZ, bitmask);
     hist::color("wz", kBlue);
   }
   if (runZZ) {
     cout << "Processing ZZ.."<<endl;
-    looper->ScanChain(chZZ,"zz", kZZ, preZZ, oldjet, bitmask);
+    looper->ScanChain(chZZ,"zz", kZZ, preZZ, bitmask);
     hist::color("zz", kGreen);
   }
   if (runWjets) {
     cout << "Processing Wjets.."<<endl;
-    looper->ScanChain(chWjets,"wjets", kWjets, preWjets, oldjet, bitmask);
+    looper->ScanChain(chWjets,"wjets", kWjets, preWjets, bitmask);
     hist::color("wjets", 40);
   }
 
   if (runWcharm) {
     cout << "Processing Wcharm.." << endl;
-    looper->ScanChain(chWcharm, "wcharm", kWcharm, preWcharm, oldjet, bitmask);
+    looper->ScanChain(chWcharm, "wcharm", kWcharm, preWcharm, bitmask);
     hist::color("wcharm", 50);
   }
   if (runDYtautau) {
     cout << "Processing DY->tautau" << endl;
-    looper->ScanChain(chDYtautau,"DYtautau", kDYtautau, preDYtautau, oldjet, bitmask);
+    looper->ScanChain(chDYtautau,"DYtautau", kDYtautau, preDYtautau, bitmask);
     hist::color("DYtautau", kBlack);
   }
   if (runDYee) {
     cout << "Processing DY->ee" << endl;
-    looper->ScanChain(chDYee,"DYee", kDYee, preDYee, oldjet, bitmask);
+    looper->ScanChain(chDYee,"DYee", kDYee, preDYee, bitmask);
     hist::color("DYee", kMagenta);
   }
   if (runDYmm) {
     cout << "Processing DY->mm" << endl;
-    looper->ScanChain(chDYmm,"DYmm", kDYmm, preDYmm, oldjet, bitmask);
+    looper->ScanChain(chDYmm,"DYmm", kDYmm, preDYmm, bitmask);
     hist::color("DYmm", kCyan);
   }
   if (runppMuX) {
     cout << "Processing ppMuX"<<endl;
-    looper->ScanChain(chppMuX,"ppMuX", kppMuX, preppMuX, oldjet, bitmask);
+    looper->ScanChain(chppMuX,"ppMuX", kppMuX, preppMuX, bitmask);
     hist::color("ppMuX", 51);
   }
   if (runEM) {
     cout << "Processing EM"<<endl;
-    looper->ScanChain(chEM,"EM", kEM, preEM, oldjet, bitmask);
+    looper->ScanChain(chEM,"EM", kEM, preEM, bitmask);
     hist::color("EM", 49);
   }
   if (runtW) {
     cout << "Processing tW"<<endl;
-    looper->ScanChain(chtW,"tW", ktW, pretW, oldjet, bitmask);
+    looper->ScanChain(chtW,"tW", ktW, pretW, bitmask);
     hist::color("tW", 63);
   }
     
   if (runVQQ) {
     cout << "Processing VQQ"<<endl;
-    looper->ScanChain(chVQQ,"VQQ", kVQQ, preVQQ, oldjet, bitmask);
+    looper->ScanChain(chVQQ,"VQQ", kVQQ, preVQQ, bitmask);
     hist::color("VQQ", 45);
   }
 
@@ -328,6 +364,7 @@ void doAll(unsigned int bitmask, bool skipFWLite = false){
 }
   
 void doAllCombined(unsigned int bitmask, bool skipFWLite = false){
+  using namespace std;
   //here is a list to the combinations of cuts useful for the analysis:
   // 1957888 -- baseline
   // 35512320 -- baseline using tcmet
@@ -400,16 +437,11 @@ void doAllCombined(unsigned int bitmask, bool skipFWLite = false){
   gSystem->CompileMacro("ttDilCounts_looper.C", "++k", "libttDilCounts_looper");
   
 
-  // Flag for jet selection
-  // true  = hyp_jet selection (15 GeV uncorrectedm eta<3)
-  // false = 30 GeV corrected, eta<2.4
-  bool oldjet=false;
-
   // K-factors
   //these have been k-factors NLO/LO before
   //now using them as sample normalizations to NLO
   
-  //these two are taken from Ceballos's pdf. 
+
   //It looks like the top x-section is for mtop = 175 GeV
   float kttdil    = 1.; //375pb, 127000 events processed
   float kttotr    = 1.; //375pb, 127000 events processed
@@ -439,62 +471,55 @@ void doAllCombined(unsigned int bitmask, bool skipFWLite = false){
   bool runttdil    = true;
   bool runttotr    = true;
   bool runVV       = true;
-  bool runWjets    = true;
+  bool runWjets    = false;
   bool runDYeemm   = true;
   bool runDYtautau = true;
-  bool runQCD      = true;
+  bool runQCD      = false;
   bool runt        = true;
-  bool runVgamma   = true;
+  bool runVgamma   = false;
   bool runLM0      = true;
 
-  TChain* chtopdil = new TChain("Events");
-  pickSkimIfExists(chtopdil, "data/TTJets-madgraph_Fall08_IDEAL_V11_redigi_v10/merged*.root", "_skimSimple2020anydil");
+  std::vector<ProcDSChain> chtopdil;
+  pickSkimIfExists(chtopdil, "/data/tmp/cms2/TTbar_Summer09-MC_31X_V3_7TeV-v1/V03-00-34/merged*.root", "_skimSimple2020anydil", 1., true, true);
 
-  TChain* chtopotr = new TChain("Events");
-  pickSkimIfExists(chtopotr, "data/TTJets-madgraph_Fall08_IDEAL_V11_redigi_v10/merged*.root", "_skimSimple2020nodil");
+  std::vector<ProcDSChain> chtopotr;
+  pickSkimIfExists(chtopotr, "/data/tmp/cms2/TTbar_Summer09-MC_31X_V3_7TeV-v1/V03-00-34/merged*.root", "_skimSimple2020nodil", 1., true, true);
 
-  TChain* chVV = new TChain("Events");
-  pickSkimIfExists(chVV, "data/WW_Summer08_IDEAL_V11_redigi_v1/merged*.root", "");
-  pickSkimIfExists(chVV, "data/WZ_incl_Summer08_IDEAL_V11_redigi_v1/merged*.root", ""); // can try WZ_3l-Pythia
-  pickSkimIfExists(chVV, "data/ZZ_Summer08_IDEAL_V11_redigi_v1/merged*.root", "");
+  std::vector<ProcDSChain> chVV;
+  //  pickSkimIfExists(chVV, "/data/tmp/cms2/WW_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, true);
+  //  pickSkimIfExists(chVV, "/data/tmp/cms2/WZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, true); // can try WZ_3l-Pythia
+  pickSkimIfExists(chVV, "/data/tmp/cms2/ZZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, true);
   
-  TChain* chWjets = new  TChain("Events");
-  pickSkimIfExists(chWjets, "data/WJets-madgraph_Summer08_IDEAL_V11_redigi_v1/merged*.root", "");
+  std::vector<ProcDSChain> chWjets;
+  pickSkimIfExists(chWjets, "/data/tmp/cms2/Wmunu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, true);
+  //  pickSkimIfExists(chWjets, "/data/tmp/cms2/Wtaunu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, true);
+    //    pickSkimIfExists(chWjets, "/merged*.root", "", 1., true, true);
 
-  TChain* chDYtautau = new  TChain("Events");
-  pickSkimIfExists(chDYtautau, "data/ZJets-madgraph_Summer08_IDEAL_V11_redigi_v1/merged*.root", "_skimSimple2020tautau");
-  //the low-mass splice has no choice other than the skim
-  //  pickSkimIfExists(chDYtautau, "data/Ztautau_M20_Summer08_IDEAL_V11_redigi_v1/merged*.root_skimSimple2020_20m50", "");
-  pickSkimIfExists(chDYtautau, "data/VQQ-madgraph_Fall08_IDEAL_V9_v1/merged*.root", "");
+  std::vector<ProcDSChain> chDYtautau;
+  pickSkimIfExists(chDYtautau, "/data/tmp/cms2/Ztautau_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimSimple2020tautau", 1., true, true);
   
-  TChain* chDYeemm = new  TChain("Events");
-  pickSkimIfExists(chDYeemm, "data/ZJets-madgraph_Summer08_IDEAL_V11_redigi_v1/merged*.root", "");
-  //the low-mass splice has no choice other than the skim
-  //  pickSkimIfExists(chDYeemm, "data/Zee_M20_Summer08_IDEAL_V11_redigi_v1/merged*.root_skimSimple2020_20m50", "");
-  //  pickSkimIfExists(chDYeemm, "data/ZJets-madgraph_Summer08_IDEAL_V11_redigi_v1/merged*.root", "_skimSimple2020mm");
-  //the low-mass splice has no choice other than the skim
-  //  pickSkimIfExists(chDYeemm, "data/Zmumu_M20_Summer08_IDEAL_V11_redigi_v1/merged*.root_skimSimple2020_20m50", "");
-  pickSkimIfExists(chDYeemm, "data/VQQ-madgraph_Fall08_IDEAL_V9_v1/merged*.root", "");
+  std::vector<ProcDSChain> chDYeemm;
+  pickSkimIfExists(chDYeemm, "/data/tmp/cms2/Zmumu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, true);
   
   //ppMuX
-  TChain* chQCD = new  TChain("Events");
-  pickSkimIfExists(chQCD, "data/InclusiveMuPt15_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merged*.root", "_skimSimple2020"); 
-  //  pickSkimIfExists(chQCD, "data/QCD_EMenriched_Pt20to30_Summer08_IDEAL_V11_redigi_v2-SingleLepton/merged*.root", "_skimSimple2020");
-  //  pickSkimIfExists(chQCD, "data/QCD_EMenriched_Pt30to80_Summer08_IDEAL_V11_redigi_v2-SingleLepton/merged*.root", "_skimSimple2020");
-  //  pickSkimIfExists(chQCD, "data/QCD_EMenriched_Pt80to170_Summer08_IDEAL_V11_redigi_v2-SingleLepton/merged*.root", "_skimSimple2020");
-  //  pickSkimIfExists(chQCD, "data/QCD_BCtoE_Pt20to30_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merged*.root", "_skimSimple2020");
-  //  pickSkimIfExists(chQCD, "data/QCD_BCtoE_Pt30to80_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merged*.root", "_skimSimple2020");
-  //  pickSkimIfExists(chQCD, "data/QCD_BCtoE_Pt80to170_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merged*.root", "_skimSimple2020");
+  std::vector<ProcDSChain> chQCD;
+  //ppMuX here  pickSkimIfExists(chQCD, "/merged*.root", "_skimSimple2020", 1., true, true); 
+  //  pickSkimIfExists(chQCD, "/data/tmp/cms2/QCD_BCtoE_Pt20to30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimSimple2020", 1., true, true);
+  pickSkimIfExists(chQCD, "/data/tmp/cms2/QCD_BCtoE_Pt30to80_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimSimple2020", 1., true, true);
+  pickSkimIfExists(chQCD, "/data/tmp/cms2/QCD_BCtoE_Pt80to170_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimSimple2020", 1., true, true);
+  pickSkimIfExists(chQCD, "/data/tmp/cms2/QCD_EMEnriched_Pt20to30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimSimple2020", 1., true, true);
+  //  pickSkimIfExists(chQCD, "/merged*.root", "_skimSimple2020", 1., true, true);
+  //  pickSkimIfExists(chQCD, "/merged*.root", "_skimSimple2020", 1., true, true);
 
   //tW
-  TChain* cht = new  TChain("Events");
-  pickSkimIfExists(cht, "data/SingleTop_sChannel_Summer08_IDEAL_V11_redigi_v3/merged*.root", ""); 
-  pickSkimIfExists(cht, "data/SingleTop_tChannel_Summer08_IDEAL_V11_redigi_v3/merged*.root", ""); 
-  pickSkimIfExists(cht, "data/SingleTop_tWChannel_Summer08_IDEAL_V11_redigi_v3/merged*.root", ""); 
+  std::vector<ProcDSChain> cht;
+  //  pickSkimIfExists(cht, "/data/tmp/cms2/SingleTop_sChannel-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, true); 
+  //  pickSkimIfExists(cht, "/data/tmp/cms2/SingleTop_tChannel-madgraph_Summer09-MC_31X_V3_7TeV-v2/V03-00-35/merged*.root", "", 1., true, true); 
+  //tW here  pickSkimIfExists(cht, "merged*.root", "", 1., true, true); 
 
   //Vgamma
-  TChain* chVgamma = new TChain("Events");
-  //  pickSkimIfExists(chVgamma, "data/AVJets-madgraph_Fall08_IDEAL_V9_v3/merged*.root", "_skimSimple2020");
+  std::vector<ProcDSChain> chVgamma;
+  //  pickSkimIfExists(chVgamma, "data/AVJets-madgraph_Fall08_IDEAL_V9_v3/merged*.root", "_skimSimple2020", 1., true, true);
 
   //LMs are run and loaded at the same time
 
@@ -509,65 +534,71 @@ void doAllCombined(unsigned int bitmask, bool skipFWLite = false){
   // Process files one at a time, and color them as needed
   if (runttdil) {
     cout << "Processing ttbar dileptonic.. "<<endl;
-    looper->ScanChain(chtopdil,"ttdil", kttdil, prettdil, oldjet, bitmask);
+    looper->ScanChain(chtopdil,"ttdil", kttdil, prettdil, bitmask);
     cout << "Done Processing ttbar dileptonic.. "<<endl;
     hist::color("ttdil", kYellow);
   }
   if (runttotr) {
     cout << "Processing ttbar no-dileptons.. "<<endl;
-    looper->ScanChain(chtopotr,"ttotr", kttotr, prettotr, oldjet, bitmask);
+    looper->ScanChain(chtopotr,"ttotr", kttotr, prettotr, bitmask);
     hist::color("ttotr", 30);
   }
   if (runVV) {
     cout << "Processing VV.."<<endl;
-    looper->ScanChain(chVV,"VV", kVV, preVV, oldjet, bitmask);
+    looper->ScanChain(chVV,"VV", kVV, preVV, bitmask);
     hist::color("VV", kRed);
   }
   if (runWjets) {
     cout << "Processing Wjets.."<<endl;
-    looper->ScanChain(chWjets,"wjets", kWjets, preWjets, oldjet, bitmask);
+    looper->ScanChain(chWjets,"wjets", kWjets, preWjets, bitmask);
     hist::color("wjets", 40);
   }
   if (runDYtautau) {
     cout << "Processing DY->tautau" << endl;
-    looper->ScanChain(chDYtautau,"DYtautau", kDYtautau, preDYtautau, oldjet, bitmask);
+    looper->ScanChain(chDYtautau,"DYtautau", kDYtautau, preDYtautau, bitmask);
     hist::color("DYtautau", kBlack);
   }
   if (runDYeemm) {
     cout << "Processing DY->ee/mm" << endl;
-    looper->ScanChain(chDYeemm,"DYeemm", kDYeemm, preDYeemm, oldjet, bitmask);
+    looper->ScanChain(chDYeemm,"DYeemm", kDYeemm, preDYeemm, bitmask);
     hist::color("DYeemm", kMagenta);
   }
   if (runQCD) {
     cout << "Processing ppMuX and EM"<<endl;
-    looper->ScanChain(chQCD,"QCD", kQCD, preQCD, oldjet, bitmask);
+    looper->ScanChain(chQCD,"QCD", kQCD, preQCD, bitmask);
     hist::color("QCD", 51);
   }
   if (runt) {
     cout << "Processing t"<<endl;
-    looper->ScanChain(cht,"t", kt, pret, oldjet, bitmask);
+    looper->ScanChain(cht,"t", kt, pret, bitmask);
     hist::color("t_", 63);
   }
 
   if (runVgamma){
     cout << "Processing Vgamma ... "<<endl;
-    looper->ScanChain(chVgamma, "Vgamma", kVgamma, preVgamma, oldjet, bitmask);
+    looper->ScanChain(chVgamma, "Vgamma", kVgamma, preVgamma, bitmask);
   }
     
   if (runLM0){
     std::vector<TString> lmEs;
     std::vector<TString> lmEds;
-    lmEs.push_back("LM0"); lmEds.push_back("SUSY_LM0-sftsht_Summer08_IDEAL_V11_v1");
-    lmEs.push_back("LM1"); lmEds.push_back("SUSY_LM1-sftsht_Summer08_IDEAL_V11_redigi_v1");
-    lmEs.push_back("LM2"); lmEds.push_back("SUSY_LM2-sftsht_Summer08_IDEAL_V11_redigi_v1");
-    lmEs.push_back("LM3"); lmEds.push_back("SUSY_LM3-sftsht_Summer08_IDEAL_V11_redigi_v1");
-    lmEs.push_back("LM4"); lmEds.push_back("SUSY_LM4-sftsht_Summer08_IDEAL_V11_redigi_v1");
-    lmEs.push_back("LM5"); lmEds.push_back("SUSY_LM5-sftsht_Summer08_IDEAL_V11_redigi_v1");
+    lmEs.push_back("LM0"); lmEds.push_back("LM0_Summer09-MC_31X_V3_7TeV-v1");
+    lmEs.push_back("LM1"); lmEds.push_back("LM1_Summer09-MC_31X_V3_7TeV-v1");
+    lmEs.push_back("LM2"); lmEds.push_back("LM2_Summer09-MC_31X_V3_7TeV-v1");
+    lmEs.push_back("LM3"); lmEds.push_back("LM3_Summer09-MC_31X_V3_7TeV-v1");
+    lmEs.push_back("LM4"); lmEds.push_back("LM4_Summer09-MC_31X_V3_7TeV-v1");
+    lmEs.push_back("LM5"); lmEds.push_back("LM5_Summer09-MC_31X_V3_7TeV-v1");
+    lmEs.push_back("LM6"); lmEds.push_back("LM6_Summer09-MC_31X_V3_7TeV-v1");
+    lmEs.push_back("LM7"); lmEds.push_back("LM7_Summer09-MC_31X_V3_7TeV-v1");
+    lmEs.push_back("LM8"); lmEds.push_back("LM8_Summer09-MC_31X_V3_7TeV-v1");
+    lmEs.push_back("LM9"); lmEds.push_back("LM9_Summer09-MC_31X_V3_7TeV-v1");
+    //    lmEs.push_back("LM9p"); lmEds.push_back("LM9p_Summer09-MC_31X_V3_7TeV-v1");
+    lmEs.push_back("LM12"); lmEds.push_back("LM12_Summer09-MC_31X_V3_7TeV-v1");
     for(unsigned int iLm=0; iLm < lmEs.size(); ++iLm){
       cout << "Processing  ... "<<lmEs[iLm].Data()<<endl;
-      TChain* chLM = new TChain("Events");
-      pickSkimIfExists(chLM, Form("data/%s/merged*.root",lmEds[iLm].Data()), "");
-      looper->ScanChain(chLM, lmEs[iLm].Data(), kLM0, preLM0, oldjet, bitmask);
+      std::vector<ProcDSChain> chLM;
+      pickSkimIfExists(chLM, Form("/data/tmp/cms2/%s/V03-00-35/merged*.root",lmEds[iLm].Data()), "", 1., true, true);
+      looper->ScanChain(chLM, lmEs[iLm].Data(), kLM0, preLM0, bitmask);
     }
   }
     
@@ -588,6 +619,7 @@ void doAllCombined(unsigned int bitmask, bool skipFWLite = false){
   
 
 void doDYandTT_PY(unsigned int bitmask, bool skipFWLite = false){
+  using namespace std;
   //see cuts written up above in the doAll()
  
   // Load various tools  
@@ -596,11 +628,6 @@ void doDYandTT_PY(unsigned int bitmask, bool skipFWLite = false){
   // Load and compile the looping code
   gSystem->CompileMacro("ttDilCounts_looper.C", "++k", "libttDilCounts_looper");
   
-  // Flag for jet selection
-  // true  = hyp_jet selection (15 GeV uncorrectedm eta<3)
-  // false = 30 GeV corrected, eta<2.4
-  bool oldjet=false;
-
   // K-factors
   //these have been k-factors NLO/LO before
   //now using them as sample normalizations to NLO
@@ -630,18 +657,18 @@ void doDYandTT_PY(unsigned int bitmask, bool skipFWLite = false){
   bool runDYmm     = true;
   bool runDYtautau = true;
 
-  TChain* chtopdil = new TChain("Events");
+  std::vector<ProcDSChain> chtopdil;
   pickSkimIfExists(chtopdil, "data/TauolaTTbar-Pythia/merged*.root", "_skimSimple2020anydil");
-  TChain* chtopotr = new TChain("Events");
+  std::vector<ProcDSChain> chtopotr;
   pickSkimIfExists(chtopotr, "data/TauolaTTbar-Pythia/merged*.root", "_skimSimple2020nodil");
 
 
   //Need to include the same mass range
-  TChain* chDYtautau = new  TChain("Events");
+  std::vector<ProcDSChain> chDYtautau;
   pickSkimIfExists(chDYtautau, "data/Ztautau_M20_Summer08_IDEAL_V9_v1/merged*.root_skimSimple2020_m50", "");
-  TChain* chDYee = new  TChain("Events");
+  std::vector<ProcDSChain> chDYee;
   pickSkimIfExists(chDYee, "data/Zee_M20_Summer08_IDEAL_V9_reco-v3/merged*.root_skimSimple2020_m50", "");
-  TChain* chDYmm = new  TChain("Events");
+  std::vector<ProcDSChain> chDYmm;
   pickSkimIfExists(chDYmm, "data/Zmumu_M20_Summer08_IDEAL_V9_reco-v2/merged*.root_skimSimple2020_m50", "");
 
   // Define colors numbers:
@@ -655,29 +682,29 @@ void doDYandTT_PY(unsigned int bitmask, bool skipFWLite = false){
   // Process files one at a time, and color them as needed
   if (runttdil) {
     cout << "Processing ttbar dileptonic.. "<<endl;
-    looper->ScanChain(chtopdil,"ttdil", kttdil, prettdil, oldjet, bitmask);
+    looper->ScanChain(chtopdil,"ttdil", kttdil, prettdil, bitmask);
     cout << "Done Processing ttbar dileptonic.. "<<endl;
     hist::color("ttdil", kYellow);
   }
   if (runttotr) {
     cout << "Processing ttbar no-dileptons.. "<<endl;
-    looper->ScanChain(chtopotr,"ttotr", kttotr, prettotr, oldjet, bitmask);
+    looper->ScanChain(chtopotr,"ttotr", kttotr, prettotr, bitmask);
     hist::color("ttotr", 30);
   }
 
   if (runDYtautau) {
     cout << "Processing DY->tautau" << endl;
-    looper->ScanChain(chDYtautau,"DYtautau", kDYtautau, preDYtautau, oldjet, bitmask);
+    looper->ScanChain(chDYtautau,"DYtautau", kDYtautau, preDYtautau, bitmask);
     hist::color("DYtautau", kBlack);
   }
   if (runDYee) {
     cout << "Processing DY->ee" << endl;
-    looper->ScanChain(chDYee,"DYee", kDYee, preDYee, oldjet, bitmask);
+    looper->ScanChain(chDYee,"DYee", kDYee, preDYee, bitmask);
     hist::color("DYee", kMagenta);
   }
   if (runDYmm) {
     cout << "Processing DY->mm" << endl;
-    looper->ScanChain(chDYmm,"DYmm", kDYmm, preDYmm, oldjet, bitmask);
+    looper->ScanChain(chDYmm,"DYmm", kDYmm, preDYmm, bitmask);
     hist::color("DYmm", kCyan);
   }
   //save all the histograms
@@ -694,6 +721,7 @@ void doDYandTT_PY(unsigned int bitmask, bool skipFWLite = false){
 }
   
 void doDYandTT_MG(unsigned int bitmask, bool skipFWLite = false){
+  using namespace std;
   //see cuts written up above in the doAll()
  
   // Load various tools  
@@ -702,11 +730,6 @@ void doDYandTT_MG(unsigned int bitmask, bool skipFWLite = false){
   // Load and compile the looping code
   gSystem->CompileMacro("ttDilCounts_looper.C", "++k", "libttDilCounts_looper");
   
-  // Flag for jet selection
-  // true  = hyp_jet selection (15 GeV uncorrectedm eta<3)
-  // false = 30 GeV corrected, eta<2.4
-  bool oldjet=false;
-
   // K-factors
   //these have been k-factors NLO/LO before
   //now using them as sample normalizations to NLO
@@ -736,16 +759,16 @@ void doDYandTT_MG(unsigned int bitmask, bool skipFWLite = false){
   bool runDYmm     = true;
   bool runDYtautau = true;
 
-  TChain* chtopdil = new TChain("Events");
+  std::vector<ProcDSChain> chtopdil;
   pickSkimIfExists(chtopdil, "data/TTJets-madgraph_Fall08_IDEAL_V11_redigi_v10/merged*.root", "_skimSimple2020anydil");
-  TChain* chtopotr = new TChain("Events");
+  std::vector<ProcDSChain> chtopotr;
   pickSkimIfExists(chtopotr, "data/TTJets-madgraph_Fall08_IDEAL_V11_redigi_v10/merged*.root", "_skimSimple2020nodil");
 
-  TChain* chDYtautau = new  TChain("Events");
+  std::vector<ProcDSChain> chDYtautau;
   pickSkimIfExists(chDYtautau, "data/ZJets-madgraph_Summer08_IDEAL_V11_redigi_v1/merged*.root", "_skimSimple2020tautau");
-  TChain* chDYee = new  TChain("Events");
+  std::vector<ProcDSChain> chDYee;
   pickSkimIfExists(chDYee, "data/ZJets-madgraph_Summer08_IDEAL_V11_redigi_v1/merged*.root", "_skimSimple2020ee");
-  TChain* chDYmm = new  TChain("Events");
+  std::vector<ProcDSChain> chDYmm;
   pickSkimIfExists(chDYmm, "data/ZJets-madgraph_Summer08_IDEAL_V11_redigi_v1/merged*.root", "_skimSimple2020mm");
   
 
@@ -760,29 +783,29 @@ void doDYandTT_MG(unsigned int bitmask, bool skipFWLite = false){
   // Process files one at a time, and color them as needed
   if (runttdil) {
     cout << "Processing ttbar dileptonic.. "<<endl;
-    looper->ScanChain(chtopdil,"ttdil", kttdil, prettdil, oldjet, bitmask);
+    looper->ScanChain(chtopdil,"ttdil", kttdil, prettdil, bitmask);
     cout << "Done Processing ttbar dileptonic.. "<<endl;
     hist::color("ttdil", kYellow);
   }
   if (runttotr) {
     cout << "Processing ttbar no-dileptons.. "<<endl;
-    looper->ScanChain(chtopotr,"ttotr", kttotr, prettotr, oldjet, bitmask);
+    looper->ScanChain(chtopotr,"ttotr", kttotr, prettotr, bitmask);
     hist::color("ttotr", 30);
   }
 
   if (runDYtautau) {
     cout << "Processing DY->tautau" << endl;
-    looper->ScanChain(chDYtautau,"DYtautau", kDYtautau, preDYtautau, oldjet, bitmask);
+    looper->ScanChain(chDYtautau,"DYtautau", kDYtautau, preDYtautau, bitmask);
     hist::color("DYtautau", kBlack);
   }
   if (runDYee) {
     cout << "Processing DY->ee" << endl;
-    looper->ScanChain(chDYee,"DYee", kDYee, preDYee, oldjet, bitmask);
+    looper->ScanChain(chDYee,"DYee", kDYee, preDYee, bitmask);
     hist::color("DYee", kMagenta);
   }
   if (runDYmm) {
     cout << "Processing DY->mm" << endl;
-    looper->ScanChain(chDYmm,"DYmm", kDYmm, preDYmm, oldjet, bitmask);
+    looper->ScanChain(chDYmm,"DYmm", kDYmm, preDYmm, bitmask);
     hist::color("DYmm", kCyan);
   }
   //save all the histograms

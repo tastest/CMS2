@@ -184,7 +184,7 @@ def makeRootMacros(outpath):
     #get the basic skeleton root script from my directory
     commands.getoutput("cp ~kalavase/crabTools/skelPostProcessingMacro.C postProcessingMacro.C")
     outFile = open("postProcessingMacro.C", "a")
-    text = "\n\n\nvoid postProcess(Float_t xsec, Float_t kFactor, Float_t filterEfficiency) {\n"
+    text = "\n\n\nvoid postProcess(Float_t xsec, Float_t kFactor, Float_t filterEfficiency=1) {\n"
     outFile.write(text)
     #write the 
     for i in goodRootFiles:
@@ -233,7 +233,6 @@ for i in range (0, len(sys.argv)):
         datapath    = sys.argv[i+1] + "/"
     if(sys.argv[i] == "-o"):
         outpath     = sys.argv[i+1] + "/"
-                         
 
 print 'Make sure that you have setup your CMSSW environment by doing eval `scramv1 runtime -sh` or eval `scramv1 runtime -csh in a CMSSW area!!!! \n\n'
 
@@ -315,15 +314,11 @@ getGoodRootFiles(datapath,outpath)
 
 
 getNumEventsRun(crabpath)
-makeRootMacros(outpath)
-##copy crab directory to output directory
-commands.getstatusoutput('mkdir ' + outpath + '/crab_logs')
-commands.getstatusoutput('cp -r ' + crabpath + '* ' + outpath + 'crab_logs')
-
 
 print '+++++++++++++++++++++++++++++'
 print 'Total number of events that were run over to produce ntuples: ' + str(totalNumEventsRun)
 
+makeRootMacros(outpath)
     
 
 
