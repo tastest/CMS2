@@ -83,6 +83,7 @@ void browseStacks( bool makePictures=false, bool wait=true , int addHistName = 1
     hist::color("^wjets_", 9);
     hist::color("^QCD_", 51); //use the same as in doAll
     hist::color("^t_", 46);      
+    hist::color("^totr_", 49);      
   }
   if (colorScheme ==2){ //based on the style in the PAS
     hist::color("^ttdil_", kGreen);
@@ -93,6 +94,7 @@ void browseStacks( bool makePictures=false, bool wait=true , int addHistName = 1
     hist::color("^wjets_", kViolet);
     hist::color("^QCD_", kViolet+3); //use the same as in doAll
     hist::color("^t_", kRed-3);      
+    hist::color("^totr_", kRed+3);      
     hist::color("^Vgamma_", kViolet-4);      
     hist::color(Form("^%s_",bsmName), kBlue);
   }
@@ -160,8 +162,8 @@ void browseStacks( bool makePictures=false, bool wait=true , int addHistName = 1
       thisStack->SetMaximum(thisMaximum);
 
       if(TString(myNames->At(i)->GetName()).Contains("hnJet")) {
-	TList* histolist = thisStack->GetHists();
-	int hatchcount = 0;
+	//	TList* histolist = thisStack->GetHists();
+	//	int hatchcount = 0;
 	// 	for(int j = 0; j<histolist->GetSize();j++) {
 	// 	  if(TString(histolist->At(j)->GetName()).Contains("tt") ||
 	// 	     TString(histolist->At(j)->GetName()).Contains("tautau") ||
@@ -201,7 +203,7 @@ void browseStacks( bool makePictures=false, bool wait=true , int addHistName = 1
 	pt1->SetBorderSize(0);
 	pt1->SetFillStyle(0);
 	
-	TText *blah;
+	TText *blah=0;
 	if (addHistName == 0){
 	  blah = pt1->AddText("");
 	} else if (addHistName == 1){

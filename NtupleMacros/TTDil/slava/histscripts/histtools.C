@@ -193,7 +193,9 @@ namespace hist {
 	TObjArray* a = name.Tokenize("_");
 	TString entry(a->GetEntries() <= token ? obj->GetName() : a->At(token)->GetName());
 	if (entry == "t"){
-	  entry = "Single top";
+	  entry = "t#font[12]{W}";
+	} else if (entry == "totr"){
+	  entry = "Top s/t-channel";
 	} else if (entry == "ttdil"){
 	  entry = "#font[12]{t#bar{t}}#rightarrow  #font[12]{ll}";
 	} else if (entry == "ttotr"){
@@ -344,6 +346,7 @@ namespace hist {
       pats.push_back(new TString("ttdil_"));
       pats.push_back(new TString("ttotr_"));
       pats.push_back(new TString("t_"));
+      pats.push_back(new TString("totr_"));
       pats.push_back(new TString("VV_"));
       pats.push_back(new TString("DYtautau_"));
       pats.push_back(new TString("DYeemm_"));
@@ -355,6 +358,7 @@ namespace hist {
 	pats.push_back(new TString("ref_ttdil_"));
 	pats.push_back(new TString("ref_ttotr_"));
 	pats.push_back(new TString("ref_t_"));
+	pats.push_back(new TString("ref_totr_"));
 	pats.push_back(new TString("ref_VV_"));
 	pats.push_back(new TString("ref_DYtautau_"));
 	pats.push_back(new TString("ref_DYeemm_"));
@@ -367,6 +371,7 @@ namespace hist {
       pats.push_back(new TString("ttdil_"));
       pats.push_back(new TString("ttotr_"));
       pats.push_back(new TString("t_"));
+      pats.push_back(new TString("totr_"));
       pats.push_back(new TString("VV_"));
       pats.push_back(new TString("DYtautau_"));
       pats.push_back(new TString("DYeemm_"));
@@ -379,6 +384,7 @@ namespace hist {
 	pats.push_back(new TString("ref_ttdil_"));
 	pats.push_back(new TString("ref_ttotr_"));
 	pats.push_back(new TString("ref_t_"));
+	pats.push_back(new TString("ref_totr_"));
 	pats.push_back(new TString("ref_VV_"));
 	pats.push_back(new TString("ref_DYtautau_"));
 	pats.push_back(new TString("ref_DYeemm_"));
@@ -391,7 +397,7 @@ namespace hist {
       pats.push_back(new TString(""));
     }
 
-    for (int iPat = 0; iPat < pats.size(); ++iPat){
+    for (unsigned int iPat = 0; iPat < pats.size(); ++iPat){
       TIterator* iter = list->MakeIterator();
       while (obj = iter->Next()) {
 	if (! obj->InheritsFrom(TH1::Class())) continue;
