@@ -75,7 +75,7 @@ void doAll3X() {
 	// write histograms
 	// 
 
-	const char* outFile = "histos_mc_3x_tmp.root";
+	const char* outFile = "histos_mc_3x.root";
 	hist::saveHist(outFile); 
 	hist::deleteHistos();
 
