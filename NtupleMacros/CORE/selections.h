@@ -149,6 +149,7 @@ bool metBalance (int i_hyp, const TVector3& corr);
 bool metProjected (int i_hyp, const TVector3& corr);
 bool pass5Met (int i_hyp, const TVector3& corr);
 bool passMet_OF20_SF30(int hypIdx, bool useTcMet);
+double met_pat_metCor_hyp(unsigned int hypIdx);
 
 //
 
