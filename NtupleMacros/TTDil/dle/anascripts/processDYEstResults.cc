@@ -9,8 +9,8 @@ TH1F* getRHist(HistogramUtilities *hUtil, sources_t theSource, TString nJets, TS
 
 	TH1F *h1_met_in = hUtil->getHistogram(theSource, "dyest_met_in", nJets, "_" + hyp_type);
     TH1F *h1_met_out = hUtil->getHistogram(theSource, "dyest_met_out", nJets, "_" + hyp_type);
-	h1_met_in->Rebin(5);
-	h1_met_out->Rebin(5);
+	h1_met_in->Rebin(2);
+	h1_met_out->Rebin(2);
 
 	TH1F *h1_R = (TH1F*)h1_met_in->Clone();
 	h1_R->Reset();
@@ -145,11 +145,15 @@ void estimate(HistogramUtilities *hUtil, JetBins_t bin, TString hyp_type,
 	Float_t k, 			err2_k;
 	Float_t R,			err2_R;
 
-	TH1F *h1_met_in_data_em = hUtil->getHistogram(sources_all, "dyest_met_in", nJets, "_em");	
+    TH1F *h1_met_in_data_em = hUtil->getHistogram(sources_all, "dyest_met_in", nJets, "_em");
+    TH1F *h1_met_in_data_ll = hUtil->getHistogram(sources_all, "dyest_met_in", nJets, "_" + hyp_type);
+
+	std::cout << "[estimate]" << std::endl;
+	std::cout << "MET CUT is " << h1_met_in_data_em->GetBinLowEdge(metCutBin) << std::endl;
+
 	n_in_data_em = h1_met_in_data_em->Integral(metCutBin, h1_met_in_data_em->GetNbinsX() + 1);
 	err2_n_in_data_em = n_in_data_em;
 
-	TH1F *h1_met_in_data_ll = hUtil->getHistogram(sources_all, "dyest_met_in", nJets, "_" + hyp_type);
 	n_in_data_ll = h1_met_in_data_ll->Integral(metCutBin, h1_met_in_data_ll->GetNbinsX() + 1);
 	err2_n_in_data_ll = n_in_data_ll;
 
@@ -302,8 +306,6 @@ void processDYEstResults(TString fileName)
 	estimate(hUtil, J1, "ee", estResults_ee, nonpeakResults_ee);
 	estimate(hUtil, J2, "ee", estResults_ee, nonpeakResults_ee);
 
-	//TLegend *lg_estimate = new TLegend(0.2, 0.6, 0.6, 0.9);
-
 	TCanvas *c1 = (TCanvas*)estResults_mm.results(0.0, 5.0);
 	c1->Draw();
 
@@ -316,29 +318,46 @@ void processDYEstResults(TString fileName)
 	TCanvas *c4 = (TCanvas*)nonpeakResults_ee.results(0.0, 30.0);
 	c4->Draw();
 
+    TLegend *lg_R = new TLegend(0.2, 0.6, 0.6, 0.9);
+    lg_R->SetFillColor(kWhite);
+    lg_R->SetShadowColor(kWhite);
+    lg_R->SetLineColor(kWhite);
+
     TH1F *h1_R_DY_ee = getRHist(hUtil, (1ll<<H_DYEE), "0j", "ee");
     h1_R_DY_ee->SetLineColor(kBlue);
+	h1_R_DY_ee->SetMarkerColor(kBlue);
     h1_R_DY_ee->SetMarkerStyle(25);
     TH1F *h1_R_DY_mm = getRHist(hUtil, (1ll<<H_DYMM), "0j", "mm");
     h1_R_DY_mm->SetLineColor(kRed);
+	h1_R_DY_mm->SetMarkerColor(kRed);
     h1_R_DY_mm->SetMarkerStyle(27);
+	lg_R->AddEntry(h1_R_DY_ee, "DY->ee", "lp");
+	lg_R->AddEntry(h1_R_DY_mm, "DY->mm", "lp");
+
 
     TCanvas *c5 = new TCanvas();
     c5->cd();
     h1_R_DY_ee->Draw("E1");
     h1_R_DY_mm->Draw("SAME E1");
+	lg_R->Draw();
 
 	TH1F *h1_R_ZZ_ee = getRHist(hUtil, (1ll<<H_ZZ), "0j", "ee");
 	h1_R_ZZ_ee->SetLineColor(kBlue);
-	h1_R_ZZ_ee->SetMarkerStyle(20);
+	h1_R_ZZ_ee->SetMarkerColor(kBlue);
+	h1_R_ZZ_ee->SetMarkerStyle(25);
 	TH1F *h1_R_ZZ_mm = getRHist(hUtil, (1ll<<H_ZZ), "0j", "mm");
 	h1_R_ZZ_mm->SetLineColor(kRed);
-	h1_R_ZZ_mm->SetMarkerStyle(22);
+	h1_R_ZZ_mm->SetMarkerColor(kRed);
+	h1_R_ZZ_mm->SetMarkerStyle(27);
+	lg_R->Clear();
+    lg_R->AddEntry(h1_R_ZZ_ee, "ZZ->ee", "lp");
+    lg_R->AddEntry(h1_R_ZZ_mm, "ZZ->mm", "lp");
 
 	TCanvas *c6 = new TCanvas();
 	c6->cd();
 	h1_R_ZZ_ee->Draw("E1");
 	h1_R_ZZ_mm->Draw("SAME E1");
+	lg_R->Draw();
 
 	delete hUtil;
 

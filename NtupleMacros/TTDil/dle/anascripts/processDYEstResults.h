@@ -38,7 +38,7 @@ const static sources_t sources_all =
 (1ll << H_DYMM) |
 (1ll << H_DYEE);
 
-const static int metCutBin = 5;
+const static int metCutBin = 7;
 
 		// ****** Get the histogram of R as a function of MET for the
 		// ****** desired datasource
