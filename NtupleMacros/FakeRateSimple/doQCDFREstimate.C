@@ -78,7 +78,7 @@ void TestPrediction() {
   //hist::setrangey(c22);
   //c22->SaveAs("muPredictedpt.png");
 
-  TCanvas *c3 = new TCanvas();
+  TCanvas *c3 = new TCanvas("c3","c3",1280,960);
   ((TH1F*)gDirectory->Get("WJets_actualnJets_el"))->SetMarkerStyle(3);
   (TH1F*)gDirectory->Get("WJets_actualnJets_el")->Draw("e");
   ((TH1F*)gDirectory->Get("WJets_predictednJets_el"))->SetMarkerStyle(25);
@@ -87,7 +87,7 @@ void TestPrediction() {
   c3->SaveAs("elWJetsnJetsPredicted.png");
 
 
-  TCanvas *c3a = new TCanvas();
+  TCanvas *c3a = new TCanvas("c3a","c3a",1280,960);
   ((TH1F*)gDirectory->Get("WJets_actualTrueCat_el"))->SetMarkerStyle(3);
   (TH1F*)gDirectory->Get("WJets_actualTrueCat_el")->Draw("e");
   ((TH1F*)gDirectory->Get("WJets_predictedTrueCat_el"))->SetMarkerStyle(25);
@@ -95,7 +95,7 @@ void TestPrediction() {
   hist::setrangey(c3a);
   c3a->SaveAs("elWJetTrueCatPredicted.png");
 
-  TCanvas *c3aa = new TCanvas();
+  TCanvas *c3aa = new TCanvas("c3aa","c3aa",1280,960);
   ((TH1F*)gDirectory->Get("TTbar_actualnJets_el"))->SetMarkerStyle(3);
   (TH1F*)gDirectory->Get("TTbar_actualnJets_el")->Draw("e");
   ((TH1F*)gDirectory->Get("TTbar_predictednJets_el"))->SetMarkerStyle(25);
@@ -103,7 +103,7 @@ void TestPrediction() {
   hist::setrangey(c3aa);
   c3aa->SaveAs("elTTbarnJetsPredicted.png");
 
-  TCanvas *c3b = new TCanvas();
+  TCanvas *c3b = new TCanvas("c3b","c3b",1280,960);
   ((TH1F*)gDirectory->Get("TTbar_actualTrueCat_el"))->SetMarkerStyle(3);
   (TH1F*)gDirectory->Get("TTbar_actualTrueCat_el")->Draw("e");
   ((TH1F*)gDirectory->Get("TTbar_predictedTrueCat_el"))->SetMarkerStyle(25);
@@ -111,21 +111,21 @@ void TestPrediction() {
   hist::setrangey(c3b);
   c3b->SaveAs("elTTbarTrueCatPredicted.png");
 
-  TCanvas *c4 = new TCanvas();
+  TCanvas *c4 = new TCanvas("c4","c4",1280,960);
   TH2F *QCDFRptvseta_el = (TH2F*)gDirectory->Get("QCD_FRptvseta_el");
   QCDFRptvseta_el->SetMinimum(0.);
   QCDFRptvseta_el->SetMaximum(0.2);
   QCDFRptvseta_el->Draw("LEGO2");
   c4->SaveAs("elFR2D.png");
 
-  TCanvas *c5 = new TCanvas();
+  TCanvas *c5 = new TCanvas("c5","c5",1280,960);
   TH2F *QCDFRErrptvseta_el = (TH2F*)gDirectory->Get("QCD_FRErrptvseta_el");
   QCDFRErrptvseta_el->SetMinimum(0.);
   QCDFRErrptvseta_el->SetMaximum(0.2);
   QCDFRErrptvseta_el->Draw("LEGO2");
   c5->SaveAs("elFRErr2D.png");
   
-  TCanvas *c6 = new TCanvas();
+  TCanvas *c6 = new TCanvas("c6","c6",1280,960);
   TH1F *QCD_FReta_el = (TH1F*)gDirectory->Get("QCD_FReta_el");
   QCD_FReta_el->SetMinimum(0.);
   QCD_FReta_el->SetMaximum(0.2);
@@ -133,7 +133,7 @@ void TestPrediction() {
   c6->SaveAs("elFReta.png");
 
 
-  TCanvas *c7 = new TCanvas();
+  TCanvas *c7 = new TCanvas("c7","c7",1280,960);
   TH1F *QCD_FRpt_el = gDirectory->Get("QCD_FRpt_el");
   QCD_FRpt_el->SetMinimum(0.);
   QCD_FRpt_el->SetMaximum(0.2);
@@ -150,7 +150,7 @@ void TestPrediction() {
   //WJets_predictedpt[0]->Draw("sames");
   //c9->SaveAs("elPredictedpt.png");
 
-  TCanvas *c10 = new TCanvas();
+  TCanvas *c10 = new TCanvas("c10","c10",1280,960);
   ((TH1F*)gDirectory->Get("WJets_actualnJets_mu"))->SetMarkerStyle(3);
   (TH1F*)gDirectory->Get("WJets_actualnJets_mu")->Draw("e");
   ((TH1F*)gDirectory->Get("WJets_predictednJets_mu"))->SetMarkerStyle(25);
@@ -158,30 +158,30 @@ void TestPrediction() {
   hist::setrangey(c3);
   c10->SaveAs("munJetsPredicted.png");
 
-  TCanvas *c11 = new TCanvas();
+  TCanvas *c11 = new TCanvas("c11","c11",1280,960);
   TH2F *QCDFRptvseta_mu = (TH2F*)gDirectory->Get("QCD_FRptvseta_mu");
   QCDFRptvseta_mu->SetMinimum(0.);
   QCDFRptvseta_mu->SetMaximum(0.2);
   QCDFRptvseta_mu->Draw("LEGO2");
   c11->SaveAs("muFR2D.png");
 
-  TCanvas *c12 = new TCanvas();
+  TCanvas *c12 = new TCanvas("c12","c12",1280,960);
   TH2F *QCDFRErrptvseta_mu = (TH2F*)gDirectory->Get("QCD_FRErrptvseta_mu");
   QCDFRErrptvseta_mu->SetMaximum(0.2);
   QCDFRErrptvseta_mu->Draw("LEGO2");
   c12->SaveAs("muFRErr2D.png");
   
-  TCanvas *c13 = new TCanvas();
+  TCanvas *c13 = new TCanvas("c13","c13",1280,960);
   TH1F *QCD_FReta_mu = (TH1F*)gDirectory->Get("QCD_FReta_mu");
   QCD_FReta_mu->Draw();
   c13->SaveAs("muFReta.png");
 
-  TCanvas *c14 = new TCanvas();
+  TCanvas *c14 = new TCanvas("c14","c14",1280,960);
   TH1F *QCD_FRpt_mu = gDirectory->Get("QCD_FRpt_mu");
   QCD_FRpt_mu->Draw();
   c14->SaveAs("muFRpt.png");
 
-  TCanvas *c15 = new TCanvas();
+  TCanvas *c15 = new TCanvas("c15","c15",1280,960);
   c15->Divide(3,3);
   c15->cd(1);
   TH1F *h_el_WJnum = gDirectory->Get("WJets_truecomposition_num_el");
