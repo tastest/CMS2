@@ -81,7 +81,7 @@ bool isNumEl(int iEl){
      electronId_cand01(iEl) &&
      electronImpact_cand01(iEl) &&             	// d0corr > .02
      electronIsolation_relsusy_cand1(iEl,true) && // relative isolation < .1
-     isFromConversionPartnerTrack(iEl)         	// dist < .02 dcot < .02
+     !isFromConversionPartnerTrack(iEl)         	// dist < .02 dcot < .02
      ){
     return true;
   } else {
@@ -96,7 +96,7 @@ bool isDenomEl(int iEl){
      (fabs(eta)<=2.4) &&
      electronImpact_cand01(iEl) &&             	// d0corr > .02
      electronIsolation_relsusy_cand1(iEl,true) && // relative isolation < .1
-     isFromConversionPartnerTrack(iEl)         	// dist < .02 dcot < .02
+     !isFromConversionPartnerTrack(iEl)         	// dist < .02 dcot < .02
      ){
     return true;
   } else{

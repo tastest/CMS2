@@ -91,7 +91,7 @@ void TestPrediction() {
   ((TH1F*)gDirectory->Get("WJets_predictedTrueCat_el"))->SetMarkerStyle(25);
   (TH1F*)gDirectory->Get("WJets_predictedTrueCat_el")->Draw("samese");
   hist::setrangey(c3a);
-  c3->SaveAs("elTrueCatPredicted.png");
+  c3a->SaveAs("elTrueCatPredicted.png");
 
   TCanvas *c4 = new TCanvas();
   TH2F *QCDFRptvseta_el = (TH2F*)gDirectory->Get("QCD_FRptvseta_el");
