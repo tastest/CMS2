@@ -97,16 +97,19 @@ gROOT->ProcessLine(".x ../Tools/setup.C");
 
 
  char* finalState[4];
- finalState[2] = "emu";
- finalState[1] = "mumu";
+ finalState[2] = "e&mu;";
+ finalState[1] = "&mu;&mu;";
  finalState[0] = "ee";
  finalState[3] = "total";
 
- cout << "|Same Sign | Total SM | DY | ttbar | Wjets | WW | WZ  | ZZ | TW | LM0 | LM1 | LM2 | LM3 | LM4 | LM5 | LM6 | LM7 | LM8 | LM9 |" << endl;
+ cout << "|Same Sign | Total SM | ttbar | TW | WZ | ZZ | WW | DY | Wjets | LM0 | LM1 | LM2 | LM3 | LM4 | LM5 | LM6 | LM7 | LM8 | LM9 |" << endl;
+// cout.setf(ios::fixed, ios::floatfield);
+// cout.precision(2);
 
  for (int i=0; i<4; i++){
 
-   cout << "| " << finalState[i] << " | " << totSM[i] <<  " | "  << DY[i] << " | " << tt[i] << " | " << wjets[i] << " | " << ww[i] << " | " << wz[i] << " | " << zz[i] << " | " << tw[i] << " | " << lm0x[i] << "|" << lm1x[i] << "|" << lm2x[i] << "|" << lm3x[i] << "|" << lm4x[i] << "|" << lm5x[i] << "|" << lm6x[i] << "|" << lm7x[i] << "|" << lm8x[i] << "|" << lm9x[i] << "|" << endl;
+//   cout << "| " << finalState[i] << " | " << totSM[i] <<  " | "  << DY[i] << " | " << tt[i] << " | " << wjets[i] << " | " << ww[i] << " | " << wz[i] << " | " << zz[i] << " | " << tw[i] << " | " << lm0x[i] << "|" << lm1x[i] << "|" << lm2x[i] << "|" << lm3x[i] << "|" << lm4x[i] << "|" << lm5x[i] << "|" << lm6x[i] << "|" << lm7x[i] << "|" << lm8x[i] << "|" << lm9x[i] << "|" << endl;
+   cout << "| " << finalState[i] << " | " << totSM[i] <<  " | "  << tt[i] << " | " << tw[i] << " | " << wz[i] << " | " << zz[i] << " | " << ww[i] << " | " << DY[i] << " | " << wjets[i] << " | " << lm0x[i] << "|" << lm1x[i] << "|" << lm2x[i] << "|" << lm3x[i] << "|" << lm4x[i] << "|" << lm5x[i] << "|" << lm6x[i] << "|" << lm7x[i] << "|" << lm8x[i] << "|" << lm9x[i] << "|" << endl;
 
   totSM[3] = totSM[3] + totSM[i]; 
    DY[3] = DY[3]+DY[i];
