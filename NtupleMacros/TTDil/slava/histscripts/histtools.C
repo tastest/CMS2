@@ -659,7 +659,7 @@ namespace hist {
   }
 
 
-  void loadHist(const char* filename, const char* pfx, const char* pat, Bool_t doAdd)
+  void loadHist(const char* filename, const char* pfx, const char* pat, const char* antipat, Bool_t doAdd)
   {
     TFile inf(filename) ;
     //inf.ReadAll() ;
@@ -669,6 +669,8 @@ namespace hist {
     TRegexp re(pat,kTRUE) ;
     if (pat!=0) cout << "pat = " << pat << endl ;
     else cout<<"no pattern: read all"<<endl;
+
+    TRegexp antire(antipat,kTRUE) ;
 
     gDirectory->cd("Rint:") ;
 
@@ -684,6 +686,11 @@ namespace hist {
 	//	cout<<"Check patt "<<pat<<endl;
 	if (TString(key->GetName()).Index(re)==-1) {
 	  continue ;
+	}
+      }
+      if (antipat!=0){
+	if (TString(key->GetName()).Index(antire)!=-1) {
+	  continue;
 	}
       }
 

@@ -47,7 +47,7 @@ namespace hist {
 
    void histio();
    void saveHist(const char* filename, const char* pat="*");
-   void loadHist(const char* filename, const char* pfx=0, const char* pat="*", Bool_t doAdd=kFALSE);
+   void loadHist(const char* filename, const char* pfx=0, const char* pat="*", const char* antipat=0, Bool_t doAdd=kFALSE);
 }
 
 
