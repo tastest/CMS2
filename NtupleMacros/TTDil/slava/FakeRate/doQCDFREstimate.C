@@ -203,21 +203,21 @@ void TestPrediction() {
 void doAll(){
   
   gROOT->ProcessLine(".L setup.C");
-  gROOT->ProcessLine("setup(true)");
+  gROOT->ProcessLine("setup()");
   gSystem->CompileMacro("QCDFRestimator.C","++k", "libQCDFRestimator");
   
-  TChain *ch_pthat30to80 = new TChain("Events");
-  ch_pthat30to80->Add("data/QCDpt30_v2/merged*.root");
+  TChain *ch_pthat30 = new TChain("Events");
+  ch_pthat30->Add("data/QCD_Pt30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root");
   
   //WJets chain
   TChain *ch_WJets = new TChain("Events");
-  ch_WJets->Add("data/WJets-madgraph_Fall08_IDEAL_V9_v1/merged*.root");
+  ch_WJets->Add("data/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root");
 
   QCDFRestimator *looper = new QCDFRestimator();
   
-  looper->ScanChainQCD(ch_pthat30to80, "QCD", 1.0, 1.0, 0.0, 99999999.0);
+  looper->ScanChainQCD(ch_pthat30, "QCD", 1.0, 1.0);
   cout << "Done QCD" << endl;
-
+  
   //do WJets
   looper->ScanChainWJets(ch_WJets, "WJets", 1.0, 1.0);
   cout << "Done WJets" << endl;
