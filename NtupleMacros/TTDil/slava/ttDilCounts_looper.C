@@ -418,14 +418,14 @@ int ttDilCounts_looper::ScanChain (std::vector<ProcDSChain>& pds, std::string pr
 	  if (! passTriggersTTDil08JanTrial(hyp_type) ) continue;
 	}
 
-        if(dilepMassVetoCutTTDil08) {
+        if(! fillMaxWeightDilOnly && dilepMassVetoCutTTDil08) {
           // Z mass veto using hyp_leptons for ee and mumu final states
           if (hyp_type == 0 || hyp_type == 3) {
             if (inZmassWindow(cms2.hyp_p4()[hypIdx].mass())) continue;
           }    
         }
 
-	if(dilepAdditionalMassVetoCutTTDil08){
+	if(! fillMaxWeightDilOnly && dilepAdditionalMassVetoCutTTDil08){
           // Z veto using additional leptons in the event
           if (additionalZvetoTTDil08()) continue; 
 	}
@@ -502,6 +502,19 @@ int ttDilCounts_looper::ScanChain (std::vector<ProcDSChain>& pds, std::string pr
 	}
 
 	// ! event level cut here, can reset the eventPassed to false
+	if (fillMaxWeightDilOnly && dilepMassVetoCutTTDil08) {
+	  int hyp_type= cms2.hyp_type()[maxWeightIndex];
+          // Z mass veto using hyp_leptons for ee and mumu final states
+          if (hyp_type == 0 || hyp_type == 3) {
+            if (inZmassWindow(cms2.hyp_p4()[maxWeightIndex].mass())) continue;
+          }
+        }
+
+        if(fillMaxWeightDilOnly && dilepAdditionalMassVetoCutTTDil08){
+          // Z veto using additional leptons in the event
+          if (additionalZvetoTTDil08()) continue;
+        }
+	
 	if (fillMaxWeightDilOnly && metBaselineSelectionTTDil08){
 	  if (globalJESscaleRescale == 1. && (useTcMet||usePfMet) && ! passMet_OF20_SF30(maxWeightIndex,useTcMet,usePfMet)) continue;
 	  if ( !(useTcMet||usePfMet)){
@@ -799,6 +812,8 @@ int ttDilCounts_looper::ScanChain (std::vector<ProcDSChain>& pds, std::string pr
 	  fill1D(hpfmetPhi[myType][arrNjets], cms2.evt_pfmetPhi(), weight);      
 	  fill1D(hpfmet[3][arrNjets], cms2.evt_pfmet(), weight);      
 	  fill1D(hpfmetPhi[3][arrNjets], cms2.evt_pfmetPhi(), weight);      
+	  fill1D(hpfmetSpec[myType][arrNjets], MetSpecial(cms2.evt_pfmet(),cms2.evt_pfmetPhi(),hypIdx), weight);      
+	  fill1D(hpfmetSpec[3][arrNjets], MetSpecial(cms2.evt_pfmet(),cms2.evt_pfmetPhi(),hypIdx), weight);      
 	  
 	  // Met vs dilepton Pt
 	  hmetVsDilepPt[myType][arrNjets]->Fill(cms2.evt_metMuonCorr(), cms2.hyp_p4()[hypIdx].pt(), weight);
@@ -1159,6 +1174,10 @@ void ttDilCounts_looper::bookHistos(std::string& prefixS) {
       hpfmetPhi[i][j]->SetDirectory(rootdir);
       hpfmetPhi[i][j]->GetXaxis()->SetTitle("#phi");
 
+      hpfmetSpec[i][j] = new TH1F(Form("%s_hpfmetSpec_%s",prefixS.c_str(),suffixS.c_str()),Form("%s_pfmetSpec_%s",prefixS.c_str(),suffixS.c_str()),20,0.,200.);
+      hpfmetSpec[i][j]->SetDirectory(rootdir);
+      hpfmetSpec[i][j]->GetXaxis()->SetTitle("MET_{proj} (GeV)");
+
       hpfmetVsDilepPt[i][j] = new TH2F(Form("%s_hpfmetVsDilepPt_%s",prefixS.c_str(),suffixS.c_str()),
 				     Form("%s_pfmetVsDilepPt_%s",prefixS.c_str(),suffixS.c_str()),
 				     100,0.,200.,100,0.,200.);
@@ -1325,6 +1344,7 @@ void ttDilCounts_looper::bookHistos(std::string& prefixS) {
       htcmetPhi[i][j]->Sumw2();
       hpfmet[i][j]->Sumw2();
       hpfmetPhi[i][j]->Sumw2();
+      hpfmetSpec[i][j]->Sumw2();
 
       hmetVsDilepPt[i][j]->Sumw2();
       hmetOverPtVsDphi[i][j]->Sumw2();

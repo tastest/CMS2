@@ -70,6 +70,7 @@ class ttDilCounts_looper {
   TH1F* htcmetPhi[4][6];       // tc MET phi
   TH1F* hpfmet[4][6];       // pf MET
   TH1F* hpfmetPhi[4][6];       // pf MET phi
+  TH1F* hpfmetSpec[4][6];       // pf MET special (projected)
 
   TH2F* hmetVsDilepPt[4][6];  // MET vs dilepton Pt
   TH2F* hmetOverPtVsDphi[4][6]; // MET/Lepton Pt vs DeltaPhi between MET and Lepton Pt
