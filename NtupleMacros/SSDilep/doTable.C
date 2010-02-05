@@ -4,7 +4,7 @@
 //gROOT->LoadMacro("loader.C+");
 
 // Load various tools
-gROOT->ProcessLine(".x ../Tools/setup.C");
+//gROOT->ProcessLine(".x setup.C");
 
 //hist file:
  TFile *ftt = TFile::Open("./processed_data_tag.root");

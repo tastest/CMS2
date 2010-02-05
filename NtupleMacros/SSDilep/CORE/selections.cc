@@ -11,6 +11,8 @@
 #include "TLorentzVector.h"
 #include "TDatabasePDG.h"
 #include "selections.h"
+#include "muonSelections.h"
+#include "electronSelections.h"
 
 // CMS2 includes
 #include "CMS2.h"
@@ -1924,6 +1926,7 @@ int numberOfExtraElectronsVJets09(int i_hyp){
 
 //------------------------------------------------------------------------------------
 // SUSY dilepton cuts 09 for TAS
+//----------------------------------------------------------------------------------
 
 bool comparePt (const LorentzVector &lv1, 
 		const LorentzVector &lv2) 
@@ -1943,6 +1946,7 @@ bool GoodSusyElectronWithoutIsolation(int index) {
   return true; 
 } 
 
+
 bool GoodSusyElectronWithoutIsolationNoD0(int index) { 
   if ( cms2.els_egamma_tightId().at(index)     !=  1) return false; 
   if ( cms2.els_closestMuon().at(index) != -1) return false; 
@@ -1961,6 +1965,7 @@ bool GoodSusyMuonWithoutIsolation(int index) {
   if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4) return false;
   return true; 
 } 
+
 
 bool isNumElSUSY09(int iEl) {
   Double_t pt = cms2.els_p4()[iEl].Pt();
@@ -2045,6 +2050,14 @@ bool GoodSusyLeptonID(int id, int index){
   if (abs(id) == 13) return GoodSusyMuonWithoutIsolation(index); 
   return false; 
 }    
+
+
+bool GoodSusy2010Leptons(int id, int index){ 
+  if (abs(id) == 11) return electronSelection_cand01(index);
+  if (abs(id) == 13) return muonId(index); 
+  return false;
+}
+
 
 bool GoodSusyTrigger(int dilType){
   bool hlt_ele15_lw_l1r = cms2.passHLTTrigger("HLT_Ele15_SW_L1R");
@@ -2328,6 +2341,102 @@ bool additionalZvetoSUSY09(int i_hyp) {
   // done
   return veto;
 }
+
+// Use one lepton with isolation WARNING
+
+bool additionalZvetoSUSY2010(int i_hyp) {
+
+  // true if we want to veto this event
+  bool veto=false;
+
+  // first, look for Z->mumu
+  for (unsigned int i=0; i < cms2.mus_p4().size(); i++) {
+    bool hypLep1 = false;
+    if (cms2.mus_p4().at(i).pt() < 10.)     continue;
+    
+    if ( TMath::Abs(cms2.mus_p4()[i].eta()) > 2.4)  continue; // eta cut
+    if (cms2.mus_gfit_chi2().at(i)/cms2.mus_gfit_ndof().at(i) >= 10) continue; //glb fit chisq
+    if (((cms2.mus_type().at(i)) & (1<<1)) == 0)    continue; // global muon
+    if (((cms2.mus_type().at(i)) & (1<<2)) == 0)    continue; // tracker muon
+    if (cms2.mus_validHits().at(i) < 11)            continue; // # of tracker hits
+    if (cms2.mus_iso_ecalvetoDep().at(i) > 4)       continue; // ECalE < 4 
+    if (cms2.mus_iso_hcalvetoDep().at(i) > 6)       continue; // HCalE < 6 
+    if (cms2.mus_gfit_validSTAHits().at(i) == 0)    continue; // Glb fit must have hits in mu chambers
+    if (TMath::Abs(cms2.mus_d0corr().at(i)) > 0.02) continue; // d0 from beamspot
+    
+    
+    if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == i ) hypLep1 = true;
+    if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == i ) hypLep1 = true;
+    
+    for (unsigned int j=i+1; j < cms2.mus_p4().size(); j++) {
+      bool hypLep2 = false;
+      if (cms2.mus_p4().at(j).pt() < 10.) continue;
+      
+      if ( TMath::Abs(cms2.mus_p4()[j].eta()) > 2.4)  continue; // eta cut
+      if (cms2.mus_gfit_chi2().at(j)/cms2.mus_gfit_ndof().at(j) >= 10) continue; //glb fit chisq
+      if (((cms2.mus_type().at(j)) & (1<<1)) == 0)    continue; // global muon
+      if (((cms2.mus_type().at(j)) & (1<<2)) == 0)    continue; // tracker muon
+      if (cms2.mus_validHits().at(j) < 11)            continue; // # of tracker hits
+      if (cms2.mus_iso_ecalvetoDep().at(j) > 4)       continue; // ECalE < 4 
+      if (cms2.mus_iso_hcalvetoDep().at(j) > 6)       continue; // HCalE < 6 
+      if (cms2.mus_gfit_validSTAHits().at(j) == 0)    continue; // Glb fit must have hits in mu chambers
+      if (TMath::Abs(cms2.mus_d0corr().at(j)) > 0.02) continue; // d0 from beamspot
+      
+
+      if (cms2.mus_charge().at(i) == cms2.mus_charge().at(j)) continue;
+      if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == j ) hypLep2 = true;
+      if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == j ) hypLep2 = true;
+      // At least one of them has to pass isolation
+      //      if (!PassSusyMuonIsolation(i) && !PassSusyMuonIsolation(j)) continue;
+      if ((muonIsoValue(i) > 0.1) && (muonIsoValue(j) > 0.1 )) continue;
+      if ( hypLep1 && hypLep2 ) continue;
+      if ( !hypLep1 && !hypLep2 ) continue;
+      // Make the invariant mass
+      LorentzVector vec = cms2.mus_p4().at(i) + cms2.mus_p4().at(j);
+      if ( inZmassWindow(vec.mass()) ) return true;
+
+    }
+  }
+
+  // now, look for Z->ee
+  for (unsigned int i=0; i < cms2.els_p4().size(); i++) {
+    bool hypLep1 = false;
+    if (cms2.els_p4().at(i).pt() < 10.)     continue;
+
+    if ( TMath::Abs(cms2.els_p4()[i].eta()) > 2.4)  continue; // eta cut
+    if (!electronId_noMuon(i)) continue;
+    if (!electronId_cand01(i)) continue;
+    if (!electronImpact_cand01(i)) continue;
+
+    if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && cms2.hyp_lt_index()[i_hyp] == i ) hypLep1 = true;
+    if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && cms2.hyp_ll_index()[i_hyp] == i ) hypLep1 = true;
+    for (unsigned int j=i+1; j<cms2.els_p4().size(); j++) {
+      bool hypLep2 = false;
+      if (cms2.els_p4().at(j).pt() < 10.) continue;
+
+      if ( TMath::Abs(cms2.els_p4()[j].eta()) > 2.4)  continue; // eta cut 
+      if (!electronId_noMuon(j)) continue; 
+      if (!electronId_cand01(j)) continue; 
+      if (!electronImpact_cand01(j)) continue; 
+
+      if (cms2.els_charge().at(i) == cms2.els_charge().at(j)) continue;
+      // At least one of them has to pass isolation
+      //      if (!PassSusyElectronIsolation(i, true) && ! PassSusyElectronIsolation(j, true)) continue;
+      if ((electronIsolation_relsusy_cand1(i, true) > 0.10) && (electronIsolation_relsusy_cand1(j, true) > 0.10)) continue;
+      if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && cms2.hyp_lt_index()[i_hyp] == j ) hypLep2 = true;
+      if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && cms2.hyp_ll_index()[i_hyp] == j ) hypLep2 = true;
+      if ( hypLep1 && hypLep2 ) continue;
+      if ( !hypLep1 && !hypLep2 ) continue;
+      // Make the invariant mass
+      LorentzVector vec = cms2.els_p4().at(i) + cms2.els_p4().at(j);
+      if ( inZmassWindow(vec.mass()) ) return true;
+      
+    }
+  }
+  // done
+  return veto;
+}
+
 
 // For Fake rates
 

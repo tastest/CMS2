@@ -7,26 +7,50 @@
 //
 
 //
-// candidate electron id function
+// combined selection functions
 //
-bool electronId_cand01();
+bool electronSelection_cand01(const unsigned int index);
+
+//
+// candidate electron id function
+// see http://www.t2.ucsd.edu/tastwiki/bin/view/CMS/ElectronID
+//
+bool electronId_cand01(const unsigned int index);
+bool electronImpact_cand01(const unsigned int index);
+
+//
+// remove electrons that are overlapping with a muon
+//
+bool electronId_noMuon(const unsigned int index);
+
+//
+// candidate electron isolation function
+// see http://www.t2.ucsd.edu/tastwiki/bin/view/CMS/EfficiencyMeasurement
+//
+bool electronIsolation_cand01(const unsigned int index);
 
 //
 // class based electron id that we have used before
 //
-bool electronId_classBased();
+bool electronId_classBasedLoose(const unsigned int index);
+bool electronId_classBasedTight(const unsigned int index);
 
 //
-// candidate electron isolation function
+// electron isolation definitions that we have used before
 //
-bool electronIsolation_cand01();
+float electronIsolation_rel(const unsigned int index, bool use_calo_iso);
+float electronIsolation_relsusy(const unsigned int index, bool use_calo_iso);
+float electronIsolation_relsusy_cand0(const unsigned int index, bool use_calo_iso);
+float electronIsolation_relsusy_cand1(const unsigned int index, bool use_calo_iso);
 
 //
-// functions for individual subdet electron isolations
+// conversion rejection
 //
-bool electronTkIsolation(const unsigned int index, const float threshold);
-bool electronEcalIsolation(const unsigned int index, const float threshold);
-bool electronHcalIsolation(const unsigned int index, const float threshold);
+bool isFromConversionHitPattern(const unsigned int index);
+bool isFromConversionPartnerTrack(const unsigned int index);
+
+//electron charge using the majority logic of the egamma group
+int getChargeUsingMajorityLogic(int elIdx, float minFracSharedHits = 0.45);
 
 #endif
 

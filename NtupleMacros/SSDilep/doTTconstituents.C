@@ -44,10 +44,17 @@ void doTTconstituents() {
   ttwoother[3]= ttbar_hnJetWOOther_all->Integral();
   other[3]=ttbar_hnJetOO_all->Integral();
 
+ char* finalState[4];
+ finalState[2] = "e&mu;";
+ finalState[1] = "&mu;&mu;";
+ finalState[0] = "ee";
+ finalState[3] = "total";
+
+
   cout << "| Same Sign | Type I+II+III | Type-I | Type-II | Type-III | Type-II-SemiLep | Type-II-Fakes | " <<  endl;
   
   for (int i = 0; i < 4 ; i++) {
-    cout << "| | " << ttww[i]+ttwo[i]+other[i] << " | " << ttww[i] << " | " << ttwo[i] << " | " << other[i] << " | " << ttwosemi[i] << " | " << ttwoother[i] << " | " << endl;
+    cout << "| " << finalState[i] << " | " <<  ttww[i]+ttwo[i]+other[i] << " | " << ttww[i] << " | " << ttwo[i] << " | " << other[i] << " | " << ttwosemi[i] << " | " << ttwoother[i] << " | " << endl;
   }
 
 

@@ -27,6 +27,8 @@ using namespace std;
 #include "CORE/CMS2.cc"
 #include "CORE/utilities.cc"
 #include "CORE/selections.cc"
+#include "CORE/electronSelections.cc"
+#include "CORE/muonSelections.cc"
 #include "Tools/tools.cc"
 #endif
 
@@ -150,6 +152,8 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
      // Cut on lepton Pt and eta
      if (cms2.hyp_lt_p4()[i_hyp].pt() < 10.0) return;
      if (cms2.hyp_ll_p4()[i_hyp].pt() < 10.0) return;
+     if ( TMath::Abs(cms2.hyp_lt_p4()[i_hyp].eta()) > 2.4) return;
+     if ( TMath::Abs(cms2.hyp_ll_p4()[i_hyp].eta()) > 2.4) return;
      if (max(cms2.hyp_ll_p4()[i_hyp].pt(), cms2.hyp_lt_p4()[i_hyp].pt()) < 20) return;
 
      monitor.count(icounter++,"Total number of hypothesis after adding lepton pt cut: ");
@@ -186,10 +190,13 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
 
      // Lepton Quality cuts and isolation according to VJets09
 
-     if (!GoodSusyLeptonID(cms2.hyp_lt_id()[i_hyp], cms2.hyp_lt_index()[i_hyp])) passedAllLeptonRequirements = false;
-     if (!GoodSusyLeptonID(cms2.hyp_ll_id()[i_hyp], cms2.hyp_ll_index()[i_hyp])) passedAllLeptonRequirements = false;
-     if (!PassSusyLeptonIsolation(cms2.hyp_ll_id()[i_hyp], cms2.hyp_ll_index()[i_hyp])) passedAllLeptonRequirements = false;
-     if (!PassSusyLeptonIsolation(cms2.hyp_lt_id()[i_hyp], cms2.hyp_lt_index()[i_hyp])) passedAllLeptonRequirements = false;
+//     if (!GoodSusyLeptonID(cms2.hyp_lt_id()[i_hyp], cms2.hyp_lt_index()[i_hyp])) passedAllLeptonRequirements = false;
+//     if (!GoodSusyLeptonID(cms2.hyp_ll_id()[i_hyp], cms2.hyp_ll_index()[i_hyp])) passedAllLeptonRequirements = false;
+//     if (!PassSusyLeptonIsolation(cms2.hyp_ll_id()[i_hyp], cms2.hyp_ll_index()[i_hyp])) passedAllLeptonRequirements = false;
+//     if (!PassSusyLeptonIsolation(cms2.hyp_lt_id()[i_hyp], cms2.hyp_lt_index()[i_hyp])) passedAllLeptonRequirements = false;
+
+     if (!GoodSusy2010Leptons(cms2.hyp_lt_id()[i_hyp], cms2.hyp_lt_index()[i_hyp])) passedAllLeptonRequirements = false;
+     if (!GoodSusy2010Leptons(cms2.hyp_ll_id()[i_hyp], cms2.hyp_ll_index()[i_hyp])) passedAllLeptonRequirements = false;
 
      if ( !passedAllLeptonRequirements ) return;
      monitor.count(icounter++,"Total number of hypothesis after adding lepton id and isolation, including eta cuts: ");     
@@ -202,8 +209,9 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
        }
      }
 
-     bool useTcMet = true;
-     if (!passMetVJets09(80., useTcMet)) return;
+     bool useTcMet = false;
+//     if (!passMetVJets09(80., useTcMet)) return;
+     if (cms2.evt_pfmet() <= 80.) return;
 
      monitor.count(icounter++,"Total number of hypothesis after adding tcmet cut: ");     
 
@@ -228,7 +236,7 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
      
      monitor.count(icounter++,"Total number of hypothesis after adding jet cuts: ");
 
-     if ( additionalZvetoSUSY09(i_hyp)) return;
+     if ( additionalZvetoSUSY2010(i_hyp)) return;
 
      monitor.count(icounter++,"Total number of hypothesis after adding additionalZvetoSUSY09 cut: ");
      

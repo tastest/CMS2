@@ -213,6 +213,8 @@ double inv_mu_relsusy_iso(int index);
 double inv_el_relsusy_iso(int index, bool use_calo_iso);
 bool GoodSusyElectronWithIsolation(int index, bool use_calo_iso); 
 bool GoodSusyLeptonWithIsolation(int id, int index);
+bool GoodSusy2010Leptons(int id, int index);
+bool additionalZvetoSUSY2010(int i_hyp);
 bool GoodSusyLeptonID(int id, int index);
 bool PassSusyMuonIsolation(int index);
 bool PassSusyElectronIsolation(int index, bool use_calo_iso);
