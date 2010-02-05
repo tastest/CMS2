@@ -367,7 +367,7 @@ void doAll(unsigned int bitmask){
 
 }
   
-void doAllCombined(unsigned int bitmask){
+void doAllCombined(unsigned int bitmask, bool runTTbarOnly = false){
   using namespace std;
   //here is a list to the combinations of cuts useful for the analysis:
   // 1957888 -- baseline
@@ -483,6 +483,20 @@ void doAllCombined(unsigned int bitmask){
   bool runVgamma   = false;
   bool runLM0      = true;
 
+  if (runTTbarOnly){
+    runttdil=true;
+    runttotr=true;
+    runVV=false;
+    runWjets=false;
+    runDYeemm=false;
+    runDYtautau=false;
+    runQCD=false;
+    runt=false;
+    runtotr=false;
+    runVgamma=false;
+    runLM0=false;
+  }
+
   std::vector<ProcDSChain> chtopdil;
   pickSkimIfExists(chtopdil, "/data/tmp/slava77/cms2/TTbar_Summer09-MC_31X_V3_7TeV-v1/V03-00-34/merged*.root", "", 1., true, false);
 
@@ -510,7 +524,7 @@ void doAllCombined(unsigned int bitmask){
   //ppMuX
   std::vector<ProcDSChain> chQCD;
   //ppMuX here  
-  pickSkimIfExists(chQCD, "/data/tmp/cms2/InclusiveMu15_Summer09-MC_31X_V3_7TeV-v1_dilepfilt/merged*.root", "", 1., true, false); 
+  pickSkimIfExists(chQCD, "/data/tmp/cms2/InclusiveMu15_Summer09-MC_31X_V3_7TeV-v1_dilepfilt/V03-00-35/merged*.root", "", 1., true, false); 
   pickSkimIfExists(chQCD, "/data/tmp/slava77/cms2/QCD_BCtoE_Pt20to30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimDil20.10", 1., true, false);
   pickSkimIfExists(chQCD, "/data/tmp/slava77/cms2/QCD_BCtoE_Pt30to80_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimDil20.10", 56.700382, false, false);
   pickSkimIfExists(chQCD, "/data/tmp/slava77/cms2/QCD_BCtoE_Pt80to170_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimDil20.10", 8.0148010, false, false);
