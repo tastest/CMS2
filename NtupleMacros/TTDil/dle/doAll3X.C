@@ -53,7 +53,12 @@ void doAll3X() {
 	// dymm
 	TChain *chain_dymm = new TChain("Events");
 	chain_dymm->Add(ntuple_location + "/cms2/Zmumu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
-
+	// dytt
+    TChain *chain_dytt = new TChain("Events");
+    chain_dytt->Add(ntuple_location + "/cms2/Ztautau_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+	// wjets
+    TChain *chain_wjets = new TChain("Events");
+    chain_wjets->Add(ntuple_location + "/cms2/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
 
 	// BSM
 	// LM0
@@ -70,12 +75,14 @@ void doAll3X() {
 	looper->ScanChain(false, "zz", chain_zz);
 	looper->ScanChain(false, "dyee", chain_dyee);
 	looper->ScanChain(false, "dymm", chain_dymm);
+    looper->ScanChain(false, "dytt", chain_dytt);
+    looper->ScanChain(false, "wjets", chain_wjets);
 
 	//
 	// write histograms
 	// 
 
-	const char* outFile = "histos_mc_3x.root";
+	const char* outFile = "histos_mc_3x_tmp.root";
 	hist::saveHist(outFile); 
 	hist::deleteHistos();
 
@@ -90,6 +97,10 @@ void doAll3X() {
 	delete chain_zz;
 	delete chain_dyee;
 	delete chain_dymm;
+	delete chain_dytt;
+	delete chain_wjets;
+
 	delete chain_lm0;
+
 }
 
