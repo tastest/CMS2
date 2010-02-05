@@ -95,6 +95,7 @@ bool isDenomEl(int iEl){
   if(
      (pt >= 10.) &&
      (fabs(eta)<=2.4) &&
+     // electronId_cand01(iEl) &&
      electronImpact_cand01(iEl) &&             	    // d0corr < .02
      electronIsolation_relsusy_cand1(iEl,true) < 0.1 &&   // relative isolation < .1
      !isFromConversionPartnerTrack(iEl) &&       	  // dist < .02 dcot < .02
@@ -278,7 +279,6 @@ int QCDFRestimator::ScanChainAppTest ( TChain* chain, TString prefix, float kFac
       //weight
       float weight = kFactor*cms2.evt_scale1fb();
       weight = 1.0;
-
 		
       for(unsigned int iHyp = 0; iHyp < cms2.hyp_p4().size(); iHyp++) {
 	
@@ -334,7 +334,6 @@ int QCDFRestimator::ScanChainAppTest ( TChain* chain, TString prefix, float kFac
                   h_predictednJets[0]->Fill(nJets, weight*FR/(1-FR));
                   h_nJets3D[0]        ->Fill(nJets, fabs(eta), pt, weight*FRErr);
                   int cat = elFakeMCCategory(iEl);
-                  h_truecomposition_denom[0]->Fill( cat, weight);
                   h_predictedTrueCat[0]->Fill(cat, weight*FR/(1-FR));
                   h_TrueCat3D[0]        ->Fill(cat, fabs(eta), pt, weight*FRErr);
                   if( cat == 4 ){
@@ -342,6 +341,10 @@ int QCDFRestimator::ScanChainAppTest ( TChain* chain, TString prefix, float kFac
                   }
                 }
               }
+							// Derek's plots should not filled using the FR/(1-FR) logic, confusing)
+							if( isDenomEl(iEl) ){ // is a fakeable object
+								h_truecomposition_denom[0]->Fill( cat, weight);
+							}
 		
             } // ll pt > 10
           } // lt pt > 20 
@@ -412,7 +415,6 @@ int QCDFRestimator::ScanChainAppTest ( TChain* chain, TString prefix, float kFac
       h_predictednJets[i]->SetBinError(iJet, err);
     }
 	
-    //ibl b
     for(unsigned int ieta = 1; ieta < h_TrueCat3D[i]->GetNbinsY() + 1; ieta++) {
       for(unsigned int ipt = 1; ipt < h_TrueCat3D[i]->GetNbinsZ() + 1; ipt++) {
         Float_t temp23 = 0.;  
@@ -434,8 +436,6 @@ int QCDFRestimator::ScanChainAppTest ( TChain* chain, TString prefix, float kFac
       Float_t err = sqrt(err2);
       h_predictedTrueCat[i]->SetBinError(iMainBin, err);
     }
-    //ibl e
-    //cout << "******Error for " << suffix[i] << sqrt(totalErr) << endl;
   }//lepton flavor loop
       
   
@@ -522,28 +522,10 @@ int QCDFRestimator::ScanChainQCD ( TChain* chain, TString prefix, float kFactor,
       }
       
       float weight = kFactor*cms2.evt_scale1fb()*0.1;
-      // 
-      weight = 1.0; //weights are the same, screws the Binomial errors up
+			// deactivated 2/5/10
+      // weight = 1.0; //weights are the same, screws the Binomial errors up
       
-      
-
-      //this is for ttbar. Skip events with a lepton in the 
-      //doc. line
-      bool haslepton = false;
-      if(prefix.Contains("TTbar")) {
-        for(unsigned int genIdx = 0; genIdx < cms2.genps_p4().size(); genIdx++) {
-          int id = fabs(cms2.genps_id()[genIdx]);
-          if(id == 11 || id == 13 || id == 15) {
-            haslepton = true;
-            continue;
-          }
-        }
-      }
-
-      if(haslepton)
-        continue;
-
-      for(int iEl = 0 ; iEl < cms2.els_p4().size(); iEl++) {
+			for(int iEl = 0 ; iEl < cms2.els_p4().size(); iEl++) {
 
         if(!isDenomEl(iEl)) continue;
         Double_t pt = cms2.els_p4()[iEl].Pt();

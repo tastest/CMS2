@@ -260,29 +260,6 @@ void doAll(){
   delete looper;
 
   TestPrediction();
-
-  TCanvas* c = new TCanvas();
-  c->Divide(2,2);
-  
-  c->cd(1);
-  QCD_FRpt_el->SetMinimum(0.0);
-  QCD_FRpt_el->SetMaximum(0.2);
-  QCD_FRpt_el->Draw();
-    
-  c->cd(2);
-  QCD_FReta_el->SetMinimum(0.0);
-  QCD_FReta_el->SetMaximum(0.2);
-  QCD_FReta_el->Draw();
-  
-  c->cd(3);
-  QCD_FRpt_mu->SetMinimum(0.0);
-  QCD_FRpt_mu->SetMaximum(0.2);
-  QCD_FRpt_mu->Draw();
-  
-  c->cd(4);
-  QCD_FReta_mu->SetMinimum(0.0);
-  QCD_FReta_mu->SetMaximum(0.2);
-  QCD_FReta_mu->Draw();
     
 }
     
