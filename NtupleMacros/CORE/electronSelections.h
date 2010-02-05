@@ -7,6 +7,11 @@
 //
 
 //
+// combined selection functions
+//
+bool electronSelection_cand01(const unsigned int index);
+
+//
 // candidate electron id function
 // see http://www.t2.ucsd.edu/tastwiki/bin/view/CMS/ElectronID
 //

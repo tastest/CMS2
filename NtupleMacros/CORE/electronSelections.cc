@@ -31,6 +31,18 @@ enum EgammaElectronType {
 	ISTRACKERDRIVEN
 };
 
+bool electronSelection_cand01(const unsigned int index)
+{
+
+	if (!electronId_noMuon(index)) return false;
+	if (!electronId_cand01(index)) return false;
+	if (!electronImpact_cand01(index)) return false;
+	if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
+	if (isFromConversionPartnerTrack(index)) return false;
+	return true;
+
+}
+
 //
 // remove if close to a muon
 //
