@@ -28,7 +28,8 @@ const static sources_t sources_peaking =
 const static sources_t sources_nonpeak =
 (1ll << H_WW)          |
 (1ll << H_TTBAR)       |
-(1ll << H_DYTT);
+(1ll << H_DYTT)	|
+(1ll << H_WJETS);
 
 const static sources_t sources_all =
 (1ll << H_TTBAR) |
@@ -36,7 +37,9 @@ const static sources_t sources_all =
 (1ll << H_WZ) |
 (1ll << H_ZZ) |
 (1ll << H_DYMM) |
-(1ll << H_DYEE);
+(1ll << H_DYEE)	|
+(1ll << H_DYTT) |
+(1ll << H_WJETS);
 
 const static int metCutBin = 7;
 

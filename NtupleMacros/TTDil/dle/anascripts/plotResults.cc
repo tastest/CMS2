@@ -16,7 +16,9 @@ const static sources_t theSources =
 	(1ll << H_WZ) |
 	(1ll << H_ZZ) |
 	(1ll << H_DYMM) |
-	(1ll << H_DYEE);
+	(1ll << H_DYEE) |
+	(1ll << H_DYTT) |
+	(1ll << H_WJETS);
 
 // placeholders
 const static sources_t theSignal = 0;
@@ -324,11 +326,13 @@ void plotResults(TString hyp, TString fileStamp)
 
 	std::vector<DataSource> sources;
 	sources.push_back( fH_TTBAR() );
-	sources.push_back( fH_WW()	);
-	sources.push_back( fH_WZ() );
-	sources.push_back( fH_ZZ() );
     sources.push_back( fH_DYMM() );
     sources.push_back( fH_DYEE() );
+    sources.push_back( fH_DYTT() );
+    sources.push_back( fH_WJETS() );  
+    sources.push_back( fH_WW()  );
+    sources.push_back( fH_WZ() );
+    sources.push_back( fH_ZZ() );
 
 	HistogramUtilities h1("../" + fileStamp + ".root", sources, 1.0);
 

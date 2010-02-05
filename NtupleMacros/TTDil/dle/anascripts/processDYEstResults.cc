@@ -282,10 +282,16 @@ void processDYEstResults(TString fileName)
 
 	// filename, met cut, doWZ, lumiNorm
 	std::vector<DataSource> sources;
-	sources.push_back( fH_TTBAR() );
-	sources.push_back( fH_DYMM() );
-	sources.push_back( fH_DYEE() );
-	sources.push_back( fH_ZZ() );
+    sources.push_back( fH_TTBAR() );
+    sources.push_back( fH_DYMM() );
+    sources.push_back( fH_DYEE() );
+    sources.push_back( fH_DYTT() );
+    sources.push_back( fH_WJETS() );
+    sources.push_back( fH_WZ() );
+    sources.push_back( fH_ZZ() );
+    sources.push_back( fH_WW()  );
+
+
 	HistogramUtilities *hUtil = new HistogramUtilities(fileName, sources, 1.0);
 
 
