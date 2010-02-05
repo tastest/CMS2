@@ -24,10 +24,10 @@
 using namespace std;
 
 #ifndef __CINT__
-#include "CORE/CMS2.cc"
-#include "CORE/utilities.cc"
-#include "CORE/selections.cc"
-#include "Tools/tools.cc"
+#include "../CORE/CMS2.cc"
+#include "../CORE/utilities.cc"
+#include "../CORE/selections.cc"
+#include "../Tools/tools.cc"
 #endif
 
 TH1F*hypos_total;
@@ -107,7 +107,7 @@ TH1F* htcmetZveto[4];
 // fkw September 2008 final hist used for muon tags estimate of top bkg
 
 
-vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > calo_jetsp4;
+vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > calo_jetsp4;
 
 struct hypo_monitor{
   std::vector<std::pair<std::string,unsigned int> > counters;
@@ -312,7 +312,7 @@ RooDataSet* MakeNewDataset(const char* name)
 void AddIsoSignalControlSample( int i_hyp, double kFactor, RooDataSet* dataset = 0 ) {
   if ( !dataset ) return;
   // The event weight including the kFactor (scaled to 1 fb-1)
-  float weight = cms2.evt_scale1fb() * kFactor ;
+  float weight = cms2.evt_scale1fb() * kFactor;
   // Cut on lepton Pt
   if (cms2.hyp_lt_p4()[i_hyp].pt() < 20.0) return;
   if (cms2.hyp_ll_p4()[i_hyp].pt() < 20.0) return;
@@ -369,7 +369,7 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, bool identifyEvents ) 
   const char sample_names[][1024] = { "ww", "wz", "zz", "wjets", "dy", "dyee", "dymm", "dytt", "ttbar", "tw", "lm0x", "lm1x", "lm2x", "lm3x", "lm4x", "lm5x", "lm6x", "lm7x", "lm8x", "lm9x"};
   const char *prefix = sample_names[sample];
   RooDataSet* dataset = MakeNewDataset(sample_names[sample]);
-  double kFactor = .1; // 1fb-1
+  double kFactor = 1; // 1fb-1
 
   //  double kFactor = .1; // 1fb-1
   //   switch (sample) {
