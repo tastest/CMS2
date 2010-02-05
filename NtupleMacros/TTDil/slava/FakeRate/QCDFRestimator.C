@@ -307,6 +307,7 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix,
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
   }
   
+
   for(unsigned int i = 0; i < 2; i++) {
     
     h_FOptvseta[i]->Sumw2();
@@ -322,8 +323,8 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix,
     h_FReta[i]->Divide(h_numeta[i], h_FOeta[i], 1., 1., "B");
     
     //fill the FR errors                  
-    for(unsigned int ptbin = 1; ptbin < h_FRpt[i]->GetNbinsX()+1; ptbin++) {
-      for(unsigned int etabin = 1; etabin < h_FReta[i]->GetNbinsX() + 1; etabin++) {
+    for(int ptbin = 1; ptbin < h_FRpt[i]->GetNbinsX()+1; ptbin++) {
+      for(int etabin = 1; etabin < h_FReta[i]->GetNbinsX() + 1; etabin++) {
 	Float_t err = h_FRptvseta[i]->GetBinError(etabin, ptbin);
 	h_FRErrptvseta[i]->SetBinContent(etabin, ptbin, err);
       }//eta loop
@@ -331,10 +332,10 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix,
 
     //do the errors for the WJets
     Float_t totalErr = 0.;
-    for(unsigned int ieta = 1; ieta < h_nJets3D[i]->GetNbinsY() + 1; ieta++) {
-      for(unsigned int ipt = 1; ipt < h_nJets3D[i]->GetNbinsZ() + 1; ipt++) {
+    for(int ieta = 1; ieta < h_nJets3D[i]->GetNbinsY() + 1; ieta++) {
+      for(int ipt = 1; ipt < h_nJets3D[i]->GetNbinsZ() + 1; ipt++) {
 	Float_t temp23 = 0.;  
-	for(unsigned int iJet = 1; iJet < h_nJets3D[i]->GetNbinsX() + 1; iJet++) {
+	for(int iJet = 1; iJet < h_nJets3D[i]->GetNbinsX() + 1; iJet++) {
 	  temp23 = temp23 + h_nJets3D[i]->GetBinContent(iJet, ieta, ipt);
 	}
 	totalErr = pow(temp23,2) + totalErr;
@@ -343,10 +344,10 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix,
     cout << "******Error for " << suffix[i] << sqrt(totalErr) << endl;
     
     
-    for(unsigned int iJet = 1; iJet < h_nJets3D[i]->GetNbinsX() + 1; iJet++) {
+    for(int iJet = 1; iJet < h_nJets3D[i]->GetNbinsX() + 1; iJet++) {
       Float_t err2 = 0.;
-      for(unsigned int ieta = 1; ieta < h_nJets3D[i]->GetNbinsY() + 1; ieta++) {
-	for(unsigned int ipt = 1; ipt < h_nJets3D[i]->GetNbinsZ() + 1; ipt++) {
+      for(int ieta = 1; ieta < h_nJets3D[i]->GetNbinsY() + 1; ieta++) {
+	for(int ipt = 1; ipt < h_nJets3D[i]->GetNbinsZ() + 1; ipt++) {
 	  Float_t temp = h_nJets3D[i]->GetBinContent(iJet, ieta, ipt);
 	  err2 = err2 + pow(temp,2);
 	  
@@ -358,7 +359,6 @@ int QCDFRestimator::ScanChainWJets ( TChain* chain, TString prefix,
     //cout << "******Error for " << suffix[i] << sqrt(totalErr) << endl;
   }//lepton flavor loop
       
-  
   
   std::cout<<"Done with "<<prefix<<std::endl;
   rootdir = gDirectory->GetDirectory("Rint:"); 
@@ -381,7 +381,6 @@ int QCDFRestimator::ScanChainQCD ( TChain* chain, TString prefix, float kFactor,
   //book Histograms
   bookHistos(prefix.Data());
 
-  
   float probOfKeeping = 1./prescale;
 
   // Initialize the random number generator for the prescale
@@ -426,8 +425,8 @@ int QCDFRestimator::ScanChainQCD ( TChain* chain, TString prefix, float kFactor,
 
       //if the pthat of the event is not within acceptable limits, quit
       //carefull.....WJets doesn't have the genps_pthat variable
-      //if(cms2.genps_pthat() < pthatmin || cms2.genps_pthat() > pthatmax)
-      //continue;
+      if(cms2.genps_pthat() < pthatmin || cms2.genps_pthat() > pthatmax)
+	continue;
       
       float weight = kFactor*cms2.evt_scale1fb()*0.01;
       weight = 1.0; //weights are the same, screws the Binomial errors up
@@ -460,7 +459,7 @@ int QCDFRestimator::ScanChainQCD ( TChain* chain, TString prefix, float kFactor,
 	//if using Denis Gele's selections
 	//if(!looseElectronSelectionTTDil08(iEl))
 	//continue;
-
+	
 	h_FOptvseta[0]->Fill(fabs(eta), min(pt,119.0), weight);
 	h_FOpt[0]     ->Fill(min(pt,119.0), weight);
 	h_FOeta[0]    ->Fill(fabs(eta), weight);
