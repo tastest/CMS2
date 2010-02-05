@@ -318,10 +318,11 @@ int QCDFRestimator::ScanChainAppTest ( TChain* chain, TString prefix, float kFac
               Double_t eta = cms2.els_p4()[iEl].Eta();
               if(trueGammaFromMuon(iEl))	continue;
 		
+							int cat = elFakeMCCategory(iEl);
+
               //dbarge
               if( isNumEl(iEl) ){	// if a numerator electron
                 h_actualnJets[0]->Fill(nJets, weight);
-                int cat = elFakeMCCategory(iEl);
                 h_actualTrueCat[0]->Fill(cat, weight);
                 h_truecomposition_num[0]->Fill( cat, weight);
                 if( cat == 4 ){
