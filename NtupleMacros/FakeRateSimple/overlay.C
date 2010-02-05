@@ -54,8 +54,8 @@ void overlay2(TH1F* h1, TH1F* h2, const char* plotname){
   TPaveStats* st2 = (TPaveStats*)h2->FindObject("stats");
   //	TPaveStats* st3 = (TPaveStats*)h3->FindObject("stats");
   //	TPaveStats* st4 = (TPaveStats*)h4->FindObject("stats");
-  st1->SetTextColor(kBlack);
-  st2->SetTextColor(kRed);
+  st1->SetTextColor(h1->GetLineColor());
+  st2->SetTextColor(h2->GetLineColor());
   //	st3->SetTextColor(kRed);
   //	st4->SetTextColor(kGreen);
   st2->SetX1NDC( 2*st1->GetX1NDC() - st1->GetX2NDC() );

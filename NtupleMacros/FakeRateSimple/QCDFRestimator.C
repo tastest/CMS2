@@ -95,9 +95,9 @@ bool isDenomEl(int iEl){
   if(
      (pt >= 10.) &&
      (fabs(eta)<=2.4) &&
-     // electronId_cand01(iEl) &&
-     electronImpact_cand01(iEl) &&             	    // d0corr < .02
-     electronIsolation_relsusy_cand1(iEl,true) < 0.1 &&   // relative isolation < .1
+     electronId_cand01(iEl) &&
+		 electronImpact_cand01(iEl) &&             	    // d0corr < .02
+     electronIsolation_relsusy_cand1(iEl,true) < 0.4 &&   // relative isolation < .1
      !isFromConversionPartnerTrack(iEl) &&       	  // dist < .02 dcot < .02
 		 electronId_noMuon(iEl)
      ){
@@ -689,31 +689,29 @@ int QCDFRestimator::ScanChainQCD ( TChain* chain, TString prefix, float kFactor,
 
   for(unsigned int i = 0; i < 2; i++) {
     
-    h_FOptvseta[i]->Sumw2();
-    h_FOeta[i]->Sumw2();
-    h_FOpt[i]->Sumw2();
-    h_FOhfpt[i]->Sumw2();
-    h_FOhfeta[i]->Sumw2();
-    h_FOlqpt[i]->Sumw2();
-    h_FOlqeta[i]->Sumw2();
-    h_FOgpt[i]->Sumw2();
-    h_FOgeta[i]->Sumw2();
+//     h_FOptvseta[i]->Sumw2();
+//     h_FOeta[i]->Sumw2();
+//     h_FOpt[i]->Sumw2();
+//     h_FOhfpt[i]->Sumw2();
+//     h_FOhfeta[i]->Sumw2();
+//     h_FOlqpt[i]->Sumw2();
+//     h_FOlqeta[i]->Sumw2();
+//     h_FOgpt[i]->Sumw2();
+//     h_FOgeta[i]->Sumw2();
     
-    h_FOmc3Id[i]->Sumw2();
+//     h_FOmc3Id[i]->Sumw2();
     
-    h_numptvseta[i]->Sumw2();
-    h_numeta[i]->Sumw2();
-    h_numpt[i]->Sumw2();
-    h_numhfpt[i]->Sumw2();
-    h_numhfeta[i]->Sumw2();
-    h_numlqpt[i]->Sumw2();
-    h_numlqeta[i]->Sumw2();
-    h_numgpt[i]->Sumw2();
-    h_numgeta[i]->Sumw2();
-    h_nummc3Id[i]->Sumw2();
-    
-    
-    
+//     h_numptvseta[i]->Sumw2();
+//     h_numeta[i]->Sumw2();
+//     h_numpt[i]->Sumw2();
+//     h_numhfpt[i]->Sumw2();
+//     h_numhfeta[i]->Sumw2();
+//     h_numlqpt[i]->Sumw2();
+//     h_numlqeta[i]->Sumw2();
+//     h_numgpt[i]->Sumw2();
+//     h_numgeta[i]->Sumw2();
+//     h_nummc3Id[i]->Sumw2();
+        
     h_FRptvseta[i]->Divide(h_numptvseta[i], h_FOptvseta[i], 1.,1.,"B");
     h_FRpt[i]->Divide(h_numpt[i], h_FOpt[i], 1., 1., "B");
     h_FReta[i]->Divide(h_numeta[i], h_FOeta[i], 1., 1., "B");
@@ -1006,6 +1004,31 @@ void QCDFRestimator::bookHistos(const char *sample) {
                           Form("%s FR as a function of mcId (status==3), %s", flavor[1], sample),
                           30, 0, 30);
   
+  for(unsigned int i = 0; i < 2; i++) {
+    
+    h_FOptvseta[i]->Sumw2();
+    h_FOeta[i]->Sumw2();
+    h_FOpt[i]->Sumw2();
+    h_FOhfpt[i]->Sumw2();
+    h_FOhfeta[i]->Sumw2();
+    h_FOlqpt[i]->Sumw2();
+    h_FOlqeta[i]->Sumw2();
+    h_FOgpt[i]->Sumw2();
+    h_FOgeta[i]->Sumw2();
+    
+    h_FOmc3Id[i]->Sumw2();
+    
+    h_numptvseta[i]->Sumw2();
+    h_numeta[i]->Sumw2();
+    h_numpt[i]->Sumw2();
+    h_numhfpt[i]->Sumw2();
+    h_numhfeta[i]->Sumw2();
+    h_numlqpt[i]->Sumw2();
+    h_numlqeta[i]->Sumw2();
+    h_numgpt[i]->Sumw2();
+    h_numgeta[i]->Sumw2();
+    h_nummc3Id[i]->Sumw2();
+	}
 }
 
 
