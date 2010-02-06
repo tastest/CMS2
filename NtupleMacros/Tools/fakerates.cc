@@ -1,4 +1,4 @@
-// $Id: fakerates.cc,v 1.28 2010/02/04 01:10:45 jmuelmen Exp $
+// $Id: fakerates.cc,v 1.29 2010/02/06 00:28:52 ibloch Exp $
 
 #include "TFile.h"
 #include "TSystem.h"
@@ -53,7 +53,9 @@ int elFakeMCCategory(int i_el) {
 	   abs(cms2.els_mc_motherid()[i_el]) == 22) ||
           (abs(cms2.els_mc_id()[i_el])       == 22) ||
           (abs(cms2.els_mc_id()[i_el])        > 100 && 
-	   abs(cms2.els_mc_id()[i_el])        < 200) 
+	   abs(cms2.els_mc_id()[i_el])        < 200)||
+          (abs(cms2.els_mc_id()[i_el])       == 11  && 
+	   abs(cms2.els_mc_motherid()[i_el]) == 111)
           ) {
 	 // electrons from gamma (conversion)
 	 category = 1;
