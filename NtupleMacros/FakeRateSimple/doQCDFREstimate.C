@@ -127,13 +127,14 @@ void TestPrediction() {
   //WJets_predictedpt[0]->Draw("sames");
   //c9->SaveAs("elPredictedpt.png");
 
-  TCanvas *c10 = new TCanvas("c10","c10",1280,960);
-  ((TH1F*)gDirectory->Get("WJets_actualnJets_mu"))->SetMarkerStyle(3);
-  (TH1F*)gDirectory->Get("WJets_actualnJets_mu")->Draw("e");
-  ((TH1F*)gDirectory->Get("WJets_predictednJets_mu"))->SetMarkerStyle(25);
-  (TH1F*)gDirectory->Get("WJets_predictednJets_mu")->Draw("samese");
-  //hist::setrangey(c3);
-  c10->SaveAs("munJetsPredicted.png");
+  overlay2( (TH1F*)gDirectory->Get("WJets_actualnJets_mu"), 
+            (TH1F*)gDirectory->Get("WJets_predictednJets_mu"), "muWJetsnJetsPredicted.png");
+  overlay2( (TH1F*)gDirectory->Get("WJets_actualTrueCat_mu"), 
+            (TH1F*)gDirectory->Get("WJets_predictedTrueCat_mu"), "muWJetTrueCatPredicted.png");
+  overlay2( (TH1F*)gDirectory->Get("TTbar_actualnJets_mu"), 
+            (TH1F*)gDirectory->Get("TTbar_predictednJets_mu"), "muTTbarnJetsPredicted.png");
+  overlay2( (TH1F*)gDirectory->Get("TTbar_actualTrueCat_mu"), 
+            (TH1F*)gDirectory->Get("TTbar_predictedTrueCat_mu"), "muTTbarTrueCatPredicted.png");
 
   TCanvas *c11 = new TCanvas("c11","c11",1280,960);
   TH2F *QCDFRptvseta_mu = (TH2F*)gDirectory->Get("QCD_FRptvseta_mu");

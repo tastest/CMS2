@@ -95,9 +95,10 @@ bool isDenomEl(int iEl){
   if(
      (pt >= 10.) &&
      (fabs(eta)<=2.4) &&
-     electronId_cand01(iEl) &&
+		 electronId_cand01(iEl) &&
 		 electronImpact_cand01(iEl) &&             	    // d0corr < .02
-     electronIsolation_relsusy_cand1(iEl,true) < 0.4 &&   // relative isolation < .1
+		 //     electronIsolation_relsusy_cand1(iEl,true) < 0.1 &&   // relative isolation < .1
+     electronIsolation_relsusy_cand1(iEl,true) < 0.4 &&   // relative isolation < .4
      !isFromConversionPartnerTrack(iEl) &&       	  // dist < .02 dcot < .02
 		 electronId_noMuon(iEl)
      ){
@@ -159,7 +160,7 @@ bool isDenomMu(int iMu){
       cms2.mus_iso_hcalvetoDep().at(iMu) <= 6 &&									          // HCalE < 6 
       cms2.mus_gfit_validSTAHits().at(iMu) > 0 &&									          // Glb fit must have hits in mu chambers
       TMath::Abs(cms2.mus_d0corr().at(iMu)) <= 0.02 &&							        // d0 from beamspot
-      muonIsoValue(iMu) <= 0.1															                // Isolation cut
+      muonIsoValue(iMu) <= 0.4															                // Isolation cut
      ){
     return true;
   } else{
@@ -304,12 +305,8 @@ int QCDFRestimator::ScanChainAppTest ( TChain* chain, TString prefix, float kFac
 		
         /* electrons */
 
-        //look only in true W->mu events. ONLY FOR W+JETS SAMPLE!!!
-        //Do this by looking at the gen-level info only
-        //if(isTrueLeptonfromW(13)) {
-        //look only at global mus!
+        //look only in true W->mu events
         //don't look at cases where the electron comes from a mu (mu->mu+gamma->electron)
-        //	if(trueMuonFromW_WJets(iMu) && (2 & cms2.mus_type()[iMu]) && cms2.mus_p4()[iMu].Pt() > 10.) {
         if( prefix.Contains("WJets") && trueMuonFromW(iMu) || 
             prefix.Contains("TTbar") && ttbarconstituents( iHyp) == 2 && trueMuonFromW(iMu) ) {
           if( TMath::Max(cms2.hyp_lt_p4()[iHyp].pt(),cms2.hyp_ll_p4()[iHyp].pt()) > 20. ) {
@@ -333,10 +330,9 @@ int QCDFRestimator::ScanChainAppTest ( TChain* chain, TString prefix, float kFac
                   Float_t FR    = GetValueTH2F(fabs(eta), min(pt,149.0), h_FR[0]);
                   Float_t FRErr = GetValueTH2F(fabs(eta), pt, h_FRErr[0]);
                   h_predictednJets[0]->Fill(nJets, weight*FR/(1-FR));
-                  h_nJets3D[0]        ->Fill(nJets, fabs(eta), pt, weight*FRErr);
-                  int cat = elFakeMCCategory(iEl);
+                  h_nJets3D[0]        ->Fill(nJets, fabs(eta), pt, weight*fabs((1-2*FR)/((1-FR)*(1-FR)))*FRErr);
                   h_predictedTrueCat[0]->Fill(cat, weight*FR/(1-FR));
-                  h_TrueCat3D[0]        ->Fill(cat, fabs(eta), pt, weight*FRErr);
+                  h_TrueCat3D[0]        ->Fill(cat, fabs(eta), pt, weight*fabs((1-2*FR)/((1-FR)*(1-FR)))*FRErr);
                   if( cat == 4 ){
                     logfile << "WJden:\t" << cms2.els_mc_id().at(iEl) << "\t" << cms2.els_mc_motherid().at(iEl) << endl;
                   }
@@ -353,33 +349,46 @@ int QCDFRestimator::ScanChainAppTest ( TChain* chain, TString prefix, float kFac
         /* end electrons */
 
         /* muons */
-        if(trueElectronFromW(iEl) && cms2.els_p4().at(iEl).Pt() > 10.) {  // electron from W with Pt >= 10
-          //if(!isNumElSUSY09(iEl))  continue; // Require the electron to be isolated and good
-          if( !isNumEl(iEl) )  continue;  // electron passes selection 
+        if( prefix.Contains("WJets") && trueElectronFromW(iEl) || 
+            prefix.Contains("TTbar") && ttbarconstituents( iHyp) == 2 && trueElectronFromW(iEl) ) {
+          if( TMath::Max(cms2.hyp_lt_p4()[iHyp].pt(),cms2.hyp_ll_p4()[iHyp].pt()) > 20. ) {
+            if( TMath::Min(cms2.hyp_lt_p4()[iHyp].pt(),cms2.hyp_ll_p4()[iHyp].pt()) > 10.) {
+							//if( !isNumEl(iEl) )  continue;  // electron passes selection 
+							Double_t pt = cms2.mus_p4().at(iMu).Pt();
+							Double_t eta = cms2.mus_p4().at(iMu).Eta();
 
-          //if(!isFakeableMuSUSY09(iMu)) continue;
-          if( !isDenomMu(iMu) ) continue; // denomintaor aka fakeable object muons
-          if(trueMuonFromW(iMu) )	cout << "SHOULD NEVER GET HERE!!!!!!" << endl;
+							if( !isDenomMu(iMu) ) continue; // denomintaor aka fakeable object muons
+							if(trueMuonFromW(iMu) )	cout << "SHOULD NEVER GET HERE!!!!!!" << endl;
 
-          // fill denominators aka fakeable objects
-          Double_t pt = cms2.mus_p4().at(iMu).Pt();
-          Double_t eta = cms2.mus_p4().at(iMu).Eta();
-          Float_t FR    = GetValueTH2F(fabs(eta), pt, h_FR[1]);
-          Float_t FRErr = GetValueTH2F(fabs(eta), pt, h_FRErr[1]);
-          h_predictednJets[1]->Fill(nJets, weight*FR);
-          h_nJets3D[1]->Fill(nJets, fabs(eta), pt, weight*FRErr);
-          h_predictedTrueCat[1]->Fill(elFakeMCCategory(iEl), weight*FR);
-          h_TrueCat3D[1]->Fill(elFakeMCCategory(iEl), fabs(eta), pt, weight*FRErr);
-          //h_truecomposition_denom[1]->Fill( muFakeMCCategory(iMu), weight); // true composition
+							int cat = muFakeMCCategory(iMu);
 
-          //if( !isNumMuSUSY09(iMu) ) continue;
-          if( !isNumMu(iMu) ) continue; // numerator aka selected muons
-
-          // fill
-          h_actualnJets[1]->Fill(nJets, weight);
-          h_actualTrueCat[1]->Fill(elFakeMCCategory(iEl), weight);
-          //h_truecomposition_num[1]->Fill( muFakeMCCategory(iMu), weight); // true composition
-        } // is true electron from W
+              if( isNumMu(iMu) ){	// if a numerator muon
+                h_actualnJets[1]->Fill(nJets, weight);
+                h_actualTrueCat[1]->Fill(cat, weight);
+                h_truecomposition_num[1]->Fill( cat, weight);
+                if( cat == 4 ){
+                  logfile << "WJnum:\t" << cms2.mus_mc_id().at(iMu) << "\t" << cms2.mus_mc_motherid().at(iMu) << endl;
+                }
+              } else { // not a numerator muon
+                if( isDenomMu(iMu) ){ // is a fakeable object
+                  Float_t FR    = GetValueTH2F(fabs(eta), min(pt,149.0), h_FR[1]);
+                  Float_t FRErr = GetValueTH2F(fabs(eta), pt, h_FRErr[1]);
+                  h_predictednJets[1]->Fill(nJets, weight*FR/(1-FR));
+                  h_nJets3D[1]        ->Fill(nJets, fabs(eta), pt, weight*fabs((1-2*FR)/((1-FR)*(1-FR)))*FRErr);
+                  h_predictedTrueCat[1]->Fill(cat, weight*FR/(1-FR));
+                  h_TrueCat3D[1]        ->Fill(cat, fabs(eta), pt, weight*fabs((1-2*FR)/((1-FR)*(1-FR)))*FRErr);
+                  if( cat == 4 ){
+                    logfile << "WJden:\t" << cms2.els_mc_id().at(iMu) << "\t" << cms2.els_mc_motherid().at(iMu) << endl;
+                  }
+                }
+              }
+							// Derek's plots should not filled using the FR/(1-FR) logic, confusing)
+							if( isDenomMu(iMu) ){ // is a fakeable object
+								h_truecomposition_denom[1]->Fill( cat, weight);
+							}
+						}
+					}
+				}
         /* end muons */
 
 
@@ -609,7 +618,6 @@ int QCDFRestimator::ScanChainQCD ( TChain* chain, TString prefix, float kFactor,
 
       /* muons */
       for(int iMu = 0 ; iMu < cms2.mus_p4().size(); iMu++) {  // loop on muons
-        //if(!isFakeableMuSUSY09(iMu)) continue;
         if( !isDenomMu(iMu) ) continue; // denominator muons aka fakeable objects
         // fill denominators aka fakeable objects
         Double_t pt = cms2.mus_p4()[iMu].Pt();
@@ -896,7 +904,7 @@ void QCDFRestimator::bookHistos(const char *sample) {
 
   //FO --> muons
   Float_t pt[4] = {10,20,60,150};
-  Float_t eta[3] = {0, 1.5, 2.4};
+  Float_t eta[3] = {0, 1.479, 2.4};
   h_FOptvseta[1] = new TH2F(Form("%s_FOptvseta_%s", sample, flavor[1]),
                             Form("%s pt vs eta of FO, %s", flavor[1], sample),
                             2, eta, 3, pt);
