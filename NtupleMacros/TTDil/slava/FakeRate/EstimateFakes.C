@@ -77,7 +77,9 @@ void EstimateFakes(unsigned int bitmask, bool skipFWLite = false){
 
 
   // Load various tools  
-  gROOT->ProcessLine(Form(".x ../setup.C(%d)",skipFWLite));
+  gROOT->ProcessLine(".L setup.C");
+  gROOT->ProcessLine("setup()");
+
 
   // Load and compile the looping code
   gSystem->CompileMacro("ttDilCounts_looper.C", "++k", "libttDilCounts_looper");
@@ -86,8 +88,7 @@ void EstimateFakes(unsigned int bitmask, bool skipFWLite = false){
   // Flag for jet selection
   // true  = hyp_jet selection (15 GeV uncorrectedm eta<3)
   // false = 30 GeV corrected, eta<2.4
-  bool oldjet=false;
-
+  
   // K-factors
   //these have been k-factors NLO/LO before
   //now using them as sample normalizations to NLO
@@ -143,74 +144,74 @@ void EstimateFakes(unsigned int bitmask, bool skipFWLite = false){
   bool runVQQ      = true;
 
   TChain* chtopdil = new TChain("Events");
-  pickSkimIfExists(chtopdil, "data/TTJets-madgraph_Fall08_IDEAL_V9_v2/merged*.root", "_skimSimple2020anydil");
+  pickSkimIfExists(chtopdil, "data/TTbar_Summer09-MC_31X_V3_7TeV-v1/V03-00-34/merged*.root", "_skimSimple2020anydil");
 
   TChain* chtopotr = new TChain("Events");
-  pickSkimIfExists(chtopotr, "data/TTJets-madgraph_Fall08_IDEAL_V9_v2/merged*.root", "_skimSimple2020nodil");
+  pickSkimIfExists(chtopotr, "data/TTbar_Summer09-MC_31X_V3_7TeV-v1/V03-00-34/merged*.root", "_skimSimple2020nodil");
 
   TChain* chww = new TChain("Events");
   //  pickSkimIfExists(chww, "data/WW_2l_Summer08_IDEAL_V9_v2/merged*.root", "");
-  pickSkimIfExists(chww, "data/WW_Summer08_IDEAL_V9_v1/merged*.root", "");
+  pickSkimIfExists(chww, "data/WW_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "");
 
   TChain* chWZ = new TChain("Events");
   //  pickSkimIfExists(chWZ, "data/WZ_3l_Summer08_IDEAL_V9_v2/merged*.root", ""); // can try WZ_3l-Pythia
-  pickSkimIfExists(chWZ, "data/WZ_incl_Summer08_IDEAL_V9_v2/merged*.root", ""); // can try WZ_3l-Pythia
+  pickSkimIfExists(chWZ, "data/WZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", ""); // can try WZ_3l-Pythia
 
   TChain* chZZ = new TChain("Events");
   //  pickSkimIfExists(chZZ, "data/ZZ_2l2n_Summer08_IDEAL_V9_v2/merged*.root", "");
-  pickSkimIfExists(chZZ, "data/ZZ_Summer08_IDEAL_V9_v1/merged*.root", "");
+  pickSkimIfExists(chZZ, "data/WZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "");
   
   TChain* chWjets = new  TChain("Events");
-  pickSkimIfExists(chWjets, "data/WJets-madgraph_Fall08_IDEAL_V9_v1/merged*.root", "");
+  pickSkimIfExists(chWjets, "data/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "");
   
   TChain* chWcharm = new TChain("Events");
-  pickSkimIfExists(chWcharm, "data/Wc-madgraph_Fall08_IDEAL_V9_reco-v1/merged*.root", "");
+  pickSkimIfExists(chWcharm, "data/Wc-madgraph_Fall08_IDEAL_V9_reco-v1/V03-00-35/merged*.root", "");
 
   TChain* chDYtautau = new  TChain("Events");
-  pickSkimIfExists(chDYtautau, "data/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged*.root", "_skimSimple2020tautau");
+  pickSkimIfExists(chDYtautau, "data/Ztautau_Summer09-MC_31X_V3_7TeV-v1//V03-00-35/merged*.root", "_skimSimple2020tautau");
    //the low-mass splice has no choice other than the skim
-  pickSkimIfExists(chDYtautau, "data/Ztautau_M20_Summer08_IDEAL_V9_v1/merged*.root_skimSimple2020_20m50", "");
+  pickSkimIfExists(chDYtautau, "data/Ztautau_M20_Summer08_IDEAL_V9_v1/V03-00-35/merged*.root_skimSimple2020_20m50", "");
 
   TChain* chDYee = new  TChain("Events");
-  pickSkimIfExists(chDYee, "data/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged*.root", "_skimSimple2020ee");
+  pickSkimIfExists(chDYee, "data/Zee_Summer09-MC_31X_V3_7TeV_TrackingParticles-v1/V03-00-35/merged*.root", "_skimSimple2020ee");
  //the low-mass splice has no choice other than the skim
-  pickSkimIfExists(chDYee, "data/Zee_M20_Summer08_IDEAL_V9_reco-v3/merged*.root_skimSimple2020_20m50", "");
+  pickSkimIfExists(chDYee, "data/Zee_M20_Summer08_IDEAL_V9_reco-v3/V03-00-35/merged*.root_skimSimple2020_20m50", "");
 
   TChain* chDYmm = new  TChain("Events");
-  pickSkimIfExists(chDYmm, "data/ZJets-madgraph_Fall08_IDEAL_V9_reco-v2/merged*.root", "_skimSimple2020mm");
+  pickSkimIfExists(chDYmm, "data/Zmumu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimSimple2020mm");
     //the low-mass splice has no choice other than the skim
-  pickSkimIfExists(chDYmm, "data/Zmumu_M20_Summer08_IDEAL_V9_reco-v2/merged*.root_skimSimple2020_20m50", "");
+  pickSkimIfExists(chDYmm, "data/Zmumu_M20_Summer08_IDEAL_V9_reco-v2/V03-00-35/merged*.root_skimSimple2020_20m50", "");
   
   //ppMuX
   TChain* chppMuX = new  TChain("Events");
   if (runppMuX) {
-    pickSkimIfExists(chppMuX, "data/InclusiveMuPt15/merged*.root", "_skimSimple2020"); 
+    pickSkimIfExists(chppMuX, "data/InclusiveMu15_Summer09-MC_31X_V3_7TeV-v1_dilepfilt/V03-00-35/merged*.root", "_skimSimple2020"); 
     //can try InclusiveMu5Pt50 .. figure out how to merge later
   }
   
   //ppEM
   TChain* chEM =  new  TChain("Events");
   if (runEM) {
-    pickSkimIfExists(chEM, "data/QCD_EMenriched_Pt20to30/merged*.root", "_skimSimple2020");
-    pickSkimIfExists(chEM, "data/QCD_EMenriched_Pt30to80/merged*.root", "_skimSimple2020");
-    pickSkimIfExists(chEM, "data/QCD_EMenriched_Pt80to170/merged*.root", "_skimSimple2020");
-    pickSkimIfExists(chEM, "data/QCD_BCtoE_Pt20to30/merged*.root", "_skimSimple2020");
-    pickSkimIfExists(chEM, "data/QCD_BCtoE_Pt30to80/merged*.root", "_skimSimple2020");
-    pickSkimIfExists(chEM, "data/QCD_BCtoE_Pt80to170/merged*.root", "_skimSimple2020");
+    pickSkimIfExists(chEM, "data/QCD_EMEnriched_Pt20to30_Summer09-MC_31X_V3_7TeV-v1//V03-00-35/merged*.root", "_skimSimple2020");
+    pickSkimIfExists(chEM, "data/QCD_EMEnriched_Pt30to80_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimSimple2020");
+    pickSkimIfExists(chEM, "data/QCD_EMEnriched_Pt80to170_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimSimple2020");
+    pickSkimIfExists(chEM, "data/CD_BCtoE_Pt20to30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimSimple2020");
+    pickSkimIfExists(chEM, "data/QCD_BCtoE_Pt30to80_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimSimple2020");
+    pickSkimIfExists(chEM, "data/QCD_BCtoE_Pt80to170_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimSimple2020");
   }
 
   //tW
   TChain* chtW = new  TChain("Events");
   if (runtW) {
-    pickSkimIfExists(chtW, "data/SingleTop_sChannel-madgraph-LHE/merged*.root", ""); 
-    pickSkimIfExists(chtW, "data/SingleTop_tChannel-madgraph-LHE/merged*.root", ""); 
-    pickSkimIfExists(chtW, "data/SingleTop_tWChannel-madgraph-LHE/merged*.root", ""); 
+    pickSkimIfExists(chtW, "data/SingleTop_sChannel-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", ""); 
+    pickSkimIfExists(chtW, "data/SingleTop_tChannel-madgraph_Summer09-MC_31X_V3_7TeV-v2/V03-00-35/merged*.root", ""); 
+    pickSkimIfExists(chtW, "data/SingleTop_tWChannel-madgraph_Summer09-MC_31X_V3_7TeV-v2/V03-00-35/merged*.root", ""); 
   }
 
   //VQQ
   TChain* chVQQ = new TChain("Events");
   if (runVQQ) {
-    pickSkimIfExists(chVQQ, "data/VQQ-madgraph_Fall08_IDEAL_V9_v1/merged*.root", "");
+    pickSkimIfExists(chVQQ, "data/VQQ-madgraph_Fall08_IDEAL_V9_v1/V03-00-35/merged*.root", "");
   }
 
 
@@ -221,7 +222,7 @@ void EstimateFakes(unsigned int bitmask, bool skipFWLite = false){
 
 
   ttDilCounts_looper* looper = new ttDilCounts_looper();
-  
+  bool oldjet = false;
   // Process files one at a time, and color them as needed
   if (runttdil) {
     cout << "Processing ttbar dileptonic.. "<<endl;
