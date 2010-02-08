@@ -173,14 +173,26 @@ void MyScanChain::FillAllDYEstHistograms(const unsigned int h, const float &weig
 
 }
 
-void MyScanChain::FillAllEleIdHistograms(const unsigned int h, const float &weight)
+void MyScanChain::FillAllEleIdHistograms(const unsigned int h, const float &weight, const TString sampleName)
 {
 
 	DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[h]);
 
-	// apply truth match
-	if (abs(cms2.hyp_lt_id()[h]) == 11 && 
+	// apply truth match behavior if ttbar
+	if (sampleName == "ttbar") {
+		if (abs(cms2.hyp_lt_id()[h]) == 11 && 
 			!((abs(cms2.hyp_lt_mc_id()[h]) == 11) && abs(cms2.hyp_lt_mc_motherid()[h]) == 24) ) return;
+	}
+	// apply truth match behavior if wjets
+    if (sample == "wjets") {
+    	if (abs(cms2.hyp_lt_id()[h]) == 11 && abs(cms2.hyp_lt_mc_motherid()[h]) != 24) return;
+    }
+	// apply truth match behavior if dyee
+    if (sampleName == "dyee") {
+        if (abs(cms2.hyp_lt_id()[h]) == 11 &&
+            !((abs(cms2.hyp_lt_mc_id()[h]) == 11) && abs(cms2.hyp_lt_mc_motherid()[h]) == 23) ) return;
+    }
+
 
 	// apply part of electron denominator first here
 	if (abs(cms2.hyp_lt_id()[h]) == 11)
@@ -345,7 +357,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 				//
 				// fill basic electron ID histograms
 				//
-				FillAllEleIdHistograms(h, weight);
+				FillAllEleIdHistograms(h, weight, sampleName);
 
 				// apply lepton id 
 				if (!looseLeptonSelectionNoIsoTTDil08(cms2.hyp_lt_id()[h], cms2.hyp_lt_index()[h])) continue;

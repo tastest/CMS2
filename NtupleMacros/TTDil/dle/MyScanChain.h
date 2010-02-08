@@ -25,7 +25,7 @@ class MyScanChain {
 
 
 		void Fill(TH1F** hist, const unsigned int hyp, const float &val, const float &weight);
-		void FillAllEleIdHistograms(const unsigned int h, const float &weight);
+		void FillAllEleIdHistograms(const unsigned int h, const float &weight, const TString &sampleName);
 		void FillAllDYEstHistograms(const unsigned int h, const float &weight, const unsigned int njet);
 
 		void FormatHist(TH1F** hist, std::string sampleName, std::string name, int n, float min, float max);
