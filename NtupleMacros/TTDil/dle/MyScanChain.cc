@@ -173,7 +173,7 @@ void MyScanChain::FillAllDYEstHistograms(const unsigned int h, const float &weig
 
 }
 
-void MyScanChain::FillAllEleIdHistograms(const unsigned int h, const float &weight, const TString sampleName)
+void MyScanChain::FillAllEleIdHistograms(const unsigned int h, const float &weight, const TString &sampleName)
 {
 
 	DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[h]);
@@ -184,8 +184,9 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int h, const float &weig
 			!((abs(cms2.hyp_lt_mc_id()[h]) == 11) && abs(cms2.hyp_lt_mc_motherid()[h]) == 24) ) return;
 	}
 	// apply truth match behavior if wjets
-    if (sample == "wjets") {
-    	if (abs(cms2.hyp_lt_id()[h]) == 11 && abs(cms2.hyp_lt_mc_motherid()[h]) != 24) return;
+    if (sampleName == "wjets") {
+    	if (abs(cms2.hyp_lt_id()[h]) == 11 &&
+            ((abs(cms2.hyp_lt_mc_id()[h]) == 11) && abs(cms2.hyp_lt_mc_motherid()[h]) == 24) ) return;
     }
 	// apply truth match behavior if dyee
     if (sampleName == "dyee") {
