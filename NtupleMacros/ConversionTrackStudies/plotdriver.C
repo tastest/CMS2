@@ -1,9 +1,9 @@
  {
    //copied from setup.C
-	gSystem->Load("libTree.so");
-	gSystem->Load("libPhysics.so");
-	gSystem->Load("libEG.so");
-	gSystem->Load("libMathCore.so");
+	//gSystem->Load("libTree.so");
+	//gSystem->Load("libPhysics.so");
+	//gSystem->Load("libEG.so");
+	//gSystem->Load("libMathCore.so");
 	//gSystem->Load("libCMS2NtupleMacrosCORE.so");
 	//gSystem->Load("libCMS2NtupleMacrosTools.so");
 	//gSystem->Load("libCMS2NtupleMacrosLooper.so");
@@ -19,8 +19,9 @@
    gStyle->SetTitleSize  ( 0.040,"X");//was 0.050
    gStyle->SetTitleOffset( 0.600,"X");//was 1.2
 
-   plotscript("ExclSpike_Runs_allRuns_withTrackingCuts_withTriggers_jan23_6.root",
-			  "ExclSpike_Runs_allRuns_withTrackingCuts_withTriggers_mc_2.root",
-			  "ExclSpike_Runs_allRuns_withTrackingCuts_withTriggers_jan23_2tev_3.root");
+   plotscript("ExclSpike_Runs_allRuns_withTrackingCuts_withTriggers_jan23_12.root",
+			  "ExclSpike_Runs_allRuns_withTrackingCuts_withTriggers_mc_5.root",
+			  "ExclSpike_Runs_allRuns_withTrackingCuts_withTriggers_jan23_2tev_7.root",
+			  "ExclSpike_Runs_allRuns_withTrackingCuts_withTriggers_mc_2tev_4.root");
 
  }

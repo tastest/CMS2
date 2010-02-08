@@ -154,6 +154,8 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
   TH1F *h_cmet[aSize];          //met 
   TH1F *h_tcmetx[aSize];
   TH1F *h_tcmety[aSize];
+  TH1F *h_tcmetxw[aSize]; //w for wide axis range
+  TH1F *h_tcmetyw[aSize];
   TH1F *h_cmetHFCorr[aSize];          //met 
   TH1F *h_cmetAllCorr[aSize];          //met 
   TH1F *h_cmetCutCorr[aSize];   //met for events with cut on erat and emax
@@ -166,6 +168,11 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
   TH1F *h_tcmetAllCorr[aSize];
   TH1F *h_pfmetCut[aSize];//met for events with cut on erat and emax
   TH1F *h_pfmet[aSize];//met 
+  //new sumet plots
+  TH1F *h_sumet[aSize];
+  TH1F *h_tcsumet[aSize];
+  TH1F *h_sumetAllCorr[aSize];
+  TH1F *h_tcsumetAllCorr[aSize];
 
   TH2F *h_scs_etvscmet[aSize]; //et of sc vs met
   TH2F *h_scs_etmaxvscmet[aSize]; //eMax_t of sc vs met
@@ -219,10 +226,14 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
   TH1F *h_twrs_adc_spike[aSize];
   TH1F *h_twrs_adc_goodt[aSize];
 
-  float metmax = 40;
+  float metmax = 40.;
   int metbins = 40;
-  float metmaxN = 30;
+  float metmaxN = 30.;
   int metbinsN = 30;
+  float sumetmax = 100.;
+  int sumetbins = 100;
+  float tcsumetmax = 150.;
+  int tcsumetbins = 150;
   
   //book histos
   //fkw's new histos come first
@@ -340,12 +351,19 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
     h_tcmet[i]    		= new TH1F((v_prefix.at(i)+"tcmet").c_str(), ";tcMET", metbins, 0.0, metmax);
     h_tcmetx[i]    		= new TH1F((v_prefix.at(i)+"tcmetx").c_str(), ";tcMET_{X}", 40, -20., 20.);
     h_tcmety[i]    		= new TH1F((v_prefix.at(i)+"tcmety").c_str(), ";tcMET_{Y}", 40, -20., 20.);
+    h_tcmetxw[i]   		= new TH1F((v_prefix.at(i)+"tcmetxw").c_str(), ";tcMET_{X}", 100, -50., 50.);
+    h_tcmetyw[i]   		= new TH1F((v_prefix.at(i)+"tcmetyw").c_str(), ";tcMET_{Y}", 100, -50., 50.);
     h_tcmetCorr[i]    	= new TH1F((v_prefix.at(i)+"tcmetCorr").c_str(), ("tcmetCorr" + v_title.at(i)).c_str(), metbins, 0.0, metmax);
     h_tcmetHFCorr[i]    = new TH1F((v_prefix.at(i)+"tcmetHFCorr").c_str(), ";tcMET", metbins, 0.0, metmax);
     h_tcmetAllCorr[i]   = new TH1F((v_prefix.at(i)+"tcmetAllCorr").c_str(), ";tcMET", metbins, 0.0, metmax);
+	//new sumet plots
+	h_sumet[i]          = new TH1F((v_prefix.at(i)+"sumet").c_str(),          ";sumET"  , sumetbins,   0.0, sumetmax  );
+	h_tcsumet[i]        = new TH1F((v_prefix.at(i)+"tcsumet").c_str(),        ";tcsumET", tcsumetbins, 0.0, tcsumetmax);
+	h_sumetAllCorr[i]   = new TH1F((v_prefix.at(i)+"sumetAllCorr").c_str(),   ";sumET"  , sumetbins,   0.0, sumetmax  );
+	h_tcsumetAllCorr[i] = new TH1F((v_prefix.at(i)+"tcsumetAllCorr").c_str(), ";tcSumET", tcsumetbins, 0.0, tcsumetmax);
 
-	h_scs_etvscmet[i] = new TH2F((v_prefix.at(i)+"scet_vs_cmet").c_str(), ("scet_vs_cmet" + v_title.at(i)).c_str(), 100, 0.0, 50.0, 100, 0.0, 50.0);
-	h_scs_etmaxvscmet[i] = new TH2F((v_prefix.at(i)+"scetmax_vs_cmet").c_str(), ("scetmax_vs_cmet" + v_title.at(i)).c_str(), 100, 0.0, 50.0, 100, 0.0, 50.0);
+	h_scs_etvscmet[i]     = new TH2F((v_prefix.at(i)+"scet_vs_cmet").c_str(), ("scet_vs_cmet" + v_title.at(i)).c_str(), 100, 0.0, 50.0, 100, 0.0, 50.0);
+	h_scs_etmaxvscmet[i]  = new TH2F((v_prefix.at(i)+"scetmax_vs_cmet").c_str(), ("scetmax_vs_cmet" + v_title.at(i)).c_str(), 100, 0.0, 50.0, 100, 0.0, 50.0);
 	h_scs_phivscmetphi[i] = new TH2F((v_prefix.at(i)+"scphi_vs_cmetphi").c_str(), ("scphi_vs_cmetphi" + v_title.at(i)).c_str(), 100, -TMath::Pi(), TMath::Pi(), 100, -TMath::Pi(), TMath::Pi() );
 	h_scs_dphicmet[i] = new TH1F((v_prefix.at(i)+"dphi_sc_cmet").c_str(), ("dphi_sc_cmet" + v_title.at(i)).c_str(), 100, -TMath::Pi(), TMath::Pi() );
 
@@ -378,7 +396,7 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 	h_scs_er4[i] = new TH1F((v_prefix.at(i)+"scs_er4").c_str(), 
 							("scs_er4" + v_title.at(i)).c_str(), 220, -0.2, 2.0);
 
-	h_twrs_ass[i] = new TH1F((v_prefix.at(i)+"twrs_ass").c_str(), ";#alpha", 201, -1.0, 1.01); 
+	h_twrs_ass[i] = new TH1F((v_prefix.at(i)+"twrs_ass").c_str(), ";#alpha", 206, -1.03, 1.03); 
 	h_twrs_timeseed_all[i]   = new TH1F((v_prefix.at(i)+"twrs_timeseed_all").c_str(),   ("twrs_timeseed_all" + v_title.at(i)).c_str()  , 50, -25.0, 25.); 
 	h_twrs_timeseed_spike[i] = new TH1F((v_prefix.at(i)+"twrs_timeseed_spike").c_str(), ("twrs_timeseed_spike" + v_title.at(i)).c_str(), 50, -25.0, 25.); 
 	h_twrs_timeseed_goodt[i] = new TH1F((v_prefix.at(i)+"twrs_timeseed_goodt").c_str(), ("twrs_timeseed_goodt" + v_title.at(i)).c_str(), 50, -25.0, 25.); 
@@ -404,15 +422,15 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 	h_twrshf_etmaxvstcmet[i] = new TH2F((v_prefix.at(i)+"twrshf_etmax_vs_tcmet").c_str(),
 										";Tower E_{T};tcMET", metbinsN, 0.0, metmaxN, metbinsN, 0.0, metmaxN); //no max in title for hf bc i take emet + hadet
 	h_twrshf_phivstcmetphi[i] = new TH2F((v_prefix.at(i)+"twrshf_phivstcmetphi").c_str(), 
-									   ";Tower #phi;tcMET #phi",  100, -TMath::Pi(), TMath::Pi(), 100, -TMath::Pi(), TMath::Pi());
+									   ";Tower #phi;-tcMET #phi",  100, -TMath::Pi(), TMath::Pi(), 100, -TMath::Pi(), TMath::Pi());
 	h_twrsec_etmaxvsclmet[i] = new TH2F((v_prefix.at(i)+"twrsec_etmax_vs_clmet").c_str(),
 									  ";Tower Emax_{T};caloMET", metbinsN, 0.0, metmaxN, metbinsN, 0.0, metmaxN);
 	h_twrsec_phivsclmetphi[i] = new TH2F((v_prefix.at(i)+"twrsec_phivsclmetphi").c_str(), 
-									   ";Tower #phi;-calo MET #phi",  100, -TMath::Pi(), TMath::Pi(), 100, -TMath::Pi(), TMath::Pi());
+									   ";Tower #phi;-caloMET #phi",  100, -TMath::Pi(), TMath::Pi(), 100, -TMath::Pi(), TMath::Pi());
 	h_twrshf_etmaxvsclmet[i] = new TH2F((v_prefix.at(i)+"twrshf_etmax_vs_clmet").c_str(),
 										";Tower E_{T};caloMET", metbinsN, 0.0, metmaxN, metbinsN, 0.0, metmaxN); //no max in title for hf bc i take emet + hadet
 	h_twrshf_phivsclmetphi[i] = new TH2F((v_prefix.at(i)+"twrshf_phivsclmetphi").c_str(), 
-									   ";Tower #phi;-caloMet #phi",  100, -TMath::Pi(), TMath::Pi(), 100, -TMath::Pi(), TMath::Pi());
+									   ";Tower #phi;-caloMET #phi",  100, -TMath::Pi(), TMath::Pi(), 100, -TMath::Pi(), TMath::Pi());
 
 
 	/* //old
@@ -449,6 +467,8 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
     h_cmet[i]->TH1F::Sumw2();
     h_tcmetx[i]->TH1F::Sumw2();
     h_tcmety[i]->TH1F::Sumw2();
+    h_tcmetxw[i]->TH1F::Sumw2();
+    h_tcmetyw[i]->TH1F::Sumw2();
     h_cmetCut[i]->TH1F::Sumw2();
     h_cmetHFCorr[i]->TH1F::Sumw2();
     h_cmetAllCorr[i]->TH1F::Sumw2();
@@ -461,6 +481,10 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
     h_tcmetAllCorr[i]->TH1F::Sumw2();
     h_pfmet[i]->TH1F::Sumw2();
     h_pfmetCut[i]->TH1F::Sumw2();
+	h_sumet[i]->TH1F::Sumw2();
+	h_tcsumet[i]->TH1F::Sumw2();
+	h_sumetAllCorr[i]->TH1F::Sumw2();
+	h_tcsumetAllCorr[i]->TH1F::Sumw2();
 
 	h_scs_dphicmet[i]->TH1F::Sumw2();
 	h_scs_dphitcmet[i]->TH1F::Sumw2();
@@ -519,6 +543,11 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
   //int nUnmatchedElectrons = 0;
   int nPassTriggers = 0;
   int nPassTrackingCuts = 0;
+  int nPassTrigTrackRun = 0;
+  int nPassHLTPD        = 0; //physics declared bit
+  int nPassHLTPDRun = 0;
+  int physicsdeclaredbit = -1; //default to invalid index
+  int physicsdeclaredleftshift = -1;
   vector<int> nGoodEventsPerRun;
   for( unsigned int i=0; i<v_goodRuns.size(); i++ ) {
 	nGoodEventsPerRun.push_back(0);
@@ -541,6 +570,7 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
   int nspikes_badrun = 0;
 
   int tothfspikes = 0;
+  int totecalspikes = 0;
   int ntwrs_eta3_5gev_all   = 0;
   int ntwrs_eta3_5gev_spike = 0;
   int ntwrs_eta3_5gev_goodt = 0;
@@ -567,21 +597,27 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
       //fkw: If the present run number is not in this set then find returns the end of the iterator, i.e. one
       //fkw: beyond the last index. In that case we give up right here.
       if(!runningonGEN && find(v_goodRuns.begin(), v_goodRuns.end(), evt_run()) == v_goodRuns.end())
-		continue;
-      nGoodEvents++;
+	  	continue;
+	  //else
+	  //	npassgoodrun++; //ONLY KEEP THIS FOR THE 2TEV RUN (otherwise redundant with goodrun())
       
       if( thisRun != (int)evt_run() ) {
 		thisRun = evt_run();
 		//cout << "Reached run " << thisRun << endl; 
       }
 
-      if(!passesTrackCuts() && requireTrackCuts) 
-		continue;
-      nPassTrackingCuts++;
-      
+	  bool passtracking = false;
+      if(passesTrackCuts() && requireTrackCuts) {
+		passtracking = true;
+		nPassTrackingCuts++;
+	  }
+		//continue;
+	  
+	  bool passtrigger = false;
       int index = (int)(!passesTrigger(runningonGEN));//index is used for histo booking
       if( passesTrigger(runningonGEN) ) {
 		nPassTriggers++;
+		passtrigger = true;
 
 		//count total good events per run
 		for( unsigned int j=0; j<v_goodRuns.size(); j++ ) {
@@ -590,17 +626,73 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 		  }
 		}
 	  }
-	  else
-		continue;
+	  //else
+	  //continue;
 
-      //first comes fkw's new stuff
-	  passgoodrun = false;
+ 	  passgoodrun = false;
 	  //insert jmu's goodrun fn + yj's list
 	  if( runningonGEN || goodrun( evt_run(), evt_lumiBlock() ) ){
 	    npassgoodrun++;
 		passgoodrun = true;
 	  }
-	  else if( !is2tev )
+	  //else if( !is2tev )
+	  //continue;
+
+	  if( (passtrigger && passgoodrun) || (passtrigger && is2tev) )
+		nGoodEvents++; //only trig + run/lumi
+
+
+	  //NEW TEST OF HLT BIT
+	  //first check name
+	  if( physicsdeclaredbit == -1 || hlt_trigNames()[physicsdeclaredbit] != "HLT_PhysicsDeclared" ) {
+		int pdtmp = physicsdeclaredbit;
+
+		//if( hlt_trigNames()[116] != "HLT_PhysicsDeclared" ) {
+		//cout << "Setting physicsdeclaredbit " << hlt_trigNames()[116] << endl;
+		for( unsigned int i=0; i<hlt_trigNames().size(); i++ ) {
+		  if( hlt_trigNames()[i] == "HLT_PhysicsDeclared" ) {
+			if( physicsdeclaredbit != (int)i ) {
+			  //cout << "run/lumi " << evt_run() << "  " << evt_lumiBlock() << endl;
+			  //cout << "bit " << i << " has name " << hlt_trigNames()[i] << endl << endl;
+
+			  physicsdeclaredbit = i;
+			}
+			else
+			  cout << "This should never print if i know what i'm doing\n\n";
+		  }
+		}
+		//don't do ANYTHING unless you find this bit
+		if( physicsdeclaredbit == -1 || physicsdeclaredbit == pdtmp ) {
+		  cout << "Did not find pysics declared bit. Exiting." << endl << endl;
+		  return "";
+		}
+	  }
+	  if( physicsdeclaredbit >= 96 )
+		physicsdeclaredleftshift = physicsdeclaredbit - 96;
+	  else {
+		cout << "Pysics declared bit shift value wrong. Exiting." << endl << endl;
+		return "";
+	  }
+
+	  //compare my result to slava's function
+	  if( (bool)(hlt_bits4() & (1<<physicsdeclaredleftshift)) != passHLTTrigger("HLT_PhysicsDeclared") ) {
+		cout << "My physicsDeclared decision does not match slava's, exiting" << endl;
+		cout << "run/lumi " << evt_run() << "  " << evt_lumiBlock() << endl << endl;
+		return "";
+	  }
+
+	  //bool passphysicsdec = false;
+	  if( hlt_bits4() & (1<<physicsdeclaredleftshift) ) //should check if hlt_physicsdeclared is set
+		nPassHLTPD++;
+
+	  if( (hlt_bits4() & (1<<physicsdeclaredleftshift)) && passgoodrun ) 
+		nPassHLTPDRun++;
+		
+	  if( passtrigger && passtracking && passgoodrun )
+		nPassTrigTrackRun++;
+	  else if( passtrigger && passtracking && is2tev ) //this automatically means good run
+		nPassTrigTrackRun++;	  
+	  else 
 		continue;
 
 	  //cout << "Done header of event loop" << endl;
@@ -617,15 +709,19 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 	  const float scdiff = 9.99;
 	  const float emaxmax = 39.9;
 	  const float etmaxcut = 5.0;
-	  const float cmet  = min(evt_met(), metmax);
-	  const float tcmet = min(evt_tcmet(), metmax);
-	  const float pfmet = min(evt_pfmet(), metmax);
+	  const float cmet  = min(evt_met(),   float(metmax-0.01));
+	  const float tcmet = min(evt_tcmet(), float(metmax-0.01));
+	  const float pfmet = min(evt_pfmet(), float(metmax-0.01));
       h_cmet[index]		->Fill(cmet);
       h_cmet[2]			->Fill(cmet);
       h_tcmet[index]	->Fill(tcmet);
       h_tcmet[2]		->Fill(tcmet);
       h_pfmet[index]	->Fill(pfmet);
       h_pfmet[2]		->Fill(pfmet);
+	  h_sumet[index]    ->Fill( min(evt_sumet(),   float(sumetmax-0.01)) );
+	  h_sumet[2]        ->Fill( min(evt_sumet(),   float(sumetmax-0.01)) );
+	  h_tcsumet[index]  ->Fill( min(evt_tcsumet(), float(tcsumetmax-0.01)) );
+	  h_tcsumet[2]      ->Fill( min(evt_tcsumet(), float(tcsumetmax-0.01)) );
       bool passed = false;
       bool failed = false;
 	  int evt_nspikes = 0;
@@ -900,15 +996,19 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 	  //	   << twrs_emMaxTime().size() << "  "
 	  //   << endl;
 	  //loop on calo towers
+	  int necalspikes = 0;
 	  int nhfspikes = 0;
 	  float tcmetallcorr    = evt_tcmet();
 	  float tcmetallcorrphi = evt_tcmetPhi();
 	  float tcmethfcorr     = evt_tcmet();
 	  float tcmethfcorrphi  = evt_tcmetPhi();
+	  float tcsumetallcorr  = evt_tcsumet();
 	  float cmetallcorr    = evt_met();
 	  float cmetallcorrphi = evt_metPhi();
 	  float cmethfcorr     = evt_met();
 	  float cmethfcorrphi  = evt_metPhi();
+	  float sumetallcorr   = evt_sumet();
+	  float hfspikex=0., hfspikey=0.;
 	  for( unsigned int i=0; i<twrs_emEnergy().size(); i++ ) {
 		if( havetimeseed ) {
 		  //h_twrs_etavsphiNar[index]->Fill( twrs_phi()[i], twrs_eta()[i] );
@@ -940,6 +1040,7 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 			const float metallcorrx = twretcorr*cos(twrs_phi().at(i)) + tcmetallcorr*cos(tcmetallcorrphi);
 			const float metallcorry = twretcorr*sin(twrs_phi().at(i)) + tcmetallcorr*sin(tcmetallcorrphi);
 			tcmethfcorr  = sqrt( methfcorrx*methfcorrx   + methfcorry* methfcorry );
+			tcmethfcorrphi = atan2( methfcorry, methfcorrx ); 
 			tcmetallcorr = sqrt( metallcorrx*metallcorrx + metallcorry*metallcorry );
 			tcmetallcorrphi = atan2( metallcorry, metallcorrx ); 
 
@@ -948,20 +1049,16 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 			const float cmetallcorrx = twretcorr*cos(twrs_phi().at(i)) + cmetallcorr*cos(cmetallcorrphi);
 			const float cmetallcorry = twretcorr*sin(twrs_phi().at(i)) + cmetallcorr*sin(cmetallcorrphi);
 			cmethfcorr  = sqrt( cmethfcorrx*cmethfcorrx   + cmethfcorry* cmethfcorry );
+			cmethfcorrphi  = atan2( cmethfcorry, cmethfcorrx ); 
 			cmetallcorr = sqrt( cmetallcorrx*cmetallcorrx + cmetallcorry*cmetallcorry );
 			cmetallcorrphi = atan2( cmetallcorry, cmetallcorrx ); 
 
-			float tmptwret = min( twretcorr, float(metmaxN-0.01) );
-			h_twrshf_phivstcmetphi[index]->Fill( twrs_phi().at(i), atan2( -evt_tcmet()*sin(evt_tcmetPhi()), -evt_tcmet()*cos(evt_tcmetPhi()) ) );
-			h_twrshf_phivstcmetphi[2]    ->Fill( twrs_phi().at(i), atan2( -evt_tcmet()*sin(evt_tcmetPhi()), -evt_tcmet()*cos(evt_tcmetPhi()) ) );
-			h_twrshf_etmaxvstcmet[index]->Fill( tmptwret, min( evt_tcmet(), float(metmaxN-0.01) ) );
-			h_twrshf_etmaxvstcmet[2]    ->Fill( tmptwret, min( evt_tcmet(), float(metmaxN-0.01) ) );
-			h_twrshf_phivsclmetphi[index]->Fill( twrs_phi().at(i), atan2( -evt_met()*sin(evt_metPhi()), -evt_met()*cos(evt_metPhi()) ) );
-			h_twrshf_phivsclmetphi[2]    ->Fill( twrs_phi().at(i), atan2( -evt_met()*sin(evt_metPhi()), -evt_met()*cos(evt_metPhi()) ) );
-			h_twrshf_etmaxvsclmet[index]->Fill( tmptwret, min( evt_met(), float(metmaxN-0.01) ) );
-			h_twrshf_etmaxvsclmet[2]    ->Fill( tmptwret, min( evt_met(), float(metmaxN-0.01) ) );
-			h_tcmetCorr[index]->Fill( tcmethfcorr );
-			h_tcmetCorr[2]->Fill( tcmethfcorr );
+			sumetallcorr    -= twretcorr;
+			tcsumetallcorr  -= twretcorr;
+
+			hfspikex += twretcorr*cos(twrs_phi().at(i));
+			hfspikey += twretcorr*sin(twrs_phi().at(i));
+
 			h_tcmetHF[index]->Fill( evt_tcmet() );
 			h_tcmetHF[2]    ->Fill( evt_tcmet() );
 		  }
@@ -1004,16 +1101,22 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 			h_twrs_er4Met[2]         ->Fill(r4);
 		  }
 
-		  //this if for spikes
+		  //this is for spikes
 		  if( emmaxet > 5. && r4 < 0.05 ) {
+			totecalspikes++;
+			necalspikes++;
 			const float metallcorrx = emmaxet*cos(twrs_phi().at(i)) + tcmetallcorr*cos(tcmetallcorrphi);
 			const float metallcorry = emmaxet*sin(twrs_phi().at(i)) + tcmetallcorr*sin(tcmetallcorrphi);
 			tcmetallcorr = sqrt( metallcorrx*metallcorrx + metallcorry*metallcorry );
+			tcmetallcorrphi = atan2( metallcorry, metallcorrx );
 			const float cmetallcorrx = emmaxet*cos(twrs_phi().at(i)) + cmetallcorr*cos(cmetallcorrphi);
 			const float cmetallcorry = emmaxet*sin(twrs_phi().at(i)) + cmetallcorr*sin(cmetallcorrphi);
 			cmetallcorr = sqrt( cmetallcorrx*cmetallcorrx + cmetallcorry*cmetallcorry );
 			cmetallcorrphi = atan2( cmetallcorry, cmetallcorrx );
 			
+			sumetallcorr    -= emmaxet;
+			tcsumetallcorr  -= emmaxet;
+
 			float tmpemmaxet = min( emmaxet, float(metmaxN-0.01) );
 			h_twrsec_phivstcmetphi[index]->Fill( twrs_phi().at(i), atan2( -evt_tcmet()*sin(evt_tcmetPhi()), -evt_tcmet()*cos(evt_tcmetPhi()) ) );
 			h_twrsec_phivstcmetphi[2]    ->Fill( twrs_phi().at(i), atan2( -evt_tcmet()*sin(evt_tcmetPhi()), -evt_tcmet()*cos(evt_tcmetPhi()) ) );
@@ -1071,24 +1174,53 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 		}//end eta if (else)
 
 	  } //end loop on towers
-	  if( nhfspikes > 1 )
-		cout << "More one HF spike  " << nhfspikes << endl;
+	  if( nhfspikes > 1 || necalspikes > 1) {
+		//cout << "More one HF spike  " << nhfspikes << endl;
+		cout << "n HF spikes: " << nhfspikes << "  n ecal spikes: " << necalspikes << endl
+			 << "caloMET not corrected = " << evt_met() << endl;
+		cout << "caloMET with HF correction = " << cmethfcorr << "  caloMET all corrected " << cmetallcorr 
+			 << "  diff " << cmethfcorr - cmetallcorr << endl << endl;
+	  }
 
-	  h_tcmetHFCorr[index]->Fill( tcmethfcorr );
-	  h_tcmetHFCorr[2]    ->Fill( tcmethfcorr );
-	  h_tcmetAllCorr[index]->Fill( tcmetallcorr );
-	  h_tcmetAllCorr[2]    ->Fill( tcmetallcorr );
-	  h_cmetHFCorr[index]->Fill( cmethfcorr );
-	  h_cmetHFCorr[2]    ->Fill( cmethfcorr );
-	  h_cmetAllCorr[index]->Fill( cmetallcorr );
-	  h_cmetAllCorr[2]    ->Fill( cmetallcorr );
-	  h_tcmetx[index]    ->Fill( tcmetallcorr*cos(tcmetallcorrphi) );
-	  h_tcmetx[2]        ->Fill( tcmetallcorr*cos(tcmetallcorrphi) );
-	  h_tcmety[index]    ->Fill( tcmetallcorr*sin(tcmetallcorrphi) );
-	  h_tcmety[2]        ->Fill( tcmetallcorr*sin(tcmetallcorrphi) );
+	  if( nhfspikes > 0 ) {
+		float hfspikeet = sqrt( hfspikex*hfspikex + hfspikey*hfspikey );
+		float hfspikephi = atan2( hfspikey, hfspikex );
+		float tmptwret = min( hfspikeet, float(metmaxN-0.01) );
+		h_twrshf_phivstcmetphi[index]->Fill( hfspikephi, atan2( -evt_tcmet()*sin(evt_tcmetPhi()), -evt_tcmet()*cos(evt_tcmetPhi()) ) );
+		h_twrshf_phivstcmetphi[2]    ->Fill( hfspikephi, atan2( -evt_tcmet()*sin(evt_tcmetPhi()), -evt_tcmet()*cos(evt_tcmetPhi()) ) );
+		h_twrshf_etmaxvstcmet[index] ->Fill( tmptwret, min( evt_tcmet(), float(metmaxN-0.01) ) );
+		h_twrshf_etmaxvstcmet[2]     ->Fill( tmptwret, min( evt_tcmet(), float(metmaxN-0.01) ) );
+		h_twrshf_phivsclmetphi[index]->Fill( hfspikephi, atan2( -evt_met()*sin(evt_metPhi()), -evt_met()*cos(evt_metPhi()) ) );
+		h_twrshf_phivsclmetphi[2]    ->Fill( hfspikephi, atan2( -evt_met()*sin(evt_metPhi()), -evt_met()*cos(evt_metPhi()) ) );
+		h_twrshf_etmaxvsclmet[index] ->Fill( tmptwret, min( evt_met(), float(metmaxN-0.01) ) );
+		h_twrshf_etmaxvsclmet[2]     ->Fill( tmptwret, min( evt_met(), float(metmaxN-0.01) ) );
+		h_tcmetCorr[index]->Fill( tcmethfcorr );
+		h_tcmetCorr[2]->Fill( tcmethfcorr );
+	  }
 
-	  sumet_   = evt_sumet();
-	  tcsumet_ = evt_tcsumet();
+	  h_tcmetHFCorr[index]		->Fill( min(tcmethfcorr , float(metmax-0.01))	);
+	  h_tcmetHFCorr[2]    		->Fill( min(tcmethfcorr , float(metmax-0.01))	);
+	  h_tcmetAllCorr[index]		->Fill( min(tcmetallcorr, float(metmax-0.01)) 	);
+	  h_tcmetAllCorr[2]    		->Fill( min(tcmetallcorr, float(metmax-0.01)) 	);
+	  h_cmetHFCorr[index]		->Fill( min(cmethfcorr 	, float(metmax-0.01))	);
+	  h_cmetHFCorr[2]    		->Fill( min(cmethfcorr 	, float(metmax-0.01))	);
+	  h_cmetAllCorr[index]		->Fill( min(cmetallcorr , float(metmax-0.01))	);
+	  h_cmetAllCorr[2]    		->Fill( min(cmetallcorr , float(metmax-0.01))	);
+	  h_tcmetx[index]    		->Fill( tcmetallcorr*cos(tcmetallcorrphi) );
+	  h_tcmetx[2]        		->Fill( tcmetallcorr*cos(tcmetallcorrphi) );
+	  h_tcmety[index]    		->Fill( tcmetallcorr*sin(tcmetallcorrphi) );
+	  h_tcmety[2]        		->Fill( tcmetallcorr*sin(tcmetallcorrphi) );
+	  h_tcmetxw[index]    		->Fill( tcmetallcorr*cos(tcmetallcorrphi) );
+	  h_tcmetxw[2]        		->Fill( tcmetallcorr*cos(tcmetallcorrphi) );
+	  h_tcmetyw[index]    		->Fill( tcmetallcorr*sin(tcmetallcorrphi) );
+	  h_tcmetyw[2]        		->Fill( tcmetallcorr*sin(tcmetallcorrphi) );
+	  h_sumetAllCorr[index]     ->Fill( min(sumetallcorr,   float(sumetmax-0.01)) );
+	  h_sumetAllCorr[2]         ->Fill( min(sumetallcorr,   float(sumetmax-0.01)) );
+	  h_tcsumetAllCorr[index]   ->Fill( min(tcsumetallcorr, float(tcsumetmax-0.01)) );
+	  h_tcsumetAllCorr[2]       ->Fill( min(tcsumetallcorr, float(tcsumetmax-0.01)) );
+
+	  sumet_   = sumetallcorr;
+	  tcsumet_ = tcsumetallcorr;
 	  MET_     = cmetallcorr;
 	  METPhi_  = cmetallcorrphi;
 	  tcMET_   = tcmetallcorr;
@@ -1121,9 +1253,28 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 
   cout << "\n\n********************SUMMARY********************" << endl;
   cout << "Total number of events: " << nEventsTotal << endl;
-  cout << "Total number of events from selected runs : " << nGoodEvents << " (" << 100*(double)nGoodEvents/nEventsTotal << "%)" << endl;
-  cout << "Total number of events that pass tracking cuts: " << nPassTrackingCuts << " (" << 100*(double)nPassTrackingCuts/nGoodEvents << "%)" << endl;
-  cout << "Total number of events from selected runs that pass the triggers and tracking cuts: " << nPassTriggers << " (" << 100*(double)nPassTriggers/nGoodEvents << "%)" << endl;
+  //cout << "Total number of events from selected runs : " << nGoodEvents << " (" << 100*(double)nGoodEvents/nEventsTotal << "%)" << endl;
+  //cout << "Total number of events from selected runs that pass the triggers and tracking cuts: " << nPassTriggers << " (" << 100*(double)nPassTriggers/nGoodEvents << "%)" << endl;
+  cout << "Total number of events that pass good run: " << npassgoodrun 
+	   << " (" << 100*(double)npassgoodrun/nEventsTotal << "% of total)" << endl;
+
+  cout << "Total number of events that pass trigger: " << nPassTriggers
+	   << " (" << 100*(double)nPassTriggers/npassgoodrun << "%)" << endl;
+
+  cout << "Total number of events that pass tracking cuts: " << nPassTrackingCuts
+	   << " (" << 100*(double)nPassTrackingCuts/npassgoodrun << "%)" << endl;
+
+  cout << "Total number of events that pass run and trigger cuts: " << nGoodEvents
+	   << " (" << 100*(double)nGoodEvents/npassgoodrun << "%)" << endl;
+
+  cout << "Total number of events that pass run, trigger, and tracking cuts: " << nPassTrigTrackRun
+	   << " (" << 100*(double)nPassTrigTrackRun/npassgoodrun << "%)" << endl;
+  cout <<endl << endl;
+
+
+  //cout << "Total number events pass HLT_PhysicsDeclared: " << nPassHLTPD << endl;
+  //cout << "Total number events pass HLT_PhysicsDeclared and good run: " << nPassHLTPDRun << endl << endl;
+
   if ( nEventsChain != nEventsTotal ) {
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
   }
@@ -1166,20 +1317,21 @@ TString ScanChain( TChain* chain, bool runningonGEN, bool requireTrackCuts = tru
 	cout << "Total HF spikes " << tothfspikes << endl << endl;
   }
 
-  cout << "good run selected nevts " << npassgoodrun << endl << endl;
+  cout << "Total HF spikes " << tothfspikes << endl;
+  cout << "Total ecal spikes " << totecalspikes << endl << endl;
 
-  cout << "\t\tGood Run\tBad Run\n"
-	   << "total scs\t\t" << nscs_goodrun << "\t" << nscs_badrun << endl
-	   << "total scs 5gevet\t" << nscs5gevet_goodrun << "\t" << nscs5gevet_badrun << endl
-	   << "good scs 5gevet \t" << ngoodscs5gevet_goodrun << "\t" << ngoodscs5gevet_badrun << endl
-	   << "n spikes \t\t" << nspikes_goodrun << "\t" << nspikes_badrun << endl
-	   << "ratio spikes to total scs  " << (float)nspikes_goodrun/(float)nscs_goodrun       << "\t" << (float)nspikes_badrun/(float)nscs_badrun << endl
-	   << "ratio spikes to scs5gevet  " << (float)nspikes_goodrun/(float)nscs5gevet_goodrun << "\t" << (float)nspikes_badrun/(float)nscs5gevet_badrun << endl;
+  //cout << "\t\tGood Run\tBad Run\n"
+  //	   << "total scs\t\t" << nscs_goodrun << "\t" << nscs_badrun << endl
+  //	   << "total scs 5gevet\t" << nscs5gevet_goodrun << "\t" << nscs5gevet_badrun << endl
+  //	   << "good scs 5gevet \t" << ngoodscs5gevet_goodrun << "\t" << ngoodscs5gevet_badrun << endl
+  //	   << "n spikes \t\t" << nspikes_goodrun << "\t" << nspikes_badrun << endl
+  //	   << "ratio spikes to total scs  " << (float)nspikes_goodrun/(float)nscs_goodrun       << "\t" << (float)nspikes_badrun/(float)nscs_badrun << endl
+  //	   << "ratio spikes to scs5gevet  " << (float)nspikes_goodrun/(float)nscs5gevet_goodrun << "\t" << (float)nspikes_badrun/(float)nscs5gevet_badrun << endl;
 
-  cout << endl << "n     twrs eta < 3 et > 5 : " << ntwrs_eta3_5gev_all << endl;
-  cout << "n good twrs eta < 3 et > 5 : " << ntwrs_eta3_5gev_goodt << endl;
-  cout << "n spike twrs eta < 3 et > 5 : " << ntwrs_eta3_5gev_spike << endl;
-  cout << endl << endl;
+  //cout << endl << "n     twrs eta < 3 et > 5 : " << ntwrs_eta3_5gev_all << endl;
+  //cout << "n good twrs eta < 3 et > 5 : " << ntwrs_eta3_5gev_goodt << endl;
+  //cout << "n spike twrs eta < 3 et > 5 : " << ntwrs_eta3_5gev_spike << endl;
+  //cout << endl << endl;
 
   TString cutDescription = "";
   if(requireTrackCuts)
@@ -1238,12 +1390,14 @@ bool passesTrackCuts() {
   for(unsigned int i = 0; i < vtxs_isFake().size(); i++) {
     if(vtxs_isFake().at(i))
       continue;
-    if(vtxs_tracksSize().at(i) < 4 )
-      continue;
+    //if(vtxs_tracksSize().at(i) < 4 )
+	//  continue;
+	if(vtxs_ndof().at(i) < 5 ) //the calomet guys use this
+	  continue;
     if( fabs( vtxs_position().at(i).z() ) > 15 )
       continue;
-    if( vtxs_position().at(i).pt() > 2 )
-      continue;
+    //if( vtxs_position().at(i).pt() > 2 )
+	//continue;
     nGoodVtxs++;
   }
   
@@ -1251,8 +1405,7 @@ bool passesTrackCuts() {
   if(nGoodVtxs==0)
     return false;
   
-  //require less than 100 tracks
-  if(trks_trk_p4().size() < 10){
+  if(trks_trk_p4().size() <= 10){
     return true;
   } else {
 
@@ -1260,9 +1413,10 @@ bool passesTrackCuts() {
     int nGoodTrks = 0;
     for(unsigned int i = 0; i < trks_trk_p4().size(); i++) {
       if(trks_qualityMask().at(i) & 4)
-	nGoodTrks++;
+		nGoodTrks++;
     }
-    if((float)nGoodTrks/trks_trk_p4().size() < 0.2)
+    //if((float)nGoodTrks/trks_trk_p4().size() < 0.2) //20%
+	if((float)nGoodTrks/trks_trk_p4().size() < 0.25) //25%
       return false;
   }
 
