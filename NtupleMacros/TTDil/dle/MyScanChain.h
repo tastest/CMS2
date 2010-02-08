@@ -67,6 +67,7 @@ class MyScanChain {
 		TH1F *h1_hyp_lt_eb_ecalIso_[4];
 		TH1F *h1_hyp_lt_eb_hcalIso_[4];
 		TH1F *h1_hyp_lt_eb_tkIso_[4];
+        TH1F *h1_hyp_lt_eb_relsusy_[4];
 
 		TH1F *h1_hyp_lt_ee_hoe_[4];
 		TH1F *h1_hyp_lt_ee_sigmaIEtaIEta_[4];
@@ -77,6 +78,7 @@ class MyScanChain {
 		TH1F *h1_hyp_lt_ee_ecalIso_[4];
 		TH1F *h1_hyp_lt_ee_hcalIso_[4];
 		TH1F *h1_hyp_lt_ee_tkIso_[4];
+		TH1F *h1_hyp_lt_ee_relsusy_[4];
 
 		// id
 		//

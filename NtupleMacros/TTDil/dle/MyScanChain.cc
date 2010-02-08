@@ -86,20 +86,20 @@ void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
 	FormatHist(h1_hyp_lt_eb_pt_, sampleName, "hyp_lt_eb_pt", 20, 0.0, 100.0);
 	FormatHist(h1_hyp_lt_ee_pt_, sampleName, "hyp_lt_ee_pt", 20, 0.0, 100.0);
 
-	FormatHist(h1_hyp_lt_eb_hoe_, sampleName, "hyp_lt_eb_hoe", 50, 0.0, 0.05);
-	FormatHist(h1_hyp_lt_ee_hoe_, sampleName, "hyp_lt_ee_hoe", 50, 0.0, 0.05);
+	FormatHist(h1_hyp_lt_eb_hoe_, sampleName, "hyp_lt_eb_hoe", 100, 0.0, 0.1);
+	FormatHist(h1_hyp_lt_ee_hoe_, sampleName, "hyp_lt_ee_hoe", 100, 0.0, 0.1);
 
 	FormatHist(h1_hyp_lt_eb_sigmaIEtaIEta_, sampleName, "hyp_lt_eb_sigmaIEtaIEta", 50, 0.0, 0.05);
 	FormatHist(h1_hyp_lt_ee_sigmaIEtaIEta_, sampleName, "hyp_lt_ee_sigmaIEtaIEta", 50, 0.0, 0.05);
 
-	FormatHist(h1_hyp_lt_eb_dEtaIn_, sampleName, "hyp_lt_eb_dEtaIn", 100, -0.05, 0.05);
-	FormatHist(h1_hyp_lt_ee_dEtaIn_, sampleName, "hyp_lt_ee_dEtaIn", 100, -0.05, 0.05);
+	FormatHist(h1_hyp_lt_eb_dEtaIn_, sampleName, "hyp_lt_eb_dEtaIn", 100, 0.0, 0.05);
+	FormatHist(h1_hyp_lt_ee_dEtaIn_, sampleName, "hyp_lt_ee_dEtaIn", 100, 0.0, 0.05);
 
-	FormatHist(h1_hyp_lt_eb_dPhiIn_, sampleName, "hyp_lt_eb_dPhiIn", 100, -0.05, 0.05);
-	FormatHist(h1_hyp_lt_ee_dPhiIn_, sampleName, "hyp_lt_ee_dPhiIn", 100, -0.05, 0.05);
+	FormatHist(h1_hyp_lt_eb_dPhiIn_, sampleName, "hyp_lt_eb_dPhiIn", 100, 0.0, 0.05);
+	FormatHist(h1_hyp_lt_ee_dPhiIn_, sampleName, "hyp_lt_ee_dPhiIn", 100, 0.0, 0.05);
 
-	FormatHist(h1_hyp_lt_eb_d0_, sampleName, "hyp_lt_eb_d0", 100, -0.05, 0.05);
-	FormatHist(h1_hyp_lt_ee_d0_, sampleName, "hyp_lt_ee_d0", 100, -0.05, 0.05);
+	FormatHist(h1_hyp_lt_eb_d0_, sampleName, "hyp_lt_eb_d0", 100, 0.0, 0.05);
+	FormatHist(h1_hyp_lt_ee_d0_, sampleName, "hyp_lt_ee_d0", 100, 0.0, 0.05);
 
 	FormatHist(h1_hyp_lt_eb_E2x5MaxOver5x5_, sampleName, "hyp_lt_eb_E2x5MaxOver5x5", 110, 0.0, 1.1);
 	FormatHist(h1_hyp_lt_ee_E2x5MaxOver5x5_, sampleName, "hyp_lt_ee_E2x5MaxOver5x5", 110, 0.0, 1.1);
@@ -111,6 +111,9 @@ void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
 	FormatHist(h1_hyp_lt_ee_ecalIso_, sampleName, "hyp_lt_ee_ecalIso", 100, 0, 10);
 	FormatHist(h1_hyp_lt_ee_hcalIso_, sampleName, "hyp_lt_ee_hcalIso", 100, 0, 25);
 	FormatHist(h1_hyp_lt_ee_tkIso_, sampleName, "hyp_lt_ee_tkIso", 100, 0, 25);
+
+	FormatHist(h1_hyp_lt_ee_relsusy_, sampleName, "hyp_lt_ee_relsusy", 100, 0, 1);
+    FormatHist(h1_hyp_lt_eb_relsusy_, sampleName, "hyp_lt_eb_relsusy", 100, 0, 1);
 
 	FormatHist(h1_hyp_lt_eb_pt_idnew_, sampleName, "hyp_lt_eb_pt_idnew", 20, 0.0, 100.0);
 	FormatHist(h1_hyp_lt_ee_pt_idnew_, sampleName, "hyp_lt_ee_pt_idnew", 20, 0.0, 100.0);
@@ -196,40 +199,51 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int h, const float &weig
 
 
 	// apply part of electron denominator first here
-	if (abs(cms2.hyp_lt_id()[h]) == 11)
+	if (abs(cms2.hyp_lt_id()[h]) == 11) {
 		if (!electron20Eta2p4(cms2.hyp_lt_index()[h])) return;
-	if (abs(cms2.hyp_ll_id()[h]) == 11)
+		if (!(cms2.els_type()[cms2.hyp_lt_index()[h]] & (1<<ISECALDRIVEN))) return;
+    }
+	if (abs(cms2.hyp_ll_id()[h]) == 11) {
 		if (!electron20Eta2p4(cms2.hyp_ll_index()[h])) return;
+        if (!(cms2.els_type()[cms2.hyp_ll_index()[h]] & (1<<ISECALDRIVEN))) return;
+	}
 
 	//
 	// fill denominator histograms
 	//
+
+	float iso_relsusy = -1;
+    if (abs(cms2.hyp_lt_id()[h]) == 11)	
+		iso_relsusy = electronIsolation_relsusy_cand1(cms2.hyp_lt_index()[h], true);
+
 	if (abs(cms2.hyp_lt_p4()[h].eta()) > 1.5 && abs(cms2.hyp_lt_id()[h]) == 11) {
 		Fill(h1_hyp_lt_ee_pt_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
 		Fill(h1_hyp_lt_ee_hoe_, hypType, cms2.els_hOverE()[cms2.hyp_lt_index()[h]], weight);
-		Fill(h1_hyp_lt_ee_d0_, hypType, cms2.els_d0corr()[cms2.hyp_lt_index()[h]], weight);
-		Fill(h1_hyp_lt_ee_dPhiIn_, hypType, cms2.els_dPhiIn()[cms2.hyp_lt_index()[h]], weight);
-		Fill(h1_hyp_lt_ee_dEtaIn_, hypType, cms2.els_dEtaIn()[cms2.hyp_lt_index()[h]], weight);
+		Fill(h1_hyp_lt_ee_d0_, hypType, fabs(cms2.els_d0corr()[cms2.hyp_lt_index()[h]]), weight);
+		Fill(h1_hyp_lt_ee_dPhiIn_, hypType, fabs(cms2.els_dPhiIn()[cms2.hyp_lt_index()[h]]), weight);
+		Fill(h1_hyp_lt_ee_dEtaIn_, hypType, fabs(cms2.els_dEtaIn()[cms2.hyp_lt_index()[h]]), weight);
 		Fill(h1_hyp_lt_ee_sigmaIEtaIEta_, hypType, cms2.els_sigmaIEtaIEta()[cms2.hyp_lt_index()[h]], weight);
 		float E2x5MaxOver5x5 = cms2.els_e2x5Max()[cms2.hyp_lt_index()[h]] / cms2.els_e5x5()[cms2.hyp_lt_index()[h]];
 		Fill(h1_hyp_lt_ee_E2x5MaxOver5x5_, hypType, E2x5MaxOver5x5, weight);
 		Fill(h1_hyp_lt_ee_ecalIso_, hypType, cms2.els_ecalIso()[h], weight);
 		Fill(h1_hyp_lt_ee_hcalIso_, hypType, cms2.els_hcalIso()[h], weight);
 		Fill(h1_hyp_lt_ee_tkIso_, hypType, cms2.els_tkIso()[h], weight);
+		Fill(h1_hyp_lt_ee_relsusy_, hypType, iso_relsusy, weight);
 	}
 
 	if (abs(cms2.hyp_lt_p4()[h].eta()) < 1.5 && abs(cms2.hyp_lt_id()[h]) == 11) {
 		Fill(h1_hyp_lt_eb_pt_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
 		Fill(h1_hyp_lt_eb_hoe_, hypType, cms2.els_hOverE()[cms2.hyp_lt_index()[h]], weight);
-		Fill(h1_hyp_lt_eb_d0_, hypType, cms2.els_d0corr()[cms2.hyp_lt_index()[h]], weight);
-		Fill(h1_hyp_lt_eb_dPhiIn_, hypType, cms2.els_dPhiIn()[cms2.hyp_lt_index()[h]], weight);
-		Fill(h1_hyp_lt_eb_dEtaIn_, hypType, cms2.els_dEtaIn()[cms2.hyp_lt_index()[h]], weight);
+		Fill(h1_hyp_lt_eb_d0_, hypType, fabs(cms2.els_d0corr()[cms2.hyp_lt_index()[h]]), weight);
+		Fill(h1_hyp_lt_eb_dPhiIn_, hypType, fabs(cms2.els_dPhiIn()[cms2.hyp_lt_index()[h]]), weight);
+		Fill(h1_hyp_lt_eb_dEtaIn_, hypType, fabs(cms2.els_dEtaIn()[cms2.hyp_lt_index()[h]]), weight);
 		Fill(h1_hyp_lt_eb_sigmaIEtaIEta_, hypType, cms2.els_sigmaIEtaIEta()[cms2.hyp_lt_index()[h]], weight);
 		float E2x5MaxOver5x5 = cms2.els_e2x5Max()[cms2.hyp_lt_index()[h]] / cms2.els_e5x5()[cms2.hyp_lt_index()[h]];
 		Fill(h1_hyp_lt_eb_E2x5MaxOver5x5_, hypType, E2x5MaxOver5x5, weight);
 		Fill(h1_hyp_lt_eb_ecalIso_, hypType, cms2.els_ecalIso()[h], weight);
 		Fill(h1_hyp_lt_eb_hcalIso_, hypType, cms2.els_hcalIso()[h], weight);
 		Fill(h1_hyp_lt_eb_tkIso_, hypType, cms2.els_tkIso()[h], weight);
+        Fill(h1_hyp_lt_eb_relsusy_, hypType, iso_relsusy, weight);
 	}
 
 	// find out what passed
