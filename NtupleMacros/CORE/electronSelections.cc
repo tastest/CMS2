@@ -70,7 +70,7 @@ bool electronId_cand01(const unsigned int index)
 	//
 	// apply cuts
 	//
-	if (fabs(cms2.els_etaSC()[index]) < 1.5) {
+	if (fabs(cms2.els_etaSC()[index]) < 1.479) {
 		//if (cms2.els_fiduciality()[index] & (1<<ISEB)) {
 		if (fabs(cms2.els_dEtaIn()[index] > dEtaInThresholds[0])) 	return false;
 		if (fabs(cms2.els_dPhiIn()[index] > dPhiInThresholds[0])) 	return false;
@@ -78,7 +78,7 @@ bool electronId_cand01(const unsigned int index)
 		if ((cms2.els_e2x5Max()[index]/cms2.els_e5x5()[index]) < e2x5Over5x5Thresholds[0]) return false;
 		return true;
 	}
-	if (fabs(cms2.els_etaSC()[index]) > 1.5) {
+	if (fabs(cms2.els_etaSC()[index]) > 1.479) {
 		//if (cms2.els_fiduciality()[index] & (1<<ISEE)) {
 		if (fabs(cms2.els_dEtaIn()[index] > dEtaInThresholds[1])) 	return false;
 		if (fabs(cms2.els_dPhiIn()[index] > dPhiInThresholds[1])) 	return false;
@@ -100,12 +100,12 @@ bool electronId_cand01(const unsigned int index)
 		//
 		// apply cutç
 		//
-		if (fabs(cms2.els_etaSC()[index]) < 1.5) {
+		if (fabs(cms2.els_etaSC()[index]) < 1.479) {
 			//if (cms2.els_fiduciality()[index] & (1<<ISEB)) {
 			if (cms2.els_d0corr()[index] > d0Thresholds[0]) return false;
 			return true;
 		}
-		if (fabs(cms2.els_etaSC()[index]) > 1.5) {
+		if (fabs(cms2.els_etaSC()[index]) > 1.479) {
 			//if (cms2.els_fiduciality()[index] & (1<<ISEE)) {
 			if (cms2.els_d0corr()[index] > d0Thresholds[1]) return false;
 			return true;
@@ -134,7 +134,7 @@ bool electronId_cand01(const unsigned int index)
 			//
 
 
-			if (fabs(cms2.els_etaSC()[index]) < 1.5) {
+			if (fabs(cms2.els_etaSC()[index]) < 1.479) {
 				//if (cms2.els_fiduciality()[index] & (1<<ISEB)) {
 				// if (cms2.els_tkIso()[index] > tkThresholds[0])    return false;
 				if (cms2.els_tkJuraIso()[index] > tkThresholds[0]) 	return false;
@@ -142,7 +142,7 @@ bool electronId_cand01(const unsigned int index)
 				if (cms2.els_hcalIso()[index] 	> hcalThresholds[0]) 	return false;
 				return true;
 			}
-			if (fabs(cms2.els_etaSC()[index]) > 1.5) {
+			if (fabs(cms2.els_etaSC()[index]) > 1.479) {
 				//if (cms2.els_fiduciality()[index] & (1<<ISEE)) {
 				//if (cms2.els_tkIso()[index] > tkThresholds[1])      return false;
 				if (cms2.els_tkJuraIso()[index] > tkThresholds[1])      return false;
@@ -199,8 +199,8 @@ bool electronId_cand01(const unsigned int index)
 			{
 				float sum = cms2.els_tkIso().at(index);
 				if (use_calo_iso) {
-					if (fabs(cms2.els_etaSC().at(index)) > 1.5) sum += cms2.els_ecalIso().at(index);
-					if (fabs(cms2.els_etaSC().at(index)) <= 1.5) sum += max(0., (cms2.els_ecalIso().at(index) -1.));
+					if (fabs(cms2.els_etaSC().at(index)) > 1.479) sum += cms2.els_ecalIso().at(index);
+					if (fabs(cms2.els_etaSC().at(index)) <= 1.479) sum += max(0., (cms2.els_ecalIso().at(index) -1.));
 					sum += cms2.els_hcalIso().at(index);
 				}
 				double pt = cms2.els_p4().at(index).pt();
@@ -211,8 +211,8 @@ bool electronId_cand01(const unsigned int index)
 			{
 				float sum = cms2.els_tkJuraIso().at(index);
 				if (use_calo_iso) {
-					if (fabs(cms2.els_etaSC().at(index)) > 1.5) sum += cms2.els_ecalIso().at(index);
-					if (fabs(cms2.els_etaSC().at(index)) <= 1.5) sum += max(0., (cms2.els_ecalIso().at(index) -1.));
+					if (fabs(cms2.els_etaSC().at(index)) > 1.479) sum += cms2.els_ecalIso().at(index);
+					if (fabs(cms2.els_etaSC().at(index)) <= 1.479) sum += max(0., (cms2.els_ecalIso().at(index) -1.));
 					sum += cms2.els_hcalIso().at(index);
 				}
 				double pt = cms2.els_p4().at(index).pt();
