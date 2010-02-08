@@ -81,6 +81,16 @@ public:
   TH1F *h_actualTrueCat[2];  
   TH3F *h_TrueCat3D[2];
 
+  //FakeEta
+  TH1F *h_predictedFakeEta[2];
+  TH1F *h_actualFakeEta[2];  
+  TH3F *h_FakeEta3D[2];
+
+  //FakePt
+  TH1F *h_predictedFakePt[2];
+  TH1F *h_actualFakePt[2];  
+  TH3F *h_FakePt3D[2];
+
   //true composition
   TH1F *h_truecomposition_num[2];
   TH1F *h_truecomposition_denom[2];
@@ -88,6 +98,13 @@ public:
 
   //TrueCat for FO object
   TH1F *h_FOTrueCat[2];
+
+  //FakeEta for FO object
+  TH1F *h_FOFakeEta[2];
+
+  //FakePt for FO object
+  TH1F *h_FOFakePt[2];
+
 
 };
 #endif

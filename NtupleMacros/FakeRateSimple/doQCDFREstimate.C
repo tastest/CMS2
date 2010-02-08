@@ -16,6 +16,8 @@ void TestPrediction() {
   //  gROOT->ProcessLine(Form(".x setup.C(%d)", 1));
   hist::deleteHistos();
   hist::loadHist("QCDFRplots.root");
+
+  gROOT->SetStyle("Plain");
    
   TH3F *WJets_nJets3D[2];
 
@@ -46,6 +48,33 @@ void TestPrediction() {
     WJets_actualTrueCat[i] = (TH1F*)gDirectory->Get(Form("WJets_actualTrueCat_%s", flavor[i]));
     WJets_predictedTrueCat[i] = (TH1F*)gDirectory->Get(Form("WJets_predictedTrueCat_%s", flavor[i]));
   }      
+
+  TH3F *WJets_FakeEta3D[2];
+
+  TH1F *WJets_actualFakeEta[2];
+  TH1F *WJets_predictedFakeEta[2];
+  
+  char *flavor[2] = {"el", "mu"};
+  for(unsigned int i = 0; i < 2; i++) {
+    WJets_FakeEta3D[i] = (TH3F*)gDirectory->Get(Form("WJets_FakeEta3D_%s", flavor[i]));
+
+    WJets_actualFakeEta[i] = (TH1F*)gDirectory->Get(Form("WJets_actualFakeEta_%s", flavor[i]));
+    WJets_predictedFakeEta[i] = (TH1F*)gDirectory->Get(Form("WJets_predictedFakeEta_%s", flavor[i]));
+  }      
+
+  TH3F *WJets_FakePt3D[2];
+
+  TH1F *WJets_actualFakePt[2];
+  TH1F *WJets_predictedFakePt[2];
+  
+  char *flavor[2] = {"el", "mu"};
+  for(unsigned int i = 0; i < 2; i++) {
+    WJets_FakePt3D[i] = (TH3F*)gDirectory->Get(Form("WJets_FakePt3D_%s", flavor[i]));
+
+    WJets_actualFakePt[i] = (TH1F*)gDirectory->Get(Form("WJets_actualFakePt_%s", flavor[i]));
+    WJets_predictedFakePt[i] = (TH1F*)gDirectory->Get(Form("WJets_predictedFakePt_%s", flavor[i]));
+  }      
+
   
   hist::color("WJets_actual", kRed);
   hist::color("WJets_num", kRed);
@@ -65,7 +94,6 @@ void TestPrediction() {
   //hist::setrangey(c2);
   //c2->SaveAs("elPredictedpt.png");
 
-
   //TCanvas *c21 = new TCanvas();
   //WJets_numeta[1]->Draw("e");
   //WJets_predictedeta[1]->Draw("samese");
@@ -83,37 +111,54 @@ void TestPrediction() {
             (TH1F*)gDirectory->Get("WJets_predictednJets_el"), "elWJetsnJetsPredicted.png");
   overlay2( (TH1F*)gDirectory->Get("WJets_actualTrueCat_el"), 
             (TH1F*)gDirectory->Get("WJets_predictedTrueCat_el"), "elWJetTrueCatPredicted.png");
+  overlay2( (TH1F*)gDirectory->Get("WJets_actualFakeEta_el"), 
+            (TH1F*)gDirectory->Get("WJets_predictedFakeEta_el"), "elWJetFakeEtaPredicted.png");
+  overlay2( (TH1F*)gDirectory->Get("WJets_actualFakePt_el"), 
+            (TH1F*)gDirectory->Get("WJets_predictedFakePt_el"), "elWJetFakePtPredicted.png");
+
+
   overlay2( (TH1F*)gDirectory->Get("TTbar_actualnJets_el"), 
             (TH1F*)gDirectory->Get("TTbar_predictednJets_el"), "elTTbarnJetsPredicted.png");
   overlay2( (TH1F*)gDirectory->Get("TTbar_actualTrueCat_el"), 
             (TH1F*)gDirectory->Get("TTbar_predictedTrueCat_el"), "elTTbarTrueCatPredicted.png");
+  overlay2( (TH1F*)gDirectory->Get("TTbar_actualFakeEta_el"), 
+            (TH1F*)gDirectory->Get("TTbar_predictedFakeEta_el"), "elTTbarFakeEtaPredicted.png");
+  overlay2( (TH1F*)gDirectory->Get("TTbar_actualFakePt_el"), 
+            (TH1F*)gDirectory->Get("TTbar_predictedFakePt_el"), "elTTbarFakePtPredicted.png");
 
   TCanvas *c4 = new TCanvas("c4","c4",1280,960);
   TH2F *QCDFRptvseta_el = (TH2F*)gDirectory->Get("QCD_FRptvseta_el");
   QCDFRptvseta_el->SetMinimum(0.);
-  QCDFRptvseta_el->SetMaximum(0.2);
+  //  QCDFRptvseta_el->SetMaximum(0.2);
+  if( QCDFRptvseta_el->GetMaximum() < 0.2 ) { QCDFRptvseta_el->SetMaximum(0.2);  }
+  else { QCDFRptvseta_el->SetMaximum(1.0);  }
   QCDFRptvseta_el->Draw("LEGO2");
   c4->SaveAs("elFR2D.png");
 
   TCanvas *c5 = new TCanvas("c5","c5",1280,960);
   TH2F *QCDFRErrptvseta_el = (TH2F*)gDirectory->Get("QCD_FRErrptvseta_el");
   QCDFRErrptvseta_el->SetMinimum(0.);
-  QCDFRErrptvseta_el->SetMaximum(0.2);
+  if( QCDFRErrptvseta_el->GetMaximum() < 0.2 ) { QCDFRErrptvseta_el->SetMaximum(0.2);  }
+  else { QCDFRErrptvseta_el->SetMaximum(1.0);  }
+  //  QCDFRErrptvseta_el->SetMaximum(0.2);
   QCDFRErrptvseta_el->Draw("LEGO2");
   c5->SaveAs("elFRErr2D.png");
-  
+
   TCanvas *c6 = new TCanvas("c6","c6",1280,960);
   TH1F *QCD_FReta_el = (TH1F*)gDirectory->Get("QCD_FReta_el");
   QCD_FReta_el->SetMinimum(0.);
-  QCD_FReta_el->SetMaximum(0.2);
+  if( QCD_FReta_el->GetMaximum() < 0.2 ) { QCD_FReta_el->SetMaximum(0.2);  }
+  else { QCD_FReta_el->SetMaximum(1.0);  }
+  //  QCD_FReta_el->SetMaximum(0.2);
   QCD_FReta_el->Draw();
   c6->SaveAs("elFReta.png");
-
 
   TCanvas *c7 = new TCanvas("c7","c7",1280,960);
   TH1F *QCD_FRpt_el = gDirectory->Get("QCD_FRpt_el");
   QCD_FRpt_el->SetMinimum(0.);
-  QCD_FRpt_el->SetMaximum(0.2);
+  if( QCD_FRpt_el->GetMaximum() < 0.2 ) { QCD_FRpt_el->SetMaximum(0.2);  }
+  else { QCD_FRpt_el->SetMaximum(1.0);  }
+  //  QCD_FRpt_el->SetMaximum(0.2);
   QCD_FRpt_el->Draw();
   c7->SaveAs("elFRpt.png");
 
@@ -131,15 +176,26 @@ void TestPrediction() {
             (TH1F*)gDirectory->Get("WJets_predictednJets_mu"), "muWJetsnJetsPredicted.png");
   overlay2( (TH1F*)gDirectory->Get("WJets_actualTrueCat_mu"), 
             (TH1F*)gDirectory->Get("WJets_predictedTrueCat_mu"), "muWJetTrueCatPredicted.png");
+  overlay2( (TH1F*)gDirectory->Get("WJets_actualFakeEta_mu"), 
+            (TH1F*)gDirectory->Get("WJets_predictedFakeEta_mu"), "muWJetFakeEtaPredicted.png");
+  overlay2( (TH1F*)gDirectory->Get("WJets_actualFakePt_mu"), 
+            (TH1F*)gDirectory->Get("WJets_predictedFakePt_mu"), "muWJetFakePtPredicted.png");
+
   overlay2( (TH1F*)gDirectory->Get("TTbar_actualnJets_mu"), 
             (TH1F*)gDirectory->Get("TTbar_predictednJets_mu"), "muTTbarnJetsPredicted.png");
   overlay2( (TH1F*)gDirectory->Get("TTbar_actualTrueCat_mu"), 
             (TH1F*)gDirectory->Get("TTbar_predictedTrueCat_mu"), "muTTbarTrueCatPredicted.png");
+  overlay2( (TH1F*)gDirectory->Get("TTbar_actualFakeEta_mu"), 
+            (TH1F*)gDirectory->Get("TTbar_predictedFakeEta_mu"), "muTTbarFakeEtaPredicted.png");
+  overlay2( (TH1F*)gDirectory->Get("TTbar_actualFakePt_mu"), 
+            (TH1F*)gDirectory->Get("TTbar_predictedFakePt_mu"), "muTTbarFakePtPredicted.png");
 
   TCanvas *c11 = new TCanvas("c11","c11",1280,960);
   TH2F *QCDFRptvseta_mu = (TH2F*)gDirectory->Get("QCD_FRptvseta_mu");
   QCDFRptvseta_mu->SetMinimum(0.);
-  QCDFRptvseta_mu->SetMaximum(0.2);
+  if( QCDFRptvseta_mu->GetMaximum() < 0.2 ) { QCDFRptvseta_mu->SetMaximum(0.2);  }
+  else { QCDFRptvseta_mu->SetMaximum(1.0);  }
+  //  QCDFRptvseta_mu->SetMaximum(0.2);
   QCDFRptvseta_mu->Draw("LEGO2");
   c11->SaveAs("muFR2D.png");
 
@@ -233,7 +289,8 @@ void doAll(){
 
   TChain *ch_pthat30to80 = new TChain("Events");
   ch_pthat30to80->Add(Form("%s/%s",location,"cms2/QCD_Pt30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root"));
-  ch_pthat30to80->Add(Form("%s/%s",location,"cms2/QCD_Pt80_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root"));
+  std::cout<<"Using QCDpt30 ONLY currently!"<<std::endl;
+  //  ch_pthat30to80->Add(Form("%s/%s",location,"cms2/QCD_Pt80_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root"));
 
   //WJets chain
   TChain *ch_WJets = new TChain("Events");

@@ -79,10 +79,10 @@ bool isNumEl(int iEl){
      // sigmaIEtaIEta < N/A , 0.03 (EB, EE)
      // E2x5Max /E5x5 > 0.90, N/A (EB, EE) 
      electronId_cand01(iEl) &&
-     electronImpact_cand01(iEl) &&             	    // d0corr < .02
+     electronImpact_cand01(iEl) &&             	          // d0corr < .02
      electronIsolation_relsusy_cand1(iEl,true) < 0.1 &&   // relative isolation < .1
-     !isFromConversionPartnerTrack(iEl) &&        	// dist < .02 dcot < .02
-		 electronId_noMuon(iEl)
+     !isFromConversionPartnerTrack(iEl) &&        	  // dist < .02 dcot < .02
+     electronId_noMuon(iEl)
      ){
     return true;
   } else {
@@ -95,12 +95,12 @@ bool isDenomEl(int iEl){
   if(
      (pt >= 10.) &&
      (fabs(eta)<=2.4) &&
-		 electronId_cand01(iEl) &&
-		 electronImpact_cand01(iEl) &&             	    // d0corr < .02
-		 //     electronIsolation_relsusy_cand1(iEl,true) < 0.1 &&   // relative isolation < .1
-     electronIsolation_relsusy_cand1(iEl,true) < 0.4 &&   // relative isolation < .4
-     !isFromConversionPartnerTrack(iEl) &&       	  // dist < .02 dcot < .02
-		 electronId_noMuon(iEl)
+     //electronId_cand01(iEl) &&                           // eleID
+     //electronImpact_cand01(iEl) &&             	   // d0corr < .02
+     //electronIsolation_relsusy_cand1(iEl,true) < 0.1 &&  // relative isolation < .1
+     electronIsolation_relsusy_cand1(iEl,true) < 0.4 &&    // relative isolation < .4
+     !isFromConversionPartnerTrack(iEl) &&       	   // dist < .02 dcot < .02
+     electronId_noMuon(iEl)
      ){
     return true;
   } else{
@@ -240,6 +240,29 @@ int QCDFRestimator::ScanChainAppTest ( TChain* chain, TString prefix, float kFac
                                          "3D histo to store error info", 6, nbins, 12, eta, 16, pt);
     h_TrueCat3D[suf]->Sumw2();
 
+    // eta distribution
+    h_predictedFakeEta[suf]  = new TH1F( Form("%s_predictedFakeEta_%s",prefix.Data(), suffix[suf]),
+                                         "predicted eta distribution, FO object",12, eta);
+    h_predictedFakeEta[suf]->Sumw2();
+    h_actualFakeEta[suf]     = new TH1F(	Form("%s_actualFakeEta_%s",prefix.Data(), suffix[suf]), 
+                                          "actual eta distribution",12, eta);
+    h_actualFakeEta[suf]->Sumw2();
+    h_FakeEta3D[suf]          = new TH3F(Form("%s_FakeEta3D_%s",prefix.Data(), suffix[suf]),
+                                         "3D histo to store error info", 12, eta, 12, eta, 16, pt);
+    h_FakeEta3D[suf]->Sumw2();
+
+    // pt distribution
+    h_predictedFakePt[suf]  = new TH1F( Form("%s_predictedFakePt_%s",prefix.Data(), suffix[suf]),
+                                         "predicted pt distribution, FO object",16, pt);
+    h_predictedFakePt[suf]->Sumw2();
+    h_actualFakePt[suf]     = new TH1F(	Form("%s_actualFakePt_%s",prefix.Data(), suffix[suf]), 
+                                          "actual pt distribution", 16, pt);
+    h_actualFakePt[suf]->Sumw2();
+    h_FakePt3D[suf]          = new TH3F(Form("%s_FakePt3D_%s",prefix.Data(), suffix[suf]),
+                                         "3D histo to store error info", 16, pt, 12, pt, 16, pt);
+    h_FakePt3D[suf]->Sumw2();
+
+
     h_truecomposition_num[suf] = new TH1F(  Form("%s_truecomposition_num_%s",prefix.Data(), suffix[suf]),
                                             Form("%s_truecomposition_num_%s",prefix.Data(), suffix[suf]), 5, -0.5, 4.5);
     h_truecomposition_num[suf]->Sumw2();
@@ -283,8 +306,11 @@ int QCDFRestimator::ScanChainAppTest ( TChain* chain, TString prefix, float kFac
 		
       for(unsigned int iHyp = 0; iHyp < cms2.hyp_p4().size(); iHyp++) {
 	
-        //opposite sign - Oli + Ingo
-        if( cms2.hyp_lt_id()[iHyp]*cms2.hyp_ll_id()[iHyp] < 0) continue;
+//             //same sign
+//             if( cms2.hyp_lt_id()[iHyp]*cms2.hyp_ll_id()[iHyp] < 0) continue;
+
+            //opposite sign
+            if( cms2.hyp_lt_id()[iHyp]*cms2.hyp_ll_id()[iHyp] > 0) continue;
 		        
         int nJets = cms2.hyp_jets_p4()[iHyp].size();
         nJets = min(nJets, 5);
@@ -321,6 +347,8 @@ int QCDFRestimator::ScanChainAppTest ( TChain* chain, TString prefix, float kFac
               if( isNumEl(iEl) ){	// if a numerator electron
                 h_actualnJets[0]->Fill(nJets, weight);
                 h_actualTrueCat[0]->Fill(cat, weight);
+                h_actualFakeEta[0]->Fill(eta, weight);
+                h_actualFakePt[0]->Fill(pt, weight);
                 h_truecomposition_num[0]->Fill( cat, weight);
                 if( cat == 4 ){
                   logfile << "WJnum:\t" << cms2.els_mc_id().at(iEl) << "\t" << cms2.els_mc_motherid().at(iEl) << endl;
@@ -333,6 +361,10 @@ int QCDFRestimator::ScanChainAppTest ( TChain* chain, TString prefix, float kFac
                   h_nJets3D[0]        ->Fill(nJets, fabs(eta), pt, weight*fabs((1-2*FR)/((1-FR)*(1-FR)))*FRErr);
                   h_predictedTrueCat[0]->Fill(cat, weight*FR/(1-FR));
                   h_TrueCat3D[0]        ->Fill(cat, fabs(eta), pt, weight*fabs((1-2*FR)/((1-FR)*(1-FR)))*FRErr);
+                  h_predictedFakeEta[0]->Fill(eta, weight*FR/(1-FR));
+                  h_FakeEta3D[0]        ->Fill(eta, fabs(eta), pt, weight*fabs((1-2*FR)/((1-FR)*(1-FR)))*FRErr);
+                  h_predictedFakePt[0]->Fill(pt, weight*FR/(1-FR));
+                  h_FakePt3D[0]        ->Fill(pt, fabs(eta), pt, weight*fabs((1-2*FR)/((1-FR)*(1-FR)))*FRErr);
                   if( cat == 4 ){
                     logfile << "WJden:\t" << cms2.els_mc_id().at(iEl) << "\t" << cms2.els_mc_motherid().at(iEl) << endl;
                   }
@@ -365,6 +397,8 @@ int QCDFRestimator::ScanChainAppTest ( TChain* chain, TString prefix, float kFac
               if( isNumMu(iMu) ){	// if a numerator muon
                 h_actualnJets[1]->Fill(nJets, weight);
                 h_actualTrueCat[1]->Fill(cat, weight);
+                h_actualFakeEta[1]->Fill(eta, weight);
+                h_actualFakePt[1]->Fill(pt, weight);
                 h_truecomposition_num[1]->Fill( cat, weight);
                 if( cat == 4 ){
                   logfile << "WJnum:\t" << cms2.mus_mc_id().at(iMu) << "\t" << cms2.mus_mc_motherid().at(iMu) << endl;
@@ -377,6 +411,10 @@ int QCDFRestimator::ScanChainAppTest ( TChain* chain, TString prefix, float kFac
                   h_nJets3D[1]        ->Fill(nJets, fabs(eta), pt, weight*fabs((1-2*FR)/((1-FR)*(1-FR)))*FRErr);
                   h_predictedTrueCat[1]->Fill(cat, weight*FR/(1-FR));
                   h_TrueCat3D[1]        ->Fill(cat, fabs(eta), pt, weight*fabs((1-2*FR)/((1-FR)*(1-FR)))*FRErr);
+                  h_predictedFakeEta[1]->Fill(eta, weight*FR/(1-FR));
+                  h_FakeEta3D[1]        ->Fill(eta, fabs(eta), pt, weight*fabs((1-2*FR)/((1-FR)*(1-FR)))*FRErr);
+                  h_predictedFakePt[1]->Fill(pt, weight*FR/(1-FR));
+                  h_FakePt3D[1]        ->Fill(pt, fabs(eta), pt, weight*fabs((1-2*FR)/((1-FR)*(1-FR)))*FRErr);
                   if( cat == 4 ){
                     logfile << "WJden:\t" << cms2.els_mc_id().at(iMu) << "\t" << cms2.els_mc_motherid().at(iMu) << endl;
                   }
@@ -446,6 +484,50 @@ int QCDFRestimator::ScanChainAppTest ( TChain* chain, TString prefix, float kFac
       Float_t err = sqrt(err2);
       h_predictedTrueCat[i]->SetBinError(iMainBin, err);
     }
+
+    for(unsigned int ieta = 1; ieta < h_FakeEta3D[i]->GetNbinsY() + 1; ieta++) {
+      for(unsigned int ipt = 1; ipt < h_FakeEta3D[i]->GetNbinsZ() + 1; ipt++) {
+        Float_t temp23 = 0.;  
+        for(unsigned int iMainBin = 1; iMainBin < h_FakeEta3D[i]->GetNbinsX() + 1; iMainBin++) {
+          temp23 = temp23 + h_FakeEta3D[i]->GetBinContent(iMainBin, ieta, ipt);
+        }
+        totalErr = pow(temp23,2) + totalErr;
+      }
+    }
+    cout << "****** Error for  " << suffix[i] << sqrt(totalErr) << endl;
+    for(unsigned int iMainBin = 1; iMainBin < h_FakeEta3D[i]->GetNbinsX() + 1; iMainBin++) {
+      Float_t err2 = 0.;
+      for(unsigned int ieta = 1; ieta < h_FakeEta3D[i]->GetNbinsY() + 1; ieta++) {
+        for(unsigned int ipt = 1; ipt < h_FakeEta3D[i]->GetNbinsZ() + 1; ipt++) {
+          Float_t temp = h_FakeEta3D[i]->GetBinContent(iMainBin, ieta, ipt);
+          err2 = err2 + pow(temp,2);
+        }
+      }
+      Float_t err = sqrt(err2);
+      h_predictedFakeEta[i]->SetBinError(iMainBin, err);
+    }
+
+    for(unsigned int ieta = 1; ieta < h_FakePt3D[i]->GetNbinsY() + 1; ieta++) {
+      for(unsigned int ipt = 1; ipt < h_FakePt3D[i]->GetNbinsZ() + 1; ipt++) {
+        Float_t temp23 = 0.;  
+        for(unsigned int iMainBin = 1; iMainBin < h_FakePt3D[i]->GetNbinsX() + 1; iMainBin++) {
+          temp23 = temp23 + h_FakePt3D[i]->GetBinContent(iMainBin, ieta, ipt);
+        }
+        totalErr = pow(temp23,2) + totalErr;
+      }
+    }
+    cout << "****** Error for  " << suffix[i] << sqrt(totalErr) << endl;
+    for(unsigned int iMainBin = 1; iMainBin < h_FakePt3D[i]->GetNbinsX() + 1; iMainBin++) {
+      Float_t err2 = 0.;
+      for(unsigned int ieta = 1; ieta < h_FakePt3D[i]->GetNbinsY() + 1; ieta++) {
+        for(unsigned int ipt = 1; ipt < h_FakePt3D[i]->GetNbinsZ() + 1; ipt++) {
+          Float_t temp = h_FakePt3D[i]->GetBinContent(iMainBin, ieta, ipt);
+          err2 = err2 + pow(temp,2);
+        }
+      }
+      Float_t err = sqrt(err2);
+      h_predictedFakePt[i]->SetBinError(iMainBin, err);
+    }
   }//lepton flavor loop
       
   
@@ -497,7 +579,9 @@ int QCDFRestimator::ScanChainQCD ( TChain* chain, TString prefix, float kFactor,
 		TString filename = currentFile->GetTitle();
 		if ( filename.Contains("_Pt30_") ) {
 			pthatmin = 0.0;
-			pthatmax = 80.0;
+                        //			pthatmax = 80.0;
+			pthatmax = 99999999999999999999999999999.;
+                        std::cout<<"For use with QCDpt30 ONLY currently!"<<std::endl;
 		} else if ( filename.Contains("_Pt80_") ) {
 			pthatmin = 30.0;
 			pthatmax = 99999999999999999999999999999.;
@@ -788,8 +872,9 @@ void QCDFRestimator::bookHistos(const char *sample) {
                                             Form("%s_truecomposition_ratio_%s",sample, flavor[suf]), 5, -0.5, 4.5);
   h_truecomposition_ratio[suf]->Sumw2();
 
-  Float_t ptel[4] = {10,20,60,150};
-  Float_t etael[3] = {0, 1.479, 2.4};
+  Float_t ptel[4] = {10,20,60,150}; // xcheck with Claudio 100208
+  Float_t etael[3] = {0, 1.479, 2.4}; // xcheck with Claudio 100208
+
   h_FOptvseta[0] = new TH2F(Form("%s_FOptvseta_%s", sample, flavor[0]),
                             Form("%s pt vs eta of FO, %s", flavor[0], sample),
                             2, etael, 3, ptel);
