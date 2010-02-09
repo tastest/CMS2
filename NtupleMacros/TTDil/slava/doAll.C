@@ -402,14 +402,14 @@ void doAllCombined(unsigned int bitmask, bool runTTbarOnly = false){
   //                      -> 2**5 (32)
   //                      -> 2**6 (64)
   //                      -> 2**7 (128)
-  //                      -> 2**8 (256)
+  //tas10IDIso            -> 2**8 (256)
   //usePfMet              -> 2**9 (512)
   //looseDileptonSelection, TTdil note 2008
   //                      -> 2**10 (1024)
   //fullMultipleHypsOnly  -> 2**11 (2048) !!!!! Not implemented, so does nothing right now !!!!!!!
   //applyZWindow cut      -> 2**12 (4096)
   //Opp. Sign Selection   -> 2**13 (8192)
-  //fillMaxWeightDilOnly  -> 2**14 (16284
+  //fillMaxWeightDilOnly  -> 2**14 (16384
   //leptonIsolationDilSelectionTTDil08 -> 2**15 (uses trk and calo isolation seperately, reltrkIso > 0.9, 
   //                                             relCaloIso > 0.9. NO OTHER CUTS BUT ISOLATION APPLIED)
   //looseDilSelectionNoIsoTTDil08      -> 2**16 (basic muon preselection cuts, no isolation)
