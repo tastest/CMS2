@@ -1,4 +1,4 @@
-// $Id: ntupleFilter.cc,v 1.3 2009/12/08 01:33:19 warren Exp $
+// $Id: ntupleFilter.cc,v 1.4 2010/02/09 02:11:26 kalavase Exp $
 
 #include <assert.h>
 #include <string>
@@ -74,7 +74,7 @@ void ntupleFilter (const std::string &infile, const std::string &outfile, bool p
 	   //chain->SetBranchStatus(chain->GetAlias("evt_kfactor"		), 0);
 	   //chain->SetBranchStatus(chain->GetAlias("evt_nEvts"		), 0);
 	   //chain->SetBranchStatus(chain->GetAlias("evt_filt_eff"		), 0);
-	  
+	   chain->SetBranchStatus("EventAuxiliary",0);
 	   // for the first file, clone the tree
 	   if ( first ) {
 		 newtree = chain->CloneTree(0);
