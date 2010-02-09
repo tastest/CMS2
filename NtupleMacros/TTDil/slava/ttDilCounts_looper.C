@@ -33,6 +33,8 @@
 #include "CORE/CMS2.h"
 #include "ttDilCounts_looper.h"
 #include "CORE/selections.cc"
+#include "CORE/muonSelections.cc"
+#include "CORE/electronSelections.cc"
 #include "CORE/utilities.cc"
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > P4;
@@ -133,10 +135,10 @@ int ttDilCounts_looper::ScanChain (std::vector<ProcDSChain>& pds, std::string pr
      compactConfig = compactConfig + "_cutBit8";
    } 
    
-   bool cutBit9 =  (cutsMask>>8) & 1;
-   if( cutBit9 ) {
-     cout << "Dummy cut bit9" << endl;
-     compactConfig = compactConfig + "_cutBit9";
+   bool tas10IDIso =  (cutsMask>>8) & 1;
+   if( tas10IDIso ) {
+     cout << "TaS lepton ID and isolation (make sure to turn off other ID and iso)" << endl;
+     compactConfig = compactConfig + "_tas10IDIso";
    } 
    
    bool usePfMet =  (cutsMask>>9) & 1;
@@ -454,6 +456,14 @@ int ttDilCounts_looper::ScanChain (std::vector<ProcDSChain>& pds, std::string pr
 	  //pt eta cuts
 	  if (! lepton20Eta2p4(id_lt, i_lt) ) continue;
 	  if (! lepton20Eta2p4(id_ll, i_ll) ) continue;
+	}
+
+	if (tas10IDIso){
+	  if (abs(id_lt)==11 && ! electronSelection_cand01(i_lt) ) continue;
+	  if (abs(id_ll)==11 && ! electronSelection_cand01(i_ll) ) continue;
+
+	  if (abs(id_lt)==13 && ! muonId(i_lt,Nominal)) continue;
+	  if (abs(id_ll)==13 && ! muonId(i_ll,Nominal)) continue;
 	}
 
 	if (looseDilSelectionNoIsoTTDil08){
