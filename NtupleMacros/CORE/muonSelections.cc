@@ -47,4 +47,7 @@ bool isCosmics(unsigned int index){
   return false;
 }
 
-
+bool passedMuonTriggerRequirements()
+{
+  return cms2.passHLTTrigger("HLT_Mu9");
+}
