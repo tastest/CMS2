@@ -48,6 +48,9 @@ enum {
 	H_WENU_7TeV,
 	H_QCD30_7TeV,
 	H_PHOTONJET_7TeV,
+
+	H_ELEGUN,
+
 };
 
 /*
@@ -131,6 +134,7 @@ DataSource fH_MU15_SINGLE();
 
 DataSource fH_WENU_7TeV();
 
+DataSource fH_ELEGUN();
 
 #endif
 

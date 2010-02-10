@@ -1,6 +1,8 @@
 
 #include "AllDataSources.h"
 
+DataSource fH_ELEGUN() { return DataSource("elegun", H_ELEGUN, kBlue); }
+
 DataSource fH_DYMM()    { return DataSource("dymm",     H_DYMM, kCyan);    }
 DataSource fH_DYEE()    { return DataSource("dyee",     H_DYEE, kMagenta);    }
 DataSource fH_DYTT()    { return DataSource("dytt",     H_DYTT, kBlack);    }
@@ -38,7 +40,7 @@ DataSource fH_PHOTONJET_7TeV() { return DataSource("photonjet", H_PHOTONJET_7TeV
 
 // old stuff?
 DataSource fH_TW()      { return DataSource("tw",       H_TW);          }
-DataSource fH_WJETS()   { return DataSource("wjets",    H_WJETS);       }
+DataSource fH_WJETS()   { return DataSource("wjets",    H_WJETS, 40);       }
 DataSource fH_MU15_SINGLE() { return DataSource("InclusiveMuPt15", H_MU15_SINGLE, 28); }
 DataSource fH_QCD80()      { return DataSource("QCDpt80",       H_QCD80, 17);          }
 DataSource fH_WJET_ALP()   { return DataSource("wjetsAlpgen", H_WJET_ALP, 40); }
