@@ -1,284 +1,175 @@
-//==============================================================
 //
-// This runs over the skimmed files (see AAREADME.txt)
+// DOCUMENT ME
 //
-// To run on unskimmed files, change the file names, but be
-// careful about Drell Yan.
-//
-// The DY skims have separated out the three generated final states,
-// while the unskimmed file has them all together, so it is a bit 
-// more complicated.  You should:
-// (1) Uncomment the block following the "Full Drell Yan file" comment
-// (2) Optionally comment out blocks where the skimmed DY files are opened
-// (3) Replace these three statements
-//        ScanTree(tDYtautau,"DYtautau", -1, 1.2);
-//        ScanTree(tDYmm,"DYmm", -1, 1.2);
-//        ScanTree(tDYee,"DYee", -1, 1.2);
-//     by
-//        ScanTree(tDY,"DYtautau", 2, 1.2);
-//        ScanTree(tDY,"DYmm",     1, 1.2);
-//        ScanTree(tDY,"DYee",     0, 1.2);
-//     Note the change in the 3rd calling parameter!
-//
-//==============================================================
+#if defined(__CINT__) && !defined(__MAKECINT__)
 {
-// Output file
-  const char* outFile = "processed_data_tag.root";
-  const bool identifyVVEvents = false; // careful with this option. You don't need it for not mixed samples
+  gSystem->Load("libCMS2NtupleMacrosCORE");
+  gSystem->Load("libRooFit.so");
+  gSystem->Load("libCMS2NtupleMacrosLooper");
+  gSystem->CompileMacro("processData.C");
+  processData();
+}
+#endif 
+
+#include "TROOT.h"
+#include "TSystem.h"
+#include "TStyle.h"
+#include "RooDataSet.h"
+#include "TRegexp.h"
+#include "TFile.h"
+
+#ifndef __CINT__
+ #include "wwtypes.h"
+ #include "doAnalysis.h"
+#endif
+
+void processData()
+{
+  using namespace std;
+  //
+  // Output file
+  //
+  const char* outFile = "processed_data.root";
+
+  //
+  // Define how to handle complex Monte Carlo samples which may have 
+  // more than one event type mixed in. Careful with this option. 
+  // You don't need it for not mixed samples.
+  //
   const bool identifyDYEvents = false;
+  
+  //
+  // Flags for files to run over 
+  // (0 and 1 are easier to modify)
+  //
+  bool runWW    = 1;
+  bool runWZ    = 0;
+  bool runZZ    = 0;
+  bool runWjets = 0;
+  bool runDYee  = 0;
+  bool runDYmm  = 0;
+  bool runDYtt  = 0;
+  bool runttbar = 0;
+  bool runtW    = 0;
+  bool runQCD   = 0; 
 
-// Flags for files to run over
-bool runWW    = true;
-bool runWZ    = true;
-bool runZZ    = true;
-bool runWjets = true;
-bool runDYee  = true;
-bool runDYmm  = true;
-bool runDYtt  = true;
-bool runttbar = true;
-bool runtW    = true;
+  // 
+  // Ntuple version
+  //
+  string version = "V03-00-35";
 
-bool runWjetBackground1 = false;
-bool runWjetBackground2 = false;
-
-// Load various tools
- string old_path = gROOT->GetMacroPath();
- gROOT->SetMacroPath((string(gROOT->GetMacroPath()) + ":" + "../Tools/").c_str());
-
- gROOT->ProcessLine(".x setup.C");
- gROOT->SetMacroPath(old_path.c_str());
- gROOT->ProcessLine(".L fitWjets.C+");
-
-// read dataset prefix
- string dataset;
- if ( ! gSystem->Getenv("CMS2_NTUPLE_LOCATION") ){
-   cout << "ERROR: Dataset location is not set. Please set CMS2_NTUPLE_LOCATION." <<endl;
-   return;
- }
- dataset = gSystem->Getenv("CMS2_NTUPLE_LOCATION");
+  //
+  // ===================================================================================
+  // 
+  // Load various tools
+  gROOT->ProcessLine(".x init.C");
+  gSystem->Load("../Tools/MiniFWLite/libMiniFWLite");
+  gROOT->LoadMacro("../Tools/getMyHistosNames.C");
+  gROOT->LoadMacro("../Tools/histtools.C+");
+  gROOT->LoadMacro("../Tools/browseStacks.C");
  
-//WW file
-TChain *fWW = new TChain("Events");
-if (runWW) {
-  fWW->Add((dataset+"/cms2-V01-02-06/WW_Summer08_IDEAL_V9_v1/merged_ntuple*.root").c_str());
-  // fWW->Add("/data/tmp/cms2-V01-02-06/VVJets/merged_vvjets.root");
-}
+  // Define colors numbers:
+  gStyle->SetPalette(1);
+  enum EColor { kWhite, kBlack, kRed, kGreen, kBlue, kYellow, kMagenta, kCyan };
 
-//WZ file
-TChain *fWZ = new TChain("Events");
-if (runWZ) {
-  fWZ->Add((dataset+"/cms2-V01-02-06/WZ_incl_Summer08_IDEAL_V9_v2/merged_ntuple*.root").c_str());
-  // fWZ->Add("/data/tmp/cms2-V01-02-06/VVJets/merged_vvjets.root");
-}
-
-//ZZ file
-TChain *fZZ = new TChain("Events");
-if (runZZ) {
-  fZZ->Add((dataset+"/cms2-V01-02-06/ZZ_Summer08_IDEAL_V9_v1/merged_ntuple*.root").c_str());
-  // fZZ->Add("/data/tmp/cms2-V01-02-06/VVJets/merged_vvjets.root");
-}
-
-//Wjets file
-TChain *fWjets = new TChain("Events");
-if (runWjets) {
-  fWjets->Add((dataset+"/cms2-V01-02-06/WJets-madgraph_Fall08_IDEAL_V9_v1/merged_ntuple*.root").c_str());
-}
-
-//DYee file
-TChain *fDYee = new TChain("Events");
-if (runDYee) {
-  fDYee->Add((dataset+"/cms2-V01-02-06/Zee_M20_Summer08_IDEAL_V9_reco-v3/merged_ntuple*.root").c_str());
-}
-
-//DYmm file
-TChain *fDYmm = new TChain("Events");
-if (runDYmm) {
-  fDYmm->Add((dataset+"/cms2-V01-02-06/Zmumu_M20_Summer08_IDEAL_V9_reco-v2/merged_ntuple*.root").c_str());
-}
-
-//DYtt file
-TChain *fDYtt = new TChain("Events");
-if (runDYtt) {
-  fDYtt->Add((dataset+"/cms2-V01-02-06/Ztautau_M20_Summer08_IDEAL_V9_v1/merged_ntuple*.root").c_str());
-}
-
-//ttbar file
-TChain *fttbar = new TChain("Events");
-if (runttbar) {
-  fttbar->Add((dataset+"/cms2-V01-02-06/TTJets-madgraph_Fall08_IDEAL_V9_v1/merged_ntuple*.root").c_str());
-}
-
-//tW file
-TChain *ftW = new TChain("Events");
-if (runtW) {
-  ftW->Add((dataset+"/cms2-V01-02-06/SingleTop_tWChannel-madgraph-LHE/merged_ntuple.root").c_str());
-}
-
-// Define colors numbers:
-gStyle->SetPalette(1);
-enum EColor { kWhite, kBlack, kRed, kGreen, kBlue, kYellow, kMagenta, kCyan };
-
- RooDataSet *fullDataSet(0);
-
-// Process files one at a time, and color them as needed
-if (runWW) {
-  cout << "Processing WW.."<< endl;
-  RooDataSet* data = ScanChain(fWW, WW, identifyVVEvents);
-  if( data ){
-    if ( fullDataSet )
-      fullDataSet->append(*data);
-    else
-      fullDataSet=data;
-  }
-  hist::color("ww", kRed);
-}
-
-if (runWZ) {
-  cout << "Processing WZ.."<< endl;
-  RooDataSet* data = ScanChain(fWZ, WZ, identifyVVEvents);
-  if ( data ){
-    if ( fullDataSet )
-      fullDataSet->append(*data);
-    else
-      fullDataSet=data;
-  }
-  hist::color("wz", kBlue);
-}
-
-if (runZZ) {
-  cout << "Processing ZZ.."<< endl;
-  RooDataSet* data = ScanChain(fZZ, ZZ, identifyVVEvents);
-  if ( data ){
-    if ( fullDataSet )
-      fullDataSet->append(*data);
-    else
-      fullDataSet=data;
-  }
-  hist::color("zz", kGreen);
-}
-
-if (runWjets) {
-  cout << "Processing Wjets.."<<endl;
-  RooDataSet* data = ScanChain(fWjets, Wjets, false);
-  if ( data ){
-    if ( fullDataSet )
-      fullDataSet->append(*data);
-    else
-      fullDataSet=data;
-  }
-  hist::color("wjets", 40);
-}
-
-if (runDYee) {
-  cout << "Processing DYee.."<<endl;
-  RooDataSet* data = ScanChain(fDYee, DYee, identifyDYEvents);
-  if ( data ){
-    if ( fullDataSet )
-      fullDataSet->append(*data);
-    else
-      fullDataSet=data;
-  }
-  hist::color("dyee", kMagenta);
-}
-
-if (runDYmm) {
-  cout << "Processing DYmm.."<<endl;
-  RooDataSet* data = ScanChain(fDYmm, DYmm, identifyDYEvents);
-  if ( data ){
-    if ( fullDataSet )
-      fullDataSet->append(*data);
-    else
-      fullDataSet=data;
-  }
-  hist::color("dymm", kCyan);
-}
-
-if (runDYtt) {
-  cout << "Processing DYtt.."<<endl;
-  RooDataSet* data = ScanChain(fDYtt, DYtt, identifyDYEvents);
-  if ( data ){
-    if ( fullDataSet )
-      fullDataSet->append(*data);
-    else
-      fullDataSet=data;
-  }
-  hist::color("dytt", kBlack);
-}
-
-if (runttbar) {
-  cout << "Processing ttbar.."<<endl;
-  RooDataSet* data = ScanChain(fttbar, ttbar, false);
-  if ( data ){
-    if ( fullDataSet )
-      fullDataSet->append(*data);
-    else
-      fullDataSet=data;
-  }
-  hist::color("ttbar", kYellow);
-}
-
-if (runtW) {
-  cout << "Processing tW.."<<endl;
-  RooDataSet* data = ScanChain(ftW, tW, false);
-  if ( data ){
-    if ( fullDataSet )
-      fullDataSet->append(*data);
-    else
-      fullDataSet=data;
-  }
-  hist::color("tw", 63);
-}
-
-//save all the histograms
-//saveHist(outFile);
- cout << "got up to here" << endl;
- TList* list = gDirectory->GetList() ;
- TIterator* iter = list->MakeIterator();
+  RooDataSet *fullDataSet(0);
+  
+  // read dataset prefix
+  string dataset = "data";
  
- TRegexp re("*",kTRUE) ;
- 
- TFile outf(outFile,"RECREATE") ;
- while(obj=iter->Next()) {
-   if (TString(obj->GetName()).Index(re)>=0) {
-     obj->Write() ;
-     cout << "." ;
-     cout.flush() ;
-   }
- }
- cout << endl ;
- outf.Close() ;
- 
- delete iter ;
+  if (runWW)
+    ProcessSample(dataset+"/WW_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", WW, 1.0, fullDataSet, kRed);
 
- if ( runWjetBackground1 ){ 
-   TCanvas* c1 = new TCanvas("wjetsBackgroundEstimates_sidebandfit","",800,800);
-   c1->Divide(2,2);
-   c1->cd(1);
-   fit_isolation(fullDataSet,0,2,"Wjets e-fake background (pdf2)");
-   c1->cd(2);
-   fit_isolation(fullDataSet,0,1,"Wjets e-fake background (pdf1)");
-   c1->cd(3);
-   fit_isolation(fullDataSet,1,2,"Wjets mu-fake background (pdf2)");
-   c1->cd(4);
-   fit_isolation(fullDataSet,1,1,"Wjets mu-fake background (pdf1)");
- }
- if ( runWjetBackground2 ){ 
-   TFile* fcs = TFile::Open("fakeIsoControlSamples.root");
-   if ( fcs ){
-     TCanvas* c2 = new TCanvas("wjetsBackgroundEstimates_qcd_sideband","",600,900);
-     c2->Divide(2,3);
-     c2->cd(1);
-     fit_isolation(fullDataSet,0,3,"Wjets e-fake background (QCD30)",h_electron_qcd30);
-     c2->cd(2);
-     fit_isolation(fullDataSet,1,3,"Wjets mu-fake background (QCD30)",h_muon_qcd30);
-     c2->cd(3);
-     fit_isolation(fullDataSet,0,3,"Wjets e-fake background (QCD80)",h_electron_qcd80);
-     c2->cd(4);
-     fit_isolation(fullDataSet,1,3,"Wjets mu-fake background (QCD80)",h_muon_qcd80);
-     c2->cd(5);
-     fit_isolation(fullDataSet,0,3,"Wjets e-fake background (QCD170)",h_electron_qcd170);
-     c2->cd(6);
-     fit_isolation(fullDataSet,1,3,"Wjets mu-fake background (QCD170)",h_muon_qcd170);
-   }
- }
+  if (runWZ)
+    ProcessSample(dataset+"/WZ_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", WZ, 1.84, fullDataSet, kBlue);
+  
+  if (runZZ)
+    ProcessSample(dataset+"/ZZ_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", ZZ, 1.47, fullDataSet, kGreen);
+ 
+  if (runWjets)
+    ProcessSample(dataset+"/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", Wjets, 1.0, fullDataSet, 40);
+
+  if (runDYee)
+    ProcessSample(dataset+"/Zee_Summer09-MC_31X_V3_7TeV_TrackingParticles-v1/"+version+"/merged_ntuple*.root", DYee, 1.14, fullDataSet, kMagenta, identifyDYEvents);
+ 
+  if (runDYmm)
+    ProcessSample(dataset+"/Zmumu_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", DYmm, 1.14, fullDataSet, kCyan, identifyDYEvents);
+ 
+  if (runDYtt)
+    ProcessSample(dataset+"/Ztautau_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", DYtt, 1.14, fullDataSet, kBlack, identifyDYEvents);
+
+  if (runttbar)
+    ProcessSample(dataset+"/TTbarJets-madgraph_Summer09-MC_31X_V3_7TeV-v2/"+version+"/merged_ntuple*.root", ttbar, 1.0, fullDataSet, kYellow);
+ 
+  if (runtW)
+    ProcessSample(dataset+"/SingleTop_tWChannel-madgraph_Summer09-MC_31X_V3_7TeV-v2/"+version+"/merged_ntuple*.root", tW, 1.0, fullDataSet, 63);
+
+  //QCD file
+  TChain *fqcd = new TChain("Events");
+  if (runQCD) {
+    fqcd->Add((dataset+"/cms2-V01-02-06/InclusiveMuPt15/merged_ntuple*.root").c_str());
+    fqcd->Add((dataset+"/cms2-V01-02-06/InclusiveMu5Pt50/merged_ntuple*.root").c_str());
+    fqcd->Add((dataset+"/cms2-V01-02-06/QCD_EMenriched_Pt20to30/merged_ntuple*.root").c_str());
+    fqcd->Add((dataset+"/cms2-V01-02-06/QCD_EMenriched_Pt30to80/merged_ntuple*.root").c_str());
+    fqcd->Add((dataset+"/cms2-V01-02-06/QCD_EMenriched_Pt80to170/merged_ntuple*.root").c_str());
+    fqcd->Add((dataset+"/cms2-V01-02-06/QCD_BCtoE_Pt20to30/merged_ntuple*.root").c_str());
+    fqcd->Add((dataset+"/cms2-V01-02-06/QCD_BCtoE_Pt30to80/merged_ntuple*.root").c_str());
+    fqcd->Add((dataset+"/cms2-V01-02-06/QCD_BCtoE_Pt80to170/merged_ntuple*.root").c_str());
+  }
+
+  /*
+  if (runQCD) {
+    cout << "Processing QCD.."<<endl;
+    RooDataSet* data = ScanChain(fWjets, qcd, false);
+    if ( data ){
+      if ( fullDataSet )
+	fullDataSet->append(*data);
+      else
+	fullDataSet=data;
+    }
+    hist::color("qcd", 40);
+  }
+  */
+
+  if (gSystem->Getenv("SkimSamples")) return;
+
+  //
+  // save all the histograms
+  //
+  //saveHist(outFile);
+
+  TList* list = gDirectory->GetList() ;
+  TIterator* iter = list->MakeIterator();
+  
+  TRegexp re("*",kTRUE) ;
+  
+  TFile outf(outFile,"RECREATE") ;
+  while(TObject* obj = iter->Next()) {
+    if (TString(obj->GetName()).Index(re)>=0) {
+      obj->Write() ;
+      cout << "." ;
+      cout.flush() ;
+    }
+  }
+  cout << endl ;
+  if (fullDataSet) {
+    std::string description("Full N-1 dataset:");
+    if (runWW)     description+=" WW";
+    if (runWZ)     description+=" WZ";
+    if (runZZ)     description+=" ZZ";
+    if (runWjets)  description+=" Wjets";
+    if (runDYee)   description+=" DYee";
+    if (runDYmm)   description+=" DYmm";
+    if (runDYtt)   description+=" DYtt";
+    if (runttbar)  description+=" ttbar";
+    if (runtW)     description+=" tW";
+    if (runQCD)    description+=" QCD";
+    fullDataSet->SetName("fulldataset");
+    fullDataSet->SetTitle(description.c_str());
+    fullDataSet->Write();
+  }
+  outf.Close() ;
+  
+  delete iter ;
+ 
 }

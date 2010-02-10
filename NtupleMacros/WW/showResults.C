@@ -4,7 +4,8 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-void showResults(const char* file = "processed_data_tag.root")
+#include "wwtypes.cc"
+void showResults(const char* file = "processed_data.root")
 {
   using namespace std;
   
@@ -23,18 +24,12 @@ void showResults(const char* file = "processed_data_tag.root")
     TH1F *ww    = dynamic_cast<TH1F*>(ftt->Get("ww_hypos_total_weighted"));
     TH1F *tw    = dynamic_cast<TH1F*>(ftt->Get("tw_hypos_total_weighted"));
   
-    char* finalState[4];
-    finalState[0] = " ee   ";
-    finalState[1] = " mumu ";
-    finalState[2] = " em   ";
-    finalState[3] = " total";
-    
     cout << "|      |  *DY ee*  | *DY mumu* |*DY tautau*|  *ttbar*  |  *Wjets*  |    *WZ*   |    *ZZ*   |    *WW*    |    *TW*   |" << endl;
     string pm = "+/-";
     // string pm = "&plusmn;";
     for (int i=0; i<4; i++){
       
-      cout << "|" << finalState[i] << "| ";
+      cout << "|" << HypothesisTypeName(i) << "| ";
       cout.setf(ios::fixed,ios::floatfield);
       cout.precision(2);
       if (DYee) cout << DYee->GetBinContent(i+1) << pm << DYee->GetBinError(i+1);
