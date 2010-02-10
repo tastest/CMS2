@@ -1304,8 +1304,8 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, double kFactor, bool i
        for( unsigned int event = 0; event < nEvents; ++event) {
 	    cms2.GetEntry(event);  // get entries for Event number event from branches of TTree tree
 	    ++nEventsTotal;
-	    if (cms2.trks_d0().size() == 0)
-		 continue;
+	    if (cms2.trks_d0().size() == 0) continue;  // needed to get rid of back Monte Carlo events in CMSSW_2_X analysis
+	    if (cms2.hyp_type().size() == 0) continue; // skip events without hypothesis
 	    EventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.evt_lumiBlock(), cms2.trks_d0()[0], 
 					cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
 	    if (is_duplicate(id)) {
@@ -1344,6 +1344,7 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, double kFactor, bool i
 	    // loop over hypothesis candidates
 	    unsigned int nHyps = cms2.hyp_type().size();
 	    for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
+	      if(cms2.hyp_p4().at(i_hyp).mass2() < 0 ) break;
 	      hypo(i_hyp, kFactor, dataset);
 	      AddIsoSignalControlSample(i_hyp, kFactor, dataset);
 	    }
