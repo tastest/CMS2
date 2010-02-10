@@ -6,30 +6,6 @@
 // CMS2 includes
 #include "electronSelections.h"
 #include "CMS2.h"
-//
-// enums and typedefs
-//
-
-enum EgammaFiduciality {
-	ISEB,
-	ISEBEEGAP,
-	ISEE,
-	ISEEGAP,
-	ISEBETAGAP,
-	ISEBPHIGAP,
-	ISEEDEEGAP,
-	ISEERINGGAP,
-	ISGAP
-};
-
-// seeding type used and corrections applied
-
-enum EgammaElectronType {
-	ISECALENERGYCORRECTED,	// if false, the electron "ecalEnergy" is just the supercluster energy 
-	ISMOMENTUMCORRECTED,  	// has E-p combination been applied
-	ISECALDRIVEN,
-	ISTRACKERDRIVEN
-};
 
 bool electronSelection_cand01(const unsigned int index)
 {
