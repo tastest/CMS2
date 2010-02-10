@@ -6,7 +6,7 @@
   gSystem->Load("libCMS2NtupleMacrosCORE");
   gSystem->Load("libRooFit.so");
   gSystem->Load("libCMS2NtupleMacrosLooper");
-  gSystem->CompileMacro("processData.C");
+  gSystem->CompileMacro("processData.C","k");
   processData();
 }
 #endif 
@@ -57,6 +57,10 @@ void processData()
   // Ntuple version
   //
   string version = "V03-00-35";
+  if (gSystem->Getenv("VERSION")){
+    version = gSystem->Getenv("VERSION");
+    cout << "Version: " << version << endl;
+  }
 
   //
   // ===================================================================================
@@ -78,7 +82,7 @@ void processData()
   string dataset = "data";
  
   if (runWW)
-    ProcessSample(dataset+"/WW_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", WW, 1.0, fullDataSet, kRed);
+    ProcessSample(dataset+"/WW_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", WW, 1.65, fullDataSet, kRed);
 
   if (runWZ)
     ProcessSample(dataset+"/WZ_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", WZ, 1.84, fullDataSet, kBlue);

@@ -23,9 +23,7 @@
 #include "RooCategory.h"
 #include "Math/VectorUtil.h"
 #include "TSystem.h"
-
-#include "Rtypes.h"
-typedef ULong64_t uint64;
+#include "TPRegexp.h"
 
 using namespace std;
 
@@ -36,7 +34,7 @@ using namespace std;
 #endif
 
 //
-// Key Analysis method implementations
+// Key Analysis method implementation
 //
 
 bool goodElectronWithoutIsolation(unsigned int i){
@@ -1519,5 +1517,69 @@ void ProcessSample( std::vector<std::string> file_patterns,
 }
 
 void SkimChain(TChain* chain){
-  
+  TObjArray *listOfFiles = chain->GetListOfFiles();
+  TIter fileIter(listOfFiles);
+  TPRegexp preg("([^/]+)/([^/]*)$");
+  unsigned int nEventsTotal = 0;
+  unsigned int nEventsSelected = 0;
+  while (TChainElement *currentFile = (TChainElement*)fileIter.Next()) {
+    TString inputFileName(currentFile->GetTitle());
+    TString directory(inputFileName);
+    preg.Substitute(directory,"$1-skim");
+    // make output directory if it doesn't exist yet
+    if ( gSystem->AccessPathName(directory.Data()) ) 
+      assert( gSystem->mkdir(directory.Data(),true) );
+    TString outputFileName(inputFileName);
+    preg.Substitute(outputFileName,"$1-skim/$2");
+    cout << "Skimming " << inputFileName << " -> " << outputFileName << endl;
+
+    TFile *output = TFile::Open(outputFileName.Data(), "RECREATE");
+    assert(output);
+    TFile *input = TFile::Open(inputFileName.Data());
+    assert(input);
+    TTree *tree = (TTree*)input->Get("Events");
+    tree->SetBranchStatus("EventAuxiliary",0);
+    TTree *newtree = tree->CloneTree(0);
+    newtree->SetDirectory(output);
+    
+    cms2.Init(newtree);
+    cms2.Init(tree);
+    
+    // Event Loop
+    const unsigned int nEvents = tree->GetEntries();
+    int i_permille_old = 0;
+    for (unsigned int event = 0; event < nEvents; ++event, ++nEventsTotal) {
+      int i_permille = (int)floor(10000 * event / float(nEvents));
+      if (i_permille != i_permille_old) {
+	// xterm magic from L. Vacavant and A. Cerri
+	if (isatty(1)) {
+	  printf("\015\033[32m ---> \033[1m\033[31m%5.2f%%"
+		 "\033[0m\033[32m <---\033[0m\015", i_permille/100.);
+	  fflush(stdout);
+	}
+	i_permille_old = i_permille;
+      }
+      cms2.GetEntry(event);
+      //set condition to skip event
+      if ( not passedSkimSelection() ) continue;
+      
+      ++nEventsSelected;
+      cms2.LoadAllBranches();
+      // fill the new tree
+      newtree->Fill();
+    }
+    output->cd();
+    newtree->Write();
+    output->Close();
+  }
+  cout << Form("Processed events: %u, \tselected: %u\n",nEventsTotal,nEventsSelected) << endl;
+}
+
+bool passedSkimSelection()
+{
+  unsigned int nHyps = cms2.hyp_type().size();
+  for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
+    if ( cms2.hyp_lt_p4().at(i_hyp).pt() > 20 && cms2.hyp_ll_p4().at(i_hyp).pt() > 20 ) return true;
+  }
+  return false;
 }
