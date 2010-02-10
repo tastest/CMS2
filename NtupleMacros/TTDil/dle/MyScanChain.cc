@@ -113,7 +113,7 @@ void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
 	FormatHist(h1_hyp_lt_ee_tkIso_, sampleName, "hyp_lt_ee_tkIso", 100, 0, 25);
 
 	FormatHist(h1_hyp_lt_ee_relsusy_, sampleName, "hyp_lt_ee_relsusy", 100, 0, 1);
-    FormatHist(h1_hyp_lt_eb_relsusy_, sampleName, "hyp_lt_eb_relsusy", 100, 0, 1);
+	FormatHist(h1_hyp_lt_eb_relsusy_, sampleName, "hyp_lt_eb_relsusy", 100, 0, 1);
 
 	FormatHist(h1_hyp_lt_eb_pt_idnew_, sampleName, "hyp_lt_eb_pt_idnew", 20, 0.0, 100.0);
 	FormatHist(h1_hyp_lt_ee_pt_idnew_, sampleName, "hyp_lt_ee_pt_idnew", 20, 0.0, 100.0);
@@ -143,10 +143,10 @@ void MyScanChain::FormatAllDYEstHistograms(std::string sampleName)
 
 	for (unsigned int j = 0; j < 3; ++j) {
 		std::string jetbin = jetbin_names[j];
-    	FormatHist(h1_dyest_mll_met_[j], sampleName, "dyest_mll_met_" + jetbin, 40, 0.0, 200.0);
-        FormatHist(h1_dyest_mll_nomet_[j], sampleName, "dyest_mll_nomet_" + jetbin, 40, 0.0, 200.0);
+		FormatHist(h1_dyest_mll_met_[j], sampleName, "dyest_mll_met_" + jetbin, 40, 0.0, 200.0);
+		FormatHist(h1_dyest_mll_nomet_[j], sampleName, "dyest_mll_nomet_" + jetbin, 40, 0.0, 200.0);
 		FormatHist(h1_dyest_met_in_[j], sampleName, "dyest_met_in_" + jetbin, 40, 0.0, 200.0);
-        FormatHist(h1_dyest_met_out_[j], sampleName, "dyest_met_out_" + jetbin, 40, 0.0, 200.0);
+		FormatHist(h1_dyest_met_out_[j], sampleName, "dyest_met_out_" + jetbin, 40, 0.0, 200.0);
 	}
 
 }
@@ -155,7 +155,7 @@ void MyScanChain::FillAllDYEstHistograms(const unsigned int h, const float &weig
 {
 
 	// which hypothesis type
-    DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[h]); 
+	DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[h]); 
 
 	// which jet bin to fill
 	unsigned int jetbin = 0;
@@ -165,7 +165,7 @@ void MyScanChain::FillAllDYEstHistograms(const unsigned int h, const float &weig
 	// fill the mass histogram
 	float mass = cms2.hyp_p4()[h].mass();
 	Fill(h1_dyest_mll_nomet_[jetbin], hypType, mass, weight);
-    if (passMet_OF20_SF30(h, false)) Fill(h1_dyest_mll_met_[jetbin], hypType, mass, weight);
+	if (passMet_OF20_SF30(h, false)) Fill(h1_dyest_mll_met_[jetbin], hypType, mass, weight);
 
 	// fill the met histograms for "in" and "out" regions
 	float mymet = met_pat_metCor_hyp(h);
@@ -176,74 +176,94 @@ void MyScanChain::FillAllDYEstHistograms(const unsigned int h, const float &weig
 
 }
 
-void MyScanChain::FillAllEleIdHistograms(const unsigned int h, const float &weight, const TString &sampleName)
+
+void MyScanChain::FillAllEleIdHistogramsNoHyp(const float &weight, const TString &sampleName)
+{
+
+	for (size_t i = 0; i < cms2.els_p4().size(); ++i) {
+		if (!electron20Eta2p4(i)) continue;
+		if (!(cms2.els_type()[i] & (1<<ISECALDRIVEN))) continue;
+		FillAllEleIdHistograms(i, weight, sampleName);
+	}
+}
+
+void MyScanChain::FillAllEleIdHistogramsHyp(const unsigned int h, const float &weight, const TString &sampleName)
 {
 
 	DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[h]);
-
-	// apply truth match behavior if ttbar
-	if (sampleName == "ttbar") {
-		if (abs(cms2.hyp_lt_id()[h]) == 11 && 
-			!((abs(cms2.hyp_lt_mc_id()[h]) == 11) && abs(cms2.hyp_lt_mc_motherid()[h]) == 24) ) return;
-	}
-	// apply truth match behavior if wjets
-    if (sampleName == "wjets") {
-    	if (abs(cms2.hyp_lt_id()[h]) == 11 &&
-            ((abs(cms2.hyp_lt_mc_id()[h]) == 11) && abs(cms2.hyp_lt_mc_motherid()[h]) == 24) ) return;
-    }
-	// apply truth match behavior if dyee
-    if (sampleName == "dyee") {
-        if (abs(cms2.hyp_lt_id()[h]) == 11 &&
-            !((abs(cms2.hyp_lt_mc_id()[h]) == 11) && abs(cms2.hyp_lt_mc_motherid()[h]) == 23) ) return;
-    }
-
 
 	// apply part of electron denominator first here
 	if (abs(cms2.hyp_lt_id()[h]) == 11) {
 		if (!electron20Eta2p4(cms2.hyp_lt_index()[h])) return;
 		if (!(cms2.els_type()[cms2.hyp_lt_index()[h]] & (1<<ISECALDRIVEN))) return;
-    }
+	}
 	if (abs(cms2.hyp_ll_id()[h]) == 11) {
 		if (!electron20Eta2p4(cms2.hyp_ll_index()[h])) return;
-        if (!(cms2.els_type()[cms2.hyp_ll_index()[h]] & (1<<ISECALDRIVEN))) return;
+		if (!(cms2.els_type()[cms2.hyp_ll_index()[h]] & (1<<ISECALDRIVEN))) return;
 	}
+
+
+	FillAllEleIdHistograms(cms2.hyp_lt_index()[h], weight, sampleName);
+
+}
+
+void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &weight, const TString &sampleName)
+{
+
+    // apply truth match behavior if ttbar
+    if (sampleName == "ttbar") {
+                if(!((abs(cms2.els_mc_id()[index]) == 11) && abs(cms2.els_mc_motherid()[index]) == 24) ) return;
+    }
+    // apply truth match behavior if wjets
+    if (sampleName == "wjets") {
+                if(((abs(cms2.els_mc_id()[index]) == 11) && abs(cms2.els_mc_motherid()[index]) == 24) ) return;
+    }
+    // apply truth match behavior if dyee
+    if (sampleName == "dyee") {
+                if(!((abs(cms2.els_mc_id()[index]) == 11) && abs(cms2.els_mc_motherid()[index]) == 23) ) return;
+    }  
+	// if particle gun
+    if (sampleName == "elegun") {
+                if(!((abs(cms2.els_mc_id()[index]) == 11))) return;
+    } 
 
 	//
 	// fill denominator histograms
 	//
 
-	float iso_relsusy = -1;
-    if (abs(cms2.hyp_lt_id()[h]) == 11)	
-		iso_relsusy = electronIsolation_relsusy_cand1(cms2.hyp_lt_index()[h], true);
+    DileptonHypType hypType = DILEPTON_EE;
 
-	if (abs(cms2.hyp_lt_p4()[h].eta()) > 1.5 && abs(cms2.hyp_lt_id()[h]) == 11) {
-		Fill(h1_hyp_lt_ee_pt_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
-		Fill(h1_hyp_lt_ee_hoe_, hypType, cms2.els_hOverE()[cms2.hyp_lt_index()[h]], weight);
-		Fill(h1_hyp_lt_ee_d0_, hypType, fabs(cms2.els_d0corr()[cms2.hyp_lt_index()[h]]), weight);
-		Fill(h1_hyp_lt_ee_dPhiIn_, hypType, fabs(cms2.els_dPhiIn()[cms2.hyp_lt_index()[h]]), weight);
-		Fill(h1_hyp_lt_ee_dEtaIn_, hypType, fabs(cms2.els_dEtaIn()[cms2.hyp_lt_index()[h]]), weight);
-		Fill(h1_hyp_lt_ee_sigmaIEtaIEta_, hypType, cms2.els_sigmaIEtaIEta()[cms2.hyp_lt_index()[h]], weight);
-		float E2x5MaxOver5x5 = cms2.els_e2x5Max()[cms2.hyp_lt_index()[h]] / cms2.els_e5x5()[cms2.hyp_lt_index()[h]];
+	float iso_relsusy = -1;
+	iso_relsusy = electronIsolation_relsusy_cand1(index, true);
+
+	if (abs(cms2.els_p4()[index].eta()) > 1.5) {
+		Fill(h1_hyp_lt_ee_pt_, hypType, cms2.els_p4()[index].Pt(), weight);
+		Fill(h1_hyp_lt_ee_hoe_, hypType, cms2.els_hOverE()[index], weight);
+		Fill(h1_hyp_lt_ee_d0_, hypType, fabs(cms2.els_d0corr()[index]), weight);
+		Fill(h1_hyp_lt_ee_dPhiIn_, hypType, fabs(cms2.els_dPhiIn()[index]), weight);
+		Fill(h1_hyp_lt_ee_dEtaIn_, hypType, fabs(cms2.els_dEtaIn()[index]), weight);
+		Fill(h1_hyp_lt_ee_sigmaIEtaIEta_, hypType, cms2.els_sigmaIEtaIEta()[index], weight);
+		float E2x5MaxOver5x5 = cms2.els_e2x5Max()[index] / cms2.els_e5x5()[index];
 		Fill(h1_hyp_lt_ee_E2x5MaxOver5x5_, hypType, E2x5MaxOver5x5, weight);
-		Fill(h1_hyp_lt_ee_ecalIso_, hypType, cms2.els_ecalIso()[h], weight);
-		Fill(h1_hyp_lt_ee_hcalIso_, hypType, cms2.els_hcalIso()[h], weight);
-		Fill(h1_hyp_lt_ee_tkIso_, hypType, cms2.els_tkIso()[h], weight);
+		Fill(h1_hyp_lt_ee_ecalIso_, hypType, cms2.els_ecalIso()[index], weight);
+		Fill(h1_hyp_lt_ee_hcalIso_, hypType, cms2.els_hcalIso()[index], weight);
+		Fill(h1_hyp_lt_ee_tkIso_, hypType, cms2.els_tkIso()[index], weight);
 		Fill(h1_hyp_lt_ee_relsusy_, hypType, iso_relsusy, weight);
 	}
 
-	if (abs(cms2.hyp_lt_p4()[h].eta()) < 1.5 && abs(cms2.hyp_lt_id()[h]) == 11) {
-		Fill(h1_hyp_lt_eb_pt_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
-		Fill(h1_hyp_lt_eb_hoe_, hypType, cms2.els_hOverE()[cms2.hyp_lt_index()[h]], weight);
-		Fill(h1_hyp_lt_eb_d0_, hypType, fabs(cms2.els_d0corr()[cms2.hyp_lt_index()[h]]), weight);
-		Fill(h1_hyp_lt_eb_dPhiIn_, hypType, fabs(cms2.els_dPhiIn()[cms2.hyp_lt_index()[h]]), weight);
-		Fill(h1_hyp_lt_eb_dEtaIn_, hypType, fabs(cms2.els_dEtaIn()[cms2.hyp_lt_index()[h]]), weight);
-		Fill(h1_hyp_lt_eb_sigmaIEtaIEta_, hypType, cms2.els_sigmaIEtaIEta()[cms2.hyp_lt_index()[h]], weight);
-		float E2x5MaxOver5x5 = cms2.els_e2x5Max()[cms2.hyp_lt_index()[h]] / cms2.els_e5x5()[cms2.hyp_lt_index()[h]];
+	if (abs(cms2.els_p4()[index].eta()) < 1.5) {
+		Fill(h1_hyp_lt_eb_pt_, hypType, cms2.els_p4()[index].Pt(), weight);
+		Fill(h1_hyp_lt_eb_hoe_, hypType, cms2.els_hOverE()[index], weight);
+		Fill(h1_hyp_lt_eb_d0_, hypType, fabs(cms2.els_d0corr()[index]), weight);
+		Fill(h1_hyp_lt_eb_dPhiIn_, hypType, fabs(cms2.els_dPhiIn()[index]), weight);
+		Fill(h1_hyp_lt_eb_dEtaIn_, hypType, fabs(cms2.els_dEtaIn()[index]), weight);
+		Fill(h1_hyp_lt_eb_sigmaIEtaIEta_, hypType, cms2.els_sigmaIEtaIEta()[index], weight);
+		float E2x5MaxOver5x5 = cms2.els_e2x5Max()[index] / cms2.els_e5x5()[index];
 		Fill(h1_hyp_lt_eb_E2x5MaxOver5x5_, hypType, E2x5MaxOver5x5, weight);
-		Fill(h1_hyp_lt_eb_ecalIso_, hypType, cms2.els_ecalIso()[h], weight);
-		Fill(h1_hyp_lt_eb_hcalIso_, hypType, cms2.els_hcalIso()[h], weight);
-		Fill(h1_hyp_lt_eb_tkIso_, hypType, cms2.els_tkIso()[h], weight);
-        Fill(h1_hyp_lt_eb_relsusy_, hypType, iso_relsusy, weight);
+		Fill(h1_hyp_lt_eb_ecalIso_, hypType, cms2.els_ecalIso()[index], weight);
+		Fill(h1_hyp_lt_eb_hcalIso_, hypType, cms2.els_hcalIso()[index], weight);
+		Fill(h1_hyp_lt_eb_tkIso_, hypType, cms2.els_tkIso()[index], weight);
+		Fill(h1_hyp_lt_eb_relsusy_, hypType, iso_relsusy, weight);
 	}
 
 	// find out what passed
@@ -253,35 +273,33 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int h, const float &weig
 	bool relSusyIso_cand0 = false;
 	bool relSusyIso_cand1 = false;
 	bool isConv = false;
-	if (abs(cms2.hyp_lt_id()[h]) == 11) {
-		if (cms2.els_egamma_looseId().at(cms2.hyp_lt_index()[h])) ltPassOld = true;
-		if (electronId_cand01(cms2.hyp_lt_index()[h])) ltPassNew = true;
-		if (electronIsolation_relsusy(cms2.hyp_lt_index()[h], true) < 0.10) relSusyIso = true;
-		if (electronIsolation_relsusy_cand0(cms2.hyp_lt_index()[h], true) < 0.10) relSusyIso_cand0 = true;
-		if (electronIsolation_relsusy_cand1(cms2.hyp_lt_index()[h], true) < 0.10) relSusyIso_cand1 = true;
-		if (isFromConversionPartnerTrack(cms2.hyp_lt_index()[h])) isConv = true;
-	}
+	if (cms2.els_egamma_looseId().at(index)) ltPassOld = true;
+	if (electronId_cand01(index)) ltPassNew = true;
+	if (electronIsolation_relsusy(index, true) < 0.10) relSusyIso = true;
+	if (electronIsolation_relsusy_cand0(index, true) < 0.10) relSusyIso_cand0 = true;
+	if (electronIsolation_relsusy_cand1(index, true) < 0.10) relSusyIso_cand1 = true;
+	if (isFromConversionPartnerTrack(index)) isConv = true;
 
 	//
 	// fill numerator histograms
 	//
-	if (abs(cms2.hyp_lt_p4()[h].eta()) > 1.5) {
-		if (ltPassOld) Fill(h1_hyp_lt_ee_pt_idold_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
-		if (ltPassNew) Fill(h1_hyp_lt_ee_pt_idnew_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
-		if (relSusyIso) Fill(h1_hyp_lt_ee_pt_isoold_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
-		if (relSusyIso_cand0) Fill(h1_hyp_lt_ee_pt_isonew_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
-		if (relSusyIso_cand1) Fill(h1_hyp_lt_ee_pt_isonew_cand1_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
-		if (relSusyIso_cand1 && ltPassNew && !isConv) Fill(h1_hyp_lt_ee_pt_id1_iso1_conv_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
-		if (!isConv) Fill(h1_hyp_lt_ee_pt_conv_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+	if (abs(cms2.els_p4()[index].eta()) > 1.5) {
+		if (ltPassOld) Fill(h1_hyp_lt_ee_pt_idold_, hypType, cms2.els_p4()[index].Pt(), weight);
+		if (ltPassNew) Fill(h1_hyp_lt_ee_pt_idnew_, hypType, cms2.els_p4()[index].Pt(), weight);
+		if (relSusyIso) Fill(h1_hyp_lt_ee_pt_isoold_, hypType, cms2.els_p4()[index].Pt(), weight);
+		if (relSusyIso_cand0) Fill(h1_hyp_lt_ee_pt_isonew_, hypType, cms2.els_p4()[index].Pt(), weight);
+		if (relSusyIso_cand1) Fill(h1_hyp_lt_ee_pt_isonew_cand1_, hypType, cms2.els_p4()[index].Pt(), weight);
+		if (relSusyIso_cand1 && ltPassNew && !isConv) Fill(h1_hyp_lt_ee_pt_id1_iso1_conv_, hypType, cms2.els_p4()[index].Pt(), weight);
+		if (!isConv) Fill(h1_hyp_lt_ee_pt_conv_, hypType, cms2.els_p4()[index].Pt(), weight);
 	}
-	if (abs(cms2.hyp_lt_p4()[h].eta()) < 1.5)  {
-		if (ltPassOld) Fill(h1_hyp_lt_eb_pt_idold_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
-		if (ltPassNew) Fill(h1_hyp_lt_eb_pt_idnew_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
-		if (relSusyIso) Fill(h1_hyp_lt_eb_pt_isoold_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
-		if (relSusyIso_cand0) Fill(h1_hyp_lt_eb_pt_isonew_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
-		if (relSusyIso_cand1) Fill(h1_hyp_lt_eb_pt_isonew_cand1_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
-		if (relSusyIso_cand1 && ltPassNew && !isConv) Fill(h1_hyp_lt_eb_pt_id1_iso1_conv_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
-		if (!isConv) Fill(h1_hyp_lt_eb_pt_conv_, hypType, cms2.hyp_lt_p4()[h].Pt(), weight);
+	if (abs(cms2.els_p4()[index].eta()) < 1.5)  {
+		if (ltPassOld) Fill(h1_hyp_lt_eb_pt_idold_, hypType, cms2.els_p4()[index].Pt(), weight);
+		if (ltPassNew) Fill(h1_hyp_lt_eb_pt_idnew_, hypType, cms2.els_p4()[index].Pt(), weight);
+		if (relSusyIso) Fill(h1_hyp_lt_eb_pt_isoold_, hypType, cms2.els_p4()[index].Pt(), weight);
+		if (relSusyIso_cand0) Fill(h1_hyp_lt_eb_pt_isonew_, hypType, cms2.els_p4()[index].Pt(), weight);
+		if (relSusyIso_cand1) Fill(h1_hyp_lt_eb_pt_isonew_cand1_, hypType, cms2.els_p4()[index].Pt(), weight);
+		if (relSusyIso_cand1 && ltPassNew && !isConv) Fill(h1_hyp_lt_eb_pt_id1_iso1_conv_, hypType, cms2.els_p4()[index].Pt(), weight);
+		if (!isConv) Fill(h1_hyp_lt_eb_pt_conv_, hypType, cms2.els_p4()[index].Pt(), weight);
 	}
 
 }
@@ -363,6 +381,11 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 			float weight = cms2.evt_scale1fb()*0.01;
 
 			//
+			// Fill event level electron histograms
+			//
+			FillAllEleIdHistogramsNoHyp(weight, sampleName);
+
+			//
 			// loop on hypothesis
 			//
 			std::vector<unsigned int> hyp_index_selected;
@@ -372,7 +395,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 				//
 				// fill basic electron ID histograms
 				//
-				FillAllEleIdHistograms(h, weight, sampleName);
+				//FillAllEleIdHistograms(h, weight, sampleName);
 
 				// apply lepton id 
 				if (!looseLeptonSelectionNoIsoTTDil08(cms2.hyp_lt_id()[h], cms2.hyp_lt_index()[h])) continue;
@@ -419,23 +442,23 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 				corCaloJets.push_back(j);
 			}
 
-            //
-            // estimate the DY background before the z veto and MET cuts are applied
-            //
+			//
+			// estimate the DY background before the z veto and MET cuts are applied
+			//
 
-            FillAllDYEstHistograms(hyp, weight, corCaloJets.size());
+			FillAllDYEstHistograms(hyp, weight, corCaloJets.size());
 
 			//
 			// apply remaining requirements
 			//
 
-            // met
-            if (!passMet_OF20_SF30(hyp, false)) continue;
+			// met
+			if (!passMet_OF20_SF30(hyp, false)) continue;
 
-            // z mass window
-            if (cms2.hyp_type()[hyp] == 0 || cms2.hyp_type()[hyp] == 3) {
-                if (inZmassWindow(cms2.hyp_p4()[hyp].mass())) continue;
-            }
+			// z mass window
+			if (cms2.hyp_type()[hyp] == 0 || cms2.hyp_type()[hyp] == 3) {
+				if (inZmassWindow(cms2.hyp_p4()[hyp].mass())) continue;
+			}
 
 			//
 			// get hypothesis type and fill analysis results histograms

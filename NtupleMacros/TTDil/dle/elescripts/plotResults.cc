@@ -16,9 +16,10 @@ const static sources_t theSignal_312 =
 const static sources_t theBackground_312 =
 	(1ll << H_WJETS);
 const static sources_t theSources_312 =
-	(1ll << H_TTBAR) |
-	(1ll << H_WJETS);
-
+//	(1ll << H_TTBAR) |
+//	(1ll << H_WJETS);
+//	(1ll << H_ELEGUN);
+	(1ll << H_DYEE);
 
 const static sources_t &theSignal = theSignal_312;
 const static sources_t &theBackground = theBackground_312;
@@ -214,16 +215,16 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
 	TCanvas *c_sb = new TCanvas();
 	c_sb->cd();
 	if (h1_signal->GetMaximum() > h1_background->GetMaximum()) {
-		h1_signal->Draw();
+		h1_signal->Draw("HIST");
 		h1_signal->GetYaxis()->SetRangeUser(0, h1_signal->GetMaximum() 
 				+ h1_signal->GetMaximum()*0.1);
-		h1_background->Draw("SAME");
+		h1_background->Draw("SAME HIST");
 	}
 	else {
-		h1_background->Draw();
+		h1_background->Draw("HIST");
 		h1_background->GetYaxis()->SetRangeUser(0, h1_background->GetMaximum() 
 				+ h1_background->GetMaximum()*0.1);
-		h1_signal->Draw("SAME");
+		h1_signal->Draw("SAME HIST");
 	}
 	if (cutVal > 0.0) arr_cut->Draw();
 	if (bin_eff99 != 0) arr_eff99->Draw();
@@ -235,7 +236,7 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
 	lg->Draw();
 	Utilities::saveCanvas(c_sb, "results/" + saveName + "_sb_lin" + name + "_" + det);
 
-	h1_signal->Draw();
+	h1_signal->Draw("HIST");
 	Utilities::saveCanvas(c_sb, "results/" + saveName + "_s_lin" + name + "_" + det);
 
 
@@ -244,15 +245,15 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
 	c_sb_log->SetLogy();
 	if (h1_signal->GetMaximum() > h1_background->GetMaximum()) {
 		h1_signal->Draw();
-		h1_signal->GetYaxis()->SetRangeUser(0.1, h1_signal->GetMaximum() 
+		h1_signal->GetYaxis()->SetRangeUser(0.01, h1_signal->GetMaximum() 
 				+ h1_signal->GetMaximum());
-		h1_background->Draw("SAME");
+		h1_background->Draw("SAME HIST");
 	}
 	else {
-		h1_background->Draw();
-		h1_background->GetYaxis()->SetRangeUser(0.1, h1_background->GetMaximum() 
+		h1_background->Draw("HIST");
+		h1_background->GetYaxis()->SetRangeUser(0.01, h1_background->GetMaximum() 
 				+ h1_background->GetMaximum());
-		h1_signal->Draw("SAME");
+		h1_signal->Draw("SAME HIST");
 	}
 	if (cutVal > 0.0) arr_cut->Draw();
 	if (bin_eff99 != 0) arr_eff99->Draw();
@@ -264,7 +265,7 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
 	lg->Draw();
 	Utilities::saveCanvas(c_sb_log, "results/" + saveName + "_sb_log" + name + "_" + det);
 
-	h1_signal->Draw();
+	h1_signal->Draw("HIST");
 	Utilities::saveCanvas(c_sb_log, "results/" + saveName + "_s_log" + name + "_" + det);
 
 	delete gr;
@@ -405,7 +406,7 @@ void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString sav
 	Utilities::saveCanvas(c1, "results/" + saveName  + "_lin_" + name + "_" + det);
 
 	c1->SetLogy();
-	st->SetMinimum(1.0);
+	st->SetMinimum(0.001);
 	st->Draw("HIST");	
 	lg_all->Draw();
 	if (det == "ee" && cutValEE != -1) getArrow(st, det, cutValEB, cutValEE)->Draw();
@@ -418,7 +419,7 @@ void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString sav
 
 }
 
-void plotResultsID(TString det, TString fileStamp)
+void plotResultsID(TString det, TString hyp, TString fileStamp, TString saveName)
 {
 
 	gROOT->ProcessLine(".L ../tdrStyle.C");
@@ -428,14 +429,26 @@ void plotResultsID(TString det, TString fileStamp)
 	// luminorm for 1pb-1
 	// luminosity is already normalised to 1pb-1 in the looper
 	std::vector<DataSource> sources;
-	sources.push_back( fH_TTBAR() );
-	sources.push_back( fH_WJETS() );
+	//sources.push_back( fH_TTBAR() );
+	//sources.push_back( fH_WJETS() );
+	//sources.push_back(fH_ELEGUN() );
+	sources.push_back(fH_DYEE());
+
 	HistogramUtilities h1(fileStamp + ".root", sources, 1.0);
 
 //void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString saveName, TString det, int rebin, float cutValEB, float cutValEE)
-    plotStack(h1, "hyp_lt_eb_dEtaIn", "LT dEtaIn", "savename", det);
-	plotEff(h1, "hyp_lt_eb_dEtaIn", "savename", det, true, 1, true);
 
+
+    plotStack(h1, "hyp_lt_" + det + "_dPhiIn", "LT dPhiIn", saveName, hyp, 1, 0.020, 0.025);
+    plotStack(h1, "hyp_lt_" + det + "_dEtaIn", "LT dEtaIn", saveName, hyp, 1, 0.007, 0.010);
+    plotStack(h1, "hyp_lt_" + det + "_hoe", "H/E", saveName, hyp, 1, 0.01, 0.01);
+    plotStack(h1, "hyp_lt_" + det + "_E2x5MaxOver5x5", "LT E2x5MaxOver5x5", saveName, hyp, 1, 0.90, 0.90);
+    plotStack(h1, "hyp_lt_" + det + "_sigmaIEtaIEta", "LT SigmaIEtaIEta", saveName, hyp, 1, 0.03, 0.03);
+    plotStack(h1, "hyp_lt_" + det + "_d0", "LT d0corr", saveName, hyp, 1, 0.02, 0.02);
+    plotStack(h1, "hyp_lt_" + det + "_relsusy", "LT relsusy iso", saveName, hyp, 1, 0.1, 0.1);
+
+	//plotEff(h1, "hyp_lt_eb_dEtaIn", "savename", det, true, 1, true);
+	//plotEff(h1, "hyp_lt_" + det + "_relsusy", "savename", hyp, true, 1, true);
 
 	// 2D stuff
 	//plot2DSB(h1, "tkIso03All2D", "p_{T} (GeV/c)", "tkIso03All", "IDStudy", det);

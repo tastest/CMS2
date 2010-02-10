@@ -11528,7 +11528,7 @@ void LoadAllBranches()
 				#endif // #ifdef PARANOIA
 			} else { 
 				printf("branch hlt_trigNames_branch does not exist!\n");
-				exit(1);
+				//exit(1);
 			}
 			hlt_trigNames_isLoaded = true;
 		}

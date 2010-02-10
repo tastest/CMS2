@@ -7,8 +7,15 @@
 	gROOT->ProcessLine(".L ../../../Tools/HistogramUtilities.cc+");
 	gROOT->ProcessLine(".L plotResults.cc+");
 
-// first argument, "det", is really the hyp type now
-	plotResultsID("ee", "../histos_mc_3x");
+// first argument, "det"
+// second argument, "hyp"
+	plotResultsID("ee", "ee", "../histos_mc_3x", "dyee");
+    plotResultsID("eb", "ee", "../histos_mc_3x", "dyee");
+
+//    plotResultsID("ee", "ee", "../histos_elegun", "elegun");
+//    plotResultsID("eb", "ee", "../histos_elegun", "elegun");
+
+
 
 }
 

@@ -33,7 +33,10 @@ void doAll3X() {
 
 	//
 	// chains for input files
-	TString ntuple_location = "/data/tmp/";
+	//TString ntuple_location = "/data/tmp/";
+    TString ntuple_location = "/store/disk02/";
+
+
 	// SM
 	// ttbar
 	TChain *chain_ttbar = new TChain("Events");
@@ -65,10 +68,15 @@ void doAll3X() {
 	TChain *chain_lm0 = new TChain("Events");
 	chain_lm0->Add(ntuple_location + "/cms2/LM0_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
 
+	// Technical
+	// single particle gun electrons
+	TChain *chain_elegun = new TChain("Events");
+	chain_elegun->Add(ntuple_location + "/cms2/SingleElectronPt5to100_336patch4/V03-00-35/merged_ntuple*.root");
+
 	// 
 	// do looping
 	//
-
+/*
 	looper->ScanChain(false, "ttbar", chain_ttbar);
 	looper->ScanChain(false, "ww", chain_ww);
 	looper->ScanChain(false, "wz", chain_wz);
@@ -77,12 +85,15 @@ void doAll3X() {
 	looper->ScanChain(false, "dymm", chain_dymm);
     looper->ScanChain(false, "dytt", chain_dytt);
     looper->ScanChain(false, "wjets", chain_wjets);
+*/
+
+	looper->ScanChain(false, "elegun", chain_elegun);
 
 	//
 	// write histograms
 	// 
 
-	const char* outFile = "histos_mc_3x_tmp.root";
+	const char* outFile = "histos_elegun.root";
 	hist::saveHist(outFile); 
 	hist::deleteHistos();
 
@@ -101,6 +112,8 @@ void doAll3X() {
 	delete chain_wjets;
 
 	delete chain_lm0;
+
+	delete chain_elegun;
 
 }
 

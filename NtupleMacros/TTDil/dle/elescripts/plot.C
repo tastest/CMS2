@@ -1,23 +1,23 @@
 
-void plot(TString fileName, TString det, TString version)
+void plot(TString fileName, TString det, TString version, TString sampleName)
 {
 
-	gROOT->ProcessLine(".L tdrStyle.C");
+	gROOT->ProcessLine(".L ../tdrStyle.C");
 	gROOT->ProcessLine("setTDRStyle()");
 
 	TFile f(fileName, "READ");
-	TH1F *h1_numerator = (TH1F*)f.Get("ttbar_hyp_lt_" + det + "_pt_ee");
-	TH1F *h1_denom_old = (TH1F*)f.Get("ttbar_hyp_lt_" + det + "_pt_idold_ee");
-	TH1F *h1_denom_new = (TH1F*)f.Get("ttbar_hyp_lt_" + det + "_pt_idnew_ee");
+	TH1F *h1_numerator = (TH1F*)f.Get(sampleName+"_hyp_lt_" + det + "_pt_ee");
+	TH1F *h1_denom_old = (TH1F*)f.Get(sampleName+"_hyp_lt_" + det + "_pt_idold_ee");
+	TH1F *h1_denom_new = (TH1F*)f.Get(sampleName+"_hyp_lt_" + det + "_pt_idnew_ee");
 
-	TH1F *h1_denom_iso_old = (TH1F*)f.Get("ttbar_hyp_lt_" + det + "_pt_isoold_ee");
-	TH1F *h1_denom_iso_new = (TH1F*)f.Get("ttbar_hyp_lt_" + det + "_pt_isonew_ee");
+	TH1F *h1_denom_iso_old = (TH1F*)f.Get(sampleName+"_hyp_lt_" + det + "_pt_isoold_ee");
+	TH1F *h1_denom_iso_new = (TH1F*)f.Get(sampleName+"_hyp_lt_" + det + "_pt_isonew_ee");
 
-	TH1F *h1_denom_iso_new_cand1 = (TH1F*)f.Get("ttbar_hyp_lt_" + det + "_pt_isonew_cand1_ee");
+	TH1F *h1_denom_iso_new_cand1 = (TH1F*)f.Get(sampleName+"_hyp_lt_" + det + "_pt_isonew_cand1_ee");
 
-	TH1F *h1_denom_id1_iso1_conv = (TH1F*)f.Get("ttbar_hyp_lt_" + det + "_pt_id1_iso1_conv_ee");
+	TH1F *h1_denom_id1_iso1_conv = (TH1F*)f.Get(sampleName+"_hyp_lt_" + det + "_pt_id1_iso1_conv_ee");
 
-	TH1F *h1_denom_conv = (TH1F*)f.Get("ttbar_hyp_lt_" + det + "_pt_conv_ee");
+	TH1F *h1_denom_conv = (TH1F*)f.Get(sampleName+"_hyp_lt_" + det + "_pt_conv_ee");
 
 	//
 	// id
