@@ -81,19 +81,14 @@ ifndef ROOTSYS
 	@echo "ROOTSYS is not set. Please set ROOT environment properly"; echo; exit 1
 endif
 
-processed_data.root: processData.C $(CORELIB) $(LIB) $(FWLIB)
-ifndef ROOTSYS
-	@echo "ROOTSYS is not set. Please set ROOT environment properly"; echo; exit 1
-else
-	$(QUIET) root -b -q processData.C
-endif
+data:
+	@echo 'Make a directory or a symbolic link called "data" pointing to sample location'; echo; exit 1
 
-fakeIsoControlSamples.root: makeFakeIsoControlSamples.C
-ifndef ROOTSYS
-	@echo "ROOTSYS is not set. Please set ROOT environment properly"; echo; exit 1
-else
+processed_data.root: data rootenv processData.C $(CORELIB) $(LIB) $(FWLIB)
+	$(QUIET) root -b -q processData.C
+
+fakeIsoControlSamples.root: rootenv makeFakeIsoControlSamples.C
 	$(QUIET) root -b -q makeFakeIsoControlSamples.C+
-endif
 
 #################################################################
 #                       User Targets 
@@ -110,20 +105,12 @@ clean: # clean up
 	$(CORELIB) $(LOOPERLIB) $(FWLIB) \
 	*.o *.d *.so LinkDef_out*; echo "Done"
 
-table: processed_data.root # show results
-ifndef ROOTSYS
-	@echo "ROOTSYS is not set. Please set ROOT environment properly"; echo; exit 1
-else
+table: rootenv processed_data.root # show results
 	$(QUIET) root -q -b showResults.C+
-endif
 t: table
 
 jetbkg: fakeIsoControlSamples.root processed_data.root  # estimate jet induced background
 	$(QUIET) echo "ok"
 
-skim: processData.C $(CORELIB) $(LIB) $(FWLIB) # skim data
-ifndef ROOTSYS
-	@echo "ROOTSYS is not set. Please set ROOT environment properly"; echo; exit 1
-else
+skim: rootenv data processData.C $(CORELIB) $(LIB) $(FWLIB) # skim data
 	$(QUIET) export SkimSamples=1; root -b -q processData.C
-endif
