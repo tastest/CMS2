@@ -100,9 +100,37 @@ class MyScanChain {
         TH1F *h1_hyp_lt_eb_afterid_relsusy_[4];
         TH1F *h1_hyp_lt_ee_afterid_relsusy_[4];
 
+        TH1F *h1_hyp_lt_eb_afterid_fbrem_[4];
+        TH1F *h1_hyp_lt_ee_afterid_fbrem_[4];
+
+        TH1F *h1_hyp_lt_eb_afterid_eopin_[4];
+        TH1F *h1_hyp_lt_ee_afterid_eopin_[4];
+
+        TH1F *h1_hyp_lt_eb_afterid_relsusy_lowfbrem_[4];
+        TH1F *h1_hyp_lt_ee_afterid_relsusy_lowfbrem_[4];
+		
+        TH1F *h1_hyp_lt_eb_afterid_relsusy_highfbrem_[4];
+        TH1F *h1_hyp_lt_ee_afterid_relsusy_highfbrem_[4];
+
+        TH1F *h1_hyp_lt_eb_afterid_eopin_lowfbrem_[4];
+        TH1F *h1_hyp_lt_ee_afterid_eopin_lowfbrem_[4];
+
+        TH1F *h1_hyp_lt_eb_afterid_eopin_highfbrem_[4];
+        TH1F *h1_hyp_lt_ee_afterid_eopin_highfbrem_[4];
+
 
 		// id
 		//
+
+		//
+		//
+		TH1F *h1_hyp_lt_eb_pt_cand01_[4];
+		TH1F *h1_hyp_lt_eb_pt_cand02_[4];
+        TH1F *h1_hyp_lt_ee_pt_cand01_[4];
+        TH1F *h1_hyp_lt_ee_pt_cand02_[4];
+		//
+		//
+
 		TH1F *h1_hyp_lt_eb_pt_idnew_[4];
 		TH1F *h1_hyp_lt_ee_pt_idnew_[4];
 		TH1F *h1_hyp_lt_eb_pt_idold_[4];
@@ -112,6 +140,7 @@ class MyScanChain {
 		//
 		TH1F *h1_hyp_lt_eb_pt_conv_[4];
 		TH1F *h1_hyp_lt_ee_pt_conv_[4];
+
 
 		// iso
 		//

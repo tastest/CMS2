@@ -37,6 +37,9 @@ enum ele_selection {
 	PASS_HOE,
 	PASS_LSHAPE,
 	PASS_D0,
+	PASS_ISO,
+	PASS_DETA_CAND02,
+	PASS_LSHAPE_CAND02,
 };
 
 //
@@ -117,25 +120,33 @@ void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
 	FormatHist(h1_hyp_lt_ee_E2x5MaxOver5x5_, sampleName, "hyp_lt_ee_E2x5MaxOver5x5", 50, 0.6, 1.1);
 
 	// NM1
-    FormatHist(h1_hyp_lt_eb_nm1_hoe_, sampleName, "hyp_lt_eb_nm1_hoe", 100, 0.0, 0.1);
-    FormatHist(h1_hyp_lt_ee_nm1_hoe_, sampleName, "hyp_lt_ee_nm1_hoe", 100, 0.0, 0.1);
-        
-    FormatHist(h1_hyp_lt_eb_nm1_sigmaIEtaIEta_, sampleName, "hyp_lt_eb_nm1_sigmaIEtaIEta", 50, 0.0, 0.05);
-    FormatHist(h1_hyp_lt_ee_nm1_sigmaIEtaIEta_, sampleName, "hyp_lt_ee_nm1_sigmaIEtaIEta", 50, 0.0, 0.05);
-        
-    FormatHist(h1_hyp_lt_eb_nm1_dEtaIn_, sampleName, "hyp_lt_eb_nm1_dEtaIn", 100, 0.0, 0.05);
-    FormatHist(h1_hyp_lt_ee_nm1_dEtaIn_, sampleName, "hyp_lt_ee_nm1_dEtaIn", 100, 0.0, 0.05);
+	FormatHist(h1_hyp_lt_eb_nm1_hoe_, sampleName, "hyp_lt_eb_nm1_hoe", 100, 0.0, 0.1);
+	FormatHist(h1_hyp_lt_ee_nm1_hoe_, sampleName, "hyp_lt_ee_nm1_hoe", 100, 0.0, 0.1);
 
-    FormatHist(h1_hyp_lt_eb_nm1_dPhiIn_, sampleName, "hyp_lt_eb_nm1_dPhiIn", 100, 0.0, 0.1);
-    FormatHist(h1_hyp_lt_ee_nm1_dPhiIn_, sampleName, "hyp_lt_ee_nm1_dPhiIn", 100, 0.0, 0.1);
+	FormatHist(h1_hyp_lt_eb_nm1_sigmaIEtaIEta_, sampleName, "hyp_lt_eb_nm1_sigmaIEtaIEta", 50, 0.0, 0.05);
+	FormatHist(h1_hyp_lt_ee_nm1_sigmaIEtaIEta_, sampleName, "hyp_lt_ee_nm1_sigmaIEtaIEta", 50, 0.0, 0.05);
 
-    FormatHist(h1_hyp_lt_eb_nm1_d0_, sampleName, "hyp_lt_eb_nm1_d0", 100, 0.0, 0.05);
-    FormatHist(h1_hyp_lt_ee_nm1_d0_, sampleName, "hyp_lt_ee_nm1_d0", 100, 0.0, 0.05);
+	FormatHist(h1_hyp_lt_eb_nm1_dEtaIn_, sampleName, "hyp_lt_eb_nm1_dEtaIn", 100, 0.0, 0.05);
+	FormatHist(h1_hyp_lt_ee_nm1_dEtaIn_, sampleName, "hyp_lt_ee_nm1_dEtaIn", 100, 0.0, 0.05);
 
-    FormatHist(h1_hyp_lt_eb_nm1_E2x5MaxOver5x5_, sampleName, "hyp_lt_eb_nm1_E2x5MaxOver5x5", 50, 0.6, 1.1);
-    FormatHist(h1_hyp_lt_ee_nm1_E2x5MaxOver5x5_, sampleName, "hyp_lt_ee_nm1_E2x5MaxOver5x5", 50, 0.6, 1.1);
+	FormatHist(h1_hyp_lt_eb_nm1_dPhiIn_, sampleName, "hyp_lt_eb_nm1_dPhiIn", 100, 0.0, 0.1);
+	FormatHist(h1_hyp_lt_ee_nm1_dPhiIn_, sampleName, "hyp_lt_ee_nm1_dPhiIn", 100, 0.0, 0.1);
 
+	FormatHist(h1_hyp_lt_eb_nm1_d0_, sampleName, "hyp_lt_eb_nm1_d0", 100, 0.0, 0.05);
+	FormatHist(h1_hyp_lt_ee_nm1_d0_, sampleName, "hyp_lt_ee_nm1_d0", 100, 0.0, 0.05);
 
+	FormatHist(h1_hyp_lt_eb_nm1_E2x5MaxOver5x5_, sampleName, "hyp_lt_eb_nm1_E2x5MaxOver5x5", 50, 0.6, 1.1);
+	FormatHist(h1_hyp_lt_ee_nm1_E2x5MaxOver5x5_, sampleName, "hyp_lt_ee_nm1_E2x5MaxOver5x5", 50, 0.6, 1.1);
+
+	// old and new pt spectra for second pass at id
+	//
+	FormatHist(h1_hyp_lt_eb_pt_cand01_, sampleName, "hyp_lt_eb_pt_cand01", 20, 0.0, 100.0);
+	FormatHist(h1_hyp_lt_ee_pt_cand01_, sampleName, "hyp_lt_ee_pt_cand01", 20, 0.0, 100.0);
+
+	FormatHist(h1_hyp_lt_eb_pt_cand02_, sampleName, "hyp_lt_eb_pt_cand02", 20, 0.0, 100.0);
+	FormatHist(h1_hyp_lt_ee_pt_cand02_, sampleName, "hyp_lt_ee_pt_cand02", 20, 0.0, 100.0);
+	//
+	//
 
 	FormatHist(h1_hyp_lt_eb_ecalIso_, sampleName, "hyp_lt_eb_ecalIso", 100, 0, 10);
 	FormatHist(h1_hyp_lt_eb_hcalIso_, sampleName, "hyp_lt_eb_hcalIso", 100, 0, 25);
@@ -148,8 +159,24 @@ void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
 	FormatHist(h1_hyp_lt_ee_relsusy_, sampleName, "hyp_lt_ee_relsusy", 100, 0, 1);
 	FormatHist(h1_hyp_lt_eb_relsusy_, sampleName, "hyp_lt_eb_relsusy", 100, 0, 1);
 
-    FormatHist(h1_hyp_lt_ee_afterid_relsusy_, sampleName, "hyp_lt_ee_afterid_relsusy", 100, 0, 1);
-    FormatHist(h1_hyp_lt_eb_afterid_relsusy_, sampleName, "hyp_lt_eb_afterid_relsusy", 100, 0, 1);
+	FormatHist(h1_hyp_lt_ee_afterid_relsusy_, sampleName, "hyp_lt_ee_afterid_relsusy", 100, 0, 1);
+	FormatHist(h1_hyp_lt_eb_afterid_relsusy_, sampleName, "hyp_lt_eb_afterid_relsusy", 100, 0, 1);
+
+	FormatHist(h1_hyp_lt_ee_afterid_fbrem_, sampleName, "hyp_lt_ee_afterid_fbrem", 100, 0, 1);
+	FormatHist(h1_hyp_lt_eb_afterid_fbrem_, sampleName, "hyp_lt_eb_afterid_fbrem", 100, 0, 1);
+
+	FormatHist(h1_hyp_lt_ee_afterid_eopin_, sampleName, "hyp_lt_ee_afterid_eopin", 100, 0, 5);
+	FormatHist(h1_hyp_lt_eb_afterid_eopin_, sampleName, "hyp_lt_eb_afterid_eopin", 100, 0, 5);
+
+	FormatHist(h1_hyp_lt_ee_afterid_relsusy_lowfbrem_, sampleName, "hyp_lt_ee_afterid_relsusy_lowfbrem", 100, 0, 1);
+	FormatHist(h1_hyp_lt_eb_afterid_relsusy_lowfbrem_, sampleName, "hyp_lt_eb_afterid_relsusy_lowfbrem", 100, 0, 1);
+	FormatHist(h1_hyp_lt_ee_afterid_relsusy_highfbrem_, sampleName, "hyp_lt_ee_afterid_relsusy_highfbrem", 100, 0, 1);
+	FormatHist(h1_hyp_lt_eb_afterid_relsusy_highfbrem_, sampleName, "hyp_lt_eb_afterid_relsusy_highfbrem", 100, 0, 1);
+
+    FormatHist(h1_hyp_lt_ee_afterid_eopin_lowfbrem_, sampleName, "hyp_lt_ee_afterid_eopin_lowfbrem", 100, 0, 5);
+    FormatHist(h1_hyp_lt_eb_afterid_eopin_lowfbrem_, sampleName, "hyp_lt_eb_afterid_eopin_lowfbrem", 100, 0, 5);
+    FormatHist(h1_hyp_lt_ee_afterid_eopin_highfbrem_, sampleName, "hyp_lt_ee_afterid_eopin_highfbrem", 100, 0, 5);
+    FormatHist(h1_hyp_lt_eb_afterid_eopin_highfbrem_, sampleName, "hyp_lt_eb_afterid_eopin_highfbrem", 100, 0, 5);
 
 	FormatHist(h1_hyp_lt_eb_pt_idnew_, sampleName, "hyp_lt_eb_pt_idnew", 20, 0.0, 100.0);
 	FormatHist(h1_hyp_lt_ee_pt_idnew_, sampleName, "hyp_lt_ee_pt_idnew", 20, 0.0, 100.0);
@@ -229,39 +256,46 @@ void MyScanChain::FillAllEleIdHistogramsHyp(const unsigned int h, const float &w
 	DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[h]);
 
 	// apply part of electron denominator first here
-	if (abs(cms2.hyp_lt_id()[h]) == 11) {
+	if (hypType == DILEPTON_EE) {
 		if (!electron20Eta2p4(cms2.hyp_lt_index()[h])) return;
 		if (!(cms2.els_type()[cms2.hyp_lt_index()[h]] & (1<<ISECALDRIVEN))) return;
-	}
-	if (abs(cms2.hyp_ll_id()[h]) == 11) {
 		if (!electron20Eta2p4(cms2.hyp_ll_index()[h])) return;
 		if (!(cms2.els_type()[cms2.hyp_ll_index()[h]] & (1<<ISECALDRIVEN))) return;
+		FillAllEleIdHistograms(cms2.hyp_lt_index()[h], weight, sampleName);
 	}
+	if (hypType == DILEPTON_EMU) {
+		if(abs(cms2.hyp_ll_id()[h]) == 13) {
+			if(trueMuonFromW_WJets(cms2.hyp_ll_index()[h]) && (cms2.els_type()[cms2.hyp_ll_index()[h]] & (1<<ISECALDRIVEN))) 
+				FillAllEleIdHistograms(cms2.hyp_lt_index()[h], weight, sampleName);
+		}
+		if(abs(cms2.hyp_lt_id()[h]) == 13) {
+			if(trueMuonFromW_WJets(cms2.hyp_lt_index()[h] && (cms2.els_type()[cms2.hyp_lt_index()[h]] & (1<<ISECALDRIVEN)))) 
+				FillAllEleIdHistograms(cms2.hyp_ll_index()[h], weight, sampleName);
+		}
 
-
-	FillAllEleIdHistograms(cms2.hyp_lt_index()[h], weight, sampleName);
+	}
 
 }
 
 void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &weight, const TString &sampleName)
 {
 
-    // apply truth match behavior if ttbar
-    if (sampleName == "ttbar") {
-                if(!((abs(cms2.els_mc_id()[index]) == 11) && abs(cms2.els_mc_motherid()[index]) == 24) ) return;
-    }
-    // apply truth match behavior if wjets
-    if (sampleName == "wjets") {
-                if(((abs(cms2.els_mc_id()[index]) == 11) && abs(cms2.els_mc_motherid()[index]) == 24) ) return;
-    }
-    // apply truth match behavior if dyee
-    if (sampleName == "dyee") {
-                if(!((abs(cms2.els_mc_id()[index]) == 11) && abs(cms2.els_mc_motherid()[index]) == 23) ) return;
-    }  
+	// apply truth match behavior if ttbar
+	if (sampleName == "ttbar") {
+		if(!((abs(cms2.els_mc_id()[index]) == 11) && abs(cms2.els_mc_motherid()[index]) == 24) ) return;
+	}
+	// apply truth match behavior if wjets
+	if (sampleName == "wjets") {
+		if(((abs(cms2.els_mc_id()[index]) == 11) && abs(cms2.els_mc_motherid()[index]) == 24) ) return;
+	}
+	// apply truth match behavior if dyee
+	if (sampleName == "dyee") {
+		if(!((abs(cms2.els_mc_id()[index]) == 11) && abs(cms2.els_mc_motherid()[index]) == 23) ) return;
+	}  
 	// if particle gun
-    if (sampleName == "elegun") {
-                if(!((abs(cms2.els_mc_id()[index]) == 11))) return;
-    } 
+	if (sampleName == "elegun") {
+		if(!((abs(cms2.els_mc_id()[index]) == 11))) return;
+	} 
 
 
 	//
@@ -272,27 +306,41 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
 	float hoeThresholds[2]                  = {0.01, 0.01};
 	float sigmaIEtaIEtaThresholds[2]        = {9999.99, 0.03};
 	float e2x5Over5x5Thresholds[2]          = {0.90, 0.00};
-    float d0Thresholds[2]               = {0.02, 0.02};
+	float d0Thresholds[2]               = {0.02, 0.02};
+
+	float e2x5Over5x5Thresholds_cand02[2]          = {0.94, 0.00};
+	float dEtaInThresholds_cand02[2]               = {0.005, 0.007};
+
 
 	int ele_result = 0;
 	int ele_passall = (1<<PASS_DETA) | (1<<PASS_DPHI) | (1<<PASS_HOE) | (1<<PASS_LSHAPE) | (1<<PASS_D0);
+	int ele_passall_id_and_iso_cand01 =  (1<<PASS_DETA) | (1<<PASS_DPHI) | (1<<PASS_HOE) | (1<<PASS_LSHAPE) | (1<<PASS_D0) | (1<<PASS_ISO);
+	int ele_passall_id_and_iso_cand02 =  (1<<PASS_DETA_CAND02) | (1<<PASS_DPHI) | (1<<PASS_HOE) | (1<<PASS_LSHAPE_CAND02) | (1<<PASS_D0) | (1<<PASS_ISO);
 
 	//
 	// apply cuts
 	//
+	float iso_relsusy = -1;
+	iso_relsusy = electronIsolation_relsusy_cand1(index, true);
+
 	if (fabs(cms2.els_etaSC()[index]) < 1.479) {
 		if (fabs(cms2.els_dEtaIn()[index] < dEtaInThresholds[0])) 	ele_result |= (1<<PASS_DETA);
+		if (fabs(cms2.els_dEtaIn()[index] < dEtaInThresholds_cand02[0]))   ele_result |= (1<<PASS_DETA_CAND02);
 		if (fabs(cms2.els_dPhiIn()[index] < dPhiInThresholds[0]))	ele_result |= (1<<PASS_DPHI);
 		if (cms2.els_hOverE()[index] < hoeThresholds[0]) 			ele_result |= (1<<PASS_HOE);
 		if ((cms2.els_e2x5Max()[index]/cms2.els_e5x5()[index]) > e2x5Over5x5Thresholds[0]) ele_result |= (1<<PASS_LSHAPE);
-        if (cms2.els_d0corr()[index] < d0Thresholds[0]) ele_result |= (1<<PASS_D0);
+		if ((cms2.els_e2x5Max()[index]/cms2.els_e5x5()[index]) > e2x5Over5x5Thresholds_cand02[0]) ele_result |= (1<<PASS_LSHAPE_CAND02);
+		if (cms2.els_d0corr()[index] < d0Thresholds[0]) ele_result |= (1<<PASS_D0);
+		if (iso_relsusy < 0.10) ele_result |= (1<<PASS_ISO);
 	}
 	if (fabs(cms2.els_etaSC()[index]) > 1.479) {
 		if (fabs(cms2.els_dEtaIn()[index] < dEtaInThresholds[1])) 	ele_result |= (1<<PASS_DETA);
+		if (fabs(cms2.els_dEtaIn()[index] < dEtaInThresholds_cand02[1]))   ele_result |= (1<<PASS_DETA_CAND02);
 		if (fabs(cms2.els_dPhiIn()[index] < dPhiInThresholds[1])) 	ele_result |= (1<<PASS_DPHI);
 		if (cms2.els_hOverE()[index] < hoeThresholds[1]) 			ele_result |= (1<<PASS_HOE);
-		if (cms2.els_sigmaIEtaIEta()[index] < sigmaIEtaIEtaThresholds[1]) 	ele_result |= (1<<PASS_LSHAPE);
-        if (cms2.els_d0corr()[index] < d0Thresholds[1]) ele_result |= (1<<PASS_D0);
+		if (cms2.els_sigmaIEtaIEta()[index] < sigmaIEtaIEtaThresholds[1]) 	ele_result |= (1<<PASS_LSHAPE) | (1<<PASS_LSHAPE_CAND02);
+		if (cms2.els_d0corr()[index] < d0Thresholds[1]) ele_result |= (1<<PASS_D0);
+		if (iso_relsusy < 0.10) ele_result |= (1<<PASS_ISO);
 	}
 
 
@@ -300,10 +348,7 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
 	// fill denominator histograms
 	//
 
-    DileptonHypType hypType = DILEPTON_EE;
-
-	float iso_relsusy = -1;
-	iso_relsusy = electronIsolation_relsusy_cand1(index, true);
+	DileptonHypType hypType = DILEPTON_EE;
 
 	if (abs(cms2.els_p4()[index].eta()) > 1.5) {
 		Fill(h1_hyp_lt_ee_pt_, hypType, cms2.els_p4()[index].Pt(), weight);
@@ -318,14 +363,29 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
 		Fill(h1_hyp_lt_ee_hcalIso_, hypType, cms2.els_hcalIso()[index], weight);
 		Fill(h1_hyp_lt_ee_tkIso_, hypType, cms2.els_tkIso()[index], weight);
 		Fill(h1_hyp_lt_ee_relsusy_, hypType, iso_relsusy, weight);
-	
-		if ((ele_result & (ele_passall & ~(1<<PASS_DETA))) == (ele_passall & ~(1<<PASS_DETA))) Fill(h1_hyp_lt_ee_nm1_dEtaIn_, hypType, fabs(cms2.els_dEtaIn()[index]), weight);
-        if ((ele_result & (ele_passall & ~(1<<PASS_DPHI))) == (ele_passall & ~(1<<PASS_DPHI))) Fill(h1_hyp_lt_ee_nm1_dPhiIn_, hypType, fabs(cms2.els_dPhiIn()[index]), weight);
-        if ((ele_result & (ele_passall & ~(1<<PASS_HOE))) == (ele_passall & ~(1<<PASS_HOE))) Fill(h1_hyp_lt_ee_nm1_hoe_, hypType, fabs(cms2.els_hOverE()[index]), weight);
-        if ((ele_result & (ele_passall & ~(1<<PASS_LSHAPE))) == (ele_passall & ~(1<<PASS_LSHAPE))) Fill(h1_hyp_lt_ee_nm1_sigmaIEtaIEta_, hypType, fabs(cms2.els_sigmaIEtaIEta()[index]), weight);
-        if ((ele_result & (ele_passall & ~(1<<PASS_D0))) == (ele_passall & ~(1<<PASS_D0))) Fill(h1_hyp_lt_ee_nm1_d0_, hypType, fabs(cms2.els_d0corr()[index]), weight);
 
-		if ((ele_result & ele_passall) == (ele_passall)) Fill(h1_hyp_lt_ee_afterid_relsusy_, hypType, iso_relsusy, weight);
+		if ((ele_result & (ele_passall & ~(1<<PASS_DETA))) == (ele_passall & ~(1<<PASS_DETA))) Fill(h1_hyp_lt_ee_nm1_dEtaIn_, hypType, fabs(cms2.els_dEtaIn()[index]), weight);
+		if ((ele_result & (ele_passall & ~(1<<PASS_DPHI))) == (ele_passall & ~(1<<PASS_DPHI))) Fill(h1_hyp_lt_ee_nm1_dPhiIn_, hypType, fabs(cms2.els_dPhiIn()[index]), weight);
+		if ((ele_result & (ele_passall & ~(1<<PASS_HOE))) == (ele_passall & ~(1<<PASS_HOE))) Fill(h1_hyp_lt_ee_nm1_hoe_, hypType, fabs(cms2.els_hOverE()[index]), weight);
+		if ((ele_result & (ele_passall & ~(1<<PASS_LSHAPE))) == (ele_passall & ~(1<<PASS_LSHAPE))) Fill(h1_hyp_lt_ee_nm1_sigmaIEtaIEta_, hypType, fabs(cms2.els_sigmaIEtaIEta()[index]), weight);
+		if ((ele_result & (ele_passall & ~(1<<PASS_D0))) == (ele_passall & ~(1<<PASS_D0))) Fill(h1_hyp_lt_ee_nm1_d0_, hypType, fabs(cms2.els_d0corr()[index]), weight);
+
+		if ((ele_result & ele_passall) == (ele_passall)) {
+			Fill(h1_hyp_lt_ee_afterid_relsusy_, hypType, iso_relsusy, weight);
+			Fill(h1_hyp_lt_ee_afterid_fbrem_, hypType, cms2.els_fbrem()[index], weight);
+			Fill(h1_hyp_lt_ee_afterid_eopin_, hypType, cms2.els_eOverPIn()[index], weight);
+			if (cms2.els_fbrem()[index] > 0.2) {
+				Fill(h1_hyp_lt_ee_afterid_relsusy_highfbrem_, hypType, iso_relsusy, weight);
+                Fill(h1_hyp_lt_ee_afterid_eopin_highfbrem_, hypType, cms2.els_eOverPIn()[index], weight);
+			}
+			else {
+				Fill(h1_hyp_lt_ee_afterid_relsusy_lowfbrem_, hypType, iso_relsusy, weight);
+				Fill(h1_hyp_lt_ee_afterid_eopin_lowfbrem_, hypType, cms2.els_eOverPIn()[index], weight);
+			}
+		}
+
+		if ((ele_result & ele_passall_id_and_iso_cand01) == (ele_passall_id_and_iso_cand01)) Fill(h1_hyp_lt_ee_pt_cand01_, hypType, cms2.els_p4()[index].Pt(), weight);
+		if ((ele_result & ele_passall_id_and_iso_cand02) == (ele_passall_id_and_iso_cand02)) Fill(h1_hyp_lt_ee_pt_cand02_, hypType, cms2.els_p4()[index].Pt(), weight);
 
 	}
 
@@ -343,13 +403,28 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
 		Fill(h1_hyp_lt_eb_tkIso_, hypType, cms2.els_tkIso()[index], weight);
 		Fill(h1_hyp_lt_eb_relsusy_, hypType, iso_relsusy, weight);
 
-        if ((ele_result & (ele_passall & ~(1<<PASS_DETA))) == (ele_passall & ~(1<<PASS_DETA))) Fill(h1_hyp_lt_eb_nm1_dEtaIn_, hypType, fabs(cms2.els_dEtaIn()[index]), weight);
-        if ((ele_result & (ele_passall & ~(1<<PASS_DPHI))) == (ele_passall & ~(1<<PASS_DPHI))) Fill(h1_hyp_lt_eb_nm1_dPhiIn_, hypType, fabs(cms2.els_dPhiIn()[index]), weight);
-        if ((ele_result & (ele_passall & ~(1<<PASS_HOE))) == (ele_passall & ~(1<<PASS_HOE))) Fill(h1_hyp_lt_eb_nm1_hoe_, hypType, fabs(cms2.els_hOverE()[index]), weight);
-        if ((ele_result & (ele_passall & ~(1<<PASS_LSHAPE))) == (ele_passall & ~(1<<PASS_LSHAPE))) Fill(h1_hyp_lt_eb_nm1_E2x5MaxOver5x5_, hypType, E2x5MaxOver5x5, weight);
-        if ((ele_result & (ele_passall & ~(1<<PASS_D0))) == (ele_passall & ~(1<<PASS_D0))) Fill(h1_hyp_lt_eb_nm1_d0_, hypType, fabs(cms2.els_d0corr()[index]), weight);
+		if ((ele_result & (ele_passall & ~(1<<PASS_DETA))) == (ele_passall & ~(1<<PASS_DETA))) Fill(h1_hyp_lt_eb_nm1_dEtaIn_, hypType, fabs(cms2.els_dEtaIn()[index]), weight);
+		if ((ele_result & (ele_passall & ~(1<<PASS_DPHI))) == (ele_passall & ~(1<<PASS_DPHI))) Fill(h1_hyp_lt_eb_nm1_dPhiIn_, hypType, fabs(cms2.els_dPhiIn()[index]), weight);
+		if ((ele_result & (ele_passall & ~(1<<PASS_HOE))) == (ele_passall & ~(1<<PASS_HOE))) Fill(h1_hyp_lt_eb_nm1_hoe_, hypType, fabs(cms2.els_hOverE()[index]), weight);
+		if ((ele_result & (ele_passall & ~(1<<PASS_LSHAPE))) == (ele_passall & ~(1<<PASS_LSHAPE))) Fill(h1_hyp_lt_eb_nm1_E2x5MaxOver5x5_, hypType, E2x5MaxOver5x5, weight);
+		if ((ele_result & (ele_passall & ~(1<<PASS_D0))) == (ele_passall & ~(1<<PASS_D0))) Fill(h1_hyp_lt_eb_nm1_d0_, hypType, fabs(cms2.els_d0corr()[index]), weight);
 
-        if ((ele_result & ele_passall) == (ele_passall)) Fill(h1_hyp_lt_eb_afterid_relsusy_, hypType, iso_relsusy, weight);
+        if ((ele_result & ele_passall) == (ele_passall)) {
+            Fill(h1_hyp_lt_eb_afterid_relsusy_, hypType, iso_relsusy, weight);
+            Fill(h1_hyp_lt_eb_afterid_fbrem_, hypType, cms2.els_fbrem()[index], weight);
+            Fill(h1_hyp_lt_eb_afterid_eopin_, hypType, cms2.els_eOverPIn()[index], weight);
+            if (cms2.els_fbrem()[index] > 0.2) {
+                Fill(h1_hyp_lt_eb_afterid_relsusy_highfbrem_, hypType, iso_relsusy, weight);
+                Fill(h1_hyp_lt_eb_afterid_eopin_highfbrem_, hypType, cms2.els_eOverPIn()[index], weight);
+            }
+            else {
+                Fill(h1_hyp_lt_eb_afterid_relsusy_lowfbrem_, hypType, iso_relsusy, weight);
+                Fill(h1_hyp_lt_eb_afterid_eopin_lowfbrem_, hypType, cms2.els_eOverPIn()[index], weight);
+            }
+        }
+
+		if ((ele_result & ele_passall_id_and_iso_cand01) == (ele_passall_id_and_iso_cand01)) Fill(h1_hyp_lt_eb_pt_cand01_, hypType, cms2.els_p4()[index].Pt(), weight);
+		if ((ele_result & ele_passall_id_and_iso_cand02) == (ele_passall_id_and_iso_cand02)) Fill(h1_hyp_lt_eb_pt_cand02_, hypType, cms2.els_p4()[index].Pt(), weight);
 
 	}
 
@@ -470,7 +545,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 			//
 			// Fill event level electron histograms
 			//
-			FillAllEleIdHistogramsNoHyp(weight, sampleName);
+			//FillAllEleIdHistogramsNoHyp(weight, sampleName);
 
 			//
 			// loop on hypothesis
@@ -482,7 +557,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 				//
 				// fill basic electron ID histograms
 				//
-				//FillAllEleIdHistograms(h, weight, sampleName);
+				FillAllEleIdHistogramsHyp(h, weight, sampleName);
 
 				// apply lepton id 
 				if (!looseLeptonSelectionNoIsoTTDil08(cms2.hyp_lt_id()[h], cms2.hyp_lt_index()[h])) continue;
@@ -502,7 +577,6 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 
 			} // end loop on hypothesis
 
-			//
 			// perform hypothesis disambiguation
 			//
 

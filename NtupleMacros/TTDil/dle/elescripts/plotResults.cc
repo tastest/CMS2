@@ -14,10 +14,10 @@
 const static sources_t theSignal_312 =
 	(1ll << H_TTBAR);
 const static sources_t theBackground_312 =
-	(1ll << H_QCD30);
+	(1ll << H_WMUNU);
 const static sources_t theSources_312 =
 	(1ll << H_TTBAR) |
-	(1ll << H_QCD30);
+	(1ll << H_WMUNU);
 //	(1ll << H_WJETS);
 //	(1ll << H_ELEGUNIDEAL);
 //	(1ll << H_DYEE);
@@ -502,7 +502,8 @@ void plotResultsID(TString det, TString hyp, TString fileStamp, TString saveName
 	// luminosity is already normalised to 1pb-1 in the looper
 	std::vector<DataSource> sources;
 	sources.push_back( fH_TTBAR() );
-	sources.push_back( fH_QCD30() );
+	sources.push_back( fH_WMUNU() );
+	//sources.push_back( fH_QCD30() );
 	//sources.push_back( fH_WJETS() );
 	//sources.push_back(fH_ELEGUNIDEAL() );
 	//sources.push_back(fH_ELEGUNSTARTUP() );
@@ -546,7 +547,22 @@ void plotResultsID(TString det, TString hyp, TString fileStamp, TString saveName
     plotEff(h1, "hyp_lt_" + det + "_nm1_d0", saveName, det, true, 1, true);
 
     plotEff(h1, "hyp_lt_" + det + "_afterid_relsusy", saveName, det, true, 1, true);
+    plotEff(h1, "hyp_lt_" + det + "_afterid_fbrem", saveName, det, true, 1, true);
+    plotEff(h1, "hyp_lt_" + det + "_afterid_eopin", saveName, det, true, 1, true);
+    plotEff(h1, "hyp_lt_" + det + "_afterid_relsusy_lowfbrem", saveName, det, true, 1, true);
+    plotEff(h1, "hyp_lt_" + det + "_afterid_relsusy_highfbrem", saveName, det, true, 1, true);
 
+	// comparison of pt spectra with different selections
+    plotEff(h1, "hyp_lt_" + det + "_pt", saveName, det, true, 1, true);
+    plotEff(h1, "hyp_lt_" + det + "_pt_cand01", saveName, det, true, 1, true);
+    plotEff(h1, "hyp_lt_" + det + "_pt_cand02", saveName, det, true, 1, true);
+
+	// fbrem
+    plotEff(h1, "hyp_lt_" + det + "_afterid_fbrem", saveName, det, true, 1, true);
+
+	// eopin depending if fbrem > 0.2
+    plotEff(h1, "hyp_lt_" + det + "_afterid_eopin_lowfbrem", saveName, det, true, 1, true);
+    plotEff(h1, "hyp_lt_" + det + "_afterid_eopin_highfbrem", saveName, det, true, 1, true);
 
 	// 2D stuff
 	//plot2DSB(h1, "tkIso03All2D", "p_{T} (GeV/c)", "tkIso03All", "IDStudy", det);

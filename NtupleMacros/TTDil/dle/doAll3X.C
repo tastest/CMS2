@@ -65,6 +65,9 @@ void doAll3X() {
 	// qcd pt30
 	TChain *chain_qcd30 = new TChain("Events");
 	chain_qcd30->Add(ntuple_location + "/cms2/QCD_Pt30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+	// wmunu
+    TChain *chain_wmunu = new TChain("Events");
+    chain_wmunu->Add(ntuple_location + "/cms2/Wmunu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
 
 	// BSM
 	// LM0
@@ -96,12 +99,13 @@ void doAll3X() {
 //  looper->ScanChain(false, "elegunideal", chain_elegunideal);
 
 	looper->ScanChain(false, "QCDpt30", chain_qcd30);
+	looper->ScanChain(false, "wm", chain_wmunu);
 
 	//
 	// write histograms
 	// 
 
-	const char* outFile = "histos_eleid.root";
+	const char* outFile = "histos_eleid_hypbased.root";
 	hist::saveHist(outFile); 
 	hist::deleteHistos();
 
@@ -118,6 +122,7 @@ void doAll3X() {
 	delete chain_dymm;
 	delete chain_dytt;
 	delete chain_wjets;
+	delete chain_wmunu;
 
 	delete chain_qcd30;
 
