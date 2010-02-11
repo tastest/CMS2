@@ -537,6 +537,16 @@ void plotResultsID(TString det, TString hyp, TString fileStamp, TString saveName
     plotEff(h1, "hyp_lt_" + det + "_d0", saveName, det, true, 1, true);
     plotEff(h1, "hyp_lt_" + det + "_relsusy", saveName, det, true, 1, true);
 
+	// NM1
+    plotEff(h1, "hyp_lt_" + det + "_nm1_dEtaIn", saveName, det, true, 1, true);
+    plotEff(h1, "hyp_lt_" + det + "_nm1_dPhiIn", saveName, det, true, 1, true);
+    plotEff(h1, "hyp_lt_" + det + "_nm1_hoe", saveName, det, true, 1, true);
+    plotEff(h1, "hyp_lt_" + det + "_nm1_E2x5MaxOver5x5", saveName, det, false, 1, false);
+    plotEff(h1, "hyp_lt_" + det + "_nm1_sigmaIEtaIEta", saveName, det, true, 1, true);
+    plotEff(h1, "hyp_lt_" + det + "_nm1_d0", saveName, det, true, 1, true);
+
+    plotEff(h1, "hyp_lt_" + det + "_afterid_relsusy", saveName, det, true, 1, true);
+
 
 	// 2D stuff
 	//plot2DSB(h1, "tkIso03All2D", "p_{T} (GeV/c)", "tkIso03All", "IDStudy", det);

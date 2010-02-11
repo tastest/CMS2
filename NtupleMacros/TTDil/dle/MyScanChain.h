@@ -82,6 +82,25 @@ class MyScanChain {
 		TH1F *h1_hyp_lt_ee_tkIso_[4];
 		TH1F *h1_hyp_lt_ee_relsusy_[4];
 
+		// N-1
+        TH1F *h1_hyp_lt_eb_nm1_hoe_[4];
+        TH1F *h1_hyp_lt_eb_nm1_sigmaIEtaIEta_[4];
+        TH1F *h1_hyp_lt_eb_nm1_dEtaIn_[4];
+        TH1F *h1_hyp_lt_eb_nm1_dPhiIn_[4];
+        TH1F *h1_hyp_lt_eb_nm1_d0_[4];
+        TH1F *h1_hyp_lt_eb_nm1_E2x5MaxOver5x5_[4];
+
+        TH1F *h1_hyp_lt_ee_nm1_hoe_[4];
+        TH1F *h1_hyp_lt_ee_nm1_sigmaIEtaIEta_[4];
+        TH1F *h1_hyp_lt_ee_nm1_dEtaIn_[4];
+        TH1F *h1_hyp_lt_ee_nm1_dPhiIn_[4];
+        TH1F *h1_hyp_lt_ee_nm1_d0_[4];
+        TH1F *h1_hyp_lt_ee_nm1_E2x5MaxOver5x5_[4];
+
+        TH1F *h1_hyp_lt_eb_afterid_relsusy_[4];
+        TH1F *h1_hyp_lt_ee_afterid_relsusy_[4];
+
+
 		// id
 		//
 		TH1F *h1_hyp_lt_eb_pt_idnew_[4];
