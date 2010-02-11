@@ -13,12 +13,7 @@
 #include "TChain.h"
 #include "TFile.h"
 #include "TDirectory.h"
-#include "TROOT.h"
-
-#include "TChain.h"
-#include "TFile.h"
 #include "TChainElement.h"
-#include "TDirectory.h"
 #include "TROOT.h"
 
 //from slava
@@ -72,7 +67,7 @@ bool isNumEl(int iEl){
 
   if(
      (pt >= 10.) &&
-     (fabs(eta)<=2.4) &&
+     (fabs(eta)<=2.5) &&
      // dEtaIn < 0.007, 0.010 (EB, EE)
      // dPhiIn < 0.020, 0.025 (EB, EE)
      // hoe < 0.01, 0.01 (EB, EE)
@@ -94,12 +89,12 @@ bool isDenomEl(int iEl){
   Double_t eta = cms2.els_p4()[iEl].Eta();
   if(
      (pt >= 10.) &&
-     (fabs(eta)<=2.4) &&
-     //electronId_cand01(iEl) &&                           // eleID
-     //electronImpact_cand01(iEl) &&             	   // d0corr < .02
+     (fabs(eta)<=2.5) &&
+     //electronId_cand01(iEl) &&                         // eleID
+     //electronImpact_cand01(iEl) &&             	       // d0corr < .02
      //electronIsolation_relsusy_cand1(iEl,true) < 0.1 &&  // relative isolation < .1
      electronIsolation_relsusy_cand1(iEl,true) < 0.4 &&    // relative isolation < .4
-     !isFromConversionPartnerTrack(iEl) &&       	   // dist < .02 dcot < .02
+     !isFromConversionPartnerTrack(iEl) &&       	       // dist < .02 dcot < .02
      electronId_noMuon(iEl)
      ){
     return true;
@@ -114,10 +109,10 @@ bool isNumMu(int iMu){
   // Pt & Eta cuts
   Double_t pt   = cms2.mus_p4().at(iMu).Pt();
   Double_t eta  = cms2.mus_p4().at(iMu).Eta();
-  if( pt < 10.0 || fabs(eta) > 2.4 ) return false;
+  if( pt < 10.0 || fabs(eta) > 2.5 ) return false;
   /* muonId cuts - numerator */
   if(
-      // abs(eta) <= 2.4
+      // abs(eta) <= 2.5
       // global chisq per degree of freedom < 10
       // global muon
       // tracker muon
@@ -127,7 +122,7 @@ bool isNumMu(int iMu){
       // glb fit has hits
       // d0 from beamspot <= .02
       // ISO < 0.2
-      muonId(iMu, Nominal)
+     muonId(iMu, Nominal)
      ){
     return true;
   } else {
@@ -140,7 +135,7 @@ bool isDenomMu(int iMu){
   // Pt & Eta cuts
   Double_t pt   = cms2.mus_p4().at(iMu).Pt();
   Double_t eta  = cms2.mus_p4().at(iMu).Eta();
-  if( pt < 10.0 || fabs(eta) > 2.4 ) return false;
+  if( pt < 10.0 || fabs(eta) > 2.5 ) return false;
   /* muonId cuts - denomintor */
   if(
 
@@ -150,14 +145,15 @@ bool isDenomMu(int iMu){
       // remove requirement on # silicon hits
       // relax isolation
 
-      TMath::Abs(cms2.mus_p4()[iMu].eta()) <= 2.4 &&								        //eta
+      TMath::Abs(cms2.mus_p4()[iMu].eta()) <= 2.5 &&								        //eta
       //cms2.mus_gfit_chi2().at(iMu)/cms2.mus_gfit_ndof().at(iMu) < 10 &&		//glb fit chisq
       cms2.mus_gfit_chi2().at(iMu)/cms2.mus_gfit_ndof().at(iMu) < 20 &&		  //glb fit chisq
+      //cms2.mus_gfit_chi2().at(iMu)/cms2.mus_gfit_ndof().at(iMu) < 40 &&		  //glb fit chisq
       (	( (cms2.mus_type().at(iMu) ) & (1<<1) ) != 0	) &&						      // global muon
       (	( (cms2.mus_type().at(iMu) ) & (1<<2)) != 0 ) &&						        // tracker muon
       //cms2.mus_validHits().at(iMu) >= 11 &&											          // # of tracker hits
-      cms2.mus_iso_ecalvetoDep().at(iMu) <= 4 &&									          // ECalE < 4 
-      cms2.mus_iso_hcalvetoDep().at(iMu) <= 6 &&									          // HCalE < 6 
+      cms2.mus_iso_ecalvetoDep().at(iMu) <= 4 &&									          // ECalE < 4 // out as test 100209 - is good!
+      cms2.mus_iso_hcalvetoDep().at(iMu) <= 6 &&									          // HCalE < 6 // out as test 100209 - is good!
       cms2.mus_gfit_validSTAHits().at(iMu) > 0 &&									          // Glb fit must have hits in mu chambers
       TMath::Abs(cms2.mus_d0corr().at(iMu)) <= 0.02 &&							        // d0 from beamspot
       muonIsoValue(iMu) <= 0.4															                // Isolation cut
@@ -305,12 +301,12 @@ int QCDFRestimator::ScanChainAppTest ( TChain* chain, TString prefix, float kFac
       weight = 1.0;
 		
       for(unsigned int iHyp = 0; iHyp < cms2.hyp_p4().size(); iHyp++) {
-	
-//             //same sign
-//             if( cms2.hyp_lt_id()[iHyp]*cms2.hyp_ll_id()[iHyp] < 0) continue;
+        
+//          //same sign
+//          if( cms2.hyp_lt_id()[iHyp]*cms2.hyp_ll_id()[iHyp] < 0) continue;
 
-            //opposite sign
-            if( cms2.hyp_lt_id()[iHyp]*cms2.hyp_ll_id()[iHyp] > 0) continue;
+          //opposite sign
+          if( cms2.hyp_lt_id()[iHyp]*cms2.hyp_ll_id()[iHyp] > 0) continue;
 		        
         int nJets = cms2.hyp_jets_p4()[iHyp].size();
         nJets = min(nJets, 5);
@@ -632,7 +628,8 @@ int QCDFRestimator::ScanChainQCD ( TChain* chain, TString prefix, float kFactor,
           logfile 	<< "QCDden:\t" << cms2.els_mc_id().at(iEl) << "\t" 
                     << cms2.els_mc_motherid().at(iEl) << endl;
         }
-        h_FOptvseta[0]->Fill(fabs(eta), min(pt,149.0), weight);
+        h_FOptvseta[0]->Fill(fabs(eta), min(pt,149.0), weight); // orig, take this in again
+        //        h_FOptvseta[0]->Fill(fabs(eta), pt, weight); // ALARM, TEST
         h_FOpt[0]     ->Fill(min(pt,149.0), weight);
         h_FOeta[0]    ->Fill(fabs(eta), weight);
 
@@ -679,7 +676,8 @@ int QCDFRestimator::ScanChainQCD ( TChain* chain, TString prefix, float kFactor,
           logfile << "QCDnum:\t" << cms2.els_mc_id().at(iEl) << "\t" << cms2.els_mc_motherid().at(iEl) << endl;
         }
 
-        h_numptvseta[0]->Fill(fabs(eta), min(pt,149.0), weight);
+        h_numptvseta[0]->Fill(fabs(eta), min(pt,149.0), weight); // orig back
+        //        h_numptvseta[0]->Fill(fabs(eta), pt, weight); // ALARM TEST
         h_numpt[0]     ->Fill(min(pt,149.0), weight);
         h_numeta[0]    ->Fill(fabs(eta), weight);
         if(matchedId == 5 || matchedId == 4 ) {
@@ -873,7 +871,8 @@ void QCDFRestimator::bookHistos(const char *sample) {
   h_truecomposition_ratio[suf]->Sumw2();
 
   Float_t ptel[4] = {10,20,60,150}; // xcheck with Claudio 100208
-  Float_t etael[3] = {0, 1.479, 2.4}; // xcheck with Claudio 100208
+  Float_t etael[3] = {0, 1.479, 2.5}; // xcheck with Claudio 100208
+  //  Float_t etael[3] = {0, 1.5, 2.5}; // ALARM, test
 
   h_FOptvseta[0] = new TH2F(Form("%s_FOptvseta_%s", sample, flavor[0]),
                             Form("%s pt vs eta of FO, %s", flavor[0], sample),
@@ -989,7 +988,7 @@ void QCDFRestimator::bookHistos(const char *sample) {
 
   //FO --> muons
   Float_t pt[4] = {10,20,60,150};
-  Float_t eta[3] = {0, 1.479, 2.4};
+  Float_t eta[3] = {0, 1.479, 2.5};
   h_FOptvseta[1] = new TH2F(Form("%s_FOptvseta_%s", sample, flavor[1]),
                             Form("%s pt vs eta of FO, %s", flavor[1], sample),
                             2, eta, 3, pt);
