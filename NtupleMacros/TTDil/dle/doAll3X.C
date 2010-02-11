@@ -62,6 +62,9 @@ void doAll3X() {
 	// wjets
     TChain *chain_wjets = new TChain("Events");
     chain_wjets->Add(ntuple_location + "/cms2/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+	// qcd pt30
+	TChain *chain_qcd30 = new TChain("Events");
+	chain_qcd30->Add(ntuple_location + "/cms2/QCD_Pt30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
 
 	// BSM
 	// LM0
@@ -70,30 +73,35 @@ void doAll3X() {
 
 	// Technical
 	// single particle gun electrons
-	TChain *chain_elegun = new TChain("Events");
-	chain_elegun->Add(ntuple_location + "/cms2/SingleElectronPt5to100_336patch4/V03-00-35/merged_ntuple*.root");
+	TChain *chain_elegunstartup = new TChain("Events");
+	chain_elegunstartup->Add(ntuple_location + "/cms2/SingleElectronPt5to100_336patch4/V03-00-35/merged_ntuple*.root");
+    TChain *chain_elegunideal = new TChain("Events");
+    chain_elegunideal->Add(ntuple_location + "/cms2/SingleElectronPt5to100_336patch4MC31XV9/V03-00-35/merged_ntuple*.root");
 
 	// 
 	// do looping
 	//
-/*
-	looper->ScanChain(false, "ttbar", chain_ttbar);
-	looper->ScanChain(false, "ww", chain_ww);
-	looper->ScanChain(false, "wz", chain_wz);
-	looper->ScanChain(false, "zz", chain_zz);
-	looper->ScanChain(false, "dyee", chain_dyee);
-	looper->ScanChain(false, "dymm", chain_dymm);
-    looper->ScanChain(false, "dytt", chain_dytt);
-    looper->ScanChain(false, "wjets", chain_wjets);
-*/
 
-	looper->ScanChain(false, "elegun", chain_elegun);
+	looper->ScanChain(false, "ttbar", chain_ttbar);
+//	looper->ScanChain(false, "ww", chain_ww);
+//	looper->ScanChain(false, "wz", chain_wz);
+//	looper->ScanChain(false, "zz", chain_zz);
+//	looper->ScanChain(false, "dyee", chain_dyee);
+//	looper->ScanChain(false, "dymm", chain_dymm);
+//    looper->ScanChain(false, "dytt", chain_dytt);
+//    looper->ScanChain(false, "wjets", chain_wjets);
+
+
+//	looper->ScanChain(false, "elegunstartup", chain_elegunstartup);
+//  looper->ScanChain(false, "elegunideal", chain_elegunideal);
+
+	looper->ScanChain(false, "QCDpt30", chain_qcd30);
 
 	//
 	// write histograms
 	// 
 
-	const char* outFile = "histos_elegun.root";
+	const char* outFile = "histos_eleid.root";
 	hist::saveHist(outFile); 
 	hist::deleteHistos();
 
@@ -111,9 +119,12 @@ void doAll3X() {
 	delete chain_dytt;
 	delete chain_wjets;
 
+	delete chain_qcd30;
+
 	delete chain_lm0;
 
-	delete chain_elegun;
+	delete chain_elegunstartup;
+	delete chain_elegunideal;
 
 }
 

@@ -9,11 +9,11 @@
 
 // first argument, "det"
 // second argument, "hyp"
-	plotResultsID("ee", "ee", "../histos_mc_3x", "dyee");
-    plotResultsID("eb", "ee", "../histos_mc_3x", "dyee");
+//	plotResultsID("ee", "ee", "../histos_mc_3x", "dyee");
+ //   plotResultsID("eb", "ee", "../histos_mc_3x", "dyee");
 
-//    plotResultsID("ee", "ee", "../histos_elegun", "elegun");
-//    plotResultsID("eb", "ee", "../histos_elegun", "elegun");
+    plotResultsID("ee", "ee", "../histos_eleid", "eleid_v0");
+    plotResultsID("eb", "ee", "../histos_eleid", "eleid_v0");
 
 
 
