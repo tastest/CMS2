@@ -9,7 +9,7 @@
 
 bool electronSelection_cand01(const unsigned int index)
 {
-        if (fabs(els_p4.Eta()) > 2.5) return false;
+        if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
 	if (!electronId_noMuon(index)) return false;
 	if (!electronId_cand01(index)) return false;
 	if (!electronImpact_cand01(index)) return false;
