@@ -43,14 +43,14 @@ void processData()
   // (0 and 1 are easier to modify)
   //
   bool runWW    = 1;
-  bool runWZ    = 0;
-  bool runZZ    = 0;
-  bool runWjets = 0;
-  bool runDYee  = 0;
-  bool runDYmm  = 0;
-  bool runDYtt  = 0;
-  bool runttbar = 0;
-  bool runtW    = 0;
+  bool runWZ    = 1;
+  bool runZZ    = 1;
+  bool runWjets = 1;
+  bool runDYee  = 1;
+  bool runDYmm  = 1;
+  bool runDYtt  = 1;
+  bool runttbar = 1;
+  bool runtW    = 1;
   bool runQCD   = 0; 
 
   // 
@@ -79,16 +79,16 @@ void processData()
   RooDataSet *fullDataSet(0);
   
   // read dataset prefix
-  string dataset = "data";
+  string dataset = "data2";
  
   if (runWW)
-    ProcessSample(dataset+"/WW_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", WW, 1.65, fullDataSet, kRed);
+    ProcessSample(dataset+"/WW_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", WW, 1.53, fullDataSet, kRed);
 
   if (runWZ)
-    ProcessSample(dataset+"/WZ_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", WZ, 1.84, fullDataSet, kBlue);
+    ProcessSample(dataset+"/WZ_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", WZ, 1.71, fullDataSet, kBlue);
   
   if (runZZ)
-    ProcessSample(dataset+"/ZZ_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", ZZ, 1.47, fullDataSet, kGreen);
+    ProcessSample(dataset+"/ZZ_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", ZZ, 1.37, fullDataSet, kGreen);
  
   if (runWjets)
     ProcessSample(dataset+"/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", Wjets, 1.0, fullDataSet, 40);
@@ -103,7 +103,7 @@ void processData()
     ProcessSample(dataset+"/Ztautau_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", DYtt, 1.14, fullDataSet, kBlack, identifyDYEvents);
 
   if (runttbar)
-    ProcessSample(dataset+"/TTbarJets-madgraph_Summer09-MC_31X_V3_7TeV-v2/"+version+"/merged_ntuple*.root", ttbar, 1.0, fullDataSet, kYellow);
+    ProcessSample(dataset+"/TTbarJets-madgraph_Summer09-MC_31X_V3_7TeV-v2/"+version+"/merged_ntuple*.root", ttbar, 0.88, fullDataSet, kYellow);
  
   if (runtW)
     ProcessSample(dataset+"/SingleTop_tWChannel-madgraph_Summer09-MC_31X_V3_7TeV-v2/"+version+"/merged_ntuple*.root", tW, 1.0, fullDataSet, 63);

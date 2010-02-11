@@ -1528,8 +1528,10 @@ void SkimChain(TChain* chain){
     TString directory(inputFileName);
     preg.Substitute(directory,"$1-skim");
     // make output directory if it doesn't exist yet
-    if ( gSystem->AccessPathName(directory.Data()) ) 
-      assert( gSystem->mkdir(directory.Data(),true) );
+    if ( gSystem->AccessPathName(directory.Data()) ) {
+      gSystem->mkdir(directory.Data(),true);
+      assert( !gSystem->AccessPathName(directory.Data()) );
+    }
     TString outputFileName(inputFileName);
     preg.Substitute(outputFileName,"$1-skim/$2");
     cout << "Skimming " << inputFileName << " -> " << outputFileName << endl;
