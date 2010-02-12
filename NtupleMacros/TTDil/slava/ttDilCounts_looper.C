@@ -457,6 +457,34 @@ int ttDilCounts_looper::ScanChain (std::vector<ProcDSChain>& pds, std::string pr
 	  if (! lepton20Eta2p4(id_lt, i_lt) ) continue;
 	  if (! lepton20Eta2p4(id_ll, i_ll) ) continue;
 	}
+	/*
+	std::cout<<"Begin print hyp "<<hypIdx<<" "<<hyp_type<<std::endl;
+	if (abs(id_lt)==13){
+	  std::cout<<"LT: "
+		   << cms2.evt_run()<<":"<<cms2.evt_lumiBlock()<<":"<<cms2.evt_event() 
+		   << " drlllt "<<ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[hypIdx],cms2.hyp_lt_p4()[hypIdx]) 
+		   <<" mcid "<<cms2.hyp_lt_mc_id()[hypIdx]<<" "<<cms2.hyp_lt_mc_motherid()[hypIdx]
+		   <<" MC "<<matchesMCTruthLTExtended(hypIdx) 
+	    //		   <<" MuJ "<<hasNearJet
+		   <<" IDtt08 "<<looseLeptonSelectionNoIsoTTDil08(id_lt, i_lt)
+		   <<" ISOtt08 "<<passLeptonIsolationTTDil08(id_lt, i_lt)
+		   <<" TAS: "<< muonId(i_lt,Nominal,true)
+		   <<std::endl;
+	}
+	if (abs(id_ll)==13){
+	  std::cout<<"LL: " 
+		   << cms2.evt_run()<<":"<<cms2.evt_lumiBlock()<<":"<<cms2.evt_event() 
+		   <<" drlllt "<< ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[hypIdx],cms2.hyp_lt_p4()[hypIdx])
+		   <<" mcid "<<cms2.hyp_ll_mc_id()[hypIdx]<<" "<<cms2.hyp_ll_mc_motherid()[hypIdx]
+		   <<" MC "<< matchesMCTruthLLExtended(hypIdx) 
+	    //		   <<" MuJ "<<hasNearJet
+		   << " IDtt08 "<<looseLeptonSelectionNoIsoTTDil08(id_ll, i_ll)
+		   <<" ISOtt08 "<<passLeptonIsolationTTDil08(id_ll, i_ll)
+		   <<" TAS: "<<muonId(i_ll,Nominal,true)
+		   <<std::endl;	  
+	}
+	std::cout<<"End print hyp"<<std::endl;
+	*/
 
 	if (tas10IDIso){
 	  if (abs(id_lt)==11 && ! electronSelection_cand01(i_lt) ) continue;
