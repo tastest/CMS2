@@ -2587,27 +2587,35 @@ int genpDileptonType(){
   return dilType;
 }
 
-
+bool matchesMCTruthLLExtended(unsigned int hypIdx){
+  bool isTrueLepton = false;
+  isTrueLepton = ( (abs(cms2.hyp_ll_id()[hypIdx]) == abs(cms2.hyp_ll_mc_id()[hypIdx]) &&
+		    abs(cms2.hyp_ll_mc_motherid()[hypIdx]) < 50 //I wish I could match to W or Z explicitely, not in MGraph
+		    )
+		   || (cms2.hyp_ll_mc_id()[hypIdx]==22 &&
+		       TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[hypIdx],cms2.hyp_ll_mc_p4()[hypIdx])) <0.05
+		       && abs(cms2.hyp_ll_id()[hypIdx]) == abs(cms2.hyp_ll_mc_motherid()[hypIdx])
+		       )
+		   );
+  return isTrueLepton;
+}
+bool matchesMCTruthLTExtended(unsigned int hypIdx){
+  bool isTrueLepton = false;
+  isTrueLepton = ( (abs(cms2.hyp_lt_id()[hypIdx]) == abs(cms2.hyp_lt_mc_id()[hypIdx]) &&
+		    abs(cms2.hyp_lt_mc_motherid()[hypIdx]) < 50 //I wish I could match to W or Z explicitely, not in MGraph
+		    )
+		   || (cms2.hyp_lt_mc_id()[hypIdx]==22 &&
+		       TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[hypIdx],cms2.hyp_lt_mc_p4()[hypIdx])) <0.05
+		       && abs(cms2.hyp_lt_id()[hypIdx]) == abs(cms2.hyp_lt_mc_motherid()[hypIdx])
+		       )
+		   );
+  return isTrueLepton;
+}
 bool matchesMCTruthDilExtended(unsigned int hypIdx){
   //this better be in the selections.cc
-  bool isTrueLepton_ll = false;
-  bool isTrueLepton_lt = false;
-  isTrueLepton_ll = ( (abs(cms2.hyp_ll_id()[hypIdx]) == abs(cms2.hyp_ll_mc_id()[hypIdx]) &&
-		       abs(cms2.hyp_ll_mc_motherid()[hypIdx]) < 50 //I wish I could match to W or Z explicitely, not in MGraph
-		       )
-		      || (cms2.hyp_ll_mc_id()[hypIdx]==22 && 
-			  TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[hypIdx],cms2.hyp_ll_mc_p4()[hypIdx])) <0.05
-			  && abs(cms2.hyp_ll_id()[hypIdx]) == abs(cms2.hyp_ll_mc_motherid()[hypIdx])
-			  )
-		      );
-  isTrueLepton_lt = ( (abs(cms2.hyp_lt_id()[hypIdx]) == abs(cms2.hyp_lt_mc_id()[hypIdx]) &&
-		       abs(cms2.hyp_lt_mc_motherid()[hypIdx]) < 50 //I wish I could match to W or Z explicitely, not in MGraph
-		       )
-		      || (cms2.hyp_lt_mc_id()[hypIdx]==22 && 
-			  TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[hypIdx],cms2.hyp_lt_mc_p4()[hypIdx])) <0.05
-			  && abs(cms2.hyp_lt_id()[hypIdx]) == abs(cms2.hyp_lt_mc_motherid()[hypIdx])
-			  )
-		      );
+  bool isTrueLepton_ll = matchesMCTruthLLExtended(hypIdx);
+  bool isTrueLepton_lt = matchesMCTruthLTExtended(hypIdx);;
+
   return (isTrueLepton_lt && isTrueLepton_ll);  
 }
 
