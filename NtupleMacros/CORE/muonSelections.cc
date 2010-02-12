@@ -12,7 +12,7 @@ bool muonId(unsigned int index, SelectionType type){
       std::cout << "muonID ERROR: requested muon is too low pt,  Abort." << std::endl;
       return false;
     }
-    if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)  return false; // eta cut
+    if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.5)  return false; // eta cut
     if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
     if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
     if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
@@ -47,4 +47,7 @@ bool isCosmics(unsigned int index){
   return false;
 }
 
-
+bool passedMuonTriggerRequirements()
+{
+  return cms2.passHLTTrigger("HLT_Mu9");
+}

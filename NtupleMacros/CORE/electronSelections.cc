@@ -6,41 +6,43 @@
 // CMS2 includes
 #include "electronSelections.h"
 #include "CMS2.h"
-//
-// enums and typedefs
-//
-
-enum EgammaFiduciality {
-	ISEB,
-	ISEBEEGAP,
-	ISEE,
-	ISEEGAP,
-	ISEBETAGAP,
-	ISEBPHIGAP,
-	ISEEDEEGAP,
-	ISEERINGGAP,
-	ISGAP
-};
-
-// seeding type used and corrections applied
-
-enum EgammaElectronType {
-	ISECALENERGYCORRECTED,	// if false, the electron "ecalEnergy" is just the supercluster energy 
-	ISMOMENTUMCORRECTED,  	// has E-p combination been applied
-	ISECALDRIVEN,
-	ISTRACKERDRIVEN
-};
 
 bool electronSelection_cand01(const unsigned int index)
 {
-
+	if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
 	if (!electronId_noMuon(index)) return false;
 	if (!electronId_cand01(index)) return false;
 	if (!electronImpact_cand01(index)) return false;
 	if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
 	if (isFromConversionPartnerTrack(index)) return false;
 	return true;
+}
 
+bool electronSelection_cand02(const unsigned int index)
+{
+    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
+    if (!electronId_noMuon(index)) return false;
+    if (!electronId_cand02(index)) return false;
+    if (!electronImpact_cand01(index)) return false;
+    if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
+    if (isFromConversionPartnerTrack(index)) return false;
+    return true;
+}
+
+
+//
+// if fbrem is low then cut on e/p_in
+//
+
+bool electronId_extra(const unsigned int index)
+{
+	if (cms2.els_fbrem()[index] < 0.2) {
+    	if (cms2.els_eOverPIn()[index] < 0.7 || cms2.els_eOverPIn()[index] > 1.5) return false;
+	}
+
+	return true;
 }
 
 //
@@ -88,7 +90,45 @@ bool electronId_cand01(const unsigned int index)
 	}
 
 	return false;
-	}
+}
+
+bool electronId_cand02(const unsigned int index)
+{
+
+    //
+    // define thresholds for EB, EE
+    //
+    float dEtaInThresholds[2]               = {0.005, 0.007};
+    float dPhiInThresholds[2]               = {0.020, 0.025};
+    float hoeThresholds[2]                  = {0.01, 0.01};
+    float sigmaIEtaIEtaThresholds[2]        = {9999.99, 0.03};
+    float e2x5Over5x5Thresholds[2]          = {0.94, 0.00};
+
+    //
+    // apply cuts
+    //
+    if (fabs(cms2.els_etaSC()[index]) < 1.479) {
+        //if (cms2.els_fiduciality()[index] & (1<<ISEB)) {
+        if (fabs(cms2.els_dEtaIn()[index] > dEtaInThresholds[0]))   return false;
+        if (fabs(cms2.els_dPhiIn()[index] > dPhiInThresholds[0]))   return false;
+        if (cms2.els_hOverE()[index] > hoeThresholds[0])        return false;
+        if ((cms2.els_e2x5Max()[index]/cms2.els_e5x5()[index]) < e2x5Over5x5Thresholds[0]) return false;
+        return true;
+    }
+    if (fabs(cms2.els_etaSC()[index]) > 1.479) {
+        //if (cms2.els_fiduciality()[index] & (1<<ISEE)) {
+        if (fabs(cms2.els_dEtaIn()[index] > dEtaInThresholds[1]))   return false;
+        if (fabs(cms2.els_dPhiIn()[index] > dPhiInThresholds[1]))   return false;
+        if (cms2.els_hOverE()[index] > hoeThresholds[1])        return false;
+        if (cms2.els_sigmaIEtaIEta()[index] > sigmaIEtaIEtaThresholds[1])   return false;
+        return true;
+    }
+
+    return false;
+}
+
+
+
 
 	bool electronImpact_cand01(const unsigned int index)
 	{

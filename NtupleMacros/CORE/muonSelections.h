@@ -28,9 +28,7 @@ double muonIsoValue(unsigned int index);
 // Trigger
 // for now we don't match muons to triggered objects
 //
-bool passedMuonTriggerRequirements(){
-  return cms2.passHLTTrigger("HLT_Mu9");
-}
+bool passedMuonTriggerRequirements();
 
 //
 // cosmics rejection
