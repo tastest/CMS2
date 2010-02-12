@@ -40,7 +40,7 @@ bool electronSelection_cand02(const unsigned int index);
 bool electronId_cand01(const unsigned int index);
 bool electronId_cand02(const unsigned int index);
 
-bool electronId_extra(const unsigned int index)
+bool electronId_extra(const unsigned int index);
 bool electronImpact_cand01(const unsigned int index);
 
 //
