@@ -13,6 +13,7 @@
 #include "TDirectory.h"
 #include "TROOT.h"
 #include "TH1F.h"
+#include "TH2F.h"
 
 #include "Math/LorentzVector.h"
 
@@ -84,6 +85,13 @@ void MyScanChain::Fill(TH1F** hist, const unsigned int hyp, const float &val, co
 	hist[DILEPTON_ALL]->Fill(val, weight);
 }
 
+void MyScanChain::Fill2D(TH2F** hist, const unsigned int hyp, const float &valx, const float &valy, const float &weight)
+{   
+    hist[hyp]->Fill(valx, valy, weight); 
+    hist[DILEPTON_ALL]->Fill(valx, valy, weight);
+}
+
+
 void MyScanChain::FormatHist(TH1F** hist, std::string sampleName, std::string name, int n, float min, float max)
 {       
 	// loop on EB, EE
@@ -97,6 +105,20 @@ void MyScanChain::FormatHist(TH1F** hist, std::string sampleName, std::string na
 		hist[i]->Sumw2();
 	}
 }    
+
+void MyScanChain::FormatHist2D(TH2F** hist, std::string sampleName, std::string name, int nx, float minx, float maxx, int ny, float miny, float maxy)
+{       
+    // loop on EB, EE 
+    for (unsigned int i = 0; i < 4; ++i)
+    {   
+        std::string str = dilepton_hypo_names[i];
+        std::string title = name + "_" + str;
+        hist[i] = new TH2F(Form("%s_%s_%s", sampleName.c_str(), name.c_str(), str.c_str()),
+                title.c_str(), nx, minx, maxx, ny, miny, maxy);
+        hist[i]->GetXaxis()->SetTitle(name.c_str());
+        hist[i]->Sumw2();
+    }
+}
 
 void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
 {
@@ -264,13 +286,11 @@ void MyScanChain::FillAllEleIdHistogramsHyp(const unsigned int h, const float &w
 	// apply part of electron denominator first here
 	if (hypType == DILEPTON_EMU && sampleName == "ttbar") {
         if(abs(cms2.hyp_ll_id()[h]) == 13) {
-            if (trueMuonFromW_WJets(cms2.hyp_ll_index()[h]) && (cms2.els_type()[cms2.hyp_lt_index()[h]] & (1<<ISECALDRIVEN)) && fabs(cms2.els_p4().at(cms2.hyp_lt_index()[h]).eta())
- < 2.4)
+            if (trueMuonFromW_WJets(cms2.hyp_ll_index()[h]) && (cms2.els_type()[cms2.hyp_lt_index()[h]] & (1<<ISECALDRIVEN)) && fabs(cms2.els_p4().at(cms2.hyp_lt_index()[h]).eta()) < 2.4)
                 FillAllEleIdHistograms(cms2.hyp_lt_index()[h], weight, sampleName);
         }
         if(abs(cms2.hyp_lt_id()[h]) == 13) {
-            if (trueMuonFromW_WJets(cms2.hyp_lt_index()[h]) && (cms2.els_type()[cms2.hyp_ll_index()[h]] & (1<<ISECALDRIVEN)) && fabs(cms2.els_p4().at(cms2.hyp_ll_index()[h]).eta())
- < 2.4)
+            if (trueMuonFromW_WJets(cms2.hyp_lt_index()[h]) && (cms2.els_type()[cms2.hyp_ll_index()[h]] & (1<<ISECALDRIVEN)) && fabs(cms2.els_p4().at(cms2.hyp_ll_index()[h]).eta()) < 2.4)
                 FillAllEleIdHistograms(cms2.hyp_ll_index()[h], weight, sampleName);
         }
 	}
@@ -349,8 +369,8 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
 		if (cms2.els_d0corr()[index] < d0Thresholds[0]) ele_result |= (1<<PASS_D0);
 		if (iso_relsusy < 0.10) ele_result |= (1<<PASS_ISO);
 
-		if (cms2.els_fbrem()[index] > 0.2) ele_result |= (1<<PASS_EXTRA);
-		if (cms2.els_fbrem()[index] < 0.2) {
+		if (cms2.els_fbrem()[index] > 0.15) ele_result |= (1<<PASS_EXTRA);
+		if (cms2.els_fbrem()[index] < 0.15) {
 			if (cms2.els_eOverPIn()[index] > 0.7 && cms2.els_eOverPIn()[index] < 1.5) ele_result |= (1<<PASS_EXTRA);
 		}
 
@@ -364,10 +384,10 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
 		if (cms2.els_d0corr()[index] < d0Thresholds[1]) ele_result |= (1<<PASS_D0);
 		if (iso_relsusy < 0.10) ele_result |= (1<<PASS_ISO);
 
-        if (cms2.els_fbrem()[index] > 0.2) ele_result |= (1<<PASS_EXTRA);
-        if (cms2.els_fbrem()[index] < 0.2) {
-            if (cms2.els_eOverPIn()[index] > 0.7 && cms2.els_eOverPIn()[index] < 1.5) ele_result |= (1<<PASS_EXTRA);
-        }
+        if (cms2.els_fbrem()[index] > 0.15) ele_result |= (1<<PASS_EXTRA);
+        //if (cms2.els_fbrem()[index] < 0.15) {
+        //    if (cms2.els_eOverPIn()[index] > 0.7 && cms2.els_eOverPIn()[index] < 1.5) ele_result |= (1<<PASS_EXTRA);
+        //}
 
 
 	}
@@ -436,7 +456,10 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
 		if ((ele_result & (ele_passall & ~(1<<PASS_DETA))) == (ele_passall & ~(1<<PASS_DETA))) Fill(h1_hyp_lt_eb_nm1_dEtaIn_, hypType, fabs(cms2.els_dEtaIn()[index]), weight);
 		if ((ele_result & (ele_passall & ~(1<<PASS_DPHI))) == (ele_passall & ~(1<<PASS_DPHI))) Fill(h1_hyp_lt_eb_nm1_dPhiIn_, hypType, fabs(cms2.els_dPhiIn()[index]), weight);
 		if ((ele_result & (ele_passall & ~(1<<PASS_HOE))) == (ele_passall & ~(1<<PASS_HOE))) Fill(h1_hyp_lt_eb_nm1_hoe_, hypType, fabs(cms2.els_hOverE()[index]), weight);
-		if ((ele_result & (ele_passall & ~(1<<PASS_LSHAPE))) == (ele_passall & ~(1<<PASS_LSHAPE))) Fill(h1_hyp_lt_eb_nm1_E2x5MaxOver5x5_, hypType, E2x5MaxOver5x5, weight);
+		if ((ele_result & (ele_passall & ~(1<<PASS_LSHAPE))) == (ele_passall & ~(1<<PASS_LSHAPE))) {
+			Fill(h1_hyp_lt_eb_nm1_E2x5MaxOver5x5_, hypType, E2x5MaxOver5x5, weight);
+			//Fill2D
+		}
 		if ((ele_result & (ele_passall & ~(1<<PASS_D0))) == (ele_passall & ~(1<<PASS_D0))) Fill(h1_hyp_lt_eb_nm1_d0_, hypType, fabs(cms2.els_d0corr()[index]), weight);
 
         if ((ele_result & ele_passall) == (ele_passall)) {

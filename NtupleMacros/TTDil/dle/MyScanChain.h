@@ -9,6 +9,7 @@
 
 
 class TH1F;
+class TH2F;
 class TChain;
 class TDirectory;
 
@@ -35,6 +36,11 @@ class MyScanChain {
 		void FormatAllEleIdHistograms(std::string sampleName);
 		void FormatAllAnaHistograms(std::string sampleName);
 		void FormatAllDYEstHistograms(std::string sampleName);
+
+		// for 2D
+		void Fill2D(TH2F** hist, const unsigned int hyp, const float &valx, const float &valy, const float &weight);
+		void FormatHist2D(TH2F** hist, std::string sampleName, std::string name, int nx, float minx, float maxx, int ny, float miny, float maxy);
+
 
 		//
 		// ttbar analysis plots

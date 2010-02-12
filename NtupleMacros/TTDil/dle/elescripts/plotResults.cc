@@ -18,7 +18,7 @@ const static sources_t theBackground_312 =
 const static sources_t theSources_312 =
 	(1ll << H_TTBAR) |
 	(1ll << H_WMUNU);
-//	(1ll << H_WJETS);
+	//(1ll << H_WJETS);
 //	(1ll << H_ELEGUNIDEAL);
 //	(1ll << H_DYEE);
 
@@ -559,7 +559,7 @@ void plotResultsID(TString det, TString hyp, TString fileStamp, TString saveName
     plotEff(h1, "hyp_lt_" + det + "_pt_cand02_extra", saveName, det, true, 1, true);
 
 	// fbrem
-    plotEff(h1, "hyp_lt_" + det + "_afterid_fbrem", saveName, det, true, 1, true);
+    plotEff(h1, "hyp_lt_" + det + "_afterid_fbrem", saveName, det, false, 1, true);
 
 	// eopin depending if fbrem > 0.2
     plotEff(h1, "hyp_lt_" + det + "_afterid_eopin_lowfbrem", saveName, det, true, 1, true);
