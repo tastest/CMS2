@@ -98,14 +98,14 @@ void doAll3X() {
 //	looper->ScanChain(false, "elegunstartup", chain_elegunstartup);
 //  looper->ScanChain(false, "elegunideal", chain_elegunideal);
 
-	looper->ScanChain(false, "QCDpt30", chain_qcd30);
+	//looper->ScanChain(false, "QCDpt30", chain_qcd30);
 	looper->ScanChain(false, "wm", chain_wmunu);
 
 	//
 	// write histograms
 	// 
 
-	const char* outFile = "histos_eleid_hypbased.root";
+	const char* outFile = "histos_eleid_hypbased_lowpt.root";
 	hist::saveHist(outFile); 
 	hist::deleteHistos();
 

@@ -556,6 +556,7 @@ void plotResultsID(TString det, TString hyp, TString fileStamp, TString saveName
     plotEff(h1, "hyp_lt_" + det + "_pt", saveName, det, true, 1, true);
     plotEff(h1, "hyp_lt_" + det + "_pt_cand01", saveName, det, true, 1, true);
     plotEff(h1, "hyp_lt_" + det + "_pt_cand02", saveName, det, true, 1, true);
+    plotEff(h1, "hyp_lt_" + det + "_pt_cand02_extra", saveName, det, true, 1, true);
 
 	// fbrem
     plotEff(h1, "hyp_lt_" + det + "_afterid_fbrem", saveName, det, true, 1, true);

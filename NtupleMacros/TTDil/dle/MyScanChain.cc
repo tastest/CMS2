@@ -40,6 +40,9 @@ enum ele_selection {
 	PASS_ISO,
 	PASS_DETA_CAND02,
 	PASS_LSHAPE_CAND02,
+	PASS_EXTRA,
+	PASS_CONV,
+	PASS_NOMUON,
 };
 
 //
@@ -145,6 +148,9 @@ void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
 
 	FormatHist(h1_hyp_lt_eb_pt_cand02_, sampleName, "hyp_lt_eb_pt_cand02", 20, 0.0, 100.0);
 	FormatHist(h1_hyp_lt_ee_pt_cand02_, sampleName, "hyp_lt_ee_pt_cand02", 20, 0.0, 100.0);
+
+    FormatHist(h1_hyp_lt_eb_pt_cand02_extra_, sampleName, "hyp_lt_eb_pt_cand02_extra", 20, 0.0, 100.0);
+    FormatHist(h1_hyp_lt_ee_pt_cand02_extra_, sampleName, "hyp_lt_ee_pt_cand02_extra", 20, 0.0, 100.0);
 	//
 	//
 
@@ -256,20 +262,27 @@ void MyScanChain::FillAllEleIdHistogramsHyp(const unsigned int h, const float &w
 	DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[h]);
 
 	// apply part of electron denominator first here
-	if (hypType == DILEPTON_EE) {
-		if (!electron20Eta2p4(cms2.hyp_lt_index()[h])) return;
-		if (!(cms2.els_type()[cms2.hyp_lt_index()[h]] & (1<<ISECALDRIVEN))) return;
-		if (!electron20Eta2p4(cms2.hyp_ll_index()[h])) return;
-		if (!(cms2.els_type()[cms2.hyp_ll_index()[h]] & (1<<ISECALDRIVEN))) return;
-		FillAllEleIdHistograms(cms2.hyp_lt_index()[h], weight, sampleName);
+	if (hypType == DILEPTON_EMU && sampleName == "ttbar") {
+        if(abs(cms2.hyp_ll_id()[h]) == 13) {
+            if (trueMuonFromW_WJets(cms2.hyp_ll_index()[h]) && (cms2.els_type()[cms2.hyp_lt_index()[h]] & (1<<ISECALDRIVEN)) && fabs(cms2.els_p4().at(cms2.hyp_lt_index()[h]).eta())
+ < 2.4)
+                FillAllEleIdHistograms(cms2.hyp_lt_index()[h], weight, sampleName);
+        }
+        if(abs(cms2.hyp_lt_id()[h]) == 13) {
+            if (trueMuonFromW_WJets(cms2.hyp_lt_index()[h]) && (cms2.els_type()[cms2.hyp_ll_index()[h]] & (1<<ISECALDRIVEN)) && fabs(cms2.els_p4().at(cms2.hyp_ll_index()[h]).eta())
+ < 2.4)
+                FillAllEleIdHistograms(cms2.hyp_ll_index()[h], weight, sampleName);
+        }
 	}
-	if (hypType == DILEPTON_EMU) {
+	if (hypType == DILEPTON_EMU && sampleName == "wm") {
 		if(abs(cms2.hyp_ll_id()[h]) == 13) {
-			if(trueMuonFromW_WJets(cms2.hyp_ll_index()[h]) && (cms2.els_type()[cms2.hyp_ll_index()[h]] & (1<<ISECALDRIVEN))) 
+			if (trueMuonFromW_WJets(cms2.hyp_ll_index()[h]) && (cms2.els_type()[cms2.hyp_lt_index()[h]] & (1<<ISECALDRIVEN)) && fabs(cms2.els_p4().at(cms2.hyp_lt_index()[h]).eta()) < 2.4)
+			//electron20Eta2p4(cms2.hyp_lt_index()[h])) 
 				FillAllEleIdHistograms(cms2.hyp_lt_index()[h], weight, sampleName);
 		}
 		if(abs(cms2.hyp_lt_id()[h]) == 13) {
-			if(trueMuonFromW_WJets(cms2.hyp_lt_index()[h] && (cms2.els_type()[cms2.hyp_lt_index()[h]] & (1<<ISECALDRIVEN)))) 
+			if (trueMuonFromW_WJets(cms2.hyp_lt_index()[h]) && (cms2.els_type()[cms2.hyp_ll_index()[h]] & (1<<ISECALDRIVEN)) && fabs(cms2.els_p4().at(cms2.hyp_ll_index()[h]).eta()) < 2.4)
+			//electron20Eta2p4(cms2.hyp_ll_index()[h]))
 				FillAllEleIdHistograms(cms2.hyp_ll_index()[h], weight, sampleName);
 		}
 
@@ -297,7 +310,6 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
 		if(!((abs(cms2.els_mc_id()[index]) == 11))) return;
 	} 
 
-
 	//
 	// define thresholds for EB, EE
 	//
@@ -313,15 +325,19 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
 
 
 	int ele_result = 0;
-	int ele_passall = (1<<PASS_DETA) | (1<<PASS_DPHI) | (1<<PASS_HOE) | (1<<PASS_LSHAPE) | (1<<PASS_D0);
-	int ele_passall_id_and_iso_cand01 =  (1<<PASS_DETA) | (1<<PASS_DPHI) | (1<<PASS_HOE) | (1<<PASS_LSHAPE) | (1<<PASS_D0) | (1<<PASS_ISO);
-	int ele_passall_id_and_iso_cand02 =  (1<<PASS_DETA_CAND02) | (1<<PASS_DPHI) | (1<<PASS_HOE) | (1<<PASS_LSHAPE_CAND02) | (1<<PASS_D0) | (1<<PASS_ISO);
+	int ele_passall = (1<<PASS_DETA) | (1<<PASS_DPHI) | (1<<PASS_HOE) | (1<<PASS_LSHAPE) | (1<<PASS_D0) | (1<<PASS_NOMUON) | (1<<PASS_CONV);
+	int ele_passall_id_and_iso_cand01 =  (1<<PASS_DETA) | (1<<PASS_DPHI) | (1<<PASS_HOE) | (1<<PASS_LSHAPE) | (1<<PASS_D0) | (1<<PASS_NOMUON) | (1<<PASS_CONV) | (1<<PASS_ISO);
+	int ele_passall_id_and_iso_cand02 =  (1<<PASS_DETA_CAND02) | (1<<PASS_DPHI) | (1<<PASS_HOE) | (1<<PASS_LSHAPE_CAND02) | (1<<PASS_D0) | (1<<PASS_NOMUON) | (1<<PASS_CONV) | (1<<PASS_ISO);
+	int ele_passall_id_and_iso_cand02_extra = ele_passall_id_and_iso_cand02 | (1<<PASS_EXTRA);
 
 	//
 	// apply cuts
 	//
 	float iso_relsusy = -1;
 	iso_relsusy = electronIsolation_relsusy_cand1(index, true);
+
+    if (electronId_noMuon(index)) ele_result |= (1<<PASS_NOMUON);
+    if (!isFromConversionPartnerTrack(index)) ele_result |= (1<<PASS_CONV);
 
 	if (fabs(cms2.els_etaSC()[index]) < 1.479) {
 		if (fabs(cms2.els_dEtaIn()[index] < dEtaInThresholds[0])) 	ele_result |= (1<<PASS_DETA);
@@ -332,6 +348,12 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
 		if ((cms2.els_e2x5Max()[index]/cms2.els_e5x5()[index]) > e2x5Over5x5Thresholds_cand02[0]) ele_result |= (1<<PASS_LSHAPE_CAND02);
 		if (cms2.els_d0corr()[index] < d0Thresholds[0]) ele_result |= (1<<PASS_D0);
 		if (iso_relsusy < 0.10) ele_result |= (1<<PASS_ISO);
+
+		if (cms2.els_fbrem()[index] > 0.2) ele_result |= (1<<PASS_EXTRA);
+		if (cms2.els_fbrem()[index] < 0.2) {
+			if (cms2.els_eOverPIn()[index] > 0.7 && cms2.els_eOverPIn()[index] < 1.5) ele_result |= (1<<PASS_EXTRA);
+		}
+
 	}
 	if (fabs(cms2.els_etaSC()[index]) > 1.479) {
 		if (fabs(cms2.els_dEtaIn()[index] < dEtaInThresholds[1])) 	ele_result |= (1<<PASS_DETA);
@@ -341,6 +363,13 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
 		if (cms2.els_sigmaIEtaIEta()[index] < sigmaIEtaIEtaThresholds[1]) 	ele_result |= (1<<PASS_LSHAPE) | (1<<PASS_LSHAPE_CAND02);
 		if (cms2.els_d0corr()[index] < d0Thresholds[1]) ele_result |= (1<<PASS_D0);
 		if (iso_relsusy < 0.10) ele_result |= (1<<PASS_ISO);
+
+        if (cms2.els_fbrem()[index] > 0.2) ele_result |= (1<<PASS_EXTRA);
+        if (cms2.els_fbrem()[index] < 0.2) {
+            if (cms2.els_eOverPIn()[index] > 0.7 && cms2.els_eOverPIn()[index] < 1.5) ele_result |= (1<<PASS_EXTRA);
+        }
+
+
 	}
 
 
@@ -386,6 +415,7 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
 
 		if ((ele_result & ele_passall_id_and_iso_cand01) == (ele_passall_id_and_iso_cand01)) Fill(h1_hyp_lt_ee_pt_cand01_, hypType, cms2.els_p4()[index].Pt(), weight);
 		if ((ele_result & ele_passall_id_and_iso_cand02) == (ele_passall_id_and_iso_cand02)) Fill(h1_hyp_lt_ee_pt_cand02_, hypType, cms2.els_p4()[index].Pt(), weight);
+        if ((ele_result & ele_passall_id_and_iso_cand02_extra) == (ele_passall_id_and_iso_cand02_extra)) Fill(h1_hyp_lt_ee_pt_cand02_extra_, hypType, cms2.els_p4()[index].Pt(), weight);
 
 	}
 
@@ -425,6 +455,7 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
 
 		if ((ele_result & ele_passall_id_and_iso_cand01) == (ele_passall_id_and_iso_cand01)) Fill(h1_hyp_lt_eb_pt_cand01_, hypType, cms2.els_p4()[index].Pt(), weight);
 		if ((ele_result & ele_passall_id_and_iso_cand02) == (ele_passall_id_and_iso_cand02)) Fill(h1_hyp_lt_eb_pt_cand02_, hypType, cms2.els_p4()[index].Pt(), weight);
+        if ((ele_result & ele_passall_id_and_iso_cand02_extra) == (ele_passall_id_and_iso_cand02_extra)) Fill(h1_hyp_lt_eb_pt_cand02_extra_, hypType, cms2.els_p4()[index].Pt(), weight);
 
 	}
 

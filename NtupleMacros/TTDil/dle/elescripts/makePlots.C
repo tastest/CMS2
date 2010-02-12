@@ -12,8 +12,8 @@
 //	plotResultsID("ee", "ee", "../histos_mc_3x", "dyee");
  //   plotResultsID("eb", "ee", "../histos_mc_3x", "dyee");
 
-    plotResultsID("ee", "ee", "../histos_eleid_hypbased", "eleid_v1");
-    plotResultsID("eb", "ee", "../histos_eleid_hypbased", "eleid_v1");
+    plotResultsID("ee", "ee", "../histos_eleid_hypbased_lowpt", "eleid_v2");
+    plotResultsID("eb", "ee", "../histos_eleid_hypbased_lowpt", "eleid_v2");
 
 
 
