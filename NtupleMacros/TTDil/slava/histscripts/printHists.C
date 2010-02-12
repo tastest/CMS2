@@ -1,4 +1,36 @@
-void printNJets( bool latex=false, const char* formatS = "%6.1f"){
+#include "specFun.C"
+
+void getSoverRootN(double& rat, double& ratE, double s, double n, double sE, double nE){
+  rat = s; rat /= n > 0 ? sqrt(n) : 1.;
+  ratE = ( sE*sE* ( 1. - 0.5*rat)*( 1. - 0.5*rat)  + (nE*nE - sE*sE)*0.25*rat*rat);
+  ratE /= n > 0 ? n : 1.;
+  ratE = sqrt(ratE);
+}
+
+double bOnlyProb(double s, double b, double bE){
+  //at some point need to put some protections here or find an appropriate code
+  unsigned int lowExp = floor(s+b);
+  double pSum = 0;
+  for (int i=lowExp; i>=0; --i){
+    if (b> 0. && bE/b>0.03){
+      pSum+= poisson_smeared_prob(i,b, bE);
+    } else {//use regualar Poisson here
+      pSum+= TMath::Poisson(i,b);
+    }
+  }
+  return pSum;
+}
+
+std::string formatFloat(double x, const char* formatS){
+  std::string xS = Form(Form("%s", formatS),x);
+  double xB = atof(xS.c_str());
+  if (x>0 && xB==0){
+    xS = Form(" %6.1g",x);
+  }
+  return xS;
+}
+
+void printNJets( bool latex=false, const char* formatS = "%6.1f", const char* signalS= "ttdil"){
   char* suffix[4];
   suffix[0] = "ee";
   suffix[1] = "mm";
@@ -6,6 +38,12 @@ void printNJets( bool latex=false, const char* formatS = "%6.1f"){
   suffix[3] = "all";
 
 
+  std::string pmSign  = latex ? " \\pm " : " &plusmn; ";
+  std::string colSep  = latex ? " & " : " | ";
+  std::string beginL  = latex ? ""   : " | ";
+  std::string endL    = latex ? " \\\\ " : " | ";
+  std::string mathSep = latex ? "$" : "";
+  
 
   if (latex) {
     std::cout << "\\begin{table}" << std::endl;
@@ -38,7 +76,7 @@ void printNJets( bool latex=false, const char* formatS = "%6.1f"){
     } else {
       std::cout<<"===================================================="<<std::endl;
       std::cout<<suffix[sample]<<std::endl;
-      std::cout<<" |   sample  |        nJet = 0        |       nJet = 1         |       nJet >= 2       |"<<std::endl;
+      std::cout<<" |    sample  |        nJet = 0        |       nJet = 1         |       nJet >= 2       |"<<std::endl;
     }
     double n0all =0;
     double n0allE = 0;
@@ -46,19 +84,37 @@ void printNJets( bool latex=false, const char* formatS = "%6.1f"){
     double n1allE = 0;
     double n2all =0;
     double n2allE = 0;
+
+    double n0sig =0;
+    double n0sigE = 0;
+    double n1sig =0;
+    double n1sigE = 0;
+    double n2sig =0;
+    double n2sigE = 0;
     for(int iH=0; iH< nHists; ++iH){
       TH1F* h1F = (TH1F*)(thisStack->GetHists()->At(iH));
       TObjArray* sampleNs = TString(h1F->GetName()).Tokenize("_");
+      bool isSig = std::string(sampleNs->At(0)->GetName()) == std::string(signalS);
+
       double n0 = h1F->GetBinContent(1); 
       double n0E = h1F->GetBinError(1);
       n0all += n0;
       n0allE += n0E*n0E;
       n0allE = sqrt(n0allE*n0allE + n0E*n0E);
+      if (isSig){
+	n0sig += n0;
+	n0sigE += n0E*n0E;
+	n0sigE = sqrt(n0sigE*n0sigE + n0E*n0E);
+      }
 
       double n1 = h1F->GetBinContent(2);
       double n1E = h1F->GetBinError(2);
       n1all += n1;
       n1allE = sqrt(n1allE*n1allE + n1E*n1E);
+      if (isSig){
+	n1sig += n1;
+	n1sigE = sqrt(n1sigE*n1sigE + n1E*n1E);
+      }
 
       int nBins = h1F->GetNbinsX();
       double n2 = 0; 
@@ -68,47 +124,105 @@ void printNJets( bool latex=false, const char* formatS = "%6.1f"){
       n2E = sqrt(n2E);
       n2all += n2;
       n2allE = sqrt(n2allE*n2allE + n2E*n2E);
+      if (isSig){
+	n2sig += n2;
+	n2sigE = sqrt(n2sigE*n2sigE + n2E*n2E);
+      }
 
-      if (latex) {
-	if (sample == 0 || sample ==2){
-	  std::cout<<Form("%9s & ",sampleNs->At(0)->GetName()) ;
-	}
-	std::cout<< "  $"<<Form(Form("%s", formatS),n0) <<" \\pm "<< Form(Form("%s", formatS),n0E) 
-		 <<"$ & $"<<Form(Form("%s", formatS),n1) <<" \\pm "<< Form(Form("%s", formatS),n1E) 
-		 <<"$ & $"<<Form(Form("%s", formatS),n2) <<" \\pm "<< Form(Form("%s", formatS),n2E) 
-		 <<"$ \\"<<"\\"  
-		 <<std::endl;
-      } else {
-	std::cout<<" | "<<Form("%9s",sampleNs->At(0)->GetName())
-	         <<" | "<<Form(Form("%s", formatS),n0) <<" &plusmn; "<<Form(Form("%s", formatS),n0E)
-	         <<" | "<<Form(Form("%s", formatS),n1) <<" &plusmn; "<<Form(Form("%s", formatS),n1E)
-	         <<" | "<<Form(Form("%s", formatS),n2) <<" &plusmn; "<<Form(Form("%s", formatS),n2E)
-	         <<" | "<<std::endl;
-      }
-    }
-    if (latex) {
-      std::cout<<"\\hline"<<std::endl;
-      if (sample == 0 || sample == 2){
-	std::cout<<Form("%9s & ","Total") ;
-      }
-      std::cout<< " $"<<Form(Form("%s", formatS),n0all) <<" \\pm "<< Form(Form("%s", formatS),n0allE) 
-	       <<"$ & $"<<Form(Form("%s", formatS),n1all) <<" \\pm "<< Form(Form("%s", formatS),n1allE) 
-	       <<"$ & $"<<Form(Form("%s", formatS),n2all) <<" \\pm "<< Form(Form("%s", formatS),n2allE) 
-	       <<"$ \\"<<"\\"  
-	       <<std::endl;
+      bool showFirstCol = true;
+      if (latex && (sample==1 || sample == 3)) showFirstCol=false;
+      std::string firstCol= Form("%9s ",sampleNs->At(0)->GetName());
+      
+      std::cout << beginL;
+      if (showFirstCol) std::cout<< firstCol << colSep;
+      std::cout << mathSep << formatFloat(n0,formatS) <<pmSign<< formatFloat(n0E,formatS)<<mathSep<<colSep
+		<< mathSep << formatFloat(n1,formatS) <<pmSign<< formatFloat(n1E,formatS)<<mathSep<<colSep
+		<< mathSep << formatFloat(n2,formatS) <<pmSign<< formatFloat(n2E,formatS)<<mathSep
+		<< endL
+		<< std::endl;
+    }// for(int iH=0; iH< nHists
+    // now print the total and related stuff
+    if (latex) std::cout<<"\\hline"<<std::endl;
+    bool showFirstCol = true;
+    if (latex && (sample==1 || sample == 3)) showFirstCol=false;
+    
+    std::string firstCol = Form("%9s ","Total");
+    std::cout << beginL;
+    if (showFirstCol) std::cout<< firstCol << colSep;
+    std::cout << mathSep << formatFloat(n0all,formatS) <<pmSign<< formatFloat(n0allE,formatS)<<mathSep<<colSep
+	      << mathSep << formatFloat(n1all,formatS) <<pmSign<< formatFloat(n1allE,formatS)<<mathSep<<colSep
+	      << mathSep << formatFloat(n2all,formatS) <<pmSign<< formatFloat(n2allE,formatS)<<mathSep
+	      << endL
+	      << std::endl;
+    firstCol = Form("%9s ","Total B");
+    std::cout << beginL;
+    if (showFirstCol) std::cout<< firstCol << colSep;
+    std::cout << mathSep << formatFloat(n0all-n0sig,formatS) <<pmSign<< formatFloat(sqrt(n0allE*n0allE-n0sigE*n0sigE),formatS)<<mathSep<<colSep
+	      << mathSep << formatFloat(n1all-n1sig,formatS) <<pmSign<< formatFloat(sqrt(n1allE*n1allE-n1sigE*n1sigE),formatS)<<mathSep<<colSep
+	      << mathSep << formatFloat(n2all-n2sig,formatS) <<pmSign<< formatFloat(sqrt(n2allE*n2allE-n2sigE*n2sigE),formatS)<<mathSep
+	      << endL
+	      << std::endl;
+
+    firstCol = Form("%9s ","S/sqrt(S+B)");
+    std::cout << beginL;
+    if (showFirstCol) std::cout<< firstCol << colSep;
+    double rat = 0; double ratE = 0;
+    
+    getSoverRootN(rat, ratE, n0sig, n0all, n0sigE, n0allE);
+    std::cout << mathSep << formatFloat(rat,formatS) <<pmSign<< formatFloat(ratE,formatS)<<mathSep<<colSep;
+    getSoverRootN(rat, ratE, n1sig, n1all, n1sigE, n1allE);
+    std::cout << mathSep << formatFloat(rat,formatS) <<pmSign<< formatFloat(ratE,formatS)<<mathSep<<colSep;
+    getSoverRootN(rat, ratE, n2sig, n2all, n2sigE, n2allE);
+    std::cout << mathSep << formatFloat(rat,formatS) <<pmSign<< formatFloat(ratE,formatS)<<mathSep
+	      << endL
+	      << std::endl;
+
+    firstCol = Form("%9s "," prob 30\\%, s");
+    std::cout << beginL;
+    if (showFirstCol) std::cout<< firstCol << colSep;
+    double prob = 0; double nSigma = 0;
+    
+    prob = bOnlyProb(n0sig, n0all-n0sig, max(0.3*(n0all-n0sig),sqrt(n0allE*n0allE-n0sigE*n0sigE))); //FIXME
+    nSigma = TMath::NormQuantile(min(0.5*(1.+prob),1-1e-15));
+    std::cout << mathSep << formatFloat((1.-prob),formatS) <<" , "<< formatFloat(nSigma,formatS)<<mathSep<<colSep;
+
+    prob = bOnlyProb(n1sig, n1all-n1sig, max(0.3*(n1all-n1sig),sqrt(n1allE*n1allE-n1sigE*n1sigE))); //FIXME
+    nSigma = TMath::NormQuantile(min(0.5*(1.+prob),1-1e-15));
+    std::cout << mathSep << formatFloat((1.-prob),formatS) <<" , "<< formatFloat(nSigma,formatS)<<mathSep<<colSep;
+
+    prob = bOnlyProb(n2sig, n2all-n2sig, max(0.3*(n2all-n2sig),sqrt(n2allE*n2allE-n2sigE*n2sigE))); //FIXME
+    nSigma = TMath::NormQuantile(min(0.5*(1.+prob),1-1e-15));
+    std::cout << mathSep << formatFloat((1.-prob),formatS) <<" , "<< formatFloat(nSigma,formatS)<<mathSep
+	      << endL
+	      << std::endl;
+
+    firstCol = Form("%9s "," prob 50\\%, s");
+    std::cout << beginL;
+    if (showFirstCol) std::cout<< firstCol << colSep;
+    prob = 0; nSigma = 0;
+    
+    prob = bOnlyProb(n0sig, n0all-n0sig, max(0.5*(n0all-n0sig),sqrt(n0allE*n0allE-n0sigE*n0sigE))); //FIXME
+    nSigma = TMath::NormQuantile(min(0.5*(1.+prob),1-1e-15));
+    std::cout << mathSep << formatFloat((1.-prob),formatS) <<" , "<< formatFloat(nSigma,formatS)<<mathSep<<colSep;
+
+    prob = bOnlyProb(n1sig, n1all-n1sig, max(0.5*(n1all-n1sig),sqrt(n1allE*n1allE-n1sigE*n1sigE))); //FIXME
+    nSigma = TMath::NormQuantile(min(0.5*(1.+prob),1-1e-15));
+    std::cout << mathSep << formatFloat((1.-prob),formatS) <<" , "<< formatFloat(nSigma,formatS)<<mathSep<<colSep;
+
+    prob = bOnlyProb(n2sig, n2all-n2sig, max(0.5*(n2all-n2sig),sqrt(n2allE*n2allE-n2sigE*n2sigE))); //FIXME
+    nSigma = TMath::NormQuantile(min(0.5*(1.+prob),1-1e-15));
+    std::cout << mathSep << formatFloat((1.-prob),formatS) <<" , "<< formatFloat(nSigma,formatS)<<mathSep
+	      << endL
+	      << std::endl;
+    
+    if (latex){
       std::cout << "\\hline " << std::endl;
       std::cout << "\\end{tabular}" << std::endl;
       std::cout << "\\end{minipage}" << std::endl;
-    } else {
-      std::cout<<" | "<<Form("%9s","Total")
-	       <<" | "<<Form(Form("%s", formatS),n0all) <<" &plusmn; "<<Form(Form("%s", formatS),n0allE)
-	       <<" | "<<Form(Form("%s", formatS),n1all) <<" &plusmn; "<<Form(Form("%s", formatS),n1allE)
-	       <<" | "<<Form(Form("%s", formatS),n2all) <<" &plusmn; "<<Form(Form("%s", formatS),n2allE)
-	       <<" | "<<std::endl;
-    }
-    if(!latex)
+    }else{
       std::cout << " " << std::endl;
-  }
+    }
+  }//over samples
  
   if (latex) {
     std::cout << "}" <<std::endl; //close \small fontsize
