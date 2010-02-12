@@ -4,6 +4,7 @@ void setup(){
 
   gSystem->Load("libGui.so");
   gSystem->Load("libPhysics.so");
+  gSystem->Load("libMathMore.so");
   
   // Load and compile something to allow proper treatment of vectors
   // Not clear that it is needed
