@@ -1,6 +1,8 @@
 #include "TROOT.h"
 #include "TFile.h"
 #include "TCanvas.h"
+#include "TLatex.h"
+#include "TStyle.h"
 #include "TH1F.h"
 #include "TH2F.h"
 #include <iostream>
@@ -8,6 +10,11 @@
 using namespace std; 
 
 void plotscript(TString indata, TString inmc="", TString ind2="", TString inmc2="") {
+
+  //plots i need to update:
+  // tcmet, tcsumet, tcmet components, tcmet resolution
+  // these 4 for 900 and 2360
+  // this means figs 7, 8, 10.
 
   TH1::AddDirectory(false); 
   //gStyle->SetOptStat(0);
@@ -44,6 +51,16 @@ void plotscript(TString indata, TString inmc="", TString ind2="", TString inmc2=
   TFile* mcfile_ = new TFile(inmc.Data(), "READ");
   TFile* d2file_ = new TFile(ind2.Data(), "READ");
   TFile* m2file_ = new TFile(inmc2.Data(), "READ");
+
+  string cms = "CMS Preliminary";
+  string d9 = "#sqrt{s} = 900 GeV";
+  string d2 = "#sqrt{s} = 2360 GeV";
+  TLatex latex;
+  latex.SetTextAlign(12);
+  latex.SetTextSize(0.05);
+  latex.SetTextFont(62);
+  latex.SetNDC();
+
 
   TCanvas *c1 = new TCanvas();
   //cout << "getting " << f1a.Data() << endl;
@@ -156,50 +173,88 @@ void plotscript(TString indata, TString inmc="", TString ind2="", TString inmc2=
   TH1F* h7a = (TH1F*)(dafile_->Get(f7a.Data())->Clone());
   TH1F* h7b = (TH1F*)(mcfile_->Get(f7b.Data())->Clone());
   TCanvas *c7a = new TCanvas(); //10
-  //nmc evts=1988370, ndata evts=184245
+  //nmc evts=1988370, ndata evts=184245. ratio = 0.092661326
+  //NEW: mc =1767180, data      =164703. ratio = 0.093201032
   gPad->SetLogy();
-  h7a->GetXaxis()->SetTitleSize(0.06);
   h7a->SetMarkerStyle(20);
-  h7a->SetMarkerSize(0.6);
+  h7a->SetMarkerSize(0.7);
   h7a->Draw();
-  h7b->Scale(184245./1988370.);
+  //h7b->Scale(184245./1988370.);
+  h7b->Scale(164703./1767180.);
   h7b->SetLineColor(2);
-  h7b->Draw("same,hist");
+  h7b->SetFillColor(2);
+  h7b->GetXaxis()->SetTitle("tcMET [GeV]");
+  h7b->GetXaxis()->SetTitleSize(0.06);
+  h7b->GetXaxis()->SetTitleOffset(0.9);
+  h7b->GetXaxis()->SetLabelOffset(0.005);
+  h7b->GetYaxis()->SetTitle("Events/GeV");
+  h7b->GetYaxis()->SetTitleOffset(1.1);
+  h7b->GetYaxis()->SetLabelOffset(0.005);
+  h7b->SetTickLength(0.03,"XYZ");
+  h7b->Draw("hist");
+  h7a->Draw("same");
+  latex.DrawLatex(0.4, 0.8, (cms).c_str());
+  latex.DrawLatex(0.4, 0.74, (d9).c_str());
   c7a->SaveAs("pas_note/plots/tcmet_datamc.eps");
 
   //fig 8
   TH1F* h8a = (TH1F*)(dafile_->Get(f8a.Data())->Clone()); //data
   TH1F* h8b = (TH1F*)(dafile_->Get(f8b.Data())->Clone());
   h8a->Add( h8b );
-  h8a->GetXaxis()->SetTitle("tcMET components");
-  h8a->GetXaxis()->SetTitleSize(0.06);
   h8a->SetMarkerStyle(20);
-  h8a->SetMarkerSize(0.6);
+  h8a->SetMarkerSize(0.7);
   TH1F* h8c = (TH1F*)(mcfile_->Get(f8c.Data())->Clone()); //mc
   TH1F* h8d = (TH1F*)(mcfile_->Get(f8d.Data())->Clone());
   h8c->Add( h8d );
-  h8c->Scale(184245./1988370.);
-  TCanvas *c8a = new TCanvas(); //11
-  h8a->Draw("");
+  //h8c->Scale(184245./1988370.);
+  h8c->Scale(164703./1767180.);
+  h8c->GetXaxis()->SetTitle("tcMET components [GeV]");
+  h8c->GetXaxis()->SetTitleSize(0.06);
+  h8c->GetXaxis()->SetTitleOffset(0.9);
+  h8c->GetXaxis()->SetLabelOffset(0.005);
+  h8c->GetYaxis()->SetTitle("Events/GeV");
+  h8c->GetYaxis()->SetTitleOffset(1.1);
+  h8c->GetYaxis()->SetLabelOffset(0.005);
   h8c->SetLineColor(2);
-  h8c->Draw("same,hist");
+  h8c->SetFillColor(2);
+  h8c->SetTickLength(0.03,"XYZ");
+  TCanvas *c8a = new TCanvas(); //11
+  h8c->Draw("hist");
+  h8a->Draw("same");
+  //gStyle->SetTickLength(-0.03,"XYZ");
+  latex.DrawLatex(0.54, 0.9, (cms).c_str());
+  latex.DrawLatex(0.6, 0.84, (d9).c_str());
   c8a->SaveAs("pas_note/plots/tcmet_comps_lin.eps");
   gPad->SetLogy();
   c8a->SaveAs("pas_note/plots/tcmet_comps.eps");
 
-  //7 and 8 are repeated as 9 and 10 at 2360gev
+  //7 and 8 are repeated as 10 and 11 at 2360gev
 
   //fig 10 (fig 9 is actually from the other script)
   TH1F* h9a = (TH1F*)(d2file_->Get(f7a.Data())->Clone());
   TH1F* h9b = (TH1F*)(m2file_->Get(f7b.Data())->Clone());
   TCanvas *c9a = new TCanvas(); //12
-  h9a->GetXaxis()->SetTitleSize(0.06);
-  gPad->SetLogy();
-  h9a->Draw();
   h9b->SetLineColor(2);
-  //num 2tev data evts = 10541, 2tev mc=402464
-  h9b->Scale(10541./402464.);
-  h9b->Draw("same,hist");
+  h9b->SetFillColor(2);
+  h9b->GetXaxis()->SetTitle("tcMET [GeV]");
+  h9b->GetXaxis()->SetTitleSize(0.06);
+  h9b->GetXaxis()->SetTitleOffset(0.9);
+  h9b->GetXaxis()->SetLabelOffset(0.005);
+  h9b->GetYaxis()->SetTitle("Events/GeV");
+  h9b->GetYaxis()->SetTitleOffset(1.1);
+  h9b->GetYaxis()->SetLabelOffset(0.005);
+  h9b->SetTickLength(0.03,"XYZ");
+  //num 2tev data evts = 10541, 2tev mc=402464. ratio = 0.026191162
+  //NEW:          data = 9685,       mc=362673. ratio = 0.026704497
+  //h9b->Scale(10541./402464.);
+  h9b->Scale(9685./362673.);
+  h9a->SetMarkerStyle(20);
+  h9a->SetMarkerSize(0.7);
+  gPad->SetLogy();
+  h9b->Draw("hist");
+  h9a->Draw("same"); //draw data on top of mc
+  latex.DrawLatex(0.4, 0.8, (cms).c_str());
+  latex.DrawLatex(0.4, 0.74, (d2).c_str());
   c9a->SaveAs("pas_note/plots/tcmet_datamc_2tev.eps");
 
   //fig 11
@@ -207,20 +262,30 @@ void plotscript(TString indata, TString inmc="", TString ind2="", TString inmc2=
   TH1F* h10b = (TH1F*)(d2file_->Get(f8b.Data())->Clone());
   h10a->Add( h10b );
   h10a->SetMarkerStyle(20);
-  h10a->SetMarkerSize(0.6);
+  h10a->SetMarkerSize(0.7);
   //h10a->GetXaxis()->SetTitleOffset(1.0);
   TH1F* h10c = (TH1F*)(m2file_->Get(f8c.Data())->Clone()); //mc
   TH1F* h10d = (TH1F*)(m2file_->Get(f8d.Data())->Clone());
   h10c->Add( h10d );
-  h10c->GetXaxis()->SetTitle("tcMET components");
+  h10c->GetXaxis()->SetTitle("tcMET components [GeV]");
   h10c->GetXaxis()->SetTitleSize(0.06);
+  h10c->GetXaxis()->SetTitleOffset(0.9);
+  h10c->GetXaxis()->SetLabelOffset(0.005);
+  h10c->GetYaxis()->SetTitle("Events/GeV");
+  h10c->GetYaxis()->SetTitleOffset(1.1);
+  h10c->GetYaxis()->SetLabelOffset(0.005);
+  h10c->SetTickLength(0.03,"XYZ");
   //h10c->Scale(h10a->Integral()/h10c->Integral()); //ok to normalize by integral?
   //num 2tev data evts = 10541, 2tev mc=402464
-  h10c->Scale(10541./402464.);
+  //h10c->Scale(10541./402464.);
+  h10c->Scale(9685./362673.);
   h10c->SetLineColor(2);
+  h10c->SetFillColor(2);
   TCanvas *c10a = new TCanvas(); //13
   h10c->Draw("hist");
   h10a->Draw("same");
+  latex.DrawLatex(0.54, 0.9, (cms).c_str());
+  latex.DrawLatex(0.6, 0.84, (d2).c_str());
   c10a->SaveAs("pas_note/plots/tcmet_comps_2tev_lin.eps");
   gPad->SetLogy();
   c10a->SaveAs("pas_note/plots/tcmet_comps_2tev.eps");
@@ -261,7 +326,8 @@ void plotscript(TString indata, TString inmc="", TString ind2="", TString inmc2=
   h13a->SetMarkerStyle(20);
   h13a->SetMarkerSize(0.6);
   h13b->GetXaxis()->SetTitleSize(0.06);
-  h13b->Scale(184245./1988370.);
+  //h13b->Scale(184245./1988370.);
+  h13b->Scale(164703./1767180.);
   h13b->SetLineColor(2);
   h13b->SetTitle("900 Gev Selected Runs");
   h13b->Draw("hist");
@@ -276,9 +342,10 @@ void plotscript(TString indata, TString inmc="", TString ind2="", TString inmc2=
   h14a->SetMarkerStyle(20);
   h14a->SetMarkerSize(0.6);
   h14b->GetXaxis()->SetTitleSize(0.06);
-  h14b->Scale(10541./402464.);
+  //h14b->Scale(10541./402464.);
+  h14b->Scale(9685./362673.);
   h14b->SetLineColor(2);
-  h14b->SetTitle("2360 Gev (Run 124120)");
+  //h14b->SetTitle("2360 Gev (Run 124120)");
   h14b->Draw("hist");
   h14b->GetYaxis()->SetRangeUser(0.04,1500);
   h14a->Draw("same");
@@ -290,14 +357,26 @@ void plotscript(TString indata, TString inmc="", TString ind2="", TString inmc2=
   TCanvas *c15 = new TCanvas(); //18
   gPad->SetLogy();
   h15a->SetMarkerStyle(20);
-  h15a->SetMarkerSize(0.6);
+  h15a->SetMarkerSize(0.7);
   h15b->GetXaxis()->SetTitleSize(0.06);
-  h15b->Scale(184245./1988370.);
+  //h15b->Scale(184245./1988370.);
+  h15b->Scale(164703./1767180.);
   h15b->SetLineColor(2);
-  h15b->SetTitle("900 Gev Selected Runs");
+  h15b->SetFillColor(2);
+  h15b->GetXaxis()->SetTitle("tcSumET [GeV]");
+  h15b->GetXaxis()->SetTitleSize(0.06);
+  h15b->GetXaxis()->SetTitleOffset(0.9);
+  h15b->GetXaxis()->SetLabelOffset(0.005);
+  h15b->GetYaxis()->SetTitle("Events/GeV");
+  h15b->GetYaxis()->SetTitleOffset(1.1);
+  h15b->GetYaxis()->SetLabelOffset(0.005);
+  h15b->SetTickLength(0.03,"XYZ");
+  //h15b->SetTitle("900 Gev Selected Runs");
   h15b->Draw("hist");
-  h15b->GetYaxis()->SetRangeUser(0.04,20000);
+  h15b->GetYaxis()->SetRangeUser(0.1,20000);
   h15a->Draw("same");
+  latex.DrawLatex(0.4, 0.9, (cms).c_str());
+  latex.DrawLatex(0.4, 0.84, (d9).c_str());
   c15->SaveAs("pas_note/plots/tcsumet_mc_datacorr.eps");
 
   //new plot 3.4: tcsumet data mc 2360 -- f10b, f10d
@@ -306,14 +385,26 @@ void plotscript(TString indata, TString inmc="", TString ind2="", TString inmc2=
   TCanvas *c16 = new TCanvas(); //19
   gPad->SetLogy();
   h16a->SetMarkerStyle(20);
-  h16a->SetMarkerSize(0.6);
+  h16a->SetMarkerSize(0.7);
   h16b->GetXaxis()->SetTitleSize(0.06);
-  h16b->Scale(10541./402464.);
+  //h16b->Scale(10541./402464.);
+  h16b->Scale(9685./362673.);
   h16b->SetLineColor(2);
-  h16b->SetTitle("2360 Gev (Run 124120)");
+  h16b->SetFillColor(2);
+  h16b->GetXaxis()->SetTitle("tcSumET [GeV]");
+  h16b->GetXaxis()->SetTitleSize(0.06);
+  h16b->GetXaxis()->SetTitleOffset(0.9);
+  h16b->GetXaxis()->SetLabelOffset(0.005);
+  h16b->GetYaxis()->SetTitle("Events/GeV");
+  h16b->GetYaxis()->SetTitleOffset(1.1);
+  h16b->GetYaxis()->SetLabelOffset(0.005);
+  h16b->SetTickLength(0.03,"XYZ");
+  //h16b->SetTitle("2360 Gev (Run 124120)");
   h16b->Draw("hist");
-  h16b->GetYaxis()->SetRangeUser(0.04,800);
+  h16b->GetYaxis()->SetRangeUser(0.1,800);
   h16a->Draw("same");
+  latex.DrawLatex(0.4, 0.9, (cms).c_str());
+  latex.DrawLatex(0.4, 0.84, (d2).c_str());
   c16->SaveAs("pas_note/plots/tcsumet_2tev_mc_datacorr.eps");
 
 

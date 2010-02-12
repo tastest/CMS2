@@ -4,8 +4,8 @@
   gROOT->ProcessLine(".L warrenRms2.C++");
 
   //data first arg, mc 2nd, third is is2tev
-  doRms("FlatTree_jan23_12.root", "FlatTree_mc_3.root");
+  //doRms("FlatTree_jan23_12.root", "FlatTree_mc_3.root");
 
-  //doRms("FlatTree_2tev_5.root", "FlatTree_mc_2tev_1.root", true);
+  doRms("FlatTree_2tev_5.root", "FlatTree_mc_2tev_1.root", true);
 
 }

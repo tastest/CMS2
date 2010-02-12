@@ -5,6 +5,7 @@
 #include "TCanvas.h"
 #include "TStyle.h"
 #include "TLegend.h"
+#include "TLatex.h"
 #include "TF1.h"
 #include <iostream>
 
@@ -152,7 +153,7 @@ void doRms(string datatree, string mctree, bool is2tev=false) {
   if( is2tev )
 	eps_c1 += "_2tev";
   //gPad->SaveAs( (eps_c1 + ".eps").c_str() );
-  c1->SaveAs( (eps_c1 + ".eps").c_str() );
+  //c1->SaveAs( (eps_c1 + ".eps").c_str() );
 					
   ///////////////////////
   // above is sigmagauss, below is rms. Forget rms.
@@ -261,11 +262,12 @@ void doRms(string datatree, string mctree, bool is2tev=false) {
 	// c3
 	///////////////////////
 										
-	TCanvas *c3 = new TCanvas("c3", "c3",14,31,700,500);
+	//TCanvas *c3 = new TCanvas("c3", "c3",14,31,700,500);
+	TCanvas *c3 = new TCanvas("c3", "c3");
 	c3->SetFillColor(0);
 	gStyle->SetOptStat(0);
 
-	//old is 12 bins to 40, or 30 to 100. new is 21 to 70
+	//old is 12 bins to 40, or 30 to 100. new is 21 to 70.
 	//const double sumEtMax_c3=110.;
 	const double sumEtMax_c3=70.;
 	const int nbins_MEX_c3=200;
@@ -287,7 +289,9 @@ void doRms(string datatree, string mctree, bool is2tev=false) {
 	TH1D* ha_c3 = TH2Ana_c3.SigmaGauss();
 	ha_c3->SetLineColor(2);
 	ha_c3->SetLineWidth(3);
-
+	ha_c3->SetMarkerStyle(0);
+	ha_c3->SetTitle("");
+	
 	//// tc data
 	TH2D* RD_c3 = new TH2D("RD_c3", title.c_str(), nbins_c3, 0., sumEtMax_c3, nbins_MEX_c3, -50., 50.); 
 	RD_c3->GetXaxis()->SetTitle("tcSumEt [GeV]");
@@ -301,32 +305,62 @@ void doRms(string datatree, string mctree, bool is2tev=false) {
 	//TH2Analyzer TH2AnaRD( &RD, 1, nbins, 1, true);
 	TH2Analyzer TH2AnaRD_c3( RD_c3, 1);
 	TH1D* haRD_c3 = TH2AnaRD_c3.SigmaGauss();
-	haRD_c3->SetMarkerStyle(21);
-	haRD_c3->SetTitle(title.c_str());
-	haRD_c3->GetXaxis()->SetTitle("SumEt [GeV]");
-	haRD_c3->GetYaxis()->SetTitle("#sigma(MEX,MEY) [GeV]");
-	haRD_c3->GetYaxis()->SetRangeUser(0.0,6.0); 
 
 	//add fitting
 	//TF1 *fit = new TF1("fit","sqrt(pow([0],2)+pow([1],2)*(x-[3])+pow([2]*(x-[3]),2))", 0, 60); //in note
-	TF1 *fit = new TF1("fit","[0]+sqrt(pow([1],2)*(x-[3])+pow([2]*(x-[3]),2))", 0, 60);
-	haRD_c3->Fit("fit","R");
-
-	cout << "f(x)=#sqrt{A^{2}+B^{2}(x-D)+C^{2}(x-D)^{2}}" << endl;
-	string sA = "A = "; sA=sA+Form("%.3f",fit->GetParameter(0))+"\\pm"+Form("%.3f",fit->GetParError(0))+" GeV";
-	string sB = "B = "; sB=sB+Form("%.3f",fit->GetParameter(1))+"\\pm"+Form("%.3f",fit->GetParError(1))+" (GeV)^{1/2}";
-	string sC = "C = "; sC=sC+Form("%.3f",fit->GetParameter(2))+"\\pm"+Form("%.3f",fit->GetParError(2));
-	string sD = "D = "; sD=sD+Form("%.3f",fit->GetParameter(3))+"\\pm"+Form("%.3f",fit->GetParError(3))+ " GeV";
-	cout << sA << endl
-		 << sB << endl
-		 << sC << endl
-		 << sD << endl;
+	//TF1 *fit = new TF1("fit","[0]+sqrt(pow([1],2)*(x-[3])+pow([2]*(x-[3]),2))", 0, 60);
+	//haRD_c3->Fit("fit","R");
+	//
+	//cout << "f(x)=#sqrt{A^{2}+B^{2}(x-D)+C^{2}(x-D)^{2}}" << endl;
+	//string sA = "A = "; sA=sA+Form("%.3f",fit->GetParameter(0))+"\\pm"+Form("%.3f",fit->GetParError(0))+" GeV";
+	//string sB = "B = "; sB=sB+Form("%.3f",fit->GetParameter(1))+"\\pm"+Form("%.3f",fit->GetParError(1))+" (GeV)^{1/2}";
+	//string sC = "C = "; sC=sC+Form("%.3f",fit->GetParameter(2))+"\\pm"+Form("%.3f",fit->GetParError(2));
+	//string sD = "D = "; sD=sD+Form("%.3f",fit->GetParameter(3))+"\\pm"+Form("%.3f",fit->GetParError(3))+ " GeV";
+	//cout << sA << endl
+	//	 << sB << endl
+	//	 << sC << endl
+	//	 << sD << endl;
 										
 	// draw
-	haRD_c3->Draw("E1");
-	haRD_c3->GetXaxis()->SetTitleSize(0.05);
-	haRD_c3->GetXaxis()->SetTitleOffset(0.95);
-	if (!noMC) ha_c3->Draw("E1same");
+	haRD_c3->SetMarkerStyle(21);
+	//haRD_c3->SetTitle(title.c_str());
+	ha_c3->SetTitle("");
+	ha_c3->GetXaxis()->SetTitle("tcSumEt [GeV]");
+	ha_c3->GetYaxis()->SetTitle("#sigma(tcMET_{X,Y}) [GeV]");
+	//ha_c3->GetXaxis()->SetTitle("tcMET components [GeV]");
+	ha_c3->GetXaxis()->SetTitleSize(0.06);
+	ha_c3->GetXaxis()->SetTitleOffset(0.9);
+	ha_c3->GetXaxis()->SetLabelOffset(0.005);
+	//ha_c3->GetYaxis()->SetTitle("Events/GeV");
+	ha_c3->GetYaxis()->SetTitleOffset(0.8);
+	ha_c3->GetYaxis()->SetLabelOffset(0.005);
+	ha_c3->SetTickLength(0.03,"XYZ");
+	//if (!noMC)
+	ha_c3->GetYaxis()->SetRangeUser(0.0,6.0); 
+	if( is2tev )
+	  ha_c3->GetXaxis()->SetRangeUser(0.0,59.9);
+	else
+	  ha_c3->GetXaxis()->SetRangeUser(0.0,66.6);
+
+	ha_c3->Draw(); //mc
+	//haRD_c3->GetXaxis()->SetTitleSize(0.05);
+	//haRD_c3->GetXaxis()->SetTitleOffset(0.95);
+	haRD_c3->Draw("same"); //data
+
+	string cms = "CMS Preliminary";
+	string d9 = "#sqrt{s} = 900 GeV";
+	string d2 = "#sqrt{s} = 2360 GeV";
+	TLatex latex;
+	latex.SetTextAlign(12);
+	latex.SetTextSize(0.05);
+	latex.SetTextFont(62);
+	latex.SetNDC();
+
+	latex.DrawLatex(0.3, 0.85, (cms).c_str());
+	if( is2tev )
+	  latex.DrawLatex(0.3, 0.79, (d2).c_str());
+	else
+	  latex.DrawLatex(0.3, 0.79, (d9).c_str());
 										
 	//TLegend *lc3 = new TLegend(0.5502874,0.7669492,0.716954,0.8771186,NULL,"brNDC");
 	//lc3->SetFillColor(10);
@@ -335,7 +369,8 @@ void doRms(string datatree, string mctree, bool is2tev=false) {
 	//lc3->Draw();
 	//c3->Update();
 										
-	std::string eps_c3 = "sigmaMEX_tc_fit";
+	//std::string eps_c3 = "sigmaMEX_tc_fit";
+	std::string eps_c3 = "sigmaMEX_tc";
 	if( is2tev )
 	  eps_c3 += "_2tev";
 	//gPad->SaveAs( (eps_c3 + ".eps").c_str() );
