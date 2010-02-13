@@ -22,7 +22,7 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 // Simple function that tells you whether or not a given set of 
 // subdetectors were valid
 //----------------------------------------------------------------
-bool isSubDetectorGood( int cuts ) {
+bool isSubDetectorGood( unsigned int cuts ) {
      return ( ( cms2.evt_detectorStatus() & cuts ) == cuts );
 }
 
@@ -2167,7 +2167,7 @@ int leptonIsFromW(int idx, int id, LorentzVector v) {
   // But we only match to leptons
   if (st3_id == -999) {
     float drmin = 999.;
-    for (int j=0; j<cms2.genps_id().size(); j++) {
+    for (unsigned int j=0; j<cms2.genps_id().size(); j++) {
       int genId = cms2.genps_id().at(j);
       if (abs(genId) == 15 || abs(genId) == 13 || abs(genId) == 11) {
         LorentzVector vgen = cms2.genps_p4().at(j);
@@ -2254,16 +2254,16 @@ bool additionalZvetoSUSY09(int i_hyp) {
     bool hypLep1 = false;
     if (cms2.mus_p4().at(i).pt() < 10.)     continue;
     if (!GoodSusyMuonWithoutIsolation(i)) continue;
-    if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == i ) hypLep1 = true;
-    if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == i ) hypLep1 = true;
+    if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == int(i) ) hypLep1 = true;
+    if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == int(i) ) hypLep1 = true;
 
     for (unsigned int j=i+1; j < cms2.mus_p4().size(); j++) {
       bool hypLep2 = false;
       if (cms2.mus_p4().at(j).pt() < 10.) continue;
       if (!GoodSusyMuonWithoutIsolation(j)) continue;
       if (cms2.mus_charge().at(i) == cms2.mus_charge().at(j)) continue;
-      if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == j ) hypLep2 = true;
-      if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == j ) hypLep2 = true;
+      if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == int(j) ) hypLep2 = true;
+      if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == int(j) ) hypLep2 = true;
       // At least one of them has to pass isolation
       if (!PassSusyMuonIsolation(i) && !PassSusyMuonIsolation(j)) continue;
       if ( hypLep1 && hypLep2 ) continue;
@@ -2280,8 +2280,8 @@ bool additionalZvetoSUSY09(int i_hyp) {
     bool hypLep1 = false;
     if (cms2.els_p4().at(i).pt() < 10.)     continue;
     if (! GoodSusyElectronWithoutIsolation(i)) continue;
-    if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && cms2.hyp_lt_index()[i_hyp] == i ) hypLep1 = true;
-    if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && cms2.hyp_ll_index()[i_hyp] == i ) hypLep1 = true;
+    if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && cms2.hyp_lt_index()[i_hyp] == int(i) ) hypLep1 = true;
+    if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && cms2.hyp_ll_index()[i_hyp] == int(i) ) hypLep1 = true;
     for (unsigned int j=i+1; j<cms2.els_p4().size(); j++) {
       bool hypLep2 = false;
       if (cms2.els_p4().at(j).pt() < 10.) continue;
@@ -2289,8 +2289,8 @@ bool additionalZvetoSUSY09(int i_hyp) {
       if (cms2.els_charge().at(i) == cms2.els_charge().at(j)) continue;
       // At least one of them has to pass isolation
       if (!PassSusyElectronIsolation(i, true) && ! PassSusyElectronIsolation(j, true)) continue;
-      if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && cms2.hyp_lt_index()[i_hyp] == j ) hypLep2 = true;
-      if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && cms2.hyp_ll_index()[i_hyp] == j ) hypLep2 = true;
+      if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && cms2.hyp_lt_index()[i_hyp] == int(j) ) hypLep2 = true;
+      if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && cms2.hyp_ll_index()[i_hyp] == int(j) ) hypLep2 = true;
       if ( hypLep1 && hypLep2 ) continue;
       if ( !hypLep1 && !hypLep2 ) continue;
       // Make the invariant mass
@@ -2991,7 +2991,7 @@ bool isconversionElectron09(int elIdx) {
     if(dRBetweenVectors(cms2.els_trk_p4()[elIdx], cms2.trks_trk_p4()[tkIdx]) > 0.3)
       continue;
     //skip the electron's track
-    if(cms2.els_trkidx()[elIdx] == tkIdx && cms2.els_trkshFrac()[elIdx] > 0.45)
+    if(cms2.els_trkidx()[elIdx] == int(tkIdx) && cms2.els_trkshFrac()[elIdx] > 0.45)
       continue;
     //ship non-opp sign candidates
     if(cms2.trks_charge()[tkIdx] + cms2.els_charge()[elIdx] != 0)
