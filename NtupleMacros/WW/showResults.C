@@ -24,50 +24,61 @@ void showResults(const char* file = "processed_data.root")
     TH1F *ww    = dynamic_cast<TH1F*>(ftt->Get("ww_hypos_total_weighted"));
     TH1F *tw    = dynamic_cast<TH1F*>(ftt->Get("tw_hypos_total_weighted"));
   
-    cout << "|      |  *DY ee*  | *DY mumu* |*DY tautau*|  *ttbar*  |  *Wjets*  |    *WZ*   |    *ZZ*   |    *WW*    |    *TW*   |" << endl;
+    cout << "\n" << Form("| %3s | %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s |",
+		 "", "*DY ee*","*DY mumu*","*DY tautau*","*ttbar*","*Wjets*","*WZ*","*ZZ*","*WW*","*TW*")
+	 << endl;
     string pm = "+/-";
     // string pm = "&plusmn;";
     for (int i=0; i<4; i++){
       
-      cout << "|" << HypothesisTypeName(i) << "| ";
-      cout.setf(ios::fixed,ios::floatfield);
-      cout.precision(2);
-      if (DYee) cout << DYee->GetBinContent(i+1) << pm << DYee->GetBinError(i+1);
-      cout << " | ";
-      if (DYmm) cout << DYmm->GetBinContent(i+1) << pm << DYmm->GetBinError(i+1);
-      cout << " | ";
-      if (DYtt) cout << DYtt->GetBinContent(i+1) << pm << DYtt->GetBinError(i+1);
-      cout << " | ";
-      if (tt) cout << tt->GetBinContent(i+1) << pm << tt->GetBinError(i+1);
-      cout << " | ";
-      if (wjets) cout << wjets->GetBinContent(i+1) << pm << wjets->GetBinError(i+1);
-      cout << " | ";
-      if (wz) cout << wz->GetBinContent(i+1) << pm << wz->GetBinError(i+1);
-      cout << " | ";
-      if (zz) cout << zz->GetBinContent(i+1) << pm << zz->GetBinError(i+1);
-      cout << " | ";
-      if (ww) cout << ww->GetBinContent(i+1) << pm << ww->GetBinError(i+1);
-      cout << " | ";
-      if (tw) cout << tw->GetBinContent(i+1) << pm << tw->GetBinError(i+1);
-      cout << " | " <<endl;
+      cout << "|" << Form(" %3s ",HypothesisTypeName(i)) << "|";
+      if (DYee) 
+	cout << Form(" %5.2f%s%4.2f ",DYee->GetBinContent(i+1),pm.c_str(),DYee->GetBinError(i+1));
+      else
+	cout << "   skipped   ";
+      cout << "|";
+      if (DYmm) 
+	cout << Form(" %5.2f%s%4.2f ",DYmm->GetBinContent(i+1),pm.c_str(),DYmm->GetBinError(i+1));
+      else
+	cout << "   skipped   ";
+      cout << "|";
+      if (DYtt) 
+	cout << Form(" %5.2f%s%4.2f ",DYtt->GetBinContent(i+1),pm.c_str(),DYtt->GetBinError(i+1));
+      else
+	cout << "   skipped   ";
+      cout << "|";
+      if (tt) 
+	cout << Form(" %5.2f%s%4.2f ",tt->GetBinContent(i+1),pm.c_str(),tt->GetBinError(i+1));
+      else
+	cout << "   skipped   ";
+      cout << "|";
+      if (wjets) 
+	cout << Form(" %5.2f%s%4.2f ",wjets->GetBinContent(i+1),pm.c_str(),wjets->GetBinError(i+1));
+      else
+	cout << "   skipped   ";
+      cout << "|";
+      if (wz) 
+	cout << Form(" %5.2f%s%4.2f ",wz->GetBinContent(i+1),pm.c_str(),wz->GetBinError(i+1));
+      else
+	cout << "   skipped   ";
+      cout << "|";
+      if (zz) 
+	cout << Form(" %5.2f%s%4.2f ",zz->GetBinContent(i+1),pm.c_str(),zz->GetBinError(i+1));
+      else
+	cout << "   skipped   ";
+      cout << "|";
+      if (ww) 
+	cout << Form(" %5.2f%s%4.2f ",ww->GetBinContent(i+1),pm.c_str(),ww->GetBinError(i+1));
+      else
+	cout << "   skipped   ";
+      cout << "|";
+      if (tw) 
+	cout << Form(" %5.2f%s%4.2f ",tw->GetBinContent(i+1),pm.c_str(),tw->GetBinError(i+1));
+      else
+	cout << "   skipped   ";
+      cout << "|" <<endl;
     }
-    
-    string samples[9];
-    samples[0] = "dyee";
-    samples[1] = "dymm";
-    samples[2] = "dytt";
-    samples[3] = "ttbar";
-    samples[4] = "wjets";
-    samples[5] = "wz";
-    samples[6] = "zz";
-    samples[7] = "ww";
-    samples[8] = "tw";
-    
-    string types[4];
-    types[0] = "ee";
-    types[1] = "mm";
-    types[2] = "em";
-    types[3] = "all";
+    cout <<endl;
 
     // top background estimate
     /*

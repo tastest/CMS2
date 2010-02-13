@@ -22,6 +22,8 @@
 #include "RooRealVar.h"
 #include "RooCategory.h"
 #include "Math/VectorUtil.h"
+#include "TSystem.h"
+#include "TPRegexp.h"
 
 using namespace std;
 
@@ -32,7 +34,7 @@ using namespace std;
 #endif
 
 //
-// Key Analysis method implementations
+// Key Analysis method implementation
 //
 
 bool goodElectronWithoutIsolation(unsigned int i){
@@ -44,11 +46,11 @@ bool goodElectronIsolated(unsigned int i){
 }
 
 bool goodMuonWithoutIsolation(unsigned int i){
-  return ww2009_muId(i) && ww2009_mud0(i); 
+  return ww2009_muId(i);
 }
 
 bool goodMuonIsolated(unsigned int i){
-  return ww2009_muId(i) && ww2009_mud0(i) && ww2009_muIso(i) > 0.92; 
+  return ww2009_muId(i) && ww2009_muIso(i) > 0.92; 
 }
 
 double metValue(){    return cms2.evt_tcmet(); }
@@ -110,10 +112,6 @@ bool ww_muId(unsigned int i){
   return muonId(i);
 }
 
-//bool ww_mud0(unsigned int i){
-//return muond0(i);
-//}
-
 double ww_muIso(unsigned int i){
   return muonIsoValue(i);
 }
@@ -122,10 +120,6 @@ bool ww2009_muId(unsigned int i){
   if ( cms2.mus_gfit_chi2().at(i)/cms2.mus_gfit_ndof().at(i) > 10.) return false;
   if ( cms2.mus_validHits().at(i) < 11 )    return false;
   if ( (cms2.mus_type().at(i)&0x2)==0 ) return false;
-  return true;
-}
-
-bool ww2009_mud0(unsigned int i){
   if (TMath::Abs(cms2.mus_d0corr().at(i)) > 0.2) return false;
   return true;
 }
@@ -824,7 +818,8 @@ void find_most_energetic_jets(int i_hyp, double weight)
 
 void hypo (int i_hyp, double kFactor, RooDataSet* dataset) 
 {
-  HypothesisType type = getHypothesisType(cms2.hyp_type().at(i_hyp));
+  HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
+  
   // The event weight including the kFactor (scaled to 1 fb-1)
   float weight = cms2.evt_scale1fb() * kFactor;
 
@@ -833,6 +828,7 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset)
      
   if ( ! passedTriggerRequirements( hypType(i_hyp) ) )return;
   monitor.count(icounter++,"Total number of hypothesis after trigger requirements: ");
+     
   // Cut on lepton Pt
   if (cms2.hyp_lt_p4()[i_hyp].pt() < 20.0) return;
   if (cms2.hyp_ll_p4()[i_hyp].pt() < 20.0) return;
@@ -840,18 +836,23 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset)
      
   // Require opposite sign
   if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) return;
+     
   // check electron isolation and id (no selection at this point)
   checkIsolation(i_hyp, weight);
+
   // Z mass veto using hyp_leptons for ee and mumu final states
   if ( type == EE || type == MM) {
     if (inZmassWindow(cms2.hyp_p4()[i_hyp].mass())) return;
   }
+
   // Z veto using additional leptons in the event
   // if (additionalZveto()) return;
-  monitor.count(icounter++,"Total number of hypothesis after lepton pt + z vetoS: ");
+  monitor.count(icounter++,"Total number of hypothesis after lepton pt + z vetos: ");
+     
   // MET
   if (!passedMetRequirements(i_hyp)) return;
   monitor.count(icounter++,"Total number of hypothesis after lepton pt + z vetos + MET cuts: ");
+     
   bool goodEvent = true;
   bool passedJetVeto = true;
 
@@ -863,6 +864,7 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset)
   int countmus = numberOfSoftMuons(i_hyp,true);
   int nExtraVetoMuons = numberOfSoftMuons(i_hyp,false);;
   if (nExtraVetoMuons) goodEvent = false;
+  
   bool passedAllLeptonRequirements = true;
   // Muon quality cuts, including isolation
   if (abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) passedAllLeptonRequirements = false;
@@ -1012,6 +1014,7 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset)
      if (dphi2 > TMath::Pi()) dphi2 = TMath::TwoPi() - dphi2;
      hmetOverPtVsDphi[type]->Fill(metValue()/cms2.hyp_p4()[i_hyp].pt(), dphi2, weight);
      hmetOverPtVsDphi[3]->Fill(metValue()/cms2.hyp_p4()[i_hyp].pt(), dphi2, weight);
+    
      // get a vector of sorted jets, fill jet histograms
      std::vector<LorentzVector> sortedJets = getJets(jetType(), i_hyp, 0, 5.0, true);
      if ( !sortedJets.empty() ) {
@@ -1032,6 +1035,7 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset)
 	    hetaJet3[3]->Fill(sortedJets[0].Eta(), weight);
 	  }
      }
+
 }//end of void hypo
 
 RooDataSet* MakeNewDataset(const char* name)
@@ -1085,6 +1089,7 @@ void AddIsoSignalControlSample( int i_hyp, double kFactor, RooDataSet* dataset) 
   set.setRealValue("run",cms2.evt_run());
   set.setRealValue("lumi",cms2.evt_lumiBlock());
   set.setCatLabel("sample_type","control_sample_signal_iso");
+	
   if ( cms2.hyp_type()[i_hyp] == 3 ){
     set.setCatLabel("hyp_type","ee");
     set.setCatLabel("fake_type","electron");
@@ -1115,7 +1120,7 @@ void AddIsoSignalControlSample( int i_hyp, double kFactor, RooDataSet* dataset) 
 }
 
 RooDataSet* ScanChain( TChain* chain, enum Sample sample, double kFactor, bool identifyEvents ) {
-  gErrorIgnoreLevel = 3000; // suppress warnings about missing dictionaries 
+  // gErrorIgnoreLevel = 3000; // suppress warnings about missing dictionaries 
   unsigned int nEventsChain = chain->GetEntries();  // number of entries in chain --> number of events from all files
   gErrorIgnoreLevel = -1;
   unsigned int nEventsTotal = 0;
@@ -1292,22 +1297,24 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, double kFactor, bool i
        assert(tree);
 
        cms2.Init(tree);  // set branch addresses for TTree tree
+
        TStopwatch t;
        //Event Loop
        unsigned int nEvents = tree->GetEntries();
        for( unsigned int event = 0; event < nEvents; ++event) {
 	    cms2.GetEntry(event);  // get entries for Event number event from branches of TTree tree
 	    ++nEventsTotal;
-	    if (cms2.trks_d0().size() == 0 || cms2.hyp_lt_p4().size() == 0 )
-	      continue;
+	    if (cms2.trks_d0().size() == 0) continue;  // needed to get rid of back Monte Carlo events in CMSSW_2_X analysis
+	    if (cms2.hyp_type().size() == 0) continue; // skip events without hypothesis
 	    EventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.evt_lumiBlock(), cms2.trks_d0()[0], 
-				   cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
+					cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
 	    if (is_duplicate(id)) {
 		 duplicates_total_n++;
 		 duplicates_total_weight += cms2.evt_scale1fb();
 		 // cout << "Duplicate event found. Run: " << cms2.evt_run() << ", Event:" << cms2.evt_event() << ", Lumi: " << cms2.evt_lumiBlock() << endl;
 		 continue;
 	    }
+
 	    int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
 	    if (i_permille != i_permille_old) {
 		 // xterm magic from L. Vacavant and A. Cerri
@@ -1316,6 +1323,7 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, double kFactor, bool i
 		 fflush(stdout);
 		 i_permille_old = i_permille;
 	    }
+	    
 	    if ( identifyEvents ){
 	      // check if we know what we are looking at
 	      if ( ! isIdentified(sample) ) nFailedIdentification++;
@@ -1337,7 +1345,7 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, double kFactor, bool i
 	    unsigned int nHyps = cms2.hyp_type().size();
 	    for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
 	      if(cms2.hyp_p4().at(i_hyp).mass2() < 0 ) break;
-	      hypo(i_hyp, kFactor, dataset);	    
+	      hypo(i_hyp, kFactor, dataset);
 	      AddIsoSignalControlSample(i_hyp, kFactor, dataset);
 	    }
        }
@@ -1360,10 +1368,14 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, double kFactor, bool i
 	   nFailedIdentification, nFailedIdentification*100.0/(nEventsChain+1e-5));
   printf("Total number of filtered out events: %d (%0.0f %%)\n",   
 	   nFilteredOut, nFilteredOut*100.0/(nEventsChain+1e-5));
-  printf("Total candidate count (ee mm em all): %.0f %.0f %.0f %0.f.\n",
+  printf("Total candidate count (%s %s %s %s): %.0f %.0f %.0f %0.f.\n",
+	 HypothesisTypeName(0), HypothesisTypeName(1), 
+	 HypothesisTypeName(2), HypothesisTypeName(3),
 	 hypos_total->GetBinContent(1), hypos_total->GetBinContent(2), 
 	 hypos_total->GetBinContent(3), hypos_total->GetBinContent(4));
-  printf("Total weighted candidate yeild (ee mm em all): %f %f %f %f\n",   
+  printf("Total weighted candidate yeild (%s %s %s %s): %f %f %f %f\n",   
+	 HypothesisTypeName(0), HypothesisTypeName(1), 
+	 HypothesisTypeName(2), HypothesisTypeName(3),
 	 hypos_total_weighted->GetBinContent(1), hypos_total_weighted->GetBinContent(2), 
 	 hypos_total_weighted->GetBinContent(3), hypos_total_weighted->GetBinContent(4));
   
@@ -1470,38 +1482,111 @@ void ProcessSample( std::vector<std::string> file_patterns,
   for ( std::vector<std::string>::const_iterator pattern = file_patterns.begin();
 	pattern != file_patterns.end(); ++pattern )
     tchain->Add(pattern->c_str());
-  std::cout << "Processing " << SampleName(sample) << ".." << std::endl;
-  RooDataSet* data = ScanChain(tchain, sample, kFactor, identifyEvents);
-  if( data ){
-    if ( output_dataset )
-      output_dataset->append(*data);
-    else
-      output_dataset=data;
+  if ( gSystem->Getenv("SkimSamples") ){
+    std::cout << "Skimming " << SampleName(sample) << ".." << std::endl;
+    SkimChain(tchain);
+  } else {
+    std::cout << "Processing " << SampleName(sample) << ".." << std::endl;
+    RooDataSet* data = ScanChain(tchain, sample, kFactor, identifyEvents);
+    if( data ){
+      if ( output_dataset )
+	output_dataset->append(*data);
+      else
+	output_dataset=data;
+    }
+    
+    const char* sampleName = SampleName(sample);
+    TRegexp reg(sampleName, kFALSE);
+    
+    TList* list = gDirectory->GetList() ;
+    if (!list) {
+      cout << "Failed to set color for " << sampleName << endl;
+      return;
+    }
+    TIterator* iter = list->MakeIterator();
+
+    while (TObject* obj = iter->Next()) {
+      if (! obj->InheritsFrom(TH1::Class())) continue;
+      
+      TString name = obj->GetName();
+
+      if (TString(sampleName).MaybeRegexp()) {
+	if (TString(obj->GetName()).Index(reg) < 0 ) continue;
+      } else if (! name.BeginsWith(sampleName)) continue;
+      
+      ((TH1*)obj)->SetFillColor(color);
+      ((TH1*)obj)->SetLineColor(color);
+      ((TH1*)obj)->SetMarkerColor(color);
+    }
   }
-  
-  const char* sampleName = SampleName(sample);
-  TRegexp reg(sampleName, kFALSE);
+}
 
-  TList* list = gDirectory->GetList() ;
-  if (!list) {
-    cout << "Failed to set color for " << sampleName << endl;
-    return;
+void SkimChain(TChain* chain){
+  TObjArray *listOfFiles = chain->GetListOfFiles();
+  TIter fileIter(listOfFiles);
+  TPRegexp preg("([^/]+)/([^/]*)$");
+  unsigned int nEventsTotal = 0;
+  unsigned int nEventsSelected = 0;
+  while (TChainElement *currentFile = (TChainElement*)fileIter.Next()) {
+    TString inputFileName(currentFile->GetTitle());
+    TString directory(inputFileName);
+    preg.Substitute(directory,"$1-skim");
+    // make output directory if it doesn't exist yet
+    if ( gSystem->AccessPathName(directory.Data()) ) {
+      gSystem->mkdir(directory.Data(),true);
+      assert( !gSystem->AccessPathName(directory.Data()) );
+    }
+    TString outputFileName(inputFileName);
+    preg.Substitute(outputFileName,"$1-skim/$2");
+    cout << "Skimming " << inputFileName << " -> " << outputFileName << endl;
+
+    TFile *output = TFile::Open(outputFileName.Data(), "RECREATE");
+    assert(output);
+    TFile *input = TFile::Open(inputFileName.Data());
+    assert(input);
+    TTree *tree = (TTree*)input->Get("Events");
+    tree->SetBranchStatus("EventAuxiliary",0);
+    TTree *newtree = tree->CloneTree(0);
+    newtree->SetDirectory(output);
+    
+    cms2.Init(newtree);
+    cms2.Init(tree);
+    
+    // Event Loop
+    const unsigned int nEvents = tree->GetEntries();
+    int i_permille_old = 0;
+    for (unsigned int event = 0; event < nEvents; ++event, ++nEventsTotal) {
+      int i_permille = (int)floor(10000 * event / float(nEvents));
+      if (i_permille != i_permille_old) {
+	// xterm magic from L. Vacavant and A. Cerri
+	if (isatty(1)) {
+	  printf("\015\033[32m ---> \033[1m\033[31m%5.2f%%"
+		 "\033[0m\033[32m <---\033[0m\015", i_permille/100.);
+	  fflush(stdout);
+	}
+	i_permille_old = i_permille;
+      }
+      cms2.GetEntry(event);
+      //set condition to skip event
+      if ( not passedSkimSelection() ) continue;
+      
+      ++nEventsSelected;
+      cms2.LoadAllBranches();
+      // fill the new tree
+      newtree->Fill();
+    }
+    output->cd();
+    newtree->Write();
+    output->Close();
   }
-  TIterator* iter = list->MakeIterator();
+  cout << Form("Processed events: %u, \tselected: %u\n",nEventsTotal,nEventsSelected) << endl;
+}
 
-  TObject* obj = 0;
-
-  while (obj = iter->Next()) {
-    if (! obj->InheritsFrom(TH1::Class())) continue;
-
-    TString name = obj->GetName();
-
-    if (TString(sampleName).MaybeRegexp()) {
-      if (TString(obj->GetName()).Index(reg) < 0 ) continue;
-    } else if (! name.BeginsWith(sampleName)) continue;
-
-    ((TH1*)obj)->SetFillColor(color);
-    ((TH1*)obj)->SetLineColor(color);
-    ((TH1*)obj)->SetMarkerColor(color);
+bool passedSkimSelection()
+{
+  unsigned int nHyps = cms2.hyp_type().size();
+  for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
+    if ( cms2.hyp_lt_p4().at(i_hyp).pt() > 20 && cms2.hyp_ll_p4().at(i_hyp).pt() > 20 ) return true;
   }
+  return false;
 }

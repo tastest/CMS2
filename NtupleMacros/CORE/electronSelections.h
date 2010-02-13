@@ -6,12 +6,47 @@
 // electron selections 
 //
 
+enum EgammaFiduciality {
+    ISEB,
+    ISEBEEGAP,
+    ISEE,
+    ISEEGAP,
+    ISEBETAGAP,
+    ISEBPHIGAP,
+    ISEEDEEGAP,
+    ISEERINGGAP,
+    ISGAP
+};
+
+// seeding type used and corrections applied
+
+enum EgammaElectronType {
+    ISECALENERGYCORRECTED,  // if false, the electron "ecalEnergy" is just the supercluster energy 
+    ISMOMENTUMCORRECTED,    // has E-p combination been applied
+    ISECALDRIVEN,
+    ISTRACKERDRIVEN
+};
+
+//
+// combined selection functions
+//
+bool electronSelection_cand01(const unsigned int index);
+bool electronSelection_cand02(const unsigned int index);
+
 //
 // candidate electron id function
 // see http://www.t2.ucsd.edu/tastwiki/bin/view/CMS/ElectronID
 //
 bool electronId_cand01(const unsigned int index);
+bool electronId_cand02(const unsigned int index);
+
+bool electronId_extra(const unsigned int index);
 bool electronImpact_cand01(const unsigned int index);
+
+//
+// remove electrons that are overlapping with a muon
+//
+bool electronId_noMuon(const unsigned int index);
 
 //
 // candidate electron isolation function
@@ -38,6 +73,9 @@ float electronIsolation_relsusy_cand1(const unsigned int index, bool use_calo_is
 //
 bool isFromConversionHitPattern(const unsigned int index);
 bool isFromConversionPartnerTrack(const unsigned int index);
+
+//electron charge using the majority logic of the egamma group
+int getChargeUsingMajorityLogic(int elIdx, float minFracSharedHits = 0.45);
 
 #endif
 

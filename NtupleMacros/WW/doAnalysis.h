@@ -5,7 +5,7 @@
 #include <vector>
 #include <set>
 #include "wwtypes.h"
-#include "CORE/CMS2.h"
+#include "TChain.h"
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
@@ -30,11 +30,9 @@ bool goodElectronIsolated(unsigned int i);
 //
 
 bool   ww_muId(unsigned int i);
-bool   ww_mud0(unsigned int i);
 double ww_muIso(unsigned int i);
 
 bool   ww2009_muId(unsigned int i);
-bool   ww2009_mud0(unsigned int i);
 double ww2009_muIso(unsigned int i);
 
 unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated);
@@ -154,6 +152,8 @@ RooDataSet* MakeNewDataset(const char* name);
 void AddIsoSignalControlSample( int i_hyp, double kFactor, RooDataSet* dataset = 0 );
 class TChain;
 RooDataSet* ScanChain( TChain* chain, Sample sample, double kFactor,  bool identifyEvents );
+void SkimChain(TChain* chain);
+bool passedSkimSelection();
 
 void ProcessSample( std::string file_pattern, 
 		    Sample sample, 

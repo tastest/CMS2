@@ -1,6 +1,9 @@
 {
-TH1::AddDirectory(true);
-gSystem->AddIncludePath("-I../");
-gSystem->Load("libPhysics.so");  
-gSystem->Load("libEG.so");
+  TH1::AddDirectory(true);
+  gSystem->AddIncludePath("-I../");
+  gSystem->Load("libPhysics.so");  
+  gSystem->Load("libEG.so");
+  gSystem->Load("libCMS2NtupleMacrosCORE");
+  gSystem->Load("libRooFit.so");
+  gSystem->Load("libCMS2NtupleMacrosLooper");
 }

@@ -4,9 +4,6 @@ bool runWjetBackground2 = true;
 
 // Load various tools
 gROOT->ProcessLine(".x init.C");
-gSystem->Load("libCMS2NtupleMacrosCORE");
-gSystem->Load("libRooFit.so");
-gSystem->Load("libCMS2NtupleMacrosLooper");
 
 TFile* f1 = TFile::Open("processed_data.root") ;
 if ( !f1 ) {

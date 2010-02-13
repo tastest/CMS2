@@ -3,6 +3,11 @@
 #
 # User targets are at the bottom
 #
+ifndef ROOTSYS
+all:
+	@echo "ROOTSYS is not set. Please set ROOT environment properly"; echo
+else
+
 all: 	help
 help:
 	@echo "Available Targets:";\
@@ -35,10 +40,12 @@ SOURCES = $(wildcard *.cc)
 OBJECTS = $(SOURCES:.cc=.o) LinkDef_out.o
 LIB = libCMS2NtupleMacrosLooper.so
 
+FWLIB = ../Tools/MiniFWLite/libMiniFWLite.so
+
 LIBS = $(CORELIB) $(LIB)
 
 
-.PHONY: all help compile clean cms2env rootenv
+.PHONY: all help compile clean cms2env
 
 libs:	$(LIBS)
 
@@ -49,6 +56,11 @@ $(CORELIB):	$(COREOBJECTS)
 $(LIB):	$(OBJECTS) 
 	$(QUIET) echo "Linking $(LIB)"; \
 	$(LINKER) $(LINKERFLAGS) -shared $(OBJECTS) -o $@ 2>&1|perl -ne 'print if(!/skipping incompatible/)'
+
+$(FWLIB):
+	$(QUIET) echo "making MiniFWLite"; \
+	cd ../Tools/MiniFWLite; \
+	$(MAKE) -f Makefile;
 
 LinkDef_out.cxx: LinkDef.h
 	$(QUIET) echo "Making CINT dictionaries"; \
@@ -69,47 +81,37 @@ LinkDef_out.cxx: LinkDef.h
 	$(QUIET) echo "Compiling $<"; \
 	$(CC) $(CFLAGS) $< -c -o $@
 
-cms2env:
+data:
+	@echo 'Make a directory or a symbolic link called "data" pointing to sample location'; echo; exit 1
 
-rootenv:
-ifndef ROOTSYS
-	@echo "ROOTSYS is not set. Please set ROOT environment properly"; echo; exit 1
-endif
-
-processed_data.root: processData.C $(LIB) $(CORELIB)
-ifndef ROOTSYS
-	@echo "ROOTSYS is not set. Please set ROOT environment properly"; echo; exit 1
-else
+processed_data.root: data processData.C $(CORELIB) $(LIB) $(FWLIB)
 	$(QUIET) root -b -q processData.C
-endif
 
 fakeIsoControlSamples.root: makeFakeIsoControlSamples.C
-ifndef ROOTSYS
-	@echo "ROOTSYS is not set. Please set ROOT environment properly"; echo; exit 1
-else
 	$(QUIET) root -b -q makeFakeIsoControlSamples.C+
-endif
 
 #################################################################
 #                       User Targets 
 #################################################################
-build: rootenv cms2env $(LIBS) # compile code
+build: $(LIBS) # compile code
 	@#root -b -q ".L doAnalysis.C++"
+b: build
 
-clean: cms2env # clean up 
+clean: # clean up 
 	$(QUIET) rm -f \
 	$(CMSROOT)/CORE/*.o \
 	$(CMSROOT)/CORE/*.d \
 	$(CMSROOT)/CORE/*.so \
-	$(CORELIB) $(LOOPERLIB) \
+	$(CORELIB) $(LOOPERLIB) $(FWLIB) \
 	*.o *.d *.so LinkDef_out*; echo "Done"
 
 table: processed_data.root # show results
-ifndef ROOTSYS
-	@echo "ROOTSYS is not set. Please set ROOT environment properly"; echo; exit 1
-else
 	$(QUIET) root -q -b showResults.C+
-endif
+t: table
 
 jetbkg: fakeIsoControlSamples.root processed_data.root  # estimate jet induced background
 	$(QUIET) echo "ok"
+
+skim: data processData.C $(CORELIB) $(LIB) $(FWLIB) # skim data
+	$(QUIET) export SkimSamples=1; root -b -q processData.C
+endif
