@@ -79,7 +79,7 @@ void processData()
   RooDataSet *fullDataSet(0);
   
   // read dataset prefix
-  string dataset = "data2";
+  string dataset = "data";
  
   if (runWW)
     ProcessSample(dataset+"/WW_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", WW, 1.53, fullDataSet, kRed);
