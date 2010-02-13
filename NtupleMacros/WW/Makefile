@@ -3,6 +3,11 @@
 #
 # User targets are at the bottom
 #
+ifndef ROOTSYS
+all:
+	@echo "ROOTSYS is not set. Please set ROOT environment properly"; echo; exit 1
+endif
+
 all: 	help
 help:
 	@echo "Available Targets:";\
@@ -40,7 +45,7 @@ FWLIB = ../Tools/MiniFWLite/libMiniFWLite.so
 LIBS = $(CORELIB) $(LIB)
 
 
-.PHONY: all help compile clean cms2env rootenv
+.PHONY: all help compile clean cms2env
 
 libs:	$(LIBS)
 
@@ -76,24 +81,19 @@ LinkDef_out.cxx: LinkDef.h
 	$(QUIET) echo "Compiling $<"; \
 	$(CC) $(CFLAGS) $< -c -o $@
 
-rootenv:
-ifndef ROOTSYS
-	@echo "ROOTSYS is not set. Please set ROOT environment properly"; echo; exit 1
-endif
-
 data:
 	@echo 'Make a directory or a symbolic link called "data" pointing to sample location'; echo; exit 1
 
-processed_data.root: data rootenv processData.C $(CORELIB) $(LIB) $(FWLIB)
+processed_data.root: data processData.C $(CORELIB) $(LIB) $(FWLIB)
 	$(QUIET) root -b -q processData.C
 
-fakeIsoControlSamples.root: rootenv makeFakeIsoControlSamples.C
+fakeIsoControlSamples.root: makeFakeIsoControlSamples.C
 	$(QUIET) root -b -q makeFakeIsoControlSamples.C+
 
 #################################################################
 #                       User Targets 
 #################################################################
-build: rootenv $(LIBS) # compile code
+build: $(LIBS) # compile code
 	@#root -b -q ".L doAnalysis.C++"
 b: build
 
@@ -105,12 +105,12 @@ clean: # clean up
 	$(CORELIB) $(LOOPERLIB) $(FWLIB) \
 	*.o *.d *.so LinkDef_out*; echo "Done"
 
-table: rootenv processed_data.root # show results
+table: processed_data.root # show results
 	$(QUIET) root -q -b showResults.C+
 t: table
 
 jetbkg: fakeIsoControlSamples.root processed_data.root  # estimate jet induced background
 	$(QUIET) echo "ok"
 
-skim: rootenv data processData.C $(CORELIB) $(LIB) $(FWLIB) # skim data
+skim: data processData.C $(CORELIB) $(LIB) $(FWLIB) # skim data
 	$(QUIET) export SkimSamples=1; root -b -q processData.C
