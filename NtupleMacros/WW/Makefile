@@ -5,8 +5,8 @@
 #
 ifndef ROOTSYS
 all:
-	@echo "ROOTSYS is not set. Please set ROOT environment properly"; echo; exit 1
-endif
+	@echo "ROOTSYS is not set. Please set ROOT environment properly"; echo
+else
 
 all: 	help
 help:
@@ -114,3 +114,4 @@ jetbkg: fakeIsoControlSamples.root processed_data.root  # estimate jet induced b
 
 skim: data processData.C $(CORELIB) $(LIB) $(FWLIB) # skim data
 	$(QUIET) export SkimSamples=1; root -b -q processData.C
+endif
