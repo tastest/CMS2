@@ -1368,10 +1368,14 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, double kFactor, bool i
 	   nFailedIdentification, nFailedIdentification*100.0/(nEventsChain+1e-5));
   printf("Total number of filtered out events: %d (%0.0f %%)\n",   
 	   nFilteredOut, nFilteredOut*100.0/(nEventsChain+1e-5));
-  printf("Total candidate count (ee mm em all): %.0f %.0f %.0f %0.f.\n",
+  printf("Total candidate count (%s %s %s %s): %.0f %.0f %.0f %0.f.\n",
+	 HypothesisTypeName(0), HypothesisTypeName(1), 
+	 HypothesisTypeName(2), HypothesisTypeName(3),
 	 hypos_total->GetBinContent(1), hypos_total->GetBinContent(2), 
 	 hypos_total->GetBinContent(3), hypos_total->GetBinContent(4));
-  printf("Total weighted candidate yeild (ee mm em all): %f %f %f %f\n",   
+  printf("Total weighted candidate yeild (%s %s %s %s): %f %f %f %f\n",   
+	 HypothesisTypeName(0), HypothesisTypeName(1), 
+	 HypothesisTypeName(2), HypothesisTypeName(3),
 	 hypos_total_weighted->GetBinContent(1), hypos_total_weighted->GetBinContent(2), 
 	 hypos_total_weighted->GetBinContent(3), hypos_total_weighted->GetBinContent(4));
   
