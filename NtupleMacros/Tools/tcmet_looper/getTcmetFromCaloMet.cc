@@ -16,7 +16,8 @@
 #include "TRandom3.h"
 
 #include "getTcmetFromCaloMet.h"
-#include "CMS2_3x.h"
+#include "CORE/CMS2.h"
+//#include "CMS2_3x.h"
 //#include "getResponseFunction_fit.C"
 
 using namespace std;
@@ -31,6 +32,10 @@ bool isTrackQuality( int index, int cuts ) {
 }
 
 //--------------------------------------------------------------------
+
+float tcmet_x;
+float tcmet_y;
+float tcsumet;
 
 metStruct getTcmetFromCaloMet(TH2F* rf){
 

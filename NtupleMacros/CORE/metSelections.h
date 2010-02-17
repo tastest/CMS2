@@ -26,7 +26,7 @@ metStruct correctedTCMET();
 // utility function find deltaPhi between met
 // and nearest hypothesis lepton
 //---------------------------------------------
-float nearestHypLeptonPhi( flaot metPhi, int hyp_index);
+float nearestHypLeptonPhi( float metPhi, int hyp_index);
 
 #endif
 

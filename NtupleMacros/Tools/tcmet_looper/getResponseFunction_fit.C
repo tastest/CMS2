@@ -1,6 +1,6 @@
 TH2F* getResponseFunction_fit(){
 
-  cout<<"Using RF fit method"<<endl;
+//  cout<<"Using RF fit method"<<endl;
   Double_t xAxis1[53] = {-2.5, -2.322, -2.172, -2.043, -1.93, -1.83, 
 			 -1.74, -1.653, -1.566, -1.479, -1.392, -1.305, 
 			 -1.218, -1.131, -1.044, -0.957, -0.879, -0.783, 

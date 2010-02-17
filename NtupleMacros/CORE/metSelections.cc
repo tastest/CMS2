@@ -7,6 +7,8 @@
 #include "TMath.h"
 #include "../Tools/tcmet_looper/getResponseFunction_fit.C"
 #include "selections.h"
+#include <math.h>
+#include <algorithm>
 
 //---------------------------------------------
 // function to calculate projected MET.
@@ -20,7 +22,7 @@ float projectedMET( float met, float metPhi, int hyp_index ) {
 
      float deltaPhi = nearestHypLeptonPhi(metPhi, hyp_index);
 
-     return (deltaPhi < TMath::Pi() / 2.)) ? met * sin(deltaPhi) : met;
+     return ((deltaPhi < TMath::Pi() / 2.) ? met * sin(deltaPhi) : met);
 }
 
 //---------------------------------------------
@@ -32,6 +34,8 @@ metStruct correctedTCMET() {
 
      metStruct met = getTcmetFromCaloMet(rf);
 
+     delete rf;
+
      return met;
 }
 
@@ -42,8 +46,8 @@ metStruct correctedTCMET() {
 float nearestHypLeptonPhi( float metPhi, int hyp_index ) {
 
      //WARNING!  This was designed to work in a dilepton environment - NOT a trilepton 
-     float tightDPhi = min(fabs(cms2.hyp_lt_p4()[hyp_index].phi() - metPhi), 2 * TMath::Pi() - fabs(cms2.hyp_lt_p4()[i_hyp].phi() - metPhi));
-     float looseDPhi = min(fabs(cms2.hyp_ll_p4()[hyp_index].phi() - metPhi), 2 * TMath::Pi() - fabs(cms2.hyp_ll_p4()[i_hyp].phi() - metPhi));
+     float tightDPhi = min(fabs(cms2.hyp_lt_p4()[hyp_index].phi() - metPhi), (float)(2 * TMath::Pi()) - fabs(cms2.hyp_lt_p4()[hyp_index].phi() - metPhi));
+     float looseDPhi = min(fabs(cms2.hyp_ll_p4()[hyp_index].phi() - metPhi), (float)(2 * TMath::Pi()) - fabs(cms2.hyp_ll_p4()[hyp_index].phi() - metPhi));
      
      return min(tightDPhi, looseDPhi);
 
