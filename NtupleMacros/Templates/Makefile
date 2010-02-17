@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.6 2009/06/08 21:35:18 fgolf Exp $
+# $Id: Makefile,v 1.7 2010/02/17 23:13:40 fgolf Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
@@ -23,6 +23,10 @@ LOOPERSOURCES = $(wildcard *.cc)
 LOOPEROBJECTS = $(LOOPERSOURCES:.cc=.o) linkdef_out.o
 LOOPERLIB = libCMS2NtupleMacrosLooper.so
 
+TCMETSOURCES = $(wildcard ${CMS2_LOCATION}/Tools/tcmet_looper/*.cc) 
+TCMETOBJECTS = $(TCMETSOURCES:.cc=.o) 
+TCMETLIB = libCMS2Toolstcmet_looper.so
+
 LIBS = $(CORELIB) $(TOOLSLIB) $(LOOPERLIB)
 
 TABLES = Results.tbl
@@ -41,6 +45,9 @@ $(CORELIB):	$(COREOBJECTS)
 
 $(LOOPERLIB):	$(LOOPEROBJECTS) 
 	$(LINKER) $(LINKERFLAGS) -shared $(LOOPEROBJECTS) -o $@ 
+
+$(TCMETLIB):	$(TCMETOBJECTS) 
+	$(LINKER) $(LINKERFLAGS) -shared $(TCMETOBJECTS) -o $@ 
 
 linkdef_out.cxx: ${CMS2_LOCATION}/NtupleMacros/linkdef.h ConfigAndRun.h
 	rootcint -f $@ -c $(INCLUDE) ConfigAndRun.h $<
@@ -64,6 +71,7 @@ clean:
 	rm -f ${CMS2_LOCATION}/NtupleMacros/Tools/*.o ${CMS2_LOCATION}/NtupleMacros/Tools/*.d $(TOOLSLIB) \
 		${CMS2_LOCATION}/NtupleMacros/CORE/*.o ${CMS2_LOCATION}/NtupleMacros/CORE/*.d $(CORELIB) \
 		*.o *.d linkdef_out.* $(LOOPERLIB) \
+		${CMS2_LOCATION}/Tools/tcmet_looper/*.o ${CMS2_LOCATION}/Tools/tcmet_looper/*.d \
 		$(TABLES) 
 
 # how to make tables
@@ -75,6 +83,7 @@ $(TABLES): $(LIBS)
 -include $(TOOLSSOURCES:.cc=.d)
 -include $(CORESOURCES:.cc=.d)
 -include $(LOOPERSOURCES:.cc=.d)
+-include $(TCMETSOURCES:.cc=.d)
 -include linkdef_out.d
 
 .PRECIOUS: $(wildcard *.tbl) $(wildcard *.log) $(wildcard *.root)
