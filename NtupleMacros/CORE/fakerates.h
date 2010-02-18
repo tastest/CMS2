@@ -18,4 +18,7 @@ bool isFakeableElectron (int i_el, enum fakeRateVersion version);
 double elFakeProb (int i_el, enum fakeRateVersion version);
 double elFakeProbErr (int i_el, enum fakeRateVersion version);
 
+int elFakeMCCategory(int i_el);
+int muFakeMCCategory(int i_mu);
+
 #endif
