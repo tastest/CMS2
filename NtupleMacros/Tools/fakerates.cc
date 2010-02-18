@@ -1,17 +1,10 @@
 #include "TSystem.h"
 #include "TFile.h"
 #include "TH2.h"
-
-//#include "electronSelections.h"
-//#include "muonSelections.h"
-
-// list of available FR versions:
-enum fakeRateVersion {
-  el_v1,
-  el_v2,
-  el_v3,
-  mu_v1,
-};
+#include "fakerates.h"
+#include "CORE/CMS2.h"
+#include "CORE/electronSelections.h"
+#include "CORE/muonSelections.h"
 
 /*muons*/
 class TH2F &fakeRateMuon (enum fakeRateVersion);
@@ -141,7 +134,7 @@ static TH2F  *el_fakeRateErr_v1 = 0;
 static TH2F  *el_fakeRateErr_v2 = 0;
 static TH2F  *el_fakeRateErr_v3 = 0;
 
-bool isFakeable (int i_el, enum fakeRateVersion version)
+bool isFakeableElectron (int i_el, enum fakeRateVersion version)
 {
   if(version == el_v1) return isFakeDenominatorElectron_v1(i_el);
   if(version == el_v2) return isFakeDenominatorElectron_v2(i_el);
