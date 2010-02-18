@@ -95,6 +95,7 @@ class MyScanChain {
         TH1F *h1_hyp_lt_eb_nm1_dPhiIn_[4];
         TH1F *h1_hyp_lt_eb_nm1_d0_[4];
         TH1F *h1_hyp_lt_eb_nm1_E2x5MaxOver5x5_[4];
+		TH2F *h1_hyp_lt_eb_nm1_lateral_[4];
 
         TH1F *h1_hyp_lt_ee_nm1_hoe_[4];
         TH1F *h1_hyp_lt_ee_nm1_sigmaIEtaIEta_[4];
@@ -102,6 +103,7 @@ class MyScanChain {
         TH1F *h1_hyp_lt_ee_nm1_dPhiIn_[4];
         TH1F *h1_hyp_lt_ee_nm1_d0_[4];
         TH1F *h1_hyp_lt_ee_nm1_E2x5MaxOver5x5_[4];
+        TH2F *h1_hyp_lt_ee_nm1_lateral_[4];
 
         TH1F *h1_hyp_lt_eb_afterid_relsusy_[4];
         TH1F *h1_hyp_lt_ee_afterid_relsusy_[4];
@@ -120,10 +122,30 @@ class MyScanChain {
 
         TH1F *h1_hyp_lt_eb_afterid_eopin_lowfbrem_[4];
         TH1F *h1_hyp_lt_ee_afterid_eopin_lowfbrem_[4];
-
         TH1F *h1_hyp_lt_eb_afterid_eopin_highfbrem_[4];
         TH1F *h1_hyp_lt_ee_afterid_eopin_highfbrem_[4];
 
+		// preshower after id
+        TH1F *h1_hyp_lt_eb_afterid_preshowerEnergy_lowfbrem_[4];
+        TH1F *h1_hyp_lt_ee_afterid_preshowerEnergy_lowfbrem_[4];
+        TH1F *h1_hyp_lt_eb_afterid_preshowerEnergy_highfbrem_[4];
+        TH1F *h1_hyp_lt_ee_afterid_preshowerEnergy_highfbrem_[4];
+
+		// dPhiIn after id 
+        TH1F *h1_hyp_lt_eb_afterid_dPhiIn_lowfbrem_[4];
+        TH1F *h1_hyp_lt_ee_afterid_dPhiIn_lowfbrem_[4];
+        TH1F *h1_hyp_lt_eb_afterid_dPhiIn_highfbrem_[4];
+        TH1F *h1_hyp_lt_ee_afterid_dPhiIn_highfbrem_[4];
+
+        // dEtaIn after id 
+        TH1F *h1_hyp_lt_eb_afterid_dEtaIn_lowfbrem_[4];
+        TH1F *h1_hyp_lt_ee_afterid_dEtaIn_lowfbrem_[4];
+        TH1F *h1_hyp_lt_eb_afterid_dEtaIn_highfbrem_[4];
+        TH1F *h1_hyp_lt_ee_afterid_dEtaIn_highfbrem_[4];
+
+		// closest muon after id
+        TH1F *h1_hyp_lt_eb_afterid_closestMu_[4];
+        TH1F *h1_hyp_lt_ee_afterid_closestMu_[4];
 
 		// id
 		//
@@ -133,10 +155,14 @@ class MyScanChain {
 		TH1F *h1_hyp_lt_eb_pt_cand01_[4];
 		TH1F *h1_hyp_lt_eb_pt_cand02_[4];
         TH1F *h1_hyp_lt_eb_pt_cand02_extra_[4];
+        TH1F *h1_hyp_lt_eb_pt_cand02_extra_v2_[4];
+		TH1F *h1_hyp_lt_eb_eta_cand02_extra_v2_[4];
+
         TH1F *h1_hyp_lt_ee_pt_cand01_[4];
         TH1F *h1_hyp_lt_ee_pt_cand02_[4];
         TH1F *h1_hyp_lt_ee_pt_cand02_extra_[4];
-
+        TH1F *h1_hyp_lt_ee_pt_cand02_extra_v2_[4];
+		TH1F *h1_hyp_lt_ee_eta_cand02_extra_v2_[4];
 		//
 		//
 

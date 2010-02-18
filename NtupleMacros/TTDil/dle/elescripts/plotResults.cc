@@ -557,13 +557,28 @@ void plotResultsID(TString det, TString hyp, TString fileStamp, TString saveName
     plotEff(h1, "hyp_lt_" + det + "_pt_cand01", saveName, det, true, 1, true);
     plotEff(h1, "hyp_lt_" + det + "_pt_cand02", saveName, det, true, 1, true);
     plotEff(h1, "hyp_lt_" + det + "_pt_cand02_extra", saveName, det, true, 1, true);
+    plotEff(h1, "hyp_lt_" + det + "_pt_cand02_extra_v2", saveName, det, true, 1, true);
+
+
 
 	// fbrem
     plotEff(h1, "hyp_lt_" + det + "_afterid_fbrem", saveName, det, false, 1, true);
 
 	// eopin depending if fbrem > 0.2
-    plotEff(h1, "hyp_lt_" + det + "_afterid_eopin_lowfbrem", saveName, det, true, 1, true);
-    plotEff(h1, "hyp_lt_" + det + "_afterid_eopin_highfbrem", saveName, det, true, 1, true);
+    plotEff(h1, "hyp_lt_" + det + "_afterid_eopin_lowfbrem", saveName, det, false, 1, true);
+    plotEff(h1, "hyp_lt_" + det + "_afterid_eopin_highfbrem", saveName, det, false, 1, true);
+
+	// dPhiIn depending if fbrem > 0.2
+    plotEff(h1, "hyp_lt_" + det + "_afterid_dPhiIn_lowfbrem", saveName, det, true, 1, true);
+    plotEff(h1, "hyp_lt_" + det + "_afterid_dPhiIn_highfbrem", saveName, det, true, 1, true);
+
+    // dEtaIn depending if fbrem > 0.2
+    plotEff(h1, "hyp_lt_" + det + "_afterid_dEtaIn_lowfbrem", saveName, det, true, 1, true);
+    plotEff(h1, "hyp_lt_" + det + "_afterid_dEtaIn_highfbrem", saveName, det, true, 1, true);
+
+    // preshowerEnergy depending if fbrem > 0.2
+    plotEff(h1, "hyp_lt_" + det + "_afterid_preshowerEnergy_lowfbrem", saveName, det, true, 1, true);
+    plotEff(h1, "hyp_lt_" + det + "_afterid_preshowerEnergy_highfbrem", saveName, det, true, 1, true);
 
 	// 2D stuff
 	//plot2DSB(h1, "tkIso03All2D", "p_{T} (GeV/c)", "tkIso03All", "IDStudy", det);
