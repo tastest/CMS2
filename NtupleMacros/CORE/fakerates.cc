@@ -90,37 +90,28 @@ double muFakeProbErr_v1 (int i_mu){
   }
   return prob_error;
 }
-bool isFakeDenominatorMuon_v1 (int iMu) {
-  //
-  // returns true if input fulfills certain cuts
-  //
-  double pt   = cms2.mus_p4().at(iMu).Pt();
-  double eta  = cms2.mus_p4().at(iMu).Eta();
-
-  if( pt < 10.0 || fabs(eta) > 2.5 ) return false;
-  /* muon cuts - denomintor */
-  if(
-
-     /* muon denominator definition */
-     // what was done in AN 2009/041:
-     // relax chisq/N to 20
-     // remove requirement on # silicon hits
-     // relax isolation
-
-     TMath::Abs(cms2.mus_p4()[iMu].eta()) <= 2.5 &&                       //eta
-     cms2.mus_gfit_chi2().at(iMu)/cms2.mus_gfit_ndof().at(iMu) < 50 &&      //glb fit chisq
-     (  ( (cms2.mus_type().at(iMu) ) & (1<<1) ) != 0  ) &&                  // global muon
-     (  ( (cms2.mus_type().at(iMu) ) & (1<<2)) != 0 ) &&                    // tracker muon
-     cms2.mus_iso_ecalvetoDep().at(iMu) <= 10 &&                            // ECalE < 4 // out as test 100209 - is good!
-     cms2.mus_iso_hcalvetoDep().at(iMu) <= 12 &&                            // HCalE < 6 // out as test 100209 - is good!
-     cms2.mus_gfit_validSTAHits().at(iMu) > 0 &&                            // Glb fit must have hits in mu chambers
-     TMath::Abs(cms2.mus_d0corr().at(iMu)) <= 0.2 &&                      // d0 from beamspot
-     (muonIsoValue(iMu) <= 0.4)                                           // Isolation cut
-     ){
+bool isFakeDenominatorMuon_v1 (int index) {
+    if ( cms2.mus_p4()[index].pt() < 10.) {
+      std::cout << "muonID ERROR: requested muon is too low pt,  Abort." << std::endl;
+      return false;
+    }
+    if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.5)  return false; // eta cut
+    //if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
+    if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 50) return false;
+    if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
+    if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
+    if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
+    //if (cms2.mus_iso_ecalvetoDep().at(index) > 4)       return false; // ECalE < 4 
+    //if (cms2.mus_iso_hcalvetoDep().at(index) > 6)       return false; // HCalE < 6 
+    if (cms2.mus_iso_ecalvetoDep().at(index) > 10)       return false;
+    if (cms2.mus_iso_hcalvetoDep().at(index) > 12)       return false;
+    if (cms2.mus_gfit_validSTAHits().at(index) == 0)    return false; // Glb fit must have hits in mu chambers
+    //if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.02) return false; // d0 from beamspot
+    //if (muonIsoValue(index) > 0.1)                      return false; // Isolation cut
+    if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.2) return false; // d0 from beamspot
+    if (muonIsoValue(index) > 0.4)                      return false; // Isolation cut
     return true;
-  } else{
-    return false;
-  }
+
 }
 TH2F &fakeRateMuon (enum fakeRateVersion version){
   if ( mu_fakeRateFile == 0 ) {
