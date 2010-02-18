@@ -289,17 +289,17 @@ TH2F &fakeRateEl (enum fakeRateVersion version){
     el_fakeRate_v1   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDn_ISO_04_FRptvseta") );
     el_fakeRate_v2   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDn_ISO_01_FRptvseta") );
     el_fakeRate_v3   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDy_ISO_04_FRptvseta") );
-  }
-	if( version == el_v1 ){ 
-		return *el_fakeRate_v1;
-	} else if( version == el_v2 ){
- 		return *el_fakeRate_v2;
-	} else if( version == el_v3 ){ 
-		return *el_fakeRate_v3;
-	} else {
-		cout << "ERROR: unknown electron version" << endl;	
-		gSystem->Exit(1);
-	}
+ }
+ if( version == el_v1 ){ 
+      return *el_fakeRate_v1;
+ } else if( version == el_v2 ){
+      return *el_fakeRate_v2;
+ } else if( version == el_v3 ){ 
+      return *el_fakeRate_v3;
+ } 
+ cout << "ERROR: unknown electron version" << endl;	
+ gSystem->Exit(1);
+ return *(TH2F*)0;
 }
 TH2F &fakeRateErrorEl (enum fakeRateVersion version){
  if ( el_fakeRateErrorFile == 0 ) {
@@ -320,10 +320,10 @@ TH2F &fakeRateErrorEl (enum fakeRateVersion version){
     return *el_fakeRateErr_v2;
   } else if( version == el_v3 ){
     return *el_fakeRateErr_v3;
-  } else { 
-    cout << "ERROR: unknown electron version" << endl;
-    gSystem->Exit(1);
   } 
+  cout << "ERROR: unknown electron version" << endl;
+  gSystem->Exit(1);
+  return *(TH2F *)0;
 } 
 
 
