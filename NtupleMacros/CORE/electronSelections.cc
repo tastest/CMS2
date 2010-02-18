@@ -286,6 +286,6 @@ bool electronId_cand02(const unsigned int index)
 				if(cms2.els_sccharge()[elIdx]*cms2.els_trk_charge()[elIdx] > 0 || (cms2.els_trkidx()[elIdx] < 0 || cms2.els_trkshFrac()[elIdx] < minFracSharedHits))
 					return cms2.els_sccharge()[elIdx];
 				else 
-					return cms2.els_trk_charge()[elIdx];
+				        return  cms2.trks_charge().at(cms2.els_trkidx().at(elIdx));
 
 			}
