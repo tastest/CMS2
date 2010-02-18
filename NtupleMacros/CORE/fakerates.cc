@@ -2,9 +2,9 @@
 #include "TFile.h"
 #include "TH2.h"
 #include "fakerates.h"
-#include "CORE/CMS2.h"
-#include "CORE/electronSelections.h"
-#include "CORE/muonSelections.h"
+#include "CMS2.h"
+#include "electronSelections.h"
+#include "muonSelections.h"
 
 /*muons*/
 class TH2F &fakeRateMuon (enum fakeRateVersion);
