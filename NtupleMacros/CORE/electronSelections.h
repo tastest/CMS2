@@ -1,4 +1,5 @@
 
+
 #ifndef ELECTRONSELECTIONS_H
 #define ELECTRONSELECTIONS_H
 
@@ -76,6 +77,9 @@ bool isFromConversionPartnerTrack(const unsigned int index);
 
 //electron charge using the majority logic of the egamma group
 int getChargeUsingMajorityLogic(int elIdx, float minFracSharedHits = 0.45);
+
+//charge flip rejection
+bool isChargeFlip(int elIndex);
 
 #endif
 

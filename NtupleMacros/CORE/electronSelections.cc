@@ -289,3 +289,11 @@ bool electronId_cand02(const unsigned int index)
 				        return  cms2.trks_charge().at(cms2.els_trkidx().at(elIdx));
 
 			}
+
+                       bool isChargeFlip(int elIndex){
+                       //true if electron is likely to be a charge flip
+			 if ((cms2.els_trkidx().at(elIndex) >= 0) && (cms2.els_trk_charge().at(elIndex) != cms2.trks_charge().at(cms2.els_trkidx().at(elIndex))) ) return true;
+			 if ((cms2.els_trkidx().at(elIndex) < 0)  && (cms2.els_trk_charge().at(elIndex) != cms2.els_sccharge().at(elIndex))) return true;
+			 
+			 return false;
+		       }
