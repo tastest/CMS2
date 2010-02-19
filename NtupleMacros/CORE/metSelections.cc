@@ -2,13 +2,12 @@
 // met selections
 //
 
-#include "metSelections.h"
-#include "CMS2.h"
-#include "TMath.h"
-#include "../Tools/tcmet_looper/getResponseFunction_fit.C"
-#include "selections.h"
 #include <math.h>
 #include <algorithm>
+#include "TMath.h"
+#include "CMS2.h"
+#include "trackSelections.h"
+#include "metSelections.h"
 
 //---------------------------------------------
 // function to calculate projected MET.
@@ -28,15 +27,13 @@ float projectedMET( float met, float metPhi, int hyp_index ) {
 //---------------------------------------------
 // function to correct tcMET for electron bug
 //---------------------------------------------
-metStruct correctedTCMET() {
-
-     TH2F* rf = getResponseFunction_fit();
-
-     metStruct met = getTcmetFromCaloMet(rf);
-
-     delete rf;
-
-     return met;
+#include "tcmet/getTcmetFromCaloMet.icc"
+#include "tcmet/getResponseFunction_fit.icc"
+metStruct correctedTCMET() 
+{
+     // static because we only want to get the response function once
+     static TH2F* rf = getResponseFunction_fit();
+     return getTcmetFromCaloMet(rf);
 }
 
 //---------------------------------------------
