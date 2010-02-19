@@ -32,6 +32,7 @@ enum {
 	H_BC30_170,
 
 	H_PHOTONJET,
+	H_PHOTONJETS,
 
 	H_QCD30,
 	H_QCD80,
@@ -45,11 +46,8 @@ enum {
 	H_ZTTJET_ALP,
 	H_MU15_SINGLE,
 
-	H_WENU_7TeV,
-	H_QCD30_7TeV,
-	H_PHOTONJET_7TeV,
-
-	H_ELEGUN,
+	H_ELEGUNIDEAL,
+	H_ELEGUNSTARTUP,
 
 };
 
@@ -112,15 +110,10 @@ DataSource fH_BC30_170();
 DataSource fH_BC20_170();
 
 DataSource fH_PHOTONJET();
+DataSource fH_PHOTONJETS();
 
 DataSource fH_QCD30();
 DataSource fH_MU30();
-
-// these were used with V02-00-08 7 TeV ntuples
-// will leave them here for the time being...
-DataSource        fH_WENU_7TeV();
-DataSource        fH_QCD30_7TeV();
-DataSource        fH_PHOTONJET_7TeV();
 
 // old?
 DataSource fH_WJETS();
@@ -132,9 +125,9 @@ DataSource fH_ZMMJET_ALP();
 DataSource fH_ZTTJET_ALP();
 DataSource fH_MU15_SINGLE();
 
-DataSource fH_WENU_7TeV();
 
-DataSource fH_ELEGUN();
+DataSource fH_ELEGUNIDEAL();
+DataSource fH_ELEGUNSTARTUP();
 
 #endif
 

@@ -1,7 +1,8 @@
 
 #include "AllDataSources.h"
 
-DataSource fH_ELEGUN() { return DataSource("elegun", H_ELEGUN, kBlue); }
+DataSource fH_ELEGUNSTARTUP() { return DataSource("elegunstartup", H_ELEGUNSTARTUP, kBlue); }
+DataSource fH_ELEGUNIDEAL() { return DataSource("elegunideal", H_ELEGUNIDEAL, kRed); }
 
 DataSource fH_DYMM()    { return DataSource("dymm",     H_DYMM, kCyan);    }
 DataSource fH_DYEE()    { return DataSource("dyee",     H_DYEE, kMagenta);    }
@@ -25,6 +26,8 @@ DataSource fH_EM30_170()      { return DataSource("QCDEMenrichedPt30to170",     
 DataSource fH_EM20_170()      { return DataSource("QCDEMenrichedPt20to170",       H_EM20_170);          }
 
 DataSource fH_PHOTONJET() { return DataSource("PhotonJetPt20to170", H_PHOTONJET); }
+DataSource fH_PHOTONJETS() { return DataSource("photonjets", H_PHOTONJETS, kMagenta); }
+
 
 DataSource fH_WENU()      { return DataSource("we",       H_WENU);          }
 DataSource fH_WMUNU()      { return DataSource("wm",       H_WMUNU);          }
@@ -32,11 +35,6 @@ DataSource fH_WTAUNU()      { return DataSource("wt",       H_WTAUNU);          
 
 DataSource fH_QCD30()      { return DataSource("QCDpt30",       H_QCD30);          }
 DataSource fH_MU30()       { return DataSource("InclusiveMuPt15",       H_MU30);          };
-
-// 7 TeV V02-00-08 - probably only used by DLE
-DataSource fH_WENU_7TeV() { return DataSource("wenu", H_WENU_7TeV); }
-DataSource fH_QCD30_7TeV() { return DataSource("qcd_pt30", H_QCD30_7TeV); }
-DataSource fH_PHOTONJET_7TeV() { return DataSource("photonjet", H_PHOTONJET_7TeV); }
 
 // old stuff?
 DataSource fH_TW()      { return DataSource("tw",       H_TW);          }
