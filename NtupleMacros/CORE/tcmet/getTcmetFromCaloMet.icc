@@ -31,8 +31,7 @@ float tcsumet;
 
 metStruct getTcmetFromCaloMet(TH2F* rf){
 
-  //rf = getResponseFunction_fit();
-
+  
   //initialize to calomet values
   tcmet_x = evt_met() * cos( evt_metPhi() );
   tcmet_y = evt_met() * sin( evt_metPhi() );
