@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// $Id: jetSelections.h,v 1.1 2010/02/19 20:23:33 jmuelmen Exp $
+// $Id: jetSelections.h,v 1.2 2010/02/19 20:45:39 jmuelmen Exp $
 
 #ifndef JETSELECTIONS_H
 #define JETSELECTIONS_H
@@ -38,7 +38,6 @@ std::vector<LorentzVector> getJets (unsigned int i_hyp,  // hyp or single-e to u
 				    double max_eta = JET_DEFAULT_ETA);
 
 int nJets (unsigned int i_hyp,  // hyp or single-e to use for cleaning
-	   bool sort = false,
 	   enum JetType = JET_DEFAULT_TYPE,
 	   enum CleaningType = JET_DEFAULT_CLEANING,
 	   double deltaR = JET_DEFAULT_DR,
@@ -46,7 +45,6 @@ int nJets (unsigned int i_hyp,  // hyp or single-e to use for cleaning
 	   double max_eta = JET_DEFAULT_ETA);
 
 double sumPt (unsigned int i_hyp,  // hyp or single-e to use for cleaning
-	      bool sort = false,
 	      enum JetType = JET_DEFAULT_TYPE,
 	      enum CleaningType = JET_DEFAULT_CLEANING,
 	      double deltaR = JET_DEFAULT_DR,

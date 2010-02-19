@@ -1,7 +1,8 @@
-// $Id: jetSelections.cc,v 1.1 2010/02/19 20:23:33 jmuelmen Exp $
+// $Id: jetSelections.cc,v 1.2 2010/02/19 20:45:39 jmuelmen Exp $
 
-#include "jetSelections.h"
+#include <algorithm>
 #include "Math/VectorUtil.h"
+#include "jetSelections.h"
 
 using std::vector;
 
@@ -96,8 +97,16 @@ getJets_fast (unsigned int i_hyp, enum JetType type, enum CleaningType cleaning,
      return ret;
 }
 
+struct jets_pt_gt {
+     bool operator () (const LorentzVector &v1, const LorentzVector &v2) 
+	  {
+	       return v1.pt() > v2.pt();
+	  }
+};
+
 // functions that we let other people use
-vector<LorentzVector> getJets (unsigned int i_hyp, enum JetType type, enum CleaningType cleaning,
+vector<LorentzVector> getJets (unsigned int i_hyp, bool sort_, 
+			       enum JetType type, enum CleaningType cleaning,
 			       double deltaR, double min_pt, double max_eta)
 {
      vector<const LorentzVector *> jets = getJets_fast(i_hyp, type, cleaning, deltaR, min_pt, max_eta);
@@ -106,6 +115,8 @@ vector<LorentzVector> getJets (unsigned int i_hyp, enum JetType type, enum Clean
      for (unsigned int i = 0; i < jets.size(); ++i) {
 	  ret.push_back(*jets[i]);
      }
+     if (sort_)
+	  sort(ret.begin(), ret.end(), jets_pt_gt());
      return ret;
 }
 
