@@ -1,11 +1,19 @@
 #ifndef METSELECTIONS_H
 #define METSELECTIONS_H
 
-#include "../Tools/tcmet_looper/getTcmetFromCaloMet.h"
-
 //
 // met selections
 //
+
+struct metStruct{
+  metStruct() : met(-999.), metphi(-999.), metx(-999.), mety(-999.), sumet(-999.)  {}
+  float met;
+  float metphi;
+  float metx;
+  float mety;
+  float sumet;
+};
+
 
 //---------------------------------------------
 // function to calculate projected MET.
