@@ -146,29 +146,29 @@ TH2F &fakeRateErrorMuon (enum fakeRateVersion version){
 /* electrons */
 class TH2F &fakeRateEl (enum fakeRateVersion);
 class TH2F &fakeRateErrorEl (enum fakeRateVersion);
-bool   isFakeDenominatorElectron_v1 (int);
-double elFakeProb_v1 (int);
-double elFakeProbErr_v1 (int);
-bool   isFakeDenominatorElectron_v2 (int);
-double elFakeProb_v2 (int);
-double elFakeProbErr_v2 (int);
-bool   isFakeDenominatorElectron_v3 (int);
-double elFakeProb_v3 (int);
-double elFakeProbErr_v3 (int);
+bool   isFakeDenominatorElectron_v1_cand01 (int);
+double elFakeProb_v1_cand01 (int);
+double elFakeProbErr_v1_cand01 (int);
+bool   isFakeDenominatorElectron_v2_cand01 (int);
+double elFakeProb_v2_cand01 (int);
+double elFakeProbErr_v2_cand01 (int);
+bool   isFakeDenominatorElectron_v3_cand01 (int);
+double elFakeProb_v3_cand01 (int);
+double elFakeProbErr_v3_cand01 (int);
 static TFile *el_fakeRateFile = 0;
-static TH2F  *el_fakeRate_v1 = 0;
-static TH2F  *el_fakeRate_v2 = 0;
-static TH2F  *el_fakeRate_v3 = 0;
+static TH2F  *el_fakeRate_v1_cand01 = 0;
+static TH2F  *el_fakeRate_v2_cand01 = 0;
+static TH2F  *el_fakeRate_v3_cand01 = 0;
 static TFile *el_fakeRateErrorFile = 0;
-static TH2F  *el_fakeRateErr_v1 = 0;
-static TH2F  *el_fakeRateErr_v2 = 0;
-static TH2F  *el_fakeRateErr_v3 = 0;
+static TH2F  *el_fakeRateErr_v1_cand01 = 0;
+static TH2F  *el_fakeRateErr_v2_cand01 = 0;
+static TH2F  *el_fakeRateErr_v3_cand01 = 0;
 
 bool isFakeableElectron (int i_el, enum fakeRateVersion version)
 {
-  if(version == el_v1) return isFakeDenominatorElectron_v1(i_el);
-  if(version == el_v2) return isFakeDenominatorElectron_v2(i_el);
-  if(version == el_v3) return isFakeDenominatorElectron_v3(i_el);
+  if(version == el_v1_cand01) return isFakeDenominatorElectron_v1_cand01(i_el);
+  if(version == el_v2_cand01) return isFakeDenominatorElectron_v2_cand01(i_el);
+  if(version == el_v3_cand01) return isFakeDenominatorElectron_v3_cand01(i_el);
   else {
     std::cout<<"isFakeable: invalid fakeRateVersion given. Check it!"<<std::endl;
     return false;
@@ -176,9 +176,9 @@ bool isFakeableElectron (int i_el, enum fakeRateVersion version)
 }
 double elFakeProb (int i_el, enum fakeRateVersion version)
 {
-  if(version == el_v1) return elFakeProb_v1(i_el);
-  if(version == el_v2) return elFakeProb_v2(i_el);
-  if(version == el_v3) return elFakeProb_v3(i_el);
+  if(version == el_v1_cand01) return elFakeProb_v1_cand01(i_el);
+  if(version == el_v2_cand01) return elFakeProb_v2_cand01(i_el);
+  if(version == el_v3_cand01) return elFakeProb_v3_cand01(i_el);
   else {
     std::cout<<"elFakeProb: invalid fakeRateVersion given. Check it!"<<std::endl;
     return -999.;
@@ -187,9 +187,9 @@ double elFakeProb (int i_el, enum fakeRateVersion version)
 
 double elFakeProbErr (int i_el, enum fakeRateVersion version)
 {
-  if(version == el_v1) return elFakeProbErr_v1(i_el);
-  if(version == el_v2) return elFakeProbErr_v2(i_el);
-  if(version == el_v3) return elFakeProbErr_v3(i_el);
+  if(version == el_v1_cand01) return elFakeProbErr_v1_cand01(i_el);
+  if(version == el_v2_cand01) return elFakeProbErr_v2_cand01(i_el);
+  if(version == el_v3_cand01) return elFakeProbErr_v3_cand01(i_el);
   else {
     std::cout<<"elFakeProbErr: invalid fakeRateVersion given. Check it!"<<std::endl;
     return -999.;
@@ -199,7 +199,7 @@ double elFakeProbErr (int i_el, enum fakeRateVersion version)
 // --------------------------------
 // electrons v1
 // --------------------------------
-bool isFakeDenominatorElectron_v1 (int index) {
+bool isFakeDenominatorElectron_v1_cand01 (int index) {
  	if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
 	if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
   if (!electronId_noMuon(index)) return false;
@@ -210,11 +210,11 @@ bool isFakeDenominatorElectron_v1 (int index) {
   if (isFromConversionPartnerTrack(index)) return false;
   return true;
 }
-double elFakeProb_v1 (int i_el){
+double elFakeProb_v1_cand01 (int i_el){
   float prob = 0.0;
   float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateEl(el_v1);
-  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v1);
+  TH2F *theFakeRate = &fakeRateEl(el_v1_cand01);
+  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v1_cand01);
   // cut definition
   float pt = cms2.els_p4()[i_el].Pt();
   float eta = fabs(cms2.els_p4()[i_el].Eta());
@@ -237,11 +237,11 @@ double elFakeProb_v1 (int i_el){
   return prob;
 }
 
-double elFakeProbErr_v1 (int i_el){
+double elFakeProbErr_v1_cand01 (int i_el){
   float prob = 0.0;
   float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateEl(el_v1);
-  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v1);
+  TH2F *theFakeRate = &fakeRateEl(el_v1_cand01);
+  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v1_cand01);
   // cut definition
   float pt = cms2.els_p4()[i_el].Pt();
   float eta = fabs(cms2.els_p4()[i_el].Eta());
@@ -267,7 +267,7 @@ double elFakeProbErr_v1 (int i_el){
 // --------------------------------
 // electrons v2
 // --------------------------------
-bool isFakeDenominatorElectron_v2 (int index) {
+bool isFakeDenominatorElectron_v2_cand01 (int index) {
  	if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
 	if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
   if (!electronId_noMuon(index)) return false;
@@ -277,11 +277,11 @@ bool isFakeDenominatorElectron_v2 (int index) {
   if (isFromConversionPartnerTrack(index)) return false;
   return true;
 }
-double elFakeProb_v2 (int i_el){
+double elFakeProb_v2_cand01 (int i_el){
   float prob = 0.0;
   float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateEl(el_v2);
-  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v2);
+  TH2F *theFakeRate = &fakeRateEl(el_v2_cand01);
+  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v2_cand01);
   // cut definition
   float pt = cms2.els_p4()[i_el].Pt();
   float eta = fabs(cms2.els_p4()[i_el].Eta());
@@ -304,11 +304,11 @@ double elFakeProb_v2 (int i_el){
   return prob;
 }
 
-double elFakeProbErr_v2 (int i_el){
+double elFakeProbErr_v2_cand01 (int i_el){
   float prob = 0.0;
   float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateEl(el_v2);
-  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v2);
+  TH2F *theFakeRate = &fakeRateEl(el_v2_cand01);
+  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v2_cand01);
   // cut definition
   float pt = cms2.els_p4()[i_el].Pt();
   float eta = fabs(cms2.els_p4()[i_el].Eta());
@@ -333,7 +333,7 @@ double elFakeProbErr_v2 (int i_el){
 // --------------------------------
 // electrons v3
 // --------------------------------
-bool isFakeDenominatorElectron_v3 (int index) {
+bool isFakeDenominatorElectron_v3_cand01 (int index) {
  	if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
   if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
   if (!electronId_noMuon(index)) return false;
@@ -344,11 +344,11 @@ bool isFakeDenominatorElectron_v3 (int index) {
   if (isFromConversionPartnerTrack(index)) return false;
   return true;
 }
-double elFakeProb_v3 (int i_el){
+double elFakeProb_v3_cand01 (int i_el){
   float prob = 0.0;
   float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateEl(el_v3);
-  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v3);
+  TH2F *theFakeRate = &fakeRateEl(el_v3_cand01);
+  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v3_cand01);
   // cut definition
   float pt = cms2.els_p4()[i_el].Pt();
   float eta = fabs(cms2.els_p4()[i_el].Eta());
@@ -370,13 +370,11 @@ double elFakeProb_v3 (int i_el){
   }
   return prob;
 }
-
-
-double elFakeProbErr_v3 (int i_el){
+double elFakeProbErr_v3_cand01 (int i_el){
   float prob = 0.0;
   float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateEl(el_v3);
-  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v3);
+  TH2F *theFakeRate = &fakeRateEl(el_v3_cand01);
+  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v3_cand01);
   // cut definition
   float pt = cms2.els_p4()[i_el].Pt();
   float eta = fabs(cms2.els_p4()[i_el].Eta());
@@ -410,16 +408,16 @@ TH2F &fakeRateEl (enum fakeRateVersion version){
       std::cout << "$CMS2_LOCATION/NtupleMacros/data/el_FR_3X.root exists!" << std::endl;
       gSystem->Exit(1);
     }
-    el_fakeRate_v1   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDn_ISO_04_FRptvseta") );
-    el_fakeRate_v2   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDn_ISO_01_FRptvseta") );
-    el_fakeRate_v3   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDy_ISO_04_FRptvseta") );
+    el_fakeRate_v1_cand01   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDn_ISO_04_FRptvseta") );
+    el_fakeRate_v2_cand01   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDn_ISO_01_FRptvseta") );
+    el_fakeRate_v3_cand01   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDy_ISO_04_FRptvseta") );
  }
- if( version == el_v1 ){ 
-      return *el_fakeRate_v1;
- } else if( version == el_v2 ){
-      return *el_fakeRate_v2;
- } else if( version == el_v3 ){ 
-      return *el_fakeRate_v3;
+ if( version == el_v1_cand01 ){ 
+      return *el_fakeRate_v1_cand01;
+ } else if( version == el_v2_cand01 ){
+      return *el_fakeRate_v2_cand01;
+ } else if( version == el_v3_cand01 ){ 
+      return *el_fakeRate_v3_cand01;
  } 
  cout << "ERROR: unknown electron version" << endl;	
  gSystem->Exit(1);
@@ -434,16 +432,16 @@ TH2F &fakeRateErrorEl (enum fakeRateVersion version){
       std::cout << "$CMS2_LOCATION/NtupleMacros/data/el_FR_3X.root exists!" << std::endl;
       gSystem->Exit(1);
     }
-    el_fakeRateErr_v1   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDn_ISO_04_FRErrptvseta") );
-    el_fakeRateErr_v2   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDn_ISO_01_FRErrptvseta") );
-    el_fakeRateErr_v3   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDy_ISO_04_FRErrptvseta") );
+    el_fakeRateErr_v1_cand01   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDn_ISO_04_FRErrptvseta") );
+    el_fakeRateErr_v2_cand01   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDn_ISO_01_FRErrptvseta") );
+    el_fakeRateErr_v3_cand01   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDy_ISO_04_FRErrptvseta") );
   } 
-  if( version == el_v1 ){
-    return *el_fakeRateErr_v1;
-  } else if( version == el_v2 ){
-    return *el_fakeRateErr_v2;
-  } else if( version == el_v3 ){
-    return *el_fakeRateErr_v3;
+  if( version == el_v1_cand01 ){
+    return *el_fakeRateErr_v1_cand01;
+  } else if( version == el_v2_cand01 ){
+    return *el_fakeRateErr_v2_cand01;
+  } else if( version == el_v3_cand01 ){
+    return *el_fakeRateErr_v3_cand01;
   } 
   cout << "ERROR: unknown electron version" << endl;
   gSystem->Exit(1);
