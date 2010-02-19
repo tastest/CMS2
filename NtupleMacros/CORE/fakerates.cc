@@ -5,6 +5,7 @@
 #include "CMS2.h"
 #include "electronSelections.h"
 #include "muonSelections.h"
+#include "selections.h"
 
 /*muons*/
 class TH2F &fakeRateMuon (enum fakeRateVersion);
