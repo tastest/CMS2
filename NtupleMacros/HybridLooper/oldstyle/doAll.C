@@ -72,6 +72,15 @@ void doAll() {
     TChain *chain_wmunu = new TChain("Events");
     chain_wmunu->Add(ntuple_location + "/cms2/Wmunu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
 
+	// photonjets
+	TChain *chain_photonjets = new TChain("Events");
+    chain_photonjets->Add(ntuple_location + "/cms2/PhotonJet_Pt170to300_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+    chain_photonjets->Add(ntuple_location + "/cms2/PhotonJet_Pt20to30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+    chain_photonjets->Add(ntuple_location + "/cms2/PhotonJet_Pt30to50_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+    chain_photonjets->Add(ntuple_location + "/cms2/PhotonJet_Pt50to80_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+    chain_photonjets->Add(ntuple_location + "/cms2/PhotonJet_Pt80to120_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+
+
 	// BSM
 	// LM0
 	TChain *chain_lm0 = new TChain("Events");
@@ -101,8 +110,9 @@ void doAll() {
 //	looper->ScanChain(false, "elegunstartup", chain_elegunstartup);
 //  looper->ScanChain(false, "elegunideal", chain_elegunideal);
 
-	//looper->ScanChain(false, "QCDpt30", chain_qcd30);
+	looper->ScanChain(false, "QCDpt30", chain_qcd30);
 //	looper->ScanChain(false, "wm", chain_wmunu);
+	looper->ScanChain(false, "photonjets", chain_photonjets);
 
 	//
 	// write histograms
@@ -128,6 +138,7 @@ void doAll() {
 	delete chain_wmunu;
 
 	delete chain_qcd30;
+	delete chain_photonjets;
 
 	delete chain_lm0;
 
