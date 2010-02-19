@@ -49,7 +49,8 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
   headerf << "#include \"TTree.h\"" << endl;
   headerf << "#include \"TH1F.h\""  << endl;
   headerf << "#include \"TFile.h\"" << endl;
-  headerf << "#include <vector> " << endl << endl;
+  headerf << "#include <vector> " << endl;
+  headerf << "typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;" << endl << endl;
   if (paranoid)
     headerf << "#define PARANOIA" << endl << endl;
   headerf << "using namespace std; " << endl;
