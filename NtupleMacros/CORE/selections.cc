@@ -3032,6 +3032,7 @@ bool idIsBeauty(int id) {
   else return false;
 }
 
+/*
 // return a pair of d0, d0err with respect to a primary vertex
 std::pair<double, double> trks_d0_pv (int itrk, int ipv)
 {
@@ -3059,3 +3060,4 @@ std::pair<double, double> trks_d0_pv (int itrk, int ipv)
      std::cerr << "Oh no!  sigma^2(d0corr) < 0!" << std::endl;
      return std::pair<double, double>(d0vtx, -sqrt(-d0err2vtx));
 }
+*/
