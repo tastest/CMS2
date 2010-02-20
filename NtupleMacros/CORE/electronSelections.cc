@@ -74,16 +74,16 @@ bool electronId_cand01(const unsigned int index)
 	//
 	if (fabs(cms2.els_etaSC()[index]) < 1.479) {
 		//if (cms2.els_fiduciality()[index] & (1<<ISEB)) {
-		if (fabs(cms2.els_dEtaIn()[index] > dEtaInThresholds[0])) 	return false;
-		if (fabs(cms2.els_dPhiIn()[index] > dPhiInThresholds[0])) 	return false;
+		if (fabs(cms2.els_dEtaIn()[index]) > dEtaInThresholds[0]) 	return false;
+		if (fabs(cms2.els_dPhiIn()[index]) > dPhiInThresholds[0]) 	return false;
 		if (cms2.els_hOverE()[index] > hoeThresholds[0]) 		return false;
 		if ((cms2.els_e2x5Max()[index]/cms2.els_e5x5()[index]) < e2x5Over5x5Thresholds[0]) return false;
 		return true;
 	}
 	if (fabs(cms2.els_etaSC()[index]) > 1.479) {
 		//if (cms2.els_fiduciality()[index] & (1<<ISEE)) {
-		if (fabs(cms2.els_dEtaIn()[index] > dEtaInThresholds[1])) 	return false;
-		if (fabs(cms2.els_dPhiIn()[index] > dPhiInThresholds[1])) 	return false;
+		if (fabs(cms2.els_dEtaIn()[index]) > dEtaInThresholds[1]) 	return false;
+		if (fabs(cms2.els_dPhiIn()[index]) > dPhiInThresholds[1]) 	return false;
 		if (cms2.els_hOverE()[index] > hoeThresholds[1]) 		return false;
 		if (cms2.els_sigmaIEtaIEta()[index] > sigmaIEtaIEtaThresholds[1]) 	return false;
 		return true;
@@ -109,16 +109,16 @@ bool electronId_cand02(const unsigned int index)
     //
     if (fabs(cms2.els_etaSC()[index]) < 1.479) {
         //if (cms2.els_fiduciality()[index] & (1<<ISEB)) {
-        if (fabs(cms2.els_dEtaIn()[index] > dEtaInThresholds[0]))   return false;
-        if (fabs(cms2.els_dPhiIn()[index] > dPhiInThresholds[0]))   return false;
+        if (fabs(cms2.els_dEtaIn()[index]) > dEtaInThresholds[0])   return false;
+        if (fabs(cms2.els_dPhiIn()[index]) > dPhiInThresholds[0])   return false;
         if (cms2.els_hOverE()[index] > hoeThresholds[0])        return false;
         if ((cms2.els_e2x5Max()[index]/cms2.els_e5x5()[index]) < e2x5Over5x5Thresholds[0]) return false;
         return true;
     }
     if (fabs(cms2.els_etaSC()[index]) > 1.479) {
         //if (cms2.els_fiduciality()[index] & (1<<ISEE)) {
-        if (fabs(cms2.els_dEtaIn()[index] > dEtaInThresholds[1]))   return false;
-        if (fabs(cms2.els_dPhiIn()[index] > dPhiInThresholds[1]))   return false;
+        if (fabs(cms2.els_dEtaIn()[index]) > dEtaInThresholds[1])   return false;
+        if (fabs(cms2.els_dPhiIn()[index]) > dPhiInThresholds[1])   return false;
         if (cms2.els_hOverE()[index] > hoeThresholds[1])        return false;
         if (cms2.els_sigmaIEtaIEta()[index] > sigmaIEtaIEtaThresholds[1])   return false;
         return true;
