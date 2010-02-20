@@ -894,15 +894,15 @@ TH2F &fakeRateEl (enum fakeRateVersion version){
       std::cout << "$CMS2_LOCATION/NtupleMacros/data/el_FR_3X.root exists!" << std::endl;
       gSystem->Exit(1);
     }
-    el_fakeRate_v1_cand01   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDn_ISO_04_FRptvseta") );
-    el_fakeRate_v1_cand02   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDn_ISO_04_FRptvseta") );
-    el_fakeRate_v1_cand02flip   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDn_ISO_04_FRptvseta") );
-    el_fakeRate_v2_cand01   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDn_ISO_01_FRptvseta") );
-    el_fakeRate_v2_cand02   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDn_ISO_01_FRptvseta") );
-    el_fakeRate_v2_cand02flip   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDn_ISO_01_FRptvseta") );
-    el_fakeRate_v3_cand01   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDy_ISO_04_FRptvseta") );
-    el_fakeRate_v3_cand02   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDy_ISO_04_FRptvseta") );
-    el_fakeRate_v3_cand02flip   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDy_ISO_04_FRptvseta") );
+    el_fakeRate_v1_cand01     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v1_cand01_IDn_ISO_04_FRptvseta") );
+    el_fakeRate_v1_cand02     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v1_cand02_IDn_ISO_04_FRptvseta") );
+    el_fakeRate_v1_cand02flip = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v1_cand02flip_IDn_ISO_04_FRptvseta") );
+    el_fakeRate_v2_cand01     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v2_cand01_IDn_ISO_01_FRptvseta") );
+    el_fakeRate_v2_cand02     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v2_cand02_IDn_ISO_01_FRptvseta") );
+    el_fakeRate_v2_cand02flip = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v2_cand02flip_IDn_ISO_01_FRptvseta") );
+    el_fakeRate_v3_cand01     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v3_cand01_IDy_ISO_04_FRptvseta") );
+    el_fakeRate_v3_cand02     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v3_cand02_IDy_ISO_04_FRptvseta") );
+    el_fakeRate_v3_cand02flip = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v3_cand02flip_IDy_ISO_04_FRptvseta") );
   }
   if( version == el_v1_cand01 ){ 
     return *el_fakeRate_v1_cand01;
@@ -936,15 +936,15 @@ TH2F &fakeRateErrorEl (enum fakeRateVersion version){
       std::cout << "$CMS2_LOCATION/NtupleMacros/data/el_FR_3X.root exists!" << std::endl;
       gSystem->Exit(1);
     }
-    el_fakeRateErr_v1_cand01   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDn_ISO_04_FRErrptvseta") );
-    el_fakeRateErr_v1_cand02   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDn_ISO_04_FRErrptvseta") );
-    el_fakeRateErr_v1_cand02flip   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDn_ISO_04_FRErrptvseta") );
-    el_fakeRateErr_v2_cand01   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDn_ISO_01_FRErrptvseta") );
-    el_fakeRateErr_v2_cand02   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDn_ISO_01_FRErrptvseta") );
-    el_fakeRateErr_v2_cand02flip   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDn_ISO_01_FRErrptvseta") );
-    el_fakeRateErr_v3_cand01   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDy_ISO_04_FRErrptvseta") );
-    el_fakeRateErr_v3_cand02   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDy_ISO_04_FRErrptvseta") );
-    el_fakeRateErr_v3_cand02flip   = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_IDy_ISO_04_FRErrptvseta") );
+    el_fakeRateErr_v1_cand01     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v1_cand01_IDn_ISO_04_FRErrptvseta") );
+    el_fakeRateErr_v1_cand02     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v1_cand02_IDn_ISO_04_FRErrptvseta") );
+    el_fakeRateErr_v1_cand02flip = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v1_cand02flip_IDn_ISO_04_FRErrptvseta") );
+    el_fakeRateErr_v2_cand01     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v2_cand01_IDn_ISO_01_FRErrptvseta") );
+    el_fakeRateErr_v2_cand02     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v2_cand02_IDn_ISO_01_FRErrptvseta") );
+    el_fakeRateErr_v2_cand02flip = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v2_cand02flip_IDn_ISO_01_FRErrptvseta") );
+    el_fakeRateErr_v3_cand01     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v3_cand01_IDy_ISO_04_FRErrptvseta") );
+    el_fakeRateErr_v3_cand02     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v3_cand02_IDy_ISO_04_FRErrptvseta") );
+    el_fakeRateErr_v3_cand02flip = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v3_cand02flip_IDy_ISO_04_FRErrptvseta") );
   } 
   if( version == el_v1_cand01 ){
     return *el_fakeRateErr_v1_cand01;
