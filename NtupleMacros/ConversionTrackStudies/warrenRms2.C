@@ -272,7 +272,8 @@ void doRms(string datatree, string mctree, bool is2tev=false) {
 	const double sumEtMax_c3=70.;
 	const int nbins_MEX_c3=200;
 	const int nbins_c3=21;
-										
+	const int tccolor = 896;
+				
 	//// tc MC
 	TH2D* MC_c3 = new TH2D("MC_c3", title.c_str(), nbins_c3, 0., sumEtMax_c3, nbins_MEX_c3, -50., 50.); 
 	MC_c3->GetXaxis()->SetTitle("tcSumEt [GeV]");
@@ -287,9 +288,11 @@ void doRms(string datatree, string mctree, bool is2tev=false) {
 	//TH2Analyzer TH2Ana( &MC, 1, 100, 10, false);
 	//TH2Analyzer TH2Ana( &MC, 1, nbins, 1, true);
 	TH1D* ha_c3 = TH2Ana_c3.SigmaGauss();
-	ha_c3->SetLineColor(2);
+	ha_c3->SetLineColor(tccolor);
+	ha_c3->SetFillColor(0);
 	ha_c3->SetLineWidth(3);
 	ha_c3->SetMarkerStyle(0);
+	ha_c3->SetMarkerColor(tccolor);
 	ha_c3->SetTitle("");
 	
 	//// tc data
@@ -305,6 +308,7 @@ void doRms(string datatree, string mctree, bool is2tev=false) {
 	//TH2Analyzer TH2AnaRD( &RD, 1, nbins, 1, true);
 	TH2Analyzer TH2AnaRD_c3( RD_c3, 1);
 	TH1D* haRD_c3 = TH2AnaRD_c3.SigmaGauss();
+	haRD_c3->SetFillColor(0);
 
 	//add fitting
 	//TF1 *fit = new TF1("fit","sqrt(pow([0],2)+pow([1],2)*(x-[3])+pow([2]*(x-[3]),2))", 0, 60); //in note
@@ -320,13 +324,15 @@ void doRms(string datatree, string mctree, bool is2tev=false) {
 	//	 << sB << endl
 	//	 << sC << endl
 	//	 << sD << endl;
-										
+	
 	// draw
 	haRD_c3->SetMarkerStyle(21);
 	//haRD_c3->SetTitle(title.c_str());
 	ha_c3->SetTitle("");
-	ha_c3->GetXaxis()->SetTitle("tcSumEt [GeV]");
-	ha_c3->GetYaxis()->SetTitle("#sigma(tcMET_{X,Y}) [GeV]");
+	string ylabel = "#sigma(tc#slash{E}_{x,y}) [GeV]";
+	string sumetlabel = "tc#scale[0.7]{#sum}E_{T} [GeV]";
+	ha_c3->GetXaxis()->SetTitle(sumetlabel.c_str());
+	ha_c3->GetYaxis()->SetTitle(ylabel.c_str());
 	//ha_c3->GetXaxis()->SetTitle("tcMET components [GeV]");
 	ha_c3->GetXaxis()->SetTitleSize(0.06);
 	ha_c3->GetXaxis()->SetTitleOffset(0.9);
@@ -347,26 +353,33 @@ void doRms(string datatree, string mctree, bool is2tev=false) {
 	//haRD_c3->GetXaxis()->SetTitleOffset(0.95);
 	haRD_c3->Draw("same"); //data
 
-	string cms = "CMS Preliminary";
-	string d9 = "#sqrt{s} = 900 GeV";
-	string d2 = "#sqrt{s} = 2360 GeV";
+	string cmsd2 = "#splitline{CMS Preliminary 2009}{#sqrt{s} = 2360 GeV}";
+	string cmsd9 = "#splitline{CMS Preliminary 2009}{#sqrt{s} = 900 GeV}";
 	TLatex latex;
 	latex.SetTextAlign(12);
-	latex.SetTextSize(0.05);
+	latex.SetTextSize(0.04);
 	latex.SetTextFont(62);
 	latex.SetNDC();
+	double x2 = 0.16; //for the latex--this is the middle of the left edge of the tlatex
+	double y2 = 0.88;
 
-	latex.DrawLatex(0.3, 0.85, (cms).c_str());
+	//latex.DrawLatex(0.3, 0.85, (cms).c_str());
 	if( is2tev )
-	  latex.DrawLatex(0.3, 0.79, (d2).c_str());
+	  latex.DrawLatex(x2, y2, (cmsd2).c_str());
+	//latex.DrawLatex(0.3, 0.79, (cmsd2).c_str());
 	else
-	  latex.DrawLatex(0.3, 0.79, (d9).c_str());
+	  latex.DrawLatex(x2, y2, (cmsd9).c_str());
+	//latex.DrawLatex(0.3, 0.79, (cmsd9).c_str());
 										
-	//TLegend *lc3 = new TLegend(0.5502874,0.7669492,0.716954,0.8771186,NULL,"brNDC");
-	//lc3->SetFillColor(10);
-	//lc3->AddEntry(haRD_c3,"data, TC","p");
-	//if (!noMC) lc3->AddEntry(ha_c3,"MC, TC","l");
-	//lc3->Draw();
+	TLegend &legend2 = *new TLegend(x2, y2-0.16, x2+0.3, y2-0.06); //y2-0.16 = 0.72  y2-0.06 = 0.82
+	legend2.SetTextFont(42); //same as TDR style
+	legend2.SetFillColor(0);
+	//legend2.SetBorderSize(0); //was in code, but not plots in pas
+	legend2.SetShadowColor(0);
+
+	legend2.AddEntry(haRD_c3, "Data");
+	if (!noMC) legend2.AddEntry(ha_c3, "Simulation");
+	legend2.Draw();
 	//c3->Update();
 										
 	//std::string eps_c3 = "sigmaMEX_tc_fit";
