@@ -4,12 +4,15 @@
 
 // list of available FR versions:
 enum fakeRateVersion {
-  el_v1_cand01,
-  el_v1_cand02,
+  el_v1_cand01, // pure cand01 selection
+  el_v1_cand02, // cand02 + extra
+  el_v1_cand02flip, // cand02 + extra + chargeflipVeto
   el_v2_cand01,
   el_v2_cand02,
+  el_v2_cand02flip,
   el_v3_cand01,
   el_v3_cand02,
+  el_v3_cand02flip,
   mu_v1,
 };
 
