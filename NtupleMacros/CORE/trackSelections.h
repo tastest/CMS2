@@ -1,7 +1,7 @@
 // -*- C++ -*-
 
-#ifndef SELECTION_H
-#define SELECTION_H
+#ifndef TRK_SELECTION_H
+#define TRK_SELECTION_H
 
 #include <utility>
 
