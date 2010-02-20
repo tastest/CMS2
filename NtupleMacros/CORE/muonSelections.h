@@ -18,6 +18,7 @@ enum SelectionType {
 // version is a backup.
 //
 bool muonId(unsigned int index, SelectionType type = Nominal);
+bool muonIdNotIsolated(unsigned int index, SelectionType type = Nominal);
 
 //
 // relative isolation

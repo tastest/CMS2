@@ -5,6 +5,11 @@
 // Apply various muon identification requirements
 //------------------------------------------------------------------
 bool muonId(unsigned int index, SelectionType type){
+  return 
+    muonIdNotIsolated( index, type ) && 
+    muonIsoValue(index) < 0.1;          // Isolation cut
+}
+bool muonIdNotIsolated(unsigned int index, SelectionType type){
   switch (type) {
 
   case Nominal:
@@ -21,7 +26,6 @@ bool muonId(unsigned int index, SelectionType type){
     if (cms2.mus_iso_hcalvetoDep().at(index) > 6)       return false; // HCalE < 6 
     if (cms2.mus_gfit_validSTAHits().at(index) == 0)    return false; // Glb fit must have hits in mu chambers
     if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.02) return false; // d0 from beamspot
-    if (muonIsoValue(index) > 0.1)                      return false; // Isolation cut
     return true;
     break;
 
