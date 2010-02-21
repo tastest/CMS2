@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// $Id: jetSelections.h,v 1.2 2010/02/19 20:45:39 jmuelmen Exp $
+// $Id: jetSelections.h,v 1.3 2010/02/21 01:14:45 jmuelmen Exp $
 
 #ifndef JETSELECTIONS_H
 #define JETSELECTIONS_H
@@ -29,6 +29,7 @@ enum CleaningType {
 #define JET_DEFAULT_PT		30
 #define JET_DEFAULT_ETA		2.4
 
+// vector of p4's of the jets passing selections
 std::vector<LorentzVector> getJets (unsigned int i_hyp,  // hyp or single-e to use for cleaning
 				    bool sort = false,
 				    enum JetType = JET_DEFAULT_TYPE,
@@ -37,6 +38,16 @@ std::vector<LorentzVector> getJets (unsigned int i_hyp,  // hyp or single-e to u
 				    double min_pt = JET_DEFAULT_PT,
 				    double max_eta = JET_DEFAULT_ETA);
 
+// vector of bools aligned with the jet collection telling you which
+// jets passed the selections
+std::vector<bool> getJetFlags (unsigned int i_hyp,  // hyp or single-e to use for cleaning
+			       enum JetType = JET_DEFAULT_TYPE,
+			       enum CleaningType = JET_DEFAULT_CLEANING,
+			       double deltaR = JET_DEFAULT_DR,
+			       double min_pt = JET_DEFAULT_PT,
+			       double max_eta = JET_DEFAULT_ETA);
+
+// number of jets passing selections
 int nJets (unsigned int i_hyp,  // hyp or single-e to use for cleaning
 	   enum JetType = JET_DEFAULT_TYPE,
 	   enum CleaningType = JET_DEFAULT_CLEANING,
@@ -44,6 +55,7 @@ int nJets (unsigned int i_hyp,  // hyp or single-e to use for cleaning
 	   double min_pt = JET_DEFAULT_PT,
 	   double max_eta = JET_DEFAULT_ETA);
 
+// scalar sum pt of jets passing selections
 double sumPt (unsigned int i_hyp,  // hyp or single-e to use for cleaning
 	      enum JetType = JET_DEFAULT_TYPE,
 	      enum CleaningType = JET_DEFAULT_CLEANING,

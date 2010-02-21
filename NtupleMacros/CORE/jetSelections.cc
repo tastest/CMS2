@@ -1,4 +1,4 @@
-// $Id: jetSelections.cc,v 1.3 2010/02/19 21:01:14 jmuelmen Exp $
+// $Id: jetSelections.cc,v 1.4 2010/02/21 01:14:45 jmuelmen Exp $
 
 #include <algorithm>
 #include <utility>
@@ -52,12 +52,12 @@ static jets_with_corr_t getJets_fast (unsigned int i_hyp, enum JetType type, enu
 	  }
 	  const double pt = jets->at(i).pt() * corr;
 	  if (pt < min_pt) 
-	       continue;
+	       goto conti;
 	  //------------------------------------------------------------
 	  // max |eta| cut
 	  //------------------------------------------------------------
 	  if (fabs(jets->at(i).eta()) > max_eta)
-	       continue;
+	       goto conti;
 	  //------------------------------------------------------------
 	  // lepton cleaning
 	  //------------------------------------------------------------
@@ -68,10 +68,10 @@ static jets_with_corr_t getJets_fast (unsigned int i_hyp, enum JetType type, enu
 	  {
 	       const LorentzVector &lt = cms2.hyp_lt_p4().at(i_hyp);
 	       if (ROOT::Math::VectorUtil::DeltaR(jets->at(i), lt) < deltaR)
-		    continue;
+		    goto conti;
 	       const LorentzVector &ll = cms2.hyp_ll_p4().at(i_hyp);
 	       if (ROOT::Math::VectorUtil::DeltaR(jets->at(i), ll) < deltaR)
-		    continue;
+		    goto conti;
 	       break;
 	  }
 	  case JETS_CLEAN_HYP_E:
@@ -79,27 +79,33 @@ static jets_with_corr_t getJets_fast (unsigned int i_hyp, enum JetType type, enu
 	       const LorentzVector &lt = cms2.hyp_lt_p4().at(i_hyp);
 	       const int lt_id = cms2.hyp_lt_id().at(i_hyp);
 	       if (abs(lt_id) == 11 && ROOT::Math::VectorUtil::DeltaR(jets->at(i), lt) < deltaR)
-		    continue;
+		    goto conti;
 	       const LorentzVector &ll = cms2.hyp_ll_p4().at(i_hyp);
 	       const int ll_id = cms2.hyp_ll_id().at(i_hyp);
 	       if (abs(ll_id) == 11 && ROOT::Math::VectorUtil::DeltaR(jets->at(i), ll) < deltaR)
-		    continue;
+		    goto conti;
 	       break;
 	  }
 	  case JETS_CLEAN_SINGLE_E:
 	  {
 	       const LorentzVector &e = cms2.els_p4().at(i_hyp);
 	       if (ROOT::Math::VectorUtil::DeltaR(jets->at(i), e) < deltaR)
-		    continue;
+		    goto conti;
 	       break;
 	  }
 	  default:
 	       assert(false);
 	  }
 	  //------------------------------------------------------------
-	  // lepton passed all cuts
+	  // jet passed all cuts
 	  //------------------------------------------------------------
 	  ret.push_back(pair<const LorentzVector *, double>(&jets->at(i), corr));
+	  continue;
+	  //------------------------------------------------------------
+	  // jet failed
+	  //------------------------------------------------------------
+     conti:
+	  ret.push_back(pair<const LorentzVector *, double>(0, corr));
      }
      return ret;
 }
@@ -121,18 +127,39 @@ vector<LorentzVector> getJets (unsigned int i_hyp, bool sort_,
      ret.reserve(jets.size());
      for (unsigned int i = 0; i < jets.size(); ++i) {
 	  // correct the jet momentum if a corrected jet type was requested
-	  ret.push_back(*jets[i].first * jets[i].second);
+	  if (jets[i].first != 0)
+	       ret.push_back(*jets[i].first * jets[i].second);
      }
      if (sort_)
 	  sort(ret.begin(), ret.end(), jets_pt_gt());
      return ret;
 }
 
+std::vector<bool> getJetFlags (unsigned int i_hyp, enum JetType type, enum CleaningType cleaning,
+	   double deltaR, double min_pt, double max_eta)
+{
+     jets_with_corr_t jets = getJets_fast(i_hyp, type, cleaning, deltaR, min_pt, max_eta);
+     vector<bool> ret;
+     ret.reserve(jets.size());
+     for (unsigned int i = 0; i < jets.size(); ++i) {
+	  // correct the jet momentum if a corrected jet type was requested
+	  ret.push_back(jets[i].first != 0);
+     }
+     return ret;
+}
+
+
 int nJets (unsigned int i_hyp, enum JetType type, enum CleaningType cleaning,
 	   double deltaR, double min_pt, double max_eta)
 {
      jets_with_corr_t jets = getJets_fast(i_hyp, type, cleaning, deltaR, min_pt, max_eta);
-     return jets.size();
+     int ret = 0;
+     for (unsigned int i = 0; i < jets.size(); ++i) {
+	  // correct the jet momentum if a corrected jet type was requested
+	  if (jets[i].first != 0)
+	       ret++;
+     }
+     return ret;
 }
 
 double sumPt (unsigned int i_hyp, enum JetType type, enum CleaningType cleaning,
@@ -142,7 +169,8 @@ double sumPt (unsigned int i_hyp, enum JetType type, enum CleaningType cleaning,
      double ret = 0;
      for (unsigned int i = 0; i < jets.size(); ++i) {
 	  // correct the jet momentum if a corrected jet type was requested
-	  ret += jets[i].first->pt() * jets[i].second;
+	  if (jets[i].first != 0)
+	       ret += jets[i].first->pt() * jets[i].second;
      }
      return ret;
 }
