@@ -139,7 +139,6 @@ bool pass5Met (int i_hyp, const TVector3& corr);
 
 
 bool passLeptonIsolation(int id, int index, bool use_ele_calo_iso);
-void leptonGenpCount(int& nele, int& nmuon, int& ntau) ; 
 double muonTrkIsolationPAT(int index); 
 double muonCalIsolationPAT(int index); 
 bool electron20Eta2p4(int index);
