@@ -21,7 +21,7 @@ double MT2(
 
 //--- Set the masses -----------------------//
 
-  //pa[0] = v1.M();
+	//pa[0] = v1.M();
 	if( v1.M2() >= 0 ){
 		pa[0] = (double) v1.M();
 	} else {
@@ -80,7 +80,6 @@ double MT2(
 //-----------------------------------------------//
 
 	// set the transverse momenta for the leptons & MET
-  
 	pa[1] = (double) v1.Px();
 	pa[2] = (double) v1.Py();
 	pb[1] = (double) v2.Px();
