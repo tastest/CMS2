@@ -44,7 +44,8 @@ bool trueGammaFromMuon(int electron);
 //-------------------------------------------------- 
 // Returns the number of e,mu, and tau in the doc lines 
 //----------------------------------------------------- 
-void leptonGenpCount(int& nele, int& nmuon, int& ntau);
+int leptonGenpCount(int& nele, int& nmuon, int& ntau);
+int leptonGenpCount_lepTauDecays(int& nele, int& nmuon, int& ntau);
 int genpDileptonType();
   //0 mumu; 1 emu; 2 ee
   

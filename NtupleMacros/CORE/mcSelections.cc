@@ -529,7 +529,7 @@ bool trueGammaFromMuon(int electron) {
 //-------------------------------------------------- 
 // Returns the number of e,mu, and tau in the doc lines 
 //----------------------------------------------------- 
-void leptonGenpCount(int& nele, int& nmuon, int& ntau) { 
+int leptonGenpCount(int& nele, int& nmuon, int& ntau) { 
   nele=0; 
   nmuon=0; 
   ntau=0; 
@@ -538,9 +538,34 @@ void leptonGenpCount(int& nele, int& nmuon, int& ntau) {
     if (abs(cms2.genps_id().at(jj)) == 11) nele++; 
     if (abs(cms2.genps_id().at(jj)) == 13) nmuon++; 
     if (abs(cms2.genps_id().at(jj)) == 15) ntau++; 
-  } 
+  }
+  
+  return nele + nmuon + ntau;
+ 
 } 
 
+int leptonGenpCount_lepTauDecays(int& nele, int& nmuon, int& ntau) { 
+  nele=0; 
+  nmuon=0; 
+  ntau=0; 
+  int size = cms2.genps_id().size(); 
+  for (int jj=0; jj<size; jj++) { 
+    if (abs(cms2.genps_id().at(jj)) == 11) nele++; 
+    if (abs(cms2.genps_id().at(jj)) == 13) nmuon++; 
+    if (abs(cms2.genps_id().at(jj)) == 15) {
+      for(unsigned int kk = 0; kk < cms2.genps_lepdaughter_id()[jj].size(); kk++) {
+	int daughter = abs(cms2.genps_lepdaughter_id()[jj][kk]);
+	if( daughter == 11 || daughter == 13)
+	  ntau++; 
+      }//daughter loop
+    }//if tau
+  }//genps loop
+  
+  return nele + nmuon + ntau;
+}
+
+
+//---------------------------------------------------------
 int genpDileptonType(){
   //0 mumu; 1 emu; 2 ee
   
