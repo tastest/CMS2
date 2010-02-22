@@ -22,7 +22,7 @@ ROOFITINCLUDE =
 ifdef CMSSW_VERSION
 	ROOFITINCLUDE = $(shell scramv1 tool info roofitcore | grep INCLUDE | sed 's/^INCLUDE=/-I/')
 endif
-INCLUDE = -I$(CMSROOT) $(ROOFITINCLUDE)
+INCLUDE = -I$(CMSROOT) $(ROOFITINCLUDE) -I$(CMSROOT)/CORE
 CFLAGS = -Wall -Wno-unused-function -g -O2 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS)
 
 LINKER = g++
@@ -106,11 +106,12 @@ clean: # clean up
 	*.o *.d *.so LinkDef_out*; echo "Done"
 
 table: processed_data.root # show results
-	$(QUIET) root -q -b showResults.C+
+	$(QUIET) root -q -l showResults.C+
 t: table
 
-jetbkg: fakeIsoControlSamples.root processed_data.root  # estimate jet induced background
-	$(QUIET) echo "ok"
+jetbkg: processed_data.root  # estimate jet induced background
+	$(QUIET) root -q -l estimateJetBkg_fakes.C+; \
+	root -q -l estimateJetBkg_sideband.C+
 
 skim: data processData.C $(CORELIB) $(LIB) $(FWLIB) # skim data
 	$(QUIET) export SkimSamples=1; root -b -q processData.C

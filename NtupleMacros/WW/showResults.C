@@ -35,47 +35,47 @@ void showResults(const char* file = "processed_data.root")
       if (DYee) 
 	cout << Form(" %5.2f%s%4.2f ",DYee->GetBinContent(i+1),pm.c_str(),DYee->GetBinError(i+1));
       else
-	cout << "   skipped   ";
+	cout << "    skipped   ";
       cout << "|";
       if (DYmm) 
 	cout << Form(" %5.2f%s%4.2f ",DYmm->GetBinContent(i+1),pm.c_str(),DYmm->GetBinError(i+1));
       else
-	cout << "   skipped   ";
+	cout << "    skipped   ";
       cout << "|";
       if (DYtt) 
 	cout << Form(" %5.2f%s%4.2f ",DYtt->GetBinContent(i+1),pm.c_str(),DYtt->GetBinError(i+1));
       else
-	cout << "   skipped   ";
+	cout << "    skipped   ";
       cout << "|";
       if (tt) 
 	cout << Form(" %5.2f%s%4.2f ",tt->GetBinContent(i+1),pm.c_str(),tt->GetBinError(i+1));
       else
-	cout << "   skipped   ";
+	cout << "    skipped   ";
       cout << "|";
       if (wjets) 
 	cout << Form(" %5.2f%s%4.2f ",wjets->GetBinContent(i+1),pm.c_str(),wjets->GetBinError(i+1));
       else
-	cout << "   skipped   ";
+	cout << "    skipped   ";
       cout << "|";
       if (wz) 
 	cout << Form(" %5.2f%s%4.2f ",wz->GetBinContent(i+1),pm.c_str(),wz->GetBinError(i+1));
       else
-	cout << "   skipped   ";
+	cout << "    skipped   ";
       cout << "|";
       if (zz) 
 	cout << Form(" %5.2f%s%4.2f ",zz->GetBinContent(i+1),pm.c_str(),zz->GetBinError(i+1));
       else
-	cout << "   skipped   ";
+	cout << "    skipped   ";
       cout << "|";
       if (ww) 
 	cout << Form(" %5.2f%s%4.2f ",ww->GetBinContent(i+1),pm.c_str(),ww->GetBinError(i+1));
       else
-	cout << "   skipped   ";
+	cout << "    skipped   ";
       cout << "|";
       if (tw) 
 	cout << Form(" %5.2f%s%4.2f ",tw->GetBinContent(i+1),pm.c_str(),tw->GetBinError(i+1));
       else
-	cout << "   skipped   ";
+	cout << "    skipped   ";
       cout << "|" <<endl;
     }
     cout <<endl;

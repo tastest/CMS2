@@ -34,23 +34,27 @@ using namespace std;
 #endif
 
 //
-// Key Analysis method implementation
+// Key analysis method implementation
 //
 
 bool goodElectronWithoutIsolation(unsigned int i){
-  return ww2009_elId(i) && ww2009_eld0(i); 
+  return ww_elId(i) && ww_eld0(i);
 }
 
 bool goodElectronIsolated(unsigned int i){
-  return ww2009_elId(i) && ww2009_eld0(i) && ww2009_elIso(i)>0.92; 
+  return ww_elId(i) && ww_eld0(i) && ww_elIso(i)<0.1;
+}
+
+bool fakableElectron(unsigned int i){
+  return ww_elIso(i)<0.1;
 }
 
 bool goodMuonWithoutIsolation(unsigned int i){
-  return ww2009_muId(i);
+  return ww_muId(i);
 }
 
 bool goodMuonIsolated(unsigned int i){
-  return ww2009_muId(i) && ww2009_muIso(i) > 0.92; 
+  return ww_muId(i) && ww_muIso(i) < .1; 
 }
 
 double metValue(){    return cms2.evt_tcmet(); }
@@ -65,7 +69,7 @@ JetType jetType(){
 }
 
 unsigned int numberOfJets(unsigned int i_hyp){
-  return getJets(jetType(), i_hyp, 20, 3.0).size();
+  return getJets(jetType(), i_hyp, 20, 5.0).size();
 }
 
 
@@ -73,16 +77,26 @@ unsigned int numberOfJets(unsigned int i_hyp){
 // Electron Id
 //
 
-bool ww_elId(unsigned int i){
-  return electronId_cand01(i);
+bool ww_elId(unsigned int index){
+  if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+  if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
+  if (!electronId_noMuon(index)) return false;
+  if (!electronId_cand01(index)) return false;
+  if (!electronId_cand02(index)) return false;
+  if (!electronId_extra(index)) return false;
+  //// if (!electronImpact_cand01(index)) return false;
+  //// if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
+  if (isFromConversionPartnerTrack(index)) return false;
+  return true;
+
 }
 
-bool ww_eld0(unsigned int i){
-  return electronImpact_cand01(i);
+bool ww_eld0(unsigned int index){
+  return electronImpact_cand01(index);
 }
 
-double ww_elIso(unsigned int i){
-  return electronIsolation_relsusy(i, true);
+double ww_elIso(unsigned int index){
+  return electronIsolation_relsusy_cand1(index, true);
 }
 
 bool ww2009_elId(unsigned int i){
@@ -108,8 +122,8 @@ double ww2009_elIso(unsigned int i){
 // Muon Id
 //
 
-bool ww_muId(unsigned int i){
-  return muonId(i);
+bool ww_muId(unsigned int index){
+  return muonIdNotIsolated(index);
 }
 
 double ww_muIso(unsigned int i){
@@ -524,12 +538,17 @@ TH1F* hptJet3[4];    // Pt of 3rd jet
 TH1F* hetaJet1[4];   // eta of 1st jet
 TH1F* hetaJet2[4];   // eta of 2nd jet
 TH1F* hetaJet3[4];   // eta of 3rd jet
-TH1F* heleRelIso[4]; // iso variable defined as pt/(pt+sum) for electron
-TH1F* hmuRelIso[4];  // iso variable defined as pt/(pt+sum) for muons
+TH1F* hElRelIso[4];  // electron relative iso (final selection, but one electron iso is relaxed)
+TH1F* hMuRelIso[4];  // muon relative iso (final selection, but one muon iso is relaxed
 
 TH2F* hmetVsDilepPt[4];    // MET vs dilepton Pt
 TH2F* hmetOverPtVsDphi[4]; // MET/Lepton Pt vs DeltaPhi between MET and Lepton Pt
 TH2F* hdphillvsmll[4];     // delta phi between leptons vs dilepton mass
+TH2F* helFRfakable[4];     // Fake rate study: rate of fakable objects
+TH2F* hFakableRateSingleElectron; // Fake rate study: rate of fakable objects
+TH2F* hFinalRateSingleElectron;   // Fake rate study: rate of final objects
+TH1F* hIsoSingleMuon;             // isolation background 
+TH1F* hIsoSingleElectron;         // isolation background 
 
 //
 // Not cleaned area
@@ -568,9 +587,6 @@ TH1F* helRelIsoFailId;  // electron relative iso (trk+ecal+hcal) CMS2 with weigh
 TH1F* helRelPatIsoPassId;  // electron relative iso (trk+ecal+hcal) PAT with weights 1,1,1 passed el ID
 TH1F* helRelPatIsoNoId;    // electron relative iso (trk+ecal+hcal) PAT with weights 1,1,1 no el ID
 TH1F* helRelPatIsoFailId;  // electron relative iso (trk+ecal+hcal) PAT with weights 1,1,1 failed el ID
-
-TH1F* hemElRelIso;  // electron relative iso for emu final selection
-TH1F* hemMuRelIso;  // muon relative iso for emu final selection
 
 TH1F* hmaxJPTEt;         // energy distribution for the most energetic jet
 TH1F* hmaxCaloJetEt;     // energy distribution for the most energetic jet
@@ -687,8 +703,7 @@ void checkIsolation(int i_hyp, double weight){
 }
 
 void getIsolationSidebandsAfterSelections(int i_hyp, double weight, RooDataSet* dataset, bool passedAllLeptonRequirements){
-  // em case
-  // both leptons are relaxed 
+  HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
   RooArgSet set( *(dataset->get()) );
   set.setCatIndex("selected",passedAllLeptonRequirements?1:0);
   set.setRealValue("event",cms2.evt_event());
@@ -696,7 +711,8 @@ void getIsolationSidebandsAfterSelections(int i_hyp, double weight, RooDataSet* 
   set.setRealValue("lumi",cms2.evt_lumiBlock());
   set.setCatLabel("sample_type","data_relaxed_iso");
   
-  if ( cms2.hyp_type()[i_hyp] == 1 || cms2.hyp_type()[i_hyp] == 2 ){
+  // em case
+  if ( type == EM ){
     unsigned int imu = cms2.hyp_lt_index()[i_hyp];
     unsigned int iel = cms2.hyp_ll_index()[i_hyp];
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp])==11 ){
@@ -705,64 +721,58 @@ void getIsolationSidebandsAfterSelections(int i_hyp, double weight, RooDataSet* 
     }
     if ( goodElectronWithoutIsolation(iel) && 
 	 goodMuonIsolated(imu) ) {
-      hemElRelIso->Fill( ww2009_elIso(iel), weight );
+      hElRelIso[type]->Fill( ww_elIso(iel), weight );
       set.setCatLabel("hyp_type","em");
       set.setCatLabel("fake_type","electron");
-      set.setRealValue("iso", ww2009_elIso(iel) );
+      set.setRealValue("iso", ww_elIso(iel) );
       dataset->add(set,weight);
     
     }
     if ( goodElectronIsolated(iel) && goodMuonWithoutIsolation(imu) ) {
-      hemMuRelIso->Fill( ww2009_muIso(imu), weight );
+      hMuRelIso[type]->Fill( ww_muIso(imu), weight );
       set.setCatLabel("hyp_type","em");
       set.setCatLabel("fake_type","muon");
-      set.setRealValue("iso",ww2009_muIso(imu));
+      set.setRealValue("iso",ww_muIso(imu));
       dataset->add(set,weight);
     }
   }
-  // mumu case - only one muon is relaxed
-  // taking the first pair that works, since looking for the least
-  // isolated lepton would increase the non-isolated contribution
-  // from signal sources by double counting the tail
-  if ( cms2.hyp_type()[i_hyp] == 0){
+
+  // mm case
+  if ( type == MM ){
     unsigned int imu1 = cms2.hyp_lt_index()[i_hyp];
     unsigned int imu2 = cms2.hyp_ll_index()[i_hyp];
-    bool relaxed_muon_found(false);
     if ( goodMuonWithoutIsolation(imu1) && goodMuonIsolated(imu2) ) {
+      hMuRelIso[type]->Fill( ww_muIso(imu1), weight );
       set.setCatLabel("hyp_type","mm");
       set.setCatLabel("fake_type","muon");
-      set.setRealValue("iso",ww2009_muIso(imu1));
+      set.setRealValue("iso",ww_muIso(imu1));
       dataset->add(set,weight);
-      relaxed_muon_found = true;
     }
-    if ( !relaxed_muon_found &&
-	 goodMuonIsolated(imu1) && goodMuonWithoutIsolation(imu2) ) {
+    if ( goodMuonIsolated(imu1) && goodMuonWithoutIsolation(imu2) ) {
+      hMuRelIso[type]->Fill( ww_muIso(imu2), weight );
       set.setCatLabel("hyp_type","mm");
       set.setCatLabel("fake_type","muon");
-      set.setRealValue("iso",ww2009_muIso(imu2));
+      set.setRealValue("iso",ww_muIso(imu2));
       dataset->add(set,weight);
     }
   }
-  // ee case - only one muon is relaxed
-  // taking the first pair that works, since looking for the least
-  // isolated lepton would increase the non-isolated contribution
-  // from signal sources by double counting the tail
-  if ( cms2.hyp_type()[i_hyp] == 3){
+
+  // ee case
+  if ( type == EE){
     unsigned int iel1 = cms2.hyp_lt_index()[i_hyp];
     unsigned int iel2 = cms2.hyp_ll_index()[i_hyp];
-    bool relaxed_electron_found(false);
     if ( goodElectronWithoutIsolation(iel1) && goodElectronIsolated(iel2) ) {
+      hElRelIso[type]->Fill( ww_elIso(iel1), weight );
       set.setCatLabel("hyp_type","ee");
       set.setCatLabel("fake_type","electron");
-      set.setRealValue("iso",ww2009_elIso(iel1));
+      set.setRealValue("iso",ww_elIso(iel1));
       dataset->add(set,weight);
-      relaxed_electron_found = true;
     }
-    if ( !relaxed_electron_found &&
-	 goodElectronIsolated(iel1) && goodElectronWithoutIsolation(iel2) ) {
+    if ( goodElectronIsolated(iel1) && goodElectronWithoutIsolation(iel2) ) {
+      hElRelIso[type]->Fill( ww_elIso(iel2), weight );
       set.setCatLabel("hyp_type","ee");
       set.setCatLabel("fake_type","electron");
-      set.setRealValue("iso",ww2009_elIso(iel2));
+      set.setRealValue("iso",ww_elIso(iel2));
       dataset->add(set,weight);
     }
   }
@@ -816,6 +826,55 @@ void find_most_energetic_jets(int i_hyp, double weight)
   }
 }  
 
+void extractFakeRateSingleLepton(){
+  // weights are ignore. see no reason to complicate stuff
+  for ( unsigned int i=0; i < cms2.els_p4().size(); ++i ){
+    if ( cms2.els_p4().at(i).pt() < 20 ) continue;
+    if ( fakableElectron(i) ) 
+      hFakableRateSingleElectron->Fill(cms2.els_p4().at(i).pt(), fabs(cms2.els_p4().at(i).eta()) );
+    if ( goodElectronIsolated(i) ) 
+      hFinalRateSingleElectron->Fill(cms2.els_p4().at(i).pt(), fabs(cms2.els_p4().at(i).eta()) );  
+  }
+}
+
+void extractIsoSingleLepton(){
+  // weights are ignore. see no reason to complicate stuff
+  for ( unsigned int i=0; i < cms2.mus_p4().size(); ++i ){
+    if ( cms2.mus_p4().at(i).pt() < 20 ) continue;
+    if ( goodMuonWithoutIsolation(i) ) hIsoSingleMuon->Fill(ww_muIso(i));
+  }
+  for ( unsigned int i=0; i < cms2.els_p4().size(); ++i ){
+    if ( cms2.els_p4().at(i).pt() < 20 ) continue;
+    if ( goodElectronWithoutIsolation(i) ) hIsoSingleElectron->Fill(ww_elIso(i));
+  }
+}
+
+void countFakableObjectsAfterAllSelections(unsigned int i_hyp, 
+					   double weight, 
+					   bool passedLTElFakableRequirements, 
+					   bool passedLLElFakableRequirements,
+					   bool passedLTFinalRequirements,
+					   bool passedLLFinalRequirements)
+{
+  HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
+  if ( passedLTElFakableRequirements && !passedLTFinalRequirements && passedLLFinalRequirements ){
+    helFRfakable[type]->Fill(cms2.hyp_lt_p4().at(i_hyp).pt(),
+			     fabs(cms2.hyp_lt_p4().at(i_hyp).eta()),
+			     weight);
+    helFRfakable[3]->Fill(cms2.hyp_lt_p4().at(i_hyp).pt(),
+			  fabs(cms2.hyp_lt_p4().at(i_hyp).eta()),
+			  weight);
+  }
+  if ( passedLLElFakableRequirements && passedLTFinalRequirements && !passedLLFinalRequirements ){
+    helFRfakable[type]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(),
+			     fabs(cms2.hyp_ll_p4().at(i_hyp).eta()),
+			     weight);
+    helFRfakable[3]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(),
+			  fabs(cms2.hyp_ll_p4().at(i_hyp).eta()),
+			  weight);
+  }
+}
+
 void hypo (int i_hyp, double kFactor, RooDataSet* dataset) 
 {
   HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
@@ -826,6 +885,9 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset)
   unsigned int icounter(0);
   monitor.count(icounter++,"Total number of hypothesis: ");
      
+  // if ( cms2.hyp_FVFit_prob()[i_hyp] < 0.005 ) return;
+  monitor.count(icounter++,"Total number of hypothesis after vertex cut: ");
+     
   if ( ! passedTriggerRequirements( hypType(i_hyp) ) )return;
   monitor.count(icounter++,"Total number of hypothesis after trigger requirements: ");
      
@@ -834,7 +896,7 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset)
   if (cms2.hyp_ll_p4()[i_hyp].pt() < 20.0) return;
   monitor.count(icounter++,"Total number of hypothesis after lepton pt cut: ");
      
-  // Require opposite sign
+  // Require same sign
   if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) return;
      
   // check electron isolation and id (no selection at this point)
@@ -865,19 +927,39 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset)
   int nExtraVetoMuons = numberOfSoftMuons(i_hyp,false);;
   if (nExtraVetoMuons) goodEvent = false;
   
-  bool passedAllLeptonRequirements = true;
+  bool passedLTFinalRequirements = true;
+  bool passedLLFinalRequirements = true;
+  bool passedLTElFakableRequirements = true;
+  bool passedLLElFakableRequirements = true;
+
   // Muon quality cuts, including isolation
-  if (abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) passedAllLeptonRequirements = false;
-  if (abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) ) passedAllLeptonRequirements = false;
-  
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13){
+    if ( !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) passedLTFinalRequirements = false;
+    passedLTElFakableRequirements = false;
+  }
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13){
+    if ( !goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) ) passedLLFinalRequirements = false;
+    passedLLElFakableRequirements = false;
+  }  
   // Electron quality cuts, including isolation
-  if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_lt_index()[i_hyp]) ) passedAllLeptonRequirements = false;
-  if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_ll_index()[i_hyp]) ) passedAllLeptonRequirements = false;
-     
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11){
+    if ( !goodElectronIsolated(cms2.hyp_lt_index()[i_hyp]) ) passedLTFinalRequirements = false;
+    if ( !fakableElectron(cms2.hyp_lt_index()[i_hyp]) ) passedLTElFakableRequirements = false;
+  }
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11){
+    if ( !goodElectronIsolated(cms2.hyp_ll_index()[i_hyp]) ) passedLLFinalRequirements = false;
+    if ( !fakableElectron(cms2.hyp_ll_index()[i_hyp]) ) passedLLElFakableRequirements = false;
+  }
   if (goodEvent && dataset )
-    getIsolationSidebandsAfterSelections(i_hyp, weight, dataset, passedAllLeptonRequirements);
+    getIsolationSidebandsAfterSelections(i_hyp, weight, dataset, passedLTFinalRequirements && passedLLFinalRequirements);
+  
+  if (goodEvent) {
+    countFakableObjectsAfterAllSelections(i_hyp, weight, 
+					  passedLTElFakableRequirements, passedLLElFakableRequirements, 
+					  passedLTFinalRequirements, passedLLFinalRequirements);
+  }
      
-  if ( !passedAllLeptonRequirements ) return;
+  if ( !passedLTFinalRequirements || !passedLLFinalRequirements ) return;
   monitor.count(icounter++,"Total number of hypothesis after full lepton selection + z vetos + MET cuts: ");
      
   // trkjet veto
@@ -910,7 +992,7 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset)
   // -------------------------------------------------------------------//
   // If we made it to here, we passed all cuts and we are ready to fill //
   // -------------------------------------------------------------------//
-     
+
   hypos_total->Fill(type);
   hypos_total->Fill(3);
   hypos_total_weighted->Fill(type,weight);
@@ -971,29 +1053,6 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset)
      if (abs(cms2.hyp_lt_id()[i_hyp]) == 13) hmuEta[3]->Fill(cms2.hyp_lt_p4()[i_hyp].eta(), weight);
      if (abs(cms2.hyp_ll_id()[i_hyp]) == 13) hmuEta[3]->Fill(cms2.hyp_ll_p4()[i_hyp].eta(), weight);
 
-     // Relative isolation... muons
-     if (abs(cms2.hyp_lt_id()[i_hyp]) == 13) {
-       double iso = ww2009_muIso(cms2.hyp_lt_index().at(i_hyp));
-       heleRelIso[type]->Fill(iso, weight);
-       heleRelIso[3]->Fill(iso, weight);
-     }
-     if (abs(cms2.hyp_ll_id()[i_hyp]) == 13) {
-       double iso = ww2009_muIso(cms2.hyp_ll_index().at(i_hyp));
-       heleRelIso[type]->Fill(iso, weight);
-       heleRelIso[3]->Fill(iso, weight);
-     }
-
-     // Relative isolation... electrons
-     if (abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
-       double iso = ww2009_elIso(cms2.hyp_lt_index().at(i_hyp));
-       heleRelIso[type]->Fill(iso, weight);
-       heleRelIso[3]->Fill(iso, weight);
-     }
-     if (abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
-       double iso = ww2009_elIso(cms2.hyp_ll_index().at(i_hyp));
-       heleRelIso[type]->Fill(iso, weight);
-       heleRelIso[3]->Fill(iso, weight);
-     }
 
      // dilepton pt
      hdilPt[type]->Fill(cms2.hyp_p4()[i_hyp].pt(), weight);
@@ -1040,7 +1099,7 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset)
 
 RooDataSet* MakeNewDataset(const char* name)
 {
-  RooRealVar set_iso("iso","iso",0.,1.);
+  RooRealVar set_iso("iso","iso",0.,10.);
   RooRealVar set_event("event","event",0);
   RooRealVar set_run("run","run",0);
   RooRealVar set_lumi("lumi","lumi",0);
@@ -1095,12 +1154,12 @@ void AddIsoSignalControlSample( int i_hyp, double kFactor, RooDataSet* dataset) 
     set.setCatLabel("fake_type","electron");
     if ( goodElectronIsolated(cms2.hyp_lt_index()[i_hyp]) &&
 	 goodElectronWithoutIsolation(cms2.hyp_ll_index()[i_hyp]) ){
-      set.setRealValue("iso",ww2009_elIso(cms2.hyp_ll_index()[i_hyp]));
+      set.setRealValue("iso",ww_elIso(cms2.hyp_ll_index()[i_hyp]));
       dataset->add(set,weight);
     }
     if ( goodElectronIsolated(cms2.hyp_ll_index()[i_hyp]) &&
 	 goodElectronWithoutIsolation(cms2.hyp_lt_index()[i_hyp]) ){
-      set.setRealValue("iso",ww2009_elIso(cms2.hyp_lt_index()[i_hyp]));
+      set.setRealValue("iso",ww_elIso(cms2.hyp_lt_index()[i_hyp]));
       dataset->add(set,weight);
     }
   } else {
@@ -1108,18 +1167,24 @@ void AddIsoSignalControlSample( int i_hyp, double kFactor, RooDataSet* dataset) 
     set.setCatLabel("fake_type","muon");
     if ( goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) &&
 	 goodMuonWithoutIsolation(cms2.hyp_ll_index()[i_hyp]) ){
-      set.setRealValue("iso",ww2009_muIso(cms2.hyp_ll_index()[i_hyp]));
+      set.setRealValue("iso",ww_muIso(cms2.hyp_ll_index()[i_hyp]));
       dataset->add(set,weight);
     }
     if ( goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) &&
 	 goodMuonWithoutIsolation(cms2.hyp_lt_index()[i_hyp]) ){
-      set.setRealValue("iso",ww2009_muIso(cms2.hyp_lt_index()[i_hyp]));
+      set.setRealValue("iso",ww_muIso(cms2.hyp_lt_index()[i_hyp]));
       dataset->add(set,weight);
     }
   }
 }
 
-RooDataSet* ScanChain( TChain* chain, enum Sample sample, double kFactor, bool identifyEvents ) {
+RooDataSet* ScanChain( TChain* chain, 
+		       enum Sample sample, 
+		       double kFactor, 
+		       bool identifyEvents, 
+		       bool qcdBackground) 
+{
+  // chain->SetParallelUnzip(kTRUE);
   // gErrorIgnoreLevel = 3000; // suppress warnings about missing dictionaries 
   unsigned int nEventsChain = chain->GetEntries();  // number of entries in chain --> number of events from all files
   gErrorIgnoreLevel = -1;
@@ -1129,14 +1194,7 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, double kFactor, bool i
   const char *prefix = SampleName(sample);
   RooDataSet* dataset = MakeNewDataset(prefix);
   kFactor *= .1; // 100pb-1
-//   switch (sample) {
-//   case WW:
-//        evt_scale1fb = 0.1538;
-//        break;
-//   default:
-//        break;
-//   }
-  
+
   hypos_total          = new TH1F(Form("%s_hypos_total",prefix),"Total number of hypothesis counts",4,0,4);
   hypos_total_weighted = new TH1F(Form("%s_hypos_total_weighted",prefix),"Total number of hypotheses (weighted)",4,0,4);
   hypos_total_weighted->Sumw2();
@@ -1146,6 +1204,7 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, double kFactor, bool i
     hypos_total_weighted->GetXaxis()->SetBinLabel(i+1,HypothesisTypeName(i));
   }
   
+  const Double_t ptbins[4] = {20,30,80,200};
   for (unsigned int i=0; i<4; i++) {
 
     hnJet[i]      = new TH1F(Form("%s_hnJet_%s",     prefix,HypothesisTypeName(i)), "Number of jets after all cuts" , 5,0.,5.);	
@@ -1168,12 +1227,18 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, double kFactor, bool i
     hetaJet1[i]   = new TH1F(Form("%s_hetaJet1_%s",  prefix,HypothesisTypeName(i)), "Leading jet Eta after all cuts", 50, -5., 5.);
     hetaJet2[i]   = new TH1F(Form("%s_hetaJet2_%s",  prefix,HypothesisTypeName(i)), "Second jet Eta after all cuts", 50, -5., 5.);
     hetaJet3[i]   = new TH1F(Form("%s_hetaJet3_%s",  prefix,HypothesisTypeName(i)), "Third jet Eta after all cuts", 50, -5., 5.);
-    heleRelIso[i] = new TH1F(Form("%s_heleRelIso_%s",prefix,HypothesisTypeName(i)), "Electron relative isolation after all cuts",200, 0., 2.);
-    hmuRelIso[i]  = new TH1F(Form("%s_hmuRelIso_%s", prefix,HypothesisTypeName(i)), "Muon relative isolation after all cuts", 100, 0., 1.);
+    hElRelIso[i]  = new TH1F(Form("%s_hElRelIso_%s", prefix,HypothesisTypeName(i)), "Electron relative isolation after all cuts but electron iso",200, 0., 2.);
+    hMuRelIso[i]  = new TH1F(Form("%s_hMuRelIso_%s", prefix,HypothesisTypeName(i)), "Muon relative isolation after all cuts but muon iso", 200, 0., 2.);
     hmetVsDilepPt[i]    = new TH2F(Form("%s_hmetVsDilepPt_%s",   prefix,HypothesisTypeName(i)), "MET vs di-lepton Pt after all cuts", 100,0.,200.,100,0.,200.);
+    hmetVsDilepPt[i]->Sumw2();
     hmetOverPtVsDphi[i] = new TH2F(Form("%s_hmetOverPtVsDphi_%s",prefix,HypothesisTypeName(i)), "MET/Pt vs di-lepton phi after all cuts", 100,0.,3.,32,0., 3.2);
+    hmetOverPtVsDphi[i]->Sumw2();
     hdphillvsmll[i]     = new TH2F(Form("%s_dphillvsmll_%s",     prefix,HypothesisTypeName(i)), "dPhi of the two leptons vs di-lepton mass", 100,10.,210.,32,0.,3.2);
+    hdphillvsmll[i]->Sumw2();
     hextramuonsvsnjet[i]= new TH2F(Form("%s_extramuonsvsnjet_%s",prefix,HypothesisTypeName(i)), "Number of extra muon vs number of jets", 10,0.0,10.0,10,0.0,10.0);
+    hextramuonsvsnjet[i]->Sumw2();
+    helFRfakable[i]     = new TH2F(Form("%s_helFRfakable_%s",    prefix,HypothesisTypeName(i)), "FR study: rate of fakable objects", 3,ptbins,2,0,3.0);
+    helFRfakable[i]->Sumw2();
 
     hnJet[i]->Sumw2();
     helePt[i]->Sumw2();
@@ -1195,9 +1260,8 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, double kFactor, bool i
     hetaJet1[i]->Sumw2();
     hetaJet2[i]->Sumw2();
     hetaJet3[i]->Sumw2();
-    heleRelIso[i]->Sumw2(); 
-    hmuRelIso[i]->Sumw2(); 
-    hextramuonsvsnjet[i]->Sumw2();
+    hElRelIso[i]->Sumw2(); 
+    hMuRelIso[i]->Sumw2(); 
 
   }
   
@@ -1253,11 +1317,6 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, double kFactor, bool i
   helRelPatIsoNoId    = new TH1F(Form("%s_helRelPatIsoNoId",prefix),   Form("%s - electron relative iso (trk+ecal+hcal) PAT with weights 1,1,1 without el id",prefix), 120, 0., 1.2);
   helRelPatIsoNoId->Sumw2();
 
-  hemElRelIso = new TH1F(Form("%s_hemElRelIso",prefix), Form("%s - electron relative iso for emu final selection",prefix), 120, 0., 1.2);
-  hemElRelIso->Sumw2();
-  hemMuRelIso = new TH1F(Form("%s_hemMuRelIso",prefix), Form("%s - muon relative iso for emu final selection",prefix), 120, 0., 1.2);
-  hemMuRelIso->Sumw2();
-
   hmaxJPTEt = new TH1F(Form("%s_hmaxJPTEt",prefix),               Form("%s - most energetic jet Et (JPT)",prefix), 100, 0., 100);
   hmaxJPTEt->Sumw2();
   hmaxCaloJetEt = new TH1F(Form("%s_hmaxCaloJetEt",prefix),       Form("%s - most energetic jet Et (CaloJet)",prefix), 100, 0., 100);
@@ -1272,6 +1331,17 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, double kFactor, bool i
   hmaxGenJetEt->Sumw2();
   hCentralBquarkEtaAfterVeto = new TH1F(Form("%s_centralBQuarkEtaAfterVeto",prefix), Form("%s - central b quark eta distribution after jet veto",prefix), 20, 0, 10);
   hForwardBquarkEtaAfterVeto = new TH1F(Form("%s_forwardBQuarkEtaAfterVeto",prefix), Form("%s - forward b quark eta distribution after jet veto",prefix), 20, 0, 10);
+
+  if (qcdBackground) {
+    hFakableRateSingleElectron = new TH2F(Form("%s_hFakableRateSingleElectron",prefix), "FR study: rate of fakable objects", 3,ptbins,2,0,3.0);
+    hFakableRateSingleElectron->Sumw2();
+    hFinalRateSingleElectron   = new TH2F(Form("%s_hFinalRateSingleElectron",  prefix), "FR study: rate of final objects", 3,ptbins,2,0,3.0);
+    hFinalRateSingleElectron->Sumw2();
+    hIsoSingleMuon             = new TH1F(Form("%s_hIsoSingleMuon",prefix),             "Muon isolation distribution for goodMuonWithoutIsolation", 100,0,10);
+    hIsoSingleMuon->Sumw2();
+    hIsoSingleElectron         = new TH1F(Form("%s_hIsoSingleElectron",prefix),         "Electron isolation distribution for goodElectronWithoutIsolation", 100,0,10);
+    hIsoSingleElectron->Sumw2();
+  }
 
   // clear list of duplicates
   already_seen.clear();
@@ -1334,13 +1404,14 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, double kFactor, bool i
 		continue;
 	      }
 	    }
-
-	    // fkw, here go all histos that should be filled per event instead of per hyp:
-	    // loop over generator particles:
-	    //Note: top = +-6, W = +-24, b = +-5
-	    //cout << " Event = " << event << endl;
-	    // fkw, end of per event filling of histos.
 	    
+	    if (qcdBackground) {
+	      // get fake rates
+	      extractFakeRateSingleLepton();
+	      // isolation
+	      extractIsoSingleLepton();
+	    }
+
 	    // loop over hypothesis candidates
 	    unsigned int nHyps = cms2.hyp_type().size();
 	    for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
@@ -1464,11 +1535,12 @@ void ProcessSample( std::string file_pattern,
 		    double kFactor,
 		    RooDataSet* output_dataset, 
 		    Color_t color, 
-		    bool identifyEvents )
+		    bool identifyEvents,
+		    bool qcdBackground)
 {
   std::vector<string> vec;
   vec.push_back(file_pattern);
-  ProcessSample(vec,sample,kFactor,output_dataset,color,identifyEvents);
+  ProcessSample(vec,sample,kFactor,output_dataset,color,identifyEvents,qcdBackground);
 }
 
 void ProcessSample( std::vector<std::string> file_patterns, 
@@ -1476,7 +1548,8 @@ void ProcessSample( std::vector<std::string> file_patterns,
 		    double kFactor,
 		    RooDataSet* output_dataset, 
 		    Color_t color, 
-		    bool identifyEvents )
+		    bool identifyEvents,
+		    bool qcdBackground)
 {
   TChain *tchain = new TChain("Events");
   for ( std::vector<std::string>::const_iterator pattern = file_patterns.begin();
@@ -1487,7 +1560,7 @@ void ProcessSample( std::vector<std::string> file_patterns,
     SkimChain(tchain);
   } else {
     std::cout << "Processing " << SampleName(sample) << ".." << std::endl;
-    RooDataSet* data = ScanChain(tchain, sample, kFactor, identifyEvents);
+    RooDataSet* data = ScanChain(tchain,sample,kFactor,identifyEvents,qcdBackground);
     if( data ){
       if ( output_dataset )
 	output_dataset->append(*data);
@@ -1532,7 +1605,7 @@ void SkimChain(TChain* chain){
     TString directory(inputFileName);
     preg.Substitute(directory,"$1-skim");
     // make output directory if it doesn't exist yet
-    if ( gSystem->AccessPathName(directory.Data()) ) {
+    if ( gSystem->AccessPathName(directory.Data()) ){
       gSystem->mkdir(directory.Data(),true);
       assert( !gSystem->AccessPathName(directory.Data()) );
     }
@@ -1586,7 +1659,27 @@ bool passedSkimSelection()
 {
   unsigned int nHyps = cms2.hyp_type().size();
   for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
-    if ( cms2.hyp_lt_p4().at(i_hyp).pt() > 20 && cms2.hyp_ll_p4().at(i_hyp).pt() > 20 ) return true;
+    if ( cms2.hyp_lt_p4().at(i_hyp).pt() < 20 || cms2.hyp_ll_p4().at(i_hyp).pt() < 20 ) return false;
+    if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) return false;
+    HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
+    if ( type == EE || type == MM) {
+      if (inZmassWindow(cms2.hyp_p4()[i_hyp].mass())) return false;
+    }
+    if (!passedMetRequirements(i_hyp)) return false;
+    bool passedAllLeptonRequirements = true;
+    // Muon quality cuts, including isolation
+    if (abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) passedAllLeptonRequirements = false;
+    if (abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) ) passedAllLeptonRequirements = false;
+    
+    // Electron quality cuts, including isolation
+    if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_lt_index()[i_hyp]) ) passedAllLeptonRequirements = false;
+    if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_ll_index()[i_hyp]) ) passedAllLeptonRequirements = false;
+    if ( !passedAllLeptonRequirements ) return false;
+    if ( numberOfJets(i_hyp) > 0 ) return false;
+    if ( numberOfSoftMuons(i_hyp,true) > 0 ) return false;
+
+
+    return true;
   }
   return false;
 }

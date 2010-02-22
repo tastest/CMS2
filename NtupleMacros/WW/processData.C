@@ -51,7 +51,7 @@ void processData()
   bool runDYtt  = 1;
   bool runttbar = 1;
   bool runtW    = 1;
-  bool runQCD   = 0; 
+  bool runQCD   = 1; 
 
   // 
   // Ntuple version
@@ -107,7 +107,14 @@ void processData()
  
   if (runtW)
     ProcessSample(dataset+"/SingleTop_tWChannel-madgraph_Summer09-MC_31X_V3_7TeV-v2/"+version+"/merged_ntuple*.root", tW, 1.0, fullDataSet, 63);
-
+  
+  std::vector<string> qcdSamples;
+  qcdSamples.push_back(dataset+"/QCD_Pt30_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root");
+  qcdSamples.push_back(dataset+"/QCD_Pt80_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root");
+  if (runQCD)
+    ProcessSample(qcdSamples, qcd, 1.0, fullDataSet, 40, false, true);
+  
+  /*
   //QCD file
   TChain *fqcd = new TChain("Events");
   if (runQCD) {
@@ -120,7 +127,7 @@ void processData()
     fqcd->Add((dataset+"/cms2-V01-02-06/QCD_BCtoE_Pt30to80/merged_ntuple*.root").c_str());
     fqcd->Add((dataset+"/cms2-V01-02-06/QCD_BCtoE_Pt80to170/merged_ntuple*.root").c_str());
   }
-
+  */
   /*
   if (runQCD) {
     cout << "Processing QCD.."<<endl;
