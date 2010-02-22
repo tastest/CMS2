@@ -368,10 +368,10 @@ void dumpDocLines() {
   std::cout << "------------------------------------------" << std::endl;
   for (int j=0; j<size; j++) {
     cout << setw(9) << left << pdg->GetParticle(cms2.genps_id().at(j))->GetName() << " "
-         << setw(7) << right << setprecision(4) << cms2.genps_p4().at(j).pt() << "  "
-         << setw(7) << right << setprecision(4) << cms2.genps_p4().at(j).phi() << "  "
-         << setw(10) << right << setprecision(4) << cms2.genps_p4().at(j).eta() << "  "
-         << setw(10) << right << setprecision(4) << cms2.genps_p4().at(j).mass() << endl;
+	 << setw(7) << right << setprecision(4) << cms2.genps_p4().at(j).pt() << "  "
+	 << setw(7) << right << setprecision(4) << cms2.genps_p4().at(j).phi() << "  "
+	 << setw(10) << right << setprecision(4) << cms2.genps_p4().at(j).eta() << "  "
+	 << setw(10) << right << setprecision(4) << cms2.genps_p4().at(j).mass() << endl;
   }
 }
 
@@ -381,8 +381,8 @@ int ttbarconstituents(int i_hyp){
   //WO = one of the two leptons from W and the other not = 2
   //OO = neither of the two leptons is from a W = 3
 
-  int lttype = leptonIsFromW(cms2.hyp_lt_index()[i_hyp],cms2.hyp_lt_id()[i_hyp],cms2.hyp_lt_p4()[i_hyp] );
-  int lltype = leptonIsFromW(cms2.hyp_ll_index()[i_hyp],cms2.hyp_ll_id()[i_hyp],cms2.hyp_ll_p4()[i_hyp] );
+  int lttype = leptonIsFromW(cms2.hyp_lt_index()[i_hyp],cms2.hyp_lt_id()[i_hyp]);
+  int lltype = leptonIsFromW(cms2.hyp_ll_index()[i_hyp],cms2.hyp_ll_id()[i_hyp]);
   if (lltype > 0 && lttype > 0) return 1;
   else if( (lltype >0 && lttype <= 0) || (lttype >0 && lltype <=0) ) return 2;
   else if( (lltype <=0 && lttype <=0) )return 3;
@@ -414,7 +414,7 @@ int ttbarconstituents(int i_hyp){
 //        
 // Authors: Claudio in consultation with fkw 22-july-09    
 //---------------------------------------------------------
-int leptonIsFromW(int idx, int id, LorentzVector v) {
+int leptonIsFromW(int idx, int id) {
 
   // get the matches to status=1 and status=3
   int st1_id = 0;
@@ -424,33 +424,53 @@ int leptonIsFromW(int idx, int id, LorentzVector v) {
     st1_id = cms2.els_mc_id()[idx];
     st3_id = cms2.els_mc3_id()[idx];
     st1_motherid = cms2.els_mc_motherid()[idx];
+    //a true lepton from a W will have it's motherid==24
+    //if the lepton comes from a tau decay that comes from a W, 
+    //we have to do some work to trace the parentage
+    //to do this, we have to go to the status==3 block because 
+    //the daughter info is not in status==1
+      if(abs(st1_motherid)==15) {
+      for(unsigned int i = 0; i < cms2.genps_id().size(); i++) {//status 3 loop
+	if(abs(cms2.genps_id()[i]) == 15 ) { //make sure we get the right tau!
+	  cms2.genps_lepdaughter_id()[i].size(); 
+	  for(unsigned int j = 0; j < cms2.genps_lepdaughter_id()[i].size(); j++) { //loop over the tau's status1 daughters
+	    float dr = ROOT::Math::VectorUtil::DeltaR(cms2.els_mc_p4()[idx], cms2.genps_lepdaughter_p4()[i][j]);
+	    if (dr < 0.0001) { //should be the same exact status==1 gen particle!
+	      st1_motherid = cms2.genps_id_mother()[i];
+	      continue;
+	    }//if (dr < 0.0001)
+	  }//loop over the tau's daughters
+	}//tau
+      }//status 3 loop
+    }//if(abs(st1_motherid)==15) {
   } else if (abs(id) == 13) {
     st1_id = cms2.mus_mc_id()[idx];
     st3_id = cms2.mus_mc3_id()[idx];
     st1_motherid = cms2.mus_mc_motherid()[idx];
+    //a true lepton from a W will have it's motherid==24
+    //if the lepton comes from a tau decay that comes from a W, 
+    //we have to do some work to trace the parentage
+    //to do this, we have to go to the status==3 block because 
+    //the daughter info is not in status==1
+    if(abs(st1_motherid)==15) {
+      for(unsigned int i = 0; i < cms2.genps_id().size(); i++) {//status 3 loop
+	if(abs(cms2.genps_id()[i]) == 15 ) { //make sure we get the right tau!
+	  cms2.genps_lepdaughter_id()[i].size();
+	  for(unsigned int j = 0; j < cms2.genps_lepdaughter_id()[i].size(); j++) {//loop over the tau's status1 daughters
+	    float dr = ROOT::Math::VectorUtil::DeltaR(cms2.mus_mc_p4()[idx], cms2.genps_lepdaughter_p4()[i][j]);
+	    if (dr < 0.0001) { //should be the same exact status==1 gen particle!
+	      st1_motherid = cms2.genps_id_mother()[i];
+	      continue;
+	    }//if (dr < 0.0001)
+	  }//loop over the tau's daughters
+	}//tau
+      }//status 3 loop
+    }//if(abs(st1_motherid)==15) {
   } else {
     std::cout << "You fool.  Give me +/- 11 or +/- 13 please" << std::endl;
     return false;
   }
 
-  // Step 0
-  // The match to status=3 in DR<0.1 from the ntuple is too tight.
-  // If there is no match to status=3, we try the match again with DR<0.2
-  // But we only match to leptons
-  if (st3_id == -999) {
-    float drmin = 999.;
-    for (unsigned int j=0; j<cms2.genps_id().size(); j++) {
-      int genId = cms2.genps_id().at(j);
-      if (abs(genId) == 15 || abs(genId) == 13 || abs(genId) == 11) {
-        LorentzVector vgen = cms2.genps_p4().at(j);
-        float dr = ROOT::Math::VectorUtil::DeltaR(v, vgen);
-        if (dr < 0.2 && dr < drmin) {
-          drmin = dr;
-          st3_id = genId;
-        }
-      }
-    }
-  }
 
   // debug
   // std::cout << "id=" << id << " st1_id=" << st1_id;
@@ -481,28 +501,14 @@ int leptonIsFromW(int idx, int id, LorentzVector v) {
   if (st1_id == -id && abs(st1_motherid) == 24) return 2; // W
   if (st1_id ==  id &&   st1_motherid    == 23) return 1; // Z
   if (st1_id == -id &&   st1_motherid    == 23) return 2; // Z
-
+  
   // Step 4
   // Another no-brainer: pick up leptons matched to status=3
   // leptons.  This should take care of collinear FSR
   if (st3_id ==  id) return 1;
   if (st3_id == -id) return 2;
 
-  // Step 5
-  // Now we need to go after the W->tau->lepton.  
-  // We exploit the fact that in t->W->tau the tau shows up
-  // at status=3.  We also use the fact that the tau decay products
-  // are highly boosted, so the direction of the status=3 tau and
-  // the lepton from tau decays are about the same
-  //
-  // We do not use the status=1 links because there is not
-  // enough information to distinguish
-  // W->tau->lepton  or W->tau->lepton gamma
-  //  from
-  // B->tau->lepton or B->tau->lepton gamma
-  if (abs(st3_id) == 15 && id*st3_id > 0) return 1;
-  if (abs(st3_id) == 15 && id*st3_id < 0) return 2;
-
+ 
   // Step 6
   // If we get here, we have a non-W lepton
   // Now we figure out if it is from b, c, or "other"
