@@ -142,12 +142,12 @@ bool electronId_cand02(const unsigned int index)
 		//
 		if (fabs(cms2.els_etaSC()[index]) < 1.479) {
 			//if (cms2.els_fiduciality()[index] & (1<<ISEB)) {
-			if (cms2.els_d0corr()[index] > d0Thresholds[0]) return false;
+			if (fabs(cms2.els_d0corr()[index]) > d0Thresholds[0]) return false;
 			return true;
 		}
 		if (fabs(cms2.els_etaSC()[index]) > 1.479) {
 			//if (cms2.els_fiduciality()[index] & (1<<ISEE)) {
-			if (cms2.els_d0corr()[index] > d0Thresholds[1]) return false;
+			if (fabs(cms2.els_d0corr()[index]) > d0Thresholds[1]) return false;
 			return true;
 		}
 
