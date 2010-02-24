@@ -621,25 +621,18 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile) {
   codef << "    for( unsigned int event = 0; event < nEvents; ++event) {" << endl;
   codef << "      cms2.GetEntry(event);" << endl;
   codef << "      ++nEventsTotal;" << endl;
-  //codef << "      std::cout << \"els size: \" << els_p4().size() << \" \";" << endl;
-  //codef << "      std::cout << \"mus size: \" << mus_p4().size() << std::endl;" << endl << endl;
-  //codef << "      for (unsigned int mus = 0; " << endl;
-  //codef << "           mus < mus_p4().size(); mus++) " << endl << endl;
-  //codef << "         samplehisto->Fill(mus_p4().at(mus).Pt());" << endl << endl;
-  //codef << "      for (unsigned int hyp = 0;" << endl;
-  //codef << "           hyp < hyp_jets_p4().size();" << endl;
-  //codef << "           ++hyp) {" << endl;
-  //codef << "        std::cout << \"hyp: \" << hyp << \"jet corrections:\";" << endl;
-  //codef << "        for ( unsigned int jet = 0;" << endl;
-  //codef << "              jet < hyp_jets_p4()[hyp].size();" << endl;
-  //codef << "              ++jet ) {" << endl;
-  //codef << "          std::cout << \" \" << hyp_jets_p4()[hyp][jet].pt();" << endl;
-  //codef << "        }" << endl;
-  //codef << "        std::cout << endl;" << endl;
-  //codef << "      }" << endl;
-  //    codef << "      if ( hyp_jets_p4().size() == 0 ) {" << endl;
-  //codef << "        std::cout << \"no hypothesis!\" << std::endl;" << endl;
-  //codef << "      }" << endl;
+
+  codef << "      // Progress feedback to the user" << endl;
+  codef << "      if(nEventsTotal%1000 == 0) {" << endl;
+  codef << "        // xterm magic from L. Vacavant and A. Cerri" << endl;
+  codef << "        if (isatty(1)) {" << endl;
+  codef << "          printf(\"\\015\\033[32m ---> \\033[1m\\033[31m%4.1f%%\"" << endl;
+  codef << "          \"\\033[0m\\033[32m <---\\033[0m\\015\", (float)nEventsTotal/(nEventsChain*0.01));" << endl;
+  codef << "          fflush(stdout);" << endl;
+  codef << "        }" << endl;
+  codef << "      }//if(nEventsTotal%20000 == 0) {\n\n\n"
+										      
+
   codef << "    }" << endl;
   codef << "  }" << endl;
   codef << "" << endl;
