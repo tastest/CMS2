@@ -44,17 +44,42 @@ metStruct getTcmetFromCaloMet(TH2F* rf){
     
     if( flag == 0 ) continue;
     
+    //for flags 1,2,3,5 only perform muon correction
+    //if validSTAHits > 0
     else if( flag == 1 ){ 
-      correctMETforMuon  ( mus_gfit_p4().at(i), i );
-      correctSumEtForMuon( mus_gfit_p4().at(i), i );
+      
+      if(mus_gfit_validSTAHits().at(i) > 0){
+	correctMETforMuon  ( mus_gfit_p4().at(i), i );
+	correctSumEtForMuon( mus_gfit_p4().at(i), i );
+      }
+      
+      else if(isGoodTrack( mus_trkidx().at(i))){
+	correctMETforPion  ( mus_trkidx().at(i) , rf);
+	correctSumEtForPion( mus_trkidx().at(i) , rf);
+      }
     }
     else if( flag == 2 ){
-      correctMETforMuon  ( mus_trk_p4().at(i), i );
-      correctSumEtForMuon( mus_trk_p4().at(i), i );
+      
+      if(mus_gfit_validSTAHits().at(i) > 0){
+	correctMETforMuon  ( mus_trk_p4().at(i), i );
+	correctSumEtForMuon( mus_trk_p4().at(i), i );
+      }
+      
+      else if(isGoodTrack( mus_trkidx().at(i))){
+	correctMETforPion  ( mus_trkidx().at(i) , rf);
+	correctSumEtForPion( mus_trkidx().at(i) , rf);
+      }
     }
     else if( flag == 3 || flag==5 ){
-      correctMETforMuon  ( mus_p4().at(i), i );
-      correctSumEtForMuon( mus_p4().at(i), i );
+      
+      if(mus_gfit_validSTAHits().at(i) > 0){
+	correctMETforMuon  ( mus_p4().at(i), i );
+	correctSumEtForMuon( mus_p4().at(i), i );
+      }
+      else if(isGoodTrack( mus_trkidx().at(i))){
+	correctMETforPion  ( mus_trkidx().at(i) , rf);
+	correctSumEtForPion( mus_trkidx().at(i) , rf);
+      }
     }
     else if( flag == 4 ){
       correctMETforPion  ( mus_trkidx().at(i) , rf);
@@ -63,6 +88,7 @@ metStruct getTcmetFromCaloMet(TH2F* rf){
     
     else
       std::cout << "Muon has an undefined flag!\n";
+    
   }
   
   //correct muon-corrected calomet for pions
