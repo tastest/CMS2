@@ -46,7 +46,14 @@ bool goodElectronIsolated(unsigned int i){
 }
 
 bool fakableElectron(unsigned int i){
-  return ww_elIso(i)<0.1;
+  //return ww_elIso(i)<0.1;
+  if (!cms2.els_type()[i] & (1<<ISECALDRIVEN)) return false;
+  if (fabs(cms2.els_p4()[i].eta()) > 2.5) return false;
+  if (!electronId_noMuon(i)) return false;
+  if (electronIsolation_relsusy_cand1(i, true) > 0.10) return false;
+  if (isFromConversionPartnerTrack(i)) return false;
+  return true;
+
 }
 
 bool goodMuonWithoutIsolation(unsigned int i){
@@ -81,7 +88,7 @@ bool ww_elId(unsigned int index){
   if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
   if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
   if (!electronId_noMuon(index)) return false;
-  if (!electronId_cand01(index)) return false;
+  //if (!electronId_cand01(index)) return false;
   if (!electronId_cand02(index)) return false;
   if (!electronId_extra(index)) return false;
   //// if (!electronImpact_cand01(index)) return false;
