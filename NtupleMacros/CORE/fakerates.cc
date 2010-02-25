@@ -1,10 +1,9 @@
-
-
+// ROOT includes
 #include "TSystem.h"
 #include "TFile.h"
 #include "TH2.h"
 
-
+// TAS includes
 #include "fakerates.h"
 #include "CMS2.h"
 #include "electronSelections.h"
@@ -14,14 +13,12 @@
 class TH2F &fakeRateMuon (enum fakeRateVersion);
 static TFile *mu_fakeRateFile = 0;
 static TH2F  *mu_fakeRate = 0;
-
 bool isFakeableMuon (int index, enum fakeRateVersion version){
   // check version is valid
   if(version != mu_v1){  
     std::cout<<"isFakeableMuon: invalid fakeRateVersion given. Check it!"<<std::endl;
     return false;
   }
-
   // return denominator for current version
   if ( cms2.mus_p4()[index].pt() < 10.) {
     std::cout << "muonID ERROR: requested muon is too low pt,  Abort." << std::endl;
@@ -43,10 +40,9 @@ bool isFakeableMuon (int index, enum fakeRateVersion version){
   if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.2) return false; // d0 from beamspot
   if (muonIsoValue(index) > 0.4)                      return false; // Isolation cut
   return true;
-
-
 }
 double muFakeProb (int i_mu, enum fakeRateVersion version){
+
  // check version is valid
   if(version != mu_v1){
     std::cout<<"muFakeProb: invalid muon fakeRateVersion given. Check it!"<<std::endl;
@@ -136,13 +132,7 @@ static TH2F  *el_fakeRate_v3_cand02flip = 0;
 // denominator selection
 bool isFakeableElectron (int index, enum fakeRateVersion version){
 
-  // yes this is long conditional but I don't think it's necessary to have separate functions
-  // only to wrap what is done by the conditinal below
-  // here everything is in the same place and you can immediately see what you are getting
-  // although we have 9 versions now, many are redundant / useless so we expect to have versions for:
-  // WW, SS, OS
-  // if we are going to have many more than 9 versions, neither this way or the old way is adequate  
-
+// remove ID, ISO, IP
   if(version == el_v1_cand01){
     if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
     if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
@@ -181,7 +171,9 @@ bool isFakeableElectron (int index, enum fakeRateVersion version){
     // on request of FKW we have also here:
     if (isChargeFlip(index)) return false;
     return true;
-  } else if(version == el_v2_cand01){
+  } 
+// remove ID, IP
+    else if(version == el_v2_cand01){
     if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
     if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
     if (!electronId_noMuon(index)) return false;
@@ -189,19 +181,6 @@ bool isFakeableElectron (int index, enum fakeRateVersion version){
     //if (!electronImpact_cand01(index)) return false;
     if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
     if (isFromConversionPartnerTrack(index)) return false;
-    return true;
-  } else if(version == el_v2_cand02){
-    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
-    if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
-    if (!electronId_noMuon(index)) return false;
-    //  if (!electronId_cand02(index)) return false;
-    // extra on request of FKW
-    //  if (!electronId_extra(index)) return false;
-    //  if (!electronImpact_cand01(index)) return false;
-    if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
-    if (isFromConversionPartnerTrack(index)) return false;
-    // on request of FKW we have also here:
-    // if (isChargeFlip(index)) return false;
     return true;
   } else if(version == el_v2_cand02){
     if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
@@ -229,7 +208,9 @@ bool isFakeableElectron (int index, enum fakeRateVersion version){
     // on request of FKW we have also here:
     if (isChargeFlip(index)) return false;
     return true;
-  } else if(version == el_v3_cand01){
+  } 
+// remove ISO, IP
+    else if(version == el_v3_cand01){
     if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
     if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
     if (!electronId_noMuon(index)) return false;
@@ -267,17 +248,14 @@ bool isFakeableElectron (int index, enum fakeRateVersion version){
     // on request of FKW we have also here:
     if (isChargeFlip(index)) return false;
     return true;
-  } else {
+  } 
+  else {
     std::cout<<"isFakeable: invalid fakeRateVersion given. Check it!"<<std::endl;
     return false;
   }
 }
 
-
-
 double elFakeProb (int i_el, enum fakeRateVersion version){
-  // add check that version is valid
-  //return elFakeProb_test(i_el, version);
 
   // initialization
   float prob = 0.0;
@@ -300,8 +278,6 @@ double elFakeProb (int i_el, enum fakeRateVersion version){
 }
 
 double elFakeProbErr (int i_el, enum fakeRateVersion version){
-  // add check that version is valid
-  //return elFakeProbErr_test(i_el, version);
 
   // initialization
   float prob = 0.0;
@@ -326,11 +302,7 @@ double elFakeProbErr (int i_el, enum fakeRateVersion version){
   return prob_error;
 }
 
-
-
-// --------------------------------
-/* new root file access for 3X */
-// --------------------------------
+// read fake rate & errors from ROOT file in cvs NtupleMacros/data
 TH2F &fakeRateEl (enum fakeRateVersion version){
   if ( el_fakeRateFile == 0 ) {
     el_fakeRateFile = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/el_FR_3X.root", "read");
