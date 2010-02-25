@@ -1,6 +1,10 @@
+
+
 #include "TSystem.h"
 #include "TFile.h"
 #include "TH2.h"
+
+
 #include "fakerates.h"
 #include "CMS2.h"
 #include "electronSelections.h"
@@ -8,89 +12,17 @@
 
 /*muons*/
 class TH2F &fakeRateMuon (enum fakeRateVersion);
-class TH2F &fakeRateErrorMuon (enum fakeRateVersion);
-bool   isFakeDenominatorMuon_v1 (int);
-double muFakeProb_v1 (int);
-double muFakeProbErr_v1 (int);
 static TFile *mu_fakeRateFile = 0;
 static TH2F  *mu_fakeRate = 0;
-static TH2F  *mu_fakeRate_err = 0;
-bool isFakeableMuon (int i_mu, enum fakeRateVersion version){
-  if(version == mu_v1) return  isFakeDenominatorMuon_v1(i_mu);
-  else {
+
+bool isFakeableMuon (int index, enum fakeRateVersion version){
+  // check version is valid
+  if(version != mu_v1){  
     std::cout<<"isFakeableMuon: invalid fakeRateVersion given. Check it!"<<std::endl;
     return false;
   }
-}
-double muFakeProb (int i_mu, enum fakeRateVersion version){
-  if(version == mu_v1) return muFakeProb_v1(i_mu);
-  else {
-    std::cout<<"muFakeProb: invalid muon fakeRateVersion given. Check it!"<<std::endl;
-    return -999.;
-  }
-}
-double muFakeProbErr (int i_mu, enum fakeRateVersion version){
-  if(version == mu_v1) return muFakeProbErr_v1(i_mu);
-  else {
-    std::cout<<"muFakeProbErr: invalid muon fakeRateVersion given. Check it!"<<std::endl;
-    return -999.;
-  }
-}
 
-double muFakeProb_v1 (int i_mu){
-  float prob = 0.0;
-  float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateMuon(mu_v1);
-  TH2F *theFakeRateErr = &fakeRateErrorMuon(mu_v1);
-  // cut definition
-  float pt = cms2.mus_p4()[i_mu].Pt();
-  float eta = fabs(cms2.mus_p4()[i_mu].Eta());
-  float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
-
-  if ( pt > upperEdge )
-    pt = upperEdge;
-  prob = theFakeRate->GetBinContent(theFakeRate->FindBin(eta,pt));
-  prob_error = theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(eta,pt));
-
-  if (prob>1.0 || prob<0.0) {
-    std::cout<<"ERROR FROM MU FAKE RATE!!! prob = " << prob << std::endl;
-  }
-  if (prob==0.0){
-    std::cout<<"ERROR FROM MU FAKE RATE!!! prob = " << prob
-             <<" for Et = " <<cms2.mus_p4()[i_mu].Pt()
-             <<" and Eta = " <<cms2.mus_p4()[i_mu].Eta()
-             << std::endl;
-  }
-  return prob;
-}
-
-double muFakeProbErr_v1 (int i_mu){
-  float prob = 0.0;
-  float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateMuon(mu_v1);
-  TH2F *theFakeRateErr = &fakeRateErrorMuon(mu_v1);
-  // cut definition
-  float pt = cms2.mus_p4()[i_mu].Pt();
-  float eta = fabs(cms2.mus_p4()[i_mu].Eta());
-  float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
-
-  if ( pt > upperEdge )
-    pt = upperEdge;
-  prob = theFakeRate->GetBinContent(theFakeRate->FindBin(eta,pt));
-  prob_error = theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(eta,pt));
-
-  if (prob>1.0 || prob<0.0) {
-    std::cout<<"ERROR FROM MU FAKE RATE!!! prob = " << prob << std::endl;
-  }
-  if (prob==0.0){
-    std::cout<<"ERROR FROM MU FAKE RATE!!! prob = " << prob
-             <<" for Et = " <<cms2.mus_p4()[i_mu].Pt()
-             <<" and Eta = " <<cms2.mus_p4()[i_mu].Eta()
-             << std::endl;
-  }
-  return prob_error;
-}
-bool isFakeDenominatorMuon_v1 (int index) {
+  // return denominator for current version
   if ( cms2.mus_p4()[index].pt() < 10.) {
     std::cout << "muonID ERROR: requested muon is too low pt,  Abort." << std::endl;
     return false;
@@ -112,6 +44,61 @@ bool isFakeDenominatorMuon_v1 (int index) {
   if (muonIsoValue(index) > 0.4)                      return false; // Isolation cut
   return true;
 
+
+}
+double muFakeProb (int i_mu, enum fakeRateVersion version){
+ // check version is valid
+  if(version != mu_v1){
+    std::cout<<"muFakeProb: invalid muon fakeRateVersion given. Check it!"<<std::endl;
+    return -999.;
+  }
+
+  // initializations
+  float prob = 0.0;
+  float pt = cms2.mus_p4()[i_mu].Pt();
+  float eta = fabs(cms2.mus_p4()[i_mu].Eta());
+
+  // Get FR(eta,pt) from 2D hist
+  TH2F *theFakeRate = &fakeRateMuon(mu_v1);
+  float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) 
+                    + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
+  if ( pt > upperEdge ) pt = upperEdge;
+  prob = theFakeRate->GetBinContent(theFakeRate->FindBin(eta,pt));
+
+  // sanity check
+  if ( prob > 1.0 || prob < 0.0 ) std::cout << "ERROR FROM MU FAKE RATE!!! prob = " << prob << std::endl;
+  if (prob==0.0) std::cout << "ERROR FROM MU FAKE RATE!!! prob = " << prob <<" for Et = " <<cms2.mus_p4()[i_mu].Pt()
+                           << " and Eta = " <<cms2.mus_p4()[i_mu].Eta() << std::endl;
+
+  //
+  return prob;
+}
+double muFakeProbErr (int i_mu, enum fakeRateVersion version){
+  // check version is valid
+  if(version != mu_v1){
+    std::cout<<"muFakeProbErr: invalid muon fakeRateVersion given. Check it!"<<std::endl;
+    return -999.;
+  }
+
+  // initializations
+  float prob = 0.0;
+  float prob_error = 0.0;
+  float pt = cms2.mus_p4()[i_mu].Pt();
+  float eta = fabs(cms2.mus_p4()[i_mu].Eta());
+
+  // Get FR(eta,pt) & error(eta,pt) from 2D hist 
+  TH2F *theFakeRate = &fakeRateMuon(mu_v1);
+  float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
+  if ( pt > upperEdge ) pt = upperEdge;
+  prob        = theFakeRate->GetBinContent( theFakeRate->FindBin(eta,pt) );
+  prob_error  = theFakeRate->GetBinError( theFakeRate->FindBin(eta,pt) );
+
+  // sanity check
+  if ( prob > 1.0 || prob < 0.0 ) std::cout << "ERROR FROM MU FAKE RATE!!! prob = " << prob << std::endl;
+  if (prob==0.0) std::cout << "ERROR FROM MU FAKE RATE!!! prob = " << prob <<" for Et = " <<cms2.mus_p4()[i_mu].Pt()
+                           << " and Eta = " <<cms2.mus_p4()[i_mu].Eta() << std::endl;
+  //
+  return prob_error;
 }
 TH2F &fakeRateMuon (enum fakeRateVersion version){
   if ( mu_fakeRateFile == 0 ) {
@@ -122,64 +109,20 @@ TH2F &fakeRateMuon (enum fakeRateVersion version){
       std::cout << "$CMS2_LOCATION/NtupleMacros/data/QCDFRplots-v1.root exists!" << std::endl;
       gSystem->Exit(1);
     }
-    if(version) {
-      // need to use the version here soon!
-    }
     mu_fakeRate       = dynamic_cast<TH2F *>( mu_fakeRateFile->Get("QCD30_mu_FR_etavspt") );
-    mu_fakeRate_err   = dynamic_cast<TH2F *>( mu_fakeRateFile->Get("QCD30_mu_FRErr_etavspt") );
   }
   return *mu_fakeRate;
 }
-TH2F &fakeRateErrorMuon (enum fakeRateVersion version){
-  if ( mu_fakeRateFile == 0 ) {
-    mu_fakeRateFile = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/mu_FR_3X.root", "read");
-    if ( mu_fakeRateFile == 0 ) {
-      std::cout << "$CMS2_LOCATION/NtupleMacros/data/QCDFRplots-v1.root could not be found!!" << std::endl;
-      std::cout << "Please make sure that $CMS2_LOCATION points to your CMS2 directory and that" << std::endl;
-      std::cout << "$CMS2_LOCATION/NtupleMacros/data/QCDFRplots-v1.root exists!" << std::endl;
-      gSystem->Exit(1);
-    }
-    if(version) {
-      // need to use the version here soon!
-    }
-    mu_fakeRate_err = dynamic_cast<TH2F *>(mu_fakeRateFile->Get("QCD30_mu_FRErr_etavspt"));
-  } 
-  return *mu_fakeRate_err;
-}
-
-
 
 /* electrons */
 class TH2F &fakeRateEl (enum fakeRateVersion);
-class TH2F &fakeRateErrorEl (enum fakeRateVersion);
-bool   isFakeDenominatorElectron_v1_cand01 (int);
-bool   isFakeDenominatorElectron_v1_cand02 (int);
-bool   isFakeDenominatorElectron_v1_cand02flip (int);
-double elFakeProb_v1_cand01 (int);
-double elFakeProb_v1_cand02 (int);
-double elFakeProb_v1_cand02flip (int);
-double elFakeProbErr_v1_cand01 (int);
-double elFakeProbErr_v1_cand02 (int);
-double elFakeProbErr_v1_cand02flip (int);
-bool   isFakeDenominatorElectron_v2_cand01 (int);
-bool   isFakeDenominatorElectron_v2_cand02 (int);
-bool   isFakeDenominatorElectron_v2_cand02flip (int);
-double elFakeProb_v2_cand01 (int);
-double elFakeProb_v2_cand02 (int);
-double elFakeProb_v2_cand02flip (int);
-double elFakeProbErr_v2_cand01 (int);
-double elFakeProbErr_v2_cand02 (int);
-double elFakeProbErr_v2_cand02flip (int);
-bool   isFakeDenominatorElectron_v3_cand01 (int);
-bool   isFakeDenominatorElectron_v3_cand02 (int);
-bool   isFakeDenominatorElectron_v3_cand02flip (int);
-double elFakeProb_v3_cand01 (int);
-double elFakeProb_v3_cand02 (int);
-double elFakeProb_v3_cand02flip (int);
-double elFakeProbErr_v3_cand01 (int);
-double elFakeProbErr_v3_cand02 (int);
-double elFakeProbErr_v3_cand02flip (int);
+double elFakeProb_test (int, enum fakeRateVersion);
+double elFakeProbErr_test (int, enum fakeRateVersion);
+
+// file containing FR & errors for all supported denominators
 static TFile *el_fakeRateFile = 0;
+
+// histograms for supported denominators
 static TH2F  *el_fakeRate_v1_cand01 = 0;
 static TH2F  *el_fakeRate_v1_cand02 = 0;
 static TH2F  *el_fakeRate_v1_cand02flip = 0;
@@ -189,698 +132,201 @@ static TH2F  *el_fakeRate_v2_cand02flip = 0;
 static TH2F  *el_fakeRate_v3_cand01 = 0;
 static TH2F  *el_fakeRate_v3_cand02 = 0;
 static TH2F  *el_fakeRate_v3_cand02flip = 0;
-static TFile *el_fakeRateErrorFile = 0;
-static TH2F  *el_fakeRateErr_v1_cand01 = 0;
-static TH2F  *el_fakeRateErr_v1_cand02 = 0;
-static TH2F  *el_fakeRateErr_v1_cand02flip = 0;
-static TH2F  *el_fakeRateErr_v2_cand01 = 0;
-static TH2F  *el_fakeRateErr_v2_cand02 = 0;
-static TH2F  *el_fakeRateErr_v2_cand02flip = 0;
-static TH2F  *el_fakeRateErr_v3_cand01 = 0;
-static TH2F  *el_fakeRateErr_v3_cand02 = 0;
-static TH2F  *el_fakeRateErr_v3_cand02flip = 0;
 
-bool isFakeableElectron (int i_el, enum fakeRateVersion version)
-{
-  if(version == el_v1_cand01) return isFakeDenominatorElectron_v1_cand01(i_el);
-  if(version == el_v1_cand02) return isFakeDenominatorElectron_v1_cand02(i_el);
-  if(version == el_v1_cand02flip) return isFakeDenominatorElectron_v1_cand02flip(i_el);
-  if(version == el_v2_cand01) return isFakeDenominatorElectron_v2_cand01(i_el);
-  if(version == el_v2_cand02) return isFakeDenominatorElectron_v2_cand02(i_el);
-  if(version == el_v2_cand02flip) return isFakeDenominatorElectron_v2_cand02flip(i_el);
-  if(version == el_v3_cand01) return isFakeDenominatorElectron_v3_cand01(i_el);
-  if(version == el_v3_cand02) return isFakeDenominatorElectron_v3_cand02(i_el);
-  if(version == el_v3_cand02flip) return isFakeDenominatorElectron_v3_cand02flip(i_el);
-  else {
+// denominator selection
+bool isFakeableElectron (int index, enum fakeRateVersion version){
+
+  // yes this is long conditional but I don't think it's necessary to have separate functions
+  // only to wrap what is done by the conditinal below
+  // here everything is in the same place and you can immediately see what you are getting
+  // although we have 9 versions now, many are redundant / useless so we expect to have versions for:
+  // WW, SS, OS
+  // if we are going to have many more than 9 versions, neither this way or the old way is adequate  
+
+  if(version == el_v1_cand01){
+    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
+    if (!electronId_noMuon(index)) return false;
+    //if (!electronId_cand01(index)) return false;
+    //if (!electronImpact_cand01(index)) return false;
+    //if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
+    if (electronIsolation_relsusy_cand1(index, true) > 0.40) return false;
+    if (isFromConversionPartnerTrack(index)) return false;
+    return true;
+  } else if(version == el_v1_cand02){
+    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
+    if (!electronId_noMuon(index)) return false;
+    //  if (!electronId_cand02(index)) return false;
+    // extra on request of FKW
+    //  if (!electronId_extra(index)) return false;
+    //  if (!electronImpact_cand01(index)) return false;
+    //  if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
+    if (electronIsolation_relsusy_cand1(index, true) > 0.40) return false;
+    if (isFromConversionPartnerTrack(index)) return false;
+    // on request of FKW we have also here:
+    //  if (isChargeFlip(index)) return false;
+    return true;
+  } else if(version == el_v1_cand02flip){
+    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
+    if (!electronId_noMuon(index)) return false;
+    //  if (!electronId_cand02(index)) return false;
+    // extra on request of FKW
+    //  if (!electronId_extra(index)) return false;
+    //  if (!electronImpact_cand01(index)) return false;
+    //  if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
+    if (electronIsolation_relsusy_cand1(index, true) > 0.40) return false;
+    if (isFromConversionPartnerTrack(index)) return false;
+    // on request of FKW we have also here:
+    if (isChargeFlip(index)) return false;
+    return true;
+  } else if(version == el_v2_cand01){
+    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
+    if (!electronId_noMuon(index)) return false;
+    //if (!electronId_cand01(index)) return false;
+    //if (!electronImpact_cand01(index)) return false;
+    if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
+    if (isFromConversionPartnerTrack(index)) return false;
+    return true;
+  } else if(version == el_v2_cand02){
+    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
+    if (!electronId_noMuon(index)) return false;
+    //  if (!electronId_cand02(index)) return false;
+    // extra on request of FKW
+    //  if (!electronId_extra(index)) return false;
+    //  if (!electronImpact_cand01(index)) return false;
+    if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
+    if (isFromConversionPartnerTrack(index)) return false;
+    // on request of FKW we have also here:
+    // if (isChargeFlip(index)) return false;
+    return true;
+  } else if(version == el_v2_cand02){
+    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
+    if (!electronId_noMuon(index)) return false;
+    //  if (!electronId_cand02(index)) return false;
+    // extra on request of FKW
+    //  if (!electronId_extra(index)) return false;
+    //  if (!electronImpact_cand01(index)) return false;
+    if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
+    if (isFromConversionPartnerTrack(index)) return false;
+    // on request of FKW we have also here:
+    // if (isChargeFlip(index)) return false;
+    return true;
+  } else if(version == el_v2_cand02flip){
+    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
+    if (!electronId_noMuon(index)) return false;
+    //  if (!electronId_cand02(index)) return false;
+    // extra on request of FKW
+    //  if (!electronId_extra(index)) return false;
+    //  if (!electronImpact_cand01(index)) return false;
+    if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
+    if (isFromConversionPartnerTrack(index)) return false;
+    // on request of FKW we have also here:
+    if (isChargeFlip(index)) return false;
+    return true;
+  } else if(version == el_v3_cand01){
+    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
+    if (!electronId_noMuon(index)) return false;
+    if (!electronId_cand01(index)) return false;
+    //if (!electronImpact_cand01(index)) return false;
+    //if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
+    if (electronIsolation_relsusy_cand1(index, true) > 0.40) return false;
+    if (isFromConversionPartnerTrack(index)) return false;
+    return true;
+  } else if(version == el_v3_cand02){
+    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
+    if (!electronId_noMuon(index)) return false;
+    if (!electronId_cand02(index)) return false;
+    // extra on request of FKW
+    if (!electronId_extra(index)) return false;
+    //  if (!electronImpact_cand01(index)) return false;
+    //  if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
+    if (electronIsolation_relsusy_cand1(index, true) > 0.40) return false;
+    if (isFromConversionPartnerTrack(index)) return false;
+    // on request of FKW we have also here:
+    //  if (isChargeFlip(index)) return false;
+    return true;
+  } else if(version == el_v3_cand02flip){
+    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
+    if (!electronId_noMuon(index)) return false;
+    if (!electronId_cand02(index)) return false;
+    // extra on request of FKW
+    if (!electronId_extra(index)) return false;
+    //  if (!electronImpact_cand01(index)) return false;
+    //  if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
+    if (electronIsolation_relsusy_cand1(index, true) > 0.40) return false;
+    if (isFromConversionPartnerTrack(index)) return false;
+    // on request of FKW we have also here:
+    if (isChargeFlip(index)) return false;
+    return true;
+  } else {
     std::cout<<"isFakeable: invalid fakeRateVersion given. Check it!"<<std::endl;
     return false;
   }
 }
-double elFakeProb (int i_el, enum fakeRateVersion version)
-{
-  if(version == el_v1_cand01) return elFakeProb_v1_cand01(i_el);
-  if(version == el_v1_cand02) return elFakeProb_v1_cand02(i_el);
-  if(version == el_v1_cand02flip) return elFakeProb_v1_cand02flip(i_el);
-  if(version == el_v2_cand01) return elFakeProb_v2_cand01(i_el);
-  if(version == el_v2_cand02) return elFakeProb_v2_cand02(i_el);
-  if(version == el_v2_cand02flip) return elFakeProb_v2_cand02flip(i_el);
-  if(version == el_v3_cand01) return elFakeProb_v3_cand01(i_el);
-  if(version == el_v3_cand02) return elFakeProb_v3_cand02(i_el);
-  if(version == el_v3_cand02flip) return elFakeProb_v3_cand02flip(i_el);
-  else {
-    std::cout<<"elFakeProb: invalid fakeRateVersion given. Check it!"<<std::endl;
-    return -999.;
-  }
-}
 
-double elFakeProbErr (int i_el, enum fakeRateVersion version)
-{
-  if(version == el_v1_cand01) return elFakeProbErr_v1_cand01(i_el);
-  if(version == el_v1_cand02) return elFakeProbErr_v1_cand02(i_el);
-  if(version == el_v1_cand02flip) return elFakeProbErr_v1_cand02flip(i_el);
-  if(version == el_v2_cand01) return elFakeProbErr_v2_cand01(i_el);
-  if(version == el_v2_cand02) return elFakeProbErr_v2_cand02(i_el);
-  if(version == el_v2_cand02flip) return elFakeProbErr_v2_cand02flip(i_el);
-  if(version == el_v3_cand01) return elFakeProbErr_v3_cand01(i_el);
-  if(version == el_v3_cand02) return elFakeProbErr_v3_cand02(i_el);
-  if(version == el_v3_cand02flip) return elFakeProbErr_v3_cand02flip(i_el);
-  else {
-    std::cout<<"elFakeProbErr: invalid fakeRateVersion given. Check it!"<<std::endl;
-    return -999.;
-  }
-}
 
-// --------------------------------
-// electrons v1_cand01
-// --------------------------------
-bool isFakeDenominatorElectron_v1_cand01 (int index) {
-  if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
-  if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
-  if (!electronId_noMuon(index)) return false;
-  //if (!electronId_cand01(index)) return false;
-  //if (!electronImpact_cand01(index)) return false;
-  //if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
-  if (electronIsolation_relsusy_cand1(index, true) > 0.40) return false;
-  if (isFromConversionPartnerTrack(index)) return false;
-  return true;
-}
-double elFakeProb_v1_cand01 (int i_el){
+
+double elFakeProb (int i_el, enum fakeRateVersion version){
+  // add check that version is valid
+  //return elFakeProb_test(i_el, version);
+
+  // initialization
   float prob = 0.0;
-  float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateEl(el_v1_cand01);
-  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v1_cand01);
-  // cut definition
-  float pt = cms2.els_p4()[i_el].Pt();
-  float eta = fabs(cms2.els_p4()[i_el].Eta());
-  float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
+  float pt = cms2.els_p4().at(i_el).Pt();
+  float eta = fabs(cms2.els_p4().at(i_el).Eta());
 
+  // get the FR & from 2D hist
+  TH2F *theFakeRate = &fakeRateEl( version );
+  float upperEdge =  theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) 
+                    + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
   if ( pt > upperEdge ) pt = upperEdge;
-     
-  prob       = theFakeRate->GetBinContent(theFakeRate->FindBin(eta,pt));
-  prob_error = theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(eta,pt));
-     
-  if (prob>1.0 || prob<0.0) {
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob << std::endl;
-  }
-  if (prob==0.0){
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob
-             <<" for Et = " <<cms2.els_p4()[i_el].Pt()
-             <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
-             << std::endl;
-  }
+  prob       = theFakeRate->GetBinContent( theFakeRate->FindBin(eta,pt) );
+
+  // sanity checks on FR and error
+  if ( prob > 1.0 || prob < 0.0) std::cout << "ERROR FROM EL FAKE RATE!!! prob = " << prob << std::endl;
+  if (prob==0.0) std::cout << "ERROR FROM EL FAKE RATE!!! prob = " << prob << " for Et = " << cms2.els_p4()[i_el].Pt() 
+                           << " and Eta = " <<cms2.els_p4()[i_el].Eta() << std::endl;
+  // return FR
   return prob;
 }
 
-double elFakeProbErr_v1_cand01 (int i_el){
+double elFakeProbErr (int i_el, enum fakeRateVersion version){
+  // add check that version is valid
+  //return elFakeProbErr_test(i_el, version);
+
+  // initialization
   float prob = 0.0;
   float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateEl(el_v1_cand01);
-  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v1_cand01);
-  // cut definition
-  float pt = cms2.els_p4()[i_el].Pt();
-  float eta = fabs(cms2.els_p4()[i_el].Eta());
-  float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
-
+  float pt = cms2.els_p4().at(i_el).Pt();
+  float eta = fabs(cms2.els_p4().at(i_el).Eta());
+  
+  // get the FR & error from 2D hist
+  TH2F *theFakeRate = &fakeRateEl( version );
+  float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) 
+                    + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
   if ( pt > upperEdge ) pt = upperEdge;
-     
   prob       = theFakeRate->GetBinContent(theFakeRate->FindBin(eta,pt));
-  prob_error = theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(eta,pt));
-     
-  if (prob>1.0 || prob<0.0) {
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob << std::endl;
-  }
-  if (prob==0.0){
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob
-             <<" for Et = " <<cms2.els_p4()[i_el].Pt()
-             <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
-             << std::endl;
-  }
-  return prob_error;
-}
-
-// --------------------------------
-// electrons v1_cand02
-// --------------------------------
-bool isFakeDenominatorElectron_v1_cand02 (int index) {
-  if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
-  if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
-  if (!electronId_noMuon(index)) return false;
-  //  if (!electronId_cand02(index)) return false;
-  // extra on request of FKW
-  //  if (!electronId_extra(index)) return false;
-  //  if (!electronImpact_cand01(index)) return false;
-  //  if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
-  if (electronIsolation_relsusy_cand1(index, true) > 0.40) return false;
-  if (isFromConversionPartnerTrack(index)) return false;
-  // on request of FKW we have also here:
-  //  if (isChargeFlip(index)) return false;
-  return true;
-}
-double elFakeProb_v1_cand02 (int i_el){
-  float prob = 0.0;
-  float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateEl(el_v1_cand02);
-  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v1_cand02);
-  // cut definition
-  float pt = cms2.els_p4()[i_el].Pt();
-  float eta = fabs(cms2.els_p4()[i_el].Eta());
-  float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
-
-  if ( pt > upperEdge ) pt = upperEdge;
-     
-  prob       = theFakeRate->GetBinContent(theFakeRate->FindBin(eta,pt));
-  prob_error = theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(eta,pt));
-     
-  if (prob>1.0 || prob<0.0) {
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob << std::endl;
-  }
-  if (prob==0.0){
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob
-             <<" for Et = " <<cms2.els_p4()[i_el].Pt()
-             <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
-             << std::endl;
-  }
-  return prob;
-}
-
-double elFakeProbErr_v1_cand02 (int i_el){
-  float prob = 0.0;
-  float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateEl(el_v1_cand02);
-  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v1_cand02);
-  // cut definition
-  float pt = cms2.els_p4()[i_el].Pt();
-  float eta = fabs(cms2.els_p4()[i_el].Eta());
-  float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
-
-  if ( pt > upperEdge ) pt = upperEdge;
-     
-  prob       = theFakeRate->GetBinContent(theFakeRate->FindBin(eta,pt));
-  prob_error = theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(eta,pt));
-     
-  if (prob>1.0 || prob<0.0) {
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob << std::endl;
-  }
-  if (prob==0.0){
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob
-             <<" for Et = " <<cms2.els_p4()[i_el].Pt()
-             <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
-             << std::endl;
-  }
-  return prob_error;
-}
-
-// --------------------------------
-// electrons v1_cand02flip
-// --------------------------------
-bool isFakeDenominatorElectron_v1_cand02flip (int index) {
-  if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
-  if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
-  if (!electronId_noMuon(index)) return false;
-  //  if (!electronId_cand02(index)) return false;
-  // extra on request of FKW
-  //  if (!electronId_extra(index)) return false;
-  //  if (!electronImpact_cand01(index)) return false;
-  //  if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
-  if (electronIsolation_relsusy_cand1(index, true) > 0.40) return false;
-  if (isFromConversionPartnerTrack(index)) return false;
-  // on request of FKW we have also here:
-  if (isChargeFlip(index)) return false;
-  return true;
-}
-double elFakeProb_v1_cand02flip (int i_el){
-  float prob = 0.0;
-  float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateEl(el_v1_cand02flip);
-  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v1_cand02flip);
-  // cut definition
-  float pt = cms2.els_p4()[i_el].Pt();
-  float eta = fabs(cms2.els_p4()[i_el].Eta());
-  float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
-
-  if ( pt > upperEdge ) pt = upperEdge;
-     
-  prob       = theFakeRate->GetBinContent(theFakeRate->FindBin(eta,pt));
-  prob_error = theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(eta,pt));
-     
-  if (prob>1.0 || prob<0.0) {
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob << std::endl;
-  }
-  if (prob==0.0){
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob
-             <<" for Et = " <<cms2.els_p4()[i_el].Pt()
-             <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
-             << std::endl;
-  }
-  return prob;
-}
-
-double elFakeProbErr_v1_cand02flip (int i_el){
-  float prob = 0.0;
-  float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateEl(el_v1_cand02flip);
-  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v1_cand02flip);
-  // cut definition
-  float pt = cms2.els_p4()[i_el].Pt();
-  float eta = fabs(cms2.els_p4()[i_el].Eta());
-  float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
-
-  if ( pt > upperEdge ) pt = upperEdge;
-     
-  prob       = theFakeRate->GetBinContent(theFakeRate->FindBin(eta,pt));
-  prob_error = theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(eta,pt));
-     
-  if (prob>1.0 || prob<0.0) {
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob << std::endl;
-  }
-  if (prob==0.0){
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob
-             <<" for Et = " <<cms2.els_p4()[i_el].Pt()
-             <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
-             << std::endl;
-  }
+  prob_error = theFakeRate->GetBinError(theFakeRate->FindBin(eta,pt));
+ 
+  // sanity checks on FR and error
+  if ( prob > 1.0 || prob < 0.0) std::cout << "ERROR FROM EL FAKE RATE!!! prob = " << prob << std::endl;
+  if (prob==0.0) std::cout << "ERROR FROM EL FAKE RATE!!! prob = " << prob << " for Et = " << cms2.els_p4()[i_el].Pt() 
+                           << " and Eta = " <<cms2.els_p4()[i_el].Eta() << std::endl;
+  
+  //
   return prob_error;
 }
 
 
-
-// --------------------------------
-// electrons v2_cand01
-// --------------------------------
-bool isFakeDenominatorElectron_v2_cand01 (int index) {
-  if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
-  if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
-  if (!electronId_noMuon(index)) return false;
-  //if (!electronId_cand01(index)) return false;
-  //if (!electronImpact_cand01(index)) return false;
-  if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
-  if (isFromConversionPartnerTrack(index)) return false;
-  return true;
-}
-double elFakeProb_v2_cand01 (int i_el){
-  float prob = 0.0;
-  float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateEl(el_v2_cand01);
-  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v2_cand01);
-  // cut definition
-  float pt = cms2.els_p4()[i_el].Pt();
-  float eta = fabs(cms2.els_p4()[i_el].Eta());
-  float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
-
-  if ( pt > upperEdge ) pt = upperEdge;
-     
-  prob       = theFakeRate->GetBinContent(theFakeRate->FindBin(eta,pt));
-  prob_error = theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(eta,pt));
-     
-  if (prob>1.0 || prob<0.0) {
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob << std::endl;
-  }
-  if (prob==0.0){
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob
-             <<" for Et = " <<cms2.els_p4()[i_el].Pt()
-             <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
-             << std::endl;
-  }
-  return prob;
-}
-
-double elFakeProbErr_v2_cand01 (int i_el){
-  float prob = 0.0;
-  float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateEl(el_v2_cand01);
-  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v2_cand01);
-  // cut definition
-  float pt = cms2.els_p4()[i_el].Pt();
-  float eta = fabs(cms2.els_p4()[i_el].Eta());
-  float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
-
-  if ( pt > upperEdge ) pt = upperEdge;
-     
-  prob       = theFakeRate->GetBinContent(theFakeRate->FindBin(eta,pt));
-  prob_error = theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(eta,pt));
-     
-  if (prob>1.0 || prob<0.0) {
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob << std::endl;
-  }
-  if (prob==0.0){
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob
-             <<" for Et = " <<cms2.els_p4()[i_el].Pt()
-             <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
-             << std::endl;
-  }
-  return prob_error;
-}
-
-// --------------------------------
-// electrons v2_cand02
-// --------------------------------
-bool isFakeDenominatorElectron_v2_cand02 (int index) {
-  if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
-  if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
-  if (!electronId_noMuon(index)) return false;
-  //  if (!electronId_cand02(index)) return false;
-  // extra on request of FKW
-  //  if (!electronId_extra(index)) return false;
-  //  if (!electronImpact_cand01(index)) return false;
-  if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
-  if (isFromConversionPartnerTrack(index)) return false;
-  // on request of FKW we have also here:
-  // if (isChargeFlip(index)) return false;
-  return true;
-}
-double elFakeProb_v2_cand02 (int i_el){
-  float prob = 0.0;
-  float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateEl(el_v2_cand02);
-  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v2_cand02);
-  // cut definition
-  float pt = cms2.els_p4()[i_el].Pt();
-  float eta = fabs(cms2.els_p4()[i_el].Eta());
-  float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
-
-  if ( pt > upperEdge ) pt = upperEdge;
-     
-  prob       = theFakeRate->GetBinContent(theFakeRate->FindBin(eta,pt));
-  prob_error = theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(eta,pt));
-     
-  if (prob>1.0 || prob<0.0) {
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob << std::endl;
-  }
-  if (prob==0.0){
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob
-             <<" for Et = " <<cms2.els_p4()[i_el].Pt()
-             <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
-             << std::endl;
-  }
-  return prob;
-}
-
-double elFakeProbErr_v2_cand02 (int i_el){
-  float prob = 0.0;
-  float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateEl(el_v2_cand02);
-  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v2_cand02);
-  // cut definition
-  float pt = cms2.els_p4()[i_el].Pt();
-  float eta = fabs(cms2.els_p4()[i_el].Eta());
-  float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
-
-  if ( pt > upperEdge ) pt = upperEdge;
-     
-  prob       = theFakeRate->GetBinContent(theFakeRate->FindBin(eta,pt));
-  prob_error = theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(eta,pt));
-     
-  if (prob>1.0 || prob<0.0) {
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob << std::endl;
-  }
-  if (prob==0.0){
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob
-             <<" for Et = " <<cms2.els_p4()[i_el].Pt()
-             <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
-             << std::endl;
-  }
-  return prob_error;
-}
-
-// --------------------------------
-// electrons v2_cand02flip
-// --------------------------------
-bool isFakeDenominatorElectron_v2_cand02flip (int index) {
-  if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
-  if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
-  if (!electronId_noMuon(index)) return false;
-  //  if (!electronId_cand02(index)) return false;
-  // extra on request of FKW
-  //  if (!electronId_extra(index)) return false;
-  //  if (!electronImpact_cand01(index)) return false;
-  if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
-  if (isFromConversionPartnerTrack(index)) return false;
-  // on request of FKW we have also here:
-  if (isChargeFlip(index)) return false;
-  return true;
-}
-double elFakeProb_v2_cand02flip (int i_el){
-  float prob = 0.0;
-  float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateEl(el_v2_cand02flip);
-  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v2_cand02flip);
-  // cut definition
-  float pt = cms2.els_p4()[i_el].Pt();
-  float eta = fabs(cms2.els_p4()[i_el].Eta());
-  float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
-
-  if ( pt > upperEdge ) pt = upperEdge;
-     
-  prob       = theFakeRate->GetBinContent(theFakeRate->FindBin(eta,pt));
-  prob_error = theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(eta,pt));
-     
-  if (prob>1.0 || prob<0.0) {
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob << std::endl;
-  }
-  if (prob==0.0){
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob
-             <<" for Et = " <<cms2.els_p4()[i_el].Pt()
-             <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
-             << std::endl;
-  }
-  return prob;
-}
-
-double elFakeProbErr_v2_cand02flip (int i_el){
-  float prob = 0.0;
-  float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateEl(el_v2_cand02flip);
-  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v2_cand02flip);
-  // cut definition
-  float pt = cms2.els_p4()[i_el].Pt();
-  float eta = fabs(cms2.els_p4()[i_el].Eta());
-  float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
-
-  if ( pt > upperEdge ) pt = upperEdge;
-     
-  prob       = theFakeRate->GetBinContent(theFakeRate->FindBin(eta,pt));
-  prob_error = theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(eta,pt));
-     
-  if (prob>1.0 || prob<0.0) {
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob << std::endl;
-  }
-  if (prob==0.0){
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob
-             <<" for Et = " <<cms2.els_p4()[i_el].Pt()
-             <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
-             << std::endl;
-  }
-  return prob_error;
-}
-
-// --------------------------------
-// electrons v3_cand01
-// --------------------------------
-bool isFakeDenominatorElectron_v3_cand01 (int index) {
-  if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
-  if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
-  if (!electronId_noMuon(index)) return false;
-  if (!electronId_cand01(index)) return false;
-  //if (!electronImpact_cand01(index)) return false;
-  //if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
-  if (electronIsolation_relsusy_cand1(index, true) > 0.40) return false;
-  if (isFromConversionPartnerTrack(index)) return false;
-  return true;
-}
-double elFakeProb_v3_cand01 (int i_el){
-  float prob = 0.0;
-  float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateEl(el_v3_cand01);
-  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v3_cand01);
-  // cut definition
-  float pt = cms2.els_p4()[i_el].Pt();
-  float eta = fabs(cms2.els_p4()[i_el].Eta());
-  float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
-
-  if ( pt > upperEdge ) pt = upperEdge;
-     
-  prob       = theFakeRate->GetBinContent(theFakeRate->FindBin(eta,pt));
-  prob_error = theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(eta,pt));
-     
-  if (prob>1.0 || prob<0.0) {
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob << std::endl;
-  }
-  if (prob==0.0){
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob
-             <<" for Et = " <<cms2.els_p4()[i_el].Pt()
-             <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
-             << std::endl;
-  }
-  return prob;
-}
-double elFakeProbErr_v3_cand01 (int i_el){
-  float prob = 0.0;
-  float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateEl(el_v3_cand01);
-  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v3_cand01);
-  // cut definition
-  float pt = cms2.els_p4()[i_el].Pt();
-  float eta = fabs(cms2.els_p4()[i_el].Eta());
-  float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
-
-  if ( pt > upperEdge ) pt = upperEdge;
-     
-  prob       = theFakeRate->GetBinContent(theFakeRate->FindBin(eta,pt));
-  prob_error = theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(eta,pt));
-     
-  if (prob>1.0 || prob<0.0) {
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob << std::endl;
-  }
-  if (prob==0.0){
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob
-             <<" for Et = " <<cms2.els_p4()[i_el].Pt()
-             <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
-             << std::endl;
-  }
-  return prob_error;
-}
-
-// --------------------------------
-// electrons v3_cand02
-// --------------------------------
-bool isFakeDenominatorElectron_v3_cand02 (int index) {
-  if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
-  if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
-  if (!electronId_noMuon(index)) return false;
-  if (!electronId_cand02(index)) return false;
-  // extra on request of FKW
-  if (!electronId_extra(index)) return false;
-  //  if (!electronImpact_cand01(index)) return false;
-  //  if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
-  if (electronIsolation_relsusy_cand1(index, true) > 0.40) return false;
-  if (isFromConversionPartnerTrack(index)) return false;
-  // on request of FKW we have also here:
-  //  if (isChargeFlip(index)) return false;
-  return true;
-}
-double elFakeProb_v3_cand02 (int i_el){
-  float prob = 0.0;
-  float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateEl(el_v3_cand02);
-  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v3_cand02);
-  // cut definition
-  float pt = cms2.els_p4()[i_el].Pt();
-  float eta = fabs(cms2.els_p4()[i_el].Eta());
-  float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
-
-  if ( pt > upperEdge ) pt = upperEdge;
-     
-  prob       = theFakeRate->GetBinContent(theFakeRate->FindBin(eta,pt));
-  prob_error = theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(eta,pt));
-     
-  if (prob>1.0 || prob<0.0) {
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob << std::endl;
-  }
-  if (prob==0.0){
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob
-             <<" for Et = " <<cms2.els_p4()[i_el].Pt()
-             <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
-             << std::endl;
-  }
-  return prob;
-}
-double elFakeProbErr_v3_cand02 (int i_el){
-  float prob = 0.0;
-  float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateEl(el_v3_cand02);
-  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v3_cand02);
-  // cut definition
-  float pt = cms2.els_p4()[i_el].Pt();
-  float eta = fabs(cms2.els_p4()[i_el].Eta());
-  float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
-
-  if ( pt > upperEdge ) pt = upperEdge;
-     
-  prob       = theFakeRate->GetBinContent(theFakeRate->FindBin(eta,pt));
-  prob_error = theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(eta,pt));
-     
-  if (prob>1.0 || prob<0.0) {
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob << std::endl;
-  }
-  if (prob==0.0){
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob
-             <<" for Et = " <<cms2.els_p4()[i_el].Pt()
-             <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
-             << std::endl;
-  }
-  return prob_error;
-}
-
-// --------------------------------
-// electrons v3_cand02flip
-// --------------------------------
-bool isFakeDenominatorElectron_v3_cand02flip (int index) {
-  if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
-  if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
-  if (!electronId_noMuon(index)) return false;
-  if (!electronId_cand02(index)) return false;
-  // extra on request of FKW
-  if (!electronId_extra(index)) return false;
-  //  if (!electronImpact_cand01(index)) return false;
-  //  if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
-  if (electronIsolation_relsusy_cand1(index, true) > 0.40) return false;
-  if (isFromConversionPartnerTrack(index)) return false;
-  // on request of FKW we have also here:
-  if (isChargeFlip(index)) return false;
-  return true;
-}
-double elFakeProb_v3_cand02flip (int i_el){
-  float prob = 0.0;
-  float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateEl(el_v3_cand02flip);
-  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v3_cand02flip);
-  // cut definition
-  float pt = cms2.els_p4()[i_el].Pt();
-  float eta = fabs(cms2.els_p4()[i_el].Eta());
-  float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
-
-  if ( pt > upperEdge ) pt = upperEdge;
-     
-  prob       = theFakeRate->GetBinContent(theFakeRate->FindBin(eta,pt));
-  prob_error = theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(eta,pt));
-     
-  if (prob>1.0 || prob<0.0) {
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob << std::endl;
-  }
-  if (prob==0.0){
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob
-             <<" for Et = " <<cms2.els_p4()[i_el].Pt()
-             <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
-             << std::endl;
-  }
-  return prob;
-}
-double elFakeProbErr_v3_cand02flip (int i_el){
-  float prob = 0.0;
-  float prob_error = 0.0;
-  TH2F *theFakeRate = &fakeRateEl(el_v3_cand02flip);
-  TH2F *theFakeRateErr = &fakeRateErrorEl(el_v3_cand02flip);
-  // cut definition
-  float pt = cms2.els_p4()[i_el].Pt();
-  float eta = fabs(cms2.els_p4()[i_el].Eta());
-  float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
-
-  if ( pt > upperEdge ) pt = upperEdge;
-     
-  prob       = theFakeRate->GetBinContent(theFakeRate->FindBin(eta,pt));
-  prob_error = theFakeRateErr->GetBinContent(theFakeRateErr->FindBin(eta,pt));
-     
-  if (prob>1.0 || prob<0.0) {
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob << std::endl;
-  }
-  if (prob==0.0){
-    std::cout<<"ERROR FROM EL FAKE RATE!!! prob = " << prob
-             <<" for Et = " <<cms2.els_p4()[i_el].Pt()
-             <<" and Eta = " <<cms2.els_p4()[i_el].Eta()
-             << std::endl;
-  }
-  return prob_error;
-}
 
 // --------------------------------
 /* new root file access for 3X */
@@ -894,15 +340,15 @@ TH2F &fakeRateEl (enum fakeRateVersion version){
       std::cout << "$CMS2_LOCATION/NtupleMacros/data/el_FR_3X.root exists!" << std::endl;
       gSystem->Exit(1);
     }
-    el_fakeRate_v1_cand01     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v1_cand01_IDn_ISO_04_FRptvseta") );
-    el_fakeRate_v1_cand02     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v1_cand02_IDn_ISO_04_FRptvseta") );
-    el_fakeRate_v1_cand02flip = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v1_cand02flip_IDn_ISO_04_FRptvseta") );
-    el_fakeRate_v2_cand01     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v2_cand01_IDn_ISO_01_FRptvseta") );
-    el_fakeRate_v2_cand02     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v2_cand02_IDn_ISO_01_FRptvseta") );
-    el_fakeRate_v2_cand02flip = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v2_cand02flip_IDn_ISO_01_FRptvseta") );
-    el_fakeRate_v3_cand01     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v3_cand01_IDy_ISO_04_FRptvseta") );
-    el_fakeRate_v3_cand02     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v3_cand02_IDy_ISO_04_FRptvseta") );
-    el_fakeRate_v3_cand02flip = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v3_cand02flip_IDy_ISO_04_FRptvseta") );
+    el_fakeRate_v1_cand01     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v1_cand01_FR_etavspt") );
+    el_fakeRate_v1_cand02     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v1_cand02_FR_etavspt") );
+    el_fakeRate_v1_cand02flip = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v1_cand02flip_FR_etavspt") );
+    el_fakeRate_v2_cand01     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v2_cand01_FR_etavspt") );
+    el_fakeRate_v2_cand02     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v2_cand02_FR_etavspt") );
+    el_fakeRate_v2_cand02flip = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v2_cand02flip_FR_etavspt") );
+    el_fakeRate_v3_cand01     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v3_cand01_FR_etavspt") );
+    el_fakeRate_v3_cand02     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v3_cand02_FR_etavspt") );
+    el_fakeRate_v3_cand02flip = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v3_cand02flip_FR_etavspt") );
   }
   if( version == el_v1_cand01 ){ 
     return *el_fakeRate_v1_cand01;
@@ -927,45 +373,3 @@ TH2F &fakeRateEl (enum fakeRateVersion version){
   gSystem->Exit(1);
   return *(TH2F*)0;
 }
-TH2F &fakeRateErrorEl (enum fakeRateVersion version){
-  if ( el_fakeRateErrorFile == 0 ) {
-    el_fakeRateErrorFile = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/el_FR_3X.root", "read");
-    if ( el_fakeRateErrorFile == 0 ) {
-      std::cout << "$CMS2_LOCATION/NtupleMacros/data/el_FR_3X.root could not be found!!" << std::endl;
-      std::cout << "Please make sure that $CMS2_LOCATION points to your CMS2 directory and that" << std::endl;
-      std::cout << "$CMS2_LOCATION/NtupleMacros/data/el_FR_3X.root exists!" << std::endl;
-      gSystem->Exit(1);
-    }
-    el_fakeRateErr_v1_cand01     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v1_cand01_IDn_ISO_04_FRErrptvseta") );
-    el_fakeRateErr_v1_cand02     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v1_cand02_IDn_ISO_04_FRErrptvseta") );
-    el_fakeRateErr_v1_cand02flip = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v1_cand02flip_IDn_ISO_04_FRErrptvseta") );
-    el_fakeRateErr_v2_cand01     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v2_cand01_IDn_ISO_01_FRErrptvseta") );
-    el_fakeRateErr_v2_cand02     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v2_cand02_IDn_ISO_01_FRErrptvseta") );
-    el_fakeRateErr_v2_cand02flip = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v2_cand02flip_IDn_ISO_01_FRErrptvseta") );
-    el_fakeRateErr_v3_cand01     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v3_cand01_IDy_ISO_04_FRErrptvseta") );
-    el_fakeRateErr_v3_cand02     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v3_cand02_IDy_ISO_04_FRErrptvseta") );
-    el_fakeRateErr_v3_cand02flip = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v3_cand02flip_IDy_ISO_04_FRErrptvseta") );
-  } 
-  if( version == el_v1_cand01 ){
-    return *el_fakeRateErr_v1_cand01;
-  } else if( version == el_v1_cand02 ){
-    return *el_fakeRateErr_v1_cand02;
-  } else if( version == el_v1_cand02flip ){
-    return *el_fakeRateErr_v1_cand02flip;
-  } else if( version == el_v2_cand01 ){
-    return *el_fakeRateErr_v2_cand01;
-  } else if( version == el_v2_cand02 ){
-    return *el_fakeRateErr_v2_cand02;
-  } else if( version == el_v2_cand02flip ){
-    return *el_fakeRateErr_v2_cand02flip;
-  } else if( version == el_v3_cand01 ){
-    return *el_fakeRateErr_v3_cand01;
-  } else if( version == el_v3_cand02 ){
-    return *el_fakeRateErr_v3_cand02;
-  } else if( version == el_v3_cand02flip ){
-    return *el_fakeRateErr_v3_cand02flip;
-  } 
-  cout << "ERROR: unknown electron version" << endl;
-  gSystem->Exit(1);
-  return *(TH2F *)0;
-} 
