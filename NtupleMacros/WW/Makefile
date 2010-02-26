@@ -33,6 +33,7 @@ ifeq ($(shell root-config --platform),macosx)
 endif
 
 CORESOURCES = $(CMSROOT)/CORE/CMS2.cc $(CMSROOT)/CORE/muonSelections.cc $(CMSROOT)/CORE/electronSelections.cc 
+#$(CMSROOT)/CORE/fakerates.cc
 # CORESOURCES = $(wildcard $(CMSROOT)/CORE/*.cc) 
 COREOBJECTS = $(CORESOURCES:.cc=.o) 
 CORELIB = libCMS2NtupleMacrosCORE.so
@@ -111,6 +112,10 @@ table: processed_data.root # show results
 t: table
 
 jetbkg: processed_data.root  # estimate jet induced background
+	$(QUIET) root -q -l estimateJetBkg_fakes.C+; \
+	root -q -l estimateJetBkg_sideband.C+
+
+jetbkg2: processed_data.root ../data/el_FR_3X.root # estimate jet induced background from FR group
 	$(QUIET) root -q -l estimateJetBkg_fakes.C+; \
 	root -q -l estimateJetBkg_sideband.C+
 
