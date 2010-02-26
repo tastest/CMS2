@@ -39,135 +39,41 @@ class MyScanChain {
 		//
 		// ele ID plots
 
+        // pt
+        TH1F *h1_hyp_debug_pt_[2][4];
+        TH1F *h1_hyp_debug_after_cand01_pt_[2][4];
 
-        // NEW
-        TH1F *h1_hyp_ltid_sigmaIEtaIEta_[2][4];
+        // eta
+        TH1F *h1_hyp_debug_eta_[2][4];
+        TH1F *h1_hyp_debug_after_cand01_eta_[2][4];
 
+        // sigmaIEtaIEta
+        TH1F *h1_hyp_debug_sigmaIEtaIEta_[2][4];
+        TH1F *h1_hyp_debug_after_cand01_sigmaIEtaIEta_[2][4];
 
+        // hoe
+        TH1F *h1_hyp_debug_hoe_[2][4];
+        TH1F *h1_hyp_debug_after_cand01_hoe_[2][4];
 
-		//
-		// basic selection quantities
-		//
+        // dPhiIn
+        TH1F *h1_hyp_debug_dPhiIn_[2][4];
+        TH1F *h1_hyp_debug_after_cand01_dPhiIn_[2][4];
 
-        TH1F *h1_hyp_lt_eb_pt_[4];
-        TH1F *h1_hyp_lt_ee_pt_[4];
+        // dEtaIn
+        TH1F *h1_hyp_debug_dEtaIn_[2][4];
+        TH1F *h1_hyp_debug_after_cand01_dEtaIn_[2][4];
 
-		TH1F *h1_hyp_lt_eb_hoe_[4];
-		TH1F *h1_hyp_lt_eb_sigmaIEtaIEta_[4];
-		TH1F *h1_hyp_lt_eb_dEtaIn_[4];
-		TH1F *h1_hyp_lt_eb_dPhiIn_[4];
-		TH1F *h1_hyp_lt_eb_d0_[4];
-		TH1F *h1_hyp_lt_eb_E2x5MaxOver5x5_[4];
-		TH1F *h1_hyp_lt_eb_ecalIso_[4];
-		TH1F *h1_hyp_lt_eb_hcalIso_[4];
-		TH1F *h1_hyp_lt_eb_tkIso_[4];
-        TH1F *h1_hyp_lt_eb_relsusy_[4];
+        // d0
+        TH1F *h1_hyp_debug_d0_[2][4];
+        TH1F *h1_hyp_debug_after_cand01_d0_[2][4];
 
-		TH1F *h1_hyp_lt_ee_hoe_[4];
-		TH1F *h1_hyp_lt_ee_sigmaIEtaIEta_[4];
-		TH1F *h1_hyp_lt_ee_dEtaIn_[4];
-		TH1F *h1_hyp_lt_ee_dPhiIn_[4];
-		TH1F *h1_hyp_lt_ee_d0_[4];
-		TH1F *h1_hyp_lt_ee_E2x5MaxOver5x5_[4];
-		TH1F *h1_hyp_lt_ee_ecalIso_[4];
-		TH1F *h1_hyp_lt_ee_hcalIso_[4];
-		TH1F *h1_hyp_lt_ee_tkIso_[4];
-		TH1F *h1_hyp_lt_ee_relsusy_[4];
+        // E2x5MaxOver5x5
+        TH1F *h1_hyp_debug_E2x5MaxOver5x5_[2][4];
+        TH1F *h1_hyp_debug_after_cand01_E2x5MaxOver5x5_[2][4];
 
-		// N-1
-        TH1F *h1_hyp_lt_eb_nm1_hoe_[4];
-        TH1F *h1_hyp_lt_eb_nm1_sigmaIEtaIEta_[4];
-        TH1F *h1_hyp_lt_eb_nm1_dEtaIn_[4];
-        TH1F *h1_hyp_lt_eb_nm1_dPhiIn_[4];
-        TH1F *h1_hyp_lt_eb_nm1_d0_[4];
-        TH1F *h1_hyp_lt_eb_nm1_E2x5MaxOver5x5_[4];
-		TH2F *h1_hyp_lt_eb_nm1_lateral_[4];
-
-        TH1F *h1_hyp_lt_ee_nm1_hoe_[4];
-        TH1F *h1_hyp_lt_ee_nm1_sigmaIEtaIEta_[4];
-        TH1F *h1_hyp_lt_ee_nm1_dEtaIn_[4];
-        TH1F *h1_hyp_lt_ee_nm1_dPhiIn_[4];
-        TH1F *h1_hyp_lt_ee_nm1_d0_[4];
-        TH1F *h1_hyp_lt_ee_nm1_E2x5MaxOver5x5_[4];
-        TH2F *h1_hyp_lt_ee_nm1_lateral_[4];
-
-        TH1F *h1_hyp_lt_eb_afterid_relsusy_[4];
-        TH1F *h1_hyp_lt_ee_afterid_relsusy_[4];
-
-        TH1F *h1_hyp_lt_eb_afterid_fbrem_[4];
-        TH1F *h1_hyp_lt_ee_afterid_fbrem_[4];
-
-        TH1F *h1_hyp_lt_eb_afterid_eopin_[4];
-        TH1F *h1_hyp_lt_ee_afterid_eopin_[4];
-
-        TH1F *h1_hyp_lt_eb_afterid_relsusy_lowfbrem_[4];
-        TH1F *h1_hyp_lt_ee_afterid_relsusy_lowfbrem_[4];
-		
-        TH1F *h1_hyp_lt_eb_afterid_relsusy_highfbrem_[4];
-        TH1F *h1_hyp_lt_ee_afterid_relsusy_highfbrem_[4];
-
-        TH1F *h1_hyp_lt_eb_afterid_eopin_lowfbrem_[4];
-        TH1F *h1_hyp_lt_ee_afterid_eopin_lowfbrem_[4];
-        TH1F *h1_hyp_lt_eb_afterid_eopin_highfbrem_[4];
-        TH1F *h1_hyp_lt_ee_afterid_eopin_highfbrem_[4];
-
-		// dPhiIn after id 
-        TH1F *h1_hyp_lt_eb_afterid_dPhiIn_lowfbrem_[4];
-        TH1F *h1_hyp_lt_ee_afterid_dPhiIn_lowfbrem_[4];
-        TH1F *h1_hyp_lt_eb_afterid_dPhiIn_highfbrem_[4];
-        TH1F *h1_hyp_lt_ee_afterid_dPhiIn_highfbrem_[4];
-
-        // dEtaIn after id 
-        TH1F *h1_hyp_lt_eb_afterid_dEtaIn_lowfbrem_[4];
-        TH1F *h1_hyp_lt_ee_afterid_dEtaIn_lowfbrem_[4];
-        TH1F *h1_hyp_lt_eb_afterid_dEtaIn_highfbrem_[4];
-        TH1F *h1_hyp_lt_ee_afterid_dEtaIn_highfbrem_[4];
-
-		// id
-		//
-		//
-		TH1F *h1_hyp_lt_eb_pt_cand01_[4];
-		TH1F *h1_hyp_lt_eb_pt_cand02_[4];
-        TH1F *h1_hyp_lt_eb_pt_cand02_extra_[4];
-        TH1F *h1_hyp_lt_eb_pt_cand02_extra_v2_[4];
-		TH1F *h1_hyp_lt_eb_eta_cand02_extra_v2_[4];
-
-        TH1F *h1_hyp_lt_ee_pt_cand01_[4];
-        TH1F *h1_hyp_lt_ee_pt_cand02_[4];
-        TH1F *h1_hyp_lt_ee_pt_cand02_extra_[4];
-        TH1F *h1_hyp_lt_ee_pt_cand02_extra_v2_[4];
-		TH1F *h1_hyp_lt_ee_eta_cand02_extra_v2_[4];
-		//
-		//
-
-		TH1F *h1_hyp_lt_eb_pt_idnew_[4];
-		TH1F *h1_hyp_lt_ee_pt_idnew_[4];
-		TH1F *h1_hyp_lt_eb_pt_idold_[4];
-		TH1F *h1_hyp_lt_ee_pt_idold_[4];
-
-		// conv
-		//
-		TH1F *h1_hyp_lt_eb_pt_conv_[4];
-		TH1F *h1_hyp_lt_ee_pt_conv_[4];
-
-
-		// iso
-		//
-		TH1F *h1_hyp_lt_eb_pt_isonew_cand1_[4];
-		TH1F *h1_hyp_lt_ee_pt_isonew_cand1_[4];
-		TH1F *h1_hyp_lt_eb_pt_isonew_[4];
-		TH1F *h1_hyp_lt_ee_pt_isonew_[4];
-		TH1F *h1_hyp_lt_eb_pt_isoold_[4];
-		TH1F *h1_hyp_lt_ee_pt_isoold_[4];
-
-		// iso and conv
-		//
-		TH1F *h1_hyp_lt_eb_pt_id1_iso1_conv_[4];
-		TH1F *h1_hyp_lt_ee_pt_id1_iso1_conv_[4];
-
-		//
-		// validation plots
-		//
+        // reliso
+        TH1F *h1_hyp_debug_reliso_[2][4];
+        TH1F *h1_hyp_debug_after_cand01_reliso_[2][4];
 
 
 };

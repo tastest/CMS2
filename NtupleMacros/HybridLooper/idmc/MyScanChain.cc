@@ -53,6 +53,7 @@ enum ele_selection {
 // for hyps
 //
 
+
 void printCuts(elecuts_t result_electronSelections_cand01)
 {
     if(result_electronSelections_cand01 & (1<<ELEPASS_ISO)) std::cout << "pass iso\n";
@@ -146,132 +147,39 @@ void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
 
     for (unsigned int i = 0; i < 2; ++i) {
         std::string detname = det_names[i];
-        FormatHist(h1_hyp_ltid_sigmaIEtaIEta_[i], sampleName, "h1_hyp_ltid_sigmaIEtaIEta_" + detname, 50, 0.0, 0.05);
+
+        // debug variables
+        // before and after selections applied
+
+        FormatHist(h1_hyp_debug_pt_[i], sampleName, "h1_hyp_debug_pt_" + detname, 200, 0.0, 200.0);
+        FormatHist(h1_hyp_debug_after_cand01_pt_[i], sampleName, "h1_hyp_debug_after_cand01_pt_" + detname, 200, 0.0, 200.0);
+
+        FormatHist(h1_hyp_debug_eta_[i], sampleName, "h1_hyp_debug_eta_" + detname, 30, -3.0, 3.0);
+        FormatHist(h1_hyp_debug_after_cand01_eta_[i], sampleName, "h1_hyp_debug_after_cand01_eta_" + detname, 30, -3.0, 3.0);
+
+        FormatHist(h1_hyp_debug_sigmaIEtaIEta_[i], sampleName, "h1_hyp_debug_sigmaIEtaIEta_" + detname, 50, 0.0, 0.05);
+        FormatHist(h1_hyp_debug_after_cand01_sigmaIEtaIEta_[i], sampleName, "h1_hyp_debug_after_cand01_sigmaIEtaIEta_" + detname, 50, 0.0, 0.05);
+
+        FormatHist(h1_hyp_debug_hoe_[i], sampleName, "h1_hyp_debug_hoe_" + detname, 100, 0.0, 0.1);
+        FormatHist(h1_hyp_debug_after_cand01_hoe_[i], sampleName, "h1_hyp_debug_after_cand01_hoe_" + detname, 100, 0.0, 0.1);
+
+        FormatHist(h1_hyp_debug_dPhiIn_[i], sampleName, "h1_hyp_debug_dPhiIn_" + detname, 100, -0.05, 0.05);
+        FormatHist(h1_hyp_debug_after_cand01_dPhiIn_[i], sampleName, "h1_hyp_debug_after_cand01_dPhiIn_" + detname, 100, -0.05, 0.05);
+
+        FormatHist(h1_hyp_debug_dEtaIn_[i], sampleName, "h1_hyp_debug_dEtaIn_" + detname, 100, -0.05, 0.05);
+        FormatHist(h1_hyp_debug_after_cand01_dEtaIn_[i], sampleName, "h1_hyp_debug_after_cand01_dEtaIn_" + detname, 100, -0.05, 0.05);
+
+        FormatHist(h1_hyp_debug_d0_[i], sampleName, "h1_hyp_debug_d0_" + detname, 100, -0.05, 0.05);
+        FormatHist(h1_hyp_debug_after_cand01_d0_[i], sampleName, "h1_hyp_debug_after_cand01_d0_" + detname, 100, -0.05, 0.05);
+
+        FormatHist(h1_hyp_debug_E2x5MaxOver5x5_[i], sampleName, "h1_hyp_debug_E2x5MaxOver5x5_" + detname, 110, 0.0, 1.10);
+        FormatHist(h1_hyp_debug_after_cand01_E2x5MaxOver5x5_[i], sampleName, "h1_hyp_debug_after_cand01_E2x5MaxOver5x5_" + detname, 110, 0.0, 1.10);
+
+        FormatHist(h1_hyp_debug_reliso_[i], sampleName, "h1_hyp_debug_reliso_" + detname, 100, 0.0, 1.0);
+        FormatHist(h1_hyp_debug_after_cand01_reliso_[i], sampleName, "h1_hyp_debug_after_cand01_reliso_" + detname, 100, 0.0, 1.0);
+
     }
 
-
-	FormatHist(h1_hyp_lt_eb_pt_, sampleName, "hyp_lt_eb_pt", 20, 0.0, 100.0);
-	FormatHist(h1_hyp_lt_ee_pt_, sampleName, "hyp_lt_ee_pt", 20, 0.0, 100.0);
-
-	FormatHist(h1_hyp_lt_eb_hoe_, sampleName, "hyp_lt_eb_hoe", 100, 0.0, 0.1);
-	FormatHist(h1_hyp_lt_ee_hoe_, sampleName, "hyp_lt_ee_hoe", 100, 0.0, 0.1);
-
-	FormatHist(h1_hyp_lt_eb_sigmaIEtaIEta_, sampleName, "hyp_lt_eb_sigmaIEtaIEta", 50, 0.0, 0.05);
-	FormatHist(h1_hyp_lt_ee_sigmaIEtaIEta_, sampleName, "hyp_lt_ee_sigmaIEtaIEta", 50, 0.0, 0.05);
-
-	FormatHist(h1_hyp_lt_eb_dEtaIn_, sampleName, "hyp_lt_eb_dEtaIn", 100, 0.0, 0.05);
-	FormatHist(h1_hyp_lt_ee_dEtaIn_, sampleName, "hyp_lt_ee_dEtaIn", 100, 0.0, 0.05);
-
-	FormatHist(h1_hyp_lt_eb_dPhiIn_, sampleName, "hyp_lt_eb_dPhiIn", 100, 0.0, 0.1);
-	FormatHist(h1_hyp_lt_ee_dPhiIn_, sampleName, "hyp_lt_ee_dPhiIn", 100, 0.0, 0.1);
-
-	FormatHist(h1_hyp_lt_eb_d0_, sampleName, "hyp_lt_eb_d0", 100, 0.0, 0.05);
-	FormatHist(h1_hyp_lt_ee_d0_, sampleName, "hyp_lt_ee_d0", 100, 0.0, 0.05);
-
-	FormatHist(h1_hyp_lt_eb_E2x5MaxOver5x5_, sampleName, "hyp_lt_eb_E2x5MaxOver5x5", 50, 0.6, 1.1);
-	FormatHist(h1_hyp_lt_ee_E2x5MaxOver5x5_, sampleName, "hyp_lt_ee_E2x5MaxOver5x5", 50, 0.6, 1.1);
-
-	// NM1
-	FormatHist(h1_hyp_lt_eb_nm1_hoe_, sampleName, "hyp_lt_eb_nm1_hoe", 100, 0.0, 0.1);
-	FormatHist(h1_hyp_lt_ee_nm1_hoe_, sampleName, "hyp_lt_ee_nm1_hoe", 100, 0.0, 0.1);
-
-	FormatHist(h1_hyp_lt_eb_nm1_sigmaIEtaIEta_, sampleName, "hyp_lt_eb_nm1_sigmaIEtaIEta", 50, 0.0, 0.05);
-	FormatHist(h1_hyp_lt_ee_nm1_sigmaIEtaIEta_, sampleName, "hyp_lt_ee_nm1_sigmaIEtaIEta", 50, 0.0, 0.05);
-
-	FormatHist(h1_hyp_lt_eb_nm1_dEtaIn_, sampleName, "hyp_lt_eb_nm1_dEtaIn", 100, 0.0, 0.05);
-	FormatHist(h1_hyp_lt_ee_nm1_dEtaIn_, sampleName, "hyp_lt_ee_nm1_dEtaIn", 100, 0.0, 0.05);
-
-	FormatHist(h1_hyp_lt_eb_nm1_dPhiIn_, sampleName, "hyp_lt_eb_nm1_dPhiIn", 100, 0.0, 0.1);
-	FormatHist(h1_hyp_lt_ee_nm1_dPhiIn_, sampleName, "hyp_lt_ee_nm1_dPhiIn", 100, 0.0, 0.1);
-
-	FormatHist(h1_hyp_lt_eb_nm1_d0_, sampleName, "hyp_lt_eb_nm1_d0", 100, 0.0, 0.05);
-	FormatHist(h1_hyp_lt_ee_nm1_d0_, sampleName, "hyp_lt_ee_nm1_d0", 100, 0.0, 0.05);
-
-	FormatHist(h1_hyp_lt_eb_nm1_E2x5MaxOver5x5_, sampleName, "hyp_lt_eb_nm1_E2x5MaxOver5x5", 50, 0.6, 1.1);
-	FormatHist(h1_hyp_lt_ee_nm1_E2x5MaxOver5x5_, sampleName, "hyp_lt_ee_nm1_E2x5MaxOver5x5", 50, 0.6, 1.1);
-
-	FormatHist2D(h1_hyp_lt_eb_nm1_lateral_, sampleName, "hyp_lt_eb_nm1_lateral", 110, 0, 1.1, 110, 0, 1.1);
-	FormatHist2D(h1_hyp_lt_ee_nm1_lateral_, sampleName, "hyp_lt_ee_nm1_lateral", 110, 0, 1.1, 110, 0, 1.1);
-
-	// old and new pt spectra for second pass at id
-	//
-	FormatHist(h1_hyp_lt_eb_pt_cand01_, sampleName, "hyp_lt_eb_pt_cand01", 20, 0.0, 100.0);
-	FormatHist(h1_hyp_lt_ee_pt_cand01_, sampleName, "hyp_lt_ee_pt_cand01", 20, 0.0, 100.0);
-
-	FormatHist(h1_hyp_lt_eb_pt_cand02_, sampleName, "hyp_lt_eb_pt_cand02", 20, 0.0, 100.0);
-	FormatHist(h1_hyp_lt_ee_pt_cand02_, sampleName, "hyp_lt_ee_pt_cand02", 20, 0.0, 100.0);
-
-	FormatHist(h1_hyp_lt_eb_pt_cand02_extra_, sampleName, "hyp_lt_eb_pt_cand02_extra", 20, 0.0, 100.0);
-	FormatHist(h1_hyp_lt_ee_pt_cand02_extra_, sampleName, "hyp_lt_ee_pt_cand02_extra", 20, 0.0, 100.0);
-
-	FormatHist(h1_hyp_lt_eb_pt_cand02_extra_v2_, sampleName, "hyp_lt_eb_pt_cand02_extra_v2", 20, 0.0, 100.0);
-	FormatHist(h1_hyp_lt_ee_pt_cand02_extra_v2_, sampleName, "hyp_lt_ee_pt_cand02_extra_v2", 20, 0.0, 100.0);
-
-	FormatHist(h1_hyp_lt_eb_eta_cand02_extra_v2_, sampleName, "hyp_lt_eb_eta_cand02_extra_v2", 120, -3, 3);
-	FormatHist(h1_hyp_lt_ee_eta_cand02_extra_v2_, sampleName, "hyp_lt_ee_eta_cand02_extra_v2", 120, -3, 3);
-
-
-	//
-	//
-
-	FormatHist(h1_hyp_lt_eb_ecalIso_, sampleName, "hyp_lt_eb_ecalIso", 100, 0, 10);
-	FormatHist(h1_hyp_lt_eb_hcalIso_, sampleName, "hyp_lt_eb_hcalIso", 100, 0, 25);
-	FormatHist(h1_hyp_lt_eb_tkIso_, sampleName, "hyp_lt_eb_tkIso", 100, 0, 25);
-
-	FormatHist(h1_hyp_lt_ee_ecalIso_, sampleName, "hyp_lt_ee_ecalIso", 100, 0, 10);
-	FormatHist(h1_hyp_lt_ee_hcalIso_, sampleName, "hyp_lt_ee_hcalIso", 100, 0, 25);
-	FormatHist(h1_hyp_lt_ee_tkIso_, sampleName, "hyp_lt_ee_tkIso", 100, 0, 25);
-
-	FormatHist(h1_hyp_lt_ee_relsusy_, sampleName, "hyp_lt_ee_relsusy", 100, 0, 1);
-	FormatHist(h1_hyp_lt_eb_relsusy_, sampleName, "hyp_lt_eb_relsusy", 100, 0, 1);
-
-	FormatHist(h1_hyp_lt_ee_afterid_relsusy_, sampleName, "hyp_lt_ee_afterid_relsusy", 100, 0, 1);
-	FormatHist(h1_hyp_lt_eb_afterid_relsusy_, sampleName, "hyp_lt_eb_afterid_relsusy", 100, 0, 1);
-
-	FormatHist(h1_hyp_lt_ee_afterid_fbrem_, sampleName, "hyp_lt_ee_afterid_fbrem", 100, 0, 1);
-	FormatHist(h1_hyp_lt_eb_afterid_fbrem_, sampleName, "hyp_lt_eb_afterid_fbrem", 100, 0, 1);
-
-	FormatHist(h1_hyp_lt_ee_afterid_eopin_, sampleName, "hyp_lt_ee_afterid_eopin", 100, 0, 5);
-	FormatHist(h1_hyp_lt_eb_afterid_eopin_, sampleName, "hyp_lt_eb_afterid_eopin", 100, 0, 5);
-
-	FormatHist(h1_hyp_lt_ee_afterid_relsusy_lowfbrem_, sampleName, "hyp_lt_ee_afterid_relsusy_lowfbrem", 100, 0, 1);
-	FormatHist(h1_hyp_lt_eb_afterid_relsusy_lowfbrem_, sampleName, "hyp_lt_eb_afterid_relsusy_lowfbrem", 100, 0, 1);
-	FormatHist(h1_hyp_lt_ee_afterid_relsusy_highfbrem_, sampleName, "hyp_lt_ee_afterid_relsusy_highfbrem", 100, 0, 1);
-	FormatHist(h1_hyp_lt_eb_afterid_relsusy_highfbrem_, sampleName, "hyp_lt_eb_afterid_relsusy_highfbrem", 100, 0, 1);
-
-	FormatHist(h1_hyp_lt_ee_afterid_eopin_lowfbrem_, sampleName, "hyp_lt_ee_afterid_eopin_lowfbrem", 100, 0, 5);
-	FormatHist(h1_hyp_lt_eb_afterid_eopin_lowfbrem_, sampleName, "hyp_lt_eb_afterid_eopin_lowfbrem", 100, 0, 5);
-	FormatHist(h1_hyp_lt_ee_afterid_eopin_highfbrem_, sampleName, "hyp_lt_ee_afterid_eopin_highfbrem", 100, 0, 5);
-	FormatHist(h1_hyp_lt_eb_afterid_eopin_highfbrem_, sampleName, "hyp_lt_eb_afterid_eopin_highfbrem", 100, 0, 5);
-
-	// dPhiIn after id (except dPhiIn)
-	FormatHist(h1_hyp_lt_ee_afterid_dPhiIn_lowfbrem_, sampleName, "hyp_lt_ee_afterid_dPhiIn_lowfbrem", 100, 0, 0.1);
-	FormatHist(h1_hyp_lt_eb_afterid_dPhiIn_lowfbrem_, sampleName, "hyp_lt_eb_afterid_dPhiIn_lowfbrem", 100, 0, 0.1);
-	FormatHist(h1_hyp_lt_ee_afterid_dPhiIn_highfbrem_, sampleName, "hyp_lt_ee_afterid_dPhiIn_highfbrem", 100, 0, 0.1);
-	FormatHist(h1_hyp_lt_eb_afterid_dPhiIn_highfbrem_, sampleName, "hyp_lt_eb_afterid_dPhiIn_highfbrem", 100, 0, 0.1);
-
-	// dEtaIn after id (except dEtaIn)
-	FormatHist(h1_hyp_lt_ee_afterid_dEtaIn_lowfbrem_, sampleName, "hyp_lt_ee_afterid_dEtaIn_lowfbrem", 40, 0, 0.04);
-	FormatHist(h1_hyp_lt_eb_afterid_dEtaIn_lowfbrem_, sampleName, "hyp_lt_eb_afterid_dEtaIn_lowfbrem", 40, 0, 0.04);
-	FormatHist(h1_hyp_lt_ee_afterid_dEtaIn_highfbrem_, sampleName, "hyp_lt_ee_afterid_dEtaIn_highfbrem", 40, 0, 0.04);
-	FormatHist(h1_hyp_lt_eb_afterid_dEtaIn_highfbrem_, sampleName, "hyp_lt_eb_afterid_dEtaIn_highfbrem", 40, 0, 0.04);
-
-	FormatHist(h1_hyp_lt_eb_pt_idnew_, sampleName, "hyp_lt_eb_pt_idnew", 20, 0.0, 100.0);
-	FormatHist(h1_hyp_lt_ee_pt_idnew_, sampleName, "hyp_lt_ee_pt_idnew", 20, 0.0, 100.0);
-	FormatHist(h1_hyp_lt_eb_pt_idold_, sampleName, "hyp_lt_eb_pt_idold", 20, 0.0, 100.0);
-	FormatHist(h1_hyp_lt_ee_pt_idold_, sampleName, "hyp_lt_ee_pt_idold", 20, 0.0, 100.0);
-
-	FormatHist(h1_hyp_lt_eb_pt_isonew_cand1_, sampleName, "hyp_lt_eb_pt_isonew_cand1", 20, 0.0, 100.0);
-	FormatHist(h1_hyp_lt_ee_pt_isonew_cand1_, sampleName, "hyp_lt_ee_pt_isonew_cand1", 20, 0.0, 100.0);
-	FormatHist(h1_hyp_lt_eb_pt_isonew_, sampleName, "hyp_lt_eb_pt_isonew", 20, 0.0, 100.0);
-	FormatHist(h1_hyp_lt_ee_pt_isonew_, sampleName, "hyp_lt_ee_pt_isonew", 20, 0.0, 100.0);
-	FormatHist(h1_hyp_lt_eb_pt_isoold_, sampleName, "hyp_lt_eb_pt_isoold", 20, 0.0, 100.0);
-	FormatHist(h1_hyp_lt_ee_pt_isoold_, sampleName, "hyp_lt_ee_pt_isoold", 20, 0.0, 100.0);
-	FormatHist(h1_hyp_lt_eb_pt_conv_, sampleName, "hyp_lt_eb_pt_conv", 20, 0.0, 100.0);
-	FormatHist(h1_hyp_lt_ee_pt_conv_, sampleName, "hyp_lt_ee_pt_conv", 20, 0.0, 100.0);
-
-	FormatHist(h1_hyp_lt_eb_pt_id1_iso1_conv_, sampleName, "hyp_lt_eb_pt_id1_iso1_conv", 20, 0.0, 100.0);
-	FormatHist(h1_hyp_lt_ee_pt_id1_iso1_conv_, sampleName, "hyp_lt_ee_pt_id1_iso1_conv", 20, 0.0, 100.0);
 }
 
 void MyScanChain::FillAllEleIdHistogramsNoHyp(const float &weight, const TString &sampleName)
@@ -289,26 +197,36 @@ void MyScanChain::FillAllEleIdHistogramsHyp(const unsigned int h, const float &w
 
 	DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[h]);
 
-	// apply part of electron denominator first here
+    //
+    // Set up different denominator types depending on the sample
+    // and on the hypothesis
+    //
+
 	if (hypType == DILEPTON_EMU && sampleName == "ttbar") {
 		if(abs(cms2.hyp_ll_id()[h]) == 13) {
-			if (trueMuonFromW_WJets(cms2.hyp_ll_index()[h]) && (cms2.els_type()[cms2.hyp_lt_index()[h]] & (1<<ISECALDRIVEN)) && fabs(cms2.els_p4().at(cms2.hyp_lt_index()[h]).eta()) < 2.4)
+			if (trueMuonFromW_WJets(cms2.hyp_ll_index()[h]) 
+                    && (cms2.els_type()[cms2.hyp_lt_index()[h]] & (1<<ISECALDRIVEN)) 
+                    && fabs(cms2.els_p4().at(cms2.hyp_lt_index()[h]).eta()) < 2.5)
 				FillAllEleIdHistograms(cms2.hyp_lt_index()[h], weight, sampleName);
 		}
 		if(abs(cms2.hyp_lt_id()[h]) == 13) {
-			if (trueMuonFromW_WJets(cms2.hyp_lt_index()[h]) && (cms2.els_type()[cms2.hyp_ll_index()[h]] & (1<<ISECALDRIVEN)) && fabs(cms2.els_p4().at(cms2.hyp_ll_index()[h]).eta()) < 2.4)
+			if (trueMuonFromW_WJets(cms2.hyp_lt_index()[h]) 
+                    && (cms2.els_type()[cms2.hyp_ll_index()[h]] & (1<<ISECALDRIVEN)) 
+                    && fabs(cms2.els_p4().at(cms2.hyp_ll_index()[h]).eta()) < 2.5)
 				FillAllEleIdHistograms(cms2.hyp_ll_index()[h], weight, sampleName);
 		}
 	}
 	if (hypType == DILEPTON_EMU && sampleName == "wm") {
 		if(abs(cms2.hyp_ll_id()[h]) == 13) {
-			if (trueMuonFromW_WJets(cms2.hyp_ll_index()[h]) && (cms2.els_type()[cms2.hyp_lt_index()[h]] & (1<<ISECALDRIVEN)) && fabs(cms2.els_p4().at(cms2.hyp_lt_index()[h]).eta()) < 2.4)
-				//electron20Eta2p4(cms2.hyp_lt_index()[h])) 
+			if (trueMuonFromW_WJets(cms2.hyp_ll_index()[h]) 
+                    && (cms2.els_type()[cms2.hyp_lt_index()[h]] & (1<<ISECALDRIVEN)) 
+                    && fabs(cms2.els_p4().at(cms2.hyp_lt_index()[h]).eta()) < 2.5)
 				FillAllEleIdHistograms(cms2.hyp_lt_index()[h], weight, sampleName);
 		}
 		if(abs(cms2.hyp_lt_id()[h]) == 13) {
-			if (trueMuonFromW_WJets(cms2.hyp_lt_index()[h]) && (cms2.els_type()[cms2.hyp_ll_index()[h]] & (1<<ISECALDRIVEN)) && fabs(cms2.els_p4().at(cms2.hyp_ll_index()[h]).eta()) < 2.4)
-				//electron20Eta2p4(cms2.hyp_ll_index()[h]))
+			if (trueMuonFromW_WJets(cms2.hyp_lt_index()[h]) 
+                    && (cms2.els_type()[cms2.hyp_ll_index()[h]] & (1<<ISECALDRIVEN)) 
+                    && fabs(cms2.els_p4().at(cms2.hyp_ll_index()[h]).eta()) < 2.5)
 				FillAllEleIdHistograms(cms2.hyp_ll_index()[h], weight, sampleName);
 		}
 
@@ -336,32 +254,62 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
 		if(!((abs(cms2.els_mc_id()[index]) == 11))) return;
 	} 
 
-	//
-	// fill denominator histograms
-	//
+    //
+    // work out which cuts passed
+    //
 
-	DileptonHypType hypType = DILEPTON_EE;
+    DileptonHypType hypType = DILEPTON_EE;
 
-	bool pass_electronSelection_cand01 = electronSelection_cand01(index);
+    // full selection with cand01
+    bool pass_electronSelection_cand01 = electronSelection_cand01(index);
     elecuts_t result_electronSelections_cand01 = electronSelections_debug_;
 
+    // eleid cand01
     bool pass_electronId_cand01 = electronId_cand01(index);
     elecuts_t result_electronId_cand01 = electronId_debug_;
-
-    bool checkAll = false;
-    if ((result_electronSelections_cand01 & electronSelections_passall_) == result_electronSelections_cand01) checkAll = true;
-
-    bool checkId = false;
-    if ((result_electronId_cand01 & electronSelections_passid_) == result_electronId_cand01) checkId = true;
 
     unsigned int det = 0;
     if (fabs(cms2.els_etaSC()[index]) > 1.479) det = 1;
 
 
-    Fill(h1_hyp_ltid_sigmaIEtaIEta_[det], hypType, cms2.els_sigmaIEtaIEta()[index], weight);
+	//
+	// fill histograms
+	//
 
+    // fill debug histograms
+    //
+    // before selections
+    //
 
-    std::cout << "id " << checkId << " all " << checkAll << std::endl;
+    float E2x5MaxOver5x5 = cms2.els_e2x5Max()[index] / cms2.els_e5x5()[index];
+    float iso_relsusy = electronIsolation_relsusy_cand1(index, true);
+       
+    Fill(h1_hyp_debug_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+    Fill(h1_hyp_debug_eta_[det], hypType, cms2.els_etaSC()[index], weight);
+    Fill(h1_hyp_debug_sigmaIEtaIEta_[det], hypType, cms2.els_sigmaIEtaIEta()[index], weight);
+    Fill(h1_hyp_debug_hoe_[det], hypType, cms2.els_hOverE()[index], weight);
+    Fill(h1_hyp_debug_dPhiIn_[det], hypType, cms2.els_dPhiIn()[index], weight);
+    Fill(h1_hyp_debug_dEtaIn_[det], hypType, cms2.els_dEtaIn()[index], weight);
+    Fill(h1_hyp_debug_d0_[det], hypType, cms2.els_d0()[index], weight);
+    Fill(h1_hyp_debug_E2x5MaxOver5x5_[det], hypType, E2x5MaxOver5x5, weight);
+    Fill(h1_hyp_debug_reliso_[det], hypType, iso_relsusy, weight);
+
+    //
+    // after selections
+    //
+    if (pass_electronSelection_cand01) {
+    
+       Fill(h1_hyp_debug_after_cand01_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+       Fill(h1_hyp_debug_after_cand01_eta_[det], hypType, cms2.els_etaSC()[index], weight);
+       Fill(h1_hyp_debug_after_cand01_sigmaIEtaIEta_[det], hypType, cms2.els_sigmaIEtaIEta()[index], weight);
+       Fill(h1_hyp_debug_after_cand01_hoe_[det], hypType, cms2.els_hOverE()[index], weight);
+       Fill(h1_hyp_debug_after_cand01_dPhiIn_[det], hypType, cms2.els_dPhiIn()[index], weight);
+       Fill(h1_hyp_debug_after_cand01_dEtaIn_[det], hypType, cms2.els_dEtaIn()[index], weight);
+       Fill(h1_hyp_debug_after_cand01_d0_[det], hypType, cms2.els_d0()[index], weight);
+       Fill(h1_hyp_debug_after_cand01_E2x5MaxOver5x5_[det], hypType, E2x5MaxOver5x5, weight);
+       Fill(h1_hyp_debug_after_cand01_reliso_[det], hypType, iso_relsusy, weight);
+
+    } 
 
 }
 
