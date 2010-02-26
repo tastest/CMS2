@@ -32,6 +32,8 @@ using namespace tas;
 //
 //
 
+static const char det_names[][128] = { "EB", "EE"};
+
 enum ele_selection {
 	PASS_DPHI,
 	PASS_DETA,
@@ -50,6 +52,30 @@ enum ele_selection {
 //
 // for hyps
 //
+
+void printCuts(elecuts_t result_electronSelections_cand01)
+{
+    if(result_electronSelections_cand01 & (1<<ELEPASS_ISO)) std::cout << "pass iso\n";
+    else std::cout << "fail iso\n";
+
+    if(result_electronSelections_cand01 & (1<<ELEPASS_ID)) std::cout << "pass id\n";
+    else std::cout << "fail id\n";
+
+    if(result_electronSelections_cand01 & (1<<ELEPASS_D0)) std::cout << "pass d0\n";
+    else std::cout << "fail d0\n";
+
+    if(result_electronSelections_cand01 & (1<<ELEPASS_NOTCONV)) std::cout << "pass conv\n";
+    else std::cout << "fail conv\n";
+
+    if(result_electronSelections_cand01 & (1<<ELEPASS_TYPE)) std::cout << "pass type\n";
+    else std::cout << "fail type\n";
+
+    if(result_electronSelections_cand01 & (1<<ELEPASS_FIDUCIAL)) std::cout << "pass eta\n";
+    else std::cout << "fail eta\n";
+
+    if(result_electronSelections_cand01 & (1<<ELEPASS_NOMUON)) std::cout << "pass muon\n";
+    else std::cout << "fail muon\n";
+}
 
 double dRbetweenVectors(const LorentzVector &vec1,
 		const LorentzVector &vec2 ){
@@ -117,6 +143,12 @@ void MyScanChain::FormatHist2D(TH2F** hist, std::string sampleName, std::string 
 
 void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
 {
+
+    for (unsigned int i = 0; i < 2; ++i) {
+        std::string detname = det_names[i];
+        FormatHist(h1_hyp_ltid_sigmaIEtaIEta_[i], sampleName, "h1_hyp_ltid_sigmaIEtaIEta_" + detname, 50, 0.0, 0.05);
+    }
+
 
 	FormatHist(h1_hyp_lt_eb_pt_, sampleName, "hyp_lt_eb_pt", 20, 0.0, 100.0);
 	FormatHist(h1_hyp_lt_ee_pt_, sampleName, "hyp_lt_ee_pt", 20, 0.0, 100.0);
@@ -212,13 +244,6 @@ void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
 	FormatHist(h1_hyp_lt_ee_afterid_eopin_highfbrem_, sampleName, "hyp_lt_ee_afterid_eopin_highfbrem", 100, 0, 5);
 	FormatHist(h1_hyp_lt_eb_afterid_eopin_highfbrem_, sampleName, "hyp_lt_eb_afterid_eopin_highfbrem", 100, 0, 5);
 
-	// preshower after id
-	FormatHist(h1_hyp_lt_ee_afterid_preshowerEnergy_lowfbrem_, sampleName, "hyp_lt_ee_afterid_preshowerEnergy_lowfbrem", 100, 0, 2);
-	FormatHist(h1_hyp_lt_eb_afterid_preshowerEnergy_lowfbrem_, sampleName, "hyp_lt_eb_afterid_preshowerEnergy_lowfbrem", 100, 0, 2);
-	FormatHist(h1_hyp_lt_ee_afterid_preshowerEnergy_highfbrem_, sampleName, "hyp_lt_ee_afterid_preshowerEnergy_highfbrem", 100, 0, 2);
-	FormatHist(h1_hyp_lt_eb_afterid_preshowerEnergy_highfbrem_, sampleName, "hyp_lt_eb_afterid_preshowerEnergy_highfbrem", 100, 0, 2);
-
-
 	// dPhiIn after id (except dPhiIn)
 	FormatHist(h1_hyp_lt_ee_afterid_dPhiIn_lowfbrem_, sampleName, "hyp_lt_ee_afterid_dPhiIn_lowfbrem", 100, 0, 0.1);
 	FormatHist(h1_hyp_lt_eb_afterid_dPhiIn_lowfbrem_, sampleName, "hyp_lt_eb_afterid_dPhiIn_lowfbrem", 100, 0, 0.1);
@@ -230,11 +255,6 @@ void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
 	FormatHist(h1_hyp_lt_eb_afterid_dEtaIn_lowfbrem_, sampleName, "hyp_lt_eb_afterid_dEtaIn_lowfbrem", 40, 0, 0.04);
 	FormatHist(h1_hyp_lt_ee_afterid_dEtaIn_highfbrem_, sampleName, "hyp_lt_ee_afterid_dEtaIn_highfbrem", 40, 0, 0.04);
 	FormatHist(h1_hyp_lt_eb_afterid_dEtaIn_highfbrem_, sampleName, "hyp_lt_eb_afterid_dEtaIn_highfbrem", 40, 0, 0.04);
-
-	// closest mu
-	FormatHist(h1_hyp_lt_ee_afterid_closestMu_, sampleName, "hyp_lt_ee_closestMu", 60, 0.0, 3); 
-	FormatHist(h1_hyp_lt_eb_afterid_closestMu_, sampleName, "hyp_lt_eb_closestMu", 60, 0.0, 3); 
-
 
 	FormatHist(h1_hyp_lt_eb_pt_idnew_, sampleName, "hyp_lt_eb_pt_idnew", 20, 0.0, 100.0);
 	FormatHist(h1_hyp_lt_ee_pt_idnew_, sampleName, "hyp_lt_ee_pt_idnew", 20, 0.0, 100.0);
@@ -317,246 +337,31 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
 	} 
 
 	//
-	// define thresholds for EB, EE
-	//
-	float dEtaInThresholds[2]               = {0.007, 0.010};
-	float dPhiInThresholds[2]               = {0.020, 0.025};
-	float hoeThresholds[2]                  = {0.01, 0.01};
-	float sigmaIEtaIEtaThresholds[2]        = {9999.99, 0.03};
-	float e2x5Over5x5Thresholds[2]          = {0.90, 0.00};
-	float d0Thresholds[2]               = {0.02, 0.02};
-
-	float e2x5Over5x5Thresholds_cand02[2]          = {0.94, 0.00};
-	float dEtaInThresholds_cand02[2]               = {0.005, 0.007};
-
-	int ele_result = 0;
-	int ele_passall = (1<<PASS_DETA) | (1<<PASS_DPHI) | (1<<PASS_HOE) | (1<<PASS_LSHAPE) | (1<<PASS_D0) | (1<<PASS_NOMUON) | (1<<PASS_CONV);
-	int ele_passall_id_cand02 = (1<<PASS_DETA_CAND02) | (1<<PASS_DPHI) | (1<<PASS_HOE) | (1<<PASS_LSHAPE_CAND02) | (1<<PASS_D0) | (1<<PASS_NOMUON) | (1<<PASS_CONV);
-
-	int ele_passall_id_and_iso_cand01 =  (1<<PASS_DETA) | (1<<PASS_DPHI) | (1<<PASS_HOE) | (1<<PASS_LSHAPE) | (1<<PASS_D0) | (1<<PASS_NOMUON) | (1<<PASS_CONV) | (1<<PASS_ISO);
-	int ele_passall_id_and_iso_cand02 =  (1<<PASS_DETA_CAND02) | (1<<PASS_DPHI) | (1<<PASS_HOE) | (1<<PASS_LSHAPE_CAND02) | (1<<PASS_D0) | (1<<PASS_NOMUON) | (1<<PASS_CONV) | (1<<PASS_ISO);
-	int ele_passall_id_and_iso_cand02_extra = ele_passall_id_and_iso_cand02 | (1<<PASS_EXTRA);
-	int ele_passall_id_and_iso_cand02_extra_v2 = ele_passall_id_and_iso_cand02 | (1<<PASS_EXTRA_V2);
-
-
-	//
-	// apply cuts
-	//
-	float iso_relsusy = -1;
-	iso_relsusy = electronIsolation_relsusy_cand1(index, true);
-
-	if (electronId_noMuon(index)) ele_result |= (1<<PASS_NOMUON);
-	if (!isFromConversionPartnerTrack(index)) ele_result |= (1<<PASS_CONV);
-
-	if (fabs(cms2.els_etaSC()[index]) < 1.479) {
-		if (fabs(cms2.els_dEtaIn()[index]) < dEtaInThresholds[0]) 	ele_result |= (1<<PASS_DETA);
-		if (fabs(cms2.els_dEtaIn()[index]) < dEtaInThresholds_cand02[0])   ele_result |= (1<<PASS_DETA_CAND02);
-		if (fabs(cms2.els_dPhiIn()[index]) < dPhiInThresholds[0])	ele_result |= (1<<PASS_DPHI);
-		if (cms2.els_hOverE()[index] < hoeThresholds[0]) 			ele_result |= (1<<PASS_HOE);
-		if ((cms2.els_e2x5Max()[index]/cms2.els_e5x5()[index]) > e2x5Over5x5Thresholds[0]) ele_result |= (1<<PASS_LSHAPE);
-		if ((cms2.els_e2x5Max()[index]/cms2.els_e5x5()[index]) > e2x5Over5x5Thresholds_cand02[0]) ele_result |= (1<<PASS_LSHAPE_CAND02);
-		if (cms2.els_d0corr()[index] < d0Thresholds[0]) ele_result |= (1<<PASS_D0);
-		if (iso_relsusy < 0.10) ele_result |= (1<<PASS_ISO);
-
-		if (cms2.els_fbrem()[index] > 0.20) {
-			ele_result |= (1<<PASS_EXTRA);
-			ele_result |= (1<<PASS_EXTRA_V2);
-		}
-		if (cms2.els_fbrem()[index] < 0.20) {
-			if (cms2.els_eOverPIn()[index] > 0.7 && cms2.els_eOverPIn()[index] < 1.5) ele_result |= (1<<PASS_EXTRA);
-			if (cms2.els_eOverPIn()[index] > 0.9 && cms2.els_eOverPIn()[index] < 1.5 && fabs(cms2.els_dEtaIn()[index]) < 0.03) ele_result |= (1<<PASS_EXTRA_V2);
-		}
-
-	}
-	if (fabs(cms2.els_etaSC()[index]) > 1.479) {
-		if (fabs(cms2.els_dEtaIn()[index]) < dEtaInThresholds[1]) 	ele_result |= (1<<PASS_DETA);
-		if (fabs(cms2.els_dEtaIn()[index]) < dEtaInThresholds_cand02[1])   ele_result |= (1<<PASS_DETA_CAND02);
-		if (fabs(cms2.els_dPhiIn()[index]) < dPhiInThresholds[1]) 	ele_result |= (1<<PASS_DPHI);
-		if (cms2.els_hOverE()[index] < hoeThresholds[1]) 			ele_result |= (1<<PASS_HOE);
-		if (cms2.els_sigmaIEtaIEta()[index] < sigmaIEtaIEtaThresholds[1]) 	ele_result |= (1<<PASS_LSHAPE) | (1<<PASS_LSHAPE_CAND02);
-		if (cms2.els_d0corr()[index] < d0Thresholds[1]) ele_result |= (1<<PASS_D0);
-		if (iso_relsusy < 0.10) ele_result |= (1<<PASS_ISO);
-
-		if (cms2.els_fbrem()[index] > 0.20) {
-			ele_result |= (1<<PASS_EXTRA);
-			ele_result |= (1<<PASS_EXTRA_V2);
-		}
-		//if (cms2.els_fbrem()[index] < 0.15) {
-		//    if (cms2.els_eOverPIn()[index] > 0.7 && cms2.els_eOverPIn()[index] < 1.5) ele_result |= (1<<PASS_EXTRA);
-		//}
-
-
-	}
-
-	//
 	// fill denominator histograms
 	//
 
 	DileptonHypType hypType = DILEPTON_EE;
 
-	// find sc index
-	int scidx = -1;
-	for (size_t s = 0; s < cms2.evt_nscs(); ++s) {
-		if (cms2.scs_elsidx()[s] == index) {
-			scidx = s;
-			break;
-		}
-	}
+	bool pass_electronSelection_cand01 = electronSelection_cand01(index);
+    elecuts_t result_electronSelections_cand01 = electronSelections_debug_;
 
-	// find closest mu
-	int muidx = -1;
-	float closestMu = 999.99;
-	for (size_t m = 0; m < cms2.mus_p4().size(); ++m) {
-		double dR = dRbetweenVectors(cms2.mus_p4()[m], cms2.els_p4()[index]); 
-		if (dR < closestMu) {
-			muidx = m;
-			closestMu = dR;
-		}
-	}
+    bool pass_electronId_cand01 = electronId_cand01(index);
+    elecuts_t result_electronId_cand01 = electronId_debug_;
 
-	float E2x5MaxOver5x5 = cms2.els_e2x5Max()[index] / cms2.els_e5x5()[index];
-	float E1x5Over5x5 = cms2.els_e1x5()[index] / cms2.els_e5x5()[index];
+    bool checkAll = false;
+    if ((result_electronSelections_cand01 & electronSelections_passall_) == result_electronSelections_cand01) checkAll = true;
 
-	if (fabs(cms2.els_etaSC()[index]) > 1.479) {
-		Fill(h1_hyp_lt_ee_pt_, hypType, cms2.els_p4()[index].Pt(), weight);
-		Fill(h1_hyp_lt_ee_hoe_, hypType, cms2.els_hOverE()[index], weight);
-		Fill(h1_hyp_lt_ee_d0_, hypType, fabs(cms2.els_d0corr()[index]), weight);
-		Fill(h1_hyp_lt_ee_dPhiIn_, hypType, fabs(cms2.els_dPhiIn()[index]), weight);
-		Fill(h1_hyp_lt_ee_dEtaIn_, hypType, fabs(cms2.els_dEtaIn()[index]), weight);
-		Fill(h1_hyp_lt_ee_sigmaIEtaIEta_, hypType, cms2.els_sigmaIEtaIEta()[index], weight);
-		Fill(h1_hyp_lt_ee_E2x5MaxOver5x5_, hypType, E2x5MaxOver5x5, weight);
-		Fill(h1_hyp_lt_ee_ecalIso_, hypType, cms2.els_ecalIso()[index], weight);
-		Fill(h1_hyp_lt_ee_hcalIso_, hypType, cms2.els_hcalIso()[index], weight);
-		Fill(h1_hyp_lt_ee_tkIso_, hypType, cms2.els_tkIso()[index], weight);
-		Fill(h1_hyp_lt_ee_relsusy_, hypType, iso_relsusy, weight);
+    bool checkId = false;
+    if ((result_electronId_cand01 & electronSelections_passid_) == result_electronId_cand01) checkId = true;
 
-		if ((ele_result & (ele_passall & ~(1<<PASS_DETA))) == (ele_passall & ~(1<<PASS_DETA))) Fill(h1_hyp_lt_ee_nm1_dEtaIn_, hypType, fabs(cms2.els_dEtaIn()[index]), weight);
-		if ((ele_result & (ele_passall & ~(1<<PASS_DPHI))) == (ele_passall & ~(1<<PASS_DPHI))) Fill(h1_hyp_lt_ee_nm1_dPhiIn_, hypType, fabs(cms2.els_dPhiIn()[index]), weight);
-		if ((ele_result & (ele_passall & ~(1<<PASS_HOE))) == (ele_passall & ~(1<<PASS_HOE))) Fill(h1_hyp_lt_ee_nm1_hoe_, hypType, fabs(cms2.els_hOverE()[index]), weight);
-		if ((ele_result & (ele_passall & ~(1<<PASS_LSHAPE))) == (ele_passall & ~(1<<PASS_LSHAPE))) {
-			Fill(h1_hyp_lt_ee_nm1_sigmaIEtaIEta_, hypType, fabs(cms2.els_sigmaIEtaIEta()[index]), weight);
-			Fill2D(h1_hyp_lt_ee_nm1_lateral_, hypType, E2x5MaxOver5x5, E1x5Over5x5, weight);
-		}
-		if ((ele_result & (ele_passall & ~(1<<PASS_D0))) == (ele_passall & ~(1<<PASS_D0))) Fill(h1_hyp_lt_ee_nm1_d0_, hypType, fabs(cms2.els_d0corr()[index]), weight);
+    unsigned int det = 0;
+    if (fabs(cms2.els_etaSC()[index]) > 1.479) det = 1;
 
-		if ((ele_result &ele_passall_id_cand02) == (ele_passall_id_cand02)) {
-			Fill(h1_hyp_lt_ee_afterid_relsusy_, hypType, iso_relsusy, weight);
-			Fill(h1_hyp_lt_ee_afterid_fbrem_, hypType, cms2.els_fbrem()[index], weight);
-			Fill(h1_hyp_lt_ee_afterid_eopin_, hypType, cms2.els_eOverPIn()[index], weight);
-			if (cms2.els_fbrem()[index] > 0.2) {
-				Fill(h1_hyp_lt_ee_afterid_relsusy_highfbrem_, hypType, iso_relsusy, weight);
-				Fill(h1_hyp_lt_ee_afterid_eopin_highfbrem_, hypType, cms2.els_eOverPIn()[index], weight);
-				Fill(h1_hyp_lt_ee_afterid_dPhiIn_highfbrem_, hypType, fabs(cms2.els_dPhiIn()[index]), weight);				
-				Fill(h1_hyp_lt_ee_afterid_dEtaIn_highfbrem_, hypType, fabs(cms2.els_dEtaIn()[index]), weight);
-				Fill(h1_hyp_lt_ee_afterid_preshowerEnergy_highfbrem_, hypType, cms2.scs_preshowerEnergy()[scidx]/cms2.scs_rawEnergy()[scidx], weight);
-			}
-			else {
-				Fill(h1_hyp_lt_ee_afterid_relsusy_lowfbrem_, hypType, iso_relsusy, weight);
-				Fill(h1_hyp_lt_ee_afterid_eopin_lowfbrem_, hypType, cms2.els_eOverPIn()[index], weight);
-				Fill(h1_hyp_lt_ee_afterid_dPhiIn_lowfbrem_, hypType, fabs(cms2.els_dPhiIn()[index]), weight); 
-				Fill(h1_hyp_lt_ee_afterid_dEtaIn_lowfbrem_, hypType, fabs(cms2.els_dEtaIn()[index]), weight);
-				Fill(h1_hyp_lt_ee_afterid_preshowerEnergy_lowfbrem_, hypType, cms2.scs_preshowerEnergy()[scidx]/cms2.scs_rawEnergy()[scidx], weight);
-			}
-		}
 
-		if ((ele_result & ele_passall_id_and_iso_cand01) == (ele_passall_id_and_iso_cand01)) Fill(h1_hyp_lt_ee_pt_cand01_, hypType, cms2.els_p4()[index].Pt(), weight);
-		if ((ele_result & ele_passall_id_and_iso_cand02) == (ele_passall_id_and_iso_cand02)) Fill(h1_hyp_lt_ee_pt_cand02_, hypType, cms2.els_p4()[index].Pt(), weight);
-		if ((ele_result & ele_passall_id_and_iso_cand02_extra) == (ele_passall_id_and_iso_cand02_extra)) Fill(h1_hyp_lt_ee_pt_cand02_extra_, hypType, cms2.els_p4()[index].Pt(), weight);
-		if ((ele_result & ele_passall_id_and_iso_cand02_extra_v2) == (ele_passall_id_and_iso_cand02_extra_v2)) {
-			Fill(h1_hyp_lt_ee_pt_cand02_extra_v2_, hypType, cms2.els_p4()[index].Pt(), weight);
-			Fill(h1_hyp_lt_ee_eta_cand02_extra_v2_, hypType, cms2.els_etaSC()[index], weight);
-			std::cout << cms2.evt_run() << ", " << cms2.evt_event() << ", " << index << std::endl;
-			Fill(h1_hyp_lt_ee_afterid_closestMu_, hypType, closestMu, weight);
-		}
-	}
+    Fill(h1_hyp_ltid_sigmaIEtaIEta_[det], hypType, cms2.els_sigmaIEtaIEta()[index], weight);
 
-	if (fabs(cms2.els_etaSC()[index]) < 1.479) {
-		Fill(h1_hyp_lt_eb_pt_, hypType, cms2.els_p4()[index].Pt(), weight);
-		Fill(h1_hyp_lt_eb_hoe_, hypType, cms2.els_hOverE()[index], weight);
-		Fill(h1_hyp_lt_eb_d0_, hypType, fabs(cms2.els_d0corr()[index]), weight);
-		Fill(h1_hyp_lt_eb_dPhiIn_, hypType, fabs(cms2.els_dPhiIn()[index]), weight);
-		Fill(h1_hyp_lt_eb_dEtaIn_, hypType, fabs(cms2.els_dEtaIn()[index]), weight);
-		Fill(h1_hyp_lt_eb_sigmaIEtaIEta_, hypType, cms2.els_sigmaIEtaIEta()[index], weight);
-		Fill(h1_hyp_lt_eb_E2x5MaxOver5x5_, hypType, E2x5MaxOver5x5, weight);
-		Fill(h1_hyp_lt_eb_ecalIso_, hypType, cms2.els_ecalIso()[index], weight);
-		Fill(h1_hyp_lt_eb_hcalIso_, hypType, cms2.els_hcalIso()[index], weight);
-		Fill(h1_hyp_lt_eb_tkIso_, hypType, cms2.els_tkIso()[index], weight);
-		Fill(h1_hyp_lt_eb_relsusy_, hypType, iso_relsusy, weight);
 
-		if ((ele_result & (ele_passall & ~(1<<PASS_DETA))) == (ele_passall & ~(1<<PASS_DETA))) Fill(h1_hyp_lt_eb_nm1_dEtaIn_, hypType, fabs(cms2.els_dEtaIn()[index]), weight);
-		if ((ele_result & (ele_passall & ~(1<<PASS_DPHI))) == (ele_passall & ~(1<<PASS_DPHI))) Fill(h1_hyp_lt_eb_nm1_dPhiIn_, hypType, fabs(cms2.els_dPhiIn()[index]), weight);
-		if ((ele_result & (ele_passall & ~(1<<PASS_HOE))) == (ele_passall & ~(1<<PASS_HOE))) Fill(h1_hyp_lt_eb_nm1_hoe_, hypType, fabs(cms2.els_hOverE()[index]), weight);
-		if ((ele_result & (ele_passall & ~(1<<PASS_LSHAPE))) == (ele_passall & ~(1<<PASS_LSHAPE))) {
-			Fill(h1_hyp_lt_eb_nm1_E2x5MaxOver5x5_, hypType, E2x5MaxOver5x5, weight);
-			Fill2D(h1_hyp_lt_eb_nm1_lateral_, hypType, E2x5MaxOver5x5, E1x5Over5x5, weight);
-		}
-		if ((ele_result & (ele_passall & ~(1<<PASS_D0))) == (ele_passall & ~(1<<PASS_D0))) Fill(h1_hyp_lt_eb_nm1_d0_, hypType, fabs(cms2.els_d0corr()[index]), weight);
-
-		if ((ele_result & ele_passall_id_cand02) == (ele_passall_id_cand02)) {
-			Fill(h1_hyp_lt_eb_afterid_relsusy_, hypType, iso_relsusy, weight);
-			Fill(h1_hyp_lt_eb_afterid_fbrem_, hypType, cms2.els_fbrem()[index], weight);
-			Fill(h1_hyp_lt_eb_afterid_eopin_, hypType, cms2.els_eOverPIn()[index], weight);
-			if (cms2.els_fbrem()[index] > 0.2) {
-				Fill(h1_hyp_lt_eb_afterid_relsusy_highfbrem_, hypType, iso_relsusy, weight);
-				Fill(h1_hyp_lt_eb_afterid_eopin_highfbrem_, hypType, cms2.els_eOverPIn()[index], weight);
-				Fill(h1_hyp_lt_eb_afterid_dPhiIn_highfbrem_, hypType, fabs(cms2.els_dPhiIn()[index]), weight);
-				Fill(h1_hyp_lt_eb_afterid_dEtaIn_highfbrem_, hypType, fabs(cms2.els_dEtaIn()[index]), weight);
-				Fill(h1_hyp_lt_eb_afterid_preshowerEnergy_highfbrem_, hypType, cms2.scs_preshowerEnergy()[scidx]/cms2.scs_rawEnergy()[scidx], weight);
-			}
-			else {
-				Fill(h1_hyp_lt_eb_afterid_relsusy_lowfbrem_, hypType, iso_relsusy, weight);
-				Fill(h1_hyp_lt_eb_afterid_eopin_lowfbrem_, hypType, cms2.els_eOverPIn()[index], weight);
-				Fill(h1_hyp_lt_eb_afterid_dPhiIn_lowfbrem_, hypType, fabs(cms2.els_dPhiIn()[index]), weight); 
-				Fill(h1_hyp_lt_eb_afterid_dEtaIn_lowfbrem_, hypType, fabs(cms2.els_dEtaIn()[index]), weight); 
-				Fill(h1_hyp_lt_eb_afterid_preshowerEnergy_lowfbrem_, hypType, cms2.scs_preshowerEnergy()[scidx]/cms2.scs_rawEnergy()[scidx], weight);
-			}
-		}
-
-		if ((ele_result & ele_passall_id_and_iso_cand01) == (ele_passall_id_and_iso_cand01)) Fill(h1_hyp_lt_eb_pt_cand01_, hypType, cms2.els_p4()[index].Pt(), weight);
-		if ((ele_result & ele_passall_id_and_iso_cand02) == (ele_passall_id_and_iso_cand02)) Fill(h1_hyp_lt_eb_pt_cand02_, hypType, cms2.els_p4()[index].Pt(), weight);
-		if ((ele_result & ele_passall_id_and_iso_cand02_extra) == (ele_passall_id_and_iso_cand02_extra)) Fill(h1_hyp_lt_eb_pt_cand02_extra_, hypType, cms2.els_p4()[index].Pt(), weight);
-		if ((ele_result & ele_passall_id_and_iso_cand02_extra_v2) == (ele_passall_id_and_iso_cand02_extra_v2)) {
-			Fill(h1_hyp_lt_eb_pt_cand02_extra_v2_, hypType, cms2.els_p4()[index].Pt(), weight);
-			Fill(h1_hyp_lt_eb_eta_cand02_extra_v2_, hypType, cms2.els_etaSC()[index], weight);
-			Fill(h1_hyp_lt_eb_afterid_closestMu_, hypType, closestMu, weight);
-		}
-	}
-
-	// find out what passed
-	bool ltPassOld = false;
-	bool ltPassNew = false;
-	bool relSusyIso = false;
-	bool relSusyIso_cand0 = false;
-	bool relSusyIso_cand1 = false;
-	bool isConv = false;
-	if (cms2.els_egamma_looseId().at(index)) ltPassOld = true;
-	if (electronId_cand01(index)) ltPassNew = true;
-	if (electronIsolation_relsusy(index, true) < 0.10) relSusyIso = true;
-	if (electronIsolation_relsusy_cand0(index, true) < 0.10) relSusyIso_cand0 = true;
-	if (electronIsolation_relsusy_cand1(index, true) < 0.10) relSusyIso_cand1 = true;
-	if (isFromConversionPartnerTrack(index)) isConv = true;
-
-	//
-	// fill numerator histograms
-	//
-	if (abs(cms2.els_p4()[index].eta()) > 1.5) {
-		if (ltPassOld) Fill(h1_hyp_lt_ee_pt_idold_, hypType, cms2.els_p4()[index].Pt(), weight);
-		if (ltPassNew) Fill(h1_hyp_lt_ee_pt_idnew_, hypType, cms2.els_p4()[index].Pt(), weight);
-		if (relSusyIso) Fill(h1_hyp_lt_ee_pt_isoold_, hypType, cms2.els_p4()[index].Pt(), weight);
-		if (relSusyIso_cand0) Fill(h1_hyp_lt_ee_pt_isonew_, hypType, cms2.els_p4()[index].Pt(), weight);
-		if (relSusyIso_cand1) Fill(h1_hyp_lt_ee_pt_isonew_cand1_, hypType, cms2.els_p4()[index].Pt(), weight);
-		if (relSusyIso_cand1 && ltPassNew && !isConv) Fill(h1_hyp_lt_ee_pt_id1_iso1_conv_, hypType, cms2.els_p4()[index].Pt(), weight);
-		if (!isConv) Fill(h1_hyp_lt_ee_pt_conv_, hypType, cms2.els_p4()[index].Pt(), weight);
-	}
-	if (abs(cms2.els_p4()[index].eta()) < 1.5)  {
-		if (ltPassOld) Fill(h1_hyp_lt_eb_pt_idold_, hypType, cms2.els_p4()[index].Pt(), weight);
-		if (ltPassNew) Fill(h1_hyp_lt_eb_pt_idnew_, hypType, cms2.els_p4()[index].Pt(), weight);
-		if (relSusyIso) Fill(h1_hyp_lt_eb_pt_isoold_, hypType, cms2.els_p4()[index].Pt(), weight);
-		if (relSusyIso_cand0) Fill(h1_hyp_lt_eb_pt_isonew_, hypType, cms2.els_p4()[index].Pt(), weight);
-		if (relSusyIso_cand1) Fill(h1_hyp_lt_eb_pt_isonew_cand1_, hypType, cms2.els_p4()[index].Pt(), weight);
-		if (relSusyIso_cand1 && ltPassNew && !isConv) Fill(h1_hyp_lt_eb_pt_id1_iso1_conv_, hypType, cms2.els_p4()[index].Pt(), weight);
-		if (!isConv) Fill(h1_hyp_lt_eb_pt_conv_, hypType, cms2.els_p4()[index].Pt(), weight);
-	}
+    std::cout << "id " << checkId << " all " << checkAll << std::endl;
 
 }
 
@@ -639,29 +444,28 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 
 			} // end loop on hypothesis
 
-		}
+		} // end loop on events
 
 	} // end loop on files
 
-} // end loop on events
 
-if ( nEventsChain != nEventsTotal ) {
-	std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
-}
-
-rootdir = gROOT->GetDirectory("root:");
-if (rootdir) rootdir->cd();
-else{
-	std::cout<<"Cant find root: . Current dir is "<<gDirectory->GetName()<<std::endl;
-	rootdir = gROOT->GetDirectory("Rint:");
-	if (rootdir){
-		std::cout<<"OK, got Rint: "<<std::endl;
-		rootdir->cd();
-	} else {
-		std::cout<<"Cant find Rint: either . Current dir is "<<gDirectory->GetName()<<std::endl;
+	if ( nEventsChain != nEventsTotal ) {
+		std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
 	}
-}
 
-return 0;
+	rootdir = gROOT->GetDirectory("root:");
+	if (rootdir) rootdir->cd();
+	else{
+		std::cout<<"Cant find root: . Current dir is "<<gDirectory->GetName()<<std::endl;
+		rootdir = gROOT->GetDirectory("Rint:");
+		if (rootdir){
+			std::cout<<"OK, got Rint: "<<std::endl;
+			rootdir->cd();
+		} else {
+			std::cout<<"Cant find Rint: either . Current dir is "<<gDirectory->GetName()<<std::endl;
+		}
+	}
+
+	return 0;
 }
 

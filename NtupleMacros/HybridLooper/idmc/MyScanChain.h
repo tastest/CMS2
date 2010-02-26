@@ -6,8 +6,6 @@
 #include <iostream>
 #include <vector>
 
-
-
 class TH1F;
 class TH2F;
 class TChain;
@@ -40,6 +38,13 @@ class MyScanChain {
 
 		//
 		// ele ID plots
+
+
+        // NEW
+        TH1F *h1_hyp_ltid_sigmaIEtaIEta_[2][4];
+
+
+
 		//
 		// basic selection quantities
 		//
@@ -106,12 +111,6 @@ class MyScanChain {
         TH1F *h1_hyp_lt_eb_afterid_eopin_highfbrem_[4];
         TH1F *h1_hyp_lt_ee_afterid_eopin_highfbrem_[4];
 
-		// preshower after id
-        TH1F *h1_hyp_lt_eb_afterid_preshowerEnergy_lowfbrem_[4];
-        TH1F *h1_hyp_lt_ee_afterid_preshowerEnergy_lowfbrem_[4];
-        TH1F *h1_hyp_lt_eb_afterid_preshowerEnergy_highfbrem_[4];
-        TH1F *h1_hyp_lt_ee_afterid_preshowerEnergy_highfbrem_[4];
-
 		// dPhiIn after id 
         TH1F *h1_hyp_lt_eb_afterid_dPhiIn_lowfbrem_[4];
         TH1F *h1_hyp_lt_ee_afterid_dPhiIn_lowfbrem_[4];
@@ -124,13 +123,7 @@ class MyScanChain {
         TH1F *h1_hyp_lt_eb_afterid_dEtaIn_highfbrem_[4];
         TH1F *h1_hyp_lt_ee_afterid_dEtaIn_highfbrem_[4];
 
-		// closest muon after id
-        TH1F *h1_hyp_lt_eb_afterid_closestMu_[4];
-        TH1F *h1_hyp_lt_ee_afterid_closestMu_[4];
-
 		// id
-		//
-
 		//
 		//
 		TH1F *h1_hyp_lt_eb_pt_cand01_[4];

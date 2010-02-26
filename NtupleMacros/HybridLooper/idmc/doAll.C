@@ -1,5 +1,5 @@
 
-void doAll3X() {
+void doAll() {
 
 	// from slavas code
 	gSystem->Load("libGui.so");
@@ -100,13 +100,13 @@ void doAll3X() {
 //  looper->ScanChain(false, "elegunideal", chain_elegunideal);
 
 	//looper->ScanChain(false, "QCDpt30", chain_qcd30);
-	looper->ScanChain(false, "wm", chain_wmunu);
+//	looper->ScanChain(false, "wm", chain_wmunu);
 
 	//
 	// write histograms
 	// 
 
-	const char* outFile = "histos_eleid_hypbased_lowpt.root";
+	const char* outFile = "histos_eleid.root";
 	hist::saveHist(outFile); 
 	hist::deleteHistos();
 
