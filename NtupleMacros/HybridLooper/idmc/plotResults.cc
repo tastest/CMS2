@@ -82,6 +82,21 @@ void plotValidationOverlay(HistogramUtilities &h1, TString name_before, TString 
     h1_after_b->SetLineColor(kBlack);
     h1_after_b->SetMarkerColor(kBlack);
 
+    TH1F *h1_eff_s = (TH1F*)h1_after_s->Clone();
+    h1_eff_s->Sumw2();
+    h1_eff_s->Divide(h1_before_s);
+    h1_eff_s->SetMarkerColor(kRed);
+    h1_eff_s->SetLineColor(kRed);
+    h1_eff_s->SetMarkerStyle(20);
+
+    TH1F *h1_eff_b = (TH1F*)h1_after_b->Clone();
+    h1_eff_b->Sumw2();
+    h1_eff_b->Divide(h1_before_b);
+    h1_eff_b->SetMarkerColor(kGreen);
+    h1_eff_b->SetLineColor(kGreen);
+    h1_eff_b->SetMarkerStyle(20);
+
+
     TLegend *lg = new TLegend(0.6, 0.8, 0.9, 0.9);
     lg->SetFillColor(kWhite);
     lg->SetLineColor(kWhite);
@@ -110,9 +125,21 @@ void plotValidationOverlay(HistogramUtilities &h1, TString name_before, TString 
     lg->Draw();
     Utilities::saveCanvas(c, "results/" + saveName + "overlay_b_" + name_after + "_" + det);
 
+    c->cd();
+    h1_eff_s->Draw();
+    h1_eff_s->GetYaxis()->SetRangeUser(0, 1.1);
+    Utilities::saveCanvas(c, "results/" + saveName + "eff_s_" + name_after + "_" + det);
+    
+    c->cd();
+    h1_eff_b->Draw();
+    h1_eff_b->GetYaxis()->SetRangeUser(0, 1.1);
+    Utilities::saveCanvas(c, "results/" + saveName + "eff_b_" + name_after + "_" + det);
+
 
     delete c;
     delete lg;
+    delete h1_eff_s;
+    delete h1_eff_b;
     delete h1_before_s;
     delete h1_after_s;
     delete h1_before_b;
