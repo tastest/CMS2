@@ -21,5 +21,7 @@ void plot2DSB(HistogramUtilities &h1, TString name, TString xTitle, TString yTit
 void plotResultsW(TString det, TString fileStamp);
 
 
+void plotValidationOverlay(HistogramUtilities &h1, TString name_before, TString name_after, TString saveName, TString det, int rebin = 1);
+
 #endif
 

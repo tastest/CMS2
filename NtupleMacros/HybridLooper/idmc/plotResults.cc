@@ -12,14 +12,14 @@
 
 	// for 2_2_X
 	const static sources_t theSignal = 
-		(1<<H_WJETS);
+		(1<<H_TTBAR);
 
 	const static sources_t theBackground = 
 		(1<<H_QCD30);
 	const static sources_t theSources = 
-		(1<<H_WJETS) |
-		(1<<H_PHOTONJETS) |
-		(1<<H_QCD30);
+		(1<<H_TTBAR);// |
+		//(1<<H_PHOTONJETS) |
+		//(1<<H_QCD30);
 
 TArrow *getArrow(THStack *st, TString det, float cutValEB, float cutValEE)
 {
@@ -59,6 +59,36 @@ void plot2DSB(HistogramUtilities &h1, TString name, TString xTitle, TString yTit
 	delete c1;
 	delete h2_signal;
 	delete h2_background;
+
+}
+
+void plotValidationOverlay(HistogramUtilities &h1, TString name_before, TString name_after, TString saveName, TString det, int rebin)
+{
+
+    TH1F *h1_before = h1.getHistogram(theSignal, name_before, det, "_ee", rebin, "before_");
+    h1_before->SetLineColor(kBlack);
+    h1_before->SetFillColor(kYellow);
+    TH1F *h1_after = h1.getHistogram(theSignal, name_after, det, "_ee", rebin, "after_");
+    h1_after->SetMarkerStyle(20);
+    h1_after->SetLineColor(kRed);
+    h1_after->SetMarkerColor(kRed);
+
+    TLegend *lg = new TLegend(0.6, 0.8, 0.9, 0.9);
+    lg->SetFillColor(kWhite);
+    lg->SetLineColor(kWhite);
+    lg->SetShadowColor(kWhite);
+    TString upperDet = det;
+    upperDet.ToUpper();
+    lg->AddEntry(h1_before, "Before (" + upperDet + ")", "fl");
+    lg->AddEntry(h1_after, "After (" + upperDet + ")", "lp");
+
+    TCanvas *c = new TCanvas();
+
+    c->cd();
+    h1_before->Draw("HIST");
+    h1_after->Draw("SAME");
+    lg->Draw();
+    Utilities::saveCanvas(c, "results/" + saveName + "overlay" + name_after + "_" + det);
 
 }
 
@@ -424,18 +454,24 @@ void plotResultsW(TString det, TString fileStamp)
         // luminorm for 1pb-1
         // luminosity is already normalised to 1pb-1 in the looper
         std::vector<DataSource> sources;
-        sources.push_back( fH_WJETS() );
-        sources.push_back( fH_QCD30() );
-        sources.push_back( fH_PHOTONJETS() );
+        sources.push_back( fH_TTBAR() );
+        //sources.push_back( fH_QCD30() );
+        //sources.push_back( fH_PHOTONJETS() );
         HistogramUtilities h1(fileStamp + ".root", sources, 1.0);
 
-        // W studies related
+        // validation related
         //
+        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_cand01_pt", "val01_", det, 4);
+        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_cand01_eta", "val01_", det, 1);
 
-        plotStack(h1, "pt", "p_{T} (GeV)", fileStamp, det, 2);
+        plotValidationOverlay(h1, "h1_hyp_debug_d0", "h1_hyp_debug_after_cand01_d0", "val01_", det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_hoe", "h1_hyp_debug_after_cand01_hoe", "val01_", det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_dPhiIn", "h1_hyp_debug_after_cand01_dPhiIn", "val01_", det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_dEtaIn", "h1_hyp_debug_after_cand01_dEtaIn", "val01_", det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_reliso", "h1_hyp_debug_after_cand01_reliso", "val01_", det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_sigmaIEtaIEta", "h1_hyp_debug_after_cand01_sigmaIEtaIEta", "val01_", det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_E2x5MaxOver5x5", "h1_hyp_debug_after_cand01_E2x5MaxOver5x5", "val01_", det, 1);
 
-	// N-1
-	plotStack(h1, "nm1_met", "tcMet (GeV)", fileStamp, det, 2);
 
 }
 

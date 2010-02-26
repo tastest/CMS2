@@ -290,7 +290,7 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
     Fill(h1_hyp_debug_hoe_[det], hypType, cms2.els_hOverE()[index], weight);
     Fill(h1_hyp_debug_dPhiIn_[det], hypType, cms2.els_dPhiIn()[index], weight);
     Fill(h1_hyp_debug_dEtaIn_[det], hypType, cms2.els_dEtaIn()[index], weight);
-    Fill(h1_hyp_debug_d0_[det], hypType, cms2.els_d0()[index], weight);
+    Fill(h1_hyp_debug_d0_[det], hypType, cms2.els_d0corr()[index], weight);
     Fill(h1_hyp_debug_E2x5MaxOver5x5_[det], hypType, E2x5MaxOver5x5, weight);
     Fill(h1_hyp_debug_reliso_[det], hypType, iso_relsusy, weight);
 
@@ -305,7 +305,7 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
        Fill(h1_hyp_debug_after_cand01_hoe_[det], hypType, cms2.els_hOverE()[index], weight);
        Fill(h1_hyp_debug_after_cand01_dPhiIn_[det], hypType, cms2.els_dPhiIn()[index], weight);
        Fill(h1_hyp_debug_after_cand01_dEtaIn_[det], hypType, cms2.els_dEtaIn()[index], weight);
-       Fill(h1_hyp_debug_after_cand01_d0_[det], hypType, cms2.els_d0()[index], weight);
+       Fill(h1_hyp_debug_after_cand01_d0_[det], hypType, cms2.els_d0corr()[index], weight);
        Fill(h1_hyp_debug_after_cand01_E2x5MaxOver5x5_[det], hypType, E2x5MaxOver5x5, weight);
        Fill(h1_hyp_debug_after_cand01_reliso_[det], hypType, iso_relsusy, weight);
 
