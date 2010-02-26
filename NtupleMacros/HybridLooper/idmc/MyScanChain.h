@@ -42,38 +42,47 @@ class MyScanChain {
         // pt
         TH1F *h1_hyp_debug_pt_[2][4];
         TH1F *h1_hyp_debug_after_cand01_pt_[2][4];
+        TH1F *h1_hyp_debug_after_cand02_pt_[2][4];
 
         // eta
         TH1F *h1_hyp_debug_eta_[2][4];
         TH1F *h1_hyp_debug_after_cand01_eta_[2][4];
+        TH1F *h1_hyp_debug_after_cand02_eta_[2][4];
 
         // sigmaIEtaIEta
         TH1F *h1_hyp_debug_sigmaIEtaIEta_[2][4];
         TH1F *h1_hyp_debug_after_cand01_sigmaIEtaIEta_[2][4];
+        TH1F *h1_hyp_debug_after_cand02_sigmaIEtaIEta_[2][4];
 
         // hoe
         TH1F *h1_hyp_debug_hoe_[2][4];
         TH1F *h1_hyp_debug_after_cand01_hoe_[2][4];
+        TH1F *h1_hyp_debug_after_cand02_hoe_[2][4];
 
         // dPhiIn
         TH1F *h1_hyp_debug_dPhiIn_[2][4];
         TH1F *h1_hyp_debug_after_cand01_dPhiIn_[2][4];
+        TH1F *h1_hyp_debug_after_cand02_dPhiIn_[2][4];
 
         // dEtaIn
         TH1F *h1_hyp_debug_dEtaIn_[2][4];
         TH1F *h1_hyp_debug_after_cand01_dEtaIn_[2][4];
+        TH1F *h1_hyp_debug_after_cand02_dEtaIn_[2][4];
 
         // d0
         TH1F *h1_hyp_debug_d0_[2][4];
         TH1F *h1_hyp_debug_after_cand01_d0_[2][4];
+        TH1F *h1_hyp_debug_after_cand02_d0_[2][4];
 
         // E2x5MaxOver5x5
         TH1F *h1_hyp_debug_E2x5MaxOver5x5_[2][4];
         TH1F *h1_hyp_debug_after_cand01_E2x5MaxOver5x5_[2][4];
+        TH1F *h1_hyp_debug_after_cand02_E2x5MaxOver5x5_[2][4];
 
         // reliso
         TH1F *h1_hyp_debug_reliso_[2][4];
         TH1F *h1_hyp_debug_after_cand01_reliso_[2][4];
+        TH1F *h1_hyp_debug_after_cand02_reliso_[2][4];
 
 
 };

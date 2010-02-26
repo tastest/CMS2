@@ -153,30 +153,39 @@ void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
 
         FormatHist(h1_hyp_debug_pt_[i], sampleName, "h1_hyp_debug_pt_" + detname, 200, 0.0, 200.0);
         FormatHist(h1_hyp_debug_after_cand01_pt_[i], sampleName, "h1_hyp_debug_after_cand01_pt_" + detname, 200, 0.0, 200.0);
+        FormatHist(h1_hyp_debug_after_cand02_pt_[i], sampleName, "h1_hyp_debug_after_cand02_pt_" + detname, 200, 0.0, 200.0);
 
         FormatHist(h1_hyp_debug_eta_[i], sampleName, "h1_hyp_debug_eta_" + detname, 30, -3.0, 3.0);
         FormatHist(h1_hyp_debug_after_cand01_eta_[i], sampleName, "h1_hyp_debug_after_cand01_eta_" + detname, 30, -3.0, 3.0);
+        FormatHist(h1_hyp_debug_after_cand02_eta_[i], sampleName, "h1_hyp_debug_after_cand02_eta_" + detname, 30, -3.0, 3.0);
 
         FormatHist(h1_hyp_debug_sigmaIEtaIEta_[i], sampleName, "h1_hyp_debug_sigmaIEtaIEta_" + detname, 50, 0.0, 0.05);
         FormatHist(h1_hyp_debug_after_cand01_sigmaIEtaIEta_[i], sampleName, "h1_hyp_debug_after_cand01_sigmaIEtaIEta_" + detname, 50, 0.0, 0.05);
+        FormatHist(h1_hyp_debug_after_cand02_sigmaIEtaIEta_[i], sampleName, "h1_hyp_debug_after_cand02_sigmaIEtaIEta_" + detname, 50, 0.0, 0.05);
 
         FormatHist(h1_hyp_debug_hoe_[i], sampleName, "h1_hyp_debug_hoe_" + detname, 100, 0.0, 0.1);
         FormatHist(h1_hyp_debug_after_cand01_hoe_[i], sampleName, "h1_hyp_debug_after_cand01_hoe_" + detname, 100, 0.0, 0.1);
+        FormatHist(h1_hyp_debug_after_cand02_hoe_[i], sampleName, "h1_hyp_debug_after_cand02_hoe_" + detname, 100, 0.0, 0.1);
 
         FormatHist(h1_hyp_debug_dPhiIn_[i], sampleName, "h1_hyp_debug_dPhiIn_" + detname, 100, -0.05, 0.05);
         FormatHist(h1_hyp_debug_after_cand01_dPhiIn_[i], sampleName, "h1_hyp_debug_after_cand01_dPhiIn_" + detname, 100, -0.05, 0.05);
+        FormatHist(h1_hyp_debug_after_cand02_dPhiIn_[i], sampleName, "h1_hyp_debug_after_cand02_dPhiIn_" + detname, 100, -0.05, 0.05);
 
         FormatHist(h1_hyp_debug_dEtaIn_[i], sampleName, "h1_hyp_debug_dEtaIn_" + detname, 100, -0.05, 0.05);
         FormatHist(h1_hyp_debug_after_cand01_dEtaIn_[i], sampleName, "h1_hyp_debug_after_cand01_dEtaIn_" + detname, 100, -0.05, 0.05);
+        FormatHist(h1_hyp_debug_after_cand02_dEtaIn_[i], sampleName, "h1_hyp_debug_after_cand02_dEtaIn_" + detname, 100, -0.05, 0.05);
 
         FormatHist(h1_hyp_debug_d0_[i], sampleName, "h1_hyp_debug_d0_" + detname, 100, -0.05, 0.05);
         FormatHist(h1_hyp_debug_after_cand01_d0_[i], sampleName, "h1_hyp_debug_after_cand01_d0_" + detname, 100, -0.05, 0.05);
+        FormatHist(h1_hyp_debug_after_cand02_d0_[i], sampleName, "h1_hyp_debug_after_cand02_d0_" + detname, 100, -0.05, 0.05);
 
         FormatHist(h1_hyp_debug_E2x5MaxOver5x5_[i], sampleName, "h1_hyp_debug_E2x5MaxOver5x5_" + detname, 110, 0.0, 1.10);
         FormatHist(h1_hyp_debug_after_cand01_E2x5MaxOver5x5_[i], sampleName, "h1_hyp_debug_after_cand01_E2x5MaxOver5x5_" + detname, 110, 0.0, 1.10);
+        FormatHist(h1_hyp_debug_after_cand02_E2x5MaxOver5x5_[i], sampleName, "h1_hyp_debug_after_cand02_E2x5MaxOver5x5_" + detname, 110, 0.0, 1.10);
 
         FormatHist(h1_hyp_debug_reliso_[i], sampleName, "h1_hyp_debug_reliso_" + detname, 100, 0.0, 1.0);
         FormatHist(h1_hyp_debug_after_cand01_reliso_[i], sampleName, "h1_hyp_debug_after_cand01_reliso_" + detname, 100, 0.0, 1.0);
+        FormatHist(h1_hyp_debug_after_cand02_reliso_[i], sampleName, "h1_hyp_debug_after_cand02_reliso_" + detname, 100, 0.0, 1.0);
 
     }
 
@@ -264,9 +273,18 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
     bool pass_electronSelection_cand01 = electronSelection_cand01(index);
     elecuts_t result_electronSelections_cand01 = electronSelections_debug_;
 
+    // full selection with cand02
+    bool pass_electronSelection_cand02 = electronSelection_cand02(index);
+    elecuts_t result_electronSelections_cand02 = electronSelections_debug_;
+
     // eleid cand01
     bool pass_electronId_cand01 = electronId_cand01(index);
     elecuts_t result_electronId_cand01 = electronId_debug_;
+
+    // eleid cand02
+    bool pass_electronId_cand02 = electronId_cand02(index);
+    elecuts_t result_electronId_cand02 = electronId_debug_;
+
 
     unsigned int det = 0;
     if (fabs(cms2.els_etaSC()[index]) > 1.479) det = 1;
@@ -298,7 +316,6 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
     // after selections
     //
     if (pass_electronSelection_cand01) {
-    
        Fill(h1_hyp_debug_after_cand01_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
        Fill(h1_hyp_debug_after_cand01_eta_[det], hypType, cms2.els_etaSC()[index], weight);
        Fill(h1_hyp_debug_after_cand01_sigmaIEtaIEta_[det], hypType, cms2.els_sigmaIEtaIEta()[index], weight);
@@ -308,7 +325,18 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
        Fill(h1_hyp_debug_after_cand01_d0_[det], hypType, cms2.els_d0corr()[index], weight);
        Fill(h1_hyp_debug_after_cand01_E2x5MaxOver5x5_[det], hypType, E2x5MaxOver5x5, weight);
        Fill(h1_hyp_debug_after_cand01_reliso_[det], hypType, iso_relsusy, weight);
+    }
 
+    if (pass_electronSelection_cand02) {
+       Fill(h1_hyp_debug_after_cand02_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+       Fill(h1_hyp_debug_after_cand02_eta_[det], hypType, cms2.els_etaSC()[index], weight);
+       Fill(h1_hyp_debug_after_cand02_sigmaIEtaIEta_[det], hypType, cms2.els_sigmaIEtaIEta()[index], weight);
+       Fill(h1_hyp_debug_after_cand02_hoe_[det], hypType, cms2.els_hOverE()[index], weight);
+       Fill(h1_hyp_debug_after_cand02_dPhiIn_[det], hypType, cms2.els_dPhiIn()[index], weight);
+       Fill(h1_hyp_debug_after_cand02_dEtaIn_[det], hypType, cms2.els_dEtaIn()[index], weight);
+       Fill(h1_hyp_debug_after_cand02_d0_[det], hypType, cms2.els_d0corr()[index], weight);
+       Fill(h1_hyp_debug_after_cand02_E2x5MaxOver5x5_[det], hypType, E2x5MaxOver5x5, weight);
+       Fill(h1_hyp_debug_after_cand02_reliso_[det], hypType, iso_relsusy, weight);
     } 
 
 }

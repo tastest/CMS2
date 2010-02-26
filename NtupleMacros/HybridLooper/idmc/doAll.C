@@ -100,7 +100,7 @@ void doAll() {
 //  looper->ScanChain(false, "elegunideal", chain_elegunideal);
 
 	//looper->ScanChain(false, "QCDpt30", chain_qcd30);
-//	looper->ScanChain(false, "wm", chain_wmunu);
+	looper->ScanChain(false, "wm", chain_wmunu);
 
 	//
 	// write histograms
