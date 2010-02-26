@@ -630,7 +630,7 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile) {
   codef << "          \"\\033[0m\\033[32m <---\\033[0m\\015\", (float)nEventsTotal/(nEventsChain*0.01));" << endl;
   codef << "          fflush(stdout);" << endl;
   codef << "        }" << endl;
-  codef << "      }//if(nEventsTotal%20000 == 0) {\n\n\n"
+  codef << "      }//if(nEventsTotal%20000 == 0) {\n\n\n";
 										      
 
   codef << "    }" << endl;
