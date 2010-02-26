@@ -561,7 +561,7 @@ TH1F* hIsoSingleElectron;         // isolation background
 // Not cleaned area
 //
 
-
+TH2F* helFRfakable_fakerate[4];     // Fake rate study: rate of fakable objects using the fakerate.cc
 TH1F* hypos_total;
 TH1F* hypos_total_weighted;
 
@@ -871,6 +871,15 @@ void countFakableObjectsAfterAllSelections(unsigned int i_hyp,
     helFRfakable[3]->Fill(cms2.hyp_lt_p4().at(i_hyp).pt(),
 			  fabs(cms2.hyp_lt_p4().at(i_hyp).eta()),
 			  weight);
+    
+    helFRfakable_fakerate[type]->Fill(fabs(cms2.hyp_lt_p4().at(i_hyp).eta()), 
+				      cms2.hyp_lt_p4().at(i_hyp).pt(),
+				      weight);
+    helFRfakable_fakerate[3]->Fill( fabs(cms2.hyp_lt_p4().at(i_hyp).eta()),
+				    cms2.hyp_lt_p4().at(i_hyp).pt(),
+				    weight);
+    
+
   }
   if ( passedLLElFakableRequirements && passedLTFinalRequirements && !passedLLFinalRequirements ){
     helFRfakable[type]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(),
@@ -879,6 +888,14 @@ void countFakableObjectsAfterAllSelections(unsigned int i_hyp,
     helFRfakable[3]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(),
 			  fabs(cms2.hyp_ll_p4().at(i_hyp).eta()),
 			  weight);
+    
+    helFRfakable_fakerate[type]->Fill( fabs(cms2.hyp_ll_p4().at(i_hyp).eta()),
+				       cms2.hyp_ll_p4().at(i_hyp).pt(),
+				       weight);
+    helFRfakable_fakerate[3]->Fill( fabs(cms2.hyp_ll_p4().at(i_hyp).eta()),
+				    cms2.hyp_ll_p4().at(i_hyp).pt(),
+				    weight);
+
   }
 }
 
@@ -1212,6 +1229,8 @@ RooDataSet* ScanChain( TChain* chain,
   }
   
   const Double_t ptbins[4] = {20,30,80,200};
+  const Double_t ptbins_fakerate[4] = {10,20,60,150};
+  
   for (unsigned int i=0; i<4; i++) {
 
     hnJet[i]      = new TH1F(Form("%s_hnJet_%s",     prefix,HypothesisTypeName(i)), "Number of jets after all cuts" , 5,0.,5.);	
@@ -1246,6 +1265,9 @@ RooDataSet* ScanChain( TChain* chain,
     hextramuonsvsnjet[i]->Sumw2();
     helFRfakable[i]     = new TH2F(Form("%s_helFRfakable_%s",    prefix,HypothesisTypeName(i)), "FR study: rate of fakable objects", 3,ptbins,2,0,3.0);
     helFRfakable[i]->Sumw2();
+    // fakable object by the fakerate.cc Revision 1.15
+    helFRfakable_fakerate[i]     = new TH2F(Form("%s_helFRfakable_fakerate_%s",    prefix,HypothesisTypeName(i)), "FR study: rate of fakable objects",2,0,3.0,3,ptbins_fakerate);
+    helFRfakable_fakerate[i]->Sumw2();
 
     hnJet[i]->Sumw2();
     helePt[i]->Sumw2();
@@ -1381,17 +1403,24 @@ RooDataSet* ScanChain( TChain* chain,
        for( unsigned int event = 0; event < nEvents; ++event) {
 	    cms2.GetEntry(event);  // get entries for Event number event from branches of TTree tree
 	    ++nEventsTotal;
+	    if (qcdBackground) {
+	      // get fake rates
+	      extractFakeRateSingleLepton();
+	      // isolation
+	      extractIsoSingleLepton();
+	    }
+	    
 	    if (cms2.trks_d0().size() == 0) continue;  // needed to get rid of back Monte Carlo events in CMSSW_2_X analysis
 	    if (cms2.hyp_type().size() == 0) continue; // skip events without hypothesis
 	    EventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.evt_lumiBlock(), cms2.trks_d0()[0], 
-					cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
+				   cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
 	    if (is_duplicate(id)) {
-		 duplicates_total_n++;
-		 duplicates_total_weight += cms2.evt_scale1fb();
-		 // cout << "Duplicate event found. Run: " << cms2.evt_run() << ", Event:" << cms2.evt_event() << ", Lumi: " << cms2.evt_lumiBlock() << endl;
-		 continue;
+	      duplicates_total_n++;
+	      duplicates_total_weight += cms2.evt_scale1fb();
+	      // cout << "Duplicate event found. Run: " << cms2.evt_run() << ", Event:" << cms2.evt_event() << ", Lumi: " << cms2.evt_lumiBlock() << endl;
+	      continue;
 	    }
-
+	    
 	    int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
 	    if (i_permille != i_permille_old) {
 		 // xterm magic from L. Vacavant and A. Cerri
@@ -1412,13 +1441,7 @@ RooDataSet* ScanChain( TChain* chain,
 	      }
 	    }
 	    
-	    if (qcdBackground) {
-	      // get fake rates
-	      extractFakeRateSingleLepton();
-	      // isolation
-	      extractIsoSingleLepton();
-	    }
-
+	    
 	    // loop over hypothesis candidates
 	    unsigned int nHyps = cms2.hyp_type().size();
 	    for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
