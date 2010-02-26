@@ -20,7 +20,7 @@ void doAll() {
 	gROOT->ProcessLine(".L ../../CORE/selections.cc+");
 	gROOT->ProcessLine(".L EffH1F.cc+");
 	gROOT->ProcessLine(".L EffMulti.cc+");
-	gROOT->ProcessLine(".L histtools.C+");
+	gROOT->ProcessLine(".L ../histtools.C+");
 
 	//
 	// the looper
