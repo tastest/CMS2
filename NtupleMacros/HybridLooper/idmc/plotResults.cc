@@ -108,8 +108,6 @@ void plotValidationOverlay(HistogramUtilities &h1, TString name_before, TString 
 
     TCanvas *c = new TCanvas();
 
-
-
     c->cd();
     h1_before_s->Draw("HIST");
     h1_before_s->GetYaxis()->SetRangeUser(0, h1_before_s->GetMaximum()*1.2);
@@ -540,6 +538,12 @@ void plotResultsW(TString det, TString fileStamp)
         plotValidationOverlay(h1, "h1_hyp_debug_sigmaIEtaIEta", "h1_hyp_debug_after_cand01_sigmaIEtaIEta", "val01_", det, 1);
         plotValidationOverlay(h1, "h1_hyp_debug_E2x5MaxOver5x5", "h1_hyp_debug_after_cand01_E2x5MaxOver5x5", "val01_", det, 1);
 
+        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_idcand01_pt", "val01_", det, 4);
+        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_isocand01_pt", "val01_", det, 4);
+        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_convcand01_pt", "val01_", det, 4);
+        plotValidationOverlay(h1, "h1_hyp_debug_after_idisocand01_pt", "h1_hyp_debug_after_idisoconvcand01_pt", "val01_", det, 4);
+
+
         plotValidationOverlay(h1, "h1_hyp_debug_pdgid", "h1_hyp_debug_after_cand02_pdgid", "val01_", det, 1);
         plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_cand02_pt", "val01_", det, 4);
         plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_cand02_eta", "val01_", det, 1);
@@ -550,6 +554,12 @@ void plotResultsW(TString det, TString fileStamp)
         plotValidationOverlay(h1, "h1_hyp_debug_reliso", "h1_hyp_debug_after_cand02_reliso", "val01_", det, 1);
         plotValidationOverlay(h1, "h1_hyp_debug_sigmaIEtaIEta", "h1_hyp_debug_after_cand02_sigmaIEtaIEta", "val01_", det, 1);
         plotValidationOverlay(h1, "h1_hyp_debug_E2x5MaxOver5x5", "h1_hyp_debug_after_cand02_E2x5MaxOver5x5", "val01_", det, 1);
+
+        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_idcand02_pt", "val01_", det, 4);
+        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_isocand02_pt", "val01_", det, 4);
+        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_convcand02_pt", "val01_", det, 4);
+        plotValidationOverlay(h1, "h1_hyp_debug_after_idisocand02_pt", "h1_hyp_debug_after_idisoconvcand02_pt", "val01_", det, 4);
+
 
 
 }

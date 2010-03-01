@@ -39,6 +39,27 @@ class MyScanChain {
 		//
 		// ele ID plots
 
+        // id
+        TH1F *h1_hyp_debug_after_idcand01_pt_[2][4];
+        TH1F *h1_hyp_debug_after_idcand02_pt_[2][4];
+
+        // iso
+        TH1F *h1_hyp_debug_after_isocand01_pt_[2][4];
+        TH1F *h1_hyp_debug_after_isocand02_pt_[2][4];
+
+        // conv
+        TH1F *h1_hyp_debug_after_convcand01_pt_[2][4];
+        TH1F *h1_hyp_debug_after_convcand02_pt_[2][4];
+
+        // iso and id
+        TH1F *h1_hyp_debug_after_idisocand01_pt_[2][4];
+        TH1F *h1_hyp_debug_after_idisocand02_pt_[2][4];
+
+        // iso and id and conv
+        TH1F *h1_hyp_debug_after_idisoconvcand01_pt_[2][4];
+        TH1F *h1_hyp_debug_after_idisoconvcand02_pt_[2][4];
+
+
         // pdg id
         TH1F *h1_hyp_debug_pdgid_[2][4];
         TH1F *h1_hyp_debug_after_cand01_pdgid_[2][4];

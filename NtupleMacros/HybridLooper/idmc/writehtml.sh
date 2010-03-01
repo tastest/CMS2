@@ -24,7 +24,7 @@ echo "
 
 for FILE_S in `ls results/*.png | grep $TAG | grep -v _b_`; do
 
-        FILE_B=`echo $FILE_S | sed 's/\(.*\)_s_\(.*\)/\1_b_\2/g'`
+    FILE_B=`echo $FILE_S | sed 's/\(.*\)_s_\(.*\)/\1_b_\2/g'`
 	TYPE=`echo $FILE_S | sed 's/.*_\(.*\)_s_.*/\1/g'`
 	VAR=`echo $FILE_S | sed 's/.*_\(.*\)_E.*\.png/\1/g'`
 	DET=`echo $FILE_S | sed 's/.*_\(.*\)\.png/\1/g'`
@@ -47,10 +47,12 @@ for FILE_S in `ls results/*.png | grep $TAG | grep -v _b_`; do
 
 	fi
 	if [ $TYPE == "eff" ]; then
+            EFF=`echo $FILE_S | sed 's/.*after_\(.*\)_$VAR_$DET\.png/\1/g'`
+
 	        if [ $VAR == "pt" ] || [ $VAR == "eta" ]; then
                 	echo "
                 	<h2>Eff($VAR, $DET): Signal (left), Background (right) <br>
-                        	- Efficiency as a function of $VAR to pass all selections</h2>
+                        	- Efficiency as a function of $VAR to pass all selections ($EFF)</h2>
                 	<img src=$FILE_S HEIGHT=$HEIGHT WIDTH=$WIDTH>
                 	<img src=$FILE_B HEIGHT=$HEIGHT WIDTH=$WIDTH><br>
                 	"
