@@ -109,7 +109,7 @@ void doAll() {
 	// write histograms
 	// 
 
-	const char* outFile = "histos_eleid_ + " + fileNameString + ".root";
+	const char* outFile = "histos_eleid_" + fileNameString + ".root";
 	hist::saveHist(outFile); 
 	hist::deleteHistos();
 
