@@ -63,6 +63,22 @@ void plot2DSB(HistogramUtilities &h1, TString name, TString xTitle, TString yTit
 
 }
 
+void setError(TH1F *h1_numer, TH1F *h1_denom, TH1F *h1_eff) {
+
+    Float_t scale = h1_numer->GetEntries() / h1_numer->Integral(0, h1_numer->GetNbinsX() + 1);
+    for (Int_t i = 0; i < h1_numer->GetNbinsX() + 1; ++i) {
+        Float_t nNumer = h1_numer->GetBinContent(i) * scale;
+        Float_t nDenom = h1_denom->GetBinContent(i) * scale;
+        Float_t eff = h1_eff->GetBinContent(i);
+        Float_t err = 0.0;
+        if (nDenom != 0) {
+            err = sqrt( eff * (1 - eff) / nDenom);
+        }
+        h1_eff->SetBinError(i, err);
+    }
+
+}
+
 void plotValidationOverlay(HistogramUtilities &h1, TString name_before, TString name_after, TString saveName, TString det, int rebin)
 {
 
@@ -83,19 +99,18 @@ void plotValidationOverlay(HistogramUtilities &h1, TString name_before, TString 
     h1_after_b->SetMarkerColor(kBlack);
 
     TH1F *h1_eff_s = (TH1F*)h1_after_s->Clone();
-    h1_eff_s->Sumw2();
     h1_eff_s->Divide(h1_before_s);
+    setError(h1_after_s, h1_before_s, h1_eff_s);
     h1_eff_s->SetMarkerColor(kRed);
     h1_eff_s->SetLineColor(kRed);
     h1_eff_s->SetMarkerStyle(20);
 
     TH1F *h1_eff_b = (TH1F*)h1_after_b->Clone();
-    h1_eff_b->Sumw2();
     h1_eff_b->Divide(h1_before_b);
+    setError(h1_after_b, h1_before_b, h1_eff_b);
     h1_eff_b->SetMarkerColor(kGreen);
     h1_eff_b->SetLineColor(kGreen);
     h1_eff_b->SetMarkerStyle(20);
-
 
     TLegend *lg = new TLegend(0.6, 0.8, 0.9, 0.9);
     lg->SetFillColor(kWhite);
@@ -136,12 +151,12 @@ void plotValidationOverlay(HistogramUtilities &h1, TString name_before, TString 
     Utilities::saveCanvas(c, "results/" + saveName + "b_" + name_after + "_" + det);
 
     c->cd();
-    h1_eff_s->Draw();
+    h1_eff_s->Draw("E1");
     h1_eff_s->GetYaxis()->SetRangeUser(0, 1.1);
     Utilities::saveCanvas(c, "results/" + saveName + "eff_s_" + name_after + "_" + det);
     
     c->cd();
-    h1_eff_b->Draw();
+    h1_eff_b->Draw("E1");
     h1_eff_b->GetYaxis()->SetRangeUser(0, 1.1);
     Utilities::saveCanvas(c, "results/" + saveName + "eff_b_" + name_after + "_" + det);
 

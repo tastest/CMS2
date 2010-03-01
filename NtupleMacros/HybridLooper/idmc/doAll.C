@@ -29,7 +29,9 @@ void doAll() {
 	// output file for histograms
 	//
 
-	MyScanChain *looper = new MyScanChain();
+
+    elecuts_t configured_cuts = (1<<ELEPASS_PT10NOT20);
+	MyScanChain *looper = new MyScanChain(configured_cuts);
 
 	//
 	// chains for input files

@@ -19,7 +19,6 @@
 
 // CMS2 includes
 #include "CMS2.h"
-#include "../../CORE/electronSelections.h"
 #include "../../CORE/selections.h"
 #include "../../Tools/DileptonHypType.h"
 
@@ -313,6 +312,19 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
     // find detector 
     unsigned int det = 0;
     if (fabs(cms2.els_etaSC()[index]) > 1.479) det = 1;
+
+    //
+    // controllable cuts
+    //
+
+    elecuts_t general_cuts_passed = 0;
+    if (cms2.els_p4()[index].Pt() > 10.0) general_cuts_passed |= (1<<ELEPASS_PT10);
+    if (cms2.els_p4()[index].Pt() > 20.0) general_cuts_passed |= (1<<ELEPASS_PT20);
+    if (cms2.els_p4()[index].Pt() > 10.0 && cms2.els_p4()[index].Pt() < 20.0) general_cuts_passed |= (1<<ELEPASS_PT10NOT20);
+    std::cout << general_cuts_passed << " & " << configured_cuts_ << " == " << (general_cuts_passed & configured_cuts_) << std::endl;
+
+    if (!((general_cuts_passed & configured_cuts_) == configured_cuts_)) return;
+    std::cout << "\t passed" << std::endl;
 
 	//
 	// fill histograms
