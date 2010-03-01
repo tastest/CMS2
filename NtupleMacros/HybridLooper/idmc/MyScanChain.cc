@@ -154,22 +154,36 @@ void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
         FormatHist(h1_hyp_debug_after_idcand01_pt_[i], sampleName, "h1_hyp_debug_after_idcand01_pt_" + detname, 200, 0.0, 200.0);
         FormatHist(h1_hyp_debug_after_idcand02_pt_[i], sampleName, "h1_hyp_debug_after_idcand02_pt_" + detname, 200, 0.0, 200.0);
 
+        FormatHist(h1_hyp_debug_after_idcand01_eta_[i], sampleName, "h1_hyp_debug_after_idcand01_eta_" + detname, 30, -3.0, 3.0);
+        FormatHist(h1_hyp_debug_after_idcand02_eta_[i], sampleName, "h1_hyp_debug_after_idcand02_eta_" + detname, 30, -3.0, 3.0);
+
         // iso
         FormatHist(h1_hyp_debug_after_isocand01_pt_[i], sampleName, "h1_hyp_debug_after_isocand01_pt_" + detname, 200, 0.0, 200.0);
         FormatHist(h1_hyp_debug_after_isocand02_pt_[i], sampleName, "h1_hyp_debug_after_isocand02_pt_" + detname, 200, 0.0, 200.0);
+
+        FormatHist(h1_hyp_debug_after_isocand01_eta_[i], sampleName, "h1_hyp_debug_after_isocand01_eta_" + detname, 30, -3.0, 3.0);
+        FormatHist(h1_hyp_debug_after_isocand02_eta_[i], sampleName, "h1_hyp_debug_after_isocand02_eta_" + detname, 30, -3.0, 3.0);
 
         // conv
         FormatHist(h1_hyp_debug_after_convcand01_pt_[i], sampleName, "h1_hyp_debug_after_convcand01_pt_" + detname, 200, 0.0, 200.0);
         FormatHist(h1_hyp_debug_after_convcand02_pt_[i], sampleName, "h1_hyp_debug_after_convcand02_pt_" + detname, 200, 0.0, 200.0);
 
+        FormatHist(h1_hyp_debug_after_convcand01_eta_[i], sampleName, "h1_hyp_debug_after_convcand01_eta_" + detname, 30, -3.0, 3.0);
+        FormatHist(h1_hyp_debug_after_convcand02_eta_[i], sampleName, "h1_hyp_debug_after_convcand02_eta_" + detname, 30, -3.0, 3.0);
+
         // iso and id
         FormatHist(h1_hyp_debug_after_idisocand01_pt_[i], sampleName, "h1_hyp_debug_after_idisocand01_pt_" + detname, 200, 0.0, 200.0);
         FormatHist(h1_hyp_debug_after_idisocand02_pt_[i], sampleName, "h1_hyp_debug_after_idisocand02_pt_" + detname, 200, 0.0, 200.0);
+
+        FormatHist(h1_hyp_debug_after_idisocand01_eta_[i], sampleName, "h1_hyp_debug_after_idisocand01_eta_" + detname, 30, -3.0, 3.0);
+        FormatHist(h1_hyp_debug_after_idisocand02_eta_[i], sampleName, "h1_hyp_debug_after_idisocand02_eta_" + detname, 30, -3.0, 3.0);
 
         // iso and id and conv
         FormatHist(h1_hyp_debug_after_idisoconvcand01_pt_[i], sampleName, "h1_hyp_debug_after_idisoconvcand01_pt_" + detname, 200, 0.0, 200.0);
         FormatHist(h1_hyp_debug_after_idisoconvcand02_pt_[i], sampleName, "h1_hyp_debug_after_idisoconvcand02_pt_" + detname, 200, 0.0, 200.0);
 
+        FormatHist(h1_hyp_debug_after_idisoconvcand01_eta_[i], sampleName, "h1_hyp_debug_after_idisoconvcand01_eta_" + detname, 30, -3.0, 3.0);
+        FormatHist(h1_hyp_debug_after_idisoconvcand02_eta_[i], sampleName, "h1_hyp_debug_after_idisoconvcand02_eta_" + detname, 30, -3.0, 3.0);
 
         FormatHist(h1_hyp_debug_pdgid_[i], sampleName, "h1_hyp_debug_pdgid_" + detname, 1000, -500, 500);
         FormatHist(h1_hyp_debug_after_cand01_pdgid_[i], sampleName, "h1_hyp_debug_after_cand01_pdgid_" + detname, 1000, -500, 500);
@@ -321,10 +335,7 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
     if (cms2.els_p4()[index].Pt() > 10.0) general_cuts_passed |= (1<<ELEPASS_PT10);
     if (cms2.els_p4()[index].Pt() > 20.0) general_cuts_passed |= (1<<ELEPASS_PT20);
     if (cms2.els_p4()[index].Pt() > 10.0 && cms2.els_p4()[index].Pt() < 20.0) general_cuts_passed |= (1<<ELEPASS_PT10NOT20);
-    std::cout << general_cuts_passed << " & " << configured_cuts_ << " == " << (general_cuts_passed & configured_cuts_) << std::endl;
-
     if (!((general_cuts_passed & configured_cuts_) == configured_cuts_)) return;
-    std::cout << "\t passed" << std::endl;
 
 	//
 	// fill histograms
@@ -353,31 +364,43 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
     // ID
     //
 
-    if ((result_electronSelections_cand01 & (1<<ELEPASS_ID)) == (1<<ELEPASS_ID)) 
+    if ((result_electronSelections_cand01 & (1<<ELEPASS_ID)) == (1<<ELEPASS_ID)) {
         Fill(h1_hyp_debug_after_idcand01_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+        Fill(h1_hyp_debug_after_idcand01_eta_[det], hypType, cms2.els_etaSC()[index], weight);
+    }
 
-    if ((result_electronSelections_cand02 & (1<<ELEPASS_ID)) == (1<<ELEPASS_ID))
+    if ((result_electronSelections_cand02 & (1<<ELEPASS_ID)) == (1<<ELEPASS_ID)) {
         Fill(h1_hyp_debug_after_idcand02_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+        Fill(h1_hyp_debug_after_idcand02_eta_[det], hypType, cms2.els_etaSC()[index], weight);
+    }
 
     //
     // Isolation
     //
 
-    if ((result_electronSelections_cand01 & (1<<ELEPASS_ISO)) == (1<<ELEPASS_ISO))
+    if ((result_electronSelections_cand01 & (1<<ELEPASS_ISO)) == (1<<ELEPASS_ISO)) {
         Fill(h1_hyp_debug_after_isocand01_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+        Fill(h1_hyp_debug_after_isocand01_eta_[det], hypType, cms2.els_etaSC()[index], weight);
+    }
 
-    if ((result_electronSelections_cand02 & (1<<ELEPASS_ISO)) == (1<<ELEPASS_ISO))
+    if ((result_electronSelections_cand02 & (1<<ELEPASS_ISO)) == (1<<ELEPASS_ISO)) {
         Fill(h1_hyp_debug_after_isocand02_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+        Fill(h1_hyp_debug_after_isocand02_eta_[det], hypType, cms2.els_etaSC()[index], weight);
+    }
 
     //
     // Conversion
     //
 
-    if ((result_electronSelections_cand01 & (1<<ELEPASS_NOTCONV)) == (1<<ELEPASS_NOTCONV))
+    if ((result_electronSelections_cand01 & (1<<ELEPASS_NOTCONV)) == (1<<ELEPASS_NOTCONV)) {
         Fill(h1_hyp_debug_after_convcand01_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+        Fill(h1_hyp_debug_after_convcand01_eta_[det], hypType, cms2.els_etaSC()[index], weight);
+    }
 
-    if ((result_electronSelections_cand02 & (1<<ELEPASS_NOTCONV)) == (1<<ELEPASS_NOTCONV))
+    if ((result_electronSelections_cand02 & (1<<ELEPASS_NOTCONV)) == (1<<ELEPASS_NOTCONV)) {
         Fill(h1_hyp_debug_after_convcand02_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+        Fill(h1_hyp_debug_after_convcand02_eta_[det], hypType, cms2.els_etaSC()[index], weight);
+    }
 
     //
     // Conversion w.r.t. ID + Iso
@@ -387,18 +410,25 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
     elecuts_t pass_idisoconv = pass_idiso | (1<<ELEPASS_NOTCONV);
 
     // denominator for cand01
-    if ((result_electronSelections_cand01 & pass_idiso) == pass_idiso)
+    if ((result_electronSelections_cand01 & pass_idiso) == pass_idiso) {
         Fill(h1_hyp_debug_after_idisocand01_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+        Fill(h1_hyp_debug_after_idisocand01_eta_[det], hypType, cms2.els_etaSC()[index], weight);
+    }
     // denominator for cand02
-    if ((result_electronSelections_cand02 & pass_idiso) == pass_idiso)
+    if ((result_electronSelections_cand02 & pass_idiso) == pass_idiso) {
         Fill(h1_hyp_debug_after_idisocand02_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
-
+        Fill(h1_hyp_debug_after_idisocand02_eta_[det], hypType, cms2.els_etaSC()[index], weight);
+    }
     // numerator for cand01
-    if ((result_electronSelections_cand01 & pass_idisoconv) == pass_idisoconv)
+    if ((result_electronSelections_cand01 & pass_idisoconv) == pass_idisoconv) {
         Fill(h1_hyp_debug_after_idisoconvcand01_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+        Fill(h1_hyp_debug_after_idisoconvcand01_eta_[det], hypType, cms2.els_etaSC()[index], weight);
+    }
     // numerator for cand02
-    if ((result_electronSelections_cand02 & pass_idisoconv) == pass_idisoconv)
+    if ((result_electronSelections_cand02 & pass_idisoconv) == pass_idisoconv) {
         Fill(h1_hyp_debug_after_idisoconvcand02_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+        Fill(h1_hyp_debug_after_idisoconvcand02_eta_[det], hypType, cms2.els_etaSC()[index], weight);
+    }
 
     //
     // after all selections

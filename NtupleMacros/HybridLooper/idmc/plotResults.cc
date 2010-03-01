@@ -558,6 +558,11 @@ void plotResultsW(TString det, TString fileStamp)
         plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_convcand01_pt", "val01_", det, 4);
         plotValidationOverlay(h1, "h1_hyp_debug_after_idisocand01_pt", "h1_hyp_debug_after_idisoconvcand01_pt", "val01_", det, 4);
 
+        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_idcand01_eta", "val01_", det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_isocand01_eta", "val01_", det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_convcand01_eta", "val01_", det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_after_idisocand01_eta", "h1_hyp_debug_after_idisoconvcand01_eta", "val01_", det, 1);
+
 
         plotValidationOverlay(h1, "h1_hyp_debug_pdgid", "h1_hyp_debug_after_cand02_pdgid", "val01_", det, 1);
         plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_cand02_pt", "val01_", det, 4);
@@ -574,6 +579,11 @@ void plotResultsW(TString det, TString fileStamp)
         plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_isocand02_pt", "val01_", det, 4);
         plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_convcand02_pt", "val01_", det, 4);
         plotValidationOverlay(h1, "h1_hyp_debug_after_idisocand02_pt", "h1_hyp_debug_after_idisoconvcand02_pt", "val01_", det, 4);
+
+        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_idcand02_eta", "val01_", det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_isocand02_eta", "val01_", det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_convcand02_eta", "val01_", det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_after_idisocand02_eta", "h1_hyp_debug_after_idisoconvcand02_eta", "val01_", det, 1);
 
 
 
