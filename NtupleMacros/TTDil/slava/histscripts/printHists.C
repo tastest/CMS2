@@ -12,7 +12,7 @@ double bOnlyProb(double s, double b, double bE){
   unsigned int lowExp = floor(s+b);
   double pSum = 0;
   for (int i=lowExp; i>=0; --i){
-    if (b> 0. && bE/b>0.03){
+    if (b> 0. && bE/b>0.03 && s>0.1*b && bE<0.5*s){
       pSum+= poisson_smeared_prob(i,b, bE);
     } else {//use regualar Poisson here
       pSum+= TMath::Poisson(i,b);
@@ -73,10 +73,10 @@ void printNJets( bool latex=false, const char* formatS = "%6.1f", const char* si
 	std::cout << "\\multicolumn{3}{|l|}{" << suffix[sample] << " final state} \\"<<"\\  " << std::endl;
 	std::cout << "   $N_{jets}=0$       & $N_{jets}=1$      & $N_{jets} \\geq 2$ \\"<<"\\ \\hline" <<std::endl;
       }
-    } else {
-      std::cout<<"===================================================="<<std::endl;
-      std::cout<<suffix[sample]<<std::endl;
-      std::cout<<" |    sample  |        nJet = 0        |       nJet = 1         |       nJet >= 2       |"<<std::endl;
+    } else {      
+      std::cout<<"===================================================="<<std::endl<<std::endl;
+      std::cout<<"Table for "<< suffix[sample]<<std::endl;
+      std::cout<<" |   *sample* |       *nJet = 0*       |      *nJet = 1*        |      *nJet >= 2*      |"<<std::endl;
     }
     double n0all =0;
     double n0allE = 0;
