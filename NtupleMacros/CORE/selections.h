@@ -8,19 +8,6 @@
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
-enum TrackAlgorithm { undefAlgorithm=0, ctf=1, rs=2, cosmics=3, iter0=4, 
-                      iter1=5, iter2=6, iter3=7, iter4=8, iter5=9, iter6=10, iter7=11, iter8=12, iter9=13,iter10=14,
-                      outInEcalSeededConv=15, inOutEcalSeededConv=16, 
-                      nuclInter=17,
-                      standAloneMuon=18,globalMuon=19,cosmicStandAloneMuon=20,cosmicGlobalMuon=21,
-                      iter1LargeD0=22,iter2LargeD0=23,iter3LargeD0=24,iter4LargeD0=25,iter5LargeD0=26,
-                      bTagGhostTracks=27,
-                      beamhalo=28, 
-                      gsf=29,
-                      algoSize=30 };
-
-enum TrackQuality { undefQuality=-1, loose=0, tight=1, highPurity=2, confirmed=3, goodIterative=4, qualitySize=5};
-
 enum SubDetector
 {
   EBp         =     0,
@@ -50,9 +37,21 @@ enum SubDetector
   nPartitions =    24
 };
 
-bool isSubDetectorGood( int cuts );
+enum JetCollectionType {
+  CaloJetCorr_jct = 0,
+  JPT_jct = 1,
+  PF_jct = 2
+};
+enum METCollectionType {
+  CaloMET_MuJES_mct = 0,
+  PatMETCor_mct = 1,
+  TCMET_mct = 2,
+  TCMETLocal_mct = 3,
+  PFMET_mct
+};
 
-bool isTrackQuality( int index, int cuts);
+
+bool isSubDetectorGood( int cuts );
 
 bool inZmassWindow (float mass);
 bool supertightElectron (int index);
@@ -80,7 +79,7 @@ bool met1(int index, const class TVector3& corr);
 bool sumEt10(double sumEt);
 bool sumEt1(double sumEt);
 
-bool isChargeFlip(int elIndex);
+//bool isChargeFlip(int elIndex);
 //old cuts on conversions
 bool conversionElectron(int electron);
 //new conversion stuff...cut on shared fraction of hits implemented
@@ -148,7 +147,8 @@ bool metSimple (float threshold, const TVector3& corr);
 bool metBalance (int i_hyp, const TVector3& corr);
 bool metProjected (int i_hyp, const TVector3& corr);
 bool pass5Met (int i_hyp, const TVector3& corr);
-bool passMet_OF20_SF30(int hypIdx, bool useTcMet);
+bool passMet_OF20_SF30(int hypIdx, METCollectionType metType);
+bool passMet_OF20_SF30(int hypIdx, bool useTcMet){ return passMet_OF20_SF30(hypIdx, useTcMet ? TCMET_mct : PatMETCor_mct);}
 double met_pat_metCor_hyp(unsigned int hypIdx);
 
 //

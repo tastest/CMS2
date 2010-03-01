@@ -15,6 +15,9 @@
 // CMS2 includes
 #include "CMS2.h"
 #include "utilities.h"
+#include "electronSelections.h"
+#include "metSelections.h"
+#include "trackSelections.h"
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
@@ -30,9 +33,9 @@ bool isSubDetectorGood( int cuts ) {
 // Simple function that tells you whether or not a track passed 
 // a particular quality flag.
 //----------------------------------------------------------------
-bool isTrackQuality( int index, int cuts ) {
-     return ( ( cms2.trks_qualityMask().at(index) & cuts ) == cuts );
-}
+//bool isTrackQuality( int index, int cuts ) {
+//     return ( ( cms2.trks_qualityMask().at(index) & cuts ) == cuts );
+//}
 
 //----------------------------------------------------------------
 // A ridicolusly simple function, but since the Z veto is used 
@@ -1507,10 +1510,15 @@ double met_pat_metPhiCor_hyp(unsigned int hypIdx){
   return atan2(lmety,lmetx);
 }
 // do the same with tcmet now
-double evt_tcmet_hyp(unsigned int hypIdx){
-  if (cms2.hyp_type()[hypIdx] ==3) return cms2.evt_tcmet();
+double evt_tcmet_hyp(unsigned int hypIdx, bool useCorrTCMET){
   double lmetx = cms2.evt_tcmet()*cos(cms2.evt_tcmetPhi());
   double lmety = cms2.evt_tcmet()*sin(cms2.evt_tcmetPhi());
+  if (useCorrTCMET){
+    metStruct cormet = correctedTCMET();
+    lmetx = cormet.metx;
+    lmety = cormet.mety;
+  }
+  if (cms2.hyp_type()[hypIdx] ==3) return sqrt(lmetx*lmetx + lmety*lmety);
 
   unsigned int i_lt = cms2.hyp_lt_index()[hypIdx];
   unsigned int i_ll = cms2.hyp_ll_index()[hypIdx];
@@ -1518,7 +1526,7 @@ double evt_tcmet_hyp(unsigned int hypIdx){
     if(cms2.mus_tcmet_flag()[i_lt] == 0){
       lmetx+= - cms2.mus_met_deltax()[i_lt] - cms2.mus_p4()[i_lt].x();
       lmety+= - cms2.mus_met_deltay()[i_lt] - cms2.mus_p4()[i_lt].y();
-    } else if (cms2.mus_tcmet_flag()[i_lt] == 4){
+    } else if (cms2.mus_tcmet_flag()[i_lt] == 4){ //WARNING: NOT VERY CONSISTENT FOR CORRECTED TCMET
       lmetx+= - cms2.mus_tcmet_deltax()[i_lt] - cms2.mus_met_deltax()[i_lt] - cms2.mus_p4()[i_lt].x(); 
       lmety+= - cms2.mus_tcmet_deltay()[i_lt] - cms2.mus_met_deltay()[i_lt] - cms2.mus_p4()[i_lt].y(); 
     }
@@ -1534,10 +1542,15 @@ double evt_tcmet_hyp(unsigned int hypIdx){
   }
   return sqrt(lmetx*lmetx+lmety*lmety);
 }
-double evt_tcmetPhi_hyp(unsigned int hypIdx){
-  if (cms2.hyp_type()[hypIdx] ==3) return cms2.evt_tcmetPhi();
+double evt_tcmetPhi_hyp(unsigned int hypIdx,bool useCorrTCMET){
   double lmetx = cms2.evt_tcmet()*cos(cms2.evt_tcmetPhi());
   double lmety = cms2.evt_tcmet()*sin(cms2.evt_tcmetPhi());
+  if (useCorrTCMET){
+    metStruct cormet = correctedTCMET();
+    lmetx = cormet.metx;
+    lmety = cormet.mety;
+  }
+  if (cms2.hyp_type()[hypIdx] ==3) return atan2(lmety,lmetx);
 
   unsigned int i_lt = cms2.hyp_lt_index()[hypIdx];
   unsigned int i_ll = cms2.hyp_ll_index()[hypIdx];
@@ -1554,7 +1567,7 @@ double evt_tcmetPhi_hyp(unsigned int hypIdx){
     if(cms2.mus_tcmet_flag()[i_ll] == 0){ 
       lmetx+= - cms2.mus_met_deltax()[i_ll] - cms2.mus_p4()[i_ll].x(); 
       lmety+= - cms2.mus_met_deltay()[i_ll] - cms2.mus_p4()[i_ll].y(); 
-    } else if (cms2.mus_tcmet_flag()[i_ll] == 4){ 
+    } else if (cms2.mus_tcmet_flag()[i_ll] == 4){ //WARNING: NOT VERY CONSISTENT FOR CORRECTED TCMET
       lmetx+= - cms2.mus_tcmet_deltax()[i_ll] - cms2.mus_met_deltax()[i_ll] - cms2.mus_p4()[i_ll].x();  
       lmety+= - cms2.mus_tcmet_deltay()[i_ll] - cms2.mus_met_deltay()[i_ll] - cms2.mus_p4()[i_ll].y();  
     } 
@@ -1574,24 +1587,19 @@ bool passMetAsIs_OF20_SF30(float met, int hyp_type){
   }
   return true;
 }  
-bool passMet_OF20_SF30(int hypIdx, bool useTcMet) {
-  float mymet;
-  if (useTcMet) {
-    mymet = evt_tcmet_hyp(hypIdx);
-  } else {
-    mymet = met_pat_metCor_hyp(hypIdx);
-  }
-  return passMetAsIs_OF20_SF30(mymet, cms2.hyp_type()[hypIdx]);
-}
-bool passMet_OF20_SF30(int hypIdx, bool useTcMet, bool usePfMet) {
-  if (useTcMet && usePfMet){
-    std::cout<<"ERROR: both useTcMet and usePfMet are set. Choose one"<<std::endl;
-    exit(6);
-  }
-  if (usePfMet){
-    return passMetAsIs_OF20_SF30(cms2.evt_pfmet(),cms2.hyp_type()[hypIdx]);
-  } else {
-    return passMet_OF20_SF30(hypIdx,useTcMet);
+
+bool passMet_OF20_SF30(int hypIdx, METCollectionType metType) {
+  int hyp_type = cms2.hyp_type()[hypIdx];
+  switch(metType){
+  case PatMETCor_mct: return passMetAsIs_OF20_SF30(met_pat_metCor_hyp(hypIdx), hyp_type);
+  case TCMET_mct: 
+  case TCMETLocal_mct:  return passMetAsIs_OF20_SF30(evt_tcmet_hyp(hypIdx, metType==TCMET_mct?false:true), hyp_type);
+  case PFMET_mct: return passMetAsIs_OF20_SF30(cms2.evt_pfmet(),hyp_type);
+  default:
+    {
+      std::cout<<"ERROR passMet_OF20_SF30 with this MET type ("<<metType<<") not implemented"<<std::endl;
+      exit(66);
+    }
   }
   return false;
 }
@@ -1599,16 +1607,8 @@ bool passMet_OF20_SF30(int hypIdx, bool useTcMet, bool usePfMet) {
 //  ***** and substituted by the preceeding one            *********************
 // event-level pat-met: emu met >20, mm,em met>30
 bool passPatMet_OF20_SF30(float metx, float mety, int hypIdx){
-  
   float mymet = sqrt(metx*metx + mety*mety);
-  if  (cms2.hyp_type().at(hypIdx) == 0 || cms2.hyp_type().at(hypIdx) == 3) {
-    if (mymet < 30) return false;
-  }
-  
-  if (cms2.hyp_type().at(hypIdx) == 1 || cms2.hyp_type().at(hypIdx) == 2) {
-    if (mymet < 20) return false;
-  }
-  return true;
+  return passMetAsIs_OF20_SF30(mymet, cms2.hyp_type()[hypIdx]);
 }
 // event-level pat-met: emu met >20, mm,em met>30
 bool passPatMet_OF20_SF30(int hypIdx){
@@ -1616,13 +1616,51 @@ bool passPatMet_OF20_SF30(int hypIdx){
 			      met_pat_metCor_hyp(hypIdx)*sin(met_pat_metPhiCor_hyp(hypIdx)),
 			      hypIdx);
 }
+// met-special cut at 10 in 0 and 1 jet bins
+bool passProjMet10TT(float metx, float mety, int hypIdx, int nJets){
+  float metphi = atan2(mety,metx);
+  float met = sqrt(metx*metx + mety*mety);
+  float projMet = MetSpecial(met, metphi, hypIdx);
+  return (projMet > 10 || cms2.hyp_p4()[hypIdx].mass() > 80 || nJets >= 2);
+}
+// met-special cut at 10 in 0 and 1 jet bins
+bool passProjMet10TT(int hypIdx, METCollectionType metType, int nJets){
+  float metphi = 0;
+  float met = 0;
+  switch(metType){
+  case PatMETCor_mct:{ 
+    met = met_pat_metCor_hyp(hypIdx);
+    metphi = met_pat_metPhiCor_hyp(hypIdx);
+    break;
+  }
+  case TCMET_mct:
+  case TCMETLocal_mct:{
+    met = evt_tcmet_hyp(hypIdx, metType==TCMET_mct?false:true);
+    metphi = evt_tcmetPhi_hyp(hypIdx, metType==TCMET_mct?false:true);
+    break;
+  }
+  case PFMET_mct:{
+    met = cms2.evt_pfmet();
+    metphi = cms2.evt_pfmetPhi();
+    break;
+  }
+  default:
+    {
+      std::cout<<"ERROR passProjMet10TT with this MET type ("<<metType<<")  not implemented"<<std::endl;
+      exit(66);
+    }
+  }
+  
+  return passProjMet10TT(met*cos(metphi), met*sin(metphi),hypIdx,nJets);
+}
+
 //**************************************************************************
 // met cut for ttbar dilepton analysis...
 // includes a boolean to switch to tcmet
-bool passMet_OF30_SF50(int hypIdx, bool useTcMet) {
+bool passMet_OF30_SF50(int hypIdx, bool useTcMet,bool useCorrTCMET) {
   float mymet;
-  if (useTcMet) {
-    mymet = evt_tcmet_hyp(hypIdx);
+  if (useTcMet||useCorrTCMET) {
+    mymet = evt_tcmet_hyp(hypIdx,useCorrTCMET);
   } else {
     mymet = met_pat_metCor_hyp(hypIdx);
   }
@@ -2551,6 +2589,26 @@ int genpCountPDGId(int id0, int id1, int id2){
   return count; 
 } 
 
+int getNumberStatus3Leptons() {
+ 
+  int count = 0;
+  for(unsigned int i = 0; i < cms2.genps_id().size(); i++) {
+    if(abs(cms2.genps_id()[i]) == 11 || abs(cms2.genps_id()[i]) == 13)
+      count++;
+    if(abs(cms2.genps_id()[i]) == 15) {
+      for(unsigned int j = 0; j < cms2.genps_lepdaughter_id()[i].size(); j++) {
+        int daughter = abs(cms2.genps_lepdaughter_id()[i][j]);
+        if( daughter == 11 || daughter == 13)
+          count++;
+      }//daughter loop
+    }//taus
+  }//geps loop
+
+  return count;
+ 
+}
+
+
 int genpCountPDGId_Pt20h24(int id0, int id1, int id2){ 
   int count = 0; 
   int size = cms2.genps_id().size(); 
@@ -3119,6 +3177,19 @@ bool isGoodDilHypJPTJet(unsigned int jetIdx, unsigned int hypIdx, double ptCut, 
 
 }
 
+// false if below ptcut, aboveabsEtaCut, below dRCut wrt hypothesis
+bool isGoodDilHypPFJet(unsigned int jetIdx, unsigned int hypIdx, double ptCut, double absEtaCut, double dRCut){
+  if (cms2.pfjets_p4()[jetIdx].pt()< ptCut || fabs(cms2.pfjets_p4()[jetIdx].eta())> absEtaCut) return false;
+  double dR_ll = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[hypIdx],cms2.pfjets_p4()[jetIdx]);
+  double dR_lt = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[hypIdx],cms2.pfjets_p4()[jetIdx]);
+  
+  if (dR_ll < dRCut) return false;
+  if (dR_lt < dRCut) return false;
+
+  return true;
+
+}
+
 
 int findPrimTrilepZ(int i_hyp, double &mass) {
   // find primary Z candidate in trilepton hyp
@@ -3270,12 +3341,14 @@ bool vetoAddZ(int i_hyp, int unusedLepton, double &mass) {
 
 }
 
+/*
 bool isChargeFlip(int elIndex){
   //true if electron is likely to be a charge flip
   if ((cms2.els_trkidx().at(elIndex) >= 0) && (cms2.els_charge().at(elIndex) != cms2.trks_charge().at(cms2.els_trkidx().at(elIndex)))) return true;
 
   return false;
 }
+*/
 
 // heavy flavor Classification
 
