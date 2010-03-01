@@ -151,6 +151,10 @@ void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
         // debug variables
         // before and after selections applied
 
+        FormatHist(h1_hyp_debug_pdgid_[i], sampleName, "h1_hyp_debug_pdgid_" + detname, 1000, -500, 500);
+        FormatHist(h1_hyp_debug_after_cand01_pdgid_[i], sampleName, "h1_hyp_debug_after_cand01_pdgid_" + detname, 1000, -500, 500);
+        FormatHist(h1_hyp_debug_after_cand02_pdgid_[i], sampleName, "h1_hyp_debug_after_cand02_pdgid_" + detname, 1000, -500, 500);
+
         FormatHist(h1_hyp_debug_pt_[i], sampleName, "h1_hyp_debug_pt_" + detname, 200, 0.0, 200.0);
         FormatHist(h1_hyp_debug_after_cand01_pt_[i], sampleName, "h1_hyp_debug_after_cand01_pt_" + detname, 200, 0.0, 200.0);
         FormatHist(h1_hyp_debug_after_cand02_pt_[i], sampleName, "h1_hyp_debug_after_cand02_pt_" + detname, 200, 0.0, 200.0);
@@ -285,10 +289,9 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
     bool pass_electronId_cand02 = electronId_cand02(index);
     elecuts_t result_electronId_cand02 = electronId_debug_;
 
-
+    // find detector 
     unsigned int det = 0;
     if (fabs(cms2.els_etaSC()[index]) > 1.479) det = 1;
-
 
 	//
 	// fill histograms
@@ -301,7 +304,8 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
 
     float E2x5MaxOver5x5 = cms2.els_e2x5Max()[index] / cms2.els_e5x5()[index];
     float iso_relsusy = electronIsolation_relsusy_cand1(index, true);
-       
+
+    Fill(h1_hyp_debug_pdgid_[det], hypType, cms2.els_mc_id()[index], weight);       
     Fill(h1_hyp_debug_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
     Fill(h1_hyp_debug_eta_[det], hypType, cms2.els_etaSC()[index], weight);
     Fill(h1_hyp_debug_sigmaIEtaIEta_[det], hypType, cms2.els_sigmaIEtaIEta()[index], weight);
@@ -316,6 +320,7 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
     // after selections
     //
     if (pass_electronSelection_cand01) {
+       Fill(h1_hyp_debug_after_cand01_pdgid_[det], hypType, cms2.els_mc_id()[index], weight);            
        Fill(h1_hyp_debug_after_cand01_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
        Fill(h1_hyp_debug_after_cand01_eta_[det], hypType, cms2.els_etaSC()[index], weight);
        Fill(h1_hyp_debug_after_cand01_sigmaIEtaIEta_[det], hypType, cms2.els_sigmaIEtaIEta()[index], weight);
@@ -328,6 +333,7 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
     }
 
     if (pass_electronSelection_cand02) {
+       Fill(h1_hyp_debug_after_cand02_pdgid_[det], hypType, cms2.els_mc_id()[index], weight); 
        Fill(h1_hyp_debug_after_cand02_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
        Fill(h1_hyp_debug_after_cand02_eta_[det], hypType, cms2.els_etaSC()[index], weight);
        Fill(h1_hyp_debug_after_cand02_sigmaIEtaIEta_[det], hypType, cms2.els_sigmaIEtaIEta()[index], weight);

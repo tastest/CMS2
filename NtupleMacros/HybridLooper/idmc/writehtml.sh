@@ -36,6 +36,15 @@ for FILE_S in `ls results/*.png | grep $TAG | grep -v _b_`; do
 		<img src=$FILE_S HEIGHT=$HEIGHT WIDTH=$WIDTH>
 	        <img src=$FILE_B HEIGHT=$HEIGHT WIDTH=$WIDTH><br>
 		"
+		if [  $VAR == "pdgid" ]; then
+                echo "
+                	<h2>$VAR ($DET): Signal (left), Background (right) <br>
+                        	- after all selections (points)</h2>
+                	<img src="results/val01_s_h1_hyp_debug_after_cand01_pdgid_$DET.png" HEIGHT=$HEIGHT WIDTH=$WIDTH>
+               	 	<img src="results/val01_b_h1_hyp_debug_after_cand01_pdgid_$DET.png" HEIGHT=$HEIGHT WIDTH=$WIDTH><br>
+                	"
+		fi
+
 	fi
 	if [ $TYPE == "eff" ]; then
 	        if [ $VAR == "pt" ] || [ $VAR == "eta" ]; then

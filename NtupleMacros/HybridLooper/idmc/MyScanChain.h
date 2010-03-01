@@ -39,6 +39,11 @@ class MyScanChain {
 		//
 		// ele ID plots
 
+        // pdg id
+        TH1F *h1_hyp_debug_pdgid_[2][4];
+        TH1F *h1_hyp_debug_after_cand01_pdgid_[2][4];
+        TH1F *h1_hyp_debug_after_cand02_pdgid_[2][4];
+
         // pt
         TH1F *h1_hyp_debug_pt_[2][4];
         TH1F *h1_hyp_debug_after_cand01_pt_[2][4];
