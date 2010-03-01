@@ -9,7 +9,8 @@
 enum SelectionType { 
   FakableObject = 0, 
   Nominal = 1, 
-  Tight = 2 
+  Tight = 2,
+  NominalTTbar = 3
 }; 
 
 //

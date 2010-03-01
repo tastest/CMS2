@@ -24,7 +24,20 @@ bool muonId(unsigned int index, SelectionType type){
     if (muonIsoValue(index) > 0.1)                      return false; // Isolation cut
     return true;
     break;
-
+  case NominalTTbar:
+    //copy-paste is BAD
+    if ( cms2.mus_p4()[index].pt() < 10.) {
+      std::cout << "muonID ERROR: requested muon is too low pt,  Abort." << std::endl;
+      return false;
+    }
+    if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.5)  return false; // eta cut
+    if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
+    if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
+    if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
+    if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
+    if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.02) return false; // d0 from beamspot
+    if (muonIsoValue(index) > 0.15)                     return false; // Isolation cut
+    return true;
   default:
     std::cout << "muonID ERROR: requested muon type is not defined. Abort." << std::endl;
     return false;
