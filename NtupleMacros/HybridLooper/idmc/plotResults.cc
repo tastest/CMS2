@@ -526,7 +526,7 @@ void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString sav
 
 }
 
-void plotResultsW(TString det, TString fileStamp)
+void plotResultsW(TString det, TString fileStamp, TString version)
 {
 
         gROOT->ProcessLine(".L tdrStyle.C");
@@ -542,48 +542,48 @@ void plotResultsW(TString det, TString fileStamp)
 
         // validation related
         //
-        plotValidationOverlay(h1, "h1_hyp_debug_pdgid", "h1_hyp_debug_after_cand01_pdgid", "val01_", det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_cand01_pt", "val01_", det, 4);
-        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_cand01_eta", "val01_", det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_d0", "h1_hyp_debug_after_cand01_d0", "val01_", det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_hoe", "h1_hyp_debug_after_cand01_hoe", "val01_", det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_dPhiIn", "h1_hyp_debug_after_cand01_dPhiIn", "val01_", det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_dEtaIn", "h1_hyp_debug_after_cand01_dEtaIn", "val01_", det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_reliso", "h1_hyp_debug_after_cand01_reliso", "val01_", det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_sigmaIEtaIEta", "h1_hyp_debug_after_cand01_sigmaIEtaIEta", "val01_", det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_E2x5MaxOver5x5", "h1_hyp_debug_after_cand01_E2x5MaxOver5x5", "val01_", det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_pdgid", "h1_hyp_debug_after_cand01_pdgid", version, det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_cand01_pt", version, det, 4);
+        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_cand01_eta", version, det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_d0", "h1_hyp_debug_after_cand01_d0", version, det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_hoe", "h1_hyp_debug_after_cand01_hoe", version, det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_dPhiIn", "h1_hyp_debug_after_cand01_dPhiIn", version, det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_dEtaIn", "h1_hyp_debug_after_cand01_dEtaIn", version, det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_reliso", "h1_hyp_debug_after_cand01_reliso", version, det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_sigmaIEtaIEta", "h1_hyp_debug_after_cand01_sigmaIEtaIEta", version, det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_E2x5MaxOver5x5", "h1_hyp_debug_after_cand01_E2x5MaxOver5x5", version, det, 1);
 
-        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_idcand01_pt", "val01_", det, 4);
-        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_isocand01_pt", "val01_", det, 4);
-        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_convcand01_pt", "val01_", det, 4);
-        plotValidationOverlay(h1, "h1_hyp_debug_after_idisocand01_pt", "h1_hyp_debug_after_idisoconvcand01_pt", "val01_", det, 4);
+        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_idcand01_pt", version, det, 4);
+        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_isocand01_pt", version, det, 4);
+        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_convcand01_pt", version, det, 4);
+        plotValidationOverlay(h1, "h1_hyp_debug_after_idisocand01_pt", "h1_hyp_debug_after_idisoconvcand01_pt", version, det, 4);
 
-        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_idcand01_eta", "val01_", det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_isocand01_eta", "val01_", det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_convcand01_eta", "val01_", det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_after_idisocand01_eta", "h1_hyp_debug_after_idisoconvcand01_eta", "val01_", det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_idcand01_eta", version, det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_isocand01_eta", version, det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_convcand01_eta", version, det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_after_idisocand01_eta", "h1_hyp_debug_after_idisoconvcand01_eta", version, det, 1);
 
 
-        plotValidationOverlay(h1, "h1_hyp_debug_pdgid", "h1_hyp_debug_after_cand02_pdgid", "val01_", det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_cand02_pt", "val01_", det, 4);
-        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_cand02_eta", "val01_", det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_d0", "h1_hyp_debug_after_cand02_d0", "val01_", det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_hoe", "h1_hyp_debug_after_cand02_hoe", "val01_", det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_dPhiIn", "h1_hyp_debug_after_cand02_dPhiIn", "val01_", det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_dEtaIn", "h1_hyp_debug_after_cand02_dEtaIn", "val01_", det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_reliso", "h1_hyp_debug_after_cand02_reliso", "val01_", det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_sigmaIEtaIEta", "h1_hyp_debug_after_cand02_sigmaIEtaIEta", "val01_", det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_E2x5MaxOver5x5", "h1_hyp_debug_after_cand02_E2x5MaxOver5x5", "val01_", det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_pdgid", "h1_hyp_debug_after_cand02_pdgid", version, det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_cand02_pt", version, det, 4);
+        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_cand02_eta", version, det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_d0", "h1_hyp_debug_after_cand02_d0", version, det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_hoe", "h1_hyp_debug_after_cand02_hoe", version, det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_dPhiIn", "h1_hyp_debug_after_cand02_dPhiIn", version, det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_dEtaIn", "h1_hyp_debug_after_cand02_dEtaIn", version, det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_reliso", "h1_hyp_debug_after_cand02_reliso", version, det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_sigmaIEtaIEta", "h1_hyp_debug_after_cand02_sigmaIEtaIEta", version, det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_E2x5MaxOver5x5", "h1_hyp_debug_after_cand02_E2x5MaxOver5x5", version, det, 1);
 
-        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_idcand02_pt", "val01_", det, 4);
-        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_isocand02_pt", "val01_", det, 4);
-        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_convcand02_pt", "val01_", det, 4);
-        plotValidationOverlay(h1, "h1_hyp_debug_after_idisocand02_pt", "h1_hyp_debug_after_idisoconvcand02_pt", "val01_", det, 4);
+        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_idcand02_pt", version, det, 4);
+        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_isocand02_pt", version, det, 4);
+        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_convcand02_pt", version, det, 4);
+        plotValidationOverlay(h1, "h1_hyp_debug_after_idisocand02_pt", "h1_hyp_debug_after_idisoconvcand02_pt", version, det, 4);
 
-        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_idcand02_eta", "val01_", det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_isocand02_eta", "val01_", det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_convcand02_eta", "val01_", det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_after_idisocand02_eta", "h1_hyp_debug_after_idisoconvcand02_eta", "val01_", det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_idcand02_eta", version, det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_isocand02_eta", version, det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_convcand02_eta", version, det, 1);
+        plotValidationOverlay(h1, "h1_hyp_debug_after_idisocand02_eta", "h1_hyp_debug_after_idisoconvcand02_eta", version, det, 1);
 
 
 

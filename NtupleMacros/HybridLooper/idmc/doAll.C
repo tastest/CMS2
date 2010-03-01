@@ -30,7 +30,8 @@ void doAll() {
 	//
 
 
-    elecuts_t configured_cuts = (1<<ELEPASS_PT10NOT20);
+    TString fileNameString = "pt20up";
+    elecuts_t configured_cuts = (1<<ELEPASS_PT20);
 	MyScanChain *looper = new MyScanChain(configured_cuts);
 
 	//
@@ -108,7 +109,7 @@ void doAll() {
 	// write histograms
 	// 
 
-	const char* outFile = "histos_eleid.root";
+	const char* outFile = "histos_eleid_ + " + fileNameString + ".root";
 	hist::saveHist(outFile); 
 	hist::deleteHistos();
 

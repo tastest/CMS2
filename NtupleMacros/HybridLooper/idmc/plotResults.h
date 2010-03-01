@@ -19,7 +19,7 @@ TArrow *getArrow(THStack *st, TString det, float cutValEB, float cutValEE);
 
 void plot2DSB(HistogramUtilities &h1, TString name, TString xTitle, TString yTitle, TString saveName, TString det);
 
-void plotResultsW(TString det, TString fileStamp);
+void plotResultsW(TString det, TString fileStamp, TString version);
 
 void setError(TH1F *h1_numer, TH1F *h1_denom, TH1F *h1_eff);
 
