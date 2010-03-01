@@ -395,19 +395,19 @@ void doAllCombined(unsigned int bitmask, bool runTTbarOnly = false){
 
   //cut <-> bit mask
   //                      -> 2**0 (1)
-  //                      -> 2**1 (2) (default is both legs are isolated. Using relative isolation, TRK+CALO)
-  //                      -> 2**2 (4)
-  //                      -> 2**3 (8)
-  //                      -> 2**4 (16)
-  //                      -> 2**5 (32)
-  //                      -> 2**6 (64)
-  //                      -> 2**7 (128)
+  //                      -> 2**1 (2)
+  //dil2010No2020         -> 2**2 (4)
+  //projMET10             -> 2**3 (8)
+  //usePFJ                -> 2**4 (16)
+  //dil2020               -> 2**5 (32)
+  //tas10IDIsoTTCut       -> 2**6 (64)
+  //tas10IDIsoTTCateg     -> 2**7 (128)
   //tas10IDIso            -> 2**8 (256)
   //usePfMet              -> 2**9 (512)
   //looseDileptonSelection, TTdil note 2008
   //                      -> 2**10 (1024)
   //fullMultipleHypsOnly  -> 2**11 (2048) !!!!! Not implemented, so does nothing right now !!!!!!!
-  //applyZWindow cut      -> 2**12 (4096)
+  //useCorrTCMET          -> 2**12 (4096)
   //Opp. Sign Selection   -> 2**13 (8192)
   //fillMaxWeightDilOnly  -> 2**14 (16384
   //leptonIsolationDilSelectionTTDil08 -> 2**15 (uses trk and calo isolation seperately, reltrkIso > 0.9, 
@@ -515,11 +515,14 @@ void doAllCombined(unsigned int bitmask, bool runTTbarOnly = false){
   //    pickSkimIfExists(chWjets, "/merged*.root", "", 1., true, false);
 
   std::vector<ProcDSChain> chDYtautau;
-  pickSkimIfExists(chDYtautau, "/data/tmp/slava77/cms2/Ztautau_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimSimple2020tautau", 1., true, false);
+  pickSkimIfExists(chDYtautau, "/data/tmp/cms2/Ztautau_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/skimDilepton-20-10/skimZtautau.root", "", 1., true, false);
+  //  pickSkimIfExists(chDYtautau, "/data/tmp/slava77/cms2/Ztautau_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimSimple2020tautau", 1., true, false);
   
   std::vector<ProcDSChain> chDYeemm;
-  pickSkimIfExists(chDYeemm, "/data/tmp/slava77/cms2/Zmumu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, false);
-  pickSkimIfExists(chDYeemm, "/data/tmp/slava77/cms2/Zee_Summer09-MC_31X_V3_7TeV_TrackingParticles-v1/V03-00-35/merged*.root", "", 1., true, false);
+  pickSkimIfExists(chDYeemm, "/data/tmp/cms2/Zmumu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/skimDilepton-20-10/skimZmumu.root", "", 1., true, false);
+  pickSkimIfExists(chDYeemm, "/data/tmp/cms2/Zee_Summer09-MC_31X_V3_7TeV_TrackingParticles-v1/V03-00-35/skimDilepton-20-10/skimZee.root", "", 1., true, false);
+  //  pickSkimIfExists(chDYeemm, "/data/tmp/slava77/cms2/Zmumu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, false);
+  //  pickSkimIfExists(chDYeemm, "/data/tmp/slava77/cms2/Zee_Summer09-MC_31X_V3_7TeV_TrackingParticles-v1/V03-00-35/merged*.root", "", 1., true, false);
   
   //ppMuX
   std::vector<ProcDSChain> chQCD;
