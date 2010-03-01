@@ -1,4 +1,5 @@
 
+
 #ifndef ELECTRONSELECTIONS_H
 #define ELECTRONSELECTIONS_H
 
@@ -32,6 +33,8 @@ enum EgammaElectronType {
 //
 bool electronSelection_cand01(const unsigned int index);
 bool electronSelection_cand02(const unsigned int index);
+bool electronSelectionTTbar_egLoose(const unsigned int index);
+bool electronSelectionTTbar_tasCand01(const unsigned int index);
 
 //
 // candidate electron id function
@@ -42,6 +45,7 @@ bool electronId_cand02(const unsigned int index);
 
 bool electronId_extra(const unsigned int index);
 bool electronImpact_cand01(const unsigned int index);
+bool electronImpactTTbar(const unsigned int index);
 
 //
 // remove electrons that are overlapping with a muon
@@ -76,6 +80,9 @@ bool isFromConversionPartnerTrack(const unsigned int index);
 
 //electron charge using the majority logic of the egamma group
 int getChargeUsingMajorityLogic(int elIdx, float minFracSharedHits = 0.45);
+
+//charge flip rejection
+bool isChargeFlip(int elIndex);
 
 #endif
 
