@@ -1,3 +1,13 @@
+// 
+// It is assumed that fake inputs are calculated as number of events
+// when one of the lepton fails nominal selection, but satisfy the fakable
+// and the othe lepton satisfies the nominal selection
+//
+// The fake rate ratio is assumed to be a straight ratio of number of
+// leptons that passed the nominal selection devided by number of those
+// that passed the fakable object requirements.
+// 
+
 #include "TFile.h"
 #include "TH1F.h"
 #include "TH2F.h"
@@ -7,13 +17,72 @@
 #include <string>
 #include "wwtypes.cc"
 
+bool CheckBinLimits(const TArrayD* h1Array, const TArrayD* h2Array)
+{
+  Int_t fN = h1Array->fN;
+  if ( fN != 0 ) {
+    if ( h2Array->fN != fN ) {
+      printf("DifferentBinLimits\n");
+      return false;
+    }
+    else {
+      for ( int i = 0; i < fN; ++i ) {
+	if ( fabs(h1Array->GetAt(i)-h2Array->GetAt(i)) > 1E-3 ) {
+	  printf("DifferentBinLimits\n");
+	  return false;
+	}
+      }
+    }
+  }
 
+  return true;
+}
 
+bool CheckConsistency(const TH1* h1, const TH1* h2)
+{
+  // Check histogram compatibility   Int_t nbinsx = h1->GetNbinsX();
+  Int_t nbinsx = h1->GetNbinsX();
+  Int_t nbinsy = h1->GetNbinsY();
+  Int_t nbinsz = h1->GetNbinsZ();
 
-void getIntegral(const TH2F* h, double& integral, double& error, const TH2F* fakeRate2){
+  // Check whether the histograms have the same number of bins.
+  if (nbinsx != h2->GetNbinsX() || nbinsy != h2->GetNbinsY() || nbinsz != h2->GetNbinsZ()) {
+    printf("DifferentNumberOfBins\n");
+    return false;
+  }
+  // Check that the axis limits of the histograms are the same
+  if (h1->fXaxis.GetXmin() != h2->fXaxis.GetXmin() ||
+      h1->fXaxis.GetXmax() != h2->fXaxis.GetXmax() ||
+      h1->fYaxis.GetXmin() != h2->fYaxis.GetXmin() ||
+      h1->fYaxis.GetXmax() != h2->fYaxis.GetXmax() ||
+      h1->fZaxis.GetXmin() != h2->fZaxis.GetXmin() ||
+      h1->fZaxis.GetXmax() != h2->fZaxis.GetXmax()) {
+    printf("DifferentAxisLimits\n");
+    return false;
+  }
+
+  bool ret = true;
+
+  ret &= CheckBinLimits(h1->GetXaxis()->GetXbins(), h2->GetXaxis()->GetXbins());
+  ret &= CheckBinLimits(h1->GetYaxis()->GetXbins(), h2->GetYaxis()->GetXbins());
+  ret &= CheckBinLimits(h1->GetZaxis()->GetXbins(), h2->GetZaxis()->GetXbins());
+
+  return ret;
+}
+
+//___________________________________________________________________________
+
+void getIntegral(const TH2F* h, double& integral, double& error, const TH2F* fakeRate){
   integral = 0;
   error = 0;
-  if ( fakeRate2 == 0 ){
+
+  // first check if histogram have the same binning
+  if ( fakeRate && ! CheckConsistency(h,fakeRate) ){
+    printf("Error: histograms are not consistent. Abort");
+    return;
+  }
+
+  if ( fakeRate == 0 ){
     for ( Int_t x=0; x<h->GetNbinsX(); ++x )
       for ( Int_t y=0; y<h->GetNbinsY(); ++y ){
 	integral += h->GetBinContent(x+1,y+1);
@@ -22,9 +91,12 @@ void getIntegral(const TH2F* h, double& integral, double& error, const TH2F* fak
   } else {
     for ( Int_t x=0; x<h->GetNbinsX(); ++x )
       for ( Int_t y=0; y<h->GetNbinsY(); ++y ){
-	integral += h->GetBinContent(x+1,y+1)*fakeRate2->GetBinContent(x+1,y+1);
-	error += h->GetBinError(x+1,y+1)*h->GetBinError(x+1,y+1)*fakeRate2->GetBinContent(x+1,y+1)*fakeRate2->GetBinContent(x+1,y+1)+
-	  h->GetBinContent(x+1,y+1)*h->GetBinContent(x+1,y+1)*fakeRate2->GetBinError(x+1,y+1)*fakeRate2->GetBinError(x+1,y+1);
+	double bin    = h->GetBinContent(x+1,y+1);
+	double binerr = h->GetBinError(x+1,y+1);
+	double fr     = fakeRate->GetBinContent(x+1,y+1);
+	double frerr  = fakeRate->GetBinError(x+1,y+1);
+	integral += bin*fr/(1-fr);
+	error += pow(binerr*fr/(1-fr),2) + pow(bin*frerr/(1-fr)/(1-fr), 2);
       }
   }
   error = sqrt(error);
@@ -32,7 +104,7 @@ void getIntegral(const TH2F* h, double& integral, double& error, const TH2F* fak
 
 void printLine( const char*name,
 		TH2F* DYee, TH2F* DYmm, TH2F* DYtt, TH2F* tt, TH2F* wjets, TH2F* wz, TH2F* zz, TH2F* ww, TH2F* tw,
-		TH2F* fakeRate2)
+		TH2F* fakeRate)
 {
   string pm = "+/-";
   // string pm = "&plusmn;";
@@ -41,63 +113,63 @@ void printLine( const char*name,
   double integral(0);
   double error(0);
   if (DYee) {
-    getIntegral(DYee, integral, error, fakeRate2);
+    getIntegral(DYee, integral, error, fakeRate);
     cout << Form(" %5.2f%s%4.2f ", integral, pm.c_str(), error);
   } 
   else
     cout << "    skipped   ";
   cout << "|";
   if (DYmm) {
-    getIntegral(DYmm, integral, error, fakeRate2);
+    getIntegral(DYmm, integral, error, fakeRate);
     cout << Form(" %5.2f%s%4.2f ", integral, pm.c_str(), error);
   }
   else
     cout << "    skipped   ";
   cout << "|";
   if (DYtt) {
-    getIntegral(DYtt, integral, error, fakeRate2);
+    getIntegral(DYtt, integral, error, fakeRate);
     cout << Form(" %5.2f%s%4.2f ", integral, pm.c_str(), error);
   }
   else
     cout << "    skipped   ";
   cout << "|";
   if (tt) {
-    getIntegral(tt, integral, error, fakeRate2);
+    getIntegral(tt, integral, error, fakeRate);
     cout << Form(" %5.2f%s%4.2f ", integral, pm.c_str(), error);
   }
   else
     cout << "    skipped   ";
   cout << "|";
   if (wjets) {
-    getIntegral(wjets, integral, error, fakeRate2);
+    getIntegral(wjets, integral, error, fakeRate);
     cout << Form(" %5.2f%s%4.2f ", integral, pm.c_str(), error);
   }
   else
     cout << "    skipped   ";
   cout << "|";
   if (wz) {
-    getIntegral(wz, integral, error, fakeRate2);
+    getIntegral(wz, integral, error, fakeRate);
     cout << Form(" %5.2f%s%4.2f ", integral, pm.c_str(), error);
   }
   else
     cout << "    skipped   ";
   cout << "|";
   if (zz) {
-    getIntegral(zz, integral, error, fakeRate2);
+    getIntegral(zz, integral, error, fakeRate);
     cout << Form(" %5.2f%s%4.2f ", integral, pm.c_str(), error);
   }
   else
     cout << "    skipped   ";
   cout << "|";
   if (ww) {
-    getIntegral(ww, integral, error, fakeRate2);
+    getIntegral(ww, integral, error, fakeRate);
     cout << Form(" %5.2f%s%4.2f ", integral, pm.c_str(), error);
   }
   else
     cout << "    skipped   ";
   cout << "|";
   if (tw) {
-    getIntegral(tw, integral, error, fakeRate2);
+    getIntegral(tw, integral, error, fakeRate);
     cout << Form(" %5.2f%s%4.2f ", integral, pm.c_str(), error);
   }
   else
@@ -106,7 +178,9 @@ void printLine( const char*name,
   
 }
 
-void estimateJetBkg_fakes(const char* file = "processed_data.root")
+void estimateJetBkg_fakes(const char* file = "processed_data.root", 
+			  const char* fakerate_file = 0,
+			  const char* fakerate_name = 0)
 {
   using namespace std;
   
@@ -114,22 +188,14 @@ void estimateJetBkg_fakes(const char* file = "processed_data.root")
   // fakerate version 
   // "WW" or "fakerate"
   //
-  string jetbkgversion = "WW";
-  if (gSystem->Getenv("JETBKGVERSION")){
-    jetbkgversion = gSystem->Getenv("JETBKGVERSION");
-    cout << "JetBkgVersion: " << jetbkgversion << endl;
-  }
+  bool externalFakeRate = (fakerate_file != 0) && (fakerate_name != 0);
 
   //hist file:
   TFile *ftt = TFile::Open(file);
   assert(ftt);
   
-  TFile *el_fakeRateFile = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/el_FR_3X.root", "read");
-  assert(el_fakeRateFile);
-    
-  //do the emu row:
   string prefix = "";
-  if(jetbkgversion == "fakerate") prefix = "_fakerate";
+  if(externalFakeRate) prefix = "_fakerate";
   TH2F *DYee_ee  = dynamic_cast<TH2F*>(ftt->Get(TString("dyee_helFRfakable"+prefix+"_ee")));
   TH2F *DYee_em  = dynamic_cast<TH2F*>(ftt->Get(TString("dyee_helFRfakable"+prefix+"_em")));
   TH2F *DYmm_ee  = dynamic_cast<TH2F*>(ftt->Get(TString("dymm_helFRfakable"+prefix+"_ee")));
@@ -149,7 +215,11 @@ void estimateJetBkg_fakes(const char* file = "processed_data.root")
   TH2F *tw_ee    = dynamic_cast<TH2F*>(ftt->Get(TString("tw_helFRfakable"+prefix+"_ee")));
   TH2F *tw_em    = dynamic_cast<TH2F*>(ftt->Get(TString("tw_helFRfakable"+prefix+"_em")));
   
-  cout <<"Electron fake count ("<<jetbkgversion<<") :" <<endl;
+  if( externalFakeRate )
+    cout <<"Electron fake count for external fakerates:" <<endl;
+  else
+    cout <<"Electron fake count for ad-hoc fakerates:" <<endl;
+
   cout << "\n" << Form("| %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s |",
 		       "", "*DY ee*","*DY mumu*","*DY tautau*","*ttbar*","*Wjets*","*WZ*","*ZZ*","*WW*","*TW*")
        << endl;
@@ -161,38 +231,31 @@ void estimateJetBkg_fakes(const char* file = "processed_data.root")
   // Apply fake rates 
   //
 
-  TH2F *fakeRate2;
+  TH2F *fakeRate(0);
   // If it is from WW code, calcualte from scratch the fake rate
-  if(jetbkgversion=="WW") {
+  if( ! externalFakeRate ){
     TH2F *qcd_el_fake  = dynamic_cast<TH2F*>(ftt->Get("qcd_hFakableRateSingleElectron"));
     TH2F *qcd_el_final = dynamic_cast<TH2F*>(ftt->Get("qcd_hFinalRateSingleElectron"));
     if ( qcd_el_fake && qcd_el_final ){
-      TH2F *qcd_el_fake_not_final = (TH2F*)qcd_el_fake->Clone("qcd_el_fake_not_final");
-      
-      // nominal fake rate
-      //TH2F *fakeRate = (TH2F*)qcd_el_final->Clone("qcd_el_fakeRate");
+      //fakeRate = (TH2F*)qcd_el_final->Clone("fakeRate");
       //fakeRate->Divide(qcd_el_fake);
-
-      // fake_rate/(1-fake_rate)
-      //fakeRate2 = (TH2F*)qcd_el_final->Clone("qcd_el_fakeRate2");
-      //fakeRate2->Divide(qcd_el_fake_not_final);
-   
-      fakeRate2 = (TH2F*)qcd_el_final->Clone("fakeRate2");
-      fakeRate2->Divide(qcd_el_final, qcd_el_fake, 1., 1., "B");
-    
+      fakeRate = (TH2F*)qcd_el_final->Clone("fakeRate");
+      fakeRate->Divide(qcd_el_final, qcd_el_fake, 1., 1., "B");
     } else {
-    cout << "Fake rates are not available to estimate jet induced background. Please re-run with QCD samples" << endl;
+      cout << "Fake rates are not available to estimate jet induced background. Please re-run with QCD samples" << endl;
     }
-  }
-  
-  if(jetbkgversion=="fakerate") {
-    fakeRate2     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v2_cand02_FR_etavspt") );
-    if(!fakeRate2) 
+    cout <<"Jet induced electron fake background estimation (ad-hoc) :\n" <<endl;    
+  } else {
+    TFile *el_fakeRateFile = TFile::Open(fakerate_file);
+    // TFile *el_fakeRateFile = TFile::Open("../data/el_FR_3X.root");
+    assert(el_fakeRateFile);
+    // fakeRate = dynamic_cast<TH2F*>( el_fakeRateFile->Get("QCD30_el_v2_cand02_FR_etavspt") );
+    fakeRate = dynamic_cast<TH2F*>( el_fakeRateFile->Get(fakerate_name) );
+    if(!fakeRate) 
       cout << "Fake rates are not available from NtupleMacros/data to estimate jet induced background. Please check" << endl;
+    cout <<"Jet induced electron fake background estimation (external fake rate) :\n" <<endl;    
   }
-  
-  cout <<"Jet induced electron fake background estimation ("<<jetbkgversion<<") :\n" <<endl;    
-  printLine("ee bkg", DYee_ee, DYmm_ee, DYtt_ee, tt_ee, wjets_ee, wz_ee, zz_ee, ww_ee, tw_ee, fakeRate2);
-  printLine("em bkg", DYee_em, DYmm_em, DYtt_em, tt_em, wjets_em, wz_em, zz_em, ww_em, tw_em, fakeRate2);
+  printLine("ee bkg", DYee_ee, DYmm_ee, DYtt_ee, tt_ee, wjets_ee, wz_ee, zz_ee, ww_ee, tw_ee, fakeRate);
+  printLine("em bkg", DYee_em, DYmm_em, DYtt_em, tt_em, wjets_em, wz_em, zz_em, ww_em, tw_em, fakeRate);
   cout <<endl;
 }
