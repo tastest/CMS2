@@ -39,6 +39,7 @@ void dumpDocLines();
 // Authors: Claudio in consultation with fkw 22-july-09    
 //---------------------------------------------------------
 int leptonIsFromW(int idx, int id);
+
 bool trueGammaFromMuon(int electron);
 // count genp leptons
 //-------------------------------------------------- 
