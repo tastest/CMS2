@@ -403,7 +403,6 @@ int ttbarconstituents(int i_hyp){
 //
 // Inputs:  idx   = index in the els or mus block
 //          id    = lepton ID (11 or 13 or -11 or -13)
-//          v     = 4-vector of reco lepton
 //
 // Output:  2 = from W/Z incorrect charge
 //          1 = from W/Z   correct charge
@@ -429,17 +428,22 @@ int leptonIsFromW(int idx, int id) {
     //we have to do some work to trace the parentage
     //to do this, we have to go to the status==3 block because 
     //the daughter info is not in status==1
-      if(abs(st1_motherid)==15) {
+    if(abs(st1_motherid)==15) {
+      bool foundelectronneutrino = false; //ensures that the matched electron from a tau really came from a W
       for(unsigned int i = 0; i < cms2.genps_id().size(); i++) {//status 3 loop
 	if(abs(cms2.genps_id()[i]) == 15 ) { //make sure we get the right tau!
 	  cms2.genps_lepdaughter_id()[i].size(); 
 	  for(unsigned int j = 0; j < cms2.genps_lepdaughter_id()[i].size(); j++) { //loop over the tau's status1 daughters
+	    if(abs(cms2.genps_lepdaughter_id()[i][j]) == 12)
+	      foundelectronneutrino = true;
 	    float dr = ROOT::Math::VectorUtil::DeltaR(cms2.els_mc_p4()[idx], cms2.genps_lepdaughter_p4()[i][j]);
 	    if (dr < 0.0001) { //should be the same exact status==1 gen particle!
 	      st1_motherid = cms2.genps_id_mother()[i];
 	      continue;
 	    }//if (dr < 0.0001)
 	  }//loop over the tau's daughters
+	  if(!foundelectronneutrino)
+	    st1_motherid = -9999;
 	}//tau
       }//status 3 loop
     }//if(abs(st1_motherid)==15) {
@@ -453,16 +457,21 @@ int leptonIsFromW(int idx, int id) {
     //to do this, we have to go to the status==3 block because 
     //the daughter info is not in status==1
     if(abs(st1_motherid)==15) {
+      bool foundmuonneutrino = false;
       for(unsigned int i = 0; i < cms2.genps_id().size(); i++) {//status 3 loop
 	if(abs(cms2.genps_id()[i]) == 15 ) { //make sure we get the right tau!
 	  cms2.genps_lepdaughter_id()[i].size();
 	  for(unsigned int j = 0; j < cms2.genps_lepdaughter_id()[i].size(); j++) {//loop over the tau's status1 daughters
+	    if(abs(cms2.genps_lepdaughter_id()[i][j]) == 14)
+	      foundmuonneutrino = true;
 	    float dr = ROOT::Math::VectorUtil::DeltaR(cms2.mus_mc_p4()[idx], cms2.genps_lepdaughter_p4()[i][j]);
 	    if (dr < 0.0001) { //should be the same exact status==1 gen particle!
-	      st1_motherid = cms2.genps_id_mother()[i];
+ 	      st1_motherid = cms2.genps_id_mother()[i];
 	      continue;
 	    }//if (dr < 0.0001)
 	  }//loop over the tau's daughters
+	  if(!foundmuonneutrino)
+	    st1_motherid = -9999;
 	}//tau
       }//status 3 loop
     }//if(abs(st1_motherid)==15) {
@@ -509,6 +518,46 @@ int leptonIsFromW(int idx, int id) {
   if (st3_id == -id) return 2;
 
  
+  // Step 5
+  // Now we need to go after the W->tau->lepton.  
+  // We exploit the fact that in t->W->tau the tau shows up
+  // at status=3.  We also use the fact that the tau decay products
+  // are highly boosted, so the direction of the status=3 tau and
+  // the lepton from tau decays are about the same
+  //
+  // We do not use the status=1 links because there is not
+  // enough information to distinguish
+  // W->tau->lepton  or W->tau->lepton gamma
+  //  from
+  // B->tau->lepton or B->tau->lepton gamma
+  //if (abs(st3_id) == 15 && id*st3_id > 0) return 1;
+  //if (abs(st3_id) == 15 && id*st3_id < 0) return 2;
+  if(abs(st3_id) == 15) {
+    //have to find the index of the status3 particle by dR
+    //because the indices are buggy
+    unsigned int mc3idx;
+    LorentzVector lepp4 =  abs(id)==11 ? cms2.els_p4()[idx] : cms2.mus_p4()[idx];
+    double mindR = 9999;
+    for(unsigned int i = 0; i < cms2.genps_id().size(); i++) {
+      float dr = ROOT::Math::VectorUtil::DeltaR(lepp4, cms2.genps_p4()[i]);
+      if(dr < mindR) {
+	mindR = dr;
+	mc3idx = i;
+      }
+    }
+    bool foundElOrMuNu = false;    
+    for(unsigned int i = 0; i < cms2.genps_lepdaughter_p4()[mc3idx].size(); i++) {
+      if(abs(cms2.genps_lepdaughter_id()[mc3idx][i]) == 12 || abs(cms2.genps_lepdaughter_id()[mc3idx][i]) == 14)
+	foundElOrMuNu = true;
+    }
+    if(!foundElOrMuNu) //comes from a hadronic decay of the tau
+      return -3;
+    if(id*st3_id > 0) 
+      return 1;
+    else return 2;
+  }
+  
+  
   // Step 6
   // If we get here, we have a non-W lepton
   // Now we figure out if it is from b, c, or "other"
@@ -561,7 +610,12 @@ int leptonGenpCount_lepTauDecays(int& nele, int& nmuon, int& ntau) {
     if (abs(cms2.genps_id().at(jj)) == 15) {
       for(unsigned int kk = 0; kk < cms2.genps_lepdaughter_id()[jj].size(); kk++) {
 	int daughter = abs(cms2.genps_lepdaughter_id()[jj][kk]);
-	if( daughter == 11 || daughter == 13)
+	//we count neutrino's because that guarantees that 
+	//there is a corresponding lepton and that it comes from
+	// a leptonic tau decay. You can get electrons from converted photons
+	//which are radiated by charged pions from the tau decay but thats
+	//hadronic and we don't care for those 
+	if( daughter == 12 || daughter == 14)
 	  ntau++; 
       }//daughter loop
     }//if tau
