@@ -9,26 +9,37 @@
 
 bool electronSelection_cand01(const unsigned int index)
 {
-	if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
-	if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
-	if (!electronId_noMuon(index)) return false;
-	if (!electronId_cand01(index)) return false;
-	if (!electronImpact_cand01(index)) return false;
-	if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
-	if (isFromConversionPartnerTrack(index)) return false;
-	return true;
+
+	electronSelections_debug_ = 0;
+
+	if (cms2.els_type()[index] & (1<<ISECALDRIVEN)) electronSelections_debug_ |= (1<<ELEPASS_TYPE);
+	if (fabs(cms2.els_p4()[index].eta()) < 2.5)electronSelections_debug_ |= (1<<ELEPASS_FIDUCIAL);
+	if (electronId_noMuon(index)) electronSelections_debug_ |= (1<<ELEPASS_NOMUON);
+	if (electronId_cand01(index)) electronSelections_debug_ |= (1<<ELEPASS_ID);
+	if (electronImpact_cand01(index)) electronSelections_debug_ |= (1<<ELEPASS_D0);
+	if (electronIsolation_relsusy_cand1(index, true) < 0.10) electronSelections_debug_ |= (1<<ELEPASS_ISO);
+	if (!isFromConversionPartnerTrack(index)) electronSelections_debug_ |= (1<<ELEPASS_NOTCONV);
+
+	if ((electronSelections_debug_ & electronSelections_passall_) == electronSelections_passall_) return true;
+	return false;
 }
 
 bool electronSelection_cand02(const unsigned int index)
 {
-	if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
-	if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
-	if (!electronId_noMuon(index)) return false;
-	if (!electronId_cand02(index)) return false;
-	if (!electronImpact_cand01(index)) return false;
-	if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
-	if (isFromConversionPartnerTrack(index)) return false;
-	return true;
+
+    electronSelections_debug_ = 0;
+
+    if (cms2.els_type()[index] & (1<<ISECALDRIVEN)) electronSelections_debug_ |= (1<<ELEPASS_TYPE);
+    if (fabs(cms2.els_p4()[index].eta()) < 2.5) electronSelections_debug_ |= (1<<ELEPASS_FIDUCIAL);
+    if (electronId_noMuon(index)) electronSelections_debug_ |= (1<<ELEPASS_NOMUON);
+    if (electronId_cand02(index)) electronSelections_debug_ |= (1<<ELEPASS_ID);
+    if (electronImpact_cand01(index)) electronSelections_debug_ |= (1<<ELEPASS_D0);
+    if (electronIsolation_relsusy_cand1(index, true) < 0.10) electronSelections_debug_ |= (1<<ELEPASS_ISO);
+    if (!isFromConversionPartnerTrack(index)) electronSelections_debug_ |= (1<<ELEPASS_NOTCONV);
+
+    if ((electronSelections_debug_ & electronSelections_passall_) == electronSelections_passall_) return true;
+    return false;
+
 }
 
 
@@ -60,6 +71,8 @@ bool electronId_noMuon(const unsigned int index)
 bool electronId_cand01(const unsigned int index)
 {
 
+    electronId_debug_ = 0;
+
 	//
 	// define thresholds for EB, EE
 	//
@@ -73,25 +86,27 @@ bool electronId_cand01(const unsigned int index)
 	// apply cuts
 	//
 	if (fabs(cms2.els_etaSC()[index]) < 1.479) {
-		if (fabs(cms2.els_dEtaIn()[index]) > dEtaInThresholds[0]) 	return false;
-		if (fabs(cms2.els_dPhiIn()[index]) > dPhiInThresholds[0]) 	return false;
-		if (cms2.els_hOverE()[index] > hoeThresholds[0]) 		return false;
-		if ((cms2.els_e2x5Max()[index]/cms2.els_e5x5()[index]) < e2x5Over5x5Thresholds[0]) return false;
-		return true;
+		if (fabs(cms2.els_dEtaIn()[index]) < dEtaInThresholds[0]) 	electronId_debug_ |= (1<<ELEPASS_DETA);
+		if (fabs(cms2.els_dPhiIn()[index]) < dPhiInThresholds[0]) 	electronId_debug_ |= (1<<ELEPASS_DPHI);
+		if (cms2.els_hOverE()[index] < hoeThresholds[0]) 		electronId_debug_ |= (1<<ELEPASS_HOE);
+		if ((cms2.els_e2x5Max()[index]/cms2.els_e5x5()[index]) > e2x5Over5x5Thresholds[0]) electronId_debug_ |= (1<<ELEPASS_LSHAPE);
 	}
 	if (fabs(cms2.els_etaSC()[index]) > 1.479) {
-		if (fabs(cms2.els_dEtaIn()[index]) > dEtaInThresholds[1]) 	return false;
-		if (fabs(cms2.els_dPhiIn()[index]) > dPhiInThresholds[1]) 	return false;
-		if (cms2.els_hOverE()[index] > hoeThresholds[1]) 		return false;
-		if (cms2.els_sigmaIEtaIEta()[index] > sigmaIEtaIEtaThresholds[1]) 	return false;
-		return true;
+		if (fabs(cms2.els_dEtaIn()[index]) < dEtaInThresholds[1]) 	electronId_debug_ |= (1<<ELEPASS_DETA);
+		if (fabs(cms2.els_dPhiIn()[index]) < dPhiInThresholds[1]) 	electronId_debug_ |= (1<<ELEPASS_DPHI);
+		if (cms2.els_hOverE()[index] < hoeThresholds[1]) 		electronId_debug_ |= (1<<ELEPASS_HOE);
+		if (cms2.els_sigmaIEtaIEta()[index] < sigmaIEtaIEtaThresholds[1])  electronId_debug_ |= (1<<ELEPASS_LSHAPE);	
 	}
 
-	return false;
+    if ((electronId_debug_ & electronSelections_passid_) == electronSelections_passid_) return true;
+    return false;
+
 }
 
 bool electronId_cand02(const unsigned int index)
 {
+
+    electronId_debug_ = 0;
 
 	//
 	// define thresholds for EB, EE
@@ -102,29 +117,26 @@ bool electronId_cand02(const unsigned int index)
 	float sigmaIEtaIEtaThresholds[2]        = {9999.99, 0.03};
 	float e2x5Over5x5Thresholds[2]          = {0.94, 0.00};
 
-	//
-	// apply cuts
-	//
-	if (fabs(cms2.els_etaSC()[index]) < 1.479) {
-		if (fabs(cms2.els_dEtaIn()[index]) > dEtaInThresholds[0])   return false;
-		if (fabs(cms2.els_dPhiIn()[index]) > dPhiInThresholds[0])   return false;
-		if (cms2.els_hOverE()[index] > hoeThresholds[0])        return false;
-		if ((cms2.els_e2x5Max()[index]/cms2.els_e5x5()[index]) < e2x5Over5x5Thresholds[0]) return false;
-		return true;
-	}
-	if (fabs(cms2.els_etaSC()[index]) > 1.479) {
-		if (fabs(cms2.els_dEtaIn()[index]) > dEtaInThresholds[1])   return false;
-		if (fabs(cms2.els_dPhiIn()[index]) > dPhiInThresholds[1])   return false;
-		if (cms2.els_hOverE()[index] > hoeThresholds[1])        return false;
-		if (cms2.els_sigmaIEtaIEta()[index] > sigmaIEtaIEtaThresholds[1])   return false;
-		return true;
-	}
+    //
+    // apply cuts
+    //
+    if (fabs(cms2.els_etaSC()[index]) < 1.479) {
+        if (fabs(cms2.els_dEtaIn()[index]) < dEtaInThresholds[0])   electronId_debug_ |= (1<<ELEPASS_DETA);
+        if (fabs(cms2.els_dPhiIn()[index]) < dPhiInThresholds[0])   electronId_debug_ |= (1<<ELEPASS_DPHI);
+        if (cms2.els_hOverE()[index] < hoeThresholds[0])        electronId_debug_ |= (1<<ELEPASS_HOE);
+        if ((cms2.els_e2x5Max()[index]/cms2.els_e5x5()[index]) > e2x5Over5x5Thresholds[0]) electronId_debug_ |= (1<<ELEPASS_LSHAPE);
+    }
+    if (fabs(cms2.els_etaSC()[index]) > 1.479) {
+        if (fabs(cms2.els_dEtaIn()[index]) < dEtaInThresholds[1])   electronId_debug_ |= (1<<ELEPASS_DETA);
+        if (fabs(cms2.els_dPhiIn()[index]) < dPhiInThresholds[1])   electronId_debug_ |= (1<<ELEPASS_DPHI);
+        if (cms2.els_hOverE()[index] < hoeThresholds[1])        electronId_debug_ |= (1<<ELEPASS_HOE);
+        if (cms2.els_sigmaIEtaIEta()[index] < sigmaIEtaIEtaThresholds[1])  electronId_debug_ |= (1<<ELEPASS_LSHAPE);
+    }
 
-	return false;
+    if ((electronId_debug_ & electronSelections_passid_) == electronSelections_passid_) return true;
+    return false;
+
 }
-
-
-
 
 bool electronImpact_cand01(const unsigned int index)
 {

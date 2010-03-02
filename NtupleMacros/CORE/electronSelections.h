@@ -3,9 +3,19 @@
 #ifndef ELECTRONSELECTIONS_H
 #define ELECTRONSELECTIONS_H
 
+
 //
 // electron selections 
 //
+
+typedef ULong64_t elecuts_t;
+
+//
+// This is for debugging and should not be used
+// by anyone who does not know what it is
+//
+elecuts_t electronSelections_debug_;
+elecuts_t electronId_debug_;
 
 enum EgammaFiduciality {
     ISEB,
@@ -27,6 +37,47 @@ enum EgammaElectronType {
     ISECALDRIVEN,
     ISTRACKERDRIVEN
 };
+
+enum ElectronSelection {
+    ELEPASS_PT10,
+    ELEPASS_PT20,
+    ELEPASS_PT10NOT20,
+    ELEPASS_DPHI,
+    ELEPASS_DETA,
+    ELEPASS_HOE,
+    ELEPASS_LSHAPE,
+    ELEPASS_ISO,
+    ELEPASS_EXTRA,
+    ELEPASS_D0,
+	ELEPASS_ID,
+    ELEPASS_NOTCONV,
+    ELEPASS_NOMUON,
+    ELEPASS_TYPE,
+    ELEPASS_FIDUCIAL,
+    ELEPASS_FULLSELECTION
+};
+
+
+//
+// These are the components of the 
+// electronSelection_candXY functions.
+//
+static const elecuts_t electronSelections_passall_ =   (1<<ELEPASS_TYPE)       |
+                                (1<<ELEPASS_FIDUCIAL)   |
+                                (1<<ELEPASS_NOMUON)     |
+                                (1<<ELEPASS_ID)         |
+                                (1<<ELEPASS_D0)         |
+                                (1<<ELEPASS_ISO)        |
+                                (1<<ELEPASS_NOTCONV);
+
+//
+// pass the candXY cut based ID part
+//
+
+static const elecuts_t electronSelections_passid_ =  (1<<ELEPASS_DETA) |
+                                            (1<<ELEPASS_DPHI) |
+                                            (1<<ELEPASS_HOE) |
+                                            (1<<ELEPASS_LSHAPE);
 
 //
 // combined selection functions
