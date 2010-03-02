@@ -1230,6 +1230,7 @@ RooDataSet* ScanChain( TChain* chain,
   
   const Double_t ptbins[4] = {20,30,80,200};
   const Double_t ptbins_fakerate[4] = {10,20,60,150};
+  const Double_t etabins_fakerate[4] = {0,1.479,2.5};
   
   for (unsigned int i=0; i<4; i++) {
 
@@ -1266,7 +1267,7 @@ RooDataSet* ScanChain( TChain* chain,
     helFRfakable[i]     = new TH2F(Form("%s_helFRfakable_%s",    prefix,HypothesisTypeName(i)), "FR study: rate of fakable objects", 3,ptbins,2,0,3.0);
     helFRfakable[i]->Sumw2();
     // fakable object by the fakerate.cc Revision 1.15
-    helFRfakable_fakerate[i]     = new TH2F(Form("%s_helFRfakable_fakerate_%s",    prefix,HypothesisTypeName(i)), "FR study: rate of fakable objects",2,0,3.0,3,ptbins_fakerate);
+    helFRfakable_fakerate[i] = new TH2F(Form("%s_helFRfakable_fakerate_%s", prefix,HypothesisTypeName(i)), "FR study: rate of fakable objects",2,etabins_fakerate,3,ptbins_fakerate);
     helFRfakable_fakerate[i]->Sumw2();
 
     hnJet[i]->Sumw2();
@@ -1346,17 +1347,17 @@ RooDataSet* ScanChain( TChain* chain,
   helRelPatIsoNoId    = new TH1F(Form("%s_helRelPatIsoNoId",prefix),   Form("%s - electron relative iso (trk+ecal+hcal) PAT with weights 1,1,1 without el id",prefix), 120, 0., 1.2);
   helRelPatIsoNoId->Sumw2();
 
-  hmaxJPTEt = new TH1F(Form("%s_hmaxJPTEt",prefix),               Form("%s - most energetic jet Et (JPT)",prefix), 100, 0., 100);
+  hmaxJPTEt = new TH1F(Form("%s_hmaxJPTEt",prefix),               Form("%s - most energetic jet Et (JPT)",prefix), 200, 0., 200);
   hmaxJPTEt->Sumw2();
-  hmaxCaloJetEt = new TH1F(Form("%s_hmaxCaloJetEt",prefix),       Form("%s - most energetic jet Et (CaloJet)",prefix), 100, 0., 100);
+  hmaxCaloJetEt = new TH1F(Form("%s_hmaxCaloJetEt",prefix),       Form("%s - most energetic jet Et (CaloJet)",prefix), 200, 0., 200);
   hmaxCaloJetEt->Sumw2();
-  hmaxTrkJetEt = new TH1F(Form("%s_hmaxTrkJetEt",prefix),         Form("%s - most energetic jet Et (TrkJet)",prefix), 100, 0., 100);
+  hmaxTrkJetEt = new TH1F(Form("%s_hmaxTrkJetEt",prefix),         Form("%s - most energetic jet Et (TrkJet)",prefix), 200, 0., 200);
   hmaxTrkJetEt->Sumw2();
-  hmaxCaloTrkJetEt = new TH1F(Form("%s_hmaxCaloTrkJetEt",prefix), Form("%s - most energetic jet Et (average of Calo + Trk Jets)",prefix), 100, 0., 100);
+  hmaxCaloTrkJetEt = new TH1F(Form("%s_hmaxCaloTrkJetEt",prefix), Form("%s - most energetic jet Et (average of Calo + Trk Jets)",prefix), 200, 0., 200);
   hmaxCaloTrkJetEt->Sumw2();
-  hmaxCaloTrkJet2Et = new TH1F(Form("%s_hmaxCaloTrkJet2Et",prefix), Form("%s - most energetic jet Et (Max Calo and Trk Jets)",prefix), 100, 0., 100);
+  hmaxCaloTrkJet2Et = new TH1F(Form("%s_hmaxCaloTrkJet2Et",prefix), Form("%s - most energetic jet Et (Max Calo and Trk Jets)",prefix), 200, 0., 200);
   hmaxCaloTrkJet2Et->Sumw2();
-  hmaxGenJetEt = new TH1F(Form("%s_hmaxGenJetEt",prefix),         Form("%s - most energetic jet Et (GenJet)",prefix), 100, 0., 100);
+  hmaxGenJetEt = new TH1F(Form("%s_hmaxGenJetEt",prefix),         Form("%s - most energetic jet Et (GenJet)",prefix), 200, 0., 200);
   hmaxGenJetEt->Sumw2();
   hCentralBquarkEtaAfterVeto = new TH1F(Form("%s_centralBQuarkEtaAfterVeto",prefix), Form("%s - central b quark eta distribution after jet veto",prefix), 20, 0, 10);
   hForwardBquarkEtaAfterVeto = new TH1F(Form("%s_forwardBQuarkEtaAfterVeto",prefix), Form("%s - forward b quark eta distribution after jet veto",prefix), 20, 0, 10);
