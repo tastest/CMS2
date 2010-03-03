@@ -18,6 +18,7 @@ enum SelectionType {
 // version is a backup.
 //
 bool muonId(unsigned int index, SelectionType type = Nominal);
+bool muonIdNotIsolated(unsigned int index, SelectionType type = Nominal);
 
 //
 // relative isolation
@@ -28,9 +29,7 @@ double muonIsoValue(unsigned int index);
 // Trigger
 // for now we don't match muons to triggered objects
 //
-bool passedMuonTriggerRequirements(){
-  return cms2.passHLTTrigger("HLT_Mu9");
-}
+bool passedMuonTriggerRequirements();
 
 //
 // cosmics rejection

@@ -2053,7 +2053,8 @@ bool GoodSusyLeptonID(int id, int index){
 
 
 bool GoodSusy2010Leptons(int id, int index){ 
-  if (abs(id) == 11) return electronSelection_cand01(index);
+  if (abs(id) == 11) return electronSelection_cand02(index)&&electronId_extra(index);
+//  if (abs(id) == 11) return electronSelection_cand01(index)&&electronId_extra(index);
   if (abs(id) == 13) return muonId(index); 
   return false;
 }
@@ -2353,17 +2354,7 @@ bool additionalZvetoSUSY2010(int i_hyp) {
   for (unsigned int i=0; i < cms2.mus_p4().size(); i++) {
     bool hypLep1 = false;
     if (cms2.mus_p4().at(i).pt() < 10.)     continue;
-    
-    if ( TMath::Abs(cms2.mus_p4()[i].eta()) > 2.4)  continue; // eta cut
-    if (cms2.mus_gfit_chi2().at(i)/cms2.mus_gfit_ndof().at(i) >= 10) continue; //glb fit chisq
-    if (((cms2.mus_type().at(i)) & (1<<1)) == 0)    continue; // global muon
-    if (((cms2.mus_type().at(i)) & (1<<2)) == 0)    continue; // tracker muon
-    if (cms2.mus_validHits().at(i) < 11)            continue; // # of tracker hits
-    if (cms2.mus_iso_ecalvetoDep().at(i) > 4)       continue; // ECalE < 4 
-    if (cms2.mus_iso_hcalvetoDep().at(i) > 6)       continue; // HCalE < 6 
-    if (cms2.mus_gfit_validSTAHits().at(i) == 0)    continue; // Glb fit must have hits in mu chambers
-    if (TMath::Abs(cms2.mus_d0corr().at(i)) > 0.02) continue; // d0 from beamspot
-    
+    if (!muonIdNotIsolated(i)) continue; 
     
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == i ) hypLep1 = true;
     if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == i ) hypLep1 = true;
@@ -2371,18 +2362,7 @@ bool additionalZvetoSUSY2010(int i_hyp) {
     for (unsigned int j=i+1; j < cms2.mus_p4().size(); j++) {
       bool hypLep2 = false;
       if (cms2.mus_p4().at(j).pt() < 10.) continue;
-      
-      if ( TMath::Abs(cms2.mus_p4()[j].eta()) > 2.4)  continue; // eta cut
-      if (cms2.mus_gfit_chi2().at(j)/cms2.mus_gfit_ndof().at(j) >= 10) continue; //glb fit chisq
-      if (((cms2.mus_type().at(j)) & (1<<1)) == 0)    continue; // global muon
-      if (((cms2.mus_type().at(j)) & (1<<2)) == 0)    continue; // tracker muon
-      if (cms2.mus_validHits().at(j) < 11)            continue; // # of tracker hits
-      if (cms2.mus_iso_ecalvetoDep().at(j) > 4)       continue; // ECalE < 4 
-      if (cms2.mus_iso_hcalvetoDep().at(j) > 6)       continue; // HCalE < 6 
-      if (cms2.mus_gfit_validSTAHits().at(j) == 0)    continue; // Glb fit must have hits in mu chambers
-      if (TMath::Abs(cms2.mus_d0corr().at(j)) > 0.02) continue; // d0 from beamspot
-      
-
+      if (!muonIdNotIsolated(j)) continue; 
       if (cms2.mus_charge().at(i) == cms2.mus_charge().at(j)) continue;
       if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == j ) hypLep2 = true;
       if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == j ) hypLep2 = true;
@@ -2404,9 +2384,10 @@ bool additionalZvetoSUSY2010(int i_hyp) {
     if (cms2.els_p4().at(i).pt() < 10.)     continue;
 
     if ( TMath::Abs(cms2.els_p4()[i].eta()) > 2.4)  continue; // eta cut
-    if (!electronId_noMuon(i)) continue;
-    if (!electronId_cand01(i)) continue;
-    if (!electronImpact_cand01(i)) continue;
+
+//    if (!electronSelection_cand01SUSYNoIso(i)) continue;
+    if (!electronSelection_cand02SUSYNoIso(i)) continue;
+    if (!electronId_extra(i)) continue;
 
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && cms2.hyp_lt_index()[i_hyp] == i ) hypLep1 = true;
     if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && cms2.hyp_ll_index()[i_hyp] == i ) hypLep1 = true;
@@ -2415,9 +2396,10 @@ bool additionalZvetoSUSY2010(int i_hyp) {
       if (cms2.els_p4().at(j).pt() < 10.) continue;
 
       if ( TMath::Abs(cms2.els_p4()[j].eta()) > 2.4)  continue; // eta cut 
-      if (!electronId_noMuon(j)) continue; 
-      if (!electronId_cand01(j)) continue; 
-      if (!electronImpact_cand01(j)) continue; 
+      if (!electronSelection_cand02SUSYNoIso(j)) continue;
+//    if (!electronSelection_cand01SUSYNoIso(j)) continue;
+
+      if (!electronId_extra(j)) continue;
 
       if (cms2.els_charge().at(i) == cms2.els_charge().at(j)) continue;
       // At least one of them has to pass isolation
@@ -3355,7 +3337,7 @@ bool vetoAddZ(int i_hyp, int unusedLepton, double &mass) {
 
 }
 
-bool isChargeFlip(int elIndex){
+bool isChargeFlip1(int elIndex){
   //true if electron is likely to be a charge flip
   if ((cms2.els_trkidx().at(elIndex) >= 0) && (cms2.els_charge().at(elIndex) != cms2.trks_charge().at(cms2.els_trkidx().at(elIndex)))) return true;
 

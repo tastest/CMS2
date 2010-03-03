@@ -19,6 +19,7 @@
 #include "RooDataSet.h"
 #include "RooRealVar.h"
 #include "RooCategory.h"
+#include "CORE/tcmet_looper/getResponseFunction_fit.C"
 
 
 using namespace std;
@@ -29,6 +30,7 @@ using namespace std;
 #include "CORE/selections.cc"
 #include "CORE/electronSelections.cc"
 #include "CORE/muonSelections.cc"
+#include "CORE/tcmet_looper/getTcmetFromCaloMet.cc"
 #include "Tools/tools.cc"
 #endif
 
@@ -107,6 +109,8 @@ TH1F* hnJetOO[4];       // Njet distributions
 TH1F* htcmetZveto[4];
 
 // fkw September 2008 final hist used for muon tags estimate of top bkg
+
+TH2F* rf = getResponseFunction_fit();
 
 
 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > calo_jetsp4;
@@ -204,14 +208,22 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
      // Z mass veto using hyp_leptons for ee and mumu final states
      if (cms2.hyp_type()[i_hyp] == 0 || cms2.hyp_type()[i_hyp] == 3) {
        if (inZmassWindow(cms2.hyp_p4()[i_hyp].mass()) || additionalZveto()) {
-	 htcmetZveto[myType]->Fill(cms2.evt_tcmet(),weight);
-	 htcmetZveto[3]->Fill(cms2.evt_tcmet(),weight);
+//	 htcmetZveto[myType]->Fill(cms2.evt_tcmet(),weight);
+//	 htcmetZveto[3]->Fill(cms2.evt_tcmet(),weight);
        }
      }
 
-     bool useTcMet = false;
+//     bool useTcMet = false;
 //     if (!passMetVJets09(80., useTcMet)) return;
+
+     metStruct tcmetStruct = getTcmetFromCaloMet( rf );
+     htcmetZveto[myType]->Fill(tcmetStruct.met,weight);
+     htcmetZveto[3]->Fill(tcmetStruct.met,weight);
+     
+//     if (tcmetStruct.met <= 30) return;    
+//     if (tcmetStruct.met <= 80) return;    
      if (cms2.evt_pfmet() <= 80.) return;
+
 
      monitor.count(icounter++,"Total number of hypothesis after adding tcmet cut: ");     
 
@@ -238,7 +250,7 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
 
      if ( additionalZvetoSUSY2010(i_hyp)) return;
 
-     monitor.count(icounter++,"Total number of hypothesis after adding additionalZvetoSUSY09 cut: ");
+     monitor.count(icounter++,"Total number of hypothesis after adding additionalZvetoSUSY2010 cut: ");
      
      if ( ! goodEvent ) return;
 

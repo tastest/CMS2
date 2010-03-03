@@ -19,17 +19,21 @@
 #include "RooDataSet.h"
 #include "RooRealVar.h"
 #include "RooCategory.h"
+#include "CORE/tcmet_looper/getResponseFunction_fit.C"
 
 
 using namespace std;
 
 #ifndef __CINT__
-#include "../CORE/CMS2.cc"
-#include "../CORE/utilities.cc"
-#include "../CORE/selections.cc"
-#include "../Tools/tools.cc"
-#include "../Tools/fliprate_egun.cc"
-#include "../Tools/chargeflip.cc"
+#include "CORE/CMS2.cc"
+#include "CORE/utilities.cc"
+#include "CORE/selections.cc"
+#include "CORE/electronSelections.cc"
+#include "CORE/muonSelections.cc"
+#include "CORE/tcmet_looper/getTcmetFromCaloMet.cc"
+#include "Tools/tools.cc"
+#include "Tools/fliprate_egun.cc"
+#include "Tools/chargeflip.cc"
 #endif
 
 TH1F* hypos_total;
@@ -111,10 +115,12 @@ TH1F* hleptonEta[4];
 TH1F* hWWleptonPt[4];
 TH1F* hWWleptonEta[4];
 
+TH2F* rf = getResponseFunction_fit();
+
 // fkw September 2008 final hist used for muon tags estimate of top bkg
 
 
-vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > calo_jetsp4;
+vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > calo_jetsp4;
 
 struct hypo_monitor{
   std::vector<std::pair<std::string,unsigned int> > counters;
@@ -158,6 +164,8 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
      if (cms2.hyp_lt_p4()[i_hyp].pt() < 10.0) return;
      if (cms2.hyp_ll_p4()[i_hyp].pt() < 10.0) return;
      if (max(cms2.hyp_ll_p4()[i_hyp].pt(), cms2.hyp_lt_p4()[i_hyp].pt()) < 20) return;
+     if ( TMath::Abs(cms2.hyp_lt_p4()[i_hyp].eta()) > 2.4) return;
+     if ( TMath::Abs(cms2.hyp_ll_p4()[i_hyp].eta()) > 2.4) return;
 
      monitor.count(icounter++,"Total number of hypothesis after adding lepton pt cut: ");
 
@@ -193,10 +201,13 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
 
      // Lepton Quality cuts and isolation according to VJets09
 
-     if (!GoodSusyLeptonID(cms2.hyp_lt_id()[i_hyp], cms2.hyp_lt_index()[i_hyp])) passedAllLeptonRequirements = false;
-     if (!GoodSusyLeptonID(cms2.hyp_ll_id()[i_hyp], cms2.hyp_ll_index()[i_hyp])) passedAllLeptonRequirements = false;
-     if (!PassSusyLeptonIsolation(cms2.hyp_ll_id()[i_hyp], cms2.hyp_ll_index()[i_hyp])) passedAllLeptonRequirements = false;
-     if (!PassSusyLeptonIsolation(cms2.hyp_lt_id()[i_hyp], cms2.hyp_lt_index()[i_hyp])) passedAllLeptonRequirements = false;
+     //     if (!GoodSusyLeptonID(cms2.hyp_lt_id()[i_hyp], cms2.hyp_lt_index()[i_hyp])) passedAllLeptonRequirements = false;
+     //     if (!GoodSusyLeptonID(cms2.hyp_ll_id()[i_hyp], cms2.hyp_ll_index()[i_hyp])) passedAllLeptonRequirements = false;
+     //     if (!PassSusyLeptonIsolation(cms2.hyp_ll_id()[i_hyp], cms2.hyp_ll_index()[i_hyp])) passedAllLeptonRequirements = false;
+     //     if (!PassSusyLeptonIsolation(cms2.hyp_lt_id()[i_hyp], cms2.hyp_lt_index()[i_hyp])) passedAllLeptonRequirements = false;
+
+     if (!GoodSusy2010Leptons(cms2.hyp_lt_id()[i_hyp], cms2.hyp_lt_index()[i_hyp])) passedAllLeptonRequirements = false;
+     if (!GoodSusy2010Leptons(cms2.hyp_ll_id()[i_hyp], cms2.hyp_ll_index()[i_hyp])) passedAllLeptonRequirements = false;
 
      if ( !passedAllLeptonRequirements ) return;
      monitor.count(icounter++,"Total number of hypothesis after adding lepton id and isolation, including eta cuts: ");     
@@ -204,18 +215,26 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
      // Z mass veto using hyp_leptons for ee and mumu final states
      if (cms2.hyp_type()[i_hyp] == 0 || cms2.hyp_type()[i_hyp] == 3) {
        if (inZmassWindow(cms2.hyp_p4()[i_hyp].mass()) || additionalZveto()) {
-	 htcmetZveto[myType]->Fill(cms2.evt_tcmet(),weight);
-	 htcmetZveto[3]->Fill(cms2.evt_tcmet(),weight);
+	 //	 htcmetZveto[myType]->Fill(cms2.evt_tcmet(),weight);
+	 //	 htcmetZveto[3]->Fill(cms2.evt_tcmet(),weight);
        }
      }
 
-     bool useTcMet = true;
-     if (!passMetVJets09(80., useTcMet)) return;
+     //     bool useTcMet = true;
+     //     if (!passMetVJets09(80., useTcMet)) return;
+
+     metStruct tcmetStruct = getTcmetFromCaloMet( rf );
+     htcmetZveto[myType]->Fill(tcmetStruct.met,weight);
+     htcmetZveto[3]->Fill(tcmetStruct.met,weight);
+
+//     if (tcmetStruct.met <= 30) return;
+//     if (tcmetStruct.met <= 80) return;
+//     if (cms2.evt_pfmet() <= 80.) return;
 
      monitor.count(icounter++,"Total number of hypothesis after adding tcmet cut: ");     
 
      calo_jetsp4.clear();
-
+     
      double etMax_calo = 0.0;
      double sumet_calo = 0.0;
      calo_jetsp4 = getCaloJets(i_hyp);
@@ -229,13 +248,15 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
      int njets = 0;
      if (calo_jetsp4.size() > 0) njets = calo_jetsp4.size();
      // Final cuts on jets
-     if (njets < 3) return;
+//     if (njets < 3) return;
      //     if (calo_jetsp4[0].pt() < 100) return; 
-     if (sumet_calo < 200) return;
+//     if (sumet_calo < 200) return;
      
      monitor.count(icounter++,"Total number of hypothesis after adding jet cuts: ");
 
-     if ( additionalZvetoSUSY09(i_hyp)) return;
+     //     if ( additionalZvetoSUSY09(i_hyp)) return;
+
+     if ( additionalZvetoSUSY2010(i_hyp)) return;
 
      monitor.count(icounter++,"Total number of hypothesis after adding additionalZvetoSUSY09 cut: ");
      
@@ -244,7 +265,7 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
      // -------------------------------------------------------------------//
      // If we made it to here, we passed all cuts and we are ready to fill //
      // -------------------------------------------------------------------//
-
+     
      //The entire logic for truthtagging e's from Zs is only used for the closure test on Zee.
      //We leave the calculation of the relevant booleans in the code, but comment out the cut on those booleans when we predict
      //the charge flip on all samples. I.e. the default in cvs is without requiring truth tags on Z, of course.
@@ -262,41 +283,41 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
 
      if ((TMath::Abs(cms2.hyp_ll_id()[i_hyp])==11) && TMath::Abs(cms2.hyp_ll_mc_id()[i_hyp])==11 && abs(cms2.hyp_ll_mc_motherid()[i_hyp]) ==23) zTrueStrict1 = true;
      if ((TMath::Abs(cms2.hyp_lt_id()[i_hyp])==11) && TMath::Abs(cms2.hyp_lt_mc_id()[i_hyp])==11 && abs(cms2.hyp_lt_mc_motherid()[i_hyp]) ==23 ) zTrueStrict2 = true;
-
+     
      //if( !(zTrueStrict1 && zTrueStrict2) ) return;// require both ees with strict truth match
      //if( !(zTrueStrict1 && zTrueStrict2) ) return;// require both ees with strict truth match
      //if( !(zTrueInclColPhot1 && zTrueInclColPhot2) ) return;// require both ees with either strict truth match or "collinear" FSR photon
      //if( !(zTrueInclColPhot1 && zTrueInclColPhot2) ) return;// require both ees with either strict truth match or "collinear" FSR photon
  
-    bool chargefake_elegun = true;
-    bool chargefake_zee = false;
+     bool chargefake_elegun = true;
+     bool chargefake_zee = false;
 
-    float flip_wt = 0.0;
+     float flip_wt = 0.0;
 
-    if (chargefake_elegun){
-      float flip_ll = 0.0;
-      float flip_lt = 0.0;
-      
-      if( TMath::Abs(cms2.hyp_lt_id()[i_hyp])==11 ) { flip_lt = getSingleEleFlipRate(cms2.els_p4()[cms2.hyp_lt_index()[i_hyp]].pt(), cms2.els_p4()[cms2.hyp_lt_index()[i_hyp]].eta());}
-      if( TMath::Abs(cms2.hyp_ll_id()[i_hyp])==11 ) { flip_ll = getSingleEleFlipRate(cms2.els_p4()[cms2.hyp_ll_index()[i_hyp]].pt(), cms2.els_p4()[cms2.hyp_ll_index()[i_hyp]].eta());}
-      
-      flip_wt = weight*(flip_ll/(1-flip_ll)+flip_lt/(1-flip_lt));
+     if (chargefake_elegun){
+       float flip_ll = 0.0;
+       float flip_lt = 0.0;
+       
+       if( TMath::Abs(cms2.hyp_lt_id()[i_hyp])==11 ) { flip_lt = getSingleEleFlipRate(cms2.els_p4()[cms2.hyp_lt_index()[i_hyp]].pt(), cms2.els_p4()[cms2.hyp_lt_index()[i_hyp]].eta());}
+       if( TMath::Abs(cms2.hyp_ll_id()[i_hyp])==11 ) { flip_ll = getSingleEleFlipRate(cms2.els_p4()[cms2.hyp_ll_index()[i_hyp]].pt(), cms2.els_p4()[cms2.hyp_ll_index()[i_hyp]].eta());}
+       
+       flip_wt = weight*(flip_ll/(1-flip_ll)+flip_lt/(1-flip_lt));
 
-    }
+     }
 
 
-    if (chargefake_zee){
-      float flip_ll = 0.0;
-      float flip_lt = 0.0;
-      
-      if( TMath::Abs(cms2.hyp_lt_id()[i_hyp])==11 ) { flip_lt = getZtoEEMCFlipRate(cms2.els_p4()[cms2.hyp_lt_index()[i_hyp]].pt(), cms2.els_p4()[cms2.hyp_lt_index()[i_hyp]].eta());}
-      if( TMath::Abs(cms2.hyp_ll_id()[i_hyp])==11 ) { flip_ll = getZtoEEMCFlipRate(cms2.els_p4()[cms2.hyp_ll_index()[i_hyp]].pt(), cms2.els_p4()[cms2.hyp_ll_index()[i_hyp]].eta());}
-      
-      flip_wt = weight*(flip_ll/(1-flip_ll)+flip_lt/(1-flip_lt));
+     if (chargefake_zee){
+       float flip_ll = 0.0;
+       float flip_lt = 0.0;
+       
+       if( TMath::Abs(cms2.hyp_lt_id()[i_hyp])==11 ) { flip_lt = getZtoEEMCFlipRate(cms2.els_p4()[cms2.hyp_lt_index()[i_hyp]].pt(), cms2.els_p4()[cms2.hyp_lt_index()[i_hyp]].eta());}
+       if( TMath::Abs(cms2.hyp_ll_id()[i_hyp])==11 ) { flip_ll = getZtoEEMCFlipRate(cms2.els_p4()[cms2.hyp_ll_index()[i_hyp]].pt(), cms2.els_p4()[cms2.hyp_ll_index()[i_hyp]].eta());}
+       
+       flip_wt = weight*(flip_ll/(1-flip_ll)+flip_lt/(1-flip_lt));
+       
+     }
 
-    }
-
-    weight = flip_wt;
+     weight = flip_wt;
     
      //  Fill the distribution that is used in doTable.C to produce the standard table for twiki.
      hnJet[myType]->Fill(min(njets,4), weight);
@@ -305,10 +326,10 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
      // Classify the origin of the two leptons:
      int lttype = leptonIsFromW(cms2.hyp_lt_index()[i_hyp], cms2.hyp_lt_id()[i_hyp], cms2.hyp_lt_p4()[i_hyp]);
      int lltype = leptonIsFromW(cms2.hyp_ll_index()[i_hyp], cms2.hyp_ll_id()[i_hyp], cms2.hyp_ll_p4()[i_hyp]);
-
+     
      bool semilep = (lttype == -1 || lttype == -2 ||lltype == -1 || lltype == -2 );// this means one of the two leptons comes from heavy flavor.
      bool chargefake = (lttype == 2 || lltype == 2 );//this means that at least one of the two leptons comes from a W AND is a chargefake.
-
+     
      //Classify the event (this actually calls leptonIsFromW internally again. Not efficient, but so what?
      //WW (=1), WO (=2), OO (=3)
      int tttype = ttbarconstituents(i_hyp);
@@ -316,10 +337,10 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
      if (tttype == 1) {//WW
        hnJetWW[myType]->Fill(min(njets,4), weight);
        hnJetWW[3]->Fill(min(njets,4), weight);
-       hWWleptonPt[myType]->Fill(min(cms2.hyp_ll_p4()[i_hyp].pt(), 149.), weight); // Lepton pt
-       hWWleptonPt[3]->Fill(min(cms2.hyp_ll_p4()[i_hyp].pt(), 149.), weight); // Lepton pt
-       hWWleptonPt[myType]->Fill(min(cms2.hyp_lt_p4()[i_hyp].pt(), 149.), weight);
-       hWWleptonPt[3]->Fill(min(cms2.hyp_lt_p4()[i_hyp].pt(), 149.), weight);
+       hWWleptonPt[myType]->Fill(min(cms2.hyp_ll_p4()[i_hyp].pt(), float(149.)), weight); // Lepton pt
+       hWWleptonPt[3]->Fill(min(cms2.hyp_ll_p4()[i_hyp].pt(), float(149.)), weight); // Lepton pt
+       hWWleptonPt[myType]->Fill(min(cms2.hyp_lt_p4()[i_hyp].pt(), float(149.)), weight);
+       hWWleptonPt[3]->Fill(min(cms2.hyp_lt_p4()[i_hyp].pt(), float(149.)), weight);
        hWWleptonEta[myType]->Fill(fabs(cms2.hyp_ll_p4()[i_hyp].eta()), weight); // Lepton Eta
        hWWleptonEta[3]->Fill(fabs(cms2.hyp_ll_p4()[i_hyp].eta()), weight); // Lepton Eta
        hWWleptonEta[myType]->Fill(fabs(cms2.hyp_lt_p4()[i_hyp].eta()), weight);
@@ -327,28 +348,29 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
      } else if (tttype == 2) {
        hnJetWO[myType]->Fill(min(njets,4), weight);
        hnJetWO[3]->Fill(min(njets,4), weight);
-       if (semilep) {
-	 hnJetWOSemilep[myType]->Fill(min(njets,4), weight); 
-	 hnJetWOSemilep[3]->Fill(min(njets,4), weight); 
+       if ( lttype == -1 || lttype == -2 || lltype == -1 || lltype == -2) {
+         hnJetWOSemilep[myType]->Fill(min(njets,4), weight);
+         hnJetWOSemilep[3]->Fill(min(njets,4), weight);
        } else {
-	 hnJetOO[myType]->Fill(min(njets,4), weight); 
-	 hnJetOO[3]->Fill(min(njets,4), weight); 
+         hnJetWOOther[myType]->Fill(min(njets,4), weight);
+         hnJetWOOther[3]->Fill(min(njets,4), weight);
        }
      } else {
-       hnJetWOOther[myType]->Fill(min(njets,4), weight);
-       hnJetWOOther[3]->Fill(min(njets,4), weight);
+       hnJetOO[myType]->Fill(min(njets,4), weight);
+       hnJetOO[3]->Fill(min(njets,4), weight);
      }
+
 
      // Add pt and Eta lepton and mass
 
      hdilMass[myType]->Fill(cms2.hyp_p4()[i_hyp].mass(), weight);
      hdilMass[3]->Fill(cms2.hyp_p4()[i_hyp].mass(), weight);
 
-     hleptonPt[myType]->Fill(min(cms2.hyp_ll_p4()[i_hyp].pt(), 149.), weight); // Lepton pt
-     hleptonPt[3]->Fill(min(cms2.hyp_ll_p4()[i_hyp].pt(), 149.), weight); // Lepton pt
+     hleptonPt[myType]->Fill(min(cms2.hyp_ll_p4()[i_hyp].pt(), float(149.)), weight); // Lepton pt
+     hleptonPt[3]->Fill(min(cms2.hyp_ll_p4()[i_hyp].pt(), float(149.)), weight); // Lepton pt
 
-     hleptonPt[myType]->Fill(min(cms2.hyp_lt_p4()[i_hyp].pt(), 149.), weight);
-     hleptonPt[3]->Fill(min(cms2.hyp_lt_p4()[i_hyp].pt(), 149.), weight);
+     hleptonPt[myType]->Fill(min(cms2.hyp_lt_p4()[i_hyp].pt(), float(149.)), weight);
+     hleptonPt[3]->Fill(min(cms2.hyp_lt_p4()[i_hyp].pt(), float(149.)), weight);
 
      hleptonEta[myType]->Fill(fabs(cms2.hyp_ll_p4()[i_hyp].eta()), weight); // Lepton Eta
      hleptonEta[3]->Fill(fabs(cms2.hyp_ll_p4()[i_hyp].eta()), weight); // Lepton Eta
@@ -455,7 +477,7 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, bool identifyEvents ) 
   const char sample_names[][1024] = { "ww", "wz", "zz", "wjets", "dy", "dyee", "dymm", "dytt", "ttbar", "tw", "lm0x", "lm1x", "lm2x", "lm3x", "lm4x", "lm5x", "lm6x", "lm7x", "lm8x", "lm9x"};
   const char *prefix = sample_names[sample];
   RooDataSet* dataset = MakeNewDataset(sample_names[sample]);
-  double kFactor = 1; // 1fb-1
+  double kFactor = .1; // 1fb-1
 
   //  Float_t ptbin[4] = {10, 20, 60, 150};
   //  Float_t etabin[3] = {0, 1.5, 2.4};

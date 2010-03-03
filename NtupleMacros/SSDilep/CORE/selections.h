@@ -80,7 +80,7 @@ bool met1(int index, const class TVector3& corr);
 bool sumEt10(double sumEt);
 bool sumEt1(double sumEt);
 
-bool isChargeFlip(int elIndex);
+bool isChargeFlip1(int elIndex);
 //old cuts on conversions
 bool conversionElectron(int electron);
 //new conversion stuff...cut on shared fraction of hits implemented

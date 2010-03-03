@@ -28,26 +28,26 @@
   const bool identifyDYEvents = false;
 
 // Flags for files to run over
-bool runWW    = true;
-bool runWZ    = true;
-bool runZZ    = true;
-bool runWjets = true;
+bool runWW    = false;
+bool runWZ    = false;
+bool runZZ    = false;
+bool runWjets = false;
 bool runDYee  = false;
 bool runDYmm  = false;
 bool runDYtt  = false;
-bool runDY  = true;
+bool runDY  = false;
 bool runttbar = true;
-bool runtW    = true;
-bool runLM0x    = true;
-bool runLM1x    = true;
-bool runLM2x    = true;
-bool runLM3x    = true;
-bool runLM4x    = true;
-bool runLM5x    = true;
-bool runLM6x    = true;
-bool runLM7x    = true;
-bool runLM8x    = true;
-bool runLM9x    = true;
+bool runtW    = false;
+bool runLM0x    = false;
+bool runLM1x    = false;
+bool runLM2x    = false;
+bool runLM3x    = false;
+bool runLM4x    = false;
+bool runLM5x    = false;
+bool runLM6x    = false;
+bool runLM7x    = false;
+bool runLM8x    = false;
+bool runLM9x    = false;
 
 bool runWjetBackground1 = false;
 bool runWjetBackground2 = false;
@@ -62,6 +62,7 @@ bool runWjetBackground2 = false;
 
  gROOT->ProcessLine(Form(".x setup.C(%d)", 1));
  gSystem->CompileMacro("doAnalysis.C", "++k", "libsusyosdiltp");
+// gSystem->CompileMacro("doFlipAnalysis.C", "++k", "libsusyosdiltp");
 // gSystem->CompileMacro("doAnalysisttbar.C", "++k", "libsusyttdiltp");
 // gSystem->CompileMacro("doFakeAnalysis.C", "++k", "libsusyosdiltp");
 // gSystem->CompileMacro("doAnalysisCompare.C", "++k", "libsusyosdiltp");
