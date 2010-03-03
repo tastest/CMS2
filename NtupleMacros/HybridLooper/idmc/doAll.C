@@ -17,6 +17,7 @@ void doAll() {
 
 	gROOT->ProcessLine(".L ../../CORE/electronSelections.cc+");
 	gROOT->ProcessLine(".L ../../CORE/utilities.cc+");
+    gROOT->ProcessLine(".L ../../CORE/mcSelections.cc+");
 	gROOT->ProcessLine(".L ../../CORE/selections.cc+");
 	gROOT->ProcessLine(".L ../histtools.C+");
 
@@ -29,9 +30,10 @@ void doAll() {
 	// output file for histograms
 	//
 
-
-    TString fileNameString = "pt20up";
-    elecuts_t configured_cuts = (1<<ELEPASS_PT20);
+    //TString fileNameString = "pt20up";
+    TString fileNameString = "pt10to20";
+    //elecuts_t configured_cuts = (1<<ELEPASS_PT20);
+    elecuts_t configured_cuts = (1<<ELEPASS_PT10NOT20);
 	MyScanChain *looper = new MyScanChain(configured_cuts);
 
 	//

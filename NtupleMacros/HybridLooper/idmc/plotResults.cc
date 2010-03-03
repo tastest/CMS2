@@ -166,6 +166,18 @@ void plotValidationOverlay(HistogramUtilities &h1, TString name_before, TString 
     if (plotEff)
         Utilities::saveCanvas(c, "results/" + saveName + "eff_b_" + name_after + "_" + det);
 
+    c->cd();
+    lg->Clear();
+    lg->AddEntry(h1_after_b, "After - BG (" + upperDet + ")", "fl");
+    lg->AddEntry(h1_after_s, "After - Signal (" + upperDet + ")", "lp");
+    h1_after_s->Draw("HIST E1");
+    Float_t max = h1_after_s->GetMaximum()*1.2;
+    if (h1_after_b->GetMaximum()*1.2 > max) max = h1_after_b->GetMaximum()*1.2;
+    h1_after_s->GetYaxis()->SetRangeUser(0, max);
+    h1_after_b->Draw("SAME HIST E1");
+    lg->Draw();
+    if (plotDist)
+        Utilities::saveCanvas(c, "results/" + saveName + "overlay_sb_" + name_after + "_" + det);
 
     delete c;
     delete lg;

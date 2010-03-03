@@ -32,6 +32,14 @@ echo "
         <b>Background:</b><br>
     chain_wmunu->Add(ntuple_location + "/cms2/Wmunu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");<br>
     select EMU events, where the muon is truth match and from a W<br>
+    <br>
+    <br>
+    <b>MC pdgid catagories using elFakeMCCategory in mcSelections.cc</b><br>
+    // 0: real electron from W or Z<br>
+    // 1: electrons from gamma (conversion) <br>
+    // 2: electron candidate or its mother is a light hadron<br>
+    // 3: real electron from heavy hadron decay<br>
+    // 4: the rest<br>
 
     <br>
     <br>
@@ -129,9 +137,10 @@ echo "
 	"
 
 
-for FILE_S in `ls results/*.png | grep $TAG | grep $VER | grep -v _b_`; do
+for FILE_S in `ls results/*.png | grep $TAG | grep $VER | grep _s_`; do
 
     FILE_B=`echo $FILE_S | sed 's/\(.*\)_s_\(.*\)/\1_b_\2/g'`
+    FILE_SB=`echo $FILE_S | sed 's/\(.*\)_s_\(.*\)/\1_sb_\2/g'`
 	TYPE=`echo $FILE_S | sed 's/.*_\(.*\)_s_.*/\1/g'`
 	VAR=`echo $FILE_S | sed 's/.*_\(.*\)_E.*\.png/\1/g'`
 	DET=`echo $FILE_S | sed 's/.*_\(.*\)\.png/\1/g'`
@@ -139,20 +148,27 @@ for FILE_S in `ls results/*.png | grep $TAG | grep $VER | grep -v _b_`; do
 	if [ $TYPE == "overlay" ]; then
 		echo "
 		<h2>$VAR ($DET): Signal (left), Background (right) <br>
-			- before all selections (solid), after all selections (points)</h2>
+            - comparing S before and after all selections and likewise for B</h2>
 		<img src=$FILE_S HEIGHT=$HEIGHT WIDTH=$WIDTH>
-	        <img src=$FILE_B HEIGHT=$HEIGHT WIDTH=$WIDTH><br>
-		"
-		if [  $VAR == "pdgid" ]; then
+        <img src=$FILE_B HEIGHT=$HEIGHT WIDTH=$WIDTH><br>
+        "
+        if [ $VAR != "pdgid" ]; then
                 echo "
-                	<h2>$VAR ($DET): Signal (left), Background (right) <br>
-                        	- after all selections (points)</h2>
-                	<img src="results/$VER\_s_h1_hyp_debug_after_cand01_pdgid_$DET.png" HEIGHT=$HEIGHT WIDTH=$WIDTH>
-               	 	<img src="results/$VER\_b_h1_hyp_debug_after_cand01_pdgid_$DET.png" HEIGHT=$HEIGHT WIDTH=$WIDTH><br>
-                	"
+                <h2>- comparing S and B after all selections</h2><br>
+            <img src=$FILE_SB HEIGHT=$HEIGHT WIDTH=$WIDTH><br>
+            "
 		fi
 
-	fi
+        if [ $VAR == "pdgid" ]; then
+            echo "
+                <h2>$VAR ($DET): Signal (left), Background (right) <br>
+                    	- comparing S before and after all selections and likewise for B</h2>
+               	    <img src="results/$VER\_s_h1_hyp_debug_after_cand01_pdgid_$DET.png" HEIGHT=$HEIGHT WIDTH=$WIDTH>
+                 	<img src="results/$VER\_b_h1_hyp_debug_after_cand01_pdgid_$DET.png" HEIGHT=$HEIGHT WIDTH=$WIDTH><br>
+                "
+	    fi
+    fi
+
 #	if [ $TYPE == "eff" ]; then
 #            EFF=`echo $FILE_S | sed 's/.*after_\(.*\).png/\1/g'`
 #
