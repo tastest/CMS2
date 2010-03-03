@@ -1,3 +1,7 @@
+
+# ifndef MCSELECTIONS_H
+# define MCSELECTIONS_H
+
 #include "CMS2.h"
 
 int getDrellYanType();
@@ -57,3 +61,6 @@ int elFakeMCCategory(int i_el);
 int muFakeMCCategory(int i_mu);
 bool idIsCharm(int id);
 bool idIsBeauty(int id);
+
+#endif
+
