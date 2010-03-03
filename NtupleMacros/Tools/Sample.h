@@ -4,7 +4,7 @@
 
 #include <string>
 
-enum Process { TEST, WW, WZ, ZZ, We, Wm, Wt, DYee, DYmm, DYtt,
+enum Process { OTHER, TEST, WW, WZ, ZZ, We, Wm, Wt, DYee, DYmm, DYtt,
 	       ttbar, ttMadgraph, tW, singleTop_tChannel, singleTop_sChannel, 
 	       LM0, LM1, LM2, LM2mhfeq360, LM3, LM4, LM5, LM6, LM7, LM8, LM9, LM9p, LM9t175, LM10, LM11, LM12, LM13,
 	       InclusiveMuPt15, InclusiveMuPt15dilep,
