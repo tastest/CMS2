@@ -37,7 +37,7 @@ enum SubDetector
   nPartitions =    24
 };
 
-bool isSubDetectorGood( int cuts );
+bool isSubDetectorGood( unsigned int cuts );
 
 bool isTrackQuality( int index, int cuts);
 
@@ -58,15 +58,7 @@ bool passMuonIsolationLoose(int index);
 bool goodMuonIsolated(int index);
 bool goodElectronIsolated(int index, bool use_calo_iso = false);
 bool goodLooseElectronWithoutIsolation(int index);
-bool pass2Met(int index, const class TVector3& corr);
 double nearestDeltaPhi(double Phi, int index);
-double MetSpecial(double MET, double MetPhi, int index);
-bool pass4Met(int index, const class TVector3& corr);
-bool met10(int index, const class TVector3& corr);
-bool met1(int index, const class TVector3& corr);
-bool sumEt10(double sumEt);
-bool sumEt1(double sumEt);
-bool passMet_OF20_SF30(int hypIdx, bool useTcMet);
 
 bool isChargeFlip(int elIndex);
 //old cuts on conversions
@@ -90,12 +82,6 @@ double tagMuonPt (int i_dilep);
 double tagMuonRelIso (int i_dilep);
 int additionalZcounter();
 bool additionalZveto();
-bool isDYee();
-bool isDYmm();
-bool isDYtt();
-bool isWe();
-bool isWm();
-bool isWt();
 int nTrkJets(int i_hyp);
 bool passTrkJetVeto(int i_hyp);
 std::vector<LorentzVector> JPTs(int i_hyp, double etThreshold);
@@ -114,29 +100,14 @@ double conversionDeltaPhi (int i_conv, int i_el);
 bool passTrackIsolation(int index);
 int passTrackZVeto(int hyp_index);
 
-int getDrellYanType();
-int getZZType ();
-void dumpDocLines();
 int NjetVeto(std::vector<TLorentzVector>& Jet, double min_et);
 bool trueElectron(int index);
 bool trueMuon(int index);
 bool trueMuonFromW(int index);
-bool trueMuonFromW_WJets(int index);
 bool trueElectronFromW(int index);
-bool trueElectronFromW_WJets(int index);
-//bool isFakeDenominatorElectron(int index);
-//bool isFakeNumeratorElectron(int index, int type); 
 
 // muon cleaning by ratio of track and global Pt
 bool muonReconstructionCleaning(int i_hyp, float threshold);
-
-// new MET factorization
-bool metSimple (float threshold, const TVector3& corr);
-bool metBalance (int i_hyp, const TVector3& corr);
-bool metProjected (int i_hyp, const TVector3& corr);
-bool pass5Met (int i_hyp, const TVector3& corr);
-//
-
 
 bool passLeptonIsolation(int id, int index, bool use_ele_calo_iso);
 double muonTrkIsolationPAT(int index); 
@@ -182,7 +153,6 @@ bool passLeptonIsolationVJets09(int id, int index);
 bool looseElectronSelectionVJets09(int index);
 bool looseMuonSelectionVJets09(int index);
 bool passLeptonIDVJets09(int id, int index);
-bool passMetVJets09(float value, bool useTcMet);
 int numberOfExtraMuonsVJets09(int i_hyp);
 int numberOfExtraElectronsVJets09(int i_hyp);
 
@@ -192,7 +162,6 @@ bool comparePt(const LorentzVector &lv1,
 	       const LorentzVector &lv2);
 bool GoodSusyElectronWithoutIsolation(int index);
 bool GoodSusyElectronWithoutIsolationNoD0(int index);
-bool GoodSusyElectronWithIsolationLoose(int index, bool use_calo_iso); 
 bool PassSusyElectronIsolationLoose(int index, bool use_calo_iso);
 bool GoodSusyMuonWithIsolation(int index); 
 bool GoodSusyMuonWithoutIsolation(int index);
@@ -210,11 +179,7 @@ int numberOfExtraElectronsSUSY(int i_hyp);
 int numberOfExtraMuonsSUSY(int i_hyp);
 std::vector<LorentzVector> getCaloJets(int i_hyp); 
 std::vector<LorentzVector> getJPTJets(int i_hyp); 
-int ttbarconstituents(int i_hyp);
 bool additionalZvetoSUSY09(int i_hyp);
-bool idIsBeauty(int id);
-bool idIsCharm(int id);
-int leptonIsFromW(int idx, int id, LorentzVector v);
 bool isFakeableElSUSY09(int iEl);
 bool isFakeableMuSUSY09(int iMu);
 bool isNumElSUSY09(int iEl);
@@ -226,13 +191,10 @@ bool isFakeableElTTDil08(int iEl);
 bool isNumMuTTDil08(int iMu);
 bool isFakeableMuTTDil08(int iMu);
 
-bool trueGammaFromMuon(int electron);
-
 int findPrimTrilepZ(int i_hyp, double &mass);
 bool vetoAddZ(int i_hyp, int unusedLepton, double &mass);
 std::vector<LorentzVector> JPTsTrilep(int i_hyp, double etThreshold);
 unsigned int nJPTsTrilep(int i_hyp, double etThreshold);
 double nearestDeltaPhiTrilep(double Phi, int i_hyp);
 double nearestDeltaPhiJet(double Phi, int i_hyp);
-double MetSpecialTrilep(double MET, double MetPhi, int index);
 #endif
