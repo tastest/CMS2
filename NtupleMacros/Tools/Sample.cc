@@ -57,7 +57,7 @@ Sample fFreeForm (const char *sample_glob, enum Process p, int histo_color,
 }
 
 static const std::string prefix = (getenv("CMS2_NTUPLE_LOCATION") != 0) ? 
-     std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" : "/data/tmp/";
+     std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" : "/data/tmp/cms2/";
 
 // New test file
 Sample fTest ()
