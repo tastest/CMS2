@@ -367,11 +367,14 @@ void dumpDocLines() {
   static TDatabasePDG *pdg = new TDatabasePDG();
   std::cout << "------------------------------------------" << std::endl;
   for (int j=0; j<size; j++) {
+  float m2 = cms2.genps_p4().at(j).M2();
+  float m = m2 >= 0 ? sqrt(m2) : 0.0;
     cout << setw(9) << left << pdg->GetParticle(cms2.genps_id().at(j))->GetName() << " "
 	 << setw(7) << right << setprecision(4) << cms2.genps_p4().at(j).pt() << "  "
 	 << setw(7) << right << setprecision(4) << cms2.genps_p4().at(j).phi() << "  "
 	 << setw(10) << right << setprecision(4) << cms2.genps_p4().at(j).eta() << "  "
-	 << setw(10) << right << setprecision(4) << cms2.genps_p4().at(j).mass() << endl;
+	 << setw(10) << right << setprecision(4) << m << endl;
+    //;
   }
 }
 
