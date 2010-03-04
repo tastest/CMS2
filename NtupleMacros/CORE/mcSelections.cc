@@ -374,7 +374,6 @@ void dumpDocLines() {
 	 << setw(7) << right << setprecision(4) << cms2.genps_p4().at(j).phi() << "  "
 	 << setw(10) << right << setprecision(4) << cms2.genps_p4().at(j).eta() << "  "
 	 << setw(10) << right << setprecision(4) << m << endl;
-    //;
   }
 }
 
