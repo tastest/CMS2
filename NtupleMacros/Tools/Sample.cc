@@ -1,6 +1,7 @@
 #include "TChain.h"
 #include "Sample.h"
 #include "tools.h"
+#include "CORE/mcSelections.h"
 #include <string>
 
 bool filterByProcess (enum Process sample)
