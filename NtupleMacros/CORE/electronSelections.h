@@ -3,12 +3,13 @@
 #ifndef ELECTRONSELECTIONS_H
 #define ELECTRONSELECTIONS_H
 
+#include <stdint.h>
 
 //
 // electron selections 
 //
 
-typedef ULong64_t elecuts_t;
+typedef uint64_t elecuts_t;
 
 //
 // This is for debugging and should not be used
