@@ -19,12 +19,6 @@ static void  correctSumEtForPion  ( int index , TH2F* rf);
 
 //--------------------------------------------------------------------
 
-static bool isTrackQuality( int index, int cuts ) {
-  return ( ( cms2.trks_qualityMask().at(index) & cuts ) == cuts );
-}
-
-//--------------------------------------------------------------------
-
 float tcmet_x;
 float tcmet_y;
 float tcsumet;
