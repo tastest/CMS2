@@ -1,7 +1,3 @@
-
-#ifndef METSELECTIONS_H
-#define METSELECTIONS_H
-
 //
 // met selections
 //
@@ -53,6 +49,3 @@ float nearestHypLeptonPhi( float metPhi, int hyp_index ) {
      return min(tightDPhi, looseDPhi);
 
 }
-
-#endif
-
