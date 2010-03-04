@@ -29,3 +29,11 @@ std::pair<double, double> trks_d0_pv (int itrk, int ipv)
      std::cerr << "Oh no!  sigma^2(d0corr) < 0!" << std::endl;
      return std::pair<double, double>(d0vtx, -sqrt(-d0err2vtx));
 }
+
+//----------------------------------------------------------------
+// Simple function that tells you whether or not a track passed 
+// a particular quality flag.
+//----------------------------------------------------------------
+bool isTrackQuality( int index, int cuts ) {
+     return ( ( cms2.trks_qualityMask().at(index) & cuts ) == cuts );
+}
