@@ -7,6 +7,9 @@
 #include "electronSelections.h"
 #include "CMS2.h"
 
+elecuts_t electronSelections_debug_;
+elecuts_t electronId_debug_;
+
 bool electronSelection_cand01(const unsigned int index)
 {
 

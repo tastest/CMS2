@@ -15,8 +15,8 @@ typedef uint64_t elecuts_t;
 // This is for debugging and should not be used
 // by anyone who does not know what it is
 //
-elecuts_t electronSelections_debug_;
-elecuts_t electronId_debug_;
+extern elecuts_t electronSelections_debug_;
+extern elecuts_t electronId_debug_;
 
 enum EgammaFiduciality {
     ISEB,
