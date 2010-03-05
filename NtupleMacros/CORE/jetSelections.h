@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// $Id: jetSelections.h,v 1.3 2010/02/21 01:14:45 jmuelmen Exp $
+// $Id: jetSelections.h,v 1.4 2010/03/05 02:47:30 warren Exp $
 
 #ifndef JETSELECTIONS_H
 #define JETSELECTIONS_H
@@ -13,7 +13,8 @@ enum JetType {
      JETS_TYPE_PF_CORR,
      JETS_TYPE_PF_UNCORR,
      JETS_TYPE_CALO_CORR,
-     JETS_TYPE_CALO_UNCORR
+     JETS_TYPE_CALO_UNCORR,
+     JETS_TYPE_GEN
 };
 
 enum CleaningType {
