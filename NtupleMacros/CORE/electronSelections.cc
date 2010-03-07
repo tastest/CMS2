@@ -45,6 +45,45 @@ bool electronSelection_cand02(const unsigned int index)
 
 }
 
+//but based on a simpler cut-based egamma ID
+// with more better rejection: JuraTrackIso, susy-style (ped subtracted in EB)
+// and conversion rejection
+bool electronSelectionTTbar_cand01(const unsigned int index) {
+  if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+  if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
+  if (!electronId_noMuon(index)) return false;
+  if (!electronId_cand01(index)) return false; 
+  if (!electronImpactTTbar(index)) return false;
+  if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
+  if (isFromConversionPartnerTrack(index)) return false;
+  return true;
+}
+
+bool electronImpactTTbar(const unsigned int index) {
+  //
+  // define thresholds for EB, EE
+  //
+  float d0Thresholds[2]               = {0.04, 0.04};
+  
+  //
+  // apply cutç
+  //
+  if (fabs(cms2.els_etaSC()[index]) < 1.479) {
+    //if (cms2.els_fiduciality()[index] & (1<<ISEB)) {
+    if (fabs(cms2.els_d0corr()[index]) > d0Thresholds[0]) return false;
+    return true;
+  }
+  if (fabs(cms2.els_etaSC()[index]) > 1.479) {
+    //if (cms2.els_fiduciality()[index] & (1<<ISEE)) {
+    if (fabs(cms2.els_d0corr()[index]) > d0Thresholds[1]) return false;
+    return true;
+  }
+  
+  return false;
+  
+}
+
+
 
 //
 // if fbrem is low then cut on e/p_in

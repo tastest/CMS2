@@ -86,7 +86,10 @@ static const elecuts_t electronSelections_passid_ =  (1<<ELEPASS_DETA) |
 bool electronSelection_cand01(const unsigned int index);
 bool electronSelection_cand02(const unsigned int index);
 
-//
+//TTbar selections
+bool electronImpactTTbar(const unsigned int index);
+bool electronSelectionTTbar_cand01(const unsigned int index);
+bool electronImpactTTbar(const unsigned int index);
 // candidate electron id function
 // see http://www.t2.ucsd.edu/tastwiki/bin/view/CMS/ElectronID
 //
