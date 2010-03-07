@@ -99,11 +99,9 @@ void printNJets( bool latex=false, const char* formatS = "%6.1f", const char* si
       double n0 = h1F->GetBinContent(1); 
       double n0E = h1F->GetBinError(1);
       n0all += n0;
-      n0allE += n0E*n0E;
       n0allE = sqrt(n0allE*n0allE + n0E*n0E);
       if (isSig){
 	n0sig += n0;
-	n0sigE += n0E*n0E;
 	n0sigE = sqrt(n0sigE*n0sigE + n0E*n0E);
       }
 
