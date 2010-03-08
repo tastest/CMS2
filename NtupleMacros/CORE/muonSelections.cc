@@ -5,9 +5,23 @@
 // Apply various muon identification requirements
 //------------------------------------------------------------------
 bool muonId(unsigned int index, SelectionType type){
+
+  float isovalue;
+
+  switch(type) {
+  case Nominal:
+    isovalue = 0.1;
+    break;
+  case NominalTTbar:
+    isovalue = 0.15;
+    break;
+  default:
+    std::cout << "muonID ERROR: requested muon type is not defined. Abort." << std::endl;
+    return false;
+  } 
   return 
     muonIdNotIsolated( index, type ) && 
-    muonIsoValue(index) < 0.1;          // Isolation cut
+    muonIsoValue(index) < isovalue;          // Isolation cut
 }
 bool muonIdNotIsolated(unsigned int index, SelectionType type){
   switch (type) {
@@ -30,7 +44,6 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type){
     break;
 
   case NominalTTbar:
-    //copy-paste is BAD
     if ( cms2.mus_p4()[index].pt() < 10.) {
       std::cout << "muonID ERROR: requested muon is too low pt,  Abort." << std::endl;
       return false;
@@ -41,7 +54,6 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type){
     if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
     if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
     if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.02) return false; // d0 from beamspot
-    if (muonIsoValue(index) > 0.15)                     return false; // Isolation cut
     return true;
 
   default:
