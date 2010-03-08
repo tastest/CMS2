@@ -27,14 +27,6 @@ bool isSubDetectorGood( unsigned int cuts ) {
 }
 
 //----------------------------------------------------------------
-// Simple function that tells you whether or not a track passed 
-// a particular quality flag.
-//----------------------------------------------------------------
-bool isTrackQuality( int index, int cuts ) {
-     return ( ( cms2.trks_qualityMask().at(index) & cuts ) == cuts );
-}
-
-//----------------------------------------------------------------
 // true electron
 //----------------------------------------------------------------
 bool trueElectron(int index) {
