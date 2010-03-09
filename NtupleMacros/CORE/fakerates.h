@@ -4,6 +4,7 @@
 
 // list of available FR versions:
 enum fakeRateVersion {
+  el_ttbar,   
   el_v1_cand01, // pure cand01 selection
   el_v1_cand02, // cand02 + extra
   el_v1_cand02flip, // cand02 + extra + chargeflipVeto
@@ -14,6 +15,7 @@ enum fakeRateVersion {
   el_v3_cand02,
   el_v3_cand02flip,
   mu_v1,
+  mu_ttbar
 };
 
 bool isFakeableMuon (int i_mu, enum fakeRateVersion version);

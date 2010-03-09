@@ -9,16 +9,16 @@
 #include "electronSelections.h"
 #include "muonSelections.h"
 
+
 /*muons*/
 class TH2F &fakeRateMuon (enum fakeRateVersion);
 static TFile *mu_fakeRateFile = 0;
 static TH2F  *mu_fakeRate = 0;
+static TH2F  *mu_ttbar_fakeRate = 0;
 bool isFakeableMuon (int index, enum fakeRateVersion version){
-  // check version is valid
-  if(version != mu_v1){  
-    std::cout<<"isFakeableMuon: invalid fakeRateVersion given. Check it!"<<std::endl;
-    return false;
-  }
+
+if( version == mu_v1 ){
+
   // return denominator for current version
   if ( cms2.mus_p4()[index].pt() < 10.) {
     std::cout << "muonID ERROR: requested muon is too low pt,  Abort." << std::endl;
@@ -40,14 +40,28 @@ bool isFakeableMuon (int index, enum fakeRateVersion version){
   if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.2) return false; // d0 from beamspot
   if (muonIsoValue(index) > 0.4)                      return false; // Isolation cut
   return true;
+
+} 
+else if ( version == mu_ttbar ){
+    if ( cms2.mus_p4()[index].pt() < 10.) {
+      std::cout << "muonID ERROR: requested muon is too low pt,  Abort." << std::endl;
+      return false;
+    }
+    if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.5)  return false; // eta cut
+    if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
+    if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
+    if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
+    if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
+    if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.02) return false; // d0 from beamspot
+    return true;
+} 
+else {
+  cout << "ERROR: unhandled muon version" << endl;
+  return false;
+}
+
 }
 double muFakeProb (int i_mu, enum fakeRateVersion version){
-
- // check version is valid
-  if(version != mu_v1){
-    std::cout<<"muFakeProb: invalid muon fakeRateVersion given. Check it!"<<std::endl;
-    return -999.;
-  }
 
   // initializations
   float prob = 0.0;
@@ -55,7 +69,7 @@ double muFakeProb (int i_mu, enum fakeRateVersion version){
   float eta = fabs(cms2.mus_p4()[i_mu].Eta());
 
   // Get FR(eta,pt) from 2D hist
-  TH2F *theFakeRate = &fakeRateMuon(mu_v1);
+  TH2F *theFakeRate = &fakeRateMuon(version);
   float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) 
                     + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
   if ( pt > upperEdge ) pt = upperEdge;
@@ -70,11 +84,6 @@ double muFakeProb (int i_mu, enum fakeRateVersion version){
   return prob;
 }
 double muFakeProbErr (int i_mu, enum fakeRateVersion version){
-  // check version is valid
-  if(version != mu_v1){
-    std::cout<<"muFakeProbErr: invalid muon fakeRateVersion given. Check it!"<<std::endl;
-    return -999.;
-  }
 
   // initializations
   float prob = 0.0;
@@ -83,7 +92,7 @@ double muFakeProbErr (int i_mu, enum fakeRateVersion version){
   float eta = fabs(cms2.mus_p4()[i_mu].Eta());
 
   // Get FR(eta,pt) & error(eta,pt) from 2D hist 
-  TH2F *theFakeRate = &fakeRateMuon(mu_v1);
+  TH2F *theFakeRate = &fakeRateMuon(version);
   float upperEdge = theFakeRate->GetYaxis()->GetBinLowEdge(theFakeRate->GetYaxis()->GetNbins()) + theFakeRate->GetYaxis()->GetBinWidth(theFakeRate->GetYaxis()->GetNbins()) - 0.001;
   if ( pt > upperEdge ) pt = upperEdge;
   prob        = theFakeRate->GetBinContent( theFakeRate->FindBin(eta,pt) );
@@ -106,8 +115,16 @@ TH2F &fakeRateMuon (enum fakeRateVersion version){
       gSystem->Exit(1);
     }
     mu_fakeRate       = dynamic_cast<TH2F *>( mu_fakeRateFile->Get("QCD30_mu_FR_etavspt") );
+    mu_ttbar_fakeRate = dynamic_cast<TH2F *>( mu_fakeRateFile->Get("QCD30_mu_ttbar_FR_etavspt") );
   }
-  return *mu_fakeRate;
+  if(version == mu_v1){
+    return *mu_fakeRate;
+  } else if (version == mu_ttbar){
+    return *mu_ttbar_fakeRate;
+  } 
+  cout << "ERROR: unknown muon version" << endl;
+  gSystem->Exit(1); 
+  return *(TH2F*)0; 
 }
 
 /* electrons */
@@ -119,6 +136,8 @@ double elFakeProbErr_test (int, enum fakeRateVersion);
 static TFile *el_fakeRateFile = 0;
 
 // histograms for supported denominators
+static TH2F  *el_fakeRate_ttbar = 0;
+
 static TH2F  *el_fakeRate_v1_cand01 = 0;
 static TH2F  *el_fakeRate_v1_cand02 = 0;
 static TH2F  *el_fakeRate_v1_cand02flip = 0;
@@ -249,6 +268,16 @@ bool isFakeableElectron (int index, enum fakeRateVersion version){
     if (isChargeFlip(index)) return false;
     return true;
   } 
+  else if( version == el_ttbar ){
+    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
+    if (!electronId_noMuon(index)) return false;
+    //if (!electronId_cand01(index)) return false;
+    //if (!electronImpact_cand01(index)) return false; 
+    if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
+    if (isFromConversionPartnerTrack(index)) return false;
+    return true;
+  }
   else {
     std::cout<<"isFakeable: invalid fakeRateVersion given. Check it!"<<std::endl;
     return false;
@@ -321,6 +350,7 @@ TH2F &fakeRateEl (enum fakeRateVersion version){
     el_fakeRate_v3_cand01     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v3_cand01_FR_etavspt") );
     el_fakeRate_v3_cand02     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v3_cand02_FR_etavspt") );
     el_fakeRate_v3_cand02flip = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v3_cand02flip_FR_etavspt") );
+    el_fakeRate_ttbar = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_ttbar_FR_etavspt") );
   }
   if( version == el_v1_cand01 ){ 
     return *el_fakeRate_v1_cand01;
@@ -340,8 +370,42 @@ TH2F &fakeRateEl (enum fakeRateVersion version){
     return *el_fakeRate_v3_cand02;
   } else if( version == el_v3_cand02flip ){ 
     return *el_fakeRate_v3_cand02flip;
-  } 
+  } else if( version == el_ttbar ){ 
+    return *el_fakeRate_ttbar;
+  }
   cout << "ERROR: unknown electron version" << endl;	
   gSystem->Exit(1);
   return *(TH2F*)0;
 }
+
+void PrintTH2F( TH2F* theFakeRate ){
+  for(int j=0; j <= 1+theFakeRate->GetNbinsX(); j++){
+    cout << j << "\t";
+  }
+  cout << endl;
+  for(int i=0; i <= 1+theFakeRate->GetNbinsY(); i++){
+    cout << i << "\t";
+    for(int j=0; j <= 1+theFakeRate->GetNbinsX(); j++){
+      cout << Form("%.07f", theFakeRate->GetBinContent(j,1+theFakeRate->GetNbinsY()-i) ) << "\t";
+    }
+    cout << endl;
+  }
+  return;
+} 
+  
+//
+void PrintErrTH2F( TH2F* theFakeRate ){
+  for(int j=0; j <= 1+theFakeRate->GetNbinsX(); j++){
+    cout << j << "\t";
+  }
+  cout << endl;
+  for(int i=0; i <= 1+theFakeRate->GetNbinsY(); i++){
+    cout << i << "\t";
+    for(int j=0; j <= 1+theFakeRate->GetNbinsX(); j++){
+      cout << Form("%.07f", theFakeRate->GetBinError(j,1+theFakeRate->GetNbinsY()-i) ) << "\t";
+    }
+    cout << endl; 
+  }
+  return;
+} 
+
