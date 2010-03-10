@@ -6,6 +6,13 @@ DataSource fH_ELEGUNIDEAL() { return DataSource("elegunideal", H_ELEGUNIDEAL, kR
 
 DataSource fH_DYMM()    { return DataSource("dymm",     H_DYMM, kCyan);    }
 DataSource fH_DYEE()    { return DataSource("dyee",     H_DYEE, kMagenta);    }
+
+DataSource fH_DYMM_ODD()    { return DataSource("dymm_odd",     H_DYMM_ODD, kCyan);    }
+DataSource fH_DYEE_ODD()    { return DataSource("dyee_odd",     H_DYEE_ODD, kMagenta);    }
+
+DataSource fH_DYMM_EVEN()    { return DataSource("dymm_even",     H_DYMM_EVEN, kCyan);    }
+DataSource fH_DYEE_EVEN()    { return DataSource("dyee_even",     H_DYEE_EVEN, kMagenta);    }
+
 DataSource fH_DYTT()    { return DataSource("dytt",     H_DYTT, kBlack);    }
 
 DataSource fH_TTBAR()   { return DataSource("ttbar",    H_TTBAR, kYellow);       }

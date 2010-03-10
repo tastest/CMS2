@@ -9,6 +9,14 @@ enum {
 	H_TTBAR   ,
 	H_DYMM    ,
 	H_DYEE    ,
+
+    H_DYMM_ODD    ,
+    H_DYEE_ODD    ,
+
+    H_DYMM_EVEN    ,
+    H_DYEE_EVEN    ,
+
+
 	H_DYTT    ,
 
 	H_ZZ      ,
@@ -86,6 +94,13 @@ const static sources_t sources_nonpeaking =
 
 DataSource fH_DYMM();
 DataSource fH_DYEE();
+
+DataSource fH_DYMM_ODD();
+DataSource fH_DYEE_ODD();
+
+DataSource fH_DYMM_EVEN();
+DataSource fH_DYEE_EVEN();
+
 DataSource fH_DYTT();
 
 DataSource fH_TTBAR();
