@@ -555,7 +555,6 @@ void plotResultsW(TString det, TString fileStamp, TString version)
         std::vector<DataSource> sources;
         sources.push_back( fH_TTBAR() );
         sources.push_back( fH_WMUNU() );
-        //sources.push_back( fH_PHOTONJETS() );
         HistogramUtilities h1(fileStamp + ".root", sources, 1.0);
 
         // for comparing different options

@@ -20,6 +20,8 @@
 // CMS2 includes
 #include "CMS2.h"
 #include "../../CORE/selections.h"
+#include "../../CORE/electronSelections.h"
+#include "../../CORE/muonSelections.h"
 #include "../../CORE/mcSelections.h"
 #include "../../Tools/DileptonHypType.h"
 
@@ -296,7 +298,8 @@ void MyScanChain::FillAllEleIdHistogramsHyp(const unsigned int h, const float &w
 				FillAllEleIdHistograms(cms2.hyp_ll_index()[h], weight, sampleName);
 		}
 	}
-	if (hypType == DILEPTON_EMU && sampleName == "wm") {
+
+   	if (hypType == DILEPTON_EMU && sampleName == "wm") {
 		if(abs(cms2.hyp_ll_id()[h]) == 13) {
 			if ((leptonIsFromW(cms2.hyp_ll_index()[h], cms2.hyp_ll_id()[h]) > 0 )
                     && (cms2.els_type()[cms2.hyp_lt_index()[h]] & (1<<ISECALDRIVEN)) 
@@ -311,6 +314,25 @@ void MyScanChain::FillAllEleIdHistogramsHyp(const unsigned int h, const float &w
 		}
 
 	}
+
+    if (hypType == DILEPTON_EMU && sampleName == "InclusiveMuPt15") {
+        if(abs(cms2.hyp_ll_id()[h]) == 13) {
+            if (   muonId(cms2.hyp_ll_index()[h], Nominal)
+                    && (cms2.els_type()[cms2.hyp_lt_index()[h]] & (1<<ISECALDRIVEN))
+                    && fabs(cms2.els_p4().at(cms2.hyp_lt_index()[h]).eta()) < 2.5)
+                FillAllEleIdHistograms(cms2.hyp_lt_index()[h], weight, sampleName);
+        }
+        if(abs(cms2.hyp_lt_id()[h]) == 13) {
+            if (    muonId(cms2.hyp_lt_index()[h], Nominal)
+                    && (cms2.els_type()[cms2.hyp_ll_index()[h]] & (1<<ISECALDRIVEN))
+                    && fabs(cms2.els_p4().at(cms2.hyp_ll_index()[h]).eta()) < 2.5)
+                FillAllEleIdHistograms(cms2.hyp_ll_index()[h], weight, sampleName);
+        }
+
+    }
+
+
+
 
 }
 

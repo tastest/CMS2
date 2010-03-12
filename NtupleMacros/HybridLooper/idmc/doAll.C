@@ -15,6 +15,7 @@ void doAll() {
 	//
 	gROOT->ProcessLine(".L CMS2.cc+");
 
+    gROOT->ProcessLine(".L ../../CORE/muonSelections.cc+");
 	gROOT->ProcessLine(".L ../../CORE/electronSelections.cc+");
 	gROOT->ProcessLine(".L ../../CORE/utilities.cc+");
     gROOT->ProcessLine(".L ../../CORE/mcSelections.cc+");
@@ -76,6 +77,9 @@ void doAll() {
 	// wmunu
     TChain *chain_wmunu = new TChain("Events");
     chain_wmunu->Add(ntuple_location + "/cms2/Wmunu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+    // inclusive mu15 dilep filt
+    TChain *chain_inclmu15 = new TChain("Events");
+    chain_inclmu15->Add(ntuple_location + "/cms2/InclusiveMu15_Summer09-MC_31X_V3_7TeV-v1_dilepfilt/V03-00-35/merged_ntuple*.root");
 
 	// BSM
 	// LM0
@@ -108,6 +112,7 @@ void doAll() {
 
 	//looper->ScanChain(false, "QCDpt30", chain_qcd30);
 	looper->ScanChain(false, "wm", chain_wmunu);
+    //looper->ScanChain(false, "InclusiveMuPt15", chain_inclmu15);
 
 	//
 	// write histograms
@@ -131,6 +136,7 @@ void doAll() {
 	delete chain_dytt;
 	delete chain_wjets;
 	delete chain_wmunu;
+    delete chain_inclmu15;
 
 	delete chain_qcd30;
 
