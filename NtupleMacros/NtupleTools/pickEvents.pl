@@ -17,9 +17,10 @@ my $template = << 'EOF';
 import FWCore.ParameterSet.Config as cms
 process = cms.Process("PE")
 process.source = cms.Source("PoolSource",
-   fileNames = cms.untracked.vstring( FILES ),
+   fileNames = cms.untracked.vstring(),
    eventsToProcess = cms.untracked.VEventRange( EVENTS )
 )
+process.source.fileNames.extend(( FILES ))
 process.Out = cms.OutputModule("PoolOutputModule",
    fileName = cms.untracked.string(OUTPUT)
 )
