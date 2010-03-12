@@ -143,11 +143,42 @@ void MyScanChain::FormatHist2D(TH2F** hist, std::string sampleName, std::string 
 	}
 }
 
+bool MyScanChain::CheckCutsNM1(elecuts_t apply, elecuts_t remove, elecuts_t passed)
+{
+    if ((passed & (apply & (~remove))) == (apply & (~remove))) return true;
+    return false;
+}
+
+bool MyScanChain::CheckCuts(elecuts_t apply, elecuts_t passed)
+{
+    if ((apply & passed) == apply) return true;
+    return false;
+}
+
+
 void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
 {
 
     for (unsigned int i = 0; i < 2; ++i) {
         std::string detname = det_names[i];
+
+        // plots for puneeths talk
+        // compare pt eff of cand01 with egamma loose 
+        // with respect to other selections
+        // denom
+        FormatHist(h1_hyp_id_nm1_pt_[i], sampleName, "h1_hyp_id_nm1_pt_" + detname, 200, 0.0, 200.0);
+        // pass cand01
+        FormatHist(h1_hyp_idcand01_nm1_pt_[i], sampleName, "h1_hyp_idcand01_nm1_pt_" + detname, 200, 0.0, 200.0);
+        // pass cand02
+        FormatHist(h1_hyp_idcand02_nm1_pt_[i], sampleName, "h1_hyp_idcand02_nm1_pt_" + detname, 200, 0.0, 200.0);
+        // pass cand01extra
+        FormatHist(h1_hyp_idcand01extra_nm1_pt_[i], sampleName, "h1_hyp_idcand01extra_nm1_pt_" + detname, 200, 0.0, 200.0);
+        // pass cand02extra
+        FormatHist(h1_hyp_idcand02extra_nm1_pt_[i], sampleName, "h1_hyp_idcand02extra_nm1_pt_" + detname, 200, 0.0, 200.0);
+        // pass egamma loose
+        FormatHist(h1_hyp_idegammaloose_nm1_pt_[i], sampleName, "h1_hyp_idegammaloose_nm1_pt_" + detname, 200, 0.0, 200.0);
+        // pass egamma tight
+        FormatHist(h1_hyp_idegammatight_nm1_pt_[i], sampleName, "h1_hyp_idegammatight_nm1_pt_" + detname, 200, 0.0, 200.0);
 
         // debug variables
         // before and after selections applied
@@ -325,6 +356,9 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
     bool pass_electronId_cand02 = electronId_cand02(index);
     elecuts_t result_electronId_cand02 = electronId_debug_;
 
+    // extra
+    bool pass_electronId_extra = electronId_extra(index);
+
     // find detector 
     unsigned int det = 0;
     if (fabs(cms2.els_etaSC()[index]) > 1.479) det = 1;
@@ -466,6 +500,23 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
        Fill(h1_hyp_debug_after_cand02_E2x5MaxOver5x5_[det], hypType, E2x5MaxOver5x5, weight);
        Fill(h1_hyp_debug_after_cand02_reliso_[det], hypType, iso_relsusy, weight);
     } 
+
+
+    //
+    // fill histograms comparing different options
+    //
+    if (CheckCutsNM1(electronSelections_passall_, (1<<ELEPASS_ID), result_electronSelections_cand01)) {
+        Fill(h1_hyp_id_nm1_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+
+        if (pass_electronId_cand01) Fill(h1_hyp_idcand01_nm1_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+        if (pass_electronId_cand02) Fill(h1_hyp_idcand02_nm1_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+        if (pass_electronId_cand01 && pass_electronId_extra) Fill(h1_hyp_idcand01extra_nm1_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+        if (pass_electronId_cand02 && pass_electronId_extra) Fill(h1_hyp_idcand02extra_nm1_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+        if (electronId_classBasedLoose(index)) Fill(h1_hyp_idegammaloose_nm1_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+        if (electronId_classBasedTight(index)) Fill(h1_hyp_idegammatight_nm1_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+
+    }
+
 
 }
 

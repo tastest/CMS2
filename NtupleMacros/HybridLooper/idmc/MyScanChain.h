@@ -39,9 +39,24 @@ class MyScanChain {
 		void Fill2D(TH2F** hist, const unsigned int hyp, const float &valx, const float &valy, const float &weight);
 		void FormatHist2D(TH2F** hist, std::string sampleName, std::string name, int nx, float minx, float maxx, int ny, float miny, float maxy);
 
+        // dealing with cuts
+        bool CheckCutsNM1(elecuts_t apply, elecuts_t remove, elecuts_t passed);
+        bool CheckCuts(elecuts_t apply, elecuts_t passed);
+
+
         // configured cuts
         //
         elecuts_t configured_cuts_;
+
+        // plots for comparing current options
+        // with respect to other selections
+        TH1F *h1_hyp_id_nm1_pt_[2][4];
+        TH1F *h1_hyp_idcand01_nm1_pt_[2][4];
+        TH1F *h1_hyp_idcand02_nm1_pt_[2][4];
+        TH1F *h1_hyp_idcand01extra_nm1_pt_[2][4];
+        TH1F *h1_hyp_idcand02extra_nm1_pt_[2][4];
+        TH1F *h1_hyp_idegammaloose_nm1_pt_[2][4];
+        TH1F *h1_hyp_idegammatight_nm1_pt_[2][4];
 
 		//
 		// ele ID plots

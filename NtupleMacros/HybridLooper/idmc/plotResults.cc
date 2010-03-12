@@ -558,6 +558,17 @@ void plotResultsW(TString det, TString fileStamp, TString version)
         //sources.push_back( fH_PHOTONJETS() );
         HistogramUtilities h1(fileStamp + ".root", sources, 1.0);
 
+        // for comparing different options
+        //
+        plotValidationOverlay(h1, "h1_hyp_id_nm1_pt", "h1_hyp_idcand01_nm1_pt", version, det, 4);
+        plotValidationOverlay(h1, "h1_hyp_id_nm1_pt", "h1_hyp_idcand02_nm1_pt", version, det, 4);
+        plotValidationOverlay(h1, "h1_hyp_id_nm1_pt", "h1_hyp_idcand01extra_nm1_pt", version, det, 4);
+        plotValidationOverlay(h1, "h1_hyp_id_nm1_pt", "h1_hyp_idcand02extra_nm1_pt", version, det, 4);
+        plotValidationOverlay(h1, "h1_hyp_id_nm1_pt", "h1_hyp_idegammaloose_nm1_pt", version, det, 4);
+        plotValidationOverlay(h1, "h1_hyp_id_nm1_pt", "h1_hyp_idegammatight_nm1_pt", version, det, 4);
+
+/*
+
         // validation related
         //
         plotValidationOverlay(h1, "h1_hyp_debug_pdgid", "h1_hyp_debug_after_cand01_pdgid", version, det, 1);
@@ -604,6 +615,6 @@ void plotResultsW(TString det, TString fileStamp, TString version)
         plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_isocand02_eta", version, det, 1, false, true);
         plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_convcand02_eta", version, det, 1, false, true);
         plotValidationOverlay(h1, "h1_hyp_debug_after_idisocand02_eta", "h1_hyp_debug_after_idisoconvcand02_eta", version, det, 1, false, true);
-
+*/
 }
 
