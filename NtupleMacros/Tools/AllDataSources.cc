@@ -41,7 +41,9 @@ DataSource fH_WMUNU()      { return DataSource("wm",       H_WMUNU);          }
 DataSource fH_WTAUNU()      { return DataSource("wt",       H_WTAUNU);          }
 
 DataSource fH_QCD30()      { return DataSource("QCDpt30",       H_QCD30, kGreen);          }
-DataSource fH_MU30()       { return DataSource("InclusiveMuPt15",       H_MU30);          };
+DataSource fH_MU30()       { return DataSource("InclusiveMuPt30",       H_MU30);          };
+DataSource fH_MU15()       { return DataSource("InclusiveMuPt15",       H_MU15);          };
+
 
 // old stuff?
 DataSource fH_TW()      { return DataSource("tw",       H_TW);          }

@@ -45,6 +45,7 @@ enum {
 	H_QCD30,
 	H_QCD80,
 	H_MU30,
+    H_MU15,
 
 	H_TW      ,
 	H_WJETS   ,
@@ -129,6 +130,7 @@ DataSource fH_PHOTONJETS();
 
 DataSource fH_QCD30();
 DataSource fH_MU30();
+DataSource fH_MU15();
 
 // old?
 DataSource fH_WJETS();
