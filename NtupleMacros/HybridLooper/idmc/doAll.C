@@ -32,11 +32,11 @@ void doAll() {
 	//
 
     //TString fileNameString = "pt20up";
-    //TString fileNameString = "pt10to20";
-    TString fileNameString = "pt10up";
+    TString fileNameString = "pt10to20";
+    //TString fileNameString = "pt10up";
     //elecuts_t configured_cuts = (1<<ELEPASS_PT20);
-    //elecuts_t configured_cuts = (1<<ELEPASS_PT10NOT20);
-    elecuts_t configured_cuts = (1<<ELEPASS_PT10);
+    elecuts_t configured_cuts = (1<<ELEPASS_PT10NOT20);
+    //elecuts_t configured_cuts = (1<<ELEPASS_PT10);
 	MyScanChain *looper = new MyScanChain(configured_cuts);
 
 	//

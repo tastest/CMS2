@@ -58,6 +58,21 @@ class MyScanChain {
         TH1F *h1_hyp_idegammaloose_nm1_pt_[2][4];
         TH1F *h1_hyp_idegammatight_nm1_pt_[2][4];
 
+        // investigation into extra
+        //
+
+        TH1F *h1_hyp_idcand01_nm1_fbrem_0_pt_[2][4];
+        TH1F *h1_hyp_idcand01_nm1_fbrem_1_pt_[2][4];
+        TH1F *h1_hyp_idcand01_nm1_fbrem_2_pt_[2][4];
+        TH1F *h1_hyp_idcand01_nm1_fbrem_3_pt_[2][4];
+        TH1F *h1_hyp_idcand01_nm1_fbrem_4_pt_[2][4];
+
+        TH1F *h1_hyp_idcand01_nm1_eopinlowfbrem_0_pt_[2][4];
+        TH1F *h1_hyp_idcand01_nm1_eopinlowfbrem_1_pt_[2][4];
+        TH1F *h1_hyp_idcand01_nm1_eopinlowfbrem_2_pt_[2][4];
+        TH1F *h1_hyp_idcand01_nm1_eopinlowfbrem_3_pt_[2][4];
+        TH1F *h1_hyp_idcand01_nm1_eopinlowfbrem_4_pt_[2][4];
+
 		//
 		// ele ID plots
 

@@ -182,6 +182,21 @@ void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
         // pass egamma tight
         FormatHist(h1_hyp_idegammatight_nm1_pt_[i], sampleName, "h1_hyp_idegammatight_nm1_pt_" + detname, 200, 0.0, 200.0);
 
+
+        // investigate extra
+        //
+        FormatHist(h1_hyp_idcand01_nm1_fbrem_0_pt_[i], sampleName, "h1_hyp_idcand01_nm1_fbrem_0_pt_" + detname, 50.0, 0.0, 1.0);
+        FormatHist(h1_hyp_idcand01_nm1_fbrem_1_pt_[i], sampleName, "h1_hyp_idcand01_nm1_fbrem_1_pt_" + detname, 50.0, 0.0, 1.0);
+        FormatHist(h1_hyp_idcand01_nm1_fbrem_2_pt_[i], sampleName, "h1_hyp_idcand01_nm1_fbrem_2_pt_" + detname, 50.0, 0.0, 1.0);
+        FormatHist(h1_hyp_idcand01_nm1_fbrem_3_pt_[i], sampleName, "h1_hyp_idcand01_nm1_fbrem_3_pt_" + detname, 50.0, 0.0, 1.0);
+        FormatHist(h1_hyp_idcand01_nm1_fbrem_4_pt_[i], sampleName, "h1_hyp_idcand01_nm1_fbrem_4_pt_" + detname, 50.0, 0.0, 1.0);
+
+        FormatHist(h1_hyp_idcand01_nm1_eopinlowfbrem_0_pt_[i], sampleName, "h1_hyp_idcand01_nm1_eopinlowfbrem_0_pt_" + detname, 200.0, 0.0, 4.0);
+        FormatHist(h1_hyp_idcand01_nm1_eopinlowfbrem_1_pt_[i], sampleName, "h1_hyp_idcand01_nm1_eopinlowfbrem_1_pt_" + detname, 200.0, 0.0, 4.0);
+        FormatHist(h1_hyp_idcand01_nm1_eopinlowfbrem_2_pt_[i], sampleName, "h1_hyp_idcand01_nm1_eopinlowfbrem_2_pt_" + detname, 200.0, 0.0, 4.0);
+        FormatHist(h1_hyp_idcand01_nm1_eopinlowfbrem_3_pt_[i], sampleName, "h1_hyp_idcand01_nm1_eopinlowfbrem_3_pt_" + detname, 200.0, 0.0, 4.0);
+        FormatHist(h1_hyp_idcand01_nm1_eopinlowfbrem_4_pt_[i], sampleName, "h1_hyp_idcand01_nm1_eopinlowfbrem_4_pt_" + detname, 200.0, 0.0, 4.0);
+
         // debug variables
         // before and after selections applied
 
@@ -538,6 +553,33 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
         if (electronId_classBasedTight(index)) Fill(h1_hyp_idegammatight_nm1_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
 
     }
+
+
+    //
+    // investigate what the extra is really doing
+    //
+    // plot the fbrem dists for light hadrons and other
+
+    if (pass_electronSelection_cand01 && pdgidCatagory == 0) {
+        Fill (h1_hyp_idcand01_nm1_fbrem_0_pt_[det], hypType, cms2.els_fbrem()[index], weight);
+        if (cms2.els_fbrem()[index] < 0.2) Fill (h1_hyp_idcand01_nm1_eopinlowfbrem_0_pt_[det], hypType, cms2.els_eOverPIn()[index], weight);
+    }
+    else if (pass_electronSelection_cand01 && pdgidCatagory == 1) {
+        Fill (h1_hyp_idcand01_nm1_fbrem_1_pt_[det], hypType, cms2.els_fbrem()[index], weight);
+        if (cms2.els_fbrem()[index] < 0.2) Fill (h1_hyp_idcand01_nm1_eopinlowfbrem_1_pt_[det], hypType, cms2.els_eOverPIn()[index], weight);
+    }
+    else if (pass_electronSelection_cand01 && pdgidCatagory == 2) {
+        Fill (h1_hyp_idcand01_nm1_fbrem_2_pt_[det], hypType, cms2.els_fbrem()[index], weight);
+        if (cms2.els_fbrem()[index] < 0.2) Fill (h1_hyp_idcand01_nm1_eopinlowfbrem_2_pt_[det], hypType, cms2.els_eOverPIn()[index], weight);
+    }
+    else if (pass_electronSelection_cand01 && pdgidCatagory == 3) {
+        Fill (h1_hyp_idcand01_nm1_fbrem_3_pt_[det], hypType, cms2.els_fbrem()[index], weight);
+        if (cms2.els_fbrem()[index] < 0.2) Fill (h1_hyp_idcand01_nm1_eopinlowfbrem_3_pt_[det], hypType, cms2.els_eOverPIn()[index], weight);
+    }
+    else if (pass_electronSelection_cand01 && pdgidCatagory == 4) {
+        Fill (h1_hyp_idcand01_nm1_fbrem_4_pt_[det], hypType, cms2.els_fbrem()[index], weight);
+        if (cms2.els_fbrem()[index] < 0.2) Fill (h1_hyp_idcand01_nm1_eopinlowfbrem_4_pt_[det], hypType, cms2.els_eOverPIn()[index], weight);
+    }    
 
 
 }
