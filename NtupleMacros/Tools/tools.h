@@ -1,3 +1,5 @@
+// -*- C++ -*-
+
 #ifndef TOOLS_H
 #define TOOLS_H
 
@@ -8,7 +10,6 @@
 #include <algorithm>
 #include <vector>
 #include <set>
-#include "CORE/selections.h"
 #include "Math/VectorUtil.h"
 
 using std::vector;
@@ -45,6 +46,19 @@ struct DorkyEventIdentifier {
 };
 extern std::set<DorkyEventIdentifier> already_seen;
 bool is_duplicate (const DorkyEventIdentifier &id);
+
+struct Status3Identifier {
+     // this is a workaround for not having unique event id's in MC 
+     Status3Identifier (class CMS2 &cms2);
+     unsigned long int run, event, lumi_section;
+     std::multiset<float> pts;
+     bool operator < (const Status3Identifier &) const;
+     bool operator > (const Status3Identifier &) const;
+     bool operator == (const Status3Identifier &) const;
+};
+extern std::set<Status3Identifier> already_seen_stat3;
+bool is_duplicate (const Status3Identifier &id);
+bool operator == (const Status3Identifier &, const Status3Identifier &);
 
 void saveHist(const char* filename, const char* pat="*");
 

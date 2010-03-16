@@ -11,7 +11,6 @@
 #include "TList.h"
 #include "TRegexp.h"
 #include "TDirectory.h"
-#include "CORE/selections.h"
 #include "tools.h"
 #include "DileptonHypType.h"
 #include "CORE/CMS2.h"
@@ -299,6 +298,7 @@ float mmm(int i, int j)
   }
 }
 
+#if 0
 bool goodLeptonIsolated(int bucket, int first, int second, int third) {
   // check if all 3 leptons are good isolated leptons
   //
@@ -334,7 +334,7 @@ bool goodLeptonIsolated(int bucket, int first, int second, int third) {
 
   return result;
 }
-
+#endif
 
 float ptLowestPtLepton(int bucket, int first, int second, int third) {
   // determine pt of lowest pt lepton
@@ -734,6 +734,7 @@ bool passMETCut(int bucket, float metAll, float electronMETCut, float muonMETCut
   return result;
 }
 
+#if 0
 float calcSecZMass(int bucket, unsigned int* leptons, float zmass) {
   // combine lepton not belonging to primary Z candidate with all other good leptons without isolation to form Z candidates (OC, Same flavor)
   // return mass closest to zmass
@@ -814,6 +815,7 @@ float calcSecZMass(int bucket, unsigned int* leptons, float zmass) {
   return result;
 
 }
+#endif
 
 bool testJetForElectrons(const LorentzVector& jetP4, const LorentzVector& elP4) {
   
@@ -997,6 +999,63 @@ bool is_duplicate (const DorkyEventIdentifier &id)
      std::pair<std::set<DorkyEventIdentifier>::const_iterator, bool> ret =
           already_seen.insert(id);
      return !ret.second;
+}
+
+Status3Identifier::Status3Identifier (CMS2 &cms2)
+     : run(cms2.evt_run()),
+       event(cms2.evt_event()),
+       lumi_section(cms2.evt_lumiBlock())
+{
+//      pts.reserve(cms2.genps_p4().size());
+     for (unsigned int i = 0; i < std::min(size_t(4), cms2.genps_p4().size()); ++i) {
+	  pts.insert(cms2.genps_p4()[i].pt());
+	  // only go up to the W for this exercise
+	  if (i + 1 < cms2.genps_p4().size() && 
+	      abs(cms2.genps_id()[i + 1]) == 24)
+	       break;
+     }
+}
+
+bool Status3Identifier::operator < (const Status3Identifier &other) const
+{
+     std::multiset<float>::const_iterator ipts = pts.begin();
+     std::multiset<float>::const_iterator iother = other.pts.begin();
+     for (unsigned int i = 0; i < std::max(pts.size(), other.pts.size()); 
+	  ++i, ++ipts, ++iother) {
+	  if (i >= pts.size())
+	       return true;
+	  if (i >= other.pts.size())
+	       return false;
+// 	  if (fabs(*ipts - *iother) > 1e-6 * fabs(*ipts)) 
+// 	       return *ipts < *iother;
+	  if (*ipts != *iother)
+	       return *ipts < *iother;
+     }
+     return false;
+}
+
+std::set<Status3Identifier> already_seen_stat3;
+bool is_duplicate (const Status3Identifier &id)
+{
+     std::pair<std::set<Status3Identifier>::const_iterator, bool> ret =
+          already_seen_stat3.insert(id);
+     if (!ret.second) {
+	  std::cout << std::setprecision(8);
+	  std::cout << "new entry (" << id.run << " " << id.lumi_section << " " << id.event << ") ";
+	  for (std::multiset<float>::const_iterator i = id.pts.begin();
+	       i != id.pts.end(); ++i) {
+	       std::cout << *i << " ";
+	  }
+	  std::cout << std::endl;
+	  std::cout << "old entry (" << ret.first->run << " " << ret.first->lumi_section << " " << ret.first->event << ") ";
+	  for (std::multiset<float>::const_iterator i = ret.first->pts.begin();
+	       i != ret.first->pts.end(); ++i) {
+	       std::cout << *i << " ";
+	  }
+	  std::cout << std::endl;
+	  return true;
+     }
+     return false;
 }
 
 enum DileptonHypType hyp_typeToHypType (int hyp_type)
