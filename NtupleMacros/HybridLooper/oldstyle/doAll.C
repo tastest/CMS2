@@ -15,9 +15,13 @@ void doAll() {
 	//
 	gROOT->ProcessLine(".L CMS2.cc+");
 
+    gROOT->ProcessLine(".L ../../CORE/mcSelections.cc+");
+    gROOT->ProcessLine(".L ../../CORE/trackSelections.cc+");
+    gROOT->ProcessLine(".L ../../CORE/jetSelections.cc+");
+    gROOT->ProcessLine(".L ../../CORE/metSelections.cc+");
+
 	gROOT->ProcessLine(".L ../../CORE/electronSelections.cc+");
 	gROOT->ProcessLine(".L ../../CORE/utilities.cc+");
-	gROOT->ProcessLine(".L ../../CORE/selections.cc+");
 	gROOT->ProcessLine(".L EffH1F.cc+");
 	gROOT->ProcessLine(".L EffMulti.cc+");
 	gROOT->ProcessLine(".L ../histtools.C+");

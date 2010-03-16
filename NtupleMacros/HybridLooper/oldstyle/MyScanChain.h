@@ -8,12 +8,15 @@
 
 // looper includes
 #include "EffMulti.h"
+#include "Math/VectorUtil.h"
 
 
 // typedefs
 typedef UInt_t      uint32;
 typedef ULong64_t   uint64;
 typedef uint64  	cuts_t;
+
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 //
 // for det types

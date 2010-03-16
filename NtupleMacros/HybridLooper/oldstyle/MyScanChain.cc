@@ -20,7 +20,6 @@
 // CMS2 includes
 #include "CMS2.h"
 #include "../../CORE/electronSelections.h"
-#include "../../CORE/selections.h"
 #include "../../Tools/DileptonHypType.h"
 
 //
@@ -52,8 +51,7 @@ enum ele_selection {
 	PASS_NOMUON,
 };
 
-double dRbetweenVectors(const LorentzVector &vec1,
-		const LorentzVector &vec2 ){
+double dRbetweenVectors(const LorentzVector &vec1, const LorentzVector &vec2 ){
 
 	double dphi = std::min(::fabs(vec1.Phi() - vec2.Phi()), 2 * M_PI - fabs(vec1.Phi() - vec2.Phi()));
 	double deta = vec1.Eta() - vec2.Eta();
