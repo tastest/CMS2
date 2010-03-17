@@ -17,3 +17,14 @@ double MT2J(
 	const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >,
 	const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >
 );
+
+vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > CleanJets(
+  const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >,
+  const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >,
+  const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >,
+  const float,
+  const float,
+  const float
+);
+
+
