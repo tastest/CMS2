@@ -1,7 +1,4 @@
 #include "MT2.h"
-#include "TMath.h"
-#include "math.h"
-#include "Math/VectorUtil.h"
 
 //////////////////////////////////////////
 // --- leptonic (WW) mt2 definition --- //
@@ -91,7 +88,7 @@ double MT2J(
 	const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > vect_p4_jets
 ){
 	if( vect_p4_jets.size() < 2 ){
-		cout << "MT2.cc: error MT2J called with less than 2 jets... returning mt2 value of -1.0" << endl;
+		cout << "MT2.cc: error MT2J called with less than 2 jets... returning mt2 value of -1.0";
 		return -1.0; 
 	}
 	double mt2_min = std::numeric_limits<double>::max();
@@ -105,38 +102,3 @@ double MT2J(
 	}}
 	return mt2_min;
 }
-
-
-
-Bool_t comparePt ( 
-  ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > lv1,
-  ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > lv2 
-){
-  return lv1.pt() > lv2.pt();
-}
-vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > CleanJets(
-  const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > vect_p4_jets,
-  const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > p4_lepton_1,
-  const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > p4_lepton_2,
-  const float jet_pt_threshold,
-  const float jet_eta_threshold,
-  const float jet_lepton_dR_veto_cone
-){
-  vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > cleaned_vect_p4_jets;
-  for (unsigned int ijet = 0; ijet < vect_p4_jets.size(); ijet++) {                                                   // loop on jets supplied by user
-    if( vect_p4_jets.at(ijet).pt() < jet_pt_threshold ) continue;                                                     // apply pt threshold
-    if( jet_eta_threshold > 0 ){                                                                                      // if the eta threshold is > 0
-      if( fabs( vect_p4_jets.at(ijet).eta() ) > jet_eta_threshold ) continue;                                         // apply eta threshold
-    }
-    if( jet_lepton_dR_veto_cone > 0 ){
-      if( ROOT::Math::VectorUtil::DeltaR( vect_p4_jets.at(ijet), p4_lepton_1 ) < jet_lepton_dR_veto_cone ) continue;  // apply lepton1-jet dR vetos
-      if( ROOT::Math::VectorUtil::DeltaR( vect_p4_jets.at(ijet), p4_lepton_2 ) < jet_lepton_dR_veto_cone ) continue;  // apply lepton2-jet dR vetos
-    }
-    cleaned_vect_p4_jets.push_back( vect_p4_jets.at(ijet) );                                                          // keep jets within thresholds
-  }
-  // sort jets by pt
-  sort( cleaned_vect_p4_jets.begin(), cleaned_vect_p4_jets.end(), comparePt );                                        // sort jets by pt
-  return cleaned_vect_p4_jets;
-}
-
-
