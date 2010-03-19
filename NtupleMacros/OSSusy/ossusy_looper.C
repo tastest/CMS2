@@ -203,7 +203,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         cms2.Init(tree);
 
         unsigned int nEntries = tree->GetEntries();
-        nEntries=1000;
+        //nEntries=1000;
 
         for(unsigned int z = 0; z < nEntries; ++z) {
             ++nEventsTotal;
