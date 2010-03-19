@@ -158,7 +158,7 @@ bool nkcut(const unsigned value,const int n,
 }
 
 int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale,
-        JetTypeEnum jetType, MetTypeEnum metType, bool doFakeApp)
+        JetTypeEnum jetType, MetTypeEnum metType, ZVetoEnum zveto, bool doFakeApp)
 {
     if(doFakeApp) {
         std::cout<<"**************************"<<std::endl;
@@ -203,7 +203,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         cms2.Init(tree);
 
         unsigned int nEntries = tree->GetEntries();
-        //nEntries=1000;
+        nEntries=1000;
 
         for(unsigned int z = 0; z < nEntries; ++z) {
             ++nEventsTotal;
@@ -642,9 +642,18 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
                     if(!g_susybaseline){  
                         if (id_lt * id_ll > 0)  continue;
                     }
-                    if (hyp_type()[hypIdx] == 3 || hyp_type()[hypIdx] == 0) {
-                        if (hyp_p4()[hypIdx].mass() > 76. && hyp_p4()[hypIdx].mass() < 106.) continue;
-                    }
+		    if (zveto == e_standard) {
+		      if (hyp_type()[hypIdx] == 3 || hyp_type()[hypIdx] == 0) {
+			if (hyp_p4()[hypIdx].mass() > 76. && hyp_p4()[hypIdx].mass() < 106.) continue;
+		      }
+		    }else if(zveto == e_allzveto){
+		      if (hyp_p4()[hypIdx].mass() > 76. && hyp_p4()[hypIdx].mass() < 106.)   continue;
+		    }else if(zveto == e_nozveto){
+		      //no cut
+		    }else{
+		      cout<<"UNRECOGNIZED ZVETO"<<endl;
+		      exit(0);
+		    }
 
                     fillHistos(hdilMass,  hyp_p4()[hypIdx].mass()  , weight, myType, nJetsIdx);
                     fillHistos(htcmet  ,  tcmet            , weight, myType, nJetsIdx);
@@ -668,8 +677,14 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
                     unsigned cutbit=0;
 
                     cut[0] = g_susybaseline ? true : (id_lt * id_ll < 0); 
-                    cut[1] = (hyp_type()[hypIdx]==3 || hyp_type()[hypIdx]==0) ? 
-                        (hyp_p4()[hypIdx].mass() < 76. || hyp_p4()[hypIdx].mass() > 106.) : true; 
+		    if (zveto == e_standard) {
+		      cut[1] = (hyp_type()[hypIdx]==3 || hyp_type()[hypIdx]==0) ? 
+			(hyp_p4()[hypIdx].mass() < 76. || hyp_p4()[hypIdx].mass() > 106.) : true; 
+		    }else if(zveto == e_allzveto){
+		      cut[1] = (hyp_p4()[hypIdx].mass() < 76. || hyp_p4()[hypIdx].mass() > 106.);
+		    }else if(zveto == e_nozveto){
+		      cut[1] = true;
+		    }
                     cut[2] = g_susybaseline ? theMet > 80. : theMet > 50.;
                     cut[3] = theSumJetPt > 200.;
                     cut[4] = theNJets    > 1;
