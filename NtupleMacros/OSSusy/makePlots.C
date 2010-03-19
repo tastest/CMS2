@@ -24,7 +24,7 @@ void makePlots(string filename, string met, string jet) {
   gROOT->SetStyle("Plain");
   gROOT->ProcessLine("gStyle->SetOptStat(0)");
 
-  const char samples[19][6] = {"ttdil", "DYee", "wjets", "tW", "ww", "wz", "zz", "LM0", "LM1", "LM2", "LM3", "LM4", "LM5", "LM6", "LM7", "LM8", "LM9", "LM10", "LM11"};
+  const char samples[19][6] = {"ttdil", "Zjets", "wjets", "tW", "ww", "wz", "zz", "LM0", "LM1", "LM2", "LM3", "LM4", "LM5", "LM6", "LM7", "LM8", "LM9", "LM10", "LM11"};
 
   const unsigned int nSMSamples = 7;
   const unsigned int nLMSamples = 12;
