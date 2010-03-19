@@ -125,7 +125,7 @@ void doAll_ossusy_looper(bool skipFWLite = true) {
 
     //Flags for files to run over
     bool runttdil    = 1;
-    bool runttotr    = 0;
+    bool runttotr    = 1;
     bool runWW       = 1;
     bool runWZ       = 1;
     bool runZZ       = 1;
@@ -151,7 +151,7 @@ void doAll_ossusy_looper(bool skipFWLite = true) {
     bool runLM9      = 1;
     bool runLM10     = 1;
     bool runLM11     = 1;
-    bool runLM12     = 0;
+    bool runLM12     = 1;
 
     TChain* chZjets = new  TChain("Events");
     if(runZjets){
