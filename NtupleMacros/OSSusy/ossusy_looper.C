@@ -973,9 +973,6 @@ void ossusy_looper::BookHistos(char *prefix) {
     TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
     rootdir->cd();
 
-    hmz = new TH1F("hmz","gen z mass",200,0,200);
-    hmll = new TH1F("hmll","gen dil mass",200,0,200);
-
     char jetbins[5][7]    = {"0", "1", "2", "3", "#geq 4"};
     char suffixall[4][4]  = {"ee", "mm", "em", "all"};
     char njetCh[4][5]     = {"0j", "1j", "2j", "allj"};

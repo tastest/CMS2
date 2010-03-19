@@ -74,8 +74,6 @@ class ossusy_looper
         TH2F* hetaZ_tcmetsqrtsumet[4][4]; 
         TH2F* hetaZ_tcmetsumet[4][4]; 
 
-        TH1F* hmz;
-        TH1F* hmll;
         TH2F* hdilMass_tcmet[4][4];
         TH1F* hmt2jcore[4][4];               // MT2J from CORE
         TH1F* hmt2j[4][4];                   // potentially custom MT2J
