@@ -195,7 +195,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
     float combinedSecondaryVertexBJetTag_wp[3] = { 0.387, 0.838, 0.94  };
      */
 
-    TH2F* rf = getResponseFunction_fit();
     if(g_createTree) makeTree(prefix);
 
     while((currentFile = (TChainElement*)fileIter.Next())) {
@@ -462,7 +461,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
                 //float tcmet  = evt_tcmet();
                 float genmet = gen_met();
 
-                metStruct tcmetStruct = getTcmetFromCaloMet( rf );
+                metStruct tcmetStruct = correctedTCMET();
                 float tcmet    = tcmetStruct.met;
                 //float tcsumet  = tcmetStruct.sumet;
                 float tcmetphi = tcmetStruct.metphi;
