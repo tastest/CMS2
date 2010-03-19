@@ -1,6 +1,7 @@
 // Original author: Puneeth Kalavase (UCSB)
 // 
-/*ROOT macro to make CMS2.h and ScanChain.C files for basic analysis
+/*
+  ROOT macro to make CMS2.h and ScanChain.C files for basic analysis
   of CMS2 ntuples. Usage:
 
   root [0] .L makeCMS2ClassFiles.C++
@@ -23,13 +24,6 @@
 #include <set>
 #include <algorithm>
 #include <vector>
-/*
-
-Usage:
-
-*/
-
-
 #include "Math/LorentzVector.h"
 
 using namespace std;
