@@ -3,17 +3,13 @@
 /*ROOT macro to make CMS2.h and ScanChain.C files for basic analysis
   of CMS2 ntuples. Usage:
 
-  [kalavase@stau ~/rootmacros]$ root
   root [0] .L makeCMS2ClassFiles.C++
-  // 
-  // the second and third arguments are optional
-  //
-  // if we are paranoid, each float, vector<float> and
-  // vector<vector<float> > is checked for NaNs and infs
-  //
-  // The classname is CMS2 by default
-  //
-  root [1] makeCMS2ClassFiles("merged_ntuple.root",true,"classname")
+  root [1] makeCMS2ClassFiles(filename, paranoia, branchfilename, classname )
+  
+  filename = location+name of ntuple file
+  paranoia = boolean. If true, will add checks for branches that have nans
+  branchfilename = See http://www.t2.ucsd.edu/tastwiki/bin/view/CMS/SkimNtuples
+  classname = you can change the default name of the class "CMS2" to whatever you want
 
 */
 
@@ -27,6 +23,13 @@
 #include <set>
 #include <algorithm>
 #include <vector>
+/*
+
+Usage:
+
+*/
+
+
 #include "Math/LorentzVector.h"
 
 using namespace std;
@@ -35,6 +38,59 @@ ofstream codef;
 ofstream implf;
 ofstream branchfile;
 
+void makeHeaderFile(TFile *f, bool paranoid, string Classname);
+void makeSrcFile(std::string Classname, std::string branchNamesFile);
+void makeBranchFile(std::string branchNamesFile);
+void makeDriverFile(std::string fname);
+
+
+//-------------------------------------------------------------------------------------------------
+void makeCMS2ClassFiles (std::string fname, bool paranoid = true, 
+			 std::string branchNamesFile="", std::string className = "CMS2") {
+
+  using namespace std;
+  
+  TFile *f = TFile::Open( fname.c_str() );
+
+  if(f==NULL) {
+    cout << "File does not exist. Exiting program" << endl;
+    return;
+  }
+
+  if(f->IsZombie()) { 
+    cout << "File is not a valid root file, or root file is corruped" << endl;
+    cout << "Exiting..." << endl;
+    return;
+  }
+
+  //class is CMS2 by default
+  //std::string Classname = className=="" ? "CMS2" : className;
+  
+  headerf.open((className+".h").c_str());
+  implf.open((className+".cc").c_str());
+  codef.open("ScanChain.C");
+  
+  implf << "#include \"" << className+".h" << "\"\n" << className << " cms2;" << endl;
+  makeHeaderFile(f, paranoid, className);
+  makeSrcFile(className, branchNamesFile);
+  if(branchNamesFile!="")
+    makeBranchFile(branchNamesFile);
+  implf << "}" << endl;
+  implf.close();
+  headerf << "}" << endl;
+  headerf << "#endif" << endl;
+  headerf.close();
+
+  
+  codef.close();
+
+  makeDriverFile(fname);
+
+  f->Close();
+}
+
+
+//-------------------------------------------------------------------------------------------------
 void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
 	
   
@@ -553,8 +609,7 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
     
 }
   
-  
-// void makeSrcFile(TFile *f, bool paranoid, std::string Classname, std::string branchNamesFile) {
+//-------------------------------------------------------------------------------------------------
 void makeSrcFile(std::string Classname, std::string branchNamesFile) {
 
   // TTree *ev = (TTree*)f->Get("Events");
@@ -652,7 +707,7 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile) {
 }
 
   
-      
+//-------------------------------------------------------------------------------------------------
 void makeBranchFile(std::string branchNamesFile) {
   
   ifstream branchesF(branchNamesFile.c_str());
@@ -784,38 +839,19 @@ void makeBranchFile(std::string branchNamesFile) {
   branchfile.close();
 }
 
+  
+void makeDriverFile(std::string fname) { 
 
-void makeCMS2ClassFiles (std::string fname, bool paranoid = true, 
-			 std::string branchNamesFile="", std::string className = "CMS2") {
+  ofstream driverF;
+  driverF.open("doAll.C");
 
-  using namespace std;
-  
-  TFile *f = TFile::Open( fname.c_str() );
-  if(f->IsZombie()) { 
-    cout << "File is not a valid root file, or root file is corruped" << endl;
-    cout << "Exiting..." << endl;
-  }
-  //class is CMS2 by default
-  //std::string Classname = className=="" ? "CMS2" : className;
-  
-  headerf.open((className+".h").c_str());
-  implf.open((className+".cc").c_str());
-  codef.open("ScanChain.C");
-  
-  implf << "#include \"" << className+".h" << "\"\nCMS2 cms2;" << endl;
-  makeHeaderFile(f, paranoid, className);
-  makeSrcFile(className, branchNamesFile);
-  if(branchNamesFile!="")
-    makeBranchFile(branchNamesFile);
-  
-  implf << "}" << endl;
-  implf.close();
-  headerf << "}" << endl;
-  headerf << "#endif" << endl;
-  headerf.close();
+  driverF << "{" << endl << endl;
+  driverF << "  gROOT->ProcessLine(\".L ScanChain.C+\");" << endl << endl;
+  driverF << "  TChain ch = new TChain(\"Events\"); " << endl;
+  driverF << "  ch->Add(\"" + fname + "\");" << endl;
+  driverF << "  ScanChain(ch); " << endl;
+  driverF << "}";
+  driverF.close();
 
   
-  codef.close();
-  f->Close();
 }
-  
