@@ -25,6 +25,7 @@
 #include "TKey.h"
 #include "TTree.h"
 #include "TCanvas.h"
+#include "TVirtualPad.h"
 #include "TString.h"
 #include <fstream>
 #include <algorithm>
@@ -39,7 +40,7 @@ vector<TString> getAliasNames(TTree *t) {
   vector<TString> v_aliasnames;
   
   TList *t_list =  t->GetListOfAliases();
-  for(unsigned int i = 0; i < t_list->GetSize(); i++) {
+  for(int i = 0; i < t_list->GetSize(); i++) {
     TString aliasname(t_list->At(i)->GetName());
     TBranch *branch = t->GetBranch(t->GetAlias(aliasname.Data()));
     TString branchname(branch->GetName());
@@ -50,7 +51,7 @@ vector<TString> getAliasNames(TTree *t) {
        branchname.Contains("LorentzVectorss") ||
        branchname.Contains("timestamp") ) {
       
-      cout << "Sorry, I dont know about vector of vectors of objects" 
+      cout << "Sorry, I dont know about vector of vectors of objects. " 
 	   << "Will be skipping " << aliasname << endl;
       
       continue;
@@ -61,7 +62,7 @@ vector<TString> getAliasNames(TTree *t) {
 	   << " Put in a feature request. Will be skipping " << aliasname << endl;
       continue;
     }
-      v_aliasnames.push_back(aliasname);
+    v_aliasnames.push_back(aliasname);
   }
 
   sort(v_aliasnames.begin(), v_aliasnames.end());
@@ -82,7 +83,7 @@ bool areHistosTheSame(TH1F* h1, TH1F* h2) {
   if(TMath::Abs(range1 - range2) > 0.000001) 
     return false;
   
-  for(unsigned int i = 1; i < h1->GetNbinsX()+1; i++) {
+  for(int i = 1; i < h1->GetNbinsX()+1; i++) {
     if(TMath::Abs(h1->GetBinContent(i) - h2->GetBinContent(i)) > 0.000001) 
       return false;
   }
@@ -140,7 +141,7 @@ void compareNtuples(TString file1, TString file2, bool doNotSaveSameHistos="true
   TObjArray *objArray= file1.Tokenize("/");
   TString fname1 = "";
   TString fname2 = "";
-  for(unsigned int i = 0; i < objArray->GetSize(); i++) {
+  for(int i = 0; i < objArray->GetSize(); i++) {
     if(fname1 != "")
       continue;
     cout << TString(objArray->At(i)->GetName()) << endl;
@@ -150,7 +151,7 @@ void compareNtuples(TString file1, TString file2, bool doNotSaveSameHistos="true
     }
   }
   objArray = file2.Tokenize("/"); 
-  for(unsigned int i = 0; i < objArray->GetSize(); i++) {
+  for(int i = 0; i < objArray->GetSize(); i++) {
     if(fname2 != "")
       continue;
     cout << TString(objArray->At(i)->GetName()) << endl;
@@ -196,8 +197,7 @@ void compareNtuples(TString file1, TString file2, bool doNotSaveSameHistos="true
       command  = alias + ".Pt()>>" + histname;      
     }
     tree1->Draw(command.Data());
-    TH1F *h1 = (TH1F*)c1->GetPrimitive(histname.Data());
-
+    TH1F *h1 = (TH1F*)gDirectory->Get(histname.Data());
     if(h1==NULL) {
       cout << "********** Branch " << v1_notCommonBranches.at(i) 
 	   << " in file " << file1 << "exists, but is undrawable for some reason. " 
@@ -209,25 +209,36 @@ void compareNtuples(TString file1, TString file2, bool doNotSaveSameHistos="true
 
     if(drawWithErrors)
       h1->TH1F::Sumw2();
-
+    
 
     h1->Scale(1./h1->GetEntries());
-    
     if(!drawWithErrors) {
-	h1->SetLineColor(0);
-	h1->SetMarkerSize(1.1);
-	h1->SetMarkerStyle(3);
+      h1->SetLineColor(0);
+      h1->SetMarkerSize(1.1);
+      h1->SetMarkerStyle(3);
     } else {
-	h1->SetMarkerSize(1.3);
-	h1->SetMarkerStyle(3);
+      h1->SetMarkerSize(1.3);
+      h1->SetMarkerStyle(3);
     }
+    
     TString histtitle = alias + ", " + fname1;
     h1->SetTitle(histtitle.Data());
     h1->Draw();
     c1->SaveAs("diff.eps(");
+    c1->SetLogy();
+    
+    //if the canvas has been divided, want to set the logy
+    for(int i = 0; i < c1->GetListOfPrimitives()->GetSize(); i++) {
+      if(string(c1->GetListOfPrimitives()->At(i)->ClassName()) != "TVirtualPad")
+	continue;
+      TVirtualPad *vPad = (TVirtualPad*)(c1->GetListOfPrimitives()->At(i));
+      if(vPad != NULL) {
+	vPad->SetLogy();
+      }
+    }
+    c1->SaveAs("diff.eps(");
+    c1->SetLogy(0);
   }
-
-
 
   for(unsigned int i = 0; i < v2_notCommonBranches.size(); i++) {
     
@@ -244,7 +255,7 @@ void compareNtuples(TString file1, TString file2, bool doNotSaveSameHistos="true
       command  = alias + ".Pt()>>" + histname;      
     }
     tree2->Draw(command.Data());
-    TH1F *h2 = (TH1F*)c1->GetPrimitive(histname.Data());
+    TH1F *h2 = (TH1F*)gDirectory->Get(histname.Data());
     if(h2==NULL) {
       cout << "********** Branch " << v2_notCommonBranches.at(i) 
 	   << " in file " << file2 << "exists, but is undrawable for some reason. " 
@@ -272,6 +283,17 @@ void compareNtuples(TString file1, TString file2, bool doNotSaveSameHistos="true
     h2->SetTitle(histtitle.Data());
     h2->Draw();
     c1->SaveAs("diff.eps(");
+    c1->SetLogy();
+    //if the canvas has been divided, want to set the logy
+    for(int i = 0; i < c1->GetListOfPrimitives()->GetSize(); i++) {
+      if(string(c1->GetListOfPrimitives()->At(i)->ClassName()) != "TVirtualPad")
+	continue;
+      TVirtualPad *vPad = (TVirtualPad*)c1->GetListOfPrimitives()->At(i);
+      if(vPad != NULL)
+	vPad->SetLogy();
+    }
+    c1->SaveAs("diff.eps(");
+    c1->SetLogy(0);
   }
 
 
@@ -281,8 +303,8 @@ void compareNtuples(TString file1, TString file2, bool doNotSaveSameHistos="true
         
     TString alias = v_commonBranches.at(i);
     cout << "Comparing Branch: " << alias << endl;
-    TString hist1name = "h1_"+(alias);
-    TString hist2name = "h2_"+(alias);
+    TString hist1name = "h1_"+ alias;
+    TString hist2name = "h2_"+ alias;
     TString command1 = (alias)+">>"+hist1name;
     TString command2 = (alias)+">>"+hist2name;
     TBranch *branch = tree2->GetBranch(tree2->GetAlias(alias));
@@ -296,17 +318,19 @@ void compareNtuples(TString file1, TString file2, bool doNotSaveSameHistos="true
     }
     
     tree1->Draw(command1.Data());
-    TH1F *h1 = (TH1F*)c1->GetPrimitive(hist1name.Data());
+    //TH1F *h1 = (TH1F*)c1->GetPrimitive(hist1name.Data());
+    TH1F *h1 = (TH1F*)gDirectory->Get(hist1name.Data());
     if(h1==NULL) {
       cout << "********** Branch " << v_commonBranches.at(i) 
-	   << " in file " << file1 << "exists, but is undrawable for some reason. " 
+	   << " in file " << file1 << " exists, but is undrawable for some reason. " 
 	   << "Skipping this branch" << endl;
       c1->Clear();
       continue; 
     }
     //set the Overflow at the last bin
     tree2->Draw(command2.Data());
-    TH1F *h2 = (TH1F*)c1->GetPrimitive(hist2name.Data());
+    //TH1F *h2 = (TH1F*)c1->GetPrimitive(hist2name.Data());
+    TH1F *h2 = (TH1F*)gDirectory->Get(hist2name.Data());
     if(h2==NULL) {
       cout << "********** Branch " << v_commonBranches.at(i) 
 	   << " in file " << file2 << "exists, but is undrawable for some reason. " 
@@ -358,84 +382,123 @@ void compareNtuples(TString file1, TString file2, bool doNotSaveSameHistos="true
 	h2->Draw("e");
       }
             
-      if(i < v_commonBranches.size() - 1)
+      if(i < v_commonBranches.size() - 1) {
 	c1->SaveAs("diff.eps(");
-      else {
+	c1->SetLogy();
+	//if the canvas has been divided, want to set the logy
+	for(int i = 0; i < c1->GetListOfPrimitives()->GetSize(); i++) {
+	  if(string(c1->GetListOfPrimitives()->At(i)->ClassName()) != "TVirtualPad")
+	    continue;
+	  TVirtualPad *vPad = (TVirtualPad*)c1->GetListOfPrimitives()->At(i);
+	  if(vPad != NULL)
+	    vPad->SetLogy();
+	}
+	c1->SaveAs("diff.eps(");
+	c1->SetLogy(0);
+      } else {
 	cout << "done" << endl;
+	c1->SaveAs("diff.eps(");
+	c1->SetLogy();
+	for(int i = 0; i < c1->GetListOfPrimitives()->GetSize(); i++) {
+	  if(string(c1->GetListOfPrimitives()->At(i)->ClassName()) != "TVirtualPad")
+	    continue;
+	  TVirtualPad *vPad = (TVirtualPad*)c1->GetListOfPrimitives()->At(i);
+	  if(vPad != NULL)
+	    vPad->SetLogy();
+	}
 	c1->SaveAs("diff.eps)");
-      }
+	c1->SetLogy(0);
+      } 
       continue;
-    }       
+    }
             
-    if(h1->GetMaximum() >= h2->GetMaximum()) {
+      if(h1->GetMaximum() >= h2->GetMaximum()) {
       
-      double max = 1.1*h1->GetMaximum();
-      h1->SetMaximum(max);
-      h2->SetMaximum(max);
+	double max = 1.1*h1->GetMaximum();
+	h1->SetMaximum(max);
+	h2->SetMaximum(max);
       
-      if(!drawWithErrors) {
-	h1->SetLineColor(0);
-	h1->SetMarkerSize(1.1);
-	h1->SetMarkerStyle(3);
-	h2->SetLineColor(kRed);
-	h2->SetLineStyle(7);
-	h2->Draw();
-	h1->Draw("samesh*");
+	if(!drawWithErrors) {
+	  h1->SetLineColor(0);
+	  h1->SetMarkerSize(1.1);
+	  h1->SetMarkerStyle(3);
+	  h2->SetLineColor(kRed);
+	  h2->SetLineStyle(7);
+	  h2->Draw();
+	  h1->Draw("samesh*");
+	} else {
+	  h1->SetMarkerSize(1.3);
+	  h1->SetMarkerStyle(3);
+	  h2->SetMarkerSize(1.1);
+	  h2->SetMarkerStyle(8);
+	  h2->SetMarkerColor(kRed);
+	  h2->Draw("e");
+	  h1->Draw("samese");
+	}
+      
       } else {
-	h1->SetMarkerSize(1.3);
-	h1->SetMarkerStyle(3);
-	h2->SetMarkerSize(1.1);
-	h2->SetMarkerStyle(8);
-	h2->SetMarkerColor(kRed);
-	h2->Draw("e");
-	h1->Draw("samese");
-      }
+	double max = 1.1*h2->GetMaximum();
       
-    } else {
-      double max = 1.1*h2->GetMaximum();
+	h1->SetMaximum(max);
+	h2->SetMaximum(max);
       
-      h1->SetMaximum(max);
-      h2->SetMaximum(max);
-      
-       if(!drawWithErrors) {
-	h1->SetLineColor(0);
-	h1->SetMarkerSize(1.1);
-	h1->SetMarkerStyle(3);
-	h2->SetLineColor(kRed);
-	h2->SetLineStyle(7);
-	TString histtitle = fname1+" (black) " + fname2 + " (red)";
-	h2->SetTitle(histtitle.Data());
-	h1->SetTitle(histtitle.Data());
-	h1->Draw();
-	h2->Draw("samesh*");
-      } else {
-	h1->SetMarkerSize(1.3);
-	h1->SetMarkerStyle(3);
-	h2->SetMarkerSize(1.1);
-	h2->SetMarkerStyle(8);
-	h2->SetMarkerColor(kRed);
-	TString histtitle = fname1+" (black) " + fname2 + " (red)";
-	h2->SetTitle(histtitle.Data());
-	h1->SetTitle(histtitle.Data());
-	h1->Draw("e");
-	h2->Draw("samese");
-      }
+	if(!drawWithErrors) {
+	  h1->SetLineColor(0);
+	  h1->SetMarkerSize(1.1);
+	  h1->SetMarkerStyle(3);
+	  h2->SetLineColor(kRed);
+	  h2->SetLineStyle(7);
+	  TString histtitle = fname1+" (black) " + fname2 + " (red)";
+	  h2->SetTitle(histtitle.Data());
+	  h1->SetTitle(histtitle.Data());
+	  h1->Draw();
+	  h2->Draw("samesh*");
+	} else {
+	  h1->SetMarkerSize(1.3);
+	  h1->SetMarkerStyle(3);
+	  h2->SetMarkerSize(1.1);
+	  h2->SetMarkerStyle(8);
+	  h2->SetMarkerColor(kRed);
+	  TString histtitle = fname1+" (black) " + fname2 + " (red)";
+	  h2->SetTitle(histtitle.Data());
+	  h1->SetTitle(histtitle.Data());
+	  h1->Draw("e");
+	  h2->Draw("samese");
+	}
 
 
-    }
+      }
         
-    if(i < v_commonBranches.size() - 1)
-      c1->SaveAs("diff.eps(");
-    else {
-      cout << "done" << endl;
-      c1->Clear();
-      c1->SaveAs("diff.eps)");
-    }
+      if(i < v_commonBranches.size() - 1) {
+	c1->SaveAs("diff.eps(");
+	c1->SetLogy();
+	//if the canvas has been divided, want to set the logy
+	for(int i = 0; i < c1->GetListOfPrimitives()->GetSize(); i++) {
+	  if(string(c1->GetListOfPrimitives()->At(i)->ClassName()) != "TVirtualPad")
+	    continue;
+	  TVirtualPad *vPad = (TVirtualPad*)c1->GetListOfPrimitives()->At(i);
+	  if(vPad != NULL)
+	    vPad->SetLogy();
+	}
+	c1->SaveAs("diff.eps(");
+	c1->SetLogy(0);
+      } else {
+	cout << "done" << endl;
+	c1->SaveAs("diff.eps(");
+	c1->SetLogy();
+	for(int i = 0; i < c1->GetListOfPrimitives()->GetSize(); i++) {
+	  if(string(c1->GetListOfPrimitives()->At(i)->ClassName()) != "TVirtualPad")
+	    continue;
+	  TVirtualPad *vPad = (TVirtualPad*)c1->GetListOfPrimitives()->At(i);
+	  if(vPad != NULL)
+	    vPad->SetLogy();
+	}
+	c1->SaveAs("diff.eps)");
+	c1->SetLogy(0);
+      }
     
   }//for loop
     
-
-  cout << c1->GetListOfPrimitives()->GetSize() << endl;
-
-    
+  
 }
+  
