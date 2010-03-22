@@ -642,18 +642,18 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
                     if(!g_susybaseline){  
                         if (id_lt * id_ll > 0)  continue;
                     }
-		    if (zveto == e_standard) {
-		      if (hyp_type()[hypIdx] == 3 || hyp_type()[hypIdx] == 0) {
-			if (hyp_p4()[hypIdx].mass() > 76. && hyp_p4()[hypIdx].mass() < 106.) continue;
-		      }
-		    }else if(zveto == e_allzveto){
-		      if (hyp_p4()[hypIdx].mass() > 76. && hyp_p4()[hypIdx].mass() < 106.)   continue;
-		    }else if(zveto == e_nozveto){
-		      //no cut
-		    }else{
-		      cout<<"UNRECOGNIZED ZVETO"<<endl;
-		      exit(0);
-		    }
+                    if (zveto == e_standard) {
+                        if (hyp_type()[hypIdx] == 3 || hyp_type()[hypIdx] == 0) {
+                            if (hyp_p4()[hypIdx].mass() > 76. && hyp_p4()[hypIdx].mass() < 106.) continue;
+                        }
+                    }else if(zveto == e_allzveto){
+                        if (hyp_p4()[hypIdx].mass() > 76. && hyp_p4()[hypIdx].mass() < 106.)   continue;
+                    }else if(zveto == e_nozveto){
+                        //no cut
+                    }else{
+                        cout<<"UNRECOGNIZED ZVETO"<<endl;
+                        exit(0);
+                    }
 
                     fillHistos(hdilMass,  hyp_p4()[hypIdx].mass()  , weight, myType, nJetsIdx);
                     fillHistos(htcmet  ,  tcmet            , weight, myType, nJetsIdx);
@@ -677,14 +677,14 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
                     unsigned cutbit=0;
 
                     cut[0] = g_susybaseline ? true : (id_lt * id_ll < 0); 
-		    if (zveto == e_standard) {
-		      cut[1] = (hyp_type()[hypIdx]==3 || hyp_type()[hypIdx]==0) ? 
-			(hyp_p4()[hypIdx].mass() < 76. || hyp_p4()[hypIdx].mass() > 106.) : true; 
-		    }else if(zveto == e_allzveto){
-		      cut[1] = (hyp_p4()[hypIdx].mass() < 76. || hyp_p4()[hypIdx].mass() > 106.);
-		    }else if(zveto == e_nozveto){
-		      cut[1] = true;
-		    }
+                    if (zveto == e_standard) {
+                        cut[1] = (hyp_type()[hypIdx]==3 || hyp_type()[hypIdx]==0) ? 
+                            (hyp_p4()[hypIdx].mass() < 76. || hyp_p4()[hypIdx].mass() > 106.) : true; 
+                    }else if(zveto == e_allzveto){
+                        cut[1] = (hyp_p4()[hypIdx].mass() < 76. || hyp_p4()[hypIdx].mass() > 106.);
+                    }else if(zveto == e_nozveto){
+                        cut[1] = true;
+                    }
                     cut[2] = g_susybaseline ? theMet > 80. : theMet > 50.;
                     cut[3] = theSumJetPt > 200.;
                     cut[4] = theNJets    > 1;
@@ -976,7 +976,8 @@ bool ossusy_looper::passTrigger(int dilType)
     return true;
 }
  
-void ossusy_looper::BookHistos(char *prefix) {
+void ossusy_looper::BookHistos(char *prefix)
+{
     // Prefix comes from the sample and it is passed to the scanning function
     // Suffix is "ee" "em" "em" "all" which depends on the final state
     // For example: histogram named tt_hnJet_ee would be the Njet distribution

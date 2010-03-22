@@ -24,16 +24,16 @@ class ossusy_looper
         // e_tcmet   :   track corrected met
         // e_muon    :   calo met with muon corrections
         // e_muonjes :   calo met with muon and jet energy scale corrections
-	enum ZVetoEnum   { e_standard = 0, e_allzveto, e_nozveto };
-	// e_standard:   apply Z-veto to same-flavor pairs
-	// e_allzveto:   apply Z-veto regardless of lepton flavor
-	// e_nozveto :   no Z-veto
+        enum ZVetoEnum   { e_standard = 0, e_allzveto, e_nozveto };
+        // e_standard:   apply Z-veto to same-flavor pairs
+        // e_allzveto:   apply Z-veto regardless of lepton flavor
+        // e_nozveto :   no Z-veto
 
         int  ScanChain(TChain *chain, char *prefix = "", float kFactor = 1., int prescale = 1., 
-		       JetTypeEnum jetType = e_JPT, 
-		       MetTypeEnum metType = e_tcmet,
-		       ZVetoEnum zveto = e_standard,
-		       bool doFakeApp = false);
+                JetTypeEnum jetType = e_JPT, 
+                MetTypeEnum metType = e_tcmet,
+                ZVetoEnum zveto = e_standard,
+                bool doFakeApp = false);
         void BookHistos (char *prefix);
         bool passZSelection (int hypIdx);
         bool passTrigger (int dilType);
