@@ -55,11 +55,13 @@ void makePlots(char* filename) {
    
   //Load and add histos--------------------------------------------
   loadHist(filename, 0, 0, "*dilPt_allj*", kTRUE);
+  loadHist(filename, 0, 0, "*dilPtSmeared_allj*", kTRUE);
   loadHist(filename, 0, 0, "*tcmet_allj*", kTRUE);
   //loadHist(filename.c_str(), 0, 0, "*metmuonjes_allj*", kTRUE);
   std::cout << "adding histograms..." << std::endl;
 
   hist::add("sm_dilPt_allj_all", "^[^L].*_hdilPt_allj_all$");
+  hist::add("sm_dilPtSmeared_allj_all", "^[^L].*_hdilPtSmeared_allj_all$");
   //hist::add("sm_dilPt_2j_all", "^LM11_hdilPt_2j_all$");
   hist::add("sm_tcmet_allj_all", "^[^L].*_htcmet_allj_all$");
   hist::add("sm_tcmet_allj_ee",  "^[^L].*_htcmet_allj_ee$");
@@ -68,6 +70,7 @@ void makePlots(char* filename) {
   //hist::add("sm_metmuonjes_2j_all", "^[^L].*_hmetmuonjes_2j_all$");
 
   TH1F* sm_dilPt =     (TH1F*)gDirectory->Get("sm_dilPt_allj_all");
+  TH1F* sm_dilPtSmeared = (TH1F*)gDirectory->Get("sm_dilPtSmeared_allj_all");
   TH1F* sm_tcmet_all = (TH1F*)gDirectory->Get("sm_tcmet_allj_all");
   TH1F* sm_tcmet_ee =  (TH1F*)gDirectory->Get("sm_tcmet_allj_ee");
   TH1F* sm_tcmet_mm =  (TH1F*)gDirectory->Get("sm_tcmet_allj_mm");
@@ -75,6 +78,10 @@ void makePlots(char* filename) {
 
   if(sm_dilPt == 0){
     cout<<"Error unable to find histos sm_dilPt_allj_all"<<endl;
+    return;
+  }
+  if(sm_dilPtSmeared == 0){
+    cout<<"Error unable to find histos sm_dilPtSmeared_allj_all"<<endl;
     return;
   }
   if(sm_tcmet_all == 0){
@@ -104,6 +111,16 @@ void makePlots(char* filename) {
   TH1F* hLM1_dilPt   = (TH1F*) gDirectory->Get("LM1_hdilPt_allj_all");
   sm_LM1_dilPt->Add(hLM1_dilPt);
 
+  //SM+LM0 dilPtSmeared hist
+  TH1F* sm_LM0_dilPtSmeared = (TH1F*) sm_dilPtSmeared->Clone();
+  TH1F* hLM0_dilPtSmeared   = (TH1F*) gDirectory->Get("LM0_hdilPtSmeared_allj_all");
+  sm_LM0_dilPtSmeared->Add(hLM0_dilPtSmeared);
+
+  //SM+LM1 dilPtSmeared hist
+  TH1F* sm_LM1_dilPtSmeared = (TH1F*) sm_dilPtSmeared->Clone();
+  TH1F* hLM1_dilPtSmeared   = (TH1F*) gDirectory->Get("LM1_hdilPtSmeared_allj_all");
+  sm_LM1_dilPtSmeared->Add(hLM1_dilPtSmeared);
+
   //SM+LM0 tcmet hist
   TH1F* sm_LM0_tcmet = (TH1F*) sm_tcmet_all->Clone();
   TH1F* hLM0_tcmet   = (TH1F*) gDirectory->Get("LM0_htcmet_allj_all");
@@ -122,23 +139,44 @@ void makePlots(char* filename) {
   int bin100 = sm_dilPt->FindBin(100);
   int bin175 = sm_dilPt->FindBin(175);
   double scale = sm_dilPt->Integral(bin50, 101) / sm_dilPt->Integral(0, 101);
-  sm_dilPt->Scale( 1 / scale );
+  sm_dilPt->Scale( 1. / scale );
   double dilpt_prediction100 = sm_dilPt->Integral(bin100, 101);
   double dilpt_prediction175 = sm_dilPt->Integral(bin175, 101);
 
+  int bin50_smeared  = sm_dilPtSmeared->FindBin(50);
+  int bin100_smeared = sm_dilPtSmeared->FindBin(100);
+  int bin175_smeared = sm_dilPtSmeared->FindBin(175);
+  double scale_smeared = sm_dilPtSmeared->Integral(bin50_smeared, 101) / sm_dilPtSmeared->Integral(0, 101);
+  sm_dilPtSmeared->Scale( 1. / scale_smeared );
+  double dilptSmeared_prediction100 = sm_dilPtSmeared->Integral(bin100_smeared, 101);
+  double dilptSmeared_prediction175 = sm_dilPtSmeared->Integral(bin175_smeared, 101);
+
   std::cout << "the scale factor is: " << scale << std::endl;
+  std::cout << "the smeared scale factor is: " << scale_smeared << std::endl;
 
   //SM+LM0 prediction
   double scaleLM0 = sm_LM0_dilPt->Integral(bin50, 101) / sm_LM0_dilPt->Integral(0, 101);
-  sm_LM0_dilPt->Scale(1 / scaleLM0);
+  sm_LM0_dilPt->Scale(1. / scaleLM0);
   double dilpt_LM0_prediction100 = sm_LM0_dilPt->Integral(bin100, 101);
   double dilpt_LM0_prediction175 = sm_LM0_dilPt->Integral(bin175, 101);
 
   //SM+LM1 prediction
   double scaleLM1 = sm_LM1_dilPt->Integral(bin50, 101) / sm_LM1_dilPt->Integral(0, 101);
-  sm_LM1_dilPt->Scale(1 / scaleLM1);
+  sm_LM1_dilPt->Scale(1. / scaleLM1);
   double dilpt_LM1_prediction100 = sm_LM1_dilPt->Integral(bin100, 101);
   double dilpt_LM1_prediction175 = sm_LM1_dilPt->Integral(bin175, 101);
+
+  //SM+LM0 smeared prediction
+  double scaleLM0_smeared = sm_LM0_dilPtSmeared->Integral(bin50_smeared, 101) / sm_LM0_dilPtSmeared->Integral(0, 101);
+  sm_LM0_dilPtSmeared->Scale(1. / scaleLM0_smeared);
+  double dilptSmeared_LM0_prediction100 = sm_LM0_dilPtSmeared->Integral(bin100_smeared, 101);
+  double dilptSmeared_LM0_prediction175 = sm_LM0_dilPtSmeared->Integral(bin175_smeared, 101);
+
+  //SM+LM1 smeared prediction
+  double scaleLM1_smeared = sm_LM1_dilPtSmeared->Integral(bin50_smeared, 101) / sm_LM1_dilPtSmeared->Integral(0, 101);
+  sm_LM1_dilPtSmeared->Scale(1. / scaleLM1_smeared);
+  double dilptSmeared_LM1_prediction100 = sm_LM1_dilPtSmeared->Integral(bin100_smeared, 101);
+  double dilptSmeared_LM1_prediction175 = sm_LM1_dilPtSmeared->Integral(bin175_smeared, 101);
 
   //draw plot
   TCanvas* c1 = new TCanvas;
@@ -178,7 +216,11 @@ void makePlots(char* filename) {
 
   std::cout << dilpt_prediction100 << " events predicted from dilepton pt distribution for " 
             << " tcmet > 100 GeV" << std::endl;
+  std::cout << dilptSmeared_prediction100 << " events predicted from smeared dilepton pt distribution for " 
+            << " tcmet > 100 GeV" << std::endl;
   std::cout << dilpt_prediction175 << " events predicted from dilepton pt distribution for " 
+            << " tcmet > 175 GeV" << std::endl;
+  std::cout << dilptSmeared_prediction175 << " events predicted from smeared dilepton pt distribution for " 
             << " tcmet > 175 GeV" << std::endl;
   
   //get observed number of events above 100, 175 GeV
@@ -202,17 +244,20 @@ void makePlots(char* filename) {
 
   //print out predictions and observations
   cout<<endl<<endl<<endl;
-  cout<<"---------------------------------------------------------"<<endl;
-  cout<<"|                   |  met > 100 GeV  |  met > 175 GeV  |"<<endl;
-  cout<<"|"<<setw(10)<<"SM Observed        |"<<setprecision(3)<<setw(15)<<met_observed100<<"  |"<<setw(15)<<met_observed175<<"  |"<<endl;
-  cout<<"|"<<setw(10)<<"SM Prediction      |"<<setprecision(3)<<setw(15)<<dilpt_prediction100<<"  |"<<setw(15)<<dilpt_prediction175<<"  |"<<endl;
-  cout<<"|                   |"<<setw(18)<<"|"<<setw(18)<<"|"<<endl;
-  cout<<"|"<<setw(10)<<"SM+LM0 Observed    |"<<setprecision(3)<<setw(15)<<met_LM0_observed100<<"  |"<<setw(15)<<met_LM0_observed175<<"  |"<<endl;
-  cout<<"|"<<setw(10)<<"SM+LM0 Prediction  |"<<setprecision(3)<<setw(15)<<dilpt_LM0_prediction100<<"  |"<<setw(15)<<dilpt_LM0_prediction175<<"  |"<<endl;
-  cout<<"|                   |"<<setw(18)<<"|"<<setw(18)<<"|"<<endl;
-  cout<<"|"<<setw(10)<<"SM+LM1 Observed    |"<<setprecision(3)<<setw(15)<<met_LM1_observed100<<"  |"<<setw(15)<<met_LM1_observed175<<"  |"<<endl;
-  cout<<"|"<<setw(10)<<"SM+LM1 Prediction  |"<<setprecision(3)<<setw(15)<<dilpt_LM1_prediction100<<"  |"<<setw(15)<<dilpt_LM1_prediction175<<"  |"<<endl;
-  cout<<"---------------------------------------------------------"<<endl;
+  cout<<"---------------------------------------------------------------"<<endl;
+  cout<<"|                         |  met > 100 GeV  |  met > 175 GeV  |"<<endl;
+  cout<<"|"<<setw(10)<<"SM Observed              |"<<setprecision(3)<<setw(15)<<met_observed100<<"  |"<<setw(15)<<met_observed175<<"  |"<<endl;
+  cout<<"|"<<setw(10)<<"SM Prediction            |"<<setprecision(3)<<setw(15)<<dilpt_prediction100<<"  |"<<setw(15)<<dilpt_prediction175<<"  |"<<endl;
+  cout<<"|"<<setw(10)<<"SM Smeared Prediction    |"<<setprecision(3)<<setw(15)<<dilptSmeared_prediction100<<"  |"<<setw(15)<<dilptSmeared_prediction175<<"  |"<<endl;
+  cout<<"|                         |"<<setw(18)<<"|"<<setw(18)<<"|"<<endl;
+  cout<<"|"<<setw(10)<<"SM+LM0 Observed          |"<<setprecision(3)<<setw(15)<<met_LM0_observed100<<"  |"<<setw(15)<<met_LM0_observed175<<"  |"<<endl;
+  cout<<"|"<<setw(10)<<"SM+LM0 Prediction        |"<<setprecision(3)<<setw(15)<<dilpt_LM0_prediction100<<"  |"<<setw(15)<<dilpt_LM0_prediction175<<"  |"<<endl;
+  cout<<"|"<<setw(10)<<"SM+LM0 Smeared Prediction|"<<setprecision(3)<<setw(15)<<dilptSmeared_LM0_prediction100<<"  |"<<setw(15)<<dilptSmeared_LM0_prediction175<<"  |"<<endl;
+  cout<<"|                         |"<<setw(18)<<"|"<<setw(18)<<"|"<<endl;
+  cout<<"|"<<setw(10)<<"SM+LM1 Observed          |"<<setprecision(3)<<setw(15)<<met_LM1_observed100<<"  |"<<setw(15)<<met_LM1_observed175<<"  |"<<endl;
+  cout<<"|"<<setw(10)<<"SM+LM1 Prediction        |"<<setprecision(3)<<setw(15)<<dilpt_LM1_prediction100<<"  |"<<setw(15)<<dilpt_LM1_prediction175<<"  |"<<endl;
+  cout<<"|"<<setw(10)<<"SM+LM1 Smeared Prediction|"<<setprecision(3)<<setw(15)<<dilptSmeared_LM1_prediction100<<"  |"<<setw(15)<<dilptSmeared_LM1_prediction175<<"  |"<<endl;
+  cout<<"---------------------------------------------------------------"<<endl;
 
   //make yield tables
   makeTable(filename, samples, 100, sm_tcmet_all, sm_tcmet_ee, sm_tcmet_mm, sm_tcmet_em);
