@@ -17,7 +17,8 @@ static TH2F* getResponseFunction_fit(){
    
    TH2F *hrf = new TH2F("hrf","RF  (fit)",52, xAxis1,28, yAxis1);
    TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
-   hrf->SetDirectory(rootdir);
+   TDirectory *tcmetdir = rootdir->mkdir("tcmet");
+   hrf->SetDirectory(tcmetdir);
    hrf->SetBinContent(163,0.596559);
    hrf->SetBinContent(164,0.628848);
    hrf->SetBinContent(165,0.6198216);
