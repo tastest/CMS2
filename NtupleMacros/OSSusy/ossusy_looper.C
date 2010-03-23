@@ -19,6 +19,7 @@
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TMath.h"
+#include "TRandom3.h"
 #include "Math/LorentzVector.h"
 
 #include "ossusy_looper.h"
@@ -42,6 +43,8 @@ void fillOverFlow(TH1F *h1, float value, float weight = 1.);
 void fillOverFlow(TH2F *h2, float xvalue, float yvalue, float weight = 1.);
 void fillHistos(TH1F *h1[4][4],float value, float weight, int myType, int nJetsIdx);
 void fillHistos(TH2F *h2[4][4],float xvalue, float yvalue, float weight, int myType, int nJetsIdx);
+float returnSigma(float sumJetPt, ossusy_looper::MetTypeEnum metType);
+float returnBias(float sumJetPt, ossusy_looper::MetTypeEnum metType);
 
 void ossusy_looper::makeTree(char *prefix)
 {
@@ -155,6 +158,14 @@ bool nkcut(const unsigned value,const int n,
         if (value&(1<<i)) {} else { return false;}
     }
     return true;
+}
+
+ossusy_looper::ossusy_looper()
+{
+    g_susybaseline = false;
+    g_createTree   = false;
+    g_useBitMask   = false;
+    random3_ = new TRandom3(1);
 }
 
 int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale,
@@ -827,6 +838,13 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
                 // dilepton pt
                 fillHistos(hdilPt, hyp_p4()[hypIdx].pt(), weight, myType, nJetsIdx);
 
+                // smeared dilepton pt
+                float sigma = returnSigma(theSumJetPt, metType);
+                float bias  = returnBias(theSumJetPt, metType);
+                float smear = random3_->Gaus(0, sigma);
+                float dilPtSmeared = bias * hyp_p4()[hypIdx].pt() + smear;
+                fillHistos(hdilPtSmeared, dilPtSmeared, weight, myType, nJetsIdx);
+
                 // Gen Met and Met Phi
                 fillHistos(hgenmet, gen_met(), weight, myType, nJetsIdx);
                 fillHistos(hgenmetPhi, gen_metPhi(), weight, myType, nJetsIdx);
@@ -1099,6 +1117,9 @@ void ossusy_looper::BookHistos(char *prefix)
             hdilPt[i][j] = new TH1F(Form("%s_hdilPt_%s",prefix,suffix),Form("%s_dilPt_%s",prefix,suffix),60,0.,300.);
             hdilPt[i][j]->GetXaxis()->SetTitle("Pt (GeV)");
 
+            hdilPtSmeared[i][j] = new TH1F(Form("%s_hdilPtSmeared_%s",prefix,suffix),Form("%s_dilPtSmeared_%s",prefix,suffix),60,0.,300.);
+            hdilPtSmeared[i][j]->GetXaxis()->SetTitle("Pt (GeV)");
+
             // changed binning from 2 GeV to 10 GeV
             hgenmet[i][j] = new TH1F(Form("%s_hgenmet_%s",prefix,suffix),Form("%s_genmet_%s",prefix,suffix),60,0.,300.);
             hgenmet[i][j]->GetXaxis()->SetTitle("MET (GeV)");
@@ -1259,6 +1280,7 @@ void ossusy_looper::BookHistos(char *prefix)
             hmuEta[i][j]->Sumw2();
             hdilMass[i][j]->Sumw2();
             hdilPt[i][j]->Sumw2();
+            hdilPtSmeared[i][j]->Sumw2();
             hgenmet[i][j]->Sumw2();
             hgenmetPhi[i][j]->Sumw2();
             hmetmuon[i][j]->Sumw2();
@@ -1357,4 +1379,52 @@ void fillHistos(TH2F *h2[4][4],float xvalue, float yvalue, float weight, int myT
     fillUnderOverFlow(h2[myType][3],        xvalue, yvalue, weight);      
     fillUnderOverFlow(h2[3][nJetsIdx],      xvalue, yvalue, weight);      
     fillUnderOverFlow(h2[3][3],             xvalue, yvalue, weight);      
+}
+
+float returnSigma (float sumJetPt, ossusy_looper::MetTypeEnum metType)
+{
+    const float xbins[] = { 100, 200, 400, 800 };
+    const float tcmet_sigma[] = { 13.02, 13.44, 14.64, 17.19, 21.95 };
+    const float muonjes_sigma[] = { 21.13, 20.3, 21.08, 24.06, 29.08 };
+
+    if (metType == ossusy_looper::e_tcmet) {
+        for( int j = 0; j < 4; j++ ) {
+            if( sumJetPt < xbins[j] )
+                return tcmet_sigma[j];
+        }
+
+        return tcmet_sigma[4];
+    }
+    else if (metType == ossusy_looper::e_muonjes) {
+        for( int j = 0; j < 4; j++ ) {
+            if( sumJetPt < xbins[j] )
+                return muonjes_sigma[j];
+        }
+
+        return muonjes_sigma[4];
+    }
+}
+
+float returnBias(float sumJetPt, ossusy_looper::MetTypeEnum metType)
+{
+    const float xbins[] = { 100, 200, 400, 800 };
+    const float tcmet_bias[]  = { 0.87, 0.88, 0.91, 0.95, 0.99 };
+    const float muonjes_bias[]  = { 0.94, 1., 1.03, 1.03, 1.07 };
+
+    if (metType == ossusy_looper::e_tcmet) {
+        for( int j = 0; j < 4; j++ ) {
+            if( sumJetPt < xbins[j] )
+                return tcmet_bias[j];
+        }
+
+        return tcmet_bias[4];
+    }
+    else if (metType == ossusy_looper::e_muonjes) {
+        for( int j = 0; j < 4; j++ ) {
+            if( sumJetPt < xbins[j] )
+                return muonjes_bias[j];
+        }
+
+        return muonjes_bias[4];
+    }
 }

@@ -11,12 +11,16 @@ typedef map<unsigned int, unsigned int> m_uiui;
 class  TChain;
 class  TH1F;
 class  TH2F;
+class  TRandom3;
 class  TTree;
 struct metStruct;
 
 class ossusy_looper
 {
     public: 
+        ossusy_looper();
+        ~ossusy_looper() {}
+
         enum JetTypeEnum { e_JPT = 0, e_calo };
         // e_JPT     :   jpt jets
         // e_calo    :   l1 and l2 corrected calo jets
@@ -53,6 +57,7 @@ class ossusy_looper
         bool g_susybaseline;
         bool g_createTree;
         bool g_useBitMask;
+        TRandom3 *random3_;
 
         // Baby ntuple variables
         TFile  *outFile;
@@ -107,6 +112,7 @@ class ossusy_looper
         TH1F* hmuEta[4][4];                  // muon eta
         TH1F* hdilMass[4][4];                // dilepton mass
         TH1F* hdilPt[4][4];                  // dilepton Pt
+        TH1F* hdilPtSmeared[4][4];           // dilepton Pt with Gaussian smearing
 
         TH1F* hgenmet[4][4];                 // MET corrected for muons and JES
         TH1F* hgenmetPhi[4][4];              // MET corrected for muons and JES phi
