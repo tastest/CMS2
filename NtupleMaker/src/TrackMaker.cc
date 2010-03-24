@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/4
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: TrackMaker.cc,v 1.25 2009/12/16 09:53:29 jmuelmen Exp $
+// $Id: TrackMaker.cc,v 1.25.2.1 2010/03/24 22:45:07 jribnik Exp $
 //
 //
 
@@ -323,6 +323,7 @@ void TrackMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       if(!valid_hit) continue;
       if(pixel_hit){
+          /*
 
 	const SiPixelRecHit *pixel_hit_cast = dynamic_cast<const SiPixelRecHit*>(&(**ihit));
 	assert(pixel_hit_cast != 0);
@@ -343,9 +344,11 @@ void TrackMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	}
 
+    */
       }
 
       else if (strip_hit){
+          /*
 	const SiStripRecHit2D *strip_hit_cast = dynamic_cast<const SiStripRecHit2D*>(&(**ihit));
 	ClusterRef const& cluster = strip_hit_cast->cluster();
 
@@ -378,6 +381,7 @@ void TrackMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  trks_layer1_layer    ->push_back(layer);
 	  i_layer++;
 	}
+    */
       }
 
     }

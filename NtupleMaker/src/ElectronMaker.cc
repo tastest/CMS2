@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Puneeth Kalavase
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: ElectronMaker.cc,v 1.41.2.2 2010/01/20 23:26:58 kalavase Exp $
+// $Id: ElectronMaker.cc,v 1.41.2.3 2010/03/24 22:45:07 jribnik Exp $
 //
 //
 
@@ -653,6 +653,7 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
       if(!valid_hit) continue;
       if(pixel_hit){
+          /*
 
 	const SiPixelRecHit *pixel_hit_cast = dynamic_cast<const SiPixelRecHit*>(&(**ihit));
 	assert(pixel_hit_cast != 0);
@@ -673,9 +674,11 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
 	}
 
+    */
       }
 
       else if (strip_hit){
+          /*
 	const SiStripRecHit2D *strip_hit_cast = dynamic_cast<const SiStripRecHit2D*>(&(**ihit));
 	ClusterRef const& cluster = strip_hit_cast->cluster();
 
@@ -708,6 +711,7 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	  els_layer1_layer    ->push_back(layer);
 	  i_layer++;
 	}
+    */
       }
 
     }
