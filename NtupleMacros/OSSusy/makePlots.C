@@ -260,9 +260,76 @@ void makePlots(char* filename) {
   cout<<"---------------------------------------------------------------"<<endl;
 
   //make yield tables
-  makeTable(filename, samples, 100, sm_tcmet_all, sm_tcmet_ee, sm_tcmet_mm, sm_tcmet_em);
-  makeTable(filename, samples, 175, sm_tcmet_all, sm_tcmet_ee, sm_tcmet_mm, sm_tcmet_em);
+  //makeTable(filename, samples, 100, sm_tcmet_all, sm_tcmet_ee, sm_tcmet_mm, sm_tcmet_em);
+  //makeTable(filename, samples, 175, sm_tcmet_all, sm_tcmet_ee, sm_tcmet_mm, sm_tcmet_em);
   
+  //make yield tables (side-by-side)
+  TFile *f=TFile::Open(filename);
+
+  const unsigned int nsamples=samples.size();
+  char* leptype[4]={"all","ee","mm","em"};
+  TH1F *h;
+  TH1F* hall = (TH1F*)sm_tcmet_all->Clone();
+  TH1F* hee  = (TH1F*)sm_tcmet_ee->Clone();
+  TH1F* hmm  = (TH1F*)sm_tcmet_mm->Clone();
+  TH1F* hem  = (TH1F*)sm_tcmet_em->Clone();
+
+  cout<<endl<<endl<<endl;
+  cout<<"------------------------------------------------------------------------------------------------"
+      <<"-------------------------------------------------------------------------------"<<endl;
+
+  cout<<"|              |  met > 100 GeV    |  met > 100 GeV    |  met > 100 GeV    |  met > 100 GeV    |"
+      <<"  met > 175 GeV    |  met > 175 GeV    |  met > 175 GeV    |  met > 175 GeV   |"<<endl;
+
+  cout<<"|    Sample    |            all    |             ee    |             mm    |             em    |"
+      <<"            all    |             ee    |             mm    |             em   |"<<endl;
+  
+  bin100 = hall->FindBin(100);
+  bin175 = hall->FindBin(175);
+  int maxbin = hall->GetNbinsX()+1;
+  cout<<"|"<<setw(10)<<"SM TOT";
+  cout<<setprecision(3)<<"    |"<<setw(15)<<hall->Integral(bin100,maxbin);
+  cout<<setprecision(3)<<"    |"<<setw(15)<<hee-> Integral(bin100,maxbin);
+  cout<<setprecision(3)<<"    |"<<setw(15)<<hmm-> Integral(bin100,maxbin);
+  cout<<setprecision(3)<<"    |"<<setw(15)<<hem-> Integral(bin100,maxbin);
+  cout<<setprecision(3)<<"    |"<<setw(15)<<hall->Integral(bin175,maxbin);
+  cout<<setprecision(3)<<"    |"<<setw(15)<<hee-> Integral(bin175,maxbin);
+  cout<<setprecision(3)<<"    |"<<setw(15)<<hmm-> Integral(bin175,maxbin);
+  cout<<setprecision(3)<<"    |"<<setw(15)<<hem-> Integral(bin175,maxbin)<<"   |"<<endl;
+
+  for(unsigned int isample = 0 ; isample < nsamples ; isample++){
+
+    h = (TH1F*) f->Get(Form("%s_htcmet_allj_all",samples.at(isample),"all"));
+    if(h==0) continue;
+    delete h;
+    
+    cout<<"|"<<setw(10)<<samples[isample];
+
+    for(int ilep = 0 ; ilep < 4 ; ilep++){
+      h = (TH1F*) f->Get(Form("%s_htcmet_allj_%s",samples.at(isample),leptype[ilep]));
+      
+      cout<<setprecision(3)<<"    |"<<setw(15)<<h->Integral(bin100,maxbin);
+      
+      delete h;
+    }
+
+    for(int ilep = 0 ; ilep < 4 ; ilep++){
+      h = (TH1F*) f->Get(Form("%s_htcmet_allj_%s",samples.at(isample),leptype[ilep]));
+      
+      cout<<setprecision(3)<<"    |"<<setw(15)<<h->Integral(bin175,maxbin);
+      
+      delete h;
+    }
+
+    cout<<"   |"<<endl;
+  }
+
+  cout<<"------------------------------------------------------------------------------------------------"
+      <<"-------------------------------------------------------------------------------"<<endl;
+
+ 
+  delete f;
+
 }
 
 
