@@ -4,6 +4,7 @@
 #include "TGraph.h"
 #include "TCanvas.h"
 #include "TLegend.h"
+#include "TMath.h"
 #include <iostream>
 #include <iomanip>
 #include <math.h>
@@ -23,6 +24,17 @@ void loadHist(const char* filename, const char* directory = 0, const char* pfx =
 
 void makeTable(char* filename, vector<char*> samples, float metcut,
                TH1F* hall, TH1F* hee, TH1F* hmm, TH1F* hem);
+
+
+double calcIntegralError(int lowerBin, int upperBin, TH1F* histo, double* error) {
+  double sqError = 0;
+  for(int bins = lowerBin; bins <= upperBin; ++bins) {
+    sqError += TMath::Power(histo->GetBinError(bins),2.);
+    }
+  *error = TMath::Sqrt(sqError);
+  return *error;
+}
+
 
 void makePlots(char* filename) {
 
@@ -140,7 +152,11 @@ void makePlots(char* filename) {
   int bin175 = sm_dilPt->FindBin(175);
   double scale = sm_dilPt->Integral(bin50, 101) / sm_dilPt->Integral(0, 101);
   sm_dilPt->Scale( 1. / scale );
+  double dilpt_prediction100Err = 0.;
+  calcIntegralError(bin100, 101, sm_dilPt, &dilpt_prediction100Err);
   double dilpt_prediction100 = sm_dilPt->Integral(bin100, 101);
+  double dilpt_prediction175Err = 0.;
+  calcIntegralError(bin175, 101, sm_dilPt, &dilpt_prediction175Err);
   double dilpt_prediction175 = sm_dilPt->Integral(bin175, 101);
 
   int bin50_smeared  = sm_dilPtSmeared->FindBin(50);
@@ -148,7 +164,11 @@ void makePlots(char* filename) {
   int bin175_smeared = sm_dilPtSmeared->FindBin(175);
   double scale_smeared = sm_dilPtSmeared->Integral(bin50_smeared, 101) / sm_dilPtSmeared->Integral(0, 101);
   sm_dilPtSmeared->Scale( 1. / scale_smeared );
+  double dilptSmeared_prediction100Err = 0.;
+  calcIntegralError(bin100_smeared, 101, sm_dilPtSmeared, &dilptSmeared_prediction100Err);
   double dilptSmeared_prediction100 = sm_dilPtSmeared->Integral(bin100_smeared, 101);
+  double dilptSmeared_prediction175Err = 0.;
+  calcIntegralError(bin175_smeared, 101, sm_dilPtSmeared, &dilptSmeared_prediction175Err);
   double dilptSmeared_prediction175 = sm_dilPtSmeared->Integral(bin175_smeared, 101);
 
   std::cout << "the scale factor is: " << scale << std::endl;
@@ -157,25 +177,41 @@ void makePlots(char* filename) {
   //SM+LM0 prediction
   double scaleLM0 = sm_LM0_dilPt->Integral(bin50, 101) / sm_LM0_dilPt->Integral(0, 101);
   sm_LM0_dilPt->Scale(1. / scaleLM0);
+  double dilpt_LM0_prediction100Err = 0.;
+  calcIntegralError(bin100, 101, sm_LM0_dilPt, &dilpt_LM0_prediction100Err);
   double dilpt_LM0_prediction100 = sm_LM0_dilPt->Integral(bin100, 101);
+  double dilpt_LM0_prediction175Err = 0.;
+  calcIntegralError(bin175, 101, sm_LM0_dilPt, &dilpt_LM0_prediction175Err);
   double dilpt_LM0_prediction175 = sm_LM0_dilPt->Integral(bin175, 101);
 
   //SM+LM1 prediction
   double scaleLM1 = sm_LM1_dilPt->Integral(bin50, 101) / sm_LM1_dilPt->Integral(0, 101);
   sm_LM1_dilPt->Scale(1. / scaleLM1);
+  double dilpt_LM1_prediction100Err = 0.;
+  calcIntegralError(bin100, 101, sm_LM1_dilPt, &dilpt_LM1_prediction100Err);
   double dilpt_LM1_prediction100 = sm_LM1_dilPt->Integral(bin100, 101);
+  double dilpt_LM1_prediction175Err = 0.;
+  calcIntegralError(bin175, 101, sm_LM1_dilPt, &dilpt_LM1_prediction175Err);
   double dilpt_LM1_prediction175 = sm_LM1_dilPt->Integral(bin175, 101);
 
   //SM+LM0 smeared prediction
   double scaleLM0_smeared = sm_LM0_dilPtSmeared->Integral(bin50_smeared, 101) / sm_LM0_dilPtSmeared->Integral(0, 101);
   sm_LM0_dilPtSmeared->Scale(1. / scaleLM0_smeared);
+  double dilptSmeared_LM0_prediction100Err = 0.;
+  calcIntegralError(bin100_smeared, 101, sm_LM0_dilPtSmeared, &dilptSmeared_LM0_prediction100Err);
   double dilptSmeared_LM0_prediction100 = sm_LM0_dilPtSmeared->Integral(bin100_smeared, 101);
+  double dilptSmeared_LM0_prediction175Err = 0.;
+  calcIntegralError(bin175_smeared, 101, sm_LM0_dilPtSmeared, &dilptSmeared_LM0_prediction175Err);
   double dilptSmeared_LM0_prediction175 = sm_LM0_dilPtSmeared->Integral(bin175_smeared, 101);
 
   //SM+LM1 smeared prediction
   double scaleLM1_smeared = sm_LM1_dilPtSmeared->Integral(bin50_smeared, 101) / sm_LM1_dilPtSmeared->Integral(0, 101);
   sm_LM1_dilPtSmeared->Scale(1. / scaleLM1_smeared);
+  double dilptSmeared_LM1_prediction100Err = 0.;
+  calcIntegralError(bin100_smeared, 101, sm_LM1_dilPtSmeared, &dilptSmeared_LM1_prediction100Err);
   double dilptSmeared_LM1_prediction100 = sm_LM1_dilPtSmeared->Integral(bin100_smeared, 101);
+  double dilptSmeared_LM1_prediction175Err = 0.;
+  calcIntegralError(bin175_smeared, 101, sm_LM1_dilPtSmeared, &dilptSmeared_LM1_prediction175Err);
   double dilptSmeared_LM1_prediction175 = sm_LM1_dilPtSmeared->Integral(bin175_smeared, 101);
 
   //draw plot
@@ -196,7 +232,23 @@ void makePlots(char* filename) {
   sm_tcmet_all->SetLineColor(kRed);
   sm_tcmet_all->SetMarkerStyle(24);
   sm_tcmet_all->Draw("sames");
-  
+
+  TH1F* obsPredPulls = new TH1F("obsPredPulls","obsPredPulls",50,-5,5);
+  TH1F* obsPredRatio = (TH1F*) sm_dilPt->Clone("obsPredRatio");
+  obsPredRatio->Sumw2();
+  //  obsPredRatio->Divide(sm_dilPt,sm_tcmet_all,1,1,"B");
+  obsPredRatio->Add(sm_dilPt,sm_tcmet_all,-1,1);
+  for(int bins = 1; bins <= obsPredRatio->GetNbinsX(); ++bins) {
+    double pullValue = obsPredRatio->GetBinContent(bins);
+    pullValue = pullValue / TMath::Sqrt(TMath::Power(sm_tcmet_all->GetBinError(bins),2.)+TMath::Power(sm_dilPt->GetBinError(bins),2.));
+    obsPredRatio->SetBinContent(bins,pullValue);
+    //    std::cout<<sm_tcmet_all->GetBinCenter(bins)<<std::endl;
+    if(sm_tcmet_all->GetBinCenter(bins)>100.)  obsPredPulls->Fill(pullValue);
+  }
+  obsPredRatio->SetLineColor(kGreen+5);
+  obsPredRatio->SetMarkerStyle(27);
+  //  obsPredRatio->Draw("sames");
+
   sm_dilPt->SetXTitle("p_{T} (GeV)");
   sm_dilPt->SetTitle("");
   
@@ -214,6 +266,11 @@ void makePlots(char* filename) {
   legend->SetBorderSize(0);
   legend->Draw();
 
+
+  TCanvas* c2 = new TCanvas;
+  c2->cd();
+  obsPredPulls->Draw();
+
   std::cout << dilpt_prediction100 << " events predicted from dilepton pt distribution for " 
             << " tcmet > 100 GeV" << std::endl;
   std::cout << dilptSmeared_prediction100 << " events predicted from smeared dilepton pt distribution for " 
@@ -228,13 +285,34 @@ void makePlots(char* filename) {
   int metbin100 = sm_tcmet_all->FindBin(100);
   int metbin175 = sm_tcmet_all->FindBin(175);
 
+//   double met_observed100 = sm_tcmet_all->Integral(metbin100, 101);
+//   double met_observed175 = sm_tcmet_all->Integral(metbin175, 101);
+
+//   double met_LM0_observed100 = sm_LM0_tcmet->Integral(metbin100, 101);
+//   double met_LM0_observed175 = sm_LM0_tcmet->Integral(metbin175, 101);
+
+//   double met_LM1_observed100 = sm_LM1_tcmet->Integral(metbin100, 101);
+//   double met_LM1_observed175 = sm_LM1_tcmet->Integral(metbin175, 101);
+
+  double met_observed100Err = 0.;
+  calcIntegralError(metbin100, 101,sm_tcmet_all , &met_observed100Err);
   double met_observed100 = sm_tcmet_all->Integral(metbin100, 101);
+  double met_observed175Err = 0;;
+  calcIntegralError(metbin175, 101,sm_tcmet_all , &met_observed175Err);
   double met_observed175 = sm_tcmet_all->Integral(metbin175, 101);
 
+  double met_LM0_observed100Err = 0.;
+  calcIntegralError(metbin100, 101, sm_LM0_tcmet, &met_LM0_observed100Err);
   double met_LM0_observed100 = sm_LM0_tcmet->Integral(metbin100, 101);
+  double met_LM0_observed175Err = 0.;
+  calcIntegralError(metbin175, 101, sm_LM0_tcmet, &met_LM0_observed175Err);
   double met_LM0_observed175 = sm_LM0_tcmet->Integral(metbin175, 101);
 
+  double met_LM1_observed100Err = 0.;
+  calcIntegralError(metbin100, 101, sm_LM1_tcmet, &met_LM1_observed100Err);
   double met_LM1_observed100 = sm_LM1_tcmet->Integral(metbin100, 101);
+  double met_LM1_observed175Err = 0.;
+  calcIntegralError(metbin175, 101, sm_LM1_tcmet, &met_LM1_observed175Err);
   double met_LM1_observed175 = sm_LM1_tcmet->Integral(metbin175, 101);
 
   std::cout << met_observed100 << " events observed in " 
@@ -246,17 +324,17 @@ void makePlots(char* filename) {
   cout<<endl<<endl<<endl;
   cout<<"---------------------------------------------------------------"<<endl;
   cout<<"|                         |  met > 100 GeV  |  met > 175 GeV  |"<<endl;
-  cout<<"|"<<setw(10)<<"SM Observed              |"<<setprecision(3)<<setw(15)<<met_observed100<<"  |"<<setw(15)<<met_observed175<<"  |"<<endl;
-  cout<<"|"<<setw(10)<<"SM Prediction            |"<<setprecision(3)<<setw(15)<<dilpt_prediction100<<"  |"<<setw(15)<<dilpt_prediction175<<"  |"<<endl;
-  cout<<"|"<<setw(10)<<"SM Smeared Prediction    |"<<setprecision(3)<<setw(15)<<dilptSmeared_prediction100<<"  |"<<setw(15)<<dilptSmeared_prediction175<<"  |"<<endl;
+  cout<<"|"<<setw(10)<<"SM Observed              |"<<setprecision(2)<<setw(9)<<met_observed100<<" +-"<<met_observed100Err<<"  |"<<setw(9)<<met_observed175<<" +-"<<met_observed175Err<<"  |"<<endl;
+  cout<<"|"<<setw(10)<<"SM Prediction            |"<<setprecision(2)<<setw(9)<<dilpt_prediction100<<" +-"<<dilpt_prediction100Err<<"  |"<<setw(9)<<dilpt_prediction175<<" +-"<<dilpt_prediction175Err<<"  |"<<endl;
+  cout<<"|"<<setw(10)<<"SM Smeared Prediction    |"<<setprecision(2)<<setw(9)<<dilptSmeared_prediction100<<" +-"<<dilptSmeared_prediction100Err<<"  |"<<setw(9)<<dilptSmeared_prediction175<<" +-"<<dilptSmeared_prediction175Err<<"  |"<<endl;
   cout<<"|                         |"<<setw(18)<<"|"<<setw(18)<<"|"<<endl;
-  cout<<"|"<<setw(10)<<"SM+LM0 Observed          |"<<setprecision(3)<<setw(15)<<met_LM0_observed100<<"  |"<<setw(15)<<met_LM0_observed175<<"  |"<<endl;
-  cout<<"|"<<setw(10)<<"SM+LM0 Prediction        |"<<setprecision(3)<<setw(15)<<dilpt_LM0_prediction100<<"  |"<<setw(15)<<dilpt_LM0_prediction175<<"  |"<<endl;
-  cout<<"|"<<setw(10)<<"SM+LM0 Smeared Prediction|"<<setprecision(3)<<setw(15)<<dilptSmeared_LM0_prediction100<<"  |"<<setw(15)<<dilptSmeared_LM0_prediction175<<"  |"<<endl;
+  cout<<"|"<<setw(10)<<"SM+LM0 Observed          |"<<setprecision(2)<<setw(9)<<met_LM0_observed100<<" +-"<<met_LM0_observed100Err<<"  |"<<setw(9)<<met_LM0_observed175<<" +-"<<met_LM0_observed175Err<<"  |"<<endl;
+  cout<<"|"<<setw(10)<<"SM+LM0 Prediction        |"<<setprecision(2)<<setw(9)<<dilpt_LM0_prediction100<<" +-"<<dilpt_LM0_prediction100Err<<"  |"<<setw(9)<<dilpt_LM0_prediction175<<" +-"<<dilpt_LM0_prediction175Err<<"  |"<<endl;
+  cout<<"|"<<setw(10)<<"SM+LM0 Smeared Prediction|"<<setprecision(2)<<setw(9)<<dilptSmeared_LM0_prediction100<<" +-"<<dilptSmeared_LM0_prediction100Err<<"  |"<<setw(9)<<dilptSmeared_LM0_prediction175<<" +-"<<dilptSmeared_LM0_prediction175Err<<"  |"<<endl;
   cout<<"|                         |"<<setw(18)<<"|"<<setw(18)<<"|"<<endl;
-  cout<<"|"<<setw(10)<<"SM+LM1 Observed          |"<<setprecision(3)<<setw(15)<<met_LM1_observed100<<"  |"<<setw(15)<<met_LM1_observed175<<"  |"<<endl;
-  cout<<"|"<<setw(10)<<"SM+LM1 Prediction        |"<<setprecision(3)<<setw(15)<<dilpt_LM1_prediction100<<"  |"<<setw(15)<<dilpt_LM1_prediction175<<"  |"<<endl;
-  cout<<"|"<<setw(10)<<"SM+LM1 Smeared Prediction|"<<setprecision(3)<<setw(15)<<dilptSmeared_LM1_prediction100<<"  |"<<setw(15)<<dilptSmeared_LM1_prediction175<<"  |"<<endl;
+  cout<<"|"<<setw(10)<<"SM+LM1 Observed          |"<<setprecision(2)<<setw(9)<<met_LM1_observed100<<" +-"<<met_LM1_observed100Err<<"  |"<<setw(9)<<met_LM1_observed175<<" +-"<<met_LM1_observed175Err<<"  |"<<endl;
+  cout<<"|"<<setw(10)<<"SM+LM1 Prediction        |"<<setprecision(2)<<setw(9)<<dilpt_LM1_prediction100<<" +-"<<dilpt_LM1_prediction100Err<<"  |"<<setw(9)<<dilpt_LM1_prediction175<<" +-"<<dilpt_LM1_prediction175Err<<"  |"<<endl;
+  cout<<"|"<<setw(10)<<"SM+LM1 Smeared Prediction|"<<setprecision(2)<<setw(9)<<dilptSmeared_LM1_prediction100<<" +-"<<dilptSmeared_LM1_prediction100Err<<"  |"<<setw(9)<<dilptSmeared_LM1_prediction175<<" +-"<<dilptSmeared_LM1_prediction175Err<<"  |"<<endl;
   cout<<"---------------------------------------------------------------"<<endl;
 
   //make yield tables
@@ -278,37 +356,54 @@ void makePlots(char* filename) {
   cout<<"------------------------------------------------------------------------------------------------"
       <<"-------------------------------------------------------------------------------"<<endl;
 
-  cout<<"|              |  met > 100 GeV    |  met > 100 GeV    |  met > 100 GeV    |  met > 100 GeV    |"
+  cout<<"|                       |  met > 100 GeV    |  met > 100 GeV    |  met > 100 GeV    |  met > 100 GeV    |"
       <<"  met > 175 GeV    |  met > 175 GeV    |  met > 175 GeV    |  met > 175 GeV   |"<<endl;
 
-  cout<<"|    Sample    |            all    |             ee    |             mm    |             em    |"
+  cout<<"|    Sample   (weight)  |            all    |             ee    |             mm    |             em    |"
       <<"            all    |             ee    |             mm    |             em   |"<<endl;
   
   bin100 = hall->FindBin(100);
   bin175 = hall->FindBin(175);
   int maxbin = hall->GetNbinsX()+1;
-  cout<<"|"<<setw(10)<<"SM TOT";
-  cout<<setprecision(3)<<"    |"<<setw(15)<<hall->Integral(bin100,maxbin);
-  cout<<setprecision(3)<<"    |"<<setw(15)<<hee-> Integral(bin100,maxbin);
-  cout<<setprecision(3)<<"    |"<<setw(15)<<hmm-> Integral(bin100,maxbin);
-  cout<<setprecision(3)<<"    |"<<setw(15)<<hem-> Integral(bin100,maxbin);
-  cout<<setprecision(3)<<"    |"<<setw(15)<<hall->Integral(bin175,maxbin);
-  cout<<setprecision(3)<<"    |"<<setw(15)<<hee-> Integral(bin175,maxbin);
-  cout<<setprecision(3)<<"    |"<<setw(15)<<hmm-> Integral(bin175,maxbin);
-  cout<<setprecision(3)<<"    |"<<setw(15)<<hem-> Integral(bin175,maxbin)<<"   |"<<endl;
-
+  double dummy = 0.;
+  if(42 != 42){
+    cout<<"|"<<setw(15)<<"SM TOT"<<" ("<<hall->Integral()/hall->GetEntries()<<") ";
+    cout<<std::right<<setprecision(2)<<"    |"<<setw(9)<<hall->Integral(bin100,maxbin)<<" +-"<<calcIntegralError(bin100, maxbin, hall, &dummy);
+    cout<<std::right<<setprecision(2)<<"    |"<<setw(9)<<hee-> Integral(bin100,maxbin)<<" +-"<<calcIntegralError(bin100, maxbin, hee, &dummy);
+    cout<<std::right<<setprecision(2)<<"    |"<<setw(9)<<hmm-> Integral(bin100,maxbin)<<" +-"<<calcIntegralError(bin100, maxbin, hmm, &dummy);
+    cout<<std::right<<setprecision(2)<<"    |"<<setw(9)<<hem-> Integral(bin100,maxbin)<<" +-"<<calcIntegralError(bin100, maxbin, hem, &dummy);
+    cout<<std::right<<setprecision(2)<<"    |"<<setw(9)<<hall->Integral(bin175,maxbin)<<" +-"<<calcIntegralError(bin175, maxbin, hall, &dummy);
+    cout<<std::right<<setprecision(2)<<"    |"<<setw(9)<<hee-> Integral(bin175,maxbin)<<" +-"<<calcIntegralError(bin175, maxbin, hee, &dummy);
+    cout<<std::right<<setprecision(2)<<"    |"<<setw(9)<<hmm-> Integral(bin175,maxbin)<<" +-"<<calcIntegralError(bin175, maxbin, hmm, &dummy);
+    cout<<std::right<<setprecision(2)<<"    |"<<setw(9)<<hem-> Integral(bin175,maxbin)<<" +-"<<calcIntegralError(bin175, maxbin, hem, &dummy)<<"   |"<<endl;
+  }
+  else {
+    cout<<"|"<<setw(15)<<"SM TOT"<<" ("<<hall->Integral()/hall->GetEntries()<<") ";
+    cout<<std::right<<setprecision(3)<<"    |"<<setw(15)<<hall->Integral(bin100,maxbin);
+    cout<<std::right<<setprecision(3)<<"    |"<<setw(15)<<hee-> Integral(bin100,maxbin);
+    cout<<std::right<<setprecision(3)<<"    |"<<setw(15)<<hmm-> Integral(bin100,maxbin);
+    cout<<std::right<<setprecision(3)<<"    |"<<setw(15)<<hem-> Integral(bin100,maxbin);
+    cout<<std::right<<setprecision(3)<<"    |"<<setw(15)<<hall->Integral(bin175,maxbin);
+    cout<<std::right<<setprecision(3)<<"    |"<<setw(15)<<hee-> Integral(bin175,maxbin);
+    cout<<std::right<<setprecision(3)<<"    |"<<setw(15)<<hmm-> Integral(bin175,maxbin);
+    cout<<std::right<<setprecision(3)<<"    |"<<setw(15)<<hem-> Integral(bin175,maxbin)<<"   |"<<endl;
+  }
   for(unsigned int isample = 0 ; isample < nsamples ; isample++){
 
     h = (TH1F*) f->Get(Form("%s_htcmet_allj_all",samples.at(isample),"all"));
     if(h==0) continue;
-    delete h;
     
-    cout<<"|"<<setw(10)<<samples[isample];
+    if( h->GetEntries()>0. )    cout<<"|"<<setw(10)<<samples[isample]<<" ("<<h->Integral()/h->GetEntries()<<") ";
+    else   cout<<"|"<<setw(10)<<samples[isample]<<" (xx) ";
+
+    delete h;
+
 
     for(int ilep = 0 ; ilep < 4 ; ilep++){
       h = (TH1F*) f->Get(Form("%s_htcmet_allj_%s",samples.at(isample),leptype[ilep]));
       
-      cout<<setprecision(3)<<"    |"<<setw(15)<<h->Integral(bin100,maxbin);
+      if(42 != 42)      cout<<setprecision(2)<<"    |"<<std::right<<setw(9)<<h->Integral(bin100,maxbin)<<" +-"<<calcIntegralError(bin100, maxbin, h, &dummy);
+      else              cout<<setprecision(3)<<"    |"<<std::right<<setw(15)<<h->Integral(bin100,maxbin);
       
       delete h;
     }
@@ -316,7 +411,8 @@ void makePlots(char* filename) {
     for(int ilep = 0 ; ilep < 4 ; ilep++){
       h = (TH1F*) f->Get(Form("%s_htcmet_allj_%s",samples.at(isample),leptype[ilep]));
       
-      cout<<setprecision(3)<<"    |"<<setw(15)<<h->Integral(bin175,maxbin);
+      if(42 != 42)      cout<<setprecision(2)<<"    |"<<std::right<<setw(9)<<h->Integral(bin175,maxbin)<<" +-"<<calcIntegralError(bin175, maxbin, h, &dummy);
+      else              cout<<setprecision(3)<<"    |"<<std::right<<setw(15)<<h->Integral(bin175,maxbin);
       
       delete h;
     }
