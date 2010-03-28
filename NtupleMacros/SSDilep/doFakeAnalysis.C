@@ -24,11 +24,14 @@
 using namespace std;
 
 #ifndef __CINT__
-#include "../CORE/CMS2.cc"
-#include "../CORE/utilities.cc"
-#include "../CORE/selections.cc"
-#include "../Tools/tools.cc"
-#include "../Tools/fakerates.cc"
+#include "CORE/CMS2.cc"
+#include "CORE/utilities.cc"
+#include "CORE/selections.cc"
+#include "CORE/electronSelections.cc"
+#include "CORE/muonSelections.cc"
+#include "CORE/tcmet_looper/getTcmetFromCaloMet.cc"
+#include "Tools/tools.cc"
+#include "CORE/fakerates.cc"
 #endif
 
 TH1F* hypos_total;
@@ -116,7 +119,7 @@ TH1F* hWOEtalt[4];
 // fkw September 2008 final hist used for muon tags estimate of top bkg
 
 
-vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > calo_jetsp4;
+vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > calo_jetsp4;
 
 struct hypo_monitor{
   std::vector<std::pair<std::string,unsigned int> > counters;
@@ -158,6 +161,8 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
   // Cut on lepton Pt and eta
   if (cms2.hyp_lt_p4()[i_hyp].pt() < 10.0) return;
   if (cms2.hyp_ll_p4()[i_hyp].pt() < 10.0) return;
+  if ( TMath::Abs(cms2.hyp_lt_p4()[i_hyp].eta()) > 2.4) return;
+  if ( TMath::Abs(cms2.hyp_ll_p4()[i_hyp].eta()) > 2.4) return;
   if (max(cms2.hyp_ll_p4()[i_hyp].pt(), cms2.hyp_lt_p4()[i_hyp].pt()) < 20) return;
   
   monitor.count(icounter++,"Total number of hypothesis after adding lepton pt cut: ");
@@ -196,10 +201,10 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
   
   // Lepton Quality cuts and isolation according to VJets09
   if (standardAnalysis) {
-    if (!GoodSusyLeptonID(cms2.hyp_lt_id()[i_hyp], cms2.hyp_lt_index()[i_hyp])) passedAllLeptonRequirements = false;
-    if (!GoodSusyLeptonID(cms2.hyp_ll_id()[i_hyp], cms2.hyp_ll_index()[i_hyp])) passedAllLeptonRequirements = false;
-    if (!PassSusyLeptonIsolation(cms2.hyp_ll_id()[i_hyp], cms2.hyp_ll_index()[i_hyp])) passedAllLeptonRequirements = false;
-    if (!PassSusyLeptonIsolation(cms2.hyp_lt_id()[i_hyp], cms2.hyp_lt_index()[i_hyp])) passedAllLeptonRequirements = false;
+    if (!GoodSusy2010Leptons(cms2.hyp_lt_id()[i_hyp], cms2.hyp_lt_index()[i_hyp])) passedAllLeptonRequirements = false;
+    if (!GoodSusy2010Leptons(cms2.hyp_ll_id()[i_hyp], cms2.hyp_ll_index()[i_hyp])) passedAllLeptonRequirements = false;
+   //  if (!PassSusyLeptonIsolation(cms2.hyp_ll_id()[i_hyp], cms2.hyp_ll_index()[i_hyp])) passedAllLeptonRequirements = false;
+//     if (!PassSusyLeptonIsolation(cms2.hyp_lt_id()[i_hyp], cms2.hyp_lt_index()[i_hyp])) passedAllLeptonRequirements = false;
   }
   if ( !passedAllLeptonRequirements ) return;
   monitor.count(icounter++,"Total number of hypothesis after adding lepton id and isolation, including eta cuts: ");     
@@ -223,19 +228,19 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
       bool isFOMll   = false;
       bool evtFRmm   = false;
       
-      if (GoodSusyMuonWithoutIsolation(iMlt) && PassSusyMuonIsolation(iMlt)) isGoodMlt = true;
-      if (isFakeableMuSUSY09(iMlt)) isFOMlt = true;
-      if (GoodSusyMuonWithoutIsolation(iMll) && PassSusyMuonIsolation(iMll)) isGoodMll = true;
-      if (isFakeableMuSUSY09(iMll)) isFOMll = true;
+      if (GoodSusy2010Leptons(13, iMlt)) isGoodMlt = true;
+      if (isFakeableMuon(iMlt, mu_v1)) isFOMlt = true;
+      if (GoodSusy2010Leptons(13, iMll)) isGoodMll = true;
+      if (isFakeableMuon(iMll, mu_v1)) isFOMll = true;
       
       if ( isGoodMlt && isGoodMll) return; // This is the real analysis
       
       if( isGoodMlt && !isGoodMll && isFOMll) {
-	fprob = FakeProb_v1(iMll, errwt, llId);
+	fprob = muFakeProb(iMll,  mu_v1);
 	evtFRmm = true;
       }
       if( isGoodMll && !isGoodMlt && isFOMlt) {
-	fprob = FakeProb_v1(iMlt, errwt, ltId);
+	fprob = muFakeProb(iMlt,  mu_v1);
 	evtFRmm = true;
       }
       if (!evtFRmm) return; //don't bother with hyps that don't have one FO and one Good
@@ -260,11 +265,10 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
       bool isFOMu   = false;
       bool evtFRemu = false;
       
-      if (GoodSusyElectronWithoutIsolation(iEl) && PassSusyElectronIsolation(iEl, true)) isGoodEl = true;
-//      if (isFakeableElSUSY09(iEl)) isFOEl = true;
-      if (isFakeable(iEl)) isFOEl = true;
-      if (GoodSusyMuonWithoutIsolation(iMu) && PassSusyMuonIsolation(iMu)) isGoodMu = true;
-      if (isFakeableMuSUSY09(iMu)) isFOMu = true;
+      if (GoodSusy2010Leptons(11, iEl)) isGoodEl = true;
+      if (isFakeableElectron(iEl, el_v2_cand02flip)) isFOEl = true;
+      if (GoodSusy2010Leptons(13, iMu)) isGoodMu = true;
+      if (isFakeableMuon(iMu, mu_v1)) isFOMu = true;
       
       //	 if (isGoodMu && isGoodEl) return;
       //	 if (trueGammaFromMuon(iEl)) return;
@@ -272,12 +276,12 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
       //	 if (!GoodSusyLeptonID(13, iMu)) return;
       
       if (isGoodMu && !isGoodEl && isFOEl) {
-	fprob = FakeProb_v1(iEl, errwt, 11);
+	fprob = elFakeProb(iEl, el_v2_cand02flip);
 	evtFRemu = true;
       }
       
       if (isGoodEl && !isGoodMu && isFOMu) {
-	fprob = FakeProb_v1(iMu, errwt, 13);
+	fprob = muFakeProb(iMu,  mu_v1);
 	evtFRemu = true;
       }
       if (!evtFRemu) return;//don't bother with hyps that don't have one FO and one Good
@@ -294,24 +298,22 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
       bool isFOEll   = false;
       bool evtFRee   = false;
       
-      if (GoodSusyElectronWithoutIsolation(iElt) && PassSusyElectronIsolation(iElt, true)) isGoodElt = true;
-//      if (isFakeableElSUSY09(iElt)) isFOElt = true;
-      if (isFakeable(iElt)) isFOElt = true;
-      if (GoodSusyElectronWithoutIsolation(iEll) && PassSusyElectronIsolation(iEll, true)) isGoodEll = true;
-//      if (isFakeableElSUSY09(iEll)) isFOEll = true;
-      if (isFakeable(iEll)) isFOEll = true;
+      if (GoodSusy2010Leptons(11, iElt)) isGoodElt = true;
+      if (isFakeableElectron(iElt, el_v2_cand02flip)) isFOElt = true;
+      if (GoodSusy2010Leptons(11, iEll)) isGoodEll = true;
+      if (isFakeableElectron(iEll, el_v2_cand02flip)) isFOEll = true;
       
       if ( isGoodElt && isGoodEll) return; // This is the real analysis
       //	 if (trueGammaFromMuon(iElt)) return;
       //	 if (trueGammaFromMuon(iEll)) return;
       
       if( isGoodElt && !isGoodEll && isFOEll) {
-	fprob = FakeProb_v1(iEll, errwt, llId);
+	fprob = elFakeProb(iEll, el_v2_cand02flip);
 	evtFRee = true;
       }
       
       if( isGoodEll && !isGoodElt && isFOElt) {
-	fprob = FakeProb_v1(iElt, errwt, ltId);
+	fprob = elFakeProb(iElt, el_v2_cand02flip);
 	evtFRee = true;
       }
       if (!evtFRee) return;//don't bother with hyps that don't have one FO and one Good
@@ -328,8 +330,10 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
        }
      }
 
-     bool useTcMet = true;
-     if (!passMetVJets09(80., useTcMet)) return;
+     // bool useTcMet = true;
+     // if (!passMetVJets09(80., useTcMet)) return;
+     
+     if (cms2.evt_pfmet() <= 80.) return;
 
      monitor.count(icounter++,"Total number of hypothesis after adding tcmet cut: ");     
 
@@ -353,8 +357,10 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
      if (sumet_calo < 200) return;
      
      monitor.count(icounter++,"Total number of hypothesis after adding jet cuts: ");
-     if ( additionalZvetoSUSY09(i_hyp)) return;
-     monitor.count(icounter++,"Total number of hypothesis after adding additionalZvetoSUSY09 cut: ");
+
+     if ( additionalZvetoSUSY2010(i_hyp)) return;
+
+     monitor.count(icounter++,"Total number of hypothesis after adding additionalZvetoSUSY2010 cut: ");
      
      if ( ! goodEvent ) return;
 
@@ -402,15 +408,15 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
        if ((truthtagll || truthtaglt) && !(truthtagll && truthtaglt)) {
 
          if (truthtagll) { // plot lt because it's the fake one
-           hWOPtlt[myType]->Fill(min(cms2.hyp_lt_p4()[i_hyp].pt(), 149.), weight);
-           hWOPtlt[3]->Fill(min(cms2.hyp_lt_p4()[i_hyp].pt(), 149.), weight);
+           hWOPtlt[myType]->Fill(min(cms2.hyp_lt_p4()[i_hyp].pt(), float(149.)), weight);
+           hWOPtlt[3]->Fill(min(cms2.hyp_lt_p4()[i_hyp].pt(), float(149.)), weight);
            hWOEtalt[myType]->Fill(fabs(cms2.hyp_lt_p4()[i_hyp].eta()), weight); // Lepton Eta
            hWOEtalt[3]->Fill(fabs(cms2.hyp_lt_p4()[i_hyp].eta()), weight); // Lepton Eta
          }
 
          if (truthtaglt) { // plot ll because it's the fake one
-           hWOPtll[myType]->Fill(min(cms2.hyp_ll_p4()[i_hyp].pt(), 149.), weight);
-           hWOPtll[3]->Fill(min(cms2.hyp_ll_p4()[i_hyp].pt(), 149.), weight);
+           hWOPtll[myType]->Fill(min(cms2.hyp_ll_p4()[i_hyp].pt(), float(149.)), weight);
+           hWOPtll[3]->Fill(min(cms2.hyp_ll_p4()[i_hyp].pt(), float(149.)), weight);
            hWOEtall[myType]->Fill(fabs(cms2.hyp_ll_p4()[i_hyp].eta()), weight); // Lepton Eta
            hWOEtall[3]->Fill(fabs(cms2.hyp_ll_p4()[i_hyp].eta()), weight); // Lepton Eta
          }
@@ -433,11 +439,11 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
      hdilMass[myType]->Fill(cms2.hyp_p4()[i_hyp].mass(), weight);
      hdilMass[3]->Fill(cms2.hyp_p4()[i_hyp].mass(), weight);
 
-     hleptonPt[myType]->Fill(min(cms2.hyp_ll_p4()[i_hyp].pt(), 149.), weight); // Lepton pt
-     hleptonPt[3]->Fill(min(cms2.hyp_ll_p4()[i_hyp].pt(), 149.), weight); // Lepton pt
+     hleptonPt[myType]->Fill(min(cms2.hyp_ll_p4()[i_hyp].pt(), float(149.0)), weight); // Lepton pt
+     hleptonPt[3]->Fill(min(cms2.hyp_ll_p4()[i_hyp].pt(), float(149.0)), weight); // Lepton pt
 
-     hleptonPt[myType]->Fill(min(cms2.hyp_lt_p4()[i_hyp].pt(), 149.), weight);
-     hleptonPt[3]->Fill(min(cms2.hyp_lt_p4()[i_hyp].pt(), 149.), weight);
+     hleptonPt[myType]->Fill(min(cms2.hyp_lt_p4()[i_hyp].pt(), float(149.0)), weight);
+     hleptonPt[3]->Fill(min(cms2.hyp_lt_p4()[i_hyp].pt(), float(149.0)), weight);
 
      hleptonEta[myType]->Fill(fabs(cms2.hyp_ll_p4()[i_hyp].eta()), weight); // Lepton Eta
      hleptonEta[3]->Fill(fabs(cms2.hyp_ll_p4()[i_hyp].eta()), weight); // Lepton Eta
@@ -487,7 +493,7 @@ RooDataSet* MakeNewDataset(const char* name)
 void AddIsoSignalControlSample( int i_hyp, double kFactor, RooDataSet* dataset = 0 ) {
   if ( !dataset ) return;
   // The event weight including the kFactor (scaled to 1 fb-1)
-  float weight = cms2.evt_scale1fb() * kFactor;
+  float weight = cms2.evt_scale1fb() * kFactor ;
   // Cut on lepton Pt
   if (cms2.hyp_lt_p4()[i_hyp].pt() < 20.0) return;
   if (cms2.hyp_ll_p4()[i_hyp].pt() < 20.0) return;
@@ -544,9 +550,9 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, bool identifyEvents ) 
   const char sample_names[][1024] = { "ww", "wz", "zz", "wjets", "dy", "dyee", "dymm", "dytt", "ttbar", "tw", "lm0x", "lm1x", "lm2x", "lm3x", "lm4x", "lm5x", "lm6x", "lm7x", "lm8x", "lm9x"};
   const char *prefix = sample_names[sample];
   RooDataSet* dataset = MakeNewDataset(sample_names[sample]);
-  double kFactor = 1; // 1fb-1
+  //double kFactor = 1; // 1fb-1
 
-  //  double kFactor = .1; // 1fb-1
+  double kFactor = .1; 
   //   switch (sample) {
   //   case WW:
   //        evt_scale1fb = 0.1538;
