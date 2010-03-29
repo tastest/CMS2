@@ -22,11 +22,11 @@ main(int argc, char **argv)
 
   if( argc < 3 ) {
     printf("\n  Usage: zn.exe Nsig Nbgr [Sbgr^2 [Dbgr]]\n");
-    printf("  where  Nsig - number of signal events\n");
-    printf("         Nbgr - number of background events\n");
-    printf("         Sbgr - statistical background uncertainty\n");
+    printf("  where  Nsig  - number of signal events\n");
+    printf("         Nbgr  - number of background events\n");
+    printf("         Sbgr2 - squared statistical background uncertainty\n");
     printf("                (usually Sbgr^2 = Nbgr)\n");
-    printf("         Dbgr - systematic background uncertainty (in percent)\n\n");
+    printf("         Dbgr  - systematic background uncertainty (in percent)\n\n");
     exit(1);
   }
 
@@ -45,7 +45,7 @@ main(int argc, char **argv)
   Dbgr0 = Nb * Dbgr / 100.0;
   Nb2 = Nb + Dbgr0;
 
-// display input parameters
+  // display input parameters
 
   printf("\nSignal Nsig = %Lg\nBackground Nbgr = %Lg\n",Ns,Nb);
   if( argc > 3 ) {
@@ -55,14 +55,14 @@ main(int argc, char **argv)
   if( argc > 4 )
     printf("Systematic uncertainty Dbgr = Nbgr * %Lg\% = %Lg\n",Dbgr,Dbgr0);
   
-// counting significance Scl
+  // counting significance Scl
 
   Nsb = Ns + Nb;
   Scl = sqrtl(2.0*(Nsb*logl(Nsb/Nb) - Ns));
   printf("\n Significance  Scl  =  sqrt(2*((Nsig+Nbgr)*");
   printf("ln(1+Nsig/Nbgr)-Nsig)) = %.3Lf\n",Scl);
 
-// counting significance S12
+  // counting significance S12
 
   S12 = 2.0*(sqrtl(Nsb) - sqrtl(Nb));
   printf("\n Significance  S12    = 2 * (sqrt(Nsig + Nbgr)");
@@ -83,7 +83,7 @@ main(int argc, char **argv)
     printf("S12''*sqrt((Nbgr+Dbgr)/(Nbgr+Sbgr2+Dbgr)) = %.3Lf\n",S123);   
   }
 
-// counting significance ScP
+  // counting significance ScP
 
   if( S12 < 7.0 ) {
 
@@ -112,7 +112,7 @@ long double sigcpunc( long double Nsb,
 
   long double Sbgr = sqrtl(Sbgr2);
   
-// to average background around Nbgr+Dbgr in range +/- 3 Sbgr
+  // to average background around Nbgr+Dbgr in range +/- 3 Sbgr
 
   long double sumW = 0.0;
   long double sumS = 0.0;
@@ -139,7 +139,7 @@ long double sigcpunc( long double Nsb,
 
 long double sigcp( long double Nsb, long double Nb )
 {
-//  return gausin(sumP(Nsb, Nb));
+  //  return gausin(sumP(Nsb, Nb));
   return -gausin(1.0-sumP(Nsb, Nb));
 }
 
@@ -150,10 +150,10 @@ long double sumP( long double Nsb, long double Nb )
 {
   long int N = (long int)Nsb;
 
-// initial value takes into account the case Nsb is non-integer 
+  // initial value takes into account the case Nsb is non-integer 
   long double sum = 0.5*(poisson_pdf((long double)N,Nb)+poisson_pdf(Nsb,Nb))*(Nsb-N);
   
-// start from the least members of row to increase accuracy
+  // start from the least members of row to increase accuracy
   for ( long int i = N-1; i >=0; i-- ) sum += poisson_pdf(i, Nb);
   
   return sum;
@@ -164,7 +164,7 @@ long double sumP( long double Nsb, long double Nb )
 
 long double poisson_pdf(long double x, long double mu) {
 
-     return expl(x*logl(mu) - lgamma(x+1.) - mu);
+  return expl(x*logl(mu) - lgamma(x+1.) - mu);
 }
 
 
@@ -180,25 +180,25 @@ long double lgamma(long double z) {
   //
   //--- Nve 14-nov-1998 UU-SAP Utrecht
 
-    if (z<=0) return 0;
+  if (z<=0) return 0;
  
-    // Coefficients for the series expansion
-    long double c[7] = { 2.5066282746310005, 76.18009172947146,
-                  -86.50532032941677,   24.01409824083091,
-                   -1.231739572450155, 0.1208650973866179e-2,
-                   -0.5395239384953e-5};
+  // Coefficients for the series expansion
+  long double c[7] = { 2.5066282746310005, 76.18009172947146,
+                       -86.50532032941677,   24.01409824083091,
+                       -1.231739572450155, 0.1208650973866179e-2,
+                       -0.5395239384953e-5};
  
-    long double x   = z;
-    long double y   = x;
-    long double tmp = x+5.5;
-    tmp = (x+0.5)*logl(tmp)-tmp;
-    long double ser = 1.000000000190015;
-    for (int i=1; i<7; i++) {
-      y   += 1.0;
-      ser += c[i]/y;
-    }
-    long double v = tmp+logl(c[0]*ser/x);
-    return v;
+  long double x   = z;
+  long double y   = x;
+  long double tmp = x+5.5;
+  tmp = (x+0.5)*logl(tmp)-tmp;
+  long double ser = 1.000000000190015;
+  for (int i=1; i<7; i++) {
+    y   += 1.0;
+    ser += c[i]/y;
+  }
+  long double v = tmp+logl(c[0]*ser/x);
+  return v;
 }
 
 
@@ -255,28 +255,28 @@ long double freq( long double X )
   long double RW2 = 1./W2;
 
   long double P1[4] = {+2.4266795523053175e+2, +2.1979261618294152e+1,
-                  +6.9963834886191355e+0, -3.5609843701815385e-2};
+                       +6.9963834886191355e+0, -3.5609843701815385e-2};
 		  
   long double Q1[4] = {+2.1505887586986120e+2, +9.1164905404514901e+1,
-                  +1.5082797630407787e+1, +1.0};
+                       +1.5082797630407787e+1, +1.0};
 
   long double P2[8] = {+3.00459261020161601e+2,+4.51918953711872942e+2,
-                  +3.39320816734343687e+2,+1.52989285046940404e+2,
-                  +4.31622272220567353e+1,+7.21175825088309366e+0,
-                  +5.64195517478973971e-1,-1.36864857382716707e-7};
+                       +3.39320816734343687e+2,+1.52989285046940404e+2,
+                       +4.31622272220567353e+1,+7.21175825088309366e+0,
+                       +5.64195517478973971e-1,-1.36864857382716707e-7};
 
   long double Q2[8] = {+3.00459260956983293e+2,+7.90950925327898027e+2,
-                  +9.31354094850609621e+2,+6.38980264465631167e+2,
-                  +2.77585444743987643e+2,+7.70001529352294730e+1,
-                  +1.27827273196294235e+1,+1.0};
+                       +9.31354094850609621e+2,+6.38980264465631167e+2,
+                       +2.77585444743987643e+2,+7.70001529352294730e+1,
+                       +1.27827273196294235e+1,+1.0};
 
   long double P3[5] = {-2.99610707703542174e-3, -4.94730910623250734e-2,
-                  -2.26956593539686930e-1, -2.78661308609647788e-1,
-                  -2.23192459734184686e-2};
+                       -2.26956593539686930e-1, -2.78661308609647788e-1,
+                       -2.23192459734184686e-2};
 
   long double Q3[5] = {+1.06209230528467918e-2, +1.91308926107829841e-1,
-                  +1.05167510706793207e+0, +1.98733201817135256e+0,
-                  +1.0};
+                       +1.05167510706793207e+0, +1.98733201817135256e+0,
+                       +1.0};
 
   long double V, Y, AP, AQ, H, HC, FREQ;
   int I; 
