@@ -41,7 +41,7 @@ class ossusy_looper
         void BookHistos (char *prefix);
         bool passZSelection (int hypIdx);
         bool passTrigger (int dilType);
-
+      
         // Set globals
         void set_susybaseline (bool b) { g_susybaseline = b; }
         void set_createTree   (bool b) { g_createTree   = b; }
@@ -49,7 +49,7 @@ class ossusy_looper
 
         // Baby ntuple methods
         void makeTree (char *prefix);
-        void fillTree (char *prefix, int hypIdx, metStruct tcmetStruct, float sumjetpt, float mt2j, int njets, float vecjetpt);
+        void fillTree (char *prefix, float weight, int hypIdx, metStruct tcmetStruct, float sumjetpt, float mt2j, int njets, float vecjetpt, int pass, int passz, float m0, float m12);
         void closeTree ();
 
     private:
@@ -75,6 +75,13 @@ class ossusy_looper
         Float_t dileta_;
         Float_t dilpt_;
         Float_t vecjetpt_;
+        Int_t   pass_;
+        Int_t   passz_;
+        Float_t m0_;
+        Float_t m12_;
+
+        //susy scan histos
+ 
 
         // Lots and lots of histograms
         TH2F* hsumJetPt_tcmet[4][4];
