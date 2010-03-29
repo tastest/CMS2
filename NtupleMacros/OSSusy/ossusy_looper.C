@@ -24,7 +24,8 @@
 
 #include "ossusy_looper.h"
 #include "getMt2.C"
-#include "CORE/CMS2.cc"
+//#include "CORE/CMS2.cc"
+#include "CMS2.cc" //include SParm branches
 #include "CORE/electronSelections.cc"
 #include "CORE/fakerates.cc"
 #include "CORE/mcSelections.cc"
@@ -37,6 +38,20 @@
 using namespace std;
 using namespace tas;
 
+//mSUGRA scan parameters-----------------------------
+
+const int   nm0points    = 81;
+const float m0min        = 0.;
+const float m0max        = 4050.;
+const int   nm12points   = 26;
+const float m12min       = 100.;
+const float m12max       = 620.;
+
+TH1F* hsusydilPt[nm0points][nm12points]; 
+TH1F* hsusytcmet[nm0points][nm12points]; 
+
+//---------------------------------------------------
+
 void fillUnderOverFlow(TH1F *h1, float value, float weight = 1.);
 void fillUnderOverFlow(TH2F *h2, float xvalue, float yvalue, float weight = 1.);
 void fillOverFlow(TH1F *h1, float value, float weight = 1.);
@@ -45,6 +60,22 @@ void fillHistos(TH1F *h1[4][4],float value, float weight, int myType, int nJetsI
 void fillHistos(TH2F *h2[4][4],float xvalue, float yvalue, float weight, int myType, int nJetsIdx);
 float returnSigma(float sumJetPt, ossusy_looper::MetTypeEnum metType);
 float returnBias(float sumJetPt, ossusy_looper::MetTypeEnum metType);
+
+int getIndexFromM0(float m0){
+  
+  float binsize = (m0max - m0min) / (float) nm0points;
+  int index     = (int)(m0 - m0min) / binsize;
+  return index;
+    
+}
+
+int getIndexFromM12(float m12){
+  
+  float binsize = (m12max - m12min) / (float) nm12points;
+  int index     = (int)(m12 - m12min) / binsize;
+  return index;
+    
+}
 
 void ossusy_looper::makeTree(char *prefix)
 {
@@ -71,6 +102,11 @@ void ossusy_looper::makeTree(char *prefix)
     outTree->Branch("dilpt",       &dilpt_,      "dilpt/F");
     outTree->Branch("njets",       &njets_,      "njets/I");
     outTree->Branch("vecjetpt",    &vecjetpt_,   "vecjetpt/F");
+    outTree->Branch("pass",        &pass_,       "pass/I");
+    outTree->Branch("passz",       &passz_,      "passz/I");
+    outTree->Branch("m0",          &m0_,         "m0/F");
+    outTree->Branch("m12",         &m12_,        "m12/F");
+
 }
 
 int getProcessType(char *prefix)
@@ -102,12 +138,14 @@ int getProcessType(char *prefix)
     return proc;
 }
 
-void ossusy_looper::fillTree(char *prefix, int hypIdx, metStruct tcmetStruct,
-					 float sumjetpt, float mt2j, int njets, float vecjetpt)
+void ossusy_looper::fillTree(char *prefix, float weight, int hypIdx, metStruct tcmetStruct,
+                             float sumjetpt, float mt2j, int njets, 
+                             float vecjetpt, int pass, int passz, float m0, float m12)
 {
     //Method called to fill the tree. Any variables which are not external must
     //be passed as arguments to this function.
-    weight_      = evt_scale1fb()/10.;
+    //weight_      = evt_scale1fb()/10.;
+    weight_      = weight;
     proc_        = getProcessType(prefix);
     dilmass_     = hyp_p4()[hypIdx].mass();
     dilpt_       = hyp_p4()[hypIdx].pt();
@@ -119,7 +157,11 @@ void ossusy_looper::fillTree(char *prefix, int hypIdx, metStruct tcmetStruct,
     mt2j_        = mt2j;
     njets_       = njets;
     vecjetpt_    = vecjetpt; 
-
+    pass_        = pass;
+    passz_       = passz;
+    m0_          = m0;
+    m12_         = m12;
+    
     leptype_ = -1;
     if (hyp_type()[hypIdx] == 3) leptype_ = 0; // ee
     if (hyp_type()[hypIdx] == 0) leptype_ = 1; // mm
@@ -230,6 +272,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
                 if(myduplicate) continue;
             }
 
+            //cout<<"nhyp "<<hyp_p4().size()<<endl;
             for(unsigned int hypIdx = 0; hypIdx < hyp_p4().size(); ++hypIdx) {
 
                 // REPLICATE THE SKIM SELECTION!
@@ -314,6 +357,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
                 if(strcmp(prefix,"ttdil") == 0 && ttbarconstituents(hypIdx) != 1 )continue;
                 if(strcmp(prefix,"ttotr") == 0 && ttbarconstituents(hypIdx) == 1 )continue;
 
+                //cout<<"pass lepton/trigger selection"<<endl;
                 // check if it's a correct genp-event (deprecated)
                 //std::string prefixStr(prefix);
                 //if (prefixStr == "ttdil"    && genpCountPDGId(11,13,15) != 2) continue;
@@ -556,7 +600,12 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
                 m_events.insert(pair<int,int>(evt_event(), 1));
 
                 // The event weight including the kFactor (scaled to 100 pb-1)
-                float weight = kFactor*evt_scale1fb()*0.1;
+                float weight = -1.;
+                if(strcmp(prefix,"LMscan") == 0){
+                  weight = kFactor * sparm_xsec() * 100. / 10000.; //xsec * lumi (100/pb) / nevents (10000)
+                }else{
+                  weight = kFactor * evt_scale1fb() * 0.1;
+                }
 
                 // This isn't quite right, and works only if both em and ppmux are in play
                 // ibl: is this still applicable? Check! 100302
@@ -634,9 +683,19 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
                 int new_njpts =       vjpts_p4.size();
                 int nHypJetsIdx =     min(new_hyp_njets, 2);
                 int nJetsIdx =        min(new_njets, 2);
+                int pass = ( theSumJetPt > 200 && theNJets >= 2 && theMet > 50. && id_lt * id_ll < 0 ) ? 1 : 0;
+                int passz = (passZSelection ( hypIdx ) ) ? 1 : 0;
                 //int nJptsIdx =        min(new_njpts, 2);
 
-                if(g_createTree) fillTree(prefix, hypIdx , tcmetStruct , theSumJetPt , mt2j, theNJets, vecjetpt);
+                float m0  = -9999.;
+                float m12 = -9999.;
+                
+                if(strcmp(prefix,"LMscan") == 0){
+                  m0  = sparm_m0();
+                  m12 = sparm_m12();
+                }
+
+                if(g_createTree) fillTree(prefix, weight, hypIdx , tcmetStruct , theSumJetPt , mt2j, theNJets, vecjetpt, pass, passz, m0, m12);
 
                 //selection (continue statements)-------------------------------
                 if(!g_useBitMask){
@@ -735,6 +794,18 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
                 //-------------------------------------------------------------
                 // Lots of histograms
                 //-------------------------------------------------------------
+                
+                //Fill susyscan histos
+                if(strcmp(prefix,"LMscan") == 0){
+                  
+                  //cout << " m0 "     << sparm_m0()  << " index " << getIndexFromM0(m0) 
+                  //     << " m1/2 "   << sparm_m12() << " index " << getIndexFromM12(m12)
+                  //     << " weight " << weight << endl;
+                 
+                  fillUnderOverFlow( hsusydilPt[ getIndexFromM0(m0) ][ getIndexFromM12(m12)] , hyp_p4()[hypIdx].pt(), weight);
+                  fillUnderOverFlow( hsusytcmet[ getIndexFromM0(m0) ][ getIndexFromM12(m12)] , tcmet, weight);
+
+                }
 
                 fillHistos(hmt2jcore, mt2jcore, weight, myType, nJetsIdx);
                 fillHistos(hmt2j, mt2j, weight, myType, nJetsIdx);
@@ -1015,6 +1086,21 @@ void ossusy_looper::BookHistos(char *prefix)
     //double binedges1500[11] = {0., 100., 200., 300., 400., 500., 600., 800., 1000., 1200., 1500.};
     double binedges1500[6] = {0., 100., 200., 400., 800., 1500.};
     //double binedges2000[11] = {0., 100., 200., 300., 400., 500., 600., 800., 1000., 1500., 2000.};
+
+    if(strcmp("LMscan",prefix)==0){
+      for(int im0 = 0 ; im0 < nm0points ; im0++){
+        for(int im12 = 0 ; im12 < nm12points ; im12++){
+          
+          hsusydilPt[im0][im12] = new TH1F(Form("susy_hdilPt_m0_%i_m12_%i",im0,im12),
+                                           Form("susy_hdilPt_m0_%i_m12_%i",im0,im12),60,0.,300.);
+          hsusydilPt[im0][im12] -> GetXaxis()->SetTitle("Pt (GeV)");
+          
+          hsusytcmet[im0][im12] = new TH1F(Form("susy_htcmet_m0_%i_m12_%i",im0,im12),
+                                           Form("susy_htcmet_m0_%i_m12_%i",im0,im12),60,0.,300.);
+          hsusytcmet[im0][im12] -> GetXaxis()->SetTitle("tcmet (GeV)");
+        }
+      }
+    }
 
     for (int i = 0; i < 4; i++) {
         hnJet[i] = new TH1F(Form("%s_hnJet_%s",prefix,suffixall[i]),Form("%s_nJet_%s",prefix,suffixall[i]),11,-0.5,10.5);	
