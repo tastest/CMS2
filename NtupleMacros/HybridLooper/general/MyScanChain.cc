@@ -127,7 +127,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     FormatHist(h1_els_2nd_pt_, "hyp_els_2nd_pt", 100, 0, 200);
 
     FormatHist(h1_els_single_pt_, "h1_els_single_pt", 100, 0, 200);
-    FormatHist(h1_els_single_tcmet_, "hyp_els_single_tcmet", 100, 0, 200);
+    FormatHist(h1_els_single_tcmet_, "h1_els_single_tcmet", 100, 0, 200);
     FormatHist(h1_els_single_tcmet_highpt_, "h1_els_single_tcmet_highpt", 100, 0, 200);
 
 	// file loop
