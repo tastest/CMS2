@@ -115,12 +115,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 	// format histograms
 	//
 	// N-1
-	FormatHist(h1_mass_, "mass", 200, 0, 200);
-    FormatHist(h1_met_, "met", 400, 0, 400);
-    FormatHist(h1_metin_, "metin", 400, 0, 400);
-
-    FormatHist(h1_sumpt_, "sumpt", 1000, 0, 1000);
-    FormatHist(h1_sumptin_, "sumptin", 1000, 0, 1000);
+    FormatHist(h1_tcmet_, "met", 400, 0, 400);
 
 
 	// file loop
@@ -167,7 +162,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 
 
             //
-            // loop on hyps
+            // loop on els
             //
 
 
@@ -176,6 +171,12 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
                     //
                     // hyp level cuts
                     //
+
+                    // select di-electrons
+                    if (cms2.hyp_type()[h] != 3) continue;
+                    
+                    std::cout << "found " << cms2.hyp_lt_id()[h] << std::endl;
+
 
             }
 

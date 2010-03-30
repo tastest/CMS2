@@ -101,7 +101,7 @@ void doAll() {
     // data
     //
     TChain *chain_v0 = new TChain("Events");
-    chain_v0->Add(ntuple_location + "/store/disk02/slava77/reltestdata/CMSSW_3_5_6-cms2-data/*.root.v0");
+    chain_v0->Add("/tas03/disk02/slava77/reltestdata/CMSSW_3_5_6-cms2-data/*.root.v0");
 
 
 
@@ -162,6 +162,8 @@ void doAll() {
 
 	delete chain_elegunstartup;
 	delete chain_elegunideal;
+
+    delete chain_v0;
 
 }
 
