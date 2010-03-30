@@ -159,7 +159,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 			}
 
 			// work out event weight
-			float weight = cms2.evt_scale1fb()*0.1;
+			//float weight = cms2.evt_scale1fb()*0.1;
 
             //
             // event level cuts
