@@ -29,37 +29,6 @@ double MT2(
  	pa[0] = v1.M2() >= 0 ? v1.M() : 0.0;	
 	pb[0] = v2.M2() >= 0 ? v2.M() : 0.0;
 
-	/* Note on floating point precision & M^2 < 0:
-
-		- Previously ( 2X ) we set pa[0] and pb[0] to their respective particle masses:
-
-			pa[0] = v1.M()
-			pb[0] = v2.M()
-		
-			This is what is recommended by the MT2Utility.cc authors
-
-		- Now ( 3X ) floating point roundoff can lead to m^2 = E^2 - p^2 < 0, we choose to set M to zero for these cases 
-		- Remember that many or all doubles were changed to floats at the NtupleMaker level from 2X to 3X to save space.
-		- This presents with the following error from calling LorentzVector::M() :
-
-			dlopen error: /home/users/dbarge/cvs/UserCode/JRibnik/CMS2/NtupleMacros/CORE/mt2/example_looper/./ScanChain_C.so: undefined symbol: 
-			_ZN4ROOT4Math9GenVector5ThrowEPKc
-			Load Error: Failed to load Dynamic link library /home/users/dbarge/cvs/UserCode/JRibnik/CMS2/NtupleMacros/CORE/mt2/example_looper/./ScanChain_C.so ...
-			/home/users/dbarge/cvs/UserCode/JRibnik/CMS2/NtupleMacros/CORE/mt2/example_looper/./ScanChain_C_ACLiC_dict.o(.gnu.linkonce.t._ZNK4ROOT4Math9PxPyPzE4DIfE1MEv+0x4e): In function `ROOT::Math::PxPyPzE4D<float>::M() const':
-			: undefined reference to `ROOT::Math::GenVector::Throw(char const*)'
-
-			JMu said it best:
-			
-			"The reason you see a linker error rather than an exception is a delicious morsel
-			of ROOT rootiness.  The LorentzVector code is all included (because it's
-			templated in all those funny ways), so it doesn't require linking to any
-			library.  Except for the exceptions.  Those live in a library.  If you don't
-			link it in, you get a linker error."
-			
-			- For the leptonic (WW) mt2 distribution, we could just set the masses to 0 since we're in the massless limit anyway (excluding taus)
-			- The N jets (tt) mt2 distribution is significantly affected because the b quark mass is 4 GeV so the mass must be set properly
-	*/
-
 //-----------------------------------------------//
 
 	// set the transverse momenta for the leptons & MET
