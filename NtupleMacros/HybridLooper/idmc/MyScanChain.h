@@ -30,7 +30,7 @@ class MyScanChain {
 
 		void FillAllEleIdHistogramsNoHyp(const float &weight, const TString &sampleName);
 		void FillAllEleIdHistogramsHyp(const unsigned int h, const float &weight, const TString &sampleName);
-		void FillAllEleIdHistograms(const unsigned int index, const float &weight, const TString &sampleName);
+		void FillAllEleIdHistograms(const unsigned int index, const float &weight, const TString &sampleName, const unsigned int hyp);
 
 		void FormatHist(TH1F** hist, std::string sampleName, std::string name, int n, float min, float max);
 		void FormatAllEleIdHistograms(std::string sampleName);
@@ -47,6 +47,24 @@ class MyScanChain {
         // configured cuts
         //
         elecuts_t configured_cuts_;
+
+        //
+        // plots for checking the various ID against jet activity
+        //
+
+        TH1F *h1_hyp_id_nm1_njets_[2][4];
+        TH1F *h1_hyp_idcand01_nm1_njets_[2][4];
+        TH1F *h1_hyp_idegammaloose_nm1_njets_[2][4];
+
+        TH1F *h1_hyp_id_closejet_nm1_pt_[2][4];
+        TH1F *h1_hyp_idcand01_closejet_nm1_pt_[2][4];
+        TH1F *h1_hyp_idegammaloose_closejet_nm1_pt_[2][4];
+    
+        TH1F *h1_hyp_id_nm1_drjet_[2][4];
+
+        //
+        //
+        //
 
         // plots for comparing current options
         // with respect to other selections

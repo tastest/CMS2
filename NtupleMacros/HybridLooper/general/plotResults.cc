@@ -12,15 +12,14 @@
 
 	// for 2_2_X
 	const static sources_t theSignal = 
-		(1<<H_TTBAR);
+		(1<<H_WJETS);
 
 	const static sources_t theBackground = 
-		(1<<H_WMUNU);
-
+		(1<<H_QCD30);
 	const static sources_t theSources = 
-		(1<<H_TTBAR);// |
-		//(1<<H_PHOTONJETS) |
-		//(1<<H_QCD30);
+		(1<<H_WJETS) |
+		(1<<H_PHOTONJETS) |
+		(1<<H_QCD30);
 
 TArrow *getArrow(THStack *st, TString det, float cutValEB, float cutValEE)
 {
@@ -60,134 +59,6 @@ void plot2DSB(HistogramUtilities &h1, TString name, TString xTitle, TString yTit
 	delete c1;
 	delete h2_signal;
 	delete h2_background;
-
-}
-
-void setError(TH1F *h1_numer, TH1F *h1_denom, TH1F *h1_eff) {
-
-    Float_t scale = h1_numer->GetEntries() / h1_numer->Integral(0, h1_numer->GetNbinsX() + 1);
-    for (Int_t i = 0; i < h1_numer->GetNbinsX() + 1; ++i) {
-        Float_t nNumer = h1_numer->GetBinContent(i) * scale;
-        Float_t nDenom = h1_denom->GetBinContent(i) * scale;
-        Float_t eff = h1_eff->GetBinContent(i);
-        Float_t err = 0.0;
-        if (nDenom != 0) {
-            err = sqrt( eff * (1 - eff) / nDenom);
-        }
-        h1_eff->SetBinError(i, err);
-    }
-
-}
-
-void plotValidationOverlay(HistogramUtilities &h1, TString name_before, TString name_after, TString saveName, TString det, int rebin, bool plotDist, bool plotEff)
-{
-
-    TH1F *h1_before_s = h1.getHistogram(theSignal, name_before, det, "_ee", rebin, "before_s_");
-    h1_before_s->SetLineColor(kBlack);
-    h1_before_s->SetFillColor(kYellow);
-    TH1F *h1_after_s = h1.getHistogram(theSignal, name_after, det, "_ee", rebin, "after_s_");
-    h1_after_s->SetMarkerStyle(20);
-    h1_after_s->SetLineColor(kRed);
-    h1_after_s->SetMarkerColor(kRed);
-
-    TH1F *h1_before_b = h1.getHistogram(theBackground, name_before, det, "_ee", rebin, "before_b_");
-    h1_before_b->SetLineColor(kBlack);
-    h1_before_b->SetFillColor(kGreen);
-    TH1F *h1_after_b = h1.getHistogram(theBackground, name_after, det, "_ee", rebin, "after_b_");
-    h1_after_b->SetMarkerStyle(20);
-    h1_after_b->SetLineColor(kBlack);
-    h1_after_b->SetMarkerColor(kBlack);
-
-    TH1F *h1_eff_s = (TH1F*)h1_after_s->Clone();
-    h1_eff_s->Divide(h1_before_s);
-    setError(h1_after_s, h1_before_s, h1_eff_s);
-    h1_eff_s->SetMarkerColor(kRed);
-    h1_eff_s->SetLineColor(kRed);
-    h1_eff_s->SetMarkerStyle(20);
-
-    TH1F *h1_eff_b = (TH1F*)h1_after_b->Clone();
-    h1_eff_b->Divide(h1_before_b);
-    setError(h1_after_b, h1_before_b, h1_eff_b);
-    h1_eff_b->SetMarkerColor(kGreen);
-    h1_eff_b->SetLineColor(kGreen);
-    h1_eff_b->SetMarkerStyle(20);
-
-    TLegend *lg = new TLegend(0.6, 0.8, 0.9, 0.9);
-    lg->SetFillColor(kWhite);
-    lg->SetLineColor(kWhite);
-    lg->SetShadowColor(kWhite);
-    TString upperDet = det;
-    upperDet.ToUpper();
-    lg->AddEntry(h1_before_s, "Before (" + upperDet + ")", "fl");
-    lg->AddEntry(h1_after_s, "After (" + upperDet + ")", "lp");
-
-    TCanvas *c = new TCanvas();
-
-    c->cd();
-    h1_before_s->Draw("HIST");
-    h1_before_s->GetYaxis()->SetRangeUser(0, h1_before_s->GetMaximum()*1.2);
-    h1_after_s->Draw("SAME");
-    lg->Draw();
-    if (plotDist)
-        Utilities::saveCanvas(c, "results/" + saveName + "overlay_s_" + name_after + "_" + det);
-
-    c->cd();
-    lg->Clear();
-    lg->AddEntry(h1_before_b, "Before (" + upperDet + ")", "fl");
-    lg->AddEntry(h1_after_b, "After (" + upperDet + ")", "lp");
-    h1_before_b->Draw("HIST");
-    h1_before_b->GetYaxis()->SetRangeUser(0, h1_before_b->GetMaximum()*1.2);
-    h1_after_b->Draw("SAME");
-    lg->Draw();
-    if (plotDist)
-        Utilities::saveCanvas(c, "results/" + saveName + "overlay_b_" + name_after + "_" + det);
-
-    c->cd();
-    h1_after_s->Draw();
-    lg->Draw();
-    if (plotDist)
-        Utilities::saveCanvas(c, "results/" + saveName + "s_" + name_after + "_" + det);
-
-    c->cd();
-    h1_after_b->Draw();
-    lg->Draw();
-    if (plotDist)
-        Utilities::saveCanvas(c, "results/" + saveName + "b_" + name_after + "_" + det);
-
-    c->cd();
-    h1_eff_s->Draw("E1");
-    h1_eff_s->GetYaxis()->SetRangeUser(0, 1.1);
-    if (plotEff)
-        Utilities::saveCanvas(c, "results/" + saveName + "eff_s_" + name_after + "_" + det);
-    
-    c->cd();
-    h1_eff_b->Draw("E1");
-    h1_eff_b->GetYaxis()->SetRangeUser(0, 1.1);
-    if (plotEff)
-        Utilities::saveCanvas(c, "results/" + saveName + "eff_b_" + name_after + "_" + det);
-
-    c->cd();
-    lg->Clear();
-    lg->AddEntry(h1_after_b, "After - BG (" + upperDet + ")", "fl");
-    lg->AddEntry(h1_after_s, "After - Signal (" + upperDet + ")", "lp");
-    h1_after_s->Draw("HIST E1");
-    Float_t max = h1_after_s->GetMaximum()*1.2;
-    if (h1_after_b->GetMaximum()*1.2 > max) max = h1_after_b->GetMaximum()*1.2;
-    h1_after_s->GetYaxis()->SetRangeUser(0, max);
-    h1_after_b->Draw("SAME HIST E1");
-    lg->Draw();
-    if (plotDist)
-        Utilities::saveCanvas(c, "results/" + saveName + "overlay_sb_" + name_after + "_" + det);
-
-    delete c;
-    delete lg;
-    delete h1_eff_s;
-    delete h1_eff_b;
-    delete h1_before_s;
-    delete h1_after_s;
-    delete h1_before_b;
-    delete h1_after_b;
-
 
 }
 
@@ -544,7 +415,7 @@ void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString sav
 
 }
 
-void plotResultsW(TString det, TString fileStamp, TString version)
+void plotResultsW(TString det, TString fileStamp)
 {
 
         gROOT->ProcessLine(".L tdrStyle.C");
@@ -553,74 +424,18 @@ void plotResultsW(TString det, TString fileStamp, TString version)
         // luminorm for 1pb-1
         // luminosity is already normalised to 1pb-1 in the looper
         std::vector<DataSource> sources;
-        sources.push_back( fH_TTBAR() );
-        sources.push_back( fH_WMUNU() );
+        sources.push_back( fH_WJETS() );
+        sources.push_back( fH_QCD30() );
+        sources.push_back( fH_PHOTONJETS() );
         HistogramUtilities h1(fileStamp + ".root", sources, 1.0);
 
-        // for comparing different options
+        // W studies related
         //
-        plotValidationOverlay(h1, "h1_hyp_id_nm1_pt", "h1_hyp_idcand01_nm1_pt", version, det, 4);
-        plotValidationOverlay(h1, "h1_hyp_id_nm1_pt", "h1_hyp_idcand02_nm1_pt", version, det, 4);
-        plotValidationOverlay(h1, "h1_hyp_id_nm1_pt", "h1_hyp_idcand01extra_nm1_pt", version, det, 4);
-        plotValidationOverlay(h1, "h1_hyp_id_nm1_pt", "h1_hyp_idcand02extra_nm1_pt", version, det, 4);
-        plotValidationOverlay(h1, "h1_hyp_id_nm1_pt", "h1_hyp_idegammaloose_nm1_pt", version, det, 4);
-        plotValidationOverlay(h1, "h1_hyp_id_nm1_pt", "h1_hyp_idegammatight_nm1_pt", version, det, 4);
 
-        plotValidationOverlay(h1, "h1_hyp_id_nm1_njets", "h1_hyp_idcand01_nm1_njets", version, det, 1);
-        plotValidationOverlay(h1, "h1_hyp_id_nm1_njets", "h1_hyp_idegammaloose_nm1_njets", version, det, 1);
+        plotStack(h1, "pt", "p_{T} (GeV)", fileStamp, det, 2);
 
-        plotValidationOverlay(h1, "h1_hyp_id_closejet_nm1_pt", "h1_hyp_idcand01_closejet_nm1_pt", version, det, 4);
-        plotValidationOverlay(h1, "h1_hyp_id_closejet_nm1_pt", "h1_hyp_idegammaloose_closejet_nm1_pt", version, det, 4);
+	// N-1
+	plotStack(h1, "nm1_met", "tcMet (GeV)", fileStamp, det, 2);
 
-
-/*
-
-        // validation related
-        //
-        plotValidationOverlay(h1, "h1_hyp_debug_pdgid", "h1_hyp_debug_after_cand01_pdgid", version, det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_cand01_pt", version, det, 4);
-        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_cand01_eta", version, det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_d0", "h1_hyp_debug_after_cand01_d0", version, det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_hoe", "h1_hyp_debug_after_cand01_hoe", version, det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_dPhiIn", "h1_hyp_debug_after_cand01_dPhiIn", version, det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_dEtaIn", "h1_hyp_debug_after_cand01_dEtaIn", version, det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_reliso", "h1_hyp_debug_after_cand01_reliso", version, det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_sigmaIEtaIEta", "h1_hyp_debug_after_cand01_sigmaIEtaIEta", version, det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_E2x5MaxOver5x5", "h1_hyp_debug_after_cand01_E2x5MaxOver5x5", version, det, 1);
-
-        // last two are plot dists and plot efficiency
-        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_idcand01_pt", version, det, 4, false, true);
-        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_isocand01_pt", version, det, 4, false, true);
-        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_convcand01_pt", version, det, 4, false, true);
-        plotValidationOverlay(h1, "h1_hyp_debug_after_idisocand01_pt", "h1_hyp_debug_after_idisoconvcand01_pt", version, det, 4, false, true);
-
-        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_idcand01_eta", version, det, 1, false, true);
-        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_isocand01_eta", version, det, 1, false, true);
-        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_convcand01_eta", version, det, 1, false, true);
-        plotValidationOverlay(h1, "h1_hyp_debug_after_idisocand01_eta", "h1_hyp_debug_after_idisoconvcand01_eta", version, det, 1, false, true);
-
-
-        plotValidationOverlay(h1, "h1_hyp_debug_pdgid", "h1_hyp_debug_after_cand02_pdgid", version, det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_cand02_pt", version, det, 4);
-        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_cand02_eta", version, det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_d0", "h1_hyp_debug_after_cand02_d0", version, det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_hoe", "h1_hyp_debug_after_cand02_hoe", version, det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_dPhiIn", "h1_hyp_debug_after_cand02_dPhiIn", version, det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_dEtaIn", "h1_hyp_debug_after_cand02_dEtaIn", version, det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_reliso", "h1_hyp_debug_after_cand02_reliso", version, det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_sigmaIEtaIEta", "h1_hyp_debug_after_cand02_sigmaIEtaIEta", version, det, 1);
-        plotValidationOverlay(h1, "h1_hyp_debug_E2x5MaxOver5x5", "h1_hyp_debug_after_cand02_E2x5MaxOver5x5", version, det, 1);
-
-        // last two are plot dists and plot efficiency
-        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_idcand02_pt", version, det, 4, false, true);
-        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_isocand02_pt", version, det, 4, false, true);
-        plotValidationOverlay(h1, "h1_hyp_debug_pt", "h1_hyp_debug_after_convcand02_pt", version, det, 4, false, true);
-        plotValidationOverlay(h1, "h1_hyp_debug_after_idisocand02_pt", "h1_hyp_debug_after_idisoconvcand02_pt", version, det, 4, false, true);
-
-        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_idcand02_eta", version, det, 1, false, true);
-        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_isocand02_eta", version, det, 1, false, true);
-        plotValidationOverlay(h1, "h1_hyp_debug_eta", "h1_hyp_debug_after_convcand02_eta", version, det, 1, false, true);
-        plotValidationOverlay(h1, "h1_hyp_debug_after_idisocand02_eta", "h1_hyp_debug_after_idisoconvcand02_eta", version, det, 1, false, true);
-*/
 }
 

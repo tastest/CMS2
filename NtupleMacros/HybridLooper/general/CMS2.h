@@ -9,7 +9,6 @@
 #include "TH1F.h"
 #include "TFile.h"
 #include <vector> 
-typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 #define PARANOIA
 

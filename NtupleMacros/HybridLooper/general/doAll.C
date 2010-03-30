@@ -4,6 +4,7 @@ void doAll() {
 	// from slavas code
 	gSystem->Load("libGui.so");
 	gSystem->Load("libPhysics.so");
+    gSystem->Load("../../Tools/MiniFWLite/libMiniFWLite.so");
 
 	// Load and compile something to allow proper treatment of vectors
 	// Not clear that it is needed
@@ -14,12 +15,14 @@ void doAll() {
 	// utilities
 	//
 	gROOT->ProcessLine(".L CMS2.cc+");
+
+    gROOT->ProcessLine(".L ../../CORE/mcSelections.cc+");
     gROOT->ProcessLine(".L ../../CORE/trackSelections.cc+");
     gROOT->ProcessLine(".L ../../CORE/jetSelections.cc+");
-    gROOT->ProcessLine(".L ../../CORE/muonSelections.cc+");
+    gROOT->ProcessLine(".L ../../CORE/metSelections.cc+");
+    gROOT->ProcessLine(".L ../../CORE/eventSelections.cc+");
 	gROOT->ProcessLine(".L ../../CORE/electronSelections.cc+");
 	gROOT->ProcessLine(".L ../../CORE/utilities.cc+");
-    gROOT->ProcessLine(".L ../../CORE/mcSelections.cc+");
 	gROOT->ProcessLine(".L ../histtools.C+");
 
 	//
@@ -31,13 +34,7 @@ void doAll() {
 	// output file for histograms
 	//
 
-    TString fileNameString = "pt20up";
-    //TString fileNameString = "pt10to20";
-    //TString fileNameString = "pt10up";
-    elecuts_t configured_cuts = (1<<ELEPASS_PT20);
-    //elecuts_t configured_cuts = (1<<ELEPASS_PT10NOT20);
-    //elecuts_t configured_cuts = (1<<ELEPASS_PT10);
-	MyScanChain *looper = new MyScanChain(configured_cuts);
+	MyScanChain *looper = new MyScanChain();
 
 	//
 	// chains for input files
@@ -69,22 +66,30 @@ void doAll() {
     chain_dytt->Add(ntuple_location + "/cms2/Ztautau_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
 	// wjets
     TChain *chain_wjets = new TChain("Events");
-    //chain_wjets->Add(ntuple_location + "/cms2/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
-	chain_wjets->Add(ntuple_location + "/cms2/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/dilep-skim/wjets_skim.root");
+    chain_wjets->Add(ntuple_location + "/cms2/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+	//chain_wjets->Add(ntuple_location + "/cms2/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/dilep-skim/wjets_skim.root");
 	// qcd pt30
 	TChain *chain_qcd30 = new TChain("Events");
 	chain_qcd30->Add(ntuple_location + "/cms2/QCD_Pt30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
 	// wmunu
     TChain *chain_wmunu = new TChain("Events");
     chain_wmunu->Add(ntuple_location + "/cms2/Wmunu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
-    // inclusive mu15 dilep filt
-    TChain *chain_inclmu15 = new TChain("Events");
-    chain_inclmu15->Add(ntuple_location + "/cms2/InclusiveMu15_Summer09-MC_31X_V3_7TeV-v1_dilepfilt/V03-00-35/merged_ntuple*.root");
+	// photonjets
+	TChain *chain_photonjets = new TChain("Events");
+    chain_photonjets->Add(ntuple_location + "/cms2/PhotonJet_Pt170to300_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+    chain_photonjets->Add(ntuple_location + "/cms2/PhotonJet_Pt20to30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+    chain_photonjets->Add(ntuple_location + "/cms2/PhotonJet_Pt30to50_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+    chain_photonjets->Add(ntuple_location + "/cms2/PhotonJet_Pt50to80_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+    chain_photonjets->Add(ntuple_location + "/cms2/PhotonJet_Pt80to120_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+
 
 	// BSM
 	// LM0
 	TChain *chain_lm0 = new TChain("Events");
 	chain_lm0->Add(ntuple_location + "/cms2/LM0_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+
+    TChain *chain_lm4 = new TChain("Events");
+    chain_lm4->Add(ntuple_location + "/cms2/LM4_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
 
 	// Technical
 	// single particle gun electrons
@@ -93,11 +98,18 @@ void doAll() {
     TChain *chain_elegunideal = new TChain("Events");
     chain_elegunideal->Add(ntuple_location + "/cms2/SingleElectronPt5to100_336patch4MC31XV9/V03-00-35/merged_ntuple*.root");
 
+    // data
+    //
+    TChain *chain_v0 = new TChain("Events");
+    chain_v0->Add(ntuple_location + "/store/disk02/slava77/reltestdata/CMSSW_3_5_6-cms2-data/*.root.v0");
+
+
+
 	// 
 	// do looping
 	//
 
-	looper->ScanChain(false, "ttbar", chain_ttbar);
+	//looper->ScanChain(false, "ttbar", chain_ttbar);
 //	looper->ScanChain(false, "ww", chain_ww);
 //	looper->ScanChain(false, "wz", chain_wz);
 //	looper->ScanChain(false, "zz", chain_zz);
@@ -110,15 +122,20 @@ void doAll() {
 //	looper->ScanChain(false, "elegunstartup", chain_elegunstartup);
 //  looper->ScanChain(false, "elegunideal", chain_elegunideal);
 
-	//looper->ScanChain(false, "QCDpt30", chain_qcd30);
-	looper->ScanChain(false, "wm", chain_wmunu);
-    //looper->ScanChain(false, "InclusiveMuPt15", chain_inclmu15);
+//	looper->ScanChain(false, "QCDpt30", chain_qcd30);
+//	looper->ScanChain(false, "wm", chain_wmunu);
+//	looper->ScanChain(false, "photonjets", chain_photonjets);
+
+//    looper->ScanChain(false, "lm0", chain_lm0);
+//    looper->ScanChain(false, "lm4", chain_lm4);
+
+    looper->ScanChain(true, "v0", chain_v0);
 
 	//
 	// write histograms
 	// 
 
-	const char* outFile = "histos_eleid_" + fileNameString + ".root";
+	const char* outFile = "histos_mc.root";
 	hist::saveHist(outFile); 
 	hist::deleteHistos();
 
@@ -136,11 +153,12 @@ void doAll() {
 	delete chain_dytt;
 	delete chain_wjets;
 	delete chain_wmunu;
-    delete chain_inclmu15;
 
 	delete chain_qcd30;
+	delete chain_photonjets;
 
 	delete chain_lm0;
+    delete chain_lm4;
 
 	delete chain_elegunstartup;
 	delete chain_elegunideal;
