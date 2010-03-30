@@ -172,7 +172,6 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
   
   
   headerf << "public: " << endl;
-  headerf << "int ScanChain(class TChain* chain, int nEvents=-1, std::string skimFilePrefix=\"\");" << endl;
   headerf << "void Init(TTree *tree) {" << endl;
     
 
