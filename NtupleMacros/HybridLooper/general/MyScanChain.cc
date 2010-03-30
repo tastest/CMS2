@@ -115,8 +115,20 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 	// format histograms
 	//
 	// N-1
-    FormatHist(h1_tcmet_, "met", 400, 0, 400);
 
+    // di-electrons /hyp related
+    FormatHist(h1_hyp_mee_, "hyp_mee", 100, 0, 200);
+    FormatHist(h1_hyp_lt_pt_, "hyp_lt_pt", 100, 0, 200);
+    FormatHist(h1_hyp_ll_pt_, "hyp_ll_pt", 100, 0, 200);
+
+    // single electrons 
+    FormatHist(h1_els_n_, "hyp_els_n", 10, -0.5, 9.5);
+    FormatHist(h1_els_1st_pt_, "hyp_els_1st_pt", 100, 0, 200);
+    FormatHist(h1_els_2nd_pt_, "hyp_els_2nd_pt", 100, 0, 200);
+
+    FormatHist(h1_els_single_pt_, "h1_els_single_pt", 100, 0, 200);
+    FormatHist(h1_els_single_tcmet_, "hyp_els_single_tcmet", 100, 0, 200);
+    FormatHist(h1_els_single_tcmet_highpt_, "h1_els_single_tcmet_highpt", 100, 0, 200);
 
 	// file loop
 	//
@@ -160,9 +172,26 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
             // event level cuts
             //
 
-
             //
             // loop on els
+            //
+
+            h1_els_n_[DET_ALL]->Fill(cms2.evt_nels());
+            if (cms2.evt_nels() > 0) {
+                h1_els_1st_pt_[DET_ALL]->Fill(cms2.els_p4()[0].Pt());
+                if (cms2.evt_nels() > 1) 
+                    h1_els_2nd_pt_[DET_ALL]->Fill(cms2.els_p4()[1].Pt());
+            }
+
+            if (cms2.evt_nels() == 1) {
+                h1_els_single_pt_[DET_ALL]->Fill(cms2.els_p4()[0].Pt());
+                h1_els_single_tcmet_[DET_ALL]->Fill(cms2.evt_tcmet());
+                if (cms2.els_p4()[0].Pt() > 10.0) 
+                    h1_els_single_tcmet_highpt_[DET_ALL]->Fill(cms2.evt_tcmet());
+            }
+
+            //
+            // loop on hyps
             //
 
 
@@ -174,9 +203,9 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 
                     // select di-electrons
                     if (cms2.hyp_type()[h] != 3) continue;
-                    
-                    std::cout << "found " << cms2.hyp_lt_id()[h] << std::endl;
-
+                    h1_hyp_mee_[DET_ALL]->Fill(cms2.hyp_p4()[h].M());
+                    h1_hyp_lt_pt_[DET_ALL]->Fill(cms2.hyp_lt_p4()[h].Pt());
+                    h1_hyp_ll_pt_[DET_ALL]->Fill(cms2.hyp_ll_p4()[h].Pt());
 
             }
 
