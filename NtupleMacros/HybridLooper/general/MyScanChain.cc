@@ -117,7 +117,9 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 	// N-1
 
     // di-muons /hyp related
-    FormatHist(h1_hyp_mm_m_, "hyp_mm_m", 100, 0, 200);
+    FormatHist(h1_hyp_mm_m_, "hyp_mm_m", 400, 0, 200);
+    FormatHist(h1_hyp_mm_os_m_, "hyp_mm_os_m", 400, 0, 200);
+    FormatHist(h1_hyp_mm_ss_m_, "hyp_mm_ss_m", 400, 0, 200);
     FormatHist(h1_hyp_lt_mus_pt_, "hyp_lt_mus_pt", 100, 0, 200);
     FormatHist(h1_hyp_ll_mus_pt_, "hyp_ll_mus_pt", 100, 0, 200);
 
@@ -213,9 +215,13 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
                       h1_hyp_ll_els_pt_[DET_ALL]->Fill(cms2.hyp_ll_p4()[h].Pt());
                     }
 
-                    // select di-electrons
+                    // select di-muons
                     if (cms2.hyp_type()[h] == 0) {
+                      if( !(cms2.mus_goodmask()[ cms2.hyp_ll_index()[h] ] & 19<<1 ) ) continue; // select LastStationAngTight
+                      if( !(cms2.mus_goodmask()[ cms2.hyp_lt_index()[h] ] & 19<<1 ) ) continue; // select LastStationAngTight
                       h1_hyp_mm_m_[DET_ALL]->Fill(cms2.hyp_p4()[h].M());
+                      if( cms2.hyp_ll_id()[h] * cms2.hyp_lt_id()[h] < 0 )  h1_hyp_mm_os_m_[DET_ALL]->Fill(cms2.hyp_p4()[h].M());
+                      if( cms2.hyp_ll_id()[h] * cms2.hyp_lt_id()[h] > 0 )  h1_hyp_mm_ss_m_[DET_ALL]->Fill(cms2.hyp_p4()[h].M());
                       h1_hyp_lt_mus_pt_[DET_ALL]->Fill(cms2.hyp_lt_p4()[h].Pt());
                       h1_hyp_ll_mus_pt_[DET_ALL]->Fill(cms2.hyp_ll_p4()[h].Pt());
                     }

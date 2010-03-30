@@ -66,6 +66,8 @@ class MyScanChain {
 		// general  
 		//
         TH1F    *h1_hyp_mm_m_[3];
+        TH1F    *h1_hyp_mm_os_m_[3];
+        TH1F    *h1_hyp_mm_ss_m_[3];
         TH1F    *h1_hyp_lt_mus_pt_[3];
         TH1F    *h1_hyp_ll_mus_pt_[3];
 
