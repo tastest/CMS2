@@ -9,7 +9,8 @@ double MT2(
   const float metPhi,
   const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > v1,
   const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > v2,
-  float invisible_particle_mass
+  float invisible_particle_mass,
+  bool verbose
 ){
 
 //--- code here follows documentation in MT2Utility.cc ---//
@@ -20,8 +21,18 @@ double MT2(
   double pmiss[3] = {0,0,0};
 
   // Set the masses
-  pa[0] = v1.M2() >= 0 ? v1.M() : 0.0;
-  pb[0] = v2.M2() >= 0 ? v2.M() : 0.0;
+  if( v1.M2() >= 0 ){
+    pa[0] = v1.M();
+  } else {
+    pa[0] = 0.0;
+    if(verbose) cout << "ERROR: v1.M2 < 0 ... Setting v1.M() = 0" << endl;
+  }
+  if( v2.M2() >= 0 ){
+    pb[0] = v2.M();
+  } else {
+    pb[0] = 0.0;
+    if(verbose) cout << "ERROR: v2.M2 < 0 ... Setting v2.M() = 0" << endl;
+  }
 
   // set the transverse momenta for the leptons & MET
   pa[1]     = (double) v1.Px();
@@ -49,7 +60,8 @@ double MT2J(
   const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > p4_lepton_2,
   const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > vect_p4_jets,
   float invisible_particle_mass,
-  enum enum_mt2_method method_mt2
+  enum enum_mt2_method method_mt2,
+  bool verbose
 ){
   if( vect_p4_jets.size() < 2 ){
     cout << "MT2.cc: error MT2J called with less than 2 jets... returning mt2 value of -1.0" << endl;
@@ -59,7 +71,13 @@ double MT2J(
   for(unsigned int j1=0; j1 < vect_p4_jets.size(); j1++){
   for(unsigned int j2=0; j2 < vect_p4_jets.size(); j2++){
     if(j1==j2) continue;
-    double mt2_j1_j2 = MT2( met, metPhi, p4_lepton_1 + vect_p4_jets.at(j1), p4_lepton_2 + vect_p4_jets.at(j2) );
+    double mt2_j1_j2;
+    if( method_mt2 == BISECT){
+      mt2_j1_j2 = MT2( met, metPhi, p4_lepton_1 + vect_p4_jets.at(j1), p4_lepton_2 + vect_p4_jets.at(j2) );
+    } else {
+      cout << "ERROR: Undefined calculation method... returning -1" << endl;
+      return -1.0;
+    }
     if(mt2_j1_j2 < mt2_min){
       mt2_min = mt2_j1_j2;
     }
