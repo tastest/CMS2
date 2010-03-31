@@ -82,6 +82,9 @@ class MyScanChain {
         TH1F    *h1_els_single_pt_[3];
         TH1F    *h1_els_single_tcmet_[3];
         TH1F    *h1_els_single_tcmet_highpt_[3];
+        TH1F    *h1_els_single_eopin_highpt_[3];
+
+
 };
 
 #endif

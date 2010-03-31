@@ -136,6 +136,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     FormatHist(h1_els_single_pt_, "h1_els_single_pt", 100, 0, 200);
     FormatHist(h1_els_single_tcmet_, "h1_els_single_tcmet", 100, 0, 200);
     FormatHist(h1_els_single_tcmet_highpt_, "h1_els_single_tcmet_highpt", 100, 0, 200);
+    FormatHist(h1_els_single_eopin_highpt_, "h1_els_single_eopin_highpt", 100, 0, 20);
 
 	// file loop
 	//
@@ -193,10 +194,11 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
             if (cms2.evt_nels() == 1) {
                 h1_els_single_pt_[DET_ALL]->Fill(cms2.els_p4()[0].Pt());
                 h1_els_single_tcmet_[DET_ALL]->Fill(cms2.evt_tcmet());
-                if (cms2.els_p4()[0].Pt() > 10.0) 
-                    h1_els_single_tcmet_highpt_[DET_ALL]->Fill(cms2.evt_tcmet());
-            }
-
+                if (cms2.els_p4()[0].Pt() > 10.0) {
+                        h1_els_single_tcmet_highpt_[DET_ALL]->Fill(cms2.evt_tcmet());
+                        h1_els_single_eopin_highpt_[DET_ALL]->Fill(cms2.els_eOverPIn()[0]);
+                    }
+                }
             //
             // loop on hyps
             //
