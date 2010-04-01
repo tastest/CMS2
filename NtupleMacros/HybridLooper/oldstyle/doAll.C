@@ -22,7 +22,6 @@ void doAll() {
 	//TString ntuple_location = "/data/tmp/";
     TString ntuple_location = "/store/disk02/";
 
-
 	// SM
 	// ttbar
 	TChain *chain_ttbar = new TChain("Events");
@@ -80,13 +79,14 @@ void doAll() {
     //
     // the slava-tuple
     TChain *chain_v0 = new TChain("Events");
-    //chain_v0->Add("/tas03/disk02/slava77/reltestdata/CMSSW_3_5_6-cms2-data/*.root.v0");
-
     // run 440?
     chain_v0->Add("/tas03/disk02/slava77/reltestdata/CMSSW_3_5_6-cms2-data/_cms__store_express_Commissioning10_ExpressPhysics_FEVT_v7_*_*_440_*.root.v0");
     // run 442?
     chain_v0->Add("/tas03/disk02/slava77/reltestdata/CMSSW_3_5_6-cms2-data/_cms__store_express_Commissioning10_ExpressPhysics_FEVT_v7_*_*_442_*.root.v0");
 
+    // the goodcoll-tuple
+    TChain *chain_goodcoll = new TChain("Events");
+    chain_goodcoll->Add("/tas01/disk01/cms2/MinimumBias_Commissioning10-GOODCOLL-v7_r132440_r132442/V03-03-07/merged*.root");
 
 	// 
 	// do looping
@@ -106,10 +106,11 @@ void doAll() {
 //  looper->ScanChain(false, "elegunideal", chain_elegunideal);
 
 //	looper->ScanChain(false, "QCDpt30", chain_qcd30);
-//	looper->ScanChain(false, "wm", chain_wmunu);
+	//looper->ScanChain(false, "wm", chain_wmunu);
 //	looper->ScanChain(false, "photonjets", chain_photonjets);
 
-    looper->ScanChain(true, "v0", chain_v0);
+    //looper->ScanChain(true, "v0", chain_v0);
+    looper->ScanChain(true, "goodcoll", chain_goodcoll);
 
 	//
 	// write histograms
@@ -141,6 +142,9 @@ void doAll() {
 
 	delete chain_elegunstartup;
 	delete chain_elegunideal;
+
+    delete chain_v0;
+    delete chain_goodcoll;
 
 }
 
