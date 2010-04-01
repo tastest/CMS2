@@ -162,9 +162,10 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 	FormatHist(h1_phi_, "phi", 100, -4, 4);
 
 	// N-1
-	FormatHist(h1_nm1_met_, "nm1_met", 100, 0, 100);
+	FormatHist(h1_nm1_tcmet_, "nm1_tcmet", 20, 0, 100);
+    FormatHist(h1_nm1_pfmet_, "nm1_pfmet", 20, 0, 100);
     FormatHist(h1_nm1_jetveto_, "nm1_jetveto", 100, 0, 100);
-    FormatHist(h1_nm1_iso_, "nm1_iso", 100, 0, 10);
+    FormatHist(h1_nm1_iso_, "nm1_iso", 100, 0, 1);
 
 	// file loop
 	//
@@ -254,7 +255,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 
 			// isolation
             //std::cout << cms2.els_tkJuraIso().at(eleIndex) << std::endl;
-			//float iso_relsusy = electronIsolation_relsusy_cand1(eleIndex, true);
+//			float iso_relsusy = electronIsolation_relsusy_cand1(eleIndex, true);
 
 
     //printf("cms2 = 0x%x\n", &cms2);
@@ -303,8 +304,12 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 			const cuts_t pass_all = (1<<PASS_PT) | (1<<PASS_NOSECOND) | (1<<PASS_ISFIDUCIAL) | (1<<PASS_ISO) | (1<<PASS_MET) | (1<<PASS_JETVETO);
 
 			if (CheckCutsNM1(pass_all, (1<<PASS_MET), cuts_passed)) {
-				h1_nm1_met_[det]->Fill(cms2.evt_tcmet(), weight);
-                h1_nm1_met_[DET_ALL]->Fill(cms2.evt_tcmet(), weight);
+				h1_nm1_tcmet_[det]->Fill(cms2.evt_tcmet(), weight);
+                h1_nm1_tcmet_[DET_ALL]->Fill(cms2.evt_tcmet(), weight);
+
+                h1_nm1_pfmet_[det]->Fill(cms2.evt_pfmet(), weight);
+                h1_nm1_pfmet_[DET_ALL]->Fill(cms2.evt_pfmet(), weight);
+
 			}
 
             if (CheckCutsNM1(pass_all, (1<<PASS_JETVETO), cuts_passed)) {

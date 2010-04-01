@@ -4,6 +4,7 @@ void doAll() {
 	// from slavas code
 	gSystem->Load("libGui.so");
 	gSystem->Load("libPhysics.so");
+    gSystem->Load("../../Tools/MiniFWLite/libMiniFWLite.so");
 
 	// Load and compile something to allow proper treatment of vectors
 	// Not clear that it is needed

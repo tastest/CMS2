@@ -71,7 +71,8 @@ class MyScanChain {
 		TH1F    *h1_eta_[3];
 		TH1F    *h1_phi_[3];
 
-		TH1F 	*h1_nm1_met_[3];
+		TH1F 	*h1_nm1_tcmet_[3];
+        TH1F    *h1_nm1_pfmet_[3];
         TH1F    *h1_nm1_jetveto_[3];
         TH1F    *h1_nm1_iso_[3];
 
