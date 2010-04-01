@@ -166,6 +166,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     FormatHist(h1_nm1_pfmet_, "nm1_pfmet", 20, 0, 100);
     FormatHist(h1_nm1_jetveto_, "nm1_jetveto", 100, 0, 100);
     FormatHist(h1_nm1_iso_, "nm1_iso", 100, 0, 1);
+    FormatHist(h1_nm1_secondpt_, "nm1_secondpt", 100, 0, 100);
 
 	// file loop
 	//
@@ -246,8 +247,9 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 			if (cms2.els_p4()[eleIndex].Pt() > 20.0) cuts_passed |= (1<<PASS_PT);
 
 			// don't allow events with a second electron above 20.0 GeV
-			if ((foundSecond && cms2.els_p4()[eleSecondIndex].Pt() < 20.0) 
-					|| (!foundSecond)) cuts_passed |= (1<<PASS_NOSECOND);
+            float secondPt = 0.0;
+			if (foundSecond) secondPt == cms2.els_p4()[eleSecondIndex].Pt();
+            if (secondPt < 20.0) cuts_passed |= (1<<PASS_NOSECOND);
 
 			// impose fiducial cuts in Eta
 			if (fabs(cms2.els_etaSC()[eleIndex]) < 1.4442 
@@ -320,6 +322,11 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
             if (CheckCutsNM1(pass_all, (1<<PASS_ISO), cuts_passed)) {
                 h1_nm1_iso_[det]->Fill(iso_relsusy, weight);
                 h1_nm1_iso_[DET_ALL]->Fill(iso_relsusy, weight);
+            }
+
+            if (CheckCutsNM1(pass_all, (1<<PASS_NOSECOND), cuts_passed)) {
+                h1_nm1_secondpt_[det]->Fill(secondPt, weight);
+                h1_nm1_secondpt_[DET_ALL]->Fill(secondPt, weight);
             }
 
 
