@@ -163,6 +163,8 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 
 	// N-1
 	FormatHist(h1_nm1_met_, "nm1_met", 100, 0, 100);
+    FormatHist(h1_nm1_jetveto_, "nm1_jetveto", 100, 0, 100);
+    FormatHist(h1_nm1_iso_, "nm1_iso", 100, 0, 10);
 
 	// file loop
 	//
@@ -200,7 +202,9 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 			}
 
 			// work out event weight
-			float weight = cms2.evt_scale1fb()*0.01;
+
+//			float weight = cms2.evt_scale1fb()*0.01;
+            float weight = 1.0;
 
 			// find candidate electron
 			// assumes electrons are sorted by pT descending
@@ -249,7 +253,18 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 					|| (fabs(cms2.els_etaSC()[eleIndex]) > 1.560 && fabs(cms2.els_etaSC()[eleIndex]) < 2.500)) cuts_passed |= (1<<PASS_ISFIDUCIAL);
 
 			// isolation
-			float iso_relsusy = electronIsolation_relsusy_cand1(eleIndex, true);
+            //std::cout << cms2.els_tkJuraIso().at(eleIndex) << std::endl;
+			//float iso_relsusy = electronIsolation_relsusy_cand1(eleIndex, true);
+
+
+    //printf("cms2 = 0x%x\n", &cms2);
+    float sum = cms2.els_tkJuraIso().at(eleIndex);
+    if (fabs(cms2.els_etaSC().at(eleIndex)) > 1.479) sum += cms2.els_ecalIso().at(eleIndex);
+    if (fabs(cms2.els_etaSC().at(eleIndex)) <= 1.479) sum += max(0., (cms2.els_ecalIso().at(eleIndex) -1.));
+    sum += cms2.els_hcalIso().at(eleIndex);
+    double pt = cms2.els_p4().at(eleIndex).pt();
+    float iso_relsusy =  sum/max(pt, 20.);
+
 			if (iso_relsusy < 0.10) cuts_passed |= (1<<PASS_ISO);
 
 			// met
@@ -279,11 +294,11 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 			h1_pt_[det]->Fill(cms2.els_p4()[eleIndex].Pt(), weight);
 			h1_pt_[DET_ALL]->Fill(cms2.els_p4()[eleIndex].Pt(), weight);			
 
-			h1_pt_[det]->Fill(cms2.els_etaSC()[eleIndex], weight);
-			h1_pt_[DET_ALL]->Fill(cms2.els_etaSC()[eleIndex], weight);
+			h1_eta_[det]->Fill(cms2.els_etaSC()[eleIndex], weight);
+			h1_eta_[DET_ALL]->Fill(cms2.els_etaSC()[eleIndex], weight);
 
-			h1_pt_[det]->Fill(cms2.els_phiSC()[eleIndex], weight);
-			h1_pt_[DET_ALL]->Fill(cms2.els_phiSC()[eleIndex], weight);
+			h1_phi_[det]->Fill(cms2.els_phiSC()[eleIndex], weight);
+			h1_phi_[DET_ALL]->Fill(cms2.els_phiSC()[eleIndex], weight);
 
 			const cuts_t pass_all = (1<<PASS_PT) | (1<<PASS_NOSECOND) | (1<<PASS_ISFIDUCIAL) | (1<<PASS_ISO) | (1<<PASS_MET) | (1<<PASS_JETVETO);
 
@@ -291,6 +306,17 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 				h1_nm1_met_[det]->Fill(cms2.evt_tcmet(), weight);
                 h1_nm1_met_[DET_ALL]->Fill(cms2.evt_tcmet(), weight);
 			}
+
+            if (CheckCutsNM1(pass_all, (1<<PASS_JETVETO), cuts_passed)) {
+                h1_nm1_jetveto_[det]->Fill(leadingJPT, weight);
+                h1_nm1_jetveto_[DET_ALL]->Fill(leadingJPT, weight);
+            }
+
+            if (CheckCutsNM1(pass_all, (1<<PASS_ISO), cuts_passed)) {
+                h1_nm1_iso_[det]->Fill(iso_relsusy, weight);
+                h1_nm1_iso_[DET_ALL]->Fill(iso_relsusy, weight);
+            }
+
 
 			//
 			// Count
