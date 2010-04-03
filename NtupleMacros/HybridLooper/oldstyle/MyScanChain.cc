@@ -18,7 +18,7 @@
 #include "Math/LorentzVector.h"
 
 // CMS2 includes
-#include "CMS2.h"
+#include "../../CORE/CMS2.h"
 #include "../../CORE/trackSelections.h"
 #include "../../CORE/electronSelections.h"
 #include "../../Tools/DileptonHypType.h"
