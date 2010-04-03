@@ -78,6 +78,39 @@ protected:
 	float evt_bField_;
 	TBranch *evt_bField_branch;
 	bool evt_bField_isLoaded;
+	float	evt_kfactor_;
+	TBranch *evt_kfactor_branch;
+	bool evt_kfactor_isLoaded;
+	float	evt_scale1fb_;
+	TBranch *evt_scale1fb_branch;
+	bool evt_scale1fb_isLoaded;
+	float	evt_xsec_excl_;
+	TBranch *evt_xsec_excl_branch;
+	bool evt_xsec_excl_isLoaded;
+	float	evt_xsec_incl_;
+	TBranch *evt_xsec_incl_branch;
+	bool evt_xsec_incl_isLoaded;
+	float gen_met_;
+	TBranch *gen_met_branch;
+	bool gen_met_isLoaded;
+	float gen_metPhi_;
+	TBranch *gen_metPhi_branch;
+	bool gen_metPhi_isLoaded;
+	float genps_alphaQCD_;
+	TBranch *genps_alphaQCD_branch;
+	bool genps_alphaQCD_isLoaded;
+	float genps_pthat_;
+	TBranch *genps_pthat_branch;
+	bool genps_pthat_isLoaded;
+	float genps_qScale_;
+	TBranch *genps_qScale_branch;
+	bool genps_qScale_isLoaded;
+	float genps_weight_;
+	TBranch *genps_weight_branch;
+	bool genps_weight_isLoaded;
+	float gen_sumEt_;
+	TBranch *gen_sumEt_branch;
+	bool gen_sumEt_isLoaded;
 	float hcalnoise_eventChargeFraction_;
 	TBranch *hcalnoise_eventChargeFraction_branch;
 	bool hcalnoise_eventChargeFraction_isLoaded;
@@ -303,30 +336,15 @@ protected:
 	float evt_sumetOptNoHFHO_;
 	TBranch *evt_sumetOptNoHFHO_branch;
 	bool evt_sumetOptNoHFHO_isLoaded;
-	float met_pat_metCor_;
-	TBranch *met_pat_metCor_branch;
-	bool met_pat_metCor_isLoaded;
-	float met_pat_metPhiCor_;
-	TBranch *met_pat_metPhiCor_branch;
-	bool met_pat_metPhiCor_isLoaded;
-	float met_pat_metPhiUncor_;
-	TBranch *met_pat_metPhiUncor_branch;
-	bool met_pat_metPhiUncor_isLoaded;
-	float met_pat_metPhiUncorJES_;
-	TBranch *met_pat_metPhiUncorJES_branch;
-	bool met_pat_metPhiUncorJES_isLoaded;
-	float met_pat_metPhiUncorMuon_;
-	TBranch *met_pat_metPhiUncorMuon_branch;
-	bool met_pat_metPhiUncorMuon_isLoaded;
-	float met_pat_metUncor_;
-	TBranch *met_pat_metUncor_branch;
-	bool met_pat_metUncor_isLoaded;
-	float met_pat_metUncorJES_;
-	TBranch *met_pat_metUncorJES_branch;
-	bool met_pat_metUncorJES_isLoaded;
-	float met_pat_metUncorMuon_;
-	TBranch *met_pat_metUncorMuon_branch;
-	bool met_pat_metUncorMuon_isLoaded;
+	float pdfinfo_scale_;
+	TBranch *pdfinfo_scale_branch;
+	bool pdfinfo_scale_isLoaded;
+	float pdfinfo_x1_;
+	TBranch *pdfinfo_x1_branch;
+	bool pdfinfo_x1_isLoaded;
+	float pdfinfo_x2_;
+	TBranch *pdfinfo_x2_branch;
+	bool pdfinfo_x2_isLoaded;
 	float evt_pfmet_;
 	TBranch *evt_pfmet_branch;
 	bool evt_pfmet_isLoaded;
@@ -363,6 +381,27 @@ protected:
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > taus_calo_p4_;
 	TBranch *taus_calo_p4_branch;
 	bool taus_calo_p4_isLoaded;
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > els_mc_motherp4_;
+	TBranch *els_mc_motherp4_branch;
+	bool els_mc_motherp4_isLoaded;
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > els_mc_p4_;
+	TBranch *els_mc_p4_branch;
+	bool els_mc_p4_isLoaded;
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > jets_mc_gp_p4_;
+	TBranch *jets_mc_gp_p4_branch;
+	bool jets_mc_gp_p4_isLoaded;
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > jets_mc_p4_;
+	TBranch *jets_mc_p4_branch;
+	bool jets_mc_p4_isLoaded;
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > mus_mc_motherp4_;
+	TBranch *mus_mc_motherp4_branch;
+	bool mus_mc_motherp4_isLoaded;
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > mus_mc_p4_;
+	TBranch *mus_mc_p4_branch;
+	bool mus_mc_p4_isLoaded;
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > trk_mcp4_;
+	TBranch *trk_mcp4_branch;
+	bool trk_mcp4_isLoaded;
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > els_inner_position_;
 	TBranch *els_inner_position_branch;
 	bool els_inner_position_isLoaded;
@@ -384,6 +423,15 @@ protected:
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > els_vertex_p4_;
 	TBranch *els_vertex_p4_branch;
 	bool els_vertex_p4_isLoaded;
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > genjets_p4_;
+	TBranch *genjets_p4_branch;
+	bool genjets_p4_isLoaded;
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > genps_p4_;
+	TBranch *genps_p4_branch;
+	bool genps_p4_isLoaded;
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > genps_prod_vtx_;
+	TBranch *genps_prod_vtx_branch;
+	bool genps_prod_vtx_isLoaded;
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > hyp_ll_p4_;
 	TBranch *hyp_ll_p4_branch;
 	bool hyp_ll_p4_isLoaded;
@@ -405,6 +453,12 @@ protected:
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > hyp_FVFit_v4_;
 	TBranch *hyp_FVFit_v4_branch;
 	bool hyp_FVFit_v4_isLoaded;
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > hyp_ll_mc_p4_;
+	TBranch *hyp_ll_mc_p4_branch;
+	bool hyp_ll_mc_p4_isLoaded;
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > hyp_lt_mc_p4_;
+	TBranch *hyp_lt_mc_p4_branch;
+	bool hyp_lt_mc_p4_isLoaded;
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > jets_p4_;
 	TBranch *jets_p4_branch;
 	bool jets_p4_isLoaded;
@@ -468,39 +522,6 @@ protected:
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > mus_vertex_p4_;
 	TBranch *mus_vertex_p4_branch;
 	bool mus_vertex_p4_isLoaded;
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > els_pat_genMotherP4_;
-	TBranch *els_pat_genMotherP4_branch;
-	bool els_pat_genMotherP4_isLoaded;
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > els_pat_genP4_;
-	TBranch *els_pat_genP4_branch;
-	bool els_pat_genP4_isLoaded;
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > els_pat_p4_;
-	TBranch *els_pat_p4_branch;
-	bool els_pat_p4_isLoaded;
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > jets_pat_genJet_p4_;
-	TBranch *jets_pat_genJet_p4_branch;
-	bool jets_pat_genJet_p4_isLoaded;
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > jets_pat_genPartonMother_p4_;
-	TBranch *jets_pat_genPartonMother_p4_branch;
-	bool jets_pat_genPartonMother_p4_isLoaded;
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > jets_pat_genParton_p4_;
-	TBranch *jets_pat_genParton_p4_branch;
-	bool jets_pat_genParton_p4_isLoaded;
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > jets_pat_jet_p4_;
-	TBranch *jets_pat_jet_p4_branch;
-	bool jets_pat_jet_p4_isLoaded;
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > jets_pat_jet_uncorp4_;
-	TBranch *jets_pat_jet_uncorp4_branch;
-	bool jets_pat_jet_uncorp4_isLoaded;
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > mus_pat_genMotherP4_;
-	TBranch *mus_pat_genMotherP4_branch;
-	bool mus_pat_genMotherP4_isLoaded;
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > mus_pat_genP4_;
-	TBranch *mus_pat_genP4_branch;
-	bool mus_pat_genP4_isLoaded;
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > mus_pat_p4_;
-	TBranch *mus_pat_p4_branch;
-	bool mus_pat_p4_isLoaded;
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > pfjets_p4_;
 	TBranch *pfjets_p4_branch;
 	bool pfjets_p4_isLoaded;
@@ -558,6 +579,9 @@ protected:
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > vtxs_position_;
 	TBranch *vtxs_position_branch;
 	bool vtxs_position_isLoaded;
+	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > > genps_lepdaughter_p4_;
+	TBranch *genps_lepdaughter_p4_branch;
+	bool genps_lepdaughter_p4_isLoaded;
 	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > > hlt_trigObjs_p4_;
 	TBranch *hlt_trigObjs_p4_branch;
 	bool hlt_trigObjs_p4_isLoaded;
@@ -807,6 +831,45 @@ protected:
 	vector<float> taus_calo_signaltrksInvariantMass_;
 	TBranch *taus_calo_signaltrksInvariantMass_branch;
 	bool taus_calo_signaltrksInvariantMass_isLoaded;
+	vector<float> els_mc3dr_;
+	TBranch *els_mc3dr_branch;
+	bool els_mc3dr_isLoaded;
+	vector<float> els_mcdr_;
+	TBranch *els_mcdr_branch;
+	bool els_mcdr_isLoaded;
+	vector<float> jets_mc3dr_;
+	TBranch *jets_mc3dr_branch;
+	bool jets_mc3dr_isLoaded;
+	vector<float> jets_mcdr_;
+	TBranch *jets_mcdr_branch;
+	bool jets_mcdr_isLoaded;
+	vector<float> jets_mc_emEnergy_;
+	TBranch *jets_mc_emEnergy_branch;
+	bool jets_mc_emEnergy_isLoaded;
+	vector<float> jets_mc_gpdr_;
+	TBranch *jets_mc_gpdr_branch;
+	bool jets_mc_gpdr_isLoaded;
+	vector<float> jets_mc_hadEnergy_;
+	TBranch *jets_mc_hadEnergy_branch;
+	bool jets_mc_hadEnergy_isLoaded;
+	vector<float> jets_mc_invEnergy_;
+	TBranch *jets_mc_invEnergy_branch;
+	bool jets_mc_invEnergy_isLoaded;
+	vector<float> jets_mc_otherEnergy_;
+	TBranch *jets_mc_otherEnergy_branch;
+	bool jets_mc_otherEnergy_isLoaded;
+	vector<float> mus_mc3dr_;
+	TBranch *mus_mc3dr_branch;
+	bool mus_mc3dr_isLoaded;
+	vector<float> mus_mcdr_;
+	TBranch *mus_mcdr_branch;
+	bool mus_mcdr_isLoaded;
+	vector<float> trk_mc3dr_;
+	TBranch *trk_mc3dr_branch;
+	bool trk_mc3dr_isLoaded;
+	vector<float> trk_mcdr_;
+	TBranch *trk_mcdr_branch;
+	bool trk_mcdr_isLoaded;
 	vector<float> els_ecalJuraIso_;
 	TBranch *els_ecalJuraIso_branch;
 	bool els_ecalJuraIso_isLoaded;
@@ -1422,117 +1485,6 @@ protected:
 	vector<float> mus_z0corr_;
 	TBranch *mus_z0corr_branch;
 	bool mus_z0corr_isLoaded;
-	vector<float> els_pat_caloIso_;
-	TBranch *els_pat_caloIso_branch;
-	bool els_pat_caloIso_isLoaded;
-	vector<float> els_pat_ecalIso_;
-	TBranch *els_pat_ecalIso_branch;
-	bool els_pat_ecalIso_isLoaded;
-	vector<float> els_pat_hcalIso_;
-	TBranch *els_pat_hcalIso_branch;
-	bool els_pat_hcalIso_isLoaded;
-	vector<float> els_pat_looseId_;
-	TBranch *els_pat_looseId_branch;
-	bool els_pat_looseId_isLoaded;
-	vector<float> els_pat_robustHighEnergy_;
-	TBranch *els_pat_robustHighEnergy_branch;
-	bool els_pat_robustHighEnergy_isLoaded;
-	vector<float> els_pat_robustLooseId_;
-	TBranch *els_pat_robustLooseId_branch;
-	bool els_pat_robustLooseId_isLoaded;
-	vector<float> els_pat_robustTightId_;
-	TBranch *els_pat_robustTightId_branch;
-	bool els_pat_robustTightId_isLoaded;
-	vector<float> els_pat_scE1x5_;
-	TBranch *els_pat_scE1x5_branch;
-	bool els_pat_scE1x5_isLoaded;
-	vector<float> els_pat_scE2x5Max_;
-	TBranch *els_pat_scE2x5Max_branch;
-	bool els_pat_scE2x5Max_isLoaded;
-	vector<float> els_pat_scE5x5_;
-	TBranch *els_pat_scE5x5_branch;
-	bool els_pat_scE5x5_isLoaded;
-	vector<float> els_pat_sigmaEtaEta_;
-	TBranch *els_pat_sigmaEtaEta_branch;
-	bool els_pat_sigmaEtaEta_isLoaded;
-	vector<float> els_pat_sigmaIEtaIEta_;
-	TBranch *els_pat_sigmaIEtaIEta_branch;
-	bool els_pat_sigmaIEtaIEta_isLoaded;
-	vector<float> els_pat_tightId_;
-	TBranch *els_pat_tightId_branch;
-	bool els_pat_tightId_isLoaded;
-	vector<float> els_pat_trackIso_;
-	TBranch *els_pat_trackIso_branch;
-	bool els_pat_trackIso_isLoaded;
-	vector<float> jets_pat_combinedSecondaryVertexBJetTag_;
-	TBranch *jets_pat_combinedSecondaryVertexBJetTag_branch;
-	bool jets_pat_combinedSecondaryVertexBJetTag_isLoaded;
-	vector<float> jets_pat_combinedSecondaryVertexMVABJetTag_;
-	TBranch *jets_pat_combinedSecondaryVertexMVABJetTag_branch;
-	bool jets_pat_combinedSecondaryVertexMVABJetTag_isLoaded;
-	vector<float> jets_pat_coneIsolationTauJetTag_;
-	TBranch *jets_pat_coneIsolationTauJetTag_branch;
-	bool jets_pat_coneIsolationTauJetTag_isLoaded;
-	vector<float> jets_pat_impactParameterMVABJetTag_;
-	TBranch *jets_pat_impactParameterMVABJetTag_branch;
-	bool jets_pat_impactParameterMVABJetTag_isLoaded;
-	vector<float> jets_pat_jetBProbabilityBJetTag_;
-	TBranch *jets_pat_jetBProbabilityBJetTag_branch;
-	bool jets_pat_jetBProbabilityBJetTag_isLoaded;
-	vector<float> jets_pat_jetCharge_;
-	TBranch *jets_pat_jetCharge_branch;
-	bool jets_pat_jetCharge_isLoaded;
-	vector<float> jets_pat_jetProbabilityBJetTag_;
-	TBranch *jets_pat_jetProbabilityBJetTag_branch;
-	bool jets_pat_jetProbabilityBJetTag_isLoaded;
-	vector<float> jets_pat_noCorrF_;
-	TBranch *jets_pat_noCorrF_branch;
-	bool jets_pat_noCorrF_isLoaded;
-	vector<float> jets_pat_simpleSecondaryVertexBJetTag_;
-	TBranch *jets_pat_simpleSecondaryVertexBJetTag_branch;
-	bool jets_pat_simpleSecondaryVertexBJetTag_isLoaded;
-	vector<float> jets_pat_softElectronByIP3dBJetTag_;
-	TBranch *jets_pat_softElectronByIP3dBJetTag_branch;
-	bool jets_pat_softElectronByIP3dBJetTag_isLoaded;
-	vector<float> jets_pat_softElectronByPtBJetTag_;
-	TBranch *jets_pat_softElectronByPtBJetTag_branch;
-	bool jets_pat_softElectronByPtBJetTag_isLoaded;
-	vector<float> jets_pat_softMuonBJetTag_;
-	TBranch *jets_pat_softMuonBJetTag_branch;
-	bool jets_pat_softMuonBJetTag_isLoaded;
-	vector<float> jets_pat_softMuonNoIPBJetTag_;
-	TBranch *jets_pat_softMuonNoIPBJetTag_branch;
-	bool jets_pat_softMuonNoIPBJetTag_isLoaded;
-	vector<float> jets_pat_trackCountingHighEffBJetTag_;
-	TBranch *jets_pat_trackCountingHighEffBJetTag_branch;
-	bool jets_pat_trackCountingHighEffBJetTag_isLoaded;
-	vector<float> jets_pat_trackCountingHighPurBJetTag_;
-	TBranch *jets_pat_trackCountingHighPurBJetTag_branch;
-	bool jets_pat_trackCountingHighPurBJetTag_isLoaded;
-	vector<float> mus_pat_caloIso_;
-	TBranch *mus_pat_caloIso_branch;
-	bool mus_pat_caloIso_isLoaded;
-	vector<float> mus_pat_calovetoDep_;
-	TBranch *mus_pat_calovetoDep_branch;
-	bool mus_pat_calovetoDep_isLoaded;
-	vector<float> mus_pat_ecalIso_;
-	TBranch *mus_pat_ecalIso_branch;
-	bool mus_pat_ecalIso_isLoaded;
-	vector<float> mus_pat_ecalvetoDep_;
-	TBranch *mus_pat_ecalvetoDep_branch;
-	bool mus_pat_ecalvetoDep_isLoaded;
-	vector<float> mus_pat_hcalIso_;
-	TBranch *mus_pat_hcalIso_branch;
-	bool mus_pat_hcalIso_isLoaded;
-	vector<float> mus_pat_hcalvetoDep_;
-	TBranch *mus_pat_hcalvetoDep_branch;
-	bool mus_pat_hcalvetoDep_isLoaded;
-	vector<float> mus_pat_trackIso_;
-	TBranch *mus_pat_trackIso_branch;
-	bool mus_pat_trackIso_isLoaded;
-	vector<float> mus_pat_trckvetoDep_;
-	TBranch *mus_pat_trckvetoDep_branch;
-	bool mus_pat_trckvetoDep_isLoaded;
 	vector<float> pfjets_chargedEmE_;
 	TBranch *pfjets_chargedEmE_branch;
 	bool pfjets_chargedEmE_isLoaded;
@@ -2019,6 +1971,12 @@ protected:
 	int l1_nmus_;
 	TBranch *l1_nmus_branch;
 	bool l1_nmus_isLoaded;
+	int pdfinfo_id1_;
+	TBranch *pdfinfo_id1_branch;
+	bool pdfinfo_id1_isLoaded;
+	int pdfinfo_id2_;
+	TBranch *pdfinfo_id2_branch;
+	bool pdfinfo_id2_isLoaded;
 	vector<int> evt_ecaliPhiSuspects_;
 	TBranch *evt_ecaliPhiSuspects_branch;
 	bool evt_ecaliPhiSuspects_isLoaded;
@@ -2043,6 +2001,84 @@ protected:
 	vector<int> taus_calo_tightId_;
 	TBranch *taus_calo_tightId_branch;
 	bool taus_calo_tightId_isLoaded;
+	vector<int> els_mc3_id_;
+	TBranch *els_mc3_id_branch;
+	bool els_mc3_id_isLoaded;
+	vector<int> els_mc3idx_;
+	TBranch *els_mc3idx_branch;
+	bool els_mc3idx_isLoaded;
+	vector<int> els_mc3_motherid_;
+	TBranch *els_mc3_motherid_branch;
+	bool els_mc3_motherid_isLoaded;
+	vector<int> els_mc3_motheridx_;
+	TBranch *els_mc3_motheridx_branch;
+	bool els_mc3_motheridx_isLoaded;
+	vector<int> els_mc_id_;
+	TBranch *els_mc_id_branch;
+	bool els_mc_id_isLoaded;
+	vector<int> els_mcidx_;
+	TBranch *els_mcidx_branch;
+	bool els_mcidx_isLoaded;
+	vector<int> els_mc_motherid_;
+	TBranch *els_mc_motherid_branch;
+	bool els_mc_motherid_isLoaded;
+	vector<int> jets_mc3_id_;
+	TBranch *jets_mc3_id_branch;
+	bool jets_mc3_id_isLoaded;
+	vector<int> jets_mc3idx_;
+	TBranch *jets_mc3idx_branch;
+	bool jets_mc3idx_isLoaded;
+	vector<int> jets_mc_gpidx_;
+	TBranch *jets_mc_gpidx_branch;
+	bool jets_mc_gpidx_isLoaded;
+	vector<int> jets_mc_id_;
+	TBranch *jets_mc_id_branch;
+	bool jets_mc_id_isLoaded;
+	vector<int> jets_mcidx_;
+	TBranch *jets_mcidx_branch;
+	bool jets_mcidx_isLoaded;
+	vector<int> mus_mc3_id_;
+	TBranch *mus_mc3_id_branch;
+	bool mus_mc3_id_isLoaded;
+	vector<int> mus_mc3idx_;
+	TBranch *mus_mc3idx_branch;
+	bool mus_mc3idx_isLoaded;
+	vector<int> mus_mc3_motherid_;
+	TBranch *mus_mc3_motherid_branch;
+	bool mus_mc3_motherid_isLoaded;
+	vector<int> mus_mc3_motheridx_;
+	TBranch *mus_mc3_motheridx_branch;
+	bool mus_mc3_motheridx_isLoaded;
+	vector<int> mus_mc_id_;
+	TBranch *mus_mc_id_branch;
+	bool mus_mc_id_isLoaded;
+	vector<int> mus_mcidx_;
+	TBranch *mus_mcidx_branch;
+	bool mus_mcidx_isLoaded;
+	vector<int> mus_mc_motherid_;
+	TBranch *mus_mc_motherid_branch;
+	bool mus_mc_motherid_isLoaded;
+	vector<int> trk_mc3_id_;
+	TBranch *trk_mc3_id_branch;
+	bool trk_mc3_id_isLoaded;
+	vector<int> trk_mc3idx_;
+	TBranch *trk_mc3idx_branch;
+	bool trk_mc3idx_isLoaded;
+	vector<int> trk_mc3_motherid_;
+	TBranch *trk_mc3_motherid_branch;
+	bool trk_mc3_motherid_isLoaded;
+	vector<int> trk_mc3_motheridx_;
+	TBranch *trk_mc3_motheridx_branch;
+	bool trk_mc3_motheridx_isLoaded;
+	vector<int> trk_mc_id_;
+	TBranch *trk_mc_id_branch;
+	bool trk_mc_id_isLoaded;
+	vector<int> trk_mcidx_;
+	TBranch *trk_mcidx_branch;
+	bool trk_mcidx_isLoaded;
+	vector<int> trk_mc_motherid_;
+	TBranch *trk_mc_motherid_branch;
+	bool trk_mc_motherid_isLoaded;
 	vector<int> els_closestJet_;
 	TBranch *els_closestJet_branch;
 	bool els_closestJet_isLoaded;
@@ -2109,6 +2145,15 @@ protected:
 	vector<int> els_valid_pixelhits_;
 	TBranch *els_valid_pixelhits_branch;
 	bool els_valid_pixelhits_isLoaded;
+	vector<int> genps_id_;
+	TBranch *genps_id_branch;
+	bool genps_id_isLoaded;
+	vector<int> genps_id_mother_;
+	TBranch *genps_id_mother_branch;
+	bool genps_id_mother_isLoaded;
+	vector<int> genps_status_;
+	TBranch *genps_status_branch;
+	bool genps_status_isLoaded;
 	vector<int> hyp_ll_charge_;
 	TBranch *hyp_ll_charge_branch;
 	bool hyp_ll_charge_isLoaded;
@@ -2154,6 +2199,18 @@ protected:
 	vector<int> hyp_FVFit_status_;
 	TBranch *hyp_FVFit_status_branch;
 	bool hyp_FVFit_status_isLoaded;
+	vector<int> hyp_ll_mc_id_;
+	TBranch *hyp_ll_mc_id_branch;
+	bool hyp_ll_mc_id_isLoaded;
+	vector<int> hyp_ll_mc_motherid_;
+	TBranch *hyp_ll_mc_motherid_branch;
+	bool hyp_ll_mc_motherid_isLoaded;
+	vector<int> hyp_lt_mc_id_;
+	TBranch *hyp_lt_mc_id_branch;
+	bool hyp_lt_mc_id_isLoaded;
+	vector<int> hyp_lt_mc_motherid_;
+	TBranch *hyp_lt_mc_motherid_branch;
+	bool hyp_lt_mc_motherid_isLoaded;
 	vector<int> hyp_quadlep_first_type_;
 	TBranch *hyp_quadlep_first_type_branch;
 	bool hyp_quadlep_first_type_isLoaded;
@@ -2322,39 +2379,6 @@ protected:
 	vector<int> mus_validHits_;
 	TBranch *mus_validHits_branch;
 	bool mus_validHits_isLoaded;
-	vector<int> els_pat_genID_;
-	TBranch *els_pat_genID_branch;
-	bool els_pat_genID_isLoaded;
-	vector<int> els_pat_genMotherID_;
-	TBranch *els_pat_genMotherID_branch;
-	bool els_pat_genMotherID_isLoaded;
-	vector<int> jets_pat_genPartonMother_id_;
-	TBranch *jets_pat_genPartonMother_id_branch;
-	bool jets_pat_genPartonMother_id_isLoaded;
-	vector<int> jets_pat_genParton_id_;
-	TBranch *jets_pat_genParton_id_branch;
-	bool jets_pat_genParton_id_isLoaded;
-	vector<int> jets_pat_jetIDLoose_;
-	TBranch *jets_pat_jetIDLoose_branch;
-	bool jets_pat_jetIDLoose_isLoaded;
-	vector<int> jets_pat_jetIDLooseAOD_;
-	TBranch *jets_pat_jetIDLooseAOD_branch;
-	bool jets_pat_jetIDLooseAOD_isLoaded;
-	vector<int> jets_pat_jetIDMinimal_;
-	TBranch *jets_pat_jetIDMinimal_branch;
-	bool jets_pat_jetIDMinimal_isLoaded;
-	vector<int> jets_pat_jetIDTight_;
-	TBranch *jets_pat_jetIDTight_branch;
-	bool jets_pat_jetIDTight_isLoaded;
-	vector<int> jets_pat_partonFlavour_;
-	TBranch *jets_pat_partonFlavour_branch;
-	bool jets_pat_partonFlavour_isLoaded;
-	vector<int> mus_pat_genID_;
-	TBranch *mus_pat_genID_branch;
-	bool mus_pat_genID_isLoaded;
-	vector<int> mus_pat_genMotherID_;
-	TBranch *mus_pat_genMotherID_branch;
-	bool mus_pat_genMotherID_isLoaded;
 	vector<int> pfjets_chargedMultiplicity_;
 	TBranch *pfjets_chargedMultiplicity_branch;
 	bool pfjets_chargedMultiplicity_isLoaded;
@@ -2496,6 +2520,12 @@ protected:
 	vector<vector<int> > taus_calo_sigtrk_idx_;
 	TBranch *taus_calo_sigtrk_idx_branch;
 	bool taus_calo_sigtrk_idx_isLoaded;
+	vector<vector<int> > genps_lepdaughter_id_;
+	TBranch *genps_lepdaughter_id_branch;
+	bool genps_lepdaughter_id_isLoaded;
+	vector<vector<int> > genps_lepdaughter_idx_;
+	TBranch *genps_lepdaughter_idx_branch;
+	bool genps_lepdaughter_idx_isLoaded;
 	vector<vector<int> > hlt_trigObjs_id_;
 	TBranch *hlt_trigObjs_id_branch;
 	bool hlt_trigObjs_id_isLoaded;
@@ -2523,6 +2553,15 @@ protected:
 	unsigned int evt_run_;
 	TBranch *evt_run_branch;
 	bool evt_run_isLoaded;
+	unsigned int genps_flavorHistoryFilterResult_;
+	TBranch *genps_flavorHistoryFilterResult_branch;
+	bool genps_flavorHistoryFilterResult_isLoaded;
+	unsigned int evt_ngenjets_;
+	TBranch *evt_ngenjets_branch;
+	bool evt_ngenjets_isLoaded;
+	unsigned int genps_signalProcessID_;
+	TBranch *genps_signalProcessID_branch;
+	bool genps_signalProcessID_isLoaded;
 	unsigned int hlt_bits1_;
 	TBranch *hlt_bits1_branch;
 	bool hlt_bits1_isLoaded;
@@ -2655,17 +2694,14 @@ protected:
 	vector<unsigned int> hyp_trilep_third_index_;
 	TBranch *hyp_trilep_third_index_branch;
 	bool hyp_trilep_third_index_isLoaded;
-	vector<unsigned int> els_pat_flag_;
-	TBranch *els_pat_flag_branch;
-	bool els_pat_flag_isLoaded;
-	vector<unsigned int> jets_pat_flag_;
-	TBranch *jets_pat_flag_branch;
-	bool jets_pat_flag_isLoaded;
-	vector<unsigned int> mus_pat_flag_;
-	TBranch *mus_pat_flag_branch;
-	bool mus_pat_flag_isLoaded;
+	int	evt_nEvts_;
+	TBranch *evt_nEvts_branch;
+	bool evt_nEvts_isLoaded;
+	float	evt_filt_eff_;
+	TBranch *evt_filt_eff_branch;
+	bool evt_filt_eff_isLoaded;
 public: 
-//int ScanChain(class TChain* chain, int nEvents=-1, std::string skimFilePrefix="");
+int ScanChain(class TChain* chain, int nEvents=-1, std::string skimFilePrefix="");
 void Init(TTree *tree) {
 	evt_bsp4_branch = 0;
 	if (tree->GetAlias("evt_bsp4") != 0) {
@@ -2698,6 +2734,62 @@ void Init(TTree *tree) {
 	}
 	if(taus_calo_p4_branch == 0 ) {
 	cout << "Branch taus_calo_p4 does not exist." << endl;
+	}
+	els_mc_motherp4_branch = 0;
+	if (tree->GetAlias("els_mc_motherp4") != 0) {
+		els_mc_motherp4_branch = tree->GetBranch(tree->GetAlias("els_mc_motherp4"));
+		els_mc_motherp4_branch->SetAddress(&els_mc_motherp4_);
+	}
+	if(els_mc_motherp4_branch == 0 ) {
+	cout << "Branch els_mc_motherp4 does not exist." << endl;
+	}
+	els_mc_p4_branch = 0;
+	if (tree->GetAlias("els_mc_p4") != 0) {
+		els_mc_p4_branch = tree->GetBranch(tree->GetAlias("els_mc_p4"));
+		els_mc_p4_branch->SetAddress(&els_mc_p4_);
+	}
+	if(els_mc_p4_branch == 0 ) {
+	cout << "Branch els_mc_p4 does not exist." << endl;
+	}
+	jets_mc_gp_p4_branch = 0;
+	if (tree->GetAlias("jets_mc_gp_p4") != 0) {
+		jets_mc_gp_p4_branch = tree->GetBranch(tree->GetAlias("jets_mc_gp_p4"));
+		jets_mc_gp_p4_branch->SetAddress(&jets_mc_gp_p4_);
+	}
+	if(jets_mc_gp_p4_branch == 0 ) {
+	cout << "Branch jets_mc_gp_p4 does not exist." << endl;
+	}
+	jets_mc_p4_branch = 0;
+	if (tree->GetAlias("jets_mc_p4") != 0) {
+		jets_mc_p4_branch = tree->GetBranch(tree->GetAlias("jets_mc_p4"));
+		jets_mc_p4_branch->SetAddress(&jets_mc_p4_);
+	}
+	if(jets_mc_p4_branch == 0 ) {
+	cout << "Branch jets_mc_p4 does not exist." << endl;
+	}
+	mus_mc_motherp4_branch = 0;
+	if (tree->GetAlias("mus_mc_motherp4") != 0) {
+		mus_mc_motherp4_branch = tree->GetBranch(tree->GetAlias("mus_mc_motherp4"));
+		mus_mc_motherp4_branch->SetAddress(&mus_mc_motherp4_);
+	}
+	if(mus_mc_motherp4_branch == 0 ) {
+	cout << "Branch mus_mc_motherp4 does not exist." << endl;
+	}
+	mus_mc_p4_branch = 0;
+	if (tree->GetAlias("mus_mc_p4") != 0) {
+		mus_mc_p4_branch = tree->GetBranch(tree->GetAlias("mus_mc_p4"));
+		mus_mc_p4_branch->SetAddress(&mus_mc_p4_);
+	}
+	if(mus_mc_p4_branch == 0 ) {
+	cout << "Branch mus_mc_p4 does not exist." << endl;
+	}
+	trk_mcp4_branch = 0;
+	if (tree->GetAlias("trk_mcp4") != 0) {
+		trk_mcp4_branch = tree->GetBranch(tree->GetAlias("trk_mcp4"));
+		trk_mcp4_branch->SetAddress(&trk_mcp4_);
+	}
+	if(trk_mcp4_branch == 0 ) {
+	cout << "Branch trk_mcp4 does not exist." << endl;
 	}
 	els_inner_position_branch = 0;
 	if (tree->GetAlias("els_inner_position") != 0) {
@@ -2755,6 +2847,30 @@ void Init(TTree *tree) {
 	if(els_vertex_p4_branch == 0 ) {
 	cout << "Branch els_vertex_p4 does not exist." << endl;
 	}
+	genjets_p4_branch = 0;
+	if (tree->GetAlias("genjets_p4") != 0) {
+		genjets_p4_branch = tree->GetBranch(tree->GetAlias("genjets_p4"));
+		genjets_p4_branch->SetAddress(&genjets_p4_);
+	}
+	if(genjets_p4_branch == 0 ) {
+	cout << "Branch genjets_p4 does not exist." << endl;
+	}
+	genps_p4_branch = 0;
+	if (tree->GetAlias("genps_p4") != 0) {
+		genps_p4_branch = tree->GetBranch(tree->GetAlias("genps_p4"));
+		genps_p4_branch->SetAddress(&genps_p4_);
+	}
+	if(genps_p4_branch == 0 ) {
+	cout << "Branch genps_p4 does not exist." << endl;
+	}
+	genps_prod_vtx_branch = 0;
+	if (tree->GetAlias("genps_prod_vtx") != 0) {
+		genps_prod_vtx_branch = tree->GetBranch(tree->GetAlias("genps_prod_vtx"));
+		genps_prod_vtx_branch->SetAddress(&genps_prod_vtx_);
+	}
+	if(genps_prod_vtx_branch == 0 ) {
+	cout << "Branch genps_prod_vtx does not exist." << endl;
+	}
 	hyp_ll_p4_branch = 0;
 	if (tree->GetAlias("hyp_ll_p4") != 0) {
 		hyp_ll_p4_branch = tree->GetBranch(tree->GetAlias("hyp_ll_p4"));
@@ -2810,6 +2926,22 @@ void Init(TTree *tree) {
 	}
 	if(hyp_FVFit_v4_branch == 0 ) {
 	cout << "Branch hyp_FVFit_v4 does not exist." << endl;
+	}
+	hyp_ll_mc_p4_branch = 0;
+	if (tree->GetAlias("hyp_ll_mc_p4") != 0) {
+		hyp_ll_mc_p4_branch = tree->GetBranch(tree->GetAlias("hyp_ll_mc_p4"));
+		hyp_ll_mc_p4_branch->SetAddress(&hyp_ll_mc_p4_);
+	}
+	if(hyp_ll_mc_p4_branch == 0 ) {
+	cout << "Branch hyp_ll_mc_p4 does not exist." << endl;
+	}
+	hyp_lt_mc_p4_branch = 0;
+	if (tree->GetAlias("hyp_lt_mc_p4") != 0) {
+		hyp_lt_mc_p4_branch = tree->GetBranch(tree->GetAlias("hyp_lt_mc_p4"));
+		hyp_lt_mc_p4_branch->SetAddress(&hyp_lt_mc_p4_);
+	}
+	if(hyp_lt_mc_p4_branch == 0 ) {
+	cout << "Branch hyp_lt_mc_p4 does not exist." << endl;
 	}
 	jets_p4_branch = 0;
 	if (tree->GetAlias("jets_p4") != 0) {
@@ -2978,94 +3110,6 @@ void Init(TTree *tree) {
 	}
 	if(mus_vertex_p4_branch == 0 ) {
 	cout << "Branch mus_vertex_p4 does not exist." << endl;
-	}
-	els_pat_genMotherP4_branch = 0;
-	if (tree->GetAlias("els_pat_genMotherP4") != 0) {
-		els_pat_genMotherP4_branch = tree->GetBranch(tree->GetAlias("els_pat_genMotherP4"));
-		els_pat_genMotherP4_branch->SetAddress(&els_pat_genMotherP4_);
-	}
-	if(els_pat_genMotherP4_branch == 0 ) {
-	cout << "Branch els_pat_genMotherP4 does not exist." << endl;
-	}
-	els_pat_genP4_branch = 0;
-	if (tree->GetAlias("els_pat_genP4") != 0) {
-		els_pat_genP4_branch = tree->GetBranch(tree->GetAlias("els_pat_genP4"));
-		els_pat_genP4_branch->SetAddress(&els_pat_genP4_);
-	}
-	if(els_pat_genP4_branch == 0 ) {
-	cout << "Branch els_pat_genP4 does not exist." << endl;
-	}
-	els_pat_p4_branch = 0;
-	if (tree->GetAlias("els_pat_p4") != 0) {
-		els_pat_p4_branch = tree->GetBranch(tree->GetAlias("els_pat_p4"));
-		els_pat_p4_branch->SetAddress(&els_pat_p4_);
-	}
-	if(els_pat_p4_branch == 0 ) {
-	cout << "Branch els_pat_p4 does not exist." << endl;
-	}
-	jets_pat_genJet_p4_branch = 0;
-	if (tree->GetAlias("jets_pat_genJet_p4") != 0) {
-		jets_pat_genJet_p4_branch = tree->GetBranch(tree->GetAlias("jets_pat_genJet_p4"));
-		jets_pat_genJet_p4_branch->SetAddress(&jets_pat_genJet_p4_);
-	}
-	if(jets_pat_genJet_p4_branch == 0 ) {
-	cout << "Branch jets_pat_genJet_p4 does not exist." << endl;
-	}
-	jets_pat_genPartonMother_p4_branch = 0;
-	if (tree->GetAlias("jets_pat_genPartonMother_p4") != 0) {
-		jets_pat_genPartonMother_p4_branch = tree->GetBranch(tree->GetAlias("jets_pat_genPartonMother_p4"));
-		jets_pat_genPartonMother_p4_branch->SetAddress(&jets_pat_genPartonMother_p4_);
-	}
-	if(jets_pat_genPartonMother_p4_branch == 0 ) {
-	cout << "Branch jets_pat_genPartonMother_p4 does not exist." << endl;
-	}
-	jets_pat_genParton_p4_branch = 0;
-	if (tree->GetAlias("jets_pat_genParton_p4") != 0) {
-		jets_pat_genParton_p4_branch = tree->GetBranch(tree->GetAlias("jets_pat_genParton_p4"));
-		jets_pat_genParton_p4_branch->SetAddress(&jets_pat_genParton_p4_);
-	}
-	if(jets_pat_genParton_p4_branch == 0 ) {
-	cout << "Branch jets_pat_genParton_p4 does not exist." << endl;
-	}
-	jets_pat_jet_p4_branch = 0;
-	if (tree->GetAlias("jets_pat_jet_p4") != 0) {
-		jets_pat_jet_p4_branch = tree->GetBranch(tree->GetAlias("jets_pat_jet_p4"));
-		jets_pat_jet_p4_branch->SetAddress(&jets_pat_jet_p4_);
-	}
-	if(jets_pat_jet_p4_branch == 0 ) {
-	cout << "Branch jets_pat_jet_p4 does not exist." << endl;
-	}
-	jets_pat_jet_uncorp4_branch = 0;
-	if (tree->GetAlias("jets_pat_jet_uncorp4") != 0) {
-		jets_pat_jet_uncorp4_branch = tree->GetBranch(tree->GetAlias("jets_pat_jet_uncorp4"));
-		jets_pat_jet_uncorp4_branch->SetAddress(&jets_pat_jet_uncorp4_);
-	}
-	if(jets_pat_jet_uncorp4_branch == 0 ) {
-	cout << "Branch jets_pat_jet_uncorp4 does not exist." << endl;
-	}
-	mus_pat_genMotherP4_branch = 0;
-	if (tree->GetAlias("mus_pat_genMotherP4") != 0) {
-		mus_pat_genMotherP4_branch = tree->GetBranch(tree->GetAlias("mus_pat_genMotherP4"));
-		mus_pat_genMotherP4_branch->SetAddress(&mus_pat_genMotherP4_);
-	}
-	if(mus_pat_genMotherP4_branch == 0 ) {
-	cout << "Branch mus_pat_genMotherP4 does not exist." << endl;
-	}
-	mus_pat_genP4_branch = 0;
-	if (tree->GetAlias("mus_pat_genP4") != 0) {
-		mus_pat_genP4_branch = tree->GetBranch(tree->GetAlias("mus_pat_genP4"));
-		mus_pat_genP4_branch->SetAddress(&mus_pat_genP4_);
-	}
-	if(mus_pat_genP4_branch == 0 ) {
-	cout << "Branch mus_pat_genP4 does not exist." << endl;
-	}
-	mus_pat_p4_branch = 0;
-	if (tree->GetAlias("mus_pat_p4") != 0) {
-		mus_pat_p4_branch = tree->GetBranch(tree->GetAlias("mus_pat_p4"));
-		mus_pat_p4_branch->SetAddress(&mus_pat_p4_);
-	}
-	if(mus_pat_p4_branch == 0 ) {
-	cout << "Branch mus_pat_p4 does not exist." << endl;
 	}
 	pfjets_p4_branch = 0;
 	if (tree->GetAlias("pfjets_p4") != 0) {
@@ -3379,6 +3423,94 @@ void Init(TTree *tree) {
 	}
 	if(evt_bField_branch == 0 ) {
 	cout << "Branch evt_bField does not exist." << endl;
+	}
+	evt_kfactor_branch = 0;
+	if (tree->GetAlias("evt_kfactor") != 0) {
+		evt_kfactor_branch = tree->GetBranch(tree->GetAlias("evt_kfactor"));
+		evt_kfactor_branch->SetAddress(&evt_kfactor_);
+	}
+	if(evt_kfactor_branch == 0 ) {
+	cout << "Branch evt_kfactor does not exist." << endl;
+	}
+	evt_scale1fb_branch = 0;
+	if (tree->GetAlias("evt_scale1fb") != 0) {
+		evt_scale1fb_branch = tree->GetBranch(tree->GetAlias("evt_scale1fb"));
+		evt_scale1fb_branch->SetAddress(&evt_scale1fb_);
+	}
+	if(evt_scale1fb_branch == 0 ) {
+	cout << "Branch evt_scale1fb does not exist." << endl;
+	}
+	evt_xsec_excl_branch = 0;
+	if (tree->GetAlias("evt_xsec_excl") != 0) {
+		evt_xsec_excl_branch = tree->GetBranch(tree->GetAlias("evt_xsec_excl"));
+		evt_xsec_excl_branch->SetAddress(&evt_xsec_excl_);
+	}
+	if(evt_xsec_excl_branch == 0 ) {
+	cout << "Branch evt_xsec_excl does not exist." << endl;
+	}
+	evt_xsec_incl_branch = 0;
+	if (tree->GetAlias("evt_xsec_incl") != 0) {
+		evt_xsec_incl_branch = tree->GetBranch(tree->GetAlias("evt_xsec_incl"));
+		evt_xsec_incl_branch->SetAddress(&evt_xsec_incl_);
+	}
+	if(evt_xsec_incl_branch == 0 ) {
+	cout << "Branch evt_xsec_incl does not exist." << endl;
+	}
+	gen_met_branch = 0;
+	if (tree->GetAlias("gen_met") != 0) {
+		gen_met_branch = tree->GetBranch(tree->GetAlias("gen_met"));
+		gen_met_branch->SetAddress(&gen_met_);
+	}
+	if(gen_met_branch == 0 ) {
+	cout << "Branch gen_met does not exist." << endl;
+	}
+	gen_metPhi_branch = 0;
+	if (tree->GetAlias("gen_metPhi") != 0) {
+		gen_metPhi_branch = tree->GetBranch(tree->GetAlias("gen_metPhi"));
+		gen_metPhi_branch->SetAddress(&gen_metPhi_);
+	}
+	if(gen_metPhi_branch == 0 ) {
+	cout << "Branch gen_metPhi does not exist." << endl;
+	}
+	genps_alphaQCD_branch = 0;
+	if (tree->GetAlias("genps_alphaQCD") != 0) {
+		genps_alphaQCD_branch = tree->GetBranch(tree->GetAlias("genps_alphaQCD"));
+		genps_alphaQCD_branch->SetAddress(&genps_alphaQCD_);
+	}
+	if(genps_alphaQCD_branch == 0 ) {
+	cout << "Branch genps_alphaQCD does not exist." << endl;
+	}
+	genps_pthat_branch = 0;
+	if (tree->GetAlias("genps_pthat") != 0) {
+		genps_pthat_branch = tree->GetBranch(tree->GetAlias("genps_pthat"));
+		genps_pthat_branch->SetAddress(&genps_pthat_);
+	}
+	if(genps_pthat_branch == 0 ) {
+	cout << "Branch genps_pthat does not exist." << endl;
+	}
+	genps_qScale_branch = 0;
+	if (tree->GetAlias("genps_qScale") != 0) {
+		genps_qScale_branch = tree->GetBranch(tree->GetAlias("genps_qScale"));
+		genps_qScale_branch->SetAddress(&genps_qScale_);
+	}
+	if(genps_qScale_branch == 0 ) {
+	cout << "Branch genps_qScale does not exist." << endl;
+	}
+	genps_weight_branch = 0;
+	if (tree->GetAlias("genps_weight") != 0) {
+		genps_weight_branch = tree->GetBranch(tree->GetAlias("genps_weight"));
+		genps_weight_branch->SetAddress(&genps_weight_);
+	}
+	if(genps_weight_branch == 0 ) {
+	cout << "Branch genps_weight does not exist." << endl;
+	}
+	gen_sumEt_branch = 0;
+	if (tree->GetAlias("gen_sumEt") != 0) {
+		gen_sumEt_branch = tree->GetBranch(tree->GetAlias("gen_sumEt"));
+		gen_sumEt_branch->SetAddress(&gen_sumEt_);
+	}
+	if(gen_sumEt_branch == 0 ) {
+	cout << "Branch gen_sumEt does not exist." << endl;
 	}
 	hcalnoise_eventChargeFraction_branch = 0;
 	if (tree->GetAlias("hcalnoise_eventChargeFraction") != 0) {
@@ -3980,69 +4112,29 @@ void Init(TTree *tree) {
 	if(evt_sumetOptNoHFHO_branch == 0 ) {
 	cout << "Branch evt_sumetOptNoHFHO does not exist." << endl;
 	}
-	met_pat_metCor_branch = 0;
-	if (tree->GetAlias("met_pat_metCor") != 0) {
-		met_pat_metCor_branch = tree->GetBranch(tree->GetAlias("met_pat_metCor"));
-		met_pat_metCor_branch->SetAddress(&met_pat_metCor_);
+	pdfinfo_scale_branch = 0;
+	if (tree->GetAlias("pdfinfo_scale") != 0) {
+		pdfinfo_scale_branch = tree->GetBranch(tree->GetAlias("pdfinfo_scale"));
+		pdfinfo_scale_branch->SetAddress(&pdfinfo_scale_);
 	}
-	if(met_pat_metCor_branch == 0 ) {
-	cout << "Branch met_pat_metCor does not exist." << endl;
+	if(pdfinfo_scale_branch == 0 ) {
+	cout << "Branch pdfinfo_scale does not exist." << endl;
 	}
-	met_pat_metPhiCor_branch = 0;
-	if (tree->GetAlias("met_pat_metPhiCor") != 0) {
-		met_pat_metPhiCor_branch = tree->GetBranch(tree->GetAlias("met_pat_metPhiCor"));
-		met_pat_metPhiCor_branch->SetAddress(&met_pat_metPhiCor_);
+	pdfinfo_x1_branch = 0;
+	if (tree->GetAlias("pdfinfo_x1") != 0) {
+		pdfinfo_x1_branch = tree->GetBranch(tree->GetAlias("pdfinfo_x1"));
+		pdfinfo_x1_branch->SetAddress(&pdfinfo_x1_);
 	}
-	if(met_pat_metPhiCor_branch == 0 ) {
-	cout << "Branch met_pat_metPhiCor does not exist." << endl;
+	if(pdfinfo_x1_branch == 0 ) {
+	cout << "Branch pdfinfo_x1 does not exist." << endl;
 	}
-	met_pat_metPhiUncor_branch = 0;
-	if (tree->GetAlias("met_pat_metPhiUncor") != 0) {
-		met_pat_metPhiUncor_branch = tree->GetBranch(tree->GetAlias("met_pat_metPhiUncor"));
-		met_pat_metPhiUncor_branch->SetAddress(&met_pat_metPhiUncor_);
+	pdfinfo_x2_branch = 0;
+	if (tree->GetAlias("pdfinfo_x2") != 0) {
+		pdfinfo_x2_branch = tree->GetBranch(tree->GetAlias("pdfinfo_x2"));
+		pdfinfo_x2_branch->SetAddress(&pdfinfo_x2_);
 	}
-	if(met_pat_metPhiUncor_branch == 0 ) {
-	cout << "Branch met_pat_metPhiUncor does not exist." << endl;
-	}
-	met_pat_metPhiUncorJES_branch = 0;
-	if (tree->GetAlias("met_pat_metPhiUncorJES") != 0) {
-		met_pat_metPhiUncorJES_branch = tree->GetBranch(tree->GetAlias("met_pat_metPhiUncorJES"));
-		met_pat_metPhiUncorJES_branch->SetAddress(&met_pat_metPhiUncorJES_);
-	}
-	if(met_pat_metPhiUncorJES_branch == 0 ) {
-	cout << "Branch met_pat_metPhiUncorJES does not exist." << endl;
-	}
-	met_pat_metPhiUncorMuon_branch = 0;
-	if (tree->GetAlias("met_pat_metPhiUncorMuon") != 0) {
-		met_pat_metPhiUncorMuon_branch = tree->GetBranch(tree->GetAlias("met_pat_metPhiUncorMuon"));
-		met_pat_metPhiUncorMuon_branch->SetAddress(&met_pat_metPhiUncorMuon_);
-	}
-	if(met_pat_metPhiUncorMuon_branch == 0 ) {
-	cout << "Branch met_pat_metPhiUncorMuon does not exist." << endl;
-	}
-	met_pat_metUncor_branch = 0;
-	if (tree->GetAlias("met_pat_metUncor") != 0) {
-		met_pat_metUncor_branch = tree->GetBranch(tree->GetAlias("met_pat_metUncor"));
-		met_pat_metUncor_branch->SetAddress(&met_pat_metUncor_);
-	}
-	if(met_pat_metUncor_branch == 0 ) {
-	cout << "Branch met_pat_metUncor does not exist." << endl;
-	}
-	met_pat_metUncorJES_branch = 0;
-	if (tree->GetAlias("met_pat_metUncorJES") != 0) {
-		met_pat_metUncorJES_branch = tree->GetBranch(tree->GetAlias("met_pat_metUncorJES"));
-		met_pat_metUncorJES_branch->SetAddress(&met_pat_metUncorJES_);
-	}
-	if(met_pat_metUncorJES_branch == 0 ) {
-	cout << "Branch met_pat_metUncorJES does not exist." << endl;
-	}
-	met_pat_metUncorMuon_branch = 0;
-	if (tree->GetAlias("met_pat_metUncorMuon") != 0) {
-		met_pat_metUncorMuon_branch = tree->GetBranch(tree->GetAlias("met_pat_metUncorMuon"));
-		met_pat_metUncorMuon_branch->SetAddress(&met_pat_metUncorMuon_);
-	}
-	if(met_pat_metUncorMuon_branch == 0 ) {
-	cout << "Branch met_pat_metUncorMuon does not exist." << endl;
+	if(pdfinfo_x2_branch == 0 ) {
+	cout << "Branch pdfinfo_x2 does not exist." << endl;
 	}
 	evt_pfmet_branch = 0;
 	if (tree->GetAlias("evt_pfmet") != 0) {
@@ -4107,6 +4199,14 @@ void Init(TTree *tree) {
 	}
 	if(evt_tcsumet_branch == 0 ) {
 	cout << "Branch evt_tcsumet does not exist." << endl;
+	}
+	genps_lepdaughter_p4_branch = 0;
+	if (tree->GetAlias("genps_lepdaughter_p4") != 0) {
+		genps_lepdaughter_p4_branch = tree->GetBranch(tree->GetAlias("genps_lepdaughter_p4"));
+		genps_lepdaughter_p4_branch->SetAddress(&genps_lepdaughter_p4_);
+	}
+	if(genps_lepdaughter_p4_branch == 0 ) {
+	cout << "Branch genps_lepdaughter_p4 does not exist." << endl;
 	}
 	hlt_trigObjs_p4_branch = 0;
 	if (tree->GetAlias("hlt_trigObjs_p4") != 0) {
@@ -4771,6 +4871,110 @@ void Init(TTree *tree) {
 	}
 	if(taus_calo_signaltrksInvariantMass_branch == 0 ) {
 	cout << "Branch taus_calo_signaltrksInvariantMass does not exist." << endl;
+	}
+	els_mc3dr_branch = 0;
+	if (tree->GetAlias("els_mc3dr") != 0) {
+		els_mc3dr_branch = tree->GetBranch(tree->GetAlias("els_mc3dr"));
+		els_mc3dr_branch->SetAddress(&els_mc3dr_);
+	}
+	if(els_mc3dr_branch == 0 ) {
+	cout << "Branch els_mc3dr does not exist." << endl;
+	}
+	els_mcdr_branch = 0;
+	if (tree->GetAlias("els_mcdr") != 0) {
+		els_mcdr_branch = tree->GetBranch(tree->GetAlias("els_mcdr"));
+		els_mcdr_branch->SetAddress(&els_mcdr_);
+	}
+	if(els_mcdr_branch == 0 ) {
+	cout << "Branch els_mcdr does not exist." << endl;
+	}
+	jets_mc3dr_branch = 0;
+	if (tree->GetAlias("jets_mc3dr") != 0) {
+		jets_mc3dr_branch = tree->GetBranch(tree->GetAlias("jets_mc3dr"));
+		jets_mc3dr_branch->SetAddress(&jets_mc3dr_);
+	}
+	if(jets_mc3dr_branch == 0 ) {
+	cout << "Branch jets_mc3dr does not exist." << endl;
+	}
+	jets_mcdr_branch = 0;
+	if (tree->GetAlias("jets_mcdr") != 0) {
+		jets_mcdr_branch = tree->GetBranch(tree->GetAlias("jets_mcdr"));
+		jets_mcdr_branch->SetAddress(&jets_mcdr_);
+	}
+	if(jets_mcdr_branch == 0 ) {
+	cout << "Branch jets_mcdr does not exist." << endl;
+	}
+	jets_mc_emEnergy_branch = 0;
+	if (tree->GetAlias("jets_mc_emEnergy") != 0) {
+		jets_mc_emEnergy_branch = tree->GetBranch(tree->GetAlias("jets_mc_emEnergy"));
+		jets_mc_emEnergy_branch->SetAddress(&jets_mc_emEnergy_);
+	}
+	if(jets_mc_emEnergy_branch == 0 ) {
+	cout << "Branch jets_mc_emEnergy does not exist." << endl;
+	}
+	jets_mc_gpdr_branch = 0;
+	if (tree->GetAlias("jets_mc_gpdr") != 0) {
+		jets_mc_gpdr_branch = tree->GetBranch(tree->GetAlias("jets_mc_gpdr"));
+		jets_mc_gpdr_branch->SetAddress(&jets_mc_gpdr_);
+	}
+	if(jets_mc_gpdr_branch == 0 ) {
+	cout << "Branch jets_mc_gpdr does not exist." << endl;
+	}
+	jets_mc_hadEnergy_branch = 0;
+	if (tree->GetAlias("jets_mc_hadEnergy") != 0) {
+		jets_mc_hadEnergy_branch = tree->GetBranch(tree->GetAlias("jets_mc_hadEnergy"));
+		jets_mc_hadEnergy_branch->SetAddress(&jets_mc_hadEnergy_);
+	}
+	if(jets_mc_hadEnergy_branch == 0 ) {
+	cout << "Branch jets_mc_hadEnergy does not exist." << endl;
+	}
+	jets_mc_invEnergy_branch = 0;
+	if (tree->GetAlias("jets_mc_invEnergy") != 0) {
+		jets_mc_invEnergy_branch = tree->GetBranch(tree->GetAlias("jets_mc_invEnergy"));
+		jets_mc_invEnergy_branch->SetAddress(&jets_mc_invEnergy_);
+	}
+	if(jets_mc_invEnergy_branch == 0 ) {
+	cout << "Branch jets_mc_invEnergy does not exist." << endl;
+	}
+	jets_mc_otherEnergy_branch = 0;
+	if (tree->GetAlias("jets_mc_otherEnergy") != 0) {
+		jets_mc_otherEnergy_branch = tree->GetBranch(tree->GetAlias("jets_mc_otherEnergy"));
+		jets_mc_otherEnergy_branch->SetAddress(&jets_mc_otherEnergy_);
+	}
+	if(jets_mc_otherEnergy_branch == 0 ) {
+	cout << "Branch jets_mc_otherEnergy does not exist." << endl;
+	}
+	mus_mc3dr_branch = 0;
+	if (tree->GetAlias("mus_mc3dr") != 0) {
+		mus_mc3dr_branch = tree->GetBranch(tree->GetAlias("mus_mc3dr"));
+		mus_mc3dr_branch->SetAddress(&mus_mc3dr_);
+	}
+	if(mus_mc3dr_branch == 0 ) {
+	cout << "Branch mus_mc3dr does not exist." << endl;
+	}
+	mus_mcdr_branch = 0;
+	if (tree->GetAlias("mus_mcdr") != 0) {
+		mus_mcdr_branch = tree->GetBranch(tree->GetAlias("mus_mcdr"));
+		mus_mcdr_branch->SetAddress(&mus_mcdr_);
+	}
+	if(mus_mcdr_branch == 0 ) {
+	cout << "Branch mus_mcdr does not exist." << endl;
+	}
+	trk_mc3dr_branch = 0;
+	if (tree->GetAlias("trk_mc3dr") != 0) {
+		trk_mc3dr_branch = tree->GetBranch(tree->GetAlias("trk_mc3dr"));
+		trk_mc3dr_branch->SetAddress(&trk_mc3dr_);
+	}
+	if(trk_mc3dr_branch == 0 ) {
+	cout << "Branch trk_mc3dr does not exist." << endl;
+	}
+	trk_mcdr_branch = 0;
+	if (tree->GetAlias("trk_mcdr") != 0) {
+		trk_mcdr_branch = tree->GetBranch(tree->GetAlias("trk_mcdr"));
+		trk_mcdr_branch->SetAddress(&trk_mcdr_);
+	}
+	if(trk_mcdr_branch == 0 ) {
+	cout << "Branch trk_mcdr does not exist." << endl;
 	}
 	els_ecalJuraIso_branch = 0;
 	if (tree->GetAlias("els_ecalJuraIso") != 0) {
@@ -6412,302 +6616,6 @@ void Init(TTree *tree) {
 	if(mus_z0corr_branch == 0 ) {
 	cout << "Branch mus_z0corr does not exist." << endl;
 	}
-	els_pat_caloIso_branch = 0;
-	if (tree->GetAlias("els_pat_caloIso") != 0) {
-		els_pat_caloIso_branch = tree->GetBranch(tree->GetAlias("els_pat_caloIso"));
-		els_pat_caloIso_branch->SetAddress(&els_pat_caloIso_);
-	}
-	if(els_pat_caloIso_branch == 0 ) {
-	cout << "Branch els_pat_caloIso does not exist." << endl;
-	}
-	els_pat_ecalIso_branch = 0;
-	if (tree->GetAlias("els_pat_ecalIso") != 0) {
-		els_pat_ecalIso_branch = tree->GetBranch(tree->GetAlias("els_pat_ecalIso"));
-		els_pat_ecalIso_branch->SetAddress(&els_pat_ecalIso_);
-	}
-	if(els_pat_ecalIso_branch == 0 ) {
-	cout << "Branch els_pat_ecalIso does not exist." << endl;
-	}
-	els_pat_hcalIso_branch = 0;
-	if (tree->GetAlias("els_pat_hcalIso") != 0) {
-		els_pat_hcalIso_branch = tree->GetBranch(tree->GetAlias("els_pat_hcalIso"));
-		els_pat_hcalIso_branch->SetAddress(&els_pat_hcalIso_);
-	}
-	if(els_pat_hcalIso_branch == 0 ) {
-	cout << "Branch els_pat_hcalIso does not exist." << endl;
-	}
-	els_pat_looseId_branch = 0;
-	if (tree->GetAlias("els_pat_looseId") != 0) {
-		els_pat_looseId_branch = tree->GetBranch(tree->GetAlias("els_pat_looseId"));
-		els_pat_looseId_branch->SetAddress(&els_pat_looseId_);
-	}
-	if(els_pat_looseId_branch == 0 ) {
-	cout << "Branch els_pat_looseId does not exist." << endl;
-	}
-	els_pat_robustHighEnergy_branch = 0;
-	if (tree->GetAlias("els_pat_robustHighEnergy") != 0) {
-		els_pat_robustHighEnergy_branch = tree->GetBranch(tree->GetAlias("els_pat_robustHighEnergy"));
-		els_pat_robustHighEnergy_branch->SetAddress(&els_pat_robustHighEnergy_);
-	}
-	if(els_pat_robustHighEnergy_branch == 0 ) {
-	cout << "Branch els_pat_robustHighEnergy does not exist." << endl;
-	}
-	els_pat_robustLooseId_branch = 0;
-	if (tree->GetAlias("els_pat_robustLooseId") != 0) {
-		els_pat_robustLooseId_branch = tree->GetBranch(tree->GetAlias("els_pat_robustLooseId"));
-		els_pat_robustLooseId_branch->SetAddress(&els_pat_robustLooseId_);
-	}
-	if(els_pat_robustLooseId_branch == 0 ) {
-	cout << "Branch els_pat_robustLooseId does not exist." << endl;
-	}
-	els_pat_robustTightId_branch = 0;
-	if (tree->GetAlias("els_pat_robustTightId") != 0) {
-		els_pat_robustTightId_branch = tree->GetBranch(tree->GetAlias("els_pat_robustTightId"));
-		els_pat_robustTightId_branch->SetAddress(&els_pat_robustTightId_);
-	}
-	if(els_pat_robustTightId_branch == 0 ) {
-	cout << "Branch els_pat_robustTightId does not exist." << endl;
-	}
-	els_pat_scE1x5_branch = 0;
-	if (tree->GetAlias("els_pat_scE1x5") != 0) {
-		els_pat_scE1x5_branch = tree->GetBranch(tree->GetAlias("els_pat_scE1x5"));
-		els_pat_scE1x5_branch->SetAddress(&els_pat_scE1x5_);
-	}
-	if(els_pat_scE1x5_branch == 0 ) {
-	cout << "Branch els_pat_scE1x5 does not exist." << endl;
-	}
-	els_pat_scE2x5Max_branch = 0;
-	if (tree->GetAlias("els_pat_scE2x5Max") != 0) {
-		els_pat_scE2x5Max_branch = tree->GetBranch(tree->GetAlias("els_pat_scE2x5Max"));
-		els_pat_scE2x5Max_branch->SetAddress(&els_pat_scE2x5Max_);
-	}
-	if(els_pat_scE2x5Max_branch == 0 ) {
-	cout << "Branch els_pat_scE2x5Max does not exist." << endl;
-	}
-	els_pat_scE5x5_branch = 0;
-	if (tree->GetAlias("els_pat_scE5x5") != 0) {
-		els_pat_scE5x5_branch = tree->GetBranch(tree->GetAlias("els_pat_scE5x5"));
-		els_pat_scE5x5_branch->SetAddress(&els_pat_scE5x5_);
-	}
-	if(els_pat_scE5x5_branch == 0 ) {
-	cout << "Branch els_pat_scE5x5 does not exist." << endl;
-	}
-	els_pat_sigmaEtaEta_branch = 0;
-	if (tree->GetAlias("els_pat_sigmaEtaEta") != 0) {
-		els_pat_sigmaEtaEta_branch = tree->GetBranch(tree->GetAlias("els_pat_sigmaEtaEta"));
-		els_pat_sigmaEtaEta_branch->SetAddress(&els_pat_sigmaEtaEta_);
-	}
-	if(els_pat_sigmaEtaEta_branch == 0 ) {
-	cout << "Branch els_pat_sigmaEtaEta does not exist." << endl;
-	}
-	els_pat_sigmaIEtaIEta_branch = 0;
-	if (tree->GetAlias("els_pat_sigmaIEtaIEta") != 0) {
-		els_pat_sigmaIEtaIEta_branch = tree->GetBranch(tree->GetAlias("els_pat_sigmaIEtaIEta"));
-		els_pat_sigmaIEtaIEta_branch->SetAddress(&els_pat_sigmaIEtaIEta_);
-	}
-	if(els_pat_sigmaIEtaIEta_branch == 0 ) {
-	cout << "Branch els_pat_sigmaIEtaIEta does not exist." << endl;
-	}
-	els_pat_tightId_branch = 0;
-	if (tree->GetAlias("els_pat_tightId") != 0) {
-		els_pat_tightId_branch = tree->GetBranch(tree->GetAlias("els_pat_tightId"));
-		els_pat_tightId_branch->SetAddress(&els_pat_tightId_);
-	}
-	if(els_pat_tightId_branch == 0 ) {
-	cout << "Branch els_pat_tightId does not exist." << endl;
-	}
-	els_pat_trackIso_branch = 0;
-	if (tree->GetAlias("els_pat_trackIso") != 0) {
-		els_pat_trackIso_branch = tree->GetBranch(tree->GetAlias("els_pat_trackIso"));
-		els_pat_trackIso_branch->SetAddress(&els_pat_trackIso_);
-	}
-	if(els_pat_trackIso_branch == 0 ) {
-	cout << "Branch els_pat_trackIso does not exist." << endl;
-	}
-	jets_pat_combinedSecondaryVertexBJetTag_branch = 0;
-	if (tree->GetAlias("jets_pat_combinedSecondaryVertexBJetTag") != 0) {
-		jets_pat_combinedSecondaryVertexBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_combinedSecondaryVertexBJetTag"));
-		jets_pat_combinedSecondaryVertexBJetTag_branch->SetAddress(&jets_pat_combinedSecondaryVertexBJetTag_);
-	}
-	if(jets_pat_combinedSecondaryVertexBJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_combinedSecondaryVertexBJetTag does not exist." << endl;
-	}
-	jets_pat_combinedSecondaryVertexMVABJetTag_branch = 0;
-	if (tree->GetAlias("jets_pat_combinedSecondaryVertexMVABJetTag") != 0) {
-		jets_pat_combinedSecondaryVertexMVABJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_combinedSecondaryVertexMVABJetTag"));
-		jets_pat_combinedSecondaryVertexMVABJetTag_branch->SetAddress(&jets_pat_combinedSecondaryVertexMVABJetTag_);
-	}
-	if(jets_pat_combinedSecondaryVertexMVABJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_combinedSecondaryVertexMVABJetTag does not exist." << endl;
-	}
-	jets_pat_coneIsolationTauJetTag_branch = 0;
-	if (tree->GetAlias("jets_pat_coneIsolationTauJetTag") != 0) {
-		jets_pat_coneIsolationTauJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_coneIsolationTauJetTag"));
-		jets_pat_coneIsolationTauJetTag_branch->SetAddress(&jets_pat_coneIsolationTauJetTag_);
-	}
-	if(jets_pat_coneIsolationTauJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_coneIsolationTauJetTag does not exist." << endl;
-	}
-	jets_pat_impactParameterMVABJetTag_branch = 0;
-	if (tree->GetAlias("jets_pat_impactParameterMVABJetTag") != 0) {
-		jets_pat_impactParameterMVABJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_impactParameterMVABJetTag"));
-		jets_pat_impactParameterMVABJetTag_branch->SetAddress(&jets_pat_impactParameterMVABJetTag_);
-	}
-	if(jets_pat_impactParameterMVABJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_impactParameterMVABJetTag does not exist." << endl;
-	}
-	jets_pat_jetBProbabilityBJetTag_branch = 0;
-	if (tree->GetAlias("jets_pat_jetBProbabilityBJetTag") != 0) {
-		jets_pat_jetBProbabilityBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_jetBProbabilityBJetTag"));
-		jets_pat_jetBProbabilityBJetTag_branch->SetAddress(&jets_pat_jetBProbabilityBJetTag_);
-	}
-	if(jets_pat_jetBProbabilityBJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_jetBProbabilityBJetTag does not exist." << endl;
-	}
-	jets_pat_jetCharge_branch = 0;
-	if (tree->GetAlias("jets_pat_jetCharge") != 0) {
-		jets_pat_jetCharge_branch = tree->GetBranch(tree->GetAlias("jets_pat_jetCharge"));
-		jets_pat_jetCharge_branch->SetAddress(&jets_pat_jetCharge_);
-	}
-	if(jets_pat_jetCharge_branch == 0 ) {
-	cout << "Branch jets_pat_jetCharge does not exist." << endl;
-	}
-	jets_pat_jetProbabilityBJetTag_branch = 0;
-	if (tree->GetAlias("jets_pat_jetProbabilityBJetTag") != 0) {
-		jets_pat_jetProbabilityBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_jetProbabilityBJetTag"));
-		jets_pat_jetProbabilityBJetTag_branch->SetAddress(&jets_pat_jetProbabilityBJetTag_);
-	}
-	if(jets_pat_jetProbabilityBJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_jetProbabilityBJetTag does not exist." << endl;
-	}
-	jets_pat_noCorrF_branch = 0;
-	if (tree->GetAlias("jets_pat_noCorrF") != 0) {
-		jets_pat_noCorrF_branch = tree->GetBranch(tree->GetAlias("jets_pat_noCorrF"));
-		jets_pat_noCorrF_branch->SetAddress(&jets_pat_noCorrF_);
-	}
-	if(jets_pat_noCorrF_branch == 0 ) {
-	cout << "Branch jets_pat_noCorrF does not exist." << endl;
-	}
-	jets_pat_simpleSecondaryVertexBJetTag_branch = 0;
-	if (tree->GetAlias("jets_pat_simpleSecondaryVertexBJetTag") != 0) {
-		jets_pat_simpleSecondaryVertexBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_simpleSecondaryVertexBJetTag"));
-		jets_pat_simpleSecondaryVertexBJetTag_branch->SetAddress(&jets_pat_simpleSecondaryVertexBJetTag_);
-	}
-	if(jets_pat_simpleSecondaryVertexBJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_simpleSecondaryVertexBJetTag does not exist." << endl;
-	}
-	jets_pat_softElectronByIP3dBJetTag_branch = 0;
-	if (tree->GetAlias("jets_pat_softElectronByIP3dBJetTag") != 0) {
-		jets_pat_softElectronByIP3dBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_softElectronByIP3dBJetTag"));
-		jets_pat_softElectronByIP3dBJetTag_branch->SetAddress(&jets_pat_softElectronByIP3dBJetTag_);
-	}
-	if(jets_pat_softElectronByIP3dBJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_softElectronByIP3dBJetTag does not exist." << endl;
-	}
-	jets_pat_softElectronByPtBJetTag_branch = 0;
-	if (tree->GetAlias("jets_pat_softElectronByPtBJetTag") != 0) {
-		jets_pat_softElectronByPtBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_softElectronByPtBJetTag"));
-		jets_pat_softElectronByPtBJetTag_branch->SetAddress(&jets_pat_softElectronByPtBJetTag_);
-	}
-	if(jets_pat_softElectronByPtBJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_softElectronByPtBJetTag does not exist." << endl;
-	}
-	jets_pat_softMuonBJetTag_branch = 0;
-	if (tree->GetAlias("jets_pat_softMuonBJetTag") != 0) {
-		jets_pat_softMuonBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_softMuonBJetTag"));
-		jets_pat_softMuonBJetTag_branch->SetAddress(&jets_pat_softMuonBJetTag_);
-	}
-	if(jets_pat_softMuonBJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_softMuonBJetTag does not exist." << endl;
-	}
-	jets_pat_softMuonNoIPBJetTag_branch = 0;
-	if (tree->GetAlias("jets_pat_softMuonNoIPBJetTag") != 0) {
-		jets_pat_softMuonNoIPBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_softMuonNoIPBJetTag"));
-		jets_pat_softMuonNoIPBJetTag_branch->SetAddress(&jets_pat_softMuonNoIPBJetTag_);
-	}
-	if(jets_pat_softMuonNoIPBJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_softMuonNoIPBJetTag does not exist." << endl;
-	}
-	jets_pat_trackCountingHighEffBJetTag_branch = 0;
-	if (tree->GetAlias("jets_pat_trackCountingHighEffBJetTag") != 0) {
-		jets_pat_trackCountingHighEffBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_trackCountingHighEffBJetTag"));
-		jets_pat_trackCountingHighEffBJetTag_branch->SetAddress(&jets_pat_trackCountingHighEffBJetTag_);
-	}
-	if(jets_pat_trackCountingHighEffBJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_trackCountingHighEffBJetTag does not exist." << endl;
-	}
-	jets_pat_trackCountingHighPurBJetTag_branch = 0;
-	if (tree->GetAlias("jets_pat_trackCountingHighPurBJetTag") != 0) {
-		jets_pat_trackCountingHighPurBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_trackCountingHighPurBJetTag"));
-		jets_pat_trackCountingHighPurBJetTag_branch->SetAddress(&jets_pat_trackCountingHighPurBJetTag_);
-	}
-	if(jets_pat_trackCountingHighPurBJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_trackCountingHighPurBJetTag does not exist." << endl;
-	}
-	mus_pat_caloIso_branch = 0;
-	if (tree->GetAlias("mus_pat_caloIso") != 0) {
-		mus_pat_caloIso_branch = tree->GetBranch(tree->GetAlias("mus_pat_caloIso"));
-		mus_pat_caloIso_branch->SetAddress(&mus_pat_caloIso_);
-	}
-	if(mus_pat_caloIso_branch == 0 ) {
-	cout << "Branch mus_pat_caloIso does not exist." << endl;
-	}
-	mus_pat_calovetoDep_branch = 0;
-	if (tree->GetAlias("mus_pat_calovetoDep") != 0) {
-		mus_pat_calovetoDep_branch = tree->GetBranch(tree->GetAlias("mus_pat_calovetoDep"));
-		mus_pat_calovetoDep_branch->SetAddress(&mus_pat_calovetoDep_);
-	}
-	if(mus_pat_calovetoDep_branch == 0 ) {
-	cout << "Branch mus_pat_calovetoDep does not exist." << endl;
-	}
-	mus_pat_ecalIso_branch = 0;
-	if (tree->GetAlias("mus_pat_ecalIso") != 0) {
-		mus_pat_ecalIso_branch = tree->GetBranch(tree->GetAlias("mus_pat_ecalIso"));
-		mus_pat_ecalIso_branch->SetAddress(&mus_pat_ecalIso_);
-	}
-	if(mus_pat_ecalIso_branch == 0 ) {
-	cout << "Branch mus_pat_ecalIso does not exist." << endl;
-	}
-	mus_pat_ecalvetoDep_branch = 0;
-	if (tree->GetAlias("mus_pat_ecalvetoDep") != 0) {
-		mus_pat_ecalvetoDep_branch = tree->GetBranch(tree->GetAlias("mus_pat_ecalvetoDep"));
-		mus_pat_ecalvetoDep_branch->SetAddress(&mus_pat_ecalvetoDep_);
-	}
-	if(mus_pat_ecalvetoDep_branch == 0 ) {
-	cout << "Branch mus_pat_ecalvetoDep does not exist." << endl;
-	}
-	mus_pat_hcalIso_branch = 0;
-	if (tree->GetAlias("mus_pat_hcalIso") != 0) {
-		mus_pat_hcalIso_branch = tree->GetBranch(tree->GetAlias("mus_pat_hcalIso"));
-		mus_pat_hcalIso_branch->SetAddress(&mus_pat_hcalIso_);
-	}
-	if(mus_pat_hcalIso_branch == 0 ) {
-	cout << "Branch mus_pat_hcalIso does not exist." << endl;
-	}
-	mus_pat_hcalvetoDep_branch = 0;
-	if (tree->GetAlias("mus_pat_hcalvetoDep") != 0) {
-		mus_pat_hcalvetoDep_branch = tree->GetBranch(tree->GetAlias("mus_pat_hcalvetoDep"));
-		mus_pat_hcalvetoDep_branch->SetAddress(&mus_pat_hcalvetoDep_);
-	}
-	if(mus_pat_hcalvetoDep_branch == 0 ) {
-	cout << "Branch mus_pat_hcalvetoDep does not exist." << endl;
-	}
-	mus_pat_trackIso_branch = 0;
-	if (tree->GetAlias("mus_pat_trackIso") != 0) {
-		mus_pat_trackIso_branch = tree->GetBranch(tree->GetAlias("mus_pat_trackIso"));
-		mus_pat_trackIso_branch->SetAddress(&mus_pat_trackIso_);
-	}
-	if(mus_pat_trackIso_branch == 0 ) {
-	cout << "Branch mus_pat_trackIso does not exist." << endl;
-	}
-	mus_pat_trckvetoDep_branch = 0;
-	if (tree->GetAlias("mus_pat_trckvetoDep") != 0) {
-		mus_pat_trckvetoDep_branch = tree->GetBranch(tree->GetAlias("mus_pat_trckvetoDep"));
-		mus_pat_trckvetoDep_branch->SetAddress(&mus_pat_trckvetoDep_);
-	}
-	if(mus_pat_trckvetoDep_branch == 0 ) {
-	cout << "Branch mus_pat_trckvetoDep does not exist." << endl;
-	}
 	pfjets_chargedEmE_branch = 0;
 	if (tree->GetAlias("pfjets_chargedEmE") != 0) {
 		pfjets_chargedEmE_branch = tree->GetBranch(tree->GetAlias("pfjets_chargedEmE"));
@@ -8004,6 +7912,22 @@ void Init(TTree *tree) {
 	if(l1_nmus_branch == 0 ) {
 	cout << "Branch l1_nmus does not exist." << endl;
 	}
+	pdfinfo_id1_branch = 0;
+	if (tree->GetAlias("pdfinfo_id1") != 0) {
+		pdfinfo_id1_branch = tree->GetBranch(tree->GetAlias("pdfinfo_id1"));
+		pdfinfo_id1_branch->SetAddress(&pdfinfo_id1_);
+	}
+	if(pdfinfo_id1_branch == 0 ) {
+	cout << "Branch pdfinfo_id1 does not exist." << endl;
+	}
+	pdfinfo_id2_branch = 0;
+	if (tree->GetAlias("pdfinfo_id2") != 0) {
+		pdfinfo_id2_branch = tree->GetBranch(tree->GetAlias("pdfinfo_id2"));
+		pdfinfo_id2_branch->SetAddress(&pdfinfo_id2_);
+	}
+	if(pdfinfo_id2_branch == 0 ) {
+	cout << "Branch pdfinfo_id2 does not exist." << endl;
+	}
 	evt_ecaliPhiSuspects_branch = 0;
 	if (tree->GetAlias("evt_ecaliPhiSuspects") != 0) {
 		evt_ecaliPhiSuspects_branch = tree->GetBranch(tree->GetAlias("evt_ecaliPhiSuspects"));
@@ -8067,6 +7991,214 @@ void Init(TTree *tree) {
 	}
 	if(taus_calo_tightId_branch == 0 ) {
 	cout << "Branch taus_calo_tightId does not exist." << endl;
+	}
+	els_mc3_id_branch = 0;
+	if (tree->GetAlias("els_mc3_id") != 0) {
+		els_mc3_id_branch = tree->GetBranch(tree->GetAlias("els_mc3_id"));
+		els_mc3_id_branch->SetAddress(&els_mc3_id_);
+	}
+	if(els_mc3_id_branch == 0 ) {
+	cout << "Branch els_mc3_id does not exist." << endl;
+	}
+	els_mc3idx_branch = 0;
+	if (tree->GetAlias("els_mc3idx") != 0) {
+		els_mc3idx_branch = tree->GetBranch(tree->GetAlias("els_mc3idx"));
+		els_mc3idx_branch->SetAddress(&els_mc3idx_);
+	}
+	if(els_mc3idx_branch == 0 ) {
+	cout << "Branch els_mc3idx does not exist." << endl;
+	}
+	els_mc3_motherid_branch = 0;
+	if (tree->GetAlias("els_mc3_motherid") != 0) {
+		els_mc3_motherid_branch = tree->GetBranch(tree->GetAlias("els_mc3_motherid"));
+		els_mc3_motherid_branch->SetAddress(&els_mc3_motherid_);
+	}
+	if(els_mc3_motherid_branch == 0 ) {
+	cout << "Branch els_mc3_motherid does not exist." << endl;
+	}
+	els_mc3_motheridx_branch = 0;
+	if (tree->GetAlias("els_mc3_motheridx") != 0) {
+		els_mc3_motheridx_branch = tree->GetBranch(tree->GetAlias("els_mc3_motheridx"));
+		els_mc3_motheridx_branch->SetAddress(&els_mc3_motheridx_);
+	}
+	if(els_mc3_motheridx_branch == 0 ) {
+	cout << "Branch els_mc3_motheridx does not exist." << endl;
+	}
+	els_mc_id_branch = 0;
+	if (tree->GetAlias("els_mc_id") != 0) {
+		els_mc_id_branch = tree->GetBranch(tree->GetAlias("els_mc_id"));
+		els_mc_id_branch->SetAddress(&els_mc_id_);
+	}
+	if(els_mc_id_branch == 0 ) {
+	cout << "Branch els_mc_id does not exist." << endl;
+	}
+	els_mcidx_branch = 0;
+	if (tree->GetAlias("els_mcidx") != 0) {
+		els_mcidx_branch = tree->GetBranch(tree->GetAlias("els_mcidx"));
+		els_mcidx_branch->SetAddress(&els_mcidx_);
+	}
+	if(els_mcidx_branch == 0 ) {
+	cout << "Branch els_mcidx does not exist." << endl;
+	}
+	els_mc_motherid_branch = 0;
+	if (tree->GetAlias("els_mc_motherid") != 0) {
+		els_mc_motherid_branch = tree->GetBranch(tree->GetAlias("els_mc_motherid"));
+		els_mc_motherid_branch->SetAddress(&els_mc_motherid_);
+	}
+	if(els_mc_motherid_branch == 0 ) {
+	cout << "Branch els_mc_motherid does not exist." << endl;
+	}
+	jets_mc3_id_branch = 0;
+	if (tree->GetAlias("jets_mc3_id") != 0) {
+		jets_mc3_id_branch = tree->GetBranch(tree->GetAlias("jets_mc3_id"));
+		jets_mc3_id_branch->SetAddress(&jets_mc3_id_);
+	}
+	if(jets_mc3_id_branch == 0 ) {
+	cout << "Branch jets_mc3_id does not exist." << endl;
+	}
+	jets_mc3idx_branch = 0;
+	if (tree->GetAlias("jets_mc3idx") != 0) {
+		jets_mc3idx_branch = tree->GetBranch(tree->GetAlias("jets_mc3idx"));
+		jets_mc3idx_branch->SetAddress(&jets_mc3idx_);
+	}
+	if(jets_mc3idx_branch == 0 ) {
+	cout << "Branch jets_mc3idx does not exist." << endl;
+	}
+	jets_mc_gpidx_branch = 0;
+	if (tree->GetAlias("jets_mc_gpidx") != 0) {
+		jets_mc_gpidx_branch = tree->GetBranch(tree->GetAlias("jets_mc_gpidx"));
+		jets_mc_gpidx_branch->SetAddress(&jets_mc_gpidx_);
+	}
+	if(jets_mc_gpidx_branch == 0 ) {
+	cout << "Branch jets_mc_gpidx does not exist." << endl;
+	}
+	jets_mc_id_branch = 0;
+	if (tree->GetAlias("jets_mc_id") != 0) {
+		jets_mc_id_branch = tree->GetBranch(tree->GetAlias("jets_mc_id"));
+		jets_mc_id_branch->SetAddress(&jets_mc_id_);
+	}
+	if(jets_mc_id_branch == 0 ) {
+	cout << "Branch jets_mc_id does not exist." << endl;
+	}
+	jets_mcidx_branch = 0;
+	if (tree->GetAlias("jets_mcidx") != 0) {
+		jets_mcidx_branch = tree->GetBranch(tree->GetAlias("jets_mcidx"));
+		jets_mcidx_branch->SetAddress(&jets_mcidx_);
+	}
+	if(jets_mcidx_branch == 0 ) {
+	cout << "Branch jets_mcidx does not exist." << endl;
+	}
+	mus_mc3_id_branch = 0;
+	if (tree->GetAlias("mus_mc3_id") != 0) {
+		mus_mc3_id_branch = tree->GetBranch(tree->GetAlias("mus_mc3_id"));
+		mus_mc3_id_branch->SetAddress(&mus_mc3_id_);
+	}
+	if(mus_mc3_id_branch == 0 ) {
+	cout << "Branch mus_mc3_id does not exist." << endl;
+	}
+	mus_mc3idx_branch = 0;
+	if (tree->GetAlias("mus_mc3idx") != 0) {
+		mus_mc3idx_branch = tree->GetBranch(tree->GetAlias("mus_mc3idx"));
+		mus_mc3idx_branch->SetAddress(&mus_mc3idx_);
+	}
+	if(mus_mc3idx_branch == 0 ) {
+	cout << "Branch mus_mc3idx does not exist." << endl;
+	}
+	mus_mc3_motherid_branch = 0;
+	if (tree->GetAlias("mus_mc3_motherid") != 0) {
+		mus_mc3_motherid_branch = tree->GetBranch(tree->GetAlias("mus_mc3_motherid"));
+		mus_mc3_motherid_branch->SetAddress(&mus_mc3_motherid_);
+	}
+	if(mus_mc3_motherid_branch == 0 ) {
+	cout << "Branch mus_mc3_motherid does not exist." << endl;
+	}
+	mus_mc3_motheridx_branch = 0;
+	if (tree->GetAlias("mus_mc3_motheridx") != 0) {
+		mus_mc3_motheridx_branch = tree->GetBranch(tree->GetAlias("mus_mc3_motheridx"));
+		mus_mc3_motheridx_branch->SetAddress(&mus_mc3_motheridx_);
+	}
+	if(mus_mc3_motheridx_branch == 0 ) {
+	cout << "Branch mus_mc3_motheridx does not exist." << endl;
+	}
+	mus_mc_id_branch = 0;
+	if (tree->GetAlias("mus_mc_id") != 0) {
+		mus_mc_id_branch = tree->GetBranch(tree->GetAlias("mus_mc_id"));
+		mus_mc_id_branch->SetAddress(&mus_mc_id_);
+	}
+	if(mus_mc_id_branch == 0 ) {
+	cout << "Branch mus_mc_id does not exist." << endl;
+	}
+	mus_mcidx_branch = 0;
+	if (tree->GetAlias("mus_mcidx") != 0) {
+		mus_mcidx_branch = tree->GetBranch(tree->GetAlias("mus_mcidx"));
+		mus_mcidx_branch->SetAddress(&mus_mcidx_);
+	}
+	if(mus_mcidx_branch == 0 ) {
+	cout << "Branch mus_mcidx does not exist." << endl;
+	}
+	mus_mc_motherid_branch = 0;
+	if (tree->GetAlias("mus_mc_motherid") != 0) {
+		mus_mc_motherid_branch = tree->GetBranch(tree->GetAlias("mus_mc_motherid"));
+		mus_mc_motherid_branch->SetAddress(&mus_mc_motherid_);
+	}
+	if(mus_mc_motherid_branch == 0 ) {
+	cout << "Branch mus_mc_motherid does not exist." << endl;
+	}
+	trk_mc3_id_branch = 0;
+	if (tree->GetAlias("trk_mc3_id") != 0) {
+		trk_mc3_id_branch = tree->GetBranch(tree->GetAlias("trk_mc3_id"));
+		trk_mc3_id_branch->SetAddress(&trk_mc3_id_);
+	}
+	if(trk_mc3_id_branch == 0 ) {
+	cout << "Branch trk_mc3_id does not exist." << endl;
+	}
+	trk_mc3idx_branch = 0;
+	if (tree->GetAlias("trk_mc3idx") != 0) {
+		trk_mc3idx_branch = tree->GetBranch(tree->GetAlias("trk_mc3idx"));
+		trk_mc3idx_branch->SetAddress(&trk_mc3idx_);
+	}
+	if(trk_mc3idx_branch == 0 ) {
+	cout << "Branch trk_mc3idx does not exist." << endl;
+	}
+	trk_mc3_motherid_branch = 0;
+	if (tree->GetAlias("trk_mc3_motherid") != 0) {
+		trk_mc3_motherid_branch = tree->GetBranch(tree->GetAlias("trk_mc3_motherid"));
+		trk_mc3_motherid_branch->SetAddress(&trk_mc3_motherid_);
+	}
+	if(trk_mc3_motherid_branch == 0 ) {
+	cout << "Branch trk_mc3_motherid does not exist." << endl;
+	}
+	trk_mc3_motheridx_branch = 0;
+	if (tree->GetAlias("trk_mc3_motheridx") != 0) {
+		trk_mc3_motheridx_branch = tree->GetBranch(tree->GetAlias("trk_mc3_motheridx"));
+		trk_mc3_motheridx_branch->SetAddress(&trk_mc3_motheridx_);
+	}
+	if(trk_mc3_motheridx_branch == 0 ) {
+	cout << "Branch trk_mc3_motheridx does not exist." << endl;
+	}
+	trk_mc_id_branch = 0;
+	if (tree->GetAlias("trk_mc_id") != 0) {
+		trk_mc_id_branch = tree->GetBranch(tree->GetAlias("trk_mc_id"));
+		trk_mc_id_branch->SetAddress(&trk_mc_id_);
+	}
+	if(trk_mc_id_branch == 0 ) {
+	cout << "Branch trk_mc_id does not exist." << endl;
+	}
+	trk_mcidx_branch = 0;
+	if (tree->GetAlias("trk_mcidx") != 0) {
+		trk_mcidx_branch = tree->GetBranch(tree->GetAlias("trk_mcidx"));
+		trk_mcidx_branch->SetAddress(&trk_mcidx_);
+	}
+	if(trk_mcidx_branch == 0 ) {
+	cout << "Branch trk_mcidx does not exist." << endl;
+	}
+	trk_mc_motherid_branch = 0;
+	if (tree->GetAlias("trk_mc_motherid") != 0) {
+		trk_mc_motherid_branch = tree->GetBranch(tree->GetAlias("trk_mc_motherid"));
+		trk_mc_motherid_branch->SetAddress(&trk_mc_motherid_);
+	}
+	if(trk_mc_motherid_branch == 0 ) {
+	cout << "Branch trk_mc_motherid does not exist." << endl;
 	}
 	els_closestJet_branch = 0;
 	if (tree->GetAlias("els_closestJet") != 0) {
@@ -8244,6 +8376,30 @@ void Init(TTree *tree) {
 	if(els_valid_pixelhits_branch == 0 ) {
 	cout << "Branch els_valid_pixelhits does not exist." << endl;
 	}
+	genps_id_branch = 0;
+	if (tree->GetAlias("genps_id") != 0) {
+		genps_id_branch = tree->GetBranch(tree->GetAlias("genps_id"));
+		genps_id_branch->SetAddress(&genps_id_);
+	}
+	if(genps_id_branch == 0 ) {
+	cout << "Branch genps_id does not exist." << endl;
+	}
+	genps_id_mother_branch = 0;
+	if (tree->GetAlias("genps_id_mother") != 0) {
+		genps_id_mother_branch = tree->GetBranch(tree->GetAlias("genps_id_mother"));
+		genps_id_mother_branch->SetAddress(&genps_id_mother_);
+	}
+	if(genps_id_mother_branch == 0 ) {
+	cout << "Branch genps_id_mother does not exist." << endl;
+	}
+	genps_status_branch = 0;
+	if (tree->GetAlias("genps_status") != 0) {
+		genps_status_branch = tree->GetBranch(tree->GetAlias("genps_status"));
+		genps_status_branch->SetAddress(&genps_status_);
+	}
+	if(genps_status_branch == 0 ) {
+	cout << "Branch genps_status does not exist." << endl;
+	}
 	hyp_ll_charge_branch = 0;
 	if (tree->GetAlias("hyp_ll_charge") != 0) {
 		hyp_ll_charge_branch = tree->GetBranch(tree->GetAlias("hyp_ll_charge"));
@@ -8363,6 +8519,38 @@ void Init(TTree *tree) {
 	}
 	if(hyp_FVFit_status_branch == 0 ) {
 	cout << "Branch hyp_FVFit_status does not exist." << endl;
+	}
+	hyp_ll_mc_id_branch = 0;
+	if (tree->GetAlias("hyp_ll_mc_id") != 0) {
+		hyp_ll_mc_id_branch = tree->GetBranch(tree->GetAlias("hyp_ll_mc_id"));
+		hyp_ll_mc_id_branch->SetAddress(&hyp_ll_mc_id_);
+	}
+	if(hyp_ll_mc_id_branch == 0 ) {
+	cout << "Branch hyp_ll_mc_id does not exist." << endl;
+	}
+	hyp_ll_mc_motherid_branch = 0;
+	if (tree->GetAlias("hyp_ll_mc_motherid") != 0) {
+		hyp_ll_mc_motherid_branch = tree->GetBranch(tree->GetAlias("hyp_ll_mc_motherid"));
+		hyp_ll_mc_motherid_branch->SetAddress(&hyp_ll_mc_motherid_);
+	}
+	if(hyp_ll_mc_motherid_branch == 0 ) {
+	cout << "Branch hyp_ll_mc_motherid does not exist." << endl;
+	}
+	hyp_lt_mc_id_branch = 0;
+	if (tree->GetAlias("hyp_lt_mc_id") != 0) {
+		hyp_lt_mc_id_branch = tree->GetBranch(tree->GetAlias("hyp_lt_mc_id"));
+		hyp_lt_mc_id_branch->SetAddress(&hyp_lt_mc_id_);
+	}
+	if(hyp_lt_mc_id_branch == 0 ) {
+	cout << "Branch hyp_lt_mc_id does not exist." << endl;
+	}
+	hyp_lt_mc_motherid_branch = 0;
+	if (tree->GetAlias("hyp_lt_mc_motherid") != 0) {
+		hyp_lt_mc_motherid_branch = tree->GetBranch(tree->GetAlias("hyp_lt_mc_motherid"));
+		hyp_lt_mc_motherid_branch->SetAddress(&hyp_lt_mc_motherid_);
+	}
+	if(hyp_lt_mc_motherid_branch == 0 ) {
+	cout << "Branch hyp_lt_mc_motherid does not exist." << endl;
 	}
 	hyp_quadlep_first_type_branch = 0;
 	if (tree->GetAlias("hyp_quadlep_first_type") != 0) {
@@ -8812,94 +9000,6 @@ void Init(TTree *tree) {
 	if(mus_validHits_branch == 0 ) {
 	cout << "Branch mus_validHits does not exist." << endl;
 	}
-	els_pat_genID_branch = 0;
-	if (tree->GetAlias("els_pat_genID") != 0) {
-		els_pat_genID_branch = tree->GetBranch(tree->GetAlias("els_pat_genID"));
-		els_pat_genID_branch->SetAddress(&els_pat_genID_);
-	}
-	if(els_pat_genID_branch == 0 ) {
-	cout << "Branch els_pat_genID does not exist." << endl;
-	}
-	els_pat_genMotherID_branch = 0;
-	if (tree->GetAlias("els_pat_genMotherID") != 0) {
-		els_pat_genMotherID_branch = tree->GetBranch(tree->GetAlias("els_pat_genMotherID"));
-		els_pat_genMotherID_branch->SetAddress(&els_pat_genMotherID_);
-	}
-	if(els_pat_genMotherID_branch == 0 ) {
-	cout << "Branch els_pat_genMotherID does not exist." << endl;
-	}
-	jets_pat_genPartonMother_id_branch = 0;
-	if (tree->GetAlias("jets_pat_genPartonMother_id") != 0) {
-		jets_pat_genPartonMother_id_branch = tree->GetBranch(tree->GetAlias("jets_pat_genPartonMother_id"));
-		jets_pat_genPartonMother_id_branch->SetAddress(&jets_pat_genPartonMother_id_);
-	}
-	if(jets_pat_genPartonMother_id_branch == 0 ) {
-	cout << "Branch jets_pat_genPartonMother_id does not exist." << endl;
-	}
-	jets_pat_genParton_id_branch = 0;
-	if (tree->GetAlias("jets_pat_genParton_id") != 0) {
-		jets_pat_genParton_id_branch = tree->GetBranch(tree->GetAlias("jets_pat_genParton_id"));
-		jets_pat_genParton_id_branch->SetAddress(&jets_pat_genParton_id_);
-	}
-	if(jets_pat_genParton_id_branch == 0 ) {
-	cout << "Branch jets_pat_genParton_id does not exist." << endl;
-	}
-	jets_pat_jetIDLoose_branch = 0;
-	if (tree->GetAlias("jets_pat_jetIDLoose") != 0) {
-		jets_pat_jetIDLoose_branch = tree->GetBranch(tree->GetAlias("jets_pat_jetIDLoose"));
-		jets_pat_jetIDLoose_branch->SetAddress(&jets_pat_jetIDLoose_);
-	}
-	if(jets_pat_jetIDLoose_branch == 0 ) {
-	cout << "Branch jets_pat_jetIDLoose does not exist." << endl;
-	}
-	jets_pat_jetIDLooseAOD_branch = 0;
-	if (tree->GetAlias("jets_pat_jetIDLooseAOD") != 0) {
-		jets_pat_jetIDLooseAOD_branch = tree->GetBranch(tree->GetAlias("jets_pat_jetIDLooseAOD"));
-		jets_pat_jetIDLooseAOD_branch->SetAddress(&jets_pat_jetIDLooseAOD_);
-	}
-	if(jets_pat_jetIDLooseAOD_branch == 0 ) {
-	cout << "Branch jets_pat_jetIDLooseAOD does not exist." << endl;
-	}
-	jets_pat_jetIDMinimal_branch = 0;
-	if (tree->GetAlias("jets_pat_jetIDMinimal") != 0) {
-		jets_pat_jetIDMinimal_branch = tree->GetBranch(tree->GetAlias("jets_pat_jetIDMinimal"));
-		jets_pat_jetIDMinimal_branch->SetAddress(&jets_pat_jetIDMinimal_);
-	}
-	if(jets_pat_jetIDMinimal_branch == 0 ) {
-	cout << "Branch jets_pat_jetIDMinimal does not exist." << endl;
-	}
-	jets_pat_jetIDTight_branch = 0;
-	if (tree->GetAlias("jets_pat_jetIDTight") != 0) {
-		jets_pat_jetIDTight_branch = tree->GetBranch(tree->GetAlias("jets_pat_jetIDTight"));
-		jets_pat_jetIDTight_branch->SetAddress(&jets_pat_jetIDTight_);
-	}
-	if(jets_pat_jetIDTight_branch == 0 ) {
-	cout << "Branch jets_pat_jetIDTight does not exist." << endl;
-	}
-	jets_pat_partonFlavour_branch = 0;
-	if (tree->GetAlias("jets_pat_partonFlavour") != 0) {
-		jets_pat_partonFlavour_branch = tree->GetBranch(tree->GetAlias("jets_pat_partonFlavour"));
-		jets_pat_partonFlavour_branch->SetAddress(&jets_pat_partonFlavour_);
-	}
-	if(jets_pat_partonFlavour_branch == 0 ) {
-	cout << "Branch jets_pat_partonFlavour does not exist." << endl;
-	}
-	mus_pat_genID_branch = 0;
-	if (tree->GetAlias("mus_pat_genID") != 0) {
-		mus_pat_genID_branch = tree->GetBranch(tree->GetAlias("mus_pat_genID"));
-		mus_pat_genID_branch->SetAddress(&mus_pat_genID_);
-	}
-	if(mus_pat_genID_branch == 0 ) {
-	cout << "Branch mus_pat_genID does not exist." << endl;
-	}
-	mus_pat_genMotherID_branch = 0;
-	if (tree->GetAlias("mus_pat_genMotherID") != 0) {
-		mus_pat_genMotherID_branch = tree->GetBranch(tree->GetAlias("mus_pat_genMotherID"));
-		mus_pat_genMotherID_branch->SetAddress(&mus_pat_genMotherID_);
-	}
-	if(mus_pat_genMotherID_branch == 0 ) {
-	cout << "Branch mus_pat_genMotherID does not exist." << endl;
-	}
 	pfjets_chargedMultiplicity_branch = 0;
 	if (tree->GetAlias("pfjets_chargedMultiplicity") != 0) {
 		pfjets_chargedMultiplicity_branch = tree->GetBranch(tree->GetAlias("pfjets_chargedMultiplicity"));
@@ -9276,6 +9376,22 @@ void Init(TTree *tree) {
 	if(taus_calo_sigtrk_idx_branch == 0 ) {
 	cout << "Branch taus_calo_sigtrk_idx does not exist." << endl;
 	}
+	genps_lepdaughter_id_branch = 0;
+	if (tree->GetAlias("genps_lepdaughter_id") != 0) {
+		genps_lepdaughter_id_branch = tree->GetBranch(tree->GetAlias("genps_lepdaughter_id"));
+		genps_lepdaughter_id_branch->SetAddress(&genps_lepdaughter_id_);
+	}
+	if(genps_lepdaughter_id_branch == 0 ) {
+	cout << "Branch genps_lepdaughter_id does not exist." << endl;
+	}
+	genps_lepdaughter_idx_branch = 0;
+	if (tree->GetAlias("genps_lepdaughter_idx") != 0) {
+		genps_lepdaughter_idx_branch = tree->GetBranch(tree->GetAlias("genps_lepdaughter_idx"));
+		genps_lepdaughter_idx_branch->SetAddress(&genps_lepdaughter_idx_);
+	}
+	if(genps_lepdaughter_idx_branch == 0 ) {
+	cout << "Branch genps_lepdaughter_idx does not exist." << endl;
+	}
 	hlt_trigObjs_id_branch = 0;
 	if (tree->GetAlias("hlt_trigObjs_id") != 0) {
 		hlt_trigObjs_id_branch = tree->GetBranch(tree->GetAlias("hlt_trigObjs_id"));
@@ -9347,6 +9463,30 @@ void Init(TTree *tree) {
 	}
 	if(evt_run_branch == 0 ) {
 	cout << "Branch evt_run does not exist." << endl;
+	}
+	genps_flavorHistoryFilterResult_branch = 0;
+	if (tree->GetAlias("genps_flavorHistoryFilterResult") != 0) {
+		genps_flavorHistoryFilterResult_branch = tree->GetBranch(tree->GetAlias("genps_flavorHistoryFilterResult"));
+		genps_flavorHistoryFilterResult_branch->SetAddress(&genps_flavorHistoryFilterResult_);
+	}
+	if(genps_flavorHistoryFilterResult_branch == 0 ) {
+	cout << "Branch genps_flavorHistoryFilterResult does not exist." << endl;
+	}
+	evt_ngenjets_branch = 0;
+	if (tree->GetAlias("evt_ngenjets") != 0) {
+		evt_ngenjets_branch = tree->GetBranch(tree->GetAlias("evt_ngenjets"));
+		evt_ngenjets_branch->SetAddress(&evt_ngenjets_);
+	}
+	if(evt_ngenjets_branch == 0 ) {
+	cout << "Branch evt_ngenjets does not exist." << endl;
+	}
+	genps_signalProcessID_branch = 0;
+	if (tree->GetAlias("genps_signalProcessID") != 0) {
+		genps_signalProcessID_branch = tree->GetBranch(tree->GetAlias("genps_signalProcessID"));
+		genps_signalProcessID_branch->SetAddress(&genps_signalProcessID_);
+	}
+	if(genps_signalProcessID_branch == 0 ) {
+	cout << "Branch genps_signalProcessID does not exist." << endl;
 	}
 	hlt_bits1_branch = 0;
 	if (tree->GetAlias("hlt_bits1") != 0) {
@@ -9700,29 +9840,21 @@ void Init(TTree *tree) {
 	if(hyp_trilep_third_index_branch == 0 ) {
 	cout << "Branch hyp_trilep_third_index does not exist." << endl;
 	}
-	els_pat_flag_branch = 0;
-	if (tree->GetAlias("els_pat_flag") != 0) {
-		els_pat_flag_branch = tree->GetBranch(tree->GetAlias("els_pat_flag"));
-		els_pat_flag_branch->SetAddress(&els_pat_flag_);
+	evt_nEvts_branch = 0;
+	if (tree->GetAlias("evt_nEvts") != 0) {
+		evt_nEvts_branch = tree->GetBranch(tree->GetAlias("evt_nEvts"));
+		evt_nEvts_branch->SetAddress(&evt_nEvts_);
 	}
-	if(els_pat_flag_branch == 0 ) {
-	cout << "Branch els_pat_flag does not exist." << endl;
+	if(evt_nEvts_branch == 0 ) {
+	cout << "Branch evt_nEvts does not exist." << endl;
 	}
-	jets_pat_flag_branch = 0;
-	if (tree->GetAlias("jets_pat_flag") != 0) {
-		jets_pat_flag_branch = tree->GetBranch(tree->GetAlias("jets_pat_flag"));
-		jets_pat_flag_branch->SetAddress(&jets_pat_flag_);
+	evt_filt_eff_branch = 0;
+	if (tree->GetAlias("evt_filt_eff") != 0) {
+		evt_filt_eff_branch = tree->GetBranch(tree->GetAlias("evt_filt_eff"));
+		evt_filt_eff_branch->SetAddress(&evt_filt_eff_);
 	}
-	if(jets_pat_flag_branch == 0 ) {
-	cout << "Branch jets_pat_flag does not exist." << endl;
-	}
-	mus_pat_flag_branch = 0;
-	if (tree->GetAlias("mus_pat_flag") != 0) {
-		mus_pat_flag_branch = tree->GetBranch(tree->GetAlias("mus_pat_flag"));
-		mus_pat_flag_branch->SetAddress(&mus_pat_flag_);
-	}
-	if(mus_pat_flag_branch == 0 ) {
-	cout << "Branch mus_pat_flag does not exist." << endl;
+	if(evt_filt_eff_branch == 0 ) {
+	cout << "Branch evt_filt_eff does not exist." << endl;
 	}
   tree->SetMakeClass(0);
 }
@@ -9750,6 +9882,17 @@ void GetEntry(unsigned int idx)
 		evt_bs_yErr_isLoaded = false;
 		evt_bs_zErr_isLoaded = false;
 		evt_bField_isLoaded = false;
+		evt_kfactor_isLoaded = false;
+		evt_scale1fb_isLoaded = false;
+		evt_xsec_excl_isLoaded = false;
+		evt_xsec_incl_isLoaded = false;
+		gen_met_isLoaded = false;
+		gen_metPhi_isLoaded = false;
+		genps_alphaQCD_isLoaded = false;
+		genps_pthat_isLoaded = false;
+		genps_qScale_isLoaded = false;
+		genps_weight_isLoaded = false;
+		gen_sumEt_isLoaded = false;
 		hcalnoise_eventChargeFraction_isLoaded = false;
 		hcalnoise_eventEMEnergy_isLoaded = false;
 		hcalnoise_eventEMFraction_isLoaded = false;
@@ -9825,14 +9968,9 @@ void GetEntry(unsigned int idx)
 		evt_sumetOptHO_isLoaded = false;
 		evt_sumetOptNoHF_isLoaded = false;
 		evt_sumetOptNoHFHO_isLoaded = false;
-		met_pat_metCor_isLoaded = false;
-		met_pat_metPhiCor_isLoaded = false;
-		met_pat_metPhiUncor_isLoaded = false;
-		met_pat_metPhiUncorJES_isLoaded = false;
-		met_pat_metPhiUncorMuon_isLoaded = false;
-		met_pat_metUncor_isLoaded = false;
-		met_pat_metUncorJES_isLoaded = false;
-		met_pat_metUncorMuon_isLoaded = false;
+		pdfinfo_scale_isLoaded = false;
+		pdfinfo_x1_isLoaded = false;
+		pdfinfo_x2_isLoaded = false;
 		evt_pfmet_isLoaded = false;
 		evt_pfmetPhi_isLoaded = false;
 		evt_pfmetSig_isLoaded = false;
@@ -9845,6 +9983,13 @@ void GetEntry(unsigned int idx)
 		l1_met_p4_isLoaded = false;
 		l1_mht_p4_isLoaded = false;
 		taus_calo_p4_isLoaded = false;
+		els_mc_motherp4_isLoaded = false;
+		els_mc_p4_isLoaded = false;
+		jets_mc_gp_p4_isLoaded = false;
+		jets_mc_p4_isLoaded = false;
+		mus_mc_motherp4_isLoaded = false;
+		mus_mc_p4_isLoaded = false;
+		trk_mcp4_isLoaded = false;
 		els_inner_position_isLoaded = false;
 		els_outer_position_isLoaded = false;
 		els_p4_isLoaded = false;
@@ -9852,6 +9997,9 @@ void GetEntry(unsigned int idx)
 		els_p4Out_isLoaded = false;
 		els_trk_p4_isLoaded = false;
 		els_vertex_p4_isLoaded = false;
+		genjets_p4_isLoaded = false;
+		genps_p4_isLoaded = false;
+		genps_prod_vtx_isLoaded = false;
 		hyp_ll_p4_isLoaded = false;
 		hyp_ll_trk_p4_isLoaded = false;
 		hyp_lt_p4_isLoaded = false;
@@ -9859,6 +10007,8 @@ void GetEntry(unsigned int idx)
 		hyp_p4_isLoaded = false;
 		hyp_FVFit_p4_isLoaded = false;
 		hyp_FVFit_v4_isLoaded = false;
+		hyp_ll_mc_p4_isLoaded = false;
+		hyp_lt_mc_p4_isLoaded = false;
 		jets_p4_isLoaded = false;
 		jets_vertex_p4_isLoaded = false;
 		jpts_p4_isLoaded = false;
@@ -9880,17 +10030,6 @@ void GetEntry(unsigned int idx)
 		mus_sta_vertex_p4_isLoaded = false;
 		mus_trk_p4_isLoaded = false;
 		mus_vertex_p4_isLoaded = false;
-		els_pat_genMotherP4_isLoaded = false;
-		els_pat_genP4_isLoaded = false;
-		els_pat_p4_isLoaded = false;
-		jets_pat_genJet_p4_isLoaded = false;
-		jets_pat_genPartonMother_p4_isLoaded = false;
-		jets_pat_genParton_p4_isLoaded = false;
-		jets_pat_jet_p4_isLoaded = false;
-		jets_pat_jet_uncorp4_isLoaded = false;
-		mus_pat_genMotherP4_isLoaded = false;
-		mus_pat_genP4_isLoaded = false;
-		mus_pat_p4_isLoaded = false;
 		pfjets_p4_isLoaded = false;
 		taus_pf_lead_chargecand_p4_isLoaded = false;
 		taus_pf_lead_neutrcand_p4_isLoaded = false;
@@ -9910,6 +10049,7 @@ void GetEntry(unsigned int idx)
 		trks_vertex_p4_isLoaded = false;
 		trkjets_p4_isLoaded = false;
 		vtxs_position_isLoaded = false;
+		genps_lepdaughter_p4_isLoaded = false;
 		hlt_trigObjs_p4_isLoaded = false;
 		hyp_jets_p4_isLoaded = false;
 		hyp_other_jets_p4_isLoaded = false;
@@ -9993,6 +10133,19 @@ void GetEntry(unsigned int idx)
 		taus_calo_leadtrk_validHits_isLoaded = false;
 		taus_calo_maximumHCALhitEt_isLoaded = false;
 		taus_calo_signaltrksInvariantMass_isLoaded = false;
+		els_mc3dr_isLoaded = false;
+		els_mcdr_isLoaded = false;
+		jets_mc3dr_isLoaded = false;
+		jets_mcdr_isLoaded = false;
+		jets_mc_emEnergy_isLoaded = false;
+		jets_mc_gpdr_isLoaded = false;
+		jets_mc_hadEnergy_isLoaded = false;
+		jets_mc_invEnergy_isLoaded = false;
+		jets_mc_otherEnergy_isLoaded = false;
+		mus_mc3dr_isLoaded = false;
+		mus_mcdr_isLoaded = false;
+		trk_mc3dr_isLoaded = false;
+		trk_mcdr_isLoaded = false;
 		els_ecalJuraIso_isLoaded = false;
 		els_ecalJuraTowerIso_isLoaded = false;
 		els_hcalConeIso_isLoaded = false;
@@ -10198,43 +10351,6 @@ void GetEntry(unsigned int idx)
 		mus_z0_isLoaded = false;
 		mus_z0Err_isLoaded = false;
 		mus_z0corr_isLoaded = false;
-		els_pat_caloIso_isLoaded = false;
-		els_pat_ecalIso_isLoaded = false;
-		els_pat_hcalIso_isLoaded = false;
-		els_pat_looseId_isLoaded = false;
-		els_pat_robustHighEnergy_isLoaded = false;
-		els_pat_robustLooseId_isLoaded = false;
-		els_pat_robustTightId_isLoaded = false;
-		els_pat_scE1x5_isLoaded = false;
-		els_pat_scE2x5Max_isLoaded = false;
-		els_pat_scE5x5_isLoaded = false;
-		els_pat_sigmaEtaEta_isLoaded = false;
-		els_pat_sigmaIEtaIEta_isLoaded = false;
-		els_pat_tightId_isLoaded = false;
-		els_pat_trackIso_isLoaded = false;
-		jets_pat_combinedSecondaryVertexBJetTag_isLoaded = false;
-		jets_pat_combinedSecondaryVertexMVABJetTag_isLoaded = false;
-		jets_pat_coneIsolationTauJetTag_isLoaded = false;
-		jets_pat_impactParameterMVABJetTag_isLoaded = false;
-		jets_pat_jetBProbabilityBJetTag_isLoaded = false;
-		jets_pat_jetCharge_isLoaded = false;
-		jets_pat_jetProbabilityBJetTag_isLoaded = false;
-		jets_pat_noCorrF_isLoaded = false;
-		jets_pat_simpleSecondaryVertexBJetTag_isLoaded = false;
-		jets_pat_softElectronByIP3dBJetTag_isLoaded = false;
-		jets_pat_softElectronByPtBJetTag_isLoaded = false;
-		jets_pat_softMuonBJetTag_isLoaded = false;
-		jets_pat_softMuonNoIPBJetTag_isLoaded = false;
-		jets_pat_trackCountingHighEffBJetTag_isLoaded = false;
-		jets_pat_trackCountingHighPurBJetTag_isLoaded = false;
-		mus_pat_caloIso_isLoaded = false;
-		mus_pat_calovetoDep_isLoaded = false;
-		mus_pat_ecalIso_isLoaded = false;
-		mus_pat_ecalvetoDep_isLoaded = false;
-		mus_pat_hcalIso_isLoaded = false;
-		mus_pat_hcalvetoDep_isLoaded = false;
-		mus_pat_trackIso_isLoaded = false;
-		mus_pat_trckvetoDep_isLoaded = false;
 		pfjets_chargedEmE_isLoaded = false;
 		pfjets_chargedHadronE_isLoaded = false;
 		pfjets_cor_isLoaded = false;
@@ -10397,6 +10513,8 @@ void GetEntry(unsigned int idx)
 		l1_njetsf_isLoaded = false;
 		l1_njetst_isLoaded = false;
 		l1_nmus_isLoaded = false;
+		pdfinfo_id1_isLoaded = false;
+		pdfinfo_id2_isLoaded = false;
 		evt_ecaliPhiSuspects_isLoaded = false;
 		evt_globaliPhiSuspects_isLoaded = false;
 		evt_hcaliPhiSuspects_isLoaded = false;
@@ -10405,6 +10523,32 @@ void GetEntry(unsigned int idx)
 		taus_calo_charge_isLoaded = false;
 		taus_calo_leadtrk_idx_isLoaded = false;
 		taus_calo_tightId_isLoaded = false;
+		els_mc3_id_isLoaded = false;
+		els_mc3idx_isLoaded = false;
+		els_mc3_motherid_isLoaded = false;
+		els_mc3_motheridx_isLoaded = false;
+		els_mc_id_isLoaded = false;
+		els_mcidx_isLoaded = false;
+		els_mc_motherid_isLoaded = false;
+		jets_mc3_id_isLoaded = false;
+		jets_mc3idx_isLoaded = false;
+		jets_mc_gpidx_isLoaded = false;
+		jets_mc_id_isLoaded = false;
+		jets_mcidx_isLoaded = false;
+		mus_mc3_id_isLoaded = false;
+		mus_mc3idx_isLoaded = false;
+		mus_mc3_motherid_isLoaded = false;
+		mus_mc3_motheridx_isLoaded = false;
+		mus_mc_id_isLoaded = false;
+		mus_mcidx_isLoaded = false;
+		mus_mc_motherid_isLoaded = false;
+		trk_mc3_id_isLoaded = false;
+		trk_mc3idx_isLoaded = false;
+		trk_mc3_motherid_isLoaded = false;
+		trk_mc3_motheridx_isLoaded = false;
+		trk_mc_id_isLoaded = false;
+		trk_mcidx_isLoaded = false;
+		trk_mc_motherid_isLoaded = false;
 		els_closestJet_isLoaded = false;
 		els_closestMuon_isLoaded = false;
 		els_category_isLoaded = false;
@@ -10427,6 +10571,9 @@ void GetEntry(unsigned int idx)
 		els_type_isLoaded = false;
 		els_validHits_isLoaded = false;
 		els_valid_pixelhits_isLoaded = false;
+		genps_id_isLoaded = false;
+		genps_id_mother_isLoaded = false;
+		genps_status_isLoaded = false;
 		hyp_ll_charge_isLoaded = false;
 		hyp_ll_id_isLoaded = false;
 		hyp_ll_index_isLoaded = false;
@@ -10442,6 +10589,10 @@ void GetEntry(unsigned int idx)
 		hyp_type_isLoaded = false;
 		hyp_FVFit_ndf_isLoaded = false;
 		hyp_FVFit_status_isLoaded = false;
+		hyp_ll_mc_id_isLoaded = false;
+		hyp_ll_mc_motherid_isLoaded = false;
+		hyp_lt_mc_id_isLoaded = false;
+		hyp_lt_mc_motherid_isLoaded = false;
 		hyp_quadlep_first_type_isLoaded = false;
 		hyp_quadlep_fourth_type_isLoaded = false;
 		hyp_quadlep_second_type_isLoaded = false;
@@ -10498,17 +10649,6 @@ void GetEntry(unsigned int idx)
 		mus_trkidx_isLoaded = false;
 		mus_type_isLoaded = false;
 		mus_validHits_isLoaded = false;
-		els_pat_genID_isLoaded = false;
-		els_pat_genMotherID_isLoaded = false;
-		jets_pat_genPartonMother_id_isLoaded = false;
-		jets_pat_genParton_id_isLoaded = false;
-		jets_pat_jetIDLoose_isLoaded = false;
-		jets_pat_jetIDLooseAOD_isLoaded = false;
-		jets_pat_jetIDMinimal_isLoaded = false;
-		jets_pat_jetIDTight_isLoaded = false;
-		jets_pat_partonFlavour_isLoaded = false;
-		mus_pat_genID_isLoaded = false;
-		mus_pat_genMotherID_isLoaded = false;
 		pfjets_chargedMultiplicity_isLoaded = false;
 		pfjets_muonMultiplicity_isLoaded = false;
 		pfjets_neutralMultiplicity_isLoaded = false;
@@ -10556,6 +10696,8 @@ void GetEntry(unsigned int idx)
 		twrsUncleaned_emThreshSevLvl_isLoaded = false;
 		taus_calo_isotrk_idx_isLoaded = false;
 		taus_calo_sigtrk_idx_isLoaded = false;
+		genps_lepdaughter_id_isLoaded = false;
+		genps_lepdaughter_idx_isLoaded = false;
 		hlt_trigObjs_id_isLoaded = false;
 		hyp_jets_idx_isLoaded = false;
 		hyp_other_jets_idx_isLoaded = false;
@@ -10565,6 +10707,9 @@ void GetEntry(unsigned int idx)
 		evt_event_isLoaded = false;
 		evt_lumiBlock_isLoaded = false;
 		evt_run_isLoaded = false;
+		genps_flavorHistoryFilterResult_isLoaded = false;
+		evt_ngenjets_isLoaded = false;
+		genps_signalProcessID_isLoaded = false;
 		hlt_bits1_isLoaded = false;
 		hlt_bits2_isLoaded = false;
 		hlt_bits3_isLoaded = false;
@@ -10609,9 +10754,8 @@ void GetEntry(unsigned int idx)
 		hyp_trilep_first_index_isLoaded = false;
 		hyp_trilep_second_index_isLoaded = false;
 		hyp_trilep_third_index_isLoaded = false;
-		els_pat_flag_isLoaded = false;
-		jets_pat_flag_isLoaded = false;
-		mus_pat_flag_isLoaded = false;
+		evt_nEvts_isLoaded = false;
+		evt_filt_eff_isLoaded = false;
 	}
 
 void LoadAllBranches() 
@@ -10637,6 +10781,17 @@ void LoadAllBranches()
 	if (evt_bs_yErr_branch != 0) evt_bs_yErr();
 	if (evt_bs_zErr_branch != 0) evt_bs_zErr();
 	if (evt_bField_branch != 0) evt_bField();
+	if (evt_kfactor_branch != 0) evt_kfactor();
+	if (evt_scale1fb_branch != 0) evt_scale1fb();
+	if (evt_xsec_excl_branch != 0) evt_xsec_excl();
+	if (evt_xsec_incl_branch != 0) evt_xsec_incl();
+	if (gen_met_branch != 0) gen_met();
+	if (gen_metPhi_branch != 0) gen_metPhi();
+	if (genps_alphaQCD_branch != 0) genps_alphaQCD();
+	if (genps_pthat_branch != 0) genps_pthat();
+	if (genps_qScale_branch != 0) genps_qScale();
+	if (genps_weight_branch != 0) genps_weight();
+	if (gen_sumEt_branch != 0) gen_sumEt();
 	if (hcalnoise_eventChargeFraction_branch != 0) hcalnoise_eventChargeFraction();
 	if (hcalnoise_eventEMEnergy_branch != 0) hcalnoise_eventEMEnergy();
 	if (hcalnoise_eventEMFraction_branch != 0) hcalnoise_eventEMFraction();
@@ -10712,14 +10867,9 @@ void LoadAllBranches()
 	if (evt_sumetOptHO_branch != 0) evt_sumetOptHO();
 	if (evt_sumetOptNoHF_branch != 0) evt_sumetOptNoHF();
 	if (evt_sumetOptNoHFHO_branch != 0) evt_sumetOptNoHFHO();
-	if (met_pat_metCor_branch != 0) met_pat_metCor();
-	if (met_pat_metPhiCor_branch != 0) met_pat_metPhiCor();
-	if (met_pat_metPhiUncor_branch != 0) met_pat_metPhiUncor();
-	if (met_pat_metPhiUncorJES_branch != 0) met_pat_metPhiUncorJES();
-	if (met_pat_metPhiUncorMuon_branch != 0) met_pat_metPhiUncorMuon();
-	if (met_pat_metUncor_branch != 0) met_pat_metUncor();
-	if (met_pat_metUncorJES_branch != 0) met_pat_metUncorJES();
-	if (met_pat_metUncorMuon_branch != 0) met_pat_metUncorMuon();
+	if (pdfinfo_scale_branch != 0) pdfinfo_scale();
+	if (pdfinfo_x1_branch != 0) pdfinfo_x1();
+	if (pdfinfo_x2_branch != 0) pdfinfo_x2();
 	if (evt_pfmet_branch != 0) evt_pfmet();
 	if (evt_pfmetPhi_branch != 0) evt_pfmetPhi();
 	if (evt_pfmetSig_branch != 0) evt_pfmetSig();
@@ -10732,6 +10882,13 @@ void LoadAllBranches()
 	if (l1_met_p4_branch != 0) l1_met_p4();
 	if (l1_mht_p4_branch != 0) l1_mht_p4();
 	if (taus_calo_p4_branch != 0) taus_calo_p4();
+	if (els_mc_motherp4_branch != 0) els_mc_motherp4();
+	if (els_mc_p4_branch != 0) els_mc_p4();
+	if (jets_mc_gp_p4_branch != 0) jets_mc_gp_p4();
+	if (jets_mc_p4_branch != 0) jets_mc_p4();
+	if (mus_mc_motherp4_branch != 0) mus_mc_motherp4();
+	if (mus_mc_p4_branch != 0) mus_mc_p4();
+	if (trk_mcp4_branch != 0) trk_mcp4();
 	if (els_inner_position_branch != 0) els_inner_position();
 	if (els_outer_position_branch != 0) els_outer_position();
 	if (els_p4_branch != 0) els_p4();
@@ -10739,6 +10896,9 @@ void LoadAllBranches()
 	if (els_p4Out_branch != 0) els_p4Out();
 	if (els_trk_p4_branch != 0) els_trk_p4();
 	if (els_vertex_p4_branch != 0) els_vertex_p4();
+	if (genjets_p4_branch != 0) genjets_p4();
+	if (genps_p4_branch != 0) genps_p4();
+	if (genps_prod_vtx_branch != 0) genps_prod_vtx();
 	if (hyp_ll_p4_branch != 0) hyp_ll_p4();
 	if (hyp_ll_trk_p4_branch != 0) hyp_ll_trk_p4();
 	if (hyp_lt_p4_branch != 0) hyp_lt_p4();
@@ -10746,6 +10906,8 @@ void LoadAllBranches()
 	if (hyp_p4_branch != 0) hyp_p4();
 	if (hyp_FVFit_p4_branch != 0) hyp_FVFit_p4();
 	if (hyp_FVFit_v4_branch != 0) hyp_FVFit_v4();
+	if (hyp_ll_mc_p4_branch != 0) hyp_ll_mc_p4();
+	if (hyp_lt_mc_p4_branch != 0) hyp_lt_mc_p4();
 	if (jets_p4_branch != 0) jets_p4();
 	if (jets_vertex_p4_branch != 0) jets_vertex_p4();
 	if (jpts_p4_branch != 0) jpts_p4();
@@ -10767,17 +10929,6 @@ void LoadAllBranches()
 	if (mus_sta_vertex_p4_branch != 0) mus_sta_vertex_p4();
 	if (mus_trk_p4_branch != 0) mus_trk_p4();
 	if (mus_vertex_p4_branch != 0) mus_vertex_p4();
-	if (els_pat_genMotherP4_branch != 0) els_pat_genMotherP4();
-	if (els_pat_genP4_branch != 0) els_pat_genP4();
-	if (els_pat_p4_branch != 0) els_pat_p4();
-	if (jets_pat_genJet_p4_branch != 0) jets_pat_genJet_p4();
-	if (jets_pat_genPartonMother_p4_branch != 0) jets_pat_genPartonMother_p4();
-	if (jets_pat_genParton_p4_branch != 0) jets_pat_genParton_p4();
-	if (jets_pat_jet_p4_branch != 0) jets_pat_jet_p4();
-	if (jets_pat_jet_uncorp4_branch != 0) jets_pat_jet_uncorp4();
-	if (mus_pat_genMotherP4_branch != 0) mus_pat_genMotherP4();
-	if (mus_pat_genP4_branch != 0) mus_pat_genP4();
-	if (mus_pat_p4_branch != 0) mus_pat_p4();
 	if (pfjets_p4_branch != 0) pfjets_p4();
 	if (taus_pf_lead_chargecand_p4_branch != 0) taus_pf_lead_chargecand_p4();
 	if (taus_pf_lead_neutrcand_p4_branch != 0) taus_pf_lead_neutrcand_p4();
@@ -10797,6 +10948,7 @@ void LoadAllBranches()
 	if (trks_vertex_p4_branch != 0) trks_vertex_p4();
 	if (trkjets_p4_branch != 0) trkjets_p4();
 	if (vtxs_position_branch != 0) vtxs_position();
+	if (genps_lepdaughter_p4_branch != 0) genps_lepdaughter_p4();
 	if (hlt_trigObjs_p4_branch != 0) hlt_trigObjs_p4();
 	if (hyp_jets_p4_branch != 0) hyp_jets_p4();
 	if (hyp_other_jets_p4_branch != 0) hyp_other_jets_p4();
@@ -10880,6 +11032,19 @@ void LoadAllBranches()
 	if (taus_calo_leadtrk_validHits_branch != 0) taus_calo_leadtrk_validHits();
 	if (taus_calo_maximumHCALhitEt_branch != 0) taus_calo_maximumHCALhitEt();
 	if (taus_calo_signaltrksInvariantMass_branch != 0) taus_calo_signaltrksInvariantMass();
+	if (els_mc3dr_branch != 0) els_mc3dr();
+	if (els_mcdr_branch != 0) els_mcdr();
+	if (jets_mc3dr_branch != 0) jets_mc3dr();
+	if (jets_mcdr_branch != 0) jets_mcdr();
+	if (jets_mc_emEnergy_branch != 0) jets_mc_emEnergy();
+	if (jets_mc_gpdr_branch != 0) jets_mc_gpdr();
+	if (jets_mc_hadEnergy_branch != 0) jets_mc_hadEnergy();
+	if (jets_mc_invEnergy_branch != 0) jets_mc_invEnergy();
+	if (jets_mc_otherEnergy_branch != 0) jets_mc_otherEnergy();
+	if (mus_mc3dr_branch != 0) mus_mc3dr();
+	if (mus_mcdr_branch != 0) mus_mcdr();
+	if (trk_mc3dr_branch != 0) trk_mc3dr();
+	if (trk_mcdr_branch != 0) trk_mcdr();
 	if (els_ecalJuraIso_branch != 0) els_ecalJuraIso();
 	if (els_ecalJuraTowerIso_branch != 0) els_ecalJuraTowerIso();
 	if (els_hcalConeIso_branch != 0) els_hcalConeIso();
@@ -11085,43 +11250,6 @@ void LoadAllBranches()
 	if (mus_z0_branch != 0) mus_z0();
 	if (mus_z0Err_branch != 0) mus_z0Err();
 	if (mus_z0corr_branch != 0) mus_z0corr();
-	if (els_pat_caloIso_branch != 0) els_pat_caloIso();
-	if (els_pat_ecalIso_branch != 0) els_pat_ecalIso();
-	if (els_pat_hcalIso_branch != 0) els_pat_hcalIso();
-	if (els_pat_looseId_branch != 0) els_pat_looseId();
-	if (els_pat_robustHighEnergy_branch != 0) els_pat_robustHighEnergy();
-	if (els_pat_robustLooseId_branch != 0) els_pat_robustLooseId();
-	if (els_pat_robustTightId_branch != 0) els_pat_robustTightId();
-	if (els_pat_scE1x5_branch != 0) els_pat_scE1x5();
-	if (els_pat_scE2x5Max_branch != 0) els_pat_scE2x5Max();
-	if (els_pat_scE5x5_branch != 0) els_pat_scE5x5();
-	if (els_pat_sigmaEtaEta_branch != 0) els_pat_sigmaEtaEta();
-	if (els_pat_sigmaIEtaIEta_branch != 0) els_pat_sigmaIEtaIEta();
-	if (els_pat_tightId_branch != 0) els_pat_tightId();
-	if (els_pat_trackIso_branch != 0) els_pat_trackIso();
-	if (jets_pat_combinedSecondaryVertexBJetTag_branch != 0) jets_pat_combinedSecondaryVertexBJetTag();
-	if (jets_pat_combinedSecondaryVertexMVABJetTag_branch != 0) jets_pat_combinedSecondaryVertexMVABJetTag();
-	if (jets_pat_coneIsolationTauJetTag_branch != 0) jets_pat_coneIsolationTauJetTag();
-	if (jets_pat_impactParameterMVABJetTag_branch != 0) jets_pat_impactParameterMVABJetTag();
-	if (jets_pat_jetBProbabilityBJetTag_branch != 0) jets_pat_jetBProbabilityBJetTag();
-	if (jets_pat_jetCharge_branch != 0) jets_pat_jetCharge();
-	if (jets_pat_jetProbabilityBJetTag_branch != 0) jets_pat_jetProbabilityBJetTag();
-	if (jets_pat_noCorrF_branch != 0) jets_pat_noCorrF();
-	if (jets_pat_simpleSecondaryVertexBJetTag_branch != 0) jets_pat_simpleSecondaryVertexBJetTag();
-	if (jets_pat_softElectronByIP3dBJetTag_branch != 0) jets_pat_softElectronByIP3dBJetTag();
-	if (jets_pat_softElectronByPtBJetTag_branch != 0) jets_pat_softElectronByPtBJetTag();
-	if (jets_pat_softMuonBJetTag_branch != 0) jets_pat_softMuonBJetTag();
-	if (jets_pat_softMuonNoIPBJetTag_branch != 0) jets_pat_softMuonNoIPBJetTag();
-	if (jets_pat_trackCountingHighEffBJetTag_branch != 0) jets_pat_trackCountingHighEffBJetTag();
-	if (jets_pat_trackCountingHighPurBJetTag_branch != 0) jets_pat_trackCountingHighPurBJetTag();
-	if (mus_pat_caloIso_branch != 0) mus_pat_caloIso();
-	if (mus_pat_calovetoDep_branch != 0) mus_pat_calovetoDep();
-	if (mus_pat_ecalIso_branch != 0) mus_pat_ecalIso();
-	if (mus_pat_ecalvetoDep_branch != 0) mus_pat_ecalvetoDep();
-	if (mus_pat_hcalIso_branch != 0) mus_pat_hcalIso();
-	if (mus_pat_hcalvetoDep_branch != 0) mus_pat_hcalvetoDep();
-	if (mus_pat_trackIso_branch != 0) mus_pat_trackIso();
-	if (mus_pat_trckvetoDep_branch != 0) mus_pat_trckvetoDep();
 	if (pfjets_chargedEmE_branch != 0) pfjets_chargedEmE();
 	if (pfjets_chargedHadronE_branch != 0) pfjets_chargedHadronE();
 	if (pfjets_cor_branch != 0) pfjets_cor();
@@ -11284,6 +11412,8 @@ void LoadAllBranches()
 	if (l1_njetsf_branch != 0) l1_njetsf();
 	if (l1_njetst_branch != 0) l1_njetst();
 	if (l1_nmus_branch != 0) l1_nmus();
+	if (pdfinfo_id1_branch != 0) pdfinfo_id1();
+	if (pdfinfo_id2_branch != 0) pdfinfo_id2();
 	if (evt_ecaliPhiSuspects_branch != 0) evt_ecaliPhiSuspects();
 	if (evt_globaliPhiSuspects_branch != 0) evt_globaliPhiSuspects();
 	if (evt_hcaliPhiSuspects_branch != 0) evt_hcaliPhiSuspects();
@@ -11292,6 +11422,32 @@ void LoadAllBranches()
 	if (taus_calo_charge_branch != 0) taus_calo_charge();
 	if (taus_calo_leadtrk_idx_branch != 0) taus_calo_leadtrk_idx();
 	if (taus_calo_tightId_branch != 0) taus_calo_tightId();
+	if (els_mc3_id_branch != 0) els_mc3_id();
+	if (els_mc3idx_branch != 0) els_mc3idx();
+	if (els_mc3_motherid_branch != 0) els_mc3_motherid();
+	if (els_mc3_motheridx_branch != 0) els_mc3_motheridx();
+	if (els_mc_id_branch != 0) els_mc_id();
+	if (els_mcidx_branch != 0) els_mcidx();
+	if (els_mc_motherid_branch != 0) els_mc_motherid();
+	if (jets_mc3_id_branch != 0) jets_mc3_id();
+	if (jets_mc3idx_branch != 0) jets_mc3idx();
+	if (jets_mc_gpidx_branch != 0) jets_mc_gpidx();
+	if (jets_mc_id_branch != 0) jets_mc_id();
+	if (jets_mcidx_branch != 0) jets_mcidx();
+	if (mus_mc3_id_branch != 0) mus_mc3_id();
+	if (mus_mc3idx_branch != 0) mus_mc3idx();
+	if (mus_mc3_motherid_branch != 0) mus_mc3_motherid();
+	if (mus_mc3_motheridx_branch != 0) mus_mc3_motheridx();
+	if (mus_mc_id_branch != 0) mus_mc_id();
+	if (mus_mcidx_branch != 0) mus_mcidx();
+	if (mus_mc_motherid_branch != 0) mus_mc_motherid();
+	if (trk_mc3_id_branch != 0) trk_mc3_id();
+	if (trk_mc3idx_branch != 0) trk_mc3idx();
+	if (trk_mc3_motherid_branch != 0) trk_mc3_motherid();
+	if (trk_mc3_motheridx_branch != 0) trk_mc3_motheridx();
+	if (trk_mc_id_branch != 0) trk_mc_id();
+	if (trk_mcidx_branch != 0) trk_mcidx();
+	if (trk_mc_motherid_branch != 0) trk_mc_motherid();
 	if (els_closestJet_branch != 0) els_closestJet();
 	if (els_closestMuon_branch != 0) els_closestMuon();
 	if (els_category_branch != 0) els_category();
@@ -11314,6 +11470,9 @@ void LoadAllBranches()
 	if (els_type_branch != 0) els_type();
 	if (els_validHits_branch != 0) els_validHits();
 	if (els_valid_pixelhits_branch != 0) els_valid_pixelhits();
+	if (genps_id_branch != 0) genps_id();
+	if (genps_id_mother_branch != 0) genps_id_mother();
+	if (genps_status_branch != 0) genps_status();
 	if (hyp_ll_charge_branch != 0) hyp_ll_charge();
 	if (hyp_ll_id_branch != 0) hyp_ll_id();
 	if (hyp_ll_index_branch != 0) hyp_ll_index();
@@ -11329,6 +11488,10 @@ void LoadAllBranches()
 	if (hyp_type_branch != 0) hyp_type();
 	if (hyp_FVFit_ndf_branch != 0) hyp_FVFit_ndf();
 	if (hyp_FVFit_status_branch != 0) hyp_FVFit_status();
+	if (hyp_ll_mc_id_branch != 0) hyp_ll_mc_id();
+	if (hyp_ll_mc_motherid_branch != 0) hyp_ll_mc_motherid();
+	if (hyp_lt_mc_id_branch != 0) hyp_lt_mc_id();
+	if (hyp_lt_mc_motherid_branch != 0) hyp_lt_mc_motherid();
 	if (hyp_quadlep_first_type_branch != 0) hyp_quadlep_first_type();
 	if (hyp_quadlep_fourth_type_branch != 0) hyp_quadlep_fourth_type();
 	if (hyp_quadlep_second_type_branch != 0) hyp_quadlep_second_type();
@@ -11385,17 +11548,6 @@ void LoadAllBranches()
 	if (mus_trkidx_branch != 0) mus_trkidx();
 	if (mus_type_branch != 0) mus_type();
 	if (mus_validHits_branch != 0) mus_validHits();
-	if (els_pat_genID_branch != 0) els_pat_genID();
-	if (els_pat_genMotherID_branch != 0) els_pat_genMotherID();
-	if (jets_pat_genPartonMother_id_branch != 0) jets_pat_genPartonMother_id();
-	if (jets_pat_genParton_id_branch != 0) jets_pat_genParton_id();
-	if (jets_pat_jetIDLoose_branch != 0) jets_pat_jetIDLoose();
-	if (jets_pat_jetIDLooseAOD_branch != 0) jets_pat_jetIDLooseAOD();
-	if (jets_pat_jetIDMinimal_branch != 0) jets_pat_jetIDMinimal();
-	if (jets_pat_jetIDTight_branch != 0) jets_pat_jetIDTight();
-	if (jets_pat_partonFlavour_branch != 0) jets_pat_partonFlavour();
-	if (mus_pat_genID_branch != 0) mus_pat_genID();
-	if (mus_pat_genMotherID_branch != 0) mus_pat_genMotherID();
 	if (pfjets_chargedMultiplicity_branch != 0) pfjets_chargedMultiplicity();
 	if (pfjets_muonMultiplicity_branch != 0) pfjets_muonMultiplicity();
 	if (pfjets_neutralMultiplicity_branch != 0) pfjets_neutralMultiplicity();
@@ -11443,6 +11595,8 @@ void LoadAllBranches()
 	if (twrsUncleaned_emThreshSevLvl_branch != 0) twrsUncleaned_emThreshSevLvl();
 	if (taus_calo_isotrk_idx_branch != 0) taus_calo_isotrk_idx();
 	if (taus_calo_sigtrk_idx_branch != 0) taus_calo_sigtrk_idx();
+	if (genps_lepdaughter_id_branch != 0) genps_lepdaughter_id();
+	if (genps_lepdaughter_idx_branch != 0) genps_lepdaughter_idx();
 	if (hlt_trigObjs_id_branch != 0) hlt_trigObjs_id();
 	if (hyp_jets_idx_branch != 0) hyp_jets_idx();
 	if (hyp_other_jets_idx_branch != 0) hyp_other_jets_idx();
@@ -11452,6 +11606,9 @@ void LoadAllBranches()
 	if (evt_event_branch != 0) evt_event();
 	if (evt_lumiBlock_branch != 0) evt_lumiBlock();
 	if (evt_run_branch != 0) evt_run();
+	if (genps_flavorHistoryFilterResult_branch != 0) genps_flavorHistoryFilterResult();
+	if (evt_ngenjets_branch != 0) evt_ngenjets();
+	if (genps_signalProcessID_branch != 0) genps_signalProcessID();
 	if (hlt_bits1_branch != 0) hlt_bits1();
 	if (hlt_bits2_branch != 0) hlt_bits2();
 	if (hlt_bits3_branch != 0) hlt_bits3();
@@ -11496,9 +11653,8 @@ void LoadAllBranches()
 	if (hyp_trilep_first_index_branch != 0) hyp_trilep_first_index();
 	if (hyp_trilep_second_index_branch != 0) hyp_trilep_second_index();
 	if (hyp_trilep_third_index_branch != 0) hyp_trilep_third_index();
-	if (els_pat_flag_branch != 0) els_pat_flag();
-	if (jets_pat_flag_branch != 0) jets_pat_flag();
-	if (mus_pat_flag_branch != 0) mus_pat_flag();
+	if (evt_nEvts_branch != 0) evt_nEvts();
+	if (evt_filt_eff_branch != 0) evt_filt_eff();
 }
 
 	TString &evt_CMS2tag()
@@ -11856,6 +12012,199 @@ void LoadAllBranches()
 			evt_bField_isLoaded = true;
 		}
 		return evt_bField_;
+	}
+	float &evt_kfactor()
+	{
+		if (not evt_kfactor_isLoaded) {
+			if (evt_kfactor_branch != 0) {
+				evt_kfactor_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch evt_kfactor_branch does not exist!\n");
+				exit(1);
+			}
+			evt_kfactor_isLoaded = true;
+		}
+		return evt_kfactor_;
+	}
+	float &evt_scale1fb()
+	{
+		if (not evt_scale1fb_isLoaded) {
+			if (evt_scale1fb_branch != 0) {
+				evt_scale1fb_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch evt_scale1fb_branch does not exist!\n");
+				exit(1);
+			}
+			evt_scale1fb_isLoaded = true;
+		}
+		return evt_scale1fb_;
+	}
+	float &evt_xsec_excl()
+	{
+		if (not evt_xsec_excl_isLoaded) {
+			if (evt_xsec_excl_branch != 0) {
+				evt_xsec_excl_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch evt_xsec_excl_branch does not exist!\n");
+				exit(1);
+			}
+			evt_xsec_excl_isLoaded = true;
+		}
+		return evt_xsec_excl_;
+	}
+	float &evt_xsec_incl()
+	{
+		if (not evt_xsec_incl_isLoaded) {
+			if (evt_xsec_incl_branch != 0) {
+				evt_xsec_incl_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch evt_xsec_incl_branch does not exist!\n");
+				exit(1);
+			}
+			evt_xsec_incl_isLoaded = true;
+		}
+		return evt_xsec_incl_;
+	}
+	float &gen_met()
+	{
+		if (not gen_met_isLoaded) {
+			if (gen_met_branch != 0) {
+				gen_met_branch->GetEntry(index);
+				#ifdef PARANOIA
+				if (not isfinite(gen_met_)) {
+					printf("branch gen_met_branch contains a bad float: %f\n", gen_met_);
+					exit(1);
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch gen_met_branch does not exist!\n");
+				exit(1);
+			}
+			gen_met_isLoaded = true;
+		}
+		return gen_met_;
+	}
+	float &gen_metPhi()
+	{
+		if (not gen_metPhi_isLoaded) {
+			if (gen_metPhi_branch != 0) {
+				gen_metPhi_branch->GetEntry(index);
+				#ifdef PARANOIA
+				if (not isfinite(gen_metPhi_)) {
+					printf("branch gen_metPhi_branch contains a bad float: %f\n", gen_metPhi_);
+					exit(1);
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch gen_metPhi_branch does not exist!\n");
+				exit(1);
+			}
+			gen_metPhi_isLoaded = true;
+		}
+		return gen_metPhi_;
+	}
+	float &genps_alphaQCD()
+	{
+		if (not genps_alphaQCD_isLoaded) {
+			if (genps_alphaQCD_branch != 0) {
+				genps_alphaQCD_branch->GetEntry(index);
+				#ifdef PARANOIA
+				if (not isfinite(genps_alphaQCD_)) {
+					printf("branch genps_alphaQCD_branch contains a bad float: %f\n", genps_alphaQCD_);
+					exit(1);
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch genps_alphaQCD_branch does not exist!\n");
+				exit(1);
+			}
+			genps_alphaQCD_isLoaded = true;
+		}
+		return genps_alphaQCD_;
+	}
+	float &genps_pthat()
+	{
+		if (not genps_pthat_isLoaded) {
+			if (genps_pthat_branch != 0) {
+				genps_pthat_branch->GetEntry(index);
+				#ifdef PARANOIA
+				if (not isfinite(genps_pthat_)) {
+					printf("branch genps_pthat_branch contains a bad float: %f\n", genps_pthat_);
+					exit(1);
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch genps_pthat_branch does not exist!\n");
+				exit(1);
+			}
+			genps_pthat_isLoaded = true;
+		}
+		return genps_pthat_;
+	}
+	float &genps_qScale()
+	{
+		if (not genps_qScale_isLoaded) {
+			if (genps_qScale_branch != 0) {
+				genps_qScale_branch->GetEntry(index);
+				#ifdef PARANOIA
+				if (not isfinite(genps_qScale_)) {
+					printf("branch genps_qScale_branch contains a bad float: %f\n", genps_qScale_);
+					exit(1);
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch genps_qScale_branch does not exist!\n");
+				exit(1);
+			}
+			genps_qScale_isLoaded = true;
+		}
+		return genps_qScale_;
+	}
+	float &genps_weight()
+	{
+		if (not genps_weight_isLoaded) {
+			if (genps_weight_branch != 0) {
+				genps_weight_branch->GetEntry(index);
+				#ifdef PARANOIA
+				if (not isfinite(genps_weight_)) {
+					printf("branch genps_weight_branch contains a bad float: %f\n", genps_weight_);
+					exit(1);
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch genps_weight_branch does not exist!\n");
+				exit(1);
+			}
+			genps_weight_isLoaded = true;
+		}
+		return genps_weight_;
+	}
+	float &gen_sumEt()
+	{
+		if (not gen_sumEt_isLoaded) {
+			if (gen_sumEt_branch != 0) {
+				gen_sumEt_branch->GetEntry(index);
+				#ifdef PARANOIA
+				if (not isfinite(gen_sumEt_)) {
+					printf("branch gen_sumEt_branch contains a bad float: %f\n", gen_sumEt_);
+					exit(1);
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch gen_sumEt_branch does not exist!\n");
+				exit(1);
+			}
+			gen_sumEt_isLoaded = true;
+		}
+		return gen_sumEt_;
 	}
 	float &hcalnoise_eventChargeFraction()
 	{
@@ -13282,157 +13631,62 @@ void LoadAllBranches()
 		}
 		return evt_sumetOptNoHFHO_;
 	}
-	float &met_pat_metCor()
+	float &pdfinfo_scale()
 	{
-		if (not met_pat_metCor_isLoaded) {
-			if (met_pat_metCor_branch != 0) {
-				met_pat_metCor_branch->GetEntry(index);
+		if (not pdfinfo_scale_isLoaded) {
+			if (pdfinfo_scale_branch != 0) {
+				pdfinfo_scale_branch->GetEntry(index);
 				#ifdef PARANOIA
-				if (not isfinite(met_pat_metCor_)) {
-					printf("branch met_pat_metCor_branch contains a bad float: %f\n", met_pat_metCor_);
+				if (not isfinite(pdfinfo_scale_)) {
+					printf("branch pdfinfo_scale_branch contains a bad float: %f\n", pdfinfo_scale_);
 					exit(1);
 				}
 				#endif // #ifdef PARANOIA
 			} else { 
-				printf("branch met_pat_metCor_branch does not exist!\n");
+				printf("branch pdfinfo_scale_branch does not exist!\n");
 				exit(1);
 			}
-			met_pat_metCor_isLoaded = true;
+			pdfinfo_scale_isLoaded = true;
 		}
-		return met_pat_metCor_;
+		return pdfinfo_scale_;
 	}
-	float &met_pat_metPhiCor()
+	float &pdfinfo_x1()
 	{
-		if (not met_pat_metPhiCor_isLoaded) {
-			if (met_pat_metPhiCor_branch != 0) {
-				met_pat_metPhiCor_branch->GetEntry(index);
+		if (not pdfinfo_x1_isLoaded) {
+			if (pdfinfo_x1_branch != 0) {
+				pdfinfo_x1_branch->GetEntry(index);
 				#ifdef PARANOIA
-				if (not isfinite(met_pat_metPhiCor_)) {
-					printf("branch met_pat_metPhiCor_branch contains a bad float: %f\n", met_pat_metPhiCor_);
+				if (not isfinite(pdfinfo_x1_)) {
+					printf("branch pdfinfo_x1_branch contains a bad float: %f\n", pdfinfo_x1_);
 					exit(1);
 				}
 				#endif // #ifdef PARANOIA
 			} else { 
-				printf("branch met_pat_metPhiCor_branch does not exist!\n");
+				printf("branch pdfinfo_x1_branch does not exist!\n");
 				exit(1);
 			}
-			met_pat_metPhiCor_isLoaded = true;
+			pdfinfo_x1_isLoaded = true;
 		}
-		return met_pat_metPhiCor_;
+		return pdfinfo_x1_;
 	}
-	float &met_pat_metPhiUncor()
+	float &pdfinfo_x2()
 	{
-		if (not met_pat_metPhiUncor_isLoaded) {
-			if (met_pat_metPhiUncor_branch != 0) {
-				met_pat_metPhiUncor_branch->GetEntry(index);
+		if (not pdfinfo_x2_isLoaded) {
+			if (pdfinfo_x2_branch != 0) {
+				pdfinfo_x2_branch->GetEntry(index);
 				#ifdef PARANOIA
-				if (not isfinite(met_pat_metPhiUncor_)) {
-					printf("branch met_pat_metPhiUncor_branch contains a bad float: %f\n", met_pat_metPhiUncor_);
+				if (not isfinite(pdfinfo_x2_)) {
+					printf("branch pdfinfo_x2_branch contains a bad float: %f\n", pdfinfo_x2_);
 					exit(1);
 				}
 				#endif // #ifdef PARANOIA
 			} else { 
-				printf("branch met_pat_metPhiUncor_branch does not exist!\n");
+				printf("branch pdfinfo_x2_branch does not exist!\n");
 				exit(1);
 			}
-			met_pat_metPhiUncor_isLoaded = true;
+			pdfinfo_x2_isLoaded = true;
 		}
-		return met_pat_metPhiUncor_;
-	}
-	float &met_pat_metPhiUncorJES()
-	{
-		if (not met_pat_metPhiUncorJES_isLoaded) {
-			if (met_pat_metPhiUncorJES_branch != 0) {
-				met_pat_metPhiUncorJES_branch->GetEntry(index);
-				#ifdef PARANOIA
-				if (not isfinite(met_pat_metPhiUncorJES_)) {
-					printf("branch met_pat_metPhiUncorJES_branch contains a bad float: %f\n", met_pat_metPhiUncorJES_);
-					exit(1);
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch met_pat_metPhiUncorJES_branch does not exist!\n");
-				exit(1);
-			}
-			met_pat_metPhiUncorJES_isLoaded = true;
-		}
-		return met_pat_metPhiUncorJES_;
-	}
-	float &met_pat_metPhiUncorMuon()
-	{
-		if (not met_pat_metPhiUncorMuon_isLoaded) {
-			if (met_pat_metPhiUncorMuon_branch != 0) {
-				met_pat_metPhiUncorMuon_branch->GetEntry(index);
-				#ifdef PARANOIA
-				if (not isfinite(met_pat_metPhiUncorMuon_)) {
-					printf("branch met_pat_metPhiUncorMuon_branch contains a bad float: %f\n", met_pat_metPhiUncorMuon_);
-					exit(1);
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch met_pat_metPhiUncorMuon_branch does not exist!\n");
-				exit(1);
-			}
-			met_pat_metPhiUncorMuon_isLoaded = true;
-		}
-		return met_pat_metPhiUncorMuon_;
-	}
-	float &met_pat_metUncor()
-	{
-		if (not met_pat_metUncor_isLoaded) {
-			if (met_pat_metUncor_branch != 0) {
-				met_pat_metUncor_branch->GetEntry(index);
-				#ifdef PARANOIA
-				if (not isfinite(met_pat_metUncor_)) {
-					printf("branch met_pat_metUncor_branch contains a bad float: %f\n", met_pat_metUncor_);
-					exit(1);
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch met_pat_metUncor_branch does not exist!\n");
-				exit(1);
-			}
-			met_pat_metUncor_isLoaded = true;
-		}
-		return met_pat_metUncor_;
-	}
-	float &met_pat_metUncorJES()
-	{
-		if (not met_pat_metUncorJES_isLoaded) {
-			if (met_pat_metUncorJES_branch != 0) {
-				met_pat_metUncorJES_branch->GetEntry(index);
-				#ifdef PARANOIA
-				if (not isfinite(met_pat_metUncorJES_)) {
-					printf("branch met_pat_metUncorJES_branch contains a bad float: %f\n", met_pat_metUncorJES_);
-					exit(1);
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch met_pat_metUncorJES_branch does not exist!\n");
-				exit(1);
-			}
-			met_pat_metUncorJES_isLoaded = true;
-		}
-		return met_pat_metUncorJES_;
-	}
-	float &met_pat_metUncorMuon()
-	{
-		if (not met_pat_metUncorMuon_isLoaded) {
-			if (met_pat_metUncorMuon_branch != 0) {
-				met_pat_metUncorMuon_branch->GetEntry(index);
-				#ifdef PARANOIA
-				if (not isfinite(met_pat_metUncorMuon_)) {
-					printf("branch met_pat_metUncorMuon_branch contains a bad float: %f\n", met_pat_metUncorMuon_);
-					exit(1);
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch met_pat_metUncorMuon_branch does not exist!\n");
-				exit(1);
-			}
-			met_pat_metUncorMuon_isLoaded = true;
-		}
-		return met_pat_metUncorMuon_;
+		return pdfinfo_x2_;
 	}
 	float &evt_pfmet()
 	{
@@ -13672,6 +13926,167 @@ void LoadAllBranches()
 		}
 		return taus_calo_p4_;
 	}
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &els_mc_motherp4()
+	{
+		if (not els_mc_motherp4_isLoaded) {
+			if (els_mc_motherp4_branch != 0) {
+				els_mc_motherp4_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >::const_iterator i = els_mc_motherp4_.begin(); i != els_mc_motherp4_.end(); ++i) {
+					int e;
+					frexp(i->pt(), &e);
+					if (not isfinite(i->pt()) || e > 30) {
+						printf("branch els_mc_motherp4_branch contains a bad float: %f\n", i->pt());
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch els_mc_motherp4_branch does not exist!\n");
+				exit(1);
+			}
+			els_mc_motherp4_isLoaded = true;
+		}
+		return els_mc_motherp4_;
+	}
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &els_mc_p4()
+	{
+		if (not els_mc_p4_isLoaded) {
+			if (els_mc_p4_branch != 0) {
+				els_mc_p4_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >::const_iterator i = els_mc_p4_.begin(); i != els_mc_p4_.end(); ++i) {
+					int e;
+					frexp(i->pt(), &e);
+					if (not isfinite(i->pt()) || e > 30) {
+						printf("branch els_mc_p4_branch contains a bad float: %f\n", i->pt());
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch els_mc_p4_branch does not exist!\n");
+				exit(1);
+			}
+			els_mc_p4_isLoaded = true;
+		}
+		return els_mc_p4_;
+	}
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_mc_gp_p4()
+	{
+		if (not jets_mc_gp_p4_isLoaded) {
+			if (jets_mc_gp_p4_branch != 0) {
+				jets_mc_gp_p4_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >::const_iterator i = jets_mc_gp_p4_.begin(); i != jets_mc_gp_p4_.end(); ++i) {
+					int e;
+					frexp(i->pt(), &e);
+					if (not isfinite(i->pt()) || e > 30) {
+						printf("branch jets_mc_gp_p4_branch contains a bad float: %f\n", i->pt());
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch jets_mc_gp_p4_branch does not exist!\n");
+				exit(1);
+			}
+			jets_mc_gp_p4_isLoaded = true;
+		}
+		return jets_mc_gp_p4_;
+	}
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_mc_p4()
+	{
+		if (not jets_mc_p4_isLoaded) {
+			if (jets_mc_p4_branch != 0) {
+				jets_mc_p4_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >::const_iterator i = jets_mc_p4_.begin(); i != jets_mc_p4_.end(); ++i) {
+					int e;
+					frexp(i->pt(), &e);
+					if (not isfinite(i->pt()) || e > 30) {
+						printf("branch jets_mc_p4_branch contains a bad float: %f\n", i->pt());
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch jets_mc_p4_branch does not exist!\n");
+				exit(1);
+			}
+			jets_mc_p4_isLoaded = true;
+		}
+		return jets_mc_p4_;
+	}
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &mus_mc_motherp4()
+	{
+		if (not mus_mc_motherp4_isLoaded) {
+			if (mus_mc_motherp4_branch != 0) {
+				mus_mc_motherp4_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >::const_iterator i = mus_mc_motherp4_.begin(); i != mus_mc_motherp4_.end(); ++i) {
+					int e;
+					frexp(i->pt(), &e);
+					if (not isfinite(i->pt()) || e > 30) {
+						printf("branch mus_mc_motherp4_branch contains a bad float: %f\n", i->pt());
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch mus_mc_motherp4_branch does not exist!\n");
+				exit(1);
+			}
+			mus_mc_motherp4_isLoaded = true;
+		}
+		return mus_mc_motherp4_;
+	}
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &mus_mc_p4()
+	{
+		if (not mus_mc_p4_isLoaded) {
+			if (mus_mc_p4_branch != 0) {
+				mus_mc_p4_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >::const_iterator i = mus_mc_p4_.begin(); i != mus_mc_p4_.end(); ++i) {
+					int e;
+					frexp(i->pt(), &e);
+					if (not isfinite(i->pt()) || e > 30) {
+						printf("branch mus_mc_p4_branch contains a bad float: %f\n", i->pt());
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch mus_mc_p4_branch does not exist!\n");
+				exit(1);
+			}
+			mus_mc_p4_isLoaded = true;
+		}
+		return mus_mc_p4_;
+	}
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &trk_mcp4()
+	{
+		if (not trk_mcp4_isLoaded) {
+			if (trk_mcp4_branch != 0) {
+				trk_mcp4_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >::const_iterator i = trk_mcp4_.begin(); i != trk_mcp4_.end(); ++i) {
+					int e;
+					frexp(i->pt(), &e);
+					if (not isfinite(i->pt()) || e > 30) {
+						printf("branch trk_mcp4_branch contains a bad float: %f\n", i->pt());
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch trk_mcp4_branch does not exist!\n");
+				exit(1);
+			}
+			trk_mcp4_isLoaded = true;
+		}
+		return trk_mcp4_;
+	}
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &els_inner_position()
 	{
 		if (not els_inner_position_isLoaded) {
@@ -13833,6 +14248,75 @@ void LoadAllBranches()
 		}
 		return els_vertex_p4_;
 	}
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &genjets_p4()
+	{
+		if (not genjets_p4_isLoaded) {
+			if (genjets_p4_branch != 0) {
+				genjets_p4_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >::const_iterator i = genjets_p4_.begin(); i != genjets_p4_.end(); ++i) {
+					int e;
+					frexp(i->pt(), &e);
+					if (not isfinite(i->pt()) || e > 30) {
+						printf("branch genjets_p4_branch contains a bad float: %f\n", i->pt());
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch genjets_p4_branch does not exist!\n");
+				exit(1);
+			}
+			genjets_p4_isLoaded = true;
+		}
+		return genjets_p4_;
+	}
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &genps_p4()
+	{
+		if (not genps_p4_isLoaded) {
+			if (genps_p4_branch != 0) {
+				genps_p4_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >::const_iterator i = genps_p4_.begin(); i != genps_p4_.end(); ++i) {
+					int e;
+					frexp(i->pt(), &e);
+					if (not isfinite(i->pt()) || e > 30) {
+						printf("branch genps_p4_branch contains a bad float: %f\n", i->pt());
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch genps_p4_branch does not exist!\n");
+				exit(1);
+			}
+			genps_p4_isLoaded = true;
+		}
+		return genps_p4_;
+	}
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &genps_prod_vtx()
+	{
+		if (not genps_prod_vtx_isLoaded) {
+			if (genps_prod_vtx_branch != 0) {
+				genps_prod_vtx_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >::const_iterator i = genps_prod_vtx_.begin(); i != genps_prod_vtx_.end(); ++i) {
+					int e;
+					frexp(i->pt(), &e);
+					if (not isfinite(i->pt()) || e > 30) {
+						printf("branch genps_prod_vtx_branch contains a bad float: %f\n", i->pt());
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch genps_prod_vtx_branch does not exist!\n");
+				exit(1);
+			}
+			genps_prod_vtx_isLoaded = true;
+		}
+		return genps_prod_vtx_;
+	}
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &hyp_ll_p4()
 	{
 		if (not hyp_ll_p4_isLoaded) {
@@ -13993,6 +14477,52 @@ void LoadAllBranches()
 			hyp_FVFit_v4_isLoaded = true;
 		}
 		return hyp_FVFit_v4_;
+	}
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &hyp_ll_mc_p4()
+	{
+		if (not hyp_ll_mc_p4_isLoaded) {
+			if (hyp_ll_mc_p4_branch != 0) {
+				hyp_ll_mc_p4_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >::const_iterator i = hyp_ll_mc_p4_.begin(); i != hyp_ll_mc_p4_.end(); ++i) {
+					int e;
+					frexp(i->pt(), &e);
+					if (not isfinite(i->pt()) || e > 30) {
+						printf("branch hyp_ll_mc_p4_branch contains a bad float: %f\n", i->pt());
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch hyp_ll_mc_p4_branch does not exist!\n");
+				exit(1);
+			}
+			hyp_ll_mc_p4_isLoaded = true;
+		}
+		return hyp_ll_mc_p4_;
+	}
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &hyp_lt_mc_p4()
+	{
+		if (not hyp_lt_mc_p4_isLoaded) {
+			if (hyp_lt_mc_p4_branch != 0) {
+				hyp_lt_mc_p4_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >::const_iterator i = hyp_lt_mc_p4_.begin(); i != hyp_lt_mc_p4_.end(); ++i) {
+					int e;
+					frexp(i->pt(), &e);
+					if (not isfinite(i->pt()) || e > 30) {
+						printf("branch hyp_lt_mc_p4_branch contains a bad float: %f\n", i->pt());
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch hyp_lt_mc_p4_branch does not exist!\n");
+				exit(1);
+			}
+			hyp_lt_mc_p4_isLoaded = true;
+		}
+		return hyp_lt_mc_p4_;
 	}
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_p4()
 	{
@@ -14477,259 +15007,6 @@ void LoadAllBranches()
 		}
 		return mus_vertex_p4_;
 	}
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &els_pat_genMotherP4()
-	{
-		if (not els_pat_genMotherP4_isLoaded) {
-			if (els_pat_genMotherP4_branch != 0) {
-				els_pat_genMotherP4_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >::const_iterator i = els_pat_genMotherP4_.begin(); i != els_pat_genMotherP4_.end(); ++i) {
-					int e;
-					frexp(i->pt(), &e);
-					if (not isfinite(i->pt()) || e > 30) {
-						printf("branch els_pat_genMotherP4_branch contains a bad float: %f\n", i->pt());
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch els_pat_genMotherP4_branch does not exist!\n");
-				exit(1);
-			}
-			els_pat_genMotherP4_isLoaded = true;
-		}
-		return els_pat_genMotherP4_;
-	}
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &els_pat_genP4()
-	{
-		if (not els_pat_genP4_isLoaded) {
-			if (els_pat_genP4_branch != 0) {
-				els_pat_genP4_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >::const_iterator i = els_pat_genP4_.begin(); i != els_pat_genP4_.end(); ++i) {
-					int e;
-					frexp(i->pt(), &e);
-					if (not isfinite(i->pt()) || e > 30) {
-						printf("branch els_pat_genP4_branch contains a bad float: %f\n", i->pt());
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch els_pat_genP4_branch does not exist!\n");
-				exit(1);
-			}
-			els_pat_genP4_isLoaded = true;
-		}
-		return els_pat_genP4_;
-	}
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &els_pat_p4()
-	{
-		if (not els_pat_p4_isLoaded) {
-			if (els_pat_p4_branch != 0) {
-				els_pat_p4_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >::const_iterator i = els_pat_p4_.begin(); i != els_pat_p4_.end(); ++i) {
-					int e;
-					frexp(i->pt(), &e);
-					if (not isfinite(i->pt()) || e > 30) {
-						printf("branch els_pat_p4_branch contains a bad float: %f\n", i->pt());
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch els_pat_p4_branch does not exist!\n");
-				exit(1);
-			}
-			els_pat_p4_isLoaded = true;
-		}
-		return els_pat_p4_;
-	}
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_pat_genJet_p4()
-	{
-		if (not jets_pat_genJet_p4_isLoaded) {
-			if (jets_pat_genJet_p4_branch != 0) {
-				jets_pat_genJet_p4_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >::const_iterator i = jets_pat_genJet_p4_.begin(); i != jets_pat_genJet_p4_.end(); ++i) {
-					int e;
-					frexp(i->pt(), &e);
-					if (not isfinite(i->pt()) || e > 30) {
-						printf("branch jets_pat_genJet_p4_branch contains a bad float: %f\n", i->pt());
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_genJet_p4_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_genJet_p4_isLoaded = true;
-		}
-		return jets_pat_genJet_p4_;
-	}
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_pat_genPartonMother_p4()
-	{
-		if (not jets_pat_genPartonMother_p4_isLoaded) {
-			if (jets_pat_genPartonMother_p4_branch != 0) {
-				jets_pat_genPartonMother_p4_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >::const_iterator i = jets_pat_genPartonMother_p4_.begin(); i != jets_pat_genPartonMother_p4_.end(); ++i) {
-					int e;
-					frexp(i->pt(), &e);
-					if (not isfinite(i->pt()) || e > 30) {
-						printf("branch jets_pat_genPartonMother_p4_branch contains a bad float: %f\n", i->pt());
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_genPartonMother_p4_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_genPartonMother_p4_isLoaded = true;
-		}
-		return jets_pat_genPartonMother_p4_;
-	}
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_pat_genParton_p4()
-	{
-		if (not jets_pat_genParton_p4_isLoaded) {
-			if (jets_pat_genParton_p4_branch != 0) {
-				jets_pat_genParton_p4_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >::const_iterator i = jets_pat_genParton_p4_.begin(); i != jets_pat_genParton_p4_.end(); ++i) {
-					int e;
-					frexp(i->pt(), &e);
-					if (not isfinite(i->pt()) || e > 30) {
-						printf("branch jets_pat_genParton_p4_branch contains a bad float: %f\n", i->pt());
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_genParton_p4_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_genParton_p4_isLoaded = true;
-		}
-		return jets_pat_genParton_p4_;
-	}
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_pat_jet_p4()
-	{
-		if (not jets_pat_jet_p4_isLoaded) {
-			if (jets_pat_jet_p4_branch != 0) {
-				jets_pat_jet_p4_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >::const_iterator i = jets_pat_jet_p4_.begin(); i != jets_pat_jet_p4_.end(); ++i) {
-					int e;
-					frexp(i->pt(), &e);
-					if (not isfinite(i->pt()) || e > 30) {
-						printf("branch jets_pat_jet_p4_branch contains a bad float: %f\n", i->pt());
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_jet_p4_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_jet_p4_isLoaded = true;
-		}
-		return jets_pat_jet_p4_;
-	}
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_pat_jet_uncorp4()
-	{
-		if (not jets_pat_jet_uncorp4_isLoaded) {
-			if (jets_pat_jet_uncorp4_branch != 0) {
-				jets_pat_jet_uncorp4_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >::const_iterator i = jets_pat_jet_uncorp4_.begin(); i != jets_pat_jet_uncorp4_.end(); ++i) {
-					int e;
-					frexp(i->pt(), &e);
-					if (not isfinite(i->pt()) || e > 30) {
-						printf("branch jets_pat_jet_uncorp4_branch contains a bad float: %f\n", i->pt());
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_jet_uncorp4_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_jet_uncorp4_isLoaded = true;
-		}
-		return jets_pat_jet_uncorp4_;
-	}
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &mus_pat_genMotherP4()
-	{
-		if (not mus_pat_genMotherP4_isLoaded) {
-			if (mus_pat_genMotherP4_branch != 0) {
-				mus_pat_genMotherP4_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >::const_iterator i = mus_pat_genMotherP4_.begin(); i != mus_pat_genMotherP4_.end(); ++i) {
-					int e;
-					frexp(i->pt(), &e);
-					if (not isfinite(i->pt()) || e > 30) {
-						printf("branch mus_pat_genMotherP4_branch contains a bad float: %f\n", i->pt());
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch mus_pat_genMotherP4_branch does not exist!\n");
-				exit(1);
-			}
-			mus_pat_genMotherP4_isLoaded = true;
-		}
-		return mus_pat_genMotherP4_;
-	}
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &mus_pat_genP4()
-	{
-		if (not mus_pat_genP4_isLoaded) {
-			if (mus_pat_genP4_branch != 0) {
-				mus_pat_genP4_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >::const_iterator i = mus_pat_genP4_.begin(); i != mus_pat_genP4_.end(); ++i) {
-					int e;
-					frexp(i->pt(), &e);
-					if (not isfinite(i->pt()) || e > 30) {
-						printf("branch mus_pat_genP4_branch contains a bad float: %f\n", i->pt());
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch mus_pat_genP4_branch does not exist!\n");
-				exit(1);
-			}
-			mus_pat_genP4_isLoaded = true;
-		}
-		return mus_pat_genP4_;
-	}
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &mus_pat_p4()
-	{
-		if (not mus_pat_p4_isLoaded) {
-			if (mus_pat_p4_branch != 0) {
-				mus_pat_p4_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >::const_iterator i = mus_pat_p4_.begin(); i != mus_pat_p4_.end(); ++i) {
-					int e;
-					frexp(i->pt(), &e);
-					if (not isfinite(i->pt()) || e > 30) {
-						printf("branch mus_pat_p4_branch contains a bad float: %f\n", i->pt());
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch mus_pat_p4_branch does not exist!\n");
-				exit(1);
-			}
-			mus_pat_p4_isLoaded = true;
-		}
-		return mus_pat_p4_;
-	}
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &pfjets_p4()
 	{
 		if (not pfjets_p4_isLoaded) {
@@ -15166,6 +15443,31 @@ void LoadAllBranches()
 			vtxs_position_isLoaded = true;
 		}
 		return vtxs_position_;
+	}
+	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > > &genps_lepdaughter_p4()
+	{
+		if (not genps_lepdaughter_p4_isLoaded) {
+			if (genps_lepdaughter_p4_branch != 0) {
+				genps_lepdaughter_p4_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > >::const_iterator i = genps_lepdaughter_p4_.begin(); i != genps_lepdaughter_p4_.end(); ++i) {
+					for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >::const_iterator j = i->begin(); j != i->end(); ++j) {
+						int e;
+						frexp(j->pt(), &e);
+						if (not isfinite(j->pt()) || e > 30) {
+							printf("branch genps_lepdaughter_p4_branch contains a bad float: %f\n", j->pt());
+							exit(1);
+						}
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch genps_lepdaughter_p4_branch does not exist!\n");
+				exit(1);
+			}
+			genps_lepdaughter_p4_isLoaded = true;
+		}
+		return genps_lepdaughter_p4_;
 	}
 	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > > &hlt_trigObjs_p4()
 	{
@@ -16945,6 +17247,279 @@ void LoadAllBranches()
 			taus_calo_signaltrksInvariantMass_isLoaded = true;
 		}
 		return taus_calo_signaltrksInvariantMass_;
+	}
+	vector<float> &els_mc3dr()
+	{
+		if (not els_mc3dr_isLoaded) {
+			if (els_mc3dr_branch != 0) {
+				els_mc3dr_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = els_mc3dr_.begin(); i != els_mc3dr_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch els_mc3dr_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch els_mc3dr_branch does not exist!\n");
+				exit(1);
+			}
+			els_mc3dr_isLoaded = true;
+		}
+		return els_mc3dr_;
+	}
+	vector<float> &els_mcdr()
+	{
+		if (not els_mcdr_isLoaded) {
+			if (els_mcdr_branch != 0) {
+				els_mcdr_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = els_mcdr_.begin(); i != els_mcdr_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch els_mcdr_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch els_mcdr_branch does not exist!\n");
+				exit(1);
+			}
+			els_mcdr_isLoaded = true;
+		}
+		return els_mcdr_;
+	}
+	vector<float> &jets_mc3dr()
+	{
+		if (not jets_mc3dr_isLoaded) {
+			if (jets_mc3dr_branch != 0) {
+				jets_mc3dr_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = jets_mc3dr_.begin(); i != jets_mc3dr_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch jets_mc3dr_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch jets_mc3dr_branch does not exist!\n");
+				exit(1);
+			}
+			jets_mc3dr_isLoaded = true;
+		}
+		return jets_mc3dr_;
+	}
+	vector<float> &jets_mcdr()
+	{
+		if (not jets_mcdr_isLoaded) {
+			if (jets_mcdr_branch != 0) {
+				jets_mcdr_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = jets_mcdr_.begin(); i != jets_mcdr_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch jets_mcdr_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch jets_mcdr_branch does not exist!\n");
+				exit(1);
+			}
+			jets_mcdr_isLoaded = true;
+		}
+		return jets_mcdr_;
+	}
+	vector<float> &jets_mc_emEnergy()
+	{
+		if (not jets_mc_emEnergy_isLoaded) {
+			if (jets_mc_emEnergy_branch != 0) {
+				jets_mc_emEnergy_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = jets_mc_emEnergy_.begin(); i != jets_mc_emEnergy_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch jets_mc_emEnergy_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch jets_mc_emEnergy_branch does not exist!\n");
+				exit(1);
+			}
+			jets_mc_emEnergy_isLoaded = true;
+		}
+		return jets_mc_emEnergy_;
+	}
+	vector<float> &jets_mc_gpdr()
+	{
+		if (not jets_mc_gpdr_isLoaded) {
+			if (jets_mc_gpdr_branch != 0) {
+				jets_mc_gpdr_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = jets_mc_gpdr_.begin(); i != jets_mc_gpdr_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch jets_mc_gpdr_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch jets_mc_gpdr_branch does not exist!\n");
+				exit(1);
+			}
+			jets_mc_gpdr_isLoaded = true;
+		}
+		return jets_mc_gpdr_;
+	}
+	vector<float> &jets_mc_hadEnergy()
+	{
+		if (not jets_mc_hadEnergy_isLoaded) {
+			if (jets_mc_hadEnergy_branch != 0) {
+				jets_mc_hadEnergy_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = jets_mc_hadEnergy_.begin(); i != jets_mc_hadEnergy_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch jets_mc_hadEnergy_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch jets_mc_hadEnergy_branch does not exist!\n");
+				exit(1);
+			}
+			jets_mc_hadEnergy_isLoaded = true;
+		}
+		return jets_mc_hadEnergy_;
+	}
+	vector<float> &jets_mc_invEnergy()
+	{
+		if (not jets_mc_invEnergy_isLoaded) {
+			if (jets_mc_invEnergy_branch != 0) {
+				jets_mc_invEnergy_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = jets_mc_invEnergy_.begin(); i != jets_mc_invEnergy_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch jets_mc_invEnergy_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch jets_mc_invEnergy_branch does not exist!\n");
+				exit(1);
+			}
+			jets_mc_invEnergy_isLoaded = true;
+		}
+		return jets_mc_invEnergy_;
+	}
+	vector<float> &jets_mc_otherEnergy()
+	{
+		if (not jets_mc_otherEnergy_isLoaded) {
+			if (jets_mc_otherEnergy_branch != 0) {
+				jets_mc_otherEnergy_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = jets_mc_otherEnergy_.begin(); i != jets_mc_otherEnergy_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch jets_mc_otherEnergy_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch jets_mc_otherEnergy_branch does not exist!\n");
+				exit(1);
+			}
+			jets_mc_otherEnergy_isLoaded = true;
+		}
+		return jets_mc_otherEnergy_;
+	}
+	vector<float> &mus_mc3dr()
+	{
+		if (not mus_mc3dr_isLoaded) {
+			if (mus_mc3dr_branch != 0) {
+				mus_mc3dr_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = mus_mc3dr_.begin(); i != mus_mc3dr_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch mus_mc3dr_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch mus_mc3dr_branch does not exist!\n");
+				exit(1);
+			}
+			mus_mc3dr_isLoaded = true;
+		}
+		return mus_mc3dr_;
+	}
+	vector<float> &mus_mcdr()
+	{
+		if (not mus_mcdr_isLoaded) {
+			if (mus_mcdr_branch != 0) {
+				mus_mcdr_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = mus_mcdr_.begin(); i != mus_mcdr_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch mus_mcdr_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch mus_mcdr_branch does not exist!\n");
+				exit(1);
+			}
+			mus_mcdr_isLoaded = true;
+		}
+		return mus_mcdr_;
+	}
+	vector<float> &trk_mc3dr()
+	{
+		if (not trk_mc3dr_isLoaded) {
+			if (trk_mc3dr_branch != 0) {
+				trk_mc3dr_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = trk_mc3dr_.begin(); i != trk_mc3dr_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch trk_mc3dr_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch trk_mc3dr_branch does not exist!\n");
+				exit(1);
+			}
+			trk_mc3dr_isLoaded = true;
+		}
+		return trk_mc3dr_;
+	}
+	vector<float> &trk_mcdr()
+	{
+		if (not trk_mcdr_isLoaded) {
+			if (trk_mcdr_branch != 0) {
+				trk_mcdr_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = trk_mcdr_.begin(); i != trk_mcdr_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch trk_mcdr_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch trk_mcdr_branch does not exist!\n");
+				exit(1);
+			}
+			trk_mcdr_isLoaded = true;
+		}
+		return trk_mcdr_;
 	}
 	vector<float> &els_ecalJuraIso()
 	{
@@ -21251,783 +21826,6 @@ void LoadAllBranches()
 		}
 		return mus_z0corr_;
 	}
-	vector<float> &els_pat_caloIso()
-	{
-		if (not els_pat_caloIso_isLoaded) {
-			if (els_pat_caloIso_branch != 0) {
-				els_pat_caloIso_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = els_pat_caloIso_.begin(); i != els_pat_caloIso_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch els_pat_caloIso_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch els_pat_caloIso_branch does not exist!\n");
-				exit(1);
-			}
-			els_pat_caloIso_isLoaded = true;
-		}
-		return els_pat_caloIso_;
-	}
-	vector<float> &els_pat_ecalIso()
-	{
-		if (not els_pat_ecalIso_isLoaded) {
-			if (els_pat_ecalIso_branch != 0) {
-				els_pat_ecalIso_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = els_pat_ecalIso_.begin(); i != els_pat_ecalIso_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch els_pat_ecalIso_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch els_pat_ecalIso_branch does not exist!\n");
-				exit(1);
-			}
-			els_pat_ecalIso_isLoaded = true;
-		}
-		return els_pat_ecalIso_;
-	}
-	vector<float> &els_pat_hcalIso()
-	{
-		if (not els_pat_hcalIso_isLoaded) {
-			if (els_pat_hcalIso_branch != 0) {
-				els_pat_hcalIso_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = els_pat_hcalIso_.begin(); i != els_pat_hcalIso_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch els_pat_hcalIso_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch els_pat_hcalIso_branch does not exist!\n");
-				exit(1);
-			}
-			els_pat_hcalIso_isLoaded = true;
-		}
-		return els_pat_hcalIso_;
-	}
-	vector<float> &els_pat_looseId()
-	{
-		if (not els_pat_looseId_isLoaded) {
-			if (els_pat_looseId_branch != 0) {
-				els_pat_looseId_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = els_pat_looseId_.begin(); i != els_pat_looseId_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch els_pat_looseId_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch els_pat_looseId_branch does not exist!\n");
-				exit(1);
-			}
-			els_pat_looseId_isLoaded = true;
-		}
-		return els_pat_looseId_;
-	}
-	vector<float> &els_pat_robustHighEnergy()
-	{
-		if (not els_pat_robustHighEnergy_isLoaded) {
-			if (els_pat_robustHighEnergy_branch != 0) {
-				els_pat_robustHighEnergy_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = els_pat_robustHighEnergy_.begin(); i != els_pat_robustHighEnergy_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch els_pat_robustHighEnergy_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch els_pat_robustHighEnergy_branch does not exist!\n");
-				exit(1);
-			}
-			els_pat_robustHighEnergy_isLoaded = true;
-		}
-		return els_pat_robustHighEnergy_;
-	}
-	vector<float> &els_pat_robustLooseId()
-	{
-		if (not els_pat_robustLooseId_isLoaded) {
-			if (els_pat_robustLooseId_branch != 0) {
-				els_pat_robustLooseId_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = els_pat_robustLooseId_.begin(); i != els_pat_robustLooseId_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch els_pat_robustLooseId_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch els_pat_robustLooseId_branch does not exist!\n");
-				exit(1);
-			}
-			els_pat_robustLooseId_isLoaded = true;
-		}
-		return els_pat_robustLooseId_;
-	}
-	vector<float> &els_pat_robustTightId()
-	{
-		if (not els_pat_robustTightId_isLoaded) {
-			if (els_pat_robustTightId_branch != 0) {
-				els_pat_robustTightId_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = els_pat_robustTightId_.begin(); i != els_pat_robustTightId_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch els_pat_robustTightId_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch els_pat_robustTightId_branch does not exist!\n");
-				exit(1);
-			}
-			els_pat_robustTightId_isLoaded = true;
-		}
-		return els_pat_robustTightId_;
-	}
-	vector<float> &els_pat_scE1x5()
-	{
-		if (not els_pat_scE1x5_isLoaded) {
-			if (els_pat_scE1x5_branch != 0) {
-				els_pat_scE1x5_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = els_pat_scE1x5_.begin(); i != els_pat_scE1x5_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch els_pat_scE1x5_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch els_pat_scE1x5_branch does not exist!\n");
-				exit(1);
-			}
-			els_pat_scE1x5_isLoaded = true;
-		}
-		return els_pat_scE1x5_;
-	}
-	vector<float> &els_pat_scE2x5Max()
-	{
-		if (not els_pat_scE2x5Max_isLoaded) {
-			if (els_pat_scE2x5Max_branch != 0) {
-				els_pat_scE2x5Max_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = els_pat_scE2x5Max_.begin(); i != els_pat_scE2x5Max_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch els_pat_scE2x5Max_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch els_pat_scE2x5Max_branch does not exist!\n");
-				exit(1);
-			}
-			els_pat_scE2x5Max_isLoaded = true;
-		}
-		return els_pat_scE2x5Max_;
-	}
-	vector<float> &els_pat_scE5x5()
-	{
-		if (not els_pat_scE5x5_isLoaded) {
-			if (els_pat_scE5x5_branch != 0) {
-				els_pat_scE5x5_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = els_pat_scE5x5_.begin(); i != els_pat_scE5x5_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch els_pat_scE5x5_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch els_pat_scE5x5_branch does not exist!\n");
-				exit(1);
-			}
-			els_pat_scE5x5_isLoaded = true;
-		}
-		return els_pat_scE5x5_;
-	}
-	vector<float> &els_pat_sigmaEtaEta()
-	{
-		if (not els_pat_sigmaEtaEta_isLoaded) {
-			if (els_pat_sigmaEtaEta_branch != 0) {
-				els_pat_sigmaEtaEta_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = els_pat_sigmaEtaEta_.begin(); i != els_pat_sigmaEtaEta_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch els_pat_sigmaEtaEta_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch els_pat_sigmaEtaEta_branch does not exist!\n");
-				exit(1);
-			}
-			els_pat_sigmaEtaEta_isLoaded = true;
-		}
-		return els_pat_sigmaEtaEta_;
-	}
-	vector<float> &els_pat_sigmaIEtaIEta()
-	{
-		if (not els_pat_sigmaIEtaIEta_isLoaded) {
-			if (els_pat_sigmaIEtaIEta_branch != 0) {
-				els_pat_sigmaIEtaIEta_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = els_pat_sigmaIEtaIEta_.begin(); i != els_pat_sigmaIEtaIEta_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch els_pat_sigmaIEtaIEta_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch els_pat_sigmaIEtaIEta_branch does not exist!\n");
-				exit(1);
-			}
-			els_pat_sigmaIEtaIEta_isLoaded = true;
-		}
-		return els_pat_sigmaIEtaIEta_;
-	}
-	vector<float> &els_pat_tightId()
-	{
-		if (not els_pat_tightId_isLoaded) {
-			if (els_pat_tightId_branch != 0) {
-				els_pat_tightId_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = els_pat_tightId_.begin(); i != els_pat_tightId_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch els_pat_tightId_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch els_pat_tightId_branch does not exist!\n");
-				exit(1);
-			}
-			els_pat_tightId_isLoaded = true;
-		}
-		return els_pat_tightId_;
-	}
-	vector<float> &els_pat_trackIso()
-	{
-		if (not els_pat_trackIso_isLoaded) {
-			if (els_pat_trackIso_branch != 0) {
-				els_pat_trackIso_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = els_pat_trackIso_.begin(); i != els_pat_trackIso_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch els_pat_trackIso_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch els_pat_trackIso_branch does not exist!\n");
-				exit(1);
-			}
-			els_pat_trackIso_isLoaded = true;
-		}
-		return els_pat_trackIso_;
-	}
-	vector<float> &jets_pat_combinedSecondaryVertexBJetTag()
-	{
-		if (not jets_pat_combinedSecondaryVertexBJetTag_isLoaded) {
-			if (jets_pat_combinedSecondaryVertexBJetTag_branch != 0) {
-				jets_pat_combinedSecondaryVertexBJetTag_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = jets_pat_combinedSecondaryVertexBJetTag_.begin(); i != jets_pat_combinedSecondaryVertexBJetTag_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch jets_pat_combinedSecondaryVertexBJetTag_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_combinedSecondaryVertexBJetTag_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_combinedSecondaryVertexBJetTag_isLoaded = true;
-		}
-		return jets_pat_combinedSecondaryVertexBJetTag_;
-	}
-	vector<float> &jets_pat_combinedSecondaryVertexMVABJetTag()
-	{
-		if (not jets_pat_combinedSecondaryVertexMVABJetTag_isLoaded) {
-			if (jets_pat_combinedSecondaryVertexMVABJetTag_branch != 0) {
-				jets_pat_combinedSecondaryVertexMVABJetTag_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = jets_pat_combinedSecondaryVertexMVABJetTag_.begin(); i != jets_pat_combinedSecondaryVertexMVABJetTag_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch jets_pat_combinedSecondaryVertexMVABJetTag_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_combinedSecondaryVertexMVABJetTag_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_combinedSecondaryVertexMVABJetTag_isLoaded = true;
-		}
-		return jets_pat_combinedSecondaryVertexMVABJetTag_;
-	}
-	vector<float> &jets_pat_coneIsolationTauJetTag()
-	{
-		if (not jets_pat_coneIsolationTauJetTag_isLoaded) {
-			if (jets_pat_coneIsolationTauJetTag_branch != 0) {
-				jets_pat_coneIsolationTauJetTag_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = jets_pat_coneIsolationTauJetTag_.begin(); i != jets_pat_coneIsolationTauJetTag_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch jets_pat_coneIsolationTauJetTag_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_coneIsolationTauJetTag_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_coneIsolationTauJetTag_isLoaded = true;
-		}
-		return jets_pat_coneIsolationTauJetTag_;
-	}
-	vector<float> &jets_pat_impactParameterMVABJetTag()
-	{
-		if (not jets_pat_impactParameterMVABJetTag_isLoaded) {
-			if (jets_pat_impactParameterMVABJetTag_branch != 0) {
-				jets_pat_impactParameterMVABJetTag_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = jets_pat_impactParameterMVABJetTag_.begin(); i != jets_pat_impactParameterMVABJetTag_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch jets_pat_impactParameterMVABJetTag_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_impactParameterMVABJetTag_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_impactParameterMVABJetTag_isLoaded = true;
-		}
-		return jets_pat_impactParameterMVABJetTag_;
-	}
-	vector<float> &jets_pat_jetBProbabilityBJetTag()
-	{
-		if (not jets_pat_jetBProbabilityBJetTag_isLoaded) {
-			if (jets_pat_jetBProbabilityBJetTag_branch != 0) {
-				jets_pat_jetBProbabilityBJetTag_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = jets_pat_jetBProbabilityBJetTag_.begin(); i != jets_pat_jetBProbabilityBJetTag_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch jets_pat_jetBProbabilityBJetTag_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_jetBProbabilityBJetTag_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_jetBProbabilityBJetTag_isLoaded = true;
-		}
-		return jets_pat_jetBProbabilityBJetTag_;
-	}
-	vector<float> &jets_pat_jetCharge()
-	{
-		if (not jets_pat_jetCharge_isLoaded) {
-			if (jets_pat_jetCharge_branch != 0) {
-				jets_pat_jetCharge_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = jets_pat_jetCharge_.begin(); i != jets_pat_jetCharge_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch jets_pat_jetCharge_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_jetCharge_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_jetCharge_isLoaded = true;
-		}
-		return jets_pat_jetCharge_;
-	}
-	vector<float> &jets_pat_jetProbabilityBJetTag()
-	{
-		if (not jets_pat_jetProbabilityBJetTag_isLoaded) {
-			if (jets_pat_jetProbabilityBJetTag_branch != 0) {
-				jets_pat_jetProbabilityBJetTag_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = jets_pat_jetProbabilityBJetTag_.begin(); i != jets_pat_jetProbabilityBJetTag_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch jets_pat_jetProbabilityBJetTag_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_jetProbabilityBJetTag_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_jetProbabilityBJetTag_isLoaded = true;
-		}
-		return jets_pat_jetProbabilityBJetTag_;
-	}
-	vector<float> &jets_pat_noCorrF()
-	{
-		if (not jets_pat_noCorrF_isLoaded) {
-			if (jets_pat_noCorrF_branch != 0) {
-				jets_pat_noCorrF_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = jets_pat_noCorrF_.begin(); i != jets_pat_noCorrF_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch jets_pat_noCorrF_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_noCorrF_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_noCorrF_isLoaded = true;
-		}
-		return jets_pat_noCorrF_;
-	}
-	vector<float> &jets_pat_simpleSecondaryVertexBJetTag()
-	{
-		if (not jets_pat_simpleSecondaryVertexBJetTag_isLoaded) {
-			if (jets_pat_simpleSecondaryVertexBJetTag_branch != 0) {
-				jets_pat_simpleSecondaryVertexBJetTag_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = jets_pat_simpleSecondaryVertexBJetTag_.begin(); i != jets_pat_simpleSecondaryVertexBJetTag_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch jets_pat_simpleSecondaryVertexBJetTag_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_simpleSecondaryVertexBJetTag_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_simpleSecondaryVertexBJetTag_isLoaded = true;
-		}
-		return jets_pat_simpleSecondaryVertexBJetTag_;
-	}
-	vector<float> &jets_pat_softElectronByIP3dBJetTag()
-	{
-		if (not jets_pat_softElectronByIP3dBJetTag_isLoaded) {
-			if (jets_pat_softElectronByIP3dBJetTag_branch != 0) {
-				jets_pat_softElectronByIP3dBJetTag_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = jets_pat_softElectronByIP3dBJetTag_.begin(); i != jets_pat_softElectronByIP3dBJetTag_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch jets_pat_softElectronByIP3dBJetTag_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_softElectronByIP3dBJetTag_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_softElectronByIP3dBJetTag_isLoaded = true;
-		}
-		return jets_pat_softElectronByIP3dBJetTag_;
-	}
-	vector<float> &jets_pat_softElectronByPtBJetTag()
-	{
-		if (not jets_pat_softElectronByPtBJetTag_isLoaded) {
-			if (jets_pat_softElectronByPtBJetTag_branch != 0) {
-				jets_pat_softElectronByPtBJetTag_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = jets_pat_softElectronByPtBJetTag_.begin(); i != jets_pat_softElectronByPtBJetTag_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch jets_pat_softElectronByPtBJetTag_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_softElectronByPtBJetTag_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_softElectronByPtBJetTag_isLoaded = true;
-		}
-		return jets_pat_softElectronByPtBJetTag_;
-	}
-	vector<float> &jets_pat_softMuonBJetTag()
-	{
-		if (not jets_pat_softMuonBJetTag_isLoaded) {
-			if (jets_pat_softMuonBJetTag_branch != 0) {
-				jets_pat_softMuonBJetTag_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = jets_pat_softMuonBJetTag_.begin(); i != jets_pat_softMuonBJetTag_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch jets_pat_softMuonBJetTag_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_softMuonBJetTag_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_softMuonBJetTag_isLoaded = true;
-		}
-		return jets_pat_softMuonBJetTag_;
-	}
-	vector<float> &jets_pat_softMuonNoIPBJetTag()
-	{
-		if (not jets_pat_softMuonNoIPBJetTag_isLoaded) {
-			if (jets_pat_softMuonNoIPBJetTag_branch != 0) {
-				jets_pat_softMuonNoIPBJetTag_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = jets_pat_softMuonNoIPBJetTag_.begin(); i != jets_pat_softMuonNoIPBJetTag_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch jets_pat_softMuonNoIPBJetTag_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_softMuonNoIPBJetTag_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_softMuonNoIPBJetTag_isLoaded = true;
-		}
-		return jets_pat_softMuonNoIPBJetTag_;
-	}
-	vector<float> &jets_pat_trackCountingHighEffBJetTag()
-	{
-		if (not jets_pat_trackCountingHighEffBJetTag_isLoaded) {
-			if (jets_pat_trackCountingHighEffBJetTag_branch != 0) {
-				jets_pat_trackCountingHighEffBJetTag_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = jets_pat_trackCountingHighEffBJetTag_.begin(); i != jets_pat_trackCountingHighEffBJetTag_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch jets_pat_trackCountingHighEffBJetTag_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_trackCountingHighEffBJetTag_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_trackCountingHighEffBJetTag_isLoaded = true;
-		}
-		return jets_pat_trackCountingHighEffBJetTag_;
-	}
-	vector<float> &jets_pat_trackCountingHighPurBJetTag()
-	{
-		if (not jets_pat_trackCountingHighPurBJetTag_isLoaded) {
-			if (jets_pat_trackCountingHighPurBJetTag_branch != 0) {
-				jets_pat_trackCountingHighPurBJetTag_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = jets_pat_trackCountingHighPurBJetTag_.begin(); i != jets_pat_trackCountingHighPurBJetTag_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch jets_pat_trackCountingHighPurBJetTag_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_trackCountingHighPurBJetTag_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_trackCountingHighPurBJetTag_isLoaded = true;
-		}
-		return jets_pat_trackCountingHighPurBJetTag_;
-	}
-	vector<float> &mus_pat_caloIso()
-	{
-		if (not mus_pat_caloIso_isLoaded) {
-			if (mus_pat_caloIso_branch != 0) {
-				mus_pat_caloIso_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = mus_pat_caloIso_.begin(); i != mus_pat_caloIso_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch mus_pat_caloIso_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch mus_pat_caloIso_branch does not exist!\n");
-				exit(1);
-			}
-			mus_pat_caloIso_isLoaded = true;
-		}
-		return mus_pat_caloIso_;
-	}
-	vector<float> &mus_pat_calovetoDep()
-	{
-		if (not mus_pat_calovetoDep_isLoaded) {
-			if (mus_pat_calovetoDep_branch != 0) {
-				mus_pat_calovetoDep_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = mus_pat_calovetoDep_.begin(); i != mus_pat_calovetoDep_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch mus_pat_calovetoDep_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch mus_pat_calovetoDep_branch does not exist!\n");
-				exit(1);
-			}
-			mus_pat_calovetoDep_isLoaded = true;
-		}
-		return mus_pat_calovetoDep_;
-	}
-	vector<float> &mus_pat_ecalIso()
-	{
-		if (not mus_pat_ecalIso_isLoaded) {
-			if (mus_pat_ecalIso_branch != 0) {
-				mus_pat_ecalIso_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = mus_pat_ecalIso_.begin(); i != mus_pat_ecalIso_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch mus_pat_ecalIso_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch mus_pat_ecalIso_branch does not exist!\n");
-				exit(1);
-			}
-			mus_pat_ecalIso_isLoaded = true;
-		}
-		return mus_pat_ecalIso_;
-	}
-	vector<float> &mus_pat_ecalvetoDep()
-	{
-		if (not mus_pat_ecalvetoDep_isLoaded) {
-			if (mus_pat_ecalvetoDep_branch != 0) {
-				mus_pat_ecalvetoDep_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = mus_pat_ecalvetoDep_.begin(); i != mus_pat_ecalvetoDep_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch mus_pat_ecalvetoDep_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch mus_pat_ecalvetoDep_branch does not exist!\n");
-				exit(1);
-			}
-			mus_pat_ecalvetoDep_isLoaded = true;
-		}
-		return mus_pat_ecalvetoDep_;
-	}
-	vector<float> &mus_pat_hcalIso()
-	{
-		if (not mus_pat_hcalIso_isLoaded) {
-			if (mus_pat_hcalIso_branch != 0) {
-				mus_pat_hcalIso_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = mus_pat_hcalIso_.begin(); i != mus_pat_hcalIso_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch mus_pat_hcalIso_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch mus_pat_hcalIso_branch does not exist!\n");
-				exit(1);
-			}
-			mus_pat_hcalIso_isLoaded = true;
-		}
-		return mus_pat_hcalIso_;
-	}
-	vector<float> &mus_pat_hcalvetoDep()
-	{
-		if (not mus_pat_hcalvetoDep_isLoaded) {
-			if (mus_pat_hcalvetoDep_branch != 0) {
-				mus_pat_hcalvetoDep_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = mus_pat_hcalvetoDep_.begin(); i != mus_pat_hcalvetoDep_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch mus_pat_hcalvetoDep_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch mus_pat_hcalvetoDep_branch does not exist!\n");
-				exit(1);
-			}
-			mus_pat_hcalvetoDep_isLoaded = true;
-		}
-		return mus_pat_hcalvetoDep_;
-	}
-	vector<float> &mus_pat_trackIso()
-	{
-		if (not mus_pat_trackIso_isLoaded) {
-			if (mus_pat_trackIso_branch != 0) {
-				mus_pat_trackIso_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = mus_pat_trackIso_.begin(); i != mus_pat_trackIso_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch mus_pat_trackIso_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch mus_pat_trackIso_branch does not exist!\n");
-				exit(1);
-			}
-			mus_pat_trackIso_isLoaded = true;
-		}
-		return mus_pat_trackIso_;
-	}
-	vector<float> &mus_pat_trckvetoDep()
-	{
-		if (not mus_pat_trckvetoDep_isLoaded) {
-			if (mus_pat_trckvetoDep_branch != 0) {
-				mus_pat_trckvetoDep_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = mus_pat_trckvetoDep_.begin(); i != mus_pat_trckvetoDep_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch mus_pat_trckvetoDep_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch mus_pat_trckvetoDep_branch does not exist!\n");
-				exit(1);
-			}
-			mus_pat_trckvetoDep_isLoaded = true;
-		}
-		return mus_pat_trckvetoDep_;
-	}
 	vector<float> &pfjets_chargedEmE()
 	{
 		if (not pfjets_chargedEmE_isLoaded) {
@@ -25262,6 +25060,36 @@ void LoadAllBranches()
 		}
 		return l1_nmus_;
 	}
+	int &pdfinfo_id1()
+	{
+		if (not pdfinfo_id1_isLoaded) {
+			if (pdfinfo_id1_branch != 0) {
+				pdfinfo_id1_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch pdfinfo_id1_branch does not exist!\n");
+				exit(1);
+			}
+			pdfinfo_id1_isLoaded = true;
+		}
+		return pdfinfo_id1_;
+	}
+	int &pdfinfo_id2()
+	{
+		if (not pdfinfo_id2_isLoaded) {
+			if (pdfinfo_id2_branch != 0) {
+				pdfinfo_id2_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch pdfinfo_id2_branch does not exist!\n");
+				exit(1);
+			}
+			pdfinfo_id2_isLoaded = true;
+		}
+		return pdfinfo_id2_;
+	}
 	vector<int> &evt_ecaliPhiSuspects()
 	{
 		if (not evt_ecaliPhiSuspects_isLoaded) {
@@ -25381,6 +25209,396 @@ void LoadAllBranches()
 			taus_calo_tightId_isLoaded = true;
 		}
 		return taus_calo_tightId_;
+	}
+	vector<int> &els_mc3_id()
+	{
+		if (not els_mc3_id_isLoaded) {
+			if (els_mc3_id_branch != 0) {
+				els_mc3_id_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch els_mc3_id_branch does not exist!\n");
+				exit(1);
+			}
+			els_mc3_id_isLoaded = true;
+		}
+		return els_mc3_id_;
+	}
+	vector<int> &els_mc3idx()
+	{
+		if (not els_mc3idx_isLoaded) {
+			if (els_mc3idx_branch != 0) {
+				els_mc3idx_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch els_mc3idx_branch does not exist!\n");
+				exit(1);
+			}
+			els_mc3idx_isLoaded = true;
+		}
+		return els_mc3idx_;
+	}
+	vector<int> &els_mc3_motherid()
+	{
+		if (not els_mc3_motherid_isLoaded) {
+			if (els_mc3_motherid_branch != 0) {
+				els_mc3_motherid_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch els_mc3_motherid_branch does not exist!\n");
+				exit(1);
+			}
+			els_mc3_motherid_isLoaded = true;
+		}
+		return els_mc3_motherid_;
+	}
+	vector<int> &els_mc3_motheridx()
+	{
+		if (not els_mc3_motheridx_isLoaded) {
+			if (els_mc3_motheridx_branch != 0) {
+				els_mc3_motheridx_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch els_mc3_motheridx_branch does not exist!\n");
+				exit(1);
+			}
+			els_mc3_motheridx_isLoaded = true;
+		}
+		return els_mc3_motheridx_;
+	}
+	vector<int> &els_mc_id()
+	{
+		if (not els_mc_id_isLoaded) {
+			if (els_mc_id_branch != 0) {
+				els_mc_id_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch els_mc_id_branch does not exist!\n");
+				exit(1);
+			}
+			els_mc_id_isLoaded = true;
+		}
+		return els_mc_id_;
+	}
+	vector<int> &els_mcidx()
+	{
+		if (not els_mcidx_isLoaded) {
+			if (els_mcidx_branch != 0) {
+				els_mcidx_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch els_mcidx_branch does not exist!\n");
+				exit(1);
+			}
+			els_mcidx_isLoaded = true;
+		}
+		return els_mcidx_;
+	}
+	vector<int> &els_mc_motherid()
+	{
+		if (not els_mc_motherid_isLoaded) {
+			if (els_mc_motherid_branch != 0) {
+				els_mc_motherid_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch els_mc_motherid_branch does not exist!\n");
+				exit(1);
+			}
+			els_mc_motherid_isLoaded = true;
+		}
+		return els_mc_motherid_;
+	}
+	vector<int> &jets_mc3_id()
+	{
+		if (not jets_mc3_id_isLoaded) {
+			if (jets_mc3_id_branch != 0) {
+				jets_mc3_id_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch jets_mc3_id_branch does not exist!\n");
+				exit(1);
+			}
+			jets_mc3_id_isLoaded = true;
+		}
+		return jets_mc3_id_;
+	}
+	vector<int> &jets_mc3idx()
+	{
+		if (not jets_mc3idx_isLoaded) {
+			if (jets_mc3idx_branch != 0) {
+				jets_mc3idx_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch jets_mc3idx_branch does not exist!\n");
+				exit(1);
+			}
+			jets_mc3idx_isLoaded = true;
+		}
+		return jets_mc3idx_;
+	}
+	vector<int> &jets_mc_gpidx()
+	{
+		if (not jets_mc_gpidx_isLoaded) {
+			if (jets_mc_gpidx_branch != 0) {
+				jets_mc_gpidx_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch jets_mc_gpidx_branch does not exist!\n");
+				exit(1);
+			}
+			jets_mc_gpidx_isLoaded = true;
+		}
+		return jets_mc_gpidx_;
+	}
+	vector<int> &jets_mc_id()
+	{
+		if (not jets_mc_id_isLoaded) {
+			if (jets_mc_id_branch != 0) {
+				jets_mc_id_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch jets_mc_id_branch does not exist!\n");
+				exit(1);
+			}
+			jets_mc_id_isLoaded = true;
+		}
+		return jets_mc_id_;
+	}
+	vector<int> &jets_mcidx()
+	{
+		if (not jets_mcidx_isLoaded) {
+			if (jets_mcidx_branch != 0) {
+				jets_mcidx_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch jets_mcidx_branch does not exist!\n");
+				exit(1);
+			}
+			jets_mcidx_isLoaded = true;
+		}
+		return jets_mcidx_;
+	}
+	vector<int> &mus_mc3_id()
+	{
+		if (not mus_mc3_id_isLoaded) {
+			if (mus_mc3_id_branch != 0) {
+				mus_mc3_id_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch mus_mc3_id_branch does not exist!\n");
+				exit(1);
+			}
+			mus_mc3_id_isLoaded = true;
+		}
+		return mus_mc3_id_;
+	}
+	vector<int> &mus_mc3idx()
+	{
+		if (not mus_mc3idx_isLoaded) {
+			if (mus_mc3idx_branch != 0) {
+				mus_mc3idx_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch mus_mc3idx_branch does not exist!\n");
+				exit(1);
+			}
+			mus_mc3idx_isLoaded = true;
+		}
+		return mus_mc3idx_;
+	}
+	vector<int> &mus_mc3_motherid()
+	{
+		if (not mus_mc3_motherid_isLoaded) {
+			if (mus_mc3_motherid_branch != 0) {
+				mus_mc3_motherid_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch mus_mc3_motherid_branch does not exist!\n");
+				exit(1);
+			}
+			mus_mc3_motherid_isLoaded = true;
+		}
+		return mus_mc3_motherid_;
+	}
+	vector<int> &mus_mc3_motheridx()
+	{
+		if (not mus_mc3_motheridx_isLoaded) {
+			if (mus_mc3_motheridx_branch != 0) {
+				mus_mc3_motheridx_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch mus_mc3_motheridx_branch does not exist!\n");
+				exit(1);
+			}
+			mus_mc3_motheridx_isLoaded = true;
+		}
+		return mus_mc3_motheridx_;
+	}
+	vector<int> &mus_mc_id()
+	{
+		if (not mus_mc_id_isLoaded) {
+			if (mus_mc_id_branch != 0) {
+				mus_mc_id_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch mus_mc_id_branch does not exist!\n");
+				exit(1);
+			}
+			mus_mc_id_isLoaded = true;
+		}
+		return mus_mc_id_;
+	}
+	vector<int> &mus_mcidx()
+	{
+		if (not mus_mcidx_isLoaded) {
+			if (mus_mcidx_branch != 0) {
+				mus_mcidx_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch mus_mcidx_branch does not exist!\n");
+				exit(1);
+			}
+			mus_mcidx_isLoaded = true;
+		}
+		return mus_mcidx_;
+	}
+	vector<int> &mus_mc_motherid()
+	{
+		if (not mus_mc_motherid_isLoaded) {
+			if (mus_mc_motherid_branch != 0) {
+				mus_mc_motherid_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch mus_mc_motherid_branch does not exist!\n");
+				exit(1);
+			}
+			mus_mc_motherid_isLoaded = true;
+		}
+		return mus_mc_motherid_;
+	}
+	vector<int> &trk_mc3_id()
+	{
+		if (not trk_mc3_id_isLoaded) {
+			if (trk_mc3_id_branch != 0) {
+				trk_mc3_id_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch trk_mc3_id_branch does not exist!\n");
+				exit(1);
+			}
+			trk_mc3_id_isLoaded = true;
+		}
+		return trk_mc3_id_;
+	}
+	vector<int> &trk_mc3idx()
+	{
+		if (not trk_mc3idx_isLoaded) {
+			if (trk_mc3idx_branch != 0) {
+				trk_mc3idx_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch trk_mc3idx_branch does not exist!\n");
+				exit(1);
+			}
+			trk_mc3idx_isLoaded = true;
+		}
+		return trk_mc3idx_;
+	}
+	vector<int> &trk_mc3_motherid()
+	{
+		if (not trk_mc3_motherid_isLoaded) {
+			if (trk_mc3_motherid_branch != 0) {
+				trk_mc3_motherid_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch trk_mc3_motherid_branch does not exist!\n");
+				exit(1);
+			}
+			trk_mc3_motherid_isLoaded = true;
+		}
+		return trk_mc3_motherid_;
+	}
+	vector<int> &trk_mc3_motheridx()
+	{
+		if (not trk_mc3_motheridx_isLoaded) {
+			if (trk_mc3_motheridx_branch != 0) {
+				trk_mc3_motheridx_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch trk_mc3_motheridx_branch does not exist!\n");
+				exit(1);
+			}
+			trk_mc3_motheridx_isLoaded = true;
+		}
+		return trk_mc3_motheridx_;
+	}
+	vector<int> &trk_mc_id()
+	{
+		if (not trk_mc_id_isLoaded) {
+			if (trk_mc_id_branch != 0) {
+				trk_mc_id_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch trk_mc_id_branch does not exist!\n");
+				exit(1);
+			}
+			trk_mc_id_isLoaded = true;
+		}
+		return trk_mc_id_;
+	}
+	vector<int> &trk_mcidx()
+	{
+		if (not trk_mcidx_isLoaded) {
+			if (trk_mcidx_branch != 0) {
+				trk_mcidx_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch trk_mcidx_branch does not exist!\n");
+				exit(1);
+			}
+			trk_mcidx_isLoaded = true;
+		}
+		return trk_mcidx_;
+	}
+	vector<int> &trk_mc_motherid()
+	{
+		if (not trk_mc_motherid_isLoaded) {
+			if (trk_mc_motherid_branch != 0) {
+				trk_mc_motherid_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch trk_mc_motherid_branch does not exist!\n");
+				exit(1);
+			}
+			trk_mc_motherid_isLoaded = true;
+		}
+		return trk_mc_motherid_;
 	}
 	vector<int> &els_closestJet()
 	{
@@ -25712,6 +25930,51 @@ void LoadAllBranches()
 		}
 		return els_valid_pixelhits_;
 	}
+	vector<int> &genps_id()
+	{
+		if (not genps_id_isLoaded) {
+			if (genps_id_branch != 0) {
+				genps_id_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch genps_id_branch does not exist!\n");
+				exit(1);
+			}
+			genps_id_isLoaded = true;
+		}
+		return genps_id_;
+	}
+	vector<int> &genps_id_mother()
+	{
+		if (not genps_id_mother_isLoaded) {
+			if (genps_id_mother_branch != 0) {
+				genps_id_mother_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch genps_id_mother_branch does not exist!\n");
+				exit(1);
+			}
+			genps_id_mother_isLoaded = true;
+		}
+		return genps_id_mother_;
+	}
+	vector<int> &genps_status()
+	{
+		if (not genps_status_isLoaded) {
+			if (genps_status_branch != 0) {
+				genps_status_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch genps_status_branch does not exist!\n");
+				exit(1);
+			}
+			genps_status_isLoaded = true;
+		}
+		return genps_status_;
+	}
 	vector<int> &hyp_ll_charge()
 	{
 		if (not hyp_ll_charge_isLoaded) {
@@ -25936,6 +26199,66 @@ void LoadAllBranches()
 			hyp_FVFit_status_isLoaded = true;
 		}
 		return hyp_FVFit_status_;
+	}
+	vector<int> &hyp_ll_mc_id()
+	{
+		if (not hyp_ll_mc_id_isLoaded) {
+			if (hyp_ll_mc_id_branch != 0) {
+				hyp_ll_mc_id_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch hyp_ll_mc_id_branch does not exist!\n");
+				exit(1);
+			}
+			hyp_ll_mc_id_isLoaded = true;
+		}
+		return hyp_ll_mc_id_;
+	}
+	vector<int> &hyp_ll_mc_motherid()
+	{
+		if (not hyp_ll_mc_motherid_isLoaded) {
+			if (hyp_ll_mc_motherid_branch != 0) {
+				hyp_ll_mc_motherid_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch hyp_ll_mc_motherid_branch does not exist!\n");
+				exit(1);
+			}
+			hyp_ll_mc_motherid_isLoaded = true;
+		}
+		return hyp_ll_mc_motherid_;
+	}
+	vector<int> &hyp_lt_mc_id()
+	{
+		if (not hyp_lt_mc_id_isLoaded) {
+			if (hyp_lt_mc_id_branch != 0) {
+				hyp_lt_mc_id_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch hyp_lt_mc_id_branch does not exist!\n");
+				exit(1);
+			}
+			hyp_lt_mc_id_isLoaded = true;
+		}
+		return hyp_lt_mc_id_;
+	}
+	vector<int> &hyp_lt_mc_motherid()
+	{
+		if (not hyp_lt_mc_motherid_isLoaded) {
+			if (hyp_lt_mc_motherid_branch != 0) {
+				hyp_lt_mc_motherid_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch hyp_lt_mc_motherid_branch does not exist!\n");
+				exit(1);
+			}
+			hyp_lt_mc_motherid_isLoaded = true;
+		}
+		return hyp_lt_mc_motherid_;
 	}
 	vector<int> &hyp_quadlep_first_type()
 	{
@@ -26777,171 +27100,6 @@ void LoadAllBranches()
 		}
 		return mus_validHits_;
 	}
-	vector<int> &els_pat_genID()
-	{
-		if (not els_pat_genID_isLoaded) {
-			if (els_pat_genID_branch != 0) {
-				els_pat_genID_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch els_pat_genID_branch does not exist!\n");
-				exit(1);
-			}
-			els_pat_genID_isLoaded = true;
-		}
-		return els_pat_genID_;
-	}
-	vector<int> &els_pat_genMotherID()
-	{
-		if (not els_pat_genMotherID_isLoaded) {
-			if (els_pat_genMotherID_branch != 0) {
-				els_pat_genMotherID_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch els_pat_genMotherID_branch does not exist!\n");
-				exit(1);
-			}
-			els_pat_genMotherID_isLoaded = true;
-		}
-		return els_pat_genMotherID_;
-	}
-	vector<int> &jets_pat_genPartonMother_id()
-	{
-		if (not jets_pat_genPartonMother_id_isLoaded) {
-			if (jets_pat_genPartonMother_id_branch != 0) {
-				jets_pat_genPartonMother_id_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_genPartonMother_id_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_genPartonMother_id_isLoaded = true;
-		}
-		return jets_pat_genPartonMother_id_;
-	}
-	vector<int> &jets_pat_genParton_id()
-	{
-		if (not jets_pat_genParton_id_isLoaded) {
-			if (jets_pat_genParton_id_branch != 0) {
-				jets_pat_genParton_id_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_genParton_id_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_genParton_id_isLoaded = true;
-		}
-		return jets_pat_genParton_id_;
-	}
-	vector<int> &jets_pat_jetIDLoose()
-	{
-		if (not jets_pat_jetIDLoose_isLoaded) {
-			if (jets_pat_jetIDLoose_branch != 0) {
-				jets_pat_jetIDLoose_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_jetIDLoose_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_jetIDLoose_isLoaded = true;
-		}
-		return jets_pat_jetIDLoose_;
-	}
-	vector<int> &jets_pat_jetIDLooseAOD()
-	{
-		if (not jets_pat_jetIDLooseAOD_isLoaded) {
-			if (jets_pat_jetIDLooseAOD_branch != 0) {
-				jets_pat_jetIDLooseAOD_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_jetIDLooseAOD_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_jetIDLooseAOD_isLoaded = true;
-		}
-		return jets_pat_jetIDLooseAOD_;
-	}
-	vector<int> &jets_pat_jetIDMinimal()
-	{
-		if (not jets_pat_jetIDMinimal_isLoaded) {
-			if (jets_pat_jetIDMinimal_branch != 0) {
-				jets_pat_jetIDMinimal_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_jetIDMinimal_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_jetIDMinimal_isLoaded = true;
-		}
-		return jets_pat_jetIDMinimal_;
-	}
-	vector<int> &jets_pat_jetIDTight()
-	{
-		if (not jets_pat_jetIDTight_isLoaded) {
-			if (jets_pat_jetIDTight_branch != 0) {
-				jets_pat_jetIDTight_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_jetIDTight_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_jetIDTight_isLoaded = true;
-		}
-		return jets_pat_jetIDTight_;
-	}
-	vector<int> &jets_pat_partonFlavour()
-	{
-		if (not jets_pat_partonFlavour_isLoaded) {
-			if (jets_pat_partonFlavour_branch != 0) {
-				jets_pat_partonFlavour_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch jets_pat_partonFlavour_branch does not exist!\n");
-				exit(1);
-			}
-			jets_pat_partonFlavour_isLoaded = true;
-		}
-		return jets_pat_partonFlavour_;
-	}
-	vector<int> &mus_pat_genID()
-	{
-		if (not mus_pat_genID_isLoaded) {
-			if (mus_pat_genID_branch != 0) {
-				mus_pat_genID_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch mus_pat_genID_branch does not exist!\n");
-				exit(1);
-			}
-			mus_pat_genID_isLoaded = true;
-		}
-		return mus_pat_genID_;
-	}
-	vector<int> &mus_pat_genMotherID()
-	{
-		if (not mus_pat_genMotherID_isLoaded) {
-			if (mus_pat_genMotherID_branch != 0) {
-				mus_pat_genMotherID_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch mus_pat_genMotherID_branch does not exist!\n");
-				exit(1);
-			}
-			mus_pat_genMotherID_isLoaded = true;
-		}
-		return mus_pat_genMotherID_;
-	}
 	vector<int> &pfjets_chargedMultiplicity()
 	{
 		if (not pfjets_chargedMultiplicity_isLoaded) {
@@ -27647,6 +27805,36 @@ void LoadAllBranches()
 		}
 		return taus_calo_sigtrk_idx_;
 	}
+	vector<vector<int> > &genps_lepdaughter_id()
+	{
+		if (not genps_lepdaughter_id_isLoaded) {
+			if (genps_lepdaughter_id_branch != 0) {
+				genps_lepdaughter_id_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch genps_lepdaughter_id_branch does not exist!\n");
+				exit(1);
+			}
+			genps_lepdaughter_id_isLoaded = true;
+		}
+		return genps_lepdaughter_id_;
+	}
+	vector<vector<int> > &genps_lepdaughter_idx()
+	{
+		if (not genps_lepdaughter_idx_isLoaded) {
+			if (genps_lepdaughter_idx_branch != 0) {
+				genps_lepdaughter_idx_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch genps_lepdaughter_idx_branch does not exist!\n");
+				exit(1);
+			}
+			genps_lepdaughter_idx_isLoaded = true;
+		}
+		return genps_lepdaughter_idx_;
+	}
 	vector<vector<int> > &hlt_trigObjs_id()
 	{
 		if (not hlt_trigObjs_id_isLoaded) {
@@ -27781,6 +27969,51 @@ void LoadAllBranches()
 			evt_run_isLoaded = true;
 		}
 		return evt_run_;
+	}
+	unsigned int &genps_flavorHistoryFilterResult()
+	{
+		if (not genps_flavorHistoryFilterResult_isLoaded) {
+			if (genps_flavorHistoryFilterResult_branch != 0) {
+				genps_flavorHistoryFilterResult_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch genps_flavorHistoryFilterResult_branch does not exist!\n");
+				exit(1);
+			}
+			genps_flavorHistoryFilterResult_isLoaded = true;
+		}
+		return genps_flavorHistoryFilterResult_;
+	}
+	unsigned int &evt_ngenjets()
+	{
+		if (not evt_ngenjets_isLoaded) {
+			if (evt_ngenjets_branch != 0) {
+				evt_ngenjets_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch evt_ngenjets_branch does not exist!\n");
+				exit(1);
+			}
+			evt_ngenjets_isLoaded = true;
+		}
+		return evt_ngenjets_;
+	}
+	unsigned int &genps_signalProcessID()
+	{
+		if (not genps_signalProcessID_isLoaded) {
+			if (genps_signalProcessID_branch != 0) {
+				genps_signalProcessID_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch genps_signalProcessID_branch does not exist!\n");
+				exit(1);
+			}
+			genps_signalProcessID_isLoaded = true;
+		}
+		return genps_signalProcessID_;
 	}
 	unsigned int &hlt_bits1()
 	{
@@ -28442,50 +28675,35 @@ void LoadAllBranches()
 		}
 		return hyp_trilep_third_index_;
 	}
-	vector<unsigned int> &els_pat_flag()
+	int &evt_nEvts()
 	{
-		if (not els_pat_flag_isLoaded) {
-			if (els_pat_flag_branch != 0) {
-				els_pat_flag_branch->GetEntry(index);
+		if (not evt_nEvts_isLoaded) {
+			if (evt_nEvts_branch != 0) {
+				evt_nEvts_branch->GetEntry(index);
 				#ifdef PARANOIA
 				#endif // #ifdef PARANOIA
 			} else { 
-				printf("branch els_pat_flag_branch does not exist!\n");
+				printf("branch evt_nEvts_branch does not exist!\n");
 				exit(1);
 			}
-			els_pat_flag_isLoaded = true;
+			evt_nEvts_isLoaded = true;
 		}
-		return els_pat_flag_;
+		return evt_nEvts_;
 	}
-	vector<unsigned int> &jets_pat_flag()
+	float &evt_filt_eff()
 	{
-		if (not jets_pat_flag_isLoaded) {
-			if (jets_pat_flag_branch != 0) {
-				jets_pat_flag_branch->GetEntry(index);
+		if (not evt_filt_eff_isLoaded) {
+			if (evt_filt_eff_branch != 0) {
+				evt_filt_eff_branch->GetEntry(index);
 				#ifdef PARANOIA
 				#endif // #ifdef PARANOIA
 			} else { 
-				printf("branch jets_pat_flag_branch does not exist!\n");
+				printf("branch evt_filt_eff_branch does not exist!\n");
 				exit(1);
 			}
-			jets_pat_flag_isLoaded = true;
+			evt_filt_eff_isLoaded = true;
 		}
-		return jets_pat_flag_;
-	}
-	vector<unsigned int> &mus_pat_flag()
-	{
-		if (not mus_pat_flag_isLoaded) {
-			if (mus_pat_flag_branch != 0) {
-				mus_pat_flag_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch mus_pat_flag_branch does not exist!\n");
-				exit(1);
-			}
-			mus_pat_flag_isLoaded = true;
-		}
-		return mus_pat_flag_;
+		return evt_filt_eff_;
 	}
 	bool passHLTTrigger(TString trigName) {
 		int trigIndx;
@@ -28602,6 +28820,17 @@ namespace tas {
 	float &evt_bs_yErr();
 	float &evt_bs_zErr();
 	float &evt_bField();
+	float &evt_kfactor();
+	float &evt_scale1fb();
+	float &evt_xsec_excl();
+	float &evt_xsec_incl();
+	float &gen_met();
+	float &gen_metPhi();
+	float &genps_alphaQCD();
+	float &genps_pthat();
+	float &genps_qScale();
+	float &genps_weight();
+	float &gen_sumEt();
 	float &hcalnoise_eventChargeFraction();
 	float &hcalnoise_eventEMEnergy();
 	float &hcalnoise_eventEMFraction();
@@ -28677,14 +28906,9 @@ namespace tas {
 	float &evt_sumetOptHO();
 	float &evt_sumetOptNoHF();
 	float &evt_sumetOptNoHFHO();
-	float &met_pat_metCor();
-	float &met_pat_metPhiCor();
-	float &met_pat_metPhiUncor();
-	float &met_pat_metPhiUncorJES();
-	float &met_pat_metPhiUncorMuon();
-	float &met_pat_metUncor();
-	float &met_pat_metUncorJES();
-	float &met_pat_metUncorMuon();
+	float &pdfinfo_scale();
+	float &pdfinfo_x1();
+	float &pdfinfo_x2();
 	float &evt_pfmet();
 	float &evt_pfmetPhi();
 	float &evt_pfmetSig();
@@ -28697,6 +28921,13 @@ namespace tas {
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >  &l1_met_p4();
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >  &l1_mht_p4();
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &taus_calo_p4();
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &els_mc_motherp4();
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &els_mc_p4();
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_mc_gp_p4();
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_mc_p4();
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &mus_mc_motherp4();
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &mus_mc_p4();
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &trk_mcp4();
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &els_inner_position();
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &els_outer_position();
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &els_p4();
@@ -28704,6 +28935,9 @@ namespace tas {
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &els_p4Out();
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &els_trk_p4();
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &els_vertex_p4();
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &genjets_p4();
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &genps_p4();
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &genps_prod_vtx();
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &hyp_ll_p4();
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &hyp_ll_trk_p4();
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &hyp_lt_p4();
@@ -28711,6 +28945,8 @@ namespace tas {
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &hyp_p4();
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &hyp_FVFit_p4();
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &hyp_FVFit_v4();
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &hyp_ll_mc_p4();
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &hyp_lt_mc_p4();
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_p4();
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_vertex_p4();
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jpts_p4();
@@ -28732,17 +28968,6 @@ namespace tas {
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &mus_sta_vertex_p4();
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &mus_trk_p4();
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &mus_vertex_p4();
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &els_pat_genMotherP4();
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &els_pat_genP4();
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &els_pat_p4();
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_pat_genJet_p4();
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_pat_genPartonMother_p4();
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_pat_genParton_p4();
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_pat_jet_p4();
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_pat_jet_uncorp4();
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &mus_pat_genMotherP4();
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &mus_pat_genP4();
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &mus_pat_p4();
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &pfjets_p4();
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &taus_pf_lead_chargecand_p4();
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &taus_pf_lead_neutrcand_p4();
@@ -28762,6 +28987,7 @@ namespace tas {
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &trks_vertex_p4();
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &trkjets_p4();
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &vtxs_position();
+	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > > &genps_lepdaughter_p4();
 	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > > &hlt_trigObjs_p4();
 	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > > &hyp_jets_p4();
 	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > > &hyp_other_jets_p4();
@@ -28845,6 +29071,19 @@ namespace tas {
 	vector<float> &taus_calo_leadtrk_validHits();
 	vector<float> &taus_calo_maximumHCALhitEt();
 	vector<float> &taus_calo_signaltrksInvariantMass();
+	vector<float> &els_mc3dr();
+	vector<float> &els_mcdr();
+	vector<float> &jets_mc3dr();
+	vector<float> &jets_mcdr();
+	vector<float> &jets_mc_emEnergy();
+	vector<float> &jets_mc_gpdr();
+	vector<float> &jets_mc_hadEnergy();
+	vector<float> &jets_mc_invEnergy();
+	vector<float> &jets_mc_otherEnergy();
+	vector<float> &mus_mc3dr();
+	vector<float> &mus_mcdr();
+	vector<float> &trk_mc3dr();
+	vector<float> &trk_mcdr();
 	vector<float> &els_ecalJuraIso();
 	vector<float> &els_ecalJuraTowerIso();
 	vector<float> &els_hcalConeIso();
@@ -29050,43 +29289,6 @@ namespace tas {
 	vector<float> &mus_z0();
 	vector<float> &mus_z0Err();
 	vector<float> &mus_z0corr();
-	vector<float> &els_pat_caloIso();
-	vector<float> &els_pat_ecalIso();
-	vector<float> &els_pat_hcalIso();
-	vector<float> &els_pat_looseId();
-	vector<float> &els_pat_robustHighEnergy();
-	vector<float> &els_pat_robustLooseId();
-	vector<float> &els_pat_robustTightId();
-	vector<float> &els_pat_scE1x5();
-	vector<float> &els_pat_scE2x5Max();
-	vector<float> &els_pat_scE5x5();
-	vector<float> &els_pat_sigmaEtaEta();
-	vector<float> &els_pat_sigmaIEtaIEta();
-	vector<float> &els_pat_tightId();
-	vector<float> &els_pat_trackIso();
-	vector<float> &jets_pat_combinedSecondaryVertexBJetTag();
-	vector<float> &jets_pat_combinedSecondaryVertexMVABJetTag();
-	vector<float> &jets_pat_coneIsolationTauJetTag();
-	vector<float> &jets_pat_impactParameterMVABJetTag();
-	vector<float> &jets_pat_jetBProbabilityBJetTag();
-	vector<float> &jets_pat_jetCharge();
-	vector<float> &jets_pat_jetProbabilityBJetTag();
-	vector<float> &jets_pat_noCorrF();
-	vector<float> &jets_pat_simpleSecondaryVertexBJetTag();
-	vector<float> &jets_pat_softElectronByIP3dBJetTag();
-	vector<float> &jets_pat_softElectronByPtBJetTag();
-	vector<float> &jets_pat_softMuonBJetTag();
-	vector<float> &jets_pat_softMuonNoIPBJetTag();
-	vector<float> &jets_pat_trackCountingHighEffBJetTag();
-	vector<float> &jets_pat_trackCountingHighPurBJetTag();
-	vector<float> &mus_pat_caloIso();
-	vector<float> &mus_pat_calovetoDep();
-	vector<float> &mus_pat_ecalIso();
-	vector<float> &mus_pat_ecalvetoDep();
-	vector<float> &mus_pat_hcalIso();
-	vector<float> &mus_pat_hcalvetoDep();
-	vector<float> &mus_pat_trackIso();
-	vector<float> &mus_pat_trckvetoDep();
 	vector<float> &pfjets_chargedEmE();
 	vector<float> &pfjets_chargedHadronE();
 	vector<float> &pfjets_cor();
@@ -29249,6 +29451,8 @@ namespace tas {
 	int &l1_njetsf();
 	int &l1_njetst();
 	int &l1_nmus();
+	int &pdfinfo_id1();
+	int &pdfinfo_id2();
 	vector<int> &evt_ecaliPhiSuspects();
 	vector<int> &evt_globaliPhiSuspects();
 	vector<int> &evt_hcaliPhiSuspects();
@@ -29257,6 +29461,32 @@ namespace tas {
 	vector<int> &taus_calo_charge();
 	vector<int> &taus_calo_leadtrk_idx();
 	vector<int> &taus_calo_tightId();
+	vector<int> &els_mc3_id();
+	vector<int> &els_mc3idx();
+	vector<int> &els_mc3_motherid();
+	vector<int> &els_mc3_motheridx();
+	vector<int> &els_mc_id();
+	vector<int> &els_mcidx();
+	vector<int> &els_mc_motherid();
+	vector<int> &jets_mc3_id();
+	vector<int> &jets_mc3idx();
+	vector<int> &jets_mc_gpidx();
+	vector<int> &jets_mc_id();
+	vector<int> &jets_mcidx();
+	vector<int> &mus_mc3_id();
+	vector<int> &mus_mc3idx();
+	vector<int> &mus_mc3_motherid();
+	vector<int> &mus_mc3_motheridx();
+	vector<int> &mus_mc_id();
+	vector<int> &mus_mcidx();
+	vector<int> &mus_mc_motherid();
+	vector<int> &trk_mc3_id();
+	vector<int> &trk_mc3idx();
+	vector<int> &trk_mc3_motherid();
+	vector<int> &trk_mc3_motheridx();
+	vector<int> &trk_mc_id();
+	vector<int> &trk_mcidx();
+	vector<int> &trk_mc_motherid();
 	vector<int> &els_closestJet();
 	vector<int> &els_closestMuon();
 	vector<int> &els_category();
@@ -29279,6 +29509,9 @@ namespace tas {
 	vector<int> &els_type();
 	vector<int> &els_validHits();
 	vector<int> &els_valid_pixelhits();
+	vector<int> &genps_id();
+	vector<int> &genps_id_mother();
+	vector<int> &genps_status();
 	vector<int> &hyp_ll_charge();
 	vector<int> &hyp_ll_id();
 	vector<int> &hyp_ll_index();
@@ -29294,6 +29527,10 @@ namespace tas {
 	vector<int> &hyp_type();
 	vector<int> &hyp_FVFit_ndf();
 	vector<int> &hyp_FVFit_status();
+	vector<int> &hyp_ll_mc_id();
+	vector<int> &hyp_ll_mc_motherid();
+	vector<int> &hyp_lt_mc_id();
+	vector<int> &hyp_lt_mc_motherid();
 	vector<int> &hyp_quadlep_first_type();
 	vector<int> &hyp_quadlep_fourth_type();
 	vector<int> &hyp_quadlep_second_type();
@@ -29350,17 +29587,6 @@ namespace tas {
 	vector<int> &mus_trkidx();
 	vector<int> &mus_type();
 	vector<int> &mus_validHits();
-	vector<int> &els_pat_genID();
-	vector<int> &els_pat_genMotherID();
-	vector<int> &jets_pat_genPartonMother_id();
-	vector<int> &jets_pat_genParton_id();
-	vector<int> &jets_pat_jetIDLoose();
-	vector<int> &jets_pat_jetIDLooseAOD();
-	vector<int> &jets_pat_jetIDMinimal();
-	vector<int> &jets_pat_jetIDTight();
-	vector<int> &jets_pat_partonFlavour();
-	vector<int> &mus_pat_genID();
-	vector<int> &mus_pat_genMotherID();
 	vector<int> &pfjets_chargedMultiplicity();
 	vector<int> &pfjets_muonMultiplicity();
 	vector<int> &pfjets_neutralMultiplicity();
@@ -29408,6 +29634,8 @@ namespace tas {
 	vector<vector<int> > &twrsUncleaned_emThreshSevLvl();
 	vector<vector<int> > &taus_calo_isotrk_idx();
 	vector<vector<int> > &taus_calo_sigtrk_idx();
+	vector<vector<int> > &genps_lepdaughter_id();
+	vector<vector<int> > &genps_lepdaughter_idx();
 	vector<vector<int> > &hlt_trigObjs_id();
 	vector<vector<int> > &hyp_jets_idx();
 	vector<vector<int> > &hyp_other_jets_idx();
@@ -29417,6 +29645,9 @@ namespace tas {
 	unsigned int &evt_event();
 	unsigned int &evt_lumiBlock();
 	unsigned int &evt_run();
+	unsigned int &genps_flavorHistoryFilterResult();
+	unsigned int &evt_ngenjets();
+	unsigned int &genps_signalProcessID();
 	unsigned int &hlt_bits1();
 	unsigned int &hlt_bits2();
 	unsigned int &hlt_bits3();
@@ -29461,9 +29692,8 @@ namespace tas {
 	vector<unsigned int> &hyp_trilep_first_index();
 	vector<unsigned int> &hyp_trilep_second_index();
 	vector<unsigned int> &hyp_trilep_third_index();
-	vector<unsigned int> &els_pat_flag();
-	vector<unsigned int> &jets_pat_flag();
-	vector<unsigned int> &mus_pat_flag();
+	int &evt_nEvts();
+	float &evt_filt_eff();
 	bool passHLTTrigger(TString trigName);
 	bool passL1Trigger(TString trigName);
 }

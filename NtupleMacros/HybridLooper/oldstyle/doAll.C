@@ -11,6 +11,8 @@ void doAll() {
     gSystem->Load("libCMS2NtupleMacrosCORE.so");
     gSystem->Load("libCMS2NtupleMacrosLooper.so");
 
+    gROOT->ProcessLine(".L ../histtools.C+");
+
 	//
 	// output file for histograms
 	//
@@ -75,6 +77,10 @@ void doAll() {
     TChain *chain_elegunideal = new TChain("Events");
     chain_elegunideal->Add(ntuple_location + "/cms2/SingleElectronPt5to100_336patch4MC31XV9/V03-00-35/merged_ntuple*.root");
 
+    // 7 TeV minbias
+    TChain *chain_minbias = new TChain("Events");
+    chain_minbias->Add("/tas01/disk01/cms2/MinBias_Spring10-START3X_V25B_356ReReco-v1/V03-03-07/merged_ntuple*.root");
+
     // data
     //
     // the slava-tuple
@@ -111,6 +117,7 @@ void doAll() {
 
     //looper->ScanChain(true, "v0", chain_v0);
     looper->ScanChain(true, "goodcoll", chain_goodcoll);
+    looper->ScanChain(false, "minbias", chain_minbias);
 
 	//
 	// write histograms
@@ -145,6 +152,9 @@ void doAll() {
 
     delete chain_v0;
     delete chain_goodcoll;
+
+    delete chain_minbias;
+
 
 }
 
