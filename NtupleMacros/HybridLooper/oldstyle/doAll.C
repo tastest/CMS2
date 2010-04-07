@@ -90,6 +90,16 @@ void doAll() {
     // run 442?
     chain_v0->Add("/tas03/disk02/slava77/reltestdata/CMSSW_3_5_6-cms2-data/_cms__store_express_Commissioning10_ExpressPhysics_FEVT_v7_*_*_442_*.root.v0");
 
+    // run 132569
+    TChain *chain_132569 = new TChain("Events");
+    chain_132569->Add("/tas03/disk02/slava77/reltestdata/CMSSW_3_5_6-cms2-data/_cms__store_express_Commissioning10_ExpressPhysics_FEVT_v*_*_*_569_*.root.v0");
+
+    // run 132579
+    TChain *chain_132572 = new TChain("Events");
+    chain_132572->Add("/tas03/disk02/slava77/reltestdata/CMSSW_3_5_6-cms2-data/_cms__store_express_Commissioning10_ExpressPhysics_FEVT_v*_*_*_572_*.
+root.v0");
+
+
     // the goodcoll-tuple
     TChain *chain_goodcoll = new TChain("Events");
     chain_goodcoll->Add("/tas01/disk01/cms2/MinimumBias_Commissioning10-GOODCOLL-v7_r132440_r132442/V03-03-07/merged*.root");
@@ -116,14 +126,19 @@ void doAll() {
 //	looper->ScanChain(false, "photonjets", chain_photonjets);
 
     //looper->ScanChain(true, "v0", chain_v0);
+
+    //looper->ScanChain(true, "run132569", chain_132569);
+    //looper->ScanChain(true, "run132572", chain_132572);
+
     looper->ScanChain(true, "goodcoll", chain_goodcoll);
-    looper->ScanChain(false, "minbias", chain_minbias);
+
+    //looper->ScanChain(false, "minbias", chain_minbias);
 
 	//
 	// write histograms
 	// 
 
-	const char* outFile = "histos_mc.root";
+	const char* outFile = "histos_data.root";
 	hist::saveHist(outFile); 
 	hist::deleteHistos();
 
@@ -155,6 +170,8 @@ void doAll() {
 
     delete chain_minbias;
 
+    delete chain_132569;
+    delete chain_132572;
 
 }
 

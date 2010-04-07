@@ -32,10 +32,13 @@ ifeq ($(shell root-config --platform),macosx)
 	LINKERFLAGS = -dynamiclib -undefined dynamic_lookup -Wl,-x -O -Xlinker -bind_at_load -flat_namespace $(shell root-config --libs) -lEG -lGenVector
 endif
 
-CORESOURCES = CMS2.cc $(CMSROOT)/CORE/electronSelections.cc \
+CORESOURCES = \
+    $(CMSROOT)/CORE/CMS2.cc \
+    $(CMSROOT)/CORE/electronSelections.cc \
     $(CMSROOT)/CORE/trackSelections.cc \
     $(CMSROOT)/CORE/metSelections.cc \
-    $(CMSROOT)/CORE/utilities.cc
+    $(CMSROOT)/CORE/utilities.cc \
+    $(CMSROOT)/CORE/eventSelections.cc 
 #    $(CMSROOT)/CORE/mcSelections.cc \
 #    $(CMSROOT)/CORE/jetSelections.cc \
 
@@ -115,3 +118,4 @@ clean: # clean up
 	*.o *.d *.so LinkDef_out*; echo "Done"
 
 endif
+

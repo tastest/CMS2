@@ -22,6 +22,7 @@
 #include "../../CORE/trackSelections.h"
 #include "../../CORE/electronSelections.h"
 #include "../../Tools/DileptonHypType.h"
+#include "../../CORE/eventSelections.h"
 
 //
 // Namespaces
@@ -215,48 +216,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
             //
             // do event cleaning
             //
-            // require bit 40 or 41 passed
-            //
-            if (!(cms2.l1_techbits2() & (1<<8) || cms2.l1_techbits2() & (1<<9))) continue;
-            // require the anti-coincidence of 42 and 43 DIDN't pass
-            //
-            if (!(cms2.l1_techbits2() & (1<<10)) && (cms2.l1_techbits2() & (1<<11))) continue;
-            if ((cms2.l1_techbits2() & (1<<10)) && !(cms2.l1_techbits2() & (1<<11))) continue;
-            // require bits 36-39 DIDN't pass
-            //
-            if (cms2.l1_techbits2() & (1<<7) || cms2.l1_techbits2() & (1<<6) || 
-                    cms2.l1_techbits2() & (1<<5) || cms2.l1_techbits2() & (1<<4)) continue;
-            //
-            // require bit zero for beams 
-            if (isData && !(cms2.l1_techbits1() & (1<<0))) continue;
-            //
-            // at least 1 good vertex
-            // count good vertexs
-            //              
-            int nGoodVertex = 0;
-            for (size_t v = 0; v < cms2.vtxs_position().size(); ++v) {
-
-                if (cms2.vtxs_isFake()[v]) continue;
-                if (cms2.vtxs_ndof()[v] < 4) continue;
-                if (fabs(cms2.vtxs_position()[v].Z()) > 15.0) continue;
-                nGoodVertex ++;
-            }
-            if (nGoodVertex == 0) continue;
-
-            //
-            // if >= 10 tracks, require at least 25% high purity
-            if (cms2.trks_ndof().size() >= 10) {
-                int nHighPurityTracks = 0;
-                for (size_t t = 0; t < cms2.trks_ndof().size(); ++t)
-                    if (isTrackQuality(t, (1<<highPurity))) nHighPurityTracks ++;
-                if (cms2.trks_ndof().size()/float(nHighPurityTracks) < 0.25) continue;
-            }
-
-            //
-            // end event cleaning
-            //
-
-
+            if (!cleaning_standard(isData)) continue;
 
             // find candidate electron
             // assumes electrons are sorted by pT descending
