@@ -840,7 +840,7 @@ void makeDriverFile(std::string fname) {
 
   driverF << "{" << endl << endl;
   driverF << "  gROOT->ProcessLine(\".L ScanChain.C+\");" << endl << endl;
-  driverF << "  TChain ch = new TChain(\"Events\"); " << endl;
+  driverF << "  TChain *ch = new TChain(\"Events\"); " << endl;
   driverF << "  ch->Add(\"" + fname + "\");" << endl;
   driverF << "  ScanChain(ch); " << endl;
   driverF << "}";
