@@ -492,7 +492,6 @@ float electronIsolation_relsusy_cand0(const unsigned int index, bool use_calo_is
 
 float electronIsolation_relsusy_cand1(const unsigned int index, bool use_calo_iso)
 {
-    printf("elesel cms2 = 0x%x\n", &cms2);
     float sum = cms2.els_tkJuraIso().at(index);
     if (use_calo_iso) {
         if (fabs(cms2.els_etaSC().at(index)) > 1.479) sum += cms2.els_ecalIso().at(index);
