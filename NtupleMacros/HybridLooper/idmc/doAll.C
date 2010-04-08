@@ -1,31 +1,17 @@
 
 void doAll() {
 
-	// from slavas code
-	gSystem->Load("libGui.so");
-	gSystem->Load("libPhysics.so");
+    //
+    // the looper
+    //
+    gSystem->Load("libTree.so");
+    gSystem->Load("libPhysics.so");
+    gSystem->Load("libEG.so");
+    gSystem->Load("libMathCore.so");
+    gSystem->Load("libCMS2NtupleMacrosCORE.so");
+    gSystem->Load("libCMS2NtupleMacrosLooper.so");
 
-	// Load and compile something to allow proper treatment of vectors
-	// Not clear that it is needed
-	gSystem->CompileMacro("loader.C", "++k", "libloader");
-	// end from slava
-
-	//
-	// utilities
-	//
-	gROOT->ProcessLine(".L CMS2.cc+");
-    gROOT->ProcessLine(".L ../../CORE/trackSelections.cc+");
-    gROOT->ProcessLine(".L ../../CORE/jetSelections.cc+");
-    gROOT->ProcessLine(".L ../../CORE/muonSelections.cc+");
-	gROOT->ProcessLine(".L ../../CORE/electronSelections.cc+");
-	gROOT->ProcessLine(".L ../../CORE/utilities.cc+");
-    gROOT->ProcessLine(".L ../../CORE/mcSelections.cc+");
-	gROOT->ProcessLine(".L ../histtools.C+");
-
-	//
-	// the looper
-	//
-	gROOT->ProcessLine(".L MyScanChain.cc+");
+    gROOT->ProcessLine(".L ../histtools.C+");
 
 	//
 	// output file for histograms

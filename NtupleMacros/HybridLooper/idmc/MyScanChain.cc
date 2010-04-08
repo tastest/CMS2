@@ -18,7 +18,7 @@
 #include "Math/LorentzVector.h"
 
 // CMS2 includes
-#include "CMS2.h"
+#include "../../CORE/CMS2.h"
 #include "../../CORE/electronSelections.h"
 #include "../../CORE/muonSelections.h"
 #include "../../CORE/jetSelections.h"
@@ -202,17 +202,17 @@ void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
 
         // investigate extra
         //
-        FormatHist(h1_hyp_idcand01_nm1_fbrem_0_pt_[i], sampleName, "h1_hyp_idcand01_nm1_fbrem_0_pt_" + detname, 50.0, 0.0, 1.0);
-        FormatHist(h1_hyp_idcand01_nm1_fbrem_1_pt_[i], sampleName, "h1_hyp_idcand01_nm1_fbrem_1_pt_" + detname, 50.0, 0.0, 1.0);
-        FormatHist(h1_hyp_idcand01_nm1_fbrem_2_pt_[i], sampleName, "h1_hyp_idcand01_nm1_fbrem_2_pt_" + detname, 50.0, 0.0, 1.0);
-        FormatHist(h1_hyp_idcand01_nm1_fbrem_3_pt_[i], sampleName, "h1_hyp_idcand01_nm1_fbrem_3_pt_" + detname, 50.0, 0.0, 1.0);
-        FormatHist(h1_hyp_idcand01_nm1_fbrem_4_pt_[i], sampleName, "h1_hyp_idcand01_nm1_fbrem_4_pt_" + detname, 50.0, 0.0, 1.0);
+        FormatHist(h1_hyp_idcand01_nm1_fbrem_0_pt_[i], sampleName, "h1_hyp_idcand01_nm1_fbrem_0_pt_" + detname, 50, 0.0, 1.0);
+        FormatHist(h1_hyp_idcand01_nm1_fbrem_1_pt_[i], sampleName, "h1_hyp_idcand01_nm1_fbrem_1_pt_" + detname, 50, 0.0, 1.0);
+        FormatHist(h1_hyp_idcand01_nm1_fbrem_2_pt_[i], sampleName, "h1_hyp_idcand01_nm1_fbrem_2_pt_" + detname, 50, 0.0, 1.0);
+        FormatHist(h1_hyp_idcand01_nm1_fbrem_3_pt_[i], sampleName, "h1_hyp_idcand01_nm1_fbrem_3_pt_" + detname, 50, 0.0, 1.0);
+        FormatHist(h1_hyp_idcand01_nm1_fbrem_4_pt_[i], sampleName, "h1_hyp_idcand01_nm1_fbrem_4_pt_" + detname, 50, 0.0, 1.0);
 
-        FormatHist(h1_hyp_idcand01_nm1_eopinlowfbrem_0_pt_[i], sampleName, "h1_hyp_idcand01_nm1_eopinlowfbrem_0_pt_" + detname, 200.0, 0.0, 4.0);
-        FormatHist(h1_hyp_idcand01_nm1_eopinlowfbrem_1_pt_[i], sampleName, "h1_hyp_idcand01_nm1_eopinlowfbrem_1_pt_" + detname, 200.0, 0.0, 4.0);
-        FormatHist(h1_hyp_idcand01_nm1_eopinlowfbrem_2_pt_[i], sampleName, "h1_hyp_idcand01_nm1_eopinlowfbrem_2_pt_" + detname, 200.0, 0.0, 4.0);
-        FormatHist(h1_hyp_idcand01_nm1_eopinlowfbrem_3_pt_[i], sampleName, "h1_hyp_idcand01_nm1_eopinlowfbrem_3_pt_" + detname, 200.0, 0.0, 4.0);
-        FormatHist(h1_hyp_idcand01_nm1_eopinlowfbrem_4_pt_[i], sampleName, "h1_hyp_idcand01_nm1_eopinlowfbrem_4_pt_" + detname, 200.0, 0.0, 4.0);
+        FormatHist(h1_hyp_idcand01_nm1_eopinlowfbrem_0_pt_[i], sampleName, "h1_hyp_idcand01_nm1_eopinlowfbrem_0_pt_" + detname, 200, 0.0, 4.0);
+        FormatHist(h1_hyp_idcand01_nm1_eopinlowfbrem_1_pt_[i], sampleName, "h1_hyp_idcand01_nm1_eopinlowfbrem_1_pt_" + detname, 200, 0.0, 4.0);
+        FormatHist(h1_hyp_idcand01_nm1_eopinlowfbrem_2_pt_[i], sampleName, "h1_hyp_idcand01_nm1_eopinlowfbrem_2_pt_" + detname, 200, 0.0, 4.0);
+        FormatHist(h1_hyp_idcand01_nm1_eopinlowfbrem_3_pt_[i], sampleName, "h1_hyp_idcand01_nm1_eopinlowfbrem_3_pt_" + detname, 200, 0.0, 4.0);
+        FormatHist(h1_hyp_idcand01_nm1_eopinlowfbrem_4_pt_[i], sampleName, "h1_hyp_idcand01_nm1_eopinlowfbrem_4_pt_" + detname, 200, 0.0, 4.0);
 
         // debug variables
         // before and after selections applied

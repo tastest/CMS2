@@ -10,6 +10,7 @@ class TH1F;
 class TH2F;
 class TChain;
 class TDirectory;
+class TString;
 
 #include "../../CORE/electronSelections.h"
 
