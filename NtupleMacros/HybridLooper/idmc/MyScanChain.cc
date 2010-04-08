@@ -170,6 +170,8 @@ void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
         FormatHist(h1_hyp_idegammaloose_nm1_pt_[i], sampleName, "h1_hyp_idegammaloose_nm1_pt_" + detname, 200, 0.0, 200.0);
         // pass egamma tight
         FormatHist(h1_hyp_idegammatight_nm1_pt_[i], sampleName, "h1_hyp_idegammatight_nm1_pt_" + detname, 200, 0.0, 200.0);
+        // pass new egamma loose (V02)
+        FormatHist(h1_hyp_idegammanewloose_nm1_pt_[i], sampleName, "h1_hyp_idegammanewloose_nm1_pt_" + detname, 200, 0.0, 200.0);
 
         //
         // investigate jet dependence
@@ -557,6 +559,8 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
         if (pass_electronId_cand02 && pass_electronId_extra) Fill(h1_hyp_idcand02extra_nm1_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
         if (electronId_classBasedLoose(index)) Fill(h1_hyp_idegammaloose_nm1_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
         if (electronId_classBasedTight(index)) Fill(h1_hyp_idegammatight_nm1_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+
+        if(electronId_classBasedExperimental(index)) Fill(h1_hyp_idegammanewloose_nm1_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
 
     }
 

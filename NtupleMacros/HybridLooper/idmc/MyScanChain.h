@@ -80,6 +80,7 @@ class MyScanChain {
         TH1F *h1_hyp_idcand02extra_nm1_pt_[2][4];
         TH1F *h1_hyp_idegammaloose_nm1_pt_[2][4];
         TH1F *h1_hyp_idegammatight_nm1_pt_[2][4];
+        TH1F *h1_hyp_idegammanewloose_nm1_pt_[2][4];
 
         // investigation into extra
         //

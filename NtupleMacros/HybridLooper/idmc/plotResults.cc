@@ -565,9 +565,12 @@ void plotResultsW(TString det, TString fileStamp, TString version)
         plotValidationOverlay(h1, "h1_hyp_id_nm1_pt", "h1_hyp_idcand02extra_nm1_pt", version, det, 4);
         plotValidationOverlay(h1, "h1_hyp_id_nm1_pt", "h1_hyp_idegammaloose_nm1_pt", version, det, 4);
         plotValidationOverlay(h1, "h1_hyp_id_nm1_pt", "h1_hyp_idegammatight_nm1_pt", version, det, 4);
+        plotValidationOverlay(h1, "h1_hyp_id_nm1_pt", "h1_hyp_idegammanewloose_nm1_pt", version, det, 4);
 
         plotValidationOverlay(h1, "h1_hyp_id_nm1_njets", "h1_hyp_idcand01_nm1_njets", version, det, 1);
         plotValidationOverlay(h1, "h1_hyp_id_nm1_njets", "h1_hyp_idegammaloose_nm1_njets", version, det, 1);
+
+
 
         plotValidationOverlay(h1, "h1_hyp_id_closejet_nm1_pt", "h1_hyp_idcand01_closejet_nm1_pt", version, det, 4);
         plotValidationOverlay(h1, "h1_hyp_id_closejet_nm1_pt", "h1_hyp_idegammaloose_closejet_nm1_pt", version, det, 4);
