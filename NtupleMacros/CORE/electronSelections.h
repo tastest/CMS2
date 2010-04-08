@@ -117,6 +117,14 @@ bool electronId_classBasedLoose(const unsigned int index);
 bool electronId_classBasedTight(const unsigned int index);
 
 //
+// class based id that is new/experimental
+//
+
+bool electronId_classBasedExperimental(const unsigned int index);
+int classify(const unsigned int version, const unsigned int index);
+
+
+//
 // electron isolation definitions that we have used before
 //
 float electronIsolation_rel(const unsigned int index, bool use_calo_iso);
