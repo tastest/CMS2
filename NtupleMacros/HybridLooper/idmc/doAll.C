@@ -17,6 +17,29 @@ void doAll() {
 	// output file for histograms
 	//
 
+//
+// danger!  keep this up to date
+//
+enum ElectronSelection {
+    ELEPASS_PT10,
+    ELEPASS_PT20,
+    ELEPASS_PT10NOT20,
+    ELEPASS_DPHI,
+    ELEPASS_DETA,
+    ELEPASS_HOE,
+    ELEPASS_LSHAPE,
+    ELEPASS_ISO,
+    ELEPASS_EXTRA,
+    ELEPASS_D0,
+    ELEPASS_ID,
+    ELEPASS_NOTCONV,
+    ELEPASS_NOMUON,
+    ELEPASS_TYPE,
+    ELEPASS_FIDUCIAL,
+    ELEPASS_FULLSELECTION
+};
+
+
     TString fileNameString = "pt20up";
     //TString fileNameString = "pt10to20";
     //TString fileNameString = "pt10up";
@@ -84,6 +107,7 @@ void doAll() {
 	//
 
 	looper->ScanChain(false, "ttbar", chain_ttbar);
+
 //	looper->ScanChain(false, "ww", chain_ww);
 //	looper->ScanChain(false, "wz", chain_wz);
 //	looper->ScanChain(false, "zz", chain_zz);
@@ -97,7 +121,11 @@ void doAll() {
 //  looper->ScanChain(false, "elegunideal", chain_elegunideal);
 
 	//looper->ScanChain(false, "QCDpt30", chain_qcd30);
-	looper->ScanChain(false, "wm", chain_wmunu);
+
+
+////	looper->ScanChain(false, "wm", chain_wmunu);
+
+
     //looper->ScanChain(false, "InclusiveMuPt15", chain_inclmu15);
 
 	//

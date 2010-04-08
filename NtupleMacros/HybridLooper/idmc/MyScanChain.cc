@@ -19,11 +19,10 @@
 
 // CMS2 includes
 #include "../../CORE/CMS2.h"
-#include "../../CORE/electronSelections.h"
 #include "../../CORE/muonSelections.h"
 #include "../../CORE/jetSelections.h"
 #include "../../CORE/mcSelections.h"
-#include "../../Tools/DileptonHypType.h"
+#include "../../CORE/utilities.h"
 
 //
 // Namespaces
@@ -55,8 +54,22 @@ enum ele_selection {
 // for hyps
 //
 
+enum DileptonHypType MyScanChain::hyp_typeToHypType (int hyp_type)
+{
+    switch (hyp_type) {
+        case 0:
+            return DILEPTON_MUMU;
+        case 1: case 2:
+            return DILEPTON_EMU;
+        case 3:
+            return DILEPTON_EE;
+        default:
+            assert(hyp_type < 4);
+    }
+    return DILEPTON_ALL;
+}
 
-void printCuts(elecuts_t result_electronSelections_cand01)
+void MyScanChain::printCuts(elecuts_t result_electronSelections_cand01)
 {
     if(result_electronSelections_cand01 & (1<<ELEPASS_ISO)) std::cout << "pass iso\n";
     else std::cout << "fail iso\n";
@@ -79,30 +92,6 @@ void printCuts(elecuts_t result_electronSelections_cand01)
     if(result_electronSelections_cand01 & (1<<ELEPASS_NOMUON)) std::cout << "pass muon\n";
     else std::cout << "fail muon\n";
 }
-
-double dRbetweenVectors(const LorentzVector &vec1,
-		const LorentzVector &vec2 ){
-
-	double dphi = std::min(::fabs(vec1.Phi() - vec2.Phi()), 2 * M_PI - fabs(vec1.Phi() - vec2.Phi()));
-	double deta = vec1.Eta() - vec2.Eta();
-	return sqrt(dphi*dphi + deta*deta);
-} 
-
-enum DileptonHypType hyp_typeToHypType (int hyp_type)
-{
-	switch (hyp_type) {
-		case 0:
-			return DILEPTON_MUMU;
-		case 1: case 2:
-			return DILEPTON_EMU;
-		case 3:
-			return DILEPTON_EE;
-		default:
-			assert(hyp_type < 4);
-	}
-	return DILEPTON_ALL;
-}
-
 
 void MyScanChain::Fill(TH1F** hist, const unsigned int hyp, const float &val, const float &weight)
 {
@@ -606,7 +595,8 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
     if (CheckCutsNM1(electronSelections_passall_, (1<<ELEPASS_ID), result_electronSelections_cand01)) {
 
         // get the vector of cleaned jets
-        std::vector<LorentzVector> jets = getJets(hyp, true, JETS_TYPE_PF_CORR, JETS_CLEAN_HYP_E_MU, 0.4, 30.0, 2.4);
+//        std::vector<LorentzVector> jets = getJets(hyp, true, JETS_TYPE_PF_CORR, JETS_CLEAN_HYP_E_MU, 0.4, 30.0, 2.4);
+        std::vector<LorentzVector> jets = getJets(hyp);
 
         // find the dr to the closest jet
         float dRMin = 999.99;

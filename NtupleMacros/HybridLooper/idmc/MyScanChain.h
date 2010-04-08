@@ -13,6 +13,7 @@ class TDirectory;
 class TString;
 
 #include "../../CORE/electronSelections.h"
+#include "../../Tools/DileptonHypType.h"
 
 class MyScanChain {
 
@@ -44,6 +45,9 @@ class MyScanChain {
         bool CheckCutsNM1(elecuts_t apply, elecuts_t remove, elecuts_t passed);
         bool CheckCuts(elecuts_t apply, elecuts_t passed);
 
+        // misc
+        enum DileptonHypType hyp_typeToHypType (int hyp_type);
+        void printCuts(elecuts_t result_electronSelections_cand01);
 
         // configured cuts
         //
