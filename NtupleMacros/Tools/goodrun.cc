@@ -1,11 +1,13 @@
-// $Id: goodrun.cc,v 1.1 2009/12/02 20:45:10 jmuelmen Exp $
+// $Id: goodrun.cc,v 1.2 2010/04/08 00:35:58 jmuelmen Exp $
 
 // CINT is allowed to see this, but nothing else:
 bool goodrun (unsigned int run, unsigned int lumi_block);
 
 #ifndef __CINT__
 
+#include <assert.h>
 #include <stdio.h>
+#include <string.h>
 #include <set>
 
 struct run_and_lumi {
@@ -49,6 +51,9 @@ static void load_runs (const char *fname)
 			 return;
 		    }
 	       }
+	  } else if (strlen(buf) != 0 && buf[0] == '#') {
+	       line++;
+	       // printf("Read a comment line (line %d) from the good run list: %s\n", line, buf);
 	  } else {
 	       line++;
 	       // printf("Read a line from the good run list: %s\n", buf);
@@ -57,7 +62,7 @@ static void load_runs (const char *fname)
 	       int s = sscanf(pbuf, " %u%n", &run, &n);
 	       if (s != 1) {
 		    fprintf(stderr, "Expected a run number (unsigned int)"
-			    " in the first position of line: %s\n", buf);
+			    " in the first position of line %d: %s\n", line, buf);
 		    assert(s == 1);
 	       }
 	       pbuf += n;
@@ -71,7 +76,7 @@ static void load_runs (const char *fname)
 		    s = sscanf(pbuf, " %lld%n", &lumi_max, &n);
 		    if (s != 1) {
 			 fprintf(stderr, "Expected a max lumi section in a lumi section range"
-				 " (int) in the third position of line: %s\n", buf);
+				 " (int) in the third position of line %d: %s\n", line, buf);
 			 assert(s == 1);
 		    }
 		    pbuf += n;
@@ -79,19 +84,19 @@ static void load_runs (const char *fname)
 	       char trail[1024] = "";
 	       s = sscanf(pbuf, " %s", trail);
 	       if (strlen(trail) != 0) {
-		    fprintf(stderr, "Unexpected trailing junk (%s) on line: %s\n", trail, buf);
+		    fprintf(stderr, "Unexpected trailing junk (%s) on line %d: %s\n", trail, line, buf);
 		    assert(s == 0);
 	       }
 	       // printf("Read line: run %u, min lumi %lld, max lumi %lld\n", run, lumi_min, lumi_max);
 	       struct run_and_lumi new_entry = { run, lumi_min, lumi_max };
 	       good_runs_.insert(new_entry);
-	       // advance past the newline 
-	       char newlines[1024] = "";
-	       s = fscanf(file, "%[ \f\n\r\t\v]", newlines); 
-	       if (strlen(newlines) != 1) {
-		    fprintf(stderr, "Warning: unexpected white space following line %d\n", line);
-		    // but that's just a warning
-	       }
+	  }
+	  // advance past the newline 
+	  char newlines[1024] = "";
+	  s = fscanf(file, "%[ \f\n\r\t\v]", newlines); 
+	  if (strlen(newlines) != 1) {
+	       fprintf(stderr, "Warning: unexpected white space following line %d\n", line);
+	       // but that's just a warning
 	  }
      } while (s == 1);
      fclose(file);
