@@ -1,3 +1,6 @@
+#ifndef EVENTSELECTIONS_H
+#define EVENTSELECTIONS_H
+
 //----------------------------------------------------------------
 // A ridicolusly simple function, but since the Z veto is used 
 // in two places, might as well centralize it to keep consistency
@@ -35,4 +38,6 @@ bool cleaning_goodVertex();
 // if >= 10 tracks, require at least 25% high purity
 //----------------------------------------------------------------
 bool cleaning_goodTracks();
+
+#endif
 
