@@ -66,9 +66,8 @@ bool cleaning_goodVertex()
     for (size_t v = 0; v < cms2.vtxs_position().size(); ++v) 
     {
         if (cms2.vtxs_isFake()[v]) continue;
-        if (cms2.vtxs_ndof()[v] < 4) continue;
+        if (cms2.vtxs_ndof()[v] < 5) continue;
         if (fabs(cms2.vtxs_position()[v].Z()) > 15.0) continue;
-        if (cms2.vtxs_position()[v].Rho() > 2.0) continue;
         nGoodVertex ++;
     }
     if (nGoodVertex == 0) return false;
@@ -86,7 +85,7 @@ bool cleaning_goodTracks()
         {
             if (isTrackQuality(t, (1<<highPurity))) nHighPurityTracks ++;
         }
-        if (cms2.trks_ndof().size()/float(nHighPurityTracks) < 0.25) return false;
+        if (float(nHighPurityTracks)/cms2.trks_ndof().size() < 0.25) return false;
     }
     return true;
 }

@@ -49,14 +49,20 @@ bool electronSelection_cand02(const unsigned int index)
 // with more better rejection: JuraTrackIso, susy-style (ped subtracted in EB)
 // and conversion rejection
 bool electronSelectionTTbar_cand01(const unsigned int index) {
-  if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
-  if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
-  if (!electronId_noMuon(index)) return false;
-  if (!electronId_cand01(index)) return false; 
-  if (!electronImpactTTbar(index)) return false;
-  if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
-  if (isFromConversionPartnerTrack(index)) return false;
-  return true;
+
+  electronSelections_debug_ = 0;
+
+  if (cms2.els_type()[index] & (1<<ISECALDRIVEN)) electronSelections_debug_ |= (1<<ELEPASS_TYPE);
+  if (fabs(cms2.els_p4()[index].eta()) < 2.5) electronSelections_debug_ |= (1<<ELEPASS_FIDUCIAL);
+  if (electronId_noMuon(index)) electronSelections_debug_ |= (1<<ELEPASS_NOMUON);
+  if (electronId_cand01(index)) electronSelections_debug_ |= (1<<ELEPASS_ID); 
+  if (electronImpactTTbar(index)) electronSelections_debug_ |= (1<<ELEPASS_D0);
+  if (electronIsolation_relsusy_cand1(index, true) < 0.10) electronSelections_debug_ |= (1<<ELEPASS_ISO);
+  if (!isFromConversionPartnerTrack(index)) electronSelections_debug_ |= (1<<ELEPASS_NOTCONV);
+
+  if ((electronSelections_debug_ & electronSelections_passall_) == electronSelections_passall_) return true;
+  return false;
+
 }
 
 bool electronImpactTTbar(const unsigned int index) {
@@ -295,6 +301,7 @@ float electronIsolation_relsusy_cand0(const unsigned int index, bool use_calo_is
 
 float electronIsolation_relsusy_cand1(const unsigned int index, bool use_calo_iso)
 {
+    printf("elesel cms2 = 0x%x\n", &cms2);
 	float sum = cms2.els_tkJuraIso().at(index);
 	if (use_calo_iso) {
 		if (fabs(cms2.els_etaSC().at(index)) > 1.479) sum += cms2.els_ecalIso().at(index);
