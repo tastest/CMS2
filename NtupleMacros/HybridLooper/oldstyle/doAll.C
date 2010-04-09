@@ -11,7 +11,7 @@ void doAll() {
     gSystem->Load("libCMS2NtupleMacrosCORE.so");
     gSystem->Load("libCMS2NtupleMacrosLooper.so");
 
-    gROOT->ProcessLine(".L ../histtools.C+");
+    gROOT->ProcessLine(".L histtools.C+");
 
 	//
 	// output file for histograms
