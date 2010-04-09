@@ -104,6 +104,11 @@ root.v0");
     TChain *chain_goodcoll = new TChain("Events");
     chain_goodcoll->Add("/tas01/disk01/cms2/MinimumBias_Commissioning10-GOODCOLL-v7_r132440_r132442/V03-03-07/merged*.root");
 
+    // the whunt skim
+    TChain *chain_whunt_skim = new TChain("Events");
+    chain_whunt_skim->Add("/tas03/disk01/whunt/skim/WHunt_update_*.root");
+
+
 	// 
 	// do looping
 	//
@@ -130,9 +135,11 @@ root.v0");
     //looper->ScanChain(true, "run132569", chain_132569);
     //looper->ScanChain(true, "run132572", chain_132572);
 
-    looper->ScanChain(true, "goodcoll", chain_goodcoll);
+    //looper->ScanChain(true, "goodcoll", chain_goodcoll);
 
     //looper->ScanChain(false, "minbias", chain_minbias);
+
+    looper->ScanChain(true, "whunt", chain_whunt_skim);
 
 	//
 	// write histograms
@@ -172,6 +179,8 @@ root.v0");
 
     delete chain_132569;
     delete chain_132572;
+
+    delete chain_whunt_skim;
 
 }
 
