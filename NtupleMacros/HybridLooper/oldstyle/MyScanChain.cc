@@ -121,6 +121,141 @@ bool MyScanChain::CheckCuts(cuts_t apply, cuts_t passed)
     return false;
 }
 
+//
+// Analyse Electrons
+//
+
+void MyScanChain::AnalyseElectrons(const float &weight) {
+
+    // find candidate electron
+    // assumes electrons are sorted by pT descending
+    int eleIndex = 0;
+    int eleSecondIndex = 0;
+    bool foundFirst = false;
+    bool foundSecond = false;
+    for (size_t i = 0; i < cms2.evt_nels(); ++i)
+    {
+        // no particle flow
+        if (! cms2.els_type()[i] & (1<<ISECALDRIVEN)) continue;
+
+        if (foundFirst && !foundSecond) {
+            eleSecondIndex = i;
+            foundSecond = true;
+            break;
+        }
+        if (!foundFirst) {
+            eleIndex = i;
+            foundFirst = true;
+        }
+    }
+
+    // must have found first electron
+    if (!foundFirst) return;
+
+    // get subdetector (for histogramming)
+    int det = getSubdet(eleIndex);
+
+    //
+    // work out what cuts this event passes
+    //
+
+    // the cuts that this event passes
+    cuts_t cuts_passed = 0;
+
+    // pt cut
+    if (cms2.els_p4()[eleIndex].Pt() > 20.0) cuts_passed |= (1<<PASS_PT);
+
+    // don't allow events with a second electron above 20.0 GeV
+    float secondPt = 0.0;
+    if (foundSecond) secondPt == cms2.els_p4()[eleSecondIndex].Pt();
+    if (secondPt < 20.0) cuts_passed |= (1<<PASS_NOSECOND);
+
+    // impose fiducial cuts in Eta
+    if (fabs(cms2.els_etaSC()[eleIndex]) < 1.4442
+            || (fabs(cms2.els_etaSC()[eleIndex]) > 1.560 && fabs(cms2.els_etaSC()[eleIndex]) < 2.500)) cuts_passed |= (1<<PASS_ISFIDUCIAL);
+
+    // isolation
+    //std::cout << cms2.els_tkJuraIso().at(eleIndex) << std::endl;
+    //          float iso_relsusy = electronIsolation_relsusy_cand1(eleIndex, true);
+
+    //printf("cms2 = 0x%x\n", &cms2);
+    float sum = cms2.els_tkJuraIso().at(eleIndex);
+    if (fabs(cms2.els_etaSC().at(eleIndex)) > 1.479) sum += cms2.els_ecalIso().at(eleIndex);
+    if (fabs(cms2.els_etaSC().at(eleIndex)) <= 1.479) sum += max(0., (cms2.els_ecalIso().at(eleIndex) -1.));
+    sum += cms2.els_hcalIso().at(eleIndex);
+    double pt = cms2.els_p4().at(eleIndex).pt();
+    float iso_relsusy =  sum/max(pt, 20.);
+
+    if (iso_relsusy < 0.10) cuts_passed |= (1<<PASS_ISO);
+
+    // met
+    if (cms2.evt_tcmet() > 30.0) cuts_passed |= (1<<PASS_MET);
+
+    // jet veto... leading pT JPT jet that is dR > 0.4 from the nearest electron
+    float leadingJPT = 0.0;
+    int leadingJPTIndex = 0;
+    for (size_t j = 0; j < cms2.jpts_p4().size(); ++j)
+    {
+        if ( TMath::Abs(cms2.jpts_p4()[j].eta()) > 2.5 ) continue;
+        if ( TMath::Abs(dRbetweenVectors(cms2.els_p4()[eleIndex], cms2.jpts_p4()[j])) < 0.4) continue;
+
+        // find leading pT JPT
+        if (cms2.jpts_p4()[j].Et() > leadingJPT) {
+            leadingJPT = cms2.jpts_p4()[j].Et();
+            leadingJPTIndex = j;
+        }
+    }
+
+    if (leadingJPT < 30.0) cuts_passed |= (1<<PASS_JETVETO);
+
+    //
+    // do plotting
+    //
+
+    h1_ele_pt_[det]->Fill(cms2.els_p4()[eleIndex].Pt(), weight);
+    h1_ele_pt_[DET_ALL]->Fill(cms2.els_p4()[eleIndex].Pt(), weight);
+
+    h1_ele_eta_[det]->Fill(cms2.els_etaSC()[eleIndex], weight);
+    h1_ele_eta_[DET_ALL]->Fill(cms2.els_etaSC()[eleIndex], weight);
+
+    h1_ele_phi_[det]->Fill(cms2.els_phiSC()[eleIndex], weight);
+    h1_ele_phi_[DET_ALL]->Fill(cms2.els_phiSC()[eleIndex], weight);
+
+    const cuts_t pass_all = (1<<PASS_PT) | (1<<PASS_NOSECOND) | (1<<PASS_ISFIDUCIAL) | (1<<PASS_ISO) | (1<<PASS_MET) | (1<<PASS_JETVETO);
+
+    if (CheckCutsNM1(pass_all, (1<<PASS_MET), cuts_passed)) {
+        h1_ele_nm1_tcmet_[det]->Fill(cms2.evt_tcmet(), weight);
+        h1_ele_nm1_tcmet_[DET_ALL]->Fill(cms2.evt_tcmet(), weight);
+
+        h1_ele_nm1_pfmet_[det]->Fill(cms2.evt_pfmet(), weight);
+        h1_ele_nm1_pfmet_[DET_ALL]->Fill(cms2.evt_pfmet(), weight);
+
+    }
+
+    if (CheckCutsNM1(pass_all, (1<<PASS_JETVETO), cuts_passed)) {
+        h1_ele_nm1_jetveto_[det]->Fill(leadingJPT, weight);
+        h1_ele_nm1_jetveto_[DET_ALL]->Fill(leadingJPT, weight);
+    }
+
+    if (CheckCutsNM1(pass_all, (1<<PASS_ISO), cuts_passed)) {
+        h1_ele_nm1_iso_[det]->Fill(iso_relsusy, weight);
+        h1_ele_nm1_iso_[DET_ALL]->Fill(iso_relsusy, weight);
+    }
+
+    if (CheckCutsNM1(pass_all, (1<<PASS_NOSECOND), cuts_passed)) {
+        h1_ele_nm1_secondpt_[det]->Fill(secondPt, weight);
+        h1_ele_nm1_secondpt_[DET_ALL]->Fill(secondPt, weight);
+    }
+
+}
+
+//
+// Analyse Muons
+//
+
+void MyScanChain::AnalyseMuons(const float &weight) {
+
+}
 
 //
 // Main function
@@ -160,18 +295,26 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     // format histograms
     //
 
-    // General
     //
-    FormatHist(h1_pt_, "pt", 100, 0, 100);
-    FormatHist(h1_eta_, "eta", 100, -3, 3);
-    FormatHist(h1_phi_, "phi", 100, -4, 4);
+    // Electrons
+    //
 
+    // General
+    FormatHist(h1_ele_pt_, "ele_pt", 100, 0, 100);
+    FormatHist(h1_ele_eta_, "ele_eta", 100, -3, 3);
+    FormatHist(h1_ele_phi_, "ele_phi", 100, -4, 4);
     // N-1
-    FormatHist(h1_nm1_tcmet_, "nm1_tcmet", 20, 0, 100);
-    FormatHist(h1_nm1_pfmet_, "nm1_pfmet", 20, 0, 100);
-    FormatHist(h1_nm1_jetveto_, "nm1_jetveto", 100, 0, 100);
-    FormatHist(h1_nm1_iso_, "nm1_iso", 100, 0, 1);
-    FormatHist(h1_nm1_secondpt_, "nm1_secondpt", 100, 0, 100);
+    FormatHist(h1_ele_nm1_tcmet_, "ele_nm1_tcmet", 20, 0, 100);
+    FormatHist(h1_ele_nm1_pfmet_, "ele_nm1_pfmet", 20, 0, 100);
+    FormatHist(h1_ele_nm1_jetveto_, "ele_nm1_jetveto", 100, 0, 100);
+    FormatHist(h1_ele_nm1_iso_, "ele_nm1_iso", 100, 0, 1);
+    FormatHist(h1_ele_nm1_secondpt_, "ele_nm1_secondpt", 100, 0, 100);
+
+    //
+    // Muons
+    //
+
+
 
     // file loop
     //
@@ -218,131 +361,18 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
             //
             if (!cleaning_standard(isData)) continue;
 
-            // find candidate electron
-            // assumes electrons are sorted by pT descending
-            int eleIndex = 0;
-            int eleSecondIndex = 0;
-            bool foundFirst = false;
-            bool foundSecond = false;
-            for (size_t i = 0; i < cms2.evt_nels(); ++i)
-            {       
-                // no particle flow
-                if (! cms2.els_type()[i] & (1<<ISECALDRIVEN)) continue;
+            //
+            // Do the analysis
+            //
+            AnalyseElectrons(weight);
+            AnalyseMuons(weight);
 
-                if (foundFirst && !foundSecond) {
-                    eleSecondIndex = i;
-                    foundSecond = true;
-                    break;
-                }       
-                if (!foundFirst) { 
-                    eleIndex = i;
-                    foundFirst = true;
-                }
-            }
-
-            // must have found first electron
-            if (!foundFirst) continue;
-
-            // get subdetector (for histogramming)
-            int det = getSubdet(eleIndex);
 
             //
-            // work out what cuts this event passes
+            // Count... Hmm think this bit needs fixing as it doesn't
+            // mean much right now
             //
-
-            // the cuts that this event passes
-            cuts_t cuts_passed = 0;
-
-            // pt cut
-            if (cms2.els_p4()[eleIndex].Pt() > 20.0) cuts_passed |= (1<<PASS_PT);
-
-            // don't allow events with a second electron above 20.0 GeV
-            float secondPt = 0.0;
-            if (foundSecond) secondPt == cms2.els_p4()[eleSecondIndex].Pt();
-            if (secondPt < 20.0) cuts_passed |= (1<<PASS_NOSECOND);
-
-            // impose fiducial cuts in Eta
-            if (fabs(cms2.els_etaSC()[eleIndex]) < 1.4442 
-                    || (fabs(cms2.els_etaSC()[eleIndex]) > 1.560 && fabs(cms2.els_etaSC()[eleIndex]) < 2.500)) cuts_passed |= (1<<PASS_ISFIDUCIAL);
-
-            // isolation
-            //std::cout << cms2.els_tkJuraIso().at(eleIndex) << std::endl;
-            //			float iso_relsusy = electronIsolation_relsusy_cand1(eleIndex, true);
-
-
-            //printf("cms2 = 0x%x\n", &cms2);
-            float sum = cms2.els_tkJuraIso().at(eleIndex);
-            if (fabs(cms2.els_etaSC().at(eleIndex)) > 1.479) sum += cms2.els_ecalIso().at(eleIndex);
-            if (fabs(cms2.els_etaSC().at(eleIndex)) <= 1.479) sum += max(0., (cms2.els_ecalIso().at(eleIndex) -1.));
-            sum += cms2.els_hcalIso().at(eleIndex);
-            double pt = cms2.els_p4().at(eleIndex).pt();
-            float iso_relsusy =  sum/max(pt, 20.);
-
-            if (iso_relsusy < 0.10) cuts_passed |= (1<<PASS_ISO);
-
-            // met
-            if (cms2.evt_tcmet() > 30.0) cuts_passed |= (1<<PASS_MET);
-
-            // jet veto... leading pT JPT jet that is dR > 0.4 from the nearest electron
-            float leadingJPT = 0.0;
-            int leadingJPTIndex = 0;
-            for (size_t j = 0; j < cms2.jpts_p4().size(); ++j)
-            {
-                if ( TMath::Abs(cms2.jpts_p4()[j].eta()) > 2.5 ) continue;
-                if ( TMath::Abs(dRbetweenVectors(cms2.els_p4()[eleIndex], cms2.jpts_p4()[j])) < 0.4) continue;
-
-                // find leading pT JPT
-                if (cms2.jpts_p4()[j].Et() > leadingJPT) {
-                    leadingJPT = cms2.jpts_p4()[j].Et();
-                    leadingJPTIndex = j;
-                }
-            }
-            if (leadingJPT < 30.0) cuts_passed |= (1<<PASS_JETVETO);
-
-            //
-            // do plotting
-            //
-
-
-            h1_pt_[det]->Fill(cms2.els_p4()[eleIndex].Pt(), weight);
-            h1_pt_[DET_ALL]->Fill(cms2.els_p4()[eleIndex].Pt(), weight);			
-
-            h1_eta_[det]->Fill(cms2.els_etaSC()[eleIndex], weight);
-            h1_eta_[DET_ALL]->Fill(cms2.els_etaSC()[eleIndex], weight);
-
-            h1_phi_[det]->Fill(cms2.els_phiSC()[eleIndex], weight);
-            h1_phi_[DET_ALL]->Fill(cms2.els_phiSC()[eleIndex], weight);
-
-            const cuts_t pass_all = (1<<PASS_PT) | (1<<PASS_NOSECOND) | (1<<PASS_ISFIDUCIAL) | (1<<PASS_ISO) | (1<<PASS_MET) | (1<<PASS_JETVETO);
-
-            if (CheckCutsNM1(pass_all, (1<<PASS_MET), cuts_passed)) {
-                h1_nm1_tcmet_[det]->Fill(cms2.evt_tcmet(), weight);
-                h1_nm1_tcmet_[DET_ALL]->Fill(cms2.evt_tcmet(), weight);
-
-                h1_nm1_pfmet_[det]->Fill(cms2.evt_pfmet(), weight);
-                h1_nm1_pfmet_[DET_ALL]->Fill(cms2.evt_pfmet(), weight);
-
-            }
-
-            if (CheckCutsNM1(pass_all, (1<<PASS_JETVETO), cuts_passed)) {
-                h1_nm1_jetveto_[det]->Fill(leadingJPT, weight);
-                h1_nm1_jetveto_[DET_ALL]->Fill(leadingJPT, weight);
-            }
-
-            if (CheckCutsNM1(pass_all, (1<<PASS_ISO), cuts_passed)) {
-                h1_nm1_iso_[det]->Fill(iso_relsusy, weight);
-                h1_nm1_iso_[DET_ALL]->Fill(iso_relsusy, weight);
-            }
-
-            if (CheckCutsNM1(pass_all, (1<<PASS_NOSECOND), cuts_passed)) {
-                h1_nm1_secondpt_[det]->Fill(secondPt, weight);
-                h1_nm1_secondpt_[DET_ALL]->Fill(secondPt, weight);
-            }
-
-            //
-            // Count
-            //
-
+            /*
             cands_passing[det] += weight;
             cands_passing_w2[det] += weight * weight;
             cands_count[det] ++;
@@ -350,6 +380,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
             cands_passing[DET_ALL] += weight;
             cands_passing_w2[DET_ALL] += weight * weight;
             cands_count[DET_ALL] ++;
+            */
 
         } // end loop on files
 

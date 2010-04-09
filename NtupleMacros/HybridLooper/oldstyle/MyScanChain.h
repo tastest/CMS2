@@ -45,6 +45,12 @@ class MyScanChain {
 
 	private:
 
+        // Electrons
+        void AnalyseElectrons(const float &weight);
+
+        // Muons
+        void AnalyseMuons(const float &weight);
+
 		// get subdetector for histogram filling
 		enum DetType getSubdet(int eleIndex);
 
@@ -67,15 +73,15 @@ class MyScanChain {
 
 		// general  
 		//
-		TH1F    *h1_pt_[3];
-		TH1F    *h1_eta_[3];
-		TH1F    *h1_phi_[3];
+		TH1F    *h1_ele_pt_[3];
+		TH1F    *h1_ele_eta_[3];
+		TH1F    *h1_ele_phi_[3];
 
-		TH1F 	*h1_nm1_tcmet_[3];
-        TH1F    *h1_nm1_pfmet_[3];
-        TH1F    *h1_nm1_jetveto_[3];
-        TH1F    *h1_nm1_iso_[3];
-        TH1F    *h1_nm1_secondpt_[3];
+		TH1F 	*h1_ele_nm1_tcmet_[3];
+        TH1F    *h1_ele_nm1_pfmet_[3];
+        TH1F    *h1_ele_nm1_jetveto_[3];
+        TH1F    *h1_ele_nm1_iso_[3];
+        TH1F    *h1_ele_nm1_secondpt_[3];
 
 };
 
