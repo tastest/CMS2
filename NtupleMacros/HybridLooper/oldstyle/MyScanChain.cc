@@ -279,7 +279,8 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
 
         // print out details of event passing
         // the full selection
-        std::cout       << "ELECTRONS: " 
+        if (isData_)
+            std::cout       << "ELECTRONS: " 
                         << cms2.evt_run() << "\t" 
                         << cms2.evt_lumiBlock() << "\t" 
                         << cms2.evt_event() << std::endl;
@@ -396,7 +397,8 @@ void MyScanChain::AnalyseMuons(const float &weight) {
 
         // print out details of event passing
         // the full selection
-        std::cout       << "MUONS: "
+        if (isData_)
+            std::cout       << "MUONS: "
                         << cms2.evt_run() << "\t"
                         << cms2.evt_lumiBlock() << "\t"
                         << cms2.evt_event() << std::endl;
@@ -434,6 +436,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 
     // set sampleName
     sampleName_ = sampleName;
+    isData_ = isData;
 
     //
     //

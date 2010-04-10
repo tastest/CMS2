@@ -71,6 +71,7 @@ class MyScanChain {
 
                 // sample name
                 std::string sampleName_;
+                bool isData_;
 
                 //
                 // electrons

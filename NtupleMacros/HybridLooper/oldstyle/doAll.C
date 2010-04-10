@@ -121,13 +121,13 @@ root.v0");
 //	looper->ScanChain(false, "dyee", chain_dyee);
 //	looper->ScanChain(false, "dymm", chain_dymm);
 //    looper->ScanChain(false, "dytt", chain_dytt);
-//    looper->ScanChain(false, "wjets", chain_wjets);
+    looper->ScanChain(false, "wjets", chain_wjets);
 
 
 //	looper->ScanChain(false, "elegunstartup", chain_elegunstartup);
 //  looper->ScanChain(false, "elegunideal", chain_elegunideal);
 
-//	looper->ScanChain(false, "QCDpt30", chain_qcd30);
+	looper->ScanChain(false, "QCDpt30", chain_qcd30);
 	//looper->ScanChain(false, "wm", chain_wmunu);
 //	looper->ScanChain(false, "photonjets", chain_photonjets);
 
