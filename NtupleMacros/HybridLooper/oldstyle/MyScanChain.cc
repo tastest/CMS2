@@ -23,7 +23,7 @@
 #include "../../CORE/electronSelections.h"
 #include "../../Tools/DileptonHypType.h"
 #include "../../CORE/eventSelections.h"
-
+#include "../../CORE/muonSelections.cc"
 //
 // Namespaces
 //
@@ -38,6 +38,7 @@ enum mu_selection {
     PASS_MU_NOSECOND,
     PASS_MU_ISFIDUCIAL,
     PASS_MU_MET,
+    PASS_MU_ISO,
 };
 
 enum ele_selection {
@@ -193,8 +194,9 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
     if (iso_relsusy < 0.10) cuts_passed |= (1<<PASS_ELE_ISO);
 
     // met
-    if (cms2.evt_tcmet() > 20.0) cuts_passed |= (1<<PASS_ELE_MET);
-
+    //if (cms2.evt_tcmet() > 20.0 ) cuts_passed |= (1<<PASS_ELE_MET);
+    if (cms2.evt_tcmet() > 20.0 && cms2.evt_pfmet() > 20) cuts_passed |= (1<<PASS_ELE_MET);
+    
     // ratio of the met to the muon pt
     float tcmetratio = cms2.evt_tcmet() / cms2.els_p4()[eleIndex].Pt();
     float pfmetratio = cms2.evt_pfmet() / cms2.els_p4()[eleIndex].Pt();
@@ -253,9 +255,7 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
         FillHist(h1_ele_nm1_jetveto_, det, leadingJPT, weight);
     }
 
-    if (CheckCutsNM1(pass_all, (1<<PASS_ELE_ISO), cuts_passed)) {
-        FillHist(h1_ele_nm1_iso_, det, iso_relsusy, weight);
-    }
+
 
     if (CheckCutsNM1(pass_all, (1<<PASS_ELE_NOSECOND), cuts_passed)) {
         FillHist(h1_ele_nm1_secondpt_, det, secondPt, weight);
@@ -279,12 +279,15 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
 
         // print out details of event passing
         // the full selection
-        if (isData_)
-            std::cout       << "ELECTRONS: " 
-                        << cms2.evt_run() << "\t" 
-                        << cms2.evt_lumiBlock() << "\t" 
-                        << cms2.evt_event() << std::endl;
-
+      if (isData_) {
+	//std::cout       << "MUONS: "
+	_asciifile    << "ELECTRONS: "
+		      << cms2.evt_run() << "\t" 
+		      << cms2.evt_lumiBlock() << "\t" 
+		      << cms2.evt_event() << std::endl;
+	
+      }
+	
         FillHist(h1_ele_selected_pt_, det, cms2.els_p4()[eleIndex].Pt(), weight);
         FillHist(h1_ele_selected_eta_, det, cms2.els_etaSC()[eleIndex], weight);
         FillHist(h1_ele_selected_phi_, det, cms2.els_phiSC()[eleIndex], weight);
@@ -356,7 +359,7 @@ void MyScanChain::AnalyseMuons(const float &weight) {
     if (fabs(cms2.mus_p4()[muIndex].Eta()) < 2.5) cuts_passed |= (1<<PASS_MU_ISFIDUCIAL);
 
     // met
-    if (cms2.evt_tcmet() > 20.0) cuts_passed |= (1<<PASS_MU_MET);
+    if (cms2.evt_tcmet() > 20.0 && cms2.evt_pfmet() > 20) cuts_passed |= (1<<PASS_MU_MET);
 
     // ratio of the met to the muon pt
     float tcmetratio = cms2.evt_tcmet() / cms2.mus_p4()[muIndex].Pt();
@@ -366,6 +369,8 @@ void MyScanChain::AnalyseMuons(const float &weight) {
     float tcmetdphi = acos(cos(cms2.evt_tcmetPhi() - cms2.mus_p4()[muIndex].Phi()));
     float pfmetdphi = acos(cos(cms2.evt_pfmetPhi() - cms2.mus_p4()[muIndex].Phi()));
 
+    // muon isolation value
+    if (muonIsoValue(muIndex) < 0.1)   cuts_passed |= (1<<PASS_MU_ISO);
     //
     // do plotting
     //
@@ -380,8 +385,10 @@ void MyScanChain::AnalyseMuons(const float &weight) {
     FillHist(h1_mu_tcmetratio_, det, tcmetratio, weight);
     FillHist(h1_mu_pfmetratio_, det, pfmetratio, weight);
 
+
     const cuts_t pass_all =     (1<<PASS_MU_PT) | (1<<PASS_MU_NOSECOND) |
-                                (1<<PASS_MU_ISFIDUCIAL) | (1<<PASS_MU_MET);
+                                (1<<PASS_MU_ISO) | (1<<PASS_MU_ISFIDUCIAL) | (1<<PASS_MU_MET)
+      ;
 
     if (CheckCutsNM1(pass_all, (1<<PASS_MU_NOSECOND), cuts_passed)) {
         FillHist(h1_mu_nm1_secondpt_, det, secondPt, weight);
@@ -392,17 +399,22 @@ void MyScanChain::AnalyseMuons(const float &weight) {
         FillHist(h1_mu_nm1_pfmet_, det, cms2.evt_pfmet(), weight);
     }
 
+    if (CheckCutsNM1(pass_all, (1<<PASS_MU_ISO), cuts_passed)) {
+        FillHist(h1_mu_nm1_iso_, det, muonIsoValue(muIndex), weight);
+    }
+
     // apply all cuts
     if (CheckCuts(pass_all, cuts_passed)) {
 
         // print out details of event passing
         // the full selection
-        if (isData_)
-            std::cout       << "MUONS: "
-                        << cms2.evt_run() << "\t"
-                        << cms2.evt_lumiBlock() << "\t"
-                        << cms2.evt_event() << std::endl;
-
+      if (isData_)
+	  // std::cout       << "MUONS: "
+	    _asciifile       << "MUONS: "
+			     << cms2.evt_run() << "\t"
+			     << cms2.evt_lumiBlock() << "\t"
+			     << cms2.evt_event() << std::endl;
+	
         FillHist(h1_mu_selected_pt_, det, cms2.mus_p4()[muIndex].Pt(), weight);
         FillHist(h1_mu_selected_eta_, det, cms2.mus_p4()[muIndex].Eta(), weight);
         FillHist(h1_mu_selected_phi_, det, cms2.mus_p4()[muIndex].Phi(), weight);
@@ -519,6 +531,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     FormatHist(h1_mu_nm1_secondpt_, "mu_nm1_secondpt", 100, 0, 100);
     FormatHist(h1_mu_nm1_tcmet_, "mu_nm1_tcmet", 20, 0, 100);
     FormatHist(h1_mu_nm1_pfmet_, "mu_nm1_pfmet", 20, 0, 100);
+    FormatHist(h1_mu_nm1_iso_, "mu_nm1_iso", 100, 0, 1);
 
     // after all selections
     FormatHist(h1_mu_selected_pt_, "mu_selected_pt", 100, 0, 100);
@@ -531,6 +544,11 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     FormatHist(h1_mu_selected_tcmetratio_, "mu_selected_tcmetratio", 50, 0, 5);
     FormatHist(h1_mu_selected_pfmetratio_, "mu_selected_pfmetratio", 50, 0, 5);
 
+    // open an asciifile to store results
+    if(isData_) {
+      _asciifile.open("whunt_output.txt"); 
+      _asciifile << "Type \t"<<  "Run # \t" << "Lumi # \t" << "\Event #\t" <<std::endl;
+    }
 
     // file loop
     //
