@@ -265,6 +265,15 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
         FillHist(h1_ele_nm1_r19_, det, r19, weight);
     }
 
+    if (CheckCutsNM1(pass_all, (1<<PASS_ELE_R19) | (1<<PASS_ELE_MET), cuts_passed)) {
+        FillHist(h1_ele_nm1nor19_tcmet_, det, cms2.evt_tcmet(), weight);
+        FillHist(h1_ele_nm1nor19_pfmet_, det, cms2.evt_pfmet(), weight);
+        FillHist(h1_ele_nm1nor19_tcmetratio_, det, tcmetratio, weight);
+        FillHist(h1_ele_nm1nor19_pfmetratio_, det, pfmetratio, weight);
+
+    }
+
+
     // apply all cuts
     if (CheckCuts(pass_all, cuts_passed)) {
 
@@ -448,7 +457,13 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     FormatHist(h1_ele_nm1_jetveto_, "ele_nm1_jetveto", 100, 0, 100);
     FormatHist(h1_ele_nm1_iso_, "ele_nm1_iso", 100, 0, 1);
     FormatHist(h1_ele_nm1_secondpt_, "ele_nm1_secondpt", 100, 0, 100);
+
     FormatHist(h1_ele_nm1_r19_, "ele_nm1_r19", 120, 0, 1.2);
+    FormatHist(h1_ele_nm1nor19_tcmet_, "ele_nm1nor19_tcmet", 20, 0, 100);
+    FormatHist(h1_ele_nm1nor19_pfmet_, "ele_nm1nor19_pfmet", 20, 0, 100);
+    FormatHist(h1_ele_nm1nor19_tcmetratio_, "ele_nm1nor19_tcmetratio", 50, 0, 5);
+    FormatHist(h1_ele_nm1nor19_pfmetratio_, "ele_nm1nor19_pfmetratio", 50, 0, 5);
+
 
     // after all selections
     FormatHist(h1_ele_selected_pt_, "ele_selected_pt", 100, 0, 100);
