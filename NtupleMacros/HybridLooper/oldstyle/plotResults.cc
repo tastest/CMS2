@@ -421,21 +421,20 @@ void plotResultsW(TString det, TString fileStamp)
         gROOT->ProcessLine(".L tdrStyle.C");
         gROOT->ProcessLine("setTDRStyle()");
 
-        // luminorm for 1pb-1
-        // luminosity is already normalised to 1pb-1 in the looper
+        // luminorm for 0.1pb-1 (is set to 1fb in the looper)
+        float norm = 0.0001;
         std::vector<DataSource> sources;
         sources.push_back( fH_WJETS() );
         sources.push_back( fH_QCD30() );
-        sources.push_back( fH_PHOTONJETS() );
-        HistogramUtilities h1(fileStamp + ".root", sources, 1.0);
+        HistogramUtilities h1(fileStamp + ".root", sources, luminorm);
 
         // W studies related
         //
 
-        plotStack(h1, "pt", "p_{T} (GeV)", fileStamp, det, 2);
+        // last argument of plotStack is rebin factor
 
-	// N-1
-	plotStack(h1, "nm1_met", "tcMet (GeV)", fileStamp, det, 2);
+        plotStack(h1, "ele_selected_pt", "p_{T} (GeV)", fileStamp, det, 1);
+
 
 }
 
