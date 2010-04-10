@@ -422,10 +422,10 @@ void plotResultsW(TString det, TString fileStamp)
         gROOT->ProcessLine("setTDRStyle()");
 
         // luminorm for 0.1pb-1 (is set to 1fb in the looper)
-        float norm = 0.0001;
+        float luminorm = 0.0001;
         std::vector<DataSource> sources;
-        sources.push_back( fH_WJETS() );
-        sources.push_back( fH_QCD30() );
+        //sources.push_back( fH_WJETS() );
+        //sources.push_back( fH_QCD30() );
         HistogramUtilities h1(fileStamp + ".root", sources, luminorm);
 
         // W studies related
