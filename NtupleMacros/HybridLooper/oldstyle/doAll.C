@@ -106,7 +106,8 @@ root.v0");
 
     // the whunt skim
     TChain *chain_whunt_skim = new TChain("Events");
-    chain_whunt_skim->Add("/tas03/disk01/whunt/skim/WHunt_update_*.root");
+//    chain_whunt_skim->Add("/tas03/disk01/whunt/skim/WHunt_update_*.root");
+    chain_whunt_skim->Add("/Users/dlevans/tas03/disk01/whunt/skim/WHunt_update_*.root");
 
 
 	// 

@@ -1,6 +1,6 @@
 
 //
-// ttbar -> ll
+// Yanyan "glorious" Gao
 // Dave "the one but not the only" Evans 
 //
 
@@ -33,27 +33,32 @@ using namespace tas;
 //
 //
 
+enum mu_selection {
+    PASS_MU_PT,
+    PASS_MU_NOSECOND,
+    PASS_MU_ISFIDUCIAL,
+    PASS_MU_MET,
+};
+
 enum ele_selection {
-    PASS_PT,
-    PASS_NOSECOND,
-    PASS_ISFIDUCIAL,
-    PASS_MET,
-    PASS_ISO,
-    PASS_JETVETO,
-
-    PASS_DPHI,
-    PASS_DETA,
-    PASS_HOE,
-    PASS_LSHAPE,
-    PASS_D0,
-    PASS_DETA_CAND02,
-    PASS_LSHAPE_CAND02,
-    PASS_EXTRA,
-    PASS_CONV,
-    PASS_NOMUON,
-
-    PASS_CLEANEVENT,
-
+    PASS_ELE_PT,
+    PASS_ELE_NOSECOND,
+    PASS_ELE_ISFIDUCIAL,
+    PASS_ELE_MET,
+    PASS_ELE_ISO,
+    PASS_ELE_JETVETO,
+    PASS_ELE_R19,
+    PASS_ELE_DPHI,
+    PASS_ELE_DETA,
+    PASS_ELE_HOE,
+    PASS_ELE_LSHAPE,
+    PASS_ELE_D0,
+    PASS_ELE_DETA_CAND02,
+    PASS_ELE_LSHAPE_CAND02,
+    PASS_ELE_EXTRA,
+    PASS_ELE_CONV,
+    PASS_ELE_NOMUON,
+    PASS_ELE_CLEANEVENT,
 };
 
 double dRbetweenVectors(const LorentzVector &vec1, const LorentzVector &vec2 ){
@@ -72,6 +77,12 @@ enum DetType MyScanChain::getSubdet(int eleIndex)
     else if (cms2.els_fiduciality()[eleIndex] & (1<<ISEE)) return DET_EE;
     std::cout << "ERROR! not in EB or EE" << std::endl;
     return DET_ALL;
+}
+
+void MyScanChain::FillHist(TH1F** hist, DetType det, const float value, const float weight) 
+{
+        hist[det]->Fill(value, weight);
+        hist[DET_ALL]->Fill(value, weight);
 }
 
 void MyScanChain::Format2DHist(TH2F** hist, std::string name, Int_t nx, Float_t minx, Float_t maxx,
@@ -94,7 +105,6 @@ void MyScanChain::FormatHist(TH1F** hist, std::string name, Int_t n, Float_t min
         std::string det = det_names[i];
         hist[i] = new TH1F(Form("%s_%s_%s", sampleName_.c_str(), name.c_str(), det.c_str()),
                 name.c_str(), n, min, max);
-        //hist[i]->SetFillColor(sampleName_.histo_color);
         hist[i]->GetXaxis()->SetTitle(name.c_str());
     }
 }
@@ -135,7 +145,7 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
     bool foundSecond = false;
     for (size_t i = 0; i < cms2.evt_nels(); ++i)
     {
-        // no particle flow
+        // must be found by the ecal driven algorithms
         if (! cms2.els_type()[i] & (1<<ISECALDRIVEN)) continue;
 
         if (foundFirst && !foundSecond) {
@@ -153,7 +163,7 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
     if (!foundFirst) return;
 
     // get subdetector (for histogramming)
-    int det = getSubdet(eleIndex);
+    DetType det = getSubdet(eleIndex);
 
     //
     // work out what cuts this event passes
@@ -163,35 +173,38 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
     cuts_t cuts_passed = 0;
 
     // pt cut
-    if (cms2.els_p4()[eleIndex].Pt() > 20.0) cuts_passed |= (1<<PASS_PT);
+    if (cms2.els_p4()[eleIndex].Pt() > 20.0) cuts_passed |= (1<<PASS_ELE_PT);
+
+    // not a spike
+    float r19 = cms2.els_eMax()[eleIndex]/cms2.els_e5x5()[eleIndex];
+    if (r19 < 0.95) cuts_passed |= (1<<PASS_ELE_R19);
 
     // don't allow events with a second electron above 20.0 GeV
     float secondPt = 0.0;
-    if (foundSecond) secondPt == cms2.els_p4()[eleSecondIndex].Pt();
-    if (secondPt < 20.0) cuts_passed |= (1<<PASS_NOSECOND);
+    if (foundSecond) secondPt = cms2.els_p4()[eleSecondIndex].Pt();
+    if (secondPt < 20.0) cuts_passed |= (1<<PASS_ELE_NOSECOND);
 
     // impose fiducial cuts in Eta
     if (fabs(cms2.els_etaSC()[eleIndex]) < 1.4442
-            || (fabs(cms2.els_etaSC()[eleIndex]) > 1.560 && fabs(cms2.els_etaSC()[eleIndex]) < 2.500)) cuts_passed |= (1<<PASS_ISFIDUCIAL);
+            || (fabs(cms2.els_etaSC()[eleIndex]) > 1.560 && fabs(cms2.els_etaSC()[eleIndex]) < 2.500)) cuts_passed |= (1<<PASS_ELE_ISFIDUCIAL);
 
     // isolation
-    //std::cout << cms2.els_tkJuraIso().at(eleIndex) << std::endl;
-    //          float iso_relsusy = electronIsolation_relsusy_cand1(eleIndex, true);
-
-    //printf("cms2 = 0x%x\n", &cms2);
-    float sum = cms2.els_tkJuraIso().at(eleIndex);
-    if (fabs(cms2.els_etaSC().at(eleIndex)) > 1.479) sum += cms2.els_ecalIso().at(eleIndex);
-    if (fabs(cms2.els_etaSC().at(eleIndex)) <= 1.479) sum += max(0., (cms2.els_ecalIso().at(eleIndex) -1.));
-    sum += cms2.els_hcalIso().at(eleIndex);
-    double pt = cms2.els_p4().at(eleIndex).pt();
-    float iso_relsusy =  sum/max(pt, 20.);
-
-    if (iso_relsusy < 0.10) cuts_passed |= (1<<PASS_ISO);
+    float iso_relsusy = electronIsolation_relsusy_cand1(eleIndex, true);
+    if (iso_relsusy < 0.10) cuts_passed |= (1<<PASS_ELE_ISO);
 
     // met
-    if (cms2.evt_tcmet() > 30.0) cuts_passed |= (1<<PASS_MET);
+    if (cms2.evt_tcmet() > 20.0) cuts_passed |= (1<<PASS_ELE_MET);
 
-    // jet veto... leading pT JPT jet that is dR > 0.4 from the nearest electron
+    // ratio of the met to the muon pt
+    float tcmetratio = cms2.evt_tcmet() / cms2.els_p4()[eleIndex].Pt();
+    float pfmetratio = cms2.evt_pfmet() / cms2.els_p4()[eleIndex].Pt();
+
+    // phi angle between the met and the muon
+    float tcmetdphi = acos(cos(cms2.evt_tcmetPhi() - cms2.els_p4()[eleIndex].Phi()));
+    float pfmetdphi = acos(cos(cms2.evt_pfmetPhi() - cms2.els_p4()[eleIndex].Phi()));
+
+    // jet veto
+    // leading pT JPT jet that is dR > 0.4 from the nearest electron
     float leadingJPT = 0.0;
     int leadingJPTIndex = 0;
     for (size_t j = 0; j < cms2.jpts_p4().size(); ++j)
@@ -206,45 +219,71 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
         }
     }
 
-    if (leadingJPT < 30.0) cuts_passed |= (1<<PASS_JETVETO);
+    if (leadingJPT < 30.0) cuts_passed |= (1<<PASS_ELE_JETVETO);
 
     //
     // do plotting
     //
 
-    h1_ele_pt_[det]->Fill(cms2.els_p4()[eleIndex].Pt(), weight);
-    h1_ele_pt_[DET_ALL]->Fill(cms2.els_p4()[eleIndex].Pt(), weight);
+    FillHist(h1_ele_pt_, det, cms2.els_p4()[eleIndex].Pt(), weight);
+    FillHist(h1_ele_eta_, det, cms2.els_etaSC()[eleIndex], weight);
+    FillHist(h1_ele_phi_, det, cms2.els_phiSC()[eleIndex], weight);
+    FillHist(h1_ele_tcmet_, det, cms2.evt_tcmet(), weight);
+    FillHist(h1_ele_pfmet_, det, cms2.evt_pfmet(), weight);
+    FillHist(h1_ele_tcmetdphi_, det, tcmetdphi, weight);
+    FillHist(h1_ele_pfmetdphi_, det, pfmetdphi, weight);
+    FillHist(h1_ele_tcmetratio_, det, tcmetratio, weight);
+    FillHist(h1_ele_pfmetratio_, det, pfmetratio, weight);
 
-    h1_ele_eta_[det]->Fill(cms2.els_etaSC()[eleIndex], weight);
-    h1_ele_eta_[DET_ALL]->Fill(cms2.els_etaSC()[eleIndex], weight);
+    const cuts_t pass_all =     (1<<PASS_ELE_PT) | (1<<PASS_ELE_NOSECOND) | 
+                                (1<<PASS_ELE_ISFIDUCIAL) | (1<<PASS_ELE_ISO) | 
+                                (1<<PASS_ELE_MET) | (1<<PASS_ELE_JETVETO) |
+                                (1<<PASS_ELE_R19);
 
-    h1_ele_phi_[det]->Fill(cms2.els_phiSC()[eleIndex], weight);
-    h1_ele_phi_[DET_ALL]->Fill(cms2.els_phiSC()[eleIndex], weight);
-
-    const cuts_t pass_all = (1<<PASS_PT) | (1<<PASS_NOSECOND) | (1<<PASS_ISFIDUCIAL) | (1<<PASS_ISO) | (1<<PASS_MET) | (1<<PASS_JETVETO);
-
-    if (CheckCutsNM1(pass_all, (1<<PASS_MET), cuts_passed)) {
-        h1_ele_nm1_tcmet_[det]->Fill(cms2.evt_tcmet(), weight);
-        h1_ele_nm1_tcmet_[DET_ALL]->Fill(cms2.evt_tcmet(), weight);
-
-        h1_ele_nm1_pfmet_[det]->Fill(cms2.evt_pfmet(), weight);
-        h1_ele_nm1_pfmet_[DET_ALL]->Fill(cms2.evt_pfmet(), weight);
-
+    if (CheckCutsNM1(pass_all, (1<<PASS_ELE_MET), cuts_passed)) {
+        FillHist(h1_ele_nm1_tcmet_, det, cms2.evt_tcmet(), weight);
+        FillHist(h1_ele_nm1_pfmet_, det, cms2.evt_pfmet(), weight);
+        FillHist(h1_ele_nm1_tcmetdphi_, det, tcmetdphi, weight);
+        FillHist(h1_ele_nm1_pfmetdphi_, det, pfmetdphi, weight);
+        FillHist(h1_ele_nm1_tcmetratio_, det, tcmetratio, weight);
+        FillHist(h1_ele_nm1_pfmetratio_, det, pfmetratio, weight);
     }
 
-    if (CheckCutsNM1(pass_all, (1<<PASS_JETVETO), cuts_passed)) {
-        h1_ele_nm1_jetveto_[det]->Fill(leadingJPT, weight);
-        h1_ele_nm1_jetveto_[DET_ALL]->Fill(leadingJPT, weight);
+    if (CheckCutsNM1(pass_all, (1<<PASS_ELE_JETVETO), cuts_passed)) {
+        FillHist(h1_ele_nm1_jetveto_, det, leadingJPT, weight);
     }
 
-    if (CheckCutsNM1(pass_all, (1<<PASS_ISO), cuts_passed)) {
-        h1_ele_nm1_iso_[det]->Fill(iso_relsusy, weight);
-        h1_ele_nm1_iso_[DET_ALL]->Fill(iso_relsusy, weight);
+    if (CheckCutsNM1(pass_all, (1<<PASS_ELE_ISO), cuts_passed)) {
+        FillHist(h1_ele_nm1_iso_, det, iso_relsusy, weight);
     }
 
-    if (CheckCutsNM1(pass_all, (1<<PASS_NOSECOND), cuts_passed)) {
-        h1_ele_nm1_secondpt_[det]->Fill(secondPt, weight);
-        h1_ele_nm1_secondpt_[DET_ALL]->Fill(secondPt, weight);
+    if (CheckCutsNM1(pass_all, (1<<PASS_ELE_NOSECOND), cuts_passed)) {
+        FillHist(h1_ele_nm1_secondpt_, det, secondPt, weight);
+    }
+
+    if (CheckCutsNM1(pass_all, (1<<PASS_ELE_R19), cuts_passed)) {
+        FillHist(h1_ele_nm1_r19_, det, r19, weight);
+    }
+
+    // apply all cuts
+    if (CheckCuts(pass_all, cuts_passed)) {
+
+        // print out details of event passing
+        // the full selection
+        std::cout       << "ELECTRONS: " 
+                        << cms2.evt_run() << "\t" 
+                        << cms2.evt_lumiBlock() << "\t" 
+                        << cms2.evt_event() << std::endl;
+
+        FillHist(h1_ele_selected_pt_, det, cms2.els_p4()[eleIndex].Pt(), weight);
+        FillHist(h1_ele_selected_eta_, det, cms2.els_etaSC()[eleIndex], weight);
+        FillHist(h1_ele_selected_phi_, det, cms2.els_phiSC()[eleIndex], weight);
+        FillHist(h1_ele_selected_tcmet_, det, cms2.evt_tcmet(), weight);
+        FillHist(h1_ele_selected_pfmet_, det, cms2.evt_pfmet(), weight);
+        FillHist(h1_ele_selected_tcmetdphi_, det, tcmetdphi, weight);
+        FillHist(h1_ele_selected_pfmetdphi_, det, pfmetdphi, weight);
+        FillHist(h1_ele_selected_tcmetratio_, det, tcmetratio, weight);
+        FillHist(h1_ele_selected_pfmetratio_, det, pfmetratio, weight);        
     }
 
 }
@@ -254,6 +293,95 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
 //
 
 void MyScanChain::AnalyseMuons(const float &weight) {
+
+    // find candidate muon
+    // assumes muons are sorted by pT descending
+    int muIndex = 0;
+    int muSecondIndex = 0;
+    bool foundFirst = false;
+    bool foundSecond = false;
+    for (size_t i = 0; i < cms2.mus_p4().size(); ++i)
+    {
+        // must be tracker and global
+        // see CORE/muonSelections.cc
+        if (((cms2.mus_type()[i]) & (1<<1)) == 0)    continue; // global muon
+        if (((cms2.mus_type()[i]) & (1<<2)) == 0)    continue; // tracker muon
+
+        if (foundFirst && !foundSecond) {
+            muSecondIndex = i;
+            foundSecond = true;
+            break;
+        }
+        if (!foundFirst) {
+            muIndex = i;
+            foundFirst = true;
+        }
+    }
+
+    // must have found first muon
+    if (!foundFirst) return;
+
+    // get subdetector (for histogramming)
+    // not sure what the most sensible eta division
+    // is for muons!
+    DetType det = DET_EE;
+    if (fabs(cms2.mus_p4()[muIndex].Eta()) < 1.479) det = DET_EB;
+
+    //
+    // work out what cuts this event passes
+    //
+
+    // the cuts that this event passes
+    cuts_t cuts_passed = 0;
+
+    // pt cut
+    if (cms2.mus_p4()[muIndex].Pt() > 20.0) cuts_passed |= (1<<PASS_MU_PT);
+
+    // don't allow events with a second muon above 20.0 GeV
+    float secondPt = 0.0;
+    if (foundSecond) secondPt = cms2.mus_p4()[muSecondIndex].Pt();
+    if (secondPt < 20.0) cuts_passed |= (1<<PASS_MU_NOSECOND);
+
+    // impose fiducial cuts in Eta
+    if (fabs(cms2.mus_p4()[muIndex].Eta()) < 2.5) cuts_passed |= (1<<PASS_MU_ISFIDUCIAL);
+
+    // met
+    if (cms2.evt_tcmet() > 20.0) cuts_passed |= (1<<PASS_MU_MET);
+
+    // ratio of the met to the muon pt
+    float tcmetratio = cms2.evt_tcmet() / cms2.mus_p4()[muIndex].Pt();
+    float pfmetratio = cms2.evt_pfmet() / cms2.mus_p4()[muIndex].Pt();
+
+    // phi angle between the met and the muon
+    float tcmetdphi = acos(cos(cms2.evt_tcmetPhi() - cms2.mus_p4()[muIndex].Phi()));
+    float pfmetdphi = acos(cos(cms2.evt_pfmetPhi() - cms2.mus_p4()[muIndex].Phi()));
+
+    //
+    // do plotting
+    //
+
+    FillHist(h1_mu_pt_, det, cms2.mus_p4()[muIndex].Pt(), weight);
+    FillHist(h1_mu_eta_, det, cms2.mus_p4()[muIndex].Eta(), weight);
+    FillHist(h1_mu_phi_, det, cms2.mus_p4()[muIndex].Phi(), weight);
+    FillHist(h1_mu_tcmet_, det, cms2.evt_tcmet(), weight);
+    FillHist(h1_mu_pfmet_, det, cms2.evt_pfmet(), weight);
+    FillHist(h1_mu_tcmetdphi_, det, tcmetdphi, weight);
+    FillHist(h1_mu_pfmetdphi_, det, pfmetdphi, weight);
+    FillHist(h1_mu_tcmetratio_, det, tcmetratio, weight);
+    FillHist(h1_mu_pfmetratio_, det, pfmetratio, weight);
+
+    const cuts_t pass_all =     (1<<PASS_MU_PT) | (1<<PASS_MU_NOSECOND) |
+                                (1<<PASS_MU_ISFIDUCIAL) | (1<<PASS_MU_MET);
+
+    if (CheckCutsNM1(pass_all, (1<<PASS_MU_NOSECOND), cuts_passed)) {
+        FillHist(h1_mu_nm1_secondpt_, det, secondPt, weight);
+    }
+
+    if (CheckCutsNM1(pass_all, (1<<PASS_MU_MET), cuts_passed)) {
+        FillHist(h1_mu_nm1_tcmet_, det, cms2.evt_tcmet(), weight);
+        FillHist(h1_mu_nm1_pfmet_, det, cms2.evt_pfmet(), weight);
+    }
+
 
 }
 
@@ -299,21 +427,61 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     // Electrons
     //
 
-    // General
+    // General (before any cuts)
     FormatHist(h1_ele_pt_, "ele_pt", 100, 0, 100);
     FormatHist(h1_ele_eta_, "ele_eta", 100, -3, 3);
     FormatHist(h1_ele_phi_, "ele_phi", 100, -4, 4);
+    FormatHist(h1_ele_tcmet_, "ele_tcmet", 20, 0, 100);
+    FormatHist(h1_ele_pfmet_, "ele_pfmet", 20, 0, 100);
+    FormatHist(h1_ele_tcmetdphi_, "ele_tcmetdphi", 100, -4, 4);
+    FormatHist(h1_ele_pfmetdphi_, "ele_pfmetdphi", 100, -4, 4);
+    FormatHist(h1_ele_tcmetratio_, "ele_tcmetratio", 50, 0, 5);
+    FormatHist(h1_ele_pfmetratio_, "ele_pfmetratio", 50, 0, 5);
+
     // N-1
     FormatHist(h1_ele_nm1_tcmet_, "ele_nm1_tcmet", 20, 0, 100);
     FormatHist(h1_ele_nm1_pfmet_, "ele_nm1_pfmet", 20, 0, 100);
+    FormatHist(h1_ele_nm1_tcmetdphi_, "ele_nm1_tcmetdphi", 100, -4, 4);
+    FormatHist(h1_ele_nm1_pfmetdphi_, "ele_nm1_pfmetdphi", 100, -4, 4);
+    FormatHist(h1_ele_nm1_tcmetratio_, "ele_nm1_tcmetratio", 50, 0, 5);
+    FormatHist(h1_ele_nm1_pfmetratio_, "ele_nm1_pfmetratio", 50, 0, 5);
     FormatHist(h1_ele_nm1_jetveto_, "ele_nm1_jetveto", 100, 0, 100);
     FormatHist(h1_ele_nm1_iso_, "ele_nm1_iso", 100, 0, 1);
     FormatHist(h1_ele_nm1_secondpt_, "ele_nm1_secondpt", 100, 0, 100);
+    FormatHist(h1_ele_nm1_r19_, "ele_nm1_r19", 120, 0, 1.2);
 
+    // after all selections
+    FormatHist(h1_ele_selected_pt_, "ele_selected_pt", 100, 0, 100);
+    FormatHist(h1_ele_selected_eta_, "ele_selected_eta", 100, -3, 3);
+    FormatHist(h1_ele_selected_phi_, "ele_selected_phi", 100, -4, 4);
+    FormatHist(h1_ele_selected_tcmet_, "ele_selected_tcmet", 20, 0, 100);
+    FormatHist(h1_ele_selected_pfmet_, "ele_selected_pfmet", 20, 0, 100);
+    FormatHist(h1_ele_selected_tcmetdphi_, "ele_selected_tcmetdphi", 100, -4, 4);
+    FormatHist(h1_ele_selected_pfmetdphi_, "ele_selected_pfmetdphi", 100, -4, 4);
+    FormatHist(h1_ele_selected_tcmetratio_, "ele_selected_tcmetratio", 50, 0, 5);
+    FormatHist(h1_ele_selected_pfmetratio_, "ele_selected_pfmetratio", 50, 0, 5);
+
+        
     //
     // Muons
     //
 
+    // General (before any cuts)
+    FormatHist(h1_mu_pt_, "mu_pt", 100, 0, 100);
+    FormatHist(h1_mu_eta_, "mu_eta", 100, -3, 3);
+    FormatHist(h1_mu_phi_, "mu_phi", 100, -4, 4);
+    FormatHist(h1_mu_tcmet_, "mu_tcmet", 20, 0, 100);
+    FormatHist(h1_mu_pfmet_, "mu_pfmet", 20, 0, 100);
+    FormatHist(h1_mu_tcmetdphi_, "mu_tcmetdphi", 100, -4, 4);
+    FormatHist(h1_mu_pfmetdphi_, "mu_pfmetdphi", 100, -4, 4);
+    FormatHist(h1_mu_tcmetratio_, "mu_tcmetratio", 50, 0, 5);
+    FormatHist(h1_mu_pfmetratio_, "mu_pfmetratio", 50, 0, 5);
+
+
+    // N-1
+    FormatHist(h1_mu_nm1_secondpt_, "mu_nm1_secondpt", 100, 0, 100);
+    FormatHist(h1_mu_nm1_tcmet_, "mu_nm1_tcmet", 20, 0, 100);
+    FormatHist(h1_mu_nm1_pfmet_, "mu_nm1_pfmet", 20, 0, 100);
 
 
     // file loop
