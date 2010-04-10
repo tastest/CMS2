@@ -22,7 +22,7 @@ void doAll() {
 	//
 	// chains for input files
 	//TString ntuple_location = "/data/tmp/";
-    TString ntuple_location = "/store/disk02/";
+    TString ntuple_location = "/tas01/disk02/";
 
 	// SM
 	// ttbar
@@ -48,11 +48,15 @@ void doAll() {
     chain_dytt->Add(ntuple_location + "/cms2/Ztautau_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
 	// wjets
     TChain *chain_wjets = new TChain("Events");
-    chain_wjets->Add(ntuple_location + "/cms2/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+    chain_wjets->Add(ntuple_location + "/cms2/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple.root");
 	//chain_wjets->Add(ntuple_location + "/cms2/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/dilep-skim/wjets_skim.root");
 	// qcd pt30
 	TChain *chain_qcd30 = new TChain("Events");
 	chain_qcd30->Add(ntuple_location + "/cms2/QCD_Pt30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+
+	TChain *chain_qcd80 = new TChain("Events");
+	chain_qcd80->Add(ntuple_location + "/cms2/QCD_Pt80_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+	
 	// wmunu
     TChain *chain_wmunu = new TChain("Events");
     chain_wmunu->Add(ntuple_location + "/cms2/Wmunu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
@@ -106,8 +110,9 @@ root.v0");
 
     // the whunt skim
     TChain *chain_whunt_skim = new TChain("Events");
-//    chain_whunt_skim->Add("/tas03/disk01/whunt/skim/WHunt_update_*.root");
-    chain_whunt_skim->Add("/Users/dlevans/tas03/disk01/whunt/skim/WHunt_update_*.root");
+    chain_whunt_skim->Add("/tas03/disk01/whunt/skim/emuskim_*.root");
+    //chain_whunt_skim->Add("/tas03/disk01/whunt_dead/skim/WHunt_update_*.root");
+    //chain_whunt_skim->Add("/Users/dlevans/tas03/disk01/whunt/skim/WHunt_update_*.root");
 
 
 	// 
@@ -121,13 +126,14 @@ root.v0");
 //	looper->ScanChain(false, "dyee", chain_dyee);
 //	looper->ScanChain(false, "dymm", chain_dymm);
 //    looper->ScanChain(false, "dytt", chain_dytt);
-    looper->ScanChain(false, "wjets", chain_wjets);
+    //looper->ScanChain(false, "wjets", chain_wjets);
 
 
 //	looper->ScanChain(false, "elegunstartup", chain_elegunstartup);
 //  looper->ScanChain(false, "elegunideal", chain_elegunideal);
 
-	looper->ScanChain(false, "QCDpt30", chain_qcd30);
+    //looper->ScanChain(false, "QCDpt30", chain_qcd30);
+    //looper->ScanChain(false, "QCDpt80", chain_qcd80);
 	//looper->ScanChain(false, "wm", chain_wmunu);
 //	looper->ScanChain(false, "photonjets", chain_photonjets);
 
