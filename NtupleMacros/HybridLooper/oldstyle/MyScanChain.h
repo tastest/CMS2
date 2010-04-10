@@ -103,7 +103,6 @@ class MyScanChain {
                 TH1F    *h1_ele_nm1nor19_tcmetratio_[3];
                 TH1F    *h1_ele_nm1nor19_pfmetratio_[3];
 
-
                 // after all selections
                 TH1F    *h1_ele_selected_pt_[3];
                 TH1F    *h1_ele_selected_eta_[3];
@@ -133,6 +132,17 @@ class MyScanChain {
                 TH1F    *h1_mu_nm1_secondpt_[3];
                 TH1F    *h1_mu_nm1_tcmet_[3];
                 TH1F    *h1_mu_nm1_pfmet_[3];
+
+                // after all selections
+                TH1F    *h1_mu_selected_pt_[3];
+                TH1F    *h1_mu_selected_eta_[3];
+                TH1F    *h1_mu_selected_phi_[3];
+                TH1F    *h1_mu_selected_tcmet_[3];
+                TH1F    *h1_mu_selected_pfmet_[3];
+                TH1F    *h1_mu_selected_tcmetdphi_[3];
+                TH1F    *h1_mu_selected_pfmetdphi_[3];
+                TH1F    *h1_mu_selected_tcmetratio_[3];
+                TH1F    *h1_mu_selected_pfmetratio_[3];
 
 
 };

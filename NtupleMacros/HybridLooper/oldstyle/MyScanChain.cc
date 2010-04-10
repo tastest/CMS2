@@ -391,6 +391,27 @@ void MyScanChain::AnalyseMuons(const float &weight) {
         FillHist(h1_mu_nm1_pfmet_, det, cms2.evt_pfmet(), weight);
     }
 
+    // apply all cuts
+    if (CheckCuts(pass_all, cuts_passed)) {
+
+        // print out details of event passing
+        // the full selection
+        std::cout       << "MUONS: "
+                        << cms2.evt_run() << "\t"
+                        << cms2.evt_lumiBlock() << "\t"
+                        << cms2.evt_event() << std::endl;
+
+        FillHist(h1_mu_selected_pt_, det, cms2.mus_p4()[muIndex].Pt(), weight);
+        FillHist(h1_mu_selected_eta_, det, cms2.mus_p4()[muIndex].Eta(), weight);
+        FillHist(h1_mu_selected_phi_, det, cms2.mus_p4()[muIndex].Phi(), weight);
+        FillHist(h1_mu_selected_tcmet_, det, cms2.evt_tcmet(), weight);
+        FillHist(h1_mu_selected_pfmet_, det, cms2.evt_pfmet(), weight);
+        FillHist(h1_mu_selected_tcmetdphi_, det, tcmetdphi, weight);
+        FillHist(h1_mu_selected_pfmetdphi_, det, pfmetdphi, weight);
+        FillHist(h1_mu_selected_tcmetratio_, det, tcmetratio, weight);
+        FillHist(h1_mu_selected_pfmetratio_, det, pfmetratio, weight);
+    }
+
 
 }
 
@@ -464,7 +485,6 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     FormatHist(h1_ele_nm1nor19_tcmetratio_, "ele_nm1nor19_tcmetratio", 50, 0, 5);
     FormatHist(h1_ele_nm1nor19_pfmetratio_, "ele_nm1nor19_pfmetratio", 50, 0, 5);
 
-
     // after all selections
     FormatHist(h1_ele_selected_pt_, "ele_selected_pt", 100, 0, 100);
     FormatHist(h1_ele_selected_eta_, "ele_selected_eta", 100, -3, 3);
@@ -492,11 +512,21 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     FormatHist(h1_mu_tcmetratio_, "mu_tcmetratio", 50, 0, 5);
     FormatHist(h1_mu_pfmetratio_, "mu_pfmetratio", 50, 0, 5);
 
-
     // N-1
     FormatHist(h1_mu_nm1_secondpt_, "mu_nm1_secondpt", 100, 0, 100);
     FormatHist(h1_mu_nm1_tcmet_, "mu_nm1_tcmet", 20, 0, 100);
     FormatHist(h1_mu_nm1_pfmet_, "mu_nm1_pfmet", 20, 0, 100);
+
+    // after all selections
+    FormatHist(h1_mu_selected_pt_, "mu_selected_pt", 100, 0, 100);
+    FormatHist(h1_mu_selected_eta_, "mu_selected_eta", 100, -3, 3);
+    FormatHist(h1_mu_selected_phi_, "mu_selected_phi", 100, -4, 4);
+    FormatHist(h1_mu_selected_tcmet_, "mu_selected_tcmet", 20, 0, 100);
+    FormatHist(h1_mu_selected_pfmet_, "mu_selected_pfmet", 20, 0, 100);
+    FormatHist(h1_mu_selected_tcmetdphi_, "mu_selected_tcmetdphi", 100, -4, 4);
+    FormatHist(h1_mu_selected_pfmetdphi_, "mu_selected_pfmetdphi", 100, -4, 4);
+    FormatHist(h1_mu_selected_tcmetratio_, "mu_selected_tcmetratio", 50, 0, 5);
+    FormatHist(h1_mu_selected_pfmetratio_, "mu_selected_pfmetratio", 50, 0, 5);
 
 
     // file loop
