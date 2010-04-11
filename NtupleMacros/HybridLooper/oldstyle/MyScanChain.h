@@ -116,6 +116,29 @@ class MyScanChain {
                 TH1F    *h1_ele_selected_pfmetdphi_[3];
                 TH1F    *h1_ele_selected_tcmetratio_[3];
                 TH1F    *h1_ele_selected_pfmetratio_[3];
+                TH1F    *h1_ele_selected_tcmetsignificance_[3];
+                TH1F    *h1_ele_selected_pfmetsignificance_[3];
+                TH1F    *h1_ele_selected_ptcmet_[3];
+                TH1F    *h1_ele_selected_ppfmet_[3];
+                TH1F    *h1_ele_selected_pftransmass_[3];
+                TH1F    *h1_ele_selected_tctransmass_[3];
+
+                TH1F    *h1_ele_selected_sigmaIEtaIEta_[3];
+                TH1F    *h1_ele_selected_e2x5MaxOver5x5_[3];
+                TH1F    *h1_ele_selected_dEtaIn_[3];
+                TH1F    *h1_ele_selected_dPhiIn_[3];
+                TH1F    *h1_ele_selected_hOverE_[3];
+                TH1F    *h1_ele_selected_fbrem_[3];
+                TH1F    *h1_ele_selected_eOverPIn_[3];
+
+                // antiselection on met
+                TH1F *h1_ele_antiselected_sigmaIEtaIEta_[3];
+                TH1F *h1_ele_antiselected_e2x5MaxOver5x5_[3];
+                TH1F *h1_ele_antiselected_dEtaIn_[3];
+                TH1F *h1_ele_antiselected_dPhiIn_[3];
+                TH1F *h1_ele_antiselected_hOverE_[3];
+                TH1F *h1_ele_antiselected_fbrem_[3];
+                TH1F *h1_ele_antiselected_eOverPIn_[3];
 
                 //
                 // muons
@@ -147,8 +170,12 @@ class MyScanChain {
                 TH1F    *h1_mu_selected_pfmetdphi_[3];
                 TH1F    *h1_mu_selected_tcmetratio_[3];
                 TH1F    *h1_mu_selected_pfmetratio_[3];
-
-
+                TH1F    *h1_mu_selected_tcmetsignificance_[3];
+                TH1F    *h1_mu_selected_pfmetsignificance_[3];
+                TH1F    *h1_mu_selected_ptcmet_[3];
+                TH1F    *h1_mu_selected_ppfmet_[3];
+                TH1F    *h1_mu_selected_pftransmass_[3];
+                TH1F    *h1_mu_selected_tctransmass_[3];
 
 };
 

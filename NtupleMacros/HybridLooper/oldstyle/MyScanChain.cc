@@ -23,7 +23,9 @@
 #include "../../CORE/electronSelections.h"
 #include "../../Tools/DileptonHypType.h"
 #include "../../CORE/eventSelections.h"
-#include "../../CORE/muonSelections.cc"
+#include "../../CORE/muonSelections.h"
+#include "../../CORE/metSelections.h"
+
 //
 // Namespaces
 //
@@ -60,6 +62,7 @@ enum ele_selection {
     PASS_ELE_CONV,
     PASS_ELE_NOMUON,
     PASS_ELE_CLEANEVENT,
+    PASS_ELE_ANTIMET,
 };
 
 double dRbetweenVectors(const LorentzVector &vec1, const LorentzVector &vec2 ){
@@ -196,7 +199,8 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
     // met
     //if (cms2.evt_tcmet() > 20.0 ) cuts_passed |= (1<<PASS_ELE_MET);
     if (cms2.evt_tcmet() > 20.0 && cms2.evt_pfmet() > 20) cuts_passed |= (1<<PASS_ELE_MET);
-    
+    if (cms2.evt_tcmet() < 15.0 && cms2.evt_pfmet() < 15.0) cuts_passed |= (1<<PASS_ELE_ANTIMET);   
+ 
     // ratio of the met to the muon pt
     float tcmetratio = cms2.evt_tcmet() / cms2.els_p4()[eleIndex].Pt();
     float pfmetratio = cms2.evt_pfmet() / cms2.els_p4()[eleIndex].Pt();
@@ -227,6 +231,17 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
     // do plotting
     //
 
+    // compute some common variables 
+    float e2x5MaxOver5x5 = cms2.els_e2x5Max()[eleIndex]/cms2.els_e5x5()[eleIndex];
+    float ppfmet = projectedMETW(cms2.evt_pfmet(), cms2.evt_pfmetPhi(), cms2.els_p4()[eleIndex].Phi());
+    float ptcmet = projectedMETW(cms2.evt_tcmet(), cms2.evt_tcmetPhi(), cms2.els_p4()[eleIndex].Phi());
+    float pfmetsignificance = cms2.evt_pfmet() / cms2.evt_pfsumet();
+    float tcmetsignificance = cms2.evt_tcmet() / cms2.evt_tcsumet();
+    float pftransmass = sqrt( 2.0 * cms2.els_p4()[eleIndex].Pt() * cms2.evt_pfmet() 
+                                * (1 - cos(cms2.evt_pfmetPhi() - cms2.els_p4()[eleIndex].Phi() )));
+    float tctransmass = sqrt( 2.0 * cms2.els_p4()[eleIndex].Pt() * cms2.evt_tcmet() 
+                                * (1 - cos(cms2.evt_tcmetPhi() - cms2.els_p4()[eleIndex].Phi() )));
+
     FillHist(h1_ele_pt_, det, cms2.els_p4()[eleIndex].Pt(), weight);
     FillHist(h1_ele_eta_, det, cms2.els_etaSC()[eleIndex], weight);
     FillHist(h1_ele_phi_, det, cms2.els_phiSC()[eleIndex], weight);
@@ -242,6 +257,11 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
                                 (1<<PASS_ELE_MET) | (1<<PASS_ELE_JETVETO) |
                                 (1<<PASS_ELE_R19);
 
+    const cuts_t pass_all_antiselection = (1<<PASS_ELE_PT) | (1<<PASS_ELE_NOSECOND) |
+                                (1<<PASS_ELE_ISFIDUCIAL) | (1<<PASS_ELE_ISO) |
+                                (1<<PASS_ELE_ANTIMET) | (1<<PASS_ELE_JETVETO) |
+                                (1<<PASS_ELE_R19);
+
     if (CheckCutsNM1(pass_all, (1<<PASS_ELE_MET), cuts_passed)) {
         FillHist(h1_ele_nm1_tcmet_, det, cms2.evt_tcmet(), weight);
         FillHist(h1_ele_nm1_pfmet_, det, cms2.evt_pfmet(), weight);
@@ -255,8 +275,6 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
         FillHist(h1_ele_nm1_jetveto_, det, leadingJPT, weight);
     }
 
-
-
     if (CheckCutsNM1(pass_all, (1<<PASS_ELE_NOSECOND), cuts_passed)) {
         FillHist(h1_ele_nm1_secondpt_, det, secondPt, weight);
     }
@@ -265,14 +283,12 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
         FillHist(h1_ele_nm1_r19_, det, r19, weight);
     }
 
-    if (CheckCutsNM1(pass_all, (1<<PASS_ELE_R19) | (1<<PASS_ELE_MET), cuts_passed)) {
+    if (CheckCutsNM1(pass_all, ((1<<PASS_ELE_R19) | (1<<PASS_ELE_MET)), cuts_passed)) {
         FillHist(h1_ele_nm1nor19_tcmet_, det, cms2.evt_tcmet(), weight);
         FillHist(h1_ele_nm1nor19_pfmet_, det, cms2.evt_pfmet(), weight);
         FillHist(h1_ele_nm1nor19_tcmetratio_, det, tcmetratio, weight);
         FillHist(h1_ele_nm1nor19_pfmetratio_, det, pfmetratio, weight);
-
     }
-
 
     // apply all cuts
     if (CheckCuts(pass_all, cuts_passed)) {
@@ -280,12 +296,10 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
         // print out details of event passing
         // the full selection
       if (isData_) {
-	//std::cout       << "MUONS: "
 	_asciifile    << "ELECTRONS: "
 		      << cms2.evt_run() << "\t" 
 		      << cms2.evt_lumiBlock() << "\t" 
 		      << cms2.evt_event() << std::endl;
-	
       }
 	
         FillHist(h1_ele_selected_pt_, det, cms2.els_p4()[eleIndex].Pt(), weight);
@@ -297,6 +311,35 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
         FillHist(h1_ele_selected_pfmetdphi_, det, pfmetdphi, weight);
         FillHist(h1_ele_selected_tcmetratio_, det, tcmetratio, weight);
         FillHist(h1_ele_selected_pfmetratio_, det, pfmetratio, weight);        
+        FillHist(h1_ele_selected_ptcmet_, det, ptcmet, weight);
+        FillHist(h1_ele_selected_ppfmet_, det, ppfmet, weight);
+        FillHist(h1_ele_selected_tcmetsignificance_, det, tcmetsignificance, weight);
+        FillHist(h1_ele_selected_pfmetsignificance_, det, pfmetsignificance, weight);
+        FillHist(h1_ele_selected_tctransmass_, det, tctransmass, weight);
+        FillHist(h1_ele_selected_pftransmass_, det, pftransmass, weight);
+
+        FillHist(h1_ele_selected_sigmaIEtaIEta_, det, cms2.els_sigmaIEtaIEta()[eleIndex], weight);
+        FillHist(h1_ele_selected_dEtaIn_, det, cms2.els_dEtaIn()[eleIndex], weight);
+        FillHist(h1_ele_selected_dPhiIn_, det, cms2.els_dPhiIn()[eleIndex], weight);
+        FillHist(h1_ele_selected_hOverE_, det, cms2.els_hOverE()[eleIndex], weight);
+        FillHist(h1_ele_selected_e2x5MaxOver5x5_, det, e2x5MaxOver5x5, weight);
+        FillHist(h1_ele_selected_fbrem_, det, cms2.els_fbrem()[eleIndex], weight);
+        FillHist(h1_ele_selected_eOverPIn_, det, cms2.els_eOverPIn()[eleIndex], weight);
+
+    }
+
+    // apply all cuts with antiselection on met instead of selection
+    // to select background like electrons
+        
+    if (CheckCuts(pass_all_antiselection, cuts_passed)) {
+        FillHist(h1_ele_antiselected_sigmaIEtaIEta_, det, cms2.els_sigmaIEtaIEta()[eleIndex], weight);
+        FillHist(h1_ele_antiselected_dEtaIn_, det, cms2.els_dEtaIn()[eleIndex], weight);
+        FillHist(h1_ele_antiselected_dPhiIn_, det, cms2.els_dPhiIn()[eleIndex], weight);
+        FillHist(h1_ele_antiselected_hOverE_, det, cms2.els_hOverE()[eleIndex], weight);
+        FillHist(h1_ele_antiselected_e2x5MaxOver5x5_, det, e2x5MaxOver5x5, weight);
+        FillHist(h1_ele_antiselected_fbrem_, det, cms2.els_fbrem()[eleIndex], weight);
+        FillHist(h1_ele_antiselected_eOverPIn_, det, cms2.els_eOverPIn()[eleIndex], weight);
+
     }
 
 }
@@ -375,6 +418,16 @@ void MyScanChain::AnalyseMuons(const float &weight) {
     // do plotting
     //
 
+    // compute some common variables 
+    float ppfmet = projectedMETW(cms2.evt_pfmet(), cms2.evt_pfmetPhi(), cms2.mus_p4()[muIndex].Phi());
+    float ptcmet = projectedMETW(cms2.evt_tcmet(), cms2.evt_tcmetPhi(), cms2.mus_p4()[muIndex].Phi());
+    float pfmetsignificance = cms2.evt_pfmet() / cms2.evt_pfsumet();
+    float tcmetsignificance = cms2.evt_tcmet() / cms2.evt_tcsumet();
+    float pftransmass = sqrt( 2.0 * cms2.mus_p4()[muIndex].Pt() * cms2.evt_pfmet()
+                                * (1 - cos(cms2.evt_pfmetPhi() - cms2.mus_p4()[muIndex].Phi() )));
+    float tctransmass = sqrt( 2.0 * cms2.mus_p4()[muIndex].Pt() * cms2.evt_tcmet()
+                                * (1 - cos(cms2.evt_tcmetPhi() - cms2.mus_p4()[muIndex].Phi() )));
+
     FillHist(h1_mu_pt_, det, cms2.mus_p4()[muIndex].Pt(), weight);
     FillHist(h1_mu_eta_, det, cms2.mus_p4()[muIndex].Eta(), weight);
     FillHist(h1_mu_phi_, det, cms2.mus_p4()[muIndex].Phi(), weight);
@@ -408,13 +461,13 @@ void MyScanChain::AnalyseMuons(const float &weight) {
 
         // print out details of event passing
         // the full selection
-      if (isData_)
-	  // std::cout       << "MUONS: "
+      if (isData_) {
 	    _asciifile       << "MUONS: "
 			     << cms2.evt_run() << "\t"
 			     << cms2.evt_lumiBlock() << "\t"
 			     << cms2.evt_event() << std::endl;
-	
+	}
+
         FillHist(h1_mu_selected_pt_, det, cms2.mus_p4()[muIndex].Pt(), weight);
         FillHist(h1_mu_selected_eta_, det, cms2.mus_p4()[muIndex].Eta(), weight);
         FillHist(h1_mu_selected_phi_, det, cms2.mus_p4()[muIndex].Phi(), weight);
@@ -424,6 +477,13 @@ void MyScanChain::AnalyseMuons(const float &weight) {
         FillHist(h1_mu_selected_pfmetdphi_, det, pfmetdphi, weight);
         FillHist(h1_mu_selected_tcmetratio_, det, tcmetratio, weight);
         FillHist(h1_mu_selected_pfmetratio_, det, pfmetratio, weight);
+        FillHist(h1_mu_selected_ptcmet_, det, ptcmet, weight);
+        FillHist(h1_mu_selected_ppfmet_, det, ppfmet, weight);
+        FillHist(h1_mu_selected_tcmetsignificance_, det, tcmetsignificance, weight);
+        FillHist(h1_mu_selected_pfmetsignificance_, det, pfmetsignificance, weight);
+        FillHist(h1_mu_selected_tctransmass_, det, tctransmass, weight);
+        FillHist(h1_mu_selected_pftransmass_, det, pftransmass, weight);
+
     }
 
 
@@ -510,8 +570,32 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     FormatHist(h1_ele_selected_pfmetdphi_, "ele_selected_pfmetdphi", 100, -4, 4);
     FormatHist(h1_ele_selected_tcmetratio_, "ele_selected_tcmetratio", 50, 0, 5);
     FormatHist(h1_ele_selected_pfmetratio_, "ele_selected_pfmetratio", 50, 0, 5);
+    FormatHist(h1_ele_selected_tcmetsignificance_, "ele_selected_tcmetsignificance", 100, 0, 10.0);
+    FormatHist(h1_ele_selected_pfmetsignificance_, "ele_selected_pfmetsignificance", 100, 0, 10.0);
+    FormatHist(h1_ele_selected_ptcmet_, "ele_selected_ptcmet", 20, 0, 100);
+    FormatHist(h1_ele_selected_ppfmet_, "ele_selected_ppfmet", 20, 0, 100);
+    FormatHist(h1_ele_selected_tctransmass_, "ele_selected_tctransmass", 20, 0, 100);
+    FormatHist(h1_ele_selected_pftransmass_, "ele_selected_pftransmass", 20, 0, 100);
 
-        
+    FormatHist(h1_ele_selected_sigmaIEtaIEta_, "ele_selected_sigmaIEtaIEta", 100, 0, 0.1);
+    FormatHist(h1_ele_selected_dEtaIn_, "ele_selected_dEtaIn", 100, -0.5, 0.5);
+    FormatHist(h1_ele_selected_dPhiIn_, "ele_selected_dPhiIn", 100, -0.5, 0.5);
+    FormatHist(h1_ele_selected_hOverE_, "ele_selected_hOverE", 100, 0, 1.0);
+    FormatHist(h1_ele_selected_e2x5MaxOver5x5_, "ele_selected_e2x5MaxOver5x5", 110, 0, 1.1);
+    FormatHist(h1_ele_selected_fbrem_, "ele_selected_fbrem", 100, 0, 1.0);
+    FormatHist(h1_ele_selected_eOverPIn_, "ele_selected_eOverPIn", 100, 0, 5.0);
+
+
+    // anti-selection on met
+    FormatHist(h1_ele_antiselected_sigmaIEtaIEta_, "ele_antiselected_sigmaIEtaIEta", 100, 0, 0.1);    
+    FormatHist(h1_ele_antiselected_dEtaIn_, "ele_antiselected_dEtaIn", 100, -0.5, 0.5);
+    FormatHist(h1_ele_antiselected_dPhiIn_, "ele_antiselected_dPhiIn", 100, -0.5, 0.5);
+    FormatHist(h1_ele_antiselected_hOverE_, "ele_antiselected_hOverE", 100, 0, 1.0);
+    FormatHist(h1_ele_antiselected_e2x5MaxOver5x5_, "ele_antiselected_e2x5MaxOver5x5", 110, 0, 1.1);
+    FormatHist(h1_ele_antiselected_fbrem_, "ele_antiselected_fbrem", 100, 0, 1.0);
+    FormatHist(h1_ele_antiselected_eOverPIn_, "ele_antiselected_eOverPIn", 100, 0, 5.0);
+
+    
     //
     // Muons
     //
@@ -543,6 +627,12 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     FormatHist(h1_mu_selected_pfmetdphi_, "mu_selected_pfmetdphi", 100, -4, 4);
     FormatHist(h1_mu_selected_tcmetratio_, "mu_selected_tcmetratio", 50, 0, 5);
     FormatHist(h1_mu_selected_pfmetratio_, "mu_selected_pfmetratio", 50, 0, 5);
+    FormatHist(h1_mu_selected_tcmetsignificance_, "mu_selected_tcmetsignificance", 100, 0, 10.0);
+    FormatHist(h1_mu_selected_pfmetsignificance_, "mu_selected_pfmetsignificance", 100, 0, 10.0);
+    FormatHist(h1_mu_selected_ptcmet_, "mu_selected_ptcmet", 20, 0, 100);
+    FormatHist(h1_mu_selected_ppfmet_, "mu_selected_ppfmet", 20, 0, 100);
+    FormatHist(h1_mu_selected_tctransmass_, "mu_selected_tctransmass", 20, 0, 100);
+    FormatHist(h1_mu_selected_pftransmass_, "mu_selected_pftransmass", 20, 0, 100);
 
     // open an asciifile to store results
     if(isData_) {
