@@ -26,6 +26,11 @@ struct metStruct{
 float projectedMET( float met, float metPhi, int hyp_index );
 
 //---------------------------------------------
+// as above but simpler for single lepton events
+//---------------------------------------------
+float projectedMETW( float met, float metPhi, float leptonPhi);
+
+//---------------------------------------------
 // function to correct tcMET for electron bug
 //---------------------------------------------
 metStruct correctedTCMET();

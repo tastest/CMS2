@@ -20,9 +20,17 @@
 float projectedMET( float met, float metPhi, int hyp_index ) {
 
      float deltaPhi = nearestHypLeptonPhi(metPhi, hyp_index);
-
      return ((deltaPhi < TMath::Pi() / 2.) ? met * sin(deltaPhi) : met);
 }
+
+//---------------------------------------------
+// as above but simpler for single lepton events
+//---------------------------------------------
+float projectedMETW( float met, float metPhi, float leptonPhi) {
+     float deltaPhi = acos(cos(metPhi - leptonPhi));
+     return ((deltaPhi < TMath::Pi() / 2.) ? met * sin(deltaPhi) : met);
+}
+
 
 //---------------------------------------------
 // function to correct tcMET for electron bug
