@@ -17,9 +17,12 @@
 	const static sources_t theBackground = 
 		(1<<H_QCD30);
 	const static sources_t theSources = 
+		(1<<H_WHUNT) |
 		(1<<H_WJETS) |
 		(1<<H_PHOTONJETS) |
-		(1<<H_QCD30);
+		(1<<H_QCD30) |
+	(1<<H_QCD80);
+
 
 TArrow *getArrow(THStack *st, TString det, float cutValEB, float cutValEE)
 {
@@ -390,7 +393,12 @@ void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString sav
 
         THStack *st = h1.getStack(theSources, name, "", det, rebin);
         TLegend *lg_all = h1.getLegend(theSources, name, "", det);
-	lg_all->SetX1(0.4);
+	lg_all->SetX1(0.6);
+	lg_all->SetX2(0.7);
+	lg_all->SetY1(0.7);
+	lg_all->SetY2(0.9);
+
+	lg_all->SetTextSize(0.04);
 
         TCanvas *c1 = new TCanvas();
         c1->cd();
@@ -424,8 +432,9 @@ void plotResultsW(TString det, TString fileStamp)
         // luminorm for 0.1pb-1 (is set to 1fb in the looper)
         float luminorm = 0.0001;
         std::vector<DataSource> sources;
-        //sources.push_back( fH_WJETS() );
-        //sources.push_back( fH_QCD30() );
+        sources.push_back( fH_WJETS() );
+        sources.push_back( fH_QCD30() );
+	//sources.push_back( fH_QCD80() );
         HistogramUtilities h1(fileStamp + ".root", sources, luminorm);
 
         // W studies related
@@ -433,7 +442,15 @@ void plotResultsW(TString det, TString fileStamp)
 
         // last argument of plotStack is rebin factor
 
-        plotStack(h1, "ele_selected_pt", "p_{T} (GeV)", fileStamp, det, 1);
+        plotStack(h1, "ele_selected_pt", "Electron p_{T} (GeV)", fileStamp, det, 1);
+	plotStack(h1, "ele_selected_pfmetdphi", "#Delta#Phi (Electron, pfMET)", fileStamp, det, 1);
+	plotStack(h1, "ele_selected_tcmetdphi", "#Delta#Phi (Electron, tcMET)", fileStamp, det, 1);
+
+
+        plotStack(h1, "mu_selected_pt", "#mu p_{T} (GeV)", fileStamp, det, 1);
+	plotStack(h1, "mu_selected_pfmetdphi", "#Delta#Phi (#mu, pfMET)", fileStamp, det, 1);
+	plotStack(h1, "mu_selected_tcmetdphi", "#Delta#Phi (#mu, tcMET)", fileStamp, det, 1);
+
 
 
 }
