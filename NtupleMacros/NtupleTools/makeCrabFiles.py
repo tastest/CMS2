@@ -12,8 +12,8 @@ numEvtsPerJob = 5000
 outNtupleName = 'ntuple.root'
 storageElement = 'T2_US_UCSD'
 tag = 'V01-02-06'
-mode = 'glite'
-server = 'cern';
+mode = 'glidein'
+server = '1';
 dbs_url = 'http://ming.ucsd.edu:8080/DBS2/servlet/DBSServlet';
 report_every = 1000;
 global_tag_flag = '';
@@ -27,7 +27,7 @@ def makeCrabConfig():
     outFile.write('jobtype   = cmssw\n')
     outFile.write('scheduler = ' + mode + '\n')
     if ( server != '' ) :
-        outFile.write('server_name = ' + server + '\n')
+        outFile.write('use_server = ' + server + '\n')
     outFile.write('\n[CMSSW]\n')
     outFile.write('datasetpath             = ' + dataSet + '\n')
     outFile.write('pset                    = ' + outFileName + '_cfg.py \n')
@@ -123,8 +123,8 @@ if len(sys.argv) < 5 :
     print '\t-nEvts\t\tNumber of events you want to run on. Default is -1'
     print '\t-evtsPerJob\tNumber of events per job. Default is 5000'
     #print '\t-n\t\tName of output Ntuple file. Default is ntuple.root'
-    print '\t-m\t\tsubmission mode (possible: condor_g, condor, glite). Default is glite'
-    print '\t-s\t\tserver name. Default is cern'
+    print '\t-m\t\tsubmission mode (possible: condor_g, condor, glite). Default is glidein'
+    print '\t-s\t\tserver name. By default, we let CRAB pick the server '
     print '\t-dbs\t\tdbs url for publication. Default is http://ming.ucsd.edu:8080/DBS2/servlet/DBSServlet'
     print '\t-re\t\tMessage Logger modulus for error reporting. Default is 1000'
     print '\t-gtag\t\tglobal tag. Default is MC_31X_V3::All'
@@ -174,16 +174,20 @@ else :
     for i in lines.readlines():
       dbs_result = re.sub('\n', '', i)
       global_tag = re.sub('#.+$', '', dbs_result)
-    if( global_tag != '' and global_tag_flag == ''):
-    	print '\nDBS Query results:\t\'' + dbs_result + '\' ?\n'
-    	print 'Use global tag from DBS:\t\'' + global_tag + '\' ?\n'
-    	answer = raw_input('[y/n]?')
-    	if(answer != 'y'): 
-    		print 'Exiting...\n'
-    		sys.exit()
-    if( global_tag == '' and global_tag_flag == '' ):
-    	print '\nGlobal tag not found in DBS. Use -gtag to set global tag. Exiting...\n'
-    	sys.exit()
+      if( global_tag != '' and global_tag_flag == ''):
+          print '\nDBS Query results:\t\'' + dbs_result + '\' ?\n'
+          print 'Use global tag from DBS:\t\'' + global_tag + '\' ?\n'
+          answer = raw_input('[y/n]?')
+          while(answer != 'y' and answer != 'n'): 
+              print 'Please pick either \'y\' or \'n\''
+              answer = raw_input('[y/n]?')
+          if answer == 'n':
+              print 'Enter alternative Global Tag:'
+              global_tag = raw_input('new global tag:')
+                  
+          if( global_tag == '' and global_tag_flag == '' ):
+              print '\nGlobal tag not found in DBS. Use -gtag to set global tag. Exiting...\n'
+              sys.exit()
 makeCMSSWConfig(cmsswSkelFile)
 makeCrabConfig()    
 
