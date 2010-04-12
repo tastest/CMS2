@@ -58,6 +58,7 @@ enum {
 	H_ELEGUNIDEAL,
 	H_ELEGUNSTARTUP,
 	H_WHUNT,
+    H_MINBIAS,
 };
 
 /*
@@ -94,6 +95,7 @@ const static sources_t sources_nonpeaking =
 // are available with V02-00-12
 
 DataSource fH_WHUNT();
+DataSource fH_MINBIAS();
 
 DataSource fH_DYMM();
 DataSource fH_DYEE();
