@@ -140,18 +140,18 @@ void doAll() {
 
     // MC
     //looper->ScanChain(false, "minbias", chain_minbias);
-    //looper->ScanChain(false, "QCDpt30", chain_qcd30);
-    //looper->ScanChain(false, "wjets", chain_wjets);
+    looper->ScanChain(false, "QCDpt30", chain_qcd30);
+    looper->ScanChain(false, "wjets", chain_wjets);
 
     // DATA
-    looper->ScanChain(true, "whunt", chain_whunt_skim);
+    //looper->ScanChain(true, "whunt", chain_whunt_skim);
 
     //
     // write histograms
     // 
 
-    //const char* outFile = "histos_reference.root";
-    const char* outFile = "histos_data.root";
+    const char* outFile = "histos_reference.root";
+    //const char* outFile = "histos_data.root";
     hist::saveHist(outFile); 
     hist::deleteHistos();
 
