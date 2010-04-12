@@ -40,8 +40,22 @@ if not os.path.isdir(indir) :
     print "Cannot find %s.  Exiting." % infile
     sys.exit()
 
+##############################################
+# Run the makePlots.C script
+##############################################
+
+rmplotfile = "rm -f results/*.png; rm -f %s/*.png " % (indir)
+os.system(rmplotfile)
+
+makePlots = "root -q -b makePlots.C"
+os.system(makePlots)
+
+##############################################
+# Copy files to the WEBPAGE
+##############################################
+
 # copy the files
-cpplotfile = "cp results/histos_data_lin*_selected*.png %s" % (indir)
+cpplotfile = "cp results/histos_data_lin*_selected*.png results/histos_data_lin*_nm1*.png %s" % (indir)
 os.system(cpplotfile)
 
 cpindexfile = "cp wplots.html %sindex.html" % (indir)
