@@ -1,5 +1,3 @@
-// $Id: emuskim.cc,v 1.1 2010/04/09 16:24:08 jribnik Exp $
-
 #include <assert.h>
 #include <string>
 #include "TChain.h"
@@ -7,37 +5,13 @@
 #include "TObjArray.h"
 #include "TTree.h"
 
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <cstdio>
-#include <strstream>
-
-
 #include "CORE/CMS2.h"
-CMS2 cms2;
 
 #include "Rtypes.h"
 typedef ULong64_t uint64;
 
-// Used to filter an ntuple based on the 'select' function return
-// infile is the path to the ntuple you want to filter (* allowed)
-// outfile is the result
-// cut is specified in the select() function
-
-// eg:
-// ntupleFilter("/data/tmp/cms2-V03-00-10/MinimumBias_BeamCommissioning09-rereco_FIRSTCOLL_v1/*.root","/data/tmp/wandrews/minbias/filtered_ntuple.root")
-//infile and outfile must end in ".root"
-
-// WARNING: all of the input files are put into 1 output file, so
-// please be careful you don't create a file which is enormous (unless
-// you can handle enormous files)
-
 bool select ()
 {
-    // for example, require l1 tech bit 40 or 41
-    //bool pass = cms2.l1_techbits2() & (1 << 8) || cms2.l1_techbits2() & (1 << 9);
-    //bool pass = cms2.hyp_p4().size() > 0;
     bool pass = false;
     for(unsigned int mui = 0; mui < cms2.mus_p4().size(); ++mui)
         if (cms2.mus_p4()[mui].pt() > 20. && (cms2.mus_type()[mui]&6))
@@ -52,11 +26,6 @@ void emuskim (const std::string &infile, const std::string &outfile, bool printP
 {
      // output file and tree
      TFile *output =TFile::Open(outfile.c_str(), "RECREATE");
-     
-     TString RunListFileName = "RunsProcessed.txt";
-
-     ofstream ProcessedFilesFile(RunListFileName,ios::out|ios::app);
-
      assert(output != 0);
      TTree *newtree = 0;
 
@@ -72,29 +41,7 @@ void emuskim (const std::string &infile, const std::string &outfile, bool printP
 	 }
 	 
      TChain *chain = new TChain("Events");
-     
-     ifstream stream(infile.c_str());
-     TString oneRootFile = "";
-     TString line = "";
-     
-     while ( line.ReadLine(stream) ) {
-       istrstream stream5(line.Data());
-       stream5 >>  oneRootFile ;      
-       std::cout<<"file: "<<oneRootFile<<std::endl;
-       TFile *testfile = TFile::Open(oneRootFile);
-       if (! testfile || testfile->IsZombie())
-       {
-           std::cout<<"!!!" <<oneRootFile<< " is bad, skipping :(" <<std::endl;
-           continue;
-       }
-       testfile->Close();
-       chain->Add(oneRootFile);
-     }
-     if(chain->GetEntries() < 1 ) {
-       std::cout<<"emuskim: no entries in chain, exiting..."<<std::endl;
-       return;
-     }
-     
+     chain->Add(infile.c_str());
      TObjArray *listOfFiles = chain->GetListOfFiles();
      const uint64 nEventsChain = chain->GetEntries();
      uint64 nEventsTotal = 0;
@@ -107,10 +54,6 @@ void emuskim (const std::string &infile, const std::string &outfile, bool printP
      int i_permille_old = 0;
      while ( currentFile = (TFile*)fileIter.Next() ) {
 	   TFile f(currentFile->GetTitle());
-     TString filename = currentFile->GetTitle();
-
-     std::cout<<"Start looping file: "<<filename<<std::endl;
-
 	   //const char *name = f.GetName();
 	   TTree *tree = (TTree*)f.Get("Events");
 
@@ -163,12 +106,6 @@ void emuskim (const std::string &infile, const std::string &outfile, bool printP
 		 // fill the new tree
 		 newtree->Fill();
 	   }
-
-     ofstream ProcessedFilesFile(RunListFileName,ios::out|ios::app);
-     ProcessedFilesFile << filename
-                << endl;
-
-     std::cout<<"Done looping file: "<<filename<<std::endl;
      }
 
 	 if( printPass ) {

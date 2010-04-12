@@ -11,7 +11,7 @@
 #include "TMath.h"
 #include "TROOT.h"
 
-#include "CORE/CMS2.cc"
+#include "CORE/CMS2.h"
 #include "CORE/electronSelections.cc"
 #include "CORE/muonSelections.cc"
 
@@ -22,13 +22,10 @@ typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 float deltaPhi (float, float);
 bool sortByPt (const LorentzVector &, const LorentzVector &);
 
-void babymaker::ScanChain (TChain *chain, char *babyFilename, int nEvents)
+void babymaker::ScanChain (const char *inputFilename, const char *babyFilename, int nEvents)
 {
-    if (chain->GetEntries() < 1)
-    {
-        std::cout<<"babymaker: no entries in chain, exiting..."<<std::endl;
-        return;
-    }
+    TChain *chain = new TChain("Events");
+    chain->Add(inputFilename);
     TObjArray *listOfFiles = chain->GetListOfFiles();
 
     unsigned int nEventsChain=0;
@@ -218,7 +215,7 @@ void babymaker::InitBabyNtuple ()
     e_nmHits_   = -999999;
 }
 
-void babymaker::MakeBabyNtuple(char *babyFilename)
+void babymaker::MakeBabyNtuple(const char *babyFilename)
 {
     TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
     rootdir->cd();

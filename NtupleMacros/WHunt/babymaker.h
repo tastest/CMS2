@@ -14,11 +14,11 @@ class babymaker
             delete babyFile_;
             delete babyTree_;
         };
-        void MakeBabyNtuple (char *);
+        void MakeBabyNtuple (const char *);
         void InitBabyNtuple ();
         void FillBabyNtuple ();
         void CloseBabyNtuple ();
-        void ScanChain (TChain *, char*, int nEvents = -1);
+        void ScanChain (const char *, const char *, int nEvents = -1);
 
     private:
         //

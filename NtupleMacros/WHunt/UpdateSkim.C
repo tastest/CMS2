@@ -1,29 +1,31 @@
-// #include "TTimeStamp.h"
-// #include "TString.h"
-// #include <iostream>
-//void UpdateSkim(void) 
+#include <iostream>
+
+#include "TObjArray.h"
+#include "TObjString.h"
+#include "TPRegexp.h"
+#include "TROOT.h"
+#include "TString.h"
+
+#include "CORE/CMS2.cc"
+#include "emuskim.cc"
+#include "babymaker.C"
+
+void UpdateSkim(const char *inputFileName) 
 {
-  TTimeStamp * time = new TTimeStamp();
-  std::cout<<"hello"<<std::endl;
-  std::cout<<"And the date is: "<<time->GetDate()<<std::endl;
-  std::cout<<"And the time is: "<<time->GetTime()<<std::endl;
+    TPRegexp preg("\\S+/merged_ntuple_(\\d+_\\d+).root");
+    TString ident = ((TObjString*)preg.MatchS(TString(inputFileName))->At(1))->GetString();
 
-  TString outputFileName = "";
-  outputFileName.Append("skim/WHunt_update_");
-  outputFileName+= time->GetDate();
-  outputFileName.Append("_");
-  outputFileName+= time->GetTime();
-  outputFileName.Append(".root");
+    TString skimFileName = "";
+    skimFileName.Append("skim/emuskim_");
+    skimFileName.Append(ident);
+    skimFileName.Append(".root");
 
-  gROOT->ProcessLine(".L emuskim.cc+");
-  gROOT->ProcessLine("emuskim(\"RunsToProcess.txt\",outputFileName.Data())");
+    emuskim(inputFileName, skimFileName.Data());
 
-  TString babyoutputFileName = outputFileName;
-  babyoutputFileName.ReplaceAll("skim/WHunt_update_", "baby/WHunt_update_baby_");
+    TString babyFileName = skimFileName;
+    babyFileName.ReplaceAll("skim/emuskim_", "baby/emuskim_baby_");
 
-  TChain *c = new TChain("Events");
-  c->Add(outputFileName);
-  gROOT->ProcessLine(".L babymaker.C+");
-  babymaker bah;
-  bah.ScanChain(c, babyoutputFileName.Data());
+    std::cout << "Making a baby named " << babyFileName << std::endl;
+    babymaker *baby = new babymaker();
+    baby->ScanChain(skimFileName.Data(), babyFileName.Data());
 }
