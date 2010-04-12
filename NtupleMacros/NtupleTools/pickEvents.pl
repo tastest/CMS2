@@ -20,7 +20,7 @@ process.source = cms.Source("PoolSource",
    fileNames = cms.untracked.vstring(),
    eventsToProcess = cms.untracked.VEventRange( EVENTS )
 )
-process.source.fileNames.extend(( FILES ))
+process.source.fileNames.extend([ FILES ])
 process.Out = cms.OutputModule("PoolOutputModule",
    fileName = cms.untracked.string(OUTPUT)
 )
