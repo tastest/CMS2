@@ -151,6 +151,8 @@ void plotResultsW(TString det, TString fileStamp, TString refFileStamp, float & 
     plotDataRefOverlayStack(datah1, refh1, "ele_selected_pftransmass", "Transverse Mass w/pfMET (GeV)", fileStamp, det, 1);
     plotDataRefOverlayStack(datah1, refh1, "ele_selected_d0corr", "d0(BS) (cm)", fileStamp, det, 1);
     plotDataRefOverlayStack(datah1, refh1, "ele_selected_nmhits", "Number of Missing Hits", fileStamp, det, 1);
+    plotDataRefOverlayStack(datah1, refh1, "ele_selected_tcmetdphi", "dPhi(tcMET, Electron) (GeV)", fileStamp, det, 1);
+
 
     // N-1 distributions
     plotDataRefOverlayStack(datah1, refh1, "ele_nm1_tcmet", "NM1 tcMET (GeV)", fileStamp, det, 1);
@@ -158,6 +160,8 @@ void plotResultsW(TString det, TString fileStamp, TString refFileStamp, float & 
     plotDataRefOverlayStack(datah1, refh1, "ele_nm1_iso", "NM1 RelIso (GeV)", fileStamp, det, 1);
     plotDataRefOverlayStack(datah1, refh1, "ele_nm1_jetveto", "NM1 Leading JPT p_{T} (GeV)", fileStamp, det, 1);
     plotDataRefOverlayStack(datah1, refh1, "ele_nm1_secondpt", "NM1 Second Electron p_{T} (GeV)", fileStamp, det, 1);
+    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_r19", "NM1 eMax/e5x5", fileStamp, det, 1);
+
 
 
     // Muons
@@ -167,6 +171,7 @@ void plotResultsW(TString det, TString fileStamp, TString refFileStamp, float & 
     plotDataRefOverlayStack(datah1, refh1, "mu_selected_tctransmass", "Transverse Mass w/tcMET (GeV)", fileStamp, det, 1);
     plotDataRefOverlayStack(datah1, refh1, "mu_selected_pftransmass", "Transverse Mass w/pfMET (GeV)", fileStamp, det, 1);
     plotDataRefOverlayStack(datah1, refh1, "mu_selected_d0corr", "d0(BS) (cm))", fileStamp, det, 1);
+    plotDataRefOverlayStack(datah1, refh1, "mu_selected_tcmetdphi", "dPhi(tcMET, Muon) (GeV)", fileStamp, det, 1);
 
     // N-1 distributions
     plotDataRefOverlayStack(datah1, refh1, "mu_nm1_tcmet", "NM1 tcMET (GeV)", fileStamp, det, 1);

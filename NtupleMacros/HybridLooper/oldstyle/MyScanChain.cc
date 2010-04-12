@@ -569,16 +569,16 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     FormatHist(h1_ele_pt_, "ele_pt", 100, 0, 100);
     FormatHist(h1_ele_eta_, "ele_eta", 100, -3, 3);
     FormatHist(h1_ele_phi_, "ele_phi", 100, -4, 4);
-    FormatHist(h1_ele_tcmet_, "ele_tcmet", 20, 0, 100);
-    FormatHist(h1_ele_pfmet_, "ele_pfmet", 20, 0, 100);
+    FormatHist(h1_ele_tcmet_, "ele_tcmet", 100, 0, 100);
+    FormatHist(h1_ele_pfmet_, "ele_pfmet", 100, 0, 100);
     FormatHist(h1_ele_tcmetdphi_, "ele_tcmetdphi", 100, -4, 4);
     FormatHist(h1_ele_pfmetdphi_, "ele_pfmetdphi", 100, -4, 4);
     FormatHist(h1_ele_tcmetratio_, "ele_tcmetratio", 50, 0, 5);
     FormatHist(h1_ele_pfmetratio_, "ele_pfmetratio", 50, 0, 5);
 
     // N-1
-    FormatHist(h1_ele_nm1_tcmet_, "ele_nm1_tcmet", 20, 0, 100);
-    FormatHist(h1_ele_nm1_pfmet_, "ele_nm1_pfmet", 20, 0, 100);
+    FormatHist(h1_ele_nm1_tcmet_, "ele_nm1_tcmet", 100, 0, 100);
+    FormatHist(h1_ele_nm1_pfmet_, "ele_nm1_pfmet", 100, 0, 100);
     FormatHist(h1_ele_nm1_tcmetdphi_, "ele_nm1_tcmetdphi", 100, -4, 4);
     FormatHist(h1_ele_nm1_pfmetdphi_, "ele_nm1_pfmetdphi", 100, -4, 4);
     FormatHist(h1_ele_nm1_tcmetratio_, "ele_nm1_tcmetratio", 50, 0, 5);
@@ -588,8 +588,8 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     FormatHist(h1_ele_nm1_secondpt_, "ele_nm1_secondpt", 100, 0, 100);
 
     FormatHist(h1_ele_nm1_r19_, "ele_nm1_r19", 120, 0, 1.2);
-    FormatHist(h1_ele_nm1nor19_tcmet_, "ele_nm1nor19_tcmet", 20, 0, 100);
-    FormatHist(h1_ele_nm1nor19_pfmet_, "ele_nm1nor19_pfmet", 20, 0, 100);
+    FormatHist(h1_ele_nm1nor19_tcmet_, "ele_nm1nor19_tcmet", 100, 0, 100);
+    FormatHist(h1_ele_nm1nor19_pfmet_, "ele_nm1nor19_pfmet", 100, 0, 100);
     FormatHist(h1_ele_nm1nor19_tcmetratio_, "ele_nm1nor19_tcmetratio", 50, 0, 5);
     FormatHist(h1_ele_nm1nor19_pfmetratio_, "ele_nm1nor19_pfmetratio", 50, 0, 5);
 
@@ -597,18 +597,18 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     FormatHist(h1_ele_selected_pt_, "ele_selected_pt", 100, 0, 100);
     FormatHist(h1_ele_selected_eta_, "ele_selected_eta", 100, -3, 3);
     FormatHist(h1_ele_selected_phi_, "ele_selected_phi", 100, -4, 4);
-    FormatHist(h1_ele_selected_tcmet_, "ele_selected_tcmet", 20, 0, 100);
-    FormatHist(h1_ele_selected_pfmet_, "ele_selected_pfmet", 20, 0, 100);
+    FormatHist(h1_ele_selected_tcmet_, "ele_selected_tcmet", 100, 0, 100);
+    FormatHist(h1_ele_selected_pfmet_, "ele_selected_pfmet", 100, 0, 100);
     FormatHist(h1_ele_selected_tcmetdphi_, "ele_selected_tcmetdphi", 100, -4, 4);
     FormatHist(h1_ele_selected_pfmetdphi_, "ele_selected_pfmetdphi", 100, -4, 4);
     FormatHist(h1_ele_selected_tcmetratio_, "ele_selected_tcmetratio", 50, 0, 5);
     FormatHist(h1_ele_selected_pfmetratio_, "ele_selected_pfmetratio", 50, 0, 5);
     FormatHist(h1_ele_selected_tcmetsignificance_, "ele_selected_tcmetsignificance", 100, 0, 10.0);
     FormatHist(h1_ele_selected_pfmetsignificance_, "ele_selected_pfmetsignificance", 100, 0, 10.0);
-    FormatHist(h1_ele_selected_ptcmet_, "ele_selected_ptcmet", 20, 0, 100);
-    FormatHist(h1_ele_selected_ppfmet_, "ele_selected_ppfmet", 20, 0, 100);
-    FormatHist(h1_ele_selected_tctransmass_, "ele_selected_tctransmass", 20, 0, 100);
-    FormatHist(h1_ele_selected_pftransmass_, "ele_selected_pftransmass", 20, 0, 100);
+    FormatHist(h1_ele_selected_ptcmet_, "ele_selected_ptcmet", 100, 0, 100);
+    FormatHist(h1_ele_selected_ppfmet_, "ele_selected_ppfmet", 100, 0, 100);
+    FormatHist(h1_ele_selected_tctransmass_, "ele_selected_tctransmass", 200, 0, 200);
+    FormatHist(h1_ele_selected_pftransmass_, "ele_selected_pftransmass", 200, 0, 200);
     FormatHist(h1_ele_selected_d0corr_, "ele_selected_d0corr", 100, -0.2, 0.2);
     FormatHist(h1_ele_selected_nmhits_, "ele_selected_nmhits", 10, -0.5, 9.5);   
 
@@ -639,8 +639,8 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     FormatHist(h1_mu_pt_, "mu_pt", 100, 0, 100);
     FormatHist(h1_mu_eta_, "mu_eta", 100, -3, 3);
     FormatHist(h1_mu_phi_, "mu_phi", 100, -4, 4);
-    FormatHist(h1_mu_tcmet_, "mu_tcmet", 20, 0, 100);
-    FormatHist(h1_mu_pfmet_, "mu_pfmet", 20, 0, 100);
+    FormatHist(h1_mu_tcmet_, "mu_tcmet", 100, 0, 100);
+    FormatHist(h1_mu_pfmet_, "mu_pfmet", 100, 0, 100);
     FormatHist(h1_mu_tcmetdphi_, "mu_tcmetdphi", 100, -4, 4);
     FormatHist(h1_mu_pfmetdphi_, "mu_pfmetdphi", 100, -4, 4);
     FormatHist(h1_mu_tcmetratio_, "mu_tcmetratio", 50, 0, 5);
@@ -648,26 +648,26 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 
     // N-1
     FormatHist(h1_mu_nm1_secondpt_, "mu_nm1_secondpt", 100, 0, 100);
-    FormatHist(h1_mu_nm1_tcmet_, "mu_nm1_tcmet", 20, 0, 100);
-    FormatHist(h1_mu_nm1_pfmet_, "mu_nm1_pfmet", 20, 0, 100);
+    FormatHist(h1_mu_nm1_tcmet_, "mu_nm1_tcmet", 100, 0, 100);
+    FormatHist(h1_mu_nm1_pfmet_, "mu_nm1_pfmet", 100, 0, 100);
     FormatHist(h1_mu_nm1_iso_, "mu_nm1_iso", 100, 0, 1);
 
     // after all selections
     FormatHist(h1_mu_selected_pt_, "mu_selected_pt", 100, 0, 100);
     FormatHist(h1_mu_selected_eta_, "mu_selected_eta", 100, -3, 3);
     FormatHist(h1_mu_selected_phi_, "mu_selected_phi", 100, -4, 4);
-    FormatHist(h1_mu_selected_tcmet_, "mu_selected_tcmet", 20, 0, 100);
-    FormatHist(h1_mu_selected_pfmet_, "mu_selected_pfmet", 20, 0, 100);
+    FormatHist(h1_mu_selected_tcmet_, "mu_selected_tcmet", 100, 0, 100);
+    FormatHist(h1_mu_selected_pfmet_, "mu_selected_pfmet", 100, 0, 100);
     FormatHist(h1_mu_selected_tcmetdphi_, "mu_selected_tcmetdphi", 100, -4, 4);
     FormatHist(h1_mu_selected_pfmetdphi_, "mu_selected_pfmetdphi", 100, -4, 4);
     FormatHist(h1_mu_selected_tcmetratio_, "mu_selected_tcmetratio", 50, 0, 5);
     FormatHist(h1_mu_selected_pfmetratio_, "mu_selected_pfmetratio", 50, 0, 5);
     FormatHist(h1_mu_selected_tcmetsignificance_, "mu_selected_tcmetsignificance", 100, 0, 10.0);
     FormatHist(h1_mu_selected_pfmetsignificance_, "mu_selected_pfmetsignificance", 100, 0, 10.0);
-    FormatHist(h1_mu_selected_ptcmet_, "mu_selected_ptcmet", 20, 0, 100);
-    FormatHist(h1_mu_selected_ppfmet_, "mu_selected_ppfmet", 20, 0, 100);
-    FormatHist(h1_mu_selected_tctransmass_, "mu_selected_tctransmass", 20, 0, 100);
-    FormatHist(h1_mu_selected_pftransmass_, "mu_selected_pftransmass", 20, 0, 100);
+    FormatHist(h1_mu_selected_ptcmet_, "mu_selected_ptcmet", 100, 0, 100);
+    FormatHist(h1_mu_selected_ppfmet_, "mu_selected_ppfmet", 100, 0, 100);
+    FormatHist(h1_mu_selected_tctransmass_, "mu_selected_tctransmass", 200, 0, 200);
+    FormatHist(h1_mu_selected_pftransmass_, "mu_selected_pftransmass", 200, 0, 200);
     FormatHist(h1_mu_selected_d0corr_, "mu_selected_d0corr", 100, -0.2, 0.2);
 
     // open an asciifile to store results
