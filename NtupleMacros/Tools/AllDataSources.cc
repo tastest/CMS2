@@ -1,7 +1,6 @@
 
 #include "AllDataSources.h"
 
-DataSource fH_WHUNT() { return DataSource("whunt", H_WHUNT, kBlack);
 
 DataSource fH_ELEGUNSTARTUP() { return DataSource("elegunstartup", H_ELEGUNSTARTUP, kBlue); }
 DataSource fH_ELEGUNIDEAL() { return DataSource("elegunideal", H_ELEGUNIDEAL, kRed); }
@@ -51,9 +50,9 @@ DataSource fH_MU15()       { return DataSource("InclusiveMuPt15",       H_MU15);
 DataSource fH_TW()      { return DataSource("tw",       H_TW);          }
 DataSource fH_WJETS()   { return DataSource("wjets",    H_WJETS, 40);       }
 DataSource fH_MU15_SINGLE() { return DataSource("InclusiveMuPt15", H_MU15_SINGLE, 28); }
-DataSource fH_QCD80()      { return DataSource("QCDpt80",       H_QCD80, 17);          }
+DataSource fH_QCD80()      { return DataSource("QCDpt80",       H_QCD80, kBlue);          }
 DataSource fH_WJET_ALP()   { return DataSource("wjetsAlpgen", H_WJET_ALP, 40); }
 DataSource fH_ZEEJET_ALP()   { return DataSource("dyeeAlpgen", H_ZEEJET_ALP, 42); }
 DataSource fH_ZMMJET_ALP()   { return DataSource("dymmAlpgen", H_ZMMJET_ALP, 44); }
 DataSource fH_ZTTJET_ALP()   { return DataSource("dyttAlpgen", H_ZTTJET_ALP, 46); }
-
+DataSource fH_WHUNT()      { return DataSource("whunt",       H_WHUNT, kRed);          }

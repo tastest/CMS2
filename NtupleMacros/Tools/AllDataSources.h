@@ -6,8 +6,6 @@
 
 enum {
 
-        H_WHUNT,
-
 	H_TTBAR   ,
 	H_DYMM    ,
 	H_DYEE    ,
@@ -59,7 +57,7 @@ enum {
 
 	H_ELEGUNIDEAL,
 	H_ELEGUNSTARTUP,
-
+	H_WHUNT,
 };
 
 /*
