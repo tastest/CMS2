@@ -108,9 +108,10 @@ def getNumEventsRun(crabpath):
     global goodCrabXMLFiles
     #get the job number from the crab file
     for i in goodCrabXMLFiles:
+        print "New: " + i
         jobNum = i.split("_")[len(i.split("_"))-1]
         jobNum = jobNum.split(".")[0]
-        cmd = "ls " +  outpath + "/preprocessing/ntuple_" + jobNum + ".root"
+        cmd = "ls " +  outpath + "/preprocessing/ntuple_" + jobNum + "_1.root"
         print cmd
         if commands.getstatusoutput(cmd)[0] == 256:
             continue
@@ -134,11 +135,14 @@ def getGoodRootFiles(datapath,outpath):
     global dcachePrefix
     tempXMLFileList = []
     for i in goodCrabXMLFiles:
-        #if j > 2:
-            #break
-        #j = j+1
+        resubmissionNum = '1'
+        if i.find('Submission')!=-1:
+            for j in i.split('/'):
+                if j.find('Submission') !=-1:
+                    resubmissionNum = str(int(j.split('_')[len(j.split('_'))-1]) + 1)
         path = ''
-        fname = i.split('/')[len(i.split('/'))-1].replace('crab_fjr_', 'ntuple_').replace('.xml', '.root')
+        fname = i.split('/')[len(i.split('/'))-1].replace('crab_fjr_', 'ntuple_').replace('.xml', '_'+resubmissionNum+'.root')
+        print fname
         if commands.getstatusoutput('echo $HOSTNAME')[1].find('ucsd') !=-1:
             path = datapath + fname
         elif commands.getstatusoutput('echo $HOSTNAME')[1].find('fnal') !=-1:
@@ -150,7 +154,7 @@ def getGoodRootFiles(datapath,outpath):
         if datapath.find('hadoop') != -1:
             print 'Moving ' + fname + ' from hadoop to ' + outpath + '/temp'
             cmd = 'cp ' + dcachePrefix + path + ' ' + outpath + '/temp'
-        print commands.getoutput(cmd)
+            print commands.getoutput(cmd)
         
         print 'Checking File ' + outpath + '/temp/' + fname + ' for integrity'
         cmd = ""
@@ -159,7 +163,9 @@ def getGoodRootFiles(datapath,outpath):
             print cmd
         else:
             cmd = "./sweepRoot -o Events " + outpath + '/temp/' + fname + ' 2> /dev/null'
+
         output = commands.getoutput(cmd).split('\n')
+        #print commands.getstatusoutput(cmd)
         for k in output:
             if k.find('SUMMARY') != -1:
                 print k
@@ -235,8 +241,6 @@ for i in range (0, len(sys.argv)):
         outpath     = sys.argv[i+1] + "/"
                          
 
-print 'Make sure that you have setup your CMSSW environment by doing eval `scramv1 runtime -sh` or eval `scramv1 runtime -csh in a CMSSW area!!!! \n\n'
-
 if( commands.getstatusoutput('ls ' + crabpath)[0] == 256):
     print 'The crab path does not exist. Please supply a valid path'
     sys.exit()
@@ -276,12 +280,11 @@ if datapath.find("pnfs") != -1:
         
 
 if datapath.find("hadooop") != -1:
-        #if at UCSD, get the personal dcache door
         dcachePrefix = ''
     
 
 if datapath.find("pnfs") != -1 or datapath.find("hadoop") != -1:
-    print "Files are in the se. After some processing, will transfer them to " + outpath + "/preprocessing to speed up dieting/merging/weighting step"
+    print "Files are in the SE. Will transfer them to " + outpath + "/preprocessing to speed up dieting/merging/weighting step"
     cmd = "mkdir " + outpath + "/preprocessing"
     if commands.getstatusoutput(cmd)[0] == 256 and commands.getstatusoutput("ls " + outpath + "/preprocessing")[1]!="":
         print "The directory " + outpath + "/preprocessing already exists and is not empty!. Exiting!"
@@ -323,6 +326,8 @@ commands.getstatusoutput('cp -r ' + crabpath + '* ' + outpath + 'crab_logs')
 
 print '+++++++++++++++++++++++++++++'
 print 'Total number of events that were run over to produce ntuples: ' + str(totalNumEventsRun)
+
+
 
     
 
