@@ -40,16 +40,16 @@
      chain->Draw("e_cand01>>cand01(2, -0.5, 1.5)", welSelection);
      canvas->Print("plots/e_cand01.png");
 
-     chain->Draw("e_eopin>>eopin(50, 0., 2.)", welSelection);
+     chain->Draw("e_eopin>>eopin(50, 0., 5.)", welSelection);
      canvas->Print("plots/e_eopin.png");
 
      chain->Draw("e_hoe>>hoe(50, 0., 1.)", welSelection);
      canvas->Print("plots/e_hoe.png");
 
-     chain->Draw("e_dphiin>>dphiin(50, -2., 2.)", welSelection);
+     chain->Draw("e_dphiin>>dphiin(100, -0.5., 0.5.)", welSelection);
      canvas->Print("plots/e_dphiin.png");
 
-     chain->Draw("e_detain>>detain(50, -2., 2.)", welSelection);
+     chain->Draw("e_detain>>detain(100, -0.1., 0.1.)", welSelection);
      canvas->Print("plots/e_detain.png");
    
      chain->Draw("e_eMe55>>eMe55(50, 0., 1.5)", welSelection);
