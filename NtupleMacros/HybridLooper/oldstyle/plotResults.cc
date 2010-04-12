@@ -161,7 +161,7 @@ void plotResultsW(TString det, TString fileStamp, TString refFileStamp, float & 
     // last argument of plotStack is rebin factor
 
     // Electrons
-    plotDataRefOverlayStack(datah1, refh1, "ele_selected_pt", "Electron p_{T} (GeV)", fileStamp, det, 16);
+    plotDataRefOverlayStack(datah1, refh1, "ele_selected_pt", "Electron p_{T} (GeV)", fileStamp, det, 8);
     plotDataRefOverlayStack(datah1, refh1, "ele_selected_ppfmet", "Electron Projected pfMET (GeV)", fileStamp, det, 4);
     plotDataRefOverlayStack(datah1, refh1, "ele_selected_ptcmet", "Electron Projected tcMET (GeV)", fileStamp, det, 4);
     plotDataRefOverlayStack(datah1, refh1, "ele_selected_tctransmass", "Transverse Mass w/tcMET (GeV)", fileStamp, det, 16);
@@ -182,7 +182,7 @@ void plotResultsW(TString det, TString fileStamp, TString refFileStamp, float & 
 
 
     // Muons
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_pt", "Muon p_{T} (GeV)", fileStamp, det, 16);
+    plotDataRefOverlayStack(datah1, refh1, "mu_selected_pt", "Muon p_{T} (GeV)", fileStamp, det, 8);
     plotDataRefOverlayStack(datah1, refh1, "mu_selected_ppfmet", "Muon Projected pfMET (GeV)", fileStamp, det, 1);
     plotDataRefOverlayStack(datah1, refh1, "mu_selected_ptcmet", "Muon Projected tcMET (GeV)", fileStamp, det, 1);
     plotDataRefOverlayStack(datah1, refh1, "mu_selected_tctransmass", "Transverse Mass w/tcMET (GeV)", fileStamp, det, 16);
