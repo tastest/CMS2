@@ -9,6 +9,7 @@
 
 #include "TGraphAsymmErrors.h"
 #include "TArrow.h"
+#include "TLatex.h"
 
 // for 2_2_X
 const static sources_t theMCSignal =  (1<<H_WJETS);
@@ -42,8 +43,8 @@ void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString sav
     TLegend *lg_all = h1.getLegend(theSources, name, "", det);
     lg_all->SetX1(0.6);
     lg_all->SetX2(0.7);
-    lg_all->SetY1(0.7);
-    lg_all->SetY2(0.9);
+    lg_all->SetY1(0.6);
+    lg_all->SetY2(0.8);
 
     lg_all->SetTextSize(0.04);
 
@@ -75,12 +76,22 @@ void plotDataRefOverlayStack(HistogramUtilities &hData, HistogramUtilities &hRef
         TString name, TString titleX, TString saveName, TString det, int rebin)
 {
 
+    TLatex *   tex = new TLatex(0.55,0.83,"MC Norm (1 nb^{-1})");
+    tex->SetNDC();
+    tex->SetTextSize(0.04);
+    tex->SetLineWidth(2);
+    TLatex *   tex2 = new TLatex(0.55,0.88,"CMS Preliminary 2010");
+    tex2->SetNDC();
+    tex2->SetTextSize(0.04);
+    tex2->SetLineWidth(2);
+
+
     THStack *stRef = hRef.getStack(theMCSources, name, "", det, rebin);
     TLegend *lg_all = hRef.getLegend(theMCSources, name, "", det);
-    lg_all->SetX1(0.6);
-    lg_all->SetX2(0.7);
-    lg_all->SetY1(0.7);
-    lg_all->SetY2(0.9);
+    lg_all->SetX1(0.55);
+    lg_all->SetX2(0.65);
+    lg_all->SetY1(0.6);
+    lg_all->SetY2(0.8);
     lg_all->SetTextSize(0.04);
 
     TH1F *h1Data =  hData.getHistogram(theDataSources, name, "", det, rebin);
@@ -103,6 +114,8 @@ void plotDataRefOverlayStack(HistogramUtilities &hData, HistogramUtilities &hRef
     h1Data->Draw("samee1");
     stRef->GetXaxis()->SetTitle(titleX); 
     lg_all->Draw();
+    tex->Draw();
+    tex2->Draw();
     Utilities::saveCanvas(c1, "results/" + saveName  + "_lin_" + name + "_" + det);
 
     c1->SetLogy();
@@ -110,8 +123,12 @@ void plotDataRefOverlayStack(HistogramUtilities &hData, HistogramUtilities &hRef
     stRef->Draw();	
     h1Data->Draw("samee1");
     lg_all->Draw();
+    tex->Draw();
+    tex2->Draw();
     Utilities::saveCanvas(c1, "results/" + saveName  + "_log_" + name + "_" + det);
 
+    delete tex;
+    delete tex2;
     delete c1;
     delete stRef;
     delete lg_all;
@@ -144,11 +161,11 @@ void plotResultsW(TString det, TString fileStamp, TString refFileStamp, float & 
     // last argument of plotStack is rebin factor
 
     // Electrons
-    plotDataRefOverlayStack(datah1, refh1, "ele_selected_pt", "Electron p_{T} (GeV)", fileStamp, det, 4);
+    plotDataRefOverlayStack(datah1, refh1, "ele_selected_pt", "Electron p_{T} (GeV)", fileStamp, det, 16);
     plotDataRefOverlayStack(datah1, refh1, "ele_selected_ppfmet", "Electron Projected pfMET (GeV)", fileStamp, det, 4);
     plotDataRefOverlayStack(datah1, refh1, "ele_selected_ptcmet", "Electron Projected tcMET (GeV)", fileStamp, det, 4);
-    plotDataRefOverlayStack(datah1, refh1, "ele_selected_tctransmass", "Transverse Mass w/tcMET (GeV)", fileStamp, det, 4);
-    plotDataRefOverlayStack(datah1, refh1, "ele_selected_pftransmass", "Transverse Mass w/pfMET (GeV)", fileStamp, det, 4);
+    plotDataRefOverlayStack(datah1, refh1, "ele_selected_tctransmass", "Transverse Mass w/tcMET (GeV)", fileStamp, det, 16);
+    plotDataRefOverlayStack(datah1, refh1, "ele_selected_pftransmass", "Transverse Mass w/pfMET (GeV)", fileStamp, det, 16);
     plotDataRefOverlayStack(datah1, refh1, "ele_selected_d0corr", "d0(BS) (cm)", fileStamp, det, 1);
     plotDataRefOverlayStack(datah1, refh1, "ele_selected_nmhits", "Number of Missing Hits", fileStamp, det, 1);
     plotDataRefOverlayStack(datah1, refh1, "ele_selected_tcmetdphi", "dPhi(tcMET, Electron) (GeV)", fileStamp, det, 1);
@@ -165,11 +182,11 @@ void plotResultsW(TString det, TString fileStamp, TString refFileStamp, float & 
 
 
     // Muons
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_pt", "Muon p_{T} (GeV)", fileStamp, det, 4);
+    plotDataRefOverlayStack(datah1, refh1, "mu_selected_pt", "Muon p_{T} (GeV)", fileStamp, det, 16);
     plotDataRefOverlayStack(datah1, refh1, "mu_selected_ppfmet", "Muon Projected pfMET (GeV)", fileStamp, det, 1);
     plotDataRefOverlayStack(datah1, refh1, "mu_selected_ptcmet", "Muon Projected tcMET (GeV)", fileStamp, det, 1);
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_tctransmass", "Transverse Mass w/tcMET (GeV)", fileStamp, det, 4);
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_pftransmass", "Transverse Mass w/pfMET (GeV)", fileStamp, det, 4);
+    plotDataRefOverlayStack(datah1, refh1, "mu_selected_tctransmass", "Transverse Mass w/tcMET (GeV)", fileStamp, det, 16);
+    plotDataRefOverlayStack(datah1, refh1, "mu_selected_pftransmass", "Transverse Mass w/pfMET (GeV)", fileStamp, det, 16);
     plotDataRefOverlayStack(datah1, refh1, "mu_selected_d0corr", "d0(BS) (cm))", fileStamp, det, 1);
     plotDataRefOverlayStack(datah1, refh1, "mu_selected_tcmetdphi", "dPhi(tcMET, Muon) (GeV)", fileStamp, det, 1);
 
