@@ -235,8 +235,8 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
     float e2x5MaxOver5x5 = cms2.els_e2x5Max()[eleIndex]/cms2.els_e5x5()[eleIndex];
     float ppfmet = projectedMETW(cms2.evt_pfmet(), cms2.evt_pfmetPhi(), cms2.els_p4()[eleIndex].Phi());
     float ptcmet = projectedMETW(cms2.evt_tcmet(), cms2.evt_tcmetPhi(), cms2.els_p4()[eleIndex].Phi());
-    float pfmetsignificance = cms2.evt_pfmet() / cms2.evt_pfsumet();
-    float tcmetsignificance = cms2.evt_tcmet() / cms2.evt_tcsumet();
+    float pfmetsignificance = cms2.evt_pfmet() / sqrt(cms2.evt_pfsumet());
+    float tcmetsignificance = cms2.evt_tcmet() / sqrt(cms2.evt_tcsumet());
     float pftransmass = sqrt( 2.0 * cms2.els_p4()[eleIndex].Pt() * cms2.evt_pfmet() 
                                 * (1 - cos(cms2.evt_pfmetPhi() - cms2.els_p4()[eleIndex].Phi() )));
     float tctransmass = sqrt( 2.0 * cms2.els_p4()[eleIndex].Pt() * cms2.evt_tcmet() 
@@ -296,10 +296,23 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
         // print out details of event passing
         // the full selection
       if (isData_) {
-	_asciifile    << "ELECTRONS: "
-		      << cms2.evt_run() << "\t" 
+	_asciifile    << "********************************************************************"
+		      << std::endl;
+	_asciifile    << "ELECTRONS: \t"
+		      << cms2.evt_run() << "\t\t" 
 		      << cms2.evt_lumiBlock() << "\t" 
 		      << cms2.evt_event() << std::endl;
+	_asciifile    << "--------------------------------------------------------------------"
+		      << std::endl;
+	_asciifile   << "Pt = "<<cms2.els_p4()[eleIndex].Pt() 
+		     << "\t tcMet = "<< cms2.evt_tcmet()
+		     << "\t Projected tcMet = "<< ptcmet
+		     << "\t Transverse Mass (tcMet) = "<< tctransmass
+		     <<"\n"
+		     << "\t pfMet = "<< cms2.evt_pfmet()
+		     << "\t Transverse Mass (pfMet) = "<< pftransmass
+		     << "\t Projected pfMet = "<< ppfmet
+		     << std::endl;
       }
 	
         FillHist(h1_ele_selected_pt_, det, cms2.els_p4()[eleIndex].Pt(), weight);
@@ -421,8 +434,8 @@ void MyScanChain::AnalyseMuons(const float &weight) {
     // compute some common variables 
     float ppfmet = projectedMETW(cms2.evt_pfmet(), cms2.evt_pfmetPhi(), cms2.mus_p4()[muIndex].Phi());
     float ptcmet = projectedMETW(cms2.evt_tcmet(), cms2.evt_tcmetPhi(), cms2.mus_p4()[muIndex].Phi());
-    float pfmetsignificance = cms2.evt_pfmet() / cms2.evt_pfsumet();
-    float tcmetsignificance = cms2.evt_tcmet() / cms2.evt_tcsumet();
+    float pfmetsignificance = cms2.evt_pfmet() / sqrt(cms2.evt_pfsumet());
+    float tcmetsignificance = cms2.evt_tcmet() / sqrt(cms2.evt_tcsumet());
     float pftransmass = sqrt( 2.0 * cms2.mus_p4()[muIndex].Pt() * cms2.evt_pfmet()
                                 * (1 - cos(cms2.evt_pfmetPhi() - cms2.mus_p4()[muIndex].Phi() )));
     float tctransmass = sqrt( 2.0 * cms2.mus_p4()[muIndex].Pt() * cms2.evt_tcmet()
@@ -462,11 +475,24 @@ void MyScanChain::AnalyseMuons(const float &weight) {
         // print out details of event passing
         // the full selection
       if (isData_) {
-	    _asciifile       << "MUONS: "
-			     << cms2.evt_run() << "\t"
-			     << cms2.evt_lumiBlock() << "\t"
-			     << cms2.evt_event() << std::endl;
-	}
+	_asciifile    << "********************************************************************"
+		      << std::endl;
+	_asciifile       << "MUONS: \t\t"
+			 << cms2.evt_run() << "\t\t"
+			 << cms2.evt_lumiBlock() << "\t"
+			 << cms2.evt_event() << std::endl;
+	_asciifile    << "--------------------------------------------------------------------"
+		      << std::endl;
+	_asciifile   << "Pt = "<<cms2.mus_p4()[muIndex].Pt() 
+		     << "\t tcMet = "<< cms2.evt_tcmet()
+		     << "\t Projected tcMet = "<< ptcmet
+		     << "\t Transverse Mass (tcMet) = "<< tctransmass
+		     << "\n"
+		     << "\t pfMet = "<< cms2.evt_pfmet()
+		     << "\t Transverse Mass (pfMet) = "<< pftransmass
+		     << "\t Projected pfMet = "<< ppfmet
+		     << std::endl;
+      }
 
         FillHist(h1_mu_selected_pt_, det, cms2.mus_p4()[muIndex].Pt(), weight);
         FillHist(h1_mu_selected_eta_, det, cms2.mus_p4()[muIndex].Eta(), weight);
@@ -637,7 +663,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     // open an asciifile to store results
     if(isData_) {
       _asciifile.open("whunt_output.txt"); 
-      _asciifile << "Type \t"<<  "Run # \t" << "Lumi # \t" << "\Event #\t" <<std::endl;
+      _asciifile << "Type \t\t"<<  "Run # \t\t" << "LumiBlock # \t" << "Event #\t\t" <<std::endl;
     }
 
     // file loop
