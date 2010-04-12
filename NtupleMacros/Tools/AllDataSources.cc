@@ -1,6 +1,8 @@
 
 #include "AllDataSources.h"
 
+DataSource fH_WHUNT() { return DataSource("whunt", H_WHUNT, kBlack);
+
 DataSource fH_ELEGUNSTARTUP() { return DataSource("elegunstartup", H_ELEGUNSTARTUP, kBlue); }
 DataSource fH_ELEGUNIDEAL() { return DataSource("elegunideal", H_ELEGUNIDEAL, kRed); }
 

@@ -6,6 +6,8 @@
 
 enum {
 
+        H_WHUNT,
+
 	H_TTBAR   ,
 	H_DYMM    ,
 	H_DYEE    ,
@@ -92,6 +94,8 @@ const static sources_t sources_nonpeaking =
 
 // consistent set of 7 TeV ntuples
 // are available with V02-00-12
+
+DataSource fH_WHUNT();
 
 DataSource fH_DYMM();
 DataSource fH_DYEE();
