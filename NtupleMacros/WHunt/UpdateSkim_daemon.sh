@@ -1,5 +1,4 @@
 #!/bin/bash
-#!/bin/bash
 
 while [ 1 ]; do
     # get time stamp
@@ -8,14 +7,25 @@ while [ 1 ]; do
 
     echo "Starting to check for new files to process..."
     find /tas03/disk03/slava77/reltestdata/CMSSW_3_5_6-cms2-data -maxdepth 1 -name "merged_ntuple_[0-9]*_[0-9]*.root" -printf "%p %s %C@\n" > AllRunsAvailable.txt
+    rm RunsToProcess.txt
     touch RunsProcessed.txt
-    diff RunsProcessed.txt AllRunsAvailable.txt | grep ">" | awk '{print substr($0,3,length($0))}' > RunsToProcess.txt
+
+    # loop over all runs available, check to find file name in RunsProcessed.txt,
+    # if not there, add to RunsToProcess.txt
+    while read line; do
+        wasprocessed=`cat RunsProcessed.txt | grep "$line"`
+        if [ `echo -n $wasprocessed | wc -c` -eq 0 ];
+        then
+            echo $line >> RunsToProcess.txt
+        fi
+    done <AllRunsAvailable.txt
+
     # check how many new files are there, 
     # only run if there are actually new ones
     nFiles=`cat RunsToProcess.txt | wc -l`
     if [ $nFiles -lt 1 ];
     then
-     echo "No new runs to process - stopping..."
+        echo "No new runs to process - stopping..."
     else
         while read line; do
             file=`echo $line | awk '{print $1}'`
@@ -28,5 +38,26 @@ while [ 1 ]; do
             fi
         done <RunsToProcess.txt
     fi
-sleep 600;
+
+    # slava's merging and remerging may remove files in which case
+    # we will have duplicates so rm parentless babies and skims
+    echo "cleaning out parentless babies and skims"
+    for baby in `ls baby/*.root`; do
+        ident=`echo $baby | sed 's!^.*/emuskim_baby_\(.*\).root.*$!\1!'`
+        grep $ident AllRunsAvailable.txt >/dev/null 2>&1
+        if [ $? -ne 0 ]; then
+            echo "found parentless baby, removing $baby"
+            rm $baby
+        fi
+    done
+    for skim in `ls skim/*.root`; do
+        ident=`echo $skim | sed 's!^.*/emuskim_\(.*\).root.*$!\1!'`
+        grep $ident AllRunsAvailable.txt >/dev/null 2>&1
+        if [ $? -ne 0 ]; then
+            echo "found parentless skim, removing $skim"
+            rm $skim
+        fi
+    done
+
+    sleep 600;
 done
