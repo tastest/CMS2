@@ -12,6 +12,9 @@
 
     luminorm = 0.201/1e+06; // 0.201 nb
     plotResultsInclStudy("all", "histos_data", "histos_reference_qcdonly", "0.201 nb^{-1}", luminorm);
+    plotResultsInclStudy("eb", "histos_data", "histos_reference_qcdonly", "0.201 nb^{-1}", luminorm);
+    plotResultsInclStudy("ee", "histos_data", "histos_reference_qcdonly", "0.201 nb^{-1}", luminorm);
+
 
 }
 

@@ -362,22 +362,30 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
 
     // comparison of inclusive distributions
     // totally inclusive
+
     if (CheckCuts(((1<<PASS_ELE_ISFIDUCIAL) | (1<<PASS_ELE_PT)), cuts_passed)) {
+        FillHist(h1_ele_incl_r19_, det, r19, weight);
+    }    
+
+    if (CheckCuts(((1<<PASS_ELE_R19) | (1<<PASS_ELE_ISFIDUCIAL) | (1<<PASS_ELE_PT)), cuts_passed)) {
         FillHist(h1_ele_incl_pt_, det, cms2.els_p4()[eleIndex].Pt(), weight);
         FillHist(h1_ele_incl_eta_, det, cms2.els_p4()[eleIndex].Eta(), weight);
         FillHist(h1_ele_incl_tcmet_, det, cms2.evt_tcmet(), weight);
         FillHist(h1_ele_incl_pfmet_, det, cms2.evt_pfmet(), weight);
         FillHist(h1_ele_incl_iso_, det, iso_relsusy, weight);
+        FillHist(h1_ele_incl_tkIso_, det, cms2.els_tkIso()[eleIndex], weight);
+        FillHist(h1_ele_incl_ecalIso_, det, cms2.els_ecalIso()[eleIndex], weight);
+        FillHist(h1_ele_incl_hcalIso_, det, cms2.els_hcalIso()[eleIndex], weight);
     }
     // inclusive isolated
-    if (CheckCuts(((1<<PASS_ELE_ISFIDUCIAL) | (1<<PASS_ELE_PT) | (1<<PASS_ELE_ISO)), cuts_passed)) {
+    if (CheckCuts(((1<<PASS_ELE_R19) | (1<<PASS_ELE_ISFIDUCIAL) | (1<<PASS_ELE_PT) | (1<<PASS_ELE_ISO)), cuts_passed)) {
         FillHist(h1_ele_incliso_pt_, det, cms2.els_p4()[eleIndex].Pt(), weight);
         FillHist(h1_ele_incliso_eta_, det, cms2.els_p4()[eleIndex].Eta(), weight);
         FillHist(h1_ele_incliso_tcmet_, det, cms2.evt_tcmet(), weight);
         FillHist(h1_ele_incliso_pfmet_, det, cms2.evt_pfmet(), weight);
     }
     // inclusive nonisolated
-    if (CheckCuts(((1<<PASS_ELE_ISFIDUCIAL) | (1<<PASS_ELE_PT) | (1<<PASS_ELE_ANTIISO)), cuts_passed)) {
+    if (CheckCuts(((1<<PASS_ELE_R19) | (1<<PASS_ELE_ISFIDUCIAL) | (1<<PASS_ELE_PT) | (1<<PASS_ELE_ANTIISO)), cuts_passed)) {
         FillHist(h1_ele_inclnoniso_pt_, det, cms2.els_p4()[eleIndex].Pt(), weight);
         FillHist(h1_ele_inclnoniso_eta_, det, cms2.els_p4()[eleIndex].Eta(), weight);
         FillHist(h1_ele_inclnoniso_tcmet_, det, cms2.evt_tcmet(), weight);
@@ -628,11 +636,15 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 
     // data-mc comparisons for backgrounds
     // inclusive selection
+    FormatHist(h1_ele_incl_r19_, "ele_incl_r19", 120, 0, 1.2);
     FormatHist(h1_ele_incl_iso_, "ele_incl_iso", 100, 0, 1);
     FormatHist(h1_ele_incl_pt_, "ele_incl_pt", 100, 0, 100);
     FormatHist(h1_ele_incl_eta_, "ele_incl_eta", 100, -3, 3);
     FormatHist(h1_ele_incl_tcmet_, "ele_incl_tcmet", 100, 0, 100);
     FormatHist(h1_ele_incl_pfmet_, "ele_incl_pfmet", 100, 0, 100);
+    FormatHist(h1_ele_incl_tkIso_, "ele_incl_tkIso", 100, 0, 20);
+    FormatHist(h1_ele_incl_hcalIso_, "ele_incl_ecalIso", 100, 0, 20);
+    FormatHist(h1_ele_incl_ecalIso_, "ele_incl_hcalIso", 100, 0, 20);
     // isolated
     FormatHist(h1_ele_incliso_pt_, "ele_incliso_pt", 100, 0, 100);
     FormatHist(h1_ele_incliso_eta_, "ele_incliso_eta", 100, -3, 3);

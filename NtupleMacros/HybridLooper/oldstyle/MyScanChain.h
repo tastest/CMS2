@@ -90,7 +90,11 @@ class MyScanChain {
         TH1F    *h1_ele_pfmetratio_[3];
 
         // inclusive comparisons of bg dists
+        TH1F    *h1_ele_incl_r19_[3];
         TH1F    *h1_ele_incl_iso_[3];
+        TH1F    *h1_ele_incl_tkIso_[3];
+        TH1F    *h1_ele_incl_ecalIso_[3];
+        TH1F    *h1_ele_incl_hcalIso_[3];
         TH1F    *h1_ele_incl_pt_[3];
         TH1F    *h1_ele_incl_eta_[3];
         TH1F    *h1_ele_incl_tcmet_[3];

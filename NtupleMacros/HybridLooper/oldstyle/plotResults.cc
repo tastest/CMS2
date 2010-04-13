@@ -273,11 +273,17 @@ void plotResultsInclStudy(TString det, TString fileStamp, TString refFileStamp, 
     plotDataRefOverlayStack(datah1, refh2, "ele_incl_pt", "Electron p_{T} (GeV)", fileStamp + "_qcd30", det, norm, 4);
     plotDataRefOverlayStack(datah1, refh2, "ele_incl_eta", "Electron #eta", fileStamp + "_qcd30", det, norm, 4);
 
+    plotDataRefOverlayStack(datah1, refh1, "ele_incl_r19", "Electron R19", fileStamp + "_qcd15", det, norm, 4);
     plotDataRefOverlayStack(datah1, refh1, "ele_incl_pt", "Electron p_{T} (GeV)", fileStamp + "_qcd15", det, norm, 4);
     plotDataRefOverlayStack(datah1, refh1, "ele_incl_eta", "Electron #eta", fileStamp + "_qcd15", det, norm, 4);
     plotDataRefOverlayStack(datah1, refh1, "ele_incl_pfmet", "Electron pfMET (GeV)", fileStamp + "_qcd15", det, norm, 4);
     plotDataRefOverlayStack(datah1, refh1, "ele_incl_tcmet", "Electron tcMET (GeV)", fileStamp + "_qcd15", det, norm, 4);
     plotDataRefOverlayStack(datah1, refh1, "ele_incl_iso", "Electron RelIso", fileStamp + "_qcd15", det, norm, 4);
+
+    plotDataRefOverlayStack(datah1, refh1, "ele_incl_tkIso", "Electron Track Iso", fileStamp + "_qcd15", det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "ele_incl_ecalIso", "Electron ECAL Iso", fileStamp + "_qcd15", det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "ele_incl_hcalIso", "Electron HCAL Iso", fileStamp + "_qcd15", det, norm, 4);
+
 
     // iso
     plotDataRefOverlayStack(datah1, refh1, "ele_incliso_pt", "Electron p_{T} (GeV)", fileStamp + "_qcd15", det, norm, 4);
