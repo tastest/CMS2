@@ -37,27 +37,32 @@ while [ 1 ]; do
                 echo $line >>RunsProcessed.txt
             fi
         done <RunsToProcess.txt
-    fi
 
-    # slava's merging and remerging may remove files in which case
-    # we will have duplicates so rm parentless babies and skims
-    echo "cleaning out parentless babies and skims"
-    for baby in `ls baby/*.root`; do
-        ident=`echo $baby | sed 's!^.*/emuskim_baby_\(.*\).root.*$!\1!'`
-        grep $ident AllRunsAvailable.txt >/dev/null 2>&1
-        if [ $? -ne 0 ]; then
-            echo "found parentless baby, removing $baby"
-            rm $baby
-        fi
-    done
-    for skim in `ls skim/*.root`; do
-        ident=`echo $skim | sed 's!^.*/emuskim_\(.*\).root.*$!\1!'`
-        grep $ident AllRunsAvailable.txt >/dev/null 2>&1
-        if [ $? -ne 0 ]; then
-            echo "found parentless skim, removing $skim"
-            rm $skim
-        fi
-    done
+        # slava's merging and remerging may remove files in which case
+        # we will have duplicates so rm parentless babies and skims
+        echo "cleaning out parentless babies and skims"
+        for baby in `ls baby/*.root`; do
+            ident=`echo $baby | sed 's!^.*/emuskim_baby_\(.*\).root.*$!\1!'`
+            grep $ident AllRunsAvailable.txt >/dev/null 2>&1
+            if [ $? -ne 0 ]; then
+                echo "found parentless baby, removing $baby"
+                rm $baby
+            fi
+        done
+        for skim in `ls skim/*.root`; do
+            ident=`echo $skim | sed 's!^.*/emuskim_\(.*\).root.*$!\1!'`
+            grep $ident AllRunsAvailable.txt >/dev/null 2>&1
+            if [ $? -ne 0 ]; then
+                echo "found parentless skim, removing $skim"
+                rm $skim
+            fi
+        done
+
+        # Run basic plotting and scanning script
+        # in a separate process so that if it
+        # stalls it does not affect this process
+        ./makePlots.sh&
+    fi
 
     sleep 600;
 done
