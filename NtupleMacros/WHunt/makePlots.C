@@ -70,4 +70,9 @@
 
      chain->Draw("type>>mutype(21, -0.5, 20.5)", wmuSelection);
      canvas->Print("plots/mu_type.png");
+
+     TTreePlayer *tp = (TTreePlayer*)chain->GetPlayer();
+     tp->SetScanRedirect(kTRUE);
+     tp->SetScanFileName("wcands.txt");
+     chain->Scan("run:ls:evt:pfmet:njets:jet1pt:dphimetjet:eormu:type:pt:iso:d0corr:dphimet:drjet:mt:mu_muonid:mu_goodmask:mu_gfitchi2:e_cand01:e_eopin:e_hoe:e_dphiin:e_detain:e_eMe55:e_nmHits", wselection);
 }
