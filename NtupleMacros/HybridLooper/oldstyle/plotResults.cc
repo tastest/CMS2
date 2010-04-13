@@ -14,7 +14,7 @@
 // for 2_2_X
 const static sources_t theMCSignal =  (1<<H_WJETS);
 
-const static sources_t theMCBackground =  (1<<H_QCD30);
+const static sources_t theMCBackground = (1<<H_QCD30) | (1<<H_QCD15);
 
 const static sources_t theMCSources = theMCSignal | theMCBackground;
 
@@ -81,10 +81,10 @@ void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString sav
 
 
 void plotDataRefOverlayStack(HistogramUtilities &hData, HistogramUtilities &hRef, 
-        TString name, TString titleX, TString saveName, TString det, int rebin,  float cutValEB, float cutValEE)
+        TString name, TString titleX, TString saveName, TString det, TString norm, int rebin,  float cutValEB, float cutValEE)
 {
 
-    TLatex *   tex = new TLatex(0.55,0.83,"MC Norm (1 nb^{-1})");
+    TLatex *   tex = new TLatex(0.55,0.83,"MC Norm (" + norm + ")");
     tex->SetNDC();
     tex->SetTextSize(0.04);
     tex->SetLineWidth(2);
@@ -151,7 +151,7 @@ void plotDataRefOverlayStack(HistogramUtilities &hData, HistogramUtilities &hRef
 
 }
 
-void plotElectronIDStack(HistogramUtilities &hData, HistogramUtilities &hRef, TString name, TString titleX, TString saveName, TString det, int rebin)
+void plotElectronIDStack(HistogramUtilities &hData, HistogramUtilities &hRef, TString name, TString titleX, TString saveName, TString det, TString norm, int rebin)
 {
 
     TString selected_name = "ele_selected_" + name;
@@ -167,7 +167,7 @@ void plotElectronIDStack(HistogramUtilities &hData, HistogramUtilities &hRef, TS
     texAntiselected->SetTextSize(0.04);
     texAntiselected->SetLineWidth(2);
 
-    TLatex *   texLumi = new TLatex(0.55,0.83,"MC Norm (1 nb^{-1})");
+    TLatex *   texLumi = new TLatex(0.55,0.83,"MC Norm (" + norm + ")");
     texLumi->SetNDC();
     texLumi->SetTextSize(0.04);
     texLumi->SetLineWidth(2);
@@ -246,7 +246,7 @@ void plotElectronIDStack(HistogramUtilities &hData, HistogramUtilities &hRef, TS
 
 }
 
-void plotResultsQCDStudy(TString det, TString fileStamp, TString refFileStamp, const float &luminorm)
+void plotResultsInclStudy(TString det, TString fileStamp, TString refFileStamp, TString norm, const float &luminorm)
 {
 
     gROOT->ProcessLine(".L tdrStyle.C");
@@ -255,14 +255,16 @@ void plotResultsQCDStudy(TString det, TString fileStamp, TString refFileStamp, c
     // luminorm for 0.1pb-1 (is set to 1fb in the looper)
     //float luminorm = 0.0001;
     std::vector<DataSource> dataSources;
+    std::vector<DataSource> refSources2;
     std::vector<DataSource> refSources;
-
     dataSources.push_back (fH_WHUNT() );
-    refSources.push_back( fH_WJETS() );
-    refSources.push_back( fH_QCD30() );
-    //refSources.push_back( fH_MINBIAS() );
+    refSources2.push_back( fH_QCD30() );
+    refSources.push_back( fH_QCD15() );
+
+
 
     HistogramUtilities datah1(fileStamp + ".root", dataSources);
+    HistogramUtilities refh2(refFileStamp + ".root", refSources2, luminorm);
     HistogramUtilities refh1(refFileStamp + ".root", refSources, luminorm);
 
     //
@@ -270,12 +272,32 @@ void plotResultsQCDStudy(TString det, TString fileStamp, TString refFileStamp, c
     //
 
     // before any selections
-    plotDataRefOverlayStack(datah1, refh1, "ele_pt", "Electron p_{T} (GeV)", fileStamp, det, 4);
-    plotDataRefOverlayStack(datah1, refh1, "ele_eta", "Electron #eta", fileStamp, det, 4);
+    plotDataRefOverlayStack(datah1, refh2, "ele_incl_pt", "Electron p_{T} (GeV)", fileStamp + "_qcd30", det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh2, "ele_incl_eta", "Electron #eta", fileStamp + "_qcd30", det, norm, 4);
+
+    plotDataRefOverlayStack(datah1, refh1, "ele_incl_pt", "Electron p_{T} (GeV)", fileStamp + "_qcd15", det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "ele_incl_eta", "Electron #eta", fileStamp + "_qcd15", det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "ele_incl_pfmet", "Electron pfMET (GeV)", fileStamp + "_qcd15", det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "ele_incl_tcmet", "Electron tcMET (GeV)", fileStamp + "_qcd15", det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "ele_incl_iso", "Electron RelIso", fileStamp + "_qcd15", det, norm, 4);
+
+    //
+    // Muons
+    //
+
+    // before any selections
+    plotDataRefOverlayStack(datah1, refh2, "mu_incl_pt", "Muon p_{T} (GeV)", fileStamp + "_qcd30", det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh2, "mu_incl_eta", "Muon #eta", fileStamp + "_qcd30", det, norm, 4);
+
+    plotDataRefOverlayStack(datah1, refh1, "mu_incl_pt", "Muon p_{T} (GeV)", fileStamp + "_qcd15", det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "mu_incl_eta", "Muon #eta", fileStamp + "_qcd15", det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "mu_incl_pfmet", "Muon pfMET (GeV)", fileStamp + "_qcd15", det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "mu_incl_tcmet", "Muon tcMET (GeV)", fileStamp + "_qcd15", det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "mu_incl_iso", "Muon RelIso", fileStamp + "_qcd15", det, norm, 4);
 
 }
 
-void plotResultsW(TString det, TString fileStamp, TString refFileStamp, const float &luminorm)
+void plotResultsW(TString det, TString fileStamp, TString refFileStamp, TString norm, const float &luminorm)
 {
 
     gROOT->ProcessLine(".L tdrStyle.C");
@@ -288,8 +310,7 @@ void plotResultsW(TString det, TString fileStamp, TString refFileStamp, const fl
 
     dataSources.push_back (fH_WHUNT() );
     refSources.push_back( fH_WJETS() );
-    refSources.push_back( fH_QCD30() );
-    //refSources.push_back( fH_MINBIAS() );
+    refSources.push_back( fH_QCD15() );
 
     HistogramUtilities datah1(fileStamp + ".root", dataSources);
     HistogramUtilities refh1(refFileStamp + ".root", refSources, luminorm);
@@ -305,81 +326,77 @@ void plotResultsW(TString det, TString fileStamp, TString refFileStamp, const fl
     //
 
     // before any selections
-    plotDataRefOverlayStack(datah1, refh1, "ele_pt", "Electron p_{T} (GeV)", fileStamp, det, 4);
-    plotDataRefOverlayStack(datah1, refh1, "ele_eta", "Electron #eta", fileStamp, det, 4);
+    plotDataRefOverlayStack(datah1, refh1, "ele_pt", "Electron p_{T} (GeV)", fileStamp, det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "ele_eta", "Electron #eta", fileStamp, det, norm, 4);
 
     // after all selections
-    plotDataRefOverlayStack(datah1, refh1, "ele_selected_pt", "Electron p_{T} (GeV)", fileStamp, det, 8);
-    plotDataRefOverlayStack(datah1, refh1, "ele_selected_pfmet", "Electron pfMET (GeV)", fileStamp, det, 4);
-    plotDataRefOverlayStack(datah1, refh1, "ele_selected_tcmet", "Electron tcMET (GeV)", fileStamp, det, 4);
-    plotDataRefOverlayStack(datah1, refh1, "ele_selected_ppfmet", "Electron Projected pfMET (GeV)", fileStamp, det, 4);
-    plotDataRefOverlayStack(datah1, refh1, "ele_selected_ptcmet", "Electron Projected tcMET (GeV)", fileStamp, det, 4);
-    plotDataRefOverlayStack(datah1, refh1, "ele_selected_tctransmass", "Transverse Mass w/tcMET (GeV)", fileStamp, det, 16);
-    plotDataRefOverlayStack(datah1, refh1, "ele_selected_pftransmass", "Transverse Mass w/pfMET (GeV)", fileStamp, det, 16);
-    plotDataRefOverlayStack(datah1, refh1, "ele_selected_d0corr", "d0(BS) (cm)", fileStamp, det, 1);
-    plotDataRefOverlayStack(datah1, refh1, "ele_selected_nmhits", "Number of Missing Hits", fileStamp, det, 1);
-    plotDataRefOverlayStack(datah1, refh1, "ele_selected_tcmetdphi", "dPhi(tcMET, Electron) (GeV)", fileStamp, det, 1);
+    plotDataRefOverlayStack(datah1, refh1, "ele_selected_pt", "Electron p_{T} (GeV)", fileStamp, det, norm, 8);
+    plotDataRefOverlayStack(datah1, refh1, "ele_selected_pfmet", "Electron pfMET (GeV)", fileStamp, det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "ele_selected_tcmet", "Electron tcMET (GeV)", fileStamp, det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "ele_selected_ppfmet", "Electron Projected pfMET (GeV)", fileStamp, det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "ele_selected_ptcmet", "Electron Projected tcMET (GeV)", fileStamp, det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "ele_selected_tctransmass", "Transverse Mass w/tcMET (GeV)", fileStamp, det, norm, 16);
+    plotDataRefOverlayStack(datah1, refh1, "ele_selected_pftransmass", "Transverse Mass w/pfMET (GeV)", fileStamp, det, norm, 16);
+    plotDataRefOverlayStack(datah1, refh1, "ele_selected_d0corr", "d0(BS) (cm)", fileStamp, det, norm, 1);
+    plotDataRefOverlayStack(datah1, refh1, "ele_selected_nmhits", "Number of Missing Hits", fileStamp, det, norm, 1);
+    plotDataRefOverlayStack(datah1, refh1, "ele_selected_tcmetdphi", "dPhi(tcMET, Electron) (GeV)", fileStamp, det, norm, 1);
 
     // N-1 distributions
-    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_tcmet", "NM1 tcMET (GeV)", fileStamp, det, 4, 20.0, 20.0);
-    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_pfmet", "NM1 pfMET (GeV)", fileStamp, det, 4, 20.0, 20.0);
-    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_iso", "NM1 RelIso (GeV)", fileStamp, det, 1, 0.10, 0.10);
-    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_jetveto", "NM1 Leading JPT p_{T} (GeV)", fileStamp, det, 1, 30.0, 30.0);
-    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_secondpt", "NM1 Second Electron p_{T} (GeV)", fileStamp, det, 1, 20.0, 20.0);
-    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_r19", "NM1 eMax/e5x5", fileStamp, det, 1, 0.95, 0.95);
+    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_tcmet", "NM1 tcMET (GeV)", fileStamp, det, norm, 4, 20.0, 20.0);
+    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_pfmet", "NM1 pfMET (GeV)", fileStamp, det, norm, 4, 20.0, 20.0);
+    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_iso", "NM1 RelIso", fileStamp, det, norm, 1, 0.10, 0.10);
+    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_jetveto", "NM1 Leading JPT p_{T} (GeV)", fileStamp, det, norm, 1, 30.0, 30.0);
+    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_secondpt", "NM1 Second Electron p_{T} (GeV)", fileStamp, det, norm, 1, 20.0, 20.0);
+    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_r19", "NM1 eMax/e5x5", fileStamp, det, norm, 1, 0.95, 0.95);
 
     // N-1 distributions without data points
     plotStack(refh1, "ele_nm1_tcmet", "NM1 tcMET (GeV)", fileStamp + "_refonly", det, 4, 20.0, 20.0);
     plotStack(refh1, "ele_nm1_pfmet", "NM1 pfMET (GeV)", fileStamp + "_refonly", det, 4, 20.0, 20.0);
-    plotStack(refh1, "ele_nm1_iso", "NM1 RelIso (GeV)", fileStamp + "_refonly", det, 1, 0.10, 0.10);
+    plotStack(refh1, "ele_nm1_iso", "NM1 RelIso", fileStamp + "_refonly", det, 1, 0.10, 0.10);
     plotStack(refh1, "ele_nm1_secondpt", "NM1 Second Electron p_{T} (GeV)", fileStamp + "_refonly", det, 1, 20.0, 20.0);
     plotStack(refh1, "ele_nm1_jetveto", "NM1 Leading JPT p_{T} (GeV)", fileStamp + "_refonly", det, 1, 30.0, 30.0);
     plotStack(refh1, "ele_nm1_r19", "NM1 eMax/e5x5", fileStamp + "_refonly", det, 1, 0.95, 0.95);
 
     // selection and anti-selection for electron id variable studies
     // barrel
-    plotElectronIDStack(datah1, refh1, "sigmaIEtaIEta", "sigmaIEtaIEta", fileStamp, "eb", 2);
-    plotElectronIDStack(datah1, refh1, "eOverPIn", "E/p_{IN}", fileStamp, "eb", 2);
-    plotElectronIDStack(datah1, refh1, "hOverE", "H/E", fileStamp, "eb", 2);
-    plotElectronIDStack(datah1, refh1, "e2x5MaxOver5x5", "E2x5Max/E5x5", fileStamp, "eb", 2);
-    plotElectronIDStack(datah1, refh1, "dEtaIn", "dEtaIn", fileStamp, "eb", 2);
-    plotElectronIDStack(datah1, refh1, "dPhiIn", "dPhiIn", fileStamp, "eb", 2);
+    plotElectronIDStack(datah1, refh1, "sigmaIEtaIEta", "sigmaIEtaIEta", fileStamp, "eb", norm, 2);
+    plotElectronIDStack(datah1, refh1, "eOverPIn", "E/p_{IN}", fileStamp, "eb", norm, 2);
+    plotElectronIDStack(datah1, refh1, "hOverE", "H/E", fileStamp, "eb", norm, 2);
+    plotElectronIDStack(datah1, refh1, "e2x5MaxOver5x5", "E2x5Max/E5x5", fileStamp, "eb", norm, 2);
+    plotElectronIDStack(datah1, refh1, "dEtaIn", "dEtaIn", fileStamp, "eb", norm, 2);
+    plotElectronIDStack(datah1, refh1, "dPhiIn", "dPhiIn", fileStamp, "eb", norm, 2);
     // endcap
-    plotElectronIDStack(datah1, refh1, "sigmaIEtaIEta", "sigmaIEtaIEta", fileStamp, "ee", 2);
-    plotElectronIDStack(datah1, refh1, "eOverPIn", "E/p_{IN}", fileStamp, "ee", 2);
-    plotElectronIDStack(datah1, refh1, "hOverE", "H/E", fileStamp, "ee", 2);
-    plotElectronIDStack(datah1, refh1, "e2x5MaxOver5x5", "E2x5Max/E5x5", fileStamp, "ee", 2);
-    plotElectronIDStack(datah1, refh1, "dEtaIn", "dEtaIn", fileStamp, "ee", 2);
-    plotElectronIDStack(datah1, refh1, "dPhiIn", "dPhiIn", fileStamp, "ee", 2);
+    plotElectronIDStack(datah1, refh1, "sigmaIEtaIEta", "sigmaIEtaIEta", fileStamp, "ee", norm, 2);
+    plotElectronIDStack(datah1, refh1, "eOverPIn", "E/p_{IN}", fileStamp, "ee", norm, 2);
+    plotElectronIDStack(datah1, refh1, "hOverE", "H/E", fileStamp, "ee", norm, 2);
+    plotElectronIDStack(datah1, refh1, "e2x5MaxOver5x5", "E2x5Max/E5x5", fileStamp, "ee", norm, 2);
+    plotElectronIDStack(datah1, refh1, "dEtaIn", "dEtaIn", fileStamp, "ee", norm, 2);
+    plotElectronIDStack(datah1, refh1, "dPhiIn", "dPhiIn", fileStamp, "ee", norm, 2);
 
     //
     // Muons
     //
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_pt", "Muon p_{T} (GeV)", fileStamp, det, 8);
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_pfmet", "Muon pfMET (GeV)", fileStamp, det, 4);
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_tcmet", "Muon tcMET (GeV)", fileStamp, det, 4);
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_ppfmet", "Muon Projected pfMET (GeV)", fileStamp, det, 4);
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_ptcmet", "Muon Projected tcMET (GeV)", fileStamp, det, 4);
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_tctransmass", "Transverse Mass w/tcMET (GeV)", fileStamp, det, 16);
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_pftransmass", "Transverse Mass w/pfMET (GeV)", fileStamp, det, 16);
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_d0corr", "d0(BS) (cm))", fileStamp, det, 1);
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_tcmetdphi", "dPhi(tcMET, Muon) (GeV)", fileStamp, det, 1);
+    plotDataRefOverlayStack(datah1, refh1, "mu_selected_pt", "Muon p_{T} (GeV)", fileStamp, det, norm, 8);
+    plotDataRefOverlayStack(datah1, refh1, "mu_selected_pfmet", "Muon pfMET (GeV)", fileStamp, det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "mu_selected_tcmet", "Muon tcMET (GeV)", fileStamp, det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "mu_selected_ppfmet", "Muon Projected pfMET (GeV)", fileStamp, det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "mu_selected_ptcmet", "Muon Projected tcMET (GeV)", fileStamp, det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "mu_selected_tctransmass", "Transverse Mass w/tcMET (GeV)", fileStamp, det, norm, 16);
+    plotDataRefOverlayStack(datah1, refh1, "mu_selected_pftransmass", "Transverse Mass w/pfMET (GeV)", fileStamp, det, norm, 16);
+    plotDataRefOverlayStack(datah1, refh1, "mu_selected_d0corr", "d0(BS) (cm))", fileStamp, det, norm, 1);
+    plotDataRefOverlayStack(datah1, refh1, "mu_selected_tcmetdphi", "dPhi(tcMET, Muon) (GeV)", fileStamp, det, norm, 1);
 
     // N-1 distributions
-    plotDataRefOverlayStack(datah1, refh1, "mu_nm1_tcmet", "NM1 tcMET (GeV)", fileStamp, det, 4, 20.0, 20.0);
-    plotDataRefOverlayStack(datah1, refh1, "mu_nm1_pfmet", "NM1 pfMET (GeV)", fileStamp, det, 4, 20.0, 20.0);
-    plotDataRefOverlayStack(datah1, refh1, "mu_nm1_iso", "NM1 RelIso (GeV)", fileStamp, det, 1, 0.10, 0.10);
-    plotDataRefOverlayStack(datah1, refh1, "mu_nm1_secondpt", "NM1 Second Muon p_{T} (GeV)", fileStamp, det, 1, 20.0, 20.0);
+    plotDataRefOverlayStack(datah1, refh1, "mu_nm1_tcmet", "NM1 tcMET (GeV)", fileStamp, det, norm, 4, 20.0, 20.0);
+    plotDataRefOverlayStack(datah1, refh1, "mu_nm1_pfmet", "NM1 pfMET (GeV)", fileStamp, det, norm, 4, 20.0, 20.0);
+    plotDataRefOverlayStack(datah1, refh1, "mu_nm1_iso", "NM1 RelIso", fileStamp, det, norm, 1, 0.10, 0.10);
+    plotDataRefOverlayStack(datah1, refh1, "mu_nm1_secondpt", "NM1 Second Muon p_{T} (GeV)", fileStamp, det, norm, 1, 20.0, 20.0);
 
     // N-1 distributions without data points
     plotStack(refh1, "mu_nm1_tcmet", "NM1 tcMET (GeV)", fileStamp + "_refonly", det, 4, 20.0, 20.0);
     plotStack(refh1, "mu_nm1_pfmet", "NM1 pfMET (GeV)", fileStamp + "_refonly", det, 4, 20.0, 20.0);
-    plotStack(refh1, "mu_nm1_iso", "NM1 RelIso (GeV)", fileStamp + "_refonly", det, 1, 0.10, 0.10);
+    plotStack(refh1, "mu_nm1_iso", "NM1 RelIso", fileStamp + "_refonly", det, 1, 0.10, 0.10);
     plotStack(refh1, "mu_nm1_secondpt", "NM1 Second Muon p_{T} (GeV)", fileStamp + "_refonly", det, 1, 20.0, 20.0);
-
-
-
-
 
 }
 

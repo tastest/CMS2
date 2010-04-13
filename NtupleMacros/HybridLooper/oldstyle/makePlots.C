@@ -11,10 +11,7 @@
 	// https://twiki.cern.ch/twiki/bin/view/CMS/LumiWiki2010Data
 
 	float luminorm = 1.0/1e+06; // 1.0 nb
-	//plotResultsW("all", "histos_data", "histos_reference", luminorm);
-
-    luminorm = 0.201/1e+06; // 0.201 nb
-    plotResultsQCDStudy("all", "histos_data", "histos_reference_qcdonly", luminorm);
+	plotResultsW("all", "histos_data", "histos_reference", "1 nb^{-1}", luminorm);
 
 }
 

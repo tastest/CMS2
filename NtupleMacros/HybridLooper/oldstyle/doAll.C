@@ -142,6 +142,7 @@ void doAll() {
 
 
     // MC
+    looper->ScanChain(false, "minbias", chain_minbias);
     looper->ScanChain(false, "QCDpt15", chain_qcd15);
     looper->ScanChain(false, "QCDpt30", chain_qcd30);
     //looper->ScanChain(false, "wjets", chain_wjets);
