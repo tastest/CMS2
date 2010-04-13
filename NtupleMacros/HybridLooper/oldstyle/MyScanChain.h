@@ -89,6 +89,21 @@ class MyScanChain {
         TH1F    *h1_ele_tcmetratio_[3];
         TH1F    *h1_ele_pfmetratio_[3];
 
+        // inclusive comparisons of bg dists
+        TH1F    *h1_ele_incl_iso_[3];
+        TH1F    *h1_ele_incl_pt_[3];
+        TH1F    *h1_ele_incl_eta_[3];
+        TH1F    *h1_ele_incl_tcmet_[3];
+        TH1F    *h1_ele_incl_pfmet_[3];
+        TH1F    *h1_ele_incliso_pt_[3];
+        TH1F    *h1_ele_incliso_eta_[3];
+        TH1F    *h1_ele_incliso_tcmet_[3];
+        TH1F    *h1_ele_incliso_pfmet_[3];
+        TH1F    *h1_ele_inclnoniso_pt_[3];
+        TH1F    *h1_ele_inclnoniso_eta_[3];
+        TH1F    *h1_ele_inclnoniso_tcmet_[3];
+        TH1F    *h1_ele_inclnoniso_pfmet_[3];
+
         // nm1
         TH1F 	*h1_ele_nm1_tcmet_[3];
         TH1F    *h1_ele_nm1_pfmet_[3];
@@ -155,6 +170,21 @@ class MyScanChain {
         TH1F    *h1_mu_pfmetdphi_[3];
         TH1F    *h1_mu_tcmetratio_[3];
         TH1F    *h1_mu_pfmetratio_[3];
+
+        // inclusive comparisons of bg dists
+        TH1F    *h1_mu_incl_iso_[3];
+        TH1F    *h1_mu_incl_pt_[3];
+        TH1F    *h1_mu_incl_eta_[3];
+        TH1F    *h1_mu_incl_tcmet_[3];
+        TH1F    *h1_mu_incl_pfmet_[3];
+        TH1F    *h1_mu_incliso_pt_[3];
+        TH1F    *h1_mu_incliso_eta_[3];
+        TH1F    *h1_mu_incliso_tcmet_[3];
+        TH1F    *h1_mu_incliso_pfmet_[3];
+        TH1F    *h1_mu_inclnoniso_pt_[3];
+        TH1F    *h1_mu_inclnoniso_eta_[3];
+        TH1F    *h1_mu_inclnoniso_tcmet_[3];
+        TH1F    *h1_mu_inclnoniso_pfmet_[3];
 
         // nm1
         TH1F    *h1_mu_nm1_secondpt_[3];

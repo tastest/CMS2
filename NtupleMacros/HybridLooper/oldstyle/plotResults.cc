@@ -246,6 +246,35 @@ void plotElectronIDStack(HistogramUtilities &hData, HistogramUtilities &hRef, TS
 
 }
 
+void plotResultsQCDStudy(TString det, TString fileStamp, TString refFileStamp, const float &luminorm)
+{
+
+    gROOT->ProcessLine(".L tdrStyle.C");
+    gROOT->ProcessLine("setTDRStyle()");
+
+    // luminorm for 0.1pb-1 (is set to 1fb in the looper)
+    //float luminorm = 0.0001;
+    std::vector<DataSource> dataSources;
+    std::vector<DataSource> refSources;
+
+    dataSources.push_back (fH_WHUNT() );
+    refSources.push_back( fH_WJETS() );
+    refSources.push_back( fH_QCD30() );
+    //refSources.push_back( fH_MINBIAS() );
+
+    HistogramUtilities datah1(fileStamp + ".root", dataSources);
+    HistogramUtilities refh1(refFileStamp + ".root", refSources, luminorm);
+
+    //
+    // Electrons
+    //
+
+    // before any selections
+    plotDataRefOverlayStack(datah1, refh1, "ele_pt", "Electron p_{T} (GeV)", fileStamp, det, 4);
+    plotDataRefOverlayStack(datah1, refh1, "ele_eta", "Electron #eta", fileStamp, det, 4);
+
+}
+
 void plotResultsW(TString det, TString fileStamp, TString refFileStamp, const float &luminorm)
 {
 
@@ -274,6 +303,12 @@ void plotResultsW(TString det, TString fileStamp, TString refFileStamp, const fl
     //
     // Electrons
     //
+
+    // before any selections
+    plotDataRefOverlayStack(datah1, refh1, "ele_pt", "Electron p_{T} (GeV)", fileStamp, det, 4);
+    plotDataRefOverlayStack(datah1, refh1, "ele_eta", "Electron #eta", fileStamp, det, 4);
+
+    // after all selections
     plotDataRefOverlayStack(datah1, refh1, "ele_selected_pt", "Electron p_{T} (GeV)", fileStamp, det, 8);
     plotDataRefOverlayStack(datah1, refh1, "ele_selected_pfmet", "Electron pfMET (GeV)", fileStamp, det, 4);
     plotDataRefOverlayStack(datah1, refh1, "ele_selected_tcmet", "Electron tcMET (GeV)", fileStamp, det, 4);

@@ -53,6 +53,9 @@ void doAll() {
     // qcd pt30
     TChain *chain_qcd30 = new TChain("Events");
     chain_qcd30->Add(ntuple_location + "/cms2/QCD_Pt30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+    TChain *chain_qcd15 = new TChain("Events");
+    chain_qcd15->Add(ntuple_location + "/cms2/QCD_Pt15_Summer09-MC_31X_V3_7TeV-v1/V03-03-09/merged_ntuple*.root");
+
 
     TChain *chain_qcd80 = new TChain("Events");
     chain_qcd80->Add(ntuple_location + "/cms2/QCD_Pt80_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
@@ -139,19 +142,20 @@ void doAll() {
 
 
     // MC
-    //looper->ScanChain(false, "minbias", chain_minbias);
-    //looper->ScanChain(false, "QCDpt30", chain_qcd30);
+    looper->ScanChain(false, "QCDpt15", chain_qcd15);
+    looper->ScanChain(false, "QCDpt30", chain_qcd30);
     //looper->ScanChain(false, "wjets", chain_wjets);
 
     // DATA
-    looper->ScanChain(true, "whunt", chain_whunt_skim);
+    //looper->ScanChain(true, "whunt", chain_whunt_skim);
 
     //
     // write histograms
     // 
 
+    const char* outFile = "histos_reference_qcdonly.root";
     //const char* outFile = "histos_reference.root";
-    const char* outFile = "histos_data.root";
+    //const char* outFile = "histos_data.root";
     hist::saveHist(outFile); 
     hist::deleteHistos();
 
@@ -170,6 +174,7 @@ void doAll() {
     delete chain_wjets;
     delete chain_wmunu;
 
+    delete chain_qcd15;
     delete chain_qcd30;
     delete chain_photonjets;
 

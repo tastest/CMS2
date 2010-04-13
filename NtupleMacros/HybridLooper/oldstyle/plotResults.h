@@ -15,7 +15,7 @@ void plotElectronIDStack(HistogramUtilities &hData, HistogramUtilities &hRef, TS
 TArrow *getArrow(THStack *st, TString det, float cutValEB, float cutValEE, float max = -1.0);
 
 void plotResultsW(TString det, TString fileStamp, TString refFileStamp, const float &luminorm);
-
+void plotResultsQCDStudy(TString det, TString fileStamp, TString refFileStamp, const float &luminorm);
 
 #endif
 
