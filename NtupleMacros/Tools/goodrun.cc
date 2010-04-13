@@ -1,4 +1,4 @@
-// $Id: goodrun.cc,v 1.3 2010/04/13 02:49:17 warren Exp $
+// $Id: goodrun.cc,v 1.4 2010/04/13 21:39:48 warren Exp $
 
 // CINT is allowed to see this, but nothing else:
 bool goodrun (unsigned int run, unsigned int lumi_block);
@@ -27,6 +27,7 @@ static bool good_runs_loaded_ = false;
 
 static int load_runs (const char *fname)
 {
+     good_runs_.clear();
      FILE *file = fopen(fname, "r");
      if (file == 0) {
 	  perror("opening good run list");
@@ -126,6 +127,13 @@ bool goodrun (unsigned int run, unsigned int lumi_block)
 	  }
      }
      return false;
+}
+
+void set_goodrun_file (const char* filename)
+{
+  int ret = load_runs(filename);
+  assert(ret != 0);
+  good_runs_loaded_ = true;
 }
 
 #endif // __CUNT__
