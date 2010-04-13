@@ -24,14 +24,20 @@ const static sources_t theDataSources = (1<<H_WHUNT);
 
 
 
-TArrow *getArrow(THStack *st, TString det, float cutValEB, float cutValEE)
+TArrow *getArrow(THStack *st, TString det, float cutValEB, float cutValEE, float max)
 {
 
     float cutVal; 
     if (det == "eb") cutVal = cutValEB;
     else cutVal = cutValEE;
-    TArrow *arr_cut = new TArrow(cutVal, st->GetMaximum()/2.0, cutVal, 0, 0.05, "|>");
-    arr_cut->SetLineWidth(2.0);
+    if (max == -1.0) max = st->GetMaximum()/1.2;
+    TArrow *arr_cut = new TArrow(cutVal, max, cutVal, 0, 0.08, "|>");
+    arr_cut->SetAngle(25.0);
+    arr_cut->SetLineWidth(3.0);
+    arr_cut->SetLineColor(kRed);
+    arr_cut->SetFillColor(kRed);
+    arr_cut->SetLineStyle(kDashed);
+    arr_cut->SetFillStyle(3001);
     return arr_cut;
 }
 
@@ -41,8 +47,8 @@ void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString sav
 
     THStack *st = h1.getStack(theSources, name, "", det, rebin);
     TLegend *lg_all = h1.getLegend(theSources, name, "", det);
-    lg_all->SetX1(0.6);
-    lg_all->SetX2(0.7);
+    lg_all->SetX1(0.55);
+    lg_all->SetX2(0.70);
     lg_all->SetY1(0.6);
     lg_all->SetY2(0.8);
 
@@ -55,14 +61,16 @@ void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString sav
     lg_all->Draw();
     if (det == "ee" && cutValEE != -1) getArrow(st, det, cutValEB, cutValEE)->Draw();
     if (det == "eb" && cutValEB != -1) getArrow(st, det, cutValEB, cutValEE)->Draw();
+    if (det == "all" && cutValEE != -1) getArrow(st, det, cutValEB, cutValEE)->Draw();
     Utilities::saveCanvas(c1, "results/" + saveName  + "_lin_" + name + "_" + det);
 
     c1->SetLogy();
-    st->SetMinimum(1.0);
+    st->SetMinimum(0.10);
     st->Draw();	
     lg_all->Draw();
     if (det == "ee" && cutValEE != -1) getArrow(st, det, cutValEB, cutValEE)->Draw();
     if (det == "eb" && cutValEB != -1) getArrow(st, det, cutValEB, cutValEE)->Draw();
+    if (det == "all" && cutValEE != -1) getArrow(st, det, cutValEB, cutValEE)->Draw();
     Utilities::saveCanvas(c1, "results/" + saveName  + "_log_" + name + "_" + det);
 
     delete c1;
@@ -73,7 +81,7 @@ void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString sav
 
 
 void plotDataRefOverlayStack(HistogramUtilities &hData, HistogramUtilities &hRef, 
-        TString name, TString titleX, TString saveName, TString det, int rebin)
+        TString name, TString titleX, TString saveName, TString det, int rebin,  float cutValEB, float cutValEE)
 {
 
     TLatex *   tex = new TLatex(0.55,0.83,"MC Norm (1 nb^{-1})");
@@ -89,7 +97,7 @@ void plotDataRefOverlayStack(HistogramUtilities &hData, HistogramUtilities &hRef
     THStack *stRef = hRef.getStack(theMCSources, name, "", det, rebin);
     TLegend *lg_all = hRef.getLegend(theMCSources, name, "", det);
     lg_all->SetX1(0.55);
-    lg_all->SetX2(0.65);
+    lg_all->SetX2(0.70);
     lg_all->SetY1(0.6);
     lg_all->SetY2(0.8);
     lg_all->SetTextSize(0.04);
@@ -101,12 +109,14 @@ void plotDataRefOverlayStack(HistogramUtilities &hData, HistogramUtilities &hRef
     h1Data->GetYaxis()->SetLabelSize(0);
     h1Data->SetMarkerStyle(20);
     h1Data->SetMarkerSize(1.5);
-    h1Data->SetLineWidth(1.5);
+    h1Data->SetLineWidth(2.0);
     h1Data->SetMarkerColor(kRed);
     h1Data->SetLineColor(kRed);
     lg_all->AddEntry(h1Data,"Data", "lep"); 
-    if(stRef->GetMaximum() < h1Data->GetMaximum() )
-        stRef->SetMaximum(h1Data->GetMaximum()*2.0);
+
+    // ideal y range should be at least 2 sigma greater than highest data point
+    float idealMaximumData = h1Data->GetMaximum() + sqrt(h1Data->GetMaximum())*2;
+    if(stRef->GetMaximum() < idealMaximumData ) stRef->SetMaximum(idealMaximumData);
 
     TCanvas *c1 = new TCanvas();
     c1->cd();
@@ -116,15 +126,21 @@ void plotDataRefOverlayStack(HistogramUtilities &hData, HistogramUtilities &hRef
     lg_all->Draw();
     tex->Draw();
     tex2->Draw();
+    if (det == "ee" && cutValEE != -1) getArrow(stRef, det, cutValEB, cutValEE, idealMaximumData/1.2)->Draw();
+    if (det == "eb" && cutValEB != -1) getArrow(stRef, det, cutValEB, cutValEE, idealMaximumData/1.2)->Draw();
+    if (det == "all" && cutValEE != -1) getArrow(stRef, det, cutValEB, cutValEE, idealMaximumData/1.2)->Draw();
     Utilities::saveCanvas(c1, "results/" + saveName  + "_lin_" + name + "_" + det);
 
     c1->SetLogy();
-    stRef->SetMinimum(1.0);
+    stRef->SetMinimum(0.10);
     stRef->Draw();	
     h1Data->Draw("samee1");
     lg_all->Draw();
     tex->Draw();
     tex2->Draw();
+    if (det == "ee" && cutValEE != -1) getArrow(stRef, det, cutValEB, cutValEE, idealMaximumData/1.2)->Draw();
+    if (det == "eb" && cutValEB != -1) getArrow(stRef, det, cutValEB, cutValEE, idealMaximumData/1.2)->Draw();
+    if (det == "all" && cutValEE != -1) getArrow(stRef, det, cutValEB, cutValEE, idealMaximumData/1.2)->Draw();
     Utilities::saveCanvas(c1, "results/" + saveName  + "_log_" + name + "_" + det);
 
     delete tex;
@@ -158,9 +174,12 @@ void plotResultsW(TString det, TString fileStamp, TString refFileStamp, float & 
     // W studies related
     //
 
-    // last argument of plotStack is rebin factor
+    // last argument of plotStack is rebin factor, cut val EB and cut val EE
+    // in the case of topology "all" it uses cutValEE.
 
+    //
     // Electrons
+    //
     plotDataRefOverlayStack(datah1, refh1, "ele_selected_pt", "Electron p_{T} (GeV)", fileStamp, det, 8);
     plotDataRefOverlayStack(datah1, refh1, "ele_selected_pfmet", "Electron pfMET (GeV)", fileStamp, det, 4);
     plotDataRefOverlayStack(datah1, refh1, "ele_selected_tcmet", "Electron tcMET (GeV)", fileStamp, det, 4);
@@ -174,16 +193,25 @@ void plotResultsW(TString det, TString fileStamp, TString refFileStamp, float & 
 
 
     // N-1 distributions
-    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_tcmet", "NM1 tcMET (GeV)", fileStamp, det, 4);
-    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_pfmet", "NM1 pfMET (GeV)", fileStamp, det, 4);
-    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_iso", "NM1 RelIso (GeV)", fileStamp, det, 1);
-    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_jetveto", "NM1 Leading JPT p_{T} (GeV)", fileStamp, det, 1);
-    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_secondpt", "NM1 Second Electron p_{T} (GeV)", fileStamp, det, 1);
-    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_r19", "NM1 eMax/e5x5", fileStamp, det, 1);
+    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_tcmet", "NM1 tcMET (GeV)", fileStamp, det, 4, 20.0, 20.0);
+    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_pfmet", "NM1 pfMET (GeV)", fileStamp, det, 4, 20.0, 20.0);
+    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_iso", "NM1 RelIso (GeV)", fileStamp, det, 1, 0.10, 0.10);
+    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_jetveto", "NM1 Leading JPT p_{T} (GeV)", fileStamp, det, 1, 30.0, 30.0);
+    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_secondpt", "NM1 Second Electron p_{T} (GeV)", fileStamp, det, 1, 20.0, 20.0);
+    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_r19", "NM1 eMax/e5x5", fileStamp, det, 1, 0.95, 0.95);
+
+    // N-1 distributions without data points
+    plotStack(refh1, "ele_nm1_tcmet", "NM1 tcMET (GeV)", fileStamp + "_refonly", det, 4, 20.0, 20.0);
+    plotStack(refh1, "ele_nm1_pfmet", "NM1 pfMET (GeV)", fileStamp + "_refonly", det, 4, 20.0, 20.0);
+    plotStack(refh1, "ele_nm1_iso", "NM1 RelIso (GeV)", fileStamp + "_refonly", det, 1, 0.10, 0.10);
+    plotStack(refh1, "ele_nm1_secondpt", "NM1 Second Electron p_{T} (GeV)", fileStamp + "_refonly", det, 1, 20.0, 20.0);
+    plotStack(refh1, "ele_nm1_jetveto", "NM1 Leading JPT p_{T} (GeV)", fileStamp + "_refonly", det, 1, 30.0, 30.0);
+    plotStack(refh1, "ele_nm1_r19", "NM1 eMax/e5x5", fileStamp + "_refonly", det, 1, 0.95, 0.95);
 
 
-
+    //
     // Muons
+    //
     plotDataRefOverlayStack(datah1, refh1, "mu_selected_pt", "Muon p_{T} (GeV)", fileStamp, det, 8);
     plotDataRefOverlayStack(datah1, refh1, "mu_selected_pfmet", "Muon pfMET (GeV)", fileStamp, det, 1);
     plotDataRefOverlayStack(datah1, refh1, "mu_selected_tcmet", "Muon tcMET (GeV)", fileStamp, det, 1);
@@ -195,10 +223,19 @@ void plotResultsW(TString det, TString fileStamp, TString refFileStamp, float & 
     plotDataRefOverlayStack(datah1, refh1, "mu_selected_tcmetdphi", "dPhi(tcMET, Muon) (GeV)", fileStamp, det, 1);
 
     // N-1 distributions
-    plotDataRefOverlayStack(datah1, refh1, "mu_nm1_tcmet", "NM1 tcMET (GeV)", fileStamp, det, 4);
-    plotDataRefOverlayStack(datah1, refh1, "mu_nm1_pfmet", "NM1 pfMET (GeV)", fileStamp, det, 4);
-    plotDataRefOverlayStack(datah1, refh1, "mu_nm1_iso", "NM1 RelIso (GeV)", fileStamp, det, 1);
-    plotDataRefOverlayStack(datah1, refh1, "mu_nm1_secondpt", "NM1 Second Muon p_{T} (GeV)", fileStamp, det, 1);
+    plotDataRefOverlayStack(datah1, refh1, "mu_nm1_tcmet", "NM1 tcMET (GeV)", fileStamp, det, 4, 20.0, 20.0);
+    plotDataRefOverlayStack(datah1, refh1, "mu_nm1_pfmet", "NM1 pfMET (GeV)", fileStamp, det, 4, 20.0, 20.0);
+    plotDataRefOverlayStack(datah1, refh1, "mu_nm1_iso", "NM1 RelIso (GeV)", fileStamp, det, 1, 0.10, 0.10);
+    plotDataRefOverlayStack(datah1, refh1, "mu_nm1_secondpt", "NM1 Second Muon p_{T} (GeV)", fileStamp, det, 1, 20.0, 20.0);
+
+    // N-1 distributions without data points
+    plotStack(refh1, "mu_nm1_tcmet", "NM1 tcMET (GeV)", fileStamp + "_refonly", det, 4, 20.0, 20.0);
+    plotStack(refh1, "mu_nm1_pfmet", "NM1 pfMET (GeV)", fileStamp + "_refonly", det, 4, 20.0, 20.0);
+    plotStack(refh1, "mu_nm1_iso", "NM1 RelIso (GeV)", fileStamp + "_refonly", det, 1, 0.10, 0.10);
+    plotStack(refh1, "mu_nm1_secondpt", "NM1 Second Muon p_{T} (GeV)", fileStamp + "_refonly", det, 1, 20.0, 20.0);
+
+
+
 
 
 }
