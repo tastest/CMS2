@@ -11,7 +11,7 @@ if [ ! -e wcands.txt ]; then
     exit 1
 fi
 
-tac wcands.txt | head -n-3 | tac | head -n-1 | sed 's/\*//g' | awk '{ORS=" ";for(i=2;i<=NF;i++) print $i;ORS="\n";print ""}' >wcands_stripped.txt
+tac wcands.txt | head -n-3 | tac | head -n-1 | sed 's/\*//g' | awk '{ORS=" ";for(i=2;i<=NF;i++) print $i;ORS="\n";print ""}' | sed 's/ $/ /g' >wcands_stripped.txt
 touch wcands_stripped_processed.txt
 while read line; do
     grep "$line" wcands_stripped_processed.txt >/dev/null 2>&1
