@@ -151,8 +151,94 @@ void plotDataRefOverlayStack(HistogramUtilities &hData, HistogramUtilities &hRef
 
 }
 
+void plotElectronIDStack(HistogramUtilities &hData, HistogramUtilities &hRef, TString name, TString titleX, TString saveName, TString det, int rebin)
+{
 
-void plotResultsW(TString det, TString fileStamp, TString refFileStamp, float & luminorm)
+    TString selected_name = "ele_selected_" + name;
+    TString antiselected_name = "ele_antiselected_" + name;
+
+    TLatex *   texSelected = new TLatex(0.55,0.88,"MET > 20.0 GeV");
+    texSelected->SetNDC();
+    texSelected->SetTextSize(0.04);
+    texSelected->SetLineWidth(2);
+
+    TLatex *   texAntiselected = new TLatex(0.55,0.88,"MET < 15.0 GeV");
+    texAntiselected->SetNDC();
+    texAntiselected->SetTextSize(0.04);
+    texAntiselected->SetLineWidth(2);
+
+    // get selected and antiselected reference mc
+    THStack *stRefSelected = hRef.getStack(theMCSources, selected_name, "", det, rebin);
+    THStack *stRefAntiselected = hRef.getStack(theMCSources, antiselected_name, "", det, rebin);
+
+    // get selected data
+    TH1F *h1DataSelected =  hData.getHistogram(theDataSources, selected_name, "", det, rebin);
+    h1DataSelected->GetXaxis()->SetTitle("");
+    h1DataSelected->GetYaxis()->SetTitle("");
+    h1DataSelected->GetXaxis()->SetLabelSize(0);
+    h1DataSelected->GetYaxis()->SetLabelSize(0);
+    h1DataSelected->SetMarkerStyle(20);
+    h1DataSelected->SetMarkerSize(1.5);
+    h1DataSelected->SetLineWidth(2.0);
+    h1DataSelected->SetMarkerColor(kRed);
+    h1DataSelected->SetLineColor(kRed);
+
+    // get antiselected data
+    TH1F *h1DataAntiselected =  hData.getHistogram(theDataSources, antiselected_name, "", det, rebin);
+    h1DataAntiselected->GetXaxis()->SetTitle("");
+    h1DataAntiselected->GetYaxis()->SetTitle("");
+    h1DataAntiselected->GetXaxis()->SetLabelSize(0);
+    h1DataAntiselected->GetYaxis()->SetLabelSize(0);
+    h1DataAntiselected->SetMarkerStyle(20);
+    h1DataAntiselected->SetMarkerSize(1.5);
+    h1DataAntiselected->SetLineWidth(2.0);
+    h1DataAntiselected->SetMarkerColor(kBlack);
+    h1DataAntiselected->SetLineColor(kBlack);
+
+    TLegend *lg_all = hRef.getLegend(theMCSources, antiselected_name, "", det);
+    lg_all->SetX1(0.55);
+    lg_all->SetX2(0.70);
+    lg_all->SetY1(0.6);
+    lg_all->SetY2(0.8);
+    lg_all->SetTextSize(0.04);
+    lg_all->AddEntry(h1DataSelected, "Data", "lep");
+
+    TCanvas *c1 = new TCanvas();
+    c1->cd();
+
+    // draw selected
+    // ideal y range should be at least 2 sigma greater than highest data point
+    float idealMaximumData = h1DataSelected->GetMaximum() + sqrt(h1DataSelected->GetMaximum())*2;
+    if(stRefSelected->GetMaximum() < idealMaximumData ) stRefSelected->SetMaximum(idealMaximumData);
+    stRefSelected->Draw();
+    h1DataSelected->Draw("samee1");
+    stRefSelected->GetXaxis()->SetTitle(titleX);
+    lg_all->Draw();
+    texSelected->Draw();
+    Utilities::saveCanvas(c1, "results/" + saveName  + "_lin_" + selected_name + "_" + det);
+
+    // draw antiselected
+    idealMaximumData = h1DataAntiselected->GetMaximum() + sqrt(h1DataAntiselected->GetMaximum())*2;
+    if(stRefAntiselected->GetMaximum() < idealMaximumData ) stRefAntiselected->SetMaximum(idealMaximumData);
+    stRefAntiselected->Draw();
+    h1DataAntiselected->Draw("samee1");
+    stRefAntiselected->GetXaxis()->SetTitle(titleX);
+    lg_all->Draw();
+    texAntiselected->Draw();
+    Utilities::saveCanvas(c1, "results/" + saveName  + "_lin_" + antiselected_name + "_" + det);
+
+    delete texSelected;
+    delete texAntiselected;
+    delete h1DataSelected;
+    delete h1DataAntiselected;
+    delete c1;
+    delete stRefSelected;
+    delete stRefAntiselected;
+
+
+}
+
+void plotResultsW(TString det, TString fileStamp, TString refFileStamp, const float &luminorm)
 {
 
     gROOT->ProcessLine(".L tdrStyle.C");
@@ -191,7 +277,6 @@ void plotResultsW(TString det, TString fileStamp, TString refFileStamp, float & 
     plotDataRefOverlayStack(datah1, refh1, "ele_selected_nmhits", "Number of Missing Hits", fileStamp, det, 1);
     plotDataRefOverlayStack(datah1, refh1, "ele_selected_tcmetdphi", "dPhi(tcMET, Electron) (GeV)", fileStamp, det, 1);
 
-
     // N-1 distributions
     plotDataRefOverlayStack(datah1, refh1, "ele_nm1_tcmet", "NM1 tcMET (GeV)", fileStamp, det, 4, 20.0, 20.0);
     plotDataRefOverlayStack(datah1, refh1, "ele_nm1_pfmet", "NM1 pfMET (GeV)", fileStamp, det, 4, 20.0, 20.0);
@@ -207,6 +292,9 @@ void plotResultsW(TString det, TString fileStamp, TString refFileStamp, float & 
     plotStack(refh1, "ele_nm1_secondpt", "NM1 Second Electron p_{T} (GeV)", fileStamp + "_refonly", det, 1, 20.0, 20.0);
     plotStack(refh1, "ele_nm1_jetveto", "NM1 Leading JPT p_{T} (GeV)", fileStamp + "_refonly", det, 1, 30.0, 30.0);
     plotStack(refh1, "ele_nm1_r19", "NM1 eMax/e5x5", fileStamp + "_refonly", det, 1, 0.95, 0.95);
+
+    // selection and anti-selection for electron id variable studies
+    plotElectronIDStack(datah1, refh1, "sigmaIEtaIEta", "sigmaIEtaIEta", fileStamp, "eb", 2);
 
 
     //
