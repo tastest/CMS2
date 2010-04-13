@@ -27,6 +27,8 @@
 #include "../../CORE/metSelections.h"
 #include "../../CORE/utilities.h"
 
+#include "../../Tools/goodrun.cc"
+
 //
 // Namespaces
 //
@@ -799,6 +801,14 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
             // work out event weight
             float weight = 1.0;
             if (!isData) weight = cms2.evt_scale1fb();
+
+            //
+            // do good run check
+            //
+
+            if (isData) {
+                if (!goodrun(cms2.evt_run(), cms2.evt_lumiBlock())) continue;
+            }
 
             //
             // do event cleaning

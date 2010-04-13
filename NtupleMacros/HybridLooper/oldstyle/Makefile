@@ -33,6 +33,7 @@ ifeq ($(shell root-config --platform),macosx)
 endif
 
 CORESOURCES = \
+    $(CMSROOT)/Tools/goodrun.cc \
     $(CMSROOT)/CORE/CMS2.cc \
     $(CMSROOT)/CORE/electronSelections.cc \
     $(CMSROOT)/CORE/muonSelections.cc \

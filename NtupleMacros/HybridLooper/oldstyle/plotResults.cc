@@ -261,8 +261,6 @@ void plotResultsInclStudy(TString det, TString fileStamp, TString refFileStamp, 
     refSources2.push_back( fH_QCD30() );
     refSources.push_back( fH_QCD15() );
 
-
-
     HistogramUtilities datah1(fileStamp + ".root", dataSources);
     HistogramUtilities refh2(refFileStamp + ".root", refSources2, luminorm);
     HistogramUtilities refh1(refFileStamp + ".root", refSources, luminorm);
@@ -280,6 +278,19 @@ void plotResultsInclStudy(TString det, TString fileStamp, TString refFileStamp, 
     plotDataRefOverlayStack(datah1, refh1, "ele_incl_pfmet", "Electron pfMET (GeV)", fileStamp + "_qcd15", det, norm, 4);
     plotDataRefOverlayStack(datah1, refh1, "ele_incl_tcmet", "Electron tcMET (GeV)", fileStamp + "_qcd15", det, norm, 4);
     plotDataRefOverlayStack(datah1, refh1, "ele_incl_iso", "Electron RelIso", fileStamp + "_qcd15", det, norm, 4);
+
+    // iso
+    plotDataRefOverlayStack(datah1, refh1, "ele_incliso_pt", "Electron p_{T} (GeV)", fileStamp + "_qcd15", det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "ele_incliso_eta", "Electron #eta", fileStamp + "_qcd15", det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "ele_incliso_pfmet", "Electron pfMET (GeV)", fileStamp + "_qcd15", det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "ele_incliso_tcmet", "Electron tcMET (GeV)", fileStamp + "_qcd15", det, norm, 4);
+
+    // noniso
+    plotDataRefOverlayStack(datah1, refh1, "ele_inclnoniso_pt", "Electron p_{T} (GeV)", fileStamp + "_qcd15", det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "ele_inclnoniso_eta", "Electron #eta", fileStamp + "_qcd15", det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "ele_inclnoniso_pfmet", "Electron pfMET (GeV)", fileStamp + "_qcd15", det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "ele_inclnoniso_tcmet", "Electron tcMET (GeV)", fileStamp + "_qcd15", det, norm, 4);
+
 
     //
     // Muons
