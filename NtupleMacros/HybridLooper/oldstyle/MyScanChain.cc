@@ -141,6 +141,8 @@ bool MyScanChain::CheckCuts(cuts_t apply, cuts_t passed)
 
 void MyScanChain::AnalyseElectrons(const float &weight) {
 
+    std::cout << "doing electrons" << std::endl;
+
     // find candidate electron
     // assumes electrons are sorted by pT descending
     int eleIndex = 0;
@@ -369,6 +371,8 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
 
 void MyScanChain::AnalyseMuons(const float &weight) {
 
+    std::cout << "doing muons" << std::endl;
+
     // find candidate muon
     // assumes muons are sorted by pT descending
     int muIndex = 0;
@@ -406,6 +410,8 @@ void MyScanChain::AnalyseMuons(const float &weight) {
     // work out what cuts this event passes
     //
 
+    std::cout << "going to work out cuts" << std::endl;
+
     // the cuts that this event passes
     cuts_t cuts_passed = 0;
 
@@ -420,6 +426,8 @@ void MyScanChain::AnalyseMuons(const float &weight) {
     // impose fiducial cuts in Eta
     if (fabs(cms2.mus_p4()[muIndex].Eta()) < 2.5) cuts_passed |= (1<<PASS_MU_ISFIDUCIAL);
 
+    std::cout << "mark 1" << std::endl;
+
     // met
     if (cms2.evt_tcmet() > 20.0 && cms2.evt_pfmet() > 20) cuts_passed |= (1<<PASS_MU_MET);
 
@@ -427,15 +435,21 @@ void MyScanChain::AnalyseMuons(const float &weight) {
     float tcmetratio = cms2.evt_tcmet() / cms2.mus_p4()[muIndex].Pt();
     float pfmetratio = cms2.evt_pfmet() / cms2.mus_p4()[muIndex].Pt();
 
+    std::cout << "mark 2" << std::endl;
+
     // phi angle between the met and the muon
     float tcmetdphi = acos(cos(cms2.evt_tcmetPhi() - cms2.mus_p4()[muIndex].Phi()));
     float pfmetdphi = acos(cos(cms2.evt_pfmetPhi() - cms2.mus_p4()[muIndex].Phi()));
+
+    std::cout << "mark 3" << std::endl;
 
     // muon isolation value
     if (muonIsoValue(muIndex) < 0.1)   cuts_passed |= (1<<PASS_MU_ISO);
     //
     // do plotting
     //
+
+    std::cout << "going to do muon plotting" << std::endl;
 
     // compute some common variables 
     float ppfmet = projectedMETW(cms2.evt_pfmet(), cms2.evt_pfmetPhi(), cms2.mus_p4()[muIndex].Phi());
@@ -711,6 +725,9 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
                 i_permille_old = i_permille;
             }
 
+
+            std::cout << "Event number: " << event << std::endl;
+
             // work out event weight
             float weight = 1.0;
             if (!isData) weight = cms2.evt_scale1fb();
@@ -724,7 +741,9 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
             // Do the analysis
             //
             AnalyseElectrons(weight);
+            std::cout << "done electrons" << std::endl;
             AnalyseMuons(weight);
+            std::cout << "done muons" << std::endl;
 
 
             //

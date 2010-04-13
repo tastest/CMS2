@@ -41,14 +41,18 @@ if not os.path.isdir(indir) :
     sys.exit()
 
 ##############################################
-# Run the makePlots.C script
+# Run doData.C and makePlots.C script
 ##############################################
+
+doData = "root -l -q -b doData.C"
+os.system(doData)
 
 rmplotfile = "rm -f results/*.png; rm -f %s/*.png " % (indir)
 os.system(rmplotfile)
 
-makePlots = "root -q -b makePlots.C"
+makePlots = "root -l -q -b makePlots.C"
 os.system(makePlots)
+
 
 ##############################################
 # Copy files to the WEBPAGE
