@@ -35,16 +35,15 @@ class babymaker
         Int_t   njets_;
         Float_t jet1pt_;
         Float_t dphimetjet_;
+        Int_t   eormu_;
 
         // lepton stuff
-        Int_t   eormu_;
         Int_t   type_;
         Float_t pt_;
         Float_t iso_;
         Float_t d0corr_;
         Float_t dphimet_;
         Float_t drjet_;
-        Float_t mt_;
 
         // muon stuff
         Bool_t  mu_muonid_;
