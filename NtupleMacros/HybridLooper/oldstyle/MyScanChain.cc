@@ -25,6 +25,7 @@
 #include "../../CORE/eventSelections.h"
 #include "../../CORE/muonSelections.h"
 #include "../../CORE/metSelections.h"
+#include "../../CORE/utilities.h"
 
 //
 // Namespaces
@@ -64,13 +65,6 @@ enum ele_selection {
     PASS_ELE_CLEANEVENT,
     PASS_ELE_ANTIMET,
 };
-
-double dRbetweenVectors(const LorentzVector &vec1, const LorentzVector &vec2 ){
-
-    double dphi = std::min(::fabs(vec1.Phi() - vec2.Phi()), 2 * M_PI - fabs(vec1.Phi() - vec2.Phi()));
-    double deta = vec1.Eta() - vec2.Eta();
-    return sqrt(dphi*dphi + deta*deta);
-} 
 
 // to decdie if to fill the EB histo (zero in the array)
 // or the EE histo (one in the array)
