@@ -72,9 +72,9 @@ while read line; do
 done <wcands_stripped.txt
 
 # Transfer back to cms-tas03
-scp *.root cms-tas03:~/devel/tas/whunt/picks
-scp wcands_stripped_processed.txt cms-tas03:~/devel/tas/whunt/
-scp dump*.txt cms-tas03:~/devel/tas/whunt/dumps
+scp *.root cms-tas03:/tas03/disk01/whunt/picks
+scp wcands_stripped_processed.txt cms-tas03:/tas03/disk01/whunt/
+scp dump*.txt cms-tas03:/tas03/disk01/whunt/dumps
 
 # Cleanup
 rm *.root *.py dump*.txt
