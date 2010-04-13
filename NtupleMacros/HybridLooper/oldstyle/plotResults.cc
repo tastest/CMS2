@@ -167,6 +167,11 @@ void plotElectronIDStack(HistogramUtilities &hData, HistogramUtilities &hRef, TS
     texAntiselected->SetTextSize(0.04);
     texAntiselected->SetLineWidth(2);
 
+    TLatex *   texLumi = new TLatex(0.55,0.83,"MC Norm (1 nb^{-1})");
+    texLumi->SetNDC();
+    texLumi->SetTextSize(0.04);
+    texLumi->SetLineWidth(2);
+
     // get selected and antiselected reference mc
     THStack *stRefSelected = hRef.getStack(theMCSources, selected_name, "", det, rebin);
     THStack *stRefAntiselected = hRef.getStack(theMCSources, antiselected_name, "", det, rebin);
@@ -192,8 +197,8 @@ void plotElectronIDStack(HistogramUtilities &hData, HistogramUtilities &hRef, TS
     h1DataAntiselected->SetMarkerStyle(20);
     h1DataAntiselected->SetMarkerSize(1.5);
     h1DataAntiselected->SetLineWidth(2.0);
-    h1DataAntiselected->SetMarkerColor(kBlack);
-    h1DataAntiselected->SetLineColor(kBlack);
+    h1DataAntiselected->SetMarkerColor(kRed);
+    h1DataAntiselected->SetLineColor(kRed);
 
     TLegend *lg_all = hRef.getLegend(theMCSources, antiselected_name, "", det);
     lg_all->SetX1(0.55);
@@ -215,6 +220,7 @@ void plotElectronIDStack(HistogramUtilities &hData, HistogramUtilities &hRef, TS
     stRefSelected->GetXaxis()->SetTitle(titleX);
     lg_all->Draw();
     texSelected->Draw();
+    texLumi->Draw();
     Utilities::saveCanvas(c1, "results/" + saveName  + "_lin_" + selected_name + "_" + det);
 
     // draw antiselected
@@ -225,8 +231,10 @@ void plotElectronIDStack(HistogramUtilities &hData, HistogramUtilities &hRef, TS
     stRefAntiselected->GetXaxis()->SetTitle(titleX);
     lg_all->Draw();
     texAntiselected->Draw();
+    texLumi->Draw();
     Utilities::saveCanvas(c1, "results/" + saveName  + "_lin_" + antiselected_name + "_" + det);
 
+    delete texLumi;
     delete texSelected;
     delete texAntiselected;
     delete h1DataSelected;
@@ -294,8 +302,20 @@ void plotResultsW(TString det, TString fileStamp, TString refFileStamp, const fl
     plotStack(refh1, "ele_nm1_r19", "NM1 eMax/e5x5", fileStamp + "_refonly", det, 1, 0.95, 0.95);
 
     // selection and anti-selection for electron id variable studies
+    // barrel
     plotElectronIDStack(datah1, refh1, "sigmaIEtaIEta", "sigmaIEtaIEta", fileStamp, "eb", 2);
-
+    plotElectronIDStack(datah1, refh1, "eOverPIn", "E/p_{IN}", fileStamp, "eb", 2);
+    plotElectronIDStack(datah1, refh1, "hOverE", "H/E", fileStamp, "eb", 2);
+    plotElectronIDStack(datah1, refh1, "e2x5MaxOver5x5", "E2x5Max/E5x5", fileStamp, "eb", 2);
+    plotElectronIDStack(datah1, refh1, "dEtaIn", "dEtaIn", fileStamp, "eb", 2);
+    plotElectronIDStack(datah1, refh1, "dPhiIn", "dPhiIn", fileStamp, "eb", 2);
+    // endcap
+    plotElectronIDStack(datah1, refh1, "sigmaIEtaIEta", "sigmaIEtaIEta", fileStamp, "ee", 2);
+    plotElectronIDStack(datah1, refh1, "eOverPIn", "E/p_{IN}", fileStamp, "ee", 2);
+    plotElectronIDStack(datah1, refh1, "hOverE", "H/E", fileStamp, "ee", 2);
+    plotElectronIDStack(datah1, refh1, "e2x5MaxOver5x5", "E2x5Max/E5x5", fileStamp, "ee", 2);
+    plotElectronIDStack(datah1, refh1, "dEtaIn", "dEtaIn", fileStamp, "ee", 2);
+    plotElectronIDStack(datah1, refh1, "dPhiIn", "dPhiIn", fileStamp, "ee", 2);
 
     //
     // Muons
