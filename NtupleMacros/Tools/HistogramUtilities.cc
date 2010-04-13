@@ -40,7 +40,6 @@ void HistogramUtilities::setOrder(std::vector<DataSource> potentialSources)
 TH1F* HistogramUtilities::getHistogram(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin, TString nameprefix) 
 {
   TString histNameSuffix = "_" + var + "_" + nJets + hyp_type;
-
   TH1F *h1_data = 0;
   for (unsigned int i = 0; i < sources_.size(); ++i)
 	{
@@ -119,12 +118,14 @@ THStack* HistogramUtilities::getStack(sources_t theSources, TString var, TString
   for (int i = sources_.size() - 1; i >= 0; --i)
 	{
 	  if ((theSources & makeBit(sources_[i].getSource()) ) == makeBit(sources_[i].getSource()) ) {
-		//std::cout << "getting " << sources_[i].getName() + histNameSuffix << std::endl;
+		std::cout << "getting " << sources_[i].getName() + histNameSuffix << std::endl;
 		//std::cout << "reading file " << file_->GetName() << std::endl;
 		//file_->cd(); //we used this at one point to debug why we couldn't find a hist
 		//gDirectory->ls();
 		TH1F *h1_temp = ((TH1F*)(file_->Get(sources_[i].getName() + histNameSuffix)->Clone()));
 		//std::cout << h1_temp->GetBinContent(1) << std::endl;
+		Int_t lastBin = h1_temp->GetNbinsX();
+		h1_temp->SetBinContent(lastBin, h1_temp->GetBinContent(lastBin) + h1_temp->GetBinContent(lastBin+1));
 		if (sources_[i].getColor() != 0) {
 		  h1_temp->SetFillColor(sources_[i].getColor());
 		  h1_temp->SetLineColor(sources_[i].getColor());
@@ -190,7 +191,7 @@ THStack* HistogramUtilities::get2fileStack(sources_t theSources, TString var, TS
   
   for (int i = sources_.size() - 1; i >= 0; --i) {
 	if ((theSources & makeBit(sources_[i].getSource()) ) == makeBit(sources_[i].getSource()) ) {
-	  std::cout << "getting " << sources_[i].getName() + histNameSuffix1 << std::endl;
+	  //std::cout << "getting " << sources_[i].getName() + histNameSuffix1 << std::endl;
 	  TH1F *h1_temp = ((TH1F*)(file_ ->Get(sources_[i].getName() + histNameSuffix1)->Clone()));
 	  TH1F *h2_temp = ((TH1F*)(file2_->Get(sources_[i].getName() + histNameSuffix1)->Clone())); //suffix1
 	  if (sources_[i].getColor() != 0) {
