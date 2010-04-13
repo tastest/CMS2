@@ -1,4 +1,4 @@
-// $Id: goodrun.cc,v 1.2 2010/04/08 00:35:58 jmuelmen Exp $
+// $Id: goodrun.cc,v 1.3 2010/04/13 02:49:17 warren Exp $
 
 // CINT is allowed to see this, but nothing else:
 bool goodrun (unsigned int run, unsigned int lumi_block);
@@ -25,12 +25,12 @@ typedef std::multiset<struct run_and_lumi> set_t;
 static set_t good_runs_;
 static bool good_runs_loaded_ = false;
 
-static void load_runs (const char *fname)
+static int load_runs (const char *fname)
 {
      FILE *file = fopen(fname, "r");
      if (file == 0) {
 	  perror("opening good run list");
-	  return;
+	  return 0;
      }
      int s;
      int line = 0;
@@ -44,11 +44,11 @@ static void load_runs (const char *fname)
 	  if (s != 1) {
 	       if (s != EOF) {
 		    perror("reading good run list");
-		    return;
+		    return 0;
 	       } else {
 		    if (ferror(file)) {
 			 perror("reading good run list");
-			 return;
+			 return 0;
 		    }
 	       }
 	  } else if (strlen(buf) != 0 && buf[0] == '#') {
@@ -94,14 +94,14 @@ static void load_runs (const char *fname)
 	  // advance past the newline 
 	  char newlines[1024] = "";
 	  s = fscanf(file, "%[ \f\n\r\t\v]", newlines); 
-	  if (strlen(newlines) != 1) {
-	       fprintf(stderr, "Warning: unexpected white space following line %d\n", line);
-	       // but that's just a warning
-	  }
-     } while (s == 1);
-     fclose(file);
+	  if (s != -1 && strlen(newlines) != 1) {
+		fprintf(stderr, "Warning: unexpected white space following line %d\n", line);
+		// but that's just a warning
+	  } 
+	 } while (s == 1);
+	 fclose(file);
+	 return line;
 }	       
-	       
 
 bool goodrun (unsigned int run, unsigned int lumi_block)
 {
