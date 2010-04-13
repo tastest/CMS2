@@ -127,6 +127,7 @@ void babymaker::ScanChain (const char *inputFilename, const char *babyFilename, 
                 }
 
                 drjet_       = mindrjet;
+                mt_          = sqrt(2.*pt_*pfmet_*(1.-cos(dphimet_)));
                 mu_muonid_   = muonId(mui);
                 mu_goodmask_ = cms2.mus_goodmask()[mui];
                 mu_gfitchi2_ = cms2.mus_gfit_chi2()[mui];
@@ -159,6 +160,7 @@ void babymaker::ScanChain (const char *inputFilename, const char *babyFilename, 
                 }
 
                 drjet_    = mindrjet;
+                mt_       = sqrt(2.*pt_*pfmet_*(1.-cos(dphimet_)));
                 e_cand01_ = electronId_cand01(eli);
                 e_eopin_  = cms2.els_eOverPIn()[eli];
                 e_hoe_    = cms2.els_hOverE()[eli];
@@ -190,15 +192,16 @@ void babymaker::InitBabyNtuple ()
     njets_        = -999999;
     jet1pt_       = -999999.;
     dphimetjet_   = -999999.;
-    eormu_        = -999999;
 
     // lepton stuff
+    eormu_        = -999999;
     type_         = -999999;
     pt_           = -999999.;
     iso_          = -999999.;
     d0corr_       = -999999.;
     dphimet_      = -999999.;
     drjet_        = -999999.;
+    mt_           = -999999.;
 
     // muon stuff
     mu_muonid_   = -999999;
@@ -232,15 +235,16 @@ void babymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("njets",      &njets_,     "njets/I"     ); // uncorrected pt > 20
     babyTree_->Branch("jet1pt",     &jet1pt_,    "jet1pt/F"    );
     babyTree_->Branch("dphimetjet", &dphimetjet_,"dphimetjet/F");
-    babyTree_->Branch("eormu",      &eormu_,     "eormu/I"     );
 
     // lepton stuff
+    babyTree_->Branch("eormu",   &eormu_,   "eormu/I"  );
     babyTree_->Branch("type",    &type_,    "type/I"   );
     babyTree_->Branch("pt",      &pt_,      "pt/F"     );
     babyTree_->Branch("iso",     &iso_,     "iso/F"    );
     babyTree_->Branch("d0corr",  &d0corr_,  "d0corr/F" );
     babyTree_->Branch("dphimet", &dphimet_, "dphimet/F");
     babyTree_->Branch("drjet",   &drjet_,   "drjet/F"  );
+    babyTree_->Branch("mt",      &mt_,      "mt/F"     );
 
     // muon stuff
     babyTree_->Branch("mu_muonid",   &mu_muonid_,   "mu_muonid/O"  );
