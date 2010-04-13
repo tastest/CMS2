@@ -45,7 +45,7 @@ if not os.path.isdir(indir) :
 ##############################################
 
 doData = "root -l -q -b doData.C"
-#os.system(doData)
+os.system(doData)
 
 rmplotfile = "rm -f results/*.png; rm -f %s/*.png " % (indir)
 os.system(rmplotfile)
