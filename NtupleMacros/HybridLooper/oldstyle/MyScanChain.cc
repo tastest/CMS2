@@ -240,6 +240,9 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
             * (1 - cos(cms2.evt_pfmetPhi() - cms2.els_p4()[eleIndex].Phi() )));
     float tctransmass = sqrt( 2.0 * cms2.els_p4()[eleIndex].Pt() * cms2.evt_tcmet() 
             * (1 - cos(cms2.evt_tcmetPhi() - cms2.els_p4()[eleIndex].Phi() )));
+    float pthat = -1.0;
+    if (!isData_) pthat = cms2.genps_pthat();
+
 
     FillHist(h1_ele_pt_, det, cms2.els_p4()[eleIndex].Pt(), weight);
     FillHist(h1_ele_eta_, det, cms2.els_etaSC()[eleIndex], weight);
@@ -376,6 +379,7 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
         FillHist(h1_ele_incl_tkIso_, det, cms2.els_tkIso()[eleIndex], weight);
         FillHist(h1_ele_incl_ecalIso_, det, cms2.els_ecalIso()[eleIndex], weight);
         FillHist(h1_ele_incl_hcalIso_, det, cms2.els_hcalIso()[eleIndex], weight);
+        FillHist(h1_ele_incl_pthat_, det, pthat, weight);
     }
     // inclusive isolated
     if (CheckCuts(((1<<PASS_ELE_R19) | (1<<PASS_ELE_ISFIDUCIAL) | (1<<PASS_ELE_PT) | (1<<PASS_ELE_ISO)), cuts_passed)) {
@@ -645,6 +649,8 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     FormatHist(h1_ele_incl_tkIso_, "ele_incl_tkIso", 100, 0, 20);
     FormatHist(h1_ele_incl_hcalIso_, "ele_incl_ecalIso", 100, 0, 20);
     FormatHist(h1_ele_incl_ecalIso_, "ele_incl_hcalIso", 100, 0, 20);
+    FormatHist(h1_ele_incl_pthat_, "ele_incl_pthat", 100, 0, 100.0);
+
     // isolated
     FormatHist(h1_ele_incliso_pt_, "ele_incliso_pt", 100, 0, 100);
     FormatHist(h1_ele_incliso_eta_, "ele_incliso_eta", 100, -3, 3);

@@ -99,6 +99,7 @@ class MyScanChain {
         TH1F    *h1_ele_incl_eta_[3];
         TH1F    *h1_ele_incl_tcmet_[3];
         TH1F    *h1_ele_incl_pfmet_[3];
+        TH1F    *h1_ele_incl_pthat_[3];
         TH1F    *h1_ele_incliso_pt_[3];
         TH1F    *h1_ele_incliso_eta_[3];
         TH1F    *h1_ele_incliso_tcmet_[3];
