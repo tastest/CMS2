@@ -8,10 +8,10 @@
 using namespace std;
 using namespace tas;
 
-static metStruct getTcmetFromCaloMet(TH2F* rf);
+static metStruct getTcmetFromCaloMet(TH2F* rf, bool usePV = false);
 static bool  isMuon               ( int index );
 static bool  isElectron           ( int index );
-static bool  isGoodTrack          ( int index );
+static bool  isGoodTrack          ( int index, bool usePV = false );
 static void  correctMETforMuon    ( LorentzVector p4, int index );
 static void  correctMETforPion    ( int index , TH2F* rf);
 static void  correctSumEtForMuon  ( LorentzVector p4, int index );
@@ -23,7 +23,7 @@ float tcmet_x;
 float tcmet_y;
 float tcsumet;
 
-metStruct getTcmetFromCaloMet(TH2F* rf){
+metStruct getTcmetFromCaloMet(TH2F* rf, bool usePV){
 
   
      //initialize to calomet values
@@ -47,7 +47,7 @@ metStruct getTcmetFromCaloMet(TH2F* rf){
 		    correctSumEtForMuon( mus_gfit_p4().at(i), i );
 	       }
       
-	       else if(isGoodTrack( mus_trkidx().at(i))) {
+	       else if(isGoodTrack( mus_trkidx().at(i), usePV)) {
 		    correctMETforPion  ( mus_trkidx().at(i) , rf);
 		    correctSumEtForPion( mus_trkidx().at(i) , rf);
 	       }
@@ -59,7 +59,7 @@ metStruct getTcmetFromCaloMet(TH2F* rf){
 		    correctSumEtForMuon( mus_trk_p4().at(i), i );
 	       }
       
-	       else if(isGoodTrack( mus_trkidx().at(i))) {
+	       else if(isGoodTrack( mus_trkidx().at(i), usePV)) {
 		    correctMETforPion  ( mus_trkidx().at(i) , rf);
 		    correctSumEtForPion( mus_trkidx().at(i) , rf);
 	       }
@@ -71,7 +71,7 @@ metStruct getTcmetFromCaloMet(TH2F* rf){
 		    correctSumEtForMuon( mus_p4().at(i), i );
 	       }
 
-	       else if(isGoodTrack( mus_trkidx().at(i))) {
+	       else if(isGoodTrack( mus_trkidx().at(i), usePV)) {
 		    correctMETforPion  ( mus_trkidx().at(i) , rf);
 		    correctSumEtForPion( mus_trkidx().at(i) , rf);
 	       }
@@ -95,7 +95,7 @@ metStruct getTcmetFromCaloMet(TH2F* rf){
 	  if( isElectron( i ) ) 
 	       continue;
     
-	  if( !isGoodTrack( i ) ) 
+	  if( !isGoodTrack( i, usePV ) ) 
 	       continue;
     
 	  correctMETforPion( i , rf);
@@ -117,13 +117,21 @@ metStruct getTcmetFromCaloMet(TH2F* rf){
 
 //--------------------------------------------------------------------
 
-bool isGoodTrack( int index ) {
+bool isGoodTrack( int index, bool usePV ) {
   
+     float corrected_d0 = trks_d0corr().at(index);
+
+     if(usePV)
+     {
+	  std::cout << "using d0 corrected for primary vertex!\n";
+	  corrected_d0 = trks_d0vtx().at(index);
+     }
+
      if( trks_algo().at(index) < 8 ) {
 
 	  float d0cut = min( sqrt( pow(0.015,2) + pow(0.5/trks_trk_p4().at(index).pt(),2) ), 0.3);
 
-	  if( trks_d0corr().at(index) > d0cut ) return false;
+	  if( corrected_d0 > d0cut ) return false;
      }
      else {
 	  if( trks_validHits().at(index) < 11 )                              return false;

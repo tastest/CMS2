@@ -33,7 +33,7 @@ float projectedMETW( float met, float metPhi, float leptonPhi);
 //---------------------------------------------
 // function to correct tcMET for electron bug
 //---------------------------------------------
-metStruct correctedTCMET();
+metStruct correctedTCMET(bool usePV = false);
 
 //---------------------------------------------
 // utility function find deltaPhi between met
