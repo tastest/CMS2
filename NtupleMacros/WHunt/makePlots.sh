@@ -7,7 +7,12 @@
 # and transferring everything back over
 cp wcands.txt wcands.txt_previous
 root -b -l -q makePlots.C
-foundmorecandidates=`diff wcands.txt wcands.txt_previous`
+# check if there is a change in the list of run, lumisection, event (we will also send a mail
+# about a new W candidate if a candidate disappers right now).
+cat wcands.txt          | awk '{print $4" "$6" "$8}' | grep -v run | grep ^[^" "] | sort > wcands.txt_short
+cat wcands.txt_previous | awk '{print $4" "$6" "$8}' | grep -v run | grep ^[^" "] | sort > wcands.txt_previous_short
+#
+foundmorecandidates=`diff wcands.txt_short wcands.txt_previous_short`
  if [ `echo -n $foundmorecandidates | wc -c` -gt 0 ];
    then
    echo "**********ALERT***ALERT***ALERT************"
@@ -26,6 +31,9 @@ foundmorecandidates=`diff wcands.txt wcands.txt_previous`
  else
    echo "No new W candidates"
  fi
+rm wcands.txt_short
+rm wcands.txt_previous_short
+#
 scp wcands.txt lxplus303:~/scratch0/whunt
 ssh lxplus303 /afs/cern.ch/user/j/jribnik/scratch0/whunt/wcands.sh
 scp plots/* uaf-2.t2.ucsd.edu:~/public_html/whunt/plots
