@@ -276,8 +276,8 @@ void babymaker::CloseBabyNtuple()
 float deltaPhi (float phi1, float phi2)
 {
     float dphi = phi1-phi2;
-    while (fabs(dphi) > TMath::Pi())
-        dphi = dphi > 0 ? dphi -= TMath::Pi() : dphi += TMath::Pi();
+    if (dphi < 0.) dphi = -1.*dphi;
+    if (dphi > TMath::Pi()) dphi = 2.*TMath::Pi() - dphi;
     return dphi;
 }
 
