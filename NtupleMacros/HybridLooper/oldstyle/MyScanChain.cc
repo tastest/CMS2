@@ -271,6 +271,7 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
         FillHist(h1_ele_nm1_pfmetdphi_, det, pfmetdphi, weight);
         FillHist(h1_ele_nm1_tcmetratio_, det, tcmetratio, weight);
         FillHist(h1_ele_nm1_pfmetratio_, det, pfmetratio, weight);
+        FillHist(h1_ele_nm1_tcmet_pthat_, det, pthat, weight);
     }
 
     if (CheckCutsNM1(pass_all, (1<<PASS_ELE_ISO), cuts_passed)) {
@@ -664,6 +665,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 
 
     // N-1
+    FormatHist(h1_ele_nm1_tcmet_pthat_, "ele_nm1_tcmet_pthat", 100, 0, 100);
     FormatHist(h1_ele_nm1_tcmet_, "ele_nm1_tcmet", 100, 0, 100);
     FormatHist(h1_ele_nm1_pfmet_, "ele_nm1_pfmet", 100, 0, 100);
     FormatHist(h1_ele_nm1_tcmetdphi_, "ele_nm1_tcmetdphi", 100, -4, 4);
