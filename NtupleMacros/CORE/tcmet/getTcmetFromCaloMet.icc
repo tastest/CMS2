@@ -122,10 +122,7 @@ bool isGoodTrack( int index, bool usePV ) {
      float corrected_d0 = trks_d0corr().at(index);
 
      if(usePV)
-     {
-	  std::cout << "using d0 corrected for primary vertex!\n";
 	  corrected_d0 = trks_d0vtx().at(index);
-     }
 
      if( trks_algo().at(index) < 8 ) {
 
