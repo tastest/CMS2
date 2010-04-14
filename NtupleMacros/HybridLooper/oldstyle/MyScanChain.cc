@@ -26,6 +26,7 @@
 #include "../../CORE/muonSelections.h"
 #include "../../CORE/metSelections.h"
 #include "../../CORE/utilities.h"
+#include "../../CORE/mcSelections.h"
 
 #include "../../Tools/goodrun.cc"
 
@@ -101,6 +102,7 @@ void MyScanChain::Format2DHist(TH2F** hist, std::string name, Int_t nx, Float_t 
 
 void MyScanChain::FormatHist(TH1F** hist, std::string name, Int_t n, Float_t min, Float_t max)
 {
+
     // loop on EB, EE
     for (unsigned int i = 0; i < 3; ++i)
     {
@@ -108,6 +110,7 @@ void MyScanChain::FormatHist(TH1F** hist, std::string name, Int_t n, Float_t min
         hist[i] = new TH1F(Form("%s_%s_%s", sampleName_.c_str(), name.c_str(), det.c_str()),
                 name.c_str(), n, min, max);
         hist[i]->GetXaxis()->SetTitle(name.c_str());
+        hist[i]->Sumw2();
     }
 }
 
@@ -240,9 +243,14 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
             * (1 - cos(cms2.evt_pfmetPhi() - cms2.els_p4()[eleIndex].Phi() )));
     float tctransmass = sqrt( 2.0 * cms2.els_p4()[eleIndex].Pt() * cms2.evt_tcmet() 
             * (1 - cos(cms2.evt_tcmetPhi() - cms2.els_p4()[eleIndex].Phi() )));
-    float pthat = -1.0;
-    if (!isData_) pthat = cms2.genps_pthat();
 
+    // mc or data dependent quantities
+    int pdgidCatagory = 1.0;
+    float pthat = -1.0;
+    if (!isData_) {
+        pdgidCatagory = elFakeMCCategory(eleIndex);
+        pthat = cms2.genps_pthat();
+    }
 
     FillHist(h1_ele_pt_, det, cms2.els_p4()[eleIndex].Pt(), weight);
     FillHist(h1_ele_eta_, det, cms2.els_etaSC()[eleIndex], weight);
@@ -272,6 +280,7 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
         FillHist(h1_ele_nm1_tcmetratio_, det, tcmetratio, weight);
         FillHist(h1_ele_nm1_pfmetratio_, det, pfmetratio, weight);
         FillHist(h1_ele_nm1_tcmet_pthat_, det, pthat, weight);
+        FillHist(h1_ele_nm1_tcmet_pdgidCatagory_, det, pdgidCatagory, weight);
     }
 
     if (CheckCutsNM1(pass_all, (1<<PASS_ELE_ISO), cuts_passed)) {
@@ -666,6 +675,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 
     // N-1
     FormatHist(h1_ele_nm1_tcmet_pthat_, "ele_nm1_tcmet_pthat", 100, 0, 100);
+    FormatHist(h1_ele_nm1_tcmet_pdgidCatagory_, "ele_nm1_tcmet_pdgidCatagory", 10, -0.5, 9.5);
     FormatHist(h1_ele_nm1_tcmet_, "ele_nm1_tcmet", 100, 0, 100);
     FormatHist(h1_ele_nm1_pfmet_, "ele_nm1_pfmet", 100, 0, 100);
     FormatHist(h1_ele_nm1_tcmetdphi_, "ele_nm1_tcmetdphi", 100, -4, 4);

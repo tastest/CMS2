@@ -111,6 +111,7 @@ class MyScanChain {
 
         // nm1
         TH1F 	*h1_ele_nm1_tcmet_pthat_[3];
+        TH1F    *h1_ele_nm1_tcmet_pdgidCatagory_[3];
         TH1F 	*h1_ele_nm1_tcmet_[3];
         TH1F    *h1_ele_nm1_pfmet_[3];
         TH1F    *h1_ele_nm1_tcmetdphi_[3];
