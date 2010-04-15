@@ -16,7 +16,13 @@ while [ 1 ]; do
         wasprocessed=`cat RunsProcessed.txt | grep "$line"`
         if [ `echo -n $wasprocessed | wc -c` -eq 0 ];
         then
+          runnumber=`echo $line | awk -F "_" '{print $6}'`
+	  if [ $runnumber -gt 133222 ] && [ $runnumber -le 133250 ];
+	  then
+	    echo "Run with magnetic field off, skipping run: "$runnumber
+	  else 
             echo $line >> RunsToProcess.txt
+	  fi
         fi
     done <AllRunsAvailable.txt
 
@@ -39,14 +45,14 @@ while [ 1 ]; do
         done <RunsToProcess.txt
 
         # slava's merging and remerging may remove files in which case
-        # we will have duplicates so rm parentless twins and skims
-        echo "cleaning out parentless twins and skims"
-        for twin in `ls twin/*.root`; do
-            ident=`echo $twin | sed 's!^.*/dilepskim_twin_\(.*\).root.*$!\1!'`
+        # we will have duplicates so rm parentless babies and skims
+        echo "cleaning out parentless babies and skims"
+        for baby in `ls baby/*.root`; do
+            ident=`echo $baby | sed 's!^.*/dilepskim_baby_\(.*\).root.*$!\1!'`
             grep $ident AllRunsAvailable.txt >/dev/null 2>&1
             if [ $? -ne 0 ]; then
-                echo "found parentless twin, removing $twin"
-                rm $twin
+                echo "found parentless baby, removing $baby"
+                rm $baby
             fi
         done
         for skim in `ls skim/*.root`; do
