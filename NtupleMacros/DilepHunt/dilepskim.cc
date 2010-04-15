@@ -53,8 +53,7 @@ void dilepskim (const std::string &infile, const std::string &outfile, bool prin
      uint64 nEventsTotal = 0;
      uint64 nEventsSelected = 0;
 
-     //TPRegexp preg("\\S+/merged_ntuple_(\\d+_\\d+).root");
-     TPRegexp preg("\\S+/\\S+_(\\d+_\\d+).root");
+     TPRegexp preg("\\S+/merged_ntuple_(\\d+_\\d+).root");
      // file loop
      TIter fileIter(listOfFiles);
      TFile *currentFile = 0;
@@ -142,9 +141,9 @@ void dilepskim (const std::string &infile, const std::string &outfile, bool prin
              //	  << "Total events run on: " << nEventsTotal << endl
              //	  << "Num events selected: " << nEventsSelected << endl;
              //<< "Copy finished. Closing Files" << endl;
-         }
 
-         fclose(log);
+             fclose(log);
+         }
      }
 
      output->cd();
