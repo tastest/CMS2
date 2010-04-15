@@ -32,26 +32,26 @@ class twinmaker
         Int_t   ls_;
         Int_t   evt_;
         Int_t   njets_;
-	Int_t   hyp_type_;
+        Int_t   hyp_type_;
         Float_t pfmet_;
-	Float_t tcmet_;
+        Float_t tcmet_;
         Float_t jet1pt_;
         Float_t dphipfmetjet_;
         Float_t dphitcmetjet_;
-	Float_t dilpt_;
-	Float_t deltaphi_;	
+        Float_t dilpt_;
+        Float_t deltaphi_;	
 
         // lepton stuff
         Int_t   eormu1_;
-	Int_t   eormu2_;
+        Int_t   eormu2_;
         Int_t   type1_;
         Int_t   type2_;
         Float_t pt1_;
         Float_t pt2_;
-	Float_t eta1_;
-	Float_t eta2_;
-	Float_t phi1_;
-	Float_t phi2_;
+        Float_t eta1_;
+        Float_t eta2_;
+        Float_t phi1_;
+        Float_t phi2_;
         Float_t iso1_;
         Float_t iso2_;
         Float_t d0corr1_;
@@ -64,7 +64,7 @@ class twinmaker
         Float_t dphitcmet2_;
         Float_t drjet1_;
         Float_t drjet2_;
-	Float_t mass_;
+        Float_t mass_;
 
         // muon stuff
         Bool_t  mu1_muonid_;
@@ -89,8 +89,8 @@ class twinmaker
         Float_t e2_detain_;
         Float_t e1_eMe55_;
         Float_t e2_eMe55_;
-	Float_t e1_drmu_;
-	Float_t e2_drmu_;
+        Float_t e1_drmu_;
+        Float_t e2_drmu_;
 };
 
 #endif

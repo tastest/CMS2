@@ -78,40 +78,40 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
             ls_         = cms2.evt_lumiBlock();
             evt_        = cms2.evt_event();
             pfmet_      = cms2.evt_pfmet();
-	    
-	    metStruct tcMET = correctedTCMET();
-	    float tcmet    = tcMET.met;
-	    float tcmetPhi = tcMET.metphi;
 
-	    // now, need to loop over calotwers and correct tcMET for HF spikes
-	    for( unsigned int i = 0; i < twrs_emEnergy().size(); i++ )
-	    {
-		 // if tower is in the HF, check if it is a spike
-		 if( fabs(twrs_eta().at(i)) < 3. )
-		      continue;
+            metStruct tcMET = correctedTCMET();
+            float tcmet    = tcMET.met;
+            float tcmetPhi = tcMET.metphi;
 
-		 double alpha = twrs_emEnergy().at(i) / (twrs_emEnergy().at(i) + twrs_hadEnergy().at(i)); // alpha = (L-S)/(L+S)
+            // now, need to loop over calotwers and correct tcMET for HF spikes
+            for( unsigned int i = 0; i < twrs_emEnergy().size(); i++ )
+            {
+                // if tower is in the HF, check if it is a spike
+                if( fabs(twrs_eta().at(i)) < 3. )
+                    continue;
 
-		 // if tower is "spiking" correct MET by adding components of tower to components of MET
-		 if( (alpha <= -0.8 || alpha >= 0.99) && (twrs_emEt().at(i) + twrs_hadEt().at(i)) > 5. )
-		 {
+                double alpha = twrs_emEnergy().at(i) / (twrs_emEnergy().at(i) + twrs_hadEnergy().at(i)); // alpha = (L-S)/(L+S)
 
-		      const float towerET  = twrs_emEt().at(i) + twrs_hadEt().at(i);			      
-		      const float hfspikeX = towerET * cos(twrs_phi().at(i));
-		      const float hfspikeY = towerET * sin(twrs_phi().at(i));
+                // if tower is "spiking" correct MET by adding components of tower to components of MET
+                if( (alpha <= -0.8 || alpha >= 0.99) && (twrs_emEt().at(i) + twrs_hadEt().at(i)) > 5. )
+                {
 
-		      const float tcmetCorrX = tcmet * cos(tcmetPhi) + hfspikeX;
-		      const float tcmetCorrY = tcmet * sin(tcmetPhi) + hfspikeY;
-		      tcmet    = sqrt( tcmetCorrX * tcmetCorrX + tcmetCorrY * tcmetCorrY );
-		      tcmetPhi = atan2(tcmetCorrY, tcmetCorrX);
-		 }
-	    }
+                    const float towerET  = twrs_emEt().at(i) + twrs_hadEt().at(i);			      
+                    const float hfspikeX = towerET * cos(twrs_phi().at(i));
+                    const float hfspikeY = towerET * sin(twrs_phi().at(i));
 
-	    tcmet_ = tcmet;
+                    const float tcmetCorrX = tcmet * cos(tcmetPhi) + hfspikeX;
+                    const float tcmetCorrY = tcmet * sin(tcmetPhi) + hfspikeY;
+                    tcmet    = sqrt( tcmetCorrX * tcmetCorrX + tcmetCorrY * tcmetCorrY );
+                    tcmetPhi = atan2(tcmetCorrY, tcmetCorrX);
+                }
+            }
+
+            tcmet_ = tcmet;
 
             float thePFMetPhi = cms2.evt_pfmetPhi();
-	    float theTCMetPhi = tcmetPhi;
-	    
+            float theTCMetPhi = tcmetPhi;
+
             VofP4 theJets;
             for(unsigned int jeti = 0; jeti < cms2.pfjets_p4().size(); ++jeti)
             {
@@ -138,173 +138,173 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
             dphipfmetjet_ = mindphipfmet;
             dphitcmetjet_ = mindphitcmet;
 
-	    // dilepton hypothesis stuff
-	    for(unsigned hypi = 0; hypi < cms2.hyp_p4().size(); ++hypi)
-	    {
+            // dilepton hypothesis stuff
+            for(unsigned hypi = 0; hypi < cms2.hyp_p4().size(); ++hypi)
+            {
 
-		 // require 10/10 hypothesis
-		 if (min(cms2.hyp_lt_p4()[hypi].pt(), cms2.hyp_ll_p4()[hypi].pt()) < 5.)
-		      continue;
-		 
-		 int index1 = cms2.hyp_lt_index()[hypi];
-		 int index2 = cms2.hyp_ll_index()[hypi];
+                // require 10/10 hypothesis
+                if (min(cms2.hyp_lt_p4()[hypi].pt(), cms2.hyp_ll_p4()[hypi].pt()) < 5.)
+                    continue;
 
-		 if (abs(cms2.hyp_lt_id()[hypi]) == 13 && !(cms2.mus_type()[index1] & 6))
-		      continue;
-		 if (abs(cms2.hyp_ll_id()[hypi]) == 13 && !(cms2.mus_type()[index2] & 6))
- 		      continue;
+                int index1 = cms2.hyp_lt_index()[hypi];
+                int index2 = cms2.hyp_ll_index()[hypi];
 
-		 hyp_type_    = cms2.hyp_type()[hypi];
-		 pt1_         = cms2.hyp_lt_p4()[hypi].pt();
-		 pt2_         = cms2.hyp_ll_p4()[hypi].pt();
-		 eta1_        = cms2.hyp_lt_p4()[hypi].eta();
-		 eta2_        = cms2.hyp_ll_p4()[hypi].eta();
-		 phi1_        = cms2.hyp_lt_p4()[hypi].phi();
-		 phi2_        = cms2.hyp_ll_p4()[hypi].phi();
-		 d0corr1_     = cms2.hyp_lt_d0corr()[hypi];
-		 d0corr2_     = cms2.hyp_ll_d0corr()[hypi];		 
-		 eormu1_      = cms2.hyp_lt_id()[hypi];
-		 eormu2_      = cms2.hyp_ll_id()[hypi];
-		 dphipfmet1_  = deltaPhi(cms2.hyp_lt_p4()[hypi].phi(), thePFMetPhi);
-		 dphipfmet2_  = deltaPhi(cms2.hyp_ll_p4()[hypi].phi(), thePFMetPhi);
-		 dphitcmet1_  = deltaPhi(cms2.hyp_lt_p4()[hypi].phi(), theTCMetPhi);
-		 dphitcmet2_  = deltaPhi(cms2.hyp_ll_p4()[hypi].phi(), theTCMetPhi);
-		 mass_        = cms2.hyp_p4()[hypi].mass2() > 0 ? cms2.hyp_p4()[hypi].mass() : TMath::Sqrt(-1 * cms2.hyp_p4()[hypi].mass2());
-		 dilpt_       = cms2.hyp_p4()[hypi].pt();		 
-		 deltaphi_    = deltaPhi(phi1_, phi2_);
+                if (abs(cms2.hyp_lt_id()[hypi]) == 13 && !(cms2.mus_type()[index1] & 6))
+                    continue;
+                if (abs(cms2.hyp_ll_id()[hypi]) == 13 && !(cms2.mus_type()[index2] & 6))
+                    continue;
 
-		 // now, find jet closest to each hyp lepton
-		 float mindrjet1 = 999999.;
-		 float mindrjet2 = 999999.;
-		 for(unsigned int jeti = 0; jeti < theJets.size(); ++jeti)
-		 {
-		      // for tight hyp lepton
-		      float deta1 = cms2.hyp_lt_p4()[hypi].eta()-theJets[jeti].eta();
-		      float dphi1 = deltaPhi(cms2.hyp_lt_p4()[hypi].phi(), theJets[jeti].phi());
-		      float currdrjet1 = sqrt(deta1*deta1+dphi1*dphi1);
-		      if (currdrjet1 < mindrjet1)
-			   mindrjet1 = currdrjet1;
+                hyp_type_    = cms2.hyp_type()[hypi];
+                pt1_         = cms2.hyp_lt_p4()[hypi].pt();
+                pt2_         = cms2.hyp_ll_p4()[hypi].pt();
+                eta1_        = cms2.hyp_lt_p4()[hypi].eta();
+                eta2_        = cms2.hyp_ll_p4()[hypi].eta();
+                phi1_        = cms2.hyp_lt_p4()[hypi].phi();
+                phi2_        = cms2.hyp_ll_p4()[hypi].phi();
+                d0corr1_     = cms2.hyp_lt_d0corr()[hypi];
+                d0corr2_     = cms2.hyp_ll_d0corr()[hypi];		 
+                eormu1_      = cms2.hyp_lt_id()[hypi];
+                eormu2_      = cms2.hyp_ll_id()[hypi];
+                dphipfmet1_  = deltaPhi(cms2.hyp_lt_p4()[hypi].phi(), thePFMetPhi);
+                dphipfmet2_  = deltaPhi(cms2.hyp_ll_p4()[hypi].phi(), thePFMetPhi);
+                dphitcmet1_  = deltaPhi(cms2.hyp_lt_p4()[hypi].phi(), theTCMetPhi);
+                dphitcmet2_  = deltaPhi(cms2.hyp_ll_p4()[hypi].phi(), theTCMetPhi);
+                mass_        = cms2.hyp_p4()[hypi].mass2() > 0 ? cms2.hyp_p4()[hypi].mass() : TMath::Sqrt(-1 * cms2.hyp_p4()[hypi].mass2());
+                dilpt_       = cms2.hyp_p4()[hypi].pt();		 
+                deltaphi_    = deltaPhi(phi1_, phi2_);
 
-		      // for loose hyp lepton
-		      float deta2 = cms2.hyp_lt_p4()[hypi].eta()-theJets[jeti].eta();
-		      float dphi2 = deltaPhi(cms2.hyp_lt_p4()[hypi].phi(), theJets[jeti].phi());
-		      float currdrjet2 = sqrt(deta2*deta2+dphi2*dphi2);
-		      if (currdrjet2 < mindrjet2)
-			   mindrjet2 = currdrjet2;
-		 }
+                // now, find jet closest to each hyp lepton
+                float mindrjet1 = 999999.;
+                float mindrjet2 = 999999.;
+                for(unsigned int jeti = 0; jeti < theJets.size(); ++jeti)
+                {
+                    // for tight hyp lepton
+                    float deta1 = cms2.hyp_lt_p4()[hypi].eta()-theJets[jeti].eta();
+                    float dphi1 = deltaPhi(cms2.hyp_lt_p4()[hypi].phi(), theJets[jeti].phi());
+                    float currdrjet1 = sqrt(deta1*deta1+dphi1*dphi1);
+                    if (currdrjet1 < mindrjet1)
+                        mindrjet1 = currdrjet1;
 
-		 drjet1_ = mindrjet1;
-		 drjet2_ = mindrjet2;
+                    // for loose hyp lepton
+                    float deta2 = cms2.hyp_lt_p4()[hypi].eta()-theJets[jeti].eta();
+                    float dphi2 = deltaPhi(cms2.hyp_lt_p4()[hypi].phi(), theJets[jeti].phi());
+                    float currdrjet2 = sqrt(deta2*deta2+dphi2*dphi2);
+                    if (currdrjet2 < mindrjet2)
+                        mindrjet2 = currdrjet2;
+                }
 
-		 // figure out hypothesis type and fill appropriate iso, type variables
-		 if(hyp_type_ == 0)
-		 {
-		      iso1_   = muonIsoValue(index1);
-		      iso2_   = muonIsoValue(index2);
-		      type1_  = cms2.mus_type()[index1];
-		      type2_  = cms2.mus_type()[index2];
+                drjet1_ = mindrjet1;
+                drjet2_ = mindrjet2;
 
-		      mu1_muonid_    = muonId(index1, NominalTTbar); 
-		      mu1_goodmask_  = cms2.mus_goodmask()[index1];
-		      mu1_gfitchi2_  = cms2.mus_gfit_chi2()[index1];
+                // figure out hypothesis type and fill appropriate iso, type variables
+                if(hyp_type_ == 0)
+                {
+                    iso1_   = muonIsoValue(index1);
+                    iso2_   = muonIsoValue(index2);
+                    type1_  = cms2.mus_type()[index1];
+                    type2_  = cms2.mus_type()[index2];
 
-		      mu2_muonid_    = muonId(index2, NominalTTbar);
-		      mu2_goodmask_  = cms2.mus_goodmask()[index2];
-		      mu2_gfitchi2_  = cms2.mus_gfit_chi2()[index1];
+                    mu1_muonid_    = muonId(index1, NominalTTbar); 
+                    mu1_goodmask_  = cms2.mus_goodmask()[index1];
+                    mu1_gfitchi2_  = cms2.mus_gfit_chi2()[index1];
 
-		      int trkidx1 = cms2.mus_trkidx()[index1];
-		      int trkidx2 = cms2.mus_trkidx()[index2];
-		      d0vtx1_ = cms2.trks_d0vtx()[trkidx1];
-		      d0vtx2_ = cms2.trks_d0vtx()[trkidx2];
-		 }
-		 else if(hyp_type_ == 1)
-		 {
-		      iso1_   = muonIsoValue(index1);
-		      iso2_   = electronIsolation_relsusy_cand0(index2, true);
-		      type1_  = cms2.mus_type()[index1];
-		      type2_  = cms2.els_type()[index2];
+                    mu2_muonid_    = muonId(index2, NominalTTbar);
+                    mu2_goodmask_  = cms2.mus_goodmask()[index2];
+                    mu2_gfitchi2_  = cms2.mus_gfit_chi2()[index1];
 
-		      mu1_muonid_    = muonId(index1, NominalTTbar); 
-		      mu1_goodmask_  = cms2.mus_goodmask()[index1];
-		      mu1_gfitchi2_  = cms2.mus_gfit_chi2()[index1];
+                    int trkidx1 = cms2.mus_trkidx()[index1];
+                    int trkidx2 = cms2.mus_trkidx()[index2];
+                    d0vtx1_ = cms2.trks_d0vtx()[trkidx1];
+                    d0vtx2_ = cms2.trks_d0vtx()[trkidx2];
+                }
+                else if(hyp_type_ == 1)
+                {
+                    iso1_   = muonIsoValue(index1);
+                    iso2_   = electronIsolation_relsusy_cand0(index2, true);
+                    type1_  = cms2.mus_type()[index1];
+                    type2_  = cms2.els_type()[index2];
 
-		      int trkidx1 = cms2.mus_trkidx()[index1];
-		      int trkidx2 = cms2.els_trkidx()[index2];
-		      d0vtx1_ = cms2.trks_d0vtx()[trkidx1];
-		      if(trkidx2 >= 0)
-			   d0vtx2_ = cms2.trks_d0vtx()[trkidx2];
+                    mu1_muonid_    = muonId(index1, NominalTTbar); 
+                    mu1_goodmask_  = cms2.mus_goodmask()[index1];
+                    mu1_gfitchi2_  = cms2.mus_gfit_chi2()[index1];
 
-		      e2_cand01_  = isGoodElectron(index2);
-		      e2_eopin_   = cms2.els_eOverPIn()[index2];
-		      e2_hoe_     = cms2.els_hOverE()[index2];
-		      e2_dphiin_  = cms2.els_dPhiIn()[index2];
-		      e2_detain_  = cms2.els_dEtaIn()[index2];
-		      e2_eMe55_   = cms2.els_eMax()[index2] / cms2.els_e5x5()[index2];
-		      e2_nmHits_  = cms2.els_exp_innerlayers()[index2];
-		      e2_drmu_    = cms2.els_musdr()[index2];
-		 }
-		 else if(hyp_type_ == 2)
-		 {
-		      iso1_   = electronIsolation_relsusy_cand0(index1, true);
-		      iso2_   = muonIsoValue(index2);
-		      type1_  = cms2.els_type()[index1];
-		      type2_  = cms2.mus_type()[index2];
+                    int trkidx1 = cms2.mus_trkidx()[index1];
+                    int trkidx2 = cms2.els_trkidx()[index2];
+                    d0vtx1_ = cms2.trks_d0vtx()[trkidx1];
+                    if(trkidx2 >= 0)
+                        d0vtx2_ = cms2.trks_d0vtx()[trkidx2];
 
-		      e1_cand01_  = isGoodElectron(index1);
-		      e1_eopin_   = cms2.els_eOverPIn()[index1];
-		      e1_hoe_     = cms2.els_hOverE()[index1];
-		      e1_dphiin_  = cms2.els_dPhiIn()[index1];
-		      e1_detain_  = cms2.els_dEtaIn()[index1];
-		      e1_eMe55_   = cms2.els_eMax()[index1] / cms2.els_e5x5()[index1];
-		      e1_nmHits_  = cms2.els_exp_innerlayers()[index1];
-		      e1_drmu_    = cms2.els_musdr()[index1];
+                    e2_cand01_  = isGoodElectron(index2);
+                    e2_eopin_   = cms2.els_eOverPIn()[index2];
+                    e2_hoe_     = cms2.els_hOverE()[index2];
+                    e2_dphiin_  = cms2.els_dPhiIn()[index2];
+                    e2_detain_  = cms2.els_dEtaIn()[index2];
+                    e2_eMe55_   = cms2.els_eMax()[index2] / cms2.els_e5x5()[index2];
+                    e2_nmHits_  = cms2.els_exp_innerlayers()[index2];
+                    e2_drmu_    = cms2.els_musdr()[index2];
+                }
+                else if(hyp_type_ == 2)
+                {
+                    iso1_   = electronIsolation_relsusy_cand0(index1, true);
+                    iso2_   = muonIsoValue(index2);
+                    type1_  = cms2.els_type()[index1];
+                    type2_  = cms2.mus_type()[index2];
 
-		      mu2_muonid_    = muonId(index2, NominalTTbar); 
-		      mu2_goodmask_  = cms2.mus_goodmask()[index2];
-		      mu2_gfitchi2_  = cms2.mus_gfit_chi2()[index2];
+                    e1_cand01_  = isGoodElectron(index1);
+                    e1_eopin_   = cms2.els_eOverPIn()[index1];
+                    e1_hoe_     = cms2.els_hOverE()[index1];
+                    e1_dphiin_  = cms2.els_dPhiIn()[index1];
+                    e1_detain_  = cms2.els_dEtaIn()[index1];
+                    e1_eMe55_   = cms2.els_eMax()[index1] / cms2.els_e5x5()[index1];
+                    e1_nmHits_  = cms2.els_exp_innerlayers()[index1];
+                    e1_drmu_    = cms2.els_musdr()[index1];
 
-		      int trkidx1 = cms2.els_trkidx()[index1];
-		      int trkidx2 = cms2.mus_trkidx()[index2];
-		      if(trkidx1 >= 0)
-			   d0vtx1_ = cms2.trks_d0vtx()[index1];
-		      d0vtx2_ = cms2.trks_d0vtx()[trkidx2];
-		 }
-		 else if(hyp_type_ == 3)
-		 {
-		      iso1_   = electronIsolation_relsusy_cand0(index1, true);
-		      iso2_   = electronIsolation_relsusy_cand0(index2, true);
-		      type1_  = cms2.els_type()[index1];
-		      type2_  = cms2.els_type()[index2];
+                    mu2_muonid_    = muonId(index2, NominalTTbar); 
+                    mu2_goodmask_  = cms2.mus_goodmask()[index2];
+                    mu2_gfitchi2_  = cms2.mus_gfit_chi2()[index2];
 
-		      e1_cand01_  = isGoodElectron(index1);
-		      e1_eopin_   = cms2.els_eOverPIn()[index1];
-		      e1_hoe_     = cms2.els_hOverE()[index1];
-		      e1_dphiin_  = cms2.els_dPhiIn()[index1];
-		      e1_detain_  = cms2.els_dEtaIn()[index1];
-		      e1_eMe55_   = cms2.els_eMax()[index1] / cms2.els_e5x5()[index1];
-		      e1_nmHits_  = cms2.els_exp_innerlayers()[index1];
-		      e1_drmu_    = cms2.els_musdr()[index1];
+                    int trkidx1 = cms2.els_trkidx()[index1];
+                    int trkidx2 = cms2.mus_trkidx()[index2];
+                    if(trkidx1 >= 0)
+                        d0vtx1_ = cms2.trks_d0vtx()[index1];
+                    d0vtx2_ = cms2.trks_d0vtx()[trkidx2];
+                }
+                else if(hyp_type_ == 3)
+                {
+                    iso1_   = electronIsolation_relsusy_cand0(index1, true);
+                    iso2_   = electronIsolation_relsusy_cand0(index2, true);
+                    type1_  = cms2.els_type()[index1];
+                    type2_  = cms2.els_type()[index2];
 
-		      e2_cand01_  = isGoodElectron(index2);
-		      e2_eopin_   = cms2.els_eOverPIn()[index2];
-		      e2_hoe_     = cms2.els_hOverE()[index2];
-		      e2_dphiin_  = cms2.els_dPhiIn()[index2];
-		      e2_detain_  = cms2.els_dEtaIn()[index2];
-		      e2_eMe55_   = cms2.els_eMax()[index2] / cms2.els_e5x5()[index2];
-		      e2_nmHits_  = cms2.els_exp_innerlayers()[index2];
-		      e2_drmu_    = cms2.els_musdr()[index2];
+                    e1_cand01_  = isGoodElectron(index1);
+                    e1_eopin_   = cms2.els_eOverPIn()[index1];
+                    e1_hoe_     = cms2.els_hOverE()[index1];
+                    e1_dphiin_  = cms2.els_dPhiIn()[index1];
+                    e1_detain_  = cms2.els_dEtaIn()[index1];
+                    e1_eMe55_   = cms2.els_eMax()[index1] / cms2.els_e5x5()[index1];
+                    e1_nmHits_  = cms2.els_exp_innerlayers()[index1];
+                    e1_drmu_    = cms2.els_musdr()[index1];
 
-		      int trkidx1 = cms2.els_trkidx()[index1];
-		      int trkidx2 = cms2.els_trkidx()[index2];
-		      if(trkidx1 >= 0)
-			   d0vtx1_ = cms2.trks_d0vtx()[trkidx1];
-		      if(trkidx2 >= 0)
-			   d0vtx2_ = cms2.trks_d0vtx()[trkidx2];
-		 }
+                    e2_cand01_  = isGoodElectron(index2);
+                    e2_eopin_   = cms2.els_eOverPIn()[index2];
+                    e2_hoe_     = cms2.els_hOverE()[index2];
+                    e2_dphiin_  = cms2.els_dPhiIn()[index2];
+                    e2_detain_  = cms2.els_dEtaIn()[index2];
+                    e2_eMe55_   = cms2.els_eMax()[index2] / cms2.els_e5x5()[index2];
+                    e2_nmHits_  = cms2.els_exp_innerlayers()[index2];
+                    e2_drmu_    = cms2.els_musdr()[index2];
 
-		 FillTwinNtuple();
-	    }
-	}
+                    int trkidx1 = cms2.els_trkidx()[index1];
+                    int trkidx2 = cms2.els_trkidx()[index2];
+                    if(trkidx1 >= 0)
+                        d0vtx1_ = cms2.trks_d0vtx()[trkidx1];
+                    if(trkidx2 >= 0)
+                        d0vtx2_ = cms2.trks_d0vtx()[trkidx2];
+                }
+
+                FillTwinNtuple();
+            }
+        }
 
         if (nEventsChain != nEventsTotal)
         {
@@ -485,14 +485,14 @@ bool sortByPt (const LorentzVector &vec1, const LorentzVector &vec2)
 
 bool isGoodElectron(const int index)
 {
-     if(!electronId_cand01(index))
-	  return false;
-     else if(isFromConversionPartnerTrack(index))
-	  return false;
-     else if(isFromConversionHitPattern(index))
-	  return false;
-     else if(!electronId_noMuon(index))
-	  return false;
-     else
-	  return true;
+    if(!electronId_cand01(index))
+        return false;
+    else if(isFromConversionPartnerTrack(index))
+        return false;
+    else if(isFromConversionHitPattern(index))
+        return false;
+    else if(!electronId_noMuon(index))
+        return false;
+    else
+        return true;
 }
