@@ -1,9 +1,13 @@
 #include <assert.h>
+#include <map>
+#include <utility>
 #include <string>
 #include "TChain.h"
 #include "TFile.h"
 #include "TObjArray.h"
+#include "TPRegexp.h"
 #include "TTree.h"
+#include <cstdio>
 
 #include "CORE/CMS2.h"
 
@@ -34,92 +38,116 @@ bool select ()
 
 void dilepskim (const std::string &infile, const std::string &outfile, bool printPass=false)  
 {
-    // output file and tree
-    TFile *output =TFile::Open(outfile.c_str(), "RECREATE");
-    assert(output != 0);
-    TTree *newtree = 0;
+     // output file and tree
+     TFile *output =TFile::Open(outfile.c_str(), "RECREATE");
+     assert(output != 0);
+     TTree *newtree = 0;
 
-    const long long max_tree_size = 20000000000000000LL;
-    TTree::SetMaxTreeSize(max_tree_size);
+     const long long max_tree_size = 20000000000000000LL;
+     TTree::SetMaxTreeSize(max_tree_size);
 
-    FILE *log = 0; //for keeping any output desired on selection
-    if( printPass ) {
-        size_t pos = outfile.find(".root");
-        assert( pos != string::npos );
-        std::string outcpy = outfile;
-        log = fopen( outcpy.replace(pos, 5, "_run_lumi_event").c_str(), "w" );
-    }
+     TChain *chain = new TChain("Events");
+     chain->Add(infile.c_str());
+     TObjArray *listOfFiles = chain->GetListOfFiles();
+     const uint64 nEventsChain = chain->GetEntries();
+     uint64 nEventsTotal = 0;
+     uint64 nEventsSelected = 0;
 
-    TChain *chain = new TChain("Events");
-    chain->Add(infile.c_str());
-    TObjArray *listOfFiles = chain->GetListOfFiles();
-    const uint64 nEventsChain = chain->GetEntries();
-    uint64 nEventsTotal = 0;
-    uint64 nEventsSelected = 0;
+     //TPRegexp preg("\\S+/merged_ntuple_(\\d+_\\d+).root");
+     TPRegexp preg("\\S+/\\S+_(\\d+_\\d+).root");
+     // file loop
+     TIter fileIter(listOfFiles);
+     TFile *currentFile = 0;
+     bool first = true;
+     int i_permille_old = 0;
+     while ( currentFile = (TFile*)fileIter.Next() ) {
+         TFile f(currentFile->GetTitle());
+         //const char *name = f.GetName();
+         TTree *tree = (TTree*)f.Get("Events");
 
-    // file loop
-    TIter fileIter(listOfFiles);
-    TFile *currentFile = 0;
-    bool first = true;
-    int i_permille_old = 0;
-    while ( currentFile = (TFile*)fileIter.Next() ) {
-        TFile f(currentFile->GetTitle());
-        //const char *name = f.GetName();
-        TTree *tree = (TTree*)f.Get("Events");
+         FILE *log = 0; //for keeping any output desired on selection
+         if( printPass ) {
+             TString ident = ((TObjString*)preg.MatchS(TString(currentFile->GetTitle()))->At(1))->GetString();
+             TString logFileName = "";
+             logFileName.Append("logs/log_");
+             logFileName.Append(ident);
+             logFileName.Append(".txt");
+             log = fopen( logFileName.Data(), "w" );
+         }
 
-        chain->SetBranchStatus("EventAuxiliary",0);
-        // for the first file, clone the tree
-        if ( first ) {
-            newtree = chain->CloneTree(0);
-            newtree->SetDirectory(output);
-            first = false;	       
-        }
+         chain->SetBranchStatus("EventAuxiliary",0);
+         // for the first file, clone the tree
+         if ( first ) {
+             newtree = chain->CloneTree(0);
+             newtree->SetDirectory(output);
+             first = false;	       
+         }
 
-        // init
-        cms2.Init(newtree);
-        cms2.Init(tree);
+         // init
+         cms2.Init(newtree);
+         cms2.Init(tree);
 
-        // Event Loop
-        const unsigned int nEvents = tree->GetEntries();
-        for (unsigned int event = 0; event < nEvents; ++event, ++nEventsTotal) {
-            int i_permille = (int)floor(10000 * nEventsTotal / float(nEventsChain));
-            if (i_permille != i_permille_old) {
-                // xterm magic from L. Vacavant and A. Cerri
-                if (isatty(1)) {
-                    printf("\015\033[32m ---> \033[1m\033[31m%5.2f%%"
-                            "\033[0m\033[32m <---\033[0m\015", i_permille/100.);
-                    fflush(stdout);
-                }
-                i_permille_old = i_permille;
-            }
+         // Keep track of and record passed triggers
+         // on file-by-file basis
+         std::map<TString,int> trigCountMap;
+         for(unsigned int trigi = 0; trigi < cms2.hlt_trigNames().size(); ++trigi)
+             trigCountMap.insert(std::make_pair(cms2.hlt_trigNames()[trigi], 0));
 
-            cms2.GetEntry(event);
-            //set condition to skip event
-            if (not select()) 
-                continue;
+         // Event Loop
+         const unsigned int nEvents = tree->GetEntries();
+         for (unsigned int event = 0; event < nEvents; ++event, ++nEventsTotal) {
+             int i_permille = (int)floor(10000 * nEventsTotal / float(nEventsChain));
+             if (i_permille != i_permille_old) {
+                 // xterm magic from L. Vacavant and A. Cerri
+                 if (isatty(1)) {
+                     printf("\015\033[32m ---> \033[1m\033[31m%5.2f%%"
+                             "\033[0m\033[32m <---\033[0m\015", i_permille/100.);
+                     fflush(stdout);
+                 }
+                 i_permille_old = i_permille;
+             }
 
-            ++nEventsSelected;
-            if( printPass ) {
-                fprintf(log, "%i %i %i\n", cms2.evt_run(), cms2.evt_lumiBlock(), cms2.evt_event() );
-            }
+             cms2.GetEntry(event);
 
-            cms2.LoadAllBranches();
+             // triggers++
+             std::map<TString,int>::iterator mapit;
+             for(unsigned int trigi = 0; trigi < cms2.hlt_trigNames().size(); ++trigi)
+                 if (cms2.passHLTTrigger(cms2.hlt_trigNames()[trigi]))
+                     (trigCountMap[cms2.hlt_trigNames()[trigi]])++;
 
-            // fill the new tree
-            newtree->Fill();
-        }
-    }
+             //set condition to skip event
+             if (not select()) 
+                 continue;
 
-    if( printPass ) {
-        fprintf(log, "\nTotal events run on: %i\n", nEventsTotal);
-        fprintf(log, "Num events selected: %llu\n", nEventsSelected ); //need two fprintf statements bc of some gcc bug
-        //cout << endl
-        //	  << "Total events run on: " << nEventsTotal << endl
-        //	  << "Num events selected: " << nEventsSelected << endl;
-        //<< "Copy finished. Closing Files" << endl;
-    }
+             ++nEventsSelected;
+             //if( printPass ) {
+             //    fprintf(log, "%i %i %i\n", cms2.evt_run(), cms2.evt_lumiBlock(), cms2.evt_event() );
+             //}
 
-    output->cd();
-    newtree->Write();
-    delete output;
+             cms2.LoadAllBranches();
+
+             // fill the new tree
+             newtree->Fill();
+         }
+
+         if( printPass ) {
+             fprintf(log, "TotalEvents %i\n", nEventsTotal);
+             fprintf(log, "SelectedEvents %i\n", nEventsSelected); //need two fprintf statements bc of some gcc bug
+
+             // Dump trigCountMap
+             std::map<TString,int>::const_iterator trigIter;
+             for(trigIter = trigCountMap.begin(); trigIter != trigCountMap.end(); ++trigIter)
+                 fprintf(log, "%s %i\n", trigIter->first.Data(), trigIter->second);
+             //cout << endl
+             //	  << "Total events run on: " << nEventsTotal << endl
+             //	  << "Num events selected: " << nEventsSelected << endl;
+             //<< "Copy finished. Closing Files" << endl;
+         }
+
+         fclose(log);
+     }
+
+     output->cd();
+     newtree->Write();
+     delete output;
 }
