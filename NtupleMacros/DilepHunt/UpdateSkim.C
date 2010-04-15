@@ -19,7 +19,7 @@ void UpdateSkim(const char *inputFileName)
     skimFileName.Append(ident);
     skimFileName.Append(".root");
 
-    dilepskim(inputFileName, skimFileName.Data());
+    dilepskim(inputFileName, skimFileName.Data(), 1);
 
     TString babyFileName = skimFileName;
     babyFileName.ReplaceAll("skim/dilepskim_", "baby/dilepskim_baby_");
