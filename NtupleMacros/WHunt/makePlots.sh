@@ -34,6 +34,12 @@ foundmorecandidates=`diff wcands.txt_short wcands.txt_previous_short`
 rm wcands.txt_short
 rm wcands.txt_previous_short
 #
+# Run Dave / Yanyan data MC comparison:
+echo "Starting data/MC comparison looper"
+cd ../HybridLooper/oldstyle/
+make build
+python makeWPlots.py wfinder
+#
 scp wcands.txt lxplus303:~/scratch0/whunt
 ssh lxplus303 /afs/cern.ch/user/j/jribnik/scratch0/whunt/wcands.sh
 scp plots/* uaf-2.t2.ucsd.edu:~/public_html/whunt/plots
