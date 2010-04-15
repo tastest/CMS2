@@ -17,7 +17,7 @@ while [ 1 ]; do
         if [ `echo -n $wasprocessed | wc -c` -eq 0 ];
         then
           runnumber=`echo $line | awk -F "_" '{print $6}'`
-	  if [ $runnumber -eq 133239 ] || [ $runnumber -eq 133240 ]  || [ $runnumber -eq 133241 ] || [ $runnumber -eq 133242 ] || [ $runnumber -eq 133244 ] || [ $runnumber -eq 133247 ] || [ $runnumber -eq 133248 ];
+	  if [ $runnumber -gt 133222 ] && [ $runnumber -le 133250 ];
 	  then
 	    echo "Run with magnetic field off, skipping run: "$runnumber
 	  else 

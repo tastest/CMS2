@@ -11,7 +11,13 @@ while read line; do
     wasprocessed=`cat RunsProcessed.txt | grep "$line"`
     if [ `echo -n $wasprocessed | wc -c` -eq 0 ];
     then
+      runnumber=`echo $line | awk -F "_" '{print $6}'`
+  if [ $runnumber -gt 133222 ] && [ $runnumber -le 133250 ];
+  then
+    echo "Run with magnetic field off, skipping run: "$runnumber
+  else 
         echo $line >> RunsToProcess.txt
+  fi
     fi
 done <AllRunsAvailable.txt
 
