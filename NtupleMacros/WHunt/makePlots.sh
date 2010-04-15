@@ -38,7 +38,8 @@ rm wcands.txt_previous_short
 echo "Starting data/MC comparison looper"
 cd ../HybridLooper/oldstyle/
 make build
-python makeWPlots.py wfinder
+# was makeWPlots.py before
+python makeWSummaryPlot.py wfinder
 #
 scp wcands.txt lxplus303:~/scratch0/whunt
 ssh lxplus303 /afs/cern.ch/user/j/jribnik/scratch0/whunt/wcands.sh
