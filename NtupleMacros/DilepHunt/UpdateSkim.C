@@ -21,10 +21,10 @@ void UpdateSkim(const char *inputFileName)
 
     dilepskim(inputFileName, skimFileName.Data());
 
-    TString twinFileName = skimFileName;
-    twinFileName.ReplaceAll("skim/dilepskim_", "twin/dilepskim_twin_");
+    TString babyFileName = skimFileName;
+    babyFileName.ReplaceAll("skim/dilepskim_", "baby/dilepskim_baby_");
 
-    std::cout << "Making twins named " << twinFileName << std::endl;
+    std::cout << "Making a baby named " << babyFileName << std::endl;
     twinmaker *twin = new twinmaker();
-    twin->ScanChain(skimFileName.Data(), twinFileName.Data());
+    twin->ScanChain(skimFileName.Data(), babyFileName.Data());
 }
