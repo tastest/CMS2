@@ -204,18 +204,18 @@ void babymaker::InitBabyNtuple ()
     mt_           = -999999.;
 
     // muon stuff
-    mu_muonid_   = -999999;
-    mu_goodmask_ = -999999;
-    mu_gfitchi2_ = -999999.;
+    mu_muonid_    = 0;
+    mu_goodmask_  = -999999;
+    mu_gfitchi2_  = -999999.;
 
     // electron stuff
-    e_cand01_   = -999999;
-    e_eopin_    = -999999.;
-    e_hoe_      = -999999.;
-    e_dphiin_   = -999999.;
-    e_detain_   = -999999.;
-    e_eMe55_    = -999999.;
-    e_nmHits_   = -999999;
+    e_cand01_     = 0;
+    e_eopin_      = -999999.;
+    e_hoe_        = -999999.;
+    e_dphiin_     = -999999.;
+    e_detain_     = -999999.;
+    e_eMe55_      = -999999.;
+    e_nmHits_     = -999999;
 }
 
 void babymaker::MakeBabyNtuple(const char *babyFilename)
