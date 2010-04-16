@@ -23,7 +23,7 @@ void plotResultsW(TString det, TString fileStamp, TString version);
 
 void setError(TH1F *h1_numer, TH1F *h1_denom, TH1F *h1_eff);
 
-void plotValidationOverlay(HistogramUtilities &h1, TString name_before, TString name_after, TString saveName, TString det, int rebin = 1,  bool plotDist = true, bool plotEff = true);
+void plotValidationOverlay(HistogramUtilities &h1, TString name_before, TString name_after, TString sn1, TString sn2, TString saveName, TString det, int rebin = 1,  bool plotDist = true, bool plotEff = true);
 
 #endif
 

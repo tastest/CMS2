@@ -102,12 +102,16 @@ enum ElectronSelection {
     TChain *chain_elegunideal = new TChain("Events");
     chain_elegunideal->Add(ntuple_location + "/cms2/SingleElectronPt5to100_336patch4MC31XV9/V03-00-35/merged_ntuple*.root");
 
+    // test ntuple with new ele id computed in cmssw
+    // from
+    // '/store/relval/CMSSW_3_5_2/RelValZEE/GEN-SIM-RECO/MC_3XY_V21-v1/0016/*.root',
+    //
+    TChain *chain_eleidval = new TChain("Events");
+    chain_eleidval->Add(ntuple_location + "/dlevans/relval_zee_ntuple.root");
+
 	// 
 	// do looping
 	//
-
-	looper->ScanChain(false, "ttbar", chain_ttbar);
-
 //	looper->ScanChain(false, "ww", chain_ww);
 //	looper->ScanChain(false, "wz", chain_wz);
 //	looper->ScanChain(false, "zz", chain_zz);
@@ -115,24 +119,27 @@ enum ElectronSelection {
 //	looper->ScanChain(false, "dymm", chain_dymm);
 //    looper->ScanChain(false, "dytt", chain_dytt);
 //    looper->ScanChain(false, "wjets", chain_wjets);
-
-
 //	looper->ScanChain(false, "elegunstartup", chain_elegunstartup);
 //  looper->ScanChain(false, "elegunideal", chain_elegunideal);
-
 	//looper->ScanChain(false, "QCDpt30", chain_qcd30);
-
-
-	looper->ScanChain(false, "wm", chain_wmunu);
-
-
     //looper->ScanChain(false, "InclusiveMuPt15", chain_inclmu15);
+
+
+    // ele id studies
+    //
+
+    //looper->ScanChain(false, "ttbar", chain_ttbar);
+	//looper->ScanChain(false, "wm", chain_wmunu);
+
+    // ele id sanity check with sani id
+    looper->ScanChain(false, "eleidval", chain_eleidval);
+
 
 	//
 	// write histograms
 	// 
 
-	const char* outFile = "histos_eleid_" + fileNameString + ".root";
+	const char* outFile = "histos_eleid_saniv02_" + fileNameString + ".root";
 	hist::saveHist(outFile); 
 	hist::deleteHistos();
 
@@ -151,13 +158,11 @@ enum ElectronSelection {
 	delete chain_wjets;
 	delete chain_wmunu;
     delete chain_inclmu15;
-
 	delete chain_qcd30;
-
 	delete chain_lm0;
-
 	delete chain_elegunstartup;
 	delete chain_elegunideal;
+    delete chain_eleidval;
 
 }
 

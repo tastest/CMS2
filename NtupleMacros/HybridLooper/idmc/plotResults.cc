@@ -79,7 +79,7 @@ void setError(TH1F *h1_numer, TH1F *h1_denom, TH1F *h1_eff) {
 
 }
 
-void plotValidationOverlay(HistogramUtilities &h1, TString name_before, TString name_after, TString saveName, TString det, int rebin, bool plotDist, bool plotEff)
+void plotValidationOverlay(HistogramUtilities &h1, TString name_before, TString name_after, TString sn1, TString sn2, TString saveName, TString det, int rebin, bool plotDist, bool plotEff)
 {
 
     TH1F *h1_before_s = h1.getHistogram(theSignal, name_before, det, "_ee", rebin, "before_s_");
@@ -118,8 +118,8 @@ void plotValidationOverlay(HistogramUtilities &h1, TString name_before, TString 
     lg->SetShadowColor(kWhite);
     TString upperDet = det;
     upperDet.ToUpper();
-    lg->AddEntry(h1_before_s, "Before (" + upperDet + ")", "fl");
-    lg->AddEntry(h1_after_s, "After (" + upperDet + ")", "lp");
+    lg->AddEntry(h1_before_s, sn1 + " (" + upperDet + ")", "fl");
+    lg->AddEntry(h1_after_s, sn2 + " (" + upperDet + ")", "lp");
 
     TCanvas *c = new TCanvas();
 
@@ -128,17 +128,21 @@ void plotValidationOverlay(HistogramUtilities &h1, TString name_before, TString 
     h1_before_s->GetYaxis()->SetRangeUser(0, h1_before_s->GetMaximum()*1.2);
     h1_after_s->Draw("SAME");
     lg->Draw();
+    if (h1_after_s->GetMaximum() > h1_before_s->GetMaximum())
+        h1_before_s->GetYaxis()->SetRangeUser(0, h1_after_s->GetMaximum()*1.2);
     if (plotDist)
         Utilities::saveCanvas(c, "results/" + saveName + "overlay_s_" + name_after + "_" + det);
 
     c->cd();
     lg->Clear();
-    lg->AddEntry(h1_before_b, "Before (" + upperDet + ")", "fl");
-    lg->AddEntry(h1_after_b, "After (" + upperDet + ")", "lp");
+    lg->AddEntry(h1_before_b, sn1 + " (" + upperDet + ")", "fl");
+    lg->AddEntry(h1_after_b, sn2 + " (" + upperDet + ")", "lp");
     h1_before_b->Draw("HIST");
     h1_before_b->GetYaxis()->SetRangeUser(0, h1_before_b->GetMaximum()*1.2);
     h1_after_b->Draw("SAME");
     lg->Draw();
+    if (h1_after_b->GetMaximum() > h1_before_b->GetMaximum())
+        h1_before_b->GetYaxis()->SetRangeUser(0, h1_after_b->GetMaximum()*1.2);
     if (plotDist)
         Utilities::saveCanvas(c, "results/" + saveName + "overlay_b_" + name_after + "_" + det);
 
@@ -168,8 +172,8 @@ void plotValidationOverlay(HistogramUtilities &h1, TString name_before, TString 
 
     c->cd();
     lg->Clear();
-    lg->AddEntry(h1_after_b, "After - BG (" + upperDet + ")", "fl");
-    lg->AddEntry(h1_after_s, "After - Signal (" + upperDet + ")", "lp");
+    lg->AddEntry(h1_after_b, sn2 + " - BG (" + upperDet + ")", "fl");
+    lg->AddEntry(h1_after_s, sn2 + " - Signal (" + upperDet + ")", "lp");
     h1_after_s->Draw("HIST E1");
     Float_t max = h1_after_s->GetMaximum()*1.2;
     if (h1_after_b->GetMaximum()*1.2 > max) max = h1_after_b->GetMaximum()*1.2;
@@ -559,6 +563,7 @@ void plotResultsW(TString det, TString fileStamp, TString version)
 
         // for comparing different options
         //
+/*
         plotValidationOverlay(h1, "h1_hyp_id_nm1_pt", "h1_hyp_idcand01_nm1_pt", version, det, 4);
         plotValidationOverlay(h1, "h1_hyp_id_nm1_pt", "h1_hyp_idcand02_nm1_pt", version, det, 4);
         plotValidationOverlay(h1, "h1_hyp_id_nm1_pt", "h1_hyp_idcand01extra_nm1_pt", version, det, 4);
@@ -566,14 +571,20 @@ void plotResultsW(TString det, TString fileStamp, TString version)
         plotValidationOverlay(h1, "h1_hyp_id_nm1_pt", "h1_hyp_idegammaloose_nm1_pt", version, det, 4);
         plotValidationOverlay(h1, "h1_hyp_id_nm1_pt", "h1_hyp_idegammatight_nm1_pt", version, det, 4);
         plotValidationOverlay(h1, "h1_hyp_id_nm1_pt", "h1_hyp_idegammanewloose_nm1_pt", version, det, 4);
-
         plotValidationOverlay(h1, "h1_hyp_id_nm1_njets", "h1_hyp_idcand01_nm1_njets", version, det, 1);
         plotValidationOverlay(h1, "h1_hyp_id_nm1_njets", "h1_hyp_idegammaloose_nm1_njets", version, det, 1);
-
-
-
         plotValidationOverlay(h1, "h1_hyp_id_closejet_nm1_pt", "h1_hyp_idcand01_closejet_nm1_pt", version, det, 4);
         plotValidationOverlay(h1, "h1_hyp_id_closejet_nm1_pt", "h1_hyp_idegammaloose_closejet_nm1_pt", version, det, 4);
+*/
+        plotEff(h1, "h1_hyp_idstudy_after_classExp_reliso", "classExp", det + "_ee", true, 1, true);
+        plotEff(h1, "h1_hyp_idstudy_after_cand01_reliso", "classExp", det + "_ee", true, 1, true);
+        plotEff(h1, "h1_hyp_idstudy_after_cand02_reliso", "classExp", det + "_ee", true, 1, true);
+
+        plotEff(h1, "h1_hyp_idstudy_after_classExpFull_pt", "classExp", det + "_ee", false, 4, true);
+        plotEff(h1, "h1_hyp_idstudy_after_classExpRel01_pt", "classExp", det + "_ee", false, 4, true);
+        plotEff(h1, "h1_hyp_idstudy_after_classExpRel02_pt", "classExp", det + "_ee", false, 4, true);
+
+        plotValidationOverlay(h1, "h1_hyp_idstudy_after_classExpFull_pt", "h1_hyp_idstudy_after_classExpRel01_pt", "Full", "Rel01", "classExp", det, 4);
 
 
 /*

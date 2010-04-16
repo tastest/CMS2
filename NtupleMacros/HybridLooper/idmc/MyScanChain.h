@@ -186,6 +186,37 @@ class MyScanChain {
         TH1F *h1_hyp_debug_after_cand02_reliso_[2][4];
 
 
+        // debug for experimental class based id
+        TH1F *h1_hyp_debug_after_classExp_hoe_[2][4];
+        TH1F *h1_hyp_debug_after_classExp_dPhiIn_[2][4];
+        TH1F *h1_hyp_debug_after_classExp_dEtaIn_[2][4];
+        TH1F *h1_hyp_debug_after_classExp_d0_[2][4];
+        TH1F *h1_hyp_debug_after_classExp_eSeedOverPIn_[2][4];
+        TH1F *h1_hyp_debug_after_classExp_sigmaEtaEta_[2][4];
+        TH1F *h1_hyp_debug_after_classExp_ecalIso_[2][4];
+        TH1F *h1_hyp_debug_after_classExp_hcalIso_[2][4];
+        TH1F *h1_hyp_debug_after_classExp_tkIso_[2][4];
+
+        TH1F *h1_hyp_idstudy_after_classExp_reliso_[2][4];
+        TH1F *h1_hyp_idstudy_after_cand01_reliso_[2][4];
+        TH1F *h1_hyp_idstudy_after_cand02_reliso_[2][4];
+
+        TH1F *h1_hyp_idstudy_after_classExpFull_pt_[2][4];
+        TH1F *h1_hyp_idstudy_after_classExpRel01_pt_[2][4];
+        TH1F *h1_hyp_idstudy_after_classExpRel02_pt_[2][4];
+
+        TH1F *h1_hyp_idstudy_classExpRecomp_[2][4];
+        TH1F *h1_hyp_idstudy_classExpRecompId_[2][4];
+        TH1F *h1_hyp_idstudy_classExpRecompIso_[2][4];
+
+        TH1F *h1_hyp_idstudy_classExpSaniLoose_[2][4];
+        TH1F *h1_hyp_idstudy_classExpSaniLooseId_[2][4];
+        TH1F *h1_hyp_idstudy_classExpSaniLooseIso_[2][4];
+
+        TH1F *h1_hyp_idstudy_classExpSaniTight_[2][4];
+
+
+
 };
 
 #endif
