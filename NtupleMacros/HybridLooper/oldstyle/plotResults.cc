@@ -120,7 +120,7 @@ void plotDataRefOverlayStack(HistogramUtilities &hData, HistogramUtilities &hRef
 
     TCanvas *c1 = new TCanvas();
     c1->cd();
-    stRef->Draw();
+    stRef->Draw("HIST");
     h1Data->Draw("samee1");
     stRef->GetXaxis()->SetTitle(titleX); 
     lg_all->Draw();
@@ -133,7 +133,7 @@ void plotDataRefOverlayStack(HistogramUtilities &hData, HistogramUtilities &hRef
 
     c1->SetLogy();
     stRef->SetMinimum(0.10);
-    stRef->Draw();	
+    stRef->Draw("HIST");	
     h1Data->Draw("samee1");
     lg_all->Draw();
     tex->Draw();
@@ -373,6 +373,15 @@ void plotResultsW(TString det, TString fileStamp, TString refFileStamp, TString 
     plotStack(refh1, "ele_nm1_secondpt", "NM1 Second Electron p_{T} (GeV)", fileStamp + "_refonly", det, 1, 20.0, 20.0);
     plotStack(refh1, "ele_nm1_jetveto", "NM1 Leading JPT p_{T} (GeV)", fileStamp + "_refonly", det, 1, 30.0, 30.0);
     plotStack(refh1, "ele_nm1_r19", "NM1 eMax/e5x5", fileStamp + "_refonly", det, 1, 0.95, 0.95);
+
+    // selection with electron id
+    plotDataRefOverlayStack(datah1, refh1, "ele_selected_cand01_pt", "Electron p_{T} (GeV)", fileStamp, det, norm, 8);
+    plotDataRefOverlayStack(datah1, refh1, "ele_selected_cand01_pfmet", "Electron pfMET (GeV)", fileStamp, det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "ele_selected_cand01_tcmet", "Electron tcMET (GeV)", fileStamp, det, norm, 4);
+    // n-1 plots for selection with electron id
+    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_cand01_pfmet", "NM1 Electron pfMET (GeV)", fileStamp, det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "ele_nm1_cand01_tcmet", "NM1 Electron tcMET (GeV)", fileStamp, det, norm, 4);
+
 
     // selection and anti-selection for electron id variable studies
     // barrel
