@@ -32,6 +32,7 @@ class babymaker
         Int_t   ls_;
         Int_t   evt_;
         Float_t pfmet_;
+        Float_t tcmet_;
         Int_t   njets_;
         Float_t jet1pt_;
         Float_t dphimetjet_;
@@ -59,6 +60,8 @@ class babymaker
         Float_t e_detain_;
         Float_t e_eMe55_;
         Int_t   e_nmHits_;
+        Float_t e_dcot_;
+        Float_t e_dist_;
 };
 
 #endif

@@ -13,7 +13,9 @@
 
 #include "CORE/CMS2.h"
 #include "CORE/electronSelections.cc"
+#include "CORE/metSelections.cc"
 #include "CORE/muonSelections.cc"
+#include "CORE/trackSelections.cc"
 
 #include "Math/LorentzVector.h"
 #include "Math/PxPyPzE4D.h"
@@ -79,6 +81,11 @@ void babymaker::ScanChain (const char *inputFilename, const char *babyFilename, 
 
             float theMetPhi = cms2.evt_pfmetPhi();
 
+            metStruct tcmetStruct = correctedTCMET();
+            tcmet_      = tcmetStruct.met;
+            //float tcsumet  = tcmetStruct.sumet;
+            //float tcmetphi = tcmetStruct.metphi;
+
             VofP4 theJets;
             for(unsigned int jeti = 0; jeti < cms2.pfjets_p4().size(); ++jeti)
             {
@@ -130,7 +137,7 @@ void babymaker::ScanChain (const char *inputFilename, const char *babyFilename, 
                 mt_          = sqrt(2.*pt_*pfmet_*(1.-cos(dphimet_)));
                 mu_muonid_   = muonId(mui);
                 mu_goodmask_ = cms2.mus_goodmask()[mui];
-                mu_gfitchi2_ = cms2.mus_gfit_chi2()[mui];
+                mu_gfitchi2_ = cms2.mus_gfit_chi2()[mui]/cms2.mus_gfit_ndof()[mui];
 
                 FillBabyNtuple();
             }
@@ -168,6 +175,8 @@ void babymaker::ScanChain (const char *inputFilename, const char *babyFilename, 
                 e_detain_ = cms2.els_dEtaIn()[eli];
                 e_eMe55_  = cms2.els_eMax()[eli]/cms2.els_e5x5()[eli];
                 e_nmHits_ = cms2.els_exp_innerlayers()[eli];
+                e_dcot_   = cms2.els_conv_dcot()[eli];
+                e_dist_   = cms2.els_conv_dist()[eli];
 
                 FillBabyNtuple();
             }
@@ -189,6 +198,7 @@ void babymaker::InitBabyNtuple ()
     ls_           = -999999;
     evt_          = -999999;
     pfmet_        = -999999.;
+    tcmet_        = -999999.;
     njets_        = -999999;
     jet1pt_       = -999999.;
     dphimetjet_   = -999999.;
@@ -216,6 +226,8 @@ void babymaker::InitBabyNtuple ()
     e_detain_     = -999999.;
     e_eMe55_      = -999999.;
     e_nmHits_     = -999999;
+    e_dcot_       = -999999.;
+    e_dist_       = -999999.;
 }
 
 void babymaker::MakeBabyNtuple(const char *babyFilename)
@@ -232,6 +244,7 @@ void babymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("ls",         &ls_,        "ls/I"        );
     babyTree_->Branch("evt",        &evt_,       "evt/I"       );
     babyTree_->Branch("pfmet",      &pfmet_,     "pfmet/F"     );
+    babyTree_->Branch("tcmet",      &tcmet_,     "tcmet/F"     );
     babyTree_->Branch("njets",      &njets_,     "njets/I"     ); // uncorrected pt > 20
     babyTree_->Branch("jet1pt",     &jet1pt_,    "jet1pt/F"    );
     babyTree_->Branch("dphimetjet", &dphimetjet_,"dphimetjet/F");
@@ -258,7 +271,9 @@ void babymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e_dphiin", &e_dphiin_, "e_dphiin/F");
     babyTree_->Branch("e_detain", &e_detain_, "e_detain/F");
     babyTree_->Branch("e_eMe55",  &e_eMe55_,  "e_eMe55/F" ); // for spikes
-    babyTree_->Branch("e_nmHits", &e_nmHits_, "e_nmHits/I"); // for conversions
+    babyTree_->Branch("e_nmHits", &e_nmHits_, "e_nmHits/I");
+    babyTree_->Branch("e_dcot",   &e_dcot_,   "e_dcot/F"  ); // els_conv_dcot
+    babyTree_->Branch("e_dist",   &e_dist_,   "e_dist/F"  ); // els_conv_dist
 }
 
 void babymaker::FillBabyNtuple()
