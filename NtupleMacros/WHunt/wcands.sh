@@ -46,27 +46,32 @@ while read line; do
     # Dump the event
     dumpFile="dump_${run_}_${ls_}_${evt_}.txt"
     echo pfmet `echo $line | awk '{print $4}'` >>$dumpFile
-    echo njets `echo $line | awk '{print $5}'` >>$dumpFile
-    echo jet1pt `echo $line | awk '{print $6}'` >>$dumpFile
-    echo dphimetjet `echo $line | awk '{print $7}'` >>$dumpFile
-    echo eormu `echo $line | awk '{print $8}'` >>$dumpFile
-    echo type `echo $line | awk '{print $9}'` >>$dumpFile
-    echo pt `echo $line | awk '{print $10}'` >>$dumpFile
-    echo iso `echo $line | awk '{print $11}'` >>$dumpFile
-    echo d0corr `echo $line | awk '{print $12}'` >>$dumpFile
-    echo dphimet `echo $line | awk '{print $13}'` >>$dumpFile
-    echo drjet `echo $line | awk '{print $14}'` >>$dumpFile
-    echo mt `echo $line | awk '{print $15}'` >>$dumpFile
-    echo mu_muonid `echo $line | awk '{print $16}'` >>$dumpFile
-    echo mu_goodmask `echo $line | awk '{print $17}'` >>$dumpFile
-    echo mu_gfitchi2 `echo $line | awk '{print $18}'` >>$dumpFile
-    echo e_cand01 `echo $line | awk '{print $19}'` >>$dumpFile
-    echo e_eopin `echo $line | awk '{print $20}'` >>$dumpFile
-    echo e_hoe `echo $line | awk '{print $21}'` >>$dumpFile
-    echo e_dphiin `echo $line | awk '{print $22}'` >>$dumpFile
-    echo e_detain `echo $line | awk '{print $23}'` >>$dumpFile
-    echo e_eMe55 `echo $line | awk '{print $24}'` >>$dumpFile
-    echo e_nmHits `echo $line | awk '{print $25}'` >>$dumpFile
+    echo tcmet `echo $line | awk '{print $5}'` >>$dumpFile
+    echo njets `echo $line | awk '{print $6}'` >>$dumpFile
+    echo jet1pt `echo $line | awk '{print $7}'` >>$dumpFile
+    echo dphipfmetjet `echo $line | awk '{print $8}'` >>$dumpFile
+    echo dphitcmetjet `echo $line | awk '{print $9}'` >>$dumpFile
+    echo eormu `echo $line | awk '{print $10}'` >>$dumpFile
+    echo type `echo $line | awk '{print $11}'` >>$dumpFile
+    echo pt `echo $line | awk '{print $12}'` >>$dumpFile
+    echo iso `echo $line | awk '{print $13}'` >>$dumpFile
+    echo d0corr `echo $line | awk '{print $14}'` >>$dumpFile
+    echo dphipfmet `echo $line | awk '{print $15}'` >>$dumpFile
+    echo dphitcmet `echo $line | awk '{print $16}'` >>$dumpFile
+    echo drjet `echo $line | awk '{print $17}'` >>$dumpFile
+    echo mt `echo $line | awk '{print $18}'` >>$dumpFile
+    echo mu_muonid `echo $line | awk '{print $19}'` >>$dumpFile
+    echo mu_goodmask `echo $line | awk '{print $20}'` >>$dumpFile
+    echo mu_gfitchi2 `echo $line | awk '{print $21}'` >>$dumpFile
+    echo e_cand01 `echo $line | awk '{print $22}'` >>$dumpFile
+    echo e_eopin `echo $line | awk '{print $23}'` >>$dumpFile
+    echo e_hoe `echo $line | awk '{print $24}'` >>$dumpFile
+    echo e_dphiin `echo $line | awk '{print $25}'` >>$dumpFile
+    echo e_detain `echo $line | awk '{print $26}'` >>$dumpFile
+    echo e_eMe55 `echo $line | awk '{print $27}'` >>$dumpFile
+    echo e_nmHits `echo $line | awk '{print $28}'` >>$dumpFile
+    echo e_dcot `echo $line | awk '{print $29}'` >>$dumpFile
+    echo e_dist `echo $line | awk '{print $30}'` >>$dumpFile
 
     echo $line >>wcands_stripped_processed.txt
 done <wcands_stripped.txt
