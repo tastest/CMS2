@@ -35,7 +35,8 @@ class babymaker
         Float_t tcmet_;
         Int_t   njets_;
         Float_t jet1pt_;
-        Float_t dphimetjet_;
+        Float_t dphipfmetjet_;
+        Float_t dphitcmetjet_;
 
         // lepton stuff
         Int_t   eormu_;
@@ -43,7 +44,8 @@ class babymaker
         Float_t pt_;
         Float_t iso_;
         Float_t d0corr_;
-        Float_t dphimet_;
+        Float_t dphipfmet_;
+        Float_t dphitcmet_;
         Float_t drjet_;
         Float_t mt_;
 

@@ -79,12 +79,37 @@ void babymaker::ScanChain (const char *inputFilename, const char *babyFilename, 
             evt_        = cms2.evt_event();
             pfmet_      = cms2.evt_pfmet();
 
-            float theMetPhi = cms2.evt_pfmetPhi();
+            metStruct tcMET = correctedTCMET();
+            float tcmet    = tcMET.met;
+            float tcmetPhi = tcMET.metphi;
 
-            metStruct tcmetStruct = correctedTCMET();
-            tcmet_      = tcmetStruct.met;
-            //float tcsumet  = tcmetStruct.sumet;
-            //float tcmetphi = tcmetStruct.metphi;
+            // now, need to loop over calotwers and correct tcMET for HF spikes
+            for(unsigned int i = 0; i < cms2.twrs_emEnergy().size(); ++i)
+            {
+                // if tower is in the HF, check if it is a spike
+                if (fabs(cms2.twrs_eta().at(i)) < 3.)
+                    continue; 
+
+                double alpha = cms2.twrs_emEnergy().at(i) / (cms2.twrs_emEnergy().at(i) + cms2.twrs_hadEnergy().at(i)); // alpha = (L-S)/(L+S)
+
+                // if tower is "spiking" correct MET by adding components of tower to components of MET
+                if ( (alpha <= -0.8 || alpha >= 0.99) && (cms2.twrs_emEt().at(i) + cms2.twrs_hadEt().at(i)) > 5. )
+                {
+                    const float towerET  = cms2.twrs_emEt().at(i) + cms2.twrs_hadEt().at(i);
+                    const float hfspikeX = towerET * cos(cms2.twrs_phi().at(i));
+                    const float hfspikeY = towerET * sin(cms2.twrs_phi().at(i));
+
+                    const float tcmetCorrX = tcmet * cos(tcmetPhi) + hfspikeX;
+                    const float tcmetCorrY = tcmet * sin(tcmetPhi) + hfspikeY;
+                    tcmet    = sqrt( tcmetCorrX * tcmetCorrX + tcmetCorrY * tcmetCorrY );
+                    tcmetPhi = atan2(tcmetCorrY, tcmetCorrX);
+                }
+            }
+
+            tcmet_ = tcmet;
+
+            float thePFMetPhi = cms2.evt_pfmetPhi();
+            float theTCMetPhi = tcmetPhi;
 
             VofP4 theJets;
             for(unsigned int jeti = 0; jeti < cms2.pfjets_p4().size(); ++jeti)
@@ -94,17 +119,24 @@ void babymaker::ScanChain (const char *inputFilename, const char *babyFilename, 
             }
             std::sort(theJets.begin(), theJets.end(), sortByPt);
 
-            double mindphimet = 999999.;
-            for(unsigned int jeti = 0; jeti < theJets.size(); ++jeti)
-            {
-                float currdphimet = deltaPhi(theMetPhi, theJets[jeti].phi());
-                if (currdphimet < mindphimet)
-                    mindphimet = currdphimet;
-            }
-
             njets_      = theJets.size();
             jet1pt_     = theJets.size() ? theJets[0].pt() : -999999.;
-            dphimetjet_ = mindphimet;
+
+            double mindphipfmet = 999999.;
+            double mindphitcmet = 999999.;
+            for(unsigned int jeti = 0; jeti < theJets.size(); ++jeti)
+            {
+                float currdphipfmet = deltaPhi(thePFMetPhi, theJets[jeti].phi());
+                if (currdphipfmet < mindphipfmet)
+                    mindphipfmet = currdphipfmet;
+
+                float currdphitcmet = deltaPhi(thePFMetPhi, theJets[jeti].phi());
+                if (currdphitcmet < mindphitcmet)
+                    mindphitcmet = currdphitcmet;
+            }
+
+            dphipfmetjet_ = mindphipfmet;
+            dphitcmetjet_ = mindphitcmet;
 
             // muon stuff
             for(unsigned mui = 0; mui < cms2.mus_p4().size(); ++mui)
@@ -121,7 +153,8 @@ void babymaker::ScanChain (const char *inputFilename, const char *babyFilename, 
                 pt_       = cms2.mus_p4()[mui].pt();
                 iso_      = muonIsoValue(mui);
                 d0corr_   = cms2.mus_d0corr()[mui];
-                dphimet_  = deltaPhi(theMetPhi, cms2.mus_p4()[mui].phi());
+                dphipfmet_= deltaPhi(thePFMetPhi, cms2.mus_p4()[mui].phi());
+                dphitcmet_= deltaPhi(theTCMetPhi, cms2.mus_p4()[mui].phi());
 
                 float mindrjet = 999999.;
                 for(unsigned int jeti = 0; jeti < theJets.size(); ++jeti)
@@ -134,7 +167,7 @@ void babymaker::ScanChain (const char *inputFilename, const char *babyFilename, 
                 }
 
                 drjet_       = mindrjet;
-                mt_          = sqrt(2.*pt_*pfmet_*(1.-cos(dphimet_)));
+                mt_          = sqrt(2.*pt_*pfmet_*(1.-cos(dphipfmet_)));
                 mu_muonid_   = muonId(mui);
                 mu_goodmask_ = cms2.mus_goodmask()[mui];
                 mu_gfitchi2_ = cms2.mus_gfit_chi2()[mui]/cms2.mus_gfit_ndof()[mui];
@@ -149,12 +182,13 @@ void babymaker::ScanChain (const char *inputFilename, const char *babyFilename, 
                 if (cms2.els_p4()[eli].pt() <= 20)
                     continue;
 
-                eormu_   = 11;
-                type_    = cms2.els_type()[eli];
-                pt_      = cms2.els_p4()[eli].pt();
-                iso_     = electronIsolation_relsusy_cand0(eli, true);
-                d0corr_  = cms2.els_d0corr()[eli];
-                dphimet_ = deltaPhi(theMetPhi, cms2.els_p4()[eli].phi());
+                eormu_    = 11;
+                type_     = cms2.els_type()[eli];
+                pt_       = cms2.els_p4()[eli].pt();
+                iso_      = electronIsolation_relsusy_cand0(eli, true);
+                d0corr_   = cms2.els_d0corr()[eli];
+                dphipfmet_= deltaPhi(thePFMetPhi, cms2.els_p4()[eli].phi());
+                dphitcmet_= deltaPhi(theTCMetPhi, cms2.els_p4()[eli].phi());
 
                 float mindrjet = 999999.;
                 for(unsigned int jeti = 0; jeti < theJets.size(); ++jeti)
@@ -167,7 +201,7 @@ void babymaker::ScanChain (const char *inputFilename, const char *babyFilename, 
                 }
 
                 drjet_    = mindrjet;
-                mt_       = sqrt(2.*pt_*pfmet_*(1.-cos(dphimet_)));
+                mt_       = sqrt(2.*pt_*pfmet_*(1.-cos(dphipfmet_)));
                 e_cand01_ = electronId_cand01(eli);
                 e_eopin_  = cms2.els_eOverPIn()[eli];
                 e_hoe_    = cms2.els_hOverE()[eli];
@@ -201,7 +235,8 @@ void babymaker::InitBabyNtuple ()
     tcmet_        = -999999.;
     njets_        = -999999;
     jet1pt_       = -999999.;
-    dphimetjet_   = -999999.;
+    dphipfmetjet_ = -999999.;
+    dphitcmetjet_ = -999999.;
 
     // lepton stuff
     eormu_        = -999999;
@@ -209,7 +244,8 @@ void babymaker::InitBabyNtuple ()
     pt_           = -999999.;
     iso_          = -999999.;
     d0corr_       = -999999.;
-    dphimet_      = -999999.;
+    dphipfmet_    = -999999.;
+    dphitcmet_    = -999999.;
     drjet_        = -999999.;
     mt_           = -999999.;
 
@@ -240,24 +276,26 @@ void babymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_ = new TTree("tree", "A Baby Ntuple");
 
     // event stuff
-    babyTree_->Branch("run",        &run_,       "run/I"       );
-    babyTree_->Branch("ls",         &ls_,        "ls/I"        );
-    babyTree_->Branch("evt",        &evt_,       "evt/I"       );
-    babyTree_->Branch("pfmet",      &pfmet_,     "pfmet/F"     );
-    babyTree_->Branch("tcmet",      &tcmet_,     "tcmet/F"     );
-    babyTree_->Branch("njets",      &njets_,     "njets/I"     ); // uncorrected pt > 20
-    babyTree_->Branch("jet1pt",     &jet1pt_,    "jet1pt/F"    );
-    babyTree_->Branch("dphimetjet", &dphimetjet_,"dphimetjet/F");
+    babyTree_->Branch("run",          &run_,         "run/I"         );
+    babyTree_->Branch("ls",           &ls_,          "ls/I"          );
+    babyTree_->Branch("evt",          &evt_,         "evt/I"         );
+    babyTree_->Branch("pfmet",        &pfmet_,       "pfmet/F"       );
+    babyTree_->Branch("tcmet",        &tcmet_,       "tcmet/F"       );
+    babyTree_->Branch("njets",        &njets_,       "njets/I"       ); // uncorrected pt > 20
+    babyTree_->Branch("jet1pt",       &jet1pt_,      "jet1pt/F"      );
+    babyTree_->Branch("dphipfmetjet", &dphipfmetjet_,"dphipfmetjet/F");
+    babyTree_->Branch("dphitcmetjet", &dphitcmetjet_,"dphitcmetjet/F");
 
     // lepton stuff
-    babyTree_->Branch("eormu",   &eormu_,   "eormu/I"  );
-    babyTree_->Branch("type",    &type_,    "type/I"   );
-    babyTree_->Branch("pt",      &pt_,      "pt/F"     );
-    babyTree_->Branch("iso",     &iso_,     "iso/F"    );
-    babyTree_->Branch("d0corr",  &d0corr_,  "d0corr/F" );
-    babyTree_->Branch("dphimet", &dphimet_, "dphimet/F");
-    babyTree_->Branch("drjet",   &drjet_,   "drjet/F"  );
-    babyTree_->Branch("mt",      &mt_,      "mt/F"     );
+    babyTree_->Branch("eormu",     &eormu_,     "eormu/I"    );
+    babyTree_->Branch("type",      &type_,      "type/I"     );
+    babyTree_->Branch("pt",        &pt_,        "pt/F"       );
+    babyTree_->Branch("iso",       &iso_,       "iso/F"      );
+    babyTree_->Branch("d0corr",    &d0corr_,    "d0corr/F"   );
+    babyTree_->Branch("dphipfmet", &dphipfmet_, "dphipfmet/F");
+    babyTree_->Branch("dphitcmet", &dphitcmet_, "dphitcmet/F");
+    babyTree_->Branch("drjet",     &drjet_,     "drjet/F"    );
+    babyTree_->Branch("mt",        &mt_,        "mt/F"       );
 
     // muon stuff
     babyTree_->Branch("mu_muonid",   &mu_muonid_,   "mu_muonid/O"  );
@@ -271,7 +309,7 @@ void babymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e_dphiin", &e_dphiin_, "e_dphiin/F");
     babyTree_->Branch("e_detain", &e_detain_, "e_detain/F");
     babyTree_->Branch("e_eMe55",  &e_eMe55_,  "e_eMe55/F" ); // for spikes
-    babyTree_->Branch("e_nmHits", &e_nmHits_, "e_nmHits/I");
+    babyTree_->Branch("e_nmHits", &e_nmHits_, "e_nmHits/I"); // els_exp_innerlayers
     babyTree_->Branch("e_dcot",   &e_dcot_,   "e_dcot/F"  ); // els_conv_dcot
     babyTree_->Branch("e_dist",   &e_dist_,   "e_dist/F"  ); // els_conv_dist
 }
