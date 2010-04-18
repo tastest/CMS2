@@ -84,21 +84,21 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
             float tcmetPhi = tcMET.metphi;
 
             // now, need to loop over calotwers and correct tcMET for HF spikes
-            for( unsigned int i = 0; i < twrs_emEnergy().size(); i++ )
+            for(unsigned int i = 0; i < cms2.twrs_emEnergy().size(); ++i)
             {
                 // if tower is in the HF, check if it is a spike
-                if( fabs(twrs_eta().at(i)) < 3. )
+                if (fabs(cms2.twrs_eta().at(i)) < 3.)
                     continue;
 
-                double alpha = twrs_emEnergy().at(i) / (twrs_emEnergy().at(i) + twrs_hadEnergy().at(i)); // alpha = (L-S)/(L+S)
+                double alpha = cms2.twrs_emEnergy().at(i) / (cms2.twrs_emEnergy().at(i) + cms2.twrs_hadEnergy().at(i)); // alpha = (L-S)/(L+S)
 
                 // if tower is "spiking" correct MET by adding components of tower to components of MET
-                if( (alpha <= -0.8 || alpha >= 0.99) && (twrs_emEt().at(i) + twrs_hadEt().at(i)) > 5. )
+                if ( (alpha <= -0.8 || alpha >= 0.99) && (cms2.twrs_emEt().at(i) + cms2.twrs_hadEt().at(i)) > 5. )
                 {
 
-                    const float towerET  = twrs_emEt().at(i) + twrs_hadEt().at(i);			      
-                    const float hfspikeX = towerET * cos(twrs_phi().at(i));
-                    const float hfspikeY = towerET * sin(twrs_phi().at(i));
+                    const float towerET  = cms2.twrs_emEt().at(i) + cms2.twrs_hadEt().at(i);			      
+                    const float hfspikeX = towerET * cos(cms2.twrs_phi().at(i));
+                    const float hfspikeY = towerET * sin(cms2.twrs_phi().at(i));
 
                     const float tcmetCorrX = tcmet * cos(tcmetPhi) + hfspikeX;
                     const float tcmetCorrY = tcmet * sin(tcmetPhi) + hfspikeY;
@@ -120,6 +120,9 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
             }
             std::sort(theJets.begin(), theJets.end(), sortByPt);
 
+            njets_      = theJets.size();
+            jet1pt_     = theJets.size() ? theJets[0].pt() : -999999.;
+
             double mindphipfmet = 999999.;
             double mindphitcmet = 999999.;
             for(unsigned int jeti = 0; jeti < theJets.size(); ++jeti)
@@ -133,16 +136,13 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
                     mindphitcmet = currdphitcmet;
             }
 
-            njets_      = theJets.size();
-            jet1pt_     = theJets.size() ? theJets[0].pt() : -999999.;
             dphipfmetjet_ = mindphipfmet;
             dphitcmetjet_ = mindphitcmet;
 
             // dilepton hypothesis stuff
             for(unsigned hypi = 0; hypi < cms2.hyp_p4().size(); ++hypi)
             {
-
-                // require 10/10 hypothesis
+                // require 5/5 hypothesis
                 if (min(cms2.hyp_lt_p4()[hypi].pt(), cms2.hyp_ll_p4()[hypi].pt()) < 5.)
                     continue;
 
@@ -204,13 +204,13 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
                     type1_  = cms2.mus_type()[index1];
                     type2_  = cms2.mus_type()[index2];
 
-                    mu1_muonid_    = muonId(index1, NominalTTbar); 
+                    mu1_muonid_    = muonIdNotIsolated(index1, NominalTTbar); 
                     mu1_goodmask_  = cms2.mus_goodmask()[index1];
-                    mu1_gfitchi2_  = cms2.mus_gfit_chi2()[index1];
+                    mu1_gfitchi2_  = cms2.mus_gfit_chi2()[index1]/cms2.mus_gfit_ndof()[index1];
 
-                    mu2_muonid_    = muonId(index2, NominalTTbar);
+                    mu2_muonid_    = muonIdNotIsolated(index2, NominalTTbar);
                     mu2_goodmask_  = cms2.mus_goodmask()[index2];
-                    mu2_gfitchi2_  = cms2.mus_gfit_chi2()[index1];
+                    mu2_gfitchi2_  = cms2.mus_gfit_chi2()[index2]/cms2.mus_gfit_ndof()[index2];
 
                     int trkidx1 = cms2.mus_trkidx()[index1];
                     int trkidx2 = cms2.mus_trkidx()[index2];
@@ -224,9 +224,9 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
                     type1_  = cms2.mus_type()[index1];
                     type2_  = cms2.els_type()[index2];
 
-                    mu1_muonid_    = muonId(index1, NominalTTbar); 
+                    mu1_muonid_    = muonIdNotIsolated(index1, NominalTTbar); 
                     mu1_goodmask_  = cms2.mus_goodmask()[index1];
-                    mu1_gfitchi2_  = cms2.mus_gfit_chi2()[index1];
+                    mu1_gfitchi2_  = cms2.mus_gfit_chi2()[index1]/cms2.mus_gfit_ndof()[index1];
 
                     int trkidx1 = cms2.mus_trkidx()[index1];
                     int trkidx2 = cms2.els_trkidx()[index2];
@@ -259,9 +259,9 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
                     e1_nmHits_  = cms2.els_exp_innerlayers()[index1];
                     e1_drmu_    = cms2.els_musdr()[index1];
 
-                    mu2_muonid_    = muonId(index2, NominalTTbar); 
+                    mu2_muonid_    = muonIdNotIsolated(index2, NominalTTbar); 
                     mu2_goodmask_  = cms2.mus_goodmask()[index2];
-                    mu2_gfitchi2_  = cms2.mus_gfit_chi2()[index2];
+                    mu2_gfitchi2_  = cms2.mus_gfit_chi2()[index2]/cms2.mus_gfit_ndof()[index2];
 
                     int trkidx1 = cms2.els_trkidx()[index1];
                     int trkidx2 = cms2.mus_trkidx()[index2];
@@ -357,16 +357,16 @@ void twinmaker::InitTwinNtuple ()
     mass_          = -999999.;
 
     // muon stuff
-    mu1_muonid_   = -999999;
-    mu2_muonid_   = -999999;
+    mu1_muonid_   = 0;
+    mu2_muonid_   = 0;
     mu1_goodmask_ = -999999;
     mu2_goodmask_ = -999999;
     mu1_gfitchi2_ = -999999.;
     mu2_gfitchi2_ = -999999.;
 
     // electron stuff
-    e1_cand01_   = -999999;
-    e2_cand01_   = -999999;
+    e1_cand01_   = 0;
+    e2_cand01_   = 0;
     e1_nmHits_   = -999999;
     e2_nmHits_   = -999999;
     e1_eopin_    = -999999.;
