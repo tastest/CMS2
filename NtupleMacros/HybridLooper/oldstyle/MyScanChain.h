@@ -110,6 +110,7 @@ class MyScanChain {
         TH1F    *h1_ele_inclnoniso_pfmet_[3];
 
         // nm1
+        TH1F    *h1_ele_nm1_pt_[3];
         TH1F 	*h1_ele_nm1_tcmet_pthat_[3];
         TH1F    *h1_ele_nm1_tcmet_pdgidCatagory_[3];
         TH1F 	*h1_ele_nm1_tcmet_[3];
@@ -164,6 +165,17 @@ class MyScanChain {
         TH1F *h1_ele_antiselected_fbrem_[3];
         TH1F *h1_ele_antiselected_eOverPIn_[3];
 
+        // after all selections + electron ID
+        TH1F    *h1_ele_selected_cand01_pt_[3];
+        TH1F    *h1_ele_selected_cand01_tcmet_[3];
+        TH1F    *h1_ele_selected_cand01_pfmet_[3];
+        // N-1 plots for selections with electron ID
+        TH1F    *h1_ele_nm1_cand01_pt_[3];
+        TH1F    *h1_ele_nm1_cand01_tcmet_[3];
+        TH1F    *h1_ele_nm1_cand01_pfmet_[3];
+
+
+
         //
         // muons
         //
@@ -194,6 +206,7 @@ class MyScanChain {
         TH1F    *h1_mu_inclnoniso_pfmet_[3];
 
         // nm1
+        TH1F    *h1_mu_nm1_pt_[3];
         TH1F    *h1_mu_nm1_secondpt_[3];
         TH1F    *h1_mu_nm1_tcmet_[3];
         TH1F    *h1_mu_nm1_pfmet_[3];

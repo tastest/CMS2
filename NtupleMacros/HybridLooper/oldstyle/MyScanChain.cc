@@ -70,6 +70,7 @@ enum ele_selection {
     PASS_ELE_NOMUON,
     PASS_ELE_CLEANEVENT,
     PASS_ELE_ANTIMET,
+    PASS_ELE_CAND01,
 };
 
 // to decdie if to fill the EB histo (zero in the array)
@@ -230,6 +231,9 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
 
     if (leadingJPT < 30.0) cuts_passed |= (1<<PASS_ELE_JETVETO);
 
+    // electron ID decisions
+    if (electronId_cand01(eleIndex)) cuts_passed |= (1<<PASS_ELE_CAND01);
+
     //
     // do plotting
     //
@@ -272,6 +276,10 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
         (1<<PASS_ELE_ISFIDUCIAL) | (1<<PASS_ELE_ISO) |
         (1<<PASS_ELE_ANTIMET) | (1<<PASS_ELE_JETVETO) |
         (1<<PASS_ELE_R19);
+
+    if (CheckCutsNM1(pass_all, (1<<PASS_ELE_PT), cuts_passed)) {
+        FillHist(h1_ele_nm1_pt_, det, cms2.els_p4()[eleIndex].Pt(), weight);
+    }
 
     if (CheckCutsNM1(pass_all, (1<<PASS_ELE_MET), cuts_passed)) {
         FillHist(h1_ele_nm1_tcmet_, det, cms2.evt_tcmet(), weight);
@@ -373,6 +381,22 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
         FillHist(h1_ele_antiselected_eOverPIn_, det, cms2.els_eOverPIn()[eleIndex], weight);
 
     }
+
+    // full selection and cand01 electron ID
+    if (CheckCuts(pass_all | (1<<PASS_ELE_CAND01), cuts_passed)) {
+        FillHist(h1_ele_selected_cand01_pt_, det, cms2.els_p4()[eleIndex].Pt(), weight);
+        FillHist(h1_ele_selected_cand01_tcmet_, det, cms2.evt_tcmet(), weight);
+        FillHist(h1_ele_selected_cand01_pfmet_, det, cms2.evt_pfmet(), weight);
+    }
+    // - show some N-1 plots
+    if (CheckCutsNM1(pass_all | (1<<PASS_ELE_CAND01), (1<<PASS_ELE_PT), cuts_passed)) {
+        FillHist(h1_ele_nm1_cand01_pt_, det, cms2.els_p4()[eleIndex].Pt(), weight);    
+    }
+    if (CheckCutsNM1(pass_all | (1<<PASS_ELE_CAND01), (1<<PASS_ELE_MET), cuts_passed)) {
+        FillHist(h1_ele_nm1_cand01_tcmet_, det, cms2.evt_tcmet(), weight);
+        FillHist(h1_ele_nm1_cand01_pfmet_, det, cms2.evt_pfmet(), weight);
+    }
+
 
     // comparison of inclusive distributions
     // totally inclusive
@@ -509,6 +533,10 @@ void MyScanChain::AnalyseMuons(const float &weight) {
 
     const cuts_t pass_all =     (1<<PASS_MU_PT) | (1<<PASS_MU_NOSECOND) |
         (1<<PASS_MU_ISO) | (1<<PASS_MU_ISFIDUCIAL) | (1<<PASS_MU_MET);
+
+    if (CheckCutsNM1(pass_all, (1<<PASS_MU_PT), cuts_passed)) {
+        FillHist(h1_mu_nm1_pt_, det, cms2.mus_p4()[muIndex].Pt(), weight);
+    }
 
     if (CheckCutsNM1(pass_all, (1<<PASS_MU_NOSECOND), cuts_passed)) {
         FillHist(h1_mu_nm1_secondpt_, det, secondPt, weight);
@@ -677,6 +705,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     // N-1
     FormatHist(h1_ele_nm1_tcmet_pthat_, "ele_nm1_tcmet_pthat", 100, 0, 100);
     FormatHist(h1_ele_nm1_tcmet_pdgidCatagory_, "ele_nm1_tcmet_pdgidCatagory", 10, -0.5, 9.5);
+    FormatHist(h1_ele_nm1_pt_, "ele_nm1_pt", 100, 0, 100);
     FormatHist(h1_ele_nm1_tcmet_, "ele_nm1_tcmet", 100, 0, 100);
     FormatHist(h1_ele_nm1_pfmet_, "ele_nm1_pfmet", 100, 0, 100);
     FormatHist(h1_ele_nm1_tcmetdphi_, "ele_nm1_tcmetdphi", 100, -4, 4);
@@ -730,6 +759,15 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     FormatHist(h1_ele_antiselected_fbrem_, "ele_antiselected_fbrem", 100, 0, 1.0);
     FormatHist(h1_ele_antiselected_eOverPIn_, "ele_antiselected_eOverPIn", 100, 0, 5.0);
 
+    // selected and electron ID
+    FormatHist(h1_ele_selected_cand01_pt_, "ele_selected_cand01_pt", 100, 0, 100);
+    FormatHist(h1_ele_selected_cand01_tcmet_, "ele_selected_cand01_tcmet", 100, 0, 100);
+    FormatHist(h1_ele_selected_cand01_pfmet_, "ele_selected_cand01_pfmet", 100, 0, 100);
+    // N-1 plots for selection with electron ID
+    FormatHist(h1_ele_nm1_cand01_pt_, "ele_nm1_cand01_pt", 100, 0, 100);
+    FormatHist(h1_ele_nm1_cand01_tcmet_, "ele_nm1_cand01_tcmet", 100, 0, 100);
+    FormatHist(h1_ele_nm1_cand01_pfmet_, "ele_nm1_cand01_pfmet", 100, 0, 100);
+
 
     //
     // Muons
@@ -765,6 +803,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     FormatHist(h1_mu_inclnoniso_pfmet_, "mu_inclnoniso_pfmet", 100, 0, 100);
 
     // N-1
+    FormatHist(h1_mu_nm1_pt_, "mu_nm1_pt", 100, 0, 100);
     FormatHist(h1_mu_nm1_secondpt_, "mu_nm1_secondpt", 100, 0, 100);
     FormatHist(h1_mu_nm1_tcmet_, "mu_nm1_tcmet", 100, 0, 100);
     FormatHist(h1_mu_nm1_pfmet_, "mu_nm1_pfmet", 100, 0, 100);
