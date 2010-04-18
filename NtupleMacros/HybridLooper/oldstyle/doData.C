@@ -20,7 +20,9 @@ void doData() {
 
     // DATA
     TChain *chain_whunt_skim = new TChain("Events");
-    chain_whunt_skim->Add("/tas03/disk01/whunt/skim/emuskim_*.root");
+    //chain_whunt_skim->Add("/tas03/disk01/whunt/skim/emuskim_*.root");
+    // on dle laptop
+    chain_whunt_skim->Add("/Users/dlevans/tas03/disk01/whunt/skim/emuskim_merged.root");
     looper->ScanChain(true, "whunt", chain_whunt_skim);
 
     //

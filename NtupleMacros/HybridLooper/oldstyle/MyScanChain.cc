@@ -28,6 +28,7 @@
 #include "../../CORE/utilities.h"
 #include "../../CORE/mcSelections.h"
 
+#include "runUtilities.h"
 #include "../../Tools/goodrun.cc"
 
 //
@@ -837,7 +838,8 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
             //
 
             if (isData) {
-                if (!goodrun(cms2.evt_run(), cms2.evt_lumiBlock())) continue;
+                int goodRunMax = highestGoodrun();
+                if (!goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) && cms2.evt_run() <= goodRunMax) continue;
             }
 
             //
