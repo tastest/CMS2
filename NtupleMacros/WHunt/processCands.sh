@@ -5,6 +5,7 @@
 # The scan output includes a dump of all
 # baby branches, not just run, ls and evt
 
+cd /afs/cern.ch/user/j/jribnik/scratch0/whunt
 if [ $# -ne 2 ]
 then
     echo usage: processCands.sh cands.txt tas03loc
