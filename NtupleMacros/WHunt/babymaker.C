@@ -203,7 +203,7 @@ void babymaker::ScanChain (const char *inputFilename, const char *babyFilename, 
 
                 drjet_    = mindrjet;
                 mt_       = sqrt(2.*pt_*pfmet_*(1.-cos(dphipfmet_)));
-                e_cand01_ = electronId_cand01(eli);
+                e_cand01_ = isGoodElectron(eli);
                 e_eopin_  = cms2.els_eOverPIn()[eli];
                 e_hoe_    = cms2.els_hOverE()[eli];
                 e_dphiin_ = cms2.els_dPhiIn()[eli];
