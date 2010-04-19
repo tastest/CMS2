@@ -8,14 +8,14 @@
     zselection   += "iso1 < 0.2 || iso2 < 0.2";     // at least one is isolated
     zselection   += "abs(eormu1) == abs(eormu2)";   // same flavor
     //zselection   += "eormu1*eormu2 < 0";            // opposite sign
-    zselection   += "d0corr1 < 2. && d0corr2 < 2."; // a first step to fight gross cosmics
+    zselection   += "abs(d0corr1) < 0.4 && abs(d0corr2) < 0.4";
 
     TCut topselection("(pt1 > 20. || pt2 > 20.) && pt1 > 10. && pt2 > 10."); // 20/10
     topselection   += "iso1 < 0.2 || iso2 < 0.2";                            // at least one is isolated
     //topselection   += "eormu1*eormu2 < 0";                                   // opposite sign
     topselection   += "njets > 0";                                           // at least one pt > 20 jet
-    topselection   += "pfmet > 20 || tcmet > 20";                            // met > 20
-    topselection   += "d0corr1 < 2. && d0corr2 < 2.";                        // a first step to fight gross cosmics
+    //topselection   += "pfmet > 20 || tcmet > 20";                            // met > 20
+    topselection   += "abs(d0corr1) < 0.4 && abs(d0corr2) < 0.4";
 
     TCanvas* canvas = new TCanvas("canvas", "canvas", 600, 400);
     canvas->cd();
