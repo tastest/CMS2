@@ -361,7 +361,8 @@ int getZZType()
 // Not a selection function per se, but useful nonetheless:
 // dumps the documentation lines for this event
 //------------------------------------------------------------
-void dumpDocLines() {
+int dumpDocLines() 
+{
   int size = cms2.genps_id().size();
   // Initialize particle database
   static TDatabasePDG *pdg = new TDatabasePDG();
@@ -375,6 +376,7 @@ void dumpDocLines() {
 	 << setw(10) << right << setprecision(4) << cms2.genps_p4().at(j).eta() << "  "
 	 << setw(10) << right << setprecision(4) << m << endl;
   }
+  return 0;
 }
 
 int ttbarconstituents(int i_hyp){
