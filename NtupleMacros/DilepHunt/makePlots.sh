@@ -16,12 +16,12 @@ ssh lxplus303 /afs/cern.ch/user/j/jribnik/scratch0/dilephunt/processCands.sh zca
 scp topcands.txt lxplus303:~/scratch0/dilephunt
 ssh lxplus303 /afs/cern.ch/user/j/jribnik/scratch0/dilephunt/processCands.sh topcands.txt /tas03/disk01/dilephunt/topcands
 
-scp plots/* uaf-2.t2.ucsd.edu:~/public_html/dilephunt/plots
+scp plots/* uaf-4.t2.ucsd.edu:~/public_html/dilephunt/plots
 
-scp zcands/dumps/* uaf-2.t2.ucsd.edu:~/public_html/dilephunt/zcands/dumps
-scp zcands/picks/* uaf-2.t2.ucsd.edu:~/public_html/dilephunt/zcands/picks
+scp zcands/dumps/* uaf-4.t2.ucsd.edu:~/public_html/dilephunt/zcands/dumps
+scp zcands/picks/* uaf-4.t2.ucsd.edu:~/devel/fireShot/picks
 
-scp topcands/dumps/* uaf-2.t2.ucsd.edu:~/public_html/dilephunt/topcands/dumps
-scp topcands/picks/* uaf-2.t2.ucsd.edu:~/public_html/dilephunt/topcands/picks
+scp topcands/dumps/* uaf-4.t2.ucsd.edu:~/public_html/dilephunt/topcands/dumps
+scp topcands/picks/* uaf-4.t2.ucsd.edu:~/devel/fireShot/picks
 
-ssh uaf-6.t2.ucsd.edu "touch ~/devel/dilephunt/.fireShot.bang"
+ssh uaf-6.t2.ucsd.edu "touch ~/devel/fireShot/.fireShot.bang"
