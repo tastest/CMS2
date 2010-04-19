@@ -198,7 +198,7 @@ void babymaker::ScanChain (const char *inputFilename, const char *babyFilename, 
                 d0corr_   = cms2.els_d0corr()[eli];
 
                 int trkidx= cms2.els_trkidx()[eli];
-                if (trkidx2 >= 0)
+                if (trkidx >= 0)
                     d0vtx_= cms2.trks_d0vtx()[trkidx];
 
                 dphipfmet_= deltaPhi(thePFMetPhi, cms2.els_p4()[eli].phi());
