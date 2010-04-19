@@ -220,7 +220,7 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
                 else if(hyp_type_ == 1)
                 {
                     iso1_   = muonIsoValue(index1);
-                    iso2_   = electronIsolation_relsusy_cand0(index2, true);
+                    iso2_   = electronIsolation_relsusy_cand1(index2, true);
                     type1_  = cms2.mus_type()[index1];
                     type2_  = cms2.els_type()[index2];
 
@@ -241,11 +241,13 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
                     e2_detain_  = cms2.els_dEtaIn()[index2];
                     e2_eMe55_   = cms2.els_eMax()[index2] / cms2.els_e5x5()[index2];
                     e2_nmHits_  = cms2.els_exp_innerlayers()[index2];
+                    e2_dcot_    = cms2.els_conv_dcot()[index2];
+                    e2_dist_    = cms2.els_conv_dist()[index2];
                     e2_drmu_    = cms2.els_musdr()[index2];
                 }
                 else if(hyp_type_ == 2)
                 {
-                    iso1_   = electronIsolation_relsusy_cand0(index1, true);
+                    iso1_   = electronIsolation_relsusy_cand1(index1, true);
                     iso2_   = muonIsoValue(index2);
                     type1_  = cms2.els_type()[index1];
                     type2_  = cms2.mus_type()[index2];
@@ -257,6 +259,8 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
                     e1_detain_  = cms2.els_dEtaIn()[index1];
                     e1_eMe55_   = cms2.els_eMax()[index1] / cms2.els_e5x5()[index1];
                     e1_nmHits_  = cms2.els_exp_innerlayers()[index1];
+                    e1_dcot_    = cms2.els_conv_dcot()[index1];
+                    e1_dist_    = cms2.els_conv_dist()[index1];
                     e1_drmu_    = cms2.els_musdr()[index1];
 
                     mu2_muonid_    = muonIdNotIsolated(index2, NominalTTbar); 
@@ -271,8 +275,8 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
                 }
                 else if(hyp_type_ == 3)
                 {
-                    iso1_   = electronIsolation_relsusy_cand0(index1, true);
-                    iso2_   = electronIsolation_relsusy_cand0(index2, true);
+                    iso1_   = electronIsolation_relsusy_cand1(index1, true);
+                    iso2_   = electronIsolation_relsusy_cand1(index2, true);
                     type1_  = cms2.els_type()[index1];
                     type2_  = cms2.els_type()[index2];
 
@@ -283,6 +287,8 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
                     e1_detain_  = cms2.els_dEtaIn()[index1];
                     e1_eMe55_   = cms2.els_eMax()[index1] / cms2.els_e5x5()[index1];
                     e1_nmHits_  = cms2.els_exp_innerlayers()[index1];
+                    e1_dcot_    = cms2.els_conv_dcot()[index1];
+                    e1_dist_    = cms2.els_conv_dist()[index1];
                     e1_drmu_    = cms2.els_musdr()[index1];
 
                     e2_cand01_  = isGoodElectron(index2);
@@ -292,6 +298,8 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
                     e2_detain_  = cms2.els_dEtaIn()[index2];
                     e2_eMe55_   = cms2.els_eMax()[index2] / cms2.els_e5x5()[index2];
                     e2_nmHits_  = cms2.els_exp_innerlayers()[index2];
+                    e2_dcot_    = cms2.els_conv_dcot()[index2];
+                    e2_dist_    = cms2.els_conv_dist()[index2];
                     e2_drmu_    = cms2.els_musdr()[index2];
 
                     int trkidx1 = cms2.els_trkidx()[index1];
@@ -367,8 +375,6 @@ void twinmaker::InitTwinNtuple ()
     // electron stuff
     e1_cand01_   = 0;
     e2_cand01_   = 0;
-    e1_nmHits_   = -999999;
-    e2_nmHits_   = -999999;
     e1_eopin_    = -999999.;
     e2_eopin_    = -999999.;
     e1_hoe_      = -999999.;
@@ -379,6 +385,12 @@ void twinmaker::InitTwinNtuple ()
     e2_detain_   = -999999.;
     e1_eMe55_    = -999999.;
     e2_eMe55_    = -999999.;
+    e1_nmHits_   = -999999;
+    e2_nmHits_   = -999999;
+    e1_dcot_     = -999999.;
+    e2_dcot_     = -999999.;
+    e1_dist_     = -999999.;
+    e2_dist_     = -999999.;
     e1_drmu_     = -999999.;
     e2_drmu_     = -999999.;
 }
@@ -442,8 +454,6 @@ void twinmaker::MakeTwinNtuple(const char *twinFilename)
     // eectron stuff
     twinTree_->Branch("e1_cand01", &e1_cand01_, "e1_cand01/O");
     twinTree_->Branch("e2_cand01", &e2_cand01_, "e2_cand01/O");
-    twinTree_->Branch("e1_nmHits", &e1_nmHits_, "e1_nmHits/I"); // for conversions
-    twinTree_->Branch("e2_nmHits", &e2_nmHits_, "e2_nmHits/I"); // for conversions
     twinTree_->Branch("e1_eopin",  &e1_eopin_,  "e1_eopin/F" );
     twinTree_->Branch("e2_eopin",  &e2_eopin_,  "e2_eopin/F" );
     twinTree_->Branch("e1_hoe",    &e1_hoe_,    "e1_hoe/F"   );
@@ -454,6 +464,12 @@ void twinmaker::MakeTwinNtuple(const char *twinFilename)
     twinTree_->Branch("e2_detain", &e2_detain_, "e2_detain/F");
     twinTree_->Branch("e1_eMe55",  &e1_eMe55_,  "e1_eMe55/F" ); // for spikes
     twinTree_->Branch("e2_eMe55",  &e2_eMe55_,  "e2_eMe55/F" ); // for spikes
+    twinTree_->Branch("e1_nmHits", &e1_nmHits_, "e1_nmHits/I");
+    twinTree_->Branch("e2_nmHits", &e2_nmHits_, "e2_nmHits/I");
+    twinTree_->Branch("e1_dcot",   &e1_dcot_,   "e1_dcot/F"  );
+    twinTree_->Branch("e2_dcot",   &e2_dcot_,   "e2_dcot/F"  );
+    twinTree_->Branch("e1_dist",   &e1_dist_,   "e1_dist/F"  );
+    twinTree_->Branch("e2_dist",   &e2_dist_,   "e2_dist/F"  );
     twinTree_->Branch("e1_drmu",   &e1_drmu_,   "e1_drmu/F"  );
     twinTree_->Branch("e2_drmu",   &e2_drmu_,   "e2_drmu/F"  );
 }
@@ -485,14 +501,18 @@ bool sortByPt (const LorentzVector &vec1, const LorentzVector &vec2)
 
 bool isGoodElectron(const int index)
 {
-    if(!electronId_cand01(index))
+    if (! electronId_noMuon(index))
         return false;
-    else if(isFromConversionPartnerTrack(index))
+    if (! electronId_cand01(index))
         return false;
-    else if(isFromConversionHitPattern(index))
+    //if (! electronImpact_cand01(index))
+    //    return false;
+    if (isFromConversionPartnerTrack(index))
         return false;
-    else if(!electronId_noMuon(index))
+    // Note that this is not currently
+    // in electronSelection_cand01
+    if (isFromConversionHitPattern(index))
         return false;
-    else
-        return true;
+
+    return true;
 }

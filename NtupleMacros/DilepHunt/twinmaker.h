@@ -77,8 +77,6 @@ class twinmaker
         // electron stuff
         Bool_t  e1_cand01_;
         Bool_t  e2_cand01_;
-        Int_t   e1_nmHits_;
-        Int_t   e2_nmHits_;
         Float_t e1_eopin_;
         Float_t e2_eopin_;
         Float_t e1_hoe_;
@@ -89,6 +87,12 @@ class twinmaker
         Float_t e2_detain_;
         Float_t e1_eMe55_;
         Float_t e2_eMe55_;
+        Int_t   e1_nmHits_;
+        Int_t   e2_nmHits_;
+        Float_t e1_dcot_;
+        Float_t e2_dcot_;
+        Float_t e1_dist_;
+        Float_t e2_dist_;
         Float_t e1_drmu_;
         Float_t e2_drmu_;
 };
