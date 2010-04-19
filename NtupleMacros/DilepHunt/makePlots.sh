@@ -10,11 +10,11 @@
 # Produces zcands.txt and topcands.txt
 root -b -l -q makePlots.C
 
-scp zcands.txt lxplus303:~/scratch0/dilephunt
-ssh lxplus303 /afs/cern.ch/user/j/jribnik/scratch0/dilephunt/processCands.sh zcands.txt /tas03/disk01/dilephunt/zcands
+scp -o "StrictHostKeyChecking no" zcands.txt lxplus5:~/scratch0/dilephunt
+ssh -o "StrictHostKeyChecking no" lxplus5 /afs/cern.ch/user/j/jribnik/scratch0/dilephunt/processCands.sh zcands.txt /tas03/disk01/dilephunt/zcands
 
-scp topcands.txt lxplus303:~/scratch0/dilephunt
-ssh lxplus303 /afs/cern.ch/user/j/jribnik/scratch0/dilephunt/processCands.sh topcands.txt /tas03/disk01/dilephunt/topcands
+scp -o "StrictHostKeyChecking no" topcands.txt lxplus5:~/scratch0/dilephunt
+ssh -o "StrictHostKeyChecking no" lxplus5 /afs/cern.ch/user/j/jribnik/scratch0/dilephunt/processCands.sh topcands.txt /tas03/disk01/dilephunt/topcands
 
 scp plots/* uaf-4.t2.ucsd.edu:~/public_html/dilephunt/plots
 
