@@ -152,8 +152,14 @@ void babymaker::ScanChain (const char *inputFilename, const char *babyFilename, 
                 eormu_    = 13;
                 type_     = cms2.mus_type()[mui];
                 pt_       = cms2.mus_p4()[mui].pt();
+                eta_      = cms2.mus_p4()[mui].eta();
+                phi_      = cms2.mus_p4()[mui].phi();
                 iso_      = muonIsoValue(mui);
                 d0corr_   = cms2.mus_d0corr()[mui];
+
+                int trkidx= cms2.mus_trkidx()[mui];
+                d0vtx_    = cms2.trks_d0vtx()[trkidx];
+
                 dphipfmet_= deltaPhi(thePFMetPhi, cms2.mus_p4()[mui].phi());
                 dphitcmet_= deltaPhi(theTCMetPhi, cms2.mus_p4()[mui].phi());
 
@@ -169,7 +175,7 @@ void babymaker::ScanChain (const char *inputFilename, const char *babyFilename, 
 
                 drjet_       = mindrjet;
                 mt_          = sqrt(2.*pt_*pfmet_*(1.-cos(dphipfmet_)));
-                mu_muonid_   = muonId(mui);
+                mu_muonid_   = muonIdNotIsolated(mui, NominalTTbar);
                 mu_goodmask_ = cms2.mus_goodmask()[mui];
                 mu_gfitchi2_ = cms2.mus_gfit_chi2()[mui]/cms2.mus_gfit_ndof()[mui];
 
@@ -186,8 +192,15 @@ void babymaker::ScanChain (const char *inputFilename, const char *babyFilename, 
                 eormu_    = 11;
                 type_     = cms2.els_type()[eli];
                 pt_       = cms2.els_p4()[eli].pt();
+                eta_      = cms2.els_p4()[eli].eta();
+                phi_      = cms2.els_p4()[eli].phi();
                 iso_      = electronIsolation_relsusy_cand1(eli, true);
                 d0corr_   = cms2.els_d0corr()[eli];
+
+                int trkidx= cms2.els_trkidx()[eli];
+                if (trkidx2 >= 0)
+                    d0vtx_= cms2.trks_d0vtx()[trkidx];
+
                 dphipfmet_= deltaPhi(thePFMetPhi, cms2.els_p4()[eli].phi());
                 dphitcmet_= deltaPhi(theTCMetPhi, cms2.els_p4()[eli].phi());
 
@@ -212,6 +225,7 @@ void babymaker::ScanChain (const char *inputFilename, const char *babyFilename, 
                 e_nmHits_ = cms2.els_exp_innerlayers()[eli];
                 e_dcot_   = cms2.els_conv_dcot()[eli];
                 e_dist_   = cms2.els_conv_dist()[eli];
+                e_drmu_   = cms2.els_musdr()[eli];
 
                 FillBabyNtuple();
             }
@@ -243,8 +257,11 @@ void babymaker::InitBabyNtuple ()
     eormu_        = -999999;
     type_         = -999999;
     pt_           = -999999.;
+    eta_          = -999999.;
+    phi_          = -999999.;
     iso_          = -999999.;
     d0corr_       = -999999.;
+    d0vtx_        = -999999.;
     dphipfmet_    = -999999.;
     dphitcmet_    = -999999.;
     drjet_        = -999999.;
@@ -265,6 +282,7 @@ void babymaker::InitBabyNtuple ()
     e_nmHits_     = -999999;
     e_dcot_       = -999999.;
     e_dist_       = -999999.;
+    e_drmu_       = -999999.;
 }
 
 void babymaker::MakeBabyNtuple(const char *babyFilename)
@@ -291,8 +309,11 @@ void babymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("eormu",     &eormu_,     "eormu/I"    );
     babyTree_->Branch("type",      &type_,      "type/I"     );
     babyTree_->Branch("pt",        &pt_,        "pt/F"       );
+    babyTree_->Branch("eta",       &eta_,       "eta/F"      );
+    babyTree_->Branch("phi",       &phi_,       "phi/F"      );
     babyTree_->Branch("iso",       &iso_,       "iso/F"      );
     babyTree_->Branch("d0corr",    &d0corr_,    "d0corr/F"   );
+    babyTree_->Branch("d0vtx",     &d0vtx_,     "d0vtx/F"    );
     babyTree_->Branch("dphipfmet", &dphipfmet_, "dphipfmet/F");
     babyTree_->Branch("dphitcmet", &dphitcmet_, "dphitcmet/F");
     babyTree_->Branch("drjet",     &drjet_,     "drjet/F"    );
@@ -303,7 +324,7 @@ void babymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("mu_goodmask", &mu_goodmask_, "mu_goodmask/I");
     babyTree_->Branch("mu_gfitchi2", &mu_gfitchi2_, "mu_gfitchi2/F");
 
-    // eectron stuff
+    // electron stuff
     babyTree_->Branch("e_cand01", &e_cand01_, "e_cand01/O");
     babyTree_->Branch("e_eopin",  &e_eopin_,  "e_eopin/F" );
     babyTree_->Branch("e_hoe",    &e_hoe_,    "e_hoe/F"   );
@@ -313,6 +334,7 @@ void babymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e_nmHits", &e_nmHits_, "e_nmHits/I"); // els_exp_innerlayers
     babyTree_->Branch("e_dcot",   &e_dcot_,   "e_dcot/F"  ); // els_conv_dcot
     babyTree_->Branch("e_dist",   &e_dist_,   "e_dist/F"  ); // els_conv_dist
+    babyTree_->Branch("e_drmu",   &e_drmu_,   "e_drmu/F"  );
 }
 
 void babymaker::FillBabyNtuple()
@@ -348,12 +370,12 @@ bool isGoodElectron(const int index)
         return false;
     //if (! electronImpact_cand01(index))
     //    return false;
-    if (isFromConversionPartnerTrack(index))
-        return false;
+    //if (isFromConversionPartnerTrack(index))
+    //    return false;
     // Note that this is not currently
     // in electronSelection_cand01
-    if (isFromConversionHitPattern(index))
-        return false;
+    //if (isFromConversionHitPattern(index))
+    //    return false;
 
     return true;
 }

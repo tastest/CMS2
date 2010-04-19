@@ -42,8 +42,11 @@ class babymaker
         Int_t   eormu_;
         Int_t   type_;
         Float_t pt_;
+        Float_t eta_;
+        Float_t phi_;
         Float_t iso_;
         Float_t d0corr_;
+        Float_t d0vtx_;
         Float_t dphipfmet_;
         Float_t dphitcmet_;
         Float_t drjet_;
@@ -64,6 +67,7 @@ class babymaker
         Int_t   e_nmHits_;
         Float_t e_dcot_;
         Float_t e_dist_;
+        Float_t e_drmu_;
 };
 
 #endif
