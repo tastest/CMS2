@@ -23,6 +23,7 @@
 typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 float deltaPhi (float, float);
 bool sortByPt (const LorentzVector &, const LorentzVector &);
+bool isGoodElectron(const int);
 
 void babymaker::ScanChain (const char *inputFilename, const char *babyFilename, int nEvents)
 {
@@ -185,7 +186,7 @@ void babymaker::ScanChain (const char *inputFilename, const char *babyFilename, 
                 eormu_    = 11;
                 type_     = cms2.els_type()[eli];
                 pt_       = cms2.els_p4()[eli].pt();
-                iso_      = electronIsolation_relsusy_cand0(eli, true);
+                iso_      = electronIsolation_relsusy_cand1(eli, true);
                 d0corr_   = cms2.els_d0corr()[eli];
                 dphipfmet_= deltaPhi(thePFMetPhi, cms2.els_p4()[eli].phi());
                 dphitcmet_= deltaPhi(theTCMetPhi, cms2.els_p4()[eli].phi());
@@ -337,4 +338,22 @@ float deltaPhi (float phi1, float phi2)
 bool sortByPt (const LorentzVector &vec1, const LorentzVector &vec2)
 {
     return vec1.pt() > vec2.pt();
+}
+
+bool isGoodElectron(const int index)
+{
+    if (! electronId_noMuon(index))
+        return false;
+    if (! electronId_cand01(index))
+        return false;
+    //if (! electronImpact_cand01(index))
+    //    return false;
+    if (isFromConversionPartnerTrack(index))
+        return false;
+    // Note that this is not currently
+    // in electronSelection_cand01
+    if (isFromConversionHitPattern(index))
+        return false;
+
+    return true;
 }
