@@ -186,8 +186,8 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
                         mindrjet1 = currdrjet1;
 
                     // for loose hyp lepton
-                    float deta2 = cms2.hyp_lt_p4()[hypi].eta()-theJets[jeti].eta();
-                    float dphi2 = deltaPhi(cms2.hyp_lt_p4()[hypi].phi(), theJets[jeti].phi());
+                    float deta2 = cms2.hyp_ll_p4()[hypi].eta()-theJets[jeti].eta();
+                    float dphi2 = deltaPhi(cms2.hyp_ll_p4()[hypi].phi(), theJets[jeti].phi());
                     float currdrjet2 = sqrt(deta2*deta2+dphi2*dphi2);
                     if (currdrjet2 < mindrjet2)
                         mindrjet2 = currdrjet2;
@@ -507,12 +507,12 @@ bool isGoodElectron(const int index)
         return false;
     //if (! electronImpact_cand01(index))
     //    return false;
-    if (isFromConversionPartnerTrack(index))
-        return false;
+    //if (isFromConversionPartnerTrack(index))
+    //    return false;
     // Note that this is not currently
     // in electronSelection_cand01
-    if (isFromConversionHitPattern(index))
-        return false;
+    //if (isFromConversionHitPattern(index))
+    //    return false;
 
     return true;
 }
