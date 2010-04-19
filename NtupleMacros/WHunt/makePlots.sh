@@ -43,7 +43,7 @@ python makeWSummaryPlot.py wfinder
 #
 scp wcands.txt lxplus303:~/scratch0/whunt
 ssh lxplus303 /afs/cern.ch/user/j/jribnik/scratch0/whunt/processCands.sh wcands.txt /tas03/disk01/whunt
-scp plots/* uaf-2.t2.ucsd.edu:~/public_html/whunt/plots
-scp dumps/* uaf-2.t2.ucsd.edu:~/public_html/whunt/dumps
-scp picks/* uaf-2.t2.ucsd.edu:~/public_html/whunt/picks
-ssh uaf-6.t2.ucsd.edu "touch ~/devel/whunt/.fireShot.bang"
+scp plots/* uaf-4.t2.ucsd.edu:~/public_html/whunt/plots
+scp dumps/* uaf-4.t2.ucsd.edu:~/public_html/whunt/dumps
+scp picks/* uaf-4.t2.ucsd.edu:~/devel/fireShot/picks
+ssh uaf-4.t2.ucsd.edu "touch ~/devel/fireShot/.fireShot.bang"
