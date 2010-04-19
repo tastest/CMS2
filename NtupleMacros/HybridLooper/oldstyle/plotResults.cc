@@ -412,6 +412,15 @@ void plotResultsW(TString det, TString fileStamp, TString refFileStamp, TString 
     plotDataRefOverlayStack(datah1, refh1, "mu_selected_d0corr", "d0(BS) (cm))", fileStamp, det, norm, 1);
     plotDataRefOverlayStack(datah1, refh1, "mu_selected_tcmetdphi", "dPhi(tcMET, Muon) (GeV)", fileStamp, det, norm, 1);
 
+    plotDataRefOverlayStack(datah1, refh1, "mu_selected_nChi2", "Muon nChi2", fileStamp, det, norm, 1);
+    plotDataRefOverlayStack(datah1, refh1, "mu_selected_type", "Muon type", fileStamp, det, norm, 1);
+    plotDataRefOverlayStack(datah1, refh1, "mu_selected_validHits", "Muon Valid Hits", fileStamp, det, norm, 1);
+    plotDataRefOverlayStack(datah1, refh1, "mu_selected_ecalvetoDep", "Muon Ecal Veto Deposit", fileStamp, det, norm, 1);
+    plotDataRefOverlayStack(datah1, refh1, "mu_selected_hcalvetoDep", "Muon Hcal Veto Deposit", fileStamp, det, norm, 1);
+    plotDataRefOverlayStack(datah1, refh1, "mu_selected_validSTAHits", "Muon valid STA Hits", fileStamp, det, norm, 1);
+    plotDataRefOverlayStack(datah1, refh1, "mu_selected_muonIsoValue", "Muon IsoValue", fileStamp, det, norm, 1);
+    plotDataRefOverlayStack(datah1, refh1, "mu_selected_isCosmics", "Muon IsCosmic", fileStamp, det, norm, 1);
+
     // N-1 distributions
     plotDataRefOverlayStack(datah1, refh1, "mu_nm1_tcmet", "NM1 tcMET (GeV)", fileStamp, det, norm, 4, 20.0, 20.0);
     plotDataRefOverlayStack(datah1, refh1, "mu_nm1_pfmet", "NM1 pfMET (GeV)", fileStamp, det, norm, 4, 20.0, 20.0);

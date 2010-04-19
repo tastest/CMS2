@@ -593,6 +593,15 @@ void MyScanChain::AnalyseMuons(const float &weight) {
         FillHist(h1_mu_selected_pftransmass_, det, pftransmass, weight);
         FillHist(h1_mu_selected_d0corr_, det, cms2.mus_d0corr()[muIndex], weight);
 
+	FillHist(h1_mu_selected_nChi2_, 	det, cms2.mus_gfit_chi2().at(muIndex)/cms2.mus_gfit_ndof().at(muIndex), weight);
+	FillHist(h1_mu_selected_type_, 		det, cms2.mus_type().at(muIndex), 					weight);
+	FillHist(h1_mu_selected_validHits_,  	det, cms2.mus_validHits().at(muIndex), 					weight);
+	FillHist(h1_mu_selected_ecalvetoDep_, 	det, cms2.mus_iso_ecalvetoDep().at(muIndex), 				weight);
+	FillHist(h1_mu_selected_hcalvetoDep_, 	det, cms2.mus_iso_hcalvetoDep().at(muIndex), 				weight);
+	FillHist(h1_mu_selected_validSTAHits_, 	det, cms2.mus_gfit_validSTAHits().at(muIndex), 				weight);
+	FillHist(h1_mu_selected_muonIsoValue_, 	det, muonIsoValue(muIndex), 						weight);
+	FillHist(h1_mu_selected_isCosmics_, 	det, isCosmics(muIndex), 						weight);
+
     }
 
     // comparison of inclusive distributions
@@ -826,6 +835,15 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     FormatHist(h1_mu_selected_tctransmass_, "mu_selected_tctransmass", 200, 0, 200);
     FormatHist(h1_mu_selected_pftransmass_, "mu_selected_pftransmass", 200, 0, 200);
     FormatHist(h1_mu_selected_d0corr_, "mu_selected_d0corr", 100, -0.2, 0.2);
+    //ibl add ID histos
+    FormatHist(h1_mu_selected_nChi2_, "mu_selected_nChi2", 150, 0, 15);
+    FormatHist(h1_mu_selected_type_, "mu_selected_type", 15, 0, 15);
+    FormatHist(h1_mu_selected_validHits_, "mu_selected_validHits", 60, 0, 60);
+    FormatHist(h1_mu_selected_ecalvetoDep_, "mu_selected_ecalvetoDep", 100, 0, 10);
+    FormatHist(h1_mu_selected_hcalvetoDep_, "mu_selected_hcalvetoDep", 150, 0, 15);
+    FormatHist(h1_mu_selected_validSTAHits_, "mu_selected_validSTAHits", 50, 0, 50);
+    FormatHist(h1_mu_selected_muonIsoValue_, "mu_selected_muonIsoValue", 200, 0, 2.);
+    FormatHist(h1_mu_selected_isCosmics_, "mu_selected_isCosmics", 2, 0, 2);
 
     // open an asciifile to store results
     if(isData_) {
