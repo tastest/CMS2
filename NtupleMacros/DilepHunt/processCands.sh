@@ -1,9 +1,7 @@
 #!/bin/bash
 
 # Turn output of TTree::Scan into something
-# pickAnEvent.pl can process
-# The scan output includes a dump of all
-# baby branches, not just run, ls and evt
+# useful, and trigger pickAnEvent.pl
 
 cd /afs/cern.ch/user/j/jribnik/scratch0/dilephunt
 if [ $# -ne 2 ]
@@ -40,34 +38,10 @@ do
     run_=`echo $line | awk '{print $1}'`
     ls_=`echo $line | awk '{print $2}'`
     evt_=`echo $line | awk '{print $3}'`
-    echo Processing new candidate: $run_ $ls_ $evt_
-
-    # Choose the right dataset!!!
-    if [ $run_ -le 132512 ]
-    then
-        echo /ExpressPhysics/Commissioning10-Express-v7/FEVT >eventToPick.txt
-    elif [ $run_ -le 133532 ]
-    then
-        echo /ExpressPhysics/Commissioning10-Express-v8/FEVT >eventToPick.txt
-    else
-        echo /ExpressPhysics/Commissioning10-Express-v9/FEVT >eventToPick.txt
-    fi
-
-    # Need CMSSW environment for pickAnEvent.pl
-    if [ ! -d CMSSW_3_5_6/src ]
-    then
-        scramv1 p CMSSW CMSSW_3_5_6
-    fi
-    cd CMSSW_3_5_6/src
-    eval `scramv1 ru -sh`
-    cd -
-
-    # Finally ready for pickAnEvent.pl
-    echo "$run_ $ls_ $evt_" >>eventToPick.txt
-    ./pickAnEvent.pl eventToPick.txt
+    echo Processing new candidate in $run_ $ls_ $evt_
 
     # Dump the event
-    # JUST IN CASE there are multiple cands
+    # In case there are multiple cands
     # per event suffix with cand index
     candi=0
     dumpFile="dump_${run_}_${ls_}_${evt_}_${candi}.txt"
@@ -84,6 +58,35 @@ do
         value=`eval $valuecmd`
         echo $field $value >>$dumpFile
     done
+
+    # Only need to pickAnEvent.pl once
+    # per event, so do so for candi==0
+    if [ $candi -eq 0 ]
+    then
+        # Choose the right dataset!!!
+        if [ $run_ -le 132512 ]
+        then
+            echo /ExpressPhysics/Commissioning10-Express-v7/FEVT >eventToPick.txt
+        elif [ $run_ -le 133532 ]
+        then
+            echo /ExpressPhysics/Commissioning10-Express-v8/FEVT >eventToPick.txt
+        else
+            echo /ExpressPhysics/Commissioning10-Express-v9/FEVT >eventToPick.txt
+        fi
+
+        # Need CMSSW environment for pickAnEvent.pl
+        if [ ! -d CMSSW_3_5_6/src ]
+        then
+            scramv1 p CMSSW CMSSW_3_5_6
+        fi
+        cd CMSSW_3_5_6/src
+        eval `scramv1 ru -sh`
+        cd -
+
+        # Finally ready for pickAnEvent.pl
+        echo "$run_ $ls_ $evt_" >>eventToPick.txt
+        ./pickAnEvent.pl eventToPick.txt
+    fi
 
     echo $line >>${candsfiletrunc}_stripped_processed.txt
 done <${candsfiletrunc}_stripped.txt
