@@ -139,7 +139,9 @@ double elFakeProbErr_test (int, enum fakeRateVersion);
 static TFile *el_fakeRateFile = 0;
 
 // histograms for supported denominators
-static TH2F  *el_fakeRate_ttbar = 0;
+static TH2F  *el_fakeRate_ttbar_v1 = 0;
+static TH2F  *el_fakeRate_ttbar_v2 = 0;
+static TH2F  *el_fakeRate_ttbar_v3 = 0;
 
 static TH2F  *el_fakeRate_v1_cand01 = 0;
 static TH2F  *el_fakeRate_v1_cand02 = 0;
@@ -271,13 +273,33 @@ bool isFakeableElectron (int index, enum fakeRateVersion version){
     if (isChargeFlip(index)) return false;
     return true;
   } 
-  else if( version == el_ttbar ){
+  else if( version == el_ttbar_v1 ){
+    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
+    if (!electronId_noMuon(index)) return false;
+    //if (!electronId_cand01(index)) return false;
+    //if (!electronImpact_cand01(index)) return false; 
+    //if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
+    if (isFromConversionPartnerTrack(index)) return false;
+    return true;
+  }
+  else if( version == el_ttbar_v2 ){
     if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
     if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
     if (!electronId_noMuon(index)) return false;
     //if (!electronId_cand01(index)) return false;
     //if (!electronImpact_cand01(index)) return false; 
     if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
+    if (isFromConversionPartnerTrack(index)) return false;
+    return true;
+  }
+  else if( version == el_ttbar_v3 ){
+    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
+    if (!electronId_noMuon(index)) return false;
+    //if (!electronId_cand01(index)) return false;
+    if (!electronImpact_cand01(index)) return false; 
+    //if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
     if (isFromConversionPartnerTrack(index)) return false;
     return true;
   }
@@ -353,7 +375,9 @@ TH2F &fakeRateEl (enum fakeRateVersion version){
     el_fakeRate_v3_cand01     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v3_cand01_FR_etavspt") );
     el_fakeRate_v3_cand02     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v3_cand02_FR_etavspt") );
     el_fakeRate_v3_cand02flip = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v3_cand02flip_FR_etavspt") );
-    el_fakeRate_ttbar = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_ttbar_FR_etavspt") );
+    el_fakeRate_ttbar_v1 = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_ttbar_v1_FR_etavspt") );
+    el_fakeRate_ttbar_v2 = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_ttbar_v2_FR_etavspt") );
+    el_fakeRate_ttbar_v3 = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_ttbar_v3_FR_etavspt") );
   }
   if( version == el_v1_cand01 ){ 
     return *el_fakeRate_v1_cand01;
@@ -373,8 +397,15 @@ TH2F &fakeRateEl (enum fakeRateVersion version){
     return *el_fakeRate_v3_cand02;
   } else if( version == el_v3_cand02flip ){ 
     return *el_fakeRate_v3_cand02flip;
-  } else if( version == el_ttbar ){ 
-    return *el_fakeRate_ttbar;
+  } 
+  else if( version == el_ttbar_v1 ){ 
+    return *el_fakeRate_ttbar_v1;
+  } 
+  else if( version == el_ttbar_v2 ){ 
+    return *el_fakeRate_ttbar_v2;
+  } 
+  else if( version == el_ttbar_v3 ){ 
+    return *el_fakeRate_ttbar_v3;
   }
   cout << "ERROR: unknown electron version" << endl;	
   gSystem->Exit(1);

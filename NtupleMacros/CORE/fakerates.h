@@ -4,7 +4,10 @@
 
 // list of available FR versions:
 enum fakeRateVersion {
-  el_ttbar,   
+  el_ttbar_v1,   
+  el_ttbar_v2,   
+  el_ttbar_v3,   
+
   el_v1_cand01, // pure cand01 selection
   el_v1_cand02, // cand02 + extra
   el_v1_cand02flip, // cand02 + extra + chargeflipVeto
