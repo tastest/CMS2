@@ -43,11 +43,14 @@ do
     echo Processing new candidate: $run_ $ls_ $evt_
 
     # Choose the right dataset!!!
-    if [ $run_ -lt 132514 ]
+    if [ $run_ -le 132512 ]
     then
         echo /ExpressPhysics/Commissioning10-Express-v7/FEVT >eventToPick.txt
-    else
+    elif [ $run_ -le 133532 ]
+    then
         echo /ExpressPhysics/Commissioning10-Express-v8/FEVT >eventToPick.txt
+    else
+        echo /ExpressPhysics/Commissioning10-Express-v9/FEVT >eventToPick.txt
     fi
 
     # Need CMSSW environment for pickAnEvent.pl
@@ -64,7 +67,16 @@ do
     ./pickAnEvent.pl eventToPick.txt
 
     # Dump the event
-    dumpFile="dump_${run_}_${ls_}_${evt_}.txt"
+    # JUST IN CASE there are multiple cands
+    # per event suffix with cand index
+    candi=0
+    dumpFile="dump_${run_}_${ls_}_${evt_}_${candi}.txt"
+    while [ -e $dumpFile ]
+    do
+        candi=$(($candi+1))
+        dumpFile="dump_${run_}_${ls_}_${evt_}_${candi}.txt"
+    done
+
     for i in `seq 4 $nf`; do
         fieldcmd="echo $fields | awk '{print \$$i}'"
         valuecmd="echo $line | awk '{print \$$i}'"
