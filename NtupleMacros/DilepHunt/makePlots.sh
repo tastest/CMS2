@@ -17,11 +17,5 @@ scp -o "StrictHostKeyChecking no" topcands.txt lxplus5:~/scratch0/dilephunt
 ssh -o "StrictHostKeyChecking no" lxplus5 /afs/cern.ch/user/j/jribnik/scratch0/dilephunt/processCands.sh topcands.txt /tas03/disk01/dilephunt/topcands
 
 scp plots/* uaf-4.t2.ucsd.edu:~/public_html/dilephunt/plots
-
 scp zcands/dumps/* uaf-4.t2.ucsd.edu:~/public_html/dilephunt/zcands/dumps
-scp zcands/picks/* uaf-4.t2.ucsd.edu:~/devel/fireShot/picks
-
 scp topcands/dumps/* uaf-4.t2.ucsd.edu:~/public_html/dilephunt/topcands/dumps
-scp topcands/picks/* uaf-4.t2.ucsd.edu:~/devel/fireShot/picks
-
-ssh uaf-6.t2.ucsd.edu "touch ~/devel/fireShot/.fireShot.bang"
