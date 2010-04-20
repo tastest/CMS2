@@ -158,7 +158,7 @@ bool isFakeableElectron (int index, enum fakeRateVersion version){
 
 // remove ID, ISO, IP
   if(version == el_v1_cand01){
-    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (!(cms2.els_type()[index] & (1<<ISECALDRIVEN))) return false;
     if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
     if (!electronId_noMuon(index)) return false;
     //if (!electronId_cand01(index)) return false;
@@ -168,7 +168,7 @@ bool isFakeableElectron (int index, enum fakeRateVersion version){
     if (isFromConversionPartnerTrack(index)) return false;
     return true;
   } else if(version == el_v1_cand02){
-    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (!(cms2.els_type()[index] & (1<<ISECALDRIVEN))) return false;
     if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
     if (!electronId_noMuon(index)) return false;
     //  if (!electronId_cand02(index)) return false;
@@ -182,7 +182,7 @@ bool isFakeableElectron (int index, enum fakeRateVersion version){
     //  if (isChargeFlip(index)) return false;
     return true;
   } else if(version == el_v1_cand02flip){
-    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (!(cms2.els_type()[index] & (1<<ISECALDRIVEN))) return false;
     if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
     if (!electronId_noMuon(index)) return false;
     //  if (!electronId_cand02(index)) return false;
@@ -198,7 +198,7 @@ bool isFakeableElectron (int index, enum fakeRateVersion version){
   } 
 // remove ID, IP
     else if(version == el_v2_cand01){
-    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (!(cms2.els_type()[index] & (1<<ISECALDRIVEN))) return false;
     if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
     if (!electronId_noMuon(index)) return false;
     //if (!electronId_cand01(index)) return false;
@@ -207,7 +207,7 @@ bool isFakeableElectron (int index, enum fakeRateVersion version){
     if (isFromConversionPartnerTrack(index)) return false;
     return true;
   } else if(version == el_v2_cand02){
-    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (!(cms2.els_type()[index] & (1<<ISECALDRIVEN))) return false;
     if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
     if (!electronId_noMuon(index)) return false;
     //  if (!electronId_cand02(index)) return false;
@@ -220,7 +220,7 @@ bool isFakeableElectron (int index, enum fakeRateVersion version){
     // if (isChargeFlip(index)) return false;
     return true;
   } else if(version == el_v2_cand02flip){
-    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (!(cms2.els_type()[index] & (1<<ISECALDRIVEN))) return false;
     if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
     if (!electronId_noMuon(index)) return false;
     //  if (!electronId_cand02(index)) return false;
@@ -235,7 +235,7 @@ bool isFakeableElectron (int index, enum fakeRateVersion version){
   } 
 // remove ISO, IP
     else if(version == el_v3_cand01){
-    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (!(cms2.els_type()[index] & (1<<ISECALDRIVEN))) return false;
     if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
     if (!electronId_noMuon(index)) return false;
     if (!electronId_cand01(index)) return false;
@@ -245,7 +245,7 @@ bool isFakeableElectron (int index, enum fakeRateVersion version){
     if (isFromConversionPartnerTrack(index)) return false;
     return true;
   } else if(version == el_v3_cand02){
-    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (!(cms2.els_type()[index] & (1<<ISECALDRIVEN))) return false;
     if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
     if (!electronId_noMuon(index)) return false;
     if (!electronId_cand02(index)) return false;
@@ -259,7 +259,7 @@ bool isFakeableElectron (int index, enum fakeRateVersion version){
     //  if (isChargeFlip(index)) return false;
     return true;
   } else if(version == el_v3_cand02flip){
-    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (!(cms2.els_type()[index] & (1<<ISECALDRIVEN))) return false;
     if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
     if (!electronId_noMuon(index)) return false;
     if (!electronId_cand02(index)) return false;
@@ -274,7 +274,7 @@ bool isFakeableElectron (int index, enum fakeRateVersion version){
     return true;
   } 
   else if( version == el_ttbar_v1 ){
-    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (!(cms2.els_type()[index] & (1<<ISECALDRIVEN))) return false;
     if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
     if (!electronId_noMuon(index)) return false;
     //if (!electronId_cand01(index)) return false;
@@ -284,7 +284,7 @@ bool isFakeableElectron (int index, enum fakeRateVersion version){
     return true;
   }
   else if( version == el_ttbar_v2 ){
-    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (!(cms2.els_type()[index] & (1<<ISECALDRIVEN))) return false;
     if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
     if (!electronId_noMuon(index)) return false;
     //if (!electronId_cand01(index)) return false;
@@ -294,7 +294,7 @@ bool isFakeableElectron (int index, enum fakeRateVersion version){
     return true;
   }
   else if( version == el_ttbar_v3 ){
-    if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+    if (!(cms2.els_type()[index] & (1<<ISECALDRIVEN))) return false;
     if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
     if (!electronId_noMuon(index)) return false;
     //if (!electronId_cand01(index)) return false;
