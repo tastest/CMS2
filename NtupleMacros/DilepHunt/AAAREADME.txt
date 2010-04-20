@@ -1,3 +1,3 @@
-mkdir -p baby skim logs plots topcands/dumps topcands/picks zcands/dumps zcands/picks
+mkdir -p baby skim logs plots topcands/dumps zcands/dumps
 cvs co -rHEAD -d CORE UserCode/JRibnik/CMS2/NtupleMacros/CORE
 sed 's!#define PARANOIA!//#define PARANOIA!' CORE/CMS2.h >CORE/CMS2.h.new; mv CORE/CMS2.h.new CORE/CMS2.h
