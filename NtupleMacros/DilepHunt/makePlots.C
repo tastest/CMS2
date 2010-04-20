@@ -4,18 +4,17 @@
     TChain* chain = new TChain("tree");
     chain->Add("/tas03/disk01/dilephunt/baby/*.root");
 
-    TCut zselection("pt1 > 20. && pt2 > 20.");      // two pt > 20 leptons
-    zselection   += "iso1 < 0.2 || iso2 < 0.2";     // at least one is isolated
-    zselection   += "abs(eormu1) == abs(eormu2)";   // same flavor
-    //zselection   += "eormu1*eormu2 < 0";            // opposite sign
-    zselection   += "abs(d0corr1) < 0.4 && abs(d0corr2) < 0.4";
+    TCut zselection("pt1 > 20. && pt2 > 20.");                  // two pt > 20 leptons
+    zselection   += "iso1 < 0.2 || iso2 < 0.2";                 // at least one is "well" isolated
+    zselection   += "iso1 < 0.4 && iso2 < 0.4";                 // and both are somewhat isolated
+    zselection   += "abs(eormu1) == abs(eormu2)";               // same flavor
+    zselection   += "abs(d0corr1) < 0.4 && abs(d0corr2) < 0.4"; // humble impact parameters
 
     TCut topselection("(pt1 > 20. || pt2 > 20.) && pt1 > 10. && pt2 > 10."); // 20/10
-    topselection   += "iso1 < 0.2 || iso2 < 0.2";                            // at least one is isolated
-    //topselection   += "eormu1*eormu2 < 0";                                   // opposite sign
-    topselection   += "njets > 0";                                           // at least one pt > 20 jet
-    //topselection   += "pfmet > 20 || tcmet > 20";                            // met > 20
-    topselection   += "abs(d0corr1) < 0.4 && abs(d0corr2) < 0.4";
+    topselection   += "iso1 < 0.2 || iso2 < 0.2";                            // at least one is "well" isolated
+    topselection   += "iso1 < 0.4 && iso2 < 0.4           ";                 // and both are somewhat isolated
+    topselection   += "abs(d0corr1) < 0.4 && abs(d0corr2) < 0.4";            // humble impact parameters
+    topselection   += "((hyp_type == 0 || hyp_type == 3) && (pfmet > 10. || tcmet > 10.)) || (hyp_type == 1 || hyp_type == 2)"; // met cuts for ee,mumu only
 
     TCanvas* canvas = new TCanvas("canvas", "canvas", 600, 400);
     canvas->cd();
