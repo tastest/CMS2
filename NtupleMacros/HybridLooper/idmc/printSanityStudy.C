@@ -243,7 +243,7 @@ void printSanityStudy(TString det) {
     b_h1_hyp_idstudy_after_cand01_pt->Draw("HIST SAME");
     s_h1_hyp_idstudy_after_classExpLoose_pt->Draw("HIST SAME E1");
     b_h1_hyp_idstudy_after_classExpLoose_pt->Draw("HIST SAME E1");
-    s_h1_hyp_idstudy_after_cand01_pt->GetYaxis()->SetRangeUser(0, 6);
+    s_h1_hyp_idstudy_after_cand01_pt->GetYaxis()->SetRangeUser(0, 10);
     s_h1_hyp_idstudy_after_cand01_pt->GetXaxis()->SetTitle("p_{T} (GeV)");
     l1->Draw();
 
@@ -275,7 +275,7 @@ void printSanityStudy(TString det) {
     s_h1_hyp_idstudy_after_cand01_pt->GetXaxis()->SetTitle("p_{T} (GeV)");
     l2->Draw();
     
-    c1->SaveAs("results/study_" + det + "_classExpTight.png");
+    c2->SaveAs("results/study_" + det + "_classExpTight.png");
 
     //
     // pt distributions after iso loose
@@ -302,7 +302,7 @@ void printSanityStudy(TString det) {
     b_h1_hyp_idstudy_after_classExpLooseRel01_pt->Draw("HIST SAME E1");
     s_h1_hyp_idstudy_after_classExpLooseFull_pt->Draw("HIST SAME E1");
     b_h1_hyp_idstudy_after_classExpLooseFull_pt->Draw("HIST SAME E1");
-    s_h1_hyp_idstudy_after_cand01Rel01_pt->GetYaxis()->SetRangeUser(0, 6);
+    s_h1_hyp_idstudy_after_cand01Rel01_pt->GetYaxis()->SetRangeUser(0, 6.5);
     s_h1_hyp_idstudy_after_cand01Rel01_pt->GetXaxis()->SetTitle("p_{T} (GeV)");
     l3->Draw();
 
@@ -333,7 +333,7 @@ void printSanityStudy(TString det) {
     b_h1_hyp_idstudy_after_classExpTightRel01_pt->Draw("HIST SAME E1");
     s_h1_hyp_idstudy_after_classExpTightFull_pt->Draw("HIST SAME E1");
     b_h1_hyp_idstudy_after_classExpTightFull_pt->Draw("HIST SAME E1");
-    s_h1_hyp_idstudy_after_cand01Rel01_pt->GetYaxis()->SetRangeUser(0, 6);
+    s_h1_hyp_idstudy_after_cand01Rel01_pt->GetYaxis()->SetRangeUser(0, 10);
     s_h1_hyp_idstudy_after_cand01Rel01_pt->GetXaxis()->SetTitle("p_{T} (GeV)");
     l4->Draw();
     
