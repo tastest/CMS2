@@ -62,11 +62,11 @@ do
     # Only pickAnEvent.pl events that have
     # not already been picked
     alreadypicked=0
-    ssh cms-tas03 ls /tas03/disk01/fireShot/picks/*${run_}_${ls_}_${evt_}.root >/dev/null 2>&1
-    if [ $? -eq 0 ]
-    then
-        alreadypicked=1
-    fi
+    #ssh cms-tas03 ls /tas03/disk01/fireShot/picks/*${run_}_${ls_}_${evt_}.root >/dev/null 2>&1
+    #if [ $? -eq 0 ]
+    #then
+    #    alreadypicked=1
+    #fi
 
     # If we must pick, only do so for candi==0
     # as we have not yet transferred this pick
