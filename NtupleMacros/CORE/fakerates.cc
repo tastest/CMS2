@@ -297,8 +297,8 @@ bool isFakeableElectron (int index, enum fakeRateVersion version){
     //if (!(cms2.els_type()[index] & (1<<ISECALDRIVEN))) return false;
     if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
     if (!electronId_noMuon(index)) return false;
-    //if (!electronId_cand01(index)) return false;
-    if (!electronImpact_cand01(index)) return false; 
+    if (!electronId_cand01(index)) return false;
+    //if (!electronImpact_cand01(index)) return false; 
     //if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
     if (isFromConversionPartnerTrack(index)) return false;
     return true;
