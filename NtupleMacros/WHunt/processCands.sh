@@ -59,9 +59,19 @@ do
         echo $field $value >>$dumpFile
     done
 
-    # Only need to pickAnEvent.pl once
-    # per event, so do so for candi==0
-    if [ $candi -eq 0 ]
+    # Only pickAnEvent.pl events that have
+    # not already been picked
+    alreadypicked=0
+    #ssh cms-tas03 ls /tas03/disk01/fireShot/picks/*${run_}_${ls_}_${evt_}.root >/dev/null 2>&1
+    #if [ $? -eq 0 ]
+    #then
+    #    alreadypicked=1
+    #fi
+
+    # If we must pick, only do so for candi==0
+    # as we have not yet transferred this pick
+    # in order to know that it has been picked
+    if [ $alreadypicked -eq 0 ] && [ $candi -eq 0 ]
     then
         # Choose the right dataset!!!
         if [ $run_ -le 132512 ]
@@ -92,7 +102,7 @@ do
 done <${candsfiletrunc}_stripped.txt
 
 # Transfer back
-scp *.root cms-tas03:${tas03loc}/picks
+scp *.root cms-tas03:/tas03/disk01/fireShot/picks
 scp dump*.txt cms-tas03:${tas03loc}/dumps
 scp ${candsfiletrunc}_stripped*.txt cms-tas03:${tas03loc}/
 
