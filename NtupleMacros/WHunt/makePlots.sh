@@ -41,9 +41,7 @@ make build
 # was makeWPlots.py before
 python makeWSummaryPlot.py wfinder
 #
-scp wcands.txt lxplus303:~/scratch0/whunt
-ssh lxplus303 /afs/cern.ch/user/j/jribnik/scratch0/whunt/processCands.sh wcands.txt /tas03/disk01/whunt
+scp -o "StrictHostKeyChecking no"  wcands.txt lxplus5:~/scratch0/whunt
+ssh -o "StrictHostKeyChecking no" lxplus5 /afs/cern.ch/user/j/jribnik/scratch0/whunt/processCands.sh wcands.txt /tas03/disk01/whunt
 scp plots/* uaf-4.t2.ucsd.edu:~/public_html/whunt/plots
 scp dumps/* uaf-4.t2.ucsd.edu:~/public_html/whunt/dumps
-scp picks/* uaf-4.t2.ucsd.edu:~/devel/fireShot/picks
-ssh uaf-4.t2.ucsd.edu "touch ~/devel/fireShot/.fireShot.bang"
