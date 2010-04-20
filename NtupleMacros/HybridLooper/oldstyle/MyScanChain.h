@@ -230,6 +230,16 @@ class MyScanChain {
         TH1F    *h1_mu_selected_tctransmass_[3];
         TH1F    *h1_mu_selected_d0corr_[3];
 
+        TH1F    * h1_mu_d0corr_[3];
+        TH1F    * h1_mu_nChi2_[3];
+        TH1F    * h1_mu_type_[3];
+        TH1F    * h1_mu_validHits_[3];
+        TH1F    * h1_mu_ecalvetoDep_[3];
+        TH1F    * h1_mu_hcalvetoDep_[3];
+        TH1F    * h1_mu_validSTAHits_[3];
+        TH1F    * h1_mu_muonIsoValue_[3];
+        TH1F    * h1_mu_isCosmics_[3];
+
         TH1F    * h1_mu_selected_nChi2_[3];
         TH1F    * h1_mu_selected_type_[3];
         TH1F    * h1_mu_selected_validHits_[3];
@@ -238,6 +248,16 @@ class MyScanChain {
         TH1F    * h1_mu_selected_validSTAHits_[3];
         TH1F    * h1_mu_selected_muonIsoValue_[3];
         TH1F    * h1_mu_selected_isCosmics_[3];
+
+        TH1F    * h1_mu_antiselected_d0corr_[3];
+        TH1F    * h1_mu_antiselected_nChi2_[3];
+        TH1F    * h1_mu_antiselected_type_[3];
+        TH1F    * h1_mu_antiselected_validHits_[3];
+        TH1F    * h1_mu_antiselected_ecalvetoDep_[3];
+        TH1F    * h1_mu_antiselected_hcalvetoDep_[3];
+        TH1F    * h1_mu_antiselected_validSTAHits_[3];
+        TH1F    * h1_mu_antiselected_muonIsoValue_[3];
+        TH1F    * h1_mu_antiselected_isCosmics_[3];
 
 };
 

@@ -56,7 +56,7 @@ void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString sav
 
     TCanvas *c1 = new TCanvas();
     c1->cd();
-    st->Draw();
+    st->Draw("hist");
     st->GetXaxis()->SetTitle(titleX); 
     lg_all->Draw();
     if (det == "ee" && cutValEE != -1) getArrow(st, det, cutValEB, cutValEE)->Draw();
@@ -66,7 +66,7 @@ void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString sav
 
     c1->SetLogy();
     st->SetMinimum(0.10);
-    st->Draw();	
+    st->Draw("hist");	
     lg_all->Draw();
     if (det == "ee" && cutValEE != -1) getArrow(st, det, cutValEB, cutValEE)->Draw();
     if (det == "eb" && cutValEB != -1) getArrow(st, det, cutValEB, cutValEE)->Draw();
@@ -215,7 +215,7 @@ void plotElectronIDStack(HistogramUtilities &hData, HistogramUtilities &hRef, TS
     // ideal y range should be at least 2 sigma greater than highest data point
     float idealMaximumData = h1DataSelected->GetMaximum() + sqrt(h1DataSelected->GetMaximum())*2;
     if(stRefSelected->GetMaximum() < idealMaximumData ) stRefSelected->SetMaximum(idealMaximumData);
-    stRefSelected->Draw();
+    stRefSelected->Draw("hist");
     h1DataSelected->Draw("samee1");
     stRefSelected->GetXaxis()->SetTitle(titleX);
     lg_all->Draw();
@@ -226,7 +226,104 @@ void plotElectronIDStack(HistogramUtilities &hData, HistogramUtilities &hRef, TS
     // draw antiselected
     idealMaximumData = h1DataAntiselected->GetMaximum() + sqrt(h1DataAntiselected->GetMaximum())*2;
     if(stRefAntiselected->GetMaximum() < idealMaximumData ) stRefAntiselected->SetMaximum(idealMaximumData);
-    stRefAntiselected->Draw();
+    stRefAntiselected->Draw("hist");
+    h1DataAntiselected->Draw("samee1");
+    stRefAntiselected->GetXaxis()->SetTitle(titleX);
+    lg_all->Draw();
+    texAntiselected->Draw();
+    texLumi->Draw();
+    Utilities::saveCanvas(c1, "results/" + saveName  + "_lin_" + antiselected_name + "_" + det);
+
+    delete texLumi;
+    delete texSelected;
+    delete texAntiselected;
+    delete h1DataSelected;
+    delete h1DataAntiselected;
+    delete c1;
+    delete stRefSelected;
+    delete stRefAntiselected;
+
+
+}
+
+
+
+void plotMuonIDStack(HistogramUtilities &hData, HistogramUtilities &hRef, TString name, TString titleX, TString saveName, TString det, TString norm, int rebin)
+{
+
+    TString selected_name = "mu_selected_" + name;
+    TString antiselected_name = "mu_antiselected_" + name;
+
+    TLatex *   texSelected = new TLatex(0.55,0.88,"MET > 20.0 GeV");
+    texSelected->SetNDC();
+    texSelected->SetTextSize(0.04);
+    texSelected->SetLineWidth(2);
+
+    TLatex *   texAntiselected = new TLatex(0.55,0.88,"MET < 15.0 GeV");
+    texAntiselected->SetNDC();
+    texAntiselected->SetTextSize(0.04);
+    texAntiselected->SetLineWidth(2);
+
+    TLatex *   texLumi = new TLatex(0.55,0.83,"MC Norm (" + norm + ")");
+    texLumi->SetNDC();
+    texLumi->SetTextSize(0.04);
+    texLumi->SetLineWidth(2);
+
+    // get selected and antiselected reference mc
+    THStack *stRefSelected = hRef.getStack(theMCSources, selected_name, "", det, rebin);
+    THStack *stRefAntiselected = hRef.getStack(theMCSources, antiselected_name, "", det, rebin);
+
+    // get selected data
+    TH1F *h1DataSelected =  hData.getHistogram(theDataSources, selected_name, "", det, rebin);
+    h1DataSelected->GetXaxis()->SetTitle("");
+    h1DataSelected->GetYaxis()->SetTitle("");
+    h1DataSelected->GetXaxis()->SetLabelSize(0);
+    h1DataSelected->GetYaxis()->SetLabelSize(0);
+    h1DataSelected->SetMarkerStyle(20);
+    h1DataSelected->SetMarkerSize(1.5);
+    h1DataSelected->SetLineWidth(2.0);
+    h1DataSelected->SetMarkerColor(kRed);
+    h1DataSelected->SetLineColor(kRed);
+
+    // get antiselected data
+    TH1F *h1DataAntiselected =  hData.getHistogram(theDataSources, antiselected_name, "", det, rebin);
+    h1DataAntiselected->GetXaxis()->SetTitle("");
+    h1DataAntiselected->GetYaxis()->SetTitle("");
+    h1DataAntiselected->GetXaxis()->SetLabelSize(0);
+    h1DataAntiselected->GetYaxis()->SetLabelSize(0);
+    h1DataAntiselected->SetMarkerStyle(20);
+    h1DataAntiselected->SetMarkerSize(1.5);
+    h1DataAntiselected->SetLineWidth(2.0);
+    h1DataAntiselected->SetMarkerColor(kRed);
+    h1DataAntiselected->SetLineColor(kRed);
+
+    TLegend *lg_all = hRef.getLegend(theMCSources, antiselected_name, "", det);
+    lg_all->SetX1(0.55);
+    lg_all->SetX2(0.70);
+    lg_all->SetY1(0.6);
+    lg_all->SetY2(0.8);
+    lg_all->SetTextSize(0.04);
+    lg_all->AddEntry(h1DataSelected, "Data", "lep");
+
+    TCanvas *c1 = new TCanvas();
+    c1->cd();
+
+    // draw selected
+    // ideal y range should be at least 2 sigma greater than highest data point
+    float idealMaximumData = h1DataSelected->GetMaximum() + sqrt(h1DataSelected->GetMaximum())*2;
+    if(stRefSelected->GetMaximum() < idealMaximumData ) stRefSelected->SetMaximum(idealMaximumData);
+    stRefSelected->Draw("hist");
+    h1DataSelected->Draw("samee1");
+    stRefSelected->GetXaxis()->SetTitle(titleX);
+    lg_all->Draw();
+    texSelected->Draw();
+    texLumi->Draw();
+    Utilities::saveCanvas(c1, "results/" + saveName  + "_lin_" + selected_name + "_" + det);
+
+    // draw antiselected
+    idealMaximumData = h1DataAntiselected->GetMaximum() + sqrt(h1DataAntiselected->GetMaximum())*2;
+    if(stRefAntiselected->GetMaximum() < idealMaximumData ) stRefAntiselected->SetMaximum(idealMaximumData);
+    stRefAntiselected->Draw("hist");
     h1DataAntiselected->Draw("samee1");
     stRefAntiselected->GetXaxis()->SetTitle(titleX);
     lg_all->Draw();
@@ -412,14 +509,24 @@ void plotResultsW(TString det, TString fileStamp, TString refFileStamp, TString 
     plotDataRefOverlayStack(datah1, refh1, "mu_selected_d0corr", "d0(BS) (cm))", fileStamp, det, norm, 1);
     plotDataRefOverlayStack(datah1, refh1, "mu_selected_tcmetdphi", "dPhi(tcMET, Muon) (GeV)", fileStamp, det, norm, 1);
 
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_nChi2", "Muon nChi2", fileStamp, det, norm, 1);
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_type", "Muon type", fileStamp, det, norm, 1);
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_validHits", "Muon Valid Hits", fileStamp, det, norm, 1);
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_ecalvetoDep", "Muon Ecal Veto Deposit", fileStamp, det, norm, 1);
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_hcalvetoDep", "Muon Hcal Veto Deposit", fileStamp, det, norm, 1);
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_validSTAHits", "Muon valid STA Hits", fileStamp, det, norm, 1);
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_muonIsoValue", "Muon IsoValue", fileStamp, det, norm, 1);
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_isCosmics", "Muon IsCosmic", fileStamp, det, norm, 1);
+//     plotDataRefOverlayStack(datah1, refh1, "mu_selected_nChi2", "Muon nChi2", fileStamp, det, norm, 1);
+//     plotDataRefOverlayStack(datah1, refh1, "mu_selected_type", "Muon type", fileStamp, det, norm, 1);
+//     plotDataRefOverlayStack(datah1, refh1, "mu_selected_validHits", "Muon Valid Hits", fileStamp, det, norm, 1);
+//     plotDataRefOverlayStack(datah1, refh1, "mu_selected_ecalvetoDep", "Muon Ecal Veto Deposit", fileStamp, det, norm, 1);
+//     plotDataRefOverlayStack(datah1, refh1, "mu_selected_hcalvetoDep", "Muon Hcal Veto Deposit", fileStamp, det, norm, 1);
+//     plotDataRefOverlayStack(datah1, refh1, "mu_selected_validSTAHits", "Muon valid STA Hits", fileStamp, det, norm, 1);
+//     plotDataRefOverlayStack(datah1, refh1, "mu_selected_muonIsoValue", "Muon IsoValue", fileStamp, det, norm, 1);
+//     plotDataRefOverlayStack(datah1, refh1, "mu_selected_isCosmics", "Muon IsCosmic", fileStamp, det, norm, 1);
+
+    plotMuonIDStack(datah1, refh1, "nChi2", "Muon nChi2", fileStamp, det, norm, 1);
+    plotMuonIDStack(datah1, refh1, "type", "Muon type", fileStamp, det, norm, 1);
+    plotMuonIDStack(datah1, refh1, "validHits", "Muon Valid Hits", fileStamp, det, norm, 1);
+    plotMuonIDStack(datah1, refh1, "ecalvetoDep", "Muon Ecal Veto Deposit", fileStamp, det, norm, 1);
+    plotMuonIDStack(datah1, refh1, "hcalvetoDep", "Muon Hcal Veto Deposit", fileStamp, det, norm, 1);
+    plotMuonIDStack(datah1, refh1, "validSTAHits", "Muon valid STA Hits", fileStamp, det, norm, 1);
+    plotMuonIDStack(datah1, refh1, "muonIsoValue", "Muon IsoValue", fileStamp, det, norm, 1);
+    plotMuonIDStack(datah1, refh1, "isCosmics", "Muon IsCosmic", fileStamp, det, norm, 1);
+
 
     // N-1 distributions
     plotDataRefOverlayStack(datah1, refh1, "mu_nm1_tcmet", "NM1 tcMET (GeV)", fileStamp, det, norm, 4, 20.0, 20.0);
