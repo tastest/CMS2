@@ -279,7 +279,7 @@ bool isFakeableElectron (int index, enum fakeRateVersion version){
     if (!electronId_noMuon(index)) return false;
     //if (!electronId_cand01(index)) return false;
     //if (!electronImpact_cand01(index)) return false; 
-    //if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
+    if (electronIsolation_relsusy_cand1(index, true) > 0.40) return false;
     if (isFromConversionPartnerTrack(index)) return false;
     return true;
   }
@@ -299,7 +299,7 @@ bool isFakeableElectron (int index, enum fakeRateVersion version){
     if (!electronId_noMuon(index)) return false;
     if (!electronId_cand01(index)) return false;
     //if (!electronImpact_cand01(index)) return false; 
-    //if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
+    if (electronIsolation_relsusy_cand1(index, true) > 0.40) return false;
     if (isFromConversionPartnerTrack(index)) return false;
     return true;
   }
