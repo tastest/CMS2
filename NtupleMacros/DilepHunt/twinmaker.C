@@ -206,11 +206,11 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
 
                     mu1_muonid_    = muonIdNotIsolated(index1, NominalTTbar); 
                     mu1_goodmask_  = cms2.mus_goodmask()[index1];
-                    mu1_gfitchi2_  = cms2.mus_gfit_chi2()[index1]/cms2.mus_gfit_ndof()[index1];
+                    mu1_gfitchi2_  = cms2.mus_gfit_chi2()[index1] < -9000. ? -999999. : cms2.mus_gfit_chi2()[index1]/cms2.mus_gfit_ndof()[index1];
 
                     mu2_muonid_    = muonIdNotIsolated(index2, NominalTTbar);
                     mu2_goodmask_  = cms2.mus_goodmask()[index2];
-                    mu2_gfitchi2_  = cms2.mus_gfit_chi2()[index2]/cms2.mus_gfit_ndof()[index2];
+                    mu2_gfitchi2_  = cms2.mus_gfit_chi2()[index2] < -9000. ? -999999. : cms2.mus_gfit_chi2()[index2]/cms2.mus_gfit_ndof()[index2];
 
                     int trkidx1 = cms2.mus_trkidx()[index1];
                     int trkidx2 = cms2.mus_trkidx()[index2];
@@ -226,7 +226,7 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
 
                     mu1_muonid_    = muonIdNotIsolated(index1, NominalTTbar); 
                     mu1_goodmask_  = cms2.mus_goodmask()[index1];
-                    mu1_gfitchi2_  = cms2.mus_gfit_chi2()[index1]/cms2.mus_gfit_ndof()[index1];
+                    mu1_gfitchi2_  = cms2.mus_gfit_chi2()[index1] < -9000. ? -999999. : cms2.mus_gfit_chi2()[index1]/cms2.mus_gfit_ndof()[index1];
 
                     int trkidx1 = cms2.mus_trkidx()[index1];
                     int trkidx2 = cms2.els_trkidx()[index2];
@@ -265,7 +265,7 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
 
                     mu2_muonid_    = muonIdNotIsolated(index2, NominalTTbar); 
                     mu2_goodmask_  = cms2.mus_goodmask()[index2];
-                    mu2_gfitchi2_  = cms2.mus_gfit_chi2()[index2]/cms2.mus_gfit_ndof()[index2];
+                    mu2_gfitchi2_  = cms2.mus_gfit_chi2()[index2] < -9000. ? -999999. : cms2.mus_gfit_chi2()[index2]/cms2.mus_gfit_ndof()[index2];
 
                     int trkidx1 = cms2.els_trkidx()[index1];
                     int trkidx2 = cms2.mus_trkidx()[index2];

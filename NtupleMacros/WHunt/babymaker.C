@@ -177,7 +177,7 @@ void babymaker::ScanChain (const char *inputFilename, const char *babyFilename, 
                 mt_          = sqrt(2.*pt_*pfmet_*(1.-cos(dphipfmet_)));
                 mu_muonid_   = muonIdNotIsolated(mui, NominalTTbar);
                 mu_goodmask_ = cms2.mus_goodmask()[mui];
-                mu_gfitchi2_ = cms2.mus_gfit_chi2()[mui]/cms2.mus_gfit_ndof()[mui];
+                mu_gfitchi2_ = cms2.mus_gfit_chi2()[mui] < -9000. ? -999999. : cms2.mus_gfit_chi2()[mui]/cms2.mus_gfit_ndof()[mui];
 
                 FillBabyNtuple();
             }
