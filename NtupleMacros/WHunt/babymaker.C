@@ -225,7 +225,7 @@ void babymaker::ScanChain (const char *inputFilename, const char *babyFilename, 
                 e_nmHits_ = cms2.els_exp_innerlayers()[eli];
                 e_dcot_   = cms2.els_conv_dcot()[eli];
                 e_dist_   = cms2.els_conv_dist()[eli];
-                e_drmu_   = cms2.els_musdr()[eli];
+                e_drmu_   = cms2.els_closestMuon()[eli] < 0 ? -999999. : cms2.els_musdr()[eli];
 
                 FillBabyNtuple();
             }

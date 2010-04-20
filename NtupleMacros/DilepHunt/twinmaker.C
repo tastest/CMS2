@@ -243,7 +243,7 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
                     e2_nmHits_  = cms2.els_exp_innerlayers()[index2];
                     e2_dcot_    = cms2.els_conv_dcot()[index2];
                     e2_dist_    = cms2.els_conv_dist()[index2];
-                    e2_drmu_    = cms2.els_musdr()[index2];
+                    e2_drmu_    = cms2.els_closestMuon()[index2] < 0 ? -999999. : cms2.els_musdr()[index2];
                 }
                 else if(hyp_type_ == 2)
                 {
@@ -261,7 +261,7 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
                     e1_nmHits_  = cms2.els_exp_innerlayers()[index1];
                     e1_dcot_    = cms2.els_conv_dcot()[index1];
                     e1_dist_    = cms2.els_conv_dist()[index1];
-                    e1_drmu_    = cms2.els_musdr()[index1];
+                    e1_drmu_    = cms2.els_closestMuon()[index1] < 0 ? -999999. : cms2.els_musdr()[index1];
 
                     mu2_muonid_    = muonIdNotIsolated(index2, NominalTTbar); 
                     mu2_goodmask_  = cms2.mus_goodmask()[index2];
@@ -289,7 +289,7 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
                     e1_nmHits_  = cms2.els_exp_innerlayers()[index1];
                     e1_dcot_    = cms2.els_conv_dcot()[index1];
                     e1_dist_    = cms2.els_conv_dist()[index1];
-                    e1_drmu_    = cms2.els_musdr()[index1];
+                    e1_drmu_    = cms2.els_closestMuon()[index1] < 0 ? -999999. : cms2.els_musdr()[index1];
 
                     e2_cand01_  = isGoodElectron(index2);
                     e2_eopin_   = cms2.els_eOverPIn()[index2];
@@ -300,7 +300,7 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
                     e2_nmHits_  = cms2.els_exp_innerlayers()[index2];
                     e2_dcot_    = cms2.els_conv_dcot()[index2];
                     e2_dist_    = cms2.els_conv_dist()[index2];
-                    e2_drmu_    = cms2.els_musdr()[index2];
+                    e2_drmu_    = cms2.els_closestMuon()[index2] < 0 ? -999999. : cms2.els_musdr()[index2];
 
                     int trkidx1 = cms2.els_trkidx()[index1];
                     int trkidx2 = cms2.els_trkidx()[index2];
