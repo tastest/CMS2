@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# Turn output of TTree::Scan into something
-# useful, and trigger pickAnEvent.pl
+# Turn output of TTree::Scan into something useful,
+# i.e. a dump, and trigger pickAnEvent.pl
+# E-mail whomever about existence of new candidate
 
 cd /afs/cern.ch/user/j/jribnik/scratch0/dilephunt
 if [ $# -ne 2 ]
@@ -58,6 +59,21 @@ do
         value=`eval $valuecmd`
         echo $field $value >>$dumpFile
     done
+
+    # E-mail the dump unless there exists
+    # the do not email file
+    if [ ! -e .donotemail ]
+    then
+        echo "Check out: http://uaf-2.t2.ucsd.edu/~jribnik/dilephunt/" >email.tmp
+        echo >>email.tmp
+        echo "Here she is:">>email.tmp
+        echo >>email.tmp
+        cat $dumpFile >>email.tmp
+        cat email.tmp | mail -s "[$candsfiletrunc ALERT] New candidate found!" jribnik@cern.ch
+        cat email.tmp | mail -s "[$candsfiletrunc ALERT] New candidate found!" ingo.bloch@cern.ch
+        cat email.tmp | mail -s "[$candsfiletrunc ALERT] New candidate found!" ayagil@physics.ucsd.edu
+        cat email.tmp | mail -s "[$candsfiletrunc ALERT] New candidate found!" fgolf@physics.ucsd.edu
+    fi
 
     # Only pickAnEvent.pl events that have
     # not already been picked
