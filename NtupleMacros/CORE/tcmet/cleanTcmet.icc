@@ -1,11 +1,13 @@
+// -*- C++ -*-
+
 #ifndef CLEANTCMET_ICC
 #define CLEANTCMET_ICC
 
 #include "../metSelections.h"
 
-metStruct cleanTCMETforHFspikes   (float, float, float);
-metStruct cleanTCMETforHCALnoise  (float, float, float);
-metStruct cleanTCMETforECALspikes (float, float, float);
+static metStruct cleanTCMETforHFspikes   (float met_x, float met_y, float sumet);
+static metStruct cleanTCMETforHCALnoise  (float met_x, float met_y, float sumet);
+static metStruct cleanTCMETforECALspikes (float met_x, float met_y, float sumet);
 
 //---------------------------------------------------------
 
