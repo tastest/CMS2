@@ -31,9 +31,14 @@ float projectedMET( float met, float metPhi, int hyp_index );
 float projectedMETW( float met, float metPhi, float leptonPhi);
 
 //---------------------------------------------
-// function to correct tcMET for electron bug
+// function to calculate latest tcMET
 //---------------------------------------------
-metStruct correctedTCMET(bool usePV = false);
+metStruct correctedTCMET(bool usePV = false, bool useHFcleaning = true, bool useHCALcleaning = true, bool useECALcleaning = false);
+
+//---------------------------------------------
+// calorimeter cleaning for tcMET
+//---------------------------------------------
+metStruct cleanTCMET(float met_x, float met_y, float sumet, bool useHFcleaning = true, bool useHCALcleaning = true, bool useECALcleaning = false);
 
 //---------------------------------------------
 // utility function find deltaPhi between met

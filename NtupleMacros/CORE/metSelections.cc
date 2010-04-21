@@ -33,16 +33,42 @@ float projectedMETW( float met, float metPhi, float leptonPhi) {
 
 
 //---------------------------------------------
-// function to correct tcMET for electron bug
+// function to calculate latest tcMET
 //---------------------------------------------
 #include "tcmet/getTcmetFromCaloMet.icc"
 #include "tcmet/getResponseFunction_fit.icc"
-metStruct correctedTCMET(bool usePV) 
+metStruct correctedTCMET(bool usePV, bool useHFcleaning, bool useHCALcleaning, bool useECALcleaning) 
 {
      // static because we only want to get the response function once
      static TH2F* rf = getResponseFunction_fit();
-     return getTcmetFromCaloMet(rf, usePV);
+     return getTcmetFromCaloMet(rf, usePV, useHFcleaning, useHCALcleaning, useECALcleaning);
 }
+
+//---------------------------------------------
+// calorimeter cleaning for tcMET
+//---------------------------------------------
+#include "tcmet/cleanTcmet.icc"
+metStruct cleanTCMET (float met_x, float met_y, float sumet, bool useHFcleaning, bool useHCALcleaning, bool useECALcleaning)
+{
+     metStruct tcmetStruct;
+     tcmetStruct.met    = sqrt(met_x * met_x + met_y * met_y);
+     tcmetStruct.metphi = atan2(met_y, met_x);
+     tcmetStruct.metx   = met_x;
+     tcmetStruct.mety   = met_y;
+     tcmetStruct.sumet  = sumet;
+     
+     if (useHFcleaning)
+	  tcmetStruct = cleanTCMETforHFspikes(tcmetStruct.metx, tcmetStruct.mety, tcmetStruct.sumet);
+
+     if (useHCALcleaning)
+	  tcmetStruct = cleanTCMETforHCALnoise(tcmetStruct.metx, tcmetStruct.mety, tcmetStruct.sumet);
+
+     if (useECALcleaning)
+	  tcmetStruct = cleanTCMETforECALspikes(tcmetStruct.metx, tcmetStruct.mety, tcmetStruct.sumet);
+
+     return tcmetStruct;
+}
+
 
 //---------------------------------------------
 // utility function find deltaPhi between met
