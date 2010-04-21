@@ -321,7 +321,7 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
 
         h1_signal->SetLineWidth(2);
 	h1_signal->SetLineColor(kBlue);
-	h1_signal->SetLineStyle(kDashed);
+	//h1_signal->SetLineStyle(kDashed);
         h1_background->SetLineWidth(2);
 	h1_background->SetLineColor(kGreen);
 	TLegend *lg = 0;
@@ -344,16 +344,16 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
 	TCanvas *c_sb = new TCanvas();
 	c_sb->cd();
 	if (h1_signal->GetMaximum() > h1_background->GetMaximum()) {
-		h1_signal->Draw();
+		h1_signal->Draw("E1");
 		h1_signal->GetYaxis()->SetRangeUser(0, h1_signal->GetMaximum() 
 							+ h1_signal->GetMaximum()*0.1);
-		h1_background->Draw("SAME");
+		h1_background->Draw("HIST SAME E1");
 	}
 	else {
-        	h1_background->Draw();
+        	h1_background->Draw("HIST E1");
                 h1_background->GetYaxis()->SetRangeUser(0, h1_background->GetMaximum() 
 								+ h1_background->GetMaximum()*0.1);
-        	h1_signal->Draw("SAME");
+        	h1_signal->Draw("SAME E1");
 	}
 	if (cutVal > 0.0) arr_cut->Draw();
 	if (bin_eff99 != 0) arr_eff99->Draw();
@@ -373,16 +373,16 @@ void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det
 	c_sb_log->cd();
 	c_sb_log->SetLogy();
         if (h1_signal->GetMaximum() > h1_background->GetMaximum()) {
-                h1_signal->Draw();
+                h1_signal->Draw("E1");
                 h1_signal->GetYaxis()->SetRangeUser(0.1, h1_signal->GetMaximum() 
                                                         + h1_signal->GetMaximum());
-                h1_background->Draw("SAME");
+                h1_background->Draw("HIST SAME E1");
         }
         else {
-                h1_background->Draw();
+                h1_background->Draw("HIST E1");
                 h1_background->GetYaxis()->SetRangeUser(0.1, h1_background->GetMaximum() 
                                                                 + h1_background->GetMaximum());
-                h1_signal->Draw("SAME");
+                h1_signal->Draw("SAME E1");
         }
         if (cutVal > 0.0) arr_cut->Draw();
         if (bin_eff99 != 0) arr_eff99->Draw();
@@ -576,15 +576,28 @@ void plotResultsW(TString det, TString fileStamp, TString version)
         plotValidationOverlay(h1, "h1_hyp_id_closejet_nm1_pt", "h1_hyp_idcand01_closejet_nm1_pt", version, det, 4);
         plotValidationOverlay(h1, "h1_hyp_id_closejet_nm1_pt", "h1_hyp_idegammaloose_closejet_nm1_pt", version, det, 4);
 */
-        plotEff(h1, "h1_hyp_idstudy_after_classExp_reliso", "classExp", det + "_ee", true, 1, true);
+
+        plotEff(h1, "h1_hyp_idstudy_after_classExpLoose_reliso", "classExp", det + "_ee", true, 1, true);
+        plotEff(h1, "h1_hyp_idstudy_after_classExpTight_reliso", "classExp", det + "_ee", true, 1, true);
         plotEff(h1, "h1_hyp_idstudy_after_cand01_reliso", "classExp", det + "_ee", true, 1, true);
-        plotEff(h1, "h1_hyp_idstudy_after_cand02_reliso", "classExp", det + "_ee", true, 1, true);
 
-        plotEff(h1, "h1_hyp_idstudy_after_classExpFull_pt", "classExp", det + "_ee", false, 4, true);
-        plotEff(h1, "h1_hyp_idstudy_after_classExpRel01_pt", "classExp", det + "_ee", false, 4, true);
-        plotEff(h1, "h1_hyp_idstudy_after_classExpRel02_pt", "classExp", det + "_ee", false, 4, true);
+        plotEff(h1, "h1_hyp_idstudy_after_classExpLoose_pt", "classExp", det + "_ee", true, 4, true);
+        plotEff(h1, "h1_hyp_idstudy_after_classExpTight_pt", "classExp", det + "_ee", true, 4, true);
+        plotEff(h1, "h1_hyp_idstudy_after_cand01_pt", "classExp", det + "_ee", true, 4, true);
 
-        plotValidationOverlay(h1, "h1_hyp_idstudy_after_classExpFull_pt", "h1_hyp_idstudy_after_classExpRel01_pt", "Full", "Rel01", "classExp", det, 4);
+        plotEff(h1, "h1_hyp_idstudy_after_classExpLooseFull_pt", "classExp", det + "_ee", false, 4, true);
+        plotEff(h1, "h1_hyp_idstudy_after_classExpLooseRel01_pt", "classExp", det + "_ee", false, 4, true);
+        plotEff(h1, "h1_hyp_idstudy_after_classExpLooseRel02_pt", "classExp", det + "_ee", false, 4, true);
+
+        plotEff(h1, "h1_hyp_idstudy_after_classExpTightFull_pt", "classExp", det + "_ee", false, 4, true);
+        plotEff(h1, "h1_hyp_idstudy_after_classExpTightRel01_pt", "classExp", det + "_ee", false, 4, true);
+        plotEff(h1, "h1_hyp_idstudy_after_classExpTightRel02_pt", "classExp", det + "_ee", false, 4, true);
+
+        plotEff(h1, "h1_hyp_idstudy_after_cand01Rel01_pt", "classExp", det + "_ee", false, 4, true);
+        plotEff(h1, "h1_hyp_idstudy_after_cand01Rel02_pt", "classExp", det + "_ee", false, 4, true);
+
+
+//        plotValidationOverlay(h1, "h1_hyp_idstudy_after_classExpLooseFull_pt", "h1_hyp_idstudy_after_classExpLooseRel01_pt", "Full", "Rel01", "classExpLoose", det, 4);
 
 
 /*

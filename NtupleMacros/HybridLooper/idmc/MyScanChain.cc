@@ -295,23 +295,38 @@ void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
         FormatHist(h1_hyp_debug_after_classExp_hcalIso_[i], sampleName, "h1_hyp_debug_after_classExp_hcalIso_" + detname, 100, 0.0, 10);
         FormatHist(h1_hyp_debug_after_classExp_tkIso_[i], sampleName, "h1_hyp_debug_after_classExp_tkIso_" + detname, 100, 0.0, 10);
 
-        FormatHist(h1_hyp_idstudy_after_classExp_reliso_[i], sampleName, "h1_hyp_idstudy_after_classExp_reliso_" + detname, 100, 0.0, 1.0);
+        // reliso after id
+        FormatHist(h1_hyp_idstudy_after_classExpLoose_reliso_[i], sampleName, "h1_hyp_idstudy_after_classExpLoose_reliso_" + detname, 100, 0.0, 1.0);
+        FormatHist(h1_hyp_idstudy_after_classExpTight_reliso_[i], sampleName, "h1_hyp_idstudy_after_classExpTight_reliso_" + detname, 100, 0.0, 1.0);
         FormatHist(h1_hyp_idstudy_after_cand01_reliso_[i], sampleName, "h1_hyp_idstudy_after_cand01_reliso_" + detname, 100, 0.0, 1.0);
-        FormatHist(h1_hyp_idstudy_after_cand02_reliso_[i], sampleName, "h1_hyp_idstudy_after_cand02_reliso_" + detname, 100, 0.0, 1.0);
 
-        FormatHist(h1_hyp_idstudy_after_classExpFull_pt_[i], sampleName, "h1_hyp_idstudy_after_classExpFull_pt_" + detname, 200, 0.0, 200);
-        FormatHist(h1_hyp_idstudy_after_classExpRel01_pt_[i], sampleName, "h1_hyp_idstudy_after_classExpRel01_pt_" + detname, 200, 0.0, 200);
-        FormatHist(h1_hyp_idstudy_after_classExpRel02_pt_[i], sampleName, "h1_hyp_idstudy_after_classExpRel02_pt_" + detname, 200, 0.0, 200);
+        // pt after id
+        FormatHist(h1_hyp_idstudy_after_classExpLoose_pt_[i], sampleName, "h1_hyp_idstudy_after_classExpLoose_pt_" + detname, 200, 0.0, 200);
+        FormatHist(h1_hyp_idstudy_after_classExpTight_pt_[i], sampleName, "h1_hyp_idstudy_after_classExpTight_pt_" + detname, 200, 0.0, 200);
+        FormatHist(h1_hyp_idstudy_after_cand01_pt_[i], sampleName, "h1_hyp_idstudy_after_cand01_pt_" + detname, 200, 0.0, 200);
 
-        FormatHist(h1_hyp_idstudy_classExpRecomp_[i], sampleName, "h1_hyp_idstudy_classExpRecomp_" + detname, 5, -0.5, 4.5);
-        FormatHist(h1_hyp_idstudy_classExpRecompId_[i], sampleName, "h1_hyp_idstudy_classExpRecompId_" + detname, 5, -0.5, 4.5);
-        FormatHist(h1_hyp_idstudy_classExpRecompIso_[i], sampleName, "h1_hyp_idstudy_classExpRecompIso_" + detname, 5, -0.5, 4.5);
+        // pt after id AND iso
+        FormatHist(h1_hyp_idstudy_after_classExpLooseFull_pt_[i], sampleName, "h1_hyp_idstudy_after_classExpLooseFull_pt_" + detname, 200, 0.0, 200);
+        FormatHist(h1_hyp_idstudy_after_classExpLooseRel01_pt_[i], sampleName, "h1_hyp_idstudy_after_classExpLooseRel01_pt_" + detname, 200, 0.0, 200);
+        FormatHist(h1_hyp_idstudy_after_classExpLooseRel02_pt_[i], sampleName, "h1_hyp_idstudy_after_classExpLooseRel02_pt_" + detname, 200, 0.0, 200);
 
-        FormatHist(h1_hyp_idstudy_classExpSaniLoose_[i], sampleName, "h1_hyp_idstudy_classExpSaniLoose_" + detname, 5, -0.5, 4.5);
+        FormatHist(h1_hyp_idstudy_after_classExpTightFull_pt_[i], sampleName, "h1_hyp_idstudy_after_classExpTightFull_pt_" + detname, 200, 0.0, 200);
+        FormatHist(h1_hyp_idstudy_after_classExpTightRel01_pt_[i], sampleName, "h1_hyp_idstudy_after_classExpTightRel01_pt_" + detname, 200, 0.0, 200);
+        FormatHist(h1_hyp_idstudy_after_classExpTightRel02_pt_[i], sampleName, "h1_hyp_idstudy_after_classExpTightRel02_pt_" + detname, 200, 0.0, 200);
+
+        FormatHist(h1_hyp_idstudy_after_cand01Rel01_pt_[i], sampleName, "h1_hyp_idstudy_after_cand01Rel01_pt_" + detname, 200, 0.0, 200);
+        FormatHist(h1_hyp_idstudy_after_cand01Rel02_pt_[i], sampleName, "h1_hyp_idstudy_after_cand01Rel02_pt_" + detname, 200, 0.0, 200);
+
+        // check reimplementation of sani id in the looper
+        FormatHist(h1_hyp_idstudy_classExpLooseRecompId_[i], sampleName, "h1_hyp_idstudy_classExpLooseRecompId_" + detname, 5, -0.5, 4.5);
+        FormatHist(h1_hyp_idstudy_classExpLooseRecompIso_[i], sampleName, "h1_hyp_idstudy_classExpLooseRecompIso_" + detname, 5, -0.5, 4.5);
+        FormatHist(h1_hyp_idstudy_classExpTightRecompId_[i], sampleName, "h1_hyp_idstudy_classExpTightRecompId_" + detname, 5, -0.5, 4.5);
+        FormatHist(h1_hyp_idstudy_classExpTightRecompIso_[i], sampleName, "h1_hyp_idstudy_classExpTightRecompIso_" + detname, 5, -0.5, 4.5);
+
         FormatHist(h1_hyp_idstudy_classExpSaniLooseId_[i], sampleName, "h1_hyp_idstudy_classExpSaniLooseId_" + detname, 5, -0.5, 4.5);
         FormatHist(h1_hyp_idstudy_classExpSaniLooseIso_[i], sampleName, "h1_hyp_idstudy_classExpSaniLooseIso_" + detname, 5, -0.5, 4.5);
-
-        FormatHist(h1_hyp_idstudy_classExpSaniTight_[i], sampleName, "h1_hyp_idstudy_classExpSaniTight_" + detname, 5, -0.5, 4.5);
+        FormatHist(h1_hyp_idstudy_classExpSaniTightId_[i], sampleName, "h1_hyp_idstudy_classExpSaniTightId_" + detname, 5, -0.5, 4.5);
+        FormatHist(h1_hyp_idstudy_classExpSaniTightIso_[i], sampleName, "h1_hyp_idstudy_classExpSaniTightIso_" + detname, 5, -0.5, 4.5);
 
     }
 
@@ -608,32 +623,25 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
 
     //
     // experimental class based id
-    //
-    const elecuts_t cutsToRemove =   
-//(1<<ELEPASS_TYPE)       |
-//                                (1<<ELEPASS_FIDUCIAL)   |
-                                (1<<ELEPASS_NOMUON)     |
-                                (1<<ELEPASS_ID)         |
-                                (1<<ELEPASS_D0)         |
-                                (1<<ELEPASS_ISO)        |
-                                (1<<ELEPASS_NOTCONV);
+    // validation part
 
+    int answerLoose = electronId_classBasedExperimental(0, index);
+    int answerTight = electronId_classBasedExperimental(1, index);
 
-    if (CheckCutsNM1(electronSelections_passall_, cutsToRemove, result_electronSelections_cand01)) {
+    if (CheckCuts((1<<ELEPASS_TYPE) | (1<<ELEPASS_FIDUCIAL), result_electronSelections_cand01)) {
 
         // check that class based id passed independently of isolation decision
-        int answer = electronId_classBasedExperimental(index);
-        Fill(h1_hyp_idstudy_classExpRecomp_[det], hypType, answer, 1.0);
-        Fill(h1_hyp_idstudy_classExpRecompId_[det], hypType, bool(answer & (1<<0)), 1.0);
-        Fill(h1_hyp_idstudy_classExpRecompIso_[det], hypType, bool(answer & (1<<1)), 1.0);
+        Fill(h1_hyp_idstudy_classExpLooseRecompId_[det], hypType, bool(answerLoose & (1<<0)), 1.0);
+        Fill(h1_hyp_idstudy_classExpLooseRecompIso_[det], hypType, bool(answerLoose & (1<<1)), 1.0);
+        Fill(h1_hyp_idstudy_classExpTightRecompId_[det], hypType, bool(answerTight & (1<<0)), 1.0);
+        Fill(h1_hyp_idstudy_classExpTightRecompIso_[det], hypType, bool(answerTight & (1<<1)), 1.0);
 
-        Fill(h1_hyp_idstudy_classExpSaniLoose_[det], hypType, cms2.els_egamma_looseId()[index], 1.0);
         Fill(h1_hyp_idstudy_classExpSaniLooseId_[det], hypType, bool(int(cms2.els_egamma_looseId()[index]) & (1<<0)), 1.0);
         Fill(h1_hyp_idstudy_classExpSaniLooseIso_[det], hypType, bool(int(cms2.els_egamma_looseId()[index]) & (1<<1)), 1.0);
+        Fill(h1_hyp_idstudy_classExpSaniTightId_[det], hypType, bool(int(cms2.els_egamma_tightId()[index]) & (1<<0)), 1.0);
+        Fill(h1_hyp_idstudy_classExpSaniTightIso_[det], hypType, bool(int(cms2.els_egamma_tightId()[index]) & (1<<1)), 1.0);
 
-        Fill(h1_hyp_idstudy_classExpSaniTight_[det], hypType, cms2.els_egamma_tightId()[index], 1.0);
-
-        if( answer == 3 || answer == 1 ) {
+        if( answerLoose == 3 || answerLoose == 1 ) {
             Fill(h1_hyp_idegammanewloose_nm1_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
             // check the values are cut on
             Fill(h1_hyp_debug_after_classExp_hoe_[0], hypType, cms2.els_hOverE()[index], weight);
@@ -647,30 +655,54 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
             Fill(h1_hyp_debug_after_classExp_ecalIso_[0], hypType, cms2.els_ecalIso()[index], weight);
             Fill(h1_hyp_debug_after_classExp_hcalIso_[0], hypType, cms2.els_hcalIso()[index], weight);
             Fill(h1_hyp_debug_after_classExp_tkIso_[0], hypType, cms2.els_tkIso()[index], weight);
-            Fill(h1_hyp_idstudy_after_classExp_reliso_[det], hypType, iso_relsusy, weight);
+        }
+    }
 
+
+
+    //
+    // experimental class based id
+    // study and comparison part
+    //
+
+    if (CheckCuts((1<<ELEPASS_TYPE) | (1<<ELEPASS_FIDUCIAL), result_electronSelections_cand01)) {
+
+        // loose experimental class based id passed
+        if( answerLoose == 3 || answerLoose == 1 ) {
+            Fill(h1_hyp_idstudy_after_classExpLoose_reliso_[det], hypType, iso_relsusy, weight);
+            Fill(h1_hyp_idstudy_after_classExpLoose_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
             if (iso_relsusy < 0.10)
-                Fill(h1_hyp_idstudy_after_classExpRel01_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+                Fill(h1_hyp_idstudy_after_classExpLooseRel01_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
             if (iso_relsusy < 0.20)
-                Fill(h1_hyp_idstudy_after_classExpRel02_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+                Fill(h1_hyp_idstudy_after_classExpLooseRel02_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+            if (answerLoose == 3)
+                Fill(h1_hyp_idstudy_after_classExpLooseFull_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
         }
 
-        // check that the cand01 passed
+        // tight experimental class based id passed
+        if( answerTight == 3 || answerTight == 1 ) {
+            Fill(h1_hyp_idstudy_after_classExpTight_reliso_[det], hypType, iso_relsusy, weight);
+            Fill(h1_hyp_idstudy_after_classExpTight_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+            if (iso_relsusy < 0.10)
+                Fill(h1_hyp_idstudy_after_classExpTightRel01_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+            if (iso_relsusy < 0.20)
+                Fill(h1_hyp_idstudy_after_classExpTightRel02_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+            if (answerTight == 3)
+                Fill(h1_hyp_idstudy_after_classExpTightFull_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+        }
+
+        // cand01 passed
         if (pass_electronId_cand01) {
             Fill(h1_hyp_idstudy_after_cand01_reliso_[det], hypType, iso_relsusy, weight);
+            Fill(h1_hyp_idstudy_after_cand01_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+            if (iso_relsusy < 0.10)
+                Fill(h1_hyp_idstudy_after_cand01Rel01_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight); 
+            if (iso_relsusy < 0.20)
+                Fill(h1_hyp_idstudy_after_cand01Rel02_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
         }
 
-        // check that the cand02 passed
-        if (pass_electronId_cand02) {
-            Fill(h1_hyp_idstudy_after_cand02_reliso_[det], hypType, iso_relsusy, weight);
-        }
+    } // end denominator selection
 
-        // class based id and isolation both pass
-        if (answer == 3) {
-            Fill(h1_hyp_idstudy_after_classExpFull_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
-        }
-
-    }
 
     //
     // investigate what the extra is really doing

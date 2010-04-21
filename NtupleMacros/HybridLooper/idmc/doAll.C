@@ -107,7 +107,7 @@ enum ElectronSelection {
     // '/store/relval/CMSSW_3_5_2/RelValZEE/GEN-SIM-RECO/MC_3XY_V21-v1/0016/*.root',
     //
     TChain *chain_eleidval = new TChain("Events");
-    chain_eleidval->Add(ntuple_location + "/dlevans/relval_zee_ntuple.root");
+    chain_eleidval->Add(ntuple_location + "/dlevans/relval_zee_ntuple_dev.root");
 
 	// 
 	// do looping

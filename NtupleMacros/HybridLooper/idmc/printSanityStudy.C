@@ -1,4 +1,21 @@
 
+
+void printIntegral(std::string text, const TH1F *histSignal, const TH1F *histBackground)
+{
+
+    float s = histSignal->Integral(0, histSignal->GetNbinsX() + 1);
+    float b = histBackground->Integral(0, histSignal->GetNbinsX() + 1);
+
+    std::cout << text << " \t& ";
+    printf("%4.2f", s);
+    std::cout << " \t& ";
+    printf("%4.2f", b);
+    std::cout << " \t& ";
+    printf("%4.2f", s/sqrt(b));
+    std::cout << " \\\\ \\hline" << std::endl;
+
+}
+
 void formatHist(TH1F *hist, bool signal, unsigned int idType) {
     hist->SetDirectory(gDirectory);
     hist->Rebin(10);
@@ -253,7 +270,6 @@ void printSanityStudy(TString det) {
     //
     // pt distributions before iso tight
     //
-
     TCanvas *c2 = new TCanvas();
     c2->cd();
 
@@ -277,10 +293,22 @@ void printSanityStudy(TString det) {
     
     c2->SaveAs("results/study_" + det + "_classExpTight.png");
 
+    // print table of IDs before Iso
+    std::cout << "\\begin{table}[ht]" << std::endl;
+    std::cout << "\\caption{Electron ID before isolation " + det + "}" << std::endl;
+    std::cout << "\\begin{center}" << std::endl;
+    std::cout << "\\begin{tabular}{|l*{4}{|c}|r|}\\hline" << std::endl;
+    std::cout << "ID type   & S & B & S/$\\sqrt{B}$  \\\\ \\hline" << std::endl;
+    printIntegral("cand01", s_h1_hyp_idstudy_after_cand01_pt, b_h1_hyp_idstudy_after_cand01_pt);
+    printIntegral("class loose", s_h1_hyp_idstudy_after_classExpLoose_pt, b_h1_hyp_idstudy_after_classExpLoose_pt);
+    printIntegral("class tight", s_h1_hyp_idstudy_after_classExpTight_pt, b_h1_hyp_idstudy_after_classExpTight_pt);
+    std::cout <<"\\end{tabular}" << std::endl;
+    std::cout <<"\\end{center}" << std::endl;
+    std::cout << "\\end{table}" << std::endl;
+
     //
     // pt distributions after iso loose
     //
-
     TCanvas *c3 = new TCanvas();
     c3->cd();
 
@@ -312,7 +340,6 @@ void printSanityStudy(TString det) {
     //
     // pt distributions after iso tight
     //
-    
     TCanvas *c4 = new TCanvas();
     c4->cd();
     
@@ -338,6 +365,21 @@ void printSanityStudy(TString det) {
     l4->Draw();
     
     c4->SaveAs("results/study_" + det + "_classExpTightRel01.png");
+
+    // print table of IDs after Iso
+    std::cout << "\\begin{table}[ht]" << std::endl;
+    std::cout << "\\caption{Electron ID after isolation " + det + "}" << std::endl;
+    std::cout << "\\begin{center}" << std::endl;
+    std::cout << "\\begin{tabular}{|l*{4}{|c}|r|}\\hline" << std::endl;
+    std::cout << "ID type   & S & B & S/$\\sqrt{B}$  \\\\ \\hline" << std::endl;
+    printIntegral("cand01 + reliso", s_h1_hyp_idstudy_after_cand01Rel01_pt, b_h1_hyp_idstudy_after_cand01Rel01_pt);
+    printIntegral("class loose + reliso", s_h1_hyp_idstudy_after_classExpLooseRel01_pt, b_h1_hyp_idstudy_after_classExpLooseRel01_pt);
+    printIntegral("class loose + full", s_h1_hyp_idstudy_after_classExpLooseFull_pt, b_h1_hyp_idstudy_after_classExpLooseFull_pt);
+    printIntegral("class tight + reliso", s_h1_hyp_idstudy_after_classExpTightRel01_pt, b_h1_hyp_idstudy_after_classExpTightRel01_pt);
+    printIntegral("class tight + full", s_h1_hyp_idstudy_after_classExpTightFull_pt, b_h1_hyp_idstudy_after_classExpTightFull_pt);
+    std::cout <<"\\end{tabular}" << std::endl;
+    std::cout <<"\\end{center}" << std::endl;
+    std::cout << "\\end{table}" << std::endl;
 
 
     //

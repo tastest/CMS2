@@ -197,25 +197,41 @@ class MyScanChain {
         TH1F *h1_hyp_debug_after_classExp_hcalIso_[2][4];
         TH1F *h1_hyp_debug_after_classExp_tkIso_[2][4];
 
-        TH1F *h1_hyp_idstudy_after_classExp_reliso_[2][4];
+        // rel iso distributions after ids applied
+        // (no iso)
+        TH1F *h1_hyp_idstudy_after_classExpLoose_reliso_[2][4];
+        TH1F *h1_hyp_idstudy_after_classExpTight_reliso_[2][4];
         TH1F *h1_hyp_idstudy_after_cand01_reliso_[2][4];
-        TH1F *h1_hyp_idstudy_after_cand02_reliso_[2][4];
 
-        TH1F *h1_hyp_idstudy_after_classExpFull_pt_[2][4];
-        TH1F *h1_hyp_idstudy_after_classExpRel01_pt_[2][4];
-        TH1F *h1_hyp_idstudy_after_classExpRel02_pt_[2][4];
+        // pt distributions after ids applied
+        // (no iso)
+        TH1F *h1_hyp_idstudy_after_classExpLoose_pt_[2][4];
+        TH1F *h1_hyp_idstudy_after_classExpTight_pt_[2][4];
+        TH1F *h1_hyp_idstudy_after_cand01_pt_[2][4];
 
-        TH1F *h1_hyp_idstudy_classExpRecomp_[2][4];
-        TH1F *h1_hyp_idstudy_classExpRecompId_[2][4];
-        TH1F *h1_hyp_idstudy_classExpRecompIso_[2][4];
+        // pt distributions after ids AND iso applied
+        TH1F *h1_hyp_idstudy_after_classExpLooseFull_pt_[2][4];
+        TH1F *h1_hyp_idstudy_after_classExpLooseRel01_pt_[2][4];
+        TH1F *h1_hyp_idstudy_after_classExpLooseRel02_pt_[2][4];
 
-        TH1F *h1_hyp_idstudy_classExpSaniLoose_[2][4];
+        TH1F *h1_hyp_idstudy_after_classExpTightFull_pt_[2][4];
+        TH1F *h1_hyp_idstudy_after_classExpTightRel01_pt_[2][4];
+        TH1F *h1_hyp_idstudy_after_classExpTightRel02_pt_[2][4];
+
+        TH1F *h1_hyp_idstudy_after_cand01Rel01_pt_[2][4];
+        TH1F *h1_hyp_idstudy_after_cand01Rel02_pt_[2][4];
+
+        // decision bits for validation of 
+        // recomputation of sani id in the looper
+        TH1F *h1_hyp_idstudy_classExpLooseRecompId_[2][4];
+        TH1F *h1_hyp_idstudy_classExpLooseRecompIso_[2][4];
+        TH1F *h1_hyp_idstudy_classExpTightRecompId_[2][4];
+        TH1F *h1_hyp_idstudy_classExpTightRecompIso_[2][4];
+
         TH1F *h1_hyp_idstudy_classExpSaniLooseId_[2][4];
         TH1F *h1_hyp_idstudy_classExpSaniLooseIso_[2][4];
-
-        TH1F *h1_hyp_idstudy_classExpSaniTight_[2][4];
-
-
+        TH1F *h1_hyp_idstudy_classExpSaniTightId_[2][4];
+        TH1F *h1_hyp_idstudy_classExpSaniTightIso_[2][4];
 
 };
 
