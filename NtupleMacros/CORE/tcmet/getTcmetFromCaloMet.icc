@@ -8,7 +8,7 @@
 using namespace std;
 using namespace tas;
 
-static metStruct getTcmetFromCaloMet(TH2F* rf, bool usePV = false);
+static metStruct getTcmetFromCaloMet(TH2F* rf, bool usePV = false, bool useHFcleaning = true, bool useHCALcleaning = true, bool useECALcleaning = false);
 static bool  isMuon               ( int index );
 static bool  isElectron           ( int index );
 static bool  isGoodTrack          ( int index, bool usePV = false );
@@ -19,13 +19,14 @@ static void  correctSumEtForPion  ( int index , TH2F* rf);
 
 //--------------------------------------------------------------------
 
+#include "cleanTcmet.icc"
+
 float tcmet_x;
 float tcmet_y;
 float tcsumet;
 
-metStruct getTcmetFromCaloMet(TH2F* rf, bool usePV){
-
-  
+metStruct getTcmetFromCaloMet (TH2F* rf, bool usePV, bool useHFcleaning, bool useHCALcleaning, bool useECALcleaning)
+{
      //initialize to calomet values
      tcmet_x = evt_met() * cos( evt_metPhi() );
      tcmet_y = evt_met() * sin( evt_metPhi() );
@@ -104,14 +105,23 @@ metStruct getTcmetFromCaloMet(TH2F* rf, bool usePV){
   
      float tcmet    = TMath::Sqrt( tcmet_x * tcmet_x + tcmet_y * tcmet_y );
      float tcmetPhi = atan2(tcmet_y,tcmet_x); 
-  
+
      metStruct tcmetStruct;
      tcmetStruct.met    = tcmet;
      tcmetStruct.metphi = tcmetPhi;
      tcmetStruct.metx   = tcmet_x;
      tcmetStruct.mety   = tcmet_y;
      tcmetStruct.sumet  = tcsumet;
-  
+
+     if (useHFcleaning)
+	  tcmetStruct = cleanTCMETforHFspikes(tcmetStruct.metx, tcmetStruct.mety, tcmetStruct.sumet);
+
+     if (useHCALcleaning)
+	  tcmetStruct = cleanTCMETforHCALnoise(tcmetStruct.metx, tcmetStruct.mety, tcmetStruct.sumet);
+    
+     if (useECALcleaning)
+	  tcmetStruct = cleanTCMETforECALspikes(tcmetStruct.metx, tcmetStruct.mety, tcmetStruct.sumet);
+
      return tcmetStruct;
 }
 
