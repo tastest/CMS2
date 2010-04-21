@@ -138,7 +138,7 @@ enum ElectronSelection {
 	//
 	// write histograms
 	// 
-
+    //const char* outFile = "histos_eleid_" + fileNameString + ".root";
 	const char* outFile = "histos_eleid_saniv02_" + fileNameString + ".root";
 	hist::saveHist(outFile); 
 	hist::deleteHistos();
