@@ -8,6 +8,10 @@
 #include "CMS2.h"
 #include "trackSelections.h"
 #include "metSelections.h"
+#include "Math/LorentzVector.h"
+
+
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 //---------------------------------------------
 // function to calculate projected MET.

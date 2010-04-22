@@ -5,6 +5,9 @@
 #include "Math/VectorUtil.h"
 #include "CMS2.h"
 #include "mcSelections.h"
+#include "Math/LorentzVector.h"
+
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 //-------------------------------------------------
 // Auxiliary function to scan the doc line and 
