@@ -6,8 +6,6 @@
 #include <iostream>
 #include <vector>
 
-
-
 class TH1F;
 class TH2F;
 class TChain;
@@ -30,6 +28,7 @@ class MyScanChain {
 
 		void FormatHist(TH1F** hist, std::string sampleName, std::string name, int n, float min, float max);
 		void FormatAllDYEstHistograms(std::string sampleName);
+        void FormatAllAnaHistograms(std::string sampleName);
 
 		// for 2D
 		void Fill2D(TH2F** hist, const unsigned int hyp, const float &valx, const float &valy, const float &weight);

@@ -18,15 +18,21 @@
 #include "Math/LorentzVector.h"
 
 // CMS2 includes
-#include "CMS2.h"
+#include "../../CORE/CMS2.h"
 #include "../../CORE/electronSelections.h"
-#include "../../CORE/selections.h"
+//#include "../../CORE/selections.h"
 #include "../../Tools/DileptonHypType.h"
 
 //
 // Namespaces
 //
 using namespace tas;
+
+//
+// typedefs
+//
+
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 //
 //
@@ -153,14 +159,14 @@ void MyScanChain::FillAllDYEstHistograms(const unsigned int h, const float &weig
     // fill the mass histogram
     float mass = cms2.hyp_p4()[h].mass();
     Fill(h1_dyest_mll_nomet_[jetbin], hypType, mass, weight);
-    if (passMet_OF20_SF30(h, false)) Fill(h1_dyest_mll_met_[jetbin], hypType, mass, weight);
+    //if (passMet_OF20_SF30(h, false)) Fill(h1_dyest_mll_met_[jetbin], hypType, mass, weight);
 
     // fill the met histograms for "in" and "out" regions
-    float mymet = met_pat_metCor_hyp(h);
-    if (inZmassWindow(mass)) {
-        Fill(h1_dyest_met_in_[jetbin], hypType, mymet, weight);
-    }
-    else Fill(h1_dyest_met_out_[jetbin], hypType, mymet, weight);
+    //float mymet = met_pat_metCor_hyp(h);
+    //if (inZmassWindow(mass)) {
+    //    Fill(h1_dyest_met_in_[jetbin], hypType, mymet, weight);
+    //}
+    //else Fill(h1_dyest_met_out_[jetbin], hypType, mymet, weight);
 
 }
 
@@ -198,7 +204,6 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 	//
 	// format histograms
 	//
-	FormatAllEleIdHistograms(sampleName);
 	FormatAllAnaHistograms(sampleName);
 	FormatAllDYEstHistograms(sampleName);
 
@@ -252,18 +257,13 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 			hyp_index_selected.clear();
 			for (size_t h = 0; h < cms2.hyp_type().size(); ++h) {
 
-				//
-				// fill basic electron ID histograms
-				//
-				FillAllEleIdHistogramsHyp(h, weight, sampleName);
-
 				// apply lepton id 
-				if (!looseLeptonSelectionNoIsoTTDil08(cms2.hyp_lt_id()[h], cms2.hyp_lt_index()[h])) continue;
-				if (!looseLeptonSelectionNoIsoTTDil08(cms2.hyp_ll_id()[h], cms2.hyp_ll_index()[h])) continue;
+//				if (!looseLeptonSelectionNoIsoTTDil08(cms2.hyp_lt_id()[h], cms2.hyp_lt_index()[h])) continue;
+//				if (!looseLeptonSelectionNoIsoTTDil08(cms2.hyp_ll_id()[h], cms2.hyp_ll_index()[h])) continue;
 
 				// apply isolation
-				if (!passLeptonIsolationTTDil08(cms2.hyp_ll_id()[h], cms2.hyp_ll_index()[h])) continue;
-				if (!passLeptonIsolationTTDil08(cms2.hyp_lt_id()[h], cms2.hyp_lt_index()[h])) continue;
+//				if (!passLeptonIsolationTTDil08(cms2.hyp_ll_id()[h], cms2.hyp_ll_index()[h])) continue;
+//				if (!passLeptonIsolationTTDil08(cms2.hyp_lt_id()[h], cms2.hyp_lt_index()[h])) continue;
 
 				// opposite charge
 				if (cms2.hyp_lt_id()[h] * cms2.hyp_ll_id()[h] > 0) continue;
@@ -281,14 +281,14 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 			int strasbourgDilType = -1;
 			if (hyp_index_selected.size() == 0) continue;
 			int hyp = 0;
-			hyp = eventDilIndexByWeightTTDil08(hyp_index_selected, strasbourgDilType, false, false);
+//			hyp = eventDilIndexByWeightTTDil08(hyp_index_selected, strasbourgDilType, false, false);
 
 			//
 			// make requirements of the selected hypothesis
 			//
 
 			// trigger
-			if (!passTriggersMu9orLisoE15(cms2.hyp_type()[hyp])) continue;
+//			if (!passTriggersMu9orLisoE15(cms2.hyp_type()[hyp])) continue;
 
 			//
 			// If we got to here then classify the event according to nJets
@@ -296,10 +296,10 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 
 			std::vector<unsigned int> corCaloJets;
 			corCaloJets.clear();
-			for (size_t j = 0; j < cms2.jets_p4().size(); ++j) {
-				if (!isGoodDilHypJet(j, hyp, 30.0, 2.4, 0.4, false)) continue;
-				corCaloJets.push_back(j);
-			}
+			//for (size_t j = 0; j < cms2.jets_p4().size(); ++j) {
+			//	if (!isGoodDilHypJet(j, hyp, 30.0, 2.4, 0.4, false)) continue;
+			//	corCaloJets.push_back(j);
+			//}
 
 			//
 			// estimate the DY background before the z veto and MET cuts are applied
@@ -312,24 +312,24 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 			//
 
 			// met
-			if (!passMet_OF20_SF30(hyp, false)) continue;
+//			if (!passMet_OF20_SF30(hyp, false)) continue;
 
-			// z mass window
-			if (cms2.hyp_type()[hyp] == 0 || cms2.hyp_type()[hyp] == 3) {
-				if (inZmassWindow(cms2.hyp_p4()[hyp].mass())) continue;
-			}
+//			// z mass window
+//			if (cms2.hyp_type()[hyp] == 0 || cms2.hyp_type()[hyp] == 3) {
+//				if (inZmassWindow(cms2.hyp_p4()[hyp].mass())) continue;
+//			}
 
 			//
 			// get hypothesis type and fill analysis results histograms
 			//
 
-			DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[hyp]);
-			Fill(h1_hyp_njets_, hypType, corCaloJets.size(), weight);
+//			DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[hyp]);
+			//Fill(h1_hyp_njets_, hypType, corCaloJets.size(), weight);
 
 			//
 			// count...
 			//
-
+/*
 			if (corCaloJets.size() >= 2) {
 
 				cands_passing[hypType] += weight;
@@ -343,7 +343,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 				//std::cout << "event number, hyp type: " << cms2.evt_event() << " \t" << cms2.hyp_type()[hyp] << std::endl;
 
 			}
-
+*/
 
 		} // end loop on files
 
