@@ -44,7 +44,11 @@ CORESOURCES = \
     $(CMSROOT)/CORE/trackSelections.cc \
     $(CMSROOT)/CORE/utilities.cc \
     $(CMSROOT)/CORE/eventSelections.cc \
-    $(CMSROOT)/CORE/mcSelections.cc  
+    $(CMSROOT)/CORE/mcSelections.cc \
+	$(CMSROOT)/CORE/metSelections.cc \
+	$(CMSROOT)/CORE/ttbarSelections.cc \
+	$(CMSROOT)/CORE/jetSelections.cc
+
 COREOBJECTS = $(CORESOURCES:.cc=.o) 
 CORELIB = libCMS2NtupleMacrosCORE.so
 

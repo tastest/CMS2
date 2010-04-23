@@ -19,9 +19,15 @@
 
 // CMS2 includes
 #include "../../CORE/CMS2.h"
+
+#include "../../CORE/eventSelections.h"
 #include "../../CORE/electronSelections.h"
-//#include "../../CORE/selections.h"
-#include "../../Tools/DileptonHypType.h"
+#include "../../CORE/metSelections.h"
+#include "../../CORE/jetSelections.h"
+
+#include "../../CORE/ttbarSelections.h"
+
+#include "../../Tools/tools.cc"
 
 //
 // Namespaces
@@ -29,8 +35,14 @@
 using namespace tas;
 
 //
+// definitions...
 //
-//
+
+enum {
+
+    PASS_TOP_PT,
+
+};
 
 //
 // for jets
@@ -39,32 +51,9 @@ using namespace tas;
 static const char jetbin_names[][128] = { "0j", "1j", "2j"};
 
 //
-// for hyps
+// functions
 //
-/*
-double dRbetweenVectors(const LorentzVector &vec1,
-		const LorentzVector &vec2 ){
 
-	double dphi = std::min(::fabs(vec1.Phi() - vec2.Phi()), 2 * M_PI - fabs(vec1.Phi() - vec2.Phi()));
-	double deta = vec1.Eta() - vec2.Eta();
-	return sqrt(dphi*dphi + deta*deta);
-} 
-
-enum DileptonHypType hyp_typeToHypType (int hyp_type)
-{
-	switch (hyp_type) {
-		case 0:
-			return DILEPTON_MUMU;
-		case 1: case 2:
-			return DILEPTON_EMU;
-		case 3:
-			return DILEPTON_EE;
-		default:
-			assert(hyp_type < 4);
-	}
-	return DILEPTON_ALL;
-}
-*/
 void MyScanChain::Fill(TH1F** hist, const unsigned int hyp, const float &val, const float &weight)
 {
 	hist[hyp]->Fill(val, weight);
@@ -128,7 +117,7 @@ void MyScanChain::FillAllDYEstHistograms(const unsigned int h, const float &weig
 {
 
     // which hypothesis type
-    //DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[h]); 
+    DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[h]); 
 
     // which jet bin to fill
     unsigned int jetbin = 0;
@@ -137,38 +126,24 @@ void MyScanChain::FillAllDYEstHistograms(const unsigned int h, const float &weig
 
     // fill the mass histogram
     float mass = cms2.hyp_p4()[h].mass();
-    //Fill(h1_dyest_mll_nomet_[jetbin], hypType, mass, weight);
-    //if (passMet_OF20_SF30(h, false)) Fill(h1_dyest_mll_met_[jetbin], hypType, mass, weight);
+    Fill(h1_dyest_mll_nomet_[jetbin], hypType, mass, weight);
+    if (passMetAsIs_OF20_SF30(cms2.evt_pfmet(), hypType)) Fill(h1_dyest_mll_met_[jetbin], hypType, mass, weight);
 
     // fill the met histograms for "in" and "out" regions
-    //float mymet = met_pat_metCor_hyp(h);
-    //if (inZmassWindow(mass)) {
-    //    Fill(h1_dyest_met_in_[jetbin], hypType, mymet, weight);
-    //}
-    //else Fill(h1_dyest_met_out_[jetbin], hypType, mymet, weight);
+    float mymet = cms2.evt_pfmet();
+    if (inZmassWindow(mass)) {
+        Fill(h1_dyest_met_in_[jetbin], hypType, mymet, weight);
+    }
+    else Fill(h1_dyest_met_out_[jetbin], hypType, mymet, weight);
 
 }
 
 //
 // Main function
 //
+
 int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents, std::string skimFilePrefix) {
 
-	//
-	// define counters
-	//
-
-	// count the (weighted and unweighted) number of candidates passing our cuts
-	float             cands_passing[4];
-	float             cands_passing_w2[4];
-	unsigned int       cands_count[4];
-	memset(cands_passing   , 0, sizeof(cands_passing       ));
-	memset(cands_passing_w2        , 0, sizeof(cands_passing_w2    ));
-	memset(cands_count             , 0, sizeof(cands_count         ));
-
-	//
-	//
-	//
 	TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
 	if (rootdir == 0){
 		std::cout<<"Head directory root: not found. Try Rint: ..."<<std::endl;
@@ -183,9 +158,11 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 	//
 	// format histograms
 	//
+
 	FormatAllAnaHistograms(sampleName);
 	FormatAllDYEstHistograms(sampleName);
 
+    //
 	// file loop
 	//
 
@@ -225,24 +202,16 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 			float weight = cms2.evt_scale1fb()*0.01;
 
 			//
-			// Fill event level electron histograms
-			//
-			//FillAllEleIdHistogramsNoHyp(weight, sampleName);
-
-			//
 			// loop on hypothesis
 			//
+
 			std::vector<unsigned int> hyp_index_selected;
 			hyp_index_selected.clear();
+
 			for (size_t h = 0; h < cms2.hyp_type().size(); ++h) {
 
-				// apply lepton id 
-//				if (!looseLeptonSelectionNoIsoTTDil08(cms2.hyp_lt_id()[h], cms2.hyp_lt_index()[h])) continue;
-//				if (!looseLeptonSelectionNoIsoTTDil08(cms2.hyp_ll_id()[h], cms2.hyp_ll_index()[h])) continue;
-
-				// apply isolation
-//				if (!passLeptonIsolationTTDil08(cms2.hyp_ll_id()[h], cms2.hyp_ll_index()[h])) continue;
-//				if (!passLeptonIsolationTTDil08(cms2.hyp_lt_id()[h], cms2.hyp_lt_index()[h])) continue;
+				// apply lepton id and iso
+                if (!isGoodHypwIso(h)) continue;
 
 				// opposite charge
 				if (cms2.hyp_lt_id()[h] * cms2.hyp_ll_id()[h] > 0) continue;
@@ -254,75 +223,60 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 
 			} // end loop on hypothesis
 
-			// perform hypothesis disambiguation
+            //
+            // require a hypothesis was found
+            //
+
+            if (hyp_index_selected.size() == 0) continue;
+            int hyp = 0;
+
+            //
+			// perform hypothesis disambiguation and get hyp type for selected hyp
 			//
 
 			int strasbourgDilType = -1;
-			if (hyp_index_selected.size() == 0) continue;
-			int hyp = 0;
-//			hyp = eventDilIndexByWeightTTDil08(hyp_index_selected, strasbourgDilType, false, false);
+			hyp = eventDilIndexByWeightTTDil08(hyp_index_selected, strasbourgDilType, false, false);
+            DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[hyp]);
 
 			//
 			// make requirements of the selected hypothesis
 			//
 
 			// trigger
-//			if (!passTriggersMu9orLisoE15(cms2.hyp_type()[hyp])) continue;
+			//if (!passTriggersMu9orLisoE15(cms2.hyp_type()[hyp])) continue;
 
 			//
 			// If we got to here then classify the event according to nJets
 			//	
+std::cout << cms2.pfjets_p4().size() << std::endl;
+std::cout << cms2.pfjets_cor().size() << std::endl;
 
-			std::vector<unsigned int> corCaloJets;
-			corCaloJets.clear();
-			//for (size_t j = 0; j < cms2.jets_p4().size(); ++j) {
-			//	if (!isGoodDilHypJet(j, hyp, 30.0, 2.4, 0.4, false)) continue;
-			//	corCaloJets.push_back(j);
-			//}
+unsigned int nJetsFound = 0;
+            //unsigned int nJetsFound = nJets(hyp, JETS_TYPE_PF_CORR, JETS_CLEAN_HYP_E_MU, 0.4, 30.0, 2.4);
 
 			//
 			// estimate the DY background before the z veto and MET cuts are applied
 			//
 
-			FillAllDYEstHistograms(hyp, weight, corCaloJets.size());
+			FillAllDYEstHistograms(hyp, weight, nJetsFound);
 
 			//
 			// apply remaining requirements
 			//
 
 			// met
-//			if (!passMet_OF20_SF30(hyp, false)) continue;
+			if (!passMetAsIs_OF20_SF30(cms2.evt_pfmet(), hypType)) continue;
 
-//			// z mass window
-//			if (cms2.hyp_type()[hyp] == 0 || cms2.hyp_type()[hyp] == 3) {
-//				if (inZmassWindow(cms2.hyp_p4()[hyp].mass())) continue;
-//			}
-
-			//
-			// get hypothesis type and fill analysis results histograms
-			//
-
-//			DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[hyp]);
-			//Fill(h1_hyp_njets_, hypType, corCaloJets.size(), weight);
-
-			//
-			// count...
-			//
-/*
-			if (corCaloJets.size() >= 2) {
-
-				cands_passing[hypType] += weight;
-				cands_passing_w2[hypType] += weight * weight;
-				cands_count[hypType] ++;
-
-				cands_passing[DILEPTON_ALL] += weight;
-				cands_passing_w2[DILEPTON_ALL] += weight * weight;
-				cands_count[DILEPTON_ALL] ++;
-
-				//std::cout << "event number, hyp type: " << cms2.evt_event() << " \t" << cms2.hyp_type()[hyp] << std::endl;
-
+			// z mass window
+			if (cms2.hyp_type()[hyp] == 0 || cms2.hyp_type()[hyp] == 3) {
+				if (inZmassWindow(cms2.hyp_p4()[hyp].mass())) continue;
 			}
-*/
+
+			//
+			// fill analysis results histograms
+			//
+
+			Fill(h1_hyp_njets_, hypType, nJetsFound, weight);
 
 		} // end loop on files
 
@@ -331,23 +285,6 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 	if ( nEventsChain != nEventsTotal ) {
 		std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
 	}
-
-	//
-	// print table entry
-	//
-
-	std::cout.flush();
-	std::cout << std::endl;
-	for (unsigned int i = 0; i < 4; ++i) {
-		std::string str = dilepton_hypo_names[i];
-		std::cout << " & " << dilepton_hypo_names[i] << "\t";
-	}
-	std::cout << "\\\\ \\hline" << std::endl;
-	std::cout << sampleName << "\t";
-	for (unsigned int i = 0; i < 4; ++i) {
-		std::cout << " & " << cands_passing[i] << " $\\pm$ " << sqrt(cands_passing_w2[i]) << "\t";
-	}
-	std::cout << "\\\\ \\hline" << std::endl;
 
 	//
 	// make sure we're back in the right root dir
