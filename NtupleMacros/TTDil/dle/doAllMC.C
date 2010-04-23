@@ -7,6 +7,7 @@ void doAllMC() {
     gSystem->Load("libTree.so");
     gSystem->Load("libPhysics.so");
     gSystem->Load("libEG.so");
+    gSystem->Load("libGenVector.so");
     gSystem->Load("libMathCore.so");
     gSystem->Load("libCMS2NtupleMacrosCORE.so");
     gSystem->Load("libCMS2NtupleMacrosLooper.so");
@@ -65,7 +66,7 @@ void doAllMC() {
     //looper->ScanChain(false, "dytt", chain_dytt);
     //looper->ScanChain(false, "wjets", chain_wjets);
     //looper->ScanChain(false, "QCDpt30", chain_qcd30);
-    looper->ScanChain(false, "wm", chain_wmunu);
+    //looper->ScanChain(false, "wm", chain_wmunu);
 
     //
     // write histograms

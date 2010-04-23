@@ -29,29 +29,8 @@
 using namespace tas;
 
 //
-// typedefs
-//
-
-typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
-
 //
 //
-//
-
-enum ele_selection {
-	PASS_DPHI,
-	PASS_DETA,
-	PASS_HOE,
-	PASS_LSHAPE,
-	PASS_D0,
-	PASS_ISO,
-	PASS_DETA_CAND02,
-	PASS_LSHAPE_CAND02,
-	PASS_EXTRA,
-	PASS_EXTRA_V2,
-	PASS_CONV,
-	PASS_NOMUON,
-};
 
 //
 // for jets
@@ -62,7 +41,7 @@ static const char jetbin_names[][128] = { "0j", "1j", "2j"};
 //
 // for hyps
 //
-
+/*
 double dRbetweenVectors(const LorentzVector &vec1,
 		const LorentzVector &vec2 ){
 
@@ -85,7 +64,7 @@ enum DileptonHypType hyp_typeToHypType (int hyp_type)
 	}
 	return DILEPTON_ALL;
 }
-
+*/
 void MyScanChain::Fill(TH1F** hist, const unsigned int hyp, const float &val, const float &weight)
 {
 	hist[hyp]->Fill(val, weight);
@@ -149,7 +128,7 @@ void MyScanChain::FillAllDYEstHistograms(const unsigned int h, const float &weig
 {
 
     // which hypothesis type
-    DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[h]); 
+    //DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[h]); 
 
     // which jet bin to fill
     unsigned int jetbin = 0;
@@ -158,7 +137,7 @@ void MyScanChain::FillAllDYEstHistograms(const unsigned int h, const float &weig
 
     // fill the mass histogram
     float mass = cms2.hyp_p4()[h].mass();
-    Fill(h1_dyest_mll_nomet_[jetbin], hypType, mass, weight);
+    //Fill(h1_dyest_mll_nomet_[jetbin], hypType, mass, weight);
     //if (passMet_OF20_SF30(h, false)) Fill(h1_dyest_mll_met_[jetbin], hypType, mass, weight);
 
     // fill the met histograms for "in" and "out" regions
