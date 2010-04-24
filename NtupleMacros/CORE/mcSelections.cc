@@ -5,9 +5,6 @@
 #include "Math/VectorUtil.h"
 #include "CMS2.h"
 #include "mcSelections.h"
-#include "Math/LorentzVector.h"
-
-typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 //-------------------------------------------------
 // Auxiliary function to scan the doc line and 
@@ -364,8 +361,7 @@ int getZZType()
 // Not a selection function per se, but useful nonetheless:
 // dumps the documentation lines for this event
 //------------------------------------------------------------
-int dumpDocLines() 
-{
+void dumpDocLines() {
   int size = cms2.genps_id().size();
   // Initialize particle database
   static TDatabasePDG *pdg = new TDatabasePDG();
@@ -379,7 +375,6 @@ int dumpDocLines()
 	 << setw(10) << right << setprecision(4) << cms2.genps_p4().at(j).eta() << "  "
 	 << setw(10) << right << setprecision(4) << m << endl;
   }
-  return 0;
 }
 
 int ttbarconstituents(int i_hyp){

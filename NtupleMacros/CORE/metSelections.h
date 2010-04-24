@@ -26,19 +26,9 @@ struct metStruct{
 float projectedMET( float met, float metPhi, int hyp_index );
 
 //---------------------------------------------
-// as above but simpler for single lepton events
+// function to correct tcMET for electron bug
 //---------------------------------------------
-float projectedMETW( float met, float metPhi, float leptonPhi);
-
-//---------------------------------------------
-// function to calculate latest tcMET
-//---------------------------------------------
-metStruct correctedTCMET(bool usePV = false, bool useHFcleaning = true, bool useHCALcleaning = true, bool useECALcleaning = false);
-
-//---------------------------------------------
-// calorimeter cleaning for tcMET
-//---------------------------------------------
-metStruct cleanTCMET(float met_x, float met_y, float sumet, bool useHFcleaning = true, bool useHCALcleaning = true, bool useECALcleaning = false);
+metStruct correctedTCMET();
 
 //---------------------------------------------
 // utility function find deltaPhi between met

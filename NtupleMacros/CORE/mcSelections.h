@@ -15,7 +15,7 @@ bool isWW();
 bool isWZ();
 bool isZZ();
 int getZZType();
-int dumpDocLines();
+void dumpDocLines();
 
 //--------------------------------------------------------
 // Determines if the lepton in question is from W/Z
@@ -43,7 +43,6 @@ int dumpDocLines();
 // Authors: Claudio in consultation with fkw 22-july-09    
 //---------------------------------------------------------
 int leptonIsFromW(int idx, int id);
-int ttbarconstituents(int i_hyp);
 
 bool trueGammaFromMuon(int electron);
 // count genp leptons
