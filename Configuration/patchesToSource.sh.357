@@ -1,3 +1,10 @@
 #New Conversion code
 cvs co -r V00-05-03     RecoEgamma/EgammaTools
 cvs co -r V08-03-04     DataFormats/MuonReco
+cvs co -r CMSSW_3_5_7 RecoEcal/EgammaCoreTools #need for patches below
+cvs co -r CMSSW_3_5_7 DataFormats/EgammaReco
+cvs co -r p2010-04-06 JetMETCorrections/GammaJet
+patch -p0 RecoEcal/EgammaCoreTools/src/ClusterShapeAlgo.cc JetMETCorrections/GammaJet/diffclusshapalgoc_33x
+patch -p0 RecoEcal/EgammaCoreTools/interface/ClusterShapeAlgo.h JetMETCorrections/GammaJet/diffclusshapalgoh_31x 
+patch -p0 DataFormats/EgammaReco/src/ClusterShape.cc JetMETCorrections/GammaJet/diffclusshapc_31x
+patch -p0 DataFormats/EgammaReco/interface/ClusterShape.h JetMETCorrections/GammaJet/diffclusshaph_31x 
