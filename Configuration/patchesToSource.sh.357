@@ -8,3 +8,4 @@ patch -p0 RecoEcal/EgammaCoreTools/src/ClusterShapeAlgo.cc JetMETCorrections/Gam
 patch -p0 RecoEcal/EgammaCoreTools/interface/ClusterShapeAlgo.h JetMETCorrections/GammaJet/diffclusshapalgoh_31x 
 patch -p0 DataFormats/EgammaReco/src/ClusterShape.cc JetMETCorrections/GammaJet/diffclusshapc_31x
 patch -p0 DataFormats/EgammaReco/interface/ClusterShape.h JetMETCorrections/GammaJet/diffclusshaph_31x 
+rm JetMETCorrections/GammaJet/src/GammaJetAnalyzer.cc #does not compile.....
