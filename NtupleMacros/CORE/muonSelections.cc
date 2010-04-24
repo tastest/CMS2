@@ -27,7 +27,7 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type){
   switch (type) {
 
   case Nominal:
-    if ( cms2.mus_p4()[index].pt() < 5.) {
+    if ( cms2.mus_p4()[index].pt() < 10.) {
       std::cout << "muonID ERROR: requested muon is too low pt,  Abort." << std::endl;
       return false;
     }
@@ -44,7 +44,7 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type){
     break;
 
   case NominalTTbar:
-    if ( cms2.mus_p4()[index].pt() < 5.) {
+    if ( cms2.mus_p4()[index].pt() < 10.) {
       std::cout << "muonID ERROR: requested muon is too low pt,  Abort." << std::endl;
       return false;
     }
