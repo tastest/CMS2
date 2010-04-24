@@ -15,7 +15,38 @@
 //eidHyperTight4
 //--------------------------------
 
+#include <iostream>
 #include "electronSelectionsCICParameters.h"
+
+void eidGet(const cic_tightness tightness, std::vector<double> &cutdeta, std::vector<double> &cutdphi, std::vector<double> &cuteopin, std::vector<double> &cutet, std::vector<double> &cuthoe, std::vector<double> &cutip, std::vector<double> &cutisoecal, std::vector<double> &cutisohcal, std::vector<double> &cutisotk, std::vector<double> &cutmishits, std::vector<double> &cutsee)
+{
+
+    switch (tightness) {
+        case CIC_VERYLOOSE:
+            eidVeryLoose(cutdeta, cutdphi, cuteopin, cutet, cuthoe, cutip, cutisoecal, cutisohcal, cutisotk, cutmishits, cutsee);
+        case CIC_LOOSE:
+            eidLoose(cutdeta, cutdphi, cuteopin, cutet, cuthoe, cutip, cutisoecal, cutisohcal, cutisotk, cutmishits, cutsee);
+        case CIC_MEDIUM:
+            eidMedium(cutdeta, cutdphi, cuteopin, cutet, cuthoe, cutip, cutisoecal, cutisohcal, cutisotk, cutmishits, cutsee);
+        case CIC_TIGHT:
+            eidTight(cutdeta, cutdphi, cuteopin, cutet, cuthoe, cutip, cutisoecal, cutisohcal, cutisotk, cutmishits, cutsee);
+        case CIC_SUPERTIGHT:
+            eidSuperTight(cutdeta, cutdphi, cuteopin, cutet, cuthoe, cutip, cutisoecal, cutisohcal, cutisotk, cutmishits, cutsee);
+        case CIC_HYPERTIGHT1:
+            eidHyperTight1(cutdeta, cutdphi, cuteopin, cutet, cuthoe, cutip, cutisoecal, cutisohcal, cutisotk, cutmishits, cutsee);
+        case CIC_HYPERTIGHT2:
+            eidHyperTight2(cutdeta, cutdphi, cuteopin, cutet, cuthoe, cutip, cutisoecal, cutisohcal, cutisotk, cutmishits, cutsee);
+        case CIC_HYPERTIGHT3:
+            eidHyperTight3(cutdeta, cutdphi, cuteopin, cutet, cuthoe, cutip, cutisoecal, cutisohcal, cutisotk, cutmishits, cutsee);
+        case CIC_HYPERTIGHT4:
+            eidHyperTight4(cutdeta, cutdphi, cuteopin, cutet, cuthoe, cutip, cutisoecal, cutisohcal, cutisotk, cutmishits, cutsee);
+        default:
+            std::cout << "[eidGet] ERROR! Invalid tightness level" << std::endl;
+    }
+
+    return;
+
+}
 
 void eidAssign(std::vector<double> &cutarr, double cutvals[])
 {
@@ -74,6 +105,7 @@ void eidVeryLoose(std::vector<double> &cutdeta, std::vector<double> &cutdphi, st
     eidAssign(cutdeta, cutdeta_tmp);
     eidAssign(cutdphi, cutdphi_tmp);
     eidAssign(cuteopin, cuteopin_tmp);
+    eidAssign(cutet, cutet_tmp);
     eidAssign(cuthoe, cuthoe_tmp);
     eidAssign(cutip, cutip_tmp);
     eidAssign(cutisoecal, cutisoecal_tmp);
@@ -133,6 +165,7 @@ void eidLoose(std::vector<double> &cutdeta, std::vector<double> &cutdphi, std::v
     eidAssign(cutdeta, cutdeta_tmp);
     eidAssign(cutdphi, cutdphi_tmp);
     eidAssign(cuteopin, cuteopin_tmp);
+    eidAssign(cutet, cutet_tmp);
     eidAssign(cuthoe, cuthoe_tmp);
     eidAssign(cutip, cutip_tmp);
     eidAssign(cutisoecal, cutisoecal_tmp);
@@ -193,6 +226,7 @@ void eidMedium(std::vector<double> &cutdeta, std::vector<double> &cutdphi, std::
     eidAssign(cutdeta, cutdeta_tmp);
     eidAssign(cutdphi, cutdphi_tmp);
     eidAssign(cuteopin, cuteopin_tmp);
+    eidAssign(cutet, cutet_tmp);
     eidAssign(cuthoe, cuthoe_tmp);
     eidAssign(cutip, cutip_tmp);
     eidAssign(cutisoecal, cutisoecal_tmp);
@@ -252,6 +286,7 @@ void eidTight(std::vector<double> &cutdeta, std::vector<double> &cutdphi, std::v
     eidAssign(cutdeta, cutdeta_tmp);
     eidAssign(cutdphi, cutdphi_tmp);
     eidAssign(cuteopin, cuteopin_tmp);
+    eidAssign(cutet, cutet_tmp);
     eidAssign(cuthoe, cuthoe_tmp);
     eidAssign(cutip, cutip_tmp);
     eidAssign(cutisoecal, cutisoecal_tmp);
@@ -311,6 +346,7 @@ void eidSuperTight(std::vector<double> &cutdeta, std::vector<double> &cutdphi, s
     eidAssign(cutdeta, cutdeta_tmp);
     eidAssign(cutdphi, cutdphi_tmp);
     eidAssign(cuteopin, cuteopin_tmp);
+    eidAssign(cutet, cutet_tmp);
     eidAssign(cuthoe, cuthoe_tmp);
     eidAssign(cutip, cutip_tmp);
     eidAssign(cutisoecal, cutisoecal_tmp);
@@ -370,6 +406,7 @@ void eidHyperTight1(std::vector<double> &cutdeta, std::vector<double> &cutdphi, 
     eidAssign(cutdeta, cutdeta_tmp);
     eidAssign(cutdphi, cutdphi_tmp);
     eidAssign(cuteopin, cuteopin_tmp);
+    eidAssign(cutet, cutet_tmp);
     eidAssign(cuthoe, cuthoe_tmp);
     eidAssign(cutip, cutip_tmp);
     eidAssign(cutisoecal, cutisoecal_tmp);
@@ -429,6 +466,7 @@ void eidHyperTight2(std::vector<double> &cutdeta, std::vector<double> &cutdphi, 
     eidAssign(cutdeta, cutdeta_tmp);
     eidAssign(cutdphi, cutdphi_tmp);
     eidAssign(cuteopin, cuteopin_tmp);
+    eidAssign(cutet, cutet_tmp);
     eidAssign(cuthoe, cuthoe_tmp);
     eidAssign(cutip, cutip_tmp);
     eidAssign(cutisoecal, cutisoecal_tmp);
@@ -488,6 +526,7 @@ void eidHyperTight3(std::vector<double> &cutdeta, std::vector<double> &cutdphi, 
     eidAssign(cutdeta, cutdeta_tmp);
     eidAssign(cutdphi, cutdphi_tmp);
     eidAssign(cuteopin, cuteopin_tmp);
+    eidAssign(cutet, cutet_tmp);
     eidAssign(cuthoe, cuthoe_tmp);
     eidAssign(cutip, cutip_tmp);
     eidAssign(cutisoecal, cutisoecal_tmp);
@@ -547,6 +586,7 @@ void eidHyperTight4(std::vector<double> &cutdeta, std::vector<double> &cutdphi, 
     eidAssign(cutdeta, cutdeta_tmp);
     eidAssign(cutdphi, cutdphi_tmp);
     eidAssign(cuteopin, cuteopin_tmp);
+    eidAssign(cutet, cutet_tmp);
     eidAssign(cuthoe, cuthoe_tmp);
     eidAssign(cutip, cutip_tmp);
     eidAssign(cutisoecal, cutisoecal_tmp);

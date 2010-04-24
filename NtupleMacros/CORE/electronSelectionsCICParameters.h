@@ -9,6 +9,7 @@
 // Settings provided
 //
 //--------------------------------
+//eidVeryLoose
 //eidLoose
 //eidMedium
 //eidTight
@@ -20,6 +21,20 @@
 //--------------------------------
 
 #include <vector>
+
+enum cic_tightness {
+    CIC_VERYLOOSE,
+    CIC_LOOSE,
+    CIC_MEDIUM,
+    CIC_TIGHT,
+    CIC_SUPERTIGHT,
+    CIC_HYPERTIGHT1,
+    CIC_HYPERTIGHT2,
+    CIC_HYPERTIGHT3,
+    CIC_HYPERTIGHT4,
+};
+
+void eidGet(const cic_tightness tightness, std::vector<double> &cutdeta, std::vector<double> &cutdphi, std::vector<double> &cuteopin, std::vector<double> &cutet, std::vector<double> &cuthoe, std::vector<double> &cutip, std::vector<double> &cutisoecal, std::vector<double> &cutisohcal, std::vector<double> &cutisotk, std::vector<double> &cutmishits, std::vector<double> &cutsee);
 
 void eidAssign(std::vector<double> &cutarr, double cutvals[]);
 
