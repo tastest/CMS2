@@ -1,9 +1,9 @@
 
-
 #ifndef ELECTRONSELECTIONS_H
 #define ELECTRONSELECTIONS_H
 
 #include <stdint.h>
+#include <vector>
 
 //
 // electron selections 
@@ -120,9 +120,11 @@ bool electronId_classBasedTight(const unsigned int index);
 // class based id that is new/experimental
 //
 
-bool electronId_classBasedExperimental(const unsigned int index);
-int classify(const unsigned int version, const unsigned int index);
+unsigned int electronId_classBasedExperimental(const unsigned int tightness, const unsigned int index);
+unsigned int classify(const unsigned int version, const unsigned int index);
+void electronId_classBasedExperimentalAssign(std::vector<double> &cutarr, double cutvals[]);
 
+unsigned int electronId_VBTF70(const unsigned int index);
 
 //
 // electron isolation definitions that we have used before
