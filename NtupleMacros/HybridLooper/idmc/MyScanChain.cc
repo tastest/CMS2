@@ -23,6 +23,7 @@
 #include "../../CORE/jetSelections.h"
 #include "../../CORE/mcSelections.h"
 #include "../../CORE/utilities.h"
+#include "../../CORE/electronSelectionsCICParameters.h"
 
 //
 // Namespaces
@@ -299,11 +300,13 @@ void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
         FormatHist(h1_hyp_idstudy_after_classExpLoose_reliso_[i], sampleName, "h1_hyp_idstudy_after_classExpLoose_reliso_" + detname, 100, 0.0, 1.0);
         FormatHist(h1_hyp_idstudy_after_classExpTight_reliso_[i], sampleName, "h1_hyp_idstudy_after_classExpTight_reliso_" + detname, 100, 0.0, 1.0);
         FormatHist(h1_hyp_idstudy_after_cand01_reliso_[i], sampleName, "h1_hyp_idstudy_after_cand01_reliso_" + detname, 100, 0.0, 1.0);
+        FormatHist(h1_hyp_idstudy_after_vbtf70_reliso_[i], sampleName, "h1_hyp_idstudy_after_vbtf70_reliso_" + detname, 100, 0.0, 1.0);
 
         // pt after id
         FormatHist(h1_hyp_idstudy_after_classExpLoose_pt_[i], sampleName, "h1_hyp_idstudy_after_classExpLoose_pt_" + detname, 200, 0.0, 200);
         FormatHist(h1_hyp_idstudy_after_classExpTight_pt_[i], sampleName, "h1_hyp_idstudy_after_classExpTight_pt_" + detname, 200, 0.0, 200);
         FormatHist(h1_hyp_idstudy_after_cand01_pt_[i], sampleName, "h1_hyp_idstudy_after_cand01_pt_" + detname, 200, 0.0, 200);
+        FormatHist(h1_hyp_idstudy_after_vbtf70_pt_[i], sampleName, "h1_hyp_idstudy_after_vbtf70_pt_" + detname, 200, 0.0, 200);
 
         // pt after id AND iso
         FormatHist(h1_hyp_idstudy_after_classExpLooseFull_pt_[i], sampleName, "h1_hyp_idstudy_after_classExpLooseFull_pt_" + detname, 200, 0.0, 200);
@@ -316,6 +319,9 @@ void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
 
         FormatHist(h1_hyp_idstudy_after_cand01Rel01_pt_[i], sampleName, "h1_hyp_idstudy_after_cand01Rel01_pt_" + detname, 200, 0.0, 200);
         FormatHist(h1_hyp_idstudy_after_cand01Rel02_pt_[i], sampleName, "h1_hyp_idstudy_after_cand01Rel02_pt_" + detname, 200, 0.0, 200);
+
+        FormatHist(h1_hyp_idstudy_after_vbtf70Rel01_pt_[i], sampleName, "h1_hyp_idstudy_after_vbtf70Rel01_pt_" + detname, 200, 0.0, 200);
+        FormatHist(h1_hyp_idstudy_after_vbtf70Full_pt_[i], sampleName, "h1_hyp_idstudy_after_vbtf70Full_pt_" + detname, 200, 0.0, 200);
 
         // check reimplementation of sani id in the looper
         FormatHist(h1_hyp_idstudy_classExpLooseRecompId_[i], sampleName, "h1_hyp_idstudy_classExpLooseRecompId_" + detname, 5, -0.5, 4.5);
@@ -625,8 +631,8 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
     // experimental class based id
     // validation part
 
-    int answerLoose = electronId_classBasedExperimental(0, index);
-    int answerTight = electronId_classBasedExperimental(1, index);
+    int answerLoose = electronId_CIC(CIC_LOOSE, index);
+    int answerTight = electronId_CIC(CIC_TIGHT, index);
 
     if (CheckCuts((1<<ELEPASS_TYPE) | (1<<ELEPASS_FIDUCIAL), result_electronSelections_cand01)) {
 
@@ -701,6 +707,17 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
                 Fill(h1_hyp_idstudy_after_cand01Rel02_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
         }
 
+        // VBTF70
+        unsigned int answerVBTF70 = electronId_VBTF70(index);
+        if (answerVBTF70 == 3 || answerVBTF70 == 1) {
+            Fill(h1_hyp_idstudy_after_vbtf70_reliso_[det], hypType, iso_relsusy, weight);
+            Fill(h1_hyp_idstudy_after_vbtf70_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+            if (iso_relsusy < 0.10)
+                Fill(h1_hyp_idstudy_after_vbtf70Rel01_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+            if (answerVBTF70 == 3)
+                Fill(h1_hyp_idstudy_after_vbtf70Full_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+        }
+
     } // end denominator selection
 
 
@@ -734,7 +751,7 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
     //
     // jet activity
     //
-
+/*
     if (CheckCutsNM1(electronSelections_passall_, (1<<ELEPASS_ID), result_electronSelections_cand01)) {
 
         // get the vector of cleaned jets
@@ -765,7 +782,7 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
         }
 
     }
-
+*/
 
     //
     //

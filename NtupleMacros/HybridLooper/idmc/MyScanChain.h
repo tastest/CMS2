@@ -202,12 +202,14 @@ class MyScanChain {
         TH1F *h1_hyp_idstudy_after_classExpLoose_reliso_[2][4];
         TH1F *h1_hyp_idstudy_after_classExpTight_reliso_[2][4];
         TH1F *h1_hyp_idstudy_after_cand01_reliso_[2][4];
+        TH1F *h1_hyp_idstudy_after_vbtf70_reliso_[2][4];
 
         // pt distributions after ids applied
         // (no iso)
         TH1F *h1_hyp_idstudy_after_classExpLoose_pt_[2][4];
         TH1F *h1_hyp_idstudy_after_classExpTight_pt_[2][4];
         TH1F *h1_hyp_idstudy_after_cand01_pt_[2][4];
+        TH1F *h1_hyp_idstudy_after_vbtf70_pt_[2][4];
 
         // pt distributions after ids AND iso applied
         TH1F *h1_hyp_idstudy_after_classExpLooseFull_pt_[2][4];
@@ -220,6 +222,9 @@ class MyScanChain {
 
         TH1F *h1_hyp_idstudy_after_cand01Rel01_pt_[2][4];
         TH1F *h1_hyp_idstudy_after_cand01Rel02_pt_[2][4];
+
+        TH1F *h1_hyp_idstudy_after_vbtf70Full_pt_[2][4];
+        TH1F *h1_hyp_idstudy_after_vbtf70Rel01_pt_[2][4];
 
         // decision bits for validation of 
         // recomputation of sani id in the looper

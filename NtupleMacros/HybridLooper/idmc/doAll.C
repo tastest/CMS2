@@ -128,18 +128,18 @@ enum ElectronSelection {
     // ele id studies
     //
 
-    //looper->ScanChain(false, "ttbar", chain_ttbar);
-	//looper->ScanChain(false, "wm", chain_wmunu);
+    looper->ScanChain(false, "ttbar", chain_ttbar);
+	looper->ScanChain(false, "wm", chain_wmunu);
 
     // ele id sanity check with sani id
-    looper->ScanChain(false, "eleidval", chain_eleidval);
+    //looper->ScanChain(false, "eleidval", chain_eleidval);
 
 
 	//
 	// write histograms
 	// 
-    //const char* outFile = "histos_eleid_" + fileNameString + ".root";
-	const char* outFile = "histos_eleid_saniv02_" + fileNameString + ".root";
+    const char* outFile = "histos_eleid_" + fileNameString + ".root";
+	//const char* outFile = "histos_eleid_saniv02_" + fileNameString + ".root";
 	hist::saveHist(outFile); 
 	hist::deleteHistos();
 

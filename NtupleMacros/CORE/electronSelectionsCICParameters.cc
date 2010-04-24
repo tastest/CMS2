@@ -24,22 +24,31 @@ void eidGet(const cic_tightness tightness, std::vector<double> &cutdeta, std::ve
     switch (tightness) {
         case CIC_VERYLOOSE:
             eidVeryLoose(cutdeta, cutdphi, cuteopin, cutet, cuthoe, cutip, cutisoecal, cutisohcal, cutisotk, cutmishits, cutsee);
+            return;
         case CIC_LOOSE:
             eidLoose(cutdeta, cutdphi, cuteopin, cutet, cuthoe, cutip, cutisoecal, cutisohcal, cutisotk, cutmishits, cutsee);
+            return;
         case CIC_MEDIUM:
             eidMedium(cutdeta, cutdphi, cuteopin, cutet, cuthoe, cutip, cutisoecal, cutisohcal, cutisotk, cutmishits, cutsee);
+            return;
         case CIC_TIGHT:
             eidTight(cutdeta, cutdphi, cuteopin, cutet, cuthoe, cutip, cutisoecal, cutisohcal, cutisotk, cutmishits, cutsee);
+            return;
         case CIC_SUPERTIGHT:
             eidSuperTight(cutdeta, cutdphi, cuteopin, cutet, cuthoe, cutip, cutisoecal, cutisohcal, cutisotk, cutmishits, cutsee);
+            return;
         case CIC_HYPERTIGHT1:
             eidHyperTight1(cutdeta, cutdphi, cuteopin, cutet, cuthoe, cutip, cutisoecal, cutisohcal, cutisotk, cutmishits, cutsee);
+            return;
         case CIC_HYPERTIGHT2:
             eidHyperTight2(cutdeta, cutdphi, cuteopin, cutet, cuthoe, cutip, cutisoecal, cutisohcal, cutisotk, cutmishits, cutsee);
+            return;
         case CIC_HYPERTIGHT3:
             eidHyperTight3(cutdeta, cutdphi, cuteopin, cutet, cuthoe, cutip, cutisoecal, cutisohcal, cutisotk, cutmishits, cutsee);
+            return;
         case CIC_HYPERTIGHT4:
             eidHyperTight4(cutdeta, cutdphi, cuteopin, cutet, cuthoe, cutip, cutisoecal, cutisohcal, cutisotk, cutmishits, cutsee);
+            return;
         default:
             std::cout << "[eidGet] ERROR! Invalid tightness level" << std::endl;
     }

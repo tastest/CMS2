@@ -69,6 +69,19 @@ void formatHist(TH1F *hist, bool signal, unsigned int idType) {
             hist->SetMarkerColor(kMagenta);
         }
     }
+    if (idType == 4) {
+        if (signal) {
+            hist->SetLineColor(kCyan);
+            hist->SetMarkerStyle(20);
+            hist->SetMarkerColor(kCyan);
+        }
+        else {
+            hist->SetLineColor(kOrange);
+            hist->SetMarkerStyle(20);
+            hist->SetMarkerColor(kOrange);
+        }
+
+    }
 
 
 
@@ -133,23 +146,23 @@ void printSanityStudy(TString det) {
     // just sani tight
     //
     TH1F *s_h1_hyp_idstudy_after_classExpTight_pt = (TH1F*)f.Get("ttbar_h1_hyp_idstudy_after_classExpTight_pt_" + det + "_ee");
-    formatHist(s_h1_hyp_idstudy_after_classExpTight_pt, true, 1);
+    formatHist(s_h1_hyp_idstudy_after_classExpTight_pt, true, 0);
     TH1F *b_h1_hyp_idstudy_after_classExpTight_pt = (TH1F*)f.Get("wm_h1_hyp_idstudy_after_classExpTight_pt_" + det + "_ee");
-    formatHist(b_h1_hyp_idstudy_after_classExpTight_pt, false, 1);
+    formatHist(b_h1_hyp_idstudy_after_classExpTight_pt, false, 0);
 
     TH1F *s_h1_hyp_idstudy_after_classExpTight_reliso = (TH1F*)f.Get("ttbar_h1_hyp_idstudy_after_classExpTight_reliso_" + det + "_ee");
-    formatHist(s_h1_hyp_idstudy_after_classExpTight_reliso, true, 1);
+    formatHist(s_h1_hyp_idstudy_after_classExpTight_reliso, true, 0);
     TH1F *b_h1_hyp_idstudy_after_classExpTight_reliso = (TH1F*)f.Get("wm_h1_hyp_idstudy_after_classExpTight_reliso_" + det + "_ee");
-    formatHist(b_h1_hyp_idstudy_after_classExpTight_reliso, false, 1);
+    formatHist(b_h1_hyp_idstudy_after_classExpTight_reliso, false, 0);
 
 
     //
     // sani tight with sani iso
     //
     TH1F *s_h1_hyp_idstudy_after_classExpTightFull_pt = (TH1F*)f.Get("ttbar_h1_hyp_idstudy_after_classExpTightFull_pt_" + det + "_ee");
-    formatHist(s_h1_hyp_idstudy_after_classExpTightFull_pt, true, 3);
+    formatHist(s_h1_hyp_idstudy_after_classExpTightFull_pt, true, 0);
     TH1F *b_h1_hyp_idstudy_after_classExpTightFull_pt = (TH1F*)f.Get("wm_h1_hyp_idstudy_after_classExpTightFull_pt_" + det + "_ee");
-    formatHist(b_h1_hyp_idstudy_after_classExpTightFull_pt, false, 3);
+    formatHist(b_h1_hyp_idstudy_after_classExpTightFull_pt, false, 0);
 
     //
     // sani tight with reliso01
@@ -181,6 +194,38 @@ void printSanityStudy(TString det) {
     formatHist(s_h1_hyp_idstudy_after_cand01Rel01_pt, true, 2); 
     TH1F *b_h1_hyp_idstudy_after_cand01Rel01_pt = (TH1F*)f.Get("wm_h1_hyp_idstudy_after_cand01Rel01_pt_" + det + "_ee"); 
     formatHist(b_h1_hyp_idstudy_after_cand01Rel01_pt, false, 2);
+
+    //
+    // just vbtf70
+    //
+    TH1F *s_h1_hyp_idstudy_after_vbtf70_pt = (TH1F*)f.Get("ttbar_h1_hyp_idstudy_after_vbtf70_pt_" + det + "_ee");
+    formatHist(s_h1_hyp_idstudy_after_vbtf70_pt, true, 4);
+    TH1F *b_h1_hyp_idstudy_after_vbtf70_pt = (TH1F*)f.Get("wm_h1_hyp_idstudy_after_vbtf70_pt_" + det + "_ee");
+    formatHist(b_h1_hyp_idstudy_after_vbtf70_pt, false, 4);
+    
+    TH1F *s_h1_hyp_idstudy_after_vbtf70_reliso = (TH1F*)f.Get("ttbar_h1_hyp_idstudy_after_vbtf70_reliso_" + det + "_ee");
+    formatHist(s_h1_hyp_idstudy_after_vbtf70_reliso, true, 4);
+    TH1F *b_h1_hyp_idstudy_after_vbtf70_reliso = (TH1F*)f.Get("wm_h1_hyp_idstudy_after_vbtf70_reliso_" + det + "_ee");
+    formatHist(b_h1_hyp_idstudy_after_vbtf70_reliso, false, 4);
+
+    
+    //
+    // vbtf70 with reliso01
+    //
+    TH1F *s_h1_hyp_idstudy_after_vbtf70Rel01_pt = (TH1F*)f.Get("ttbar_h1_hyp_idstudy_after_vbtf70Rel01_pt_" + det + "_ee");
+    formatHist(s_h1_hyp_idstudy_after_vbtf70Rel01_pt, true, 3); 
+    TH1F *b_h1_hyp_idstudy_after_vbtf70Rel01_pt = (TH1F*)f.Get("wm_h1_hyp_idstudy_after_vbtf70Rel01_pt_" + det + "_ee");
+    formatHist(b_h1_hyp_idstudy_after_vbtf70Rel01_pt, false, 3);
+
+    //
+    // vbtf70 full
+    //
+    TH1F *s_h1_hyp_idstudy_after_vbtf70Full_pt = (TH1F*)f.Get("ttbar_h1_hyp_idstudy_after_vbtf70Full_pt_" + det + "_ee");
+    formatHist(s_h1_hyp_idstudy_after_vbtf70Full_pt, true, 4);
+    TH1F *b_h1_hyp_idstudy_after_vbtf70Full_pt = (TH1F*)f.Get("wm_h1_hyp_idstudy_after_vbtf70Full_pt_" + det + "_ee");
+    formatHist(b_h1_hyp_idstudy_after_vbtf70Full_pt, false, 4);
+
+
 
     //
     // Efficiencies
@@ -537,6 +582,110 @@ void printSanityStudy(TString det) {
 
     c10->SaveAs("results/study_" + det + "_classExpLoose_reliso.png");
 
+
+    //
+    // VBTF70 investigations
+    //
+
+    //
+    // pt distributions before iso tight
+    //
+    TCanvas *c11 = new TCanvas();
+    c11->cd();
+    
+    TLegend *l11 = new TLegend(0.5, 0.5, 0.9, 0.9);
+    l11->SetFillColor(kWhite);
+    l11->SetLineColor(kWhite);
+    l11->SetShadowColor(kWhite);
+//    l11->AddEntry(s_h1_hyp_idstudy_after_cand01_pt, "S (cand01)", "lf");
+//    l11->AddEntry(b_h1_hyp_idstudy_after_cand01_pt, "BG (cand01)", "lf");
+    l11->AddEntry(s_h1_hyp_idstudy_after_classExpTight_pt, "S (class tight)", "lp");
+    l11->AddEntry(b_h1_hyp_idstudy_after_classExpTight_pt, "BG (class tight)", "lp");
+    l11->AddEntry(s_h1_hyp_idstudy_after_vbtf70_pt, "S (vbtf70 no iso)", "lp");
+    l11->AddEntry(b_h1_hyp_idstudy_after_vbtf70_pt, "BG (vbtf70 no iso)", "lp");
+    
+//    s_h1_hyp_idstudy_after_cand01_pt->Draw("HIST");
+//    b_h1_hyp_idstudy_after_cand01_pt->Draw("HIST SAME");
+    b_h1_hyp_idstudy_after_classExpTight_pt->Draw("HIST E1");
+    s_h1_hyp_idstudy_after_classExpTight_pt->Draw("HIST SAME E1");
+    b_h1_hyp_idstudy_after_classExpTight_pt->Draw("HIST SAME E1");
+    s_h1_hyp_idstudy_after_vbtf70_pt->Draw("HIST SAME E1");
+    b_h1_hyp_idstudy_after_vbtf70_pt->Draw("HIST SAME E1");
+    if (det == "EE") b_h1_hyp_idstudy_after_classExpTight_pt->GetYaxis()->SetRangeUser(0, 4);
+    if (det == "EB") b_h1_hyp_idstudy_after_classExpTight_pt->GetYaxis()->SetRangeUser(0, 6);
+    b_h1_hyp_idstudy_after_classExpTight_pt->GetXaxis()->SetTitle("p_{T} (GeV)");
+    l11->Draw();
+    
+    c11->SaveAs("results/study_" + det + "_vbtf70.png");
+    
+    // print table of IDs before Iso
+    std::cout << "\\begin{table}[ht]" << std::endl;
+    std::cout << "\\caption{VBTF70 Electron ID before isolation " + det + "}" << std::endl;
+    std::cout << "\\begin{center}" << std::endl;
+    std::cout << "\\begin{tabular}{|l*{4}{|c}|r|}\\hline" << std::endl;
+    std::cout << "ID type   & S & B & S/$\\sqrt{B}$  \\\\ \\hline" << std::endl;
+    printIntegral("cand01", s_h1_hyp_idstudy_after_cand01_pt, b_h1_hyp_idstudy_after_cand01_pt);
+    printIntegral("class tight", s_h1_hyp_idstudy_after_classExpTight_pt, b_h1_hyp_idstudy_after_classExpTight_pt);
+    printIntegral("vbtf70 no iso", s_h1_hyp_idstudy_after_vbtf70_pt, b_h1_hyp_idstudy_after_vbtf70_pt);
+    std::cout <<"\\end{tabular}" << std::endl;
+    std::cout <<"\\end{center}" << std::endl;
+    std::cout << "\\end{table}" << std::endl;
+
+    //
+    // pt distributions after iso tight
+    //
+
+    TCanvas *c12 = new TCanvas();
+    c12->cd();
+
+    TLegend *l12 = new TLegend(0.5, 0.5, 0.9, 0.9);
+    l12->SetFillColor(kWhite);
+    l12->SetLineColor(kWhite);
+    l12->SetShadowColor(kWhite);
+//    l12->AddEntry(s_h1_hyp_idstudy_after_cand01Rel01_pt, "S (cand01 rel01)", "lf");
+//    l12->AddEntry(b_h1_hyp_idstudy_after_cand01Rel01_pt, "BG (cand01 rel01)", "lf");
+//    l12->AddEntry(s_h1_hyp_idstudy_after_classExpTightRel01_pt, "S (class tight rel01)", "lp");
+//    l12->AddEntry(b_h1_hyp_idstudy_after_classExpTightRel01_pt, "BG (class tight rel01)", "lp");
+    l12->AddEntry(s_h1_hyp_idstudy_after_classExpTightFull_pt, "S (class tight full)", "lp");
+    l12->AddEntry(b_h1_hyp_idstudy_after_classExpTightFull_pt, "BG (class tight full)", "lp");
+//    l12->AddEntry(s_h1_hyp_idstudy_after_vbtf70Rel01_pt, "S (vbtf70 rel01)", "lp");
+//    l12->AddEntry(b_h1_hyp_idstudy_after_vbtf70Rel01_pt, "BG (vbtf70 rel01)", "lp");
+    l12->AddEntry(s_h1_hyp_idstudy_after_vbtf70Full_pt, "S (vbtf70 full)", "lp");
+    l12->AddEntry(b_h1_hyp_idstudy_after_vbtf70Full_pt, "BG (vbtf70 full)", "lp");
+
+
+//    s_h1_hyp_idstudy_after_cand01Rel01_pt->Draw("HIST");
+//    b_h1_hyp_idstudy_after_cand01Rel01_pt->Draw("HIST SAME");
+//    s_h1_hyp_idstudy_after_classExpTightRel01_pt->Draw("HIST SAME E1");
+//    b_h1_hyp_idstudy_after_classExpTightRel01_pt->Draw("HIST SAME E1");
+    b_h1_hyp_idstudy_after_classExpTightFull_pt->Draw("HIST E1");
+    s_h1_hyp_idstudy_after_classExpTightFull_pt->Draw("HIST SAME E1");
+//    s_h1_hyp_idstudy_after_vbtf70Rel01_pt->Draw("HIST SAME E1");
+//    b_h1_hyp_idstudy_after_vbtf70Rel01_pt->Draw("HIST SAME E1");
+    s_h1_hyp_idstudy_after_vbtf70Full_pt->Draw("HIST SAME E1");
+    b_h1_hyp_idstudy_after_vbtf70Full_pt->Draw("HIST SAME E1");
+
+    if (det == "EE") b_h1_hyp_idstudy_after_classExpTightFull_pt->GetYaxis()->SetRangeUser(0, 4);
+    if (det == "EB") b_h1_hyp_idstudy_after_classExpTightFull_pt->GetYaxis()->SetRangeUser(0, 6);
+    b_h1_hyp_idstudy_after_classExpTightFull_pt->GetXaxis()->SetTitle("p_{T} (GeV)");
+    l12->Draw();
+
+    c12->SaveAs("results/study_" + det + "_vbtf70Rel01.png");
+
+    // print table of IDs before Iso
+    std::cout << "\\begin{table}[ht]" << std::endl;
+    std::cout << "\\caption{VBTF70 Electron ID before isolation " + det + "}" << std::endl;
+    std::cout << "\\begin{center}" << std::endl;
+    std::cout << "\\begin{tabular}{|l*{4}{|c}|r|}\\hline" << std::endl;
+    std::cout << "ID type   & S & B & S/$\\sqrt{B}$  \\\\ \\hline" << std::endl;
+    printIntegral("cand01 + reliso", s_h1_hyp_idstudy_after_cand01Rel01_pt, b_h1_hyp_idstudy_after_cand01Rel01_pt);
+    printIntegral("class tight + reliso", s_h1_hyp_idstudy_after_classExpTightRel01_pt, b_h1_hyp_idstudy_after_classExpTightRel01_pt);
+    printIntegral("class tight + full", s_h1_hyp_idstudy_after_classExpTightFull_pt, b_h1_hyp_idstudy_after_classExpTightFull_pt);
+    printIntegral("vbtf70 full", s_h1_hyp_idstudy_after_vbtf70Full_pt, b_h1_hyp_idstudy_after_vbtf70Full_pt);
+    printIntegral("vbtf70 reliso", s_h1_hyp_idstudy_after_vbtf70Rel01_pt, b_h1_hyp_idstudy_after_vbtf70Rel01_pt);
+    std::cout <<"\\end{tabular}" << std::endl;
+    std::cout <<"\\end{center}" << std::endl;
+    std::cout << "\\end{table}" << std::endl;
 
 }
 

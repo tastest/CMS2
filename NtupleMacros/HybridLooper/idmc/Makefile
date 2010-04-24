@@ -33,6 +33,7 @@ ifeq ($(shell root-config --platform),macosx)
 endif
 
 CORESOURCES = $(CMSROOT)/CORE/CMS2.cc \
+    $(CMSROOT)/CORE/electronSelectionsCICParameters.cc \
     $(CMSROOT)/CORE/electronSelections.cc \
     $(CMSROOT)/CORE/trackSelections.cc \
     $(CMSROOT)/CORE/metSelections.cc \
