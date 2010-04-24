@@ -63,5 +63,5 @@ else
     # Run basic plotting and scanning script
     # in a separate process so that if it
     # stalls it does not affect this process
-    ./makePlots.sh&
+    #./makePlots.sh&
 fi

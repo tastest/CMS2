@@ -6,6 +6,7 @@
      chain->Add("/tas03/disk01/whunt/baby/*.root");
 
      TCut wselection("iso < 0.2 && pfmet > 25 && pfmet < 80 && abs(d0corr) < 0.4");
+     wselection   += "(eormu == 13 && (type&6)==6) || eormu == 11"; // global && tracker muon
      TCut welSelection( wselection + "eormu == 11");
      TCut wmuSelection( wselection + "eormu == 13");
 

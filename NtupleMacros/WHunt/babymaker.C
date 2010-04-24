@@ -13,6 +13,7 @@
 
 #include "CORE/CMS2.h"
 #include "CORE/electronSelections.cc"
+#include "CORE/electronSelectionsCICParameters.cc"
 #include "CORE/metSelections.cc"
 #include "CORE/muonSelections.cc"
 #include "CORE/trackSelections.cc"
