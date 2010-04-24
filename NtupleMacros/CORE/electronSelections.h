@@ -60,6 +60,12 @@ enum ElectronSelection {
     ELEPASS_FULLSELECTION
 };
 
+enum ElectronSelectionCIC {
+    ELEPASS_CIC_ID,
+    ELEPASS_CIC_ISO,
+    ELEPASS_CIC_CONV,
+    ELEPASS_CIC_IP,
+};
 
 //
 // These are the components of the 

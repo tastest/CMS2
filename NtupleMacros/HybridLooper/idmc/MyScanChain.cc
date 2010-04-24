@@ -634,20 +634,23 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
     int answerLoose = electronId_CIC(CIC_LOOSE, index);
     int answerTight = electronId_CIC(CIC_TIGHT, index);
 
+    const elecuts_t cicval_id = (1<<ELEPASS_CIC_ID) | (1<<ELEPASS_CIC_IP) | (1<<ELEPASS_CIC_CONV);
+    const elecuts_t cicval_iso = (1<<ELEPASS_CIC_ISO); 
+
     if (CheckCuts((1<<ELEPASS_TYPE) | (1<<ELEPASS_FIDUCIAL), result_electronSelections_cand01)) {
 
         // check that class based id passed independently of isolation decision
-        Fill(h1_hyp_idstudy_classExpLooseRecompId_[det], hypType, bool(answerLoose & (1<<0)), 1.0);
-        Fill(h1_hyp_idstudy_classExpLooseRecompIso_[det], hypType, bool(answerLoose & (1<<1)), 1.0);
-        Fill(h1_hyp_idstudy_classExpTightRecompId_[det], hypType, bool(answerTight & (1<<0)), 1.0);
-        Fill(h1_hyp_idstudy_classExpTightRecompIso_[det], hypType, bool(answerTight & (1<<1)), 1.0);
+        Fill(h1_hyp_idstudy_classExpLooseRecompId_[det], hypType, bool(answerLoose & cicval_id), 1.0);
+        Fill(h1_hyp_idstudy_classExpLooseRecompIso_[det], hypType, bool(answerLoose & cicval_iso), 1.0);
+        Fill(h1_hyp_idstudy_classExpTightRecompId_[det], hypType, bool(answerTight & cicval_id), 1.0);
+        Fill(h1_hyp_idstudy_classExpTightRecompIso_[det], hypType, bool(answerTight & cicval_iso), 1.0);
 
         Fill(h1_hyp_idstudy_classExpSaniLooseId_[det], hypType, bool(int(cms2.els_egamma_looseId()[index]) & (1<<0)), 1.0);
         Fill(h1_hyp_idstudy_classExpSaniLooseIso_[det], hypType, bool(int(cms2.els_egamma_looseId()[index]) & (1<<1)), 1.0);
         Fill(h1_hyp_idstudy_classExpSaniTightId_[det], hypType, bool(int(cms2.els_egamma_tightId()[index]) & (1<<0)), 1.0);
         Fill(h1_hyp_idstudy_classExpSaniTightIso_[det], hypType, bool(int(cms2.els_egamma_tightId()[index]) & (1<<1)), 1.0);
 
-        if( answerLoose == 3 || answerLoose == 1 ) {
+        if( answerLoose & cicval_id ) {
             Fill(h1_hyp_idegammanewloose_nm1_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
             // check the values are cut on
             Fill(h1_hyp_debug_after_classExp_hoe_[0], hypType, cms2.els_hOverE()[index], weight);
@@ -674,26 +677,26 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
     if (CheckCuts((1<<ELEPASS_TYPE) | (1<<ELEPASS_FIDUCIAL), result_electronSelections_cand01)) {
 
         // loose experimental class based id passed
-        if( answerLoose == 3 || answerLoose == 1 ) {
+        if( (answerLoose & cicval_id) == cicval_id ) {
             Fill(h1_hyp_idstudy_after_classExpLoose_reliso_[det], hypType, iso_relsusy, weight);
             Fill(h1_hyp_idstudy_after_classExpLoose_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
             if (iso_relsusy < 0.10)
                 Fill(h1_hyp_idstudy_after_classExpLooseRel01_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
             if (iso_relsusy < 0.20)
                 Fill(h1_hyp_idstudy_after_classExpLooseRel02_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
-            if (answerLoose == 3)
+            if ((answerLoose & cicval_iso) == cicval_iso)
                 Fill(h1_hyp_idstudy_after_classExpLooseFull_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
         }
 
         // tight experimental class based id passed
-        if( answerTight == 3 || answerTight == 1 ) {
+        if( (answerTight & cicval_id) == cicval_id ) {
             Fill(h1_hyp_idstudy_after_classExpTight_reliso_[det], hypType, iso_relsusy, weight);
             Fill(h1_hyp_idstudy_after_classExpTight_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
             if (iso_relsusy < 0.10)
                 Fill(h1_hyp_idstudy_after_classExpTightRel01_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
             if (iso_relsusy < 0.20)
                 Fill(h1_hyp_idstudy_after_classExpTightRel02_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
-            if (answerTight == 3)
+            if ((answerTight & cicval_iso) == cicval_iso)
                 Fill(h1_hyp_idstudy_after_classExpTightFull_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
         }
 

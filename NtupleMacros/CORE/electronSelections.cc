@@ -367,44 +367,27 @@ unsigned int electronId_CIC(const cic_tightness tightness, const unsigned int in
         hcalIso = hcalIso*pow(40./scEt, 2); 
     }
 
-    if ((tkIso > cutisotk[cat+3*eb+bin*6]) ||
-            (ecalIso > cutisoecal[cat+3*eb+bin*6]) ||
-            (hcalIso > cutisohcal[cat+3*eb+bin*6]))
-        result = 0;
-    else
-        result = 2;
+    if ((tkIso < cutisotk[cat+3*eb+bin*6]) &&
+            (ecalIso < cutisoecal[cat+3*eb+bin*6]) &&
+            (hcalIso < cutisohcal[cat+3*eb+bin*6]))
+        result |= (1<<ELEPASS_CIC_ISO);
 
     if (fBrem < -2)
         return result;
 
-    //std::cout << "hoe" << hOverE << std::endl;
-    if (hOverE > cuthoe[cat+3*eb+bin*6])
-        return result;
+    if (hOverE < cuthoe[cat+3*eb+bin*6] &&
+        sigmaee < cutsee[cat+3*eb+bin*6] &&
+        fabs(deltaPhiIn) < cutdphi[cat+3*eb+bin*6] &&
+        fabs(deltaEtaIn) < cutdeta[cat+3*eb+bin*6] &&
+        eSeedOverPin > cuteopin[cat+3*eb+bin*6])
+        result |= (1<<ELEPASS_CIC_ID);
 
-    //std::cout << "see" << sigmaee << std::endl;
-    if (sigmaee > cutsee[cat+3*eb+bin*6])
-        return result;
+    if (ip < cutip[cat+3*eb+bin*6])
+        result |= (1<<ELEPASS_CIC_IP);
 
-    //std::cout << "dphiin" << fabs(deltaPhiIn) << std::endl;
-    if (fabs(deltaPhiIn) > cutdphi[cat+3*eb+bin*6])
-        return result;  
+    if (mishits < cutmishits[cat+3*eb+bin*6])
+        result |= (1<<ELEPASS_CIC_CONV);
 
-    //std::cout << "detain" << fabs(deltaEtaIn) << std::endl;
-    if (fabs(deltaEtaIn) > cutdeta[cat+3*eb+bin*6])
-        return result;
-
-    //std::cout << "eseedopin " << eSeedOverPin << std::endl;
-    if (eSeedOverPin < cuteopin[cat+3*eb+bin*6])
-        return result;
-
-    //std::cout << "ip" << ip << std::endl;
-    if (ip > cutip[cat+3*eb+bin*6])
-        return result;
-
-    if (mishits > cutmishits[cat+3*eb+bin*6])
-        return result;
-
-    result = result + 1;
     return result;
 
 }
