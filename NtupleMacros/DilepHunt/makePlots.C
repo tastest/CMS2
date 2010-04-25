@@ -9,8 +9,8 @@
     zselection   += "iso1 < 0.4 && iso2 < 0.4";                 // and both are somewhat isolated
     zselection   += "abs(eormu1) == abs(eormu2)";               // same flavor
     zselection   += "abs(d0corr1) < 0.4 && abs(d0corr2) < 0.4"; // humble impact parameters
-    //zselection   += "(abs(eormu1) == 13 && (type1&6) == 6) || abs(eormu1) == 11"; // global && tracker muon
-    //zselection   += "(abs(eormu2) == 13 && (type2&6) == 6) || abs(eormu2) == 11"; // global && tracker muon
+    zselection   += "(abs(eormu1) == 13 && (type1&6) == 6) || abs(eormu1) == 11"; // global && tracker muon
+    zselection   += "(abs(eormu2) == 13 && (type2&6) == 6) || abs(eormu2) == 11"; // global && tracker muon
 
     TCut topselection("(pt1 > 20. || pt2 > 20.) && pt1 > 10. && pt2 > 10."); // 20/10
     topselection   += "iso1 < 0.2 || iso2 < 0.2";                            // at least one is "well" isolated
