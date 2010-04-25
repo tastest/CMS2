@@ -301,7 +301,7 @@ unsigned int electronId_CIC(const cic_tightness tightness, const unsigned int in
     double scEt = cms2.els_eSC()[index]*sin(scTheta); 
     //double eta = cms2.els_p4()[index].Eta(); // not used
     // this is eSuperClusterOverP
-    double eOverP = cms2.els_eOverPIn()[index];
+    //double eOverP = cms2.els_eOverPIn()[index];
 
     //    double eSeed = cms2.els_eSeed()[index];
     //    double pin  = cms2.els_p4In()[index].R();   
@@ -314,11 +314,11 @@ unsigned int electronId_CIC(const cic_tightness tightness, const unsigned int in
 
     double hOverE = cms2.els_hOverE()[index];
     double sigmaee = cms2.els_sigmaIEtaIEta()[index];
-    double e25Max = cms2.els_e2x5Max()[index];
-    double e15 = cms2.els_e1x5()[index];
-    double e55 = cms2.els_e5x5()[index];
-    double e25Maxoe55 = e25Max/e55 ;
-    double e15oe55 = e15/e55 ;
+    //double e25Max = cms2.els_e2x5Max()[index];
+    //double e15 = cms2.els_e1x5()[index];
+    //double e55 = cms2.els_e5x5()[index];
+    //double e25Maxoe55 = e25Max/e55 ;
+    //double e15oe55 = e15/e55 ;
     double deltaPhiIn = cms2.els_dPhiIn()[index];
     double deltaEtaIn = cms2.els_dEtaIn()[index];
 
@@ -328,8 +328,8 @@ unsigned int electronId_CIC(const cic_tightness tightness, const unsigned int in
     double tkIso = cms2.els_tkIso()[index];
     double ecalIso = cms2.els_ecalIso04()[index];
     double hcalIso = cms2.els_hcalIso04()[index];
-    double hcalIso1 = cms2.els_hcalDepth1TowerSumEt04()[index];
-    double hcalIso2 = cms2.els_hcalDepth2TowerSumEt04()[index];
+    //double hcalIso1 = cms2.els_hcalDepth1TowerSumEt04()[index];
+    //double hcalIso2 = cms2.els_hcalDepth2TowerSumEt04()[index];
 
     ip = fabs(cms2.els_d0corr()[index]);
 
