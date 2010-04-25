@@ -22,9 +22,8 @@
 
 #include "../../CORE/eventSelections.h"
 #include "../../CORE/electronSelections.h"
-#include "../../CORE/metSelections.h"
+#include "../../CORE/muonSelections.h"
 #include "../../CORE/jetSelections.h"
-
 #include "../../CORE/ttbarSelections.h"
 
 #include "../../Tools/tools.cc"
@@ -40,7 +39,9 @@ using namespace tas;
 
 enum {
 
-    PASS_TOP_PT,
+    PASS_TOPLEPTON_PT,
+    PASS_TOPLEPTON_ID,
+    PASS_TOPLEPTON_ISO,
 
 };
 
@@ -53,6 +54,54 @@ static const char jetbin_names[][128] = { "0j", "1j", "2j"};
 //
 // functions
 //
+
+
+unsigned int MyScanChain::leptonSelect(const int id, const unsigned int lepIdx)
+{
+
+    unsigned int cuts_passed = 0;
+
+    // electrons
+    //
+    if (abs(id) == 11) {
+        // test basic part of electron selection before trying
+        // different electron ids
+        if ((els_type()[lepIdx] & (1<<ISECALDRIVEN)) &&
+            fabs(els_p4()[lepIdx].eta()) < 2.5 &&
+            electronId_noMuon(lepIdx) &&
+            electronImpactTTbar(lepIdx) &&
+            !isFromConversionPartnerTrack(lepIdx)) 
+        {
+            // pt
+            if (cms2.els_p4()[lepIdx].Pt() > 20.0) cuts_passed |= (1<<PASS_TOPLEPTON_PT);
+
+            // cand01
+            //if (electronId_cand01(lepIdx)) cuts_passed |= (1<<PASS_TOPLEPTON_ID);
+            //if (electronIsolation_relsusy_cand1(lepIdx, true) < 0.1) cuts_passed |= (1<<PASS_TOPLEPTON_ISO);
+
+            // vbtf70
+            //unsigned int answer_vbtf = electronId_VBTF70(lepIdx);
+            //if ((answer_vbtf & (1<<0)) == (1<<0)) cuts_passed |= (1<<PASS_TOPLEPTON_ID);
+            //if ((answer_vbtf & (1<<1)) == (1<<1)) cuts_passed |= (1<<PASS_TOPLEPTON_ISO);
+
+            // CIC
+            unsigned int answer_cic = electronId_CIC(CIC_TIGHT, lepIdx);
+            if ((answer_cic & (1<<ELEPASS_CIC_ID)) == (1<<ELEPASS_CIC_ID)) cuts_passed |= (1<<PASS_TOPLEPTON_ID);
+            if ((answer_cic & (1<<ELEPASS_CIC_ISO)) == (1<<ELEPASS_CIC_ISO)) cuts_passed |= (1<<PASS_TOPLEPTON_ISO);
+
+        }
+    }
+    // muons
+    //
+    if (abs(id) == 13) {
+        if (cms2.mus_p4()[lepIdx].Pt() > 20.0) cuts_passed |= (1<<PASS_TOPLEPTON_PT);
+        if (muonIdNotIsolated(lepIdx, NominalTTbar)) cuts_passed |= (1<<PASS_TOPLEPTON_ID);
+        if (muonIsoValue(lepIdx) < 0.15) cuts_passed |= (1<<PASS_TOPLEPTON_ISO);
+    }
+
+    return cuts_passed;
+    
+}
 
 void MyScanChain::Fill(TH1F** hist, const unsigned int hyp, const float &val, const float &weight)
 {
@@ -210,10 +259,18 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 
 			for (size_t h = 0; h < cms2.hyp_type().size(); ++h) {
 
-				// apply lepton id and iso
-                if (!isGoodHypwIso(h)) continue;
+                // find what cuts lt and ll passed
+                unsigned int cuts_passed_ll = leptonSelect(cms2.hyp_ll_id()[h], cms2.hyp_ll_index()[h]);
+                unsigned int cuts_passed_lt = leptonSelect(cms2.hyp_lt_id()[h], cms2.hyp_lt_index()[h]);
 
-				// opposite charge
+                // require both to pass id and isolation and pt
+                unsigned int pass_idiso =   (1<<PASS_TOPLEPTON_PT) | 
+                                            (1<<PASS_TOPLEPTON_ID) | 
+                                            (1<<PASS_TOPLEPTON_ISO);
+                if (!((cuts_passed_ll & pass_idiso) == pass_idiso)) continue;
+                if (!((cuts_passed_lt & pass_idiso) == pass_idiso)) continue;
+
+				// require opposite charge
 				if (cms2.hyp_lt_id()[h] * cms2.hyp_ll_id()[h] > 0) continue;
 
 				//
@@ -247,12 +304,9 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 
 			//
 			// If we got to here then classify the event according to nJets
-			//	
-std::cout << cms2.pfjets_p4().size() << std::endl;
-std::cout << cms2.pfjets_cor().size() << std::endl;
-
-unsigned int nJetsFound = 0;
-            //unsigned int nJetsFound = nJets(hyp, JETS_TYPE_PF_CORR, JETS_CLEAN_HYP_E_MU, 0.4, 30.0, 2.4);
+            //
+    
+            unsigned int nJetsFound = nJets(hyp, JETS_TYPE_PF_CORR, JETS_CLEAN_HYP_E_MU, 0.4, 30.0, 2.4);
 
 			//
 			// estimate the DY background before the z veto and MET cuts are applied

@@ -11,6 +11,7 @@ void doAllData() {
     gSystem->Load("libMathCore.so");
     gSystem->Load("libCMS2NtupleMacrosCORE.so");
     gSystem->Load("libCMS2NtupleMacrosLooper.so");
+    gSystem->Load("../../Tools/MiniFWLite/libMiniFWLite.so");
     gROOT->ProcessLine(".L ../histtools.C+");
 
     MyScanChain *looper = new MyScanChain();

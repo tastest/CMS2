@@ -11,6 +11,7 @@ void doAllMC() {
     gSystem->Load("libMathCore.so");
     gSystem->Load("libCMS2NtupleMacrosCORE.so");
     gSystem->Load("libCMS2NtupleMacrosLooper.so");
+    gSystem->Load("../../Tools/MiniFWLite/libMiniFWLite.so");
     gROOT->ProcessLine(".L ../histtools.C+");
 
     MyScanChain *looper = new MyScanChain();
@@ -64,7 +65,7 @@ void doAllMC() {
     //looper->ScanChain(false, "dyee", chain_dyee);
     //looper->ScanChain(false, "dymm", chain_dymm);
     //looper->ScanChain(false, "dytt", chain_dytt);
-    //looper->ScanChain(false, "wjets", chain_wjets);
+    looper->ScanChain(false, "wjets", chain_wjets);
     //looper->ScanChain(false, "QCDpt30", chain_qcd30);
     //looper->ScanChain(false, "wm", chain_wmunu);
 

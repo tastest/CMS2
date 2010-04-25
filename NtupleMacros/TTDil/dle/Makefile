@@ -40,12 +40,12 @@ TOOLSLIB = libCMS2NtupleMacrosTOOLS.so
 CORESOURCES = \
     $(CMSROOT)/CORE/CMS2.cc \
     $(CMSROOT)/CORE/electronSelections.cc \
+	$(CMSROOT)/CORE/electronSelectionsCICParameters.cc \
     $(CMSROOT)/CORE/muonSelections.cc \
     $(CMSROOT)/CORE/trackSelections.cc \
     $(CMSROOT)/CORE/utilities.cc \
     $(CMSROOT)/CORE/eventSelections.cc \
     $(CMSROOT)/CORE/mcSelections.cc \
-	$(CMSROOT)/CORE/metSelections.cc \
 	$(CMSROOT)/CORE/ttbarSelections.cc \
 	$(CMSROOT)/CORE/jetSelections.cc
 
@@ -58,7 +58,7 @@ LIB = libCMS2NtupleMacrosLooper.so
 
 FWLIB = ../../Tools/MiniFWLite/libMiniFWLite.so
 
-LIBS = $(CORELIB) $(TOOLSLIB) $(LIB)
+LIBS = $(CORELIB) $(TOOLSLIB) $(LIB) $(FWLIB)
 
 .PHONY: all help compile clean cms2env
 
@@ -78,7 +78,7 @@ $(LIB):	$(OBJECTS)
 
 $(FWLIB) :
 	$(QUITE) echo "making MiniFWLite"; \
-	cd ../Tools/MiniFWLite; \
+	cd ../../Tools/MiniFWLite; \
 	$(MAKE) -f Makefile;
 
 LinkDef_out.cxx: LinkDef.h

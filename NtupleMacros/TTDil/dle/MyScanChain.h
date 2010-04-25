@@ -34,6 +34,12 @@ class MyScanChain {
 		void Fill2D(TH2F** hist, const unsigned int hyp, const float &valx, const float &valy, const float &weight);
 		void FormatHist2D(TH2F** hist, std::string sampleName, std::string name, int nx, float minx, float maxx, int ny, float miny, float maxy);
 
+        //
+        // dealing with selections
+        //
+        unsigned int leptonSelect(const int id, const unsigned int lepIdx);
+
+
 		//
 		// ttbar analysis plots
 		//
