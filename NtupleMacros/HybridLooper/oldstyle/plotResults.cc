@@ -499,15 +499,15 @@ void plotResultsW(TString det, TString fileStamp, TString refFileStamp, TString 
     //
     // Muons
     //
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_pt", "Muon p_{T} (GeV)", fileStamp, det, norm, 8);
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_pfmet", "Muon pfMET (GeV)", fileStamp, det, norm, 4);
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_tcmet", "Muon tcMET (GeV)", fileStamp, det, norm, 4);
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_ppfmet", "Muon Projected pfMET (GeV)", fileStamp, det, norm, 4);
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_ptcmet", "Muon Projected tcMET (GeV)", fileStamp, det, norm, 4);
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_tctransmass", "Transverse Mass w/tcMET (GeV)", fileStamp, det, norm, 16);
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_pftransmass", "Transverse Mass w/pfMET (GeV)", fileStamp, det, norm, 16);
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_d0corr", "d0(BS) (cm))", fileStamp, det, norm, 1);
-    plotDataRefOverlayStack(datah1, refh1, "mu_selected_tcmetdphi", "dPhi(tcMET, Muon) (GeV)", fileStamp, det, norm, 1);
+//     plotDataRefOverlayStack(datah1, refh1, "mu_selected_pt", "Muon p_{T} (GeV)", fileStamp, det, norm, 8);
+//     plotDataRefOverlayStack(datah1, refh1, "mu_selected_pfmet", "Muon pfMET (GeV)", fileStamp, det, norm, 4);
+//     plotDataRefOverlayStack(datah1, refh1, "mu_selected_tcmet", "Muon tcMET (GeV)", fileStamp, det, norm, 4);
+//     plotDataRefOverlayStack(datah1, refh1, "mu_selected_ppfmet", "Muon Projected pfMET (GeV)", fileStamp, det, norm, 4);
+//     plotDataRefOverlayStack(datah1, refh1, "mu_selected_ptcmet", "Muon Projected tcMET (GeV)", fileStamp, det, norm, 4);
+//     plotDataRefOverlayStack(datah1, refh1, "mu_selected_tctransmass", "Transverse Mass w/tcMET (GeV)", fileStamp, det, norm, 16);
+//     plotDataRefOverlayStack(datah1, refh1, "mu_selected_pftransmass", "Transverse Mass w/pfMET (GeV)", fileStamp, det, norm, 16);
+//     plotDataRefOverlayStack(datah1, refh1, "mu_selected_d0corr", "d0(BS) (cm))", fileStamp, det, norm, 1);
+//     plotDataRefOverlayStack(datah1, refh1, "mu_selected_tcmetdphi", "dPhi(tcMET, Muon) (GeV)", fileStamp, det, norm, 1);
 
 //     plotDataRefOverlayStack(datah1, refh1, "mu_selected_nChi2", "Muon nChi2", fileStamp, det, norm, 1);
 //     plotDataRefOverlayStack(datah1, refh1, "mu_selected_type", "Muon type", fileStamp, det, norm, 1);
@@ -518,6 +518,17 @@ void plotResultsW(TString det, TString fileStamp, TString refFileStamp, TString 
 //     plotDataRefOverlayStack(datah1, refh1, "mu_selected_muonIsoValue", "Muon IsoValue", fileStamp, det, norm, 1);
 //     plotDataRefOverlayStack(datah1, refh1, "mu_selected_isCosmics", "Muon IsCosmic", fileStamp, det, norm, 1);
 
+
+    plotMuonIDStack(datah1, refh1, "pt", "Muon p_{T} (GeV)", fileStamp, det, norm, 8);
+    plotMuonIDStack(datah1, refh1, "pfmet", "Muon pfMET (GeV)", fileStamp, det, norm, 4);
+    plotMuonIDStack(datah1, refh1, "tcmet", "Muon tcMET (GeV)", fileStamp, det, norm, 4);
+    plotMuonIDStack(datah1, refh1, "ppfmet", "Muon Projected pfMET (GeV)", fileStamp, det, norm, 4);
+    plotMuonIDStack(datah1, refh1, "ptcmet", "Muon Projected tcMET (GeV)", fileStamp, det, norm, 4);
+    plotMuonIDStack(datah1, refh1, "tctransmass", "Transverse Mass w/tcMET (GeV)", fileStamp, det, norm, 16);
+    plotMuonIDStack(datah1, refh1, "pftransmass", "Transverse Mass w/pfMET (GeV)", fileStamp, det, norm, 16);
+    plotMuonIDStack(datah1, refh1, "d0corr", "d0(BS) (cm))", fileStamp, det, norm, 1);
+    plotMuonIDStack(datah1, refh1, "tcmetdphi", "dPhi(tcMET, Muon) (GeV)", fileStamp, det, norm, 1);
+
     plotMuonIDStack(datah1, refh1, "nChi2", "Muon nChi2", fileStamp, det, norm, 1);
     plotMuonIDStack(datah1, refh1, "type", "Muon type", fileStamp, det, norm, 1);
     plotMuonIDStack(datah1, refh1, "validHits", "Muon Valid Hits", fileStamp, det, norm, 1);
@@ -527,6 +538,8 @@ void plotResultsW(TString det, TString fileStamp, TString refFileStamp, TString 
     plotMuonIDStack(datah1, refh1, "muonIsoValue", "Muon IsoValue", fileStamp, det, norm, 1);
     plotMuonIDStack(datah1, refh1, "isCosmics", "Muon IsCosmic", fileStamp, det, norm, 1);
 
+    plotMuonIDStack(datah1, refh1, "caloCompatibility", "Muon caloCompatibility", fileStamp, det, norm, 1);
+    plotMuonIDStack(datah1, refh1, "pid", "Muon TM sel: 1 LSl, 2 LSt, 3 C2Dl, 4 C2Dt", fileStamp, det, norm, 1);
 
     // N-1 distributions
     plotDataRefOverlayStack(datah1, refh1, "mu_nm1_tcmet", "NM1 tcMET (GeV)", fileStamp, det, norm, 4, 20.0, 20.0);

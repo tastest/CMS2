@@ -42,6 +42,7 @@ using namespace tas;
 
 enum mu_selection {
     PASS_MU_PT,
+    PASS_MU_LOOSEPT,
     PASS_MU_NOSECOND,
     PASS_MU_ISFIDUCIAL,
     PASS_MU_MET,
@@ -484,6 +485,11 @@ void MyScanChain::AnalyseMuons(const float &weight) {
     // pt cut
     if (cms2.mus_p4()[muIndex].Pt() > 20.0) cuts_passed |= (1<<PASS_MU_PT);
 
+    // pt cut - will only have an effect on more inclusive skims (with the whunt it does nothing, as
+    // we have the pt cut for the skim)
+    //    if (cms2.mus_p4()[muIndex].Pt() > 5.0) cuts_passed |= (1<<PASS_MU_LOOSEPT);
+    if (cms2.mus_p4()[muIndex].Pt() > 20.0) cuts_passed |= (1<<PASS_MU_LOOSEPT); // temp put pt back to 20 GeV
+
     // don't allow events with a second muon above 20.0 GeV
     float secondPt = 0.0;
     if (foundSecond) secondPt = cms2.mus_p4()[muSecondIndex].Pt();
@@ -549,7 +555,7 @@ void MyScanChain::AnalyseMuons(const float &weight) {
         (1<<PASS_MU_ISO) | (1<<PASS_MU_ISFIDUCIAL) | (1<<PASS_MU_MET);
 
 
-    const cuts_t pass_all_antiselection = (1<<PASS_MU_PT) | (1<<PASS_MU_NOSECOND) |
+    const cuts_t pass_all_antiselection = (1<<PASS_MU_LOOSEPT) | (1<<PASS_MU_NOSECOND) |
        (1<<PASS_MU_ISO) | (1<<PASS_MU_ISFIDUCIAL) | (1<<PASS_MU_ANTIMET);
 
 
@@ -621,10 +627,32 @@ void MyScanChain::AnalyseMuons(const float &weight) {
 	FillHist(h1_mu_selected_muonIsoValue_, 	det, muonIsoValue(muIndex), 						weight);
 	FillHist(h1_mu_selected_isCosmics_, 	det, isCosmics(muIndex), 						weight);
 
+	FillHist(h1_mu_selected_caloCompatibility_, 		det, cms2.mus_caloCompatibility().at(muIndex), 					weight);
+	FillHist(h1_mu_selected_pid_, 		det, cms2.mus_pid_TMLastStationLoose().at(muIndex)*0.5+1., 					weight);
+	FillHist(h1_mu_selected_pid_, 		det, cms2.mus_pid_TMLastStationTight().at(muIndex)*0.5+2., 					weight);
+	FillHist(h1_mu_selected_pid_, 		det, cms2.mus_pid_TM2DCompatibilityLoose().at(muIndex)*0.5+3., 					weight);
+	FillHist(h1_mu_selected_pid_, 		det, cms2.mus_pid_TM2DCompatibilityTight().at(muIndex)*0.5+4., 					weight);
     }
 
     // signal selection with inverted++ MET selection 
     if (CheckCuts(pass_all_antiselection, cuts_passed)) {
+        FillHist(h1_mu_antiselected_pt_, det, cms2.mus_p4()[muIndex].Pt(), weight);
+        FillHist(h1_mu_antiselected_eta_, det, cms2.mus_p4()[muIndex].Eta(), weight);
+        FillHist(h1_mu_antiselected_phi_, det, cms2.mus_p4()[muIndex].Phi(), weight);
+        FillHist(h1_mu_antiselected_tcmet_, det, cms2.evt_tcmet(), weight);
+        FillHist(h1_mu_antiselected_pfmet_, det, cms2.evt_pfmet(), weight);
+        FillHist(h1_mu_antiselected_tcmetdphi_, det, tcmetdphi, weight);
+        FillHist(h1_mu_antiselected_pfmetdphi_, det, pfmetdphi, weight);
+        FillHist(h1_mu_antiselected_tcmetratio_, det, tcmetratio, weight);
+        FillHist(h1_mu_antiselected_pfmetratio_, det, pfmetratio, weight);
+        FillHist(h1_mu_antiselected_ptcmet_, det, ptcmet, weight);
+        FillHist(h1_mu_antiselected_ppfmet_, det, ppfmet, weight);
+        FillHist(h1_mu_antiselected_tcmetsignificance_, det, tcmetsignificance, weight);
+        FillHist(h1_mu_antiselected_pfmetsignificance_, det, pfmetsignificance, weight);
+        FillHist(h1_mu_antiselected_tctransmass_, det, tctransmass, weight);
+        FillHist(h1_mu_antiselected_pftransmass_, det, pftransmass, weight);
+
+
       FillHist(h1_mu_antiselected_d0corr_, det, cms2.mus_d0corr()[muIndex], weight);
 
       FillHist(h1_mu_antiselected_nChi2_,             det, cms2.mus_gfit_chi2().at(muIndex)/cms2.mus_gfit_ndof().at(muIndex), weight);
@@ -635,6 +663,13 @@ void MyScanChain::AnalyseMuons(const float &weight) {
       FillHist(h1_mu_antiselected_validSTAHits_, 	det, cms2.mus_gfit_validSTAHits().at(muIndex), 				weight);
       FillHist(h1_mu_antiselected_muonIsoValue_, 	det, muonIsoValue(muIndex), 						weight);
       FillHist(h1_mu_antiselected_isCosmics_, 	det, isCosmics(muIndex), 						weight);
+      
+      FillHist(h1_mu_antiselected_caloCompatibility_, 		det, cms2.mus_caloCompatibility().at(muIndex), 					weight);
+      FillHist(h1_mu_antiselected_pid_, 		det, cms2.mus_pid_TMLastStationLoose().at(muIndex)*0.5+1., 					weight);
+      FillHist(h1_mu_antiselected_pid_, 		det, cms2.mus_pid_TMLastStationTight().at(muIndex)*0.5+2, 					weight);
+      FillHist(h1_mu_antiselected_pid_, 		det, cms2.mus_pid_TM2DCompatibilityLoose().at(muIndex)*0.5+3, 					weight);
+      FillHist(h1_mu_antiselected_pid_, 		det, cms2.mus_pid_TM2DCompatibilityTight().at(muIndex)*0.5+4, 					weight);
+      
     }
 
 
@@ -871,6 +906,8 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     FormatHist(h1_mu_selected_pftransmass_, "mu_selected_pftransmass", 200, 0, 200);
     FormatHist(h1_mu_selected_d0corr_, "mu_selected_d0corr", 100, -0.2, 0.2);
     //ibl add ID histos
+
+
     FormatHist(h1_mu_nChi2_, "mu_nChi2", 150, 0, 15);
     FormatHist(h1_mu_type_, "mu_type", 15, 0, 15);
     FormatHist(h1_mu_validHits_, "mu_validHits", 60, 0, 60);
@@ -889,7 +926,27 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     FormatHist(h1_mu_selected_muonIsoValue_, "mu_selected_muonIsoValue", 200, 0, 2.);
     FormatHist(h1_mu_selected_isCosmics_, "mu_selected_isCosmics", 2, 0, 2);
 
+    FormatHist(h1_mu_selected_caloCompatibility_, "mu_selected_caloCompatibility", 100,0.,1.);
+    FormatHist(h1_mu_selected_pid_, "mu_selected_pid", 10,0.,5.);
+
+    FormatHist(h1_mu_antiselected_pt_, "mu_antiselected_pt", 100, 0, 100);
+    FormatHist(h1_mu_antiselected_eta_, "mu_antiselected_eta", 100, -3, 3);
+    FormatHist(h1_mu_antiselected_phi_, "mu_antiselected_phi", 100, -4, 4);
+    FormatHist(h1_mu_antiselected_tcmet_, "mu_antiselected_tcmet", 100, 0, 100);
+    FormatHist(h1_mu_antiselected_pfmet_, "mu_antiselected_pfmet", 100, 0, 100);
+    FormatHist(h1_mu_antiselected_tcmetdphi_, "mu_antiselected_tcmetdphi", 100, -4, 4);
+    FormatHist(h1_mu_antiselected_pfmetdphi_, "mu_antiselected_pfmetdphi", 100, -4, 4);
+    FormatHist(h1_mu_antiselected_tcmetratio_, "mu_antiselected_tcmetratio", 50, 0, 5);
+    FormatHist(h1_mu_antiselected_pfmetratio_, "mu_antiselected_pfmetratio", 50, 0, 5);
+    FormatHist(h1_mu_antiselected_tcmetsignificance_, "mu_antiselected_tcmetsignificance", 100, 0, 10.0);
+    FormatHist(h1_mu_antiselected_pfmetsignificance_, "mu_antiselected_pfmetsignificance", 100, 0, 10.0);
+    FormatHist(h1_mu_antiselected_ptcmet_, "mu_antiselected_ptcmet", 100, 0, 100);
+    FormatHist(h1_mu_antiselected_ppfmet_, "mu_antiselected_ppfmet", 100, 0, 100);
+    FormatHist(h1_mu_antiselected_tctransmass_, "mu_antiselected_tctransmass", 200, 0, 200);
+    FormatHist(h1_mu_antiselected_pftransmass_, "mu_antiselected_pftransmass", 200, 0, 200);
     FormatHist(h1_mu_antiselected_d0corr_, "mu_antiselected_d0corr", 100, -0.2, 0.2);
+
+    //    FormatHist(h1_mu_antiselected_d0corr_, "mu_antiselected_d0corr", 100, -0.2, 0.2);
     FormatHist(h1_mu_antiselected_nChi2_, "mu_antiselected_nChi2", 150, 0, 15);
     FormatHist(h1_mu_antiselected_type_, "mu_antiselected_type", 15, 0, 15);
     FormatHist(h1_mu_antiselected_validHits_, "mu_antiselected_validHits", 60, 0, 60);
@@ -898,6 +955,8 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     FormatHist(h1_mu_antiselected_validSTAHits_, "mu_antiselected_validSTAHits", 50, 0, 50);
     FormatHist(h1_mu_antiselected_muonIsoValue_, "mu_antiselected_muonIsoValue", 200, 0, 2.);
     FormatHist(h1_mu_antiselected_isCosmics_, "mu_antiselected_isCosmics", 2, 0, 2);
+    FormatHist(h1_mu_antiselected_caloCompatibility_, "mu_antiselected_caloCompatibility", 100,0.,1.);
+    FormatHist(h1_mu_antiselected_pid_, "mu_antiselected_pid", 10,0.,5.);
 
     // open an asciifile to store results
     if(isData_) {
