@@ -3,7 +3,7 @@ include Makefile.arch
 ROOTINCDIR   := $(shell $(ROOTCONFIG) --incdir)
 LDFLAGS      += -fPIC
 
-FORWRAPPERH   = vector.h Wrapper.h Math/LorentzVector.h Math/PositionVector3D.h
+FORWRAPPERH   = Wrapper.h Math/LorentzVector.h Math/PositionVector3D.h
 MINIFWLITEH   = $(FORWRAPPERH) DataFormats.h
 
 all:	libMiniFWLite.so
