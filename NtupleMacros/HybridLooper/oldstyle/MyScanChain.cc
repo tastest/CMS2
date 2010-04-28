@@ -21,6 +21,7 @@
 #include "../../CORE/CMS2.h"
 #include "../../CORE/trackSelections.h"
 #include "../../CORE/electronSelections.h"
+#include "../../CORE/fakerates.h"
 #include "../../Tools/DileptonHypType.h"
 #include "../../CORE/eventSelections.h"
 #include "../../CORE/muonSelections.h"
@@ -252,7 +253,7 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
             * (1 - cos(cms2.evt_tcmetPhi() - cms2.els_p4()[eleIndex].Phi() )));
 
     // mc or data dependent quantities
-    int pdgidCatagory = 1.0;
+    int pdgidCatagory = 1;
     float pthat = -1.0;
     if (!isData_) {
         pdgidCatagory = elFakeMCCategory(eleIndex);
@@ -278,6 +279,12 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
         (1<<PASS_ELE_ISFIDUCIAL) | (1<<PASS_ELE_ISO) |
         (1<<PASS_ELE_ANTIMET) | (1<<PASS_ELE_JETVETO) |
         (1<<PASS_ELE_R19);
+
+    if( isFakeableElectron (eleIndex, el_v2_cand01)  && cms2.els_p4()[eleIndex].Pt() > 10. ) { // require pt > 10 also on e (we have it on mu)
+        FillHist(h1_ele_FO_pt_, det, cms2.els_p4()[eleIndex].Pt(), weight);
+        FillHist(h1_ele_FO_eta_, det, cms2.els_etaSC()[eleIndex], weight);
+        FillHist(h1_ele_FO_iso_, det, iso_relsusy, weight);
+      }
 
     if (CheckCutsNM1(pass_all, (1<<PASS_ELE_PT), cuts_passed)) {
         FillHist(h1_ele_nm1_pt_, det, cms2.els_p4()[eleIndex].Pt(), weight);
@@ -576,6 +583,13 @@ void MyScanChain::AnalyseMuons(const float &weight) {
         FillHist(h1_mu_nm1_iso_, det, iso_relsusy, weight);
     }
 
+
+     if( isFakeableMuon (muIndex, mu_v1) ) { 
+        FillHist(h1_mu_FO_pt_,  det, cms2.mus_p4()[muIndex].Pt(), weight);
+        FillHist(h1_mu_FO_eta_, det, cms2.mus_p4()[muIndex].Eta(), weight);
+        FillHist(h1_mu_FO_iso_, det, iso_relsusy, weight);
+      }
+
     // apply all cuts
     if (CheckCuts(pass_all, cuts_passed)) {
 
@@ -755,6 +769,11 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     FormatHist(h1_ele_tcmetratio_, "ele_tcmetratio", 50, 0, 5);
     FormatHist(h1_ele_pfmetratio_, "ele_pfmetratio", 50, 0, 5);
 
+    // data-mc comparison for FO
+    FormatHist(h1_ele_FO_pt_, "ele_FO_pt", 100, 0, 100);
+    FormatHist(h1_ele_FO_eta_,"ele_FO_eta", 100, -3, 3);
+    FormatHist(h1_ele_FO_iso_,"ele_FO_iso", 100, 0, 1);
+
     // data-mc comparisons for backgrounds
     // inclusive selection
     FormatHist(h1_ele_incl_r19_, "ele_incl_r19", 120, 0, 1.2);
@@ -862,6 +881,11 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     FormatHist(h1_mu_tcmetratio_, "mu_tcmetratio", 50, 0, 5);
     FormatHist(h1_mu_pfmetratio_, "mu_pfmetratio", 50, 0, 5);
     FormatHist(h1_mu_d0corr_, "mu_d0corr", 100, -0.2, 0.2);
+
+    // data-mc comparison for FO
+    FormatHist(h1_mu_FO_pt_, "mu_FO_pt", 100, 0, 100);
+    FormatHist(h1_mu_FO_eta_,"mu_FO_eta", 100, -3, 3);
+    FormatHist(h1_mu_FO_iso_,"mu_FO_iso", 100, 0, 1);
 
     // data-mc comparisons for backgrounds
     // inclusive selection
@@ -975,7 +999,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 
     TObjArray *listOfFiles = chain->GetListOfFiles();
     TIter fileIter(listOfFiles);
-    TFile *currentFile = 0;
+    //    TFile *currentFile = 0;
     while (TChainElement *currentFile = (TChainElement*)fileIter.Next()) {
         TFile *f = TFile::Open(currentFile->GetTitle());
         TTree *tree = (TTree*)f->Get("Events");
@@ -1008,7 +1032,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
             //
 
             if (isData) {
-                int goodRunMax = highestGoodrun();
+                uint goodRunMax = highestGoodrun();
                 if (!goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) && cms2.evt_run() <= goodRunMax) continue;
             }
 
@@ -1038,6 +1062,8 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
              */
 
         } // end loop on files
+	
+	delete tree;
 
     } // end loop on events
 

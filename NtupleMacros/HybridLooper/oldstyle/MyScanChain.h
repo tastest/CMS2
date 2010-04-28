@@ -89,6 +89,11 @@ class MyScanChain {
         TH1F    *h1_ele_tcmetratio_[3];
         TH1F    *h1_ele_pfmetratio_[3];
 
+	// data-mc comparison for FO
+        TH1F    *h1_ele_FO_pt_[3];
+        TH1F    *h1_ele_FO_eta_[3];
+        TH1F    *h1_ele_FO_iso_[3];
+
         // inclusive comparisons of bg dists
         TH1F    *h1_ele_incl_r19_[3];
         TH1F    *h1_ele_incl_iso_[3];
@@ -189,6 +194,11 @@ class MyScanChain {
         TH1F    *h1_mu_pfmetdphi_[3];
         TH1F    *h1_mu_tcmetratio_[3];
         TH1F    *h1_mu_pfmetratio_[3];
+
+	// data-mc comparison for FO
+        TH1F    *h1_mu_FO_pt_[3];
+        TH1F    *h1_mu_FO_eta_[3];
+        TH1F    *h1_mu_FO_iso_[3];
 
         // inclusive comparisons of bg dists
         TH1F    *h1_mu_incl_iso_[3];

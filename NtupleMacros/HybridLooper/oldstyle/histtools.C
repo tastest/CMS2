@@ -432,7 +432,7 @@ namespace hist {
     // nxtot = nx+2 includes underflow and overflow
     Int_t nx = h1->GetNbinsX();
     if (h2->GetNbinsX() != nx) {
-      cout << "Histograms must have same number of bins" << endl;
+      std::cout << "Histograms must have same number of bins" << std::endl;
       return 0;
     }
 
@@ -471,11 +471,11 @@ namespace hist {
 
     // quit if not found
     if (h1 == 0) {
-      cout << "Histogram " << name1 << " not found" << endl;
+      std::cout << "Histogram " << name1 << " not found" << std::endl;
       return 0;
     }
     if (h2 == 0) {
-      cout << "Histogram " << name2 << " not found" << endl;
+      std::cout << "Histogram " << name2 << " not found" << std::endl;
       return 0;
     }
 
@@ -501,15 +501,15 @@ namespace hist {
     Int_t nx = h1->GetNbinsX();
     Int_t nxtot = nx + 2;
     if (h2->GetNbinsX() != nx) {
-      cout << "Histograms must have same number of bins" << endl;
+      std::cout << "Histograms must have same number of bins" << std::endl;
       return 0;
     }
     if (h3->GetNbinsX() != nx) {
-      cout << "Histograms must have same number of bins" << endl;
+      std::cout << "Histograms must have same number of bins" << std::endl;
       return 0;
     }
     if (h3->GetNbinsX() != nx) {
-      cout << "Histograms must have same number of bins" << endl;
+      std::cout << "Histograms must have same number of bins" << std::endl;
       return 0;
     }
 
@@ -578,11 +578,11 @@ namespace hist {
     while(TObject* obj=iter->Next()) {
       if (TString(obj->GetName()).Index(re)>=0) {
 	obj->Write() ;
-	cout << "." ;
-	cout.flush() ;
+	std::cout << "." ;
+	std::cout.flush() ;
       }
     }
-    cout << endl ;
+    std::cout << std::endl ;
     outf.Close() ;
 
     delete iter ;
@@ -597,14 +597,14 @@ namespace hist {
     TIterator* iter = list->MakeIterator();
 
     TRegexp re(pat,kTRUE) ;
-    cout << "pat = " << pat << endl ;
+    std::cout << "pat = " << pat << std::endl ;
 
     gDirectory->cd("Rint:") ;
 
     TObject* obj ;
     TKey* key ;
-    cout << "doAdd = " << (doAdd?"T":"F") << endl ;
-    cout << "loadHist: reading." ;
+    std::cout << "doAdd = " << (doAdd?"T":"F") << std::endl ;
+    std::cout << "loadHist: reading." ;
     while(key=(TKey*)iter->Next()) {
 
       Int_t ridx = TString(key->GetName()).Index(re) ;
@@ -653,10 +653,10 @@ namespace hist {
       if (!gDirectory->GetList()->FindObject(clone)) {
 	gDirectory->Append(clone) ;
       }
-      cout << "." ;
-      cout.flush() ;
+      std::cout << "." ;
+      std::cout.flush() ;
     }
-    cout << endl;
+    std::cout << std::endl;
     inf.Close() ;
     delete iter ;
   }

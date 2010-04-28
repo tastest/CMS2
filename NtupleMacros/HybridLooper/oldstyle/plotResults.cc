@@ -443,6 +443,15 @@ void plotResultsW(TString det, TString fileStamp, TString refFileStamp, TString 
     plotDataRefOverlayStack(datah1, refh1, "ele_pt", "Electron p_{T} (GeV)", fileStamp, det, norm, 4);
     plotDataRefOverlayStack(datah1, refh1, "ele_eta", "Electron #eta", fileStamp, det, norm, 4);
 
+
+    // with FO selection only
+    plotDataRefOverlayStack(datah1, refh1, "ele_FO_pt" , "Electron FO p_{T} (GeV)", fileStamp, det, norm, 1);
+    plotDataRefOverlayStack(datah1, refh1, "ele_FO_eta", "Electron FO #eta", fileStamp, det, norm, 1);
+    plotDataRefOverlayStack(datah1, refh1, "ele_FO_iso", "Electron FO relIso", fileStamp, det, norm, 1);      
+    plotDataRefOverlayStack(datah1, refh1, "mu_FO_pt"  , "Muon FO p_{T} (GeV)", fileStamp, det, norm, 1);
+    plotDataRefOverlayStack(datah1, refh1, "mu_FO_eta" , "Muon FO #eta", fileStamp, det, norm, 1);	     
+    plotDataRefOverlayStack(datah1, refh1, "mu_FO_iso" , "Muon FO relIso", fileStamp, det, norm, 1);     
+
     // after all selections
     plotDataRefOverlayStack(datah1, refh1, "ele_selected_pt", "Electron p_{T} (GeV)", fileStamp, det, norm, 8);
     plotDataRefOverlayStack(datah1, refh1, "ele_selected_pfmet", "Electron pfMET (GeV)", fileStamp, det, norm, 4);

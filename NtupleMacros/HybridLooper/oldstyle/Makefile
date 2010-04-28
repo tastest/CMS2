@@ -42,6 +42,7 @@ CORESOURCES = \
     $(CMSROOT)/CORE/utilities.cc \
     $(CMSROOT)/CORE/eventSelections.cc \
      $(CMSROOT)/CORE/mcSelections.cc \
+     $(CMSROOT)/CORE/fakerates.cc \
 #    $(CMSROOT)/CORE/jetSelections.cc \
 
  
