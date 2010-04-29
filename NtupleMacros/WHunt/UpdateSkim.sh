@@ -64,4 +64,8 @@ else
     # in a separate process so that if it
     # stalls it does not affect this process
     #./makePlots.sh&
+
+    # Last run processed
+    cat RunsProcessed.txt | cut -d '_' -f 6 | sort -n -r | head -n 1 >lastrun.txt
+    scp lastrun.txt uaf-4.t2.ucsd.edu:~/tmp
 fi
