@@ -180,6 +180,7 @@ void babymaker::ScanChain (const char *inputFilename, const char *babyFilename, 
                 mu_muonid_   = muonIdNotIsolated(mui, NominalTTbar);
                 mu_goodmask_ = cms2.mus_goodmask()[mui];
                 mu_gfitchi2_ = cms2.mus_gfit_chi2()[mui] < -9000. ? -999999. : cms2.mus_gfit_chi2()[mui]/cms2.mus_gfit_ndof()[mui];
+                mu_cosmic_   = isCosmics(mui);
 
                 FillBabyNtuple();
             }
@@ -274,6 +275,7 @@ void babymaker::InitBabyNtuple ()
     mu_muonid_    = 0;
     mu_goodmask_  = -999999;
     mu_gfitchi2_  = -999999.;
+    mu_cosmic_    = 0;
 
     // electron stuff
     e_cand01_     = 0;
@@ -327,6 +329,7 @@ void babymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("mu_muonid",   &mu_muonid_,   "mu_muonid/O"  );
     babyTree_->Branch("mu_goodmask", &mu_goodmask_, "mu_goodmask/I");
     babyTree_->Branch("mu_gfitchi2", &mu_gfitchi2_, "mu_gfitchi2/F");
+    babyTree_->Branch("mu_cosmic",   &mu_cosmic_,   "mu_cosmic/O"  );
 
     // electron stuff
     babyTree_->Branch("e_cand01", &e_cand01_, "e_cand01/O");

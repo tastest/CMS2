@@ -57,6 +57,7 @@ class babymaker
         Bool_t  mu_muonid_;
         Int_t   mu_goodmask_;
         Float_t mu_gfitchi2_;
+        Bool_t  mu_cosmic_;
 
         // electron stuff
         Bool_t  e_cand01_;
