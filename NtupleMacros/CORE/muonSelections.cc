@@ -71,10 +71,20 @@ double muonIsoValue(unsigned int index){
   double pt  = cms2.mus_p4().at(index).pt();
   return sum/max(pt,20.);
 }
-//-----------------------------------------------
-// Nothing here at the moment?
-//-----------------------------------------------
+
+//--------------------------------------------------------------
+//  Remove cosmics by looking for back-to-back muon-track pairs
+//--------------------------------------------------------------
+// http://indico.cern.ch/contributionDisplay.py?contribId=2&confId=86834
 bool isCosmics(unsigned int index){
+  for (int itrk=0; itrk < int(cms2.trks_trk_p4().size()); ++itrk) {
+    const LorentzVector& mu_p4  = cms2.mus_trk_p4().at(index);
+    const LorentzVector& trk_p4 = cms2.trks_trk_p4().at(itrk);
+    double sprod = mu_p4.px()*trk_p4.px()+mu_p4.py()*trk_p4.py()+mu_p4.pz()*trk_p4.pz();
+    if ( acos( -(sprod/trk_p4.P()/mu_p4.P()) ) < 0.01 &&
+	 fabs(trk_p4.pt()-mu_p4.pt())/mu_p4.pt() < 0.05 )
+      return true;
+  }
   return false;
 }
 
