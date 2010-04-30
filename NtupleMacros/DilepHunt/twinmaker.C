@@ -139,6 +139,7 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
 
             dphipfmetjet_ = mindphipfmet;
             dphitcmetjet_ = mindphitcmet;
+            ntrks_        = cms2.trks_trk_p4().size();
 
             // dilepton hypothesis stuff
             for(unsigned hypi = 0; hypi < cms2.hyp_p4().size(); ++hypi)
@@ -173,7 +174,6 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
                 mass_        = cms2.hyp_p4()[hypi].mass2() > 0 ? cms2.hyp_p4()[hypi].mass() : TMath::Sqrt(-1 * cms2.hyp_p4()[hypi].mass2());
                 dilpt_       = cms2.hyp_p4()[hypi].pt();		 
                 deltaphi_    = deltaPhi(phi1_, phi2_);
-                ntrks_       = cms2.trks_trk_p4().size();
 
                 // now, find jet closest to each hyp lepton
                 float mindrjet1 = 999999.;
