@@ -1003,6 +1003,11 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     while (TChainElement *currentFile = (TChainElement*)fileIter.Next()) {
         TFile *f = TFile::Open(currentFile->GetTitle());
         TTree *tree = (TTree*)f->Get("Events");
+	if(!tree) {
+	  std::cout<<"Could not extract tree from file, skipping."<<std::endl;
+	  tree = 0;
+	  continue;
+	}
         cms2.Init(tree);
 
         //Event Loop
