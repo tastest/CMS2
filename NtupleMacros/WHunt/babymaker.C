@@ -13,7 +13,7 @@
 
 #include "CORE/CMS2.h"
 #include "CORE/electronSelections.cc"
-#include "CORE/electronSelectionsCICParameters.cc"
+#include "CORE/electronSelectionsParameters.cc"
 #include "CORE/metSelections.cc"
 #include "CORE/muonSelections.cc"
 #include "CORE/trackSelections.cc"
@@ -139,6 +139,7 @@ void babymaker::ScanChain (const char *inputFilename, const char *babyFilename, 
 
             dphipfmetjet_ = mindphipfmet;
             dphitcmetjet_ = mindphitcmet;
+            ntrks_        = cms2.trks_trk_p4().size();
 
             // muon stuff
             for(unsigned mui = 0; mui < cms2.mus_p4().size(); ++mui)
@@ -253,6 +254,7 @@ void babymaker::InitBabyNtuple ()
     jet1pt_       = -999999.;
     dphipfmetjet_ = -999999.;
     dphitcmetjet_ = -999999.;
+    ntrks_        = -999999;
 
     // lepton stuff
     eormu_        = -999999;
@@ -305,6 +307,7 @@ void babymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("jet1pt",       &jet1pt_,      "jet1pt/F"      );
     babyTree_->Branch("dphipfmetjet", &dphipfmetjet_,"dphipfmetjet/F");
     babyTree_->Branch("dphitcmetjet", &dphitcmetjet_,"dphitcmetjet/F");
+    babyTree_->Branch("ntrks",        &ntrks_,       "ntrks/I"       );
 
     // lepton stuff
     babyTree_->Branch("eormu",     &eormu_,     "eormu/I"    );

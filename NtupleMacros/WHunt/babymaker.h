@@ -37,6 +37,7 @@ class babymaker
         Float_t jet1pt_;
         Float_t dphipfmetjet_;
         Float_t dphitcmetjet_;
+        Int_t   ntrks_;
 
         // lepton stuff
         Int_t   eormu_;
