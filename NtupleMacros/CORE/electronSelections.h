@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <vector>
 
-#include "electronSelectionsCICParameters.h"
+#include "electronSelectionsParameters.h"
 
 //
 // electron selections 
@@ -130,7 +130,7 @@ bool electronId_classBasedTight(const unsigned int index);
 
 unsigned int electronId_CIC(const cic_tightness tightness, const unsigned int index);
 unsigned int classify(const unsigned int version, const unsigned int index);
-unsigned int electronId_VBTF70(const unsigned int index);
+unsigned int electronId_VBTFTOP(const unsigned int index, const vbtf_tightness tightness);
 
 //
 // electron isolation definitions that we have used before

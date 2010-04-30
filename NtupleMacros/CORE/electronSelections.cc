@@ -290,7 +290,7 @@ unsigned int electronId_CIC(const cic_tightness tightness, const unsigned int in
     std::vector<double> cutmishits;
     std::vector<double> cutsee;
 
-    eidGet(tightness, cutdeta, cutdphi, cuteopin, cutet, cuthoe, 
+    eidGetCIC(tightness, cutdeta, cutdphi, cuteopin, cutet, cuthoe, 
             cutip, cutisoecal, cutisohcal, cutisotk, cutmishits, cutsee);
 
     //
@@ -376,10 +376,10 @@ unsigned int electronId_CIC(const cic_tightness tightness, const unsigned int in
         return result;
 
     if (hOverE < cuthoe[cat+3*eb+bin*6] &&
-        sigmaee < cutsee[cat+3*eb+bin*6] &&
-        fabs(deltaPhiIn) < cutdphi[cat+3*eb+bin*6] &&
-        fabs(deltaEtaIn) < cutdeta[cat+3*eb+bin*6] &&
-        eSeedOverPin > cuteopin[cat+3*eb+bin*6])
+            sigmaee < cutsee[cat+3*eb+bin*6] &&
+            fabs(deltaPhiIn) < cutdphi[cat+3*eb+bin*6] &&
+            fabs(deltaEtaIn) < cutdeta[cat+3*eb+bin*6] &&
+            eSeedOverPin > cuteopin[cat+3*eb+bin*6])
         result |= (1<<ELEPASS_CIC_ID);
 
     if (ip < cutip[cat+3*eb+bin*6])
@@ -433,66 +433,42 @@ unsigned int classify(const unsigned int version, const unsigned int index) {
 // VBTF stuff
 //
 
-//WP70 (70%)
-//=======
-//EB
-//--
-//track_iso  2.5 GeV
-//ecal_iso   3.0 GeV
-//hcal_iso   5.0 GeV
-//sihih      0.01
-//Dphi@vtx   0.02
-//Deta@vtx   0.006
-//H/E        0.02
-
-//EE
-//--
-//track_iso  0.8 GeV
-//ecal_iso   2.5 GeV
-//hcal_iso   0.25 GeV
-//sihih      0.03
-//Dphi@vtx   0.02
-//Deta@vtx   0.003
-//H/E        0.0025
-
-unsigned int electronId_VBTF70(const unsigned int index)
+unsigned int electronId_VBTFTOP(const unsigned int index, const vbtf_tightness tightness)
 {
 
     unsigned int answer = 0;
-    float tkThresholds[2]   =   {2.5, 0.8};
-    float ecalThresholds[2] =   {3.0, 2.5};
-    float hcalThresholds[2] =   {5.0, 0.25};
-    float dEtaInThresholds[2]               = {0.006, 0.003};
-    float dPhiInThresholds[2]               = {0.020, 0.020};
-    float hoeThresholds[2]                  = {0.02, 0.0025};
-    float sigmaIEtaIEtaThresholds[2]        = {0.01, 0.03};
+
+    std::vector<double> relisoThresholds;
+    std::vector<double> dEtaInThresholds;
+    std::vector<double> dPhiInThresholds;
+    std::vector<double> hoeThresholds;
+    std::vector<double> sigmaIEtaIEtaThresholds;
+
+    eidGetVBTF(tightness, dEtaInThresholds, dPhiInThresholds, hoeThresholds, 
+                sigmaIEtaIEtaThresholds, relisoThresholds);
 
     // barrel
     if (fabs(cms2.els_etaSC()[index]) < 1.479) {
 
-        if (cms2.els_tkJuraIso()[index] < tkThresholds[0] &&
-            cms2.els_ecalIso()[index]   < ecalThresholds[0] &&
-            cms2.els_hcalIso()[index]   < hcalThresholds[0])
+        if (electronIsolation_relsusy_cand1(index, true) < relisoThresholds[0])
             answer |= (1<<1);
 
         if (fabs(cms2.els_dEtaIn()[index]) < dEtaInThresholds[0] &&
-            fabs(cms2.els_dPhiIn()[index]) < dPhiInThresholds[0] &&
-            cms2.els_hOverE()[index] < hoeThresholds[0] &&
-            cms2.els_sigmaIEtaIEta()[index] < sigmaIEtaIEtaThresholds[0])
+                fabs(cms2.els_dPhiIn()[index]) < dPhiInThresholds[0] &&
+                cms2.els_hOverE()[index] < hoeThresholds[0] &&
+                cms2.els_sigmaIEtaIEta()[index] < sigmaIEtaIEtaThresholds[0])
             answer |= (1<<0);
     }
 
     // endcap
     if (fabs(cms2.els_etaSC()[index]) > 1.479) {
-        if (cms2.els_tkJuraIso()[index] < tkThresholds[1] &&
-            cms2.els_ecalIso()[index]   < ecalThresholds[1] &&
-            cms2.els_hcalIso()[index]   < hcalThresholds[1])
+        if (electronIsolation_relsusy_cand1(index, true) < relisoThresholds[1])
             answer |= (1<<1);
 
         if (fabs(cms2.els_dEtaIn()[index]) < dEtaInThresholds[1] &&
-            fabs(cms2.els_dPhiIn()[index]) < dPhiInThresholds[1] &&
-            cms2.els_hOverE()[index] < hoeThresholds[1] &&
-            cms2.els_sigmaIEtaIEta()[index] < sigmaIEtaIEtaThresholds[1])
+                fabs(cms2.els_dPhiIn()[index]) < dPhiInThresholds[1] &&
+                cms2.els_hOverE()[index] < hoeThresholds[1] &&
+                cms2.els_sigmaIEtaIEta()[index] < sigmaIEtaIEtaThresholds[1])
             answer |= (1<<0);
     }
 
