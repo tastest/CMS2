@@ -74,6 +74,8 @@ class twinmaker
         Int_t   mu2_goodmask_;
         Float_t mu1_gfitchi2_;
         Float_t mu2_gfitchi2_;
+        Bool_t  mu1_cosmic_;
+        Bool_t  mu2_cosmic_;
 
         // electron stuff
         Bool_t  e1_cand01_;

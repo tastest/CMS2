@@ -209,10 +209,12 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
                     mu1_muonid_    = muonIdNotIsolated(index1, NominalTTbar); 
                     mu1_goodmask_  = cms2.mus_goodmask()[index1];
                     mu1_gfitchi2_  = cms2.mus_gfit_chi2()[index1] < -9000. ? -999999. : cms2.mus_gfit_chi2()[index1]/cms2.mus_gfit_ndof()[index1];
+                    mu1_cosmic_    = isCosmics(index1); 
 
                     mu2_muonid_    = muonIdNotIsolated(index2, NominalTTbar);
                     mu2_goodmask_  = cms2.mus_goodmask()[index2];
                     mu2_gfitchi2_  = cms2.mus_gfit_chi2()[index2] < -9000. ? -999999. : cms2.mus_gfit_chi2()[index2]/cms2.mus_gfit_ndof()[index2];
+                    mu2_cosmic_    = isCosmics(index2); 
 
                     int trkidx1 = cms2.mus_trkidx()[index1];
                     int trkidx2 = cms2.mus_trkidx()[index2];
@@ -229,6 +231,7 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
                     mu1_muonid_    = muonIdNotIsolated(index1, NominalTTbar); 
                     mu1_goodmask_  = cms2.mus_goodmask()[index1];
                     mu1_gfitchi2_  = cms2.mus_gfit_chi2()[index1] < -9000. ? -999999. : cms2.mus_gfit_chi2()[index1]/cms2.mus_gfit_ndof()[index1];
+                    mu1_cosmic_    = isCosmics(index1); 
 
                     int trkidx1 = cms2.mus_trkidx()[index1];
                     int trkidx2 = cms2.els_trkidx()[index2];
@@ -268,6 +271,7 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
                     mu2_muonid_    = muonIdNotIsolated(index2, NominalTTbar); 
                     mu2_goodmask_  = cms2.mus_goodmask()[index2];
                     mu2_gfitchi2_  = cms2.mus_gfit_chi2()[index2] < -9000. ? -999999. : cms2.mus_gfit_chi2()[index2]/cms2.mus_gfit_ndof()[index2];
+                    mu2_cosmic_    = isCosmics(index2); 
 
                     int trkidx1 = cms2.els_trkidx()[index1];
                     int trkidx2 = cms2.mus_trkidx()[index2];
@@ -374,6 +378,8 @@ void twinmaker::InitTwinNtuple ()
     mu2_goodmask_ = -999999;
     mu1_gfitchi2_ = -999999.;
     mu2_gfitchi2_ = -999999.;
+    mu1_cosmic_   = 0;
+    mu2_cosmic_   = 0;
 
     // electron stuff
     e1_cand01_   = 0;
@@ -454,6 +460,8 @@ void twinmaker::MakeTwinNtuple(const char *twinFilename)
     twinTree_->Branch("mu2_goodmask", &mu2_goodmask_, "mu2_goodmask/I");
     twinTree_->Branch("mu1_gfitchi2", &mu1_gfitchi2_, "mu1_gfitchi2/F");
     twinTree_->Branch("mu2_gfitchi2", &mu2_gfitchi2_, "mu2_gfitchi2/F");
+    twinTree_->Branch("mu1_cosmic",   &mu1_cosmic_,   "mu1_cosmic/O"  );
+    twinTree_->Branch("mu2_cosmic",   &mu2_cosmic_,   "mu2_cosmic/O"  );
 
     // eectron stuff
     twinTree_->Branch("e1_cand01", &e1_cand01_, "e1_cand01/O");
