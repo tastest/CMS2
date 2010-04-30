@@ -40,6 +40,7 @@ class twinmaker
         Float_t dphitcmetjet_;
         Float_t dilpt_;
         Float_t deltaphi_;	
+        Int_t   ntrks_;
 
         // lepton stuff
         Int_t   eormu1_;

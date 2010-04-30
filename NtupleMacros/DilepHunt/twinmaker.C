@@ -172,6 +172,7 @@ void twinmaker::ScanChain (const char *inputFilename, const char *twinFilename, 
                 mass_        = cms2.hyp_p4()[hypi].mass2() > 0 ? cms2.hyp_p4()[hypi].mass() : TMath::Sqrt(-1 * cms2.hyp_p4()[hypi].mass2());
                 dilpt_       = cms2.hyp_p4()[hypi].pt();		 
                 deltaphi_    = deltaPhi(phi1_, phi2_);
+                ntrks_       = cms2.trks_trk_p4().size();
 
                 // now, find jet closest to each hyp lepton
                 float mindrjet1 = 999999.;
@@ -338,6 +339,7 @@ void twinmaker::InitTwinNtuple ()
     dphitcmetjet_ = -999999.;
     dilpt_        = -999999.;
     deltaphi_     = -999999.;
+    ntrks_        = -999999;
 
     // lepton stuff
     eormu1_        = -999999;
@@ -417,6 +419,7 @@ void twinmaker::MakeTwinNtuple(const char *twinFilename)
     twinTree_->Branch("dphitcmetjet", &dphitcmetjet_,"dphitcmetjet/F");
     twinTree_->Branch("dilpt",        &dilpt_,       "dilpt/F"       );
     twinTree_->Branch("deltaphi",     &deltaphi_,    "deltaphi/F"    );
+    twinTree_->Branch("ntrks",        &ntrks_,       "ntrks/I"       );
 
     // lepton stuff
     twinTree_->Branch("eormu1",     &eormu1_,     "eormu1/I"    );
