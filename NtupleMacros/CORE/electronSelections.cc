@@ -5,7 +5,8 @@
 
 // CMS2 includes
 #include "electronSelections.h"
-#include "CMS2.h"
+#include "electronSelectionsParameters.cc"
+#include "CMS2.cc"
 
 elecuts_t electronSelections_debug_;
 elecuts_t electronId_debug_;
