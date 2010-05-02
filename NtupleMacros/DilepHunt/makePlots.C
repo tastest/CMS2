@@ -11,6 +11,7 @@
     zselection   += "abs(d0corr1) < 0.4 && abs(d0corr2) < 0.4"; // humble impact parameters
     zselection   += "(abs(eormu1) == 13 && (type1&6) == 6) || abs(eormu1) == 11"; // global && tracker muon
     zselection   += "(abs(eormu2) == 13 && (type2&6) == 6) || abs(eormu2) == 11"; // global && tracker muon
+    zselection   += "ntrks > 2"; // reject non-collision events, i.e. cosmics
 
     TCut topselection("(pt1 > 20. || pt2 > 20.) && pt1 > 10. && pt2 > 10."); // 20/10
     topselection   += "iso1 < 0.2 || iso2 < 0.2";                            // at least one is "well" isolated
@@ -19,6 +20,7 @@
     topselection   += "((hyp_type == 0 || hyp_type == 3) && (pfmet > 10. || tcmet > 10.)) || (hyp_type == 1 || hyp_type == 2)"; // met cuts for ee,mumu only
     topselection   += "(abs(eormu1) == 13 && (type1&6) == 6) || abs(eormu1) == 11"; // global && tracker muon
     topselection   += "(abs(eormu2) == 13 && (type2&6) == 6) || abs(eormu2) == 11"; // global && tracker muon
+    topselection   += "ntrks > 2"; // reject non-collision events, i.e. cosmics
 
     TCut zeeSelection  = zselection   + "hyp_type == 3";
     TCut zmmSelection  = zselection   + "hyp_type == 0";
