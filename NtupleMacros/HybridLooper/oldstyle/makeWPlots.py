@@ -59,7 +59,7 @@ os.system(makePlots)
 ##############################################
 
 # copy the files
-cpplotfile = "cp results/histos_data_lin*_selected*.png results/histos_data*lin*_nm1*.png results/histos_data_lin*_antiselected*.png %s" % (indir)
+cpplotfile = "cp results/histos_data_lin*_selected*.png results/histos_data*lin*_nm1*.png results/histos_data_lin*_antiselected*.png results/*FO*png %s" % (indir)
 os.system(cpplotfile)
 
 cpindexfile = "cp wplots.html %sindex.html" % (indir)

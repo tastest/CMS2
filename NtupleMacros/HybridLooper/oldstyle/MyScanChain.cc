@@ -155,8 +155,8 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
     bool foundSecond = false;
     for (size_t i = 0; i < cms2.evt_nels(); ++i)
     {
-        // must be found by the ecal driven algorithms
-        if (! cms2.els_type()[i] & (1<<ISECALDRIVEN)) continue;
+        // must be found by the ecal driven algorithms 
+      if (! cms2.els_type()[i] & (1<<ISECALDRIVEN)) continue; // this is a bug!! fix it! 100430 IBL
 
         if (foundFirst && !foundSecond) {
             eleSecondIndex = i;
@@ -202,6 +202,12 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
     float iso_relsusy = electronIsolation_relsusy_cand1(eleIndex, true);
     if (iso_relsusy < 0.10) cuts_passed |= (1<<PASS_ELE_ISO);
     else cuts_passed |= (1<<PASS_ELE_ANTIISO);
+
+    float iso_relsusy_tkJura = cms2.els_tkJuraIso().at(eleIndex);
+    float iso_relsusy_ecalIso = -999.;
+    if (fabs(cms2.els_etaSC().at(eleIndex)) > 1.479)  iso_relsusy_ecalIso = cms2.els_ecalIso().at(eleIndex);
+    if (fabs(cms2.els_etaSC().at(eleIndex)) <= 1.479) iso_relsusy_ecalIso = max(0., (cms2.els_ecalIso().at(eleIndex) -1.));
+    float iso_relsusy_hcalIso = cms2.els_hcalIso().at(eleIndex);
 
     // met
     //if (cms2.evt_tcmet() > 20.0 ) cuts_passed |= (1<<PASS_ELE_MET);
@@ -280,11 +286,42 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
         (1<<PASS_ELE_ANTIMET) | (1<<PASS_ELE_JETVETO) |
         (1<<PASS_ELE_R19);
 
-    if( isFakeableElectron (eleIndex, el_v2_cand01)  && cms2.els_p4()[eleIndex].Pt() > 10. ) { // require pt > 10 also on e (we have it on mu)
+    if( isFakeableElectron (eleIndex, el_v2_cand01)  && cms2.els_p4()[eleIndex].Pt() > 10. && (CheckCuts(((1<<PASS_ELE_R19)), cuts_passed)) ) { // require pt > 10 also on e (we have it on mu)
+
+      //       if( fabs(cms2.els_etaSC()[eleIndex]) > 2.5 ) std::cout<<"ALARM! ele eta > 2.5!! "
+      // 							    <<cms2.els_p4()[eleIndex].eta()
+      // 							    <<" SC version "
+      // 							    <<cms2.els_etaSC()[eleIndex]
+      // 	                                                    << "  "
+      // 							    << cms2.evt_run() << "\t\t" 
+      // 							    << cms2.evt_lumiBlock() << "\t" 
+      // 							    << cms2.evt_event() << std::endl;
+
         FillHist(h1_ele_FO_pt_, det, cms2.els_p4()[eleIndex].Pt(), weight);
         FillHist(h1_ele_FO_eta_, det, cms2.els_etaSC()[eleIndex], weight);
         FillHist(h1_ele_FO_iso_, det, iso_relsusy, weight);
+        FillHist(h1_ele_FO_isotkJura_, det, iso_relsusy_tkJura, weight);
+        FillHist(h1_ele_FO_isoecalIso_, det, iso_relsusy_ecalIso, weight);
+        FillHist(h1_ele_FO_isohcalIso_, det, iso_relsusy_hcalIso, weight);
+	// 	if(!CheckCuts(pass_WWsel, cuts_passed)) {
+	// 	  // fill FO!Num here
+	// 	}
       }
+
+
+    // further FO plots for other FR definitions (keep v2_cand01 as default)
+    if( isFakeableElectron (eleIndex, el_v1_cand01)  && cms2.els_p4()[eleIndex].Pt() > 10. && (CheckCuts(((1<<PASS_ELE_R19)), cuts_passed)) ) { // require pt > 10 also on e (we have it on mu)
+        FillHist(h1_ele_FOv1cand01_pt_, det, cms2.els_p4()[eleIndex].Pt(), weight);
+        FillHist(h1_ele_FOv1cand01_eta_, det, cms2.els_etaSC()[eleIndex], weight);
+        FillHist(h1_ele_FOv1cand01_iso_, det, iso_relsusy, weight);
+        FillHist(h1_ele_FOv1cand01_isotkJura_, det, iso_relsusy_tkJura, weight);
+        FillHist(h1_ele_FOv1cand01_isoecalIso_, det, iso_relsusy_ecalIso, weight);
+        FillHist(h1_ele_FOv1cand01_isohcalIso_, det, iso_relsusy_hcalIso, weight);
+	// 	if(!CheckCuts(pass_WWsel, cuts_passed)) {
+	// 	  // fill FO!Num here
+	// 	}
+      }
+
 
     if (CheckCutsNM1(pass_all, (1<<PASS_ELE_PT), cuts_passed)) {
         FillHist(h1_ele_nm1_pt_, det, cms2.els_p4()[eleIndex].Pt(), weight);
@@ -736,6 +773,9 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     sampleName_ = sampleName;
     isData_ = isData;
 
+    // temporary switches
+    bool allowAllRunsBeyondGoodRunList = false;
+
     //
     //
     //
@@ -773,6 +813,16 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     FormatHist(h1_ele_FO_pt_, "ele_FO_pt", 100, 0, 100);
     FormatHist(h1_ele_FO_eta_,"ele_FO_eta", 100, -3, 3);
     FormatHist(h1_ele_FO_iso_,"ele_FO_iso", 100, 0, 1);
+    FormatHist(h1_ele_FO_isotkJura_, "ele_FO_isotkJura", 100, 0, 10);
+    FormatHist(h1_ele_FO_isoecalIso_,"ele_FO_isoecalIso", 100, 0, 10);
+    FormatHist(h1_ele_FO_isohcalIso_,"ele_FO_isohcalIso", 100, 0, 10);
+
+    FormatHist(h1_ele_FOv1cand01_pt_, "ele_FOv1cand01_pt", 100, 0, 100);
+    FormatHist(h1_ele_FOv1cand01_eta_,"ele_FOv1cand01_eta", 100, -3, 3);
+    FormatHist(h1_ele_FOv1cand01_iso_,"ele_FOv1cand01_iso", 100, 0, 1);
+    FormatHist(h1_ele_FOv1cand01_isotkJura_, "ele_FOv1cand01_isotkJura", 100, 0, 10);
+    FormatHist(h1_ele_FOv1cand01_isoecalIso_,"ele_FOv1cand01_isoecalIso", 100, 0, 10);
+    FormatHist(h1_ele_FOv1cand01_isohcalIso_,"ele_FOv1cand01_isohcalIso", 100, 0, 10);
 
     // data-mc comparisons for backgrounds
     // inclusive selection
@@ -1038,7 +1088,15 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 
             if (isData) {
                 uint goodRunMax = highestGoodrun();
-                if (!goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) && cms2.evt_run() <= goodRunMax) continue;
+		if( allowAllRunsBeyondGoodRunList ) {
+		  // good data listed in the goodrun list and any run with runnumber larger than highest
+		  // run number in goodrun list:
+		  if (!goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) && cms2.evt_run() <= goodRunMax) continue;
+		}
+		else {
+		  // strictly only the good data listed in the goodrun list:
+		  if ( !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
+		}
             }
 
             //

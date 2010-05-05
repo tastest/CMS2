@@ -116,6 +116,7 @@ void plotDataRefOverlayStack(HistogramUtilities &hData, HistogramUtilities &hRef
 
     // ideal y range should be at least 2 sigma greater than highest data point
     float idealMaximumData = h1Data->GetMaximum() + sqrt(h1Data->GetMaximum())*2;
+    if( 42 != 42 ) idealMaximumData = 55;
     if(stRef->GetMaximum() < idealMaximumData ) stRef->SetMaximum(idealMaximumData);
 
     TCanvas *c1 = new TCanvas();
@@ -425,6 +426,8 @@ void plotResultsW(TString det, TString fileStamp, TString refFileStamp, TString 
     dataSources.push_back (fH_WHUNT() );
     refSources.push_back( fH_WJETS() );
     refSources.push_back( fH_QCD15() );
+    //    refSources.push_back( fH_QCD30() );
+    //    refSources.push_back( fH_MINBIAS() );
 
     HistogramUtilities datah1(fileStamp + ".root", dataSources);
     HistogramUtilities refh1(refFileStamp + ".root", refSources, luminorm);
@@ -448,6 +451,19 @@ void plotResultsW(TString det, TString fileStamp, TString refFileStamp, TString 
     plotDataRefOverlayStack(datah1, refh1, "ele_FO_pt" , "Electron FO p_{T} (GeV)", fileStamp, det, norm, 1);
     plotDataRefOverlayStack(datah1, refh1, "ele_FO_eta", "Electron FO #eta", fileStamp, det, norm, 1);
     plotDataRefOverlayStack(datah1, refh1, "ele_FO_iso", "Electron FO relIso", fileStamp, det, norm, 1);      
+
+    plotDataRefOverlayStack(datah1, refh1, "ele_FO_isotkJura",  "Electron FO tkJura", fileStamp, det, norm, 1);      
+    plotDataRefOverlayStack(datah1, refh1, "ele_FO_isoecalIso", "Electron FO ecalIso", fileStamp, det, norm, 1);      
+    plotDataRefOverlayStack(datah1, refh1, "ele_FO_isohcalIso", "Electron FO hcalIso", fileStamp, det, norm, 1);      
+
+    plotDataRefOverlayStack(datah1, refh1, "ele_FOv1cand01_pt" , "Electron FO p_{T} (GeV)", fileStamp, det, norm, 1);
+    plotDataRefOverlayStack(datah1, refh1, "ele_FOv1cand01_eta", "Electron FO #eta", fileStamp, det, norm, 1);
+    plotDataRefOverlayStack(datah1, refh1, "ele_FOv1cand01_iso", "Electron FO relIso", fileStamp, det, norm, 1);      
+
+    plotDataRefOverlayStack(datah1, refh1, "ele_FOv1cand01_isotkJura",  "Electron FOv1cand01 tkJura", fileStamp, det, norm, 1);      
+    plotDataRefOverlayStack(datah1, refh1, "ele_FOv1cand01_isoecalIso", "Electron FOv1cand01 ecalIso", fileStamp, det, norm, 1);      
+    plotDataRefOverlayStack(datah1, refh1, "ele_FOv1cand01_isohcalIso", "Electron FOv1cand01 hcalIso", fileStamp, det, norm, 1);      
+
     plotDataRefOverlayStack(datah1, refh1, "mu_FO_pt"  , "Muon FO p_{T} (GeV)", fileStamp, det, norm, 1);
     plotDataRefOverlayStack(datah1, refh1, "mu_FO_eta" , "Muon FO #eta", fileStamp, det, norm, 1);	     
     plotDataRefOverlayStack(datah1, refh1, "mu_FO_iso" , "Muon FO relIso", fileStamp, det, norm, 1);     

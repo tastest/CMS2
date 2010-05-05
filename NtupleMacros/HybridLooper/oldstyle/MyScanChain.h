@@ -93,6 +93,16 @@ class MyScanChain {
         TH1F    *h1_ele_FO_pt_[3];
         TH1F    *h1_ele_FO_eta_[3];
         TH1F    *h1_ele_FO_iso_[3];
+        TH1F    *h1_ele_FO_isotkJura_[3];
+        TH1F    *h1_ele_FO_isoecalIso_[3];
+        TH1F    *h1_ele_FO_isohcalIso_[3];
+
+        TH1F    *h1_ele_FOv1cand01_pt_[3];
+        TH1F    *h1_ele_FOv1cand01_eta_[3];
+        TH1F    *h1_ele_FOv1cand01_iso_[3];
+        TH1F    *h1_ele_FOv1cand01_isotkJura_[3];
+        TH1F    *h1_ele_FOv1cand01_isoecalIso_[3];
+        TH1F    *h1_ele_FOv1cand01_isohcalIso_[3];
 
         // inclusive comparisons of bg dists
         TH1F    *h1_ele_incl_r19_[3];
