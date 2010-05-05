@@ -10,6 +10,26 @@ You need the CMS2_LOCATION environment variable because lot's of filenames
 are searched for relative to it. It is expected that this envvar points to the CMS2
 directory, i.e. the one that contains NtupleMacros directory.
 
+Root version:
+use 5.24.  This is needed to get the right roofit version.
+UAF: source /home/users/spadhi/ROOT/slc4_ia32_gcc34/root/bin/thisroot.sh
+cms-tas01: use /opt/root
+
+Check out the looper:
+cvs co -r  SameSignV00-00-04 -d SSDilep UserCode/JRibnik/CMS2/NtupleMacros/SSDilep
+cvs co -d Tools UserCode/JRibnik/CMS2/NtupleMacros/Tools
+
+Make the FWLite lib:
+cd Tools/MiniFWLite
+make
+
+Run it:
+root -b
+root [0] gSystem->Load("../Tools/MiniFWLite/libMiniFWLite.so");
+root [1] gSystem->SetAclicMode(TSystem::kDebug);     
+root [2] .x processData.C
+
+
 #################################################################
                      Make Default Histograms
 #################################################################
