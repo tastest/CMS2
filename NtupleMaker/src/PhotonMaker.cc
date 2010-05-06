@@ -13,7 +13,7 @@
 //
 // Original Author:  Puneeth Kalavase
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: PhotonMaker.cc,v 1.11.2.1 2010/05/06 03:01:36 warren Exp $
+// $Id: PhotonMaker.cc,v 1.11.2.2 2010/05/06 03:41:01 warren Exp $
 //
 //
 
@@ -282,7 +282,7 @@ void PhotonMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 		  break;
 		}
 	  }
-	  cout << endl;
+	  //cout << endl;
 	  if( !foundseed ) {
 		//this is understood: the photon can have energy significantly higher than SC for whatever reason.
 		//cout << "No seed found. seed id: " << int(photon->superCluster()->seed()->seed())
