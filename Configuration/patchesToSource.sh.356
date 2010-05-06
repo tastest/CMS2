@@ -3,3 +3,5 @@ cvs co -r V04-06-00      DataFormats/EcalDetId
 cvs co -r V00-13-13      RecoLocalCalo/CaloTowersCreator                  
 cvs co -r V00-11-01      RecoLocalCalo/EcalRecAlgos 
 cvs co -r V00-05-02      RecoEgamma/EgammaTools
+#not going to be used for mc, but this will make calotowerhfmaker compile
+cvs co -r V00-00-06 JetMETAnalysis/HcalReflagging
