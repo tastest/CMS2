@@ -13,7 +13,7 @@
 //
 // Original Author:  Puneeth Kalavase
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: PhotonMaker.cc,v 1.11.2.2 2010/05/06 03:41:01 warren Exp $
+// $Id: PhotonMaker.cc,v 1.11.2.3 2010/05/06 03:43:31 warren Exp $
 //
 //
 
@@ -229,7 +229,7 @@ void PhotonMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	 const CaloTopology *topology_ = pTopology.product();
 
 	 // get topology (for moments)
-	 const CaloSubdetectorTopology *topology_eb = topology_->getSubdetectorTopology(DetId::Ecal, EcalBarrel);
+	 //const CaloSubdetectorTopology *topology_eb = topology_->getSubdetectorTopology(DetId::Ecal, EcalBarrel);
 	 //const CaloSubdetectorTopology *topology_ee = topology_->getSubdetectorTopology(DetId::Ecal, EcalEndcap); //not used yet
 
      //fill number of photons variable : NO ET CUT
@@ -298,7 +298,7 @@ void PhotonMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	  //   iSetup.get<IdealGeometryRecord>().get(geoHandle);
 	  iSetup.get<CaloGeometryRecord>().get(geoHandle);
 	  //const CaloGeometry* geometry = geoHandle.product();
-	  const CaloSubdetectorGeometry* geometry_eb = geoHandle->getSubdetectorGeometry(DetId::Ecal, EcalBarrel);
+	  //const CaloSubdetectorGeometry* geometry_eb = geoHandle->getSubdetectorGeometry(DetId::Ecal, EcalBarrel); 
 	  //const CaloSubdetectorGeometry* geometry_ee = geoHandle->getSubdetectorGeometry(DetId::Ecal, EcalEndcap); //not used yet
 
 	  CaloClusterPtr tempCluster = photon->superCluster()->seed(); //caloclusterfwd.h--different data type from BasicCluster so need both
