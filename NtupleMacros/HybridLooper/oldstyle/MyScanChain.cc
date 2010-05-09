@@ -774,7 +774,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
     isData_ = isData;
 
     // temporary switches
-    bool allowAllRunsBeyondGoodRunList = false;
+    bool allowAllRunsBeyondGoodRunList = true;
 
     //
     //
@@ -1088,15 +1088,15 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 
             if (isData) {
                 uint goodRunMax = highestGoodrun();
-		if( allowAllRunsBeyondGoodRunList ) {
-		  // good data listed in the goodrun list and any run with runnumber larger than highest
-		  // run number in goodrun list:
-		  if (!goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) && cms2.evt_run() <= goodRunMax) continue;
-		}
-		else {
-		  // strictly only the good data listed in the goodrun list:
-		  if ( !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
-		}
+		        if( allowAllRunsBeyondGoodRunList ) {
+		            // good data listed in the goodrun list and any run with runnumber larger than highest
+		            // run number in goodrun list:
+		            if (!goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) && cms2.evt_run() <= goodRunMax) continue;
+		        }
+		        else {
+		            // strictly only the good data listed in the goodrun list:
+		            if ( !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
+		        }
             }
 
             //
