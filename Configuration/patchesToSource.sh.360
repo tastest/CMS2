@@ -9,4 +9,5 @@ cvs co -r V03-00-10-01 JetMETCorrections/Modules
 #PAT
 cvs co -r V05-09-14    DataFormats/PatCandidates 
 cvs co -r V07-13-15    PhysicsTools/PatAlgos                            
-cvs co -r V00-01-05    PhysicsTools/SelectorUtils  
+cvs co -r V00-01-05    PhysicsTools/SelectorUtils
+cvs co -r V00-00-07    JetMETAnalysis/HcalReflagging
