@@ -15,7 +15,7 @@
 		(1<<H_TTBAR);
 
 	const static sources_t theBackground = 
-		(1<<H_WMUNU);
+		(1<<H_WJETS);
 
 	const static sources_t theSources = 
 		(1<<H_TTBAR);// |
@@ -558,7 +558,7 @@ void plotResultsW(TString det, TString fileStamp, TString version)
         // luminosity is already normalised to 1pb-1 in the looper
         std::vector<DataSource> sources;
         sources.push_back( fH_TTBAR() );
-        sources.push_back( fH_WMUNU() );
+        sources.push_back( fH_WJETS() );
         HistogramUtilities h1(fileStamp + ".root", sources, 1.0);
 
         // for comparing different options
@@ -579,7 +579,14 @@ void plotResultsW(TString det, TString fileStamp, TString version)
 
         plotEff(h1, "h1_hyp_idstudy_after_classExpLoose_reliso", "classExp", det + "_ee", true, 1, true);
         plotEff(h1, "h1_hyp_idstudy_after_classExpTight_reliso", "classExp", det + "_ee", true, 1, true);
+
+
         plotEff(h1, "h1_hyp_idstudy_after_cand01_reliso", "classExp", det + "_ee", true, 1, true);
+        plotEff(h1, "h1_hyp_idstudy_after_cand01_sumisopedsub", "classExp", det + "_ee", true, 1, true);
+        plotEff(h1, "h1_hyp_idstudy_after_cand01_sumiso", "classExp", det + "_ee", true, 1, true);
+        plotEff(h1, "h1_hyp_idstudy_after_cand01_relisovcone", "classExp", det + "_ee", true, 1, true);
+
+
 
         plotEff(h1, "h1_hyp_idstudy_after_classExpLoose_pt", "classExp", det + "_ee", true, 4, true);
         plotEff(h1, "h1_hyp_idstudy_after_classExpTight_pt", "classExp", det + "_ee", true, 4, true);

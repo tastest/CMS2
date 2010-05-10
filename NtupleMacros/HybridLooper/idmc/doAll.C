@@ -10,6 +10,7 @@ void doAll() {
     gSystem->Load("libMathCore.so");
     gSystem->Load("libCMS2NtupleMacrosCORE.so");
     gSystem->Load("libCMS2NtupleMacrosLooper.so");
+    gSystem->Load("../../Tools/MiniFWLite/libMiniFWLite.so");
 
     gROOT->ProcessLine(".L ../histtools.C+");
 
@@ -129,7 +130,8 @@ enum ElectronSelection {
     //
 
     looper->ScanChain(false, "ttbar", chain_ttbar);
-	looper->ScanChain(false, "wm", chain_wmunu);
+	looper->ScanChain(false, "wjets", chain_wjets);
+    //looper->ScanChain(false, "QCDpt30", chain_qcd30);
 
     // ele id sanity check with sani id
     //looper->ScanChain(false, "eleidval", chain_eleidval);

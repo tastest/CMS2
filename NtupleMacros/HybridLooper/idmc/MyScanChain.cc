@@ -282,8 +282,9 @@ void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
         FormatHist(h1_hyp_debug_after_cand02_E2x5MaxOver5x5_[i], sampleName, "h1_hyp_debug_after_cand02_E2x5MaxOver5x5_" + detname, 110, 0.0, 1.10);
 
         FormatHist(h1_hyp_debug_reliso_[i], sampleName, "h1_hyp_debug_reliso_" + detname, 100, 0.0, 1.0);
-        FormatHist(h1_hyp_debug_after_cand01_reliso_[i], sampleName, "h1_hyp_debug_after_cand01_reliso_" + detname, 100, 0.0, 1.0);
         FormatHist(h1_hyp_debug_after_cand02_reliso_[i], sampleName, "h1_hyp_debug_after_cand02_reliso_" + detname, 100, 0.0, 1.0);
+        FormatHist(h1_hyp_debug_after_cand01_reliso_[i], sampleName, "h1_hyp_debug_after_cand01_reliso_" + detname, 100, 0.0, 1.0);
+
 
         // experimental catagorised id debug plots
         FormatHist(h1_hyp_debug_after_classExp_hoe_[i], sampleName, "h1_hyp_debug_after_classExp_hoe_" + detname, 100, 0.0, 0.1);
@@ -299,8 +300,13 @@ void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
         // reliso after id
         FormatHist(h1_hyp_idstudy_after_classExpLoose_reliso_[i], sampleName, "h1_hyp_idstudy_after_classExpLoose_reliso_" + detname, 100, 0.0, 1.0);
         FormatHist(h1_hyp_idstudy_after_classExpTight_reliso_[i], sampleName, "h1_hyp_idstudy_after_classExpTight_reliso_" + detname, 100, 0.0, 1.0);
-        FormatHist(h1_hyp_idstudy_after_cand01_reliso_[i], sampleName, "h1_hyp_idstudy_after_cand01_reliso_" + detname, 100, 0.0, 1.0);
         FormatHist(h1_hyp_idstudy_after_vbtf70_reliso_[i], sampleName, "h1_hyp_idstudy_after_vbtf70_reliso_" + detname, 100, 0.0, 1.0);
+
+        FormatHist(h1_hyp_idstudy_after_cand01_sumiso_[i], sampleName, "h1_hyp_idstudy_after_cand01_sumiso_" + detname, 100, 0.0, 10.0);
+        FormatHist(h1_hyp_idstudy_after_cand01_sumisopedsub_[i], sampleName, "h1_hyp_idstudy_after_cand01_sumisopedsub_" + detname, 100, 0.0, 10.0);
+        FormatHist(h1_hyp_idstudy_after_cand01_reliso_[i], sampleName, "h1_hyp_idstudy_after_cand01_reliso_" + detname, 100, 0.0, 1.0);
+        FormatHist(h1_hyp_idstudy_after_cand01_relisovcone_[i], sampleName, "h1_hyp_idstudy_after_cand01_relisovcone_" + detname, 100, 0.0, 1.0);
+
 
         // pt after id
         FormatHist(h1_hyp_idstudy_after_classExpLoose_pt_[i], sampleName, "h1_hyp_idstudy_after_classExpLoose_pt_" + detname, 200, 0.0, 200);
@@ -342,7 +348,7 @@ void MyScanChain::FillAllEleIdHistogramsNoHyp(const float &weight, const TString
 {
 
 	for (size_t i = 0; i < cms2.els_p4().size(); ++i) {
-		if (cms2.els_p4()[i].Pt() < 20 || fabs(cms2.els_etaSC()[i]) > 2.5) continue;
+		if (cms2.els_p4().at(i).Pt() < 20 || fabs(cms2.els_etaSC().at(i)) > 2.5) continue;
 		if (!(cms2.els_type()[i] & (1<<ISECALDRIVEN))) continue;
 		FillAllEleIdHistograms(i, weight, sampleName, 0);
 	}
@@ -373,7 +379,7 @@ void MyScanChain::FillAllEleIdHistogramsHyp(const unsigned int h, const float &w
 		}
 	}
 
-   	if (hypType == DILEPTON_EMU && sampleName == "wm") {
+   	if (hypType == DILEPTON_EMU && sampleName == "wjets") {
 		if(abs(cms2.hyp_ll_id()[h]) == 13) {
 			if ((leptonIsFromW(cms2.hyp_ll_index()[h], cms2.hyp_ll_id()[h]) > 0 )
                     && (cms2.els_type()[cms2.hyp_lt_index()[h]] & (1<<ISECALDRIVEN)) 
@@ -420,7 +426,6 @@ void MyScanChain::FillAllEleIdHistogramsHyp(const unsigned int h, const float &w
 
 void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &weight, const TString &sampleName, const unsigned int hyp)
 {
-
 	// apply truth match behavior if ttbar
 	if (sampleName == "ttbar") {
 		if(!((abs(cms2.els_mc_id()[index]) == 11) && abs(cms2.els_mc_motherid()[index]) == 24) ) return;
@@ -443,19 +448,23 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
     }
 
 
+
     //
     // work out which cuts passed
     //
 
     DileptonHypType hypType = DILEPTON_EE;
+    
 
     // full selection with cand01
     bool pass_electronSelection_cand01 = electronSelection_cand01(index);
     elecuts_t result_electronSelections_cand01 = electronSelections_debug_;
 
+
     // full selection with cand02
     bool pass_electronSelection_cand02 = electronSelection_cand02(index);
     elecuts_t result_electronSelections_cand02 = electronSelections_debug_;
+
 
     // eleid cand01
     bool pass_electronId_cand01 = electronId_cand01(index);
@@ -482,6 +491,7 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
     if (cms2.els_p4()[index].Pt() > 10.0 && cms2.els_p4()[index].Pt() < 20.0) general_cuts_passed |= (1<<ELEPASS_PT10NOT20);
     if (!((general_cuts_passed & configured_cuts_) == configured_cuts_)) return;
 
+
 	//
 	// fill histograms
 	//
@@ -494,11 +504,28 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
     float E2x5MaxOver5x5 = cms2.els_e2x5Max()[index] / cms2.els_e5x5()[index];
     float iso_relsusy = electronIsolation_relsusy_cand1(index, true);
 
+    float iso_sum_pedsub = cms2.els_tkJuraIso().at(index);
+    if (fabs(cms2.els_etaSC().at(index)) > 1.479) iso_sum_pedsub += cms2.els_ecalIso().at(index);
+    if (fabs(cms2.els_etaSC().at(index)) <= 1.479) iso_sum_pedsub += max(0., (cms2.els_ecalIso().at(index) -1.));
+    iso_sum_pedsub += cms2.els_hcalIso().at(index);
+    
+    float iso_sum = cms2.els_tkJuraIso().at(index); 
+    if (fabs(cms2.els_etaSC().at(index)) > 1.479) iso_sum += cms2.els_ecalIso().at(index);
+    if (fabs(cms2.els_etaSC().at(index)) <= 1.479) iso_sum += cms2.els_ecalIso().at(index);
+    iso_sum += cms2.els_hcalIso().at(index);
+        
+    float sum_vcone = cms2.els_tkJuraIso().at(index);
+    if (fabs(cms2.els_etaSC().at(index)) > 1.479) sum_vcone += cms2.els_ecalIso04().at(index);
+    if (fabs(cms2.els_etaSC().at(index)) <= 1.479) sum_vcone += max(0., (cms2.els_ecalIso04().at(index) -1.));
+    sum_vcone += cms2.els_hcalIso04().at(index);
+    float iso_relsusy_vcone =  sum_vcone/max(cms2.els_p4().at(index).pt(), float(20.));
+
     int pdgidCatagory = 4;
     if (((abs(cms2.els_mc_id()[index]) == 11) && abs(cms2.els_mc_motherid()[index]) == 24) // W
         || ((abs(cms2.els_mc_id()[index]) == 11) && abs(cms2.els_mc_motherid()[index]) == 23)) // Z
         pdgidCatagory = 0;
     else pdgidCatagory = elFakeMCCategory(index);
+
 
     Fill(h1_hyp_debug_pdgid_[det], hypType, pdgidCatagory, weight);       
     Fill(h1_hyp_debug_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
@@ -594,7 +621,10 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
        Fill(h1_hyp_debug_after_cand01_dEtaIn_[det], hypType, cms2.els_dEtaIn()[index], weight);
        Fill(h1_hyp_debug_after_cand01_d0_[det], hypType, cms2.els_d0corr()[index], weight);
        Fill(h1_hyp_debug_after_cand01_E2x5MaxOver5x5_[det], hypType, E2x5MaxOver5x5, weight);
+
+        // sum with pedestal sub over pt
        Fill(h1_hyp_debug_after_cand01_reliso_[det], hypType, iso_relsusy, weight);
+
     }
 
     if (pass_electronSelection_cand02) {
@@ -632,7 +662,7 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
     // validation part
 
     int answerLoose = electronId_CIC(CIC_LOOSE, index);
-    int answerTight = electronId_CIC(CIC_TIGHT, index);
+    int answerTight = electronId_CIC(CIC_HYPERTIGHT4, index);
 
     const elecuts_t cicval_id = (1<<ELEPASS_CIC_ID) | (1<<ELEPASS_CIC_IP) | (1<<ELEPASS_CIC_CONV);
     const elecuts_t cicval_iso = (1<<ELEPASS_CIC_ISO); 
@@ -674,7 +704,7 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
     // study and comparison part
     //
 
-    if (CheckCuts((1<<ELEPASS_TYPE) | (1<<ELEPASS_FIDUCIAL), result_electronSelections_cand01)) {
+    if (CheckCuts((1<<ELEPASS_NOTCONV) | (1<<ELEPASS_D0) | (1<<ELEPASS_NOMUON) | (1<<ELEPASS_TYPE) | (1<<ELEPASS_FIDUCIAL), result_electronSelections_cand01)) {
 
         // loose experimental class based id passed
         if( (answerLoose & cicval_id) == cicval_id ) {
@@ -702,7 +732,16 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
 
         // cand01 passed
         if (pass_electronId_cand01) {
+
+            // sum iso
+            Fill(h1_hyp_idstudy_after_cand01_sumiso_[det], hypType, iso_sum, weight);
+            // sum iso with pedestal sub
+            Fill(h1_hyp_idstudy_after_cand01_sumisopedsub_[det], hypType, iso_sum_pedsub, weight);
+            // sum with pedestal sub over pt
             Fill(h1_hyp_idstudy_after_cand01_reliso_[det], hypType, iso_relsusy, weight);
+            // sum with pedestal sub over pt with ecal and hcal cone = 0.4
+            Fill(h1_hyp_idstudy_after_cand01_relisovcone_[det], hypType, iso_relsusy_vcone, weight);
+
             Fill(h1_hyp_idstudy_after_cand01_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
             if (iso_relsusy < 0.10)
                 Fill(h1_hyp_idstudy_after_cand01Rel01_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight); 
@@ -799,6 +838,8 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
 //
 int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents, std::string skimFilePrefix) {
 
+std::cout << "scanning " << sampleName << std::endl;
+
 	//
 	//
 	//
@@ -864,14 +905,14 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 			//
 			// loop on hypothesis
 			//
+            
 			for (size_t h = 0; h < cms2.hyp_type().size(); ++h) {
-
 				//
 				// fill basic electron ID histograms
 				//
 				FillAllEleIdHistogramsHyp(h, weight, sampleName);
-
 			} // end loop on hypothesis
+            
 
 		} // end loop on events
 

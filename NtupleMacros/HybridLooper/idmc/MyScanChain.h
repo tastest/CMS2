@@ -182,9 +182,8 @@ class MyScanChain {
 
         // reliso
         TH1F *h1_hyp_debug_reliso_[2][4];
-        TH1F *h1_hyp_debug_after_cand01_reliso_[2][4];
         TH1F *h1_hyp_debug_after_cand02_reliso_[2][4];
-
+        TH1F *h1_hyp_debug_after_cand01_reliso_[2][4];
 
         // debug for experimental class based id
         TH1F *h1_hyp_debug_after_classExp_hoe_[2][4];
@@ -201,8 +200,12 @@ class MyScanChain {
         // (no iso)
         TH1F *h1_hyp_idstudy_after_classExpLoose_reliso_[2][4];
         TH1F *h1_hyp_idstudy_after_classExpTight_reliso_[2][4];
-        TH1F *h1_hyp_idstudy_after_cand01_reliso_[2][4];
         TH1F *h1_hyp_idstudy_after_vbtf70_reliso_[2][4];
+
+        TH1F *h1_hyp_idstudy_after_cand01_sumiso_[2][4];
+        TH1F *h1_hyp_idstudy_after_cand01_sumisopedsub_[2][4];
+        TH1F *h1_hyp_idstudy_after_cand01_reliso_[2][4];
+        TH1F *h1_hyp_idstudy_after_cand01_relisovcone_[2][4];
 
         // pt distributions after ids applied
         // (no iso)
