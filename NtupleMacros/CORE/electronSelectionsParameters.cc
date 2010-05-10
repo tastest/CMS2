@@ -2,6 +2,42 @@
 #include <iostream>
 #include "electronSelectionsParameters.h"
 
+void eidGetCand(const cand_tightness tightness, std::vector<double> &cutdeta, std::vector<double> &cutdphi, std::vector<double> &cuthoe, std::vector<double> &cutslat)
+{
+
+    switch (tightness) {
+        case CAND_01:
+        {
+            double dEtaInThresholds_tmp[2]               = {0.007, 0.010};
+            double dPhiInThresholds_tmp[2]               = {0.020, 0.025};
+            double hoeThresholds_tmp[2]                  = {0.01, 0.01};
+            double latThresholds_tmp[2]                  = {0.90, 0.03};
+            eidAssign(cutdeta, dEtaInThresholds_tmp, 2);
+            eidAssign(cutdphi, dPhiInThresholds_tmp, 2);
+            eidAssign(cuthoe, hoeThresholds_tmp, 2);
+            eidAssign(cutslat, latThresholds_tmp, 2);
+            return;
+        }
+        case CAND_02:
+        {
+            double dEtaInThresholds_tmp[2]               = {0.005, 0.007};
+            double dPhiInThresholds_tmp[2]               = {0.020, 0.025};
+            double hoeThresholds_tmp[2]                  = {0.01, 0.01};
+            double latThresholds_tmp[2]                  = {0.94, 0.03};
+            eidAssign(cutdeta, dEtaInThresholds_tmp, 2);
+            eidAssign(cutdphi, dPhiInThresholds_tmp, 2);
+            eidAssign(cuthoe, hoeThresholds_tmp, 2);
+            eidAssign(cutslat, latThresholds_tmp, 2);
+            return;
+        }
+        default:
+            std::cout << "[eidGetCand] ERROR! Invalid tightness level" << std::endl;
+    }
+
+    return;
+}
+
+
 void eidGetVBTF(const vbtf_tightness tightness, std::vector<double> &cutdeta, std::vector<double> &cutdphi, std::vector<double> &cuthoe, std::vector<double> &cutsee, std::vector<double> &cutreliso)
 {
 

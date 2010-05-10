@@ -41,6 +41,19 @@ enum vbtf_tightness {
 };
 //--------------------------------
 
+//
+// Data required for CAND ID
+//
+// Settings provided
+//
+//--------------------------------
+enum cand_tightness {
+    CAND_01,
+    CAND_02,
+};
+//--------------------------------
+
+void eidGetCand(const cand_tightness tightness, std::vector<double> &cutdeta, std::vector<double> &cutdphi, std::vector<double> &cuthoe, std::vector<double> &cutslat);
 
 void eidGetVBTF(const vbtf_tightness tightness, std::vector<double> &cutdeta, std::vector<double> &cutdphi, std::vector<double> &cuthoe, std::vector<double> &cutsee, std::vector<double> &cutreliso);
 
