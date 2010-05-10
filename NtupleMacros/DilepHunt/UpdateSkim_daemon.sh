@@ -7,7 +7,7 @@ while [ 1 ]; do
 
     echo "Starting to check for new files to process..."
     find /tas03/disk03/slava77/reltestdata/CMSSW_3_5_6-cms2-data -follow -maxdepth 1 -name "merged_ntuple_[0-9]*_[0-9]*.root" -printf "%p %s %C@\n" > AllRunsAvailable.txt
-    find /tas03/disk03/slava77/reltestdata/CMSSW_3_5_7-cms2-data -maxdepth 1 -name "merged_ntuple_[0-9]*_[0-9]*.root" -printf "%p %s %C@\n" >> AllRunsAvailable.txt
+    find /tas03/disk03/slava77/reltestdata/CMSSW_3_5_7-cms2-data -follow -maxdepth 1 -name "merged_ntuple_[0-9]*_[0-9]*.root" -printf "%p %s %C@\n" >> AllRunsAvailable.txt
     rm RunsToProcess.txt
     touch RunsProcessed.txt
 
