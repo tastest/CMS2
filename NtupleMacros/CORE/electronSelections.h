@@ -8,46 +8,60 @@
 #include "electronSelectionsParameters.h"
 
 //
-// Configurable components
-// of the selection
+// This is the menu of electron selections
 //
 
 enum EleSelectionType {
     //
     // iso cuts
     //
+    // rel iso (fixed below 20 GeV) < 0.10
+    // 0.3 cone size for all, 1 GeV pedestal sub in EB
     ELEISO_REL010,
+    // rel iso (fixed below 20 GeV) < 0.15
+    // 0.3 cone size for all, 1 GeV pedestal sub in EB
     ELEISO_REL015,
     //
     // ip cuts
     //
+    // d0 corrected for beamspot < 0.02
     ELEIP_200,
+    // d0 corrected for beamspot < 0.04
     ELEIP_400,
     //
     // id cuts
     //
+    // pass "CAND01" electron ID
     ELEID_CAND01,
+    // pass "CAND02" electron ID
     ELEID_CAND02,
+    // pass "EXTRA" electron ID
     ELEID_EXTRA,
     //
     // conv rej cuts
     //
+    // dist < 0.02 && dcot(theta) < 0.02
     ELENOTCONV_DISTDCOT002,
+    // < 2 missing hits
     ELENOTCONV_HITPATTERN,
     //
     // eta cuts
     //
+    // |eta| < 2.50 where eta is the ecal eta
     ELEETA_250,
     //
     // no muon cuts
     //
+    // no muon within dR < 0.1
     ELENOMUON_010,
     //
     // ecal driven requirement
     //
+    // seed must have been found by at least the ecal algo
     ELESEED_ECAL,
 };
 
+// ===================== TTBar ============================
 //
 // The standard TTBar selection
 //
@@ -63,50 +77,50 @@ static const unsigned int electronSelection_ttbar =
 //---------------------------------------------------------
 
 //
+// ======================== WW ============================
+//
 // The standard WW selection
 //
 //---------------------------------------------------------
 static const unsigned int electronSelection_ww =
                     (1<<ELEISO_REL010) |
-                    (1<<ELEIP_400) |
-                    (1<<ELEID_CAND01) |
+                    (1<<ELEID_CAND02) |
+                    (1<<ELEID_EXTRA) |
                     (1<<ELENOTCONV_DISTDCOT002) |
                     (1<<ELEETA_250) |
                     (1<<ELENOMUON_010) |
                     (1<<ELESEED_ECAL);
 //---------------------------------------------------------
-
 //
-// The standard SS susy selection
+// The standard WW selection with no isolation
 //
 //---------------------------------------------------------
-static const unsigned int electronSelection_ss =
-                    (1<<ELEISO_REL010) |
-                    (1<<ELEIP_400) |
-                    (1<<ELEID_CAND01) |
+static const unsigned int electronSelection_ww_noiso =
+                    (1<<ELEID_CAND02) |
+                    (1<<ELEID_EXTRA) |
                     (1<<ELENOTCONV_DISTDCOT002) |
                     (1<<ELEETA_250) |
                     (1<<ELENOMUON_010) |
                     (1<<ELESEED_ECAL);
 //---------------------------------------------------------
-
 //
-// The standard OS susy selection
+// The standard WW impact parameter cut
 //
 //---------------------------------------------------------
-static const unsigned int electronSelection_os =
-                    (1<<ELEISO_REL010) |
-                    (1<<ELEIP_400) |
-                    (1<<ELEID_CAND01) |
-                    (1<<ELENOTCONV_DISTDCOT002) |
-                    (1<<ELEETA_250) |
-                    (1<<ELENOMUON_010) |
-                    (1<<ELESEED_ECAL);
+static const unsigned int electronSelection_ww_ip =
+                    (1<<ELEIP_200);
+//---------------------------------------------------------
+//
+// The standard WW isolation cut
+//
+//---------------------------------------------------------
+static const unsigned int electronSelection_ww_iso =
+                    (1<<ELEISO_REL010);
 //---------------------------------------------------------
 
 
 //
-//
+// other enums for internal use
 //
 
 enum EgammaFiduciality {
@@ -139,7 +153,7 @@ enum ElectronIDComponent {
 // master selection function
 //
 bool pass_electronSelection(const unsigned int index, const unsigned int selectionType);
-unsigned int electronSelection(const unsigned int index, const unsigned int selectionType);
+unsigned int electronSelection(const unsigned int index);
 
 //
 // "cand" electron id

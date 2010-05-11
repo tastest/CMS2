@@ -9,12 +9,12 @@
 
 bool pass_electronSelection(const unsigned int index, const unsigned int selectionType)
 {
-    unsigned int cuts_passed = electronSelection(index, selectionType);
+    unsigned int cuts_passed = electronSelection(index);
     if ((cuts_passed & selectionType) == selectionType) return true;
     return false;
 }
 
-unsigned int electronSelection(const unsigned int index, const unsigned int selectionType) 
+unsigned int electronSelection(const unsigned int index) 
 {
 
     //
@@ -50,15 +50,15 @@ unsigned int electronSelection(const unsigned int index, const unsigned int sele
     //
 
     if (!isFromConversionPartnerTrack(index)) cuts_passed |= (1<<ELENOTCONV_DISTDCOT002);
-    if (!isFromConversionHitPattern(index)) cuts_passed |= (1<<ELENOTCONV_DISTDCOT002);
+    if (!isFromConversionHitPattern(index)) cuts_passed |= (1<<ELENOTCONV_HITPATTERN);
 
     //
     // fiduciality/other cuts
     //
 
-    if (!(cms2.els_type()[index] & (1<<ISECALDRIVEN))) cuts_passed |= (1<<ELESEED_ECAL);
+    if ((cms2.els_type()[index] & (1<<ISECALDRIVEN))) cuts_passed |= (1<<ELESEED_ECAL);
     if (fabs(cms2.els_p4()[index].eta()) < 2.5) cuts_passed |= (1<<ELEETA_250);
-    if (!electronId_noMuon(index)) cuts_passed |= (1<<ELENOMUON_010);
+    if (electronId_noMuon(index)) cuts_passed |= (1<<ELENOMUON_010);
 
     //
     // return which selections passed
