@@ -1,3 +1,11 @@
+//example usage:
+// > root
+// root [0] .L NtupleMacros/Tools/PrintBranchSizes.C++
+// ...
+// root [1] PrintBranches("ntuple_nofilt_100evts_qcd30.root")
+
+
+
 #include "TTree.h"
 #include "TObjArray.h"
 #include "TString.h"
@@ -11,6 +19,16 @@
 
 
 using namespace std;
+
+void PrintBranchSizes(TTree* tree);
+
+//call function below with name of ntuple file as arg
+void PrintSizes(string input) {
+  TFile *infile = TFile::Open(input.c_str());
+  TTree *tree = (TTree*)infile->Get("Events");
+  PrintBranchSizes(tree);
+}
+
 
 void PrintBranchSizes(TTree* tree) {
 
