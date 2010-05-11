@@ -13,6 +13,7 @@
 /*muons*/
 class TH2F &fakeRateMuon (enum fakeRateVersion);
 static TFile *mu_fakeRateFile = 0;
+char* mu_filename;
 static TH2F  *mu_fakeRate = 0;
 static TH2F  *mu_ttbar_fakeRate = 0;
 bool isFakeableMuon (int index, enum fakeRateVersion version){
@@ -20,7 +21,7 @@ bool isFakeableMuon (int index, enum fakeRateVersion version){
 if( version == mu_v1 ){
 
   // return denominator for current version
-  if ( cms2.mus_p4()[index].pt() < 10.) {
+  if ( cms2.mus_p4()[index].pt() < 5.0) {
     std::cout << "muonID ERROR: requested muon is too low pt,  Abort." << std::endl;
     return false;
   }
@@ -43,7 +44,7 @@ if( version == mu_v1 ){
 
 } 
 else if ( version == mu_ttbar ){
-  if ( cms2.mus_p4()[index].pt() < 10.) {
+  if ( cms2.mus_p4()[index].pt() < 5.0) {
     std::cout << "muonID ERROR: requested muon is too low pt,  Abort." << std::endl;
     return false;
   }
@@ -86,6 +87,12 @@ double muFakeProb (int i_mu, enum fakeRateVersion version){
   //
   return prob;
 }
+
+void SetMuonFile(char * filename){
+  mu_filename = filename;
+  cout << endl << "*Using muon fake rates from: " << mu_filename << endl;
+}
+
 double muFakeProbErr (int i_mu, enum fakeRateVersion version){
 
   // initializations
@@ -110,15 +117,16 @@ double muFakeProbErr (int i_mu, enum fakeRateVersion version){
 }
 TH2F &fakeRateMuon (enum fakeRateVersion version){
   if ( mu_fakeRateFile == 0 ) {
-    mu_fakeRateFile = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/mu_FR_3X.root", "read");
+    //mu_fakeRateFile = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/mu_FR_3X.root", "read");
+    mu_fakeRateFile = TFile::Open(mu_filename, "read");
     if ( mu_fakeRateFile == 0 ) {
       std::cout << "$CMS2_LOCATION/NtupleMacros/data/QCDFRplots-v1.root could not be found!!" << std::endl;
       std::cout << "Please make sure that $CMS2_LOCATION points to your CMS2 directory and that" << std::endl;
       std::cout << "$CMS2_LOCATION/NtupleMacros/data/QCDFRplots-v1.root exists!" << std::endl;
       gSystem->Exit(1);
     }
-    mu_fakeRate       = dynamic_cast<TH2F *>( mu_fakeRateFile->Get("QCD30_mu_FR_etavspt") );
-    mu_ttbar_fakeRate = dynamic_cast<TH2F *>( mu_fakeRateFile->Get("QCD30_mu_ttbar_FR_etavspt") );
+    mu_fakeRate       = dynamic_cast<TH2F *>( mu_fakeRateFile->Get("mu_FR_etavspt") );
+    mu_ttbar_fakeRate = dynamic_cast<TH2F *>( mu_fakeRateFile->Get("mu_ttbar_FR_etavspt") );
   }
   if(version == mu_v1){
     return *mu_fakeRate;
@@ -332,7 +340,7 @@ double elFakeProb (int i_el, enum fakeRateVersion version ){
   return prob;
 }
 
-double elFakeProbErr (int i_el, enum fakeRateVersion version, char* sample){
+double elFakeProbErr (int i_el, enum fakeRateVersion version){
 
   // initialization
   float prob = 0.0;
@@ -367,7 +375,6 @@ TH2F &fakeRateEl (enum fakeRateVersion version ){
   if ( el_fakeRateFile == 0 ) {
     //el_fakeRateFile = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/el_FR_3X.root", "read");
     //el_fakeRateFile = TFile::Open("/home/users/dbarge/FakeRates/CMSSW_3_5_6__CMS2_V03-03-23/el_FR_3X.root", "read");
-    cout << el_filename << endl;
     el_fakeRateFile = TFile::Open( el_filename, "read");
     if ( el_fakeRateFile == 0 ) {
       std::cout << "$CMS2_LOCATION/NtupleMacros/data/el_FR_3X.root could not be found!!" << std::endl;
