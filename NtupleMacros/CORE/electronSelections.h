@@ -128,18 +128,18 @@ enum EgammaElectronType {
     ISTRACKERDRIVEN
 };
 
-enum ElectronSelectionCIC {
-    ELEPASS_CIC_ID,
-    ELEPASS_CIC_ISO,
-    ELEPASS_CIC_CONV,
-    ELEPASS_CIC_IP,
+enum ElectronIDComponent {
+    ELEID_ID,
+    ELEID_ISO,
+    ELEID_CONV,
+    ELEID_IP,
 };
 
 // 
 // master selection function
 //
-
-bool electronSelection(const unsigned int index, const unsigned int selectionType);
+bool pass_electronSelection(const unsigned int index, const unsigned int selectionType);
+unsigned int electronSelection(const unsigned int index, const unsigned int selectionType);
 
 //
 // "cand" electron id

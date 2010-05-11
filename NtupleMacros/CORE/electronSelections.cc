@@ -7,70 +7,64 @@
 #include "electronSelections.h"
 #include "CMS2.h"
 
-bool electronSelection(const unsigned int index, const unsigned int selectionType) 
+bool pass_electronSelection(const unsigned int index, const unsigned int selectionType)
 {
+    unsigned int cuts_passed = electronSelection(index, selectionType);
+    if ((cuts_passed & selectionType) == selectionType) return true;
+    return false;
+}
+
+unsigned int electronSelection(const unsigned int index, const unsigned int selectionType) 
+{
+
+    //
+    // keep track of which cuts passed
+    //
+
+    unsigned int cuts_passed = 0;
 
     //
     // isolation
     //
 
-    if ((selectionType & (1<<ELEISO_REL010)) == (1<<ELEISO_REL010))
-            if (electronIsolation_rel(index, true) < 0.10) return false;
-
-    if ((selectionType & (1<<ELEISO_REL015)) == (1<<ELEISO_REL015))
-            if (electronIsolation_rel(index, true) < 0.15) return false;
+    if (electronIsolation_rel(index, true) < 0.10) cuts_passed |= (1<<ELEISO_REL010);
+    if (electronIsolation_rel(index, true) < 0.15) cuts_passed |= (1<<ELEISO_REL015);
 
     //
     // ip
     //
 
-    if ((selectionType & (1<<ELEIP_200)) == (1<<ELEIP_200)) 
-        if (fabs(cms2.els_d0corr()[index]) > 0.02) return false;
-
-    if ((selectionType & (1<<ELEIP_400)) == (1<<ELEIP_400))
-        if (fabs(cms2.els_d0corr()[index]) > 0.04) return false;
+    if (fabs(cms2.els_d0corr()[index]) < 0.02) cuts_passed |= (1<<ELEIP_200);
+    if (fabs(cms2.els_d0corr()[index]) < 0.04) cuts_passed |= (1<<ELEIP_400);
 
     //
     // id
     //
 
-    if ((selectionType & (1<<ELEID_CAND01)) == (1<<ELEID_CAND01))    
-            if (!electronId_cand(index, CAND_01)) return false;
-
-    if ((selectionType & (1<<ELEID_CAND02)) == (1<<ELEID_CAND02))
-            if (!electronId_cand(index, CAND_02)) return false;
-
-    if ((selectionType & (1<<ELEID_EXTRA)) == (1<<ELEID_EXTRA))
-            if (!electronId_extra(index)) return false;
+    if (electronId_cand(index, CAND_01)) cuts_passed |= (1<<ELEID_CAND01);
+    if (electronId_cand(index, CAND_02)) cuts_passed |= (1<<ELEID_CAND02);
+    if (electronId_extra(index)) cuts_passed |= (1<<ELEID_EXTRA);
 
     //
     // conversion rejection cuts
     //
 
-    if ((selectionType & (1<<ELENOTCONV_DISTDCOT002)) == (1<<ELENOTCONV_DISTDCOT002))
-            if (isFromConversionPartnerTrack(index)) return false;
-
-    if ((selectionType & (1<<ELENOTCONV_HITPATTERN)) == (1<<ELENOTCONV_HITPATTERN))
-            if(isFromConversionHitPattern(index)) return false;
+    if (!isFromConversionPartnerTrack(index)) cuts_passed |= (1<<ELENOTCONV_DISTDCOT002);
+    if (!isFromConversionHitPattern(index)) cuts_passed |= (1<<ELENOTCONV_DISTDCOT002);
 
     //
     // fiduciality/other cuts
     //
 
-    if ((selectionType & (1<<ELESEED_ECAL)) == (1<<ELESEED_ECAL))
-            if (!(cms2.els_type()[index] & (1<<ISECALDRIVEN))) return false;
-
-    if ((selectionType & (1<<ELEETA_250)) == (1<<ELEETA_250))
-            if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
-
-    if ((selectionType & (1<<ELENOMUON_010)) == (1<<ELENOMUON_010))
-        if (!electronId_noMuon(index)) return false;
+    if (!(cms2.els_type()[index] & (1<<ISECALDRIVEN))) cuts_passed |= (1<<ELESEED_ECAL);
+    if (fabs(cms2.els_p4()[index].eta()) < 2.5) cuts_passed |= (1<<ELEETA_250);
+    if (!electronId_noMuon(index)) cuts_passed |= (1<<ELENOMUON_010);
 
     //
-    // if we got to here then pass
+    // return which selections passed
     //
 
-    return true;
+    return cuts_passed;
 
 }
 
@@ -249,7 +243,7 @@ unsigned int electronId_CIC(const unsigned int index, const cic_tightness tightn
     if ((tkIso < cutisotk[cat+3*eb+bin*6]) &&
             (ecalIso < cutisoecal[cat+3*eb+bin*6]) &&
             (hcalIso < cutisohcal[cat+3*eb+bin*6]))
-        result |= (1<<ELEPASS_CIC_ISO);
+        result |= (1<<ELEID_ISO);
 
     if (fBrem < -2)
         return result;
@@ -259,13 +253,13 @@ unsigned int electronId_CIC(const unsigned int index, const cic_tightness tightn
             fabs(deltaPhiIn) < cutdphi[cat+3*eb+bin*6] &&
             fabs(deltaEtaIn) < cutdeta[cat+3*eb+bin*6] &&
             eSeedOverPin > cuteopin[cat+3*eb+bin*6])
-        result |= (1<<ELEPASS_CIC_ID);
+        result |= (1<<ELEID_ID);
 
     if (ip < cutip[cat+3*eb+bin*6])
-        result |= (1<<ELEPASS_CIC_IP);
+        result |= (1<<ELEID_IP);
 
     if (mishits < cutmishits[cat+3*eb+bin*6])
-        result |= (1<<ELEPASS_CIC_CONV);
+        result |= (1<<ELEID_CONV);
 
     return result;
 
@@ -330,25 +324,25 @@ unsigned int electronId_VBTF(const unsigned int index, const vbtf_tightness tigh
     if (fabs(cms2.els_etaSC()[index]) < 1.479) {
 
         if (electronIsolation_rel(index, true) < relisoThresholds[0])
-            answer |= (1<<1);
+            answer |= (1<<ELEID_ISO);
 
         if (fabs(cms2.els_dEtaIn()[index]) < dEtaInThresholds[0] &&
                 fabs(cms2.els_dPhiIn()[index]) < dPhiInThresholds[0] &&
                 cms2.els_hOverE()[index] < hoeThresholds[0] &&
                 cms2.els_sigmaIEtaIEta()[index] < sigmaIEtaIEtaThresholds[0])
-            answer |= (1<<0);
+            answer |= (1<<ELEID_ID);
     }
 
     // endcap
     if (fabs(cms2.els_etaSC()[index]) > 1.479) {
         if (electronIsolation_rel(index, true) < relisoThresholds[1])
-            answer |= (1<<1);
+            answer |= (1<<ELEID_ISO);
 
         if (fabs(cms2.els_dEtaIn()[index]) < dEtaInThresholds[1] &&
                 fabs(cms2.els_dPhiIn()[index]) < dPhiInThresholds[1] &&
                 cms2.els_hOverE()[index] < hoeThresholds[1] &&
                 cms2.els_sigmaIEtaIEta()[index] < sigmaIEtaIEtaThresholds[1])
-            answer |= (1<<0);
+            answer |= (1<<ELEID_ID);
     }
 
     return answer;
