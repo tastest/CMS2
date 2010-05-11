@@ -137,6 +137,7 @@ double elFakeProbErr_test (int, enum fakeRateVersion);
 
 // file containing FR & errors for all supported denominators
 static TFile *el_fakeRateFile = 0;
+char* el_filename;
 
 // histograms for supported denominators
 static TH2F  *el_fakeRate_ttbar_v1 = 0;
@@ -309,7 +310,7 @@ bool isFakeableElectron (int index, enum fakeRateVersion version){
   }
 }
 
-double elFakeProb (int i_el, enum fakeRateVersion version){
+double elFakeProb (int i_el, enum fakeRateVersion version ){
 
   // initialization
   float prob = 0.0;
@@ -331,7 +332,7 @@ double elFakeProb (int i_el, enum fakeRateVersion version){
   return prob;
 }
 
-double elFakeProbErr (int i_el, enum fakeRateVersion version){
+double elFakeProbErr (int i_el, enum fakeRateVersion version, char* sample){
 
   // initialization
   float prob = 0.0;
@@ -356,28 +357,36 @@ double elFakeProbErr (int i_el, enum fakeRateVersion version){
   return prob_error;
 }
 
+void SetElectronFile(char * filename){
+  el_filename = filename;
+  cout << endl << "*Using electron fake rates from: " << el_filename << endl;
+}
+
 // read fake rate & errors from ROOT file in cvs NtupleMacros/data
-TH2F &fakeRateEl (enum fakeRateVersion version){
+TH2F &fakeRateEl (enum fakeRateVersion version ){
   if ( el_fakeRateFile == 0 ) {
-    el_fakeRateFile = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/el_FR_3X.root", "read");
+    //el_fakeRateFile = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/el_FR_3X.root", "read");
+    //el_fakeRateFile = TFile::Open("/home/users/dbarge/FakeRates/CMSSW_3_5_6__CMS2_V03-03-23/el_FR_3X.root", "read");
+    cout << el_filename << endl;
+    el_fakeRateFile = TFile::Open( el_filename, "read");
     if ( el_fakeRateFile == 0 ) {
       std::cout << "$CMS2_LOCATION/NtupleMacros/data/el_FR_3X.root could not be found!!" << std::endl;
       std::cout << "Please make sure that $CMS2_LOCATION points to your CMS2 directory and that" << std::endl;
       std::cout << "$CMS2_LOCATION/NtupleMacros/data/el_FR_3X.root exists!" << std::endl;
       gSystem->Exit(1);
     }
-    el_fakeRate_v1_cand01     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v1_cand01_FR_etavspt") );
-    el_fakeRate_v1_cand02     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v1_cand02_FR_etavspt") );
-    el_fakeRate_v1_cand02flip = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v1_cand02flip_FR_etavspt") );
-    el_fakeRate_v2_cand01     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v2_cand01_FR_etavspt") );
-    el_fakeRate_v2_cand02     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v2_cand02_FR_etavspt") );
-    el_fakeRate_v2_cand02flip = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v2_cand02flip_FR_etavspt") );
-    el_fakeRate_v3_cand01     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v3_cand01_FR_etavspt") );
-    el_fakeRate_v3_cand02     = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v3_cand02_FR_etavspt") );
-    el_fakeRate_v3_cand02flip = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_v3_cand02flip_FR_etavspt") );
-    el_fakeRate_ttbar_v1 = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_ttbar_v1_FR_etavspt") );
-    el_fakeRate_ttbar_v2 = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_ttbar_v2_FR_etavspt") );
-    el_fakeRate_ttbar_v3 = dynamic_cast<TH2F *>( el_fakeRateFile->Get("QCD30_el_ttbar_v3_FR_etavspt") );
+    el_fakeRate_v1_cand01     = dynamic_cast<TH2F *>( el_fakeRateFile->Get( "el_v1_cand01_Cleaned_FR_etavspt" ) );
+    el_fakeRate_v1_cand02     = dynamic_cast<TH2F *>( el_fakeRateFile->Get( "el_v1_cand02_Cleaned_FR_etavspt" ) );
+    el_fakeRate_v1_cand02flip = dynamic_cast<TH2F *>( el_fakeRateFile->Get( "el_v1_cand02flip_Cleaned_FR_etavspt" ) );
+    el_fakeRate_v2_cand01     = dynamic_cast<TH2F *>( el_fakeRateFile->Get( "el_v2_cand01_Cleaned_FR_etavspt" ) );
+    el_fakeRate_v2_cand02     = dynamic_cast<TH2F *>( el_fakeRateFile->Get( "el_v2_cand02_Cleaned_FR_etavspt" ) );
+    el_fakeRate_v2_cand02flip = dynamic_cast<TH2F *>( el_fakeRateFile->Get( "el_v2_cand02flip_Cleaned_FR_etavspt" ) );
+    el_fakeRate_v3_cand01     = dynamic_cast<TH2F *>( el_fakeRateFile->Get( "el_v3_cand01_Cleaned_FR_etavspt" ) );
+    el_fakeRate_v3_cand02     = dynamic_cast<TH2F *>( el_fakeRateFile->Get( "el_v3_cand02_Cleaned_FR_etavspt" ) );
+    el_fakeRate_v3_cand02flip = dynamic_cast<TH2F *>( el_fakeRateFile->Get( "el_v3_cand02flip_Cleaned_FR_etavspt" ) );
+    el_fakeRate_ttbar_v1 = dynamic_cast<TH2F *>( el_fakeRateFile->Get( "el_ttbar_v1_Cleaned_FR_etavspt" ) );
+    el_fakeRate_ttbar_v2 = dynamic_cast<TH2F *>( el_fakeRateFile->Get( "el_ttbar_v2_Cleaned_FR_etavspt" ) );
+    el_fakeRate_ttbar_v3 = dynamic_cast<TH2F *>( el_fakeRateFile->Get( "el_ttbar_v3_Cleaned_FR_etavspt" ) );
   }
   if( version == el_v1_cand01 ){ 
     return *el_fakeRate_v1_cand01;
