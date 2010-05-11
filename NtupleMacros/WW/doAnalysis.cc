@@ -42,10 +42,20 @@ bool goodElectronWithoutIsolation(unsigned int i){
 }
 
 bool goodElectronIsolated(unsigned int i){
+
+  return ww_elId(i) && ww_eld0(i) && pass_electronSelection(i, electronSelection_ww_iso);
+
+/*
   return ww_elId(i) && ww_eld0(i) && ww_elIso(i)<0.1;
+*/
+
 }
 
 bool fakableElectron(unsigned int i){
+
+    return pass_electronSelection(i, electronSelection_ww_noiso);
+
+/*
   //return ww_elIso(i)<0.1;
   if (!cms2.els_type()[i] & (1<<ISECALDRIVEN)) return false;
   if (fabs(cms2.els_p4()[i].eta()) > 2.5) return false;
@@ -53,7 +63,7 @@ bool fakableElectron(unsigned int i){
   if (electronIsolation_relsusy_cand1(i, true) > 0.10) return false;
   if (isFromConversionPartnerTrack(i)) return false;
   return true;
-
+*/
 }
 
 bool goodMuonWithoutIsolation(unsigned int i){
@@ -85,25 +95,40 @@ unsigned int numberOfJets(unsigned int i_hyp){
 //
 
 bool ww_elId(unsigned int index){
+
+    return pass_electronSelection(index, electronSelection_ww);
+
+/*
   if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
   if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
   if (!electronId_noMuon(index)) return false;
-  //if (!electronId_cand01(index)) return false;
-  if (!electronId_cand02(index)) return false;
-  if (!electronId_extra(index)) return false;
-  //// if (!electronImpact_cand01(index)) return false;
-  //// if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
+  if (!electronId_cand01(index)) return false;
   if (isFromConversionPartnerTrack(index)) return false;
   return true;
+*/
 
 }
 
 bool ww_eld0(unsigned int index){
+
+    return pass_electronSelection(index, electronSelection_ww_ip);
+    // or you could do
+    // return pass_electronSelection(index, (1<<ELEIP_200));
+
+/*
   return electronImpact_cand01(index);
+*/
+
 }
 
 double ww_elIso(unsigned int index){
+
+    return electronIsolation_rel(index, true);
+
+/*
   return electronIsolation_relsusy_cand1(index, true);
+*/
+
 }
 
 bool ww2009_elId(unsigned int i){
