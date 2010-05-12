@@ -10,7 +10,9 @@ enum SelectionType {
   FakableObject = 0, 
   Nominal = 1, 
   Tight = 2,
-  NominalTTbar = 3
+  NominalTTbar = 3,
+  muonSelectionFO_mu_v1 = 4,
+  muonSelectionFO_mu_ttbar = 5
 }; 
 
 //
