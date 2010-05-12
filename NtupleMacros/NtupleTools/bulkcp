@@ -5,7 +5,7 @@
 #
 # bulkcp
 
-my $version = "1.0.0";
+my $version = "1.1.0";
 
 use warnings;
 use strict;
@@ -221,7 +221,25 @@ if ($sched_pid)
         for my $pid (keys %act_pids_file)
         {
             my $file = $act_pids_file{$pid};
-            my $curr_size = `find $file -printf \"\%s\" 2>/dev/null`;
+            my $curr_size = 0;
+            if ($protocol eq "rsync")
+            {
+                # Get current size from the temp files
+                # created by rsync
+                $file =~ m/^(\S+)\/(\S+)$/;
+                my $path = $1;
+                my $trunc_file = $2;
+                # On this host the temp files begin with '.'
+                # and end with \S{6,6} or \w{6,6} afaict but
+                # maybe rsync is different on other hosts?
+                # As I am unsure we will not use -regexp and
+                # use find .$trunc_file.* until it fails us
+                $curr_size = `find $path/.$trunc_file.* -printf \"\%s\" 2>/dev/null`;
+            }
+            else
+            {
+                $curr_size = `find $file -printf \"\%s\" 2>/dev/null`;
+            }
             $all_pids_size{$pid} = $curr_size unless ($? != 0);
         }
 
@@ -298,7 +316,7 @@ else
 
         # Patient people only $nthreads
         # at a time
-        while ($count > $nthreads)
+        while ($count >= $nthreads)
         {
             my $dip = waitpid(-1, WNOHANG);
             if ($dip == 0)
