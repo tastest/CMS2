@@ -53,7 +53,8 @@ bool goodElectronIsolated(unsigned int i){
 
 bool fakableElectron(unsigned int i){
 
-    return pass_electronSelection(i, electronSelection_ww_noiso);
+    // extrapolate in id
+    return pass_electronSelection(i, electronSelectionFO_el_v2_cand02);
 
 /*
   //return ww_elIso(i)<0.1;
@@ -96,7 +97,7 @@ unsigned int numberOfJets(unsigned int i_hyp){
 
 bool ww_elId(unsigned int index){
 
-    return pass_electronSelection(index, electronSelection_ww);
+    return pass_electronSelection(index, electronSelection_ww_noiso);
 
 /*
   if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
@@ -113,7 +114,7 @@ bool ww_eld0(unsigned int index){
 
     return pass_electronSelection(index, electronSelection_ww_ip);
     // or you could do
-    // return pass_electronSelection(index, (1<<ELEIP_200));
+    // return pass_electronSelection(index, (1ll<<ELEIP_200));
 
 /*
   return electronImpact_cand01(index);
