@@ -153,7 +153,8 @@ def getGoodRootFiles(datapath,outpath):
             cmd = 'dccp ' + dcachePrefix + path + ' ' + outpath + '/temp'
         if datapath.find('hadoop') != -1:
             print 'Moving ' + fname + ' from hadoop to ' + outpath + '/temp'
-            cmd = 'cp ' + dcachePrefix + path + ' ' + outpath + '/temp'
+            #cmd = 'cp ' + dcachePrefix + path + ' ' + outpath + '/temp'
+            cmd = 'hadoop fs -copyToLocal ' + dcachePrefix + path[7:] + ' ' + outpath + '/temp'
             print commands.getoutput(cmd)
         
         print 'Checking File ' + outpath + '/temp/' + fname + ' for integrity'
