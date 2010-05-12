@@ -29,6 +29,7 @@ unsigned int electronSelection(const unsigned int index)
 
     if (electronIsolation_rel(index, true) < 0.10) cuts_passed |= (1<<ELEISO_REL010);
     if (electronIsolation_rel(index, true) < 0.15) cuts_passed |= (1<<ELEISO_REL015);
+    if (electronIsolation_rel(index, true) < 0.40) cuts_passed |= (1<<ELEISO_REL040);
 
     //
     // ip
@@ -59,6 +60,12 @@ unsigned int electronSelection(const unsigned int index)
     if ((cms2.els_type()[index] & (1<<ISECALDRIVEN))) cuts_passed |= (1<<ELESEED_ECAL);
     if (fabs(cms2.els_p4()[index].eta()) < 2.5) cuts_passed |= (1<<ELEETA_250);
     if (electronId_noMuon(index)) cuts_passed |= (1<<ELENOMUON_010);
+
+    //
+    // chargeflip
+    //
+
+    if (!isChargeFlip(index)) cuts_passed |= ELECHARGE_NOTFLIP;
 
     //
     // return which selections passed
