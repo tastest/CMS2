@@ -12,6 +12,12 @@
 #pragma link C++ class ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >+;
 #pragma link C++ class ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<float>,ROOT::Math::DefaultCoordinateSystemTag>+;
 #include <vector>
+#pragma link C++ class vector<ROOT::Math::PxPyPzE4D<float> >+;
+#pragma link C++ class vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >+;
+#pragma link C++ class vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<float>,ROOT::Math::DefaultCoordinateSystemTag> >+;
+#pragma link C++ class vector<vector<ROOT::Math::PxPyPzE4D<float> > >+;
+#pragma link C++ class vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > >+;
+#pragma link C++ class vector<vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<float>,ROOT::Math::DefaultCoordinateSystemTag> > >+;
 
 // for CMS2 classes
 #pragma link C++ class edm::Wrapper<TString>+;
