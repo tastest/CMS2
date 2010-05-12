@@ -27,7 +27,9 @@ def makeCrabConfig():
     outFile.write('jobtype   = cmssw\n')
     outFile.write('scheduler = ' + mode + '\n')
     if ( server != '' ) :
-        outFile.write('use_server = ' + server + '\n')
+        outFile.write('server_name = ' + server + '\n')
+    else :
+        outFile.write('use_server = ' + '1' + '\n')
     outFile.write('\n[CMSSW]\n')
     outFile.write('datasetpath             = ' + dataSet + '\n')
     outFile.write('pset                    = ' + outFileName + '_cfg.py \n')
