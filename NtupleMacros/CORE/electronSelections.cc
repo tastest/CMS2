@@ -7,65 +7,65 @@
 #include "electronSelections.h"
 #include "CMS2.h"
 
-bool pass_electronSelection(const unsigned int index, const unsigned int selectionType)
+bool pass_electronSelection(const unsigned int index, const cuts_t selectionType)
 {
-    unsigned int cuts_passed = electronSelection(index);
+    cuts_t cuts_passed = electronSelection(index);
     if ((cuts_passed & selectionType) == selectionType) return true;
     return false;
 }
 
-unsigned int electronSelection(const unsigned int index) 
+cuts_t electronSelection(const unsigned int index) 
 {
 
     //
     // keep track of which cuts passed
     //
 
-    unsigned int cuts_passed = 0;
+    cuts_t cuts_passed = 0;
 
     //
     // isolation
     //
 
-    if (electronIsolation_rel(index, true) < 0.10) cuts_passed |= (1<<ELEISO_REL010);
-    if (electronIsolation_rel(index, true) < 0.15) cuts_passed |= (1<<ELEISO_REL015);
-    if (electronIsolation_rel(index, true) < 0.40) cuts_passed |= (1<<ELEISO_REL040);
+    if (electronIsolation_rel(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_REL010);
+    if (electronIsolation_rel(index, true) < 0.15) cuts_passed |= (1ll<<ELEISO_REL015);
+    if (electronIsolation_rel(index, true) < 0.40) cuts_passed |= (1ll<<ELEISO_REL040);
 
     //
     // ip
     //
 
-    if (fabs(cms2.els_d0corr()[index]) < 0.02) cuts_passed |= (1<<ELEIP_200);
-    if (fabs(cms2.els_d0corr()[index]) < 0.04) cuts_passed |= (1<<ELEIP_400);
+    if (fabs(cms2.els_d0corr()[index]) < 0.02) cuts_passed |= (1ll<<ELEIP_200);
+    if (fabs(cms2.els_d0corr()[index]) < 0.04) cuts_passed |= (1ll<<ELEIP_400);
 
     //
     // id
     //
 
-    if (electronId_cand(index, CAND_01)) cuts_passed |= (1<<ELEID_CAND01);
-    if (electronId_cand(index, CAND_02)) cuts_passed |= (1<<ELEID_CAND02);
-    if (electronId_extra(index)) cuts_passed |= (1<<ELEID_EXTRA);
+    if (electronId_cand(index, CAND_01)) cuts_passed |= (1ll<<ELEID_CAND01);
+    if (electronId_cand(index, CAND_02)) cuts_passed |= (1ll<<ELEID_CAND02);
+    if (electronId_extra(index)) cuts_passed |= (1ll<<ELEID_EXTRA);
 
     //
     // conversion rejection cuts
     //
 
-    if (!isFromConversionPartnerTrack(index)) cuts_passed |= (1<<ELENOTCONV_DISTDCOT002);
-    if (!isFromConversionHitPattern(index)) cuts_passed |= (1<<ELENOTCONV_HITPATTERN);
+    if (!isFromConversionPartnerTrack(index)) cuts_passed |= (1ll<<ELENOTCONV_DISTDCOT002);
+    if (!isFromConversionHitPattern(index)) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN);
 
     //
     // fiduciality/other cuts
     //
 
-    if ((cms2.els_type()[index] & (1<<ISECALDRIVEN))) cuts_passed |= (1<<ELESEED_ECAL);
-    if (fabs(cms2.els_p4()[index].eta()) < 2.5) cuts_passed |= (1<<ELEETA_250);
-    if (electronId_noMuon(index)) cuts_passed |= (1<<ELENOMUON_010);
+    if ((cms2.els_type()[index] & (1ll<<ISECALDRIVEN))) cuts_passed |= (1ll<<ELESEED_ECAL);
+    if (fabs(cms2.els_p4()[index].eta()) < 2.5) cuts_passed |= (1ll<<ELEETA_250);
+    if (electronId_noMuon(index)) cuts_passed |= (1ll<<ELENOMUON_010);
 
     //
     // chargeflip
     //
 
-    if (!isChargeFlip(index)) cuts_passed |= ELECHARGE_NOTFLIP;
+    if (!isChargeFlip(index)) cuts_passed |= (1ll<<ELECHARGE_NOTFLIP);
 
     //
     // return which selections passed
