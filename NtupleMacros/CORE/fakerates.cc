@@ -20,17 +20,17 @@ static TH2F  *mu_ttbar_fakeRate = 0;
 bool isFakeableMuon (int index, enum fakeRateVersion version) {
 
     if ( version == mu_v1 ) {
-        muonId(index, muonSelectionFO_mu_v1);
+        return muonId(index, muonSelectionFO_mu_v1);
     } 
     else if ( version == mu_ttbar ) {
-        muonId(index, muonSelectionFO_mu_ttbar);
+        return muonId(index, muonSelectionFO_mu_ttbar);
     } 
     else {
         cout << "ERROR: unhandled muon version" << endl;
         return false;
     }
-
 }
+
 double muFakeProb (int i_mu, enum fakeRateVersion version){
 
     // initializations
