@@ -204,7 +204,7 @@ static const unsigned int electronSelectionFO_el_v3_cand02flip =
 //
 // The standard TTBar selection without isolation
 //---------------------------------------------------------
-static const unsigned int electronSelection_ttbar =
+static const unsigned int electronSelection_ttbar_noiso =
                     (1<<ELEIP_400) |
                     (1<<ELEID_CAND01) |
                     (1<<ELENOTCONV_DISTDCOT002) |
@@ -218,22 +218,16 @@ static const unsigned int electronSelection_ttbar =
 static const unsigned int electronSelection_ttbar_iso =
                     (1<<ELEISO_REL010);
 //---------------------------------------------------------
-
+//
+// The standard TTBar selection with isolation
+//---------------------------------------------------------
+static const unsigned int electronSelection_ttbar =
+        electronSelection_ttbar_noiso |
+        electronSelection_ttbar_iso;
+//---------------------------------------------------------
 
 
 // ======================== WW ============================
-//
-// The standard WW selection
-//---------------------------------------------------------
-static const unsigned int electronSelection_ww =
-                    (1<<ELEISO_REL010) |
-                    (1<<ELEID_CAND02) |
-                    (1<<ELEID_EXTRA) |
-                    (1<<ELENOTCONV_DISTDCOT002) |
-                    (1<<ELEETA_250) |
-                    (1<<ELENOMUON_010) |
-                    (1<<ELESEED_ECAL);
-//---------------------------------------------------------
 //
 // The standard WW selection with no isolation
 //---------------------------------------------------------
@@ -257,6 +251,15 @@ static const unsigned int electronSelection_ww_ip =
 static const unsigned int electronSelection_ww_iso =
                     (1<<ELEISO_REL010);
 //---------------------------------------------------------
+//
+// The standard WW selection
+//---------------------------------------------------------
+static const unsigned int electronSelection_ww =
+                    electronSelection_ww_noiso |
+                    electronSelection_ww_iso;
+// FIXME: for fakerates
+static const unsigned int electronSelection_cand02 = electronSelection_ww;
+//---------------------------------------------------------
 
 
 
@@ -272,6 +275,8 @@ static const unsigned int electronSelection_os =
                     (1<<ELEETA_250) |
                     (1<<ELENOMUON_010) |
                     (1<<ELESEED_ECAL);
+// FIXME: for fake rates
+static const unsigned int electronSelection_cand01 = electronSelection_os;
 //---------------------------------------------------------
 
 
