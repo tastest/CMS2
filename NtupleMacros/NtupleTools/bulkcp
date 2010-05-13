@@ -5,7 +5,7 @@
 #
 # bulkcp
 
-my $version = "1.1.0";
+my $version = "1.2.0";
 
 use warnings;
 use strict;
@@ -285,29 +285,43 @@ else
     # Track number and pids of forked jobs
     my $count = 0;
 
+    # Consider the first file only
+    my $first = 1;
+
+    # Base directory of the remote transfer
+    my $base_dir = ""; 
+
     # Let's do this
     foreach my $line (@lines)
     {
-        $line =~ m/^(\S) (\S+\/(\S+)) (\d+)$/;
+        $line =~ m/^(\S) ((\S+)\/\S+) (\d+)$/;
         my $type = $1;
         my $file = $2;
-        my $file_trunc = $3;
+        my $remote_path = $3;
         my $size = $4;
 
+        if ($first == 1)
+        {
+            $base_dir = $remote_path;
+            $first = 0;
+        }
+
+        $file =~ m/^$base_dir\/(\S+)$/;
+        my $rel_to_base_dir = $1;
+        my $local_file = "$local/$rel_to_base_dir";
+
         # If directory then make directory,
-        # update $local and continue.
+        # and continue.
         # Pas pour lcg-cp until I write a
         # lcg-find which will never happen
         if ($type eq "d")
         {
             if ($protocol ne "lcg-cp")
             {
-                $local .= "/$file_trunc";
-
                 # Does directory exist?
-                if (! -d $local)
+                if (! -d $local_file)
                 {
-                    die "Error: unable to mkpath($local)\n" unless mkpath($local);
+                    die "Error: unable to mkpath($local_file)\n" unless mkpath($local_file);
                 }
             }
 
@@ -340,13 +354,13 @@ else
         if ($pid)
         {
             $| = 1; # flush buffer
-            print "b $pid $local/$file_trunc $size\n";
+            print "b $pid $local_file $size\n";
         }
         else
         {
-            system "scp $host:$file $local/$file_trunc >/dev/null 2>&1" if ($protocol eq "scp");
-            system "rsync -az -e ssh $host:$file $local/$file_trunc >/dev/null 2>&1" if ($protocol eq "rsync");
-            system "lcg-cp -D srmv2 -t 3600 $srm$file file:///$local/$file_trunc >/dev/null 2>&1" if ($protocol eq "lcg-cp");
+            system "scp $host:$file $local_file >/dev/null 2>&1" if ($protocol eq "scp");
+            system "rsync -az -e ssh $host:$file $local_file >/dev/null 2>&1" if ($protocol eq "rsync");
+            system "lcg-cp -D srmv2 -t 3600 $srm$file file:///$local_file >/dev/null 2>&1" if ($protocol eq "lcg-cp");
             exit $?;
         }
     }
