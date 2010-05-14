@@ -22,7 +22,7 @@ ROOFITINCLUDE =
 ifdef CMSSW_VERSION
 	ROOFITINCLUDE = $(shell scramv1 tool info roofitcore | grep INCLUDE | sed 's/^INCLUDE=/-I/')
 endif
-INCLUDE = -I$(CMSROOT) $(ROOFITINCLUDE) -I$(CMSROOT)/CORE
+INCLUDE = -I$(CMSROOT) $(ROOFITINCLUDE) -I$(CMSROOT)/CORE -I$(CMSROOT)/Tools
 CFLAGS = -Wall -Wno-unused-function -g -O2 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS)
 
 LINKER = g++
@@ -32,19 +32,22 @@ ifeq ($(shell root-config --platform),macosx)
 	LINKERFLAGS = -dynamiclib -undefined dynamic_lookup -Wl,-x -O -Xlinker -bind_at_load -flat_namespace $(shell root-config --libs) -lEG -lGenVector
 endif
 
-CORESOURCES = $(CMSROOT)/CORE/CMS2.cc \
-    $(CMSROOT)/CORE/electronSelectionsCICParameters.cc \
+#TOOLSSOURCES = $(wildcard $(CMSROOT)/Tools/*.cc)
+TOOLSSOURCES = $(CMSROOT)/Tools/tools.cc
+TOOLSOBJECTS = $(TOOLSSOURCES:.cc=.o)
+TOOLSLIB = libCMS2NtupleMacrosTOOLS.so
+
+CORESOURCES = \
+    $(CMSROOT)/CORE/CMS2.cc \
     $(CMSROOT)/CORE/electronSelections.cc \
+	$(CMSROOT)/CORE/electronSelectionsParameters.cc \
+    $(CMSROOT)/CORE/muonSelections.cc \
     $(CMSROOT)/CORE/trackSelections.cc \
-    $(CMSROOT)/CORE/metSelections.cc \
     $(CMSROOT)/CORE/utilities.cc \
     $(CMSROOT)/CORE/eventSelections.cc \
     $(CMSROOT)/CORE/mcSelections.cc \
-    $(CMSROOT)/CORE/jetSelections.cc 
+	$(CMSROOT)/CORE/jetSelections.cc
 
- 
-#$(CMSROOT)/CORE/fakerates.cc
-# CORESOURCES = $(wildcard $(CMSROOT)/CORE/*.cc) 
 COREOBJECTS = $(CORESOURCES:.cc=.o) 
 CORELIB = libCMS2NtupleMacrosCORE.so
 
@@ -54,8 +57,7 @@ LIB = libCMS2NtupleMacrosLooper.so
 
 FWLIB = ../../Tools/MiniFWLite/libMiniFWLite.so
 
-LIBS = $(CORELIB) $(LIB)
-
+LIBS = $(CORELIB) $(TOOLSLIB) $(LIB) $(FWLIB)
 
 .PHONY: all help compile clean cms2env
 
@@ -65,20 +67,23 @@ $(CORELIB):	$(COREOBJECTS)
 	$(QUIET) echo "Linking $(CORELIB)"; \
 	$(LINKER) $(LINKERFLAGS) -shared $(COREOBJECTS) -o $@ 2>&1|perl -ne 'print if(!/skipping incompatible/)'
 
+$(TOOLSLIB): $(TOOLSOBJECTS) 
+	$(QUIET) echo "Linking $(TOOLSLIB)"; \
+	$(LINKER) $(LINKERFLAGS) -shared $(TOOLSOBJECTS) -o $@ 2>&1|perl -ne 'print if(!/skipping incompatible/)'
+
 $(LIB):	$(OBJECTS) 
 	$(QUIET) echo "Linking $(LIB)"; \
 	$(LINKER) $(LINKERFLAGS) -shared $(OBJECTS) -o $@ 2>&1|perl -ne 'print if(!/skipping incompatible/)'
 
-$(FWLIB):
-	$(QUIET) echo "making MiniFWLite"; \
-	cd ../Tools/MiniFWLite; \
+$(FWLIB) :
+	$(QUITE) echo "making MiniFWLite"; \
+	cd ../../Tools/MiniFWLite; \
 	$(MAKE) -f Makefile;
 
 LinkDef_out.cxx: LinkDef.h
 	$(QUIET) echo "Making CINT dictionaries"; \
 	rootcint -f LinkDef_out.cc -c -p $(INCLUDE) LinkDef.h; \
 	cat LinkDef.h LinkDef_out.cc > LinkDef_out.cxx; rm LinkDef_out.cc
-# [ -e LinkDef_out.cc ] || [ -e LinkDef_out.h ] || [ -e LinkDef_out.o ] && rm LinkDef_out.* \
 
 # General rule for making object files
 %.d:	%.cc
@@ -93,14 +98,6 @@ LinkDef_out.cxx: LinkDef.h
 	$(QUIET) echo "Compiling $<"; \
 	$(CC) $(CFLAGS) $< -c -o $@
 
-data:
-	@echo 'Make a directory or a symbolic link called "data" pointing to sample location'; echo; exit 1
-
-processed_data.root: data processData.C $(CORELIB) $(LIB) $(FWLIB)
-	$(QUIET) root -b -q processData.C
-
-fakeIsoControlSamples.root: makeFakeIsoControlSamples.C
-	$(QUIET) root -b -q makeFakeIsoControlSamples.C+
 
 #################################################################
 #                       User Targets 
@@ -114,7 +111,10 @@ clean: # clean up
 	$(CMSROOT)/CORE/*.o \
 	$(CMSROOT)/CORE/*.d \
 	$(CMSROOT)/CORE/*.so \
-	$(CORELIB) $(LOOPERLIB) $(FWLIB) \
+	$(CMSROOT)/Tools/*.o \
+	$(CMSROOT)/Tools/*.d \
+	$(CMSROOT)/Tools/*.so \
+	$(CORELIB) $(TOOLSLIB) $(LOOPERLIB) $(FWLIB) \
 	*.o *.d *.so LinkDef_out*; echo "Done"
 
 endif

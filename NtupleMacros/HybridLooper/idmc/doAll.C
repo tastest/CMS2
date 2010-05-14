@@ -31,9 +31,9 @@ enum ElectronSelection {
     TString fileNameString = "pt20up";
     //TString fileNameString = "pt10to20";
     //TString fileNameString = "pt10up";
-    elecuts_t configured_cuts = (1<<ELEPASS_PT20);
-    //elecuts_t configured_cuts = (1<<ELEPASS_PT10NOT20);
-    //elecuts_t configured_cuts = (1<<ELEPASS_PT10);
+    cuts_t configured_cuts = (1<<ELEPASS_PT20);
+    //cuts_t configured_cuts = (1<<ELEPASS_PT10NOT20);
+    //cuts_t configured_cuts = (1<<ELEPASS_PT10);
 	MyScanChain *looper = new MyScanChain(configured_cuts);
 
 	//
