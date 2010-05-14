@@ -14,18 +14,18 @@ void doAll() {
 
     gROOT->ProcessLine(".L ../histtools.C+");
 
-	//
-	// output file for histograms
-	//
+    //
+    // output file for histograms
+    //
 
-//
-// danger!  keep this up to date
-//
-enum ElectronSelection {
-    ELEPASS_PT10,
-    ELEPASS_PT20,
-    ELEPASS_PT10NOT20,
-};
+    //
+    // danger!  keep this up to date
+    //
+    enum ElectronSelection {
+        ELEPASS_PT10,
+        ELEPASS_PT20,
+        ELEPASS_PT10NOT20,
+    };
 
 
     TString fileNameString = "pt20up";
@@ -34,45 +34,45 @@ enum ElectronSelection {
     cuts_t configured_cuts = (1<<ELEPASS_PT20);
     //cuts_t configured_cuts = (1<<ELEPASS_PT10NOT20);
     //cuts_t configured_cuts = (1<<ELEPASS_PT10);
-	MyScanChain *looper = new MyScanChain(configured_cuts);
+    MyScanChain *looper = new MyScanChain(configured_cuts);
 
-	//
-	// chains for input files
+    //
+    // chains for input files
     TString ntuple_location = "/store/disk00/cms2/";
 
-	// SM
-	// ttbar
-	TChain *chain_ttbar = new TChain("Events");
-	chain_ttbar->Add(ntuple_location + "TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-07/merged_ntuple*.root");
-	// wjets
+    // SM
+    // ttbar
+    TChain *chain_ttbar = new TChain("Events");
+    chain_ttbar->Add(ntuple_location + "TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-07/merged_ntuple*.root");
+    // wjets
     TChain *chain_wjets = new TChain("Events");
-	chain_wjets->Add(ntuple_location + "doesnotexist/wjets_skim.root");
-	// qcd pt30
-	TChain *chain_qcd30 = new TChain("Events");
-	chain_qcd30->Add(ntuple_location + "QCD_Pt30_Spring10-START3X_V26_S09-v1/V03-04-08/merged_ntuple*.root");
+    chain_wjets->Add(ntuple_location + "doesnotexist/wjets_skim.root");
+    // qcd pt30
+    TChain *chain_qcd30 = new TChain("Events");
+    chain_qcd30->Add(ntuple_location + "QCD_Pt30_Spring10-START3X_V26_S09-v1/V03-04-08/merged_ntuple*.root");
 
-	// 
-	// do looping
-	//
+    // 
+    // do looping
+    //
 
     looper->ScanChain(false, "ttbar", chain_ttbar);
-	//looper->ScanChain(false, "wjets", chain_wjets);
+    //looper->ScanChain(false, "wjets", chain_wjets);
     looper->ScanChain(false, "QCDpt30", chain_qcd30);
 
-	//
-	// write histograms
-	// 
+    //
+    // write histograms
+    // 
     const char* outFile = "histos_eleid_" + fileNameString + ".root";
-	hist::saveHist(outFile); 
-	hist::deleteHistos();
+    hist::saveHist(outFile); 
+    hist::deleteHistos();
 
-	//
-	// tidy up
-	//
-	delete looper;
-	delete chain_ttbar;
-	delete chain_wjets;
-	delete chain_qcd30;
+    //
+    // tidy up
+    //
+    //delete looper;
+    delete chain_ttbar;
+    delete chain_wjets;
+    delete chain_qcd30;
 
 }
 

@@ -54,7 +54,12 @@ class MyScanChain {
 		// plots
 		//
         TH1F *h1_hyp_pt_[2][4];
+        TH1F *h1_hyp_cand01_pt_[2][4];
+        TH1F *h1_hyp_distdcot002_pt_[2][4];
+        TH1F *h1_hyp_hitpattern_pt_[2][4];
 
+        TH1F *h1_hyp_reliso_[2][4];
+        TH1F *h1_hyp_cand01_reliso_[2][4];
 
 };
 

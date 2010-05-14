@@ -123,6 +123,13 @@ void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
         std::string detname = det_names[i];
 
         FormatHist(h1_hyp_pt_[i], sampleName, "h1_hyp_pt_" + detname, 200, 0.0, 200.0);              
+        FormatHist(h1_hyp_cand01_pt_[i], sampleName, "h1_hyp_cand01_pt_" + detname, 200, 0.0, 200.0);
+        FormatHist(h1_hyp_distdcot002_pt_[i], sampleName, "h1_hyp_distdcot002_pt_" + detname, 200, 0.0, 200.0);
+        FormatHist(h1_hyp_hitpattern_pt_[i], sampleName, "h1_hyp_hitpattern_pt_" + detname, 200, 0.0, 200.0);
+
+        FormatHist(h1_hyp_reliso_[i], sampleName, "h1_hyp_reliso_" + detname, 100, 0, 1.0);
+        FormatHist(h1_hyp_cand01_reliso_[i], sampleName, "h1_hyp_cand01_reliso_" + detname, 100, 0.0, 1.0);
+
     }
 
 }
@@ -165,7 +172,7 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
     //
 
     float E2x5MaxOver5x5 = cms2.els_e2x5Max()[index] / cms2.els_e5x5()[index];
-    float iso_relsusy = electronIsolation_rel(index, true);
+    float iso_rel = electronIsolation_rel(index, true);
     int pdgidCatagory = 4;
     int mcId = abs(cms2.els_mc_id()[index]);
     int motherId = abs(cms2.els_mc_motherid()[index]);
@@ -181,14 +188,28 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
     //
     // basic denominator must pass
     //
-    static const cuts_t denominator = (1ll<<ELEETA_250) | (1ll<<ELENOMUON_010) | (1<<ELESEED_ECAL);
-    if ((electron_cuts_passed & denominator) == denominator) {
+    static const cuts_t denominator = (1ll<<ELEIP_200) | (1ll<<ELEETA_250) | (1ll<<ELENOMUON_010) | (1ll<<ELESEED_ECAL);
+    if (CheckCuts(denominator, electron_cuts_passed)) {
 
         //
         // fill histograms
         //
 
         Fill(h1_hyp_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+        Fill(h1_hyp_reliso_[det], hypType, iso_rel, weight);    
+
+        if (CheckCuts((1ll<<ELEID_CAND01), electron_cuts_passed)) {
+            Fill(h1_hyp_cand01_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+            Fill(h1_hyp_cand01_reliso_[det], hypType, iso_rel, weight);
+        }
+
+        if (CheckCuts((1ll<<ELENOTCONV_DISTDCOT002), electron_cuts_passed)) {
+            Fill(h1_hyp_distdcot002_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+        }
+
+        if (CheckCuts((1ll<<ELENOTCONV_HITPATTERN), electron_cuts_passed)) {
+            Fill(h1_hyp_hitpattern_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+        }
 
     }
 
@@ -244,7 +265,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
             ++nEventsTotal;
 
             // Progress feedback to the user
-            int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
+            int i_permille = (int)floor(1001 * nEventsTotal / float(nEventsChain));
             if (i_permille != i_permille_old) {
                 // xterm magic from L. Vacavant and A. Cerri
                 if (isatty(1)) {
@@ -320,6 +341,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 
         } // end loop on events
 
+        delete f;
     } // end loop on files
 
     if ( nEventsChain != nEventsTotal ) {
@@ -338,6 +360,8 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
             std::cout<<"Cant find Rint: either . Current dir is "<<gDirectory->GetName()<<std::endl;
         }
     }
+
+
 
     return 0;
 }
