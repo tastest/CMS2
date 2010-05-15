@@ -1,0 +1,6 @@
+#New Conversion code
+cvs co -r V00-05-03    RecoEgamma/EgammaTools
+#Cleaning
+cvs co -r V00-00-07    JetMETAnalysis/HcalReflagging
+# dont forget this
+checkdeps -a
