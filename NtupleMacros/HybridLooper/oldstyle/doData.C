@@ -10,6 +10,7 @@ void doData() {
     gSystem->Load("libMathCore.so");
     gSystem->Load("libCMS2NtupleMacrosCORE.so");
     gSystem->Load("libCMS2NtupleMacrosLooper.so");
+    gSystem->Load("../../Tools/MiniFWLite/libMiniFWLite.so");
     gROOT->ProcessLine(".L histtools.C+");
 
     //
@@ -23,7 +24,7 @@ void doData() {
     //chain_whunt_skim->Add("/tas03/disk01/whunt/skim/emuskim_*.root");
     // on dle laptop/other
     //chain_whunt_skim->Add("/Users/dlevans/tas03/disk01/whunt/skim/emuskim_merged.root");
-    chain_whunt_skim->Add("/tmp/emuskim_merged.root");
+    chain_whunt_skim->Add("/tmp/emuskim_merged_1400_160510.root");
     looper->ScanChain(true, "whunt", chain_whunt_skim);
 
     //
