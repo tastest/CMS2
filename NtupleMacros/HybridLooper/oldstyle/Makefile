@@ -36,6 +36,7 @@ CORESOURCES = \
     $(CMSROOT)/Tools/goodrun.cc \
     $(CMSROOT)/CORE/CMS2.cc \
     $(CMSROOT)/CORE/electronSelections.cc \
+    $(CMSROOT)/CORE/electronSelectionsParameters.cc \
     $(CMSROOT)/CORE/muonSelections.cc \
     $(CMSROOT)/CORE/trackSelections.cc \
     $(CMSROOT)/CORE/metSelections.cc \

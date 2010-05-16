@@ -21,6 +21,7 @@
 #include "../../CORE/CMS2.h"
 #include "../../CORE/trackSelections.h"
 #include "../../CORE/electronSelections.h"
+#include "../../CORE/electronSelectionsParameters.h"
 #include "../../CORE/fakerates.h"
 #include "../../Tools/DileptonHypType.h"
 #include "../../CORE/eventSelections.h"
@@ -199,15 +200,15 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
             || (fabs(cms2.els_etaSC()[eleIndex]) > 1.560 && fabs(cms2.els_etaSC()[eleIndex]) < 2.500)) cuts_passed |= (1<<PASS_ELE_ISFIDUCIAL);
 
     // isolation
-    float iso_relsusy = electronIsolation_relsusy_cand1(eleIndex, true);
-    if (iso_relsusy < 0.10) cuts_passed |= (1<<PASS_ELE_ISO);
+    float iso_rel = electronIsolation_rel(eleIndex, true);
+    if (iso_rel < 0.10) cuts_passed |= (1<<PASS_ELE_ISO);
     else cuts_passed |= (1<<PASS_ELE_ANTIISO);
 
-    float iso_relsusy_tkJura = cms2.els_tkJuraIso().at(eleIndex);
-    float iso_relsusy_ecalIso = -999.;
-    if (fabs(cms2.els_etaSC().at(eleIndex)) > 1.479)  iso_relsusy_ecalIso = cms2.els_ecalIso().at(eleIndex);
-    if (fabs(cms2.els_etaSC().at(eleIndex)) <= 1.479) iso_relsusy_ecalIso = max(0., (cms2.els_ecalIso().at(eleIndex) -1.));
-    float iso_relsusy_hcalIso = cms2.els_hcalIso().at(eleIndex);
+    float iso_rel_tkJura = cms2.els_tkJuraIso().at(eleIndex);
+    float iso_rel_ecalIso = -999.;
+    if (fabs(cms2.els_etaSC().at(eleIndex)) > 1.479)  iso_rel_ecalIso = cms2.els_ecalIso().at(eleIndex);
+    if (fabs(cms2.els_etaSC().at(eleIndex)) <= 1.479) iso_rel_ecalIso = max(0., (cms2.els_ecalIso().at(eleIndex) -1.));
+    float iso_rel_hcalIso = cms2.els_hcalIso().at(eleIndex);
 
     // met
     //if (cms2.evt_tcmet() > 20.0 ) cuts_passed |= (1<<PASS_ELE_MET);
@@ -241,7 +242,7 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
     if (leadingJPT < 30.0) cuts_passed |= (1<<PASS_ELE_JETVETO);
 
     // electron ID decisions
-    if (electronId_cand01(eleIndex)) cuts_passed |= (1<<PASS_ELE_CAND01);
+    if (electronId_cand(eleIndex, CAND_01)) cuts_passed |= (1<<PASS_ELE_CAND01);
 
     //
     // do plotting
@@ -299,10 +300,10 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
 
         FillHist(h1_ele_FO_pt_, det, cms2.els_p4()[eleIndex].Pt(), weight);
         FillHist(h1_ele_FO_eta_, det, cms2.els_etaSC()[eleIndex], weight);
-        FillHist(h1_ele_FO_iso_, det, iso_relsusy, weight);
-        FillHist(h1_ele_FO_isotkJura_, det, iso_relsusy_tkJura, weight);
-        FillHist(h1_ele_FO_isoecalIso_, det, iso_relsusy_ecalIso, weight);
-        FillHist(h1_ele_FO_isohcalIso_, det, iso_relsusy_hcalIso, weight);
+        FillHist(h1_ele_FO_iso_, det, iso_rel, weight);
+        FillHist(h1_ele_FO_isotkJura_, det, iso_rel_tkJura, weight);
+        FillHist(h1_ele_FO_isoecalIso_, det, iso_rel_ecalIso, weight);
+        FillHist(h1_ele_FO_isohcalIso_, det, iso_rel_hcalIso, weight);
 	// 	if(!CheckCuts(pass_WWsel, cuts_passed)) {
 	// 	  // fill FO!Num here
 	// 	}
@@ -313,10 +314,10 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
     if( isFakeableElectron (eleIndex, el_v1_cand01)  && cms2.els_p4()[eleIndex].Pt() > 10. && (CheckCuts(((1<<PASS_ELE_R19)), cuts_passed)) ) { // require pt > 10 also on e (we have it on mu)
         FillHist(h1_ele_FOv1cand01_pt_, det, cms2.els_p4()[eleIndex].Pt(), weight);
         FillHist(h1_ele_FOv1cand01_eta_, det, cms2.els_etaSC()[eleIndex], weight);
-        FillHist(h1_ele_FOv1cand01_iso_, det, iso_relsusy, weight);
-        FillHist(h1_ele_FOv1cand01_isotkJura_, det, iso_relsusy_tkJura, weight);
-        FillHist(h1_ele_FOv1cand01_isoecalIso_, det, iso_relsusy_ecalIso, weight);
-        FillHist(h1_ele_FOv1cand01_isohcalIso_, det, iso_relsusy_hcalIso, weight);
+        FillHist(h1_ele_FOv1cand01_iso_, det, iso_rel, weight);
+        FillHist(h1_ele_FOv1cand01_isotkJura_, det, iso_rel_tkJura, weight);
+        FillHist(h1_ele_FOv1cand01_isoecalIso_, det, iso_rel_ecalIso, weight);
+        FillHist(h1_ele_FOv1cand01_isohcalIso_, det, iso_rel_hcalIso, weight);
 	// 	if(!CheckCuts(pass_WWsel, cuts_passed)) {
 	// 	  // fill FO!Num here
 	// 	}
@@ -339,7 +340,7 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
     }
 
     if (CheckCutsNM1(pass_all, (1<<PASS_ELE_ISO), cuts_passed)) {
-        FillHist(h1_ele_nm1_iso_, det, iso_relsusy, weight);
+        FillHist(h1_ele_nm1_iso_, det, iso_rel, weight);
     }
 
     if (CheckCutsNM1(pass_all, (1<<PASS_ELE_JETVETO), cuts_passed)) {
@@ -456,7 +457,7 @@ void MyScanChain::AnalyseElectrons(const float &weight) {
         FillHist(h1_ele_incl_eta_, det, cms2.els_p4()[eleIndex].Eta(), weight);
         FillHist(h1_ele_incl_tcmet_, det, cms2.evt_tcmet(), weight);
         FillHist(h1_ele_incl_pfmet_, det, cms2.evt_pfmet(), weight);
-        FillHist(h1_ele_incl_iso_, det, iso_relsusy, weight);
+        FillHist(h1_ele_incl_iso_, det, iso_rel, weight);
         FillHist(h1_ele_incl_tkIso_, det, cms2.els_tkIso()[eleIndex], weight);
         FillHist(h1_ele_incl_ecalIso_, det, cms2.els_ecalIso()[eleIndex], weight);
         FillHist(h1_ele_incl_hcalIso_, det, cms2.els_hcalIso()[eleIndex], weight);
@@ -557,8 +558,8 @@ void MyScanChain::AnalyseMuons(const float &weight) {
     float pfmetdphi = acos(cos(cms2.evt_pfmetPhi() - cms2.mus_p4()[muIndex].Phi()));
 
     // muon isolation value
-    float iso_relsusy = muonIsoValue(muIndex);
-    if (iso_relsusy < 0.1)   cuts_passed |= (1<<PASS_MU_ISO);
+    float iso_rel = muonIsoValue(muIndex);
+    if (iso_rel < 0.1)   cuts_passed |= (1<<PASS_MU_ISO);
     else cuts_passed |= (1<<PASS_MU_ANTIISO);
     //
     // do plotting
@@ -617,14 +618,14 @@ void MyScanChain::AnalyseMuons(const float &weight) {
     }
 
     if (CheckCutsNM1(pass_all, (1<<PASS_MU_ISO), cuts_passed)) {
-        FillHist(h1_mu_nm1_iso_, det, iso_relsusy, weight);
+        FillHist(h1_mu_nm1_iso_, det, iso_rel, weight);
     }
 
 
      if( isFakeableMuon (muIndex, mu_v1) ) { 
         FillHist(h1_mu_FO_pt_,  det, cms2.mus_p4()[muIndex].Pt(), weight);
         FillHist(h1_mu_FO_eta_, det, cms2.mus_p4()[muIndex].Eta(), weight);
-        FillHist(h1_mu_FO_iso_, det, iso_relsusy, weight);
+        FillHist(h1_mu_FO_iso_, det, iso_rel, weight);
       }
 
     // apply all cuts
@@ -731,7 +732,7 @@ void MyScanChain::AnalyseMuons(const float &weight) {
         FillHist(h1_mu_incl_eta_, det, cms2.mus_p4()[muIndex].Eta(), weight);
         FillHist(h1_mu_incl_tcmet_, det, cms2.evt_tcmet(), weight);
         FillHist(h1_mu_incl_pfmet_, det, cms2.evt_pfmet(), weight);
-        FillHist(h1_mu_incl_iso_, det, iso_relsusy, weight);
+        FillHist(h1_mu_incl_iso_, det, iso_rel, weight);
     }
     // inclusive isolated
     if (CheckCuts(((1<<PASS_MU_ISFIDUCIAL) | (1<<PASS_MU_PT) | (1<<PASS_MU_ISO)), cuts_passed)) {
