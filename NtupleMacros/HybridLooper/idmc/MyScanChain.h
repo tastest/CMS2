@@ -29,9 +29,7 @@ class MyScanChain {
 
 
 		void Fill(TH1F** hist, const unsigned int hyp, const float &val, const float &weight);
-
 		void FillAllEleIdHistograms(const unsigned int index, const float &weight, const TString &sampleName, const unsigned int hyp);
-
 		void FormatHist(TH1F** hist, std::string sampleName, std::string name, int n, float min, float max);
 		void FormatAllEleIdHistograms(std::string sampleName);
 
@@ -54,12 +52,22 @@ class MyScanChain {
 		// plots
 		//
         TH1F *h1_hyp_pt_[2][4];
-        TH1F *h1_hyp_cand01_pt_[2][4];
-        TH1F *h1_hyp_distdcot002_pt_[2][4];
-        TH1F *h1_hyp_hitpattern_pt_[2][4];
-
         TH1F *h1_hyp_reliso_[2][4];
+        TH1F *h1_hyp_pdgid_[2][4];
+
+        TH1F *h1_hyp_cand01_pt_[2][4];
         TH1F *h1_hyp_cand01_reliso_[2][4];
+        TH1F *h1_hyp_cand01_pdgid_[2][4];
+
+        TH1F *h1_hyp_distdcot002_pt_[2][4];
+        TH1F *h1_hyp_distdcot002_pdgid_[2][4];
+
+        TH1F *h1_hyp_hitpattern_pt_[2][4];
+        TH1F *h1_hyp_hitpattern_pdgid_[2][4];
+
+        TH1F *h1_hyp_convboth_pt_[2][4];
+        TH1F *h1_hyp_convboth_pdgid_[2][4];
+
 
 };
 

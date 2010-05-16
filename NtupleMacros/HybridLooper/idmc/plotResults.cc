@@ -12,13 +12,13 @@
 
 	// for 2_2_X
 	const static sources_t theSignal = 
-		(1<<H_TTBAR);
+		(1ll<<H_TTBAR);
 
 	const static sources_t theBackground = 
-		(1<<H_WJETS);
+		(1ll<<H_WJETS);
 
 	const static sources_t theSources = 
-		(1<<H_TTBAR);// |
+		(1ll<<H_TTBAR);// |
 		//(1<<H_PHOTONJETS) |
 		//(1<<H_QCD30);
 

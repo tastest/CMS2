@@ -123,12 +123,23 @@ void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
         std::string detname = det_names[i];
 
         FormatHist(h1_hyp_pt_[i], sampleName, "h1_hyp_pt_" + detname, 200, 0.0, 200.0);              
-        FormatHist(h1_hyp_cand01_pt_[i], sampleName, "h1_hyp_cand01_pt_" + detname, 200, 0.0, 200.0);
-        FormatHist(h1_hyp_distdcot002_pt_[i], sampleName, "h1_hyp_distdcot002_pt_" + detname, 200, 0.0, 200.0);
-        FormatHist(h1_hyp_hitpattern_pt_[i], sampleName, "h1_hyp_hitpattern_pt_" + detname, 200, 0.0, 200.0);
-
         FormatHist(h1_hyp_reliso_[i], sampleName, "h1_hyp_reliso_" + detname, 100, 0, 1.0);
+        FormatHist(h1_hyp_pdgid_[i], sampleName, "h1_hyp_pdgid_" + detname, 10, -0.5, 9.5);
+
+        FormatHist(h1_hyp_cand01_pt_[i], sampleName, "h1_hyp_cand01_pt_" + detname, 200, 0.0, 200.0);
+        FormatHist(h1_hyp_cand01_pdgid_[i], sampleName, "h1_hyp_cand01_pdgid_" + detname, 10, -0.5, 9.5);
         FormatHist(h1_hyp_cand01_reliso_[i], sampleName, "h1_hyp_cand01_reliso_" + detname, 100, 0.0, 1.0);
+
+        FormatHist(h1_hyp_distdcot002_pt_[i], sampleName, "h1_hyp_distdcot002_pt_" + detname, 200, 0.0, 200.0);
+        FormatHist(h1_hyp_distdcot002_pdgid_[i], sampleName, "h1_hyp_distdcot002_pdgid_" + detname, 10, -0.5, 9.5);
+
+        FormatHist(h1_hyp_hitpattern_pt_[i], sampleName, "h1_hyp_hitpattern_pt_" + detname, 200, 0.0, 200.0);
+        FormatHist(h1_hyp_hitpattern_pdgid_[i], sampleName, "h1_hyp_hitpattern_pdgid_" + detname, 10, -0.5, 9.5);
+
+        FormatHist(h1_hyp_convboth_pt_[i], sampleName, "h1_hyp_convboth_pt_" + detname, 200, 0.0, 200.0);
+        FormatHist(h1_hyp_convboth_pdgid_[i], sampleName, "h1_hyp_convboth_pdgid_" + detname, 10, -0.5, 9.5);
+
+
 
     }
 
@@ -189,6 +200,7 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
     // basic denominator must pass
     //
     static const cuts_t denominator = (1ll<<ELEIP_200) | (1ll<<ELEETA_250) | (1ll<<ELENOMUON_010) | (1ll<<ELESEED_ECAL);
+
     if (CheckCuts(denominator, electron_cuts_passed)) {
 
         //
@@ -197,19 +209,30 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
 
         Fill(h1_hyp_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
         Fill(h1_hyp_reliso_[det], hypType, iso_rel, weight);    
-
+        Fill(h1_hyp_pdgid_[det], hypType, pdgidCatagory, weight);
+ 
         if (CheckCuts((1ll<<ELEID_CAND01), electron_cuts_passed)) {
             Fill(h1_hyp_cand01_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
             Fill(h1_hyp_cand01_reliso_[det], hypType, iso_rel, weight);
+            Fill(h1_hyp_cand01_pdgid_[det], hypType, pdgidCatagory, weight);
         }
 
         if (CheckCuts((1ll<<ELENOTCONV_DISTDCOT002), electron_cuts_passed)) {
             Fill(h1_hyp_distdcot002_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+            Fill(h1_hyp_distdcot002_pdgid_[det], hypType, pdgidCatagory, weight);
         }
 
         if (CheckCuts((1ll<<ELENOTCONV_HITPATTERN), electron_cuts_passed)) {
             Fill(h1_hyp_hitpattern_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+            Fill(h1_hyp_hitpattern_pdgid_[det], hypType, pdgidCatagory, weight);
         }
+
+        if (CheckCuts(((1ll<<ELENOTCONV_DISTDCOT002) | (1ll<<ELENOTCONV_HITPATTERN)), electron_cuts_passed)) {
+            Fill(h1_hyp_convboth_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
+            Fill(h1_hyp_convboth_pdgid_[det], hypType, pdgidCatagory, weight);
+        }
+
+
 
     }
 
