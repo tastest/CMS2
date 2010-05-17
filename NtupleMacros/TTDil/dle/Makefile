@@ -40,13 +40,14 @@ TOOLSLIB = libCMS2NtupleMacrosTOOLS.so
 CORESOURCES = \
     $(CMSROOT)/CORE/CMS2.cc \
     $(CMSROOT)/CORE/electronSelections.cc \
-	$(CMSROOT)/CORE/electronSelectionsCICParameters.cc \
+	$(CMSROOT)/CORE/electronSelectionsParameters.cc \
     $(CMSROOT)/CORE/muonSelections.cc \
     $(CMSROOT)/CORE/trackSelections.cc \
     $(CMSROOT)/CORE/utilities.cc \
     $(CMSROOT)/CORE/eventSelections.cc \
     $(CMSROOT)/CORE/mcSelections.cc \
 	$(CMSROOT)/CORE/ttbarSelections.cc \
+	$(CMSROOT)/CORE/metSelections.cc \
 	$(CMSROOT)/CORE/jetSelections.cc
 
 COREOBJECTS = $(CORESOURCES:.cc=.o) 

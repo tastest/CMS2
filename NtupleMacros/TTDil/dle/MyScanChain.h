@@ -15,7 +15,7 @@ class MyScanChain {
 
 	public:
 
-		MyScanChain() {};
+		MyScanChain(unsigned int electronId) : electronId_(electronId) {};
 		~MyScanChain() {};
 
 		int ScanChain(bool isData, std::string sampleName, TChain *chain, int nEvents = -1, std::string skimFilePrefix="");
@@ -38,7 +38,7 @@ class MyScanChain {
         // dealing with selections
         //
         unsigned int leptonSelect(const int id, const unsigned int lepIdx);
-
+        unsigned int electronId_;
 
 		//
 		// ttbar analysis plots
@@ -46,14 +46,20 @@ class MyScanChain {
 
 		TH1F *h1_hyp_njets_[4];
 
+        TH1F *h1_hyp_mll_[4][4];
+        TH1F *h1_hyp_pt_[4][4];
+        TH1F *h1_hyp_pfmet_[4][4];
+        TH1F *h1_hyp_tcmet_[4][4];
+
+
 		//
 		// DY estimate plots
 		//
 
-		TH1F *h1_dyest_mll_met_[3][4];
-        TH1F *h1_dyest_mll_nomet_[3][4];
-		TH1F *h1_dyest_met_in_[3][4];
-		TH1F *h1_dyest_met_out_[3][4];
+		TH1F *h1_dyest_mll_met_[4][4];
+        TH1F *h1_dyest_mll_nomet_[4][4];
+		TH1F *h1_dyest_met_in_[4][4];
+		TH1F *h1_dyest_met_out_[4][4];
 
 };
 

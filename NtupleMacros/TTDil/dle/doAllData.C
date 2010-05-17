@@ -14,13 +14,18 @@ void doAllData() {
     gSystem->Load("../../Tools/MiniFWLite/libMiniFWLite.so");
     gROOT->ProcessLine(".L ../histtools.C+");
 
-    MyScanChain *looper = new MyScanChain();
+    MyScanChain *looper = new MyScanChain(0);
 
     // DATA
     TChain *chain_whunt_skim = new TChain("Events");
-    chain_whunt_skim->Add("/tas03/disk01/whunt/skim/emuskim_*.root");
+    //chain_whunt_skim->Add("/tas03/disk01/whunt/skim/emuskim_*.root");
     // on dle laptop
     //chain_whunt_skim->Add("/Users/dlevans/tas03/disk01/whunt/skim/emuskim_merged.root");
+    // skim merged
+    chain_whunt_skim->Add("/tmp/emuskim_merged_1400_160510.root");
+
+
+    // do the looping
     looper->ScanChain(true, "whunt", chain_whunt_skim);
 
     //

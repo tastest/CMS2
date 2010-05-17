@@ -1,5 +1,5 @@
 
-void doAllMC() {
+void doAllMC(unsigned int electronId) {
 
     //
     // the looper
@@ -14,18 +14,19 @@ void doAllMC() {
     gSystem->Load("../../Tools/MiniFWLite/libMiniFWLite.so");
     gROOT->ProcessLine(".L ../histtools.C+");
 
-    MyScanChain *looper = new MyScanChain();
+    MyScanChain *looper = new MyScanChain(electronId);
 
     //
     // chains for input files
-    //TString ntuple_location = "/data/tmp/";
-    TString ntuple_location = "/store/disk02/";
+    TString ntuple_location = "/store/disk00/cms2/";
 
     // SM
     // ttbar
     TChain *chain_ttbar = new TChain("Events");
-    chain_ttbar->Add(ntuple_location + "/cms2/TTbar_Summer09-MC_31X_V3_7TeV-v1/V03-00-34/merged_ntuple*.root");
+    chain_ttbar->Add(ntuple_location + "TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-07/merged_ntuple*.root");
+    //chain_ttbar->Add("/tas01/disk02/cms2/TTbar_Summer09-MC_31X_V3_7TeV-v1/V03-00-34/merged_ntuple*.root");
     // ww
+/*
     TChain *chain_ww = new TChain("Events");
     chain_ww->Add(ntuple_location + "/cms2/WW_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
     // wz
@@ -43,16 +44,21 @@ void doAllMC() {
     // dytt
     TChain *chain_dytt = new TChain("Events");
     chain_dytt->Add(ntuple_location + "/cms2/Ztautau_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+*/
     // wjets
     TChain *chain_wjets = new TChain("Events");
     //chain_wjets->Add(ntuple_location + "/cms2/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
-    chain_wjets->Add(ntuple_location + "/cms2/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/dilep-skim/wjets_skim.root");
+    chain_wjets->Add(ntuple_location + "WJets-madgraph_Spring10-START3X_V26_S09-v1_SingleLep/V03-04-08/dilep-skim.root");
+    //chain_wjets->Add("/tas01/disk02/cms2/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/dilep-skim/wjets_skim.root");
+    
+/*
     // qcd pt30
     TChain *chain_qcd30 = new TChain("Events");
     chain_qcd30->Add(ntuple_location + "/cms2/QCD_Pt30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
     // wmunu
     TChain *chain_wmunu = new TChain("Events");
     chain_wmunu->Add(ntuple_location + "/cms2/Wmunu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+*/
 
     // 
     // do looping
@@ -83,16 +89,16 @@ void doAllMC() {
     delete looper;
 
     delete chain_ttbar;
-    delete chain_ww;
+/*    delete chain_ww;
     delete chain_wz;
     delete chain_zz;
     delete chain_dyee;
     delete chain_dymm;
     delete chain_dytt;
-    delete chain_wjets;
-    delete chain_wmunu;
+*/    delete chain_wjets;
+/*    delete chain_wmunu;
     delete chain_qcd30;
-
+*/
 
 }
 
