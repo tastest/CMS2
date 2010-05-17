@@ -480,7 +480,6 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 
                 }
 
-
                 //
                 // apply selection
                 //
