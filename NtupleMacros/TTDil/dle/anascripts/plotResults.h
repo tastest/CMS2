@@ -9,15 +9,11 @@ class HistogramUtilities;
 class THStack;
 class TArrow;
 
-// utilities
-void plotEff(HistogramUtilities &h1, TString name, TString saveName, TString det, bool ascending, int rebin = 1, bool legendOnRight = true, float cutValEB = -1.0, float cutValEE = -1.0);
+TArrow *getArrow(THStack *st, TString det, float cutValEB, float cutValEE, float max = -1.0);
 void plotStack(HistogramUtilities &h1, TString name, TString titleX, TString saveName, TString det, int rebin = 1, float cutValEB = -1.0, float cutValEE = -1.0);
-TArrow *getArrow(THStack *st, TString det, float cutValEB, float cutValEE);
+void plotDataRefOverlayStack(HistogramUtilities &hData, HistogramUtilities &hRef, TString name, TString titleX, TString saveName, TString det, TString norm, int rebin,  float cutValEB = -1.0, float cutValEE = -1.0);
 
-void plot2DSB(HistogramUtilities &h1, TString name, TString xTitle, TString yTitle, TString saveName, TString det);
-
-// do it
-void plotResults(TString hyp, TString fileStamp);
+void plotResults(TString det, TString fileStamp, TString refFileStamp, TString norm, const float &luminorm);
 
 #endif
 
