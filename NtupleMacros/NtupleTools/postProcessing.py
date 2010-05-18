@@ -13,67 +13,66 @@ from xml.dom.minidom import Node
 def getGoodXMLFiles(crabpath):
     global goodCrabXMLFiles
     # get list of Submission directories,
-    cmd = 'ls -dt ' + crabpath + '/res/Submission_*'
-    submissionDirs = []
-    temp = []
-    if commands.getstatusoutput(cmd)[0] != 256:
-        submissionDirs = commands.getoutput(cmd).split('\n')
-        cmd = 'cd ' + submissionDirs[0]+ '; ls *.xml' #start with the most recent directory
-        temp = commands.getoutput(cmd).split('\n')
-    
-    
-    for i in temp:
-        print 'Parsing ' + i
-        try:
-            doc = xml.dom.minidom.parse(submissionDirs[0]+'/'+i) #read xml file to see if the job failed
-        except:
-            print 'FrameworkJobReport:',i,'could not be parsed and is skipped'
-	    continue
-        jobFailed = True
-        for node in doc.getElementsByTagName("FrameworkJobReport"):
-            key =  node.attributes.keys()[0].encode('ascii')
-            if node.attributes[key].value == "Success":
-                jobFailed = False
-            if node.attributes[key].value == "Failed":
-                print "Job " + i.split('/')[len(i.split('/'))-1].split('.')[0].split('_')[2] + " Failed!!!"
-                jobFailed = True
-        if jobFailed == False:
-            goodCrabXMLFiles.append(submissionDirs[0] + '/' + i)
-            
-    
-        
-    for i in range(1,len(submissionDirs)):
-        files = commands.getoutput('ls ' + submissionDirs[i] + '/crab_fjr_*.xml').split('\n')
-        for j in files:
-            duplicateFile = False
-            for k in goodCrabXMLFiles:
-                if k.split('/')[len(k.split('/'))-1] == j.split('/')[len(j.split('/'))-1]:
-                    duplicateFile = True
-                    break
-            if duplicateFile == False:
-                print 'Parsing ' + j
-                try:
-                    doc = xml.dom.minidom.parse(j) #read xml file to see if the job failed
-                except:
-                    print 'FrameworkJobReport:',i,'could not be parsed and is skipped'
-                    continue
-                jobFailed = True
-                for node in doc.getElementsByTagName("FrameworkJobReport"):
-                    key =  node.attributes.keys()[0].encode('ascii')
-                    if node.attributes[key].value == "Success":
-                        jobFailed = False
-                    if node.attributes[key].value == "Failed":
-                        print "Job " + j.split('/')[len(j.split('/'))-1].split('.')[0].split('_')[2] + " Failed!!!"
-                        jobFailed = True
-                if jobFailed == False:
-                    goodCrabXMLFiles.append(j)
-    
-            
+    #cmd = 'ls -dt ' + crabpath + '/res/Submission_*'
+    #submissionDirs = []
+    #temp = []
+    #if commands.getstatusoutput(cmd)[0] != 256:
+    #    submissionDirs = commands.getoutput(cmd).split('\n')
+    #    cmd = 'cd ' + submissionDirs[0]+ '; ls *.xml' #start with the most recent directory
+    #    temp = commands.getoutput(cmd).split('\n')
+    #
+    #
+    #for i in temp:
+    #    print 'Parsing ' + i
+    #    try:
+    #        doc = xml.dom.minidom.parse(submissionDirs[0]+'/'+i) #read xml file to see if the job failed
+    #    except:
+    #        print 'FrameworkJobReport:',i,'could not be parsed and is skipped'
+	#    continue
+    #    jobFailed = True
+    #    for node in doc.getElementsByTagName("FrameworkJobReport"):
+    #        key =  node.attributes.keys()[0].encode('ascii')
+    #        if node.attributes[key].value == "Success":
+    #            jobFailed = False
+    #        if node.attributes[key].value == "Failed":
+    #            print "Job " + i.split('/')[len(i.split('/'))-1].split('.')[0].split('_')[2] + " Failed!!!"
+    #            jobFailed = True
+    #    if jobFailed == False:
+    #        goodCrabXMLFiles.append(submissionDirs[0] + '/' + i)
+    #        
+    #
+    #    
+    #for i in range(1,len(submissionDirs)):
+    #    files = commands.getoutput('ls ' + submissionDirs[i] + '/crab_fjr_*.xml').split('\n')
+    #    for j in files:
+    #        duplicateFile = False
+    #        for k in goodCrabXMLFiles:
+    #            if k.split('/')[len(k.split('/'))-1] == j.split('/')[len(j.split('/'))-1]:
+    #                duplicateFile = True
+    #                break
+    #        if duplicateFile == False:
+    #            print 'Parsing ' + j
+    #            try:
+    #                doc = xml.dom.minidom.parse(j) #read xml file to see if the job failed
+    #            except:
+    #                print 'FrameworkJobReport:',i,'could not be parsed and is skipped'
+    #                continue
+    #            jobFailed = True
+    #            for node in doc.getElementsByTagName("FrameworkJobReport"):
+    #                key =  node.attributes.keys()[0].encode('ascii')
+    #                if node.attributes[key].value == "Success":
+    #                    jobFailed = False
+    #                if node.attributes[key].value == "Failed":
+    #                    print "Job " + j.split('/')[len(j.split('/'))-1].split('.')[0].split('_')[2] + " Failed!!!"
+    #                    jobFailed = True
+    #            if jobFailed == False:
+    #                goodCrabXMLFiles.append(j)
     ##now add the files in the top res directory that do not
-    cmd = 'find ' + crabpath + '/res/ -iname *.xml'
+    #cmd = 'find ' + crabpath + '/res/ -iname *.xml'
+	
+    #instead of all above, just use /res/*.xml
+    cmd = 'ls ' + crabpath + '/res/*.xml'
     temp = commands.getoutput(cmd).split('\n')
-
-    
     
     for j in temp:
         print 'Parsing ' + j
@@ -135,17 +134,25 @@ def getGoodRootFiles(datapath,outpath):
     global dcachePrefix
     tempXMLFileList = []
     for i in goodCrabXMLFiles:
-        resubmissionNum = '1'
-        if i.find('Submission')!=-1:
-            for j in i.split('/'):
-                if j.find('Submission') !=-1:
-                    resubmissionNum = str(int(j.split('_')[len(j.split('_'))-1]) + 1)
-        path = ''
-        fname = i.split('/')[len(i.split('/'))-1].replace('crab_fjr_', 'ntuple_').replace('.xml', '_'+resubmissionNum+'.root')
-        print fname
-        if commands.getstatusoutput('echo $HOSTNAME')[1].find('ucsd') !=-1:
-            path = datapath + fname
-        elif commands.getstatusoutput('echo $HOSTNAME')[1].find('fnal') !=-1:
+        #no more resubmission dir. Use <LFN> tag, never assume ntuple file name.
+        #many lfn's, but first should always be right, and start with '/store/user'
+        doc = xml.dom.minidom.parse(i)
+        path = '/cms'+doc.getElementsByTagName("LFN")[0].firstChild.data.strip().rstrip()
+        fname = path.split('/')[len(path.split('/'))-1]
+        
+        #old
+        #resubmissionNum = '1'
+        #if i.find('Submission')!=-1:
+        #    for j in i.split('/'):
+        #        if j.find('Submission') !=-1:
+        #            resubmissionNum = str(int(j.split('_')[len(j.split('_'))-1]) + 1)
+        #path = ''
+        #fname = i.split('/')[len(i.split('/'))-1].replace('crab_fjr_', 'ntuple_').replace('.xml', '_'+resubmissionNum+'.root')
+
+        #if commands.getstatusoutput('echo $HOSTNAME')[1].find('ucsd') !=-1:
+            #path = datapath + fname #no longer need user path, use LFN above
+        #el
+        if commands.getstatusoutput('echo $HOSTNAME')[1].find('fnal') !=-1:
             path = datapath.replace('pnfs', 'usr', 1) + fname
         
         if datapath.find('pnfs') != -1:
@@ -155,8 +162,8 @@ def getGoodRootFiles(datapath,outpath):
         if datapath.find('hadoop') != -1:
             print 'Moving ' + fname + ' from hadoop to ' + outpath + '/temp'
             #cmd = 'cp ' + dcachePrefix + path + ' ' + outpath + '/temp'
-            cmd = 'hadoop fs -copyToLocal ' + dcachePrefix + path[7:] + ' ' + outpath + '/temp'
-            print commands.getoutput(cmd)
+            cmd = 'hadoop fs -copyToLocal ' + dcachePrefix + path + ' ' + outpath + '/temp'
+            commands.getoutput(cmd)
         
         print 'Checking File ' + outpath + '/temp/' + fname + ' for integrity'
         cmd = ""
@@ -172,10 +179,10 @@ def getGoodRootFiles(datapath,outpath):
             if k.find('SUMMARY') != -1:
                 print k
             if k.find('SUMMARY: 1 bad, 0 good') != -1:
-                print 'File: ' + outpath + '/temp/' + fname + ' does not seem to be good!!!!'
+                print 'File: ' + outpath + '/temp/' + fname + ' does not seem to be good!!!!\n'
                 commands.getoutput('rm ' + outpath+'/temp/' + fname)
             elif k.find('SUMMARY: 0 bad, 1 good') != -1:
-                print 'File: ' + outpath + '/temp/' + fname + ' looks just fine!'
+                print 'File: ' + outpath + '/temp/' + fname + ' looks just fine!\n'
                 commands.getoutput('mv ' + outpath + '/temp/' + fname + ' ' + outpath + '/preprocessing/')
                 goodRootFiles.append(outpath + '/preprocessing/' + fname)
                 tempXMLFileList.append(i)
@@ -317,8 +324,6 @@ rootFilesToMerge = []
 
 getGoodXMLFiles(crabpath)
 getGoodRootFiles(datapath,outpath)        
-
-
 getNumEventsRun(crabpath)
 makeRootMacros(outpath)
 ##copy crab directory to output directory
@@ -332,28 +337,3 @@ print 'Total number of events that were run over to produce ntuples: ' + str(tot
 
 
     
-
-
-    
-
-
-
-
-
-
-    
-    
-
-
-
-
-
-
-
-
-
-    
-
-    
-    
-
