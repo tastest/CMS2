@@ -1,6 +1,20 @@
 #New Conversion code
 cvs co -r V00-05-03    RecoEgamma/EgammaTools
 #Cleaning
-cvs co -r V00-00-07    JetMETAnalysis/HcalReflagging
+cvs co -r V00-00-09    JetMETAnalysis/HcalReflagging
+#ECAL timing cleaning; get package from release and patch to allow cleaning using timing
+addpkg RecoLocalCalo/EcalRecAlgos
+cd RecoLocalCalo/EcalRecAlgos
+cp ../../CMS2/Configuration/patchEcalSeverityLevelAlgo.diff.361 .
+patch -p0 < patchEcalSeverityLevelAlgo.diff.361
+rm patchEcalSeverityLevelAlgo.diff.361
+cd ../..
+# also need to check out an patch RecoLocalCalo/CaloTowersCreator so that we can toggle timing on/off
+addpkg RecoLocalCalo/CaloTowersCreator
+cd RecoLocalCalo
+cp ../../CMS2/Configuration/patchCaloTowersCreator.diff.361 .
+patch -p0 < patchCaloTowersCreator.diff.361
+rm patchCaloTowersCreator.diff.361
+cd ..
 # dont forget this
 checkdeps -a
