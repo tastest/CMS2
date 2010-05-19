@@ -1,14 +1,23 @@
-// $Id: goodrun.cc,v 1.4 2010/04/13 21:39:48 warren Exp $
+// $Id: goodrun.cc,v 1.5 2010/05/19 19:41:34 jmuelmen Exp $
 
 // CINT is allowed to see this, but nothing else:
 bool goodrun (unsigned int run, unsigned int lumi_block);
+bool goodrun_json (unsigned int run, unsigned int lumi_block);
+void set_goodrun_file (const char* filename);
+void set_goodrun_file_json (const char* filename);
 
 #ifndef __CINT__
 
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <set>
+#include <string>
+
+enum file_type { TEXT, JSON };
 
 struct run_and_lumi {
      unsigned int run;
@@ -25,13 +34,85 @@ typedef std::multiset<struct run_and_lumi> set_t;
 static set_t good_runs_;
 static bool good_runs_loaded_ = false;
 
-static int load_runs (const char *fname)
+static const char json_py[] =
+"#! /usr/bin/env python                                                                                       \n"
+"													      \n"
+"# usage to print out good run selection for goodrun.cc:						      \n"
+"# convertGoodRunsList_JSON.py <json file>								      \n"
+"													      \n"
+"import sys,json											      \n"
+"													      \n"
+"runs = json.load(open(sys.argv[1],\"r\"))								      \n"
+"													      \n"
+"for run in runs.keys():										      \n"
+"    for lumiBlock in runs[run] :									      \n"
+"        if len(lumiBlock) != 2 :									      \n"
+"            print 'ERROR reading lumi block: run:',run,'lumiBlock:',lumiBlock				      \n"
+"        else:												      \n"
+"            # print 'run ' + str(run) + ', min lumi ' + str(lumiBlock[0]) + ', max lumi ' + str(lumiBlock[1])\n"
+"            print run,lumiBlock[0],lumiBlock[1]							      \n"
+     "													      \n";
+//"print ''                                                                                                     \n";
+
+static int load_runs (const char *fname, enum file_type type)
 {
      good_runs_.clear();
-     FILE *file = fopen(fname, "r");
-     if (file == 0) {
-	  perror("opening good run list");
-	  return 0;
+     FILE *file = 0;
+     switch (type) { 
+     case TEXT:
+	  file = fopen(fname, "r");
+	  if (file == 0) {
+	       perror("opening good run list");
+	       return 0;
+	  }
+	  break;
+     case JSON:
+     {
+	  // first make a temp file with the python parsing code
+	  FILE *pyfile = fopen("tmp.py", "w");
+	  if (pyfile == 0) {
+	       perror("opening tmp file");
+	       return 0;
+	  }
+	  fprintf(pyfile, "%s", json_py);
+	  fclose(pyfile);
+	  chmod("tmp.py", S_IRUSR | S_IWUSR | S_IXUSR);
+	  // now execute a command to convert the JSON file to text
+	  pid_t child = fork();
+	  if (child == -1) {
+	       perror("forking process to convert JSON good run list");
+	       return 0;
+	  }
+	  if (child == 0) {
+	       FILE *f = freopen((std::string(fname) + ".tmp").c_str(), "w", stdout);
+	       if (f == 0) {
+		    perror("opening good run list");
+		    return 127;
+	       }
+	       execlp("./tmp.py", "", fname, (char *)0);
+	       perror("executing JSON conversion script");
+	       exit(127);
+	  }
+	  if (child != 0) {
+	       int status;
+	       waitpid(child, &status, 0);
+	       if (status != 0) {
+		    printf("conversion exited abnormally, consult previous errors\n");
+		    return 0;
+	       }
+	  }
+	  printf("note: converted JSON file is in %s.tmp, "
+		 "please consult in case of parsing errors\n", fname);
+	  file = fopen((std::string(fname) + ".tmp").c_str(), "r");
+	  if (file == 0) {
+	       perror("opening good run list");
+	       return 0;
+	  }
+	  unlink("tmp.py");
+	  break;
+     }
+     default:
+	  break;
      }
      int s;
      int line = 0;
@@ -99,15 +180,18 @@ static int load_runs (const char *fname)
 		fprintf(stderr, "Warning: unexpected white space following line %d\n", line);
 		// but that's just a warning
 	  } 
-	 } while (s == 1);
-	 fclose(file);
-	 return line;
-}	       
+     } while (s == 1);
+     fclose(file);
+     if (type == JSON)
+	  unlink((std::string(fname) + ".tmp").c_str());
+     return line;
+}
 
 bool goodrun (unsigned int run, unsigned int lumi_block)
 {
      if (not good_runs_loaded_) {
-	  load_runs("goodruns.txt");
+	  int ret = load_runs("goodruns.txt", TEXT);
+	  assert(ret != 0);
 	  good_runs_loaded_ = true;
      }
      // we assume that an empty list means accept anything
@@ -129,11 +213,30 @@ bool goodrun (unsigned int run, unsigned int lumi_block)
      return false;
 }
 
+bool goodrun_json (unsigned int run, unsigned int lumi_block)
+{
+     if (not good_runs_loaded_) {
+	  int ret = load_runs("goodruns.json", JSON);
+	  assert(ret != 0);
+	  good_runs_loaded_ = true;
+     }
+     // once the JSON good-run list is loaded, there's no difference
+     // between TEXT and JSON
+     return goodrun(run, lumi_block);
+}
+
 void set_goodrun_file (const char* filename)
 {
-  int ret = load_runs(filename);
+  int ret = load_runs(filename, TEXT);
   assert(ret != 0);
   good_runs_loaded_ = true;
+}
+
+void set_goodrun_file_json (const char* filename)
+{
+     int ret = load_runs(filename, JSON);
+     assert(ret != 0);
+     good_runs_loaded_ = true;
 }
 
 #endif // __CUNT__
