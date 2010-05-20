@@ -200,7 +200,7 @@ unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated){
 //
 
 bool passedTriggerRequirements(HypTypeInNtuples type) {
-  bool hlt_ele15_lw_l1r = cms2.passHLTTrigger("HLT_Ele15_SW_L1R");
+  bool hlt_ele15_lw_l1r = cms2.passHLTTrigger("HLT_Ele15_LW_L1R");
   bool hltMu9           = passedMuonTriggerRequirements();
  
   if (type == MuMu && ! (hltMu9) ) return false;
