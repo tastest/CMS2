@@ -1174,9 +1174,8 @@ RooDataSet* MakeNewDataset(const char* name)
   RooDataSet* dataset = new RooDataSet(name, "N-1 dataset",
 				       RooArgSet(set_event,set_run,set_lumi,
 						 set_iso,set_selected,set_weight,
-						 set_hyp_type,set_fake_type,set_sample_type));
-  // RooFit::WeightVar(set_weight) );
-  dataset->setWeightVar(set_weight);
+						 set_hyp_type,set_fake_type,set_sample_type),
+				       RooFit::WeightVar(set_weight) );
   return dataset;
 }
 
