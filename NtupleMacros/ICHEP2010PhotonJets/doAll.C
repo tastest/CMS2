@@ -9,7 +9,7 @@
   gROOT->ProcessLine(".L doScanChain.C++");
 
   //first bool is data, second is MC
-  doScanChain("output", true, false);
+  doScanChain("outputtest", true, false);
   //doScanChain("output_MC", false, true);  
 
   //both

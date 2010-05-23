@@ -43,61 +43,40 @@ TString ScanChain( TChain* chain, bool isGEN, bool requireTrackCuts = true, bool
   // file loop
   TIter fileIter(listOfFiles);
 
-  vector<string> v_prefix;
-  vector<string> v_title;
-  //talk to Warren about how to deal with this map stuff. I want to count the number of evts that pass any of our favorite triggers
+  vector<string> v_trignames;
   map<string,int> v_numEvtsPerTrigger;
 
-  if(isGEN) {
-    v_prefix.push_back("mcpt_");
-    v_prefix.push_back("mcft_"); 
-    v_prefix.push_back("mcall_");
-    v_title.push_back(" for MC events passing the trigger Requirements");
-    v_title.push_back(" for MC events failing the trigger Requirements");
-    v_title.push_back(" for all MC events");
-  } else {
-    v_prefix.push_back("HLT_L1Jet6U_");
-    v_prefix.push_back("HLT_L1Jet10U_");
-    v_prefix.push_back("HLT_Jet15U_");
-    v_prefix.push_back("HLT_Jet30U_");
-    v_prefix.push_back("HLT_Photon10_");
-    v_prefix.push_back("L1_SingleEG5_");
-    v_prefix.push_back("HLT_Photon15_");
-    v_title.push_back(" for events passing L1Jet6U");
-    v_title.push_back(" for events passing L1Jet10U");
-    v_title.push_back(" for events passing Jet15U");
-    v_title.push_back(" for events passing Jet30U");
-    v_title.push_back(" for events passing Photon10");
-    v_title.push_back(" for events passing L1SingleEG5");
-    v_title.push_back(" for events passing Photon15");
+  v_trignames.push_back("HLT_L1Jet6U");
+  v_trignames.push_back("HLT_L1Jet10U");
+  v_trignames.push_back("HLT_Jet15U");
+  v_trignames.push_back("HLT_Jet30U");
+  v_trignames.push_back("HLT_Photon10_L1R");
+  v_trignames.push_back("L1_SingleEG5");
+  v_trignames.push_back("HLT_Photon15_L1R");
+
+  vector<string> v_l1assoc;
+  v_l1assoc.push_back("L1_SingleJet6");
+  v_l1assoc.push_back("L1_SingleJet10");
+  v_l1assoc.push_back("L1_SingleJet6");
+  v_l1assoc.push_back("L1_SingleJet20");
+  v_l1assoc.push_back("L1_SingleEG5");
+  v_l1assoc.push_back("NA");
+  v_l1assoc.push_back("L1_SingleEG8");
+
+  map<string, TH1F*> m_prescales;
+  map<string, TH1F*> m_maxpfjetpt;
+  for( unsigned int i=0;i<v_trignames.size(); i++ ) {
+    m_prescales[v_trignames[i]] = MakeHist((v_trignames[i]+"prescales").c_str(),  ("prescales for "+v_trignames[i]+";log of product of prescales").c_str(), 10, -0.01, 9.99);
+    m_maxpfjetpt[v_trignames[i]] = MakeHist((v_trignames[i]+"maxpfjetpt").c_str(),  ("max pfjet pT "+v_trignames[i]+";pT").c_str(), 500, 0.0, 500.0);
   }
 
-  if(v_prefix.size() != v_title.size() ) {
-    cout << "The vector of prefixes and the vector of title are not the same size!!! Exiting!" << endl;
-    return "";
-  }
-
-  unsigned int aSize = v_prefix.size();
   const double pi = TMath::Pi();
 
   const double crystalunit = 0.017453292519943295;
   const double barrelend = 85.5*crystalunit;
-  
-  //1d hist TH1F *h_bla1d[aSize];       
-  //2d hist TH2F *h_bla2d[aSize];
-
-  TH1F* h_prescales[aSize];
 
   const float metmaxw = 2500.;
   const int metbinsw = 250;
-
-  for(unsigned int i = 0; i < v_prefix.size(); i++) {
-    //1d hist NewHist(h_bla1d[i],(v_prefix.at(i)+"bla1d").c_str(), ";bla 1d", metbins, 0.0, metmax, isGEN);
-    //2d hist: NewHist(h_bla2d[i],(v_prefix.at(i)+"bla2d").c_str(), ";bla x ;bla y", 100, -pi, pi, d0bins, -d0max, d0max, isGEN);
-
-    NewHist(h_prescales[i],(v_prefix.at(i)+"prescales").c_str(), ";log of product of prescales",10, -0.01, 9.99, isGEN);
-
-  }
 
   TDirectory* histdir = gDirectory;
   //pass fail counters
@@ -134,14 +113,65 @@ TString ScanChain( TChain* chain, bool isGEN, bool requireTrackCuts = true, bool
 	    npassgoodrun++;
 	    v_goodRuns.insert(evt_run());
 	  }
-      
-	  if( !(passesTrackCuts() && requireTrackCuts)) cout << "failed tracking cuts - this should never happen" <<  endl;
+	  else continue;
+	  
+	  //if( !(passesTrackCuts() && requireTrackCuts)) //cout << "failed tracking cuts - this should never happen" <<  endl;
+	  //  continue;
 
 	  nGoodEvents++;
 
 	  int pL1Jet6U = 1;
 	  int pL1Jet10U = 1;
+
+	  map<string, int> m_l1hlt;
+	  for( unsigned int i=0; i < v_trignames.size(); i++ ) { //for all hlt trigs we want
+		bool foundl1 = false;
+		for( unsigned int j=0; j < l1_trigNames().size(); j++ ) {
+		  //cout << l1_trigNames()[j] << endl;
+		  if( v_l1assoc[i] == "NA" ) {
+			foundl1 = true;
+			continue;
+		  }
+		  else if( v_l1assoc[i] == l1_trigNames()[j] ) { //find associated l1 trig
+			m_l1hlt[v_trignames[i]] = j;
+			foundl1 = true;
+			break;
+		  }
+		}
+		if( !foundl1 )
+		  cout << "Missed l1 assoc for " << v_trignames[i] << endl;
+	  }
 	  
+	  //hlt
+	  for( unsigned int i=0; i<hlt_trigNames().size(); i++ ) {
+		for( unsigned int j=0; j<v_trignames.size(); j++ ) {
+		  if( hlt_trigNames()[i] == v_trignames[j] && passHLTTrigger(hlt_trigNames()[i]) ){
+		    //here's where we fill hists fr hlt triggers
+		    m_prescales[v_trignames[j]]->Fill( log10( hlt_prescales()[i] * l1_prescales()[ m_l1hlt[(string)hlt_trigNames()[i]] ] ) );
+		    float maxpfjetpt = 0;
+		    for ( unsigned int k=0; k<pfjets_p4().size(); k++){
+		      if( maxpfjetpt < pfjets_p4()[k].pt() ) maxpfjetpt = pfjets_p4()[k].pt();
+		    }
+		    m_maxpfjetpt[v_trignames[j]]->Fill(maxpfjetpt);
+		  }//end of filling hists for hlt triggers
+		}
+	  }
+
+	  //l1
+	  for( unsigned int i=0; i<l1_trigNames().size(); i++ ) {
+		for( unsigned int j=0; j<v_trignames.size(); j++ ) {
+		  if( l1_trigNames()[i] == v_trignames[j] && passL1Trigger( l1_trigNames()[i] ) ){
+		    //here's where we fill hists for l1 triggers
+		    m_prescales[v_trignames[j]]->Fill( log10(l1_prescales()[j]) );
+		    float maxpfjetpt = 0;
+		    for ( unsigned int k=0; k<pfjets_p4().size(); k++){
+		      if( maxpfjetpt < pfjets_p4()[k].pt() ) maxpfjetpt = pfjets_p4()[k].pt();
+		    }
+		    m_maxpfjetpt[v_trignames[j]]->Fill(maxpfjetpt);
+
+		  }//end of filling hists for l1 triggers
+		}
+	  }
 	  
       //cout << "end of event loop" << endl << endl;
     }//event loop
