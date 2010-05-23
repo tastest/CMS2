@@ -23,6 +23,12 @@ patch -p0 < patchCaloTowersCreator.diff.361
 rm patchCaloTowersCreator.diff.361
 cd ..
 
+# also need to check out HBHE Filter Producer
+addpkg CommonTools/RecoAlgos
+cvs update -A -r V00-02-14 CommonTools/RecoAlgos/plugins/HBHENoiseFilterResultProducer.cc
+cvs update -r V00-02-14 CommonTools/RecoAlgos/python/HBHENoiseFilterResultProducer_cfi.py
+cvs update -r V00-02-12 CommonTools/RecoAlgos/BuildFile
+
 echo;echo checkingdeps;echo
 
 # dont forget this
