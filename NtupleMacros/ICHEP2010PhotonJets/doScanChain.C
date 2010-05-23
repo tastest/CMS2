@@ -5,20 +5,16 @@
 //void doAll() {
 void doScanChain(string name, bool runonData=true, bool runonGEN=false) {
 
-  //set_goodrun_file("goodruns_134987.txt");
   set_goodrun_file("goodruns.txt");
 
   //////DATA
   string dataEGMay6 = "/nfs-3/userdata/cms2/MinimumBias_Commissioning10-May6thPDSkim2_SD_EG-v1/V03-04-09/merged_ntuple*.root";
-  string dataJetMETMay6 = "/nfs-3/userdata/cms2/MinimumBias_Commissioning10-May6thPDSkim2_SD_JetMETTau-v1/V03-04-09/merged_ntuple*.root";
-  string dataJetMETMonMay6 = "/nfs-3/userdata/cms2/MinimumBias_Commissioning10-May6thPDSkim2_SD_JetMETTauMonitor-v1/V03-04-09/merged_ntuple*.root";
-  string dataJetMETMonSomeMay6 = "/nfs-3/userdata/cms2/MinimumBias_Commissioning10-May6thPDSkim2_SD_JetMETTauMonitor-v1/V03-04-09/merged_ntuple_10*.root";
 
-  string datastring = dataJetMETMonSomeMay6;
+  string datastring = dataEGMay6;
 
   vector<string> v_data;
   //v_data.push_back(datapunapr1);
-  //v_data.push_back(dataEGMay6);
+  v_data.push_back(dataEGMay6);
 
   TChain *ch_data = new TChain("Events");
   if( v_data.size() == 0 )
