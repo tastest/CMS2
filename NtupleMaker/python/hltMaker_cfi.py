@@ -12,11 +12,14 @@ hlt8e29Maker = cms.EDProducer("HLTMaker",
     prunedTriggerNames = cms.untracked.vstring(
         # wildcards
         "*Mu*",
+        "*EG*",
         "*Ele*",
+        "*Photon*",
         # jets
         "*Jet*",
          #met	
         "*met*",
+        "*MET*",
         "HLT_Jet50U",
         "HLT_DiJetAve15U",
         "HLT_DiJetAve30U",
@@ -57,11 +60,14 @@ hlt1E31Maker = cms.EDProducer("HLTMaker",
     prunedTriggerNames = cms.untracked.vstring(
         # wildcards
         "*Mu*",
+        "*EG*",
         "*Ele*",
+        "*Photon*",
         # jets
         "*Jet*",
         #met	
         "*met*",
+        "*MET*",
         "HLT_Jet110",
         "HLT_DiJetAve15U",
         "HLT_DiJetAve30U",
@@ -108,11 +114,14 @@ hltMaker = cms.EDProducer("HLTMaker",
     prunedTriggerNames = cms.untracked.vstring(
         # wildcards
         "*Mu*",
+        "*EG*",
         "*Ele*",
+        "*Photon*",
         # jets
         "*Jet*",
         #met	
         "*met*",
+        "*MET*",
         "HLT_Jet110",
         "HLT_DiJetAve15U",
         "HLT_DiJetAve30U",
