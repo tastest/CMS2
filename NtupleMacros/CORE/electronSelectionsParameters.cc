@@ -126,6 +126,83 @@ void eidGetVBTF(const vbtf_tightness tightness, std::vector<double> &cutdeta, st
             eidAssign(cutsee, sigmaIEtaIEtaThresholds_tmp, 2);
             return;
         }
+
+        case VBTF_35X_90:
+        {
+            double isoThresholds_tmp[2]                 = {0.1,     0.07};
+            double sigmaIEtaIEtaThresholds_tmp[2]       = {0.01,    0.03};
+            double dPhiInThresholds_tmp[2]              = {0.8,     0.7};
+            double dEtaInThresholds_tmp[2]              = {0.007,   0.009};
+            double hoeThresholds_tmp[2]                 = {0.12,     0.05};
+            eidAssign(cutreliso, isoThresholds_tmp, 2);
+            eidAssign(cutdeta, dEtaInThresholds_tmp, 2);
+            eidAssign(cutdphi, dPhiInThresholds_tmp, 2);
+            eidAssign(cuthoe, hoeThresholds_tmp, 2);
+            eidAssign(cutsee, sigmaIEtaIEtaThresholds_tmp, 2);
+            return;
+        }   
+
+        case VBTF_35X_85:
+        {
+            double isoThresholds_tmp[2]                 = {0.09,     0.06};
+            double sigmaIEtaIEtaThresholds_tmp[2]       = {0.01,    0.03};
+            double dPhiInThresholds_tmp[2]              = {0.06,     0.04};
+            double dEtaInThresholds_tmp[2]              = {0.006,   0.007};            
+            double hoeThresholds_tmp[2]                 = {0.04,     0.025};
+            eidAssign(cutreliso, isoThresholds_tmp, 2);
+            eidAssign(cutdeta, dEtaInThresholds_tmp, 2);
+            eidAssign(cutdphi, dPhiInThresholds_tmp, 2);
+            eidAssign(cuthoe, hoeThresholds_tmp, 2);
+            eidAssign(cutsee, sigmaIEtaIEtaThresholds_tmp, 2);
+            return;
+        }
+
+        case VBTF_35X_80:
+        {
+            double isoThresholds_tmp[2]                 = {0.07,     0.06};
+            double sigmaIEtaIEtaThresholds_tmp[2]       = {0.01,    0.03};
+            double dPhiInThresholds_tmp[2]              = {0.06,     0.03};
+            double dEtaInThresholds_tmp[2]              = {0.004,   0.007};            
+            double hoeThresholds_tmp[2]                 = {0.04,     0.025};
+            eidAssign(cutreliso, isoThresholds_tmp, 2);
+            eidAssign(cutdeta, dEtaInThresholds_tmp, 2);
+            eidAssign(cutdphi, dPhiInThresholds_tmp, 2);
+            eidAssign(cuthoe, hoeThresholds_tmp, 2);
+            eidAssign(cutsee, sigmaIEtaIEtaThresholds_tmp, 2);
+            return;
+        }
+
+        case VBTF_35X_70:
+        {
+            double isoThresholds_tmp[2]                 = {0.05,     0.04};
+            double sigmaIEtaIEtaThresholds_tmp[2]       = {0.01,    0.03};
+            double dPhiInThresholds_tmp[2]              = {0.03,     0.02};
+            double dEtaInThresholds_tmp[2]              = {0.003,   0.005};
+            double hoeThresholds_tmp[2]                 = {0.025,     0.012};
+            eidAssign(cutreliso, isoThresholds_tmp, 2);
+            eidAssign(cutdeta, dEtaInThresholds_tmp, 2);
+            eidAssign(cutdphi, dPhiInThresholds_tmp, 2);
+            eidAssign(cuthoe, hoeThresholds_tmp, 2);
+            eidAssign(cutsee, sigmaIEtaIEtaThresholds_tmp, 2);
+            return;
+        }
+
+        case VBTF_35X_60:
+        {
+            double isoThresholds_tmp[2]                 = {0.04,     0.03};
+            double sigmaIEtaIEtaThresholds_tmp[2]       = {0.01,    0.03};
+            double dPhiInThresholds_tmp[2]              = {0.02,     0.02};
+            double dEtaInThresholds_tmp[2]              = {0.0025,   0.003};
+            double hoeThresholds_tmp[2]                 = {0.025,     0.009};
+            eidAssign(cutreliso, isoThresholds_tmp, 2);
+            eidAssign(cutdeta, dEtaInThresholds_tmp, 2);
+            eidAssign(cutdphi, dPhiInThresholds_tmp, 2);
+            eidAssign(cuthoe, hoeThresholds_tmp, 2);
+            eidAssign(cutsee, sigmaIEtaIEtaThresholds_tmp, 2);
+            return;
+        }
+
+
         default:
             std::cout << "[eidGetVBTF] ERROR! Invalid tightness level" << std::endl;
     }
