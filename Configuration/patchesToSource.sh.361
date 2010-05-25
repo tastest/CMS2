@@ -4,13 +4,7 @@ cvs co -r V00-05-03    RecoEgamma/EgammaTools
 cvs co -r V00-00-09    JetMETAnalysis/HcalReflagging
 
 #ECAL timing cleaning; get package from release and patch to allow cleaning using timing
-
-addpkg RecoLocalCalo/EcalRecAlgos
-cd RecoLocalCalo/EcalRecAlgos
-cp ../../CMS2/Configuration/patchEcalSeverityLevelAlgo.diff.361 .
-patch -p0 < patchEcalSeverityLevelAlgo.diff.361
-rm patchEcalSeverityLevelAlgo.diff.361
-cd ../..
+cvs co -r V00-11-02-01 RecoLocalCalo/EcalRecAlgos
 
 echo;echo
 
