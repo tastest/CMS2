@@ -7,27 +7,11 @@
 #include <vector>
 #include "TChain.h"
 
-#ifndef ProcDSChain_H
-#define ProcDSChain_H
-struct ProcDSChain {
-  ProcDSChain(TChain* ch, float sc = 1, bool doW = true, bool chDup = false): events(ch), scale1fb(sc),  useWeigtFromBranch(doW), 
-									      checkDuplicates(chDup) {}
-  TChain* events;
-  float scale1fb;
-  bool useWeigtFromBranch;
-  bool checkDuplicates;
-};
-#endif
-
+#include "ProcDSS.h"
 
 class ttDilCounts_looper {
-
-	 public: 
-
-//   static const unsigned int LOOSEDIL = 1<<10;
-//   static const unsigned int LOOSEDIL_OS = (1<<10) + (1<<13);
-//   static const unsigned int LOOSEDIL_OS_ONEWEIGHT = (1<<10) + (1<<13) + (1<<14);
-
+  
+public: 
   
   struct EIDiif {
     EIDiif():i0(0),i1(0),f0(0) {}
@@ -40,12 +24,16 @@ class ttDilCounts_looper {
     int i1;
     float f0;
   };
-
-  int ScanChain ( std::string fName, std::string prefix, float kFactor=1.0, int prescale=1, unsigned int cutsMask=31);
-  int ScanChain ( TChain* chain, std::string prefix, float kFactor=1.0, int prescale=1, unsigned int cutsMask=31);
-  int ScanChain ( std::vector<ProcDSChain>& pds, std::string prefix, float kFactor=1.0, int prescale=1, unsigned int cutsMask=31);
+  
+  int ScanChain ( std::string fName, std::string prefix, float kFactor=1.0, int prescale=1, 
+		  unsigned long long int cutsMask=0);
+  int ScanChain ( TChain* chain, std::string prefix, float kFactor=1.0, int prescale=1, 
+		  unsigned long long int cutsMask=0);
+  int ScanChain ( ProcDSS& pds, unsigned long long int cutsMask);
   void fill1D(TH1F* h, double val, double weight);
-
+  TH2F* getFRhisto(TString fName, TString hName);
+  float GetValueTH2F(Float_t, Float_t, TH2F*);
+  
   TH1F* hnJet[4];       // Njet distributions
   TH1F* hnJetinZwindow[4];  //usefull for DY estimate
   TH1F* hnJetoutZwindow[4]; //usefull for DY estimate
@@ -96,12 +84,20 @@ class ttDilCounts_looper {
   TH1F* hSumJSpt[4][6]; 
   TH1F* hSumJSMTpt[4][6]; 
   TH1F* hSumJStcMTpt[4][6]; 
+  TH1F* hSumJSpfMTpt[4][6]; 
+
   TH1F* hvecSumJSpt[4][6]; 
   TH1F* hvecSumJSmLLpt[4][6]; 
   TH2F* hvecSumJSmLLptVspatmet[4][6]; 
   TH2F* hvecSumJSmLLptVstcmet[4][6]; 
   TH2F* hvecSumJSmLLptVspfmet[4][6]; 
- 
+
+  TH1F* hMT2cal[4][6];
+  TH1F* hMT2tc[4][6];
+  TH1F* hMT2pf[4][6];
+  TH1F* hMT2Jcal[4][6];
+  TH1F* hMT2Jtc[4][6];
+  TH1F* hMT2Jpf[4][6];
 
   TH1F* numTightLep[4][6]; // number of tight leptons per event.
   TH1F* hmuSumIso[4][6];  // sum of trk pt, em et, had et in cone of 0.3
