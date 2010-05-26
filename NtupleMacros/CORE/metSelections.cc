@@ -41,11 +41,11 @@ float projectedMETW( float met, float metPhi, float leptonPhi) {
 //---------------------------------------------
 #include "tcmet/getTcmetFromCaloMet.icc"
 #include "tcmet/getResponseFunction_fit.icc"
-metStruct correctedTCMET(bool usePV, bool useHFcleaning, bool useHCALcleaning, bool useECALcleaning) 
+metStruct correctedTCMET(bool usePV, bool useElectronVetoCone, bool useHFcleaning, bool useHCALcleaning, bool useECALcleaning, bool printout, ostream& ostr) 
 {
      // static because we only want to get the response function once
      static TH2F* rf = getResponseFunction_fit();
-     return getTcmetFromCaloMet(rf, usePV, useHFcleaning, useHCALcleaning, useECALcleaning);
+     return getTcmetFromCaloMet(rf, useElectronVetoCone, usePV, useHFcleaning, useHCALcleaning, useECALcleaning, printout,ostr);
 }
 
 //---------------------------------------------
