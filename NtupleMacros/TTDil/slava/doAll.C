@@ -15,19 +15,10 @@
 #include <iostream>
 #include "histscripts/histtools.h"
 #include "ttDilCounts_looper.h"
+#include "ttDilRefS10_looper.h"
 #endif //__CINT__
 
-#ifndef ProcDSChain_H
-#define ProcDSChain_H
-struct ProcDSChain {
-  ProcDSChain(TChain* ch, float sc = 1, bool doW = true, bool chDup = false): events(ch), scale1fb(sc),  useWeigtFromBranch(doW),
-                                                                              checkDuplicates(chDup) {}
-  TChain* events;
-  float scale1fb;
-  bool useWeigtFromBranch;
-  bool checkDuplicates;
-};
-#endif
+#include "ProcDSS.h"
 
 void pickSkimIfExists(TChain* ch, const std::string& base, const std::string& skimExt){
   TChain* dummy = new TChain("Events");
@@ -54,11 +45,13 @@ void pickSkimIfExists(TChain* ch, const std::string& base, const std::string& sk
 }
 
 
-void pickSkimIfExists(std::vector<ProcDSChain>& pds, const std::string& base, const std::string& skimExt,
+void pickSkimIfExists(ProcDSS& pds, const std::string& name, 
+		      const std::string& base, const std::string& skimExt,
                       float scale = 1., bool useWeigtFromBranch = true, bool checkDups = false){
   TChain* dummy = new TChain("Events");
   TChain* ch = new TChain("Events");
-  pds.push_back(ProcDSChain(ch, scale, useWeigtFromBranch, checkDups ));
+  ProcDSChain tmpDs(ch, name, scale, useWeigtFromBranch, checkDups );
+  pds.add(tmpDs);
   if (skimExt != ""){
     std::string skimName = base+skimExt;
     if (dummy->Add(skimName.c_str())){
@@ -77,371 +70,19 @@ void pickSkimIfExists(std::vector<ProcDSChain>& pds, const std::string& base, co
     assert(0);
   }
   return;
-
+}
+void pickSkimIfExists(ProcDSS& pds, const std::string& base, const std::string& skimExt,
+                      float scale = 1., bool useWeigtFromBranch = true, bool checkDups = false){
+  pickSkimIfExists(pds, pds.name, base, skimExt, scale, useWeigtFromBranch, checkDups);
 }
 
-
-void doAll(unsigned int bitmask){
-  std::cout<<"THIS IS NOT UPDATED"<<std::endl;
-  gSystem->Exit(0);
-
+void doAllCombined(unsigned long int bitmask, bool runTTbarOnly = false){
   using namespace std;
-  //here is a list to the combinations of cuts useful for the analysis:
-  // 1957888 -- baseline
-  // 35512320 -- baseline using tcmet
-  // 1695744 -- baseline without MET
-  // 1433600 -- baseline without zveto
-  // 1926144 -- baseline without tight iso (only loose iso)
-  // 18735104 -- baseline JES-up
-  // 10346496 -- baseline JES-down
-  // 1171456 -- baseline without MET, without zveto
-  // 2220032 -- baseline without MET, without zveto, using AN09/047 (v<=4) trigger selection
-
-  // 1941504 -- baseline without duplicate removal
-
-  
-  //cut <-> bit mask
-  //ID cuts               -> 2**0 (1)
-  //Isolation cuts        -> 2**1 (2) (default is both legs are isolated. Using relative isolation, TRK+CALO)
-  //                       2**8+2**1 (Require one-only hyp lepton to be isolated. In emu, that will mean that the muon
-  //                                  will have rel iso > 0.92 and the el will have 0.6 < relIso < 0.92)
-  //                       2**9+2**1 (Require one-only hyp lepton to be isolated. In emu, that will mean that the el
-  //                                  will have rel iso > 0.92 and the mu will have 0.6 < relIso < 0.92)
-  //                       2**9+2**8+2**1 (require both leptons to have 0.6 < relIso < 0.92)
-  //DileptonMassVeto      -> 2**2 (4)
-  //METcut                -> 2**3 (8)
-  //nJets                 -> 2**4 (16)
-  //extra MuTag           -> 2**5 (32)
-  //METveto               -> 2**6 (64)
-  //Extra MuTag (pt>5)    -> 2**7 (128)
-  //looseDileptonSelection, TTdil note 2008
-  //                      -> 2**10 (1024)
-  //fullMultipleHypsOnly  -> 2**11 (2048) !!!!! Not implemented, so does nothing right now !!!!!!!
-  //applyZWindow cut      -> 2**12 (4096)
-  //Opp. Sign Selection   -> 2**13 (8192)
-  //fillMaxWeightDilOnly  -> 2**14 (16284
-  //leptonIsolationDilSelectionTTDil08 -> 2**15 (uses trk and calo isolation seperately, reltrkIso > 0.9, 
-  //                                             relCaloIso > 0.9. NO OTHER CUTS BUT ISOLATION APPLIED)
-  //looseDilSelectionNoIsoTTDil08      -> 2**16 (basic muon preselection cuts, no isolation)
-  //lepton20Eta2p4DilSelection         -> 2**17 (only pt and eta cuts applied to leptons)
-  //metBaselineSelectionTTDil108       -> 2**18 (calls passPatMet_OF20_SF30 -> corrMET  > 20 (emu),
-  //                                             corrMET > 30 (ee, mumu))
-  //dilepMassVetoCutTTDil08            -> 2**19 pretty much what it sounds like
-  //applyTriggersMu9orLisoE15          -> 2**20 mm -> HLT_Mu9 
-  //                                            ee -> HLT_Ele15_SW_L1R
-  //                                            em -> HLT_Mu9 or HLT_Ele15_SW_L1R
-  //applyTriggersTTDil08JanTrial       -> 2**21 mm -> HLT_Mu15_L1Mu7 || HLT_DoubleMu3
-  //                                            ee -> HLT_IsoEle18_L1R || HLT_DoubleIsoEle12_L1R
-  //                                            em -> HLT_IsoEle18_L1R || HLT_Mu15_L1Mu7 || HLT_IsoEle10_Mu10_L1R
-  // dilepAdditionalMassVetoCutTTDil08 -> 2**22
-  // corJES10ptDn                      -> 2**23 rescale JES by 10% Down
-  // corJES10ptUp                      -> 2**24 rescale JES by 10% up
-  // useTcMet                          -> 2**25 use tcmet
-  // useJPT                            -> 2**26 use JPT
-  // muJetClean                        -> 2**27 do not count jets within 0.4 of muons 
-  // dilTruthMatch                     -> 2**28 require the lepton to be MCtruth matched (coming off a hard-scattering lepton)
- 
-  // Load various tools  
-  //  gROOT->ProcessLine(".x setup.C");
-
-  // Load and compile the looping code
-  //  gSystem->CompileMacro("ttDilCounts_looper.C", "++k", "libttDilCounts_looper");
-  
+  //See AAA_ListOfBits.txt for the list of bits and their meaning
 
   // K-factors
   //these have been k-factors NLO/LO before
-  //now using them as sample normalizations to NLO
-  
-  //these two are taken from Ceballos's pdf. 
-  //It looks like the top x-section is for mtop = 175 GeV
-  float kttdil    = 1.; //375pb, 127000 events processed
-  float kttotr    = 1.; //375pb, 127000 events processed
-
-  float kWW       = 1.;
-  float kWZ       = 1.;
-  float kZZ       = 1.;
-  float kWjets    = 1.; //11850 pb, 980000 events processed
-  float kWcharm   = 1.1;
-  float kDYee     = 1.;  //1230 pb,  970360 events processed
-  float kDYmm     = 1.;  //1230 pb,  970360 events processed
-  float kDYtautau = 1.;  //1230 pb,  970360 events processed
-  float kppMuX    = 1.; //xsec/nevents
-  float kEM       = 1.;
-  float ktW       = 1.; //the evtScale is all negative for some reason
-  float kVQQ      = 1;
-
-  // Prescales
-  int prettdil    = 1;
-  int prettotr    = 1;
-  int preWW       = 1;
-  int preWZ       = 1;
-  int preZZ       = 1;
-  int preWjets    = 1;
-  int preWcharm   = 1;
-  int preDYee     = 1;
-  int preDYmm     = 1;
-  int preDYtautau = 1;
-  int preppMuX    = 1;
-  int preEM       = 1;
-  int pretW       = 1;
-  int preVQQ      = 1;
-
-  // Flags for files to run over
-  bool runttdil    = true;
-  bool runttotr    = true;
-  bool runWW       = true;
-  bool runWZ       = true;
-  bool runZZ       = true;
-  bool runWjets    = true;
-  bool runWcharm   = false;
-  bool runDYee     = true;
-  bool runDYmm     = true;
-  bool runDYtautau = true;
-  bool runppMuX    = true;
-  bool runEM       = true;
-  bool runtW       = true;
-  bool runVQQ      = true;
-
-  std::vector<ProcDSChain> chtopdil;
-  pickSkimIfExists(chtopdil, "data/TTJets-madgraph_Fall08_IDEAL_V11_redigi_v10/merged*.root", "_skimSimple2020anydil");
-
-  std::vector<ProcDSChain> chtopotr;
-  pickSkimIfExists(chtopotr, "data/TTJets-madgraph_Fall08_IDEAL_V11_redigi_v10/merged*.root", "_skimSimple2020nodil");
-
-  std::vector<ProcDSChain> chww;
-  pickSkimIfExists(chww, "data/WW_Summer08_IDEAL_V11_redigi_v1/merged*.root", "");
-
-  std::vector<ProcDSChain> chWZ;
-  pickSkimIfExists(chWZ, "data/WZ_incl_Summer08_IDEAL_V11_redigi_v1/merged*.root", ""); // can try WZ_3l-Pythia
-
-  std::vector<ProcDSChain> chZZ;
-  pickSkimIfExists(chZZ, "data/ZZ_Summer08_IDEAL_V11_redigi_v1/merged*.root", "");
-  
-  std::vector<ProcDSChain> chWjets;
-  pickSkimIfExists(chWjets, "data/WJets-madgraph_Summer08_IDEAL_V11_redigi_v1/merged*.root", "");
-
-  std::vector<ProcDSChain> chWcharm;
-  pickSkimIfExists(chWcharm, "data/Wc-madgraph_Fall08_IDEAL_V11_redigi_v1/merged*.root", "");
-
-  std::vector<ProcDSChain> chDYtautau;
-  pickSkimIfExists(chDYtautau, "data/ZJets-madgraph_Summer08_IDEAL_V11_redigi_v1/merged*.root", "_skimSimple2020tautau");
-  //the low-mass splice has no choice other than the skim
-  pickSkimIfExists(chDYtautau, "data/Ztautau_M20_Summer08_IDEAL_V11_redigi_v1/merged*.root_skimSimple2020_20m50", "");
-  
-  std::vector<ProcDSChain> chDYee;
-  pickSkimIfExists(chDYee, "data/ZJets-madgraph_Summer08_IDEAL_V11_redigi_v1/merged*.root", "_skimSimple2020ee");
-  //the low-mass splice has no choice other than the skim
-  pickSkimIfExists(chDYee, "data/Zee_M20_Summer08_IDEAL_V11_redigi_v1/merged*.root_skimSimple2020_20m50", "");
-
-  std::vector<ProcDSChain> chDYmm;
-  pickSkimIfExists(chDYmm, "data/ZJets-madgraph_Summer08_IDEAL_V11_redigi_v1/merged*.root", "_skimSimple2020mm");
-  //the low-mass splice has no choice other than the skim
-  pickSkimIfExists(chDYmm, "data/Zmumu_M20_Summer08_IDEAL_V11_redigi_v1/merged*.root_skimSimple2020_20m50", "");
-  
-  //ppMuX
-  std::vector<ProcDSChain> chppMuX;
-  if (runppMuX) {
-    pickSkimIfExists(chppMuX, "data/InclusiveMuPt15_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merged*.root", "_skimSimple2020"); 
-    //can try InclusiveMu5Pt50 .. figure out how to merge later
-  }
-  
-  //ppEM
-  std::vector<ProcDSChain> chEM;
-  if (runEM) {
-    pickSkimIfExists(chEM, "data/QCD_EMenriched_Pt20to30_Summer08_IDEAL_V11_redigi_v2-SingleLepton/merged*.root", "_skimSimple2020");
-    pickSkimIfExists(chEM, "data/QCD_EMenriched_Pt30to80_Summer08_IDEAL_V11_redigi_v2-SingleLepton/merged*.root", "_skimSimple2020");
-    pickSkimIfExists(chEM, "data/QCD_EMenriched_Pt80to170_Summer08_IDEAL_V11_redigi_v2-SingleLepton/merged*.root", "_skimSimple2020");
-    pickSkimIfExists(chEM, "data/QCD_BCtoE_Pt20to30_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merged*.root", "_skimSimple2020");
-    pickSkimIfExists(chEM, "data/QCD_BCtoE_Pt30to80_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merged*.root", "_skimSimple2020");
-    pickSkimIfExists(chEM, "data/QCD_BCtoE_Pt80to170_Summer08_IDEAL_V11_redigi_v1-SingleLepton/merged*.root", "_skimSimple2020");
-  }
-
-  //tW
-  std::vector<ProcDSChain> chtW;
-  if (runtW) {
-    pickSkimIfExists(chtW, "data/SingleTop_sChannel_Summer08_IDEAL_V11_redigi_v3/merged*.root", ""); 
-    pickSkimIfExists(chtW, "data/SingleTop_tChannel_Summer08_IDEAL_V11_redigi_v3/merged*.root", ""); 
-    pickSkimIfExists(chtW, "data/SingleTop_tWChannel_Summer08_IDEAL_V11_redigi_v3/merged*.root", ""); 
-  }
-
-  //VQQ
-  std::vector<ProcDSChain> chVQQ;
-  if (runVQQ) {
-    pickSkimIfExists(chVQQ, "data/VQQ-madgraph_Fall08_IDEAL_V9_v1/merged*.root", "");
-  }
-
-
-  // Define colors numbers:
-  gStyle->SetPalette(1);
-  enum EColor { kWhite, kBlack, kRed, kGreen, kBlue, kYellow, kMagenta, kCyan };
-  
-
-
-  ttDilCounts_looper* looper = new ttDilCounts_looper();
-  
-  // Process files one at a time, and color them as needed
-  if (runttdil) {
-    cout << "Processing ttbar dileptonic.. "<<endl;
-    looper->ScanChain(chtopdil,"ttdil", kttdil, prettdil, bitmask);
-    cout << "Done Processing ttbar dileptonic.. "<<endl;
-    hist::color("ttdil", kYellow);
-  }
-  if (runttotr) {
-    cout << "Processing ttbar no-dileptons.. "<<endl;
-    looper->ScanChain(chtopotr,"ttotr", kttotr, prettotr, bitmask);
-    hist::color("ttotr", 30);
-  }
-  if (runWW) {
-    cout << "Processing WW.."<<endl;
-    looper->ScanChain(chww,"ww", kWW, preWW, bitmask);
-    hist::color("ww", kRed);
-  }
-  if (runWZ) {
-    cout << "Processing WZ.."<<endl;
-    looper->ScanChain(chWZ,"wz", kWZ, preWZ, bitmask);
-    hist::color("wz", kBlue);
-  }
-  if (runZZ) {
-    cout << "Processing ZZ.."<<endl;
-    looper->ScanChain(chZZ,"zz", kZZ, preZZ, bitmask);
-    hist::color("zz", kGreen);
-  }
-  if (runWjets) {
-    cout << "Processing Wjets.."<<endl;
-    looper->ScanChain(chWjets,"wjets", kWjets, preWjets, bitmask);
-    hist::color("wjets", 40);
-  }
-
-  if (runWcharm) {
-    cout << "Processing Wcharm.." << endl;
-    looper->ScanChain(chWcharm, "wcharm", kWcharm, preWcharm, bitmask);
-    hist::color("wcharm", 50);
-  }
-  if (runDYtautau) {
-    cout << "Processing DY->tautau" << endl;
-    looper->ScanChain(chDYtautau,"DYtautau", kDYtautau, preDYtautau, bitmask);
-    hist::color("DYtautau", kBlack);
-  }
-  if (runDYee) {
-    cout << "Processing DY->ee" << endl;
-    looper->ScanChain(chDYee,"DYee", kDYee, preDYee, bitmask);
-    hist::color("DYee", kMagenta);
-  }
-  if (runDYmm) {
-    cout << "Processing DY->mm" << endl;
-    looper->ScanChain(chDYmm,"DYmm", kDYmm, preDYmm, bitmask);
-    hist::color("DYmm", kCyan);
-  }
-  if (runppMuX) {
-    cout << "Processing ppMuX"<<endl;
-    looper->ScanChain(chppMuX,"ppMuX", kppMuX, preppMuX, bitmask);
-    hist::color("ppMuX", 51);
-  }
-  if (runEM) {
-    cout << "Processing EM"<<endl;
-    looper->ScanChain(chEM,"EM", kEM, preEM, bitmask);
-    hist::color("EM", 49);
-  }
-  if (runtW) {
-    cout << "Processing tW"<<endl;
-    looper->ScanChain(chtW,"tW", ktW, pretW, bitmask);
-    hist::color("tW", 63);
-  }
-    
-  if (runVQQ) {
-    cout << "Processing VQQ"<<endl;
-    looper->ScanChain(chVQQ,"VQQ", kVQQ, preVQQ, bitmask);
-    hist::color("VQQ", 45);
-  }
-
-  //save all the histograms
-    
-  const char* outFile = Form("myHist_testfix_%d_%s.root", bitmask, looper->compactConfig.c_str());
-  hist::saveHist(outFile);
-  hist::deleteHistos();
-
-  cout << "Finished with bitmask "<<bitmask << endl;
-
-
-  gSystem->Exit(0);
-
-}
-  
-void doAllCombined(unsigned int bitmask, bool runTTbarOnly = false){
-  using namespace std;
-  //here is a list to the combinations of cuts useful for the analysis:
-  // 1957888 -- baseline
-  // 35512320 -- baseline using tcmet
-  // 1695744 -- baseline without MET
-  // 1433600 -- baseline without zveto
-  // 1926144 -- baseline without tight iso (only loose iso)
-  // 18735104 -- baseline JES-up
-  // 10346496 -- baseline JES-down
-  // 1171456 -- baseline without MET, without zveto
-  // 2220032 -- baseline without MET, without zveto, using AN09/047 (v<=4) trigger selection
-
-  // 1941504 -- baseline without duplicate removal
-  // 1139712 -- baseline without MET, without zveto, no tight-iso (loose only) == "loose leptons"
-  // 1172480 -- baseline without MET, without zveto, with tight iso
-  // 538828800 -- baseline with dil dispatch by the highest mass
-  // 538042368 -- baseline without MET, without zveto, with dil dispatch by the highest mass
-  // 538010624 -- baseline without MET, without zveto, no tight-iso (loose only), with dil dispatch by the highest mass
-  // 538043392 -- baseline without MET, without zveto, with tight iso, with dil dispatch by the highest mass
-  // 1075699712 -- baseline with dil dispatch by the highest mass
-  // 1074913280 -- baseline without MET, without zveto, with dil dispatch by the highest pt
-  // 1074881536 -- baseline without MET, without zveto, no tight-iso (loose only), with dil dispatch by the highest pt
-  // 1074914304 -- baseline without MET, without zveto, with tight iso, with dil dispatch by the highest pt
-
-
-  //cut <-> bit mask
-  //                      -> 2**0 (1)
-  //                      -> 2**1 (2)
-  //dil2010No2020         -> 2**2 (4)
-  //projMET10             -> 2**3 (8)
-  //usePFJ                -> 2**4 (16)
-  //dil2020               -> 2**5 (32)
-  //tas10IDIsoTTCut       -> 2**6 (64)
-  //tas10IDIsoTTCateg     -> 2**7 (128)
-  //tas10IDIso            -> 2**8 (256)
-  //usePfMet              -> 2**9 (512)
-  //looseDileptonSelection, TTdil note 2008
-  //                      -> 2**10 (1024)
-  //fullMultipleHypsOnly  -> 2**11 (2048) !!!!! Not implemented, so does nothing right now !!!!!!!
-  //useCorrTCMET          -> 2**12 (4096)
-  //Opp. Sign Selection   -> 2**13 (8192)
-  //fillMaxWeightDilOnly  -> 2**14 (16384
-  //leptonIsolationDilSelectionTTDil08 -> 2**15 (uses trk and calo isolation seperately, reltrkIso > 0.9, 
-  //                                             relCaloIso > 0.9. NO OTHER CUTS BUT ISOLATION APPLIED)
-  //looseDilSelectionNoIsoTTDil08      -> 2**16 (basic muon preselection cuts, no isolation)
-  //lepton20Eta2p4DilSelection         -> 2**17 (only pt and eta cuts applied to leptons)
-  //metBaselineSelectionTTDil108       -> 2**18 (calls passPatMet_OF20_SF30 -> corrMET  > 20 (emu),
-  //                                             corrMET > 30 (ee, mumu))
-  //dilepMassVetoCutTTDil08            -> 2**19 pretty much what it sounds like
-  //applyTriggersMu9orLisoE15          -> 2**20 mm -> HLT_Mu9 
-  //                                            ee -> HLT_Ele15_SW_L1R
-  //                                            em -> HLT_Mu9 or HLT_Ele15_SW_L1R
-  //applyTriggersTTDil08JanTrial       -> 2**21 mm -> HLT_Mu15_L1Mu7 || HLT_DoubleMu3
-  //                                            ee -> HLT_IsoEle18_L1R || HLT_DoubleIsoEle12_L1R
-  //                                            em -> HLT_IsoEle18_L1R || HLT_Mu15_L1Mu7 || HLT_IsoEle10_Mu10_L1R
-  // dilepAdditionalMassVetoCutTTDil08 -> 2**22
-  // corJES10ptDn                      -> 2**23 rescale JES by 10% Down
-  // corJES10ptUp                      -> 2**24 rescale JES by 10% up
-  // useTcMet                          -> 2**25 use tcmet
-  // useJPT                            -> 2**26 use JPT
-  // muJetClean                        -> 2**27 do not count jets within 0.4 of muons 
-  // dilTruthMatch                     -> 2**28 require the lepton to be MCtruth matched (coming off a hard-scattering lepton)
- 
-  // Load various tools  
-  //  gROOT->ProcessLine(Form(".x setup.C(%d)",skipFWLite));
-
-  // Load and compile the looping code
-  //  gSystem->CompileMacro("ttDilCounts_looper.C", "++k", "libttDilCounts_looper");
-  
-
-  // K-factors
-  //these have been k-factors NLO/LO before
-  //now using them as sample normalizations to NLO
-  
+  //now using them as sample normalizations to NLO  
 
   //It looks like the top x-section is for mtop = 175 GeV
   float kttdil    = 1.; //375pb, 127000 events processed
@@ -481,7 +122,7 @@ void doAllCombined(unsigned int bitmask, bool runTTbarOnly = false){
   bool runt        = true;
   bool runtotr     = true;
   bool runVgamma   = false;
-  bool runLM0      = true;
+  bool runLMs      = true;
 
   if (runTTbarOnly){
     runttdil=true;
@@ -494,63 +135,76 @@ void doAllCombined(unsigned int bitmask, bool runTTbarOnly = false){
     runt=false;
     runtotr=false;
     runVgamma=false;
-    runLM0=false;
+    runLMs=false;
   }
 
-  std::vector<ProcDSChain> chtopdil;
-  pickSkimIfExists(chtopdil, "/data/tmp/slava77/cms2/TTbar_Summer09-MC_31X_V3_7TeV-v1/V03-00-34/merged*.root", "", 1., true, false);
-
-  std::vector<ProcDSChain> chtopotr;
-  pickSkimIfExists(chtopotr, "/data/tmp/slava77/cms2/TTbar_Summer09-MC_31X_V3_7TeV-v1/V03-00-34/merged*.root", "", 1., true, false);
-
-  std::vector<ProcDSChain> chVV;
-  pickSkimIfExists(chVV, "/data/tmp/slava77/cms2/WW_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, false);
-  pickSkimIfExists(chVV, "/data/tmp/slava77/cms2/WZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, false); // can try WZ_3l-Pythia
-  pickSkimIfExists(chVV, "/data/tmp/slava77/cms2/ZZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, false);
+  ProcDSS chtopdil("ttdil",kttdil, prettdil);
+  if (runttdil){
+    pickSkimIfExists(chtopdil, "/data/tmp/slava77/cms2/TTbar_Summer09-MC_31X_V3_7TeV-v1/V03-00-34/merged*.root", "", 165.E+3*1./626610., false, false);
+  }    
   
-  std::vector<ProcDSChain> chWjets;
-  pickSkimIfExists(chWjets, "/data/tmp/slava77/cms2/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimDil20.10", 2.4390652, false, false);
-  //  pickSkimIfExists(chWjets, "/data/tmp/slava77/cms2/Wmunu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, false);
-  //  pickSkimIfExists(chWjets, "/data/tmp/slava77/cms2/Wtaunu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, false);
-  //    pickSkimIfExists(chWjets, "/merged*.root", "", 1., true, false);
-
-  std::vector<ProcDSChain> chDYtautau;
-  pickSkimIfExists(chDYtautau, "/data/tmp/cms2/Ztautau_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/skimDilepton-20-10/skimZtautau.root", "", 1., true, false);
-  //  pickSkimIfExists(chDYtautau, "/data/tmp/slava77/cms2/Ztautau_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimSimple2020tautau", 1., true, false);
+  ProcDSS chtopotr("ttotr",kttotr, prettotr);
+  if (runttotr){
+    pickSkimIfExists(chtopotr, "/data/tmp/slava77/cms2/TTbar_Summer09-MC_31X_V3_7TeV-v1/V03-00-34/merged*.root", "", 165.E+3*1./626610., false, false);
+  }    
   
-  std::vector<ProcDSChain> chDYeemm;
-  pickSkimIfExists(chDYeemm, "/data/tmp/cms2/Zmumu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/skimDilepton-20-10/skimZmumu.root", "", 1., true, false);
-  pickSkimIfExists(chDYeemm, "/data/tmp/cms2/Zee_Summer09-MC_31X_V3_7TeV_TrackingParticles-v1/V03-00-35/skimDilepton-20-10/skimZee.root", "", 1., true, false);
-  //  pickSkimIfExists(chDYeemm, "/data/tmp/slava77/cms2/Zmumu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, false);
-  //  pickSkimIfExists(chDYeemm, "/data/tmp/slava77/cms2/Zee_Summer09-MC_31X_V3_7TeV_TrackingParticles-v1/V03-00-35/merged*.root", "", 1., true, false);
+  ProcDSS chVV("VV",kVV, preVV, bitmask);
+  if (runVV){
+    pickSkimIfExists(chVV, "/data/tmp/slava77/cms2/WW_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 43.E+3*1./120280., false, false);
+    pickSkimIfExists(chVV, "/data/tmp/slava77/cms2/WZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 18.E+3*1./114070., false, false); // can try WZ_3l-Pythia
+    pickSkimIfExists(chVV, "/data/tmp/slava77/cms2/ZZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 5.9E+3*1./145368., false, false);
+  }    
+
+  ProcDSS chWjets("wjets",kWjets, preWjets);
+  if (runWjets){
+    pickSkimIfExists(chWjets, "/data/tmp/slava77/cms2/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimDil20.10", 28.E+6*1./11217412., false, false);
+  }
+  
+  ProcDSS chDYtautau("DYtautau", kDYtautau, preDYtautau);
+  if(runDYtautau){
+    pickSkimIfExists(chDYtautau, "/data/tmp/cms2/Ztautau_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/skimDilepton-20-10/skimZtautau.root", "", 1482.E+3*1./2193025., false, false);
+  }
+
+  ProcDSS chDYeemm("DYeemm", kDYeemm, preDYeemm);
+  if (runDYeemm){
+    pickSkimIfExists(chDYeemm, "/data/tmp/cms2/Zmumu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/skimDilepton-20-10/skimZmumu.root", "", 1482.E+3*1./2078932., false, false);
+    pickSkimIfExists(chDYeemm, "/data/tmp/cms2/Zee_Summer09-MC_31X_V3_7TeV_TrackingParticles-v1/V03-00-35/skimDilepton-20-10/skimZee.root", "", 1482.E+3*1./2513855., false, false);
+  }
   
   //ppMuX
-  std::vector<ProcDSChain> chQCD;
-  //ppMuX here  
-  pickSkimIfExists(chQCD, "/data/tmp/cms2/InclusiveMu15_Summer09-MC_31X_V3_7TeV-v1_dilepfilt/V03-00-35/merged*.root", "", 1., true, false); 
-  pickSkimIfExists(chQCD, "/data/tmp/slava77/cms2/QCD_BCtoE_Pt20to30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimDil20.10", 1., true, false);
-  pickSkimIfExists(chQCD, "/data/tmp/slava77/cms2/QCD_BCtoE_Pt30to80_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimDil20.10", 56.700382, false, false);
-  pickSkimIfExists(chQCD, "/data/tmp/slava77/cms2/QCD_BCtoE_Pt80to170_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimDil20.10", 8.0148010, false, false);
-  pickSkimIfExists(chQCD, "/data/tmp/slava77/cms2/QCD_EMEnriched_Pt20to30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimDil20.10", 235.5E9/33545633.*0.0073, false, false);
-  pickSkimIfExists(chQCD, "/data/tmp/slava77/cms2/QCD_EMEnriched_Pt30to80_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimDil20.10", 1., true, false);
-  pickSkimIfExists(chQCD, "/data/tmp/slava77/cms2/QCD_EMEnriched_Pt80to170_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimDil20.10", 24.373495, false, false);
+  ProcDSS chQCD("QCD", kQCD, preQCD);
+  if(runQCD){
+    //ppMuX here  
+    pickSkimIfExists(chQCD, "/data/tmp/cms2/InclusiveMu15_Summer09-MC_31X_V3_7TeV-v1_dilepfilt/V03-00-35/merged*.root", "", 1., true, false); 
+    pickSkimIfExists(chQCD, "/data/tmp/slava77/cms2/QCD_BCtoE_Pt20to30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimDil20.10", 1., true, false);
+    pickSkimIfExists(chQCD, "/data/tmp/slava77/cms2/QCD_BCtoE_Pt30to80_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimDil20.10", 56.700382, false, false);
+    pickSkimIfExists(chQCD, "/data/tmp/slava77/cms2/QCD_BCtoE_Pt80to170_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimDil20.10", 8.0148010, false, false);
+    pickSkimIfExists(chQCD, "/data/tmp/slava77/cms2/QCD_EMEnriched_Pt20to30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimDil20.10", 235.5E9/33545633.*0.0073, false, false);
+    pickSkimIfExists(chQCD, "/data/tmp/slava77/cms2/QCD_EMEnriched_Pt30to80_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimDil20.10", 1., true, false);
+    pickSkimIfExists(chQCD, "/data/tmp/slava77/cms2/QCD_EMEnriched_Pt80to170_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "_skimDil20.10", 24.373495, false, false);
+  }
 
   //tW
-  std::vector<ProcDSChain> cht;
-  pickSkimIfExists(cht, "/data/tmp/slava77/cms2/SingleTop_tWChannel-madgraph_Summer09-MC_31X_V3_7TeV-v2/V03-00-35/merged*.root", "", 1., true, false); 
+  ProcDSS cht("t",kt, pret);
+  if (runt){
+    pickSkimIfExists(cht, "/data/tmp/slava77/cms2/SingleTop_tWChannel-madgraph_Summer09-MC_31X_V3_7TeV-v2/V03-00-35/merged*.root", "", 10.6E+3*1./473237., false, false); 
+  }    
 
-  std::vector<ProcDSChain> chtotr;
-  pickSkimIfExists(chtotr, "/data/tmp/slava77/cms2/SingleTop_sChannel-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 1., true, false); 
-  pickSkimIfExists(chtotr, "/data/tmp/slava77/cms2/SingleTop_tChannel-madgraph_Summer09-MC_31X_V3_7TeV-v2/V03-00-35/merged*.root", "", 1., true, false); 
+  ProcDSS chtotr("totr", ktotr, pretotr);
+  if (runttotr){
+    pickSkimIfExists(chtotr, "/data/tmp/slava77/cms2/SingleTop_sChannel-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", "", 4.6E+3*0.32442*1./409787., false, false); 
+    pickSkimIfExists(chtotr, "/data/tmp/slava77/cms2/SingleTop_tChannel-madgraph_Summer09-MC_31X_V3_7TeV-v2/V03-00-35/merged*.root", "", 63.E+3*0.32442*1./515167., false, false); 
+  }
 
   //Vgamma
-  std::vector<ProcDSChain> chVgamma;
-  //  pickSkimIfExists(chVgamma, "data/AVJets-madgraph_Fall08_IDEAL_V9_v3/merged*.root", "_skimDil20.10", 1., true, false);
+  ProcDSS chVgamma("Vgamma", kVgamma, preVgamma);
+  if(runVgamma){
+  }
 
   //LMs are run and loaded at the same time
   std::vector<TString> lmEs;
   std::vector<TString> lmEds;
-  if (runLM0){
+  if (runLMs){
     lmEs.push_back("LM0"); lmEds.push_back("LM0_Summer09-MC_31X_V3_7TeV-v1");
     lmEs.push_back("LM1"); lmEds.push_back("LM1_Summer09-MC_31X_V3_7TeV-v1");
     lmEs.push_back("LM2"); lmEds.push_back("LM2_Summer09-MC_31X_V3_7TeV-v1");
@@ -568,7 +222,7 @@ void doAllCombined(unsigned int bitmask, bool runTTbarOnly = false){
     lmEs.push_back("LM12"); lmEds.push_back("LM12_Summer09-MC_31X_V3_7TeV-v1");
     for(unsigned int iLm=0; iLm < lmEs.size(); ++iLm){
       cout << "Loading to test presence of files  ... "<<lmEs[iLm].Data()<<endl;
-      std::vector<ProcDSChain> chLM;
+      ProcDSS chLM(lmEs[iLm].Data(),kLM0, preLM0);
       pickSkimIfExists(chLM, Form("/data/tmp/slava77/cms2/%s/V03-00-35/merged*.root",lmEds[iLm].Data()), "", 1., true, false);
     }
   }
@@ -582,69 +236,67 @@ void doAllCombined(unsigned int bitmask, bool runTTbarOnly = false){
   ttDilCounts_looper* looper = new ttDilCounts_looper();
   
   // Process files one at a time, and color them as needed
-  if (runttdil) {
-    cout << "Processing ttbar dileptonic.. "<<endl;
-    looper->ScanChain(chtopdil,"ttdil", kttdil, prettdil, bitmask);
-    cout << "Done Processing ttbar dileptonic.. "<<endl;
-    hist::color("ttdil", kYellow);
+  if (chtopdil.size()>0) {
+    cout << "Processing ... "<<chtopdil.name<<endl;
+    looper->ScanChain(chtopdil, bitmask);
+    hist::color(chtopdil.name.c_str(), kYellow);
   }
-  if (runttotr) {
-    cout << "Processing ttbar no-dileptons.. "<<endl;
-    looper->ScanChain(chtopotr,"ttotr", kttotr, prettotr, bitmask);
-    hist::color("ttotr", 30);
+  if (chtopotr.size()>0) {
+    cout << "Processing  "<<chtopotr.name<<endl;
+    looper->ScanChain(chtopotr, bitmask);
+    hist::color(chtopotr.name.c_str(), 30);
   }
-  if (runVV) {
-    cout << "Processing VV.."<<endl;
-    looper->ScanChain(chVV,"VV", kVV, preVV, bitmask);
-    hist::color("VV", kRed);
+  if (chVV.size()>0) {
+    cout << "Processing .."<<chVV.name<<endl;
+    looper->ScanChain(chVV, bitmask);
+    hist::color(chVV.name.c_str(), kRed);
   }
-  if (runWjets) {
-    cout << "Processing Wjets.."<<endl;
-    looper->ScanChain(chWjets,"wjets", kWjets, preWjets, bitmask);
-    hist::color("wjets", 40);
+  if (chWjets.size()>0) {
+    cout << "Processing "<<chWjets.name<<endl;
+    looper->ScanChain(chWjets, bitmask);
+    hist::color(chWjets.name.c_str(), 40);
   }
-  if (runDYtautau) {
-    cout << "Processing DY->tautau" << endl;
-    looper->ScanChain(chDYtautau,"DYtautau", kDYtautau, preDYtautau, bitmask);
-    hist::color("DYtautau", kBlack);
+  if (chDYtautau.size()>0) {
+    cout << "Processing "<<chDYtautau.name << endl;
+    looper->ScanChain(chDYtautau, bitmask);
+    hist::color(chDYtautau.name.c_str(), kBlack);
   }
-  if (runDYeemm) {
-    cout << "Processing DY->ee/mm" << endl;
-    looper->ScanChain(chDYeemm,"DYeemm", kDYeemm, preDYeemm, bitmask);
-    hist::color("DYeemm", kMagenta);
+  if (chDYeemm.size()>0) {
+    cout << "Processing "<<chDYeemm.name << endl;
+    looper->ScanChain(chDYeemm, bitmask);
+    hist::color(chDYeemm.name.c_str(), kMagenta);
   }
-  if (runQCD) {
-    cout << "Processing ppMuX and EM"<<endl;
-    looper->ScanChain(chQCD,"QCD", kQCD, preQCD, bitmask);
-    hist::color("QCD", 51);
+  if (chQCD.size()>0) {
+    cout << "Processing "<<chQCD.name<<endl;
+    looper->ScanChain(chQCD, bitmask);
+    hist::color(chQCD.name.c_str(), 51);
   }
-  if (runt) {
-    cout << "Processing t"<<endl;
-    looper->ScanChain(cht,"t", kt, pret, bitmask);
-    hist::color("t_", 63);
+  if (cht.size()>0) {
+    cout << "Processing "<<cht.name<<endl;
+    looper->ScanChain(cht, bitmask);
+    hist::color(std::string(cht.name+"_").c_str(), 63);
   }
-  if (runtotr) {
-    cout << "Processing totr"<<endl;
-    looper->ScanChain(chtotr,"totr", ktotr, pretotr, bitmask);
-    hist::color("totr_", 67);
+  if (chtotr.size()>0) {
+    cout << "Processing "<<chtotr.name<<endl;
+    looper->ScanChain(chtotr, bitmask);
+    hist::color(std::string(chtotr.name+"_").c_str(), 67);
   }
 
-  if (runVgamma){
-    cout << "Processing Vgamma ... "<<endl;
-    looper->ScanChain(chVgamma, "Vgamma", kVgamma, preVgamma, bitmask);
+  if (chVgamma.size()>0){
+    cout << "Processing ... "<<chVgamma.name<<endl;
+    looper->ScanChain(chVgamma, bitmask);
   }
     
-  if (runLM0){
+  if (runLMs){
     for(unsigned int iLm=0; iLm < lmEs.size(); ++iLm){
-      cout << "Processing  ... "<<lmEs[iLm].Data()<<endl;
-      std::vector<ProcDSChain> chLM;
+      ProcDSS chLM(lmEs[iLm].Data(), kLM0, preLM0);
+      cout << "Processing  ... "<<chLM.name<<endl;
       pickSkimIfExists(chLM, Form("/data/tmp/slava77/cms2/%s/V03-00-35/merged*.root",lmEds[iLm].Data()), "", 1., true, false);
-      looper->ScanChain(chLM, lmEs[iLm].Data(), kLM0, preLM0, bitmask);
+      looper->ScanChain(chLM, bitmask);
     }
   }
     
-  //save all the histograms
-    
+  //save all the histograms    
   const char* outFile = 0;
   if (!runVgamma) outFile = Form("myHistComb_testfix_%d_%s.root", bitmask, looper->compactConfig.c_str());
   else outFile = Form("myHistComb_wExtras_%d_%s.root", bitmask, looper->compactConfig.c_str());
@@ -654,6 +306,73 @@ void doAllCombined(unsigned int bitmask, bool runTTbarOnly = false){
   cout << "Finished with bitmask "<<bitmask << endl;
 
 
+  gSystem->Exit(0);
+
+}
+  
+
+void doAllRefS10(unsigned long int bitmask, bool runTTbarOnly = false){
+  using namespace std;
+  //See AAA_ListOfBits.txt for the list of bits and their meaning
+
+  // K-factors
+  //these have been k-factors NLO/LO before
+  //now using them as sample normalizations to NLO  
+
+  //It looks like the top x-section is for mtop = 175 GeV
+  float kttdil    = 1.; //375pb, 127000 events processed
+  float kttotr    = 1.; //375pb, 127000 events processed
+
+  // Prescales
+  int prettdil    = 1;
+  int prettotr    = 1;
+
+  // Flags for files to run over
+  bool runttdil    = true;
+  bool runttotr    = true;
+
+  if (runTTbarOnly){
+    runttdil=true;
+    runttotr=true;
+  }
+
+  ProcDSS chtopdil("ttdil",kttdil, prettdil);
+  if (runttdil){
+    pickSkimIfExists(chtopdil, "/data/tmp/slava77/Reference*ntuple.root", "", 100., false, false);
+  }    
+  
+  ProcDSS chtopotr("ttotr",kttotr, prettotr);
+  if (runttotr){
+    pickSkimIfExists(chtopotr, "/data/tmp/slava77/Reference*ntuple.root", "", 100., false, false);
+  }    
+  
+  // Define colors numbers:
+  gStyle->SetPalette(1);
+  enum EColor { kWhite, kBlack, kRed, kGreen, kBlue, kYellow, kMagenta, kCyan };
+  
+
+
+  ttDilRefS10_looper* looper = new ttDilRefS10_looper();
+  
+  // Process files one at a time, and color them as needed
+  if (chtopdil.size()>0) {
+    cout << "Processing ... "<<chtopdil.name<<endl;
+    looper->ScanChain(chtopdil, bitmask);
+    hist::color(chtopdil.name.c_str(), kYellow);
+  }
+  if (chtopotr.size()>0) {
+    cout << "Processing  "<<chtopotr.name<<endl;
+    looper->ScanChain(chtopotr, bitmask);
+    hist::color(chtopotr.name.c_str(), 30);
+  }
+
+  //save all the histograms    
+  const char* outFile = 0;
+  outFile = Form("histComb_refS10_%d_%s.root", bitmask, looper->compactConfig.c_str());
+  hist::saveHist(outFile);
+  hist::deleteHistos();
+
+  cout << "Finished with bitmask "<<bitmask << endl;
   gSystem->Exit(0);
 
 }
@@ -698,18 +417,18 @@ void doDYandTT_PY(unsigned int bitmask){
   bool runDYmm     = true;
   bool runDYtautau = true;
 
-  std::vector<ProcDSChain> chtopdil;
+  ProcDSS chtopdil("ttdil", kttdil, prettdil);
   pickSkimIfExists(chtopdil, "data/TauolaTTbar-Pythia/merged*.root", "_skimSimple2020anydil");
-  std::vector<ProcDSChain> chtopotr;
+  ProcDSS chtopotr("ttotr", kttotr, prettotr);
   pickSkimIfExists(chtopotr, "data/TauolaTTbar-Pythia/merged*.root", "_skimSimple2020nodil");
 
 
   //Need to include the same mass range
-  std::vector<ProcDSChain> chDYtautau;
+  ProcDSS chDYtautau("DYtautau", kDYtautau, preDYtautau);
   pickSkimIfExists(chDYtautau, "data/Ztautau_M20_Summer08_IDEAL_V9_v1/merged*.root_skimSimple2020_m50", "");
-  std::vector<ProcDSChain> chDYee;
+  ProcDSS chDYee("DYee", kDYee, preDYee);
   pickSkimIfExists(chDYee, "data/Zee_M20_Summer08_IDEAL_V9_reco-v3/merged*.root_skimSimple2020_m50", "");
-  std::vector<ProcDSChain> chDYmm;
+  ProcDSS chDYmm("DYmm", kDYmm, preDYmm);
   pickSkimIfExists(chDYmm, "data/Zmumu_M20_Summer08_IDEAL_V9_reco-v2/merged*.root_skimSimple2020_m50", "");
 
   // Define colors numbers:
@@ -721,32 +440,32 @@ void doDYandTT_PY(unsigned int bitmask){
   ttDilCounts_looper* looper = new ttDilCounts_looper();
   
   // Process files one at a time, and color them as needed
-  if (runttdil) {
-    cout << "Processing ttbar dileptonic.. "<<endl;
-    looper->ScanChain(chtopdil,"ttdil", kttdil, prettdil, bitmask);
+  if (chtopotr.size()>0) {
+    cout << "Processing "<<chtopdil.name<<endl;
+    looper->ScanChain(chtopdil, bitmask);
     cout << "Done Processing ttbar dileptonic.. "<<endl;
-    hist::color("ttdil", kYellow);
+    hist::color(chtopdil.name.c_str(), kYellow);
   }
-  if (runttotr) {
-    cout << "Processing ttbar no-dileptons.. "<<endl;
-    looper->ScanChain(chtopotr,"ttotr", kttotr, prettotr, bitmask);
-    hist::color("ttotr", 30);
+  if (chtopdil.size()>0) {
+    cout << "Processing .. "<< chtopotr.name<<endl;
+    looper->ScanChain(chtopotr, bitmask);
+    hist::color(chtopotr.name.c_str(), 30);
   }
 
-  if (runDYtautau) {
-    cout << "Processing DY->tautau" << endl;
-    looper->ScanChain(chDYtautau,"DYtautau", kDYtautau, preDYtautau, bitmask);
-    hist::color("DYtautau", kBlack);
+  if (chDYtautau.size()>0) {
+    cout << "Processing "<<chDYtautau.name << endl;
+    looper->ScanChain(chDYtautau,bitmask);
+    hist::color(chDYtautau.name.c_str(), kBlack);
   }
-  if (runDYee) {
-    cout << "Processing DY->ee" << endl;
-    looper->ScanChain(chDYee,"DYee", kDYee, preDYee, bitmask);
-    hist::color("DYee", kMagenta);
+  if (chDYee.size()) {
+    cout << "Processing "<<chDYee.name << endl;
+    looper->ScanChain(chDYee,bitmask);
+    hist::color(chDYee.name.c_str(), kMagenta);
   }
-  if (runDYmm) {
-    cout << "Processing DY->mm" << endl;
-    looper->ScanChain(chDYmm,"DYmm", kDYmm, preDYmm, bitmask);
-    hist::color("DYmm", kCyan);
+  if (chDYmm.size()) {
+    cout << "Processing "<<chDYmm.name << endl;
+    looper->ScanChain(chDYmm,bitmask);
+    hist::color(chDYmm.name.c_str(), kCyan);
   }
   //save all the histograms
     
@@ -764,19 +483,7 @@ void doDYandTT_PY(unsigned int bitmask){
 void doDYandTT_MG(unsigned int bitmask){
   using namespace std;
   //see cuts written up above in the doAll()
- 
-  // Load various tools  
-  //  gROOT->ProcessLine(Form(".x setup.C(%d)",skipFWLite));
 
-  // Load and compile the looping code
-  //  gSystem->CompileMacro("ttDilCounts_looper.C", "++k", "libttDilCounts_looper");
-  
-  // K-factors
-  //these have been k-factors NLO/LO before
-  //now using them as sample normalizations to NLO
-  
-  //these two are taken from Ceballos's pdf. 
-  //It looks like the top x-section is for mtop = 175 GeV
   float kttdil    = 1.; 
   float kttotr    = 1.; 
 
@@ -800,16 +507,16 @@ void doDYandTT_MG(unsigned int bitmask){
   bool runDYmm     = true;
   bool runDYtautau = true;
 
-  std::vector<ProcDSChain> chtopdil;
+  ProcDSS chtopdil("ttdil", kttdil, prettdil);
   pickSkimIfExists(chtopdil, "data/TTJets-madgraph_Fall08_IDEAL_V11_redigi_v10/merged*.root", "_skimSimple2020anydil");
-  std::vector<ProcDSChain> chtopotr;
+  ProcDSS chtopotr("ttotr", kttotr, prettotr);
   pickSkimIfExists(chtopotr, "data/TTJets-madgraph_Fall08_IDEAL_V11_redigi_v10/merged*.root", "_skimSimple2020nodil");
 
-  std::vector<ProcDSChain> chDYtautau;
+  ProcDSS chDYtautau("DYtautau", kDYtautau, preDYtautau);
   pickSkimIfExists(chDYtautau, "data/ZJets-madgraph_Summer08_IDEAL_V11_redigi_v1/merged*.root", "_skimSimple2020tautau");
-  std::vector<ProcDSChain> chDYee;
+  ProcDSS chDYee("DYee", kDYee, preDYee);
   pickSkimIfExists(chDYee, "data/ZJets-madgraph_Summer08_IDEAL_V11_redigi_v1/merged*.root", "_skimSimple2020ee");
-  std::vector<ProcDSChain> chDYmm;
+  ProcDSS chDYmm("DYmm", kDYmm, preDYmm);
   pickSkimIfExists(chDYmm, "data/ZJets-madgraph_Summer08_IDEAL_V11_redigi_v1/merged*.root", "_skimSimple2020mm");
   
 
@@ -822,32 +529,31 @@ void doDYandTT_MG(unsigned int bitmask){
   ttDilCounts_looper* looper = new ttDilCounts_looper();
   
   // Process files one at a time, and color them as needed
-  if (runttdil) {
-    cout << "Processing ttbar dileptonic.. "<<endl;
-    looper->ScanChain(chtopdil,"ttdil", kttdil, prettdil, bitmask);
-    cout << "Done Processing ttbar dileptonic.. "<<endl;
-    hist::color("ttdil", kYellow);
+  if (chtopdil.size()) {
+    cout << "Processing  "<<chtopdil.name<<endl;
+    looper->ScanChain(chtopdil, bitmask);
+    hist::color(chtopdil.name.c_str(), kYellow);
   }
-  if (runttotr) {
-    cout << "Processing ttbar no-dileptons.. "<<endl;
-    looper->ScanChain(chtopotr,"ttotr", kttotr, prettotr, bitmask);
-    hist::color("ttotr", 30);
+  if (chtopotr.size()) {
+    cout << "Processing .. "<<chtopotr.name<<endl;
+    looper->ScanChain(chtopotr, bitmask);
+    hist::color(chtopotr.name.c_str(), 30);
   }
 
-  if (runDYtautau) {
-    cout << "Processing DY->tautau" << endl;
-    looper->ScanChain(chDYtautau,"DYtautau", kDYtautau, preDYtautau, bitmask);
-    hist::color("DYtautau", kBlack);
+  if (chDYtautau.size()) {
+    cout << "Processing "<<chDYtautau.name << endl;
+    looper->ScanChain(chDYtautau,bitmask);
+    hist::color(chDYtautau.name.c_str(), kBlack);
   }
-  if (runDYee) {
-    cout << "Processing DY->ee" << endl;
-    looper->ScanChain(chDYee,"DYee", kDYee, preDYee, bitmask);
-    hist::color("DYee", kMagenta);
+  if (chDYee.size()) {
+    cout << "Processing "<<chDYee.name << endl;
+    looper->ScanChain(chDYee,bitmask);
+    hist::color(chDYee.name.c_str(), kMagenta);
   }
-  if (runDYmm) {
-    cout << "Processing DY->mm" << endl;
-    looper->ScanChain(chDYmm,"DYmm", kDYmm, preDYmm, bitmask);
-    hist::color("DYmm", kCyan);
+  if (chDYmm.size()) {
+    cout << "Processing "<<chDYmm.name << endl;
+    looper->ScanChain(chDYmm,bitmask);
+    hist::color(chDYmm.name.c_str(), kCyan);
   }
   //save all the histograms
     
