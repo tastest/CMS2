@@ -361,7 +361,7 @@ unsigned int electronId_VBTF(const unsigned int index, const vbtf_tightness tigh
 //
 float electronIsolation_rel(const unsigned int index, bool use_calo_iso)
 {
-    float sum = cms2.els_tkIso().at(index);
+    float sum = cms2.els_tkJuraIso().at(index);
     if (use_calo_iso) {
         if (fabs(cms2.els_etaSC().at(index)) > 1.479) sum += cms2.els_ecalIso().at(index);
         if (fabs(cms2.els_etaSC().at(index)) <= 1.479) sum += max(0., (cms2.els_ecalIso().at(index) -1.));
