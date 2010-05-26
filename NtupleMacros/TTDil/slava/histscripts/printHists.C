@@ -14,7 +14,7 @@ double bOnlyProb(double s, double b, double bE){
   for (int i=lowExp; i>=0; --i){
     if (b> 0. && bE/b>0.03 && s>0.1*b && bE<0.5*s){
       pSum+= poisson_smeared_prob(i,b, bE);
-    } else {//use regualar Poisson here
+    } else if (b>0.){//use regualar Poisson here
       pSum+= TMath::Poisson(i,b);
     }
   }
