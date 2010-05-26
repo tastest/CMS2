@@ -1577,45 +1577,36 @@ double evt_tcmetPhi_hyp(unsigned int hypIdx,bool useCorrTCMET){
 
 // met cut for ttbar dilepton analysis...
 // includes a boolean to switch to tcmet
-bool passMetAsIs_OF20_SF30(float met, int hyp_type){
+bool passMet_OF_SF(float met, int hyp_type, float ofCut, float sfCut){
   if  (hyp_type == 0 || hyp_type == 3) {
-    if (met < 30) return false;
+    if (met < sfCut) return false;
   }
   
   if (hyp_type == 1 || hyp_type == 2) {
-    if (met < 20) return false;
+    if (met < ofCut) return false;
   }
   return true;
 }  
 
-bool passMet_OF20_SF30(int hypIdx, METCollectionType metType) {
+bool passMet_OF_SF(int hypIdx, METCollectionType metType, float ofCut, float sfCut) {
   int hyp_type = cms2.hyp_type()[hypIdx];
   switch(metType){
-  case PatMETCor_mct: return passMetAsIs_OF20_SF30(met_pat_metCor_hyp(hypIdx), hyp_type);
+  case PatMETCor_mct: return passMet_OF_SF(met_pat_metCor_hyp(hypIdx), hyp_type, ofCut, sfCut);
   case TCMET_mct: 
-  case TCMETLocal_mct:  return passMetAsIs_OF20_SF30(evt_tcmet_hyp(hypIdx, metType==TCMET_mct?false:true), hyp_type);
-  case PFMET_mct: return passMetAsIs_OF20_SF30(cms2.evt_pfmet(),hyp_type);
+  case TCMETLocal_mct:  return passMet_OF_SF(evt_tcmet_hyp(hypIdx, metType==TCMET_mct?false:true), hyp_type, ofCut, sfCut);
+  case PFMET_mct: return passMet_OF_SF(cms2.evt_pfmet(),hyp_type, ofCut, sfCut);
   default:
     {
-      std::cout<<"ERROR passMet_OF20_SF30 with this MET type ("<<metType<<") not implemented"<<std::endl;
+      std::cout<<"ERROR passMet_OF_SF with this MET type ("<<metType<<") not implemented"<<std::endl;
       exit(66);
     }
   }
   return false;
 }
-//  ***** The following two functions should be deprecated *********************
-//  ***** and substituted by the preceeding one            *********************
-// event-level pat-met: emu met >20, mm,em met>30
-bool passPatMet_OF20_SF30(float metx, float mety, int hypIdx){
-  float mymet = sqrt(metx*metx + mety*mety);
-  return passMetAsIs_OF20_SF30(mymet, cms2.hyp_type()[hypIdx]);
+bool passMet_OF20_SF30(int hypIdx, METCollectionType metType) {
+  return passMet_OF_SF(hypIdx, metType, 20, 30);
 }
-// event-level pat-met: emu met >20, mm,em met>30
-bool passPatMet_OF20_SF30(int hypIdx){
-  return passPatMet_OF20_SF30(met_pat_metCor_hyp(hypIdx)*cos(met_pat_metPhiCor_hyp(hypIdx)), 
-			      met_pat_metCor_hyp(hypIdx)*sin(met_pat_metPhiCor_hyp(hypIdx)),
-			      hypIdx);
-}
+
 // met-special cut at 10 in 0 and 1 jet bins
 bool passProjMet10TT(float metx, float mety, int hypIdx, int nJets){
   float metphi = atan2(mety,metx);
@@ -1657,44 +1648,9 @@ bool passProjMet10TT(int hypIdx, METCollectionType metType, int nJets){
 //**************************************************************************
 // met cut for ttbar dilepton analysis...
 // includes a boolean to switch to tcmet
-bool passMet_OF30_SF50(int hypIdx, bool useTcMet,bool useCorrTCMET) {
-  float mymet;
-  if (useTcMet||useCorrTCMET) {
-    mymet = evt_tcmet_hyp(hypIdx,useCorrTCMET);
-  } else {
-    mymet = met_pat_metCor_hyp(hypIdx);
-  }
-  if  (cms2.hyp_type().at(hypIdx) == 0 || cms2.hyp_type().at(hypIdx) == 3) {
-    if (mymet < 50) return false;
-  }
-  
-  if (cms2.hyp_type().at(hypIdx) == 1 || cms2.hyp_type().at(hypIdx) == 2) {
-    if (mymet < 30) return false;
-  }
-  return true;
+bool passMet_OF30_SF50(int hypIdx, METCollectionType metType) {
+  return passMet_OF_SF(hypIdx, metType, 30, 50);
 }  
-//  ***** The following two functions should be deprecated *********************
-//  ***** and substituted by the preceeding one            *********************
-// event-level pat-met: emu met >20, mm,em met>30
-bool passPatMet_OF30_SF50(float metx, float mety, int hypIdx){
-  float mymet = sqrt(metx*metx + mety*mety);
-  if  (cms2.hyp_type().at(hypIdx) == 0 || cms2.hyp_type().at(hypIdx) == 3) {
-    if (mymet < 50) return false;
-  }
-  
-  if (cms2.hyp_type().at(hypIdx) == 1 || cms2.hyp_type().at(hypIdx) == 2) {
-    if (mymet < 30) return false;
-  }
-  return true;
-}
-// event-level pat-met: emu met >30, mm,em met>50
-bool passPatMet_OF30_SF50(int hypIdx){
-  return passPatMet_OF30_SF50(met_pat_metCor_hyp(hypIdx)*cos(met_pat_metPhiCor_hyp(hypIdx)), 
-			      met_pat_metCor_hyp(hypIdx)*sin(met_pat_metPhiCor_hyp(hypIdx)),
-			      hypIdx);
-}
-
-//**************************************************************************
 
 //-----------------------------------------------------------------------------------------------
 //New selections for the common TTDil working group
@@ -2582,6 +2538,7 @@ int genpCountPDGId(int id0, int id1, int id2){
   int count = 0; 
   int size = cms2.genps_id().size(); 
   for (int jj=0; jj<size; jj++) { 
+    if (cms2.genps_status()[jj]!=3) continue;
     if (abs(cms2.genps_id().at(jj)) == id0) count++; 
     if (abs(cms2.genps_id().at(jj)) == id1) count++; 
     if (abs(cms2.genps_id().at(jj)) == id2) count++; 
@@ -2593,18 +2550,73 @@ int getNumberStatus3Leptons() {
  
   int count = 0;
   for(unsigned int i = 0; i < cms2.genps_id().size(); i++) {
+    if (cms2.genps_status()[i]!=3 && abs(cms2.genps_id_mother()[i]) >100) continue;
     if(abs(cms2.genps_id()[i]) == 11 || abs(cms2.genps_id()[i]) == 13)
       count++;
     if(abs(cms2.genps_id()[i]) == 15) {
+      int nLDau = 0;
+      int nHDau = 0;
       for(unsigned int j = 0; j < cms2.genps_lepdaughter_id()[i].size(); j++) {
         int daughter = abs(cms2.genps_lepdaughter_id()[i][j]);
-        if( daughter == 11 || daughter == 13)
-          count++;
+        if( daughter == 11 || daughter == 13){
+	  nLDau++;
+	}
+	if (daughter > 100){
+	  nHDau++;
+	}
       }//daughter loop
+      if (nHDau == 0 ) count+=nLDau;
     }//taus
   }//geps loop
 
   return count;
+ 
+}
+
+int getGenDilType(bool skipTaus = false) {
+ 
+  int count = 0;
+  int countE = 0;
+  int countM = 0;
+  for(unsigned int i = 0; i < cms2.genps_id().size(); i++) {
+    if (cms2.genps_status()[i]!=3 && abs(cms2.genps_id_mother()[i]) >100 ) continue;
+    if(abs(cms2.genps_id()[i]) == 11 || abs(cms2.genps_id()[i]) == 13){
+      count++;
+      if (abs(cms2.genps_id()[i]) == 11){
+	countE++;
+      } else {
+	countM++;
+      }
+    }
+    if(abs(cms2.genps_id()[i]) == 15 && ! skipTaus) {
+      int nLDau = 0;
+      int nHDau = 0;
+      for(unsigned int j = 0; j < cms2.genps_lepdaughter_id()[i].size(); j++) {
+        int daughter = abs(cms2.genps_lepdaughter_id()[i][j]);
+	if (daughter > 100 ) nHDau++;
+      }
+      if (nHDau == 0){
+	for(unsigned int j = 0; j < cms2.genps_lepdaughter_id()[i].size(); j++) {
+	  int daughter = abs(cms2.genps_lepdaughter_id()[i][j]);
+	  if( daughter == 11 || daughter == 13){
+	    count++;
+	    if (daughter == 11){
+	      countE++;
+	    } else {
+	      countM++;
+	    }
+	  }
+	}
+      }//daughter loop
+    }//taus
+  }//geps loop
+
+  int genDilType = -1;
+  if (countE == 2) genDilType = 0;
+  if (countM == 2) genDilType = 1;
+  if (countE == 1 && countM ==1) genDilType = 2;
+
+  return genDilType;
  
 }
 
@@ -3143,6 +3155,31 @@ bool isGoodDilHypJet(unsigned int jetIdx, unsigned int hypIdx, double ptCut, dou
   if (cms2.jets_cor()[jetIdx]*cms2.jets_p4()[jetIdx].pt()< ptCut || fabs(cms2.jets_p4()[jetIdx].eta())> absEtaCut) return false;
   double dR_ll = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[hypIdx],cms2.jets_p4()[jetIdx]);
   double dR_lt = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[hypIdx],cms2.jets_p4()[jetIdx]);
+  
+  if (abs(cms2.hyp_ll_id()[hypIdx]) == 11){
+    if (dR_ll < dRCut) return false;
+  }
+  if (abs(cms2.hyp_lt_id()[hypIdx]) == 11){
+    if (dR_lt < dRCut) return false;
+  }
+
+  if (muJetClean){
+    if (abs(cms2.hyp_ll_id()[hypIdx]) == 13){
+      if (dR_ll < dRCut) return false;
+    }
+    if (abs(cms2.hyp_lt_id()[hypIdx]) == 13){
+      if (dR_lt < dRCut) return false;
+    }
+  }
+
+  return true;
+
+}
+bool isGoodDilHypJet(P4 jp4, unsigned int hypIdx, double ptCut, double absEtaCut, double dRCut, bool muJetClean){
+  if (jp4.pt()< ptCut || fabs(jp4.eta())> absEtaCut) return false;
+  using ROOT::Math::VectorUtil::DeltaR;
+  double dR_ll = DeltaR(cms2.hyp_ll_p4()[hypIdx], jp4);
+  double dR_lt = DeltaR(cms2.hyp_lt_p4()[hypIdx], jp4);
   
   if (abs(cms2.hyp_ll_id()[hypIdx]) == 11){
     if (dR_ll < dRCut) return false;
