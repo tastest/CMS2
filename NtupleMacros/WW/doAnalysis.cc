@@ -200,7 +200,7 @@ unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated){
 //
 
 bool passedTriggerRequirements(HypTypeInNtuples type) {
-  bool hlt_ele15_lw_l1r = cms2.passHLTTrigger("HLT_Ele15_LW_L1R");
+  bool hlt_ele15_lw_l1r = cms2.passHLTTrigger("HLT_Ele15_SW_L1R");
   bool hltMu9           = passedMuonTriggerRequirements();
  
   if (type == MuMu && ! (hltMu9) ) return false;
@@ -1229,7 +1229,8 @@ void AddIsoSignalControlSample( int i_hyp, double kFactor, RooDataSet* dataset) 
 
 RooDataSet* ScanChain( TChain* chain, 
 		       enum Sample sample, 
-		       double kFactor, 
+		       double integratedLumi, // in unit of pb^-1
+		       double xsec,
 		       bool identifyEvents, 
 		       bool qcdBackground) 
 {
@@ -1242,8 +1243,7 @@ RooDataSet* ScanChain( TChain* chain,
  // declare and create array of histograms
   const char *prefix = SampleName(sample);
   RooDataSet* dataset = MakeNewDataset(prefix);
-  kFactor *= .1; // 100pb-1
-
+  
   hypos_total          = new TH1F(Form("%s_hypos_total",prefix),"Total number of hypothesis counts",4,0,4);
   hypos_total_weighted = new TH1F(Form("%s_hypos_total_weighted",prefix),"Total number of hypotheses (weighted)",4,0,4);
   hypos_total_weighted->Sumw2();
@@ -1422,59 +1422,62 @@ RooDataSet* ScanChain( TChain* chain,
        assert(tree);
 
        cms2.Init(tree);  // set branch addresses for TTree tree
-
+       
+       // Reset the kFactor if the xsec argument is specified
+       double kFactor = integratedLumi/1000.0;
+       if( xsec > 0) kFactor = (integratedLumi/1000.0) * xsec / (cms2.evt_xsec_excl()*cms2.evt_kfactor());
+       
        TStopwatch t;
        //Event Loop
        unsigned int nEvents = tree->GetEntries();
        for( unsigned int event = 0; event < nEvents; ++event) {
-	    cms2.GetEntry(event);  // get entries for Event number event from branches of TTree tree
-	    ++nEventsTotal;
-	    if (qcdBackground) {
-	      // get fake rates
-	      extractFakeRateSingleLepton();
-	      // isolation
-	      extractIsoSingleLepton();
-	    }
-	    
-	    if (cms2.trks_d0().size() == 0) continue;  // needed to get rid of back Monte Carlo events in CMSSW_2_X analysis
-	    if (cms2.hyp_type().size() == 0) continue; // skip events without hypothesis
-	    EventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.evt_lumiBlock(), cms2.trks_d0()[0], 
-				   cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
-	    if (is_duplicate(id)) {
-	      duplicates_total_n++;
-	      duplicates_total_weight += cms2.evt_scale1fb();
-	      // cout << "Duplicate event found. Run: " << cms2.evt_run() << ", Event:" << cms2.evt_event() << ", Lumi: " << cms2.evt_lumiBlock() << endl;
-	      continue;
-	    }
-	    
-	    int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
-	    if (i_permille != i_permille_old) {
-		 // xterm magic from L. Vacavant and A. Cerri
-		 printf("\015\033[32m ---> \033[1m\033[31m%4.1f%%"
-			"\033[0m\033[32m <---\033[0m\015", i_permille/10.);
-		 fflush(stdout);
-		 i_permille_old = i_permille;
-	    }
-	    
-	    if ( identifyEvents ){
-	      // check if we know what we are looking at
-	      if ( ! isIdentified(sample) ) nFailedIdentification++;
-	      
-	      // filter by process
-	      if ( ! filterByProcess(sample) ) {
-		nFilteredOut++;
-		continue;
-	      }
-	    }
-	    
-	    
-	    // loop over hypothesis candidates
-	    unsigned int nHyps = cms2.hyp_type().size();
-	    for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
-	      if(cms2.hyp_p4().at(i_hyp).mass2() < 0 ) break;
-	      hypo(i_hyp, kFactor, dataset);
-	      AddIsoSignalControlSample(i_hyp, kFactor, dataset);
-	    }
+	 cms2.GetEntry(event);  // get entries for Event number event from branches of TTree tree
+	 ++nEventsTotal;
+	 if (qcdBackground) {
+	   // get fake rates
+	   extractFakeRateSingleLepton();
+	   // isolation
+	   extractIsoSingleLepton();
+	 }
+	 
+	 if (cms2.trks_d0().size() == 0) continue;  // needed to get rid of back Monte Carlo events in CMSSW_2_X analysis
+	 if (cms2.hyp_type().size() == 0) continue; // skip events without hypothesis
+	 EventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.evt_lumiBlock(), cms2.trks_d0()[0], 
+				cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
+	 if (is_duplicate(id)) {
+	   duplicates_total_n++;
+	   duplicates_total_weight += cms2.evt_scale1fb();
+	   // cout << "Duplicate event found. Run: " << cms2.evt_run() << ", Event:" << cms2.evt_event() << ", Lumi: " << cms2.evt_lumiBlock() << endl;
+	   continue;
+	 }
+	 
+	 int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
+	 if (i_permille != i_permille_old) {
+	   // xterm magic from L. Vacavant and A. Cerri
+	   printf("\015\033[32m ---> \033[1m\033[31m%4.1f%%"
+		  "\033[0m\033[32m <---\033[0m\015", i_permille/10.);
+	   fflush(stdout);
+	   i_permille_old = i_permille;
+	 }
+	 
+	 if ( identifyEvents ){
+	   // check if we know what we are looking at
+	   if ( ! isIdentified(sample) ) nFailedIdentification++;
+	   
+	   // filter by process
+	   if ( ! filterByProcess(sample) ) {
+	     nFilteredOut++;
+	     continue;
+	   }
+	 }
+	 
+	 // loop over hypothesis candidates
+	 unsigned int nHyps = cms2.hyp_type().size();
+	 for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
+	   if(cms2.hyp_p4().at(i_hyp).mass2() < 0 ) break;
+	   hypo(i_hyp, kFactor, dataset);
+	   AddIsoSignalControlSample(i_hyp, kFactor, dataset);
+	 }
        }
        t.Stop();
        printf("Finished processing file: %s\n",currentFile->GetTitle());
@@ -1588,7 +1591,8 @@ bool isIdentified( enum Sample sample ) {
 
 void ProcessSample( std::string file_pattern, 
 		    Sample sample, 
-		    double kFactor,
+		    double integratedLumi,
+		    double xsec,
 		    RooDataSet* output_dataset, 
 		    Color_t color, 
 		    bool identifyEvents,
@@ -1596,12 +1600,13 @@ void ProcessSample( std::string file_pattern,
 {
   std::vector<string> vec;
   vec.push_back(file_pattern);
-  ProcessSample(vec,sample,kFactor,output_dataset,color,identifyEvents,qcdBackground);
+  ProcessSample(vec,sample,integratedLumi,xsec,output_dataset,color,identifyEvents,qcdBackground);
 }
 
 void ProcessSample( std::vector<std::string> file_patterns, 
 		    Sample sample, 
-		    double kFactor,
+		    double integratedLumi,
+		    double xsec,
 		    RooDataSet* output_dataset, 
 		    Color_t color, 
 		    bool identifyEvents,
@@ -1616,7 +1621,7 @@ void ProcessSample( std::vector<std::string> file_patterns,
     SkimChain(tchain);
   } else {
     std::cout << "Processing " << SampleName(sample) << ".." << std::endl;
-    RooDataSet* data = ScanChain(tchain,sample,kFactor,identifyEvents,qcdBackground);
+    RooDataSet* data = ScanChain(tchain,sample,integratedLumi,xsec,identifyEvents,qcdBackground);
     if( data ){
       if ( output_dataset )
 	output_dataset->append(*data);

@@ -51,7 +51,7 @@ void processData()
   bool runDYtt  = 1;
   bool runttbar = 1;
   bool runtW    = 1;
-  bool runQCD   = 1; 
+  bool runQCD   = 0; 
 
   // 
   // Ntuple version
@@ -82,37 +82,38 @@ void processData()
   string dataset = "data";
  
   if (runWW)
-    ProcessSample(dataset+"/WW_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", WW, 1.53, fullDataSet, kRed);
+    ProcessSample(dataset+"/WW_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", WW, 100.0, 42.84, fullDataSet, kRed);
 
   if (runWZ)
-    ProcessSample(dataset+"/WZ_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", WZ, 1.71, fullDataSet, kBlue);
+    ProcessSample(dataset+"/WZ_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", WZ, 100.0, 18.0, fullDataSet, kBlue);
   
   if (runZZ)
-    ProcessSample(dataset+"/ZZ_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", ZZ, 1.37, fullDataSet, kGreen);
+    ProcessSample(dataset+"/ZZ_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", ZZ, 100.0, 5.9, fullDataSet, kGreen);
  
   if (runWjets)
-    ProcessSample(dataset+"/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", Wjets, 1.0, fullDataSet, 40);
+    ProcessSample(dataset+"/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", Wjets, 100.0, 27360, fullDataSet, 40);
+
 
   if (runDYee)
-    ProcessSample(dataset+"/Zee_Summer09-MC_31X_V3_7TeV_TrackingParticles-v1/"+version+"/merged_ntuple*.root", DYee, 1.14, fullDataSet, kMagenta, identifyDYEvents);
+    ProcessSample(dataset+"/Zee_Summer09-MC_31X_V3_7TeV_TrackingParticles-v1/"+version+"/merged_ntuple*.root", DYee, 100.0, 1482.0, fullDataSet, kMagenta, identifyDYEvents);
  
   if (runDYmm)
-    ProcessSample(dataset+"/Zmumu_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", DYmm, 1.14, fullDataSet, kCyan, identifyDYEvents);
+    ProcessSample(dataset+"/Zmumu_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", DYmm, 100.0, 1482.0*1.00, fullDataSet, kCyan, identifyDYEvents);
  
   if (runDYtt)
-    ProcessSample(dataset+"/Ztautau_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", DYtt, 1.14, fullDataSet, kBlack, identifyDYEvents);
+    ProcessSample(dataset+"/Ztautau_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root", DYtt, 100.0, 1482.0*1.00, fullDataSet, kBlack, identifyDYEvents);
 
   if (runttbar)
-    ProcessSample(dataset+"/TTbarJets-madgraph_Summer09-MC_31X_V3_7TeV-v2/"+version+"/merged_ntuple*.root", ttbar, 0.88, fullDataSet, kYellow);
+    ProcessSample(dataset+"/TTbarJets-madgraph_Summer09-MC_31X_V3_7TeV-v2/"+version+"/merged_ntuple*.root", ttbar, 100.0, 165.0, fullDataSet, kYellow);
  
   if (runtW)
-    ProcessSample(dataset+"/SingleTop_tWChannel-madgraph_Summer09-MC_31X_V3_7TeV-v2/"+version+"/merged_ntuple*.root", tW, 1.0, fullDataSet, 63);
+    ProcessSample(dataset+"/SingleTop_tWChannel-madgraph_Summer09-MC_31X_V3_7TeV-v2/"+version+"/merged_ntuple*.root", tW, 100.0, 11.00, fullDataSet, 63);
   
   std::vector<string> qcdSamples;
   qcdSamples.push_back(dataset+"/QCD_Pt30_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root");
   qcdSamples.push_back(dataset+"/QCD_Pt80_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root");
   if (runQCD)
-    ProcessSample(qcdSamples, qcd, 1.0, fullDataSet, 40, false, true);
+    ProcessSample(qcdSamples, qcd, 100.0, -1, fullDataSet, 40, false, true);
   
   /*
   //QCD file

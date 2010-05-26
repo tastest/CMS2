@@ -153,7 +153,8 @@ void AddIsoSignalControlSample( int i_hyp, double kFactor, RooDataSet* dataset =
 class TChain;
 RooDataSet* ScanChain( TChain* chain, 
 		       Sample sample, 
-		       double kFactor,  
+		       double integratedLumi,
+		       double xsec,
 		       bool identifyEvents,
 		       bool qcdBackground = false);
 void SkimChain(TChain* chain);
@@ -161,14 +162,16 @@ bool passedSkimSelection();
 
 void ProcessSample( std::string file_pattern, 
 		    Sample sample, 
-		    double kFactor,
+		    double integratedLumi,
+		    double xsec,
 		    RooDataSet* output_dataset, 
 		    Color_t color, 
 		    bool identifyEvents = false,
 		    bool qcdBackground = false);
 void ProcessSample( std::vector<std::string> file_patterns, 
 		    Sample sample,
-		    double kFactor,
+		    double integratedLumi,
+		    double xsec,
 		    RooDataSet* output_dataset, 
 		    Color_t color, 
 		    bool identifyEvents = false,
