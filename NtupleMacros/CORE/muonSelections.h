@@ -10,7 +10,9 @@ enum SelectionType {
   FakableObject = 0, 
   Nominal = 1, 
   Tight = 2,
-  NominalTTbar = 3
+  NominalTTbar = 3,
+  FakeableTTbarV1 = 4,
+  TTbarRefS10 = 5
 }; 
 
 //
