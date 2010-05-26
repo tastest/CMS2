@@ -35,6 +35,7 @@ bool electronSelection_cand01(const unsigned int index);
 bool electronSelection_cand02(const unsigned int index);
 bool electronSelectionTTbar_egLoose(const unsigned int index);
 bool electronSelectionTTbar_tasCand01(const unsigned int index);
+bool electronSelectionTTbar_refS10(const unsigned int index);
 
 //
 // candidate electron id function

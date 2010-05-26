@@ -9,7 +9,7 @@
 
 bool electronSelection_cand01(const unsigned int index)
 {
-  if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+  if (!(cms2.els_type()[index] & (1<<ISECALDRIVEN))) return false;
   if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
   if (!electronId_noMuon(index)) return false;
   if (!electronId_cand01(index)) return false;
@@ -21,7 +21,7 @@ bool electronSelection_cand01(const unsigned int index)
 
 bool electronSelection_cand02(const unsigned int index)
 {
-  if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+  if (!(cms2.els_type()[index] & (1<<ISECALDRIVEN))) return false;
   if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
   if (!electronId_noMuon(index)) return false;
   if (!electronId_cand02(index)) return false;
@@ -36,7 +36,18 @@ bool electronSelection_cand02(const unsigned int index)
 // and conversion rejection
 bool electronSelectionTTbar_egLoose(const unsigned int index)
 {
-  if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+  if (!(cms2.els_type()[index] & (1<<ISECALDRIVEN))) return false;
+  if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
+  if (!electronId_noMuon(index)) return false;
+  if (!electronId_classBasedLoose(index)) return false; // egamma_looseId
+  if (!electronImpactTTbar(index)) return false;
+  if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
+  if (isFromConversionPartnerTrack(index)) return false;
+  return true;
+}
+bool electronSelectionTTbar_egLoose(const unsigned int index, unsigned int fakeableV)
+{
+  if (!(cms2.els_type()[index] & (1<<ISECALDRIVEN))) return false;
   if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
   if (!electronId_noMuon(index)) return false;
   if (!electronId_classBasedLoose(index)) return false; // egamma_looseId
@@ -50,13 +61,32 @@ bool electronSelectionTTbar_egLoose(const unsigned int index)
 // and conversion rejection
 bool electronSelectionTTbar_tasCand01(const unsigned int index)
 {
-  if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
+  if (!(cms2.els_type()[index] & (1<<ISECALDRIVEN))) return false;
   if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
   if (!electronId_noMuon(index)) return false;
   if (!electronId_cand01(index)) return false; // 
   if (!electronImpactTTbar(index)) return false;
   if (electronIsolation_relsusy_cand1(index, true) > 0.10) return false;
   if (isFromConversionPartnerTrack(index)) return false;
+  return true;
+}
+
+bool electronSelectionTTbar_refS10(const unsigned int index){
+  if (cms2.els_p4()[index].pt()<20 ) return false;
+  if (fabs(cms2.els_p4()[index].eta()) > 2.4) return false;
+  if (!electronId_classBasedLoose(index)) return false; // egamma_looseId
+  if (!electronImpactTTbar(index)) return false;
+  int muSize = cms2.mus_p4().size();
+  for (int i =0; i< muSize; ++i){
+    if (((cms2.mus_type()[i])&6)==0) continue; //global or tracker
+    if (cms2.mus_validHits()[i] <= 10 ) continue;
+    float dR = ROOT::Math::VectorUtil::DeltaR(cms2.mus_p4()[i], cms2.els_p4()[index]);
+    if (dR< 0.1) return false;
+  }
+  if ((cms2.els_exp_innerlayers()[index]) > 1) return false;
+  float isoSum = cms2.els_tkIso04()[index] + cms2.els_ecalIso04()[index] + cms2.els_hcalIso04()[index];
+  if (isoSum/cms2.els_p4()[index].pt()>0.15) return false;
+
   return true;
 }
 
