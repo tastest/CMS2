@@ -109,7 +109,8 @@ static const cuts_t electronSelectionFO_el_ttbar_v2 =
 //---------------------------------------------------------
 static const cuts_t electronSelectionFO_el_ttbar_v3 =
         electronSelectionFO_baseline |
-        (1ll<<ELEID_CAND01);
+        (1ll<<ELEID_CAND01) |
+        (1ll<<ELEISO_REL040);
 //---------------------------------------------------------
 //  
 // V1 fakeable object for cand01
