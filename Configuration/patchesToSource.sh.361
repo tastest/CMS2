@@ -4,24 +4,18 @@ cvs co -r V00-05-03    RecoEgamma/EgammaTools
 cvs co -r V00-00-09    JetMETAnalysis/HcalReflagging
 
 #ECAL timing cleaning; get package from release and patch to allow cleaning using timing
-cvs co -r V00-11-02-01 RecoLocalCalo/EcalRecAlgos
+cvs co -r V00-11-02-03 RecoLocalCalo/EcalRecAlgos
 
 echo;echo
-
-# also need to check out an patch RecoLocalCalo/CaloTowersCreator so that we can toggle timing on/off
-
-addpkg RecoLocalCalo/CaloTowersCreator
-cd RecoLocalCalo
-cp ../CMS2/Configuration/patchCaloTowersCreator.diff.361 .
-patch -p0 < patchCaloTowersCreator.diff.361
-rm patchCaloTowersCreator.diff.361
-cd ..
 
 # also need to check out HBHE Filter Producer
 addpkg CommonTools/RecoAlgos
 cvs update -A -r V00-02-14 CommonTools/RecoAlgos/plugins/HBHENoiseFilterResultProducer.cc
 cvs update -r V00-02-14 CommonTools/RecoAlgos/python/HBHENoiseFilterResultProducer_cfi.py
 cvs update -r V00-02-12 CommonTools/RecoAlgos/BuildFile
+
+# beam halo flagging
+cvs co -r V00-00-05 RecoMET/METAnalyzers
 
 echo;echo checkingdeps;echo
 
