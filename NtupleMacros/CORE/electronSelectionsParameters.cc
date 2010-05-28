@@ -127,6 +127,21 @@ void eidGetVBTF(const vbtf_tightness tightness, std::vector<double> &cutdeta, st
             return;
         }
 
+        case VBTF_35X_95:
+        {
+            double isoThresholds_tmp[2]                 = {0.15,     0.1};
+            double sigmaIEtaIEtaThresholds_tmp[2]       = {0.01,    0.03};
+            double dPhiInThresholds_tmp[2]              = {0.8,     0.7};
+            double dEtaInThresholds_tmp[2]              = {0.007,   0.01};
+            double hoeThresholds_tmp[2]                 = {0.5,     0.07};
+            eidAssign(cutreliso, isoThresholds_tmp, 2);
+            eidAssign(cutdeta, dEtaInThresholds_tmp, 2);
+            eidAssign(cutdphi, dPhiInThresholds_tmp, 2);
+            eidAssign(cuthoe, hoeThresholds_tmp, 2);
+            eidAssign(cutsee, sigmaIEtaIEtaThresholds_tmp, 2);
+            return;
+        }
+
         case VBTF_35X_90:
         {
             double isoThresholds_tmp[2]                 = {0.1,     0.07};
