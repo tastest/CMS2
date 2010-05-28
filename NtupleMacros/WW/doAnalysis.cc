@@ -1720,26 +1720,9 @@ bool passedSkimSelection()
 {
   unsigned int nHyps = cms2.hyp_type().size();
   for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
-    if ( cms2.hyp_lt_p4().at(i_hyp).pt() < 20 || cms2.hyp_ll_p4().at(i_hyp).pt() < 20 ) return false;
-    if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) return false;
-    HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
-    if ( type == EE || type == MM) {
-      if (inZmassWindow(cms2.hyp_p4()[i_hyp].mass())) return false;
-    }
-    if (!passedMetRequirements(i_hyp)) return false;
-    bool passedAllLeptonRequirements = true;
-    // Muon quality cuts, including isolation
-    if (abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) passedAllLeptonRequirements = false;
-    if (abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) ) passedAllLeptonRequirements = false;
-    
-    // Electron quality cuts, including isolation
-    if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_lt_index()[i_hyp]) ) passedAllLeptonRequirements = false;
-    if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_ll_index()[i_hyp]) ) passedAllLeptonRequirements = false;
-    if ( !passedAllLeptonRequirements ) return false;
-    if ( numberOfJets(i_hyp) > 0 ) return false;
-    if ( numberOfSoftMuons(i_hyp,true) > 0 ) return false;
-
-
+    if ( cms2.hyp_lt_p4().at(i_hyp).pt() < 20 || cms2.hyp_ll_p4().at(i_hyp).pt() < 20 ) continue;
+    if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) continue;
+    if ( metValue() < 20 ) continue;
     return true;
   }
   return false;
