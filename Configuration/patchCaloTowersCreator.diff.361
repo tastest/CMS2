@@ -1,0 +1,58 @@
+Index: CaloTowersCreator/interface/CaloTowersCreationAlgo.h
+===================================================================
+RCS file: /cvs_server/repositories/CMSSW/CMSSW/RecoLocalCalo/CaloTowersCreator/interface/CaloTowersCreationAlgo.h,v
+retrieving revision 1.18
+diff -r1.18 CaloTowersCreationAlgo.h
+153a154,155
+>   void setEcalTimingStatus(bool useTiming) {theEcalTimingIsUsed = useTiming;}
+> 
+262a265
+>   bool theEcalTimingIsUsed;
+Index: CaloTowersCreator/python/calotowermaker_cfi.py
+===================================================================
+RCS file: /cvs_server/repositories/CMSSW/CMSSW/RecoLocalCalo/CaloTowersCreator/python/calotowermaker_cfi.py,v
+retrieving revision 1.12
+diff -r1.12 calotowermaker_cfi.py
+111c111
+<                               
+---
+>     useEcalTiming = cms.bool(False),                                
+Index: CaloTowersCreator/src/CaloTowersCreationAlgo.cc
+===================================================================
+RCS file: /cvs_server/repositories/CMSSW/CMSSW/RecoLocalCalo/CaloTowersCreator/src/CaloTowersCreationAlgo.cc,v
+retrieving revision 1.35
+diff -r1.35 CaloTowersCreationAlgo.cc
+905c905
+< 	thisEcalSevLvl = theEcalSevLvlAlgo->severityLevel( *ac_it, *theEbHandle, *theEcalChStatus);
+---
+> 	   thisEcalSevLvl = theEcalSevLvlAlgo->severityLevel( *ac_it, *theEbHandle, *theEcalChStatus, 5., EcalSeverityLevelAlgo::kSwissCross, 0.95, theEcalTimingIsUsed, -999.);
+908c908
+< 	thisEcalSevLvl = theEcalSevLvlAlgo->severityLevel( *ac_it, *theEeHandle, *theEcalChStatus);
+---
+> 	   thisEcalSevLvl = theEcalSevLvlAlgo->severityLevel( *ac_it, *theEeHandle, *theEcalChStatus, 5., EcalSeverityLevelAlgo::kSwissCross, 0.95, theEcalTimingIsUsed, -999.);
+1402,1403c1402,1403
+<   if      (id.subdetId() == EcalBarrel) severityLevel = theEcalSevLvlAlgo->severityLevel( id, *theEbHandle, *theEcalChStatus);
+<   else if (id.subdetId() == EcalEndcap) severityLevel = theEcalSevLvlAlgo->severityLevel( id, *theEeHandle, *theEcalChStatus);
+---
+>   if      (id.subdetId() == EcalBarrel) severityLevel = theEcalSevLvlAlgo->severityLevel( id, *theEbHandle, *theEcalChStatus, 5., EcalSeverityLevelAlgo::kSwissCross, 0.95, theEcalTimingIsUsed, -999.);
+>   else if (id.subdetId() == EcalEndcap) severityLevel = theEcalSevLvlAlgo->severityLevel( id, *theEeHandle, *theEcalChStatus, 5., EcalSeverityLevelAlgo::kSwissCross, 0.95, theEcalTimingIsUsed, -999.);
+Index: CaloTowersCreator/src/CaloTowersCreator.cc
+===================================================================
+RCS file: /cvs_server/repositories/CMSSW/CMSSW/RecoLocalCalo/CaloTowersCreator/src/CaloTowersCreator.cc,v
+retrieving revision 1.23
+diff -r1.23 CaloTowersCreator.cc
+96a97,98
+>   useEcalTiming_(conf.getParameter<bool>("useEcalTiming")),
+> 
+157a160,161
+>   algo_.setEcalTimingStatus(useEcalTiming_);
+> 
+Index: CaloTowersCreator/src/CaloTowersCreator.h
+===================================================================
+RCS file: /cvs_server/repositories/CMSSW/CMSSW/RecoLocalCalo/CaloTowersCreator/src/CaloTowersCreator.h,v
+retrieving revision 1.6
+diff -r1.6 CaloTowersCreator.h
+44a45,47
+> 
+>   // flag to use ecal timing
+>   bool useEcalTiming_;
