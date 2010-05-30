@@ -1,0 +1,47 @@
+Index: interface/EcalSeverityLevelAlgo.h
+===================================================================
+RCS file: /cvs_server/repositories/CMSSW/CMSSW/RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgo.h,v
+retrieving revision 1.13
+diff -r1.13 EcalSeverityLevelAlgo.h
+18c18
+<                 enum EcalSeverityLevel { kGood=0, kProblematic, kRecovered, kWeird, kBad };
+---
+>                 enum EcalSeverityLevel { kGood=0, kProblematic, kRecovered, kWeird, kBad, kOutOfTime };
+29c29,31
+<                                           float spIdThreshold = 0.95
+---
+>                                           float spIdThreshold = 0.95,
+> 					  bool useTiming = false,
+> 					  float recHitTimingEnergyThreshold = -999.
+50a53,55
+> 		// return whether or not tthe rechit is a spike based on kOutOfTime
+> 		static bool spikeFromTiming( const EcalRecHit &, float recHitTimingEnergyThreshold);
+> 
+Index: src/EcalSeverityLevelAlgo.cc
+===================================================================
+RCS file: /cvs_server/repositories/CMSSW/CMSSW/RecoLocalCalo/EcalRecAlgos/src/EcalSeverityLevelAlgo.cc,v
+retrieving revision 1.17
+diff -r1.17 EcalSeverityLevelAlgo.cc
+10c10,12
+<                 float spIdThreshold
+---
+> 		float spIdThreshold,
+>         	bool useTiming,			  
+> 		float recHitTimingEnergyThreshold
+32a35,38
+> 
+> 		else if (useTiming && spikeFromTiming(*it, recHitTimingEnergyThreshold)) return kOutOfTime;
+>                 // for now no filtering on VPT discharges in the endcap		
+> 
+182a189,199
+> 
+> bool EcalSeverityLevelAlgo::spikeFromTiming( const EcalRecHit &recHit, float recHitTimingEnergyThreshold)
+> {
+>      if (recHit.energy() < recHitTimingEnergyThreshold)
+> 	  return false;
+> 	  
+>      if (recHit.recoFlag() == EcalRecHit::kOutOfTime)
+> 	  return true;
+> 
+>      return false;
+> }
