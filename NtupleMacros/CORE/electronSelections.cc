@@ -46,6 +46,12 @@ cuts_t electronSelection(const unsigned int index)
     if (electronId_cand(index, CAND_02)) cuts_passed |= (1ll<<ELEID_CAND02);
     if (electronId_extra(index)) cuts_passed |= (1ll<<ELEID_EXTRA);
 
+    // ELEID_VBTF_35X_90
+    unsigned int answer_vbtf = electronId_VBTF( index, VBTF_35X_90 );
+    if ( ( answer_vbtf & (1ll<<ELEID_ID) ) == (1ll<<ELEID_ID) ){ 
+      cuts_passed |= (1ll<<ELEID_VBTF_35X_90);
+    }
+
     //
     // conversion rejection cuts
     //
@@ -60,6 +66,16 @@ cuts_t electronSelection(const unsigned int index)
     if ((cms2.els_type()[index] & (1ll<<ISECALDRIVEN))) cuts_passed |= (1ll<<ELESEED_ECAL);
     if (fabs(cms2.els_p4()[index].eta()) < 2.5) cuts_passed |= (1ll<<ELEETA_250);
     if (electronId_noMuon(index)) cuts_passed |= (1ll<<ELENOMUON_010);
+
+    //
+    // Pt
+    //
+    if( cms2.els_p4()[index].pt() > 10.0 ) cuts_passed |= (1ll<<ELEPT_010);
+
+    //
+    // Super Cluster Et
+    //
+    if( ( cms2.els_eSC()[index] / cosh(cms2.els_etaSC()[index]) ) > 10.0 ) cuts_passed |= (1ll<<ELESCET_010);
 
     //
     // chargeflip

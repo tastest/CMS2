@@ -44,6 +44,8 @@ enum EleSelectionType {
     ELEID_CAND02,
     // pass "EXTRA" electron ID
     ELEID_EXTRA,
+    // VBTF90 ID
+    ELEID_VBTF_35X_90,
     //
     // conv rej cuts
     //
@@ -57,6 +59,13 @@ enum EleSelectionType {
     // |eta| < 2.50 where eta is the ecal eta
     ELEETA_250,
     //
+    // Pt
+    //
+    ELEPT_010,
+    //
+    // Super Cluster Et
+    //
+    ELESCET_010,
     // no muon cuts
     //
     // no muon within dR < 0.1
@@ -230,6 +239,57 @@ static const cuts_t electronSelection_ttbar =
         electronSelection_ttbar_noiso |
         electronSelection_ttbar_iso;
 //---------------------------------------------------------
+
+//---------------------------------------------------------
+// TTBar selection with VBTF90 ID
+//---------------------------------------------------------
+static const cuts_t electronSelection_ttbarV1 =
+  (1ll<<ELEID_VBTF_35X_90) |
+  (1ll<<ELEIP_400) |										
+  (1ll<<ELEISO_REL015) |
+  (1ll<<ELENOMUON_010) |
+  (1ll<<ELENOTCONV_HITPATTERN) |
+  (1ll<<ELENOTCONV_DISTDCOT002) |
+  (1ll<<ELESCET_010) |
+  (1ll<<ELEPT_010) |
+  (1ll<<ELEETA_250) |
+  (1ll<<ELESEED_ECAL);
+//---------------------------------------------------------
+// TTBarV1 fakeable object definition v1
+// extrapolating in isolation and id
+//---------------------------------------------------------
+static const cuts_t electronSelectionFO_el_ttbarV1_v1 =
+  electronSelectionFO_baseline |
+  (1ll<<ELENOTCONV_HITPATTERN) |
+  (1ll<<ELESCET_010) |
+  (1ll<<ELEPT_010) |
+
+  (1ll<<ELEISO_REL040);
+//---------------------------------------------------------
+// TTBarV1 fakeable object definition v2
+// extrapolating in id
+//---------------------------------------------------------
+static const cuts_t electronSelectionFO_el_ttbarV1_v2 =
+  electronSelectionFO_baseline |
+  (1ll<<ELENOTCONV_HITPATTERN) |
+  (1ll<<ELESCET_010) |
+  (1ll<<ELEPT_010) |
+
+  (1ll<<ELEISO_REL015);
+//---------------------------------------------------------
+// TTBarV1 fakeable object definition v3
+// extrapolating in iso
+//---------------------------------------------------------
+static const cuts_t electronSelectionFO_el_ttbarV1_v3 =
+  electronSelectionFO_baseline |
+  (1ll<<ELENOTCONV_HITPATTERN) |
+  (1ll<<ELESCET_010) |
+  (1ll<<ELEPT_010) |
+
+  (1ll<<ELEID_VBTF_35X_90) |
+  (1ll<<ELEISO_REL040);
+//---------------------------------------------------------
+
 
 //
 // ======================== WW ============================
