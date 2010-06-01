@@ -200,7 +200,7 @@ unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated){
 //
 
 bool passedTriggerRequirements(HypTypeInNtuples type) {
-  bool hlt_ele15_lw_l1r = cms2.passHLTTrigger("HLT_Ele15_SW_L1R");
+  bool hlt_ele15_lw_l1r = cms2.passHLTTrigger("HLT_Ele15_LW_L1R");
   bool hltMu9           = passedMuonTriggerRequirements();
  
   if (type == MuMu && ! (hltMu9) ) return false;
@@ -1665,14 +1665,14 @@ void SkimChain(TChain* chain){
   while (TChainElement *currentFile = (TChainElement*)fileIter.Next()) {
     TString inputFileName(currentFile->GetTitle());
     TString directory(inputFileName);
-    preg.Substitute(directory,"$1-skim");
+    preg.Substitute(directory,"$1-wwskim");
     // make output directory if it doesn't exist yet
     if ( gSystem->AccessPathName(directory.Data()) ){
       gSystem->mkdir(directory.Data(),true);
       assert( !gSystem->AccessPathName(directory.Data()) );
     }
     TString outputFileName(inputFileName);
-    preg.Substitute(outputFileName,"$1-skim/$2");
+    preg.Substitute(outputFileName,"$1-wwskim/$2");
     cout << "Skimming " << inputFileName << " -> " << outputFileName << endl;
 
     TFile *output = TFile::Open(outputFileName.Data(), "RECREATE");
