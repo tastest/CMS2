@@ -42,29 +42,12 @@ bool goodElectronWithoutIsolation(unsigned int i){
 }
 
 bool goodElectronIsolated(unsigned int i){
-
-  return ww_elId(i) && ww_eld0(i) && pass_electronSelection(i, electronSelection_ww_iso);
-
-/*
   return ww_elId(i) && ww_eld0(i) && ww_elIso(i)<0.1;
-*/
-
 }
 
 bool fakableElectron(unsigned int i){
-
-    // extrapolate in id
-    return pass_electronSelection(i, electronSelectionFO_el_v2_cand02);
-
-/*
-  //return ww_elIso(i)<0.1;
-  if (!cms2.els_type()[i] & (1<<ISECALDRIVEN)) return false;
-  if (fabs(cms2.els_p4()[i].eta()) > 2.5) return false;
-  if (!electronId_noMuon(i)) return false;
-  if (electronIsolation_relsusy_cand1(i, true) > 0.10) return false;
-  if (isFromConversionPartnerTrack(i)) return false;
-  return true;
-*/
+  // extrapolate in id
+  return ww_eld0(i) && ww_elIso(i)<0.1;
 }
 
 bool goodMuonWithoutIsolation(unsigned int i){
@@ -79,7 +62,14 @@ double metValue(){    return cms2.evt_tcmet(); }
 double metPhiValue(){ return cms2.evt_tcmetPhi(); }
 
 bool passedMetRequirements(unsigned int i_hyp){
-  return ww2009_met(i_hyp);
+  HypTypeInNtuples type = hypType(i_hyp);
+  double pMet = projectedMet(i_hyp);
+  if ( pMet < 20 ) return false;
+  if (type == ElEl || type == MuMu) {
+    if ( metValue() < 45 ) return false;
+    // if ( !metBalance(i_hyp) ) return false;
+  }
+  return true;
 }
 
 JetType jetType(){
@@ -87,7 +77,7 @@ JetType jetType(){
 }
 
 unsigned int numberOfJets(unsigned int i_hyp){
-  return getJets(jetType(), i_hyp, 20, 5.0).size();
+  return getJets(jetType(), i_hyp, 20, 3.0).size();
 }
 
 
@@ -96,86 +86,37 @@ unsigned int numberOfJets(unsigned int i_hyp){
 //
 
 bool ww_elId(unsigned int index){
-
-    return pass_electronSelection(index, electronSelection_ww_noiso);
-
-/*
-  if (!cms2.els_type()[index] & (1<<ISECALDRIVEN)) return false;
-  if (fabs(cms2.els_p4()[index].eta()) > 2.5) return false;
-  if (!electronId_noMuon(index)) return false;
-  if (!electronId_cand01(index)) return false;
-  if (isFromConversionPartnerTrack(index)) return false;
+  if( fabs(cms2.els_conv_dist().at(index)) < 0.02 &&
+      fabs(cms2.els_conv_dcot().at(index)) < 0.02) return false;
+  if (! (electronId_VBTF(index, VBTF_TOP80) & (1<<ELEID_ID)) ) return false;
+  int ctfIndex = cms2.els_trkidx().at(index);
+  if ( ctfIndex >=0 && 
+       cms2.els_trk_charge().at(index)!=cms2.trks_charge().at(ctfIndex) ) return false;
   return true;
-*/
-
 }
 
 bool ww_eld0(unsigned int index){
-
-    return pass_electronSelection(index, electronSelection_ww_ip);
-    // or you could do
-    // return pass_electronSelection(index, (1ll<<ELEIP_200));
-
-/*
-  return electronImpact_cand01(index);
-*/
-
+  return fabs(cms2.els_d0corr()[index]) < 0.02;
 }
 
 double ww_elIso(unsigned int index){
-
-    return electronIsolation_rel(index, true);
-
-/*
-  return electronIsolation_relsusy_cand1(index, true);
-*/
-
+  float sum = cms2.els_tkIso().at(index);
+  sum += max(0., (cms2.els_ecalIso().at(index) -1.));
+  sum += cms2.els_hcalIso().at(index);
+  double pt = cms2.els_p4().at(index).pt();
+  return sum/max(pt, 20.);
 }
-
-bool ww2009_elId(unsigned int i){
-  if ( !cms2.els_egamma_tightId().at(i) ) return false;
-  if ( cms2.els_closestMuon().at(i) != -1) return false;
-  return true;  
-}
-
-bool ww2009_eld0(unsigned int i){
-  if ( TMath::Abs(cms2.els_d0corr().at(i)) > 0.025)   return false;
-  return true;
-}
-
-double ww2009_elIso(unsigned int i){
-  double sum = cms2.els_pat_trackIso().at(i) +
-    cms2.els_pat_ecalIso().at(i) + cms2.els_pat_hcalIso().at(i);
-  double pt  = cms2.els_p4().at(i).pt();
-  return pt/(pt + sum + 1e-5);
-}
-
 
 //
 // Muon Id
 //
 
 bool ww_muId(unsigned int index){
-  return muonIdNotIsolated(index);
+  return muonIdNotIsolated(index,NominalTTbar);
 }
 
 double ww_muIso(unsigned int i){
   return muonIsoValue(i);
-}
-
-bool ww2009_muId(unsigned int i){
-  if ( cms2.mus_gfit_chi2().at(i)/cms2.mus_gfit_ndof().at(i) > 10.) return false;
-  if ( cms2.mus_validHits().at(i) < 11 )    return false;
-  if ( (cms2.mus_type().at(i)&0x2)==0 ) return false;
-  if (TMath::Abs(cms2.mus_d0corr().at(i)) > 0.2) return false;
-  return true;
-}
-
-double ww2009_muIso(unsigned int i){
-  double sum =  cms2.mus_iso03_sumPt().at(i) +  
-    cms2.mus_iso03_emEt().at(i) + cms2.mus_iso03_hadEt().at(i);
-  double pt  = cms2.mus_p4().at(i).pt();
-  return pt / (pt+sum+1e-5);
 }
 
 unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated){
@@ -188,7 +129,7 @@ unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated){
     if ( cms2.mus_validHits()[imu] < 11) continue;
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == imu ) continue;
     if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == imu ) continue;
-    if ( nonisolated && ww2009_muIso(imu)>0.90 && cms2.mus_p4()[imu].pt()>20 ) continue;
+    if ( nonisolated && ww_muIso(imu)>0.1 && cms2.mus_p4()[imu].pt()>20 ) continue;
     ++nMuons;
   }
   return nMuons;
@@ -982,6 +923,7 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset)
   // Cut on lepton Pt
   if (cms2.hyp_lt_p4()[i_hyp].pt() < 20.0) return;
   if (cms2.hyp_ll_p4()[i_hyp].pt() < 20.0) return;
+  if (cms2.hyp_p4()[i_hyp].mass() < 12) return;
   monitor.count(icounter++,"Total number of hypothesis after lepton pt cut: ");
      
   // Require same sign
@@ -1013,7 +955,7 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset)
   }
   int countmus = numberOfSoftMuons(i_hyp,true);
   int nExtraVetoMuons = numberOfSoftMuons(i_hyp,false);;
-  if (nExtraVetoMuons) goodEvent = false;
+  // if (nExtraVetoMuons) goodEvent = false;
   
   bool passedLTFinalRequirements = true;
   bool passedLLFinalRequirements = true;

@@ -24,56 +24,83 @@ void showResults(const char* file = "processed_data.root")
     TH1F *ww    = dynamic_cast<TH1F*>(ftt->Get("ww_hypos_total_weighted"));
     TH1F *tw    = dynamic_cast<TH1F*>(ftt->Get("tw_hypos_total_weighted"));
   
-    cout << "\n" << Form("| %3s | %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s |",
-		 "", "*DY ee*","*DY mumu*","*DY tautau*","*ttbar*","*Wjets*","*WZ*","*ZZ*","*WW*","*TW*")
+    cout << "\n" << Form("| %3s | %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s |",
+			 "", "*DY ee*","*DY mumu*","*DY tautau*","*ttbar*","*TW*","*Wjets*","*WZ*","*ZZ*","*Total BKG*","*WW*")
 	 << endl;
     string pm = "+/-";
     // string pm = "&plusmn;";
+    double bkg[4] = {0, 0, 0, 0};
+    double bkgerr2[4] = {0, 0, 0, 0};
     for (int i=0; i<4; i++){
       
       cout << "|" << Form(" %3s ",HypothesisTypeName(i)) << "|";
-      if (DYee) 
+      if (DYee){
 	cout << Form(" %5.2f%s%4.2f ",DYee->GetBinContent(i+1),pm.c_str(),DYee->GetBinError(i+1));
+	bkg[i]     += DYee->GetBinContent(i+1);
+	bkgerr2[i] += pow(DYee->GetBinError(i+1),2);
+      }
       else
 	cout << "    skipped   ";
       cout << "|";
-      if (DYmm) 
+      if (DYmm){
 	cout << Form(" %5.2f%s%4.2f ",DYmm->GetBinContent(i+1),pm.c_str(),DYmm->GetBinError(i+1));
+	bkg[i]     += DYmm->GetBinContent(i+1);
+	bkgerr2[i] += pow(DYmm->GetBinError(i+1),2);
+      }
       else
 	cout << "    skipped   ";
       cout << "|";
-      if (DYtt) 
+      if (DYtt){
 	cout << Form(" %5.2f%s%4.2f ",DYtt->GetBinContent(i+1),pm.c_str(),DYtt->GetBinError(i+1));
+	bkg[i]     += DYtt->GetBinContent(i+1);
+	bkgerr2[i] += pow(DYtt->GetBinError(i+1),2);
+      }
       else
 	cout << "    skipped   ";
       cout << "|";
-      if (tt) 
+      if (tt){
 	cout << Form(" %5.2f%s%4.2f ",tt->GetBinContent(i+1),pm.c_str(),tt->GetBinError(i+1));
+	bkg[i]     += tt->GetBinContent(i+1);
+	bkgerr2[i] += pow(tt->GetBinError(i+1),2);
+      }
       else
 	cout << "    skipped   ";
       cout << "|";
-      if (wjets) 
+      if (tw){
+	cout << Form(" %5.2f%s%4.2f ",tw->GetBinContent(i+1),pm.c_str(),tw->GetBinError(i+1));
+	bkg[i]     += tw->GetBinContent(i+1);
+	bkgerr2[i] += pow(tw->GetBinError(i+1),2);
+      }
+      else
+	cout << "    skipped   ";
+      cout << "|";
+      if (wjets){
 	cout << Form(" %5.2f%s%4.2f ",wjets->GetBinContent(i+1),pm.c_str(),wjets->GetBinError(i+1));
+	bkg[i]     += wjets->GetBinContent(i+1);
+	bkgerr2[i] += pow(wjets->GetBinError(i+1),2);
+      }
       else
 	cout << "    skipped   ";
       cout << "|";
-      if (wz) 
+      if (wz){
 	cout << Form(" %5.2f%s%4.2f ",wz->GetBinContent(i+1),pm.c_str(),wz->GetBinError(i+1));
+	bkg[i]     += wz->GetBinContent(i+1);
+	bkgerr2[i] += pow(wz->GetBinError(i+1),2);
+      }
       else
 	cout << "    skipped   ";
       cout << "|";
-      if (zz) 
+      if (zz){
 	cout << Form(" %5.2f%s%4.2f ",zz->GetBinContent(i+1),pm.c_str(),zz->GetBinError(i+1));
+	bkg[i]     += zz->GetBinContent(i+1);
+	bkgerr2[i] += pow(zz->GetBinError(i+1),2);
+      }
       else
 	cout << "    skipped   ";
       cout << "|";
+      cout << Form(" %5.2f%s%4.2f ",bkg[i],pm.c_str(),sqrt(bkgerr2[i])) << "|";
       if (ww) 
 	cout << Form(" %5.2f%s%4.2f ",ww->GetBinContent(i+1),pm.c_str(),ww->GetBinError(i+1));
-      else
-	cout << "    skipped   ";
-      cout << "|";
-      if (tw) 
-	cout << Form(" %5.2f%s%4.2f ",tw->GetBinContent(i+1),pm.c_str(),tw->GetBinError(i+1));
       else
 	cout << "    skipped   ";
       cout << "|" <<endl;

@@ -17,10 +17,6 @@ bool   ww_elId(unsigned int i);
 bool   ww_eld0(unsigned int i);
 double ww_elIso(unsigned int i);
 
-bool   ww2009_elId(unsigned int i);
-bool   ww2009_eld0(unsigned int i);
-double ww2009_elIso(unsigned int i);
-
 // combined analysis selectors
 bool goodElectronWithoutIsolation(unsigned int i);
 bool goodElectronIsolated(unsigned int i);
@@ -31,9 +27,6 @@ bool goodElectronIsolated(unsigned int i);
 
 bool   ww_muId(unsigned int i);
 double ww_muIso(unsigned int i);
-
-bool   ww2009_muId(unsigned int i);
-double ww2009_muIso(unsigned int i);
 
 unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated);
 
@@ -94,6 +87,8 @@ unsigned int numberOfJets(unsigned int i_hyp);
 //
 // Tools
 //
+
+HypTypeInNtuples hypType(unsigned int i_hyp);
 
 struct EventIdentifier {
   unsigned long int run, event, lumi;
