@@ -433,7 +433,7 @@ unsigned int electronId_VBTF(const unsigned int index, const vbtf_tightness tigh
 //
 // "CIC" id
 //
-unsigned int electronId_CIC(const unsigned int index, const cic_tightness tightness);
+unsigned int electronId_CIC(const unsigned int index, const unsigned int version, const cic_tightness tightness);
 unsigned int classify(const unsigned int version, const unsigned int index);
 
 //

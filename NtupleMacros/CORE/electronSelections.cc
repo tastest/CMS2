@@ -56,7 +56,7 @@ cuts_t electronSelection(const unsigned int index)
     // ELEID_VBTF_35X_90
     unsigned int answer_vbtf = electronId_VBTF( index, VBTF_35X_90 );
     if ( ( answer_vbtf & (1ll<<ELEID_ID) ) == (1ll<<ELEID_ID) ){ 
-      cuts_passed |= (1ll<<ELEID_VBTF_35X_90);
+        cuts_passed |= (1ll<<ELEID_VBTF_35X_90);
     }
 
     //
@@ -179,27 +179,14 @@ bool electronId_classBasedTight(const unsigned int index)
 // class based id that is new/experimental
 //
 
-unsigned int electronId_CIC(const unsigned int index, const cic_tightness tightness)
+unsigned int electronId_CIC(const unsigned int index, const unsigned int version, const cic_tightness tightness)
 {
 
-    //
-    // set the parameters for the chosen tightness
-    //
-
-    std::vector<double> cutdeta;
-    std::vector<double> cutdphi;
-    std::vector<double> cuteopin;
-    std::vector<double> cutet;
-    std::vector<double> cuthoe;
-    std::vector<double> cutip;
-    std::vector<double> cutisoecal;
-    std::vector<double> cutisohcal;
-    std::vector<double> cutisotk;
-    std::vector<double> cutmishits;
-    std::vector<double> cutsee;
-
-    eidGetCIC(tightness, cutdeta, cutdphi, cuteopin, cutet, cuthoe, 
-            cutip, cutisoecal, cutisohcal, cutisotk, cutmishits, cutsee);
+    // check that a valid version number was supplied
+    if (version != 2 && version != 4) {
+        std::cout << "[electronId_CIC] Error! Version must be 2 or 4 - fail" << std::endl;
+        return 0;
+    }
 
     //
     // get the variables that are going to be cut on
@@ -207,108 +194,192 @@ unsigned int electronId_CIC(const unsigned int index, const cic_tightness tightn
 
     double scTheta = (2*atan(exp(-1*cms2.els_etaSC()[index])));
     double scEt = cms2.els_eSC()[index]*sin(scTheta); 
-    //double eta = cms2.els_p4()[index].Eta(); // not used
-    // this is eSuperClusterOverP
-    //double eOverP = cms2.els_eOverPIn()[index];
-
-    //    double eSeed = cms2.els_eSeed()[index];
-    //    double pin  = cms2.els_p4In()[index].R();   
-    //    double pout = cms2.els_p4Out()[index].R(); 
-    //    double eSeedOverPin = eSeed/pin; 
-    //    double fBrem = (pin-pout)/pin;
     double eSeedOverPin = cms2.els_eSeedOverPIn()[index];
     double fBrem = cms2.els_fbrem()[index];
-
-
     double hOverE = cms2.els_hOverE()[index];
     double sigmaee = cms2.els_sigmaIEtaIEta()[index];
-    //double e25Max = cms2.els_e2x5Max()[index];
-    //double e15 = cms2.els_e1x5()[index];
-    //double e55 = cms2.els_e5x5()[index];
-    //double e25Maxoe55 = e25Max/e55 ;
-    //double e15oe55 = e15/e55 ;
     double deltaPhiIn = cms2.els_dPhiIn()[index];
     double deltaEtaIn = cms2.els_dEtaIn()[index];
-
-    double ip = 0;
-    //int mishits = electron->gsfTrack()->trackerExpectedHitsInner().numberOfHits();
     int mishits = cms2.els_exp_innerlayers()[index];
+    double dist = cms2.els_conv_dist()[index];
+    double dcot = cms2.els_conv_dcot()[index];
     double tkIso = cms2.els_tkIso()[index];
     double ecalIso = cms2.els_ecalIso04()[index];
     double hcalIso = cms2.els_hcalIso04()[index];
-    //double hcalIso1 = cms2.els_hcalDepth1TowerSumEt04()[index];
-    //double hcalIso2 = cms2.els_hcalDepth2TowerSumEt04()[index];
-
-    ip = fabs(cms2.els_d0corr()[index]);
-
+    double ip = fabs(cms2.els_d0corr()[index]);
     // should be sigmaIEtaIEta with respect to the SC...
     // (in the EE it is with respect to the seed BC...)
-    //if (cms2.els_fiduciality()[index] & (1<<ISEB))
-    //    sigmaee = cms2.els_sigmaIEtaIEtaSC()[index];
+    if (cms2.els_fiduciality()[index] & (1<<ISEB))
+        sigmaee = cms2.els_sigmaIEtaIEtaSC()[index];
 
-    // version for classify is 2
-    unsigned int cat = classify(2, index);
+    // find the catagory for this electron
+    unsigned int cat = classify(version, index);
 
-    bool isEB = (cms2.els_fiduciality()[index] & (1<<ISEB));
+    // determine if in EB or EE
     int eb;
-    if (isEB) 
-        eb = 0;
-    else 
-        eb = 1; 
+    if (cms2.els_fiduciality()[index] & (1<<ISEB)) eb = 0;
+    else eb = 1;
 
-    unsigned int result = 0;
-    int bin = 0;
+    //
+    // Version V02
+    //
 
-    if (scEt < 20.)
-        bin = 2;
-    else if (scEt > 30.)
-        bin = 0;
-    else
-        bin = 1;
+    if (version == 2) {
 
-    if (fBrem > 0)
-        eSeedOverPin = eSeedOverPin + fBrem;
+        //
+        // set the parameters for the chosen tightness
+        //
 
-    if (bin != 2) {     
-        tkIso = tkIso*pow(40./scEt, 2); 
-        ecalIso = ecalIso*pow(40./scEt, 2); 
-        hcalIso = hcalIso*pow(40./scEt, 2); 
+        std::vector<double> cutdeta;
+        std::vector<double> cutdphi;
+        std::vector<double> cuteopin;
+        std::vector<double> cutet;
+        std::vector<double> cuthoe;
+        std::vector<double> cutip;
+        std::vector<double> cutisoecal;
+        std::vector<double> cutisohcal;
+        std::vector<double> cutisotk;
+        std::vector<double> cutmishits;
+        std::vector<double> cutsee;
+
+       eidGetCIC_V02(tightness, cutdeta, cutdphi, cuteopin, cutet, cuthoe, 
+                cutip, cutisoecal, cutisohcal, cutisotk, cutmishits, cutsee);
+
+
+        unsigned int result = 0;
+        int bin = 0;
+        if (scEt < 20.)
+            bin = 2;
+        else if (scEt > 30.)
+            bin = 0;
+        else
+            bin = 1;
+
+        if (fBrem > 0)
+            eSeedOverPin = eSeedOverPin + fBrem;
+
+        if (bin != 2) {     
+            tkIso = tkIso*pow(40./scEt, 2); 
+            ecalIso = ecalIso*pow(40./scEt, 2); 
+            hcalIso = hcalIso*pow(40./scEt, 2); 
+        }
+
+        if ((tkIso < cutisotk[cat+3*eb+bin*6]) &&
+                (ecalIso < cutisoecal[cat+3*eb+bin*6]) &&
+                (hcalIso < cutisohcal[cat+3*eb+bin*6]))
+            result |= (1<<ELEID_ISO);
+
+        if (fBrem < -2)
+            return result;
+
+        if (hOverE < cuthoe[cat+3*eb+bin*6] &&
+                sigmaee < cutsee[cat+3*eb+bin*6] &&
+                fabs(deltaPhiIn) < cutdphi[cat+3*eb+bin*6] &&
+                fabs(deltaEtaIn) < cutdeta[cat+3*eb+bin*6] &&
+                eSeedOverPin > cuteopin[cat+3*eb+bin*6])
+            result |= (1<<ELEID_ID);
+
+        if (ip < cutip[cat+3*eb+bin*6])
+            result |= (1<<ELEID_IP);
+
+        if (mishits < cutmishits[cat+3*eb+bin*6])
+            result |= (1<<ELEID_CONV);
+
+        return result;
     }
 
-    if ((tkIso < cutisotk[cat+3*eb+bin*6]) &&
-            (ecalIso < cutisoecal[cat+3*eb+bin*6]) &&
-            (hcalIso < cutisohcal[cat+3*eb+bin*6]))
-        result |= (1<<ELEID_ISO);
+    //
+    // version V03, V04 or V05
+    //
 
-    if (fBrem < -2)
+    if (version == 3 || version == 4 || version == 5) {
+
+        //
+        // set the parameters for the chosen tightness
+        //
+        std::vector<double> cutdcotdist;
+        std::vector<double> cutdetain;
+        std::vector<double> cutdphiin;
+        std::vector<double> cuteseedopcor;
+        std::vector<double> cutet;
+        std::vector<double> cutfmishits;
+        std::vector<double> cuthoe;
+        std::vector<double> cutip_gsf;
+        std::vector<double> cutiso_sum;
+        std::vector<double> cutiso_sumoet;
+        std::vector<double> cutsee;
+
+        eidGetCIC_V03(tightness, cutdcotdist, cutdetain, cutdphiin, cuteseedopcor, cutet,
+                    cutfmishits, cuthoe, cutip_gsf, cutiso_sum, cutiso_sumoet, cutsee);
+
+
+        // this is certainly true for V03
+        // but not sure the meaning of V04,05
+        bool wantBinning = true;
+
+        unsigned int result = 0;
+        int bin = 0;
+        if (wantBinning) {
+            if (scEt < 20.)
+                bin = 2;
+            else if (scEt > 30.)
+                bin = 0;
+            else
+                bin = 1;
+        }
+
+        if (fBrem > 0)
+            eSeedOverPin = eSeedOverPin + fBrem;
+
+        float iso_sum = tkIso + ecalIso + hcalIso;
+        float iso_sum_corrected = iso_sum*pow(40./scEt, 2);
+
+        if ((iso_sum < cutiso_sum[cat+bin*9]) &&
+                (iso_sum_corrected < cutiso_sumoet[cat+bin*9]))
+            result |= (1<<ELEID_ISO);
+
+        if (fBrem > -2) {
+            if ((hOverE < cuthoe[cat+bin*9]) and
+                    (sigmaee < cutsee[cat+bin*9]) and
+                    (fabs(deltaPhiIn) < cutdphiin[cat+bin*9]) and
+                    (fabs(deltaEtaIn) < cutdetain[cat+bin*9]) and
+                    (eSeedOverPin > cuteseedopcor[cat+bin*9]) and
+                    (scEt > cutet[cat+bin*9]))
+                result |= (1<<ELEID_ID);
+        }
+
+        if (ip < cutip_gsf[cat+bin*9])
+            result |= (1<<ELEID_IP);
+
+        float dcotdistcomb = ((0.4 - std::max(dist, dcot)) > 0?(0.4 - std::max(dist, dcot)):0);
+        if ((mishits < cutfmishits[cat+bin*9]) and 
+                (dcotdistcomb < cutdcotdist[cat+bin*9]))
+            result |= (1<<ELEID_CONV);
+
         return result;
+    }
 
-    if (hOverE < cuthoe[cat+3*eb+bin*6] &&
-            sigmaee < cutsee[cat+3*eb+bin*6] &&
-            fabs(deltaPhiIn) < cutdphi[cat+3*eb+bin*6] &&
-            fabs(deltaEtaIn) < cutdeta[cat+3*eb+bin*6] &&
-            eSeedOverPin > cuteopin[cat+3*eb+bin*6])
-        result |= (1<<ELEID_ID);
-
-    if (ip < cutip[cat+3*eb+bin*6])
-        result |= (1<<ELEID_IP);
-
-    if (mishits < cutmishits[cat+3*eb+bin*6])
-        result |= (1<<ELEID_CONV);
-
-    return result;
+    std::cout << "[electronId_CIC] Error! got to the end and didn't apply any cuts - fail" << std::endl;
+    return 0;
 
 }
 
 unsigned int classify(const unsigned int version, const unsigned int index) {
 
-    // this is eSuperClusterOverP
+    // variables used for classification
+    double eta = fabs(cms2.els_etaSC()[index]);
     double eOverP = cms2.els_eOverPIn()[index];
     double fBrem = cms2.els_fbrem()[index];
     bool isEB = (cms2.els_fiduciality()[index] & (1<<ISEB));
     bool isEE = (cms2.els_fiduciality()[index] & (1<<ISEE));
+    bool ecalDriven = (cms2.els_type()[index] & (1<<ISECALDRIVEN));
+    bool trackerDriven = (cms2.els_type()[index] & (1<<ISTRACKERDRIVEN));
 
     int cat = -1;
+
+    //
+    // version V00 or V01
+    //
     if (version == 0 || version == 1) {
         if((isEB && fBrem<0.06) || (isEE && fBrem<0.1)) 
             cat=1;
@@ -317,7 +388,12 @@ unsigned int classify(const unsigned int version, const unsigned int index) {
         else 
             cat=2;
         return cat;
-    } else {
+    }
+
+    //
+    // version V02
+    //
+    if (version == 2) {
         if (isEB) {       // BARREL
             if(fBrem < 0.12)
                 cat=1;
@@ -335,6 +411,52 @@ unsigned int classify(const unsigned int version, const unsigned int index) {
         }
         return cat;
     }
+
+    //
+    // version V03, V04 or V05
+    // took this from V00-03-07-02 of 
+    // ElectronIdentification/src/CutBasedElectronID.cc
+    //
+
+    if (version == 3 || version == 4 || version == 5) {
+
+        // this is certainly true for V03
+        // but not sure the meaning of V04,05
+        bool newCategories = false;
+
+        if (isEB) {
+            if ((fBrem >= 0.12) && (eOverP > 0.9) && (eOverP < 1.2))
+                cat = 0;
+            else if (((eta >  .445   && eta <  .45  ) ||
+                        (eta >  .79    && eta <  .81  ) ||
+                        (eta > 1.137   && eta < 1.157 ) ||
+                        (eta > 1.47285 && eta < 1.4744)) && newCategories)
+                cat = 6;
+            else if (trackerDriven && !ecalDriven && newCategories)
+                cat = 8;
+            else if (fBrem < 0.12)
+                cat = 1;
+            else
+                cat = 2;
+        } else {
+            if ((fBrem >= 0.2) && (eOverP > 0.82) && (eOverP < 1.22))
+                cat = 3;
+            else if (eta > 1.5 && eta <  1.58 && newCategories)
+                cat = 7;
+            else if (trackerDriven && !ecalDriven && newCategories)
+                cat = 8;
+            else if (fBrem < 0.2)
+                cat = 4;
+            else
+                cat = 5;
+        }
+
+        return cat;
+    }
+
+
+    return cat;
+
 }
 
 //
@@ -353,7 +475,7 @@ unsigned int electronId_VBTF(const unsigned int index, const vbtf_tightness tigh
     std::vector<double> sigmaIEtaIEtaThresholds;
 
     eidGetVBTF(tightness, dEtaInThresholds, dPhiInThresholds, hoeThresholds, 
-                sigmaIEtaIEtaThresholds, relisoThresholds);
+            sigmaIEtaIEtaThresholds, relisoThresholds);
 
     // barrel
     if (fabs(cms2.els_etaSC()[index]) < 1.479) {
