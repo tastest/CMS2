@@ -319,6 +319,35 @@ bool inZmassWindow(float mass){
   return ( mass > 76. && mass < 106. );
 }
 
+double BTag(JetType type, unsigned int iJet){
+  // find a jet in the jets list
+  // that matches the current type jet
+  LorentzVector jetP4;
+  switch ( type ) {
+  case jptJet:
+    jetP4 = cms2.jpts_p4().at(iJet);
+    break;
+  case CaloJet:
+    // return cms2.jets_jetProbabilityBJetTag().at(iJet);
+    return cms2.jets_combinedSecondaryVertexBJetTag().at(iJet);
+    break;
+  default:
+    std::cout << "ERROR: not supported jet type is requested: " << type << " FixIt!" << std::endl;
+    assert(0);
+  }
+  int refJet = -1;
+  for ( unsigned int i=0; i < cms2.jets_p4().size(); ++i) {
+    if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(jetP4,cms2.jets_p4()[i])) > 0.3 ) continue;
+    refJet = i;
+  }
+  if (refJet == -1){
+    // std::cout << "Warning: failed to find a matching jet for b-tagging." << std::endl; 
+    return 0.0;
+  }
+  // return cms2.jets_jetProbabilityBJetTag().at(refJet);
+  return cms2.jets_combinedSecondaryVertexBJetTag().at(refJet);
+}
+
 //
 // Tools
 //
@@ -583,6 +612,9 @@ TH2F* hFinalRateSingleElectron;   // Fake rate study: rate of final objects
 TH1F* hIsoSingleMuon;             // isolation background 
 TH1F* hIsoSingleElectron;         // isolation background 
 
+TH1F* hmaxJPTEt;         // energy distribution for the most energetic jet
+TH2F* hmaxBtagVsJPTEt;   // btag vs energy distribution for the most energetic jet
+
 //
 // Not cleaned area
 //
@@ -621,7 +653,6 @@ TH1F* helRelPatIsoPassId;  // electron relative iso (trk+ecal+hcal) PAT with wei
 TH1F* helRelPatIsoNoId;    // electron relative iso (trk+ecal+hcal) PAT with weights 1,1,1 no el ID
 TH1F* helRelPatIsoFailId;  // electron relative iso (trk+ecal+hcal) PAT with weights 1,1,1 failed el ID
 
-TH1F* hmaxJPTEt;         // energy distribution for the most energetic jet
 TH1F* hmaxCaloJetEt;     // energy distribution for the most energetic jet
 TH1F* hmaxTrkJetEt;      // energy distribution for the most energetic jet
 TH1F* hmaxCaloTrkJetEt;  // energy distribution for the most energetic jet
@@ -815,14 +846,21 @@ void find_most_energetic_jets(int i_hyp, double weight)
 {
   {
     double jptMax(0.);
+    int jptMaxIndex(-1);
+    // double 
     for ( unsigned int i=0; i < cms2.jpts_p4().size(); ++i) {
       if ( cms2.jpts_p4()[i].Et() < jptMax ) continue;
       if ( TMath::Abs(cms2.jpts_p4()[i].eta()) > 3.0 ) continue;
       if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jpts_p4()[i])) < 0.4 ||
 	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jpts_p4()[i])) < 0.4 ) continue;
       jptMax = cms2.jpts_p4()[i].Et();
+      jptMaxIndex = i;
     }
     hmaxJPTEt->Fill(jptMax, weight);
+    if (jptMaxIndex >= 0)
+      hmaxBtagVsJPTEt->Fill(jptMax, BTag(jptJet,jptMaxIndex), weight);
+    else
+      hmaxBtagVsJPTEt->Fill(jptMax, 0.0, weight);
   }
   {
     double genJetMax(0.);
@@ -1374,6 +1412,8 @@ RooDataSet* ScanChain( TChain* chain,
 
   hmaxJPTEt = new TH1F(Form("%s_hmaxJPTEt",prefix),               Form("%s - most energetic jet Et (JPT)",prefix), 200, 0., 200);
   hmaxJPTEt->Sumw2();
+  hmaxBtagVsJPTEt = new TH2F(Form("%s_hmaxBtagVsJPTEt",prefix),   Form("%s - most energetic jet Et (JPT) vs b-tagger output",prefix), 20, 0., 100, 10, 0, 1);
+  hmaxBtagVsJPTEt->Sumw2();
   hmaxCaloJetEt = new TH1F(Form("%s_hmaxCaloJetEt",prefix),       Form("%s - most energetic jet Et (CaloJet)",prefix), 200, 0., 200);
   hmaxCaloJetEt->Sumw2();
   hmaxTrkJetEt = new TH1F(Form("%s_hmaxTrkJetEt",prefix),         Form("%s - most energetic jet Et (TrkJet)",prefix), 200, 0., 200);
