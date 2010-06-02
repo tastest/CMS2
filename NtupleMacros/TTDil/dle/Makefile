@@ -33,7 +33,9 @@ ifeq ($(shell root-config --platform),macosx)
 endif
 
 #TOOLSSOURCES = $(wildcard $(CMSROOT)/Tools/*.cc)
-TOOLSSOURCES = $(CMSROOT)/Tools/tools.cc
+TOOLSSOURCES = $(CMSROOT)/Tools/tools.cc \
+			   $(CMSROOT)/Tools/goodrun.cc 
+
 TOOLSOBJECTS = $(TOOLSSOURCES:.cc=.o)
 TOOLSLIB = libCMS2NtupleMacrosTOOLS.so
 

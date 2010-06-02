@@ -18,7 +18,7 @@ void doAllMC(unsigned int electronId) {
 
     //
     // chains for input files
-    TString ntuple_location = "/store/disk00/cms2/";
+    TString ntuple_location = "/tas07/disk00/cms2/";
 
     // SM
     // ttbar
@@ -47,14 +47,16 @@ void doAllMC(unsigned int electronId) {
 */
     // wjets
     TChain *chain_wjets = new TChain("Events");
-    //chain_wjets->Add(ntuple_location + "/cms2/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
     chain_wjets->Add(ntuple_location + "WJets-madgraph_Spring10-START3X_V26_S09-v1_SingleLep/V03-04-08/dilep-skim.root");
-    //chain_wjets->Add("/tas01/disk02/cms2/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/dilep-skim/wjets_skim.root");
     
-/*
+    // zjets
+    TChain *chain_zjets = new TChain("Events");
+    chain_zjets->Add(ntuple_location + "ZJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-08/merged_ntuple*.root");
+
     // qcd pt30
     TChain *chain_qcd30 = new TChain("Events");
-    chain_qcd30->Add(ntuple_location + "/cms2/QCD_Pt30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
+    chain_qcd30->Add(ntuple_location + "QCD_Pt30_Spring10-START3X_V26_S09-v1/V03-04-08/merged_ntuple*.root");
+/*
     // wmunu
     TChain *chain_wmunu = new TChain("Events");
     chain_wmunu->Add(ntuple_location + "/cms2/Wmunu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root");
@@ -64,22 +66,23 @@ void doAllMC(unsigned int electronId) {
     // do looping
     //
 
-    looper->ScanChain(false, "ttbar", chain_ttbar);
+    //looper->ScanChain(false, "ttbar", chain_ttbar);
     //looper->ScanChain(false, "ww", chain_ww);
     //looper->ScanChain(false, "wz", chain_wz);
     //looper->ScanChain(false, "zz", chain_zz);
     //looper->ScanChain(false, "dyee", chain_dyee);
     //looper->ScanChain(false, "dymm", chain_dymm);
     //looper->ScanChain(false, "dytt", chain_dytt);
-    looper->ScanChain(false, "wjets", chain_wjets);
-    //looper->ScanChain(false, "QCDpt30", chain_qcd30);
+    //looper->ScanChain(false, "wjets", chain_wjets);
+    //looper->ScanChain(false, "zjets", chain_zjets);
+    looper->ScanChain(false, "QCDpt30", chain_qcd30);
     //looper->ScanChain(false, "wm", chain_wmunu);
 
     //
     // write histograms
     // 
 
-    const char* outFile = "histos_mc.root";
+    const char* outFile = "histos_mc_spike.root";
     hist::saveHist(outFile); 
     hist::deleteHistos();
 
@@ -96,6 +99,7 @@ void doAllMC(unsigned int electronId) {
     delete chain_dymm;
     delete chain_dytt;
 */    delete chain_wjets;
+    delete chain_zjets;
 /*    delete chain_wmunu;
     delete chain_qcd30;
 */

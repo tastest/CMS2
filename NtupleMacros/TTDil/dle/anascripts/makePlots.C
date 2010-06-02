@@ -10,8 +10,13 @@
 	// Scale it to the luminosity group measurement
 	// https://twiki.cern.ch/twiki/bin/view/CMS/LumiWiki2010Data
 
-	float luminorm = 1.0/1e+06; // 1.0 nb
-	plotResults("all", "../histos_data", "../histos_mc", "1 nb^{-1}", luminorm);
+    float L = 4.8; // 1 nb
+    std::string L_str = "4.8 nb^{-1}";
+	float luminorm = L/(1e+06*0.01);
+	plotResults("all", "histos_data", "histos_mc", L_str, luminorm);
+    plotResults("ee", "histos_data", "histos_mc", L_str, luminorm);
+    plotResults("mm", "histos_data", "histos_mc", L_str, luminorm);
+    plotResults("em", "histos_data", "histos_mc", L_str, luminorm);
 
 }
 

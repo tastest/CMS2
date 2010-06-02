@@ -12,7 +12,7 @@
 #include "TLatex.h"
 
 const static sources_t theMCSignal =  (1<<H_TTBAR);
-const static sources_t theMCBackground = (1<<H_WJETS);
+const static sources_t theMCBackground = (1<<H_ZJETS) | (1<<H_WJETS) | (1<<H_QCD30);
 const static sources_t theMCSources = theMCSignal | theMCBackground;
 
 const static sources_t theSources = theMCSignal | theMCBackground;
@@ -88,7 +88,10 @@ void plotDataRefOverlayStack(HistogramUtilities &hData, HistogramUtilities &hRef
     tex2->SetNDC();
     tex2->SetTextSize(0.04);
     tex2->SetLineWidth(2);
-
+    TLatex *   tex3 = new TLatex(0.25, 0.88,"Final State: " + det);
+    tex3->SetNDC();
+    tex3->SetTextSize(0.04);
+    tex3->SetLineWidth(2);
 
     THStack *stRef = hRef.getStack(theMCSources, name, "", det, rebin);
     TLegend *lg_all = hRef.getLegend(theMCSources, name, "", det);
@@ -106,8 +109,8 @@ void plotDataRefOverlayStack(HistogramUtilities &hData, HistogramUtilities &hRef
     h1Data->SetMarkerStyle(20);
     h1Data->SetMarkerSize(1.5);
     h1Data->SetLineWidth(2.0);
-    h1Data->SetMarkerColor(kRed);
-    h1Data->SetLineColor(kRed);
+    h1Data->SetMarkerColor(kBlack);
+    h1Data->SetLineColor(kBlack);
     lg_all->AddEntry(h1Data,"Data", "lep"); 
 
     // ideal y range should be at least 2 sigma greater than highest data point
@@ -122,6 +125,7 @@ void plotDataRefOverlayStack(HistogramUtilities &hData, HistogramUtilities &hRef
     lg_all->Draw();
     tex->Draw();
     tex2->Draw();
+    tex3->Draw();
     if (det == "ee" && cutValEE != -1) getArrow(stRef, det, cutValEB, cutValEE, idealMaximumData/1.2)->Draw();
     if (det == "eb" && cutValEB != -1) getArrow(stRef, det, cutValEB, cutValEE, idealMaximumData/1.2)->Draw();
     if (det == "all" && cutValEE != -1) getArrow(stRef, det, cutValEB, cutValEE, idealMaximumData/1.2)->Draw();
@@ -134,6 +138,7 @@ void plotDataRefOverlayStack(HistogramUtilities &hData, HistogramUtilities &hRef
     lg_all->Draw();
     tex->Draw();
     tex2->Draw();
+    tex3->Draw();
     if (det == "ee" && cutValEE != -1) getArrow(stRef, det, cutValEB, cutValEE, idealMaximumData/1.2)->Draw();
     if (det == "eb" && cutValEB != -1) getArrow(stRef, det, cutValEB, cutValEE, idealMaximumData/1.2)->Draw();
     if (det == "all" && cutValEE != -1) getArrow(stRef, det, cutValEB, cutValEE, idealMaximumData/1.2)->Draw();
@@ -159,17 +164,46 @@ void plotResults(TString det, TString fileStamp, TString refFileStamp, TString n
     std::vector<DataSource> refSources;
     dataSources.push_back (fH_WHUNT() );
     refSources.push_back( fH_TTBAR() );
+    refSources.push_back( fH_ZJETS() );
+    refSources.push_back( fH_QCD30() );
     refSources.push_back( fH_WJETS() );
 
-    HistogramUtilities datah1(fileStamp + ".root", dataSources);
-    HistogramUtilities refh1(refFileStamp + ".root", refSources, luminorm);
+    HistogramUtilities datah1("../" + fileStamp + ".root", dataSources);
+    HistogramUtilities refh1("../" + refFileStamp + ".root", refSources, luminorm);
 
     //
     // Electrons
     //
 
     // before any selections
-    plotDataRefOverlayStack(datah1, refh1, "hyp_tcmet_allj", "Electron p_{T} (GeV)", fileStamp, det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "hyp_tcmet_allj", "tcMET (GeV)", fileStamp, det, norm, 1);
+    plotDataRefOverlayStack(datah1, refh1, "hyp_ll_pt_allj", "pT (LL) (GeV)", fileStamp, det, norm, 2);
+    plotDataRefOverlayStack(datah1, refh1, "hyp_lt_pt_allj", "pT (LT) (GeV)", fileStamp, det, norm, 2);
+    plotDataRefOverlayStack(datah1, refh1, "hyp_ll_d0corr_allj", "d0corr (LL) cm", fileStamp, det, norm, 2);
+    plotDataRefOverlayStack(datah1, refh1, "hyp_lt_d0corr_allj", "d0corr (LT) cm", fileStamp, det, norm, 2);
+    plotDataRefOverlayStack(datah1, refh1, "hyp_allmuon_d0corr_allj", "d0corr (all muons) cm", fileStamp, det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "hyp_glbtrkmuon_d0corr_allj", "d0corr (glb+trk muons) cm", fileStamp, det, norm, 4);
+
+
+
+    // preselection
+    plotDataRefOverlayStack(datah1, refh1, "hyp_presel_njets", "Number of Jets", fileStamp, det, norm, 1);
+    plotDataRefOverlayStack(datah1, refh1, "hyp_presel_tcmet_allj", "tcMET (GeV)", fileStamp, det, norm, 1);
+    plotDataRefOverlayStack(datah1, refh1, "hyp_presel_mll_allj", "M_{ll} (GeV)", fileStamp, det, norm, 1);
+    plotDataRefOverlayStack(datah1, refh1, "hyp_presel_pt_allj", "pT_{ll} (GeV)", fileStamp, det, norm, 4);
+    plotDataRefOverlayStack(datah1, refh1, "hyp_presel_lt_iso_allj", "RelIso (LT) (GeV)", fileStamp, det, norm, 2);
+    plotDataRefOverlayStack(datah1, refh1, "hyp_presel_ll_iso_allj", "RelIso (LL) (GeV)", fileStamp, det, norm, 2);
+    plotDataRefOverlayStack(datah1, refh1, "hyp_presel_ll_pt_allj", "pT (LL) (GeV)", fileStamp, det, norm, 2);
+    plotDataRefOverlayStack(datah1, refh1, "hyp_presel_lt_pt_allj", "pT (LT) (GeV)", fileStamp, det, norm, 2);
+    plotDataRefOverlayStack(datah1, refh1, "hyp_presel_ll_d0corr_allj", "d0corr (LL) cm", fileStamp, det, norm, 2);
+    plotDataRefOverlayStack(datah1, refh1, "hyp_presel_lt_d0corr_allj", "d0corr (LT) cm", fileStamp, det, norm, 2);
+
+    // preselection + loose iso
+    plotDataRefOverlayStack(datah1, refh1, "hyp_presel_looseiso_njets", "Number of Jets", fileStamp, det, norm, 1);
+    plotDataRefOverlayStack(datah1, refh1, "hyp_presel_looseiso_tcmet_allj", "tcMET (GeV)", fileStamp, det, norm, 1);
+    plotDataRefOverlayStack(datah1, refh1, "hyp_presel_looseiso_mll_allj", "M_{ll} (GeV)", fileStamp, det, norm, 1);
+    plotDataRefOverlayStack(datah1, refh1, "hyp_presel_looseiso_pt_allj", "pT_{ll} (GeV)", fileStamp, det, norm, 4);
+
 
 }
 
