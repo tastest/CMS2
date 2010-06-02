@@ -14,6 +14,12 @@ bool inZmassWindow (float mass);
 bool cleaning_standard(bool isData);
 
 //----------------------------------------------------------------
+// standard event cleaning
+// for low pt dilepton / fake rate data studies
+//----------------------------------------------------------------
+bool cleaning_standardNoBSC(bool isData);
+
+//----------------------------------------------------------------
 // require BPTX
 //----------------------------------------------------------------
 bool cleaning_BPTX(bool isData);

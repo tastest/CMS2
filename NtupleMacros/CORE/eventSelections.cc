@@ -29,6 +29,19 @@ bool cleaning_standard(bool isData)
 }
 
 //
+// standard event cleaning
+// for low pt dilepton / fake rate data studies
+//
+bool cleaning_standardNoBSC(bool isData)
+{
+    if (!cleaning_BPTX(isData)) return false;
+    if (!cleaning_beamHalo())   return false;
+    if (!cleaning_goodVertex()) return false;
+    if (!cleaning_goodTracks()) return false;
+    return true;
+}
+
+//
 // require bit 40 or 41 passed
 //
 bool cleaning_BSC() 
