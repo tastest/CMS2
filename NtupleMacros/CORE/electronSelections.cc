@@ -7,6 +7,13 @@
 #include "electronSelections.h"
 #include "CMS2.h"
 
+
+bool pass_electronSelectionCompareMask(const cuts_t cuts_passed, const cuts_t selectionType)
+{
+    if ((cuts_passed & selectionType) == selectionType) return true;
+    return false;
+}
+
 bool pass_electronSelection(const unsigned int index, const cuts_t selectionType)
 {
     cuts_t cuts_passed = electronSelection(index);
@@ -82,6 +89,11 @@ cuts_t electronSelection(const unsigned int index)
     //
 
     if (!isChargeFlip(index)) cuts_passed |= (1ll<<ELECHARGE_NOTFLIP);
+
+    //
+    // spike rejection
+    //
+    if (!isSpikeElectron(index)) cuts_passed |= (1ll<<ELENOSPIKE_SWISS005);
 
     //
     // return which selections passed
@@ -422,3 +434,22 @@ bool isChargeFlip(int elIndex){
 
     return false;
 }
+
+//
+// spike rejection for electrons
+//
+
+bool isSpikeElectron(const unsigned int index) {
+
+    const int scidx = cms2.els_scindex()[index];
+    bool isSpike = false;
+    if (scidx != -1) {
+        //subtract twice max since max is in both 1x3 and 3x1, and we want neither
+        const float r4 = (cms2.scs_e1x3()[scidx] + cms2.scs_e3x1()[scidx] - 2*cms2.scs_eMax()[scidx])/cms2.scs_eMax()[scidx];
+        if (r4 < 0.05) isSpike = true;
+    }
+
+    return isSpike;
+
+}
+

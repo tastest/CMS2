@@ -80,6 +80,11 @@ enum EleSelectionType {
     //
     // is not a charge flip
     ELECHARGE_NOTFLIP,
+    //
+    // spike rejection
+    //
+    // swiss variable should be > 0.05 to not be a spike
+    ELENOSPIKE_SWISS005,
 
 };
 
@@ -403,6 +408,7 @@ enum ElectronIDComponent {
 // 
 // master selection function
 //
+bool pass_electronSelectionCompareMask(const cuts_t cuts_passed, const cuts_t selectionType);
 bool pass_electronSelection(const unsigned int index, const cuts_t selectionType);
 cuts_t electronSelection(const unsigned int index);
 
@@ -459,6 +465,11 @@ int getChargeUsingMajorityLogic(int elIdx, float minFracSharedHits = 0.45);
 //charge flip rejection
 //
 bool isChargeFlip(int elIndex);
+
+//
+// spike rejection for electrons
+//
+bool isSpikeElectron(const unsigned int index);
 
 #endif
 
