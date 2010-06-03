@@ -38,6 +38,7 @@ TString printCand(int bucket, int first, int second, int third);
 struct DorkyEventIdentifier {
      // this is a workaround for not having unique event id's in MC 
      DorkyEventIdentifier (class CMS2 &cms2);
+     DorkyEventIdentifier (unsigned long int r, unsigned long int e, unsigned long int l);
      unsigned long int run, event, lumi_section;
      float trks_d0;
      float trks_pt, trks_eta, trks_phi;

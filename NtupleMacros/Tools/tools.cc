@@ -950,10 +950,16 @@ DorkyEventIdentifier::DorkyEventIdentifier (CMS2 &cms2)
 				      // out of bounds
        trks_pt (cms2.trks_trk_p4().at(0).pt()),
        trks_eta(cms2.trks_trk_p4().at(0).eta()),
-       trks_phi(cms2.trks_trk_p4().at(0).phi())
-{
-     
-}
+       trks_phi(cms2.trks_trk_p4().at(0).phi()) { }
+
+DorkyEventIdentifier::DorkyEventIdentifier (unsigned long int r, unsigned long int e, unsigned long int l)
+     : run(r),
+       event(e),
+       lumi_section(l),
+       trks_d0(0),
+       trks_pt (0),
+       trks_eta(0),
+       trks_phi(0) { }
 
 bool DorkyEventIdentifier::operator < (const DorkyEventIdentifier &other) const
 {
