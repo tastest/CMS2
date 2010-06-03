@@ -29,7 +29,7 @@
 #include "../../CORE/ttbarSelections.h"
 
 #include "../../Tools/DileptonHypType.h"
-#include "../../Tools/tools.h"
+#include "../../Tools/tools.cc"
 
 #include "../../Tools/goodrun.cc"
 #include "../../CORE/utilities.h"
@@ -910,9 +910,10 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
             // do duplicate check
             //
 
-            DorkyEventIdentifier id(cms2);
+
+            DorkyEventIdentifier id(cms2.evt_run(), cms2.evt_event(), cms2.evt_lumiBlock());
             if (is_duplicate(id)) {
-                std::cout << "removing a duplicate" << std::endl;
+                std::cout << "****************** removing a duplicate" << std::endl;
                 continue;
             }
 

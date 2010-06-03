@@ -94,7 +94,8 @@ void doAllData() {
 
 	// do the looping
 	//looper->ScanChain(true, "whunt", chain_whunt_skim);
-	looper->ScanChain(true, "may6eg", chain_may6eg);
+	//looper->ScanChain(true, "may6eg", chain_may6eg);
+	looper->ScanChain(true, "data", chain_golf);
 
 	//
 	// write histograms
