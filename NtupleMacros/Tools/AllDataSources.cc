@@ -16,7 +16,7 @@ DataSource fH_DYEE_EVEN()    { return DataSource("dyee_even",     H_DYEE_EVEN, k
 
 DataSource fH_DYTT()    { return DataSource("dytt",     H_DYTT, kBlack);    }
 
-DataSource fH_TTBAR()   { return DataSource("ttbar",    H_TTBAR, kYellow);       }
+DataSource fH_TTBAR()   { return DataSource("ttbar",    H_TTBAR, kRed);       }
 DataSource fH_ZZ()  { return DataSource("zz",   H_ZZ, kGreen);      }
 DataSource fH_WZ()  { return DataSource("wz",   H_WZ, kBlue);      }
 DataSource fH_WW()      { return DataSource("ww",       H_WW, kRed);          }
@@ -57,7 +57,8 @@ DataSource fH_ZMMJET_ALP()   { return DataSource("dymmAlpgen", H_ZMMJET_ALP, 44)
 DataSource fH_ZTTJET_ALP()   { return DataSource("dyttAlpgen", H_ZTTJET_ALP, 46); }
 
 DataSource fH_WJETS()   { return DataSource("wjets",    H_WJETS, kBlue);       }
-DataSource fH_WHUNT()      { return DataSource("whunt",       H_WHUNT, kRed);          }
+DataSource fH_ZJETS()   { return DataSource("zjets",    H_ZJETS, kCyan);       }
+DataSource fH_DATA()      { return DataSource("DATA",       H_DATA, kRed);          }
 DataSource fH_MINBIAS()      { return DataSource("minbias",       H_MINBIAS, kGray);          }
 
 

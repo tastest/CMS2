@@ -50,6 +50,7 @@ enum {
 
 	H_TW      ,
 	H_WJETS   ,
+    H_ZJETS ,
 	H_WJET_ALP,
 	H_ZEEJET_ALP,
 	H_ZMMJET_ALP,
@@ -58,7 +59,7 @@ enum {
 
 	H_ELEGUNIDEAL,
 	H_ELEGUNSTARTUP,
-	H_WHUNT,
+	H_DATA,
     H_MINBIAS,
 };
 
@@ -95,7 +96,7 @@ const static sources_t sources_nonpeaking =
 // consistent set of 7 TeV ntuples
 // are available with V02-00-12
 
-DataSource fH_WHUNT();
+DataSource fH_DATA();
 DataSource fH_MINBIAS();
 
 DataSource fH_DYMM();
@@ -140,6 +141,7 @@ DataSource fH_MU15();
 
 // old?
 DataSource fH_WJETS();
+DataSource fH_ZJETS();
 DataSource fH_TW();
 DataSource fH_QCD80();
 DataSource fH_WJET_ALP();
