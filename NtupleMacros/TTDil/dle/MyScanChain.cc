@@ -911,12 +911,6 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
             //
 
             DorkyEventIdentifier id(cms2);
-/*
-            id.run = cms2.evt_run();
-            id.event =  cms2.evt_event();
-            id.lumi = cms2.evt_lumiBlock();
-*/
-            // = { cms2.evt_run(), cms2.evt_event(), cms2.evt_lumiBlock() };
             if (is_duplicate(id)) {
                 std::cout << "removing a duplicate" << std::endl;
                 continue;
@@ -932,7 +926,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
             // Do early data study
             //
 
-            //TopNotTopDown(weight);
+            TopNotTopDown(weight);
             //SuperClusterCheck(weight);
             
             //
@@ -943,7 +937,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
             //
             // Run the spike check
             //
-            SpikeCheck(weight);
+            //SpikeCheck(weight);
 
             //
             // define cuts
