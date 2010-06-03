@@ -58,7 +58,7 @@ DataSource fH_ZTTJET_ALP()   { return DataSource("dyttAlpgen", H_ZTTJET_ALP, 46)
 
 DataSource fH_WJETS()   { return DataSource("wjets",    H_WJETS, kBlue);       }
 DataSource fH_ZJETS()   { return DataSource("zjets",    H_ZJETS, kCyan);       }
-DataSource fH_DATA()      { return DataSource("DATA",       H_DATA, kRed);          }
+DataSource fH_DATA()      { return DataSource("data",       H_DATA, kRed);          }
 DataSource fH_MINBIAS()      { return DataSource("minbias",       H_MINBIAS, kGray);          }
 
 
