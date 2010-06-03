@@ -1,4 +1,4 @@
-// $Id: goodrun.cc,v 1.5 2010/05/19 19:41:34 jmuelmen Exp $
+// $Id: goodrun.cc,v 1.6 2010/06/03 12:29:29 dlevans Exp $
 
 // CINT is allowed to see this, but nothing else:
 bool goodrun (unsigned int run, unsigned int lumi_block);
@@ -14,6 +14,7 @@ void set_goodrun_file_json (const char* filename);
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <set>
 #include <string>
 
