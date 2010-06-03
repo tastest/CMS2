@@ -28,7 +28,9 @@
 #include "../../CORE/metSelections.h"
 #include "../../CORE/ttbarSelections.h"
 
-#include "../../Tools/tools.cc"
+#include "../../Tools/DileptonHypType.h"
+#include "../../Tools/tools.h"
+
 #include "../../Tools/goodrun.cc"
 #include "../../CORE/utilities.h"
 
@@ -276,7 +278,7 @@ unsigned int MyScanChain::leptonSelect(const int id, const unsigned int lepIdx)
             //
             // CIC super tight
             if (electronId_ == TOPELEID_CICSUPERTIGHT || electronId_ == TOPELEID_CICSUPERTIGHTREL) {
-                unsigned int answer_cic = electronId_CIC(lepIdx, CIC_SUPERTIGHT);
+                unsigned int answer_cic = electronId_CIC(lepIdx, 2, CIC_SUPERTIGHT);
                 if ((answer_cic & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<PASS_TOPLEPTON_ID);
                 if (electronId_ == TOPELEID_CICSUPERTIGHT && (answer_cic & (1ll<<ELEID_ISO)) == (1ll<<ELEID_ISO)) cuts_passed |= (1ll<<PASS_TOPLEPTON_ISO);
                 if (electronId_ == TOPELEID_CICSUPERTIGHTREL && electronIsolation_rel(lepIdx, true) < 0.1) cuts_passed |= (1ll<<PASS_TOPLEPTON_ISO);
@@ -284,7 +286,7 @@ unsigned int MyScanChain::leptonSelect(const int id, const unsigned int lepIdx)
 
             // CIC tight
             if (electronId_ == TOPELEID_CICTIGHT || electronId_ == TOPELEID_CICTIGHTREL) {
-                unsigned int answer_cic = electronId_CIC(lepIdx, CIC_TIGHT);
+                unsigned int answer_cic = electronId_CIC(lepIdx, 2, CIC_TIGHT);
                 if ((answer_cic & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<PASS_TOPLEPTON_ID);
                 if (electronId_ == TOPELEID_CICTIGHT && (answer_cic & (1ll<<ELEID_ISO)) == (1ll<<ELEID_ISO)) cuts_passed |= (1ll<<PASS_TOPLEPTON_ISO);
                 if (electronId_ == TOPELEID_CICTIGHTREL && electronIsolation_rel(lepIdx, true) < 0.1) cuts_passed |= (1ll<<PASS_TOPLEPTON_ISO);
@@ -292,7 +294,7 @@ unsigned int MyScanChain::leptonSelect(const int id, const unsigned int lepIdx)
 
             // CIC loose
             if (electronId_ == TOPELEID_CICLOOSE || electronId_ == TOPELEID_CICLOOSEREL) {
-                unsigned int answer_cic = electronId_CIC(lepIdx, CIC_LOOSE);
+                unsigned int answer_cic = electronId_CIC(lepIdx, 2, CIC_LOOSE);
                 if ((answer_cic & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<PASS_TOPLEPTON_ID);
                 if (electronId_ == TOPELEID_CICLOOSE && (answer_cic & (1ll<<ELEID_ISO)) == (1ll<<ELEID_ISO)) cuts_passed |= (1ll<<PASS_TOPLEPTON_ISO);
                 if (electronId_ == TOPELEID_CICLOOSEREL && electronIsolation_rel(lepIdx, true) < 0.1) cuts_passed |= (1ll<<PASS_TOPLEPTON_ISO);
@@ -300,7 +302,7 @@ unsigned int MyScanChain::leptonSelect(const int id, const unsigned int lepIdx)
 
             // CIC very loose
             if (electronId_ == TOPELEID_CICVERYLOOSE || electronId_ == TOPELEID_CICVERYLOOSEREL) {
-                unsigned int answer_cic = electronId_CIC(lepIdx, CIC_VERYLOOSE);
+                unsigned int answer_cic = electronId_CIC(lepIdx, 2, CIC_VERYLOOSE);
                 if ((answer_cic & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<PASS_TOPLEPTON_ID);
                 if (electronId_ == TOPELEID_CICVERYLOOSE && (answer_cic & (1ll<<ELEID_ISO)) == (1ll<<ELEID_ISO)) cuts_passed |= (1ll<<PASS_TOPLEPTON_ISO);
                 if (electronId_ == TOPELEID_CICVERYLOOSEREL && electronIsolation_rel(lepIdx, true) < 0.1) cuts_passed |= (1ll<<PASS_TOPLEPTON_ISO);
@@ -905,10 +907,26 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
             }
 
             //
+            // do duplicate check
+            //
+
+            DorkyEventIdentifier id(cms2);
+/*
+            id.run = cms2.evt_run();
+            id.event =  cms2.evt_event();
+            id.lumi = cms2.evt_lumiBlock();
+*/
+            // = { cms2.evt_run(), cms2.evt_event(), cms2.evt_lumiBlock() };
+            if (is_duplicate(id)) {
+                std::cout << "removing a duplicate" << std::endl;
+                continue;
+            }
+
+            //
             // standard event cleaning
             //
 
-            if (!cleaning_standard(isData)) continue;
+            if (!cleaning_standardNoBSC(isData)) continue;
 
             //
             // Do early data study
