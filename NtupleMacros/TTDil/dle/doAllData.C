@@ -80,17 +80,17 @@ void doAllData() {
 	//
 	// Frank Golf
 	// (use at UCSD)
-	TChain *ch_golf = new TChain("Events");
-	ch_golf->Add("/nfs-3/userdata/cms2/MinimumBias_Commissioning10-May6thPDSkim2_SD_Mu-v1/V03-04-09/merged_ntuple*.root");
-	ch_golf->Add("/nfs-3/userdata/cms2/MinimumBias_Commissioning10-SD_Mu-v9_RECO/singleLepPt5Skim/*.root"  );
-	ch_golf->Add("/nfs-3/userdata/yanjuntu/Mu_Run2010A-PromptReco-v1_RECO/V03-04-09-01/merged_ntuple*.root"      );
-	ch_golf->Add("/nfs-3/userdata/yanjuntu/Mu_Run2010A-PromptReco-v1_RECO/V03-04-10-01/merged_ntuple*.root"      );
-	ch_golf->Add("/nfs-3/userdata/yanjuntu/Mu_Run2010A-PromptReco-v2_RECO/V03-04-10-01/merged_ntuple*.root"      );
-	ch_golf->Add("/nfs-3/userdata/cms2/MinimumBias_Commissioning10-May6thPDSkim2_SD_EG-v1/V03-04-09/merged_ntuple*.root");
-	ch_golf->Add("/nfs-3/userdata/cms2/MinimumBias_Commissioning10-SD_EG-v9_RECO/singleLepPt5Skim/*.root"  );
-	ch_golf->Add("/nfs-3/userdata/yanjuntu/EG_Run2010A-PromptReco-v1_RECO/V03-04-09-01/merged_ntuple*.root"      );
-	ch_golf->Add("/nfs-3/userdata/yanjuntu/EG_Run2010A-PromptReco-v1_RECO/V03-04-10-01/merged_ntuple*.root"      );
-	ch_golf->Add("/nfs-3/userdata/yanjuntu/EG_Run2010A-PromptReco-v2_RECO/V03-04-10-01/merged_ntuple*.root"      );
+	TChain *chain_golf = new TChain("Events");
+	chain_golf->Add("/nfs-3/userdata/cms2/MinimumBias_Commissioning10-May6thPDSkim2_SD_Mu-v1/V03-04-09/merged_ntuple*.root");
+	chain_golf->Add("/nfs-3/userdata/cms2/MinimumBias_Commissioning10-SD_Mu-v9_RECO/singleLepPt5Skim/*.root"  );
+	chain_golf->Add("/nfs-3/userdata/yanjuntu/Mu_Run2010A-PromptReco-v1_RECO/V03-04-09-01/merged_ntuple*.root"      );
+	chain_golf->Add("/nfs-3/userdata/yanjuntu/Mu_Run2010A-PromptReco-v1_RECO/V03-04-10-01/merged_ntuple*.root"      );
+	chain_golf->Add("/nfs-3/userdata/yanjuntu/Mu_Run2010A-PromptReco-v2_RECO/V03-04-10-01/merged_ntuple*.root"      );
+	chain_golf->Add("/nfs-3/userdata/cms2/MinimumBias_Commissioning10-May6thPDSkim2_SD_EG-v1/V03-04-09/merged_ntuple*.root");
+	chain_golf->Add("/nfs-3/userdata/cms2/MinimumBias_Commissioning10-SD_EG-v9_RECO/singleLepPt5Skim/*.root"  );
+	chain_golf->Add("/nfs-3/userdata/yanjuntu/EG_Run2010A-PromptReco-v1_RECO/V03-04-09-01/merged_ntuple*.root"      );
+	chain_golf->Add("/nfs-3/userdata/yanjuntu/EG_Run2010A-PromptReco-v1_RECO/V03-04-10-01/merged_ntuple*.root"      );
+	chain_golf->Add("/nfs-3/userdata/yanjuntu/EG_Run2010A-PromptReco-v2_RECO/V03-04-10-01/merged_ntuple*.root"      );
 
 	// do the looping
 	//looper->ScanChain(true, "whunt", chain_whunt_skim);
