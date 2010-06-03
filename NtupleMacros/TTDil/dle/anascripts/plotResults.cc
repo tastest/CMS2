@@ -16,7 +16,7 @@ const static sources_t theMCBackground = (1<<H_ZJETS) | (1<<H_WJETS) | (1<<H_QCD
 const static sources_t theMCSources = theMCSignal | theMCBackground;
 
 const static sources_t theSources = theMCSignal | theMCBackground;
-const static sources_t theDataSources = (1<<H_WHUNT);
+const static sources_t theDataSources = (1<<H_DATA);
 
 
 
@@ -93,6 +93,7 @@ void plotDataRefOverlayStack(HistogramUtilities &hData, HistogramUtilities &hRef
     tex3->SetTextSize(0.04);
     tex3->SetLineWidth(2);
 
+    std::cout << "mc" << std::endl;
     THStack *stRef = hRef.getStack(theMCSources, name, "", det, rebin);
     TLegend *lg_all = hRef.getLegend(theMCSources, name, "", det);
     lg_all->SetX1(0.55);
@@ -101,6 +102,7 @@ void plotDataRefOverlayStack(HistogramUtilities &hData, HistogramUtilities &hRef
     lg_all->SetY2(0.8);
     lg_all->SetTextSize(0.04);
 
+    std::cout << "data" << std::endl;
     TH1F *h1Data =  hData.getHistogram(theDataSources, name, "", det, rebin);
     h1Data->GetXaxis()->SetTitle("");
     h1Data->GetYaxis()->SetTitle("");
@@ -162,7 +164,7 @@ void plotResults(TString det, TString fileStamp, TString refFileStamp, TString n
     //float luminorm = 0.0001;
     std::vector<DataSource> dataSources;
     std::vector<DataSource> refSources;
-    dataSources.push_back (fH_WHUNT() );
+    dataSources.push_back (fH_DATA() );
     refSources.push_back( fH_TTBAR() );
     refSources.push_back( fH_ZJETS() );
     refSources.push_back( fH_QCD30() );
