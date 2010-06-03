@@ -34,7 +34,7 @@ float projectedMETW( float met, float metPhi, float leptonPhi);
 // function to calculate latest tcMET
 //---------------------------------------------
 metStruct correctedTCMET(bool usePV = false, bool useElectronVetoCone = false, bool useHFcleaning = true, 
-                         bool useHCALcleaning = true, bool useECALcleaning = false, bool printout = false, ostream& ostr = cout);
+                         bool useHCALcleaning = true, bool useECALcleaning = false, bool printout = false, ostream& ostr = std::cout);
 
 //---------------------------------------------
 // calorimeter cleaning for tcMET
