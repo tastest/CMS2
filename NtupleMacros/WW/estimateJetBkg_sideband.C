@@ -17,8 +17,8 @@ void getEstimate(const TH1F* h, double& estimate, double& error, const TH1F* qcd
       sideband_err += h->GetBinError(x)*h->GetBinError(x);
     }
   } 
-  estimate = sideband*0.1/0.8;
-  error = sqrt(sideband_err)*0.1/0.8;
+  estimate = sideband*0.15/0.8;
+  error = sqrt(sideband_err)*0.15/0.8;
 }
 
 void printLine( const char*name,
@@ -124,7 +124,7 @@ void estimateJetBkg_sideband(const char* file = "processed_data.root")
   TH1F *tw_mm    = dynamic_cast<TH1F*>(ftt->Get("tw_hMuRelIso_mm"));
   TH1F *tw_em    = dynamic_cast<TH1F*>(ftt->Get("tw_hMuRelIso_em"));
   
-  cout << "Jet induced muon fake background estimation ([0.2,1.0]*0.1/0.8):" <<endl;
+  cout << "Jet induced muon fake background estimation ([0.2,1.0]*0.15/0.8):" <<endl;
   cout << "\n" << Form("| %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s |",
 		       "", "*DY ee*","*DY mumu*","*DY tautau*","*ttbar*","*Wjets*","*WZ*","*ZZ*","*WW*","*TW*")
        << endl;

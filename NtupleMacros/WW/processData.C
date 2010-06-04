@@ -92,6 +92,7 @@ void processData()
  
   if (runWjets)
     ProcessSample(dataset+"/WJets-madgraph_Spring10-START3X_V26_S09-v1_SingleLep/V03-04-08"+version+"/dilep-skim.root", Wjets, 100.0, 28049, fullDataSet, 40);
+    // ProcessSample(dataset+"/PhotonVJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-08-01"+version+"/merged_ntuple*.root", Wjets, 100.0, -1, fullDataSet, 40);
 
   if (runDYee)
     ProcessSample(dataset+"/Zee_Spring10-START3X_V26_S09-v1/V03-04-08-01"+version+"/merged_ntuple*.root", DYee, 100.0, 1482.0, fullDataSet, kMagenta, identifyDYEvents);
