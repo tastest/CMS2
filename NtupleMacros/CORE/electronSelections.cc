@@ -185,8 +185,8 @@ electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned in
 {
 
     // check that a valid version number was supplied
-    if (version != 2 && version != 3) {
-        std::cout << "[electronId_CIC] Error! Version must be 2 or 3 - fail" << std::endl;
+    if (version != 2 && version != 3 && version != 4) {
+        std::cout << "[electronId_CIC] Error! Version must be 2, 3 or 4 - fail" << std::endl;
         return 0;
     }
 
@@ -310,14 +310,22 @@ electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned in
         std::vector<double> cutiso_sum;
         std::vector<double> cutiso_sumoet;
         std::vector<double> cutsee;
+        bool wantBinning;
 
-        eidGetCIC_V03(tightness, cutdcotdist, cutdetain, cutdphiin, cuteseedopcor, cutet,
+        if (version == 3) {
+            eidGetCIC_V03(tightness, cutdcotdist, cutdetain, cutdphiin, cuteseedopcor, cutet,
                     cutfmishits, cuthoe, cutip_gsf, cutiso_sum, cutiso_sumoet, cutsee);
+            wantBinning = true;
+        }
 
+        if (version == 4) {
+            eidGetCIC_V04(tightness, cutdcotdist, cutdetain, cutdphiin, cuteseedopcor, cutet,
+                    cutfmishits, cuthoe, cutip_gsf, cutiso_sum, cutiso_sumoet, cutsee);
+            wantBinning = false;
+        }
 
         // this is certainly true for V03
         // but not sure the meaning of V04,05
-        bool wantBinning = true;
         unsigned int result = 0;
         int bin = 0;
         if (wantBinning) {
@@ -421,8 +429,8 @@ unsigned int classify(const unsigned int version, const unsigned int index) {
 
     if (version == 3 || version == 4 || version == 5) {
 
-        // this is certainly true for V03
-        // but not sure the meaning of V04,05
+        // this is certainly true for V03 and V04
+        // not sure about V05
         bool newCategories = false;
 
         if (isEB) {

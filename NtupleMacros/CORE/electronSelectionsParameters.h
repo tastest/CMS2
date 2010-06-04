@@ -63,6 +63,10 @@ void eidGetCand(const cand_tightness tightness, std::vector<double> &cutdeta, st
 
 void eidGetVBTF(const vbtf_tightness tightness, std::vector<double> &cutdeta, std::vector<double> &cutdphi, std::vector<double> &cuthoe, std::vector<double> &cutsee, std::vector<double> &cutreliso);
 
+void eidGetCIC_V04(const cic_tightness tightness, std::vector<double> &cutdcotdist, std::vector<double> &cutdetain, std::vector<double> &cutdphiin, std::vector
+<double> &cuteseedopcor, std::vector<double> &cutet, std::vector<double> &cutfmishits, std::vector<double> &cuthoe, std::vector<double> &cutip_gsf, std::vector
+<double> &cutiso_sum, std::vector<double> &cutiso_sumoet, std::vector<double> &cutsee)
+
 void eidGetCIC_V03(const cic_tightness tightness, std::vector<double> &cutdcotdist, std::vector<double> &cutdetain, std::vector<double> &cutdphiin, std::vector<double> &cuteseedopcor, std::vector<double> &cutet, std::vector<double> &cutfmishits, std::vector<double> &cuthoe, std::vector<double> &cutip_gsf, std::vector<double> &cutiso_sum, std::vector<double> &cutiso_sumoet, std::vector<double> &cutsee);
 
 void eidGetCIC_V02(const cic_tightness tightness, std::vector<double> &cutdeta, std::vector<double> &cutdphi, std::vector<double> &cuteopin, std::vector<double> &cutet, std::vector<double> &cuthoe, std::vector<double> &cutip, std::vector<double> &cutisoecal, std::vector<double> &cutisohcal, std::vector<double> &cutisotk, std::vector<double> &cutmishits, std::vector<double> &cutsee);
