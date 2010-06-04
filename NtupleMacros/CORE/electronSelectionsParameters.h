@@ -65,7 +65,7 @@ void eidGetVBTF(const vbtf_tightness tightness, std::vector<double> &cutdeta, st
 
 void eidGetCIC_V04(const cic_tightness tightness, std::vector<double> &cutdcotdist, std::vector<double> &cutdetain, std::vector<double> &cutdphiin, std::vector
 <double> &cuteseedopcor, std::vector<double> &cutet, std::vector<double> &cutfmishits, std::vector<double> &cuthoe, std::vector<double> &cutip_gsf, std::vector
-<double> &cutiso_sum, std::vector<double> &cutiso_sumoet, std::vector<double> &cutsee)
+<double> &cutiso_sum, std::vector<double> &cutiso_sumoet, std::vector<double> &cutsee);
 
 void eidGetCIC_V03(const cic_tightness tightness, std::vector<double> &cutdcotdist, std::vector<double> &cutdetain, std::vector<double> &cutdphiin, std::vector<double> &cuteseedopcor, std::vector<double> &cutet, std::vector<double> &cutfmishits, std::vector<double> &cuthoe, std::vector<double> &cutip_gsf, std::vector<double> &cutiso_sum, std::vector<double> &cutiso_sumoet, std::vector<double> &cutsee);
 
