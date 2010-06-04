@@ -77,7 +77,7 @@ JetType jetType(){
 }
 
 unsigned int numberOfJets(unsigned int i_hyp){
-  return getJets(jetType(), i_hyp, 25, 3.0).size();
+  return getJets(jetType(), i_hyp, 20, 3.0).size();
 }
 
 
