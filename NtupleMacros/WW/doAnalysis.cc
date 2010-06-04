@@ -55,7 +55,7 @@ bool goodMuonWithoutIsolation(unsigned int i){
 }
 
 bool goodMuonIsolated(unsigned int i){
-  return ww_muId(i) && ww_muIso(i) < .1; 
+  return ww_muId(i) && ww_muIso(i) < .15; 
 }
 
 double metValue(){    return cms2.evt_tcmet(); }
@@ -89,6 +89,10 @@ bool ww_elId(unsigned int index){
   if( fabs(cms2.els_conv_dist().at(index)) < 0.02 &&
       fabs(cms2.els_conv_dcot().at(index)) < 0.02) return false;
   if (! (electronId_VBTF(index, VBTF_TOP80) & (1<<ELEID_ID)) ) return false;
+  // if (! (electronId_CIC(index, 2, CIC_SUPERTIGHT) & (1<<ELEID_ID)) ) return false;
+  
+  // conversion rejection - hit based
+  //if ( cms2.els_exp_innerlayers().at(index) > 0 ) return false;
   int ctfIndex = cms2.els_trkidx().at(index);
   if ( ctfIndex >=0 && 
        cms2.els_trk_charge().at(index)!=cms2.trks_charge().at(ctfIndex) ) return false;
