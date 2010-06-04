@@ -10,7 +10,7 @@
 
 typedef ULong64_t   uint64;
 typedef uint64      cuts_t;
-
+typedef uint64      electronIdComponent_t;
 //
 // This is the menu of electron selections
 //
@@ -44,8 +44,10 @@ enum EleSelectionType {
     ELEID_CAND02,
     // pass "EXTRA" electron ID
     ELEID_EXTRA,
-    // VBTF90 ID
+    // VBTF90 electron ID (35X)
     ELEID_VBTF_35X_90,
+    // CIC_MEDIUM electron ID (V03)
+    ELEID_CIC_V03_MEDIUM,
     //
     // conv rej cuts
     //
@@ -428,12 +430,12 @@ bool electronId_classBasedTight(const unsigned int index);
 //
 // "VBTF" id
 //
-unsigned int electronId_VBTF(const unsigned int index, const vbtf_tightness tightness);
+electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tightness tightness);
 
 //
 // "CIC" id
 //
-unsigned int electronId_CIC(const unsigned int index, const unsigned int version, const cic_tightness tightness);
+electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned int version, const cic_tightness tightness);
 unsigned int classify(const unsigned int version, const unsigned int index);
 
 //

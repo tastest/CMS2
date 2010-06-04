@@ -53,11 +53,13 @@ cuts_t electronSelection(const unsigned int index)
     if (electronId_cand(index, CAND_02)) cuts_passed |= (1ll<<ELEID_CAND02);
     if (electronId_extra(index)) cuts_passed |= (1ll<<ELEID_EXTRA);
 
-    // ELEID_VBTF_35X_90
-    unsigned int answer_vbtf = electronId_VBTF( index, VBTF_35X_90 );
-    if ( ( answer_vbtf & (1ll<<ELEID_ID) ) == (1ll<<ELEID_ID) ){ 
-        cuts_passed |= (1ll<<ELEID_VBTF_35X_90);
-    }
+    // VBTF90 (optimised in 35X)
+    electronIdComponent_t answer_vbtf = electronId_VBTF(index, VBTF_35X_90);
+    if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_35X_90);
+
+    // CIC_MEDIUM (V03 optimisation)
+    electronIdComponent_t answer_cic = electronId_CIC(index, 3, CIC_MEDIUM);
+    if ((answer_cic & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_CIC_V03_MEDIUM);
 
     //
     // conversion rejection cuts
@@ -179,7 +181,7 @@ bool electronId_classBasedTight(const unsigned int index)
 // class based id that is new/experimental
 //
 
-unsigned int electronId_CIC(const unsigned int index, const unsigned int version, const cic_tightness tightness)
+electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned int version, const cic_tightness tightness)
 {
 
     // check that a valid version number was supplied
@@ -462,7 +464,7 @@ unsigned int classify(const unsigned int version, const unsigned int index) {
 // VBTF stuff
 //
 
-unsigned int electronId_VBTF(const unsigned int index, const vbtf_tightness tightness)
+electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tightness tightness)
 {
 
     unsigned int answer = 0;
