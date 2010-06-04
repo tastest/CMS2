@@ -183,8 +183,8 @@ unsigned int electronId_CIC(const unsigned int index, const unsigned int version
 {
 
     // check that a valid version number was supplied
-    if (version != 2 && version != 4) {
-        std::cout << "[electronId_CIC] Error! Version must be 2 or 4 - fail" << std::endl;
+    if (version != 2 && version != 3) {
+        std::cout << "[electronId_CIC] Error! Version must be 2 or 3 - fail" << std::endl;
         return 0;
     }
 
@@ -316,7 +316,6 @@ unsigned int electronId_CIC(const unsigned int index, const unsigned int version
         // this is certainly true for V03
         // but not sure the meaning of V04,05
         bool wantBinning = true;
-
         unsigned int result = 0;
         int bin = 0;
         if (wantBinning) {

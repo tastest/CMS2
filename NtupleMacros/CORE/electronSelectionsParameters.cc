@@ -302,6 +302,7 @@ void eidGetCIC_V03(const cic_tightness tightness, std::vector<double> &cutdcotdi
                 eidAssign(cutiso_sum, cutiso_sum_tmp, 27);
                 eidAssign(cutiso_sumoet, cutiso_sumoet_tmp, 27);
                 eidAssign(cutsee, cutsee_tmp, 27);
+                return;
             }
 
         case CIC_LOOSE:
@@ -372,6 +373,7 @@ void eidGetCIC_V03(const cic_tightness tightness, std::vector<double> &cutdcotdi
                 eidAssign(cutiso_sum, cutiso_sum_tmp, 27);
                 eidAssign(cutiso_sumoet, cutiso_sumoet_tmp, 27);
                 eidAssign(cutsee, cutsee_tmp, 27);
+                return;
             }
 
         case CIC_MEDIUM:
@@ -442,6 +444,7 @@ void eidGetCIC_V03(const cic_tightness tightness, std::vector<double> &cutdcotdi
                 eidAssign(cutiso_sum, cutiso_sum_tmp, 27);
                 eidAssign(cutiso_sumoet, cutiso_sumoet_tmp, 27);
                 eidAssign(cutsee, cutsee_tmp, 27);
+                return;
             }
 
         case CIC_TIGHT:
@@ -512,6 +515,7 @@ void eidGetCIC_V03(const cic_tightness tightness, std::vector<double> &cutdcotdi
                 eidAssign(cutiso_sum, cutiso_sum_tmp, 27);
                 eidAssign(cutiso_sumoet, cutiso_sumoet_tmp, 27);
                 eidAssign(cutsee, cutsee_tmp, 27);
+                return;
             }
 
         case CIC_SUPERTIGHT:
@@ -582,6 +586,7 @@ void eidGetCIC_V03(const cic_tightness tightness, std::vector<double> &cutdcotdi
                 eidAssign(cutiso_sum, cutiso_sum_tmp, 27);
                 eidAssign(cutiso_sumoet, cutiso_sumoet_tmp, 27);
                 eidAssign(cutsee, cutsee_tmp, 27);
+                return;
             }
 
         case CIC_HYPERTIGHT1:
@@ -652,6 +657,7 @@ void eidGetCIC_V03(const cic_tightness tightness, std::vector<double> &cutdcotdi
                 eidAssign(cutiso_sum, cutiso_sum_tmp, 27);
                 eidAssign(cutiso_sumoet, cutiso_sumoet_tmp, 27);
                 eidAssign(cutsee, cutsee_tmp, 27);
+                return;
             }
 
         case CIC_HYPERTIGHT2:
@@ -722,6 +728,7 @@ void eidGetCIC_V03(const cic_tightness tightness, std::vector<double> &cutdcotdi
                 eidAssign(cutiso_sum, cutiso_sum_tmp, 27);
                 eidAssign(cutiso_sumoet, cutiso_sumoet_tmp, 27);
                 eidAssign(cutsee, cutsee_tmp, 27);
+                return;
             }
 
         case CIC_HYPERTIGHT3:
@@ -792,6 +799,7 @@ void eidGetCIC_V03(const cic_tightness tightness, std::vector<double> &cutdcotdi
                 eidAssign(cutiso_sum, cutiso_sum_tmp, 27);
                 eidAssign(cutiso_sumoet, cutiso_sumoet_tmp, 27);
                 eidAssign(cutsee, cutsee_tmp, 27);
+                return;
             }
 
         case CIC_HYPERTIGHT4:
@@ -862,7 +870,11 @@ void eidGetCIC_V03(const cic_tightness tightness, std::vector<double> &cutdcotdi
                 eidAssign(cutiso_sum, cutiso_sum_tmp, 18);
                 eidAssign(cutiso_sumoet, cutiso_sumoet_tmp, 18);
                 eidAssign(cutsee, cutsee_tmp, 18);
+                return;
             }
+
+        default:
+            std::cout << "[eidGetCIC] ERROR! Invalid tightness level" << std::endl;
 
     }
 
