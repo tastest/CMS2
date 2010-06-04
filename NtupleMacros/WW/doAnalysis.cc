@@ -89,7 +89,7 @@ bool ww_elId(unsigned int index){
   if( fabs(cms2.els_conv_dist().at(index)) < 0.02 &&
       fabs(cms2.els_conv_dcot().at(index)) < 0.02) return false;
   if (! (electronId_VBTF(index, VBTF_TOP80) & (1<<ELEID_ID)) ) return false;
-  // if (! (electronId_CIC(index, 2, CIC_SUPERTIGHT) & (1<<ELEID_ID)) ) return false;
+  // if (! (electronId_CIC(index, 4, CIC_SUPERTIGHT) & (1<<ELEID_ID)) ) return false;
   
   // conversion rejection - hit based
   //if ( cms2.els_exp_innerlayers().at(index) > 0 ) return false;
@@ -916,10 +916,11 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset)
   float weight = cms2.evt_scale1fb() * kFactor;
 
   unsigned int icounter(0);
+  monitor.nProcessed = cms2.evt_nEvts();
   monitor.count(icounter++,"Total number of hypothesis: ");
      
   // if ( cms2.hyp_FVFit_prob()[i_hyp] < 0.005 ) return;
-  monitor.count(icounter++,"Total number of hypothesis after vertex cut: ");
+  // monitor.count(icounter++,"Total number of hypothesis after vertex cut: ");
      
   if ( ! passedTriggerRequirements( hypType(i_hyp) ) )return;
   monitor.count(icounter++,"Total number of hypothesis after trigger requirements: ");
@@ -928,7 +929,7 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset)
   if (cms2.hyp_lt_p4()[i_hyp].pt() < 20.0) return;
   if (cms2.hyp_ll_p4()[i_hyp].pt() < 20.0) return;
   if (cms2.hyp_p4()[i_hyp].mass() < 12) return;
-  monitor.count(icounter++,"Total number of hypothesis after lepton pt cut: ");
+  monitor.count(icounter++,"Total number of hypothesis after previous + lepton pt and mll cuts: ");
      
   // Require same sign
   if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) return;
@@ -943,11 +944,11 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset)
 
   // Z veto using additional leptons in the event
   // if (additionalZveto()) return;
-  monitor.count(icounter++,"Total number of hypothesis after lepton pt + z vetos: ");
+  monitor.count(icounter++,"Total number of hypothesis after previous + z veto cuts: ");
      
   // MET
   if (!passedMetRequirements(i_hyp)) return;
-  monitor.count(icounter++,"Total number of hypothesis after lepton pt + z vetos + MET cuts: ");
+  monitor.count(icounter++,"Total number of hypothesis after previous + MET cuts: ");
      
   bool goodEvent = true;
   bool passedJetVeto = true;
@@ -994,7 +995,7 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset)
   }
      
   if ( !passedLTFinalRequirements || !passedLLFinalRequirements ) return;
-  monitor.count(icounter++,"Total number of hypothesis after full lepton selection + z vetos + MET cuts: ");
+  monitor.count(icounter++,"Total number of hypothesis after previous + lepton id/iso cuts: ");
      
   // trkjet veto
   // if ( !passTrkJetVeto(i_hyp) ) return;
@@ -1022,6 +1023,8 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset)
     if ( nBQuarks>1 ) hForwardBquarkEtaAfterVeto->Fill(forwardBQuarkEta);
   }
   if ( ! goodEvent ) return;
+
+  monitor.count(icounter++,"Total number of hypothesis after previous + jet veto cuts: ");
 
   // -------------------------------------------------------------------//
   // If we made it to here, we passed all cuts and we are ready to fill //
