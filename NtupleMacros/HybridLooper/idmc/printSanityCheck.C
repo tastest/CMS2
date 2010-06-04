@@ -2,7 +2,7 @@
 void printSanityCheck()
 {
 
-    TFile f("histos_eleid_saniv02_pt20up.root");
+    TFile f("histos_eleid_pt20up.root");
 
     TCanvas *c1 = new TCanvas();
     c1->cd();

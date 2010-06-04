@@ -23,7 +23,9 @@
 #include "../../CORE/jetSelections.h"
 #include "../../CORE/mcSelections.h"
 #include "../../CORE/utilities.h"
+
 #include "../../CORE/electronSelectionsParameters.h"
+#include "../../CORE/electronSelections.h"
 
 //
 // Namespaces
@@ -139,6 +141,16 @@ void MyScanChain::FormatAllEleIdHistograms(std::string sampleName)
         FormatHist(h1_hyp_convboth_pt_[i], sampleName, "h1_hyp_convboth_pt_" + detname, 200, 0.0, 200.0);
         FormatHist(h1_hyp_convboth_pdgid_[i], sampleName, "h1_hyp_convboth_pdgid_" + detname, 10, -0.5, 9.5);
 
+        // check reimplementation of sani id in the looper
+        FormatHist(h1_hyp_idstudy_classExpLooseRecompId_[i], sampleName, "h1_hyp_idstudy_classExpLooseRecompId_" + detname, 5, -0.5, 4.5);
+        FormatHist(h1_hyp_idstudy_classExpLooseRecompIso_[i], sampleName, "h1_hyp_idstudy_classExpLooseRecompIso_" + detname, 5, -0.5, 4.5);
+        FormatHist(h1_hyp_idstudy_classExpTightRecompId_[i], sampleName, "h1_hyp_idstudy_classExpTightRecompId_" + detname, 5, -0.5, 4.5);
+        FormatHist(h1_hyp_idstudy_classExpTightRecompIso_[i], sampleName, "h1_hyp_idstudy_classExpTightRecompIso_" + detname, 5, -0.5, 4.5);
+
+        FormatHist(h1_hyp_idstudy_classExpSaniLooseId_[i], sampleName, "h1_hyp_idstudy_classExpSaniLooseId_" + detname, 5, -0.5, 4.5);
+        FormatHist(h1_hyp_idstudy_classExpSaniLooseIso_[i], sampleName, "h1_hyp_idstudy_classExpSaniLooseIso_" + detname, 5, -0.5, 4.5);
+        FormatHist(h1_hyp_idstudy_classExpSaniTightId_[i], sampleName, "h1_hyp_idstudy_classExpSaniTightId_" + detname, 5, -0.5, 4.5);
+        FormatHist(h1_hyp_idstudy_classExpSaniTightIso_[i], sampleName, "h1_hyp_idstudy_classExpSaniTightIso_" + detname, 5, -0.5, 4.5);
 
 
     }
@@ -210,7 +222,7 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
         Fill(h1_hyp_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
         Fill(h1_hyp_reliso_[det], hypType, iso_rel, weight);    
         Fill(h1_hyp_pdgid_[det], hypType, pdgidCatagory, weight);
- 
+
         if (CheckCuts((1ll<<ELEID_CAND01), electron_cuts_passed)) {
             Fill(h1_hyp_cand01_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
             Fill(h1_hyp_cand01_reliso_[det], hypType, iso_rel, weight);
@@ -231,6 +243,24 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
             Fill(h1_hyp_convboth_pt_[det], hypType, cms2.els_p4()[index].Pt(), weight);
             Fill(h1_hyp_convboth_pdgid_[det], hypType, pdgidCatagory, weight);
         }
+
+        //
+        // validate sani ID
+        // 
+
+        int answerLoose = electronId_CIC(index, 3, CIC_LOOSE);
+        int answerTight = electronId_CIC(index, 3, CIC_TIGHT);
+
+        // check that class based id passed independently of isolation decision
+        Fill(h1_hyp_idstudy_classExpLooseRecompId_[det], hypType, bool(answerLoose & (1<<ELEID_ID)), 1.0);
+        Fill(h1_hyp_idstudy_classExpLooseRecompIso_[det], hypType, bool(answerLoose & (1<<ELEID_ISO)), 1.0);
+        Fill(h1_hyp_idstudy_classExpTightRecompId_[det], hypType, bool(answerTight & (1<<ELEID_ID)), 1.0);
+        Fill(h1_hyp_idstudy_classExpTightRecompIso_[det], hypType, bool(answerTight & (1<<ELEID_ISO)), 1.0);
+
+        Fill(h1_hyp_idstudy_classExpSaniLooseId_[det], hypType, bool(int(cms2.els_egamma_looseId()[index]) & (1<<0)), 1.0);
+        Fill(h1_hyp_idstudy_classExpSaniLooseIso_[det], hypType, bool(int(cms2.els_egamma_looseId()[index]) & (1<<1)), 1.0);
+        Fill(h1_hyp_idstudy_classExpSaniTightId_[det], hypType, bool(int(cms2.els_egamma_tightId()[index]) & (1<<0)), 1.0);
+        Fill(h1_hyp_idstudy_classExpSaniTightIso_[det], hypType, bool(int(cms2.els_egamma_tightId()[index]) & (1<<1)), 1.0);
 
 
 
@@ -328,7 +358,6 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
                 //    }
 
                 DileptonHypType hypType = hyp_typeToHypType(cms2.hyp_type()[h]);
-
                 if (hypType == DILEPTON_EMU && sampleName == "ttbar") {
                     if(abs(cms2.hyp_ll_id()[h]) == 13) {
                         if (leptonIsFromW(cms2.hyp_ll_index()[h], cms2.hyp_ll_id()[h]) > 0 )
@@ -353,13 +382,16 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, i
 
                 if (hypType == DILEPTON_EMU && sampleName == "QCDpt30") {
                     if(abs(cms2.hyp_lt_id()[h]) == 11) {
-                            FillAllEleIdHistograms(cms2.hyp_lt_index()[h], weight, sampleName, h);
+                        FillAllEleIdHistograms(cms2.hyp_lt_index()[h], weight, sampleName, h);
                     }
                 }
-                
 
+                if (sampleName == "eleidval") {
+                    FillAllEleIdHistograms(cms2.hyp_lt_index()[h], weight, sampleName, h);
+                }                
 
             } // end loop on hypothesis
+
 
 
         } // end loop on events

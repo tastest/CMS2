@@ -51,13 +51,21 @@ void doAll() {
     TChain *chain_qcd30 = new TChain("Events");
     chain_qcd30->Add(ntuple_location + "QCD_Pt30_Spring10-START3X_V26_S09-v1/V03-04-08/merged_ntuple*.root");
 
+    //
+    // Validation
+    TChain *chain_eleidval = new TChain("Events");
+    chain_eleidval->Add("/tmp/dlevans/ntuple.root");
+    
+
     // 
     // do looping
     //
 
-    looper->ScanChain(false, "ttbar", chain_ttbar);
+    //looper->ScanChain(false, "ttbar", chain_ttbar);
     //looper->ScanChain(false, "wjets", chain_wjets);
-    looper->ScanChain(false, "QCDpt30", chain_qcd30);
+    //looper->ScanChain(false, "QCDpt30", chain_qcd30);
+
+    looper->ScanChain(false, "eleidval", chain_eleidval);
 
     //
     // write histograms
@@ -73,6 +81,7 @@ void doAll() {
     delete chain_ttbar;
     delete chain_wjets;
     delete chain_qcd30;
+    delete chain_eleidval;
 
 }
 

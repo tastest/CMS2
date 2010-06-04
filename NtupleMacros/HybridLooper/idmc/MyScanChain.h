@@ -68,6 +68,18 @@ class MyScanChain {
         TH1F *h1_hyp_convboth_pt_[2][4];
         TH1F *h1_hyp_convboth_pdgid_[2][4];
 
+        // decision bits for validation of 
+        // recomputation of sani id in the looper
+        TH1F *h1_hyp_idstudy_classExpLooseRecompId_[2][4];
+        TH1F *h1_hyp_idstudy_classExpLooseRecompIso_[2][4];
+        TH1F *h1_hyp_idstudy_classExpTightRecompId_[2][4];
+        TH1F *h1_hyp_idstudy_classExpTightRecompIso_[2][4];
+
+        TH1F *h1_hyp_idstudy_classExpSaniLooseId_[2][4];
+        TH1F *h1_hyp_idstudy_classExpSaniLooseIso_[2][4];
+        TH1F *h1_hyp_idstudy_classExpSaniTightId_[2][4];
+        TH1F *h1_hyp_idstudy_classExpSaniTightIso_[2][4];
+
 
 };
 
