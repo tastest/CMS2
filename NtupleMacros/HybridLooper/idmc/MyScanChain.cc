@@ -248,8 +248,8 @@ void MyScanChain::FillAllEleIdHistograms(const unsigned int index, const float &
         // validate sani ID
         // 
 
-        int answerLoose = electronId_CIC(index, 3, CIC_LOOSE);
-        int answerTight = electronId_CIC(index, 3, CIC_TIGHT);
+        int answerLoose = electronId_CIC(index, 4, CIC_LOOSE);
+        int answerTight = electronId_CIC(index, 4, CIC_TIGHT);
 
         // check that class based id passed independently of isolation decision
         Fill(h1_hyp_idstudy_classExpLooseRecompId_[det], hypType, bool(answerLoose & (1<<ELEID_ID)), 1.0);
