@@ -18,34 +18,38 @@ static void  correctMETforPion    ( int index , TH2F* rf);
 static void  correctSumEtForMuon  ( LorentzVector p4, int index );
 static void  correctSumEtForPion  ( int index , TH2F* rf);
 static bool  closeToElectron      ( int index );
+inline double fround(double n, double d){
+  return floor(n * pow(10., d) + .5) / pow(10., d);
+}
 
-void printMet(string label, float tcmet_x_pre, float tcmet_y_pre, float tcmet_x , float tcmet_y , float tcsumet, ostream& ostr, int width = 12){
+void printMet(string label, float tcmet_x_pre, float tcmet_y_pre, float tcmet_x , float tcmet_y , float tcsumet, ostream& ostr, int width = 8){
+  double ndec = 2.;
   
-  ostr << "|" << setw(width) << label                               << setw(width)
-       << "|" << setw(width) << tcmet_x - tcmet_x_pre               << setw(width)
-       << "|" << setw(width) << tcmet_y - tcmet_y_pre               << setw(width)
-       << "|" << setw(width) << tcmet_x                             << setw(width)
-       << "|" << setw(width) << tcmet_y                             << setw(width)
-       << "|" << setw(width) << sqrt(pow(tcmet_x,2)+pow(tcmet_y,2)) << setw(width)       
-       << "|" << setw(width) << atan2(tcmet_y,tcmet_x)              << setw(width)       
-       << "|" << setw(width) << tcsumet                             << setw(width) << "|" << endl;
+  ostr << "|" << setw(12)    << label                                            << setw(4)
+       << "|" << setw(width) << fround(tcmet_x - tcmet_x_pre,ndec)               << setw(4)
+       << "|" << setw(width) << fround(tcmet_y - tcmet_y_pre,ndec)               << setw(4)
+       << "|" << setw(width) << fround(tcmet_x,ndec)                             << setw(4)
+       << "|" << setw(width) << fround(tcmet_y,ndec)                             << setw(4)
+       << "|" << setw(width) << fround(sqrt(pow(tcmet_x,2)+pow(tcmet_y,2)),ndec) << setw(4)       
+       << "|" << setw(width) << fround(atan2(tcmet_y,tcmet_x),ndec)              << setw(4)       
+       << "|" << setw(width) << fround(tcsumet,ndec)                             << setw(4) << "|" << endl;
   
 }
 
-void printHeader(ostream& ostr, int width = 12){
+void printHeader(ostream& ostr, int width = 8){
 
   ostr << endl;
   ostr << evt_dataset() << endl;
   ostr << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
 
-  ostr << "|" << setw(width) << "label"   << setw(width)
-       << "|" << setw(width) << "deltax"  << setw(width)
-       << "|" << setw(width) << "deltay"  << setw(width)
-       << "|" << setw(width) << "metx"    << setw(width)
-       << "|" << setw(width) << "mety"    << setw(width)
-       << "|" << setw(width) << "met"     << setw(width)
-       << "|" << setw(width) << "metphi"  << setw(width)
-       << "|" << setw(width) << "sumet"   << setw(width) << "|" << endl;
+  ostr << "|" << setw(12)    << "label"   << setw(4)
+       << "|" << setw(width) << "deltax"  << setw(4)
+       << "|" << setw(width) << "deltay"  << setw(4)
+       << "|" << setw(width) << "metx"    << setw(4)
+       << "|" << setw(width) << "mety"    << setw(4)
+       << "|" << setw(width) << "met"     << setw(4)
+       << "|" << setw(width) << "metphi"  << setw(4)
+       << "|" << setw(width) << "sumet"   << setw(4) << "|" << endl;
     
 }
 
@@ -185,25 +189,25 @@ metStruct getTcmetFromCaloMet (TH2F* rf, bool useElectronVetoCone, bool usePV, b
        tcmet_x_pre = tcmet_x;
        tcmet_y_pre = tcmet_y;
        tcmetStruct = cleanTCMETforHFspikes(tcmetStruct.metx, tcmetStruct.mety, tcmetStruct.sumet);
-       if(printout_)       printMet("HF clean",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr);
+       if(printout_)       printMet("HF clean",tcmet_x_pre,tcmet_y_pre,tcmetStruct.metx,tcmetStruct.mety,tcmetStruct.sumet,ostr);
      }
      
      if (useHCALcleaning){
        tcmet_x_pre = tcmet_x;
        tcmet_y_pre = tcmet_y;
        tcmetStruct = cleanTCMETforHCALnoise(tcmetStruct.metx, tcmetStruct.mety, tcmetStruct.sumet);
-       if(printout_)       printMet("HCAL clean",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr);
+       if(printout_)       printMet("HCAL clean",tcmet_x_pre,tcmet_y_pre,tcmetStruct.metx,tcmetStruct.mety,tcmetStruct.sumet,ostr);
      }
 
      if (useECALcleaning){
        tcmet_x_pre = tcmet_x;
        tcmet_y_pre = tcmet_y;
        tcmetStruct = cleanTCMETforECALspikes(tcmetStruct.metx, tcmetStruct.mety, tcmetStruct.sumet);
-       if(printout_)       printMet("ECAL clean",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr);
+       if(printout_)       printMet("ECAL clean",tcmet_x_pre,tcmet_y_pre,tcmetStruct.metx,tcmetStruct.mety,tcmetStruct.sumet,ostr);
      }
 
-     if(printout_)       printMet("Final",tcmet_x,tcmet_y,tcmet_x,tcmet_y,tcsumet,ostr);
-     
+     if(printout_)       printMet("Final",tcmet_x_pre,tcmet_y_pre,tcmetStruct.metx,tcmetStruct.mety,tcmetStruct.sumet,ostr);
+          
      return tcmetStruct;
 }
 
