@@ -25,6 +25,7 @@
 #include <algorithm>
 #include <vector>
 #include "Math/LorentzVector.h"
+#include <sys/stat.h>
 
 using namespace std;
 ofstream headerf;
@@ -56,6 +57,16 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true,
     cout << "Exiting..." << endl;
     return;
   }
+
+  //check if the branchNamesFile exists
+  struct stat results;
+  int intStat = stat(branchNamesFile.c_str(), &results);
+  if(intStat != 0) {
+    cout << "Cannot open " << branchNamesFile << endl;
+    cout << "Please make sure that the file exists" << endl;
+    return;
+  }
+
 
   //class is CMS2 by default
   //std::string Classname = className=="" ? "CMS2" : className;
@@ -682,6 +693,8 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile) {
 										      
 
   codef << "    }" << endl;
+  codef << "    delete tree;" << endl;
+  codef << "    f.Close();" << endl;
   codef << "  }" << endl;
   codef << "" << endl;
   codef << "  if ( nEventsChain != nEventsTotal ) {" << endl;
