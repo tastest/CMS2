@@ -22,34 +22,55 @@ inline double fround(double n, double d){
   return floor(n * pow(10., d) + .5) / pow(10., d);
 }
 
-void printMet(string label, float tcmet_x_pre, float tcmet_y_pre, float tcmet_x , float tcmet_y , float tcsumet, ostream& ostr, int width = 8){
+void printMet(string label, float tcmet_x_pre, float tcmet_y_pre, float tcmet_x , float tcmet_y , float tcsumet, ostream& ostr, int index = -1){
+ 
   double ndec = 2.;
   
-  ostr << "|" << setw(12)    << label                                            << setw(4)
-       << "|" << setw(width) << fround(tcmet_x - tcmet_x_pre,ndec)               << setw(4)
-       << "|" << setw(width) << fround(tcmet_y - tcmet_y_pre,ndec)               << setw(4)
-       << "|" << setw(width) << fround(tcmet_x,ndec)                             << setw(4)
-       << "|" << setw(width) << fround(tcmet_y,ndec)                             << setw(4)
-       << "|" << setw(width) << fround(sqrt(pow(tcmet_x,2)+pow(tcmet_y,2)),ndec) << setw(4)       
-       << "|" << setw(width) << fround(atan2(tcmet_y,tcmet_x),ndec)              << setw(4)       
-       << "|" << setw(width) << fround(tcsumet,ndec)                             << setw(4) << "|" << endl;
+  float pt     = 0 ;
+  float phi    = 0;
+  float d0corr = 0;
+  float d0vtx  = 0;
+
+  if( index > -1 ){
+    pt      = trks_trk_p4().at(index).pt();
+    phi     = trks_trk_p4().at(index).phi();
+    d0corr  = trks_d0corr().at(index);
+    d0vtx   = trks_d0vtx().at(index);
+  }
+
+  ostr << "|" << setw(12) << label                                            << setw(4)
+       << "|" << setw(8)  << fround(tcmet_x - tcmet_x_pre,ndec)               << setw(4)
+       << "|" << setw(8)  << fround(tcmet_y - tcmet_y_pre,ndec)               << setw(4)
+       << "|" << setw(8)  << fround(tcmet_x,ndec)                             << setw(4)
+       << "|" << setw(8)  << fround(tcmet_y,ndec)                             << setw(4)
+       << "|" << setw(8)  << fround(sqrt(pow(tcmet_x,2)+pow(tcmet_y,2)),ndec) << setw(4)       
+       << "|" << setw(8)  << fround(atan2(tcmet_y,tcmet_x),ndec)              << setw(4)       
+       << "|" << setw(8)  << fround(tcsumet,ndec)                             << setw(4) 
+       << "|" << setw(8)  << fround(pt,ndec)                                  << setw(4) 
+       << "|" << setw(8)  << fround(phi,ndec)                                 << setw(4) 
+       << "|" << setw(8)  << fround(d0corr,ndec)                              << setw(4)
+       << "|" << setw(8)  << fround(d0vtx,ndec)                               << setw(4) << "|" << endl;
   
 }
 
-void printHeader(ostream& ostr, int width = 8){
+void printHeader(ostream& ostr){
 
   ostr << endl;
   ostr << evt_dataset() << endl;
   ostr << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
 
-  ostr << "|" << setw(12)    << "label"   << setw(4)
-       << "|" << setw(width) << "deltax"  << setw(4)
-       << "|" << setw(width) << "deltay"  << setw(4)
-       << "|" << setw(width) << "metx"    << setw(4)
-       << "|" << setw(width) << "mety"    << setw(4)
-       << "|" << setw(width) << "met"     << setw(4)
-       << "|" << setw(width) << "metphi"  << setw(4)
-       << "|" << setw(width) << "sumet"   << setw(4) << "|" << endl;
+  ostr << "|" << setw(12) << "label"   << setw(4)
+       << "|" << setw(8)  << "deltax"  << setw(4)
+       << "|" << setw(8)  << "deltay"  << setw(4)
+       << "|" << setw(8)  << "metx"    << setw(4)
+       << "|" << setw(8)  << "mety"    << setw(4)
+       << "|" << setw(8)  << "met"     << setw(4)
+       << "|" << setw(8)  << "metphi"  << setw(4)
+       << "|" << setw(8)  << "sumet"   << setw(4) 
+       << "|" << setw(8)  << "pT"      << setw(4) 
+       << "|" << setw(8)  << "phi"     << setw(4)
+       << "|" << setw(8)  << "d0corr"  << setw(4)
+       << "|" << setw(8)  << "d0vtx"   << setw(4) << "|" << endl;
     
 }
 
@@ -97,13 +118,13 @@ metStruct getTcmetFromCaloMet (TH2F* rf, bool useElectronVetoCone, bool usePV, b
 	       if(mus_gfit_validSTAHits().at(i) > 0) {
 		    correctMETforMuon  ( mus_gfit_p4().at(i), i );
 		    correctSumEtForMuon( mus_gfit_p4().at(i), i );
-                    if(printout_)       printMet("Muon",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr);
+                    if(printout_)       printMet("Muon",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr,mus_trkidx().at(i));
 	       }
       
 	       else if(isGoodTrack( mus_trkidx().at(i), usePV)) {
 		    correctMETforPion  ( mus_trkidx().at(i) , rf);
 		    correctSumEtForPion( mus_trkidx().at(i) , rf);
-                    if(printout_)       printMet("Pion",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr);
+                    if(printout_)       printMet("Pion",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr,mus_trkidx().at(i));
 	       }
 	  }
 	  else if( flag == 2 ) {
@@ -111,13 +132,13 @@ metStruct getTcmetFromCaloMet (TH2F* rf, bool useElectronVetoCone, bool usePV, b
 	       if(mus_gfit_validSTAHits().at(i) > 0) {
 		    correctMETforMuon  ( mus_trk_p4().at(i), i );
 		    correctSumEtForMuon( mus_trk_p4().at(i), i );
-                    if(printout_)       printMet("Muon",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr);
+                    if(printout_)       printMet("Muon",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr,mus_trkidx().at(i));
 	       }
       
 	       else if(isGoodTrack( mus_trkidx().at(i), usePV)) {
 		    correctMETforPion  ( mus_trkidx().at(i) , rf);
 		    correctSumEtForPion( mus_trkidx().at(i) , rf);
-                    if(printout_)       printMet("Pion",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr);
+                    if(printout_)       printMet("Pion",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr,mus_trkidx().at(i));
 	       }
 	  }
 	  else if( flag == 3 || flag==5 ) {
@@ -125,19 +146,19 @@ metStruct getTcmetFromCaloMet (TH2F* rf, bool useElectronVetoCone, bool usePV, b
 	       if(mus_gfit_validSTAHits().at(i) > 0) {
 		    correctMETforMuon  ( mus_p4().at(i), i );
 		    correctSumEtForMuon( mus_p4().at(i), i );
-                    if(printout_)       printMet("Muon",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr);
+                    if(printout_)       printMet("Muon",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr,mus_trkidx().at(i));
 	       }
 
 	       else if(isGoodTrack( mus_trkidx().at(i), usePV)) {
 		    correctMETforPion  ( mus_trkidx().at(i) , rf);
 		    correctSumEtForPion( mus_trkidx().at(i) , rf);
-                    if(printout_)       printMet("Pion",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr);
+                    if(printout_)       printMet("Pion",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr,mus_trkidx().at(i));
 	       }
 	  }
 	  else if( flag == 4 ) {
 	       correctMETforPion  ( mus_trkidx().at(i) , rf);
 	       correctSumEtForPion( mus_trkidx().at(i) , rf);
-               if(printout_)       printMet("Pion",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr);
+               if(printout_)       printMet("Pion",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr,mus_trkidx().at(i));
                
 	  }
     
@@ -168,8 +189,8 @@ metStruct getTcmetFromCaloMet (TH2F* rf, bool useElectronVetoCone, bool usePV, b
 	  correctSumEtForPion( i , rf);
           
           if( printout_ ){
-            if( closeToElectron(i) )  printMet("Pion (e)",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr);
-            else                      printMet("Pion",    tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr);
+            if( closeToElectron(i) )  printMet("Pion (e)",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr,i);
+            else                      printMet("Pion",    tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr,i);
           }
      }
   
@@ -186,22 +207,22 @@ metStruct getTcmetFromCaloMet (TH2F* rf, bool useElectronVetoCone, bool usePV, b
      if(printout_)       printMet("Pre clean",tcmet_x,tcmet_y,tcmet_x,tcmet_y,tcsumet,ostr);
 
      if (useHFcleaning){
-       tcmet_x_pre = tcmet_x;
-       tcmet_y_pre = tcmet_y;
+       tcmet_x_pre = tcmetStruct.metx;
+       tcmet_y_pre = tcmetStruct.mety;
        tcmetStruct = cleanTCMETforHFspikes(tcmetStruct.metx, tcmetStruct.mety, tcmetStruct.sumet);
        if(printout_)       printMet("HF clean",tcmet_x_pre,tcmet_y_pre,tcmetStruct.metx,tcmetStruct.mety,tcmetStruct.sumet,ostr);
      }
      
      if (useHCALcleaning){
-       tcmet_x_pre = tcmet_x;
-       tcmet_y_pre = tcmet_y;
+       tcmet_x_pre = tcmetStruct.metx;
+       tcmet_y_pre = tcmetStruct.mety;
        tcmetStruct = cleanTCMETforHCALnoise(tcmetStruct.metx, tcmetStruct.mety, tcmetStruct.sumet);
        if(printout_)       printMet("HCAL clean",tcmet_x_pre,tcmet_y_pre,tcmetStruct.metx,tcmetStruct.mety,tcmetStruct.sumet,ostr);
      }
 
      if (useECALcleaning){
-       tcmet_x_pre = tcmet_x;
-       tcmet_y_pre = tcmet_y;
+       tcmet_x_pre = tcmetStruct.metx;
+       tcmet_y_pre = tcmetStruct.mety;
        tcmetStruct = cleanTCMETforECALspikes(tcmetStruct.metx, tcmetStruct.mety, tcmetStruct.sumet);
        if(printout_)       printMet("ECAL clean",tcmet_x_pre,tcmet_y_pre,tcmetStruct.metx,tcmetStruct.mety,tcmetStruct.sumet,ostr);
      }
