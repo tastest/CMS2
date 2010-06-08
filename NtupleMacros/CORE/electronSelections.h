@@ -46,6 +46,8 @@ enum EleSelectionType {
     ELEID_EXTRA,
     // VBTF90 electron ID (35X)
     ELEID_VBTF_35X_90,
+    // VBTF70 electron ID (35X)
+    ELEID_VBTF_35X_70,
     // CIC_MEDIUM electron ID (V03)
     ELEID_CIC_V03_MEDIUM,
     //

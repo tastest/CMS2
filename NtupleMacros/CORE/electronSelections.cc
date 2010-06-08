@@ -49,15 +49,29 @@ cuts_t electronSelection(const unsigned int index)
     // id
     //
 
+    // 
+    // "CAND" ID
+    //
+    // CAND01
     if (electronId_cand(index, CAND_01)) cuts_passed |= (1ll<<ELEID_CAND01);
+    // CAND02
     if (electronId_cand(index, CAND_02)) cuts_passed |= (1ll<<ELEID_CAND02);
+    // "EXTRA"
     if (electronId_extra(index)) cuts_passed |= (1ll<<ELEID_EXTRA);
-
+    //
+    // VBTF ID
+    //
+    electronIdComponent_t answer_vbtf = 0;
     // VBTF90 (optimised in 35X)
-    electronIdComponent_t answer_vbtf = electronId_VBTF(index, VBTF_35X_90);
+    answer_vbtf = electronId_VBTF(index, VBTF_35X_90);
     if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_35X_90);
-
-    // CIC_MEDIUM (V03 optimisation)
+    // VBTF70 (optimised in 35X)
+    answer_vbtf = electronId_VBTF(index, VBTF_35X_70);
+    if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_35X_70);
+    //
+    // CIC ID  
+    //
+    // MEDIUM (V03 optimisation)
     electronIdComponent_t answer_cic = electronId_CIC(index, 3, CIC_MEDIUM);
     if ((answer_cic & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_CIC_V03_MEDIUM);
 
