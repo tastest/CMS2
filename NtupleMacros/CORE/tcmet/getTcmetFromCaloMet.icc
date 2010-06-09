@@ -28,12 +28,14 @@ void printMet(string label, float tcmet_x_pre, float tcmet_y_pre, float tcmet_x 
   
   float pt     = 0 ;
   float phi    = 0;
+  float eta    = 0;
   float d0corr = 0;
   float d0vtx  = 0;
 
   if( index > -1 ){
     pt      = trks_trk_p4().at(index).pt();
     phi     = trks_trk_p4().at(index).phi();
+    eta     = trks_trk_p4().at(index).eta();
     d0corr  = trks_d0corr().at(index);
     d0vtx   = trks_d0vtx().at(index);
   }
@@ -48,8 +50,9 @@ void printMet(string label, float tcmet_x_pre, float tcmet_y_pre, float tcmet_x 
        << "|" << setw(8)  << fround(tcsumet,ndec)                             << setw(4) 
        << "|" << setw(8)  << fround(pt,ndec)                                  << setw(4) 
        << "|" << setw(8)  << fround(phi,ndec)                                 << setw(4) 
-       << "|" << setw(8)  << fround(d0corr,ndec)                              << setw(4)
-       << "|" << setw(8)  << fround(d0vtx,ndec)                               << setw(4) << "|" << endl;
+       << "|" << setw(8)  << fround(eta,ndec)                                 << setw(4) 
+       << "|" << setw(8)  << fround(d0corr,4)                                 << setw(4)
+       << "|" << setw(8)  << fround(d0vtx,4)                                  << setw(4) << "|" << endl;
   
 }
 
@@ -69,6 +72,7 @@ void printHeader(ostream& ostr){
        << "|" << setw(8)  << "sumet"   << setw(4) 
        << "|" << setw(8)  << "pT"      << setw(4) 
        << "|" << setw(8)  << "phi"     << setw(4)
+       << "|" << setw(8)  << "eta"     << setw(4)
        << "|" << setw(8)  << "d0corr"  << setw(4)
        << "|" << setw(8)  << "d0vtx"   << setw(4) << "|" << endl;
     
@@ -244,8 +248,9 @@ bool isGoodTrack( int index, bool usePV ) {
      if( trks_algo().at(index) < 8 ) {
 
 	  float d0cut = min( sqrt( pow(0.015,2) + pow(0.5/trks_trk_p4().at(index).pt(),2) ), 0.3);
+	  if( d0cut < 0.3 ) d0cut = 0.3;
 
-	  if( corrected_d0 > d0cut ) return false;
+	  if( fabs( corrected_d0 ) > d0cut ) return false;
      }
      else {
 	  if( trks_validHits().at(index) < 11 )                              return false;
