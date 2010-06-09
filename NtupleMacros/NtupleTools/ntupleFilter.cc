@@ -1,4 +1,4 @@
-// $Id: ntupleFilter.cc,v 1.7 2010/06/09 20:48:47 warren Exp $
+// $Id: ntupleFilter.cc,v 1.8 2010/06/09 20:51:35 warren Exp $
 
 #include <assert.h>
 #include <string>
@@ -6,7 +6,7 @@
 #include "TFile.h"
 #include "TObjArray.h"
 #include "TTree.h"
-#include "goodrun.cc"
+#include "../Tools/goodrun.cc"
 
 #include "../CORE/CMS2.cc"
 //CMS2 cms2;
