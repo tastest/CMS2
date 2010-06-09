@@ -1,4 +1,4 @@
-// $Id: ntupleFilter.cc,v 1.6 2010/06/09 18:41:44 warren Exp $
+// $Id: ntupleFilter.cc,v 1.7 2010/06/09 20:48:47 warren Exp $
 
 #include <assert.h>
 #include <string>
@@ -6,7 +6,7 @@
 #include "TFile.h"
 #include "TObjArray.h"
 #include "TTree.h"
-#include "../Tools/goodrun.cc"
+#include "goodrun.cc"
 
 #include "../CORE/CMS2.cc"
 //CMS2 cms2;
@@ -31,14 +31,20 @@ using namespace tas;
 
 bool select ()
 {
-  if( !goodrun( evt_event(), evt_lumiBlock() ) )
+  //hyp filter
+  //if( hyp_p4().size() > 0 )
+  //return true;
+
+  if( !goodrun( evt_run(), evt_lumiBlock() ) )
 	return false;
 
+  const float ptthresh = 40.;
+
   for( unsigned int i=0; i<pfjets_p4().size(); i++ )
-	if( pfjets_p4()[i].pt() > 10 )
+	if( pfjets_p4()[i].pt() > ptthresh )
 	  return true;
   for( unsigned int i=0; i<jets_p4().size(); i++ )
-	if( jets_p4()[i].pt()*jets_cor()[i] > 10 )
+	if( jets_p4()[i].pt()*jets_cor()[i] > ptthresh )
 	  return true;
   return false;
 }
