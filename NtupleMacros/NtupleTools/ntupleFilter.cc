@@ -1,4 +1,4 @@
-// $Id: ntupleFilter.cc,v 1.5 2010/02/10 03:00:58 kalavase Exp $
+// $Id: ntupleFilter.cc,v 1.6 2010/06/09 18:41:44 warren Exp $
 
 #include <assert.h>
 #include <string>
@@ -6,12 +6,15 @@
 #include "TFile.h"
 #include "TObjArray.h"
 #include "TTree.h"
+#include "../Tools/goodrun.cc"
 
-#include "CMS2.h"
-CMS2 cms2;
+#include "../CORE/CMS2.cc"
+//CMS2 cms2;
 
 #include "Rtypes.h"
 typedef ULong64_t uint64;
+
+using namespace tas;
 
 // Used to filter an ntuple based on the 'select' function return
 // infile is the path to the ntuple you want to filter (* allowed)
@@ -28,10 +31,16 @@ typedef ULong64_t uint64;
 
 bool select ()
 {
-  // for example, require l1 tech bit 40 or 41
-  //bool pass = cms2.l1_techbits2() & (1 << 8) || cms2.l1_techbits2() & (1 << 9);
-  bool pass = cms2.hyp_p4().size() > 0;
-  return pass;
+  if( !goodrun( evt_event(), evt_lumiBlock() ) )
+	return false;
+
+  for( unsigned int i=0; i<pfjets_p4().size(); i++ )
+	if( pfjets_p4()[i].pt() > 10 )
+	  return true;
+  for( unsigned int i=0; i<jets_p4().size(); i++ )
+	if( jets_p4()[i].pt()*jets_cor()[i] > 10 )
+	  return true;
+  return false;
 }
 
 void ntupleFilter (const std::string &infile, const std::string &outfile, bool printPass=false)  
@@ -64,7 +73,7 @@ void ntupleFilter (const std::string &infile, const std::string &outfile, bool p
      TFile *currentFile = 0;
      bool first = true;
      int i_permille_old = 0;
-     while ( currentFile = (TFile*)fileIter.Next() ) {
+     while ( (currentFile = (TFile*)fileIter.Next()) ) {
 	   TFile f(currentFile->GetTitle());
 	   //const char *name = f.GetName();
 	   TTree *tree = (TTree*)f.Get("Events");
@@ -121,7 +130,7 @@ void ntupleFilter (const std::string &infile, const std::string &outfile, bool p
      }
 
 	 if( printPass ) {
-	   fprintf(log, "\nTotal events run on: %i\n", nEventsTotal);
+	   fprintf(log, "\nTotal events run on: %llu\n", nEventsTotal);
 	   fprintf(log, "Num events selected: %llu\n", nEventsSelected ); //need two fprintf statements bc of some gcc bug
 	   //cout << endl
  	   //	  << "Total events run on: " << nEventsTotal << endl
