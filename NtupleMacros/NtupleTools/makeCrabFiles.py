@@ -164,7 +164,7 @@ if os.path.exists(cmsswSkelFile) == False:
     sys.exit()
 
 
-#print '\nGetting global tag from DBS...'
+print '\nGetting global tag from DBS...'
 if( global_tag_flag != '' ):
 	print '\nUsing \'' + global_tag_flag + '\' specified by -gtag flag.\n'
 	global_tag = global_tag_flag
@@ -172,24 +172,25 @@ else :
     global_tag = '';
     dbs_result = '';
     command = 'dbsql find config.name,config.content where dataset=' + dataSet + '>config.content; while read line; do globaltag=`echo $line | sed -n \'s/^.*process.GlobalTag.globaltag = \([^p]*\).*$/\\1/p\'`; if [ "$globaltag" != "" ]; then echo $globaltag; break; fi; done <config.content; rm config.content';
-    lines = os.popen(command);
-    for i in lines.readlines():
-      dbs_result = re.sub('\n', '', i)
-      global_tag = re.sub('#.+$', '', dbs_result)
-      if( global_tag != '' and global_tag_flag == ''):
-          print '\nDBS Query results:\t\'' + dbs_result + '\' ?\n'
-          print 'Use global tag from DBS:\t\'' + global_tag + '\' ?\n'
-          answer = raw_input('[y/n]?')
-          while(answer != 'y' and answer != 'n'): 
-              print 'Please pick either \'y\' or \'n\''
-              answer = raw_input('[y/n]?')
-          if answer == 'n':
-              print 'Enter alternative Global Tag:'
-              global_tag = raw_input('new global tag:')
-                  
-          if( global_tag == '' and global_tag_flag == '' ):
-              print '\nGlobal tag not found in DBS. Use -gtag to set global tag. Exiting...\n'
-              sys.exit()
-makeCMSSWConfig(cmsswSkelFile)
-makeCrabConfig()    
-
+    print '\n'
+    len = len( os.popen(command).readlines() )
+    if( len > 0 ):
+      lines = os.popen(command);
+      for i in lines.readlines():
+        dbs_result = re.sub('\n', '', i)
+        global_tag = re.sub('#.+$', '', dbs_result)
+        if( global_tag != '' ):
+            print '\nDBS Query results:\t\'' + dbs_result + '\' ?\n'
+            print 'Use global tag from DBS:\t\'' + global_tag + '\' ?\n'
+            answer = raw_input('[y/n]?')
+            while(answer != 'y' and answer != 'n'): 
+                print 'Please pick either \'y\' or \'n\''
+                answer = raw_input('[y/n]?')
+            if answer == 'n':
+                print 'Enter alternative Global Tag:'
+                global_tag = raw_input('new global tag:')
+            makeCMSSWConfig(cmsswSkelFile)
+            makeCrabConfig()
+    else: 
+      print '\nGlobal tag not found in DBS. Use -gtag to set global tag. Exiting...\n'
+      sys.exit()
