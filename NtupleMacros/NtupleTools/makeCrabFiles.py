@@ -168,6 +168,8 @@ if os.path.exists(cmsswSkelFile) == False:
 if( global_tag_flag != '' ):
 	print '\nUsing \'' + global_tag_flag + '\' specified by -gtag flag.\n'
 	global_tag = global_tag_flag
+	makeCMSSWConfig(cmsswSkelFile)
+	makeCrabConfig()
 else :
     global_tag = '';
     dbs_result = '';
@@ -178,7 +180,7 @@ else :
       for i in lines.readlines():
         dbs_result = re.sub('\n', '', i)
         global_tag = re.sub('#.+$', '', dbs_result)
-        if( global_tag != '' ):
+        if( global_tag != '' and global_tag_flag == '' ):
             print '\nDBS Query results:\t\'' + dbs_result + '\' ?\n'
             print 'Use global tag from DBS:\t\'' + global_tag + '\' ?\n'
             answer = raw_input('[y/n]?')
