@@ -164,7 +164,7 @@ if os.path.exists(cmsswSkelFile) == False:
     sys.exit()
 
 
-print '\nGetting global tag from DBS...'
+#print '\nGetting global tag from DBS...'
 if( global_tag_flag != '' ):
 	print '\nUsing \'' + global_tag_flag + '\' specified by -gtag flag.\n'
 	global_tag = global_tag_flag
@@ -172,7 +172,6 @@ else :
     global_tag = '';
     dbs_result = '';
     command = 'dbsql find config.name,config.content where dataset=' + dataSet + '>config.content; while read line; do globaltag=`echo $line | sed -n \'s/^.*process.GlobalTag.globaltag = \([^p]*\).*$/\\1/p\'`; if [ "$globaltag" != "" ]; then echo $globaltag; break; fi; done <config.content; rm config.content';
-    print '\n'
     len = len( os.popen(command).readlines() )
     if( len > 0 ):
       lines = os.popen(command);
