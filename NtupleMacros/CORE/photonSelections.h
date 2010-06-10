@@ -9,7 +9,7 @@ enum PhotonSelectionType {
   Yuri = 0
 }; 
 
-//
+// declarations
 bool photonId( const unsigned int, PhotonSelectionType = Yuri );
 bool isSpikePhoton( const unsigned int );
 
