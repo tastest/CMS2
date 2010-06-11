@@ -1,0 +1,547 @@
+// C++ includes
+#include <iostream>
+
+// ROOT includes
+#include "TSystem.h"
+#include "TChain.h"
+#include "TDirectory.h"
+#include "TChainElement.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "Math/VectorUtil.h"
+
+// TAS includes
+#include "./CMS2.cc"
+#include "../CORE/trackSelections.cc"
+#include "../CORE/eventSelections.cc"
+
+#include "../CORE/muonSelections.cc"
+#include "../CORE/electronSelections.cc"
+#include "../CORE/electronSelectionsParameters.cc"
+
+
+//#include "../CORE/fakerates.cc"
+#include "../CORE/triggerUtils.cc"
+#include "./goodrun.cc"
+#include "./myBabyMaker.h"
+using namespace std;
+using namespace tas;
+
+
+//-----------------------------------
+// Looper code starts here
+// eormu=-1 do both e and mu
+//      =11 do electrons
+//      =13 do muons
+//-----------------------------------
+void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu) {
+
+  // Make a baby ntuple
+  MakeBabyNtuple(babyFilename);
+
+  // Set the JSON file
+  //  set_goodrun_file("Cert_132440-134725_7TeV_MinimumBias_May6ReReco_Collisions10.txt");
+  //set_goodrun_file("goodruns_FGolf_email_May25.txt");
+  set_goodrun_file("./jsonlist_132440_136100.txt");
+
+  // The deltaR requirement between objects and jets to remove the jet trigger dependence
+  float deltaRCut = 1.0;
+
+  //--------------------------
+  // File and Event Loop
+  //---------------------------
+  int i_permilleOld = 0;
+  unsigned int nEventsTotal = 0;
+  unsigned int nEventsChain = 0;
+  int nEvents = -1;
+  if (nEvents==-1){
+    nEventsChain = chain->GetEntries();
+  } else {
+    nEventsChain = nEvents;
+  }
+  nEventsChain = chain->GetEntries();
+  TObjArray *listOfFiles = chain->GetListOfFiles();
+  TIter fileIter(listOfFiles);
+  map<int,int> m_events;
+  while(TChainElement *currentFile = (TChainElement*)fileIter.Next() ) {
+    TString filename = currentFile->GetTitle();
+    
+    TFile f(filename.Data());
+    TTree *tree = (TTree*)f.Get("Events");
+    cms2.Init(tree);
+    unsigned int nEntries = tree->GetEntries();
+    unsigned int nLoop = nEntries;
+    unsigned int z;
+    for( z = 0; z < nLoop; z++) {	// Event Loop
+      cms2.GetEntry(z);
+
+      // looper progress
+      ++nEventsTotal;
+      int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
+      if (i_permille != i_permilleOld) {
+        printf("  \015\033[32m ---> \033[1m\033[31m%4.1f%%" "\033[0m\033[32m <---\033[0m\015", i_permille/10.);
+        fflush(stdout);
+        i_permilleOld = i_permille;
+      }
+
+      // Good  Runs
+      if(!goodrun( evt_run(), evt_lumiBlock() )) continue;
+
+      // Event cleaning (careful, it requires technical bits)
+      // if (!cleaning_standard(true)) continue;
+      if (!cleaning_BPTX(true))   continue;
+      if (!cleaning_beamHalo())   continue;
+      if (!cleaning_goodVertex()) continue;
+      if (!cleaning_goodTracks()) continue;
+
+
+
+
+      // Loop over electrons
+      if (eormu == -1 || eormu==11) {
+	for (unsigned int iEl = 0 ; iEl < els_p4().size(); iEl++) {
+
+	  // ECAL spike cleaning
+	  //float r19 = cms2.els_eMax()[iEl]/cms2.els_e5x5()[iEl];
+	  //if (r19 >= 0.95) continue;
+
+	  // Apply a pt cut
+	  if ( els_p4().at(iEl).pt() < 5.) continue;
+
+
+	  // Initialize baby ntuple
+	  InitBabyNtuple();
+
+	  num_ = pass_electronSelection( iEl, electronSelection_ttbarV1 );
+	  v1_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v1 );
+	  v2_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v2 );
+	  v3_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v3 );
+
+	  // Sanity
+	  if (num_ && (!v1_)) cout << "bad v1" << endl;
+	  if (num_ && (!v2_)) cout << "bad v2" << endl;
+	  if (num_ && (!v3_)) cout << "bad v3" << endl;
+
+	  // If there is no v1/v2/v3 lepton quit
+	  if ( (!v1_) && (!v2_) && (!v3_) ) continue;
+
+	  // If it is above 20 GeV see if we can make a 
+	  // Z with another pt>20 FO.  Will use the v1 FO since 
+	  // these are the loosest
+	  bool isaZ = false;
+	  if (els_p4().at(iEl).pt() > 20.) {
+	    for (unsigned int jEl = 0 ; jEl < els_p4().size(); jEl++) {
+	      if (iEl == jEl)                             continue;
+	      if (els_p4().at(jEl).pt() < 20.)            continue;
+	      if ( ! pass_electronSelection( jEl, electronSelectionFO_el_ttbarV1_v1 ) ) continue;
+	      if ( ! v1_ ) continue;
+	      LorentzVector w = els_p4().at(iEl) + els_p4().at(jEl);
+	      if (abs(w.mass()-91.) > 20.) continue;
+	      isaZ = true;
+	    }
+	  }
+	  if (isaZ) continue;
+
+	  // Load the electron and event quantities
+	  run_   = evt_run();
+	  ls_    = evt_lumiBlock();
+	  evt_   = evt_event();
+	  pt_    = els_p4().at(iEl).pt();
+	  eta_   = els_p4().at(iEl).eta();
+	  phi_   = els_p4().at(iEl).phi();
+	  scet_  = els_eSC()[iEl] / cosh( els_etaSC()[iEl] );
+	  id_    = 11*els_charge().at(iEl);
+	  tcmet_ = evt_tcmet();
+
+	  // Our jet trigger flags
+	  hlt15u_ = min(2,nHLTObjects("HLT_Jet15U")); 
+	  hlt30u_ = min(2,nHLTObjects("HLT_Jet30U")); 
+	  hlt50u_ = min(2,nHLTObjects("HLT_Jet50U")); 
+	  l16u_   = min(2,nHLTObjects("HLT_L1Jet6U"));
+	  l110u_  = min(2,nHLTObjects("HLT_L1Jet10U"));
+
+	  // If only one jet triggered, see if it is far enough away 
+	  if (hlt15u_ == 1) {
+	    LorentzVector p4j = p4HLTObject("HLT_Jet15U",0);
+	    double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4j);
+	    if (dr > deltaRCut) hlt15u_ = 2;
+	  }
+	  if (hlt30u_ == 1) {
+	    LorentzVector p4j = p4HLTObject("HLT_Jet30U",0);
+	    double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4j);
+	    if (dr > deltaRCut) hlt30u_ = 2;
+	  }
+	  if (hlt50u_ == 1) {
+	    LorentzVector p4j = p4HLTObject("HLT_Jet50U",0);
+	    double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4j);
+	    if (dr > deltaRCut) hlt50u_ = 2;
+	  }
+	  if (l16u_ == 1) {
+	    LorentzVector p4j = p4HLTObject("HLT_L1Jet6U",0);
+	    double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4j);
+	    if (dr > deltaRCut) l16u_ = 2;
+	  }
+	  if (l110u_ == 1) {
+	    LorentzVector p4j = p4HLTObject("HLT_L1Jet10U",0);
+	    double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4j);
+	    if (dr > deltaRCut) l110u_ = 2;
+	  }
+
+	  // Now fill the egamma trigger flages
+	  ph10_ = nHLTObjects("HLT_Photon10_L1R");
+	  el10_ = nHLTObjects("HLT_Ele10_LW_L1R");
+	  eg5_  = nHLTObjects("HLT_L1SingleEG5");
+	  eg8_  = nHLTObjects("HLT_L1SingleEG8");
+
+	  // I know that Ele10 is the only trigger for which the HLT objects are saved for all data we have
+	  if (el10_ > 0) {
+	    bool match = false;
+	    for (int itrg=0; itrg<el10_; itrg++) {
+	      LorentzVector p4tr = p4HLTObject("HLT_Ele10_LW_L1R",itrg);
+	      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
+	      if (dr < drel10_) drel10_ = dr;
+	      if (dr < 0.4) match=true;
+	    }
+	    if (match) {
+	      el10_ = 2;
+	    } else {
+	      el10_ = 1;
+	    }
+	  }
+
+	  // Photon 10, on the other hand, is there only some fraction of the data
+	  if (ph10_ > 0) {
+	    bool match = false;
+	    for (int itrg=0; itrg<ph10_; itrg++) {
+	      LorentzVector p4tr = p4HLTObject("HLT_Photon10_L1R",itrg);
+	      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
+	      if (dr < drph10_) drph10_ = dr;
+	      if (dr < 0.4) match=true;
+	    }
+	    if (match) {
+	      ph10_ = 2;
+	    } else {
+	      ph10_ = 1;
+	    }
+	  }
+
+	  // For EG5 and EG8 the HLT object is missing, so we'll try with the L1 info
+	  // There appear to be two L1 EM objects: one with "iso" and one without.
+	  // From some event dumps it looks like the iso one is the one we want
+	  // Also: the Photon10 HLT object is sometimes missing, but I know that EG5 is its prerequisite
+	  // so if it is missing we will match to EG5
+	  if ( (eg5_ == -1 || eg8_ == -1 || ph10_ == -1) && l1_emiso_p4().size()>0) {
+	    
+	    for (unsigned int ig = 0 ; ig < l1_emiso_p4().size(); ig++) {
+	    
+	      if (ph10_ == -1 && l1_emiso_p4().at(ig).pt() > 5.) {
+		double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl),l1_emiso_p4().at(ig)); 
+		if (dr < drph10_) drph10_ = dr;
+	      }
+	      if (eg5_ == -1 && l1_emiso_p4().at(ig).pt() > 5.) {
+		double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl),l1_emiso_p4().at(ig)); 
+		if (dr < dreg5_) dreg5_ = dr;
+	      }
+	      if (eg8_ == -1 && l1_emiso_p4().at(ig).pt() > 8.) {
+		double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl),l1_emiso_p4().at(ig)); 
+		if (dr < dreg8_) dreg8_ = dr;
+	      }
+
+	    } // closes loop over L1 EG objects
+	    
+	    if (ph10_ == -1) {
+	      if (drph10_ < 100.) ph10_ = 1; // objects found, but no match
+	      if (drph10_ < 0.4)  ph10_ = 2; // objects found, and matched
+	    }
+	    if (eg5_ == -1) {
+	      if (dreg5_ < 100.) eg5_ = 1; // objects found, but no match
+	      if (dreg5_ < 0.4)  eg5_ = 2; // objects found, and matched
+	    }
+	    if (eg8_ == -1) {
+	      if (dreg8_ < 100.) eg8_ = 1; // objects found, but no match
+	      if (dreg8_ < 0.4)  eg8_ = 2; // objects found, and matched
+	    }
+	 
+	  } // closes if-block of EG5, EG8, PH10 objects missing
+ 
+	    
+	
+
+	  // Time to fill the baby for the electrons
+	  FillBabyNtuple();
+
+	}// closes loop over electrons
+      } // closes if statements about whether we want to fill electrons
+
+
+      // Now the same stuff but for the muons
+      // Loop over electrons
+      if (eormu == -1 || eormu==13) {
+	for (unsigned int iMu = 0 ; iMu < mus_p4().size(); iMu++) {
+
+	  // Apply a pt cut
+	  if ( mus_p4().at(iMu).pt() < 5.) continue;
+
+	  // If it is not a muon FO, quit
+	  //if (!(isFakeableMuon(iMu, mu_ttbar))) continue;
+	  if ( ! muonId(iMu, muonSelectionFO_mu_ttbar) ) continue;
+
+	  // If it is above 20 GeV see if we can make a 
+	  // Z with another pt>20 FO.  
+	  bool isaZ = false;
+	  if (mus_p4().at(iMu).pt() > 20.) {
+	    for (unsigned int jMu = 0 ; jMu < mus_p4().size(); jMu++) {
+	      if (iMu == jMu)                             continue;
+	      if (mus_p4().at(jMu).pt() < 20.)            continue;
+	      if ( ! muonId( jMu, muonSelectionFO_mu_ttbar) ) continue;
+	      if ( ! muonId( iMu, muonSelectionFO_mu_ttbar) ) continue;
+	      LorentzVector w = mus_p4().at(iMu) + mus_p4().at(jMu);
+	      if (abs(w.mass()-91.) > 20.) continue;
+	      isaZ = true;
+	    }
+	  }
+	  if (isaZ) continue;
+
+	  // Initialize baby ntuple
+	  InitBabyNtuple();
+
+	  // Load the muon and event quantities
+	  run_  = evt_run();
+	  ls_   = evt_lumiBlock();
+	  evt_  = evt_event();
+	  pt_   = mus_p4().at(iMu).pt();
+	  eta_  = mus_p4().at(iMu).eta();
+	  phi_  = mus_p4().at(iMu).phi();
+	  id_   = 13*mus_charge().at(iMu);
+	  num_  = muonId(iMu, NominalTTbar);
+          tcmet_ = evt_tcmet();
+
+	  // Careful about tcmet.  
+	  // For muons pt>10 GeV, if it is not already corrected for it, do it
+	  if (pt_ > 10. && (mus_tcmet_flag().at(iMu) == 0 || mus_tcmet_flag().at(iMu) == 4)) {
+	    cout << "Correcting the tcmet" <<endl;
+	    double lmetx = tcmet_ * cos(evt_tcmetPhi());
+	    double lmety = tcmet_  * sin(evt_tcmetPhi());
+	    if (mus_tcmet_flag()[iMu] == 0){
+	      lmetx+= - mus_met_deltax()[iMu] - mus_p4()[iMu].x();
+	      lmety+= - mus_met_deltay()[iMu] - mus_p4()[iMu].y();
+	    } else if (mus_tcmet_flag()[iMu] == 4){
+	      lmetx+= - mus_tcmet_deltax()[iMu] - mus_met_deltax()[iMu] - mus_p4()[iMu].x(); 
+	      lmety+= - mus_tcmet_deltay()[iMu] - mus_met_deltay()[iMu] - mus_p4()[iMu].y(); 
+	    }
+
+	    tcmet_ = sqrt(lmetx*lmetx+lmety*lmety);
+	  }
+
+
+	  // Our jet trigger flags
+	  hlt15u_ = min(2,nHLTObjects("HLT_Jet15U")); 
+	  hlt30u_ = min(2,nHLTObjects("HLT_Jet30U")); 
+	  hlt50u_ = min(2,nHLTObjects("HLT_Jet50U")); 
+	  l16u_   = min(2,nHLTObjects("HLT_L1Jet6U"));
+	  l110u_  = min(2,nHLTObjects("HLT_L1Jet10U"));
+
+	  // If only one jet triggered, see if it is far enough away 
+	  if (hlt15u_ == 1) {
+	    LorentzVector p4j = p4HLTObject("HLT_Jet15U",0);
+	    double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4j);
+	    if (dr > deltaRCut) hlt15u_ = 2;
+	  }
+	  if (hlt30u_ == 1) {
+	    LorentzVector p4j = p4HLTObject("HLT_Jet30U",0);
+	    double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4j);
+	    if (dr > deltaRCut) hlt30u_ = 2;
+	  }
+	  if (hlt50u_ == 1) {
+	    LorentzVector p4j = p4HLTObject("HLT_Jet50U",0);
+	    double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4j);
+	    if (dr > deltaRCut) hlt50u_ = 2;
+	  }
+	  if (l16u_ == 1) {
+	    LorentzVector p4j = p4HLTObject("HLT_L1Jet6U",0);
+	    double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4j);
+	    if (dr > deltaRCut) l16u_ = 2;
+	  }
+	  if (l110u_ == 1) {
+	    LorentzVector p4j = p4HLTObject("HLT_L1Jet10U",0);
+	    double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4j);
+	    if (dr > deltaRCut) l110u_ = 2;
+	  }
+
+	  // Now fill the muon trigger flags
+	  mu3_ = nHLTObjects("HLT_Mu3");
+	  mu5_ = nHLTObjects("HLT_Mu5");
+	  mu9_ = nHLTObjects("HLT_Mu9");
+
+	  // Explicit match with Mu3 trigger
+	  if (mu3_ > 0) {
+	    bool match = false;
+	    for (int itrg=0; itrg<mu3_; itrg++) {
+	      LorentzVector p4tr = p4HLTObject("HLT_Mu3",itrg);
+	      double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4tr);
+	      if (dr < drmu3_) drmu3_ = dr;
+	      if (dr < 0.4) match=true;
+	    }
+	    if (match) {
+	      mu3_ = 2;
+	    } else {
+	      mu3_ = 1;
+	    }
+	  }
+
+	  // Explicit match with Mu5 trigger
+	  if (mu5_ > 0) {
+	    bool match = false;
+	    for (int itrg=0; itrg<mu5_; itrg++) {
+	      LorentzVector p4tr = p4HLTObject("HLT_Mu5",itrg);
+	      double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4tr);
+	      if (dr < drmu5_) drmu5_ = dr;
+	      if (dr < 0.4) match=true;
+	    }
+	    if (match) {
+	      mu5_ = 2;
+	    } else {
+	      mu5_ = 1;
+	    }
+	  }
+ 
+    // Explicit match with Mu5 trigger
+    if (mu9_ > 0) {
+      bool match = false;
+      for (int itrg=0; itrg<mu9_; itrg++) {
+        LorentzVector p4tr = p4HLTObject("HLT_Mu5",itrg);
+        double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4tr);
+        if (dr < drmu9_) drmu9_ = dr;
+        if (dr < 0.4) match=true;
+      }
+      if (match) {
+        mu9_ = 2;
+      } else {
+        mu9_ = 1;
+      }
+    }
+
+
+	  // Time to fill the baby for the muons
+	  FillBabyNtuple();
+
+	}// closes loop over muons
+      } // closes if statements about whether we want to fill muons
+
+      
+    }// closes loop over events
+  }  // closes loop over files
+  cout << "   " <<endl;
+  CloseBabyNtuple();
+  return;
+}    // closes myLooper function  
+
+//------------------------------------------
+// Initialize baby ntuple variables
+//------------------------------------------
+void myBabyMaker::InitBabyNtuple () {
+  run_ = -1;
+  ls_  = -1;
+  evt_ = -1;
+  id_  = -1;
+  pt_  = -999.;
+  eta_ = -999.;
+  phi_ = -999.;
+  scet_ = -999.;
+  tcmet_ = -999.;
+  hlt15u_ = 0;
+  hlt30u_ = 0;
+  hlt50u_ = 0;
+  l16u_   = 0;
+  l110u_  = 0;
+  v1_  = false;
+  v2_  = false;
+  v3_  = false;
+  num_ = false;
+  ph10_ = 0;
+  el10_ = 0;
+  eg5_  = 0;
+  eg8_  = 0;
+  mu5_  = 0;
+  mu9_  = 0;
+  mu3_  = 0;
+  drph10_ = 99.;
+  drel10_ = 99.;
+  dreg5_  = 99.;
+  dreg8_  = 99.;
+  drmu5_  = 99.;
+  drmu9_  = 99.;
+  drmu3_   = 99.;
+}
+//-------------------------------------
+// Book the baby ntuple
+//-------------------------------------
+void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
+{
+    TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
+    rootdir->cd();
+    babyFile_ = new TFile(Form("%s", babyFilename), "RECREATE");
+    babyFile_->cd();
+    babyTree_ = new TTree("tree", "A Baby Ntuple");
+
+    babyTree_->Branch("run",          &run_,         "run/I"         );
+    babyTree_->Branch("ls",           &ls_,          "ls/I"          );
+    babyTree_->Branch("evt",          &evt_,         "evt/I"         );
+
+    babyTree_->Branch("pt",           &pt_,          "pt/F"         );
+    babyTree_->Branch("eta",          &eta_,         "eta/F"         );
+    babyTree_->Branch("phi",          &phi_,         "phi/F"         );
+    babyTree_->Branch("scet",          &scet_,         "scet/F"         );
+    babyTree_->Branch("tcmet",          &tcmet_,         "tcmet/F"         );
+    babyTree_->Branch("id",          &id_,         "id/I"         );
+
+    babyTree_->Branch("hlt15u",       &hlt15u_,       "hlt15u/I"      );
+    babyTree_->Branch("hlt30u",       &hlt30u_,       "hlt30u/I"      );
+    babyTree_->Branch("hlt50u",       &hlt50u_,       "hlt50u/I"      );
+    babyTree_->Branch("l16u",         &l16u_,         "l16uu/I"      );
+    babyTree_->Branch("l110",         &l110u_,        "l110u/I"      );
+
+    babyTree_->Branch("v1",         &v1_,        "v1/O"      );
+    babyTree_->Branch("v2",         &v2_,        "v2/O"      );
+    babyTree_->Branch("v3",         &v3_,        "v3/O"      );
+    babyTree_->Branch("num",         &num_,        "num/O"      );
+
+    babyTree_->Branch("ph10",       &ph10_,       "ph10/I"      );
+    babyTree_->Branch("el10",         &el10_,         "el10/I"      );
+    babyTree_->Branch("eg5",         &eg5_,        "eg5/I"      );
+    babyTree_->Branch("eg8",         &eg8_,        "eg8/I"      );
+
+    babyTree_->Branch("drph10",       &drph10_,       "drph10/F"      );
+    babyTree_->Branch("drel10",         &drel10_,         "drel10/F"      );
+    babyTree_->Branch("dreg5",         &dreg5_,        "dreg5/F"      );
+    babyTree_->Branch("dreg8",         &dreg8_,        "dreg8/F"      );
+
+    babyTree_->Branch("mu9",       &mu9_,       "mu9/I"      );
+    babyTree_->Branch("mu5",       &mu5_,       "mu5/I"      );
+    babyTree_->Branch("mu3",       &mu3_,       "mu3/I"      );
+
+    babyTree_->Branch("drmu9",       &drmu9_,       "drmu9/F"      );
+    babyTree_->Branch("drmu5",       &drmu5_,       "drmu5/F"      );
+    babyTree_->Branch("drmu3",       &drmu3_,       "drmu3/F"      );
+
+}
+//----------------------------------
+// Fill the baby
+//----------------------------------
+void myBabyMaker::FillBabyNtuple()
+{
+    babyTree_->Fill();
+}
+//--------------------------------
+// Close the baby
+//--------------------------------
+void myBabyMaker::CloseBabyNtuple()
+{
+    babyFile_->cd();
+    babyTree_->Write();
+    babyFile_->Close();
+}
+
+
+
+

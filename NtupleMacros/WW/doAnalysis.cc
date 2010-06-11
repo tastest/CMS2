@@ -1423,16 +1423,15 @@ RooDataSet* ScanChain( TChain* chain,
 
        cms2.Init(tree);  // set branch addresses for TTree tree
        
+       // Reset the kFactor if the xsec argument is specified
+       double kFactor = integratedLumi/1000.0;
+       if( xsec > 0) kFactor = (integratedLumi/1000.0) * xsec / (cms2.evt_xsec_excl()*cms2.evt_kfactor());
+       
        TStopwatch t;
        //Event Loop
        unsigned int nEvents = tree->GetEntries();
        for( unsigned int event = 0; event < nEvents; ++event) {
 	 cms2.GetEntry(event);  // get entries for Event number event from branches of TTree tree
-	 
-	 // Reset the kFactor if the xsec argument is specified
-	 double kFactor = integratedLumi/1000.0;
-	 if( xsec > 0) kFactor = (integratedLumi/1000.0) * xsec / (cms2.evt_xsec_excl()*cms2.evt_kfactor());
-       
 	 ++nEventsTotal;
 	 if (qcdBackground) {
 	   // get fake rates
