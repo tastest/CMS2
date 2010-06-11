@@ -32,12 +32,6 @@ enum cic_tightness {
 //
 //--------------------------------
 enum vbtf_tightness {
-    VBTF_TOP95,
-    VBTF_TOP90,
-    VBTF_TOP85,
-    VBTF_TOP80,
-    VBTF_TOP70,
-    VBTF_TOP55,
     VBTF_35X_95,
     VBTF_35X_90,
     VBTF_35X_85,
