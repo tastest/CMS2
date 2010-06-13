@@ -5,7 +5,7 @@ process = cms.Process("CMS2")
 from Configuration.EventContent.EventContent_cff import *
 
 process.configurationMetadata = cms.untracked.PSet(
-        version = cms.untracked.string('$Revision: 1.2 $'),
+        version = cms.untracked.string('$Revision: 1.2.2.1 $'),
         annotation = cms.untracked.string('CMS2'),
         name = cms.untracked.string('CMS2 test configuration')
 )
@@ -84,7 +84,7 @@ process.options = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
     skipEvents = cms.untracked.uint32(0),
     fileNames = cms.untracked.vstring(
-    'file:/store/disk00/jribnik/Spring10_TTbarJets-madgraph_GEN-SIM-RECO_START3X_V26_S09-v1_0005_2AA58B20-AD46-DF11-9274-003048C69032.root'
+    'file:/home/users/fgolf/devel/CMSSW_3_6_1_patch4/src/CMS2/NtupleMaker/test/0C51BC87-D944-DF11-90EB-003048678B1C.root'
     ),
 )
 
@@ -111,8 +111,7 @@ process.out.outputCommands.extend(cms.untracked.vstring('keep *_*Maker*_*_CMS2*'
 process.load("CMS2.NtupleMaker.cms2CoreSequences_cff")
 process.load("CMS2.NtupleMaker.cms2GENSequence_cff")
 process.load("CMS2.NtupleMaker.cms2PATSequence_cff")
-process.load('CMS2.NtupleMaker.pixelDigiMaker_cfi')
-process.load('CMS2.NtupleMaker.beamHaloSequence_cff')
+process.load("CMS2.NtupleMaker.cms2PFSequence_cff")
 process.load('CMS2.NtupleMaker.monolepGenFilter_cfi')
 
 # loosen thresholds on collections
@@ -123,6 +122,7 @@ process.hypDilepMaker.LooseLepton_PtCut=cms.double(10.0)
 # process paths;
 #-------------------------------------------------
 process.cms2WithEverything             = cms.Sequence( process.cms2CoreSequence
+                                                       * process.cms2PFNoTauSequence
                                                        * process.cms2GENSequence
                                                        * process.patDefaultSequence
                                                        * process.cms2PATSequence)
