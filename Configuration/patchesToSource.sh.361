@@ -19,6 +19,9 @@ cvs co -r V00-00-05 RecoMET/METAnalyzers
 
 echo;echo checkingdeps;echo
 
+cvs co -d MitCommon  -r ConvRejection-10-06-09 UserCode/MitCommon
+cvs co -d MitEdm     -r ConvRejection-10-06-09 UserCode/MitEdm
+
 # dont forget this
 checkdeps -a
 
