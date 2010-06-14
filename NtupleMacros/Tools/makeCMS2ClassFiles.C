@@ -59,12 +59,14 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true,
   }
 
   //check if the branchNamesFile exists
-  struct stat results;
-  int intStat = stat(branchNamesFile.c_str(), &results);
-  if(intStat != 0) {
-    cout << "Cannot open " << branchNamesFile << endl;
-    cout << "Please make sure that the file exists" << endl;
+  if(branchNamesFile != "") {
+    struct stat results;
+    int intStat = stat(branchNamesFile.c_str(), &results);
+    if(intStat != 0) {
+      cout << "Cannot open " << branchNamesFile << endl;
+      cout << "Please make sure that the file exists" << endl;
     return;
+    }
   }
 
 
