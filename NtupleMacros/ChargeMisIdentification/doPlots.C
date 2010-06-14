@@ -41,7 +41,7 @@
   canvas->SetBottomMargin(0.155);
   eff = els_pt_reco->Integral() / els_pt_sim->Integral() * 100;
   els_pt_reco->Divide(els_pt_sim);
-  els_pt_reco->SetName("RecoEff");
+  els_pt_reco->SetName("RecoEff_pt");
   els_pt_reco->SetTitle("Reconstruction efficiency (reco/sim) in p_{T}");
   els_pt_reco->SetYTitle("Efficiency");
   els_pt_reco->SetMaximum(1.01);
@@ -64,7 +64,7 @@
   forward_den = els_eta_sim->Integral(0,els_eta_sim->FindBin(-1*f_b_eta_divider)) + els_eta_sim->Integral(els_eta_sim->FindBin(f_b_eta_divider),els_eta_sim->GetNbinsX()+1);
   forward_eff = forward_num / forward_den * 100;
   els_eta_reco->Divide(els_eta_sim);
-  els_eta_reco->SetName("RecoEff");
+  els_eta_reco->SetName("RecoEff_eta");
   els_eta_reco->SetTitle("Reconstruction efficiency (reco/sim) in #eta");
   els_eta_reco->SetYTitle("Efficiency");
   els_eta_reco->SetMaximum(1.01);
@@ -83,17 +83,18 @@
   canvas->SetBottomMargin(0.155);
   ineff = els_pt_recosim_incorCharge->Integral() / els_pt_recosim->Integral() * 100;
   els_pt_recosim_incorCharge->Divide(els_pt_recosim);
-  els_pt_recosim_incorCharge->SetName("ChargeMisIDRate");
+  els_pt_recosim_incorCharge->SetName("ChargeMisIDRate_pt");
   els_pt_recosim_incorCharge->SetTitle("Charge MisId rate (recosim_incorCharge/recosim) in p_{T}");
   els_pt_recosim_incorCharge->SetYTitle("Charge MisId rate");
-  els_pt_recosim_incorCharge->SetMaximum(0.1);
-  els_pt_recosim_incorCharge->SetMinimum(0.);
+  els_pt_recosim_incorCharge->SetMaximum(0.05);
+  els_pt_recosim_incorCharge->SetMinimum(-0.005);
   els_pt_recosim_incorCharge->Draw();
+  
   box = new TPaveText(40,0.085,80,0.095);
   box->SetBorderSize(1);
   box->SetFillColor(0);
   box->InsertText(Form("charge MisId rate: %2.3f %s",ineff,"%"));
-  box->Draw();
+//box->Draw();
   canvas->Print("ChargeMisIdRatePt.png");
 
   canvas->Clear();
@@ -106,11 +107,11 @@
   forward_den = els_eta_recosim->Integral(0,els_eta_recosim->FindBin(-1*f_b_eta_divider)) + els_eta_recosim->Integral(els_eta_recosim->FindBin(f_b_eta_divider),els_eta_recosim->GetNbinsX()+1);
   forward_ineff = forward_num / forward_den * 100;
   els_eta_recosim_incorCharge->Divide(els_eta_recosim);
-  els_eta_recosim_incorCharge->SetName("ChargeMisIdRate");
+  els_eta_recosim_incorCharge->SetName("ChargeMisIdRate_eta");
   els_eta_recosim_incorCharge->SetTitle("Charge MisId rate (recosim_incorCharge/recosim) in #eta");
   els_eta_recosim_incorCharge->SetYTitle("Charge MisId rate");
   els_eta_recosim_incorCharge->SetMaximum(0.1);
-  els_eta_recosim_incorCharge->SetMinimum(0.);
+  els_eta_recosim_incorCharge->SetMinimum(-0.005);
   els_eta_recosim_incorCharge->Draw();
   box = new TPaveText(-1.5,0.075,1.5,0.095);
   box->SetBorderSize(1);
@@ -139,5 +140,11 @@
   std::cout << "| *comment* | *reco efficiency [%]* | *barrel reco efficiency [%]* | *forward reco efficiency [%]* | *charge misidentification rate [%]* | *barrel charge misidentification rate [%]* | *forward charge misidentification rate [%]* |" << std::endl;
   std::cout << "| | " << Form("%3.3f",eff) << " | " << Form("%3.3f",barrel_eff) << " | " << Form("%3.3f",forward_eff) << " | " << Form("%3.3f",ineff) << " | " << Form("%3.3f",barrel_ineff) << " | " << Form("%3.3f",forward_ineff) << " |" << std::endl;
 
-
+TFile* outFile_ = TFile::Open("efficiency_3x.root", "RECREATE");
+outFile_->cd();
+els_pt_reco->Write();
+els_eta_reco->Write();
+els_pt_recosim_incorCharge->Write();
+els_eta_recosim_incorCharge->Write();
+outFile_->Close();
 }

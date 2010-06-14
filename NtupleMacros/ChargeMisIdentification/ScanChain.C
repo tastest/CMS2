@@ -10,9 +10,10 @@
 #include "CMS2.h"
 CMS2 cms2;
 //#include "CORE/CMS2.cc"
-#include "../CORE/selections.cc"
-#include "../CORE/utilities.cc"
-#include "../Tools/tools.cc"
+//#include "../CORE/selections.cc"
+#include "../CORE/electronSelections.cc"
+//#include "../CORE/utilities.cc"
+#include "tools.cc"
 
 using namespace tas;
 
@@ -34,6 +35,10 @@ int ScanChain( TChain* chain) {
   unsigned int nBinsEta = 52;
   float lowBinsEta      = -2.6;
   float highBinsEta     =  2.6;
+
+  float ptbins[10]= {10, 20, 30, 40, 50, 60, 70, 80, 90, 150};
+  // float ptbins[5]= {10, 30, 40, 50, 200};
+   float etabins[8] = {0, 0.5, 1.0, 1.28, 1.56, 1.84, 2.12, 2.5};
   
   TH1F *els_pt_sim 			= book1DHist("els_pt_sim", 
 						     "true Electron: p_{T}^{true}",
@@ -127,7 +132,48 @@ int ScanChain( TChain* chain) {
 						     450.,
 						     "Track ID",
 						     "Electrons",2);
+  TH2F *els_2Detavspt_recosim               = book2DVarHist ("els_eta_pt_recosim", 
+						       "true Electron: #eta^{true} vs. p_{T}^{true}",
+						       9, 
+						       ptbins, 
+						       7, 
+						       etabins, 
+						       "p_{T}",
+						       "#eta",
+						       "",
+						       2);
+  TH2 *els_2Detavspt_recosim_incorCharge =  book2DVarHist("els_eta_pt_recosim_incorCharge",
+						     "true Electron with incorrect reconstructed Charge: #eta^{true} vs. p_{T}^{true}",
+						     9, 
+						     ptbins, 
+						     7, 
+						     etabins, 
+						     "p_{T}",
+						     "#eta",
+						     "",
+						     2);
 
+//  els_2Detavspt_recosim               = book2DVarHist ("els_eta_pt_recosim", 
+// 						       "true Electron: #eta^{true} vs. p_{T}^{true}",
+// 						       4, 
+// 						       ptbins, 
+// 						       7, 
+// 						       etabins, 
+// 						       "p_{T}",
+// 						       "#eta",
+// 						       "",
+// 						       2);
+//   els_2Detavspt_recosim_incorCharge =  book2DVarHist("els_eta_pt_recosim_incorCharge",
+// 						     "true Electron with incorrect reconstructed Charge: #eta^{true} vs. p_{T}^{true}",
+// 						     4, 
+// 						     ptbins, 
+// 						     7, 
+// 						     etabins, 
+// 						     "p_{T}",
+// 						     "#eta",
+// 						     "",
+// 						     2);
+						    
 
   // file loop
   TIter fileIter(listOfFiles);
@@ -169,37 +215,30 @@ int ScanChain( TChain* chain) {
       for (unsigned int els = 0; 
            els < els_p4().size(); 
 	   ++els) {
-
-	// cuts
-
-	// SUSY cuts, replace
-	// if ( !goodElectronIsolated(els) ) continue;
-	// with corresponding cuts
-        if ( !GoodSusyLeptonID(11,els) ) continue;
-	if ( !PassSusyLeptonIsolation(11,els) ) continue;
-
-	// SUSY cuts, replace
-	// if ( conversionElectron(els) ) continue;
-	// with corresponding cuts
-	if ( conversionElectron(els) ) continue;
-
-	// check how many electrons don't have an associated track
+	if(! (electronSelection_cand02(els) && electronId_extra(els))) continue;
+	
+	   // check how many electrons don't have an associated track
 	els_trkId->Fill(els_trkidx().at(els));
 	// tmp charge variable
-	double charge = els_charge().at(els);
+	//double charge = els_charge().at(els); //majority logic
+	//int charge = getChargeUsingMajorityLogic(els, 0.45);
+	double charge = els_trk_charge().at(els);  //our method
+	//double charge = els_sccharge().at(els);
+	//if (charge !=els_charge().at(els)) std::cout<<"warning  " <<std::endl;
 	
-	// SUSY cuts, replace
-	// if electron has associated track and track charge is not equal to electron charge, veto
- 	// int trk = els_trkidx().at(els);
-	// if ( (trk >= 0) && (charge != trks_charge().at(trk)) ) {
-	//  continue;
-	// }
-	// with corresponding cuts
-	if ( isChargeFlip(els) ) continue;
+	if(isChargeFlip(els))continue ;
+	
 
-	// fill reco
-	els_pt_reco->Fill(els_p4().at(els).Pt());
-	els_eta_reco->Fill(els_p4().at(els).eta());
+	//if ((cms2.els_trkidx().at(els) >= 0) && (cms2.els_trk_charge().at(els) != cms2.trks_charge().at(cms2.els_trkidx().at(els))) ) continue;
+
+	
+	//	else if ((els_trkidx().at(els) < 0) && (cms2.els_trk_charge().at(els) != els_sccharge().at(els)))continue;
+	//if (isFromConversionHitPattern(els)) continue;
+	
+
+	  els_pt_reco->Fill(els_p4().at(els).Pt());
+	  els_eta_reco->Fill(els_p4().at(els).eta());
+
 
 	// fill reco_corCharge
 	if ( (charge == -1 && els_mc_id().at(els) == 11) || (charge == 1 && els_mc_id().at(els) == -11) ) {
@@ -213,6 +252,8 @@ int ScanChain( TChain* chain) {
 	// fill recosim
 	els_pt_recosim->Fill(els_mc_p4().at(els).Pt());
 	els_eta_recosim->Fill(els_mc_p4().at(els).eta());
+	
+	els_2Detavspt_recosim->Fill(els_p4().at(els).Pt(), fabs(els_p4().at(els).eta())); 
 
 	// correct charge identified
 	if ( (charge == -1 && els_mc_id().at(els) == 11) || (charge == 1 && els_mc_id().at(els) == -11) ) {
@@ -225,9 +266,11 @@ int ScanChain( TChain* chain) {
 
 	  els_pt_recosim_incorCharge->Fill(els_mc_p4().at(els).Pt());
 	  els_eta_recosim_incorCharge->Fill(els_mc_p4().at(els).eta());
+
+	  els_2Detavspt_recosim_incorCharge->Fill(els_p4().at(els).Pt(), fabs(els_p4().at(els).eta())); 
 	}
 
-      }
+      } //end of looping over reco eles
       
     }
     
