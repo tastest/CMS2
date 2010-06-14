@@ -13,7 +13,6 @@ outNtupleName = 'ntuple.root'
 storageElement = 'T2_US_UCSD'
 tag = 'V01-02-06'
 mode = 'glidein'
-server = '1';
 dbs_url = 'http://ming.ucsd.edu:8080/DBS2/servlet/DBSServlet';
 report_every = 1000;
 global_tag_flag = '';
@@ -26,10 +25,7 @@ def makeCrabConfig():
     outFile.write('[CRAB]\n')
     outFile.write('jobtype   = cmssw\n')
     outFile.write('scheduler = ' + mode + '\n')
-    if ( server != '' ) :
-        outFile.write('server_name = ' + server + '\n')
-    else :
-        outFile.write('use_server = ' + '1' + '\n')
+    outFile.write('use_server = ' + '1' + '\n')
     outFile.write('\n[CMSSW]\n')
     outFile.write('datasetpath             = ' + dataSet + '\n')
     outFile.write('pset                    = ' + outFileName + '_cfg.py \n')
@@ -126,7 +122,6 @@ if len(sys.argv) < 5 :
     print '\t-evtsPerJob\tNumber of events per job. Default is 5000'
     #print '\t-n\t\tName of output Ntuple file. Default is ntuple.root'
     print '\t-m\t\tsubmission mode (possible: condor_g, condor, glite). Default is glidein'
-    print '\t-s\t\tserver name. By default, we let CRAB pick the server '
     print '\t-dbs\t\tdbs url for publication. Default is http://ming.ucsd.edu:8080/DBS2/servlet/DBSServlet'
     print '\t-re\t\tMessage Logger modulus for error reporting. Default is 1000'
     print '\t-gtag\t\tglobal tag. Default is MC_31X_V3::All'
@@ -150,8 +145,6 @@ for i in range(0, len(sys.argv)):
         tag  = str(sys.argv[i+1])
     if sys.argv[i] == '-m':
         mode  = str(sys.argv[i+1])
-    if sys.argv[i] == '-s':
-        server  = str(sys.argv[i+1])
     if sys.argv[i] == '-dbs':
         dbs_url = str(sys.argv[i+1])
     if sys.argv[i] == '-re':
