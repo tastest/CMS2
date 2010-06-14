@@ -175,7 +175,7 @@ else :
     else:
       command = 'python $DBSCMD_HOME/dbsCommandLine.py -c search --url=' + dbs_url + ' --query="find config.name,config.content where dataset=' + dataSet + '">config.content; while read line; do globaltag=`echo $line | sed -n \'s/^.*process.GlobalTag.globaltag = \([^p]*\).*$/\\1/p\'`; if [ "$globaltag" != "" ]; then echo $globaltag; break; fi; done <config.content; rm config.content';
 
-    print command
+    #print command
 
     len = len( os.popen(command).readlines() )
     if( len > 0 ):
