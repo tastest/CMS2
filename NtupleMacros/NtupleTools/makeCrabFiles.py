@@ -13,7 +13,8 @@ outNtupleName = 'ntuple.root'
 storageElement = 'T2_US_UCSD'
 tag = 'V01-02-06'
 mode = 'glidein'
-dbs_url = 'http://ming.ucsd.edu:8080/DBS2/servlet/DBSServlet';
+dbs_url = ''
+dbs_url_pub = 'http://ming.ucsd.edu:8080/DBS2/servlet/DBSServlet';
 report_every = 1000;
 global_tag_flag = '';
 
@@ -31,7 +32,10 @@ def makeCrabConfig():
     outFile.write('pset                    = ' + outFileName + '_cfg.py \n')
     outFile.write('total_number_of_events  = ' + str(numEvtsTotal) + '\n')
     outFile.write('events_per_job          = ' + str(numEvtsPerJob) + '\n')
-    outFile.write('output_file             = ' + outNtupleName + '\n\n\n')
+    outFile.write('output_file             = ' + outNtupleName + '\n')
+    if dbs_url != '' :
+      outFile.write('dbs_url                 = ' + dbs_url + '\n')
+    outFile.write('\n')
     outFile.write('[USER]\n')
     outFile.write('return_data             = 0\n')
     outFile.write('copy_data               = 1\n')
@@ -40,7 +44,7 @@ def makeCrabConfig():
     outFile.write('user_remote_dir         = CMS2_' + tag + '/' + outFileName + '\n')
     outFile.write('publish_data            = 0\n')
     outFile.write('publish_data_name       = CMS2_' + tag + '\n')
-    outFile.write('dbs_url_for_publication = ' + dbs_url + '\n\n')
+    outFile.write('dbs_url_for_publication = ' + dbs_url_pub + '\n\n')
     outFile.write('[GRID]\n')
     outFile.write('maxtarballsize = 20\n')
     
@@ -166,7 +170,13 @@ if( global_tag_flag != '' ):
 else :
     global_tag = '';
     dbs_result = '';
-    command = 'dbsql find config.name,config.content where dataset=' + dataSet + '>config.content; while read line; do globaltag=`echo $line | sed -n \'s/^.*process.GlobalTag.globaltag = \([^p]*\).*$/\\1/p\'`; if [ "$globaltag" != "" ]; then echo $globaltag; break; fi; done <config.content; rm config.content';
+    if dbs_url == '' :
+      command = 'dbsql find config.name,config.content where dataset=' + dataSet + '>config.content; while read line; do globaltag=`echo $line | sed -n \'s/^.*process.GlobalTag.globaltag = \([^p]*\).*$/\\1/p\'`; if [ "$globaltag" != "" ]; then echo $globaltag; break; fi; done <config.content; rm config.content';
+    else:
+      command = 'python $DBSCMD_HOME/dbsCommandLine.py -c search --url=' + dbs_url + ' --query="find config.name,config.content where dataset=' + dataSet + '">config.content; while read line; do globaltag=`echo $line | sed -n \'s/^.*process.GlobalTag.globaltag = \([^p]*\).*$/\\1/p\'`; if [ "$globaltag" != "" ]; then echo $globaltag; break; fi; done <config.content; rm config.content';
+
+    print command
+
     len = len( os.popen(command).readlines() )
     if( len > 0 ):
       lines = os.popen(command);
