@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <set>
-#include <utility>
 #include "Math/VectorUtil.h"
 #include "Math/PtEtaPhiE4D.h"
 #include "Math/PtEtaPhiM4D.h"
@@ -24,6 +23,87 @@
 
 using std::vector;
 TH2D* rfhist = 0;
+
+TVector3 correctMETforTracks()
+{
+  if ( ! rfhist ){
+    printf("correctMETforTracks(): loading RF histo\n");
+    TDirectory* currentDir = gDirectory;
+    TFile *metcorr_file = TFile::Open("$CMS2_LOCATION/NtupleMacros/data/metcorr.root", "read");
+    if ( metcorr_file == 0 ) {
+        std::cout << "$CMS2_LOCATION/NtupleMacros/data/metcorr.root could not be found!!" << std::endl;
+	std::cout << "Please make sure that $CMS2_LOCATION points to your CMS2 directory and that" << std::endl;
+	std::cout << "$CMS2_LOCATION/NtupleMacros/data/metcorr.root exists!" << std::endl;
+        gSystem->Exit(1); 
+    }
+    assert( metcorr_file );
+    rfhist = dynamic_cast<TH2D*>(metcorr_file->Get("rf_pt_mbin"));
+    assert( rfhist );
+    rfhist->SetDirectory(0);
+    metcorr_file->Close();
+    currentDir->cd();
+  }
+  // initialize temporary met variables
+  double met_x = 0;
+  double met_y = 0;
+
+  // set kinematic and quality cuts
+  const int    nhits_cut  = 7;
+  const double hoe_cut    = 0.1;
+  const double d0_cut     = 0.05;
+  const double nchisq_cut = 5.;
+  const double eta_cut    = 2.4;
+  const double low_pt_cut = 2.;
+  const double hi_pt_cut  = 100.;
+
+  for( unsigned int trkCount = 0; trkCount < cms2.trks_trk_p4().size(); ++trkCount ) {
+    // skip track if matched to a global muon
+    if( cms2.trk_musidx()[trkCount] != -999 &&  
+	ROOT::Math::VectorUtil::DeltaR(cms2.trks_trk_p4()[trkCount],
+				       cms2.mus_trk_p4()[cms2.trk_musidx()[trkCount]]) < 0.1) {
+      if( cms2.mus_trkidx()[cms2.trk_musidx()[trkCount]]  == int(trkCount) 
+	  // useless && cms2.mus_trkdr()[cms2.trk_musidx()[trkCount]] < 0.1 
+	  ) continue;
+    }
+
+    // skip track if matched to an "electron"
+    if( cms2.trks_elsidx()[trkCount] != -999 && cms2.trks_elsdr()[trkCount] < 0.1) {
+      if( cms2.els_hOverE()[ cms2.trks_elsidx()[trkCount] ] < hoe_cut ) {
+	if( cms2.els_trkidx()[cms2.trks_elsidx()[trkCount]]  == int(trkCount) && cms2.els_trkdr()[cms2.trks_elsidx()[trkCount]] < 0.1 ) continue;
+      }
+    }
+
+    // skip tracks at large eta or with large pt
+    if( TMath::Abs( cms2.trks_trk_p4()[trkCount].eta() ) > eta_cut || cms2.trks_trk_p4()[trkCount].pt() > hi_pt_cut ) continue;
+
+    // skip tracks that do no pass quality cuts
+    if( cms2.trks_validHits()[trkCount] < nhits_cut || ( cms2.trks_chi2()[trkCount] / cms2.trks_ndof()[trkCount] ) > nchisq_cut || TMath::Abs( cms2.trks_d0corr()[trkCount] ) > d0_cut ) continue;
+
+    // correct tracks w/ pt < 2 setting RF = 0
+    if( cms2.trks_trk_p4()[trkCount].pt() < low_pt_cut ) {
+      met_x -= cms2.trks_trk_p4()[trkCount].pt() * cos( cms2.trks_trk_p4()[trkCount].phi() );
+      met_y -= cms2.trks_trk_p4()[trkCount].pt() * sin( cms2.trks_trk_p4()[trkCount].phi() );
+      continue;
+    }
+
+    // skip any remaining tracks that don't have outerEta, outerPhi information
+    if( cms2.trks_outer_p4()[trkCount].x() == -999 || cms2.trks_outer_p4()[trkCount].y() == -999 ) continue;
+
+    // if we've made it this far, get the response from the histogram
+    int bin   = rfhist->FindBin( cms2.trks_trk_p4()[trkCount].eta(), cms2.trks_trk_p4()[trkCount].pt() );
+    double rf = rfhist->GetBinContent( bin );
+
+    // now, correct MET for track using RF
+    met_x +=  ( rf * cms2.trks_trk_p4()[trkCount].P() * ( 1 / cosh( cms2.trks_outer_p4()[trkCount].Eta() ) ) * cos( cms2.trks_outer_p4()[trkCount].Phi() ) - cms2.trks_trk_p4()[trkCount].pt() * cos( cms2.trks_trk_p4()[trkCount].phi() ) );
+    met_y +=  ( rf * cms2.trks_trk_p4()[trkCount].P() * ( 1 / cosh( cms2.trks_outer_p4()[trkCount].Eta() ) ) * sin( cms2.trks_outer_p4()[trkCount].phi() ) - cms2.trks_trk_p4()[trkCount].pt() * sin( cms2.trks_trk_p4()[trkCount].phi() ) );
+  }
+
+  // fill MET vector
+  TVector3 metvec( met_x, met_y, 0);
+  
+  // return corrected MET
+  return metvec;
+}
 
 double dRbetweenVectors(const LorentzVector &vec1, 
 			const LorentzVector &vec2 ){ 
@@ -137,122 +217,4 @@ double trkIsolation(int trk_index) {
   }
 
   return sumPt;
-}
-
-// this is meant to be passed as the third argument, the predicate, of the
-// standard library sort algorithm
-bool sortByPt(const LorentzVector &vec1, 
-			const LorentzVector &vec2 )
-{
-    return vec1.pt() > vec2.pt();
-}
-
-// this is a workaround for not having unique event id's in MC
-class DorkyEvent
-{
-    public:
-        DorkyEvent()
-        {
-            run_      = cms2.evt_run();
-            lumi_     = cms2.evt_lumiBlock();
-            event_    = cms2.evt_event();
-            trks_d0_  = cms2.trks_d0().size()     ? cms2.trks_d0()[0]           : -9999.;
-            trks_pt_  = cms2.trks_trk_p4().size() ? cms2.trks_trk_p4()[0].pt()  : -9999.;
-            trks_eta_ = cms2.trks_trk_p4().size() ? cms2.trks_trk_p4()[0].eta() : -9999.;
-            trks_phi_ = cms2.trks_trk_p4().size() ? cms2.trks_trk_p4()[0].phi() : -9999.;
-        }
-        ~DorkyEvent() {}
-
-        bool operator < (const DorkyEvent &) const;
-        bool operator == (const DorkyEvent &) const;
-
-        unsigned int run      () const { return run_;      }
-        unsigned int lumi     () const { return lumi_;     }
-        unsigned int event    () const { return event_;    }
-        float        trks_d0  () const { return trks_d0_;  }
-        float        trks_pt  () const { return trks_pt_;  }
-        float        trks_eta () const { return trks_eta_; }
-        float        trks_phi () const { return trks_phi_; }
-
-    private:
-        unsigned int run_, lumi_, event_;
-        float trks_d0_, trks_pt_, trks_eta_, trks_phi_;
-};
-
-class DorkyEventIdentifier
-{
-    public:
-        DorkyEventIdentifier()
-        {
-            already_seen.clear();
-            duplicates_total_n = 0;
-            duplicates_total_weight = 0.;
-        }
-        ~DorkyEventIdentifier() {}
-
-        bool is_duplicate(const DorkyEvent &id)
-        {
-            std::pair<std::set<DorkyEvent>::const_iterator, bool> ret =
-                already_seen.insert(id);
-
-            if (! ret.second) {
-                duplicates_total_n++;
-                duplicates_total_weight += cms2.evt_scale1fb();
-                cout << "Duplicate event found. Run: " << ret.first->run() << ", Lumi: " << ret.first->lumi() << ", Event: " << ret.first->event() << endl;
-                cout.precision(10);
-                cout << "\td0:\t"  << ret.first->trks_d0()  << endl;
-                cout << "\tpt:\t"  << ret.first->trks_pt()  << endl;
-                cout << "\teta:\t" << ret.first->trks_eta() << endl;
-                cout << "\tphi:\t" << ret.first->trks_phi() << endl;
-            }
-
-            return ! ret.second;
-        }
-
-    private:
-        std::set<DorkyEvent> already_seen;
-        int duplicates_total_n;
-        double duplicates_total_weight;
-};
-
-bool DorkyEvent::operator < (const DorkyEvent &other) const
-{
-    if (run() != other.run())
-        return run() < other.run();
-    if (event() != other.event())
-        return event() < other.event();
-    // the floating point numbers are not easy, because we're
-    // comapring ones that are truncated (because they were written
-    // to file and read back in) with ones that are not truncated.
-    if (fabs(trks_d0()  - other.trks_d0())  > 1e-6 * trks_d0())
-        return trks_d0() < other.trks_d0();
-    if (fabs(trks_pt()  - other.trks_pt())  > 1e-6 * trks_pt())
-        return trks_pt() < other.trks_pt();
-    if (fabs(trks_eta() - other.trks_eta()) > 1e-6 * trks_eta())
-        return trks_eta() < other.trks_eta();
-    if (fabs(trks_phi() - other.trks_phi()) > 1e-6 * trks_phi())
-        return trks_phi() < other.trks_phi();
-    // if the records are exactly the same, then r1 is not less than
-    // r2.  Duh!
-    return false;
-}
-
-bool DorkyEvent::operator == (const DorkyEvent &other) const
-{
-    if (run() != other.run())
-        return false;
-    if (event() != other.event())
-        return false;
-    // the floating point numbers are not easy, because we're
-    // comapring ones that are truncated (because they were written
-    // to file and read back in) with ones that are not truncated.
-    if (fabs(trks_d0()  - other.trks_d0())  > 1e-6 * trks_d0())
-        return false;
-    if (fabs(trks_pt()  - other.trks_pt())  > 1e-6 * trks_pt())
-        return false;
-    if (fabs(trks_eta() - other.trks_eta()) > 1e-6 * trks_eta())
-        return false;
-    if (fabs(trks_phi() - other.trks_phi()) > 1e-6 * trks_phi())
-        return false;
-    return true;
 }
