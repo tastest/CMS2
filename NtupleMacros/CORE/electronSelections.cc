@@ -341,17 +341,19 @@ electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned in
         std::vector<double> cutiso_sum;
         std::vector<double> cutiso_sumoet;
         std::vector<double> cutsee;
-        bool wantBinning;
+
+        // V03 uses Et binning
+        bool wantBinning = true;
 
         if (version == 3) {
             eidGetCIC_V03(tightness, cutdcotdist, cutdetain, cutdphiin, cuteseedopcor, cutet,
                     cutfmishits, cuthoe, cutip_gsf, cutiso_sum, cutiso_sumoet, cutsee);
-            wantBinning = true;
         }
 
         if (version == 4) {
             eidGetCIC_V04(tightness, cutdcotdist, cutdetain, cutdphiin, cuteseedopcor, cutet,
                     cutfmishits, cuthoe, cutip_gsf, cutiso_sum, cutiso_sumoet, cutsee);
+            // V04 does not use Et binning
             wantBinning = false;
         }
 
