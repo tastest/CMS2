@@ -46,6 +46,8 @@ enum EleSelectionType {
     ELEID_EXTRA,
     // VBTF90 electron ID (35X)
     ELEID_VBTF_35X_90,
+    // VBTF80 electron ID (35X)
+    ELEID_VBTF_35X_80,
     // VBTF70 electron ID (35X)
     ELEID_VBTF_35X_70,
     // CIC_MEDIUM electron ID (V03)
@@ -474,6 +476,12 @@ bool isChargeFlip(int elIndex);
 // spike rejection for electrons
 //
 bool isSpikeElectron(const unsigned int index);
+
+//
+// position correction for electrons
+//
+
+void electronCorrection_pos(const unsigned int index, float &dEtaIn, float &dPhiIn, float applyCorrection = true);
 
 #endif
 
