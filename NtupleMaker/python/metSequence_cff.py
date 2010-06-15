@@ -19,4 +19,5 @@ met.src = cms.InputTag("cms2towerMaker")
 from CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi import *
 cms2HBHENoiseFilterResultProducer = HBHENoiseFilterResultProducer.clone()
 
-metCorSequence = cms.Sequence(metMuonJESCorAK5CMS2 * cms2towerMaker * metNew * cms2HBHENoiseFilterResultProducer)
+#metCorSequence = cms.Sequence(metMuonJESCorAK5CMS2 * cms2towerMaker * metNew * cms2HBHENoiseFilterResultProducer)
+metCorSequence = cms.Sequence(metMuonJESCorAK5CMS2 * cms2towerMaker * metNew)
