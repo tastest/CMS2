@@ -126,7 +126,7 @@ if len(sys.argv) < 5 :
     print '\t-evtsPerJob\tNumber of events per job. Default is 5000'
     #print '\t-n\t\tName of output Ntuple file. Default is ntuple.root'
     print '\t-m\t\tsubmission mode (possible: condor_g, condor, glite). Default is glidein'
-    print '\t-dbs\t\tdbs url for publication. Default is http://ming.ucsd.edu:8080/DBS2/servlet/DBSServlet'
+    print '\t-dbs\t\tdbs url'
     print '\t-re\t\tMessage Logger modulus for error reporting. Default is 1000'
     print '\t-gtag\t\tglobal tag. Default is MC_31X_V3::All'
     sys.exit()
