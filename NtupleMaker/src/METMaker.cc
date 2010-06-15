@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/4
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: METMaker.cc,v 1.22 2010/05/23 17:59:43 fgolf Exp $
+// $Id: METMaker.cc,v 1.22.4.1 2010/06/15 13:30:16 jribnik Exp $
 //
 //
 
@@ -65,7 +65,7 @@ METMaker::METMaker(const edm::ParameterSet& iConfig) {
      if(branchprefix.find("_") != std::string::npos)
 	  branchprefix.replace(branchprefix.find("_"),1,"");
      
-     produces<float> (branchprefix+"hbhbeFilter").setBranchAlias(aliasprefix_+"_hbheFilter");
+     //produces<float> (branchprefix+"hbhbeFilter").setBranchAlias(aliasprefix_+"_hbheFilter");
      produces<float> ("evt35xmet").setBranchAlias("evt35x_met");
      produces<float> ("evt35xmetPhi").setBranchAlias("evt35x_metPhi");
      produces<float> ("evt35xmetSig").setBranchAlias("evt35x_metSig");
@@ -169,7 +169,7 @@ METMaker::METMaker(const edm::ParameterSet& iConfig) {
      caloTowerInputTag     = iConfig.getParameter<edm::InputTag>("caloTower_tag_");
      towerEtThreshold      = iConfig.getParameter<double>       ("towerEtThreshold_");
      make_eta_rings        = iConfig.getParameter<bool>         ("make_eta_rings_");
-     hbheNoiseFilterInputTag = iConfig.getParameter<edm::InputTag>("hbheNoiseFilterInputTag_");
+     //hbheNoiseFilterInputTag = iConfig.getParameter<edm::InputTag>("hbheNoiseFilterInputTag_");
 
      if( make_eta_rings ) {
 	  produces<vector<float> > (branchprefix+"towermetetaslice"         ).setBranchAlias(aliasprefix_+"_towermet_etaslice"         );
@@ -197,7 +197,7 @@ void METMaker::endJob()
 // ------------ method called to produce the data  ------------
 void METMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   
-     auto_ptr<bool>    evt_hbheFilter          (new bool      );
+     //auto_ptr<bool>    evt_hbheFilter          (new bool      );
      auto_ptr<float>   evt35x_met              (new float     );
      auto_ptr<float>   evt35x_metPhi           (new float     );
      auto_ptr<float>   evt35x_metSig           (new float     );
@@ -295,7 +295,7 @@ void METMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
      edm::Handle< reco::MuonCollection > muon_h;
      edm::Handle<bool> filter_h;     
 
-     iEvent.getByLabel(hbheNoiseFilterInputTag, filter_h);
+     //iEvent.getByLabel(hbheNoiseFilterInputTag, filter_h);
      iEvent.getByLabel(met_tag      , met_h       );
      iEvent.getByLabel(met36x_tag   , met36x_h    );
      iEvent.getByLabel(metHO_tag    , metHO_h     );
@@ -313,7 +313,7 @@ void METMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
      iEvent.getByLabel(muon_vm_tag, muon_vm_h );
      iEvent.getByLabel(muon_tag   , muon_h    );
     
-     *evt_hbheFilter   = *filter_h;
+     //*evt_hbheFilter   = *filter_h;
      *evt35x_met       = ( met_h->front()       ).et();
      *evt35x_metPhi    = ( met_h->front()       ).phi();
      *evt35x_metSig    = ( met_h->front()       ).metSignificance();
