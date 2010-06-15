@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Puneeth Kalavase
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: ElectronMaker.cc,v 1.51 2010/05/07 01:30:10 warren Exp $
+// $Id: ElectronMaker.cc,v 1.51.6.1 2010/06/15 13:31:39 jribnik Exp $
 //
 //
 
@@ -220,11 +220,11 @@ ElectronMaker::ElectronMaker(const edm::ParameterSet& iConfig) {
   produces<vector<LorentzVector> >  ("elsouterposition"           ).setBranchAlias("els_outer_position"         );
   produces<vector<int> >            ("elsvalidpixelhits"          ).setBranchAlias("els_valid_pixelhits"        );
   produces<vector<int> >            ("elslostpixelhits"           ).setBranchAlias("els_lost_pixelhits"         );
-  produces<vector<int> >            ("elslayer1sizerphi"          ).setBranchAlias("els_layer1_sizerphi"        ); 
-  produces<vector<int> >            ("elslayer1sizerz"            ).setBranchAlias("els_layer1_sizerz"          ); 
-  produces<vector<float> >          ("elslayer1charge"            ).setBranchAlias("els_layer1_charge"          ); 
-  produces<vector<int> >            ("elslayer1det"               ).setBranchAlias("els_layer1_det"             );
-  produces<vector<int> >            ("elslayer1layer"             ).setBranchAlias("els_layer1_layer"           ); 
+  //produces<vector<int> >            ("elslayer1sizerphi"          ).setBranchAlias("els_layer1_sizerphi"        ); 
+  //produces<vector<int> >            ("elslayer1sizerz"            ).setBranchAlias("els_layer1_sizerz"          ); 
+  //produces<vector<float> >          ("elslayer1charge"            ).setBranchAlias("els_layer1_charge"          ); 
+  //produces<vector<int> >            ("elslayer1det"               ).setBranchAlias("els_layer1_det"             );
+  //produces<vector<int> >            ("elslayer1layer"             ).setBranchAlias("els_layer1_layer"           ); 
   produces<vector<int> >            ("elsexpinnerlayers"          ).setBranchAlias("els_exp_innerlayers"        );
   produces<vector<int> >            ("elsexpouterlayers"          ).setBranchAlias("els_exp_outerlayers"        );   
 	
@@ -404,11 +404,11 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   auto_ptr<vector<LorentzVector> >els_outer_position          (new vector<LorentzVector>);
   auto_ptr<vector<int> >	  els_valid_pixelhits         (new vector<int>	        ); 
   auto_ptr<vector<int> >	  els_lost_pixelhits          (new vector<int>        	); 
-  auto_ptr<vector<int> >	  els_layer1_sizerphi         (new vector<int>	        ); 
-  auto_ptr<vector<int> >	  els_layer1_sizerz           (new vector<int>	        ); 
-  auto_ptr<vector<float> >	  els_layer1_charge           (new vector<float>	);
-  auto_ptr<vector<int> >	  els_layer1_det              (new vector<int>	        );
-  auto_ptr<vector<int> >	  els_layer1_layer            (new vector<int>          );
+  //auto_ptr<vector<int> >	  els_layer1_sizerphi         (new vector<int>	        ); 
+  //auto_ptr<vector<int> >	  els_layer1_sizerz           (new vector<int>	        ); 
+  //auto_ptr<vector<float> >	  els_layer1_charge           (new vector<float>	);
+  //auto_ptr<vector<int> >	  els_layer1_det              (new vector<int>	        );
+  //auto_ptr<vector<int> >	  els_layer1_layer            (new vector<int>          );
   auto_ptr<vector<int> >	  els_exp_innerlayers         (new vector<int>		); 
   auto_ptr<vector<int> >	  els_exp_outerlayers         (new vector<int>		); 
 
@@ -717,6 +717,7 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
       if(!valid_hit) continue;
       if(pixel_hit){
+          /*
 
 	const SiPixelRecHit *pixel_hit_cast = dynamic_cast<const SiPixelRecHit*>(&(**ihit));
 	assert(pixel_hit_cast != 0);
@@ -737,9 +738,11 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
 	}
 
+    */
       }
 
       else if (strip_hit){
+          /*
 	const SiStripRecHit1D *strip_hit_cast = dynamic_cast<const SiStripRecHit1D*>(&(**ihit));
 	const SiStripRecHit2D *strip2d_hit_cast = dynamic_cast<const SiStripRecHit2D*>(&(**ihit));
 	ClusterRef cluster;
@@ -777,6 +780,7 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	  els_layer1_layer    ->push_back(layer);
 	  i_layer++;
 	}
+    */
       }
 
     }
@@ -936,11 +940,11 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   iEvent.put(els_outer_position  , "elsouterposition"  );
   iEvent.put(els_valid_pixelhits , "elsvalidpixelhits" );
   iEvent.put(els_lost_pixelhits  , "elslostpixelhits"  );
-  iEvent.put(els_layer1_layer    , "elslayer1layer"    );
-  iEvent.put(els_layer1_sizerphi , "elslayer1sizerphi" );
-  iEvent.put(els_layer1_sizerz   , "elslayer1sizerz"   );
-  iEvent.put(els_layer1_charge   , "elslayer1charge"   );
-  iEvent.put(els_layer1_det      , "elslayer1det"      );
+  //iEvent.put(els_layer1_layer    , "elslayer1layer"    );
+  //iEvent.put(els_layer1_sizerphi , "elslayer1sizerphi" );
+  //iEvent.put(els_layer1_sizerz   , "elslayer1sizerz"   );
+  //iEvent.put(els_layer1_charge   , "elslayer1charge"   );
+  //iEvent.put(els_layer1_det      , "elslayer1det"      );
   iEvent.put(els_exp_innerlayers , "elsexpinnerlayers" );
   iEvent.put(els_exp_outerlayers , "elsexpouterlayers" );
 

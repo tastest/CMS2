@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/4
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: TrackMaker.cc,v 1.29 2010/03/18 02:13:34 kalavase Exp $
+// $Id: TrackMaker.cc,v 1.29.8.1 2010/06/15 13:31:39 jribnik Exp $
 //
 //
 
@@ -111,11 +111,11 @@ TrackMaker::TrackMaker(const edm::ParameterSet& iConfig) {
   produces<vector<LorentzVector> >  ("trksouterposition"           ).setBranchAlias("trks_outer_position"         );
   produces<vector<int> >            ("trksvalidpixelhits"          ).setBranchAlias("trks_valid_pixelhits"        );
   produces<vector<int> >            ("trkslostpixelhits"           ).setBranchAlias("trks_lost_pixelhits"         );
-  produces<vector<int> >            ("trkslayer1sizerphi"          ).setBranchAlias("trks_layer1_sizerphi"        ); 
-  produces<vector<int> >            ("trkslayer1sizerz"            ).setBranchAlias("trks_layer1_sizerz"          ); 
-  produces<vector<float> >          ("trkslayer1charge"            ).setBranchAlias("trks_layer1_charge"          ); 
-  produces<vector<int> >            ("trkslayer1det"               ).setBranchAlias("trks_layer1_det"             );
-  produces<vector<int> >            ("trkslayer1layer"             ).setBranchAlias("trks_layer1_layer"           ); 
+  //produces<vector<int> >            ("trkslayer1sizerphi"          ).setBranchAlias("trks_layer1_sizerphi"        ); 
+  //produces<vector<int> >            ("trkslayer1sizerz"            ).setBranchAlias("trks_layer1_sizerz"          ); 
+  //produces<vector<float> >          ("trkslayer1charge"            ).setBranchAlias("trks_layer1_charge"          ); 
+  //produces<vector<int> >            ("trkslayer1det"               ).setBranchAlias("trks_layer1_det"             );
+  //produces<vector<int> >            ("trkslayer1layer"             ).setBranchAlias("trks_layer1_layer"           ); 
   produces<vector<int> >            ("trksexpinnerlayers"          ).setBranchAlias("trks_exp_innerlayers"        );
   produces<vector<int> >            ("trksexpouterlayers"          ).setBranchAlias("trks_exp_outerlayers"        );   
 
@@ -162,11 +162,11 @@ void TrackMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr<vector<LorentzVector> >trks_outer_position          (new vector<LorentzVector>  );
   std::auto_ptr<vector<int> >	       trks_valid_pixelhits         (new vector<int>	        ); 
   std::auto_ptr<vector<int> >	       trks_lost_pixelhits          (new vector<int>        	); 
-  std::auto_ptr<vector<int> >	       trks_layer1_sizerphi         (new vector<int>	        ); 
-  std::auto_ptr<vector<int> >	       trks_layer1_sizerz           (new vector<int>	        ); 
-  std::auto_ptr<vector<float> >	       trks_layer1_charge           (new vector<float>	        );
-  std::auto_ptr<vector<int> >	       trks_layer1_det              (new vector<int>	        );
-  std::auto_ptr<vector<int> >	       trks_layer1_layer            (new vector<int>            );
+  //std::auto_ptr<vector<int> >	       trks_layer1_sizerphi         (new vector<int>	        ); 
+  //std::auto_ptr<vector<int> >	       trks_layer1_sizerz           (new vector<int>	        ); 
+  //std::auto_ptr<vector<float> >	       trks_layer1_charge           (new vector<float>	        );
+  //std::auto_ptr<vector<int> >	       trks_layer1_det              (new vector<int>	        );
+  //std::auto_ptr<vector<int> >	       trks_layer1_layer            (new vector<int>            );
   std::auto_ptr<vector<int> >	       trks_exp_innerlayers         (new vector<int>		); 
   std::auto_ptr<vector<int> >	       trks_exp_outerlayers         (new vector<int>		); 
 
@@ -325,6 +325,7 @@ void TrackMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       layer     = (int)pattern.getLayer(hit_pattern);
       if(!valid_hit) continue;
       if(pixel_hit){
+          /*
 	const SiPixelRecHit *pixel_hit_cast = dynamic_cast<const SiPixelRecHit*>(&(**ihit));
 	assert(pixel_hit_cast != 0);
 	pixel_ClusterRef const& pixel_cluster = pixel_hit_cast->cluster();
@@ -341,8 +342,10 @@ void TrackMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  i_layer++;
 
 	}
+    */
       }
       else if (strip_hit){
+          /*
 	const SiStripRecHit1D *strip_hit_cast = dynamic_cast<const SiStripRecHit1D*>(&(**ihit));
 	const SiStripRecHit2D *strip2d_hit_cast = dynamic_cast<const SiStripRecHit2D*>(&(**ihit));
 	ClusterRef cluster;
@@ -376,6 +379,7 @@ void TrackMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  trks_layer1_layer    ->push_back(layer);
 	  i_layer++;
 	}
+    */
       }
     }
     trks_valid_pixelhits ->push_back(pattern.numberOfValidPixelHits());
@@ -423,11 +427,11 @@ void TrackMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put(trks_outer_position  , "trksouterposition"  );
   iEvent.put(trks_valid_pixelhits , "trksvalidpixelhits" );
   iEvent.put(trks_lost_pixelhits  , "trkslostpixelhits"  );
-  iEvent.put(trks_layer1_layer    , "trkslayer1layer"    );
-  iEvent.put(trks_layer1_sizerphi , "trkslayer1sizerphi" );
-  iEvent.put(trks_layer1_sizerz   , "trkslayer1sizerz"   );
-  iEvent.put(trks_layer1_charge   , "trkslayer1charge"   );
-  iEvent.put(trks_layer1_det      , "trkslayer1det"      );
+  //iEvent.put(trks_layer1_layer    , "trkslayer1layer"    );
+  //iEvent.put(trks_layer1_sizerphi , "trkslayer1sizerphi" );
+  //iEvent.put(trks_layer1_sizerz   , "trkslayer1sizerz"   );
+  //iEvent.put(trks_layer1_charge   , "trkslayer1charge"   );
+  //iEvent.put(trks_layer1_det      , "trkslayer1det"      );
   iEvent.put(trks_exp_innerlayers , "trksexpinnerlayers" );
   iEvent.put(trks_exp_outerlayers , "trksexpouterlayers" );
   
