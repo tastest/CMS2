@@ -5,7 +5,7 @@ process = cms.Process("CMS2")
 from Configuration.EventContent.EventContent_cff import *
 
 process.configurationMetadata = cms.untracked.PSet(
-        version = cms.untracked.string('$Revision: 1.2.2.1 $'),
+        version = cms.untracked.string('$Revision: 1.2.2.1.2.1 $'),
         annotation = cms.untracked.string('CMS2'),
         name = cms.untracked.string('CMS2 test configuration')
 )
@@ -23,7 +23,7 @@ process.load("RecoJets.Configuration.RecoJPTJets_cff")
 process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
 process.load('Configuration/EventContent/EventContent_cff')
 
-process.GlobalTag.globaltag = "START3X_V26::All"
+process.GlobalTag.globaltag = "START36_V10A::All"
 
 process.options = cms.untracked.PSet(
     Rethrow = cms.untracked.vstring('ProductNotFound')
@@ -84,7 +84,7 @@ process.options = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
     skipEvents = cms.untracked.uint32(0),
     fileNames = cms.untracked.vstring(
-        'file:/home/users/fgolf/devel/CMSSW_3_6_1_patch4/src/CMS2/NtupleMaker/test/0C51BC87-D944-DF11-90EB-003048678B1C.root'
+        'file:/hadoop/cms/store/user/spadhi/PhysicsProcess_PYTHIA6_SUSY_GMSM_SC_ML01_7TeV_v0/PhysicsProcess_PYTHIA6_SUSY_GMSM_SC_ML01_7TeV_v0/a73d1ec6edf392d3b157013b643c088f/ntuple_9_1.root'
     ),
 )
 
