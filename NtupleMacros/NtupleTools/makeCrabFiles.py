@@ -8,7 +8,7 @@ import sys
 cmsswSkelFile = ''
 dataSet = ''
 numEvtsTotal = -1
-numEvtsPerJob = 5000
+numEvtsPerJob = 20000
 outNtupleName = 'ntuple.root'
 storageElement = 'T2_US_UCSD'
 tag = 'V01-02-06'
