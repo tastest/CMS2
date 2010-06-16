@@ -156,11 +156,11 @@ def getGoodRootFiles(datapath,outpath):
             path = datapath.replace('pnfs', 'usr', 1) + fname
         
         if datapath.find('pnfs') != -1:
-            print 'Moving ' + fname + ' from dcache to ' + outpath + '/temp'
+            print 'Copying ' + fname + ' from dcache to ' + outpath + '/temp'
             cmd = 'dccp ' + dcachePrefix + path + ' ' + outpath + '/temp'
             print commands.getoutput(cmd)
         if datapath.find('hadoop') != -1:
-            print 'Moving ' + fname + ' from hadoop to ' + outpath + '/temp'
+            print 'Copying ' + fname + ' from hadoop to ' + outpath + '/temp'
             #cmd = 'cp ' + dcachePrefix + path + ' ' + outpath + '/temp'
             cmd = 'hadoop fs -copyToLocal ' + dcachePrefix + path + ' ' + outpath + '/temp'
             commands.getoutput(cmd)
