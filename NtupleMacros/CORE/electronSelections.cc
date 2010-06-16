@@ -163,7 +163,7 @@ bool electronId_cand(const unsigned int index, const cand_tightness tightness)
 
     float dEtaIn = cms2.els_dEtaIn()[index];
     float dPhiIn = cms2.els_dPhiIn()[index];
-    electronCorrection_pos(index, dEtaIn, dPhiIn);
+    //electronCorrection_pos(index, dEtaIn, dPhiIn);
 
     //
     // apply cuts
@@ -243,7 +243,7 @@ electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned in
     
     float deltaEtaIn = cms2.els_dEtaIn()[index];
     float deltaPhiIn = cms2.els_dPhiIn()[index];
-    electronCorrection_pos(index, deltaEtaIn, deltaPhiIn);
+    //electronCorrection_pos(index, deltaEtaIn, deltaPhiIn);
 
     // find the catagory for this electron
     unsigned int cat = classify(version, index);
@@ -525,7 +525,7 @@ electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tight
 
     float dEtaIn = cms2.els_dEtaIn()[index];
     float dPhiIn = cms2.els_dPhiIn()[index];
-    electronCorrection_pos(index, dEtaIn, dPhiIn);
+    //electronCorrection_pos(index, dEtaIn, dPhiIn);
 
     // barrel
     if (fabs(cms2.els_etaSC()[index]) < 1.479) {
@@ -656,8 +656,17 @@ void electronCorrection_pos(const unsigned int index, float &dEtaIn, float &dPhi
 
     //                                      X',     Y',     Z'
     int sign = -1;
-    float scPositionCorrectionEEP[3] = {   sign*0.52,   sign*-0.81,  sign*00.81};
-    float scPositionCorrectionEEM[3] = {    sign*-0.02,  sign*-0.81,  sign*-0.94};
+
+// PM
+//
+//    float scPositionCorrectionEEP[3] = {   sign*0.52,   sign*-0.81,  sign*00.81};
+//    float scPositionCorrectionEEM[3] = {    sign*-0.02,  sign*-0.81,  sign*-0.94};
+
+// CC
+//
+    float scPositionCorrectionEEP[3] = {   sign*(0.3 + 0.1475),   sign*0.3782,  0.4847};
+    float scPositionCorrectionEEM[3] = {    sign*0.1475,  sign*0.3782,  0.4847};
+
 
     LorentzVector initial_pos = cms2.scs_pos_p4()[cms2.els_scindex()[index]];
     LorentzVector corrected_pos;
