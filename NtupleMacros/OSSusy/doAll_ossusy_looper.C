@@ -47,9 +47,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // Load various tools  
   gROOT->ProcessLine(Form(".x setup.C(%d)", skipFWLite));
 
+  // Load FWLite
+  gSystem->Load("Tools/MiniFWLite/libMiniFWLite.so");
+
   // Load and compile the looping code
-  gSystem->CompileMacro("ossusy_looper.C", 
-                        "++k", "libossusy_looper");
+  gSystem->CompileMacro("ossusy_looper.C","++k", "libossusy_looper");
 
   ossusy_looper* looper = new ossusy_looper();
   //use OS/SS baseline selection as documented in:
@@ -95,6 +97,10 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   float kLM11     = 1.;
   float kLM12     = 1.;
   float kLMscan   = 1.;
+  float kML1      = 1.;
+  float kML3      = 1.;
+  float kML5      = 1.;
+  float kML7      = 1.;
 
   // Prescales
   int prettdil    = 1;
@@ -125,8 +131,12 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preLM10     = 1;
   int preLM11     = 1;
   int preLM12     = 1;
+  int preML1      = 1;
+  int preML3      = 1;
+  int preML5      = 1;
+  int preML7      = 1;
   int preLMscan = 1;
-
+  /*
   //Flags for files to run over
   bool runttdil    = 1;
   bool runttotr    = 1;
@@ -156,57 +166,95 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runLM10     = 1;
   bool runLM11     = 1;
   bool runLM12     = 1;
-  bool runLMscan   = 1; 
+  bool runML1      = 0;
+  bool runML3      = 0;
+  bool runML5      = 0;
+  bool runML7      = 0;
+  bool runLMscan   = 0; 
+  */
+
+   //Flags for files to run over
+   bool runttdil    = 0;
+   bool runttotr    = 0;
+   bool runWW       = 0;
+   bool runWZ       = 0;
+   bool runZZ       = 0;
+   bool runWjets    = 0;
+   bool runWcharm   = 0;
+   bool runZjets    = 0;
+   bool runDYee     = 0;
+   bool runDYmm     = 0;
+   bool runDYtautau = 0;
+   bool runppMuX    = 0;
+   bool runEM       = 0;
+   bool runtW       = 0;
+   bool runVQQ      = 0;
+   bool runLM0      = 0;
+   bool runLM1      = 0;
+   bool runLM2      = 0;
+   bool runLM3      = 0;
+   bool runLM4      = 0;
+   bool runLM5      = 0;
+   bool runLM6      = 0;
+   bool runLM7      = 0;
+   bool runLM8      = 0;
+   bool runLM9      = 0;
+   bool runLM10     = 0;
+   bool runLM11     = 0;
+   bool runLM12     = 0;
+   bool runML1      = 1;
+   bool runML3      = 1;
+   bool runML5      = 1;
+   bool runML7      = 1;
+   bool runLMscan   = 0; 
   
  
   TChain* chZjets = new  TChain("Events");
   if(runZjets){
     pickSkimIfExists(chZjets, 
-                     //"data3x/ZJets-madgraph_Summer09-MC_31X_V3_7TeV-v2/V03-00-35/merged*.root", 
-                     "data3x/ZJets-madgraph_Summer09-MC_31X_V3_7TeV-v2/V03-00-35/skimDilepton-20-10/skimmed*.root", 
+                     "/tas/cms2/ZJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-08/merged*root",
                      "Zjets");
   }
 
   TChain* chtopdil = new TChain("Events");
   if (runttdil) {
     pickSkimIfExists(chtopdil, 
-                     "data3x/TTbarJets-madgraph_Summer09-MC_31X_V3_7TeV-v2/V03-00-35/merged*.root",
+                     "/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-07/merged*.root",
                      "TTJets");
   }
 
   TChain* chtopotr = new TChain("Events");
   if(runttotr){
     pickSkimIfExists(chtopotr, 
-                     "data3x/TTbarJets-madgraph_Summer09-MC_31X_V3_7TeV-v2/V03-00-35/merged*.root",
+                     "/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-07/merged*.root",
                      "TTJets");
   }
 
   TChain* chww = new TChain("Events");
   if(runWW){
     pickSkimIfExists(chww, 
-                     "data3x/WW_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root",
+                     "/tas/cms2/WW_Spring10-START3X_V26_S09-v1_DiLep/V03-04-08/merged*root",
                      "WW");
   }
 
   TChain* chWZ = new TChain("Events");
   if(runWZ){
     pickSkimIfExists(chWZ, 
-                     "data3x/WZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
+                     "/tas/cms2/WZ_Spring10-START3X_V26_S09-v1/V03-04-08/merged*root",
                      "WZ_incl"); // can try WZ_3l-Pythia
   }
 
   TChain* chZZ = new TChain("Events");
   if(runZZ){
     pickSkimIfExists(chZZ, 
-                     "data3x/ZZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
+                     "/tas/cms2/ZZ_Spring10-START3X_V26_S09-v1_DiLep/V03-04-08/merged*.root", 
                      "ZZ");
   }
 
   TChain* chWjets = new  TChain("Events");
   if(runWjets){
     pickSkimIfExists(chWjets, 
-                     //"data3x/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
-                     "data3x/WJets-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/skimDilepton-20-10/skimmed*.root",
+                     "/tas/cms2/WJets-madgraph_Spring10-START3X_V26_S09-v1_SingleLep/V03-04-08/merged*.root",
                      "WJets");
   }
 
@@ -221,7 +269,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain* chDYtautau = new  TChain("Events");
   if(runDYtautau){
     pickSkimIfExists(chDYtautau, 
-                     "data3x/Ztautau_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
+                     "/tas/cms2/Ztautau_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged*.root", 
                      "DYtautau");
   }
 
@@ -231,7 +279,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain* chDYee = new  TChain("Events");
   if(runDYee){
     pickSkimIfExists(chDYee, 
-                     "data3x/Zee_Summer09-MC_31X_V3_7TeV_TrackingParticles-v1/V03-00-35/merged*.root", 
+                     "/tas/cms2/Zee_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged*.root", 
                      "DYee");
   }
   // the low-mass splice has no choice other than the skim
@@ -240,55 +288,58 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   if(runDYmm){
     TChain* chDYmm = new  TChain("Events");
     pickSkimIfExists(chDYmm, 
-                     "data3x/Zmumu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
+                     "/tas/cms2/Zmumu_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged*.root", 
                      "DYmm");
   }
   // the low-mass splice has no choice other than the skim
   //    pickSkimIfExists(chDYmm, "data/Zmumu_M20_Summer08_IDEAL_V11_redigi_v1/merged*.root", "Zmumu_M20");
 
+
   // ppMuX
-  TChain* chppMuX = new  TChain("Events");
-  if (runppMuX) {
-    pickSkimIfExists(chppMuX, 
-                     "data3x/InclusiveMu15_Summer09-MC_31X_V3_7TeV-v1_dilepfilt/merged*.root", 
-                     "InclusiveMuPt15"); 
-    // can try InclusiveMu5Pt50 .. figure out how to merge later
-  }
+  // Spring10 sample not yet available!!! 
+//   TChain* chppMuX = new  TChain("Events");
+//   if (runppMuX) {
+//     pickSkimIfExists(chppMuX, 
+//                      "data3x/InclusiveMu15_Summer09-MC_31X_V3_7TeV-v1_dilepfilt/merged*.root", 
+//                      "InclusiveMuPt15"); 
+//     // can try InclusiveMu5Pt50 .. figure out how to merge later
+//   }
 
   // ppEM
-  TChain* chEM =  new  TChain("Events");
-  if (runEM) {
-    pickSkimIfExists(chEM, 
-                     "data3x/QCD_EMEnriched_Pt20to30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
-                     "_skimSimple2020");
-    pickSkimIfExists(chEM, 
-                     "data3x/QCD_EMEnriched_Pt30to80_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
-                     "_skimSimple2020");
-    pickSkimIfExists(chEM, 
-                     "data3x/QCD_EMEnriched_Pt80to170_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
-                     "_skimSimple2020");
-    pickSkimIfExists(chEM, 
-                     "data3x/QCD_BCtoE_Pt20to30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
-                     "_skimSimple2020");
-    pickSkimIfExists(chEM, 
-                     "data3x/QCD_BCtoE_Pt30to80_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
-                     "_skimSimple2020");
-    pickSkimIfExists(chEM, 
-                     "data3x/QCD_BCtoE_Pt80to170_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
-                     "_skimSimple2020");
-  }
+  // Spring10 sample not yet available!!!
+//   TChain* chEM =  new  TChain("Events");
+//   if (runEM) {
+//     pickSkimIfExists(chEM, 
+//                      "data3x/QCD_EMEnriched_Pt20to30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
+//                      "_skimSimple2020");
+//     pickSkimIfExists(chEM, 
+//                      "data3x/QCD_EMEnriched_Pt30to80_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
+//                      "_skimSimple2020");
+//     pickSkimIfExists(chEM, 
+//                      "data3x/QCD_EMEnriched_Pt80to170_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
+//                      "_skimSimple2020");
+//     pickSkimIfExists(chEM, 
+//                      "data3x/QCD_BCtoE_Pt20to30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
+//                      "_skimSimple2020");
+//     pickSkimIfExists(chEM, 
+//                      "data3x/QCD_BCtoE_Pt30to80_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
+//                      "_skimSimple2020");
+//     pickSkimIfExists(chEM, 
+//                      "data3x/QCD_BCtoE_Pt80to170_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
+//                      "_skimSimple2020");
+//   }
 
   // tW
   TChain* chtW = new  TChain("Events");
   if (runtW) {
+//     pickSkimIfExists(chtW, 
+//                      //TRANSFER!!!
+//                      "SingleTop_sChannel"); 
+//     pickSkimIfExists(chtW, 
+//                      //TRANSFER!!!
+//                      "SingleTop_tChannel"); 
     pickSkimIfExists(chtW, 
-                     "data3x/SingleTop_sChannel-madgraph_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
-                     "SingleTop_sChannel"); 
-    pickSkimIfExists(chtW, 
-                     "data3x/SingleTop_tChannel-madgraph_Summer09-MC_31X_V3_7TeV-v2/V03-00-35/merged*.root", 
-                     "SingleTop_tChannel"); 
-    pickSkimIfExists(chtW, 
-                     "data3x/SingleTop_tWChannel-madgraph_Summer09-MC_31X_V3_7TeV-v2/V03-00-35/merged*.root",
+                     "/tas/cms2/SingleTop_tWChannel-madgraph_Spring10-START3X_V26_S09-v1/V03-04-07/merged*.root",
                      "SingleTop_tWChannel"); 
   }
 
@@ -301,6 +352,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // 		     "VQQ");
   //   }
 
+  // LM points currently being processed!!!!
   // LM0
   TChain *chLM0 = new TChain("Events");
   if (runLM0) {
@@ -405,6 +457,38 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                      "SUSY_LM12");
   }
 
+  // ML1
+  TChain *chML1 = new TChain("Events");
+  if (runML1) {
+    pickSkimIfExists(chML1, 
+                     "/tas/cms2/PhysicsProcess_PYTHIA6_SUSY_GMSM_SC_ML01_7TeV_v0/V03-04-13-01-gmsb/merged*root",
+                     "SUSY_ML1");
+  }
+
+  // ML3
+  TChain *chML3 = new TChain("Events");
+  if (runML3) {
+    pickSkimIfExists(chML3, 
+                     "/tas/cms2/PhysicsProcess_PYTHIA6_SUSY_GMSM_SC_ML03_7TeV_v0/V03-04-13-01-gmsb/merged*root",
+                     "SUSY_ML3");
+  }
+
+  // ML5
+  TChain *chML5 = new TChain("Events");
+  if (runML5) {
+    pickSkimIfExists(chML5, 
+                     "/tas/cms2/PhysicsProcess_PYTHIA6_SUSY_GMSM_SC_ML05_7TeV_v0/V03-04-13-01-gmsb/merged*root",
+                     "SUSY_ML5");
+  }
+
+  // ML7
+  TChain *chML7 = new TChain("Events");
+  if (runML7) {
+    pickSkimIfExists(chML7, 
+                     "/tas/cms2/PhysicsProcess_PYTHIA6_SUSY_GMSM_SC_ML07_7TeV_v0/V03-04-13-01-gmsb/merged*root",
+                     "SUSY_ML7");
+  }
+  
   // LMscan
   TChain *chLMscan = new TChain("Events");
   if (runLMscan) {
@@ -416,14 +500,14 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   char jetTypeStrings[2][5] = {"JPT", "calo"};
   char metTypeStrings[3][8] = {"tcmet", "muon", "muonjes"};
   bool doFakeApp            = false;
-  char* zvetoStrings[3]      = {"", "_allzveto", "_nozveto"};
+  char* zvetoStrings[4]      = {"", "_allzveto", "_nozveto","_selectz"};
 
   // Process files one at a time, and color them as needed
   for (int jetTypeIdx = 1; jetTypeIdx < 2; ++jetTypeIdx)
     {
       for (int metTypeIdx = 0; metTypeIdx < 1; ++metTypeIdx)
         {
-          for (int zvetoIdx = 0; zvetoIdx < 1; ++zvetoIdx)
+          for (int zvetoIdx = 3; zvetoIdx < 4; ++zvetoIdx)
             {
 
               ossusy_looper::JetTypeEnum  jetType(jetTypeIdx);
@@ -496,18 +580,18 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                 cout << "Done processing DY->mm" << endl;
                 hist::color("DYmm", kCyan);
               }
-              if (runppMuX) {
-                cout << "Processing ppMuX" << endl;
-                looper->ScanChain(chppMuX,"ppMuX", kppMuX, preppMuX, jetType, metType, zveto, doFakeApp);
-                cout << "Done processing ppMuX" << endl;
-                hist::color("ppMuX", 51);
-              }
-              if (runEM) {
-                cout << "Processing EM" << endl;
-                looper->ScanChain(chEM,"EM", kEM, preEM, jetType, metType, zveto, doFakeApp);
-                cout << "Done processing EM" << endl;
-                hist::color("EM", 49);
-              }
+//               if (runppMuX) {
+//                 cout << "Processing ppMuX" << endl;
+//                 looper->ScanChain(chppMuX,"ppMuX", kppMuX, preppMuX, jetType, metType, zveto, doFakeApp);
+//                 cout << "Done processing ppMuX" << endl;
+//                 hist::color("ppMuX", 51);
+//               }
+//               if (runEM) {
+//                 cout << "Processing EM" << endl;
+//                 looper->ScanChain(chEM,"EM", kEM, preEM, jetType, metType, zveto, doFakeApp);
+//                 cout << "Done processing EM" << endl;
+//                 hist::color("EM", 49);
+//               }
               if (runtW) {
                 cout << "Processing tW" << endl;
                 looper->ScanChain(chtW,"tW", ktW, pretW, jetType, metType, zveto, doFakeApp);
@@ -598,6 +682,26 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                 cout << "Done processing LM12" << endl;
                 hist::color("LM12", kOrange-7);
               }
+              if (runML1) {
+                cout << "Processing ML1" << endl;
+                looper->ScanChain(chML1, "ML1", kML1, preML1, jetType, metType, zveto, doFakeApp);
+                cout << "Done processing ML1" << endl;
+              }
+              if (runML3) {
+                cout << "Processing ML3" << endl;
+                looper->ScanChain(chML3, "ML3", kML3, preML3, jetType, metType, zveto, doFakeApp);
+                cout << "Done processing ML3" << endl;
+              }
+              if (runML5) {
+                cout << "Processing ML5" << endl;
+                looper->ScanChain(chML5, "ML5", kML5, preML5, jetType, metType, zveto, doFakeApp);
+                cout << "Done processing ML5" << endl;
+              }
+              if (runML7) {
+                cout << "Processing ML7" << endl;
+                looper->ScanChain(chML7, "ML7", kML7, preML7, jetType, metType, zveto, doFakeApp);
+                cout << "Done processing ML7" << endl;
+              }
               if (runLMscan) {
                 cout << "Processing LMscan" << endl;
                 looper->ScanChain(chLMscan, "LMscan", kLMscan, preLMscan, jetType, metType, zveto, doFakeApp);
@@ -605,17 +709,16 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                 hist::color("LMscan", kOrange-7);
               }
 
+
               // save all the histograms
               if(doFakeApp) {
                 const char* outFile = Form("root/victory_baseline_metgt50_sumjetptgt200_cand01_%s_%s%s_FakeApp_3x.root", 
                                            jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
               }
               else {
-                const char* outFile = Form("root/victory_baseline_metgt50_sumjetptgt200_cand01_%s_%s%s_3x.root", 
+                const char* outFile = Form("root/victory_baseline_metgt50_sumjetptgt200_cand01_%s_%s%s_ML_3x.root", 
                                            jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
               }
-              //const char* outFile = Form("root3x/victory_susybaseline_%s_%s_3x_newemselectors.root", 
-              //			     jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx]);
 
               //const char* outFile = Form("victory_baseline_genmetgt50_nosumjetptcut_%s_%s_pleasework_varbins.root", 
               //jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx]);
