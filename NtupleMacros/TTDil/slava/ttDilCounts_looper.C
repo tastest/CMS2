@@ -43,52 +43,6 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > P4;
 typedef std::vector<P4 >  VofP4;
 
 
-VofP4 jetsForCounting(int hypIdx, float globalJESscaleRescale, bool muJetClean, JetCollectionType jtype){
-  VofP4 jp4;
-  P4 p4Tmp;
-  switch (jtype){
-  case CaloJetCorr_jct:
-    {
-      unsigned int nJ = cms2.jets_p4().size();
-      for (unsigned int ijet=0; ijet<nJ; ijet++) {
-	if (!isGoodDilHypJet(ijet, hypIdx, 30./globalJESscaleRescale, 2.4, 0.4, muJetClean)) continue;
-	float thisJetRescale =  globalJESscaleRescale;
-	p4Tmp = cms2.jets_cor()[ijet]*cms2.jets_p4()[ijet]* thisJetRescale;
-	jp4.push_back(p4Tmp);
-      }
-    }
-    break;
-  case JPT_jct:
-    {
-      unsigned int nJ = cms2.jpts_p4().size();
-      for (unsigned int ijet=0; ijet< nJ; ijet++) {
-	if (!isGoodDilHypJPTJet(ijet, hypIdx, 30./globalJESscaleRescale, 2.4, 0.4)) continue;
-	float thisJetRescale = globalJESscaleRescale;
-	p4Tmp = cms2.jpts_p4()[ijet] * thisJetRescale;
-	jp4.push_back(p4Tmp);
-      }
-    }
-    break;
-  case PF_jct:
-    {
-      unsigned int nJ = cms2.pfjets_p4().size();
-      for (unsigned int ijet=0; ijet< nJ; ijet++) {
-	if (!isGoodDilHypPFJet(ijet, hypIdx, 30./globalJESscaleRescale, 2.4, 0.4)) continue;
-	float thisJetRescale = globalJESscaleRescale;
-	p4Tmp = cms2.pfjets_p4()[ijet] * thisJetRescale;
-	jp4.push_back(p4Tmp);
-      }
-    }
-    break;
-  default:
-    std::cout<<"Unknown jet type"<<std::endl;
-    exit(99);
-    break;
-  }
-  return jp4;
-}
-
-
 //------------------------------------------------------------
 
 TH2F* ttDilCounts_looper::getFRhisto(TString fName, TString hName) {
@@ -651,7 +605,7 @@ int ttDilCounts_looper::ScanChain (ProcDSS& pds, unsigned long long int cutsMask
 	  if ( id_lt * id_ll > 0 ) continue;
 	}
 
-	VofP4 new_hyp_jets_p4_val(jetsForCounting(hypIdx, globalJESscaleRescale, muJetClean, jetCType));
+	VofP4 new_hyp_jets_p4_val(jetsForCounting(hypIdx, globalJESscaleRescale, muJetClean, jetCType, 30, 2.4, 0.4));
 	unsigned int nJetsCounted = new_hyp_jets_p4_val.size();
 
 	// ! for TTDil analysis this should be made for the event-qualifying hyp only
@@ -732,7 +686,7 @@ int ttDilCounts_looper::ScanChain (ProcDSS& pds, unsigned long long int cutsMask
 	  if (! passTriggersTTDil08JanTrial(cms2.hyp_type()[maxWeightIndex]) ) continue;
 	}
 	
-	VofP4 new_hyp_jets_p4_val(jetsForCounting(maxWeightIndex, globalJESscaleRescale, muJetClean, jetCType));
+	VofP4 new_hyp_jets_p4_val(jetsForCounting(maxWeightIndex, globalJESscaleRescale, muJetClean, jetCType, 30, 2.4, 0.4));
 	unsigned int nJetsCounted = new_hyp_jets_p4_val.size();
 
 	if (fillMaxWeightDilOnly && (passMET2030 || passProjMET10 || passMET30)){
@@ -779,7 +733,7 @@ int ttDilCounts_looper::ScanChain (ProcDSS& pds, unsigned long long int cutsMask
 
 	// Now we have to manipulate the jets.
 	unsigned int new_hyp_njets=0;  // jet count
-	VofP4 new_hyp_jets_p4_val(jetsForCounting(hypIdx, globalJESscaleRescale, muJetClean, jetCType));
+	VofP4 new_hyp_jets_p4_val(jetsForCounting(hypIdx, globalJESscaleRescale, muJetClean, jetCType, 30, 2.4, 0.4));
 	new_hyp_njets = new_hyp_jets_p4_val.size();
 	VofP4* new_hyp_jets_p4 = & new_hyp_jets_p4_val;
 

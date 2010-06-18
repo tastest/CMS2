@@ -20,6 +20,7 @@
 #include "trackSelections.h"
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > P4;
 
 //----------------------------------------------------------------
 // Simple function that tells you whether or not a given set of 
@@ -3148,6 +3149,53 @@ bool isconversionElectron09(int elIdx) {
 //---------------------------------------------------
 
 
+VofLorentzVector 
+jetsForCounting(int hypIdx, float globalJESscaleRescale, bool muJetClean, JetCollectionType jtype, float minpt, float maxeta, float dR){
+  VofLorentzVector jp4;
+  LorentzVector p4Tmp;
+  switch (jtype){
+  case CaloJetCorr_jct:
+    {
+      unsigned int nJ = cms2.jets_p4().size();
+      for (unsigned int ijet=0; ijet<nJ; ijet++) {
+	float thisJetRescale =  globalJESscaleRescale;
+	p4Tmp = cms2.jets_cor()[ijet]*cms2.jets_p4()[ijet]* thisJetRescale;
+	if (!isGoodDilHypJet(p4Tmp, hypIdx, minpt/globalJESscaleRescale, maxeta, dR, muJetClean)) continue;
+	jp4.push_back(p4Tmp);
+      }
+    }
+    break;
+  case JPT_jct:
+    {
+      unsigned int nJ = cms2.jpts_p4().size();
+      for (unsigned int ijet=0; ijet< nJ; ijet++) {
+	float thisJetRescale = globalJESscaleRescale;
+	p4Tmp =  cms2.jpts_p4()[ijet] * thisJetRescale; // this is supposedly corrected already
+	if (!isGoodDilHypJet(p4Tmp, hypIdx, minpt/globalJESscaleRescale, maxeta, dR, muJetClean)) continue;
+	jp4.push_back(p4Tmp);
+      }
+    }
+    break;
+  case PF_jct:
+    {
+      unsigned int nJ = cms2.pfjets_p4().size();
+      for (unsigned int ijet=0; ijet< nJ; ijet++) {
+	float thisJetRescale = globalJESscaleRescale;
+	p4Tmp = cms2.pfjets_cor()[ijet]* cms2.pfjets_p4()[ijet] * thisJetRescale;
+	if (!isGoodDilHypJet(p4Tmp, hypIdx, minpt/globalJESscaleRescale, maxeta, dR, muJetClean)) continue;
+	jp4.push_back(p4Tmp);
+      } 
+    }
+    break;
+  default:
+    std::cout<<"Unknown jet type"<<std::endl;
+    exit(99);
+    break;
+  }
+  return jp4;
+}
+
+
 
 
 // false if below ptcut, aboveabsEtaCut, below dRCut wrt hypothesis
@@ -3175,7 +3223,7 @@ bool isGoodDilHypJet(unsigned int jetIdx, unsigned int hypIdx, double ptCut, dou
   return true;
 
 }
-bool isGoodDilHypJet(P4 jp4, unsigned int hypIdx, double ptCut, double absEtaCut, double dRCut, bool muJetClean){
+bool isGoodDilHypJet(LorentzVector& jp4, unsigned int hypIdx, double ptCut, double absEtaCut, double dRCut, bool muJetClean){
   if (jp4.pt()< ptCut || fabs(jp4.eta())> absEtaCut) return false;
   using ROOT::Math::VectorUtil::DeltaR;
   double dR_ll = DeltaR(cms2.hyp_ll_p4()[hypIdx], jp4);

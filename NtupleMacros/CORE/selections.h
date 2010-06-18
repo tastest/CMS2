@@ -7,6 +7,7 @@
 #include <utility>
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
+typedef std::vector<LorentzVector >  VofLorentzVector;
 
 enum SubDetector
 {
@@ -113,7 +114,9 @@ std::vector<LorentzVector> JPTs(int i_hyp, double etThreshold);
 unsigned int nJPTs(int i_hyp, double etThreshod);
 unsigned int nJPTs(int i_hyp); // with default threshold = 20
 // bool passCaloTrkjetCombo ();
+VofLorentzVector jetsForCounting(int hypIdx, float globalJESscaleRescale, bool muJetClean, JetCollectionType jtype, float minpt, float maxeta, float dR);
 bool isGoodDilHypJet(unsigned int jetIdx, unsigned int hypIdx, double ptCut, double absEtaCut, double dRCut, bool muJetClean);
+bool isGoodDilHypJet(LorentzVector& jp4, unsigned int hypIdx, double ptCut, double absEtaCut, double dRCut, bool muJetClean);
 
 double mu_rel_iso (int index);
 double el_rel_iso (int index, bool use_calo_iso);
