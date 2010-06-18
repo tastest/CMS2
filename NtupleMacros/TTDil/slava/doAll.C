@@ -338,12 +338,14 @@ void doAllRefS10(unsigned long int bitmask, bool runTTbarOnly = false){
 
   ProcDSS chtopdil("ttdil",kttdil, prettdil);
   if (runttdil){
-    pickSkimIfExists(chtopdil, "/data/tmp/slava77/Reference*ntuple.root", "", 100., false, false);
+    //    pickSkimIfExists(chtopdil, "/tas05/disk00/slava77/Reference*ntupleRefS10.root", "", 100., false, false);
+    pickSkimIfExists(chtopdil, "/tas05/disk00/slava77/Reference*-V03-03-13-01.root", "", 100., false, false);
   }    
   
   ProcDSS chtopotr("ttotr",kttotr, prettotr);
   if (runttotr){
-    pickSkimIfExists(chtopotr, "/data/tmp/slava77/Reference*ntuple.root", "", 100., false, false);
+    //    pickSkimIfExists(chtopotr, "/tas05/disk00/slava77/Reference*ntupleRefS10.root", "", 100., false, false);
+    pickSkimIfExists(chtopotr, "/tas05/disk00/slava77/Reference*-V03-03-13-01.root", "", 100., false, false);
   }    
   
   // Define colors numbers:
