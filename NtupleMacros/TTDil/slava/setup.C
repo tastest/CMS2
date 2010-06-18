@@ -1,5 +1,5 @@
 // Loads a bunch of tools in interpretative mode
-void setup(bool noCompile=false){
+void setup(bool noCompile=false, bool compileCMS2=false){
   gSystem->Load("libMiniFWLite.so");
 
   gSystem->Load("libGui.so");
@@ -24,7 +24,11 @@ void setup(bool noCompile=false){
     gSystem->CompileMacro("histscripts/getMyHistosNames.C", "++k", "libgetMyHistosNames");
     gSystem->CompileMacro("histscripts/histtools.C", "++k", "libhisttools");
     gSystem->CompileMacro("histscripts/browseStacks.C", "++k", "libbrowseStacks");
-    gSystem->CompileMacro("CORE/CMS2.cc", "++k", "libCMS2");
+    if (compileCMS2){
+      gSystem->CompileMacro("CORE/CMS2.cc", "++k", "libCMS2");
+    } else {
+      gSystem->Load("libCMS2.so");
+    }
     gSystem->CompileMacro("CORE/MT2.cc", "++k", "libMT2");
     gSystem->CompileMacro("ttDilCounts_looper.C", "++k", "libttDilCounts_looper");
     gSystem->CompileMacro("ttDilRefS10_looper.C", "++k", "libttDilRefS10_looper");
