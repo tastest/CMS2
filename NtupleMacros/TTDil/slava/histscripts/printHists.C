@@ -1,5 +1,10 @@
 #include "specFun.C"
 
+template <typename T>
+T max(const T& a, const T& b){ return a> b ? a : b; }
+template <typename T>
+T min(const T& a, const T& b){ return a< b ? a : b; }
+
 void getSoverRootN(double& rat, double& ratE, double s, double n, double sE, double nE){
   rat = s; rat /= n > 0 ? sqrt(n) : 1.;
   ratE = ( sE*sE* ( 1. - 0.5*rat)*( 1. - 0.5*rat)  + (nE*nE - sE*sE)*0.25*rat*rat);
@@ -180,15 +185,15 @@ void printNJets( bool latex=false, const char* formatS = "%6.1f", const char* si
     if (showFirstCol) std::cout<< firstCol << colSep;
     double prob = 0; double nSigma = 0;
     
-    prob = bOnlyProb(n0sig, n0all-n0sig, max(0.3*(n0all-n0sig),sqrt(n0allE*n0allE-n0sigE*n0sigE))); //FIXME
+    prob = bOnlyProb(n0sig, n0all-n0sig, std::max(0.3*(n0all-n0sig),sqrt(n0allE*n0allE-n0sigE*n0sigE))); //FIXME
     nSigma = TMath::NormQuantile(min(0.5*(1.+prob),1-1e-15));
     std::cout << mathSep << formatFloat((1.-prob),formatS) <<" , "<< formatFloat(nSigma,formatS)<<mathSep<<colSep;
 
-    prob = bOnlyProb(n1sig, n1all-n1sig, max(0.3*(n1all-n1sig),sqrt(n1allE*n1allE-n1sigE*n1sigE))); //FIXME
+    prob = bOnlyProb(n1sig, n1all-n1sig, std::max(0.3*(n1all-n1sig),sqrt(n1allE*n1allE-n1sigE*n1sigE))); //FIXME
     nSigma = TMath::NormQuantile(min(0.5*(1.+prob),1-1e-15));
     std::cout << mathSep << formatFloat((1.-prob),formatS) <<" , "<< formatFloat(nSigma,formatS)<<mathSep<<colSep;
 
-    prob = bOnlyProb(n2sig, n2all-n2sig, max(0.3*(n2all-n2sig),sqrt(n2allE*n2allE-n2sigE*n2sigE))); //FIXME
+    prob = bOnlyProb(n2sig, n2all-n2sig, std::max(0.3*(n2all-n2sig),sqrt(n2allE*n2allE-n2sigE*n2sigE))); //FIXME
     nSigma = TMath::NormQuantile(min(0.5*(1.+prob),1-1e-15));
     std::cout << mathSep << formatFloat((1.-prob),formatS) <<" , "<< formatFloat(nSigma,formatS)<<mathSep
 	      << endL
@@ -199,15 +204,15 @@ void printNJets( bool latex=false, const char* formatS = "%6.1f", const char* si
     if (showFirstCol) std::cout<< firstCol << colSep;
     prob = 0; nSigma = 0;
     
-    prob = bOnlyProb(n0sig, n0all-n0sig, max(0.5*(n0all-n0sig),sqrt(n0allE*n0allE-n0sigE*n0sigE))); //FIXME
+    prob = bOnlyProb(n0sig, n0all-n0sig, std::max(0.5*(n0all-n0sig),sqrt(n0allE*n0allE-n0sigE*n0sigE))); //FIXME
     nSigma = TMath::NormQuantile(min(0.5*(1.+prob),1-1e-15));
     std::cout << mathSep << formatFloat((1.-prob),formatS) <<" , "<< formatFloat(nSigma,formatS)<<mathSep<<colSep;
 
-    prob = bOnlyProb(n1sig, n1all-n1sig, max(0.5*(n1all-n1sig),sqrt(n1allE*n1allE-n1sigE*n1sigE))); //FIXME
+    prob = bOnlyProb(n1sig, n1all-n1sig, std::max(0.5*(n1all-n1sig),sqrt(n1allE*n1allE-n1sigE*n1sigE))); //FIXME
     nSigma = TMath::NormQuantile(min(0.5*(1.+prob),1-1e-15));
     std::cout << mathSep << formatFloat((1.-prob),formatS) <<" , "<< formatFloat(nSigma,formatS)<<mathSep<<colSep;
 
-    prob = bOnlyProb(n2sig, n2all-n2sig, max(0.5*(n2all-n2sig),sqrt(n2allE*n2allE-n2sigE*n2sigE))); //FIXME
+    prob = bOnlyProb(n2sig, n2all-n2sig, std::max(0.5*(n2all-n2sig),sqrt(n2allE*n2allE-n2sigE*n2sigE))); //FIXME
     nSigma = TMath::NormQuantile(min(0.5*(1.+prob),1-1e-15));
     std::cout << mathSep << formatFloat((1.-prob),formatS) <<" , "<< formatFloat(nSigma,formatS)<<mathSep
 	      << endL
@@ -498,4 +503,84 @@ void getJESSyst(const char* formatS = "% 4.f"){
   std::cout<<  "expressed in $\\%$ for changes in the jet energy scale down and up by $10\\%$.}"    <<std::endl;
   std::cout<<  "\\end{center}"                                               <<std::endl;
   std::cout<<  "\\end{table}"                                                <<std::endl;
+}
+
+float histSum(TH1F* h, int minB, int maxB){
+  float res = 0;
+  for (int iB = minB; iB <= maxB; ++iB){
+    res += h->GetBinContent(iB);
+  }
+  return res;
+}
+float histSumErr(TH1F* h, int minB, int maxB){
+  float res2 = 0;
+  for (int iB = minB; iB <= maxB; ++iB){
+    res2 += h->GetBinError(iB)*h->GetBinError(iB);
+  }
+  return sqrt(res2);
+}
+
+void printFlow(std::string fList, const char* formatS = "%6.1f", bool latex = false){
+  FILE *confF = fopen(fList.c_str(), "r");
+  char inFile[1024]; memset(inFile, 0, sizeof(inFile));
+  char conf[20]; memset(conf, 0, sizeof(conf));
+  long long bitMask=0;
+  
+  int nCount = 0;
+  std::vector<std::string> inFileSV(20);
+  std::vector<std::string> confSV(20);
+  std::vector<TFile*> inFileV(20,0);
+  while (fscanf(confF, "%s %s", inFile, conf) == 2) {
+    //    std::cout<<inFile<<" is "<<conf<<std::endl;
+    if (nCount > 19) return;
+    inFileSV[nCount] = std::string(inFile);
+    confSV[nCount]  = std::string(conf);
+    inFileV[nCount] = new TFile(inFileSV[nCount].c_str());
+    if (inFileV[nCount] == 0) return;
+    std::cout<<"Got "<<inFileV[nCount]->GetName()<<" "<<confSV[nCount].c_str()<<std::endl;
+    nCount++;
+  }
+
+  std::vector<TH1F*> h_topdil_mm(20,0);
+  std::vector<TH1F*> h_topdil_ee(20,0);
+  std::vector<TH1F*> h_topdil_em(20,0);
+  std::vector<TH1F*> h_topdil_all(20,0);
+  for ( int iF = 0; iF < nCount; ++iF){
+    h_topdil_mm[iF] = (TH1F*)inFileV[iF]->Get("ttdil_hnJet_mm");
+    h_topdil_ee[iF] = (TH1F*)inFileV[iF]->Get("ttdil_hnJet_ee");
+    h_topdil_em[iF] = (TH1F*)inFileV[iF]->Get("ttdil_hnJet_em");
+    h_topdil_all[iF] = (TH1F*)inFileV[iF]->Get("ttdil_hnJet_all");
+  }
+
+  std::string pmSign  = latex ? " \\pm " : " &plusmn; ";
+  std::string colSep  = latex ? " & " : " | ";
+  std::string hcolSep  = latex ? " & " : "* | *";
+  std::string beginL  = latex ? ""   : " | ";
+  std::string endL    = latex ? " \\\\ " : " | ";
+  std::string mathSep = latex ? "$" : "";
+  
+
+  if (latex) {
+    std::cout << "\\begin{table}" << std::endl;
+    std::cout << "\\begin{center}" << std::endl;
+    std::cout << "{\\small" << std::endl;
+  }
+
+  std::cout<<beginL<<"*Mode* ";
+  for (int iF = 0; iF< nCount; ++iF) std::cout<<hcolSep<<confSV[iF].c_str();
+  std::cout<<endL<<std::endl;
+
+  std::cout<<beginL<<"mm ";
+  for (int iF = 0; iF< nCount; ++iF) std::cout<<colSep<<formatFloat(histSum(h_topdil_mm[iF],0,100),formatS);
+  std::cout<<endL<<std::endl;
+  std::cout<<beginL<<"ee ";
+  for (int iF = 0; iF< nCount; ++iF) std::cout<<colSep<<formatFloat(histSum(h_topdil_ee[iF],0,100),formatS);
+  std::cout<<endL<<std::endl;
+  std::cout<<beginL<<"em ";
+  for (int iF = 0; iF< nCount; ++iF) std::cout<<colSep<<formatFloat(histSum(h_topdil_em[iF],0,100),formatS);
+  std::cout<<endL<<std::endl;
+  std::cout<<beginL<<"all ";
+  for (int iF = 0; iF< nCount; ++iF) std::cout<<colSep<<formatFloat(histSum(h_topdil_all[iF],0,100),formatS);
+  std::cout<<endL<<std::endl;
+
 }
