@@ -368,17 +368,25 @@ int dumpDocLines()
 {
   int size = cms2.genps_id().size();
   // Initialize particle database
-  static TDatabasePDG *pdg = new TDatabasePDG();
-  std::cout << "------------------------------------------" << std::endl;
+  // static TDatabasePDG *pdg = new TDatabasePDG();
+  TDatabasePDG *pdg = new TDatabasePDG();
+  cout << "                " << "   pt    " << "  phi  " << "      eta   " << "    mass  " 
+       << "status " << "Mother  " << endl;     
+  std::cout << "---------------------------------------------------------------------" << std::endl;
   for (int j=0; j<size; j++) {
   float m2 = cms2.genps_p4().at(j).M2();
   float m = m2 >= 0 ? sqrt(m2) : 0.0;
-    cout << setw(9) << left << pdg->GetParticle(cms2.genps_id().at(j))->GetName() << " "
+  cout << setw(4) << left << j << " "
+         << setw(10) << left << pdg->GetParticle(cms2.genps_id().at(j))->GetName() << " "
 	 << setw(7) << right << setprecision(4) << cms2.genps_p4().at(j).pt() << "  "
 	 << setw(7) << right << setprecision(4) << cms2.genps_p4().at(j).phi() << "  "
 	 << setw(10) << right << setprecision(4) << cms2.genps_p4().at(j).eta() << "  "
-	 << setw(10) << right << setprecision(4) << m << endl;
+	 << setw(7) << right << setprecision(4) << m << "  "
+         << setw(4) << right << cms2.genps_status().at(j) << " "
+         << setw(10) << left << pdg->GetParticle(cms2.genps_id_mother().at(j))->GetName() 
+         << " " << endl;
   }
+  delete pdg;
   return 0;
 }
 
