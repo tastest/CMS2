@@ -56,7 +56,8 @@ void get_k(HistogramUtilities *hUtil, TString nJets, TString hyp_type, Float_t &
 void estimate(HistogramUtilities *hUtil, JetBins_t nJets, TString hyp_type, 
 		ResultsHistograms &estResults, ResultsHistograms &nonpeakResults);
 
-void processDYEstResults(TString fileName);
+//void processDYEstResults(TString fileName);
+void processDYEstResults(TString det, TString fileStamp, TString refFileStamp, TString norm, const float &luminorm);
 
 #endif
 
