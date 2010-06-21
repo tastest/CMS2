@@ -98,9 +98,13 @@ void doAll_ossusy_looper_gmsb(bool skipFWLite = true)
   float kLM12     = 1.;
   float kLMscan   = 1.;
   float kML1      = 1.;
+  float kML2      = 1.;
   float kML3      = 1.;
+  float kML4      = 1.;
   float kML5      = 1.;
+  float kML6      = 1.;
   float kML7      = 1.;
+  float kML8      = 1.;
 
   // Prescales
   int prettdil    = 1;
@@ -132,9 +136,13 @@ void doAll_ossusy_looper_gmsb(bool skipFWLite = true)
   int preLM11     = 1;
   int preLM12     = 1;
   int preML1      = 1;
+  int preML2      = 1;
   int preML3      = 1;
+  int preML4      = 1;
   int preML5      = 1;
+  int preML6      = 1;
   int preML7      = 1;
+  int preML8      = 1;
   int preLMscan = 1;
   /*
   //Flags for files to run over
@@ -167,9 +175,13 @@ void doAll_ossusy_looper_gmsb(bool skipFWLite = true)
   bool runLM11     = 1;
   bool runLM12     = 1;
   bool runML1      = 0;
+  bool runML2      = 0;
   bool runML3      = 0;
+  bool runML4      = 0;
   bool runML5      = 0;
+  bool runML6      = 0;
   bool runML7      = 0;
+  bool runML8      = 0;
   bool runLMscan   = 0; 
   */
 
@@ -203,9 +215,13 @@ void doAll_ossusy_looper_gmsb(bool skipFWLite = true)
    bool runLM11     = 0;
    bool runLM12     = 0;
    bool runML1      = 1;
+   bool runML2      = 1;
    bool runML3      = 1;
+   bool runML4      = 1;
    bool runML5      = 1;
+   bool runML6      = 1;
    bool runML7      = 1;
+   bool runML8      = 1;
    bool runLMscan   = 0; 
   
  
@@ -465,12 +481,28 @@ void doAll_ossusy_looper_gmsb(bool skipFWLite = true)
                      "SUSY_ML1");
   }
 
+  // ML2
+  TChain *chML2 = new TChain("Events");
+  if (runML2) {
+    pickSkimIfExists(chML2, 
+                     "/tas/cms2/PhysicsProcess_PYTHIA6_SUSY_GMSM_SC_ML02_7TeV_v0/V03-04-13-01-gmsb/merged_ntuple*root",
+                     "SUSY_ML2");
+  }
+
   // ML3
   TChain *chML3 = new TChain("Events");
   if (runML3) {
     pickSkimIfExists(chML3, 
                      "/tas/cms2/PhysicsProcess_PYTHIA6_SUSY_GMSM_SC_ML03_7TeV_v0/V03-04-13-01-gmsb/merged*root",
                      "SUSY_ML3");
+  }
+
+  // ML4
+  TChain *chML4 = new TChain("Events");
+  if (runML4) {
+    pickSkimIfExists(chML4, 
+                     "/tas/cms2/PhysicsProcess_PYTHIA6_SUSY_GMSM_SC_ML04_7TeV_v0/V03-04-13-01-gmsb/merged_ntuple*root",
+                     "SUSY_ML4");
   }
 
   // ML5
@@ -481,12 +513,28 @@ void doAll_ossusy_looper_gmsb(bool skipFWLite = true)
                      "SUSY_ML5");
   }
 
+  // ML6
+  TChain *chML6 = new TChain("Events");
+  if (runML6) {
+    pickSkimIfExists(chML6, 
+                     "/tas/cms2/PhysicsProcess_PYTHIA6_SUSY_GMSM_SC_ML06_7TeV_v0/V03-04-13-01-gmsb/merged_ntuple*root",
+                     "SUSY_ML6");
+  }
+
   // ML7
   TChain *chML7 = new TChain("Events");
   if (runML7) {
     pickSkimIfExists(chML7, 
                      "/tas/cms2/PhysicsProcess_PYTHIA6_SUSY_GMSM_SC_ML07_7TeV_v0/V03-04-13-01-gmsb/merged*root",
                      "SUSY_ML7");
+  }
+
+  // ML8
+  TChain *chML8 = new TChain("Events");
+  if (runML8) {
+    pickSkimIfExists(chML8, 
+                     "/tas/cms2/PhysicsProcess_PYTHIA6_SUSY_GMSM_SC_ML08_7TeV_v0/V03-04-13-01-gmsb/merged_ntuple*root",
+                     "SUSY_ML8");
   }
   
   // LMscan
@@ -687,20 +735,40 @@ void doAll_ossusy_looper_gmsb(bool skipFWLite = true)
                 looper->ScanChain(chML1, "ML1", kML1, preML1, jetType, metType, zveto, doFakeApp);
                 cout << "Done processing ML1" << endl;
               }
+              if (runML2) {
+                cout << "Processing ML2" << endl;
+                looper->ScanChain(chML2, "ML2", kML2, preML2, jetType, metType, zveto, doFakeApp);
+                cout << "Done processing ML2" << endl;
+              }
               if (runML3) {
                 cout << "Processing ML3" << endl;
                 looper->ScanChain(chML3, "ML3", kML3, preML3, jetType, metType, zveto, doFakeApp);
                 cout << "Done processing ML3" << endl;
+              }
+              if (runML4) {
+                cout << "Processing ML4" << endl;
+                looper->ScanChain(chML4, "ML4", kML4, preML4, jetType, metType, zveto, doFakeApp);
+                cout << "Done processing ML4" << endl;
               }
               if (runML5) {
                 cout << "Processing ML5" << endl;
                 looper->ScanChain(chML5, "ML5", kML5, preML5, jetType, metType, zveto, doFakeApp);
                 cout << "Done processing ML5" << endl;
               }
+              if (runML6) {
+                cout << "Processing ML6" << endl;
+                looper->ScanChain(chML6, "ML6", kML6, preML6, jetType, metType, zveto, doFakeApp);
+                cout << "Done processing ML6" << endl;
+              }
               if (runML7) {
                 cout << "Processing ML7" << endl;
                 looper->ScanChain(chML7, "ML7", kML7, preML7, jetType, metType, zveto, doFakeApp);
                 cout << "Done processing ML7" << endl;
+              }
+              if (runML8) {
+                cout << "Processing ML8" << endl;
+                looper->ScanChain(chML8, "ML8", kML8, preML8, jetType, metType, zveto, doFakeApp);
+                cout << "Done processing ML8" << endl;
               }
               if (runLMscan) {
                 cout << "Processing LMscan" << endl;
@@ -716,8 +784,7 @@ void doAll_ossusy_looper_gmsb(bool skipFWLite = true)
                                            jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
               }
               else {
-                const char* outFile = Form("root/victory_baseline_metgt50_sumjetptgt200_cand01_%s_%s%s_ML_3x.root", 
-                                           jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
+                const char* outFile = "root/gmsb_MLonly_noselection.root";
               }
 
               //const char* outFile = Form("victory_baseline_genmetgt50_nosumjetptcut_%s_%s_pleasework_varbins.root", 
