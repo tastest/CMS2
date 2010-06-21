@@ -64,6 +64,10 @@ class ossusy_looper_gmsb
         TFile* outFile;
         TTree* outTree;
 
+        TH1F* hnleptons_all_pass;
+        TH1F* hnleptons_ss_pass;
+        TH1F* hnleptons_os_pass;
+        TH1F* hsign;
         TH1F* hnleptons;
         TH1F* hnelectrons;
         TH1F* hnmuons;

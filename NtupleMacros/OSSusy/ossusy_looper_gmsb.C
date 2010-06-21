@@ -320,7 +320,6 @@ int ossusy_looper_gmsb::ScanChain(TChain* chain, char *prefix, float kFactor, in
         }
       }
       
-
       float weight = evt_scale1fb() * 0.1;
 
       fillUnderOverFlow( hnleptons, nLep ,weight );
@@ -361,16 +360,41 @@ int ossusy_looper_gmsb::ScanChain(TChain* chain, char *prefix, float kFactor, in
         float dilmass2 = ( v1 + v2 ).M2();
         float dilmass = dilmass2 > 0 ? sqrt(dilmass2) : sqrt(-dilmass2);
         fillUnderOverFlow(hdilmass_ptmax ,  dilmass , weight );
+
+        hsign->Fill(  leptons_pdgid.at(ilep1) * leptons_pdgid.at(ilep2) > 0 ? 1.5 : 0.5 , weight );
       }
+      
+      if( sumJetPt < 200. )  continue;
+      if( pfmet    < 80.  )  continue;
+      if( nLep     < 2    )  continue;
+      if( nJets    < 3    )  continue;
+
+      bool samesign = false;
+      if( nLep > 2 ) samesign = true;
+      else if( nLep > 1 ){
+        if( leptons_pdgid.at(ilep1) * leptons_pdgid.at(ilep2) > 0 ) samesign = true;
+      }
+      if( !samesign ) continue;
+      
+      fillUnderOverFlow( hnleptons_all_pass , nLep , weight );
+      
+      if( nLep > 1 ){
+        if( leptons_pdgid.at(ilep1) * leptons_pdgid.at(ilep2) > 0 )
+          fillUnderOverFlow( hnleptons_ss_pass , nLep , weight );
+        
+        if( leptons_pdgid.at(ilep1) * leptons_pdgid.at(ilep2) < 0 )
+          fillUnderOverFlow( hnleptons_os_pass , nLep , weight );
+      }
+      
 
     } // entries
   } // currentFile
-
+      
   if(g_createTree) closeTree();
-
+      
   if (nEventsChain != nEventsTotal)
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
-
+    
   return 0;
 }
 
@@ -387,6 +411,11 @@ void ossusy_looper_gmsb::BookHistos(char *prefix)
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
 
+  hnleptons_all_pass   = new TH1F(Form("%s_hnleptons_all_pass",prefix), "Num Leptons Passing Cuts + Event Selection",      11,-0.5,10.5);
+  hnleptons_ss_pass    = new TH1F(Form("%s_hnleptons_ss_pass",prefix),  "Num SS Leptons Passing Cuts + Event Selection",   11,-0.5,10.5);
+  hnleptons_os_pass    = new TH1F(Form("%s_hnleptons_os_pass",prefix),  "Num OS Leptons Passing Cuts + Event Selection",   11,-0.5,10.5);
+
+  hsign           = new TH1F(Form("%s_hsign",prefix),"OS(0) SS (1)",                      2,0,2);
   hnleptons       = new TH1F(Form("%s_hnleptons",prefix),"Num Leptons Passing Cuts",      11,-0.5,10.5);
   hnelectrons     = new TH1F(Form("%s_hnelectrons",prefix),"Num Electrons Passing Cuts",  11,-0.5,10.5);
   hnmuons         = new TH1F(Form("%s_hnmuons",prefix),"Num Muons Passing Cuts",          11,-0.5,10.5);
