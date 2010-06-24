@@ -95,7 +95,16 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
       if (!cleaning_goodTracks()) continue;
 
 
-
+      // Loop over jets and see what is btagged
+      // Medium operating point from https://twiki.cern.ch/twiki/bin/view/CMS/BTagPerformanceOP
+      int this_nbjet = 0;
+      vector<unsigned int> bindex;
+      for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
+	if (jets_p4().at(iJet).pt() < 15.) continue;
+	if (jets_simpleSecondaryVertexHighEffBJetTag().at(iJet) < 1.74) continue;
+	this_nbjet++;
+	bindex.push_back(iJet);
+      }
 
       // Loop over electrons
       if (eormu == -1 || eormu==11) {
@@ -152,6 +161,18 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 	  scet_  = els_eSC()[iEl] / cosh( els_etaSC()[iEl] );
 	  id_    = 11*els_charge().at(iEl);
 	  tcmet_ = evt_tcmet();
+
+	  // The btag information
+	  nbjet_ = this_nbjet;
+	  dRbNear_ = 99.;
+	  dRbFar_  = -99.;
+	  for (int ii=0; ii<nbjet_; ii++) {
+	    unsigned int iJet = bindex[ii];
+	    float dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), jets_p4().at(iJet));
+	    if (dr < dRbNear_) dRbNear_ = dr;
+	    if (dr > dRbFar_)   dRbFar_  = dr;
+	  }
+	    
 
 	  // Our jet trigger flags
 	  hlt15u_ = min(2,nHLTObjects("HLT_Jet15U")); 
@@ -318,6 +339,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 
 	  // Careful about tcmet.  
 	  // For muons pt>10 GeV, if it is not already corrected for it, do it
+	  // THIS is most likely wrong...needs to be fixed......
 	  if (pt_ > 10. && (mus_tcmet_flag().at(iMu) == 0 || mus_tcmet_flag().at(iMu) == 4)) {
 	    cout << "Correcting the tcmet" <<endl;
 	    double lmetx = tcmet_ * cos(evt_tcmetPhi());
@@ -333,6 +355,18 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 	    tcmet_ = sqrt(lmetx*lmetx+lmety*lmety);
 	  }
 
+
+
+	  // The btag information
+	  nbjet_ = this_nbjet;
+	  dRbNear_ =  99.;
+	  dRbFar_  = -99.;
+	  for (int ii=0; ii<nbjet_; ii++) {
+	    unsigned int iJet = bindex[ii];
+	    float dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), jets_p4().at(iJet));
+	    if (dr < dRbNear_) dRbNear_ = dr;
+	    if (dr > dRbFar_)  dRbFar_  = dr;
+	  }
 
 	  // Our jet trigger flags
 	  hlt15u_ = min(2,nHLTObjects("HLT_Jet15U")); 
@@ -405,7 +439,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 	    }
 	  }
  
-    // Explicit match with Mu5 trigger
+    // Explicit match with Mu9 trigger
     if (mu9_ > 0) {
       bool match = false;
       for (int itrg=0; itrg<mu9_; itrg++) {
@@ -471,7 +505,10 @@ void myBabyMaker::InitBabyNtuple () {
   dreg8_  = 99.;
   drmu5_  = 99.;
   drmu9_  = 99.;
-  drmu3_   = 99.;
+  drmu3_  = 99.;
+  nbjet_  = 0;
+  dRbNear_ = 99.;
+  dRbFar_ = -99.;
 }
 //-------------------------------------
 // Book the baby ntuple
@@ -524,6 +561,9 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("drmu5",       &drmu5_,       "drmu5/F"      );
     babyTree_->Branch("drmu3",       &drmu3_,       "drmu3/F"      );
 
+    babyTree_->Branch("nbjet",       &nbjet_,       "nbjet/I"      );
+    babyTree_->Branch("dRNear",       &dRbNear_,       "dRbNear/F"      );
+    babyTree_->Branch("dRFar",       &dRbFar_,       "dRbFar/F"      );
 }
 //----------------------------------
 // Fill the baby

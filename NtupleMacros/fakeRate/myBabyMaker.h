@@ -81,6 +81,12 @@ class myBabyMaker
 	Float_t drmu5_;
 	Float_t drmu3_;
 	
+	// Btag information
+	Int_t nbjet_; // number of btagged jet pt>15
+	Float_t dRbNear_; // dR between lepton and closest such jet
+	Float_t dRbFar_; // dR between lepton and farthest such jet
+
+
 };
 
 #endif
