@@ -6,6 +6,7 @@
 #include <set>
 #include "wwtypes.h"
 #include "TChain.h"
+#include <fstream>
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
@@ -13,9 +14,12 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 // Electron Id
 //
 
+bool   ww_elBase(unsigned int i);
 bool   ww_elId(unsigned int i);
 bool   ww_eld0(unsigned int i);
-double ww_elIso(unsigned int i);
+bool   ww_eld0PV(unsigned int i);
+bool   ww_elIso(unsigned int i);
+double ww_elIsoVal(unsigned int i);
 
 // combined analysis selectors
 bool goodElectronWithoutIsolation(unsigned int i);
@@ -25,8 +29,12 @@ bool goodElectronIsolated(unsigned int i);
 // Muon Id
 //
 
+bool   ww_muBase(unsigned int i);
 bool   ww_muId(unsigned int i);
-double ww_muIso(unsigned int i);
+bool   ww_muIso(unsigned int i);
+double ww_muIsoVal(unsigned int i);
+bool   ww_mud0(unsigned int i);
+bool   ww_mud0PV(unsigned int i);
 
 unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated);
 
@@ -96,21 +104,6 @@ struct EventIdentifier {
   float hyp_lt_pt, hyp_lt_eta, hyp_lt_phi;
   bool operator < (const EventIdentifier &) const;
   bool operator == (const EventIdentifier &) const;
-};
-
-struct hypo_monitor{
-  std::vector<std::pair<std::string,unsigned int> > counters;
-  void count(unsigned int index, const char* name){
-    unsigned int current_size = counters.size();
-    for ( unsigned int i=current_size; i<=index; ++i ) 
-      counters.push_back( std::pair<std::string,unsigned int>("",0) );
-    counters[index].first = name;
-    counters[index].second++;
-  }
-  void print(){
-    for ( unsigned int i=0; i<counters.size(); ++i ) 
-      std::cout << counters[i].first << "\t" << counters[i].second << std::endl;
-  }
 };
 
 unsigned int getDrellYanType();
