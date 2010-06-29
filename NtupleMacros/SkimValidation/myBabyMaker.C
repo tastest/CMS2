@@ -39,12 +39,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, const char
   int i_permilleOld = 0;
   unsigned int nEventsTotal = 0;
   unsigned int nEventsChain = 0;
-  //int nEvents = -1;
-  //if (nEvents==-1){
-  //  nEventsChain = chain->GetEntries();
-  //} else {
-  //  nEventsChain = nEvents;
-  //}
+
   nEventsChain = chain->GetEntries();
   TObjArray *listOfFiles = chain->GetListOfFiles();
   TIter fileIter(listOfFiles);
@@ -78,25 +73,19 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, const char
 	  // Initialize baby ntuple--clear every event
 	  InitBabyNtuple();
 
-	  //const float minpt = 10.;
-	  //bool passmus = false;
-	  //bool passels = false;
 	  vector<int> goodels;
 	  vector<int> goodmus;
 
       // Select events passing trigger w/ leptons
       if( domus && passHLTTrigger(mutrig_) ) {
-		//passmus = doMuons();
 		goodmus = doMuons();
 	  }	  
 
       if( doels && passHLTTrigger(eltrig_) ) {
-		//passels = doElectrons();
 		goodels = doElectrons();
 	  }
 
 	  // Time to fill the baby
-	  //if( passels || passmus ) {
 	  if( goodels.size() > 0 || goodmus.size() > 0 ) {
 		//cout << "I'm a good event" << endl;
 
@@ -111,7 +100,6 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, const char
 		trkjets_  = CleanJets( trkjets_p4(), goodels, goodmus );
 
 		doMet();
-		//doJets();
 		FillBabyNtuple();
 	  }
 
@@ -179,6 +167,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     //babyTree_->Branch("pt",   &pt_,   "pt/F"); //leftover
 	//els
     babyTree_->Branch("nels"    , & nels_);
+    babyTree_->Branch("eld0corr", & eld0_);
     babyTree_->Branch("elcharge", & elcharge_);
     babyTree_->Branch("elp4"    , & elp4_ );
 	babyTree_->Branch("elreliso", & elreliso_);
@@ -283,9 +272,9 @@ vector<int> myBabyMaker::doMuons() {
 
 	// Muon Selection
 	bool muId = muonId( iMu, NominalTTbar );
+	musId_.push_back( muId );
 	if( muId ) {
 	  nMu++;
-	  musId_.push_back( muId );
 	  goodmus.push_back(iMu);
 	}
   }
@@ -313,7 +302,7 @@ void myBabyMaker::doJets() {
 // this is meant to be passed as the third argument, the predicate, of the
 // standard library sort algorithm
 bool sortByPt(const LorentzVector &vec1, 
-      const LorentzVector &vec2 )
+			  const LorentzVector &vec2 )
 {
     return vec1.pt() > vec2.pt();
 }
