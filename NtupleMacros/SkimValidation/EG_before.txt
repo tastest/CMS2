@@ -1,0 +1,5 @@
+/tas/cms2/MinimumBias_Commissioning10-May6thPDSkim2_SD_EG-v1/V03-04-09
+/tas/yanjuntu/Prompt_Data_CMSSW_3_6_0_V03-04-09-01/MinimumBias_Commissioning10-SD_EG-v9_RECO/singleLepPt5Skim
+/tas/yanjuntu/Prompt_Data_CMSSW_3_6_0_V03-04-09-01/EG_Run2010A-PromptReco-v1_RECO/singleLepPt5Skim
+/tas/yanjuntu/Prompt_Data_CMSSW_3_6_1_V03-04-10-01/EG_Run2010A-PromptReco-v1_RECO/singleLepPt5Skim
+/tas/cms2/EG_Run2010A-PromptReco-v2_RECO/V03-04-10-01/singleLepPt5Skim
