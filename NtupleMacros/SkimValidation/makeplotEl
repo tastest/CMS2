@@ -1,0 +1,2 @@
+#!/bin/bash
+sed 's/mu/el/g' < PlotMu.C > PlotEl.C
