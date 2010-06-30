@@ -55,26 +55,31 @@ private:
 
   Int_t   nJets_;
   Int_t   nels_;
-  Int_t   nMu_;
-  vector<Int_t>   elcharge_; //0 or 1 for now (0 if disagree, 1 if agree), but if it becomes a bitmask, it'll be int
+  Int_t   nmus_;
+  vector<int>   elscharge_; //0 or 1 for now (0 if disagree, 1 if agree), but if it becomes a bitmask, it'll be int
+  vector<int>   muscharge_; //0 or 1 for now (0 if disagree, 1 if agree), but if it becomes a bitmask, it'll be int
 
   // floats--els
-  vector<Float_t> eld0_;
-  vector<Float_t> elreliso_;
-  vector<Float_t> eltrkiso_;
-  vector<Float_t> elecliso_;
-  vector<Float_t> elhcliso_;
+  vector<float> elsd0corr_;
+  vector<float> elsreliso_;
+  vector<float> elstrkiso_;
+  vector<float> elsecliso_;
+  vector<float> elshcliso_;
 
   // floats--mus
   vector<float> musd0corr_;
-  vector<float> musIso_;
+  vector<float> musreliso_;
+  vector<float> mustrkiso_;
+  vector<float> musecliso_;
+  vector<float> mushcliso_;
   vector<bool>  musId_;
+  vector<bool>  elsId_;
 
   // Jets
-  vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > jets_;
-  vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > pfjets_;
-  vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > trkjets_;
-  vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > hypjets_;
+  vector<LorentzVector> jets_;
+  vector<LorentzVector> pfjets_;
+  vector<LorentzVector> trkjets_;
+  //vector<LorentzVector> hypjets_;
 
   // floats--met (no vectors)
   Float_t clmet_;
@@ -86,7 +91,7 @@ private:
 
   // Lorentz Vectors--jets
   vector<LorentzVector> musp4_;
-  vector<LorentzVector> elp4_;  
+  vector<LorentzVector> elsp4_;  
 
 };
 

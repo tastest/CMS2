@@ -1,6 +1,12 @@
 {
 gSystem->Load("../validation/CMSSW_3_7_0_patch2_V03-05-01/src/CMS2/NtupleMacros/Tools/MiniFWLite/libMiniFWLite.so");
-gStyle->SetOptStat("nemou");
+gROOT->SetStyle("Plain");
+gStyle->SetHistFillColor(kRed);
+gStyle->SetHistMinimumZero();
+gStyle->SetOptStat("nemoui");
+
+const string suffix = ".png";
+const string dir = "plots/";
 
 int   N_nbins = 2;
 float N_min = 0.5;
@@ -14,87 +20,328 @@ int eta_nbins = 25;
 float eta_min = -2.5;
 float eta_max = 2.5;
 
-int phi_nbins = 50;
+int phi_nbins = 30;
 float phi_min = -3.15;
 float phi_max = 3.15;
 
 int d0_nbins = 50;
-float d0_min = -.1;
-float d0_max = .1;
+float d0_min = -.025;
+float d0_max = .025;
 
-int Iso_nbins = 50;
+int Iso_nbins = 100;
 float Iso_min = 0;
 float Iso_max = 1;
 
+int   met_nbins = 75;
+float met_min   = 0;
+float met_max   = 75;
 
-TH1F* mu1_N        = new TH1F("mu1_N", "mu1_N", N_nbins, N_min, N_max );
+int jet_pt_nbins  = 70;
+float jet_pt_min  = 30;
+float jet_pt_max  = 100;
+
+int jet_eta_nbins = 25;
+float jet_eta_min = -2.4;
+float jet_eta_max = 2.4;
+
+int Njet_nbins  = 6;
+int Njet_min    = 0;
+int Njet_max    = 6; 
+
+// muon quantities - before
+TH1F* mu1_N        = new TH1F("mu1_Nmus", "mu1_Nmus", N_nbins, N_min, N_max );
+TH1F* mu1_Niso     = new TH1F("mu1_Nmusiso", "mu1_Nmus_isolated", N_nbins, N_min, N_max );
 TH1F* mu1_pt       = new TH1F("mu1_pt", "mu1_pt", pt_nbins, pt_min, pt_max );
 TH1F* mu1_eta      = new TH1F("mu1_eta", "mu1_eta", eta_nbins, eta_min, eta_max );
 TH1F* mu1_phi      = new TH1F("mu1_phi", "mu1_phi", phi_nbins, phi_min, phi_max );
 TH1F* mu1_d0corr   = new TH1F("mu1_d0corr", "mu1_d0corr", d0_nbins, d0_min, d0_max );
 TH1F* mu1_Iso      = new TH1F("mu1_Iso", "mu1_Iso", Iso_nbins, Iso_min, Iso_max );
-TH2F* mu1_phi_d0   = new TH2F("mu1_d0phi", "mu1_d0phi", phi_nbins, phi_min, phi_max, d0_nbins, d0_min, d0_max );
+TH2F* mu1_phi_d0   = new TH2F("mu1_phi_d0", "mu1_phi_d0", phi_nbins, phi_min, phi_max, d0_nbins, d0_min, d0_max );
 
-TH1F* mu2_N        = new TH1F("mu2_N", "mu2_N", N_nbins, N_min, N_max );
+// met & met phi - before
+TH1F* mu1_clmet        = new TH1F("mu1_clmet", "mu1_clmet", met_nbins, met_min, met_max );
+TH1F* mu1_pfmet        = new TH1F("mu1_pfmet", "mu1_pfmet", met_nbins, met_min, met_max );
+TH1F* mu1_tcmet        = new TH1F("mu1_tcmet", "mu1_tcmet", met_nbins, met_min, met_max );
+TH1F* mu1_clmetphi     = new TH1F("mu1_clmetphi", "mu1_clmetphi", phi_nbins, phi_min, phi_max );
+TH1F* mu1_pfmetphi     = new TH1F("mu1_pfmetphi", "mu1_pfmetphi", phi_nbins, phi_min, phi_max );
+TH1F* mu1_tcmetphi     = new TH1F("mu1_tcmetphi", "mu1_tcmetphi", phi_nbins, phi_min, phi_max );
+
+// jets - before
+
+TH1F* mu1_Njets     = new TH1F("mu1_Njets", "mu1_Ncalojets", Njet_nbins, Njet_min, Njet_max );
+TH1F* mu1_Npfjets   = new TH1F("mu1_Npfjets", "mu1_Npfjets", Njet_nbins, Njet_min, Njet_max );
+TH1F* mu1_Ntrkjets  = new TH1F("mu1_Ntrkjets", "mu1_Ntrkjets", Njet_nbins, Njet_min, Njet_max );
+
+TH1F* mu1_jets_pt   	= new TH1F("mu1_jets_pt", "mu1_calojets_pt", jet_pt_nbins, jet_pt_min, jet_pt_max );
+TH1F* mu1_pfjets_pt   	= new TH1F("mu1_pfjets_pt", "mu1_pfjets_pt", jet_pt_nbins, jet_pt_min, jet_pt_max );
+TH1F* mu1_trkjets_pt   	= new TH1F("mu1_trkjets_pt", "mu1_trkjets_pt", jet_pt_nbins, jet_pt_min, jet_pt_max );
+
+TH1F* mu1_jets_eta   	= new TH1F("mu1_jets_eta", "mu1_calojets_eta", jet_eta_nbins, jet_eta_min, jet_eta_max );
+TH1F* mu1_pfjets_eta   	= new TH1F("mu1_pfjets_eta", "mu1_pfjets_eta", jet_eta_nbins, jet_eta_min, jet_eta_max );
+TH1F* mu1_trkjets_eta   = new TH1F("mu1_trkjets_eta", "mu1_trkjets_eta", jet_eta_nbins, jet_eta_min, jet_eta_max );
+
+TH1F* mu1_jets_phi   	= new TH1F("mu1_jets_phi", "mu1_calojets_phi", phi_nbins, phi_min, phi_max );
+TH1F* mu1_pfjets_phi   	= new TH1F("mu1_pfjets_phi", "mu1_pfjets_phi", phi_nbins, phi_min, phi_max );
+TH1F* mu1_trkjets_phi   = new TH1F("mu1_trkjets_phi", "mu1_trkjets_phi", phi_nbins, phi_min, phi_max );
+
+// muons - after
+TH1F* mu2_N        = new TH1F("mu2_Nmus", "mu2_Nmus", N_nbins, N_min, N_max );
+TH1F* mu2_Niso     = new TH1F("mu2_Nmusiso", "mu2_Nmus_isolated", N_nbins, N_min, N_max );
 TH1F* mu2_pt       = new TH1F("mu2_pt", "mu2_pt", pt_nbins, pt_min, pt_max );
 TH1F* mu2_eta      = new TH1F("mu2_eta", "mu2_eta", eta_nbins, eta_min, eta_max );
 TH1F* mu2_phi      = new TH1F("mu2_phi", "mu2_phi", phi_nbins, phi_min, phi_max );
 TH1F* mu2_d0corr   = new TH1F("mu2_d0corr", "mu2_d0corr", d0_nbins, d0_min, d0_max );
 TH1F* mu2_Iso      = new TH1F("mu2_Iso", "mu2_Iso", Iso_nbins, Iso_min, Iso_max );
-TH2F* mu2_phi_d0   = new TH2F("mu2_d0phi", "mu2_d0phi", phi_nbins, phi_min, phi_max, d0_nbins, d0_min, d0_max );
+TH2F* mu2_phi_d0   = new TH2F("mu2_phi_d0", "mu2_phi_d0", phi_nbins, phi_min, phi_max, d0_nbins, d0_min, d0_max );
 
+// met & met phi - after
+TH1F* mu2_clmet        = new TH1F("mu2_clmet", "mu2_clmet", met_nbins, met_min, met_max );
+TH1F* mu2_pfmet        = new TH1F("mu2_pfmet", "mu2_pfmet", met_nbins, met_min, met_max );
+TH1F* mu2_tcmet        = new TH1F("mu2_tcmet", "mu2_tcmet", met_nbins, met_min, met_max );
+TH1F* mu2_clmetphi     = new TH1F("mu2_clmetphi", "mu2_clmetphi", phi_nbins, phi_min, phi_max );
+TH1F* mu2_pfmetphi     = new TH1F("mu2_pfmetphi", "mu2_pfmetphi", phi_nbins, phi_min, phi_max );
+TH1F* mu2_tcmetphi     = new TH1F("mu2_tcmetphi", "mu2_tcmetphi", phi_nbins, phi_min, phi_max );
+
+// jets - after
+
+TH1F* mu2_Njets     = new TH1F("mu2_Njets", "mu2_Ncalojets", Njet_nbins, Njet_min, Njet_max );
+TH1F* mu2_Npfjets   = new TH1F("mu2_Npfjets", "mu2_Npfjets", Njet_nbins, Njet_min, Njet_max );
+TH1F* mu2_Ntrkjets  = new TH1F("mu2_Ntrkjets", "mu2_Ntrkjets", Njet_nbins, Njet_min, Njet_max );
+
+TH1F* mu2_jets_pt   	= new TH1F("mu2_jets_pt", "mu2_calojets_pt", jet_pt_nbins, jet_pt_min, jet_pt_max );
+TH1F* mu2_pfjets_pt   	= new TH1F("mu2_pfjets_pt", "mu2_pfjets_pt", jet_pt_nbins, jet_pt_min, jet_pt_max );
+TH1F* mu2_trkjets_pt   	= new TH1F("mu2_trkjets_pt", "mu2_trkjets_pt", jet_pt_nbins, jet_pt_min, jet_pt_max );
+TH1F* mu2_jets_eta   	= new TH1F("mu2_jets_eta", "mu2_calojets_eta", jet_eta_nbins, jet_eta_min, jet_eta_max );
+TH1F* mu2_pfjets_eta   	= new TH1F("mu2_pfjets_eta", "mu2_pfjets_eta", jet_eta_nbins, jet_eta_min, jet_eta_max );
+TH1F* mu2_trkjets_eta   = new TH1F("mu2_trkjets_eta", "mu2_trkjets_eta", jet_eta_nbins, jet_eta_min, jet_eta_max );
+TH1F* mu2_jets_phi   	= new TH1F("mu2_jets_phi", "mu2_calojets_phi", phi_nbins, phi_min, phi_max );
+TH1F* mu2_pfjets_phi   	= new TH1F("mu2_pfjets_phi", "mu2_pfjets_phi", phi_nbins, phi_min, phi_max );
+TH1F* mu2_trkjets_phi   = new TH1F("mu2_trkjets_phi", "mu2_trkjets_phi", phi_nbins, phi_min, phi_max );
+
+// Chains
 TChain *chain1 = new TChain("tree");
-chain1->Add("validate_mus_before.root");
-
 TChain *chain2 = new TChain("tree");
-chain2->Add("validate_mus_after.root");
+chain1->Add("/tas03/home/warren/CMSSW_3_7_0_patch2/src/CMS2/NtupleMacros/SkimValidation/validate_mus_before.root");
+chain2->Add("/tas03/home/warren/CMSSW_3_7_0_patch2/src/CMS2/NtupleMacros/SkimValidation/validate_mus_after.root");
 
-chain1->Draw("nMu >> mu1_N", "musId");
-chain1->Draw("musp4.pt() >> mu1_pt", "musId");
-chain1->Draw("musp4.eta() >> mu1_eta", "musId");
-chain1->Draw("musp4.phi() >> mu1_phi", "musId");
-chain1->Draw("musd0corr >> mu1_d0corr", "musId");
-chain1->Draw("musIso >> mu1_Iso");
-//chain1->Draw("mus.phi():musd0corr >> mu_phi_d0", "musId");
+// Fill Before
+TCanvas *ctemp = new TCanvas();
+chain1->Draw("nmu >> mu1_Nmus");
+chain1->Draw("Sum$(musid) >> mu1_Nmusiso"); //isolated bc musid is isolated
+chain1->Draw("musp4.pt() >> mu1_pt", "musid");
+chain1->Draw("musp4.eta() >> mu1_eta", "musid");
+chain1->Draw("musp4.phi() >> mu1_phi", "musid");
+chain1->Draw("musd0corr >> mu1_d0corr", "musid");
+chain1->Draw("musiso >> mu1_Iso");
+chain1->Draw("musd0corr:musp4.phi() >> mu1_phi_d0", "musid", "BOX");
 
-chain2->Draw("nMu >> mu2_N", "musId");
-chain2->Draw("musp4.pt() >> mu2_pt", "musId");
-chain2->Draw("musp4.eta() >> mu2_eta", "musId");
-chain2->Draw("musp4.phi() >> mu2_phi", "musId");
-chain2->Draw("musd0corr >> mu2_d0corr", "musId");
-chain2->Draw("musIso >> mu2_Iso");
-//chain2->Draw("mus.phi():musd0corr >> mu_phi_d0", "musId");
+chain1->Draw("clmet >> mu1_clmet");
+chain1->Draw("pfmet >> mu1_pfmet");
+chain1->Draw("tcmet >> mu1_tcmet");
+
+chain1->Draw("clmetphi >> mu1_clmetphi", "clmet>10");
+chain1->Draw("pfmetphi >> mu1_pfmetphi", "pfmet>10");
+chain1->Draw("tcmetphi >> mu1_tcmetphi", "tcmet>10");
+
+chain1->Draw("jets@.size() >> mu1_Njets");
+chain1->Draw("pfjets@.size() >> mu1_Npfjets");
+chain1->Draw("trkjets@.size() >> mu1_Ntrkjets");
+
+chain1->Draw("jets.pt() >> mu1_jets_pt");
+chain1->Draw("pfjets.pt() >> mu1_pfjets_pt");
+chain1->Draw("trkjets.pt() >> mu1_trkjets_pt");
+chain1->Draw("jets.eta() >> mu1_jets_eta");
+chain1->Draw("pfjets.eta() >> mu1_pfjets_eta");
+chain1->Draw("trkjets.eta() >> mu1_trkjets_eta");
+chain1->Draw("jets.phi() >> mu1_jets_phi");
+chain1->Draw("pfjets.phi() >> mu1_pfjets_phi");
+chain1->Draw("trkjets.phi() >> mu1_trkjets_phi");
+
+// Fill After
+chain2->Draw("nmu >> mu2_Nmus");
+chain2->Draw("Sum$(musid) >> mu2_Nmusiso");
+chain2->Draw("musp4.pt() >> mu2_pt", "musid");
+chain2->Draw("musp4.eta() >> mu2_eta", "musid");
+chain2->Draw("musp4.phi() >> mu2_phi", "musid");
+chain2->Draw("musd0corr >> mu2_d0corr", "musid");
+chain2->Draw("musiso >> mu2_Iso");
+chain2->Draw("musd0corr:musp4.phi() >> mu2_phi_d0", "musid", "BOX PROJ");
+
+chain2->Draw("clmet >> mu2_clmet");
+chain2->Draw("pfmet >> mu2_pfmet");
+chain2->Draw("tcmet >> mu2_tcmet");
+
+chain2->Draw("clmetphi >> mu2_clmetphi", "clmet>10");
+chain2->Draw("pfmetphi >> mu2_pfmetphi", "pfmet>10");
+chain2->Draw("tcmetphi >> mu2_tcmetphi", "tcmet>10");
+
+chain2->Draw("jets@.size() >> mu2_Njets");
+chain2->Draw("pfjets@.size() >> mu2_Npfjets");
+chain2->Draw("trkjets@.size() >> mu2_Ntrkjets");
+
+chain2->Draw("jets.pt() >> mu2_jets_pt");
+chain2->Draw("pfjets.pt() >> mu2_pfjets_pt");
+chain2->Draw("trkjets.pt() >> mu2_trkjets_pt");
+chain2->Draw("jets.eta() >> mu2_jets_eta");
+chain2->Draw("pfjets.eta() >> mu2_pfjets_eta");
+chain2->Draw("trkjets.eta() >> mu2_trkjets_eta");
+chain2->Draw("jets.phi() >> mu2_jets_phi");
+chain2->Draw("pfjets.phi() >> mu2_pfjets_phi");
+chain2->Draw("trkjets.phi() >> mu2_trkjets_phi");
+
+delete ctemp;
 
 TCanvas *c1 = new TCanvas();
 c1->SetWindowSize(1100,850);
 c1->Divide(3,2);
-c1->cd(1);
+c1->cd(1)->SetLogy();
 mu1_pt->Draw();
 c1->cd(2);
 mu1_eta->Draw();
 c1->cd(3);
 mu1_phi->Draw();
-c1->cd(4);
+c1->cd(4)->SetLogy();
 mu2_pt->Draw();
 c1->cd(5);
 mu2_eta->Draw();
 c1->cd(6);
 mu2_phi->Draw();
+c1->SaveAs((dir+"compare_mu_kinematics"+suffix).c_str());
 
 TCanvas *c2 = new TCanvas();
-c2->SetWindowSize(1100,850);
-c2->Divide(3,2);
-c2->cd(1);
+ c2->SetWindowSize(1450,850);//wider bc 4 plots
+c2->Divide(4,2);
+c2->cd(1)->SetLogy();
 mu1_N->Draw();
-c2->cd(2);
-mu1_d0corr->Draw();
+c2->cd(2)->SetLogy();
+mu1_Niso->Draw();
 c2->cd(3);
-mu1_Iso->Draw();
+mu1_d0corr->Draw();
 c2->cd(4);
+mu1_Iso->Draw();
+c2->cd(5)->SetLogy();
 mu2_N->Draw();
-c2->cd(5);
+c2->cd(6)->SetLogy();
+mu2_Niso->Draw();
+c2->cd(7);
 mu2_d0corr->Draw();
-c2->cd(6);
+c2->cd(8);
 mu2_Iso->Draw();
+c1->SaveAs((dir+"compare_mu_N_do_iso"+suffix).c_str());
+
+TCanvas *c3 = new TCanvas();
+c3->SetWindowSize(1100,900);
+c3->Divide(2,2);
+c3->cd(1);
+mu1_phi_d0->Draw("BOX");
+c3->cd(2);
+mu2_phi_d0->Draw("BOX");
+c3->cd(3);
+mu1_phi_d0->ProfileX()->Draw();
+c3->cd(4);
+mu2_phi_d0->ProfileX()->Draw();
+c1->SaveAs((dir+"compare_mu_2dkin"+suffix).c_str());
+
+TCanvas *c4 = new TCanvas();
+c4->SetWindowSize(1100,850);
+c4->Divide(3,2);
+c4->cd(1)->SetLogy();
+mu1_clmet->Draw();
+c4->cd(2)->SetLogy();
+mu1_pfmet->Draw();
+c4->cd(3)->SetLogy();
+mu1_tcmet->Draw();
+c4->cd(4)->SetLogy();
+mu2_clmet->Draw();
+c4->cd(5)->SetLogy();
+mu2_pfmet->Draw();
+c4->cd(6)->SetLogy();
+mu2_tcmet->Draw();
+c1->SaveAs((dir+"compare_mu_met"+suffix).c_str());
+
+TCanvas *c5 = new TCanvas();
+c5->SetWindowSize(1100,850);
+c5->Divide(3,2);
+c5->cd(1);
+mu1_clmetphi->Draw();
+c5->cd(2);
+mu1_pfmetphi->Draw();
+c5->cd(3);
+mu1_tcmetphi->Draw();
+c5->cd(4);
+mu2_clmetphi->Draw();
+c5->cd(5);
+mu2_pfmetphi->Draw();
+c5->cd(6);
+mu2_tcmetphi->Draw();
+c1->SaveAs((dir+"compare_mu_metphi"+suffix).c_str());
+
+TCanvas *c = new TCanvas();
+c->SetWindowSize(1100,850);
+c->Divide(3,2);
+c->cd(1);
+mu1_Njets->Draw();
+c->cd(2);
+mu1_Npfjets->Draw();
+c->cd(3);
+mu1_Ntrkjets->Draw();
+c->cd(4);
+mu2_Njets->Draw();
+c->cd(5);
+mu2_Npfjets->Draw();
+c->cd(6);
+mu2_Ntrkjets->Draw();
+c1->SaveAs((dir+"compare_mu_jet"+suffix).c_str());
+
+TCanvas *c6 = new TCanvas();
+c6->SetWindowSize(1100,850);
+c6->Divide(3,2);
+c6->cd(1);
+mu1_jets_pt->Draw();
+c6->cd(2);
+mu1_jets_eta->Draw();
+c6->cd(3);
+mu1_jets_phi->Draw();
+c6->cd(4);
+mu2_jets_pt->Draw();
+c6->cd(5);
+mu2_jets_eta->Draw();
+c6->cd(6);
+mu2_jets_phi->Draw();
+c1->SaveAs((dir+"compare_mu_cljetkin"+suffix).c_str());
+
+TCanvas *c7 = new TCanvas();
+c7->SetWindowSize(1100,850);
+c7->Divide(3,2);
+c7->cd(1);
+mu1_pfjets_pt->Draw();
+c7->cd(2);
+mu1_pfjets_eta->Draw();
+c7->cd(3);
+mu1_pfjets_phi->Draw();
+c7->cd(4);
+mu2_pfjets_pt->Draw();
+c7->cd(5);
+mu2_pfjets_eta->Draw();
+c7->cd(6);
+mu2_pfjets_phi->Draw();
+c1->SaveAs((dir+"compare_mu_pfjetkin"+suffix).c_str());
+
+TCanvas *c8 = new TCanvas();
+c8->SetWindowSize(1100,850);
+c8->Divide(3,2);
+c8->cd(1);
+mu1_trkjets_pt->Draw();
+c8->cd(2);
+mu1_trkjets_eta->Draw();
+c8->cd(3);
+mu1_trkjets_phi->Draw();
+c8->cd(4);
+mu2_trkjets_pt->Draw();
+c8->cd(5);
+mu2_trkjets_eta->Draw();
+c8->cd(6);
+mu2_trkjets_phi->Draw();
+c1->SaveAs((dir+"compare_mu_tkjetkin"+suffix).c_str());
 
 }

@@ -59,7 +59,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, const char
 
       // looper progress
       ++nEventsTotal;
-      int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
+      int i_permille = (int)floor(1000 * float(nEventsTotal) / float(nEventsChain));
       if (i_permille != i_permilleOld) {
         printf("  \015\033[32m ---> \033[1m\033[31m%4.1f%%" "\033[0m\033[32m <---\033[0m\015", i_permille/10.);
         fflush(stdout);
@@ -86,7 +86,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, const char
 	  }
 
 	  // Time to fill the baby
-	  if( goodels.size() > 0 || goodmus.size() > 0 ) {
+	  //if( goodels.size() > 0 || goodmus.size() > 0 ) {
+	  if( nels_ > 0 || nmus_ > 0 ) {
 		//cout << "I'm a good event" << endl;
 
 		// event info
@@ -117,7 +118,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, const char
 void myBabyMaker::InitBabyNtuple () {
   //ints
   nels_  = 0;
-  nMu_   = 0;
+  nmus_   = 0;
   nJets_ = 0;
 
   run_    = -999;
@@ -125,25 +126,31 @@ void myBabyMaker::InitBabyNtuple () {
   lumi_   = -999;
 
   // floats--mus
-  musp4_.clear();
   musd0corr_.clear();
-  musIso_.clear();
+  muscharge_.clear();
+  musp4_.clear();
+  musreliso_.clear();
+  mustrkiso_.clear();
+  musecliso_.clear();
+  mushcliso_.clear();
   musId_.clear();
+
+  //els
+  elsd0corr_.clear();
+  elscharge_.clear();
+  elsp4_.clear();
+  elsreliso_.clear();
+  elstrkiso_.clear();
+  elsecliso_.clear();
+  elshcliso_.clear();
+  elsId_.clear();
 
   // Jets
   jets_   .clear();
   pfjets_ .clear();
   trkjets_.clear();
-  hypjets_.clear();
+  //hypjets_.clear();
 
-  //els
-  eld0_.clear();
-  elcharge_.clear();
-  elp4_.clear();
-  elreliso_.clear();
-  eltrkiso_.clear();
-  elecliso_.clear();
-  elhcliso_.clear();
   //met
   clmet_ 		= -999.;
   tcmet_ 		= -999.;
@@ -166,14 +173,25 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
 
     //babyTree_->Branch("pt",   &pt_,   "pt/F"); //leftover
 	//els
-    babyTree_->Branch("nels"    , & nels_);
-    babyTree_->Branch("eld0corr", & eld0_);
-    babyTree_->Branch("elcharge", & elcharge_);
-    babyTree_->Branch("elp4"    , & elp4_ );
-	babyTree_->Branch("elreliso", & elreliso_);
-    babyTree_->Branch("eltrkiso", & eltrkiso_);
-    babyTree_->Branch("elecliso", & elecliso_);
-    babyTree_->Branch("elhcliso", & elhcliso_);
+    babyTree_->Branch("nel"      , &nels_		);
+    babyTree_->Branch("elsid"    , &elsId_		);	
+    babyTree_->Branch("elsd0corr", &elsd0corr_	);
+    babyTree_->Branch("elscharge", &elscharge_	);
+    babyTree_->Branch("elsp4"    , &elsp4_ 		);
+	babyTree_->Branch("elsiso"   , &elsreliso_	); //this is rel, but not max(20,pt)
+    babyTree_->Branch("elstrkiso", &elstrkiso_	);
+    babyTree_->Branch("elsecliso", &elsecliso_	);
+    babyTree_->Branch("elshcliso", &elshcliso_	);
+
+    babyTree_->Branch("nmu",       &nmus_		);
+    babyTree_->Branch("musid",     &musId_		);
+    babyTree_->Branch("musd0corr", &musd0corr_	);
+    babyTree_->Branch("muscharge", &muscharge_	);
+    babyTree_->Branch("musp4",     &musp4_		);
+    babyTree_->Branch("musiso",    &musreliso_	);
+    babyTree_->Branch("mustrkiso", &mustrkiso_	);
+    babyTree_->Branch("musecliso", &musecliso_	);
+    babyTree_->Branch("mushcliso", &mushcliso_	);
 
     babyTree_->Branch("clmet"   , &clmet_   );
     babyTree_->Branch("tcmet"   , &tcmet_   );
@@ -182,17 +200,9 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("tcmetphi", &tcmetphi_);
     babyTree_->Branch("pfmetphi", &pfmetphi_);
 
-    babyTree_->Branch("run",    &run_,  "run/i");
-    babyTree_->Branch("event",  &event_, "event/i");
-    babyTree_->Branch("lumi",   &lumi_,  "lumi/i");
-
-    // vector<bool>
-    babyTree_->Branch("musId",      &musId_);
-    babyTree_->Branch("nMu",        &nMu_);
-    babyTree_->Branch("musd0corr",  &musd0corr_);
-    babyTree_->Branch("musIso",     &musIso_);
-    babyTree_->Branch("musp4",      &musp4_);
-    babyTree_->Branch("jets",       &jets_);
+    babyTree_->Branch("run"  , &run_  , "run/i"  );
+    babyTree_->Branch("event", &event_, "event/i");
+    babyTree_->Branch("lumi" , &lumi_ , "lumi/i" );
 	//jets
     babyTree_->Branch("pfjets",     &pfjets_);
     babyTree_->Branch("trkjets",    &trkjets_);
@@ -231,16 +241,18 @@ vector<int> myBabyMaker::doElectrons() {
 
 	//write data members
 	nels_++;
-	elp4_.push_back(els_p4()[iel]);
-	elcharge_.push_back(els_charge()[iel]);
-	eld0_.push_back(els_d0corr()[iel]);
-	elreliso_.push_back(els_p4()[iel].pt()/
-						(els_ecalIso()[iel] + els_hcalIso()[iel] + els_tkIso()[iel]) );
-	eltrkiso_.push_back(els_tkIso()[iel] );
-	elecliso_.push_back(els_ecalIso()[iel]);
-	elhcliso_.push_back(els_hcalIso()[iel]);
+	elsp4_.push_back(els_p4()[iel]);
+	elscharge_.push_back(els_charge()[iel]);
+	elsd0corr_.push_back(els_d0corr()[iel]);
+	elsreliso_.push_back( (els_ecalIso()[iel] + els_hcalIso()[iel] + els_tkIso()[iel]) /
+						els_p4()[iel].pt() );
+	elstrkiso_.push_back(els_tkIso()[iel] );
+	elsecliso_.push_back(els_ecalIso()[iel]);
+	elshcliso_.push_back(els_hcalIso()[iel]);
 
-	if( pass_electronSelection(iel, elsel, false) )
+	bool elId = pass_electronSelection(iel, elsel, false);
+	elsId_.push_back( elId );
+	if( elId )
 	  //havegoodel = true;
 	  goodels.push_back(iel);
   }// closes loop over electrons
@@ -254,33 +266,36 @@ vector<int> myBabyMaker::doMuons() {
   vector<int> goodmus;
 
   // Loop over muons
-  int nMu = 0;
-  for (unsigned int iMu = 0; iMu < mus_p4().size(); iMu++) {
+  int nmus = 0;
+  for( unsigned int iMu = 0; iMu < mus_p4().size(); iMu++) {
 
 	if( mus_p4().at(iMu).pt() < 10 ) continue;
 	if( fabs( mus_p4().at(iMu).eta() ) > 2.5 ) continue; 
 	if( !muonIdNotIsolated( iMu, NominalTTbar ) ) continue;
 
-	// pt, eta, phi       
-	musp4_.push_back( mus_p4().at(iMu) );
+	nmus++; //num id'd, not necessarily isolated
 
-	// d0 corrected
-	musd0corr_.push_back( mus_d0corr().at(iMu) );
+	muscharge_.push_back(mus_charge().at(iMu));
 
-	// Relative Isolation
-	musIso_.push_back( muonIsoValue(iMu) );
+	musp4_.push_back( mus_p4().at(iMu) ); // pt, eta, phi 
+
+	musd0corr_.push_back( mus_d0corr().at(iMu) ); // d0 corrected
+
+	musreliso_.push_back( muonIsoValue(iMu) ); // Relative Isolation
+	mustrkiso_.push_back( mus_iso03_sumPt().at(iMu) );
+	musecliso_.push_back( mus_iso03_emEt() .at(iMu) );
+	mushcliso_.push_back( mus_iso03_hadEt().at(iMu) );
 
 	// Muon Selection
 	bool muId = muonId( iMu, NominalTTbar );
 	musId_.push_back( muId );
 	if( muId ) {
-	  nMu++;
-	  goodmus.push_back(iMu);
+	  goodmus.push_back(iMu); //jet cleaning only
 	}
   }
 
   // number of muons passing full selection
-  nMu_ = nMu;
+  nmus_ = nmus;
 
   return goodmus;
 }
@@ -323,7 +338,7 @@ vector<LorentzVector> myBabyMaker::CleanJets(
   assert( jet_eta_threshold > 0 && jet_eta_threshold < 3. );
   assert( jet_lepton_dR_veto_cone > 0. && jet_lepton_dR_veto_cone < 2. );
   // Clean Jets
-  vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > cleaned_vect_p4_jets;
+  vector<LorentzVector> cleaned_vect_p4_jets;
   for (unsigned int ijet = 0; ijet < vect_p4_jets.size(); ijet++) {         // loop on jets supplied by user
 	float pt = vect_p4_jets.at(ijet).pt();
 	if( docor )
