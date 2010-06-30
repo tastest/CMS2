@@ -225,8 +225,8 @@ unsigned int numberOfExtraLeptons(int i_hyp, double minPt){
     // printf("Electron: %u, pt: %0.2f\n",i,cms2.els_p4().at(i).pt());
     if ( cms2.els_p4()[i].pt() < minPt ) continue;
     // printf("\tpassed minPt\n");
-    if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.els_p4().at(i)) <0.3) ) continue;
-    if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.els_p4().at(i)) <0.3) ) continue;
+    if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.els_p4().at(i)) <0.1) ) continue;
+    if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.els_p4().at(i)) <0.1) ) continue;
     // printf("\tpassed hyp letpons\n");
     if ( !(ww_elId(i) && ww_eld0PV(i) && ww_elIso(i) && 
 	   fabs(cms2.els_p4().at(i).eta()) < 2.5) ) continue;
