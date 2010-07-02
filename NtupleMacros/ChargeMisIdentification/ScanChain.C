@@ -6,16 +6,49 @@
 #include "TFile.h"
 #include "TDirectory.h"
 #include "TROOT.h"
+#include "TH1F.h"
+#include "TH2F.h"
 
-#include "CMS2.h"
-CMS2 cms2;
-//#include "CORE/CMS2.cc"
+//#include "CMS2.h"
+#include "CMS2.cc"
+
 //#include "../CORE/selections.cc"
-#include "../CORE/electronSelections.cc"
 //#include "../CORE/utilities.cc"
-#include "tools.cc"
+//#include "../Tools/tools.cc"
+#include "../CORE/electronSelections.cc"
 
 using namespace tas;
+//CMS2 cms2;
+
+TH1F* book1DHist(const char* name, const char* title, unsigned int nbins, float low, float high, const char* xtitle, const char* ytitle, int color) {
+  // return histogram instance with called Sumw2
+  TH1F *hist = new TH1F(name,title,nbins,low,high);
+  hist->SetXTitle(xtitle);
+  hist->SetYTitle(ytitle);
+  hist->Sumw2();
+  hist->SetFillColor(color);
+  hist->SetLineColor(color);
+   
+  return hist;   
+}
+
+TH2F* book2DHist(const char* name, const char* title, 
+                 unsigned int xnbins, float xlow, float xhigh, 
+                 unsigned int ynbins, float ylow, float yhigh, 
+                 const char* xtitle, const char* ytitle, const char* ztitle, 
+                 int color) {
+  // return histogram instance with called Sumw2
+  TH2F *hist = new TH2F(name,title,xnbins,xlow,xhigh,ynbins,ylow,yhigh);
+  hist->SetXTitle(xtitle);
+  hist->SetYTitle(ytitle);
+  hist->SetZTitle(ztitle);
+  hist->Sumw2(); 
+  hist->SetFillColor(color);
+  hist->SetStats(kFALSE);
+  //hist->SetLineColor(color);
+   
+  return hist;   
+}
 
 int ScanChain( TChain* chain) {
 
@@ -29,16 +62,14 @@ int ScanChain( TChain* chain) {
   rootdir->cd();
 
   unsigned int nBinsPt 	= 55;
+  //unsigned int nBinsPt 	= 5;
   float lowBinsPt 	= 0.;
   float highBinsPt 	= 110.;
 
   unsigned int nBinsEta = 52;
+  //unsigned int nBinsEta = 5;
   float lowBinsEta      = -2.6;
   float highBinsEta     =  2.6;
-
-  float ptbins[10]= {10, 20, 30, 40, 50, 60, 70, 80, 90, 150};
-  // float ptbins[5]= {10, 30, 40, 50, 200};
-   float etabins[8] = {0, 0.5, 1.0, 1.28, 1.56, 1.84, 2.12, 2.5};
   
   TH1F *els_pt_sim 			= book1DHist("els_pt_sim", 
 						     "true Electron: p_{T}^{true}",
@@ -132,48 +163,73 @@ int ScanChain( TChain* chain) {
 						     450.,
 						     "Track ID",
 						     "Electrons",2);
-  TH2F *els_2Detavspt_recosim               = book2DVarHist ("els_eta_pt_recosim", 
-						       "true Electron: #eta^{true} vs. p_{T}^{true}",
-						       9, 
-						       ptbins, 
-						       7, 
-						       etabins, 
-						       "p_{T}",
-						       "#eta",
-						       "",
-						       2);
-  TH2 *els_2Detavspt_recosim_incorCharge =  book2DVarHist("els_eta_pt_recosim_incorCharge",
-						     "true Electron with incorrect reconstructed Charge: #eta^{true} vs. p_{T}^{true}",
-						     9, 
-						     ptbins, 
-						     7, 
-						     etabins, 
-						     "p_{T}",
-						     "#eta",
-						     "",
-						     2);
+  // 2D histograms 
+  TH2F *els_2d_eta_Pt_corCharge		= book2DHist("els_2d_eta_Pt_corCharge",
+						     "2D histogram of eta vs Pt corCharge",
+						     nBinsEta,
+						     lowBinsEta,
+						     highBinsEta,
+						     nBinsPt,
+						     lowBinsPt,
+						     highBinsPt,
+						     "#eta^{true}",
+						     "p_{T}^{true} [GeV]",
+						     " ",2);
 
-//  els_2Detavspt_recosim               = book2DVarHist ("els_eta_pt_recosim", 
-// 						       "true Electron: #eta^{true} vs. p_{T}^{true}",
-// 						       4, 
-// 						       ptbins, 
-// 						       7, 
-// 						       etabins, 
-// 						       "p_{T}",
-// 						       "#eta",
-// 						       "",
-// 						       2);
-//   els_2Detavspt_recosim_incorCharge =  book2DVarHist("els_eta_pt_recosim_incorCharge",
-// 						     "true Electron with incorrect reconstructed Charge: #eta^{true} vs. p_{T}^{true}",
-// 						     4, 
-// 						     ptbins, 
-// 						     7, 
-// 						     etabins, 
-// 						     "p_{T}",
-// 						     "#eta",
-// 						     "",
-// 						     2);
-						    
+  TH2F *els_2d_eta_Pt_incorCharge	= book2DHist("els_2d_eta_Pt_incorCharge",
+						     "2D histogram of eta vs Pt incorCharge",
+						     nBinsEta,
+						     lowBinsEta,
+						     highBinsEta,
+						     nBinsPt,
+						     lowBinsPt,
+						     highBinsPt,
+						     "#eta^{true}",
+						     "p_{T}^{true} [GeV]",
+						     " ",2);
+
+  TH2F *els_2d_eta_Pt_ratio 		= book2DHist("els_2d_eta_Pt_ratio",
+						     "2D histogram of eta vs Pt ratio",
+						     nBinsEta,
+						     lowBinsEta,
+						     highBinsEta,
+						     nBinsPt,
+						     lowBinsPt,
+						     highBinsPt,
+						     "#eta^{true}",
+						     "p_{T}^{true} [GeV]",
+						     //"MisID rate",2);
+						     " ",2);
+
+  int num_beforecut=0;
+  int num_ELEID_CAND02=0;
+  int num_ELEID_EXTRA=0;
+  int num_ELENOTCONV_DISTDCOT002=0;
+  int num_ELENOTCONV_HITPATTERN=0;
+  int num_ELECHARGE_NOFLIP=0;
+
+  // individual cuts in ELEID_CAND02
+  int num_ELEID_CAND02_ELESEED_ECAL=0;
+  int num_ELEID_CAND02_ELEETA_250=0;
+  int num_ELEID_CAND02_ELENOMUON_010=0;
+  int num_ELEID_CAND02_ELEID_CAND02=0;
+  int num_ELEID_CAND02_ELEISO_REL010=0;
+  int num_ELEID_CAND02_ELENOTCONV_DISTDCOT002=0;
+  int num_ELEID_CAND02_ELEIP_200=0;
+
+
+  int num_cand02=0;
+  int num_extra=0;
+  int num_hitpattern=0;
+  int num_partnertrack=0;
+  int num_chargeflip=0;
+  int num_cand02_ecal=0;
+  int num_cand02_eta250=0;
+  int num_cand02_noMuon=0;
+  int num_cand02_cand02=0;
+  int num_cand02_impact=0;
+  int num_cand02_relsusy010=0;
+
 
   // file loop
   TIter fileIter(listOfFiles);
@@ -189,7 +245,7 @@ int ScanChain( TChain* chain) {
     for( unsigned int event = 0; event < nEvents; ++event) {
       cms2.GetEntry(event);
       ++nEventsTotal;
-      
+     
       if ( nEventsTotal%10000 == 0 ) {
 	std::cout << "Event: " << nEventsTotal << endl;
       }
@@ -198,6 +254,9 @@ int ScanChain( TChain* chain) {
       for ( unsigned int els = 0;
 	    els < genps_p4().size();
 	    ++els ) {
+
+	// pt cut
+	if( (genps_p4()[els].pt()) < 10 ) continue;
 
 	// check that electron is final state electron
 	if ( genps_status()[els] != 1 ) continue;
@@ -211,34 +270,177 @@ int ScanChain( TChain* chain) {
 
       }
 
+// down to here, no problem.
+
       // loop over reco electrons
       for (unsigned int els = 0; 
            els < els_p4().size(); 
 	   ++els) {
-	if(! (electronSelection_cand02(els) && electronId_extra(els))) continue;
-	
-	   // check how many electrons don't have an associated track
+
+	//
+	// cuts
+	//
+
+	// pt
+	if( (els_p4().at(els).Pt()) < 10 ) continue;
+
+	//if (!pass_electronSelection(els, electronSelection_oldss)) 
+        //   continue;
+
+        // ttbar_v1
+        //if (!pass_electronSelection(els, electronSelection_ttbarV1))
+        // continue;
+
+	//if (!pass_electronSelection(els, electronSelection_ELECHARGE_NOFLIP))
+	//continue; 
+
+	// 3 flip
+	//if (!pass_electronSelection(els, electronSelection_ELECHARGE_NOFLIP3AGREE))
+	//continue; 
+
+	//if (pass_electronSelection(els, electronSelection_ELECHARGE_NOFLIP))
+        // ttbar_v1_chargeflip
+        //if (!pass_electronSelection(els, electronSelection_ttbarV1_chargeflip))
+        //   continue;
+
+
+
+	// new SS
+        //if (!pass_electronSelection(els, electronSelection_ttbarV1_noiso)) 
+        //   continue;
+        //if (!pass_electronSelection(els, electronSelection_ttbarV1_iso))
+        //   continue;
+
+	// new cuts debug
+///*
+
+	num_beforecut++;
+
+	//if (!pass_electronSelection(els, electronSelection_ELEID_CAND02))
+	//continue; 
+	//if (pass_electronSelection(els, electronSelection_ELEID_CAND02))
+	// in 1.56, mimic 1.26
+	if (!pass_electronSelection(els, electronSelection_ELEID_CAND02_old))
+	continue;
+	//num_ELEID_CAND02++;
+
+	if (!pass_electronSelection(els, electronSelection_ELEID_EXTRA))
+	continue; 
+	//if (pass_electronSelection(els, electronSelection_ELEID_EXTRA))
+	//num_ELEID_EXTRA++;
+
+	if (!pass_electronSelection(els, electronSelection_ELENOTCONV_DISTDCOT002))
+	continue; 
+	//if (pass_electronSelection(els, electronSelection_ELENOTCONV_DISTDCOT002))
+	//num_ELENOTCONV_DISTDCOT002++;
+
+	if (!pass_electronSelection(els, electronSelection_ELENOTCONV_HITPATTERN))
+	continue; 
+	//if (pass_electronSelection(els, electronSelection_ELENOTCONV_HITPATTERN))
+	//num_ELENOTCONV_HITPATTERN++;
+
+	//if (!pass_electronSelection(els, electronSelection_ELECHARGE_NOFLIP))
+	//continue; 
+	//if (pass_electronSelection(els, electronSelection_ELECHARGE_NOFLIP))
+	//num_ELECHARGE_NOFLIP++;
+
+	//if (!pass_electronSelection(els, electronSelection_ELECHARGE_NOFLIP3AGREE))
+	//continue; 
+
+	// print out numbers
+	if (pass_electronSelection(els, electronSelection_ELEID_CAND02_old_ELESEED_ECAL))
+	num_ELEID_CAND02_ELESEED_ECAL++;
+
+	if (pass_electronSelection(els, electronSelection_ELEID_CAND02_old_ELEETA_250))
+	num_ELEID_CAND02_ELEETA_250++;
+
+	if (pass_electronSelection(els, electronSelection_ELEID_CAND02_old_ELENOMUON_010))
+	num_ELEID_CAND02_ELENOMUON_010++;
+
+	if (pass_electronSelection(els, electronSelection_ELEID_CAND02_old_ELEID_CAND02))
+	num_ELEID_CAND02_ELEID_CAND02++;
+
+	if (pass_electronSelection(els, electronSelection_ELEID_CAND02_old_ELEISO_REL010))
+	num_ELEID_CAND02_ELEISO_REL010++;
+
+	if (pass_electronSelection(els, electronSelection_ELEID_CAND02_old_ELENOTCONV_DISTDCOT002))
+	num_ELEID_CAND02_ELENOTCONV_DISTDCOT002++;
+
+	if (pass_electronSelection(els, electronSelection_ELEID_CAND02_old_ELEIP_200))
+	num_ELEID_CAND02_ELEIP_200++;
+//*/
+
+
+	// double check Derek's work
+	//if (!pass_electronSelection(els, electronSelection_ss))
+	//continue; 
+	 
+	//if (!pass_electronSelection(els, electronSelection_ELECHARGE_NOFLIP))
+	//continue; 
+
+	//if (!pass_electronSelection(els, electronSelection_ELECHARGE_NOFLIP3AGREE))
+	//continue; 
+
+
+	// old cuts std::cout<<"debug"<<endl;
+
+/*
+        // eleId_v3(1.26) 
+	num_beforecut++;
+
+	if (!electronSelection_cand02(els)) continue;
+	//if (electronSelection_cand02(els)) 
+	//  num_cand02++;
+
+	if (!electronId_extra(els) ) continue;
+	//if (electronId_extra(els) ) 
+	//  num_extra++;
+
+	if(isFromConversionPartnerTrack(els)) continue;
+	//if(!isFromConversionPartnerTrack(els)) 
+	//  num_hitpattern++;
+
+        // need to be commented out for comparison with 336p4
+	if(isFromConversionHitPattern(els)) continue; 
+	//if(!isFromConversionHitPattern(els))  
+	//  num_partnertrack++;
+
+	//if ( isChargeFlip(els) ) continue; 
+	//if(!isChargeFlip(els) ) 
+	//  num_chargeflip++;
+
+
+	// debugg
+	if (electronSelection_cand02_ecal(els)) 
+	  num_cand02_ecal++;
+
+	if (electronSelection_cand02_eta250(els)) 
+	  num_cand02_eta250++;
+
+	if (electronSelection_cand02_noMuon(els)) 
+	  num_cand02_noMuon++;
+
+	if (electronSelection_cand02_cand02(els)) 
+	  num_cand02_cand02++;
+
+	if (electronSelection_cand02_impact(els)) 
+	  num_cand02_impact++;
+
+	if (electronSelection_cand02_relsusy010(els)) 
+	  num_cand02_relsusy010++;
+
+*/
+
+
+	// check how many electrons don't have an associated track
 	els_trkId->Fill(els_trkidx().at(els));
 	// tmp charge variable
-	//double charge = els_charge().at(els); //majority logic
-	//int charge = getChargeUsingMajorityLogic(els, 0.45);
-	double charge = els_trk_charge().at(els);  //our method
-	//double charge = els_sccharge().at(els);
-	//if (charge !=els_charge().at(els)) std::cout<<"warning  " <<std::endl;
+	//double charge = els_charge().at(els); //
+	double charge = els_trk_charge().at(els);
 	
-	if(isChargeFlip(els))continue ;
-	
-
-	//if ((cms2.els_trkidx().at(els) >= 0) && (cms2.els_trk_charge().at(els) != cms2.trks_charge().at(cms2.els_trkidx().at(els))) ) continue;
-
-	
-	//	else if ((els_trkidx().at(els) < 0) && (cms2.els_trk_charge().at(els) != els_sccharge().at(els)))continue;
-	//if (isFromConversionHitPattern(els)) continue;
-	
-
-	  els_pt_reco->Fill(els_p4().at(els).Pt());
-	  els_eta_reco->Fill(els_p4().at(els).eta());
-
+	// fill reco
+	els_pt_reco->Fill(els_p4().at(els).Pt());
+	els_eta_reco->Fill(els_p4().at(els).eta());
 
 	// fill reco_corCharge
 	if ( (charge == -1 && els_mc_id().at(els) == 11) || (charge == 1 && els_mc_id().at(els) == -11) ) {
@@ -252,29 +454,80 @@ int ScanChain( TChain* chain) {
 	// fill recosim
 	els_pt_recosim->Fill(els_mc_p4().at(els).Pt());
 	els_eta_recosim->Fill(els_mc_p4().at(els).eta());
-	
-	els_2Detavspt_recosim->Fill(els_p4().at(els).Pt(), fabs(els_p4().at(els).eta())); 
 
 	// correct charge identified
 	if ( (charge == -1 && els_mc_id().at(els) == 11) || (charge == 1 && els_mc_id().at(els) == -11) ) {
 
 	  els_pt_recosim_corCharge->Fill(els_mc_p4().at(els).Pt());
 	  els_eta_recosim_corCharge->Fill(els_mc_p4().at(els).eta());
+	  els_2d_eta_Pt_corCharge->Fill(els_mc_p4().at(els).eta(), els_mc_p4().at(els).Pt()); //2d
+
 
 	  // incorrect charge identified
 	} else {
 
 	  els_pt_recosim_incorCharge->Fill(els_mc_p4().at(els).Pt());
 	  els_eta_recosim_incorCharge->Fill(els_mc_p4().at(els).eta());
-
-	  els_2Detavspt_recosim_incorCharge->Fill(els_p4().at(els).Pt(), fabs(els_p4().at(els).eta())); 
+	  els_2d_eta_Pt_incorCharge->Fill(els_mc_p4().at(els).eta(), els_mc_p4().at(els).Pt()); //2d
 	}
 
-      } //end of looping over reco eles
+      }
       
     }
-    
   }
+
+  // 2d ratio
+  Float_t deno=0, num=0;
+  for(Int_t i=0; i<nBinsEta; i++)
+  {
+    for(Int_t j=0; j<nBinsPt; j++)
+    {
+       deno = els_2d_eta_Pt_corCharge->GetBinContent(i+1, j+1)	
+            +els_2d_eta_Pt_incorCharge->GetBinContent(i+1, j+1);
+       num = els_2d_eta_Pt_incorCharge->GetBinContent(i+1, j+1);
+
+       els_2d_eta_Pt_ratio->SetBinContent(i+1, j+1, num/deno);
+    }
+  } 
+
+/*
+  cout << " ------------------------------------------------------------- " << endl;
+  cout << "num_beforecut             : " << num_beforecut << endl;
+  cout << "num_ELEID_CAND02          : " << num_ELEID_CAND02 << endl;
+  cout << "num_ELEID_EXTRA           : " << num_ELEID_EXTRA << endl;
+  cout << "num_ELENOTCONV_DISTDCOT002: " << num_ELENOTCONV_DISTDCOT002 << endl;
+  cout << "num_ELENOTCONV_HITPATTERN : " << num_ELENOTCONV_HITPATTERN  << endl;
+  cout << "num_ELECHARGE_NOFLIP      : " << num_ELECHARGE_NOFLIP << endl;
+  cout << "num_ELEID_CAND02_ELESEED_ECAL          : " << num_ELEID_CAND02_ELESEED_ECAL << endl;
+  cout << "num_ELEID_CAND02_ELEETA_250            : " << num_ELEID_CAND02_ELEETA_250 << endl;
+  cout << "num_ELEID_CAND02_ELENOMUON_010         : " << num_ELEID_CAND02_ELENOMUON_010 << endl;
+  cout << "num_ELEID_CAND02_ELEID_CAND02          : " << num_ELEID_CAND02_ELEID_CAND02 << endl;
+  cout << "num_ELEID_CAND02_ELEISO_REL010         : " << num_ELEID_CAND02_ELEISO_REL010 << endl;
+  cout << "num_ELEID_CAND02_ELENOTCONV_DISTDCOT002: " 
+       << num_ELEID_CAND02_ELENOTCONV_DISTDCOT002 << endl;
+  cout << "num_ELEID_CAND02_ELEIP_200             : " << num_ELEID_CAND02_ELEIP_200 << endl; 
+  cout << " ------------------------------------------------------------- " << endl;
+*/
+/*
+  cout << " ----------------------------------------------- " << endl;
+  cout << "num_beforecut          : " << num_beforecut << endl;
+  cout << "num_cand02             : " << num_cand02 << endl; 
+  cout << "num_extra              : " << num_extra << endl; 
+  cout << "num_hitpattern         : " << num_hitpattern << endl; 
+  cout << "num_partnertrack       : " << num_partnertrack << endl; 
+  cout << "num_chargeflip         : " << num_chargeflip << endl; 
+  cout << "num_cand02_ecal          : " << num_cand02_ecal << endl;
+  cout << "num_cand02_eta250        : " << num_cand02_eta250  << endl;
+  cout << "num_cand02_noMuon        : " << num_cand02_noMuon  << endl;
+  cout << "num_cand02_cand02        : " << num_cand02_cand02  << endl; 
+  cout << "num_cand02_impact        : " << num_cand02_impact  << endl;
+  cout << "num_cand02_relsusy010    : " << num_cand02_relsusy010 << endl;
+  cout << " ----------------------------------------------- " << endl;
+*/
+
+
+
+
 
   if ( nEventsChain != nEventsTotal ) {
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
