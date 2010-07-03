@@ -86,6 +86,7 @@ enum EleSelectionType {
     //
     // is not a charge flip
     ELECHARGE_NOTFLIP,
+    ELECHARGE_NOTFLIP3AGREE,
     //
     // spike rejection
     //
@@ -365,14 +366,16 @@ static const cuts_t electronSelection_cand01 = electronSelection_os;
 static const cuts_t electronSelection_ss =
                     (1ll<<ELEISO_REL010) |
                     (1ll<<ELEIP_200) |
-                    (1ll<<ELEID_CAND02) |
+                    //(1ll<<ELEID_CAND02) |
+                    (1ll<<ELEID_VBTF_35X_70) | // VBTF70
                     (1ll<<ELEID_EXTRA) |
                     (1ll<<ELENOTCONV_HITPATTERN) |
                     (1ll<<ELENOTCONV_DISTDCOT002) |
                     (1ll<<ELEETA_250) |
                     (1ll<<ELENOMUON_010) |
-                    (1ll<<ELESEED_ECAL) |
-                    (1ll<<ELECHARGE_NOTFLIP);
+                    (1ll<<ELESEED_ECAL); 
+                    (1ll<<ELECHARGE_NOTFLIP3AGREE);
+
 //---------------------------------------------------------
 // FIXME: for fake rates
 static const cuts_t electronSelection_cand02flip = electronSelection_ss;
@@ -472,7 +475,7 @@ int getChargeUsingMajorityLogic(int elIdx, float minFracSharedHits = 0.45);
 //charge flip rejection
 //
 bool isChargeFlip(int elIndex);
-
+bool isChargeFlip3agree(int elIndex); 
 //
 // spike rejection for electrons
 //

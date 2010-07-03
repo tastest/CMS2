@@ -107,7 +107,8 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     // chargeflip
     //
 
-    if (!isChargeFlip(index)) cuts_passed |= (1ll<<ELECHARGE_NOTFLIP);
+    if (!isChargeFlip(index)) cuts_passed |= (1ll<<ELECHARGE_NOTFLIP); 
+    if (!isChargeFlip3agree(index)) cuts_passed |= (1ll<<ELECHARGE_NOTFLIP3AGREE);
 
     //
     // spike rejection
@@ -606,6 +607,24 @@ bool isChargeFlip(int elIndex){
 
     return false;
 }
+
+bool isChargeFlip3agree(int elIndex){
+
+    if (cms2.els_trkidx().at(elIndex) >= 0) 
+    {
+      // false if 3 charge measurements agree
+      if(
+           (cms2.els_trk_charge().at(elIndex)          // gsf
+           == cms2.trks_charge().at(cms2.els_trkidx().at(elIndex))) // ctf 
+           &&
+           (cms2.trks_charge().at(cms2.els_trkidx().at(elIndex)) // ctf 
+           == cms2.els_sccharge().at(elIndex)) )      // sc
+      return false;  
+    }
+
+    return true;
+}
+
 
 //
 // spike rejection for electrons
