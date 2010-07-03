@@ -373,7 +373,7 @@ static const cuts_t electronSelection_ss =
                     (1ll<<ELENOTCONV_DISTDCOT002) |
                     (1ll<<ELEETA_250) |
                     (1ll<<ELENOMUON_010) |
-                    (1ll<<ELESEED_ECAL); 
+                    (1ll<<ELESEED_ECAL) |
                     (1ll<<ELECHARGE_NOTFLIP3AGREE);
 
 //---------------------------------------------------------
