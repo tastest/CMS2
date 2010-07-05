@@ -58,7 +58,8 @@ class myBabyMaker
 
 	// What electron trigger did it pass and is the electron matched to a egamma trg object
 	// 0=fail 1="pass but no match" 2="pass and matched" -1="pass but egamm trg obj missing"
-	Int_t ph10_;  // HLT_Photon10_L1R
+	Int_t ph10_;  // HLT_Photon10_L1R or HLT_Photon10_Cleaned_L1R
+	Int_t ph15_;  // HLT_Photon15_L1R or HLT_Photon15_Cleaned_L1R
 	Int_t el10_;  // HLT_Ele10_LW_L1R
 	Int_t eg5_;   // HLT_L1SingleEG5 
 	Int_t eg8_;   // HLT_L1SingleEG
@@ -72,6 +73,7 @@ class myBabyMaker
 
 	//  Minimm dR to the closest eg object
 	Float_t drph10_;
+	Float_t drph15_;
 	Float_t drel10_;
 	Float_t dreg5_;
 	Float_t dreg8_;

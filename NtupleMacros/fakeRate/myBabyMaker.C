@@ -121,7 +121,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 	  // Initialize baby ntuple
 	  InitBabyNtuple();
 
-	  num_ = pass_electronSelection( iEl, electronSelection_ttbarV1 );
+	  // Add spike veto
+	  num_ = pass_electronSelection( iEl, electronSelection_ttbarV1 ) && (!isSpikeElectron(iEl));
 	  v1_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v1 );
 	  v2_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v2 );
 	  v3_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v3 );
@@ -208,13 +209,16 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 	    if (dr > deltaRCut) l110u_ = 2;
 	  }
 
-	  // Now fill the egamma trigger flages
-	  ph10_ = nHLTObjects("HLT_Photon10_L1R");
-	  el10_ = nHLTObjects("HLT_Ele10_LW_L1R");
-	  eg5_  = nHLTObjects("HLT_L1SingleEG5");
-	  eg8_  = nHLTObjects("HLT_L1SingleEG8");
+	  // Now fill the egamma trigger flags  (look at both cleaned and uncleaned photons_
+	  int ph10cl = nHLTObjects("HLT_Photon10_Cleaned_L1R");
+	  int ph10   = nHLTObjects("HLT_Photon10_L1R");
+	  int ph15cl = nHLTObjects("HLT_Photon15_Cleaned_L1R");
+	  int ph15   = nHLTObjects("HLT_Photon15_L1R");
+	  el10_   = nHLTObjects("HLT_Ele10_LW_L1R");
+	  eg5_    = nHLTObjects("HLT_L1SingleEG5");
+	  eg8_    = nHLTObjects("HLT_L1SingleEG8");
 
-	  // I know that Ele10 is the only trigger for which the HLT objects are saved for all data we have
+	  // For Ele10 the HLT objects are saved for all data we have
 	  if (el10_ > 0) {
 	    bool match = false;
 	    for (int itrg=0; itrg<el10_; itrg++) {
@@ -230,11 +234,19 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 	    }
 	  }
 
-	  // Photon 10, on the other hand, is there only some fraction of the data
-	  if (ph10_ > 0) {
+	  // Now for photon10 we look at cleaned and at uncleaned
+	  if (ph10 == 0 && ph10cl == 0) ph10_=0;   // trigger failed
+	  if (ph10 <  0 || ph10cl <  0) ph10_=-1;  // passed but no object
+	  if (ph10cl > 0 || ph10 > 0) {
 	    bool match = false;
-	    for (int itrg=0; itrg<ph10_; itrg++) {
+	    for (int itrg=0; itrg<ph10; itrg++) {
 	      LorentzVector p4tr = p4HLTObject("HLT_Photon10_L1R",itrg);
+	      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
+	      if (dr < drph10_) drph10_ = dr;
+	      if (dr < 0.4) match=true;
+	    }
+	    for (int itrg=0; itrg<ph10cl; itrg++) {
+	      LorentzVector p4tr = p4HLTObject("HLT_Photon10_Cleaned_L1R",itrg);
 	      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
 	      if (dr < drph10_) drph10_ = dr;
 	      if (dr < 0.4) match=true;
@@ -246,19 +258,44 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 	    }
 	  }
 
+	  // Now for photon15 we look at cleaned and at uncleaned
+	  if (ph15 == 0 && ph15cl == 0) ph15_=0;   // trigger failed
+	  if (ph15 <  0 || ph15cl <  0) ph15_=-1;  // passed but no object
+	  if (ph15cl > 0 || ph15 > 0) {
+	    bool match = false;
+	    for (int itrg=0; itrg<ph15; itrg++) {
+	      LorentzVector p4tr = p4HLTObject("HLT_Photon15_L1R",itrg);
+	      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
+	      if (dr < drph15_) drph15_ = dr;
+	      if (dr < 0.4) match=true;
+	    }
+	    for (int itrg=0; itrg<ph15cl; itrg++) {
+	      LorentzVector p4tr = p4HLTObject("HLT_Photon15_Cleaned_L1R",itrg);
+	      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
+	      if (dr < drph15_) drph15_ = dr;
+	      if (dr < 0.4) match=true;
+	    }
+	    if (match) {
+	      ph15_ = 2;
+	    } else {
+	      ph15_ = 1;
+	    }
+	  }
+
+
 	  // For EG5 and EG8 the HLT object is missing, so we'll try with the L1 info
 	  // There appear to be two L1 EM objects: one with "iso" and one without.
 	  // From some event dumps it looks like the iso one is the one we want
 	  // Also: the Photon10 HLT object is sometimes missing, but I know that EG5 is its prerequisite
-	  // so if it is missing we will match to EG5
+	  // so if it is missing we will match to EG5  (TAKE THIS OUT.... July 5th 2010)
 	  if ( (eg5_ == -1 || eg8_ == -1 || ph10_ == -1) && l1_emiso_p4().size()>0) {
 	    
 	    for (unsigned int ig = 0 ; ig < l1_emiso_p4().size(); ig++) {
 	    
-	      if (ph10_ == -1 && l1_emiso_p4().at(ig).pt() > 5.) {
-		double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl),l1_emiso_p4().at(ig)); 
-		if (dr < drph10_) drph10_ = dr;
-	      }
+	      //if (ph10_ == -1 && l1_emiso_p4().at(ig).pt() > 5.) {
+	      //	double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl),l1_emiso_p4().at(ig)); 
+	      //	if (dr < drph10_) drph10_ = dr;
+	      //}
 	      if (eg5_ == -1 && l1_emiso_p4().at(ig).pt() > 5.) {
 		double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl),l1_emiso_p4().at(ig)); 
 		if (dr < dreg5_) dreg5_ = dr;
@@ -270,10 +307,10 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 
 	    } // closes loop over L1 EG objects
 	    
-	    if (ph10_ == -1) {
-	      if (drph10_ < 100.) ph10_ = 1; // objects found, but no match
-	      if (drph10_ < 0.4)  ph10_ = 2; // objects found, and matched
-	    }
+	    //if (ph10_ == -1) {
+	    //  if (drph10_ < 100.) ph10_ = 1; // objects found, but no match
+	    //  if (drph10_ < 0.4)  ph10_ = 2; // objects found, and matched
+	    //}
 	    if (eg5_ == -1) {
 	      if (dreg5_ < 100.) eg5_ = 1; // objects found, but no match
 	      if (dreg5_ < 0.4)  eg5_ = 2; // objects found, and matched
@@ -334,22 +371,22 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 	  eta_  = mus_p4().at(iMu).eta();
 	  phi_  = mus_p4().at(iMu).phi();
 	  id_   = 13*mus_charge().at(iMu);
-	  num_  = muonId(iMu, NominalTTbar);
+	  num_  = muonId(iMu, NominalTTbarV2);
           tcmet_ = evt_tcmet();
 
 	  // Careful about tcmet.  
 	  // For muons pt>10 GeV, if it is not already corrected for it, do it
-	  // THIS is most likely wrong...needs to be fixed......
+	  // THIS is most likely wrong...needs to be fixed......(Fixed July 5, 2010)
 	  if (pt_ > 10. && (mus_tcmet_flag().at(iMu) == 0 || mus_tcmet_flag().at(iMu) == 4)) {
 	    cout << "Correcting the tcmet" <<endl;
 	    double lmetx = tcmet_ * cos(evt_tcmetPhi());
 	    double lmety = tcmet_  * sin(evt_tcmetPhi());
 	    if (mus_tcmet_flag()[iMu] == 0){
-	      lmetx+= - mus_met_deltax()[iMu] - mus_p4()[iMu].x();
-	      lmety+= - mus_met_deltay()[iMu] - mus_p4()[iMu].y();
+	      lmetx+= mus_met_deltax()[iMu] - mus_p4()[iMu].x();
+	      lmety+= mus_met_deltay()[iMu] - mus_p4()[iMu].y();
 	    } else if (mus_tcmet_flag()[iMu] == 4){
-	      lmetx+= - mus_tcmet_deltax()[iMu] - mus_met_deltax()[iMu] - mus_p4()[iMu].x(); 
-	      lmety+= - mus_tcmet_deltay()[iMu] - mus_met_deltay()[iMu] - mus_p4()[iMu].y(); 
+	      lmetx+= - mus_tcmet_deltax()[iMu] + mus_met_deltax()[iMu] - mus_p4()[iMu].x(); 
+	      lmety+= - mus_tcmet_deltay()[iMu] + mus_met_deltay()[iMu] - mus_p4()[iMu].y(); 
 	    }
 
 	    tcmet_ = sqrt(lmetx*lmetx+lmety*lmety);
@@ -493,6 +530,7 @@ void myBabyMaker::InitBabyNtuple () {
   v3_  = false;
   num_ = false;
   ph10_ = 0;
+  ph15_ = 0;
   el10_ = 0;
   eg5_  = 0;
   eg8_  = 0;
@@ -500,6 +538,7 @@ void myBabyMaker::InitBabyNtuple () {
   mu9_  = 0;
   mu3_  = 0;
   drph10_ = 99.;
+  drph15_ = 99.;
   drel10_ = 99.;
   dreg5_  = 99.;
   dreg8_  = 99.;
@@ -544,11 +583,13 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("num",         &num_,        "num/O"      );
 
     babyTree_->Branch("ph10",       &ph10_,       "ph10/I"      );
+    babyTree_->Branch("ph15",       &ph15_,       "ph15/I"      );
     babyTree_->Branch("el10",         &el10_,         "el10/I"      );
     babyTree_->Branch("eg5",         &eg5_,        "eg5/I"      );
     babyTree_->Branch("eg8",         &eg8_,        "eg8/I"      );
 
     babyTree_->Branch("drph10",       &drph10_,       "drph10/F"      );
+    babyTree_->Branch("drph15",       &drph15_,       "drph15/F"      );
     babyTree_->Branch("drel10",         &drel10_,         "drel10/F"      );
     babyTree_->Branch("dreg5",         &dreg5_,        "dreg5/F"      );
     babyTree_->Branch("dreg8",         &dreg8_,        "dreg8/F"      );
