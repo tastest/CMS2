@@ -22,7 +22,7 @@
 
 //#include "../CORE/fakerates.cc"
 #include "../CORE/triggerUtils.cc"
-#include "./goodrun.cc"
+#include "../Tools/goodrun.cc"
 #include "./myBabyMaker.h"
 using namespace std;
 using namespace tas;
