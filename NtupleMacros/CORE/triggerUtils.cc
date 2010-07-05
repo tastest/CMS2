@@ -40,7 +40,7 @@ bool goodEGTrigger5July2010 (bool mc) {
     int p15 = nHLTObjects("HLT_Photon15_L1R");
     if (p15 != 0) return true;
 
-    int p15 = nHLTObjects("HLT_Photon15_Cleaned_L1R");
+    p15 = nHLTObjects("HLT_Photon15_Cleaned_L1R");
     if (p15 != 0) return true;
 
  
