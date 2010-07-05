@@ -12,7 +12,8 @@ enum SelectionType {
   Tight = 2,
   NominalTTbar = 3,
   muonSelectionFO_mu_v1 = 4,
-  muonSelectionFO_mu_ttbar = 5
+  muonSelectionFO_mu_ttbar = 5,
+  NominalTTbarV2 = 6
 }; 
 
 //
