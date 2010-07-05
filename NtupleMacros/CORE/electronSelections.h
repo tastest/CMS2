@@ -315,45 +315,6 @@ static const cuts_t electronSelection_ttbarV2 =
   (1ll<<ELEETA_250) |
   (1ll<<ELESEED_ECAL) |
   (1ll<<ELENOSPIKE_SWISS005); 
-//---------------------------------------------------------
-// TTBarV2 fakeable object definition v1
-// extrapolating in isolation and id
-//---------------------------------------------------------
-static const cuts_t electronSelectionFO_el_ttbarV2_v1 =
-  electronSelectionFO_baseline |
-  (1ll<<ELENOTCONV_HITPATTERN) |
-  (1ll<<ELESCET_010) |
-  (1ll<<ELEPT_010) |
-  (1ll<<ELEISO_REL040)|
-  (1ll<<ELENOSPIKE_SWISS005);
-
-//---------------------------------------------------------
-// TTBarV2 fakeable object definition v2
-// extrapolating in id
-//---------------------------------------------------------
-static const cuts_t electronSelectionFO_el_ttbarV2_v2 =
-  electronSelectionFO_baseline |
-  (1ll<<ELENOTCONV_HITPATTERN) |
-  (1ll<<ELESCET_010) |
-  (1ll<<ELEPT_010) |
-  (1ll<<ELEISO_REL015) |
-  (1ll<<ELENOSPIKE_SWISS005); 
-//---------------------------------------------------------
-// TTBarV2 fakeable object definition v3
-// extrapolating in iso
-//---------------------------------------------------------
-static const cuts_t electronSelectionFO_el_ttbarV2_v3 =
-  electronSelectionFO_baseline |
-  (1ll<<ELENOTCONV_HITPATTERN) |
-  (1ll<<ELESCET_010) |
-  (1ll<<ELEPT_010) |
-  (1ll<<ELEID_VBTF_35X_90) |
-  (1ll<<ELEISO_REL040) |
-  (1ll<<ELENOSPIKE_SWISS005); 
-//---------------------------------------------------------
-
-
-
 
 //
 // ======================== WW ============================
