@@ -7,6 +7,49 @@
 #include "CMS2.h"
 #include "triggerUtils.h"
 
+//--------------------------------------------------
+// EG trigger selection from 5 July 2010
+// data: Photon10 OR Electron 10 OR Photon 15
+// MC  : E10 OR Photon15
+// (Note: in data Photon10 is prescaled at some point)
+// (Note: in MC Photon15 has a different L1 requirement, so we 
+//        use Photon10 and we tighten the pt threshold)
+//--------------------------------------------------
+bool goodEGTrigger5July2010 (bool mc) {
+  if (mc) {
+ 
+   int e10 = nHLTObjects("HLT_Ele10_LW_L1R");
+    if (e10 > 0) return true;
+
+    int p10 = nHLTObjects("HLT_Photon10_L1R");
+    for (int i=0; i<p10; i++) {
+      LorentzVector v = p4HLTObject("HLT_Photon10_L1R", i);
+      if (v.pt() > 15.) return true;
+    }
+ 
+  } else {  // data now
+    int e10 = nHLTObjects("HLT_Ele10_LW_L1R");
+    if (e10 > 0) return true;
+
+    int p10 = nHLTObjects("HLT_Photon10_L1R");
+    if (p10 > 0) return true;
+
+    p10 = nHLTObjects("HLT_Photon10_Cleaned_L1R");
+    if (p10 > 0) return true;
+
+    int p15 = nHLTObjects("HLT_Photon15_L1R");
+    if (p15 > 0) return true;
+
+    int p15 = nHLTObjects("HLT_Photon15_Cleaned_L1R");
+    if (p15 > 0) return true;
+
+ 
+  }
+  return false;
+}
+
+
+
 //-----------------------------------------------------
 // Returns the nth object that passes a given trigger
 // (n starts from 0)
