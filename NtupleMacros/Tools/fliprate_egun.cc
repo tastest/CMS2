@@ -22,88 +22,88 @@ double getSingleEleNum(double el_pt, double el_eta) {
 
   el_eta = fabs(el_eta);
 
-  if( el_eta < 0.5 ){
-    if( el_pt > 90.0 )	return 26.0;
-    if( el_pt > 80.0 )	return 12.0;
-    if( el_pt > 70.0 )	return 9.0;
-    if( el_pt > 60.0 )	return 12.0;
-    if( el_pt > 50.0 )	return  6.0;
-    if( el_pt > 40.0 )	return  5.0;
-    if( el_pt > 30.0 )	return  4.0;
-    if( el_pt > 20.0 )	return  2.0;
-    if( el_pt > 10.0 )	return  2.0;
+  if( el_eta < 0.5 ){ 
+    if( el_pt > 90) return 0;
+    if( el_pt > 80) return 2;
+    if( el_pt > 70) return 2;
+    if( el_pt > 60) return 3;
+    if( el_pt > 50) return 2;
+    if( el_pt > 40) return 1;
+    if( el_pt > 30) return 3;
+    if( el_pt > 20) return 0;
+    if( el_pt > 10) return 0;
     return 0.0;
   }
-  if( el_eta < 1.0 ){
-    if( el_pt > 90.0 )  return 32.0;
-    if( el_pt > 80.0 )  return 31.0;
-    if( el_pt > 70.0 )  return 22.0;
-    if( el_pt > 60.0 )  return 19.0;
-    if( el_pt > 50.0 )  return 17.0;
-    if( el_pt > 40.0 )  return 10.0;
-    if( el_pt > 30.0 )  return 12.0;
-    if( el_pt > 20.0 )  return  3.0;
-    if( el_pt > 10.0 )  return  1.0;
+  if( el_eta < 1 ){ 
+    if( el_pt > 90) return 8;
+    if( el_pt > 80) return 3;
+    if( el_pt > 70) return 3;
+    if( el_pt > 60) return 4;
+    if( el_pt > 50) return 5;
+    if( el_pt > 40) return 2;
+    if( el_pt > 30) return 6;
+    if( el_pt > 20) return 2;
+    if( el_pt > 10) return 1;
     return 0.0;
   }
-  if( el_eta < 1.28 ){
-    if( el_pt > 90.0 )  return 41.0;
-    if( el_pt > 80.0 )  return 39.0;
-    if( el_pt > 70.0 )  return 34.0;
-    if( el_pt > 60.0 )  return 30.0;
-    if( el_pt > 50.0 )  return 26.0;
-    if( el_pt > 40.0 )  return 16.0;
-    if( el_pt > 30.0 )  return 13.0;
-    if( el_pt > 20.0 )  return  6.0;
-    if( el_pt > 10.0 )  return  1.0;
+  if( el_eta < 1.28 ){ 
+    if( el_pt > 90) return 12;
+    if( el_pt > 80) return 12;
+    if( el_pt > 70) return 8;
+    if( el_pt > 60) return 15;
+    if( el_pt > 50) return 10;
+    if( el_pt > 40) return 6;
+    if( el_pt > 30) return 10;
+    if( el_pt > 20) return 2;
+    if( el_pt > 10) return 1;
     return 0.0;
   }
-  if( el_eta < 1.56 ){
-    if( el_pt > 90.0 )  return 74.0;
-    if( el_pt > 80.0 )  return 88.0;
-    if( el_pt > 70.0 )  return 90.0;
-    if( el_pt > 60.0 )  return 64.0;
-    if( el_pt > 50.0 )  return 57.0;
-    if( el_pt > 40.0 )  return 42.0;
-    if( el_pt > 30.0 )  return 29.0;
-    if( el_pt > 20.0 )  return 11.0;
-    if( el_pt > 10.0 )  return 2.0;
+  if( el_eta < 1.56 ){ 
+    if( el_pt > 90) return 32;
+    if( el_pt > 80) return 32;
+    if( el_pt > 70) return 22;
+    if( el_pt > 60) return 22;
+    if( el_pt > 50) return 19;
+    if( el_pt > 40) return 17;
+    if( el_pt > 30) return 9;
+    if( el_pt > 20) return 6;
+    if( el_pt > 10) return 1;
     return 0.0;
   }
-  if( el_eta < 1.84 ){
-    if( el_pt > 90.0 )  return 228.0;
-    if( el_pt > 80.0 )  return 240.0;
-    if( el_pt > 70.0 )  return 215.0;
-    if( el_pt > 60.0 )  return 195.0;
-    if( el_pt > 50.0 )  return 124.0;
-    if( el_pt > 40.0 )  return 100.0;
-    if( el_pt > 30.0 )  return 55.0;
-    if( el_pt > 20.0 )  return 16.0;
-    if( el_pt > 10.0 )  return 9.0;
+  if( el_eta < 1.84 ){ 
+    if( el_pt > 90) return 56;
+    if( el_pt > 80) return 56;
+    if( el_pt > 70) return 50;
+    if( el_pt > 60) return 62;
+    if( el_pt > 50) return 41;
+    if( el_pt > 40) return 38;
+    if( el_pt > 30) return 18;
+    if( el_pt > 20) return 12;
+    if( el_pt > 10) return 0;
     return 0.0;
   }
-  if( el_eta < 2.12 ){
-    if( el_pt > 90.0 )  return 165.0;
-    if( el_pt > 80.0 )  return 199.0;
-    if( el_pt > 70.0 )  return 166.0;
-    if( el_pt > 60.0 )  return 160.0;
-    if( el_pt > 50.0 )  return 112.0;
-    if( el_pt > 40.0 )  return 89.0;
-    if( el_pt > 30.0 )  return 60.0;
-    if( el_pt > 20.0 )  return 28.0;
-    if( el_pt > 10.0 )  return 6.0;
+  if( el_eta < 2.12 ){ 
+    if( el_pt > 90) return 50;
+    if( el_pt > 80) return 35;
+    if( el_pt > 70) return 36;
+    if( el_pt > 60) return 36;
+    if( el_pt > 50) return 22;
+    if( el_pt > 40) return 26;
+    if( el_pt > 30) return 13;
+    if( el_pt > 20) return 6;
+    if( el_pt > 10) return 4;
     return 0.0;
   }
-  if( el_eta <= 2.5 ){
-    if( el_pt > 90.0 )  return 250.0;
-    if( el_pt > 80.0 )  return 250.0;
-    if( el_pt > 70.0 )  return 227.0;
-    if( el_pt > 60.0 )  return 211.0;
-    if( el_pt > 50.0 )  return 187.0;
-    if( el_pt > 40.0 )  return 168.0;
-    if( el_pt > 30.0 )  return 124.0;
-    if( el_pt > 20.0 )  return 64.0;
-    if( el_pt > 10.0 )  return 32.0;
+  if( el_eta < 2.5 ){ 
+    if( el_pt > 90) return 47;
+    if( el_pt > 80) return 56;
+    if( el_pt > 70) return 48;
+    if( el_pt > 60) return 37;
+    if( el_pt > 50) return 34;
+    if( el_pt > 40) return 29;
+    if( el_pt > 30) return 9;
+    if( el_pt > 20) return 21;
+    if( el_pt > 10) return 4;
     return 0.0;
   }
   std::cout << "Error: eta > 2.5 value found" << endl; 
@@ -115,88 +115,88 @@ double getSingleEleDenom(double el_pt, double el_eta) {
 
   el_eta = fabs(el_eta);
 
-  if( el_eta < 0.5 ){
-    if( el_pt > 90.0 )	return 30479.0;
-    if( el_pt > 80.0 )	return 31026.0;
-    if( el_pt > 70.0 )	return 30869.0;
-    if( el_pt > 60.0 )	return 30163.0;
-    if( el_pt > 50.0 )	return 30171.0;
-    if( el_pt > 40.0 )	return 30690.0;
-    if( el_pt > 30.0 )	return 30450.0;
-    if( el_pt > 20.0 )	return 29890.0;
-    if( el_pt > 10.0 )	return 26416.0;
+  if( el_eta < 0.5 ){ 
+    if( el_pt > 90) return 29598;
+    if( el_pt > 80) return 29458;
+    if( el_pt > 70) return 29894;
+    if( el_pt > 60) return 29800;
+    if( el_pt > 50) return 29817;
+    if( el_pt > 40) return 29646;
+    if( el_pt > 30) return 29468;
+    if( el_pt > 20) return 28424;
+    if( el_pt > 10) return 23816;
     return 0.0;
   }
-  if( el_eta < 1.0 ){
-    if( el_pt > 90.0 )  return 31752.0;
-    if( el_pt > 80.0 )  return 32158.0;
-    if( el_pt > 70.0 )  return 32041.0;
-    if( el_pt > 60.0 )  return 32160.0;
-    if( el_pt > 50.0 )  return 31503.0;
-    if( el_pt > 40.0 )  return 31799.0;
-    if( el_pt > 30.0 )  return 31506.0;
-    if( el_pt > 20.0 )  return 29683.0;
-    if( el_pt > 10.0 )  return 26905.0;
+  if( el_eta < 1 ){ 
+    if( el_pt > 90) return 29226;
+    if( el_pt > 80) return 29247;
+    if( el_pt > 70) return 29497;
+    if( el_pt > 60) return 29223;
+    if( el_pt > 50) return 29944;
+    if( el_pt > 40) return 29770;
+    if( el_pt > 30) return 29486;
+    if( el_pt > 20) return 29112;
+    if( el_pt > 10) return 24737;
     return 0.0;
   }
-  if( el_eta < 1.28 ){
-    if( el_pt > 90.0 )  return 17909.0;
-    if( el_pt > 80.0 )  return 18537.0;
-    if( el_pt > 70.0 )  return 18780.0;
-    if( el_pt > 60.0 )  return 18594.0;
-    if( el_pt > 50.0 )  return 18140.0;
-    if( el_pt > 40.0 )  return 18025.0;
-    if( el_pt > 30.0 )  return 17392.0;
-    if( el_pt > 20.0 )  return 16069.0;
-    if( el_pt > 10.0 )  return 12778.0;
+  if( el_eta < 1.28 ){ 
+    if( el_pt > 90) return 16042;
+    if( el_pt > 80) return 16359;
+    if( el_pt > 70) return 16036;
+    if( el_pt > 60) return 16218;
+    if( el_pt > 50) return 16093;
+    if( el_pt > 40) return 16086;
+    if( el_pt > 30) return 15891;
+    if( el_pt > 20) return 14635;
+    if( el_pt > 10) return 11896;
     return 0.0;
   }
-  if( el_eta < 1.56 ){
-    if( el_pt > 90.0 )  return 13680.0;
-    if( el_pt > 80.0 )  return 14568.0;
-    if( el_pt > 70.0 )  return 15104.0;
-    if( el_pt > 60.0 )  return 14733.0;
-    if( el_pt > 50.0 )  return 14777.0;
-    if( el_pt > 40.0 )  return 14499.0;
-    if( el_pt > 30.0 )  return 13572.0;
-    if( el_pt > 20.0 )  return 12063.0;
-    if( el_pt > 10.0 )  return 9166.0;
+  if( el_eta < 1.56 ){ 
+    if( el_pt > 90) return 12192;
+    if( el_pt > 80) return 12205;
+    if( el_pt > 70) return 11799;
+    if( el_pt > 60) return 12129;
+    if( el_pt > 50) return 11795;
+    if( el_pt > 40) return 11776;
+    if( el_pt > 30) return 11147;
+    if( el_pt > 20) return 10052;
+    if( el_pt > 10) return 7545;
     return 0.0;
   }
-  if( el_eta < 1.84 ){
-    if( el_pt > 90.0 )  return 16990.0;
-    if( el_pt > 80.0 )  return 17608.0;
-    if( el_pt > 70.0 )  return 17624.0;
-    if( el_pt > 60.0 )  return 17817.0;
-    if( el_pt > 50.0 )  return 17688.0;
-    if( el_pt > 40.0 )  return 17822.0;
-    if( el_pt > 30.0 )  return 16628.0;
-    if( el_pt > 20.0 )  return 14626.0;
-    if( el_pt > 10.0 )  return 8920.0;
+  if( el_eta < 1.84 ){ 
+    if( el_pt > 90) return 12990;
+    if( el_pt > 80) return 13375;
+    if( el_pt > 70) return 13431;
+    if( el_pt > 60) return 13415;
+    if( el_pt > 50) return 13127;
+    if( el_pt > 40) return 12808;
+    if( el_pt > 30) return 12308;
+    if( el_pt > 20) return 10435;
+    if( el_pt > 10) return 6272;
     return 0.0;
   }
-  if( el_eta < 2.12 ){
-    if( el_pt > 90.0 )  return 16554.0;
-    if( el_pt > 80.0 )  return 17241.0;
-    if( el_pt > 70.0 )  return 17441.0;
-    if( el_pt > 60.0 )  return 17629.0;
-    if( el_pt > 50.0 )  return 17659.0;
-    if( el_pt > 40.0 )  return 17627.0;
-    if( el_pt > 30.0 )  return 17311.0;
-    if( el_pt > 20.0 )  return 16194.0;
-    if( el_pt > 10.0 )  return 12052.0;
+  if( el_eta < 2.12 ){ 
+    if( el_pt > 90) return 13452;
+    if( el_pt > 80) return 13478;
+    if( el_pt > 70) return 13617;
+    if( el_pt > 60) return 13479;
+    if( el_pt > 50) return 13585;
+    if( el_pt > 40) return 13490;
+    if( el_pt > 30) return 13059;
+    if( el_pt > 20) return 12067;
+    if( el_pt > 10) return 8339;
     return 0.0;
   }
-  if( el_eta <= 2.5 ){
-    if( el_pt > 90.0 )  return 18590.0;
-    if( el_pt > 80.0 )  return 19566.0;
-    if( el_pt > 70.0 )  return 19833.0;
-    if( el_pt > 60.0 )  return 19576.0;
-    if( el_pt > 50.0 )  return 20099.0;
-    if( el_pt > 40.0 )  return 20491.0;
-    if( el_pt > 30.0 )  return 20188.0;
-    if( el_pt > 20.0 )  return 20162.0;
-    if( el_pt > 10.0 )  return 17844.0;
+  if( el_eta < 2.5 ){ 
+    if( el_pt > 90) return 14884;
+    if( el_pt > 80) return 15043;
+    if( el_pt > 70) return 15072;
+    if( el_pt > 60) return 14891;
+    if( el_pt > 50) return 14931;
+    if( el_pt > 40) return 15031;
+    if( el_pt > 30) return 14592;
+    if( el_pt > 20) return 14307;
+    if( el_pt > 10) return 12050;
     return 0.0;
   }
   std::cout << "Error: eta > 2.5 value found" << endl; 
@@ -223,4 +223,3 @@ double getSingleEleFlipRateError(double el_pt, double el_eta) {
   double p = num/denom;
   return sqrt(p*(1-p)/denom);
 }
-
