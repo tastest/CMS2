@@ -19,7 +19,7 @@ bool goodEGTrigger5July2010 (bool mc) {
   if (mc) {
  
    int e10 = nHLTObjects("HLT_Ele10_LW_L1R");
-    if (e10 > 0) return true;
+    if (e10 != 0) return true;
 
     int p10 = nHLTObjects("HLT_Photon10_L1R");
     for (int i=0; i<p10; i++) {
@@ -29,19 +29,19 @@ bool goodEGTrigger5July2010 (bool mc) {
  
   } else {  // data now
     int e10 = nHLTObjects("HLT_Ele10_LW_L1R");
-    if (e10 > 0) return true;
+    if (e10 != 0) return true;
 
     int p10 = nHLTObjects("HLT_Photon10_L1R");
-    if (p10 > 0) return true;
+    if (p10 != 0) return true;
 
     p10 = nHLTObjects("HLT_Photon10_Cleaned_L1R");
-    if (p10 > 0) return true;
+    if (p10 != 0) return true;
 
     int p15 = nHLTObjects("HLT_Photon15_L1R");
-    if (p15 > 0) return true;
+    if (p15 != 0) return true;
 
     int p15 = nHLTObjects("HLT_Photon15_Cleaned_L1R");
-    if (p15 > 0) return true;
+    if (p15 != 0) return true;
 
  
   }
