@@ -253,7 +253,7 @@ static const cuts_t electronSelection_ttbar =
 //---------------------------------------------------------
 
 //---------------------------------------------------------
-// TTBar selection with VBTF90 ID
+// TTBarV1 selection with VBTF90 ID
 //---------------------------------------------------------
 static const cuts_t electronSelection_ttbarV1 =
   (1ll<<ELEID_VBTF_35X_90) |
@@ -275,7 +275,6 @@ static const cuts_t electronSelectionFO_el_ttbarV1_v1 =
   (1ll<<ELENOTCONV_HITPATTERN) |
   (1ll<<ELESCET_010) |
   (1ll<<ELEPT_010) |
-
   (1ll<<ELEISO_REL040);
 //---------------------------------------------------------
 // TTBarV1 fakeable object definition v2
@@ -286,7 +285,6 @@ static const cuts_t electronSelectionFO_el_ttbarV1_v2 =
   (1ll<<ELENOTCONV_HITPATTERN) |
   (1ll<<ELESCET_010) |
   (1ll<<ELEPT_010) |
-
   (1ll<<ELEISO_REL015);
 //---------------------------------------------------------
 // TTBarV1 fakeable object definition v3
@@ -297,10 +295,64 @@ static const cuts_t electronSelectionFO_el_ttbarV1_v3 =
   (1ll<<ELENOTCONV_HITPATTERN) |
   (1ll<<ELESCET_010) |
   (1ll<<ELEPT_010) |
-
   (1ll<<ELEID_VBTF_35X_90) |
   (1ll<<ELEISO_REL040);
 //---------------------------------------------------------
+
+
+//---------------------------------------------------------
+// TTBarV2 selection with VBTF90 ID
+//---------------------------------------------------------
+static const cuts_t electronSelection_ttbarV2 =
+  (1ll<<ELEID_VBTF_35X_90) |
+  (1ll<<ELEIP_400) |
+  (1ll<<ELEISO_REL015) |
+  (1ll<<ELENOMUON_010) |
+  (1ll<<ELENOTCONV_HITPATTERN) |
+  (1ll<<ELENOTCONV_DISTDCOT002) |
+  (1ll<<ELESCET_010) |
+  (1ll<<ELEPT_010) |
+  (1ll<<ELEETA_250) |
+  (1ll<<ELESEED_ECAL) |
+  (1ll<<ELENOSPIKE_SWISS005); 
+//---------------------------------------------------------
+// TTBarV2 fakeable object definition v1
+// extrapolating in isolation and id
+//---------------------------------------------------------
+static const cuts_t electronSelectionFO_el_ttbarV2_v1 =
+  electronSelectionFO_baseline |
+  (1ll<<ELENOTCONV_HITPATTERN) |
+  (1ll<<ELESCET_010) |
+  (1ll<<ELEPT_010) |
+  (1ll<<ELEISO_REL040)|
+  (1ll<<ELENOSPIKE_SWISS005);
+
+//---------------------------------------------------------
+// TTBarV2 fakeable object definition v2
+// extrapolating in id
+//---------------------------------------------------------
+static const cuts_t electronSelectionFO_el_ttbarV2_v2 =
+  electronSelectionFO_baseline |
+  (1ll<<ELENOTCONV_HITPATTERN) |
+  (1ll<<ELESCET_010) |
+  (1ll<<ELEPT_010) |
+  (1ll<<ELEISO_REL015) |
+  (1ll<<ELENOSPIKE_SWISS005); 
+//---------------------------------------------------------
+// TTBarV2 fakeable object definition v3
+// extrapolating in iso
+//---------------------------------------------------------
+static const cuts_t electronSelectionFO_el_ttbarV2_v3 =
+  electronSelectionFO_baseline |
+  (1ll<<ELENOTCONV_HITPATTERN) |
+  (1ll<<ELESCET_010) |
+  (1ll<<ELEPT_010) |
+  (1ll<<ELEID_VBTF_35X_90) |
+  (1ll<<ELEISO_REL040) |
+  (1ll<<ELENOSPIKE_SWISS005); 
+//---------------------------------------------------------
+
+
 
 
 //
