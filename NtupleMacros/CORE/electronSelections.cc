@@ -664,7 +664,7 @@ void electronCorrection_pos(const unsigned int index, float &dEtaIn, float &dPhi
     // return uncorrected values
     //
 
-    if (!(cms2.els_fiduciality()[index]) & (1<<ISEE)) return;
+    if (!(cms2.els_fiduciality()[index] & 1<<ISEE)) return;
     if (cms2.els_scindex()[index] == -1) return;
 
     //
