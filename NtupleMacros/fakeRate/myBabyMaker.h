@@ -54,7 +54,8 @@ class myBabyMaker
 	Bool_t v1_;
 	Bool_t v2_;
 	Bool_t v3_;
-	Bool_t num_;
+	Bool_t num_;   // {electronSelection_ttbarV1 && (!isSpikeElectron()}  NominalTTbarV2   
+	Bool_t numv1_; // electronSelection_ttbarV1 NominalTTbarV1
 
 	// What electron trigger did it pass and is the electron matched to a egamma trg object
 	// 0=fail 1="pass but no match" 2="pass and matched" -1="pass but egamm trg obj missing"

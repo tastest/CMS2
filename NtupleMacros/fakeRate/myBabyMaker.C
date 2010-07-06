@@ -123,6 +123,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 
 	  // Add spike veto
 	  num_ = pass_electronSelection( iEl, electronSelection_ttbarV1 ) && (!isSpikeElectron(iEl));
+          numv1_ = pass_electronSelection( iEl, electronSelection_ttbarV1 );
 	  v1_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v1 );
 	  v2_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v2 );
 	  v3_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v3 );
@@ -372,6 +373,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 	  phi_  = mus_p4().at(iMu).phi();
 	  id_   = 13*mus_charge().at(iMu);
 	  num_  = muonId(iMu, NominalTTbarV2);
+	  numv1_  = muonId(iMu, NominalTTbarV1);
           tcmet_ = evt_tcmet();
 
 	  // Careful about tcmet.  
@@ -529,6 +531,7 @@ void myBabyMaker::InitBabyNtuple () {
   v2_  = false;
   v3_  = false;
   num_ = false;
+  numv1_ = false;
   ph10_ = 0;
   ph15_ = 0;
   el10_ = 0;
@@ -581,6 +584,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("v2",         &v2_,        "v2/O"      );
     babyTree_->Branch("v3",         &v3_,        "v3/O"      );
     babyTree_->Branch("num",         &num_,        "num/O"      );
+    babyTree_->Branch("numv1",         &numv1_,        "numv1/O"      );
 
     babyTree_->Branch("ph10",       &ph10_,       "ph10/I"      );
     babyTree_->Branch("ph15",       &ph15_,       "ph15/I"      );
