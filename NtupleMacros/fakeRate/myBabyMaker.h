@@ -54,11 +54,13 @@ class myBabyMaker
 	Bool_t v1_;
 	Bool_t v2_;
 	Bool_t v3_;
-	Bool_t num_;
+	Bool_t num_;   // {electronSelection_ttbarV1 && (!isSpikeElectron()}  NominalTTbarV2   
+	Bool_t numv1_; // electronSelection_ttbarV1 NominalTTbar
 
 	// What electron trigger did it pass and is the electron matched to a egamma trg object
 	// 0=fail 1="pass but no match" 2="pass and matched" -1="pass but egamm trg obj missing"
-	Int_t ph10_;  // HLT_Photon10_L1R
+	Int_t ph10_;  // HLT_Photon10_L1R or HLT_Photon10_Cleaned_L1R
+	Int_t ph15_;  // HLT_Photon15_L1R or HLT_Photon15_Cleaned_L1R
 	Int_t el10_;  // HLT_Ele10_LW_L1R
 	Int_t eg5_;   // HLT_L1SingleEG5 
 	Int_t eg8_;   // HLT_L1SingleEG
@@ -72,6 +74,7 @@ class myBabyMaker
 
 	//  Minimm dR to the closest eg object
 	Float_t drph10_;
+	Float_t drph15_;
 	Float_t drel10_;
 	Float_t dreg5_;
 	Float_t dreg8_;
@@ -81,6 +84,12 @@ class myBabyMaker
 	Float_t drmu5_;
 	Float_t drmu3_;
 	
+	// Btag information
+	Int_t nbjet_; // number of btagged jet pt>15
+	Float_t dRbNear_; // dR between lepton and closest such jet
+	Float_t dRbFar_; // dR between lepton and farthest such jet
+
+
 };
 
 #endif

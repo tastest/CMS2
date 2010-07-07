@@ -14,14 +14,14 @@ bool pass_electronSelectionCompareMask(const cuts_t cuts_passed, const cuts_t se
     return false;
 }
 
-bool pass_electronSelection(const unsigned int index, const cuts_t selectionType)
+bool pass_electronSelection(const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection)
 {
-    cuts_t cuts_passed = electronSelection(index);
+    cuts_t cuts_passed = electronSelection(index, applyAlignmentCorrection);
     if ((cuts_passed & selectionType) == selectionType) return true;
     return false;
 }
 
-cuts_t electronSelection(const unsigned int index) 
+cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection) 
 {
 
     //
@@ -53,9 +53,9 @@ cuts_t electronSelection(const unsigned int index)
     // "CAND" ID
     //
     // CAND01
-    if (electronId_cand(index, CAND_01)) cuts_passed |= (1ll<<ELEID_CAND01);
+    if (electronId_cand(index, CAND_01, applyAlignmentCorrection)) cuts_passed |= (1ll<<ELEID_CAND01);
     // CAND02
-    if (electronId_cand(index, CAND_02)) cuts_passed |= (1ll<<ELEID_CAND02);
+    if (electronId_cand(index, CAND_02, applyAlignmentCorrection)) cuts_passed |= (1ll<<ELEID_CAND02);
     // "EXTRA"
     if (electronId_extra(index)) cuts_passed |= (1ll<<ELEID_EXTRA);
     //
@@ -63,16 +63,19 @@ cuts_t electronSelection(const unsigned int index)
     //
     electronIdComponent_t answer_vbtf = 0;
     // VBTF90 (optimised in 35X)
-    answer_vbtf = electronId_VBTF(index, VBTF_35X_90);
+    answer_vbtf = electronId_VBTF(index, VBTF_35X_90, applyAlignmentCorrection);
     if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_35X_90);
     // VBTF70 (optimised in 35X)
-    answer_vbtf = electronId_VBTF(index, VBTF_35X_70);
+    answer_vbtf = electronId_VBTF(index, VBTF_35X_80, applyAlignmentCorrection);
+    if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_35X_80);
+    // VBTF70 (optimised in 35X)
+    answer_vbtf = electronId_VBTF(index, VBTF_35Xr2_70, applyAlignmentCorrection);
     if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_35X_70);
     //
     // CIC ID  
     //
     // MEDIUM (V03 optimisation)
-    electronIdComponent_t answer_cic = electronId_CIC(index, 3, CIC_MEDIUM);
+    electronIdComponent_t answer_cic = electronId_CIC(index, 3, CIC_MEDIUM, applyAlignmentCorrection);
     if ((answer_cic & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_CIC_V03_MEDIUM);
 
     //
@@ -104,7 +107,8 @@ cuts_t electronSelection(const unsigned int index)
     // chargeflip
     //
 
-    if (!isChargeFlip(index)) cuts_passed |= (1ll<<ELECHARGE_NOTFLIP);
+    if (!isChargeFlip(index)) cuts_passed |= (1ll<<ELECHARGE_NOTFLIP); 
+    if (!isChargeFlip3agree(index)) cuts_passed |= (1ll<<ELECHARGE_NOTFLIP3AGREE);
 
     //
     // spike rejection
@@ -143,7 +147,7 @@ bool electronId_noMuon(const unsigned int index)
 //
 // candidate electron id function
 //
-bool electronId_cand(const unsigned int index, const cand_tightness tightness)
+bool electronId_cand(const unsigned int index, const cand_tightness tightness, bool applyAlignementCorrection)
 {
 
     std::vector<double> relisoThresholds;
@@ -155,17 +159,25 @@ bool electronId_cand(const unsigned int index, const cand_tightness tightness)
     eidGetCand(tightness, dEtaInThresholds, dPhiInThresholds, hoeThresholds, latThresholds);
 
     //
+    // get corrected dEtaIn and dPhiIn
+    //
+
+    float dEtaIn = cms2.els_dEtaIn()[index];
+    float dPhiIn = cms2.els_dPhiIn()[index];
+    if (applyAlignementCorrection) electronCorrection_pos(index, dEtaIn, dPhiIn);
+
+    //
     // apply cuts
     //
     if (fabs(cms2.els_etaSC()[index]) < 1.479) {
-        if (fabs(cms2.els_dEtaIn()[index]) > dEtaInThresholds[0]) 	return false;
-        if (fabs(cms2.els_dPhiIn()[index]) > dPhiInThresholds[0]) 	return false;
+        if (fabs(dEtaIn) > dEtaInThresholds[0]) 	return false;
+        if (fabs(dPhiIn) > dPhiInThresholds[0]) 	return false;
         if (cms2.els_hOverE()[index] > hoeThresholds[0]) 		    return false;
         if ((cms2.els_e2x5Max()[index]/cms2.els_e5x5()[index]) < latThresholds[0]) return false;
     }
     if (fabs(cms2.els_etaSC()[index]) > 1.479) {
-        if (fabs(cms2.els_dEtaIn()[index]) > dEtaInThresholds[1]) 	return false;
-        if (fabs(cms2.els_dPhiIn()[index]) > dPhiInThresholds[1]) 	return false;
+        if (fabs(dEtaIn) > dEtaInThresholds[1]) 	return false;
+        if (fabs(dPhiIn) > dPhiInThresholds[1]) 	return false;
         if (cms2.els_hOverE()[index] > hoeThresholds[1]) 		    return false;
         if (cms2.els_sigmaIEtaIEta()[index] > latThresholds[1])  return false;	
     }
@@ -195,7 +207,7 @@ bool electronId_classBasedTight(const unsigned int index)
 // class based id that is new/experimental
 //
 
-electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned int version, const cic_tightness tightness)
+electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned int version, const cic_tightness tightness, bool applyAlignementCorrection)
 {
 
     // check that a valid version number was supplied
@@ -214,8 +226,6 @@ electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned in
     double fBrem = cms2.els_fbrem()[index];
     double hOverE = cms2.els_hOverE()[index];
     double sigmaee = cms2.els_sigmaIEtaIEta()[index];
-    double deltaPhiIn = cms2.els_dPhiIn()[index];
-    double deltaEtaIn = cms2.els_dEtaIn()[index];
     int mishits = cms2.els_exp_innerlayers()[index];
     double dist = cms2.els_conv_dist()[index];
     double dcot = cms2.els_conv_dcot()[index];
@@ -227,6 +237,14 @@ electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned in
     // (in the EE it is with respect to the seed BC...)
     if (cms2.els_fiduciality()[index] & (1<<ISEB))
         sigmaee = cms2.els_sigmaIEtaIEtaSC()[index];
+
+    //
+    // get corrected dEtaIn and dPhiIn
+    //
+    
+    float deltaEtaIn = cms2.els_dEtaIn()[index];
+    float deltaPhiIn = cms2.els_dPhiIn()[index];
+    if (applyAlignementCorrection) electronCorrection_pos(index, deltaEtaIn, deltaPhiIn);
 
     // find the catagory for this electron
     unsigned int cat = classify(version, index);
@@ -324,17 +342,19 @@ electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned in
         std::vector<double> cutiso_sum;
         std::vector<double> cutiso_sumoet;
         std::vector<double> cutsee;
-        bool wantBinning;
+
+        // V03 uses Et binning
+        bool wantBinning = true;
 
         if (version == 3) {
             eidGetCIC_V03(tightness, cutdcotdist, cutdetain, cutdphiin, cuteseedopcor, cutet,
                     cutfmishits, cuthoe, cutip_gsf, cutiso_sum, cutiso_sumoet, cutsee);
-            wantBinning = true;
         }
 
         if (version == 4) {
             eidGetCIC_V04(tightness, cutdcotdist, cutdetain, cutdphiin, cuteseedopcor, cutet,
                     cutfmishits, cuthoe, cutip_gsf, cutiso_sum, cutiso_sumoet, cutsee);
+            // V04 does not use Et binning
             wantBinning = false;
         }
 
@@ -486,7 +506,7 @@ unsigned int classify(const unsigned int version, const unsigned int index) {
 // VBTF stuff
 //
 
-electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tightness tightness)
+electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tightness tightness, bool applyAlignementCorrection)
 {
 
     unsigned int answer = 0;
@@ -500,14 +520,22 @@ electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tight
     eidGetVBTF(tightness, dEtaInThresholds, dPhiInThresholds, hoeThresholds, 
             sigmaIEtaIEtaThresholds, relisoThresholds);
 
+    //
+    // get corrected dEtaIn and dPhiIn
+    //
+
+    float dEtaIn = cms2.els_dEtaIn()[index];
+    float dPhiIn = cms2.els_dPhiIn()[index];
+    if (applyAlignementCorrection) electronCorrection_pos(index, dEtaIn, dPhiIn);
+
     // barrel
     if (fabs(cms2.els_etaSC()[index]) < 1.479) {
 
         if (electronIsolation_rel(index, true) < relisoThresholds[0])
             answer |= (1<<ELEID_ISO);
 
-        if (fabs(cms2.els_dEtaIn()[index]) < dEtaInThresholds[0] &&
-                fabs(cms2.els_dPhiIn()[index]) < dPhiInThresholds[0] &&
+        if (fabs(dEtaIn) < dEtaInThresholds[0] &&
+                fabs(dPhiIn) < dPhiInThresholds[0] &&
                 cms2.els_hOverE()[index] < hoeThresholds[0] &&
                 cms2.els_sigmaIEtaIEta()[index] < sigmaIEtaIEtaThresholds[0])
             answer |= (1<<ELEID_ID);
@@ -518,8 +546,8 @@ electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tight
         if (electronIsolation_rel(index, true) < relisoThresholds[1])
             answer |= (1<<ELEID_ISO);
 
-        if (fabs(cms2.els_dEtaIn()[index]) < dEtaInThresholds[1] &&
-                fabs(cms2.els_dPhiIn()[index]) < dPhiInThresholds[1] &&
+        if (fabs(dEtaIn) < dEtaInThresholds[1] &&
+                fabs(dPhiIn) < dPhiInThresholds[1] &&
                 cms2.els_hOverE()[index] < hoeThresholds[1] &&
                 cms2.els_sigmaIEtaIEta()[index] < sigmaIEtaIEtaThresholds[1])
             answer |= (1<<ELEID_ID);
@@ -580,6 +608,24 @@ bool isChargeFlip(int elIndex){
     return false;
 }
 
+bool isChargeFlip3agree(int elIndex){
+
+    if (cms2.els_trkidx().at(elIndex) >= 0) 
+    {
+      // false if 3 charge measurements agree
+      if(
+           (cms2.els_trk_charge().at(elIndex)          // gsf
+           == cms2.trks_charge().at(cms2.els_trkidx().at(elIndex))) // ctf 
+           &&
+           (cms2.trks_charge().at(cms2.els_trkidx().at(elIndex)) // ctf 
+           == cms2.els_sccharge().at(elIndex)) )      // sc
+      return false;  
+    }
+
+    return true;
+}
+
+
 //
 // spike rejection for electrons
 //
@@ -595,6 +641,67 @@ bool isSpikeElectron(const unsigned int index) {
     }
 
     return isSpike;
+
+}
+
+//
+// position correction for electrons
+//
+
+void electronCorrection_pos(const unsigned int index, float &dEtaIn, float &dPhiIn)
+{
+
+    //
+    // uncorrected dEtaIn and dPhiIn
+    //
+
+    dEtaIn = cms2.els_dEtaIn()[index];
+    dPhiIn = cms2.els_dPhiIn()[index];
+
+    //
+    // if configered not to apply correction
+    // or in barrel or no valid super cluster
+    // return uncorrected values
+    //
+
+    if (!(cms2.els_fiduciality()[index]) & (1<<ISEE)) return;
+    if (cms2.els_scindex()[index] == -1) return;
+
+    //
+    // set up correction parameters for EE+ and EE-
+    // RecoEgamma/EgammaTools/python/correctedElectronsProducer_cfi.py?revision=1.2
+    //
+
+    //                                      X',     Y',     Z'
+    float scPositionCorrectionEEP[3] = {   0.52,   -0.81,  0.81};
+    float scPositionCorrectionEEM[3] = {    -0.02,  -0.81,  -0.94};
+
+    LorentzVector initial_pos = cms2.scs_pos_p4()[cms2.els_scindex()[index]];
+    LorentzVector corrected_pos;
+
+    //
+    // work out corrected position
+    //
+
+    if (cms2.els_etaSC()[index] < 0) {
+            corrected_pos = LorentzVector(  initial_pos.x() + scPositionCorrectionEEM[0],
+                                            initial_pos.y() + scPositionCorrectionEEM[1],
+                                            initial_pos.z() + scPositionCorrectionEEM[2], 0.0);
+    }
+    if (cms2.els_etaSC()[index] > 0) {
+            corrected_pos = LorentzVector(  initial_pos.x() + scPositionCorrectionEEP[0],
+                                            initial_pos.y() + scPositionCorrectionEEP[1],
+                                            initial_pos.z() + scPositionCorrectionEEP[2], 0.0);
+    }
+
+    //
+    // work out correction to dEtaIn and dPhiIn
+    //
+
+    float deta_sc = corrected_pos.Eta() - initial_pos.Eta();
+    float dphi_sc = acos(cos(corrected_pos.Phi() - initial_pos.Phi()));
+    dEtaIn = deta_sc + cms2.els_dEtaIn()[index];
+    dPhiIn = acos(cos(dphi_sc + cms2.els_dPhiIn()[index]));
 
 }
 

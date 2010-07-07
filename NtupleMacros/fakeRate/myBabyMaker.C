@@ -1,5 +1,6 @@
 // C++ includes
 #include <iostream>
+#include <set>
 
 // ROOT includes
 #include "TSystem.h"
@@ -22,10 +23,45 @@
 
 //#include "../CORE/fakerates.cc"
 #include "../CORE/triggerUtils.cc"
-#include "./goodrun.cc"
+#include "../Tools/goodrun.cc"
 #include "./myBabyMaker.h"
 using namespace std;
 using namespace tas;
+
+struct DorkyEventIdentifier {
+  // this is a workaround for not having unique event id's in MC
+  unsigned long int run, event,lumi;
+  bool operator < (const DorkyEventIdentifier &) const;
+  bool operator == (const DorkyEventIdentifier &) const;
+};
+
+bool DorkyEventIdentifier::operator < (const DorkyEventIdentifier &other) const
+{
+  if (run != other.run)
+    return run < other.run;
+  if (event != other.event)
+    return event < other.event;
+  if(lumi != other.lumi)
+    return lumi < other.lumi;
+  return false;
+}
+
+bool DorkyEventIdentifier::operator == (const DorkyEventIdentifier &other) const
+{
+  if (run != other.run)
+    return false;
+  if (event != other.event)
+    return false;
+  return true;
+}
+
+std::set<DorkyEventIdentifier> already_seen;
+bool is_duplicate (const DorkyEventIdentifier &id) {
+  std::pair<std::set<DorkyEventIdentifier>::const_iterator, bool> ret =
+    already_seen.insert(id);
+  return !ret.second;
+}
+
 
 
 //-----------------------------------
@@ -36,13 +72,18 @@ using namespace tas;
 //-----------------------------------
 void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu) {
 
+  already_seen.clear();
+
   // Make a baby ntuple
   MakeBabyNtuple(babyFilename);
 
   // Set the JSON file
   //  set_goodrun_file("Cert_132440-134725_7TeV_MinimumBias_May6ReReco_Collisions10.txt");
   //set_goodrun_file("goodruns_FGolf_email_May25.txt");
-  set_goodrun_file("./jsonlist_132440_136100.txt");
+  //set_goodrun_file("./jsonlist_132440_136100.txt");
+  //set_goodrun_file("./Certlist_135059-139239_7TeV_TopMergedJuly04_26.85invnb_JSON.txt");
+
+  set_goodrun_file("./jsonlist_132440_139239.txt");
 
   // The deltaR requirement between objects and jets to remove the jet trigger dependence
   float deltaRCut = 1.0;
@@ -75,6 +116,16 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
     for( z = 0; z < nLoop; z++) {	// Event Loop
       cms2.GetEntry(z);
 
+      // Good  Runs
+      if(!goodrun( evt_run(), evt_lumiBlock() )) continue;
+
+      // check for duplicated
+      DorkyEventIdentifier id = { evt_run(),evt_event(), evt_lumiBlock() };
+      if (is_duplicate(id) ){ 
+        cout << "\t! ERROR: found duplicate." << endl;
+        continue;
+      }
+
       // looper progress
       ++nEventsTotal;
       int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
@@ -83,10 +134,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
         fflush(stdout);
         i_permilleOld = i_permille;
       }
-
-      // Good  Runs
-      if(!goodrun( evt_run(), evt_lumiBlock() )) continue;
-
+      
       // Event cleaning (careful, it requires technical bits)
       // if (!cleaning_standard(true)) continue;
       if (!cleaning_BPTX(true))   continue;
@@ -95,7 +143,16 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
       if (!cleaning_goodTracks()) continue;
 
 
-
+      // Loop over jets and see what is btagged
+      // Medium operating point from https://twiki.cern.ch/twiki/bin/view/CMS/BTagPerformanceOP
+      int this_nbjet = 0;
+      vector<unsigned int> bindex;
+      for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
+	if (jets_p4().at(iJet).pt() < 15.) continue;
+	if (jets_simpleSecondaryVertexHighEffBJetTag().at(iJet) < 1.74) continue;
+	this_nbjet++;
+	bindex.push_back(iJet);
+      }
 
       // Loop over electrons
       if (eormu == -1 || eormu==11) {
@@ -112,7 +169,9 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 	  // Initialize baby ntuple
 	  InitBabyNtuple();
 
-	  num_ = pass_electronSelection( iEl, electronSelection_ttbarV1 );
+	  // Add spike veto
+	  num_ = pass_electronSelection( iEl, electronSelection_ttbarV1 ) && (!isSpikeElectron(iEl));
+          numv1_ = pass_electronSelection( iEl, electronSelection_ttbarV1 );
 	  v1_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v1 );
 	  v2_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v2 );
 	  v3_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v3 );
@@ -153,6 +212,18 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 	  id_    = 11*els_charge().at(iEl);
 	  tcmet_ = evt_tcmet();
 
+	  // The btag information
+	  nbjet_ = this_nbjet;
+	  dRbNear_ = 99.;
+	  dRbFar_  = -99.;
+	  for (int ii=0; ii<nbjet_; ii++) {
+	    unsigned int iJet = bindex[ii];
+	    float dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), jets_p4().at(iJet));
+	    if (dr < dRbNear_) dRbNear_ = dr;
+	    if (dr > dRbFar_)   dRbFar_  = dr;
+	  }
+	    
+
 	  // Our jet trigger flags
 	  hlt15u_ = min(2,nHLTObjects("HLT_Jet15U")); 
 	  hlt30u_ = min(2,nHLTObjects("HLT_Jet30U")); 
@@ -187,13 +258,16 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 	    if (dr > deltaRCut) l110u_ = 2;
 	  }
 
-	  // Now fill the egamma trigger flages
-	  ph10_ = nHLTObjects("HLT_Photon10_L1R");
-	  el10_ = nHLTObjects("HLT_Ele10_LW_L1R");
-	  eg5_  = nHLTObjects("HLT_L1SingleEG5");
-	  eg8_  = nHLTObjects("HLT_L1SingleEG8");
+	  // Now fill the egamma trigger flags  (look at both cleaned and uncleaned photons_
+	  int ph10cl = nHLTObjects("HLT_Photon10_Cleaned_L1R");
+	  int ph10   = nHLTObjects("HLT_Photon10_L1R");
+	  int ph15cl = nHLTObjects("HLT_Photon15_Cleaned_L1R");
+	  int ph15   = nHLTObjects("HLT_Photon15_L1R");
+	  el10_   = nHLTObjects("HLT_Ele10_LW_L1R");
+	  eg5_    = nHLTObjects("HLT_L1SingleEG5");
+	  eg8_    = nHLTObjects("HLT_L1SingleEG8");
 
-	  // I know that Ele10 is the only trigger for which the HLT objects are saved for all data we have
+	  // For Ele10 the HLT objects are saved for all data we have
 	  if (el10_ > 0) {
 	    bool match = false;
 	    for (int itrg=0; itrg<el10_; itrg++) {
@@ -209,11 +283,19 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 	    }
 	  }
 
-	  // Photon 10, on the other hand, is there only some fraction of the data
-	  if (ph10_ > 0) {
+	  // Now for photon10 we look at cleaned and at uncleaned
+	  if (ph10 == 0 && ph10cl == 0) ph10_=0;   // trigger failed
+	  if (ph10 <  0 || ph10cl <  0) ph10_=-1;  // passed but no object
+	  if (ph10cl > 0 || ph10 > 0) {
 	    bool match = false;
-	    for (int itrg=0; itrg<ph10_; itrg++) {
+	    for (int itrg=0; itrg<ph10; itrg++) {
 	      LorentzVector p4tr = p4HLTObject("HLT_Photon10_L1R",itrg);
+	      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
+	      if (dr < drph10_) drph10_ = dr;
+	      if (dr < 0.4) match=true;
+	    }
+	    for (int itrg=0; itrg<ph10cl; itrg++) {
+	      LorentzVector p4tr = p4HLTObject("HLT_Photon10_Cleaned_L1R",itrg);
 	      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
 	      if (dr < drph10_) drph10_ = dr;
 	      if (dr < 0.4) match=true;
@@ -225,19 +307,44 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 	    }
 	  }
 
+	  // Now for photon15 we look at cleaned and at uncleaned
+	  if (ph15 == 0 && ph15cl == 0) ph15_=0;   // trigger failed
+	  if (ph15 <  0 || ph15cl <  0) ph15_=-1;  // passed but no object
+	  if (ph15cl > 0 || ph15 > 0) {
+	    bool match = false;
+	    for (int itrg=0; itrg<ph15; itrg++) {
+	      LorentzVector p4tr = p4HLTObject("HLT_Photon15_L1R",itrg);
+	      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
+	      if (dr < drph15_) drph15_ = dr;
+	      if (dr < 0.4) match=true;
+	    }
+	    for (int itrg=0; itrg<ph15cl; itrg++) {
+	      LorentzVector p4tr = p4HLTObject("HLT_Photon15_Cleaned_L1R",itrg);
+	      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
+	      if (dr < drph15_) drph15_ = dr;
+	      if (dr < 0.4) match=true;
+	    }
+	    if (match) {
+	      ph15_ = 2;
+	    } else {
+	      ph15_ = 1;
+	    }
+	  }
+
+
 	  // For EG5 and EG8 the HLT object is missing, so we'll try with the L1 info
 	  // There appear to be two L1 EM objects: one with "iso" and one without.
 	  // From some event dumps it looks like the iso one is the one we want
 	  // Also: the Photon10 HLT object is sometimes missing, but I know that EG5 is its prerequisite
-	  // so if it is missing we will match to EG5
+	  // so if it is missing we will match to EG5  (TAKE THIS OUT.... July 5th 2010)
 	  if ( (eg5_ == -1 || eg8_ == -1 || ph10_ == -1) && l1_emiso_p4().size()>0) {
 	    
 	    for (unsigned int ig = 0 ; ig < l1_emiso_p4().size(); ig++) {
 	    
-	      if (ph10_ == -1 && l1_emiso_p4().at(ig).pt() > 5.) {
-		double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl),l1_emiso_p4().at(ig)); 
-		if (dr < drph10_) drph10_ = dr;
-	      }
+	      //if (ph10_ == -1 && l1_emiso_p4().at(ig).pt() > 5.) {
+	      //	double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl),l1_emiso_p4().at(ig)); 
+	      //	if (dr < drph10_) drph10_ = dr;
+	      //}
 	      if (eg5_ == -1 && l1_emiso_p4().at(ig).pt() > 5.) {
 		double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl),l1_emiso_p4().at(ig)); 
 		if (dr < dreg5_) dreg5_ = dr;
@@ -249,10 +356,10 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 
 	    } // closes loop over L1 EG objects
 	    
-	    if (ph10_ == -1) {
-	      if (drph10_ < 100.) ph10_ = 1; // objects found, but no match
-	      if (drph10_ < 0.4)  ph10_ = 2; // objects found, and matched
-	    }
+	    //if (ph10_ == -1) {
+	    //  if (drph10_ < 100.) ph10_ = 1; // objects found, but no match
+	    //  if (drph10_ < 0.4)  ph10_ = 2; // objects found, and matched
+	    //}
 	    if (eg5_ == -1) {
 	      if (dreg5_ < 100.) eg5_ = 1; // objects found, but no match
 	      if (dreg5_ < 0.4)  eg5_ = 2; // objects found, and matched
@@ -313,26 +420,40 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 	  eta_  = mus_p4().at(iMu).eta();
 	  phi_  = mus_p4().at(iMu).phi();
 	  id_   = 13*mus_charge().at(iMu);
-	  num_  = muonId(iMu, NominalTTbar);
+	  num_  = muonId(iMu, NominalTTbarV2);
+	  numv1_  = muonId(iMu, NominalTTbar);
           tcmet_ = evt_tcmet();
 
 	  // Careful about tcmet.  
 	  // For muons pt>10 GeV, if it is not already corrected for it, do it
+	  // THIS is most likely wrong...needs to be fixed......(Fixed July 5, 2010)
 	  if (pt_ > 10. && (mus_tcmet_flag().at(iMu) == 0 || mus_tcmet_flag().at(iMu) == 4)) {
 	    cout << "Correcting the tcmet" <<endl;
 	    double lmetx = tcmet_ * cos(evt_tcmetPhi());
 	    double lmety = tcmet_  * sin(evt_tcmetPhi());
 	    if (mus_tcmet_flag()[iMu] == 0){
-	      lmetx+= - mus_met_deltax()[iMu] - mus_p4()[iMu].x();
-	      lmety+= - mus_met_deltay()[iMu] - mus_p4()[iMu].y();
+	      lmetx+= mus_met_deltax()[iMu] - mus_p4()[iMu].x();
+	      lmety+= mus_met_deltay()[iMu] - mus_p4()[iMu].y();
 	    } else if (mus_tcmet_flag()[iMu] == 4){
-	      lmetx+= - mus_tcmet_deltax()[iMu] - mus_met_deltax()[iMu] - mus_p4()[iMu].x(); 
-	      lmety+= - mus_tcmet_deltay()[iMu] - mus_met_deltay()[iMu] - mus_p4()[iMu].y(); 
+	      lmetx+= - mus_tcmet_deltax()[iMu] + mus_met_deltax()[iMu] - mus_p4()[iMu].x(); 
+	      lmety+= - mus_tcmet_deltay()[iMu] + mus_met_deltay()[iMu] - mus_p4()[iMu].y(); 
 	    }
 
 	    tcmet_ = sqrt(lmetx*lmetx+lmety*lmety);
 	  }
 
+
+
+	  // The btag information
+	  nbjet_ = this_nbjet;
+	  dRbNear_ =  99.;
+	  dRbFar_  = -99.;
+	  for (int ii=0; ii<nbjet_; ii++) {
+	    unsigned int iJet = bindex[ii];
+	    float dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), jets_p4().at(iJet));
+	    if (dr < dRbNear_) dRbNear_ = dr;
+	    if (dr > dRbFar_)  dRbFar_  = dr;
+	  }
 
 	  // Our jet trigger flags
 	  hlt15u_ = min(2,nHLTObjects("HLT_Jet15U")); 
@@ -405,7 +526,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 	    }
 	  }
  
-    // Explicit match with Mu5 trigger
+    // Explicit match with Mu9 trigger
     if (mu9_ > 0) {
       bool match = false;
       for (int itrg=0; itrg<mu9_; itrg++) {
@@ -458,7 +579,9 @@ void myBabyMaker::InitBabyNtuple () {
   v2_  = false;
   v3_  = false;
   num_ = false;
+  numv1_ = false;
   ph10_ = 0;
+  ph15_ = 0;
   el10_ = 0;
   eg5_  = 0;
   eg8_  = 0;
@@ -466,12 +589,16 @@ void myBabyMaker::InitBabyNtuple () {
   mu9_  = 0;
   mu3_  = 0;
   drph10_ = 99.;
+  drph15_ = 99.;
   drel10_ = 99.;
   dreg5_  = 99.;
   dreg8_  = 99.;
   drmu5_  = 99.;
   drmu9_  = 99.;
-  drmu3_   = 99.;
+  drmu3_  = 99.;
+  nbjet_  = 0;
+  dRbNear_ = 99.;
+  dRbFar_ = -99.;
 }
 //-------------------------------------
 // Book the baby ntuple
@@ -505,13 +632,16 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("v2",         &v2_,        "v2/O"      );
     babyTree_->Branch("v3",         &v3_,        "v3/O"      );
     babyTree_->Branch("num",         &num_,        "num/O"      );
+    babyTree_->Branch("numv1",         &numv1_,        "numv1/O"      );
 
     babyTree_->Branch("ph10",       &ph10_,       "ph10/I"      );
+    babyTree_->Branch("ph15",       &ph15_,       "ph15/I"      );
     babyTree_->Branch("el10",         &el10_,         "el10/I"      );
     babyTree_->Branch("eg5",         &eg5_,        "eg5/I"      );
     babyTree_->Branch("eg8",         &eg8_,        "eg8/I"      );
 
     babyTree_->Branch("drph10",       &drph10_,       "drph10/F"      );
+    babyTree_->Branch("drph15",       &drph15_,       "drph15/F"      );
     babyTree_->Branch("drel10",         &drel10_,         "drel10/F"      );
     babyTree_->Branch("dreg5",         &dreg5_,        "dreg5/F"      );
     babyTree_->Branch("dreg8",         &dreg8_,        "dreg8/F"      );
@@ -524,6 +654,9 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("drmu5",       &drmu5_,       "drmu5/F"      );
     babyTree_->Branch("drmu3",       &drmu3_,       "drmu3/F"      );
 
+    babyTree_->Branch("nbjet",       &nbjet_,       "nbjet/I"      );
+    babyTree_->Branch("dRNear",       &dRbNear_,       "dRbNear/F"      );
+    babyTree_->Branch("dRFar",       &dRbFar_,       "dRbFar/F"      );
 }
 //----------------------------------
 // Fill the baby

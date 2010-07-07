@@ -8,10 +8,10 @@ ch1->Add("JMTMonitor.root");
 ch2->Add("JMT.root");
 
 // Book the histograms
-double xbin[5]={5.,7.,10.,20.,40.};
+double xbin[3]={10.,20.,40.};
 //double xbin[5]={0.,1., 1.479, 2., 2.5};
-int nbinsx = 4;
-double xmax = 0.7;
+int nbinsx = 2;
+double xmax = 0.5;
 //double xmax = 0.9;
 
 // 6u
@@ -127,16 +127,16 @@ eff6u.Draw();
 eff10u->Draw("same");
 eff15u->Draw("same");
 eff30u->Draw("same");
-//eff50u->Draw("same");
+eff50u->Draw("same");
 TLegend *leg2 = new TLegend(0.5,0.7,0.99,0.99);
 leg2->AddEntry(eff6u,"HLT_L1Jet6U");
 leg2->AddEntry(eff10u,"HLT_L1Jet10U");
 leg2->AddEntry(eff15u,"HLT_Jet15U");
 leg2->AddEntry(eff30u,"HLT_Jet30U");
-//leg2->AddEntry(eff50u,"HLT_Jet50U");
+leg2->AddEntry(eff50u,"HLT_Jet50U");
 leg2->Draw();
 
-//return;
+return;
 
 // 6U in black
 num6u->SetMarkerStyle(20);

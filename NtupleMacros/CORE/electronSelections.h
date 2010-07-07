@@ -46,6 +46,8 @@ enum EleSelectionType {
     ELEID_EXTRA,
     // VBTF90 electron ID (35X)
     ELEID_VBTF_35X_90,
+    // VBTF80 electron ID (35X)
+    ELEID_VBTF_35X_80,
     // VBTF70 electron ID (35X)
     ELEID_VBTF_35X_70,
     // CIC_MEDIUM electron ID (V03)
@@ -84,6 +86,7 @@ enum EleSelectionType {
     //
     // is not a charge flip
     ELECHARGE_NOTFLIP,
+    ELECHARGE_NOTFLIP3AGREE,
     //
     // spike rejection
     //
@@ -250,7 +253,7 @@ static const cuts_t electronSelection_ttbar =
 //---------------------------------------------------------
 
 //---------------------------------------------------------
-// TTBar selection with VBTF90 ID
+// TTBarV1 selection with VBTF90 ID
 //---------------------------------------------------------
 static const cuts_t electronSelection_ttbarV1 =
   (1ll<<ELEID_VBTF_35X_90) |
@@ -272,7 +275,6 @@ static const cuts_t electronSelectionFO_el_ttbarV1_v1 =
   (1ll<<ELENOTCONV_HITPATTERN) |
   (1ll<<ELESCET_010) |
   (1ll<<ELEPT_010) |
-
   (1ll<<ELEISO_REL040);
 //---------------------------------------------------------
 // TTBarV1 fakeable object definition v2
@@ -283,7 +285,6 @@ static const cuts_t electronSelectionFO_el_ttbarV1_v2 =
   (1ll<<ELENOTCONV_HITPATTERN) |
   (1ll<<ELESCET_010) |
   (1ll<<ELEPT_010) |
-
   (1ll<<ELEISO_REL015);
 //---------------------------------------------------------
 // TTBarV1 fakeable object definition v3
@@ -294,11 +295,26 @@ static const cuts_t electronSelectionFO_el_ttbarV1_v3 =
   (1ll<<ELENOTCONV_HITPATTERN) |
   (1ll<<ELESCET_010) |
   (1ll<<ELEPT_010) |
-
   (1ll<<ELEID_VBTF_35X_90) |
   (1ll<<ELEISO_REL040);
 //---------------------------------------------------------
 
+
+//---------------------------------------------------------
+// TTBarV2 selection with VBTF90 ID
+//---------------------------------------------------------
+static const cuts_t electronSelection_ttbarV2 =
+  (1ll<<ELEID_VBTF_35X_90) |
+  (1ll<<ELEIP_400) |
+  (1ll<<ELEISO_REL015) |
+  (1ll<<ELENOMUON_010) |
+  (1ll<<ELENOTCONV_HITPATTERN) |
+  (1ll<<ELENOTCONV_DISTDCOT002) |
+  (1ll<<ELESCET_010) |
+  (1ll<<ELEPT_010) |
+  (1ll<<ELEETA_250) |
+  (1ll<<ELESEED_ECAL) |
+  (1ll<<ELENOSPIKE_SWISS005); 
 
 //
 // ======================== WW ============================
@@ -363,13 +379,16 @@ static const cuts_t electronSelection_cand01 = electronSelection_os;
 static const cuts_t electronSelection_ss =
                     (1ll<<ELEISO_REL010) |
                     (1ll<<ELEIP_200) |
-                    (1ll<<ELEID_CAND02) |
+                    //(1ll<<ELEID_CAND02) |
+                    (1ll<<ELEID_VBTF_35X_70) | // VBTF70
                     (1ll<<ELEID_EXTRA) |
+                    (1ll<<ELENOTCONV_HITPATTERN) |
                     (1ll<<ELENOTCONV_DISTDCOT002) |
                     (1ll<<ELEETA_250) |
                     (1ll<<ELENOMUON_010) |
                     (1ll<<ELESEED_ECAL) |
-                    (1ll<<ELECHARGE_NOTFLIP);
+                    (1ll<<ELECHARGE_NOTFLIP3AGREE);
+
 //---------------------------------------------------------
 // FIXME: for fake rates
 static const cuts_t electronSelection_cand02flip = electronSelection_ss;
@@ -413,13 +432,13 @@ enum ElectronIDComponent {
 // master selection function
 //
 bool pass_electronSelectionCompareMask(const cuts_t cuts_passed, const cuts_t selectionType);
-bool pass_electronSelection(const unsigned int index, const cuts_t selectionType);
-cuts_t electronSelection(const unsigned int index);
+bool pass_electronSelection(const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection = false);
+cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection = false);
 
 //
 // "cand" electron id
 //
-bool electronId_cand(const unsigned int index, const cand_tightness tightness);
+bool electronId_cand(const unsigned int index, const cand_tightness tightness, bool applyAlignementCorrection = false);
 bool electronId_extra(const unsigned int index);
 
 //
@@ -432,12 +451,12 @@ bool electronId_classBasedTight(const unsigned int index);
 //
 // "VBTF" id
 //
-electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tightness tightness);
+electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tightness tightness,  bool applyAlignementCorrection = false);
 
 //
 // "CIC" id
 //
-electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned int version, const cic_tightness tightness);
+electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned int version, const cic_tightness tightness, bool applyAlignementCorrection = false);
 unsigned int classify(const unsigned int version, const unsigned int index);
 
 //
@@ -469,11 +488,17 @@ int getChargeUsingMajorityLogic(int elIdx, float minFracSharedHits = 0.45);
 //charge flip rejection
 //
 bool isChargeFlip(int elIndex);
-
+bool isChargeFlip3agree(int elIndex); 
 //
 // spike rejection for electrons
 //
 bool isSpikeElectron(const unsigned int index);
+
+//
+// position correction for electrons
+//
+
+void electronCorrection_pos(const unsigned int index, float &dEtaIn, float &dPhiIn);
 
 #endif
 
