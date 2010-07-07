@@ -31,18 +31,18 @@
   TH2F* v315u  = new TH2F("v315u", "v315u", 4,etaEleBin,3,ptEleBin);
 
   // The bins for the muon FR
-  double ptMuBin[5] ={5.,7.,10.,15.,40.};
-  double etaMuBin[ ]={0., 1., 1.5, 2., 2.5};
+  double ptMuBin[3] ={10.,15.,40.};
+  double etaMuBin[5]={0., 1., 1.5, 2., 2.5};
   
   // Book the muon FR
-  TH2F* mnum6u = new TH2F("mnum6u","num6u",4,etaMuBin,4,ptMuBin);
-  TH2F* fo6u  = new TH2F("fo6u", "fo6u", 4,etaMuBin,4,ptMuBin);
+  TH2F* mnum6u = new TH2F("mnum6u","num6u",4,etaMuBin,2,ptMuBin);
+  TH2F* fo6u  = new TH2F("fo6u", "fo6u", 4,etaMuBin,2,ptMuBin);
 
-  TH2F* mnum10u = new TH2F("mnum10u","num10u",4,etaMuBin,4,ptMuBin);
-  TH2F* fo10u  = new TH2F("fo10u", "fo10u", 4,etaMuBin,4,ptMuBin);
+  TH2F* mnum10u = new TH2F("mnum10u","num10u",4,etaMuBin,2,ptMuBin);
+  TH2F* fo10u  = new TH2F("fo10u", "fo10u", 4,etaMuBin,2,ptMuBin);
 
-  TH2F* mnum15u = new TH2F("mnum15u","num15u",4,etaMuBin,4,ptMuBin);
-  TH2F* fo15u  = new TH2F("fo15u", "fo15u", 4,etaMuBin,4,ptMuBin);
+  TH2F* mnum15u = new TH2F("mnum15u","num15u",4,etaMuBin,2,ptMuBin);
+  TH2F* fo15u  = new TH2F("fo15u", "fo15u", 4,etaMuBin,2,ptMuBin);
 
 
   // Fill the muon histograms

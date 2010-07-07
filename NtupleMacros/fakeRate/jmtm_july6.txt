@@ -1,0 +1,5 @@
+/hadoop/cms/store/user/spadhi/CMS2_V03-04-26-02/Commissioning10-SD_JetMETTauMonitor-Jun14thSkim_v1
+/nfs-3/userdata/cms2/JetMETTauMonitor_Run2010A-Jun14thReReco_v1_RECO/V03-04-26-01/singleLepPt5Skim
+/nfs-3/userdata/cms2/JetMETTauMonitor_Run2010A-PromptReco-v4_RECO/V03-04-25/singleLepPt5Skim
+/nfs-3/userdata/cms2/JetMETTauMonitor_Run2010A-PromptReco-v4_RECO/V03-04-26-01/singleLepPt5Skim
+/nfs-3/userdata/cms2/JetMETTauMonitor_Run2010A-PromptReco-v4_RECO/V03-04-26-02/singleLepPt10Skim

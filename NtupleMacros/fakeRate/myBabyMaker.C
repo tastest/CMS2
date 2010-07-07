@@ -1,5 +1,6 @@
 // C++ includes
 #include <iostream>
+#include <set>
 
 // ROOT includes
 #include "TSystem.h"
@@ -27,6 +28,41 @@
 using namespace std;
 using namespace tas;
 
+struct DorkyEventIdentifier {
+  // this is a workaround for not having unique event id's in MC
+  unsigned long int run, event,lumi;
+  bool operator < (const DorkyEventIdentifier &) const;
+  bool operator == (const DorkyEventIdentifier &) const;
+};
+
+bool DorkyEventIdentifier::operator < (const DorkyEventIdentifier &other) const
+{
+  if (run != other.run)
+    return run < other.run;
+  if (event != other.event)
+    return event < other.event;
+  if(lumi != other.lumi)
+    return lumi < other.lumi;
+  return false;
+}
+
+bool DorkyEventIdentifier::operator == (const DorkyEventIdentifier &other) const
+{
+  if (run != other.run)
+    return false;
+  if (event != other.event)
+    return false;
+  return true;
+}
+
+std::set<DorkyEventIdentifier> already_seen;
+bool is_duplicate (const DorkyEventIdentifier &id) {
+  std::pair<std::set<DorkyEventIdentifier>::const_iterator, bool> ret =
+    already_seen.insert(id);
+  return !ret.second;
+}
+
+
 
 //-----------------------------------
 // Looper code starts here
@@ -36,13 +72,18 @@ using namespace tas;
 //-----------------------------------
 void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu) {
 
+  already_seen.clear();
+
   // Make a baby ntuple
   MakeBabyNtuple(babyFilename);
 
   // Set the JSON file
   //  set_goodrun_file("Cert_132440-134725_7TeV_MinimumBias_May6ReReco_Collisions10.txt");
   //set_goodrun_file("goodruns_FGolf_email_May25.txt");
-  set_goodrun_file("./jsonlist_132440_136100.txt");
+  //set_goodrun_file("./jsonlist_132440_136100.txt");
+  //set_goodrun_file("./Certlist_135059-139239_7TeV_TopMergedJuly04_26.85invnb_JSON.txt");
+
+  set_goodrun_file("./jsonlist_132440_139239.txt");
 
   // The deltaR requirement between objects and jets to remove the jet trigger dependence
   float deltaRCut = 1.0;
@@ -75,6 +116,16 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
     for( z = 0; z < nLoop; z++) {	// Event Loop
       cms2.GetEntry(z);
 
+      // Good  Runs
+      if(!goodrun( evt_run(), evt_lumiBlock() )) continue;
+
+      // check for duplicated
+      DorkyEventIdentifier id = { evt_run(),evt_event(), evt_lumiBlock() };
+      if (is_duplicate(id) ){ 
+        cout << "\t! ERROR: found duplicate." << endl;
+        continue;
+      }
+
       // looper progress
       ++nEventsTotal;
       int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
@@ -83,10 +134,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
         fflush(stdout);
         i_permilleOld = i_permille;
       }
-
-      // Good  Runs
-      if(!goodrun( evt_run(), evt_lumiBlock() )) continue;
-
+      
       // Event cleaning (careful, it requires technical bits)
       // if (!cleaning_standard(true)) continue;
       if (!cleaning_BPTX(true))   continue;
@@ -373,7 +421,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 	  phi_  = mus_p4().at(iMu).phi();
 	  id_   = 13*mus_charge().at(iMu);
 	  num_  = muonId(iMu, NominalTTbarV2);
-	  numv1_  = muonId(iMu, NominalTTbarV1);
+	  numv1_  = muonId(iMu, NominalTTbar);
           tcmet_ = evt_tcmet();
 
 	  // Careful about tcmet.  
