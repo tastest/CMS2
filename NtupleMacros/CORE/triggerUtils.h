@@ -1,7 +1,7 @@
 #ifndef triggerUtils_h
 #define triggerUtils_h
 bool goodEGTrigger5July2010 (bool);
-int nHLTObjects(char*);
-LorentzVector p4HLTObject(char*, int) ;
+int nHLTObjects(const char*);
+LorentzVector p4HLTObject(const char*, int) ;
 void PrintTriggers();
 #endif

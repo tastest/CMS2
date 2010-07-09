@@ -4,6 +4,7 @@
 
 //int nTriggeredJets(char*);
 //LorentzVector singleJetBias( char*, int) ;
+#include "TSystem.h"
 #include "CMS2.h"
 #include "triggerUtils.h"
 
@@ -54,7 +55,7 @@ bool goodEGTrigger5July2010 (bool mc) {
 // Returns the nth object that passes a given trigger
 // (n starts from 0)
 ///----------------------------------------------------
-LorentzVector p4HLTObject( char* arg, int objNumber){
+LorentzVector p4HLTObject(const char* arg, int objNumber){
  
   TString HLTTrigger( arg );
   int trigIndx = -1;
@@ -89,7 +90,7 @@ LorentzVector p4HLTObject( char* arg, int objNumber){
 // Returns zero if the trigger failed
 // Returns -1 if the trigger passed but no onjects were found
 //--------------------------------------------------------
-int nHLTObjects( char* arg ){
+int nHLTObjects(const char* arg ){
 
   // put the trigger name into a string
   TString HLTTrigger( arg );
