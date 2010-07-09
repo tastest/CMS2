@@ -1,5 +1,6 @@
 
 #include "HistogramUtilities.h"
+#include "AllDataSources.h"
 
 using namespace std;
 
@@ -47,10 +48,12 @@ TH1F* HistogramUtilities::getHistogram(sources_t theSources, TString var, TStrin
             //std::cout << "getting " << sources_[i].getName() + histNameSuffix << std::endl;
             if (!h1_data) h1_data = (TH1F*)(file_->Get(sources_[i].getName() + histNameSuffix)->Clone());
             else h1_data->Add((TH1F*)file_->Get(sources_[i].getName() + histNameSuffix));
-            Int_t lastBin = h1_data->GetNbinsX();
-            h1_data->SetBinContent(lastBin, h1_data->GetBinContent(lastBin) + h1_data->GetBinContent(lastBin+1));
         }
     }       
+
+    // set the last bin to be the overflow
+    Int_t lastBin = h1_data->GetNbinsX();
+    h1_data->SetBinContent(lastBin, h1_data->GetBinContent(lastBin) + h1_data->GetBinContent(lastBin+1));
 
     h1_data->Scale(lumiNorm_);
     if( rebin != 1 )
@@ -120,7 +123,6 @@ THStack* HistogramUtilities::getStack(sources_t theSources, TString var, TString
     TString histNameSuffix = "_" + var + "_" + nJets + hyp_type;
     for (int i = sources_.size() - 1; i >= 0; --i)
     {
-
         if ((theSources & makeBit(sources_[i].getSource()) ) == makeBit(sources_[i].getSource()) ) {
             std::cout << "getting " << sources_[i].getName() + histNameSuffix << std::endl;
             //std::cout << "reading file " << file_->GetName() << std::endl;

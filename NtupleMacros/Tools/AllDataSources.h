@@ -15,8 +15,6 @@ enum {
 
     H_DYMM_EVEN    ,
     H_DYEE_EVEN    ,
-
-
 	H_DYTT    ,
 
 	H_ZZ      ,

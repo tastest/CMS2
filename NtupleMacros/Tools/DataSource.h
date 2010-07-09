@@ -6,7 +6,8 @@
 #include "TColor.h"
 #include <iostream>
 
-typedef UInt_t sources_t;
+typedef ULong64_t   uint64;
+typedef uint64      sources_t;
 
 class DataSource {
 
