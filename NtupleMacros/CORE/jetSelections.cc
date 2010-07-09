@@ -1,9 +1,12 @@
-// $Id: jetSelections.cc,v 1.5 2010/03/05 02:47:30 warren Exp $
+// $Id: jetSelections.cc,v 1.6 2010/07/09 12:21:00 jmuelmen Exp $
 
 #include <algorithm>
 #include <utility>
 #include "Math/VectorUtil.h"
 #include "jetSelections.h"
+#include "jetcorr/JetCorrectorParameters.icc"
+#include "jetcorr/FactorizedJetCorrector.icc"
+#include "jetcorr/SimpleJetCorrector.icc"
 
 using std::vector;
 using std::pair;
@@ -177,4 +180,83 @@ double sumPt (unsigned int i_hyp, enum JetType type, enum CleaningType cleaning,
 	       ret += jets[i].first->pt() * jets[i].second;
      }
      return ret;
+}
+
+static FactorizedJetCorrector *jetCorrector = 0;
+
+void setJetCorrector (FactorizedJetCorrector *jc) 
+{
+     if (jetCorrector != 0)
+	  delete jetCorrector;
+     jetCorrector = jc;
+}
+
+FactorizedJetCorrector *makeJetCorrector (const char *l2corr, const char *l3corr, const char *l2l3_residual_corr)
+{
+     // do some rigmarole to evaluate env variables in the strings
+     std::string cmd = "echo ";
+     int s;
+     FILE *f;
+     f = popen((cmd + l2corr).c_str(), "r");
+     if (!f) {
+	  perror((std::string("Opening pipe to execute ") + cmd + l2corr).c_str());
+	  return 0;
+     }
+     char l2corr_name[1024];
+     s = fscanf(f, " %1024s\n", l2corr_name);
+     if (s != 1) {
+	  perror("reading file list");
+     }
+     assert(s == 1);
+     f = popen((cmd + l3corr).c_str(), "r");
+     if (!f) {
+	  perror((std::string("Opening pipe to execute ") + cmd + l3corr).c_str());
+	  return 0;
+     }
+     char l3corr_name[1024];
+     s = fscanf(f, " %1024s\n", l3corr_name);
+     if (s != 1) {
+	  perror("reading file list");
+     }
+     assert(s == 1);
+     f = popen((cmd + l2l3_residual_corr).c_str(), "r");
+     if (!f) {
+	  perror((std::string("Opening pipe to execute ") + cmd + l2l3_residual_corr).c_str());
+	  return 0;
+     }
+     char l2l3_residual_corr_name[1024];
+     s = fscanf(f, " %1024s\n", l2l3_residual_corr_name);
+     if (s != 1) {
+	  perror("reading file list");
+     }
+     assert(s == 1);
+     printf("%s\n%s\n%s\n", l2corr_name, l3corr_name, l2l3_residual_corr_name);
+     JetCorrectorParameters L2JetCorPar (l2corr_name);
+     JetCorrectorParameters L3JetCorPar (l3corr_name);
+     JetCorrectorParameters ResJetCorPar(l2l3_residual_corr_name);
+     vector<JetCorrectorParameters> vParam;
+     vParam.push_back(L2JetCorPar);
+     vParam.push_back(L3JetCorPar);
+     vParam.push_back(ResJetCorPar);
+     return new FactorizedJetCorrector(vParam);
+}
+
+double jetCorrection (const LorentzVector &jet, FactorizedJetCorrector *jetCorrector)
+{
+     jetCorrector->setJetPt(jet.pt());
+     jetCorrector->setJetEta(jet.eta());
+     return jetCorrector->getCorrection();
+}
+
+double jetCorrection (const LorentzVector &jet)
+{
+     assert(jetCorrector != 0);
+     jetCorrector->setJetPt(jet.pt());
+     jetCorrector->setJetEta(jet.eta());
+     return jetCorrector->getCorrection();
+}
+
+double jetCorrection (int ijet) 
+{ 
+     return jetCorrection(cms2.jets_p4()[ijet]); 
 }

@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// $Id: jetSelections.h,v 1.4 2010/03/05 02:47:30 warren Exp $
+// $Id: jetSelections.h,v 1.5 2010/07/09 12:21:00 jmuelmen Exp $
 
 #ifndef JETSELECTIONS_H
 #define JETSELECTIONS_H
@@ -64,4 +64,16 @@ double sumPt (unsigned int i_hyp,  // hyp or single-e to use for cleaning
 	      double min_pt = JET_DEFAULT_PT,
 	      double max_eta = JET_DEFAULT_ETA);
 
+// code to retrieve jet corrections from jet-correction text files
+class FactorizedJetCorrector;
+FactorizedJetCorrector *makeJetCorrector (const char *l2corr 		 = "$CMSSW_BASE/src/CondFormats/JetMETObjects/data/Spring10_L2Relative_AK5Calo.txt", 
+					  const char *l3corr 		 = "$CMSSW_BASE/src/CondFormats/JetMETObjects/data/Spring10_L3Absolute_AK5Calo.txt", 
+					  const char *l2l3_residual_corr = "$CMSSW_BASE/src/CondFormats/JetMETObjects/data/Spring10DataV1_L2L3Residual_AK5Calo.txt");
+// either specify a jet corrector in the call to jetCorrection 
+double jetCorrection (const LorentzVector &jet, 
+		      FactorizedJetCorrector *jetCorrector);
+// or set it once and have it be used it in all subsequent calls to jetCorrection
+void setJetCorrector (FactorizedJetCorrector *);
+double jetCorrection (const LorentzVector &jet);
+double jetCorrection (int ijet);
 #endif // SEL_JETS_H
