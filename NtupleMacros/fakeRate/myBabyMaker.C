@@ -162,8 +162,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 	  //float r19 = cms2.els_eMax()[iEl]/cms2.els_e5x5()[iEl];
 	  //if (r19 >= 0.95) continue;
 
-	  // Apply a pt cut
-	  if ( els_p4().at(iEl).pt() < 5.) continue;
+	  // Apply a pt cut (Changed it from 5 GeV to 10 GeV...Claudio 10 July 2010)
+	  if ( els_p4().at(iEl).pt() < 10.) continue;
 
 
 	  // Initialize baby ntuple
@@ -264,6 +264,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 	  int ph15cl = nHLTObjects("HLT_Photon15_Cleaned_L1R");
 	  int ph15   = nHLTObjects("HLT_Photon15_L1R");
 	  el10_   = nHLTObjects("HLT_Ele10_LW_L1R");
+	  el15_   = nHLTObjects("HLT_Ele15_LW_L1R");
 	  eg5_    = nHLTObjects("HLT_L1SingleEG5");
 	  eg8_    = nHLTObjects("HLT_L1SingleEG8");
 
@@ -280,6 +281,22 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 	      el10_ = 2;
 	    } else {
 	      el10_ = 1;
+	    }
+	  }
+
+	  // For Ele15 the HLT objects are saved for all data we have
+	  if (el15_ > 0) {
+	    bool match = false;
+	    for (int itrg=0; itrg<el15_; itrg++) {
+	      LorentzVector p4tr = p4HLTObject("HLT_Ele15_LW_L1R",itrg);
+	      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
+	      if (dr < drel15_) drel15_ = dr;
+	      if (dr < 0.4) match=true;
+	    }
+	    if (match) {
+	      el15_ = 2;
+	    } else {
+	      el15_ = 1;
 	    }
 	  }
 
@@ -371,6 +388,13 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 	 
 	  } // closes if-block of EG5, EG8, PH10 objects missing
  
+	  // Find the highest Pt jet separated by at least dRcut from this lepton
+	  // and fill the jet Pt
+	  ptj1_ = 0.0;
+	  for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
+	    double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl),jets_p4().at(iJet));
+	    if (dr > deltaRCut && jets_p4().at(iJet).pt()>ptj1_) ptj1_=jets_p4().at(iJet).pt();
+	  }
 	    
 	
 
@@ -386,8 +410,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
       if (eormu == -1 || eormu==13) {
 	for (unsigned int iMu = 0 ; iMu < mus_p4().size(); iMu++) {
 
-	  // Apply a pt cut
-	  if ( mus_p4().at(iMu).pt() < 5.) continue;
+	  // Apply a pt cut --- moved the cut to 10 GeV (Claudio, 10 Jul 2010)
+	  if ( mus_p4().at(iMu).pt() < 10.) continue;
 
 	  // If it is not a muon FO, quit
 	  //if (!(isFakeableMuon(iMu, mu_ttbar))) continue;
@@ -526,21 +550,29 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 	    }
 	  }
  
-    // Explicit match with Mu9 trigger
-    if (mu9_ > 0) {
-      bool match = false;
-      for (int itrg=0; itrg<mu9_; itrg++) {
-        LorentzVector p4tr = p4HLTObject("HLT_Mu5",itrg);
-        double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4tr);
-        if (dr < drmu9_) drmu9_ = dr;
-        if (dr < 0.4) match=true;
-      }
-      if (match) {
-        mu9_ = 2;
-      } else {
-        mu9_ = 1;
-      }
-    }
+	  // Explicit match with Mu9 trigger
+	  if (mu9_ > 0) {
+	    bool match = false;
+	    for (int itrg=0; itrg<mu9_; itrg++) {
+	      LorentzVector p4tr = p4HLTObject("HLT_Mu5",itrg);
+	      double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4tr);
+	      if (dr < drmu9_) drmu9_ = dr;
+	      if (dr < 0.4) match=true;
+	    }
+	    if (match) {
+	      mu9_ = 2;
+	    } else {
+	      mu9_ = 1;
+	    }
+	  }
+
+	  // Find the highest Pt jet separated by at least dRcut from this lepton
+	  // and fill the jet Pt
+	  ptj1_ = 0.0;
+	  for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
+	    double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu),jets_p4().at(iJet));
+	    if (dr > deltaRCut && jets_p4().at(iJet).pt()>ptj1_) ptj1_=jets_p4().at(iJet).pt();
+	  }
 
 
 	  // Time to fill the baby for the muons
@@ -583,6 +615,7 @@ void myBabyMaker::InitBabyNtuple () {
   ph10_ = 0;
   ph15_ = 0;
   el10_ = 0;
+  el15_ = 0;
   eg5_  = 0;
   eg8_  = 0;
   mu5_  = 0;
@@ -591,6 +624,7 @@ void myBabyMaker::InitBabyNtuple () {
   drph10_ = 99.;
   drph15_ = 99.;
   drel10_ = 99.;
+  drel15_ = 99.;
   dreg5_  = 99.;
   dreg8_  = 99.;
   drmu5_  = 99.;
@@ -599,6 +633,7 @@ void myBabyMaker::InitBabyNtuple () {
   nbjet_  = 0;
   dRbNear_ = 99.;
   dRbFar_ = -99.;
+  ptj1_   = 0.;
 }
 //-------------------------------------
 // Book the baby ntuple
@@ -637,12 +672,14 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("ph10",       &ph10_,       "ph10/I"      );
     babyTree_->Branch("ph15",       &ph15_,       "ph15/I"      );
     babyTree_->Branch("el10",         &el10_,         "el10/I"      );
+    babyTree_->Branch("el15",         &el15_,         "el15/I"      );
     babyTree_->Branch("eg5",         &eg5_,        "eg5/I"      );
     babyTree_->Branch("eg8",         &eg8_,        "eg8/I"      );
 
     babyTree_->Branch("drph10",       &drph10_,       "drph10/F"      );
     babyTree_->Branch("drph15",       &drph15_,       "drph15/F"      );
     babyTree_->Branch("drel10",         &drel10_,         "drel10/F"      );
+    babyTree_->Branch("drel15",         &drel15_,         "drel15/F"      );
     babyTree_->Branch("dreg5",         &dreg5_,        "dreg5/F"      );
     babyTree_->Branch("dreg8",         &dreg8_,        "dreg8/F"      );
 
@@ -657,6 +694,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("nbjet",       &nbjet_,       "nbjet/I"      );
     babyTree_->Branch("dRNear",       &dRbNear_,       "dRbNear/F"      );
     babyTree_->Branch("dRFar",       &dRbFar_,       "dRbFar/F"      );
+
+    babyTree_->Branch("ptj1",       &ptj1_,       "ptj1/F"      );
 }
 //----------------------------------
 // Fill the baby

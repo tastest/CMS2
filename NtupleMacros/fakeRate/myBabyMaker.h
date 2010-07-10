@@ -62,6 +62,7 @@ class myBabyMaker
 	Int_t ph10_;  // HLT_Photon10_L1R or HLT_Photon10_Cleaned_L1R
 	Int_t ph15_;  // HLT_Photon15_L1R or HLT_Photon15_Cleaned_L1R
 	Int_t el10_;  // HLT_Ele10_LW_L1R
+	Int_t el15_;  // HLT_Ele15_LW_L1R
 	Int_t eg5_;   // HLT_L1SingleEG5 
 	Int_t eg8_;   // HLT_L1SingleEG
 
@@ -76,6 +77,7 @@ class myBabyMaker
 	Float_t drph10_;
 	Float_t drph15_;
 	Float_t drel10_;
+	Float_t drel15_;
 	Float_t dreg5_;
 	Float_t dreg8_;
 
@@ -88,6 +90,9 @@ class myBabyMaker
 	Int_t nbjet_; // number of btagged jet pt>15
 	Float_t dRbNear_; // dR between lepton and closest such jet
 	Float_t dRbFar_; // dR between lepton and farthest such jet
+
+	// Information to do offline jet trigger selection
+	Float_t ptj1_; // highest pt jet well separated from the lepton
 
 
 };
