@@ -17,7 +17,9 @@
 using namespace std;
 
 // Get Methods
-LorentzVector TauP4(void){
+
+/* this is where the meat is */
+LorentzVector Tauify::TauP4(void){
   LorentzVector p4_return;
   p4_return.SetPx(-999.0);
   p4_return.SetPy(-999.0);
@@ -25,15 +27,30 @@ LorentzVector TauP4(void){
   p4_return.SetE(-999.0);
   return p4_return;
 }
-float TauMET(void){
+float Tauify::TauMET(void){
   return -999.0;
 }
-float TauIso(void){
+float Tauify::TauIso(void){
   return -999.0;
 }
-float TauIP(void){
+float Tauify::TauIP(void){
   return -999.0;
 }
+
+// io test
+unsigned int Tauify::TauSize(void){
+  return tau_data.size();
+}
+int Tauify::First(int index){
+  return tau_data[index].first;
+}
+float Tauify::Second(int index){
+  return tau_data[index].second.first;
+}
+float Tauify::Third(int index){
+  return tau_data[index].second.second;
+}
+
 
 // Set Methods
 void Tauify::SetLepton( LorentzVector p4_lepton, float met, float iso, float d0){
@@ -58,6 +75,7 @@ Tauify::Tauify( const char* infile, bool verbose /* default false in header */ )
     exit(1);
   }
   else {  // read file
+    int index = 0;
     while (! input_stream.eof() ){
       // read line
       string line;
@@ -95,6 +113,20 @@ Tauify::Tauify( const char* infile, bool verbose /* default false in header */ )
 
         //  
         if(verbose) cout << particle_id << " " << momentum << " " << costheta << endl;
+
+        // pair of floats
+        pair<float, float> pair_ff;
+        pair_ff.first = momentum;
+        pair_ff.second = costheta;
+
+        // pair of an int and a pair of floats
+        pair<int, pair<float, float> > pair_iff;
+        pair_iff.first = particle_id;
+        pair_iff.second = pair_ff;
+       
+        tau_data[index] = pair_iff;
+
+        index++;
 
       }
     }
