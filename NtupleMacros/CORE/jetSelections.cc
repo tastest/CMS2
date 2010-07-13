@@ -1,4 +1,4 @@
-// $Id: jetSelections.cc,v 1.6 2010/07/09 12:21:00 jmuelmen Exp $
+// $Id: jetSelections.cc,v 1.7 2010/07/13 09:07:43 jmuelmen Exp $
 
 #include <algorithm>
 #include <utility>
@@ -191,53 +191,40 @@ void setJetCorrector (FactorizedJetCorrector *jc)
      jetCorrector = jc;
 }
 
-FactorizedJetCorrector *makeJetCorrector (const char *l2corr, const char *l3corr, const char *l2l3_residual_corr)
+class FactorizedJetCorrector *makeJetCorrector (const char *l2corr, 
+						const char *l3corr, 
+						const char *l2l3_residual_corr)
 {
-     // do some rigmarole to evaluate env variables in the strings
-     std::string cmd = "echo ";
-     int s;
-     FILE *f;
-     f = popen((cmd + l2corr).c_str(), "r");
-     if (!f) {
-	  perror((std::string("Opening pipe to execute ") + cmd + l2corr).c_str());
-	  return 0;
-     }
-     char l2corr_name[1024];
-     s = fscanf(f, " %1024s\n", l2corr_name);
-     if (s != 1) {
-	  perror("reading file list");
-     }
-     assert(s == 1);
-     f = popen((cmd + l3corr).c_str(), "r");
-     if (!f) {
-	  perror((std::string("Opening pipe to execute ") + cmd + l3corr).c_str());
-	  return 0;
-     }
-     char l3corr_name[1024];
-     s = fscanf(f, " %1024s\n", l3corr_name);
-     if (s != 1) {
-	  perror("reading file list");
-     }
-     assert(s == 1);
-     f = popen((cmd + l2l3_residual_corr).c_str(), "r");
-     if (!f) {
-	  perror((std::string("Opening pipe to execute ") + cmd + l2l3_residual_corr).c_str());
-	  return 0;
-     }
-     char l2l3_residual_corr_name[1024];
-     s = fscanf(f, " %1024s\n", l2l3_residual_corr_name);
-     if (s != 1) {
-	  perror("reading file list");
-     }
-     assert(s == 1);
-     printf("%s\n%s\n%s\n", l2corr_name, l3corr_name, l2l3_residual_corr_name);
-     JetCorrectorParameters L2JetCorPar (l2corr_name);
-     JetCorrectorParameters L3JetCorPar (l3corr_name);
-     JetCorrectorParameters ResJetCorPar(l2l3_residual_corr_name);
+     std::vector<std::string> corrs;
+     corrs.reserve(3);
+     corrs.push_back(l2corr);
+     corrs.push_back(l3corr);
+     corrs.push_back(l2l3_residual_corr);
+     return makeJetCorrector(corrs);
+}
+
+class FactorizedJetCorrector *makeJetCorrector (const std::vector<std::string> &corrs)
+{
      vector<JetCorrectorParameters> vParam;
-     vParam.push_back(L2JetCorPar);
-     vParam.push_back(L3JetCorPar);
-     vParam.push_back(ResJetCorPar);
+     for (std::vector<std::string>::const_iterator i = corrs.begin(), i_end = corrs.end();
+	  i != i_end; ++i) {
+	  // do some rigmarole to evaluate env variables in the strings
+	  const std::string cmd = "echo ";
+	  FILE *f = popen((cmd + *i).c_str(), "r");
+	  if (!f) {
+	       perror((std::string("Opening pipe to execute ") + cmd + *i).c_str());
+	       return 0;
+	  }
+	  char corr_name[1024];
+	  int s = fscanf(f, " %1024s\n", corr_name);
+	  if (s != 1) {
+	       perror("reading file list");
+	  }
+	  assert(s == 1);
+	  JetCorrectorParameters JetCorPar(corr_name);
+	  printf("%s\n", corr_name);
+	  vParam.push_back(JetCorrectorParameters(corr_name));
+     }
      return new FactorizedJetCorrector(vParam);
 }
 

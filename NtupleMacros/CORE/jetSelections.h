@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// $Id: jetSelections.h,v 1.5 2010/07/09 12:21:00 jmuelmen Exp $
+// $Id: jetSelections.h,v 1.6 2010/07/13 09:07:43 jmuelmen Exp $
 
 #ifndef JETSELECTIONS_H
 #define JETSELECTIONS_H
@@ -69,6 +69,7 @@ class FactorizedJetCorrector;
 FactorizedJetCorrector *makeJetCorrector (const char *l2corr 		 = "$CMSSW_BASE/src/CondFormats/JetMETObjects/data/Spring10_L2Relative_AK5Calo.txt", 
 					  const char *l3corr 		 = "$CMSSW_BASE/src/CondFormats/JetMETObjects/data/Spring10_L3Absolute_AK5Calo.txt", 
 					  const char *l2l3_residual_corr = "$CMSSW_BASE/src/CondFormats/JetMETObjects/data/Spring10DataV1_L2L3Residual_AK5Calo.txt");
+FactorizedJetCorrector *makeJetCorrector (const std::vector<std::string> &vector_of_file_names);
 // either specify a jet corrector in the call to jetCorrection 
 double jetCorrection (const LorentzVector &jet, 
 		      FactorizedJetCorrector *jetCorrector);
