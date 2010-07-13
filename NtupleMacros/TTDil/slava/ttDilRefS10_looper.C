@@ -333,27 +333,17 @@ int ttDilRefS10_looper::ScanChain (ProcDSS& pds, unsigned long long int cutsMask
 	if (ge2BtagsHiEff1p7 || ge1BtagsHiEff1p7){
 	  int nBtags = 0;
 	  if (usePF){
-	    //we don't have it properly :(
-	    //so, I'm matching to calojets or trk jets
 	    for (unsigned int iJ = 0; iJ < nJetsCounted; ++iJ){
 	      //lets find the jet index
 	      int iJet = -1;
-	      // calo
 	      for (unsigned int jJ = 0; jJ <cms2.jets_p4().size(); ++jJ ){
-		if (DeltaR(new_hyp_jets_p4_val[iJ], cms2.jets_p4()[jJ]) < 0.1){
+		if (DeltaR(new_hyp_jets_p4_val[iJ], cms2.pfjets_p4()[jJ]) < 0.1){
 		  iJet = jJ; break;
 		}
 	      }
-	      if (iJet != -1 && cms2.jets_trackCountingHighEffBJetTag()[iJet] > 1.7) nBtags++;
-	      if (iJet == -1){//try trk
-		for (unsigned int jJ = 0; jJ <cms2.jets_p4().size(); ++jJ ){
-		  if (DeltaR(new_hyp_jets_p4_val[iJ], cms2.trkjets_p4()[jJ]) < 0.1){
-		    iJet = jJ; break;
-		  }
-		}
-		if (iJet != -1 && cms2.trkjets_trackCountingHighEffBJetTag()[iJet] > 1.7) nBtags++;
-	      }//  if (iJet == -1)
-	    }
+	      if (iJet == -1) continue;
+	      if (cms2.pfjets_trackCountingHighEffBJetTag()[iJet] > 1.7) nBtags++;
+	    }//  if (iJet == -1)
 	  }  else {
 	    //calojets
 	    for (unsigned int iJ = 0; iJ < nJetsCounted; ++iJ){
