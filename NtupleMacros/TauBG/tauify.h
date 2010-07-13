@@ -1,15 +1,22 @@
 // ROOT includes
 #include "Math/LorentzVector.h"
+
+// C++ includes
 #include <map>
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
+typedef ROOT::Math::DisplacementVector3D<ROOT::Math::Cartesian3D<double> > Vector;
 
 class Tauify{
   private:
     // data member to hold tau rest frame variables
     // pid, |P|, costheta
     // not as complicated as it looks... think: index <--> vector(int, float, float)
-    map<int, pair<int, pair<float, float> > > tau_data;
+    map<int, pair<int, pair<double, double> > > tau_data;
+
+    LorentzVector p4_lepton_lab;
+    LorentzVector p4_tau_lepton_cm;
+    LorentzVector p4_tau_lepton_lab;
 
   public:
     // constructor & destructor
@@ -28,7 +35,7 @@ class Tauify{
     // io test
     unsigned int TauSize(void);
     int   First(int);
-    float Second(int);
-    float Third(int);
+    double Second(int);
+    double Third(int);
 
 };
