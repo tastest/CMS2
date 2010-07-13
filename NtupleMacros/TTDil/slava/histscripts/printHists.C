@@ -1,9 +1,21 @@
+#include "TMath.h"
+#include <iostream>
+#include <vector>
+#include "TROOT.h"
+#include "TH1F.h"
+#include "Math/Math.h"
+#include "Math/SpecFunc.h"
+#include "TFile.h"
+#include <cmath>
+#include "histtools.h"
+
 #include "specFun.C"
 
-template <typename T>
-T max(const T& a, const T& b){ return a> b ? a : b; }
-template <typename T>
-T min(const T& a, const T& b){ return a< b ? a : b; }
+
+//template <typename T>
+//T max(const T& a, const T& b){ return a> b ? a : b; }
+//template <typename T>
+//T min(const T& a, const T& b){ return a< b ? a : b; }
 
 void getSoverRootN(double& rat, double& ratE, double s, double n, double sE, double nE){
   rat = s; rat /= n > 0 ? sqrt(n) : 1.;
@@ -31,6 +43,63 @@ std::string formatFloat(double x, const char* formatS){
   double xB = atof(xS.c_str());
   if (x>0 && xB==0){
     xS = Form(" %6.1g",x);
+  }
+  return xS;
+}
+
+std::string formatFloat(double x, double xRef, int nSignificant, int printStyle, bool latex = false){
+  std::string fS;
+  bool isInt = false;
+  int nDigs = 0;
+  if (fabs(xRef) <= x && x>1E-12){
+    nDigs =   std::floor(log(fabs(xRef))/log(10.));
+    if (fabs(xRef)>1){
+      nDigs +=1;
+      if (nDigs >= nSignificant){
+	fS = std::string("%d");//+std::string(Form("%dd", nDigs));
+	isInt = true;
+      } else {
+	fS = std::string("%")+std::string(Form("%d.%df", nSignificant, nSignificant-nDigs));
+      }
+    } else {
+      nDigs = abs(nDigs);
+      fS = std::string("%")+std::string(Form("%d.%df", nDigs+nSignificant, nSignificant+nDigs-1));
+    }
+  }
+  if (x<=1E-12){
+    if (nSignificant>1) fS = std::string("%")+std::string(Form("%d.%df", nSignificant, nSignificant-1));
+    if (nSignificant<=1) fS = std::string("%d");
+  }
+
+  std::string pmSign  = latex ? " \\pm " : " &plusmn; "; 
+  std::string mathSep = latex ? "$" : "";
+  std::string timesSign = latex ? "\\times" : "X";
+
+  
+  std::string xS;
+  if (printStyle == 0){
+    if (isInt){
+      xS = mathSep + std::string(Form(Form("%s", fS.c_str()),(long int)x)) + mathSep;
+    } else {
+      xS = mathSep + std::string(Form(Form("%s", fS.c_str()),x)) + mathSep;
+    }
+  }
+  if (printStyle == 1){
+    if (isInt){
+      xS = mathSep + std::string(Form(Form("%s", fS.c_str()),(long int)x)) 
+	+ pmSign + std::string(Form(Form("%s", fS.c_str()),(long int)xRef)) + mathSep;
+    } else {
+      if (fabs(xRef)> 1E-12 && fabs(xRef) < 0.001){
+	double xTmp = pow(10,nDigs)*x;
+	double xRefTmp = pow(10,nDigs)*xRef;
+	fS = std::string("%")+std::string(Form("%d.%df", nSignificant, nSignificant-1));
+	xS = mathSep + std::string(Form(Form("(%s", fS.c_str()),xTmp)) 
+	  + pmSign + std::string(Form(Form("%s) \\times 10^{-%d}", fS.c_str(), nDigs),xRefTmp)) + mathSep;
+      } else {
+	xS = mathSep + std::string(Form(Form("%s", fS.c_str()),x))
+	  + pmSign + std::string(Form(Form("%s", fS.c_str()),xRef)) + mathSep;
+      }
+    }
   }
   return xS;
 }
@@ -512,12 +581,15 @@ float histSum(TH1F* h, int minB, int maxB){
   }
   return res;
 }
-float histSumErr(TH1F* h, int minB, int maxB){
+float histSumErr2(TH1F* h, int minB, int maxB){
   float res2 = 0;
   for (int iB = minB; iB <= maxB; ++iB){
     res2 += h->GetBinError(iB)*h->GetBinError(iB);
   }
-  return sqrt(res2);
+  return res2;
+}
+float histSumErr(TH1F* h, int minB, int maxB){
+  return sqrt(histSumErr2( h, minB, maxB));
 }
 
 void printFlow(std::string fList, const char* formatS = "%6.1f", bool latex = false){
@@ -529,22 +601,25 @@ void printFlow(std::string fList, const char* formatS = "%6.1f", bool latex = fa
   int nCount = 0;
   std::vector<std::string> inFileSV(20);
   std::vector<std::string> confSV(20);
-  std::vector<TFile*> inFileV(20,0);
+  std::vector<TFile*> inFileV(20,(TFile*)0);
   while (fscanf(confF, "%s %s", inFile, conf) == 2) {
     //    std::cout<<inFile<<" is "<<conf<<std::endl;
     if (nCount > 19) return;
     inFileSV[nCount] = std::string(inFile);
     confSV[nCount]  = std::string(conf);
     inFileV[nCount] = new TFile(inFileSV[nCount].c_str());
-    if (inFileV[nCount] == 0) return;
+    if (inFileV[nCount] == 0){
+      std::cout<<"Failed to read "<<inFile<<std::endl;
+      return;
+    }
     std::cout<<"Got "<<inFileV[nCount]->GetName()<<" "<<confSV[nCount].c_str()<<std::endl;
     nCount++;
   }
 
-  std::vector<TH1F*> h_topdil_mm(20,0);
-  std::vector<TH1F*> h_topdil_ee(20,0);
-  std::vector<TH1F*> h_topdil_em(20,0);
-  std::vector<TH1F*> h_topdil_all(20,0);
+  std::vector<TH1F*> h_topdil_mm(20,(TH1F*)0);
+  std::vector<TH1F*> h_topdil_ee(20,(TH1F*)0);
+  std::vector<TH1F*> h_topdil_em(20,(TH1F*)0);
+  std::vector<TH1F*> h_topdil_all(20,(TH1F*)0);
   for ( int iF = 0; iF < nCount; ++iF){
     h_topdil_mm[iF] = (TH1F*)inFileV[iF]->Get("ttdil_hnJet_mm");
     h_topdil_ee[iF] = (TH1F*)inFileV[iF]->Get("ttdil_hnJet_ee");
@@ -582,5 +657,160 @@ void printFlow(std::string fList, const char* formatS = "%6.1f", bool latex = fa
   std::cout<<beginL<<"all ";
   for (int iF = 0; iF< nCount; ++iF) std::cout<<colSep<<formatFloat(histSum(h_topdil_all[iF],0,100),formatS);
   std::cout<<endL<<std::endl;
+
+}
+
+// read the $hPrefixes_hnJet_$hSuffix histograms from the vector of files inFiles and print out the values
+// printStyle: 0 -- value only; 1 -- value +/- error
+void printFlowOneLine(const std::vector<TFile*>& inFiles, float minX, float maxX,
+		      const std::vector<std::string>& hPrefixes, 
+		      const char* modeName, const char* hSuffix, 
+		      float scaleF = 1.0,
+		      int nSignificant = 2, unsigned int  printStyle = 1,
+		      bool latex = false, bool printDebug = false){
+
+  int nCount = inFiles.size();
+  int nPfxs = hPrefixes.size();
+
+  TH1F* h_tmp = 0;
+  std::vector<double> inValue(nCount, 0);
+  std::vector<double> inError(nCount, 0);
+
+  for ( int iF = 0; iF < nCount; ++iF){
+    double tVal = 0; double tErr2 = 0;
+    for (int iPfx = 0; iPfx  < nPfxs; ++iPfx){
+      h_tmp = (TH1F*)inFiles[iF]->Get(Form("%s_hnJet_%s", hPrefixes[iPfx].c_str(), hSuffix));
+      if (printDebug) std::cout<<" Got  hName "<<h_tmp->GetName()<<" : Int = "<<h_tmp->Integral(-1,1000)<<std::endl;
+      int iMin = h_tmp->FindBin(minX);
+      int iMax = h_tmp->FindBin(maxX);
+      tVal += histSum(h_tmp, iMin, iMax);
+      tErr2 += histSumErr2(h_tmp, iMin, iMax);
+    }
+
+    inValue[iF] =tVal*scaleF;
+    inError[iF] =sqrt(tErr2)*scaleF;
+  }
+
+  std::string pmSign  = latex ? " \\pm " : " &plusmn; ";
+  std::string colSep  = latex ? " & " : " | ";
+  std::string hcolSep  = latex ? " & " : "* | *";
+  std::string beginL  = latex ? ""   : " | ";
+  std::string endL    = latex ? " \\\\ " : " | ";
+  std::string mathSep = latex ? "$" : "";
+  
+
+  std::cout<<beginL<<modeName<<" ";
+  for (int iF = 0; iF< nCount; ++iF){
+    std::cout<<"\t"<<colSep<<formatFloat(inValue[iF], inError[iF], nSignificant, printStyle, latex);
+  }
+  std::cout<<endL<<std::endl;
+}
+
+void printFlowMCnData(std::string fList, float scaleF = 1., bool latex = false, bool debugPrint = false){
+  std::cout<<fList<<std::endl;
+  FILE *confF = fopen(fList.c_str(), "r");
+  char inFile[1024]; memset(inFile, 0, sizeof(inFile));
+  char inFilePP[1024]; memset(inFilePP, 0, sizeof(inFilePP));
+  char conf[20]; memset(conf, 0, sizeof(conf));
+  long long bitMask=0;
+  
+  int nCount = 0;
+  while (fscanf(confF, "%s %s %s", inFile, inFilePP, conf) == 3) nCount++;
+  std::cout<<"Read "<<nCount<<" files"<<std::endl;
+
+  fclose(confF);
+
+  confF = fopen(fList.c_str(), "r");
+  std::vector<std::string> inFileSV(nCount);
+  std::vector<std::string> inFilePPSV(nCount);
+  std::vector<std::string> confSV(nCount);
+  std::vector<TFile*> inFileV(nCount, (TFile*)0);
+  std::vector<TFile*> inFilePPV(nCount, (TFile*)0);
+  nCount = 0;
+  while (fscanf(confF, "%s %s %s", inFilePP, inFile, conf) == 3) {
+    inFileSV[nCount] = std::string(inFile);
+    inFilePPSV[nCount] = std::string(inFilePP);
+    confSV[nCount] = std::string(conf);
+    inFileV[nCount] = new TFile(inFileSV[nCount].c_str());
+    inFilePPV[nCount] = new TFile(inFilePPSV[nCount].c_str());
+    if (inFileV[nCount] == 0 || inFilePPV[nCount] == 0){
+      std::cout<<"Failed to read "<<inFile<<std::endl;
+      return;
+    }
+    if (debugPrint) std::cout<<"Got "<<inFileV[nCount]->GetName()<<" "<<confSV[nCount].c_str()<<std::endl;
+    nCount++;
+    memset(inFile, 0, sizeof(inFile));
+    memset(conf, 0, sizeof(conf));
+  }
+
+  std::string pmSign  = latex ? " \\pm " : " &plusmn; ";
+  std::string colSep  = latex ? " & " : " | ";
+  std::string hcolSep  = latex ? " & " : "* | *";
+  std::string beginL  = latex ? ""   : " | ";
+  std::string endL    = latex ? " \\\\ " : " | ";
+  std::string mathSep = latex ? "$" : "";
+  
+  std::vector<std::string> modeSV;
+  modeSV.push_back("ee");
+  modeSV.push_back("mm");
+  modeSV.push_back("em");
+  modeSV.push_back("all");
+
+  
+  for (int iMode = 0; iMode < modeSV.size(); ++iMode){
+    std::string modeS  = modeSV[iMode];
+    if (latex) {
+      std::cout << "\\begin{table}" << std::endl;
+      std::cout << "\\begin{center}" << std::endl;
+      std::cout << "{\\small \\caption{Mode "<<modeS<<" }" << std::endl;
+      std::cout << "\\begin{tabular}{l";
+      for (int i=0; i< nCount; ++i) std::cout<<"c";
+      std::cout << "}\\hline"<<std::endl;
+    }
+    
+    if (latex) std::cout<<beginL<<" Channel ";
+    else std::cout<<beginL<<" *Channel* ";
+    for (int iF = 0; iF< nCount; ++iF) std::cout<<hcolSep<<confSV[iF].c_str();
+    std::cout<<endL<<std::endl;
+    if (latex) std::cout<<"\\hline"<<std::endl;
+    std::vector<std::string> hPrefixes;
+    
+    hPrefixes.push_back(std::string("ttdil"));
+    printFlowOneLine(inFileV, -1, 100, hPrefixes, "Dilepton $t\\bar{t}$", modeS.c_str(), scaleF, 1, 1, true); if(latex) std::cout <<"\\hline"<<std::endl;
+    hPrefixes.clear(); hPrefixes.push_back(std::string("VV"));
+    printFlowOneLine(inFileV, -1, 100, hPrefixes, "$VV$", modeS.c_str(), scaleF, 1, 1, true);
+    hPrefixes.clear(); hPrefixes.push_back(std::string("tw"));
+    printFlowOneLine(inFileV, -1, 100, hPrefixes, "Single-top $tW$", modeS.c_str(), scaleF, 1, 1, true);
+    hPrefixes.clear(); hPrefixes.push_back(std::string("DYtautau"));
+    printFlowOneLine(inFileV, -1, 100, hPrefixes, "Drell-Yan $\\tau\\tau$", modeS.c_str(), scaleF, 1, 1, true);
+    hPrefixes.clear(); hPrefixes.push_back(std::string("DYee")); hPrefixes.push_back(std::string("DYmm")); 
+    printFlowOneLine(inFileV, -1, 100, hPrefixes, "Drell-Yan $ee/\\mu\\mu$", modeS.c_str(), scaleF, 1, 1, true);
+    hPrefixes.clear(); hPrefixes.push_back(std::string("ttotr"));
+    printFlowOneLine(inFileV, -1, 100, hPrefixes, "Non-dilepton $t\\bar{t}$", modeS.c_str(), scaleF, 1, 1, true);
+    hPrefixes.clear(); hPrefixes.push_back(std::string("wjets"));
+    printFlowOneLine(inFileV, -1, 100, hPrefixes, "W+jets", modeS.c_str(), scaleF, 1, 1, true);
+    hPrefixes.clear(); hPrefixes.push_back(std::string("qcd15"));  hPrefixes.push_back(std::string("qcd30"));
+    printFlowOneLine(inFileV, -1, 100, hPrefixes, "QCD multijets", modeS.c_str(), scaleF, 1, 1, true);  if(latex) std::cout <<"\\hline"<<std::endl;
+    hPrefixes.clear(); 
+    hPrefixes.push_back(std::string("ttdil")); 
+    hPrefixes.push_back(std::string("VV"));
+    hPrefixes.push_back(std::string("tw")); 
+    hPrefixes.push_back(std::string("DYtautau")); 
+    hPrefixes.push_back(std::string("DYee")); hPrefixes.push_back(std::string("DYmm"));
+    hPrefixes.push_back(std::string("ttotr"));
+    hPrefixes.push_back(std::string("wjets")); 
+    hPrefixes.push_back(std::string("qcd15"));  hPrefixes.push_back(std::string("qcd30"));
+    printFlowOneLine(inFileV, -1, 100, hPrefixes, "Total simulated", modeS.c_str(), scaleF, 1, 1, true);  if(latex) std::cout <<"\\hline"<<std::endl;
+    hPrefixes.clear(); hPrefixes.push_back(std::string("data"));
+    printFlowOneLine(inFilePPV, -1, 100, hPrefixes, "Data", modeS.c_str(), 1., 1, 0, true);  if(latex) std::cout <<"\\hline"<<std::endl;
+    
+    if (latex) {
+      std::cout << "\\end{tabular}"<<std::endl;
+      std::cout << "}"<<std::endl;
+      std::cout << "\\end{center}" << std::endl;
+      std::cout << "\\end{table}" << std::endl;
+      std::cout << std::endl;
+    }
+  } // loop over modes
 
 }
