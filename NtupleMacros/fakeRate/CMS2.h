@@ -25668,7 +25668,7 @@ void LoadAllBranches()
 		if(found_it != end_it)
 			trigIndx = found_it - begin_it;
 		else {
-			cout << "CMS2.h:  Cannot find Trigger " << trigName << endl; 
+		  //			cout << "CMS2.h:  Cannot find Trigger " << trigName << endl; 
 			return 0;
 		}
 

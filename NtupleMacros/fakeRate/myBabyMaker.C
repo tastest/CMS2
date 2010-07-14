@@ -19,6 +19,7 @@
 #include "../CORE/muonSelections.cc"
 #include "../CORE/electronSelections.cc"
 #include "../CORE/electronSelectionsParameters.cc"
+#include "../CORE/metSelections.cc"
 
 
 //#include "../CORE/fakerates.cc"
@@ -448,23 +449,35 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
 	  numv1_  = muonId(iMu, NominalTTbar);
           tcmet_ = evt_tcmet();
 
+
+	  // Now REALLY fix it (July 14, 2010)
+	  if (pt_ > 10.) {
+	    if (!wasMetCorrectedForThisMuon(iMu, usingTcMet)) {
+	      cout << "Correcting the tcmet" << endl;
+	      float metX = tcmet_ * cos(evt_tcmetPhi());
+	      float metY = tcmet_ * sin(evt_tcmetPhi());
+	      fixMetForThisMuon(iMu, metX, metY, usingTcMet);
+	      tcmet_ = sqrt(metX*metX + metY*metY);
+	    }
+	  }
+
 	  // Careful about tcmet.  
 	  // For muons pt>10 GeV, if it is not already corrected for it, do it
 	  // THIS is most likely wrong...needs to be fixed......(Fixed July 5, 2010)
-	  if (pt_ > 10. && (mus_tcmet_flag().at(iMu) == 0 || mus_tcmet_flag().at(iMu) == 4)) {
-	    cout << "Correcting the tcmet" <<endl;
-	    double lmetx = tcmet_ * cos(evt_tcmetPhi());
-	    double lmety = tcmet_  * sin(evt_tcmetPhi());
-	    if (mus_tcmet_flag()[iMu] == 0){
-	      lmetx+= mus_met_deltax()[iMu] - mus_p4()[iMu].x();
-	      lmety+= mus_met_deltay()[iMu] - mus_p4()[iMu].y();
-	    } else if (mus_tcmet_flag()[iMu] == 4){
-	      lmetx+= - mus_tcmet_deltax()[iMu] + mus_met_deltax()[iMu] - mus_p4()[iMu].x(); 
-	      lmety+= - mus_tcmet_deltay()[iMu] + mus_met_deltay()[iMu] - mus_p4()[iMu].y(); 
-	    }
-
-	    tcmet_ = sqrt(lmetx*lmetx+lmety*lmety);
-	  }
+	  //if (pt_ > 10. && (mus_tcmet_flag().at(iMu) == 0 || mus_tcmet_flag().at(iMu) == 4)) {
+	  //  cout << "Correcting the tcmet" <<endl;
+	  //  double lmetx = tcmet_ * cos(evt_tcmetPhi());
+	  //  double lmety = tcmet_  * sin(evt_tcmetPhi());
+	  //  if (mus_tcmet_flag()[iMu] == 0){
+	  //    lmetx+= mus_met_deltax()[iMu] - mus_p4()[iMu].x();
+	  //    lmety+= mus_met_deltay()[iMu] - mus_p4()[iMu].y();
+	  //  } else if (mus_tcmet_flag()[iMu] == 4){
+	  //    lmetx+= - mus_tcmet_deltax()[iMu] + mus_met_deltax()[iMu] - mus_p4()[iMu].x(); 
+	  //    lmety+= - mus_tcmet_deltay()[iMu] + mus_met_deltay()[iMu] - mus_p4()[iMu].y(); 
+	  //  }
+          //
+	  //  tcmet_ = sqrt(lmetx*lmetx+lmety*lmety);
+	  //}
 
 
 
