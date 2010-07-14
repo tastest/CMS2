@@ -13,6 +13,53 @@
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
+
+//---------------------------------------------------
+// Function that checks whether met (or tcmet) was 
+// corrected for a given muon.  This uses the value maps
+//---------------------------------------------------
+bool wasMetCorrectedForThisMuon(int imu, whichMetType type) {
+  bool answer=true;
+  switch(type) {
+    case usingTcMet:
+      if (cms2.mus_tcmet_flag().at(imu) == 0 || 
+          cms2.mus_tcmet_flag().at(imu) == 4) answer = false;
+      break;
+    case usingCaloMet:
+      if (cms2.mus_met_flag().at(imu) == 0) answer = false;
+      break;
+    default:
+      std::cout << "Illegal call to wasMetCorrectedForThisMuon" <<std::endl;
+  }
+}
+
+//-----------------------------------------------------------
+// Function that corrects the met (or tcmet) for a given
+// muon in case this was not done in reco.  Uses value maps
+//-------------------------------------------------------------
+void fixMetForThisMuon(int imu, float& metX, float& metY, whichMetTypr type) {
+  bool wasItCorrected = wasMetCorrectedForThisMuon(imu, type);
+  if (!wasItCorrected) {
+    switch(type) {
+
+      case usingTcMet:
+	if (cms2.mus_tcmet_flag()[imu] == 0) {
+	  metX += cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x();
+	  metY += cms2.mus_met_deltay()[imu] - cms2.mus_p4()[imu].y();
+	} else if (cms2.mus_tcmet_flag()[imu] == 4) {
+	  metX += - mus_tcmet_deltax()[imu] + mus_met_deltax()[imu] - mus_p4()[iMu].x(); 
+	  metY += - mus_tcmet_deltay()[imu] + mus_met_deltay()[imu] - mus_p4()[iMu].y(); 
+	}
+	break;
+
+      case usingCaloMet:
+	metX += cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x();
+	metY += cms2.mus_met_deltay()[imu] - cms2.mus_p4()[imu].y();
+	break;
+    }
+  }
+}
+
 //---------------------------------------------
 // function to calculate projected MET.
 // takes three parameters as input:

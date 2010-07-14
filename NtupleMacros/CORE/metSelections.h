@@ -5,6 +5,8 @@
 // met selections
 //
 
+
+
 struct metStruct{
   metStruct() : met(-999.), metphi(-999.), metx(-999.), mety(-999.), sumet(-999.)  {}
   float met;
@@ -13,6 +15,25 @@ struct metStruct{
   float mety;
   float sumet;
 };
+
+
+enum whichMetType {
+  usingTcMet = 1,
+  usingCaloMet = 2,
+};
+
+
+//---------------------------------------------------
+// Function that checks whether met (or tcmet) was 
+// corrected for a given muon.  This uses the value maps
+//---------------------------------------------------
+bool wasMetCorrectedForThisMuon(int imu, whichMetType type);
+
+//-----------------------------------------------------------
+// Function that corrects the met (or tcmet) for a given
+// muon in case this was not done in reco.  Uses value maps
+//-------------------------------------------------------------
+void fixMetForThisMuon(int imu, float& metX, float& metY, whichMetTypr type);
 
 
 //---------------------------------------------
