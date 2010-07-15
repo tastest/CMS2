@@ -14,6 +14,7 @@
 
 // TAS includes
 #include "../CORE/CMS2.cc"
+//#include "./CMS2.cc"
 #include "./textFileMaker.h"
 using namespace std;
 using namespace tas;

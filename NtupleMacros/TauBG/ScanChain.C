@@ -26,19 +26,32 @@
 
 #include "CMS2.cc"
 
-#include "../tauify.C"
+#include "tauify.C"
 
 using namespace tas;
 
 int ScanChain( TChain* chain, int nEvents = -1, std::string skimFilePrefix="") {
 
-  Tauify *t = new Tauify("../decay.txt");
+  Tauify *t = new Tauify("decay.txt");
 
   //
   TFile *f = new TFile("test.root","RECREATE");
+  
+  float pi = TMath::Pi();
 
   //
-  TH1F *h_zmass = new TH1F("zmass", "zmass", 150, 0, 150);
+  TH1F *h_zmass       = new TH1F("zmass", "zmass", 150, 0, 150);
+  TH1F *h_p_cm        = new TH1F("p_cm", "p_cm", 100, 0, 2);
+  TH1F *h_costheta_cm = new TH1F("costheta_cm", "costheta_cm", 100, -1, 1);
+
+  TH1F *h_lep_pt      = new TH1F("lep_pt", "lep_pt", 200, 0, 200);
+  TH1F *h_lep_eta     = new TH1F("lep_eta", "lep_eta", 200, -2.5, 2.5);
+  TH1F *h_lep_phi     = new TH1F("lep_phi", "lep_phi", 200, -1*pi, pi);
+
+  TH1F *h_taulep_pt   = new TH1F("taulep_pt", "taulep_pt", 500, 0, 5000);
+  TH1F *h_taulep_eta  = new TH1F("taulep_eta", "taulep_eta", 200, -2.5, 2.5);
+  TH1F *h_taulep_phi  = new TH1F("taulep_phi", "taulep_phi", 200, -1*pi, pi);
+
 
   TObjArray *listOfFiles = chain->GetListOfFiles();
   unsigned int nEventsChain=0;
@@ -81,8 +94,8 @@ int ScanChain( TChain* chain, int nEvents = -1, std::string skimFilePrefix="") {
         if( hyp_lt_p4().at(iHyp).eta() > 2.5 ) continue;
 
         // pt
-        if( hyp_ll_p4().at(iHyp).pt() < 20 ) continue;
-        if( hyp_lt_p4().at(iHyp).pt() < 20 ) continue;
+        //if( hyp_ll_p4().at(iHyp).pt() < 10 ) continue;
+        //if( hyp_lt_p4().at(iHyp).pt() < 10 ) continue;
 
         //
         LorentzVector p4_z = hyp_ll_p4().at(iHyp) + hyp_lt_p4().at(iHyp);
@@ -90,7 +103,31 @@ int ScanChain( TChain* chain, int nEvents = -1, std::string skimFilePrefix="") {
 
         //
         t->SetLepton( hyp_lt_p4().at(iHyp), 0, 0, 0 );
-        t->TauP4();
+
+        //LorentzVector id_test       = t->ParticleId();
+        //LorentzVector p_test        = t->MomentumCM();
+        //LorentzVector costheta_test = t->CosThetaCM();
+
+        LorentzVector p4_test  = t->TauP4();
+  
+        int   id_test       = t->ParticleId();
+
+        float met_test      = t->TauMET();
+        float iso_test      = t->TauIso();
+        float ip_test       = t->TauIP();
+
+
+        h_p_cm->Fill( t->MomentumCM() );
+        h_costheta_cm->Fill( t->CosThetaCM() );
+
+        h_lep_pt->Fill( hyp_lt_p4().at(iHyp).pt() );
+        h_lep_eta->Fill( hyp_lt_p4().at(iHyp).eta() );
+        h_lep_phi->Fill( hyp_lt_p4().at(iHyp).phi() );
+
+        h_taulep_pt->Fill( p4_test.pt() );
+        h_taulep_eta->Fill( p4_test.eta() );
+        h_taulep_phi->Fill( p4_test.phi() );
+
 
       }
 

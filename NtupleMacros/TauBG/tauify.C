@@ -5,68 +5,63 @@
 // in data ( data driven Ztautau prediction )  //
 //---------------------------------------------//
 
-// header
+// all includes in header
 #include "tauify.h"  
-
-//
-#include "Math/Boost.h"
-#include "TMath.h"
-#include "TRandom3.h"
-
-
-// C++ includes
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <limits>
 
 using namespace std;
 
-// Get Methods
-
-/* this is where the meat is */
-LorentzVector Tauify::TauP4(void){
-  return p4_tau_lepton_lab;
-}
-float Tauify::TauMET(void){
-  return -999.0;
-}
-float Tauify::TauIso(void){
-  return -999.0;
-}
-float Tauify::TauIP(void){
-  return -999.0;
-}
-
-// io test
+// private Get Methods - access by index
 unsigned int Tauify::TauSize(void){
   return tau_data.size();
 }
-int Tauify::First(int index){
+int Tauify::ParticleId(int index){
   return tau_data[index].first;
 }
-double Tauify::Second(int index){
+double Tauify::MomentumCM(int index){
   return tau_data[index].second.first;
 }
-double Tauify::Third(int index){
+double Tauify::CosThetaCM(int index){
   return tau_data[index].second.second;
 }
 
+// public Get Methods
+LorentzVector Tauify::TauP4(void){
+  return p4_tau_lepton_lab;
+}
+int Tauify::ParticleId(void){
+  return id;
+}
+float Tauify::MomentumCM(void){
+  return p_cm;
+}
+float Tauify::CosThetaCM(void){
+  return costheta_cm;
+
+}
+float Tauify::TauMET(void){
+  return tau_met;
+}
+float Tauify::TauIso(void){
+  return tau_iso;
+}
+float Tauify::TauIP(void){
+  return tau_ip;
+}
 
 // Set Methods
-void Tauify::SetLepton( LorentzVector p4_arg, float met, float iso, float d0){
+void Tauify::SetLepton( LorentzVector p4_arg, float met_arg, float iso_arg, float ip_arg){
 
   // set the 4 vector of the lepton in the LAB
   p4_lepton_lab = p4_arg;
 
   // how to handle lepton id? random for now...
   // assume all tau decays are equally likely, pick a random P and cos(theta) from the file
-  TRandom3 *rand1   = new TRandom3(0);
-  int index         = rand1->Integer( TauSize() );
-  int id            = First(index);
-  double p          = Second(index);
-  double cos_theta  = Third(index);
-  double theta      = acos(cos_theta); 
+  TRandom3 *rand1 = new TRandom3(0);
+  int index       = rand1->Integer( TauSize() );
+  id              = ParticleId(index);
+  p_cm            = MomentumCM(index);
+  costheta_cm     = CosThetaCM(index);
+  double theta    = acos(costheta_cm); 
 
   // 3 vectors
   Vector p3_lepton_lab;
@@ -77,10 +72,9 @@ void Tauify::SetLepton( LorentzVector p4_arg, float met, float iso, float d0){
   p3_lepton_lab.SetCoordinates( (double)p4_lepton_lab.Px(), (double)p4_lepton_lab.Py(), (double)p4_lepton_lab.Pz() );
    
   // 3 momentum paralell to lepton
-  //para = ( (p*cos_theta) / sqrt( p3_lepton_lab.Mag2() ) )*p3_lepton_lab;
   para = p3_lepton_lab;
   para /= sqrt( p3_lepton_lab.Mag2() );
-  para *= p*cos_theta;
+  para *= p_cm*costheta_cm;
 
   // the 3 momentum perpendicular to the lepton is free to lie anywhere in the normal plane
   // taking the cross product of the paralell vector and any other vector will give a vector that lies in that plane
@@ -107,12 +101,13 @@ void Tauify::SetLepton( LorentzVector p4_arg, float met, float iso, float d0){
   // 3 momentum perpendicular to lepton
   perp = para.Cross( p3_cross );
   perp /= sqrt( perp.Mag2() );
-  perp *= p*sin(theta);
+  perp *= p_cm*sin(theta);
   
-  // still need to randomize 
-  // random phi
+  // random rotation
   TRandom3 *rand2 = new TRandom3(0);
   double phi      = rand2->Uniform( 0, 2*TMath::Pi() );
+  ROOT::Math::AxisAngle rot( para, phi );
+  perp = rot( perp );
 
   //
   Vector p3_tau_lepton_cm = para + perp;
@@ -131,15 +126,24 @@ void Tauify::SetLepton( LorentzVector p4_arg, float met, float iso, float d0){
   
   // check para magnitude
   double Mag_para = sqrt( para.Mag2() );
-  if( fabs(Mag_para - fabs(p*cos_theta)) > epsilon ) cout << "ERROR! paralell magnitude is wrong: " << Mag_para << " != " << fabs(p*cos_theta) << endl;
+  if( fabs(Mag_para - fabs(p_cm*costheta_cm)) > epsilon ){ 
+    cout << "ERROR! paralell magnitude is wrong: " << Mag_para << " != " << fabs(p_cm*costheta_cm) << endl;
+    exit(1);
+  }
 
   // check perp magnitude
   double Mag_perp = sqrt( perp.Mag2() );
-  if( fabs(Mag_perp - fabs(p*sin(theta))) > epsilon ) cout << "ERROR! perpendicular magnitude is wrong: " << Mag_perp << " != " << fabs(p*sin(theta)) << endl;
+  if( fabs(Mag_perp - fabs(p_cm*sin(theta))) > epsilon ){ 
+    cout << "ERROR! perpendicular magnitude is wrong: " << Mag_perp << " != " << fabs(p_cm*sin(theta)) << endl;
+    exit(1);
+  }
 
   // check p^2 = ( para + perp )^2
   double test = sqrt( perp.Dot(perp) + para.Dot(para) + 2*para.Dot(perp) );
-  if( fabs(test - p) > epsilon ) cout << "ERROR! p^2 != ( para + perp)^2: " << p << " != " << test << endl;
+  if( fabs(test - p_cm) > epsilon ){ 
+    cout << "ERROR! p^2 != ( para + perp)^2: " << p_cm << " != " << test << endl;
+    exit(1);
+  }
 
 
 
@@ -160,18 +164,14 @@ void Tauify::SetLepton( LorentzVector p4_arg, float met, float iso, float d0){
   // boost from CM to LAB
   p4_tau_lepton_lab = boost_lab*p4_tau_lepton_cm;
 
-//  // validate boosting back 
-//  p4_lepton_cm = boost_cm*p4_lepton_lab;
-//
-//  // boost back to lab
-//  ROOT::Math::Boost boost_lab = boost_cm.Inverse();
-//
-//  // validate boosting back 
-//  //p4_tau_lepton_lab = boost_lab*p4_lepton_cm; 
-//  //cout << p4_lepton_lab.E() << "\t" << p4_lepton_lab.Px() << "\t" << p4_lepton_lab.Py() << "\t" << p4_lepton_lab.Pz() << endl;
-//  //cout << p4_lepton_cm.E() << "\t" << p4_lepton_cm.Px() << "\t" << p4_lepton_cm.Py() << "\t" << p4_lepton_cm.Pz() << endl;
-//  //cout << p4_tau_lepton_lab.E() << "\t" << p4_tau_lepton_lab.Px() << "\t" << p4_tau_lepton_lab.Py() << "\t" << p4_tau_lepton_lab.Pz() << endl;
-//  //cout << endl;
+  //
+  tau_met = met_arg;
+  tau_iso = iso_arg;
+  tau_ip  = ip_arg;
+
+  tau_met = -999;
+  tau_iso = -999;
+  tau_ip  = -999;
 
   return;
 }
@@ -251,7 +251,6 @@ Tauify::Tauify( const char* infile, bool verbose /* default false in header */ )
     }
     input_stream.close();
   }
-
 
   return;
 }
