@@ -381,7 +381,6 @@ static const cuts_t electronSelection_ss =
                     (1ll<<ELEIP_200) |
                     //(1ll<<ELEID_CAND02) |
                     (1ll<<ELEID_VBTF_35X_70) | // VBTF70
-                    (1ll<<ELEID_EXTRA) |
                     (1ll<<ELENOTCONV_HITPATTERN) |
                     (1ll<<ELENOTCONV_DISTDCOT002) |
                     (1ll<<ELEETA_250) |
