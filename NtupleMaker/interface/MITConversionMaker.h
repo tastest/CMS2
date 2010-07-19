@@ -13,7 +13,7 @@
 //
 // Original Author:  Puneeth Kalavase
 //         Created:  Thu Jun  10 11:07:38 CDT 2010
-// $Id: MITConversionMaker.h,v 1.2 2010/06/14 11:56:09 kalavase Exp $
+// $Id: MITConversionMaker.h,v 1.2.2.1 2010/07/19 12:40:30 fgolf Exp $
 //
 //
 #ifndef NTUPLEMAKER_FLAVORHISTORYPRODUCER_H
@@ -49,6 +49,7 @@ private:
   edm::InputTag elsInputTag_;
   edm::InputTag mitConversionsTag_;
   edm::InputTag ctfTrksInputTag_;
+  edm::InputTag beamSpotTag_;
   
 };
 
