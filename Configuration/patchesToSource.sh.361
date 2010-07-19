@@ -26,7 +26,7 @@ addpkg RecoMET/METProducers
 cvs up -r V03-01-21 RecoMET/METAlgorithms/interface/TCMETAlgo.h
 cvs up -r V03-01-21 RecoMET/METAlgorithms/src/TCMETAlgo.cc
 cvs up -r V03-01-21 RecoMET/METAlgorithms/src/BuildFile.xml
-cvs up -A V03-01-36 RecoMET/METProducers/python/TCMET_cfi.py
+cvs up -r V03-01-36 RecoMET/METProducers/python/TCMET_cfi.py
 
 echo;echo checkingdeps;echo
 
