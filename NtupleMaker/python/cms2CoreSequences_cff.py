@@ -18,6 +18,7 @@ from CMS2.NtupleMaker.electronSequence_cfi         import *
 from CMS2.NtupleMaker.elToJetAssMaker_cfi          import *
 from CMS2.NtupleMaker.elToMuAssMaker_cfi           import *
 from CMS2.NtupleMaker.eventMaker_cfi               import *
+from CMS2.NtupleMaker.gsfTrackMaker_cfi            import *
 from CMS2.NtupleMaker.hcalNoiseSummaryMaker_cfi    import *
 from CMS2.NtupleMaker.hltMaker_cff                 import *
 from CMS2.NtupleMaker.hypDilepMaker_cfi            import *
@@ -47,13 +48,15 @@ from CMS2.NtupleMaker.trkJetMaker_cfi              import *
 from CMS2.NtupleMaker.trkToVtxAssMaker_cfi         import *
 from CMS2.NtupleMaker.vertexMaker_cfi              import *
 
+from CMS2.NtupleMaker.tcmetSequence_cff            import *
+
 CMS2Reco         = cms.Sequence(egammaElectronIDCMS2 * cms2JetSequence * metCorSequence * CMS2Btagging * CMS2TrkBtagging * CMS2JPTBtagging * cms2beamHaloSequence)
                  
 eventmakers      = cms.Sequence(beamSpotMaker * vertexMaker * eventMaker * hcalNoiseSummaryMaker)
                  
 trigmakers       = cms.Sequence(l1Maker * hltMakerSequence)
                  
-makers           = cms.Sequence(trackMaker * muonMaker * scMaker * electronMaker * photonMaker * jetMaker * jptMaker * trkJetMaker * metMaker * tcmetMaker * recoErrorLogMaker)
+makers           = cms.Sequence(trackMaker * gsfTrackMaker * muonMaker * scMaker * electronMaker * photonMaker * jetMaker * jptMaker * trkJetMaker * metMaker * tcmetMaker * recoErrorLogMaker)
                  
 assmakers        = cms.Sequence(jetToMuAssMaker * jetToElAssMaker * muToElsAssMaker * muToJetAssMaker * elToMuAssMaker * elToJetAssMaker * trackToMuonAssMaker * trackToElsAssMaker * trkToVtxAssMaker) 
                  
@@ -61,4 +64,4 @@ hypmakers        = cms.Sequence(hypDilepMaker * hypDilepVertexMaker * hypTrilepM
                  
 othermakers      = cms.Sequence(elCaloIsoSequence * elTkJuraIsoMaker * bTagMaker *  bTagTrkMaker * bTagJPTJetMaker * conversionMaker)
 
-cms2CoreSequence = cms.Sequence(CMS2Reco * eventmakers * trigmakers * makers * assmakers * othermakers * hypmakers)
+cms2CoreSequence = cms.Sequence(CMS2Reco * eventmakers * trigmakers * makers * assmakers * othermakers * hypmakers * tcmetSequence)
