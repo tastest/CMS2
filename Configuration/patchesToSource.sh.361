@@ -22,6 +22,13 @@ echo;echo checkingdeps;echo
 cvs co -d MitCommon  -r ConvRejection-10-06-09 UserCode/MitCommon
 cvs co -d MitEdm     -r ConvRejection-10-06-09 UserCode/MitEdm
 
+# get latest tcMET
+addpkg RecoMET/METAlgorithms
+addpkg RecoMET/METProducers
+cvs up -A RecoMET/METAlgorithms/interface/TCMETAlgo.h
+cvs up -A RecoMET/METAlgorithms/src/TCMETAlgo.cc
+cvs up -A RecoMET/METProducers/python/TCMET_cfi.py
+
 # dont forget this
 checkdeps -a
 
