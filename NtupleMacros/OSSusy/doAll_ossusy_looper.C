@@ -98,13 +98,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   float kLM12     = 1.;
   float kLMscan   = 1.;
   float kML1      = 1.;
-  float kML2      = 1.;
   float kML3      = 1.;
-  float kML4      = 1.;
   float kML5      = 1.;
-  float kML6      = 1.;
   float kML7      = 1.;
-  float kML8      = 1.;
 
   // Prescales
   int prettdil    = 1;
@@ -136,15 +132,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preLM11     = 1;
   int preLM12     = 1;
   int preML1      = 1;
-  int preML2      = 1;
   int preML3      = 1;
-  int preML4      = 1;
   int preML5      = 1;
-  int preML6      = 1;
   int preML7      = 1;
-  int preML8      = 1;
   int preLMscan = 1;
-  
+  /*
   //Flags for files to run over
   bool runttdil    = 1;
   bool runttotr    = 1;
@@ -175,54 +167,46 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runLM11     = 1;
   bool runLM12     = 1;
   bool runML1      = 0;
-  bool runML2      = 0;
   bool runML3      = 0;
-  bool runML4      = 0;
   bool runML5      = 0;
-  bool runML6      = 0;
   bool runML7      = 0;
-  bool runML8      = 0;
   bool runLMscan   = 0; 
-  
+  */
 
-//    //Flags for files to run over
-//    bool runttdil    = 0;
-//    bool runttotr    = 0;
-//    bool runWW       = 0;
-//    bool runWZ       = 0;
-//    bool runZZ       = 0;
-//    bool runWjets    = 0;
-//    bool runWcharm   = 0;
-//    bool runZjets    = 0;
-//    bool runDYee     = 0;
-//    bool runDYmm     = 0;
-//    bool runDYtautau = 0;
-//    bool runppMuX    = 0;
-//    bool runEM       = 0;
-//    bool runtW       = 0;
-//    bool runVQQ      = 0;
-//    bool runLM0      = 0;
-//    bool runLM1      = 0;
-//    bool runLM2      = 0;
-//    bool runLM3      = 0;
-//    bool runLM4      = 0;
-//    bool runLM5      = 0;
-//    bool runLM6      = 0;
-//    bool runLM7      = 0;
-//    bool runLM8      = 0;
-//    bool runLM9      = 0;
-//    bool runLM10     = 0;
-//    bool runLM11     = 0;
-//    bool runLM12     = 0;
-//    bool runML1      = 1;
-//    bool runML2      = 1;
-//    bool runML3      = 1;
-//    bool runML4      = 1;
-//    bool runML5      = 1;
-//    bool runML6      = 1;
-//    bool runML7      = 1;
-//    bool runML8      = 1;
-//    bool runLMscan   = 0; 
+   //Flags for files to run over
+   bool runttdil    = 0;
+   bool runttotr    = 0;
+   bool runWW       = 0;
+   bool runWZ       = 0;
+   bool runZZ       = 0;
+   bool runWjets    = 0;
+   bool runWcharm   = 0;
+   bool runZjets    = 0;
+   bool runDYee     = 0;
+   bool runDYmm     = 0;
+   bool runDYtautau = 0;
+   bool runppMuX    = 0;
+   bool runEM       = 0;
+   bool runtW       = 0;
+   bool runVQQ      = 0;
+   bool runLM0      = 0;
+   bool runLM1      = 0;
+   bool runLM2      = 0;
+   bool runLM3      = 0;
+   bool runLM4      = 0;
+   bool runLM5      = 0;
+   bool runLM6      = 0;
+   bool runLM7      = 0;
+   bool runLM8      = 0;
+   bool runLM9      = 0;
+   bool runLM10     = 0;
+   bool runLM11     = 0;
+   bool runLM12     = 0;
+   bool runML1      = 1;
+   bool runML3      = 1;
+   bool runML5      = 1;
+   bool runML7      = 1;
+   bool runLMscan   = 0; 
   
  
   TChain* chZjets = new  TChain("Events");
@@ -472,21 +456,13 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                      "data3x/LM12_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
                      "SUSY_LM12");
   }
-  
+
   // ML1
   TChain *chML1 = new TChain("Events");
   if (runML1) {
     pickSkimIfExists(chML1, 
                      "/tas/cms2/PhysicsProcess_PYTHIA6_SUSY_GMSM_SC_ML01_7TeV_v0/V03-04-13-01-gmsb/merged*root",
                      "SUSY_ML1");
-  }
-
-  // ML2
-  TChain *chML2 = new TChain("Events");
-  if (runML2) {
-    pickSkimIfExists(chML2, 
-                     "/tas/cms2/PhysicsProcess_PYTHIA6_SUSY_GMSM_SC_ML02_7TeV_v0/V03-04-13-01-gmsb/merged*root",
-                     "SUSY_ML2");
   }
 
   // ML3
@@ -497,28 +473,12 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                      "SUSY_ML3");
   }
 
-  // ML4
-  TChain *chML4 = new TChain("Events");
-  if (runML4) {
-    pickSkimIfExists(chML4, 
-                     "/tas/cms2/PhysicsProcess_PYTHIA6_SUSY_GMSM_SC_ML04_7TeV_v0/V03-04-13-01-gmsb/merged*root",
-                     "SUSY_ML4");
-  }
-
   // ML5
   TChain *chML5 = new TChain("Events");
   if (runML5) {
     pickSkimIfExists(chML5, 
                      "/tas/cms2/PhysicsProcess_PYTHIA6_SUSY_GMSM_SC_ML05_7TeV_v0/V03-04-13-01-gmsb/merged*root",
                      "SUSY_ML5");
-  }
-
-  // ML6
-  TChain *chML6 = new TChain("Events");
-  if (runML6) {
-    pickSkimIfExists(chML6, 
-                     "/tas/cms2/PhysicsProcess_PYTHIA6_SUSY_GMSM_SC_ML06_7TeV_v0/V03-04-13-01-gmsb/merged*root",
-                     "SUSY_ML6");
   }
 
   // ML7
@@ -529,14 +489,6 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                      "SUSY_ML7");
   }
   
-  // ML8
-  TChain *chML8 = new TChain("Events");
-  if (runML8) {
-    pickSkimIfExists(chML8, 
-                     "/tas/cms2/PhysicsProcess_PYTHIA6_SUSY_GMSM_SC_ML08_7TeV_v0/V03-04-13-01-gmsb/merged*root",
-                     "SUSY_ML8");
-  }
-
   // LMscan
   TChain *chLMscan = new TChain("Events");
   if (runLMscan) {
@@ -555,7 +507,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
     {
       for (int metTypeIdx = 0; metTypeIdx < 1; ++metTypeIdx)
         {
-          for (int zvetoIdx = 0; zvetoIdx < 1; ++zvetoIdx)
+          for (int zvetoIdx = 3; zvetoIdx < 4; ++zvetoIdx)
             {
 
               ossusy_looper::JetTypeEnum  jetType(jetTypeIdx);
@@ -735,40 +687,20 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                 looper->ScanChain(chML1, "ML1", kML1, preML1, jetType, metType, zveto, doFakeApp);
                 cout << "Done processing ML1" << endl;
               }
-              if (runML2) {
-                cout << "Processing ML2" << endl;
-                looper->ScanChain(chML2, "ML2", kML2, preML2, jetType, metType, zveto, doFakeApp);
-                cout << "Done processing ML2" << endl;
-              }
               if (runML3) {
                 cout << "Processing ML3" << endl;
                 looper->ScanChain(chML3, "ML3", kML3, preML3, jetType, metType, zveto, doFakeApp);
                 cout << "Done processing ML3" << endl;
-              }
-              if (runML4) {
-                cout << "Processing ML4" << endl;
-                looper->ScanChain(chML4, "ML4", kML4, preML4, jetType, metType, zveto, doFakeApp);
-                cout << "Done processing ML4" << endl;
               }
               if (runML5) {
                 cout << "Processing ML5" << endl;
                 looper->ScanChain(chML5, "ML5", kML5, preML5, jetType, metType, zveto, doFakeApp);
                 cout << "Done processing ML5" << endl;
               }
-              if (runML6) {
-                cout << "Processing ML6" << endl;
-                looper->ScanChain(chML6, "ML6", kML6, preML6, jetType, metType, zveto, doFakeApp);
-                cout << "Done processing ML6" << endl;
-              }
               if (runML7) {
                 cout << "Processing ML7" << endl;
                 looper->ScanChain(chML7, "ML7", kML7, preML7, jetType, metType, zveto, doFakeApp);
                 cout << "Done processing ML7" << endl;
-              }
-              if (runML8) {
-                cout << "Processing ML8" << endl;
-                looper->ScanChain(chML8, "ML8", kML8, preML8, jetType, metType, zveto, doFakeApp);
-                cout << "Done processing ML8" << endl;
               }
               if (runLMscan) {
                 cout << "Processing LMscan" << endl;
