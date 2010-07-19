@@ -9,6 +9,7 @@ muonTCMETValueMapProducerNew.muonMinValidStaHits = cms.int32(0)
 
 tcMetNew = tcMet.clone()
 tcMetNew.tcmetDepValueMap = cms.InputTag("muonTCMETValueMapProducerNew", "muCorrData")
+tcMetNew.usePFClusters = cms.bool(True)
 
 tcmetMakerNew = tcmetMaker.clone()
 tcmetMakerNew.aliasPrefix = cms.untracked.string("evtnew")
