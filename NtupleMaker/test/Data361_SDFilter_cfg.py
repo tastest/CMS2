@@ -5,7 +5,7 @@ process = cms.Process("CMS2")
 from Configuration.EventContent.EventContent_cff import *
 
 process.configurationMetadata = cms.untracked.PSet(
-        version = cms.untracked.string('$Revision: 1.10.2.1 $'),
+        version = cms.untracked.string('$Revision: 1.10.2.2 $'),
         annotation = cms.untracked.string('CMS2'),
         name = cms.untracked.string('CMS2 test configuration')
 )
@@ -84,8 +84,9 @@ process.options = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-#        'file:/store/disk00/kalavase/RelVal_TTBar_3_6_1/EABD13F1-0A5D-DF11-92FA-001A92971B38.root'
-        'file:/tas05/disk00/kalavase/RelVal_TTBar_3_6_1/60E04BD6-095D-DF11-92CD-001A92971BD8.root' 
+    #        'file:/store/disk00/kalavase/RelVal_TTBar_3_6_1/EABD13F1-0A5D-DF11-92FA-001A92971B38.root'
+    '/store/data/Run2010A/EG/RECO/v4/000/140/181/A05885B0-3790-DF11-9CE9-0030487CD7B4.root'
+    #'file:/tas05/disk00/kalavase/RelVal_TTBar_3_6_1/60E04BD6-095D-DF11-92CD-001A92971BD8.root' 
     ),
 )
 
