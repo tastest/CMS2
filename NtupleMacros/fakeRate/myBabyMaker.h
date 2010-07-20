@@ -18,7 +18,7 @@ class myBabyMaker
         void InitBabyNtuple ();
         void FillBabyNtuple ();
         void CloseBabyNtuple ();
-        void ScanChain (TChain *, const char *, int);
+        void ScanChain (TChain *, const char *, bool, int);
 
     private:
         //
@@ -41,6 +41,7 @@ class myBabyMaker
 
 	// tcmet
 	Float_t tcmet_;
+	Float_t tcmetphi_;
 
 	// did it pass the jet trigger and is this lepton unbiased
 	// 0=fail 1="pass but biased" 2="pass and unbiased"  -1="pass but cant find jet trg obj"
@@ -93,7 +94,11 @@ class myBabyMaker
 
 	// Information to do offline jet trigger selection
 	Float_t ptj1_; // highest pt jet well separated from the lepton
+  Float_t ptj1_b2b_;
+  Float_t dphij1_b2b_;
 
+  // transverse W mass
+  Float_t mt_;
 
 };
 
