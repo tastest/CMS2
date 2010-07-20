@@ -376,23 +376,70 @@ static const cuts_t electronSelection_cand01 = electronSelection_os;
 //
 // The standard SS selection
 //---------------------------------------------------------
-static const cuts_t electronSelection_ss =
-                    (1ll<<ELEISO_REL010) |
+// SS NoIso selections
+
+static const cuts_t electronSelection_ss_NoIso =
+                    (1ll<<ELEID_VBTF_35X_80) |
                     (1ll<<ELEIP_200) |
-                    //(1ll<<ELEID_CAND02) |
-                    (1ll<<ELEID_VBTF_35X_70) | // VBTF70
+                    (1ll<<ELENOMUON_010) |
                     (1ll<<ELENOTCONV_HITPATTERN) |
                     (1ll<<ELENOTCONV_DISTDCOT002) |
+                    (1ll<<ELESCET_010) |
+                    (1ll<<ELEPT_010) |
                     (1ll<<ELEETA_250) |
-                    (1ll<<ELENOMUON_010) |
-                    (1ll<<ELESEED_ECAL) |
-                    (1ll<<ELECHARGE_NOTFLIP3AGREE);
+                    (1ll<<ELESEED_ECAL);
+
+// SS Iso selections
+
+static const cuts_t electronSelection_ss_Iso =
+                    (1ll<<ELEISO_REL010);
+
+// SS Final selections
+
+static const cuts_t electronSelection_ss =
+                    electronSelection_ss_NoIso |
+		    electronSelection_ss_Iso;               
+
+
+// SS Flip Veto 
+
+const cuts_t electronSelection_ss_Flip =
+	            (1ll<<ELECHARGE_NOTFLIP3AGREE);
+
+
+//---------------------------------------------------------
+//  SS With VBTFID V1, V2, V3
+//---------------------------------------------------------
+
+static const cuts_t electronSelectionFO_ssVBTF80_v1 =
+  electronSelectionFO_baseline |
+  (1ll<<ELENOTCONV_HITPATTERN) |
+  (1ll<<ELESCET_010) |
+  (1ll<<ELEPT_010) |
+  (1ll<<ELEISO_REL040);
+
+static const cuts_t electronSelectionFO_ssVBTF80_v2 =
+  electronSelectionFO_baseline |
+  (1ll<<ELENOTCONV_HITPATTERN) |
+  (1ll<<ELESCET_010) |
+  (1ll<<ELEPT_010) |
+  (1ll<<ELEISO_REL010);
+
+static const cuts_t electronSelectionFO_ssVBTF80_v3 =
+  electronSelectionFO_baseline |
+  (1ll<<ELENOTCONV_HITPATTERN) |
+  (1ll<<ELESCET_010) |
+  (1ll<<ELEPT_010) |
+  (1ll<<ELEID_VBTF_35X_80) |
+  (1ll<<ELEISO_REL040);
+
+
+
 
 //---------------------------------------------------------
 // FIXME: for fake rates
 static const cuts_t electronSelection_cand02flip = electronSelection_ss;
 //---------------------------------------------------------
-
 
 
 
