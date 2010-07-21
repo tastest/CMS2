@@ -17,18 +17,10 @@ cvs update -r V00-02-12 CommonTools/RecoAlgos/BuildFile
 # beam halo flagging
 cvs co -r V00-00-05 RecoMET/METAnalyzers
 
+echo;echo checkingdeps;echo
+
 cvs co -d MitCommon  -r ConvRejection-10-06-09 UserCode/MitCommon
 cvs co -d MitEdm     -r ConvRejection-10-06-09 UserCode/MitEdm
-
-# get latest tcMET
-addpkg RecoMET/METAlgorithms
-addpkg RecoMET/METProducers
-cvs up -r V03-01-21 RecoMET/METAlgorithms/interface/TCMETAlgo.h
-cvs up -r V03-01-21 RecoMET/METAlgorithms/src/TCMETAlgo.cc
-cvs up -r V03-01-21 RecoMET/METAlgorithms/BuildFile.xml
-cvs up -r V03-01-36 RecoMET/METProducers/python/TCMET_cfi.py
-
-echo;echo checkingdeps;echo
 
 # dont forget this
 checkdeps -a
