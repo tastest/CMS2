@@ -44,6 +44,8 @@ enum EleSelectionType {
     ELEID_CAND02,
     // pass "EXTRA" electron ID
     ELEID_EXTRA,
+    // VBTF95 electron ID (35X)
+    ELEID_VBTF_35X_95,
     // VBTF90 electron ID (35X)
     ELEID_VBTF_35X_90,
     // VBTF80 electron ID (35X)
@@ -68,10 +70,12 @@ enum EleSelectionType {
     // Pt
     //
     ELEPT_010,
+    ELEPT_020,
     //
     // Super Cluster Et
     //
     ELESCET_010,
+    ELESCET_015,
     // no muon cuts
     //
     // no muon within dR < 0.1

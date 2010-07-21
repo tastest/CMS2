@@ -62,6 +62,9 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     // VBTF ID
     //
     electronIdComponent_t answer_vbtf = 0;
+    // VBTF95 (optimised in 35X)
+    answer_vbtf = electronId_VBTF(index, VBTF_35X_95, applyAlignmentCorrection);
+    if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_35X_95);
     // VBTF90 (optimised in 35X)
     answer_vbtf = electronId_VBTF(index, VBTF_35X_90, applyAlignmentCorrection);
     if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_35X_90);
@@ -97,11 +100,13 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     // Pt
     //
     if( cms2.els_p4()[index].pt() > 10.0 ) cuts_passed |= (1ll<<ELEPT_010);
+    if( cms2.els_p4()[index].pt() > 20.0 ) cuts_passed |= (1ll<<ELEPT_020);
 
     //
     // Super Cluster Et
     //
     if( ( cms2.els_eSC()[index] / cosh(cms2.els_etaSC()[index]) ) > 10.0 ) cuts_passed |= (1ll<<ELESCET_010);
+    if( ( cms2.els_eSC()[index] / cosh(cms2.els_etaSC()[index]) ) > 15.0 ) cuts_passed |= (1ll<<ELESCET_015);
 
     //
     // chargeflip
