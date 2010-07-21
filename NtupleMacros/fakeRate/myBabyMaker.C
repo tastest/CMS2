@@ -63,6 +63,12 @@ bool is_duplicate (const DorkyEventIdentifier &id) {
   return !ret.second;
 }
 
+ 
+// transverse mass
+float Mt( LorentzVector p4, float met, float met_phi ){
+  return sqrt( 2*met*( p4.pt() - ( p4.Px()*cos(met_phi) + p4.Py()*sin(met_phi) ) ) );
+}
+
 
 
 //-----------------------------------
@@ -71,7 +77,7 @@ bool is_duplicate (const DorkyEventIdentifier &id) {
 //      =11 do electrons
 //      =13 do muons
 //-----------------------------------
-void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu) {
+void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isData, int eormu) {
 
   already_seen.clear();
 
@@ -79,15 +85,13 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
   MakeBabyNtuple(babyFilename);
 
   // Set the JSON file
-  //  set_goodrun_file("Cert_132440-134725_7TeV_MinimumBias_May6ReReco_Collisions10.txt");
-  //set_goodrun_file("goodruns_FGolf_email_May25.txt");
-  //set_goodrun_file("./jsonlist_132440_136100.txt");
-  //set_goodrun_file("./Certlist_135059-139239_7TeV_TopMergedJuly04_26.85invnb_JSON.txt");
-
-  set_goodrun_file("./jsonlist_132440_139239.txt");
+  if(isData){
+    set_goodrun_file("./jsonlist_132440_139239.txt");
+  }
 
   // The deltaR requirement between objects and jets to remove the jet trigger dependence
-  float deltaRCut = 1.0;
+  float deltaRCut   = 1.0;
+  float deltaPhiCut = 2.5;
 
   //--------------------------
   // File and Event Loop
@@ -117,14 +121,16 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
     for( z = 0; z < nLoop; z++) {	// Event Loop
       cms2.GetEntry(z);
 
-      // Good  Runs
-      if(!goodrun( evt_run(), evt_lumiBlock() )) continue;
+      if(isData){
+        // Good  Runs
+        if(!goodrun( evt_run(), evt_lumiBlock() )) continue;
 
-      // check for duplicated
-      DorkyEventIdentifier id = { evt_run(),evt_event(), evt_lumiBlock() };
-      if (is_duplicate(id) ){ 
-        cout << "\t! ERROR: found duplicate." << endl;
-        continue;
+        // check for duplicated
+        DorkyEventIdentifier id = { evt_run(),evt_event(), evt_lumiBlock() };
+        if (is_duplicate(id) ){ 
+          cout << "\t! ERROR: found duplicate." << endl;
+          continue;
+        }
       }
 
       // looper progress
@@ -138,462 +144,458 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, int eormu)
       
       // Event cleaning (careful, it requires technical bits)
       // if (!cleaning_standard(true)) continue;
-      if (!cleaning_BPTX(true))   continue;
+      if (!cleaning_BPTX(isData))   continue;
       if (!cleaning_beamHalo())   continue;
       if (!cleaning_goodVertex()) continue;
       if (!cleaning_goodTracks()) continue;
-
 
       // Loop over jets and see what is btagged
       // Medium operating point from https://twiki.cern.ch/twiki/bin/view/CMS/BTagPerformanceOP
       int this_nbjet = 0;
       vector<unsigned int> bindex;
       for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
-	if (jets_p4().at(iJet).pt() < 15.) continue;
-	if (jets_simpleSecondaryVertexHighEffBJetTag().at(iJet) < 1.74) continue;
-	this_nbjet++;
-	bindex.push_back(iJet);
+	      if (jets_p4().at(iJet).pt() < 15.) continue;
+	      if (jets_simpleSecondaryVertexHighEffBJetTag().at(iJet) < 1.74) continue;
+	      this_nbjet++;
+	      bindex.push_back(iJet);
       }
+      
+/* Electrons */
 
-      // Loop over electrons
       if (eormu == -1 || eormu==11) {
-	for (unsigned int iEl = 0 ; iEl < els_p4().size(); iEl++) {
+	    for (unsigned int iEl = 0 ; iEl < els_p4().size(); iEl++) {
 
-	  // ECAL spike cleaning
-	  //float r19 = cms2.els_eMax()[iEl]/cms2.els_e5x5()[iEl];
-	  //if (r19 >= 0.95) continue;
+	      // ECAL spike cleaning
+	      //float r19 = cms2.els_eMax()[iEl]/cms2.els_e5x5()[iEl];
+	      //if (r19 >= 0.95) continue;
 
-	  // Apply a pt cut (Changed it from 5 GeV to 10 GeV...Claudio 10 July 2010)
-	  if ( els_p4().at(iEl).pt() < 10.) continue;
-
-
-	  // Initialize baby ntuple
-	  InitBabyNtuple();
-
-	  // Add spike veto
-	  num_ = pass_electronSelection( iEl, electronSelection_ttbarV1 ) && (!isSpikeElectron(iEl));
-          numv1_ = pass_electronSelection( iEl, electronSelection_ttbarV1 );
-	  v1_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v1 );
-	  v2_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v2 );
-	  v3_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v3 );
-
-	  // Sanity
-	  if (num_ && (!v1_)) cout << "bad v1" << endl;
-	  if (num_ && (!v2_)) cout << "bad v2" << endl;
-	  if (num_ && (!v3_)) cout << "bad v3" << endl;
-
-	  // If there is no v1/v2/v3 lepton quit
-	  if ( (!v1_) && (!v2_) && (!v3_) ) continue;
-
-	  // If it is above 20 GeV see if we can make a 
-	  // Z with another pt>20 FO.  Will use the v1 FO since 
-	  // these are the loosest
-	  bool isaZ = false;
-	  if (els_p4().at(iEl).pt() > 20.) {
-	    for (unsigned int jEl = 0 ; jEl < els_p4().size(); jEl++) {
-	      if (iEl == jEl)                             continue;
-	      if (els_p4().at(jEl).pt() < 20.)            continue;
-	      if ( ! pass_electronSelection( jEl, electronSelectionFO_el_ttbarV1_v1 ) ) continue;
-	      if ( ! v1_ ) continue;
-	      LorentzVector w = els_p4().at(iEl) + els_p4().at(jEl);
-	      if (abs(w.mass()-91.) > 20.) continue;
-	      isaZ = true;
-	    }
-	  }
-	  if (isaZ) continue;
-
-	  // Load the electron and event quantities
-	  run_   = evt_run();
-	  ls_    = evt_lumiBlock();
-	  evt_   = evt_event();
-	  pt_    = els_p4().at(iEl).pt();
-	  eta_   = els_p4().at(iEl).eta();
-	  phi_   = els_p4().at(iEl).phi();
-	  scet_  = els_eSC()[iEl] / cosh( els_etaSC()[iEl] );
-	  id_    = 11*els_charge().at(iEl);
-	  tcmet_ = evt_tcmet();
-
-	  // The btag information
-	  nbjet_ = this_nbjet;
-	  dRbNear_ = 99.;
-	  dRbFar_  = -99.;
-	  for (int ii=0; ii<nbjet_; ii++) {
-	    unsigned int iJet = bindex[ii];
-	    float dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), jets_p4().at(iJet));
-	    if (dr < dRbNear_) dRbNear_ = dr;
-	    if (dr > dRbFar_)   dRbFar_  = dr;
-	  }
-	    
-
-	  // Our jet trigger flags
-	  hlt15u_ = min(2,nHLTObjects("HLT_Jet15U")); 
-	  hlt30u_ = min(2,nHLTObjects("HLT_Jet30U")); 
-	  hlt50u_ = min(2,nHLTObjects("HLT_Jet50U")); 
-	  l16u_   = min(2,nHLTObjects("HLT_L1Jet6U"));
-	  l110u_  = min(2,nHLTObjects("HLT_L1Jet10U"));
-
-	  // If only one jet triggered, see if it is far enough away 
-	  if (hlt15u_ == 1) {
-	    LorentzVector p4j = p4HLTObject("HLT_Jet15U",0);
-	    double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4j);
-	    if (dr > deltaRCut) hlt15u_ = 2;
-	  }
-	  if (hlt30u_ == 1) {
-	    LorentzVector p4j = p4HLTObject("HLT_Jet30U",0);
-	    double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4j);
-	    if (dr > deltaRCut) hlt30u_ = 2;
-	  }
-	  if (hlt50u_ == 1) {
-	    LorentzVector p4j = p4HLTObject("HLT_Jet50U",0);
-	    double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4j);
-	    if (dr > deltaRCut) hlt50u_ = 2;
-	  }
-	  if (l16u_ == 1) {
-	    LorentzVector p4j = p4HLTObject("HLT_L1Jet6U",0);
-	    double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4j);
-	    if (dr > deltaRCut) l16u_ = 2;
-	  }
-	  if (l110u_ == 1) {
-	    LorentzVector p4j = p4HLTObject("HLT_L1Jet10U",0);
-	    double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4j);
-	    if (dr > deltaRCut) l110u_ = 2;
-	  }
-
-	  // Now fill the egamma trigger flags  (look at both cleaned and uncleaned photons_
-	  int ph10cl = nHLTObjects("HLT_Photon10_Cleaned_L1R");
-	  int ph10   = nHLTObjects("HLT_Photon10_L1R");
-	  int ph15cl = nHLTObjects("HLT_Photon15_Cleaned_L1R");
-	  int ph15   = nHLTObjects("HLT_Photon15_L1R");
-	  el10_   = nHLTObjects("HLT_Ele10_LW_L1R");
-	  el15_   = nHLTObjects("HLT_Ele15_LW_L1R");
-	  eg5_    = nHLTObjects("HLT_L1SingleEG5");
-	  eg8_    = nHLTObjects("HLT_L1SingleEG8");
-
-	  // For Ele10 the HLT objects are saved for all data we have
-	  if (el10_ > 0) {
-	    bool match = false;
-	    for (int itrg=0; itrg<el10_; itrg++) {
-	      LorentzVector p4tr = p4HLTObject("HLT_Ele10_LW_L1R",itrg);
-	      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
-	      if (dr < drel10_) drel10_ = dr;
-	      if (dr < 0.4) match=true;
-	    }
-	    if (match) {
-	      el10_ = 2;
-	    } else {
-	      el10_ = 1;
-	    }
-	  }
-
-	  // For Ele15 the HLT objects are saved for all data we have
-	  if (el15_ > 0) {
-	    bool match = false;
-	    for (int itrg=0; itrg<el15_; itrg++) {
-	      LorentzVector p4tr = p4HLTObject("HLT_Ele15_LW_L1R",itrg);
-	      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
-	      if (dr < drel15_) drel15_ = dr;
-	      if (dr < 0.4) match=true;
-	    }
-	    if (match) {
-	      el15_ = 2;
-	    } else {
-	      el15_ = 1;
-	    }
-	  }
-
-	  // Now for photon10 we look at cleaned and at uncleaned
-	  if (ph10 == 0 && ph10cl == 0) ph10_=0;   // trigger failed
-	  if (ph10 <  0 || ph10cl <  0) ph10_=-1;  // passed but no object
-	  if (ph10cl > 0 || ph10 > 0) {
-	    bool match = false;
-	    for (int itrg=0; itrg<ph10; itrg++) {
-	      LorentzVector p4tr = p4HLTObject("HLT_Photon10_L1R",itrg);
-	      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
-	      if (dr < drph10_) drph10_ = dr;
-	      if (dr < 0.4) match=true;
-	    }
-	    for (int itrg=0; itrg<ph10cl; itrg++) {
-	      LorentzVector p4tr = p4HLTObject("HLT_Photon10_Cleaned_L1R",itrg);
-	      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
-	      if (dr < drph10_) drph10_ = dr;
-	      if (dr < 0.4) match=true;
-	    }
-	    if (match) {
-	      ph10_ = 2;
-	    } else {
-	      ph10_ = 1;
-	    }
-	  }
-
-	  // Now for photon15 we look at cleaned and at uncleaned
-	  if (ph15 == 0 && ph15cl == 0) ph15_=0;   // trigger failed
-	  if (ph15 <  0 || ph15cl <  0) ph15_=-1;  // passed but no object
-	  if (ph15cl > 0 || ph15 > 0) {
-	    bool match = false;
-	    for (int itrg=0; itrg<ph15; itrg++) {
-	      LorentzVector p4tr = p4HLTObject("HLT_Photon15_L1R",itrg);
-	      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
-	      if (dr < drph15_) drph15_ = dr;
-	      if (dr < 0.4) match=true;
-	    }
-	    for (int itrg=0; itrg<ph15cl; itrg++) {
-	      LorentzVector p4tr = p4HLTObject("HLT_Photon15_Cleaned_L1R",itrg);
-	      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
-	      if (dr < drph15_) drph15_ = dr;
-	      if (dr < 0.4) match=true;
-	    }
-	    if (match) {
-	      ph15_ = 2;
-	    } else {
-	      ph15_ = 1;
-	    }
-	  }
+	      // Apply a pt cut (Changed it from 5 GeV to 10 GeV...Claudio 10 July 2010)
+	      if ( els_p4().at(iEl).pt() < 10.) continue;
 
 
-	  // For EG5 and EG8 the HLT object is missing, so we'll try with the L1 info
-	  // There appear to be two L1 EM objects: one with "iso" and one without.
-	  // From some event dumps it looks like the iso one is the one we want
-	  // Also: the Photon10 HLT object is sometimes missing, but I know that EG5 is its prerequisite
-	  // so if it is missing we will match to EG5  (TAKE THIS OUT.... July 5th 2010)
-	  if ( (eg5_ == -1 || eg8_ == -1 || ph10_ == -1) && l1_emiso_p4().size()>0) {
-	    
-	    for (unsigned int ig = 0 ; ig < l1_emiso_p4().size(); ig++) {
-	    
-	      //if (ph10_ == -1 && l1_emiso_p4().at(ig).pt() > 5.) {
-	      //	double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl),l1_emiso_p4().at(ig)); 
-	      //	if (dr < drph10_) drph10_ = dr;
-	      //}
-	      if (eg5_ == -1 && l1_emiso_p4().at(ig).pt() > 5.) {
-		double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl),l1_emiso_p4().at(ig)); 
-		if (dr < dreg5_) dreg5_ = dr;
-	      }
-	      if (eg8_ == -1 && l1_emiso_p4().at(ig).pt() > 8.) {
-		double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl),l1_emiso_p4().at(ig)); 
-		if (dr < dreg8_) dreg8_ = dr;
-	      }
+	      // Initialize baby ntuple
+	      InitBabyNtuple();
 
-	    } // closes loop over L1 EG objects
-	    
-	    //if (ph10_ == -1) {
-	    //  if (drph10_ < 100.) ph10_ = 1; // objects found, but no match
-	    //  if (drph10_ < 0.4)  ph10_ = 2; // objects found, and matched
-	    //}
-	    if (eg5_ == -1) {
-	      if (dreg5_ < 100.) eg5_ = 1; // objects found, but no match
-	      if (dreg5_ < 0.4)  eg5_ = 2; // objects found, and matched
-	    }
-	    if (eg8_ == -1) {
-	      if (dreg8_ < 100.) eg8_ = 1; // objects found, but no match
-	      if (dreg8_ < 0.4)  eg8_ = 2; // objects found, and matched
-	    }
-	 
-	  } // closes if-block of EG5, EG8, PH10 objects missing
+	      // Add spike veto
+	      num_ = pass_electronSelection( iEl, electronSelection_ttbarV1 ) && (!isSpikeElectron(iEl));
+        numv1_ = pass_electronSelection( iEl, electronSelection_ttbarV1 );
+	      v1_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v1 );
+	      v2_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v2 );
+	      v3_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v3 );
+
+	      // Sanity
+	      if (num_ && (!v1_)) cout << "bad v1" << endl;
+	      if (num_ && (!v2_)) cout << "bad v2" << endl;
+	      if (num_ && (!v3_)) cout << "bad v3" << endl;
+
+	      // If there is no v1/v2/v3 lepton quit
+	      if ( (!v1_) && (!v2_) && (!v3_) ) continue;
+
+			  // If it is above 20 GeV see if we can make a 
+			  // Z with another pt>20 FO.  Will use the v1 FO since 
+			  // these are the loosest
+			  bool isaZ = false;
+			  if (els_p4().at(iEl).pt() > 20.) {
+			    for (unsigned int jEl = 0 ; jEl < els_p4().size(); jEl++) {
+			      if (iEl == jEl)                             continue;
+			      if (els_p4().at(jEl).pt() < 20.)            continue;
+			      if ( ! pass_electronSelection( jEl, electronSelectionFO_el_ttbarV1_v1 ) ) continue;
+			      if ( ! v1_ ) continue;
+			      LorentzVector w = els_p4().at(iEl) + els_p4().at(jEl);
+			      if (abs(w.mass()-91.) > 20.) continue;
+			      isaZ = true;
+			    }
+			  }
+			  if (isaZ) continue;
+		
+			  // Load the electron and event quantities
+			  run_   = evt_run();
+			  ls_    = evt_lumiBlock();
+			  evt_   = evt_event();
+			  pt_    = els_p4().at(iEl).pt();
+			  eta_   = els_p4().at(iEl).eta();
+			  phi_   = els_p4().at(iEl).phi();
+			  scet_  = els_eSC()[iEl] / cosh( els_etaSC()[iEl] );
+			  id_    = 11*els_charge().at(iEl);
+			  tcmet_ = evt_tcmet();
+		    tcmetphi_ = evt_tcmetPhi();
+		
+		    // W transverse mass
+		    mt_ = Mt( els_p4().at(iEl), tcmet_, tcmetphi_ );
+		
+			  // The btag information
+			  nbjet_ = this_nbjet;
+			  dRbNear_ = 99.;
+			  dRbFar_  = -99.;
+			  for (int ii=0; ii<nbjet_; ii++) {
+			    unsigned int iJet = bindex[ii];
+			    float dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), jets_p4().at(iJet));
+			    if (dr < dRbNear_) dRbNear_ = dr;
+			    if (dr > dRbFar_)   dRbFar_  = dr;
+			  }
+			    
+		
+			  // Our jet trigger flags
+			  hlt15u_ = min(2,nHLTObjects("HLT_Jet15U")); 
+			  hlt30u_ = min(2,nHLTObjects("HLT_Jet30U")); 
+			  hlt50u_ = min(2,nHLTObjects("HLT_Jet50U")); 
+			  l16u_   = min(2,nHLTObjects("HLT_L1Jet6U"));
+			  l110u_  = min(2,nHLTObjects("HLT_L1Jet10U"));
+
+			  // If only one jet triggered, see if it is far enough away 
+			  if (hlt15u_ == 1) {
+			    LorentzVector p4j = p4HLTObject("HLT_Jet15U",0);
+			    double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4j);
+			    if (dr > deltaRCut) hlt15u_ = 2;
+			  }
+			  if (hlt30u_ == 1) {
+			    LorentzVector p4j = p4HLTObject("HLT_Jet30U",0);
+			    double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4j);
+			    if (dr > deltaRCut) hlt30u_ = 2;
+			  }
+			  if (hlt50u_ == 1) {
+			    LorentzVector p4j = p4HLTObject("HLT_Jet50U",0);
+			    double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4j);
+			    if (dr > deltaRCut) hlt50u_ = 2;
+			  }
+			  if (l16u_ == 1) {
+			    LorentzVector p4j = p4HLTObject("HLT_L1Jet6U",0);
+			    double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4j);
+			    if (dr > deltaRCut) l16u_ = 2;
+			  }
+			  if (l110u_ == 1) {
+			    LorentzVector p4j = p4HLTObject("HLT_L1Jet10U",0);
+			    double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4j);
+			    if (dr > deltaRCut) l110u_ = 2;
+			  }
+		
+			  // Now fill the egamma trigger flags  (look at both cleaned and uncleaned photons_
+			  int ph10cl = nHLTObjects("HLT_Photon10_Cleaned_L1R");
+			  int ph10   = nHLTObjects("HLT_Photon10_L1R");
+			  int ph15cl = nHLTObjects("HLT_Photon15_Cleaned_L1R");
+			  int ph15   = nHLTObjects("HLT_Photon15_L1R");
+			  el10_   = nHLTObjects("HLT_Ele10_LW_L1R");
+			  el15_   = nHLTObjects("HLT_Ele15_LW_L1R");
+			  eg5_    = nHLTObjects("HLT_L1SingleEG5");
+			  eg8_    = nHLTObjects("HLT_L1SingleEG8");
+		
+			  // For Ele10 the HLT objects are saved for all data we have
+			  if (el10_ > 0) {
+			    bool match = false;
+			    for (int itrg=0; itrg<el10_; itrg++) {
+			      LorentzVector p4tr = p4HLTObject("HLT_Ele10_LW_L1R",itrg);
+			      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
+			      if (dr < drel10_) drel10_ = dr;
+			      if (dr < 0.4) match=true;
+			    }
+			    if (match) {
+			      el10_ = 2;
+			    } else {
+			      el10_ = 1;
+			    }
+			  }
+		
+			  // For Ele15 the HLT objects are saved for all data we have
+			  if (el15_ > 0) {
+			    bool match = false;
+			    for (int itrg=0; itrg<el15_; itrg++) {
+			      LorentzVector p4tr = p4HLTObject("HLT_Ele15_LW_L1R",itrg);
+			      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
+			      if (dr < drel15_) drel15_ = dr;
+			      if (dr < 0.4) match=true;
+			    }
+			    if (match) {
+			      el15_ = 2;
+			    } else {
+			      el15_ = 1;
+			    }
+			  }
+		
+			  // Now for photon10 we look at cleaned and at uncleaned
+			  if (ph10 == 0 && ph10cl == 0) ph10_=0;   // trigger failed
+			  if (ph10 <  0 || ph10cl <  0) ph10_=-1;  // passed but no object
+			  if (ph10cl > 0 || ph10 > 0) {
+			    bool match = false;
+			    for (int itrg=0; itrg<ph10; itrg++) {
+			      LorentzVector p4tr = p4HLTObject("HLT_Photon10_L1R",itrg);
+			      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
+			      if (dr < drph10_) drph10_ = dr;
+			      if (dr < 0.4) match=true;
+			    }
+			    for (int itrg=0; itrg<ph10cl; itrg++) {
+			      LorentzVector p4tr = p4HLTObject("HLT_Photon10_Cleaned_L1R",itrg);
+			      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
+			      if (dr < drph10_) drph10_ = dr;
+			      if (dr < 0.4) match=true;
+			    }
+			    if (match) {
+			      ph10_ = 2;
+			    } else {
+			      ph10_ = 1;
+			    }
+			  }
+		
+			  // Now for photon15 we look at cleaned and at uncleaned
+			  if (ph15 == 0 && ph15cl == 0) ph15_=0;   // trigger failed
+			  if (ph15 <  0 || ph15cl <  0) ph15_=-1;  // passed but no object
+			  if (ph15cl > 0 || ph15 > 0) {
+			    bool match = false;
+			    for (int itrg=0; itrg<ph15; itrg++) {
+			      LorentzVector p4tr = p4HLTObject("HLT_Photon15_L1R",itrg);
+			      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
+			      if (dr < drph15_) drph15_ = dr;
+			      if (dr < 0.4) match=true;
+			    }
+			    for (int itrg=0; itrg<ph15cl; itrg++) {
+			      LorentzVector p4tr = p4HLTObject("HLT_Photon15_Cleaned_L1R",itrg);
+			      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
+			      if (dr < drph15_) drph15_ = dr;
+			      if (dr < 0.4) match=true;
+			    }
+			    if (match) {
+			      ph15_ = 2;
+			    } else {
+			      ph15_ = 1;
+			    }
+			  }
+
+
+			  // For EG5 and EG8 the HLT object is missing, so we'll try with the L1 info
+			  // There appear to be two L1 EM objects: one with "iso" and one without.
+			  // From some event dumps it looks like the iso one is the one we want
+			  // Also: the Photon10 HLT object is sometimes missing, but I know that EG5 is its prerequisite
+			  // so if it is missing we will match to EG5  (TAKE THIS OUT.... July 5th 2010)
+			  if ( (eg5_ == -1 || eg8_ == -1 || ph10_ == -1) && l1_emiso_p4().size()>0) {
+			    
+			    for (unsigned int ig = 0 ; ig < l1_emiso_p4().size(); ig++) {
+			    
+			      //if (ph10_ == -1 && l1_emiso_p4().at(ig).pt() > 5.) {
+			      //	double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl),l1_emiso_p4().at(ig)); 
+			      //	if (dr < drph10_) drph10_ = dr;
+			      //}
+			      if (eg5_ == -1 && l1_emiso_p4().at(ig).pt() > 5.) {
+				      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl),l1_emiso_p4().at(ig)); 
+				      if (dr < dreg5_) dreg5_ = dr;
+			      }
+			      if (eg8_ == -1 && l1_emiso_p4().at(ig).pt() > 8.) {
+				      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl),l1_emiso_p4().at(ig)); 
+				      if (dr < dreg8_) dreg8_ = dr;
+			      }
+		
+			    } // closes loop over L1 EG objects
+			    
+			    //if (ph10_ == -1) {
+			    //  if (drph10_ < 100.) ph10_ = 1; // objects found, but no match
+			    //  if (drph10_ < 0.4)  ph10_ = 2; // objects found, and matched
+			    //}
+			    if (eg5_ == -1) {
+			      if (dreg5_ < 100.) eg5_ = 1; // objects found, but no match
+			      if (dreg5_ < 0.4)  eg5_ = 2; // objects found, and matched
+			    }
+			    if (eg8_ == -1) {
+			      if (dreg8_ < 100.) eg8_ = 1; // objects found, but no match
+			      if (dreg8_ < 0.4)  eg8_ = 2; // objects found, and matched
+			    }
+			 
+			  } // closes if-block of EG5, EG8, PH10 objects missing
  
-	  // Find the highest Pt jet separated by at least dRcut from this lepton
-	  // and fill the jet Pt
-	  ptj1_ = 0.0;
-	  for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
-	    double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl),jets_p4().at(iJet));
-	    if (dr > deltaRCut && jets_p4().at(iJet).pt()>ptj1_) ptj1_=jets_p4().at(iJet).pt();
-	  }
-	    
-	
+		    // Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
+		    ptj1_       = 0.0;
+		    ptj1_b2b_   = -999.0;
+		    dphij1_b2b_ = -999.0;
+		    for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
+		      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), jets_p4().at(iJet) );
+		      if ( dr > deltaRCut && jets_p4().at(iJet).pt() > ptj1_ ){
+		        ptj1_ = jets_p4().at(iJet).pt();
+		
+		        // back to back jets
+		        dphij1_b2b_ = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iEl), jets_p4().at(iJet) ) );
+		        if( dphij1_b2b_ > deltaPhiCut && jets_p4().at(iJet).pt() > ptj1_b2b_ ) ptj1_b2b_ = jets_p4().at(iJet).pt();
+		      }
+		    }
 
-	  // Time to fill the baby for the electrons
-	  FillBabyNtuple();
-
-	}// closes loop over electrons
+			  // Time to fill the baby for the electrons
+			  FillBabyNtuple();
+    
+			}// closes loop over electrons
       } // closes if statements about whether we want to fill electrons
 
+/* Muons */
 
-      // Now the same stuff but for the muons
-      // Loop over electrons
       if (eormu == -1 || eormu==13) {
-	for (unsigned int iMu = 0 ; iMu < mus_p4().size(); iMu++) {
+	    for (unsigned int iMu = 0 ; iMu < mus_p4().size(); iMu++) {
 
-	  // Apply a pt cut --- moved the cut to 10 GeV (Claudio, 10 Jul 2010)
-	  if ( mus_p4().at(iMu).pt() < 10.) continue;
+			  // Apply a pt cut --- moved the cut to 10 GeV (Claudio, 10 Jul 2010)
+			  if ( mus_p4().at(iMu).pt() < 10.) continue;
+		
+			  // If it is not a muon FO, quit
+			  //if (!(isFakeableMuon(iMu, mu_ttbar))) continue;
+			  if ( ! muonId(iMu, muonSelectionFO_mu_ttbar) ) continue;
+		
+			  // If it is above 20 GeV see if we can make a 
+			  // Z with another pt>20 FO.  
+			  bool isaZ = false;
+			  if (mus_p4().at(iMu).pt() > 20.) {
+			    for (unsigned int jMu = 0 ; jMu < mus_p4().size(); jMu++) {
+			      if (iMu == jMu)                             continue;
+			      if (mus_p4().at(jMu).pt() < 20.)            continue;
+			      if ( ! muonId( jMu, muonSelectionFO_mu_ttbar) ) continue;
+			      if ( ! muonId( iMu, muonSelectionFO_mu_ttbar) ) continue;
+			      LorentzVector w = mus_p4().at(iMu) + mus_p4().at(jMu);
+			      if (abs(w.mass()-91.) > 20.) continue;
+			      isaZ = true;
+			    }
+			  }
+			  if (isaZ) continue;
+		
+			  // Initialize baby ntuple
+			  InitBabyNtuple();
+		
+			  // Load the muon and event quantities
+			  run_  = evt_run();
+			  ls_   = evt_lumiBlock();
+			  evt_  = evt_event();
+			  pt_   = mus_p4().at(iMu).pt();
+			  eta_  = mus_p4().at(iMu).eta();
+			  phi_  = mus_p4().at(iMu).phi();
+			  id_   = 13*mus_charge().at(iMu);
+			  num_  = muonId(iMu, NominalTTbarV2);
+			  numv1_  = muonId(iMu, NominalTTbar);
+        tcmet_ = evt_tcmet();
+		    tcmetphi_ = evt_tcmetPhi();
+		
 
-	  // If it is not a muon FO, quit
-	  //if (!(isFakeableMuon(iMu, mu_ttbar))) continue;
-	  if ( ! muonId(iMu, muonSelectionFO_mu_ttbar) ) continue;
+			  // Now REALLY fix it (July 14, 2010)
+			  if (pt_ > 10.) {
+			    if (!wasMetCorrectedForThisMuon(iMu, usingTcMet)) {
+			      float metX = tcmet_ * cos(evt_tcmetPhi());
+			      float metY = tcmet_ * sin(evt_tcmetPhi());
+			      fixMetForThisMuon(iMu, metX, metY, usingTcMet);
+			      tcmet_ = sqrt(metX*metX + metY*metY);
+			    }
+			  }
 
-	  // If it is above 20 GeV see if we can make a 
-	  // Z with another pt>20 FO.  
-	  bool isaZ = false;
-	  if (mus_p4().at(iMu).pt() > 20.) {
-	    for (unsigned int jMu = 0 ; jMu < mus_p4().size(); jMu++) {
-	      if (iMu == jMu)                             continue;
-	      if (mus_p4().at(jMu).pt() < 20.)            continue;
-	      if ( ! muonId( jMu, muonSelectionFO_mu_ttbar) ) continue;
-	      if ( ! muonId( iMu, muonSelectionFO_mu_ttbar) ) continue;
-	      LorentzVector w = mus_p4().at(iMu) + mus_p4().at(jMu);
-	      if (abs(w.mass()-91.) > 20.) continue;
-	      isaZ = true;
-	    }
-	  }
-	  if (isaZ) continue;
+		    // W transverse mass
+		    mt_ = Mt( mus_p4().at(iMu), tcmet_, tcmetphi_ );
+		
+			  // The btag information
+			  nbjet_ = this_nbjet;
+			  dRbNear_ =  99.;
+			  dRbFar_  = -99.;
+			  for (int ii=0; ii<nbjet_; ii++) {
+			    unsigned int iJet = bindex[ii];
+			    float dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), jets_p4().at(iJet));
+			    if (dr < dRbNear_) dRbNear_ = dr;
+			    if (dr > dRbFar_)  dRbFar_  = dr;
+			  }
+		
+			  // Our jet trigger flags
+			  hlt15u_ = min(2,nHLTObjects("HLT_Jet15U")); 
+			  hlt30u_ = min(2,nHLTObjects("HLT_Jet30U")); 
+			  hlt50u_ = min(2,nHLTObjects("HLT_Jet50U")); 
+			  l16u_   = min(2,nHLTObjects("HLT_L1Jet6U"));
+			  l110u_  = min(2,nHLTObjects("HLT_L1Jet10U"));
+		
+			  // If only one jet triggered, see if it is far enough away 
+			  if (hlt15u_ == 1) {
+			    LorentzVector p4j = p4HLTObject("HLT_Jet15U",0);
+			    double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4j);
+			    if (dr > deltaRCut) hlt15u_ = 2;
+			  }
+			  if (hlt30u_ == 1) {
+			    LorentzVector p4j = p4HLTObject("HLT_Jet30U",0);
+			    double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4j);
+			    if (dr > deltaRCut) hlt30u_ = 2;
+			  }
+			  if (hlt50u_ == 1) {
+			    LorentzVector p4j = p4HLTObject("HLT_Jet50U",0);
+			    double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4j);
+			    if (dr > deltaRCut) hlt50u_ = 2;
+			  }
+			  if (l16u_ == 1) {
+			    LorentzVector p4j = p4HLTObject("HLT_L1Jet6U",0);
+			    double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4j);
+			    if (dr > deltaRCut) l16u_ = 2;
+			  }
+			  if (l110u_ == 1) {
+			    LorentzVector p4j = p4HLTObject("HLT_L1Jet10U",0);
+			    double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4j);
+			    if (dr > deltaRCut) l110u_ = 2;
+			  }
+		
+			  // Now fill the muon trigger flags
+			  mu3_ = nHLTObjects("HLT_Mu3");
+			  mu5_ = nHLTObjects("HLT_Mu5");
+			  mu9_ = nHLTObjects("HLT_Mu9");
+		
+			  // Explicit match with Mu3 trigger
+			  if (mu3_ > 0) {
+			    bool match = false;
+			    for (int itrg=0; itrg<mu3_; itrg++) {
+			      LorentzVector p4tr = p4HLTObject("HLT_Mu3",itrg);
+			      double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4tr);
+			      if (dr < drmu3_) drmu3_ = dr;
+			      if (dr < 0.4) match=true;
+			    }
+			    if (match) {
+			      mu3_ = 2;
+			    } else {
+			      mu3_ = 1;
+			    }
+			  }
 
-	  // Initialize baby ntuple
-	  InitBabyNtuple();
+			  // Explicit match with Mu5 trigger
+			  if (mu5_ > 0) {
+			    bool match = false;
+			    for (int itrg=0; itrg<mu5_; itrg++) {
+			      LorentzVector p4tr = p4HLTObject("HLT_Mu5",itrg);
+			      double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4tr);
+			      if (dr < drmu5_) drmu5_ = dr;
+			      if (dr < 0.4) match=true;
+			    }
+			    if (match) {
+			      mu5_ = 2;
+			    } else {
+			      mu5_ = 1;
+			    }
+			  }
+		 
+			  // Explicit match with Mu9 trigger
+			  if (mu9_ > 0) {
+			    bool match = false;
+			    for (int itrg=0; itrg<mu9_; itrg++) {
+			      LorentzVector p4tr = p4HLTObject("HLT_Mu5",itrg);
+			      double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4tr);
+			      if (dr < drmu9_) drmu9_ = dr;
+			      if (dr < 0.4) match=true;
+			    }
+			    if (match) {
+			      mu9_ = 2;
+			    } else {
+			      mu9_ = 1;
+			    }
+			  }
 
-	  // Load the muon and event quantities
-	  run_  = evt_run();
-	  ls_   = evt_lumiBlock();
-	  evt_  = evt_event();
-	  pt_   = mus_p4().at(iMu).pt();
-	  eta_  = mus_p4().at(iMu).eta();
-	  phi_  = mus_p4().at(iMu).phi();
-	  id_   = 13*mus_charge().at(iMu);
-	  num_  = muonId(iMu, NominalTTbarV2);
-	  numv1_  = muonId(iMu, NominalTTbar);
-          tcmet_ = evt_tcmet();
+			  // Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
+        ptj1_       = 0.0;
+        ptj1_b2b_   = -999.0;
+        dphij1_b2b_ = -999.0;
+        for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
+          double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), jets_p4().at(iJet) );
+          if ( dr > deltaRCut && jets_p4().at(iJet).pt() > ptj1_ ){
+            ptj1_ = jets_p4().at(iJet).pt();
 
+            // back to back jets
+            dphij1_b2b_ = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iMu), jets_p4().at(iJet) ) );
+            if( dphij1_b2b_ > deltaPhiCut && jets_p4().at(iJet).pt() > ptj1_b2b_ ) ptj1_b2b_ = jets_p4().at(iJet).pt();
+          }
+        }
 
-	  // Now REALLY fix it (July 14, 2010)
-	  if (pt_ > 10.) {
-	    if (!wasMetCorrectedForThisMuon(iMu, usingTcMet)) {
-	      cout << "Correcting the tcmet" << endl;
-	      float metX = tcmet_ * cos(evt_tcmetPhi());
-	      float metY = tcmet_ * sin(evt_tcmetPhi());
-	      fixMetForThisMuon(iMu, metX, metY, usingTcMet);
-	      tcmet_ = sqrt(metX*metX + metY*metY);
-	    }
-	  }
+			  // Time to fill the baby for the muons
+			  FillBabyNtuple();
 
-	  // Careful about tcmet.  
-	  // For muons pt>10 GeV, if it is not already corrected for it, do it
-	  // THIS is most likely wrong...needs to be fixed......(Fixed July 5, 2010)
-	  //if (pt_ > 10. && (mus_tcmet_flag().at(iMu) == 0 || mus_tcmet_flag().at(iMu) == 4)) {
-	  //  cout << "Correcting the tcmet" <<endl;
-	  //  double lmetx = tcmet_ * cos(evt_tcmetPhi());
-	  //  double lmety = tcmet_  * sin(evt_tcmetPhi());
-	  //  if (mus_tcmet_flag()[iMu] == 0){
-	  //    lmetx+= mus_met_deltax()[iMu] - mus_p4()[iMu].x();
-	  //    lmety+= mus_met_deltay()[iMu] - mus_p4()[iMu].y();
-	  //  } else if (mus_tcmet_flag()[iMu] == 4){
-	  //    lmetx+= - mus_tcmet_deltax()[iMu] + mus_met_deltax()[iMu] - mus_p4()[iMu].x(); 
-	  //    lmety+= - mus_tcmet_deltay()[iMu] + mus_met_deltay()[iMu] - mus_p4()[iMu].y(); 
-	  //  }
-          //
-	  //  tcmet_ = sqrt(lmetx*lmetx+lmety*lmety);
-	  //}
-
-
-
-	  // The btag information
-	  nbjet_ = this_nbjet;
-	  dRbNear_ =  99.;
-	  dRbFar_  = -99.;
-	  for (int ii=0; ii<nbjet_; ii++) {
-	    unsigned int iJet = bindex[ii];
-	    float dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), jets_p4().at(iJet));
-	    if (dr < dRbNear_) dRbNear_ = dr;
-	    if (dr > dRbFar_)  dRbFar_  = dr;
-	  }
-
-	  // Our jet trigger flags
-	  hlt15u_ = min(2,nHLTObjects("HLT_Jet15U")); 
-	  hlt30u_ = min(2,nHLTObjects("HLT_Jet30U")); 
-	  hlt50u_ = min(2,nHLTObjects("HLT_Jet50U")); 
-	  l16u_   = min(2,nHLTObjects("HLT_L1Jet6U"));
-	  l110u_  = min(2,nHLTObjects("HLT_L1Jet10U"));
-
-	  // If only one jet triggered, see if it is far enough away 
-	  if (hlt15u_ == 1) {
-	    LorentzVector p4j = p4HLTObject("HLT_Jet15U",0);
-	    double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4j);
-	    if (dr > deltaRCut) hlt15u_ = 2;
-	  }
-	  if (hlt30u_ == 1) {
-	    LorentzVector p4j = p4HLTObject("HLT_Jet30U",0);
-	    double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4j);
-	    if (dr > deltaRCut) hlt30u_ = 2;
-	  }
-	  if (hlt50u_ == 1) {
-	    LorentzVector p4j = p4HLTObject("HLT_Jet50U",0);
-	    double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4j);
-	    if (dr > deltaRCut) hlt50u_ = 2;
-	  }
-	  if (l16u_ == 1) {
-	    LorentzVector p4j = p4HLTObject("HLT_L1Jet6U",0);
-	    double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4j);
-	    if (dr > deltaRCut) l16u_ = 2;
-	  }
-	  if (l110u_ == 1) {
-	    LorentzVector p4j = p4HLTObject("HLT_L1Jet10U",0);
-	    double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4j);
-	    if (dr > deltaRCut) l110u_ = 2;
-	  }
-
-	  // Now fill the muon trigger flags
-	  mu3_ = nHLTObjects("HLT_Mu3");
-	  mu5_ = nHLTObjects("HLT_Mu5");
-	  mu9_ = nHLTObjects("HLT_Mu9");
-
-	  // Explicit match with Mu3 trigger
-	  if (mu3_ > 0) {
-	    bool match = false;
-	    for (int itrg=0; itrg<mu3_; itrg++) {
-	      LorentzVector p4tr = p4HLTObject("HLT_Mu3",itrg);
-	      double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4tr);
-	      if (dr < drmu3_) drmu3_ = dr;
-	      if (dr < 0.4) match=true;
-	    }
-	    if (match) {
-	      mu3_ = 2;
-	    } else {
-	      mu3_ = 1;
-	    }
-	  }
-
-	  // Explicit match with Mu5 trigger
-	  if (mu5_ > 0) {
-	    bool match = false;
-	    for (int itrg=0; itrg<mu5_; itrg++) {
-	      LorentzVector p4tr = p4HLTObject("HLT_Mu5",itrg);
-	      double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4tr);
-	      if (dr < drmu5_) drmu5_ = dr;
-	      if (dr < 0.4) match=true;
-	    }
-	    if (match) {
-	      mu5_ = 2;
-	    } else {
-	      mu5_ = 1;
-	    }
-	  }
- 
-	  // Explicit match with Mu9 trigger
-	  if (mu9_ > 0) {
-	    bool match = false;
-	    for (int itrg=0; itrg<mu9_; itrg++) {
-	      LorentzVector p4tr = p4HLTObject("HLT_Mu5",itrg);
-	      double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4tr);
-	      if (dr < drmu9_) drmu9_ = dr;
-	      if (dr < 0.4) match=true;
-	    }
-	    if (match) {
-	      mu9_ = 2;
-	    } else {
-	      mu9_ = 1;
-	    }
-	  }
-
-	  // Find the highest Pt jet separated by at least dRcut from this lepton
-	  // and fill the jet Pt
-	  ptj1_ = 0.0;
-	  for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
-	    double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu),jets_p4().at(iJet));
-	    if (dr > deltaRCut && jets_p4().at(iJet).pt()>ptj1_) ptj1_=jets_p4().at(iJet).pt();
-	  }
-
-
-	  // Time to fill the baby for the muons
-	  FillBabyNtuple();
-
-	}// closes loop over muons
+			}// closes loop over muons
       } // closes if statements about whether we want to fill muons
-
       
     }// closes loop over events
   }  // closes loop over files
@@ -615,6 +617,7 @@ void myBabyMaker::InitBabyNtuple () {
   phi_ = -999.;
   scet_ = -999.;
   tcmet_ = -999.;
+  tcmetphi_ = -999.;
   hlt15u_ = 0;
   hlt30u_ = 0;
   hlt50u_ = 0;
@@ -647,6 +650,9 @@ void myBabyMaker::InitBabyNtuple () {
   dRbNear_ = 99.;
   dRbFar_ = -99.;
   ptj1_   = 0.;
+  ptj1_b2b_ = -999.;
+  dphij1_b2b_ = -999.;
+  mt_ = -999;
 }
 //-------------------------------------
 // Book the baby ntuple
@@ -668,6 +674,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("phi",          &phi_,         "phi/F"         );
     babyTree_->Branch("scet",          &scet_,         "scet/F"         );
     babyTree_->Branch("tcmet",          &tcmet_,         "tcmet/F"         );
+    babyTree_->Branch("tcmetphi",          &tcmetphi_,         "tcmetphi/F"         );
     babyTree_->Branch("id",          &id_,         "id/I"         );
 
     babyTree_->Branch("hlt15u",       &hlt15u_,       "hlt15u/I"      );
@@ -709,6 +716,12 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("dRFar",       &dRbFar_,       "dRbFar/F"      );
 
     babyTree_->Branch("ptj1",       &ptj1_,       "ptj1/F"      );
+
+    babyTree_->Branch("ptj1_b2b",       &ptj1_b2b_,       "ptj1_b2b/F"      );
+    babyTree_->Branch("dphij1_b2b",       &dphij1_b2b_,       "dphij1_b2b/F"      );
+
+    babyTree_->Branch("mt",          &mt_,         "mt/F"         );
+
 }
 //----------------------------------
 // Fill the baby
