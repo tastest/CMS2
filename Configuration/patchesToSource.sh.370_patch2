@@ -18,6 +18,14 @@ cvs co -d MitEdm     -r ConvRejection-10-06-09 UserCode/MitEdm
 
 for f in $(find MitEdm/Filters/ -type f); do sed 's!FWCore/ParameterSet/interface/InputTag!FWCore/Utilities/interface/InputTag!g' $f > blah; mv blah $f; done
 
+# get latest tcMET
+addpkg RecoMET/METAlgorithms
+addpkg RecoMET/METProducers
+cvs up -r V03-01-21 RecoMET/METAlgorithms/interface/TCMETAlgo.h
+cvs up -r V03-01-21 RecoMET/METAlgorithms/src/TCMETAlgo.cc
+cvs up -r V03-01-21 RecoMET/METAlgorithms/BuildFile.xml
+cvs up -r V03-01-36 RecoMET/METProducers/python/TCMET_cfi.py
+
 echo;echo checkingdeps;echo
 
 # dont forget this
