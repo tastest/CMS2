@@ -1,4 +1,3 @@
-// C++ includes
 #include <iostream>
 #include <set>
 
@@ -399,20 +398,22 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 			 
 			  } // closes if-block of EG5, EG8, PH10 objects missing
  
-		    // Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
-		    ptj1_       = 0.0;
-		    ptj1_b2b_   = -999.0;
-		    dphij1_b2b_ = -999.0;
-		    for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
-		      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), jets_p4().at(iJet) );
-		      if ( dr > deltaRCut && jets_p4().at(iJet).pt() > ptj1_ ){
-		        ptj1_ = jets_p4().at(iJet).pt();
-		
-		        // back to back jets
-		        dphij1_b2b_ = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iEl), jets_p4().at(iJet) ) );
-		        if( dphij1_b2b_ > deltaPhiCut && jets_p4().at(iJet).pt() > ptj1_b2b_ ) ptj1_b2b_ = jets_p4().at(iJet).pt();
-		      }
-		    }
+        // Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
+        ptj1_       = 0.0;
+        ptj1_b2b_   = -999.0;
+        dphij1_b2b_ = -999.0;
+        nj1_        = 0;
+        for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
+          double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), jets_p4().at(iJet) );
+          if( dr > deltaRCut && jets_p4().at(iJet).pt() > 10 ) nj1_++;
+          if ( dr > deltaRCut && jets_p4().at(iJet).pt() > ptj1_ ){
+            ptj1_ = jets_p4().at(iJet).pt();
+
+            // back to back in phi
+            dphij1_b2b_ = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iEl), jets_p4().at(iJet) ) );
+            if( dphij1_b2b_ > deltaPhiCut && jets_p4().at(iJet).pt() > ptj1_b2b_ ) ptj1_b2b_ = jets_p4().at(iJet).pt();
+          }
+        }
 
 			  // Time to fill the baby for the electrons
 			  FillBabyNtuple();
@@ -580,12 +581,14 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         ptj1_       = 0.0;
         ptj1_b2b_   = -999.0;
         dphij1_b2b_ = -999.0;
+        nj1_        = 0;
         for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
           double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), jets_p4().at(iJet) );
+          if( dr > deltaRCut && jets_p4().at(iJet).pt() > 10 ) nj1_++;
           if ( dr > deltaRCut && jets_p4().at(iJet).pt() > ptj1_ ){
             ptj1_ = jets_p4().at(iJet).pt();
 
-            // back to back jets
+            // back to back in phi
             dphij1_b2b_ = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iMu), jets_p4().at(iJet) ) );
             if( dphij1_b2b_ > deltaPhiCut && jets_p4().at(iJet).pt() > ptj1_b2b_ ) ptj1_b2b_ = jets_p4().at(iJet).pt();
           }
@@ -650,6 +653,7 @@ void myBabyMaker::InitBabyNtuple () {
   dRbNear_ = 99.;
   dRbFar_ = -99.;
   ptj1_   = 0.;
+  nj1_    = 0;
   ptj1_b2b_ = -999.;
   dphij1_b2b_ = -999.;
   mt_ = -999;
@@ -716,7 +720,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("dRFar",       &dRbFar_,       "dRbFar/F"      );
 
     babyTree_->Branch("ptj1",       &ptj1_,       "ptj1/F"      );
-
+    babyTree_->Branch("nj1",       &nj1_,       "nj1/I"      );
     babyTree_->Branch("ptj1_b2b",       &ptj1_b2b_,       "ptj1_b2b/F"      );
     babyTree_->Branch("dphij1_b2b",       &dphij1_b2b_,       "dphij1_b2b/F"      );
 
