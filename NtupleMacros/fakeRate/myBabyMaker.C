@@ -181,7 +181,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 	      v1_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v1 );
 	      v2_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v2 );
 	      v3_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v3 );
-	      numSS_ = pass_electronSelection(iEL, electronSelection_ss);
+	      numSS_ = pass_electronSelection(iEl, electronSelection_ss);
 	      v1SS_  = pass_electronSelection(iEl, electronSelectionFO_ssVBTF80_v1);
 	      v2SS_  = pass_electronSelection(iEl, electronSelectionFO_ssVBTF80_v2);
 	      v3SS_  = pass_electronSelection(iEl, electronSelectionFO_ssVBTF80_v3);
