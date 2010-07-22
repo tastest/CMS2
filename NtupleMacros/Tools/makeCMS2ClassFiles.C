@@ -59,14 +59,12 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true,
   }
 
   //check if the branchNamesFile exists
-  if(branchNamesFile != "") {
-    struct stat results;
-    int intStat = stat(branchNamesFile.c_str(), &results);
-    if(intStat != 0) {
-      cout << "Cannot open " << branchNamesFile << endl;
-      cout << "Please make sure that the file exists" << endl;
+  struct stat results;
+  int intStat = stat(branchNamesFile.c_str(), &results);
+  if(intStat != 0) {
+    cout << "Cannot open " << branchNamesFile << endl;
+    cout << "Please make sure that the file exists" << endl;
     return;
-    }
   }
 
 
@@ -199,6 +197,9 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
 	headerf << "\t" << "if (tree->GetAlias(\"" << aliasname << "\") != 0) {" << endl;
 	headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << " = tree->GetBranch(tree->GetAlias(\"" << aliasname << "\"));" << endl;
 	headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << "->SetAddress(&" << aliasname << "_);" << endl << "\t}" << endl;
+	headerf << "\t" << "if(" << Form("%s_branch",aliasname.Data()) << " == 0 ) {" << endl;
+	headerf << "\t" << "cout << \"Branch " << aliasname.Data() << " does not exist.\" << endl;" << endl;
+	headerf << "\t" << "}" << endl;
       }
     }
   }
@@ -215,6 +216,9 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
       headerf << "\t" << "if (tree->GetAlias(\"" << aliasname << "\") != 0) {" << endl;
       headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << " = tree->GetBranch(tree->GetAlias(\"" << aliasname << "\"));" << endl;
       headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << "->SetAddress(&" << aliasname << "_);" << endl << "\t}" << endl;
+      headerf << "\t" << "if(" << Form("%s_branch",aliasname.Data()) << " == 0 ) {" << endl;
+      headerf << "\t" << "cout << \"Branch " << aliasname.Data() << " does not exist.\" << endl;" << endl;
+      headerf << "\t" << "}" << endl;
     }
   }
 

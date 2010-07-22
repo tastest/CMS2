@@ -273,34 +273,6 @@ void estimate(HistogramUtilities *hUtil, JetBins_t bin, TString hyp_type,
 
 }
 
-void plotResults(TString det, TString fileStamp, TString refFileStamp, TString norm, const float &luminorm)
-{
-
-    gROOT->ProcessLine(".L ../tdrStyle.C");
-    gROOT->ProcessLine("setTDRStyle()");
-
-    // luminorm for 0.1pb-1 (is set to 1fb in the looper)
-    //float luminorm = 0.0001;
-    std::vector<DataSource> dataSources;
-    std::vector<DataSource> refSources;
-    dataSources.push_back (fH_DATA() );
-    refSources.push_back( fH_TTBAR() );
-    refSources.push_back( fH_ZJETS() );
-    refSources.push_back( fH_QCD30() );
-    refSources.push_back( fH_WJETS() );
-
-    HistogramUtilities datah1("../" + fileStamp + ".root", dataSources);
-    HistogramUtilities refh1("../" + refFileStamp + ".root", refSources, luminorm);
-
-    //
-    // Electrons
-    //
-
-    // before any selections
-    plotDataRefOverlayStack(datah1, refh1, "hyp_tcmet_allj", "tcMET (GeV)", fileStamp, det, norm, 1);
-
-
-
 void processDYEstResults(TString fileName)
 {
 
