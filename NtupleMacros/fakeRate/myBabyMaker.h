@@ -93,9 +93,10 @@ class myBabyMaker
 	Float_t dRbFar_; // dR between lepton and farthest such jet
 
 	// Information to do offline jet trigger selection
-	Float_t ptj1_; // highest pt jet well separated from the lepton
-  Float_t ptj1_b2b_;
-  Float_t dphij1_b2b_;
+	Float_t ptj1_;        // highest pt jet well separated from the lepton
+  Float_t ptj1_b2b_;    // highest pt jet away frmo lepton by dR >= 1.0 and dPhi > 2.5
+  Float_t dphij1_b2b_;  // dphi between lepton and jet for jets away from lepton by dR >= 1.0
+  Int_t   nj1_;         // number of jets above 10 GeV and away from lepton by dR >= 1.0
 
   // transverse W mass
   Float_t mt_;
