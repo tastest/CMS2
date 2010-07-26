@@ -25,6 +25,7 @@ class Tauify{
     map<int, pair<int, pair<double, double> > > tau_data;
 
     LorentzVector p4_lepton_lab;
+    LorentzVector p4_lepton_cm;
     LorentzVector p4_tau_lepton_cm;
     LorentzVector p4_tau_lepton_lab;
 
