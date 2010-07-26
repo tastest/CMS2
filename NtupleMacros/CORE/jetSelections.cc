@@ -1,4 +1,4 @@
-// $Id: jetSelections.cc,v 1.7 2010/07/13 09:07:43 jmuelmen Exp $
+// $Id: jetSelections.cc,v 1.8 2010/07/26 14:46:25 fgolf Exp $
 
 #include <algorithm>
 #include <utility>
@@ -246,4 +246,19 @@ double jetCorrection (const LorentzVector &jet)
 double jetCorrection (int ijet) 
 { 
      return jetCorrection(cms2.jets_p4()[ijet]); 
+}
+
+bool jetPassesLooseJetID(int ijet)
+{
+     if (fabs(cms2.jets_p4()[ijet].eta()) < 3.)
+     {
+	  if (cms2.jets_fHPD()[ijet] > 0.98)
+	       return false;
+	  if (cms2.jets_emFrac()[ijet] < 0.01)
+	       return false;
+	  if (cms2.jets_n90Hits()[ijet] < 2)
+	       return false;
+     }
+
+     return true;
 }
