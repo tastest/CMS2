@@ -10,7 +10,6 @@ from CMS2.NtupleMaker.bTagPFSequence_cfi           import *
 from CMS2.NtupleMaker.bTaggingTrkSequence_cfi      import *
 from CMS2.NtupleMaker.bTagMaker_cfi                import *
 from CMS2.NtupleMaker.bTagJPTJetMaker_cfi          import *
-from CMS2.NtupleMaker.bTagPFJetMaker_cfi           import *
 from CMS2.NtupleMaker.bTagTrkMaker_cfi             import *
 from CMS2.NtupleMaker.conversionMaker_cfi          import *
 from CMS2.NtupleMaker.elCaloIsoSequence_cff        import *
@@ -63,7 +62,7 @@ assmakers        = cms.Sequence(jetToMuAssMaker * jetToElAssMaker * muToElsAssMa
                  
 hypmakers        = cms.Sequence(hypDilepMaker * hypDilepVertexMaker * hypTrilepMaker * hypQuadlepMaker * hypIsoMaker)
                  
-othermakers      = cms.Sequence(elCaloIsoSequence * elTkJuraIsoMaker * bTagMaker *  bTagJPTJetMaker * bTagPFJetMaker * bTagTrkMaker * conversionMaker)
+othermakers      = cms.Sequence(elCaloIsoSequence * elTkJuraIsoMaker * bTagMaker *  bTagJPTJetMaker * bTagTrkMaker * conversionMaker)
 
 cms2CoreSequence = cms.Sequence(CMS2Reco * eventmakers * trigmakers * makers * assmakers * othermakers * hypmakers)
 
