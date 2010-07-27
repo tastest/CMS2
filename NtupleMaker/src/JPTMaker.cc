@@ -14,7 +14,7 @@
 //
 // Original Frank Golf
 // Created:  Sun Jan  18 12:23:38 CDT 2008
-// $Id: JPTMaker.cc,v 1.15 2010/05/03 23:12:28 kalavase Exp $
+// $Id: JPTMaker.cc,v 1.15.2.1 2010/07/27 19:24:34 kalavase Exp $
 //
 //
 
@@ -67,7 +67,6 @@ JPTMaker::JPTMaker(const edm::ParameterSet& iConfig) {
 
   // parameters from configuration
   jptsInputTag_     = iConfig.getParameter<edm::InputTag>("jptInputTag"       );
-  minUncorPt_       = iConfig.getParameter<double>       ("minUncorPt"        );
   JPTCorrectorL2L3_ = iConfig.getParameter<std::string>  ("JPTCorrectorL2L3"  );
 
 }
@@ -107,8 +106,6 @@ void JPTMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   
   for ( std::vector<reco::JPTJet>::const_iterator jpt = v_jpts.begin(); jpt != v_jpts.end(); ++jpt ) {
 
-    if(jpt->pt() < minUncorPt_)
-      continue;
     double cor = correctorL2L3->correction(jpt->p4());
     const reco::CaloJet *cJet = dynamic_cast<const reco::CaloJet*>((jpt->getCaloJetRef()).get());
     vector_jpts_p4     ->push_back( LorentzVector( jpt->p4() )          );
