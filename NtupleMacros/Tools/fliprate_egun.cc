@@ -23,43 +23,43 @@ double getSingleEleNum(double el_pt, double el_eta) {
   el_eta = fabs(el_eta);
 
   if( el_eta < 1.28 ){ 
-    if( el_pt > 70 ) return 611;
-    if( el_pt > 50 ) return 390;
-    if( el_pt > 40 ) return 163;
-    if( el_pt > 30 ) return 140;
-    if( el_pt > 10 ) return 123;
+    if( el_pt > 70 ) return 31;
+    if( el_pt > 50 ) return 20;
+    if( el_pt > 40 ) return 5;
+    if( el_pt > 30 ) return 9;
+    if( el_pt > 10 ) return 4;
     return 0.0;
   }
   if( el_eta < 1.56 ){ 
-    if( el_pt > 70 ) return 397;
-    if( el_pt > 50 ) return 226;
-    if( el_pt > 40 ) return 85;
-    if( el_pt > 30 ) return 61;
-    if( el_pt > 10 ) return 55;
+    if( el_pt > 70 ) return 48;
+    if( el_pt > 50 ) return 30;
+    if( el_pt > 40 ) return 12;
+    if( el_pt > 30 ) return 8;
+    if( el_pt > 10 ) return 5;
     return 0.0;
   }
   if( el_eta < 1.84 ){ 
-    if( el_pt > 70 ) return 709;
-    if( el_pt > 50 ) return 380;
-    if( el_pt > 40 ) return 153;
-    if( el_pt > 30 ) return 113;
-    if( el_pt > 10 ) return 69;
+    if( el_pt > 70 ) return 92;
+    if( el_pt > 50 ) return 67;
+    if( el_pt > 40 ) return 35;
+    if( el_pt > 30 ) return 20;
+    if( el_pt > 10 ) return 13;
     return 0.0;
   }
   if( el_eta < 2.12 ){ 
-    if( el_pt > 70 ) return 841;
-    if( el_pt > 50 ) return 447;
-    if( el_pt > 40 ) return 196;
-    if( el_pt > 30 ) return 143;
-    if( el_pt > 10 ) return 106;
+    if( el_pt > 70 ) return 72;
+    if( el_pt > 50 ) return 29;
+    if( el_pt > 40 ) return 16;
+    if( el_pt > 30 ) return 13;
+    if( el_pt > 10 ) return 6;
     return 0.0;
   }
   if( el_eta < = 2.5 ){ 
-    if( el_pt > 70 ) return 1237;
-    if( el_pt > 50 ) return 636;
-    if( el_pt > 40 ) return 301;
-    if( el_pt > 30 ) return 235;
-    if( el_pt > 10 ) return 294;
+    if( el_pt > 70 ) return 93;
+    if( el_pt > 50 ) return 42;
+    if( el_pt > 40 ) return 17;
+    if( el_pt > 30 ) return 9;
+    if( el_pt > 10 ) return 20;
     return 0.0;
   }
   std::cout << "Error: eta > 2.5 value found" << endl;
@@ -72,43 +72,43 @@ double getSingleEleDenom(double el_pt, double el_eta) {
   el_eta = fabs(el_eta);
 
   if( el_eta < 1.28 ){ 
-    if( el_pt > 70 ) return 118827;
-    if( el_pt > 50 ) return 79313;
-    if( el_pt > 40 ) return 39510;
-    if( el_pt > 30 ) return 39205;
-    if( el_pt > 10 ) return 69763;
+    if( el_pt > 70 ) return 117286;
+    if( el_pt > 50 ) return 78397;
+    if( el_pt > 40 ) return 39090;
+    if( el_pt > 30 ) return 38858;
+    if( el_pt > 10 ) return 69323;
     return 0.0;
   }
   if( el_eta < 1.56 ){ 
-    if( el_pt > 70 ) return 19732;
-    if( el_pt > 50 ) return 13022;
-    if( el_pt > 40 ) return 6391;
-    if( el_pt > 30 ) return 6060;
-    if( el_pt > 10 ) return 9686;
+    if( el_pt > 70 ) return 18452;
+    if( el_pt > 50 ) return 12276;
+    if( el_pt > 40 ) return 6087;
+    if( el_pt > 30 ) return 5793;
+    if( el_pt > 10 ) return 9374;
     return 0.0;
   }
   if( el_eta < 1.84 ){ 
-    if( el_pt > 70 ) return 22468;
-    if( el_pt > 50 ) return 15126;
-    if( el_pt > 40 ) return 7377;
-    if( el_pt > 30 ) return 7148;
-    if( el_pt > 10 ) return 10356;
+    if( el_pt > 70 ) return 20720;
+    if( el_pt > 50 ) return 14174;
+    if( el_pt > 40 ) return 7021;
+    if( el_pt > 30 ) return 6852;
+    if( el_pt > 10 ) return 10145;
     return 0.0;
   }
   if( el_eta < 2.12 ){ 
-    if( el_pt > 70 ) return 23300;
-    if( el_pt > 50 ) return 15541;
-    if( el_pt > 40 ) return 7841;
-    if( el_pt > 30 ) return 7594;
-    if( el_pt > 10 ) return 12488;
+    if( el_pt > 70 ) return 21436;
+    if( el_pt > 50 ) return 14537;
+    if( el_pt > 40 ) return 7401;
+    if( el_pt > 30 ) return 7241;
+    if( el_pt > 10 ) return 12178;
     return 0.0;
   }
   if( el_eta < = 2.5 ){ 
-    if( el_pt > 70 ) return 28736;
-    if( el_pt > 50 ) return 18739;
-    if( el_pt > 40 ) return 9310;
-    if( el_pt > 30 ) return 8982;
-    if( el_pt > 10 ) return 16488;
+    if( el_pt > 70 ) return 25029;
+    if( el_pt > 50 ) return 16802;
+    if( el_pt > 40 ) return 8462;
+    if( el_pt > 30 ) return 8277;
+    if( el_pt > 10 ) return 15646;
     return 0.0;
   }
   std::cout << "Error: eta > 2.5 value found" << endl;
