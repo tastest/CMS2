@@ -64,6 +64,38 @@ void fixMetForThisMuon(int imu, float& metX, float& metY, whichMetType type) {
   }
 }
 
+//-----------------------------------------------------------
+// Function that corrects the met (or tcmet) for a given
+// muon in case this was not done in reco.  Uses value maps
+//-------------------------------------------------------------
+void fixMetForThisMuon(int imu, float& metX, float& metY, float& sumET, whichMetType type) {
+  bool wasItCorrected = wasMetCorrectedForThisMuon(imu, type);
+  if (!wasItCorrected) {
+    switch(type) {
+
+      case usingTcMet:
+	if (cms2.mus_tcmet_flag()[imu] == 0) {
+	  metX += cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x();
+	  metY += cms2.mus_met_deltay()[imu] - cms2.mus_p4()[imu].y();
+	  sumET -= sqrt(cms2.mus_met_deltax()[imu] * cms2.mus_met_deltax()[imu] + cms2.mus_met_deltay()[imu] * cms2.mus_met_deltay()[imu]) - cms2.mus_p4()[imu].pt(); 
+	} else if (cms2.mus_tcmet_flag()[imu] == 4) {
+	     metX += - cms2.mus_tcmet_deltax()[imu] + cms2.trks_trk_p4()[cms2.mus_trkidx()[imu]].px() // undo the pion correction
+		  + cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x(); // perform the muon correction
+	     metY += - cms2.mus_tcmet_deltay()[imu] + cms2.trks_trk_p4()[cms2.mus_trkidx()[imu]].py() // undo the pion correction
+		  + cms2.mus_met_deltay()[imu] - cms2.mus_p4()[imu].y(); // perform the muon correction
+	     sumET -= sqrt(cms2.mus_met_deltax()[imu] * cms2.mus_met_deltax()[imu] + cms2.mus_met_deltay()[imu] * cms2.mus_met_deltay()[imu]) - cms2.mus_p4()[imu].pt()
+		  + sqrt(cms2.mus_tcmet_deltax()[imu] * cms2.mus_tcmet_deltax()[imu] + cms2.mus_tcmet_deltay()[imu] * cms2.mus_tcmet_deltay()[imu]) + cms2.trks_trk_p4()[cms2.mus_trkidx()[imu]].pt();
+	}
+	break;
+
+      case usingCaloMet:
+	metX += cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x();
+	metY += cms2.mus_met_deltay()[imu] - cms2.mus_p4()[imu].y();
+	break;
+    }
+  }
+}
+
 //---------------------------------------------
 // function to calculate projected MET.
 // takes three parameters as input:
