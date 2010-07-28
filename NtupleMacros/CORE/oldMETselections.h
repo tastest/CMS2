@@ -22,4 +22,16 @@ bool metProjected (int i_hyp, const TVector3& corr);
 bool pass5Met (int i_hyp, const TVector3& corr);
 bool passMetVJets09(float value, bool useTcMet);
 
+
+//---------------------------------------------
+// function to calculate latest tcMET
+//---------------------------------------------
+metStruct correctedTCMET(bool usePV = false, bool useElectronVetoCone = false, bool useHFcleaning = true, 
+                         bool useHCALcleaning = true, bool useECALcleaning = false, bool printout = false, ostream& ostr = std::cout);
+
+//---------------------------------------------
+// calorimeter cleaning for tcMET
+//---------------------------------------------
+metStruct cleanTCMET(float met_x, float met_y, float sumet, bool useHFcleaning = true, bool useHCALcleaning = true, bool useECALcleaning = false);
+
 #endif
