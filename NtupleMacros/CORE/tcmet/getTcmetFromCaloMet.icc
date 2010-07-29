@@ -275,7 +275,7 @@ bool isGoodTrack( int index, bool usePV ) {
      if( trks_ptErr().at(index) / trks_trk_p4().at(index).pt() > 0.20 ) return false;
      if( !isTrackQuality( index, (1 << highPurity) ) )                  return false;
 
-     if( trks_trk_p4().at(index).pt() > ptcut_eta25_ && fabs(trks_trk_p4().at(index).eta()) > 2.5 ) return false;
+     if( trks_trk_p4().at(index).pt() > 0 && fabs(trks_trk_p4().at(index).eta()) > 2.5 ) return false;
      
      if( removeDuplicates_ ) {
       
