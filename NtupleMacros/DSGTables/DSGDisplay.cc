@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <math.h>
 #include <ncurses.h>
+#include <stdlib.h>
 #include "TCanvas.h"
 #include "TFile.h"
 #include "TH1.h"
@@ -78,6 +79,8 @@ static void printNumbers (int i, int j, int k, int l, enum layout ZJ, int whichB
     attroff(COLOR_PAIR(1));
 }
 
+// wow, pointer to member!
+// we use this so we can specify which of the histograms we want plotted
 static void plotTheDistribution (DSGTable::table_t DSGTable::* h, 
 				 int i, int j, int k, int l, enum layout ZJ, int whichBucketGrouping)
 {
@@ -199,6 +202,55 @@ void printTable(enum layout ZJ, int whichBucketGrouping)
   refresh();
 }
 
+static void printSWs (int i_sw_)
+{
+     mvprintw(1, 200, "SEARCH WINDOWS");
+     for (int i_sw = 0; i_sw < dsgs_[0]->search_windows_.size(); ++i_sw) {
+	  double sm = 0;
+	  double smw2 = 0;
+	  double data = 0; 
+	  double dataw2 = 0;
+	  for (int m = 0; m < n_dsgs_ - 1; ++m) {
+	       sm += dsgs_[m]->search_windows_[i_sw]->events_;
+	       smw2 += dsgs_[m]->search_windows_[i_sw]->w2s_;
+	  } 
+	  data += dsgs_[n_dsgs_ - 1]->search_windows_[i_sw]->events_;
+	  dataw2 += dsgs_[n_dsgs_ - 1]->search_windows_[i_sw]->w2s_;
+	  double sig = (data - sm) / sqrt(dataw2 + smw2);
+	  mvprintw(8 + i_sw * 10, 200, "%s", dsgs_[0]->search_windows_[i_sw]->name_.c_str());
+	  if (i_sw == i_sw_)
+	       attron(A_REVERSE);
+	  if (sig > 3)
+	       attron(COLOR_PAIR(1));
+	  mvprintw(10 + i_sw * 10, 200, "%6.2f", sm);
+	  mvprintw(11 + i_sw * 10, 200, "%6.2f", data);
+	  if (sig > 3)
+	       attroff(COLOR_PAIR(1));
+	  if (i_sw == i_sw_)
+	       attroff(A_REVERSE);
+     }
+}
+
+static void displaySW (int i_sw)
+{
+     static TCanvas *c = 0;
+     if (c == 0) {
+	  c = new TCanvas("csw", "csw", 300, 200);
+     }
+     THStack *stack = new THStack(dsgs_[0]->search_windows_[i_sw]->h_->GetName(), 
+				  dsgs_[0]->search_windows_[i_sw]->h_->GetTitle());
+     for (int m = 0; m < n_dsgs_ - 1; ++m) {
+	  TH1F *hist = dynamic_cast<TH1F*>(dsgs_[m]->search_windows_[i_sw]->h_->Clone());
+	  stack->Add(hist);
+     }
+     TH1F *data = dynamic_cast<TH1F*>(dsgs_[n_dsgs_ - 1]->search_windows_[i_sw]->h_->Clone());
+     data->SetFillStyle(0);
+     data->SetMarkerStyle(30);
+     data->Draw("pee");
+     stack->Draw("same");
+     data->Draw("same pee");
+     c->Update();
+}
 
 void DSGDisplay ()
 {       
@@ -212,10 +264,12 @@ void DSGDisplay ()
      DSGTable *dsg_ww 		= dynamic_cast<DSGTable *>(f->Get("ww"));
      DSGTable *dsg_wz   	= dynamic_cast<DSGTable *>(f->Get("wz"));
      DSGTable *dsg_zz   	= dynamic_cast<DSGTable *>(f->Get("zz"));
-     DSGTable *dsg_wjets	= dynamic_cast<DSGTable *>(f->Get("wjets"));
-     DSGTable *dsg_dyee 	= dynamic_cast<DSGTable *>(f->Get("dyee"));
-     DSGTable *dsg_dymm 	= dynamic_cast<DSGTable *>(f->Get("dymm"));
-     DSGTable *dsg_dytt 	= dynamic_cast<DSGTable *>(f->Get("dytt"));
+     DSGTable *dsg_we  		= dynamic_cast<DSGTable *>(f->Get("we"));
+     DSGTable *dsg_wmu 		= dynamic_cast<DSGTable *>(f->Get("wmu"));
+     DSGTable *dsg_wtau		= dynamic_cast<DSGTable *>(f->Get("wtau"));
+     DSGTable *dsg_zee 	= dynamic_cast<DSGTable *>(f->Get("zee"));
+     DSGTable *dsg_zmm 	= dynamic_cast<DSGTable *>(f->Get("zmm"));
+     DSGTable *dsg_ztt 	= dynamic_cast<DSGTable *>(f->Get("ztt"));
      DSGTable *dsg_ttbar	= dynamic_cast<DSGTable *>(f->Get("ttbar"));
 //      DSGTable *dsg_tw   	= dynamic_cast<DSGTable *>(f->Get("tw"));
      DSGTable *dsg_data 	= dynamic_cast<DSGTable *>(f->Get("data"));
@@ -223,10 +277,12 @@ void DSGDisplay ()
 	  dsg_ww          ,
  	  dsg_wz          ,
  	  dsg_zz          ,
- 	  dsg_wjets       ,
- 	  dsg_dyee        ,
- 	  dsg_dymm        ,
- 	  dsg_dytt        ,
+ 	  dsg_we         ,
+ 	  dsg_wmu        ,
+ 	  dsg_wtau       ,
+ 	  dsg_zee        ,
+ 	  dsg_zmm        ,
+ 	  dsg_ztt        ,
  	  dsg_ttbar       ,
 // 	  dsg_tw          ,
   	  dsg_data        ,
@@ -234,6 +290,47 @@ void DSGDisplay ()
      const int n_dsgs = sizeof(dsgs) / sizeof(DSGTable *);
      dsgs_ = dsgs;
      n_dsgs_ = n_dsgs;
+
+     // make a placeholder array to be used for search window tables
+     const DSGTable *dsgs_sw[n_dsgs];
+
+     // set up subtractions
+     DSGTable *dsg_ww_emu 		= dynamic_cast<DSGTable *>(f->Get("ww_emu"));
+     DSGTable *dsg_wz_emu   	= dynamic_cast<DSGTable *>(f->Get("wz_emu"));
+     DSGTable *dsg_zz_emu   	= dynamic_cast<DSGTable *>(f->Get("zz_emu"));
+     DSGTable *dsg_we_emu  		= dynamic_cast<DSGTable *>(f->Get("we_emu"));
+     DSGTable *dsg_wmu_emu 		= dynamic_cast<DSGTable *>(f->Get("wmu_emu"));
+     DSGTable *dsg_wtau_emu		= dynamic_cast<DSGTable *>(f->Get("wtau_emu"));
+     DSGTable *dsg_zee_emu 	= dynamic_cast<DSGTable *>(f->Get("zee_emu"));
+     DSGTable *dsg_zmm_emu 	= dynamic_cast<DSGTable *>(f->Get("zmm_emu"));
+     DSGTable *dsg_ztt_emu 	= dynamic_cast<DSGTable *>(f->Get("ztt_emu"));
+     DSGTable *dsg_ttbar_emu	= dynamic_cast<DSGTable *>(f->Get("ttbar_emu"));
+//      DSGTable *dsg_tw_emu   	= dynamic_cast<DSGTable *>(f->Get("tw_emu"));
+     DSGTable *dsg_data_emu 	= dynamic_cast<DSGTable *>(f->Get("data_emu"));
+     const DSGTable *dsgs_emu[] = { 
+	  dsg_ww_emu          ,
+ 	  dsg_wz_emu          ,
+ 	  dsg_zz_emu          ,
+ 	  dsg_we_emu         ,
+ 	  dsg_wmu_emu        ,
+ 	  dsg_wtau_emu       ,
+ 	  dsg_zee_emu        ,
+ 	  dsg_zmm_emu        ,
+ 	  dsg_ztt_emu        ,
+ 	  dsg_ttbar_emu       ,
+// 	  dsg_tw_emu          ,
+  	  dsg_data_emu        ,
+     };
+
+     // set up search windows
+     static const unsigned int n_sws = dsgs_[0]->search_windows_.size();
+//      std::vector<std::string> sw_names;
+//      sw_names.reserve(n_sws);
+//      for (DSGTable::sw_t::const_iterator i = dsgs[0]->search_windows_.begin(),
+// 	       i_end = dsgs[0]->search_windows_.end();
+// 	  i != i_end; ++i) {
+// 	  sw_names.push_back(i->first);
+//      }
 
      // print table
      start_color();
@@ -327,6 +424,91 @@ void DSGDisplay ()
 	  case '\n':
 	    displayHistos(i, j, k, l, ZJ, iBucketGrouping);
 	    break;
+	  case 'w': case 'W':
+	  {
+	       // search window menu
+	       mvprintw(80, 0, "Search windows are active, press 'x' to exit");
+	       unsigned int i = 0;
+	       while (1) {
+		    printSWs(i);
+		    refresh();
+		    // read input
+		    int ch = getch();
+		    if (tolower(ch) == 'x')
+			 break;
+		    switch (ch) {
+		    case KEY_UP: case 'k': case 'K':
+			 if (i > 0)
+			      i--;
+			 break;
+		    case KEY_DOWN: case 'j': case 'J':
+			 if (i < n_sws - 1)
+			      i++;
+			 break; 
+		    case '\t':
+			 if (dsgs_ == dsgs) {
+			      for (int j = 0; j < n_dsgs; ++j) {
+				   dsgs_sw[j] = dsgs[j]->search_windows_[i]->dsgTable_;
+			      }
+			      dsgs_ = dsgs_sw;
+			 } else dsgs_ = dsgs;
+			 goto end_windows;
+		    case '\n':
+			 displaySW(i);
+			 break;
+		    }
+	       }
+	       mvprintw(80, 0, "Table mode is active                        ");
+	       break;
+	  end_windows: 
+	       printTable(JETMET, iBucketGrouping);
+	       mvprintw(80, 0, "Table mode is active for search window ");
+	       attron(A_REVERSE);
+	       printw("%s", dsgs[0]->search_windows_[i]->name_.c_str());
+	       attroff(A_REVERSE);
+	       printw(", <TAB> to exit");
+	       break;
+	  }
+	  case 's': case 'S':
+	  {
+	       // subtractions menu
+	       mvprintw(80, 0, "Subtractions menu: ");
+	       attron(A_REVERSE); printw("e");
+	       attroff(A_REVERSE); printw("/mu ");
+	       attron(A_REVERSE); printw("f");
+	       attroff(A_REVERSE); printw("ake rate ");
+	       printw("e");
+	       attron(A_REVERSE); printw("x");
+	       attroff(A_REVERSE); printw("it ");
+	       while (1) {
+		    refresh();
+		    // read input
+		    int ch = getch();
+		    if (tolower(ch) == 'x')
+			 break;
+		    switch (ch) {
+		    case 'e': case 'E':
+			 if (dsgs_ == dsgs)
+			      dsgs_ = dsgs_emu;
+			 else dsgs_ = dsgs;
+			 goto end;
+		    case '\n':
+			 break;
+		    }
+	       }
+	  end:
+	       printTable(JETMET, iBucketGrouping);
+	       mvprintw(80, 0, "Table mode is active                        ");
+	       break;
+
+	  }
+	  case '\t':
+	       // tab gets us out of whatever table we're in and puts
+	       // us into the default one
+	       dsgs_ = dsgs;
+	       printTable(JETMET, iBucketGrouping);
+	       mvprintw(80, 0, "Table mode is active                        ");
+	       break;
 	  default:
 	       break;
 	  }
@@ -337,6 +519,7 @@ void DSGDisplay ()
 	  refresh();
      } 
      endwin(); 
+     exit(0);
      return;
 }
 
