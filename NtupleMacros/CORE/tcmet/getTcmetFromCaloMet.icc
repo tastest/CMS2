@@ -9,7 +9,6 @@ using namespace std;
 using namespace tas;
 
 bool  removeDuplicates_  = false;
-float ptcut_eta25_       = 100.;
 
 static metStruct getTcmetFromCaloMet(TH2F* rf, bool useElectronVetoCone = false, bool usePV = false, bool useHFcleaning = true, 
                                      bool useHCALcleaning = true, bool useECALcleaning = false, bool printout = false, ostream& ostr = cout);
@@ -22,6 +21,7 @@ static void  findDuplicateTracks  ();
 static void  correctSumEtForMuon  ( LorentzVector p4, int index );
 static void  correctSumEtForPion  ( int index , TH2F* rf);
 static bool  closeToElectron      ( int index );
+int vetoTrack( int i , int j );
 inline double fround(double n, double d){
   return floor(n * pow(10., d) + .5) / pow(10., d);
 }
@@ -255,25 +255,28 @@ bool isGoodTrack( int index, bool usePV ) {
 
      if( trks_algo().at(index) < 8 ) {
 
-	  float d0cut = min( sqrt( pow(0.015,2) + pow(0.5/trks_trk_p4().at(index).pt(),2) ), 0.3);
-          if( d0cut > 0.3 ) d0cut = 0.3;
-	  if( fabs( corrected_d0 ) > d0cut ) return false;
+       float d0cut = sqrt( pow(0.015,2) + pow(0.5/trks_trk_p4().at(index).pt(),2) );
+       if( d0cut > 0.3 ) d0cut = 0.3;
+
+       if( fabs( corrected_d0 ) > d0cut )                return false;
+       if( trks_nlayers().at(index) < nlayerscut_4567_ ) return false;
      }
      else {
-	  if( trks_validHits().at(index) < 11 )                              return false;
-	  if( trks_chi2().at(index) / trks_ndof().at(index) > 3 )            return false;
-	  if( trks_ptErr().at(index) / trks_trk_p4().at(index).pt() > 0.10 ) return false;
+       if( trks_nlayers().at(index) < nlayerscut_89_ )                     return false;
+       if( trks_validHits().at(index) < 9 )                                return false;
+       if( trks_chi2().at(index) / trks_ndof().at(index) > 5. )            return false;
+       if( trks_ptErr().at(index) / trks_trk_p4().at(index).pt() > 0.20 )  return false;
      }
 
-     if( trks_trk_p4().at(index).pt() > 100 )                           return false;
-     if( fabs( trks_trk_p4().at(index).eta() ) > 2.65 )                 return false;
      if( trks_validHits().at(index) < 6 )                               return false;
      if( trks_chi2().at(index) / trks_ndof().at(index) > 5 )            return false;
+     if( fabs( trks_trk_p4().at(index).eta() ) > 2.65 )                 return false;
+     if( trks_trk_p4().at(index).pt() > 100 )                           return false;
      if( trks_ptErr().at(index) / trks_trk_p4().at(index).pt() > 0.20 ) return false;
      if( !isTrackQuality( index, (1 << highPurity) ) )                  return false;
 
      if( trks_trk_p4().at(index).pt() > ptcut_eta25_ && fabs(trks_trk_p4().at(index).eta()) > 2.5 ) return false;
-  
+     
      if( removeDuplicates_ ) {
       
        for( unsigned int i = 0 ; i < duplicateTracks.size() ; i++ ){
@@ -291,26 +294,43 @@ void findDuplicateTracks(){
 
   for( unsigned int i = 0; i < trks_trk_p4().size(); i++ ) {
 
-    if( trks_trk_p4().at(i).pt() < 5. ) continue;
+    //if( trks_trk_p4().at(i).pt() < 5. ) continue;
 
     for( unsigned int j = i + 1 ; j < trks_trk_p4().size(); j++ ) {
 
       if( trks_charge().at(i) * trks_charge().at(j) < 0 ) continue;
-      if( trks_trk_p4().at(j).pt() < 5. )                 continue;
+      //if( trks_trk_p4().at(j).pt() < 5. )                 continue;
       
       float dphi = fabs( trks_trk_p4().at(i).phi() - trks_trk_p4().at(j).phi() );
       if( dphi > TMath::Pi() ) dphi = TMath::TwoPi() - dphi;
 
       float dcotth = fabs( 1./tan( trks_trk_p4().at(i).theta() ) - 1./tan( trks_trk_p4().at(j).theta() ) );
 
-      if( dphi   > 0.02 )    continue;
-      if( dcotth > 0.01 )    continue;
+      if( dphi   > 0.03 )      continue;
+      if( dcotth > 0.0006 )    continue;
 
-      duplicateTracks.push_back(i);
-      duplicateTracks.push_back(j);
+      int iVeto = vetoTrack( i , j );
 
+      duplicateTracks.push_back(iVeto);
+      
     }
   }
+}
+
+//--------------------------------------------------------------------
+
+int vetoTrack( int i , int j ){
+
+  //given 2 tracks, decide which one to veto
+
+  if     ( trks_validHits().at(i) < trks_validHits().at(j) )                               return i;
+  else if( trks_validHits().at(i) > trks_validHits().at(j) )                               return j;
+  else if( trks_chi2().at(i) / trks_ndof().at(i) > trks_chi2().at(j) / trks_ndof().at(j) ) return i;  
+  else if( trks_chi2().at(i) / trks_ndof().at(i) < trks_chi2().at(j) / trks_ndof().at(j) ) return j;  
+  else if( trks_ptErr().at(i) > trks_ptErr().at(j) )                                       return i; 
+  else if( trks_ptErr().at(i) < trks_ptErr().at(j) )                                       return j; 
+  return i;
+
 }
 
 //--------------------------------------------------------------------
