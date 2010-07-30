@@ -19,8 +19,8 @@ bool photonId( const unsigned int iPhoton, PhotonSelectionType type /* default d
 
       if( fabs( cms2.photons_p4().at(iPhoton).pt() ) < 10 ) return false;                                               // Pt
       if( fabs( cms2.photons_p4().at(iPhoton).eta() ) > 1.479 ) return false;                                           // Eta
-      if( cms2.photons_ecalIso().at(iPhoton) >= ( 4.2 + .004*cms2.photons_p4().at(iPhoton).pt() ) ) return false;       // ECAL Isolation
-      if( cms2.photons_hcalIso().at(iPhoton) >= ( 2.2 + .001*cms2.photons_p4().at(iPhoton).pt() ) ) return false;       // HCAL Isolation
+      if( cms2.photons_ecalIso03().at(iPhoton) >= ( 4.2 + .004*cms2.photons_p4().at(iPhoton).pt() ) ) return false;       // ECAL Isolation
+      if( cms2.photons_hcalIso03().at(iPhoton) >= ( 2.2 + .001*cms2.photons_p4().at(iPhoton).pt() ) ) return false;       // HCAL Isolation
       if( cms2.photons_hOverE().at(iPhoton)  >= 0.05 ) return false;                                                    // H over E
       if( cms2.photons_sigmaIEtaIEta().at(iPhoton) >= 0.013 ) return false;                                             // Eta width
       //if( cms2.photons_tkIsoHollow().at(iPhoton)  >= ( 2 + 0.001*cms2.photons_p4().at(iPhoton).pt() ) ) return false;   // Hollow
