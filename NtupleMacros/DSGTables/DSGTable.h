@@ -1,13 +1,15 @@
 // -*- C++ -*-
 
-// $Id: DSGTable.h,v 1.6 2009/07/20 16:35:53 avi Exp $
+// $Id: DSGTable.h,v 1.7 2010/07/29 11:54:12 jmuelmen Exp $
 
 #ifndef DSGTABLE_H
 #define DSGTABLE_H
 
+#include <map>
 #include <vector>
 #include "TNamed.h"
 #include "Tools/Sample.h"
+#include "DSGSearchWindow.h"
 
 class TH1F;
 class DSGTable : public TNamed {
@@ -128,6 +130,7 @@ public:
 
 public:
      typedef TH1F* table_t     [nZcat + 1   ][nMETcat ][nSumJetcat][nJetcat ][nBuckets];
+     typedef std::vector<DSGSearchWindow *>	sw_t;
      double		events_[nZcat + 1   ][nMETcat ][nSumJetcat][nJetcat ][nBuckets];
      double		w2s_   [nZcat + 1   ][nMETcat ][nSumJetcat][nJetcat ][nBuckets];
      TH1F		*hmet_ [nZcat + 1   ][nMETcat ][nSumJetcat][nJetcat ][nBuckets];
@@ -137,6 +140,7 @@ public:
      TH1F		*hmaxjetpt_ [nZcat + 1   ][nMETcat ][nSumJetcat][nJetcat ][nBuckets];
      TH1F		*hmaxleppt_ [nZcat + 1   ][nMETcat ][nSumJetcat][nJetcat ][nBuckets];
      TH1F		*hlepdphi_  [nZcat + 1   ][nMETcat ][nSumJetcat][nJetcat ][nBuckets];
+     sw_t		search_windows_;
 
 public:
      ClassDef(DSGTable, 1)

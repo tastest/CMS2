@@ -54,7 +54,46 @@ Sample fFreeForm (const char *sample_glob, enum Process p, int histo_color,
 }
 
 static const std::string prefix = (getenv("CMS2_NTUPLE_LOCATION") != 0) ? 
-     std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" : "/data/tmp/cms2/";
+     std::string(getenv("CMS2_NTUPLE_LOCATION")) + "/" : "/nfs-3/userdata/cms2/";
+
+struct file {
+     char name[1024];
+     char location[4096];
+     Sample sample;
+};
+
+static const file files[] = {
+     { "WW",		"WW_Spring10-START3X_V26_S09-v1_DiLep/V03-04-08/merged_ntuple*.root", 		{ 0, WW, kRed, 		1, "ww", 	true, 	0. } },
+     { "WZ",		"WZ_Spring10-START3X_V26_S09-v1/V03-04-08/merged_ntuple*.root", 		{ 0, WZ, kBlue, 	1, "wz", 	true, 	0. } },
+     { "ZZ",		"ZZ_Spring10-START3X_V26_S09-v1_DiLep/V03-04-08/merged_ntuple*.root", 		{ 0, ZZ, kGreen,	1, "zz", 	true, 	0. } },
+     { "We",		"Wenu_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged_ntuple*.root", 		{ 0, We, 33, 		1, "we", 	true, 	0. } },
+     { "Wmu",		"Wmunu_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged_ntuple*.root", 		{ 0, Wm, 36, 		1, "wmu", 	true, 	0. } },
+     { "Wtau",		"Wtaunu_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged_ntuple*.root", 		{ 0, Wt, 39, 		1, "wtau", 	true, 	0. } },
+     { "Zee",		"Zee_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged_ntuple*.root"   , 		{ 0, DYee, 42, 		1, "zee", 	true, 	0. } },
+     { "Zmm",		"Zmumu_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged_ntuple*.root" , 		{ 0, DYmm, 46, 		1, "zmm", 	true, 	0. } },
+     { "Ztt",		"Ztautau_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged_ntuple*.root",		{ 0, DYtt, 49, 		1, "ztt", 	true, 	0. } },
+     { "ttbar",		"TTbar_Spring10-START3X_V26_S09-v1/V03-04-08/merged_ntuple*.root",		{ 0, ttbar, kYellow, 	1, "ttbar", 	true, 	0. } },
+     { "LM8",		"LM8_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged_ntuple*.root", 		{ 0, LM8, 37, 		1, "LM8", 	false, 	0. } },
+};
+static const int files_size = sizeof(files) / sizeof(file);
+
+const file *find_file (const char *name)
+{
+     for (int i = 0; i < files_size; ++i) {
+	  if (strcmp(files[i].name, name) == 0)
+	       return &files[i];
+     }
+     return 0;
+}
+
+inline Sample f_ (const char *x) 
+{ 
+     const file *f = find_file(x);
+     assert(f != 0);
+     Sample ret = f->sample;
+     ret.chain = makeChain((prefix + f->location).c_str());
+     return ret;
+}
 
 // New test file
 Sample fTest ()
@@ -66,57 +105,15 @@ Sample fTest ()
      return ret;
 }
 
-     
-//WW file
-Sample fWW ()
-{
-     TChain *c = makeChain((prefix + "WW_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
-     Sample ret = { c, WW, kRed, 1, "ww", true, 0. };
-     return ret;
-}
+#define f__(x) Sample f##x () { return f_(#x); }
 
-//WZ file
-Sample fWZ ()
-{
-     TChain *c = makeChain((prefix + "WZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
-     Sample ret = { c, WZ, kBlue, 1, "wz", true, 0. };
-     return ret;
-}
+f__(WW)
+f__(WZ)
+f__(ZZ)
 
-//ZZ file
-Sample fZZ ()
-{
-     TChain *c = makeChain((prefix + "ZZ_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
-     Sample ret = { c, ZZ, kGreen, 1, "zz", true, 0. };
-     return ret;
-}
-
-//We file
-Sample fWe ()
-{
-     TChain *c = makeChain((prefix + "Wenu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/skimDilepton-20-10/*.root").c_str());
-//     std::string sample = prefix + "Wenu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root";
-     Sample ret = { c, We, 33, 1, "we", true, 0. };
-     return ret;
-}
-
-//Wm file
-Sample fWmu ()
-{
-     TChain *c = makeChain((prefix + "Wmunu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/skimDilepton-20-10/*.root").c_str());
-//     std::string sample = prefix + "Wmunu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root";
-     Sample ret = { c, Wm, 36, 1, "wmu", true, 0. };
-     return ret;
-}
-
-//Wtau file
-Sample fWtau ()
-{
-     TChain *c = makeChain((prefix + "Wtaunu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/skimDilepton-20-10/*.root").c_str());
-//     std::string sample = prefix + "Wtaunu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root";
-     Sample ret = { c, Wt, 39, 1, "wtau", true, 0. };
-     return ret;
-}
+f__(We)
+f__(Wmu)
+f__(Wtau)
 
 //WeJets file
 Sample fWeJets ()
@@ -145,32 +142,9 @@ Sample fWtJets ()
      return ret;
 }
 
-//Zee file
-Sample fZee ()
-{
-     TChain *c = makeChain((prefix + "Zee_Summer09-MC_31X_V3_7TeV_TrackingParticles-v1/V03-00-35/skimDilepton-20-10/*.root").c_str());
-//     std::string sample = prefix + "Zee_Summer09-MC_31X_V3_7TeV_TrackingParticles-v1/V03-00-35/merged_ntuple*.root";
-     Sample ret = { c, DYee, 42, 1, "zee", true, 0. };
-     return ret;
-}
-
-//Zmm file
-Sample fZmm ()
-{
-     TChain *c = makeChain((prefix + "Zmumu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/skimDilepton-20-10/*.root").c_str());
-//     std::string sample = prefix + "Zmumu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root";
-     Sample ret = { c, DYmm, 46, 1, "zmm", true, 0. };
-     return ret;
-}
-
-//Ztt file
-Sample fZtt ()
-{
-     TChain *c = makeChain((prefix + "Ztautau_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/skimDilepton-20-10/*.root").c_str());
-//     std::string sample = prefix + "Ztautau_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root";
-     Sample ret = { c, DYtt, 49, 1, "ztt", true, 0. };
-     return ret;
-}
+f__(Zee)
+f__(Zmm)
+f__(Ztt)
 
 //Zee Madgraph file
 Sample fZeejets ()
@@ -196,13 +170,7 @@ Sample fZttjets ()
      return ret;
 }
 
-//ttbar file
-Sample fttbar ()
-{
-     TChain *c = makeChain((prefix + "TTbar_Summer09-MC_31X_V3_7TeV-v1/V03-00-34/merged_ntuple*.root").c_str());
-     Sample ret = { c, ttbar, kYellow, 1, "ttbar", true, 0. };
-     return ret;
-}
+f__(ttbar)
 
 //ttbar madgraph file
 Sample fttMadgraph ()
@@ -308,13 +276,7 @@ Sample fLM7 ()
      return ret;
 }
 
-//LM8 file
-Sample fLM8 ()
-{
-     TChain *c = makeChain((prefix + "LM8_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merge*.root").c_str());
-     Sample ret = { c, LM8, 37, 1, "LM8", false, 0. };
-     return ret;
-}
+f__(LM8)
 
 //LM9 file
 Sample fLM9 ()

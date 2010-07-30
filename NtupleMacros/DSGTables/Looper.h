@@ -22,6 +22,19 @@ enum {
      CUT_LL_CALOISO,
 };
 
+enum {
+     EPEP, // e+e+
+     EMEM, // e-e-      
+     MPMP, // m+m+      
+     MMMM, // m-m-      
+     EPMP, // e+m+, m+e+
+     EMMM, // e-m-, m-e-
+     EPMM, // e+m-      
+     EMMP, // e-m+	     
+     EPEM, // e+e-, e-e+
+     MPMM, // m+m-, m-m+
+};
+
 //----------------------------------------------------------------------
 // Cut combinations for selections.  These are examples that are used
 // for various tables in the WW analysis.
@@ -84,6 +97,7 @@ protected:
      virtual bool	FilterEvent();
      virtual cuts_t	DilepSelect (int idx);
      virtual void	FillDilepHistos (int idx);
+     virtual void 	FillDSGTable (DSGTable &dsgTable, int i_hyp);
      virtual void	End ();
 
 protected:
@@ -93,6 +107,10 @@ protected:
      int                SumJetcat (int) const;
      int		Jetcat (int) const;
      int		Bucket (int) const;
+
+protected:
+     void		overflows();
+     void		emu_subtraction();
      
 public:
      // these functions are called by the table-printing code
@@ -102,5 +120,6 @@ public:
 
 public:
      DSGTable		dsgTable;
+     DSGTable		dsgTable_emu;
 };
 #endif

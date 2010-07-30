@@ -44,7 +44,7 @@ public:
 private:
 
   sources_t makeBit(sources_t source) {
-	return (1ll << source);
+	return 1ll << source;
   }
 
   TFile *file_;

@@ -3,6 +3,7 @@
 #pragma link off all    classes;
 #pragma link C++ class DSGTable+;
 #pragma link C++ class DSGTables+;
+#pragma link C++ class DSGSearchWindow+;
 #pragma link C++ all    functions;
 
 #pragma link off nestedclasses;
