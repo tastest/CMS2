@@ -119,8 +119,7 @@ std::pair<float,float> getMet(string& algo) {
     return make_pair(-99999., -99999.);
   }
   if(algo == "tcMET") {
-    metStruct cortcmet = correctedTCMET();
-    return make_pair(cortcmet.met, cortcmet.metphi);
+	   return make_pair(evt_tcmet(), evt_tcmetPhi());
   }
   if(algo == "muCorMET")
     return make_pair(evt_metMuonCorr(), evt_metMuonCorrPhi());
