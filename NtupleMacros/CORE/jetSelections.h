@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// $Id: jetSelections.h,v 1.7 2010/07/26 14:46:25 fgolf Exp $
+// $Id: jetSelections.h,v 1.8 2010/07/30 11:53:57 warren Exp $
 
 #ifndef JETSELECTIONS_H
 #define JETSELECTIONS_H
@@ -8,13 +8,18 @@
 #include <vector>
 #include "CMS2.h"
 
+//set to 1 if you want to use gen jets
+#define haveGEN 0
+
 enum JetType {
      JETS_TYPE_JPT,
      JETS_TYPE_PF_CORR,
      JETS_TYPE_PF_UNCORR,
      JETS_TYPE_CALO_CORR,
      JETS_TYPE_CALO_UNCORR,
+#if haveGEN
      JETS_TYPE_GEN
+#endif
 };
 
 enum CleaningType {

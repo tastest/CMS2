@@ -1,4 +1,4 @@
-// $Id: jetSelections.cc,v 1.8 2010/07/26 14:46:25 fgolf Exp $
+// $Id: jetSelections.cc,v 1.9 2010/07/30 11:53:57 warren Exp $
 
 #include <algorithm>
 #include <utility>
@@ -32,9 +32,11 @@ static jets_with_corr_t getJets_fast (unsigned int i_hyp, enum JetType type, enu
      case JETS_TYPE_PF_CORR: case JETS_TYPE_PF_UNCORR:
 	  jets = &cms2.pfjets_p4();
 	  break;
+#if haveGEN	  
      case JETS_TYPE_GEN:
 	  jets = &cms2.genjets_p4();
 	  break;
+#endif
      }
      jets_with_corr_t ret;
      ret.reserve(jets->size()); // reserve so we don't have to realloc later, which is slow
@@ -54,7 +56,9 @@ static jets_with_corr_t getJets_fast (unsigned int i_hyp, enum JetType type, enu
 	  case JETS_TYPE_JPT: 
 	  case JETS_TYPE_CALO_UNCORR: 
 	  case JETS_TYPE_PF_UNCORR:
+#if haveGEN	  
 	  case JETS_TYPE_GEN:
+#endif
 	       break;
 	  }
 	  const double pt = jets->at(i).pt() * corr;
