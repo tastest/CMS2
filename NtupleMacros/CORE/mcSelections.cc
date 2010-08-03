@@ -550,7 +550,7 @@ int leptonIsFromW(int idx, int id) {
   if(abs(st3_id) == 15) {
     //have to find the index of the status3 particle by dR
     //because the indices are buggy
-    unsigned int mc3idx;
+    unsigned int mc3idx = 999999;
     LorentzVector lepp4 =  abs(id)==11 ? cms2.els_p4()[idx] : cms2.mus_p4()[idx];
     double mindR = 9999;
     for(unsigned int i = 0; i < cms2.genps_id().size(); i++) {
