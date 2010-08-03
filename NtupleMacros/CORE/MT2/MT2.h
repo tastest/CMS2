@@ -10,7 +10,7 @@ double MT2(
   const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >,
   const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >,
   float = 0.0,
-  bool = true
+  bool = false
 );
 
 // MT2J declaration
@@ -22,7 +22,7 @@ double MT2J(
   const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >,
   float = 0.0,
   enum_mt2_method = BISECT,
-  bool = true
+  bool = false
 );
 
 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > CleanJets(
