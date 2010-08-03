@@ -59,9 +59,9 @@ double MT2J(
   const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > p4_lepton_1,
   const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > p4_lepton_2,
   const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > vect_p4_jets,
-  float invisible_particle_mass,
+  float ,
   enum enum_mt2_method method_mt2,
-  bool verbose
+  bool
 ){
   if( vect_p4_jets.size() < 2 ){
     cout << "MT2.cc: error MT2J called with less than 2 jets... returning mt2 value of -1.0" << endl;
