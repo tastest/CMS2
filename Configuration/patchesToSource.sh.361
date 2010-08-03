@@ -28,6 +28,9 @@ cvs up -r V03-01-21 RecoMET/METAlgorithms/src/TCMETAlgo.cc
 cvs up -r V03-01-21 RecoMET/METAlgorithms/BuildFile.xml
 cvs up -r V03-01-36 RecoMET/METProducers/python/TCMET_cfi.py
 
+#JPT and TrackJets tags
+cvs co -r  V01-09-01-09 CondFormats/JetMETObjects
+
 echo;echo checkingdeps;echo
 
 # dont forget this
