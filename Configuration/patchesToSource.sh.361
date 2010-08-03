@@ -17,10 +17,14 @@ cvs update -r V00-02-12 CommonTools/RecoAlgos/BuildFile
 # beam halo flagging
 cvs co -r V00-00-05 RecoMET/METAnalyzers
 
-echo;echo checkingdeps;echo
+#JPT and TrackJets tags
+cvs co -r  V01-09-01-09 CondFormats/JetMETObjects
 
 cvs co -d MitCommon  -r ConvRejection-10-06-09 UserCode/MitCommon
 cvs co -d MitEdm     -r ConvRejection-10-06-09 UserCode/MitEdm
+
+
+echo;echo checkingdeps;echo
 
 # dont forget this
 checkdeps -a
