@@ -8,13 +8,13 @@ import sys
 cmsswSkelFile = ''
 dataSet = ''
 numEvtsTotal = -1
-numEvtsPerJob = 5000
+numEvtsPerJob = 20000
 outNtupleName = 'ntuple.root'
 storageElement = 'T2_US_UCSD'
 tag = 'V01-02-06'
 mode = 'glidein'
-server = '1';
-dbs_url = 'http://ming.ucsd.edu:8080/DBS2/servlet/DBSServlet';
+dbs_url = ''
+dbs_url_pub = 'http://ming.ucsd.edu:8080/DBS2/servlet/DBSServlet';
 report_every = 1000;
 global_tag_flag = '';
 
@@ -26,16 +26,16 @@ def makeCrabConfig():
     outFile.write('[CRAB]\n')
     outFile.write('jobtype   = cmssw\n')
     outFile.write('scheduler = ' + mode + '\n')
-    if ( server != '' ) :
-        outFile.write('server_name = ' + server + '\n')
-    else :
-        outFile.write('use_server = ' + '1' + '\n')
+    outFile.write('use_server = ' + '1' + '\n')
     outFile.write('\n[CMSSW]\n')
     outFile.write('datasetpath             = ' + dataSet + '\n')
     outFile.write('pset                    = ' + outFileName + '_cfg.py \n')
     outFile.write('total_number_of_events  = ' + str(numEvtsTotal) + '\n')
     outFile.write('events_per_job          = ' + str(numEvtsPerJob) + '\n')
-    outFile.write('output_file             = ' + outNtupleName + '\n\n\n')
+    outFile.write('output_file             = ' + outNtupleName + '\n')
+    if dbs_url != '' :
+      outFile.write('dbs_url                 = ' + dbs_url + '\n')
+    outFile.write('\n')
     outFile.write('[USER]\n')
     outFile.write('return_data             = 0\n')
     outFile.write('copy_data               = 1\n')
@@ -44,7 +44,7 @@ def makeCrabConfig():
     outFile.write('user_remote_dir         = CMS2_' + tag + '/' + outFileName + '\n')
     outFile.write('publish_data            = 0\n')
     outFile.write('publish_data_name       = CMS2_' + tag + '\n')
-    outFile.write('dbs_url_for_publication = ' + dbs_url + '\n\n')
+    outFile.write('dbs_url_for_publication = ' + dbs_url_pub + '\n\n')
     outFile.write('[GRID]\n')
     outFile.write('maxtarballsize = 20\n')
     
@@ -126,8 +126,7 @@ if len(sys.argv) < 5 :
     print '\t-evtsPerJob\tNumber of events per job. Default is 5000'
     #print '\t-n\t\tName of output Ntuple file. Default is ntuple.root'
     print '\t-m\t\tsubmission mode (possible: condor_g, condor, glite). Default is glidein'
-    print '\t-s\t\tserver name. By default, we let CRAB pick the server '
-    print '\t-dbs\t\tdbs url for publication. Default is http://ming.ucsd.edu:8080/DBS2/servlet/DBSServlet'
+    print '\t-dbs\t\tdbs url'
     print '\t-re\t\tMessage Logger modulus for error reporting. Default is 1000'
     print '\t-gtag\t\tglobal tag. Default is MC_31X_V3::All'
     sys.exit()
@@ -150,8 +149,6 @@ for i in range(0, len(sys.argv)):
         tag  = str(sys.argv[i+1])
     if sys.argv[i] == '-m':
         mode  = str(sys.argv[i+1])
-    if sys.argv[i] == '-s':
-        server  = str(sys.argv[i+1])
     if sys.argv[i] == '-dbs':
         dbs_url = str(sys.argv[i+1])
     if sys.argv[i] == '-re':
@@ -168,28 +165,36 @@ if os.path.exists(cmsswSkelFile) == False:
 if( global_tag_flag != '' ):
 	print '\nUsing \'' + global_tag_flag + '\' specified by -gtag flag.\n'
 	global_tag = global_tag_flag
+	makeCMSSWConfig(cmsswSkelFile)
+	makeCrabConfig()
 else :
     global_tag = '';
     dbs_result = '';
-    command = 'dbsql find config.name,config.content where dataset=' + dataSet + '>config.content; while read line; do globaltag=`echo $line | sed -n \'s/^.*process.GlobalTag.globaltag = \([^p]*\).*$/\\1/p\'`; if [ "$globaltag" != "" ]; then echo $globaltag; break; fi; done <config.content; rm config.content';
-    lines = os.popen(command);
-    for i in lines.readlines():
-      dbs_result = re.sub('\n', '', i)
-      global_tag = re.sub('#.+$', '', dbs_result)
-      if( global_tag != '' and global_tag_flag == ''):
-          print '\nDBS Query results:\t\'' + dbs_result + '\' ?\n'
-          print 'Use global tag from DBS:\t\'' + global_tag + '\' ?\n'
-          answer = raw_input('[y/n]?')
-          while(answer != 'y' and answer != 'n'): 
-              print 'Please pick either \'y\' or \'n\''
-              answer = raw_input('[y/n]?')
-          if answer == 'n':
-              print 'Enter alternative Global Tag:'
-              global_tag = raw_input('new global tag:')
-                  
-          if( global_tag == '' and global_tag_flag == '' ):
-              print '\nGlobal tag not found in DBS. Use -gtag to set global tag. Exiting...\n'
-              sys.exit()
-makeCMSSWConfig(cmsswSkelFile)
-makeCrabConfig()    
+    if dbs_url == '' :
+      command = 'dbsql find config.name,config.content where dataset=' + dataSet + '>config.content; while read line; do globaltag=`echo $line | sed -n \'s/^.*process.GlobalTag.globaltag = \([^p]*\).*$/\\1/p\'`; if [ "$globaltag" != "" ]; then echo $globaltag; break; fi; done <config.content; rm config.content';
+    else:
+      command = 'python $DBSCMD_HOME/dbsCommandLine.py -c search --url=' + dbs_url + ' --query="find config.name,config.content where dataset=' + dataSet + '">config.content; while read line; do globaltag=`echo $line | sed -n \'s/^.*process.GlobalTag.globaltag = \([^p]*\).*$/\\1/p\'`; if [ "$globaltag" != "" ]; then echo $globaltag; break; fi; done <config.content; rm config.content';
 
+    #print command
+
+    len = len( os.popen(command).readlines() )
+    if( len > 0 ):
+      lines = os.popen(command);
+      for i in lines.readlines():
+        dbs_result = re.sub('\n', '', i)
+        global_tag = re.sub('#.+$', '', dbs_result)
+        if( global_tag != '' and global_tag_flag == '' ):
+            print '\nDBS Query results:\t\'' + dbs_result + '\' ?\n'
+            print 'Use global tag from DBS:\t\'' + global_tag + '\' ?\n'
+            answer = raw_input('[y/n]?')
+            while(answer != 'y' and answer != 'n'): 
+                print 'Please pick either \'y\' or \'n\''
+                answer = raw_input('[y/n]?')
+            if answer == 'n':
+                print 'Enter alternative Global Tag:'
+                global_tag = raw_input('new global tag:')
+            makeCMSSWConfig(cmsswSkelFile)
+            makeCrabConfig()
+    else: 
+      print '\nGlobal tag not found in DBS. Use -gtag to set global tag. Exiting...\n'
+      sys.exit()
