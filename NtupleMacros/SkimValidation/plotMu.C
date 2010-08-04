@@ -1,5 +1,160 @@
-{
-gSystem->Load("../validation/CMSSW_3_7_0_patch2_V03-05-01/src/CMS2/NtupleMacros/Tools/MiniFWLite/libMiniFWLite.so");
+#include "TSystem.h"
+#include "TChain.h"
+#include "TGraph.h"
+#include "TProfile.h"
+#include "TColor.h"
+#include "TH2F.h"
+#include "TF1.h"
+#include "TCanvas.h"
+#include "TRandom.h"
+#include "TROOT.h"
+#include "TStyle.h"
+#include "TGraphErrors.h"
+#include "TEllipse.h"
+#include <stdio.h>
+#include <iostream>
+#include <fstream>
+#include <strstream>
+//#include <iomanip.h>
+#include "TStopwatch.h"
+
+#include "xsecLoop.h"
+
+#include <vector>
+//#include <multimap>
+//#include <map>
+
+using namespace std;
+
+void xsecPlot( TCanvas * myCanv, TChain* myChain, Bool_t drawMu, const string suffix, const string dir ) {
+   std::vector<double> lumiVsRun;
+   std::vector<int> numMuVsRun;
+   std::vector<int> numElVsRun;
+   int runRange = 160000;
+   for(int run = 0; run<runRange; ++run) {
+     numMuVsRun.push_back(0);
+     numElVsRun.push_back(0);
+     lumiVsRun.push_back(0.);
+   }
+   
+//    Bool_t drawMu = true;
+   Bool_t drawEl = !drawMu;
+   Bool_t drawRunningMean = true;
+   
+   xsecLoop t(myChain);
+
+   if(drawMu) {
+     t.Loop(numMuVsRun, drawMu); 
+   }
+   else if(drawEl) {
+     t.Loop(numElVsRun, drawMu); // silly logic.. when drawEl is true, drawMu is false, so the loops loops electrons... to be fixed 
+   }   
+
+//    for(int run = 0; run<runRange; ++run){
+//      if(numMuVsRun[run] > 0) {
+//        cout<<"FINAL Mu run "<<run<<" nmu "<<numMuVsRun[run]<<std::endl;;
+//      }
+//    }
+   
+   t.readFile("lumi_by_run_100728.txt", lumiVsRun);
+   
+   // calculate the running mean, here for +- 12 runs
+   std::vector<float> nMuRoller; 
+   std::vector<float> nElRoller; 
+   std::vector<float> nLumiRoller;
+#ifndef __CINT__
+   if(drawRunningMean) {
+     nMuRoller = rollingThunder(numMuVsRun, lumiVsRun, 12);
+     nElRoller = rollingThunder(numElVsRun, lumiVsRun, 12);
+     nLumiRoller = rollingThunder(lumiVsRun, lumiVsRun, 12);
+   }
+#endif
+   TGraphErrors * aGraph = new TGraphErrors();
+   TGraphErrors * anotherGraph = new TGraphErrors();
+   int graphpointnr = 0;
+
+   std::vector<int> numLepVsRun;
+   std::vector<float> nLepRoller; 
+   if(drawMu) {
+     numLepVsRun = numMuVsRun;
+     nLepRoller = nMuRoller; 
+   }
+   else if(drawEl) {
+     numLepVsRun = numElVsRun;
+     nLepRoller = nElRoller; 
+   }
+
+
+   for(int run = 0; run<runRange; ++run){
+     if( lumiVsRun[run] != 0 && numLepVsRun[run] != 0 ) {
+       aGraph->SetPoint( graphpointnr, run, numLepVsRun[run]/lumiVsRun[run] );
+       aGraph->SetPointError( graphpointnr, 0, sqrt((float)numLepVsRun[run])/lumiVsRun[run] );
+       
+       anotherGraph->SetPoint( graphpointnr, run+0.4, nLepRoller[run]/nLumiRoller[run] );
+       anotherGraph->SetPointError( graphpointnr, 0, sqrt((float)nLepRoller[run])/nLumiRoller[run] );
+       
+       graphpointnr +=1;
+     }
+   }
+   
+   aGraph->SetFillColor(kWhite);
+   if(drawMu) {
+     aGraph->SetTitle("Muons per run per lumi");
+     aGraph->GetYaxis()->SetTitle("Muon rate, #sigma_{GoodMu Vis p_{T} > 10 GeV} (#mub)");
+   }
+   if(drawEl) {
+     aGraph->SetTitle("Electrons per run per lumi ");
+     aGraph->GetYaxis()->SetTitle("Ele rate, #sigma_{GoodEl Vis p_{T} > 10 GeV} (#mub)");
+   }
+   aGraph->GetYaxis()->SetTitleOffset(1.2);
+   aGraph->GetXaxis()->SetTitle("run number"); //6  
+   
+   aGraph->SetMarkerColor(4); 
+   aGraph->SetMarkerStyle(21);
+   aGraph->GetXaxis()->SetNoExponent();
+   aGraph->Draw("ALP");
+   
+   TF1 * pol0Func = new TF1("pol0Func","pol0");
+   aGraph->Fit("pol0Func");
+   
+   double fitMean = pol0Func->GetParameter(0);
+   cout<<fitMean<<endl;
+   
+   anotherGraph->SetMarkerColor(kGreen); 
+   anotherGraph->SetMarkerStyle(22);
+   if(drawRunningMean) {
+     anotherGraph->GetXaxis()->SetNoExponent();
+     anotherGraph->Draw("LP");
+   }
+   
+   graphpointnr = 0;
+   for(int run = 0; run<runRange; ++run){
+     if( lumiVsRun[run] != 0 && numLepVsRun[run] != 0 ) {
+       if( ( (numLepVsRun[run]/lumiVsRun[run]) - fitMean) / (sqrt((float)numLepVsRun[run])/lumiVsRun[run]) > 3. || 42 == 42 ) {
+         cout<<"Run: "<<run<<" Lep ratio "<<numLepVsRun[run]/lumiVsRun[run]<<" normPull "<< ( (numLepVsRun[run]/lumiVsRun[run]) - fitMean) / ( sqrt( (float)numLepVsRun[run] )/lumiVsRun[run] ) <<" nLep "<<numLepVsRun[run]<<" lumi "<<lumiVsRun[run]<<std::endl;
+         
+         TEllipse *ellipse = new TEllipse(run, numLepVsRun[run]/lumiVsRun[run]  ,10, ( sqrt( (float)numLepVsRun[run] )/lumiVsRun[run] )  ,0,360,0);
+         ellipse->SetFillStyle(0);
+         ellipse->SetLineColor(kRed);
+         ellipse->SetLineWidth(3);
+         ellipse->Draw();
+       }
+       graphpointnr +=1;
+     }
+   }
+   if(drawMu) {
+     myCanv->SaveAs((dir+"MuXsecNew"+suffix).c_str());
+   }
+   else if(drawEl) {
+   myCanv->SaveAs((dir+"ElXsecNew"+suffix).c_str());
+   }
+ }
+
+
+void plotMu(void) {
+gSystem->Load("../Tools/MiniFWLite/libMiniFWLite.so");
+//gROOT->ProcessLine(".L xsecLoop.C++");
+//gSystem->Load("xsecLoop_C.so");
 gROOT->SetStyle("Plain");
 gStyle->SetHistFillColor(kRed);
 gStyle->SetHistMinimumZero();
@@ -121,8 +276,14 @@ TH1F* mu2_trkjets_phi   = new TH1F("mu2_trkjets_phi", "mu2_trkjets_phi", phi_nbi
 // Chains
 TChain *chain1 = new TChain("tree");
 TChain *chain2 = new TChain("tree");
-chain1->Add("/tas03/home/warren/CMSSW_3_7_0_patch2/src/CMS2/NtupleMacros/SkimValidation/validate_mus_before.root");
-chain2->Add("/tas03/home/warren/CMSSW_3_7_0_patch2/src/CMS2/NtupleMacros/SkimValidation/validate_mus_after.root");
+chain1->Add("validate_mus_before.root_100730");
+chain2->Add("validate_mus_after.root");
+
+TChain *chain1el = new TChain("tree");
+TChain *chain2el = new TChain("tree");
+chain1el->Add("validate_els_before.root");
+chain2el->Add("validate_els_after.root");
+
 
 // Fill Before
 TCanvas *ctemp = new TCanvas();
@@ -344,4 +505,15 @@ c8->cd(6);
 mu2_trkjets_phi->Draw();
 c1->SaveAs((dir+"compare_mu_tkjetkin"+suffix).c_str());
 
+// Now for the "lepton cross section" plots:
+TCanvas *c9 = new TCanvas();
+//plot reference chain
+ xsecPlot(c9, chain1, true, suffix, dir);
+ // xsecPlot(c9, chain1el, false, suffix, dir);
+//plot new chain
+TCanvas *c10 = new TCanvas();
+ xsecPlot(c10, chain2, true, suffix, dir);
+ // xsecPlot(c10, chain2el, false, suffix, dir);
+
+ 
 }

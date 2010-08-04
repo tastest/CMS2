@@ -15,13 +15,13 @@ void doit() {
   //chain1->Add("/tas/cms2/Mu_Run2010A-Jun9thReReco_v1_RECO/V03-05-01/singleLepPt5Skim/*.root");
   //chain1->Add("/tas/cms2/Mu_Run2010A-Jun9thReReco_v1_RECO/V03-05-01/singleLepPt5Skim/skimmed_ntuple_34.root");
 
-  const bool doeg = false;
-  const bool domu = true;
+  const bool doeg = true;
+  const bool domu = false;
 
-  const bool dobefore = true;
+  const bool dobefore = false;
   const bool doafter  = true;
 
-  const string gdruntxt = "json_132440_138751_list_prelm.txt"; // was : jsonlist_132440_138751.txt
+  const string gdruntxt = "goodruns.txt"; // was : jsonlist_132440_138751.txt
 
   if( dobefore ) {
 	if( doeg ) {
