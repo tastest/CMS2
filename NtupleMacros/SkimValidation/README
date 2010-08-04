@@ -1,0 +1,44 @@
+Cross validate 2 datasets 
+
+
+
+
+* define Muon/Electron paths to reference ntuples:
+	Mu_before.txt
+	El_before.txt
+
+* define Muon/Electron paths to NEW datasets:
+	Mu_after.txt
+	EG_after.txt
+
+* potentially update current (cvs) goodrun list 
+	(goodruns.txt, also have the json for that, 
+	you need it for the lumi calc)
+
+* potentially update current (cvs) lumi list 
+	- see "appendix" on how to do that
+
+* run DoAll.C (make babies)
+	root doAll.C (change to run on el, mu, before and after (set bools)
+	This produces the baby ntuples
+
+* produce plots for Muon/Electrons:
+	root plotMu_Super.C
+	root plotEl_Super.C
+
+
+=====================
+===   APPENDIX   ====
+=====================
+set up following https://twiki.cern.ch/twiki/bin/viewauth/CMS/LumiCalc:
+  ssh to lxplus.cern.ch (or any slc5 host)
+  scramv1 p CMSSW CMSSW_3_7_0
+  cd CMSSW_3_7_0/src
+  cvs co -r lumi-210710 RecoLuminosity/LumiDB
+  cd RecoLuminosity/LumiDB
+  scramv1 b
+  cmsenv
+
+run (where I put an example json file to use as a reference, use one corresponding to your goodrun list)
+ lumiCalc.py --nowarning -c frontier://LumiProd/CMS_LUMI_PROD -i /afs/cern.ch/user/i/ibloch/public/json_combined_135059-140399_CertJuly19_TopFiltered.txt overview >& result_100804.txt
+ cat result_XX.txt  | grep ^"| 1" | awk -F "|" '{print $2 $6}' | grep -v "N/A" >& lumi_by_run_100804.txt
