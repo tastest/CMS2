@@ -130,7 +130,7 @@ void xsecPlot( TCanvas * myCanv, TChain* myChain, Bool_t drawMu, const string su
    graphpointnr = 0;
    for(int run = 0; run<runRange; ++run){
      if( lumiVsRun[run] != 0 && numLepVsRun[run] != 0 ) {
-       if( ( (numLepVsRun[run]/lumiVsRun[run]) - fitMean) / (sqrt((float)numLepVsRun[run])/lumiVsRun[run]) > 3. || 42 == 42 ) {
+       if( ( (numLepVsRun[run]/lumiVsRun[run]) - fitMean) / (sqrt((float)numLepVsRun[run])/lumiVsRun[run]) > 3. ) {
          cout<<"Run: "<<run<<" Lep ratio "<<numLepVsRun[run]/lumiVsRun[run]<<" normPull "<< ( (numLepVsRun[run]/lumiVsRun[run]) - fitMean) / ( sqrt( (float)numLepVsRun[run] )/lumiVsRun[run] ) <<" nLep "<<numLepVsRun[run]<<" lumi "<<lumiVsRun[run]<<std::endl;
          
          TEllipse *ellipse = new TEllipse(run, numLepVsRun[run]/lumiVsRun[run]  ,10, ( sqrt( (float)numLepVsRun[run] )/lumiVsRun[run] )  ,0,360,0);
