@@ -5,7 +5,7 @@ process = cms.Process("CMS2")
 from Configuration.EventContent.EventContent_cff import *
 
 process.configurationMetadata = cms.untracked.PSet(
-        version = cms.untracked.string('$Revision: 1.10.2.3 $'),
+        version = cms.untracked.string('$Revision: 1.10.2.4 $'),
         annotation = cms.untracked.string('CMS2'),
         name = cms.untracked.string('CMS2 test configuration')
 )
@@ -23,7 +23,7 @@ process.load("RecoJets.Configuration.RecoJPTJets_cff")
 process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
 process.load('Configuration/EventContent/EventContent_cff')
 
-process.GlobalTag.globaltag = "START3X_V26::All"
+process.GlobalTag.globaltag = "GR10_P_V7::All"
 
 process.options = cms.untracked.PSet(
     Rethrow = cms.untracked.vstring('ProductNotFound')
