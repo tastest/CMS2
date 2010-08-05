@@ -136,7 +136,7 @@ std::pair<float,float> getMet(string& algo) {
 bool passTriggersMu9orLisoE15(int dilType) {
   
   //TString method
-  bool hlt_ele15_lw_l1r = cms2.passHLTTrigger("HLT_Ele15_SW_L1R");
+  bool hlt_ele15_lw_l1r = cms2.passHLTTrigger("HLT_Ele15_LW_L1R");
   bool hltMu9           = cms2.passHLTTrigger("HLT_Mu9");
   
   if (dilType == 0 && ! (hltMu9) ) return false;
