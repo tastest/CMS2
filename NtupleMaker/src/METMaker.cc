@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/4
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: METMaker.cc,v 1.22 2010/05/23 17:59:43 fgolf Exp $
+// $Id: METMaker.cc,v 1.22.2.1 2010/08/05 17:39:41 fgolf Exp $
 //
 //
 
@@ -65,7 +65,7 @@ METMaker::METMaker(const edm::ParameterSet& iConfig) {
      if(branchprefix.find("_") != std::string::npos)
 	  branchprefix.replace(branchprefix.find("_"),1,"");
      
-     produces<float> (branchprefix+"hbhbeFilter").setBranchAlias(aliasprefix_+"_hbheFilter");
+     produces<bool> (branchprefix+"hbhbeFilter").setBranchAlias(aliasprefix_+"_hbheFilter");
      produces<float> ("evt35xmet").setBranchAlias("evt35x_met");
      produces<float> ("evt35xmetPhi").setBranchAlias("evt35x_metPhi");
      produces<float> ("evt35xmetSig").setBranchAlias("evt35x_metSig");
@@ -495,11 +495,11 @@ void METMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
      if(branchprefix.find("_") != std::string::npos)
 	  branchprefix.replace(branchprefix.find("_"),1,"");
 
-
      iEvent.put(evt35x_met            ,"evt35xmet"              );
      iEvent.put(evt35x_metPhi         ,"evt35xmetPhi"           );
      iEvent.put(evt35x_metSig         ,"evt35xmetSig"           );
      iEvent.put(evt35x_sumet          ,"evt35xsumet"            );
+	 iEvent.put(evt_hbheFilter        ,branchprefix+"hbhefilter"       );
      iEvent.put(evt_met               ,branchprefix+"met"              );
      iEvent.put(evt_metPhi            ,branchprefix+"metPhi"           );
      iEvent.put(evt_metSig            ,branchprefix+"metSig"           );
