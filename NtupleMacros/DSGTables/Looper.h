@@ -99,6 +99,7 @@ protected:
      virtual void	FillDilepHistos (int idx);
      virtual void 	FillDSGTable (DSGTable &dsgTable, int i_hyp);
      virtual void	End ();
+     virtual double	Weight (int) { return 1; }
 
 protected:
      // functions to classify a dilepton candidate
