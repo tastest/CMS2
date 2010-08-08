@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// $Id: jetSelections.h,v 1.8 2010/07/30 11:53:57 warren Exp $
+// $Id: jetSelections.h,v 1.9 2010/08/08 09:15:52 jmuelmen Exp $
 
 #ifndef JETSELECTIONS_H
 #define JETSELECTIONS_H
@@ -33,7 +33,7 @@ enum CleaningType {
 #define JET_DEFAULT_CLEANING 	JETS_CLEAN_HYP_E_MU
 #define JET_DEFAULT_DR		0.4
 #define JET_DEFAULT_PT		30
-#define JET_DEFAULT_ETA		2.4
+#define JET_DEFAULT_ETA		2.5
 
 // vector of p4's of the jets passing selections
 std::vector<LorentzVector> getJets (unsigned int i_hyp,  // hyp or single-e to use for cleaning
@@ -83,4 +83,5 @@ void setJetCorrector (FactorizedJetCorrector *);
 double jetCorrection (const LorentzVector &jet);
 double jetCorrection (int ijet);
 bool jetPassesLooseJetID(int ijet);
+bool passesCaloJetID (const LorentzVector &jetp4);
 #endif // SEL_JETS_H
