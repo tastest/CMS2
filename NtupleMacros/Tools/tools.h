@@ -12,6 +12,7 @@
 #include <set>
 #include "Math/VectorUtil.h"
 
+class CMS2;
 using std::vector;
 
 unsigned int encodeTriLeptonCand(unsigned int bucket,unsigned int first, unsigned int second, unsigned int third);
@@ -35,35 +36,38 @@ float ptLowestPtLepton(int bucket, int first, int second, int third);
 bool passTriggerLeptonMinPtCut(int bucket, int first, int second, int third, float triggerLeptonMinPtCut);
 TString printCand(int bucket, int first, int second, int third);
 
-struct DorkyEventIdentifier {
-     // this is a workaround for not having unique event id's in MC 
-     DorkyEventIdentifier (class CMS2 &cms2);
-     DorkyEventIdentifier (unsigned long int r, unsigned long int e, unsigned long int l);
-     unsigned long int run, event, lumi_section;
-     float trks_d0;
-     float trks_pt, trks_eta, trks_phi;
-     bool operator < (const DorkyEventIdentifier &) const;
-     bool operator == (const DorkyEventIdentifier &) const;
-};
-extern std::set<DorkyEventIdentifier> already_seen;
-bool is_duplicate (const DorkyEventIdentifier &id);
-
-struct Status3Identifier {
-     // this is a workaround for not having unique event id's in MC 
-     Status3Identifier (class CMS2 &cms2);
-     unsigned long int run, event, lumi_section;
-     std::multiset<float> pts;
-     bool operator < (const Status3Identifier &) const;
-     bool operator > (const Status3Identifier &) const;
-     bool operator == (const Status3Identifier &) const;
-};
-extern std::set<Status3Identifier> already_seen_stat3;
-bool is_duplicate (const Status3Identifier &id);
-bool operator == (const Status3Identifier &, const Status3Identifier &);
+namespace duplicate_removal {
+     struct DorkyEventIdentifier {
+	  // this is a workaround for not having unique event id's in MC 
+	  DorkyEventIdentifier (CMS2 &cms2);
+	  DorkyEventIdentifier (unsigned long int r, unsigned long int e, unsigned long int l);
+	  unsigned long int run, event, lumi_section;
+	  float trks_d0;
+	  float trks_pt, trks_eta, trks_phi;
+	  bool operator < (const DorkyEventIdentifier &) const;
+	  bool operator == (const DorkyEventIdentifier &) const;
+     };
+     extern std::set<DorkyEventIdentifier> already_seen;
+     bool is_duplicate (const DorkyEventIdentifier &id);
+     
+     struct Status3Identifier {
+	  Status3Identifier (CMS2 &cms2);
+	  unsigned long int run, event, lumi_section;
+	  std::multiset<float> pts;
+	  bool operator < (const Status3Identifier &) const;
+	  bool operator > (const Status3Identifier &) const;
+	  bool operator == (const Status3Identifier &) const;
+     };
+     extern std::set<Status3Identifier> already_seen_stat3;
+     bool is_duplicate (const Status3Identifier &id);
+     bool operator == (const Status3Identifier &, const Status3Identifier &);
+}
 
 void saveHist(const char* filename, const char* pat="*");
 
 double correctd0Phi(int trk_idx);
+
+bool goodrun (unsigned int run, unsigned int lumi_block);
 
 extern class TDirectory *histo_directory;
 #endif

@@ -5,8 +5,6 @@
 // met selections
 //
 
-
-
 struct metStruct{
   metStruct() : met(-999.), metphi(-999.), metx(-999.), mety(-999.), sumet(-999.)  {}
   float met;
@@ -15,25 +13,6 @@ struct metStruct{
   float mety;
   float sumet;
 };
-
-
-enum whichMetType {
-  usingTcMet = 1,
-  usingCaloMet = 2,
-};
-
-
-//---------------------------------------------------
-// Function that checks whether met (or tcmet) was 
-// corrected for a given muon.  This uses the value maps
-//---------------------------------------------------
-bool wasMetCorrectedForThisMuon(int imu, whichMetType type);
-
-//-----------------------------------------------------------
-// Function that corrects the met (or tcmet) for a given
-// muon in case this was not done in reco.  Uses value maps
-//-------------------------------------------------------------
-void fixMetForThisMuon(int imu, float& metX, float& metY, whichMetType type);
 
 
 //---------------------------------------------
@@ -67,13 +46,6 @@ metStruct cleanTCMET(float met_x, float met_y, float sumet, bool useHFcleaning =
 // and nearest hypothesis lepton
 //---------------------------------------------
 float nearestHypLeptonPhi( float metPhi, int hyp_index);
-
-//---------------------------------------------
-// correct tcMET for any hypothesis muons
-// that have not been corrected for
-//---------------------------------------------
-metStruct correctTCMETforHypMuons (int hyp_index, float met_x, float met_y, float sumet);
-
 
 #endif
 

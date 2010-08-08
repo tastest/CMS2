@@ -241,25 +241,6 @@ namespace tas {
 	vector<float> &trkjets_trackCountingHighEffBJetTag() { return cms2.trkjets_trackCountingHighEffBJetTag(); }
 	vector<float> &trkjets_trackCountingHighPurBJetTag() { return cms2.trkjets_trackCountingHighPurBJetTag(); }
 	vector<float> &evt_bs_covMatrix() { return cms2.evt_bs_covMatrix(); }
-	vector<float> &twrs_ecalTime() { return cms2.twrs_ecalTime(); }
-	vector<float> &twrs_emEnergy() { return cms2.twrs_emEnergy(); }
-	vector<float> &twrs_emEt() { return cms2.twrs_emEt(); }
-	vector<float> &twrs_emEtcorr() { return cms2.twrs_emEtcorr(); }
-	vector<float> &twrs_eta() { return cms2.twrs_eta(); }
-	vector<float> &twrs_etacorr() { return cms2.twrs_etacorr(); }
-	vector<float> &twrs_etcorr() { return cms2.twrs_etcorr(); }
-	vector<float> &twrs_hadEnergy() { return cms2.twrs_hadEnergy(); }
-	vector<float> &twrs_hadEt() { return cms2.twrs_hadEt(); }
-	vector<float> &twrs_hadEtcorr() { return cms2.twrs_hadEtcorr(); }
-	vector<float> &twrs_hcalTime() { return cms2.twrs_hcalTime(); }
-	vector<float> &twrs_outerEnergy() { return cms2.twrs_outerEnergy(); }
-	vector<float> &twrs_outerEt() { return cms2.twrs_outerEt(); }
-	vector<float> &twrs_outerEtcorr() { return cms2.twrs_outerEtcorr(); }
-	vector<float> &twrs_pcorr() { return cms2.twrs_pcorr(); }
-	vector<float> &twrs_phi() { return cms2.twrs_phi(); }
-	vector<float> &twrs_phicorr() { return cms2.twrs_phicorr(); }
-	vector<float> &twrs_spikeEt() { return cms2.twrs_spikeEt(); }
-	vector<float> &twrs_spikeR4() { return cms2.twrs_spikeR4(); }
 	vector<float> &els_mc3dr() { return cms2.els_mc3dr(); }
 	vector<float> &els_mcdr() { return cms2.els_mcdr(); }
 	vector<float> &jets_mc3dr() { return cms2.jets_mc3dr(); }
@@ -592,14 +573,6 @@ namespace tas {
 	vector<float> &vtxs_xError() { return cms2.vtxs_xError(); }
 	vector<float> &vtxs_yError() { return cms2.vtxs_yError(); }
 	vector<float> &vtxs_zError() { return cms2.vtxs_zError(); }
-	vector<vector<float> > &twrs_em3x3() { return cms2.twrs_em3x3(); }
-	vector<vector<float> > &twrs_em5x5() { return cms2.twrs_em5x5(); }
-	vector<vector<float> > &twrs_emSwiss() { return cms2.twrs_emSwiss(); }
-	vector<vector<float> > &twrs_emThresh() { return cms2.twrs_emThresh(); }
-	vector<vector<float> > &twrs_emThreshChi2() { return cms2.twrs_emThreshChi2(); }
-	vector<vector<float> > &twrs_emThreshEta() { return cms2.twrs_emThreshEta(); }
-	vector<vector<float> > &twrs_emThreshTime() { return cms2.twrs_emThreshTime(); }
-	vector<vector<float> > &twrs_hcalHitTime() { return cms2.twrs_hcalHitTime(); }
 	vector<vector<float> > &vtxs_covMatrix() { return cms2.vtxs_covMatrix(); }
 	int &evt_cscLooseHaloId() { return cms2.evt_cscLooseHaloId(); }
 	int &evt_cscTightHaloId() { return cms2.evt_cscTightHaloId(); }
@@ -639,7 +612,6 @@ namespace tas {
 	vector<int> &evt_ecaliPhiSuspects() { return cms2.evt_ecaliPhiSuspects(); }
 	vector<int> &evt_globaliPhiSuspects() { return cms2.evt_globaliPhiSuspects(); }
 	vector<int> &evt_hcaliPhiSuspects() { return cms2.evt_hcaliPhiSuspects(); }
-	vector<int> &twrs_numCrystals() { return cms2.twrs_numCrystals(); }
 	vector<int> &els_mc3_id() { return cms2.els_mc3_id(); }
 	vector<int> &els_mc3idx() { return cms2.els_mc3idx(); }
 	vector<int> &els_mc3_motherid() { return cms2.els_mc3_motherid(); }
@@ -816,12 +788,6 @@ namespace tas {
 	vector<int> &vtxs_isFake() { return cms2.vtxs_isFake(); }
 	vector<int> &vtxs_isValid() { return cms2.vtxs_isValid(); }
 	vector<int> &vtxs_tracksSize() { return cms2.vtxs_tracksSize(); }
-	vector<vector<int> > &twrs_hcalHitReFlag() { return cms2.twrs_hcalHitReFlag(); }
-	vector<vector<int> > &twrs_emMaxEcalMGPASampleADC() { return cms2.twrs_emMaxEcalMGPASampleADC(); }
-	vector<vector<int> > &twrs_emThreshRecoFlag() { return cms2.twrs_emThreshRecoFlag(); }
-	vector<vector<int> > &twrs_emThreshSevLvl() { return cms2.twrs_emThreshSevLvl(); }
-	vector<vector<int> > &twrs_hcalHitDepth() { return cms2.twrs_hcalHitDepth(); }
-	vector<vector<int> > &twrs_hcalHitFlag() { return cms2.twrs_hcalHitFlag(); }
 	vector<vector<int> > &genps_lepdaughter_id() { return cms2.genps_lepdaughter_id(); }
 	vector<vector<int> > &genps_lepdaughter_idx() { return cms2.genps_lepdaughter_idx(); }
 	vector<vector<int> > &hlt1e31_trigObjs_id() { return cms2.hlt1e31_trigObjs_id(); }
@@ -829,7 +795,6 @@ namespace tas {
 	vector<vector<int> > &hlt_trigObjs_id() { return cms2.hlt_trigObjs_id(); }
 	vector<vector<int> > &hyp_jets_idx() { return cms2.hyp_jets_idx(); }
 	vector<vector<int> > &hyp_other_jets_idx() { return cms2.hyp_other_jets_idx(); }
-	unsigned int &evt_ntwrs() { return cms2.evt_ntwrs(); }
 	unsigned int &evt_nels() { return cms2.evt_nels(); }
 	unsigned int &evt_detectorStatus() { return cms2.evt_detectorStatus(); }
 	unsigned int &evt_event() { return cms2.evt_event(); }
@@ -875,13 +840,6 @@ namespace tas {
 	unsigned int &evt_nscs() { return cms2.evt_nscs(); }
 	unsigned int &evt_ntrkjets() { return cms2.evt_ntrkjets(); }
 	unsigned int &evt_nvtxs() { return cms2.evt_nvtxs(); }
-	vector<unsigned int> &twrs_detid() { return cms2.twrs_detid(); }
-	vector<unsigned int> &twrs_numBadEcalCells() { return cms2.twrs_numBadEcalCells(); }
-	vector<unsigned int> &twrs_numBadHcalCells() { return cms2.twrs_numBadHcalCells(); }
-	vector<unsigned int> &twrs_numProblematicEcalCells() { return cms2.twrs_numProblematicEcalCells(); }
-	vector<unsigned int> &twrs_numProblematicHcalCells() { return cms2.twrs_numProblematicHcalCells(); }
-	vector<unsigned int> &twrs_numRecoveredEcalCells() { return cms2.twrs_numRecoveredEcalCells(); }
-	vector<unsigned int> &twrs_numRecoveredHcalCells() { return cms2.twrs_numRecoveredHcalCells(); }
 	vector<unsigned int> &hlt1e31_prescales() { return cms2.hlt1e31_prescales(); }
 	vector<unsigned int> &hlt8e29_prescales() { return cms2.hlt8e29_prescales(); }
 	vector<unsigned int> &hlt_prescales() { return cms2.hlt_prescales(); }
@@ -899,6 +857,8 @@ namespace tas {
 	vector<unsigned int> &els_pat_flag() { return cms2.els_pat_flag(); }
 	vector<unsigned int> &jets_pat_flag() { return cms2.jets_pat_flag(); }
 	vector<unsigned int> &mus_pat_flag() { return cms2.mus_pat_flag(); }
+	int &evt_nEvts() { return cms2.evt_nEvts(); }
+	float &evt_filt_eff() { return cms2.evt_filt_eff(); }
 	bool passHLTTrigger(TString trigName) { return cms2.passHLTTrigger(trigName); }
 	bool passHLT8E29Trigger(TString trigName) { return cms2.passHLT8E29Trigger(trigName); }
 	bool passL1Trigger(TString trigName) { return cms2.passL1Trigger(trigName); }
