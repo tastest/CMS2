@@ -19,7 +19,7 @@ l   bucket     minor row
 
 enum layout {ZMET, JETMET};
 
-static const DSGTable **dsgs_;
+static DSGTable **dsgs_;
 static int n_dsgs_;
 
 int nBucketsGroups[4] = {10, 6, 4, 3};
@@ -158,9 +158,11 @@ void printTable(enum layout ZJ, int whichBucketGrouping)
 {
      
   clear();
-  mvprintw(0, 20, "  MET > 35");
-  mvprintw(0, 70, "  MET > 100");
-  mvprintw(0, 120, "  MET > 175");
+  mvprintw(0, 20, "  MET > 0");
+  mvprintw(0, 70, "  MET > 20");
+  mvprintw(0, 120, "  MET > 30");
+  mvprintw(0, 170, "  MET > 100");
+  mvprintw(0, 220, "  MET > 175");
   if (ZJ == ZMET) {  
     mvprintw(15, 0, "no Z");
     mvprintw(40, 0, "Z");
@@ -261,22 +263,24 @@ void DSGDisplay ()
      // get the file with the tables
      TFile *f = TFile::Open("Results.root", "read");
      assert(f != 0);
-     DSGTable *dsg_ww 		= dynamic_cast<DSGTable *>(f->Get("ww"));
-     DSGTable *dsg_wz   	= dynamic_cast<DSGTable *>(f->Get("wz"));
-     DSGTable *dsg_zz   	= dynamic_cast<DSGTable *>(f->Get("zz"));
+     DSGTable *dsg_vv 		= dynamic_cast<DSGTable *>(f->Get("vv"));
+//      DSGTable *dsg_wz   	= dynamic_cast<DSGTable *>(f->Get("wz"));
+//      DSGTable *dsg_zz   	= dynamic_cast<DSGTable *>(f->Get("zz"));
      DSGTable *dsg_we  		= dynamic_cast<DSGTable *>(f->Get("we"));
      DSGTable *dsg_wmu 		= dynamic_cast<DSGTable *>(f->Get("wmu"));
      DSGTable *dsg_wtau		= dynamic_cast<DSGTable *>(f->Get("wtau"));
-     DSGTable *dsg_zee 	= dynamic_cast<DSGTable *>(f->Get("zee"));
-     DSGTable *dsg_zmm 	= dynamic_cast<DSGTable *>(f->Get("zmm"));
-     DSGTable *dsg_ztt 	= dynamic_cast<DSGTable *>(f->Get("ztt"));
+     DSGTable *dsg_zee 	= dynamic_cast<DSGTable *>(f->Get("zeejets"));
+     DSGTable *dsg_zmm 	= dynamic_cast<DSGTable *>(f->Get("zmmjets"));
+     DSGTable *dsg_ztt 	= dynamic_cast<DSGTable *>(f->Get("zttjets"));
      DSGTable *dsg_ttbar	= dynamic_cast<DSGTable *>(f->Get("ttbar"));
+     DSGTable *dsg_tw	= dynamic_cast<DSGTable *>(f->Get("tw"));
 //      DSGTable *dsg_tw   	= dynamic_cast<DSGTable *>(f->Get("tw"));
      DSGTable *dsg_data 	= dynamic_cast<DSGTable *>(f->Get("data"));
-     const DSGTable *dsgs[] = { 
-	  dsg_ww          ,
- 	  dsg_wz          ,
- 	  dsg_zz          ,
+     DSGTable *dsgs[] = { 
+// 	  dsg_ww          ,
+//  	  dsg_wz          ,
+//  	  dsg_zz          ,
+  	  dsg_vv          ,
  	  dsg_we         ,
  	  dsg_wmu        ,
  	  dsg_wtau       ,
@@ -284,15 +288,18 @@ void DSGDisplay ()
  	  dsg_zmm        ,
  	  dsg_ztt        ,
  	  dsg_ttbar       ,
-// 	  dsg_tw          ,
+ 	  dsg_tw          ,
   	  dsg_data        ,
      };
      const int n_dsgs = sizeof(dsgs) / sizeof(DSGTable *);
      dsgs_ = dsgs;
      n_dsgs_ = n_dsgs;
+     for (int i = 0; i < n_dsgs - 1; ++i) {
+//	  *dsgs[i] *= 254e-6;
+     }
 
      // make a placeholder array to be used for search window tables
-     const DSGTable *dsgs_sw[n_dsgs];
+     DSGTable *dsgs_sw[n_dsgs];
 
      // set up subtractions
      DSGTable *dsg_ww_emu 		= dynamic_cast<DSGTable *>(f->Get("ww_emu"));
@@ -307,7 +314,7 @@ void DSGDisplay ()
      DSGTable *dsg_ttbar_emu	= dynamic_cast<DSGTable *>(f->Get("ttbar_emu"));
 //      DSGTable *dsg_tw_emu   	= dynamic_cast<DSGTable *>(f->Get("tw_emu"));
      DSGTable *dsg_data_emu 	= dynamic_cast<DSGTable *>(f->Get("data_emu"));
-     const DSGTable *dsgs_emu[] = { 
+     DSGTable *dsgs_emu[] = { 
 	  dsg_ww_emu          ,
  	  dsg_wz_emu          ,
  	  dsg_zz_emu          ,

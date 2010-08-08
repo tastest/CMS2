@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// $Id: DSGTable.h,v 1.7 2010/07/29 11:54:12 jmuelmen Exp $
+// $Id: DSGTable.h,v 1.8 2010/08/08 17:10:08 jmuelmen Exp $
 
 #ifndef DSGTABLE_H
 #define DSGTABLE_H
@@ -15,7 +15,7 @@ class TH1F;
 class DSGTable : public TNamed {
 public:
      static const int	nZcat 		= 2;
-     static const int	nMETcat 	= 3;
+     static const int	nMETcat 	= 5;
      static const int	nSumJetcat	= 3;
      static const int	nJetcat 	= 3;
      static const int	nBuckets 	= 10;
@@ -116,6 +116,29 @@ public:
 	  {
 	       w2s_[zcat][metcat][sumjetcat][jetcat][bucket] += weight * weight;
 	       return events_[zcat][metcat][sumjetcat][jetcat][bucket] += weight;
+	  }
+     const DSGTable &operator *= (double scale)
+	  {
+	       for (int i = 0; i <= nZcat; ++i) {
+		    for (int j = 0; j < nMETcat; ++j) {
+		    for (int jj = 0; jj < nSumJetcat; ++jj) {
+			 for (int k = 0; k < nJetcat; ++k) {
+			      for (int l = 0; l < nBuckets; ++l) {
+				   events_[i][j][jj][k][l] 	*= scale;
+				   w2s_[i][j][jj][k][l] 	*= scale * scale;
+				   hmet_[i][j][jj][k][l]      	->Scale(scale);
+				   hmll_[i][j][jj][k][l]      	->Scale(scale);
+				   hht_[i][j][jj][k][l]       	->Scale(scale);
+				   hjsumet_[i][j][jj][k][l]   	->Scale(scale);
+				   hmaxjetpt_[i][j][jj][k][l] 	->Scale(scale);
+				   hmaxleppt_[i][j][jj][k][l] 	->Scale(scale);
+				   hlepdphi_[i][j][jj][k][l]  	->Scale(scale);
+			      }
+			 }
+		    }
+		    }
+	       }
+	       return *this;
 	  }
 //      void	FillMET (int zcat, int metcat, int jetcat, int bucket, 
 // 			 double met, double weight) 
