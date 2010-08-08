@@ -113,7 +113,7 @@ bool cleaning_goodVertexAugust2010()
         if (cms2.vtxs_isFake()[v]) continue;
         if (cms2.vtxs_ndof()[v] < 4.) continue;
         if (cms2.vtxs_position()[v].Rho() > 2.0) continue;        
-        if (fabs(cms2.vtxs_position()[v].Z()) > 25.0) continue;
+        if (fabs(cms2.vtxs_position()[v].Z()) > 24.0) continue;
         nGoodVertex ++;
     }
     if (nGoodVertex == 0) return false;
