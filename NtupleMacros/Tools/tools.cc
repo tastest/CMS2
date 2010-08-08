@@ -941,127 +941,129 @@ void correctMETmuons_crossedE(double& met, double& metPhi,
    metPhi = atan2(mety, metx);
 }
 
-DorkyEventIdentifier::DorkyEventIdentifier (CMS2 &cms2)
-     : run(cms2.evt_run()),
-       event(cms2.evt_event()),
-       lumi_section(cms2.evt_lumiBlock()),
-       trks_d0(cms2.trks_d0().at(0)), // use at() because that way we
-				      // get an exception if we are
-				      // out of bounds
-       trks_pt (cms2.trks_trk_p4().at(0).pt()),
-       trks_eta(cms2.trks_trk_p4().at(0).eta()),
-       trks_phi(cms2.trks_trk_p4().at(0).phi()) { }
+namespace duplicate_removal {
+     DorkyEventIdentifier::DorkyEventIdentifier (CMS2 &cms2)
+	  : run(cms2.evt_run()),
+	    event(cms2.evt_event()),
+	    lumi_section(cms2.evt_lumiBlock()),
+	    trks_d0(cms2.trks_d0().at(0)), // use at() because that way we
+	    // get an exception if we are
+	    // out of bounds
+	    trks_pt (cms2.trks_trk_p4().at(0).pt()),
+	    trks_eta(cms2.trks_trk_p4().at(0).eta()),
+	    trks_phi(cms2.trks_trk_p4().at(0).phi()) { }
 
-DorkyEventIdentifier::DorkyEventIdentifier (unsigned long int r, unsigned long int e, unsigned long int l)
-     : run(r),
-       event(e),
-       lumi_section(l),
-       trks_d0(0),
-       trks_pt (0),
-       trks_eta(0),
-       trks_phi(0) { }
+     DorkyEventIdentifier::DorkyEventIdentifier (unsigned long int r, unsigned long int e, unsigned long int l)
+	  : run(r),
+	    event(e),
+	    lumi_section(l),
+	    trks_d0(0),
+	    trks_pt (0),
+	    trks_eta(0),
+	    trks_phi(0) { }
 
-bool DorkyEventIdentifier::operator < (const DorkyEventIdentifier &other) const
-{
-     if (run != other.run)
-          return run < other.run;
-     if (event != other.event)
-          return event < other.event;
-     if (lumi_section != other.lumi_section)
-          return lumi_section < other.lumi_section;
-     if (TMath::Abs(trks_d0 - other.trks_d0) > 1e-6 * fabs(trks_d0))
-       return trks_d0 < other.trks_d0;
-     if (TMath::Abs(trks_pt - other.trks_pt) > 1e-6 * fabs(trks_pt))
-       return trks_pt < other.trks_pt;
-     if (TMath::Abs(trks_eta - other.trks_eta) > 1e-6 * fabs(trks_eta))
-       return trks_eta < other.trks_eta;
-     if (TMath::Abs(trks_phi - other.trks_phi) > 1e-6 * fabs(trks_phi))
-       return trks_phi < other.trks_phi;
-     return false;
-}
-
-bool DorkyEventIdentifier::operator == (const DorkyEventIdentifier &other) const
-{
-     if (run != other.run)
-          return false;
-     if (event != other.event)
-          return false;
-     if (lumi_section != other.lumi_section)
-          return false;
-     if (TMath::Abs(trks_d0 - other.trks_d0) > 1e-6 * fabs(trks_d0))
-          return false;
-     if (TMath::Abs(trks_pt - other.trks_pt) > 1e-6 * fabs(trks_pt))
-          return false;
-     if (TMath::Abs(trks_eta - other.trks_eta) > 1e-6 * fabs(trks_eta))
-          return false;
-     if (TMath::Abs(trks_phi - other.trks_phi) > 1e-6 * fabs(trks_phi))
-          return false;
-     return true;
-}
-
-std::set<DorkyEventIdentifier> already_seen;
-bool is_duplicate (const DorkyEventIdentifier &id)
-{
-     std::pair<std::set<DorkyEventIdentifier>::const_iterator, bool> ret =
-          already_seen.insert(id);
-     return !ret.second;
-}
-
-Status3Identifier::Status3Identifier (CMS2 &cms2)
-     : run(cms2.evt_run()),
-       event(cms2.evt_event()),
-       lumi_section(cms2.evt_lumiBlock())
-{
-//      pts.reserve(cms2.genps_p4().size());
-     for (unsigned int i = 0; i < std::min(size_t(4), cms2.genps_p4().size()); ++i) {
-	  pts.insert(cms2.genps_p4()[i].pt());
-	  // only go up to the W for this exercise
-	  if (i + 1 < cms2.genps_p4().size() && 
-	      abs(cms2.genps_id()[i + 1]) == 24)
-	       break;
+     bool DorkyEventIdentifier::operator < (const DorkyEventIdentifier &other) const
+     {
+	  if (run != other.run)
+	       return run < other.run;
+	  if (event != other.event)
+	       return event < other.event;
+	  if (lumi_section != other.lumi_section)
+	       return lumi_section < other.lumi_section;
+	  if (TMath::Abs(trks_d0 - other.trks_d0) > 1e-6 * fabs(trks_d0))
+	       return trks_d0 < other.trks_d0;
+	  if (TMath::Abs(trks_pt - other.trks_pt) > 1e-6 * fabs(trks_pt))
+	       return trks_pt < other.trks_pt;
+	  if (TMath::Abs(trks_eta - other.trks_eta) > 1e-6 * fabs(trks_eta))
+	       return trks_eta < other.trks_eta;
+	  if (TMath::Abs(trks_phi - other.trks_phi) > 1e-6 * fabs(trks_phi))
+	       return trks_phi < other.trks_phi;
+	  return false;
      }
-}
 
-bool Status3Identifier::operator < (const Status3Identifier &other) const
-{
-     std::multiset<float>::const_iterator ipts = pts.begin();
-     std::multiset<float>::const_iterator iother = other.pts.begin();
-     for (unsigned int i = 0; i < std::max(pts.size(), other.pts.size()); 
-	  ++i, ++ipts, ++iother) {
-	  if (i >= pts.size())
-	       return true;
-	  if (i >= other.pts.size())
+     bool DorkyEventIdentifier::operator == (const DorkyEventIdentifier &other) const
+     {
+	  if (run != other.run)
 	       return false;
-// 	  if (fabs(*ipts - *iother) > 1e-6 * fabs(*ipts)) 
-// 	       return *ipts < *iother;
-	  if (*ipts != *iother)
-	       return *ipts < *iother;
-     }
-     return false;
-}
-
-std::set<Status3Identifier> already_seen_stat3;
-bool is_duplicate (const Status3Identifier &id)
-{
-     std::pair<std::set<Status3Identifier>::const_iterator, bool> ret =
-          already_seen_stat3.insert(id);
-     if (!ret.second) {
-	  std::cout << std::setprecision(8);
-	  std::cout << "new entry (" << id.run << " " << id.lumi_section << " " << id.event << ") ";
-	  for (std::multiset<float>::const_iterator i = id.pts.begin();
-	       i != id.pts.end(); ++i) {
-	       std::cout << *i << " ";
-	  }
-	  std::cout << std::endl;
-	  std::cout << "old entry (" << ret.first->run << " " << ret.first->lumi_section << " " << ret.first->event << ") ";
-	  for (std::multiset<float>::const_iterator i = ret.first->pts.begin();
-	       i != ret.first->pts.end(); ++i) {
-	       std::cout << *i << " ";
-	  }
-	  std::cout << std::endl;
+	  if (event != other.event)
+	       return false;
+	  if (lumi_section != other.lumi_section)
+	       return false;
+	  if (TMath::Abs(trks_d0 - other.trks_d0) > 1e-6 * fabs(trks_d0))
+	       return false;
+	  if (TMath::Abs(trks_pt - other.trks_pt) > 1e-6 * fabs(trks_pt))
+	       return false;
+	  if (TMath::Abs(trks_eta - other.trks_eta) > 1e-6 * fabs(trks_eta))
+	       return false;
+	  if (TMath::Abs(trks_phi - other.trks_phi) > 1e-6 * fabs(trks_phi))
+	       return false;
 	  return true;
      }
-     return false;
+
+     std::set<DorkyEventIdentifier> already_seen;
+     bool is_duplicate (const DorkyEventIdentifier &id)
+     {
+	  std::pair<std::set<DorkyEventIdentifier>::const_iterator, bool> ret =
+	       already_seen.insert(id);
+	  return !ret.second;
+     }
+
+     Status3Identifier::Status3Identifier (CMS2 &cms2)
+	  : run(cms2.evt_run()),
+	    event(cms2.evt_event()),
+	    lumi_section(cms2.evt_lumiBlock())
+     {
+//      pts.reserve(cms2.genps_p4().size());
+	  for (unsigned int i = 0; i < std::min(size_t(4), cms2.genps_p4().size()); ++i) {
+	       pts.insert(cms2.genps_p4()[i].pt());
+	       // only go up to the W for this exercise
+	       if (i + 1 < cms2.genps_p4().size() && 
+		   abs(cms2.genps_id()[i + 1]) == 24)
+		    break;
+	  }
+     }
+
+     bool Status3Identifier::operator < (const Status3Identifier &other) const
+     {
+	  std::multiset<float>::const_iterator ipts = pts.begin();
+	  std::multiset<float>::const_iterator iother = other.pts.begin();
+	  for (unsigned int i = 0; i < std::max(pts.size(), other.pts.size()); 
+	       ++i, ++ipts, ++iother) {
+	       if (i >= pts.size())
+		    return true;
+	       if (i >= other.pts.size())
+		    return false;
+// 	  if (fabs(*ipts - *iother) > 1e-6 * fabs(*ipts)) 
+// 	       return *ipts < *iother;
+	       if (*ipts != *iother)
+		    return *ipts < *iother;
+	  }
+	  return false;
+     }
+
+     std::set<Status3Identifier> already_seen_stat3;
+     bool is_duplicate (const Status3Identifier &id)
+     {
+	  std::pair<std::set<Status3Identifier>::const_iterator, bool> ret =
+	       already_seen_stat3.insert(id);
+	  if (!ret.second) {
+	       std::cout << std::setprecision(8);
+	       std::cout << "new entry (" << id.run << " " << id.lumi_section << " " << id.event << ") ";
+	       for (std::multiset<float>::const_iterator i = id.pts.begin();
+		    i != id.pts.end(); ++i) {
+		    std::cout << *i << " ";
+	       }
+	       std::cout << std::endl;
+	       std::cout << "old entry (" << ret.first->run << " " << ret.first->lumi_section << " " << ret.first->event << ") ";
+	       for (std::multiset<float>::const_iterator i = ret.first->pts.begin();
+		    i != ret.first->pts.end(); ++i) {
+		    std::cout << *i << " ";
+	       }
+	       std::cout << std::endl;
+	       return true;
+	  }
+	  return false;
+     }
 }
 
 enum DileptonHypType hyp_typeToHypType (int hyp_type)
