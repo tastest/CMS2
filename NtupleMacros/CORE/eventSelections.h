@@ -14,6 +14,13 @@ bool inZmassWindow (float mass);
 bool cleaning_standard(bool isData);
 
 //----------------------------------------------------------------
+// 5 August 2010
+// standard event cleaning
+// for low pt dilepton / fake rate data studies
+//----------------------------------------------------------------
+bool cleaning_standardAugust2010(bool isData)
+
+//----------------------------------------------------------------
 // standard event cleaning
 // for low pt dilepton / fake rate data studies
 //----------------------------------------------------------------

@@ -42,6 +42,19 @@ bool cleaning_standardNoBSC(bool isData)
 }
 
 //
+// 5 August 2010
+// standard event cleaning
+// for low pt dilepton / fake rate data studies
+//
+bool cleaning_standardAugust2010(bool isData)
+{
+    if (!cleaning_goodVertexAugust2010()) return false;
+    if (!cleaning_goodTracks()) return false;
+	if (!cms2.evt_hbheFilter()) return false;
+    return true;
+}
+
+//
 // require bit 40 or 41 passed
 //
 bool cleaning_BSC() 
@@ -82,6 +95,25 @@ bool cleaning_goodVertex()
         if (cms2.vtxs_ndof()[v] < 4.) continue;
         if (cms2.vtxs_position()[v].Rho() > 2.0) continue;        
         if (fabs(cms2.vtxs_position()[v].Z()) > 15.0) continue;
+        nGoodVertex ++;
+    }
+    if (nGoodVertex == 0) return false;
+    return true;
+}
+
+//
+// 5 August 2010
+// at least 1 good vertex
+// 
+bool cleaning_goodVertexAugust2010()
+{             
+    int nGoodVertex = 0;
+    for (size_t v = 0; v < cms2.vtxs_position().size(); ++v) 
+    {
+        if (cms2.vtxs_isFake()[v]) continue;
+        if (cms2.vtxs_ndof()[v] < 4.) continue;
+        if (cms2.vtxs_position()[v].Rho() > 2.0) continue;        
+        if (fabs(cms2.vtxs_position()[v].Z()) > 25.0) continue;
         nGoodVertex ++;
     }
     if (nGoodVertex == 0) return false;
