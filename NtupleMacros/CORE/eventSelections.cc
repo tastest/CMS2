@@ -46,7 +46,7 @@ bool cleaning_standardNoBSC(bool isData)
 // standard event cleaning
 // for low pt dilepton / fake rate data studies
 //
-bool cleaning_standardAugust2010(bool isData)
+bool cleaning_standardAugust2010()
 {
     if (!cleaning_goodVertexAugust2010()) return false;
     if (!cleaning_goodTracks()) return false;
