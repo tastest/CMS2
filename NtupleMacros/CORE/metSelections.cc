@@ -35,7 +35,7 @@ float projectedMETW( float met, float metPhi, float leptonPhi) {
      return ((deltaPhi < TMath::Pi() / 2.) ? met * sin(deltaPhi) : met);
 }
 
-
+#if 0
 //---------------------------------------------
 // function to calculate latest tcMET
 //---------------------------------------------
@@ -72,7 +72,7 @@ metStruct cleanTCMET (float met_x, float met_y, float sumet, bool useHFcleaning,
 
      return tcmetStruct;
 }
-
+#endif
 
 //---------------------------------------------
 // utility function find deltaPhi between met
