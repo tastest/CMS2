@@ -87,16 +87,16 @@ protected:
 	float evt_bField_;
 	TBranch *evt_bField_branch;
 	bool evt_bField_isLoaded;
-	float evt_kfactor_;
+	float	evt_kfactor_;
 	TBranch *evt_kfactor_branch;
 	bool evt_kfactor_isLoaded;
-	float evt_scale1fb_;
+	float	evt_scale1fb_;
 	TBranch *evt_scale1fb_branch;
 	bool evt_scale1fb_isLoaded;
-	float evt_xsec_excl_;
+	float	evt_xsec_excl_;
 	TBranch *evt_xsec_excl_branch;
 	bool evt_xsec_excl_isLoaded;
-	float evt_xsec_incl_;
+	float	evt_xsec_incl_;
 	TBranch *evt_xsec_incl_branch;
 	bool evt_xsec_incl_isLoaded;
 	float gen_met_;
@@ -738,63 +738,6 @@ protected:
 	vector<float> evt_bs_covMatrix_;
 	TBranch *evt_bs_covMatrix_branch;
 	bool evt_bs_covMatrix_isLoaded;
-	vector<float> twrs_ecalTime_;
-	TBranch *twrs_ecalTime_branch;
-	bool twrs_ecalTime_isLoaded;
-	vector<float> twrs_emEnergy_;
-	TBranch *twrs_emEnergy_branch;
-	bool twrs_emEnergy_isLoaded;
-	vector<float> twrs_emEt_;
-	TBranch *twrs_emEt_branch;
-	bool twrs_emEt_isLoaded;
-	vector<float> twrs_emEtcorr_;
-	TBranch *twrs_emEtcorr_branch;
-	bool twrs_emEtcorr_isLoaded;
-	vector<float> twrs_eta_;
-	TBranch *twrs_eta_branch;
-	bool twrs_eta_isLoaded;
-	vector<float> twrs_etacorr_;
-	TBranch *twrs_etacorr_branch;
-	bool twrs_etacorr_isLoaded;
-	vector<float> twrs_etcorr_;
-	TBranch *twrs_etcorr_branch;
-	bool twrs_etcorr_isLoaded;
-	vector<float> twrs_hadEnergy_;
-	TBranch *twrs_hadEnergy_branch;
-	bool twrs_hadEnergy_isLoaded;
-	vector<float> twrs_hadEt_;
-	TBranch *twrs_hadEt_branch;
-	bool twrs_hadEt_isLoaded;
-	vector<float> twrs_hadEtcorr_;
-	TBranch *twrs_hadEtcorr_branch;
-	bool twrs_hadEtcorr_isLoaded;
-	vector<float> twrs_hcalTime_;
-	TBranch *twrs_hcalTime_branch;
-	bool twrs_hcalTime_isLoaded;
-	vector<float> twrs_outerEnergy_;
-	TBranch *twrs_outerEnergy_branch;
-	bool twrs_outerEnergy_isLoaded;
-	vector<float> twrs_outerEt_;
-	TBranch *twrs_outerEt_branch;
-	bool twrs_outerEt_isLoaded;
-	vector<float> twrs_outerEtcorr_;
-	TBranch *twrs_outerEtcorr_branch;
-	bool twrs_outerEtcorr_isLoaded;
-	vector<float> twrs_pcorr_;
-	TBranch *twrs_pcorr_branch;
-	bool twrs_pcorr_isLoaded;
-	vector<float> twrs_phi_;
-	TBranch *twrs_phi_branch;
-	bool twrs_phi_isLoaded;
-	vector<float> twrs_phicorr_;
-	TBranch *twrs_phicorr_branch;
-	bool twrs_phicorr_isLoaded;
-	vector<float> twrs_spikeEt_;
-	TBranch *twrs_spikeEt_branch;
-	bool twrs_spikeEt_isLoaded;
-	vector<float> twrs_spikeR4_;
-	TBranch *twrs_spikeR4_branch;
-	bool twrs_spikeR4_isLoaded;
 	vector<float> els_mc3dr_;
 	TBranch *els_mc3dr_branch;
 	bool els_mc3dr_isLoaded;
@@ -1791,30 +1734,6 @@ protected:
 	vector<float> vtxs_zError_;
 	TBranch *vtxs_zError_branch;
 	bool vtxs_zError_isLoaded;
-	vector<vector<float> > twrs_em3x3_;
-	TBranch *twrs_em3x3_branch;
-	bool twrs_em3x3_isLoaded;
-	vector<vector<float> > twrs_em5x5_;
-	TBranch *twrs_em5x5_branch;
-	bool twrs_em5x5_isLoaded;
-	vector<vector<float> > twrs_emSwiss_;
-	TBranch *twrs_emSwiss_branch;
-	bool twrs_emSwiss_isLoaded;
-	vector<vector<float> > twrs_emThresh_;
-	TBranch *twrs_emThresh_branch;
-	bool twrs_emThresh_isLoaded;
-	vector<vector<float> > twrs_emThreshChi2_;
-	TBranch *twrs_emThreshChi2_branch;
-	bool twrs_emThreshChi2_isLoaded;
-	vector<vector<float> > twrs_emThreshEta_;
-	TBranch *twrs_emThreshEta_branch;
-	bool twrs_emThreshEta_isLoaded;
-	vector<vector<float> > twrs_emThreshTime_;
-	TBranch *twrs_emThreshTime_branch;
-	bool twrs_emThreshTime_isLoaded;
-	vector<vector<float> > twrs_hcalHitTime_;
-	TBranch *twrs_hcalHitTime_branch;
-	bool twrs_hcalHitTime_isLoaded;
 	vector<vector<float> > vtxs_covMatrix_;
 	TBranch *vtxs_covMatrix_branch;
 	bool vtxs_covMatrix_isLoaded;
@@ -1932,9 +1851,6 @@ protected:
 	vector<int> evt_hcaliPhiSuspects_;
 	TBranch *evt_hcaliPhiSuspects_branch;
 	bool evt_hcaliPhiSuspects_isLoaded;
-	vector<int> twrs_numCrystals_;
-	TBranch *twrs_numCrystals_branch;
-	bool twrs_numCrystals_isLoaded;
 	vector<int> els_mc3_id_;
 	TBranch *els_mc3_id_branch;
 	bool els_mc3_id_isLoaded;
@@ -2463,24 +2379,6 @@ protected:
 	vector<int> vtxs_tracksSize_;
 	TBranch *vtxs_tracksSize_branch;
 	bool vtxs_tracksSize_isLoaded;
-	vector<vector<int> > twrs_hcalHitReFlag_;
-	TBranch *twrs_hcalHitReFlag_branch;
-	bool twrs_hcalHitReFlag_isLoaded;
-	vector<vector<int> > twrs_emMaxEcalMGPASampleADC_;
-	TBranch *twrs_emMaxEcalMGPASampleADC_branch;
-	bool twrs_emMaxEcalMGPASampleADC_isLoaded;
-	vector<vector<int> > twrs_emThreshRecoFlag_;
-	TBranch *twrs_emThreshRecoFlag_branch;
-	bool twrs_emThreshRecoFlag_isLoaded;
-	vector<vector<int> > twrs_emThreshSevLvl_;
-	TBranch *twrs_emThreshSevLvl_branch;
-	bool twrs_emThreshSevLvl_isLoaded;
-	vector<vector<int> > twrs_hcalHitDepth_;
-	TBranch *twrs_hcalHitDepth_branch;
-	bool twrs_hcalHitDepth_isLoaded;
-	vector<vector<int> > twrs_hcalHitFlag_;
-	TBranch *twrs_hcalHitFlag_branch;
-	bool twrs_hcalHitFlag_isLoaded;
 	vector<vector<int> > genps_lepdaughter_id_;
 	TBranch *genps_lepdaughter_id_branch;
 	bool genps_lepdaughter_id_isLoaded;
@@ -2502,9 +2400,6 @@ protected:
 	vector<vector<int> > hyp_other_jets_idx_;
 	TBranch *hyp_other_jets_idx_branch;
 	bool hyp_other_jets_idx_isLoaded;
-	unsigned int evt_ntwrs_;
-	TBranch *evt_ntwrs_branch;
-	bool evt_ntwrs_isLoaded;
 	unsigned int evt_nels_;
 	TBranch *evt_nels_branch;
 	bool evt_nels_isLoaded;
@@ -2640,27 +2535,6 @@ protected:
 	unsigned int evt_nvtxs_;
 	TBranch *evt_nvtxs_branch;
 	bool evt_nvtxs_isLoaded;
-	vector<unsigned int> twrs_detid_;
-	TBranch *twrs_detid_branch;
-	bool twrs_detid_isLoaded;
-	vector<unsigned int> twrs_numBadEcalCells_;
-	TBranch *twrs_numBadEcalCells_branch;
-	bool twrs_numBadEcalCells_isLoaded;
-	vector<unsigned int> twrs_numBadHcalCells_;
-	TBranch *twrs_numBadHcalCells_branch;
-	bool twrs_numBadHcalCells_isLoaded;
-	vector<unsigned int> twrs_numProblematicEcalCells_;
-	TBranch *twrs_numProblematicEcalCells_branch;
-	bool twrs_numProblematicEcalCells_isLoaded;
-	vector<unsigned int> twrs_numProblematicHcalCells_;
-	TBranch *twrs_numProblematicHcalCells_branch;
-	bool twrs_numProblematicHcalCells_isLoaded;
-	vector<unsigned int> twrs_numRecoveredEcalCells_;
-	TBranch *twrs_numRecoveredEcalCells_branch;
-	bool twrs_numRecoveredEcalCells_isLoaded;
-	vector<unsigned int> twrs_numRecoveredHcalCells_;
-	TBranch *twrs_numRecoveredHcalCells_branch;
-	bool twrs_numRecoveredHcalCells_isLoaded;
 	vector<unsigned int> hlt1e31_prescales_;
 	TBranch *hlt1e31_prescales_branch;
 	bool hlt1e31_prescales_isLoaded;
@@ -2712,6 +2586,12 @@ protected:
 	vector<unsigned int> mus_pat_flag_;
 	TBranch *mus_pat_flag_branch;
 	bool mus_pat_flag_isLoaded;
+	int	evt_nEvts_;
+	TBranch *evt_nEvts_branch;
+	bool evt_nEvts_isLoaded;
+	float	evt_filt_eff_;
+	TBranch *evt_filt_eff_branch;
+	bool evt_filt_eff_isLoaded;
 public: 
 void Init(TTree *tree) {
 	evt_bsp4_branch = 0;
@@ -2719,600 +2599,375 @@ void Init(TTree *tree) {
 		evt_bsp4_branch = tree->GetBranch(tree->GetAlias("evt_bsp4"));
 		evt_bsp4_branch->SetAddress(&evt_bsp4_);
 	}
-	if(evt_bsp4_branch == 0 ) {
-	cout << "Branch evt_bsp4 does not exist." << endl;
-	}
 	l1_met_p4_branch = 0;
 	if (tree->GetAlias("l1_met_p4") != 0) {
 		l1_met_p4_branch = tree->GetBranch(tree->GetAlias("l1_met_p4"));
 		l1_met_p4_branch->SetAddress(&l1_met_p4_);
-	}
-	if(l1_met_p4_branch == 0 ) {
-	cout << "Branch l1_met_p4 does not exist." << endl;
 	}
 	l1_mht_p4_branch = 0;
 	if (tree->GetAlias("l1_mht_p4") != 0) {
 		l1_mht_p4_branch = tree->GetBranch(tree->GetAlias("l1_mht_p4"));
 		l1_mht_p4_branch->SetAddress(&l1_mht_p4_);
 	}
-	if(l1_mht_p4_branch == 0 ) {
-	cout << "Branch l1_mht_p4 does not exist." << endl;
-	}
 	els_mc_motherp4_branch = 0;
 	if (tree->GetAlias("els_mc_motherp4") != 0) {
 		els_mc_motherp4_branch = tree->GetBranch(tree->GetAlias("els_mc_motherp4"));
 		els_mc_motherp4_branch->SetAddress(&els_mc_motherp4_);
-	}
-	if(els_mc_motherp4_branch == 0 ) {
-	cout << "Branch els_mc_motherp4 does not exist." << endl;
 	}
 	els_mc_p4_branch = 0;
 	if (tree->GetAlias("els_mc_p4") != 0) {
 		els_mc_p4_branch = tree->GetBranch(tree->GetAlias("els_mc_p4"));
 		els_mc_p4_branch->SetAddress(&els_mc_p4_);
 	}
-	if(els_mc_p4_branch == 0 ) {
-	cout << "Branch els_mc_p4 does not exist." << endl;
-	}
 	jets_mc_gp_p4_branch = 0;
 	if (tree->GetAlias("jets_mc_gp_p4") != 0) {
 		jets_mc_gp_p4_branch = tree->GetBranch(tree->GetAlias("jets_mc_gp_p4"));
 		jets_mc_gp_p4_branch->SetAddress(&jets_mc_gp_p4_);
-	}
-	if(jets_mc_gp_p4_branch == 0 ) {
-	cout << "Branch jets_mc_gp_p4 does not exist." << endl;
 	}
 	jets_mc_p4_branch = 0;
 	if (tree->GetAlias("jets_mc_p4") != 0) {
 		jets_mc_p4_branch = tree->GetBranch(tree->GetAlias("jets_mc_p4"));
 		jets_mc_p4_branch->SetAddress(&jets_mc_p4_);
 	}
-	if(jets_mc_p4_branch == 0 ) {
-	cout << "Branch jets_mc_p4 does not exist." << endl;
-	}
 	mus_mc_motherp4_branch = 0;
 	if (tree->GetAlias("mus_mc_motherp4") != 0) {
 		mus_mc_motherp4_branch = tree->GetBranch(tree->GetAlias("mus_mc_motherp4"));
 		mus_mc_motherp4_branch->SetAddress(&mus_mc_motherp4_);
-	}
-	if(mus_mc_motherp4_branch == 0 ) {
-	cout << "Branch mus_mc_motherp4 does not exist." << endl;
 	}
 	mus_mc_p4_branch = 0;
 	if (tree->GetAlias("mus_mc_p4") != 0) {
 		mus_mc_p4_branch = tree->GetBranch(tree->GetAlias("mus_mc_p4"));
 		mus_mc_p4_branch->SetAddress(&mus_mc_p4_);
 	}
-	if(mus_mc_p4_branch == 0 ) {
-	cout << "Branch mus_mc_p4 does not exist." << endl;
-	}
 	trk_mcp4_branch = 0;
 	if (tree->GetAlias("trk_mcp4") != 0) {
 		trk_mcp4_branch = tree->GetBranch(tree->GetAlias("trk_mcp4"));
 		trk_mcp4_branch->SetAddress(&trk_mcp4_);
-	}
-	if(trk_mcp4_branch == 0 ) {
-	cout << "Branch trk_mcp4 does not exist." << endl;
 	}
 	els_conv_pos_p4_branch = 0;
 	if (tree->GetAlias("els_conv_pos_p4") != 0) {
 		els_conv_pos_p4_branch = tree->GetBranch(tree->GetAlias("els_conv_pos_p4"));
 		els_conv_pos_p4_branch->SetAddress(&els_conv_pos_p4_);
 	}
-	if(els_conv_pos_p4_branch == 0 ) {
-	cout << "Branch els_conv_pos_p4 does not exist." << endl;
-	}
 	els_inner_position_branch = 0;
 	if (tree->GetAlias("els_inner_position") != 0) {
 		els_inner_position_branch = tree->GetBranch(tree->GetAlias("els_inner_position"));
 		els_inner_position_branch->SetAddress(&els_inner_position_);
-	}
-	if(els_inner_position_branch == 0 ) {
-	cout << "Branch els_inner_position does not exist." << endl;
 	}
 	els_outer_position_branch = 0;
 	if (tree->GetAlias("els_outer_position") != 0) {
 		els_outer_position_branch = tree->GetBranch(tree->GetAlias("els_outer_position"));
 		els_outer_position_branch->SetAddress(&els_outer_position_);
 	}
-	if(els_outer_position_branch == 0 ) {
-	cout << "Branch els_outer_position does not exist." << endl;
-	}
 	els_p4_branch = 0;
 	if (tree->GetAlias("els_p4") != 0) {
 		els_p4_branch = tree->GetBranch(tree->GetAlias("els_p4"));
 		els_p4_branch->SetAddress(&els_p4_);
-	}
-	if(els_p4_branch == 0 ) {
-	cout << "Branch els_p4 does not exist." << endl;
 	}
 	els_p4In_branch = 0;
 	if (tree->GetAlias("els_p4In") != 0) {
 		els_p4In_branch = tree->GetBranch(tree->GetAlias("els_p4In"));
 		els_p4In_branch->SetAddress(&els_p4In_);
 	}
-	if(els_p4In_branch == 0 ) {
-	cout << "Branch els_p4In does not exist." << endl;
-	}
 	els_p4Out_branch = 0;
 	if (tree->GetAlias("els_p4Out") != 0) {
 		els_p4Out_branch = tree->GetBranch(tree->GetAlias("els_p4Out"));
 		els_p4Out_branch->SetAddress(&els_p4Out_);
-	}
-	if(els_p4Out_branch == 0 ) {
-	cout << "Branch els_p4Out does not exist." << endl;
 	}
 	els_trk_p4_branch = 0;
 	if (tree->GetAlias("els_trk_p4") != 0) {
 		els_trk_p4_branch = tree->GetBranch(tree->GetAlias("els_trk_p4"));
 		els_trk_p4_branch->SetAddress(&els_trk_p4_);
 	}
-	if(els_trk_p4_branch == 0 ) {
-	cout << "Branch els_trk_p4 does not exist." << endl;
-	}
 	els_vertex_p4_branch = 0;
 	if (tree->GetAlias("els_vertex_p4") != 0) {
 		els_vertex_p4_branch = tree->GetBranch(tree->GetAlias("els_vertex_p4"));
 		els_vertex_p4_branch->SetAddress(&els_vertex_p4_);
-	}
-	if(els_vertex_p4_branch == 0 ) {
-	cout << "Branch els_vertex_p4 does not exist." << endl;
 	}
 	genjets_p4_branch = 0;
 	if (tree->GetAlias("genjets_p4") != 0) {
 		genjets_p4_branch = tree->GetBranch(tree->GetAlias("genjets_p4"));
 		genjets_p4_branch->SetAddress(&genjets_p4_);
 	}
-	if(genjets_p4_branch == 0 ) {
-	cout << "Branch genjets_p4 does not exist." << endl;
-	}
 	genps_p4_branch = 0;
 	if (tree->GetAlias("genps_p4") != 0) {
 		genps_p4_branch = tree->GetBranch(tree->GetAlias("genps_p4"));
 		genps_p4_branch->SetAddress(&genps_p4_);
-	}
-	if(genps_p4_branch == 0 ) {
-	cout << "Branch genps_p4 does not exist." << endl;
 	}
 	genps_prod_vtx_branch = 0;
 	if (tree->GetAlias("genps_prod_vtx") != 0) {
 		genps_prod_vtx_branch = tree->GetBranch(tree->GetAlias("genps_prod_vtx"));
 		genps_prod_vtx_branch->SetAddress(&genps_prod_vtx_);
 	}
-	if(genps_prod_vtx_branch == 0 ) {
-	cout << "Branch genps_prod_vtx does not exist." << endl;
-	}
 	hyp_ll_p4_branch = 0;
 	if (tree->GetAlias("hyp_ll_p4") != 0) {
 		hyp_ll_p4_branch = tree->GetBranch(tree->GetAlias("hyp_ll_p4"));
 		hyp_ll_p4_branch->SetAddress(&hyp_ll_p4_);
-	}
-	if(hyp_ll_p4_branch == 0 ) {
-	cout << "Branch hyp_ll_p4 does not exist." << endl;
 	}
 	hyp_ll_trk_p4_branch = 0;
 	if (tree->GetAlias("hyp_ll_trk_p4") != 0) {
 		hyp_ll_trk_p4_branch = tree->GetBranch(tree->GetAlias("hyp_ll_trk_p4"));
 		hyp_ll_trk_p4_branch->SetAddress(&hyp_ll_trk_p4_);
 	}
-	if(hyp_ll_trk_p4_branch == 0 ) {
-	cout << "Branch hyp_ll_trk_p4 does not exist." << endl;
-	}
 	hyp_lt_p4_branch = 0;
 	if (tree->GetAlias("hyp_lt_p4") != 0) {
 		hyp_lt_p4_branch = tree->GetBranch(tree->GetAlias("hyp_lt_p4"));
 		hyp_lt_p4_branch->SetAddress(&hyp_lt_p4_);
-	}
-	if(hyp_lt_p4_branch == 0 ) {
-	cout << "Branch hyp_lt_p4 does not exist." << endl;
 	}
 	hyp_lt_trk_p4_branch = 0;
 	if (tree->GetAlias("hyp_lt_trk_p4") != 0) {
 		hyp_lt_trk_p4_branch = tree->GetBranch(tree->GetAlias("hyp_lt_trk_p4"));
 		hyp_lt_trk_p4_branch->SetAddress(&hyp_lt_trk_p4_);
 	}
-	if(hyp_lt_trk_p4_branch == 0 ) {
-	cout << "Branch hyp_lt_trk_p4 does not exist." << endl;
-	}
 	hyp_p4_branch = 0;
 	if (tree->GetAlias("hyp_p4") != 0) {
 		hyp_p4_branch = tree->GetBranch(tree->GetAlias("hyp_p4"));
 		hyp_p4_branch->SetAddress(&hyp_p4_);
-	}
-	if(hyp_p4_branch == 0 ) {
-	cout << "Branch hyp_p4 does not exist." << endl;
 	}
 	hyp_FVFit_p4_branch = 0;
 	if (tree->GetAlias("hyp_FVFit_p4") != 0) {
 		hyp_FVFit_p4_branch = tree->GetBranch(tree->GetAlias("hyp_FVFit_p4"));
 		hyp_FVFit_p4_branch->SetAddress(&hyp_FVFit_p4_);
 	}
-	if(hyp_FVFit_p4_branch == 0 ) {
-	cout << "Branch hyp_FVFit_p4 does not exist." << endl;
-	}
 	hyp_FVFit_v4_branch = 0;
 	if (tree->GetAlias("hyp_FVFit_v4") != 0) {
 		hyp_FVFit_v4_branch = tree->GetBranch(tree->GetAlias("hyp_FVFit_v4"));
 		hyp_FVFit_v4_branch->SetAddress(&hyp_FVFit_v4_);
-	}
-	if(hyp_FVFit_v4_branch == 0 ) {
-	cout << "Branch hyp_FVFit_v4 does not exist." << endl;
 	}
 	hyp_ll_mc_p4_branch = 0;
 	if (tree->GetAlias("hyp_ll_mc_p4") != 0) {
 		hyp_ll_mc_p4_branch = tree->GetBranch(tree->GetAlias("hyp_ll_mc_p4"));
 		hyp_ll_mc_p4_branch->SetAddress(&hyp_ll_mc_p4_);
 	}
-	if(hyp_ll_mc_p4_branch == 0 ) {
-	cout << "Branch hyp_ll_mc_p4 does not exist." << endl;
-	}
 	hyp_lt_mc_p4_branch = 0;
 	if (tree->GetAlias("hyp_lt_mc_p4") != 0) {
 		hyp_lt_mc_p4_branch = tree->GetBranch(tree->GetAlias("hyp_lt_mc_p4"));
 		hyp_lt_mc_p4_branch->SetAddress(&hyp_lt_mc_p4_);
-	}
-	if(hyp_lt_mc_p4_branch == 0 ) {
-	cout << "Branch hyp_lt_mc_p4 does not exist." << endl;
 	}
 	jets_p4_branch = 0;
 	if (tree->GetAlias("jets_p4") != 0) {
 		jets_p4_branch = tree->GetBranch(tree->GetAlias("jets_p4"));
 		jets_p4_branch->SetAddress(&jets_p4_);
 	}
-	if(jets_p4_branch == 0 ) {
-	cout << "Branch jets_p4 does not exist." << endl;
-	}
 	jets_vertex_p4_branch = 0;
 	if (tree->GetAlias("jets_vertex_p4") != 0) {
 		jets_vertex_p4_branch = tree->GetBranch(tree->GetAlias("jets_vertex_p4"));
 		jets_vertex_p4_branch->SetAddress(&jets_vertex_p4_);
-	}
-	if(jets_vertex_p4_branch == 0 ) {
-	cout << "Branch jets_vertex_p4 does not exist." << endl;
 	}
 	jpts_p4_branch = 0;
 	if (tree->GetAlias("jpts_p4") != 0) {
 		jpts_p4_branch = tree->GetBranch(tree->GetAlias("jpts_p4"));
 		jpts_p4_branch->SetAddress(&jpts_p4_);
 	}
-	if(jpts_p4_branch == 0 ) {
-	cout << "Branch jpts_p4 does not exist." << endl;
-	}
 	l1_emiso_p4_branch = 0;
 	if (tree->GetAlias("l1_emiso_p4") != 0) {
 		l1_emiso_p4_branch = tree->GetBranch(tree->GetAlias("l1_emiso_p4"));
 		l1_emiso_p4_branch->SetAddress(&l1_emiso_p4_);
-	}
-	if(l1_emiso_p4_branch == 0 ) {
-	cout << "Branch l1_emiso_p4 does not exist." << endl;
 	}
 	l1_emnoiso_p4_branch = 0;
 	if (tree->GetAlias("l1_emnoiso_p4") != 0) {
 		l1_emnoiso_p4_branch = tree->GetBranch(tree->GetAlias("l1_emnoiso_p4"));
 		l1_emnoiso_p4_branch->SetAddress(&l1_emnoiso_p4_);
 	}
-	if(l1_emnoiso_p4_branch == 0 ) {
-	cout << "Branch l1_emnoiso_p4 does not exist." << endl;
-	}
 	l1_jetsc_p4_branch = 0;
 	if (tree->GetAlias("l1_jetsc_p4") != 0) {
 		l1_jetsc_p4_branch = tree->GetBranch(tree->GetAlias("l1_jetsc_p4"));
 		l1_jetsc_p4_branch->SetAddress(&l1_jetsc_p4_);
-	}
-	if(l1_jetsc_p4_branch == 0 ) {
-	cout << "Branch l1_jetsc_p4 does not exist." << endl;
 	}
 	l1_jetsf_p4_branch = 0;
 	if (tree->GetAlias("l1_jetsf_p4") != 0) {
 		l1_jetsf_p4_branch = tree->GetBranch(tree->GetAlias("l1_jetsf_p4"));
 		l1_jetsf_p4_branch->SetAddress(&l1_jetsf_p4_);
 	}
-	if(l1_jetsf_p4_branch == 0 ) {
-	cout << "Branch l1_jetsf_p4 does not exist." << endl;
-	}
 	l1_jetst_p4_branch = 0;
 	if (tree->GetAlias("l1_jetst_p4") != 0) {
 		l1_jetst_p4_branch = tree->GetBranch(tree->GetAlias("l1_jetst_p4"));
 		l1_jetst_p4_branch->SetAddress(&l1_jetst_p4_);
-	}
-	if(l1_jetst_p4_branch == 0 ) {
-	cout << "Branch l1_jetst_p4 does not exist." << endl;
 	}
 	l1_mus_p4_branch = 0;
 	if (tree->GetAlias("l1_mus_p4") != 0) {
 		l1_mus_p4_branch = tree->GetBranch(tree->GetAlias("l1_mus_p4"));
 		l1_mus_p4_branch->SetAddress(&l1_mus_p4_);
 	}
-	if(l1_mus_p4_branch == 0 ) {
-	cout << "Branch l1_mus_p4 does not exist." << endl;
-	}
 	mus_ecalpos_p4_branch = 0;
 	if (tree->GetAlias("mus_ecalpos_p4") != 0) {
 		mus_ecalpos_p4_branch = tree->GetBranch(tree->GetAlias("mus_ecalpos_p4"));
 		mus_ecalpos_p4_branch->SetAddress(&mus_ecalpos_p4_);
-	}
-	if(mus_ecalpos_p4_branch == 0 ) {
-	cout << "Branch mus_ecalpos_p4 does not exist." << endl;
 	}
 	mus_fitdefault_p4_branch = 0;
 	if (tree->GetAlias("mus_fitdefault_p4") != 0) {
 		mus_fitdefault_p4_branch = tree->GetBranch(tree->GetAlias("mus_fitdefault_p4"));
 		mus_fitdefault_p4_branch->SetAddress(&mus_fitdefault_p4_);
 	}
-	if(mus_fitdefault_p4_branch == 0 ) {
-	cout << "Branch mus_fitdefault_p4 does not exist." << endl;
-	}
 	mus_fitfirsthit_p4_branch = 0;
 	if (tree->GetAlias("mus_fitfirsthit_p4") != 0) {
 		mus_fitfirsthit_p4_branch = tree->GetBranch(tree->GetAlias("mus_fitfirsthit_p4"));
 		mus_fitfirsthit_p4_branch->SetAddress(&mus_fitfirsthit_p4_);
-	}
-	if(mus_fitfirsthit_p4_branch == 0 ) {
-	cout << "Branch mus_fitfirsthit_p4 does not exist." << endl;
 	}
 	mus_fitpicky_p4_branch = 0;
 	if (tree->GetAlias("mus_fitpicky_p4") != 0) {
 		mus_fitpicky_p4_branch = tree->GetBranch(tree->GetAlias("mus_fitpicky_p4"));
 		mus_fitpicky_p4_branch->SetAddress(&mus_fitpicky_p4_);
 	}
-	if(mus_fitpicky_p4_branch == 0 ) {
-	cout << "Branch mus_fitpicky_p4 does not exist." << endl;
-	}
 	mus_fittev_p4_branch = 0;
 	if (tree->GetAlias("mus_fittev_p4") != 0) {
 		mus_fittev_p4_branch = tree->GetBranch(tree->GetAlias("mus_fittev_p4"));
 		mus_fittev_p4_branch->SetAddress(&mus_fittev_p4_);
-	}
-	if(mus_fittev_p4_branch == 0 ) {
-	cout << "Branch mus_fittev_p4 does not exist." << endl;
 	}
 	mus_gfit_outerPos_p4_branch = 0;
 	if (tree->GetAlias("mus_gfit_outerPos_p4") != 0) {
 		mus_gfit_outerPos_p4_branch = tree->GetBranch(tree->GetAlias("mus_gfit_outerPos_p4"));
 		mus_gfit_outerPos_p4_branch->SetAddress(&mus_gfit_outerPos_p4_);
 	}
-	if(mus_gfit_outerPos_p4_branch == 0 ) {
-	cout << "Branch mus_gfit_outerPos_p4 does not exist." << endl;
-	}
 	mus_gfit_p4_branch = 0;
 	if (tree->GetAlias("mus_gfit_p4") != 0) {
 		mus_gfit_p4_branch = tree->GetBranch(tree->GetAlias("mus_gfit_p4"));
 		mus_gfit_p4_branch->SetAddress(&mus_gfit_p4_);
-	}
-	if(mus_gfit_p4_branch == 0 ) {
-	cout << "Branch mus_gfit_p4 does not exist." << endl;
 	}
 	mus_gfit_vertex_p4_branch = 0;
 	if (tree->GetAlias("mus_gfit_vertex_p4") != 0) {
 		mus_gfit_vertex_p4_branch = tree->GetBranch(tree->GetAlias("mus_gfit_vertex_p4"));
 		mus_gfit_vertex_p4_branch->SetAddress(&mus_gfit_vertex_p4_);
 	}
-	if(mus_gfit_vertex_p4_branch == 0 ) {
-	cout << "Branch mus_gfit_vertex_p4 does not exist." << endl;
-	}
 	mus_p4_branch = 0;
 	if (tree->GetAlias("mus_p4") != 0) {
 		mus_p4_branch = tree->GetBranch(tree->GetAlias("mus_p4"));
 		mus_p4_branch->SetAddress(&mus_p4_);
-	}
-	if(mus_p4_branch == 0 ) {
-	cout << "Branch mus_p4 does not exist." << endl;
 	}
 	mus_sta_p4_branch = 0;
 	if (tree->GetAlias("mus_sta_p4") != 0) {
 		mus_sta_p4_branch = tree->GetBranch(tree->GetAlias("mus_sta_p4"));
 		mus_sta_p4_branch->SetAddress(&mus_sta_p4_);
 	}
-	if(mus_sta_p4_branch == 0 ) {
-	cout << "Branch mus_sta_p4 does not exist." << endl;
-	}
 	mus_sta_vertex_p4_branch = 0;
 	if (tree->GetAlias("mus_sta_vertex_p4") != 0) {
 		mus_sta_vertex_p4_branch = tree->GetBranch(tree->GetAlias("mus_sta_vertex_p4"));
 		mus_sta_vertex_p4_branch->SetAddress(&mus_sta_vertex_p4_);
-	}
-	if(mus_sta_vertex_p4_branch == 0 ) {
-	cout << "Branch mus_sta_vertex_p4 does not exist." << endl;
 	}
 	mus_trk_p4_branch = 0;
 	if (tree->GetAlias("mus_trk_p4") != 0) {
 		mus_trk_p4_branch = tree->GetBranch(tree->GetAlias("mus_trk_p4"));
 		mus_trk_p4_branch->SetAddress(&mus_trk_p4_);
 	}
-	if(mus_trk_p4_branch == 0 ) {
-	cout << "Branch mus_trk_p4 does not exist." << endl;
-	}
 	mus_vertex_p4_branch = 0;
 	if (tree->GetAlias("mus_vertex_p4") != 0) {
 		mus_vertex_p4_branch = tree->GetBranch(tree->GetAlias("mus_vertex_p4"));
 		mus_vertex_p4_branch->SetAddress(&mus_vertex_p4_);
-	}
-	if(mus_vertex_p4_branch == 0 ) {
-	cout << "Branch mus_vertex_p4 does not exist." << endl;
 	}
 	els_pat_genMotherP4_branch = 0;
 	if (tree->GetAlias("els_pat_genMotherP4") != 0) {
 		els_pat_genMotherP4_branch = tree->GetBranch(tree->GetAlias("els_pat_genMotherP4"));
 		els_pat_genMotherP4_branch->SetAddress(&els_pat_genMotherP4_);
 	}
-	if(els_pat_genMotherP4_branch == 0 ) {
-	cout << "Branch els_pat_genMotherP4 does not exist." << endl;
-	}
 	els_pat_genP4_branch = 0;
 	if (tree->GetAlias("els_pat_genP4") != 0) {
 		els_pat_genP4_branch = tree->GetBranch(tree->GetAlias("els_pat_genP4"));
 		els_pat_genP4_branch->SetAddress(&els_pat_genP4_);
-	}
-	if(els_pat_genP4_branch == 0 ) {
-	cout << "Branch els_pat_genP4 does not exist." << endl;
 	}
 	els_pat_p4_branch = 0;
 	if (tree->GetAlias("els_pat_p4") != 0) {
 		els_pat_p4_branch = tree->GetBranch(tree->GetAlias("els_pat_p4"));
 		els_pat_p4_branch->SetAddress(&els_pat_p4_);
 	}
-	if(els_pat_p4_branch == 0 ) {
-	cout << "Branch els_pat_p4 does not exist." << endl;
-	}
 	jets_pat_genJet_p4_branch = 0;
 	if (tree->GetAlias("jets_pat_genJet_p4") != 0) {
 		jets_pat_genJet_p4_branch = tree->GetBranch(tree->GetAlias("jets_pat_genJet_p4"));
 		jets_pat_genJet_p4_branch->SetAddress(&jets_pat_genJet_p4_);
-	}
-	if(jets_pat_genJet_p4_branch == 0 ) {
-	cout << "Branch jets_pat_genJet_p4 does not exist." << endl;
 	}
 	jets_pat_genPartonMother_p4_branch = 0;
 	if (tree->GetAlias("jets_pat_genPartonMother_p4") != 0) {
 		jets_pat_genPartonMother_p4_branch = tree->GetBranch(tree->GetAlias("jets_pat_genPartonMother_p4"));
 		jets_pat_genPartonMother_p4_branch->SetAddress(&jets_pat_genPartonMother_p4_);
 	}
-	if(jets_pat_genPartonMother_p4_branch == 0 ) {
-	cout << "Branch jets_pat_genPartonMother_p4 does not exist." << endl;
-	}
 	jets_pat_genParton_p4_branch = 0;
 	if (tree->GetAlias("jets_pat_genParton_p4") != 0) {
 		jets_pat_genParton_p4_branch = tree->GetBranch(tree->GetAlias("jets_pat_genParton_p4"));
 		jets_pat_genParton_p4_branch->SetAddress(&jets_pat_genParton_p4_);
-	}
-	if(jets_pat_genParton_p4_branch == 0 ) {
-	cout << "Branch jets_pat_genParton_p4 does not exist." << endl;
 	}
 	jets_pat_jet_p4_branch = 0;
 	if (tree->GetAlias("jets_pat_jet_p4") != 0) {
 		jets_pat_jet_p4_branch = tree->GetBranch(tree->GetAlias("jets_pat_jet_p4"));
 		jets_pat_jet_p4_branch->SetAddress(&jets_pat_jet_p4_);
 	}
-	if(jets_pat_jet_p4_branch == 0 ) {
-	cout << "Branch jets_pat_jet_p4 does not exist." << endl;
-	}
 	jets_pat_jet_uncorp4_branch = 0;
 	if (tree->GetAlias("jets_pat_jet_uncorp4") != 0) {
 		jets_pat_jet_uncorp4_branch = tree->GetBranch(tree->GetAlias("jets_pat_jet_uncorp4"));
 		jets_pat_jet_uncorp4_branch->SetAddress(&jets_pat_jet_uncorp4_);
-	}
-	if(jets_pat_jet_uncorp4_branch == 0 ) {
-	cout << "Branch jets_pat_jet_uncorp4 does not exist." << endl;
 	}
 	mus_pat_genMotherP4_branch = 0;
 	if (tree->GetAlias("mus_pat_genMotherP4") != 0) {
 		mus_pat_genMotherP4_branch = tree->GetBranch(tree->GetAlias("mus_pat_genMotherP4"));
 		mus_pat_genMotherP4_branch->SetAddress(&mus_pat_genMotherP4_);
 	}
-	if(mus_pat_genMotherP4_branch == 0 ) {
-	cout << "Branch mus_pat_genMotherP4 does not exist." << endl;
-	}
 	mus_pat_genP4_branch = 0;
 	if (tree->GetAlias("mus_pat_genP4") != 0) {
 		mus_pat_genP4_branch = tree->GetBranch(tree->GetAlias("mus_pat_genP4"));
 		mus_pat_genP4_branch->SetAddress(&mus_pat_genP4_);
-	}
-	if(mus_pat_genP4_branch == 0 ) {
-	cout << "Branch mus_pat_genP4 does not exist." << endl;
 	}
 	mus_pat_p4_branch = 0;
 	if (tree->GetAlias("mus_pat_p4") != 0) {
 		mus_pat_p4_branch = tree->GetBranch(tree->GetAlias("mus_pat_p4"));
 		mus_pat_p4_branch->SetAddress(&mus_pat_p4_);
 	}
-	if(mus_pat_p4_branch == 0 ) {
-	cout << "Branch mus_pat_p4 does not exist." << endl;
-	}
 	pfjets_p4_branch = 0;
 	if (tree->GetAlias("pfjets_p4") != 0) {
 		pfjets_p4_branch = tree->GetBranch(tree->GetAlias("pfjets_p4"));
 		pfjets_p4_branch->SetAddress(&pfjets_p4_);
-	}
-	if(pfjets_p4_branch == 0 ) {
-	cout << "Branch pfjets_p4 does not exist." << endl;
 	}
 	photons_p4_branch = 0;
 	if (tree->GetAlias("photons_p4") != 0) {
 		photons_p4_branch = tree->GetBranch(tree->GetAlias("photons_p4"));
 		photons_p4_branch->SetAddress(&photons_p4_);
 	}
-	if(photons_p4_branch == 0 ) {
-	cout << "Branch photons_p4 does not exist." << endl;
-	}
 	scs_p4_branch = 0;
 	if (tree->GetAlias("scs_p4") != 0) {
 		scs_p4_branch = tree->GetBranch(tree->GetAlias("scs_p4"));
 		scs_p4_branch->SetAddress(&scs_p4_);
-	}
-	if(scs_p4_branch == 0 ) {
-	cout << "Branch scs_p4 does not exist." << endl;
 	}
 	scs_pos_p4_branch = 0;
 	if (tree->GetAlias("scs_pos_p4") != 0) {
 		scs_pos_p4_branch = tree->GetBranch(tree->GetAlias("scs_pos_p4"));
 		scs_pos_p4_branch->SetAddress(&scs_pos_p4_);
 	}
-	if(scs_pos_p4_branch == 0 ) {
-	cout << "Branch scs_pos_p4 does not exist." << endl;
-	}
 	scs_vtx_p4_branch = 0;
 	if (tree->GetAlias("scs_vtx_p4") != 0) {
 		scs_vtx_p4_branch = tree->GetBranch(tree->GetAlias("scs_vtx_p4"));
 		scs_vtx_p4_branch->SetAddress(&scs_vtx_p4_);
-	}
-	if(scs_vtx_p4_branch == 0 ) {
-	cout << "Branch scs_vtx_p4 does not exist." << endl;
 	}
 	trks_inner_position_branch = 0;
 	if (tree->GetAlias("trks_inner_position") != 0) {
 		trks_inner_position_branch = tree->GetBranch(tree->GetAlias("trks_inner_position"));
 		trks_inner_position_branch->SetAddress(&trks_inner_position_);
 	}
-	if(trks_inner_position_branch == 0 ) {
-	cout << "Branch trks_inner_position does not exist." << endl;
-	}
 	trks_outer_p4_branch = 0;
 	if (tree->GetAlias("trks_outer_p4") != 0) {
 		trks_outer_p4_branch = tree->GetBranch(tree->GetAlias("trks_outer_p4"));
 		trks_outer_p4_branch->SetAddress(&trks_outer_p4_);
-	}
-	if(trks_outer_p4_branch == 0 ) {
-	cout << "Branch trks_outer_p4 does not exist." << endl;
 	}
 	trks_outer_position_branch = 0;
 	if (tree->GetAlias("trks_outer_position") != 0) {
 		trks_outer_position_branch = tree->GetBranch(tree->GetAlias("trks_outer_position"));
 		trks_outer_position_branch->SetAddress(&trks_outer_position_);
 	}
-	if(trks_outer_position_branch == 0 ) {
-	cout << "Branch trks_outer_position does not exist." << endl;
-	}
 	trks_trk_p4_branch = 0;
 	if (tree->GetAlias("trks_trk_p4") != 0) {
 		trks_trk_p4_branch = tree->GetBranch(tree->GetAlias("trks_trk_p4"));
 		trks_trk_p4_branch->SetAddress(&trks_trk_p4_);
-	}
-	if(trks_trk_p4_branch == 0 ) {
-	cout << "Branch trks_trk_p4 does not exist." << endl;
 	}
 	trks_vertex_p4_branch = 0;
 	if (tree->GetAlias("trks_vertex_p4") != 0) {
 		trks_vertex_p4_branch = tree->GetBranch(tree->GetAlias("trks_vertex_p4"));
 		trks_vertex_p4_branch->SetAddress(&trks_vertex_p4_);
 	}
-	if(trks_vertex_p4_branch == 0 ) {
-	cout << "Branch trks_vertex_p4 does not exist." << endl;
-	}
 	trkjets_p4_branch = 0;
 	if (tree->GetAlias("trkjets_p4") != 0) {
 		trkjets_p4_branch = tree->GetBranch(tree->GetAlias("trkjets_p4"));
 		trkjets_p4_branch->SetAddress(&trkjets_p4_);
 	}
-	if(trkjets_p4_branch == 0 ) {
-	cout << "Branch trkjets_p4 does not exist." << endl;
-	}
 	vtxs_position_branch = 0;
 	if (tree->GetAlias("vtxs_position") != 0) {
 		vtxs_position_branch = tree->GetBranch(tree->GetAlias("vtxs_position"));
 		vtxs_position_branch->SetAddress(&vtxs_position_);
-	}
-	if(vtxs_position_branch == 0 ) {
-	cout << "Branch vtxs_position does not exist." << endl;
 	}
   tree->SetMakeClass(1);
 	evt_CMS2tag_branch = 0;
@@ -3320,6584 +2975,3915 @@ void Init(TTree *tree) {
 		evt_CMS2tag_branch = tree->GetBranch(tree->GetAlias("evt_CMS2tag"));
 		evt_CMS2tag_branch->SetAddress(&evt_CMS2tag_);
 	}
-	if(evt_CMS2tag_branch == 0 ) {
-	cout << "Branch evt_CMS2tag does not exist." << endl;
-	}
 	evt_dataset_branch = 0;
 	if (tree->GetAlias("evt_dataset") != 0) {
 		evt_dataset_branch = tree->GetBranch(tree->GetAlias("evt_dataset"));
 		evt_dataset_branch->SetAddress(&evt_dataset_);
-	}
-	if(evt_dataset_branch == 0 ) {
-	cout << "Branch evt_dataset does not exist." << endl;
 	}
 	hlt1e31_trigNames_branch = 0;
 	if (tree->GetAlias("hlt1e31_trigNames") != 0) {
 		hlt1e31_trigNames_branch = tree->GetBranch(tree->GetAlias("hlt1e31_trigNames"));
 		hlt1e31_trigNames_branch->SetAddress(&hlt1e31_trigNames_);
 	}
-	if(hlt1e31_trigNames_branch == 0 ) {
-	cout << "Branch hlt1e31_trigNames does not exist." << endl;
-	}
 	hlt8e29_trigNames_branch = 0;
 	if (tree->GetAlias("hlt8e29_trigNames") != 0) {
 		hlt8e29_trigNames_branch = tree->GetBranch(tree->GetAlias("hlt8e29_trigNames"));
 		hlt8e29_trigNames_branch->SetAddress(&hlt8e29_trigNames_);
-	}
-	if(hlt8e29_trigNames_branch == 0 ) {
-	cout << "Branch hlt8e29_trigNames does not exist." << endl;
 	}
 	hlt_trigNames_branch = 0;
 	if (tree->GetAlias("hlt_trigNames") != 0) {
 		hlt_trigNames_branch = tree->GetBranch(tree->GetAlias("hlt_trigNames"));
 		hlt_trigNames_branch->SetAddress(&hlt_trigNames_);
 	}
-	if(hlt_trigNames_branch == 0 ) {
-	cout << "Branch hlt_trigNames does not exist." << endl;
-	}
 	l1_techtrigNames_branch = 0;
 	if (tree->GetAlias("l1_techtrigNames") != 0) {
 		l1_techtrigNames_branch = tree->GetBranch(tree->GetAlias("l1_techtrigNames"));
 		l1_techtrigNames_branch->SetAddress(&l1_techtrigNames_);
-	}
-	if(l1_techtrigNames_branch == 0 ) {
-	cout << "Branch l1_techtrigNames does not exist." << endl;
 	}
 	l1_trigNames_branch = 0;
 	if (tree->GetAlias("l1_trigNames") != 0) {
 		l1_trigNames_branch = tree->GetBranch(tree->GetAlias("l1_trigNames"));
 		l1_trigNames_branch->SetAddress(&l1_trigNames_);
 	}
-	if(l1_trigNames_branch == 0 ) {
-	cout << "Branch l1_trigNames does not exist." << endl;
-	}
 	jets_closestElectron_DR_branch = 0;
 	if (tree->GetAlias("jets_closestElectron_DR") != 0) {
 		jets_closestElectron_DR_branch = tree->GetBranch(tree->GetAlias("jets_closestElectron_DR"));
 		jets_closestElectron_DR_branch->SetAddress(&jets_closestElectron_DR_);
-	}
-	if(jets_closestElectron_DR_branch == 0 ) {
-	cout << "Branch jets_closestElectron_DR does not exist." << endl;
 	}
 	jets_closestMuon_DR_branch = 0;
 	if (tree->GetAlias("jets_closestMuon_DR") != 0) {
 		jets_closestMuon_DR_branch = tree->GetBranch(tree->GetAlias("jets_closestMuon_DR"));
 		jets_closestMuon_DR_branch->SetAddress(&jets_closestMuon_DR_);
 	}
-	if(jets_closestMuon_DR_branch == 0 ) {
-	cout << "Branch jets_closestMuon_DR does not exist." << endl;
-	}
 	evt_bs_Xwidth_branch = 0;
 	if (tree->GetAlias("evt_bs_Xwidth") != 0) {
 		evt_bs_Xwidth_branch = tree->GetBranch(tree->GetAlias("evt_bs_Xwidth"));
 		evt_bs_Xwidth_branch->SetAddress(&evt_bs_Xwidth_);
-	}
-	if(evt_bs_Xwidth_branch == 0 ) {
-	cout << "Branch evt_bs_Xwidth does not exist." << endl;
 	}
 	evt_bs_XwidthErr_branch = 0;
 	if (tree->GetAlias("evt_bs_XwidthErr") != 0) {
 		evt_bs_XwidthErr_branch = tree->GetBranch(tree->GetAlias("evt_bs_XwidthErr"));
 		evt_bs_XwidthErr_branch->SetAddress(&evt_bs_XwidthErr_);
 	}
-	if(evt_bs_XwidthErr_branch == 0 ) {
-	cout << "Branch evt_bs_XwidthErr does not exist." << endl;
-	}
 	evt_bs_Ywidth_branch = 0;
 	if (tree->GetAlias("evt_bs_Ywidth") != 0) {
 		evt_bs_Ywidth_branch = tree->GetBranch(tree->GetAlias("evt_bs_Ywidth"));
 		evt_bs_Ywidth_branch->SetAddress(&evt_bs_Ywidth_);
-	}
-	if(evt_bs_Ywidth_branch == 0 ) {
-	cout << "Branch evt_bs_Ywidth does not exist." << endl;
 	}
 	evt_bs_YwidthErr_branch = 0;
 	if (tree->GetAlias("evt_bs_YwidthErr") != 0) {
 		evt_bs_YwidthErr_branch = tree->GetBranch(tree->GetAlias("evt_bs_YwidthErr"));
 		evt_bs_YwidthErr_branch->SetAddress(&evt_bs_YwidthErr_);
 	}
-	if(evt_bs_YwidthErr_branch == 0 ) {
-	cout << "Branch evt_bs_YwidthErr does not exist." << endl;
-	}
 	evt_bs_dxdz_branch = 0;
 	if (tree->GetAlias("evt_bs_dxdz") != 0) {
 		evt_bs_dxdz_branch = tree->GetBranch(tree->GetAlias("evt_bs_dxdz"));
 		evt_bs_dxdz_branch->SetAddress(&evt_bs_dxdz_);
-	}
-	if(evt_bs_dxdz_branch == 0 ) {
-	cout << "Branch evt_bs_dxdz does not exist." << endl;
 	}
 	evt_bs_dxdzErr_branch = 0;
 	if (tree->GetAlias("evt_bs_dxdzErr") != 0) {
 		evt_bs_dxdzErr_branch = tree->GetBranch(tree->GetAlias("evt_bs_dxdzErr"));
 		evt_bs_dxdzErr_branch->SetAddress(&evt_bs_dxdzErr_);
 	}
-	if(evt_bs_dxdzErr_branch == 0 ) {
-	cout << "Branch evt_bs_dxdzErr does not exist." << endl;
-	}
 	evt_bs_dydz_branch = 0;
 	if (tree->GetAlias("evt_bs_dydz") != 0) {
 		evt_bs_dydz_branch = tree->GetBranch(tree->GetAlias("evt_bs_dydz"));
 		evt_bs_dydz_branch->SetAddress(&evt_bs_dydz_);
-	}
-	if(evt_bs_dydz_branch == 0 ) {
-	cout << "Branch evt_bs_dydz does not exist." << endl;
 	}
 	evt_bs_dydzErr_branch = 0;
 	if (tree->GetAlias("evt_bs_dydzErr") != 0) {
 		evt_bs_dydzErr_branch = tree->GetBranch(tree->GetAlias("evt_bs_dydzErr"));
 		evt_bs_dydzErr_branch->SetAddress(&evt_bs_dydzErr_);
 	}
-	if(evt_bs_dydzErr_branch == 0 ) {
-	cout << "Branch evt_bs_dydzErr does not exist." << endl;
-	}
 	evt_bs_sigmaZ_branch = 0;
 	if (tree->GetAlias("evt_bs_sigmaZ") != 0) {
 		evt_bs_sigmaZ_branch = tree->GetBranch(tree->GetAlias("evt_bs_sigmaZ"));
 		evt_bs_sigmaZ_branch->SetAddress(&evt_bs_sigmaZ_);
-	}
-	if(evt_bs_sigmaZ_branch == 0 ) {
-	cout << "Branch evt_bs_sigmaZ does not exist." << endl;
 	}
 	evt_bs_sigmaZErr_branch = 0;
 	if (tree->GetAlias("evt_bs_sigmaZErr") != 0) {
 		evt_bs_sigmaZErr_branch = tree->GetBranch(tree->GetAlias("evt_bs_sigmaZErr"));
 		evt_bs_sigmaZErr_branch->SetAddress(&evt_bs_sigmaZErr_);
 	}
-	if(evt_bs_sigmaZErr_branch == 0 ) {
-	cout << "Branch evt_bs_sigmaZErr does not exist." << endl;
-	}
 	evt_bs_xErr_branch = 0;
 	if (tree->GetAlias("evt_bs_xErr") != 0) {
 		evt_bs_xErr_branch = tree->GetBranch(tree->GetAlias("evt_bs_xErr"));
 		evt_bs_xErr_branch->SetAddress(&evt_bs_xErr_);
-	}
-	if(evt_bs_xErr_branch == 0 ) {
-	cout << "Branch evt_bs_xErr does not exist." << endl;
 	}
 	evt_bs_yErr_branch = 0;
 	if (tree->GetAlias("evt_bs_yErr") != 0) {
 		evt_bs_yErr_branch = tree->GetBranch(tree->GetAlias("evt_bs_yErr"));
 		evt_bs_yErr_branch->SetAddress(&evt_bs_yErr_);
 	}
-	if(evt_bs_yErr_branch == 0 ) {
-	cout << "Branch evt_bs_yErr does not exist." << endl;
-	}
 	evt_bs_zErr_branch = 0;
 	if (tree->GetAlias("evt_bs_zErr") != 0) {
 		evt_bs_zErr_branch = tree->GetBranch(tree->GetAlias("evt_bs_zErr"));
 		evt_bs_zErr_branch->SetAddress(&evt_bs_zErr_);
-	}
-	if(evt_bs_zErr_branch == 0 ) {
-	cout << "Branch evt_bs_zErr does not exist." << endl;
 	}
 	evt_bField_branch = 0;
 	if (tree->GetAlias("evt_bField") != 0) {
 		evt_bField_branch = tree->GetBranch(tree->GetAlias("evt_bField"));
 		evt_bField_branch->SetAddress(&evt_bField_);
 	}
-	if(evt_bField_branch == 0 ) {
-	cout << "Branch evt_bField does not exist." << endl;
-	}
 	evt_kfactor_branch = 0;
 	if (tree->GetAlias("evt_kfactor") != 0) {
 		evt_kfactor_branch = tree->GetBranch(tree->GetAlias("evt_kfactor"));
 		evt_kfactor_branch->SetAddress(&evt_kfactor_);
-	}
-	if(evt_kfactor_branch == 0 ) {
-	cout << "Branch evt_kfactor does not exist." << endl;
 	}
 	evt_scale1fb_branch = 0;
 	if (tree->GetAlias("evt_scale1fb") != 0) {
 		evt_scale1fb_branch = tree->GetBranch(tree->GetAlias("evt_scale1fb"));
 		evt_scale1fb_branch->SetAddress(&evt_scale1fb_);
 	}
-	if(evt_scale1fb_branch == 0 ) {
-	cout << "Branch evt_scale1fb does not exist." << endl;
-	}
 	evt_xsec_excl_branch = 0;
 	if (tree->GetAlias("evt_xsec_excl") != 0) {
 		evt_xsec_excl_branch = tree->GetBranch(tree->GetAlias("evt_xsec_excl"));
 		evt_xsec_excl_branch->SetAddress(&evt_xsec_excl_);
-	}
-	if(evt_xsec_excl_branch == 0 ) {
-	cout << "Branch evt_xsec_excl does not exist." << endl;
 	}
 	evt_xsec_incl_branch = 0;
 	if (tree->GetAlias("evt_xsec_incl") != 0) {
 		evt_xsec_incl_branch = tree->GetBranch(tree->GetAlias("evt_xsec_incl"));
 		evt_xsec_incl_branch->SetAddress(&evt_xsec_incl_);
 	}
-	if(evt_xsec_incl_branch == 0 ) {
-	cout << "Branch evt_xsec_incl does not exist." << endl;
-	}
 	gen_met_branch = 0;
 	if (tree->GetAlias("gen_met") != 0) {
 		gen_met_branch = tree->GetBranch(tree->GetAlias("gen_met"));
 		gen_met_branch->SetAddress(&gen_met_);
-	}
-	if(gen_met_branch == 0 ) {
-	cout << "Branch gen_met does not exist." << endl;
 	}
 	gen_metPhi_branch = 0;
 	if (tree->GetAlias("gen_metPhi") != 0) {
 		gen_metPhi_branch = tree->GetBranch(tree->GetAlias("gen_metPhi"));
 		gen_metPhi_branch->SetAddress(&gen_metPhi_);
 	}
-	if(gen_metPhi_branch == 0 ) {
-	cout << "Branch gen_metPhi does not exist." << endl;
-	}
 	genps_alphaQCD_branch = 0;
 	if (tree->GetAlias("genps_alphaQCD") != 0) {
 		genps_alphaQCD_branch = tree->GetBranch(tree->GetAlias("genps_alphaQCD"));
 		genps_alphaQCD_branch->SetAddress(&genps_alphaQCD_);
-	}
-	if(genps_alphaQCD_branch == 0 ) {
-	cout << "Branch genps_alphaQCD does not exist." << endl;
 	}
 	genps_pthat_branch = 0;
 	if (tree->GetAlias("genps_pthat") != 0) {
 		genps_pthat_branch = tree->GetBranch(tree->GetAlias("genps_pthat"));
 		genps_pthat_branch->SetAddress(&genps_pthat_);
 	}
-	if(genps_pthat_branch == 0 ) {
-	cout << "Branch genps_pthat does not exist." << endl;
-	}
 	genps_qScale_branch = 0;
 	if (tree->GetAlias("genps_qScale") != 0) {
 		genps_qScale_branch = tree->GetBranch(tree->GetAlias("genps_qScale"));
 		genps_qScale_branch->SetAddress(&genps_qScale_);
-	}
-	if(genps_qScale_branch == 0 ) {
-	cout << "Branch genps_qScale does not exist." << endl;
 	}
 	genps_weight_branch = 0;
 	if (tree->GetAlias("genps_weight") != 0) {
 		genps_weight_branch = tree->GetBranch(tree->GetAlias("genps_weight"));
 		genps_weight_branch->SetAddress(&genps_weight_);
 	}
-	if(genps_weight_branch == 0 ) {
-	cout << "Branch genps_weight does not exist." << endl;
-	}
 	gen_sumEt_branch = 0;
 	if (tree->GetAlias("gen_sumEt") != 0) {
 		gen_sumEt_branch = tree->GetBranch(tree->GetAlias("gen_sumEt"));
 		gen_sumEt_branch->SetAddress(&gen_sumEt_);
-	}
-	if(gen_sumEt_branch == 0 ) {
-	cout << "Branch gen_sumEt does not exist." << endl;
 	}
 	hcalnoise_eventChargeFraction_branch = 0;
 	if (tree->GetAlias("hcalnoise_eventChargeFraction") != 0) {
 		hcalnoise_eventChargeFraction_branch = tree->GetBranch(tree->GetAlias("hcalnoise_eventChargeFraction"));
 		hcalnoise_eventChargeFraction_branch->SetAddress(&hcalnoise_eventChargeFraction_);
 	}
-	if(hcalnoise_eventChargeFraction_branch == 0 ) {
-	cout << "Branch hcalnoise_eventChargeFraction does not exist." << endl;
-	}
 	hcalnoise_eventEMEnergy_branch = 0;
 	if (tree->GetAlias("hcalnoise_eventEMEnergy") != 0) {
 		hcalnoise_eventEMEnergy_branch = tree->GetBranch(tree->GetAlias("hcalnoise_eventEMEnergy"));
 		hcalnoise_eventEMEnergy_branch->SetAddress(&hcalnoise_eventEMEnergy_);
-	}
-	if(hcalnoise_eventEMEnergy_branch == 0 ) {
-	cout << "Branch hcalnoise_eventEMEnergy does not exist." << endl;
 	}
 	hcalnoise_eventEMFraction_branch = 0;
 	if (tree->GetAlias("hcalnoise_eventEMFraction") != 0) {
 		hcalnoise_eventEMFraction_branch = tree->GetBranch(tree->GetAlias("hcalnoise_eventEMFraction"));
 		hcalnoise_eventEMFraction_branch->SetAddress(&hcalnoise_eventEMFraction_);
 	}
-	if(hcalnoise_eventEMFraction_branch == 0 ) {
-	cout << "Branch hcalnoise_eventEMFraction does not exist." << endl;
-	}
 	hcalnoise_eventHadEnergy_branch = 0;
 	if (tree->GetAlias("hcalnoise_eventHadEnergy") != 0) {
 		hcalnoise_eventHadEnergy_branch = tree->GetBranch(tree->GetAlias("hcalnoise_eventHadEnergy"));
 		hcalnoise_eventHadEnergy_branch->SetAddress(&hcalnoise_eventHadEnergy_);
-	}
-	if(hcalnoise_eventHadEnergy_branch == 0 ) {
-	cout << "Branch hcalnoise_eventHadEnergy does not exist." << endl;
 	}
 	hcalnoise_eventTrackEnergy_branch = 0;
 	if (tree->GetAlias("hcalnoise_eventTrackEnergy") != 0) {
 		hcalnoise_eventTrackEnergy_branch = tree->GetBranch(tree->GetAlias("hcalnoise_eventTrackEnergy"));
 		hcalnoise_eventTrackEnergy_branch->SetAddress(&hcalnoise_eventTrackEnergy_);
 	}
-	if(hcalnoise_eventTrackEnergy_branch == 0 ) {
-	cout << "Branch hcalnoise_eventTrackEnergy does not exist." << endl;
-	}
 	hcalnoise_max10GeVHitTime_branch = 0;
 	if (tree->GetAlias("hcalnoise_max10GeVHitTime") != 0) {
 		hcalnoise_max10GeVHitTime_branch = tree->GetBranch(tree->GetAlias("hcalnoise_max10GeVHitTime"));
 		hcalnoise_max10GeVHitTime_branch->SetAddress(&hcalnoise_max10GeVHitTime_);
-	}
-	if(hcalnoise_max10GeVHitTime_branch == 0 ) {
-	cout << "Branch hcalnoise_max10GeVHitTime does not exist." << endl;
 	}
 	hcalnoise_max25GeVHitTime_branch = 0;
 	if (tree->GetAlias("hcalnoise_max25GeVHitTime") != 0) {
 		hcalnoise_max25GeVHitTime_branch = tree->GetBranch(tree->GetAlias("hcalnoise_max25GeVHitTime"));
 		hcalnoise_max25GeVHitTime_branch->SetAddress(&hcalnoise_max25GeVHitTime_);
 	}
-	if(hcalnoise_max25GeVHitTime_branch == 0 ) {
-	cout << "Branch hcalnoise_max25GeVHitTime does not exist." << endl;
-	}
 	hcalnoise_min10GeVHitTime_branch = 0;
 	if (tree->GetAlias("hcalnoise_min10GeVHitTime") != 0) {
 		hcalnoise_min10GeVHitTime_branch = tree->GetBranch(tree->GetAlias("hcalnoise_min10GeVHitTime"));
 		hcalnoise_min10GeVHitTime_branch->SetAddress(&hcalnoise_min10GeVHitTime_);
-	}
-	if(hcalnoise_min10GeVHitTime_branch == 0 ) {
-	cout << "Branch hcalnoise_min10GeVHitTime does not exist." << endl;
 	}
 	hcalnoise_min25GeVHitTime_branch = 0;
 	if (tree->GetAlias("hcalnoise_min25GeVHitTime") != 0) {
 		hcalnoise_min25GeVHitTime_branch = tree->GetBranch(tree->GetAlias("hcalnoise_min25GeVHitTime"));
 		hcalnoise_min25GeVHitTime_branch->SetAddress(&hcalnoise_min25GeVHitTime_);
 	}
-	if(hcalnoise_min25GeVHitTime_branch == 0 ) {
-	cout << "Branch hcalnoise_min25GeVHitTime does not exist." << endl;
-	}
 	hcalnoise_minE10TS_branch = 0;
 	if (tree->GetAlias("hcalnoise_minE10TS") != 0) {
 		hcalnoise_minE10TS_branch = tree->GetBranch(tree->GetAlias("hcalnoise_minE10TS"));
 		hcalnoise_minE10TS_branch->SetAddress(&hcalnoise_minE10TS_);
-	}
-	if(hcalnoise_minE10TS_branch == 0 ) {
-	cout << "Branch hcalnoise_minE10TS does not exist." << endl;
 	}
 	hcalnoise_minE2Over10TS_branch = 0;
 	if (tree->GetAlias("hcalnoise_minE2Over10TS") != 0) {
 		hcalnoise_minE2Over10TS_branch = tree->GetBranch(tree->GetAlias("hcalnoise_minE2Over10TS"));
 		hcalnoise_minE2Over10TS_branch->SetAddress(&hcalnoise_minE2Over10TS_);
 	}
-	if(hcalnoise_minE2Over10TS_branch == 0 ) {
-	cout << "Branch hcalnoise_minE2Over10TS does not exist." << endl;
-	}
 	hcalnoise_minE2TS_branch = 0;
 	if (tree->GetAlias("hcalnoise_minE2TS") != 0) {
 		hcalnoise_minE2TS_branch = tree->GetBranch(tree->GetAlias("hcalnoise_minE2TS"));
 		hcalnoise_minE2TS_branch->SetAddress(&hcalnoise_minE2TS_);
-	}
-	if(hcalnoise_minE2TS_branch == 0 ) {
-	cout << "Branch hcalnoise_minE2TS does not exist." << endl;
 	}
 	hcalnoise_minHPDEMF_branch = 0;
 	if (tree->GetAlias("hcalnoise_minHPDEMF") != 0) {
 		hcalnoise_minHPDEMF_branch = tree->GetBranch(tree->GetAlias("hcalnoise_minHPDEMF"));
 		hcalnoise_minHPDEMF_branch->SetAddress(&hcalnoise_minHPDEMF_);
 	}
-	if(hcalnoise_minHPDEMF_branch == 0 ) {
-	cout << "Branch hcalnoise_minHPDEMF does not exist." << endl;
-	}
 	hcalnoise_minRBXEMF_branch = 0;
 	if (tree->GetAlias("hcalnoise_minRBXEMF") != 0) {
 		hcalnoise_minRBXEMF_branch = tree->GetBranch(tree->GetAlias("hcalnoise_minRBXEMF"));
 		hcalnoise_minRBXEMF_branch->SetAddress(&hcalnoise_minRBXEMF_);
-	}
-	if(hcalnoise_minRBXEMF_branch == 0 ) {
-	cout << "Branch hcalnoise_minRBXEMF does not exist." << endl;
 	}
 	hcalnoise_rms10GeVHitTime_branch = 0;
 	if (tree->GetAlias("hcalnoise_rms10GeVHitTime") != 0) {
 		hcalnoise_rms10GeVHitTime_branch = tree->GetBranch(tree->GetAlias("hcalnoise_rms10GeVHitTime"));
 		hcalnoise_rms10GeVHitTime_branch->SetAddress(&hcalnoise_rms10GeVHitTime_);
 	}
-	if(hcalnoise_rms10GeVHitTime_branch == 0 ) {
-	cout << "Branch hcalnoise_rms10GeVHitTime does not exist." << endl;
-	}
 	hcalnoise_rms25GeVHitTime_branch = 0;
 	if (tree->GetAlias("hcalnoise_rms25GeVHitTime") != 0) {
 		hcalnoise_rms25GeVHitTime_branch = tree->GetBranch(tree->GetAlias("hcalnoise_rms25GeVHitTime"));
 		hcalnoise_rms25GeVHitTime_branch->SetAddress(&hcalnoise_rms25GeVHitTime_);
-	}
-	if(hcalnoise_rms25GeVHitTime_branch == 0 ) {
-	cout << "Branch hcalnoise_rms25GeVHitTime does not exist." << endl;
 	}
 	l1_met_etTot_branch = 0;
 	if (tree->GetAlias("l1_met_etTot") != 0) {
 		l1_met_etTot_branch = tree->GetBranch(tree->GetAlias("l1_met_etTot"));
 		l1_met_etTot_branch->SetAddress(&l1_met_etTot_);
 	}
-	if(l1_met_etTot_branch == 0 ) {
-	cout << "Branch l1_met_etTot does not exist." << endl;
-	}
 	l1_met_met_branch = 0;
 	if (tree->GetAlias("l1_met_met") != 0) {
 		l1_met_met_branch = tree->GetBranch(tree->GetAlias("l1_met_met"));
 		l1_met_met_branch->SetAddress(&l1_met_met_);
-	}
-	if(l1_met_met_branch == 0 ) {
-	cout << "Branch l1_met_met does not exist." << endl;
 	}
 	l1_mht_htTot_branch = 0;
 	if (tree->GetAlias("l1_mht_htTot") != 0) {
 		l1_mht_htTot_branch = tree->GetBranch(tree->GetAlias("l1_mht_htTot"));
 		l1_mht_htTot_branch->SetAddress(&l1_mht_htTot_);
 	}
-	if(l1_mht_htTot_branch == 0 ) {
-	cout << "Branch l1_mht_htTot does not exist." << endl;
-	}
 	l1_mht_mht_branch = 0;
 	if (tree->GetAlias("l1_mht_mht") != 0) {
 		l1_mht_mht_branch = tree->GetBranch(tree->GetAlias("l1_mht_mht"));
 		l1_mht_mht_branch->SetAddress(&l1_mht_mht_);
-	}
-	if(l1_mht_mht_branch == 0 ) {
-	cout << "Branch l1_mht_mht does not exist." << endl;
 	}
 	evt_ecalendcapm_met_branch = 0;
 	if (tree->GetAlias("evt_ecalendcapm_met") != 0) {
 		evt_ecalendcapm_met_branch = tree->GetBranch(tree->GetAlias("evt_ecalendcapm_met"));
 		evt_ecalendcapm_met_branch->SetAddress(&evt_ecalendcapm_met_);
 	}
-	if(evt_ecalendcapm_met_branch == 0 ) {
-	cout << "Branch evt_ecalendcapm_met does not exist." << endl;
-	}
 	evt_ecalendcapm_metPhi_branch = 0;
 	if (tree->GetAlias("evt_ecalendcapm_metPhi") != 0) {
 		evt_ecalendcapm_metPhi_branch = tree->GetBranch(tree->GetAlias("evt_ecalendcapm_metPhi"));
 		evt_ecalendcapm_metPhi_branch->SetAddress(&evt_ecalendcapm_metPhi_);
-	}
-	if(evt_ecalendcapm_metPhi_branch == 0 ) {
-	cout << "Branch evt_ecalendcapm_metPhi does not exist." << endl;
 	}
 	evt_ecalendcapp_met_branch = 0;
 	if (tree->GetAlias("evt_ecalendcapp_met") != 0) {
 		evt_ecalendcapp_met_branch = tree->GetBranch(tree->GetAlias("evt_ecalendcapp_met"));
 		evt_ecalendcapp_met_branch->SetAddress(&evt_ecalendcapp_met_);
 	}
-	if(evt_ecalendcapp_met_branch == 0 ) {
-	cout << "Branch evt_ecalendcapp_met does not exist." << endl;
-	}
 	evt_ecalendcapp_metPhi_branch = 0;
 	if (tree->GetAlias("evt_ecalendcapp_metPhi") != 0) {
 		evt_ecalendcapp_metPhi_branch = tree->GetBranch(tree->GetAlias("evt_ecalendcapp_metPhi"));
 		evt_ecalendcapp_metPhi_branch->SetAddress(&evt_ecalendcapp_metPhi_);
-	}
-	if(evt_ecalendcapp_metPhi_branch == 0 ) {
-	cout << "Branch evt_ecalendcapp_metPhi does not exist." << endl;
 	}
 	evt_ecalmet_branch = 0;
 	if (tree->GetAlias("evt_ecalmet") != 0) {
 		evt_ecalmet_branch = tree->GetBranch(tree->GetAlias("evt_ecalmet"));
 		evt_ecalmet_branch->SetAddress(&evt_ecalmet_);
 	}
-	if(evt_ecalmet_branch == 0 ) {
-	cout << "Branch evt_ecalmet does not exist." << endl;
-	}
 	evt_ecalmetPhi_branch = 0;
 	if (tree->GetAlias("evt_ecalmetPhi") != 0) {
 		evt_ecalmetPhi_branch = tree->GetBranch(tree->GetAlias("evt_ecalmetPhi"));
 		evt_ecalmetPhi_branch->SetAddress(&evt_ecalmetPhi_);
-	}
-	if(evt_ecalmetPhi_branch == 0 ) {
-	cout << "Branch evt_ecalmetPhi does not exist." << endl;
 	}
 	evt_endcapm_met_branch = 0;
 	if (tree->GetAlias("evt_endcapm_met") != 0) {
 		evt_endcapm_met_branch = tree->GetBranch(tree->GetAlias("evt_endcapm_met"));
 		evt_endcapm_met_branch->SetAddress(&evt_endcapm_met_);
 	}
-	if(evt_endcapm_met_branch == 0 ) {
-	cout << "Branch evt_endcapm_met does not exist." << endl;
-	}
 	evt_endcapm_metPhi_branch = 0;
 	if (tree->GetAlias("evt_endcapm_metPhi") != 0) {
 		evt_endcapm_metPhi_branch = tree->GetBranch(tree->GetAlias("evt_endcapm_metPhi"));
 		evt_endcapm_metPhi_branch->SetAddress(&evt_endcapm_metPhi_);
-	}
-	if(evt_endcapm_metPhi_branch == 0 ) {
-	cout << "Branch evt_endcapm_metPhi does not exist." << endl;
 	}
 	evt_endcapp_met_branch = 0;
 	if (tree->GetAlias("evt_endcapp_met") != 0) {
 		evt_endcapp_met_branch = tree->GetBranch(tree->GetAlias("evt_endcapp_met"));
 		evt_endcapp_met_branch->SetAddress(&evt_endcapp_met_);
 	}
-	if(evt_endcapp_met_branch == 0 ) {
-	cout << "Branch evt_endcapp_met does not exist." << endl;
-	}
 	evt_endcapp_metPhi_branch = 0;
 	if (tree->GetAlias("evt_endcapp_metPhi") != 0) {
 		evt_endcapp_metPhi_branch = tree->GetBranch(tree->GetAlias("evt_endcapp_metPhi"));
 		evt_endcapp_metPhi_branch->SetAddress(&evt_endcapp_metPhi_);
-	}
-	if(evt_endcapp_metPhi_branch == 0 ) {
-	cout << "Branch evt_endcapp_metPhi does not exist." << endl;
 	}
 	evt_hcalendcapm_met_branch = 0;
 	if (tree->GetAlias("evt_hcalendcapm_met") != 0) {
 		evt_hcalendcapm_met_branch = tree->GetBranch(tree->GetAlias("evt_hcalendcapm_met"));
 		evt_hcalendcapm_met_branch->SetAddress(&evt_hcalendcapm_met_);
 	}
-	if(evt_hcalendcapm_met_branch == 0 ) {
-	cout << "Branch evt_hcalendcapm_met does not exist." << endl;
-	}
 	evt_hcalendcapm_metPhi_branch = 0;
 	if (tree->GetAlias("evt_hcalendcapm_metPhi") != 0) {
 		evt_hcalendcapm_metPhi_branch = tree->GetBranch(tree->GetAlias("evt_hcalendcapm_metPhi"));
 		evt_hcalendcapm_metPhi_branch->SetAddress(&evt_hcalendcapm_metPhi_);
-	}
-	if(evt_hcalendcapm_metPhi_branch == 0 ) {
-	cout << "Branch evt_hcalendcapm_metPhi does not exist." << endl;
 	}
 	evt_hcalendcapp_met_branch = 0;
 	if (tree->GetAlias("evt_hcalendcapp_met") != 0) {
 		evt_hcalendcapp_met_branch = tree->GetBranch(tree->GetAlias("evt_hcalendcapp_met"));
 		evt_hcalendcapp_met_branch->SetAddress(&evt_hcalendcapp_met_);
 	}
-	if(evt_hcalendcapp_met_branch == 0 ) {
-	cout << "Branch evt_hcalendcapp_met does not exist." << endl;
-	}
 	evt_hcalendcapp_metPhi_branch = 0;
 	if (tree->GetAlias("evt_hcalendcapp_metPhi") != 0) {
 		evt_hcalendcapp_metPhi_branch = tree->GetBranch(tree->GetAlias("evt_hcalendcapp_metPhi"));
 		evt_hcalendcapp_metPhi_branch->SetAddress(&evt_hcalendcapp_metPhi_);
-	}
-	if(evt_hcalendcapp_metPhi_branch == 0 ) {
-	cout << "Branch evt_hcalendcapp_metPhi does not exist." << endl;
 	}
 	evt_hcalmet_branch = 0;
 	if (tree->GetAlias("evt_hcalmet") != 0) {
 		evt_hcalmet_branch = tree->GetBranch(tree->GetAlias("evt_hcalmet"));
 		evt_hcalmet_branch->SetAddress(&evt_hcalmet_);
 	}
-	if(evt_hcalmet_branch == 0 ) {
-	cout << "Branch evt_hcalmet does not exist." << endl;
-	}
 	evt_hcalmetPhi_branch = 0;
 	if (tree->GetAlias("evt_hcalmetPhi") != 0) {
 		evt_hcalmetPhi_branch = tree->GetBranch(tree->GetAlias("evt_hcalmetPhi"));
 		evt_hcalmetPhi_branch->SetAddress(&evt_hcalmetPhi_);
-	}
-	if(evt_hcalmetPhi_branch == 0 ) {
-	cout << "Branch evt_hcalmetPhi does not exist." << endl;
 	}
 	evt_met_branch = 0;
 	if (tree->GetAlias("evt_met") != 0) {
 		evt_met_branch = tree->GetBranch(tree->GetAlias("evt_met"));
 		evt_met_branch->SetAddress(&evt_met_);
 	}
-	if(evt_met_branch == 0 ) {
-	cout << "Branch evt_met does not exist." << endl;
-	}
 	evt_metHO_branch = 0;
 	if (tree->GetAlias("evt_metHO") != 0) {
 		evt_metHO_branch = tree->GetBranch(tree->GetAlias("evt_metHO"));
 		evt_metHO_branch->SetAddress(&evt_metHO_);
-	}
-	if(evt_metHO_branch == 0 ) {
-	cout << "Branch evt_metHO does not exist." << endl;
 	}
 	evt_metHOPhi_branch = 0;
 	if (tree->GetAlias("evt_metHOPhi") != 0) {
 		evt_metHOPhi_branch = tree->GetBranch(tree->GetAlias("evt_metHOPhi"));
 		evt_metHOPhi_branch->SetAddress(&evt_metHOPhi_);
 	}
-	if(evt_metHOPhi_branch == 0 ) {
-	cout << "Branch evt_metHOPhi does not exist." << endl;
-	}
 	evt_metHOSig_branch = 0;
 	if (tree->GetAlias("evt_metHOSig") != 0) {
 		evt_metHOSig_branch = tree->GetBranch(tree->GetAlias("evt_metHOSig"));
 		evt_metHOSig_branch->SetAddress(&evt_metHOSig_);
-	}
-	if(evt_metHOSig_branch == 0 ) {
-	cout << "Branch evt_metHOSig does not exist." << endl;
 	}
 	evt_metMuonCorr_branch = 0;
 	if (tree->GetAlias("evt_metMuonCorr") != 0) {
 		evt_metMuonCorr_branch = tree->GetBranch(tree->GetAlias("evt_metMuonCorr"));
 		evt_metMuonCorr_branch->SetAddress(&evt_metMuonCorr_);
 	}
-	if(evt_metMuonCorr_branch == 0 ) {
-	cout << "Branch evt_metMuonCorr does not exist." << endl;
-	}
 	evt_metMuonCorrPhi_branch = 0;
 	if (tree->GetAlias("evt_metMuonCorrPhi") != 0) {
 		evt_metMuonCorrPhi_branch = tree->GetBranch(tree->GetAlias("evt_metMuonCorrPhi"));
 		evt_metMuonCorrPhi_branch->SetAddress(&evt_metMuonCorrPhi_);
-	}
-	if(evt_metMuonCorrPhi_branch == 0 ) {
-	cout << "Branch evt_metMuonCorrPhi does not exist." << endl;
 	}
 	evt_metMuonCorrSig_branch = 0;
 	if (tree->GetAlias("evt_metMuonCorrSig") != 0) {
 		evt_metMuonCorrSig_branch = tree->GetBranch(tree->GetAlias("evt_metMuonCorrSig"));
 		evt_metMuonCorrSig_branch->SetAddress(&evt_metMuonCorrSig_);
 	}
-	if(evt_metMuonCorrSig_branch == 0 ) {
-	cout << "Branch evt_metMuonCorrSig does not exist." << endl;
-	}
 	evt_metMuonJESCorr_branch = 0;
 	if (tree->GetAlias("evt_metMuonJESCorr") != 0) {
 		evt_metMuonJESCorr_branch = tree->GetBranch(tree->GetAlias("evt_metMuonJESCorr"));
 		evt_metMuonJESCorr_branch->SetAddress(&evt_metMuonJESCorr_);
-	}
-	if(evt_metMuonJESCorr_branch == 0 ) {
-	cout << "Branch evt_metMuonJESCorr does not exist." << endl;
 	}
 	evt_metMuonJESCorrPhi_branch = 0;
 	if (tree->GetAlias("evt_metMuonJESCorrPhi") != 0) {
 		evt_metMuonJESCorrPhi_branch = tree->GetBranch(tree->GetAlias("evt_metMuonJESCorrPhi"));
 		evt_metMuonJESCorrPhi_branch->SetAddress(&evt_metMuonJESCorrPhi_);
 	}
-	if(evt_metMuonJESCorrPhi_branch == 0 ) {
-	cout << "Branch evt_metMuonJESCorrPhi does not exist." << endl;
-	}
 	evt_metMuonJESCorrSig_branch = 0;
 	if (tree->GetAlias("evt_metMuonJESCorrSig") != 0) {
 		evt_metMuonJESCorrSig_branch = tree->GetBranch(tree->GetAlias("evt_metMuonJESCorrSig"));
 		evt_metMuonJESCorrSig_branch->SetAddress(&evt_metMuonJESCorrSig_);
-	}
-	if(evt_metMuonJESCorrSig_branch == 0 ) {
-	cout << "Branch evt_metMuonJESCorrSig does not exist." << endl;
 	}
 	evt_metNoHF_branch = 0;
 	if (tree->GetAlias("evt_metNoHF") != 0) {
 		evt_metNoHF_branch = tree->GetBranch(tree->GetAlias("evt_metNoHF"));
 		evt_metNoHF_branch->SetAddress(&evt_metNoHF_);
 	}
-	if(evt_metNoHF_branch == 0 ) {
-	cout << "Branch evt_metNoHF does not exist." << endl;
-	}
 	evt_metNoHFHO_branch = 0;
 	if (tree->GetAlias("evt_metNoHFHO") != 0) {
 		evt_metNoHFHO_branch = tree->GetBranch(tree->GetAlias("evt_metNoHFHO"));
 		evt_metNoHFHO_branch->SetAddress(&evt_metNoHFHO_);
-	}
-	if(evt_metNoHFHO_branch == 0 ) {
-	cout << "Branch evt_metNoHFHO does not exist." << endl;
 	}
 	evt_metNoHFHOPhi_branch = 0;
 	if (tree->GetAlias("evt_metNoHFHOPhi") != 0) {
 		evt_metNoHFHOPhi_branch = tree->GetBranch(tree->GetAlias("evt_metNoHFHOPhi"));
 		evt_metNoHFHOPhi_branch->SetAddress(&evt_metNoHFHOPhi_);
 	}
-	if(evt_metNoHFHOPhi_branch == 0 ) {
-	cout << "Branch evt_metNoHFHOPhi does not exist." << endl;
-	}
 	evt_metNoHFHOSig_branch = 0;
 	if (tree->GetAlias("evt_metNoHFHOSig") != 0) {
 		evt_metNoHFHOSig_branch = tree->GetBranch(tree->GetAlias("evt_metNoHFHOSig"));
 		evt_metNoHFHOSig_branch->SetAddress(&evt_metNoHFHOSig_);
-	}
-	if(evt_metNoHFHOSig_branch == 0 ) {
-	cout << "Branch evt_metNoHFHOSig does not exist." << endl;
 	}
 	evt_metNoHFPhi_branch = 0;
 	if (tree->GetAlias("evt_metNoHFPhi") != 0) {
 		evt_metNoHFPhi_branch = tree->GetBranch(tree->GetAlias("evt_metNoHFPhi"));
 		evt_metNoHFPhi_branch->SetAddress(&evt_metNoHFPhi_);
 	}
-	if(evt_metNoHFPhi_branch == 0 ) {
-	cout << "Branch evt_metNoHFPhi does not exist." << endl;
-	}
 	evt_metNoHFSig_branch = 0;
 	if (tree->GetAlias("evt_metNoHFSig") != 0) {
 		evt_metNoHFSig_branch = tree->GetBranch(tree->GetAlias("evt_metNoHFSig"));
 		evt_metNoHFSig_branch->SetAddress(&evt_metNoHFSig_);
-	}
-	if(evt_metNoHFSig_branch == 0 ) {
-	cout << "Branch evt_metNoHFSig does not exist." << endl;
 	}
 	evt_metOpt_branch = 0;
 	if (tree->GetAlias("evt_metOpt") != 0) {
 		evt_metOpt_branch = tree->GetBranch(tree->GetAlias("evt_metOpt"));
 		evt_metOpt_branch->SetAddress(&evt_metOpt_);
 	}
-	if(evt_metOpt_branch == 0 ) {
-	cout << "Branch evt_metOpt does not exist." << endl;
-	}
 	evt_metOptHO_branch = 0;
 	if (tree->GetAlias("evt_metOptHO") != 0) {
 		evt_metOptHO_branch = tree->GetBranch(tree->GetAlias("evt_metOptHO"));
 		evt_metOptHO_branch->SetAddress(&evt_metOptHO_);
-	}
-	if(evt_metOptHO_branch == 0 ) {
-	cout << "Branch evt_metOptHO does not exist." << endl;
 	}
 	evt_metOptHOPhi_branch = 0;
 	if (tree->GetAlias("evt_metOptHOPhi") != 0) {
 		evt_metOptHOPhi_branch = tree->GetBranch(tree->GetAlias("evt_metOptHOPhi"));
 		evt_metOptHOPhi_branch->SetAddress(&evt_metOptHOPhi_);
 	}
-	if(evt_metOptHOPhi_branch == 0 ) {
-	cout << "Branch evt_metOptHOPhi does not exist." << endl;
-	}
 	evt_metOptHOSig_branch = 0;
 	if (tree->GetAlias("evt_metOptHOSig") != 0) {
 		evt_metOptHOSig_branch = tree->GetBranch(tree->GetAlias("evt_metOptHOSig"));
 		evt_metOptHOSig_branch->SetAddress(&evt_metOptHOSig_);
-	}
-	if(evt_metOptHOSig_branch == 0 ) {
-	cout << "Branch evt_metOptHOSig does not exist." << endl;
 	}
 	evt_metOptNoHF_branch = 0;
 	if (tree->GetAlias("evt_metOptNoHF") != 0) {
 		evt_metOptNoHF_branch = tree->GetBranch(tree->GetAlias("evt_metOptNoHF"));
 		evt_metOptNoHF_branch->SetAddress(&evt_metOptNoHF_);
 	}
-	if(evt_metOptNoHF_branch == 0 ) {
-	cout << "Branch evt_metOptNoHF does not exist." << endl;
-	}
 	evt_metOptNoHFHO_branch = 0;
 	if (tree->GetAlias("evt_metOptNoHFHO") != 0) {
 		evt_metOptNoHFHO_branch = tree->GetBranch(tree->GetAlias("evt_metOptNoHFHO"));
 		evt_metOptNoHFHO_branch->SetAddress(&evt_metOptNoHFHO_);
-	}
-	if(evt_metOptNoHFHO_branch == 0 ) {
-	cout << "Branch evt_metOptNoHFHO does not exist." << endl;
 	}
 	evt_metOptNoHFHOPhi_branch = 0;
 	if (tree->GetAlias("evt_metOptNoHFHOPhi") != 0) {
 		evt_metOptNoHFHOPhi_branch = tree->GetBranch(tree->GetAlias("evt_metOptNoHFHOPhi"));
 		evt_metOptNoHFHOPhi_branch->SetAddress(&evt_metOptNoHFHOPhi_);
 	}
-	if(evt_metOptNoHFHOPhi_branch == 0 ) {
-	cout << "Branch evt_metOptNoHFHOPhi does not exist." << endl;
-	}
 	evt_metOptNoHFHOSig_branch = 0;
 	if (tree->GetAlias("evt_metOptNoHFHOSig") != 0) {
 		evt_metOptNoHFHOSig_branch = tree->GetBranch(tree->GetAlias("evt_metOptNoHFHOSig"));
 		evt_metOptNoHFHOSig_branch->SetAddress(&evt_metOptNoHFHOSig_);
-	}
-	if(evt_metOptNoHFHOSig_branch == 0 ) {
-	cout << "Branch evt_metOptNoHFHOSig does not exist." << endl;
 	}
 	evt_metOptNoHFPhi_branch = 0;
 	if (tree->GetAlias("evt_metOptNoHFPhi") != 0) {
 		evt_metOptNoHFPhi_branch = tree->GetBranch(tree->GetAlias("evt_metOptNoHFPhi"));
 		evt_metOptNoHFPhi_branch->SetAddress(&evt_metOptNoHFPhi_);
 	}
-	if(evt_metOptNoHFPhi_branch == 0 ) {
-	cout << "Branch evt_metOptNoHFPhi does not exist." << endl;
-	}
 	evt_metOptNoHFSig_branch = 0;
 	if (tree->GetAlias("evt_metOptNoHFSig") != 0) {
 		evt_metOptNoHFSig_branch = tree->GetBranch(tree->GetAlias("evt_metOptNoHFSig"));
 		evt_metOptNoHFSig_branch->SetAddress(&evt_metOptNoHFSig_);
-	}
-	if(evt_metOptNoHFSig_branch == 0 ) {
-	cout << "Branch evt_metOptNoHFSig does not exist." << endl;
 	}
 	evt_metOptPhi_branch = 0;
 	if (tree->GetAlias("evt_metOptPhi") != 0) {
 		evt_metOptPhi_branch = tree->GetBranch(tree->GetAlias("evt_metOptPhi"));
 		evt_metOptPhi_branch->SetAddress(&evt_metOptPhi_);
 	}
-	if(evt_metOptPhi_branch == 0 ) {
-	cout << "Branch evt_metOptPhi does not exist." << endl;
-	}
 	evt_metOptSig_branch = 0;
 	if (tree->GetAlias("evt_metOptSig") != 0) {
 		evt_metOptSig_branch = tree->GetBranch(tree->GetAlias("evt_metOptSig"));
 		evt_metOptSig_branch->SetAddress(&evt_metOptSig_);
-	}
-	if(evt_metOptSig_branch == 0 ) {
-	cout << "Branch evt_metOptSig does not exist." << endl;
 	}
 	evt_metPhi_branch = 0;
 	if (tree->GetAlias("evt_metPhi") != 0) {
 		evt_metPhi_branch = tree->GetBranch(tree->GetAlias("evt_metPhi"));
 		evt_metPhi_branch->SetAddress(&evt_metPhi_);
 	}
-	if(evt_metPhi_branch == 0 ) {
-	cout << "Branch evt_metPhi does not exist." << endl;
-	}
 	evt_metSig_branch = 0;
 	if (tree->GetAlias("evt_metSig") != 0) {
 		evt_metSig_branch = tree->GetBranch(tree->GetAlias("evt_metSig"));
 		evt_metSig_branch->SetAddress(&evt_metSig_);
-	}
-	if(evt_metSig_branch == 0 ) {
-	cout << "Branch evt_metSig does not exist." << endl;
 	}
 	evt_sumet_branch = 0;
 	if (tree->GetAlias("evt_sumet") != 0) {
 		evt_sumet_branch = tree->GetBranch(tree->GetAlias("evt_sumet"));
 		evt_sumet_branch->SetAddress(&evt_sumet_);
 	}
-	if(evt_sumet_branch == 0 ) {
-	cout << "Branch evt_sumet does not exist." << endl;
-	}
 	evt_sumetHO_branch = 0;
 	if (tree->GetAlias("evt_sumetHO") != 0) {
 		evt_sumetHO_branch = tree->GetBranch(tree->GetAlias("evt_sumetHO"));
 		evt_sumetHO_branch->SetAddress(&evt_sumetHO_);
-	}
-	if(evt_sumetHO_branch == 0 ) {
-	cout << "Branch evt_sumetHO does not exist." << endl;
 	}
 	evt_sumetMuonCorr_branch = 0;
 	if (tree->GetAlias("evt_sumetMuonCorr") != 0) {
 		evt_sumetMuonCorr_branch = tree->GetBranch(tree->GetAlias("evt_sumetMuonCorr"));
 		evt_sumetMuonCorr_branch->SetAddress(&evt_sumetMuonCorr_);
 	}
-	if(evt_sumetMuonCorr_branch == 0 ) {
-	cout << "Branch evt_sumetMuonCorr does not exist." << endl;
-	}
 	evt_sumetNoHF_branch = 0;
 	if (tree->GetAlias("evt_sumetNoHF") != 0) {
 		evt_sumetNoHF_branch = tree->GetBranch(tree->GetAlias("evt_sumetNoHF"));
 		evt_sumetNoHF_branch->SetAddress(&evt_sumetNoHF_);
-	}
-	if(evt_sumetNoHF_branch == 0 ) {
-	cout << "Branch evt_sumetNoHF does not exist." << endl;
 	}
 	evt_sumetNoHFHO_branch = 0;
 	if (tree->GetAlias("evt_sumetNoHFHO") != 0) {
 		evt_sumetNoHFHO_branch = tree->GetBranch(tree->GetAlias("evt_sumetNoHFHO"));
 		evt_sumetNoHFHO_branch->SetAddress(&evt_sumetNoHFHO_);
 	}
-	if(evt_sumetNoHFHO_branch == 0 ) {
-	cout << "Branch evt_sumetNoHFHO does not exist." << endl;
-	}
 	evt_sumetOpt_branch = 0;
 	if (tree->GetAlias("evt_sumetOpt") != 0) {
 		evt_sumetOpt_branch = tree->GetBranch(tree->GetAlias("evt_sumetOpt"));
 		evt_sumetOpt_branch->SetAddress(&evt_sumetOpt_);
-	}
-	if(evt_sumetOpt_branch == 0 ) {
-	cout << "Branch evt_sumetOpt does not exist." << endl;
 	}
 	evt_sumetOptHO_branch = 0;
 	if (tree->GetAlias("evt_sumetOptHO") != 0) {
 		evt_sumetOptHO_branch = tree->GetBranch(tree->GetAlias("evt_sumetOptHO"));
 		evt_sumetOptHO_branch->SetAddress(&evt_sumetOptHO_);
 	}
-	if(evt_sumetOptHO_branch == 0 ) {
-	cout << "Branch evt_sumetOptHO does not exist." << endl;
-	}
 	evt_sumetOptNoHF_branch = 0;
 	if (tree->GetAlias("evt_sumetOptNoHF") != 0) {
 		evt_sumetOptNoHF_branch = tree->GetBranch(tree->GetAlias("evt_sumetOptNoHF"));
 		evt_sumetOptNoHF_branch->SetAddress(&evt_sumetOptNoHF_);
-	}
-	if(evt_sumetOptNoHF_branch == 0 ) {
-	cout << "Branch evt_sumetOptNoHF does not exist." << endl;
 	}
 	evt_sumetOptNoHFHO_branch = 0;
 	if (tree->GetAlias("evt_sumetOptNoHFHO") != 0) {
 		evt_sumetOptNoHFHO_branch = tree->GetBranch(tree->GetAlias("evt_sumetOptNoHFHO"));
 		evt_sumetOptNoHFHO_branch->SetAddress(&evt_sumetOptNoHFHO_);
 	}
-	if(evt_sumetOptNoHFHO_branch == 0 ) {
-	cout << "Branch evt_sumetOptNoHFHO does not exist." << endl;
-	}
 	met_pat_metCor_branch = 0;
 	if (tree->GetAlias("met_pat_metCor") != 0) {
 		met_pat_metCor_branch = tree->GetBranch(tree->GetAlias("met_pat_metCor"));
 		met_pat_metCor_branch->SetAddress(&met_pat_metCor_);
-	}
-	if(met_pat_metCor_branch == 0 ) {
-	cout << "Branch met_pat_metCor does not exist." << endl;
 	}
 	met_pat_metPhiCor_branch = 0;
 	if (tree->GetAlias("met_pat_metPhiCor") != 0) {
 		met_pat_metPhiCor_branch = tree->GetBranch(tree->GetAlias("met_pat_metPhiCor"));
 		met_pat_metPhiCor_branch->SetAddress(&met_pat_metPhiCor_);
 	}
-	if(met_pat_metPhiCor_branch == 0 ) {
-	cout << "Branch met_pat_metPhiCor does not exist." << endl;
-	}
 	met_pat_metPhiUncor_branch = 0;
 	if (tree->GetAlias("met_pat_metPhiUncor") != 0) {
 		met_pat_metPhiUncor_branch = tree->GetBranch(tree->GetAlias("met_pat_metPhiUncor"));
 		met_pat_metPhiUncor_branch->SetAddress(&met_pat_metPhiUncor_);
-	}
-	if(met_pat_metPhiUncor_branch == 0 ) {
-	cout << "Branch met_pat_metPhiUncor does not exist." << endl;
 	}
 	met_pat_metPhiUncorJES_branch = 0;
 	if (tree->GetAlias("met_pat_metPhiUncorJES") != 0) {
 		met_pat_metPhiUncorJES_branch = tree->GetBranch(tree->GetAlias("met_pat_metPhiUncorJES"));
 		met_pat_metPhiUncorJES_branch->SetAddress(&met_pat_metPhiUncorJES_);
 	}
-	if(met_pat_metPhiUncorJES_branch == 0 ) {
-	cout << "Branch met_pat_metPhiUncorJES does not exist." << endl;
-	}
 	met_pat_metPhiUncorMuon_branch = 0;
 	if (tree->GetAlias("met_pat_metPhiUncorMuon") != 0) {
 		met_pat_metPhiUncorMuon_branch = tree->GetBranch(tree->GetAlias("met_pat_metPhiUncorMuon"));
 		met_pat_metPhiUncorMuon_branch->SetAddress(&met_pat_metPhiUncorMuon_);
-	}
-	if(met_pat_metPhiUncorMuon_branch == 0 ) {
-	cout << "Branch met_pat_metPhiUncorMuon does not exist." << endl;
 	}
 	met_pat_metUncor_branch = 0;
 	if (tree->GetAlias("met_pat_metUncor") != 0) {
 		met_pat_metUncor_branch = tree->GetBranch(tree->GetAlias("met_pat_metUncor"));
 		met_pat_metUncor_branch->SetAddress(&met_pat_metUncor_);
 	}
-	if(met_pat_metUncor_branch == 0 ) {
-	cout << "Branch met_pat_metUncor does not exist." << endl;
-	}
 	met_pat_metUncorJES_branch = 0;
 	if (tree->GetAlias("met_pat_metUncorJES") != 0) {
 		met_pat_metUncorJES_branch = tree->GetBranch(tree->GetAlias("met_pat_metUncorJES"));
 		met_pat_metUncorJES_branch->SetAddress(&met_pat_metUncorJES_);
-	}
-	if(met_pat_metUncorJES_branch == 0 ) {
-	cout << "Branch met_pat_metUncorJES does not exist." << endl;
 	}
 	met_pat_metUncorMuon_branch = 0;
 	if (tree->GetAlias("met_pat_metUncorMuon") != 0) {
 		met_pat_metUncorMuon_branch = tree->GetBranch(tree->GetAlias("met_pat_metUncorMuon"));
 		met_pat_metUncorMuon_branch->SetAddress(&met_pat_metUncorMuon_);
 	}
-	if(met_pat_metUncorMuon_branch == 0 ) {
-	cout << "Branch met_pat_metUncorMuon does not exist." << endl;
-	}
 	pdfinfo_scale_branch = 0;
 	if (tree->GetAlias("pdfinfo_scale") != 0) {
 		pdfinfo_scale_branch = tree->GetBranch(tree->GetAlias("pdfinfo_scale"));
 		pdfinfo_scale_branch->SetAddress(&pdfinfo_scale_);
-	}
-	if(pdfinfo_scale_branch == 0 ) {
-	cout << "Branch pdfinfo_scale does not exist." << endl;
 	}
 	pdfinfo_x1_branch = 0;
 	if (tree->GetAlias("pdfinfo_x1") != 0) {
 		pdfinfo_x1_branch = tree->GetBranch(tree->GetAlias("pdfinfo_x1"));
 		pdfinfo_x1_branch->SetAddress(&pdfinfo_x1_);
 	}
-	if(pdfinfo_x1_branch == 0 ) {
-	cout << "Branch pdfinfo_x1 does not exist." << endl;
-	}
 	pdfinfo_x2_branch = 0;
 	if (tree->GetAlias("pdfinfo_x2") != 0) {
 		pdfinfo_x2_branch = tree->GetBranch(tree->GetAlias("pdfinfo_x2"));
 		pdfinfo_x2_branch->SetAddress(&pdfinfo_x2_);
-	}
-	if(pdfinfo_x2_branch == 0 ) {
-	cout << "Branch pdfinfo_x2 does not exist." << endl;
 	}
 	evt_pfmet_branch = 0;
 	if (tree->GetAlias("evt_pfmet") != 0) {
 		evt_pfmet_branch = tree->GetBranch(tree->GetAlias("evt_pfmet"));
 		evt_pfmet_branch->SetAddress(&evt_pfmet_);
 	}
-	if(evt_pfmet_branch == 0 ) {
-	cout << "Branch evt_pfmet does not exist." << endl;
-	}
 	evt_pfmetPhi_branch = 0;
 	if (tree->GetAlias("evt_pfmetPhi") != 0) {
 		evt_pfmetPhi_branch = tree->GetBranch(tree->GetAlias("evt_pfmetPhi"));
 		evt_pfmetPhi_branch->SetAddress(&evt_pfmetPhi_);
-	}
-	if(evt_pfmetPhi_branch == 0 ) {
-	cout << "Branch evt_pfmetPhi does not exist." << endl;
 	}
 	evt_pfmetSig_branch = 0;
 	if (tree->GetAlias("evt_pfmetSig") != 0) {
 		evt_pfmetSig_branch = tree->GetBranch(tree->GetAlias("evt_pfmetSig"));
 		evt_pfmetSig_branch->SetAddress(&evt_pfmetSig_);
 	}
-	if(evt_pfmetSig_branch == 0 ) {
-	cout << "Branch evt_pfmetSig does not exist." << endl;
-	}
 	evt_pfsumet_branch = 0;
 	if (tree->GetAlias("evt_pfsumet") != 0) {
 		evt_pfsumet_branch = tree->GetBranch(tree->GetAlias("evt_pfsumet"));
 		evt_pfsumet_branch->SetAddress(&evt_pfsumet_);
-	}
-	if(evt_pfsumet_branch == 0 ) {
-	cout << "Branch evt_pfsumet does not exist." << endl;
 	}
 	evt_tcmet_branch = 0;
 	if (tree->GetAlias("evt_tcmet") != 0) {
 		evt_tcmet_branch = tree->GetBranch(tree->GetAlias("evt_tcmet"));
 		evt_tcmet_branch->SetAddress(&evt_tcmet_);
 	}
-	if(evt_tcmet_branch == 0 ) {
-	cout << "Branch evt_tcmet does not exist." << endl;
-	}
 	evt_tcmetPhi_branch = 0;
 	if (tree->GetAlias("evt_tcmetPhi") != 0) {
 		evt_tcmetPhi_branch = tree->GetBranch(tree->GetAlias("evt_tcmetPhi"));
 		evt_tcmetPhi_branch->SetAddress(&evt_tcmetPhi_);
-	}
-	if(evt_tcmetPhi_branch == 0 ) {
-	cout << "Branch evt_tcmetPhi does not exist." << endl;
 	}
 	evt_tcmetSig_branch = 0;
 	if (tree->GetAlias("evt_tcmetSig") != 0) {
 		evt_tcmetSig_branch = tree->GetBranch(tree->GetAlias("evt_tcmetSig"));
 		evt_tcmetSig_branch->SetAddress(&evt_tcmetSig_);
 	}
-	if(evt_tcmetSig_branch == 0 ) {
-	cout << "Branch evt_tcmetSig does not exist." << endl;
-	}
 	evt_tcsumet_branch = 0;
 	if (tree->GetAlias("evt_tcsumet") != 0) {
 		evt_tcsumet_branch = tree->GetBranch(tree->GetAlias("evt_tcsumet"));
 		evt_tcsumet_branch->SetAddress(&evt_tcsumet_);
-	}
-	if(evt_tcsumet_branch == 0 ) {
-	cout << "Branch evt_tcsumet does not exist." << endl;
 	}
 	evt35X_tcmet_branch = 0;
 	if (tree->GetAlias("evt35X_tcmet") != 0) {
 		evt35X_tcmet_branch = tree->GetBranch(tree->GetAlias("evt35X_tcmet"));
 		evt35X_tcmet_branch->SetAddress(&evt35X_tcmet_);
 	}
-	if(evt35X_tcmet_branch == 0 ) {
-	cout << "Branch evt35X_tcmet does not exist." << endl;
-	}
 	evt35X_tcmetPhi_branch = 0;
 	if (tree->GetAlias("evt35X_tcmetPhi") != 0) {
 		evt35X_tcmetPhi_branch = tree->GetBranch(tree->GetAlias("evt35X_tcmetPhi"));
 		evt35X_tcmetPhi_branch->SetAddress(&evt35X_tcmetPhi_);
-	}
-	if(evt35X_tcmetPhi_branch == 0 ) {
-	cout << "Branch evt35X_tcmetPhi does not exist." << endl;
 	}
 	evt35X_tcmetSig_branch = 0;
 	if (tree->GetAlias("evt35X_tcmetSig") != 0) {
 		evt35X_tcmetSig_branch = tree->GetBranch(tree->GetAlias("evt35X_tcmetSig"));
 		evt35X_tcmetSig_branch->SetAddress(&evt35X_tcmetSig_);
 	}
-	if(evt35X_tcmetSig_branch == 0 ) {
-	cout << "Branch evt35X_tcmetSig does not exist." << endl;
-	}
 	evt35X_tcsumet_branch = 0;
 	if (tree->GetAlias("evt35X_tcsumet") != 0) {
 		evt35X_tcsumet_branch = tree->GetBranch(tree->GetAlias("evt35X_tcsumet"));
 		evt35X_tcsumet_branch->SetAddress(&evt35X_tcsumet_);
-	}
-	if(evt35X_tcsumet_branch == 0 ) {
-	cout << "Branch evt35X_tcsumet does not exist." << endl;
 	}
 	genps_lepdaughter_p4_branch = 0;
 	if (tree->GetAlias("genps_lepdaughter_p4") != 0) {
 		genps_lepdaughter_p4_branch = tree->GetBranch(tree->GetAlias("genps_lepdaughter_p4"));
 		genps_lepdaughter_p4_branch->SetAddress(&genps_lepdaughter_p4_);
 	}
-	if(genps_lepdaughter_p4_branch == 0 ) {
-	cout << "Branch genps_lepdaughter_p4 does not exist." << endl;
-	}
 	hlt1e31_trigObjs_p4_branch = 0;
 	if (tree->GetAlias("hlt1e31_trigObjs_p4") != 0) {
 		hlt1e31_trigObjs_p4_branch = tree->GetBranch(tree->GetAlias("hlt1e31_trigObjs_p4"));
 		hlt1e31_trigObjs_p4_branch->SetAddress(&hlt1e31_trigObjs_p4_);
-	}
-	if(hlt1e31_trigObjs_p4_branch == 0 ) {
-	cout << "Branch hlt1e31_trigObjs_p4 does not exist." << endl;
 	}
 	hlt8e29_trigObjs_p4_branch = 0;
 	if (tree->GetAlias("hlt8e29_trigObjs_p4") != 0) {
 		hlt8e29_trigObjs_p4_branch = tree->GetBranch(tree->GetAlias("hlt8e29_trigObjs_p4"));
 		hlt8e29_trigObjs_p4_branch->SetAddress(&hlt8e29_trigObjs_p4_);
 	}
-	if(hlt8e29_trigObjs_p4_branch == 0 ) {
-	cout << "Branch hlt8e29_trigObjs_p4 does not exist." << endl;
-	}
 	hlt_trigObjs_p4_branch = 0;
 	if (tree->GetAlias("hlt_trigObjs_p4") != 0) {
 		hlt_trigObjs_p4_branch = tree->GetBranch(tree->GetAlias("hlt_trigObjs_p4"));
 		hlt_trigObjs_p4_branch->SetAddress(&hlt_trigObjs_p4_);
-	}
-	if(hlt_trigObjs_p4_branch == 0 ) {
-	cout << "Branch hlt_trigObjs_p4 does not exist." << endl;
 	}
 	hyp_jets_p4_branch = 0;
 	if (tree->GetAlias("hyp_jets_p4") != 0) {
 		hyp_jets_p4_branch = tree->GetBranch(tree->GetAlias("hyp_jets_p4"));
 		hyp_jets_p4_branch->SetAddress(&hyp_jets_p4_);
 	}
-	if(hyp_jets_p4_branch == 0 ) {
-	cout << "Branch hyp_jets_p4 does not exist." << endl;
-	}
 	hyp_other_jets_p4_branch = 0;
 	if (tree->GetAlias("hyp_other_jets_p4") != 0) {
 		hyp_other_jets_p4_branch = tree->GetBranch(tree->GetAlias("hyp_other_jets_p4"));
 		hyp_other_jets_p4_branch->SetAddress(&hyp_other_jets_p4_);
-	}
-	if(hyp_other_jets_p4_branch == 0 ) {
-	cout << "Branch hyp_other_jets_p4 does not exist." << endl;
 	}
 	jets_combinedSecondaryVertexBJetTag_branch = 0;
 	if (tree->GetAlias("jets_combinedSecondaryVertexBJetTag") != 0) {
 		jets_combinedSecondaryVertexBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_combinedSecondaryVertexBJetTag"));
 		jets_combinedSecondaryVertexBJetTag_branch->SetAddress(&jets_combinedSecondaryVertexBJetTag_);
 	}
-	if(jets_combinedSecondaryVertexBJetTag_branch == 0 ) {
-	cout << "Branch jets_combinedSecondaryVertexBJetTag does not exist." << endl;
-	}
 	jets_combinedSecondaryVertexMVABJetTag_branch = 0;
 	if (tree->GetAlias("jets_combinedSecondaryVertexMVABJetTag") != 0) {
 		jets_combinedSecondaryVertexMVABJetTag_branch = tree->GetBranch(tree->GetAlias("jets_combinedSecondaryVertexMVABJetTag"));
 		jets_combinedSecondaryVertexMVABJetTag_branch->SetAddress(&jets_combinedSecondaryVertexMVABJetTag_);
-	}
-	if(jets_combinedSecondaryVertexMVABJetTag_branch == 0 ) {
-	cout << "Branch jets_combinedSecondaryVertexMVABJetTag does not exist." << endl;
 	}
 	jets_jetBProbabilityBJetTag_branch = 0;
 	if (tree->GetAlias("jets_jetBProbabilityBJetTag") != 0) {
 		jets_jetBProbabilityBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_jetBProbabilityBJetTag"));
 		jets_jetBProbabilityBJetTag_branch->SetAddress(&jets_jetBProbabilityBJetTag_);
 	}
-	if(jets_jetBProbabilityBJetTag_branch == 0 ) {
-	cout << "Branch jets_jetBProbabilityBJetTag does not exist." << endl;
-	}
 	jets_jetProbabilityBJetTag_branch = 0;
 	if (tree->GetAlias("jets_jetProbabilityBJetTag") != 0) {
 		jets_jetProbabilityBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_jetProbabilityBJetTag"));
 		jets_jetProbabilityBJetTag_branch->SetAddress(&jets_jetProbabilityBJetTag_);
-	}
-	if(jets_jetProbabilityBJetTag_branch == 0 ) {
-	cout << "Branch jets_jetProbabilityBJetTag does not exist." << endl;
 	}
 	jets_simpleSecondaryVertexHighEffBJetTag_branch = 0;
 	if (tree->GetAlias("jets_simpleSecondaryVertexHighEffBJetTag") != 0) {
 		jets_simpleSecondaryVertexHighEffBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_simpleSecondaryVertexHighEffBJetTag"));
 		jets_simpleSecondaryVertexHighEffBJetTag_branch->SetAddress(&jets_simpleSecondaryVertexHighEffBJetTag_);
 	}
-	if(jets_simpleSecondaryVertexHighEffBJetTag_branch == 0 ) {
-	cout << "Branch jets_simpleSecondaryVertexHighEffBJetTag does not exist." << endl;
-	}
 	jets_simpleSecondaryVertexHighPurBJetTags_branch = 0;
 	if (tree->GetAlias("jets_simpleSecondaryVertexHighPurBJetTags") != 0) {
 		jets_simpleSecondaryVertexHighPurBJetTags_branch = tree->GetBranch(tree->GetAlias("jets_simpleSecondaryVertexHighPurBJetTags"));
 		jets_simpleSecondaryVertexHighPurBJetTags_branch->SetAddress(&jets_simpleSecondaryVertexHighPurBJetTags_);
-	}
-	if(jets_simpleSecondaryVertexHighPurBJetTags_branch == 0 ) {
-	cout << "Branch jets_simpleSecondaryVertexHighPurBJetTags does not exist." << endl;
 	}
 	jets_softElectronByIP3dBJetTag_branch = 0;
 	if (tree->GetAlias("jets_softElectronByIP3dBJetTag") != 0) {
 		jets_softElectronByIP3dBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_softElectronByIP3dBJetTag"));
 		jets_softElectronByIP3dBJetTag_branch->SetAddress(&jets_softElectronByIP3dBJetTag_);
 	}
-	if(jets_softElectronByIP3dBJetTag_branch == 0 ) {
-	cout << "Branch jets_softElectronByIP3dBJetTag does not exist." << endl;
-	}
 	jets_softElectronByPtBJetTag_branch = 0;
 	if (tree->GetAlias("jets_softElectronByPtBJetTag") != 0) {
 		jets_softElectronByPtBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_softElectronByPtBJetTag"));
 		jets_softElectronByPtBJetTag_branch->SetAddress(&jets_softElectronByPtBJetTag_);
-	}
-	if(jets_softElectronByPtBJetTag_branch == 0 ) {
-	cout << "Branch jets_softElectronByPtBJetTag does not exist." << endl;
 	}
 	jets_softMuonBJetTag_branch = 0;
 	if (tree->GetAlias("jets_softMuonBJetTag") != 0) {
 		jets_softMuonBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_softMuonBJetTag"));
 		jets_softMuonBJetTag_branch->SetAddress(&jets_softMuonBJetTag_);
 	}
-	if(jets_softMuonBJetTag_branch == 0 ) {
-	cout << "Branch jets_softMuonBJetTag does not exist." << endl;
-	}
 	jets_softMuonByIP3dBJetTag_branch = 0;
 	if (tree->GetAlias("jets_softMuonByIP3dBJetTag") != 0) {
 		jets_softMuonByIP3dBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_softMuonByIP3dBJetTag"));
 		jets_softMuonByIP3dBJetTag_branch->SetAddress(&jets_softMuonByIP3dBJetTag_);
-	}
-	if(jets_softMuonByIP3dBJetTag_branch == 0 ) {
-	cout << "Branch jets_softMuonByIP3dBJetTag does not exist." << endl;
 	}
 	jets_softMuonByPtBJetTag_branch = 0;
 	if (tree->GetAlias("jets_softMuonByPtBJetTag") != 0) {
 		jets_softMuonByPtBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_softMuonByPtBJetTag"));
 		jets_softMuonByPtBJetTag_branch->SetAddress(&jets_softMuonByPtBJetTag_);
 	}
-	if(jets_softMuonByPtBJetTag_branch == 0 ) {
-	cout << "Branch jets_softMuonByPtBJetTag does not exist." << endl;
-	}
 	jets_trackCountingHighEffBJetTag_branch = 0;
 	if (tree->GetAlias("jets_trackCountingHighEffBJetTag") != 0) {
 		jets_trackCountingHighEffBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_trackCountingHighEffBJetTag"));
 		jets_trackCountingHighEffBJetTag_branch->SetAddress(&jets_trackCountingHighEffBJetTag_);
-	}
-	if(jets_trackCountingHighEffBJetTag_branch == 0 ) {
-	cout << "Branch jets_trackCountingHighEffBJetTag does not exist." << endl;
 	}
 	jets_trackCountingHighPurBJetTag_branch = 0;
 	if (tree->GetAlias("jets_trackCountingHighPurBJetTag") != 0) {
 		jets_trackCountingHighPurBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_trackCountingHighPurBJetTag"));
 		jets_trackCountingHighPurBJetTag_branch->SetAddress(&jets_trackCountingHighPurBJetTag_);
 	}
-	if(jets_trackCountingHighPurBJetTag_branch == 0 ) {
-	cout << "Branch jets_trackCountingHighPurBJetTag does not exist." << endl;
-	}
 	trkjets_combinedSecondaryVertexBJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_combinedSecondaryVertexBJetTag") != 0) {
 		trkjets_combinedSecondaryVertexBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_combinedSecondaryVertexBJetTag"));
 		trkjets_combinedSecondaryVertexBJetTag_branch->SetAddress(&trkjets_combinedSecondaryVertexBJetTag_);
-	}
-	if(trkjets_combinedSecondaryVertexBJetTag_branch == 0 ) {
-	cout << "Branch trkjets_combinedSecondaryVertexBJetTag does not exist." << endl;
 	}
 	trkjets_combinedSecondaryVertexMVABJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_combinedSecondaryVertexMVABJetTag") != 0) {
 		trkjets_combinedSecondaryVertexMVABJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_combinedSecondaryVertexMVABJetTag"));
 		trkjets_combinedSecondaryVertexMVABJetTag_branch->SetAddress(&trkjets_combinedSecondaryVertexMVABJetTag_);
 	}
-	if(trkjets_combinedSecondaryVertexMVABJetTag_branch == 0 ) {
-	cout << "Branch trkjets_combinedSecondaryVertexMVABJetTag does not exist." << endl;
-	}
 	trkjets_jetBProbabilityBJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_jetBProbabilityBJetTag") != 0) {
 		trkjets_jetBProbabilityBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_jetBProbabilityBJetTag"));
 		trkjets_jetBProbabilityBJetTag_branch->SetAddress(&trkjets_jetBProbabilityBJetTag_);
-	}
-	if(trkjets_jetBProbabilityBJetTag_branch == 0 ) {
-	cout << "Branch trkjets_jetBProbabilityBJetTag does not exist." << endl;
 	}
 	trkjets_jetProbabilityBJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_jetProbabilityBJetTag") != 0) {
 		trkjets_jetProbabilityBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_jetProbabilityBJetTag"));
 		trkjets_jetProbabilityBJetTag_branch->SetAddress(&trkjets_jetProbabilityBJetTag_);
 	}
-	if(trkjets_jetProbabilityBJetTag_branch == 0 ) {
-	cout << "Branch trkjets_jetProbabilityBJetTag does not exist." << endl;
-	}
 	trkjets_simpleSecondaryVertexHighEffBJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_simpleSecondaryVertexHighEffBJetTag") != 0) {
 		trkjets_simpleSecondaryVertexHighEffBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_simpleSecondaryVertexHighEffBJetTag"));
 		trkjets_simpleSecondaryVertexHighEffBJetTag_branch->SetAddress(&trkjets_simpleSecondaryVertexHighEffBJetTag_);
-	}
-	if(trkjets_simpleSecondaryVertexHighEffBJetTag_branch == 0 ) {
-	cout << "Branch trkjets_simpleSecondaryVertexHighEffBJetTag does not exist." << endl;
 	}
 	trkjets_simpleSecondaryVertexHighPurBJetTags_branch = 0;
 	if (tree->GetAlias("trkjets_simpleSecondaryVertexHighPurBJetTags") != 0) {
 		trkjets_simpleSecondaryVertexHighPurBJetTags_branch = tree->GetBranch(tree->GetAlias("trkjets_simpleSecondaryVertexHighPurBJetTags"));
 		trkjets_simpleSecondaryVertexHighPurBJetTags_branch->SetAddress(&trkjets_simpleSecondaryVertexHighPurBJetTags_);
 	}
-	if(trkjets_simpleSecondaryVertexHighPurBJetTags_branch == 0 ) {
-	cout << "Branch trkjets_simpleSecondaryVertexHighPurBJetTags does not exist." << endl;
-	}
 	trkjets_softElectronByIP3dBJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_softElectronByIP3dBJetTag") != 0) {
 		trkjets_softElectronByIP3dBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_softElectronByIP3dBJetTag"));
 		trkjets_softElectronByIP3dBJetTag_branch->SetAddress(&trkjets_softElectronByIP3dBJetTag_);
-	}
-	if(trkjets_softElectronByIP3dBJetTag_branch == 0 ) {
-	cout << "Branch trkjets_softElectronByIP3dBJetTag does not exist." << endl;
 	}
 	trkjets_softElectronByPtBJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_softElectronByPtBJetTag") != 0) {
 		trkjets_softElectronByPtBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_softElectronByPtBJetTag"));
 		trkjets_softElectronByPtBJetTag_branch->SetAddress(&trkjets_softElectronByPtBJetTag_);
 	}
-	if(trkjets_softElectronByPtBJetTag_branch == 0 ) {
-	cout << "Branch trkjets_softElectronByPtBJetTag does not exist." << endl;
-	}
 	trkjets_softMuonBJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_softMuonBJetTag") != 0) {
 		trkjets_softMuonBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_softMuonBJetTag"));
 		trkjets_softMuonBJetTag_branch->SetAddress(&trkjets_softMuonBJetTag_);
-	}
-	if(trkjets_softMuonBJetTag_branch == 0 ) {
-	cout << "Branch trkjets_softMuonBJetTag does not exist." << endl;
 	}
 	trkjets_softMuonByIP3dBJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_softMuonByIP3dBJetTag") != 0) {
 		trkjets_softMuonByIP3dBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_softMuonByIP3dBJetTag"));
 		trkjets_softMuonByIP3dBJetTag_branch->SetAddress(&trkjets_softMuonByIP3dBJetTag_);
 	}
-	if(trkjets_softMuonByIP3dBJetTag_branch == 0 ) {
-	cout << "Branch trkjets_softMuonByIP3dBJetTag does not exist." << endl;
-	}
 	trkjets_softMuonByPtBJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_softMuonByPtBJetTag") != 0) {
 		trkjets_softMuonByPtBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_softMuonByPtBJetTag"));
 		trkjets_softMuonByPtBJetTag_branch->SetAddress(&trkjets_softMuonByPtBJetTag_);
-	}
-	if(trkjets_softMuonByPtBJetTag_branch == 0 ) {
-	cout << "Branch trkjets_softMuonByPtBJetTag does not exist." << endl;
 	}
 	trkjets_trackCountingHighEffBJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_trackCountingHighEffBJetTag") != 0) {
 		trkjets_trackCountingHighEffBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_trackCountingHighEffBJetTag"));
 		trkjets_trackCountingHighEffBJetTag_branch->SetAddress(&trkjets_trackCountingHighEffBJetTag_);
 	}
-	if(trkjets_trackCountingHighEffBJetTag_branch == 0 ) {
-	cout << "Branch trkjets_trackCountingHighEffBJetTag does not exist." << endl;
-	}
 	trkjets_trackCountingHighPurBJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_trackCountingHighPurBJetTag") != 0) {
 		trkjets_trackCountingHighPurBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_trackCountingHighPurBJetTag"));
 		trkjets_trackCountingHighPurBJetTag_branch->SetAddress(&trkjets_trackCountingHighPurBJetTag_);
-	}
-	if(trkjets_trackCountingHighPurBJetTag_branch == 0 ) {
-	cout << "Branch trkjets_trackCountingHighPurBJetTag does not exist." << endl;
 	}
 	evt_bs_covMatrix_branch = 0;
 	if (tree->GetAlias("evt_bs_covMatrix") != 0) {
 		evt_bs_covMatrix_branch = tree->GetBranch(tree->GetAlias("evt_bs_covMatrix"));
 		evt_bs_covMatrix_branch->SetAddress(&evt_bs_covMatrix_);
 	}
-	if(evt_bs_covMatrix_branch == 0 ) {
-	cout << "Branch evt_bs_covMatrix does not exist." << endl;
-	}
-	twrs_ecalTime_branch = 0;
-	if (tree->GetAlias("twrs_ecalTime") != 0) {
-		twrs_ecalTime_branch = tree->GetBranch(tree->GetAlias("twrs_ecalTime"));
-		twrs_ecalTime_branch->SetAddress(&twrs_ecalTime_);
-	}
-	if(twrs_ecalTime_branch == 0 ) {
-	cout << "Branch twrs_ecalTime does not exist." << endl;
-	}
-	twrs_emEnergy_branch = 0;
-	if (tree->GetAlias("twrs_emEnergy") != 0) {
-		twrs_emEnergy_branch = tree->GetBranch(tree->GetAlias("twrs_emEnergy"));
-		twrs_emEnergy_branch->SetAddress(&twrs_emEnergy_);
-	}
-	if(twrs_emEnergy_branch == 0 ) {
-	cout << "Branch twrs_emEnergy does not exist." << endl;
-	}
-	twrs_emEt_branch = 0;
-	if (tree->GetAlias("twrs_emEt") != 0) {
-		twrs_emEt_branch = tree->GetBranch(tree->GetAlias("twrs_emEt"));
-		twrs_emEt_branch->SetAddress(&twrs_emEt_);
-	}
-	if(twrs_emEt_branch == 0 ) {
-	cout << "Branch twrs_emEt does not exist." << endl;
-	}
-	twrs_emEtcorr_branch = 0;
-	if (tree->GetAlias("twrs_emEtcorr") != 0) {
-		twrs_emEtcorr_branch = tree->GetBranch(tree->GetAlias("twrs_emEtcorr"));
-		twrs_emEtcorr_branch->SetAddress(&twrs_emEtcorr_);
-	}
-	if(twrs_emEtcorr_branch == 0 ) {
-	cout << "Branch twrs_emEtcorr does not exist." << endl;
-	}
-	twrs_eta_branch = 0;
-	if (tree->GetAlias("twrs_eta") != 0) {
-		twrs_eta_branch = tree->GetBranch(tree->GetAlias("twrs_eta"));
-		twrs_eta_branch->SetAddress(&twrs_eta_);
-	}
-	if(twrs_eta_branch == 0 ) {
-	cout << "Branch twrs_eta does not exist." << endl;
-	}
-	twrs_etacorr_branch = 0;
-	if (tree->GetAlias("twrs_etacorr") != 0) {
-		twrs_etacorr_branch = tree->GetBranch(tree->GetAlias("twrs_etacorr"));
-		twrs_etacorr_branch->SetAddress(&twrs_etacorr_);
-	}
-	if(twrs_etacorr_branch == 0 ) {
-	cout << "Branch twrs_etacorr does not exist." << endl;
-	}
-	twrs_etcorr_branch = 0;
-	if (tree->GetAlias("twrs_etcorr") != 0) {
-		twrs_etcorr_branch = tree->GetBranch(tree->GetAlias("twrs_etcorr"));
-		twrs_etcorr_branch->SetAddress(&twrs_etcorr_);
-	}
-	if(twrs_etcorr_branch == 0 ) {
-	cout << "Branch twrs_etcorr does not exist." << endl;
-	}
-	twrs_hadEnergy_branch = 0;
-	if (tree->GetAlias("twrs_hadEnergy") != 0) {
-		twrs_hadEnergy_branch = tree->GetBranch(tree->GetAlias("twrs_hadEnergy"));
-		twrs_hadEnergy_branch->SetAddress(&twrs_hadEnergy_);
-	}
-	if(twrs_hadEnergy_branch == 0 ) {
-	cout << "Branch twrs_hadEnergy does not exist." << endl;
-	}
-	twrs_hadEt_branch = 0;
-	if (tree->GetAlias("twrs_hadEt") != 0) {
-		twrs_hadEt_branch = tree->GetBranch(tree->GetAlias("twrs_hadEt"));
-		twrs_hadEt_branch->SetAddress(&twrs_hadEt_);
-	}
-	if(twrs_hadEt_branch == 0 ) {
-	cout << "Branch twrs_hadEt does not exist." << endl;
-	}
-	twrs_hadEtcorr_branch = 0;
-	if (tree->GetAlias("twrs_hadEtcorr") != 0) {
-		twrs_hadEtcorr_branch = tree->GetBranch(tree->GetAlias("twrs_hadEtcorr"));
-		twrs_hadEtcorr_branch->SetAddress(&twrs_hadEtcorr_);
-	}
-	if(twrs_hadEtcorr_branch == 0 ) {
-	cout << "Branch twrs_hadEtcorr does not exist." << endl;
-	}
-	twrs_hcalTime_branch = 0;
-	if (tree->GetAlias("twrs_hcalTime") != 0) {
-		twrs_hcalTime_branch = tree->GetBranch(tree->GetAlias("twrs_hcalTime"));
-		twrs_hcalTime_branch->SetAddress(&twrs_hcalTime_);
-	}
-	if(twrs_hcalTime_branch == 0 ) {
-	cout << "Branch twrs_hcalTime does not exist." << endl;
-	}
-	twrs_outerEnergy_branch = 0;
-	if (tree->GetAlias("twrs_outerEnergy") != 0) {
-		twrs_outerEnergy_branch = tree->GetBranch(tree->GetAlias("twrs_outerEnergy"));
-		twrs_outerEnergy_branch->SetAddress(&twrs_outerEnergy_);
-	}
-	if(twrs_outerEnergy_branch == 0 ) {
-	cout << "Branch twrs_outerEnergy does not exist." << endl;
-	}
-	twrs_outerEt_branch = 0;
-	if (tree->GetAlias("twrs_outerEt") != 0) {
-		twrs_outerEt_branch = tree->GetBranch(tree->GetAlias("twrs_outerEt"));
-		twrs_outerEt_branch->SetAddress(&twrs_outerEt_);
-	}
-	if(twrs_outerEt_branch == 0 ) {
-	cout << "Branch twrs_outerEt does not exist." << endl;
-	}
-	twrs_outerEtcorr_branch = 0;
-	if (tree->GetAlias("twrs_outerEtcorr") != 0) {
-		twrs_outerEtcorr_branch = tree->GetBranch(tree->GetAlias("twrs_outerEtcorr"));
-		twrs_outerEtcorr_branch->SetAddress(&twrs_outerEtcorr_);
-	}
-	if(twrs_outerEtcorr_branch == 0 ) {
-	cout << "Branch twrs_outerEtcorr does not exist." << endl;
-	}
-	twrs_pcorr_branch = 0;
-	if (tree->GetAlias("twrs_pcorr") != 0) {
-		twrs_pcorr_branch = tree->GetBranch(tree->GetAlias("twrs_pcorr"));
-		twrs_pcorr_branch->SetAddress(&twrs_pcorr_);
-	}
-	if(twrs_pcorr_branch == 0 ) {
-	cout << "Branch twrs_pcorr does not exist." << endl;
-	}
-	twrs_phi_branch = 0;
-	if (tree->GetAlias("twrs_phi") != 0) {
-		twrs_phi_branch = tree->GetBranch(tree->GetAlias("twrs_phi"));
-		twrs_phi_branch->SetAddress(&twrs_phi_);
-	}
-	if(twrs_phi_branch == 0 ) {
-	cout << "Branch twrs_phi does not exist." << endl;
-	}
-	twrs_phicorr_branch = 0;
-	if (tree->GetAlias("twrs_phicorr") != 0) {
-		twrs_phicorr_branch = tree->GetBranch(tree->GetAlias("twrs_phicorr"));
-		twrs_phicorr_branch->SetAddress(&twrs_phicorr_);
-	}
-	if(twrs_phicorr_branch == 0 ) {
-	cout << "Branch twrs_phicorr does not exist." << endl;
-	}
-	twrs_spikeEt_branch = 0;
-	if (tree->GetAlias("twrs_spikeEt") != 0) {
-		twrs_spikeEt_branch = tree->GetBranch(tree->GetAlias("twrs_spikeEt"));
-		twrs_spikeEt_branch->SetAddress(&twrs_spikeEt_);
-	}
-	if(twrs_spikeEt_branch == 0 ) {
-	cout << "Branch twrs_spikeEt does not exist." << endl;
-	}
-	twrs_spikeR4_branch = 0;
-	if (tree->GetAlias("twrs_spikeR4") != 0) {
-		twrs_spikeR4_branch = tree->GetBranch(tree->GetAlias("twrs_spikeR4"));
-		twrs_spikeR4_branch->SetAddress(&twrs_spikeR4_);
-	}
-	if(twrs_spikeR4_branch == 0 ) {
-	cout << "Branch twrs_spikeR4 does not exist." << endl;
-	}
 	els_mc3dr_branch = 0;
 	if (tree->GetAlias("els_mc3dr") != 0) {
 		els_mc3dr_branch = tree->GetBranch(tree->GetAlias("els_mc3dr"));
 		els_mc3dr_branch->SetAddress(&els_mc3dr_);
-	}
-	if(els_mc3dr_branch == 0 ) {
-	cout << "Branch els_mc3dr does not exist." << endl;
 	}
 	els_mcdr_branch = 0;
 	if (tree->GetAlias("els_mcdr") != 0) {
 		els_mcdr_branch = tree->GetBranch(tree->GetAlias("els_mcdr"));
 		els_mcdr_branch->SetAddress(&els_mcdr_);
 	}
-	if(els_mcdr_branch == 0 ) {
-	cout << "Branch els_mcdr does not exist." << endl;
-	}
 	jets_mc3dr_branch = 0;
 	if (tree->GetAlias("jets_mc3dr") != 0) {
 		jets_mc3dr_branch = tree->GetBranch(tree->GetAlias("jets_mc3dr"));
 		jets_mc3dr_branch->SetAddress(&jets_mc3dr_);
-	}
-	if(jets_mc3dr_branch == 0 ) {
-	cout << "Branch jets_mc3dr does not exist." << endl;
 	}
 	jets_mcdr_branch = 0;
 	if (tree->GetAlias("jets_mcdr") != 0) {
 		jets_mcdr_branch = tree->GetBranch(tree->GetAlias("jets_mcdr"));
 		jets_mcdr_branch->SetAddress(&jets_mcdr_);
 	}
-	if(jets_mcdr_branch == 0 ) {
-	cout << "Branch jets_mcdr does not exist." << endl;
-	}
 	jets_mc_emEnergy_branch = 0;
 	if (tree->GetAlias("jets_mc_emEnergy") != 0) {
 		jets_mc_emEnergy_branch = tree->GetBranch(tree->GetAlias("jets_mc_emEnergy"));
 		jets_mc_emEnergy_branch->SetAddress(&jets_mc_emEnergy_);
-	}
-	if(jets_mc_emEnergy_branch == 0 ) {
-	cout << "Branch jets_mc_emEnergy does not exist." << endl;
 	}
 	jets_mc_gpdr_branch = 0;
 	if (tree->GetAlias("jets_mc_gpdr") != 0) {
 		jets_mc_gpdr_branch = tree->GetBranch(tree->GetAlias("jets_mc_gpdr"));
 		jets_mc_gpdr_branch->SetAddress(&jets_mc_gpdr_);
 	}
-	if(jets_mc_gpdr_branch == 0 ) {
-	cout << "Branch jets_mc_gpdr does not exist." << endl;
-	}
 	jets_mc_hadEnergy_branch = 0;
 	if (tree->GetAlias("jets_mc_hadEnergy") != 0) {
 		jets_mc_hadEnergy_branch = tree->GetBranch(tree->GetAlias("jets_mc_hadEnergy"));
 		jets_mc_hadEnergy_branch->SetAddress(&jets_mc_hadEnergy_);
-	}
-	if(jets_mc_hadEnergy_branch == 0 ) {
-	cout << "Branch jets_mc_hadEnergy does not exist." << endl;
 	}
 	jets_mc_invEnergy_branch = 0;
 	if (tree->GetAlias("jets_mc_invEnergy") != 0) {
 		jets_mc_invEnergy_branch = tree->GetBranch(tree->GetAlias("jets_mc_invEnergy"));
 		jets_mc_invEnergy_branch->SetAddress(&jets_mc_invEnergy_);
 	}
-	if(jets_mc_invEnergy_branch == 0 ) {
-	cout << "Branch jets_mc_invEnergy does not exist." << endl;
-	}
 	jets_mc_otherEnergy_branch = 0;
 	if (tree->GetAlias("jets_mc_otherEnergy") != 0) {
 		jets_mc_otherEnergy_branch = tree->GetBranch(tree->GetAlias("jets_mc_otherEnergy"));
 		jets_mc_otherEnergy_branch->SetAddress(&jets_mc_otherEnergy_);
-	}
-	if(jets_mc_otherEnergy_branch == 0 ) {
-	cout << "Branch jets_mc_otherEnergy does not exist." << endl;
 	}
 	mus_mc3dr_branch = 0;
 	if (tree->GetAlias("mus_mc3dr") != 0) {
 		mus_mc3dr_branch = tree->GetBranch(tree->GetAlias("mus_mc3dr"));
 		mus_mc3dr_branch->SetAddress(&mus_mc3dr_);
 	}
-	if(mus_mc3dr_branch == 0 ) {
-	cout << "Branch mus_mc3dr does not exist." << endl;
-	}
 	mus_mcdr_branch = 0;
 	if (tree->GetAlias("mus_mcdr") != 0) {
 		mus_mcdr_branch = tree->GetBranch(tree->GetAlias("mus_mcdr"));
 		mus_mcdr_branch->SetAddress(&mus_mcdr_);
-	}
-	if(mus_mcdr_branch == 0 ) {
-	cout << "Branch mus_mcdr does not exist." << endl;
 	}
 	trk_mc3dr_branch = 0;
 	if (tree->GetAlias("trk_mc3dr") != 0) {
 		trk_mc3dr_branch = tree->GetBranch(tree->GetAlias("trk_mc3dr"));
 		trk_mc3dr_branch->SetAddress(&trk_mc3dr_);
 	}
-	if(trk_mc3dr_branch == 0 ) {
-	cout << "Branch trk_mc3dr does not exist." << endl;
-	}
 	trk_mcdr_branch = 0;
 	if (tree->GetAlias("trk_mcdr") != 0) {
 		trk_mcdr_branch = tree->GetBranch(tree->GetAlias("trk_mcdr"));
 		trk_mcdr_branch->SetAddress(&trk_mcdr_);
-	}
-	if(trk_mcdr_branch == 0 ) {
-	cout << "Branch trk_mcdr does not exist." << endl;
 	}
 	trks_conv_dcot_branch = 0;
 	if (tree->GetAlias("trks_conv_dcot") != 0) {
 		trks_conv_dcot_branch = tree->GetBranch(tree->GetAlias("trks_conv_dcot"));
 		trks_conv_dcot_branch->SetAddress(&trks_conv_dcot_);
 	}
-	if(trks_conv_dcot_branch == 0 ) {
-	cout << "Branch trks_conv_dcot does not exist." << endl;
-	}
 	trks_conv_dist_branch = 0;
 	if (tree->GetAlias("trks_conv_dist") != 0) {
 		trks_conv_dist_branch = tree->GetBranch(tree->GetAlias("trks_conv_dist"));
 		trks_conv_dist_branch->SetAddress(&trks_conv_dist_);
-	}
-	if(trks_conv_dist_branch == 0 ) {
-	cout << "Branch trks_conv_dist does not exist." << endl;
 	}
 	els_ecalJuraIso_branch = 0;
 	if (tree->GetAlias("els_ecalJuraIso") != 0) {
 		els_ecalJuraIso_branch = tree->GetBranch(tree->GetAlias("els_ecalJuraIso"));
 		els_ecalJuraIso_branch->SetAddress(&els_ecalJuraIso_);
 	}
-	if(els_ecalJuraIso_branch == 0 ) {
-	cout << "Branch els_ecalJuraIso does not exist." << endl;
-	}
 	els_ecalJuraTowerIso_branch = 0;
 	if (tree->GetAlias("els_ecalJuraTowerIso") != 0) {
 		els_ecalJuraTowerIso_branch = tree->GetBranch(tree->GetAlias("els_ecalJuraTowerIso"));
 		els_ecalJuraTowerIso_branch->SetAddress(&els_ecalJuraTowerIso_);
-	}
-	if(els_ecalJuraTowerIso_branch == 0 ) {
-	cout << "Branch els_ecalJuraTowerIso does not exist." << endl;
 	}
 	els_hcalConeIso_branch = 0;
 	if (tree->GetAlias("els_hcalConeIso") != 0) {
 		els_hcalConeIso_branch = tree->GetBranch(tree->GetAlias("els_hcalConeIso"));
 		els_hcalConeIso_branch->SetAddress(&els_hcalConeIso_);
 	}
-	if(els_hcalConeIso_branch == 0 ) {
-	cout << "Branch els_hcalConeIso does not exist." << endl;
-	}
 	els_tkJuraIso_branch = 0;
 	if (tree->GetAlias("els_tkJuraIso") != 0) {
 		els_tkJuraIso_branch = tree->GetBranch(tree->GetAlias("els_tkJuraIso"));
 		els_tkJuraIso_branch->SetAddress(&els_tkJuraIso_);
-	}
-	if(els_tkJuraIso_branch == 0 ) {
-	cout << "Branch els_tkJuraIso does not exist." << endl;
 	}
 	els_jetdr_branch = 0;
 	if (tree->GetAlias("els_jetdr") != 0) {
 		els_jetdr_branch = tree->GetBranch(tree->GetAlias("els_jetdr"));
 		els_jetdr_branch->SetAddress(&els_jetdr_);
 	}
-	if(els_jetdr_branch == 0 ) {
-	cout << "Branch els_jetdr does not exist." << endl;
-	}
 	els_musdr_branch = 0;
 	if (tree->GetAlias("els_musdr") != 0) {
 		els_musdr_branch = tree->GetBranch(tree->GetAlias("els_musdr"));
 		els_musdr_branch->SetAddress(&els_musdr_);
-	}
-	if(els_musdr_branch == 0 ) {
-	cout << "Branch els_musdr does not exist." << endl;
 	}
 	els_chi2_branch = 0;
 	if (tree->GetAlias("els_chi2") != 0) {
 		els_chi2_branch = tree->GetBranch(tree->GetAlias("els_chi2"));
 		els_chi2_branch->SetAddress(&els_chi2_);
 	}
-	if(els_chi2_branch == 0 ) {
-	cout << "Branch els_chi2 does not exist." << endl;
-	}
 	els_conv_dcot_branch = 0;
 	if (tree->GetAlias("els_conv_dcot") != 0) {
 		els_conv_dcot_branch = tree->GetBranch(tree->GetAlias("els_conv_dcot"));
 		els_conv_dcot_branch->SetAddress(&els_conv_dcot_);
-	}
-	if(els_conv_dcot_branch == 0 ) {
-	cout << "Branch els_conv_dcot does not exist." << endl;
 	}
 	els_conv_dist_branch = 0;
 	if (tree->GetAlias("els_conv_dist") != 0) {
 		els_conv_dist_branch = tree->GetBranch(tree->GetAlias("els_conv_dist"));
 		els_conv_dist_branch->SetAddress(&els_conv_dist_);
 	}
-	if(els_conv_dist_branch == 0 ) {
-	cout << "Branch els_conv_dist does not exist." << endl;
-	}
 	els_conv_radius_branch = 0;
 	if (tree->GetAlias("els_conv_radius") != 0) {
 		els_conv_radius_branch = tree->GetBranch(tree->GetAlias("els_conv_radius"));
 		els_conv_radius_branch->SetAddress(&els_conv_radius_);
-	}
-	if(els_conv_radius_branch == 0 ) {
-	cout << "Branch els_conv_radius does not exist." << endl;
 	}
 	els_d0_branch = 0;
 	if (tree->GetAlias("els_d0") != 0) {
 		els_d0_branch = tree->GetBranch(tree->GetAlias("els_d0"));
 		els_d0_branch->SetAddress(&els_d0_);
 	}
-	if(els_d0_branch == 0 ) {
-	cout << "Branch els_d0 does not exist." << endl;
-	}
 	els_d0Err_branch = 0;
 	if (tree->GetAlias("els_d0Err") != 0) {
 		els_d0Err_branch = tree->GetBranch(tree->GetAlias("els_d0Err"));
 		els_d0Err_branch->SetAddress(&els_d0Err_);
-	}
-	if(els_d0Err_branch == 0 ) {
-	cout << "Branch els_d0Err does not exist." << endl;
 	}
 	els_d0corr_branch = 0;
 	if (tree->GetAlias("els_d0corr") != 0) {
 		els_d0corr_branch = tree->GetBranch(tree->GetAlias("els_d0corr"));
 		els_d0corr_branch->SetAddress(&els_d0corr_);
 	}
-	if(els_d0corr_branch == 0 ) {
-	cout << "Branch els_d0corr does not exist." << endl;
-	}
 	els_dEtaIn_branch = 0;
 	if (tree->GetAlias("els_dEtaIn") != 0) {
 		els_dEtaIn_branch = tree->GetBranch(tree->GetAlias("els_dEtaIn"));
 		els_dEtaIn_branch->SetAddress(&els_dEtaIn_);
-	}
-	if(els_dEtaIn_branch == 0 ) {
-	cout << "Branch els_dEtaIn does not exist." << endl;
 	}
 	els_dEtaOut_branch = 0;
 	if (tree->GetAlias("els_dEtaOut") != 0) {
 		els_dEtaOut_branch = tree->GetBranch(tree->GetAlias("els_dEtaOut"));
 		els_dEtaOut_branch->SetAddress(&els_dEtaOut_);
 	}
-	if(els_dEtaOut_branch == 0 ) {
-	cout << "Branch els_dEtaOut does not exist." << endl;
-	}
 	els_dPhiIn_branch = 0;
 	if (tree->GetAlias("els_dPhiIn") != 0) {
 		els_dPhiIn_branch = tree->GetBranch(tree->GetAlias("els_dPhiIn"));
 		els_dPhiIn_branch->SetAddress(&els_dPhiIn_);
-	}
-	if(els_dPhiIn_branch == 0 ) {
-	cout << "Branch els_dPhiIn does not exist." << endl;
 	}
 	els_dPhiInPhiOut_branch = 0;
 	if (tree->GetAlias("els_dPhiInPhiOut") != 0) {
 		els_dPhiInPhiOut_branch = tree->GetBranch(tree->GetAlias("els_dPhiInPhiOut"));
 		els_dPhiInPhiOut_branch->SetAddress(&els_dPhiInPhiOut_);
 	}
-	if(els_dPhiInPhiOut_branch == 0 ) {
-	cout << "Branch els_dPhiInPhiOut does not exist." << endl;
-	}
 	els_dPhiOut_branch = 0;
 	if (tree->GetAlias("els_dPhiOut") != 0) {
 		els_dPhiOut_branch = tree->GetBranch(tree->GetAlias("els_dPhiOut"));
 		els_dPhiOut_branch->SetAddress(&els_dPhiOut_);
-	}
-	if(els_dPhiOut_branch == 0 ) {
-	cout << "Branch els_dPhiOut does not exist." << endl;
 	}
 	els_deltaEtaEleClusterTrackAtCalo_branch = 0;
 	if (tree->GetAlias("els_deltaEtaEleClusterTrackAtCalo") != 0) {
 		els_deltaEtaEleClusterTrackAtCalo_branch = tree->GetBranch(tree->GetAlias("els_deltaEtaEleClusterTrackAtCalo"));
 		els_deltaEtaEleClusterTrackAtCalo_branch->SetAddress(&els_deltaEtaEleClusterTrackAtCalo_);
 	}
-	if(els_deltaEtaEleClusterTrackAtCalo_branch == 0 ) {
-	cout << "Branch els_deltaEtaEleClusterTrackAtCalo does not exist." << endl;
-	}
 	els_deltaPhiEleClusterTrackAtCalo_branch = 0;
 	if (tree->GetAlias("els_deltaPhiEleClusterTrackAtCalo") != 0) {
 		els_deltaPhiEleClusterTrackAtCalo_branch = tree->GetBranch(tree->GetAlias("els_deltaPhiEleClusterTrackAtCalo"));
 		els_deltaPhiEleClusterTrackAtCalo_branch->SetAddress(&els_deltaPhiEleClusterTrackAtCalo_);
-	}
-	if(els_deltaPhiEleClusterTrackAtCalo_branch == 0 ) {
-	cout << "Branch els_deltaPhiEleClusterTrackAtCalo does not exist." << endl;
 	}
 	els_e1x5_branch = 0;
 	if (tree->GetAlias("els_e1x5") != 0) {
 		els_e1x5_branch = tree->GetBranch(tree->GetAlias("els_e1x5"));
 		els_e1x5_branch->SetAddress(&els_e1x5_);
 	}
-	if(els_e1x5_branch == 0 ) {
-	cout << "Branch els_e1x5 does not exist." << endl;
-	}
 	els_e2x5Max_branch = 0;
 	if (tree->GetAlias("els_e2x5Max") != 0) {
 		els_e2x5Max_branch = tree->GetBranch(tree->GetAlias("els_e2x5Max"));
 		els_e2x5Max_branch->SetAddress(&els_e2x5Max_);
-	}
-	if(els_e2x5Max_branch == 0 ) {
-	cout << "Branch els_e2x5Max does not exist." << endl;
 	}
 	els_e3x3_branch = 0;
 	if (tree->GetAlias("els_e3x3") != 0) {
 		els_e3x3_branch = tree->GetBranch(tree->GetAlias("els_e3x3"));
 		els_e3x3_branch->SetAddress(&els_e3x3_);
 	}
-	if(els_e3x3_branch == 0 ) {
-	cout << "Branch els_e3x3 does not exist." << endl;
-	}
 	els_e5x5_branch = 0;
 	if (tree->GetAlias("els_e5x5") != 0) {
 		els_e5x5_branch = tree->GetBranch(tree->GetAlias("els_e5x5"));
 		els_e5x5_branch->SetAddress(&els_e5x5_);
-	}
-	if(els_e5x5_branch == 0 ) {
-	cout << "Branch els_e5x5 does not exist." << endl;
 	}
 	els_eMax_branch = 0;
 	if (tree->GetAlias("els_eMax") != 0) {
 		els_eMax_branch = tree->GetBranch(tree->GetAlias("els_eMax"));
 		els_eMax_branch->SetAddress(&els_eMax_);
 	}
-	if(els_eMax_branch == 0 ) {
-	cout << "Branch els_eMax does not exist." << endl;
-	}
 	els_eOverPIn_branch = 0;
 	if (tree->GetAlias("els_eOverPIn") != 0) {
 		els_eOverPIn_branch = tree->GetBranch(tree->GetAlias("els_eOverPIn"));
 		els_eOverPIn_branch->SetAddress(&els_eOverPIn_);
-	}
-	if(els_eOverPIn_branch == 0 ) {
-	cout << "Branch els_eOverPIn does not exist." << endl;
 	}
 	els_eOverPOut_branch = 0;
 	if (tree->GetAlias("els_eOverPOut") != 0) {
 		els_eOverPOut_branch = tree->GetBranch(tree->GetAlias("els_eOverPOut"));
 		els_eOverPOut_branch->SetAddress(&els_eOverPOut_);
 	}
-	if(els_eOverPOut_branch == 0 ) {
-	cout << "Branch els_eOverPOut does not exist." << endl;
-	}
 	els_eSC_branch = 0;
 	if (tree->GetAlias("els_eSC") != 0) {
 		els_eSC_branch = tree->GetBranch(tree->GetAlias("els_eSC"));
 		els_eSC_branch->SetAddress(&els_eSC_);
-	}
-	if(els_eSC_branch == 0 ) {
-	cout << "Branch els_eSC does not exist." << endl;
 	}
 	els_eSCPresh_branch = 0;
 	if (tree->GetAlias("els_eSCPresh") != 0) {
 		els_eSCPresh_branch = tree->GetBranch(tree->GetAlias("els_eSCPresh"));
 		els_eSCPresh_branch->SetAddress(&els_eSCPresh_);
 	}
-	if(els_eSCPresh_branch == 0 ) {
-	cout << "Branch els_eSCPresh does not exist." << endl;
-	}
 	els_eSCRaw_branch = 0;
 	if (tree->GetAlias("els_eSCRaw") != 0) {
 		els_eSCRaw_branch = tree->GetBranch(tree->GetAlias("els_eSCRaw"));
 		els_eSCRaw_branch->SetAddress(&els_eSCRaw_);
-	}
-	if(els_eSCRaw_branch == 0 ) {
-	cout << "Branch els_eSCRaw does not exist." << endl;
 	}
 	els_eSeed_branch = 0;
 	if (tree->GetAlias("els_eSeed") != 0) {
 		els_eSeed_branch = tree->GetBranch(tree->GetAlias("els_eSeed"));
 		els_eSeed_branch->SetAddress(&els_eSeed_);
 	}
-	if(els_eSeed_branch == 0 ) {
-	cout << "Branch els_eSeed does not exist." << endl;
-	}
 	els_eSeedOverPIn_branch = 0;
 	if (tree->GetAlias("els_eSeedOverPIn") != 0) {
 		els_eSeedOverPIn_branch = tree->GetBranch(tree->GetAlias("els_eSeedOverPIn"));
 		els_eSeedOverPIn_branch->SetAddress(&els_eSeedOverPIn_);
-	}
-	if(els_eSeedOverPIn_branch == 0 ) {
-	cout << "Branch els_eSeedOverPIn does not exist." << endl;
 	}
 	els_eSeedOverPOut_branch = 0;
 	if (tree->GetAlias("els_eSeedOverPOut") != 0) {
 		els_eSeedOverPOut_branch = tree->GetBranch(tree->GetAlias("els_eSeedOverPOut"));
 		els_eSeedOverPOut_branch->SetAddress(&els_eSeedOverPOut_);
 	}
-	if(els_eSeedOverPOut_branch == 0 ) {
-	cout << "Branch els_eSeedOverPOut does not exist." << endl;
-	}
 	els_ecalEnergy_branch = 0;
 	if (tree->GetAlias("els_ecalEnergy") != 0) {
 		els_ecalEnergy_branch = tree->GetBranch(tree->GetAlias("els_ecalEnergy"));
 		els_ecalEnergy_branch->SetAddress(&els_ecalEnergy_);
-	}
-	if(els_ecalEnergy_branch == 0 ) {
-	cout << "Branch els_ecalEnergy does not exist." << endl;
 	}
 	els_ecalEnergyError_branch = 0;
 	if (tree->GetAlias("els_ecalEnergyError") != 0) {
 		els_ecalEnergyError_branch = tree->GetBranch(tree->GetAlias("els_ecalEnergyError"));
 		els_ecalEnergyError_branch->SetAddress(&els_ecalEnergyError_);
 	}
-	if(els_ecalEnergyError_branch == 0 ) {
-	cout << "Branch els_ecalEnergyError does not exist." << endl;
-	}
 	els_ecalIso_branch = 0;
 	if (tree->GetAlias("els_ecalIso") != 0) {
 		els_ecalIso_branch = tree->GetBranch(tree->GetAlias("els_ecalIso"));
 		els_ecalIso_branch->SetAddress(&els_ecalIso_);
-	}
-	if(els_ecalIso_branch == 0 ) {
-	cout << "Branch els_ecalIso does not exist." << endl;
 	}
 	els_ecalIso04_branch = 0;
 	if (tree->GetAlias("els_ecalIso04") != 0) {
 		els_ecalIso04_branch = tree->GetBranch(tree->GetAlias("els_ecalIso04"));
 		els_ecalIso04_branch->SetAddress(&els_ecalIso04_);
 	}
-	if(els_ecalIso04_branch == 0 ) {
-	cout << "Branch els_ecalIso04 does not exist." << endl;
-	}
 	els_egamma_looseId_branch = 0;
 	if (tree->GetAlias("els_egamma_looseId") != 0) {
 		els_egamma_looseId_branch = tree->GetBranch(tree->GetAlias("els_egamma_looseId"));
 		els_egamma_looseId_branch->SetAddress(&els_egamma_looseId_);
-	}
-	if(els_egamma_looseId_branch == 0 ) {
-	cout << "Branch els_egamma_looseId does not exist." << endl;
 	}
 	els_egamma_robustHighEnergy_branch = 0;
 	if (tree->GetAlias("els_egamma_robustHighEnergy") != 0) {
 		els_egamma_robustHighEnergy_branch = tree->GetBranch(tree->GetAlias("els_egamma_robustHighEnergy"));
 		els_egamma_robustHighEnergy_branch->SetAddress(&els_egamma_robustHighEnergy_);
 	}
-	if(els_egamma_robustHighEnergy_branch == 0 ) {
-	cout << "Branch els_egamma_robustHighEnergy does not exist." << endl;
-	}
 	els_egamma_robustLooseId_branch = 0;
 	if (tree->GetAlias("els_egamma_robustLooseId") != 0) {
 		els_egamma_robustLooseId_branch = tree->GetBranch(tree->GetAlias("els_egamma_robustLooseId"));
 		els_egamma_robustLooseId_branch->SetAddress(&els_egamma_robustLooseId_);
-	}
-	if(els_egamma_robustLooseId_branch == 0 ) {
-	cout << "Branch els_egamma_robustLooseId does not exist." << endl;
 	}
 	els_egamma_robustTightId_branch = 0;
 	if (tree->GetAlias("els_egamma_robustTightId") != 0) {
 		els_egamma_robustTightId_branch = tree->GetBranch(tree->GetAlias("els_egamma_robustTightId"));
 		els_egamma_robustTightId_branch->SetAddress(&els_egamma_robustTightId_);
 	}
-	if(els_egamma_robustTightId_branch == 0 ) {
-	cout << "Branch els_egamma_robustTightId does not exist." << endl;
-	}
 	els_egamma_tightId_branch = 0;
 	if (tree->GetAlias("els_egamma_tightId") != 0) {
 		els_egamma_tightId_branch = tree->GetBranch(tree->GetAlias("els_egamma_tightId"));
 		els_egamma_tightId_branch->SetAddress(&els_egamma_tightId_);
-	}
-	if(els_egamma_tightId_branch == 0 ) {
-	cout << "Branch els_egamma_tightId does not exist." << endl;
 	}
 	els_electronMomentumError_branch = 0;
 	if (tree->GetAlias("els_electronMomentumError") != 0) {
 		els_electronMomentumError_branch = tree->GetBranch(tree->GetAlias("els_electronMomentumError"));
 		els_electronMomentumError_branch->SetAddress(&els_electronMomentumError_);
 	}
-	if(els_electronMomentumError_branch == 0 ) {
-	cout << "Branch els_electronMomentumError does not exist." << endl;
-	}
 	els_etaErr_branch = 0;
 	if (tree->GetAlias("els_etaErr") != 0) {
 		els_etaErr_branch = tree->GetBranch(tree->GetAlias("els_etaErr"));
 		els_etaErr_branch->SetAddress(&els_etaErr_);
-	}
-	if(els_etaErr_branch == 0 ) {
-	cout << "Branch els_etaErr does not exist." << endl;
 	}
 	els_etaSC_branch = 0;
 	if (tree->GetAlias("els_etaSC") != 0) {
 		els_etaSC_branch = tree->GetBranch(tree->GetAlias("els_etaSC"));
 		els_etaSC_branch->SetAddress(&els_etaSC_);
 	}
-	if(els_etaSC_branch == 0 ) {
-	cout << "Branch els_etaSC does not exist." << endl;
-	}
 	els_fbrem_branch = 0;
 	if (tree->GetAlias("els_fbrem") != 0) {
 		els_fbrem_branch = tree->GetBranch(tree->GetAlias("els_fbrem"));
 		els_fbrem_branch->SetAddress(&els_fbrem_);
-	}
-	if(els_fbrem_branch == 0 ) {
-	cout << "Branch els_fbrem does not exist." << endl;
 	}
 	els_hOverE_branch = 0;
 	if (tree->GetAlias("els_hOverE") != 0) {
 		els_hOverE_branch = tree->GetBranch(tree->GetAlias("els_hOverE"));
 		els_hOverE_branch->SetAddress(&els_hOverE_);
 	}
-	if(els_hOverE_branch == 0 ) {
-	cout << "Branch els_hOverE does not exist." << endl;
-	}
 	els_hcalDepth1OverEcal_branch = 0;
 	if (tree->GetAlias("els_hcalDepth1OverEcal") != 0) {
 		els_hcalDepth1OverEcal_branch = tree->GetBranch(tree->GetAlias("els_hcalDepth1OverEcal"));
 		els_hcalDepth1OverEcal_branch->SetAddress(&els_hcalDepth1OverEcal_);
-	}
-	if(els_hcalDepth1OverEcal_branch == 0 ) {
-	cout << "Branch els_hcalDepth1OverEcal does not exist." << endl;
 	}
 	els_hcalDepth1TowerSumEt_branch = 0;
 	if (tree->GetAlias("els_hcalDepth1TowerSumEt") != 0) {
 		els_hcalDepth1TowerSumEt_branch = tree->GetBranch(tree->GetAlias("els_hcalDepth1TowerSumEt"));
 		els_hcalDepth1TowerSumEt_branch->SetAddress(&els_hcalDepth1TowerSumEt_);
 	}
-	if(els_hcalDepth1TowerSumEt_branch == 0 ) {
-	cout << "Branch els_hcalDepth1TowerSumEt does not exist." << endl;
-	}
 	els_hcalDepth1TowerSumEt04_branch = 0;
 	if (tree->GetAlias("els_hcalDepth1TowerSumEt04") != 0) {
 		els_hcalDepth1TowerSumEt04_branch = tree->GetBranch(tree->GetAlias("els_hcalDepth1TowerSumEt04"));
 		els_hcalDepth1TowerSumEt04_branch->SetAddress(&els_hcalDepth1TowerSumEt04_);
-	}
-	if(els_hcalDepth1TowerSumEt04_branch == 0 ) {
-	cout << "Branch els_hcalDepth1TowerSumEt04 does not exist." << endl;
 	}
 	els_hcalDepth2OverEcal_branch = 0;
 	if (tree->GetAlias("els_hcalDepth2OverEcal") != 0) {
 		els_hcalDepth2OverEcal_branch = tree->GetBranch(tree->GetAlias("els_hcalDepth2OverEcal"));
 		els_hcalDepth2OverEcal_branch->SetAddress(&els_hcalDepth2OverEcal_);
 	}
-	if(els_hcalDepth2OverEcal_branch == 0 ) {
-	cout << "Branch els_hcalDepth2OverEcal does not exist." << endl;
-	}
 	els_hcalDepth2TowerSumEt_branch = 0;
 	if (tree->GetAlias("els_hcalDepth2TowerSumEt") != 0) {
 		els_hcalDepth2TowerSumEt_branch = tree->GetBranch(tree->GetAlias("els_hcalDepth2TowerSumEt"));
 		els_hcalDepth2TowerSumEt_branch->SetAddress(&els_hcalDepth2TowerSumEt_);
-	}
-	if(els_hcalDepth2TowerSumEt_branch == 0 ) {
-	cout << "Branch els_hcalDepth2TowerSumEt does not exist." << endl;
 	}
 	els_hcalDepth2TowerSumEt04_branch = 0;
 	if (tree->GetAlias("els_hcalDepth2TowerSumEt04") != 0) {
 		els_hcalDepth2TowerSumEt04_branch = tree->GetBranch(tree->GetAlias("els_hcalDepth2TowerSumEt04"));
 		els_hcalDepth2TowerSumEt04_branch->SetAddress(&els_hcalDepth2TowerSumEt04_);
 	}
-	if(els_hcalDepth2TowerSumEt04_branch == 0 ) {
-	cout << "Branch els_hcalDepth2TowerSumEt04 does not exist." << endl;
-	}
 	els_hcalIso_branch = 0;
 	if (tree->GetAlias("els_hcalIso") != 0) {
 		els_hcalIso_branch = tree->GetBranch(tree->GetAlias("els_hcalIso"));
 		els_hcalIso_branch->SetAddress(&els_hcalIso_);
-	}
-	if(els_hcalIso_branch == 0 ) {
-	cout << "Branch els_hcalIso does not exist." << endl;
 	}
 	els_hcalIso04_branch = 0;
 	if (tree->GetAlias("els_hcalIso04") != 0) {
 		els_hcalIso04_branch = tree->GetBranch(tree->GetAlias("els_hcalIso04"));
 		els_hcalIso04_branch->SetAddress(&els_hcalIso04_);
 	}
-	if(els_hcalIso04_branch == 0 ) {
-	cout << "Branch els_hcalIso04 does not exist." << endl;
-	}
 	els_layer1_charge_branch = 0;
 	if (tree->GetAlias("els_layer1_charge") != 0) {
 		els_layer1_charge_branch = tree->GetBranch(tree->GetAlias("els_layer1_charge"));
 		els_layer1_charge_branch->SetAddress(&els_layer1_charge_);
-	}
-	if(els_layer1_charge_branch == 0 ) {
-	cout << "Branch els_layer1_charge does not exist." << endl;
 	}
 	els_mva_branch = 0;
 	if (tree->GetAlias("els_mva") != 0) {
 		els_mva_branch = tree->GetBranch(tree->GetAlias("els_mva"));
 		els_mva_branch->SetAddress(&els_mva_);
 	}
-	if(els_mva_branch == 0 ) {
-	cout << "Branch els_mva does not exist." << endl;
-	}
 	els_ndof_branch = 0;
 	if (tree->GetAlias("els_ndof") != 0) {
 		els_ndof_branch = tree->GetBranch(tree->GetAlias("els_ndof"));
 		els_ndof_branch->SetAddress(&els_ndof_);
-	}
-	if(els_ndof_branch == 0 ) {
-	cout << "Branch els_ndof does not exist." << endl;
 	}
 	els_phiErr_branch = 0;
 	if (tree->GetAlias("els_phiErr") != 0) {
 		els_phiErr_branch = tree->GetBranch(tree->GetAlias("els_phiErr"));
 		els_phiErr_branch->SetAddress(&els_phiErr_);
 	}
-	if(els_phiErr_branch == 0 ) {
-	cout << "Branch els_phiErr does not exist." << endl;
-	}
 	els_phiSC_branch = 0;
 	if (tree->GetAlias("els_phiSC") != 0) {
 		els_phiSC_branch = tree->GetBranch(tree->GetAlias("els_phiSC"));
 		els_phiSC_branch->SetAddress(&els_phiSC_);
-	}
-	if(els_phiSC_branch == 0 ) {
-	cout << "Branch els_phiSC does not exist." << endl;
 	}
 	els_ptErr_branch = 0;
 	if (tree->GetAlias("els_ptErr") != 0) {
 		els_ptErr_branch = tree->GetBranch(tree->GetAlias("els_ptErr"));
 		els_ptErr_branch->SetAddress(&els_ptErr_);
 	}
-	if(els_ptErr_branch == 0 ) {
-	cout << "Branch els_ptErr does not exist." << endl;
-	}
 	els_sigmaEtaEta_branch = 0;
 	if (tree->GetAlias("els_sigmaEtaEta") != 0) {
 		els_sigmaEtaEta_branch = tree->GetBranch(tree->GetAlias("els_sigmaEtaEta"));
 		els_sigmaEtaEta_branch->SetAddress(&els_sigmaEtaEta_);
-	}
-	if(els_sigmaEtaEta_branch == 0 ) {
-	cout << "Branch els_sigmaEtaEta does not exist." << endl;
 	}
 	els_sigmaIEtaIEta_branch = 0;
 	if (tree->GetAlias("els_sigmaIEtaIEta") != 0) {
 		els_sigmaIEtaIEta_branch = tree->GetBranch(tree->GetAlias("els_sigmaIEtaIEta"));
 		els_sigmaIEtaIEta_branch->SetAddress(&els_sigmaIEtaIEta_);
 	}
-	if(els_sigmaIEtaIEta_branch == 0 ) {
-	cout << "Branch els_sigmaIEtaIEta does not exist." << endl;
-	}
 	els_sigmaIEtaIEtaSC_branch = 0;
 	if (tree->GetAlias("els_sigmaIEtaIEtaSC") != 0) {
 		els_sigmaIEtaIEtaSC_branch = tree->GetBranch(tree->GetAlias("els_sigmaIEtaIEtaSC"));
 		els_sigmaIEtaIEtaSC_branch->SetAddress(&els_sigmaIEtaIEtaSC_);
-	}
-	if(els_sigmaIEtaIEtaSC_branch == 0 ) {
-	cout << "Branch els_sigmaIEtaIEtaSC does not exist." << endl;
 	}
 	els_sigmaIPhiIPhi_branch = 0;
 	if (tree->GetAlias("els_sigmaIPhiIPhi") != 0) {
 		els_sigmaIPhiIPhi_branch = tree->GetBranch(tree->GetAlias("els_sigmaIPhiIPhi"));
 		els_sigmaIPhiIPhi_branch->SetAddress(&els_sigmaIPhiIPhi_);
 	}
-	if(els_sigmaIPhiIPhi_branch == 0 ) {
-	cout << "Branch els_sigmaIPhiIPhi does not exist." << endl;
-	}
 	els_sigmaIPhiIPhiSC_branch = 0;
 	if (tree->GetAlias("els_sigmaIPhiIPhiSC") != 0) {
 		els_sigmaIPhiIPhiSC_branch = tree->GetBranch(tree->GetAlias("els_sigmaIPhiIPhiSC"));
 		els_sigmaIPhiIPhiSC_branch->SetAddress(&els_sigmaIPhiIPhiSC_);
-	}
-	if(els_sigmaIPhiIPhiSC_branch == 0 ) {
-	cout << "Branch els_sigmaIPhiIPhiSC does not exist." << endl;
 	}
 	els_sigmaPhiPhi_branch = 0;
 	if (tree->GetAlias("els_sigmaPhiPhi") != 0) {
 		els_sigmaPhiPhi_branch = tree->GetBranch(tree->GetAlias("els_sigmaPhiPhi"));
 		els_sigmaPhiPhi_branch->SetAddress(&els_sigmaPhiPhi_);
 	}
-	if(els_sigmaPhiPhi_branch == 0 ) {
-	cout << "Branch els_sigmaPhiPhi does not exist." << endl;
-	}
 	els_tkIso_branch = 0;
 	if (tree->GetAlias("els_tkIso") != 0) {
 		els_tkIso_branch = tree->GetBranch(tree->GetAlias("els_tkIso"));
 		els_tkIso_branch->SetAddress(&els_tkIso_);
-	}
-	if(els_tkIso_branch == 0 ) {
-	cout << "Branch els_tkIso does not exist." << endl;
 	}
 	els_tkIso04_branch = 0;
 	if (tree->GetAlias("els_tkIso04") != 0) {
 		els_tkIso04_branch = tree->GetBranch(tree->GetAlias("els_tkIso04"));
 		els_tkIso04_branch->SetAddress(&els_tkIso04_);
 	}
-	if(els_tkIso04_branch == 0 ) {
-	cout << "Branch els_tkIso04 does not exist." << endl;
-	}
 	els_trackMomentumError_branch = 0;
 	if (tree->GetAlias("els_trackMomentumError") != 0) {
 		els_trackMomentumError_branch = tree->GetBranch(tree->GetAlias("els_trackMomentumError"));
 		els_trackMomentumError_branch->SetAddress(&els_trackMomentumError_);
-	}
-	if(els_trackMomentumError_branch == 0 ) {
-	cout << "Branch els_trackMomentumError does not exist." << endl;
 	}
 	els_trkdr_branch = 0;
 	if (tree->GetAlias("els_trkdr") != 0) {
 		els_trkdr_branch = tree->GetBranch(tree->GetAlias("els_trkdr"));
 		els_trkdr_branch->SetAddress(&els_trkdr_);
 	}
-	if(els_trkdr_branch == 0 ) {
-	cout << "Branch els_trkdr does not exist." << endl;
-	}
 	els_trkshFrac_branch = 0;
 	if (tree->GetAlias("els_trkshFrac") != 0) {
 		els_trkshFrac_branch = tree->GetBranch(tree->GetAlias("els_trkshFrac"));
 		els_trkshFrac_branch->SetAddress(&els_trkshFrac_);
-	}
-	if(els_trkshFrac_branch == 0 ) {
-	cout << "Branch els_trkshFrac does not exist." << endl;
 	}
 	els_z0_branch = 0;
 	if (tree->GetAlias("els_z0") != 0) {
 		els_z0_branch = tree->GetBranch(tree->GetAlias("els_z0"));
 		els_z0_branch->SetAddress(&els_z0_);
 	}
-	if(els_z0_branch == 0 ) {
-	cout << "Branch els_z0 does not exist." << endl;
-	}
 	els_z0Err_branch = 0;
 	if (tree->GetAlias("els_z0Err") != 0) {
 		els_z0Err_branch = tree->GetBranch(tree->GetAlias("els_z0Err"));
 		els_z0Err_branch->SetAddress(&els_z0Err_);
-	}
-	if(els_z0Err_branch == 0 ) {
-	cout << "Branch els_z0Err does not exist." << endl;
 	}
 	els_z0corr_branch = 0;
 	if (tree->GetAlias("els_z0corr") != 0) {
 		els_z0corr_branch = tree->GetBranch(tree->GetAlias("els_z0corr"));
 		els_z0corr_branch->SetAddress(&els_z0corr_);
 	}
-	if(els_z0corr_branch == 0 ) {
-	cout << "Branch els_z0corr does not exist." << endl;
-	}
 	hyp_Ht_branch = 0;
 	if (tree->GetAlias("hyp_Ht") != 0) {
 		hyp_Ht_branch = tree->GetBranch(tree->GetAlias("hyp_Ht"));
 		hyp_Ht_branch->SetAddress(&hyp_Ht_);
-	}
-	if(hyp_Ht_branch == 0 ) {
-	cout << "Branch hyp_Ht does not exist." << endl;
 	}
 	hyp_dPhi_nJet_metMuonJESCorr_branch = 0;
 	if (tree->GetAlias("hyp_dPhi_nJet_metMuonJESCorr") != 0) {
 		hyp_dPhi_nJet_metMuonJESCorr_branch = tree->GetBranch(tree->GetAlias("hyp_dPhi_nJet_metMuonJESCorr"));
 		hyp_dPhi_nJet_metMuonJESCorr_branch->SetAddress(&hyp_dPhi_nJet_metMuonJESCorr_);
 	}
-	if(hyp_dPhi_nJet_metMuonJESCorr_branch == 0 ) {
-	cout << "Branch hyp_dPhi_nJet_metMuonJESCorr does not exist." << endl;
-	}
 	hyp_dPhi_nJet_muCorrMet_branch = 0;
 	if (tree->GetAlias("hyp_dPhi_nJet_muCorrMet") != 0) {
 		hyp_dPhi_nJet_muCorrMet_branch = tree->GetBranch(tree->GetAlias("hyp_dPhi_nJet_muCorrMet"));
 		hyp_dPhi_nJet_muCorrMet_branch->SetAddress(&hyp_dPhi_nJet_muCorrMet_);
-	}
-	if(hyp_dPhi_nJet_muCorrMet_branch == 0 ) {
-	cout << "Branch hyp_dPhi_nJet_muCorrMet does not exist." << endl;
 	}
 	hyp_dPhi_nJet_tcMet_branch = 0;
 	if (tree->GetAlias("hyp_dPhi_nJet_tcMet") != 0) {
 		hyp_dPhi_nJet_tcMet_branch = tree->GetBranch(tree->GetAlias("hyp_dPhi_nJet_tcMet"));
 		hyp_dPhi_nJet_tcMet_branch->SetAddress(&hyp_dPhi_nJet_tcMet_);
 	}
-	if(hyp_dPhi_nJet_tcMet_branch == 0 ) {
-	cout << "Branch hyp_dPhi_nJet_tcMet does not exist." << endl;
-	}
 	hyp_dPhi_nJet_unCorrMet_branch = 0;
 	if (tree->GetAlias("hyp_dPhi_nJet_unCorrMet") != 0) {
 		hyp_dPhi_nJet_unCorrMet_branch = tree->GetBranch(tree->GetAlias("hyp_dPhi_nJet_unCorrMet"));
 		hyp_dPhi_nJet_unCorrMet_branch->SetAddress(&hyp_dPhi_nJet_unCorrMet_);
-	}
-	if(hyp_dPhi_nJet_unCorrMet_branch == 0 ) {
-	cout << "Branch hyp_dPhi_nJet_unCorrMet does not exist." << endl;
 	}
 	hyp_ll_chi2_branch = 0;
 	if (tree->GetAlias("hyp_ll_chi2") != 0) {
 		hyp_ll_chi2_branch = tree->GetBranch(tree->GetAlias("hyp_ll_chi2"));
 		hyp_ll_chi2_branch->SetAddress(&hyp_ll_chi2_);
 	}
-	if(hyp_ll_chi2_branch == 0 ) {
-	cout << "Branch hyp_ll_chi2 does not exist." << endl;
-	}
 	hyp_ll_d0_branch = 0;
 	if (tree->GetAlias("hyp_ll_d0") != 0) {
 		hyp_ll_d0_branch = tree->GetBranch(tree->GetAlias("hyp_ll_d0"));
 		hyp_ll_d0_branch->SetAddress(&hyp_ll_d0_);
-	}
-	if(hyp_ll_d0_branch == 0 ) {
-	cout << "Branch hyp_ll_d0 does not exist." << endl;
 	}
 	hyp_ll_d0Err_branch = 0;
 	if (tree->GetAlias("hyp_ll_d0Err") != 0) {
 		hyp_ll_d0Err_branch = tree->GetBranch(tree->GetAlias("hyp_ll_d0Err"));
 		hyp_ll_d0Err_branch->SetAddress(&hyp_ll_d0Err_);
 	}
-	if(hyp_ll_d0Err_branch == 0 ) {
-	cout << "Branch hyp_ll_d0Err does not exist." << endl;
-	}
 	hyp_ll_d0corr_branch = 0;
 	if (tree->GetAlias("hyp_ll_d0corr") != 0) {
 		hyp_ll_d0corr_branch = tree->GetBranch(tree->GetAlias("hyp_ll_d0corr"));
 		hyp_ll_d0corr_branch->SetAddress(&hyp_ll_d0corr_);
-	}
-	if(hyp_ll_d0corr_branch == 0 ) {
-	cout << "Branch hyp_ll_d0corr does not exist." << endl;
 	}
 	hyp_ll_dPhi_metMuonJESCorr_branch = 0;
 	if (tree->GetAlias("hyp_ll_dPhi_metMuonJESCorr") != 0) {
 		hyp_ll_dPhi_metMuonJESCorr_branch = tree->GetBranch(tree->GetAlias("hyp_ll_dPhi_metMuonJESCorr"));
 		hyp_ll_dPhi_metMuonJESCorr_branch->SetAddress(&hyp_ll_dPhi_metMuonJESCorr_);
 	}
-	if(hyp_ll_dPhi_metMuonJESCorr_branch == 0 ) {
-	cout << "Branch hyp_ll_dPhi_metMuonJESCorr does not exist." << endl;
-	}
 	hyp_ll_dPhi_muCorrMet_branch = 0;
 	if (tree->GetAlias("hyp_ll_dPhi_muCorrMet") != 0) {
 		hyp_ll_dPhi_muCorrMet_branch = tree->GetBranch(tree->GetAlias("hyp_ll_dPhi_muCorrMet"));
 		hyp_ll_dPhi_muCorrMet_branch->SetAddress(&hyp_ll_dPhi_muCorrMet_);
-	}
-	if(hyp_ll_dPhi_muCorrMet_branch == 0 ) {
-	cout << "Branch hyp_ll_dPhi_muCorrMet does not exist." << endl;
 	}
 	hyp_ll_dPhi_tcMet_branch = 0;
 	if (tree->GetAlias("hyp_ll_dPhi_tcMet") != 0) {
 		hyp_ll_dPhi_tcMet_branch = tree->GetBranch(tree->GetAlias("hyp_ll_dPhi_tcMet"));
 		hyp_ll_dPhi_tcMet_branch->SetAddress(&hyp_ll_dPhi_tcMet_);
 	}
-	if(hyp_ll_dPhi_tcMet_branch == 0 ) {
-	cout << "Branch hyp_ll_dPhi_tcMet does not exist." << endl;
-	}
 	hyp_ll_dPhi_unCorrMet_branch = 0;
 	if (tree->GetAlias("hyp_ll_dPhi_unCorrMet") != 0) {
 		hyp_ll_dPhi_unCorrMet_branch = tree->GetBranch(tree->GetAlias("hyp_ll_dPhi_unCorrMet"));
 		hyp_ll_dPhi_unCorrMet_branch->SetAddress(&hyp_ll_dPhi_unCorrMet_);
-	}
-	if(hyp_ll_dPhi_unCorrMet_branch == 0 ) {
-	cout << "Branch hyp_ll_dPhi_unCorrMet does not exist." << endl;
 	}
 	hyp_ll_etaErr_branch = 0;
 	if (tree->GetAlias("hyp_ll_etaErr") != 0) {
 		hyp_ll_etaErr_branch = tree->GetBranch(tree->GetAlias("hyp_ll_etaErr"));
 		hyp_ll_etaErr_branch->SetAddress(&hyp_ll_etaErr_);
 	}
-	if(hyp_ll_etaErr_branch == 0 ) {
-	cout << "Branch hyp_ll_etaErr does not exist." << endl;
-	}
 	hyp_ll_ndof_branch = 0;
 	if (tree->GetAlias("hyp_ll_ndof") != 0) {
 		hyp_ll_ndof_branch = tree->GetBranch(tree->GetAlias("hyp_ll_ndof"));
 		hyp_ll_ndof_branch->SetAddress(&hyp_ll_ndof_);
-	}
-	if(hyp_ll_ndof_branch == 0 ) {
-	cout << "Branch hyp_ll_ndof does not exist." << endl;
 	}
 	hyp_ll_phiErr_branch = 0;
 	if (tree->GetAlias("hyp_ll_phiErr") != 0) {
 		hyp_ll_phiErr_branch = tree->GetBranch(tree->GetAlias("hyp_ll_phiErr"));
 		hyp_ll_phiErr_branch->SetAddress(&hyp_ll_phiErr_);
 	}
-	if(hyp_ll_phiErr_branch == 0 ) {
-	cout << "Branch hyp_ll_phiErr does not exist." << endl;
-	}
 	hyp_ll_ptErr_branch = 0;
 	if (tree->GetAlias("hyp_ll_ptErr") != 0) {
 		hyp_ll_ptErr_branch = tree->GetBranch(tree->GetAlias("hyp_ll_ptErr"));
 		hyp_ll_ptErr_branch->SetAddress(&hyp_ll_ptErr_);
-	}
-	if(hyp_ll_ptErr_branch == 0 ) {
-	cout << "Branch hyp_ll_ptErr does not exist." << endl;
 	}
 	hyp_ll_z0_branch = 0;
 	if (tree->GetAlias("hyp_ll_z0") != 0) {
 		hyp_ll_z0_branch = tree->GetBranch(tree->GetAlias("hyp_ll_z0"));
 		hyp_ll_z0_branch->SetAddress(&hyp_ll_z0_);
 	}
-	if(hyp_ll_z0_branch == 0 ) {
-	cout << "Branch hyp_ll_z0 does not exist." << endl;
-	}
 	hyp_ll_z0Err_branch = 0;
 	if (tree->GetAlias("hyp_ll_z0Err") != 0) {
 		hyp_ll_z0Err_branch = tree->GetBranch(tree->GetAlias("hyp_ll_z0Err"));
 		hyp_ll_z0Err_branch->SetAddress(&hyp_ll_z0Err_);
-	}
-	if(hyp_ll_z0Err_branch == 0 ) {
-	cout << "Branch hyp_ll_z0Err does not exist." << endl;
 	}
 	hyp_ll_z0corr_branch = 0;
 	if (tree->GetAlias("hyp_ll_z0corr") != 0) {
 		hyp_ll_z0corr_branch = tree->GetBranch(tree->GetAlias("hyp_ll_z0corr"));
 		hyp_ll_z0corr_branch->SetAddress(&hyp_ll_z0corr_);
 	}
-	if(hyp_ll_z0corr_branch == 0 ) {
-	cout << "Branch hyp_ll_z0corr does not exist." << endl;
-	}
 	hyp_lt_chi2_branch = 0;
 	if (tree->GetAlias("hyp_lt_chi2") != 0) {
 		hyp_lt_chi2_branch = tree->GetBranch(tree->GetAlias("hyp_lt_chi2"));
 		hyp_lt_chi2_branch->SetAddress(&hyp_lt_chi2_);
-	}
-	if(hyp_lt_chi2_branch == 0 ) {
-	cout << "Branch hyp_lt_chi2 does not exist." << endl;
 	}
 	hyp_lt_d0_branch = 0;
 	if (tree->GetAlias("hyp_lt_d0") != 0) {
 		hyp_lt_d0_branch = tree->GetBranch(tree->GetAlias("hyp_lt_d0"));
 		hyp_lt_d0_branch->SetAddress(&hyp_lt_d0_);
 	}
-	if(hyp_lt_d0_branch == 0 ) {
-	cout << "Branch hyp_lt_d0 does not exist." << endl;
-	}
 	hyp_lt_d0Err_branch = 0;
 	if (tree->GetAlias("hyp_lt_d0Err") != 0) {
 		hyp_lt_d0Err_branch = tree->GetBranch(tree->GetAlias("hyp_lt_d0Err"));
 		hyp_lt_d0Err_branch->SetAddress(&hyp_lt_d0Err_);
-	}
-	if(hyp_lt_d0Err_branch == 0 ) {
-	cout << "Branch hyp_lt_d0Err does not exist." << endl;
 	}
 	hyp_lt_d0corr_branch = 0;
 	if (tree->GetAlias("hyp_lt_d0corr") != 0) {
 		hyp_lt_d0corr_branch = tree->GetBranch(tree->GetAlias("hyp_lt_d0corr"));
 		hyp_lt_d0corr_branch->SetAddress(&hyp_lt_d0corr_);
 	}
-	if(hyp_lt_d0corr_branch == 0 ) {
-	cout << "Branch hyp_lt_d0corr does not exist." << endl;
-	}
 	hyp_lt_dPhi_metMuonJESCorr_branch = 0;
 	if (tree->GetAlias("hyp_lt_dPhi_metMuonJESCorr") != 0) {
 		hyp_lt_dPhi_metMuonJESCorr_branch = tree->GetBranch(tree->GetAlias("hyp_lt_dPhi_metMuonJESCorr"));
 		hyp_lt_dPhi_metMuonJESCorr_branch->SetAddress(&hyp_lt_dPhi_metMuonJESCorr_);
-	}
-	if(hyp_lt_dPhi_metMuonJESCorr_branch == 0 ) {
-	cout << "Branch hyp_lt_dPhi_metMuonJESCorr does not exist." << endl;
 	}
 	hyp_lt_dPhi_muCorrMet_branch = 0;
 	if (tree->GetAlias("hyp_lt_dPhi_muCorrMet") != 0) {
 		hyp_lt_dPhi_muCorrMet_branch = tree->GetBranch(tree->GetAlias("hyp_lt_dPhi_muCorrMet"));
 		hyp_lt_dPhi_muCorrMet_branch->SetAddress(&hyp_lt_dPhi_muCorrMet_);
 	}
-	if(hyp_lt_dPhi_muCorrMet_branch == 0 ) {
-	cout << "Branch hyp_lt_dPhi_muCorrMet does not exist." << endl;
-	}
 	hyp_lt_dPhi_tcMet_branch = 0;
 	if (tree->GetAlias("hyp_lt_dPhi_tcMet") != 0) {
 		hyp_lt_dPhi_tcMet_branch = tree->GetBranch(tree->GetAlias("hyp_lt_dPhi_tcMet"));
 		hyp_lt_dPhi_tcMet_branch->SetAddress(&hyp_lt_dPhi_tcMet_);
-	}
-	if(hyp_lt_dPhi_tcMet_branch == 0 ) {
-	cout << "Branch hyp_lt_dPhi_tcMet does not exist." << endl;
 	}
 	hyp_lt_dPhi_unCorrMet_branch = 0;
 	if (tree->GetAlias("hyp_lt_dPhi_unCorrMet") != 0) {
 		hyp_lt_dPhi_unCorrMet_branch = tree->GetBranch(tree->GetAlias("hyp_lt_dPhi_unCorrMet"));
 		hyp_lt_dPhi_unCorrMet_branch->SetAddress(&hyp_lt_dPhi_unCorrMet_);
 	}
-	if(hyp_lt_dPhi_unCorrMet_branch == 0 ) {
-	cout << "Branch hyp_lt_dPhi_unCorrMet does not exist." << endl;
-	}
 	hyp_lt_etaErr_branch = 0;
 	if (tree->GetAlias("hyp_lt_etaErr") != 0) {
 		hyp_lt_etaErr_branch = tree->GetBranch(tree->GetAlias("hyp_lt_etaErr"));
 		hyp_lt_etaErr_branch->SetAddress(&hyp_lt_etaErr_);
-	}
-	if(hyp_lt_etaErr_branch == 0 ) {
-	cout << "Branch hyp_lt_etaErr does not exist." << endl;
 	}
 	hyp_lt_ndof_branch = 0;
 	if (tree->GetAlias("hyp_lt_ndof") != 0) {
 		hyp_lt_ndof_branch = tree->GetBranch(tree->GetAlias("hyp_lt_ndof"));
 		hyp_lt_ndof_branch->SetAddress(&hyp_lt_ndof_);
 	}
-	if(hyp_lt_ndof_branch == 0 ) {
-	cout << "Branch hyp_lt_ndof does not exist." << endl;
-	}
 	hyp_lt_phiErr_branch = 0;
 	if (tree->GetAlias("hyp_lt_phiErr") != 0) {
 		hyp_lt_phiErr_branch = tree->GetBranch(tree->GetAlias("hyp_lt_phiErr"));
 		hyp_lt_phiErr_branch->SetAddress(&hyp_lt_phiErr_);
-	}
-	if(hyp_lt_phiErr_branch == 0 ) {
-	cout << "Branch hyp_lt_phiErr does not exist." << endl;
 	}
 	hyp_lt_ptErr_branch = 0;
 	if (tree->GetAlias("hyp_lt_ptErr") != 0) {
 		hyp_lt_ptErr_branch = tree->GetBranch(tree->GetAlias("hyp_lt_ptErr"));
 		hyp_lt_ptErr_branch->SetAddress(&hyp_lt_ptErr_);
 	}
-	if(hyp_lt_ptErr_branch == 0 ) {
-	cout << "Branch hyp_lt_ptErr does not exist." << endl;
-	}
 	hyp_lt_z0_branch = 0;
 	if (tree->GetAlias("hyp_lt_z0") != 0) {
 		hyp_lt_z0_branch = tree->GetBranch(tree->GetAlias("hyp_lt_z0"));
 		hyp_lt_z0_branch->SetAddress(&hyp_lt_z0_);
-	}
-	if(hyp_lt_z0_branch == 0 ) {
-	cout << "Branch hyp_lt_z0 does not exist." << endl;
 	}
 	hyp_lt_z0Err_branch = 0;
 	if (tree->GetAlias("hyp_lt_z0Err") != 0) {
 		hyp_lt_z0Err_branch = tree->GetBranch(tree->GetAlias("hyp_lt_z0Err"));
 		hyp_lt_z0Err_branch->SetAddress(&hyp_lt_z0Err_);
 	}
-	if(hyp_lt_z0Err_branch == 0 ) {
-	cout << "Branch hyp_lt_z0Err does not exist." << endl;
-	}
 	hyp_lt_z0corr_branch = 0;
 	if (tree->GetAlias("hyp_lt_z0corr") != 0) {
 		hyp_lt_z0corr_branch = tree->GetBranch(tree->GetAlias("hyp_lt_z0corr"));
 		hyp_lt_z0corr_branch->SetAddress(&hyp_lt_z0corr_);
-	}
-	if(hyp_lt_z0corr_branch == 0 ) {
-	cout << "Branch hyp_lt_z0corr does not exist." << endl;
 	}
 	hyp_mt2_metMuonJESCorr_branch = 0;
 	if (tree->GetAlias("hyp_mt2_metMuonJESCorr") != 0) {
 		hyp_mt2_metMuonJESCorr_branch = tree->GetBranch(tree->GetAlias("hyp_mt2_metMuonJESCorr"));
 		hyp_mt2_metMuonJESCorr_branch->SetAddress(&hyp_mt2_metMuonJESCorr_);
 	}
-	if(hyp_mt2_metMuonJESCorr_branch == 0 ) {
-	cout << "Branch hyp_mt2_metMuonJESCorr does not exist." << endl;
-	}
 	hyp_mt2_muCorrMet_branch = 0;
 	if (tree->GetAlias("hyp_mt2_muCorrMet") != 0) {
 		hyp_mt2_muCorrMet_branch = tree->GetBranch(tree->GetAlias("hyp_mt2_muCorrMet"));
 		hyp_mt2_muCorrMet_branch->SetAddress(&hyp_mt2_muCorrMet_);
-	}
-	if(hyp_mt2_muCorrMet_branch == 0 ) {
-	cout << "Branch hyp_mt2_muCorrMet does not exist." << endl;
 	}
 	hyp_mt2_tcMet_branch = 0;
 	if (tree->GetAlias("hyp_mt2_tcMet") != 0) {
 		hyp_mt2_tcMet_branch = tree->GetBranch(tree->GetAlias("hyp_mt2_tcMet"));
 		hyp_mt2_tcMet_branch->SetAddress(&hyp_mt2_tcMet_);
 	}
-	if(hyp_mt2_tcMet_branch == 0 ) {
-	cout << "Branch hyp_mt2_tcMet does not exist." << endl;
-	}
 	hyp_sumJetPt_branch = 0;
 	if (tree->GetAlias("hyp_sumJetPt") != 0) {
 		hyp_sumJetPt_branch = tree->GetBranch(tree->GetAlias("hyp_sumJetPt"));
 		hyp_sumJetPt_branch->SetAddress(&hyp_sumJetPt_);
-	}
-	if(hyp_sumJetPt_branch == 0 ) {
-	cout << "Branch hyp_sumJetPt does not exist." << endl;
 	}
 	hyp_FVFit_chi2ndf_branch = 0;
 	if (tree->GetAlias("hyp_FVFit_chi2ndf") != 0) {
 		hyp_FVFit_chi2ndf_branch = tree->GetBranch(tree->GetAlias("hyp_FVFit_chi2ndf"));
 		hyp_FVFit_chi2ndf_branch->SetAddress(&hyp_FVFit_chi2ndf_);
 	}
-	if(hyp_FVFit_chi2ndf_branch == 0 ) {
-	cout << "Branch hyp_FVFit_chi2ndf does not exist." << endl;
-	}
 	hyp_FVFit_prob_branch = 0;
 	if (tree->GetAlias("hyp_FVFit_prob") != 0) {
 		hyp_FVFit_prob_branch = tree->GetBranch(tree->GetAlias("hyp_FVFit_prob"));
 		hyp_FVFit_prob_branch->SetAddress(&hyp_FVFit_prob_);
-	}
-	if(hyp_FVFit_prob_branch == 0 ) {
-	cout << "Branch hyp_FVFit_prob does not exist." << endl;
 	}
 	hyp_FVFit_v4cxx_branch = 0;
 	if (tree->GetAlias("hyp_FVFit_v4cxx") != 0) {
 		hyp_FVFit_v4cxx_branch = tree->GetBranch(tree->GetAlias("hyp_FVFit_v4cxx"));
 		hyp_FVFit_v4cxx_branch->SetAddress(&hyp_FVFit_v4cxx_);
 	}
-	if(hyp_FVFit_v4cxx_branch == 0 ) {
-	cout << "Branch hyp_FVFit_v4cxx does not exist." << endl;
-	}
 	hyp_FVFit_v4cxy_branch = 0;
 	if (tree->GetAlias("hyp_FVFit_v4cxy") != 0) {
 		hyp_FVFit_v4cxy_branch = tree->GetBranch(tree->GetAlias("hyp_FVFit_v4cxy"));
 		hyp_FVFit_v4cxy_branch->SetAddress(&hyp_FVFit_v4cxy_);
-	}
-	if(hyp_FVFit_v4cxy_branch == 0 ) {
-	cout << "Branch hyp_FVFit_v4cxy does not exist." << endl;
 	}
 	hyp_FVFit_v4cyy_branch = 0;
 	if (tree->GetAlias("hyp_FVFit_v4cyy") != 0) {
 		hyp_FVFit_v4cyy_branch = tree->GetBranch(tree->GetAlias("hyp_FVFit_v4cyy"));
 		hyp_FVFit_v4cyy_branch->SetAddress(&hyp_FVFit_v4cyy_);
 	}
-	if(hyp_FVFit_v4cyy_branch == 0 ) {
-	cout << "Branch hyp_FVFit_v4cyy does not exist." << endl;
-	}
 	hyp_FVFit_v4czx_branch = 0;
 	if (tree->GetAlias("hyp_FVFit_v4czx") != 0) {
 		hyp_FVFit_v4czx_branch = tree->GetBranch(tree->GetAlias("hyp_FVFit_v4czx"));
 		hyp_FVFit_v4czx_branch->SetAddress(&hyp_FVFit_v4czx_);
-	}
-	if(hyp_FVFit_v4czx_branch == 0 ) {
-	cout << "Branch hyp_FVFit_v4czx does not exist." << endl;
 	}
 	hyp_FVFit_v4czy_branch = 0;
 	if (tree->GetAlias("hyp_FVFit_v4czy") != 0) {
 		hyp_FVFit_v4czy_branch = tree->GetBranch(tree->GetAlias("hyp_FVFit_v4czy"));
 		hyp_FVFit_v4czy_branch->SetAddress(&hyp_FVFit_v4czy_);
 	}
-	if(hyp_FVFit_v4czy_branch == 0 ) {
-	cout << "Branch hyp_FVFit_v4czy does not exist." << endl;
-	}
 	hyp_FVFit_v4czz_branch = 0;
 	if (tree->GetAlias("hyp_FVFit_v4czz") != 0) {
 		hyp_FVFit_v4czz_branch = tree->GetBranch(tree->GetAlias("hyp_FVFit_v4czz"));
 		hyp_FVFit_v4czz_branch->SetAddress(&hyp_FVFit_v4czz_);
-	}
-	if(hyp_FVFit_v4czz_branch == 0 ) {
-	cout << "Branch hyp_FVFit_v4czz does not exist." << endl;
 	}
 	hyp_ll_ecaliso_branch = 0;
 	if (tree->GetAlias("hyp_ll_ecaliso") != 0) {
 		hyp_ll_ecaliso_branch = tree->GetBranch(tree->GetAlias("hyp_ll_ecaliso"));
 		hyp_ll_ecaliso_branch->SetAddress(&hyp_ll_ecaliso_);
 	}
-	if(hyp_ll_ecaliso_branch == 0 ) {
-	cout << "Branch hyp_ll_ecaliso does not exist." << endl;
-	}
 	hyp_ll_trkiso_branch = 0;
 	if (tree->GetAlias("hyp_ll_trkiso") != 0) {
 		hyp_ll_trkiso_branch = tree->GetBranch(tree->GetAlias("hyp_ll_trkiso"));
 		hyp_ll_trkiso_branch->SetAddress(&hyp_ll_trkiso_);
-	}
-	if(hyp_ll_trkiso_branch == 0 ) {
-	cout << "Branch hyp_ll_trkiso does not exist." << endl;
 	}
 	hyp_lt_ecaliso_branch = 0;
 	if (tree->GetAlias("hyp_lt_ecaliso") != 0) {
 		hyp_lt_ecaliso_branch = tree->GetBranch(tree->GetAlias("hyp_lt_ecaliso"));
 		hyp_lt_ecaliso_branch->SetAddress(&hyp_lt_ecaliso_);
 	}
-	if(hyp_lt_ecaliso_branch == 0 ) {
-	cout << "Branch hyp_lt_ecaliso does not exist." << endl;
-	}
 	hyp_lt_trkiso_branch = 0;
 	if (tree->GetAlias("hyp_lt_trkiso") != 0) {
 		hyp_lt_trkiso_branch = tree->GetBranch(tree->GetAlias("hyp_lt_trkiso"));
 		hyp_lt_trkiso_branch->SetAddress(&hyp_lt_trkiso_);
-	}
-	if(hyp_lt_trkiso_branch == 0 ) {
-	cout << "Branch hyp_lt_trkiso does not exist." << endl;
 	}
 	jets_approximatefHPD_branch = 0;
 	if (tree->GetAlias("jets_approximatefHPD") != 0) {
 		jets_approximatefHPD_branch = tree->GetBranch(tree->GetAlias("jets_approximatefHPD"));
 		jets_approximatefHPD_branch->SetAddress(&jets_approximatefHPD_);
 	}
-	if(jets_approximatefHPD_branch == 0 ) {
-	cout << "Branch jets_approximatefHPD does not exist." << endl;
-	}
 	jets_approximatefRBX_branch = 0;
 	if (tree->GetAlias("jets_approximatefRBX") != 0) {
 		jets_approximatefRBX_branch = tree->GetBranch(tree->GetAlias("jets_approximatefRBX"));
 		jets_approximatefRBX_branch->SetAddress(&jets_approximatefRBX_);
-	}
-	if(jets_approximatefRBX_branch == 0 ) {
-	cout << "Branch jets_approximatefRBX does not exist." << endl;
 	}
 	jets_cor_branch = 0;
 	if (tree->GetAlias("jets_cor") != 0) {
 		jets_cor_branch = tree->GetBranch(tree->GetAlias("jets_cor"));
 		jets_cor_branch->SetAddress(&jets_cor_);
 	}
-	if(jets_cor_branch == 0 ) {
-	cout << "Branch jets_cor does not exist." << endl;
-	}
 	jets_emFrac_branch = 0;
 	if (tree->GetAlias("jets_emFrac") != 0) {
 		jets_emFrac_branch = tree->GetBranch(tree->GetAlias("jets_emFrac"));
 		jets_emFrac_branch->SetAddress(&jets_emFrac_);
-	}
-	if(jets_emFrac_branch == 0 ) {
-	cout << "Branch jets_emFrac does not exist." << endl;
 	}
 	jets_fHPD_branch = 0;
 	if (tree->GetAlias("jets_fHPD") != 0) {
 		jets_fHPD_branch = tree->GetBranch(tree->GetAlias("jets_fHPD"));
 		jets_fHPD_branch->SetAddress(&jets_fHPD_);
 	}
-	if(jets_fHPD_branch == 0 ) {
-	cout << "Branch jets_fHPD does not exist." << endl;
-	}
 	jets_fRBX_branch = 0;
 	if (tree->GetAlias("jets_fRBX") != 0) {
 		jets_fRBX_branch = tree->GetBranch(tree->GetAlias("jets_fRBX"));
 		jets_fRBX_branch->SetAddress(&jets_fRBX_);
-	}
-	if(jets_fRBX_branch == 0 ) {
-	cout << "Branch jets_fRBX does not exist." << endl;
 	}
 	jets_fSubDetector1_branch = 0;
 	if (tree->GetAlias("jets_fSubDetector1") != 0) {
 		jets_fSubDetector1_branch = tree->GetBranch(tree->GetAlias("jets_fSubDetector1"));
 		jets_fSubDetector1_branch->SetAddress(&jets_fSubDetector1_);
 	}
-	if(jets_fSubDetector1_branch == 0 ) {
-	cout << "Branch jets_fSubDetector1 does not exist." << endl;
-	}
 	jets_fSubDetector2_branch = 0;
 	if (tree->GetAlias("jets_fSubDetector2") != 0) {
 		jets_fSubDetector2_branch = tree->GetBranch(tree->GetAlias("jets_fSubDetector2"));
 		jets_fSubDetector2_branch->SetAddress(&jets_fSubDetector2_);
-	}
-	if(jets_fSubDetector2_branch == 0 ) {
-	cout << "Branch jets_fSubDetector2 does not exist." << endl;
 	}
 	jets_fSubDetector3_branch = 0;
 	if (tree->GetAlias("jets_fSubDetector3") != 0) {
 		jets_fSubDetector3_branch = tree->GetBranch(tree->GetAlias("jets_fSubDetector3"));
 		jets_fSubDetector3_branch->SetAddress(&jets_fSubDetector3_);
 	}
-	if(jets_fSubDetector3_branch == 0 ) {
-	cout << "Branch jets_fSubDetector3 does not exist." << endl;
-	}
 	jets_fSubDetector4_branch = 0;
 	if (tree->GetAlias("jets_fSubDetector4") != 0) {
 		jets_fSubDetector4_branch = tree->GetBranch(tree->GetAlias("jets_fSubDetector4"));
 		jets_fSubDetector4_branch->SetAddress(&jets_fSubDetector4_);
-	}
-	if(jets_fSubDetector4_branch == 0 ) {
-	cout << "Branch jets_fSubDetector4 does not exist." << endl;
 	}
 	jets_hitsInN90_branch = 0;
 	if (tree->GetAlias("jets_hitsInN90") != 0) {
 		jets_hitsInN90_branch = tree->GetBranch(tree->GetAlias("jets_hitsInN90"));
 		jets_hitsInN90_branch->SetAddress(&jets_hitsInN90_);
 	}
-	if(jets_hitsInN90_branch == 0 ) {
-	cout << "Branch jets_hitsInN90 does not exist." << endl;
-	}
 	jets_n90Hits_branch = 0;
 	if (tree->GetAlias("jets_n90Hits") != 0) {
 		jets_n90Hits_branch = tree->GetBranch(tree->GetAlias("jets_n90Hits"));
 		jets_n90Hits_branch->SetAddress(&jets_n90Hits_);
-	}
-	if(jets_n90Hits_branch == 0 ) {
-	cout << "Branch jets_n90Hits does not exist." << endl;
 	}
 	jets_nECALTowers_branch = 0;
 	if (tree->GetAlias("jets_nECALTowers") != 0) {
 		jets_nECALTowers_branch = tree->GetBranch(tree->GetAlias("jets_nECALTowers"));
 		jets_nECALTowers_branch->SetAddress(&jets_nECALTowers_);
 	}
-	if(jets_nECALTowers_branch == 0 ) {
-	cout << "Branch jets_nECALTowers does not exist." << endl;
-	}
 	jets_nHCALTowers_branch = 0;
 	if (tree->GetAlias("jets_nHCALTowers") != 0) {
 		jets_nHCALTowers_branch = tree->GetBranch(tree->GetAlias("jets_nHCALTowers"));
 		jets_nHCALTowers_branch->SetAddress(&jets_nHCALTowers_);
-	}
-	if(jets_nHCALTowers_branch == 0 ) {
-	cout << "Branch jets_nHCALTowers does not exist." << endl;
 	}
 	jets_restrictedEMF_branch = 0;
 	if (tree->GetAlias("jets_restrictedEMF") != 0) {
 		jets_restrictedEMF_branch = tree->GetBranch(tree->GetAlias("jets_restrictedEMF"));
 		jets_restrictedEMF_branch->SetAddress(&jets_restrictedEMF_);
 	}
-	if(jets_restrictedEMF_branch == 0 ) {
-	cout << "Branch jets_restrictedEMF does not exist." << endl;
-	}
 	jpts_cor_branch = 0;
 	if (tree->GetAlias("jpts_cor") != 0) {
 		jpts_cor_branch = tree->GetBranch(tree->GetAlias("jpts_cor"));
 		jpts_cor_branch->SetAddress(&jpts_cor_);
-	}
-	if(jpts_cor_branch == 0 ) {
-	cout << "Branch jpts_cor does not exist." << endl;
 	}
 	jpts_emFrac_branch = 0;
 	if (tree->GetAlias("jpts_emFrac") != 0) {
 		jpts_emFrac_branch = tree->GetBranch(tree->GetAlias("jpts_emFrac"));
 		jpts_emFrac_branch->SetAddress(&jpts_emFrac_);
 	}
-	if(jpts_emFrac_branch == 0 ) {
-	cout << "Branch jpts_emFrac does not exist." << endl;
-	}
 	mus_met_deltax_branch = 0;
 	if (tree->GetAlias("mus_met_deltax") != 0) {
 		mus_met_deltax_branch = tree->GetBranch(tree->GetAlias("mus_met_deltax"));
 		mus_met_deltax_branch->SetAddress(&mus_met_deltax_);
-	}
-	if(mus_met_deltax_branch == 0 ) {
-	cout << "Branch mus_met_deltax does not exist." << endl;
 	}
 	mus_met_deltay_branch = 0;
 	if (tree->GetAlias("mus_met_deltay") != 0) {
 		mus_met_deltay_branch = tree->GetBranch(tree->GetAlias("mus_met_deltay"));
 		mus_met_deltay_branch->SetAddress(&mus_met_deltay_);
 	}
-	if(mus_met_deltay_branch == 0 ) {
-	cout << "Branch mus_met_deltay does not exist." << endl;
-	}
 	mus_eledr_branch = 0;
 	if (tree->GetAlias("mus_eledr") != 0) {
 		mus_eledr_branch = tree->GetBranch(tree->GetAlias("mus_eledr"));
 		mus_eledr_branch->SetAddress(&mus_eledr_);
-	}
-	if(mus_eledr_branch == 0 ) {
-	cout << "Branch mus_eledr does not exist." << endl;
 	}
 	mus_jetdr_branch = 0;
 	if (tree->GetAlias("mus_jetdr") != 0) {
 		mus_jetdr_branch = tree->GetBranch(tree->GetAlias("mus_jetdr"));
 		mus_jetdr_branch->SetAddress(&mus_jetdr_);
 	}
-	if(mus_jetdr_branch == 0 ) {
-	cout << "Branch mus_jetdr does not exist." << endl;
-	}
 	mus_caloCompatibility_branch = 0;
 	if (tree->GetAlias("mus_caloCompatibility") != 0) {
 		mus_caloCompatibility_branch = tree->GetBranch(tree->GetAlias("mus_caloCompatibility"));
 		mus_caloCompatibility_branch->SetAddress(&mus_caloCompatibility_);
-	}
-	if(mus_caloCompatibility_branch == 0 ) {
-	cout << "Branch mus_caloCompatibility does not exist." << endl;
 	}
 	mus_chi2_branch = 0;
 	if (tree->GetAlias("mus_chi2") != 0) {
 		mus_chi2_branch = tree->GetBranch(tree->GetAlias("mus_chi2"));
 		mus_chi2_branch->SetAddress(&mus_chi2_);
 	}
-	if(mus_chi2_branch == 0 ) {
-	cout << "Branch mus_chi2 does not exist." << endl;
-	}
 	mus_d0_branch = 0;
 	if (tree->GetAlias("mus_d0") != 0) {
 		mus_d0_branch = tree->GetBranch(tree->GetAlias("mus_d0"));
 		mus_d0_branch->SetAddress(&mus_d0_);
-	}
-	if(mus_d0_branch == 0 ) {
-	cout << "Branch mus_d0 does not exist." << endl;
 	}
 	mus_d0Err_branch = 0;
 	if (tree->GetAlias("mus_d0Err") != 0) {
 		mus_d0Err_branch = tree->GetBranch(tree->GetAlias("mus_d0Err"));
 		mus_d0Err_branch->SetAddress(&mus_d0Err_);
 	}
-	if(mus_d0Err_branch == 0 ) {
-	cout << "Branch mus_d0Err does not exist." << endl;
-	}
 	mus_d0corr_branch = 0;
 	if (tree->GetAlias("mus_d0corr") != 0) {
 		mus_d0corr_branch = tree->GetBranch(tree->GetAlias("mus_d0corr"));
 		mus_d0corr_branch->SetAddress(&mus_d0corr_);
-	}
-	if(mus_d0corr_branch == 0 ) {
-	cout << "Branch mus_d0corr does not exist." << endl;
 	}
 	mus_e_em_branch = 0;
 	if (tree->GetAlias("mus_e_em") != 0) {
 		mus_e_em_branch = tree->GetBranch(tree->GetAlias("mus_e_em"));
 		mus_e_em_branch->SetAddress(&mus_e_em_);
 	}
-	if(mus_e_em_branch == 0 ) {
-	cout << "Branch mus_e_em does not exist." << endl;
-	}
 	mus_e_emS9_branch = 0;
 	if (tree->GetAlias("mus_e_emS9") != 0) {
 		mus_e_emS9_branch = tree->GetBranch(tree->GetAlias("mus_e_emS9"));
 		mus_e_emS9_branch->SetAddress(&mus_e_emS9_);
-	}
-	if(mus_e_emS9_branch == 0 ) {
-	cout << "Branch mus_e_emS9 does not exist." << endl;
 	}
 	mus_e_had_branch = 0;
 	if (tree->GetAlias("mus_e_had") != 0) {
 		mus_e_had_branch = tree->GetBranch(tree->GetAlias("mus_e_had"));
 		mus_e_had_branch->SetAddress(&mus_e_had_);
 	}
-	if(mus_e_had_branch == 0 ) {
-	cout << "Branch mus_e_had does not exist." << endl;
-	}
 	mus_e_hadS9_branch = 0;
 	if (tree->GetAlias("mus_e_hadS9") != 0) {
 		mus_e_hadS9_branch = tree->GetBranch(tree->GetAlias("mus_e_hadS9"));
 		mus_e_hadS9_branch->SetAddress(&mus_e_hadS9_);
-	}
-	if(mus_e_hadS9_branch == 0 ) {
-	cout << "Branch mus_e_hadS9 does not exist." << endl;
 	}
 	mus_e_ho_branch = 0;
 	if (tree->GetAlias("mus_e_ho") != 0) {
 		mus_e_ho_branch = tree->GetBranch(tree->GetAlias("mus_e_ho"));
 		mus_e_ho_branch->SetAddress(&mus_e_ho_);
 	}
-	if(mus_e_ho_branch == 0 ) {
-	cout << "Branch mus_e_ho does not exist." << endl;
-	}
 	mus_e_hoS9_branch = 0;
 	if (tree->GetAlias("mus_e_hoS9") != 0) {
 		mus_e_hoS9_branch = tree->GetBranch(tree->GetAlias("mus_e_hoS9"));
 		mus_e_hoS9_branch->SetAddress(&mus_e_hoS9_);
-	}
-	if(mus_e_hoS9_branch == 0 ) {
-	cout << "Branch mus_e_hoS9 does not exist." << endl;
 	}
 	mus_etaErr_branch = 0;
 	if (tree->GetAlias("mus_etaErr") != 0) {
 		mus_etaErr_branch = tree->GetBranch(tree->GetAlias("mus_etaErr"));
 		mus_etaErr_branch->SetAddress(&mus_etaErr_);
 	}
-	if(mus_etaErr_branch == 0 ) {
-	cout << "Branch mus_etaErr does not exist." << endl;
-	}
 	mus_gfit_chi2_branch = 0;
 	if (tree->GetAlias("mus_gfit_chi2") != 0) {
 		mus_gfit_chi2_branch = tree->GetBranch(tree->GetAlias("mus_gfit_chi2"));
 		mus_gfit_chi2_branch->SetAddress(&mus_gfit_chi2_);
-	}
-	if(mus_gfit_chi2_branch == 0 ) {
-	cout << "Branch mus_gfit_chi2 does not exist." << endl;
 	}
 	mus_gfit_d0_branch = 0;
 	if (tree->GetAlias("mus_gfit_d0") != 0) {
 		mus_gfit_d0_branch = tree->GetBranch(tree->GetAlias("mus_gfit_d0"));
 		mus_gfit_d0_branch->SetAddress(&mus_gfit_d0_);
 	}
-	if(mus_gfit_d0_branch == 0 ) {
-	cout << "Branch mus_gfit_d0 does not exist." << endl;
-	}
 	mus_gfit_d0Err_branch = 0;
 	if (tree->GetAlias("mus_gfit_d0Err") != 0) {
 		mus_gfit_d0Err_branch = tree->GetBranch(tree->GetAlias("mus_gfit_d0Err"));
 		mus_gfit_d0Err_branch->SetAddress(&mus_gfit_d0Err_);
-	}
-	if(mus_gfit_d0Err_branch == 0 ) {
-	cout << "Branch mus_gfit_d0Err does not exist." << endl;
 	}
 	mus_gfit_d0corr_branch = 0;
 	if (tree->GetAlias("mus_gfit_d0corr") != 0) {
 		mus_gfit_d0corr_branch = tree->GetBranch(tree->GetAlias("mus_gfit_d0corr"));
 		mus_gfit_d0corr_branch->SetAddress(&mus_gfit_d0corr_);
 	}
-	if(mus_gfit_d0corr_branch == 0 ) {
-	cout << "Branch mus_gfit_d0corr does not exist." << endl;
-	}
 	mus_gfit_ndof_branch = 0;
 	if (tree->GetAlias("mus_gfit_ndof") != 0) {
 		mus_gfit_ndof_branch = tree->GetBranch(tree->GetAlias("mus_gfit_ndof"));
 		mus_gfit_ndof_branch->SetAddress(&mus_gfit_ndof_);
-	}
-	if(mus_gfit_ndof_branch == 0 ) {
-	cout << "Branch mus_gfit_ndof does not exist." << endl;
 	}
 	mus_gfit_qoverp_branch = 0;
 	if (tree->GetAlias("mus_gfit_qoverp") != 0) {
 		mus_gfit_qoverp_branch = tree->GetBranch(tree->GetAlias("mus_gfit_qoverp"));
 		mus_gfit_qoverp_branch->SetAddress(&mus_gfit_qoverp_);
 	}
-	if(mus_gfit_qoverp_branch == 0 ) {
-	cout << "Branch mus_gfit_qoverp does not exist." << endl;
-	}
 	mus_gfit_qoverpError_branch = 0;
 	if (tree->GetAlias("mus_gfit_qoverpError") != 0) {
 		mus_gfit_qoverpError_branch = tree->GetBranch(tree->GetAlias("mus_gfit_qoverpError"));
 		mus_gfit_qoverpError_branch->SetAddress(&mus_gfit_qoverpError_);
-	}
-	if(mus_gfit_qoverpError_branch == 0 ) {
-	cout << "Branch mus_gfit_qoverpError does not exist." << endl;
 	}
 	mus_gfit_z0_branch = 0;
 	if (tree->GetAlias("mus_gfit_z0") != 0) {
 		mus_gfit_z0_branch = tree->GetBranch(tree->GetAlias("mus_gfit_z0"));
 		mus_gfit_z0_branch->SetAddress(&mus_gfit_z0_);
 	}
-	if(mus_gfit_z0_branch == 0 ) {
-	cout << "Branch mus_gfit_z0 does not exist." << endl;
-	}
 	mus_gfit_z0Err_branch = 0;
 	if (tree->GetAlias("mus_gfit_z0Err") != 0) {
 		mus_gfit_z0Err_branch = tree->GetBranch(tree->GetAlias("mus_gfit_z0Err"));
 		mus_gfit_z0Err_branch->SetAddress(&mus_gfit_z0Err_);
-	}
-	if(mus_gfit_z0Err_branch == 0 ) {
-	cout << "Branch mus_gfit_z0Err does not exist." << endl;
 	}
 	mus_gfit_z0corr_branch = 0;
 	if (tree->GetAlias("mus_gfit_z0corr") != 0) {
 		mus_gfit_z0corr_branch = tree->GetBranch(tree->GetAlias("mus_gfit_z0corr"));
 		mus_gfit_z0corr_branch->SetAddress(&mus_gfit_z0corr_);
 	}
-	if(mus_gfit_z0corr_branch == 0 ) {
-	cout << "Branch mus_gfit_z0corr does not exist." << endl;
-	}
 	mus_iso03_emEt_branch = 0;
 	if (tree->GetAlias("mus_iso03_emEt") != 0) {
 		mus_iso03_emEt_branch = tree->GetBranch(tree->GetAlias("mus_iso03_emEt"));
 		mus_iso03_emEt_branch->SetAddress(&mus_iso03_emEt_);
-	}
-	if(mus_iso03_emEt_branch == 0 ) {
-	cout << "Branch mus_iso03_emEt does not exist." << endl;
 	}
 	mus_iso03_hadEt_branch = 0;
 	if (tree->GetAlias("mus_iso03_hadEt") != 0) {
 		mus_iso03_hadEt_branch = tree->GetBranch(tree->GetAlias("mus_iso03_hadEt"));
 		mus_iso03_hadEt_branch->SetAddress(&mus_iso03_hadEt_);
 	}
-	if(mus_iso03_hadEt_branch == 0 ) {
-	cout << "Branch mus_iso03_hadEt does not exist." << endl;
-	}
 	mus_iso03_hoEt_branch = 0;
 	if (tree->GetAlias("mus_iso03_hoEt") != 0) {
 		mus_iso03_hoEt_branch = tree->GetBranch(tree->GetAlias("mus_iso03_hoEt"));
 		mus_iso03_hoEt_branch->SetAddress(&mus_iso03_hoEt_);
-	}
-	if(mus_iso03_hoEt_branch == 0 ) {
-	cout << "Branch mus_iso03_hoEt does not exist." << endl;
 	}
 	mus_iso03_sumPt_branch = 0;
 	if (tree->GetAlias("mus_iso03_sumPt") != 0) {
 		mus_iso03_sumPt_branch = tree->GetBranch(tree->GetAlias("mus_iso03_sumPt"));
 		mus_iso03_sumPt_branch->SetAddress(&mus_iso03_sumPt_);
 	}
-	if(mus_iso03_sumPt_branch == 0 ) {
-	cout << "Branch mus_iso03_sumPt does not exist." << endl;
-	}
 	mus_iso05_emEt_branch = 0;
 	if (tree->GetAlias("mus_iso05_emEt") != 0) {
 		mus_iso05_emEt_branch = tree->GetBranch(tree->GetAlias("mus_iso05_emEt"));
 		mus_iso05_emEt_branch->SetAddress(&mus_iso05_emEt_);
-	}
-	if(mus_iso05_emEt_branch == 0 ) {
-	cout << "Branch mus_iso05_emEt does not exist." << endl;
 	}
 	mus_iso05_hadEt_branch = 0;
 	if (tree->GetAlias("mus_iso05_hadEt") != 0) {
 		mus_iso05_hadEt_branch = tree->GetBranch(tree->GetAlias("mus_iso05_hadEt"));
 		mus_iso05_hadEt_branch->SetAddress(&mus_iso05_hadEt_);
 	}
-	if(mus_iso05_hadEt_branch == 0 ) {
-	cout << "Branch mus_iso05_hadEt does not exist." << endl;
-	}
 	mus_iso05_hoEt_branch = 0;
 	if (tree->GetAlias("mus_iso05_hoEt") != 0) {
 		mus_iso05_hoEt_branch = tree->GetBranch(tree->GetAlias("mus_iso05_hoEt"));
 		mus_iso05_hoEt_branch->SetAddress(&mus_iso05_hoEt_);
-	}
-	if(mus_iso05_hoEt_branch == 0 ) {
-	cout << "Branch mus_iso05_hoEt does not exist." << endl;
 	}
 	mus_iso05_sumPt_branch = 0;
 	if (tree->GetAlias("mus_iso05_sumPt") != 0) {
 		mus_iso05_sumPt_branch = tree->GetBranch(tree->GetAlias("mus_iso05_sumPt"));
 		mus_iso05_sumPt_branch->SetAddress(&mus_iso05_sumPt_);
 	}
-	if(mus_iso05_sumPt_branch == 0 ) {
-	cout << "Branch mus_iso05_sumPt does not exist." << endl;
-	}
 	mus_iso_ecalvetoDep_branch = 0;
 	if (tree->GetAlias("mus_iso_ecalvetoDep") != 0) {
 		mus_iso_ecalvetoDep_branch = tree->GetBranch(tree->GetAlias("mus_iso_ecalvetoDep"));
 		mus_iso_ecalvetoDep_branch->SetAddress(&mus_iso_ecalvetoDep_);
-	}
-	if(mus_iso_ecalvetoDep_branch == 0 ) {
-	cout << "Branch mus_iso_ecalvetoDep does not exist." << endl;
 	}
 	mus_iso_hcalvetoDep_branch = 0;
 	if (tree->GetAlias("mus_iso_hcalvetoDep") != 0) {
 		mus_iso_hcalvetoDep_branch = tree->GetBranch(tree->GetAlias("mus_iso_hcalvetoDep"));
 		mus_iso_hcalvetoDep_branch->SetAddress(&mus_iso_hcalvetoDep_);
 	}
-	if(mus_iso_hcalvetoDep_branch == 0 ) {
-	cout << "Branch mus_iso_hcalvetoDep does not exist." << endl;
-	}
 	mus_iso_hovetoDep_branch = 0;
 	if (tree->GetAlias("mus_iso_hovetoDep") != 0) {
 		mus_iso_hovetoDep_branch = tree->GetBranch(tree->GetAlias("mus_iso_hovetoDep"));
 		mus_iso_hovetoDep_branch->SetAddress(&mus_iso_hovetoDep_);
-	}
-	if(mus_iso_hovetoDep_branch == 0 ) {
-	cout << "Branch mus_iso_hovetoDep does not exist." << endl;
 	}
 	mus_iso_trckvetoDep_branch = 0;
 	if (tree->GetAlias("mus_iso_trckvetoDep") != 0) {
 		mus_iso_trckvetoDep_branch = tree->GetBranch(tree->GetAlias("mus_iso_trckvetoDep"));
 		mus_iso_trckvetoDep_branch->SetAddress(&mus_iso_trckvetoDep_);
 	}
-	if(mus_iso_trckvetoDep_branch == 0 ) {
-	cout << "Branch mus_iso_trckvetoDep does not exist." << endl;
-	}
 	mus_ndof_branch = 0;
 	if (tree->GetAlias("mus_ndof") != 0) {
 		mus_ndof_branch = tree->GetBranch(tree->GetAlias("mus_ndof"));
 		mus_ndof_branch->SetAddress(&mus_ndof_);
-	}
-	if(mus_ndof_branch == 0 ) {
-	cout << "Branch mus_ndof does not exist." << endl;
 	}
 	mus_phiErr_branch = 0;
 	if (tree->GetAlias("mus_phiErr") != 0) {
 		mus_phiErr_branch = tree->GetBranch(tree->GetAlias("mus_phiErr"));
 		mus_phiErr_branch->SetAddress(&mus_phiErr_);
 	}
-	if(mus_phiErr_branch == 0 ) {
-	cout << "Branch mus_phiErr does not exist." << endl;
-	}
 	mus_ptErr_branch = 0;
 	if (tree->GetAlias("mus_ptErr") != 0) {
 		mus_ptErr_branch = tree->GetBranch(tree->GetAlias("mus_ptErr"));
 		mus_ptErr_branch->SetAddress(&mus_ptErr_);
-	}
-	if(mus_ptErr_branch == 0 ) {
-	cout << "Branch mus_ptErr does not exist." << endl;
 	}
 	mus_qoverp_branch = 0;
 	if (tree->GetAlias("mus_qoverp") != 0) {
 		mus_qoverp_branch = tree->GetBranch(tree->GetAlias("mus_qoverp"));
 		mus_qoverp_branch->SetAddress(&mus_qoverp_);
 	}
-	if(mus_qoverp_branch == 0 ) {
-	cout << "Branch mus_qoverp does not exist." << endl;
-	}
 	mus_qoverpError_branch = 0;
 	if (tree->GetAlias("mus_qoverpError") != 0) {
 		mus_qoverpError_branch = tree->GetBranch(tree->GetAlias("mus_qoverpError"));
 		mus_qoverpError_branch->SetAddress(&mus_qoverpError_);
-	}
-	if(mus_qoverpError_branch == 0 ) {
-	cout << "Branch mus_qoverpError does not exist." << endl;
 	}
 	mus_sta_chi2_branch = 0;
 	if (tree->GetAlias("mus_sta_chi2") != 0) {
 		mus_sta_chi2_branch = tree->GetBranch(tree->GetAlias("mus_sta_chi2"));
 		mus_sta_chi2_branch->SetAddress(&mus_sta_chi2_);
 	}
-	if(mus_sta_chi2_branch == 0 ) {
-	cout << "Branch mus_sta_chi2 does not exist." << endl;
-	}
 	mus_sta_d0_branch = 0;
 	if (tree->GetAlias("mus_sta_d0") != 0) {
 		mus_sta_d0_branch = tree->GetBranch(tree->GetAlias("mus_sta_d0"));
 		mus_sta_d0_branch->SetAddress(&mus_sta_d0_);
-	}
-	if(mus_sta_d0_branch == 0 ) {
-	cout << "Branch mus_sta_d0 does not exist." << endl;
 	}
 	mus_sta_d0Err_branch = 0;
 	if (tree->GetAlias("mus_sta_d0Err") != 0) {
 		mus_sta_d0Err_branch = tree->GetBranch(tree->GetAlias("mus_sta_d0Err"));
 		mus_sta_d0Err_branch->SetAddress(&mus_sta_d0Err_);
 	}
-	if(mus_sta_d0Err_branch == 0 ) {
-	cout << "Branch mus_sta_d0Err does not exist." << endl;
-	}
 	mus_sta_d0corr_branch = 0;
 	if (tree->GetAlias("mus_sta_d0corr") != 0) {
 		mus_sta_d0corr_branch = tree->GetBranch(tree->GetAlias("mus_sta_d0corr"));
 		mus_sta_d0corr_branch->SetAddress(&mus_sta_d0corr_);
-	}
-	if(mus_sta_d0corr_branch == 0 ) {
-	cout << "Branch mus_sta_d0corr does not exist." << endl;
 	}
 	mus_sta_ndof_branch = 0;
 	if (tree->GetAlias("mus_sta_ndof") != 0) {
 		mus_sta_ndof_branch = tree->GetBranch(tree->GetAlias("mus_sta_ndof"));
 		mus_sta_ndof_branch->SetAddress(&mus_sta_ndof_);
 	}
-	if(mus_sta_ndof_branch == 0 ) {
-	cout << "Branch mus_sta_ndof does not exist." << endl;
-	}
 	mus_sta_qoverp_branch = 0;
 	if (tree->GetAlias("mus_sta_qoverp") != 0) {
 		mus_sta_qoverp_branch = tree->GetBranch(tree->GetAlias("mus_sta_qoverp"));
 		mus_sta_qoverp_branch->SetAddress(&mus_sta_qoverp_);
-	}
-	if(mus_sta_qoverp_branch == 0 ) {
-	cout << "Branch mus_sta_qoverp does not exist." << endl;
 	}
 	mus_sta_qoverpError_branch = 0;
 	if (tree->GetAlias("mus_sta_qoverpError") != 0) {
 		mus_sta_qoverpError_branch = tree->GetBranch(tree->GetAlias("mus_sta_qoverpError"));
 		mus_sta_qoverpError_branch->SetAddress(&mus_sta_qoverpError_);
 	}
-	if(mus_sta_qoverpError_branch == 0 ) {
-	cout << "Branch mus_sta_qoverpError does not exist." << endl;
-	}
 	mus_sta_z0_branch = 0;
 	if (tree->GetAlias("mus_sta_z0") != 0) {
 		mus_sta_z0_branch = tree->GetBranch(tree->GetAlias("mus_sta_z0"));
 		mus_sta_z0_branch->SetAddress(&mus_sta_z0_);
-	}
-	if(mus_sta_z0_branch == 0 ) {
-	cout << "Branch mus_sta_z0 does not exist." << endl;
 	}
 	mus_sta_z0Err_branch = 0;
 	if (tree->GetAlias("mus_sta_z0Err") != 0) {
 		mus_sta_z0Err_branch = tree->GetBranch(tree->GetAlias("mus_sta_z0Err"));
 		mus_sta_z0Err_branch->SetAddress(&mus_sta_z0Err_);
 	}
-	if(mus_sta_z0Err_branch == 0 ) {
-	cout << "Branch mus_sta_z0Err does not exist." << endl;
-	}
 	mus_sta_z0corr_branch = 0;
 	if (tree->GetAlias("mus_sta_z0corr") != 0) {
 		mus_sta_z0corr_branch = tree->GetBranch(tree->GetAlias("mus_sta_z0corr"));
 		mus_sta_z0corr_branch->SetAddress(&mus_sta_z0corr_);
-	}
-	if(mus_sta_z0corr_branch == 0 ) {
-	cout << "Branch mus_sta_z0corr does not exist." << endl;
 	}
 	mus_timeAtIpInOut_branch = 0;
 	if (tree->GetAlias("mus_timeAtIpInOut") != 0) {
 		mus_timeAtIpInOut_branch = tree->GetBranch(tree->GetAlias("mus_timeAtIpInOut"));
 		mus_timeAtIpInOut_branch->SetAddress(&mus_timeAtIpInOut_);
 	}
-	if(mus_timeAtIpInOut_branch == 0 ) {
-	cout << "Branch mus_timeAtIpInOut does not exist." << endl;
-	}
 	mus_timeAtIpInOutErr_branch = 0;
 	if (tree->GetAlias("mus_timeAtIpInOutErr") != 0) {
 		mus_timeAtIpInOutErr_branch = tree->GetBranch(tree->GetAlias("mus_timeAtIpInOutErr"));
 		mus_timeAtIpInOutErr_branch->SetAddress(&mus_timeAtIpInOutErr_);
-	}
-	if(mus_timeAtIpInOutErr_branch == 0 ) {
-	cout << "Branch mus_timeAtIpInOutErr does not exist." << endl;
 	}
 	mus_timeAtIpOutIn_branch = 0;
 	if (tree->GetAlias("mus_timeAtIpOutIn") != 0) {
 		mus_timeAtIpOutIn_branch = tree->GetBranch(tree->GetAlias("mus_timeAtIpOutIn"));
 		mus_timeAtIpOutIn_branch->SetAddress(&mus_timeAtIpOutIn_);
 	}
-	if(mus_timeAtIpOutIn_branch == 0 ) {
-	cout << "Branch mus_timeAtIpOutIn does not exist." << endl;
-	}
 	mus_timeAtIpOutInErr_branch = 0;
 	if (tree->GetAlias("mus_timeAtIpOutInErr") != 0) {
 		mus_timeAtIpOutInErr_branch = tree->GetBranch(tree->GetAlias("mus_timeAtIpOutInErr"));
 		mus_timeAtIpOutInErr_branch->SetAddress(&mus_timeAtIpOutInErr_);
-	}
-	if(mus_timeAtIpOutInErr_branch == 0 ) {
-	cout << "Branch mus_timeAtIpOutInErr does not exist." << endl;
 	}
 	mus_vertexphi_branch = 0;
 	if (tree->GetAlias("mus_vertexphi") != 0) {
 		mus_vertexphi_branch = tree->GetBranch(tree->GetAlias("mus_vertexphi"));
 		mus_vertexphi_branch->SetAddress(&mus_vertexphi_);
 	}
-	if(mus_vertexphi_branch == 0 ) {
-	cout << "Branch mus_vertexphi does not exist." << endl;
-	}
 	mus_z0_branch = 0;
 	if (tree->GetAlias("mus_z0") != 0) {
 		mus_z0_branch = tree->GetBranch(tree->GetAlias("mus_z0"));
 		mus_z0_branch->SetAddress(&mus_z0_);
-	}
-	if(mus_z0_branch == 0 ) {
-	cout << "Branch mus_z0 does not exist." << endl;
 	}
 	mus_z0Err_branch = 0;
 	if (tree->GetAlias("mus_z0Err") != 0) {
 		mus_z0Err_branch = tree->GetBranch(tree->GetAlias("mus_z0Err"));
 		mus_z0Err_branch->SetAddress(&mus_z0Err_);
 	}
-	if(mus_z0Err_branch == 0 ) {
-	cout << "Branch mus_z0Err does not exist." << endl;
-	}
 	mus_z0corr_branch = 0;
 	if (tree->GetAlias("mus_z0corr") != 0) {
 		mus_z0corr_branch = tree->GetBranch(tree->GetAlias("mus_z0corr"));
 		mus_z0corr_branch->SetAddress(&mus_z0corr_);
-	}
-	if(mus_z0corr_branch == 0 ) {
-	cout << "Branch mus_z0corr does not exist." << endl;
 	}
 	els_pat_caloIso_branch = 0;
 	if (tree->GetAlias("els_pat_caloIso") != 0) {
 		els_pat_caloIso_branch = tree->GetBranch(tree->GetAlias("els_pat_caloIso"));
 		els_pat_caloIso_branch->SetAddress(&els_pat_caloIso_);
 	}
-	if(els_pat_caloIso_branch == 0 ) {
-	cout << "Branch els_pat_caloIso does not exist." << endl;
-	}
 	els_pat_ecalIso_branch = 0;
 	if (tree->GetAlias("els_pat_ecalIso") != 0) {
 		els_pat_ecalIso_branch = tree->GetBranch(tree->GetAlias("els_pat_ecalIso"));
 		els_pat_ecalIso_branch->SetAddress(&els_pat_ecalIso_);
-	}
-	if(els_pat_ecalIso_branch == 0 ) {
-	cout << "Branch els_pat_ecalIso does not exist." << endl;
 	}
 	els_pat_hcalIso_branch = 0;
 	if (tree->GetAlias("els_pat_hcalIso") != 0) {
 		els_pat_hcalIso_branch = tree->GetBranch(tree->GetAlias("els_pat_hcalIso"));
 		els_pat_hcalIso_branch->SetAddress(&els_pat_hcalIso_);
 	}
-	if(els_pat_hcalIso_branch == 0 ) {
-	cout << "Branch els_pat_hcalIso does not exist." << endl;
-	}
 	els_pat_looseId_branch = 0;
 	if (tree->GetAlias("els_pat_looseId") != 0) {
 		els_pat_looseId_branch = tree->GetBranch(tree->GetAlias("els_pat_looseId"));
 		els_pat_looseId_branch->SetAddress(&els_pat_looseId_);
-	}
-	if(els_pat_looseId_branch == 0 ) {
-	cout << "Branch els_pat_looseId does not exist." << endl;
 	}
 	els_pat_robustHighEnergy_branch = 0;
 	if (tree->GetAlias("els_pat_robustHighEnergy") != 0) {
 		els_pat_robustHighEnergy_branch = tree->GetBranch(tree->GetAlias("els_pat_robustHighEnergy"));
 		els_pat_robustHighEnergy_branch->SetAddress(&els_pat_robustHighEnergy_);
 	}
-	if(els_pat_robustHighEnergy_branch == 0 ) {
-	cout << "Branch els_pat_robustHighEnergy does not exist." << endl;
-	}
 	els_pat_robustLooseId_branch = 0;
 	if (tree->GetAlias("els_pat_robustLooseId") != 0) {
 		els_pat_robustLooseId_branch = tree->GetBranch(tree->GetAlias("els_pat_robustLooseId"));
 		els_pat_robustLooseId_branch->SetAddress(&els_pat_robustLooseId_);
-	}
-	if(els_pat_robustLooseId_branch == 0 ) {
-	cout << "Branch els_pat_robustLooseId does not exist." << endl;
 	}
 	els_pat_robustTightId_branch = 0;
 	if (tree->GetAlias("els_pat_robustTightId") != 0) {
 		els_pat_robustTightId_branch = tree->GetBranch(tree->GetAlias("els_pat_robustTightId"));
 		els_pat_robustTightId_branch->SetAddress(&els_pat_robustTightId_);
 	}
-	if(els_pat_robustTightId_branch == 0 ) {
-	cout << "Branch els_pat_robustTightId does not exist." << endl;
-	}
 	els_pat_scE1x5_branch = 0;
 	if (tree->GetAlias("els_pat_scE1x5") != 0) {
 		els_pat_scE1x5_branch = tree->GetBranch(tree->GetAlias("els_pat_scE1x5"));
 		els_pat_scE1x5_branch->SetAddress(&els_pat_scE1x5_);
-	}
-	if(els_pat_scE1x5_branch == 0 ) {
-	cout << "Branch els_pat_scE1x5 does not exist." << endl;
 	}
 	els_pat_scE2x5Max_branch = 0;
 	if (tree->GetAlias("els_pat_scE2x5Max") != 0) {
 		els_pat_scE2x5Max_branch = tree->GetBranch(tree->GetAlias("els_pat_scE2x5Max"));
 		els_pat_scE2x5Max_branch->SetAddress(&els_pat_scE2x5Max_);
 	}
-	if(els_pat_scE2x5Max_branch == 0 ) {
-	cout << "Branch els_pat_scE2x5Max does not exist." << endl;
-	}
 	els_pat_scE5x5_branch = 0;
 	if (tree->GetAlias("els_pat_scE5x5") != 0) {
 		els_pat_scE5x5_branch = tree->GetBranch(tree->GetAlias("els_pat_scE5x5"));
 		els_pat_scE5x5_branch->SetAddress(&els_pat_scE5x5_);
-	}
-	if(els_pat_scE5x5_branch == 0 ) {
-	cout << "Branch els_pat_scE5x5 does not exist." << endl;
 	}
 	els_pat_sigmaEtaEta_branch = 0;
 	if (tree->GetAlias("els_pat_sigmaEtaEta") != 0) {
 		els_pat_sigmaEtaEta_branch = tree->GetBranch(tree->GetAlias("els_pat_sigmaEtaEta"));
 		els_pat_sigmaEtaEta_branch->SetAddress(&els_pat_sigmaEtaEta_);
 	}
-	if(els_pat_sigmaEtaEta_branch == 0 ) {
-	cout << "Branch els_pat_sigmaEtaEta does not exist." << endl;
-	}
 	els_pat_sigmaIEtaIEta_branch = 0;
 	if (tree->GetAlias("els_pat_sigmaIEtaIEta") != 0) {
 		els_pat_sigmaIEtaIEta_branch = tree->GetBranch(tree->GetAlias("els_pat_sigmaIEtaIEta"));
 		els_pat_sigmaIEtaIEta_branch->SetAddress(&els_pat_sigmaIEtaIEta_);
-	}
-	if(els_pat_sigmaIEtaIEta_branch == 0 ) {
-	cout << "Branch els_pat_sigmaIEtaIEta does not exist." << endl;
 	}
 	els_pat_tightId_branch = 0;
 	if (tree->GetAlias("els_pat_tightId") != 0) {
 		els_pat_tightId_branch = tree->GetBranch(tree->GetAlias("els_pat_tightId"));
 		els_pat_tightId_branch->SetAddress(&els_pat_tightId_);
 	}
-	if(els_pat_tightId_branch == 0 ) {
-	cout << "Branch els_pat_tightId does not exist." << endl;
-	}
 	els_pat_trackIso_branch = 0;
 	if (tree->GetAlias("els_pat_trackIso") != 0) {
 		els_pat_trackIso_branch = tree->GetBranch(tree->GetAlias("els_pat_trackIso"));
 		els_pat_trackIso_branch->SetAddress(&els_pat_trackIso_);
-	}
-	if(els_pat_trackIso_branch == 0 ) {
-	cout << "Branch els_pat_trackIso does not exist." << endl;
 	}
 	jets_pat_combinedSecondaryVertexBJetTag_branch = 0;
 	if (tree->GetAlias("jets_pat_combinedSecondaryVertexBJetTag") != 0) {
 		jets_pat_combinedSecondaryVertexBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_combinedSecondaryVertexBJetTag"));
 		jets_pat_combinedSecondaryVertexBJetTag_branch->SetAddress(&jets_pat_combinedSecondaryVertexBJetTag_);
 	}
-	if(jets_pat_combinedSecondaryVertexBJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_combinedSecondaryVertexBJetTag does not exist." << endl;
-	}
 	jets_pat_combinedSecondaryVertexMVABJetTag_branch = 0;
 	if (tree->GetAlias("jets_pat_combinedSecondaryVertexMVABJetTag") != 0) {
 		jets_pat_combinedSecondaryVertexMVABJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_combinedSecondaryVertexMVABJetTag"));
 		jets_pat_combinedSecondaryVertexMVABJetTag_branch->SetAddress(&jets_pat_combinedSecondaryVertexMVABJetTag_);
-	}
-	if(jets_pat_combinedSecondaryVertexMVABJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_combinedSecondaryVertexMVABJetTag does not exist." << endl;
 	}
 	jets_pat_coneIsolationTauJetTag_branch = 0;
 	if (tree->GetAlias("jets_pat_coneIsolationTauJetTag") != 0) {
 		jets_pat_coneIsolationTauJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_coneIsolationTauJetTag"));
 		jets_pat_coneIsolationTauJetTag_branch->SetAddress(&jets_pat_coneIsolationTauJetTag_);
 	}
-	if(jets_pat_coneIsolationTauJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_coneIsolationTauJetTag does not exist." << endl;
-	}
 	jets_pat_impactParameterMVABJetTag_branch = 0;
 	if (tree->GetAlias("jets_pat_impactParameterMVABJetTag") != 0) {
 		jets_pat_impactParameterMVABJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_impactParameterMVABJetTag"));
 		jets_pat_impactParameterMVABJetTag_branch->SetAddress(&jets_pat_impactParameterMVABJetTag_);
-	}
-	if(jets_pat_impactParameterMVABJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_impactParameterMVABJetTag does not exist." << endl;
 	}
 	jets_pat_jetBProbabilityBJetTag_branch = 0;
 	if (tree->GetAlias("jets_pat_jetBProbabilityBJetTag") != 0) {
 		jets_pat_jetBProbabilityBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_jetBProbabilityBJetTag"));
 		jets_pat_jetBProbabilityBJetTag_branch->SetAddress(&jets_pat_jetBProbabilityBJetTag_);
 	}
-	if(jets_pat_jetBProbabilityBJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_jetBProbabilityBJetTag does not exist." << endl;
-	}
 	jets_pat_jetCharge_branch = 0;
 	if (tree->GetAlias("jets_pat_jetCharge") != 0) {
 		jets_pat_jetCharge_branch = tree->GetBranch(tree->GetAlias("jets_pat_jetCharge"));
 		jets_pat_jetCharge_branch->SetAddress(&jets_pat_jetCharge_);
-	}
-	if(jets_pat_jetCharge_branch == 0 ) {
-	cout << "Branch jets_pat_jetCharge does not exist." << endl;
 	}
 	jets_pat_jetProbabilityBJetTag_branch = 0;
 	if (tree->GetAlias("jets_pat_jetProbabilityBJetTag") != 0) {
 		jets_pat_jetProbabilityBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_jetProbabilityBJetTag"));
 		jets_pat_jetProbabilityBJetTag_branch->SetAddress(&jets_pat_jetProbabilityBJetTag_);
 	}
-	if(jets_pat_jetProbabilityBJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_jetProbabilityBJetTag does not exist." << endl;
-	}
 	jets_pat_noCorrF_branch = 0;
 	if (tree->GetAlias("jets_pat_noCorrF") != 0) {
 		jets_pat_noCorrF_branch = tree->GetBranch(tree->GetAlias("jets_pat_noCorrF"));
 		jets_pat_noCorrF_branch->SetAddress(&jets_pat_noCorrF_);
-	}
-	if(jets_pat_noCorrF_branch == 0 ) {
-	cout << "Branch jets_pat_noCorrF does not exist." << endl;
 	}
 	jets_pat_simpleSecondaryVertexHighEffBJetTag_branch = 0;
 	if (tree->GetAlias("jets_pat_simpleSecondaryVertexHighEffBJetTag") != 0) {
 		jets_pat_simpleSecondaryVertexHighEffBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_simpleSecondaryVertexHighEffBJetTag"));
 		jets_pat_simpleSecondaryVertexHighEffBJetTag_branch->SetAddress(&jets_pat_simpleSecondaryVertexHighEffBJetTag_);
 	}
-	if(jets_pat_simpleSecondaryVertexHighEffBJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_simpleSecondaryVertexHighEffBJetTag does not exist." << endl;
-	}
 	jets_pat_simpleSecondaryVertexHighPurBJetTag_branch = 0;
 	if (tree->GetAlias("jets_pat_simpleSecondaryVertexHighPurBJetTag") != 0) {
 		jets_pat_simpleSecondaryVertexHighPurBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_simpleSecondaryVertexHighPurBJetTag"));
 		jets_pat_simpleSecondaryVertexHighPurBJetTag_branch->SetAddress(&jets_pat_simpleSecondaryVertexHighPurBJetTag_);
-	}
-	if(jets_pat_simpleSecondaryVertexHighPurBJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_simpleSecondaryVertexHighPurBJetTag does not exist." << endl;
 	}
 	jets_pat_softElectronByIP3dBJetTag_branch = 0;
 	if (tree->GetAlias("jets_pat_softElectronByIP3dBJetTag") != 0) {
 		jets_pat_softElectronByIP3dBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_softElectronByIP3dBJetTag"));
 		jets_pat_softElectronByIP3dBJetTag_branch->SetAddress(&jets_pat_softElectronByIP3dBJetTag_);
 	}
-	if(jets_pat_softElectronByIP3dBJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_softElectronByIP3dBJetTag does not exist." << endl;
-	}
 	jets_pat_softElectronByPtBJetTag_branch = 0;
 	if (tree->GetAlias("jets_pat_softElectronByPtBJetTag") != 0) {
 		jets_pat_softElectronByPtBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_softElectronByPtBJetTag"));
 		jets_pat_softElectronByPtBJetTag_branch->SetAddress(&jets_pat_softElectronByPtBJetTag_);
-	}
-	if(jets_pat_softElectronByPtBJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_softElectronByPtBJetTag does not exist." << endl;
 	}
 	jets_pat_softMuonBJetTag_branch = 0;
 	if (tree->GetAlias("jets_pat_softMuonBJetTag") != 0) {
 		jets_pat_softMuonBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_softMuonBJetTag"));
 		jets_pat_softMuonBJetTag_branch->SetAddress(&jets_pat_softMuonBJetTag_);
 	}
-	if(jets_pat_softMuonBJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_softMuonBJetTag does not exist." << endl;
-	}
 	jets_pat_softMuonByIP3dBJetTag_branch = 0;
 	if (tree->GetAlias("jets_pat_softMuonByIP3dBJetTag") != 0) {
 		jets_pat_softMuonByIP3dBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_softMuonByIP3dBJetTag"));
 		jets_pat_softMuonByIP3dBJetTag_branch->SetAddress(&jets_pat_softMuonByIP3dBJetTag_);
-	}
-	if(jets_pat_softMuonByIP3dBJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_softMuonByIP3dBJetTag does not exist." << endl;
 	}
 	jets_pat_softMuonByPtBJetTag_branch = 0;
 	if (tree->GetAlias("jets_pat_softMuonByPtBJetTag") != 0) {
 		jets_pat_softMuonByPtBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_softMuonByPtBJetTag"));
 		jets_pat_softMuonByPtBJetTag_branch->SetAddress(&jets_pat_softMuonByPtBJetTag_);
 	}
-	if(jets_pat_softMuonByPtBJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_softMuonByPtBJetTag does not exist." << endl;
-	}
 	jets_pat_trackCountingHighEffBJetTag_branch = 0;
 	if (tree->GetAlias("jets_pat_trackCountingHighEffBJetTag") != 0) {
 		jets_pat_trackCountingHighEffBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_trackCountingHighEffBJetTag"));
 		jets_pat_trackCountingHighEffBJetTag_branch->SetAddress(&jets_pat_trackCountingHighEffBJetTag_);
-	}
-	if(jets_pat_trackCountingHighEffBJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_trackCountingHighEffBJetTag does not exist." << endl;
 	}
 	jets_pat_trackCountingHighPurBJetTag_branch = 0;
 	if (tree->GetAlias("jets_pat_trackCountingHighPurBJetTag") != 0) {
 		jets_pat_trackCountingHighPurBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_pat_trackCountingHighPurBJetTag"));
 		jets_pat_trackCountingHighPurBJetTag_branch->SetAddress(&jets_pat_trackCountingHighPurBJetTag_);
 	}
-	if(jets_pat_trackCountingHighPurBJetTag_branch == 0 ) {
-	cout << "Branch jets_pat_trackCountingHighPurBJetTag does not exist." << endl;
-	}
 	mus_pat_caloIso_branch = 0;
 	if (tree->GetAlias("mus_pat_caloIso") != 0) {
 		mus_pat_caloIso_branch = tree->GetBranch(tree->GetAlias("mus_pat_caloIso"));
 		mus_pat_caloIso_branch->SetAddress(&mus_pat_caloIso_);
-	}
-	if(mus_pat_caloIso_branch == 0 ) {
-	cout << "Branch mus_pat_caloIso does not exist." << endl;
 	}
 	mus_pat_calovetoDep_branch = 0;
 	if (tree->GetAlias("mus_pat_calovetoDep") != 0) {
 		mus_pat_calovetoDep_branch = tree->GetBranch(tree->GetAlias("mus_pat_calovetoDep"));
 		mus_pat_calovetoDep_branch->SetAddress(&mus_pat_calovetoDep_);
 	}
-	if(mus_pat_calovetoDep_branch == 0 ) {
-	cout << "Branch mus_pat_calovetoDep does not exist." << endl;
-	}
 	mus_pat_ecalIso_branch = 0;
 	if (tree->GetAlias("mus_pat_ecalIso") != 0) {
 		mus_pat_ecalIso_branch = tree->GetBranch(tree->GetAlias("mus_pat_ecalIso"));
 		mus_pat_ecalIso_branch->SetAddress(&mus_pat_ecalIso_);
-	}
-	if(mus_pat_ecalIso_branch == 0 ) {
-	cout << "Branch mus_pat_ecalIso does not exist." << endl;
 	}
 	mus_pat_ecalvetoDep_branch = 0;
 	if (tree->GetAlias("mus_pat_ecalvetoDep") != 0) {
 		mus_pat_ecalvetoDep_branch = tree->GetBranch(tree->GetAlias("mus_pat_ecalvetoDep"));
 		mus_pat_ecalvetoDep_branch->SetAddress(&mus_pat_ecalvetoDep_);
 	}
-	if(mus_pat_ecalvetoDep_branch == 0 ) {
-	cout << "Branch mus_pat_ecalvetoDep does not exist." << endl;
-	}
 	mus_pat_hcalIso_branch = 0;
 	if (tree->GetAlias("mus_pat_hcalIso") != 0) {
 		mus_pat_hcalIso_branch = tree->GetBranch(tree->GetAlias("mus_pat_hcalIso"));
 		mus_pat_hcalIso_branch->SetAddress(&mus_pat_hcalIso_);
-	}
-	if(mus_pat_hcalIso_branch == 0 ) {
-	cout << "Branch mus_pat_hcalIso does not exist." << endl;
 	}
 	mus_pat_hcalvetoDep_branch = 0;
 	if (tree->GetAlias("mus_pat_hcalvetoDep") != 0) {
 		mus_pat_hcalvetoDep_branch = tree->GetBranch(tree->GetAlias("mus_pat_hcalvetoDep"));
 		mus_pat_hcalvetoDep_branch->SetAddress(&mus_pat_hcalvetoDep_);
 	}
-	if(mus_pat_hcalvetoDep_branch == 0 ) {
-	cout << "Branch mus_pat_hcalvetoDep does not exist." << endl;
-	}
 	mus_pat_trackIso_branch = 0;
 	if (tree->GetAlias("mus_pat_trackIso") != 0) {
 		mus_pat_trackIso_branch = tree->GetBranch(tree->GetAlias("mus_pat_trackIso"));
 		mus_pat_trackIso_branch->SetAddress(&mus_pat_trackIso_);
-	}
-	if(mus_pat_trackIso_branch == 0 ) {
-	cout << "Branch mus_pat_trackIso does not exist." << endl;
 	}
 	mus_pat_trckvetoDep_branch = 0;
 	if (tree->GetAlias("mus_pat_trckvetoDep") != 0) {
 		mus_pat_trckvetoDep_branch = tree->GetBranch(tree->GetAlias("mus_pat_trckvetoDep"));
 		mus_pat_trckvetoDep_branch->SetAddress(&mus_pat_trckvetoDep_);
 	}
-	if(mus_pat_trckvetoDep_branch == 0 ) {
-	cout << "Branch mus_pat_trckvetoDep does not exist." << endl;
-	}
 	pfjets_chargedEmE_branch = 0;
 	if (tree->GetAlias("pfjets_chargedEmE") != 0) {
 		pfjets_chargedEmE_branch = tree->GetBranch(tree->GetAlias("pfjets_chargedEmE"));
 		pfjets_chargedEmE_branch->SetAddress(&pfjets_chargedEmE_);
-	}
-	if(pfjets_chargedEmE_branch == 0 ) {
-	cout << "Branch pfjets_chargedEmE does not exist." << endl;
 	}
 	pfjets_chargedHadronE_branch = 0;
 	if (tree->GetAlias("pfjets_chargedHadronE") != 0) {
 		pfjets_chargedHadronE_branch = tree->GetBranch(tree->GetAlias("pfjets_chargedHadronE"));
 		pfjets_chargedHadronE_branch->SetAddress(&pfjets_chargedHadronE_);
 	}
-	if(pfjets_chargedHadronE_branch == 0 ) {
-	cout << "Branch pfjets_chargedHadronE does not exist." << endl;
-	}
 	pfjets_cor_branch = 0;
 	if (tree->GetAlias("pfjets_cor") != 0) {
 		pfjets_cor_branch = tree->GetBranch(tree->GetAlias("pfjets_cor"));
 		pfjets_cor_branch->SetAddress(&pfjets_cor_);
-	}
-	if(pfjets_cor_branch == 0 ) {
-	cout << "Branch pfjets_cor does not exist." << endl;
 	}
 	pfjets_neutralEmE_branch = 0;
 	if (tree->GetAlias("pfjets_neutralEmE") != 0) {
 		pfjets_neutralEmE_branch = tree->GetBranch(tree->GetAlias("pfjets_neutralEmE"));
 		pfjets_neutralEmE_branch->SetAddress(&pfjets_neutralEmE_);
 	}
-	if(pfjets_neutralEmE_branch == 0 ) {
-	cout << "Branch pfjets_neutralEmE does not exist." << endl;
-	}
 	pfjets_neutralHadronE_branch = 0;
 	if (tree->GetAlias("pfjets_neutralHadronE") != 0) {
 		pfjets_neutralHadronE_branch = tree->GetBranch(tree->GetAlias("pfjets_neutralHadronE"));
 		pfjets_neutralHadronE_branch->SetAddress(&pfjets_neutralHadronE_);
-	}
-	if(pfjets_neutralHadronE_branch == 0 ) {
-	cout << "Branch pfjets_neutralHadronE does not exist." << endl;
 	}
 	photons_e1x5_branch = 0;
 	if (tree->GetAlias("photons_e1x5") != 0) {
 		photons_e1x5_branch = tree->GetBranch(tree->GetAlias("photons_e1x5"));
 		photons_e1x5_branch->SetAddress(&photons_e1x5_);
 	}
-	if(photons_e1x5_branch == 0 ) {
-	cout << "Branch photons_e1x5 does not exist." << endl;
-	}
 	photons_e2x5Max_branch = 0;
 	if (tree->GetAlias("photons_e2x5Max") != 0) {
 		photons_e2x5Max_branch = tree->GetBranch(tree->GetAlias("photons_e2x5Max"));
 		photons_e2x5Max_branch->SetAddress(&photons_e2x5Max_);
-	}
-	if(photons_e2x5Max_branch == 0 ) {
-	cout << "Branch photons_e2x5Max does not exist." << endl;
 	}
 	photons_e3x3_branch = 0;
 	if (tree->GetAlias("photons_e3x3") != 0) {
 		photons_e3x3_branch = tree->GetBranch(tree->GetAlias("photons_e3x3"));
 		photons_e3x3_branch->SetAddress(&photons_e3x3_);
 	}
-	if(photons_e3x3_branch == 0 ) {
-	cout << "Branch photons_e3x3 does not exist." << endl;
-	}
 	photons_e5x5_branch = 0;
 	if (tree->GetAlias("photons_e5x5") != 0) {
 		photons_e5x5_branch = tree->GetBranch(tree->GetAlias("photons_e5x5"));
 		photons_e5x5_branch->SetAddress(&photons_e5x5_);
-	}
-	if(photons_e5x5_branch == 0 ) {
-	cout << "Branch photons_e5x5 does not exist." << endl;
 	}
 	photons_ecalIso_branch = 0;
 	if (tree->GetAlias("photons_ecalIso") != 0) {
 		photons_ecalIso_branch = tree->GetBranch(tree->GetAlias("photons_ecalIso"));
 		photons_ecalIso_branch->SetAddress(&photons_ecalIso_);
 	}
-	if(photons_ecalIso_branch == 0 ) {
-	cout << "Branch photons_ecalIso does not exist." << endl;
-	}
 	photons_hOverE_branch = 0;
 	if (tree->GetAlias("photons_hOverE") != 0) {
 		photons_hOverE_branch = tree->GetBranch(tree->GetAlias("photons_hOverE"));
 		photons_hOverE_branch->SetAddress(&photons_hOverE_);
-	}
-	if(photons_hOverE_branch == 0 ) {
-	cout << "Branch photons_hOverE does not exist." << endl;
 	}
 	photons_hcalIso_branch = 0;
 	if (tree->GetAlias("photons_hcalIso") != 0) {
 		photons_hcalIso_branch = tree->GetBranch(tree->GetAlias("photons_hcalIso"));
 		photons_hcalIso_branch->SetAddress(&photons_hcalIso_);
 	}
-	if(photons_hcalIso_branch == 0 ) {
-	cout << "Branch photons_hcalIso does not exist." << endl;
-	}
 	photons_sigmaEtaEta_branch = 0;
 	if (tree->GetAlias("photons_sigmaEtaEta") != 0) {
 		photons_sigmaEtaEta_branch = tree->GetBranch(tree->GetAlias("photons_sigmaEtaEta"));
 		photons_sigmaEtaEta_branch->SetAddress(&photons_sigmaEtaEta_);
-	}
-	if(photons_sigmaEtaEta_branch == 0 ) {
-	cout << "Branch photons_sigmaEtaEta does not exist." << endl;
 	}
 	photons_sigmaIEtaIEta_branch = 0;
 	if (tree->GetAlias("photons_sigmaIEtaIEta") != 0) {
 		photons_sigmaIEtaIEta_branch = tree->GetBranch(tree->GetAlias("photons_sigmaIEtaIEta"));
 		photons_sigmaIEtaIEta_branch->SetAddress(&photons_sigmaIEtaIEta_);
 	}
-	if(photons_sigmaIEtaIEta_branch == 0 ) {
-	cout << "Branch photons_sigmaIEtaIEta does not exist." << endl;
-	}
 	photons_swissSeed_branch = 0;
 	if (tree->GetAlias("photons_swissSeed") != 0) {
 		photons_swissSeed_branch = tree->GetBranch(tree->GetAlias("photons_swissSeed"));
 		photons_swissSeed_branch->SetAddress(&photons_swissSeed_);
-	}
-	if(photons_swissSeed_branch == 0 ) {
-	cout << "Branch photons_swissSeed does not exist." << endl;
 	}
 	photons_tkIsoHollow_branch = 0;
 	if (tree->GetAlias("photons_tkIsoHollow") != 0) {
 		photons_tkIsoHollow_branch = tree->GetBranch(tree->GetAlias("photons_tkIsoHollow"));
 		photons_tkIsoHollow_branch->SetAddress(&photons_tkIsoHollow_);
 	}
-	if(photons_tkIsoHollow_branch == 0 ) {
-	cout << "Branch photons_tkIsoHollow does not exist." << endl;
-	}
 	photons_tkIsoSolid_branch = 0;
 	if (tree->GetAlias("photons_tkIsoSolid") != 0) {
 		photons_tkIsoSolid_branch = tree->GetBranch(tree->GetAlias("photons_tkIsoSolid"));
 		photons_tkIsoSolid_branch->SetAddress(&photons_tkIsoSolid_);
-	}
-	if(photons_tkIsoSolid_branch == 0 ) {
-	cout << "Branch photons_tkIsoSolid does not exist." << endl;
 	}
 	scs_clustersSize_branch = 0;
 	if (tree->GetAlias("scs_clustersSize") != 0) {
 		scs_clustersSize_branch = tree->GetBranch(tree->GetAlias("scs_clustersSize"));
 		scs_clustersSize_branch->SetAddress(&scs_clustersSize_);
 	}
-	if(scs_clustersSize_branch == 0 ) {
-	cout << "Branch scs_clustersSize does not exist." << endl;
-	}
 	scs_crystalsSize_branch = 0;
 	if (tree->GetAlias("scs_crystalsSize") != 0) {
 		scs_crystalsSize_branch = tree->GetBranch(tree->GetAlias("scs_crystalsSize"));
 		scs_crystalsSize_branch->SetAddress(&scs_crystalsSize_);
-	}
-	if(scs_crystalsSize_branch == 0 ) {
-	cout << "Branch scs_crystalsSize does not exist." << endl;
 	}
 	scs_e1x3_branch = 0;
 	if (tree->GetAlias("scs_e1x3") != 0) {
 		scs_e1x3_branch = tree->GetBranch(tree->GetAlias("scs_e1x3"));
 		scs_e1x3_branch->SetAddress(&scs_e1x3_);
 	}
-	if(scs_e1x3_branch == 0 ) {
-	cout << "Branch scs_e1x3 does not exist." << endl;
-	}
 	scs_e1x5_branch = 0;
 	if (tree->GetAlias("scs_e1x5") != 0) {
 		scs_e1x5_branch = tree->GetBranch(tree->GetAlias("scs_e1x5"));
 		scs_e1x5_branch->SetAddress(&scs_e1x5_);
-	}
-	if(scs_e1x5_branch == 0 ) {
-	cout << "Branch scs_e1x5 does not exist." << endl;
 	}
 	scs_e2nd_branch = 0;
 	if (tree->GetAlias("scs_e2nd") != 0) {
 		scs_e2nd_branch = tree->GetBranch(tree->GetAlias("scs_e2nd"));
 		scs_e2nd_branch->SetAddress(&scs_e2nd_);
 	}
-	if(scs_e2nd_branch == 0 ) {
-	cout << "Branch scs_e2nd does not exist." << endl;
-	}
 	scs_e2x2_branch = 0;
 	if (tree->GetAlias("scs_e2x2") != 0) {
 		scs_e2x2_branch = tree->GetBranch(tree->GetAlias("scs_e2x2"));
 		scs_e2x2_branch->SetAddress(&scs_e2x2_);
-	}
-	if(scs_e2x2_branch == 0 ) {
-	cout << "Branch scs_e2x2 does not exist." << endl;
 	}
 	scs_e2x5Max_branch = 0;
 	if (tree->GetAlias("scs_e2x5Max") != 0) {
 		scs_e2x5Max_branch = tree->GetBranch(tree->GetAlias("scs_e2x5Max"));
 		scs_e2x5Max_branch->SetAddress(&scs_e2x5Max_);
 	}
-	if(scs_e2x5Max_branch == 0 ) {
-	cout << "Branch scs_e2x5Max does not exist." << endl;
-	}
 	scs_e3x1_branch = 0;
 	if (tree->GetAlias("scs_e3x1") != 0) {
 		scs_e3x1_branch = tree->GetBranch(tree->GetAlias("scs_e3x1"));
 		scs_e3x1_branch->SetAddress(&scs_e3x1_);
-	}
-	if(scs_e3x1_branch == 0 ) {
-	cout << "Branch scs_e3x1 does not exist." << endl;
 	}
 	scs_e3x2_branch = 0;
 	if (tree->GetAlias("scs_e3x2") != 0) {
 		scs_e3x2_branch = tree->GetBranch(tree->GetAlias("scs_e3x2"));
 		scs_e3x2_branch->SetAddress(&scs_e3x2_);
 	}
-	if(scs_e3x2_branch == 0 ) {
-	cout << "Branch scs_e3x2 does not exist." << endl;
-	}
 	scs_e3x3_branch = 0;
 	if (tree->GetAlias("scs_e3x3") != 0) {
 		scs_e3x3_branch = tree->GetBranch(tree->GetAlias("scs_e3x3"));
 		scs_e3x3_branch->SetAddress(&scs_e3x3_);
-	}
-	if(scs_e3x3_branch == 0 ) {
-	cout << "Branch scs_e3x3 does not exist." << endl;
 	}
 	scs_e4x4_branch = 0;
 	if (tree->GetAlias("scs_e4x4") != 0) {
 		scs_e4x4_branch = tree->GetBranch(tree->GetAlias("scs_e4x4"));
 		scs_e4x4_branch->SetAddress(&scs_e4x4_);
 	}
-	if(scs_e4x4_branch == 0 ) {
-	cout << "Branch scs_e4x4 does not exist." << endl;
-	}
 	scs_e5x5_branch = 0;
 	if (tree->GetAlias("scs_e5x5") != 0) {
 		scs_e5x5_branch = tree->GetBranch(tree->GetAlias("scs_e5x5"));
 		scs_e5x5_branch->SetAddress(&scs_e5x5_);
-	}
-	if(scs_e5x5_branch == 0 ) {
-	cout << "Branch scs_e5x5 does not exist." << endl;
 	}
 	scs_eMax_branch = 0;
 	if (tree->GetAlias("scs_eMax") != 0) {
 		scs_eMax_branch = tree->GetBranch(tree->GetAlias("scs_eMax"));
 		scs_eMax_branch->SetAddress(&scs_eMax_);
 	}
-	if(scs_eMax_branch == 0 ) {
-	cout << "Branch scs_eMax does not exist." << endl;
-	}
 	scs_eSeed_branch = 0;
 	if (tree->GetAlias("scs_eSeed") != 0) {
 		scs_eSeed_branch = tree->GetBranch(tree->GetAlias("scs_eSeed"));
 		scs_eSeed_branch->SetAddress(&scs_eSeed_);
-	}
-	if(scs_eSeed_branch == 0 ) {
-	cout << "Branch scs_eSeed does not exist." << endl;
 	}
 	scs_energy_branch = 0;
 	if (tree->GetAlias("scs_energy") != 0) {
 		scs_energy_branch = tree->GetBranch(tree->GetAlias("scs_energy"));
 		scs_energy_branch->SetAddress(&scs_energy_);
 	}
-	if(scs_energy_branch == 0 ) {
-	cout << "Branch scs_energy does not exist." << endl;
-	}
 	scs_eta_branch = 0;
 	if (tree->GetAlias("scs_eta") != 0) {
 		scs_eta_branch = tree->GetBranch(tree->GetAlias("scs_eta"));
 		scs_eta_branch->SetAddress(&scs_eta_);
-	}
-	if(scs_eta_branch == 0 ) {
-	cout << "Branch scs_eta does not exist." << endl;
 	}
 	scs_hoe_branch = 0;
 	if (tree->GetAlias("scs_hoe") != 0) {
 		scs_hoe_branch = tree->GetBranch(tree->GetAlias("scs_hoe"));
 		scs_hoe_branch->SetAddress(&scs_hoe_);
 	}
-	if(scs_hoe_branch == 0 ) {
-	cout << "Branch scs_hoe does not exist." << endl;
-	}
 	scs_phi_branch = 0;
 	if (tree->GetAlias("scs_phi") != 0) {
 		scs_phi_branch = tree->GetBranch(tree->GetAlias("scs_phi"));
 		scs_phi_branch->SetAddress(&scs_phi_);
-	}
-	if(scs_phi_branch == 0 ) {
-	cout << "Branch scs_phi does not exist." << endl;
 	}
 	scs_preshowerEnergy_branch = 0;
 	if (tree->GetAlias("scs_preshowerEnergy") != 0) {
 		scs_preshowerEnergy_branch = tree->GetBranch(tree->GetAlias("scs_preshowerEnergy"));
 		scs_preshowerEnergy_branch->SetAddress(&scs_preshowerEnergy_);
 	}
-	if(scs_preshowerEnergy_branch == 0 ) {
-	cout << "Branch scs_preshowerEnergy does not exist." << endl;
-	}
 	scs_rawEnergy_branch = 0;
 	if (tree->GetAlias("scs_rawEnergy") != 0) {
 		scs_rawEnergy_branch = tree->GetBranch(tree->GetAlias("scs_rawEnergy"));
 		scs_rawEnergy_branch->SetAddress(&scs_rawEnergy_);
-	}
-	if(scs_rawEnergy_branch == 0 ) {
-	cout << "Branch scs_rawEnergy does not exist." << endl;
 	}
 	scs_sigmaEtaEta_branch = 0;
 	if (tree->GetAlias("scs_sigmaEtaEta") != 0) {
 		scs_sigmaEtaEta_branch = tree->GetBranch(tree->GetAlias("scs_sigmaEtaEta"));
 		scs_sigmaEtaEta_branch->SetAddress(&scs_sigmaEtaEta_);
 	}
-	if(scs_sigmaEtaEta_branch == 0 ) {
-	cout << "Branch scs_sigmaEtaEta does not exist." << endl;
-	}
 	scs_sigmaEtaPhi_branch = 0;
 	if (tree->GetAlias("scs_sigmaEtaPhi") != 0) {
 		scs_sigmaEtaPhi_branch = tree->GetBranch(tree->GetAlias("scs_sigmaEtaPhi"));
 		scs_sigmaEtaPhi_branch->SetAddress(&scs_sigmaEtaPhi_);
-	}
-	if(scs_sigmaEtaPhi_branch == 0 ) {
-	cout << "Branch scs_sigmaEtaPhi does not exist." << endl;
 	}
 	scs_sigmaIEtaIEta_branch = 0;
 	if (tree->GetAlias("scs_sigmaIEtaIEta") != 0) {
 		scs_sigmaIEtaIEta_branch = tree->GetBranch(tree->GetAlias("scs_sigmaIEtaIEta"));
 		scs_sigmaIEtaIEta_branch->SetAddress(&scs_sigmaIEtaIEta_);
 	}
-	if(scs_sigmaIEtaIEta_branch == 0 ) {
-	cout << "Branch scs_sigmaIEtaIEta does not exist." << endl;
-	}
 	scs_sigmaIEtaIEtaSC_branch = 0;
 	if (tree->GetAlias("scs_sigmaIEtaIEtaSC") != 0) {
 		scs_sigmaIEtaIEtaSC_branch = tree->GetBranch(tree->GetAlias("scs_sigmaIEtaIEtaSC"));
 		scs_sigmaIEtaIEtaSC_branch->SetAddress(&scs_sigmaIEtaIEtaSC_);
-	}
-	if(scs_sigmaIEtaIEtaSC_branch == 0 ) {
-	cout << "Branch scs_sigmaIEtaIEtaSC does not exist." << endl;
 	}
 	scs_sigmaIEtaIPhi_branch = 0;
 	if (tree->GetAlias("scs_sigmaIEtaIPhi") != 0) {
 		scs_sigmaIEtaIPhi_branch = tree->GetBranch(tree->GetAlias("scs_sigmaIEtaIPhi"));
 		scs_sigmaIEtaIPhi_branch->SetAddress(&scs_sigmaIEtaIPhi_);
 	}
-	if(scs_sigmaIEtaIPhi_branch == 0 ) {
-	cout << "Branch scs_sigmaIEtaIPhi does not exist." << endl;
-	}
 	scs_sigmaIEtaIPhiSC_branch = 0;
 	if (tree->GetAlias("scs_sigmaIEtaIPhiSC") != 0) {
 		scs_sigmaIEtaIPhiSC_branch = tree->GetBranch(tree->GetAlias("scs_sigmaIEtaIPhiSC"));
 		scs_sigmaIEtaIPhiSC_branch->SetAddress(&scs_sigmaIEtaIPhiSC_);
-	}
-	if(scs_sigmaIEtaIPhiSC_branch == 0 ) {
-	cout << "Branch scs_sigmaIEtaIPhiSC does not exist." << endl;
 	}
 	scs_sigmaIPhiIPhi_branch = 0;
 	if (tree->GetAlias("scs_sigmaIPhiIPhi") != 0) {
 		scs_sigmaIPhiIPhi_branch = tree->GetBranch(tree->GetAlias("scs_sigmaIPhiIPhi"));
 		scs_sigmaIPhiIPhi_branch->SetAddress(&scs_sigmaIPhiIPhi_);
 	}
-	if(scs_sigmaIPhiIPhi_branch == 0 ) {
-	cout << "Branch scs_sigmaIPhiIPhi does not exist." << endl;
-	}
 	scs_sigmaIPhiIPhiSC_branch = 0;
 	if (tree->GetAlias("scs_sigmaIPhiIPhiSC") != 0) {
 		scs_sigmaIPhiIPhiSC_branch = tree->GetBranch(tree->GetAlias("scs_sigmaIPhiIPhiSC"));
 		scs_sigmaIPhiIPhiSC_branch->SetAddress(&scs_sigmaIPhiIPhiSC_);
-	}
-	if(scs_sigmaIPhiIPhiSC_branch == 0 ) {
-	cout << "Branch scs_sigmaIPhiIPhiSC does not exist." << endl;
 	}
 	scs_sigmaPhiPhi_branch = 0;
 	if (tree->GetAlias("scs_sigmaPhiPhi") != 0) {
 		scs_sigmaPhiPhi_branch = tree->GetBranch(tree->GetAlias("scs_sigmaPhiPhi"));
 		scs_sigmaPhiPhi_branch->SetAddress(&scs_sigmaPhiPhi_);
 	}
-	if(scs_sigmaPhiPhi_branch == 0 ) {
-	cout << "Branch scs_sigmaPhiPhi does not exist." << endl;
-	}
 	scs_timeSeed_branch = 0;
 	if (tree->GetAlias("scs_timeSeed") != 0) {
 		scs_timeSeed_branch = tree->GetBranch(tree->GetAlias("scs_timeSeed"));
 		scs_timeSeed_branch->SetAddress(&scs_timeSeed_);
-	}
-	if(scs_timeSeed_branch == 0 ) {
-	cout << "Branch scs_timeSeed does not exist." << endl;
 	}
 	mus_tcmet_deltax_branch = 0;
 	if (tree->GetAlias("mus_tcmet_deltax") != 0) {
 		mus_tcmet_deltax_branch = tree->GetBranch(tree->GetAlias("mus_tcmet_deltax"));
 		mus_tcmet_deltax_branch->SetAddress(&mus_tcmet_deltax_);
 	}
-	if(mus_tcmet_deltax_branch == 0 ) {
-	cout << "Branch mus_tcmet_deltax does not exist." << endl;
-	}
 	mus_tcmet_deltay_branch = 0;
 	if (tree->GetAlias("mus_tcmet_deltay") != 0) {
 		mus_tcmet_deltay_branch = tree->GetBranch(tree->GetAlias("mus_tcmet_deltay"));
 		mus_tcmet_deltay_branch->SetAddress(&mus_tcmet_deltay_);
-	}
-	if(mus_tcmet_deltay_branch == 0 ) {
-	cout << "Branch mus_tcmet_deltay does not exist." << endl;
 	}
 	evt35X_mus_tcmet_deltax_branch = 0;
 	if (tree->GetAlias("evt35X_mus_tcmet_deltax") != 0) {
 		evt35X_mus_tcmet_deltax_branch = tree->GetBranch(tree->GetAlias("evt35X_mus_tcmet_deltax"));
 		evt35X_mus_tcmet_deltax_branch->SetAddress(&evt35X_mus_tcmet_deltax_);
 	}
-	if(evt35X_mus_tcmet_deltax_branch == 0 ) {
-	cout << "Branch evt35X_mus_tcmet_deltax does not exist." << endl;
-	}
 	evt35X_mus_tcmet_deltay_branch = 0;
 	if (tree->GetAlias("evt35X_mus_tcmet_deltay") != 0) {
 		evt35X_mus_tcmet_deltay_branch = tree->GetBranch(tree->GetAlias("evt35X_mus_tcmet_deltay"));
 		evt35X_mus_tcmet_deltay_branch->SetAddress(&evt35X_mus_tcmet_deltay_);
-	}
-	if(evt35X_mus_tcmet_deltay_branch == 0 ) {
-	cout << "Branch evt35X_mus_tcmet_deltay does not exist." << endl;
 	}
 	trks_chi2_branch = 0;
 	if (tree->GetAlias("trks_chi2") != 0) {
 		trks_chi2_branch = tree->GetBranch(tree->GetAlias("trks_chi2"));
 		trks_chi2_branch->SetAddress(&trks_chi2_);
 	}
-	if(trks_chi2_branch == 0 ) {
-	cout << "Branch trks_chi2 does not exist." << endl;
-	}
 	trks_d0_branch = 0;
 	if (tree->GetAlias("trks_d0") != 0) {
 		trks_d0_branch = tree->GetBranch(tree->GetAlias("trks_d0"));
 		trks_d0_branch->SetAddress(&trks_d0_);
-	}
-	if(trks_d0_branch == 0 ) {
-	cout << "Branch trks_d0 does not exist." << endl;
 	}
 	trks_d0Err_branch = 0;
 	if (tree->GetAlias("trks_d0Err") != 0) {
 		trks_d0Err_branch = tree->GetBranch(tree->GetAlias("trks_d0Err"));
 		trks_d0Err_branch->SetAddress(&trks_d0Err_);
 	}
-	if(trks_d0Err_branch == 0 ) {
-	cout << "Branch trks_d0Err does not exist." << endl;
-	}
 	trks_d0corr_branch = 0;
 	if (tree->GetAlias("trks_d0corr") != 0) {
 		trks_d0corr_branch = tree->GetBranch(tree->GetAlias("trks_d0corr"));
 		trks_d0corr_branch->SetAddress(&trks_d0corr_);
-	}
-	if(trks_d0corr_branch == 0 ) {
-	cout << "Branch trks_d0corr does not exist." << endl;
 	}
 	trks_d0corrPhi_branch = 0;
 	if (tree->GetAlias("trks_d0corrPhi") != 0) {
 		trks_d0corrPhi_branch = tree->GetBranch(tree->GetAlias("trks_d0corrPhi"));
 		trks_d0corrPhi_branch->SetAddress(&trks_d0corrPhi_);
 	}
-	if(trks_d0corrPhi_branch == 0 ) {
-	cout << "Branch trks_d0corrPhi does not exist." << endl;
-	}
 	trks_d0phiCov_branch = 0;
 	if (tree->GetAlias("trks_d0phiCov") != 0) {
 		trks_d0phiCov_branch = tree->GetBranch(tree->GetAlias("trks_d0phiCov"));
 		trks_d0phiCov_branch->SetAddress(&trks_d0phiCov_);
-	}
-	if(trks_d0phiCov_branch == 0 ) {
-	cout << "Branch trks_d0phiCov does not exist." << endl;
 	}
 	trks_etaErr_branch = 0;
 	if (tree->GetAlias("trks_etaErr") != 0) {
 		trks_etaErr_branch = tree->GetBranch(tree->GetAlias("trks_etaErr"));
 		trks_etaErr_branch->SetAddress(&trks_etaErr_);
 	}
-	if(trks_etaErr_branch == 0 ) {
-	cout << "Branch trks_etaErr does not exist." << endl;
-	}
 	trks_layer1_charge_branch = 0;
 	if (tree->GetAlias("trks_layer1_charge") != 0) {
 		trks_layer1_charge_branch = tree->GetBranch(tree->GetAlias("trks_layer1_charge"));
 		trks_layer1_charge_branch->SetAddress(&trks_layer1_charge_);
-	}
-	if(trks_layer1_charge_branch == 0 ) {
-	cout << "Branch trks_layer1_charge does not exist." << endl;
 	}
 	trks_ndof_branch = 0;
 	if (tree->GetAlias("trks_ndof") != 0) {
 		trks_ndof_branch = tree->GetBranch(tree->GetAlias("trks_ndof"));
 		trks_ndof_branch->SetAddress(&trks_ndof_);
 	}
-	if(trks_ndof_branch == 0 ) {
-	cout << "Branch trks_ndof does not exist." << endl;
-	}
 	trks_phiErr_branch = 0;
 	if (tree->GetAlias("trks_phiErr") != 0) {
 		trks_phiErr_branch = tree->GetBranch(tree->GetAlias("trks_phiErr"));
 		trks_phiErr_branch->SetAddress(&trks_phiErr_);
-	}
-	if(trks_phiErr_branch == 0 ) {
-	cout << "Branch trks_phiErr does not exist." << endl;
 	}
 	trks_ptErr_branch = 0;
 	if (tree->GetAlias("trks_ptErr") != 0) {
 		trks_ptErr_branch = tree->GetBranch(tree->GetAlias("trks_ptErr"));
 		trks_ptErr_branch->SetAddress(&trks_ptErr_);
 	}
-	if(trks_ptErr_branch == 0 ) {
-	cout << "Branch trks_ptErr does not exist." << endl;
-	}
 	trks_z0_branch = 0;
 	if (tree->GetAlias("trks_z0") != 0) {
 		trks_z0_branch = tree->GetBranch(tree->GetAlias("trks_z0"));
 		trks_z0_branch->SetAddress(&trks_z0_);
-	}
-	if(trks_z0_branch == 0 ) {
-	cout << "Branch trks_z0 does not exist." << endl;
 	}
 	trks_z0Err_branch = 0;
 	if (tree->GetAlias("trks_z0Err") != 0) {
 		trks_z0Err_branch = tree->GetBranch(tree->GetAlias("trks_z0Err"));
 		trks_z0Err_branch->SetAddress(&trks_z0Err_);
 	}
-	if(trks_z0Err_branch == 0 ) {
-	cout << "Branch trks_z0Err does not exist." << endl;
-	}
 	trks_z0corr_branch = 0;
 	if (tree->GetAlias("trks_z0corr") != 0) {
 		trks_z0corr_branch = tree->GetBranch(tree->GetAlias("trks_z0corr"));
 		trks_z0corr_branch->SetAddress(&trks_z0corr_);
-	}
-	if(trks_z0corr_branch == 0 ) {
-	cout << "Branch trks_z0corr does not exist." << endl;
 	}
 	trkjets_cor_branch = 0;
 	if (tree->GetAlias("trkjets_cor") != 0) {
 		trkjets_cor_branch = tree->GetBranch(tree->GetAlias("trkjets_cor"));
 		trkjets_cor_branch->SetAddress(&trkjets_cor_);
 	}
-	if(trkjets_cor_branch == 0 ) {
-	cout << "Branch trkjets_cor does not exist." << endl;
-	}
 	trks_d0Errvtx_branch = 0;
 	if (tree->GetAlias("trks_d0Errvtx") != 0) {
 		trks_d0Errvtx_branch = tree->GetBranch(tree->GetAlias("trks_d0Errvtx"));
 		trks_d0Errvtx_branch->SetAddress(&trks_d0Errvtx_);
-	}
-	if(trks_d0Errvtx_branch == 0 ) {
-	cout << "Branch trks_d0Errvtx does not exist." << endl;
 	}
 	trks_d0vtx_branch = 0;
 	if (tree->GetAlias("trks_d0vtx") != 0) {
 		trks_d0vtx_branch = tree->GetBranch(tree->GetAlias("trks_d0vtx"));
 		trks_d0vtx_branch->SetAddress(&trks_d0vtx_);
 	}
-	if(trks_d0vtx_branch == 0 ) {
-	cout << "Branch trks_d0vtx does not exist." << endl;
-	}
 	vtxs_chi2_branch = 0;
 	if (tree->GetAlias("vtxs_chi2") != 0) {
 		vtxs_chi2_branch = tree->GetBranch(tree->GetAlias("vtxs_chi2"));
 		vtxs_chi2_branch->SetAddress(&vtxs_chi2_);
-	}
-	if(vtxs_chi2_branch == 0 ) {
-	cout << "Branch vtxs_chi2 does not exist." << endl;
 	}
 	vtxs_ndof_branch = 0;
 	if (tree->GetAlias("vtxs_ndof") != 0) {
 		vtxs_ndof_branch = tree->GetBranch(tree->GetAlias("vtxs_ndof"));
 		vtxs_ndof_branch->SetAddress(&vtxs_ndof_);
 	}
-	if(vtxs_ndof_branch == 0 ) {
-	cout << "Branch vtxs_ndof does not exist." << endl;
-	}
 	vtxs_sumpt_branch = 0;
 	if (tree->GetAlias("vtxs_sumpt") != 0) {
 		vtxs_sumpt_branch = tree->GetBranch(tree->GetAlias("vtxs_sumpt"));
 		vtxs_sumpt_branch->SetAddress(&vtxs_sumpt_);
-	}
-	if(vtxs_sumpt_branch == 0 ) {
-	cout << "Branch vtxs_sumpt does not exist." << endl;
 	}
 	vtxs_xError_branch = 0;
 	if (tree->GetAlias("vtxs_xError") != 0) {
 		vtxs_xError_branch = tree->GetBranch(tree->GetAlias("vtxs_xError"));
 		vtxs_xError_branch->SetAddress(&vtxs_xError_);
 	}
-	if(vtxs_xError_branch == 0 ) {
-	cout << "Branch vtxs_xError does not exist." << endl;
-	}
 	vtxs_yError_branch = 0;
 	if (tree->GetAlias("vtxs_yError") != 0) {
 		vtxs_yError_branch = tree->GetBranch(tree->GetAlias("vtxs_yError"));
 		vtxs_yError_branch->SetAddress(&vtxs_yError_);
-	}
-	if(vtxs_yError_branch == 0 ) {
-	cout << "Branch vtxs_yError does not exist." << endl;
 	}
 	vtxs_zError_branch = 0;
 	if (tree->GetAlias("vtxs_zError") != 0) {
 		vtxs_zError_branch = tree->GetBranch(tree->GetAlias("vtxs_zError"));
 		vtxs_zError_branch->SetAddress(&vtxs_zError_);
 	}
-	if(vtxs_zError_branch == 0 ) {
-	cout << "Branch vtxs_zError does not exist." << endl;
-	}
-	twrs_em3x3_branch = 0;
-	if (tree->GetAlias("twrs_em3x3") != 0) {
-		twrs_em3x3_branch = tree->GetBranch(tree->GetAlias("twrs_em3x3"));
-		twrs_em3x3_branch->SetAddress(&twrs_em3x3_);
-	}
-	if(twrs_em3x3_branch == 0 ) {
-	cout << "Branch twrs_em3x3 does not exist." << endl;
-	}
-	twrs_em5x5_branch = 0;
-	if (tree->GetAlias("twrs_em5x5") != 0) {
-		twrs_em5x5_branch = tree->GetBranch(tree->GetAlias("twrs_em5x5"));
-		twrs_em5x5_branch->SetAddress(&twrs_em5x5_);
-	}
-	if(twrs_em5x5_branch == 0 ) {
-	cout << "Branch twrs_em5x5 does not exist." << endl;
-	}
-	twrs_emSwiss_branch = 0;
-	if (tree->GetAlias("twrs_emSwiss") != 0) {
-		twrs_emSwiss_branch = tree->GetBranch(tree->GetAlias("twrs_emSwiss"));
-		twrs_emSwiss_branch->SetAddress(&twrs_emSwiss_);
-	}
-	if(twrs_emSwiss_branch == 0 ) {
-	cout << "Branch twrs_emSwiss does not exist." << endl;
-	}
-	twrs_emThresh_branch = 0;
-	if (tree->GetAlias("twrs_emThresh") != 0) {
-		twrs_emThresh_branch = tree->GetBranch(tree->GetAlias("twrs_emThresh"));
-		twrs_emThresh_branch->SetAddress(&twrs_emThresh_);
-	}
-	if(twrs_emThresh_branch == 0 ) {
-	cout << "Branch twrs_emThresh does not exist." << endl;
-	}
-	twrs_emThreshChi2_branch = 0;
-	if (tree->GetAlias("twrs_emThreshChi2") != 0) {
-		twrs_emThreshChi2_branch = tree->GetBranch(tree->GetAlias("twrs_emThreshChi2"));
-		twrs_emThreshChi2_branch->SetAddress(&twrs_emThreshChi2_);
-	}
-	if(twrs_emThreshChi2_branch == 0 ) {
-	cout << "Branch twrs_emThreshChi2 does not exist." << endl;
-	}
-	twrs_emThreshEta_branch = 0;
-	if (tree->GetAlias("twrs_emThreshEta") != 0) {
-		twrs_emThreshEta_branch = tree->GetBranch(tree->GetAlias("twrs_emThreshEta"));
-		twrs_emThreshEta_branch->SetAddress(&twrs_emThreshEta_);
-	}
-	if(twrs_emThreshEta_branch == 0 ) {
-	cout << "Branch twrs_emThreshEta does not exist." << endl;
-	}
-	twrs_emThreshTime_branch = 0;
-	if (tree->GetAlias("twrs_emThreshTime") != 0) {
-		twrs_emThreshTime_branch = tree->GetBranch(tree->GetAlias("twrs_emThreshTime"));
-		twrs_emThreshTime_branch->SetAddress(&twrs_emThreshTime_);
-	}
-	if(twrs_emThreshTime_branch == 0 ) {
-	cout << "Branch twrs_emThreshTime does not exist." << endl;
-	}
-	twrs_hcalHitTime_branch = 0;
-	if (tree->GetAlias("twrs_hcalHitTime") != 0) {
-		twrs_hcalHitTime_branch = tree->GetBranch(tree->GetAlias("twrs_hcalHitTime"));
-		twrs_hcalHitTime_branch->SetAddress(&twrs_hcalHitTime_);
-	}
-	if(twrs_hcalHitTime_branch == 0 ) {
-	cout << "Branch twrs_hcalHitTime does not exist." << endl;
-	}
 	vtxs_covMatrix_branch = 0;
 	if (tree->GetAlias("vtxs_covMatrix") != 0) {
 		vtxs_covMatrix_branch = tree->GetBranch(tree->GetAlias("vtxs_covMatrix"));
 		vtxs_covMatrix_branch->SetAddress(&vtxs_covMatrix_);
-	}
-	if(vtxs_covMatrix_branch == 0 ) {
-	cout << "Branch vtxs_covMatrix does not exist." << endl;
 	}
 	evt_cscLooseHaloId_branch = 0;
 	if (tree->GetAlias("evt_cscLooseHaloId") != 0) {
 		evt_cscLooseHaloId_branch = tree->GetBranch(tree->GetAlias("evt_cscLooseHaloId"));
 		evt_cscLooseHaloId_branch->SetAddress(&evt_cscLooseHaloId_);
 	}
-	if(evt_cscLooseHaloId_branch == 0 ) {
-	cout << "Branch evt_cscLooseHaloId does not exist." << endl;
-	}
 	evt_cscTightHaloId_branch = 0;
 	if (tree->GetAlias("evt_cscTightHaloId") != 0) {
 		evt_cscTightHaloId_branch = tree->GetBranch(tree->GetAlias("evt_cscTightHaloId"));
 		evt_cscTightHaloId_branch->SetAddress(&evt_cscTightHaloId_);
-	}
-	if(evt_cscTightHaloId_branch == 0 ) {
-	cout << "Branch evt_cscTightHaloId does not exist." << endl;
 	}
 	evt_ecalLooseHaloId_branch = 0;
 	if (tree->GetAlias("evt_ecalLooseHaloId") != 0) {
 		evt_ecalLooseHaloId_branch = tree->GetBranch(tree->GetAlias("evt_ecalLooseHaloId"));
 		evt_ecalLooseHaloId_branch->SetAddress(&evt_ecalLooseHaloId_);
 	}
-	if(evt_ecalLooseHaloId_branch == 0 ) {
-	cout << "Branch evt_ecalLooseHaloId does not exist." << endl;
-	}
 	evt_ecalTightHaloId_branch = 0;
 	if (tree->GetAlias("evt_ecalTightHaloId") != 0) {
 		evt_ecalTightHaloId_branch = tree->GetBranch(tree->GetAlias("evt_ecalTightHaloId"));
 		evt_ecalTightHaloId_branch->SetAddress(&evt_ecalTightHaloId_);
-	}
-	if(evt_ecalTightHaloId_branch == 0 ) {
-	cout << "Branch evt_ecalTightHaloId does not exist." << endl;
 	}
 	evt_extremeTightHaloId_branch = 0;
 	if (tree->GetAlias("evt_extremeTightHaloId") != 0) {
 		evt_extremeTightHaloId_branch = tree->GetBranch(tree->GetAlias("evt_extremeTightHaloId"));
 		evt_extremeTightHaloId_branch->SetAddress(&evt_extremeTightHaloId_);
 	}
-	if(evt_extremeTightHaloId_branch == 0 ) {
-	cout << "Branch evt_extremeTightHaloId does not exist." << endl;
-	}
 	evt_globalLooseHaloId_branch = 0;
 	if (tree->GetAlias("evt_globalLooseHaloId") != 0) {
 		evt_globalLooseHaloId_branch = tree->GetBranch(tree->GetAlias("evt_globalLooseHaloId"));
 		evt_globalLooseHaloId_branch->SetAddress(&evt_globalLooseHaloId_);
-	}
-	if(evt_globalLooseHaloId_branch == 0 ) {
-	cout << "Branch evt_globalLooseHaloId does not exist." << endl;
 	}
 	evt_globalTightHaloId_branch = 0;
 	if (tree->GetAlias("evt_globalTightHaloId") != 0) {
 		evt_globalTightHaloId_branch = tree->GetBranch(tree->GetAlias("evt_globalTightHaloId"));
 		evt_globalTightHaloId_branch->SetAddress(&evt_globalTightHaloId_);
 	}
-	if(evt_globalTightHaloId_branch == 0 ) {
-	cout << "Branch evt_globalTightHaloId does not exist." << endl;
-	}
 	evt_hcalLooseHaloId_branch = 0;
 	if (tree->GetAlias("evt_hcalLooseHaloId") != 0) {
 		evt_hcalLooseHaloId_branch = tree->GetBranch(tree->GetAlias("evt_hcalLooseHaloId"));
 		evt_hcalLooseHaloId_branch->SetAddress(&evt_hcalLooseHaloId_);
-	}
-	if(evt_hcalLooseHaloId_branch == 0 ) {
-	cout << "Branch evt_hcalLooseHaloId does not exist." << endl;
 	}
 	evt_hcalTightHaloId_branch = 0;
 	if (tree->GetAlias("evt_hcalTightHaloId") != 0) {
 		evt_hcalTightHaloId_branch = tree->GetBranch(tree->GetAlias("evt_hcalTightHaloId"));
 		evt_hcalTightHaloId_branch->SetAddress(&evt_hcalTightHaloId_);
 	}
-	if(evt_hcalTightHaloId_branch == 0 ) {
-	cout << "Branch evt_hcalTightHaloId does not exist." << endl;
-	}
 	evt_looseHaloId_branch = 0;
 	if (tree->GetAlias("evt_looseHaloId") != 0) {
 		evt_looseHaloId_branch = tree->GetBranch(tree->GetAlias("evt_looseHaloId"));
 		evt_looseHaloId_branch->SetAddress(&evt_looseHaloId_);
-	}
-	if(evt_looseHaloId_branch == 0 ) {
-	cout << "Branch evt_looseHaloId does not exist." << endl;
 	}
 	evt_tightHaloId_branch = 0;
 	if (tree->GetAlias("evt_tightHaloId") != 0) {
 		evt_tightHaloId_branch = tree->GetBranch(tree->GetAlias("evt_tightHaloId"));
 		evt_tightHaloId_branch->SetAddress(&evt_tightHaloId_);
 	}
-	if(evt_tightHaloId_branch == 0 ) {
-	cout << "Branch evt_tightHaloId does not exist." << endl;
-	}
 	evt_bsType_branch = 0;
 	if (tree->GetAlias("evt_bsType") != 0) {
 		evt_bsType_branch = tree->GetBranch(tree->GetAlias("evt_bsType"));
 		evt_bsType_branch->SetAddress(&evt_bsType_);
-	}
-	if(evt_bsType_branch == 0 ) {
-	cout << "Branch evt_bsType does not exist." << endl;
 	}
 	evt_bunchCrossing_branch = 0;
 	if (tree->GetAlias("evt_bunchCrossing") != 0) {
 		evt_bunchCrossing_branch = tree->GetBranch(tree->GetAlias("evt_bunchCrossing"));
 		evt_bunchCrossing_branch->SetAddress(&evt_bunchCrossing_);
 	}
-	if(evt_bunchCrossing_branch == 0 ) {
-	cout << "Branch evt_bunchCrossing does not exist." << endl;
-	}
 	evt_experimentType_branch = 0;
 	if (tree->GetAlias("evt_experimentType") != 0) {
 		evt_experimentType_branch = tree->GetBranch(tree->GetAlias("evt_experimentType"));
 		evt_experimentType_branch->SetAddress(&evt_experimentType_);
-	}
-	if(evt_experimentType_branch == 0 ) {
-	cout << "Branch evt_experimentType does not exist." << endl;
 	}
 	evt_orbitNumber_branch = 0;
 	if (tree->GetAlias("evt_orbitNumber") != 0) {
 		evt_orbitNumber_branch = tree->GetBranch(tree->GetAlias("evt_orbitNumber"));
 		evt_orbitNumber_branch->SetAddress(&evt_orbitNumber_);
 	}
-	if(evt_orbitNumber_branch == 0 ) {
-	cout << "Branch evt_orbitNumber does not exist." << endl;
-	}
 	evt_storeNumber_branch = 0;
 	if (tree->GetAlias("evt_storeNumber") != 0) {
 		evt_storeNumber_branch = tree->GetBranch(tree->GetAlias("evt_storeNumber"));
 		evt_storeNumber_branch->SetAddress(&evt_storeNumber_);
-	}
-	if(evt_storeNumber_branch == 0 ) {
-	cout << "Branch evt_storeNumber does not exist." << endl;
 	}
 	hcalnoise_maxHPDHits_branch = 0;
 	if (tree->GetAlias("hcalnoise_maxHPDHits") != 0) {
 		hcalnoise_maxHPDHits_branch = tree->GetBranch(tree->GetAlias("hcalnoise_maxHPDHits"));
 		hcalnoise_maxHPDHits_branch->SetAddress(&hcalnoise_maxHPDHits_);
 	}
-	if(hcalnoise_maxHPDHits_branch == 0 ) {
-	cout << "Branch hcalnoise_maxHPDHits does not exist." << endl;
-	}
 	hcalnoise_maxRBXHits_branch = 0;
 	if (tree->GetAlias("hcalnoise_maxRBXHits") != 0) {
 		hcalnoise_maxRBXHits_branch = tree->GetBranch(tree->GetAlias("hcalnoise_maxRBXHits"));
 		hcalnoise_maxRBXHits_branch->SetAddress(&hcalnoise_maxRBXHits_);
-	}
-	if(hcalnoise_maxRBXHits_branch == 0 ) {
-	cout << "Branch hcalnoise_maxRBXHits does not exist." << endl;
 	}
 	hcalnoise_maxZeros_branch = 0;
 	if (tree->GetAlias("hcalnoise_maxZeros") != 0) {
 		hcalnoise_maxZeros_branch = tree->GetBranch(tree->GetAlias("hcalnoise_maxZeros"));
 		hcalnoise_maxZeros_branch->SetAddress(&hcalnoise_maxZeros_);
 	}
-	if(hcalnoise_maxZeros_branch == 0 ) {
-	cout << "Branch hcalnoise_maxZeros does not exist." << endl;
-	}
 	hcalnoise_noiseFilterStatus_branch = 0;
 	if (tree->GetAlias("hcalnoise_noiseFilterStatus") != 0) {
 		hcalnoise_noiseFilterStatus_branch = tree->GetBranch(tree->GetAlias("hcalnoise_noiseFilterStatus"));
 		hcalnoise_noiseFilterStatus_branch->SetAddress(&hcalnoise_noiseFilterStatus_);
-	}
-	if(hcalnoise_noiseFilterStatus_branch == 0 ) {
-	cout << "Branch hcalnoise_noiseFilterStatus does not exist." << endl;
 	}
 	hcalnoise_noiseType_branch = 0;
 	if (tree->GetAlias("hcalnoise_noiseType") != 0) {
 		hcalnoise_noiseType_branch = tree->GetBranch(tree->GetAlias("hcalnoise_noiseType"));
 		hcalnoise_noiseType_branch->SetAddress(&hcalnoise_noiseType_);
 	}
-	if(hcalnoise_noiseType_branch == 0 ) {
-	cout << "Branch hcalnoise_noiseType does not exist." << endl;
-	}
 	hcalnoise_num10GeVHits_branch = 0;
 	if (tree->GetAlias("hcalnoise_num10GeVHits") != 0) {
 		hcalnoise_num10GeVHits_branch = tree->GetBranch(tree->GetAlias("hcalnoise_num10GeVHits"));
 		hcalnoise_num10GeVHits_branch->SetAddress(&hcalnoise_num10GeVHits_);
-	}
-	if(hcalnoise_num10GeVHits_branch == 0 ) {
-	cout << "Branch hcalnoise_num10GeVHits does not exist." << endl;
 	}
 	hcalnoise_num25GeVHits_branch = 0;
 	if (tree->GetAlias("hcalnoise_num25GeVHits") != 0) {
 		hcalnoise_num25GeVHits_branch = tree->GetBranch(tree->GetAlias("hcalnoise_num25GeVHits"));
 		hcalnoise_num25GeVHits_branch->SetAddress(&hcalnoise_num25GeVHits_);
 	}
-	if(hcalnoise_num25GeVHits_branch == 0 ) {
-	cout << "Branch hcalnoise_num25GeVHits does not exist." << endl;
-	}
 	hcalnoise_numProblematicRBXs_branch = 0;
 	if (tree->GetAlias("hcalnoise_numProblematicRBXs") != 0) {
 		hcalnoise_numProblematicRBXs_branch = tree->GetBranch(tree->GetAlias("hcalnoise_numProblematicRBXs"));
 		hcalnoise_numProblematicRBXs_branch->SetAddress(&hcalnoise_numProblematicRBXs_);
-	}
-	if(hcalnoise_numProblematicRBXs_branch == 0 ) {
-	cout << "Branch hcalnoise_numProblematicRBXs does not exist." << endl;
 	}
 	hcalnoise_passHighLevelNoiseFilter_branch = 0;
 	if (tree->GetAlias("hcalnoise_passHighLevelNoiseFilter") != 0) {
 		hcalnoise_passHighLevelNoiseFilter_branch = tree->GetBranch(tree->GetAlias("hcalnoise_passHighLevelNoiseFilter"));
 		hcalnoise_passHighLevelNoiseFilter_branch->SetAddress(&hcalnoise_passHighLevelNoiseFilter_);
 	}
-	if(hcalnoise_passHighLevelNoiseFilter_branch == 0 ) {
-	cout << "Branch hcalnoise_passHighLevelNoiseFilter does not exist." << endl;
-	}
 	hcalnoise_passLooseNoiseFilter_branch = 0;
 	if (tree->GetAlias("hcalnoise_passLooseNoiseFilter") != 0) {
 		hcalnoise_passLooseNoiseFilter_branch = tree->GetBranch(tree->GetAlias("hcalnoise_passLooseNoiseFilter"));
 		hcalnoise_passLooseNoiseFilter_branch->SetAddress(&hcalnoise_passLooseNoiseFilter_);
-	}
-	if(hcalnoise_passLooseNoiseFilter_branch == 0 ) {
-	cout << "Branch hcalnoise_passLooseNoiseFilter does not exist." << endl;
 	}
 	hcalnoise_passTightNoiseFilter_branch = 0;
 	if (tree->GetAlias("hcalnoise_passTightNoiseFilter") != 0) {
 		hcalnoise_passTightNoiseFilter_branch = tree->GetBranch(tree->GetAlias("hcalnoise_passTightNoiseFilter"));
 		hcalnoise_passTightNoiseFilter_branch->SetAddress(&hcalnoise_passTightNoiseFilter_);
 	}
-	if(hcalnoise_passTightNoiseFilter_branch == 0 ) {
-	cout << "Branch hcalnoise_passTightNoiseFilter does not exist." << endl;
-	}
 	l1_nemiso_branch = 0;
 	if (tree->GetAlias("l1_nemiso") != 0) {
 		l1_nemiso_branch = tree->GetBranch(tree->GetAlias("l1_nemiso"));
 		l1_nemiso_branch->SetAddress(&l1_nemiso_);
-	}
-	if(l1_nemiso_branch == 0 ) {
-	cout << "Branch l1_nemiso does not exist." << endl;
 	}
 	l1_nemnoiso_branch = 0;
 	if (tree->GetAlias("l1_nemnoiso") != 0) {
 		l1_nemnoiso_branch = tree->GetBranch(tree->GetAlias("l1_nemnoiso"));
 		l1_nemnoiso_branch->SetAddress(&l1_nemnoiso_);
 	}
-	if(l1_nemnoiso_branch == 0 ) {
-	cout << "Branch l1_nemnoiso does not exist." << endl;
-	}
 	l1_njetsc_branch = 0;
 	if (tree->GetAlias("l1_njetsc") != 0) {
 		l1_njetsc_branch = tree->GetBranch(tree->GetAlias("l1_njetsc"));
 		l1_njetsc_branch->SetAddress(&l1_njetsc_);
-	}
-	if(l1_njetsc_branch == 0 ) {
-	cout << "Branch l1_njetsc does not exist." << endl;
 	}
 	l1_njetsf_branch = 0;
 	if (tree->GetAlias("l1_njetsf") != 0) {
 		l1_njetsf_branch = tree->GetBranch(tree->GetAlias("l1_njetsf"));
 		l1_njetsf_branch->SetAddress(&l1_njetsf_);
 	}
-	if(l1_njetsf_branch == 0 ) {
-	cout << "Branch l1_njetsf does not exist." << endl;
-	}
 	l1_njetst_branch = 0;
 	if (tree->GetAlias("l1_njetst") != 0) {
 		l1_njetst_branch = tree->GetBranch(tree->GetAlias("l1_njetst"));
 		l1_njetst_branch->SetAddress(&l1_njetst_);
-	}
-	if(l1_njetst_branch == 0 ) {
-	cout << "Branch l1_njetst does not exist." << endl;
 	}
 	l1_nmus_branch = 0;
 	if (tree->GetAlias("l1_nmus") != 0) {
 		l1_nmus_branch = tree->GetBranch(tree->GetAlias("l1_nmus"));
 		l1_nmus_branch->SetAddress(&l1_nmus_);
 	}
-	if(l1_nmus_branch == 0 ) {
-	cout << "Branch l1_nmus does not exist." << endl;
-	}
 	pdfinfo_id1_branch = 0;
 	if (tree->GetAlias("pdfinfo_id1") != 0) {
 		pdfinfo_id1_branch = tree->GetBranch(tree->GetAlias("pdfinfo_id1"));
 		pdfinfo_id1_branch->SetAddress(&pdfinfo_id1_);
-	}
-	if(pdfinfo_id1_branch == 0 ) {
-	cout << "Branch pdfinfo_id1 does not exist." << endl;
 	}
 	pdfinfo_id2_branch = 0;
 	if (tree->GetAlias("pdfinfo_id2") != 0) {
 		pdfinfo_id2_branch = tree->GetBranch(tree->GetAlias("pdfinfo_id2"));
 		pdfinfo_id2_branch->SetAddress(&pdfinfo_id2_);
 	}
-	if(pdfinfo_id2_branch == 0 ) {
-	cout << "Branch pdfinfo_id2 does not exist." << endl;
-	}
 	evt_ecaliPhiSuspects_branch = 0;
 	if (tree->GetAlias("evt_ecaliPhiSuspects") != 0) {
 		evt_ecaliPhiSuspects_branch = tree->GetBranch(tree->GetAlias("evt_ecaliPhiSuspects"));
 		evt_ecaliPhiSuspects_branch->SetAddress(&evt_ecaliPhiSuspects_);
-	}
-	if(evt_ecaliPhiSuspects_branch == 0 ) {
-	cout << "Branch evt_ecaliPhiSuspects does not exist." << endl;
 	}
 	evt_globaliPhiSuspects_branch = 0;
 	if (tree->GetAlias("evt_globaliPhiSuspects") != 0) {
 		evt_globaliPhiSuspects_branch = tree->GetBranch(tree->GetAlias("evt_globaliPhiSuspects"));
 		evt_globaliPhiSuspects_branch->SetAddress(&evt_globaliPhiSuspects_);
 	}
-	if(evt_globaliPhiSuspects_branch == 0 ) {
-	cout << "Branch evt_globaliPhiSuspects does not exist." << endl;
-	}
 	evt_hcaliPhiSuspects_branch = 0;
 	if (tree->GetAlias("evt_hcaliPhiSuspects") != 0) {
 		evt_hcaliPhiSuspects_branch = tree->GetBranch(tree->GetAlias("evt_hcaliPhiSuspects"));
 		evt_hcaliPhiSuspects_branch->SetAddress(&evt_hcaliPhiSuspects_);
-	}
-	if(evt_hcaliPhiSuspects_branch == 0 ) {
-	cout << "Branch evt_hcaliPhiSuspects does not exist." << endl;
-	}
-	twrs_numCrystals_branch = 0;
-	if (tree->GetAlias("twrs_numCrystals") != 0) {
-		twrs_numCrystals_branch = tree->GetBranch(tree->GetAlias("twrs_numCrystals"));
-		twrs_numCrystals_branch->SetAddress(&twrs_numCrystals_);
-	}
-	if(twrs_numCrystals_branch == 0 ) {
-	cout << "Branch twrs_numCrystals does not exist." << endl;
 	}
 	els_mc3_id_branch = 0;
 	if (tree->GetAlias("els_mc3_id") != 0) {
 		els_mc3_id_branch = tree->GetBranch(tree->GetAlias("els_mc3_id"));
 		els_mc3_id_branch->SetAddress(&els_mc3_id_);
 	}
-	if(els_mc3_id_branch == 0 ) {
-	cout << "Branch els_mc3_id does not exist." << endl;
-	}
 	els_mc3idx_branch = 0;
 	if (tree->GetAlias("els_mc3idx") != 0) {
 		els_mc3idx_branch = tree->GetBranch(tree->GetAlias("els_mc3idx"));
 		els_mc3idx_branch->SetAddress(&els_mc3idx_);
-	}
-	if(els_mc3idx_branch == 0 ) {
-	cout << "Branch els_mc3idx does not exist." << endl;
 	}
 	els_mc3_motherid_branch = 0;
 	if (tree->GetAlias("els_mc3_motherid") != 0) {
 		els_mc3_motherid_branch = tree->GetBranch(tree->GetAlias("els_mc3_motherid"));
 		els_mc3_motherid_branch->SetAddress(&els_mc3_motherid_);
 	}
-	if(els_mc3_motherid_branch == 0 ) {
-	cout << "Branch els_mc3_motherid does not exist." << endl;
-	}
 	els_mc3_motheridx_branch = 0;
 	if (tree->GetAlias("els_mc3_motheridx") != 0) {
 		els_mc3_motheridx_branch = tree->GetBranch(tree->GetAlias("els_mc3_motheridx"));
 		els_mc3_motheridx_branch->SetAddress(&els_mc3_motheridx_);
-	}
-	if(els_mc3_motheridx_branch == 0 ) {
-	cout << "Branch els_mc3_motheridx does not exist." << endl;
 	}
 	els_mc_id_branch = 0;
 	if (tree->GetAlias("els_mc_id") != 0) {
 		els_mc_id_branch = tree->GetBranch(tree->GetAlias("els_mc_id"));
 		els_mc_id_branch->SetAddress(&els_mc_id_);
 	}
-	if(els_mc_id_branch == 0 ) {
-	cout << "Branch els_mc_id does not exist." << endl;
-	}
 	els_mcidx_branch = 0;
 	if (tree->GetAlias("els_mcidx") != 0) {
 		els_mcidx_branch = tree->GetBranch(tree->GetAlias("els_mcidx"));
 		els_mcidx_branch->SetAddress(&els_mcidx_);
-	}
-	if(els_mcidx_branch == 0 ) {
-	cout << "Branch els_mcidx does not exist." << endl;
 	}
 	els_mc_motherid_branch = 0;
 	if (tree->GetAlias("els_mc_motherid") != 0) {
 		els_mc_motherid_branch = tree->GetBranch(tree->GetAlias("els_mc_motherid"));
 		els_mc_motherid_branch->SetAddress(&els_mc_motherid_);
 	}
-	if(els_mc_motherid_branch == 0 ) {
-	cout << "Branch els_mc_motherid does not exist." << endl;
-	}
 	jets_mc3_id_branch = 0;
 	if (tree->GetAlias("jets_mc3_id") != 0) {
 		jets_mc3_id_branch = tree->GetBranch(tree->GetAlias("jets_mc3_id"));
 		jets_mc3_id_branch->SetAddress(&jets_mc3_id_);
-	}
-	if(jets_mc3_id_branch == 0 ) {
-	cout << "Branch jets_mc3_id does not exist." << endl;
 	}
 	jets_mc3idx_branch = 0;
 	if (tree->GetAlias("jets_mc3idx") != 0) {
 		jets_mc3idx_branch = tree->GetBranch(tree->GetAlias("jets_mc3idx"));
 		jets_mc3idx_branch->SetAddress(&jets_mc3idx_);
 	}
-	if(jets_mc3idx_branch == 0 ) {
-	cout << "Branch jets_mc3idx does not exist." << endl;
-	}
 	jets_mc_gpidx_branch = 0;
 	if (tree->GetAlias("jets_mc_gpidx") != 0) {
 		jets_mc_gpidx_branch = tree->GetBranch(tree->GetAlias("jets_mc_gpidx"));
 		jets_mc_gpidx_branch->SetAddress(&jets_mc_gpidx_);
-	}
-	if(jets_mc_gpidx_branch == 0 ) {
-	cout << "Branch jets_mc_gpidx does not exist." << endl;
 	}
 	jets_mc_id_branch = 0;
 	if (tree->GetAlias("jets_mc_id") != 0) {
 		jets_mc_id_branch = tree->GetBranch(tree->GetAlias("jets_mc_id"));
 		jets_mc_id_branch->SetAddress(&jets_mc_id_);
 	}
-	if(jets_mc_id_branch == 0 ) {
-	cout << "Branch jets_mc_id does not exist." << endl;
-	}
 	jets_mcidx_branch = 0;
 	if (tree->GetAlias("jets_mcidx") != 0) {
 		jets_mcidx_branch = tree->GetBranch(tree->GetAlias("jets_mcidx"));
 		jets_mcidx_branch->SetAddress(&jets_mcidx_);
-	}
-	if(jets_mcidx_branch == 0 ) {
-	cout << "Branch jets_mcidx does not exist." << endl;
 	}
 	mus_mc3_id_branch = 0;
 	if (tree->GetAlias("mus_mc3_id") != 0) {
 		mus_mc3_id_branch = tree->GetBranch(tree->GetAlias("mus_mc3_id"));
 		mus_mc3_id_branch->SetAddress(&mus_mc3_id_);
 	}
-	if(mus_mc3_id_branch == 0 ) {
-	cout << "Branch mus_mc3_id does not exist." << endl;
-	}
 	mus_mc3idx_branch = 0;
 	if (tree->GetAlias("mus_mc3idx") != 0) {
 		mus_mc3idx_branch = tree->GetBranch(tree->GetAlias("mus_mc3idx"));
 		mus_mc3idx_branch->SetAddress(&mus_mc3idx_);
-	}
-	if(mus_mc3idx_branch == 0 ) {
-	cout << "Branch mus_mc3idx does not exist." << endl;
 	}
 	mus_mc3_motherid_branch = 0;
 	if (tree->GetAlias("mus_mc3_motherid") != 0) {
 		mus_mc3_motherid_branch = tree->GetBranch(tree->GetAlias("mus_mc3_motherid"));
 		mus_mc3_motherid_branch->SetAddress(&mus_mc3_motherid_);
 	}
-	if(mus_mc3_motherid_branch == 0 ) {
-	cout << "Branch mus_mc3_motherid does not exist." << endl;
-	}
 	mus_mc3_motheridx_branch = 0;
 	if (tree->GetAlias("mus_mc3_motheridx") != 0) {
 		mus_mc3_motheridx_branch = tree->GetBranch(tree->GetAlias("mus_mc3_motheridx"));
 		mus_mc3_motheridx_branch->SetAddress(&mus_mc3_motheridx_);
-	}
-	if(mus_mc3_motheridx_branch == 0 ) {
-	cout << "Branch mus_mc3_motheridx does not exist." << endl;
 	}
 	mus_mc_id_branch = 0;
 	if (tree->GetAlias("mus_mc_id") != 0) {
 		mus_mc_id_branch = tree->GetBranch(tree->GetAlias("mus_mc_id"));
 		mus_mc_id_branch->SetAddress(&mus_mc_id_);
 	}
-	if(mus_mc_id_branch == 0 ) {
-	cout << "Branch mus_mc_id does not exist." << endl;
-	}
 	mus_mcidx_branch = 0;
 	if (tree->GetAlias("mus_mcidx") != 0) {
 		mus_mcidx_branch = tree->GetBranch(tree->GetAlias("mus_mcidx"));
 		mus_mcidx_branch->SetAddress(&mus_mcidx_);
-	}
-	if(mus_mcidx_branch == 0 ) {
-	cout << "Branch mus_mcidx does not exist." << endl;
 	}
 	mus_mc_motherid_branch = 0;
 	if (tree->GetAlias("mus_mc_motherid") != 0) {
 		mus_mc_motherid_branch = tree->GetBranch(tree->GetAlias("mus_mc_motherid"));
 		mus_mc_motherid_branch->SetAddress(&mus_mc_motherid_);
 	}
-	if(mus_mc_motherid_branch == 0 ) {
-	cout << "Branch mus_mc_motherid does not exist." << endl;
-	}
 	trk_mc3_id_branch = 0;
 	if (tree->GetAlias("trk_mc3_id") != 0) {
 		trk_mc3_id_branch = tree->GetBranch(tree->GetAlias("trk_mc3_id"));
 		trk_mc3_id_branch->SetAddress(&trk_mc3_id_);
-	}
-	if(trk_mc3_id_branch == 0 ) {
-	cout << "Branch trk_mc3_id does not exist." << endl;
 	}
 	trk_mc3idx_branch = 0;
 	if (tree->GetAlias("trk_mc3idx") != 0) {
 		trk_mc3idx_branch = tree->GetBranch(tree->GetAlias("trk_mc3idx"));
 		trk_mc3idx_branch->SetAddress(&trk_mc3idx_);
 	}
-	if(trk_mc3idx_branch == 0 ) {
-	cout << "Branch trk_mc3idx does not exist." << endl;
-	}
 	trk_mc3_motherid_branch = 0;
 	if (tree->GetAlias("trk_mc3_motherid") != 0) {
 		trk_mc3_motherid_branch = tree->GetBranch(tree->GetAlias("trk_mc3_motherid"));
 		trk_mc3_motherid_branch->SetAddress(&trk_mc3_motherid_);
-	}
-	if(trk_mc3_motherid_branch == 0 ) {
-	cout << "Branch trk_mc3_motherid does not exist." << endl;
 	}
 	trk_mc3_motheridx_branch = 0;
 	if (tree->GetAlias("trk_mc3_motheridx") != 0) {
 		trk_mc3_motheridx_branch = tree->GetBranch(tree->GetAlias("trk_mc3_motheridx"));
 		trk_mc3_motheridx_branch->SetAddress(&trk_mc3_motheridx_);
 	}
-	if(trk_mc3_motheridx_branch == 0 ) {
-	cout << "Branch trk_mc3_motheridx does not exist." << endl;
-	}
 	trk_mc_id_branch = 0;
 	if (tree->GetAlias("trk_mc_id") != 0) {
 		trk_mc_id_branch = tree->GetBranch(tree->GetAlias("trk_mc_id"));
 		trk_mc_id_branch->SetAddress(&trk_mc_id_);
-	}
-	if(trk_mc_id_branch == 0 ) {
-	cout << "Branch trk_mc_id does not exist." << endl;
 	}
 	trk_mcidx_branch = 0;
 	if (tree->GetAlias("trk_mcidx") != 0) {
 		trk_mcidx_branch = tree->GetBranch(tree->GetAlias("trk_mcidx"));
 		trk_mcidx_branch->SetAddress(&trk_mcidx_);
 	}
-	if(trk_mcidx_branch == 0 ) {
-	cout << "Branch trk_mcidx does not exist." << endl;
-	}
 	trk_mc_motherid_branch = 0;
 	if (tree->GetAlias("trk_mc_motherid") != 0) {
 		trk_mc_motherid_branch = tree->GetBranch(tree->GetAlias("trk_mc_motherid"));
 		trk_mc_motherid_branch->SetAddress(&trk_mc_motherid_);
-	}
-	if(trk_mc_motherid_branch == 0 ) {
-	cout << "Branch trk_mc_motherid does not exist." << endl;
 	}
 	trks_conv_tkidx_branch = 0;
 	if (tree->GetAlias("trks_conv_tkidx") != 0) {
 		trks_conv_tkidx_branch = tree->GetBranch(tree->GetAlias("trks_conv_tkidx"));
 		trks_conv_tkidx_branch->SetAddress(&trks_conv_tkidx_);
 	}
-	if(trks_conv_tkidx_branch == 0 ) {
-	cout << "Branch trks_conv_tkidx does not exist." << endl;
-	}
 	els_closestJet_branch = 0;
 	if (tree->GetAlias("els_closestJet") != 0) {
 		els_closestJet_branch = tree->GetBranch(tree->GetAlias("els_closestJet"));
 		els_closestJet_branch->SetAddress(&els_closestJet_);
-	}
-	if(els_closestJet_branch == 0 ) {
-	cout << "Branch els_closestJet does not exist." << endl;
 	}
 	els_closestMuon_branch = 0;
 	if (tree->GetAlias("els_closestMuon") != 0) {
 		els_closestMuon_branch = tree->GetBranch(tree->GetAlias("els_closestMuon"));
 		els_closestMuon_branch->SetAddress(&els_closestMuon_);
 	}
-	if(els_closestMuon_branch == 0 ) {
-	cout << "Branch els_closestMuon does not exist." << endl;
-	}
 	els_category_branch = 0;
 	if (tree->GetAlias("els_category") != 0) {
 		els_category_branch = tree->GetBranch(tree->GetAlias("els_category"));
 		els_category_branch->SetAddress(&els_category_);
-	}
-	if(els_category_branch == 0 ) {
-	cout << "Branch els_category does not exist." << endl;
 	}
 	els_charge_branch = 0;
 	if (tree->GetAlias("els_charge") != 0) {
 		els_charge_branch = tree->GetBranch(tree->GetAlias("els_charge"));
 		els_charge_branch->SetAddress(&els_charge_);
 	}
-	if(els_charge_branch == 0 ) {
-	cout << "Branch els_charge does not exist." << endl;
-	}
 	els_class_branch = 0;
 	if (tree->GetAlias("els_class") != 0) {
 		els_class_branch = tree->GetBranch(tree->GetAlias("els_class"));
 		els_class_branch->SetAddress(&els_class_);
-	}
-	if(els_class_branch == 0 ) {
-	cout << "Branch els_class does not exist." << endl;
 	}
 	els_conv_tkidx_branch = 0;
 	if (tree->GetAlias("els_conv_tkidx") != 0) {
 		els_conv_tkidx_branch = tree->GetBranch(tree->GetAlias("els_conv_tkidx"));
 		els_conv_tkidx_branch->SetAddress(&els_conv_tkidx_);
 	}
-	if(els_conv_tkidx_branch == 0 ) {
-	cout << "Branch els_conv_tkidx does not exist." << endl;
-	}
 	els_exp_innerlayers_branch = 0;
 	if (tree->GetAlias("els_exp_innerlayers") != 0) {
 		els_exp_innerlayers_branch = tree->GetBranch(tree->GetAlias("els_exp_innerlayers"));
 		els_exp_innerlayers_branch->SetAddress(&els_exp_innerlayers_);
-	}
-	if(els_exp_innerlayers_branch == 0 ) {
-	cout << "Branch els_exp_innerlayers does not exist." << endl;
 	}
 	els_exp_outerlayers_branch = 0;
 	if (tree->GetAlias("els_exp_outerlayers") != 0) {
 		els_exp_outerlayers_branch = tree->GetBranch(tree->GetAlias("els_exp_outerlayers"));
 		els_exp_outerlayers_branch->SetAddress(&els_exp_outerlayers_);
 	}
-	if(els_exp_outerlayers_branch == 0 ) {
-	cout << "Branch els_exp_outerlayers does not exist." << endl;
-	}
 	els_fiduciality_branch = 0;
 	if (tree->GetAlias("els_fiduciality") != 0) {
 		els_fiduciality_branch = tree->GetBranch(tree->GetAlias("els_fiduciality"));
 		els_fiduciality_branch->SetAddress(&els_fiduciality_);
-	}
-	if(els_fiduciality_branch == 0 ) {
-	cout << "Branch els_fiduciality does not exist." << endl;
 	}
 	els_layer1_det_branch = 0;
 	if (tree->GetAlias("els_layer1_det") != 0) {
 		els_layer1_det_branch = tree->GetBranch(tree->GetAlias("els_layer1_det"));
 		els_layer1_det_branch->SetAddress(&els_layer1_det_);
 	}
-	if(els_layer1_det_branch == 0 ) {
-	cout << "Branch els_layer1_det does not exist." << endl;
-	}
 	els_layer1_layer_branch = 0;
 	if (tree->GetAlias("els_layer1_layer") != 0) {
 		els_layer1_layer_branch = tree->GetBranch(tree->GetAlias("els_layer1_layer"));
 		els_layer1_layer_branch->SetAddress(&els_layer1_layer_);
-	}
-	if(els_layer1_layer_branch == 0 ) {
-	cout << "Branch els_layer1_layer does not exist." << endl;
 	}
 	els_layer1_sizerphi_branch = 0;
 	if (tree->GetAlias("els_layer1_sizerphi") != 0) {
 		els_layer1_sizerphi_branch = tree->GetBranch(tree->GetAlias("els_layer1_sizerphi"));
 		els_layer1_sizerphi_branch->SetAddress(&els_layer1_sizerphi_);
 	}
-	if(els_layer1_sizerphi_branch == 0 ) {
-	cout << "Branch els_layer1_sizerphi does not exist." << endl;
-	}
 	els_layer1_sizerz_branch = 0;
 	if (tree->GetAlias("els_layer1_sizerz") != 0) {
 		els_layer1_sizerz_branch = tree->GetBranch(tree->GetAlias("els_layer1_sizerz"));
 		els_layer1_sizerz_branch->SetAddress(&els_layer1_sizerz_);
-	}
-	if(els_layer1_sizerz_branch == 0 ) {
-	cout << "Branch els_layer1_sizerz does not exist." << endl;
 	}
 	els_lostHits_branch = 0;
 	if (tree->GetAlias("els_lostHits") != 0) {
 		els_lostHits_branch = tree->GetBranch(tree->GetAlias("els_lostHits"));
 		els_lostHits_branch->SetAddress(&els_lostHits_);
 	}
-	if(els_lostHits_branch == 0 ) {
-	cout << "Branch els_lostHits does not exist." << endl;
-	}
 	els_lost_pixelhits_branch = 0;
 	if (tree->GetAlias("els_lost_pixelhits") != 0) {
 		els_lost_pixelhits_branch = tree->GetBranch(tree->GetAlias("els_lost_pixelhits"));
 		els_lost_pixelhits_branch->SetAddress(&els_lost_pixelhits_);
-	}
-	if(els_lost_pixelhits_branch == 0 ) {
-	cout << "Branch els_lost_pixelhits does not exist." << endl;
 	}
 	els_nSeed_branch = 0;
 	if (tree->GetAlias("els_nSeed") != 0) {
 		els_nSeed_branch = tree->GetBranch(tree->GetAlias("els_nSeed"));
 		els_nSeed_branch->SetAddress(&els_nSeed_);
 	}
-	if(els_nSeed_branch == 0 ) {
-	cout << "Branch els_nSeed does not exist." << endl;
-	}
 	els_sccharge_branch = 0;
 	if (tree->GetAlias("els_sccharge") != 0) {
 		els_sccharge_branch = tree->GetBranch(tree->GetAlias("els_sccharge"));
 		els_sccharge_branch->SetAddress(&els_sccharge_);
-	}
-	if(els_sccharge_branch == 0 ) {
-	cout << "Branch els_sccharge does not exist." << endl;
 	}
 	els_scindex_branch = 0;
 	if (tree->GetAlias("els_scindex") != 0) {
 		els_scindex_branch = tree->GetBranch(tree->GetAlias("els_scindex"));
 		els_scindex_branch->SetAddress(&els_scindex_);
 	}
-	if(els_scindex_branch == 0 ) {
-	cout << "Branch els_scindex does not exist." << endl;
-	}
 	els_trk_charge_branch = 0;
 	if (tree->GetAlias("els_trk_charge") != 0) {
 		els_trk_charge_branch = tree->GetBranch(tree->GetAlias("els_trk_charge"));
 		els_trk_charge_branch->SetAddress(&els_trk_charge_);
-	}
-	if(els_trk_charge_branch == 0 ) {
-	cout << "Branch els_trk_charge does not exist." << endl;
 	}
 	els_trkidx_branch = 0;
 	if (tree->GetAlias("els_trkidx") != 0) {
 		els_trkidx_branch = tree->GetBranch(tree->GetAlias("els_trkidx"));
 		els_trkidx_branch->SetAddress(&els_trkidx_);
 	}
-	if(els_trkidx_branch == 0 ) {
-	cout << "Branch els_trkidx does not exist." << endl;
-	}
 	els_type_branch = 0;
 	if (tree->GetAlias("els_type") != 0) {
 		els_type_branch = tree->GetBranch(tree->GetAlias("els_type"));
 		els_type_branch->SetAddress(&els_type_);
-	}
-	if(els_type_branch == 0 ) {
-	cout << "Branch els_type does not exist." << endl;
 	}
 	els_validHits_branch = 0;
 	if (tree->GetAlias("els_validHits") != 0) {
 		els_validHits_branch = tree->GetBranch(tree->GetAlias("els_validHits"));
 		els_validHits_branch->SetAddress(&els_validHits_);
 	}
-	if(els_validHits_branch == 0 ) {
-	cout << "Branch els_validHits does not exist." << endl;
-	}
 	els_valid_pixelhits_branch = 0;
 	if (tree->GetAlias("els_valid_pixelhits") != 0) {
 		els_valid_pixelhits_branch = tree->GetBranch(tree->GetAlias("els_valid_pixelhits"));
 		els_valid_pixelhits_branch->SetAddress(&els_valid_pixelhits_);
-	}
-	if(els_valid_pixelhits_branch == 0 ) {
-	cout << "Branch els_valid_pixelhits does not exist." << endl;
 	}
 	genps_id_branch = 0;
 	if (tree->GetAlias("genps_id") != 0) {
 		genps_id_branch = tree->GetBranch(tree->GetAlias("genps_id"));
 		genps_id_branch->SetAddress(&genps_id_);
 	}
-	if(genps_id_branch == 0 ) {
-	cout << "Branch genps_id does not exist." << endl;
-	}
 	genps_id_mother_branch = 0;
 	if (tree->GetAlias("genps_id_mother") != 0) {
 		genps_id_mother_branch = tree->GetBranch(tree->GetAlias("genps_id_mother"));
 		genps_id_mother_branch->SetAddress(&genps_id_mother_);
-	}
-	if(genps_id_mother_branch == 0 ) {
-	cout << "Branch genps_id_mother does not exist." << endl;
 	}
 	genps_status_branch = 0;
 	if (tree->GetAlias("genps_status") != 0) {
 		genps_status_branch = tree->GetBranch(tree->GetAlias("genps_status"));
 		genps_status_branch->SetAddress(&genps_status_);
 	}
-	if(genps_status_branch == 0 ) {
-	cout << "Branch genps_status does not exist." << endl;
-	}
 	hyp_ll_charge_branch = 0;
 	if (tree->GetAlias("hyp_ll_charge") != 0) {
 		hyp_ll_charge_branch = tree->GetBranch(tree->GetAlias("hyp_ll_charge"));
 		hyp_ll_charge_branch->SetAddress(&hyp_ll_charge_);
-	}
-	if(hyp_ll_charge_branch == 0 ) {
-	cout << "Branch hyp_ll_charge does not exist." << endl;
 	}
 	hyp_ll_id_branch = 0;
 	if (tree->GetAlias("hyp_ll_id") != 0) {
 		hyp_ll_id_branch = tree->GetBranch(tree->GetAlias("hyp_ll_id"));
 		hyp_ll_id_branch->SetAddress(&hyp_ll_id_);
 	}
-	if(hyp_ll_id_branch == 0 ) {
-	cout << "Branch hyp_ll_id does not exist." << endl;
-	}
 	hyp_ll_index_branch = 0;
 	if (tree->GetAlias("hyp_ll_index") != 0) {
 		hyp_ll_index_branch = tree->GetBranch(tree->GetAlias("hyp_ll_index"));
 		hyp_ll_index_branch->SetAddress(&hyp_ll_index_);
-	}
-	if(hyp_ll_index_branch == 0 ) {
-	cout << "Branch hyp_ll_index does not exist." << endl;
 	}
 	hyp_ll_lostHits_branch = 0;
 	if (tree->GetAlias("hyp_ll_lostHits") != 0) {
 		hyp_ll_lostHits_branch = tree->GetBranch(tree->GetAlias("hyp_ll_lostHits"));
 		hyp_ll_lostHits_branch->SetAddress(&hyp_ll_lostHits_);
 	}
-	if(hyp_ll_lostHits_branch == 0 ) {
-	cout << "Branch hyp_ll_lostHits does not exist." << endl;
-	}
 	hyp_ll_validHits_branch = 0;
 	if (tree->GetAlias("hyp_ll_validHits") != 0) {
 		hyp_ll_validHits_branch = tree->GetBranch(tree->GetAlias("hyp_ll_validHits"));
 		hyp_ll_validHits_branch->SetAddress(&hyp_ll_validHits_);
-	}
-	if(hyp_ll_validHits_branch == 0 ) {
-	cout << "Branch hyp_ll_validHits does not exist." << endl;
 	}
 	hyp_lt_charge_branch = 0;
 	if (tree->GetAlias("hyp_lt_charge") != 0) {
 		hyp_lt_charge_branch = tree->GetBranch(tree->GetAlias("hyp_lt_charge"));
 		hyp_lt_charge_branch->SetAddress(&hyp_lt_charge_);
 	}
-	if(hyp_lt_charge_branch == 0 ) {
-	cout << "Branch hyp_lt_charge does not exist." << endl;
-	}
 	hyp_lt_id_branch = 0;
 	if (tree->GetAlias("hyp_lt_id") != 0) {
 		hyp_lt_id_branch = tree->GetBranch(tree->GetAlias("hyp_lt_id"));
 		hyp_lt_id_branch->SetAddress(&hyp_lt_id_);
-	}
-	if(hyp_lt_id_branch == 0 ) {
-	cout << "Branch hyp_lt_id does not exist." << endl;
 	}
 	hyp_lt_index_branch = 0;
 	if (tree->GetAlias("hyp_lt_index") != 0) {
 		hyp_lt_index_branch = tree->GetBranch(tree->GetAlias("hyp_lt_index"));
 		hyp_lt_index_branch->SetAddress(&hyp_lt_index_);
 	}
-	if(hyp_lt_index_branch == 0 ) {
-	cout << "Branch hyp_lt_index does not exist." << endl;
-	}
 	hyp_lt_lostHits_branch = 0;
 	if (tree->GetAlias("hyp_lt_lostHits") != 0) {
 		hyp_lt_lostHits_branch = tree->GetBranch(tree->GetAlias("hyp_lt_lostHits"));
 		hyp_lt_lostHits_branch->SetAddress(&hyp_lt_lostHits_);
-	}
-	if(hyp_lt_lostHits_branch == 0 ) {
-	cout << "Branch hyp_lt_lostHits does not exist." << endl;
 	}
 	hyp_lt_validHits_branch = 0;
 	if (tree->GetAlias("hyp_lt_validHits") != 0) {
 		hyp_lt_validHits_branch = tree->GetBranch(tree->GetAlias("hyp_lt_validHits"));
 		hyp_lt_validHits_branch->SetAddress(&hyp_lt_validHits_);
 	}
-	if(hyp_lt_validHits_branch == 0 ) {
-	cout << "Branch hyp_lt_validHits does not exist." << endl;
-	}
 	hyp_njets_branch = 0;
 	if (tree->GetAlias("hyp_njets") != 0) {
 		hyp_njets_branch = tree->GetBranch(tree->GetAlias("hyp_njets"));
 		hyp_njets_branch->SetAddress(&hyp_njets_);
-	}
-	if(hyp_njets_branch == 0 ) {
-	cout << "Branch hyp_njets does not exist." << endl;
 	}
 	hyp_nojets_branch = 0;
 	if (tree->GetAlias("hyp_nojets") != 0) {
 		hyp_nojets_branch = tree->GetBranch(tree->GetAlias("hyp_nojets"));
 		hyp_nojets_branch->SetAddress(&hyp_nojets_);
 	}
-	if(hyp_nojets_branch == 0 ) {
-	cout << "Branch hyp_nojets does not exist." << endl;
-	}
 	hyp_type_branch = 0;
 	if (tree->GetAlias("hyp_type") != 0) {
 		hyp_type_branch = tree->GetBranch(tree->GetAlias("hyp_type"));
 		hyp_type_branch->SetAddress(&hyp_type_);
-	}
-	if(hyp_type_branch == 0 ) {
-	cout << "Branch hyp_type does not exist." << endl;
 	}
 	hyp_FVFit_ndf_branch = 0;
 	if (tree->GetAlias("hyp_FVFit_ndf") != 0) {
 		hyp_FVFit_ndf_branch = tree->GetBranch(tree->GetAlias("hyp_FVFit_ndf"));
 		hyp_FVFit_ndf_branch->SetAddress(&hyp_FVFit_ndf_);
 	}
-	if(hyp_FVFit_ndf_branch == 0 ) {
-	cout << "Branch hyp_FVFit_ndf does not exist." << endl;
-	}
 	hyp_FVFit_status_branch = 0;
 	if (tree->GetAlias("hyp_FVFit_status") != 0) {
 		hyp_FVFit_status_branch = tree->GetBranch(tree->GetAlias("hyp_FVFit_status"));
 		hyp_FVFit_status_branch->SetAddress(&hyp_FVFit_status_);
-	}
-	if(hyp_FVFit_status_branch == 0 ) {
-	cout << "Branch hyp_FVFit_status does not exist." << endl;
 	}
 	hyp_ll_mc_id_branch = 0;
 	if (tree->GetAlias("hyp_ll_mc_id") != 0) {
 		hyp_ll_mc_id_branch = tree->GetBranch(tree->GetAlias("hyp_ll_mc_id"));
 		hyp_ll_mc_id_branch->SetAddress(&hyp_ll_mc_id_);
 	}
-	if(hyp_ll_mc_id_branch == 0 ) {
-	cout << "Branch hyp_ll_mc_id does not exist." << endl;
-	}
 	hyp_ll_mc_motherid_branch = 0;
 	if (tree->GetAlias("hyp_ll_mc_motherid") != 0) {
 		hyp_ll_mc_motherid_branch = tree->GetBranch(tree->GetAlias("hyp_ll_mc_motherid"));
 		hyp_ll_mc_motherid_branch->SetAddress(&hyp_ll_mc_motherid_);
-	}
-	if(hyp_ll_mc_motherid_branch == 0 ) {
-	cout << "Branch hyp_ll_mc_motherid does not exist." << endl;
 	}
 	hyp_lt_mc_id_branch = 0;
 	if (tree->GetAlias("hyp_lt_mc_id") != 0) {
 		hyp_lt_mc_id_branch = tree->GetBranch(tree->GetAlias("hyp_lt_mc_id"));
 		hyp_lt_mc_id_branch->SetAddress(&hyp_lt_mc_id_);
 	}
-	if(hyp_lt_mc_id_branch == 0 ) {
-	cout << "Branch hyp_lt_mc_id does not exist." << endl;
-	}
 	hyp_lt_mc_motherid_branch = 0;
 	if (tree->GetAlias("hyp_lt_mc_motherid") != 0) {
 		hyp_lt_mc_motherid_branch = tree->GetBranch(tree->GetAlias("hyp_lt_mc_motherid"));
 		hyp_lt_mc_motherid_branch->SetAddress(&hyp_lt_mc_motherid_);
-	}
-	if(hyp_lt_mc_motherid_branch == 0 ) {
-	cout << "Branch hyp_lt_mc_motherid does not exist." << endl;
 	}
 	hyp_quadlep_first_type_branch = 0;
 	if (tree->GetAlias("hyp_quadlep_first_type") != 0) {
 		hyp_quadlep_first_type_branch = tree->GetBranch(tree->GetAlias("hyp_quadlep_first_type"));
 		hyp_quadlep_first_type_branch->SetAddress(&hyp_quadlep_first_type_);
 	}
-	if(hyp_quadlep_first_type_branch == 0 ) {
-	cout << "Branch hyp_quadlep_first_type does not exist." << endl;
-	}
 	hyp_quadlep_fourth_type_branch = 0;
 	if (tree->GetAlias("hyp_quadlep_fourth_type") != 0) {
 		hyp_quadlep_fourth_type_branch = tree->GetBranch(tree->GetAlias("hyp_quadlep_fourth_type"));
 		hyp_quadlep_fourth_type_branch->SetAddress(&hyp_quadlep_fourth_type_);
-	}
-	if(hyp_quadlep_fourth_type_branch == 0 ) {
-	cout << "Branch hyp_quadlep_fourth_type does not exist." << endl;
 	}
 	hyp_quadlep_second_type_branch = 0;
 	if (tree->GetAlias("hyp_quadlep_second_type") != 0) {
 		hyp_quadlep_second_type_branch = tree->GetBranch(tree->GetAlias("hyp_quadlep_second_type"));
 		hyp_quadlep_second_type_branch->SetAddress(&hyp_quadlep_second_type_);
 	}
-	if(hyp_quadlep_second_type_branch == 0 ) {
-	cout << "Branch hyp_quadlep_second_type does not exist." << endl;
-	}
 	hyp_quadlep_third_type_branch = 0;
 	if (tree->GetAlias("hyp_quadlep_third_type") != 0) {
 		hyp_quadlep_third_type_branch = tree->GetBranch(tree->GetAlias("hyp_quadlep_third_type"));
 		hyp_quadlep_third_type_branch->SetAddress(&hyp_quadlep_third_type_);
-	}
-	if(hyp_quadlep_third_type_branch == 0 ) {
-	cout << "Branch hyp_quadlep_third_type does not exist." << endl;
 	}
 	hyp_trilep_first_type_branch = 0;
 	if (tree->GetAlias("hyp_trilep_first_type") != 0) {
 		hyp_trilep_first_type_branch = tree->GetBranch(tree->GetAlias("hyp_trilep_first_type"));
 		hyp_trilep_first_type_branch->SetAddress(&hyp_trilep_first_type_);
 	}
-	if(hyp_trilep_first_type_branch == 0 ) {
-	cout << "Branch hyp_trilep_first_type does not exist." << endl;
-	}
 	hyp_trilep_second_type_branch = 0;
 	if (tree->GetAlias("hyp_trilep_second_type") != 0) {
 		hyp_trilep_second_type_branch = tree->GetBranch(tree->GetAlias("hyp_trilep_second_type"));
 		hyp_trilep_second_type_branch->SetAddress(&hyp_trilep_second_type_);
-	}
-	if(hyp_trilep_second_type_branch == 0 ) {
-	cout << "Branch hyp_trilep_second_type does not exist." << endl;
 	}
 	hyp_trilep_third_type_branch = 0;
 	if (tree->GetAlias("hyp_trilep_third_type") != 0) {
 		hyp_trilep_third_type_branch = tree->GetBranch(tree->GetAlias("hyp_trilep_third_type"));
 		hyp_trilep_third_type_branch->SetAddress(&hyp_trilep_third_type_);
 	}
-	if(hyp_trilep_third_type_branch == 0 ) {
-	cout << "Branch hyp_trilep_third_type does not exist." << endl;
-	}
 	jets_closestElectron_branch = 0;
 	if (tree->GetAlias("jets_closestElectron") != 0) {
 		jets_closestElectron_branch = tree->GetBranch(tree->GetAlias("jets_closestElectron"));
 		jets_closestElectron_branch->SetAddress(&jets_closestElectron_);
-	}
-	if(jets_closestElectron_branch == 0 ) {
-	cout << "Branch jets_closestElectron does not exist." << endl;
 	}
 	jets_closestMuon_branch = 0;
 	if (tree->GetAlias("jets_closestMuon") != 0) {
 		jets_closestMuon_branch = tree->GetBranch(tree->GetAlias("jets_closestMuon"));
 		jets_closestMuon_branch->SetAddress(&jets_closestMuon_);
 	}
-	if(jets_closestMuon_branch == 0 ) {
-	cout << "Branch jets_closestMuon does not exist." << endl;
-	}
 	jpts_jetidx_branch = 0;
 	if (tree->GetAlias("jpts_jetidx") != 0) {
 		jpts_jetidx_branch = tree->GetBranch(tree->GetAlias("jpts_jetidx"));
 		jpts_jetidx_branch->SetAddress(&jpts_jetidx_);
-	}
-	if(jpts_jetidx_branch == 0 ) {
-	cout << "Branch jpts_jetidx does not exist." << endl;
 	}
 	l1_emiso_ieta_branch = 0;
 	if (tree->GetAlias("l1_emiso_ieta") != 0) {
 		l1_emiso_ieta_branch = tree->GetBranch(tree->GetAlias("l1_emiso_ieta"));
 		l1_emiso_ieta_branch->SetAddress(&l1_emiso_ieta_);
 	}
-	if(l1_emiso_ieta_branch == 0 ) {
-	cout << "Branch l1_emiso_ieta does not exist." << endl;
-	}
 	l1_emiso_iphi_branch = 0;
 	if (tree->GetAlias("l1_emiso_iphi") != 0) {
 		l1_emiso_iphi_branch = tree->GetBranch(tree->GetAlias("l1_emiso_iphi"));
 		l1_emiso_iphi_branch->SetAddress(&l1_emiso_iphi_);
-	}
-	if(l1_emiso_iphi_branch == 0 ) {
-	cout << "Branch l1_emiso_iphi does not exist." << endl;
 	}
 	l1_emiso_rawId_branch = 0;
 	if (tree->GetAlias("l1_emiso_rawId") != 0) {
 		l1_emiso_rawId_branch = tree->GetBranch(tree->GetAlias("l1_emiso_rawId"));
 		l1_emiso_rawId_branch->SetAddress(&l1_emiso_rawId_);
 	}
-	if(l1_emiso_rawId_branch == 0 ) {
-	cout << "Branch l1_emiso_rawId does not exist." << endl;
-	}
 	l1_emiso_type_branch = 0;
 	if (tree->GetAlias("l1_emiso_type") != 0) {
 		l1_emiso_type_branch = tree->GetBranch(tree->GetAlias("l1_emiso_type"));
 		l1_emiso_type_branch->SetAddress(&l1_emiso_type_);
-	}
-	if(l1_emiso_type_branch == 0 ) {
-	cout << "Branch l1_emiso_type does not exist." << endl;
 	}
 	l1_emnoiso_ieta_branch = 0;
 	if (tree->GetAlias("l1_emnoiso_ieta") != 0) {
 		l1_emnoiso_ieta_branch = tree->GetBranch(tree->GetAlias("l1_emnoiso_ieta"));
 		l1_emnoiso_ieta_branch->SetAddress(&l1_emnoiso_ieta_);
 	}
-	if(l1_emnoiso_ieta_branch == 0 ) {
-	cout << "Branch l1_emnoiso_ieta does not exist." << endl;
-	}
 	l1_emnoiso_iphi_branch = 0;
 	if (tree->GetAlias("l1_emnoiso_iphi") != 0) {
 		l1_emnoiso_iphi_branch = tree->GetBranch(tree->GetAlias("l1_emnoiso_iphi"));
 		l1_emnoiso_iphi_branch->SetAddress(&l1_emnoiso_iphi_);
-	}
-	if(l1_emnoiso_iphi_branch == 0 ) {
-	cout << "Branch l1_emnoiso_iphi does not exist." << endl;
 	}
 	l1_emnoiso_rawId_branch = 0;
 	if (tree->GetAlias("l1_emnoiso_rawId") != 0) {
 		l1_emnoiso_rawId_branch = tree->GetBranch(tree->GetAlias("l1_emnoiso_rawId"));
 		l1_emnoiso_rawId_branch->SetAddress(&l1_emnoiso_rawId_);
 	}
-	if(l1_emnoiso_rawId_branch == 0 ) {
-	cout << "Branch l1_emnoiso_rawId does not exist." << endl;
-	}
 	l1_emnoiso_type_branch = 0;
 	if (tree->GetAlias("l1_emnoiso_type") != 0) {
 		l1_emnoiso_type_branch = tree->GetBranch(tree->GetAlias("l1_emnoiso_type"));
 		l1_emnoiso_type_branch->SetAddress(&l1_emnoiso_type_);
-	}
-	if(l1_emnoiso_type_branch == 0 ) {
-	cout << "Branch l1_emnoiso_type does not exist." << endl;
 	}
 	l1_jetsc_ieta_branch = 0;
 	if (tree->GetAlias("l1_jetsc_ieta") != 0) {
 		l1_jetsc_ieta_branch = tree->GetBranch(tree->GetAlias("l1_jetsc_ieta"));
 		l1_jetsc_ieta_branch->SetAddress(&l1_jetsc_ieta_);
 	}
-	if(l1_jetsc_ieta_branch == 0 ) {
-	cout << "Branch l1_jetsc_ieta does not exist." << endl;
-	}
 	l1_jetsc_iphi_branch = 0;
 	if (tree->GetAlias("l1_jetsc_iphi") != 0) {
 		l1_jetsc_iphi_branch = tree->GetBranch(tree->GetAlias("l1_jetsc_iphi"));
 		l1_jetsc_iphi_branch->SetAddress(&l1_jetsc_iphi_);
-	}
-	if(l1_jetsc_iphi_branch == 0 ) {
-	cout << "Branch l1_jetsc_iphi does not exist." << endl;
 	}
 	l1_jetsc_rawId_branch = 0;
 	if (tree->GetAlias("l1_jetsc_rawId") != 0) {
 		l1_jetsc_rawId_branch = tree->GetBranch(tree->GetAlias("l1_jetsc_rawId"));
 		l1_jetsc_rawId_branch->SetAddress(&l1_jetsc_rawId_);
 	}
-	if(l1_jetsc_rawId_branch == 0 ) {
-	cout << "Branch l1_jetsc_rawId does not exist." << endl;
-	}
 	l1_jetsc_type_branch = 0;
 	if (tree->GetAlias("l1_jetsc_type") != 0) {
 		l1_jetsc_type_branch = tree->GetBranch(tree->GetAlias("l1_jetsc_type"));
 		l1_jetsc_type_branch->SetAddress(&l1_jetsc_type_);
-	}
-	if(l1_jetsc_type_branch == 0 ) {
-	cout << "Branch l1_jetsc_type does not exist." << endl;
 	}
 	l1_jetsf_ieta_branch = 0;
 	if (tree->GetAlias("l1_jetsf_ieta") != 0) {
 		l1_jetsf_ieta_branch = tree->GetBranch(tree->GetAlias("l1_jetsf_ieta"));
 		l1_jetsf_ieta_branch->SetAddress(&l1_jetsf_ieta_);
 	}
-	if(l1_jetsf_ieta_branch == 0 ) {
-	cout << "Branch l1_jetsf_ieta does not exist." << endl;
-	}
 	l1_jetsf_iphi_branch = 0;
 	if (tree->GetAlias("l1_jetsf_iphi") != 0) {
 		l1_jetsf_iphi_branch = tree->GetBranch(tree->GetAlias("l1_jetsf_iphi"));
 		l1_jetsf_iphi_branch->SetAddress(&l1_jetsf_iphi_);
-	}
-	if(l1_jetsf_iphi_branch == 0 ) {
-	cout << "Branch l1_jetsf_iphi does not exist." << endl;
 	}
 	l1_jetsf_rawId_branch = 0;
 	if (tree->GetAlias("l1_jetsf_rawId") != 0) {
 		l1_jetsf_rawId_branch = tree->GetBranch(tree->GetAlias("l1_jetsf_rawId"));
 		l1_jetsf_rawId_branch->SetAddress(&l1_jetsf_rawId_);
 	}
-	if(l1_jetsf_rawId_branch == 0 ) {
-	cout << "Branch l1_jetsf_rawId does not exist." << endl;
-	}
 	l1_jetsf_type_branch = 0;
 	if (tree->GetAlias("l1_jetsf_type") != 0) {
 		l1_jetsf_type_branch = tree->GetBranch(tree->GetAlias("l1_jetsf_type"));
 		l1_jetsf_type_branch->SetAddress(&l1_jetsf_type_);
-	}
-	if(l1_jetsf_type_branch == 0 ) {
-	cout << "Branch l1_jetsf_type does not exist." << endl;
 	}
 	l1_jetst_ieta_branch = 0;
 	if (tree->GetAlias("l1_jetst_ieta") != 0) {
 		l1_jetst_ieta_branch = tree->GetBranch(tree->GetAlias("l1_jetst_ieta"));
 		l1_jetst_ieta_branch->SetAddress(&l1_jetst_ieta_);
 	}
-	if(l1_jetst_ieta_branch == 0 ) {
-	cout << "Branch l1_jetst_ieta does not exist." << endl;
-	}
 	l1_jetst_iphi_branch = 0;
 	if (tree->GetAlias("l1_jetst_iphi") != 0) {
 		l1_jetst_iphi_branch = tree->GetBranch(tree->GetAlias("l1_jetst_iphi"));
 		l1_jetst_iphi_branch->SetAddress(&l1_jetst_iphi_);
-	}
-	if(l1_jetst_iphi_branch == 0 ) {
-	cout << "Branch l1_jetst_iphi does not exist." << endl;
 	}
 	l1_jetst_rawId_branch = 0;
 	if (tree->GetAlias("l1_jetst_rawId") != 0) {
 		l1_jetst_rawId_branch = tree->GetBranch(tree->GetAlias("l1_jetst_rawId"));
 		l1_jetst_rawId_branch->SetAddress(&l1_jetst_rawId_);
 	}
-	if(l1_jetst_rawId_branch == 0 ) {
-	cout << "Branch l1_jetst_rawId does not exist." << endl;
-	}
 	l1_jetst_type_branch = 0;
 	if (tree->GetAlias("l1_jetst_type") != 0) {
 		l1_jetst_type_branch = tree->GetBranch(tree->GetAlias("l1_jetst_type"));
 		l1_jetst_type_branch->SetAddress(&l1_jetst_type_);
-	}
-	if(l1_jetst_type_branch == 0 ) {
-	cout << "Branch l1_jetst_type does not exist." << endl;
 	}
 	l1_mus_flags_branch = 0;
 	if (tree->GetAlias("l1_mus_flags") != 0) {
 		l1_mus_flags_branch = tree->GetBranch(tree->GetAlias("l1_mus_flags"));
 		l1_mus_flags_branch->SetAddress(&l1_mus_flags_);
 	}
-	if(l1_mus_flags_branch == 0 ) {
-	cout << "Branch l1_mus_flags does not exist." << endl;
-	}
 	l1_mus_q_branch = 0;
 	if (tree->GetAlias("l1_mus_q") != 0) {
 		l1_mus_q_branch = tree->GetBranch(tree->GetAlias("l1_mus_q"));
 		l1_mus_q_branch->SetAddress(&l1_mus_q_);
-	}
-	if(l1_mus_q_branch == 0 ) {
-	cout << "Branch l1_mus_q does not exist." << endl;
 	}
 	l1_mus_qual_branch = 0;
 	if (tree->GetAlias("l1_mus_qual") != 0) {
 		l1_mus_qual_branch = tree->GetBranch(tree->GetAlias("l1_mus_qual"));
 		l1_mus_qual_branch->SetAddress(&l1_mus_qual_);
 	}
-	if(l1_mus_qual_branch == 0 ) {
-	cout << "Branch l1_mus_qual does not exist." << endl;
-	}
 	l1_mus_qualFlags_branch = 0;
 	if (tree->GetAlias("l1_mus_qualFlags") != 0) {
 		l1_mus_qualFlags_branch = tree->GetBranch(tree->GetAlias("l1_mus_qualFlags"));
 		l1_mus_qualFlags_branch->SetAddress(&l1_mus_qualFlags_);
-	}
-	if(l1_mus_qualFlags_branch == 0 ) {
-	cout << "Branch l1_mus_qualFlags does not exist." << endl;
 	}
 	mus_met_flag_branch = 0;
 	if (tree->GetAlias("mus_met_flag") != 0) {
 		mus_met_flag_branch = tree->GetBranch(tree->GetAlias("mus_met_flag"));
 		mus_met_flag_branch->SetAddress(&mus_met_flag_);
 	}
-	if(mus_met_flag_branch == 0 ) {
-	cout << "Branch mus_met_flag does not exist." << endl;
-	}
 	mus_closestEle_branch = 0;
 	if (tree->GetAlias("mus_closestEle") != 0) {
 		mus_closestEle_branch = tree->GetBranch(tree->GetAlias("mus_closestEle"));
 		mus_closestEle_branch->SetAddress(&mus_closestEle_);
-	}
-	if(mus_closestEle_branch == 0 ) {
-	cout << "Branch mus_closestEle does not exist." << endl;
 	}
 	mus_closestJet_branch = 0;
 	if (tree->GetAlias("mus_closestJet") != 0) {
 		mus_closestJet_branch = tree->GetBranch(tree->GetAlias("mus_closestJet"));
 		mus_closestJet_branch->SetAddress(&mus_closestJet_);
 	}
-	if(mus_closestJet_branch == 0 ) {
-	cout << "Branch mus_closestJet does not exist." << endl;
-	}
 	mus_charge_branch = 0;
 	if (tree->GetAlias("mus_charge") != 0) {
 		mus_charge_branch = tree->GetBranch(tree->GetAlias("mus_charge"));
 		mus_charge_branch->SetAddress(&mus_charge_);
-	}
-	if(mus_charge_branch == 0 ) {
-	cout << "Branch mus_charge does not exist." << endl;
 	}
 	mus_gfit_validHits_branch = 0;
 	if (tree->GetAlias("mus_gfit_validHits") != 0) {
 		mus_gfit_validHits_branch = tree->GetBranch(tree->GetAlias("mus_gfit_validHits"));
 		mus_gfit_validHits_branch->SetAddress(&mus_gfit_validHits_);
 	}
-	if(mus_gfit_validHits_branch == 0 ) {
-	cout << "Branch mus_gfit_validHits does not exist." << endl;
-	}
 	mus_gfit_validSTAHits_branch = 0;
 	if (tree->GetAlias("mus_gfit_validSTAHits") != 0) {
 		mus_gfit_validSTAHits_branch = tree->GetBranch(tree->GetAlias("mus_gfit_validSTAHits"));
 		mus_gfit_validSTAHits_branch->SetAddress(&mus_gfit_validSTAHits_);
-	}
-	if(mus_gfit_validSTAHits_branch == 0 ) {
-	cout << "Branch mus_gfit_validSTAHits does not exist." << endl;
 	}
 	mus_gfit_validSiHits_branch = 0;
 	if (tree->GetAlias("mus_gfit_validSiHits") != 0) {
 		mus_gfit_validSiHits_branch = tree->GetBranch(tree->GetAlias("mus_gfit_validSiHits"));
 		mus_gfit_validSiHits_branch->SetAddress(&mus_gfit_validSiHits_);
 	}
-	if(mus_gfit_validSiHits_branch == 0 ) {
-	cout << "Branch mus_gfit_validSiHits does not exist." << endl;
-	}
 	mus_goodmask_branch = 0;
 	if (tree->GetAlias("mus_goodmask") != 0) {
 		mus_goodmask_branch = tree->GetBranch(tree->GetAlias("mus_goodmask"));
 		mus_goodmask_branch->SetAddress(&mus_goodmask_);
-	}
-	if(mus_goodmask_branch == 0 ) {
-	cout << "Branch mus_goodmask does not exist." << endl;
 	}
 	mus_iso03_ntrk_branch = 0;
 	if (tree->GetAlias("mus_iso03_ntrk") != 0) {
 		mus_iso03_ntrk_branch = tree->GetBranch(tree->GetAlias("mus_iso03_ntrk"));
 		mus_iso03_ntrk_branch->SetAddress(&mus_iso03_ntrk_);
 	}
-	if(mus_iso03_ntrk_branch == 0 ) {
-	cout << "Branch mus_iso03_ntrk does not exist." << endl;
-	}
 	mus_iso05_ntrk_branch = 0;
 	if (tree->GetAlias("mus_iso05_ntrk") != 0) {
 		mus_iso05_ntrk_branch = tree->GetBranch(tree->GetAlias("mus_iso05_ntrk"));
 		mus_iso05_ntrk_branch->SetAddress(&mus_iso05_ntrk_);
-	}
-	if(mus_iso05_ntrk_branch == 0 ) {
-	cout << "Branch mus_iso05_ntrk does not exist." << endl;
 	}
 	mus_lostHits_branch = 0;
 	if (tree->GetAlias("mus_lostHits") != 0) {
 		mus_lostHits_branch = tree->GetBranch(tree->GetAlias("mus_lostHits"));
 		mus_lostHits_branch->SetAddress(&mus_lostHits_);
 	}
-	if(mus_lostHits_branch == 0 ) {
-	cout << "Branch mus_lostHits does not exist." << endl;
-	}
 	mus_nOverlaps_branch = 0;
 	if (tree->GetAlias("mus_nOverlaps") != 0) {
 		mus_nOverlaps_branch = tree->GetBranch(tree->GetAlias("mus_nOverlaps"));
 		mus_nOverlaps_branch->SetAddress(&mus_nOverlaps_);
-	}
-	if(mus_nOverlaps_branch == 0 ) {
-	cout << "Branch mus_nOverlaps does not exist." << endl;
 	}
 	mus_nmatches_branch = 0;
 	if (tree->GetAlias("mus_nmatches") != 0) {
 		mus_nmatches_branch = tree->GetBranch(tree->GetAlias("mus_nmatches"));
 		mus_nmatches_branch->SetAddress(&mus_nmatches_);
 	}
-	if(mus_nmatches_branch == 0 ) {
-	cout << "Branch mus_nmatches does not exist." << endl;
-	}
 	mus_overlap0_branch = 0;
 	if (tree->GetAlias("mus_overlap0") != 0) {
 		mus_overlap0_branch = tree->GetBranch(tree->GetAlias("mus_overlap0"));
 		mus_overlap0_branch->SetAddress(&mus_overlap0_);
-	}
-	if(mus_overlap0_branch == 0 ) {
-	cout << "Branch mus_overlap0 does not exist." << endl;
 	}
 	mus_overlap1_branch = 0;
 	if (tree->GetAlias("mus_overlap1") != 0) {
 		mus_overlap1_branch = tree->GetBranch(tree->GetAlias("mus_overlap1"));
 		mus_overlap1_branch->SetAddress(&mus_overlap1_);
 	}
-	if(mus_overlap1_branch == 0 ) {
-	cout << "Branch mus_overlap1 does not exist." << endl;
-	}
 	mus_pid_TM2DCompatibilityLoose_branch = 0;
 	if (tree->GetAlias("mus_pid_TM2DCompatibilityLoose") != 0) {
 		mus_pid_TM2DCompatibilityLoose_branch = tree->GetBranch(tree->GetAlias("mus_pid_TM2DCompatibilityLoose"));
 		mus_pid_TM2DCompatibilityLoose_branch->SetAddress(&mus_pid_TM2DCompatibilityLoose_);
-	}
-	if(mus_pid_TM2DCompatibilityLoose_branch == 0 ) {
-	cout << "Branch mus_pid_TM2DCompatibilityLoose does not exist." << endl;
 	}
 	mus_pid_TM2DCompatibilityTight_branch = 0;
 	if (tree->GetAlias("mus_pid_TM2DCompatibilityTight") != 0) {
 		mus_pid_TM2DCompatibilityTight_branch = tree->GetBranch(tree->GetAlias("mus_pid_TM2DCompatibilityTight"));
 		mus_pid_TM2DCompatibilityTight_branch->SetAddress(&mus_pid_TM2DCompatibilityTight_);
 	}
-	if(mus_pid_TM2DCompatibilityTight_branch == 0 ) {
-	cout << "Branch mus_pid_TM2DCompatibilityTight does not exist." << endl;
-	}
 	mus_pid_TMLastStationLoose_branch = 0;
 	if (tree->GetAlias("mus_pid_TMLastStationLoose") != 0) {
 		mus_pid_TMLastStationLoose_branch = tree->GetBranch(tree->GetAlias("mus_pid_TMLastStationLoose"));
 		mus_pid_TMLastStationLoose_branch->SetAddress(&mus_pid_TMLastStationLoose_);
-	}
-	if(mus_pid_TMLastStationLoose_branch == 0 ) {
-	cout << "Branch mus_pid_TMLastStationLoose does not exist." << endl;
 	}
 	mus_pid_TMLastStationTight_branch = 0;
 	if (tree->GetAlias("mus_pid_TMLastStationTight") != 0) {
 		mus_pid_TMLastStationTight_branch = tree->GetBranch(tree->GetAlias("mus_pid_TMLastStationTight"));
 		mus_pid_TMLastStationTight_branch->SetAddress(&mus_pid_TMLastStationTight_);
 	}
-	if(mus_pid_TMLastStationTight_branch == 0 ) {
-	cout << "Branch mus_pid_TMLastStationTight does not exist." << endl;
-	}
 	mus_sta_validHits_branch = 0;
 	if (tree->GetAlias("mus_sta_validHits") != 0) {
 		mus_sta_validHits_branch = tree->GetBranch(tree->GetAlias("mus_sta_validHits"));
 		mus_sta_validHits_branch->SetAddress(&mus_sta_validHits_);
-	}
-	if(mus_sta_validHits_branch == 0 ) {
-	cout << "Branch mus_sta_validHits does not exist." << endl;
 	}
 	mus_timeDirection_branch = 0;
 	if (tree->GetAlias("mus_timeDirection") != 0) {
 		mus_timeDirection_branch = tree->GetBranch(tree->GetAlias("mus_timeDirection"));
 		mus_timeDirection_branch->SetAddress(&mus_timeDirection_);
 	}
-	if(mus_timeDirection_branch == 0 ) {
-	cout << "Branch mus_timeDirection does not exist." << endl;
-	}
 	mus_timeNumStationsUsed_branch = 0;
 	if (tree->GetAlias("mus_timeNumStationsUsed") != 0) {
 		mus_timeNumStationsUsed_branch = tree->GetBranch(tree->GetAlias("mus_timeNumStationsUsed"));
 		mus_timeNumStationsUsed_branch->SetAddress(&mus_timeNumStationsUsed_);
-	}
-	if(mus_timeNumStationsUsed_branch == 0 ) {
-	cout << "Branch mus_timeNumStationsUsed does not exist." << endl;
 	}
 	mus_trk_charge_branch = 0;
 	if (tree->GetAlias("mus_trk_charge") != 0) {
 		mus_trk_charge_branch = tree->GetBranch(tree->GetAlias("mus_trk_charge"));
 		mus_trk_charge_branch->SetAddress(&mus_trk_charge_);
 	}
-	if(mus_trk_charge_branch == 0 ) {
-	cout << "Branch mus_trk_charge does not exist." << endl;
-	}
 	mus_trkidx_branch = 0;
 	if (tree->GetAlias("mus_trkidx") != 0) {
 		mus_trkidx_branch = tree->GetBranch(tree->GetAlias("mus_trkidx"));
 		mus_trkidx_branch->SetAddress(&mus_trkidx_);
-	}
-	if(mus_trkidx_branch == 0 ) {
-	cout << "Branch mus_trkidx does not exist." << endl;
 	}
 	mus_type_branch = 0;
 	if (tree->GetAlias("mus_type") != 0) {
 		mus_type_branch = tree->GetBranch(tree->GetAlias("mus_type"));
 		mus_type_branch->SetAddress(&mus_type_);
 	}
-	if(mus_type_branch == 0 ) {
-	cout << "Branch mus_type does not exist." << endl;
-	}
 	mus_validHits_branch = 0;
 	if (tree->GetAlias("mus_validHits") != 0) {
 		mus_validHits_branch = tree->GetBranch(tree->GetAlias("mus_validHits"));
 		mus_validHits_branch->SetAddress(&mus_validHits_);
-	}
-	if(mus_validHits_branch == 0 ) {
-	cout << "Branch mus_validHits does not exist." << endl;
 	}
 	els_pat_genID_branch = 0;
 	if (tree->GetAlias("els_pat_genID") != 0) {
 		els_pat_genID_branch = tree->GetBranch(tree->GetAlias("els_pat_genID"));
 		els_pat_genID_branch->SetAddress(&els_pat_genID_);
 	}
-	if(els_pat_genID_branch == 0 ) {
-	cout << "Branch els_pat_genID does not exist." << endl;
-	}
 	els_pat_genMotherID_branch = 0;
 	if (tree->GetAlias("els_pat_genMotherID") != 0) {
 		els_pat_genMotherID_branch = tree->GetBranch(tree->GetAlias("els_pat_genMotherID"));
 		els_pat_genMotherID_branch->SetAddress(&els_pat_genMotherID_);
-	}
-	if(els_pat_genMotherID_branch == 0 ) {
-	cout << "Branch els_pat_genMotherID does not exist." << endl;
 	}
 	jets_pat_genPartonMother_id_branch = 0;
 	if (tree->GetAlias("jets_pat_genPartonMother_id") != 0) {
 		jets_pat_genPartonMother_id_branch = tree->GetBranch(tree->GetAlias("jets_pat_genPartonMother_id"));
 		jets_pat_genPartonMother_id_branch->SetAddress(&jets_pat_genPartonMother_id_);
 	}
-	if(jets_pat_genPartonMother_id_branch == 0 ) {
-	cout << "Branch jets_pat_genPartonMother_id does not exist." << endl;
-	}
 	jets_pat_genParton_id_branch = 0;
 	if (tree->GetAlias("jets_pat_genParton_id") != 0) {
 		jets_pat_genParton_id_branch = tree->GetBranch(tree->GetAlias("jets_pat_genParton_id"));
 		jets_pat_genParton_id_branch->SetAddress(&jets_pat_genParton_id_);
-	}
-	if(jets_pat_genParton_id_branch == 0 ) {
-	cout << "Branch jets_pat_genParton_id does not exist." << endl;
 	}
 	jets_pat_jetIDLoose_branch = 0;
 	if (tree->GetAlias("jets_pat_jetIDLoose") != 0) {
 		jets_pat_jetIDLoose_branch = tree->GetBranch(tree->GetAlias("jets_pat_jetIDLoose"));
 		jets_pat_jetIDLoose_branch->SetAddress(&jets_pat_jetIDLoose_);
 	}
-	if(jets_pat_jetIDLoose_branch == 0 ) {
-	cout << "Branch jets_pat_jetIDLoose does not exist." << endl;
-	}
 	jets_pat_jetIDLooseAOD_branch = 0;
 	if (tree->GetAlias("jets_pat_jetIDLooseAOD") != 0) {
 		jets_pat_jetIDLooseAOD_branch = tree->GetBranch(tree->GetAlias("jets_pat_jetIDLooseAOD"));
 		jets_pat_jetIDLooseAOD_branch->SetAddress(&jets_pat_jetIDLooseAOD_);
-	}
-	if(jets_pat_jetIDLooseAOD_branch == 0 ) {
-	cout << "Branch jets_pat_jetIDLooseAOD does not exist." << endl;
 	}
 	jets_pat_jetIDMinimal_branch = 0;
 	if (tree->GetAlias("jets_pat_jetIDMinimal") != 0) {
 		jets_pat_jetIDMinimal_branch = tree->GetBranch(tree->GetAlias("jets_pat_jetIDMinimal"));
 		jets_pat_jetIDMinimal_branch->SetAddress(&jets_pat_jetIDMinimal_);
 	}
-	if(jets_pat_jetIDMinimal_branch == 0 ) {
-	cout << "Branch jets_pat_jetIDMinimal does not exist." << endl;
-	}
 	jets_pat_jetIDTight_branch = 0;
 	if (tree->GetAlias("jets_pat_jetIDTight") != 0) {
 		jets_pat_jetIDTight_branch = tree->GetBranch(tree->GetAlias("jets_pat_jetIDTight"));
 		jets_pat_jetIDTight_branch->SetAddress(&jets_pat_jetIDTight_);
-	}
-	if(jets_pat_jetIDTight_branch == 0 ) {
-	cout << "Branch jets_pat_jetIDTight does not exist." << endl;
 	}
 	jets_pat_partonFlavour_branch = 0;
 	if (tree->GetAlias("jets_pat_partonFlavour") != 0) {
 		jets_pat_partonFlavour_branch = tree->GetBranch(tree->GetAlias("jets_pat_partonFlavour"));
 		jets_pat_partonFlavour_branch->SetAddress(&jets_pat_partonFlavour_);
 	}
-	if(jets_pat_partonFlavour_branch == 0 ) {
-	cout << "Branch jets_pat_partonFlavour does not exist." << endl;
-	}
 	mus_pat_genID_branch = 0;
 	if (tree->GetAlias("mus_pat_genID") != 0) {
 		mus_pat_genID_branch = tree->GetBranch(tree->GetAlias("mus_pat_genID"));
 		mus_pat_genID_branch->SetAddress(&mus_pat_genID_);
-	}
-	if(mus_pat_genID_branch == 0 ) {
-	cout << "Branch mus_pat_genID does not exist." << endl;
 	}
 	mus_pat_genMotherID_branch = 0;
 	if (tree->GetAlias("mus_pat_genMotherID") != 0) {
 		mus_pat_genMotherID_branch = tree->GetBranch(tree->GetAlias("mus_pat_genMotherID"));
 		mus_pat_genMotherID_branch->SetAddress(&mus_pat_genMotherID_);
 	}
-	if(mus_pat_genMotherID_branch == 0 ) {
-	cout << "Branch mus_pat_genMotherID does not exist." << endl;
-	}
 	pfjets_chargedMultiplicity_branch = 0;
 	if (tree->GetAlias("pfjets_chargedMultiplicity") != 0) {
 		pfjets_chargedMultiplicity_branch = tree->GetBranch(tree->GetAlias("pfjets_chargedMultiplicity"));
 		pfjets_chargedMultiplicity_branch->SetAddress(&pfjets_chargedMultiplicity_);
-	}
-	if(pfjets_chargedMultiplicity_branch == 0 ) {
-	cout << "Branch pfjets_chargedMultiplicity does not exist." << endl;
 	}
 	pfjets_muonMultiplicity_branch = 0;
 	if (tree->GetAlias("pfjets_muonMultiplicity") != 0) {
 		pfjets_muonMultiplicity_branch = tree->GetBranch(tree->GetAlias("pfjets_muonMultiplicity"));
 		pfjets_muonMultiplicity_branch->SetAddress(&pfjets_muonMultiplicity_);
 	}
-	if(pfjets_muonMultiplicity_branch == 0 ) {
-	cout << "Branch pfjets_muonMultiplicity does not exist." << endl;
-	}
 	pfjets_neutralMultiplicity_branch = 0;
 	if (tree->GetAlias("pfjets_neutralMultiplicity") != 0) {
 		pfjets_neutralMultiplicity_branch = tree->GetBranch(tree->GetAlias("pfjets_neutralMultiplicity"));
 		pfjets_neutralMultiplicity_branch->SetAddress(&pfjets_neutralMultiplicity_);
-	}
-	if(pfjets_neutralMultiplicity_branch == 0 ) {
-	cout << "Branch pfjets_neutralMultiplicity does not exist." << endl;
 	}
 	photons_fiduciality_branch = 0;
 	if (tree->GetAlias("photons_fiduciality") != 0) {
 		photons_fiduciality_branch = tree->GetBranch(tree->GetAlias("photons_fiduciality"));
 		photons_fiduciality_branch->SetAddress(&photons_fiduciality_);
 	}
-	if(photons_fiduciality_branch == 0 ) {
-	cout << "Branch photons_fiduciality does not exist." << endl;
-	}
 	photons_scindex_branch = 0;
 	if (tree->GetAlias("photons_scindex") != 0) {
 		photons_scindex_branch = tree->GetBranch(tree->GetAlias("photons_scindex"));
 		photons_scindex_branch->SetAddress(&photons_scindex_);
-	}
-	if(photons_scindex_branch == 0 ) {
-	cout << "Branch photons_scindex does not exist." << endl;
 	}
 	pxl_ndigis_pxb_branch = 0;
 	if (tree->GetAlias("pxl_ndigis_pxb") != 0) {
 		pxl_ndigis_pxb_branch = tree->GetBranch(tree->GetAlias("pxl_ndigis_pxb"));
 		pxl_ndigis_pxb_branch->SetAddress(&pxl_ndigis_pxb_);
 	}
-	if(pxl_ndigis_pxb_branch == 0 ) {
-	cout << "Branch pxl_ndigis_pxb does not exist." << endl;
-	}
 	pxl_ndigis_pxf_branch = 0;
 	if (tree->GetAlias("pxl_ndigis_pxf") != 0) {
 		pxl_ndigis_pxf_branch = tree->GetBranch(tree->GetAlias("pxl_ndigis_pxf"));
 		pxl_ndigis_pxf_branch->SetAddress(&pxl_ndigis_pxf_);
-	}
-	if(pxl_ndigis_pxf_branch == 0 ) {
-	cout << "Branch pxl_ndigis_pxf does not exist." << endl;
 	}
 	scs_detIdSeed_branch = 0;
 	if (tree->GetAlias("scs_detIdSeed") != 0) {
 		scs_detIdSeed_branch = tree->GetBranch(tree->GetAlias("scs_detIdSeed"));
 		scs_detIdSeed_branch->SetAddress(&scs_detIdSeed_);
 	}
-	if(scs_detIdSeed_branch == 0 ) {
-	cout << "Branch scs_detIdSeed does not exist." << endl;
-	}
 	scs_elsidx_branch = 0;
 	if (tree->GetAlias("scs_elsidx") != 0) {
 		scs_elsidx_branch = tree->GetBranch(tree->GetAlias("scs_elsidx"));
 		scs_elsidx_branch->SetAddress(&scs_elsidx_);
-	}
-	if(scs_elsidx_branch == 0 ) {
-	cout << "Branch scs_elsidx does not exist." << endl;
 	}
 	scs_severitySeed_branch = 0;
 	if (tree->GetAlias("scs_severitySeed") != 0) {
 		scs_severitySeed_branch = tree->GetBranch(tree->GetAlias("scs_severitySeed"));
 		scs_severitySeed_branch->SetAddress(&scs_severitySeed_);
 	}
-	if(scs_severitySeed_branch == 0 ) {
-	cout << "Branch scs_severitySeed does not exist." << endl;
-	}
 	mus_tcmet_flag_branch = 0;
 	if (tree->GetAlias("mus_tcmet_flag") != 0) {
 		mus_tcmet_flag_branch = tree->GetBranch(tree->GetAlias("mus_tcmet_flag"));
 		mus_tcmet_flag_branch->SetAddress(&mus_tcmet_flag_);
-	}
-	if(mus_tcmet_flag_branch == 0 ) {
-	cout << "Branch mus_tcmet_flag does not exist." << endl;
 	}
 	evt35X_mus_tcmet_flag_branch = 0;
 	if (tree->GetAlias("evt35X_mus_tcmet_flag") != 0) {
 		evt35X_mus_tcmet_flag_branch = tree->GetBranch(tree->GetAlias("evt35X_mus_tcmet_flag"));
 		evt35X_mus_tcmet_flag_branch->SetAddress(&evt35X_mus_tcmet_flag_);
 	}
-	if(evt35X_mus_tcmet_flag_branch == 0 ) {
-	cout << "Branch evt35X_mus_tcmet_flag does not exist." << endl;
-	}
 	trks_algo_branch = 0;
 	if (tree->GetAlias("trks_algo") != 0) {
 		trks_algo_branch = tree->GetBranch(tree->GetAlias("trks_algo"));
 		trks_algo_branch->SetAddress(&trks_algo_);
-	}
-	if(trks_algo_branch == 0 ) {
-	cout << "Branch trks_algo does not exist." << endl;
 	}
 	trks_charge_branch = 0;
 	if (tree->GetAlias("trks_charge") != 0) {
 		trks_charge_branch = tree->GetBranch(tree->GetAlias("trks_charge"));
 		trks_charge_branch->SetAddress(&trks_charge_);
 	}
-	if(trks_charge_branch == 0 ) {
-	cout << "Branch trks_charge does not exist." << endl;
-	}
 	trks_exp_innerlayers_branch = 0;
 	if (tree->GetAlias("trks_exp_innerlayers") != 0) {
 		trks_exp_innerlayers_branch = tree->GetBranch(tree->GetAlias("trks_exp_innerlayers"));
 		trks_exp_innerlayers_branch->SetAddress(&trks_exp_innerlayers_);
-	}
-	if(trks_exp_innerlayers_branch == 0 ) {
-	cout << "Branch trks_exp_innerlayers does not exist." << endl;
 	}
 	trks_exp_outerlayers_branch = 0;
 	if (tree->GetAlias("trks_exp_outerlayers") != 0) {
 		trks_exp_outerlayers_branch = tree->GetBranch(tree->GetAlias("trks_exp_outerlayers"));
 		trks_exp_outerlayers_branch->SetAddress(&trks_exp_outerlayers_);
 	}
-	if(trks_exp_outerlayers_branch == 0 ) {
-	cout << "Branch trks_exp_outerlayers does not exist." << endl;
-	}
 	trks_layer1_det_branch = 0;
 	if (tree->GetAlias("trks_layer1_det") != 0) {
 		trks_layer1_det_branch = tree->GetBranch(tree->GetAlias("trks_layer1_det"));
 		trks_layer1_det_branch->SetAddress(&trks_layer1_det_);
-	}
-	if(trks_layer1_det_branch == 0 ) {
-	cout << "Branch trks_layer1_det does not exist." << endl;
 	}
 	trks_layer1_layer_branch = 0;
 	if (tree->GetAlias("trks_layer1_layer") != 0) {
 		trks_layer1_layer_branch = tree->GetBranch(tree->GetAlias("trks_layer1_layer"));
 		trks_layer1_layer_branch->SetAddress(&trks_layer1_layer_);
 	}
-	if(trks_layer1_layer_branch == 0 ) {
-	cout << "Branch trks_layer1_layer does not exist." << endl;
-	}
 	trks_layer1_sizerphi_branch = 0;
 	if (tree->GetAlias("trks_layer1_sizerphi") != 0) {
 		trks_layer1_sizerphi_branch = tree->GetBranch(tree->GetAlias("trks_layer1_sizerphi"));
 		trks_layer1_sizerphi_branch->SetAddress(&trks_layer1_sizerphi_);
-	}
-	if(trks_layer1_sizerphi_branch == 0 ) {
-	cout << "Branch trks_layer1_sizerphi does not exist." << endl;
 	}
 	trks_layer1_sizerz_branch = 0;
 	if (tree->GetAlias("trks_layer1_sizerz") != 0) {
 		trks_layer1_sizerz_branch = tree->GetBranch(tree->GetAlias("trks_layer1_sizerz"));
 		trks_layer1_sizerz_branch->SetAddress(&trks_layer1_sizerz_);
 	}
-	if(trks_layer1_sizerz_branch == 0 ) {
-	cout << "Branch trks_layer1_sizerz does not exist." << endl;
-	}
 	trks_lostHits_branch = 0;
 	if (tree->GetAlias("trks_lostHits") != 0) {
 		trks_lostHits_branch = tree->GetBranch(tree->GetAlias("trks_lostHits"));
 		trks_lostHits_branch->SetAddress(&trks_lostHits_);
-	}
-	if(trks_lostHits_branch == 0 ) {
-	cout << "Branch trks_lostHits does not exist." << endl;
 	}
 	trks_lost_pixelhits_branch = 0;
 	if (tree->GetAlias("trks_lost_pixelhits") != 0) {
 		trks_lost_pixelhits_branch = tree->GetBranch(tree->GetAlias("trks_lost_pixelhits"));
 		trks_lost_pixelhits_branch->SetAddress(&trks_lost_pixelhits_);
 	}
-	if(trks_lost_pixelhits_branch == 0 ) {
-	cout << "Branch trks_lost_pixelhits does not exist." << endl;
-	}
 	trks_nlayers_branch = 0;
 	if (tree->GetAlias("trks_nlayers") != 0) {
 		trks_nlayers_branch = tree->GetBranch(tree->GetAlias("trks_nlayers"));
 		trks_nlayers_branch->SetAddress(&trks_nlayers_);
-	}
-	if(trks_nlayers_branch == 0 ) {
-	cout << "Branch trks_nlayers does not exist." << endl;
 	}
 	trks_nlayers3D_branch = 0;
 	if (tree->GetAlias("trks_nlayers3D") != 0) {
 		trks_nlayers3D_branch = tree->GetBranch(tree->GetAlias("trks_nlayers3D"));
 		trks_nlayers3D_branch->SetAddress(&trks_nlayers3D_);
 	}
-	if(trks_nlayers3D_branch == 0 ) {
-	cout << "Branch trks_nlayers3D does not exist." << endl;
-	}
 	trks_nlayersLost_branch = 0;
 	if (tree->GetAlias("trks_nlayersLost") != 0) {
 		trks_nlayersLost_branch = tree->GetBranch(tree->GetAlias("trks_nlayersLost"));
 		trks_nlayersLost_branch->SetAddress(&trks_nlayersLost_);
-	}
-	if(trks_nlayersLost_branch == 0 ) {
-	cout << "Branch trks_nlayersLost does not exist." << endl;
 	}
 	trks_qualityMask_branch = 0;
 	if (tree->GetAlias("trks_qualityMask") != 0) {
 		trks_qualityMask_branch = tree->GetBranch(tree->GetAlias("trks_qualityMask"));
 		trks_qualityMask_branch->SetAddress(&trks_qualityMask_);
 	}
-	if(trks_qualityMask_branch == 0 ) {
-	cout << "Branch trks_qualityMask does not exist." << endl;
-	}
 	trks_validHits_branch = 0;
 	if (tree->GetAlias("trks_validHits") != 0) {
 		trks_validHits_branch = tree->GetBranch(tree->GetAlias("trks_validHits"));
 		trks_validHits_branch->SetAddress(&trks_validHits_);
-	}
-	if(trks_validHits_branch == 0 ) {
-	cout << "Branch trks_validHits does not exist." << endl;
 	}
 	trks_valid_pixelhits_branch = 0;
 	if (tree->GetAlias("trks_valid_pixelhits") != 0) {
 		trks_valid_pixelhits_branch = tree->GetBranch(tree->GetAlias("trks_valid_pixelhits"));
 		trks_valid_pixelhits_branch->SetAddress(&trks_valid_pixelhits_);
 	}
-	if(trks_valid_pixelhits_branch == 0 ) {
-	cout << "Branch trks_valid_pixelhits does not exist." << endl;
-	}
 	trks_elsidx_branch = 0;
 	if (tree->GetAlias("trks_elsidx") != 0) {
 		trks_elsidx_branch = tree->GetBranch(tree->GetAlias("trks_elsidx"));
 		trks_elsidx_branch->SetAddress(&trks_elsidx_);
-	}
-	if(trks_elsidx_branch == 0 ) {
-	cout << "Branch trks_elsidx does not exist." << endl;
 	}
 	trk_musidx_branch = 0;
 	if (tree->GetAlias("trk_musidx") != 0) {
 		trk_musidx_branch = tree->GetBranch(tree->GetAlias("trk_musidx"));
 		trk_musidx_branch->SetAddress(&trk_musidx_);
 	}
-	if(trk_musidx_branch == 0 ) {
-	cout << "Branch trk_musidx does not exist." << endl;
-	}
 	vtxs_isFake_branch = 0;
 	if (tree->GetAlias("vtxs_isFake") != 0) {
 		vtxs_isFake_branch = tree->GetBranch(tree->GetAlias("vtxs_isFake"));
 		vtxs_isFake_branch->SetAddress(&vtxs_isFake_);
-	}
-	if(vtxs_isFake_branch == 0 ) {
-	cout << "Branch vtxs_isFake does not exist." << endl;
 	}
 	vtxs_isValid_branch = 0;
 	if (tree->GetAlias("vtxs_isValid") != 0) {
 		vtxs_isValid_branch = tree->GetBranch(tree->GetAlias("vtxs_isValid"));
 		vtxs_isValid_branch->SetAddress(&vtxs_isValid_);
 	}
-	if(vtxs_isValid_branch == 0 ) {
-	cout << "Branch vtxs_isValid does not exist." << endl;
-	}
 	vtxs_tracksSize_branch = 0;
 	if (tree->GetAlias("vtxs_tracksSize") != 0) {
 		vtxs_tracksSize_branch = tree->GetBranch(tree->GetAlias("vtxs_tracksSize"));
 		vtxs_tracksSize_branch->SetAddress(&vtxs_tracksSize_);
-	}
-	if(vtxs_tracksSize_branch == 0 ) {
-	cout << "Branch vtxs_tracksSize does not exist." << endl;
-	}
-	twrs_hcalHitReFlag_branch = 0;
-	if (tree->GetAlias("twrs_hcalHitReFlag") != 0) {
-		twrs_hcalHitReFlag_branch = tree->GetBranch(tree->GetAlias("twrs_hcalHitReFlag"));
-		twrs_hcalHitReFlag_branch->SetAddress(&twrs_hcalHitReFlag_);
-	}
-	if(twrs_hcalHitReFlag_branch == 0 ) {
-	cout << "Branch twrs_hcalHitReFlag does not exist." << endl;
-	}
-	twrs_emMaxEcalMGPASampleADC_branch = 0;
-	if (tree->GetAlias("twrs_emMaxEcalMGPASampleADC") != 0) {
-		twrs_emMaxEcalMGPASampleADC_branch = tree->GetBranch(tree->GetAlias("twrs_emMaxEcalMGPASampleADC"));
-		twrs_emMaxEcalMGPASampleADC_branch->SetAddress(&twrs_emMaxEcalMGPASampleADC_);
-	}
-	if(twrs_emMaxEcalMGPASampleADC_branch == 0 ) {
-	cout << "Branch twrs_emMaxEcalMGPASampleADC does not exist." << endl;
-	}
-	twrs_emThreshRecoFlag_branch = 0;
-	if (tree->GetAlias("twrs_emThreshRecoFlag") != 0) {
-		twrs_emThreshRecoFlag_branch = tree->GetBranch(tree->GetAlias("twrs_emThreshRecoFlag"));
-		twrs_emThreshRecoFlag_branch->SetAddress(&twrs_emThreshRecoFlag_);
-	}
-	if(twrs_emThreshRecoFlag_branch == 0 ) {
-	cout << "Branch twrs_emThreshRecoFlag does not exist." << endl;
-	}
-	twrs_emThreshSevLvl_branch = 0;
-	if (tree->GetAlias("twrs_emThreshSevLvl") != 0) {
-		twrs_emThreshSevLvl_branch = tree->GetBranch(tree->GetAlias("twrs_emThreshSevLvl"));
-		twrs_emThreshSevLvl_branch->SetAddress(&twrs_emThreshSevLvl_);
-	}
-	if(twrs_emThreshSevLvl_branch == 0 ) {
-	cout << "Branch twrs_emThreshSevLvl does not exist." << endl;
-	}
-	twrs_hcalHitDepth_branch = 0;
-	if (tree->GetAlias("twrs_hcalHitDepth") != 0) {
-		twrs_hcalHitDepth_branch = tree->GetBranch(tree->GetAlias("twrs_hcalHitDepth"));
-		twrs_hcalHitDepth_branch->SetAddress(&twrs_hcalHitDepth_);
-	}
-	if(twrs_hcalHitDepth_branch == 0 ) {
-	cout << "Branch twrs_hcalHitDepth does not exist." << endl;
-	}
-	twrs_hcalHitFlag_branch = 0;
-	if (tree->GetAlias("twrs_hcalHitFlag") != 0) {
-		twrs_hcalHitFlag_branch = tree->GetBranch(tree->GetAlias("twrs_hcalHitFlag"));
-		twrs_hcalHitFlag_branch->SetAddress(&twrs_hcalHitFlag_);
-	}
-	if(twrs_hcalHitFlag_branch == 0 ) {
-	cout << "Branch twrs_hcalHitFlag does not exist." << endl;
 	}
 	genps_lepdaughter_id_branch = 0;
 	if (tree->GetAlias("genps_lepdaughter_id") != 0) {
 		genps_lepdaughter_id_branch = tree->GetBranch(tree->GetAlias("genps_lepdaughter_id"));
 		genps_lepdaughter_id_branch->SetAddress(&genps_lepdaughter_id_);
 	}
-	if(genps_lepdaughter_id_branch == 0 ) {
-	cout << "Branch genps_lepdaughter_id does not exist." << endl;
-	}
 	genps_lepdaughter_idx_branch = 0;
 	if (tree->GetAlias("genps_lepdaughter_idx") != 0) {
 		genps_lepdaughter_idx_branch = tree->GetBranch(tree->GetAlias("genps_lepdaughter_idx"));
 		genps_lepdaughter_idx_branch->SetAddress(&genps_lepdaughter_idx_);
-	}
-	if(genps_lepdaughter_idx_branch == 0 ) {
-	cout << "Branch genps_lepdaughter_idx does not exist." << endl;
 	}
 	hlt1e31_trigObjs_id_branch = 0;
 	if (tree->GetAlias("hlt1e31_trigObjs_id") != 0) {
 		hlt1e31_trigObjs_id_branch = tree->GetBranch(tree->GetAlias("hlt1e31_trigObjs_id"));
 		hlt1e31_trigObjs_id_branch->SetAddress(&hlt1e31_trigObjs_id_);
 	}
-	if(hlt1e31_trigObjs_id_branch == 0 ) {
-	cout << "Branch hlt1e31_trigObjs_id does not exist." << endl;
-	}
 	hlt8e29_trigObjs_id_branch = 0;
 	if (tree->GetAlias("hlt8e29_trigObjs_id") != 0) {
 		hlt8e29_trigObjs_id_branch = tree->GetBranch(tree->GetAlias("hlt8e29_trigObjs_id"));
 		hlt8e29_trigObjs_id_branch->SetAddress(&hlt8e29_trigObjs_id_);
-	}
-	if(hlt8e29_trigObjs_id_branch == 0 ) {
-	cout << "Branch hlt8e29_trigObjs_id does not exist." << endl;
 	}
 	hlt_trigObjs_id_branch = 0;
 	if (tree->GetAlias("hlt_trigObjs_id") != 0) {
 		hlt_trigObjs_id_branch = tree->GetBranch(tree->GetAlias("hlt_trigObjs_id"));
 		hlt_trigObjs_id_branch->SetAddress(&hlt_trigObjs_id_);
 	}
-	if(hlt_trigObjs_id_branch == 0 ) {
-	cout << "Branch hlt_trigObjs_id does not exist." << endl;
-	}
 	hyp_jets_idx_branch = 0;
 	if (tree->GetAlias("hyp_jets_idx") != 0) {
 		hyp_jets_idx_branch = tree->GetBranch(tree->GetAlias("hyp_jets_idx"));
 		hyp_jets_idx_branch->SetAddress(&hyp_jets_idx_);
-	}
-	if(hyp_jets_idx_branch == 0 ) {
-	cout << "Branch hyp_jets_idx does not exist." << endl;
 	}
 	hyp_other_jets_idx_branch = 0;
 	if (tree->GetAlias("hyp_other_jets_idx") != 0) {
 		hyp_other_jets_idx_branch = tree->GetBranch(tree->GetAlias("hyp_other_jets_idx"));
 		hyp_other_jets_idx_branch->SetAddress(&hyp_other_jets_idx_);
 	}
-	if(hyp_other_jets_idx_branch == 0 ) {
-	cout << "Branch hyp_other_jets_idx does not exist." << endl;
-	}
-	evt_ntwrs_branch = 0;
-	if (tree->GetAlias("evt_ntwrs") != 0) {
-		evt_ntwrs_branch = tree->GetBranch(tree->GetAlias("evt_ntwrs"));
-		evt_ntwrs_branch->SetAddress(&evt_ntwrs_);
-	}
-	if(evt_ntwrs_branch == 0 ) {
-	cout << "Branch evt_ntwrs does not exist." << endl;
-	}
 	evt_nels_branch = 0;
 	if (tree->GetAlias("evt_nels") != 0) {
 		evt_nels_branch = tree->GetBranch(tree->GetAlias("evt_nels"));
 		evt_nels_branch->SetAddress(&evt_nels_);
-	}
-	if(evt_nels_branch == 0 ) {
-	cout << "Branch evt_nels does not exist." << endl;
 	}
 	evt_detectorStatus_branch = 0;
 	if (tree->GetAlias("evt_detectorStatus") != 0) {
 		evt_detectorStatus_branch = tree->GetBranch(tree->GetAlias("evt_detectorStatus"));
 		evt_detectorStatus_branch->SetAddress(&evt_detectorStatus_);
 	}
-	if(evt_detectorStatus_branch == 0 ) {
-	cout << "Branch evt_detectorStatus does not exist." << endl;
-	}
 	evt_event_branch = 0;
 	if (tree->GetAlias("evt_event") != 0) {
 		evt_event_branch = tree->GetBranch(tree->GetAlias("evt_event"));
 		evt_event_branch->SetAddress(&evt_event_);
-	}
-	if(evt_event_branch == 0 ) {
-	cout << "Branch evt_event does not exist." << endl;
 	}
 	evt_lumiBlock_branch = 0;
 	if (tree->GetAlias("evt_lumiBlock") != 0) {
 		evt_lumiBlock_branch = tree->GetBranch(tree->GetAlias("evt_lumiBlock"));
 		evt_lumiBlock_branch->SetAddress(&evt_lumiBlock_);
 	}
-	if(evt_lumiBlock_branch == 0 ) {
-	cout << "Branch evt_lumiBlock does not exist." << endl;
-	}
 	evt_run_branch = 0;
 	if (tree->GetAlias("evt_run") != 0) {
 		evt_run_branch = tree->GetBranch(tree->GetAlias("evt_run"));
 		evt_run_branch->SetAddress(&evt_run_);
-	}
-	if(evt_run_branch == 0 ) {
-	cout << "Branch evt_run does not exist." << endl;
 	}
 	genps_flavorHistoryFilterResult_branch = 0;
 	if (tree->GetAlias("genps_flavorHistoryFilterResult") != 0) {
 		genps_flavorHistoryFilterResult_branch = tree->GetBranch(tree->GetAlias("genps_flavorHistoryFilterResult"));
 		genps_flavorHistoryFilterResult_branch->SetAddress(&genps_flavorHistoryFilterResult_);
 	}
-	if(genps_flavorHistoryFilterResult_branch == 0 ) {
-	cout << "Branch genps_flavorHistoryFilterResult does not exist." << endl;
-	}
 	evt_ngenjets_branch = 0;
 	if (tree->GetAlias("evt_ngenjets") != 0) {
 		evt_ngenjets_branch = tree->GetBranch(tree->GetAlias("evt_ngenjets"));
 		evt_ngenjets_branch->SetAddress(&evt_ngenjets_);
-	}
-	if(evt_ngenjets_branch == 0 ) {
-	cout << "Branch evt_ngenjets does not exist." << endl;
 	}
 	genps_signalProcessID_branch = 0;
 	if (tree->GetAlias("genps_signalProcessID") != 0) {
 		genps_signalProcessID_branch = tree->GetBranch(tree->GetAlias("genps_signalProcessID"));
 		genps_signalProcessID_branch->SetAddress(&genps_signalProcessID_);
 	}
-	if(genps_signalProcessID_branch == 0 ) {
-	cout << "Branch genps_signalProcessID does not exist." << endl;
-	}
 	hlt1e31_bits1_branch = 0;
 	if (tree->GetAlias("hlt1e31_bits1") != 0) {
 		hlt1e31_bits1_branch = tree->GetBranch(tree->GetAlias("hlt1e31_bits1"));
 		hlt1e31_bits1_branch->SetAddress(&hlt1e31_bits1_);
-	}
-	if(hlt1e31_bits1_branch == 0 ) {
-	cout << "Branch hlt1e31_bits1 does not exist." << endl;
 	}
 	hlt1e31_bits2_branch = 0;
 	if (tree->GetAlias("hlt1e31_bits2") != 0) {
 		hlt1e31_bits2_branch = tree->GetBranch(tree->GetAlias("hlt1e31_bits2"));
 		hlt1e31_bits2_branch->SetAddress(&hlt1e31_bits2_);
 	}
-	if(hlt1e31_bits2_branch == 0 ) {
-	cout << "Branch hlt1e31_bits2 does not exist." << endl;
-	}
 	hlt1e31_bits3_branch = 0;
 	if (tree->GetAlias("hlt1e31_bits3") != 0) {
 		hlt1e31_bits3_branch = tree->GetBranch(tree->GetAlias("hlt1e31_bits3"));
 		hlt1e31_bits3_branch->SetAddress(&hlt1e31_bits3_);
-	}
-	if(hlt1e31_bits3_branch == 0 ) {
-	cout << "Branch hlt1e31_bits3 does not exist." << endl;
 	}
 	hlt1e31_bits4_branch = 0;
 	if (tree->GetAlias("hlt1e31_bits4") != 0) {
 		hlt1e31_bits4_branch = tree->GetBranch(tree->GetAlias("hlt1e31_bits4"));
 		hlt1e31_bits4_branch->SetAddress(&hlt1e31_bits4_);
 	}
-	if(hlt1e31_bits4_branch == 0 ) {
-	cout << "Branch hlt1e31_bits4 does not exist." << endl;
-	}
 	hlt1e31_bits5_branch = 0;
 	if (tree->GetAlias("hlt1e31_bits5") != 0) {
 		hlt1e31_bits5_branch = tree->GetBranch(tree->GetAlias("hlt1e31_bits5"));
 		hlt1e31_bits5_branch->SetAddress(&hlt1e31_bits5_);
-	}
-	if(hlt1e31_bits5_branch == 0 ) {
-	cout << "Branch hlt1e31_bits5 does not exist." << endl;
 	}
 	hlt1e31_bits6_branch = 0;
 	if (tree->GetAlias("hlt1e31_bits6") != 0) {
 		hlt1e31_bits6_branch = tree->GetBranch(tree->GetAlias("hlt1e31_bits6"));
 		hlt1e31_bits6_branch->SetAddress(&hlt1e31_bits6_);
 	}
-	if(hlt1e31_bits6_branch == 0 ) {
-	cout << "Branch hlt1e31_bits6 does not exist." << endl;
-	}
 	hlt1e31_bits7_branch = 0;
 	if (tree->GetAlias("hlt1e31_bits7") != 0) {
 		hlt1e31_bits7_branch = tree->GetBranch(tree->GetAlias("hlt1e31_bits7"));
 		hlt1e31_bits7_branch->SetAddress(&hlt1e31_bits7_);
-	}
-	if(hlt1e31_bits7_branch == 0 ) {
-	cout << "Branch hlt1e31_bits7 does not exist." << endl;
 	}
 	hlt1e31_bits8_branch = 0;
 	if (tree->GetAlias("hlt1e31_bits8") != 0) {
 		hlt1e31_bits8_branch = tree->GetBranch(tree->GetAlias("hlt1e31_bits8"));
 		hlt1e31_bits8_branch->SetAddress(&hlt1e31_bits8_);
 	}
-	if(hlt1e31_bits8_branch == 0 ) {
-	cout << "Branch hlt1e31_bits8 does not exist." << endl;
-	}
 	hlt8e29_bits1_branch = 0;
 	if (tree->GetAlias("hlt8e29_bits1") != 0) {
 		hlt8e29_bits1_branch = tree->GetBranch(tree->GetAlias("hlt8e29_bits1"));
 		hlt8e29_bits1_branch->SetAddress(&hlt8e29_bits1_);
-	}
-	if(hlt8e29_bits1_branch == 0 ) {
-	cout << "Branch hlt8e29_bits1 does not exist." << endl;
 	}
 	hlt8e29_bits2_branch = 0;
 	if (tree->GetAlias("hlt8e29_bits2") != 0) {
 		hlt8e29_bits2_branch = tree->GetBranch(tree->GetAlias("hlt8e29_bits2"));
 		hlt8e29_bits2_branch->SetAddress(&hlt8e29_bits2_);
 	}
-	if(hlt8e29_bits2_branch == 0 ) {
-	cout << "Branch hlt8e29_bits2 does not exist." << endl;
-	}
 	hlt8e29_bits3_branch = 0;
 	if (tree->GetAlias("hlt8e29_bits3") != 0) {
 		hlt8e29_bits3_branch = tree->GetBranch(tree->GetAlias("hlt8e29_bits3"));
 		hlt8e29_bits3_branch->SetAddress(&hlt8e29_bits3_);
-	}
-	if(hlt8e29_bits3_branch == 0 ) {
-	cout << "Branch hlt8e29_bits3 does not exist." << endl;
 	}
 	hlt8e29_bits4_branch = 0;
 	if (tree->GetAlias("hlt8e29_bits4") != 0) {
 		hlt8e29_bits4_branch = tree->GetBranch(tree->GetAlias("hlt8e29_bits4"));
 		hlt8e29_bits4_branch->SetAddress(&hlt8e29_bits4_);
 	}
-	if(hlt8e29_bits4_branch == 0 ) {
-	cout << "Branch hlt8e29_bits4 does not exist." << endl;
-	}
 	hlt8e29_bits5_branch = 0;
 	if (tree->GetAlias("hlt8e29_bits5") != 0) {
 		hlt8e29_bits5_branch = tree->GetBranch(tree->GetAlias("hlt8e29_bits5"));
 		hlt8e29_bits5_branch->SetAddress(&hlt8e29_bits5_);
-	}
-	if(hlt8e29_bits5_branch == 0 ) {
-	cout << "Branch hlt8e29_bits5 does not exist." << endl;
 	}
 	hlt8e29_bits6_branch = 0;
 	if (tree->GetAlias("hlt8e29_bits6") != 0) {
 		hlt8e29_bits6_branch = tree->GetBranch(tree->GetAlias("hlt8e29_bits6"));
 		hlt8e29_bits6_branch->SetAddress(&hlt8e29_bits6_);
 	}
-	if(hlt8e29_bits6_branch == 0 ) {
-	cout << "Branch hlt8e29_bits6 does not exist." << endl;
-	}
 	hlt8e29_bits7_branch = 0;
 	if (tree->GetAlias("hlt8e29_bits7") != 0) {
 		hlt8e29_bits7_branch = tree->GetBranch(tree->GetAlias("hlt8e29_bits7"));
 		hlt8e29_bits7_branch->SetAddress(&hlt8e29_bits7_);
-	}
-	if(hlt8e29_bits7_branch == 0 ) {
-	cout << "Branch hlt8e29_bits7 does not exist." << endl;
 	}
 	hlt8e29_bits8_branch = 0;
 	if (tree->GetAlias("hlt8e29_bits8") != 0) {
 		hlt8e29_bits8_branch = tree->GetBranch(tree->GetAlias("hlt8e29_bits8"));
 		hlt8e29_bits8_branch->SetAddress(&hlt8e29_bits8_);
 	}
-	if(hlt8e29_bits8_branch == 0 ) {
-	cout << "Branch hlt8e29_bits8 does not exist." << endl;
-	}
 	hlt_bits1_branch = 0;
 	if (tree->GetAlias("hlt_bits1") != 0) {
 		hlt_bits1_branch = tree->GetBranch(tree->GetAlias("hlt_bits1"));
 		hlt_bits1_branch->SetAddress(&hlt_bits1_);
-	}
-	if(hlt_bits1_branch == 0 ) {
-	cout << "Branch hlt_bits1 does not exist." << endl;
 	}
 	hlt_bits2_branch = 0;
 	if (tree->GetAlias("hlt_bits2") != 0) {
 		hlt_bits2_branch = tree->GetBranch(tree->GetAlias("hlt_bits2"));
 		hlt_bits2_branch->SetAddress(&hlt_bits2_);
 	}
-	if(hlt_bits2_branch == 0 ) {
-	cout << "Branch hlt_bits2 does not exist." << endl;
-	}
 	hlt_bits3_branch = 0;
 	if (tree->GetAlias("hlt_bits3") != 0) {
 		hlt_bits3_branch = tree->GetBranch(tree->GetAlias("hlt_bits3"));
 		hlt_bits3_branch->SetAddress(&hlt_bits3_);
-	}
-	if(hlt_bits3_branch == 0 ) {
-	cout << "Branch hlt_bits3 does not exist." << endl;
 	}
 	hlt_bits4_branch = 0;
 	if (tree->GetAlias("hlt_bits4") != 0) {
 		hlt_bits4_branch = tree->GetBranch(tree->GetAlias("hlt_bits4"));
 		hlt_bits4_branch->SetAddress(&hlt_bits4_);
 	}
-	if(hlt_bits4_branch == 0 ) {
-	cout << "Branch hlt_bits4 does not exist." << endl;
-	}
 	hlt_bits5_branch = 0;
 	if (tree->GetAlias("hlt_bits5") != 0) {
 		hlt_bits5_branch = tree->GetBranch(tree->GetAlias("hlt_bits5"));
 		hlt_bits5_branch->SetAddress(&hlt_bits5_);
-	}
-	if(hlt_bits5_branch == 0 ) {
-	cout << "Branch hlt_bits5 does not exist." << endl;
 	}
 	hlt_bits6_branch = 0;
 	if (tree->GetAlias("hlt_bits6") != 0) {
 		hlt_bits6_branch = tree->GetBranch(tree->GetAlias("hlt_bits6"));
 		hlt_bits6_branch->SetAddress(&hlt_bits6_);
 	}
-	if(hlt_bits6_branch == 0 ) {
-	cout << "Branch hlt_bits6 does not exist." << endl;
-	}
 	hlt_bits7_branch = 0;
 	if (tree->GetAlias("hlt_bits7") != 0) {
 		hlt_bits7_branch = tree->GetBranch(tree->GetAlias("hlt_bits7"));
 		hlt_bits7_branch->SetAddress(&hlt_bits7_);
-	}
-	if(hlt_bits7_branch == 0 ) {
-	cout << "Branch hlt_bits7 does not exist." << endl;
 	}
 	hlt_bits8_branch = 0;
 	if (tree->GetAlias("hlt_bits8") != 0) {
 		hlt_bits8_branch = tree->GetBranch(tree->GetAlias("hlt_bits8"));
 		hlt_bits8_branch->SetAddress(&hlt_bits8_);
 	}
-	if(hlt_bits8_branch == 0 ) {
-	cout << "Branch hlt_bits8 does not exist." << endl;
-	}
 	evt_njets_branch = 0;
 	if (tree->GetAlias("evt_njets") != 0) {
 		evt_njets_branch = tree->GetBranch(tree->GetAlias("evt_njets"));
 		evt_njets_branch->SetAddress(&evt_njets_);
-	}
-	if(evt_njets_branch == 0 ) {
-	cout << "Branch evt_njets does not exist." << endl;
 	}
 	evt_njpts_branch = 0;
 	if (tree->GetAlias("evt_njpts") != 0) {
 		evt_njpts_branch = tree->GetBranch(tree->GetAlias("evt_njpts"));
 		evt_njpts_branch->SetAddress(&evt_njpts_);
 	}
-	if(evt_njpts_branch == 0 ) {
-	cout << "Branch evt_njpts does not exist." << endl;
-	}
 	l1_bits1_branch = 0;
 	if (tree->GetAlias("l1_bits1") != 0) {
 		l1_bits1_branch = tree->GetBranch(tree->GetAlias("l1_bits1"));
 		l1_bits1_branch->SetAddress(&l1_bits1_);
-	}
-	if(l1_bits1_branch == 0 ) {
-	cout << "Branch l1_bits1 does not exist." << endl;
 	}
 	l1_bits2_branch = 0;
 	if (tree->GetAlias("l1_bits2") != 0) {
 		l1_bits2_branch = tree->GetBranch(tree->GetAlias("l1_bits2"));
 		l1_bits2_branch->SetAddress(&l1_bits2_);
 	}
-	if(l1_bits2_branch == 0 ) {
-	cout << "Branch l1_bits2 does not exist." << endl;
-	}
 	l1_bits3_branch = 0;
 	if (tree->GetAlias("l1_bits3") != 0) {
 		l1_bits3_branch = tree->GetBranch(tree->GetAlias("l1_bits3"));
 		l1_bits3_branch->SetAddress(&l1_bits3_);
-	}
-	if(l1_bits3_branch == 0 ) {
-	cout << "Branch l1_bits3 does not exist." << endl;
 	}
 	l1_bits4_branch = 0;
 	if (tree->GetAlias("l1_bits4") != 0) {
 		l1_bits4_branch = tree->GetBranch(tree->GetAlias("l1_bits4"));
 		l1_bits4_branch->SetAddress(&l1_bits4_);
 	}
-	if(l1_bits4_branch == 0 ) {
-	cout << "Branch l1_bits4 does not exist." << endl;
-	}
 	l1_techbits1_branch = 0;
 	if (tree->GetAlias("l1_techbits1") != 0) {
 		l1_techbits1_branch = tree->GetBranch(tree->GetAlias("l1_techbits1"));
 		l1_techbits1_branch->SetAddress(&l1_techbits1_);
-	}
-	if(l1_techbits1_branch == 0 ) {
-	cout << "Branch l1_techbits1 does not exist." << endl;
 	}
 	l1_techbits2_branch = 0;
 	if (tree->GetAlias("l1_techbits2") != 0) {
 		l1_techbits2_branch = tree->GetBranch(tree->GetAlias("l1_techbits2"));
 		l1_techbits2_branch->SetAddress(&l1_techbits2_);
 	}
-	if(l1_techbits2_branch == 0 ) {
-	cout << "Branch l1_techbits2 does not exist." << endl;
-	}
 	evt_nphotons_branch = 0;
 	if (tree->GetAlias("evt_nphotons") != 0) {
 		evt_nphotons_branch = tree->GetBranch(tree->GetAlias("evt_nphotons"));
 		evt_nphotons_branch->SetAddress(&evt_nphotons_);
-	}
-	if(evt_nphotons_branch == 0 ) {
-	cout << "Branch evt_nphotons does not exist." << endl;
 	}
 	evt_ecalRecoStatus_branch = 0;
 	if (tree->GetAlias("evt_ecalRecoStatus") != 0) {
 		evt_ecalRecoStatus_branch = tree->GetBranch(tree->GetAlias("evt_ecalRecoStatus"));
 		evt_ecalRecoStatus_branch->SetAddress(&evt_ecalRecoStatus_);
 	}
-	if(evt_ecalRecoStatus_branch == 0 ) {
-	cout << "Branch evt_ecalRecoStatus does not exist." << endl;
-	}
 	evt_nscs_branch = 0;
 	if (tree->GetAlias("evt_nscs") != 0) {
 		evt_nscs_branch = tree->GetBranch(tree->GetAlias("evt_nscs"));
 		evt_nscs_branch->SetAddress(&evt_nscs_);
-	}
-	if(evt_nscs_branch == 0 ) {
-	cout << "Branch evt_nscs does not exist." << endl;
 	}
 	evt_ntrkjets_branch = 0;
 	if (tree->GetAlias("evt_ntrkjets") != 0) {
 		evt_ntrkjets_branch = tree->GetBranch(tree->GetAlias("evt_ntrkjets"));
 		evt_ntrkjets_branch->SetAddress(&evt_ntrkjets_);
 	}
-	if(evt_ntrkjets_branch == 0 ) {
-	cout << "Branch evt_ntrkjets does not exist." << endl;
-	}
 	evt_nvtxs_branch = 0;
 	if (tree->GetAlias("evt_nvtxs") != 0) {
 		evt_nvtxs_branch = tree->GetBranch(tree->GetAlias("evt_nvtxs"));
 		evt_nvtxs_branch->SetAddress(&evt_nvtxs_);
-	}
-	if(evt_nvtxs_branch == 0 ) {
-	cout << "Branch evt_nvtxs does not exist." << endl;
-	}
-	twrs_detid_branch = 0;
-	if (tree->GetAlias("twrs_detid") != 0) {
-		twrs_detid_branch = tree->GetBranch(tree->GetAlias("twrs_detid"));
-		twrs_detid_branch->SetAddress(&twrs_detid_);
-	}
-	if(twrs_detid_branch == 0 ) {
-	cout << "Branch twrs_detid does not exist." << endl;
-	}
-	twrs_numBadEcalCells_branch = 0;
-	if (tree->GetAlias("twrs_numBadEcalCells") != 0) {
-		twrs_numBadEcalCells_branch = tree->GetBranch(tree->GetAlias("twrs_numBadEcalCells"));
-		twrs_numBadEcalCells_branch->SetAddress(&twrs_numBadEcalCells_);
-	}
-	if(twrs_numBadEcalCells_branch == 0 ) {
-	cout << "Branch twrs_numBadEcalCells does not exist." << endl;
-	}
-	twrs_numBadHcalCells_branch = 0;
-	if (tree->GetAlias("twrs_numBadHcalCells") != 0) {
-		twrs_numBadHcalCells_branch = tree->GetBranch(tree->GetAlias("twrs_numBadHcalCells"));
-		twrs_numBadHcalCells_branch->SetAddress(&twrs_numBadHcalCells_);
-	}
-	if(twrs_numBadHcalCells_branch == 0 ) {
-	cout << "Branch twrs_numBadHcalCells does not exist." << endl;
-	}
-	twrs_numProblematicEcalCells_branch = 0;
-	if (tree->GetAlias("twrs_numProblematicEcalCells") != 0) {
-		twrs_numProblematicEcalCells_branch = tree->GetBranch(tree->GetAlias("twrs_numProblematicEcalCells"));
-		twrs_numProblematicEcalCells_branch->SetAddress(&twrs_numProblematicEcalCells_);
-	}
-	if(twrs_numProblematicEcalCells_branch == 0 ) {
-	cout << "Branch twrs_numProblematicEcalCells does not exist." << endl;
-	}
-	twrs_numProblematicHcalCells_branch = 0;
-	if (tree->GetAlias("twrs_numProblematicHcalCells") != 0) {
-		twrs_numProblematicHcalCells_branch = tree->GetBranch(tree->GetAlias("twrs_numProblematicHcalCells"));
-		twrs_numProblematicHcalCells_branch->SetAddress(&twrs_numProblematicHcalCells_);
-	}
-	if(twrs_numProblematicHcalCells_branch == 0 ) {
-	cout << "Branch twrs_numProblematicHcalCells does not exist." << endl;
-	}
-	twrs_numRecoveredEcalCells_branch = 0;
-	if (tree->GetAlias("twrs_numRecoveredEcalCells") != 0) {
-		twrs_numRecoveredEcalCells_branch = tree->GetBranch(tree->GetAlias("twrs_numRecoveredEcalCells"));
-		twrs_numRecoveredEcalCells_branch->SetAddress(&twrs_numRecoveredEcalCells_);
-	}
-	if(twrs_numRecoveredEcalCells_branch == 0 ) {
-	cout << "Branch twrs_numRecoveredEcalCells does not exist." << endl;
-	}
-	twrs_numRecoveredHcalCells_branch = 0;
-	if (tree->GetAlias("twrs_numRecoveredHcalCells") != 0) {
-		twrs_numRecoveredHcalCells_branch = tree->GetBranch(tree->GetAlias("twrs_numRecoveredHcalCells"));
-		twrs_numRecoveredHcalCells_branch->SetAddress(&twrs_numRecoveredHcalCells_);
-	}
-	if(twrs_numRecoveredHcalCells_branch == 0 ) {
-	cout << "Branch twrs_numRecoveredHcalCells does not exist." << endl;
 	}
 	hlt1e31_prescales_branch = 0;
 	if (tree->GetAlias("hlt1e31_prescales") != 0) {
 		hlt1e31_prescales_branch = tree->GetBranch(tree->GetAlias("hlt1e31_prescales"));
 		hlt1e31_prescales_branch->SetAddress(&hlt1e31_prescales_);
 	}
-	if(hlt1e31_prescales_branch == 0 ) {
-	cout << "Branch hlt1e31_prescales does not exist." << endl;
-	}
 	hlt8e29_prescales_branch = 0;
 	if (tree->GetAlias("hlt8e29_prescales") != 0) {
 		hlt8e29_prescales_branch = tree->GetBranch(tree->GetAlias("hlt8e29_prescales"));
 		hlt8e29_prescales_branch->SetAddress(&hlt8e29_prescales_);
-	}
-	if(hlt8e29_prescales_branch == 0 ) {
-	cout << "Branch hlt8e29_prescales does not exist." << endl;
 	}
 	hlt_prescales_branch = 0;
 	if (tree->GetAlias("hlt_prescales") != 0) {
 		hlt_prescales_branch = tree->GetBranch(tree->GetAlias("hlt_prescales"));
 		hlt_prescales_branch->SetAddress(&hlt_prescales_);
 	}
-	if(hlt_prescales_branch == 0 ) {
-	cout << "Branch hlt_prescales does not exist." << endl;
-	}
 	hyp_quadlep_bucket_branch = 0;
 	if (tree->GetAlias("hyp_quadlep_bucket") != 0) {
 		hyp_quadlep_bucket_branch = tree->GetBranch(tree->GetAlias("hyp_quadlep_bucket"));
 		hyp_quadlep_bucket_branch->SetAddress(&hyp_quadlep_bucket_);
-	}
-	if(hyp_quadlep_bucket_branch == 0 ) {
-	cout << "Branch hyp_quadlep_bucket does not exist." << endl;
 	}
 	hyp_quadlep_first_index_branch = 0;
 	if (tree->GetAlias("hyp_quadlep_first_index") != 0) {
 		hyp_quadlep_first_index_branch = tree->GetBranch(tree->GetAlias("hyp_quadlep_first_index"));
 		hyp_quadlep_first_index_branch->SetAddress(&hyp_quadlep_first_index_);
 	}
-	if(hyp_quadlep_first_index_branch == 0 ) {
-	cout << "Branch hyp_quadlep_first_index does not exist." << endl;
-	}
 	hyp_quadlep_fourth_index_branch = 0;
 	if (tree->GetAlias("hyp_quadlep_fourth_index") != 0) {
 		hyp_quadlep_fourth_index_branch = tree->GetBranch(tree->GetAlias("hyp_quadlep_fourth_index"));
 		hyp_quadlep_fourth_index_branch->SetAddress(&hyp_quadlep_fourth_index_);
-	}
-	if(hyp_quadlep_fourth_index_branch == 0 ) {
-	cout << "Branch hyp_quadlep_fourth_index does not exist." << endl;
 	}
 	hyp_quadlep_second_index_branch = 0;
 	if (tree->GetAlias("hyp_quadlep_second_index") != 0) {
 		hyp_quadlep_second_index_branch = tree->GetBranch(tree->GetAlias("hyp_quadlep_second_index"));
 		hyp_quadlep_second_index_branch->SetAddress(&hyp_quadlep_second_index_);
 	}
-	if(hyp_quadlep_second_index_branch == 0 ) {
-	cout << "Branch hyp_quadlep_second_index does not exist." << endl;
-	}
 	hyp_quadlep_third_index_branch = 0;
 	if (tree->GetAlias("hyp_quadlep_third_index") != 0) {
 		hyp_quadlep_third_index_branch = tree->GetBranch(tree->GetAlias("hyp_quadlep_third_index"));
 		hyp_quadlep_third_index_branch->SetAddress(&hyp_quadlep_third_index_);
-	}
-	if(hyp_quadlep_third_index_branch == 0 ) {
-	cout << "Branch hyp_quadlep_third_index does not exist." << endl;
 	}
 	hyp_trilep_bucket_branch = 0;
 	if (tree->GetAlias("hyp_trilep_bucket") != 0) {
 		hyp_trilep_bucket_branch = tree->GetBranch(tree->GetAlias("hyp_trilep_bucket"));
 		hyp_trilep_bucket_branch->SetAddress(&hyp_trilep_bucket_);
 	}
-	if(hyp_trilep_bucket_branch == 0 ) {
-	cout << "Branch hyp_trilep_bucket does not exist." << endl;
-	}
 	hyp_trilep_first_index_branch = 0;
 	if (tree->GetAlias("hyp_trilep_first_index") != 0) {
 		hyp_trilep_first_index_branch = tree->GetBranch(tree->GetAlias("hyp_trilep_first_index"));
 		hyp_trilep_first_index_branch->SetAddress(&hyp_trilep_first_index_);
-	}
-	if(hyp_trilep_first_index_branch == 0 ) {
-	cout << "Branch hyp_trilep_first_index does not exist." << endl;
 	}
 	hyp_trilep_second_index_branch = 0;
 	if (tree->GetAlias("hyp_trilep_second_index") != 0) {
 		hyp_trilep_second_index_branch = tree->GetBranch(tree->GetAlias("hyp_trilep_second_index"));
 		hyp_trilep_second_index_branch->SetAddress(&hyp_trilep_second_index_);
 	}
-	if(hyp_trilep_second_index_branch == 0 ) {
-	cout << "Branch hyp_trilep_second_index does not exist." << endl;
-	}
 	hyp_trilep_third_index_branch = 0;
 	if (tree->GetAlias("hyp_trilep_third_index") != 0) {
 		hyp_trilep_third_index_branch = tree->GetBranch(tree->GetAlias("hyp_trilep_third_index"));
 		hyp_trilep_third_index_branch->SetAddress(&hyp_trilep_third_index_);
-	}
-	if(hyp_trilep_third_index_branch == 0 ) {
-	cout << "Branch hyp_trilep_third_index does not exist." << endl;
 	}
 	l1_prescales_branch = 0;
 	if (tree->GetAlias("l1_prescales") != 0) {
 		l1_prescales_branch = tree->GetBranch(tree->GetAlias("l1_prescales"));
 		l1_prescales_branch->SetAddress(&l1_prescales_);
 	}
-	if(l1_prescales_branch == 0 ) {
-	cout << "Branch l1_prescales does not exist." << endl;
-	}
 	l1_techtrigprescales_branch = 0;
 	if (tree->GetAlias("l1_techtrigprescales") != 0) {
 		l1_techtrigprescales_branch = tree->GetBranch(tree->GetAlias("l1_techtrigprescales"));
 		l1_techtrigprescales_branch->SetAddress(&l1_techtrigprescales_);
-	}
-	if(l1_techtrigprescales_branch == 0 ) {
-	cout << "Branch l1_techtrigprescales does not exist." << endl;
 	}
 	els_pat_flag_branch = 0;
 	if (tree->GetAlias("els_pat_flag") != 0) {
 		els_pat_flag_branch = tree->GetBranch(tree->GetAlias("els_pat_flag"));
 		els_pat_flag_branch->SetAddress(&els_pat_flag_);
 	}
-	if(els_pat_flag_branch == 0 ) {
-	cout << "Branch els_pat_flag does not exist." << endl;
-	}
 	jets_pat_flag_branch = 0;
 	if (tree->GetAlias("jets_pat_flag") != 0) {
 		jets_pat_flag_branch = tree->GetBranch(tree->GetAlias("jets_pat_flag"));
 		jets_pat_flag_branch->SetAddress(&jets_pat_flag_);
-	}
-	if(jets_pat_flag_branch == 0 ) {
-	cout << "Branch jets_pat_flag does not exist." << endl;
 	}
 	mus_pat_flag_branch = 0;
 	if (tree->GetAlias("mus_pat_flag") != 0) {
 		mus_pat_flag_branch = tree->GetBranch(tree->GetAlias("mus_pat_flag"));
 		mus_pat_flag_branch->SetAddress(&mus_pat_flag_);
 	}
-	if(mus_pat_flag_branch == 0 ) {
-	cout << "Branch mus_pat_flag does not exist." << endl;
+	evt_nEvts_branch = 0;
+	if (tree->GetAlias("evt_nEvts") != 0) {
+		evt_nEvts_branch = tree->GetBranch(tree->GetAlias("evt_nEvts"));
+		evt_nEvts_branch->SetAddress(&evt_nEvts_);
+	}
+	evt_filt_eff_branch = 0;
+	if (tree->GetAlias("evt_filt_eff") != 0) {
+		evt_filt_eff_branch = tree->GetBranch(tree->GetAlias("evt_filt_eff"));
+		evt_filt_eff_branch->SetAddress(&evt_filt_eff_);
 	}
   tree->SetMakeClass(0);
 }
@@ -10145,25 +7131,6 @@ void GetEntry(unsigned int idx)
 		trkjets_trackCountingHighEffBJetTag_isLoaded = false;
 		trkjets_trackCountingHighPurBJetTag_isLoaded = false;
 		evt_bs_covMatrix_isLoaded = false;
-		twrs_ecalTime_isLoaded = false;
-		twrs_emEnergy_isLoaded = false;
-		twrs_emEt_isLoaded = false;
-		twrs_emEtcorr_isLoaded = false;
-		twrs_eta_isLoaded = false;
-		twrs_etacorr_isLoaded = false;
-		twrs_etcorr_isLoaded = false;
-		twrs_hadEnergy_isLoaded = false;
-		twrs_hadEt_isLoaded = false;
-		twrs_hadEtcorr_isLoaded = false;
-		twrs_hcalTime_isLoaded = false;
-		twrs_outerEnergy_isLoaded = false;
-		twrs_outerEt_isLoaded = false;
-		twrs_outerEtcorr_isLoaded = false;
-		twrs_pcorr_isLoaded = false;
-		twrs_phi_isLoaded = false;
-		twrs_phicorr_isLoaded = false;
-		twrs_spikeEt_isLoaded = false;
-		twrs_spikeR4_isLoaded = false;
 		els_mc3dr_isLoaded = false;
 		els_mcdr_isLoaded = false;
 		jets_mc3dr_isLoaded = false;
@@ -10496,14 +7463,6 @@ void GetEntry(unsigned int idx)
 		vtxs_xError_isLoaded = false;
 		vtxs_yError_isLoaded = false;
 		vtxs_zError_isLoaded = false;
-		twrs_em3x3_isLoaded = false;
-		twrs_em5x5_isLoaded = false;
-		twrs_emSwiss_isLoaded = false;
-		twrs_emThresh_isLoaded = false;
-		twrs_emThreshChi2_isLoaded = false;
-		twrs_emThreshEta_isLoaded = false;
-		twrs_emThreshTime_isLoaded = false;
-		twrs_hcalHitTime_isLoaded = false;
 		vtxs_covMatrix_isLoaded = false;
 		evt_cscLooseHaloId_isLoaded = false;
 		evt_cscTightHaloId_isLoaded = false;
@@ -10543,7 +7502,6 @@ void GetEntry(unsigned int idx)
 		evt_ecaliPhiSuspects_isLoaded = false;
 		evt_globaliPhiSuspects_isLoaded = false;
 		evt_hcaliPhiSuspects_isLoaded = false;
-		twrs_numCrystals_isLoaded = false;
 		els_mc3_id_isLoaded = false;
 		els_mc3idx_isLoaded = false;
 		els_mc3_motherid_isLoaded = false;
@@ -10720,12 +7678,6 @@ void GetEntry(unsigned int idx)
 		vtxs_isFake_isLoaded = false;
 		vtxs_isValid_isLoaded = false;
 		vtxs_tracksSize_isLoaded = false;
-		twrs_hcalHitReFlag_isLoaded = false;
-		twrs_emMaxEcalMGPASampleADC_isLoaded = false;
-		twrs_emThreshRecoFlag_isLoaded = false;
-		twrs_emThreshSevLvl_isLoaded = false;
-		twrs_hcalHitDepth_isLoaded = false;
-		twrs_hcalHitFlag_isLoaded = false;
 		genps_lepdaughter_id_isLoaded = false;
 		genps_lepdaughter_idx_isLoaded = false;
 		hlt1e31_trigObjs_id_isLoaded = false;
@@ -10733,7 +7685,6 @@ void GetEntry(unsigned int idx)
 		hlt_trigObjs_id_isLoaded = false;
 		hyp_jets_idx_isLoaded = false;
 		hyp_other_jets_idx_isLoaded = false;
-		evt_ntwrs_isLoaded = false;
 		evt_nels_isLoaded = false;
 		evt_detectorStatus_isLoaded = false;
 		evt_event_isLoaded = false;
@@ -10779,13 +7730,6 @@ void GetEntry(unsigned int idx)
 		evt_nscs_isLoaded = false;
 		evt_ntrkjets_isLoaded = false;
 		evt_nvtxs_isLoaded = false;
-		twrs_detid_isLoaded = false;
-		twrs_numBadEcalCells_isLoaded = false;
-		twrs_numBadHcalCells_isLoaded = false;
-		twrs_numProblematicEcalCells_isLoaded = false;
-		twrs_numProblematicHcalCells_isLoaded = false;
-		twrs_numRecoveredEcalCells_isLoaded = false;
-		twrs_numRecoveredHcalCells_isLoaded = false;
 		hlt1e31_prescales_isLoaded = false;
 		hlt8e29_prescales_isLoaded = false;
 		hlt_prescales_isLoaded = false;
@@ -10803,6 +7747,8 @@ void GetEntry(unsigned int idx)
 		els_pat_flag_isLoaded = false;
 		jets_pat_flag_isLoaded = false;
 		mus_pat_flag_isLoaded = false;
+		evt_nEvts_isLoaded = false;
+		evt_filt_eff_isLoaded = false;
 	}
 
 void LoadAllBranches() 
@@ -11048,25 +7994,6 @@ void LoadAllBranches()
 	if (trkjets_trackCountingHighEffBJetTag_branch != 0) trkjets_trackCountingHighEffBJetTag();
 	if (trkjets_trackCountingHighPurBJetTag_branch != 0) trkjets_trackCountingHighPurBJetTag();
 	if (evt_bs_covMatrix_branch != 0) evt_bs_covMatrix();
-	if (twrs_ecalTime_branch != 0) twrs_ecalTime();
-	if (twrs_emEnergy_branch != 0) twrs_emEnergy();
-	if (twrs_emEt_branch != 0) twrs_emEt();
-	if (twrs_emEtcorr_branch != 0) twrs_emEtcorr();
-	if (twrs_eta_branch != 0) twrs_eta();
-	if (twrs_etacorr_branch != 0) twrs_etacorr();
-	if (twrs_etcorr_branch != 0) twrs_etcorr();
-	if (twrs_hadEnergy_branch != 0) twrs_hadEnergy();
-	if (twrs_hadEt_branch != 0) twrs_hadEt();
-	if (twrs_hadEtcorr_branch != 0) twrs_hadEtcorr();
-	if (twrs_hcalTime_branch != 0) twrs_hcalTime();
-	if (twrs_outerEnergy_branch != 0) twrs_outerEnergy();
-	if (twrs_outerEt_branch != 0) twrs_outerEt();
-	if (twrs_outerEtcorr_branch != 0) twrs_outerEtcorr();
-	if (twrs_pcorr_branch != 0) twrs_pcorr();
-	if (twrs_phi_branch != 0) twrs_phi();
-	if (twrs_phicorr_branch != 0) twrs_phicorr();
-	if (twrs_spikeEt_branch != 0) twrs_spikeEt();
-	if (twrs_spikeR4_branch != 0) twrs_spikeR4();
 	if (els_mc3dr_branch != 0) els_mc3dr();
 	if (els_mcdr_branch != 0) els_mcdr();
 	if (jets_mc3dr_branch != 0) jets_mc3dr();
@@ -11399,14 +8326,6 @@ void LoadAllBranches()
 	if (vtxs_xError_branch != 0) vtxs_xError();
 	if (vtxs_yError_branch != 0) vtxs_yError();
 	if (vtxs_zError_branch != 0) vtxs_zError();
-	if (twrs_em3x3_branch != 0) twrs_em3x3();
-	if (twrs_em5x5_branch != 0) twrs_em5x5();
-	if (twrs_emSwiss_branch != 0) twrs_emSwiss();
-	if (twrs_emThresh_branch != 0) twrs_emThresh();
-	if (twrs_emThreshChi2_branch != 0) twrs_emThreshChi2();
-	if (twrs_emThreshEta_branch != 0) twrs_emThreshEta();
-	if (twrs_emThreshTime_branch != 0) twrs_emThreshTime();
-	if (twrs_hcalHitTime_branch != 0) twrs_hcalHitTime();
 	if (vtxs_covMatrix_branch != 0) vtxs_covMatrix();
 	if (evt_cscLooseHaloId_branch != 0) evt_cscLooseHaloId();
 	if (evt_cscTightHaloId_branch != 0) evt_cscTightHaloId();
@@ -11446,7 +8365,6 @@ void LoadAllBranches()
 	if (evt_ecaliPhiSuspects_branch != 0) evt_ecaliPhiSuspects();
 	if (evt_globaliPhiSuspects_branch != 0) evt_globaliPhiSuspects();
 	if (evt_hcaliPhiSuspects_branch != 0) evt_hcaliPhiSuspects();
-	if (twrs_numCrystals_branch != 0) twrs_numCrystals();
 	if (els_mc3_id_branch != 0) els_mc3_id();
 	if (els_mc3idx_branch != 0) els_mc3idx();
 	if (els_mc3_motherid_branch != 0) els_mc3_motherid();
@@ -11623,12 +8541,6 @@ void LoadAllBranches()
 	if (vtxs_isFake_branch != 0) vtxs_isFake();
 	if (vtxs_isValid_branch != 0) vtxs_isValid();
 	if (vtxs_tracksSize_branch != 0) vtxs_tracksSize();
-	if (twrs_hcalHitReFlag_branch != 0) twrs_hcalHitReFlag();
-	if (twrs_emMaxEcalMGPASampleADC_branch != 0) twrs_emMaxEcalMGPASampleADC();
-	if (twrs_emThreshRecoFlag_branch != 0) twrs_emThreshRecoFlag();
-	if (twrs_emThreshSevLvl_branch != 0) twrs_emThreshSevLvl();
-	if (twrs_hcalHitDepth_branch != 0) twrs_hcalHitDepth();
-	if (twrs_hcalHitFlag_branch != 0) twrs_hcalHitFlag();
 	if (genps_lepdaughter_id_branch != 0) genps_lepdaughter_id();
 	if (genps_lepdaughter_idx_branch != 0) genps_lepdaughter_idx();
 	if (hlt1e31_trigObjs_id_branch != 0) hlt1e31_trigObjs_id();
@@ -11636,7 +8548,6 @@ void LoadAllBranches()
 	if (hlt_trigObjs_id_branch != 0) hlt_trigObjs_id();
 	if (hyp_jets_idx_branch != 0) hyp_jets_idx();
 	if (hyp_other_jets_idx_branch != 0) hyp_other_jets_idx();
-	if (evt_ntwrs_branch != 0) evt_ntwrs();
 	if (evt_nels_branch != 0) evt_nels();
 	if (evt_detectorStatus_branch != 0) evt_detectorStatus();
 	if (evt_event_branch != 0) evt_event();
@@ -11682,13 +8593,6 @@ void LoadAllBranches()
 	if (evt_nscs_branch != 0) evt_nscs();
 	if (evt_ntrkjets_branch != 0) evt_ntrkjets();
 	if (evt_nvtxs_branch != 0) evt_nvtxs();
-	if (twrs_detid_branch != 0) twrs_detid();
-	if (twrs_numBadEcalCells_branch != 0) twrs_numBadEcalCells();
-	if (twrs_numBadHcalCells_branch != 0) twrs_numBadHcalCells();
-	if (twrs_numProblematicEcalCells_branch != 0) twrs_numProblematicEcalCells();
-	if (twrs_numProblematicHcalCells_branch != 0) twrs_numProblematicHcalCells();
-	if (twrs_numRecoveredEcalCells_branch != 0) twrs_numRecoveredEcalCells();
-	if (twrs_numRecoveredHcalCells_branch != 0) twrs_numRecoveredHcalCells();
 	if (hlt1e31_prescales_branch != 0) hlt1e31_prescales();
 	if (hlt8e29_prescales_branch != 0) hlt8e29_prescales();
 	if (hlt_prescales_branch != 0) hlt_prescales();
@@ -11706,6 +8610,8 @@ void LoadAllBranches()
 	if (els_pat_flag_branch != 0) els_pat_flag();
 	if (jets_pat_flag_branch != 0) jets_pat_flag();
 	if (mus_pat_flag_branch != 0) mus_pat_flag();
+	if (evt_nEvts_branch != 0) evt_nEvts();
+	if (evt_filt_eff_branch != 0) evt_filt_eff();
 }
 
 	TString &evt_CMS2tag()
@@ -12115,10 +9021,6 @@ void LoadAllBranches()
 			if (evt_kfactor_branch != 0) {
 				evt_kfactor_branch->GetEntry(index);
 				#ifdef PARANOIA
-				if (not isfinite(evt_kfactor_)) {
-					printf("branch evt_kfactor_branch contains a bad float: %f\n", evt_kfactor_);
-					exit(1);
-				}
 				#endif // #ifdef PARANOIA
 			} else { 
 				printf("branch evt_kfactor_branch does not exist!\n");
@@ -12134,10 +9036,6 @@ void LoadAllBranches()
 			if (evt_scale1fb_branch != 0) {
 				evt_scale1fb_branch->GetEntry(index);
 				#ifdef PARANOIA
-				if (not isfinite(evt_scale1fb_)) {
-					printf("branch evt_scale1fb_branch contains a bad float: %f\n", evt_scale1fb_);
-					exit(1);
-				}
 				#endif // #ifdef PARANOIA
 			} else { 
 				printf("branch evt_scale1fb_branch does not exist!\n");
@@ -12153,10 +9051,6 @@ void LoadAllBranches()
 			if (evt_xsec_excl_branch != 0) {
 				evt_xsec_excl_branch->GetEntry(index);
 				#ifdef PARANOIA
-				if (not isfinite(evt_xsec_excl_)) {
-					printf("branch evt_xsec_excl_branch contains a bad float: %f\n", evt_xsec_excl_);
-					exit(1);
-				}
 				#endif // #ifdef PARANOIA
 			} else { 
 				printf("branch evt_xsec_excl_branch does not exist!\n");
@@ -12172,10 +9066,6 @@ void LoadAllBranches()
 			if (evt_xsec_incl_branch != 0) {
 				evt_xsec_incl_branch->GetEntry(index);
 				#ifdef PARANOIA
-				if (not isfinite(evt_xsec_incl_)) {
-					printf("branch evt_xsec_incl_branch contains a bad float: %f\n", evt_xsec_incl_);
-					exit(1);
-				}
 				#endif // #ifdef PARANOIA
 			} else { 
 				printf("branch evt_xsec_incl_branch does not exist!\n");
@@ -16615,405 +13505,6 @@ void LoadAllBranches()
 			evt_bs_covMatrix_isLoaded = true;
 		}
 		return evt_bs_covMatrix_;
-	}
-	vector<float> &twrs_ecalTime()
-	{
-		if (not twrs_ecalTime_isLoaded) {
-			if (twrs_ecalTime_branch != 0) {
-				twrs_ecalTime_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = twrs_ecalTime_.begin(); i != twrs_ecalTime_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch twrs_ecalTime_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_ecalTime_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_ecalTime_isLoaded = true;
-		}
-		return twrs_ecalTime_;
-	}
-	vector<float> &twrs_emEnergy()
-	{
-		if (not twrs_emEnergy_isLoaded) {
-			if (twrs_emEnergy_branch != 0) {
-				twrs_emEnergy_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = twrs_emEnergy_.begin(); i != twrs_emEnergy_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch twrs_emEnergy_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_emEnergy_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_emEnergy_isLoaded = true;
-		}
-		return twrs_emEnergy_;
-	}
-	vector<float> &twrs_emEt()
-	{
-		if (not twrs_emEt_isLoaded) {
-			if (twrs_emEt_branch != 0) {
-				twrs_emEt_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = twrs_emEt_.begin(); i != twrs_emEt_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch twrs_emEt_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_emEt_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_emEt_isLoaded = true;
-		}
-		return twrs_emEt_;
-	}
-	vector<float> &twrs_emEtcorr()
-	{
-		if (not twrs_emEtcorr_isLoaded) {
-			if (twrs_emEtcorr_branch != 0) {
-				twrs_emEtcorr_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = twrs_emEtcorr_.begin(); i != twrs_emEtcorr_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch twrs_emEtcorr_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_emEtcorr_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_emEtcorr_isLoaded = true;
-		}
-		return twrs_emEtcorr_;
-	}
-	vector<float> &twrs_eta()
-	{
-		if (not twrs_eta_isLoaded) {
-			if (twrs_eta_branch != 0) {
-				twrs_eta_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = twrs_eta_.begin(); i != twrs_eta_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch twrs_eta_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_eta_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_eta_isLoaded = true;
-		}
-		return twrs_eta_;
-	}
-	vector<float> &twrs_etacorr()
-	{
-		if (not twrs_etacorr_isLoaded) {
-			if (twrs_etacorr_branch != 0) {
-				twrs_etacorr_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = twrs_etacorr_.begin(); i != twrs_etacorr_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch twrs_etacorr_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_etacorr_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_etacorr_isLoaded = true;
-		}
-		return twrs_etacorr_;
-	}
-	vector<float> &twrs_etcorr()
-	{
-		if (not twrs_etcorr_isLoaded) {
-			if (twrs_etcorr_branch != 0) {
-				twrs_etcorr_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = twrs_etcorr_.begin(); i != twrs_etcorr_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch twrs_etcorr_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_etcorr_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_etcorr_isLoaded = true;
-		}
-		return twrs_etcorr_;
-	}
-	vector<float> &twrs_hadEnergy()
-	{
-		if (not twrs_hadEnergy_isLoaded) {
-			if (twrs_hadEnergy_branch != 0) {
-				twrs_hadEnergy_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = twrs_hadEnergy_.begin(); i != twrs_hadEnergy_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch twrs_hadEnergy_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_hadEnergy_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_hadEnergy_isLoaded = true;
-		}
-		return twrs_hadEnergy_;
-	}
-	vector<float> &twrs_hadEt()
-	{
-		if (not twrs_hadEt_isLoaded) {
-			if (twrs_hadEt_branch != 0) {
-				twrs_hadEt_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = twrs_hadEt_.begin(); i != twrs_hadEt_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch twrs_hadEt_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_hadEt_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_hadEt_isLoaded = true;
-		}
-		return twrs_hadEt_;
-	}
-	vector<float> &twrs_hadEtcorr()
-	{
-		if (not twrs_hadEtcorr_isLoaded) {
-			if (twrs_hadEtcorr_branch != 0) {
-				twrs_hadEtcorr_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = twrs_hadEtcorr_.begin(); i != twrs_hadEtcorr_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch twrs_hadEtcorr_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_hadEtcorr_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_hadEtcorr_isLoaded = true;
-		}
-		return twrs_hadEtcorr_;
-	}
-	vector<float> &twrs_hcalTime()
-	{
-		if (not twrs_hcalTime_isLoaded) {
-			if (twrs_hcalTime_branch != 0) {
-				twrs_hcalTime_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = twrs_hcalTime_.begin(); i != twrs_hcalTime_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch twrs_hcalTime_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_hcalTime_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_hcalTime_isLoaded = true;
-		}
-		return twrs_hcalTime_;
-	}
-	vector<float> &twrs_outerEnergy()
-	{
-		if (not twrs_outerEnergy_isLoaded) {
-			if (twrs_outerEnergy_branch != 0) {
-				twrs_outerEnergy_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = twrs_outerEnergy_.begin(); i != twrs_outerEnergy_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch twrs_outerEnergy_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_outerEnergy_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_outerEnergy_isLoaded = true;
-		}
-		return twrs_outerEnergy_;
-	}
-	vector<float> &twrs_outerEt()
-	{
-		if (not twrs_outerEt_isLoaded) {
-			if (twrs_outerEt_branch != 0) {
-				twrs_outerEt_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = twrs_outerEt_.begin(); i != twrs_outerEt_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch twrs_outerEt_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_outerEt_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_outerEt_isLoaded = true;
-		}
-		return twrs_outerEt_;
-	}
-	vector<float> &twrs_outerEtcorr()
-	{
-		if (not twrs_outerEtcorr_isLoaded) {
-			if (twrs_outerEtcorr_branch != 0) {
-				twrs_outerEtcorr_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = twrs_outerEtcorr_.begin(); i != twrs_outerEtcorr_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch twrs_outerEtcorr_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_outerEtcorr_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_outerEtcorr_isLoaded = true;
-		}
-		return twrs_outerEtcorr_;
-	}
-	vector<float> &twrs_pcorr()
-	{
-		if (not twrs_pcorr_isLoaded) {
-			if (twrs_pcorr_branch != 0) {
-				twrs_pcorr_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = twrs_pcorr_.begin(); i != twrs_pcorr_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch twrs_pcorr_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_pcorr_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_pcorr_isLoaded = true;
-		}
-		return twrs_pcorr_;
-	}
-	vector<float> &twrs_phi()
-	{
-		if (not twrs_phi_isLoaded) {
-			if (twrs_phi_branch != 0) {
-				twrs_phi_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = twrs_phi_.begin(); i != twrs_phi_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch twrs_phi_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_phi_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_phi_isLoaded = true;
-		}
-		return twrs_phi_;
-	}
-	vector<float> &twrs_phicorr()
-	{
-		if (not twrs_phicorr_isLoaded) {
-			if (twrs_phicorr_branch != 0) {
-				twrs_phicorr_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = twrs_phicorr_.begin(); i != twrs_phicorr_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch twrs_phicorr_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_phicorr_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_phicorr_isLoaded = true;
-		}
-		return twrs_phicorr_;
-	}
-	vector<float> &twrs_spikeEt()
-	{
-		if (not twrs_spikeEt_isLoaded) {
-			if (twrs_spikeEt_branch != 0) {
-				twrs_spikeEt_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = twrs_spikeEt_.begin(); i != twrs_spikeEt_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch twrs_spikeEt_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_spikeEt_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_spikeEt_isLoaded = true;
-		}
-		return twrs_spikeEt_;
-	}
-	vector<float> &twrs_spikeR4()
-	{
-		if (not twrs_spikeR4_isLoaded) {
-			if (twrs_spikeR4_branch != 0) {
-				twrs_spikeR4_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = twrs_spikeR4_.begin(); i != twrs_spikeR4_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch twrs_spikeR4_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_spikeR4_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_spikeR4_isLoaded = true;
-		}
-		return twrs_spikeR4_;
 	}
 	vector<float> &els_mc3dr()
 	{
@@ -23987,190 +20478,6 @@ void LoadAllBranches()
 		}
 		return vtxs_zError_;
 	}
-	vector<vector<float> > &twrs_em3x3()
-	{
-		if (not twrs_em3x3_isLoaded) {
-			if (twrs_em3x3_branch != 0) {
-				twrs_em3x3_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<vector<float> >::const_iterator i = twrs_em3x3_.begin(); i != twrs_em3x3_.end(); ++i) {
-					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						if (not isfinite(*j)) {
-							printf("branch twrs_em3x3_branch contains a bad float: %f\n", *j);
-							exit(1);
-						}
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_em3x3_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_em3x3_isLoaded = true;
-		}
-		return twrs_em3x3_;
-	}
-	vector<vector<float> > &twrs_em5x5()
-	{
-		if (not twrs_em5x5_isLoaded) {
-			if (twrs_em5x5_branch != 0) {
-				twrs_em5x5_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<vector<float> >::const_iterator i = twrs_em5x5_.begin(); i != twrs_em5x5_.end(); ++i) {
-					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						if (not isfinite(*j)) {
-							printf("branch twrs_em5x5_branch contains a bad float: %f\n", *j);
-							exit(1);
-						}
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_em5x5_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_em5x5_isLoaded = true;
-		}
-		return twrs_em5x5_;
-	}
-	vector<vector<float> > &twrs_emSwiss()
-	{
-		if (not twrs_emSwiss_isLoaded) {
-			if (twrs_emSwiss_branch != 0) {
-				twrs_emSwiss_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<vector<float> >::const_iterator i = twrs_emSwiss_.begin(); i != twrs_emSwiss_.end(); ++i) {
-					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						if (not isfinite(*j)) {
-							printf("branch twrs_emSwiss_branch contains a bad float: %f\n", *j);
-							exit(1);
-						}
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_emSwiss_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_emSwiss_isLoaded = true;
-		}
-		return twrs_emSwiss_;
-	}
-	vector<vector<float> > &twrs_emThresh()
-	{
-		if (not twrs_emThresh_isLoaded) {
-			if (twrs_emThresh_branch != 0) {
-				twrs_emThresh_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<vector<float> >::const_iterator i = twrs_emThresh_.begin(); i != twrs_emThresh_.end(); ++i) {
-					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						if (not isfinite(*j)) {
-							printf("branch twrs_emThresh_branch contains a bad float: %f\n", *j);
-							exit(1);
-						}
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_emThresh_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_emThresh_isLoaded = true;
-		}
-		return twrs_emThresh_;
-	}
-	vector<vector<float> > &twrs_emThreshChi2()
-	{
-		if (not twrs_emThreshChi2_isLoaded) {
-			if (twrs_emThreshChi2_branch != 0) {
-				twrs_emThreshChi2_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<vector<float> >::const_iterator i = twrs_emThreshChi2_.begin(); i != twrs_emThreshChi2_.end(); ++i) {
-					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						if (not isfinite(*j)) {
-							printf("branch twrs_emThreshChi2_branch contains a bad float: %f\n", *j);
-							exit(1);
-						}
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_emThreshChi2_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_emThreshChi2_isLoaded = true;
-		}
-		return twrs_emThreshChi2_;
-	}
-	vector<vector<float> > &twrs_emThreshEta()
-	{
-		if (not twrs_emThreshEta_isLoaded) {
-			if (twrs_emThreshEta_branch != 0) {
-				twrs_emThreshEta_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<vector<float> >::const_iterator i = twrs_emThreshEta_.begin(); i != twrs_emThreshEta_.end(); ++i) {
-					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						if (not isfinite(*j)) {
-							printf("branch twrs_emThreshEta_branch contains a bad float: %f\n", *j);
-							exit(1);
-						}
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_emThreshEta_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_emThreshEta_isLoaded = true;
-		}
-		return twrs_emThreshEta_;
-	}
-	vector<vector<float> > &twrs_emThreshTime()
-	{
-		if (not twrs_emThreshTime_isLoaded) {
-			if (twrs_emThreshTime_branch != 0) {
-				twrs_emThreshTime_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<vector<float> >::const_iterator i = twrs_emThreshTime_.begin(); i != twrs_emThreshTime_.end(); ++i) {
-					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						if (not isfinite(*j)) {
-							printf("branch twrs_emThreshTime_branch contains a bad float: %f\n", *j);
-							exit(1);
-						}
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_emThreshTime_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_emThreshTime_isLoaded = true;
-		}
-		return twrs_emThreshTime_;
-	}
-	vector<vector<float> > &twrs_hcalHitTime()
-	{
-		if (not twrs_hcalHitTime_isLoaded) {
-			if (twrs_hcalHitTime_branch != 0) {
-				twrs_hcalHitTime_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<vector<float> >::const_iterator i = twrs_hcalHitTime_.begin(); i != twrs_hcalHitTime_.end(); ++i) {
-					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
-						if (not isfinite(*j)) {
-							printf("branch twrs_hcalHitTime_branch contains a bad float: %f\n", *j);
-							exit(1);
-						}
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_hcalHitTime_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_hcalHitTime_isLoaded = true;
-		}
-		return twrs_hcalHitTime_;
-	}
 	vector<vector<float> > &vtxs_covMatrix()
 	{
 		if (not vtxs_covMatrix_isLoaded) {
@@ -24763,21 +21070,6 @@ void LoadAllBranches()
 			evt_hcaliPhiSuspects_isLoaded = true;
 		}
 		return evt_hcaliPhiSuspects_;
-	}
-	vector<int> &twrs_numCrystals()
-	{
-		if (not twrs_numCrystals_isLoaded) {
-			if (twrs_numCrystals_branch != 0) {
-				twrs_numCrystals_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_numCrystals_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_numCrystals_isLoaded = true;
-		}
-		return twrs_numCrystals_;
 	}
 	vector<int> &els_mc3_id()
 	{
@@ -27419,96 +23711,6 @@ void LoadAllBranches()
 		}
 		return vtxs_tracksSize_;
 	}
-	vector<vector<int> > &twrs_hcalHitReFlag()
-	{
-		if (not twrs_hcalHitReFlag_isLoaded) {
-			if (twrs_hcalHitReFlag_branch != 0) {
-				twrs_hcalHitReFlag_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_hcalHitReFlag_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_hcalHitReFlag_isLoaded = true;
-		}
-		return twrs_hcalHitReFlag_;
-	}
-	vector<vector<int> > &twrs_emMaxEcalMGPASampleADC()
-	{
-		if (not twrs_emMaxEcalMGPASampleADC_isLoaded) {
-			if (twrs_emMaxEcalMGPASampleADC_branch != 0) {
-				twrs_emMaxEcalMGPASampleADC_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_emMaxEcalMGPASampleADC_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_emMaxEcalMGPASampleADC_isLoaded = true;
-		}
-		return twrs_emMaxEcalMGPASampleADC_;
-	}
-	vector<vector<int> > &twrs_emThreshRecoFlag()
-	{
-		if (not twrs_emThreshRecoFlag_isLoaded) {
-			if (twrs_emThreshRecoFlag_branch != 0) {
-				twrs_emThreshRecoFlag_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_emThreshRecoFlag_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_emThreshRecoFlag_isLoaded = true;
-		}
-		return twrs_emThreshRecoFlag_;
-	}
-	vector<vector<int> > &twrs_emThreshSevLvl()
-	{
-		if (not twrs_emThreshSevLvl_isLoaded) {
-			if (twrs_emThreshSevLvl_branch != 0) {
-				twrs_emThreshSevLvl_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_emThreshSevLvl_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_emThreshSevLvl_isLoaded = true;
-		}
-		return twrs_emThreshSevLvl_;
-	}
-	vector<vector<int> > &twrs_hcalHitDepth()
-	{
-		if (not twrs_hcalHitDepth_isLoaded) {
-			if (twrs_hcalHitDepth_branch != 0) {
-				twrs_hcalHitDepth_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_hcalHitDepth_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_hcalHitDepth_isLoaded = true;
-		}
-		return twrs_hcalHitDepth_;
-	}
-	vector<vector<int> > &twrs_hcalHitFlag()
-	{
-		if (not twrs_hcalHitFlag_isLoaded) {
-			if (twrs_hcalHitFlag_branch != 0) {
-				twrs_hcalHitFlag_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_hcalHitFlag_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_hcalHitFlag_isLoaded = true;
-		}
-		return twrs_hcalHitFlag_;
-	}
 	vector<vector<int> > &genps_lepdaughter_id()
 	{
 		if (not genps_lepdaughter_id_isLoaded) {
@@ -27613,21 +23815,6 @@ void LoadAllBranches()
 			hyp_other_jets_idx_isLoaded = true;
 		}
 		return hyp_other_jets_idx_;
-	}
-	unsigned int &evt_ntwrs()
-	{
-		if (not evt_ntwrs_isLoaded) {
-			if (evt_ntwrs_branch != 0) {
-				evt_ntwrs_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch evt_ntwrs_branch does not exist!\n");
-				exit(1);
-			}
-			evt_ntwrs_isLoaded = true;
-		}
-		return evt_ntwrs_;
 	}
 	unsigned int &evt_nels()
 	{
@@ -28304,111 +24491,6 @@ void LoadAllBranches()
 		}
 		return evt_nvtxs_;
 	}
-	vector<unsigned int> &twrs_detid()
-	{
-		if (not twrs_detid_isLoaded) {
-			if (twrs_detid_branch != 0) {
-				twrs_detid_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_detid_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_detid_isLoaded = true;
-		}
-		return twrs_detid_;
-	}
-	vector<unsigned int> &twrs_numBadEcalCells()
-	{
-		if (not twrs_numBadEcalCells_isLoaded) {
-			if (twrs_numBadEcalCells_branch != 0) {
-				twrs_numBadEcalCells_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_numBadEcalCells_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_numBadEcalCells_isLoaded = true;
-		}
-		return twrs_numBadEcalCells_;
-	}
-	vector<unsigned int> &twrs_numBadHcalCells()
-	{
-		if (not twrs_numBadHcalCells_isLoaded) {
-			if (twrs_numBadHcalCells_branch != 0) {
-				twrs_numBadHcalCells_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_numBadHcalCells_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_numBadHcalCells_isLoaded = true;
-		}
-		return twrs_numBadHcalCells_;
-	}
-	vector<unsigned int> &twrs_numProblematicEcalCells()
-	{
-		if (not twrs_numProblematicEcalCells_isLoaded) {
-			if (twrs_numProblematicEcalCells_branch != 0) {
-				twrs_numProblematicEcalCells_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_numProblematicEcalCells_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_numProblematicEcalCells_isLoaded = true;
-		}
-		return twrs_numProblematicEcalCells_;
-	}
-	vector<unsigned int> &twrs_numProblematicHcalCells()
-	{
-		if (not twrs_numProblematicHcalCells_isLoaded) {
-			if (twrs_numProblematicHcalCells_branch != 0) {
-				twrs_numProblematicHcalCells_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_numProblematicHcalCells_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_numProblematicHcalCells_isLoaded = true;
-		}
-		return twrs_numProblematicHcalCells_;
-	}
-	vector<unsigned int> &twrs_numRecoveredEcalCells()
-	{
-		if (not twrs_numRecoveredEcalCells_isLoaded) {
-			if (twrs_numRecoveredEcalCells_branch != 0) {
-				twrs_numRecoveredEcalCells_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_numRecoveredEcalCells_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_numRecoveredEcalCells_isLoaded = true;
-		}
-		return twrs_numRecoveredEcalCells_;
-	}
-	vector<unsigned int> &twrs_numRecoveredHcalCells()
-	{
-		if (not twrs_numRecoveredHcalCells_isLoaded) {
-			if (twrs_numRecoveredHcalCells_branch != 0) {
-				twrs_numRecoveredHcalCells_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch twrs_numRecoveredHcalCells_branch does not exist!\n");
-				exit(1);
-			}
-			twrs_numRecoveredHcalCells_isLoaded = true;
-		}
-		return twrs_numRecoveredHcalCells_;
-	}
 	vector<unsigned int> &hlt1e31_prescales()
 	{
 		if (not hlt1e31_prescales_isLoaded) {
@@ -28663,6 +24745,36 @@ void LoadAllBranches()
 			mus_pat_flag_isLoaded = true;
 		}
 		return mus_pat_flag_;
+	}
+	int &evt_nEvts()
+	{
+		if (not evt_nEvts_isLoaded) {
+			if (evt_nEvts_branch != 0) {
+				evt_nEvts_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch evt_nEvts_branch does not exist!\n");
+				exit(1);
+			}
+			evt_nEvts_isLoaded = true;
+		}
+		return evt_nEvts_;
+	}
+	float &evt_filt_eff()
+	{
+		if (not evt_filt_eff_isLoaded) {
+			if (evt_filt_eff_branch != 0) {
+				evt_filt_eff_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch evt_filt_eff_branch does not exist!\n");
+				exit(1);
+			}
+			evt_filt_eff_isLoaded = true;
+		}
+		return evt_filt_eff_;
 	}
 	bool passHLTTrigger(TString trigName) {
 		int trigIndx;
@@ -29053,25 +25165,6 @@ namespace tas {
 	vector<float> &trkjets_trackCountingHighEffBJetTag();
 	vector<float> &trkjets_trackCountingHighPurBJetTag();
 	vector<float> &evt_bs_covMatrix();
-	vector<float> &twrs_ecalTime();
-	vector<float> &twrs_emEnergy();
-	vector<float> &twrs_emEt();
-	vector<float> &twrs_emEtcorr();
-	vector<float> &twrs_eta();
-	vector<float> &twrs_etacorr();
-	vector<float> &twrs_etcorr();
-	vector<float> &twrs_hadEnergy();
-	vector<float> &twrs_hadEt();
-	vector<float> &twrs_hadEtcorr();
-	vector<float> &twrs_hcalTime();
-	vector<float> &twrs_outerEnergy();
-	vector<float> &twrs_outerEt();
-	vector<float> &twrs_outerEtcorr();
-	vector<float> &twrs_pcorr();
-	vector<float> &twrs_phi();
-	vector<float> &twrs_phicorr();
-	vector<float> &twrs_spikeEt();
-	vector<float> &twrs_spikeR4();
 	vector<float> &els_mc3dr();
 	vector<float> &els_mcdr();
 	vector<float> &jets_mc3dr();
@@ -29404,14 +25497,6 @@ namespace tas {
 	vector<float> &vtxs_xError();
 	vector<float> &vtxs_yError();
 	vector<float> &vtxs_zError();
-	vector<vector<float> > &twrs_em3x3();
-	vector<vector<float> > &twrs_em5x5();
-	vector<vector<float> > &twrs_emSwiss();
-	vector<vector<float> > &twrs_emThresh();
-	vector<vector<float> > &twrs_emThreshChi2();
-	vector<vector<float> > &twrs_emThreshEta();
-	vector<vector<float> > &twrs_emThreshTime();
-	vector<vector<float> > &twrs_hcalHitTime();
 	vector<vector<float> > &vtxs_covMatrix();
 	int &evt_cscLooseHaloId();
 	int &evt_cscTightHaloId();
@@ -29451,7 +25536,6 @@ namespace tas {
 	vector<int> &evt_ecaliPhiSuspects();
 	vector<int> &evt_globaliPhiSuspects();
 	vector<int> &evt_hcaliPhiSuspects();
-	vector<int> &twrs_numCrystals();
 	vector<int> &els_mc3_id();
 	vector<int> &els_mc3idx();
 	vector<int> &els_mc3_motherid();
@@ -29628,12 +25712,6 @@ namespace tas {
 	vector<int> &vtxs_isFake();
 	vector<int> &vtxs_isValid();
 	vector<int> &vtxs_tracksSize();
-	vector<vector<int> > &twrs_hcalHitReFlag();
-	vector<vector<int> > &twrs_emMaxEcalMGPASampleADC();
-	vector<vector<int> > &twrs_emThreshRecoFlag();
-	vector<vector<int> > &twrs_emThreshSevLvl();
-	vector<vector<int> > &twrs_hcalHitDepth();
-	vector<vector<int> > &twrs_hcalHitFlag();
 	vector<vector<int> > &genps_lepdaughter_id();
 	vector<vector<int> > &genps_lepdaughter_idx();
 	vector<vector<int> > &hlt1e31_trigObjs_id();
@@ -29641,7 +25719,6 @@ namespace tas {
 	vector<vector<int> > &hlt_trigObjs_id();
 	vector<vector<int> > &hyp_jets_idx();
 	vector<vector<int> > &hyp_other_jets_idx();
-	unsigned int &evt_ntwrs();
 	unsigned int &evt_nels();
 	unsigned int &evt_detectorStatus();
 	unsigned int &evt_event();
@@ -29687,13 +25764,6 @@ namespace tas {
 	unsigned int &evt_nscs();
 	unsigned int &evt_ntrkjets();
 	unsigned int &evt_nvtxs();
-	vector<unsigned int> &twrs_detid();
-	vector<unsigned int> &twrs_numBadEcalCells();
-	vector<unsigned int> &twrs_numBadHcalCells();
-	vector<unsigned int> &twrs_numProblematicEcalCells();
-	vector<unsigned int> &twrs_numProblematicHcalCells();
-	vector<unsigned int> &twrs_numRecoveredEcalCells();
-	vector<unsigned int> &twrs_numRecoveredHcalCells();
 	vector<unsigned int> &hlt1e31_prescales();
 	vector<unsigned int> &hlt8e29_prescales();
 	vector<unsigned int> &hlt_prescales();
@@ -29711,6 +25781,8 @@ namespace tas {
 	vector<unsigned int> &els_pat_flag();
 	vector<unsigned int> &jets_pat_flag();
 	vector<unsigned int> &mus_pat_flag();
+	int &evt_nEvts();
+	float &evt_filt_eff();
 	bool passHLTTrigger(TString trigName);
 	bool passHLT8E29Trigger(TString trigName);
 	bool passL1Trigger(TString trigName);
