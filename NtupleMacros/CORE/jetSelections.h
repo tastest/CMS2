@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// $Id: jetSelections.h,v 1.9 2010/08/08 09:15:52 jmuelmen Exp $
+// $Id: jetSelections.h,v 1.10 2010/08/09 06:39:43 kalavase Exp $
 
 #ifndef JETSELECTIONS_H
 #define JETSELECTIONS_H
@@ -84,4 +84,5 @@ double jetCorrection (const LorentzVector &jet);
 double jetCorrection (int ijet);
 bool jetPassesLooseJetID(int ijet);
 bool passesCaloJetID (const LorentzVector &jetp4);
+bool passesPFJetID(unsigned int pfJetIdx);
 #endif // SEL_JETS_H

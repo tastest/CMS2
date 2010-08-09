@@ -1,4 +1,3 @@
-
 //
 // electron selections
 //
@@ -14,14 +13,14 @@ bool pass_electronSelectionCompareMask(const cuts_t cuts_passed, const cuts_t se
     return false;
 }
 
-bool pass_electronSelection(const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection)
+bool pass_electronSelection(const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection, bool removedEtaCutInEndcap)
 {
-    cuts_t cuts_passed = electronSelection(index, applyAlignmentCorrection);
+  cuts_t cuts_passed = electronSelection(index, applyAlignmentCorrection, removedEtaCutInEndcap);
     if ((cuts_passed & selectionType) == selectionType) return true;
     return false;
 }
 
-cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection) 
+cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection, bool removedEtaCutInEndcap) 
 {
 
     //
@@ -53,9 +52,9 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     // "CAND" ID
     //
     // CAND01
-    if (electronId_cand(index, CAND_01, applyAlignmentCorrection)) cuts_passed |= (1ll<<ELEID_CAND01);
+    if (electronId_cand(index, CAND_01, applyAlignmentCorrection, removedEtaCutInEndcap)) cuts_passed |= (1ll<<ELEID_CAND01);
     // CAND02
-    if (electronId_cand(index, CAND_02, applyAlignmentCorrection)) cuts_passed |= (1ll<<ELEID_CAND02);
+    if (electronId_cand(index, CAND_02, applyAlignmentCorrection, removedEtaCutInEndcap)) cuts_passed |= (1ll<<ELEID_CAND02);
     // "EXTRA"
     if (electronId_extra(index)) cuts_passed |= (1ll<<ELEID_EXTRA);
     //
@@ -63,22 +62,22 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     //
     electronIdComponent_t answer_vbtf = 0;
     // VBTF95 (optimised in 35X)
-    answer_vbtf = electronId_VBTF(index, VBTF_35X_95, applyAlignmentCorrection);
+    answer_vbtf = electronId_VBTF(index, VBTF_35X_95, applyAlignmentCorrection, removedEtaCutInEndcap);
     if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_35X_95);
     // VBTF90 (optimised in 35X)
-    answer_vbtf = electronId_VBTF(index, VBTF_35X_90, applyAlignmentCorrection);
+    answer_vbtf = electronId_VBTF(index, VBTF_35X_90, applyAlignmentCorrection, removedEtaCutInEndcap);
     if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_35X_90);
     // VBTF70 (optimised in 35X)
-    answer_vbtf = electronId_VBTF(index, VBTF_35X_80, applyAlignmentCorrection);
+    answer_vbtf = electronId_VBTF(index, VBTF_35X_80, applyAlignmentCorrection, removedEtaCutInEndcap);
     if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_35X_80);
     // VBTF70 (optimised in 35X)
-    answer_vbtf = electronId_VBTF(index, VBTF_35Xr2_70, applyAlignmentCorrection);
+    answer_vbtf = electronId_VBTF(index, VBTF_35Xr2_70, applyAlignmentCorrection, removedEtaCutInEndcap);
     if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_35X_70);
     //
     // CIC ID  
     //
     // MEDIUM (V03 optimisation)
-    electronIdComponent_t answer_cic = electronId_CIC(index, 3, CIC_MEDIUM, applyAlignmentCorrection);
+    electronIdComponent_t answer_cic = electronId_CIC(index, 3, CIC_MEDIUM, applyAlignmentCorrection, removedEtaCutInEndcap);
     if ((answer_cic & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_CIC_V03_MEDIUM);
 
     //
@@ -152,7 +151,7 @@ bool electronId_noMuon(const unsigned int index)
 //
 // candidate electron id function
 //
-bool electronId_cand(const unsigned int index, const cand_tightness tightness, bool applyAlignementCorrection)
+bool electronId_cand(const unsigned int index, const cand_tightness tightness, bool applyAlignementCorrection, bool removedEtaCutInEndcap)
 {
 
     std::vector<double> relisoThresholds;
@@ -170,18 +169,18 @@ bool electronId_cand(const unsigned int index, const cand_tightness tightness, b
     float dEtaIn = cms2.els_dEtaIn()[index];
     float dPhiIn = cms2.els_dPhiIn()[index];
     if (applyAlignementCorrection) electronCorrection_pos(index, dEtaIn, dPhiIn);
-
+    
     //
     // apply cuts
     //
     if (fabs(cms2.els_etaSC()[index]) < 1.479) {
-        if (fabs(dEtaIn) > dEtaInThresholds[0]) 	return false;
+      if (fabs(dEtaIn) > dEtaInThresholds[0]) 	return false;
         if (fabs(dPhiIn) > dPhiInThresholds[0]) 	return false;
         if (cms2.els_hOverE()[index] > hoeThresholds[0]) 		    return false;
         if ((cms2.els_e2x5Max()[index]/cms2.els_e5x5()[index]) < latThresholds[0]) return false;
     }
     if (fabs(cms2.els_etaSC()[index]) > 1.479) {
-        if (fabs(dEtaIn) > dEtaInThresholds[1]) 	return false;
+      if (!removedEtaCutInEndcap && (fabs(dEtaIn) > dEtaInThresholds[1])) 	return false;
         if (fabs(dPhiIn) > dPhiInThresholds[1]) 	return false;
         if (cms2.els_hOverE()[index] > hoeThresholds[1]) 		    return false;
         if (cms2.els_sigmaIEtaIEta()[index] > latThresholds[1])  return false;	
@@ -212,7 +211,7 @@ bool electronId_classBasedTight(const unsigned int index)
 // class based id that is new/experimental
 //
 
-electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned int version, const cic_tightness tightness, bool applyAlignementCorrection)
+electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned int version, const cic_tightness tightness, bool applyAlignementCorrection, bool removedEtaCutInEndcap)
 {
 
     // check that a valid version number was supplied
@@ -309,22 +308,26 @@ electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned in
             result |= (1<<ELEID_ISO);
 
         if (fBrem < -2)
-            return result;
-
-        if (hOverE < cuthoe[cat+3*eb+bin*6] &&
-                sigmaee < cutsee[cat+3*eb+bin*6] &&
-                fabs(deltaPhiIn) < cutdphi[cat+3*eb+bin*6] &&
-                fabs(deltaEtaIn) < cutdeta[cat+3*eb+bin*6] &&
-                eSeedOverPin > cuteopin[cat+3*eb+bin*6])
-            result |= (1<<ELEID_ID);
-
-        if (ip < cutip[cat+3*eb+bin*6])
-            result |= (1<<ELEID_IP);
-
-        if (mishits < cutmishits[cat+3*eb+bin*6])
-            result |= (1<<ELEID_CONV);
-
-        return result;
+	  return result;
+		
+	bool passdEtaCut = fabs(deltaEtaIn) < cutdeta[cat+3*eb+bin*6];
+			    
+			    
+	if(removedEtaCutInEndcap && eb == 1) passdEtaCut = true;
+	if (hOverE < cuthoe[cat+3*eb+bin*6] &&
+	    sigmaee < cutsee[cat+3*eb+bin*6] &&
+	    fabs(deltaPhiIn) < cutdphi[cat+3*eb+bin*6] &&
+	    passdEtaCut &&
+	    eSeedOverPin > cuteopin[cat+3*eb+bin*6])
+	  result |= (1<<ELEID_ID);
+	
+	if (ip < cutip[cat+3*eb+bin*6])
+	  result |= (1<<ELEID_IP);
+	
+	if (mishits < cutmishits[cat+3*eb+bin*6])
+	  result |= (1<<ELEID_CONV);
+	
+	return result;
     }
 
     //
@@ -511,7 +514,7 @@ unsigned int classify(const unsigned int version, const unsigned int index) {
 // VBTF stuff
 //
 
-electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tightness tightness, bool applyAlignementCorrection)
+ electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tightness tightness, bool applyAlignementCorrection, bool removedEtaCutInEndcap)
 {
 
     unsigned int answer = 0;
@@ -550,8 +553,9 @@ electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tight
     if (fabs(cms2.els_etaSC()[index]) > 1.479) {
         if (electronIsolation_rel(index, true) < relisoThresholds[1])
             answer |= (1<<ELEID_ISO);
-
-        if (fabs(dEtaIn) < dEtaInThresholds[1] &&
+	bool passdEtaCut = fabs(dEtaIn) < dEtaInThresholds[1];
+	if(removedEtaCutInEndcap) passdEtaCut = true;
+        if ( passdEtaCut &&
                 fabs(dPhiIn) < dPhiInThresholds[1] &&
                 cms2.els_hOverE()[index] < hoeThresholds[1] &&
                 cms2.els_sigmaIEtaIEta()[index] < sigmaIEtaIEtaThresholds[1])

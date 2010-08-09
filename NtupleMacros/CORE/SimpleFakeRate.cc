@@ -8,7 +8,7 @@
 //-------------------------------------------------------------
 // Class Constructor.  Includes some sanity checks.
 //-------------------------------------------------------------
-SimpleFakeRate::SimpleFakeRate(char* filename, char* histname, 
+SimpleFakeRate::SimpleFakeRate(const char* filename, const char* histname, 
                                bool lastBinIsOverflow) {
 
   // fill the overflow flag

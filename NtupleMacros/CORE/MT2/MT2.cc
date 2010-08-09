@@ -59,7 +59,7 @@ double MT2J(
   const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > p4_lepton_1,
   const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > p4_lepton_2,
   const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > vect_p4_jets,
-  float ,
+  float,
   enum enum_mt2_method method_mt2,
   bool
 ){

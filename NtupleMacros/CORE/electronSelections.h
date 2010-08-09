@@ -482,13 +482,13 @@ enum ElectronIDComponent {
 // master selection function
 //
 bool pass_electronSelectionCompareMask(const cuts_t cuts_passed, const cuts_t selectionType);
-bool pass_electronSelection(const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection = false);
-cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection = false);
+bool pass_electronSelection(const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection = false, bool removedEtaCutInEndcap = false);
+cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection = false, bool removedEtaCutInEndcap = false);
 
 //
 // "cand" electron id
 //
-bool electronId_cand(const unsigned int index, const cand_tightness tightness, bool applyAlignementCorrection = false);
+bool electronId_cand(const unsigned int index, const cand_tightness tightness, bool applyAlignementCorrection = false, bool removedEtaCutInEndcap = false);
 bool electronId_extra(const unsigned int index);
 
 //
@@ -501,12 +501,12 @@ bool electronId_classBasedTight(const unsigned int index);
 //
 // "VBTF" id
 //
-electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tightness tightness,  bool applyAlignementCorrection = false);
+electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tightness tightness,  bool applyAlignementCorrection = false, bool removedEtaCutInEndcap = false);
 
 //
 // "CIC" id
 //
-electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned int version, const cic_tightness tightness, bool applyAlignementCorrection = false);
+electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned int version, const cic_tightness tightness, bool applyAlignementCorrection = false, bool removedEtaCutInEndcap =false);
 unsigned int classify(const unsigned int version, const unsigned int index);
 
 //

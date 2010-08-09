@@ -1,4 +1,4 @@
-// $Id: jetSelections.cc,v 1.10 2010/08/08 09:15:52 jmuelmen Exp $
+// $Id: jetSelections.cc,v 1.11 2010/08/09 06:39:43 kalavase Exp $
 
 #include <algorithm>
 #include <utility>
@@ -299,3 +299,19 @@ bool passesCaloJetID (const LorentzVector &jetp4)
      return true;
 }
 
+bool passesPFJetID(unsigned int pfJetIdx) {
+
+  float pfjet_chf_  = cms2.pfjets_chargedHadronE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
+  float pfjet_nhf_  = cms2.pfjets_neutralHadronE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
+  float pfjet_cef_  = cms2.pfjets_chargedEmE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
+  float pfjet_nef_  = cms2.pfjets_neutralEmE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
+
+  if (pfjet_nhf_ < 1. && pfjet_cef_ < 1. && pfjet_nef_ < 1.)    {
+    if (fabs(cms2.pfjets_p4()[pfJetIdx].eta()) > 2.4)
+      return true;
+    else if (pfjet_chf_ > 0.)
+      return true;
+    }
+
+  return false;
+}  

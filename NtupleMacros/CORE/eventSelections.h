@@ -59,5 +59,19 @@ bool cleaning_goodVertexAugust2010();
 //----------------------------------------------------------------
 bool cleaning_goodTracks();
 
+//----------------------------------------------------------------
+// checks whether a vertex is good or not
+//----------------------------------------------------------------
+bool isGoodVertex(size_t ivtx);
+
+//----------------------------------------------------------------
+// checks whether the leptons of a given
+// hypothesis come from the same good vertex
+//----------------------------------------------------------------
+bool hypsFromSameVtx(size_t hypIdx);
+
+
+
+
 #endif
 

@@ -30,7 +30,7 @@ using namespace std;
 class SimpleFakeRate {
  public:
   // constructor
-  SimpleFakeRate(char* filename, char* histname , 
+  SimpleFakeRate(const char* filename, const char* histname , 
                  bool lastBinIsOverflow=true);
 
   // destructor

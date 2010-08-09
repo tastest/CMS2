@@ -50,7 +50,7 @@ bool cleaning_standardAugust2010()
 {
     if (!cleaning_goodVertexAugust2010()) return false;
     if (!cleaning_goodTracks()) return false;
-	if (!cms2.evt_hbheFilter()) return false;
+    //if (!cms2.evt_hbheFilter()) return false;
     return true;
 }
 
@@ -110,10 +110,8 @@ bool cleaning_goodVertexAugust2010()
     int nGoodVertex = 0;
     for (size_t v = 0; v < cms2.vtxs_position().size(); ++v) 
     {
-        if (cms2.vtxs_isFake()[v]) continue;
-        if (cms2.vtxs_ndof()[v] < 4.) continue;
-        if (cms2.vtxs_position()[v].Rho() > 2.0) continue;        
-        if (fabs(cms2.vtxs_position()[v].Z()) > 24.0) continue;
+
+      if(isGoodVertex(v))
         nGoodVertex ++;
     }
     if (nGoodVertex == 0) return false;
@@ -134,5 +132,57 @@ bool cleaning_goodTracks()
         if (float(nHighPurityTracks)/cms2.trks_ndof().size() < 0.25) return false;
     }
     return true;
+}
+
+//
+// function to select a good vertex
+// 
+bool isGoodVertex(size_t ivtx) {
+
+  if (cms2.vtxs_isFake()[ivtx]) return false;
+  if (cms2.vtxs_ndof()[ivtx] < 4.) return false;
+  if (cms2.vtxs_position()[ivtx].Rho() > 2.0) return false;
+  if (fabs(cms2.vtxs_position()[ivtx].Z()) > 24.0) return false;
+  return true;
+
+}
+
+
+
+//
+// function to check whether or not both the hypotheses 
+// are from the same vertex
+//
+
+bool hypsFromSameVtx(size_t hypIdx) {
+
+  Float_t lt_vz = 9999.;
+  Float_t ll_vz = 9999.;
+
+  if(abs(cms2.hyp_lt_id()[hypIdx]) == 11)
+    lt_vz = cms2.els_vertex_p4()[cms2.hyp_lt_index()[hypIdx]].Z();
+  if(abs(cms2.hyp_lt_id()[hypIdx]) == 13)
+    lt_vz = cms2.mus_vertex_p4()[cms2.hyp_lt_index()[hypIdx]].Z();
+
+  if(abs(cms2.hyp_ll_id()[hypIdx]) == 11)
+    ll_vz = cms2.els_vertex_p4()[cms2.hyp_ll_index()[hypIdx]].Z();
+  if(abs(cms2.hyp_ll_id()[hypIdx]) == 13)
+    ll_vz = cms2.mus_vertex_p4()[cms2.hyp_ll_index()[hypIdx]].Z();
+
+
+  for (size_t v = 0; v < cms2.vtxs_position().size(); ++v)  {
+    if(!isGoodVertex(v))
+      continue;
+    if(fabs(lt_vz - cms2.vtxs_position()[v].Z()) > 1)
+      continue;
+    if(fabs(ll_vz - cms2.vtxs_position()[v].Z()) > 1)
+      continue;
+
+    //if we've gotten here, then the vertex is good
+    //and both leptons belong to it
+    return true;
+  }
+
+  return false;
 }
 

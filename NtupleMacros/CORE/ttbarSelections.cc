@@ -1,4 +1,3 @@
-
 #include <assert.h>
 #include <algorithm>
 #include "Math/LorentzVector.h"
@@ -6,9 +5,11 @@
 #include "TMath.h"
 #include "TLorentzVector.h"
 #include "TDatabasePDG.h"
-#include "../CORE/electronSelections.h"
-#include "../CORE/muonSelections.h"
-#include "../CORE/metSelections.h"
+#include "electronSelections.cc"
+#include "electronSelectionsParameters.cc"
+#include "muonSelections.cc"
+#include "metSelections.cc"
+#include "triggerUtils.cc"
 #include "CMS2.h"
 
 #include "ttbarSelections.h"
@@ -18,71 +19,100 @@ using namespace tas;
 /******************************************************************************************/     
 // good lepton (either mu or electron, no isolation cuts)
 /******************************************************************************************/
-bool isGoodLeptonNoIso(int id, int lepIdx) {
+bool isGoodLeptonNoIso(int id, int lepIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap) {
 
+  //electrons
   if(abs(id) == 11) {
-    if (!pass_electronSelection(lepIdx, electronSelection_ttbar)) return false;
+    
+    const cuts_t elIDcuts =     (1ll<<ELEIP_400)                |                                                                  
+      (1ll<<ELENOMUON_010)              |
+      (1ll<<ELENOTCONV_HITPATTERN)      |
+      (1ll<<ELENOTCONV_DISTDCOT002)     |
+      (1ll<<ELESCET_010)                |
+      (1ll<<ELEPT_020)          |
+      (1ll<<ELEETA_250)         |
+      (1ll<<ELENOSPIKE_SWISS005) |
+      (1ll<<ELESEED_ECAL);
+    
+    unsigned int answer_vbtf = electronId_VBTF(lepIdx, VBTF_35X_90, applyAlignmentCorrection, removedEtaCutInEndcap);
+    bool elsvbtf90_ = ( ( answer_vbtf & (1ll<<ELEID_ID) ) == (1ll<<ELEID_ID) );
+    return (pass_electronSelection(lepIdx, elIDcuts, applyAlignmentCorrection, removedEtaCutInEndcap) && elsvbtf90_);
   }
 
-  if(abs(id) == 13) 
-    if(!muonIdNotIsolated(lepIdx, NominalTTbar))    return false;
+  //muons
+  if(abs(id) == 13) {
+
+    if(muonIdNotIsolated(lepIdx, NominalTTbarV2)) 
+      return true;
+
+    return false;
+      
+  }
   
 
   return true;
 }
+
 
 /******************************************************************************************/     
 // isolated lepton (either mu or electron)
 /******************************************************************************************/
-bool isGoodLeptonwIso(int id, int lepIdx) {
+bool isGoodLeptonwIso(int id, int lepIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap) {
 
-  if(!isGoodLeptonNoIso(id, lepIdx)) return false;
+  if(!isGoodLeptonNoIso(id, lepIdx, applyAlignmentCorrection, removedEtaCutInEndcap))
+    return false;
 
   // 11 is a electron
   if(abs(id)== 11) {
-    if (!pass_electronSelection(lepIdx, electronSelection_ttbar_iso)) return false;
+       const cuts_t elISOcuts =   (1ll<<ELEISO_REL015);
+       if (!pass_electronSelection(lepIdx, elISOcuts, applyAlignmentCorrection, removedEtaCutInEndcap))
+            return false;
   }
+
   // 13 is a muon
   if(abs(id) == 13) 
-    if(!muonId(lepIdx, NominalTTbar))               return false;
-  
+    if(muonIsoValue(lepIdx) > 0.15)  return false;
+        
   return true;
 }
+
 
 /******************************************************************************************/     
 // are the leptons in the hypothesis good (all cuts but isolation?)
 /******************************************************************************************/
-bool isGoodHypNoIso(int hypIdx) {
-  
-  if(!isGoodLeptonNoIso(hyp_lt_id()[hypIdx], hyp_lt_index()[hypIdx]))
+bool isGoodHypNoIso(int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap) {
+ 
+  if(!isGoodLeptonNoIso(hyp_lt_id()[hypIdx], hyp_lt_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))//, used0wrtPV)
      return false;
-  if(!isGoodLeptonNoIso(hyp_ll_id()[hypIdx], hyp_ll_index()[hypIdx]))
+  if(!isGoodLeptonNoIso(hyp_ll_id()[hypIdx], hyp_ll_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))//, used0wrtPV)
     return false;
 
   return true;
 }
+
 
 /******************************************************************************************/     
 // are the leptons in the hypothesis isolated?
 /******************************************************************************************/     
-bool isGoodHypwIso(int hypIdx) {
-  
-  
-  if(!isGoodLeptonwIso(hyp_lt_id()[hypIdx], hyp_lt_index()[hypIdx]))
+bool isGoodHypwIso(int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap) {
+
+  if(!isGoodLeptonwIso(hyp_lt_id()[hypIdx], hyp_lt_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
     return false;
-  if(!isGoodLeptonwIso(hyp_ll_id()[hypIdx], hyp_ll_index()[hypIdx]))
+  if(!isGoodLeptonwIso(hyp_ll_id()[hypIdx], hyp_ll_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
     return false;
+
 
   return true;
 }
 
+
 /******************************************************************************************/     
 // is it a good jet?
 /******************************************************************************************/     
-bool isGoodDilHypJet(LorentzVector jetp4, unsigned int& hypIdx, double ptCut, double absEtaCut, double dRCut, bool muJetClean){
-             
-  if(jetp4.Pt() < ptCut)
-    return false;
+bool isGoodDilHypJet(LorentzVector jetp4, unsigned int& hypIdx, double ptCut, double absEtaCut, double dRCut, bool muJetClean) {
+
+ if(jetp4.Pt() < ptCut)
+    return false;  
   if(fabs(jetp4.Eta()) > absEtaCut)
     return false;
   
@@ -106,183 +136,175 @@ bool isGoodDilHypJet(LorentzVector jetp4, unsigned int& hypIdx, double ptCut, do
   }
 
   return true;
-
 }
 
+
 /******************************************************************************************/     
-//return the MET and the MET phi instead of a bool because the MT2 needs it
+//return the MET and the MET phi, correcting for mus that are not corrected for by default
 /******************************************************************************************/     
-std::pair<float,float> getMet(string& algo) {
-  
-  if(algo != "tcMET" && algo != "muCorMET" && algo != "pfMET") {
+std::pair<float,float> getMet(string& algo, unsigned int hypIdx) {
+
+ if(algo != "tcMET" && algo != "muCorMET" && algo != "pfMET") {
     cout << algo << "IS NOT A RECOGNIZED MET ALGORITHM!!!!! PLEASE CHECK YOUR CODE!!!";
     return make_pair(-99999., -99999.);
   }
   if(algo == "tcMET") {
-	   return make_pair(evt_tcmet(), evt_tcmetPhi());
+    double tcmet = evt_tcmet();
+    double tcmetPhi = evt_tcmetPhi();
+    correctTcMETForHypMus(hypIdx, tcmet, tcmetPhi);
+    return make_pair(tcmet, tcmetPhi);
   }
   if(algo == "muCorMET")
     return make_pair(evt_metMuonCorr(), evt_metMuonCorrPhi());
   if(algo == "pfMET")
     return make_pair(evt_pfmet(), evt_pfmetPhi());
   
+  
   return make_pair(-99999., -99999);
-
+  
 }
 
-/******************************************************************************************/     
-//trigger requirement
-/******************************************************************************************/         
-bool passTriggersMu9orLisoE15(int dilType) {
+
+/*****************************************************************************************/
+//hypothesis disambiguation. Returns the hypothesis that has the highest sum Pt
+/*****************************************************************************************/
+unsigned int selectHypByHighestSumPt(const vector<unsigned int> &v_goodHyps) {
   
-  //TString method
-  bool hlt_ele15_lw_l1r = cms2.passHLTTrigger("HLT_Ele15_LW_L1R");
-  bool hltMu9           = cms2.passHLTTrigger("HLT_Mu9");
-  
-  if (dilType == 0 && ! (hltMu9) ) return false;
-  if ((dilType == 1 || dilType == 2) && ! (hltMu9 || hlt_ele15_lw_l1r)) return false;
-  if (dilType == 3 && ! hlt_ele15_lw_l1r) return false;     
-
-  return true;
-}
-
-/******************************************************************************************/     
-//hypothesis disabmiguation
-/******************************************************************************************/     
-int eventDilIndexByWeightTTDil08(const std::vector<unsigned int>& goodHyps, int& strasbourgDilType, bool printDebug, bool usePtOnlyForWeighting){
-  
-  int result = -1;
-  unsigned int nGoodHyps = goodHyps.size();
-  if ( nGoodHyps == 0 ) return result;
-
-  float maxWeight = -1;
-  unsigned int maxWeightIndex = 9999;
-  
-  for (unsigned int hypIdxL=0; hypIdxL < nGoodHyps; ++hypIdxL){
-    unsigned int hypIdx = goodHyps[hypIdxL];
-    float hypWeight_lt = 0;
-    float hypWeight_ll = 0;
-    float hypWeight_iso = 0;
-    float hypWeight = 0;
-    unsigned int i_lt = cms2.hyp_lt_index().at(hypIdx);
-    unsigned int i_ll = cms2.hyp_ll_index().at(hypIdx);
-
-    int id_lt = cms2.hyp_lt_id().at(hypIdx);
-    int id_ll = cms2.hyp_ll_id().at(hypIdx);
-
-    //float isoTk_lt = leptonTrkIsolationTTDil08(id_lt, i_lt);
-    //float isoTk_ll = leptonTrkIsolationTTDil08(id_ll, i_ll);
-    float isoTk_lt, isoTk_ll;
-    float isoCal_lt, isoCal_ll;
-    if(abs(id_lt) == 11) {
-      isoTk_lt = els_p4()[i_lt].Pt()/(els_tkJuraIso()[i_lt]+els_p4()[i_lt].Pt());
-      isoCal_lt = els_p4()[i_lt].Pt()/(els_hcalIso()[i_lt]+els_ecalJuraIso()[i_lt]+els_p4()[i_lt].Pt());
-    } else {
-      isoTk_lt = mus_p4()[i_lt].Pt()/(mus_iso03_sumPt()[i_lt]+mus_p4()[i_lt].Pt());
-      isoCal_lt = mus_p4()[i_lt].Pt()/(mus_iso03_emEt()[i_lt]+mus_iso03_hadEt()[i_lt]+mus_p4()[i_lt].Pt());
-    }
-    if(abs(id_ll) == 11) {
-      isoTk_ll = els_p4()[i_ll].Pt()/(els_tkJuraIso()[i_ll]+els_p4()[i_ll].Pt());
-      isoCal_ll = els_p4()[i_ll].Pt()/(els_hcalIso()[i_ll]+els_ecalJuraIso()[i_ll]+els_p4()[i_ll].Pt());
-    } else {
-      isoTk_ll = mus_p4()[i_ll].Pt()/(mus_iso03_sumPt()[i_ll]+mus_p4()[i_ll].Pt());
-      isoCal_ll = mus_p4()[i_ll].Pt()/(mus_iso03_emEt()[i_ll]+mus_iso03_hadEt()[i_ll]+mus_p4()[i_ll].Pt());
-    }
-
-  
+  float maxSumPt = 0;
+  unsigned int bestHypIdx = 0;
+  for(unsigned int i = 0; i < v_goodHyps.size(); i++) {
     
-    //ad-hoc selection of weights
-    if (abs(id_lt) == 11){
-      //I want to select "trk & cal"-isolated ones
-      hypWeight_iso += (isoTk_lt*isoCal_lt - 0.25); //shift by 0.25 to be positive-definite
-      if (! usePtOnlyForWeighting && cms2.els_egamma_tightId().at(i_lt)) hypWeight_lt += 0.2;
+    unsigned int index = v_goodHyps.at(i);
+    float sumPt = hyp_lt_p4()[index].Pt() + hyp_ll_p4()[index].Pt();
+    if( sumPt > maxSumPt) {
+      maxSumPt = sumPt;
+      bestHypIdx = index;
     }
-    if (abs(id_lt) == 13){
-      //I want to select "trk & cal"-isolated ones      
-      hypWeight_iso += (isoTk_lt*isoCal_lt - 0.25);//shift by 0.25 to be positive-definite
-      if (! usePtOnlyForWeighting) hypWeight_lt += 0.4;
+  }
+
+  return bestHypIdx;
+
+}
+
+
+
+
+/******************************************************************************************/     
+//corrects tcMET for mus that are not corrected for by default
+/******************************************************************************************/     
+void correctTcMETForHypMus(unsigned int hypIdx, double& met, double& metPhi) {
+
+  if (cms2.hyp_type()[hypIdx] ==3) return;
+  double lmetx = met*cos(metPhi);
+  double lmety = met*sin(metPhi);
+
+  unsigned int i_lt = cms2.hyp_lt_index()[hypIdx];
+  unsigned int i_ll = cms2.hyp_ll_index()[hypIdx];
+  if (abs(cms2.hyp_lt_id()[hypIdx])==13){
+    if(cms2.mus_tcmet_flag()[i_lt] == 0){
+      lmetx += cms2.mus_met_deltax()[i_lt] - cms2.mus_p4()[i_lt].x();
+      lmety += cms2.mus_met_deltay()[i_lt] - cms2.mus_p4()[i_lt].y();
+    } else if (cms2.mus_tcmet_flag()[i_lt] == 4){
+         lmetx += -cms2.mus_tcmet_deltax()[i_lt] + cms2.mus_met_deltax()[i_lt] - cms2.mus_p4()[i_lt].x() + cms2.trks_trk_p4()[cms2.mus_trkidx()[i_lt]].x(); 
+         lmety += -cms2.mus_tcmet_deltay()[i_lt] + cms2.mus_met_deltay()[i_lt] - cms2.mus_p4()[i_lt].y() + cms2.trks_trk_p4()[cms2.mus_trkidx()[i_lt]].y(); 
     }
-    if (abs(id_ll) == 11){
-      //I want to select "trk & cal"-isolated ones
-      hypWeight_iso *= (isoTk_ll*isoCal_ll - 0.25); //shift by 0.25 to be positive-definite
-      if (! usePtOnlyForWeighting && cms2.els_egamma_tightId().at(i_ll)) hypWeight_ll += 0.2;
+  }
+  if (abs(cms2.hyp_ll_id()[hypIdx])==13){
+    if(cms2.mus_tcmet_flag()[i_ll] == 0){ 
+      lmetx+= cms2.mus_met_deltax()[i_ll] - cms2.mus_p4()[i_ll].x(); 
+      lmety+= cms2.mus_met_deltay()[i_ll] - cms2.mus_p4()[i_ll].y(); 
+    } else if (cms2.mus_tcmet_flag()[i_ll] == 4){ 
+         lmetx+= - cms2.mus_tcmet_deltax()[i_ll] + cms2.mus_met_deltax()[i_ll] - cms2.mus_p4()[i_ll].x() + cms2.trks_trk_p4()[cms2.mus_trkidx()[i_ll]].x();  
+         lmety+= - cms2.mus_tcmet_deltay()[i_ll] + cms2.mus_met_deltay()[i_ll] - cms2.mus_p4()[i_ll].y() + cms2.trks_trk_p4()[cms2.mus_trkidx()[i_ll]].y();  
+    } 
+  }
+  met = sqrt(lmetx*lmetx+lmety*lmety);
+  metPhi = atan2(lmety,lmetx);
+
+  return;
+}
+
+
+/*****************************************************************************************/
+//passes the EGamma triggers
+/*****************************************************************************************/
+bool passEGTrigger(bool mc) {
+
+  if (mc) {
+ 
+    int e10 = nHLTObjects("HLT_Ele10_LW_L1R");
+    for (int i=0; i<e10; i++) {
+      LorentzVector p4 = p4HLTObject("HLT_Ele10_LW_L1R", i);
+      if(p4.Pt() > 15.) return true;
     }
-    if (abs(id_ll) == 13){
-      //I want to select "trk & cal"-isolated ones
-      hypWeight_iso *= (isoTk_ll*isoCal_ll - 0.25); //shift by 0.25 to be positive-definite
-      if (! usePtOnlyForWeighting) hypWeight_ll += 0.4;
-    }
-    float pt_lt = cms2.hyp_lt_p4().at(hypIdx).pt();
-    float pt_ll = cms2.hyp_ll_p4().at(hypIdx).pt();
-    if(pt_lt > 20.)
-      hypWeight_lt += (1. - 20./pt_lt*20./pt_lt);
-    else
-      hypWeight_lt += (1. - 10./pt_lt*10./pt_lt);
-    if(pt_ll > 20.)
-      hypWeight_ll += (1. - 20./pt_ll*20./pt_ll);
-    else
-      hypWeight_ll += (1. - 10./pt_ll*10./pt_ll);
+
+  } else {  // data now
+
     
-    if (usePtOnlyForWeighting){
-      hypWeight = hypWeight_ll*hypWeight_lt; //again, desire to have both good
-    } else {
-      hypWeight = hypWeight_ll*hypWeight_lt*hypWeight_iso; //again, desire to have both good
+    if(evt_run() < 138000) {
+      int e10 = nHLTObjects("HLT_Ele10_LW_L1R");
+      for (int i=0; i<e10; i++) {
+        LorentzVector p4 = p4HLTObject("HLT_Ele10_LW_L1R", i);
+        if(p4.Pt() > 15.) return true;
+      }
     }
 
-    if (hypWeight > maxWeight){
-      maxWeight = hypWeight;
-      maxWeightIndex = hypIdx;
+    if(evt_run() >= 138000 && evt_run() < 141900) {
+      int e15 = nHLTObjects("HLT_Ele15_LW_L1R");
+      if(e15 != 0) 
+        return true;
     }
+
+    if(evt_run() >= 141900) {
+      int e15 = nHLTObjects("HLT_Ele15_SW_L1R");
+      if(e15 != 0) 
+        return true;
+    }
+
+ 
   }
-
-  result = maxWeightIndex;
-  return result;
+  return false;
 }
 
-//
-// return the hyp index of the pair with the highest sum pt
-//
+/*****************************************************************************************/
+//get the impact parameter wrt the PV
+/*****************************************************************************************/
+double getd0wrtPV(LorentzVector p4, float d0) {
 
-unsigned int eventDilIndexByWeightTTDil10(const std::vector<unsigned int> &hyp_index_selected)
-{
-
-    float           max_pt = 0.0;
-    float           this_pt = 0.0;
-    unsigned int    max_index = 0;
-
-    for (unsigned int i = 0; i < hyp_index_selected.size(); ++i) {
-
-        // get the pt of this lepton pair
-        this_pt = cms2.hyp_ll_p4()[hyp_index_selected[i]].Pt() 
-                    + cms2.hyp_lt_p4()[hyp_index_selected[i]].Pt();
-
-        // if the pt of this lepton pair is 
-        // larger than the previous largest
-        // then remember its index in the hyp block
-        if (this_pt > max_pt) {
-            max_pt = this_pt;
-            max_index = hyp_index_selected[i];
-        }   
+   
+  double max_sumpt = -1;
+  int i_max = -1;
+  assert(cms2.vtxs_sumpt().size() == cms2.vtxs_isFake().size());
+  assert(cms2.vtxs_sumpt().size() == cms2.vtxs_position().size());
+  assert(cms2.vtxs_sumpt().size() == cms2.vtxs_covMatrix().size());
+  for (unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i) {
+    if (cms2.vtxs_isFake().at(i))
+               continue;
+    if (cms2.vtxs_sumpt().at(i) > max_sumpt) {
+      max_sumpt = cms2.vtxs_sumpt().at(i);
+      i_max = i;
     }
-
-    return max_index;
-
-}
-
-
-
-/******************************************************************************************/
-// MET cut - MET > 20 (OF) MET > 30 (SF)
-/******************************************************************************************/
-bool passMetAsIs_OF20_SF30(float met, int hyp_type)
-{
-  if  (hyp_type == 0 || hyp_type == 3) {
-    if (met < 30) return false;
   }
-  
-  if (hyp_type == 1 || hyp_type == 2) {
-    if (met < 20) return false;
-  }
-  return true;
-}  
+
+   if (i_max != -1) {
+     const double bx = vtxs_position().at(i_max).x();
+     const double by = vtxs_position().at(i_max).y();
+     double phi = p4.phi();
+     double d0vtx = d0 - bx * sin(phi) + by * cos(phi);
+     return d0vtx;
+   }
+
+   
+   cout << "did not find a PV!!!" << endl;
+   return 99999;
+
+
+ }
+
+
+
+
+
+
+
 
