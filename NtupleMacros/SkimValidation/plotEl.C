@@ -57,7 +57,7 @@ void xsecPlot( TCanvas * myCanv, TChain* myChain, Bool_t drawMu, const string su
   //      }
   //    }
    
-  t.readFile("lumi_by_run_100728.txt", lumiVsRun);
+  t.readFile("lumi_by_run.txt", lumiVsRun);
    
   // calculate the running mean, here for +- 12 runs
   std::vector<float> nMuRoller; 
