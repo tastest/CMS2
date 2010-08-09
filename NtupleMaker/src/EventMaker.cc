@@ -13,7 +13,7 @@
 //
 // Original Author:  Puneeth Kalavase
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: EventMaker.cc,v 1.30 2010/04/29 04:04:43 slava77 Exp $
+// $Id: EventMaker.cc,v 1.30.6.1 2010/08/09 11:16:40 kalavase Exp $
 //
 //
 
@@ -64,6 +64,7 @@ EventMaker::EventMaker(const edm::ParameterSet& iConfig) {
      produces<TString>             (branchprefix+"CMS2tag"        ).setBranchAlias(aliasprefix_+"_CMS2tag"       );
      produces<float>               (branchprefix+"bField"         ).setBranchAlias(aliasprefix_+"_bField"        );
      produces<unsigned int>        (branchprefix+"detectorStatus" ).setBranchAlias(aliasprefix_+"_detectorStatus");
+     produces<int>                 (branchprefix+"isRealData"     ).setBranchAlias(aliasprefix_+"_isRealData"    );
   
      datasetName_ = iConfig.getParameter<std::string>("datasetName");
      CMS2tag_     = iConfig.getParameter<std::string>("CMS2tag");
@@ -96,6 +97,7 @@ void EventMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
      auto_ptr<TString>              evt_CMS2tag         (new TString(CMS2tag_.c_str()) );
      auto_ptr<float>                evt_bField          (new float                     );
      auto_ptr<unsigned int>         evt_detectorStatus  (new unsigned int              );
+     auto_ptr<int>                  evt_isRealData      (new int                       );
   
      *evt_run                       = iEvent.id().run()        ;
      *evt_event                     = iEvent.id().event()      ;
@@ -105,6 +107,7 @@ void EventMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
      *evt_storeNumber               = iEvent.eventAuxiliary().storeNumber();
      *evt_experimentType            = iEvent.experimentType()  ;
      *evt_timestamp                 = iEvent.eventAuxiliary().time().value();
+     *evt_isRealData                = iEvent.isRealData();
   
   
      edm::Handle<DcsStatusCollection> dcsHandle;
@@ -155,6 +158,7 @@ void EventMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
      iEvent.put(evt_dataset          ,branchprefix+"dataset"         );
      iEvent.put(evt_CMS2tag          ,branchprefix+"CMS2tag"         );
      iEvent.put(evt_bField           ,branchprefix+"bField"          );
+     iEvent.put(evt_isRealData       ,branchprefix+"isRealData"      );
 }
 
 //define this as a plug-in
