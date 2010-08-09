@@ -85,7 +85,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
   // Set the JSON file
   if(isData){
-    set_goodrun_file("./jsonlist_132440_139239.txt");
+    //set_goodrun_file("./jsonlist_133446_140387_254.4nb.txt");
+    set_goodrun_file("jsonlist_132440_139239.txt");
   }
 
   // The deltaR requirement between objects and jets to remove the jet trigger dependence
@@ -181,11 +182,16 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 	      v1_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v1 );
 	      v2_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v2 );
 	      v3_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v3 );
+
 	      numSS_ = pass_electronSelection(iEl, electronSelection_ss);
 	      v1SS_  = pass_electronSelection(iEl, electronSelectionFO_ssVBTF80_v1);
 	      v2SS_  = pass_electronSelection(iEl, electronSelectionFO_ssVBTF80_v2);
 	      v3SS_  = pass_electronSelection(iEl, electronSelectionFO_ssVBTF80_v3);
 
+        numAug9_ = pass_electronSelection( iEl, electronSelection_ttbarV1, true, true ) && (!isSpikeElectron(iEl));
+	      v1Aug9_  = v1_;
+	      v2Aug9_  = v2_;
+	      v3Aug9_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v3, true, true );
 
 
 	      // Sanity
@@ -196,6 +202,11 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 	      if (numSS_ && (!v1SS_)) cout << "bad v1" << endl;
 	      if (numSS_ && (!v2SS_)) cout << "bad v2" << endl;
 	      if (numSS_ && (!v3SS_)) cout << "bad v3" << endl;
+
+	      if (numAug9_ && (!v1Aug9_)) cout << "bad v1" << endl;
+	      if (numAug9_ && (!v2Aug9_)) cout << "bad v2" << endl;
+	      if (numAug9_ && (!v3Aug9_)) cout << "bad v3" << endl;
+
 
 	      // If there is no v1/v2/v3 lepton quit
 	      if ( (!v1_) && (!v2_) && (!v3_) && (!v1SS_) && (!v2SS_) && (!v3SS_) ) continue;
@@ -409,20 +420,23 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 	      } // closes if-block of EG5, EG8, PH10 objects missing
  
 	      // Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
-	      ptj1_       = 0.0;
+	      ptj1_       = -999.0;
 	      ptj1_b2b_   = -999.0;
 	      dphij1_b2b_ = -999.0;
 	      nj1_        = 0;
 	      for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
-		double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), jets_p4().at(iJet) );
-		if( dr > deltaRCut && jets_p4().at(iJet).pt() > 10 ) nj1_++;
-		if ( dr > deltaRCut && jets_p4().at(iJet).pt() > ptj1_ ){
-		  ptj1_ = jets_p4().at(iJet).pt();
+		      double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), jets_p4().at(iJet) );
+		      if( dr > deltaRCut && jets_p4().at(iJet).pt() > 10 ) nj1_++;
+		      if ( dr > deltaRCut && jets_p4().at(iJet).pt() > ptj1_ ){
+		        ptj1_ = jets_p4().at(iJet).pt();
 		  
-		  // back to back in phi
-		  dphij1_b2b_ = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iEl), jets_p4().at(iJet) ) );
-		  if( dphij1_b2b_ > deltaPhiCut && jets_p4().at(iJet).pt() > ptj1_b2b_ ) ptj1_b2b_ = jets_p4().at(iJet).pt();
-		}
+		        // back to back in phi
+		        float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iEl), jets_p4().at(iJet) ) );
+		        if( dphi > deltaPhiCut && jets_p4().at(iJet).pt() > ptj1_b2b_ ){ 
+              ptj1_b2b_   = jets_p4().at(iJet).pt();
+		          dphij1_b2b_ = dphi;
+            }
+		      }
 	      }
 
 	      // Time to fill the baby for the electrons
@@ -476,6 +490,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 	  tcmet_ = evt_tcmet();
 	  tcmetphi_ = evt_tcmetPhi();
 	  
+    numAug9_ = num_;
+
 
 	  // Now REALLY fix it (July 14, 2010)
 	  if (pt_ > 10.) {
@@ -587,35 +603,39 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 	      mu9_ = 1;
 	    }
 	  }
+			  
+    // Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
+    ptj1_       = -999.0;
+    ptj1_b2b_   = -999.0;
+    dphij1_b2b_ = -999.0;
+    nj1_        = 0;
+    for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
+      double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), jets_p4().at(iJet) );
+      if( dr > deltaRCut && jets_p4().at(iJet).pt() > 10 ) nj1_++;
+      if ( dr > deltaRCut && jets_p4().at(iJet).pt() > ptj1_ ){
+        ptj1_ = jets_p4().at(iJet).pt();
+
+        // back to back in phi
+        float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iMu), jets_p4().at(iJet) ) );
+        if( dphi > deltaPhiCut && jets_p4().at(iJet).pt() > ptj1_b2b_ ){        
+          ptj1_b2b_   = jets_p4().at(iJet).pt();
+          dphij1_b2b_ = dphi;
+        }
+      }
+    }
+
 	  
-			  // Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
-	  ptj1_       = 0.0;
-	  ptj1_b2b_   = -999.0;
-	  dphij1_b2b_ = -999.0;
-	  nj1_        = 0;
-	  for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
-	    double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), jets_p4().at(iJet) );
-	    if( dr > deltaRCut && jets_p4().at(iJet).pt() > 10 ) nj1_++;
-	    if ( dr > deltaRCut && jets_p4().at(iJet).pt() > ptj1_ ){
-	      ptj1_ = jets_p4().at(iJet).pt();
+  // Time to fill the baby for the muons
+  FillBabyNtuple();
 
-	      // back to back in phi
-	      dphij1_b2b_ = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iMu), jets_p4().at(iJet) ) );
-	      if( dphij1_b2b_ > deltaPhiCut && jets_p4().at(iJet).pt() > ptj1_b2b_ ) ptj1_b2b_ = jets_p4().at(iJet).pt();
-	    }
-	  }
+    }// closes loop over muons
+  } // closes if statements about whether we want to fill muons
 
-	  // Time to fill the baby for the muons
-	  FillBabyNtuple();
-
-			}// closes loop over muons
-      } // closes if statements about whether we want to fill muons
-      
-    }// closes loop over events
-  }  // closes loop over files
-  cout << "   " <<endl;
-  CloseBabyNtuple();
-  return;
+}// closes loop over events
+}  // closes loop over files
+cout << "   " <<endl;
+CloseBabyNtuple();
+return;
 }    // closes myLooper function  
 
 //------------------------------------------
@@ -646,6 +666,10 @@ void myBabyMaker::InitBabyNtuple () {
   num_ = false;
   numSS_ = false;
   numv1_ = false;
+  numAug9_ = false;
+  v1Aug9_  = false;
+  v2Aug9_  = false;
+  v3Aug9_  = false;
   ph10_ = 0;
   ph15_ = 0;
   el10_ = 0;
@@ -712,6 +736,11 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("v2SS",         &v2SS_,        "v2SS/O"      );
     babyTree_->Branch("v3SS",         &v3SS_,        "v3SS/O"      );
     babyTree_->Branch("numSS",         &numSS_,        "numSS/O"      );
+
+    babyTree_->Branch("v1Aug9",         &v1Aug9_,        "v1Aug9/O"      );
+    babyTree_->Branch("v2Aug9",         &v2Aug9_,        "v2Aug9/O"      );
+    babyTree_->Branch("v3Aug9",         &v3Aug9_,        "v3Aug9/O"      );
+    babyTree_->Branch("numAug9",         &numAug9_,        "numAug9/O"      );
 
     babyTree_->Branch("ph10",       &ph10_,       "ph10/I"      );
     babyTree_->Branch("ph15",       &ph15_,       "ph15/I"      );

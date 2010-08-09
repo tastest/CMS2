@@ -62,6 +62,11 @@ class myBabyMaker
 	Bool_t numv1_; // electronSelection_ttbarV1 NominalTTbar
 	Bool_t numSS_; // electronSelection_ss Nominal
 
+	Bool_t numAug9_; 
+  Bool_t v1Aug9_;
+  Bool_t v2Aug9_;
+  Bool_t v3Aug9_;
+
 	// What electron trigger did it pass and is the electron matched to a egamma trg object
 	// 0=fail 1="pass but no match" 2="pass and matched" -1="pass but egamm trg obj missing"
 	Int_t ph10_;  // HLT_Photon10_L1R or HLT_Photon10_Cleaned_L1R
