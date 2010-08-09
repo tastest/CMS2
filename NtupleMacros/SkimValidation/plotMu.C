@@ -57,7 +57,7 @@ void xsecPlot( TCanvas * myCanv, TChain* myChain, Bool_t drawMu, const string su
   //      }
   //    }
    
-  t.readFile("lumi_by_run_100728.txt", lumiVsRun);
+  t.readFile("lumi_by_run.txt", lumiVsRun);
    
   // calculate the running mean, here for +- 12 runs
   std::vector<float> nMuRoller; 
@@ -307,7 +307,7 @@ void plotMu(void) {
   // Chains
   TChain *chain1 = new TChain("tree");
   TChain *chain2 = new TChain("tree");
-  chain1->Add("validate_mus_before.root_100730");
+  chain1->Add("validate_mus_before.root");
   chain2->Add("validate_mus_after.root");
 
   // TChain *chain1el = new TChain("tree");
