@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Puneeth Kalavase
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: HcalNoiseSummaryMaker.cc,v 1.3 2010/03/18 02:12:13 kalavase Exp $
+// $Id: HcalNoiseSummaryMaker.cc,v 1.3.4.1 2010/08/10 12:39:48 kalavase Exp $
 //
 //
 
@@ -83,6 +83,8 @@ HcalNoiseSummaryMaker::HcalNoiseSummaryMaker(const edm::ParameterSet& iConfig) {
   produces<float>   (branchprefix+"minRBXEMF"                       ).setBranchAlias(aliasprefix_+"_minRBXEMF"                );
   // number of "problematic" RBXs
   produces<int>     (branchprefix+"numProblematicRBXs"              ).setBranchAlias(aliasprefix_+"_numProblematicRBXs"       );
+  produces<float>   (branchprefix+"maxE2Over10TS"                   ).setBranchAlias(aliasprefix_+"_maxE2Over10TS"            );
+  produces<int>     (branchprefix+"maxHPDNoOtherHits"               ).setBranchAlias(aliasprefix_+"_maxHPDNoOtherHits"        );
   
 
   hcalNoiseSummaryTag_ = iConfig.getParameter<edm::InputTag>("hcalNoiseSummaryTag");
@@ -130,6 +132,8 @@ void HcalNoiseSummaryMaker::produce(edm::Event& iEvent, const edm::EventSetup& i
   auto_ptr<float>   hcalnoise_minHPDEMF                    (new float);
   auto_ptr<float>   hcalnoise_minRBXEMF                    (new float);
   auto_ptr<int>     hcalnoise_numProblematicRBXs           (new int);
+  auto_ptr<float>   hcalnoise_maxE2Over10TS                (new float);
+  auto_ptr<int>     hcalnoise_maxHPDNoOtherHits            (new int);
 
 
   Handle<HcalNoiseSummary> hcalNoiseSum_h;
@@ -163,7 +167,8 @@ void HcalNoiseSummaryMaker::produce(edm::Event& iEvent, const edm::EventSetup& i
   *hcalnoise_minHPDEMF                 = hcalNoiseSum_h->minHPDEMF();
   *hcalnoise_minRBXEMF                 = hcalNoiseSum_h->minRBXEMF();
   *hcalnoise_numProblematicRBXs        = hcalNoiseSum_h->numProblematicRBXs();
-  
+  *hcalnoise_maxE2Over10TS             = hcalNoiseSum_h->maxE2Over10TS();
+  *hcalnoise_maxHPDNoOtherHits         = hcalNoiseSum_h->maxHPDNoOtherHits();
 
 
   
@@ -197,6 +202,8 @@ void HcalNoiseSummaryMaker::produce(edm::Event& iEvent, const edm::EventSetup& i
   iEvent.put(hcalnoise_minHPDEMF,                branchprefix+"minHPDEMF");
   iEvent.put(hcalnoise_minRBXEMF,                branchprefix+"minRBXEMF");
   iEvent.put(hcalnoise_numProblematicRBXs,       branchprefix+"numProblematicRBXs");
+  iEvent.put(hcalnoise_maxE2Over10TS,            branchprefix+"maxE2Over10TS");
+  iEvent.put(hcalnoise_maxHPDNoOtherHits,        branchprefix+"maxHPDNoOtherHits");      
   
   
 }
