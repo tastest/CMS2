@@ -2,244 +2,197 @@
 gROOT->LoadMacro("eff.C");
 gStyle->SetOptStat(0);
 
-TChain *ch1 = new TChain("tree");
+TChain *qcd = new TChain("tree");
+TChain *wmunu = new TChain("tree");
+
 TChain *ch2 = new TChain("tree");
-ch1->Add("JMTMonitor.root");
-ch2->Add("JMT.root");
+
+qcd->Add("inclMu.root");
+wmunu->Add("Wmunu.root");
+ch2->Add("Mu.root");
 
 // Book the histograms
-double xbin[3]={10.,20.,40.};
-//double xbin[5]={0.,1., 1.479, 2., 2.5};
-int nbinsx = 2;
-double xmax = 0.5;
-//double xmax = 0.9;
+double xbin[13]={10.,15.,20.,25.,30.,35.,40.,45.,50.,55.,60.,65.,70.};
+int nbinsx = 12;
+double xmax = 1.0;
 
-// 6u
-TH1F* num6u = new TH1F("num6u","num6u",nbinsx,xbin);
-TH1F* fo6u  = new TH1F("fo6u", "fo6u", nbinsx,xbin);
-//10 u
+// 10u
 TH1F* num10u = new TH1F("num10u","num10u",nbinsx,xbin);
 TH1F* fo10u  = new TH1F("fo10u", "fo10u", nbinsx,xbin);
-//15 u
+// 15u
 TH1F* num15u = new TH1F("num15u","num15u",nbinsx,xbin);
 TH1F* fo15u  = new TH1F("fo15u", "fo15u", nbinsx,xbin);
-//30 u
-TH1F* num30u = new TH1F("num30u","num30u",nbinsx,xbin);
-TH1F* fo30u  = new TH1F("fo30u", "fo30u", nbinsx,xbin);
-//50 u
-TH1F* num50u = new TH1F("num50u","num50u",nbinsx,xbin);
-TH1F* fo50u  = new TH1F("fo50u", "fo50u", nbinsx,xbin);
-// 15u Mu5
-TH1F* num15uMu5 = new TH1F("num15uMu5","num15uMu5",nbinsx,xbin);
-TH1F* fo15uMu5  = new TH1F("fo15uMu5", "fo15uMu5", nbinsx,xbin);
-// Mu9
-TH1F* num15uMu9 = new TH1F("num15uMu9","num15uMu9",nbinsx,xbin);
-TH1F* fo15uMu9  = new TH1F("fo15uMu9", "fo15uMu9", nbinsx,xbin);
+// 20u
+TH1F* num20u = new TH1F("num20u","num20u",nbinsx,xbin);
+TH1F* fo20u  = new TH1F("fo20u", "fo20u", nbinsx,xbin);
+
+// 10u
+TH1F* QCDnum10u = new TH1F("QCDnum10u","QCDnum10u",nbinsx,xbin);
+TH1F* QCDfo10u  = new TH1F("QCDfo10u", "QCDfo10u", nbinsx,xbin);
+// 15u
+TH1F* QCDnum15u = new TH1F("QCDnum15u","QCDnum15u",nbinsx,xbin);
+TH1F* QCDfo15u  = new TH1F("QCDfo15u", "QCDfo15u", nbinsx,xbin);
+// 20u
+TH1F* QCDnum20u = new TH1F("QCDnum20u","QCDnum20u",nbinsx,xbin);
+TH1F* QCDfo20u  = new TH1F("QCDfo20u", "QCDfo20u", nbinsx,xbin);
+
+// 10u
+TH1F* Wnum10u = new TH1F("Wnum10u","Wnum10u",nbinsx,xbin);
+TH1F* Wfo10u  = new TH1F("Wfo10u", "Wfo10u", nbinsx,xbin);
+// 15u
+TH1F* Wnum15u = new TH1F("Wnum15u","Wnum15u",nbinsx,xbin);
+TH1F* Wfo15u  = new TH1F("Wfo15u", "Wfo15u", nbinsx,xbin);
+// 20u
+TH1F* Wnum20u = new TH1F("Wnum20u","Wnum20u",nbinsx,xbin);
+TH1F* Wfo20u  = new TH1F("Wfo20u", "Wfo20u", nbinsx,xbin);
+
+// 10u
+TH1F* MCnum10u = new TH1F("MCnum10u","MCnum10u",nbinsx,xbin);
+TH1F* MCfo10u  = new TH1F("MCfo10u", "MCfo10u", nbinsx,xbin);
+// 15u
+TH1F* MCnum15u = new TH1F("MCnum15u","MCnum15u",nbinsx,xbin);
+TH1F* MCfo15u  = new TH1F("MCfo15u", "MCfo15u", nbinsx,xbin);
+// 20u
+TH1F* MCnum20u = new TH1F("MCnum20u","MCnum20u",nbinsx,xbin);
+TH1F* MCfo20u  = new TH1F("MCfo20u", "MCfo20u", nbinsx,xbin);
 
 //// Fill the Histograms
 TCanvas * ctemp = new TCanvas();
 
-// 6u
-ch1->Draw("min(pt,39.99)>>num6u","num&&l16u>1&&abs(id)==13&&tcmet<20");
-ch1->Draw("min(pt,39.99)>>fo6u",      "l16u>1&&abs(id)==13&&tcmet<20");
 // 10u
-ch1->Draw("min(pt,39.99)>>num10u","num&&l110u>1&&abs(id)==13&&tcmet<20");
-ch1->Draw("min(pt,39.99)>>fo10u",      "l110u>1&&abs(id)==13&&tcmet<20");
+ch2->Draw("min(pt,69.99)>>num10u",  "abs(id)==13 && mu9>1 && ptj1>10  && num");
+ch2->Draw("min(pt,69.99)>>fo10u",   "abs(id)==13 && mu9>1 && ptj1>10 ");
 // 15u
-ch2->Draw("min(pt,39.99)>>num15u","num&&hlt15u>1&&abs(id)==13&&tcmet<20");
-ch2->Draw("min(pt,39.99)>>fo15u",      "hlt15u>1&&abs(id)==13&&tcmet<20");
-// 30u
-ch2->Draw("min(pt,39.99)>>num30u","num&&hlt30u>1&&abs(id)==13&&tcmet<20");
-ch2->Draw("min(pt,39.99)>>fo30u",      "hlt30u>1&&abs(id)==13&&tcmet<20");
-// 50u
-ch2->Draw("min(pt,39.99)>>num50u","num&&hlt50u>1&&abs(id)==13&&tcmet<20");
-ch2->Draw("min(pt,39.99)>>fo50u",      "hlt50u>1&&abs(id)==13&&tcmet<20");
-//
-ch2->Draw( "min(pt,39.99)>>num15uMu5", "num&&hlt15u>1&&mu5==2&&abs(id)==13&&tcmet<20");
-ch2->Draw( "min(pt,39.99)>>fo15uMu5", "hlt15u>1&&mu5==2&&abs(id)==13&&tcmet<20");
-//
-ch2->Draw( "min(pt,39.99)>>num15uMu9", "num&&hlt15u>1&&mu9==2&&abs(id)==13&&tcmet<20");
-ch2->Draw( "min(pt,39.99)>>fo15uMu9", "hlt15u>1&&mu9==2&&abs(id)==13&&tcmet<20");
+ch2->Draw("min(pt,69.99)>>num15u",  "abs(id)==13 && mu9>1 && ptj1>15  && num");
+ch2->Draw("min(pt,69.99)>>fo15u",   "abs(id)==13 && mu9>1 && ptj1>15 ");
+// 20u
+ch2->Draw("min(pt,69.99)>>num20u",  "abs(id)==13 && mu9>1 && ptj1>20  && num");
+ch2->Draw("min(pt,69.99)>>fo20u",   "abs(id)==13 && mu9>1 && ptj1>20 ");
 
-//// 6u
-//ch1->Draw("eta>>num6u","num&&l16u>1&&abs(id)==13&&tcmet<20");
-//ch1->Draw("eta>>fo6u",      "l16u>1&&abs(id)==13&&tcmet<20");
-//// 10u
-//ch1->Draw("eta>>num10u","num&&l110u>1&&abs(id)==13&&tcmet<20");
-//ch1->Draw("eta>>fo10u",      "l110u>1&&abs(id)==13&&tcmet<20");
-//// 15u
-//ch2->Draw("eta>>num15u","num&&hlt15u>1&&abs(id)==13&&tcmet<20");
-//ch2->Draw("eta>>fo15u",      "hlt15u>1&&abs(id)==13&&tcmet<20");
-//// 30u
-//ch2->Draw("eta>>num30u","num&&hlt30u>1&&abs(id)==13&&tcmet<20");
-//ch2->Draw("eta>>fo30u",      "hlt30u>1&&abs(id)==13&&tcmet<20");
-//// 50u
-//ch2->Draw("eta>>num50u","num&&hlt50u>1&&abs(id)==13&&tcmet<20");
-//ch2->Draw("eta>>fo50u",      "hlt50u>1&&abs(id)==13&&tcmet<20");
-////
-//ch2->Draw( "eta>>num15uMu5", "num&&hlt15u>1&&mu5==2&&abs(id)==13&&tcmet<20");
-//ch2->Draw( "eta>>fo15uMu5", "hlt15u>1&&mu5==2&&abs(id)==13&&tcmet<20");
-////
-//ch2->Draw( "eta>>num15uMu9", "num&&hlt15u>1&&mu9==2&&abs(id)==13&&tcmet<20");
-//ch2->Draw( "eta>>fo15uMu9", "hlt15u>1&&mu9==2&&abs(id)==13&&tcmet<20");
+// 10u
+qcd->Draw("min(pt,69.99)>>QCDnum10u",  "abs(id)==13 && mu9>1 && ptj1>10  && num");
+qcd->Draw("min(pt,69.99)>>QCDfo10u",   "abs(id)==13 && mu9>1 && ptj1>10 ");
+// 15u
+qcd->Draw("min(pt,69.99)>>QCDnum15u",  "abs(id)==13 && mu9>1 && ptj1>15  && num");
+qcd->Draw("min(pt,69.99)>>QCDfo15u",   "abs(id)==13 && mu9>1 && ptj1>15 ");
+// 20u
+qcd->Draw("min(pt,69.99)>>QCDnum20u",  "abs(id)==13 && mu9>1 && ptj1>20  && num");
+qcd->Draw("min(pt,69.99)>>QCDfo20u",   "abs(id)==13 && mu9>1 && ptj1>20 ");
+
+// 10u
+wmunu->Draw("min(pt,69.99)>>Wnum10u",  "abs(id)==13 && mu9>1 && ptj1>10  && num");
+wmunu->Draw("min(pt,69.99)>>Wfo10u",   "abs(id)==13 && mu9>1 && ptj1>10 ");
+// 15u
+wmunu->Draw("min(pt,69.99)>>Wnum15u",  "abs(id)==13 && mu9>1 && ptj1>15  && num");
+wmunu->Draw("min(pt,69.99)>>Wfo15u",   "abs(id)==13 && mu9>1 && ptj1>15 ");
+// 20u
+wmunu->Draw("min(pt,69.99)>>Wnum20u",  "abs(id)==13 && mu9>1 && ptj1>20  && num");
+wmunu->Draw("min(pt,69.99)>>Wfo20u",   "abs(id)==13 && mu9>1 && ptj1>20 ");
 
 
 delete ctemp;
 
+// Scale MC
+QCDfo15u->Scale( (245*18.205289)/1000000 );
+QCDnum15u->Scale( (245*18.205289)/1000000 );
+
+Wfo15u->Scale( (245*3.7446570)/1000000 );
+Wnum15u->Scale( (245*3.7446570)/1000000 );
+
+// Add
+
+
+MCfo10u = QCDfo15u;
+MCfo10u->Add(Wfo15u);
+
+MCfo15u = QCDfo15u;
+MCfo15u->Add(Wfo15u);
+
+MCfo20u = QCDfo15u;
+MCfo20u->Add(Wfo15u);
+
+
+MCnum10u = QCDnum15u;
+MCnum10u->Add(Wnum15u);
+
+MCnum15u = QCDnum15u;
+MCnum15u->Add(Wnum15u);
+
+MCnum20u = QCDnum15u;
+MCnum20u->Add(Wnum15u);
+
+
 
 // Get the fake rates
-TH1F* eff6u  = eff(fo6u, num6u, "eff6u");
 TH1F* eff10u = eff(fo10u,num10u,"eff10u");
 TH1F* eff15u = eff(fo15u,num15u,"eff15u");
-TH1F* eff30u = eff(fo30u,num30u,"eff30u");
-TH1F* eff50u = eff(fo50u,num50u,"eff50u");
+TH1F* eff20u = eff(fo20u,num20u,"eff20u");
 
-// 6U in black
-eff6u->SetMarkerStyle(20);
-eff6u->SetLineColor(1);
-eff6u->SetMarkerColor(1);
+TH1F* MCeff10u = eff( MCfo10u, MCnum10u,"MCeff10u");
+TH1F* MCeff15u = eff( MCfo15u, MCnum15u,"MCeff15u");
+TH1F* MCeff20u = eff( MCfo20u, MCnum20u,"MCeff20u");
 
-// 10U in black
+// 10u
 eff10u->SetMarkerStyle(23);
-eff10u->SetLineColor(2);
-eff10u->SetMarkerColor(2);
-
-// 15U in blue
-eff15u->SetMarkerStyle(21);
-eff15u->SetLineColor(4);
-eff15u->SetMarkerColor(4);
-
-// 30U in blue
-eff30u->SetMarkerStyle(21);
-eff30u->SetLineColor(kGreen+2);
-eff30u->SetMarkerColor(kGreen+2);
-
-// 50U in blue
-eff50u->SetMarkerStyle(21);
-eff50u->SetLineColor(kCyan+1);
-eff50u->SetMarkerColor(kCyan+1);
+eff10u->SetLineColor(kRed);
+eff10u->SetMarkerColor(kRed);
+// 15u
+eff15u->SetMarkerStyle(23);
+eff15u->SetLineColor(kBlue);
+eff15u->SetMarkerColor(kBlue);
+// 20u
+eff20u->SetMarkerStyle(23);
+eff20u->SetLineColor(kBlack);
+eff20u->SetMarkerColor(kBlack);
 
 //Plot it
-eff6u->SetMinimum(0.);
-eff6u->SetMaximum(xmax);
-eff15u->SetTitle("Muon Fake Rate - HLT_Jet15U");
-eff6u.Draw();
-eff10u->Draw("same");
-eff15u->Draw("same");
-eff30u->Draw("same");
-eff50u->Draw("same");
-TLegend *leg2 = new TLegend(0.5,0.7,0.99,0.99);
-leg2->AddEntry(eff6u,"HLT_L1Jet6U");
-leg2->AddEntry(eff10u,"HLT_L1Jet10U");
-leg2->AddEntry(eff15u,"HLT_Jet15U");
-leg2->AddEntry(eff30u,"HLT_Jet30U");
-leg2->AddEntry(eff50u,"HLT_Jet50U");
-leg2->Draw();
-
-return;
-
-// 6U in black
-num6u->SetMarkerStyle(20);
-num6u->SetLineColor(1);
-num6u->SetMarkerColor(1);
-// 10U in black
-num10u->SetMarkerStyle(23);
-num10u->SetLineColor(2);
-num10u->SetMarkerColor(2);
-// 15U in blue
-num15u->SetMarkerStyle(21);
-num15u->SetLineColor(4);
-num15u->SetMarkerColor(4);
-// 30U in blue
-num30u->SetMarkerStyle(21);
-num30u->SetLineColor(kGreen+2);
-num30u->SetMarkerColor(kGreen+2);
-// 50U in blue
-num50u->SetMarkerStyle(21);
-num50u->SetLineColor(kCyan+1);
-num50u->SetMarkerColor(kCyan+1);
-
-//Plot it
-TCanvas *c1 = new TCanvas();
-c1->SetWindowSize(800,400);
-c1->Divide(2,1);
-c1->cd(1)->SetLogy();
-num6u->SetMinimum(.1);
-num6u->SetTitle("Muon Fake Rate");
-num6u.Draw();
-num10u->Draw("same");
-num15u->Draw("same");
-num30u->Draw("same");
-//num50u->Draw("same");
-TLegend *leg2 = new TLegend(0.5,0.7,0.99,0.99);
-leg2->AddEntry(num6u,"HLT_L1Jet6U");
-leg2->AddEntry(num10u,"HLT_L1Jet10U");
-leg2->AddEntry(num15u,"HLT_Jet15U");
-leg2->AddEntry(num30u,"HLT_Jet30U");
-//leg2->AddEntry(num50u,"HLT_Jet50U");
-leg2->Draw();
-
-
-// 6U in black
-fo6u->SetMarkerStyle(20);
-fo6u->SetLineColor(1);
-fo6u->SetMarkerColor(1);
-// 10U in black
-fo10u->SetMarkerStyle(23);
-fo10u->SetLineColor(2);
-fo10u->SetMarkerColor(2);
-// 15U in blue
-fo15u->SetMarkerStyle(21);
-fo15u->SetLineColor(4);
-fo15u->SetMarkerColor(4);
-// 30U in blue
-fo30u->SetMarkerStyle(21);
-fo30u->SetLineColor(kGreen+2);
-fo30u->SetMarkerColor(kGreen+2);
-// 50U in blue
-fo50u->SetMarkerStyle(21);
-fo50u->SetLineColor(kCyan+1);
-fo50u->SetMarkerColor(kCyan+1);
-
-//Plot it
-c1->cd(2)->SetLogy();
-fo6u->SetMinimum(.1);
-fo6u->SetTitle("Muon Fake Rate");
-fo6u.Draw();
-fo10u->Draw("same");
-fo15u->Draw("same");
-fo30u->Draw("same");
-//fo50u->Draw("same");
-TLegend *leg2 = new TLegend(0.5,0.7,0.99,0.99);
-leg2->AddEntry(fo6u,"HLT_L1Jet6U");
-leg2->AddEntry(fo10u,"HLT_L1Jet10U");
-leg2->AddEntry(fo15u,"HLT_Jet15U");
-leg2->AddEntry(fo30u,"HLT_Jet30U");
-//leg2->AddEntry(fo50u,"HLT_Jet50U");
-leg2->Draw();
-
-
-// 15u Mu5
-TH1F* eff15uMu5 = eff( fo15uMu5, num15uMu5, "eff15uMu5");
-
-// Mu9
-TH1F* eff15uMu9 = eff( fo15uMu9, num15uMu9, "eff15uMu9");
-
-new TCanvas();
+eff15u->SetMinimum(0.);
+eff15u->SetMaximum(xmax);
+eff15u->SetTitle("Muon Fake Rate - Mu5");
 eff15u->Draw();
-eff15uMu5->SetMarkerStyle(22);
-eff15uMu5->SetMarkerColor(kRed);
-eff15uMu5->SetLineColor(kRed);
-eff15uMu5->Draw("same");
-eff15uMu9->SetMarkerStyle(20);
-//eff15uMu9->Draw("same");
+eff10u->Draw("same");
+eff20u->Draw("same");
+TLegend *leg2 = new TLegend(0.5,0.7,0.99,0.99);
+leg2->AddEntry(eff10u,"10 GeV Jet");
+leg2->AddEntry(eff15u,"15 GeV Jet");
+leg2->AddEntry(eff20u,"20 GeV Jet");
+leg2->Draw();
 
-TLegend *l1 = new TLegend(0.40,0.8,0.99,0.99);
-l1->AddEntry(eff15u,"No HLT_Mu5 trigger required");
-l1->AddEntry(eff15uMu5,"HLT_Mu5 trigger required");
-//l1->AddEntry(eff15uMu9,"Mu9 trig required");
-l1->Draw();
+//
+TCanvas *c = new TCanvas();
+c->SetWindowSize(1100,600);
+c->Divide(2,2);
+
+
+
+
+fo15u->SetMarkerStyle(23);
+num15u->SetMarkerStyle(23);
+num15u->SetMarkerColor(kRed);
+QCDnum15u->SetLineColor(kRed);
+Wnum15u->SetLineColor(kRed);
+
+c->cd(1)->SetLogy();
+fo15u->SetMinimum(.1);
+fo15u->Draw("P");
+num15u->Draw("P same");
+
+c->cd(2)->SetLogy();
+num15u->SetMinimum(.1);
+num15u->Draw("P");
+QCDnum15u->Draw("same");
+Wnum15u->Draw("same");
+
+c->cd(3);
+eff15u->Draw();
+MCeff15u->Draw("same");
+
+c->cd(4)->SetLogy();
+fo15u->SetMinimum(.1);
+fo15u->Draw("P");
+QCDfo15u->Draw("same");
+Wfo15u->Draw("same");
+
 return;
-
 
 }

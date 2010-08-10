@@ -7,7 +7,7 @@
   TChain *ch1 = new TChain("tree");
   TChain *ch2 = new TChain("tree");
   ch1->Add("JMTMonitor.root");
-  ch2->Add("JMT.root");
+  ch2->Add("./august9/JMT_36nb.root");
 
   // The bins for the electron FR
   double ptEleBin[4] ={10.,15.,20.,40.};
@@ -47,13 +47,13 @@
 
   // Fill the muon histograms
   // 6u
-  ch1->Draw("min(pt,39.99):abs(eta)>>mnum6u","num&&l16u>1&&abs(id)==13&&tcmet<20");
+  ch1->Draw("min(pt,39.99):abs(eta)>>mnum6u","numAug9&&l16u>1&&abs(id)==13&&tcmet<20");
   ch1->Draw("min(pt,39.99):abs(eta)>>fo6u",      "l16u>1&&abs(id)==13&&tcmet<20");
   // 10u
-  ch1->Draw("min(pt,39.99):abs(eta)>>mnum10u","num&&l110u>1&&abs(id)==13&&tcmet<20");
+  ch1->Draw("min(pt,39.99):abs(eta)>>mnum10u","numAug9&&l110u>1&&abs(id)==13&&tcmet<20");
   ch1->Draw("min(pt,39.99):abs(eta)>>fo10u",      "l110u>1&&abs(id)==13&&tcmet<20");
   // 15u
-  ch2->Draw("min(pt,39.99):abs(eta)>>mnum15u","num&&hlt15u>1&&abs(id)==13&&tcmet<20");
+  ch2->Draw("min(pt,39.99):abs(eta)>>mnum15u","numAug9&&hlt15u>1&&abs(id)==13&&tcmet<20");
   ch2->Draw("min(pt,39.99):abs(eta)>>fo15u",      "hlt15u>1&&abs(id)==13&&tcmet<20");
 
 
@@ -65,20 +65,20 @@
 
   // Fill the electron histograms
   // 6u
-  ch1->Draw("min(pt,39.99):abs(eta)>>enum6u","num&&l16u>1&&abs(id)==11&&tcmet<20");
-  ch1->Draw("min(pt,39.99):abs(eta)>>v16u","v1&&l16u>1&&abs(id)==11&&tcmet<20");
-  ch1->Draw("min(pt,39.99):abs(eta)>>v26u","v2&&l16u>1&&abs(id)==11&&tcmet<20");
-  ch1->Draw("min(pt,39.99):abs(eta)>>v36u","v3&&l16u>1&&abs(id)==11&&tcmet<20");
+  ch1->Draw("min(pt,39.99):abs(eta)>>enum6u","numAug9&&l16u>1&&abs(id)==11&&tcmet<20");
+  ch1->Draw("min(pt,39.99):abs(eta)>>v16u","v1Aug9&&l16u>1&&abs(id)==11&&tcmet<20");
+  ch1->Draw("min(pt,39.99):abs(eta)>>v26u","v2Aug9&&l16u>1&&abs(id)==11&&tcmet<20");
+  ch1->Draw("min(pt,39.99):abs(eta)>>v36u","v3Aug9&&l16u>1&&abs(id)==11&&tcmet<20");
   // 10u
-  ch1->Draw("min(pt,39.99):abs(eta)>>enum10u","num&&l110u>1&&abs(id)==11&&tcmet<20");
-  ch1->Draw("min(pt,39.99):abs(eta)>>v110u","v1&&l110u>1&&abs(id)==11&&tcmet<20");
-  ch1->Draw("min(pt,39.99):abs(eta)>>v210u","v2&&l110u>1&&abs(id)==11&&tcmet<20");
-  ch1->Draw("min(pt,39.99):abs(eta)>>v310u","v3&&l110u>1&&abs(id)==11&&tcmet<20");
+  ch1->Draw("min(pt,39.99):abs(eta)>>enum10u","numAug9&&l110u>1&&abs(id)==11&&tcmet<20");
+  ch1->Draw("min(pt,39.99):abs(eta)>>v110u","v1Aug9&&l110u>1&&abs(id)==11&&tcmet<20");
+  ch1->Draw("min(pt,39.99):abs(eta)>>v210u","v2Aug9&&l110u>1&&abs(id)==11&&tcmet<20");
+  ch1->Draw("min(pt,39.99):abs(eta)>>v310u","v3Aug9&&l110u>1&&abs(id)==11&&tcmet<20");
   // 15u
-  ch2->Draw("min(pt,39.99):abs(eta)>>enum15u","num&&hlt15u>1&&abs(id)==11&&tcmet<20");
-  ch2->Draw("min(pt,39.99):abs(eta)>>v115u","v1&&hlt15u>1&&abs(id)==11&&tcmet<20");
-  ch2->Draw("min(pt,39.99):abs(eta)>>v215u","v2&&hlt15u>1&&abs(id)==11&&tcmet<20");
-  ch2->Draw("min(pt,39.99):abs(eta)>>v315u","v3&&hlt15u>1&&abs(id)==11&&tcmet<20");
+  ch2->Draw("min(pt,39.99):abs(eta)>>enum15u","numAug9&&hlt15u>1&&abs(id)==11&&tcmet<20");
+  ch2->Draw("min(pt,39.99):abs(eta)>>v115u","v1Aug9&&hlt15u>1&&abs(id)==11&&tcmet<20");
+  ch2->Draw("min(pt,39.99):abs(eta)>>v215u","v2Aug9&&hlt15u>1&&abs(id)==11&&tcmet<20");
+  ch2->Draw("min(pt,39.99):abs(eta)>>v315u","v3Aug9&&hlt15u>1&&abs(id)==11&&tcmet<20");
 
 
   // Get the electron FR
