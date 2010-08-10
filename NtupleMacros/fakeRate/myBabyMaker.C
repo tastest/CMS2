@@ -86,7 +86,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
   // Set the JSON file
   if(isData){
     //set_goodrun_file("./jsonlist_133446_140387_254.4nb.txt");
-    set_goodrun_file("jsonlist_132440_139239.txt");
+    //set_goodrun_file("jsonlist_132440_139239.txt");
+    set_goodrun_file_json("Cert_and_RR_Aug9_Top_merged_132440-142537_JSON.txt");
   }
 
   // The deltaR requirement between objects and jets to remove the jet trigger dependence
@@ -123,7 +124,9 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
       if(isData){
         // Good  Runs
-        if(!goodrun( evt_run(), evt_lumiBlock() )) continue;
+        //if(!goodrun( evt_run(), evt_lumiBlock() )) continue;
+        if(!goodrun_json( evt_run(), evt_lumiBlock() )) continue;
+        //if( evt_run() != 141956 ) continue;
 
         // check for duplicated
         DorkyEventIdentifier id = { evt_run(),evt_event(), evt_lumiBlock() };
@@ -209,7 +212,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
 
 	      // If there is no v1/v2/v3 lepton quit
-	      if ( (!v1_) && (!v2_) && (!v3_) && (!v1SS_) && (!v2SS_) && (!v3SS_) ) continue;
+	      if ( (!v1_) && (!v2_) && (!v3_) && (!v1SS_) && (!v2SS_) && (!v3SS_) && (!v1Aug9_) && (!v2Aug9_) && (!v3Aug9_) ) continue;
 	      
 	      // If it is above 20 GeV see if we can make a 
 	      // Z with another pt>20 FO.  Will use the v1 FO since 
@@ -553,7 +556,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 		
 	  // Now fill the muon trigger flags
 	  mu3_ = nHLTObjects("HLT_Mu3");
-	  mu5_ = nHLTObjects("HLT_Mu5");
+	  //mu5_ = nHLTObjects("HLT_Mu5");
 	  mu9_ = nHLTObjects("HLT_Mu9");
 	  
 	  // Explicit match with Mu3 trigger
@@ -572,27 +575,27 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 	    }
 	  }
 	  
-	  // Explicit match with Mu5 trigger
-	  if (mu5_ > 0) {
-	    bool match = false;
-	    for (int itrg=0; itrg<mu5_; itrg++) {
-	      LorentzVector p4tr = p4HLTObject("HLT_Mu5",itrg);
-	      double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4tr);
-	      if (dr < drmu5_) drmu5_ = dr;
-	      if (dr < 0.4) match=true;
-	    }
-	    if (match) {
-	      mu5_ = 2;
-	    } else {
-	      mu5_ = 1;
-	    }
-	  }
+//	  // Explicit match with Mu5 trigger
+//	  if (mu5_ > 0) {
+//	    bool match = false;
+//	    for (int itrg=0; itrg<mu5_; itrg++) {
+//	      LorentzVector p4tr = p4HLTObject("HLT_Mu5",itrg);
+//	      double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4tr);
+//	      if (dr < drmu5_) drmu5_ = dr;
+//	      if (dr < 0.4) match=true;
+//	    }
+//	    if (match) {
+//	      mu5_ = 2;
+//	    } else {
+//	      mu5_ = 1;
+//	    }
+//	  }
 	  
 	  // Explicit match with Mu9 trigger
 	  if (mu9_ > 0) {
 	    bool match = false;
 	    for (int itrg=0; itrg<mu9_; itrg++) {
-	      LorentzVector p4tr = p4HLTObject("HLT_Mu5",itrg);
+	      LorentzVector p4tr = p4HLTObject("HLT_Mu9",itrg);
 	      double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4tr);
 	      if (dr < drmu9_) drmu9_ = dr;
 	      if (dr < 0.4) match=true;
