@@ -27,20 +27,11 @@ using namespace std;
 #ifndef __CINT__
 #include "CORE/CMS2.cc"
 #include "CORE/utilities.cc"
-//#include "CORE/selections.cc"
-//the following was the stuff that worked for fkw on August 2nd:
-//#include "CORE/jetSelections.cc"
-#include "CORE/triggerSelection.cc"
-//#include "CORE/electronSelections.cc"
-//#include "CORE/muonSelections.cc"
-// this got replaced by the top stuff:
-#include "COREtop/selections.cc"
-#include "COREtop/mcSelections.cc"
-#include "COREtop/trackSelections.cc"
-//#include "COREtop/eventSelections.cc"
-//end of top stuff
-#include "../Tools/tools.cc"
-#include "CORE/eventSelections.cc"
+#include "CORE/selections.cc"
+#include "CORE/electronSelections.cc"
+#include "CORE/muonSelections.cc"
+#include "CORE/tcmet_looper/getTcmetFromCaloMet.cc"
+#include "Tools/tools.cc"
 #endif
 
 TH1F*hypos_total;
@@ -48,6 +39,56 @@ TH1F* hypos_total_weighted;
 
 enum Sample {WW, WZ, ZZ, Wjets, DY, DYee, DYmm, DYtt, ttbar, tW, LM0x, LM1x, LM2x, LM3x, LM4x, LM5x, LM6x, LM7x, LM8x, LM9x}; // signal samples
 enum Hypothesis {MM, EM, EE, ALL}; // hypothesis types (em and me counted as same) and all
+
+// filter events by process
+bool filterByProcess( enum Sample sample ) {
+  switch (sample) {
+  case DYee: 
+    return isDYee();
+  case DYmm:
+    return isDYmm();
+  case DYtt:
+    return isDYtt();
+  case WW:
+    return isWW();
+  case WZ:
+    return isWZ();
+  case ZZ:
+    return isZZ();
+  default:
+    return true;
+  }
+}
+
+bool isIdentified( enum Sample sample ) {
+  switch (sample) {
+  case DYee:
+  case DYmm:
+  case DYtt:
+    return getDrellYanType()!=999;
+  case WW:
+  case WZ:
+  case ZZ:
+    return getVVType()!=999;
+  default:
+    return true;
+  }
+}
+
+// filter candidates by hypothesis
+Hypothesis filterByHypothesis( int candidate ) {
+  switch (candidate) {
+  case 0:
+    return MM;
+  case 1: case 2:
+    return EM;
+  case 3:
+    return EE;
+  }
+  cout << "Unknown type: " << candidate << "Abort" << endl;
+  assert(0);
+  return MM;
+}
 
 //  Book histograms...
 //  Naming Convention:
@@ -59,12 +100,17 @@ enum Hypothesis {MM, EM, EE, ALL}; // hypothesis types (em and me counted as sam
 // MAKE SURE TO CAL SUMW2 FOR EACH 1D HISTOGRAM BEFORE FILLING!!!!!!
 
 TH1F* hnJet[4];       // Njet distributions
-TH1F* hnSumJetPt[4];  // sum of jet pTs above some threshold
-TH1F* hnSumLepPt[4];  // sum of the pt of the 2 leptons
-TH1F* hnMET[4];       // met
-TH1F* hnSumPTall[4];  // sum of pT of jets plus lepton pTs plus met
+TH1F* hnJetWW[4];
+TH1F* hnJetWO[4];
+TH1F* hnJetWOSemilep[4];       // Njet distributions
+TH1F* hnJetWOOther[4];       // Njet distributions
+TH1F* hnJetOO[4];       // Njet distributions
+
+TH1F* htcmetZveto[4];
 
 // fkw September 2008 final hist used for muon tags estimate of top bkg
+
+TH2F* rf = getResponseFunction_fit();
 
 
 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > calo_jetsp4;
@@ -97,112 +143,96 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
     return;
   }
 
-  // The event weight including the kFactor (scaled to 10 nb-1)
-     float weight = cms2.evt_scale1fb() * kFactor * 0.01;
-
-     //puneeths accounting of the different scale factors for the different DY samples
-     TString fkwdataset = cms2.evt_dataset();
-     if(fkwdataset.Contains("DY") || fkwdataset.Contains("Zee") || fkwdataset.Contains("Zmumu") || fkwdataset.Contains("Ztautau") || fkwdataset.Contains("ZJets")) {
-       if(TString(cms2.evt_dataset()).Contains("madgraph") == true) { //mll > 50
-	 weight = weight*3048./2400.;
-       } else if(TString(cms2.evt_dataset()).Contains("M10to20") == true) { //10 < mll < 20 
-	 weight = weight*3457./2659.;
-       } else { // 20 < mll < 50
-	 weight = weight * 1666./1300.;
-       }
-     }
+  // The event weight including the kFactor (scaled to 1 fb-1)
+     float weight = cms2.evt_scale1fb() * kFactor;
 
      unsigned int icounter(0);
      monitor.count(icounter++,"Total number of hypothesis: ");
      
-     //if( icounter < 10 ) cout << "weight = " << weight << " kFactor = " << kFactor << endl;
-
      //     if ( ! passTriggersMu9orLisoE15( cms2.hyp_type()[i_hyp] ) ) return;
-     if (! GoodEarlyDataMCTrigger( cms2.hyp_type()[i_hyp] ) ) return;
-
+     if (! GoodSusyTrigger( cms2.hyp_type()[i_hyp] ) ) return;
      monitor.count(icounter++,"Total number of hypothesis after trigger requirements: ");
      
      // Cut on lepton Pt and eta
-     if (cms2.hyp_lt_p4()[i_hyp].pt() < 20.0) return;
-     if (cms2.hyp_ll_p4()[i_hyp].pt() < 20.0) return;
-     /* no longer necessary
+     if (cms2.hyp_lt_p4()[i_hyp].pt() < 10.0) return;
+     if (cms2.hyp_ll_p4()[i_hyp].pt() < 10.0) return;
      if ( TMath::Abs(cms2.hyp_lt_p4()[i_hyp].eta()) > 2.4) return;
      if ( TMath::Abs(cms2.hyp_ll_p4()[i_hyp].eta()) > 2.4) return;
      if (max(cms2.hyp_ll_p4()[i_hyp].pt(), cms2.hyp_lt_p4()[i_hyp].pt()) < 20) return;
-     */
 
      monitor.count(icounter++,"Total number of hypothesis after adding lepton pt cut: ");
+
+     bool conversion = false;
+     bool mischarge = false;
+     
+     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
+       int elIndex = cms2.hyp_ll_index()[i_hyp];
+       if ( conversionElectron(elIndex)) conversion = true;
+       if ( isChargeFlip(elIndex)) mischarge = true;
+     }
+
+     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
+       int elIndex = cms2.hyp_lt_index()[i_hyp];
+       if ( conversionElectron(elIndex)) conversion = true;
+       if ( isChargeFlip(elIndex)) mischarge = true;
+     }
+
+     if (conversion) return;
+     if (mischarge) return;
+
+     monitor.count(icounter++,"Total number of hypothesis after adding conversion and chargeflip cuts: ");
 
      // Require opposite sign
      //  if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) return;
      // Same Sign
-     //fkw if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] < 0 ) return;
+     if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] < 0 ) return;
 
      monitor.count(icounter++,"Total number of hypothesis after adding charge cut: ");
      
-     //bool passedAllLeptonRequirements = true;
+     bool goodEvent = true;
+     bool passedAllLeptonRequirements = true;
 
-     // Lepton Quality cuts and isolation
+     // Lepton Quality cuts and isolation according to VJets09
 
-     /* old fkw selection
-     //lepton reqs on lt
-     int id = abs(cms2.hyp_lt_id()[i_hyp]);
-     int index = cms2.hyp_lt_index()[i_hyp];
-     if ( id == 11 && !(electronSelection_cand02(index) && electronId_extra(index)) ) passedAllLeptonRequirements = false ;
-     if ( id == 13 && !muonId(index)) passedAllLeptonRequirements = false ; 
+//     if (!GoodSusyLeptonID(cms2.hyp_lt_id()[i_hyp], cms2.hyp_lt_index()[i_hyp])) passedAllLeptonRequirements = false;
+//     if (!GoodSusyLeptonID(cms2.hyp_ll_id()[i_hyp], cms2.hyp_ll_index()[i_hyp])) passedAllLeptonRequirements = false;
+//     if (!PassSusyLeptonIsolation(cms2.hyp_ll_id()[i_hyp], cms2.hyp_ll_index()[i_hyp])) passedAllLeptonRequirements = false;
+//     if (!PassSusyLeptonIsolation(cms2.hyp_lt_id()[i_hyp], cms2.hyp_lt_index()[i_hyp])) passedAllLeptonRequirements = false;
 
-     //lepton reqs on ll
-     id = abs(cms2.hyp_ll_id()[i_hyp]);
-     index = cms2.hyp_ll_index()[i_hyp];
-     if ( id == 11 && !(electronSelection_cand02(index) && electronId_extra(index)) ) passedAllLeptonRequirements = false ;
-     if ( id == 13 && !muonId(index)) passedAllLeptonRequirements = false ; 
-     //cut on lepton requirements
+     if (!GoodSusy2010Leptons(cms2.hyp_lt_id()[i_hyp], cms2.hyp_lt_index()[i_hyp])) passedAllLeptonRequirements = false;
+     if (!GoodSusy2010Leptons(cms2.hyp_ll_id()[i_hyp], cms2.hyp_ll_index()[i_hyp])) passedAllLeptonRequirements = false;
+
      if ( !passedAllLeptonRequirements ) return;
-     */
-
-
-     if( !isGoodHypwIso( i_hyp) ) return; //do not do ecal endcap alignment right now
-
      monitor.count(icounter++,"Total number of hypothesis after adding lepton id and isolation, including eta cuts: ");     
 
-//fkw     if (cms2.evt_pfmet() <= 80.) return;
+     // Z mass veto using hyp_leptons for ee and mumu final states
+     if (cms2.hyp_type()[i_hyp] == 0 || cms2.hyp_type()[i_hyp] == 3) {
+       if (inZmassWindow(cms2.hyp_p4()[i_hyp].mass()) || additionalZveto()) {
+//	 htcmetZveto[myType]->Fill(cms2.evt_tcmet(),weight);
+//	 htcmetZveto[3]->Fill(cms2.evt_tcmet(),weight);
+       }
+     }
+
+//     bool useTcMet = false;
+//     if (!passMetVJets09(80., useTcMet)) return;
+
+     metStruct tcmetStruct = getTcmetFromCaloMet( rf );
+     htcmetZveto[myType]->Fill(tcmetStruct.met,weight);
+     htcmetZveto[3]->Fill(tcmetStruct.met,weight);
+     
+//     if (tcmetStruct.met <= 30) return;    
+//     if (tcmetStruct.met <= 80) return;    
+     if (cms2.evt_pfmet() <= 80.) return;
+
+
+     monitor.count(icounter++,"Total number of hypothesis after adding tcmet cut: ");     
 
      calo_jetsp4.clear();
 
-     //this is puneeths jet selection
-     #define JETPTCUT 30.0
-     bool usecaloJets = false;
-     bool usejptJets = false;
-     bool usepfJets = true;
-     unsigned int hypIdx = i_hyp;
-     //get the jets passing cuts 
-     vector<LorentzVector> v_jetP4s;
-     if(usecaloJets) {
-       for(unsigned int i = 0; i < jets_p4().size(); i++) 
-	 v_jetP4s.push_back(jets_p4()[i]*jets_cor()[i]); //jets are uncorrected in our ntuples
-     }
-     if(usejptJets) {
-       for (unsigned int i = 0; i < jpts_p4().size(); i++)
-	 v_jetP4s.push_back(jpts_p4()[i] * jpts_cor()[i]);
-     }
-     if(usepfJets) 
-       v_jetP4s = pfjets_p4();
-     for (unsigned int j = 0; j < v_jetP4s.size(); ++j) {
-       if (isGoodDilHypJet(v_jetP4s.at(j), hypIdx, JETPTCUT, 2.5, 0.4, true)) 
-	 {
-	   if (usejptJets && !passesCaloJetID(v_jetP4s.at(j))) continue;
-	   //v_goodJets.push_back(j);
-	   calo_jetsp4.push_back(v_jetP4s.at(j));
-	 }
-     }
-
-     //fkw old way of selecting jets: 
-     //    calo_jetsp4 = getCaloJets(i_hyp);
-     //    calo_jetsp4 = getJPTJets(i_hyp);
-
-     //calculate sumjetpT and maximum jet pT
      double etMax_calo = 0.0;
      double sumet_calo = 0.0;
+     calo_jetsp4 = getCaloJets(i_hyp);
+     //    calo_jetsp4 = getJPTJets(i_hyp);
 
      for (unsigned int jj=0; jj < calo_jetsp4.size(); ++jj) {
        if (calo_jetsp4[jj].pt() > etMax_calo) etMax_calo = calo_jetsp4[jj].pt();
@@ -211,62 +241,54 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0)
 
      int njets = 0;
      if (calo_jetsp4.size() > 0) njets = calo_jetsp4.size();
-
      // Final cuts on jets
-     //fkw if (njets < 3) return;
+     if (njets < 3) return;
      //if (calo_jetsp4[0].pt() < 100) return; 
-     //fkw if (sumet_calo < 200) return;
+     if (sumet_calo < 200) return;
      
      monitor.count(icounter++,"Total number of hypothesis after adding jet cuts: ");
 
-     //fkw if ( additionalZvetoSUSY2010(i_hyp)) return;
+     if ( additionalZvetoSUSY2010(i_hyp)) return;
 
      monitor.count(icounter++,"Total number of hypothesis after adding additionalZvetoSUSY2010 cut: ");
      
+     if ( ! goodEvent ) return;
 
-     //here's how Puneeth gets his met
-     bool usetcMET = true;
-     bool usepfMET = false;
-     // MET cut
-     string metAlgo;
-     if(usetcMET    ) metAlgo  = "tcMET";
-     if(usepfMET    ) metAlgo  = "pfMET";    
-     pair<float, float> p_met; //met and met phi
-     if(usetcMET || usepfMET) {
-       p_met = getMet(metAlgo, i_hyp, "");//the "" here is legacy. Not used in code anyway!
-          
-       if(p_met.first < 0) {
-	 cout << "Something is wrong with the MET. Exiting" << endl;
-	 return;
-       }
-     } else cout << "you got your met screwed up" << endl;
-
-    // -------------------------------------------------------------------//
+     // -------------------------------------------------------------------//
      // If we made it to here, we passed all cuts and we are ready to fill //
      // -------------------------------------------------------------------//
 
-     //cout << "run = " << cms2.evt_run() << "event = " << cms2.evt_event() << "lumi = " << cms2.evt_lumiBlock() << endl;
-     //cout << " hypo number = " << i_hyp << endl;
-
      //  Fill the distribution
-
      // This hist is used in doTable.C to fill the results table for the twiki.
      hnJet[myType]->Fill(min(njets,4), weight);
      hnJet[3]->Fill(min(njets,4), weight);
-
-     hnSumJetPt[myType]->Fill(min(sumet_calo,999.0),weight);
-     hnSumJetPt[3]->Fill(min(sumet_calo,999.0),weight);
-
-     double sumleppt = cms2.hyp_lt_p4()[i_hyp].pt() + cms2.hyp_ll_p4()[i_hyp].pt() ;
-     hnSumLepPt[myType]->Fill(min(sumleppt,999.0),weight);
-     hnSumLepPt[3]->Fill(min(sumleppt,999.0),weight);
      
-     hnMET[myType]->Fill(p_met.first ,weight);
-     hnMET[3]->Fill(p_met.first, weight);
+     //The only thing left to do now is to work out the composition of the ttbar bkg:
 
-     double allpt = sumet_calo + p_met.first + sumleppt ;
-     hnSumPTall[myType]->Fill(min(allpt,999.0),weight);
-     hnSumPTall[3]->Fill(min(allpt,999.0),weight);
+     //To distinguish WW (=1), WO (=2), and OO (=3) 
+     int tttype = ttbarconstituents(i_hyp);
+
+     // Semileptonic
+     int lttype = leptonIsFromW(cms2.hyp_lt_index()[i_hyp],cms2.hyp_lt_id()[i_hyp],cms2.hyp_lt_p4()[i_hyp] );
+     int lltype = leptonIsFromW(cms2.hyp_ll_index()[i_hyp],cms2.hyp_ll_id()[i_hyp],cms2.hyp_ll_p4()[i_hyp] );
+
+     if (tttype == 1) {
+       hnJetWW[myType]->Fill(min(njets,4), weight);
+       hnJetWW[3]->Fill(min(njets,4), weight);
+     } else if (tttype == 2) {
+       hnJetWO[myType]->Fill(min(njets,4), weight);
+       hnJetWO[3]->Fill(min(njets,4), weight);
+       if ( lttype == -1 || lttype == -2 || lltype == -1 || lltype == -2) {
+	 hnJetWOSemilep[myType]->Fill(min(njets,4), weight); 
+	 hnJetWOSemilep[3]->Fill(min(njets,4), weight); 
+       } else {
+	 hnJetWOOther[myType]->Fill(min(njets,4), weight); 
+	 hnJetWOOther[3]->Fill(min(njets,4), weight); 
+       }
+     } else {
+       hnJetOO[myType]->Fill(min(njets,4), weight);
+       hnJetOO[3]->Fill(min(njets,4), weight);
+     }
 
      hypos_total->Fill(myType);
      hypos_total->Fill(3);
@@ -302,18 +324,63 @@ RooDataSet* MakeNewDataset(const char* name)
   RooDataSet* dataset = new RooDataSet(name, name,
 				       RooArgSet(set_event,set_run,set_lumi,
 						 set_iso,set_selected,set_weight,
-						 set_hyp_type,set_fake_type,set_sample_type),
-				       RooFit::WeightVar(set_weight) );
-  //  dataset->setWeightVar(set_weight);
+						 set_hyp_type,set_fake_type,set_sample_type) );
+  dataset->setWeightVar(set_weight);
   return dataset;
 }
 
-RooDataSet* ScanChain( TChain* chain, enum Sample sample, double kFactor ) {
+void AddIsoSignalControlSample( int i_hyp, double kFactor, RooDataSet* dataset = 0 ) {
+  if ( !dataset ) return;
+  // The event weight including the kFactor (scaled to 1 fb-1)
+  float weight = cms2.evt_scale1fb() * kFactor ;
+  // Cut on lepton Pt
+  if (cms2.hyp_lt_p4()[i_hyp].pt() < 20.0) return;
+  if (cms2.hyp_ll_p4()[i_hyp].pt() < 20.0) return;
+  // Require opposite sign
+  if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) return;
+  // Z mass veto using hyp_leptons for ee and mumu final states
+  if ( cms2.hyp_type()[i_hyp] == 1 || cms2.hyp_type()[i_hyp] == 2 ) return;
+  if (! inZmassWindow(cms2.hyp_p4()[i_hyp].mass())) return;
+  RooArgSet set( *(dataset->get()) );
+  set.setCatIndex("selected",0);
+  set.setRealValue("event",cms2.evt_event());
+  set.setRealValue("run",cms2.evt_run());
+  set.setRealValue("lumi",cms2.evt_lumiBlock());
+  set.setCatLabel("sample_type","control_sample_signal_iso");
+	
+  if ( cms2.hyp_type()[i_hyp] == 3 ){
+    set.setCatLabel("hyp_type","ee");
+    set.setCatLabel("fake_type","electron");
+    if ( goodElectronIsolated(cms2.hyp_lt_index()[i_hyp],true) &&
+	 goodElectronWithoutIsolation(cms2.hyp_ll_index()[i_hyp]) ){
+      set.setRealValue("iso",el_rel_iso(cms2.hyp_ll_index()[i_hyp],true));
+      dataset->add(set,weight);
+    }
+    if ( goodElectronIsolated(cms2.hyp_ll_index()[i_hyp],true) &&
+	 goodElectronWithoutIsolation(cms2.hyp_lt_index()[i_hyp]) ){
+      set.setRealValue("iso",el_rel_iso(cms2.hyp_lt_index()[i_hyp],true));
+      dataset->add(set,weight);
+    }
+  } else {
+    set.setCatLabel("hyp_type","mm");
+    set.setCatLabel("fake_type","muon");
+    if ( goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) &&
+	 goodMuonWithoutIsolation(cms2.hyp_ll_index()[i_hyp]) ){
+      set.setRealValue("iso",mu_rel_iso(cms2.hyp_ll_index()[i_hyp]));
+      dataset->add(set,weight);
+    }
+    if ( goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) &&
+	 goodMuonWithoutIsolation(cms2.hyp_lt_index()[i_hyp]) ){
+      set.setRealValue("iso",mu_rel_iso(cms2.hyp_lt_index()[i_hyp]));
+      dataset->add(set,weight);
+    }
+  }
+}
+
+RooDataSet* ScanChain( TChain* chain, enum Sample sample, bool identifyEvents ) {
   
   unsigned int nEventsChain = chain->GetEntries();  // number of entries in chain --> number of events from all files
   unsigned int nEventsTotal = 0;
-
-  cout << " kFactor = " << kFactor << endl;
 
   // const unsigned int numHypTypes = 4;  // number of hypotheses: MM, EM, EE, ALL
 
@@ -322,9 +389,7 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, double kFactor ) {
   const char sample_names[][1024] = { "ww", "wz", "zz", "wjets", "dy", "dyee", "dymm", "dytt", "ttbar", "tw", "lm0x", "lm1x", "lm2x", "lm3x", "lm4x", "lm5x", "lm6x", "lm7x", "lm8x", "lm9x"};
   const char *prefix = sample_names[sample];
   RooDataSet* dataset = MakeNewDataset(sample_names[sample]);
-
-  //fkw deal with this !!!
-  //double kFactor = 1.0; // 1fb-1
+  double kFactor = .1; // 1fb-1
 
   //  double kFactor = .1; // 1fb-1
   //   switch (sample) {
@@ -364,21 +429,26 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, double kFactor ) {
       hnJet[i]->GetXaxis()->SetBinLabel(k+1, jetbins[k]);
       hnJet[i]->GetXaxis()->SetLabelSize(0.07);
     }
+    hnJetWW[i] = new TH1F(Form("%s_hnJetWW_%s",prefix,suffix[i]),Form("%s_hnJetWW_%s",prefix,suffix[i]),
+			5,0.,5.);	
+    hnJetWO[i] = new TH1F(Form("%s_hnJetWO_%s",prefix,suffix[i]),Form("%s_hnJetWO_%s",prefix,suffix[i]),
+			5,0.,5.);	
+    hnJetWOSemilep[i] = new TH1F(Form("%s_hnJetWOSemilep_%s",prefix,suffix[i]),Form("%s_hnJetWOSemilep_%s",prefix,suffix[i]),
+			5,0.,5.);	
+    hnJetWOOther[i] = new TH1F(Form("%s_hnJetWOOther_%s",prefix,suffix[i]),Form("%s_hnJetWOOther_%s",prefix,suffix[i]),
+			5,0.,5.);	    
+    hnJetOO[i] = new TH1F(Form("%s_hnJetOO_%s",prefix,suffix[i]),Form("%s_hnJetOO_%s",prefix,suffix[i]),
+			5,0.,5.);	
+    htcmetZveto[i] = new TH1F(Form("%s_htcmetZveto_%s",prefix,suffix[i]),Form("%s_htcmetZveto_%s",prefix,suffix[i]),100,0.,200.);
 
-    hnSumJetPt[i] = new TH1F(Form("%s_hnSumJetPt_%s",prefix,suffix[i]),Form("%s_SumJetPt_%s",prefix,suffix[i]),
-			200,0.,1000.0);	
-    hnSumLepPt[i] = new TH1F(Form("%s_hnSumLepPt_%s",prefix,suffix[i]),Form("%s_SumLepPt_%s",prefix,suffix[i]),
-			200,0.,1000.0);	
-    hnMET[i] = new TH1F(Form("%s_hnMET_%s",prefix,suffix[i]),Form("%s_MET_%s",prefix,suffix[i]),
-			200,0.,1000.0);	
-    hnSumPTall[i] = new TH1F(Form("%s_hnSumPTall_%s",prefix,suffix[i]),Form("%s_SumPTall_%s",prefix,suffix[i]),
-			200,0.,1000.0);	
 
     hnJet[i]->Sumw2();
-    hnSumJetPt[i]->Sumw2();
-    hnSumLepPt[i]->Sumw2();
-    hnMET[i]->Sumw2();
-    hnSumPTall[i]->Sumw2();
+    hnJetWW[i]->Sumw2();
+    hnJetWO[i]->Sumw2();
+    hnJetWOSemilep[i]->Sumw2();
+    hnJetWOOther[i]->Sumw2();
+    hnJetOO[i]->Sumw2();
+    htcmetZveto[i]->Sumw2();
 
   }
   
@@ -429,13 +499,12 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, double kFactor ) {
 	    int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
 	    if (i_permille != i_permille_old) {
 		 // xterm magic from L. Vacavant and A. Cerri
-		 //fkw printf("\015\033[32m ---> \033[1m\033[31m%4.1f%%"
-	      // 	"\033[0m\033[32m <---\033[0m\015", i_permille/10.);
-	      //fflush(stdout);
+		 printf("\015\033[32m ---> \033[1m\033[31m%4.1f%%"
+			"\033[0m\033[32m <---\033[0m\015", i_permille/10.);
+		 fflush(stdout);
 		 i_permille_old = i_permille;
 	    }
 	    
-	    /*
 	    if ( identifyEvents ){
 	      // check if we know what we are looking at
 	      if ( ! isIdentified(sample) ) nFailedIdentification++;
@@ -446,7 +515,6 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, double kFactor ) {
 		continue;
 	      }
 	    }
-	    */
 
 	    // fkw, here go all histos that should be filled per event instead of per hyp:
 	    // loop over generator particles:
@@ -455,18 +523,10 @@ RooDataSet* ScanChain( TChain* chain, enum Sample sample, double kFactor ) {
 	    // fkw, end of per event filling of histos.
 	    // loop over hypothesis candidates
  
-
-	    //if (!(cms2.evt_event() == 2329800 && cms2.evt_lumiBlock() == 6754)) continue;
-
-	    //cout << "hallo I got here " << endl;
-	    bool isData = false;
-	    if (!cleaning_standardNoBSC(isData)) continue;
-	    //cout << "hallo I got here too " << endl;
-
 	    unsigned int nHyps = cms2.hyp_type().size();
-	    //cout << "kFactor = " << kFactor << endl;
 	    for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
 	      hypo(i_hyp, kFactor, dataset);
+	      AddIsoSignalControlSample(i_hyp, kFactor, dataset);
 	    }
        }
        t.Stop();
