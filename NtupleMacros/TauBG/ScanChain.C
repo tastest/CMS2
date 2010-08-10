@@ -1,23 +1,36 @@
-//
-#include "ScanChain.h"
+/* Usage:
+   root [0] .L ScanChain.C++
+   root [1] TFile *_file0 = TFile::Open("merged_ntuple.root")
+   root [2] TChain *chain = new TChain("Events")
+   root [3] chain->Add("merged_ntuple.root")
 
-//
+   There are several places where one may create CMS2 cms2
+   It can be done here (in a doAll.C script), i.e.:
+
+   root [4] CMS2 cms2 
+
+   It can be done in the source as is done below, or it can be
+   ascertained by including CORE/CMS2.cc as is commented out
+   below.  They are all the same, and everything will work so
+   long as it is created somewhere globally.
+
+   root [5] ScanChain(chain)
+*/
 #include <iostream>
 #include <vector>
 
-//
+#include "TChain.h"
+#include "TFile.h"
+#include "TDirectory.h"
+#include "TROOT.h"
+
+#include "CMS2.cc"
+
 #include "tauify.C"
 
 using namespace tas;
 
-void myBabyMaker::ScanChain( TChain* chain) {
-
-  int nEvents = -1;
- 
-  // Make a baby ntuple
-  MakeBabyNtuple("tautest.root");
-
-  int itest = 0;
+int ScanChain( TChain* chain, int nEvents = -1, std::string skimFilePrefix="") {
 
   Tauify *t = new Tauify("decay.txt");
 
@@ -31,12 +44,11 @@ void myBabyMaker::ScanChain( TChain* chain) {
   TH1F *h_p_cm        = new TH1F("p_cm", "p_cm", 100, 0, 2);
   TH1F *h_costheta_cm = new TH1F("costheta_cm", "costheta_cm", 100, -1, 1);
 
-  TH1F *h_lep_pt      = new TH1F("lep_pt", "lep_pt", 1000, 0, 1000);
+  TH1F *h_lep_pt      = new TH1F("lep_pt", "lep_pt", 200, 0, 200);
   TH1F *h_lep_eta     = new TH1F("lep_eta", "lep_eta", 200, -2.5, 2.5);
   TH1F *h_lep_phi     = new TH1F("lep_phi", "lep_phi", 200, -1*pi, pi);
-  TH1F *h_lep_mass      = new TH1F("lep_mass", "lep_mass", 100, 0, .2);
 
-  TH1F *h_taulep_pt   = new TH1F("taulep_pt", "taulep_pt", 1000, 0, 1000);
+  TH1F *h_taulep_pt   = new TH1F("taulep_pt", "taulep_pt", 500, 0, 5000);
   TH1F *h_taulep_eta  = new TH1F("taulep_eta", "taulep_eta", 200, -2.5, 2.5);
   TH1F *h_taulep_phi  = new TH1F("taulep_phi", "taulep_phi", 200, -1*pi, pi);
 
@@ -73,9 +85,6 @@ void myBabyMaker::ScanChain( TChain* chain) {
       //
       for(unsigned int iHyp = 0; iHyp < hyp_p4().size(); iHyp++) {
 
-        // Initialize baby ntuple
-        InitBabyNtuple();
-
         // muons
         if( abs(hyp_ll_id().at(iHyp) ) != 13 ) continue;
         if( abs(hyp_lt_id().at(iHyp) ) != 13 ) continue;
@@ -85,69 +94,43 @@ void myBabyMaker::ScanChain( TChain* chain) {
         if( hyp_lt_p4().at(iHyp).eta() > 2.5 ) continue;
 
         // pt
-        if( hyp_ll_p4().at(iHyp).pt() < 20 ) continue;
-        if( hyp_lt_p4().at(iHyp).pt() < 20 ) continue;
+        //if( hyp_ll_p4().at(iHyp).pt() < 10 ) continue;
+        //if( hyp_lt_p4().at(iHyp).pt() < 10 ) continue;
 
-        // Z mass
+        //
         LorentzVector p4_z = hyp_ll_p4().at(iHyp) + hyp_lt_p4().at(iHyp);
         h_zmass->Fill( p4_z.mass() );
 
-
-/* test it out on the tight lepton */
-
-        // Set
+        //
         t->SetLepton( hyp_lt_p4().at(iHyp), 0, 0, 0 );
 
-        // Get
+        //LorentzVector id_test       = t->ParticleId();
+        //LorentzVector p_test        = t->MomentumCM();
+        //LorentzVector costheta_test = t->CosThetaCM();
+
         LorentzVector p4_test  = t->TauP4();
+  
         int   id_test       = t->ParticleId();
+
         float met_test      = t->TauMET();
         float iso_test      = t->TauIso();
         float ip_test       = t->TauIP();
 
-        if( abs(id_test) != 13 ) continue;
 
-        // don't test this on M <=0 leptons
-        if( hyp_lt_p4().at(iHyp).mass() <= 0 ) continue;
-      
-        // need to come back to understand this
-        if( p4_test.pt() == 0 ) continue;
-
-        // CM quantities
         h_p_cm->Fill( t->MomentumCM() );
         h_costheta_cm->Fill( t->CosThetaCM() );
 
-        // lepton in the lab
         h_lep_pt->Fill( hyp_lt_p4().at(iHyp).pt() );
         h_lep_eta->Fill( hyp_lt_p4().at(iHyp).eta() );
         h_lep_phi->Fill( hyp_lt_p4().at(iHyp).phi() );
-        h_lep_mass->Fill( hyp_lt_p4().at(iHyp).mass() );
 
-        // lepton made to be a tau
         h_taulep_pt->Fill( p4_test.pt() );
         h_taulep_eta->Fill( p4_test.eta() );
         h_taulep_phi->Fill( p4_test.phi() );
 
-//        // sanity
-//        double epsilon = .001;
-//        if( 
-//            fabs( hyp_lt_p4().at(iHyp).pt() - p4_test.pt() ) > epsilon
-//        ){
-//          cout << itest << endl;
-//          itest++;
-//          cout << "pt:\t" << hyp_lt_p4().at(iHyp).pt() << "\t->\t" << p4_test.pt() << endl;
-//          cout << "eta:\t" << hyp_lt_p4().at(iHyp).eta() << "\t->\t" << p4_test.eta() << endl;
-//          cout << "phi:\t" << hyp_lt_p4().at(iHyp).phi() << "\t->\t" << p4_test.phi() << endl;
-//          cout << "mass:\t" << hyp_lt_p4().at(iHyp).mass() << "\t->\t" << p4_test.mass() << endl;
-//          cout << p4_test.isTimelike() << "\t" << p4_test.isLightlike() << "\t" << p4_test.isSpacelike() << endl;
-//          cout << hyp_lt_p4().at(iHyp).isTimelike() << "\t" << hyp_lt_p4().at(iHyp).isLightlike() << "\t" << hyp_lt_p4().at(iHyp).isSpacelike() << endl;
-//        }
-
-
-        // Fill
-        FillBabyNtuple();
 
       }
+
 
     }
     delete tree;
@@ -161,59 +144,5 @@ void myBabyMaker::ScanChain( TChain* chain) {
   //
   f->Write();
 
-  //
-  CloseBabyNtuple();
-
-  return;
+  return 0;
 }
-
-
-void myBabyMaker::InitBabyNtuple () {
-
-  lep_id_       = -999;
-  taulep_id_    = -999; 
-
-  p_cm_         = -999;
-  costheta_cm_  = -999;  
-   
-  //p4_lep.clear();
-  //p4_taulep.clear();
-
-}
-
-void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
-{
-    TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
-    rootdir->cd();
-    babyFile_ = new TFile(Form("%s", babyFilename), "RECREATE");
-    babyFile_->cd();
-    babyTree_ = new TTree("tree", "A Baby Ntuple");
-
-    babyTree_->Branch("lep_id",    &lep_id_,     "lep_id/I");
-    babyTree_->Branch("taulep_id", &taulep_id_,  "taulep_id/I");
-
-    babyTree_->Branch("p_cm",         &p_cm_,        "p_cm/F");
-    babyTree_->Branch("costheta_cm",  &costheta_cm_, "costheta_cm/F");
-
-    //babyTree_->Branch("p4_lep",     &p4_lep_);
-    //babyTree_->Branch("p4_taulep",  &p4_taulep_);
-
-}
-
-//----------------------------------
-// Fill the baby
-//----------------------------------
-void myBabyMaker::FillBabyNtuple()
-{
-    babyTree_->Fill();
-}
-//--------------------------------
-// Close the baby
-//--------------------------------
-void myBabyMaker::CloseBabyNtuple()
-{   
-    babyFile_->cd();
-    babyTree_->Write();
-    babyFile_->Close();
-}
-
