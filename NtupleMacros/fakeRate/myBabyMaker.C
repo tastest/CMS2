@@ -293,8 +293,6 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 	      int ph15   = nHLTObjects("HLT_Photon15_L1R");
 	      el10_   = nHLTObjects("HLT_Ele10_LW_L1R");
 	      el15_   = nHLTObjects("HLT_Ele15_LW_L1R");
-	      eg5_    = nHLTObjects("HLT_L1SingleEG5");
-	      eg8_    = nHLTObjects("HLT_L1SingleEG8");
 		
 	      // For Ele10 the HLT objects are saved for all data we have
 	      if (el10_ > 0) {
@@ -377,45 +375,6 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 	      }
 
 
-	      // For EG5 and EG8 the HLT object is missing, so we'll try with the L1 info
-	      // There appear to be two L1 EM objects: one with "iso" and one without.
-	      // From some event dumps it looks like the iso one is the one we want
-	      // Also: the Photon10 HLT object is sometimes missing, but I know that EG5 is its prerequisite
-	      // so if it is missing we will match to EG5  (TAKE THIS OUT.... July 5th 2010)
-	      if ( (eg5_ == -1 || eg8_ == -1 || ph10_ == -1) && l1_emiso_p4().size()>0) {
-			    
-		for (unsigned int ig = 0 ; ig < l1_emiso_p4().size(); ig++) {
-		  
-		  //if (ph10_ == -1 && l1_emiso_p4().at(ig).pt() > 5.) {
-		  //	double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl),l1_emiso_p4().at(ig)); 
-		  //	if (dr < drph10_) drph10_ = dr;
-		  //}
-		  if (eg5_ == -1 && l1_emiso_p4().at(ig).pt() > 5.) {
-		    double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl),l1_emiso_p4().at(ig)); 
-		    if (dr < dreg5_) dreg5_ = dr;
-		  }
-		  if (eg8_ == -1 && l1_emiso_p4().at(ig).pt() > 8.) {
-		    double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl),l1_emiso_p4().at(ig)); 
-		    if (dr < dreg8_) dreg8_ = dr;
-		  }
-		  
-		} // closes loop over L1 EG objects
-		
-		//if (ph10_ == -1) {
-		//  if (drph10_ < 100.) ph10_ = 1; // objects found, but no match
-		//  if (drph10_ < 0.4)  ph10_ = 2; // objects found, and matched
-		//}
-		if (eg5_ == -1) {
-		  if (dreg5_ < 100.) eg5_ = 1; // objects found, but no match
-		  if (dreg5_ < 0.4)  eg5_ = 2; // objects found, and matched
-		}
-		if (eg8_ == -1) {
-		  if (dreg8_ < 100.) eg8_ = 1; // objects found, but no match
-		  if (dreg8_ < 0.4)  eg8_ = 2; // objects found, and matched
-		}
-		
-	      } // closes if-block of EG5, EG8, PH10 objects missing
- 
 	      // Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
 	      ptj1_       = -999.0;
 	      ptj1_b2b_   = -999.0;
@@ -549,25 +508,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 			  }
 		
 	  // Now fill the muon trigger flags
-	  mu3_ = nHLTObjects("HLT_Mu3");
 	  mu5_ = nHLTObjects("HLT_Mu5");
 	  mu9_ = nHLTObjects("HLT_Mu9");
-	  
-	  // Explicit match with Mu3 trigger
-	  if (mu3_ > 0) {
-	    bool match = false;
-	    for (int itrg=0; itrg<mu3_; itrg++) {
-	      LorentzVector p4tr = p4HLTObject("HLT_Mu3",itrg);
-	      double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4tr);
-	      if (dr < drmu3_) drmu3_ = dr;
-	      if (dr < 0.4) match=true;
-	    }
-	    if (match) {
-	      mu3_ = 2;
-	    } else {
-	      mu3_ = 1;
-	    }
-	  }
 	  
 	  // Explicit match with Mu5 trigger
 	  if (mu5_ > 0) {
@@ -671,20 +613,14 @@ void myBabyMaker::InitBabyNtuple () {
   ph15_ = 0;
   el10_ = 0;
   el15_ = 0;
-  eg5_  = 0;
-  eg8_  = 0;
   mu5_  = 0;
   mu9_  = 0;
-  mu3_  = 0;
   drph10_ = 99.;
   drph15_ = 99.;
   drel10_ = 99.;
   drel15_ = 99.;
-  dreg5_  = 99.;
-  dreg8_  = 99.;
   drmu5_  = 99.;
   drmu9_  = 99.;
-  drmu3_  = 99.;
   nbjet_  = 0;
   dRbNear_ = 99.;
   dRbFar_ = -99.;
@@ -743,23 +679,17 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("ph15",       &ph15_,       "ph15/I"      );
     babyTree_->Branch("el10",         &el10_,         "el10/I"      );
     babyTree_->Branch("el15",         &el15_,         "el15/I"      );
-    babyTree_->Branch("eg5",         &eg5_,        "eg5/I"      );
-    babyTree_->Branch("eg8",         &eg8_,        "eg8/I"      );
 
     babyTree_->Branch("drph10",       &drph10_,       "drph10/F"      );
     babyTree_->Branch("drph15",       &drph15_,       "drph15/F"      );
     babyTree_->Branch("drel10",         &drel10_,         "drel10/F"      );
     babyTree_->Branch("drel15",         &drel15_,         "drel15/F"      );
-    babyTree_->Branch("dreg5",         &dreg5_,        "dreg5/F"      );
-    babyTree_->Branch("dreg8",         &dreg8_,        "dreg8/F"      );
 
     babyTree_->Branch("mu9",       &mu9_,       "mu9/I"      );
     babyTree_->Branch("mu5",       &mu5_,       "mu5/I"      );
-    babyTree_->Branch("mu3",       &mu3_,       "mu3/I"      );
 
     babyTree_->Branch("drmu9",       &drmu9_,       "drmu9/F"      );
     babyTree_->Branch("drmu5",       &drmu5_,       "drmu5/F"      );
-    babyTree_->Branch("drmu3",       &drmu3_,       "drmu3/F"      );
 
     babyTree_->Branch("nbjet",       &nbjet_,       "nbjet/I"      );
     babyTree_->Branch("dRNear",       &dRbNear_,       "dRbNear/F"      );

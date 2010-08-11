@@ -73,28 +73,21 @@ class myBabyMaker
 	Int_t ph15_;  // HLT_Photon15_L1R or HLT_Photon15_Cleaned_L1R
 	Int_t el10_;  // HLT_Ele10_LW_L1R
 	Int_t el15_;  // HLT_Ele15_LW_L1R
-	Int_t eg5_;   // HLT_L1SingleEG5 
-	Int_t eg8_;   // HLT_L1SingleEG
-
 
 	// What muon trigger did it pass
 	// 0=fail 1="pass but no match" 2="pass and matched" -1="pass but muon trg obj missing"
 	Int_t mu9_; // HLT_Mu9
 	Int_t mu5_; // HLT_Mu5
-	Int_t mu3_; // HLT_Mu3
 
 	//  Minimm dR to the closest eg object
 	Float_t drph10_;
 	Float_t drph15_;
 	Float_t drel10_;
 	Float_t drel15_;
-	Float_t dreg5_;
-	Float_t dreg8_;
 
 	//  Minimm dR to the closest HLT mu object
 	Float_t drmu9_;
 	Float_t drmu5_;
-	Float_t drmu3_;
 	
 	// Btag information
 	Int_t nbjet_; // number of btagged jet pt>15
