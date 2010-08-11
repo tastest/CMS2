@@ -311,163 +311,34 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
           if (dr > deltaRCut) l110u_ = 2;
         }
         
-        // Now fill the egamma trigger flags  (look at both cleaned and uncleaned photons_
-        int ph10cl = nHLTObjects("HLT_Photon10_Cleaned_L1R");
-        int ph10   = nHLTObjects("HLT_Photon10_L1R");
-        int ph15cl = nHLTObjects("HLT_Photon15_Cleaned_L1R");
-        int ph15   = nHLTObjects("HLT_Photon15_L1R");
-        el10_   = nHLTObjects("HLT_Ele10_LW_L1R");
-        el10id_  = nHLTObjects("HLT_Ele10_SW_EleId_L1R");  
-        el15_   = nHLTObjects("HLT_Ele15_LW_L1R");
+        // Fill electron & photon triggers
+        pair<int, float> pair_el10    = TriggerMatch( els_p4().at(iEl), "HLT_Ele10_LW_L1R");
+        pair<int, float> pair_el10id  = TriggerMatch( els_p4().at(iEl), "HLT_Ele10_SW_EleId_L1R");
+        pair<int, float> pair_el15    = TriggerMatch( els_p4().at(iEl), "HLT_Ele15_LW_L1R");
 
-        // Ele10 
-        if (el10_ > 0) {
-          bool match = false;
-          for (int itrg=0; itrg<el10_; itrg++) {
-            LorentzVector p4tr = p4HLTObject("HLT_Ele10_LW_L1R",itrg);
-            double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
-            if (dr < drel10_) drel10_ = dr;
-            if (dr < 0.4) match=true;
-          }
-          if (match) {
-            el10_ = 2;
-          } else {
-            el10_ = 1;
-          }
-        }
-  
-        // Ele10 -> Ele10 with id
-        if (el10id_ > 0) {
-          bool match = false;
-          for (int itrg=0; itrg<el10id_; itrg++) {
-            LorentzVector p4tr = p4HLTObject("HLT_Ele10_SW_EleId_L1R",itrg);
-            double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
-            if (dr < drel10id_) drel10id_ = dr;
-            if (dr < 0.4) match=true;
-          }
-          if (match) {
-            el10id_ = 2;
-          } else {
-            el10id_ = 1;
-          }
-        }
-      
-        // For Ele15 the HLT objects are saved for all data we have
-        if (el15_ > 0) {
-          bool match = false;
-          for (int itrg=0; itrg<el15_; itrg++) {
-            LorentzVector p4tr = p4HLTObject("HLT_Ele15_LW_L1R",itrg);
-            double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
-            if (dr < drel15_) drel15_ = dr;
-            if (dr < 0.4) match=true;
-          }
-          if (match) {
-            el15_ = 2;
-          } else {
-            el15_ = 1;
-          }
-        }
-    
-        // Now for photon10 we look at cleaned and at uncleaned
-        if (ph10 == 0 && ph10cl == 0) ph10_=0;   // trigger failed
-        if (ph10 <  0 || ph10cl <  0) ph10_=-1;  // passed but no object
-        if (ph10cl > 0 || ph10 > 0) {
-          bool match = false;
-          for (int itrg=0; itrg<ph10; itrg++) {
-            LorentzVector p4tr = p4HLTObject("HLT_Photon10_L1R",itrg);
-            double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
-            if (dr < drph10_) drph10_ = dr;
-            if (dr < 0.4) match=true;
-          }
-          for (int itrg=0; itrg<ph10cl; itrg++) {
-            LorentzVector p4tr = p4HLTObject("HLT_Photon10_Cleaned_L1R",itrg);
-            double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
-            if (dr < drph10_) drph10_ = dr;
-            if (dr < 0.4) match=true;
-          }
-          if (match) {
-            ph10_ = 2;
-          } else {
-            ph10_ = 1;
-          }
-        }
-        
-        // Now for photon15 we look at cleaned and at uncleaned
-        if (ph15 == 0 && ph15cl == 0) ph15_=0;   // trigger failed
-        if (ph15 <  0 || ph15cl <  0) ph15_=-1;  // passed but no object
-        if (ph15cl > 0 || ph15 > 0) {
-          bool match = false;
-          for (int itrg=0; itrg<ph15; itrg++) {
-            LorentzVector p4tr = p4HLTObject("HLT_Photon15_L1R",itrg);
-            double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
-            if (dr < drph15_) drph15_ = dr;
-            if (dr < 0.4) match=true;
-          }
-          for (int itrg=0; itrg<ph15cl; itrg++) {
-            LorentzVector p4tr = p4HLTObject("HLT_Photon15_Cleaned_L1R",itrg);
-            double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), p4tr);
-            if (dr < drph15_) drph15_ = dr;
-            if (dr < 0.4) match=true;
-          }
-          if (match) {
-            ph15_ = 2;
-          } else {
-            ph15_ = 1;
-          }
-        }
-
-        // test that the electron triggers are the same using the function
-        pair<int, float> pair_el10 = TriggerMatch( els_p4().at(iEl), "HLT_Ele10_LW_L1R");
-        pair<int, float> pair_el10id = TriggerMatch( els_p4().at(iEl), "HLT_Ele10_SW_EleId_L1R");
-        pair<int, float> pair_el15 = TriggerMatch( els_p4().at(iEl), "HLT_Ele15_LW_L1R");
-
-        pair<int, float> pair_ph10   = TriggerMatch( els_p4().at(iEl), "HLT_Photon10_L1R");
-        pair<int, float> pair_ph10C  = TriggerMatch( els_p4().at(iEl), "HLT_Photon10_Cleaned_L1R");
-        pair<int, float> pair_ph15   = TriggerMatch( els_p4().at(iEl), "HLT_Photon15_L1R");
-        pair<int, float> pair_ph15C  = TriggerMatch( els_p4().at(iEl), "HLT_Photon15_Cleaned_L1R");
+        pair<int, float> pair_ph10    = TriggerMatch( els_p4().at(iEl), "HLT_Photon10_L1R");
+        pair<int, float> pair_ph10C   = TriggerMatch( els_p4().at(iEl), "HLT_Photon10_Cleaned_L1R");
+        pair<int, float> pair_ph15    = TriggerMatch( els_p4().at(iEl), "HLT_Photon15_L1R");
+        pair<int, float> pair_ph15C   = TriggerMatch( els_p4().at(iEl), "HLT_Photon15_Cleaned_L1R");
 
         int   ph10    = max( pair_ph10.first, pair_ph10C.first );
         int   ph15    = max( pair_ph15.first, pair_ph15C.first );
         float drph10  = ( pair_ph10.first > pair_ph10C.first ? pair_ph10.second : pair_ph10C.second );
         float drph15  = ( pair_ph15.first > pair_ph15C.first ? pair_ph15.second : pair_ph15C.second );
 
-        // test that the electron triggers are the same using the function
-        if( pair_el10.first != el10_ || pair_el10.second != drel10_){ 
-          cout << "ERROR in trigger matching function Ele10" << endl;
-          gSystem->Exit(1);
-        }
-        if( pair_el10id.first != el10id_ || pair_el10id.second != drel10id_){ 
-          cout << "ERROR in trigger matching function Ele10id" << endl;
-          gSystem->Exit(1);
-        }
-        if( pair_el15.first != el15_ || pair_el15.second != drel15_){ 
-          cout << "ERROR in trigger matching function Ele15" << endl;
-          gSystem->Exit(1);
-        }
-
-        // test that the photon triggers are the same using the function
-        if( ph10 != ph10_ || fabs( drph10 - drph10_ ) > .000001 ){ 
-          cout << "ERROR in trigger matching function Photon 10" << endl;
-          gSystem->Exit(1);
-        }
-        if( ph15 != ph15_ || fabs( drph15 - drph15_ ) > .000001 ){ 
-          cout << "ERROR in trigger matching function Photon 15" << endl;
-          gSystem->Exit(1);
-        }
-
         // trigger matching
-        //el10_   = pair_el10.first;
-        //el10id_ = pair_el10id.first;
-        //el15_   = pair_el15.first;
-        //ph10_   = ph10;
-        //ph15_   = ph15;
+        el10_   = pair_el10.first;
+        el10id_ = pair_el10id.first;
+        el15_   = pair_el15.first;
+        ph10_   = ph10;
+        ph15_   = ph15;
 
         // dr between lepton and closest jet
-        //drel10_   = pair_el10.second;
-        //drel10id_ = pair_el10id.second;
-        //drel15_   = pair_el15.second;
-        //drph10_   = ph10;
-        //drph15_   = ph15;
+        drel10_   = pair_el10.second;
+        drel10id_ = pair_el10id.second;
+        drel15_   = pair_el15.second;
+        drph10_   = ph10;
+        drph15_   = ph15;
 
 
 
@@ -599,66 +470,15 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
           LorentzVector p4j = p4HLTObject("HLT_L1Jet10U",0);
           double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4j);
           if (dr > deltaRCut) l110u_ = 2;
-            }
+        }
         
         // Now fill the muon trigger flags
-        mu5_ = nHLTObjects("HLT_Mu5");
-        mu9_ = nHLTObjects("HLT_Mu9");
-        
-        // Explicit match with Mu5 trigger
-        if (mu5_ > 0) {
-          bool match = false;
-          for (int itrg=0; itrg<mu5_; itrg++) {
-            LorentzVector p4tr = p4HLTObject("HLT_Mu5",itrg);
-            double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4tr);
-            if (dr < drmu5_) drmu5_ = dr;
-            if (dr < 0.4) match=true;
-          }
-          if (match) {
-            mu5_ = 2;
-          } else {
-            mu5_ = 1;
-          }
-        }
-        
-        // Explicit match with Mu9 trigger
-        if (mu9_ > 0) {
-          bool match = false;
-          for (int itrg=0; itrg<mu9_; itrg++) {
-            LorentzVector p4tr = p4HLTObject("HLT_Mu9",itrg);
-            double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4tr);
-            if (dr < drmu9_) drmu9_ = dr;
-            if (dr < 0.4) match=true;
-          }
-          if (match) {
-            mu9_ = 2;
-          } else {
-            mu9_ = 1;
-          }
-        }
-           
-        // check function gives same answer 
         pair<int, float> pair_mu5 = TriggerMatch( mus_p4().at(iMu), "HLT_Mu5");
         pair<int, float> pair_mu9 = TriggerMatch( mus_p4().at(iMu), "HLT_Mu9");
-
-        if( pair_mu5.first != mu5_ || pair_mu5.second != drmu5_){
-          cout << "ERROR in trigger matching function Mu5" << endl;
-          gSystem->Exit(1);
-        } 
-        if( pair_mu9.first != mu9_ || pair_mu9.second != drmu9_){
-          cout << "ERROR in trigger matching function Mu9" << endl;
-          gSystem->Exit(1);
-        } 
-
-        // Mu5  
-        //mu5_    = pair_mu5.first;
-        //drmu5_  = pair_mu5.second;
-
-        // Mu9
-        //mu9_    = pair_mu9.first;
-        //drmu9_  = pair_mu9.second;
-
-
+        mu5_    = pair_mu5.first;
+        drmu5_  = pair_mu5.second;
+        mu9_    = pair_mu9.first;
+        drmu9_  = pair_mu9.second;
 
         // Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
         ptj1_       = -999.0;
@@ -679,7 +499,6 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
             }
           }
         }
-
     
         // Time to fill the baby for the muons
         FillBabyNtuple();
