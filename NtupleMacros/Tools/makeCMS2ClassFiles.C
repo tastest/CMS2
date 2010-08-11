@@ -133,6 +133,7 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
     TString branchtitle(branch->GetTitle());
     if(!branchname.BeginsWith("int") && 
        !branchname.BeginsWith("uint") && 
+       !branchname.BeginsWith("bool") && 
        !branchname.BeginsWith("float") &&
        !branchname.BeginsWith("double") &&
        !branchtitle.EndsWith("/F") && 
