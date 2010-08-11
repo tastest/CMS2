@@ -1,8 +1,8 @@
-# $Id: Makefile,v 1.3 2010/07/29 11:54:12 jmuelmen Exp $
+# $Id: Makefile,v 1.2 2009/07/02 16:23:32 jmuelmen Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
-CFLAGS = -Wall -g -O0 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS) -DTOOLSLIB
+CFLAGS = -Wall -Wno-unused-functions -g -O0 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS) -DTOOLSLIB
 
 LINKER = g++
 LINKERFLAGS = $(shell root-config --ldflags)
@@ -42,8 +42,8 @@ $(CORELIB):	$(COREOBJECTS)
 $(LOOPERLIB):	$(LOOPEROBJECTS) 
 	$(LINKER) $(LINKERFLAGS) -shared $(LOOPEROBJECTS) -o $@ -lncurses
 
-linkdef_out.cxx: linkdef.h ConfigAndRun.h DSGTable.h DSGSearchWindow.h
-	rootcint -f $@ -c $(INCLUDE) ConfigAndRun.h DSGTable.h DSGSearchWindow.h $<
+linkdef_out.cxx: linkdef.h ConfigAndRun.h DSGTable.h
+	rootcint -f $@ -c $(INCLUDE) ConfigAndRun.h DSGTable.h $<
 
 # General rule for making object files
 %.d:	%.cc

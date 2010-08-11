@@ -1,7 +1,5 @@
 {
 
-  gSystem->Load("../Tools/MiniFWLite/libMiniFWLite.so"); //put this in your root logon, foo
-
   gROOT->ProcessLine(".L doit.C++");
 
   doit();

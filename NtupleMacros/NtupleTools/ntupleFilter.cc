@@ -1,4 +1,4 @@
-// $Id: ntupleFilter.cc,v 1.9 2010/07/21 12:20:50 dlevans Exp $
+// $Id: ntupleFilter.cc,v 1.8 2010/06/09 20:51:35 warren Exp $
 
 #include <assert.h>
 #include <string>
@@ -38,28 +38,18 @@ bool select ()
   if( !goodrun( evt_run(), evt_lumiBlock() ) )
 	return false;
 
-  const float ptthresh = 20.;
+  const float ptthresh = 40.;
 
-/*
   for( unsigned int i=0; i<pfjets_p4().size(); i++ )
 	if( pfjets_p4()[i].pt() > ptthresh )
 	  return true;
   for( unsigned int i=0; i<jets_p4().size(); i++ )
 	if( jets_p4()[i].pt()*jets_cor()[i] > ptthresh )
 	  return true;
-
-*/
-
-    for (size_t i = 0; i < cms2.mus_ndof().size(); ++i) 
-        if (cms2.mus_p4()[i].Pt() > ptthresh) return true;
-    for (size_t i = 0; i < cms2.evt_nels(); ++i) 
-        if (cms2.els_p4()[i].Pt() > ptthresh) return true;
-
   return false;
-
 }
 
-void ntupleFilter (TChain *chain, const std::string &outfile, bool printPass=false)  
+void ntupleFilter (const std::string &infile, const std::string &outfile, bool printPass=false)  
 {
      // output file and tree
      TFile *output =TFile::Open(outfile.c_str(), "RECREATE");
@@ -77,8 +67,8 @@ void ntupleFilter (TChain *chain, const std::string &outfile, bool printPass=fal
 	   log = fopen( outcpy.replace(pos, 5, "_run_lumi_event").c_str(), "w" );
 	 }
 	 
-     //TChain *chain = new TChain("Events");
-     //chain->Add(infile.c_str());
+     TChain *chain = new TChain("Events");
+     chain->Add(infile.c_str());
      TObjArray *listOfFiles = chain->GetListOfFiles();
      const uint64 nEventsChain = chain->GetEntries();
      uint64 nEventsTotal = 0;
