@@ -21,15 +21,19 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 bool wasMetCorrectedForThisMuon(int imu, whichMetType type) {
   bool answer=true;
   switch(type) {
-    case usingTcMet:
+  case usingTcMet:
       if (cms2.mus_tcmet_flag().at(imu) == 0 || 
           cms2.mus_tcmet_flag().at(imu) == 4) answer = false;
       break;
-    case usingCaloMet:
-      if (cms2.mus_met_flag().at(imu) == 0) answer = false;
-      break;
-    default:
-      std::cout << "Illegal call to wasMetCorrectedForThisMuon" <<std::endl;
+  case usingTcMet35X:
+    if (cms2.evt35X_mus_tcmet_flag().at(imu) == 0 || 
+	cms2.evt35X_mus_tcmet_flag().at(imu) == 4) answer = false;
+    break;
+  case usingCaloMet:
+    if (cms2.mus_met_flag().at(imu) == 0) answer = false;
+    break;
+  default:
+    std::cout << "Illegal call to wasMetCorrectedForThisMuon" <<std::endl;
   }
 
   return answer;
@@ -45,7 +49,7 @@ void fixMetForThisMuon(int imu, float& metX, float& metY, whichMetType type) {
     switch(type) {
 
       case usingTcMet:
-	if (cms2.mus_tcmet_flag()[imu] == 0) {
+	if (cms2.mus_tcmet_flag()[imu] == 0) {//not corrected
 	  metX += cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x();
 	  metY += cms2.mus_met_deltay()[imu] - cms2.mus_p4()[imu].y();
 	} else if (cms2.mus_tcmet_flag()[imu] == 4) {
@@ -55,6 +59,20 @@ void fixMetForThisMuon(int imu, float& metX, float& metY, whichMetType type) {
 		  + cms2.mus_met_deltay()[imu] - cms2.mus_p4()[imu].y(); // perform the muon correction
 	}
 	break;
+
+
+    case usingTcMet35X:
+      if (cms2.evt35X_mus_tcmet_flag()[imu] == 0) {//not corrected
+	metX += cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x();
+	metY += cms2.mus_met_deltay()[imu] - cms2.mus_p4()[imu].y();
+      } else if (cms2.evt35X_mus_tcmet_flag()[imu] == 4) {
+	metX += - cms2.evt35X_mus_tcmet_deltax()[imu] + cms2.trks_trk_p4()[cms2.mus_trkidx()[imu]].px() // undo the pion correction
+	  + cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x(); // perform the muon correction
+	metY += - cms2.evt35X_mus_tcmet_deltay()[imu] + cms2.trks_trk_p4()[cms2.mus_trkidx()[imu]].py() // undo the pion correction
+	  + cms2.mus_met_deltay()[imu] - cms2.mus_p4()[imu].y(); // perform the muon correction
+      }
+      break;
+
 
       case usingCaloMet:
 	metX += cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x();
@@ -87,6 +105,24 @@ void fixMetForThisMuon(int imu, float& metX, float& metY, float& sumET, whichMet
 		  + sqrt(cms2.mus_tcmet_deltax()[imu] * cms2.mus_tcmet_deltax()[imu] + cms2.mus_tcmet_deltay()[imu] * cms2.mus_tcmet_deltay()[imu]) + cms2.trks_trk_p4()[cms2.mus_trkidx()[imu]].pt();
 	}
 	break;
+
+
+      case usingTcMet35X:
+	if (cms2.evt35X_mus_tcmet_flag()[imu] == 0) {
+	  metX += cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x();
+	  metY += cms2.mus_met_deltay()[imu] - cms2.mus_p4()[imu].y();
+	  sumET -= sqrt(cms2.mus_met_deltax()[imu] * cms2.mus_met_deltax()[imu] + cms2.mus_met_deltay()[imu] * cms2.mus_met_deltay()[imu]) - cms2.mus_p4()[imu].pt(); 
+	} else if (cms2.mus_tcmet_flag()[imu] == 4) {
+	     metX += - cms2.evt35X_mus_tcmet_deltax()[imu] + cms2.trks_trk_p4()[cms2.mus_trkidx()[imu]].px() // undo the pion correction
+		  + cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x(); // perform the muon correction
+	     metY += - cms2.evt35X_mus_tcmet_deltay()[imu] + cms2.trks_trk_p4()[cms2.mus_trkidx()[imu]].py() // undo the pion correction
+		  + cms2.mus_met_deltay()[imu] - cms2.mus_p4()[imu].y(); // perform the muon correction
+	     sumET -= sqrt(cms2.mus_met_deltax()[imu] * cms2.mus_met_deltax()[imu] + cms2.mus_met_deltay()[imu] * cms2.mus_met_deltay()[imu]) - cms2.mus_p4()[imu].pt()
+		  + sqrt(cms2.evt35X_mus_tcmet_deltax()[imu] * cms2.evt35X_mus_tcmet_deltax()[imu] + cms2.evt35X_mus_tcmet_deltay()[imu] * cms2.evt35X_mus_tcmet_deltay()[imu]) + cms2.trks_trk_p4()[cms2.mus_trkidx()[imu]].pt();
+	}
+	break;
+
+
 
       case usingCaloMet:
 	metX += cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x();

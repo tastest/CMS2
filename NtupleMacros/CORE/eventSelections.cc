@@ -46,11 +46,25 @@ bool cleaning_standardNoBSC(bool isData)
 // standard event cleaning
 // for low pt dilepton / fake rate data studies
 //
-bool cleaning_standardAugust2010()
+bool cleaning_standardAugust2010(bool isdata)
 {
     if (!cleaning_goodVertexAugust2010()) return false;
     if (!cleaning_goodTracks()) return false;
-    //if (!cms2.evt_hbheFilter()) return false;
+    if(isdata) {
+      if (cms2.evt_hbheFilter()==0) 
+	return false;
+    } else {
+      if(cms2.hcalnoise_minE2Over10TS()<0.7) return false;
+      //if(cms2.hcalnoise_maxE2Over10TS()>maxRatio_) return false; //don't have this in the MC ntuples :(
+      if(cms2.hcalnoise_maxHPDHits()>=17) return false;
+      if(cms2.hcalnoise_maxRBXHits()>=999) return false;
+      //if(cms2.hcalnoise_maxHPDNoOtherHits()>=10) return false; //don't have this in the MC ntuples :(
+      if(cms2.hcalnoise_maxZeros()>=10) return false;
+      if(cms2.hcalnoise_min25GeVHitTime()<-9999.0) return false;
+      if(cms2.hcalnoise_max25GeVHitTime()>9999.0) return false;
+      if(cms2.hcalnoise_minRBXEMF()<-999.0) return false;
+    }
+    
     return true;
 }
 
