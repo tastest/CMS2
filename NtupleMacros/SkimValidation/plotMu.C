@@ -153,7 +153,7 @@ void xsecPlot( TCanvas * myCanv, TChain* myChain, Bool_t drawMu, const string su
   //   graphpointnr = 0;
   for(int run = 0; run<runRange; ++run){
     if( lumiVsRun[run] != 0 && numLepVsRun[run] != 0 ) {
-      if( ( (numLepVsRun[run]/lumiVsRun[run]) - fitMean) / (sqrt((float)numLepVsRun[run])/lumiVsRun[run]) > 3. ) {
+      if( TMath::Abs( ( (numLepVsRun[run]/lumiVsRun[run]) - fitMean) / (sqrt((float)numLepVsRun[run])/lumiVsRun[run]) ) > 3. ) {
         cout<<"EXCESS Run: "<<run<<" Lep ratio "<<numLepVsRun[run]/lumiVsRun[run]<<" normPull "<< ( (numLepVsRun[run]/lumiVsRun[run]) - fitMean) / ( sqrt( (float)numLepVsRun[run] )/lumiVsRun[run] ) <<" nLep "<<numLepVsRun[run]<<" lumi "<<lumiVsRun[run]<<std::endl;
          
         TEllipse *ellipse = new TEllipse(run, numLepVsRun[run]/lumiVsRun[run]  ,10, ( sqrt( (float)numLepVsRun[run] )/lumiVsRun[run] )  ,0,360,0);
@@ -184,8 +184,6 @@ void xsecPlot( TCanvas * myCanv, TChain* myChain, Bool_t drawMu, const string su
 
 void plotMu(void) {
   gSystem->Load("../Tools/MiniFWLite/libMiniFWLite.so");
-  //gROOT->ProcessLine(".L xsecLoop.C++");
-  //gSystem->Load("xsecLoop_C.so");
   gROOT->SetStyle("Plain");
   gStyle->SetHistFillColor(kRed);
   gStyle->SetHistMinimumZero();

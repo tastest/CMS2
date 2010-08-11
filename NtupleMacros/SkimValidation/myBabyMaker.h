@@ -35,6 +35,8 @@ private:
   //TRIGGERS
   const string mutrig_;
   const string eltrig_;
+  const string eltrig1_;
+  const string eltrig2_;
 
   //cuts
   //const float minelpt_ = 10.; //this is in the standard selection already
