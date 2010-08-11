@@ -72,6 +72,7 @@ class myBabyMaker
 	Int_t ph10_;  // HLT_Photon10_L1R or HLT_Photon10_Cleaned_L1R
 	Int_t ph15_;  // HLT_Photon15_L1R or HLT_Photon15_Cleaned_L1R
 	Int_t el10_;  // HLT_Ele10_LW_L1R
+	Int_t el10id_;// HLT_Ele10_SW_EleId_L1R
 	Int_t el15_;  // HLT_Ele15_LW_L1R
 
 	// What muon trigger did it pass
@@ -83,6 +84,7 @@ class myBabyMaker
 	Float_t drph10_;
 	Float_t drph15_;
 	Float_t drel10_;
+	Float_t drel10id_;
 	Float_t drel15_;
 
 	//  Minimm dR to the closest HLT mu object

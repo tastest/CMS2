@@ -9,7 +9,7 @@ TChain *ch2 = new TChain("tree");
 
 qcd->Add("inclMu.root");
 wmunu->Add("Wmunu.root");
-ch2->Add("Mu.root");
+ch2->Add("mc/Mu_576nb.root");
 
 // Book the histograms
 double xbin[13]={10.,15.,20.,25.,30.,35.,40.,45.,50.,55.,60.,65.,70.};
@@ -60,44 +60,44 @@ TH1F* MCfo20u  = new TH1F("MCfo20u", "MCfo20u", nbinsx,xbin);
 TCanvas * ctemp = new TCanvas();
 
 // 10u
-ch2->Draw("min(pt,69.99)>>num10u",  "abs(id)==13 && mu9>1 && ptj1>10  && num");
-ch2->Draw("min(pt,69.99)>>fo10u",   "abs(id)==13 && mu9>1 && ptj1>10 ");
+ch2->Draw("min(pt,69.99)>>num10u",  "abs(id)==13 && tcmet<20 && mt<25 && ptj1_b2b>15 && mu5>1 && ptj1>10  && num");
+ch2->Draw("min(pt,69.99)>>fo10u",   "abs(id)==13 && tcmet<20 && mt<25 && ptj1_b2b>15 && mu5>1 && ptj1>10 ");
 // 15u
-ch2->Draw("min(pt,69.99)>>num15u",  "abs(id)==13 && mu9>1 && ptj1>15  && num");
-ch2->Draw("min(pt,69.99)>>fo15u",   "abs(id)==13 && mu9>1 && ptj1>15 ");
+ch2->Draw("min(pt,69.99)>>num15u",  "abs(id)==13 && tcmet<20 && mt<25 && ptj1_b2b>15 && mu5>1 && ptj1>15  && num");
+ch2->Draw("min(pt,69.99)>>fo15u",   "abs(id)==13 && tcmet<20 && mt<25 && ptj1_b2b>15 && mu5>1 && ptj1>15 ");
 // 20u
-ch2->Draw("min(pt,69.99)>>num20u",  "abs(id)==13 && mu9>1 && ptj1>20  && num");
-ch2->Draw("min(pt,69.99)>>fo20u",   "abs(id)==13 && mu9>1 && ptj1>20 ");
+ch2->Draw("min(pt,69.99)>>num20u",  "abs(id)==13 && tcmet<20 && mt<25 && ptj1_b2b>15 && mu5>1 && ptj1>20  && num");
+ch2->Draw("min(pt,69.99)>>fo20u",   "abs(id)==13 && tcmet<20 && mt<25 && ptj1_b2b>15 && mu5>1 && ptj1>20 ");
 
 // 10u
-qcd->Draw("min(pt,69.99)>>QCDnum10u",  "abs(id)==13 && mu9>1 && ptj1>10  && num");
-qcd->Draw("min(pt,69.99)>>QCDfo10u",   "abs(id)==13 && mu9>1 && ptj1>10 ");
+qcd->Draw("min(pt,69.99)>>QCDnum10u",  "abs(id)==13 && tcmet<20 && mt<25 && ptj1_b2b>15 && mu5>1 && ptj1>10  && num");
+qcd->Draw("min(pt,69.99)>>QCDfo10u",   "abs(id)==13 && tcmet<20 && mt<25 && ptj1_b2b>15 && mu5>1 && ptj1>10 ");
 // 15u
-qcd->Draw("min(pt,69.99)>>QCDnum15u",  "abs(id)==13 && mu9>1 && ptj1>15  && num");
-qcd->Draw("min(pt,69.99)>>QCDfo15u",   "abs(id)==13 && mu9>1 && ptj1>15 ");
+qcd->Draw("min(pt,69.99)>>QCDnum15u",  "abs(id)==13 && tcmet<20 && mt<25 && ptj1_b2b>15 && mu5>1 && ptj1>15  && num");
+qcd->Draw("min(pt,69.99)>>QCDfo15u",   "abs(id)==13 && tcmet<20 && mt<25 && ptj1_b2b>15 && mu5>1 && ptj1>15 ");
 // 20u
-qcd->Draw("min(pt,69.99)>>QCDnum20u",  "abs(id)==13 && mu9>1 && ptj1>20  && num");
-qcd->Draw("min(pt,69.99)>>QCDfo20u",   "abs(id)==13 && mu9>1 && ptj1>20 ");
+qcd->Draw("min(pt,69.99)>>QCDnum20u",  "abs(id)==13 && tcmet<20 && mt<25 && ptj1_b2b>15 && mu5>1 && ptj1>20  && num");
+qcd->Draw("min(pt,69.99)>>QCDfo20u",   "abs(id)==13 && tcmet<20 && mt<25 && ptj1_b2b>15 && mu5>1 && ptj1>20 ");
 
 // 10u
-wmunu->Draw("min(pt,69.99)>>Wnum10u",  "abs(id)==13 && mu9>1 && ptj1>10  && num");
-wmunu->Draw("min(pt,69.99)>>Wfo10u",   "abs(id)==13 && mu9>1 && ptj1>10 ");
+wmunu->Draw("min(pt,69.99)>>Wnum10u",  "abs(id)==13 && tcmet<20 && mt<25 && ptj1_b2b>15 && mu5>1 && ptj1>10  && num");
+wmunu->Draw("min(pt,69.99)>>Wfo10u",   "abs(id)==13 && tcmet<20 && mt<25 && ptj1_b2b>15 && mu5>1 && ptj1>10 ");
 // 15u
-wmunu->Draw("min(pt,69.99)>>Wnum15u",  "abs(id)==13 && mu9>1 && ptj1>15  && num");
-wmunu->Draw("min(pt,69.99)>>Wfo15u",   "abs(id)==13 && mu9>1 && ptj1>15 ");
+wmunu->Draw("min(pt,69.99)>>Wnum15u",  "abs(id)==13 && tcmet<20 && mt<25 && ptj1_b2b>15 && mu5>1 && ptj1>15  && num");
+wmunu->Draw("min(pt,69.99)>>Wfo15u",   "abs(id)==13 && tcmet<20 && mt<25 && ptj1_b2b>15 && mu5>1 && ptj1>15 ");
 // 20u
-wmunu->Draw("min(pt,69.99)>>Wnum20u",  "abs(id)==13 && mu9>1 && ptj1>20  && num");
-wmunu->Draw("min(pt,69.99)>>Wfo20u",   "abs(id)==13 && mu9>1 && ptj1>20 ");
+wmunu->Draw("min(pt,69.99)>>Wnum20u",  "abs(id)==13 && tcmet<20 && mt<25 && ptj1_b2b>15 && mu5>1 && ptj1>20  && num");
+wmunu->Draw("min(pt,69.99)>>Wfo20u",   "abs(id)==13 && tcmet<20 && mt<25 && ptj1_b2b>15 && mu5>1 && ptj1>20 ");
 
 
 delete ctemp;
 
 // Scale MC
-QCDfo15u->Scale( (245*18.205289)/1000000 );
-QCDnum15u->Scale( (245*18.205289)/1000000 );
+QCDfo15u->Scale( (576*18.205289)/1000000 );
+QCDnum15u->Scale( (576*18.205289)/1000000 );
 
-Wfo15u->Scale( (245*3.7446570)/1000000 );
-Wnum15u->Scale( (245*3.7446570)/1000000 );
+Wfo15u->Scale( (576*3.7446570)/1000000 );
+Wnum15u->Scale( (576*3.7446570)/1000000 );
 
 // Add
 
@@ -179,8 +179,8 @@ num15u->Draw("P same");
 
 c->cd(2)->SetLogy();
 num15u->SetMinimum(.1);
-num15u->Draw("P");
-QCDnum15u->Draw("same");
+//num15u->Draw("P");
+QCDnum15u->Draw();
 Wnum15u->Draw("same");
 
 c->cd(3);

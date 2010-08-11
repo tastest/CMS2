@@ -7,7 +7,7 @@
   TChain *ch1 = new TChain("tree");
   TChain *ch2 = new TChain("tree");
   ch1->Add("JMTMonitor.root");
-  ch2->Add("./august9/JMT_36nb.root");
+  ch2->Add("./august9/JMT_600nb.root");
 
   // The bins for the electron FR
   double ptEleBin[4] ={10.,15.,20.,40.};
