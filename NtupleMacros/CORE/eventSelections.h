@@ -18,7 +18,7 @@ bool cleaning_standard(bool isData);
 // standard event cleaning
 // for low pt dilepton / fake rate data studies
 //----------------------------------------------------------------
-bool cleaning_standardAugust2010();
+bool cleaning_standardAugust2010(bool isdata);
 
 //----------------------------------------------------------------
 // standard event cleaning
