@@ -171,9 +171,9 @@ std::pair<float,float> getMet(const string algo, unsigned int hypIdx) {
     float tcmetY = evt35X_tcmet()*sin(evt35X_tcmetPhi());
     
     if(abs(hyp_lt_id()[hypIdx]) == 13)
-      fixMetForThisMuon(hyp_lt_index().at(hypIdx), tcmetX, tcmetY, usingTcMet);
+      fixMetForThisMuon(hyp_lt_index().at(hypIdx), tcmetX, tcmetY, usingTcMet35X);
     if(abs(hyp_ll_id()[hypIdx]) == 13)
-      fixMetForThisMuon(hyp_ll_index().at(hypIdx), tcmetX, tcmetY, usingTcMet);
+      fixMetForThisMuon(hyp_ll_index().at(hypIdx), tcmetX, tcmetY, usingTcMet35X);
     
     return make_pair(sqrt(tcmetX*tcmetX + tcmetY*tcmetY), atan2(tcmetY, tcmetX));
   }
