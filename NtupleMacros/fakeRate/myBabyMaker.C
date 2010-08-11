@@ -85,8 +85,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
   // Set the JSON file
   if(isData){
-    //set_goodrun_file("./jsonlist_133446_140387_254.4nb.txt");
     //set_goodrun_file("jsonlist_132440_139239.txt");
+    //set_goodrun_file("./jsonlist_133446_140387_254.4nb.txt");
     set_goodrun_file_json("Cert_and_RR_Aug9_Top_merged_132440-142537_JSON.txt");
   }
 
@@ -126,7 +126,6 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         // Good  Runs
         //if(!goodrun( evt_run(), evt_lumiBlock() )) continue;
         if(!goodrun_json( evt_run(), evt_lumiBlock() )) continue;
-        //if( evt_run() != 141956 ) continue;
 
         // check for duplicated
         DorkyEventIdentifier id = { evt_run(),evt_event(), evt_lumiBlock() };
@@ -168,13 +167,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
       if (eormu == -1 || eormu==11) {
 	    for (unsigned int iEl = 0 ; iEl < els_p4().size(); iEl++) {
 
-	      // ECAL spike cleaning
-	      //float r19 = cms2.els_eMax()[iEl]/cms2.els_e5x5()[iEl];
-	      //if (r19 >= 0.95) continue;
-
 	      // Apply a pt cut (Changed it from 5 GeV to 10 GeV...Claudio 10 July 2010)
 	      if ( els_p4().at(iEl).pt() < 10.) continue;
-
 
 	      // Initialize baby ntuple
 	      InitBabyNtuple();
@@ -556,7 +550,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 		
 	  // Now fill the muon trigger flags
 	  mu3_ = nHLTObjects("HLT_Mu3");
-	  //mu5_ = nHLTObjects("HLT_Mu5");
+	  mu5_ = nHLTObjects("HLT_Mu5");
 	  mu9_ = nHLTObjects("HLT_Mu9");
 	  
 	  // Explicit match with Mu3 trigger
@@ -575,21 +569,21 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 	    }
 	  }
 	  
-//	  // Explicit match with Mu5 trigger
-//	  if (mu5_ > 0) {
-//	    bool match = false;
-//	    for (int itrg=0; itrg<mu5_; itrg++) {
-//	      LorentzVector p4tr = p4HLTObject("HLT_Mu5",itrg);
-//	      double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4tr);
-//	      if (dr < drmu5_) drmu5_ = dr;
-//	      if (dr < 0.4) match=true;
-//	    }
-//	    if (match) {
-//	      mu5_ = 2;
-//	    } else {
-//	      mu5_ = 1;
-//	    }
-//	  }
+	  // Explicit match with Mu5 trigger
+	  if (mu5_ > 0) {
+	    bool match = false;
+	    for (int itrg=0; itrg<mu5_; itrg++) {
+	      LorentzVector p4tr = p4HLTObject("HLT_Mu5",itrg);
+	      double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), p4tr);
+	      if (dr < drmu5_) drmu5_ = dr;
+	      if (dr < 0.4) match=true;
+	    }
+	    if (match) {
+	      mu5_ = 2;
+	    } else {
+	      mu5_ = 1;
+	    }
+	  }
 	  
 	  // Explicit match with Mu9 trigger
 	  if (mu9_ > 0) {
