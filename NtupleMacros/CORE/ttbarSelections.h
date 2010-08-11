@@ -34,7 +34,7 @@ bool isGoodDilHypJet(LorentzVector jetp4, unsigned int& hypIdx, double ptCut, do
 /******************************************************************************************/     
 //return the MET and the MET phi, correcting for mus that are not corrected for by default
 /******************************************************************************************/     
-std::pair<float,float> getMet(string& algo, unsigned int hypIdx);
+std::pair<float,float> getMet(const string algo, unsigned int hypIdx);
 
 /*****************************************************************************************/
 //hypothesis disambiguation. Returns the hypothesis that has the highest sum Pt
@@ -44,7 +44,7 @@ unsigned int selectHypByHighestSumPt(const vector<unsigned int> &v_goodHyps);
 /******************************************************************************************/     
 //corrects tcMET for mus that are not corrected for by default
 /******************************************************************************************/     
-void correctTcMETForHypMus(unsigned int hypIdx, double& met, double& metPhi);
+//void correctTcMETForHypMus(unsigned int hypIdx, double& met, double& metPhi);
 
 /*****************************************************************************************/
 //passes the EGamma triggers

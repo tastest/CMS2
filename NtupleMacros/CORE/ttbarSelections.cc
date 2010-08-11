@@ -139,24 +139,61 @@ bool isGoodDilHypJet(LorentzVector jetp4, unsigned int& hypIdx, double ptCut, do
 }
 
 
+
 /******************************************************************************************/     
 //return the MET and the MET phi, correcting for mus that are not corrected for by default
 /******************************************************************************************/     
-std::pair<float,float> getMet(string& algo, unsigned int hypIdx) {
-
- if(algo != "tcMET" && algo != "muCorMET" && algo != "pfMET") {
+std::pair<float,float> getMet(const string algo, unsigned int hypIdx) {
+  
+  if(algo != "tcMET" && algo != "muCorMET" && algo != "pfMET" && algo != "tcMET35X") {
     cout << algo << "IS NOT A RECOGNIZED MET ALGORITHM!!!!! PLEASE CHECK YOUR CODE!!!";
     return make_pair(-99999., -99999.);
   }
+
+  
   if(algo == "tcMET") {
-    double tcmet = evt_tcmet();
-    double tcmetPhi = evt_tcmetPhi();
-    correctTcMETForHypMus(hypIdx, tcmet, tcmetPhi);
-    return make_pair(tcmet, tcmetPhi);
+
+    float tcmetX = evt_tcmet()*cos(evt_tcmetPhi());
+    float tcmetY = evt_tcmet()*sin(evt_tcmetPhi());
+    
+    if(abs(hyp_lt_id()[hypIdx]) == 13)
+      fixMetForThisMuon(hyp_lt_index().at(hypIdx), tcmetX, tcmetY, usingTcMet);
+    if(abs(hyp_ll_id()[hypIdx]) == 13)
+      fixMetForThisMuon(hyp_ll_index().at(hypIdx), tcmetX, tcmetY, usingTcMet);
+    
+    return make_pair(sqrt(tcmetX*tcmetX + tcmetY*tcmetY), atan2(tcmetY, tcmetX));
   }
-  if(algo == "muCorMET")
-    return make_pair(evt_metMuonCorr(), evt_metMuonCorrPhi());
-  if(algo == "pfMET")
+
+
+  if(algo == "tcMET35X") {
+
+    float tcmetX = evt35X_tcmet()*cos(evt35X_tcmetPhi());
+    float tcmetY = evt35X_tcmet()*sin(evt35X_tcmetPhi());
+    
+    if(abs(hyp_lt_id()[hypIdx]) == 13)
+      fixMetForThisMuon(hyp_lt_index().at(hypIdx), tcmetX, tcmetY, usingTcMet);
+    if(abs(hyp_ll_id()[hypIdx]) == 13)
+      fixMetForThisMuon(hyp_ll_index().at(hypIdx), tcmetX, tcmetY, usingTcMet);
+    
+    return make_pair(sqrt(tcmetX*tcmetX + tcmetY*tcmetY), atan2(tcmetY, tcmetX));
+  }
+
+  
+  if(algo == "muCorMET") {
+
+    float metX = evt_metMuonCorr()*cos(evt_metMuonCorrPhi());
+    float metY = evt_metMuonCorr()*sin(evt_metMuonCorrPhi());
+    
+    if(abs(hyp_lt_id()[hypIdx]) == 13)
+      fixMetForThisMuon(hyp_lt_index().at(hypIdx), metX, metY, usingCaloMet);
+    if(abs(hyp_ll_id()[hypIdx]) == 13)
+      fixMetForThisMuon(hyp_ll_index().at(hypIdx), metX, metY, usingCaloMet);
+
+    return make_pair(sqrt(metX*metX + metY*metY), atan2(metY, metX));
+  }
+  
+  //nothing to do here because they're perfect
+  if(algo == "pfMET") 
     return make_pair(evt_pfmet(), evt_pfmetPhi());
   
   
@@ -186,43 +223,6 @@ unsigned int selectHypByHighestSumPt(const vector<unsigned int> &v_goodHyps) {
 
 }
 
-
-
-
-/******************************************************************************************/     
-//corrects tcMET for mus that are not corrected for by default
-/******************************************************************************************/     
-void correctTcMETForHypMus(unsigned int hypIdx, double& met, double& metPhi) {
-
-  if (cms2.hyp_type()[hypIdx] ==3) return;
-  double lmetx = met*cos(metPhi);
-  double lmety = met*sin(metPhi);
-
-  unsigned int i_lt = cms2.hyp_lt_index()[hypIdx];
-  unsigned int i_ll = cms2.hyp_ll_index()[hypIdx];
-  if (abs(cms2.hyp_lt_id()[hypIdx])==13){
-    if(cms2.mus_tcmet_flag()[i_lt] == 0){
-      lmetx += cms2.mus_met_deltax()[i_lt] - cms2.mus_p4()[i_lt].x();
-      lmety += cms2.mus_met_deltay()[i_lt] - cms2.mus_p4()[i_lt].y();
-    } else if (cms2.mus_tcmet_flag()[i_lt] == 4){
-         lmetx += -cms2.mus_tcmet_deltax()[i_lt] + cms2.mus_met_deltax()[i_lt] - cms2.mus_p4()[i_lt].x() + cms2.trks_trk_p4()[cms2.mus_trkidx()[i_lt]].x(); 
-         lmety += -cms2.mus_tcmet_deltay()[i_lt] + cms2.mus_met_deltay()[i_lt] - cms2.mus_p4()[i_lt].y() + cms2.trks_trk_p4()[cms2.mus_trkidx()[i_lt]].y(); 
-    }
-  }
-  if (abs(cms2.hyp_ll_id()[hypIdx])==13){
-    if(cms2.mus_tcmet_flag()[i_ll] == 0){ 
-      lmetx+= cms2.mus_met_deltax()[i_ll] - cms2.mus_p4()[i_ll].x(); 
-      lmety+= cms2.mus_met_deltay()[i_ll] - cms2.mus_p4()[i_ll].y(); 
-    } else if (cms2.mus_tcmet_flag()[i_ll] == 4){ 
-         lmetx+= - cms2.mus_tcmet_deltax()[i_ll] + cms2.mus_met_deltax()[i_ll] - cms2.mus_p4()[i_ll].x() + cms2.trks_trk_p4()[cms2.mus_trkidx()[i_ll]].x();  
-         lmety+= - cms2.mus_tcmet_deltay()[i_ll] + cms2.mus_met_deltay()[i_ll] - cms2.mus_p4()[i_ll].y() + cms2.trks_trk_p4()[cms2.mus_trkidx()[i_ll]].y();  
-    } 
-  }
-  met = sqrt(lmetx*lmetx+lmety*lmety);
-  metPhi = atan2(lmety,lmetx);
-
-  return;
-}
 
 
 /*****************************************************************************************/
