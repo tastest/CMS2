@@ -51,11 +51,11 @@ SimpleFakeRate::SimpleFakeRate(const char* filename, const char* histname,
 
   // now find out if this looks like a fake rate for positive eta only
   if ( etamin_ > -0.001 && etamax_ > 0.) {
-    cout << "------" << endl;
-    cout << "The fake rate in histogram " << histname << endl;
-    cout << " in file " << filename << " is only for +ve eta" << endl;
-    cout << " .. we will assume that it is the same at -ve eta" << endl;
-    cout << "------" << endl;
+    //cout << "------" << endl;
+    //cout << "The fake rate in histogram " << histname << endl;
+    //cout << " in file " << filename << " is only for +ve eta" << endl;
+    //cout << " .. we will assume that it is the same at -ve eta" << endl;
+    //cout << "------" << endl;
     useAbsEta_ = true;
   } else {
     useAbsEta_ = false;
