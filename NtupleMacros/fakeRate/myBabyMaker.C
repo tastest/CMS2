@@ -26,6 +26,38 @@
 using namespace std;
 using namespace tas;
 
+
+
+  
+// function for dR matching offline letpon to trigger object 
+pair<int, float> TriggerMatch( LorentzVector lepton_p4, const char* trigString, double dR_cut = 0.4 ){
+  float dR_min = numeric_limits<float>::max();
+  dR_min = 99.0;
+  int nTrig = nHLTObjects( trigString );
+  if (nTrig > 0) {
+    bool match = false;
+    for (int itrg=0; itrg<nTrig; itrg++) {
+      LorentzVector p4tr = p4HLTObject( trigString, itrg );
+      double dr = ROOT::Math::VectorUtil::DeltaR( lepton_p4, p4tr);
+      if (dr < dR_cut) match = true;
+      if (dr < dR_min) dR_min = dr;
+    }
+    if (match) {
+      nTrig = 2;
+    } 
+    else {
+      nTrig = 1;
+    }
+  }
+  pair<int, float> answer;
+  answer.first  = nTrig;
+  answer.second = dR_min;
+  return answer;
+}
+
+
+
+
 struct DorkyEventIdentifier {
   // this is a workaround for not having unique event id's in MC
   unsigned long int run, event,lumi;
@@ -384,6 +416,61 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
           }
         }
 
+        // test that the electron triggers are the same using the function
+        pair<int, float> pair_el10 = TriggerMatch( els_p4().at(iEl), "HLT_Ele10_LW_L1R");
+        pair<int, float> pair_el10id = TriggerMatch( els_p4().at(iEl), "HLT_Ele10_SW_EleId_L1R");
+        pair<int, float> pair_el15 = TriggerMatch( els_p4().at(iEl), "HLT_Ele15_LW_L1R");
+
+        pair<int, float> pair_ph10   = TriggerMatch( els_p4().at(iEl), "HLT_Photon10_L1R");
+        pair<int, float> pair_ph10C  = TriggerMatch( els_p4().at(iEl), "HLT_Photon10_Cleaned_L1R");
+        pair<int, float> pair_ph15   = TriggerMatch( els_p4().at(iEl), "HLT_Photon15_L1R");
+        pair<int, float> pair_ph15C  = TriggerMatch( els_p4().at(iEl), "HLT_Photon15_Cleaned_L1R");
+
+        int   ph10    = max( pair_ph10.first, pair_ph10C.first );
+        int   ph15    = max( pair_ph15.first, pair_ph15C.first );
+        float drph10  = ( pair_ph10.first > pair_ph10C.first ? pair_ph10.second : pair_ph10C.second );
+        float drph15  = ( pair_ph15.first > pair_ph15C.first ? pair_ph15.second : pair_ph15C.second );
+
+        // test that the electron triggers are the same using the function
+        if( pair_el10.first != el10_ || pair_el10.second != drel10_){ 
+          cout << "ERROR in trigger matching function Ele10" << endl;
+          gSystem->Exit(1);
+        }
+        if( pair_el10id.first != el10id_ || pair_el10id.second != drel10id_){ 
+          cout << "ERROR in trigger matching function Ele10id" << endl;
+          gSystem->Exit(1);
+        }
+        if( pair_el15.first != el15_ || pair_el15.second != drel15_){ 
+          cout << "ERROR in trigger matching function Ele15" << endl;
+          gSystem->Exit(1);
+        }
+
+        // test that the photon triggers are the same using the function
+        if( ph10 != ph10_ || fabs( drph10 - drph10_ ) > .000001 ){ 
+          cout << "ERROR in trigger matching function Photon 10" << endl;
+          gSystem->Exit(1);
+        }
+        if( ph15 != ph15_ || fabs( drph15 - drph15_ ) > .000001 ){ 
+          cout << "ERROR in trigger matching function Photon 15" << endl;
+          gSystem->Exit(1);
+        }
+
+        // trigger matching
+        //el10_   = pair_el10.first;
+        //el10id_ = pair_el10id.first;
+        //el15_   = pair_el15.first;
+        //ph10_   = ph10;
+        //ph15_   = ph15;
+
+        // dr between lepton and closest jet
+        //drel10_   = pair_el10.second;
+        //drel10id_ = pair_el10id.second;
+        //drel15_   = pair_el15.second;
+        //drph10_   = ph10;
+        //drph15_   = ph15;
+
+
+
         // Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
         ptj1_       = -999.0;
         ptj1_b2b_   = -999.0;
@@ -549,7 +636,30 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
             mu9_ = 1;
           }
         }
-            
+           
+        // check function gives same answer 
+        pair<int, float> pair_mu5 = TriggerMatch( mus_p4().at(iMu), "HLT_Mu5");
+        pair<int, float> pair_mu9 = TriggerMatch( mus_p4().at(iMu), "HLT_Mu9");
+
+        if( pair_mu5.first != mu5_ || pair_mu5.second != drmu5_){
+          cout << "ERROR in trigger matching function Mu5" << endl;
+          gSystem->Exit(1);
+        } 
+        if( pair_mu9.first != mu9_ || pair_mu9.second != drmu9_){
+          cout << "ERROR in trigger matching function Mu9" << endl;
+          gSystem->Exit(1);
+        } 
+
+        // Mu5  
+        //mu5_    = pair_mu5.first;
+        //drmu5_  = pair_mu5.second;
+
+        // Mu9
+        //mu9_    = pair_mu9.first;
+        //drmu9_  = pair_mu9.second;
+
+
+
         // Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
         ptj1_       = -999.0;
         ptj1_b2b_   = -999.0;
@@ -621,12 +731,14 @@ void myBabyMaker::InitBabyNtuple () {
   ph10_ = 0;
   ph15_ = 0;
   el10_ = 0;
+  el10id_ = 0;
   el15_ = 0;
   mu5_  = 0;
   mu9_  = 0;
   drph10_ = 99.;
   drph15_ = 99.;
   drel10_ = 99.;
+  drel10id_ = 99.;
   drel15_ = 99.;
   drmu5_  = 99.;
   drmu9_  = 99.;
@@ -687,11 +799,13 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("ph10",       &ph10_,       "ph10/I"      );
     babyTree_->Branch("ph15",       &ph15_,       "ph15/I"      );
     babyTree_->Branch("el10",         &el10_,         "el10/I"      );
+    babyTree_->Branch("el10id",         &el10id_,         "el10id/I"      );
     babyTree_->Branch("el15",         &el15_,         "el15/I"      );
 
     babyTree_->Branch("drph10",       &drph10_,       "drph10/F"      );
     babyTree_->Branch("drph15",       &drph15_,       "drph15/F"      );
     babyTree_->Branch("drel10",         &drel10_,         "drel10/F"      );
+    babyTree_->Branch("drel10id",         &drel10id_,         "drel10id/F"      );
     babyTree_->Branch("drel15",         &drel15_,         "drel15/F"      );
 
     babyTree_->Branch("mu9",       &mu9_,       "mu9/I"      );
