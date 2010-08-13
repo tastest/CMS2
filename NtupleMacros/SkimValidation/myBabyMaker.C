@@ -114,6 +114,13 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, const char
 		jets_     = CleanJets( jets_p4()   , goodels, goodmus, true ); //true for cor for calo only
 		pfjets_   = CleanJets( pfjets_p4() , goodels, goodmus );
 		trkjets_  = CleanJets( trkjets_p4(), goodels, goodmus );
+    
+    for(uint jet = 0; jet < jets_.size(); ++jet) {
+      jetspx_.push_back(jets_.at(jet).px());
+      jetspy_.push_back(jets_.at(jet).py());
+      jetspz_.push_back(jets_.at(jet).pz());
+      jetsE_.push_back (jets_.at(jet).E() );
+    }
 
 		doMet();
 		FillBabyNtuple();
@@ -165,6 +172,12 @@ void myBabyMaker::InitBabyNtuple () {
   pfjets_ .clear();
   trkjets_.clear();
   //hypjets_.clear();
+
+  jetspx_.clear();
+  jetspy_.clear();
+  jetspz_.clear();
+  jetsE_.clear();
+
 
   //met
   clmet_ 		= -999.;
@@ -222,6 +235,13 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("pfjets",     &pfjets_);
     babyTree_->Branch("trkjets",    &trkjets_);
     babyTree_->Branch("jets",       &jets_);
+    babyTree_->SetAlias("jets",   "jets");
+
+    babyTree_->Branch("jetspx",       &jetspx_);
+    babyTree_->Branch("jetspy",       &jetspy_);
+    babyTree_->Branch("jetspz",       &jetspz_);
+    babyTree_->Branch("jetsE" ,       &jetsE_ );
+
 
 }
 

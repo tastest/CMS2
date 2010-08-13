@@ -9,7 +9,7 @@
 
 using namespace std;
 
-void xsecLoop::Loop(std::vector<int>& numLepVsRun, Bool_t doMu)
+void xsecLoop::Loop(std::vector<int>& numLepVsRun, TString drawThese)
 {
    if (fChain == 0) return;
 
@@ -22,7 +22,8 @@ void xsecLoop::Loop(std::vector<int>& numLepVsRun, Bool_t doMu)
       nb = fChain->GetEntry(jentry);   nbytes += nb;
       // if (Cut(ientry) < 0) continue;
 
-      if(doMu) {
+      if( drawThese.Contains("mus") ) {
+        //        std::cout<<"xsecLoop mode: "<<drawThese<<std::endl;
         // do the muon loop
         for( int mu = 0; mu < nmu; ++mu ) {
           if( 
@@ -35,7 +36,8 @@ void xsecLoop::Loop(std::vector<int>& numLepVsRun, Bool_t doMu)
           }
         }
       }
-      else {
+      else if(drawThese.Contains("els")) {
+        //        std::cout<<"xsecLoop mode: "<<drawThese<<std::endl;
         //        std::cout<<"now for the electrons "<<nel<<std::endl;
         // do the electron loop
         for( int el = 0; el < nel; ++el ) {
@@ -48,6 +50,19 @@ void xsecLoop::Loop(std::vector<int>& numLepVsRun, Bool_t doMu)
             numLepVsRun.at( run ) += 1;
           }
         }
+      }
+
+      else if(drawThese.Contains("jets")) {
+        //        std::cout<<"xsecLoop mode: "<<drawThese<<std::endl;
+        // do the jet loop
+        //        std::cout<<"jet size: "<<jetspx->size()<<std::endl;
+        //         getchar();
+         for( int jet = 0; jet < jetspx->size(); ++jet ) {
+           //           std::cout<<"jet x coord  "<< jetspx->at( jet )  <<std::endl;
+           if(sqrt(jetspx->at( jet )*jetspx->at( jet )+jetspy->at( jet )*jetspy->at( jet )) > 30.) {
+             numLepVsRun.at( run ) += 1;
+           }
+         }
       }
    }
 }

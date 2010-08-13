@@ -11,6 +11,7 @@
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
+#include <TString.h>
 #include <vector>
 #include <iomanip>
 #include <iostream>
@@ -74,13 +75,17 @@ public :
    Float_t         jets_fCoordinates_fY[123];   //[_]
    Float_t         jets_fCoordinates_fZ[123];   //[_]
    Float_t         jets_fCoordinates_fT[123];   //[_]
+   vector<float>   *jetspx;
+   vector<float>   *jetspy;
+   vector<float>   *jetspz;
+   vector<float>   *jetsE;
 
    // List of branches
    TBranch        *b_nel;   //!
    TBranch        *b_elsid;   //!
    TBranch        *b_elsd0corr;   //!
    TBranch        *b_elscharge;   //!
-   TBranch        *b_elsp4;   //!
+   TBranch        *b_elsp4_;   //!
    TBranch        *b_elsp4_fCoordinates_fX;   //!
    TBranch        *b_elsp4_fCoordinates_fY;   //!
    TBranch        *b_elsp4_fCoordinates_fZ;   //!
@@ -93,7 +98,7 @@ public :
    TBranch        *b_musid;   //!
    TBranch        *b_musd0corr;   //!
    TBranch        *b_muscharge;   //!
-   TBranch        *b_musp4;   //!
+   TBranch        *b_musp4_;   //!
    TBranch        *b_musp4_fCoordinates_fX;   //!
    TBranch        *b_musp4_fCoordinates_fY;   //!
    TBranch        *b_musp4_fCoordinates_fZ;   //!
@@ -111,21 +116,25 @@ public :
    TBranch        *b_run;   //!
    TBranch        *b_event;   //!
    TBranch        *b_lumi;   //!
-   TBranch        *b_pfjets;   //!
+   TBranch        *b_pfjets_;   //!
    TBranch        *b_pfjets_fCoordinates_fX;   //!
    TBranch        *b_pfjets_fCoordinates_fY;   //!
    TBranch        *b_pfjets_fCoordinates_fZ;   //!
    TBranch        *b_pfjets_fCoordinates_fT;   //!
-   TBranch        *b_trkjets;   //!
+   TBranch        *b__;   //!
    TBranch        *b_trkjets_fCoordinates_fX;   //!
    TBranch        *b_trkjets_fCoordinates_fY;   //!
    TBranch        *b_trkjets_fCoordinates_fZ;   //!
    TBranch        *b_trkjets_fCoordinates_fT;   //!
-   TBranch        *b_jets;   //!
+   TBranch        *b_jets_;   //!
    TBranch        *b_jets_fCoordinates_fX;   //!
    TBranch        *b_jets_fCoordinates_fY;   //!
    TBranch        *b_jets_fCoordinates_fZ;   //!
    TBranch        *b_jets_fCoordinates_fT;   //!
+   TBranch        *b_jetspx;   //!
+   TBranch        *b_jetspy;   //!
+   TBranch        *b_jetspz;   //!
+   TBranch        *b_jetsE;   //!
 
    xsecLoop(TTree *tree=0);
    virtual ~xsecLoop();
@@ -133,7 +142,7 @@ public :
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
-   virtual void     Loop(std::vector<int>& numLepVsRun, Bool_t doMu);
+   virtual void     Loop(std::vector<int>& numLepVsRun, TString drawThese);
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
    //ibl/jmu
@@ -161,7 +170,8 @@ xsecLoop::xsecLoop(TTree *tree)
 xsecLoop::~xsecLoop()
 {
    if (!fChain) return;
-   delete fChain->GetCurrentFile();
+   //   delete fChain->GetCurrentFile();
+   // erm.. bad to remove this, but else I have a problem looping a chain twice...
 }
 
 Int_t xsecLoop::GetEntry(Long64_t entry)
@@ -210,6 +220,10 @@ void xsecLoop::Init(TTree *tree)
    mustrkiso = 0;
    musecliso = 0;
    mushcliso = 0;
+   jetspx = 0;
+   jetspy = 0;
+   jetspz = 0;
+   jetsE = 0;
    // Set branch addresses and branch pointers
    if (!tree) return;
    fChain = tree;
@@ -220,7 +234,7 @@ void xsecLoop::Init(TTree *tree)
    fChain->SetBranchAddress("elsid", &elsid, &b_elsid);
    fChain->SetBranchAddress("elsd0corr", &elsd0corr, &b_elsd0corr);
    fChain->SetBranchAddress("elscharge", &elscharge, &b_elscharge);
-   fChain->SetBranchAddress("elsp4", &elsp4_, &b_elsp4);
+   fChain->SetBranchAddress("elsp4", &elsp4_, &b__);
    fChain->SetBranchAddress("elsp4.fCoordinates.fX", &elsp4_fCoordinates_fX, &b_elsp4_fCoordinates_fX);
    fChain->SetBranchAddress("elsp4.fCoordinates.fY", &elsp4_fCoordinates_fY, &b_elsp4_fCoordinates_fY);
    fChain->SetBranchAddress("elsp4.fCoordinates.fZ", &elsp4_fCoordinates_fZ, &b_elsp4_fCoordinates_fZ);
@@ -233,7 +247,7 @@ void xsecLoop::Init(TTree *tree)
    fChain->SetBranchAddress("musid", &musid, &b_musid);
    fChain->SetBranchAddress("musd0corr", &musd0corr, &b_musd0corr);
    fChain->SetBranchAddress("muscharge", &muscharge, &b_muscharge);
-   fChain->SetBranchAddress("musp4", &musp4_, &b_musp4);
+   fChain->SetBranchAddress("musp4", &musp4_, &b__);
    fChain->SetBranchAddress("musp4.fCoordinates.fX", musp4_fCoordinates_fX, &b_musp4_fCoordinates_fX);
    fChain->SetBranchAddress("musp4.fCoordinates.fY", musp4_fCoordinates_fY, &b_musp4_fCoordinates_fY);
    fChain->SetBranchAddress("musp4.fCoordinates.fZ", musp4_fCoordinates_fZ, &b_musp4_fCoordinates_fZ);
@@ -251,21 +265,25 @@ void xsecLoop::Init(TTree *tree)
    fChain->SetBranchAddress("run", &run, &b_run);
    fChain->SetBranchAddress("event", &event, &b_event);
    fChain->SetBranchAddress("lumi", &lumi, &b_lumi);
-   fChain->SetBranchAddress("pfjets", &pfjets_, &b_pfjets);
+   fChain->SetBranchAddress("pfjets", &pfjets_, &b__);
    fChain->SetBranchAddress("pfjets.fCoordinates.fX", pfjets_fCoordinates_fX, &b_pfjets_fCoordinates_fX);
    fChain->SetBranchAddress("pfjets.fCoordinates.fY", pfjets_fCoordinates_fY, &b_pfjets_fCoordinates_fY);
    fChain->SetBranchAddress("pfjets.fCoordinates.fZ", pfjets_fCoordinates_fZ, &b_pfjets_fCoordinates_fZ);
    fChain->SetBranchAddress("pfjets.fCoordinates.fT", pfjets_fCoordinates_fT, &b_pfjets_fCoordinates_fT);
-   fChain->SetBranchAddress("trkjets", &trkjets_, &b_trkjets);
+   fChain->SetBranchAddress("trkjets", &trkjets_, &b__);
    fChain->SetBranchAddress("trkjets.fCoordinates.fX", trkjets_fCoordinates_fX, &b_trkjets_fCoordinates_fX);
    fChain->SetBranchAddress("trkjets.fCoordinates.fY", trkjets_fCoordinates_fY, &b_trkjets_fCoordinates_fY);
    fChain->SetBranchAddress("trkjets.fCoordinates.fZ", trkjets_fCoordinates_fZ, &b_trkjets_fCoordinates_fZ);
    fChain->SetBranchAddress("trkjets.fCoordinates.fT", trkjets_fCoordinates_fT, &b_trkjets_fCoordinates_fT);
-   fChain->SetBranchAddress("jets", &jets_, &b_jets);
+   fChain->SetBranchAddress("jets", &jets_, &b__);
    fChain->SetBranchAddress("jets.fCoordinates.fX", jets_fCoordinates_fX, &b_jets_fCoordinates_fX);
    fChain->SetBranchAddress("jets.fCoordinates.fY", jets_fCoordinates_fY, &b_jets_fCoordinates_fY);
    fChain->SetBranchAddress("jets.fCoordinates.fZ", jets_fCoordinates_fZ, &b_jets_fCoordinates_fZ);
    fChain->SetBranchAddress("jets.fCoordinates.fT", jets_fCoordinates_fT, &b_jets_fCoordinates_fT);
+   fChain->SetBranchAddress("jetspx", &jetspx, &b_jetspx);
+   fChain->SetBranchAddress("jetspy", &jetspy, &b_jetspy);
+   fChain->SetBranchAddress("jetspz", &jetspz, &b_jetspz);
+   fChain->SetBranchAddress("jetsE", &jetsE, &b_jetsE);
    Notify();
 }
 

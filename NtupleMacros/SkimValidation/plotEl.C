@@ -27,29 +27,41 @@
 
 using namespace std;
 
-void xsecPlot( TCanvas * myCanv, TChain* myChain, Bool_t drawMu, const string suffix, const string dir ) {
+void xsecPlot( TCanvas * myCanv, TChain* myChain, TString drawThese, const string suffix, const string dir ) {
   std::vector<double> lumiVsRun;
   std::vector<int> numMuVsRun;
   std::vector<int> numElVsRun;
+  std::vector<int> numJetVsRun;
   int runRange = 160000;
   for(int run = 0; run<runRange; ++run) {
     numMuVsRun.push_back(0);
     numElVsRun.push_back(0);
+    numJetVsRun.push_back(0);
     lumiVsRun.push_back(0.);
   }
    
   //    Bool_t drawMu = true;
-  Bool_t drawEl = !drawMu;
+//   Bool_t drawEl = !drawMu;
   Bool_t drawRunningMean = true;
    
   xsecLoop t(myChain);
 
-  if(drawMu) {
-    t.Loop(numMuVsRun, drawMu); 
+  if( drawThese.Contains("mus") ) {
+    std::cout<<"Counting mus"<<std::endl;
+    t.Loop(numMuVsRun, drawThese); 
   }
-  else if(drawEl) {
-    t.Loop(numElVsRun, drawMu); // silly logic.. when drawEl is true, drawMu is false, so the loops loops electrons... to be fixed 
+  else if( drawThese.Contains("els") ) {
+    std::cout<<"Counting els"<<std::endl;
+    t.Loop(numElVsRun, drawThese); 
   }   
+
+  else if( drawThese.Contains("jets") ) {
+    std::cout<<"Counting Jets"<<std::endl;
+    t.Loop(numJetVsRun, drawThese); 
+  }   
+  else {
+    std::cout<<"BAD drawable in xsecPlot: "<<drawThese <<" is not forseen. Bad things will happen - better fix this!"<<endl;
+  }
 
   //    for(int run = 0; run<runRange; ++run){
   //      if(numMuVsRun[run] > 0) {
@@ -62,11 +74,13 @@ void xsecPlot( TCanvas * myCanv, TChain* myChain, Bool_t drawMu, const string su
   // calculate the running mean, here for +- 12 runs
   std::vector<float> nMuRoller; 
   std::vector<float> nElRoller; 
+  std::vector<float> nJetRoller; 
   std::vector<float> nLumiRoller;
 #ifndef __CINT__
   if(drawRunningMean) {
-    nMuRoller = rollingThunder(numMuVsRun, lumiVsRun, 12);
-    nElRoller = rollingThunder(numElVsRun, lumiVsRun, 12);
+    nMuRoller   = rollingThunder(numMuVsRun, lumiVsRun, 12);
+    nElRoller   = rollingThunder(numElVsRun, lumiVsRun, 12);
+    nJetRoller  = rollingThunder(numJetVsRun, lumiVsRun, 12);
     nLumiRoller = rollingThunder(lumiVsRun, lumiVsRun, 12);
   }
 #endif
@@ -76,13 +90,17 @@ void xsecPlot( TCanvas * myCanv, TChain* myChain, Bool_t drawMu, const string su
 
   std::vector<int> numLepVsRun;
   std::vector<float> nLepRoller; 
-  if(drawMu) {
+  if( drawThese.Contains("mus") ) {
     numLepVsRun = numMuVsRun;
     nLepRoller = nMuRoller; 
   }
-  else if(drawEl) {
+  else if( drawThese.Contains("els") ) {
     numLepVsRun = numElVsRun;
     nLepRoller = nElRoller; 
+  }
+  else if( drawThese.Contains("jets") ) {
+    numLepVsRun = numJetVsRun;
+    nLepRoller = nJetRoller; 
   }
 
 
@@ -99,13 +117,17 @@ void xsecPlot( TCanvas * myCanv, TChain* myChain, Bool_t drawMu, const string su
   }
    
   aGraph->SetFillColor(kWhite);
-  if(drawMu) {
+  if( drawThese.Contains("mus") ) {
     aGraph->SetTitle("Muons per run per lumi");
     aGraph->GetYaxis()->SetTitle("Muon rate, #sigma_{GoodMu Vis p_{T} > 10 GeV} (#mub)");
   }
-  if(drawEl) {
+  else if( drawThese.Contains("els") ) {
     aGraph->SetTitle("Electrons per run per lumi ");
     aGraph->GetYaxis()->SetTitle("Ele rate, #sigma_{GoodEl Vis p_{T} > 10 GeV} (#mub)");
+  }
+  else if( drawThese.Contains("jets") ) {
+    aGraph->SetTitle("Jets per run per lumi ");
+    aGraph->GetYaxis()->SetTitle("Jet rate, #sigma_{Jet Vis p_{T}^{corr} > 30 GeV} (#mub)");
   }
   aGraph->GetYaxis()->SetTitleOffset(1.2);
   aGraph->GetXaxis()->SetTitle("run number"); //6  
@@ -154,7 +176,7 @@ void xsecPlot( TCanvas * myCanv, TChain* myChain, Bool_t drawMu, const string su
   for(int run = 0; run<runRange; ++run){
     if( lumiVsRun[run] != 0 && numLepVsRun[run] != 0 ) {
       if( TMath::Abs( ( (numLepVsRun[run]/lumiVsRun[run]) - fitMean) / (sqrt((float)numLepVsRun[run])/lumiVsRun[run]) ) > 3. ) {
-        cout<<"EXCESS Run: "<<run<<" Lep ratio "<<numLepVsRun[run]/lumiVsRun[run]<<" normPull "<< ( (numLepVsRun[run]/lumiVsRun[run]) - fitMean) / ( sqrt( (float)numLepVsRun[run] )/lumiVsRun[run] ) <<" nLep "<<numLepVsRun[run]<<" lumi "<<lumiVsRun[run]<<std::endl;
+        cout<<"EXCESS/DEFICIT Run: "<<run<<" Lep ratio "<<numLepVsRun[run]/lumiVsRun[run]<<" normPull "<< ( (numLepVsRun[run]/lumiVsRun[run]) - fitMean) / ( sqrt( (float)numLepVsRun[run] )/lumiVsRun[run] ) <<" nLep "<<numLepVsRun[run]<<" lumi "<<lumiVsRun[run]<<std::endl;
          
         TEllipse *ellipse = new TEllipse(run, numLepVsRun[run]/lumiVsRun[run]  ,10, ( sqrt( (float)numLepVsRun[run] )/lumiVsRun[run] )  ,0,360,0);
         ellipse->SetFillStyle(0);
@@ -164,7 +186,7 @@ void xsecPlot( TCanvas * myCanv, TChain* myChain, Bool_t drawMu, const string su
       }
       //       graphpointnr +=1;
     }
-    if(lumiVsRun[run] != 0 && numLepVsRun[run] == 0 && (fitMean*lumiVsRun[run]) > 0.6 ) {
+    if(lumiVsRun[run] != 0 && numLepVsRun[run] == 0 && (fitMean*lumiVsRun[run]) > 0.8 ) {
       TEllipse *ellipse = new TEllipse(run, fitMean  ,1, ( sqrt( fitMean*lumiVsRun[run] )/lumiVsRun[run] ) ,0,360,0);
       ellipse->SetFillStyle(0);
       ellipse->SetLineColor(kOrange);
@@ -173,17 +195,20 @@ void xsecPlot( TCanvas * myCanv, TChain* myChain, Bool_t drawMu, const string su
       cout<<"NOLEP Run: "<<run<<" nLep expected "<<fitMean*lumiVsRun[run]<<" lumi "<<lumiVsRun[run]<<std::endl;
     }
   }
-  if(drawMu) {
+  if( drawThese.Contains("mus") ) {
     myCanv->SaveAs((dir+"MuXsecNew"+suffix).c_str());
   }
-  else if(drawEl) {
+  else if( drawThese.Contains("els") ) {
     myCanv->SaveAs((dir+"ElXsecNew"+suffix).c_str());
+  }
+  else if( drawThese.Contains("jets") ) {
+    myCanv->SaveAs((dir+"JetXsecNew"+suffix).c_str());
   }
 }
 
 
 void plotEl(void){
-	gSystem->Load("../Tools/MiniFWLite/libMiniFWLite.so");
+  //	gSystem->Load("../Tools/MiniFWLite/libMiniFWLite.so");
   gROOT->SetStyle("Plain");
   gStyle->SetHistFillColor(kRed);
   gStyle->SetHistMinimumZero();
@@ -413,7 +438,7 @@ void plotEl(void){
     el2_d0corr->Draw();
     c2->cd(8);
     el2_Iso->Draw();
-    c1->SaveAs((dir+"compare_el_N_do_iso"+suffix).c_str());
+    c2->SaveAs((dir+"compare_el_N_do_iso"+suffix).c_str());
 
     TCanvas *c3 = new TCanvas();
     c3->SetWindowSize(1100,900);
@@ -426,7 +451,7 @@ void plotEl(void){
     el1_phi_d0->ProfileX()->Draw();
     c3->cd(4);
     el2_phi_d0->ProfileX()->Draw();
-    c1->SaveAs((dir+"compare_el_2dkin"+suffix).c_str());
+    c3->SaveAs((dir+"compare_el_2dkin"+suffix).c_str());
 
     TCanvas *c4 = new TCanvas();
     c4->SetWindowSize(1100,850);
@@ -443,7 +468,7 @@ void plotEl(void){
     el2_pfmet->Draw();
     c4->cd(6)->SetLogy();
     el2_tcmet->Draw();
-    c1->SaveAs((dir+"compare_el_met"+suffix).c_str());
+    c4->SaveAs((dir+"compare_el_met"+suffix).c_str());
 
     TCanvas *c5 = new TCanvas();
     c5->SetWindowSize(1100,850);
@@ -460,7 +485,7 @@ void plotEl(void){
     el2_pfmetphi->Draw();
     c5->cd(6);
     el2_tcmetphi->Draw();
-    c1->SaveAs((dir+"compare_el_metphi"+suffix).c_str());
+    c5->SaveAs((dir+"compare_el_metphi"+suffix).c_str());
 
     TCanvas *c = new TCanvas();
     c->SetWindowSize(1100,850);
@@ -477,7 +502,7 @@ void plotEl(void){
     el2_Npfjets->Draw();
     c->cd(6);
     el2_Ntrkjets->Draw();
-    c1->SaveAs((dir+"compare_el_jet"+suffix).c_str());
+    c->SaveAs((dir+"compare_el_jet"+suffix).c_str());
 
     TCanvas *c6 = new TCanvas();
     c6->SetWindowSize(1100,850);
@@ -494,7 +519,7 @@ void plotEl(void){
     el2_jets_eta->Draw();
     c6->cd(6);
     el2_jets_phi->Draw();
-    c1->SaveAs((dir+"compare_el_cljetkin"+suffix).c_str());
+    c6->SaveAs((dir+"compare_el_cljetkin"+suffix).c_str());
 
     TCanvas *c7 = new TCanvas();
     c7->SetWindowSize(1100,850);
@@ -511,7 +536,7 @@ void plotEl(void){
     el2_pfjets_eta->Draw();
     c7->cd(6);
     el2_pfjets_phi->Draw();
-    c1->SaveAs((dir+"compare_el_pfjetkin"+suffix).c_str());
+    c7->SaveAs((dir+"compare_el_pfjetkin"+suffix).c_str());
 
     TCanvas *c8 = new TCanvas();
     c8->SetWindowSize(1100,850);
@@ -528,16 +553,28 @@ void plotEl(void){
     el2_trkjets_eta->Draw();
     c8->cd(6);
     el2_trkjets_phi->Draw();
-    c1->SaveAs((dir+"compare_el_tkjetkin"+suffix).c_str());
+    c8->SaveAs((dir+"compare_el_tkjetkin"+suffix).c_str());
 
   }
 
   // Now for the "lepton cross section" plots:
-  TCanvas *c9 = new TCanvas();
+//   TCanvas *c9 = new TCanvas();
+//   //plot reference chain
+//   xsecPlot(c9, chain1, false, suffix, dir);
+//   //plot new chain
+//   TCanvas *c10 = new TCanvas();
+//   xsecPlot(c10, chain2, false, suffix, dir);
+
+   // Now for the "lepton cross section" plots:
   //plot reference chain
-  xsecPlot(c9, chain1, false, suffix, dir);
+  TCanvas *c9 = new TCanvas();
+  xsecPlot(c9, chain1, "els", suffix, dir);
+  
   //plot new chain
   TCanvas *c10 = new TCanvas();
-  xsecPlot(c10, chain2, false, suffix, dir);
- 
+  xsecPlot(c10, chain1, "els", suffix, dir);
+  
+  // temporarily try out jets here
+  TCanvas *c11 = new TCanvas();
+  xsecPlot(c11, chain1, "jets", suffix, dir);
 }

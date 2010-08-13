@@ -3,6 +3,7 @@
 
 #include "TFile.h"
 #include "TTree.h"
+#include "Math/LorentzVector.h"
 
 class myBabyMaker
 {
@@ -21,6 +22,9 @@ public:
   vector<int> doMuons();
   void doJets();
   void doMet();
+
+  typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
+
   vector<LorentzVector> CleanJets(const vector<LorentzVector> vect_p4_jets,
 								  const vector<int> elidxs,
 								  const vector<int> muidxs,
@@ -82,6 +86,10 @@ private:
   vector<LorentzVector> pfjets_;
   vector<LorentzVector> trkjets_;
   //vector<LorentzVector> hypjets_;
+  vector<float> jetspx_;
+  vector<float> jetspy_;
+  vector<float> jetspz_;
+  vector<float> jetsE_;
 
   // floats--met (no vectors)
   Float_t clmet_;
