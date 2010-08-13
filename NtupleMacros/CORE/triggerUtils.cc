@@ -17,33 +17,36 @@
 //        use Photon10 and we tighten the pt threshold)
 //--------------------------------------------------
 bool goodEGTrigger5July2010 (bool mc) {
+  const bool quiet = true;
   if (mc) {
  
-   int e10 = nHLTObjects("HLT_Ele10_LW_L1R");
+   int e10 = nHLTObjects("HLT_Ele10_LW_L1R", quiet);
     if (e10 != 0) return true;
 
-    int p10 = nHLTObjects("HLT_Photon10_L1R");
+    int p10 = nHLTObjects("HLT_Photon10_L1R", quiet);
     for (int i=0; i<p10; i++) {
       LorentzVector v = p4HLTObject("HLT_Photon10_L1R", i);
       if (v.pt() > 15.) return true;
     }
  
   } else {  // data now
-    int e10 = nHLTObjects("HLT_Ele10_LW_L1R");
+    int e10 = nHLTObjects("HLT_Ele10_LW_L1R", quiet);
     if (e10 != 0) return true;
 
-    int p10 = nHLTObjects("HLT_Photon10_L1R");
+    int p10 = nHLTObjects("HLT_Photon10_L1R", quiet);
     if (p10 != 0) return true;
 
-    p10 = nHLTObjects("HLT_Photon10_Cleaned_L1R");
+    p10 = nHLTObjects("HLT_Photon10_Cleaned_L1R", quiet);
     if (p10 != 0) return true;
 
-    int p15 = nHLTObjects("HLT_Photon15_L1R");
+    int p15 = nHLTObjects("HLT_Photon15_L1R", quiet);
     if (p15 != 0) return true;
 
-    p15 = nHLTObjects("HLT_Photon15_Cleaned_L1R");
+    p15 = nHLTObjects("HLT_Photon15_Cleaned_L1R", quiet);
     if (p15 != 0) return true;
 
+    int e15 = nHLTObjects("HLT_Ele15_LW_L1R", quiet);
+    if(e15 != 0) return true;
  
   }
   return false;
@@ -90,7 +93,7 @@ LorentzVector p4HLTObject(const char* arg, int objNumber){
 // Returns zero if the trigger failed
 // Returns -1 if the trigger passed but no onjects were found
 //--------------------------------------------------------
-int nHLTObjects(const char* arg ){
+int nHLTObjects(const char* arg, bool quiet){
 
   // put the trigger name into a string
   TString HLTTrigger( arg );
@@ -108,8 +111,9 @@ int nHLTObjects(const char* arg ){
     //cout << "nHLTObjects: Found Trigger: " << arg << endl;
   }
   else {
-    cout << "nHLTObjects: Cannot find Trigger " << arg << endl;
-    return 0;
+       if (not quiet)
+	    cout << "nHLTObjects: Cannot find Trigger " << arg << endl;
+       return 0;
   }
 
   int nobj = 0;
