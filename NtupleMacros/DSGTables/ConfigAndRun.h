@@ -50,9 +50,9 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
      Looper looper_we		(fWe()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS )) looper_we	        .Loop();
      Looper looper_wmu		(fWmu()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS )) looper_wmu	        .Loop();
      Looper looper_wtau		(fWtau()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_WJETS )) looper_wtau        .Loop();
-     Looper looper_dyee		(fZeejets()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DY  )) looper_dyee        .Loop();
-     Looper looper_dymm		(fZmmjets()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DY  )) looper_dymm        .Loop();
-     Looper looper_dytt		(fZttjets()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DY  )) looper_dytt        .Loop();
+     Looper looper_dyee		(fZee()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DY  )) looper_dyee        .Loop();
+     Looper looper_dymm		(fZmm()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DY  )) looper_dymm        .Loop();
+     Looper looper_dytt		(fZtt()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_DY  )) looper_dytt        .Loop();
      Looper looper_ttbar	(fttbar()	, cuts, log.c_str());	if (which_ones & (1 << LOOP_TTBAR )) looper_ttbar       .Loop();
      Looper looper_tw		(ftW()		, cuts, log.c_str());	if (which_ones & (1 << LOOP_TW )) looper_tw       .Loop();
      Looper looper_data		(data		, cuts, log.c_str());	looper_data          .Loop();
@@ -86,10 +86,10 @@ template <class Looper> int run (cuts_t cuts, const string &name, uint32 which_o
      return 0;
 }
 
-// default yield table
+// default yield table, using everything but ttbar
 int Results ()
 {
-     return run<Looper>(baseline_cuts, "Results", 1 << LOOP_TTBAR);
+     return run<Looper>(baseline_cuts, "Results", ~(1 << LOOP_TTBAR));
 }
 
 void DSGDisplay ();
