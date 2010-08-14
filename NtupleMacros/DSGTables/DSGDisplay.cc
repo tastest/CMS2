@@ -66,7 +66,8 @@ static void printNumbers (int i, int j, int k, int l, enum layout ZJ, int whichB
       dataw2 += dsgs_[n_dsgs_ - 1]->w2s_[2][j][i][k][buckets[whichBucketGrouping][l][n]];
     }
   }
-  double sig = (data - sm) / sqrt(smw2 + dataw2);
+  const double sig = (data - sm) / sqrt(smw2 + dataw2);
+  const int data_ = int(rint(data));
   if (sig > 3)
     attron(COLOR_PAIR(1));
   mvprintw(3 + i * 25 + (l + 1) * 2,
@@ -74,7 +75,7 @@ static void printNumbers (int i, int j, int k, int l, enum layout ZJ, int whichB
 	   "%6.2f ", sm);
   mvprintw(4 + i * 25 + (l + 1) * 2,
 	   10 + j * 50 + (k + 1) * 10,
-	   "%6.2f", data);
+	   "%3d   ", data_);
   if (sig > 3)
     attroff(COLOR_PAIR(1));
 }
@@ -206,7 +207,7 @@ void printTable(enum layout ZJ, int whichBucketGrouping)
 
 static void printSWs (int i_sw_)
 {
-     mvprintw(1, 200, "SEARCH WINDOWS");
+     mvprintw(0, 255, "SEARCH WINDOWS");
      for (int i_sw = 0; i_sw < dsgs_[0]->search_windows_.size(); ++i_sw) {
 	  double sm = 0;
 	  double smw2 = 0;
@@ -219,13 +220,13 @@ static void printSWs (int i_sw_)
 	  data += dsgs_[n_dsgs_ - 1]->search_windows_[i_sw]->events_;
 	  dataw2 += dsgs_[n_dsgs_ - 1]->search_windows_[i_sw]->w2s_;
 	  double sig = (data - sm) / sqrt(dataw2 + smw2);
-	  mvprintw(8 + i_sw * 10, 200, "%s", dsgs_[0]->search_windows_[i_sw]->name_.c_str());
+	  mvprintw(5 + i_sw * 5, 255, "%s", dsgs_[0]->search_windows_[i_sw]->name_.c_str());
 	  if (i_sw == i_sw_)
 	       attron(A_REVERSE);
 	  if (sig > 3)
 	       attron(COLOR_PAIR(1));
-	  mvprintw(10 + i_sw * 10, 200, "%6.2f", sm);
-	  mvprintw(11 + i_sw * 10, 200, "%6.2f", data);
+	  mvprintw(7 + i_sw * 5, 255, "%6.2f", sm);
+	  mvprintw(8 + i_sw * 5, 255, "%3d  ", data);
 	  if (sig > 3)
 	       attroff(COLOR_PAIR(1));
 	  if (i_sw == i_sw_)
@@ -261,21 +262,22 @@ void DSGDisplay ()
      keypad(stdscr, TRUE);            /* We get F1, F2 etc..          */
      noecho();                        /* Don't echo() while we do getch */
      // get the file with the tables
-     TFile *f = TFile::Open("Results.root", "read");
-     assert(f != 0);
-     DSGTable *dsg_vv 		= dynamic_cast<DSGTable *>(f->Get("vv"));
-//      DSGTable *dsg_wz   	= dynamic_cast<DSGTable *>(f->Get("wz"));
-//      DSGTable *dsg_zz   	= dynamic_cast<DSGTable *>(f->Get("zz"));
-     DSGTable *dsg_we  		= dynamic_cast<DSGTable *>(f->Get("we"));
-     DSGTable *dsg_wmu 		= dynamic_cast<DSGTable *>(f->Get("wmu"));
-     DSGTable *dsg_wtau		= dynamic_cast<DSGTable *>(f->Get("wtau"));
-     DSGTable *dsg_zee 	= dynamic_cast<DSGTable *>(f->Get("zeejets"));
-     DSGTable *dsg_zmm 	= dynamic_cast<DSGTable *>(f->Get("zmmjets"));
-     DSGTable *dsg_ztt 	= dynamic_cast<DSGTable *>(f->Get("zttjets"));
-     DSGTable *dsg_ttbar	= dynamic_cast<DSGTable *>(f->Get("ttbar"));
-     DSGTable *dsg_tw	= dynamic_cast<DSGTable *>(f->Get("tw"));
-//      DSGTable *dsg_tw   	= dynamic_cast<DSGTable *>(f->Get("tw"));
-     DSGTable *dsg_data 	= dynamic_cast<DSGTable *>(f->Get("data"));
+     TFile *f_mc = TFile::Open("Results_mc.root", "read");
+     assert(f_mc != 0);
+     DSGTable *dsg_vv 		= dynamic_cast<DSGTable *>(f_mc->Get("vv"));
+//      DSGTable *dsg_wz   	= dynamic_cast<DSGTable *>(f_mc->Get("wz"));
+//      DSGTable *dsg_zz   	= dynamic_cast<DSGTable *>(f_mc->Get("zz"));
+     DSGTable *dsg_we  		= dynamic_cast<DSGTable *>(f_mc->Get("we"));
+     DSGTable *dsg_wmu 		= dynamic_cast<DSGTable *>(f_mc->Get("wmu"));
+     DSGTable *dsg_wtau		= dynamic_cast<DSGTable *>(f_mc->Get("wtau"));
+     DSGTable *dsg_zee 	= dynamic_cast<DSGTable *>(f_mc->Get("zee"));
+     DSGTable *dsg_zmm 	= dynamic_cast<DSGTable *>(f_mc->Get("zmm"));
+     DSGTable *dsg_ztt 	= dynamic_cast<DSGTable *>(f_mc->Get("ztt"));
+     DSGTable *dsg_ttbar	= dynamic_cast<DSGTable *>(f_mc->Get("ttbar"));
+     DSGTable *dsg_tw	= dynamic_cast<DSGTable *>(f_mc->Get("tw"));
+     TFile *f_data = TFile::Open("Results_data.root", "read");
+     assert(f_data != 0);
+     DSGTable *dsg_data 	= dynamic_cast<DSGTable *>(f_data->Get("data"));
      DSGTable *dsgs[] = { 
 // 	  dsg_ww          ,
 //  	  dsg_wz          ,
@@ -288,32 +290,41 @@ void DSGDisplay ()
  	  dsg_zmm        ,
  	  dsg_ztt        ,
  	  dsg_ttbar       ,
- 	  dsg_tw          ,
+// 	  dsg_tw          ,
   	  dsg_data        ,
      };
+//      assert(dsg_data->chunks_of_runs_.size() == 1);
+//      const double lumi = dsg_data->chunks_of_runs_[0].lumi_ * 1e-9; // 1/microbarn to 1/fb
+//      printf("min max lum lumi = %d %d %f\n",
+// 	    dsg_data->chunks_of_runs_[0].min_run_,
+// 	    dsg_data->chunks_of_runs_[0].max_run_, lumi); exit(0);
+     const double lumi = dsg_data->lumi_ * 1e-9; // 1/microbarn to 1/fb
+//      printf("min max lum lumi = %d %d %f\n",
+// 	    dsg_data->min_run_,
+// 	    dsg_data->max_run_, lumi); exit(0);
      const int n_dsgs = sizeof(dsgs) / sizeof(DSGTable *);
      dsgs_ = dsgs;
      n_dsgs_ = n_dsgs;
      for (int i = 0; i < n_dsgs - 1; ++i) {
-//	  *dsgs[i] *= 254e-6;
+	  *dsgs[i] *= lumi;
      }
 
      // make a placeholder array to be used for search window tables
      DSGTable *dsgs_sw[n_dsgs];
 
      // set up subtractions
-     DSGTable *dsg_ww_emu 		= dynamic_cast<DSGTable *>(f->Get("ww_emu"));
-     DSGTable *dsg_wz_emu   	= dynamic_cast<DSGTable *>(f->Get("wz_emu"));
-     DSGTable *dsg_zz_emu   	= dynamic_cast<DSGTable *>(f->Get("zz_emu"));
-     DSGTable *dsg_we_emu  		= dynamic_cast<DSGTable *>(f->Get("we_emu"));
-     DSGTable *dsg_wmu_emu 		= dynamic_cast<DSGTable *>(f->Get("wmu_emu"));
-     DSGTable *dsg_wtau_emu		= dynamic_cast<DSGTable *>(f->Get("wtau_emu"));
-     DSGTable *dsg_zee_emu 	= dynamic_cast<DSGTable *>(f->Get("zee_emu"));
-     DSGTable *dsg_zmm_emu 	= dynamic_cast<DSGTable *>(f->Get("zmm_emu"));
-     DSGTable *dsg_ztt_emu 	= dynamic_cast<DSGTable *>(f->Get("ztt_emu"));
-     DSGTable *dsg_ttbar_emu	= dynamic_cast<DSGTable *>(f->Get("ttbar_emu"));
-//      DSGTable *dsg_tw_emu   	= dynamic_cast<DSGTable *>(f->Get("tw_emu"));
-     DSGTable *dsg_data_emu 	= dynamic_cast<DSGTable *>(f->Get("data_emu"));
+     DSGTable *dsg_ww_emu 		= dynamic_cast<DSGTable *>(f_mc->Get("ww_emu"));
+     DSGTable *dsg_wz_emu   	= dynamic_cast<DSGTable *>(f_mc->Get("wz_emu"));
+     DSGTable *dsg_zz_emu   	= dynamic_cast<DSGTable *>(f_mc->Get("zz_emu"));
+     DSGTable *dsg_we_emu  		= dynamic_cast<DSGTable *>(f_mc->Get("we_emu"));
+     DSGTable *dsg_wmu_emu 		= dynamic_cast<DSGTable *>(f_mc->Get("wmu_emu"));
+     DSGTable *dsg_wtau_emu		= dynamic_cast<DSGTable *>(f_mc->Get("wtau_emu"));
+     DSGTable *dsg_zee_emu 	= dynamic_cast<DSGTable *>(f_mc->Get("zee_emu"));
+     DSGTable *dsg_zmm_emu 	= dynamic_cast<DSGTable *>(f_mc->Get("zmm_emu"));
+     DSGTable *dsg_ztt_emu 	= dynamic_cast<DSGTable *>(f_mc->Get("ztt_emu"));
+     DSGTable *dsg_ttbar_emu	= dynamic_cast<DSGTable *>(f_mc->Get("ttbar_emu"));
+     DSGTable *dsg_tw_emu   	= dynamic_cast<DSGTable *>(f_mc->Get("tw_emu"));
+     DSGTable *dsg_data_emu 	= dynamic_cast<DSGTable *>(f_data->Get("data_emu"));
      DSGTable *dsgs_emu[] = { 
 	  dsg_ww_emu          ,
  	  dsg_wz_emu          ,
@@ -324,7 +335,7 @@ void DSGDisplay ()
  	  dsg_zee_emu        ,
  	  dsg_zmm_emu        ,
  	  dsg_ztt_emu        ,
- 	  dsg_ttbar_emu       ,
+	  dsg_ttbar_emu       ,
 // 	  dsg_tw_emu          ,
   	  dsg_data_emu        ,
      };
@@ -526,7 +537,7 @@ void DSGDisplay ()
 	  refresh();
      } 
      endwin(); 
-     exit(0);
+//     exit(0);
      return;
 }
 
