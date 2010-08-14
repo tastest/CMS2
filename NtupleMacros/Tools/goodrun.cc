@@ -1,4 +1,4 @@
-// $Id: goodrun.cc,v 1.7 2010/07/30 13:04:52 jmuelmen Exp $
+// $Id: goodrun.cc,v 1.8 2010/08/14 20:07:26 jmuelmen Exp $
 
 // CINT is allowed to see this, but nothing else:
 bool goodrun (unsigned int run, unsigned int lumi_block);
@@ -213,6 +213,28 @@ bool goodrun (unsigned int run, unsigned int lumi_block)
 	  }
      }
      return false;
+}
+
+int min_run ()
+{
+     if (not good_runs_loaded_)
+	  return -1;
+     set_t::const_iterator first = good_runs_.begin();
+     if (first != good_runs_.end())
+	  return first->run;
+     return -1;
+}
+
+int max_run ()
+{
+     if (not good_runs_loaded_)
+	  return -1;
+     set_t::const_iterator last = good_runs_.end();
+     if (last != good_runs_.begin()) {
+	  last--;
+	  return last->run;
+     }
+     return -1;
 }
 
 bool goodrun_json (unsigned int run, unsigned int lumi_block)
