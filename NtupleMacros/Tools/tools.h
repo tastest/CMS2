@@ -67,7 +67,10 @@ void saveHist(const char* filename, const char* pat="*");
 
 double correctd0Phi(int trk_idx);
 
+void set_goodrun_file (const char *filename);
 bool goodrun (unsigned int run, unsigned int lumi_block);
+int min_run (); // lowest run number in good run list
+int max_run (); // highest run number in good run list
 
 extern class TDirectory *histo_directory;
 #endif
