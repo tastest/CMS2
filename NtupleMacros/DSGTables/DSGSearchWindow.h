@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// $Id: DSGSearchWindow.h,v 1.1 2010/07/29 11:54:27 jmuelmen Exp $
+// $Id: DSGSearchWindow.h,v 1.2 2010/08/14 20:10:32 jmuelmen Exp $
 
 #ifndef DSGSEARCHWINDOW_H
 #define DSGSEARCHWINDOW_H
@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include "TNamed.h"
+#include "TH1.h"
 #include "Tools/Sample.h"
 
 class TH1F;
@@ -44,6 +45,7 @@ public:
 	  {
 
 	  }
+     DSGSearchWindow &operator *= (double scale);
      void 	SetH (TH1F *h) 
 	  {
 	       h_ = h;
