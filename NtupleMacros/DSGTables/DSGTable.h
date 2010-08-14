@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// $Id: DSGTable.h,v 1.8 2010/08/08 17:10:08 jmuelmen Exp $
+// $Id: DSGTable.h,v 1.9 2010/08/14 20:11:03 jmuelmen Exp $
 
 #ifndef DSGTABLE_H
 #define DSGTABLE_H
@@ -117,7 +117,7 @@ public:
 	       w2s_[zcat][metcat][sumjetcat][jetcat][bucket] += weight * weight;
 	       return events_[zcat][metcat][sumjetcat][jetcat][bucket] += weight;
 	  }
-     const DSGTable &operator *= (double scale)
+     DSGTable &operator *= (double scale)
 	  {
 	       for (int i = 0; i <= nZcat; ++i) {
 		    for (int j = 0; j < nMETcat; ++j) {
@@ -137,6 +137,9 @@ public:
 			 }
 		    }
 		    }
+	       }
+	       for (unsigned int i = 0; i < search_windows_.size(); ++i) {
+		    *search_windows_[i] *= scale;
 	       }
 	       return *this;
 	  }
@@ -164,6 +167,23 @@ public:
      TH1F		*hmaxleppt_ [nZcat + 1   ][nMETcat ][nSumJetcat][nJetcat ][nBuckets];
      TH1F		*hlepdphi_  [nZcat + 1   ][nMETcat ][nSumJetcat][nJetcat ][nBuckets];
      sw_t		search_windows_;
+
+public:
+//      struct chunk_of_runs {
+	  int		min_run_;
+	  int		max_run_;
+	  double 	lumi_;
+//      };
+//      std::vector<chunk_of_runs> chunks_of_runs_;
+     void	SetMinMaxLumi (int min, int max, double lumi) 
+	  {
+// 	       chunk_of_runs chunk = { min, max, lumi };
+// 	       chunks_of_runs_.clear();
+// 	       chunks_of_runs_.push_back(chunk);
+	       min_run_ = min;
+	       max_run_ = max;
+	       lumi_ = lumi;
+	  }
 
 public:
      ClassDef(DSGTable, 1)
