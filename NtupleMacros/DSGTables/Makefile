@@ -1,8 +1,10 @@
-# $Id: Makefile,v 1.3 2010/07/29 11:54:12 jmuelmen Exp $
+# $Id: Makefile,v 1.4 2010/08/14 20:09:01 jmuelmen Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
 CFLAGS = -Wall -g -O0 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS) -DTOOLSLIB
+TXT2JSON = ./convertGoodRunsToJSON.py
+JSON2LUMI = ${CMSSW_BASE}/src/RecoLuminosity/LumiDB/scripts/lumiCalc.py
 
 LINKER = g++
 LINKERFLAGS = $(shell root-config --ldflags)
@@ -28,7 +30,17 @@ LIBS = $(CORELIB) $(TOOLSLIB) $(LOOPERLIB)
 TABLES = Results.tbl
 
 .PHONY: all
-all:	$(LIBS) 
+all:	check_env $(LIBS) 
+
+.PHONY: check_env
+check_env:
+	if [ -z $(CMS2_LOCATION) ] ; then echo "first set CMS2_LOCATION" ; exit 1 ; fi
+
+.PHONY: check_env_data
+check_env_data:
+	if [ -z $(DATA) ] ; then echo "first set DATA" ; exit 1 ; fi
+	if ! [ -e $(DATA) ] ; then echo "data file \"$(DATA)\" does not exist" ; exit 1 ; fi
+	if [ -z $(GOODRUN) ] ; then echo "first set GOODRUN" ; exit 1 ; fi
 
 .PHONY: libs
 libs:	$(LIBS)
@@ -59,18 +71,31 @@ linkdef_out.cxx: linkdef.h ConfigAndRun.h DSGTable.h DSGSearchWindow.h
 %.o: 	%.cxx
 	$(CC) $(CFLAGS) $< -c -o $@
 
+# General rule for making JSONs from good-run lists
+%.json:	%.txt
+	$(TXT2JSON) $< > $@ || rm -f $@
+
+# General rule for calculating lumi from json
+%.lumi:	%.json
+	$(JSON2LUMI) --nowarning -c frontier://LumiProd/CMS_LUMI_PROD -i $< overview 2>&1 > $@ || rm -f $@
+
 .PHONY: clean
 clean:  
 	rm -f ${CMS2_LOCATION}/NtupleMacros/Tools/*.o ${CMS2_LOCATION}/NtupleMacros/Tools/*.d $(TOOLSLIB) \
 		${CMS2_LOCATION}/NtupleMacros/CORE/*.o ${CMS2_LOCATION}/NtupleMacros/CORE/*.d $(CORELIB) \
-		*.o *.d linkdef_out.* $(LOOPERLIB) \
-		$(TABLES) 
+		*.o *.d linkdef_out.* $(LOOPERLIB) Results*
 
 # how to make tables
 $(TABLES): $(LIBS)
 
 %.tbl %.root %.log:	$(LIBS)
 	echo $(@:.tbl=)"()" | root.exe -b setup.C
+
+.PHONY: data
+data:	check_env_data $(LIBS) $(GOODRUN) $(GOODRUN:.txt=.lumi)
+	export LUMI=`grep -A 5 Total $(GOODRUN:.txt=.lumi) | tail -2 | awk -F \| '{print $$5}' `; \
+	echo got $(LIBS), $(DATA), $(GOODRUN), $(GOODRUN:.txt=.lumi), lumi is $${LUMI}; \
+	echo "Results_data()" | root.exe -b setup.C
 
 -include $(TOOLSSOURCES:.cc=.d)
 -include $(CORESOURCES:.cc=.d)
