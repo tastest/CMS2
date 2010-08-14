@@ -60,9 +60,11 @@ void Looper::BookHistos ()
      highPtZ->SetH(new TH1F(Form("highPtZ%s", sample_.name.c_str()), "highPtZ", 10, 0, 500));
      highPtZ->dsgTable_ = new DSGTable(highPtZ->s_);
      dsgTable.search_windows_.push_back(highPtZ); 
-     DSGSearchWindow *nonIsoHighPtMu = new DSGSearchWindow(sample_, "nonIsoHighPtMu");
-     nonIsoHighPtMu->SetH(new TH1F(Form("nonIsoHighPtMu%s", sample_.name.c_str()), "nonIsoHighPtMu", 10, 0, 500));
-     dsgTable.search_windows_.push_back(nonIsoHighPtMu);
+     DSGSearchWindow *ZplusDijet = new DSGSearchWindow(sample_, "ZplusDijet");
+     ZplusDijet->SetH(new TH1F(Form("ZplusDijet%s", sample_.name.c_str()), "ZplusDijet;dijet mass", 200, 0, 2000));
+     ZplusDijet->dsgTable_ = new DSGTable(ZplusDijet->s_);
+     dsgTable.search_windows_.push_back(ZplusDijet);
+     
 }
 
 bool Looper::FilterEvent()
@@ -249,13 +251,14 @@ void Looper::FillDilepHistos (int i_hyp)
 	       hypos_total_n_[myType]++;
 	  }
      }
+     // high-pt Z search window
      const cuts_t cuts_no_iso = cuts_ & ~(CUT_BIT(CUT_LT_CALOISO) | CUT_BIT(CUT_LL_CALOISO));
      if ((cuts_passed & cuts_no_iso) == cuts_no_iso) {
 	  // even if we fail iso, we still look for a Z
 	  if ((myType == DILEPTON_EE || myType == DILEPTON_MUMU) && // ee or mu mu 
 	      cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] < 0 && // opposite charge
 	      inZmassWindow(sqrt_(cms2.hyp_p4()[i_hyp].M2())) && // in Z mass window
-	      cms2.hyp_p4()[i_hyp].pt() > 100 &&
+	      cms2.hyp_p4()[i_hyp].pt() > 50 &&
 	      (cms2.hyp_lt_ecaliso()[i_hyp] + cms2.hyp_lt_trkiso()[i_hyp]) / cms2.hyp_lt_p4()[i_hyp].pt() < 0.1 &&
 	      (cms2.hyp_ll_ecaliso()[i_hyp] + cms2.hyp_ll_trkiso()[i_hyp]) / cms2.hyp_ll_p4()[i_hyp].pt() < 0.1) {
 	       DSGSearchWindow *highPtZ = dsgTable.search_windows_[0];
@@ -264,6 +267,28 @@ void Looper::FillDilepHistos (int i_hyp)
 	       FillDSGTable(*highPtZ->dsgTable_, i_hyp);
 	  }
      }
+     // Z + dijet search window
+     if ((cuts_passed & cuts_) == cuts_) {
+	  if ((myType == DILEPTON_EE || myType == DILEPTON_MUMU) && // ee or mu mu 
+	      cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] < 0 && // opposite charge
+	      inZmassWindow(sqrt_(cms2.hyp_p4()[i_hyp].M2()))) { // in Z mass window
+	       double max_dijet_mass = -1;
+	       std::vector<LorentzVector> jets = getJets(i_hyp);
+	       for (int i = 0; i < jets.size(); ++i) {
+		    for (int j = 0; j < i; ++j) {
+			 double m = sqrt_((jets[i] + jets[j]).M2());
+			 if (m > max_dijet_mass)
+			      max_dijet_mass = m;
+		    }
+	       }
+	       if (jets.size() >= 2 && max_dijet_mass > 200) {
+		    DSGSearchWindow *ZplusDijet = dsgTable.search_windows_[1];
+		    ZplusDijet->Increment(max_dijet_mass, weight);
+		    FillDSGTable(*ZplusDijet->dsgTable_, i_hyp);
+	       }
+	  }
+     }
+	  
 }     
 
 int Looper::Zcat (int i_hyp) const
@@ -495,5 +520,14 @@ void Looper::End()
      for (int i = 0; i < 4; ++i) {
 	  std::cout << "hyp " << i << ": "  << hypos_total_n_[i] << " (" << hypos_total_weight_[i] << ")" << std::endl;
      }
+}
+
+DSGSearchWindow &DSGSearchWindow::operator *= (double scale)
+{
+     events_ *= scale;
+     w2s_ *= scale * scale;
+     h_->Scale(scale);
+     *dsgTable_ *= scale;
+     return *this;
 }
 
