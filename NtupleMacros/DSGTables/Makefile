@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.4 2010/08/14 20:09:01 jmuelmen Exp $
+# $Id: Makefile,v 1.5 2010/08/15 18:44:30 jmuelmen Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
@@ -39,7 +39,7 @@ check_env:
 .PHONY: check_env_data
 check_env_data:
 	if [ -z $(DATA) ] ; then echo "first set DATA" ; exit 1 ; fi
-	if ! [ -e $(DATA) ] ; then echo "data file \"$(DATA)\" does not exist" ; exit 1 ; fi
+	for i in `ls $(DATA)` ; do if ! [ -e $$i ] ; then echo "data file \"$$i\" does not exist" ; exit 1 ; fi ; done
 	if [ -z $(GOODRUN) ] ; then echo "first set GOODRUN" ; exit 1 ; fi
 
 .PHONY: libs
