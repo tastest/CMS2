@@ -320,17 +320,25 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         }
         
         // Fill electron & photon triggers
-        pair<int, float> pair_el10    = TriggerMatch( els_p4().at(iEl), "HLT_Ele10_LW_L1R");
-        pair<int, float> pair_el10id  = TriggerMatch( els_p4().at(iEl), "HLT_Ele10_SW_EleId_L1R");
-        pair<int, float> pair_el15    = TriggerMatch( els_p4().at(iEl), "HLT_Ele15_LW_L1R");
-        pair<int, float> pair_el15id  = TriggerMatch( els_p4().at(iEl), "HLT_Ele15_SW_EleId_L1R");
-        pair<int, float> pair_el15sw  = TriggerMatch( els_p4().at(iEl), "HLT_Ele15_SW_L1R");
-        pair<int, float> pair_el15cal = TriggerMatch( els_p4().at(iEl), "HLT_Ele15_SW_CaloEleId_L1R");
+        pair<int, float> pair_el10_lw     = TriggerMatch( els_p4().at(iEl), "HLT_Ele10_LW_L1R");
+        pair<int, float> pair_el10_sw     = TriggerMatch( els_p4().at(iEl), "HLT_Ele10_SW_L1R");
+
+        pair<int, float> pair_el10_lw_id  = TriggerMatch( els_p4().at(iEl), "HLT_Ele10_LW_EleId_L1R");
+        pair<int, float> pair_el10_sw_id  = TriggerMatch( els_p4().at(iEl), "HLT_Ele10_SW_EleId_L1R");
+
+        pair<int, float> pair_el15_lw     = TriggerMatch( els_p4().at(iEl), "HLT_Ele15_LW_L1R");
+        pair<int, float> pair_el15_sw     = TriggerMatch( els_p4().at(iEl), "HLT_Ele15_SW_L1R");
+
+        pair<int, float> pair_el15_lw_id  = TriggerMatch( els_p4().at(iEl), "HLT_Ele15_LW_EleId_L1R");
+        pair<int, float> pair_el15_sw_id  = TriggerMatch( els_p4().at(iEl), "HLT_Ele15_SW_EleId_L1R");
+
+        pair<int, float> pair_el15_sw_cid = TriggerMatch( els_p4().at(iEl), "HLT_Ele15_SW_CaloEleId_L1R");
 
         pair<int, float> pair_ph10    = TriggerMatch( els_p4().at(iEl), "HLT_Photon10_L1R");
         pair<int, float> pair_ph10C   = TriggerMatch( els_p4().at(iEl), "HLT_Photon10_Cleaned_L1R");
         pair<int, float> pair_ph15    = TriggerMatch( els_p4().at(iEl), "HLT_Photon15_L1R");
         pair<int, float> pair_ph15C   = TriggerMatch( els_p4().at(iEl), "HLT_Photon15_Cleaned_L1R");
+        pair<int, float> pair_ph20C   = TriggerMatch( els_p4().at(iEl), "HLT_Photon20_Cleaned_L1R");
 
         int   ph10    = max( pair_ph10.first, pair_ph10C.first );
         int   ph15    = max( pair_ph15.first, pair_ph15C.first );
@@ -338,25 +346,42 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         float drph15  = ( pair_ph15.first > pair_ph15C.first ? pair_ph15.second : pair_ph15C.second );
 
         // trigger matching
-        el10_     = pair_el10.first;
-        el10id_   = pair_el10id.first;
-        el15_     = pair_el15.first;
-        el15id_   = pair_el15id.first;
-        el15sw_   = pair_el15sw.first;
-        el15cal_  = pair_el15cal.first;
+        el10_lw_      = pair_el10_lw.first;
+        el10_sw_      = pair_el10_sw.first;
+
+        el10_lw_id_   = pair_el10_lw_id.first;
+        el10_sw_id_   = pair_el10_sw_id.first;
+
+        el15_lw_      = pair_el15_lw.first;
+        el15_sw_      = pair_el15_sw.first;
+
+        el15_lw_id_   = pair_el15_lw_id.first;
+        el15_sw_id_   = pair_el15_sw_id.first;
+
+        el15_sw_cid_  = pair_el15_sw_cid.first;
+
         ph10_     = ph10;
         ph15_     = ph15;
+        ph20_     = pair_ph20C.first;
 
         // dr between lepton and closest jet
-        drel10_     = pair_el10.second;
-        drel10id_   = pair_el10id.second;
-        drel15_     = pair_el15.second;
-        drel15id_   = pair_el15id.second;
-        drel15sw_   = pair_el15sw.second;
-        drel15cal_  = pair_el15cal.second;
+        drel10_lw_      = pair_el10_lw.second;
+        drel10_sw_      = pair_el10_sw.second;
+
+        drel10_lw_id_   = pair_el10_lw_id.second;
+        drel10_sw_id_   = pair_el10_sw_id.second;
+
+        drel15_lw_      = pair_el15_lw.second;
+        drel15_sw_      = pair_el15_sw.second;
+
+        drel15_lw_id_   = pair_el15_lw_id.second;
+        drel15_sw_id_   = pair_el15_sw_id.second;
+
+        drel15_sw_cid_  = pair_el15_sw_cid.second;
+
         drph10_     = drph10;
         drph15_     = drph15;
-
+        drph20_     = pair_ph20C.second;
 
 
         // Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
@@ -495,9 +520,12 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         
         // Now fill the muon trigger flags
         pair<int, float> pair_mu5 = TriggerMatch( mus_p4().at(iMu), "HLT_Mu5");
+        pair<int, float> pair_mu7 = TriggerMatch( mus_p4().at(iMu), "HLT_Mu7");
         pair<int, float> pair_mu9 = TriggerMatch( mus_p4().at(iMu), "HLT_Mu9");
         mu5_    = pair_mu5.first;
         drmu5_  = pair_mu5.second;
+        mu7_    = pair_mu7.first;
+        drmu7_  = pair_mu7.second;
         mu9_    = pair_mu9.first;
         drmu9_  = pair_mu9.second;
 
@@ -578,26 +606,46 @@ void myBabyMaker::InitBabyNtuple () {
   v1Aug9_  = false;
   v2Aug9_  = false;
   v3Aug9_  = false;
+
+  //
   ph10_ = 0;
   ph15_ = 0;
-  el10_ = 0;
-  el10id_ = 0;
-  el15_ = 0;
-  el15id_ = 0;
-  el15sw_ = 0;
-  el15cal_ = 0;
-  mu5_  = 0;
-  mu9_  = 0;
+  ph20_ = 0;
+  el10_lw_ = 0;
+  el10_sw_ = 0;
+  el10_lw_id_ = 0;
+  el10_sw_id_ = 0;
+  el15_lw_ = 0;
+  el15_sw_ = 0;
+  el15_lw_id_ = 0;
+  el15_sw_id_ = 0;
+  el15_sw_cid_ = 0;
+
+  //
   drph10_ = 99.;
   drph15_ = 99.;
-  drel10_ = 99.;
-  drel10id_ = 99.;
-  drel15_ = 99.;
-  drel15id_ = 99.;
-  drel15sw_ = 99.;
-  drel15cal_ = 99.;
+  drph20_ = 99.;
+  drel10_lw_ = 99.;
+  drel10_sw_ = 99.;
+  drel10_lw_id_ = 99.;
+  drel10_sw_id_ = 99.;
+  drel15_lw_ = 99.;
+  drel15_sw_ = 99.;
+  drel15_lw_id_ = 99.;
+  drel15_sw_id_ = 99.;
+  drel15_sw_cid_ = 99.;
+
+  //
+  mu5_  = 0;
+  mu7_  = 0;
+  mu9_  = 0;
+
+  //
   drmu5_  = 99.;
+  drmu7_  = 99.;
   drmu9_  = 99.;
+
+  //
   nbjet_  = 0;
   dRbNear_ = 99.;
   dRbFar_ = -99.;
@@ -659,26 +707,42 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("v3Aug9",         &v3Aug9_,        "v3Aug9/O"      );
     babyTree_->Branch("numAug9",         &numAug9_,        "numAug9/O"      );
 
+    //
     babyTree_->Branch("ph10",       &ph10_,       "ph10/I"      );
     babyTree_->Branch("ph15",       &ph15_,       "ph15/I"      );
-    babyTree_->Branch("el10",         &el10_,         "el10/I"      );
-    babyTree_->Branch("el10id",         &el10id_,         "el10id/I"      );
-    babyTree_->Branch("el15",         &el15_,         "el15/I"      );
-    babyTree_->Branch("el15id",         &el15id_,         "el15id/I"      );
+    babyTree_->Branch("ph20",       &ph20_,       "ph20/I"      );
+    babyTree_->Branch("el10_lw",         &el10_lw_,         "el10_lw/I"      );
+    babyTree_->Branch("el10_sw",         &el10_sw_,         "el10_sw/I"      );
+    babyTree_->Branch("el10_lw_id",         &el10_lw_id_,         "el10_lw_id/I"      );
+    babyTree_->Branch("el10_sw_id",         &el10_sw_id_,         "el10_sw_id/I"      );
+    babyTree_->Branch("el15_lw",         &el15_lw_,         "el15_lw/I"      );
+    babyTree_->Branch("el15_sw",         &el15_sw_,         "el15_sw/I"      );
+    babyTree_->Branch("el15_lw_id",         &el15_lw_id_,         "el15_lw_id/I"      );
+    babyTree_->Branch("el15_sw_id",         &el15_sw_id_,         "el15_sw_id/I"      );
+    babyTree_->Branch("el15_sw_cid",         &el15_sw_cid_,         "el15_sw_cid/I"      );
 
+    //
     babyTree_->Branch("drph10",       &drph10_,       "drph10/F"      );
     babyTree_->Branch("drph15",       &drph15_,       "drph15/F"      );
-    babyTree_->Branch("drel10",         &drel10_,         "drel10/F"      );
-    babyTree_->Branch("drel10id",         &drel10id_,         "drel10id/F"      );
-    babyTree_->Branch("drel15",         &drel15_,         "drel15/F"      );
-    babyTree_->Branch("drel15id",         &drel15id_,         "drel15id/F"      );
-    babyTree_->Branch("drel15sw",         &drel15sw_,         "drel15sw/F"      );
-    babyTree_->Branch("drel15cal",         &drel15cal_,         "drel15cal/F"      );
+    babyTree_->Branch("drph20",       &drph20_,       "drph20/F"      );
+    babyTree_->Branch("drel10_lw",         &drel10_lw_,         "drel10_lw/F"      );
+    babyTree_->Branch("drel10_sw",         &drel10_sw_,         "drel10_sw/F"      );
+    babyTree_->Branch("drel10_lw_id",         &drel10_lw_id_,         "drel10_lw_id/F"      );
+    babyTree_->Branch("drel10_sw_id",         &drel10_sw_id_,         "drel10_sw_id/F"      );
+    babyTree_->Branch("drel15_lw",         &drel15_lw_,         "drel15_lw/F"      );
+    babyTree_->Branch("drel15_sw",         &drel15_sw_,         "drel15_sw/F"      );
+    babyTree_->Branch("drel15_lw_id",         &drel15_lw_id_,         "drel15_lw_id/F"      );
+    babyTree_->Branch("drel15_sw_id",         &drel15_sw_id_,         "drel15_sw_id/F"      );
+    babyTree_->Branch("drel15_sw_cid",         &drel15_sw_cid_,         "drel15_sw_cid/F"      );
 
+    //
     babyTree_->Branch("mu9",       &mu9_,       "mu9/I"      );
+    babyTree_->Branch("mu7",       &mu7_,       "mu7/I"      );
     babyTree_->Branch("mu5",       &mu5_,       "mu5/I"      );
 
+    //
     babyTree_->Branch("drmu9",       &drmu9_,       "drmu9/F"      );
+    babyTree_->Branch("drmu7",       &drmu7_,       "drmu7/F"      );
     babyTree_->Branch("drmu5",       &drmu5_,       "drmu5/F"      );
 
     babyTree_->Branch("nbjet",       &nbjet_,       "nbjet/I"      );

@@ -81,31 +81,50 @@ class myBabyMaker
 	// 0=fail 1="pass but no match" 2="pass and matched" -1="pass but egamm trg obj missing"
 	Int_t ph10_;    // HLT_Photon10_L1R or HLT_Photon10_Cleaned_L1R
 	Int_t ph15_;    // HLT_Photon15_L1R or HLT_Photon15_Cleaned_L1R
+	Int_t ph20_;    // HLT_Photon20_Cleaned_L1R
 
-	Int_t el10_;    // HLT_Ele10_LW_L1R
-	Int_t el10id_;  // HLT_Ele10_SW_EleId_L1R
-	Int_t el15_;    // HLT_Ele15_LW_L1R
-	Int_t el15id_;  // HLT_Ele15_SW_EleId_L1R
-	Int_t el15sw_;  // HLT_Ele15_SW_L1R
-	Int_t el15cal_; // HLT_Ele15_SW_CaloEleId_L1R
+	Int_t el10_lw_;    // HLT_Ele10_LW_L1R
+	Int_t el10_sw_;    // HLT_Ele10_SW_L1R
+
+	Int_t el10_lw_id_; // HLT_Ele10_LW_EleId_L1R
+	Int_t el10_sw_id_; // HLT_Ele10_SW_EleId_L1R
+
+	Int_t el15_lw_;    // HLT_Ele15_LW_L1R
+	Int_t el15_sw_;    // HLT_Ele15_SW_L1R
+
+	Int_t el15_lw_id_; // HLT_Ele15_LW_EleId_L1R
+	Int_t el15_sw_id_; // HLT_Ele15_SW_EleId_L1R
+
+	Int_t el15_sw_cid_; // HLT_Ele15_SW_CaloEleId_L1R
 
 	// What muon trigger did it pass
 	// 0=fail 1="pass but no match" 2="pass and matched" -1="pass but muon trg obj missing"
 	Int_t mu9_; // HLT_Mu9
+	Int_t mu7_; // HLT_Mu7
 	Int_t mu5_; // HLT_Mu5
 
 	//  Minimm dR to the closest eg object
-	Float_t drph10_;
-	Float_t drph15_;
-	Float_t drel10_;
-	Float_t drel10id_;
-	Float_t drel15_;
-	Float_t drel15id_;
-	Float_t drel15sw_;
-	Float_t drel15cal_;
+  Float_t drph10_;    // HLT_Photon10_L1R or HLT_Photon10_Cleaned_L1R
+  Float_t drph15_;    // HLT_Photon15_L1R or HLT_Photon15_Cleaned_L1R
+  Float_t drph20_;    // HLT_Photon20_Cleaned_L1R
+
+  Float_t drel10_lw_;    // HLT_Ele10_LW_L1R
+  Float_t drel10_sw_;    // HLT_Ele10_SW_L1R
+
+  Float_t drel10_lw_id_; // HLT_Ele10_LW_EleId_L1R
+  Float_t drel10_sw_id_; // HLT_Ele10_SW_EleId_L1R
+
+  Float_t drel15_lw_;    // HLT_Ele15_LW_L1R
+  Float_t drel15_sw_;    // HLT_Ele15_SW_L1R
+
+  Float_t drel15_lw_id_; // HLT_Ele15_LW_EleId_L1R
+  Float_t drel15_sw_id_; // HLT_Ele15_SW_EleId_L1R
+
+  Float_t drel15_sw_cid_; // HLT_Ele15_SW_CaloEleId_L1R
 
 	//  Minimm dR to the closest HLT mu object
 	Float_t drmu9_;
+	Float_t drmu7_;
 	Float_t drmu5_;
 	
 	// Btag information
