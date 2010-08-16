@@ -26,9 +26,6 @@
 using namespace std;
 using namespace tas;
 
-
-
-  
 // function for dR matching offline letpon to trigger object 
 pair<int, float> TriggerMatch( LorentzVector lepton_p4, const char* trigString, double dR_cut = 0.4 ){
   float dR_min = numeric_limits<float>::max();
@@ -57,6 +54,7 @@ pair<int, float> TriggerMatch( LorentzVector lepton_p4, const char* trigString, 
 
 
 
+/* THIS NEEDS TO BE IN CORE */
 
 struct DorkyEventIdentifier {
   // this is a workaround for not having unique event id's in MC
@@ -114,7 +112,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
   if(isData){
     //set_goodrun_file("jsonlist_132440_139239.txt");
     //set_goodrun_file("./jsonlist_133446_140387_254.4nb.txt");
-    set_goodrun_file_json("Cert_and_RR_Aug9_Top_merged_132440-142537_JSON.txt");
+    //set_goodrun_file_json("Cert_and_RR_Aug9_Top_merged_132440-142537_JSON.txt");
+    set_goodrun_file_json("Cert_TopAug13_Merged_135059-142664.txt");
   }
 
   // The deltaR requirement between objects and jets to remove the jet trigger dependence
@@ -211,10 +210,15 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         v2SS_  = pass_electronSelection(iEl, electronSelectionFO_ssVBTF80_v2);
         v3SS_  = pass_electronSelection(iEl, electronSelectionFO_ssVBTF80_v3);
 
-        numAug9_ = pass_electronSelection( iEl, electronSelection_ttbarV1, true, true ) && (!isSpikeElectron(iEl));
+        numAug9_ = pass_electronSelection( iEl, electronSelection_ttbarV1, isData, true ) && (!isSpikeElectron(iEl));
         v1Aug9_  = v1_;
         v2Aug9_  = v2_;
-        v3Aug9_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v3, true, true );
+        v3Aug9_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v3, isData, true );
+
+        numSSAug9_ = pass_electronSelection(iEl, electronSelection_ss, isData, true);
+        v1SSAug9_  = pass_electronSelection(iEl, electronSelectionFO_ssVBTF80_v1, isData, true);
+        v2SSAug9_  = pass_electronSelection(iEl, electronSelectionFO_ssVBTF80_v2, isData, true);
+        v3SSAug9_  = pass_electronSelection(iEl, electronSelectionFO_ssVBTF80_v3, isData, true);
 
 
         // Sanity
@@ -232,7 +236,11 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
 
         // If there is no v1/v2/v3 lepton quit
-        if ( (!v1_) && (!v2_) && (!v3_) && (!v1SS_) && (!v2SS_) && (!v3SS_) && (!v1Aug9_) && (!v2Aug9_) && (!v3Aug9_) ) continue;
+        if (  (!v1_) && (!v2_) && (!v3_) && 
+              (!v1SS_) && (!v2SS_) && (!v3SS_) && 
+              (!v1Aug9_) && (!v2Aug9_) && (!v3Aug9_) &&
+              (!v1SSAug9_) && (!v2SSAug9_) && (!v3SSAug9_) 
+        ) continue;
         
         // If it is above 20 GeV see if we can make a 
         // Z with another pt>20 FO.  Will use the v1 FO since 
@@ -315,6 +323,9 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         pair<int, float> pair_el10    = TriggerMatch( els_p4().at(iEl), "HLT_Ele10_LW_L1R");
         pair<int, float> pair_el10id  = TriggerMatch( els_p4().at(iEl), "HLT_Ele10_SW_EleId_L1R");
         pair<int, float> pair_el15    = TriggerMatch( els_p4().at(iEl), "HLT_Ele15_LW_L1R");
+        pair<int, float> pair_el15id  = TriggerMatch( els_p4().at(iEl), "HLT_Ele15_SW_EleId_L1R");
+        pair<int, float> pair_el15sw  = TriggerMatch( els_p4().at(iEl), "HLT_Ele15_SW_L1R");
+        pair<int, float> pair_el15cal = TriggerMatch( els_p4().at(iEl), "HLT_Ele15_SW_CaloEleId_L1R");
 
         pair<int, float> pair_ph10    = TriggerMatch( els_p4().at(iEl), "HLT_Photon10_L1R");
         pair<int, float> pair_ph10C   = TriggerMatch( els_p4().at(iEl), "HLT_Photon10_Cleaned_L1R");
@@ -327,18 +338,24 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         float drph15  = ( pair_ph15.first > pair_ph15C.first ? pair_ph15.second : pair_ph15C.second );
 
         // trigger matching
-        el10_   = pair_el10.first;
-        el10id_ = pair_el10id.first;
-        el15_   = pair_el15.first;
-        ph10_   = ph10;
-        ph15_   = ph15;
+        el10_     = pair_el10.first;
+        el10id_   = pair_el10id.first;
+        el15_     = pair_el15.first;
+        el15id_   = pair_el15id.first;
+        el15sw_   = pair_el15sw.first;
+        el15cal_  = pair_el15cal.first;
+        ph10_     = ph10;
+        ph15_     = ph15;
 
         // dr between lepton and closest jet
-        drel10_   = pair_el10.second;
-        drel10id_ = pair_el10id.second;
-        drel15_   = pair_el15.second;
-        drph10_   = ph10;
-        drph15_   = ph15;
+        drel10_     = pair_el10.second;
+        drel10id_   = pair_el10id.second;
+        drel15_     = pair_el15.second;
+        drel15id_   = pair_el15id.second;
+        drel15sw_   = pair_el15sw.second;
+        drel15cal_  = pair_el15cal.second;
+        drph10_     = drph10;
+        drph15_     = drph15;
 
 
 
@@ -376,9 +393,6 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         // Apply a pt cut --- moved the cut to 10 GeV (Claudio, 10 Jul 2010)
         if ( mus_p4().at(iMu).pt() < 10.) continue;
         
-        // If it is not a muon FO, quit
-        if ( ! muonId(iMu, muonSelectionFO_mu_ttbar) ) continue;
-        
         // If it is above 20 GeV see if we can make a 
         // Z with another pt>20 FO.  
         bool isaZ = false;
@@ -406,13 +420,20 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         eta_  = mus_p4().at(iMu).eta();
         phi_  = mus_p4().at(iMu).phi();
         id_   = 13*mus_charge().at(iMu);
-        num_  = muonId(iMu, NominalTTbarV2);
-        numv1_  = muonId(iMu, NominalTTbar);
-        numSS_  = muonId(iMu, Nominal);
         tcmet_ = evt_tcmet();
         tcmetphi_ = evt_tcmetPhi();
+
+        //
+        num_    = muonId(iMu, NominalTTbarV2);
+        numv1_  = muonId(iMu, NominalTTbar);
+        numSS_  = muonId(iMu, Nominal);
     
+        fo_04_  = muonId(iMu, muonSelectionFO_mu_ttbar);
+        fo_10_  = muonId(iMu, muonSelectionFO_mu_ttbar_iso10);
+
         numAug9_ = num_;
+
+        if( !fo_04_ && !fo_10_ ) continue;
 
         // Now REALLY fix it (July 14, 2010)
         if (pt_ > 10.) {
@@ -534,14 +555,24 @@ void myBabyMaker::InitBabyNtuple () {
   hlt50u_ = 0;
   l16u_   = 0;
   l110u_  = 0;
+  fo_04_ = false;
+  fo_10_ = false;
+
   v1_  = false;
   v2_  = false;
   v3_  = false;
+  num_ = false;
+
   v1SS_  = false;
   v2SS_  = false;
   v3SS_  = false;
-  num_ = false;
   numSS_ = false;
+
+  v1SSAug9_  = false;
+  v2SSAug9_  = false;
+  v3SSAug9_  = false;
+  numSSAug9_ = false;
+
   numv1_ = false;
   numAug9_ = false;
   v1Aug9_  = false;
@@ -552,6 +583,9 @@ void myBabyMaker::InitBabyNtuple () {
   el10_ = 0;
   el10id_ = 0;
   el15_ = 0;
+  el15id_ = 0;
+  el15sw_ = 0;
+  el15cal_ = 0;
   mu5_  = 0;
   mu9_  = 0;
   drph10_ = 99.;
@@ -559,6 +593,9 @@ void myBabyMaker::InitBabyNtuple () {
   drel10_ = 99.;
   drel10id_ = 99.;
   drel15_ = 99.;
+  drel15id_ = 99.;
+  drel15sw_ = 99.;
+  drel15cal_ = 99.;
   drmu5_  = 99.;
   drmu9_  = 99.;
   nbjet_  = 0;
@@ -599,6 +636,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("l16u",         &l16u_,         "l16uu/I"      );
     babyTree_->Branch("l110",         &l110u_,        "l110u/I"      );
 
+    babyTree_->Branch("fo_04",         &fo_04_,        "fo_04/O"      );
+    babyTree_->Branch("fo_10",         &fo_10_,        "fo_10/O"      );
     babyTree_->Branch("v1",         &v1_,        "v1/O"      );
     babyTree_->Branch("v2",         &v2_,        "v2/O"      );
     babyTree_->Branch("v3",         &v3_,        "v3/O"      );
@@ -610,6 +649,11 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("v3SS",         &v3SS_,        "v3SS/O"      );
     babyTree_->Branch("numSS",         &numSS_,        "numSS/O"      );
 
+    babyTree_->Branch("v1SSAug9",         &v1SSAug9_,        "v1SSAug9/O"      );
+    babyTree_->Branch("v2SSAug9",         &v2SSAug9_,        "v2SSAug9/O"      );
+    babyTree_->Branch("v3SSAug9",         &v3SSAug9_,        "v3SSAug9/O"      );
+    babyTree_->Branch("numSSAug9",         &numSSAug9_,        "numSSAug9/O"      );
+
     babyTree_->Branch("v1Aug9",         &v1Aug9_,        "v1Aug9/O"      );
     babyTree_->Branch("v2Aug9",         &v2Aug9_,        "v2Aug9/O"      );
     babyTree_->Branch("v3Aug9",         &v3Aug9_,        "v3Aug9/O"      );
@@ -620,12 +664,16 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("el10",         &el10_,         "el10/I"      );
     babyTree_->Branch("el10id",         &el10id_,         "el10id/I"      );
     babyTree_->Branch("el15",         &el15_,         "el15/I"      );
+    babyTree_->Branch("el15id",         &el15id_,         "el15id/I"      );
 
     babyTree_->Branch("drph10",       &drph10_,       "drph10/F"      );
     babyTree_->Branch("drph15",       &drph15_,       "drph15/F"      );
     babyTree_->Branch("drel10",         &drel10_,         "drel10/F"      );
     babyTree_->Branch("drel10id",         &drel10id_,         "drel10id/F"      );
     babyTree_->Branch("drel15",         &drel15_,         "drel15/F"      );
+    babyTree_->Branch("drel15id",         &drel15id_,         "drel15id/F"      );
+    babyTree_->Branch("drel15sw",         &drel15sw_,         "drel15sw/F"      );
+    babyTree_->Branch("drel15cal",         &drel15cal_,         "drel15cal/F"      );
 
     babyTree_->Branch("mu9",       &mu9_,       "mu9/I"      );
     babyTree_->Branch("mu5",       &mu5_,       "mu5/I"      );

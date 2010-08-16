@@ -55,25 +55,39 @@ class myBabyMaker
 	Bool_t v1_;
 	Bool_t v2_;
 	Bool_t v3_;
-        Bool_t v1SS_;
-        Bool_t v2SS_;
-        Bool_t v3SS_;
 	Bool_t num_;   // {electronSelection_ttbarV1 && (!isSpikeElectron()}  NominalTTbarV2   
-	Bool_t numv1_; // electronSelection_ttbarV1 NominalTTbar
+
+  Bool_t v1SS_;
+  Bool_t v2SS_;
+  Bool_t v3SS_;
 	Bool_t numSS_; // electronSelection_ss Nominal
+
+  Bool_t v1SSAug9_;
+  Bool_t v2SSAug9_;
+  Bool_t v3SSAug9_;
+	Bool_t numSSAug9_; // electronSelection_ss Nominal
+
+	Bool_t numv1_; // electronSelection_ttbarV1 NominalTTbar
 
 	Bool_t numAug9_; 
   Bool_t v1Aug9_;
   Bool_t v2Aug9_;
   Bool_t v3Aug9_;
 
+  Bool_t fo_04_;
+  Bool_t fo_10_;
+
 	// What electron trigger did it pass and is the electron matched to a egamma trg object
 	// 0=fail 1="pass but no match" 2="pass and matched" -1="pass but egamm trg obj missing"
-	Int_t ph10_;  // HLT_Photon10_L1R or HLT_Photon10_Cleaned_L1R
-	Int_t ph15_;  // HLT_Photon15_L1R or HLT_Photon15_Cleaned_L1R
-	Int_t el10_;  // HLT_Ele10_LW_L1R
-	Int_t el10id_;// HLT_Ele10_SW_EleId_L1R
-	Int_t el15_;  // HLT_Ele15_LW_L1R
+	Int_t ph10_;    // HLT_Photon10_L1R or HLT_Photon10_Cleaned_L1R
+	Int_t ph15_;    // HLT_Photon15_L1R or HLT_Photon15_Cleaned_L1R
+
+	Int_t el10_;    // HLT_Ele10_LW_L1R
+	Int_t el10id_;  // HLT_Ele10_SW_EleId_L1R
+	Int_t el15_;    // HLT_Ele15_LW_L1R
+	Int_t el15id_;  // HLT_Ele15_SW_EleId_L1R
+	Int_t el15sw_;  // HLT_Ele15_SW_L1R
+	Int_t el15cal_; // HLT_Ele15_SW_CaloEleId_L1R
 
 	// What muon trigger did it pass
 	// 0=fail 1="pass but no match" 2="pass and matched" -1="pass but muon trg obj missing"
@@ -86,6 +100,9 @@ class myBabyMaker
 	Float_t drel10_;
 	Float_t drel10id_;
 	Float_t drel15_;
+	Float_t drel15id_;
+	Float_t drel15sw_;
+	Float_t drel15cal_;
 
 	//  Minimm dR to the closest HLT mu object
 	Float_t drmu9_;
