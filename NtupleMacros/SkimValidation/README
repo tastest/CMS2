@@ -1,8 +1,5 @@
 Cross validate 2 datasets 
 
-
-
-
 * define Muon/Electron paths to reference ntuples:
 	Mu_before.txt
 	El_before.txt
@@ -17,6 +14,8 @@ Cross validate 2 datasets
 
 * potentially update current (cvs) lumi list 
 	- see "appendix" on how to do that
+
+* create "plots" directory for output plots
 
 * run DoAll.C (make babies)
 	root doAll.C (change to run on el, mu, before and after (set bools)
