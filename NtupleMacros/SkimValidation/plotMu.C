@@ -331,7 +331,16 @@ void plotMu(void) {
   TChain *chain1 = new TChain("tree");
   TChain *chain2 = new TChain("tree");
   chain1->Add("validate_mus_before.root");
-  chain2->Add("validate_mus_after.root");
+  if( 42 == 42 ) {
+    chain2->Add("validate_mus_after.root");
+  }
+  else{
+    std::cout<<"ALARM! USING non standard \"after\" chain!!"<<std::endl;
+    std::cout<<"ALARM! USING non standard \"after\" chain!!"<<std::endl;
+    std::cout<<"ALARM! USING non standard \"after\" chain!!"<<std::endl;
+    //    chain2->Add("validate_mus_after_dilepskim.root");
+    chain2->Add("validate_mus_after_ptGt20.root");
+  }
 
   // TChain *chain1el = new TChain("tree");
   // TChain *chain2el = new TChain("tree");
@@ -569,10 +578,10 @@ void plotMu(void) {
   
   //plot new chain
   TCanvas *c10 = new TCanvas();
-  xsecPlot(c10, chain1, "mus", suffix, dir);
+  xsecPlot(c10, chain2, "mus", suffix, dir);
   
-  // temporarily try out jets here
-  TCanvas *c11 = new TCanvas();
-  xsecPlot(c11, chain1, "jets", suffix, dir);
+   // temporarily try out jets here
+   TCanvas *c11 = new TCanvas();
+   xsecPlot(c11, chain2, "jets", suffix, dir);
 
 }
