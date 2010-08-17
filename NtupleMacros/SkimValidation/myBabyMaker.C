@@ -12,8 +12,6 @@
 #include "../CORE/electronSelectionsParameters.cc"
 #include "../CORE/muonSelections.cc"
 #include "../Tools/goodrun.cc"
-// for dorky event a la Jake (utilities.h)
-#include "../CORE/utilities.h"
 
 using namespace std;
 using namespace tas;
@@ -21,10 +19,8 @@ using namespace tas;
 //PUT TRIGGERS HERE
 
 myBabyMaker::myBabyMaker() :
-  mutrig_("HLT_Mu9"),
-  eltrig_("HLT_Ele15_LW_L1R"),
-  eltrig1_("HLT_Ele15_LW_L1R"),
-  eltrig2_("HLT_Ele15_SW_L1R")
+  mutrig_("HLT_Mu5"),
+  eltrig_("HLT_Ele15_LW_L1R")
 {
 }
 
@@ -39,9 +35,6 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, const char
 
   // Make a baby ntuple
   MakeBabyNtuple(babyFilename);
-
-  // duplicate removal
-  DorkyEventIdentifier dei;
 
   int i_permilleOld = 0;
   unsigned int nEventsTotal = 0;
@@ -77,28 +70,20 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, const char
       if( !goodrun(evt_run(), evt_lumiBlock()) )
 		continue;
 
-      // remove duplicate events
-      if ( dei.is_duplicate(DorkyEvent()) ) {
-        //        std::cout<<".dr";
-        continue;
-      }
-
-
 	  // Initialize baby ntuple--clear every event
 	  InitBabyNtuple();
 
 	  vector<int> goodels;
 	  vector<int> goodmus;
 
-    // Select events passing trigger w/ leptons
+      // Select events passing trigger w/ leptons
       if( domus && passHLTTrigger(mutrig_) ) {
 		goodmus = doMuons();
 	  }	  
 
-      if( doels && ( passHLTTrigger(eltrig1_) || passHLTTrigger(eltrig2_) ) ) {
- 		goodels = doElectrons();
- 	  }
-
+      if( doels && passHLTTrigger(eltrig_) ) {
+		goodels = doElectrons();
+	  }
 
 	  // Time to fill the baby
 	  //if( goodels.size() > 0 || goodmus.size() > 0 ) {
@@ -114,13 +99,6 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, const char
 		jets_     = CleanJets( jets_p4()   , goodels, goodmus, true ); //true for cor for calo only
 		pfjets_   = CleanJets( pfjets_p4() , goodels, goodmus );
 		trkjets_  = CleanJets( trkjets_p4(), goodels, goodmus );
-    
-    for(uint jet = 0; jet < jets_.size(); ++jet) {
-      jetspx_.push_back(jets_.at(jet).px());
-      jetspy_.push_back(jets_.at(jet).py());
-      jetspz_.push_back(jets_.at(jet).pz());
-      jetsE_.push_back (jets_.at(jet).E() );
-    }
 
 		doMet();
 		FillBabyNtuple();
@@ -172,12 +150,6 @@ void myBabyMaker::InitBabyNtuple () {
   pfjets_ .clear();
   trkjets_.clear();
   //hypjets_.clear();
-
-  jetspx_.clear();
-  jetspy_.clear();
-  jetspz_.clear();
-  jetsE_.clear();
-
 
   //met
   clmet_ 		= -999.;
@@ -235,13 +207,6 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("pfjets",     &pfjets_);
     babyTree_->Branch("trkjets",    &trkjets_);
     babyTree_->Branch("jets",       &jets_);
-    babyTree_->SetAlias("jets",   "jets");
-
-    babyTree_->Branch("jetspx",       &jetspx_);
-    babyTree_->Branch("jetspy",       &jetspy_);
-    babyTree_->Branch("jetspz",       &jetspz_);
-    babyTree_->Branch("jetsE" ,       &jetsE_ );
-
 
 }
 

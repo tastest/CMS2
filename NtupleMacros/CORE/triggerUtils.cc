@@ -5,6 +5,7 @@
 //int nTriggeredJets(char*);
 //LorentzVector singleJetBias( char*, int) ;
 #include "TSystem.h"
+#include "CMS2.h"
 #include "triggerUtils.h"
 
 //--------------------------------------------------

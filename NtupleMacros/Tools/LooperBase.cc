@@ -26,8 +26,6 @@ LooperBase::~LooperBase ()
 
 double LooperBase::Weight (int i_hyp)
 {
-     if (sample_.process == DATA)
-	  return 1;
      return cms2.evt_scale1fb() * sample_.kFactor;
 }
 
@@ -50,7 +48,7 @@ uint64 LooperBase::Loop ()
      memset(hypos_total_weight_, 0, sizeof(hypos_total_weight_));
 
      // clear list of duplicates
-     duplicate_removal::already_seen.clear();
+     already_seen.clear();
      duplicates_total_n_ = 0;
      duplicates_total_weight_ = 0.;
 
@@ -88,8 +86,8 @@ uint64 LooperBase::Loop ()
 // 	       fprintf(logfile_, "%f\n", LooperBase::Weight(0));
 	       weightEventsTotal += LooperBase::Weight(0);
 	       
-// 	       weight_evts_processed = cms2.evt_nEvts() * cms2.evt_scale1fb();
-// 	       evts_processed = cms2.evt_nEvts();
+	       weight_evts_processed = cms2.evt_nEvts() * cms2.evt_scale1fb();
+	       evts_processed = cms2.evt_nEvts();
 
 	       // Progress feedback to the user
 	       int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
@@ -148,12 +146,12 @@ uint64 LooperBase::Loop ()
 		 " of events (%llu)\n", nEventsChain, nEventsTotal);
 	  exit(1);
      }
-     int ret;
-//      ret = fprintf(logfile_, 
-// 		       "Sample %10s: Events processed (weight): %10.1f.  Events: %8u\n",
-// 		       sample_.name.c_str(), weight_evts_processed, evts_processed);
-//      if (ret < 0)
-// 	  perror("writing to log file");
+     
+     int ret = fprintf(logfile_, 
+		       "Sample %10s: Events processed (weight): %10.1f.  Events: %8u\n",
+		       sample_.name.c_str(), weight_evts_processed, evts_processed);
+     if (ret < 0)
+	  perror("writing to log file");
      ret = fprintf(logfile_, 
 		   "Sample %10s: Events before cut (weight): %10.1f.  Events: %8u\n",
 		   sample_.name.c_str(),

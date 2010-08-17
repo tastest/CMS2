@@ -1,4 +1,4 @@
-// $Id: goodrun.cc,v 1.8 2010/08/14 20:07:26 jmuelmen Exp $
+// $Id: goodrun.cc,v 1.6 2010/06/03 12:29:29 dlevans Exp $
 
 // CINT is allowed to see this, but nothing else:
 bool goodrun (unsigned int run, unsigned int lumi_block);
@@ -10,7 +10,6 @@ void set_goodrun_file_json (const char* filename);
 
 #include <assert.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -213,28 +212,6 @@ bool goodrun (unsigned int run, unsigned int lumi_block)
 	  }
      }
      return false;
-}
-
-int min_run ()
-{
-     if (not good_runs_loaded_)
-	  return -1;
-     set_t::const_iterator first = good_runs_.begin();
-     if (first != good_runs_.end())
-	  return first->run;
-     return -1;
-}
-
-int max_run ()
-{
-     if (not good_runs_loaded_)
-	  return -1;
-     set_t::const_iterator last = good_runs_.end();
-     if (last != good_runs_.begin()) {
-	  last--;
-	  return last->run;
-     }
-     return -1;
 }
 
 bool goodrun_json (unsigned int run, unsigned int lumi_block)

@@ -5,11 +5,11 @@
 #include "TMath.h"
 #include "TLorentzVector.h"
 #include "TDatabasePDG.h"
-#include "electronSelections.h"
-#include "electronSelectionsParameters.h"
-#include "muonSelections.h"
-#include "metSelections.h"
-#include "triggerUtils.h"
+#include "electronSelections.cc"
+#include "electronSelectionsParameters.cc"
+#include "muonSelections.cc"
+#include "metSelections.cc"
+#include "triggerUtils.cc"
 #include "CMS2.h"
 
 #include "ttbarSelections.h"
@@ -50,7 +50,7 @@ bool isGoodLeptonNoIso(int id, int lepIdx, bool applyAlignmentCorrection, bool r
   }
   
 
-  return false;
+  return true;
 }
 
 
