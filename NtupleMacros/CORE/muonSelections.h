@@ -13,7 +13,8 @@ enum SelectionType {
   NominalTTbar = 3,
   muonSelectionFO_mu_v1 = 4,
   muonSelectionFO_mu_ttbar = 5,
-  NominalTTbarV2 = 6
+  NominalTTbarV2 = 6,
+  muonSelectionFO_mu_ttbar_iso10 = 7
 }; 
 
 //
