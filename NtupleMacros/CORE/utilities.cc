@@ -256,3 +256,75 @@ bool DorkyEvent::operator == (const DorkyEvent &other) const
         return false;
     return true;
 }
+
+//this function reads in a list of events from a text file
+//and checks if the current event is present in the list
+//USAGE:
+//EventInListIdentified eid;
+//bool found = eid.event_in_list( EventInList() );
+
+class EventInList{
+public:
+  EventInList(){
+    run_      = cms2.evt_run();
+    lumi_     = cms2.evt_lumiBlock();
+    event_    = cms2.evt_event();
+    dataset_  = cms2.evt_dataset();
+  }
+  ~EventInList() {}
+
+  int run          () const { return run_;      }
+  int lumi         () const { return lumi_;     }
+  int event        () const { return event_;    }
+  TString dataset  () const { return dataset_;  }
+  
+private:
+  int run_, lumi_, event_;
+  TString dataset_;
+  
+};
+
+class EventInListIdentifier{
+public:
+  EventInListIdentifier(char* inputFile = "eventList.txt"){
+    runs.clear();
+    lumis.clear();
+    events.clear();
+
+    ifstream ifile( inputFile );
+    if( !ifile.is_open() ){
+      cout << "ERROR CANNOT FIND EVENT LIST " << inputFile << endl;
+      exit(0);
+    }
+    cout << "Opened event list " << inputFile << endl;
+    
+    while( ifile >> temprun >> templumi >> tempevent ){
+      runs.push_back( temprun );
+      lumis.push_back( templumi );
+      events.push_back( tempevent );
+      cout << "Added: " << temprun << " " << templumi << " " << tempevent << endl;
+    }
+  }
+  ~EventInListIdentifier() {}
+  
+  bool event_in_list(const EventInList &id){
+    
+    for( unsigned int i = 0 ; i < runs.size() ; ++i ){
+    
+      if( id.run() == runs.at(i) && id.lumi() == lumis.at(i) && id.event() == events.at(i) ){
+        cout << "Found event in list! " << id.dataset() << " " << id.run() << " " << id.lumi() << " " << id.event() << endl;
+        return true;
+      }
+    }
+    
+    return false;
+  }
+  
+private:
+  vector<int> runs;
+  vector<int> lumis;
+  vector<int> events;
+  int temprun;
+  int templumi;
+  int tempevent;
+};
