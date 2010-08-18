@@ -13,7 +13,7 @@
 #include "../CORE/muonSelections.cc"
 #include "../Tools/goodrun.cc"
 // for dorky event a la Jake (utilities.h)
-#include "../CORE/utilities.h"
+#include "utilities.h"
 
 using namespace std;
 using namespace tas;

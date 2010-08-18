@@ -32,11 +32,17 @@ void xsecPlot( TCanvas * myCanv, TChain* myChain, TString drawThese, const strin
   std::vector<int> numMuVsRun;
   std::vector<int> numElVsRun;
   std::vector<int> numJetVsRun;
+  std::vector<int> numclMETVsRun;
+  std::vector<int> numtcMETVsRun;
+  std::vector<int> numpfMETVsRun;
   int runRange = 160000;
   for(int run = 0; run<runRange; ++run) {
     numMuVsRun.push_back(0);
     numElVsRun.push_back(0);
     numJetVsRun.push_back(0);
+    numclMETVsRun.push_back(0);
+    numtcMETVsRun.push_back(0);
+    numpfMETVsRun.push_back(0);
     lumiVsRun.push_back(0.);
   }
    
@@ -54,11 +60,23 @@ void xsecPlot( TCanvas * myCanv, TChain* myChain, TString drawThese, const strin
     std::cout<<"Counting els"<<std::endl;
     t.Loop(numElVsRun, drawThese); 
   }   
-
   else if( drawThese.Contains("jets") ) {
     std::cout<<"Counting Jets"<<std::endl;
     t.Loop(numJetVsRun, drawThese); 
   }   
+  else if( drawThese.Contains("clmet") ) {
+    std::cout<<"Counting clMet>25 events"<<std::endl;
+    t.Loop(numclMETVsRun, drawThese); 
+  }   
+  else if( drawThese.Contains("tcmet") ) {
+    std::cout<<"Counting tcMet>25 events"<<std::endl;
+    t.Loop(numtcMETVsRun, drawThese); 
+  }   
+  else if( drawThese.Contains("pfmet") ) {
+    std::cout<<"Counting pfMet>25 events"<<std::endl;
+    t.Loop(numpfMETVsRun, drawThese); 
+  }   
+
   else {
     std::cout<<"BAD drawable in xsecPlot: "<<drawThese <<" is not forseen. Bad things will happen - better fix this!"<<endl;
   }
@@ -75,13 +93,19 @@ void xsecPlot( TCanvas * myCanv, TChain* myChain, TString drawThese, const strin
   std::vector<float> nMuRoller; 
   std::vector<float> nElRoller; 
   std::vector<float> nJetRoller; 
+  std::vector<float> nclMETRoller; 
+  std::vector<float> ntcMETRoller; 
+  std::vector<float> npfMETRoller; 
   std::vector<float> nLumiRoller;
 #ifndef __CINT__
   if(drawRunningMean) {
-    nMuRoller   = rollingThunder(numMuVsRun, lumiVsRun, 12);
-    nElRoller   = rollingThunder(numElVsRun, lumiVsRun, 12);
-    nJetRoller  = rollingThunder(numJetVsRun, lumiVsRun, 12);
-    nLumiRoller = rollingThunder(lumiVsRun, lumiVsRun, 12);
+    nMuRoller     = rollingThunder(numMuVsRun, lumiVsRun, 12);
+    nElRoller     = rollingThunder(numElVsRun, lumiVsRun, 12);
+    nJetRoller    = rollingThunder(numJetVsRun, lumiVsRun, 12);
+    nclMETRoller  = rollingThunder(numclMETVsRun, lumiVsRun, 12);
+    ntcMETRoller  = rollingThunder(numtcMETVsRun, lumiVsRun, 12);
+    npfMETRoller  = rollingThunder(numpfMETVsRun, lumiVsRun, 12);
+    nLumiRoller   = rollingThunder(lumiVsRun, lumiVsRun, 12);
   }
 #endif
   TGraphErrors * aGraph = new TGraphErrors();
@@ -101,6 +125,18 @@ void xsecPlot( TCanvas * myCanv, TChain* myChain, TString drawThese, const strin
   else if( drawThese.Contains("jets") ) {
     numLepVsRun = numJetVsRun;
     nLepRoller = nJetRoller; 
+  }
+  else if( drawThese.Contains("clmet") ) {
+    numLepVsRun = numclMETVsRun;
+    nLepRoller = nclMETRoller; 
+  }
+  else if( drawThese.Contains("tcmet") ) {
+    numLepVsRun = numtcMETVsRun;
+    nLepRoller = ntcMETRoller; 
+  }
+  else if( drawThese.Contains("pfmet") ) {
+    numLepVsRun = numpfMETVsRun;
+    nLepRoller = npfMETRoller; 
   }
 
 
@@ -128,6 +164,18 @@ void xsecPlot( TCanvas * myCanv, TChain* myChain, TString drawThese, const strin
   else if( drawThese.Contains("jets") ) {
     aGraph->SetTitle("Jets per run per lumi ");
     aGraph->GetYaxis()->SetTitle("Jet rate, #sigma_{Jet Vis p_{T}^{corr} > 30 GeV} (#mub)");
+  }
+  else if( drawThese.Contains("clmet") ) {
+    aGraph->SetTitle("clMET > 25 GeV per run per lumi ");
+    aGraph->GetYaxis()->SetTitle("high clMET rate, #sigma_{clMET Vis > 25 GeV} (#mub)");
+  }
+  else if( drawThese.Contains("tcmet") ) {
+    aGraph->SetTitle("tcMET > 25 GeV per run per lumi ");
+    aGraph->GetYaxis()->SetTitle("high tcMET rate, #sigma_{tcMET Vis > 25 GeV} (#mub)");
+  }
+  else if( drawThese.Contains("pfmet") ) {
+    aGraph->SetTitle("pfMET > 25 GeV per run per lumi ");
+    aGraph->GetYaxis()->SetTitle("high pfMET rate, #sigma_{pfMET Vis > 25 GeV} (#mub)");
   }
   aGraph->GetYaxis()->SetTitleOffset(1.2);
   aGraph->GetXaxis()->SetTitle("run number"); //6  
@@ -203,6 +251,15 @@ void xsecPlot( TCanvas * myCanv, TChain* myChain, TString drawThese, const strin
   }
   else if( drawThese.Contains("jets") ) {
     myCanv->SaveAs((dir+"JetXsecNew"+suffix).c_str());
+  }
+  else if( drawThese.Contains("clmet") ) {
+    myCanv->SaveAs((dir+"clMETXsecNew"+suffix).c_str());
+  }
+  else if( drawThese.Contains("tcmet") ) {
+    myCanv->SaveAs((dir+"tcMETXsecNew"+suffix).c_str());
+  }
+  else if( drawThese.Contains("pfmet") ) {
+    myCanv->SaveAs((dir+"tcMETXsecNew"+suffix).c_str());
   }
 }
 
@@ -583,7 +640,20 @@ void plotEl(void){
   TCanvas *c10 = new TCanvas();
   xsecPlot(c10, chain2, "els", suffix, dir);
   
-   // temporarily try out jets here
-   TCanvas *c11 = new TCanvas();
-   xsecPlot(c11, chain2, "jets", suffix, dir);
+  // temporarily try out jets here
+  TCanvas *c11 = new TCanvas();
+  xsecPlot(c11, chain2, "jets", suffix, dir);
+  
+  // temporarily try out clmet here
+  TCanvas *c12 = new TCanvas();
+  xsecPlot(c12, chain2, "clmet", suffix, dir);
+  
+  // temporarily try out tcmet here
+  TCanvas *c13 = new TCanvas();
+  xsecPlot(c13, chain2, "tcmet", suffix, dir);
+  
+  // temporarily try out pfmet here
+  TCanvas *c14 = new TCanvas();
+  xsecPlot(c14, chain2, "pfmet", suffix, dir);
+
 }

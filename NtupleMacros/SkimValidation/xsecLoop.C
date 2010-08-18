@@ -64,6 +64,25 @@ void xsecLoop::Loop(std::vector<int>& numLepVsRun, TString drawThese)
            }
          }
       }
+
+      else if(drawThese.Contains("clmet")) {
+        //        std::cout<<"xsecLoop mode: "<<drawThese<<std::endl;
+        if( clmet > 25.) {
+          numLepVsRun.at( run ) += 1;
+        }
+      }
+      else if(drawThese.Contains("tcmet")) {
+        //        std::cout<<"xsecLoop mode: "<<drawThese<<std::endl;
+        if( tcmet > 25.) {
+          numLepVsRun.at( run ) += 1;
+        }
+      }
+      else if(drawThese.Contains("pfmet")) {
+        //        std::cout<<"xsecLoop mode: "<<drawThese<<std::endl;
+        if( pfmet > 25.) {
+          numLepVsRun.at( run ) += 1;
+        }
+      }
    }
 }
 
