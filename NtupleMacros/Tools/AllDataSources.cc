@@ -37,9 +37,9 @@ DataSource fH_PHOTONJET() { return DataSource("PhotonJetPt20to170", H_PHOTONJET)
 DataSource fH_PHOTONJETS() { return DataSource("photonjets", H_PHOTONJETS, kMagenta); }
 
 
-DataSource fH_WENU()      { return DataSource("we",       H_WENU, kBlue);          }
-DataSource fH_WMUNU()      { return DataSource("wm",       H_WMUNU, kBlue + 2);          }
-DataSource fH_WTAUNU()      { return DataSource("wt",       H_WTAUNU, kGray);          }
+DataSource fH_WENU()      { return DataSource("we",       H_WENU);          }
+DataSource fH_WMUNU()      { return DataSource("wm",       H_WMUNU);          }
+DataSource fH_WTAUNU()      { return DataSource("wt",       H_WTAUNU);          }
 
 DataSource fH_QCD15()       { return DataSource("QCDpt15",      H_QCD15, kGreen + 2);    };
 DataSource fH_QCD30()      { return DataSource("QCDpt30",       H_QCD30, kGreen);          }

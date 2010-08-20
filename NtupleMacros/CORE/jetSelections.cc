@@ -1,4 +1,4 @@
-// $Id: jetSelections.cc,v 1.7 2010/07/13 09:07:43 jmuelmen Exp $
+// $Id: jetSelections.cc,v 1.10 2010/08/08 09:15:52 jmuelmen Exp $
 
 #include <algorithm>
 #include <utility>
@@ -32,9 +32,11 @@ static jets_with_corr_t getJets_fast (unsigned int i_hyp, enum JetType type, enu
      case JETS_TYPE_PF_CORR: case JETS_TYPE_PF_UNCORR:
 	  jets = &cms2.pfjets_p4();
 	  break;
+#if haveGEN	  
      case JETS_TYPE_GEN:
 	  jets = &cms2.genjets_p4();
 	  break;
+#endif
      }
      jets_with_corr_t ret;
      ret.reserve(jets->size()); // reserve so we don't have to realloc later, which is slow
@@ -52,9 +54,13 @@ static jets_with_corr_t getJets_fast (unsigned int i_hyp, enum JetType type, enu
 	       corr = cms2.pfjets_cor().at(i);
 	       break;
 	  case JETS_TYPE_JPT: 
+	       corr = cms2.jpts_cor().at(i);
+	       break;
 	  case JETS_TYPE_CALO_UNCORR: 
 	  case JETS_TYPE_PF_UNCORR:
+#if haveGEN	  
 	  case JETS_TYPE_GEN:
+#endif
 	       break;
 	  }
 	  const double pt = jets->at(i).pt() * corr;
@@ -103,6 +109,11 @@ static jets_with_corr_t getJets_fast (unsigned int i_hyp, enum JetType type, enu
 	  default:
 	       assert(false);
 	  }
+	  //------------------------------------------------------------
+	  // jet ID cuts
+	  //------------------------------------------------------------
+	  if (not passesCaloJetID(jets->at(i)))
+	       goto conti;
 	  //------------------------------------------------------------
 	  // jet passed all cuts
 	  //------------------------------------------------------------
@@ -247,3 +258,44 @@ double jetCorrection (int ijet)
 { 
      return jetCorrection(cms2.jets_p4()[ijet]); 
 }
+
+bool jetPassesLooseJetID(int ijet)
+{
+     if (fabs(cms2.jets_p4()[ijet].eta()) < 3.)
+     {
+	  if (cms2.jets_fHPD()[ijet] > 0.98)
+	       return false;
+	  if (cms2.jets_emFrac()[ijet] < 0.01)
+	       return false;
+	  if (cms2.jets_n90Hits()[ijet] < 2)
+	       return false;
+     }
+
+     return true;
+}
+
+bool passesCaloJetID (const LorentzVector &jetp4)
+{
+     int jet_idx = -1;
+     double minDR = 999;
+
+     for (unsigned int i = 0; i < cms2.jets_p4().size(); i++)
+     {
+	  double deltaR = ROOT::Math::VectorUtil::DeltaR(jetp4, cms2.jets_p4()[i]);
+
+	  if (deltaR < minDR)
+	  {
+	       minDR = deltaR;
+	       jet_idx = i;
+	  }
+     }
+
+     if (jet_idx < 0)
+	  return false;
+
+     if (cms2.jets_emFrac()[jet_idx] < 0.01 || cms2.jets_fHPD()[jet_idx] > 0.98 || cms2.jets_n90Hits()[jet_idx] < 2)
+	  return false;
+
+     return true;
+}
+
