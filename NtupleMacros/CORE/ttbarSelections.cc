@@ -309,10 +309,106 @@ double getd0wrtPV(LorentzVector p4, float d0) {
 
  }
 
+/*****************************************************************************************/
+//get the number of jets passing btag discriminator cuts
+// takes as arguments a vector of indices, the jet algorithm
+// and the btag discriminator
+// the working points are hard coded
+/*****************************************************************************************/
+int getNbtags(const vector<unsigned int> v_jetsIdx, const string jetAlgo, const string bTagDiscriminator) {
+
+  if(jetAlgo != "jptJets" && jetAlgo != "caloJets" && jetAlgo != "pfJets") {
+    cout << "Unknown jet algorithm. Returning spurious value" << endl;
+    return -9999;
+  }
+
+  if(bTagDiscriminator != "trackCountingHighEffBJetTag" &&
+     bTagDiscriminator != "simpleSecondaryVertexHighEffBJetTag" && 
+     bTagDiscriminator != "simpleSecondaryVertexHighPurBJetTag") {
+    cout << "Unknown bTag Discriminator. Returning spurious value" << endl;
+    return -9999;
+  }
+
+  if(jetAlgo == "jptJets") {
+    int ntags = 0;
+    if(bTagDiscriminator == "trackCountingHighEffBJetTag") {
+      for(unsigned int i = 0; i < v_jetsIdx.size(); i++) {
+	if(jets_trackCountingHighEffBJetTag()[v_jetsIdx.at(i)] > 1.7)
+	  ntags++;
+      }
+      return ntags;
+    }else if(bTagDiscriminator == "simpleSecondaryVertexHighEffBJetTag") {
+      for(unsigned int i = 0; i < v_jetsIdx.size(); i++) {
+	if(jets_simpleSecondaryVertexHighEffBJetTag()[v_jetsIdx.at(i)] > 1.74)
+	  ntags++;
+      }
+      return ntags;
+    } else if(bTagDiscriminator == "simpleSecondaryVertexHighPurBJetTag") {
+      for(unsigned int i = 0; i < v_jetsIdx.size(); i++) {
+	if(jets_simpleSecondaryVertexHighPurBJetTags()[v_jetsIdx.at(i)] > 2)
+	  ntags++;
+      }
+      return ntags;
+    }
+  }
 
 
+  if(jetAlgo == "caloJets") {		
+    int ntags = 0;
+    if(bTagDiscriminator == "trackCountingHighEffBJetTag") {
+      for(unsigned int i = 0; i < v_jetsIdx.size(); i++) {
+	if(jets_trackCountingHighEffBJetTag()[v_jetsIdx.at(i)] > 1.7)
+	  ntags++;
+      }
+      return ntags;
+    }else if(bTagDiscriminator == "simpleSecondaryVertexHighEffBJetTag") {
+      for(unsigned int i = 0; i < v_jetsIdx.size(); i++) {
+	if(jets_simpleSecondaryVertexHighEffBJetTag()[v_jetsIdx.at(i)] > 1.74)
+	  ntags++;
+      }
+      return ntags;
+    } else if(bTagDiscriminator == "simpleSecondaryVertexHighPurBJetTag") {
+      for(unsigned int i = 0; i < v_jetsIdx.size(); i++) {
+	if(jets_simpleSecondaryVertexHighPurBJetTags()[v_jetsIdx.at(i)] > 2)
+	  ntags++;
+      }
+      return ntags;
+    }
+  }
 
 
+  
+  if(jetAlgo == "pfJets") {		
+    int ntags = 0;
+    if(bTagDiscriminator == "trackCountingHighEffBJetTag") {
+      for(unsigned int i = 0; i < v_jetsIdx.size(); i++) {
+	if(pfjets_trackCountingHighEffBJetTag()[v_jetsIdx.at(i)] > 1.7)
+	  ntags++;
+      }
+      return ntags;
+    }else if(bTagDiscriminator == "simpleSecondaryVertexHighEffBJetTag") {
+      for(unsigned int i = 0; i < v_jetsIdx.size(); i++) {
+	if(pfjets_simpleSecondaryVertexHighEffBJetTag()[v_jetsIdx.at(i)] > 1.74)
+	  ntags++;
+      }
+      return ntags;
+    } else if(bTagDiscriminator == "simpleSecondaryVertexHighPurBJetTag") {
+      for(unsigned int i = 0; i < v_jetsIdx.size(); i++) {
+	if(pfjets_simpleSecondaryVertexHighPurBJetTags()[v_jetsIdx.at(i)] > 2)
+	  ntags++;
+      }
+      return ntags;
+    }
+  }
 
 
+  
+  //should not be here
+  std::string name;
+  name = system("whoami");
+  cout << "You're somewhere you're not supposed to be. Naught " << name << "!" << endl;
+  return -9999;
 
+}
+
+      

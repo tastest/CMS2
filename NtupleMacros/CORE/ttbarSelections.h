@@ -56,8 +56,13 @@ bool passEGTrigger(bool mc);
 /*****************************************************************************************/
 double getd0wrtPV(LorentzVector p4, float d0);
 
-
-
+/*****************************************************************************************/
+//get the number of jets passing btag discriminator cuts
+// takes as arguments a vector of indices, the jet algorithm
+// and the btag discriminator
+// the working points are hard coded
+/*****************************************************************************************/
+int getNbtags(const vector<unsigned int> v_jetsIdx, const string jetAlgo, const string bTagDiscriminator);
 
 #endif
 
