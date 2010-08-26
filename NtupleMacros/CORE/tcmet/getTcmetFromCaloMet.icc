@@ -10,11 +10,10 @@ using namespace tas;
 
 bool  removeDuplicates_  = false;
 
-static metStruct getTcmetFromCaloMet(TH2F* rf, bool useElectronVetoCone = false, bool usePV = false, bool useHFcleaning = true, 
-                                     bool useHCALcleaning = true, bool useECALcleaning = false, bool printout = false, ostream& ostr = cout);
+static metStruct getTcmetFromCaloMet(TH2F* rf, bool printout = false, ostream& ostr = cout);
 static bool  isMuon               ( int index );
 static bool  isElectron           ( int index );
-static bool  isGoodTrack          ( int index, bool usePV = false );
+static bool  isGoodTrack          ( int index );
 static void  correctMETforMuon    ( LorentzVector p4, int index );
 static void  correctMETforPion    ( int index , TH2F* rf);
 static void  findDuplicateTracks  ();
@@ -84,8 +83,6 @@ void printHeader(ostream& ostr){
 
 //--------------------------------------------------------------------
 
-#include "cleanTcmet.icc"
-
 float tcmet_x;
 float tcmet_y;
 float tcmet_x_pre;
@@ -94,7 +91,7 @@ float tcsumet;
 bool  printout_;
 vector<int> duplicateTracks;
 
-metStruct getTcmetFromCaloMet (TH2F* rf, bool useElectronVetoCone, bool usePV, bool useHFcleaning, bool useHCALcleaning, bool useECALcleaning, bool printout, ostream& ostr)
+metStruct getTcmetFromCaloMet (TH2F* rf, bool printout, ostream& ostr)
 {
 
   duplicateTracks.clear();
@@ -133,7 +130,7 @@ metStruct getTcmetFromCaloMet (TH2F* rf, bool useElectronVetoCone, bool usePV, b
                     if(printout_)       printMet("Muon",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr,mus_trkidx().at(i));
 	       }
       
-	       else if(isGoodTrack( mus_trkidx().at(i), usePV)) {
+	       else if(isGoodTrack( mus_trkidx().at(i) )) {
 		    correctMETforPion  ( mus_trkidx().at(i) , rf);
 		    correctSumEtForPion( mus_trkidx().at(i) , rf);
                     if(printout_)       printMet("Pion",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr,mus_trkidx().at(i));
@@ -147,7 +144,7 @@ metStruct getTcmetFromCaloMet (TH2F* rf, bool useElectronVetoCone, bool usePV, b
                     if(printout_)       printMet("Muon",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr,mus_trkidx().at(i));
 	       }
       
-	       else if(isGoodTrack( mus_trkidx().at(i), usePV)) {
+	       else if(isGoodTrack( mus_trkidx().at(i) )) {
 		    correctMETforPion  ( mus_trkidx().at(i) , rf);
 		    correctSumEtForPion( mus_trkidx().at(i) , rf);
                     if(printout_)       printMet("Pion",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr,mus_trkidx().at(i));
@@ -161,7 +158,7 @@ metStruct getTcmetFromCaloMet (TH2F* rf, bool useElectronVetoCone, bool usePV, b
                     if(printout_)       printMet("Muon",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr,mus_trkidx().at(i));
 	       }
 
-	       else if(isGoodTrack( mus_trkidx().at(i), usePV)) {
+	       else if(isGoodTrack( mus_trkidx().at(i) )) {
 		    correctMETforPion  ( mus_trkidx().at(i) , rf);
 		    correctSumEtForPion( mus_trkidx().at(i) , rf);
                     if(printout_)       printMet("Pion",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr,mus_trkidx().at(i));
@@ -188,10 +185,10 @@ metStruct getTcmetFromCaloMet (TH2F* rf, bool useElectronVetoCone, bool usePV, b
 	  if( isElectron( i ) ) 
 	       continue;
     
-	  if( !isGoodTrack( i, usePV ) ) 
+	  if( !isGoodTrack( i ) ) 
 	       continue;
 
-	  if (useElectronVetoCone && closeToElectron(i))
+	  if (closeToElectron(i))
 	       continue;
 
           tcmet_x_pre = tcmet_x;
@@ -216,29 +213,6 @@ metStruct getTcmetFromCaloMet (TH2F* rf, bool useElectronVetoCone, bool usePV, b
      tcmetStruct.mety   = tcmet_y;
      tcmetStruct.sumet  = tcsumet;
 
-     if(printout_)       printMet("Pre clean",tcmet_x,tcmet_y,tcmet_x,tcmet_y,tcsumet,ostr);
-
-     if (useHFcleaning){
-       tcmet_x_pre = tcmetStruct.metx;
-       tcmet_y_pre = tcmetStruct.mety;
-       tcmetStruct = cleanTCMETforHFspikes(tcmetStruct.metx, tcmetStruct.mety, tcmetStruct.sumet);
-       if(printout_)       printMet("HF clean",tcmet_x_pre,tcmet_y_pre,tcmetStruct.metx,tcmetStruct.mety,tcmetStruct.sumet,ostr);
-     }
-     
-     if (useHCALcleaning){
-       tcmet_x_pre = tcmetStruct.metx;
-       tcmet_y_pre = tcmetStruct.mety;
-       tcmetStruct = cleanTCMETforHCALnoise(tcmetStruct.metx, tcmetStruct.mety, tcmetStruct.sumet);
-       if(printout_)       printMet("HCAL clean",tcmet_x_pre,tcmet_y_pre,tcmetStruct.metx,tcmetStruct.mety,tcmetStruct.sumet,ostr);
-     }
-
-     if (useECALcleaning){
-       tcmet_x_pre = tcmetStruct.metx;
-       tcmet_y_pre = tcmetStruct.mety;
-       tcmetStruct = cleanTCMETforECALspikes(tcmetStruct.metx, tcmetStruct.mety, tcmetStruct.sumet);
-       if(printout_)       printMet("ECAL clean",tcmet_x_pre,tcmet_y_pre,tcmetStruct.metx,tcmetStruct.mety,tcmetStruct.sumet,ostr);
-     }
-
      if(printout_)       printMet("Final",tcmet_x_pre,tcmet_y_pre,tcmetStruct.metx,tcmetStruct.mety,tcmetStruct.sumet,ostr);
           
      return tcmetStruct;
@@ -246,12 +220,9 @@ metStruct getTcmetFromCaloMet (TH2F* rf, bool useElectronVetoCone, bool usePV, b
 
 //--------------------------------------------------------------------
 
-bool isGoodTrack( int index, bool usePV ) {
+bool isGoodTrack( int index ) {
   
      float corrected_d0 = trks_d0corr().at(index);
-
-     if(usePV)
-	  corrected_d0 = trks_d0vtx().at(index);
 
      if( trks_algo().at(index) < 8 ) {
 
@@ -259,10 +230,10 @@ bool isGoodTrack( int index, bool usePV ) {
        if( d0cut > 0.3 ) d0cut = 0.3;
 
        if( fabs( corrected_d0 ) > d0cut )                return false;
-       if( trks_nlayers().at(index) < nlayerscut_4567_ ) return false;
+       //if( trks_nlayers().at(index) < nlayerscut_4567_ ) return false;
      }
      else {
-       if( trks_nlayers().at(index) < nlayerscut_89_ )                     return false;
+       //if( trks_nlayers().at(index) < nlayerscut_89_ )                     return false;
        if( trks_validHits().at(index) < 9 )                                return false;
        if( trks_chi2().at(index) / trks_ndof().at(index) > 5. )            return false;
        if( trks_ptErr().at(index) / trks_trk_p4().at(index).pt() > 0.20 )  return false;
@@ -448,24 +419,3 @@ bool closeToElectron( int index ) {
 
 
 
-
-
-/*
-///FOR REFERENCE HERE IS 35X TRACK SELECTION
-
-//old track selection
-bool isGoodTrack( int index, bool usePV ) {
-  
-  if( trks_trk_p4().at(index).pt() > 100 )                           return false;
-  if( fabs( trks_trk_p4().at(index).eta() ) > 2.65 )                 return false;
-  if( fabs( trks_d0corr().at(index) ) > 0.1 )                        return false;
-  if( trks_validHits().at(index) < 6 )                               return false;
-  if( trks_chi2().at(index) / trks_ndof().at(index) > 5 )            return false;
-  if( trks_ptErr().at(index) / trks_trk_p4().at(index).pt() > 0.20 ) return false;
-  if( !isTrackQuality( index, (1 << highPurity) ) )                  return false;
-  if( fabs( trks_outer_p4().at(index).eta() ) > 5 )                  return false;  
-  if( fabs( trks_outer_p4().at(index).phi() ) > 2 * TMath::Pi() )    return false; 
-  
-  return true;
-}
-*/
