@@ -235,32 +235,40 @@ bool passEGTrigger(bool mc) {
     int e10 = nHLTObjects("HLT_Ele10_LW_L1R");
     for (int i=0; i<e10; i++) {
       LorentzVector p4 = p4HLTObject("HLT_Ele10_LW_L1R", i);
-      if(p4.Pt() > 15.) return true;
+      if (p4.Pt() > 15.) return true;
     }
 
   } else {  // data now
 
     
-    if(evt_run() < 138000) {
+    if (cms2.evt_run() < 138000) {
       int e10 = nHLTObjects("HLT_Ele10_LW_L1R");
       for (int i=0; i<e10; i++) {
         LorentzVector p4 = p4HLTObject("HLT_Ele10_LW_L1R", i);
-        if(p4.Pt() > 15.) return true;
+        if (p4.Pt() > 15.) return true;
       }
     }
 
-    if(evt_run() >= 138000 && evt_run() < 141900) {
+    if (cms2.evt_run() >= 138000 && cms2.evt_run() < 141900) {
       int e15 = nHLTObjects("HLT_Ele15_LW_L1R");
-      if(e15 != 0) 
+      if (e15 != 0) 
         return true;
     }
 
-    if(evt_run() >= 141900) {
+    if (cms2.evt_run() >= 141900 && cms2.evt_run() <= 144000) {
       int e15 = nHLTObjects("HLT_Ele15_SW_L1R");
-      if(e15 != 0) 
-        return true;
+      if (e15 != 0) 
+		   return true;
     }
+	else if (cms2.evt_run() > 144000) {
+		 int e15caloId = nHLTObjects("HLT_Ele15_SW_CaloEleId_L1R");
+		 if (e15caloId != 0)
+			  return true;
 
+		 int e20 = nHLTObjects("HLT_Ele20_SW_L1R");
+		 if (e20 != 0)
+			  return true;
+	}
  
   }
   return false;
