@@ -67,10 +67,6 @@ float nearestHypLeptonPhi( float metPhi, int hyp_index);
 //---------------------------------------------
 metStruct correctTCMETforHypMuons (int hyp_index, float met_x, float met_y, float sumet);
 
-//---------------------------------------------
-// function to calculate latest tcMET
-//---------------------------------------------
-metStruct correctedTCMET(bool printout = false, ostream& ostr = std::cout);
 
 #endif
 
