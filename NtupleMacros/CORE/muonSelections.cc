@@ -29,7 +29,7 @@ bool muonId(unsigned int index, SelectionType type){
             break;
         default:
             std::cout << "muonID ERROR: requested muon type is not defined. Abort." << std::endl;
-			exit(1);
+            gSystem->Exit(1);
             return false;
     } 
     return 
