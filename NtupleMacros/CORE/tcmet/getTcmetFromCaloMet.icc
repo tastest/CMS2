@@ -117,6 +117,9 @@ metStruct getTcmetFromCaloMet (TH2F* rf, bool printout, ostream& ostr)
           tcmet_x_pre = tcmet_x;
           tcmet_y_pre = tcmet_y;
 
+          //skip muons with tracker dpt/pt > 1
+          if( mus_ptErr().at(i)/mus_p4().at(i).pt() > 1 ) continue;
+
 	  if( flag == 0 ) continue;
     
 	  //for flags 1,2,3,5 only perform muon correction
