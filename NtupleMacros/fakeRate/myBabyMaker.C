@@ -271,6 +271,15 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         tcmet_ = evt_tcmet();
         tcmetphi_ = evt_tcmetPhi();
     
+        // do the 3 electron charges agree?
+        int iCTF = els_trkidx().at(iEl);
+        if( iCTF >= 0 ){
+          int qCTF = trks_charge().at( iCTF );
+          int qGSF = els_trk_charge().at(iEl);
+          int qPIX = els_sccharge().at(iEl);
+          if( qCTF == qGSF && qCTF == qPIX && qGSF == qPIX ) q3_ = true;
+        }
+
         // W transverse mass
         mt_ = Mt( els_p4().at(iEl), tcmet_, tcmetphi_ );
         
@@ -334,6 +343,11 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
         pair<int, float> pair_el15_sw_cid = TriggerMatch( els_p4().at(iEl), "HLT_Ele15_SW_CaloEleId_L1R");
 
+        pair<int, float> pair_el20_sw     = TriggerMatch( els_p4().at(iEl), "HLT_Ele20_SW_L1R");
+        pair<int, float> pair_el25_sw     = TriggerMatch( els_p4().at(iEl), "HLT_Ele25_SW_L1R");
+
+        pair<int, float> pair_Del10_sw    = TriggerMatch( els_p4().at(iEl), "HLT_DoubleEle10_SW_L1R");
+
         pair<int, float> pair_ph10    = TriggerMatch( els_p4().at(iEl), "HLT_Photon10_L1R");
         pair<int, float> pair_ph10C   = TriggerMatch( els_p4().at(iEl), "HLT_Photon10_Cleaned_L1R");
         pair<int, float> pair_ph15    = TriggerMatch( els_p4().at(iEl), "HLT_Photon15_L1R");
@@ -360,6 +374,11 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
         el15_sw_cid_  = pair_el15_sw_cid.first;
 
+        el20_sw_      = pair_el20_sw.first;
+        el25_sw_      = pair_el25_sw.first;
+        Del10_sw_     = pair_Del10_sw.first;
+
+
         ph10_     = ph10;
         ph15_     = ph15;
         ph20_     = pair_ph20C.first;
@@ -378,6 +397,10 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         drel15_sw_id_   = pair_el15_sw_id.second;
 
         drel15_sw_cid_  = pair_el15_sw_cid.second;
+
+        drel20_sw_      = pair_el20_sw.second;
+        drel25_sw_      = pair_el25_sw.second;
+        drDel10_sw_     = pair_Del10_sw.second;
 
         drph10_     = drph10;
         drph15_     = drph15;
@@ -620,6 +643,9 @@ void myBabyMaker::InitBabyNtuple () {
   el15_lw_id_ = 0;
   el15_sw_id_ = 0;
   el15_sw_cid_ = 0;
+  el20_sw_ = 0;
+  el25_sw_ = 0;
+  Del10_sw_ = 0;
 
   //
   drph10_ = 99.;
@@ -634,6 +660,9 @@ void myBabyMaker::InitBabyNtuple () {
   drel15_lw_id_ = 99.;
   drel15_sw_id_ = 99.;
   drel15_sw_cid_ = 99.;
+  drel20_sw_ = 99.;
+  drel25_sw_ = 99.;
+  drDel10_sw_ = 99.;
 
   //
   mu5_  = 0;
@@ -654,6 +683,9 @@ void myBabyMaker::InitBabyNtuple () {
   ptj1_b2b_ = -999.;
   dphij1_b2b_ = -999.;
   mt_ = -999;
+
+  //
+  q3_ = false;
 }
 //-------------------------------------
 // Book the baby ntuple
@@ -720,6 +752,9 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("el15_lw_id",         &el15_lw_id_,         "el15_lw_id/I"      );
     babyTree_->Branch("el15_sw_id",         &el15_sw_id_,         "el15_sw_id/I"      );
     babyTree_->Branch("el15_sw_cid",         &el15_sw_cid_,         "el15_sw_cid/I"      );
+    babyTree_->Branch("el20_sw",         &el20_sw_,         "el20_sw/I"      );
+    babyTree_->Branch("el25_sw",         &el25_sw_,         "el25_sw/I"      );
+    babyTree_->Branch("Del10_sw",         &Del10_sw_,         "Del10_sw/I"      );
 
     //
     babyTree_->Branch("drph10",       &drph10_,       "drph10/F"      );
@@ -734,6 +769,9 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("drel15_lw_id",         &drel15_lw_id_,         "drel15_lw_id/F"      );
     babyTree_->Branch("drel15_sw_id",         &drel15_sw_id_,         "drel15_sw_id/F"      );
     babyTree_->Branch("drel15_sw_cid",         &drel15_sw_cid_,         "drel15_sw_cid/F"      );
+    babyTree_->Branch("drel20_sw",         &drel20_sw_,         "drel20_sw/F"      );
+    babyTree_->Branch("drel25_sw",         &drel25_sw_,         "drel25_sw/F"      );
+    babyTree_->Branch("drDel10_sw",         &drDel10_sw_,         "drDel10_sw/F"      );
 
     //
     babyTree_->Branch("mu9",       &mu9_,       "mu9/I"      );
@@ -755,6 +793,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("dphij1_b2b",       &dphij1_b2b_,       "dphij1_b2b/F"      );
 
     babyTree_->Branch("mt",          &mt_,         "mt/F"         );
+
+    babyTree_->Branch("q3",          &q3_,         "q3/O"         );
 
 }
 //----------------------------------
