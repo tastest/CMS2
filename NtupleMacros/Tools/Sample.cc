@@ -66,15 +66,15 @@ static const file files[] = {
      { "WW",		"WW_Spring10-START3X_V26_S09-v1_DiLep/V03-04-08/merged_ntuple*.root", 		{ 0, WW, kRed, 		1, "ww", 	true, 	0. } },
      { "WZ",		"WZ_Spring10-START3X_V26_S09-v1/V03-04-08/merged_ntuple*.root", 		{ 0, WZ, kBlue, 	1, "wz", 	true, 	0. } },
      { "ZZ",		"ZZ_Spring10-START3X_V26_S09-v1_DiLep/V03-04-08/merged_ntuple*.root", 		{ 0, ZZ, kGreen,	1, "zz", 	true, 	0. } },
-     { "We", 		"WJets-madgraph_Spring10-START3X_V26_S09-v1_SingleLep/V03-04-13-07/diLepPt2010Skim/*.root", 		{ 0, We, 33, 		31314./28049., "we", 	true, 	0. } },
-     { "Wmu",		"WJets-madgraph_Spring10-START3X_V26_S09-v1_SingleLep/V03-04-13-07/diLepPt2010Skim/*.root", 		{ 0, Wm, 36, 		31314./28049., "wmu", 	true, 	0. } },
-     { "Wtau",		"WJets-madgraph_Spring10-START3X_V26_S09-v1_SingleLep/V03-04-13-07/diLepPt2010Skim/*.root", 		{ 0, Wt, 39, 		31314./28049., "wtau", 	true, 	0. } },
-     { "Zee",		"ZJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/*.root",		{ 0, DYee, 42, 		1, "zee", 	true, 	0. } },
-     { "Zmm",		"ZJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/*.root",		{ 0, DYmm, 46, 		1, "zmm", 	true, 	0. } },
-     { "Ztt",		"ZJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/*.root",		{ 0, DYtt, 49, 		1, "ztt", 	true, 	0. } },
-     { "VV",		"VVJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/*.root",		{ 0, VV, kRed, 		1, "vv", 	true, 	0. } },
-     { "ttbar",		"TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/*.root",		{ 0, ttbar, kYellow, 	157.5/165., "ttbar", 	true, 	0. } },
-     { "tW",		"SingleTop_tWChannel-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/*.root",	{ 0, tW, 63, 		1, "tw", 	true, 	0. } },
+     { "We", 		"WJets-madgraph_Spring10-START3X_V26_S09-v1_SingleLep/V03-04-08/diLepPt1010Skim/skimmed_ntuple.root", 		{ 0, We, 33, 		31314./28049., "we", 	true, 	0. } },
+     { "Wmu",		"WJets-madgraph_Spring10-START3X_V26_S09-v1_SingleLep/V03-04-08/diLepPt1010Skim/skimmed_ntuple.root", 		{ 0, Wm, 36, 		31314./28049., "wmu", 	true, 	0. } },
+     { "Wtau",		"WJets-madgraph_Spring10-START3X_V26_S09-v1_SingleLep/V03-04-08/diLepPt1010Skim/skimmed_ntuple.root", 		{ 0, Wt, 39, 		31314./28049., "wtau", 	true, 	0. } },
+     { "Zee",		"Zee_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged_ntuple*.root"   , 		{ 0, DYee, 42, 		1, "zee", 	true, 	0. } },
+     { "Zmm",		"Zmumu_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged_ntuple*.root" , 		{ 0, DYmm, 46, 		1, "zmm", 	true, 	0. } },
+     { "Ztt",		"Ztautau_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged_ntuple*.root",		{ 0, DYtt, 49, 		1, "ztt", 	true, 	0. } },
+     { "VV",		"VVJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-01/*.root",		{ 0, VV, kRed, 		1, "vv", 	true, 	0. } },
+     { "ttbar",		"TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-07/diLepPt2020Skim/skimmed_ntuple.root",		{ 0, ttbar, kYellow, 	157.5/165., "ttbar", 	true, 	0. } },
+     { "tW",		"SingleTop_tWChannel-madgraph_Spring10-START3X_V26_S09-v1/V03-04-07/*.root",	{ 0, tW, 63, 		1, "tw", 	true, 	0. } },
      { "LM8",		"LM8_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged_ntuple*.root", 		{ 0, LM8, 37, 		1, "LM8", 	false, 	0. } },
 };
 static const int files_size = sizeof(files) / sizeof(file);
@@ -137,14 +137,8 @@ Sample fdata ()
 	  prefix_ + "Mu_Run2010A-PromptReco-v4_RECO/V03-04-26-01/singleLepPt5Skim/*.root" +
 	  prefix_ + "Mu_Run2010A-PromptReco-v4_RECO/V03-04-26-02/singleLepPt10Skim/*.root";
      printf("%s\n", data.c_str());
-//      TChain *c = makeChain(data.c_str());
-     TChain *c = makeChain("/home/users/jmuelmen/CMSSW_3_6_1_patch4/src/CMS2/NtupleMacros/NtupleTools/dilep_skim_2.root");
-//     TChain *c = makeChain("/nfs-3/userdata/fgolf/SSskims/data/*.root");
-//	 c->Add("/tas/cms2/Mu_Run2010A-PromptReco-v4_RECO/V03-04-26-12/singleLepPt10Skim/skimmed_ntuple_1425*.root");
-//	 c->Add("/tas/cms2/Mu_Run2010A-PromptReco-v4_RECO/V03-04-26-12/singleLepPt10Skim/skimmed_ntuple_1426*.root");			   
-//	 c->Add("/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-12/singleLepPt10Skim/skimmed_ntuple_1425*.root");
-//	 c->Add("/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-12/singleLepPt10Skim/skimmed_ntuple_1426*.root");
-     Sample ret = { c, DATA, kBlack, 1, "data", true, 0. };
+     TChain *c = makeChain(data.c_str());
+     Sample ret = { new TChain, DATA, kBlack, 1, "data", true, 0. };
      return ret;
 }
 

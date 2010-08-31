@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.2 2010/08/14 09:24:38 jmuelmen Exp $
+# $Id: Makefile,v 1.1 2010/04/16 19:01:34 jmuelmen Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
@@ -29,11 +29,7 @@ LIBS = $(LOOPERLIB) $(CORELIB) #$(TOOLSLIB)
 TABLES = Results.tbl
 
 .PHONY: all
-all:	check_env $(LIBS) 
-
-.PHONY: check_env
-check_env:
-	if [ -z $(CMS2_LOCATION) ] ; then echo "first set CMS2_LOCATION" ; exit 1 ; fi
+all:	$(LIBS) 
 
 .PHONY: libs
 libs:	$(LIBS)
