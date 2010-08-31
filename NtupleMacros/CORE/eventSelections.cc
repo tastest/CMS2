@@ -23,7 +23,7 @@ bool cleaning_standard(bool isData)
     if (!cleaning_BPTX(isData)) return false;
     if (!cleaning_BSC())        return false;
     if (!cleaning_beamHalo())   return false;
-    if (!cleaning_goodVertex()) return false;
+    if (!cleaning_goodVertexAugust2010()) return false;
     if (!cleaning_goodTracks()) return false;
     return true;
 }
@@ -36,7 +36,7 @@ bool cleaning_standardNoBSC(bool isData)
 {
     if (!cleaning_BPTX(isData)) return false;
     if (!cleaning_beamHalo())   return false;
-    if (!cleaning_goodVertex()) return false;
+    if (!cleaning_goodVertexAugust2010()) return false;
     if (!cleaning_goodTracks()) return false;
     return true;
 }
@@ -97,23 +97,6 @@ bool cleaning_BPTX(bool isData)
     return true;
 }
 
-//
-// at least 1 good vertex
-// 
-bool cleaning_goodVertex()
-{             
-    int nGoodVertex = 0;
-    for (size_t v = 0; v < cms2.vtxs_position().size(); ++v) 
-    {
-        if (cms2.vtxs_isFake()[v]) continue;
-        if (cms2.vtxs_ndof()[v] < 4.) continue;
-        if (cms2.vtxs_position()[v].Rho() > 2.0) continue;        
-        if (fabs(cms2.vtxs_position()[v].Z()) > 15.0) continue;
-        nGoodVertex ++;
-    }
-    if (nGoodVertex == 0) return false;
-    return true;
-}
 
 //
 // 5 August 2010
