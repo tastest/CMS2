@@ -24,12 +24,8 @@ bool muonId(unsigned int index, SelectionType type){
         case muonSelectionFO_mu_ttbar:
             isovalue = 0.40;
             break;
-        case muonSelectionFO_mu_ttbar_iso10:
-            isovalue = 1.0;
-            break;
         default:
             std::cout << "muonID ERROR: requested muon type is not defined. Abort." << std::endl;
-			exit(1);
             return false;
     } 
     return 
@@ -58,7 +54,6 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type){
             if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.02) return false; // d0 from beamspot
             return true;
             break;
-
 
         case NominalTTbar:
             if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.5)  return false; // eta cut
@@ -101,18 +96,6 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type){
             if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.2) return false; // d0 from beamspot
             return true;
             break;
-
-        case muonSelectionFO_mu_ttbar_iso10:
-            if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.5)  return false; // eta cut
-            if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 50) return false; //glb fit chisq
-            if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
-            if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
-            if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
-            if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.2) return false; // d0 from beamspot
-            return true;
-            break;
-
-
 
 
         default:
