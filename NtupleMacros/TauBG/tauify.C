@@ -54,17 +54,6 @@ void Tauify::SetLepton( LorentzVector p4_arg, float met_arg, float iso_arg, floa
   // set the 4 vector of the lepton in the LAB
   p4_lepton_lab = p4_arg;
 
-  // get the lepton boost from the LAB to the CM
-  ROOT::Math::Boost boost_cm( p4_lepton_lab.BoostToCM().x(), p4_lepton_lab.BoostToCM().y(), p4_lepton_lab.BoostToCM().z() );
-  p4_lepton_cm = boost_cm*p4_lepton_lab;
-
-  // get the lepton boost from the CM to the LAB
-  ROOT::Math::Boost boost_lab = boost_cm.Inverse();
-
-  // Sanity check, should get same pt distribution after boosting back
-  //p4_tau_lepton_lab = boost_lab*p4_lepton_cm;
-  //return;
-
   // how to handle lepton id? random for now...
   // assume all tau decays are equally likely, pick a random P and cos(theta) from the file
   TRandom3 *rand1 = new TRandom3(0);
@@ -125,6 +114,7 @@ void Tauify::SetLepton( LorentzVector p4_arg, float met_arg, float iso_arg, floa
 
 
 
+
   /* sanity checks */
   double epsilon = 1.0/1000000000000000.0;
 
@@ -155,12 +145,21 @@ void Tauify::SetLepton( LorentzVector p4_arg, float met_arg, float iso_arg, floa
     exit(1);
   }
 
+
+
+  /* boost back to the lab */
+
+  // get the lepton boost from the LAB to the CM
+  ROOT::Math::Boost boost_cm( p4_lepton_lab.BoostToCM().x(), p4_lepton_lab.BoostToCM().y(), p4_lepton_lab.BoostToCM().z() );
+
+  // get the lepton boost from the CM to the LAB
+  ROOT::Math::Boost boost_lab = boost_cm.Inverse();
+
   // do something smarter about the tau mass later
-  p4_tau_lepton_cm.SetPx( (float)p3_tau_lepton_cm.X() );
-  p4_tau_lepton_cm.SetPy( (float)p3_tau_lepton_cm.Y() );
-  p4_tau_lepton_cm.SetPz( (float)p3_tau_lepton_cm.Z() );
-  //p4_tau_lepton_cm.SetE( 1.7 );
-  p4_tau_lepton_cm.SetE( p4_lepton_cm.E() );
+  p4_tau_lepton_cm.SetPx( p3_tau_lepton_cm.X() );
+  p4_tau_lepton_cm.SetPy( p3_tau_lepton_cm.Y() );
+  p4_tau_lepton_cm.SetPz( p3_tau_lepton_cm.Z() );
+  p4_tau_lepton_cm.SetE( 1.7 );
 
   // boost from CM to LAB
   p4_tau_lepton_lab = boost_lab*p4_tau_lepton_cm;

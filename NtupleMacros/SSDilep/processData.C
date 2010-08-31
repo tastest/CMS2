@@ -23,7 +23,7 @@
 //==============================================================
 {
 // Output file
-  const char* outFile = "histos_mc.root";
+  const char* outFile = "processed_data_tag.root";
   const bool identifyVVEvents = false; // careful with this option. You don't need it for not mixed samples
   const bool identifyDYEvents = false;
 
@@ -31,10 +31,10 @@
 bool runWW    = false;
 bool runWZ    = false;
 bool runZZ    = false;
-bool runWjets = true;
-bool runDYee  = true;
-bool runDYmm  = true;
-bool runDYtt  = true;
+bool runWjets = false;
+bool runDYee  = false;
+bool runDYmm  = false;
+bool runDYtt  = false;
 bool runDY  = false;
 bool runttbar = true;
 bool runtW    = false;
@@ -51,22 +51,6 @@ bool runLM9x    = false;
 
 bool runWjetBackground1 = false;
 bool runWjetBackground2 = false;
-
-//NLO cross-sections
- double kttdil    = 157.5/165.;
- double kttotr    = 157.5/165.;
- double kWjets    = 31314./28049.;
- double kDYee     = 1.;
- double kDYmm     = 1.;
- double kDYtautau = 1.;
- double kVV       = 1.;
- double ktW       = 1.;
- double kqcd15    = 1.;
- double kqcd30    = 1.;
- //double kVqq      = 1.;
- double kphoton15 = 1.;
- double fkwDefault = 1.0;
-
 
 // Load various tools
 // // string old_path = gROOT->GetMacroPath();
@@ -112,45 +96,43 @@ if (runZZ) {
 //Wjets file
 TChain *fWjets = new TChain("Events");
 if (runWjets) {
-  fWjets->Add((dataset+"/EarlyDataSamples/Wenu_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged_ntuple*.root").c_str());
-  fWjets->Add((dataset+"/EarlyDataSamples/Wmunu_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged_ntuple*.root").c_str());
-  fWjets->Add((dataset+"/EarlyDataSamples/Wtaunu_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged_ntuple*.root").c_str());
+  fWjets->Add((dataset+"/Wenu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
+  fWjets->Add((dataset+"/Wmunu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
+  fWjets->Add((dataset+"/Wtaunu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
 }
 
 // DY file
 
 TChain *fDY = new TChain("Events");
 if (runDY) {
-  fDY->Add((dataset+"/EarlyDataSamples/DYee_M10to20_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged_ntuple*.root").c_str());
-  fDY->Add((dataset+"/EarlyDataSamples/DYmumu_M10to20_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged_ntuple*.root").c_str());
-  fDY->Add((dataset+"/EarlyDataSamples/Zee_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged_ntuple*.root").c_str());
-  fDY->Add((dataset+"/EarlyDataSamples/Zmumu_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged_ntuple*.root").c_str());
-  fDY->Add((dataset+"/EarlyDataSamples/Ztautau_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged_ntuple*.root").c_str());
+  fDY->Add((dataset+"/Zee_Summer09-MC_31X_V3_7TeV_TrackingParticles-v1/V03-00-35/merged_ntuple*.root").c_str());
+  fDY->Add((dataset+"/Zmumu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
+  fDY->Add((dataset+"/Ztautau_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
 }
 
 
 //DYee file
 TChain *fDYee = new TChain("Events");
 if (runDYee) {
-  fDYee->Add((dataset+"/EarlyDataSamples/Zee_Spring10-START3X_V26_S09-v1/merged_ntuple*.root").c_str());
+  fDYee->Add((dataset+"/cms2-V01-03-01/Zee_M20_Summer08_IDEAL_V11_redigi_v1/merged_ntuple*.root").c_str());
 }
 
 //DYmm file
 TChain *fDYmm = new TChain("Events");
 if (runDYmm) {
-  fDYmm->Add((dataset+"/EarlyDataSamples/Zmumu_Spring10-START3X_V26_S09-v1/merged_ntuple*.root").c_str());
+  fDYmm->Add((dataset+"/Zmumu_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
 }
 
 //DYtt file
 TChain *fDYtt = new TChain("Events");
 if (runDYtt) {
-  fDYtt->Add((dataset+"/EarlyDataSamples/Ztautau_Spring10-START3X_V26_S09-v1/merged_ntuple*.root").c_str());
+  fDYtt->Add((dataset+"/Ztautau_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged_ntuple*.root").c_str());
 }
 
 //ttbar file
 TChain *fttbar = new TChain("Events");
 if (runttbar) {
-  fttbar->Add((dataset+"/TTbar_Spring10-START3X_V26_S09-v1/V03-04-08/merged_ntuple*.root").c_str());
+  fttbar->Add((dataset+"/TTbar_Summer09-MC_31X_V3_7TeV-v1/V03-00-34/merged_ntuple*.root").c_str());
 }
 
 //tW file
@@ -232,7 +214,7 @@ enum EColor { kWhite, kBlack, kRed, kGreen, kBlue, kYellow, kMagenta, kCyan };
 // Process files one at a time, and color them as needed
 if (runWW) {
   cout << "Processing WW.."<< endl;
-  RooDataSet* data = ScanChain(fWW, WW, fkwDefault);
+  RooDataSet* data = ScanChain(fWW, WW, identifyVVEvents);
   if( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -244,7 +226,7 @@ if (runWW) {
 
 if (runWZ) {
   cout << "Processing WZ.."<< endl;
-  RooDataSet* data = ScanChain(fWZ, WZ, fkwDefault);
+  RooDataSet* data = ScanChain(fWZ, WZ, identifyVVEvents);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -256,7 +238,7 @@ if (runWZ) {
 
 if (runZZ) {
   cout << "Processing ZZ.."<< endl;
-  RooDataSet* data = ScanChain(fZZ, ZZ, fkwDefault);
+  RooDataSet* data = ScanChain(fZZ, ZZ, identifyVVEvents);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -268,7 +250,7 @@ if (runZZ) {
 
 if (runWjets) {
   cout << "Processing Wjets.."<<endl;
-  RooDataSet* data = ScanChain(fWjets, Wjets, kWjets);
+  RooDataSet* data = ScanChain(fWjets, Wjets, false);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -280,7 +262,7 @@ if (runWjets) {
 
 if (runDY) {
   cout << "Processing DY.."<<endl;
-  RooDataSet* data = ScanChain(fDY, DY, fkwDefault);
+  RooDataSet* data = ScanChain(fDY, DY, false);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -292,7 +274,7 @@ if (runDY) {
 
 if (runDYee) {
   cout << "Processing DYee.."<<endl;
-  RooDataSet* data = ScanChain(fDYee, DYee, fkwDefault);
+  RooDataSet* data = ScanChain(fDYee, DYee, identifyDYEvents);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -304,7 +286,7 @@ if (runDYee) {
 
 if (runDYmm) {
   cout << "Processing DYmm.."<<endl;
-  RooDataSet* data = ScanChain(fDYmm, DYmm, fkwDefault);
+  RooDataSet* data = ScanChain(fDYmm, DYmm, identifyDYEvents);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -316,7 +298,7 @@ if (runDYmm) {
 
 if (runDYtt) {
   cout << "Processing DYtt.."<<endl;
-  RooDataSet* data = ScanChain(fDYtt, DYtt, fkwDefault);
+  RooDataSet* data = ScanChain(fDYtt, DYtt, identifyDYEvents);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -328,7 +310,7 @@ if (runDYtt) {
 
 if (runttbar) {
   cout << "Processing ttbar.."<<endl;
-  RooDataSet* data = ScanChain(fttbar, ttbar, kttdil);
+  RooDataSet* data = ScanChain(fttbar, ttbar, false);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -340,7 +322,7 @@ if (runttbar) {
 
 if (runtW) {
   cout << "Processing tW.."<<endl;
-  RooDataSet* data = ScanChain(ftW, tW, fkwDefault);
+  RooDataSet* data = ScanChain(ftW, tW, false);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -352,7 +334,7 @@ if (runtW) {
 
 if (runLM0x) {
   cout << "Processing LM0.."<<endl;
-  RooDataSet* data = ScanChain(flm0x, LM0x, fkwDefault);
+  RooDataSet* data = ScanChain(flm0x, LM0x, false);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -364,7 +346,7 @@ if (runLM0x) {
 
 if (runLM1x) {
    cout << "Processing LM1.."<<endl;
-  RooDataSet* data = ScanChain(flm1x, LM1x, fkwDefault);
+  RooDataSet* data = ScanChain(flm1x, LM1x, false);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -376,7 +358,7 @@ if (runLM1x) {
 
 if (runLM2x) {
    cout << "Processing LM2.."<<endl;
-  RooDataSet* data = ScanChain(flm2x, LM2x, fkwDefault);
+  RooDataSet* data = ScanChain(flm2x, LM2x, false);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -388,7 +370,7 @@ if (runLM2x) {
 
 if (runLM3x) {
    cout << "Processing LM3.."<<endl;
-  RooDataSet* data = ScanChain(flm3x, LM3x, fkwDefault);
+  RooDataSet* data = ScanChain(flm3x, LM3x, false);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -400,7 +382,7 @@ if (runLM3x) {
 
 if (runLM4x) {
    cout << "Processing LM4.."<<endl;
-  RooDataSet* data = ScanChain(flm4x, LM4x, fkwDefault);
+  RooDataSet* data = ScanChain(flm4x, LM4x, false);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -412,7 +394,7 @@ if (runLM4x) {
 
 if (runLM5x) {
    cout << "Processing LM5.."<<endl;
-  RooDataSet* data = ScanChain(flm5x, LM5x, fkwDefault);
+  RooDataSet* data = ScanChain(flm5x, LM5x, false);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -424,7 +406,7 @@ if (runLM5x) {
 
 if (runLM6x) {
    cout << "Processing LM6.."<<endl;
-  RooDataSet* data = ScanChain(flm6x, LM6x, fkwDefault);
+  RooDataSet* data = ScanChain(flm6x, LM6x, false);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -436,7 +418,7 @@ if (runLM6x) {
 
 if (runLM7x) {
    cout << "Processing LM7.."<<endl;
-  RooDataSet* data = ScanChain(flm7x, LM7x, fkwDefault);
+  RooDataSet* data = ScanChain(flm7x, LM7x, false);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -448,7 +430,7 @@ if (runLM7x) {
 
 if (runLM8x) {
    cout << "Processing LM8.."<<endl;
-  RooDataSet* data = ScanChain(flm8x, LM8x, fkwDefault);
+  RooDataSet* data = ScanChain(flm8x, LM8x, false);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);
@@ -460,7 +442,7 @@ if (runLM8x) {
 
 if (runLM9x) {
    cout << "Processing LM9.."<<endl;
-  RooDataSet* data = ScanChain(flm9x, LM9x, fkwDefault);
+  RooDataSet* data = ScanChain(flm9x, LM9x, false);
   if ( data ){
     if ( fullDataSet )
       fullDataSet->append(*data);

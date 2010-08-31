@@ -1,10 +1,8 @@
-# $Id: Makefile,v 1.5 2010/08/15 18:44:30 jmuelmen Exp $
+# $Id: Makefile,v 1.2 2009/07/02 16:23:32 jmuelmen Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
-CFLAGS = -Wall -g -O0 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS) -DTOOLSLIB
-TXT2JSON = ./convertGoodRunsToJSON.py
-JSON2LUMI = ${CMSSW_BASE}/src/RecoLuminosity/LumiDB/scripts/lumiCalc.py
+CFLAGS = -Wall -Wno-unused-functions -g -O0 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS) -DTOOLSLIB
 
 LINKER = g++
 LINKERFLAGS = $(shell root-config --ldflags)
@@ -30,17 +28,7 @@ LIBS = $(CORELIB) $(TOOLSLIB) $(LOOPERLIB)
 TABLES = Results.tbl
 
 .PHONY: all
-all:	check_env $(LIBS) 
-
-.PHONY: check_env
-check_env:
-	if [ -z $(CMS2_LOCATION) ] ; then echo "first set CMS2_LOCATION" ; exit 1 ; fi
-
-.PHONY: check_env_data
-check_env_data:
-	if [ -z $(DATA) ] ; then echo "first set DATA" ; exit 1 ; fi
-	for i in `ls $(DATA)` ; do if ! [ -e $$i ] ; then echo "data file \"$$i\" does not exist" ; exit 1 ; fi ; done
-	if [ -z $(GOODRUN) ] ; then echo "first set GOODRUN" ; exit 1 ; fi
+all:	$(LIBS) 
 
 .PHONY: libs
 libs:	$(LIBS)
@@ -54,8 +42,8 @@ $(CORELIB):	$(COREOBJECTS)
 $(LOOPERLIB):	$(LOOPEROBJECTS) 
 	$(LINKER) $(LINKERFLAGS) -shared $(LOOPEROBJECTS) -o $@ -lncurses
 
-linkdef_out.cxx: linkdef.h ConfigAndRun.h DSGTable.h DSGSearchWindow.h
-	rootcint -f $@ -c $(INCLUDE) ConfigAndRun.h DSGTable.h DSGSearchWindow.h $<
+linkdef_out.cxx: linkdef.h ConfigAndRun.h DSGTable.h
+	rootcint -f $@ -c $(INCLUDE) ConfigAndRun.h DSGTable.h $<
 
 # General rule for making object files
 %.d:	%.cc
@@ -71,31 +59,18 @@ linkdef_out.cxx: linkdef.h ConfigAndRun.h DSGTable.h DSGSearchWindow.h
 %.o: 	%.cxx
 	$(CC) $(CFLAGS) $< -c -o $@
 
-# General rule for making JSONs from good-run lists
-%.json:	%.txt
-	$(TXT2JSON) $< > $@ || rm -f $@
-
-# General rule for calculating lumi from json
-%.lumi:	%.json
-	$(JSON2LUMI) --nowarning -c frontier://LumiProd/CMS_LUMI_PROD -i $< overview 2>&1 > $@ || rm -f $@
-
 .PHONY: clean
 clean:  
 	rm -f ${CMS2_LOCATION}/NtupleMacros/Tools/*.o ${CMS2_LOCATION}/NtupleMacros/Tools/*.d $(TOOLSLIB) \
 		${CMS2_LOCATION}/NtupleMacros/CORE/*.o ${CMS2_LOCATION}/NtupleMacros/CORE/*.d $(CORELIB) \
-		*.o *.d linkdef_out.* $(LOOPERLIB) Results*
+		*.o *.d linkdef_out.* $(LOOPERLIB) \
+		$(TABLES) 
 
 # how to make tables
 $(TABLES): $(LIBS)
 
 %.tbl %.root %.log:	$(LIBS)
 	echo $(@:.tbl=)"()" | root.exe -b setup.C
-
-.PHONY: data
-data:	check_env_data $(LIBS) $(GOODRUN) $(GOODRUN:.txt=.lumi)
-	export LUMI=`grep -A 5 Total $(GOODRUN:.txt=.lumi) | tail -2 | awk -F \| '{print $$5}' `; \
-	echo got $(LIBS), $(DATA), $(GOODRUN), $(GOODRUN:.txt=.lumi), lumi is $${LUMI}; \
-	echo "Results_data()" | root.exe -b setup.C
 
 -include $(TOOLSSOURCES:.cc=.d)
 -include $(CORESOURCES:.cc=.d)
