@@ -51,31 +51,35 @@ class myBabyMaker
   Int_t  l16u_;   // HLT_L1Jet6U
   Int_t  l110u_;   // HLT_L1Jet10U
 
-  // What type of electron selection did it pass
-  Bool_t v1_;
-  Bool_t v2_;
-  Bool_t v3_;
-  Bool_t num_;   // {electronSelection_ttbarV1 && (!isSpikeElectron()}  NominalTTbarV2   
+  // What type of selection did it pass
+  // v1xx_  v2xx_ v3xx_ are electron FO
+  // fo_xx_ are muon fakeable objects
+  // numxx_ are numerator selection (both muons and electrons)
+  Bool_t v1_;  // electronSelectionFO_el_ttbarV1_v1
+  Bool_t v2_;  // electronSelectionFO_el_ttbarV1_v2
+  Bool_t v3_;  // electronSelectionFO_el_ttbarV1_v3
+  Bool_t num_; // {electronSelection_ttbarV1 && (!isSpikeElectron()} (ele)  
+               // NominalTTbarV2 (muons)
+  Bool_t numv1_; // electronSelection_ttbarV1 (ele) NominalTTbar (muons)
 
-  Bool_t v1SS_;
-  Bool_t v2SS_;
-  Bool_t v3SS_;
-  Bool_t numSS_; // electronSelection_ss Nominal
+  Bool_t v1SS_;  // electronSelectionFO_ssVBTF80_v1
+  Bool_t v2SS_;  // electronSelectionFO_ssVBTF80_v2
+  Bool_t v3SS_;  // electronSelectionFO_ssVBTF80_v3
+  Bool_t numSS_; // electronSelection_ss (eletrons) Nominal (muons)
 
-  Bool_t v1SSAug9_;
-  Bool_t v2SSAug9_;
-  Bool_t v3SSAug9_;
-  Bool_t numSSAug9_; // electronSelection_ss Nominal
+  Bool_t v1SSAug9_;  // electronSelectionFO_ssVBTF80_v1, isData, true
+  Bool_t v2SSAug9_;  // electronSelectionFO_ssVBTF80_v2, isData, true
+  Bool_t v3SSAug9_;  // electronSelectionFO_ssVBTF80_v3, isData, true
+  Bool_t numSSAug9_; // electronSelection_ss (electrons) Not filled for muons
 
-  Bool_t numv1_; // electronSelection_ttbarV1 NominalTTbar
+  Bool_t v1Aug9_;  // identical to v1_
+  Bool_t v2Aug9_;  // identical to v2_
+  Bool_t v3Aug9_;  // electronSelectionFO_el_ttbarV1_v3, isData, true
+  Bool_t numAug9_; // (electronSelection_ttbarV1, isData, true) && (!isSpikeElectron(iEl)) (ele)
+                   // NominalTTbarV2 (muons)
 
-  Bool_t numAug9_; 
-  Bool_t v1Aug9_;
-  Bool_t v2Aug9_;
-  Bool_t v3Aug9_;
-
-  Bool_t fo_04_;
-  Bool_t fo_10_;
+  Bool_t fo_04_;  // muonSelectionFO_mu_ttbar
+  Bool_t fo_10_;  // muonSelectionFO_mu_ttbar_iso10
 
   // What electron trigger did it pass and is the electron matched to a egamma trg object
   // 0=fail 1="pass but no match" 2="pass and matched" -1="pass but egamm trg obj missing"
