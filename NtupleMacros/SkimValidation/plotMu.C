@@ -1,4 +1,5 @@
 #include "TSystem.h"
+#include "TMath.h"
 #include "TChain.h"
 #include "TGraph.h"
 #include "TProfile.h"
@@ -36,6 +37,9 @@ void xsecPlot( TCanvas * myCanv, TChain* myChain, TString drawThese, const strin
   std::vector<int> numtcMETVsRun;
   std::vector<int> numpfMETVsRun;
   int runRange = 160000;
+
+  double lumiUncertainty = 0.07;
+  double expectedAlertThreshold = 3.;
   for(int run = 0; run<runRange; ++run) {
     numMuVsRun.push_back(0);
     numElVsRun.push_back(0);
@@ -143,10 +147,22 @@ void xsecPlot( TCanvas * myCanv, TChain* myChain, TString drawThese, const strin
   for(int run = 0; run<runRange; ++run){
     if( lumiVsRun[run] != 0 && numLepVsRun[run] != 0 ) {
       aGraph->SetPoint( graphpointnr, run, numLepVsRun[run]/lumiVsRun[run] );
-      aGraph->SetPointError( graphpointnr, 0, sqrt((float)numLepVsRun[run])/lumiVsRun[run] );
+      double diffError = TMath::Sqrt(
+                                     ((float)numLepVsRun[run])/(lumiVsRun[run]*lumiVsRun[run])
+                                     +
+                                     TMath::Power((((float)numLepVsRun[run]/(lumiVsRun[run]*lumiVsRun[run]))*(lumiUncertainty*lumiVsRun[run])) , 2.)
+                                     );
+      //      aGraph->SetPointError( graphpointnr, 0, sqrt((float)numLepVsRun[run])/lumiVsRun[run] );
+      aGraph->SetPointError( graphpointnr, 0, diffError );
        
       anotherGraph->SetPoint( graphpointnr, run+0.4, nLepRoller[run]/nLumiRoller[run] );
-      anotherGraph->SetPointError( graphpointnr, 0, sqrt((float)nLepRoller[run])/nLumiRoller[run] );
+      diffError = TMath::Sqrt(
+                              ((float)nLepRoller[run])/(nLumiRoller[run]*nLumiRoller[run])
+                              +
+                              TMath::Power((((float)nLepRoller[run]/(nLumiRoller[run]*nLumiRoller[run]))*(lumiUncertainty*nLumiRoller[run])) , 2.)
+                              );
+      anotherGraph->SetPointError( graphpointnr, 0, diffError );
+      //      anotherGraph->SetPointError( graphpointnr, 0, sqrt((float)nLepRoller[run])/nLumiRoller[run] );
        
       graphpointnr +=1;
     }
@@ -195,7 +211,10 @@ void xsecPlot( TCanvas * myCanv, TChain* myChain, TString drawThese, const strin
   tex2->SetTextColor(8);
   tex2->SetLineWidth(2);
   tex2->Draw();
-  TLatex *tex3 = new TLatex(0.2,0.61,"Orange highlight: expect>0.8 events, see none");
+  TString orangeLable = "Orange highlight: expect>";
+  orangeLable+=expectedAlertThreshold;
+  orangeLable.Append(" ev., see none");
+  TLatex *tex3 = new TLatex(0.2,0.61,orangeLable);
   tex3->SetNDC();
   tex3->SetTextColor(kOrange);
   tex3->SetLineWidth(2);
@@ -210,8 +229,10 @@ void xsecPlot( TCanvas * myCanv, TChain* myChain, TString drawThese, const strin
   TF1 * pol0Func = new TF1("pol0Func","pol0");
   aGraph->Fit("pol0Func");
    
-  double fitMean = pol0Func->GetParameter(0);
-  cout<<fitMean<<endl;
+  double fitMean    = pol0Func->GetParameter(0);
+  double fitMeanErr = pol0Func->GetParError(0);
+  //   cout<<fitMean<<endl;
+  //   cout<<fitMeanErr<<endl;
    
   anotherGraph->SetMarkerColor(kGreen); 
   anotherGraph->SetMarkerStyle(22);
@@ -223,10 +244,21 @@ void xsecPlot( TCanvas * myCanv, TChain* myChain, TString drawThese, const strin
   //   graphpointnr = 0;
   for(int run = 0; run<runRange; ++run){
     if( lumiVsRun[run] != 0 && numLepVsRun[run] != 0 ) {
-      if( TMath::Abs( ( (numLepVsRun[run]/lumiVsRun[run]) - fitMean) / (sqrt((float)numLepVsRun[run])/lumiVsRun[run]) ) > 3. ) {
-        cout<<"EXCESS/DEFICIT Run: "<<run<<" Lep ratio "<<numLepVsRun[run]/lumiVsRun[run]<<" normPull "<< ( (numLepVsRun[run]/lumiVsRun[run]) - fitMean) / ( sqrt( (float)numLepVsRun[run] )/lumiVsRun[run] ) <<" nLep "<<numLepVsRun[run]<<" lumi "<<lumiVsRun[run]<<std::endl;
-         
-        TEllipse *ellipse = new TEllipse(run, numLepVsRun[run]/lumiVsRun[run]  ,10, ( sqrt( (float)numLepVsRun[run] )/lumiVsRun[run] )  ,0,360,0);
+
+      double diffError = TMath::Sqrt(
+                                     ((float)numLepVsRun[run])/(lumiVsRun[run]*lumiVsRun[run])
+                                     +
+                                     TMath::Power((((float)numLepVsRun[run]/(lumiVsRun[run]*lumiVsRun[run]))*(lumiUncertainty*lumiVsRun[run])) , 2.)
+                                     +
+                                     fitMeanErr*fitMeanErr
+                                     );
+
+      //       std::cout<<"Diff error: "<<diffError<<std::endl;
+      //       std::cout<<"old error: "<<  (sqrt((float)numLepVsRun[run])/lumiVsRun[run]) <<std::endl;
+
+      if( TMath::Abs( ( (numLepVsRun[run]/lumiVsRun[run]) - fitMean) / diffError ) > 3. ) {
+        cout<<"EXCESS/DEFICIT Run: "<<run<<" Lep ratio "<<numLepVsRun[run]/lumiVsRun[run]<<" normPull "<< ( (numLepVsRun[run]/lumiVsRun[run]) - fitMean) / ( diffError ) <<" nLep "<<numLepVsRun[run]<<" lumi "<<lumiVsRun[run]<<std::endl;
+        TEllipse *ellipse = new TEllipse(run, numLepVsRun[run]/lumiVsRun[run]  ,10, ( diffError )  ,0,360,0);
         ellipse->SetFillStyle(0);
         ellipse->SetLineColor(kRed);
         ellipse->SetLineWidth(3);
@@ -234,7 +266,9 @@ void xsecPlot( TCanvas * myCanv, TChain* myChain, TString drawThese, const strin
       }
       //       graphpointnr +=1;
     }
-    if(lumiVsRun[run] != 0 && numLepVsRun[run] == 0 && (fitMean*lumiVsRun[run]) > 0.8 ) {
+    if(lumiVsRun[run] != 0 && numLepVsRun[run] == 0 && (fitMean*lumiVsRun[run]) > expectedAlertThreshold ) {
+      // currently plot as size of ellipse the uncertainty based on the
+      // expected number of events only. Should also include lumi uncertainty...
       TEllipse *ellipse = new TEllipse(run, fitMean  ,1, ( sqrt( fitMean*lumiVsRun[run] )/lumiVsRun[run] ) ,0,360,0);
       ellipse->SetFillStyle(0);
       ellipse->SetLineColor(kOrange);
@@ -250,16 +284,16 @@ void xsecPlot( TCanvas * myCanv, TChain* myChain, TString drawThese, const strin
     myCanv->SaveAs((dir+"ElXsecNew"+suffix).c_str());
   }
   else if( drawThese.Contains("jets") ) {
-    myCanv->SaveAs((dir+"JetXsecNew"+suffix).c_str());
+    myCanv->SaveAs((dir+"MuJetXsecNew"+suffix).c_str());
   }
   else if( drawThese.Contains("clmet") ) {
-    myCanv->SaveAs((dir+"clMETXsecNew"+suffix).c_str());
+    myCanv->SaveAs((dir+"MuclMETXsecNew"+suffix).c_str());
   }
   else if( drawThese.Contains("tcmet") ) {
-    myCanv->SaveAs((dir+"tcMETXsecNew"+suffix).c_str());
+    myCanv->SaveAs((dir+"MutcMETXsecNew"+suffix).c_str());
   }
   else if( drawThese.Contains("pfmet") ) {
-    myCanv->SaveAs((dir+"tcMETXsecNew"+suffix).c_str());
+    myCanv->SaveAs((dir+"MupfMETXsecNew"+suffix).c_str());
   }
 }
 
@@ -396,10 +430,11 @@ void plotMu(void) {
     std::cout<<"ALARM! USING non standard \"after\" chain!!"<<std::endl;
     std::cout<<"ALARM! USING non standard \"after\" chain!!"<<std::endl;
     //    chain2->Add("validate_mus_after_dilepskim.root");
-    chain2->Add("validate_mus_after_ptGt20.root");
+    //    chain2->Add("validate_mus_after_ptGt20.root");
+    chain2->Add("validate_mus_after.root_100901_1");
   }
 
-  if( 42 == 42 ) { 
+  if( 42 != 42 ) { 
 
     // Fill Before
     TCanvas *ctemp = new TCanvas();
