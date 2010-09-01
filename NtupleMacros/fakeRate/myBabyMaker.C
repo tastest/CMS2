@@ -110,10 +110,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
   // Set the JSON file
   if(isData){
-    //set_goodrun_file("jsonlist_132440_139239.txt");
-    //set_goodrun_file("./jsonlist_133446_140387_254.4nb.txt");
-    //set_goodrun_file_json("Cert_and_RR_Aug9_Top_merged_132440-142537_JSON.txt");
-    set_goodrun_file_json("Cert_TopAug13_Merged_135059-142664.txt");
+    set_goodrun_file_json("json/Cert_TopAug13_Merged_135059-142664.txt");
   }
 
   // The deltaR requirement between objects and jets to remove the jet trigger dependence
