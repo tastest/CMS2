@@ -24,7 +24,8 @@ myBabyMaker::myBabyMaker() :
   mutrig_("HLT_Mu9"),
   eltrig_("HLT_Ele15_LW_L1R"),
   eltrig1_("HLT_Ele15_LW_L1R"),
-  eltrig2_("HLT_Ele15_SW_L1R")
+  eltrig2_("HLT_Ele15_SW_L1R"),
+  eltrig3_("HLT_Ele15_SW_CaloEleId_L1R")
 {
 }
 
@@ -95,7 +96,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, const char
 		goodmus = doMuons();
 	  }	  
 
-      if( doels && ( passHLTTrigger(eltrig1_) || passHLTTrigger(eltrig2_) ) ) {
+      if( doels && ( passHLTTrigger(eltrig1_) || passHLTTrigger(eltrig2_) || passHLTTrigger(eltrig3_) ) ) {
  		goodels = doElectrons();
  	  }
 

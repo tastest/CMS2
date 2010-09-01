@@ -41,6 +41,7 @@ private:
   const string eltrig_;
   const string eltrig1_;
   const string eltrig2_;
+  const string eltrig3_;
 
   //cuts
   //const float minelpt_ = 10.; //this is in the standard selection already
