@@ -1,5 +1,5 @@
 #include "ChainFromText.cc"
-void doData(){
+void runFR(){
 
 gROOT->LoadMacro("myBabyMaker.C++");
 
