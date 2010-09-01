@@ -15,20 +15,21 @@
 //--------------------------------------------------
 
 void plotFR( TChain* ch2, TCut numCut, TCut denCut, char* label){
+
+//-------------------------------------------------------
+// Now you define the pt and eta bins for your fake rate
+//-------------------------------------------------------
+double ybin[6]={10.,15.,20.,25.,30., 35.};
+int nbinsy = 5;
+double xbin[5]={0.0, 1.0, 1.479, 2.0, 2.5};
+int nbinsx = 4;
+
 //---------------------------
 // Load some useful tools
 //----------------------------
 gROOT->LoadMacro("eff2.C");
+gROOT->LoadMacro("eff.C");
 gStyle->SetOptStat(0);
-
-//-------------------------------------------
-// Here you load the lepton data that
-// you want to use to make your fake rate.
-// It should be a baby ntuple.  
-// Make sure you have one available
-//-------------------------------------------
-//TChain *ch2 = new TChain("tree");
-//ch2->Add("Mu.root");
 
 //----------------------------------------------------
 // Here we define cuts for numerator and denominator
@@ -47,14 +48,6 @@ TCut isNum  = numCut + ptCut + notWCut;
 //The denominator selection
 TCut isDen  = denCut + ptCut + notWCut;
 
-//-------------------------------------------------------
-// Now you define the pt and eta bins for your fake rate
-//-------------------------------------------------------
-double ybin[6]={10.,15.,20.,25.,30., 35.};
-int nbinsy = 5;
-double xbin[5]={0.0, 1.0, 1.479, 2.0, 2.5};
-int nbinsx = 4;
-
 //--------------------------------------------------------
 // Book your numerator and denominator histograms
 //--------------------------------------------------------
@@ -67,6 +60,9 @@ TH2F* den = new TH2F( Form("%s_den", label), Form("%s_den", label), nbinsx, xbin
  TCanvas *can = new TCanvas();
  ch2->Draw( Form("pt:abs(eta)>>%s_num", label), isNum);
  ch2->Draw( Form("pt:abs(eta)>>%s_den", label), isDen);
+
+ ch2->Draw( Form("pt>>%s_num1", label), isNum);
+ ch2->Draw( Form("pt>>%s_den1", label), isDen);
  delete can;
 
 //------------------------------------------
@@ -74,5 +70,6 @@ TH2F* den = new TH2F( Form("%s_den", label), Form("%s_den", label), nbinsx, xbin
 // The output histogram name is "fr"
 //------------------------------------------
  TH2F* fr = eff2(den, num, Form("%s_fr", label) );
+
  return;
 }
