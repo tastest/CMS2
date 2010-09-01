@@ -173,7 +173,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
       // Event cleaning (careful, it requires technical bits)
       if (!cleaning_BPTX(isData))   continue;
       if (!cleaning_beamHalo())   continue;
-      if (!cleaning_goodVertex()) continue;
+      if (!cleaning_goodVertexAugust2010()) continue;
       if (!cleaning_goodTracks()) continue;
 
       // Loop over jets and see what is btagged

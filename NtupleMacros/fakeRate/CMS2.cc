@@ -1,5 +1,6 @@
 #include "CMS2.h"
 CMS2 cms2;
+
 namespace tas {
 	TString &evt_CMS2tag() { return cms2.evt_CMS2tag(); }
 	TString &evt_dataset() { return cms2.evt_dataset(); }
