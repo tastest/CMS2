@@ -434,7 +434,7 @@ void plotEl(void){
     chain2->Add("validate_els_after.root_100901_1");
   }
 
-  if( 42 != 42 ) { 
+  if( 42 == 42 ) { 
 
     // Fill Before
     TCanvas *ctemp = new TCanvas();
