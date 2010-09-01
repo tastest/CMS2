@@ -657,6 +657,7 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile) {
   codef << "    }" << endl;
   codef << "  }" << endl;
   codef << "}" << endl;
+  codef << "" << endl;
   codef << "int ScanChain( TChain* chain, int nEvents = -1, std::string skimFilePrefix=\"\") {" << endl;
   codef << "" << endl;
   codef << "  // Example Histograms" << endl;
@@ -664,9 +665,8 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile) {
   codef << "  TH1F *samplehisto = new TH1F(\"samplehisto\", \"Example histogram\", 200,0,200);" << endl;
   codef << "  samplehisto->SetDirectory(rootdir);" << endl;
   codef << "" << endl;
-
   codef << "  // File Loop" << endl;
-  codef << "  if(nEvents==-1) nEvents = chain->GetEntries();" << endl;
+  codef << "  if( nEvents == -1 ) nEvents = chain->GetEntries();" << endl;
   codef << "  unsigned int nEventsChain = nEvents;" << endl;
   codef << "  unsigned int nEventsTotal = 0;" << endl;
   if(branchNamesFile!="")
@@ -675,6 +675,7 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile) {
   codef << "  TIter fileIter(listOfFiles);" << endl;
   codef << "  TFile *currentFile = 0;" << endl;
   codef << "  while ( (currentFile = (TFile*)fileIter.Next()) ) {" << endl;
+  codef << "    // Get File Content" << endl;
   codef << "    TFile f( currentFile->GetTitle() );" << endl;
   codef << "    TTree *tree = (TTree*)f.Get(\"Events\");" << endl;
   codef << "    cms2.Init(tree);" << endl;
