@@ -38,6 +38,10 @@ set up following https://twiki.cern.ch/twiki/bin/viewauth/CMS/LumiCalc:
   scramv1 b
   cmsenv
 
+(if paranoid about lumiDB, use
+export FRONTIER_FORCERELOAD=long
+)
+
 run (where I put an example json file to use as a reference, use one corresponding to your goodrun list)
  lumiCalc.py --nowarning -c frontier://LumiProd/CMS_LUMI_PROD -i /afs/cern.ch/user/i/ibloch/public/json_combined_135059-140399_CertJuly19_TopFiltered.txt overview >& result_100804.txt
  cat result_XX.txt  | grep ^"| 1" | awk -F "|" '{print $2 $6}' | grep -v "N/A" >& lumi_by_run_100804.txt
