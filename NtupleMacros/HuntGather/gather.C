@@ -49,15 +49,15 @@ float GetIntLumi(float lumi)
     return lumi+newlumi;
 }
 
-TH1F* Plot(const char *pfx, TChain *chain, const char *field, TCut sel, TCut presel, float intlumiinfb, float kfactor,
+TH1F* Plot(const char *pfx, TChain *chain, const char *field, TCut sel, TCut presel, float intlumifb, float kfactor,
         unsigned int nbins, float xlo, float xhi)
 {
     TCut scale;
     // mc has scale1fb, data does not
     if (chain->GetBranch("scale1fb"))
-        scale = Form("scale1fb*%f*%f", intlumiinfb, kfactor);
+        scale = Form("scale1fb*%f*%f", intlumifb, kfactor);
     else
-        scale = Form("%f*%f", intlumiinfb, kfactor);
+        scale = Form("%f*%f", intlumifb, kfactor);
 
     char *name = Form("%s_%s_%s", pfx, sel.GetName(), field);
     TH1F *h = new TH1F(name, name, nbins, xlo, xhi);
@@ -70,7 +70,7 @@ TH1F* Plot(const char *pfx, TChain *chain, const char *field, TCut sel, TCut pre
 }
 
 //
-// These should only be used with data, where intlumiinfb need not be specified and 
+// These should only be used with data, where intlumifb need not be specified and 
 // most likely you aren't scaling
 //
 
