@@ -12,8 +12,12 @@ void gather_example_doAll()
     std::cout << "Using json.txt for goodruns\n";
     set_goodrun_file_json("json.txt");
 
-    // integrated luminosity
-    //float f_intlumifb = 1e-6*GetIntLumi(2790, 1, 1, 144114, 79);
+    // calculate integrated luminosity in /fb
+    // note that I input /nb and so get out /nb
+    // then scale to /fb which is what I need
+    // 1e-3*GetIntLumi(/pb) is the same thing
+    // it matters not so long as it corresponds
+    // to the lumi of the json file
     float f_intlumifb = 1e-6*GetIntLumi(2790);
     std::cout << "Integrated luminosity: " << f_intlumifb << "/fb\n";
 
