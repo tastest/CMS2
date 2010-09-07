@@ -50,7 +50,6 @@ FWLIB = ../Tools/MiniFWLite/libMiniFWLite.so
 
 LIBS = $(CORELIB) $(LIB)
 
-
 .PHONY: all help compile clean cms2env
 
 libs:	$(LIBS)
@@ -122,6 +121,7 @@ jetbkg: processed_data.root  # estimate jet induced background
 jetbkg2: processed_data.root ../data/el_FR_3X.root # estimate jet induced background from FR group
 	$(QUIET) root -q -l 'estimateJetBkg_fakes.C+("processed_data.root","../data/el_FR_3X.root","QCD30_el_v2_cand02_FR_etavspt")'
 
-skim: data processData.C $(CORELIB) $(LIB) $(FWLIB) # skim data
-	$(QUIET) export SkimSamples=1; root -b -q processData.C
+skim: data processData.C $(CORELIB) $(LIB) $(FWLIB)# skim data
+	$(QUIET) if [ ! -n "$(SkimName)" ]; then echo "Please set SkimName variable in order to proceed"; exit 1; fi; \
+	export SkimSamples=1; root -b -q processData.C
 endif

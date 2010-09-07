@@ -1778,7 +1778,8 @@ void ProcessSample( std::vector<std::string> file_patterns,
 	pattern != file_patterns.end(); ++pattern )
     tchain->Add(pattern->c_str());
   if ( gSystem->Getenv("SkimSamples") ){
-    std::cout << "Skimming " << SampleName(sample) << ".." << std::endl;
+    std::cout << "Skimming " << SampleName(sample) << " with skim name " << 
+      gSystem->Getenv("SkimName") << " .." << std::endl;
     SkimChain(tchain);
   } else {
     std::cout << "Processing " << SampleName(sample) << ".." << std::endl;
@@ -1819,20 +1820,31 @@ void ProcessSample( std::vector<std::string> file_patterns,
 void SkimChain(TChain* chain){
   TObjArray *listOfFiles = chain->GetListOfFiles();
   TIter fileIter(listOfFiles);
-  TPRegexp preg("([^/]+)/([^/]*)$");
+  TPRegexp fileNameMatchPattern("(.*?)/([^/]*)$");
+  TPRegexp dataDirMatchPattern("^data");
+  if ( gSystem->Getenv("DataDir") ) dataDirMatchPattern = TPRegexp(gSystem->Getenv("DataDir"));
   unsigned int nEventsTotal = 0;
   unsigned int nEventsSelected = 0;
   while (TChainElement *currentFile = (TChainElement*)fileIter.Next()) {
+    cout << "file: " << currentFile->GetTitle() << endl;
+    TObjArray* matches = fileNameMatchPattern.MatchS(currentFile->GetTitle());
+    assert(matches);
+    cout << "matches->GetLast(): " << matches->GetLast() << endl;
+    assert(matches && matches->GetLast()==2);
     TString inputFileName(currentFile->GetTitle());
-    TString directory(inputFileName);
-    preg.Substitute(directory,"$1-wwskim");
+    TString fileName(((TObjString*)matches->At(2))->GetString());
+    TString outputDirectory(((TObjString*)matches->At(1))->GetString());
+    if ( gSystem->Getenv("SkimDir") ) 
+      dataDirMatchPattern.Substitute(outputDirectory,gSystem->Getenv("SkimDir"));
+    assert(gSystem->Getenv("SkimName"));
+    TString skimname = gSystem->Getenv("SkimName");
+    outputDirectory += "/" + skimname;
     // make output directory if it doesn't exist yet
-    if ( gSystem->AccessPathName(directory.Data()) ){
-      gSystem->mkdir(directory.Data(),true);
-      assert( !gSystem->AccessPathName(directory.Data()) );
+    if ( gSystem->AccessPathName(outputDirectory.Data()) ){
+      gSystem->mkdir(outputDirectory.Data(),true);
+      assert( !gSystem->AccessPathName(outputDirectory.Data()) );
     }
-    TString outputFileName(inputFileName);
-    preg.Substitute(outputFileName,"$1-wwskim/$2");
+    TString outputFileName(outputDirectory+"/"+fileName);
     cout << "Skimming " << inputFileName << " -> " << outputFileName << endl;
 
     TFile *output = TFile::Open(outputFileName.Data(), "RECREATE");
@@ -1881,11 +1893,20 @@ bool passedSkimSelection()
 {
   unsigned int nHyps = cms2.hyp_type().size();
   for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
-    if ( cms2.hyp_lt_p4().at(i_hyp).pt() < 20 || cms2.hyp_ll_p4().at(i_hyp).pt() < 20 ) continue;
+    // min lepton Pt
+    if ( cms2.hyp_lt_p4().at(i_hyp).pt() < 10 || cms2.hyp_ll_p4().at(i_hyp).pt() < 10 ) continue;
+    // charge
     if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) continue;
+    // met
     if ( cms2.evt35X_tcmet() < 20 &&
 	 cms2.evt_tcmet() < 20 &&
 	 cms2.evt_pfmet() < 20 ) continue;
+    // id & iso
+    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) continue;
+    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) ) continue;
+    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_lt_index()[i_hyp]) ) continue;
+    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_ll_index()[i_hyp]) ) continue;
+    
     return true;
   }
   return false;
