@@ -384,18 +384,24 @@ vector<LorentzVector> myBabyMaker::CleanJets(
     if( fabs( vect_p4_jets.at(ijet).eta() ) > jet_eta_threshold ) // apply eta threshold
 	  continue;
 	
+	bool haveoverlap = false;
     // apply electron-jet dR vetos
     for (unsigned int iel = 0; iel < elidxs.size(); iel++) {
 	  const int idx = elidxs.at(iel);
       if( ROOT::Math::VectorUtil::DeltaR( vect_p4_jets.at(ijet), els_p4().at(idx) ) < jet_lepton_dR_veto_cone )
-		continue;  
+		haveoverlap = true;  
     }
+	if( haveoverlap )
+	  continue;
     // apply muon-jet dR vetos
     for (unsigned int imu = 0; imu < muidxs.size(); imu++) {
 	  const int idx = muidxs.at(imu);
       if( ROOT::Math::VectorUtil::DeltaR( vect_p4_jets.at(ijet), mus_p4().at(idx) ) < jet_lepton_dR_veto_cone )
-		continue;  
+		haveoverlap = true;
     }
+	if( haveoverlap )
+	  continue;
+
 	LorentzVector jet = vect_p4_jets.at(ijet);
 	if( docor )
 	  jet *= jets_cor().at(ijet);
