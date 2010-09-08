@@ -1,5 +1,5 @@
-#include "TH1.h"
-#include "TGraph.h"
+
+#include "histtools.h"
 
 typedef TH1F H;
 
