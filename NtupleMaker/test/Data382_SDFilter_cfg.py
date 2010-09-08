@@ -5,7 +5,7 @@ process = cms.Process("CMS2")
 from Configuration.EventContent.EventContent_cff import *
 
 process.configurationMetadata = cms.untracked.PSet(
-        version = cms.untracked.string('$Revision: 1.6 $'),
+        version = cms.untracked.string('$Revision: 1.4 $'),
         annotation = cms.untracked.string('CMS2'),
         name = cms.untracked.string('CMS2 test configuration')
 )
@@ -18,22 +18,22 @@ process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAny_cfi")
 process.load("TrackingTools.TrackAssociator.DetIdAssociatorESProducer_cff")
-
 process.load("RecoJets.Configuration.RecoJPTJets_cff")
 process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
 process.load('Configuration/EventContent/EventContent_cff')
 
-process.GlobalTag.globaltag = "MC_38Y_V9::All"
+# global tag
+process.GlobalTag.globaltag = "GR_R_38X_V9::All"
 
+#
 process.options = cms.untracked.PSet(
     Rethrow = cms.untracked.vstring('ProductNotFound')
 )
 
+# logging
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.threshold = ''
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000
-
-
+process.MessageLogger.cerr.FwkReport.reportEvery = 1
 
 #-------------------------------------------------
 # PAT configuration
@@ -52,10 +52,10 @@ addMuonUserIsolation.toolCode(process)
 #change JetID tag
 from PhysicsTools.PatAlgos.tools.jetTools import *
 from PhysicsTools.PatAlgos.tools.cmsswVersionTools import *
-run36xOn35xInput(process)
-addJetID( process, cms.InputTag('prunedUncorrectedCMS2Jets','calojet'), "antikt5" )
+#run36xOn35xInput(process)
+addJetID( process, cms.InputTag("prunedUncorrectedCMS2Jets", "calojet"), "antikt5" )
 switchJetCollection35X(process, 
-                    cms.InputTag('prunedUncorrectedCMS2Jets','calojet'),   
+                    cms.InputTag("prunedUncorrectedCMS2Jets", "calojet"),   
                     doJTA            = True,            
                     doBTagging       = True,            
                     jetCorrLabel     = ('AK5', 'Calo'),
@@ -66,11 +66,10 @@ switchJetCollection35X(process,
                     )
 
 # add statement to prevent the PAT from using generator information
-#from PhysicsTools.PatAlgos.tools.coreTools import *
+from PhysicsTools.PatAlgos.tools.coreTools import *
 #uncomment for data
-#removeMCMatching(process, ['All'])
+removeMCMatching(process, ['All'])
 
-#
 from JetMETCorrections.Type1MET.MetType1Corrections_cff import *
 metJESCorAK5CaloJet.inputUncorJetsLabel = cms.string("ak5CaloJets")
 
@@ -79,69 +78,79 @@ metJESCorAK5CaloJet.inputUncorJetsLabel = cms.string("ak5CaloJets")
 #-----------------------------------------------------------
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100)
+    input = cms.untracked.int32(1500)
 )
 process.options = cms.untracked.PSet(
     Rethrow = cms.untracked.vstring('ProductNotFound')
 )
 
 process.source = cms.Source("PoolSource",
-    skipEvents = cms.untracked.uint32(0),
     fileNames = cms.untracked.vstring(
-    'file:../../../../../10743D97-CEA1-DF11-9F7E-002618943978.root'
+      'file:../../../../../4A1CA502-E189-DF11-A4B5-00237DA15C7C.root'
     ),
 )
 
 
-## define event selection
-process.EventSelectionDilFilt = cms.PSet(
-    SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('pWithHyp', 'pWithGenHyp')
-    )
-)
-
-process.out = cms.OutputModule(       
-        "PoolOutputModule",
-        process.EventSelectionDilFilt,
-        verbose = cms.untracked.bool(True),
-        dropMetaData = cms.untracked.string("NONE"),
-        fileName = cms.untracked.string('ntuple.root')
-)
-
-process.out.outputCommands = cms.untracked.vstring( 'drop *' )
-process.out.outputCommands.extend(cms.untracked.vstring('keep *_*Maker*_*_CMS2*'))
-
-# load event level configurations    
+# load event level configurations
 process.load("CMS2.NtupleMaker.cms2CoreSequences_cff")
-process.load("CMS2.NtupleMaker.cms2GENSequence_cff")
 process.load("CMS2.NtupleMaker.cms2PATSequence_cff")
-process.load('CMS2.NtupleMaker.pixelDigiMaker_cfi')
 process.load("CMS2.NtupleMaker.cms2HFCleaningSequence_cff")
 process.load("CMS2.NtupleMaker.cms2HcalCleaningSequence_cff")
+process.load("CMS2.NtupleMaker.sdFilter_cfi")
 process.load("CMS2.NtupleMaker.cms2PFSequence_cff")
 
-process.load("CMS2.NtupleMaker.hypFilter_cfi")
-process.load("CMS2.NtupleMaker.dilepGenFilter_cfi")
+process.filter = cms.Path(process.sdFilter)
+
+process.hltMaker.processName = cms.untracked.string("HLT")
+process.hltMakerSequence = cms.Sequence(process.hltMaker)
 
 # loosen thresholds on collections
 process.hypDilepMaker.TightLepton_PtCut=cms.double(10.0)
 process.hypDilepMaker.LooseLepton_PtCut=cms.double(10.0)
+process.hypTrilepMaker.TightLepton_PtCut = cms.double(10.0)
 
+process.out = cms.OutputModule(
+        "PoolOutputModule",
+        verbose = cms.untracked.bool(True),
+        dropMetaData = cms.untracked.string("NONE"),
+        fileName = cms.untracked.string('ntuple.root'),
+        SelectEvents = cms.untracked.PSet(
+           SelectEvents = cms.vstring('filter')
+        )
+)
+
+#run PF2PAT
+#from PhysicsTools.PatAlgos.tools.pfTools import *
+#postfix = "PFlow"
+#usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=True, postfix=postfix)
+# 
+#from PhysicsTools.PatAlgos.patEventContent_cff import patEventContentNoCleaning
+
+process.out.outputCommands = cms.untracked.vstring( 'drop *' )
+#process.out.outputCommands = cms.untracked.vstring('
+process.out.outputCommands.extend(cms.untracked.vstring('keep *_*Maker*_*_CMS2*'))
+#process.out.outputCommands = cms.untracked.vstring('keep *_*Maker*_*_CMS2*')]
+#process.out.outputCommands = cms.untracked.vstring('keep *')
+#process.out.outputCommands.extend(cms.untracked.vstring('drop *patEventContentNoCleaning*'))
+process.out.outputCommands.extend(cms.untracked.vstring('drop *_cms2towerMaker*_*_CMS2*'))
 #-------------------------------------------------
 # process paths;
 #-------------------------------------------------
-process.cms2WithEverything             = cms.Sequence( process.cms2CoreSequence
-                                                       * process.cms2PFNoTauSequence
-                                                       * process.cms2GENSequence
-                                                       * process.patDefaultSequence
-                                                       * process.cms2PATSequence
-                                                       * process.cms2HCALcleaningSequence
-                                                       * process.cms2HFcleaningSequence)
+#process.cms2WithEverything = cms.Sequence( process.eventMaker)
+process.cms2WithEverything = cms.Sequence( process.sdFilter
+                                           * process.cms2CoreSequence
+                                           * process.patDefaultSequence
+                                           * process.cms2PATSequence
+                                           * process.cms2PFNoTauSequence
+                                           * process.cms2HCALcleaningSequence
+                                           * process.cms2HFcleaningSequence)
 
 #since filtering is done in the last step, there is no reason to remove these paths
 #just comment out/remove an output which is not needed
+#process.pWithRecoLepton = cms.Path(process.cms2WithEverything * process.aSkimFilter   )
 process.eventMaker.datasetName = cms.string("")
 process.eventMaker.CMS2tag     = cms.string("")
+process.eventMaker.isData      = cms.bool(True)
 
 #stuff to speed up I/O from castor
 process.AdaptorConfig = cms.Service("AdaptorConfig",
@@ -152,10 +161,6 @@ process.AdaptorConfig = cms.Service("AdaptorConfig",
                                   )
 
 process.source.noEventSort = cms.untracked.bool(True)
-
-process.pWithHyp    = cms.Path(process.cms2WithEverything * process.hypFilter)
-process.pWithGenHyp = cms.Path(process.cms2WithEverything * process.dilepGenFilter)
-
 
 process.p = cms.Path(process.cms2WithEverything)
 process.outpath         = cms.EndPath(process.out)

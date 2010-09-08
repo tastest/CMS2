@@ -5,7 +5,7 @@ process = cms.Process("CMS2")
 from Configuration.EventContent.EventContent_cff import *
 
 process.configurationMetadata = cms.untracked.PSet(
-        version = cms.untracked.string('$Revision: 1.6 $'),
+        version = cms.untracked.string('$Revision: 1.8 $'),
         annotation = cms.untracked.string('CMS2'),
         name = cms.untracked.string('CMS2 test configuration')
 )
@@ -109,9 +109,9 @@ process.load("CMS2.NtupleMaker.cms2CoreSequences_cff")
 process.load("CMS2.NtupleMaker.cms2GENSequence_cff")
 process.load("CMS2.NtupleMaker.cms2PATSequence_cff")
 process.load('CMS2.NtupleMaker.pixelDigiMaker_cfi')
-#process.load('CMS2.NtupleMaker.beamHaloSequence_cff')
+process.load("CMS2.NtupleMaker.cms2HFCleaningSequence_cff")
+process.load("CMS2.NtupleMaker.cms2HcalCleaningSequence_cff")
 process.load("CMS2.NtupleMaker.cms2PFSequence_cff")
-
 
 # loosen thresholds on collections
 process.hypDilepMaker.TightLepton_PtCut=cms.double(10.0)
@@ -124,7 +124,9 @@ process.cms2WithEverything             = cms.Sequence( process.cms2CoreSequence
                                                        * process.cms2PFNoTauSequence
                                                        * process.cms2GENSequence
                                                        * process.patDefaultSequence
-                                                       * process.cms2PATSequence)
+                                                       * process.cms2PATSequence
+                                                       * process.cms2HCALcleaningSequence
+                                                       * process.cms2HFcleaningSequence)
 
 #since filtering is done in the last step, there is no reason to remove these paths
 #just comment out/remove an output which is not needed
