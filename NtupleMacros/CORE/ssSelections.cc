@@ -1,3 +1,4 @@
+
 #include <assert.h>
 #include <algorithm>
 #include "Math/LorentzVector.h"
@@ -254,4 +255,14 @@ bool makesExtraZ (int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutI
 	 }
 
 	 return false;
+}
+
+bool passThreeChargeRequirement(int elIdx)
+{
+	 int el_charge = cms2.els_charge()[elIdx] + cms2.els_sccharge()[elIdx] + cms2.els_trk_charge()[elIdx];
+	 int el_prod   = cms2.els_charge()[elIdx] * cms2.els_sccharge()[elIdx] * cms2.els_trk_charge()[elIdx];
+		  if (abs(el_charge) != 3 || abs(el_prod) != 1)
+			   return false;
+
+	 return true;
 }
