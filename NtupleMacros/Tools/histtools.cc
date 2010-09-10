@@ -7,16 +7,22 @@ H cumulate (const H &in, bool increasing)
 {
      H h_out(in.GetName() + TString("tmp"), in.GetTitle(), in.GetNbinsX(), 
 	     in.GetBinLowEdge(1), in.GetBinLowEdge(in.GetNbinsX() + 1));
+     h_out.Sumw2();
      double sum = 0;
+     double err2 = 0;
      if (increasing) {
 	  for (int j = 0; j <= in.GetNbinsX() + 1; ++j) {
 	       sum += in.GetBinContent(j);
+           err2 += in.GetBinError(j)*in.GetBinError(j);
 	       h_out.SetBinContent(j, sum);
+           h_out.SetBinError(j, sqrt(err2));
 	  }
      } else {
 	  for (int j = in.GetNbinsX() + 1; j >= 0; --j) {
 	       sum += in.GetBinContent(j);
-	       h_out.SetBinContent(j, sum);
+           err2 += in.GetBinError(j)*in.GetBinError(j);
+           h_out.SetBinContent(j, sum);
+           h_out.SetBinError(j, sqrt(err2));
 	  }
      }
      return h_out;
