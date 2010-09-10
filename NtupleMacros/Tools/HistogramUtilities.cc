@@ -1,6 +1,7 @@
 
 #include "HistogramUtilities.h"
 #include "AllDataSources.h"
+#include "histtools.h"
 
 using namespace std;
 
@@ -112,7 +113,7 @@ TH2F* HistogramUtilities::get2dHistogram(sources_t theSources, TString var, TStr
 }
 
 //get a stack of single var, hyp for given sources
-THStack* HistogramUtilities::getStack(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin) 
+THStack* HistogramUtilities::getStack(sources_t theSources, TString var, TString nJets, TString hyp_type, Int_t rebin, bool plotCumulated, bool cumulateAscending) 
 {
     // create a new stack object
     //THStack *st_temp = new THStack("st_temp", ""); //instead, use a sensible name:
@@ -130,16 +131,19 @@ THStack* HistogramUtilities::getStack(sources_t theSources, TString var, TString
             //gDirectory->ls();
             TH1F *h1_temp = ((TH1F*)(file_->Get(sources_[i].getName() + histNameSuffix)->Clone()));
             //std::cout << h1_temp->GetBinContent(1) << std::endl;
-            if (sources_[i].getColor() != 0) {
-                h1_temp->SetFillColor(sources_[i].getColor());
-                h1_temp->SetLineColor(sources_[i].getColor());
-            }
             Int_t lastBin = h1_temp->GetNbinsX();
             h1_temp->SetBinContent(lastBin, h1_temp->GetBinContent(lastBin) + h1_temp->GetBinContent(lastBin+1));
             if( lumiNorm_ != 1. )
                 h1_temp->Scale(lumiNorm_);
             if( rebin != 1 )
                 h1_temp->Rebin(rebin);
+            if (plotCumulated) {
+                h1_temp = (TH1F*)cumulate(*h1_temp, cumulateAscending).Clone();
+            }
+            if (sources_[i].getColor() != 0) {
+                h1_temp->SetFillColor(sources_[i].getColor());
+                h1_temp->SetLineColor(sources_[i].getColor());
+            }
             st_temp->Add(h1_temp);
         }
     }
