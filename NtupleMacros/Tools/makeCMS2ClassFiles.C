@@ -617,84 +617,83 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile) {
   
   codef << "/* Usage:" << endl;
   codef << "   root [0] .L ScanChain.C++" << endl;
-  codef << "   root [1] TChain *chain = new TChain(\"Events\")" << endl;
-  codef << "   root [2] chain->Add(\"merged_ntuple.root\")" << endl;
-  codef << "   root [3] ScanChain(chain)" << endl;
+  codef << "   root [1] TFile *_file0 = TFile::Open(\"merged_ntuple.root\")" << endl;
+  codef << "   root [2] TChain *chain = new TChain(\"Events\")" << endl;
+  codef << "   root [3] chain->Add(\"merged_ntuple.root\")" << endl;
+  codef << endl;
+  codef << "   There are several places where one may create " << Classname << " cms2" << endl;
+  codef << "   It can be done here (in a doAll.C script), i.e.:" << endl;
+  codef << endl;
+  codef << "   root [4] " << Classname << " cms2 " << endl;
+  codef << endl;
+  codef << "   It can be done in the source as is done below, or it can be" << endl;
+  codef << "   ascertained by including CORE/CMS2.cc as is commented out" << endl;
+  codef << "   below.  They are all the same, and everything will work so" << endl;
+  codef << "   long as it is created somewhere globally." << endl;
+  codef << endl;
+  codef << "   root [5] ScanChain(chain)" << endl;
   codef << "*/" << endl;
-  codef << "" << endl;
-  codef << "// C++" << endl;
   codef << "#include <iostream>" << endl;
   codef << "#include <vector>" << endl;
   codef << "" << endl;
-  codef << "// ROOT" << endl;
   codef << "#include \"TChain.h\"" << endl;
   codef << "#include \"TFile.h\"" << endl;
   codef << "#include \"TDirectory.h\"" << endl;
   codef << "#include \"TROOT.h\"" << endl;
   codef << "" << endl;
-  codef << "// CMS2" << endl;
   codef << "#include \"" + Classname+".cc\"" << endl;
   if(branchNamesFile!="")
     codef << "#include \"branches.h\"" << endl;
+  
+  codef << endl;
   codef << "using namespace tas;" << endl;
   codef << endl;
-  codef << "void progress( int nEventsTotal, int nEventsChain ){" << endl;
-  codef << "  int period = 1000;" << endl;
-  codef << "  if(nEventsTotal%1000 == 0) {" << endl;
-  codef << "    // xterm magic from L. Vacavant and A. Cerri" << endl;
-  codef << "    if (isatty(1)) {" << endl;
-  codef << "      if( ( nEventsChain - nEventsTotal ) > period ){" << endl;
-  codef << "        float frac = (float)nEventsTotal/(nEventsChain*0.01);" << endl;
-  codef << "        printf(\"\\015\\033[32m ---> \\033[1m\\033[31m%4.1f%%\"" << endl;
-  codef << "             \"\\033[0m\\033[32m <---\\033[0m\\015\", frac);" << endl;
-  codef << "        fflush(stdout);" << endl;
-  codef << "      }" << endl;
-  codef << "      else {" << endl;
-  codef << "        printf(\"\\015\\033[32m ---> \\033[1m\\033[31m%4.1f%%\"" << endl;
-  codef << "               \"\\033[0m\\033[32m <---\\033[0m\\015\", 100.);" << endl;
-  codef << "        cout << endl;" << endl;
-  codef << "      }" << endl;
-  codef << "    }" << endl;
-  codef << "  }" << endl;
-  codef << "}" << endl;
-  codef << "" << endl;
+  
   codef << "int ScanChain( TChain* chain, int nEvents = -1, std::string skimFilePrefix=\"\") {" << endl;
   codef << "" << endl;
-  codef << "  // Example Histograms" << endl;
-  codef << "  TDirectory *rootdir = gDirectory->GetDirectory(\"Rint:\");" << endl;
-  codef << "  TH1F *samplehisto = new TH1F(\"samplehisto\", \"Example histogram\", 200,0,200);" << endl;
-  codef << "  samplehisto->SetDirectory(rootdir);" << endl;
+  codef << "  TObjArray *listOfFiles = chain->GetListOfFiles();" << endl;
   codef << "" << endl;
-  codef << "  // File Loop" << endl;
-  codef << "  if( nEvents == -1 ) nEvents = chain->GetEntries();" << endl;
-  codef << "  unsigned int nEventsChain = nEvents;" << endl;
+  codef << "  unsigned int nEventsChain=0;" << endl;
+  codef << "  if(nEvents==-1) " << endl << "    nEvents = chain->GetEntries();" << endl;
+  codef << "  nEventsChain = nEvents;" << endl;
+  
   codef << "  unsigned int nEventsTotal = 0;" << endl;
   if(branchNamesFile!="")
-  codef << "  InitSkimmedTree(skimFilePrefix);" << endl;
-  codef << "  TObjArray *listOfFiles = chain->GetListOfFiles();" << endl;
+    codef << "  InitSkimmedTree(skimFilePrefix);" << endl;
+  codef << "  TDirectory *rootdir = gDirectory->GetDirectory(\"Rint:\");" << endl << endl;
+  codef << "  TH1F *samplehisto = new TH1F(\"samplehisto\", \"Example histogram\", 200,0,200);" << endl;
+  codef << "  samplehisto->SetDirectory(rootdir);" << endl;
+
+  codef << "  // file loop" << endl;
   codef << "  TIter fileIter(listOfFiles);" << endl;
   codef << "  TFile *currentFile = 0;" << endl;
-  codef << "  while ( (currentFile = (TFile*)fileIter.Next()) ) {" << endl;
-  codef << "    // Get File Content" << endl;
-  codef << "    TFile f( currentFile->GetTitle() );" << endl;
+  codef << "  while ( currentFile = (TFile*)fileIter.Next() ) {" << endl;
+  codef << "    TFile f(currentFile->GetTitle());" << endl;
   codef << "    TTree *tree = (TTree*)f.Get(\"Events\");" << endl;
   codef << "    cms2.Init(tree);" << endl;
   codef << "    " << endl;
-  codef << "    // Event Loop" << endl;
+  codef << "    //Event Loop" << endl;
   codef << "    unsigned int nEvents = tree->GetEntries();" << endl;
   codef << "    for( unsigned int event = 0; event < nEvents; ++event) {" << endl;
-  codef << "    " << endl;
-  codef << "      // Get Event Content" << endl;
   codef << "      cms2.GetEntry(event);" << endl;
   codef << "      ++nEventsTotal;" << endl;
-  codef << "    " << endl;
-  codef << "      // Progress" << endl;
-  codef << "      progress( nEventsTotal, nEventsChain );" << endl;
+
+  codef << "      // Progress feedback to the user" << endl;
+  codef << "      if(nEventsTotal%1000 == 0) {" << endl;
+  codef << "        // xterm magic from L. Vacavant and A. Cerri" << endl;
+  codef << "        if (isatty(1)) {" << endl;
+  codef << "          printf(\"\\015\\033[32m ---> \\033[1m\\033[31m%4.1f%%\"" << endl;
+  codef << "          \"\\033[0m\\033[32m <---\\033[0m\\015\", (float)nEventsTotal/(nEventsChain*0.01));" << endl;
+  codef << "          fflush(stdout);" << endl;
+  codef << "        }" << endl;
+  codef << "      }//if(nEventsTotal%20000 == 0) {\n\n\n";
+										      
+
   codef << "    }" << endl;
-  codef << "  " << endl;
   codef << "    delete tree;" << endl;
   codef << "    f.Close();" << endl;
   codef << "  }" << endl;
+  codef << "" << endl;
   codef << "  if ( nEventsChain != nEventsTotal ) {" << endl;
   codef << "    std::cout << \"ERROR: number of events from files is not equal to total number of events\" << std::endl;" << endl;
   codef << "  }" << endl;
@@ -704,11 +703,7 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile) {
     codef << "  outTree_->Write();" << endl;
     codef << "  outFile_->Close();" << endl;
   }
-  codef << "  " << endl;
-  codef << "  // Example Histograms" << endl;
   codef << "  samplehisto->Draw();" << endl;
-  codef << "  " << endl;
-  codef << "  // return" << endl;
   codef << "  return 0;" << endl;
   codef << "}" << endl;
   
