@@ -35,10 +35,10 @@ void doMC() {
 
     // ttbar
     TChain *chain_ttbar = new TChain("Events");
-    chain_ttbar->Add(ntuple_location + "TTbar_Spring10-START3X_V26_S09-v1/V03-04-08/merged_ntuple*.root");
+    chain_ttbar->Add(ntuple_location + "TTbar_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged_ntuple*.root");
 
     TChain *chain_ttbarmg = new TChain("Events");
-    chain_ttbarmg->Add(ntuple_location + "TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/*.root");
+    chain_ttbarmg->Add(ntuple_location + "TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged_ntuple*.root");
 
     // zee
     TChain *chain_zee = new TChain("Events");
@@ -52,10 +52,10 @@ void doMC() {
     // run it
     //
 
-    //looper->ScanChain("ttbar", chain_ttbar, (157.5/165.0));
-    //looper->ScanChain("ttbarmg", chain_ttbarmg, (157.5/165.0));
+    looper->ScanChain("ttbar", chain_ttbar, (157.5/165.0));
+    looper->ScanChain("ttbarmg", chain_ttbarmg, (157.5/165.0));
     looper->ScanChain("dyee", chain_zee, (1666.0/1300.0));
-    looper->ScanChain("ww", chain_ww);
+    //looper->ScanChain("ww", chain_ww);
 
     //
     // write histograms
