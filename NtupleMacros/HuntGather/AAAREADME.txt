@@ -4,6 +4,7 @@ mkdir cands dumps dumps2xfer logs emu_skim emu_baby dilep_skim dilep_baby trilep
 # Be  indepedent  of the  user  when
 # when running root
 mv rootrc .rootrc
+# make sure you are using root 5.26 or later
 
 # Check out the HEAD of CORE; if it
 # doesn't work fix it
@@ -42,7 +43,10 @@ cp /afs/cern.ch/user/s/slava77/public/jsons/august30/special/Cert_TopAug30_Merge
 # just a gather example, I run it thusly:
 root [0] .L goodrun.cc+
 root [1] .L gather.C+
-root [2] .x gather_example_doAll.C
+root [2] // for a single MC and data plot:
+root [3] .x gather_example_doAll.C+
+root [4] // or for a set of a few plots comparing with the full ttbar MC set
+root [5] .x gather_several_doAll.C+
 
 # Have a look, I think this  technology
 # is sufficient for gathering
