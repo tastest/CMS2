@@ -25,21 +25,7 @@ bool isGoodLeptonNoIsoSS (int id, int lepIdx, bool applyAlignmentCorrection, boo
 {
 	 //electrons
 	 if (abs(id) == 11)
-	 {  
-		  const cuts_t elIDcuts =		(1ll<<ELEIP_200)                |                                                                  
-										(1ll<<ELENOMUON_010)            |
-										(1ll<<ELENOTCONV_HITPATTERN)    |
-										(1ll<<ELENOTCONV_DISTDCOT002)   |
-										(1ll<<ELESCET_010)              |
-										(1ll<<ELEPT_010)				|
-										(1ll<<ELEETA_250)				|
-										(1ll<<ELENOSPIKE_SWISS005)		|
-										(1ll<<ELESEED_ECAL);
-    
-		  unsigned int answer_vbtf = electronId_VBTF(lepIdx, VBTF_35X_80, applyAlignmentCorrection, removedEtaCutInEndcap);
-		  bool elsvbtf80_ = ( ( answer_vbtf & (1ll<<ELEID_ID) ) == (1ll<<ELEID_ID) );
-		  return (pass_electronSelection(lepIdx, elIDcuts, applyAlignmentCorrection, removedEtaCutInEndcap) && elsvbtf80_);
-	 }
+		  return (pass_electronSelection(lepIdx, electronSelection_ss_NoIso, applyAlignmentCorrection, removedEtaCutInEndcap));
 
 	 //muons
 	 if (abs(id) == 13)
@@ -62,19 +48,14 @@ bool isGoodLeptonwIsoSS (int id, int lepIdx, bool applyAlignmentCorrection, bool
 	 if(!isGoodLeptonNoIsoSS(id, lepIdx, applyAlignmentCorrection, removedEtaCutInEndcap))
 		  return false;
 
-	 // 11 is a electron
 	 if (abs(id)== 11)
-	 {
-		  const cuts_t elISOcuts =   (1ll<<ELEISO_REL010);
-		  if (!pass_electronSelection(lepIdx, elISOcuts, applyAlignmentCorrection, removedEtaCutInEndcap))
-			   return false;
-	 }
+		  return (pass_electronSelection(lepIdx, electronSelection_ss, applyAlignmentCorrection, removedEtaCutInEndcap));
 
-	 // 13 is a muon
-	 if(abs(id) == 13) 
-		  if(muonIsoValue(lepIdx) > 0.10)  return false;
-        
-	 return true;
+	 if (abs(id) == 13) 
+		  if (muonId(lepIdx, Nominal))
+			   return true;
+
+	 return false;
 }
 
 
