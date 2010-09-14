@@ -238,12 +238,18 @@ bool makesExtraZ (int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutI
 	 return false;
 }
 
+/*****************************************************************************************/
+// require electron GSF, CTF and SC charges agree
+/*****************************************************************************************/
 bool passThreeChargeRequirement(int elIdx)
 {
-	 int el_charge = cms2.els_charge()[elIdx] + cms2.els_sccharge()[elIdx] + cms2.els_trk_charge()[elIdx];
-	 int el_prod   = cms2.els_charge()[elIdx] * cms2.els_sccharge()[elIdx] * cms2.els_trk_charge()[elIdx];
-		  if (abs(el_charge) != 3 || abs(el_prod) != 1)
-			   return false;
+	 int trk_idx = cms2.els_trkidx()[elIdx];
 
-	 return true;
+	 if (trk_idx >= 0)
+	 {
+		  if (cms2.els_sccharge()[elIdx] == cms2.els_trk_charge()[elIdx] && cms2.els_trk_charge()[elIdx] == cms2.trks_charge()[trk_idx])			   
+			   return true;
+	 }
+
+	 return false;
 }
