@@ -42,7 +42,7 @@ bool passMuTriggerSS(unsigned int hypIdx);
 bool makesExtraZ(int hypIdx);
 
 /*****************************************************************************************/
-// extra Z veto
+// require electron GSF, CTF and SC charges agree
 /*****************************************************************************************/
 bool passThreeChargeRequirement(int elIdx);
 
