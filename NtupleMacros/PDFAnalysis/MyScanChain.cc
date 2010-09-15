@@ -72,9 +72,10 @@ void MyScanChain::FormatHist(TH1F** hist, std::string sampleName, std::string na
 // set the pdf to use
 //
 
-void MyScanChain::specifyPDF(std::string pdfName) 
+void MyScanChain::specifyPDF(std::string pdfName1, std::string pdfName2) 
 {
-    pdfName_ = pdfName;
+    pdfName1_ = pdfName1;
+    pdfName2_ = pdfName2;
 }
 
 //
@@ -102,17 +103,26 @@ int MyScanChain::ScanChain(std::string sampleName, TChain *chain, float kFactor,
 
     // initialise the pdf 
     const int pdfSubset = 0;
-    LHAPDF::initPDFSet(pdfName_, LHAPDF::LHGRID, pdfSubset);
+    LHAPDF::initPDFSet(1, pdfName1_, LHAPDF::LHGRID, pdfSubset);
+    LHAPDF::initPDFSet(2, pdfName2_, LHAPDF::LHGRID, pdfSubset);
+
+    // the weight for the central value for 
+    // some other pdf
+    double pdfWeightOther = 1.0;
 
     // set up array to hold the weights for each event
+    // for the pdf used to generate the sample
     // size is set to maximum possible
     double pdfWeights[MAXWEIGHT];
     unsigned int nsets = 1;
-    if (LHAPDF::numberPDF() > 1) nsets += LHAPDF::numberPDF();
+    int genPdf = 1;
+    int otherPdf = 2;
+    if (LHAPDF::numberPDF(genPdf) > 1) nsets += LHAPDF::numberPDF(genPdf);
 
     //
     // format histograms
     // and set up quantities to study
+    // for the pdf used to generate sample
     //
 
     double acceptance[MAXWEIGHT];
@@ -123,6 +133,13 @@ int MyScanChain::ScanChain(std::string sampleName, TChain *chain, float kFactor,
         nTotal[i] = 0.0;
         nPass[i] = 0.0;
     }
+
+    //
+    // and for the other specified pdf
+    //
+    double acceptanceOther = 0.0;
+    double nTotalOther = 0.0;
+    double nPassOther = 0.0;
 
     //
     // file loop
@@ -167,28 +184,57 @@ int MyScanChain::ScanChain(std::string sampleName, TChain *chain, float kFactor,
             // does this event pass the analysis selection
             //
 
+            // mc leptons
+            std::vector<unsigned int> mcLeptonIndices;
             int nGoodLep = 0;
             for (size_t i = 0; i < cms2.genps_id().size(); ++i) 
             {
                 if (!(abs(cms2.genps_id()[i]) == 11 || abs(cms2.genps_id()[i]) == 13)) continue;
-                if(cms2.genps_p4()[i].Pt() < 20.0 || abs(cms2.genps_p4()[i].Eta()) > 2.5) continue;
-                //if (abs(cms2.genps_id_mother()[i]) != 24) continue;
+                if ( cms2.genps_p4()[i].Pt() < 20.0 || abs(cms2.genps_p4()[i].Eta()) > 2.5) continue;
                 nGoodLep++;
+                mcLeptonIndices.push_back(i);
+            }
+
+            // mc jets
+            int nGoodJet = 0;
+            for (size_t j = 0; j < cms2.evt_ngenjets(); ++j) 
+            {
+                if (cms2.genjets_p4()[j].Pt() < 30.0) continue;
+                if (fabs(cms2.genjets_p4()[j].Eta()) > 2.5) continue;
+                bool clean = true;
+                for ( size_t i = 0; i < mcLeptonIndices.size(); ++i) 
+                {
+                    if (ROOT::Math::VectorUtil::DeltaR(cms2.genjets_p4()[j], cms2.genps_p4()[mcLeptonIndices[i]]) < 0.4) {
+                        clean = false;
+                        break;
+                    }
+                }
+                if (clean) nGoodJet ++;
             }
 
             bool passSelection = false;
-            if (nGoodLep == 2) passSelection = true;
+            if (nGoodLep == 2 && nGoodJet >= 2) passSelection = true;
 
             //
             // do PDF analysis
             //
 
+            // central value for the weight for the pdf used to generate the sample
+            // is always going to be one
             pdfWeights[0] = 1.0;
 
-            // calculate the central value
-            LHAPDF::initPDF(0);
+            // calculate the central value of the other pdf specified for this event
+            LHAPDF::usePDFMember(otherPdf, 0);
+            double fx1Q0Other = LHAPDF::xfx(cms2.pdfinfo_x1(), cms2.pdfinfo_scale(), cms2.pdfinfo_id1()) / cms2.pdfinfo_x1();
+            double fx2Q0Other = LHAPDF::xfx(cms2.pdfinfo_x2(), cms2.pdfinfo_scale(), cms2.pdfinfo_id2()) / cms2.pdfinfo_x2();
+            
+            // calculate the central value of the pdf used to generate the sample
+            LHAPDF::usePDFMember(genPdf, 0);
             double fx1Q0 = LHAPDF::xfx(cms2.pdfinfo_x1(), cms2.pdfinfo_scale(), cms2.pdfinfo_id1()) / cms2.pdfinfo_x1();
             double fx2Q0 = LHAPDF::xfx(cms2.pdfinfo_x2(), cms2.pdfinfo_scale(), cms2.pdfinfo_id2()) / cms2.pdfinfo_x2();
+
+            // calculate a weight for this events central value into the other pdf
+            pdfWeightOther = (fx1Q0Other*fx2Q0Other)/(fx1Q0*fx2Q0);
 
             // calculate the weight for the ith subset
             // for this event
@@ -207,7 +253,12 @@ int MyScanChain::ScanChain(std::string sampleName, TChain *chain, float kFactor,
             for (unsigned int subset = 0; subset < nsets; ++subset) 
             {
                 nTotal[subset] += pdfWeights[subset];
-                if (passSelection) nPass[subset] += pdfWeights[subset];
+                nTotalOther += pdfWeightOther;
+                if (passSelection) {
+                    nPass[subset] += pdfWeights[subset];
+                    nPassOther += pdfWeightOther;
+                }
+
             }
 
         } // end loop on files
@@ -222,6 +273,7 @@ int MyScanChain::ScanChain(std::string sampleName, TChain *chain, float kFactor,
     // Analyse the observables
     //
 
+    acceptanceOther = nPassOther / nTotalOther;
     for (unsigned int i = 0; i < nsets; ++i) {
         acceptance[i] = nPass[i] / nTotal[i];
     } 
@@ -245,6 +297,7 @@ int MyScanChain::ScanChain(std::string sampleName, TChain *chain, float kFactor,
     std::cout << "[MyScanChain::ScanChain] Analysing PDF uncertainty on the acceptance" << std::endl;
     std::cout << "[MyScanChain::ScanChain] Central value is         : " << X0 << "$^{+" << plus_max << "}_{-" << minus_max << "}" << std::endl;
     std::cout << "[MyScanChain::ScanChain] Relative uncertainty is  : $^{+" << plus_max/X0 << "}_{-" << minus_max/X0 << "}" << std::endl;
+    std::cout << "[MyScanChain::ScanChain] Central value for " << pdfName2_ << ": " << acceptanceOther << std::endl;
 
     //
     // make sure we're back in the right root dir

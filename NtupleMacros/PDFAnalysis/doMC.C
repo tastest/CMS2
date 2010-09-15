@@ -26,7 +26,10 @@ void doMC() {
     // specify the PDF set to use
     // this should be a valid LHgrid file
     //
-    looper->specifyPDF("/tas07/disk00/jribnik/lhapdf/share/lhapdf/PDFsets/cteq61");
+    //looper->specifyPDF("/tas07/disk00/jribnik/lhapdf/share/lhapdf/PDFsets/cteq61");
+    //looper->specifyPDF("pdfs/MSTW2008nlo90cl");
+    looper->specifyPDF("pdfs/cteq61", "pdfs/MSTW2008nlo68cl");
+    //looper->specifyPDF("pdfs/cteq61", "pdfs/NNPDF20_100");
 
     //
     // chains for input files
@@ -52,9 +55,9 @@ void doMC() {
     // run it
     //
 
-    looper->ScanChain("ttbar", chain_ttbar, (157.5/165.0));
+    //looper->ScanChain("ttbar", chain_ttbar, (157.5/165.0));
     looper->ScanChain("ttbarmg", chain_ttbarmg, (157.5/165.0));
-    looper->ScanChain("dyee", chain_zee, (1666.0/1300.0));
+    //looper->ScanChain("dyee", chain_zee, (1666.0/1300.0));
     //looper->ScanChain("ww", chain_ww);
 
     //
