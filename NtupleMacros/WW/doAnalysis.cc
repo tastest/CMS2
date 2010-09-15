@@ -1018,7 +1018,7 @@ void countFakableObjectsAfterAllSelections(unsigned int i_hyp,
   }
 }
 
-void hypo (int i_hyp, double kFactor, RooDataSet* dataset) 
+void hypo (int i_hyp, double weight, RooDataSet* dataset) 
 {
   /*
   unsigned int nGenLeptons = 0;
@@ -1031,7 +1031,7 @@ void hypo (int i_hyp, double kFactor, RooDataSet* dataset)
   HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
   
   // The event weight including the kFactor (scaled to 1 fb-1)
-  float weight = cms2.evt_scale1fb() * kFactor;
+  // float weight = cms2.evt_scale1fb() * kFactor;
 
   monitor.nEvtProcessed = cms2.evt_nEvts();
   monitor.count(cms2, type, "Total number before cuts");
@@ -1336,10 +1336,8 @@ RooDataSet* MakeNewDataset(const char* name)
   return dataset;
 }
 
-void AddIsoSignalControlSample( int i_hyp, double kFactor, RooDataSet* dataset) {
+void AddIsoSignalControlSample( int i_hyp, double weight, RooDataSet* dataset) {
   if ( !dataset ) return;
-  // The event weight including the kFactor (scaled to 1 fb-1)
-  float weight = cms2.evt_scale1fb() * kFactor;
   // Cut on lepton Pt
   if (cms2.hyp_lt_p4()[i_hyp].pt() < 20.0) return;
   if (cms2.hyp_ll_p4()[i_hyp].pt() < 20.0) return;
@@ -1384,23 +1382,7 @@ void AddIsoSignalControlSample( int i_hyp, double kFactor, RooDataSet* dataset) 
   }
 }
 
-RooDataSet* ScanChain( TChain* chain, 
-		       enum Sample sample, 
-		       double integratedLumi, // in unit of pb^-1
-		       double xsec,
-		       bool identifyEvents, 
-		       bool qcdBackground) 
-{
-  // chain->SetParallelUnzip(kTRUE);
-  // gErrorIgnoreLevel = 3000; // suppress warnings about missing dictionaries 
-  unsigned int nEventsChain = chain->GetEntries();  // number of entries in chain --> number of events from all files
-  gErrorIgnoreLevel = -1;
-  unsigned int nEventsTotal = 0;
-
- // declare and create array of histograms
-  const char *prefix = SampleName(sample);
-  RooDataSet* dataset = MakeNewDataset(prefix);
-  
+void initializeHistograms(const char *prefix, bool qcdBackground){
   hypos_total          = new TH1F(Form("%s_hypos_total",prefix),"Total number of hypothesis counts",4,0,4);
   hypos_total_weighted = new TH1F(Form("%s_hypos_total_weighted",prefix),"Total number of hypotheses (weighted)",4,0,4);
   hypos_total_weighted->Sumw2();
@@ -1556,6 +1538,27 @@ RooDataSet* ScanChain( TChain* chain,
     hIsoSingleElectron         = new TH1F(Form("%s_hIsoSingleElectron",prefix),         "Electron isolation distribution for goodElectronWithoutIsolation", 100,0,10);
     hIsoSingleElectron->Sumw2();
   }
+}
+
+RooDataSet* ScanChain( TChain* chain, 
+		       enum Sample sample, 
+		       double integratedLumi, // in unit of pb^-1, if negative the weight is 1.
+		       double xsec,           // in unit of pb, if negative take it from evt_xsec_excl*evt_kfactor
+		       int nProcessedEvents,  // if negative, take it from evt_nEvts
+		       bool identifyEvents, 
+		       bool qcdBackground) 
+{
+  // chain->SetParallelUnzip(kTRUE);
+  // gErrorIgnoreLevel = 3000; // suppress warnings about missing dictionaries 
+  unsigned int nEventsChain = chain->GetEntries();  // number of entries in chain --> number of events from all files
+  gErrorIgnoreLevel = -1;
+  unsigned int nEventsTotal = 0;
+
+ // declare and create array of histograms
+  const char *prefix = SampleName(sample);
+  RooDataSet* dataset = MakeNewDataset(prefix);
+  
+  initializeHistograms(prefix,qcdBackground);
 
   // clear list of duplicates
   already_seen.clear();
@@ -1570,11 +1573,8 @@ RooDataSet* ScanChain( TChain* chain,
   TIter fileIter(listOfFiles);
   monitor.counters.clear();
   while (TChainElement *currentFile = (TChainElement*)fileIter.Next()) {
-       // need to call TFile::Open(), since the file is not
-       // necessarily a plain TFile (TNetFile, TDcacheFile, etc)
 //        printf("current file: %s (%s), %s\n", currentFile->GetName(), 
 // 	      currentFile->GetTitle(), currentFile->IsA()->GetName());
-       
        TFile *f = TFile::Open(currentFile->GetTitle()); 
        assert(f);
        TTree *tree = (TTree*)f->Get("Events");
@@ -1588,10 +1588,11 @@ RooDataSet* ScanChain( TChain* chain,
        for( unsigned int event = 0; event < nEvents; ++event) {
 	 cms2.GetEntry(event);  // get entries for Event number event from branches of TTree tree
 	 
-	 // Reset the kFactor if the xsec argument is specified
-	 double kFactor = integratedLumi/1000.0;
-	 if( xsec > 0) kFactor = (integratedLumi/1000.0) * xsec / (cms2.evt_xsec_excl()*cms2.evt_kfactor());
-       
+	 double weight = 1;
+	 if ( integratedLumi>0 ){
+	   weight = integratedLumi * (xsec>0?xsec:cms2.evt_xsec_excl()*cms2.evt_kfactor()) /
+	     (nProcessedEvents>0?nProcessedEvents:cms2.evt_nEvts());
+	 }       
 	 ++nEventsTotal;
 	 if (qcdBackground) {
 	   // get fake rates
@@ -1600,7 +1601,7 @@ RooDataSet* ScanChain( TChain* chain,
 	   extractIsoSingleLepton();
 	 }
 	 
-	 if (cms2.trks_d0().size() == 0) continue;  // needed to get rid of back Monte Carlo events in CMSSW_2_X analysis
+	 if (cms2.trks_d0().size() == 0) continue;  // needed to get rid of bad Monte Carlo events in CMSSW_2_X analysis
 	 if (cms2.hyp_type().size() == 0) continue; // skip events without hypothesis
 	 EventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.evt_lumiBlock(), cms2.trks_d0()[0], 
 				cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
@@ -1630,13 +1631,12 @@ RooDataSet* ScanChain( TChain* chain,
 	     continue;
 	   }
 	 }
-	 
 	 // loop over hypothesis candidates
 	 unsigned int nHyps = cms2.hyp_type().size();
 	 for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
 	   if(cms2.hyp_p4().at(i_hyp).mass2() < 0 ) break;
-	   hypo(i_hyp, kFactor, dataset);
-	   AddIsoSignalControlSample(i_hyp, kFactor, dataset);
+	   hypo(i_hyp, weight, dataset);
+	   AddIsoSignalControlSample(i_hyp, weight, dataset);
 	 }
        }
        t.Stop();
@@ -1754,6 +1754,7 @@ void ProcessSample( std::string file_pattern,
 		    Sample sample, 
 		    double integratedLumi,
 		    double xsec,
+		    int nProcessedEvents,
 		    RooDataSet* output_dataset, 
 		    Color_t color, 
 		    bool identifyEvents,
@@ -1761,13 +1762,14 @@ void ProcessSample( std::string file_pattern,
 {
   std::vector<string> vec;
   vec.push_back(file_pattern);
-  ProcessSample(vec,sample,integratedLumi,xsec,output_dataset,color,identifyEvents,qcdBackground);
+  ProcessSample(vec,sample,integratedLumi,xsec,nProcessedEvents,output_dataset,color,identifyEvents,qcdBackground);
 }
 
 void ProcessSample( std::vector<std::string> file_patterns, 
 		    Sample sample, 
 		    double integratedLumi,
 		    double xsec,
+		    int nProcessedEvents,
 		    RooDataSet* output_dataset, 
 		    Color_t color, 
 		    bool identifyEvents,
@@ -1783,7 +1785,7 @@ void ProcessSample( std::vector<std::string> file_patterns,
     SkimChain(tchain);
   } else {
     std::cout << "Processing " << SampleName(sample) << ".." << std::endl;
-    RooDataSet* data = ScanChain(tchain,sample,integratedLumi,xsec,identifyEvents,qcdBackground);
+    RooDataSet* data = ScanChain(tchain,sample,integratedLumi,xsec,nProcessedEvents,identifyEvents,qcdBackground);
     if( data ){
       if ( output_dataset )
 	output_dataset->append(*data);
