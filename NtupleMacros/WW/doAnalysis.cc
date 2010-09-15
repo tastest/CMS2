@@ -1033,8 +1033,8 @@ void hypo (int i_hyp, double weight, RooDataSet* dataset)
   // The event weight including the kFactor (scaled to 1 fb-1)
   // float weight = cms2.evt_scale1fb() * kFactor;
 
-  monitor.nEvtProcessed = cms2.evt_nEvts();
-  monitor.count(cms2, type, "Total number before cuts");
+  // monitor.nEvtProcessed = cms2.evt_nEvts();
+  // monitor.count(cms2, type, "Total number before cuts");
      
   // if ( cms2.hyp_FVFit_prob()[i_hyp] < 0.005 ) return;
   // monitor.count(cms2, type, "after vertex cut");
