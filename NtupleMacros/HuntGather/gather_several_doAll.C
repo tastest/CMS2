@@ -101,80 +101,79 @@ void gather_several_doAll()
     Float_t lowBinX     = 0.;
     Float_t highBinX    = 120.;
 
-    /*
-       TCanvas *c1 = DrawAll( "mass", thisBaseSel, f_intlumifb, 100, 70, 170, integrated,
-       bs_data_dilep      ,
-       bs_ttbarjets_dilep ,
-       bs_singletop_dilep ,
-       bs_dyee_dilep      ,
-       bs_dymumu_dilep    ,
-       bs_vvjets_dilep    ,
-       bs_wjets_dilep     ,
-       bs_zjets_dilep     ,
-       bs_zee_dilep       ,
-       bs_zmumu_dilep     ,
-       bs_ztautau_dilep  
-       );
-       c1->SaveAs("mass.png");
+    TCanvas *c1 = DrawAll( "mass", thisBaseSel, f_intlumifb, 100, 70, 170, integrated,
+            bs_data_dilep      ,
+            bs_ttbarjets_dilep ,
+            bs_singletop_dilep ,
+            bs_dyee_dilep      ,
+            bs_dymumu_dilep    ,
+            bs_vvjets_dilep    ,
+            bs_wjets_dilep     ,
+            bs_zjets_dilep     ,
+            bs_zee_dilep       ,
+            bs_zmumu_dilep     ,
+            bs_ztautau_dilep  
+            );
+    c1->SaveAs("mass.png");
 
-       TCanvas *c2 = DrawAll( "mt2", thisBaseSel, f_intlumifb, 100, 0, 120, true,
-       bs_data_dilep      ,
-       bs_ttbarjets_dilep ,
-       bs_singletop_dilep ,
-       bs_dyee_dilep      ,
-       bs_dymumu_dilep    ,
-       bs_vvjets_dilep    ,
-       bs_wjets_dilep     ,
-       bs_zjets_dilep     ,
-       bs_zee_dilep       ,
-       bs_zmumu_dilep     ,
-       bs_ztautau_dilep  
-       );
-       c2->SaveAs("mt2_int.png");
+    TCanvas *c2 = DrawAll( "mt2", thisBaseSel, f_intlumifb, 100, 0, 120, true,
+            bs_data_dilep      ,
+            bs_ttbarjets_dilep ,
+            bs_singletop_dilep ,
+            bs_dyee_dilep      ,
+            bs_dymumu_dilep    ,
+            bs_vvjets_dilep    ,
+            bs_wjets_dilep     ,
+            bs_zjets_dilep     ,
+            bs_zee_dilep       ,
+            bs_zmumu_dilep     ,
+            bs_ztautau_dilep  
+            );
+    c2->SaveAs("mt2_int.png");
 
-       TCanvas *c3 = DrawAll( "tcmet", thisBaseSel, f_intlumifb, 100, 0, 400, true,
-       bs_data_dilep      ,
-       bs_ttbarjets_dilep ,
-       bs_singletop_dilep ,
-       bs_dyee_dilep      ,
-       bs_dymumu_dilep    ,
-       bs_vvjets_dilep    ,
-       bs_wjets_dilep     ,
-       bs_zjets_dilep     ,
-       bs_zee_dilep       ,
-       bs_zmumu_dilep     ,
-       bs_ztautau_dilep  
-       );
-       c3->SaveAs("tcmet_int.png");
+    TCanvas *c3 = DrawAll( "tcmet", thisBaseSel, f_intlumifb, 100, 0, 400, true,
+            bs_data_dilep      ,
+            bs_ttbarjets_dilep ,
+            bs_singletop_dilep ,
+            bs_dyee_dilep      ,
+            bs_dymumu_dilep    ,
+            bs_vvjets_dilep    ,
+            bs_wjets_dilep     ,
+            bs_zjets_dilep     ,
+            bs_zee_dilep       ,
+            bs_zmumu_dilep     ,
+            bs_ztautau_dilep  
+            );
+    c3->SaveAs("tcmet_int.png");
 
-       TCanvas *c4 = DrawAll( "tcmet", thisBaseSel, f_intlumifb, 100, 0, 400, false,
-       bs_data_dilep      ,
-       bs_ttbarjets_dilep ,
-       bs_singletop_dilep ,
-       bs_dyee_dilep      ,
-       bs_dymumu_dilep    ,
-       bs_vvjets_dilep    ,
-       bs_wjets_dilep     ,
-       bs_zjets_dilep     ,
-       bs_zee_dilep       ,
-       bs_zmumu_dilep     ,
-       bs_ztautau_dilep  
-       );
-       c4->SaveAs("tcmet.png");
+    TCanvas *c4 = DrawAll( "tcmet", thisBaseSel, f_intlumifb, 100, 0, 400, false,
+            bs_data_dilep      ,
+            bs_ttbarjets_dilep ,
+            bs_singletop_dilep ,
+            bs_dyee_dilep      ,
+            bs_dymumu_dilep    ,
+            bs_vvjets_dilep    ,
+            bs_wjets_dilep     ,
+            bs_zjets_dilep     ,
+            bs_zee_dilep       ,
+            bs_zmumu_dilep     ,
+            bs_ztautau_dilep  
+            );
+    c4->SaveAs("tcmet.png");
 
-       TCanvas *c5 = DrawAll( "njetsClean", thisBaseSel, f_intlumifb, 15, 0, 15, false,
-       bs_data_dilep      ,
-       bs_ttbarjets_dilep ,
-       bs_singletop_dilep ,
-       bs_dyee_dilep      ,
-       bs_dymumu_dilep    ,
-       bs_vvjets_dilep    ,
-       bs_wjets_dilep     ,
-       bs_zjets_dilep     ,
-       bs_zee_dilep       ,
-    bs_zmumu_dilep     ,
-                       bs_ztautau_dilep  
-                           );
+    TCanvas *c5 = DrawAll( "njetsClean", thisBaseSel, f_intlumifb, 15, 0, 15, false,
+            bs_data_dilep      ,
+            bs_ttbarjets_dilep ,
+            bs_singletop_dilep ,
+            bs_dyee_dilep      ,
+            bs_dymumu_dilep    ,
+            bs_vvjets_dilep    ,
+            bs_wjets_dilep     ,
+            bs_zjets_dilep     ,
+            bs_zee_dilep       ,
+            bs_zmumu_dilep     ,
+            bs_ztautau_dilep  
+            );
     c5->SaveAs("njetsClean.png");
 
     TCanvas *c6 = DrawAll( "dilpt", thisBaseSel, f_intlumifb, 200, 0, 200, false,
@@ -191,5 +190,4 @@ void gather_several_doAll()
             bs_ztautau_dilep  
             );
     c6->SaveAs("dilpt_int.png");
-    */
 }
