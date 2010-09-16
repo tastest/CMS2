@@ -274,6 +274,7 @@ TCut dileptonictopv4_dilep5("((hyp_type == 0 || hyp_type == 3) && (pfmet > 30. |
 TCut dileptonictopv4_dilep6("njets > 1");
 TCut dileptonictopv4_dilep7("ntrks > 2");
 TCut dileptonictopv4_dilep("dileptonictopv4_dilep",dileptonictopv4_dilep1+dileptonictopv4_dilep2+dileptonictopv4_dilep3+dileptonictopv4_dilep4+dileptonictopv4_dilep5+dileptonictopv4_dilep6+dileptonictopv4_dilep7);
+TCut dileptonictopv4_dilep_mnjets("dileptonictopv4_dilep",dileptonictopv4_dilep1+dileptonictopv4_dilep2+dileptonictopv4_dilep3+dileptonictopv4_dilep4+dileptonictopv4_dilep5+dileptonictopv4_dilep7);
 
 TCut samesigninclusive_dilep1("eormu1*eormu2 > 0");
 TCut samesigninclusive_dilep2("pt1 > 15. && pt2 > 15.");
