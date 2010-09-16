@@ -8,6 +8,9 @@
 #include "TCut.h"
 #include "TH1F.h"
 #include "TLegend.h"
+#include "TROOT.h"
+
+#include <algorithm>
 
 float GetIntLumi(float lumi, int brun, int bls, int erun, int els)
 {
@@ -63,7 +66,9 @@ TH1F* Plot(const char *pfx, TChain *chain, const char *field, TCut sel, TCut pre
         scale = Form("%f*%f", intlumifb, kfactor);
 
     char *name = Form("%s_%s_%s", pfx, sel.GetName(), field);
-    TH1F *h = new TH1F(name, name, nbins, xlo, xhi);
+    TH1F *h = 0;
+    if (! (h = (TH1F*)gROOT->FindObjectAny(name)))
+        h = new TH1F(name, name, nbins, xlo, xhi);
 
     int brun = min_run();
     int bls  = min_run_min_lumi();
@@ -149,14 +154,26 @@ TCanvas* DrawAll(const char *field, TCut sel, float intlumifb, unsigned int nbin
         if (bss[i]) {
             if (bss[i]->isdata()) {
                 buffer = Plot(field,sel,nbins,xlo,xhi,1,bss[i]);
-                buffer->SetMarkerColor(bss[i]->color());
-                buffer->SetMarkerStyle(bss[i]->style());
-                hdatas.push_back((TH1F*)buffer->Clone(Form("hdata_%s",bss[i]->pfx())));
+
+                std::vector<TH1F*>::const_iterator it;
+                it = find(hdatas.begin(),hdatas.end(),buffer);
+
+                if (it == hdatas.end()) {
+                    buffer->SetMarkerColor(bss[i]->color());
+                    buffer->SetMarkerStyle(bss[i]->style());
+                    hdatas.push_back(buffer);
+                }
             } else {
                 buffer = Plot(field,sel,intlumifb,nbins,xlo,xhi,0,bss[i]);
-                buffer->SetFillColor(bss[i]->color());
-                buffer->SetFillStyle(bss[i]->style());
-                hmcs.push_back((TH1F*)buffer->Clone(Form("hmc_%s",bss[i]->pfx())));
+
+                std::vector<TH1F*>::const_iterator it;
+                it = find(hmcs.begin(),hmcs.end(),buffer);
+
+                if (it == hmcs.end()) {
+                    buffer->SetFillColor(bss[i]->color());
+                    buffer->SetFillStyle(bss[i]->style());
+                    hmcs.push_back(buffer);
+                }
             }
         }
     }

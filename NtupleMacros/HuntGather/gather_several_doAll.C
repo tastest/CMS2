@@ -29,8 +29,7 @@ void gather_several_doAll()
     // doesn't matter so long as it corresponds
     // to the lumi of the json file and that it
     // is correctly scaled to /fb afterward
-    //float f_intlumifb = 1e-6*GetIntLumi(2790);
-    float f_intlumifb = 1e-6*2790.;
+    float f_intlumifb = 1e-6*GetIntLumi(2790);
     std::cout << "Integrated luminosity: " << f_intlumifb << "/fb\n";
 
     //
@@ -62,13 +61,17 @@ void gather_several_doAll()
 
     BabySample *bs_vvjets_dilep = new BabySample("vvjets","/tas05/disk00/jribnik/huntmc/VVJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kvvjets,false,10,1001);
     BabySample *bs_wjets_dilep = new BabySample("wjets","/tas05/disk00/jribnik/huntmc/WJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kwjets,false,kGreen-3,1001);
-    BabySample *bs_zjets_dilep = new BabySample("zjets","/tas05/disk00/jribnik/huntmc/ZJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kzjets,false,kAzure-2,1001);
-
     BabySample *bs_ztautau_dilep = new BabySample("ztautau","/tas05/disk00/jribnik/huntmc/Ztautau_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","mass<50",kzll,false,kAzure+8,1001);
-    BabySample *bs_zee_dilep = new BabySample("zee","/tas05/disk00/jribnik/huntmc/Zee_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","mass<50",kzll,false,kAzure-2,1001);
-    BabySample *bs_zmumu_dilep = new BabySample("zmumu","/tas05/disk00/jribnik/huntmc/Zmumu_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","mass<50",kzll,false,kAzure-2,1001);
-    BabySample *bs_dyee_dilep = new BabySample("dyee","/tas05/disk00/jribnik/huntmc/DYee_M10to20_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kdyll,false,kAzure-2,1001);
-    BabySample *bs_dymumu_dilep = new BabySample("dymumu","/tas05/disk00/jribnik/huntmc/DYmumu_M10to20_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kdyll,false,kAzure-2,1001);
+
+    // Note that a common prefix means
+    // a common histogram when used in
+    // the same DrawAll, i.e. the five
+    // samples below are combined
+    BabySample *bs_zjets_dilep = new BabySample("zll","/tas05/disk00/jribnik/huntmc/ZJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kzjets,false,kAzure-2,1001);
+    BabySample *bs_zee_dilep = new BabySample("zll","/tas05/disk00/jribnik/huntmc/Zee_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","mass<50",kzll,false,kAzure-2,1001);
+    BabySample *bs_zmumu_dilep = new BabySample("zll","/tas05/disk00/jribnik/huntmc/Zmumu_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","mass<50",kzll,false,kAzure-2,1001);
+    BabySample *bs_dyee_dilep = new BabySample("zll","/tas05/disk00/jribnik/huntmc/DYee_M10to20_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kdyll,false,kAzure-2,1001);
+    BabySample *bs_dymumu_dilep = new BabySample("zll","/tas05/disk00/jribnik/huntmc/DYmumu_M10to20_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kdyll,false,kAzure-2,1001);
 
     // trilep
     BabySample *bs_zjets_trilep = new BabySample("zjets","/tas05/disk00/jribnik/huntmc/ZJets-madgraph_Spring10-START3X_V26_S09-v1/trilep_baby/*.root","",kzjets,false,1001);
@@ -94,14 +97,9 @@ void gather_several_doAll()
        c_dileptonictopv4_dilep_mnjets->SaveAs("c_dileptonictopv4_dilep_njets.png");
      */
 
-    bool integrated     = false;
-    TString drawThis    = "mass";
-    TCut    thisBaseSel = inclusivez_dilep;
-    unsigned int nBinsX = 100;
-    Float_t lowBinX     = 0.;
-    Float_t highBinX    = 120.;
+    TCut thisBaseSel = inclusivez_dilep;
 
-    TCanvas *c1 = DrawAll( "mass", thisBaseSel, f_intlumifb, 100, 70, 170, integrated,
+    TCanvas *c1 = DrawAll( "mass", thisBaseSel, f_intlumifb, 100, 70, 170, true,
             bs_data_dilep      ,
             bs_ttbarjets_dilep ,
             bs_singletop_dilep ,
@@ -114,7 +112,7 @@ void gather_several_doAll()
             bs_zmumu_dilep     ,
             bs_ztautau_dilep  
             );
-    c1->SaveAs("mass.png");
+    c1->SaveAs("mass_int.png");
 
     TCanvas *c2 = DrawAll( "mt2", thisBaseSel, f_intlumifb, 100, 0, 120, true,
             bs_data_dilep      ,
@@ -129,6 +127,7 @@ void gather_several_doAll()
             bs_zmumu_dilep     ,
             bs_ztautau_dilep  
             );
+    c2->SetLogy(1);
     c2->SaveAs("mt2_int.png");
 
     TCanvas *c3 = DrawAll( "tcmet", thisBaseSel, f_intlumifb, 100, 0, 400, true,
@@ -144,8 +143,14 @@ void gather_several_doAll()
             bs_zmumu_dilep     ,
             bs_ztautau_dilep  
             );
+    c3->SetLogy(1);
     c3->SaveAs("tcmet_int.png");
 
+    // Histogram names do not currently distinguish between
+    // standard and integrated histograms
+    // Names must be unique before we can uncomment this as
+    // we support filling existing histograms
+    /*
     TCanvas *c4 = DrawAll( "tcmet", thisBaseSel, f_intlumifb, 100, 0, 400, false,
             bs_data_dilep      ,
             bs_ttbarjets_dilep ,
@@ -159,7 +164,10 @@ void gather_several_doAll()
             bs_zmumu_dilep     ,
             bs_ztautau_dilep  
             );
+            );
+    c4->SetLogy(1);
     c4->SaveAs("tcmet.png");
+    */
 
     TCanvas *c5 = DrawAll( "njetsClean", thisBaseSel, f_intlumifb, 15, 0, 15, false,
             bs_data_dilep      ,
@@ -174,6 +182,7 @@ void gather_several_doAll()
             bs_zmumu_dilep     ,
             bs_ztautau_dilep  
             );
+    c5->SetLogy(1);
     c5->SaveAs("njetsClean.png");
 
     TCanvas *c6 = DrawAll( "dilpt", thisBaseSel, f_intlumifb, 200, 0, 200, false,
@@ -189,5 +198,6 @@ void gather_several_doAll()
             bs_zmumu_dilep     ,
             bs_ztautau_dilep  
             );
-    c6->SaveAs("dilpt_int.png");
+    c6->SetLogy(1);
+    c6->SaveAs("dilpt.png");
 }
