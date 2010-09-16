@@ -267,6 +267,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         id_    = 11*els_charge().at(iEl);
         tcmet_ = evt_tcmet();
         tcmetphi_ = evt_tcmetPhi();
+        mcid_       = els_mc_id().at(iEl);
+        mcmotherid_ = els_mc_motherid().at(iEl);
     
         // do the 3 electron charges agree?
         int iCTF = els_trkidx().at(iEl);
@@ -467,6 +469,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         id_   = 13*mus_charge().at(iMu);
         tcmet_ = evt_tcmet();
         tcmetphi_ = evt_tcmetPhi();
+        mcid_       = mus_mc_id().at(iMu);
+        mcmotherid_ = mus_mc_motherid().at(iMu);
 
         //
         num_    = muonId(iMu, NominalTTbarV2);
@@ -683,6 +687,10 @@ void myBabyMaker::InitBabyNtuple () {
 
   //
   q3_ = false;
+
+  mcid_ = 0;
+  mcmotherid_ = 0;
+
 }
 //-------------------------------------
 // Book the baby ntuple
@@ -792,6 +800,10 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("mt",          &mt_,         "mt/F"         );
 
     babyTree_->Branch("q3",          &q3_,         "q3/O"         );
+
+    babyTree_->Branch("mcid",       &mcid_,       "mcid/I"      );
+    babyTree_->Branch("mcmotherid", &mcmotherid_, "mcmotherid/I"      );
+
 
 }
 //----------------------------------

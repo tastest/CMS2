@@ -159,6 +159,10 @@ class myBabyMaker
   // do the 3 electron charges agree?
   Bool_t q3_;
 
+  //Some MC informatio added 16 Sep 2010
+  Int_t mcid_;        // els_mc_id or mus_mc_id
+  Int_t mcmotherid_;  // els_mc_motherid or mus_mc_motherid
+
 };
 
 #endif
