@@ -243,7 +243,7 @@ TCut dileptonictop_dilep4("((hyp_type == 0 || hyp_type == 3) && abs(mass-91.) > 
 TCut dileptonictop_dilep5("((hyp_type == 0 || hyp_type == 3) && (pfmet > 20. || tcmet > 20.)) || (hyp_type == 1 || hyp_type == 2)");
 TCut dileptonictop_dilep6("njets >= 1");
 TCut dileptonictop_dilep7("dileptonictop_dilep7","ntrks > 2");
-TCut dileptonictop_dilep(dileptonictop_dilep1+dileptonictop_dilep2+dileptonictop_dilep3+dileptonictop_dilep4+dileptonictop_dilep5+dileptonictop_dilep6+dileptonictop_dilep7);
+TCut dileptonictop_dilep("dileptonictop_dilep",dileptonictop_dilep1+dileptonictop_dilep2+dileptonictop_dilep3+dileptonictop_dilep4+dileptonictop_dilep5+dileptonictop_dilep6+dileptonictop_dilep7);
 
 TCut dileptonictopv2_dilep1("pt1 > 20. && pt2 > 20.");
 TCut dileptonictopv2_dilep2("(abs(eormu1) == 11 && e1_vbtf90fullAlign) || (abs(eormu1) == 13 && mu1_muonidfull && ! mu1_cosmic)");
