@@ -151,7 +151,7 @@ void ossusy_looper::makeTree(char *prefix)
   rootdir->cd();
 
   //Super compressed ntuple here
-  outFile   = new TFile(Form("ntp/%s_smallTree.root",prefix), "RECREATE");
+  outFile   = new TFile(Form("output/%s_smallTree.root",prefix), "RECREATE");
   outFile->cd();
   outTree = new TTree("t","Tree");
 
@@ -264,7 +264,7 @@ ossusy_looper::ossusy_looper()
 
 //--------------------------------------------------------------------
 
-int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale,
+int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, float lumi,
                              JetTypeEnum jetType, MetTypeEnum metType, ZVetoEnum zveto, bool doFakeApp, bool calculateTCMET)
 {
 
@@ -319,7 +319,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
     TTree *tree = (TTree*)f.Get("Events");
     cms2.Init(tree);
 
-    unsigned int nEntries = tree->GetEntries();
+    unsigned int nEntries = tree->GetEntries()/100;
 
     for(unsigned int z = 0; z < nEntries; ++z) {
       ++nEventsTotal;
@@ -768,7 +768,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         }else if( isData ){
           weight = 1;
         }else{
-          weight = kFactor * evt_scale1fb() * 0.1;
+          weight = kFactor * evt_scale1fb() * lumi;
         }
 
 
@@ -1377,6 +1377,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
     } // entries
   } // currentFile
 
+  cout << endl << endl;
   cout << nGoodEl << " Zee events" << endl;
   cout << nGoodMu << " Zmm events" << endl;
   if( nSkip_els_conv_dist > 0 )
