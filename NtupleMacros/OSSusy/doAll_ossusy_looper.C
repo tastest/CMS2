@@ -44,6 +44,20 @@ void pickSkimIfExists( TChain *ch, const std::string& base, const std::string& s
 
 void doAll_ossusy_looper(bool skipFWLite = true)
 {
+
+  //Load CORE stuff
+  gROOT->ProcessLine(".L CORE/CMS2.cc+");
+  gROOT->ProcessLine(".L CORE/trackSelections.cc+");
+  gROOT->ProcessLine(".L CORE/metSelections.cc+");
+  gROOT->ProcessLine(".L CORE/eventSelections.cc+");
+  gROOT->ProcessLine(".L CORE/electronSelectionsParameters.cc+");
+  gROOT->ProcessLine(".L CORE/electronSelections.cc+");
+  gROOT->ProcessLine(".L CORE/muonSelections.cc+");
+  gROOT->ProcessLine(".L CORE/SimpleFakeRate.cc+");
+  gROOT->ProcessLine(".L CORE/mcSelections.cc+");
+  gROOT->ProcessLine(".L CORE/MT2/MT2.cc+");
+
+
   // Load various tools  
   gROOT->ProcessLine(Form(".x setup.C(%d)", skipFWLite));
 
@@ -61,6 +75,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   looper->set_createTree(1);
   //use bitmask selection
   looper->set_useBitMask(0);
+
 
   // K-factors
   // these have been k-factors NLO/LO before
@@ -96,6 +111,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   float kLM10     = 1.;
   float kLM11     = 1.;
   float kLM12     = 1.;
+  float kLM13     = 1.;
   float kLMscan   = 1.;
   float kML1      = 1.;
   float kML2      = 1.;
@@ -135,6 +151,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preLM10     = 1;
   int preLM11     = 1;
   int preLM12     = 1;
+  int preLM13     = 1;
   int preML1      = 1;
   int preML2      = 1;
   int preML3      = 1;
@@ -146,34 +163,78 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preLMscan = 1;
   
   //Flags for files to run over
-  bool runttdil    = 1;
-  bool runttotr    = 1;
-  bool runWW       = 1;
-  bool runWZ       = 1;
-  bool runZZ       = 1;
-  bool runWjets    = 1;
+//   bool rundata     = 1;
+//   bool runttdil    = 1;
+//   bool runttotr    = 1;
+//   bool runWW       = 1;
+//   bool runWZ       = 1;
+//   bool runZZ       = 1;
+//   bool runWjets    = 1;
+//   bool runWcharm   = 0;
+//   bool runZjets    = 1;
+//   bool runDYee     = 0;
+//   bool runDYmm     = 0;
+//   bool runDYtautau = 0;
+//   bool runppMuX    = 0;
+//   bool runEM       = 0;
+//   bool runtW       = 1;
+//   bool runVQQ      = 0;
+//   bool runLM0      = 1;
+//   bool runLM1      = 1;
+//   bool runLM2      = 1;
+//   bool runLM3      = 1;
+//   bool runLM4      = 1;
+//   bool runLM5      = 1;
+//   bool runLM6      = 1;
+//   bool runLM7      = 1;
+//   bool runLM8      = 1;
+//   bool runLM9      = 1;
+//   bool runLM10     = 1;
+//   bool runLM11     = 1;
+//   bool runLM12     = 1;
+//   bool runLM13     = 1;
+//   bool runML1      = 0;
+//   bool runML2      = 0;
+//   bool runML3      = 0;
+//   bool runML4      = 0;
+//   bool runML5      = 0;
+//   bool runML6      = 0;
+//   bool runML7      = 0;
+//   bool runML8      = 0;
+//   bool runLMscan   = 0; 
+
+  
+  //Flags for files to run over
+  bool rundata     = 1;
+  bool runttdil    = 0;
+  bool runttotr    = 0;
+  bool runWW       = 0;
+  bool runWZ       = 0;
+  bool runZZ       = 0;
+  bool runWjets    = 0;
   bool runWcharm   = 0;
-  bool runZjets    = 1;
+  bool runZjets    = 0;
   bool runDYee     = 0;
   bool runDYmm     = 0;
   bool runDYtautau = 0;
   bool runppMuX    = 0;
   bool runEM       = 0;
-  bool runtW       = 1;
+  bool runtW       = 0;
   bool runVQQ      = 0;
-  bool runLM0      = 1;
-  bool runLM1      = 1;
-  bool runLM2      = 1;
-  bool runLM3      = 1;
-  bool runLM4      = 1;
-  bool runLM5      = 1;
-  bool runLM6      = 1;
-  bool runLM7      = 1;
-  bool runLM8      = 1;
-  bool runLM9      = 1;
-  bool runLM10     = 1;
-  bool runLM11     = 1;
-  bool runLM12     = 1;
+  bool runLM0      = 0;
+  bool runLM1      = 0;
+  bool runLM2      = 0;
+  bool runLM3      = 0;
+  bool runLM4      = 0;
+  bool runLM5      = 0;
+  bool runLM6      = 0;
+  bool runLM7      = 0;
+  bool runLM8      = 0;
+  bool runLM9      = 0;
+  bool runLM10     = 0;
+  bool runLM11     = 0;
+  bool runLM12     = 0;
+  bool runLM13     = 0;
   bool runML1      = 0;
   bool runML2      = 0;
   bool runML3      = 0;
@@ -183,48 +244,29 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  
 
-//    //Flags for files to run over
-//    bool runttdil    = 0;
-//    bool runttotr    = 0;
-//    bool runWW       = 0;
-//    bool runWZ       = 0;
-//    bool runZZ       = 0;
-//    bool runWjets    = 0;
-//    bool runWcharm   = 0;
-//    bool runZjets    = 0;
-//    bool runDYee     = 0;
-//    bool runDYmm     = 0;
-//    bool runDYtautau = 0;
-//    bool runppMuX    = 0;
-//    bool runEM       = 0;
-//    bool runtW       = 0;
-//    bool runVQQ      = 0;
-//    bool runLM0      = 0;
-//    bool runLM1      = 0;
-//    bool runLM2      = 0;
-//    bool runLM3      = 0;
-//    bool runLM4      = 0;
-//    bool runLM5      = 0;
-//    bool runLM6      = 0;
-//    bool runLM7      = 0;
-//    bool runLM8      = 0;
-//    bool runLM9      = 0;
-//    bool runLM10     = 0;
-//    bool runLM11     = 0;
-//    bool runLM12     = 0;
-//    bool runML1      = 1;
-//    bool runML2      = 1;
-//    bool runML3      = 1;
-//    bool runML4      = 1;
-//    bool runML5      = 1;
-//    bool runML6      = 1;
-//    bool runML7      = 1;
-//    bool runML8      = 1;
-//    bool runLMscan   = 0; 
+  TChain* chdata = new  TChain("Events");
+  if(rundata){
+    pickSkimIfExists(chdata, 
+                     "/tas/fgolf/SSskims/data/dilep_skim_2.root",
+                     "data");
+    pickSkimIfExists(chdata, 
+                     "/tas/fgolf/SSskims/data/skimmed_ntuple*.root",
+                     "data");
+    pickSkimIfExists(chdata, 
+                     "/tas/cms2/Mu_Run2010A-PromptReco-v4_RECO/V03-04-26-12/diLepPt1020Skim/skimmed_ntuple*.root",
+                     "data");
+    pickSkimIfExists(chdata, 
+                     "/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-12/diLepPt1020Skim/skimmed_ntuple*.root",
+                     "data");
+    pickSkimIfExists(chdata, 
+                     "/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-02/singleLepPt10Skim/skimmed_ntuple_139783_0.root",
+                     "data");
+    pickSkimIfExists(chdata, 
+                     "/tas/cms2/Mu_Run2010A-PromptReco-v4_RECO/V03-04-26-02/singleLepPt10Skim/skimmed_ntuple_139783_0.root",
+                     "data");
+  }
   
- 
   TChain* chZjets = new  TChain("Events");
   if(runZjets){
     pickSkimIfExists(chZjets, 
@@ -274,21 +316,21 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                      "WJets");
   }
 
-  //SAMPLE NOT YET AVAILABLE
-  //   TChain* chWcharm = new TChain("Events");
-  //   if(runWcharm){
-  //     pickSkimIfExists(chWcharm, 
-  // 		     "data/Wc-madgraph_Fall08_IDEAL_V11_redigi_v1/merged*.root", 
-  // 		     "Wc");
-  //   }
-
+  TChain* chWcharm = new TChain("Events");
+  if(runWcharm){
+    pickSkimIfExists(chWcharm, 
+                     //is this the correct sample????
+   		     "/tas/cms2/WCJets_7TeV-madgraph_Spring10-START3X_V26-v1/V03-04-13-01/merged*root",
+                     "Wc");
+  }
+  
   TChain* chDYtautau = new  TChain("Events");
   if(runDYtautau){
     pickSkimIfExists(chDYtautau, 
                      "/tas/cms2/Ztautau_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged*.root", 
                      "DYtautau");
   }
-
+  
   // the low-mass splice has no choice other than the skim
   //    pickSkimIfExists(chDYtautau, "data/Ztautau_M20_Summer08_IDEAL_V11_redigi_v1/merged*.root", "Ztautau_M20");
 
@@ -300,7 +342,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   }
   // the low-mass splice has no choice other than the skim
   //    pickSkimIfExists(chDYee, "data/Zee_M20_Summer08_IDEAL_V11_redigi_v1/merged*.root", "Zee_M20");
-
+  
   if(runDYmm){
     TChain* chDYmm = new  TChain("Events");
     pickSkimIfExists(chDYmm, 
@@ -309,31 +351,30 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   }
   // the low-mass splice has no choice other than the skim
   //    pickSkimIfExists(chDYmm, "data/Zmumu_M20_Summer08_IDEAL_V11_redigi_v1/merged*.root", "Zmumu_M20");
-
-
+  
+  
   // ppMuX
-  // Spring10 sample not yet available!!! 
-//   TChain* chppMuX = new  TChain("Events");
-//   if (runppMuX) {
-//     pickSkimIfExists(chppMuX, 
-//                      "data3x/InclusiveMu15_Summer09-MC_31X_V3_7TeV-v1_dilepfilt/merged*.root", 
-//                      "InclusiveMuPt15"); 
-//     // can try InclusiveMu5Pt50 .. figure out how to merge later
-//   }
-
+  TChain* chppMuX = new  TChain("Events");
+  if (runppMuX) {
+    pickSkimIfExists(chppMuX, 
+                     "/tas/cms2/InclusiveMu15_Spring10-START3X_V26_S09-v1/V03-04-13-07/",
+                     "InclusiveMuPt15"); 
+    // can try InclusiveMu5Pt50 .. figure out how to merge later
+  }
+  
   // ppEM
-  // Spring10 sample not yet available!!!
-//   TChain* chEM =  new  TChain("Events");
-//   if (runEM) {
+  //only pt80to170 sample is currently available!!!
+  TChain* chEM =  new  TChain("Events");
+  if (runEM) {
 //     pickSkimIfExists(chEM, 
 //                      "data3x/QCD_EMEnriched_Pt20to30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
 //                      "_skimSimple2020");
 //     pickSkimIfExists(chEM, 
 //                      "data3x/QCD_EMEnriched_Pt30to80_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
 //                      "_skimSimple2020");
-//     pickSkimIfExists(chEM, 
-//                      "data3x/QCD_EMEnriched_Pt80to170_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
-//                      "_skimSimple2020");
+    pickSkimIfExists(chEM, 
+                     "/tas/cms2/QCD_EMEnriched_Pt80to170_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
+                     "_skimSimple2020");
 //     pickSkimIfExists(chEM, 
 //                      "data3x/QCD_BCtoE_Pt20to30_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
 //                      "_skimSimple2020");
@@ -343,45 +384,46 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 //     pickSkimIfExists(chEM, 
 //                      "data3x/QCD_BCtoE_Pt80to170_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
 //                      "_skimSimple2020");
-//   }
+  }
 
   // tW
   TChain* chtW = new  TChain("Events");
   if (runtW) {
-//     pickSkimIfExists(chtW, 
-//                      //TRANSFER!!!
-//                      "SingleTop_sChannel"); 
-//     pickSkimIfExists(chtW, 
-//                      //TRANSFER!!!
-//                      "SingleTop_tChannel"); 
+    pickSkimIfExists(chtW, 
+                     "/tas/cms2/SingleTop_sChannel-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*.root",
+                     "SingleTop_sChannel"); 
+    pickSkimIfExists(chtW, 
+                     "/tas/cms2/SingleTop_tChannel-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*.root",
+                     "SingleTop_tChannel"); 
     pickSkimIfExists(chtW, 
                      "/tas/cms2/SingleTop_tWChannel-madgraph_Spring10-START3X_V26_S09-v1/V03-04-07/merged*.root",
                      "SingleTop_tWChannel"); 
   }
 
-  //SAMPLE NOT YET AVAILABLE
-  //   // VQQ
-  //   TChain* chVQQ = new TChain("Events");
-  //   if (runVQQ) {
-  //     pickSkimIfExists(chVQQ, 
-  // 		     "data/VQQ-madgraph_Summer08_IDEAL_V11_redigi_v2/merged*.root", 
-  // 		     "VQQ");
-  //   }
-
+  // VQQ
+  TChain* chVQQ = new TChain("Events");
+  if (runVQQ) {
+    pickSkimIfExists(chVQQ, 
+                     //is this the correct sample???
+                     "/tas/cms2/VqqJets-madgraph_Spring10-START3X_V26_S09-v1/merged*.root",
+  		     //"data/VQQ-madgraph_Summer08_IDEAL_V11_redigi_v2/merged*.root", 
+  		     "VQQ");
+  }
+  
   // LM points currently being processed!!!!
   // LM0
   TChain *chLM0 = new TChain("Events");
   if (runLM0) {
     pickSkimIfExists(chLM0, 
-                     "data3x/LM0_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
+                     "/tas/cms2/LM0_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
                      "SUSY_LM0");
   }
-
+  
   // LM1
   TChain *chLM1 = new TChain("Events");
   if (runLM1) {
     pickSkimIfExists(chLM1, 
-                     "data3x/LM1_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
+                     "/tas/cms2/LM1_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
                      "SUSY_LM1");
   }
 
@@ -389,7 +431,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM2 = new TChain("Events");
   if (runLM2) {
     pickSkimIfExists(chLM2, 
-                     "data3x/LM2_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
+                     "/tas/cms2/LM1_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
                      "SUSY_LM2");
   }
 
@@ -397,7 +439,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM3 = new TChain("Events");
   if (runLM3) {
     pickSkimIfExists(chLM3, 
-                     "data3x/LM3_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
+                      "/tas/cms2/LM1_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
                      "SUSY_LM3");
   }
 
@@ -405,7 +447,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM4 = new TChain("Events");
   if (runLM4) {
     pickSkimIfExists(chLM4, 
-                     "data3x/LM4_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
+                      "/tas/cms2/LM1_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
                      "SUSY_LM4");
   }
 
@@ -413,7 +455,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM5 = new TChain("Events");
   if (runLM5) {
     pickSkimIfExists(chLM5, 
-                     "data3x/LM5_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
+                     "/tas/cms2/LM1_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
                      "SUSY_LM5");
   }
 
@@ -421,7 +463,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM6 = new TChain("Events");
   if (runLM6) {
     pickSkimIfExists(chLM6, 
-                     "data3x/LM6_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
+                     "/tas/cms2/LM1_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
                      "SUSY_LM6");
   }
 
@@ -429,7 +471,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM7 = new TChain("Events");
   if (runLM7) {
     pickSkimIfExists(chLM7, 
-                     "data3x/LM7_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
+                     "/tas/cms2/LM1_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
                      "SUSY_LM7");
   }
 
@@ -437,7 +479,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM8 = new TChain("Events");
   if (runLM8) {
     pickSkimIfExists(chLM8, 
-                     "data3x/LM8_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
+                     "/tas/cms2/LM1_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
                      "SUSY_LM8");
   }
 
@@ -445,7 +487,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM9 = new TChain("Events");
   if (runLM9) {
     pickSkimIfExists(chLM9, 
-                     "data3x/LM9_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
+                     "/tas/cms2/LM1_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
                      "SUSY_LM9");
   }
 
@@ -453,7 +495,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM10 = new TChain("Events");
   if (runLM10) {
     pickSkimIfExists(chLM10, 
-                     "data3x/LM10_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
+                     "/tas/cms2/LM1_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
                      "SUSY_LM10");
   }
 
@@ -461,7 +503,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM11 = new TChain("Events");
   if (runLM11) {
     pickSkimIfExists(chLM11, 
-                     "data3x/LM11_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
+                     "/tas/cms2/LM1_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
                      "SUSY_LM11");
   }
 
@@ -469,8 +511,16 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM12 = new TChain("Events");
   if (runLM12) {
     pickSkimIfExists(chLM12, 
-                     "data3x/LM12_Summer09-MC_31X_V3_7TeV-v1/V03-00-35/merged*.root", 
+                     "/tas/cms2/LM1_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
                      "SUSY_LM12");
+  }
+
+  // LM13
+  TChain *chLM13 = new TChain("Events");
+  if (runLM13) {
+    pickSkimIfExists(chLM13, 
+                     "/tas/cms2/LM1_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
+                     "SUSY_LM13");
   }
   
   // ML1
@@ -545,13 +595,19 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                      "LMscan");
   }
 
-  char jetTypeStrings[2][5] = {"JPT", "calo"};
-  char metTypeStrings[3][8] = {"tcmet", "muon", "muonjes"};
-  bool doFakeApp            = false;
-  char* zvetoStrings[4]      = {"", "_allzveto", "_nozveto","_selectz"};
+
+  //--------------------------------
+  //set luminosity to scale to
+  //--------------------------------
+  float lumi = 2.7945e-3; //2.8 pb-1
+
+  char* jetTypeStrings[3] = {"JPT", "calo","pfjet"};
+  char* metTypeStrings[4] = {"tcmet", "muon", "muonjes","pfmet"};
+  char* zvetoStrings[4]   = {"", "_allzveto", "_nozveto","_selectz"};
+  bool doFakeApp          = false;
 
   // Process files one at a time, and color them as needed
-  for (int jetTypeIdx = 1; jetTypeIdx < 2; ++jetTypeIdx)
+  for (int jetTypeIdx = 2; jetTypeIdx < 3; ++jetTypeIdx)
     {
       for (int metTypeIdx = 0; metTypeIdx < 1; ++metTypeIdx)
         {
@@ -562,217 +618,229 @@ void doAll_ossusy_looper(bool skipFWLite = true)
               ossusy_looper::MetTypeEnum  metType(metTypeIdx);
               ossusy_looper::ZVetoEnum    zveto(zvetoIdx);
 
+              if (rundata) {
+                cout << "Processing data" << endl;
+                looper->ScanChain(chdata,"data", 1, 1, jetType, metType, zveto, doFakeApp, lumi);
+                cout << "Done processing data" << endl;
+                hist::color("data", kBlack);
+              }
               if (runZjets) {
                 cout << "Processing Zjets" << endl;
-                looper->ScanChain(chZjets,"Zjets", kZjets, preZjets, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chZjets,"Zjets", kZjets, preZjets, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing Zjets" << endl;
                 hist::color("Zjets", kBlack);
               }
               if (runttdil) {
                 cout << "Processing ttbar dileptonic.. " << endl;
-                looper->ScanChain(chtopdil,"ttdil", kttdil, prettdil, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chtopdil,"ttdil", kttdil, prettdil, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing ttbar dileptonic.. " << endl;
                 hist::color("ttdil", kYellow);
               }
               if (runttotr) {
                 cout << "Processing ttbar no-dileptons.. " << endl;
-                looper->ScanChain(chtopotr,"ttotr", kttotr, prettotr, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chtopotr,"ttotr", kttotr, prettotr, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing ttbar no-dileptons.. " << endl;
                 hist::color("ttotr", 30);
               }
               if (runWW) {
                 cout << "Processing WW.." << endl;
-                looper->ScanChain(chww,"ww", kWW, preWW, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chww,"ww", kWW, preWW, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing WW.." << endl;
                 hist::color("ww", kRed);
               }
               if (runWZ) {
                 cout << "Processing WZ.." << endl;
-                looper->ScanChain(chWZ,"wz", kWZ, preWZ, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chWZ,"wz", kWZ, preWZ, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing WZ.." << endl;
                 hist::color("wz", kBlue);
               }
               if (runZZ) {
                 cout << "Processing ZZ.." << endl;
-                looper->ScanChain(chZZ,"zz", kZZ, preZZ, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chZZ,"zz", kZZ, preZZ, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing ZZ.." << endl;
                 hist::color("zz", kGreen);
               }
               if (runWjets) {
                 cout << "Processing Wjets.." << endl;
-                looper->ScanChain(chWjets,"wjets", kWjets, preWjets, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chWjets,"wjets", kWjets, preWjets, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing Wjets.." << endl;
                 hist::color("wjets", 40);
               }
-              // 	  if (runWcharm) { //SAMPLE NOT YET AVAILABLE
-              // 	    cout << "Processing Wcharm.." << endl;
-              // 	    looper->ScanChain(chWcharm, "wcharm", kWcharm, preWcharm, jetType, metType, zveto, doFakeApp);
-              // 	    cout << "Done processing Wcharm.." << endl;
-              // 	    hist::color("wcharm", 50);
-              // 	  }
+              if (runWcharm) {
+                cout << "Processing Wcharm.." << endl;
+                looper->ScanChain(chWcharm, "wcharm", kWcharm, preWcharm, jetType, metType, zveto, doFakeApp, lumi);
+                cout << "Done processing Wcharm.." << endl;
+                hist::color("wcharm", 50);
+              }
               if (runDYtautau) {
                 cout << "Processing DY->tautau" << endl;
-                looper->ScanChain(chDYtautau,"DYtautau", kDYtautau, preDYtautau, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chDYtautau,"DYtautau", kDYtautau, preDYtautau, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing DY->tautau" << endl;
                 hist::color("DYtautau", kBlack);
               }
               if (runDYee) {
                 cout << "Processing DY->ee" << endl;
-                looper->ScanChain(chDYee,"DYee", kDYee, preDYee, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chDYee,"DYee", kDYee, preDYee, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done rocessing DY->ee" << endl;
                 hist::color("DYee", kMagenta);
               }
               if (runDYmm) {
                 cout << "Processing DY->mm" << endl;
-                looper->ScanChain(chDYmm,"DYmm", kDYmm, preDYmm, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chDYmm,"DYmm", kDYmm, preDYmm, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing DY->mm" << endl;
                 hist::color("DYmm", kCyan);
               }
-//               if (runppMuX) {
-//                 cout << "Processing ppMuX" << endl;
-//                 looper->ScanChain(chppMuX,"ppMuX", kppMuX, preppMuX, jetType, metType, zveto, doFakeApp);
-//                 cout << "Done processing ppMuX" << endl;
-//                 hist::color("ppMuX", 51);
-//               }
-//               if (runEM) {
-//                 cout << "Processing EM" << endl;
-//                 looper->ScanChain(chEM,"EM", kEM, preEM, jetType, metType, zveto, doFakeApp);
-//                 cout << "Done processing EM" << endl;
-//                 hist::color("EM", 49);
-//               }
+              if (runppMuX) {
+                cout << "Processing ppMuX" << endl;
+                looper->ScanChain(chppMuX,"ppMuX", kppMuX, preppMuX, jetType, metType, zveto, doFakeApp, lumi);
+                cout << "Done processing ppMuX" << endl;
+                hist::color("ppMuX", 51);
+              }
+              if (runEM) {
+                cout << "Processing EM" << endl;
+                looper->ScanChain(chEM,"EM", kEM, preEM, jetType, metType, zveto, doFakeApp, lumi);
+                cout << "Done processing EM" << endl;
+                hist::color("EM", 49);
+              }
               if (runtW) {
                 cout << "Processing tW" << endl;
-                looper->ScanChain(chtW,"tW", ktW, pretW, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chtW,"tW", ktW, pretW, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing tW" << endl;
                 hist::color("tW", 63);
               }
-              // 	  if (runVQQ) { //SAMPLE NOT YET AVAILABLE
-              // 	    cout << "Processing VQQ" << endl;
-              // 	    looper->ScanChain(chVQQ,"VQQ", kVQQ, preVQQ, jetType, metType, zveto, doFakeApp);
-              // 	    cout << "Done processing VQQ" << endl;
-              // 	    hist::color("VQQ", 45);
-              // 	  }
+              if (runVQQ) { 
+                cout << "Processing VQQ" << endl;
+                looper->ScanChain(chVQQ,"VQQ", kVQQ, preVQQ, jetType, metType, zveto, doFakeApp, lumi);
+                cout << "Done processing VQQ" << endl;
+                hist::color("VQQ", 45);
+              }
               if (runLM0) {
                 cout << "Processing LM0" << endl;
-                looper->ScanChain(chLM0, "LM0", kLM0, preLM0, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chLM0, "LM0", kLM0, preLM0, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing LM0" << endl;
                 hist::color("LM0", kOrange);
               }
               if (runLM1) {
                 cout << "Processing LM1" << endl;
-                looper->ScanChain(chLM1, "LM1", kLM1, preLM1, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chLM1, "LM1", kLM1, preLM1, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing LM1" << endl;
                 hist::color("LM1", kOrange+1);
               }
               if (runLM2) {
                 cout << "Processing LM2" << endl;
-                looper->ScanChain(chLM2, "LM2", kLM2, preLM2, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chLM2, "LM2", kLM2, preLM2, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing LM2" << endl;
                 hist::color("LM2", kOrange+2);
               }
               if (runLM3) {
                 cout << "Processing LM3" << endl;
-                looper->ScanChain(chLM3, "LM3", kLM3, preLM3, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chLM3, "LM3", kLM3, preLM3, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing LM3" << endl;
                 hist::color("LM3", kOrange+3);
               }
               if (runLM4) {
                 cout << "Processing LM4" << endl;
-                looper->ScanChain(chLM4, "LM4", kLM4, preLM4, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chLM4, "LM4", kLM4, preLM4, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing LM4" << endl;
                 hist::color("LM4", kOrange+4);
               }
               if (runLM5) {
                 cout << "Processing LM5" << endl;
-                looper->ScanChain(chLM5, "LM5", kLM5, preLM5, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chLM5, "LM5", kLM5, preLM5, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing LM5" << endl;
                 hist::color("LM5", kOrange+5);
               }
               if (runLM6) {
                 cout << "Processing LM6" << endl;
-                looper->ScanChain(chLM6, "LM6", kLM6, preLM6, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chLM6, "LM6", kLM6, preLM6, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing LM6" << endl;
                 hist::color("LM6", kOrange+6);
               }
               if (runLM7) {
                 cout << "Processing LM7" << endl;
-                looper->ScanChain(chLM7, "LM7", kLM7, preLM7, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chLM7, "LM7", kLM7, preLM7, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing LM7" << endl;
                 hist::color("LM7", kOrange+7);
               }
               if (runLM8) {
                 cout << "Processing LM8" << endl;
-                looper->ScanChain(chLM8, "LM8", kLM8, preLM8, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chLM8, "LM8", kLM8, preLM8, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing LM8" << endl;
                 hist::color("LM8", kOrange+8);
               }
               if (runLM9) {
                 cout << "Processing LM9" << endl;
-                looper->ScanChain(chLM9, "LM9", kLM9, preLM9, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chLM9, "LM9", kLM9, preLM9, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing LM9" << endl;
                 hist::color("LM9", kOrange+9);
               }
               if (runLM10) {
                 cout << "Processing LM10" << endl;
-                looper->ScanChain(chLM10, "LM10", kLM10, preLM10, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chLM10, "LM10", kLM10, preLM10, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing LM10" << endl;
                 hist::color("LM10", kOrange+10);
               }
               if (runLM11) { 
                 cout << "Processing LM11" << endl;
-                looper->ScanChain(chLM11, "LM11", kLM11, preLM11, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chLM11, "LM11", kLM11, preLM11, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing LM11" << endl;
                 hist::color("LM11", kOrange-7);
               }
               if (runLM12) {
                 cout << "Processing LM12" << endl;
-                looper->ScanChain(chLM12, "LM12", kLM12, preLM12, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chLM12, "LM12", kLM12, preLM12, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing LM12" << endl;
                 hist::color("LM12", kOrange-7);
               }
+              if (runLM13) {
+                cout << "Processing LM13" << endl;
+                looper->ScanChain(chLM13, "LM13", kLM13, preLM13, jetType, metType, zveto, doFakeApp, lumi);
+                cout << "Done processing LM13" << endl;
+                hist::color("LM13", kOrange-7);
+              }
               if (runML1) {
                 cout << "Processing ML1" << endl;
-                looper->ScanChain(chML1, "ML1", kML1, preML1, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chML1, "ML1", kML1, preML1, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing ML1" << endl;
               }
               if (runML2) {
                 cout << "Processing ML2" << endl;
-                looper->ScanChain(chML2, "ML2", kML2, preML2, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chML2, "ML2", kML2, preML2, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing ML2" << endl;
               }
               if (runML3) {
                 cout << "Processing ML3" << endl;
-                looper->ScanChain(chML3, "ML3", kML3, preML3, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chML3, "ML3", kML3, preML3, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing ML3" << endl;
               }
               if (runML4) {
                 cout << "Processing ML4" << endl;
-                looper->ScanChain(chML4, "ML4", kML4, preML4, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chML4, "ML4", kML4, preML4, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing ML4" << endl;
               }
               if (runML5) {
                 cout << "Processing ML5" << endl;
-                looper->ScanChain(chML5, "ML5", kML5, preML5, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chML5, "ML5", kML5, preML5, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing ML5" << endl;
               }
               if (runML6) {
                 cout << "Processing ML6" << endl;
-                looper->ScanChain(chML6, "ML6", kML6, preML6, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chML6, "ML6", kML6, preML6, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing ML6" << endl;
               }
               if (runML7) {
                 cout << "Processing ML7" << endl;
-                looper->ScanChain(chML7, "ML7", kML7, preML7, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chML7, "ML7", kML7, preML7, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing ML7" << endl;
               }
               if (runML8) {
                 cout << "Processing ML8" << endl;
-                looper->ScanChain(chML8, "ML8", kML8, preML8, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chML8, "ML8", kML8, preML8, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing ML8" << endl;
               }
               if (runLMscan) {
                 cout << "Processing LMscan" << endl;
-                looper->ScanChain(chLMscan, "LMscan", kLMscan, preLMscan, jetType, metType, zveto, doFakeApp);
+                looper->ScanChain(chLMscan, "LMscan", kLMscan, preLMscan, jetType, metType, zveto, doFakeApp, lumi);
                 cout << "Done processing LMscan" << endl;
                 hist::color("LMscan", kOrange-7);
               }
@@ -780,11 +848,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
               // save all the histograms
               if(doFakeApp) {
-                const char* outFile = Form("root/victory_baseline_metgt50_sumjetptgt200_cand01_%s_%s%s_FakeApp_3x.root", 
+                const char* outFile = Form("root/victory_baseline_metgt50_sumjetptgt200_%s_%s%s_FakeApp_3x.root", 
                                            jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
               }
               else {
-                const char* outFile = Form("root/victory_baseline_metgt50_sumjetptgt200_cand01_%s_%s%s_ML_3x.root", 
+                const char* outFile = Form("root/victory_baseline_metgt50_sumjetptgt200_%s_%s%s_ML_3x.root", 
                                            jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
               }
 
