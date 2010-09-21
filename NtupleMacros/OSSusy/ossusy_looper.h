@@ -21,23 +21,27 @@ class ossusy_looper
         ossusy_looper();
         ~ossusy_looper() {}
 
-        enum JetTypeEnum { e_JPT = 0, e_calo };
+        enum JetTypeEnum { e_JPT = 0, e_calo , e_pfjet };
         // e_JPT     :   jpt jets
         // e_calo    :   l1 and l2 corrected calo jets
-        enum MetTypeEnum { e_tcmet = 0, e_muon, e_muonjes };
+        // e_pfjet   :   corrected pfjets
+        enum MetTypeEnum { e_tcmet = 0, e_muon, e_muonjes , e_pfmet };
         // e_tcmet   :   track corrected met
         // e_muon    :   calo met with muon corrections
         // e_muonjes :   calo met with muon and jet energy scale corrections
-        enum ZVetoEnum   { e_standard = 0, e_allzveto, e_nozveto };
+        // e_pfmet   :   particle-flow met
+        enum ZVetoEnum   { e_standard = 0, e_allzveto, e_nozveto, e_selectz };
         // e_standard:   apply Z-veto to same-flavor pairs
         // e_allzveto:   apply Z-veto regardless of lepton flavor
         // e_nozveto :   no Z-veto
+        // e_selectz :   select Z by requiring SF OS pair in Z mass window
 
         int  ScanChain(TChain *chain, char *prefix = "", float kFactor = 1., int prescale = 1., 
-                JetTypeEnum jetType = e_JPT, 
-                MetTypeEnum metType = e_tcmet,
-                ZVetoEnum zveto = e_standard,
-                bool doFakeApp = false);
+                       JetTypeEnum jetType = e_JPT, 
+                       MetTypeEnum metType = e_tcmet,
+                       ZVetoEnum zveto = e_standard,
+                       bool doFakeApp = false,
+                       bool calculateTCMET = false);
         void BookHistos (char *prefix);
         bool passZSelection (int hypIdx);
         bool passTrigger (int dilType);
@@ -49,10 +53,12 @@ class ossusy_looper
 
         // Baby ntuple methods
         void makeTree (char *prefix);
-        void fillTree (char *prefix, float weight, int hypIdx, metStruct tcmetStruct, float sumjetpt, float mt2j, int njets, float vecjetpt, int pass, int passz, float m0, float m12);
         void closeTree ();
 
+
+
     private:
+
         // Globals
         bool g_susybaseline;
         bool g_createTree;
@@ -70,20 +76,47 @@ class ossusy_looper
         Float_t tcmet_;
         Float_t tcsumet_;
         Float_t tcmetphi_;
+        Float_t mt2_;
         Float_t mt2j_;
         Float_t sumjetpt_;
         Float_t dileta_;
         Float_t dilpt_;
+        Float_t dildphi_;
         Float_t vecjetpt_;
         Int_t   pass_;
         Int_t   passz_;
         Float_t m0_;
         Float_t m12_;
+        Float_t ptl1_;
+        Float_t ptl2_;
+        Float_t ptj1_;
+        Float_t ptj2_;
+        Float_t meff_;
+        Float_t mt_;
 
-        //susy scan histos
- 
+	// the fake rate accessors
+
+/* 	SimpleFakeRate fr_el */
+/* 	SimpleFakeRate fr_mu; */
 
         // Lots and lots of histograms
+        TH1F* hmt2j_signal[4][4];
+        TH1F* hmt2j_control[4][4];
+        TH1F* hmt2j_all[4][4];
+        TH2F* hmet_dilpt_signal[4][4];
+        TH2F* hmet_dilpt_control[4][4];
+        TH2F* hmet_dilpt_all[4][4];
+              
+        TH1F* hmt[4][4];
+        TH1F* hetaz[4][4];
+        TProfile* htcsumet_tcmet_prof[4][4]; 
+        TProfile* hsumJetPt_tcmetsqrtsumet_prof[4][4]; 
+        TProfile* hgensumet_genmet_prof[4][4]; 
+        //TProfile* hsumJetPt_tcmetpowtcsumet_prof[4][4][101]; 
+        //TH2F* hsumJetPt_tcmetpowtcsumet_th2[4][4][101];
+        //TH2F*     hsumJetPt_tcmetpowtcsumet_th2[101];
+        //TProfile* hsumJetPt_tcmetpowtcsumet_prof[101];
+
         TH2F* hsumJetPt_tcmet[4][4];
         TH2F* hsumJetPt_tcmetsqrtsumet[4][4]; 
         TH2F* hsumJetPt_tcmetsumet[4][4]; 
@@ -92,6 +125,7 @@ class ossusy_looper
         TH2F* hetaZ_tcmetsumet[4][4]; 
 
         TH2F* hdilMass_tcmet[4][4];
+        TH1F* hmt2core[4][4];               // MT2 from CORE
         TH1F* hmt2jcore[4][4];               // MT2J from CORE
         TH1F* hmt2j[4][4];                   // potentially custom MT2J
         TH1F* hsumJetPt[4][4];               // scalar sum jet Et
@@ -119,6 +153,7 @@ class ossusy_looper
         TH1F* hmuEta[4][4];                  // muon eta
         TH1F* hdilMass[4][4];                // dilepton mass
         TH1F* hdilPt[4][4];                  // dilepton Pt
+        TH1F* hdilPt_zveto[4][4];            // dilepton Pt with z-veto applied
         TH1F* hdilPtSmeared[4][4];           // dilepton Pt with Gaussian smearing
 
         TH1F* hgenmet[4][4];                 // MET corrected for muons and JES
