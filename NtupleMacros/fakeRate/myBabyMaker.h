@@ -152,6 +152,10 @@ class myBabyMaker
   Float_t ptj1_b2b_;    // highest pt jet away frmo lepton by dR >= 1.0 and dPhi > 2.5
   Float_t dphij1_b2b_;  // dphi between lepton and jet for jets away from lepton by dR >= 1.0
   Int_t   nj1_;         // number of jets above 10 GeV and away from lepton by dR >= 1.0
+  Float_t ptpfj1_;        // highest pt pfjet well separated from the lepton
+  Float_t ptpfj1_b2b_;    // highest pt pfjet away frmo lepton by dR >= 1.0 and dPhi > 2.5
+  Float_t dphipfj1_b2b_;  // dphi between lepton and pfjet for pfjets away from lepton by dR >= 1.0
+  Int_t   npfj1_;         // number of pfjets above 10 GeV and away from lepton by dR >= 1.0
 
   // transverse W mass
   Float_t mt_;

@@ -426,7 +426,27 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
           }
         }
 
-        // Time to fill the baby for the electrons
+        // Find the highest Pt pfjet separated by at least dRcut from this lepton and fill the pfjet Pt
+        ptpfj1_       = -999.0;
+        ptpfj1_b2b_   = -999.0;
+        dphipfj1_b2b_ = -999.0;
+        npfj1_        = 0;
+        for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+          double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), pfjets_p4().at(iJet) );
+          if( dr > deltaRCut && pfjets_p4().at(iJet).pt() > 10 ) npfj1_++;
+          if ( dr > deltaRCut && pfjets_p4().at(iJet).pt() > ptpfj1_ ){
+            ptpfj1_ = pfjets_p4().at(iJet).pt();
+      
+            // back to back in phi
+            float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iEl), pfjets_p4().at(iJet) ) );
+            if( dphi > deltaPhiCut && pfjets_p4().at(iJet).pt() > ptpfj1_b2b_ ){ 
+              ptpfj1_b2b_   = pfjets_p4().at(iJet).pt();
+              dphij1_b2b_ = dphi;
+            }
+          }
+        }
+
+	// Time to fill the baby for the electrons
         FillBabyNtuple();
 
       } // closes loop over electrons
@@ -572,7 +592,28 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
             }
           }
         }
+
+        // Find the highest Pt pfjet separated by at least dRcut from this lepton and fill the pfjet Pt
+	ptpfj1_       = -999.0;
+        ptpfj1_b2b_   = -999.0;
+        dphipfj1_b2b_ = -999.0;
+        npfj1_        = 0;
+        for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+          double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), pfjets_p4().at(iJet) );
+          if( dr > deltaRCut && pfjets_p4().at(iJet).pt() > 10 ) npfj1_++;
+          if ( dr > deltaRCut && pfjets_p4().at(iJet).pt() > ptpfj1_ ){
+            ptpfj1_ = pfjets_p4().at(iJet).pt();
     
+            // back to back in phi
+            float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iMu), pfjets_p4().at(iJet) ) );
+            if( dphi > deltaPhiCut && pfjets_p4().at(iJet).pt() > ptpfj1_b2b_ ){        
+              ptpfj1_b2b_   = pfjets_p4().at(iJet).pt();
+              dphipfj1_b2b_ = dphi;
+            }
+          }
+        }
+
+
         // Time to fill the baby for the muons
         FillBabyNtuple();
       
@@ -683,6 +724,10 @@ void myBabyMaker::InitBabyNtuple () {
   nj1_    = 0;
   ptj1_b2b_ = -999.;
   dphij1_b2b_ = -999.;
+  ptpfj1_   = 0.;
+  npfj1_    = 0;
+  ptpfj1_b2b_ = -999.;
+  dphipfj1_b2b_ = -999.;
   mt_ = -999;
 
   //
@@ -796,6 +841,10 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("nj1",       &nj1_,       "nj1/I"      );
     babyTree_->Branch("ptj1_b2b",       &ptj1_b2b_,       "ptj1_b2b/F"      );
     babyTree_->Branch("dphij1_b2b",       &dphij1_b2b_,       "dphij1_b2b/F"      );
+    babyTree_->Branch("ptpfj1",       &ptpfj1_,       "ptpfj1/F"      );
+    babyTree_->Branch("npfj1",       &npfj1_,       "npfj1/I"      );
+    babyTree_->Branch("ptpfj1_b2b",       &ptpfj1_b2b_,       "ptpfj1_b2b/F"      );
+    babyTree_->Branch("dphipfj1_b2b",       &dphipfj1_b2b_,       "dphipfj1_b2b/F"      );
 
     babyTree_->Branch("mt",          &mt_,         "mt/F"         );
 
