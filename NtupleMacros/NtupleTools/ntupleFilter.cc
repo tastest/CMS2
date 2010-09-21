@@ -1,4 +1,4 @@
-// $Id: ntupleFilter.cc,v 1.9 2010/07/21 12:20:50 dlevans Exp $
+// $Id: ntupleFilter.cc,v 1.10 2010/09/21 08:13:48 dlevans Exp $
 
 #include <assert.h>
 #include <string>
@@ -29,132 +29,136 @@ using namespace tas;
 // please be careful you don't create a file which is enormous (unless
 // you can handle enormous files)
 
-bool select ()
+bool select (bool isData)
 {
-  //hyp filter
-  //if( hyp_p4().size() > 0 )
-  //return true;
+    //hyp filter
+    //if( hyp_p4().size() > 0 )
+    //return true;
 
-  if( !goodrun( evt_run(), evt_lumiBlock() ) )
-	return false;
+    if (isData) {
+        if( !goodrun( evt_run(), evt_lumiBlock() ) ) return false;
+    }
 
-  const float ptthresh = 20.;
+    const float ptthresh = 20.;
 
-/*
-  for( unsigned int i=0; i<pfjets_p4().size(); i++ )
-	if( pfjets_p4()[i].pt() > ptthresh )
-	  return true;
-  for( unsigned int i=0; i<jets_p4().size(); i++ )
-	if( jets_p4()[i].pt()*jets_cor()[i] > ptthresh )
-	  return true;
+    /*
+       for( unsigned int i=0; i<pfjets_p4().size(); i++ )
+       if( pfjets_p4()[i].pt() > ptthresh )
+       return true;
+       for( unsigned int i=0; i<jets_p4().size(); i++ )
+       if( jets_p4()[i].pt()*jets_cor()[i] > ptthresh )
+       return true;
 
-*/
+     */
 
     for (size_t i = 0; i < cms2.mus_ndof().size(); ++i) 
         if (cms2.mus_p4()[i].Pt() > ptthresh) return true;
     for (size_t i = 0; i < cms2.evt_nels(); ++i) 
         if (cms2.els_p4()[i].Pt() > ptthresh) return true;
 
-  return false;
+    return false;
 
 }
 
-void ntupleFilter (TChain *chain, const std::string &outfile, bool printPass=false)  
+void ntupleFilter (TChain *chain, const std::string &outfile, bool printPass=false, bool isData = true, std::string runlist = "")  
 {
-     // output file and tree
-     TFile *output =TFile::Open(outfile.c_str(), "RECREATE");
-     assert(output != 0);
-     TTree *newtree = 0;
+    // set good run list
+    if (runlist != "") set_goodrun_file(runlist.c_str());
 
-     const long long max_tree_size = 20000000000000000LL;
-     TTree::SetMaxTreeSize(max_tree_size);
+    // output file and tree
+    TFile *output =TFile::Open(outfile.c_str(), "RECREATE");
+    assert(output != 0);
+    TTree *newtree = 0;
 
-	 FILE *log = 0; //for keeping any output desired on selection
-	 if( printPass ) {
-	   size_t pos = outfile.find(".root");
-	   assert( pos != string::npos );
-	   std::string outcpy = outfile;
-	   log = fopen( outcpy.replace(pos, 5, "_run_lumi_event").c_str(), "w" );
-	 }
-	 
-     //TChain *chain = new TChain("Events");
-     //chain->Add(infile.c_str());
-     TObjArray *listOfFiles = chain->GetListOfFiles();
-     const uint64 nEventsChain = chain->GetEntries();
-     uint64 nEventsTotal = 0;
-     uint64 nEventsSelected = 0;
+    const long long max_tree_size = 20000000000000000LL;
+    TTree::SetMaxTreeSize(max_tree_size);
 
-     // file loop
-     TIter fileIter(listOfFiles);
-     TFile *currentFile = 0;
-     bool first = true;
-     int i_permille_old = 0;
-     while ( (currentFile = (TFile*)fileIter.Next()) ) {
-	   TFile f(currentFile->GetTitle());
-	   //const char *name = f.GetName();
-	   TTree *tree = (TTree*)f.Get("Events");
+    FILE *log = 0; //for keeping any output desired on selection
+    if( printPass ) {
+        size_t pos = outfile.find(".root");
+        assert( pos != string::npos );
+        std::string outcpy = outfile;
+        log = fopen( outcpy.replace(pos, 5, "_run_lumi_event").c_str(), "w" );
+    }
 
-	   //chain->SetBranchStatus(chain->GetAlias("evt_scale1fb"		), 0);
-	   //chain->SetBranchStatus(chain->GetAlias("evt_xsec_excl"	), 0);
-	   //chain->SetBranchStatus(chain->GetAlias("evt_xsec_incl"	), 0);
-	   //chain->SetBranchStatus(chain->GetAlias("evt_kfactor"		), 0);
-	   //chain->SetBranchStatus(chain->GetAlias("evt_nEvts"		), 0);
-	   //chain->SetBranchStatus(chain->GetAlias("evt_filt_eff"		), 0);
-	   chain->SetBranchStatus("EventAuxiliary",0);
-	   // for the first file, clone the tree
-	   if ( first ) {
-		 newtree = chain->CloneTree(0);
-		 newtree->SetDirectory(output);
-		 first = false;
-	       
-	   }
-	  
-	   // init
-	   cms2.Init(newtree);
-	   cms2.Init(tree);
+    //TChain *chain = new TChain("Events");
+    //chain->Add(infile.c_str());
+    TObjArray *listOfFiles = chain->GetListOfFiles();
+    const uint64 nEventsChain = chain->GetEntries();
+    uint64 nEventsTotal = 0;
+    uint64 nEventsSelected = 0;
 
-	   // Event Loop
-	   const unsigned int nEvents = tree->GetEntries();
-	   for (unsigned int event = 0; event < nEvents; ++event, ++nEventsTotal) {
-		 int i_permille = (int)floor(10000 * nEventsTotal / float(nEventsChain));
-		 if (i_permille != i_permille_old) {
-		   // xterm magic from L. Vacavant and A. Cerri
-		   if (isatty(1)) {
-			 printf("\015\033[32m ---> \033[1m\033[31m%5.2f%%"
-					"\033[0m\033[32m <---\033[0m\015", i_permille/100.);
-			 fflush(stdout);
-		   }
-		   i_permille_old = i_permille;
-		 }
+    // file loop
+    TIter fileIter(listOfFiles);
+    TFile *currentFile = 0;
+    bool first = true;
+    int i_permille_old = 0;
+    while ( (currentFile = (TFile*)fileIter.Next()) ) {
+        TFile f(currentFile->GetTitle());
+        //const char *name = f.GetName();
+        TTree *tree = (TTree*)f.Get("Events");
 
-		 cms2.GetEntry(event);
-		 //set condition to skip event
-		 if (not select()) 
-		   continue;
+        //chain->SetBranchStatus(chain->GetAlias("evt_scale1fb"		), 0);
+        //chain->SetBranchStatus(chain->GetAlias("evt_xsec_excl"	), 0);
+        //chain->SetBranchStatus(chain->GetAlias("evt_xsec_incl"	), 0);
+        //chain->SetBranchStatus(chain->GetAlias("evt_kfactor"		), 0);
+        //chain->SetBranchStatus(chain->GetAlias("evt_nEvts"		), 0);
+        //chain->SetBranchStatus(chain->GetAlias("evt_filt_eff"		), 0);
+        chain->SetBranchStatus("EventAuxiliary",0);
+        // for the first file, clone the tree
+        if ( first ) {
+            newtree = chain->CloneTree(0);
+            newtree->SetDirectory(output);
+            first = false;
 
-		 ++nEventsSelected;
-		 if( printPass ) {
-		   //cout << cms2.evt_run() << " " << cms2.evt_lumiBlock() << " " << cms2.evt_event() << endl;
-		   fprintf(log, "%i %i %i\n", cms2.evt_run(), cms2.evt_lumiBlock(), cms2.evt_event() );
-		 }
+        }
 
-		 cms2.LoadAllBranches();
-	       
-		 // fill the new tree
-		 newtree->Fill();
-	   }
-     }
+        // init
+        cms2.Init(newtree);
+        cms2.Init(tree);
 
-	 if( printPass ) {
-	   fprintf(log, "\nTotal events run on: %llu\n", nEventsTotal);
-	   fprintf(log, "Num events selected: %llu\n", nEventsSelected ); //need two fprintf statements bc of some gcc bug
-	   //cout << endl
- 	   //	  << "Total events run on: " << nEventsTotal << endl
- 	   //	  << "Num events selected: " << nEventsSelected << endl;
-	   //<< "Copy finished. Closing Files" << endl;
-	 }
-	 
-     output->cd();
-     newtree->Write();
-     delete output;
+        // Event Loop
+        const unsigned int nEvents = tree->GetEntries();
+        for (unsigned int event = 0; event < nEvents; ++event, ++nEventsTotal) {
+            int i_permille = (int)floor(10000 * nEventsTotal / float(nEventsChain));
+            if (i_permille != i_permille_old) {
+                // xterm magic from L. Vacavant and A. Cerri
+                if (isatty(1)) {
+                    printf("\015\033[32m ---> \033[1m\033[31m%5.2f%%"
+                            "\033[0m\033[32m <---\033[0m\015", i_permille/100.);
+                    fflush(stdout);
+                }
+                i_permille_old = i_permille;
+            }
+
+            cms2.GetEntry(event);
+            //set condition to skip event
+            if (not select(isData)) 
+                continue;
+
+            ++nEventsSelected;
+            if( printPass ) {
+                //cout << cms2.evt_run() << " " << cms2.evt_lumiBlock() << " " << cms2.evt_event() << endl;
+                fprintf(log, "%i %i %i\n", cms2.evt_run(), cms2.evt_lumiBlock(), cms2.evt_event() );
+            }
+
+            cms2.LoadAllBranches();
+
+            // fill the new tree
+            newtree->Fill();
+        }
+    }
+
+    if( printPass ) {
+        fprintf(log, "\nTotal events run on: %llu\n", nEventsTotal);
+        fprintf(log, "Num events selected: %llu\n", nEventsSelected ); //need two fprintf statements bc of some gcc bug
+        //cout << endl
+        //	  << "Total events run on: " << nEventsTotal << endl
+        //	  << "Num events selected: " << nEventsSelected << endl;
+        //<< "Copy finished. Closing Files" << endl;
+    }
+
+    output->cd();
+    newtree->Write();
+    delete output;
 }
