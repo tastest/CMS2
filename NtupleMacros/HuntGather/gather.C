@@ -18,42 +18,30 @@ float GetIntLumi(float lumi, int brun, int bls, int erun, int els)
     TChain *c = new TChain("tree");
     c->Add("/tas05/disk00/jribnik/hunt/dilep_baby/*.root");
 
-    TCut c_goodrun("goodrun_json(run,ls)");
-    TCut c_runls(Form("(run>%i&&run<%i)||(run==%i&&ls>=%i)||(run==%i&&ls<=%i)", brun, erun, brun, bls, erun, els));
+    TCut c_goodrun(Form("((run>%i&&run<%i)||(run==%i&&ls>=%i)||(run==%i&&ls<=%i))&&goodrun_json(run,ls)", brun, erun, brun, bls, erun, els));
+    // goodrun plus events beyond range of goodrun
+    // which are not goodrun penalized
+    TCut c_goodrunplus(Form("(((run>%i&&run<%i)||(run==%i&&ls>=%i)||(run==%i&&ls<=%i))&&goodrun_json(run,ls))||(run>%i||(run==%i&&ls>%i))", brun, erun, brun, bls, erun, els, erun, erun, els));
 
     // brun:bls -> erun:els
-    int n_runls = c->GetEntries(c_goodrun+c_runls+inclusivez_dilep); 
+    int n_goodrun = c->GetEntries(c_goodrun+inclusivez_dilep); 
     // total
-    int n_total = c->GetEntries(c_goodrun+inclusivez_dilep);
+    int n_total   = c->GetEntries(c_goodrunplus+inclusivez_dilep);
     // that which is new
-    int n_new   = n_total-n_runls;
+    int n_new     = n_total-n_goodrun;
 
-    float newlumi = ((float)(n_new*lumi))/(float)n_runls;
+    float newlumi = ((float)(n_new*lumi))/(float)n_goodrun;
     return lumi+newlumi;
 }
 
 float GetIntLumi(float lumi)
 {
-    TChain *c = new TChain("tree");
-    c->Add("/tas05/disk00/jribnik/hunt/dilep_baby/*.root");
-
     int brun = min_run();
     int bls  = min_run_min_lumi();
     int erun = max_run();
     int els  = max_run_max_lumi();
 
-    TCut c_goodrun("goodrun_json(run,ls)");
-    TCut c_runls(Form("(run>%i&&run<%i)||(run==%i&&ls>=%i)||(run==%i&&ls<=%i)", brun, erun, brun, bls, erun, els));
-
-    // brun:bls -> erun:els
-    int n_runls = c->GetEntries(c_goodrun+c_runls+inclusivez_dilep); 
-    // total
-    int n_total = c->GetEntries(c_goodrun+inclusivez_dilep);
-    // that which is new
-    int n_new   = n_total-n_runls;
-
-    float newlumi = ((float)(n_new*lumi))/(float)n_runls;
-    return lumi+newlumi;
+    return GetIntLumi(lumi, brun, bls, erun, els);
 }
 
 TH1F* Plot(const char *pfx, TChain *chain, const char *field, TCut sel, TCut presel, float intlumifb, float kfactor,
@@ -61,6 +49,10 @@ TH1F* Plot(const char *pfx, TChain *chain, const char *field, TCut sel, TCut pre
 {
     TCut scale;
     // mc has scale1fb, data does not
+    // JAKE is this foolproof? rather than
+    // bool usegoodrun should we bool
+    // isdata and force application of the
+    // goodrun selection?
     if (chain->GetBranch("scale1fb"))
         scale = Form("scale1fb*%f*%f", intlumifb, kfactor);
     else
@@ -76,12 +68,14 @@ TH1F* Plot(const char *pfx, TChain *chain, const char *field, TCut sel, TCut pre
     int erun = max_run();
     int els  = max_run_max_lumi();
 
-    TCut c_goodrun("goodrun_json(run,ls)");
-    TCut c_runls(Form("(run>%i&&run<%i)||(run==%i&&ls>=%i)||(run==%i&&ls<=%i)", brun, erun, brun, bls, erun, els));
+    TCut c_goodrunplus(Form("(((run>%i&&run<%i)||(run==%i&&ls>=%i)||(run==%i&&ls<=%i))&&goodrun_json(run,ls))||(run>%i||(run==%i&&ls>%i))", brun, erun, brun, bls, erun, els, erun, erun, els));
 
     TCut c_presel = "";
+    // apply goodrun selection to data where
+    // applicable, i.e. the range covered by
+    // the goodrun json file
     if (usegoodrun)
-        c_presel += c_goodrun+c_runls+presel;
+        c_presel += c_goodrunplus+presel;
     else
         c_presel += presel;
 
