@@ -8,6 +8,7 @@
 #include "TCut.h"
 #include "TH1F.h"
 #include "TLegend.h"
+#include "TMath.h"
 #include "TROOT.h"
 
 #include <algorithm>
@@ -123,6 +124,7 @@ TH1F* Plot(const char *field, TCut sel, unsigned int nbins, float xlo, float xhi
 TH1F* slideIntegrated(TH1F* integrateThis)
 {
     TString name = integrateThis->GetName();
+    name.Append("_int");
     int NbinsX = integrateThis->GetNbinsX();
     TH1F* integrated = ((TH1F*)integrateThis->Clone("integrated"));
     integrated->Reset();
@@ -132,6 +134,7 @@ TH1F* slideIntegrated(TH1F* integrateThis)
         float integral = integrateThis->Integral(i,NbinsX);
         if(integral!=0.) integrated->SetBinContent(i,integral);
         if(integral!=0.) integrated->SetBinError(i,0);
+        //        if(integral!=0.) integrated->SetBinError(i,TMath::Sqrt(integral));
     }
 
     TH1F* result = ((TH1F*)integrated->Clone("name"));  
