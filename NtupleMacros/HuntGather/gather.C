@@ -9,6 +9,7 @@
 #include "TH1F.h"
 #include "TLegend.h"
 #include "TMath.h"
+#include "TPRegexp.h"
 #include "TROOT.h"
 
 #include <algorithm>
@@ -120,22 +121,20 @@ TH1F* slideIntegrated(TH1F* integrateThis)
     TString name = integrateThis->GetName();
     name.Append("_int");
     int NbinsX = integrateThis->GetNbinsX();
-    TH1F* integrated = ((TH1F*)integrateThis->Clone("integrated"));
+    TH1F* integrated = (TH1F*)integrateThis->Clone(name);
     integrated->Reset();
 
     // integrate rate above a certain pt value (bin)
-    for(int i = 1; i<NbinsX; ++i) {
-        float integral = integrateThis->Integral(i,NbinsX);
+    for(int i = 1; i <= NbinsX; ++i) {
+        // don't forget the overflow!
+        float integral = integrateThis->Integral(i,NbinsX+1);
         if(integral!=0.) integrated->SetBinContent(i,integral);
         if(integral!=0.) integrated->SetBinError(i,0);
         //        if(integral!=0.) integrated->SetBinError(i,TMath::Sqrt(integral));
     }
 
-    TH1F* result = ((TH1F*)integrated->Clone("name"));  
-    //result->Smooth(80);
-
-    return result;
-} 
+    return integrated;
+}
 
 TCanvas* DrawAll(const char *field, TCut sel, float intlumifb, unsigned int nbins, float xlo, float xhi, bool integrated,
         BabySample* bs1,  BabySample* bs2,  BabySample* bs3,  BabySample* bs4,  BabySample* bs5,
@@ -175,7 +174,7 @@ TCanvas* DrawAll(const char *field, TCut sel, float intlumifb, unsigned int nbin
         }
     }
 
-    TLegend* leg = new TLegend(0.65,0.622881,0.997126,0.98,NULL,"brNDC");
+    TLegend* leg = new TLegend(0.85,0.622881,0.997126,0.98,NULL,"brNDC");
     leg->SetLineColor (1);
     leg->SetLineStyle (1);
     leg->SetLineWidth (1);
@@ -200,23 +199,47 @@ TCanvas* DrawAll(const char *field, TCut sel, float intlumifb, unsigned int nbin
         hdata = slideIntegrated( hdatas[0] );
     }
 
+    TPRegexp preg("^([^_]+)_([^_]+_[^_]+)_([^_]+)(_int)?$");
+    TString  s_pfx(""),s_sel(""),s_field("");
+    if (preg.MatchB(TString(hmc->GetName()))) {
+        s_sel   = ((TObjString*)(preg.MatchS(TString(hmc->GetName()))->At(2)))->GetString();
+        s_field = ((TObjString*)(preg.MatchS(TString(hmc->GetName()))->At(3)))->GetString();
+    }
+
+    hmc->SetTitle(s_sel.Data());
     float ymax = hdata->GetMaximum() > hmc->GetMaximum() ? hdata->GetMaximum() : hmc->GetMaximum();
-    hdata->SetMarkerStyle(20);
-    leg->AddEntry(hdata, hdata->GetTitle(), "lep");
     hmc->SetMaximum(ymax*1.1);
 
     TCanvas *c1 = new TCanvas("c1");
     c1->Draw();
     // Draw the initial MC histo
     hmc->Draw();
-    leg->AddEntry(hmcs.at(0), hmcs.at(0)->GetTitle(), "f");
+    hmc->GetXaxis()->SetTitle(s_field.Data());
+
+    // But add data to legend first
+    // so that it's at the top
+    hdata->SetMarkerStyle(20);
+    if (preg.MatchB(TString(hdata->GetName())))
+        s_pfx = ((TObjString*)(preg.MatchS(TString(hdata->GetName()))->At(1)))->GetString();
+    leg->AddEntry(hdata, s_pfx.Data(), "lep");
+
+    // And back to MC
+    s_pfx = "";
+    if (preg.MatchB(TString(hmc->GetName())))
+        s_pfx = ((TObjString*)(preg.MatchS(TString(hmc->GetName()))->At(1)))->GetString();
+    leg->AddEntry(hmc, s_pfx.Data(), "f");
 
     for(unsigned int mchisto = 1; mchisto < hmcs.size(); ++mchisto) { // need 1 here, as we only want to plot 1 and more
         if (integrated)
             hmcs.at(mchisto) = slideIntegrated( hmcs.at(mchisto) );
 
         hmcs.at(mchisto)->Draw("same");
-        leg->AddEntry(hmcs.at(mchisto), hmcs.at(mchisto)->GetTitle(), "f");
+
+        s_pfx = "";
+        if (preg.MatchB(TString(hmc->GetName())))
+            s_pfx   = ((TObjString*)(preg.MatchS(TString(hmcs.at(mchisto)->GetName()))->At(1)))->GetString();
+
+        leg->AddEntry(hmcs.at(mchisto), s_pfx.Data(), "f");
     }
 
     hdata->Draw("pesames");
