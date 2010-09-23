@@ -17,7 +17,8 @@ struct metStruct{
 enum whichMetType {
   usingTcMet = 1,
   usingCaloMet = 2,
-  usingTcMet35X = 3
+  usingTcMet35X = 3,
+  usingTcMet_looper = 4
 };
 
 //---------------------------------------------------
