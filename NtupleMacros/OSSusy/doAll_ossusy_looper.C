@@ -57,7 +57,6 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   gROOT->ProcessLine(".L CORE/mcSelections.cc+");
   gROOT->ProcessLine(".L CORE/MT2/MT2.cc+");
 
-
   // Load various tools  
   gROOT->ProcessLine(Form(".x setup.C(%d)", skipFWLite));
 
@@ -83,8 +82,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
   // these two are taken from Ceballos's pdf. 
   // It looks like the top x-section is for mtop = 175 GeV
-  float kttdil    = 1.;  // 375pb, 127000 events processed
-  float kttotr    = 1.;  // 375pb, 127000 events processed
+  float kttall    = 157.5/165.0;  
+  float kttdil    = 157.5/165.0;  
+  float kttotr    = 157.5/165.0;  
   float kWW       = 1.;
   float kWZ       = 1.;
   float kZZ       = 1.;
@@ -123,6 +123,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   float kML8      = 1.;
 
   // Prescales
+  int prettall    = 1;
   int prettdil    = 1;
   int prettotr    = 1;
   int preWW       = 1;
@@ -161,9 +162,10 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preML7      = 1;
   int preML8      = 1;
   int preLMscan = 1;
-  
+  /*
   //Flags for files to run over
   bool rundata     = 1;
+  bool runttall    = 0;
   bool runttdil    = 1;
   bool runttotr    = 1;
   bool runWW       = 1;
@@ -202,11 +204,12 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
+  */
 
-/*  
   //Flags for files to run over
   bool rundata     = 1;
-  bool runttdil    = 0;
+  bool runttall    = 0;
+  bool runttdil    = 1;
   bool runttotr    = 0;
   bool runWW       = 0;
   bool runWZ       = 0;
@@ -221,7 +224,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runEM       = 0;
   bool runtW       = 0;
   bool runVQQ      = 0;
-  bool runLM0      = 0;
+  bool runLM0      = 1;
   bool runLM1      = 0;
   bool runLM2      = 0;
   bool runLM3      = 0;
@@ -244,7 +247,6 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-*/
 
   TChain* chdata = new  TChain("Events");
   if(rundata){
@@ -273,6 +275,14 @@ void doAll_ossusy_looper(bool skipFWLite = true)
     pickSkimIfExists(chZjets, 
                      "/tas/cms2/ZJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-08/merged*root",
                      "Zjets");
+  }
+
+  TChain* chtopall = new TChain("Events");
+  if (runttall) {
+    pickSkimIfExists(chtopall, 
+                     "/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/skimmed*root",
+                     //"/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-07/merged*.root",
+                     "TTJets");
   }
 
   TChain* chtopdil = new TChain("Events");
@@ -600,7 +610,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   //--------------------------------
   //set luminosity to scale to
   //--------------------------------
-  float lumi              = 2.7945e-3;     //2.8 pb-1
+  //float lumi              = 2.7945e-3;     //2.8 pb-1
+  float lumi              = 0.1;     //100 pb-1
   bool  calculateTCMET    = true; //redo tcmet calculation on the fly
 
   char* jetTypeStrings[3] = {"JPT", "calo","pfjet"};
@@ -609,7 +620,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool doFakeApp          = false;
 
   // Process files one at a time, and color them as needed
-  for (int jetTypeIdx = 2; jetTypeIdx < 3; ++jetTypeIdx)
+  for (int jetTypeIdx = 0; jetTypeIdx < 1; ++jetTypeIdx)
     {
       for (int metTypeIdx = 0; metTypeIdx < 1; ++metTypeIdx)
         {
@@ -631,6 +642,12 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                 looper->ScanChain(chZjets,"Zjets", kZjets, preZjets, lumi, jetType, metType, zveto, doFakeApp, calculateTCMET);
                 cout << "Done processing Zjets" << endl;
                 hist::color("Zjets", kBlack);
+              }
+              if (runttall) {
+                cout << "Processing ttbar all.. " << endl;
+                looper->ScanChain(chtopall,"ttall", kttall, prettall, lumi, jetType, metType, zveto, doFakeApp, calculateTCMET);
+                cout << "Done processing ttbar all.. " << endl;
+                hist::color("ttall", kYellow);
               }
               if (runttdil) {
                 cout << "Processing ttbar dileptonic.. " << endl;
