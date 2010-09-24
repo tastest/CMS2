@@ -57,13 +57,26 @@ TCut multimuon_emu("multimuon_emu",multimuon_emu1+multimuon_emu2);
 // Dilepton+X
 //
 
-TCut inclusivez_dilep1("abs(eormu1) == abs(eormu2)");
-TCut inclusivez_dilep2("pt1 > 20. && pt2 > 20.");
-TCut inclusivez_dilep3("(abs(eormu1) == 11 && e1_vbtf90fullAlign) || (abs(eormu1) == 13 && mu1_muonidfull && ! mu1_cosmic)");
-TCut inclusivez_dilep4("(abs(eormu2) == 11 && e2_vbtf90fullAlign) || (abs(eormu2) == 13 && mu2_muonidfull && ! mu2_cosmic)");
-TCut inclusivez_dilep5("mass > 76. && mass < 106.");
-TCut inclusivez_dilep6("ntrks > 2");
-TCut inclusivez_dilep("inclusivez_dilep",inclusivez_dilep1+inclusivez_dilep2+inclusivez_dilep3+inclusivez_dilep4+inclusivez_dilep5+inclusivez_dilep6);
+TCut base_dilep1("pt1 > 20. && pt2 > 20.");
+TCut base_dilep2("(abs(eormu1) == 11 && e1_vbtf90fullAlign) || (abs(eormu1) == 13 && mu1_muonidfull && ! mu1_cosmic)");
+TCut base_dilep3("(abs(eormu2) == 11 && e2_vbtf90fullAlign) || (abs(eormu2) == 13 && mu2_muonidfull && ! mu2_cosmic)");
+TCut base_dilep4("ntrks > 2");
+TCut base_dilep("base_dilep",base_dilep1+base_dilep2+base_dilep3+base_dilep4);
+
+TCut ss_dilep("eormu1*eormu2>0");
+TCut os_dilep("eormu1*eormu2<0");
+TCut sf_dilep("abs(eormu1)==abs(eormu2)");
+TCut of_dilep("abs(eormu1)!=abs(eormu2)");
+
+TCut ee_dilep("abs(eormu1)==11&&abs(eormu2)==11");
+TCut mm_dilep("abs(eormu1)==13&&abs(eormu2)==13");
+TCut em_dilep("(abs(eormu1)==11&&abs(eormu2)==13)||(abs(eormu1)==13&&abs(eormu2)==11)");
+
+TCut inclusivez_dilep1("mass > 76. && mass < 106.");
+TCut inclusivez_dilep("inclusivez_dilep",base_dilep+sf_dilep+inclusivez_dilep1);
+
+TCut inclusivenonz_dilep1("(((hyp_type == 0 || hyp_type == 3) && eormu1*eormu2 < 0) && abs(mass-91.) > 15.) || ((hyp_type == 0 || hyp_type == 3) && eormu1*eormu2 > 0) || (hyp_type == 1 || hyp_type == 2)");
+TCut inclusivenonz_dilep("inclusivenonz_dilep",base_dilep+inclusivenonz_dilep1);
 
 TCut zplusjetsv1_dilep1("abs(eormu1) == abs(eormu2)");
 TCut zplusjetsv1_dilep2("pt1 > 20. && pt2 > 20.");
@@ -136,13 +149,6 @@ TCut zptz100_dilep5("mass > 76. && mass < 106.");
 TCut zptz100_dilep6("dilpt > 100.");
 TCut zptz100_dilep7("ntrks > 2");
 TCut zptz100_dilep("zptz100_dilep",zptz100_dilep1+zptz100_dilep2+zptz100_dilep3+zptz100_dilep4+zptz100_dilep5+zptz100_dilep6+zptz100_dilep7);
-
-TCut inclusivenonz_dilep1("pt1 > 15. && pt2 > 15.");
-TCut inclusivenonz_dilep2("(abs(eormu1) == 11 && e1_vbtf90fullAlign) || (abs(eormu1) == 13 && mu1_muonidfull && ! mu1_cosmic)");
-TCut inclusivenonz_dilep3("(abs(eormu2) == 11 && e2_vbtf90fullAlign) || (abs(eormu2) == 13 && mu2_muonidfull && ! mu2_cosmic)");
-TCut inclusivenonz_dilep4("(((hyp_type == 0 || hyp_type == 3) && eormu1*eormu2 < 0) && abs(mass-91.) > 15.) || ((hyp_type == 0 || hyp_type == 3) && eormu1*eormu2 > 0) || (hyp_type == 1 || hyp_type == 2)");
-TCut inclusivenonz_dilep5("ntrks > 2");
-TCut inclusivenonz_dilep("inclusivenonz_dilep",inclusivenonz_dilep1+inclusivenonz_dilep2+inclusivenonz_dilep3+inclusivenonz_dilep4+inclusivenonz_dilep5);
 
 TCut inclusivenonzof_dilep1("pt1 > 15. && pt2 > 15.");
 TCut inclusivenonzof_dilep2("abs(eormu1) != abs(eormu2)");
