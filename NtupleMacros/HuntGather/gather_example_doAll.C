@@ -57,12 +57,12 @@ void gather_example_doAll()
     //     the integrated luminosity in /fb; scale1fb is of course multiplied by this no.
     //     whatever additional scale factor you need
     //     then the standard nbins and histogram range
-    TH1F* hmc   = Plot("zjets",czjets_dilep,"mass",inclusivez_dilep,"",f_intlumifb,1.27,100,60,120,false);
+    TH1F* hmc   = Plot("zjets",czjets_dilep,"mass",inclusivez_dilep,"",f_intlumifb,1.27,100,60,120,false,false);
 
     // TH1F* Plot(const char *pfx, TChain *chain, const char *field, TCut sel, TCut presel,
     //                   unsigned int nbins, float xlo, float xhi);
     // same as above but as this is data there is no need to specify intlumifb or kfactor
-    TH1F* hdata = Plot("data", cdata_dilep, "mass",inclusivez_dilep,"",100,60,120,true);
+    TH1F* hdata = Plot("data", cdata_dilep, "mass",inclusivez_dilep,"",100,60,120,false,true);
 
     // there is another Plot implementation for data as well:
     // TH1F* Plot(const char *pfx, TChain *chain, const char *field, TCut sel, TCut presel, float kfactor,

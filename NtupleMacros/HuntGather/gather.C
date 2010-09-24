@@ -13,6 +13,7 @@
 #include "TROOT.h"
 
 #include <algorithm>
+#include <vector>
 
 float GetIntLumi(float lumi, int brun, int bls, int erun, int els)
 {
@@ -46,7 +47,7 @@ float GetIntLumi(float lumi)
 }
 
 TH1F* Plot(const char *pfx, TChain *chain, const char *field, TCut sel, TCut presel, float intlumifb, float kfactor,
-        unsigned int nbins, float xlo, float xhi, bool usegoodrun)
+        unsigned int nbins, float xlo, float xhi, bool integrated, bool usegoodrun)
 {
     TCut scale;
     // mc has scale1fb, data does not
@@ -59,10 +60,15 @@ TH1F* Plot(const char *pfx, TChain *chain, const char *field, TCut sel, TCut pre
     else
         scale = Form("%f*%f", intlumifb, kfactor);
 
-    char *name = Form("%s_%s_%s", pfx, sel.GetName(), field);
+    char *name = 0;
+    if (integrated) name = Form("%s_%s_%s_int", pfx, sel.GetName(), field);
+    else name = Form("%s_%s_%s", pfx, sel.GetName(), field);
+
+    char *title = Form("%s_%s_%s, ~%.2f/pb", pfx, sel.GetName(), field, 1e3*intlumifb);
+
     TH1F *h = 0;
     if (! (h = (TH1F*)gROOT->FindObjectAny(name)))
-        h = new TH1F(name, name, nbins, xlo, xhi);
+        h = new TH1F(name, title, nbins, xlo, xhi);
 
     int brun = min_run();
     int bls  = min_run_min_lumi();
@@ -84,13 +90,18 @@ TH1F* Plot(const char *pfx, TChain *chain, const char *field, TCut sel, TCut pre
     TCut cut = scale*(c_presel+sel);
     chain->Draw(draw, cut, "goff");
 
+    // Move overflow to the last bin
+    float overflow = h->GetBinContent(nbins+1);
+    h->SetBinContent(nbins,overflow);
+    h->SetBinContent(nbins+1,0.);
+
     return h;
 }
 
-TH1F* Plot(const char *field, TCut sel, float intlumifb, unsigned int nbins, float xlo, float xhi, bool usegoodrun,
+TH1F* Plot(const char *field, TCut sel, float intlumifb, unsigned int nbins, float xlo, float xhi, bool integrated, bool usegoodrun,
         BabySample *bs)
 {
-    return Plot(bs->pfx(),bs->chain(),field,sel,bs->presel(),intlumifb,bs->kfactor(),nbins,xlo,xhi,usegoodrun);
+    return Plot(bs->pfx(),bs->chain(),field,sel,bs->presel(),intlumifb,bs->kfactor(),nbins,xlo,xhi,integrated,usegoodrun);
 }
 
 //
@@ -99,57 +110,48 @@ TH1F* Plot(const char *field, TCut sel, float intlumifb, unsigned int nbins, flo
 //
 
 TH1F* Plot(const char *pfx, TChain *chain, const char *field, TCut sel, TCut presel, float kfactor,
-        unsigned int nbins, float xlo, float xhi, bool usegoodrun)
+        unsigned int nbins, float xlo, float xhi, bool integrated, bool usegoodrun)
 {
-    return Plot(pfx,chain,field,sel,presel,1,kfactor,nbins,xlo,xhi,usegoodrun);
+    return Plot(pfx,chain,field,sel,presel,1,kfactor,nbins,xlo,xhi,integrated,usegoodrun);
 }
 
 TH1F* Plot(const char *pfx, TChain *chain, const char *field, TCut sel, TCut presel,
-        unsigned int nbins, float xlo, float xhi, bool usegoodrun)
+        unsigned int nbins, float xlo, float xhi, bool integrated, bool usegoodrun)
 {
-    return Plot(pfx,chain,field,sel,presel,1,1,nbins,xlo,xhi,usegoodrun);
+    return Plot(pfx,chain,field,sel,presel,1,1,nbins,xlo,xhi,integrated,usegoodrun);
 }
 
-TH1F* Plot(const char *field, TCut sel, unsigned int nbins, float xlo, float xhi, bool usegoodrun,
+TH1F* Plot(const char *field, TCut sel, unsigned int nbins, float xlo, float xhi, bool integrated, bool usegoodrun,
         BabySample *bs)
 {
-    return Plot(bs->pfx(),bs->chain(),field,sel,bs->presel(),1.,bs->kfactor(),nbins,xlo,xhi,usegoodrun);
+    return Plot(bs->pfx(),bs->chain(),field,sel,bs->presel(),1.,bs->kfactor(),nbins,xlo,xhi,integrated,usegoodrun);
 }
 
-TH1F* slideIntegrated(TH1F* integrateThis)
+// integrate from bin to infinity
+TH1F* slideIntegrated(TH1F* h1)
 {
-    TString name = integrateThis->GetName();
-    name.Append("_int");
-    int NbinsX = integrateThis->GetNbinsX();
-    TH1F* integrated = (TH1F*)integrateThis->Clone(name);
-    integrated->Reset();
-
-    // integrate rate above a certain pt value (bin)
+    int NbinsX = h1->GetNbinsX();
     for(int i = 1; i <= NbinsX; ++i) {
         // don't forget the overflow!
-        float integral = integrateThis->Integral(i,NbinsX+1);
-        if(integral!=0.) integrated->SetBinContent(i,integral);
-        if(integral!=0.) integrated->SetBinError(i,0);
-        //        if(integral!=0.) integrated->SetBinError(i,TMath::Sqrt(integral));
+        float integral = h1->Integral(i,NbinsX+1);
+        h1->SetBinContent(i,integral);
+        h1->SetBinError(i,TMath::Sqrt(integral));
     }
 
-    return integrated;
+    return h1;
 }
 
 TCanvas* DrawAll(const char *field, TCut sel, float intlumifb, unsigned int nbins, float xlo, float xhi, bool integrated,
-        BabySample* bs1,  BabySample* bs2,  BabySample* bs3,  BabySample* bs4,  BabySample* bs5,
-        BabySample* bs6,  BabySample* bs7,  BabySample* bs8,  BabySample* bs9,  BabySample* bs10,
-        BabySample* bs11, BabySample* bs12, BabySample* bs13, BabySample* bs14, BabySample* bs15)
+        std::vector<BabySample*> bss)
 {
     std::vector<TH1F*> hmcs;
     std::vector<TH1F*> hdatas;
     TH1F* buffer;
 
-    BabySample* bss[15] = {bs1,bs2,bs3,bs4,bs5,bs6,bs7,bs8,bs9,bs10,bs11,bs12,bs13,bs14,bs15};
-    for(unsigned int i = 0; i < 15; ++i) {
+    for(unsigned int i = 0; i < bss.size(); ++i) {
         if (bss[i]) {
             if (bss[i]->isdata()) {
-                buffer = Plot(field,sel,nbins,xlo,xhi,1,bss[i]);
+                buffer = Plot(field,sel,nbins,xlo,xhi,integrated,1,bss[i]);
 
                 std::vector<TH1F*>::const_iterator it;
                 it = find(hdatas.begin(),hdatas.end(),buffer);
@@ -160,7 +162,7 @@ TCanvas* DrawAll(const char *field, TCut sel, float intlumifb, unsigned int nbin
                     hdatas.push_back(buffer);
                 }
             } else {
-                buffer = Plot(field,sel,intlumifb,nbins,xlo,xhi,0,bss[i]);
+                buffer = Plot(field,sel,intlumifb,nbins,xlo,xhi,integrated,0,bss[i]);
 
                 std::vector<TH1F*>::const_iterator it;
                 it = find(hmcs.begin(),hmcs.end(),buffer);
@@ -175,13 +177,10 @@ TCanvas* DrawAll(const char *field, TCut sel, float intlumifb, unsigned int nbin
     }
 
     TLegend* leg = new TLegend(0.85,0.622881,0.997126,0.98,NULL,"brNDC");
-    leg->SetLineColor (1);
-    leg->SetLineStyle (1);
-    leg->SetLineWidth (1);
-    leg->SetFillColor (10);
-    leg->SetBorderSize(1);
+    leg->SetFillStyle(0);
 
     // mini Hstack function: (should be replaced with something more adequate)
+    // JAKE replace with Puneeth's stacker
     for(unsigned int mchisto = 0; mchisto < hmcs.size(); ++mchisto) {
         for(unsigned int mchisto2 = mchisto+1; mchisto2 < hmcs.size(); ++mchisto2) {
             (hmcs.at(mchisto))->Add(hmcs.at(mchisto2),1);
@@ -199,25 +198,25 @@ TCanvas* DrawAll(const char *field, TCut sel, float intlumifb, unsigned int nbin
         hdata = slideIntegrated( hdatas[0] );
     }
 
-    TPRegexp preg("^([^_]+)_([^_]+_[^_]+)_([^_]+)(_int)?$");
-    TString  s_pfx(""),s_sel(""),s_field("");
-    if (preg.MatchB(TString(hmc->GetName()))) {
-        s_sel   = ((TObjString*)(preg.MatchS(TString(hmc->GetName()))->At(2)))->GetString();
-        s_field = ((TObjString*)(preg.MatchS(TString(hmc->GetName()))->At(3)))->GetString();
-    }
-
-    hmc->SetTitle(s_sel.Data());
+    hmc->SetTitle(Form("%s, ~%.2f/pb", sel.GetName(), 1e3*intlumifb));
     float ymax = hdata->GetMaximum() > hmc->GetMaximum() ? hdata->GetMaximum() : hmc->GetMaximum();
     hmc->SetMaximum(ymax*1.1);
 
-    TCanvas *c1 = new TCanvas("c1");
-    c1->Draw();
-    // Draw the initial MC histo
-    hmc->Draw();
-    hmc->GetXaxis()->SetTitle(s_field.Data());
+    char *c1name = 0;
+    if (integrated) c1name = Form("c1_%s_%s_int", sel.GetName(), field);
+    else c1name = Form("c1_%s_%s", sel.GetName(), field);
 
-    // But add data to legend first
-    // so that it's at the top
+    TCanvas *c1 = new TCanvas(c1name);
+    c1->Draw();
+    hmc->Draw("hist");
+    hmc->GetXaxis()->SetTitle(field);
+
+    // For extracting sample prefix
+    TPRegexp preg("^([^_]+)_.*$");
+    TString  s_pfx("");
+
+    // Add data to legend first so
+    // that it's at the top
     hdata->SetMarkerStyle(20);
     if (preg.MatchB(TString(hdata->GetName())))
         s_pfx = ((TObjString*)(preg.MatchS(TString(hdata->GetName()))->At(1)))->GetString();
@@ -232,20 +231,80 @@ TCanvas* DrawAll(const char *field, TCut sel, float intlumifb, unsigned int nbin
     for(unsigned int mchisto = 1; mchisto < hmcs.size(); ++mchisto) { // need 1 here, as we only want to plot 1 and more
         if (integrated)
             hmcs.at(mchisto) = slideIntegrated( hmcs.at(mchisto) );
-
-        hmcs.at(mchisto)->Draw("same");
+        hmcs.at(mchisto)->Draw("histsame");
 
         s_pfx = "";
         if (preg.MatchB(TString(hmc->GetName())))
             s_pfx   = ((TObjString*)(preg.MatchS(TString(hmcs.at(mchisto)->GetName()))->At(1)))->GetString();
-
         leg->AddEntry(hmcs.at(mchisto), s_pfx.Data(), "f");
     }
 
-    hdata->Draw("pesames");
+    // Finally the data
+    hdata->Draw("pesame");
 
     leg->Draw();
     c1->RedrawAxis();
 
     return c1;
+}
+
+TCanvas* DrawAll(const char *field, TCut sel, float intlumifb, unsigned int nbins, float xlo, float xhi, bool integrated,
+        BabySample* bs1,  BabySample* bs2,  BabySample* bs3,  BabySample* bs4,  BabySample* bs5,
+        BabySample* bs6,  BabySample* bs7,  BabySample* bs8,  BabySample* bs9,  BabySample* bs10,
+        BabySample* bs11, BabySample* bs12, BabySample* bs13, BabySample* bs14, BabySample* bs15)
+{
+    std::vector<BabySample*> tmp;
+    BabySample* bss[15] = {bs1,bs2,bs3,bs4,bs5,bs6,bs7,bs8,bs9,bs10,bs11,bs12,bs13,bs14,bs15};
+    for(unsigned int i = 0; i < 15; ++i) {
+        if (bss[i])
+            tmp.push_back(bss[i]);
+    }
+
+    return DrawAll(field,sel,intlumifb,nbins,xlo,xhi,integrated,tmp);
+}
+
+// Predefines what are most likley the only BabySamples
+// one needs for gathering
+TCanvas* DrawAll(const char *field, TCut sel, float intlumifb, unsigned int nbins, float xlo, float xhi, bool integrated)
+{
+    //
+    // data babies
+    //
+
+    //static BabySample *bs_data_emu    = new BabySample("data","/tas05/disk00/jribnik/hunt/emu_baby/*.root","",1.,true);
+    static BabySample *bs_data_dilep  = new BabySample("data","/tas05/disk00/jribnik/hunt/dilep_baby/*.root","",1.,true);
+    //static BabySample *bs_data_trilep = new BabySample("data","/tas05/disk00/jribnik/hunt/trilep_baby/*.root","",1.,true);
+
+    //
+    // mc babies
+    //
+
+    // kfactors
+    float kttbarjets = 157.5/165.;
+    float ksingletop = 1.;
+    float kvvjets    = 1.;
+    float kwjets     = 31314./28049.;
+    float kzjets     = 3048./2400.;
+    float kzll       = 1666./1300.;
+    float kdyll      = 3457./2659.;
+
+    // dilep
+    static BabySample *bs_ttbarjets_dilep = new BabySample("ttbar","/tas05/disk00/jribnik/huntmc/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kttbarjets,false,kRed+1,1001);
+    static BabySample *bs_singletop_dilep = new BabySample("tW","/tas05/disk00/jribnik/huntmc/SingleTop_tWChannel-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",ksingletop,false,kMagenta,1001);
+
+    static BabySample *bs_vvjets_dilep    = new BabySample("vvjets","/tas05/disk00/jribnik/huntmc/VVJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kvvjets,false,10,1001);
+    static BabySample *bs_wjets_dilep     = new BabySample("wjets","/tas05/disk00/jribnik/huntmc/WJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kwjets,false,kGreen-3,1001);
+    static BabySample *bs_ztautau_dilep   = new BabySample("ztautau","/tas05/disk00/jribnik/huntmc/Ztautau_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","mass<50",kzll,false,kAzure+8,1001);
+
+    // Note that a common prefix means
+    // a common histogram when used in
+    // the same DrawAll, i.e. the five
+    // samples below are combined
+    static BabySample *bs_zjets_dilep     = new BabySample("zll","/tas05/disk00/jribnik/huntmc/ZJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kzjets,false,kAzure-2,1001);
+    static BabySample *bs_zee_dilep       = new BabySample("zll","/tas05/disk00/jribnik/huntmc/Zee_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","mass<50",kzll,false,kAzure-2,1001);
+    static BabySample *bs_zmumu_dilep     = new BabySample("zll","/tas05/disk00/jribnik/huntmc/Zmumu_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","mass<50",kzll,false,kAzure-2,1001);
+    static BabySample *bs_dyee_dilep      = new BabySample("zll","/tas05/disk00/jribnik/huntmc/DYee_M10to20_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kdyll,false,kAzure-2,1001);
+    static BabySample *bs_dymumu_dilep    = new BabySample("zll","/tas05/disk00/jribnik/huntmc/DYmumu_M10to20_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kdyll,false,kAzure-2,1001);
+
+    return DrawAll(field,sel,intlumifb,nbins,xlo,xhi,integrated,bs_data_dilep,bs_ttbarjets_dilep,bs_singletop_dilep,bs_dyee_dilep,bs_dymumu_dilep,bs_vvjets_dilep,bs_wjets_dilep,bs_zjets_dilep,bs_zee_dilep,bs_zmumu_dilep,bs_ztautau_dilep);
 }
