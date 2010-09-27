@@ -36,7 +36,7 @@ else
 endif
 endif
 
-CORESOURCES = $(CMSROOT)/CORE/CMS2.cc $(CMSROOT)/CORE/muonSelections.cc $(CMSROOT)/CORE/electronSelections.cc $(CMSROOT)/CORE/electronSelectionsParameters.cc
+CORESOURCES = $(CMSROOT)/CORE/CMS2.cc $(CMSROOT)/CORE/muonSelections.cc $(CMSROOT)/CORE/electronSelections.cc $(CMSROOT)/CORE/electronSelectionsParameters.cc $(CMSROOT)/CORE/jetSelections.cc 
 #$(CMSROOT)/CORE/fakerates.cc
 # CORESOURCES = $(wildcard $(CMSROOT)/CORE/*.cc) 
 COREOBJECTS = $(CORESOURCES:.cc=.o) 
