@@ -25,14 +25,24 @@
 #include "TSystem.h"
 #include "TPRegexp.h"
 #include "monitor.h"
-
+#include "../Tools/goodrun.cc"
 using namespace std;
 
 #ifndef __CINT__
 #include "CORE/CMS2.h"
 #include "CORE/electronSelections.h"
 #include "CORE/muonSelections.h"
+#include "CORE/jetSelections.h"
 #endif
+
+enum hyp_selection {
+  PASS_JETVETO,
+  PASS_SOFTMUVETO,
+  PASS_EXTRALEPTONVETO,
+  PASS_LT_FINAL,
+  PASS_LL_FINAL,
+};
+
 
 //
 // Key analysis method implementation
@@ -60,10 +70,11 @@ bool goodMuonIsolated(unsigned int i){
   return ww_muBase(i) && ww_mud0PV(i) && ww_muId(i) && ww_muIso(i); 
 }
 
-// double metValue(){    return cms2.evt_tcmet(); }
-// double metPhiValue(){ return cms2.evt_tcmetPhi(); }
+//double metValue(){    return cms2.evt_tcmet(); }
+//double metPhiValue(){ return cms2.evt_tcmetPhi(); }
 double metValue(){    return cms2.evt35X_tcmet(); }
 double metPhiValue(){ return cms2.evt35X_tcmetPhi(); }
+
 
 bool passedMetRequirements(unsigned int i_hyp){
   // if ( cms2.hyp_p4().at(i_hyp).mass()>130 ) return true;
@@ -79,7 +90,7 @@ bool passedMetRequirements(unsigned int i_hyp){
   return true;
 }
 
-JetType jetType(){
+WWJetType jetType(){
   return pfJet;
   // return jptJet;
 }
@@ -112,7 +123,7 @@ bool ww_elId(unsigned int index){
   //     cms2.els_charge().at(index)!=cms2.trks_charge().at(ctfIndex) ) return false;
   return true;
 }
-
+ 
 bool ww_eld0(unsigned int index){
   return fabs(cms2.els_d0corr()[index]) < 0.02;
 }
@@ -307,14 +318,14 @@ Bool_t comparePt(LorentzVector lv1, LorentzVector lv2) {
 }
 
 std::vector<LorentzVector> 
-getJets(JetType type, int i_hyp, double etThreshold, double etaMax, bool sortJets)
+getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJets)
 {
      std::vector<LorentzVector> jets;
-     const double vetoCone    = 0.4;
+     const double vetoCone = 0.4;
      
      switch ( type ){
      case jptJet:
-       for ( unsigned int i=0; i < cms2.jpts_p4().size(); ++i) {
+        for ( unsigned int i=0; i < cms2.jpts_p4().size(); ++i) {
 	 if ( cms2.jpts_p4()[i].Et() < etThreshold ) continue;
 	 if ( TMath::Abs(cms2.jpts_p4()[i].eta()) > etaMax ) continue;
 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ||
@@ -374,7 +385,7 @@ bool inZmassWindow(float mass){
   return fabs(mass - 91.1876) < 15;
 }
 
-double BTag(JetType type, unsigned int iJet){
+double BTag(WWJetType type, unsigned int iJet){
   // find a jet in the jets list
   // that matches the current type jet
   LorentzVector jetP4;
@@ -666,9 +677,35 @@ TH2F* hFakableRateSingleElectron; // Fake rate study: rate of fakable objects
 TH2F* hFinalRateSingleElectron;   // Fake rate study: rate of final objects
 TH1F* hIsoSingleMuon;             // isolation background 
 TH1F* hIsoSingleElectron;         // isolation background 
-
-TH1F* hmaxJPTEt;         // energy distribution for the most energetic jet
 TH2F* hmaxBtagVsJPTEt;   // btag vs energy distribution for the most energetic jet
+
+TH1F* hmaxJPTEt[4];         // energy distribution for the most energetic jet |eta|<5
+TH1F* hmaxCaloJetEt[4];     // energy distribution for the most energetic jet |eta|<5
+TH1F* hmaxTrkJetEt[4];      // energy distribution for the most energetic jet |eta|<5
+TH1F* hmaxCaloTrkJetEt[4];  // energy distribution for the most energetic jet |eta|<5
+TH1F* hmaxCaloTrkJet2Et[4]; // energy distribution for the most energetic jet |eta|<5
+TH1F* hmaxGenJetEt[4];      // energy distribution for the most energetic jet |eta|<5
+TH1F* hmaxPFJetEt[4];      // energy distribution for the most energetic jet |eta|<5
+
+TH1F* hmaxJPTEtHCal[4];         // energy distribution for the most energetic jet |eta|<3
+TH1F* hmaxCaloJetEtHCal[4];     // energy distribution for the most energetic jet |eta|<3
+TH1F* hmaxTrkJetEtHCal[4];      // energy distribution for the most energetic jet |eta|<3
+TH1F* hmaxCaloTrkJetEtHCal[4];  // energy distribution for the most energetic jet |eta|<3
+TH1F* hmaxCaloTrkJet2EtHCal[4]; // energy distribution for the most energetic jet |eta|<3
+TH1F* hmaxGenJetEtHCal[4];      // energy distribution for the most energetic jet |eta|<3
+TH1F* hmaxPFJetEtHCal[4];      // energy distribution for the most energetic jet |eta|<3
+
+TH1F* hmaxJPTEtHF[4];         // energy distribution for the most energetic jet 3<|eta|<5
+TH1F* hmaxCaloJetEtHF[4];     // energy distribution for the most energetic jet 3<|eta|<5
+TH1F* hmaxTrkJetEtHF[4];      // energy distribution for the most energetic jet 3<|eta|<5
+TH1F* hmaxCaloTrkJetEtHF[4];  // energy distribution for the most energetic jet 3<|eta|<5
+TH1F* hmaxCaloTrkJet2EtHF[4]; // energy distribution for the most energetic jet 3<|eta|<5
+TH1F* hmaxGenJetEtHF[4];      // energy distribution for the most energetic jet 3<|eta|<5
+TH1F* hmaxPFJetEtHF[4];      // energy distribution for the most energetic jet 3<|eta|<5
+
+
+
+
 
 //
 // Not cleaned area
@@ -708,12 +745,6 @@ TH1F* helRelPatIsoPassId;  // electron relative iso (trk+ecal+hcal) PAT with wei
 TH1F* helRelPatIsoNoId;    // electron relative iso (trk+ecal+hcal) PAT with weights 1,1,1 no el ID
 TH1F* helRelPatIsoFailId;  // electron relative iso (trk+ecal+hcal) PAT with weights 1,1,1 failed el ID
 
-TH1F* hmaxCaloJetEt;     // energy distribution for the most energetic jet
-TH1F* hmaxTrkJetEt;      // energy distribution for the most energetic jet
-TH1F* hmaxCaloTrkJetEt;  // energy distribution for the most energetic jet
-TH1F* hmaxCaloTrkJet2Et; // energy distribution for the most energetic jet
-TH1F* hmaxGenJetEt;      // energy distribution for the most energetic jet
-
 TH1F* hCentralBquarkEtaAfterVeto;   
 TH1F* hForwardBquarkEtaAfterVeto;   
 
@@ -721,6 +752,18 @@ TH1F* hForwardBquarkEtaAfterVeto;
 TH2F* hextramuonsvsnjet[4];
 
 hypo_monitor monitor;
+
+std::vector<std::string> jetcorr_filenames_jpt;
+FactorizedJetCorrector *jet_corrector_jpt;
+
+std::vector<std::string> jetcorr_filenames_pf;
+FactorizedJetCorrector *jet_corrector_pf;
+
+std::vector<std::string> jetcorr_filenames_calo;
+FactorizedJetCorrector *jet_corrector_calo;
+
+std::vector<std::string> jetcorr_filenames_trk;
+FactorizedJetCorrector *jet_corrector_trk;
 
 void checkIsolation(int i_hyp, double weight){
   // LT
@@ -897,58 +940,174 @@ void getIsolationSidebandsAfterSelections(int i_hyp, double weight, RooDataSet* 
   }
 }
 
-void find_most_energetic_jets(int i_hyp, double weight)
+void find_most_energetic_jets(int i_hyp, double weight, bool realData, double etaMin, double etaMax, jetregion jet, bool applyJEC)
 {
-  {
-    double jptMax(0.);
-    int jptMaxIndex(-1);
-    // double 
-    for ( unsigned int i=0; i < cms2.jpts_p4().size(); ++i) {
-      if ( cms2.jpts_p4()[i].Et() < jptMax ) continue;
-      if ( TMath::Abs(cms2.jpts_p4()[i].eta()) > 3.0 ) continue;
-      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jpts_p4()[i])) < 0.4 ||
-	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jpts_p4()[i])) < 0.4 ) continue;
-      jptMax = cms2.jpts_p4()[i].Et();
-      jptMaxIndex = i;
+  HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
+  double vetoCone = 0.3;
+
+ if(!realData)
+    {
+      double genJetMax(0.);
+      for ( unsigned int i=0; i < cms2.genjets_p4().size(); ++i) {
+	if ( cms2.genjets_p4()[i].Et() < genJetMax ) continue;
+	if ( TMath::Abs(cms2.genjets_p4()[i].eta()) > etaMax ) continue;
+	if ( TMath::Abs(cms2.genjets_p4()[i].eta()) < etaMin ) continue;
+	if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.genjets_p4()[i])) < vetoCone ||
+	     TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.genjets_p4()[i])) < vetoCone ) continue;
+	genJetMax = cms2.genjets_p4()[i].Et();
+      }
+
+      switch (jet) {
+      case ALLJET :
+	hmaxGenJetEt[type]->Fill(genJetMax, weight);
+	hmaxGenJetEt[3]->Fill(genJetMax, weight);
+	break;
+      case HCAL :
+	hmaxGenJetEtHCal[type]->Fill(genJetMax, weight);
+	hmaxGenJetEtHCal[3]->Fill(genJetMax, weight);
+	break;
+      case HF :
+	hmaxGenJetEtHF[type]->Fill(genJetMax, weight);
+	hmaxGenJetEtHF[3]->Fill(genJetMax, weight);
+	break;
+      default:
+	break;
+      }
     }
-    hmaxJPTEt->Fill(jptMax, weight);
-    if (jptMaxIndex >= 0)
-      hmaxBtagVsJPTEt->Fill(jptMax, BTag(jptJet,jptMaxIndex), weight);
-    else
-      hmaxBtagVsJPTEt->Fill(jptMax, 0.0, weight);
-  }
-  {
-    double genJetMax(0.);
-    for ( unsigned int i=0; i < cms2.genjets_p4().size(); ++i) {
-      if ( cms2.genjets_p4()[i].Et() < genJetMax ) continue;
-      if ( TMath::Abs(cms2.genjets_p4()[i].eta()) > 3.0 ) continue;
-      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.genjets_p4()[i])) < 0.4 ||
-	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.genjets_p4()[i])) < 0.4 ) continue;
-      genJetMax = cms2.genjets_p4()[i].Et();
-    }
-    hmaxGenJetEt->Fill(genJetMax, weight);
-  }
-  {
-    double caloJetMax(0.);
-    for ( unsigned int i=0; i < cms2.jets_pat_jet_p4().size(); ++i) {
-      if ( cms2.jets_pat_jet_p4()[i].Et()*cms2.jets_pat_noCorrF()[i] < caloJetMax ) continue;
-      if ( TMath::Abs(cms2.jets_pat_jet_p4()[i].eta()) > 3.0 ) continue;
-      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jets_pat_jet_p4()[i])) < 0.4 ||
-	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jets_pat_jet_p4()[i])) < 0.4 ) continue;
-      caloJetMax = cms2.jets_pat_jet_p4()[i].Et()*cms2.jets_pat_noCorrF()[i];
-    }
-    hmaxCaloJetEt->Fill(caloJetMax, weight);
-    double trkJetMax(0.);
+
+ {
+   // JPT
+   double jec = 1.0;
+   double jptMax(0.);
+   int jptMaxIndex(-1);
+   for ( unsigned int i=0; i < cms2.jpts_p4().size(); ++i) {
+     if ( TMath::Abs(cms2.jpts_p4()[i].eta()) > etaMax ) continue;
+     if ( TMath::Abs(cms2.jpts_p4()[i].eta()) < etaMin ) continue;
+     if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ||
+	  TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ) continue;
+     if(applyJEC)
+       jec = jetCorrection(cms2.jpts_p4()[i], jet_corrector_jpt);
+     //jec =  cms2.jpts_cor()[i]; // use the one in CMS2 ntuple
+     if ( cms2.jpts_p4()[i].Et() * jec < jptMax ) continue;
+     jptMax = cms2.jpts_p4()[i].Et() * jec;
+     jptMaxIndex = i;
+   }
+   if (jptMaxIndex >= 0)
+     hmaxBtagVsJPTEt->Fill(jptMax, BTag(jptJet,jptMaxIndex), weight);
+   else
+     hmaxBtagVsJPTEt->Fill(jptMax, 0.0, weight);
+
+   // Calo 
+   jec = 1.0;
+   double caloJetMax(0.);
+   for ( unsigned int i=0; i < cms2.jets_pat_jet_uncorp4().size(); ++i) {
+     if ( TMath::Abs(cms2.jets_pat_jet_uncorp4()[i].eta()) > etaMax ) continue;
+     if ( TMath::Abs(cms2.jets_pat_jet_uncorp4()[i].eta()) < etaMin ) continue;
+     if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jets_pat_jet_uncorp4()[i])) < vetoCone ||
+	  TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jets_pat_jet_uncorp4()[i])) < vetoCone ) continue;   
+     if(applyJEC)
+       jec = jetCorrection(cms2.jets_pat_jet_uncorp4()[i], jet_corrector_calo);
+     //jec = 1.0/cms2.jets_pat_noCorrF()[i]; 
+     if ( cms2.jets_pat_jet_uncorp4()[i].Et() * jec < caloJetMax ) continue;
+     caloJetMax = cms2.jets_pat_jet_uncorp4()[i].Et() * jec;
+     //if ( cms2.jets_pat_jet_p4()[i].Et() < caloJetMax ) continue;
+     //caloJetMax = cms2.jets_pat_jet_p4()[i].Et();
+   }
+   
+   // TrkJet
+   jec = 1.0;
+   double trkJetMax(0.);
     for ( unsigned int i=0; i < cms2.trkjets_p4().size(); ++i) {
-	 if ( cms2.trkjets_p4()[i].Et() < trkJetMax ) continue;
-	 if ( TMath::Abs(cms2.trkjets_p4()[i].eta()) > 3.0 ) continue;
-	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.trkjets_p4()[i])) < 0.4 ||
-	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.trkjets_p4()[i])) < 0.4 ) continue;
-	 trkJetMax = cms2.trkjets_p4()[i].Et();
+	 if ( TMath::Abs(cms2.trkjets_p4()[i].eta()) > etaMax ) continue;
+	 if ( TMath::Abs(cms2.trkjets_p4()[i].eta()) < etaMin ) continue;
+	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.trkjets_p4()[i])) < vetoCone ||
+	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.trkjets_p4()[i])) < vetoCone ) continue;
+	 if(applyJEC)
+	   jec = jetCorrection(cms2.trkjets_p4()[i], jet_corrector_trk);
+	 //jec = cms2.trkjets_cor()[i];
+	 if ( cms2.trkjets_p4()[i].Et() * jec < trkJetMax ) continue;
+	 trkJetMax = cms2.trkjets_p4()[i].Et() * jec;
     }
-    hmaxTrkJetEt->Fill(trkJetMax, weight);
-    hmaxCaloTrkJetEt->Fill((caloJetMax+trkJetMax)/2, weight);
-    hmaxCaloTrkJet2Et->Fill(std::max(caloJetMax,trkJetMax), weight);
+     
+   // PFJet
+    jec = 1.0;
+    double pfJetMax(0.);
+    for ( unsigned int i=0; i < cms2.pfjets_p4().size(); ++i) {
+      if ( TMath::Abs(cms2.pfjets_p4()[i].eta()) > etaMax ) continue;
+      if ( TMath::Abs(cms2.pfjets_p4()[i].eta()) < etaMin ) continue;
+      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ||
+	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
+      if(applyJEC)
+	jec = jetCorrection(cms2.pfjets_p4()[i], jet_corrector_pf);
+      //jec = cms2.pfjets_cor()[i];
+      if ( cms2.pfjets_p4()[i].Et() * jec < pfJetMax ) continue;
+      pfJetMax = cms2.pfjets_p4()[i].Et() * jec;
+    }
+        
+    // Fill the jet Et histograms
+    switch (jet ) {
+    case ALLJET:
+      hmaxJPTEt[type]->Fill(jptMax, weight);
+      hmaxCaloJetEt[type]->Fill(caloJetMax, weight);
+      hmaxTrkJetEt[type]->Fill(trkJetMax, weight);
+      hmaxCaloTrkJetEt[type]->Fill((caloJetMax+trkJetMax)/2, weight);
+      hmaxCaloTrkJet2Et[type]->Fill(std::max(caloJetMax,trkJetMax), weight);
+      hmaxPFJetEt[type]->Fill(pfJetMax, weight);
+      hmaxJPTEt[3]->Fill(jptMax, weight);
+      hmaxCaloJetEt[3]->Fill(caloJetMax, weight);
+      hmaxTrkJetEt[3]->Fill(trkJetMax, weight);
+      hmaxCaloTrkJetEt[3]->Fill((caloJetMax+trkJetMax)/2, weight);
+      hmaxCaloTrkJet2Et[3]->Fill(std::max(caloJetMax,trkJetMax), weight);
+      hmaxPFJetEt[3]->Fill(pfJetMax, weight);
+      break;
+    case HCAL:
+      hmaxJPTEtHCal[type]->Fill(jptMax, weight);
+      hmaxCaloJetEtHCal[type]->Fill(caloJetMax, weight);
+      hmaxTrkJetEtHCal[type]->Fill(trkJetMax, weight);
+      hmaxCaloTrkJetEtHCal[type]->Fill((caloJetMax+trkJetMax)/2, weight);
+      hmaxCaloTrkJet2EtHCal[type]->Fill(std::max(caloJetMax,trkJetMax), weight);
+      hmaxPFJetEtHCal[type]->Fill(pfJetMax, weight);
+      hmaxJPTEtHCal[3]->Fill(jptMax, weight);
+      hmaxCaloJetEtHCal[3]->Fill(caloJetMax, weight);
+      hmaxTrkJetEtHCal[3]->Fill(trkJetMax, weight);
+      hmaxCaloTrkJetEtHCal[3]->Fill((caloJetMax+trkJetMax)/2, weight);
+      hmaxCaloTrkJet2EtHCal[3]->Fill(std::max(caloJetMax,trkJetMax), weight);
+      hmaxPFJetEtHCal[3]->Fill(pfJetMax, weight);
+      break;
+    case HF:
+      hmaxJPTEtHF[type]->Fill(jptMax, weight);
+      hmaxCaloJetEtHF[type]->Fill(caloJetMax, weight);
+      hmaxTrkJetEtHF[type]->Fill(trkJetMax, weight);
+      hmaxCaloTrkJetEtHF[type]->Fill((caloJetMax+trkJetMax)/2, weight);
+      hmaxCaloTrkJet2EtHF[type]->Fill(std::max(caloJetMax,trkJetMax), weight);
+      hmaxPFJetEtHF[type]->Fill(pfJetMax, weight);
+      hmaxJPTEtHF[3]->Fill(jptMax, weight);
+      hmaxCaloJetEtHF[3]->Fill(caloJetMax, weight);
+      hmaxTrkJetEtHF[3]->Fill(trkJetMax, weight);
+      hmaxCaloTrkJetEtHF[3]->Fill((caloJetMax+trkJetMax)/2, weight);
+      hmaxCaloTrkJet2EtHF[3]->Fill(std::max(caloJetMax,trkJetMax), weight);
+      hmaxPFJetEtHF[3]->Fill(pfJetMax, weight);
+      break;
+    default:
+      break;
+    }
+
+    /*
+    // temporary
+    // Debug the anormalous events with large Jet Et in MM channel
+    if( jet == ALLJET && (jptMax > 80 || caloJetMax > 80 || pfJetMax > 80 || trkJetMax >80)) {
+      cout
+	<< "zStudy: Large JetEt found: "
+	<<"Run: "<< cms2.evt_run()
+	<<" LS: "<< cms2.evt_lumiBlock()
+	<<" Event: "<<cms2.evt_event()
+	<<" jptJet: "<<jptMax
+	<<" caloJet: "<<caloJetMax
+	<<" pfJet: "<<pfJetMax
+	<<" trkJet: "<<trkJetMax
+	<<std::endl;
+    }
+    */
   }
 }  
 
@@ -1018,7 +1177,7 @@ void countFakableObjectsAfterAllSelections(unsigned int i_hyp,
   }
 }
 
-void hypo (int i_hyp, double weight, RooDataSet* dataset) 
+void hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool realData) 
 {
   /*
   unsigned int nGenLeptons = 0;
@@ -1035,7 +1194,7 @@ void hypo (int i_hyp, double weight, RooDataSet* dataset)
 
   // monitor.nEvtProcessed = cms2.evt_nEvts();
   // monitor.count(cms2, type, "Total number before cuts");
-     
+  
   // if ( cms2.hyp_FVFit_prob()[i_hyp] < 0.005 ) return;
   // monitor.count(cms2, type, "after vertex cut");
 
@@ -1044,7 +1203,7 @@ void hypo (int i_hyp, double weight, RooDataSet* dataset)
 
   // Require same sign
   if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) return;
-
+  
   // Baseline cuts
   if (abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_muBase(cms2.hyp_lt_index()[i_hyp]) ) return;
   if (abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_muBase(cms2.hyp_ll_index()[i_hyp]) ) return;
@@ -1105,32 +1264,49 @@ void hypo (int i_hyp, double weight, RooDataSet* dataset)
 
   // Z mass veto using hyp_leptons for ee and mumu final states
   if ( type == EE || type == MM) {
-    if (inZmassWindow(cms2.hyp_p4()[i_hyp].mass())) return;
+    if ( !zStudy && inZmassWindow(cms2.hyp_p4()[i_hyp].mass())) return;
+    if ( zStudy && !inZmassWindow(cms2.hyp_p4()[i_hyp].mass())) return;
   }
 
   // Z veto using additional leptons in the event
   // if (additionalZveto()) return;
-  monitor.count(cms2,type,"after previous + z veto cuts");
-     
+
   // MET
-  // if (cms2.evt_tcmet()<20) return;
-  // monitor.count(cms2,type,"after previous + MET>20 cuts: ");
+  if (!zStudy) {
+    monitor.count(cms2,type,"after previous + z veto cuts");
+    if(!passedMetRequirements(i_hyp)) return;
+    monitor.count(cms2,type,"after previous + Full MET cuts: ");
+  }
+  if(zStudy) monitor.count(cms2,type,"after previous + z selection cuts");
   
-  if (!passedMetRequirements(i_hyp)) return;
-  monitor.count(cms2,type,"after previous + Full MET cuts: ");
-     
   bool goodEvent = true;
   bool passedJetVeto = true;
+  // equivalent to the goodEvent, bit implementation  
+  cuts_t cuts_passed = 0;
+  const cuts_t pass_all = (1<<PASS_JETVETO) | (1<<PASS_LT_FINAL) | (1<<PASS_LL_FINAL) | (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO);
 
   unsigned int nJets = numberOfJets(i_hyp);
   if (nJets>0) {
     goodEvent = false;
     passedJetVeto = false;
   }
+  else
+    cuts_passed |= (1<<PASS_JETVETO);
+
   int countmus = numberOfSoftMuons(i_hyp,true);
   int nExtraVetoMuons = numberOfSoftMuons(i_hyp,false);
-  if (nExtraVetoMuons) goodEvent = false;
-  if (numberOfExtraLeptons(i_hyp,10)) goodEvent = false;
+
+  if (!zStudy) {
+    if (nExtraVetoMuons)  goodEvent = false;
+    else cuts_passed |=   (1<<PASS_SOFTMUVETO);
+    if (numberOfExtraLeptons(i_hyp,10))    goodEvent = false;
+    else cuts_passed |=   (1<<PASS_EXTRALEPTONVETO);
+  }
+  else
+    {
+      cuts_passed |=   (1<<PASS_SOFTMUVETO);
+      cuts_passed |=   (1<<PASS_EXTRALEPTONVETO);
+    }
 
   bool passedLTFinalRequirements = true;
   bool passedLLFinalRequirements = true;
@@ -1145,7 +1321,7 @@ void hypo (int i_hyp, double weight, RooDataSet* dataset)
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13){
     if ( !goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) ) passedLLFinalRequirements = false;
     passedLLElFakableRequirements = false;
-  }  
+  } 
   // Electron quality cuts, including isolation
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11){
     if ( !goodElectronIsolated(cms2.hyp_lt_index()[i_hyp]) ) passedLTFinalRequirements = false;
@@ -1163,7 +1339,10 @@ void hypo (int i_hyp, double weight, RooDataSet* dataset)
 					  passedLTElFakableRequirements, passedLLElFakableRequirements, 
 					  passedLTFinalRequirements, passedLLFinalRequirements);
   }
-     
+
+  if ( passedLTFinalRequirements ) cuts_passed |= (1<<PASS_LT_FINAL);
+  if ( passedLLFinalRequirements ) cuts_passed |= (1<<PASS_LL_FINAL);
+
   if ( !passedLTFinalRequirements || !passedLLFinalRequirements ) return;
   monitor.count(cms2,type,"after previous + lepton id/iso cuts");
      
@@ -1171,13 +1350,18 @@ void hypo (int i_hyp, double weight, RooDataSet* dataset)
   // if ( !passTrkJetVeto(i_hyp) ) return;
      
   // find most energetic jets
-  find_most_energetic_jets(i_hyp,weight);
-  
+  bool applyJEC = false;
+  if (CheckCutsNM1(pass_all, (1<<PASS_JETVETO), cuts_passed)) {
+      find_most_energetic_jets(i_hyp,weight,realData,0.0,5.0,ALLJET, applyJEC);
+      find_most_energetic_jets(i_hyp,weight,realData,0.0,3.0,HCAL, applyJEC);
+      find_most_energetic_jets(i_hyp,weight,realData,3.0,5.0,HF, applyJEC);
+  }
+
   // 2D hist for muon tag counting
   hextramuonsvsnjet[type]->Fill(countmus, nJets, weight);
   hextramuonsvsnjet[3]->Fill(countmus, nJets, weight);
      
-  if ( passedJetVeto ) {
+  if ( !realData && passedJetVeto ) {
     // loop over gen particles
     float centralBQuarkEta(100);
     float forwardBQuarkEta(0);
@@ -1193,9 +1377,11 @@ void hypo (int i_hyp, double weight, RooDataSet* dataset)
     if ( nBQuarks>1 ) hForwardBquarkEtaAfterVeto->Fill(forwardBQuarkEta);
   }
   if ( ! goodEvent ) return;
-  
-  monitor.count(cms2,type,"after all cuts (including soft and extra lepton)");
-
+  // if(! CheckCuts(pass_all, cuts_passed)) return; // equivalent to if (! goodEvent )
+  if(!zStudy)
+    monitor.count(cms2,type,"after all cuts (including jetveto soft and extra lepton)");
+  else
+    monitor.count(cms2,type,"after all cuts (including jetveto)");
   // -------------------------------------------------------------------//
   // If we made it to here, we passed all cuts and we are ready to fill //
   // -------------------------------------------------------------------//
@@ -1336,7 +1522,7 @@ RooDataSet* MakeNewDataset(const char* name)
   return dataset;
 }
 
-void AddIsoSignalControlSample( int i_hyp, double weight, RooDataSet* dataset) {
+void AddIsoSignalControlSample( int i_hyp, double weight, RooDataSet* dataset, bool realData) {
   if ( !dataset ) return;
   // Cut on lepton Pt
   if (cms2.hyp_lt_p4()[i_hyp].pt() < 20.0) return;
@@ -1434,6 +1620,31 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     helFRfakable_fakerate[i] = new TH2F(Form("%s_helFRfakable_fakerate_%s", prefix,HypothesisTypeName(i)), "FR study: rate of fakable objects",2,etabins_fakerate,3,ptbins_fakerate);
     helFRfakable_fakerate[i]->Sumw2();
 
+    const Double_t jetEtbins[12] = {0,10,15,20,25,30,40,50,60,80,100,200};
+    hmaxGenJetEt[i]  = new TH1F(Form("%s_hmaxGenJetEt_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<5) Et (GenJet) JetVeto NM1", 11,jetEtbins);
+    hmaxJPTEt[i]  = new TH1F(Form("%s_hmaxJPTEt_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<5) Et (JPT) JetVeto NM1", 11,jetEtbins);
+    hmaxCaloJetEt[i]  = new TH1F(Form("%s_hmaxCaloJetEt_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<5) Et (CaloJet) JetVeto NM1", 11,jetEtbins);
+    hmaxTrkJetEt[i]  = new TH1F(Form("%s_hmaxTrkJetEt_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<5) Et (TrkJet) JetVeto NM1", 11,jetEtbins);
+    hmaxCaloTrkJetEt[i]  = new TH1F(Form("%s_hmaxCaloTrkJetEt_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<5) Et (average of Calo + Trk Jets) JetVeto NM1", 11,jetEtbins);
+    hmaxCaloTrkJet2Et[i]  = new TH1F(Form("%s_hmaxCaloTrkJet2Et_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<5) Et (Max of Calo + Trk Jets) JetVeto NM1", 11,jetEtbins);
+    hmaxPFJetEt[i]  = new TH1F(Form("%s_hmaxPFJetEt_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<5) Et (PFJet) JetVeto NM1", 11,jetEtbins);
+
+    hmaxGenJetEtHCal[i]  = new TH1F(Form("%s_hmaxGenJetEtHCal_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (GenJet) JetVeto NM1", 11,jetEtbins);
+    hmaxJPTEtHCal[i]  = new TH1F(Form("%s_hmaxJPTEtHCal_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (JPT) JetVeto NM1", 11,jetEtbins);
+    hmaxCaloJetEtHCal[i]  = new TH1F(Form("%s_hmaxCaloJetEtHCal_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (CaloJet) JetVeto NM1", 11,jetEtbins);
+    hmaxTrkJetEtHCal[i]  = new TH1F(Form("%s_hmaxTrkJetEtHCal_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (TrkJet) JetVeto NM1", 11,jetEtbins);
+    hmaxCaloTrkJetEtHCal[i]  = new TH1F(Form("%s_hmaxCaloTrkJetEtHCal_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (average of Calo + Trk Jets) JetVeto NM1", 11,jetEtbins);
+    hmaxCaloTrkJet2EtHCal[i]  = new TH1F(Form("%s_hmaxCaloTrkJet2EtHCal_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (Max of Calo + Trk Jets) JetVeto NM1", 11,jetEtbins);
+    hmaxPFJetEtHCal[i]  = new TH1F(Form("%s_hmaxPFJetEtHCal_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (PFJet) JetVeto NM1", 11,jetEtbins);
+
+    hmaxGenJetEtHF[i]  = new TH1F(Form("%s_hmaxGenJetEtHF_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (GenJet) JetVeto NM1", 11,jetEtbins);
+    hmaxJPTEtHF[i]  = new TH1F(Form("%s_hmaxJPTEtHF_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (JPT) JetVeto NM1", 11,jetEtbins);
+    hmaxCaloJetEtHF[i]  = new TH1F(Form("%s_hmaxCaloJetEtHF_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (CaloJet) JetVeto NM1", 11,jetEtbins);
+    hmaxTrkJetEtHF[i]  = new TH1F(Form("%s_hmaxTrkJetEtHF_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (TrkJet) JetVeto NM1", 11,jetEtbins);
+    hmaxCaloTrkJetEtHF[i]  = new TH1F(Form("%s_hmaxCaloTrkJetEtHF_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (average of Calo + Trk Jets) JetVeto NM1", 11,jetEtbins);
+    hmaxCaloTrkJet2EtHF[i]  = new TH1F(Form("%s_hmaxCaloTrkJet2EtHF_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (Max of Calo + Trk Jets) JetVeto NM1", 11,jetEtbins);
+    hmaxPFJetEtHF[i]  = new TH1F(Form("%s_hmaxPFJetEtHF_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (PFJet) JetVeto NM1", 11,jetEtbins);
+
     hnJet[i]->Sumw2();
     helePt[i]->Sumw2();
     hmuPt[i]->Sumw2();
@@ -1457,6 +1668,29 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hElRelIso[i]->Sumw2(); 
     hMuRelIso[i]->Sumw2(); 
 
+    hmaxGenJetEt[i]->Sumw2();
+    hmaxJPTEt[i]->Sumw2();
+    hmaxCaloJetEt[i]->Sumw2();
+    hmaxTrkJetEt[i]->Sumw2();
+    hmaxPFJetEt[i]->Sumw2();
+    hmaxCaloTrkJetEt[i]->Sumw2();
+    hmaxCaloTrkJet2Et[i]->Sumw2();
+
+    hmaxGenJetEtHCal[i]->Sumw2();
+    hmaxJPTEtHCal[i]->Sumw2();
+    hmaxCaloJetEtHCal[i]->Sumw2();
+    hmaxTrkJetEtHCal[i]->Sumw2();
+    hmaxPFJetEtHCal[i]->Sumw2();
+    hmaxCaloTrkJetEtHCal[i]->Sumw2();
+    hmaxCaloTrkJet2EtHCal[i]->Sumw2();
+
+    hmaxGenJetEtHF[i]->Sumw2();
+    hmaxJPTEtHF[i]->Sumw2();
+    hmaxCaloJetEtHF[i]->Sumw2();
+    hmaxTrkJetEtHF[i]->Sumw2();
+    hmaxPFJetEtHF[i]->Sumw2();
+    hmaxCaloTrkJetEtHF[i]->Sumw2();
+    hmaxCaloTrkJet2EtHF[i]->Sumw2();
   }
   
   helTrkIsoPassId = new TH1F(Form("%s_helTrkIsoPassId",prefix),        Form("%s - electron trk isolation passed robust el id",prefix),  100, 0., 20.);
@@ -1510,21 +1744,8 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
   helRelPatIsoFailId->Sumw2();
   helRelPatIsoNoId    = new TH1F(Form("%s_helRelPatIsoNoId",prefix),   Form("%s - electron relative iso (trk+ecal+hcal) PAT with weights 1,1,1 without el id",prefix), 120, 0., 1.2);
   helRelPatIsoNoId->Sumw2();
-
-  hmaxJPTEt = new TH1F(Form("%s_hmaxJPTEt",prefix),               Form("%s - most energetic jet Et (JPT)",prefix), 200, 0., 200);
-  hmaxJPTEt->Sumw2();
   hmaxBtagVsJPTEt = new TH2F(Form("%s_hmaxBtagVsJPTEt",prefix),   Form("%s - most energetic jet Et (JPT) vs b-tagger output",prefix), 20, 0., 100, 10, 0, 1);
   hmaxBtagVsJPTEt->Sumw2();
-  hmaxCaloJetEt = new TH1F(Form("%s_hmaxCaloJetEt",prefix),       Form("%s - most energetic jet Et (CaloJet)",prefix), 200, 0., 200);
-  hmaxCaloJetEt->Sumw2();
-  hmaxTrkJetEt = new TH1F(Form("%s_hmaxTrkJetEt",prefix),         Form("%s - most energetic jet Et (TrkJet)",prefix), 200, 0., 200);
-  hmaxTrkJetEt->Sumw2();
-  hmaxCaloTrkJetEt = new TH1F(Form("%s_hmaxCaloTrkJetEt",prefix), Form("%s - most energetic jet Et (average of Calo + Trk Jets)",prefix), 200, 0., 200);
-  hmaxCaloTrkJetEt->Sumw2();
-  hmaxCaloTrkJet2Et = new TH1F(Form("%s_hmaxCaloTrkJet2Et",prefix), Form("%s - most energetic jet Et (Max Calo and Trk Jets)",prefix), 200, 0., 200);
-  hmaxCaloTrkJet2Et->Sumw2();
-  hmaxGenJetEt = new TH1F(Form("%s_hmaxGenJetEt",prefix),         Form("%s - most energetic jet Et (GenJet)",prefix), 200, 0., 200);
-  hmaxGenJetEt->Sumw2();
   hCentralBquarkEtaAfterVeto = new TH1F(Form("%s_centralBQuarkEtaAfterVeto",prefix), Form("%s - central b quark eta distribution after jet veto",prefix), 20, 0, 10);
   hForwardBquarkEtaAfterVeto = new TH1F(Form("%s_forwardBQuarkEtaAfterVeto",prefix), Form("%s - forward b quark eta distribution after jet veto",prefix), 20, 0, 10);
 
@@ -1538,7 +1759,11 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hIsoSingleElectron         = new TH1F(Form("%s_hIsoSingleElectron",prefix),         "Electron isolation distribution for goodElectronWithoutIsolation", 100,0,10);
     hIsoSingleElectron->Sumw2();
   }
+
+
 }
+
+
 
 RooDataSet* ScanChain( TChain* chain, 
 		       enum Sample sample, 
@@ -1546,7 +1771,10 @@ RooDataSet* ScanChain( TChain* chain,
 		       double xsec,           // in unit of pb, if negative take it from evt_xsec_excl*evt_kfactor
 		       int nProcessedEvents,  // if negative, take it from evt_nEvts
 		       bool identifyEvents, 
-		       bool qcdBackground) 
+		       bool qcdBackground,
+		       bool zStudy,
+		       bool realData,
+		       TString cms2_json_file)
 {
   // chain->SetParallelUnzip(kTRUE);
   // gErrorIgnoreLevel = 3000; // suppress warnings about missing dictionaries 
@@ -1557,7 +1785,7 @@ RooDataSet* ScanChain( TChain* chain,
  // declare and create array of histograms
   const char *prefix = SampleName(sample);
   RooDataSet* dataset = MakeNewDataset(prefix);
-  
+
   initializeHistograms(prefix,qcdBackground);
 
   // clear list of duplicates
@@ -1568,6 +1796,29 @@ RooDataSet* ScanChain( TChain* chain,
   int nFilteredOut = 0;
 
   int i_permille_old = 0;
+  
+  jetcorr_filenames_jpt.push_back("$CMSSW_BASE/src/CondFormats/JetMETObjects/data/Spring10_L2Relative_AK5JPT.txt");
+  jetcorr_filenames_jpt.push_back("$CMSSW_BASE/src/CondFormats/JetMETObjects/data/Spring10_L3Absolute_AK5JPT.txt");
+  if(realData)
+    jetcorr_filenames_jpt.push_back("$CMSSW_BASE/src/CondFormats/JetMETObjects/data/Spring10DataV2_L2L3Residual_AK5JPT.txt");
+  jet_corrector_jpt= makeJetCorrector(jetcorr_filenames_jpt);
+  
+  jetcorr_filenames_pf.push_back("$CMSSW_BASE/src/CondFormats/JetMETObjects/data/Spring10_L2Relative_AK5PF.txt");
+  jetcorr_filenames_pf.push_back("$CMSSW_BASE/src/CondFormats/JetMETObjects/data/Spring10_L3Absolute_AK5PF.txt");
+  if(realData)
+    jetcorr_filenames_pf.push_back("$CMSSW_BASE/src/CondFormats/JetMETObjects/data/Spring10DataV2_L2L3Residual_AK5PF.txt");
+  jet_corrector_pf= makeJetCorrector(jetcorr_filenames_pf);
+
+  jetcorr_filenames_calo.push_back("$CMSSW_BASE/src/CondFormats/JetMETObjects/data/Spring10_L2Relative_AK5Calo.txt");
+  jetcorr_filenames_calo.push_back("$CMSSW_BASE/src/CondFormats/JetMETObjects/data/Spring10_L3Absolute_AK5Calo.txt");
+  if(realData)
+    jetcorr_filenames_calo.push_back("$CMSSW_BASE/src/CondFormats/JetMETObjects/data/Spring10DataV2_L2L3Residual_AK5Calo.txt");
+  jet_corrector_calo= makeJetCorrector(jetcorr_filenames_calo);
+  
+  jetcorr_filenames_trk.push_back("$CMSSW_BASE/src/CondFormats/JetMETObjects/data/Spring10_L2Relative_AK5TRK.txt");
+  jetcorr_filenames_trk.push_back("$CMSSW_BASE/src/CondFormats/JetMETObjects/data/Spring10_L3Absolute_AK5TRK.txt");
+  jet_corrector_trk= makeJetCorrector(jetcorr_filenames_trk);
+  
   // file loop
   TObjArray *listOfFiles = chain->GetListOfFiles();
   TIter fileIter(listOfFiles);
@@ -1575,22 +1826,32 @@ RooDataSet* ScanChain( TChain* chain,
   while (TChainElement *currentFile = (TChainElement*)fileIter.Next()) {
 //        printf("current file: %s (%s), %s\n", currentFile->GetName(), 
 // 	      currentFile->GetTitle(), currentFile->IsA()->GetName());
-       TFile *f = TFile::Open(currentFile->GetTitle()); 
-       assert(f);
-       TTree *tree = (TTree*)f->Get("Events");
-       assert(tree);
-
-       cms2.Init(tree);  // set branch addresses for TTree tree
-       
-       TStopwatch t;
-       //Event Loop
-       unsigned int nEvents = tree->GetEntries();
-       for( unsigned int event = 0; event < nEvents; ++event) {
-	 cms2.GetEntry(event);  // get entries for Event number event from branches of TTree tree
-	 
-	 double weight = 1;
-	 if ( integratedLumi>0 ){
-	   weight = integratedLumi * (xsec>0?xsec:cms2.evt_xsec_excl()*cms2.evt_kfactor()) /
+    TFile *f = TFile::Open(currentFile->GetTitle()); 
+    assert(f);
+    TTree *tree = (TTree*)f->Get("Events");
+    assert(tree);
+    
+    cms2.Init(tree);  // set branch addresses for TTree tree
+    
+    TStopwatch t;
+    //Event Loop
+    unsigned int nEvents = tree->GetEntries();
+  
+    for( unsigned int event = 0; event < nEvents; ++event) {
+      cms2.GetEntry(event);  // get entries for Event number event from branches of TTree tree
+      // Select the good runs from the json file
+      if(realData) {
+	if(cms2_json_file=="") {
+	  std::cout<<"Running on the real Data, please provide JSON file!"<<std::endl;
+	  break;
+	}
+	set_goodrun_file(cms2_json_file);
+	if( !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
+      }
+	 double weight = 1.0;
+	 if ( !realData && integratedLumi>0 ){
+	   double mcweight = cms2.genps_weight() > 0.0 ? 1.0 : -1.0;
+	   weight = integratedLumi * mcweight * (xsec>0?xsec:cms2.evt_xsec_excl()*cms2.evt_kfactor()) /
 	     (nProcessedEvents>0?nProcessedEvents:cms2.evt_nEvts());
 	 }       
 	 ++nEventsTotal;
@@ -1600,15 +1861,15 @@ RooDataSet* ScanChain( TChain* chain,
 	   // isolation
 	   extractIsoSingleLepton();
 	 }
-	 
-	 if (cms2.trks_d0().size() == 0) continue;  // needed to get rid of bad Monte Carlo events in CMSSW_2_X analysis
+
+	 if (cms2.trks_d0().size() == 0) continue;  // needed to get rid of back Monte Carlo events in CMSSW_2_X analysis
 	 if (cms2.hyp_type().size() == 0) continue; // skip events without hypothesis
-	 EventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.evt_lumiBlock(), cms2.trks_d0()[0], 
-				cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
+	 EventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.evt_lumiBlock() , 0, 0, 0, 0}; 
+	 //, cms2.trks_d0()[0], cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
 	 if (is_duplicate(id)) {
 	   duplicates_total_n++;
-	   duplicates_total_weight += cms2.evt_scale1fb();
-	   // cout << "Duplicate event found. Run: " << cms2.evt_run() << ", Event:" << cms2.evt_event() << ", Lumi: " << cms2.evt_lumiBlock() << endl;
+	   if(!realData) duplicates_total_weight += cms2.evt_scale1fb();
+	   //cout << "Duplicate event found. Run: " << cms2.evt_run() << ", Event:" << cms2.evt_event() << ", Lumi: " << cms2.evt_lumiBlock() << endl;
 	   continue;
 	 }
 	 
@@ -1631,28 +1892,33 @@ RooDataSet* ScanChain( TChain* chain,
 	     continue;
 	   }
 	 }
+	 
 	 // loop over hypothesis candidates
-	 unsigned int nHyps = cms2.hyp_type().size();
-	 for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
-	   if(cms2.hyp_p4().at(i_hyp).mass2() < 0 ) break;
-	   hypo(i_hyp, weight, dataset);
-	   AddIsoSignalControlSample(i_hyp, weight, dataset);
-	 }
-       }
-       t.Stop();
-       printf("Finished processing file: %s\n",currentFile->GetTitle());
-       printf("Real time: %u events / %f s = %e event/s\n", nEvents, 
-	      t.RealTime(), nEvents / t.RealTime());
-       printf("CPU time: %u events / %f s = %e event/s\n", nEvents, 
-	      t.CpuTime(), nEvents / t.CpuTime());
-       printf("Total duplicate count: %d.  Total weight %f\n",   
-	      duplicates_total_n, duplicates_total_weight);
-       delete f;
+      unsigned int nHyps = cms2.hyp_type().size();
+      // find the best candidate with m(ll) closest to the Z mass
+      unsigned int i_hyp_bestZ = bestZHyp();
+      for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
+	//if(cms2.hyp_p4().at(i_hyp).mass2() < 0 ) break;
+	if(cms2.hyp_p4().at(i_hyp).mass2() < 0 ) continue;
+	if(zStudy && (i_hyp != i_hyp_bestZ)) continue;
+	hypo(i_hyp, weight, dataset, zStudy, realData);
+	AddIsoSignalControlSample(i_hyp, weight, dataset, realData);
+      }
+    }
+    t.Stop();
+    printf("Finished processing file: %s\n",currentFile->GetTitle());
+    printf("Real time: %u events / %f s = %e event/s\n", nEvents, 
+	   t.RealTime(), nEvents / t.RealTime());
+    printf("CPU time: %u events / %f s = %e event/s\n", nEvents, 
+	   t.CpuTime(), nEvents / t.CpuTime());
+    printf("Total duplicate count: %d.  Total weight %f\n",   
+	   duplicates_total_n, duplicates_total_weight);
+    delete f;
   }
   monitor.print();
   // monitor.printEvents(3);
   if ( nEventsChain != nEventsTotal ) {
-       printf("ERROR: number of events from files (%d) is not equal to total number"
+    printf("ERROR: number of events from files (%d) is not equal to total number"
 	      " of events (%d)\n", nEventsChain, nEventsTotal);
   }
   printf("Total number of skipped events due to bad identification: %d (%0.0f %%)\n",   
@@ -1707,11 +1973,11 @@ bool EventIdentifier::operator == (const EventIdentifier &other) const
      if (fabs(trks_d0 - other.trks_d0) > 1e-6 * trks_d0)
 	  return false;
      if (fabs(hyp_lt_pt - other.hyp_lt_pt) > 1e-6 * hyp_lt_pt)
-	  return false;
+       return false;
      if (fabs(hyp_lt_eta - other.hyp_lt_eta) > 1e-6 * hyp_lt_eta)
-	  return false;
+       return false;
      if (fabs(hyp_lt_phi - other.hyp_lt_phi) > 1e-6 * hyp_lt_phi)
-	  return false;
+       return false;
      return true;
 }
 
@@ -1758,11 +2024,14 @@ void ProcessSample( std::string file_pattern,
 		    RooDataSet* output_dataset, 
 		    Color_t color, 
 		    bool identifyEvents,
-		    bool qcdBackground)
+		    bool qcdBackground,
+		    bool zStudy,
+		    bool realData,
+		    TString cms2_json_file)
 {
   std::vector<string> vec;
   vec.push_back(file_pattern);
-  ProcessSample(vec,sample,integratedLumi,xsec,nProcessedEvents,output_dataset,color,identifyEvents,qcdBackground);
+  ProcessSample(vec,sample,integratedLumi,xsec,nProcessedEvents,output_dataset,color,identifyEvents,qcdBackground,zStudy,realData,cms2_json_file);
 }
 
 void ProcessSample( std::vector<std::string> file_patterns, 
@@ -1773,7 +2042,10 @@ void ProcessSample( std::vector<std::string> file_patterns,
 		    RooDataSet* output_dataset, 
 		    Color_t color, 
 		    bool identifyEvents,
-		    bool qcdBackground)
+		    bool qcdBackground,
+		    bool zStudy,
+		    bool realData,
+		    TString cms2_json_file)
 {
   TChain *tchain = new TChain("Events");
   for ( std::vector<std::string>::const_iterator pattern = file_patterns.begin();
@@ -1785,7 +2057,7 @@ void ProcessSample( std::vector<std::string> file_patterns,
     SkimChain(tchain);
   } else {
     std::cout << "Processing " << SampleName(sample) << ".." << std::endl;
-    RooDataSet* data = ScanChain(tchain,sample,integratedLumi,xsec,nProcessedEvents,identifyEvents,qcdBackground);
+    RooDataSet* data = ScanChain(tchain,sample,integratedLumi,xsec,nProcessedEvents,identifyEvents,qcdBackground,zStudy,realData,cms2_json_file);
     if( data ){
       if ( output_dataset )
 	output_dataset->append(*data);
@@ -1887,6 +2159,7 @@ void SkimChain(TChain* chain){
     output->cd();
     newtree->Write();
     output->Close();
+    input->Close();
   }
   cout << Form("Processed events: %u, \tselected: %u\n",nEventsTotal,nEventsSelected) << endl;
 }
@@ -1913,3 +2186,31 @@ bool passedSkimSelection()
   }
   return false;
 }
+
+bool CheckCutsNM1(cuts_t apply, cuts_t remove, cuts_t passed)
+{           
+  if ((passed & (apply & (~remove))) == (apply & (~remove))) return true;
+  return false;
+}   
+
+bool CheckCuts(cuts_t apply, cuts_t passed)
+{
+  if ((apply & passed) == apply) return true;
+  return false;
+}
+
+unsigned int bestZHyp()
+{
+  unsigned int nHyps = cms2.hyp_type().size();
+  if(nHyps<2) return 0;
+  unsigned int i_hyp_bestZ = 0;
+  double minDev = 20;
+  for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
+    if(fabs(cms2.hyp_p4().at(i_hyp).mass2()-91.1876) < minDev) {
+      minDev = fabs(cms2.hyp_p4().at(i_hyp).mass2()-91.1876);
+      i_hyp_bestZ = i_hyp;
+    }
+  }
+  return i_hyp_bestZ;
+}
+

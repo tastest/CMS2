@@ -9,6 +9,7 @@
 #include <fstream>
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
+typedef ULong64_t  cuts_t;
 
 //
 // Electron Id
@@ -71,15 +72,15 @@ double nearestDeltaPhi(double Phi, int i_hyp);
 //
 // Jets
 //
-enum JetType { CaloJet, jptJet, pfJet, TrkJet, GenJet };
-std::vector<LorentzVector> getJets(JetType type, 
+enum WWJetType { CaloJet, jptJet, pfJet, TrkJet, GenJet };
+std::vector<LorentzVector> getJets(WWJetType type, 
 				   int i_hyp, 
 				   double etThreshold,
 				   double maxEta,
 				   bool sorted = false);
 
 // analysis jet type is set here.
-JetType jetType();
+WWJetType jetType();
 
 unsigned int numberOfJets(unsigned int i_hyp);
 
@@ -114,6 +115,11 @@ bool isDYtt();
 bool isWW();
 bool isWZ();
 bool isZZ();
+// N-1
+// return true if the cuts to apply - the cuts to remove were passed in the cuts that "passed"
+bool CheckCutsNM1(cuts_t apply, cuts_t remove, cuts_t passed);
+// Simple check if the desired cuts to apply are set in the cuts that "passed"
+bool CheckCuts(cuts_t apply, cuts_t passed);
 
 //
 // Not Classified
@@ -132,12 +138,14 @@ void getIsolationSidebandsAfterSelections(int i_hyp,
 					  RooDataSet* dataset, 
 					  bool passedAllLeptonRequirements);
 
-void find_most_energetic_jets(int i_hyp, double weight);
-void hypo (int i_hyp, double kFactor, RooDataSet* dataset = 0); 
+enum jetregion { HCAL, HF, ALLJET};
+void find_most_energetic_jets(int i_hyp, double weight, bool realData, double etaMin, double etaMax, jetregion jet, bool applyJEC);
+unsigned int bestZHyp();
+void hypo (int i_hyp, double weight, RooDataSet* dataset = 0, bool zStudy = false, bool realData = false ); 
 
 RooDataSet* MakeNewDataset(const char* name);
 
-void AddIsoSignalControlSample( int i_hyp, double kFactor, RooDataSet* dataset = 0 );
+void AddIsoSignalControlSample( int i_hyp, double weight, RooDataSet* dataset = 0, bool realData = false );
 class TChain;
 RooDataSet* ScanChain( TChain* chain, 
 		       Sample sample, 
@@ -145,7 +153,10 @@ RooDataSet* ScanChain( TChain* chain,
 		       double xsec,
 		       int nProcessedEvents,
 		       bool identifyEvents,
-		       bool qcdBackground = false);
+		       bool qcdBackground = false,
+		       bool zStudy = false,
+		       bool realData = false,
+		       TString cms2_json_file = "");
 void SkimChain(TChain* chain);
 bool passedSkimSelection();
 
@@ -157,7 +168,10 @@ void ProcessSample( std::string file_pattern,
 		    RooDataSet* output_dataset, 
 		    Color_t color, 
 		    bool identifyEvents = false,
-		    bool qcdBackground = false);
+		    bool qcdBackground = false,
+		    bool zStudy = false,
+		    bool realData = false,
+		    TString cms2_json_file = "");
 void ProcessSample( std::vector<std::string> file_patterns, 
 		    Sample sample,
 		    double integratedLumi,
@@ -166,6 +180,9 @@ void ProcessSample( std::vector<std::string> file_patterns,
 		    RooDataSet* output_dataset, 
 		    Color_t color, 
 		    bool identifyEvents = false,
-		    bool qcdBackground = false);
+		    bool qcdBackground = false,
+		    bool zStudy = false,
+		    bool realData = false,
+		    TString cms2_json_file = "");
 
 #endif
