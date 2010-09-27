@@ -73,7 +73,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   //make baby ntuple
   looper->set_createTree(1);
   //use bitmask selection
-  looper->set_useBitMask(0);
+  looper->set_useBitMask(1);
 
 
   // K-factors
@@ -162,6 +162,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preML7      = 1;
   int preML8      = 1;
   int preLMscan = 1;
+
   /*
   //Flags for files to run over
   bool rundata     = 1;
@@ -205,9 +206,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML8      = 0;
   bool runLMscan   = 0; 
   */
-
+  
   //Flags for files to run over
-  bool rundata     = 1;
+  bool rundata     = 0;
   bool runttall    = 0;
   bool runttdil    = 1;
   bool runttotr    = 0;
@@ -247,6 +248,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
+  
 
   TChain* chdata = new  TChain("Events");
   if(rundata){
@@ -281,6 +283,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   if (runttall) {
     pickSkimIfExists(chtopall, 
                      "/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/skimmed*root",
+                     //"/tas/cms2/TTbarJets-madgraph_Summer09-MC_31X_V3_7TeV-v2/V03-00-35-skim-skim/merged*root",
                      //"/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-07/merged*.root",
                      "TTJets");
   }
@@ -288,14 +291,17 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain* chtopdil = new TChain("Events");
   if (runttdil) {
     pickSkimIfExists(chtopdil, 
-                     "/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-07/merged*.root",
+                     "/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/skimmed*root",
+                     //"/tas/cms2/TTbarJets-madgraph_Summer09-MC_31X_V3_7TeV-v2/V03-00-35-skim/merged*root",
+                     //"/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-07/merged*.root",
                      "TTJets");
   }
 
   TChain* chtopotr = new TChain("Events");
   if(runttotr){
     pickSkimIfExists(chtopotr, 
-                     "/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-07/merged*.root",
+                     "/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/skimmed*root",
+                     //"/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-07/merged*.root",
                      "TTJets");
   }
 
@@ -610,8 +616,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   //--------------------------------
   //set luminosity to scale to
   //--------------------------------
-  //float lumi              = 2.7945e-3;     //2.8 pb-1
-  float lumi              = 0.1;     //100 pb-1
+  //float lumi              = 2.7945e-3;  //2.8 pb-1
+  float lumi              = 0.1;        //100 pb-1
+  //float lumi              = 2.77e-3;      //2.7 pb-1
   bool  calculateTCMET    = true; //redo tcmet calculation on the fly
 
   char* jetTypeStrings[3] = {"JPT", "calo","pfjet"};
@@ -871,7 +878,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                                            jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
               }
               else {
-                const char* outFile = Form("output/ossusy_%s_%s%s.root", 
+                const char* outFile = Form("output/ossusy_%s_%s%s_bitmask.root", 
                                            jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
               }
 

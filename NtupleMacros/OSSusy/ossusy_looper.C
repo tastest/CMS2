@@ -157,31 +157,36 @@ void ossusy_looper::makeTree(char *prefix)
 
   //Set branch addresses
   //variables must be declared in ossusy_looper.h
-  outTree->Branch("weight",      &weight_,     "weight/F");
-  outTree->Branch("proc",        &proc_,       "proc/I");
-  outTree->Branch("leptype",     &leptype_,    "leptype/I");
-  outTree->Branch("dilmass",     &dilmass_,    "dilmass/F");
-  outTree->Branch("tcmet",       &tcmet_,      "tcmet/F");
-  outTree->Branch("tcmetphi",    &tcmetphi_,   "tcmetphi/F");
-  outTree->Branch("tcsumet",     &tcsumet_,    "tcsumet/F");
-  outTree->Branch("mt2",         &mt2_,        "mt2/F");  
-  outTree->Branch("mt2j",        &mt2j_,       "mt2j/F");  
-  outTree->Branch("sumjetpt",    &sumjetpt_,   "sumjetpt/F");
-  outTree->Branch("dileta",      &dileta_,     "dileta/F");
-  outTree->Branch("dilpt",       &dilpt_,      "dilpt/F");
-  outTree->Branch("dildphi",     &dildphi_,    "dildphi/F");
-  outTree->Branch("njets",       &njets_,      "njets/I");
-  outTree->Branch("vecjetpt",    &vecjetpt_,   "vecjetpt/F");
-  outTree->Branch("pass",        &pass_,       "pass/I");
-  outTree->Branch("passz",       &passz_,      "passz/I");
-  outTree->Branch("m0",          &m0_,         "m0/F");
-  outTree->Branch("m12",         &m12_,        "m12/F");
-  outTree->Branch("ptl1",        &ptl1_,       "ptl1/F");
-  outTree->Branch("ptl2",        &ptl2_,       "ptl2/F");
-  outTree->Branch("ptj1",        &ptj1_,       "ptj1/F");
-  outTree->Branch("ptj2",        &ptj2_,       "ptj2/F");
-  outTree->Branch("meff",        &meff_,       "meff/F");
-  outTree->Branch("mt",          &mt_,         "mt/F");
+  outTree->Branch("weight",        &weight_,       "weight/F");
+  outTree->Branch("proc",          &proc_,         "proc/I");
+  outTree->Branch("leptype",       &leptype_,      "leptype/I");
+  outTree->Branch("dilmass",       &dilmass_,      "dilmass/F");
+  outTree->Branch("tcmet",         &tcmet_,        "tcmet/F");
+  outTree->Branch("genmet",        &genmet_,       "genmet/F");
+  outTree->Branch("pfmet",         &pfmet_,        "pfmet/F");
+  outTree->Branch("tcmet35X",      &tcmet_35X_,    "tcmet35X/F");
+  outTree->Branch("tcmetevent",    &tcmet_event_,  "tcmetevent/F");
+  outTree->Branch("tcmetlooper",   &tcmet_looper_, "tcmetlooper/F");
+  outTree->Branch("tcmetphi",      &tcmetphi_,     "tcmetphi/F");
+  outTree->Branch("tcsumet",       &tcsumet_,      "tcsumet/F");
+  outTree->Branch("mt2",           &mt2_,          "mt2/F");  
+  outTree->Branch("mt2j",          &mt2j_,         "mt2j/F");  
+  outTree->Branch("sumjetpt",      &sumjetpt_,     "sumjetpt/F");
+  outTree->Branch("dileta",        &dileta_,       "dileta/F");
+  outTree->Branch("dilpt",         &dilpt_,        "dilpt/F");
+  outTree->Branch("dildphi",       &dildphi_,      "dildphi/F");
+  outTree->Branch("njets",         &njets_,        "njets/I");
+  outTree->Branch("vecjetpt",      &vecjetpt_,     "vecjetpt/F");
+  outTree->Branch("pass",          &pass_,         "pass/I");
+  outTree->Branch("passz",         &passz_,        "passz/I");
+  outTree->Branch("m0",            &m0_,           "m0/F");
+  outTree->Branch("m12",           &m12_,          "m12/F");
+  outTree->Branch("ptl1",          &ptl1_,         "ptl1/F");
+  outTree->Branch("ptl2",          &ptl2_,         "ptl2/F");
+  outTree->Branch("ptj1",          &ptj1_,         "ptj1/F");
+  outTree->Branch("ptj2",          &ptj2_,         "ptj2/F");
+  outTree->Branch("meff",          &meff_,         "meff/F");
+  outTree->Branch("mt",            &mt_,           "mt/F");
 
 
 }
@@ -384,6 +389,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       
       for(unsigned int i = 0; i < hyp_p4().size(); ++i) {
 
+        //Summer09: remove trigger selection
+        
         //trigger selection (synced with ttdil)
         bool passMu = passHLTTrigger("HLT_Mu9");
         bool runningOnMC = isData ? false : true;
@@ -393,19 +400,24 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         if(type == 0 && !passMu)                                    continue;
         if(type == 3 && !passEl)                                    continue;
         if((type == 1 || type == 2) && !passMu && !passEl)          continue;
+        
 
         //check that hyp leptons come from same vertex
         if( !hypsFromSameVtx( i ) )    continue;
 
-//         //veto Z mass
-//         if( type == 0 || type == 3 ){
-//           if( hyp_p4()[i].mass() > 76 && hyp_p4()[i].mass() < 106 ) continue;
-//         }
+        //veto Z mass
+        //if( type == 0 || type == 3 ){
+        //  if( hyp_p4()[i].mass() > 76 && hyp_p4()[i].mass() < 106 ) continue;
+        //}
         
         //OS, pt > (20,10) GeV, dilmass > 10 GeV
         if( hyp_lt_id()[i] * hyp_ll_id()[i] > 0 )  continue;
+        
+        //Summer09: use pt > (20,20) GeV
         //if( hyp_ll_p4()[i].pt() < 20. )                                  continue;
         //if( hyp_lt_p4()[i].pt() < 20. )                                  continue;
+        
+        //pt > (20,10) GeV
         if( TMath::Max( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < 20. )   continue;
         if( TMath::Min( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < 10. )   continue;
         if( hyp_p4()[i].mass() < 10 )                                         continue;
@@ -413,14 +425,36 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         //nominal muon ID
         if (abs(hyp_ll_id()[i]) == 13  && (! muonId(hyp_ll_index()[i] , NominalTTbarV2 ) ) )   continue;
         if (abs(hyp_lt_id()[i]) == 13  && (! muonId(hyp_lt_index()[i] , NominalTTbarV2 ) ) )   continue;
-        
+
         //ttbarV2 electron ID
         if (abs(hyp_ll_id()[i]) == 11  && (! pass_electronSelection( hyp_ll_index()[i] , 
                                                                      electronSelection_ttbarV2 , isData , true ))) continue;
         if (abs(hyp_lt_id()[i]) == 11  && (! pass_electronSelection( hyp_lt_index()[i] , 
                                                                      electronSelection_ttbarV2 , isData , true ))) continue;
-       
+        
 
+        //Summer09: use MC-truth-based electron ID
+        /*
+        if (abs(hyp_ll_id()[i]) == 11 ){
+          LorentzVector v_ll = els_p4().at( cms2.hyp_ll_index()[i] );
+          bool foundEl = false;
+          for( unsigned int iel = 0 ; iel < els_mc_p4().size() ; ++iel ){
+            LorentzVector v_mc = els_mc_p4().at( iel );
+            if( dRbetweenVectors(v_ll, v_mc) < 0.1) foundEl = true;
+          }
+          if( !foundEl ) continue;
+        }
+
+       if (abs(hyp_lt_id()[i]) == 11 ){
+          LorentzVector v_lt = els_p4().at( cms2.hyp_lt_index()[i] );
+          bool foundEl = false;
+          for( unsigned int iel = 0 ; iel < els_mc_p4().size() ; ++iel ){
+            LorentzVector v_mc = els_mc_p4().at( iel );
+            if( dRbetweenVectors(v_lt, v_mc) < 0.1) foundEl = true;
+          }
+          if( !foundEl ) continue;
+        }
+        */
 
         v_goodHyps.push_back( i );
       }
@@ -670,7 +704,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
         for (unsigned int ijet = 0; ijet < jpts_p4().size(); ijet++) {
           
-          LorentzVector vjet = jpts_p4().at(ijet) * jpts_cor().at(ijet);
+          //Summer09: remove JPT correction
+          LorentzVector vjet = jpts_p4().at(ijet) * jpts_cor().at(ijet); 
           LorentzVector vlt  = hyp_lt_p4()[hypIdx];
           LorentzVector vll  = hyp_ll_p4()[hypIdx];
           
@@ -745,6 +780,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           genmet    = gen_met();
           gensumet  = gen_sumEt();
           genmetphi = gen_metPhi();
+          genmet_    = gen_met();
         }
     
         /*
@@ -773,7 +809,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         
         if( isData )   p_met = getMet( "tcMET"    , hypIdx);
         else           p_met = getMet( "tcMET35X" , hypIdx);
-
+        //else           p_met = getMet( "tcMET" , hypIdx);  //Summer09: use tcMET
+        
         float tcmet    = p_met.first;
         float tcmetphi = p_met.second;
         float tcsumet  = 1;
@@ -1023,6 +1060,23 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         //fill tree for baby ntuple 
         if(g_createTree){
 
+          p_met = getMet( "tcMET"    , hypIdx);
+          tcmet_event_ = p_met.first;
+
+          if( !isData ){
+            p_met = getMet( "tcMET35X"    , hypIdx);
+            //p_met = getMet( "tcMET"    , hypIdx); //Summer09: use tcMET
+            tcmet_35X_ = p_met.first;
+          }else{
+            tcmet_35X_ = -9999.;
+          }
+
+          p_met = getMet( "tcMET_looper"    , hypIdx);
+          tcmet_looper_ = p_met.first;
+
+          p_met = getMet( "pfMET"    , hypIdx);
+          pfmet_ = p_met.first;
+
           weight_      = weight;                       //event weight
           proc_        = getProcessType(prefix);       //integer specifying sample
           dilmass_     = hyp_p4()[hypIdx].mass();      //dilepton mass
@@ -1124,7 +1178,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         //selection (bitmask)-------------------------------------------
 
         if(g_useBitMask){
-          cout << "USING BITMASK" << endl;
+
           const int ncut = 5;
           bool cut[ncut];
           for(int ic=0;ic<ncut;ic++)cut[ic]=false;

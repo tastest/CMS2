@@ -36,12 +36,13 @@ class ossusy_looper
         // e_nozveto :   no Z-veto
         // e_selectz :   select Z by requiring SF OS pair in Z mass window
 
-        int  ScanChain(TChain *chain, char *prefix = "", float kFactor = 1., int prescale = 1., 
+        int  ScanChain(TChain *chain, char *prefix = "", float kFactor = 1., int prescale = 1., float lumi = 1.,
                        JetTypeEnum jetType = e_JPT, 
                        MetTypeEnum metType = e_tcmet,
                        ZVetoEnum zveto = e_standard,
                        bool doFakeApp = false,
-                       bool calculateTCMET = false);
+                       bool calculateTCMET = false
+                       );
         void BookHistos (char *prefix);
         bool passZSelection (int hypIdx);
         bool passTrigger (int dilType);
@@ -74,6 +75,11 @@ class ossusy_looper
         Int_t   njets_;
         Float_t dilmass_;
         Float_t tcmet_;
+        Float_t genmet_;
+        Float_t pfmet_;
+        Float_t tcmet_35X_;
+        Float_t tcmet_event_;
+        Float_t tcmet_looper_;
         Float_t tcsumet_;
         Float_t tcmetphi_;
         Float_t mt2_;
@@ -100,6 +106,8 @@ class ossusy_looper
 /* 	SimpleFakeRate fr_mu; */
 
         // Lots and lots of histograms
+        TH1F* hyield;
+
         TH1F* hmt2j_signal[4][4];
         TH1F* hmt2j_control[4][4];
         TH1F* hmt2j_all[4][4];
