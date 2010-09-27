@@ -1,3 +1,4 @@
+#include "BabyDorkIdentifier.h"
 #include "BabySample.h"
 #include "cuts.h"
 #include "gather.h"
@@ -25,10 +26,15 @@ float GetIntLumi(float lumi, int brun, int bls, int erun, int els)
     // which are not goodrun penalized
     TCut c_goodrunplus(Form("(((run>%i&&run<%i)||(run==%i&&ls>=%i)||(run==%i&&ls<=%i))&&goodrun_json(run,ls))||(run>%i||(run==%i&&ls>%i))", brun, erun, brun, bls, erun, els, erun, erun, els));
 
+    // this is of course particular to dilep babies
+    TCut c_notduplicate("! is_duplicate(run,evt,ls,pt1,pt2)");
+
     // brun:bls -> erun:els
-    int n_goodrun = c->GetEntries(c_goodrun+inclusivez_dilep); 
+    reset_babydorkidentifier();
+    int n_goodrun = c->GetEntries(c_goodrun+c_notduplicate+inclusivez_dilep); 
     // total
-    int n_total   = c->GetEntries(c_goodrunplus+inclusivez_dilep);
+    reset_babydorkidentifier();
+    int n_total   = c->GetEntries(c_goodrunplus+c_notduplicate+inclusivez_dilep);
     // that which is new
     int n_new     = n_total-n_goodrun;
 
@@ -47,15 +53,10 @@ float GetIntLumi(float lumi)
 }
 
 TH1F* Plot(const char *pfx, TChain *chain, const char *field, TCut sel, TCut presel, float intlumifb, float kfactor,
-        unsigned int nbins, float xlo, float xhi, bool integrated, bool usegoodrun)
+        unsigned int nbins, float xlo, float xhi, bool integrated, bool isdata)
 {
     TCut scale;
-    // mc has scale1fb, data does not
-    // JAKE is this foolproof? rather than
-    // bool usegoodrun should we bool
-    // isdata and force application of the
-    // goodrun selection?
-    if (chain->GetBranch("scale1fb"))
+    if (! isdata)
         scale = Form("scale1fb*%f*%f", intlumifb, kfactor);
     else
         scale = Form("%f*%f", intlumifb, kfactor);
@@ -75,14 +76,25 @@ TH1F* Plot(const char *pfx, TChain *chain, const char *field, TCut sel, TCut pre
     int erun = max_run();
     int els  = max_run_max_lumi();
 
+    // Used for data only
     TCut c_goodrunplus(Form("(((run>%i&&run<%i)||(run==%i&&ls>=%i)||(run==%i&&ls<=%i))&&goodrun_json(run,ls))||(run>%i||(run==%i&&ls>%i))", brun, erun, brun, bls, erun, els, erun, erun, els));
+    TCut c_notduplicate = "";
+
+    // is this an emu, dilep or trilep baby?
+    if (chain->GetBranch("pt3")) // trilep
+        c_notduplicate = ("! is_duplicate(run,evt,ls,pt1,pt2,pt3)");
+    else if (chain->GetBranch("pt2")) // dilep
+        c_notduplicate = ("! is_duplicate(run,evt,ls,pt1,pt2)");
+    else
+        c_notduplicate = ("! is_duplicate(run,evt,ls,pt1)");
 
     TCut c_presel = "";
     // apply goodrun selection to data where
     // applicable, i.e. the range covered by
     // the goodrun json file
-    if (usegoodrun)
-        c_presel += c_goodrunplus+presel;
+    // also apply BabyDork duplicate removal
+    if (isdata)
+        c_presel += c_goodrunplus+c_notduplicate+presel;
     else
         c_presel += presel;
 
@@ -98,10 +110,10 @@ TH1F* Plot(const char *pfx, TChain *chain, const char *field, TCut sel, TCut pre
     return h;
 }
 
-TH1F* Plot(const char *field, TCut sel, float intlumifb, unsigned int nbins, float xlo, float xhi, bool integrated, bool usegoodrun,
+TH1F* Plot(const char *field, TCut sel, float intlumifb, unsigned int nbins, float xlo, float xhi, bool integrated,
         BabySample *bs)
 {
-    return Plot(bs->pfx(),bs->chain(),field,sel,bs->presel(),intlumifb,bs->kfactor(),nbins,xlo,xhi,integrated,usegoodrun);
+    return Plot(bs->pfx(),bs->chain(),field,sel,bs->presel(),intlumifb,bs->kfactor(),nbins,xlo,xhi,integrated,bs->isdata());
 }
 
 //
@@ -110,21 +122,26 @@ TH1F* Plot(const char *field, TCut sel, float intlumifb, unsigned int nbins, flo
 //
 
 TH1F* Plot(const char *pfx, TChain *chain, const char *field, TCut sel, TCut presel, float kfactor,
-        unsigned int nbins, float xlo, float xhi, bool integrated, bool usegoodrun)
+        unsigned int nbins, float xlo, float xhi, bool integrated, bool isdata)
 {
-    return Plot(pfx,chain,field,sel,presel,1,kfactor,nbins,xlo,xhi,integrated,usegoodrun);
+    return Plot(pfx,chain,field,sel,presel,1,kfactor,nbins,xlo,xhi,integrated,isdata);
 }
 
 TH1F* Plot(const char *pfx, TChain *chain, const char *field, TCut sel, TCut presel,
-        unsigned int nbins, float xlo, float xhi, bool integrated, bool usegoodrun)
+        unsigned int nbins, float xlo, float xhi, bool integrated, bool isdata)
 {
-    return Plot(pfx,chain,field,sel,presel,1,1,nbins,xlo,xhi,integrated,usegoodrun);
+    return Plot(pfx,chain,field,sel,presel,1,1,nbins,xlo,xhi,integrated,isdata);
 }
 
-TH1F* Plot(const char *field, TCut sel, unsigned int nbins, float xlo, float xhi, bool integrated, bool usegoodrun,
+TH1F* Plot(const char *field, TCut sel, unsigned int nbins, float xlo, float xhi, bool integrated,
         BabySample *bs)
 {
-    return Plot(bs->pfx(),bs->chain(),field,sel,bs->presel(),1.,bs->kfactor(),nbins,xlo,xhi,integrated,usegoodrun);
+    return Plot(bs->pfx(),bs->chain(),field,sel,bs->presel(),1.,bs->kfactor(),nbins,xlo,xhi,integrated,bs->isdata());
+}
+
+bool sortHistsByIntegral(TH1* h1, TH1* h2)
+{
+    return h1->Integral() > h2->Integral();
 }
 
 // integrate from bin to infinity
@@ -148,10 +165,14 @@ TCanvas* DrawAll(const char *field, TCut sel, float intlumifb, unsigned int nbin
     std::vector<TH1F*> hdatas;
     TH1F* buffer;
 
+    // reset BabyDorkIdentifier here so that
+    // it is used for all data BabySamples
+    reset_babydorkidentifier();
+
     for(unsigned int i = 0; i < bss.size(); ++i) {
         if (bss[i]) {
             if (bss[i]->isdata()) {
-                buffer = Plot(field,sel,nbins,xlo,xhi,integrated,1,bss[i]);
+                buffer = Plot(field,sel,nbins,xlo,xhi,integrated,bss[i]);
 
                 std::vector<TH1F*>::const_iterator it;
                 it = find(hdatas.begin(),hdatas.end(),buffer);
@@ -162,7 +183,7 @@ TCanvas* DrawAll(const char *field, TCut sel, float intlumifb, unsigned int nbin
                     hdatas.push_back(buffer);
                 }
             } else {
-                buffer = Plot(field,sel,intlumifb,nbins,xlo,xhi,integrated,0,bss[i]);
+                buffer = Plot(field,sel,intlumifb,nbins,xlo,xhi,integrated,bss[i]);
 
                 std::vector<TH1F*>::const_iterator it;
                 it = find(hmcs.begin(),hmcs.end(),buffer);
@@ -176,19 +197,19 @@ TCanvas* DrawAll(const char *field, TCut sel, float intlumifb, unsigned int nbin
         }
     }
 
-    TLegend* leg = new TLegend(0.85,0.622881,0.997126,0.98,NULL,"brNDC");
-    leg->SetFillStyle(0);
+    // sort histograms by their total contributions
+    // makes for prettier stack plots
+    sort(hmcs.begin(), hmcs.end(), sortHistsByIntegral);
+    sort(hdatas.begin(), hdatas.end(), sortHistsByIntegral);
 
-    // mini Hstack function: (should be replaced with something more adequate)
-    // JAKE replace with Puneeth's stacker
-    for(unsigned int mchisto = 0; mchisto < hmcs.size(); ++mchisto) {
-        for(unsigned int mchisto2 = mchisto+1; mchisto2 < hmcs.size(); ++mchisto2) {
-            (hmcs.at(mchisto))->Add(hmcs.at(mchisto2),1);
+    for(unsigned int hmcsIndex = 0; hmcsIndex < hmcs.size(); ++hmcsIndex) {
+        for(unsigned int hmcsIndex2 = hmcsIndex+1; hmcsIndex2 < hmcs.size(); ++hmcsIndex2) {
+            (hmcs.at(hmcsIndex))->Add(hmcs.at(hmcsIndex2),1);
         }
     }
-    for(unsigned int datahisto = 0; datahisto < hdatas.size(); ++datahisto) {
-        for(unsigned int datahisto2 = datahisto+1; datahisto2 < hdatas.size(); ++datahisto2) {
-            (hdatas.at(datahisto))->Add(hdatas.at(datahisto2),1);
+    for(unsigned int hdatasIndex = 0; hdatasIndex < hdatas.size(); ++hdatasIndex) {
+        for(unsigned int hdatasIndex2 = hdatasIndex+1; hdatasIndex2 < hdatas.size(); ++hdatasIndex2) {
+            (hdatas.at(hdatasIndex))->Add(hdatas.at(hdatasIndex2),1);
         }
     }
 
@@ -198,18 +219,25 @@ TCanvas* DrawAll(const char *field, TCut sel, float intlumifb, unsigned int nbin
         hdata = slideIntegrated( hdatas[0] );
     }
 
-    hmc->SetTitle(Form("%s, ~%.2f/pb", sel.GetName(), 1e3*intlumifb));
-    float ymax = hdata->GetMaximum() > hmc->GetMaximum() ? hdata->GetMaximum() : hmc->GetMaximum();
-    hmc->SetMaximum(ymax*1.1);
-
     char *c1name = 0;
     if (integrated) c1name = Form("c1_%s_%s_int", sel.GetName(), field);
     else c1name = Form("c1_%s_%s", sel.GetName(), field);
-
     TCanvas *c1 = new TCanvas(c1name);
     c1->Draw();
+
+    hmc->SetTitle(Form("%s, ~%.2f/pb", sel.GetName(), 1e3*intlumifb));
+    float ymax = hdata->GetMaximum() > hmc->GetMaximum() ? hdata->GetMaximum() : hmc->GetMaximum();
+    hmc->SetMaximum(ymax*1.25);
     hmc->Draw("hist");
-    hmc->GetXaxis()->SetTitle(field);
+    if (integrated)
+        hmc->GetXaxis()->SetTitle(Form("integrated %s",field));
+    else
+        hmc->GetXaxis()->SetTitle(field);
+
+    TLegend* leg = new TLegend(0.82,0.61,0.96,0.93);
+    leg->SetBorderSize(0);
+    leg->SetFillStyle(0);
+    leg->SetShadowColor(0);
 
     // For extracting sample prefix
     TPRegexp preg("^([^_]+)_.*$");

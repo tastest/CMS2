@@ -10,18 +10,19 @@ class TH1F;
 float GetIntLumi(float lumi, int brun, int bls, int erun, int els);
 float GetIntLumi(float lumi);
 TH1F* Plot(const char *pfx, TChain *chain, const char *field, TCut sel, TCut presel, float intlumifb, float kfactor,
-           unsigned int nbins, float xlo, float xhi, bool integrated, bool usegoodrun);
-TH1F* Plot(const char *field, TCut sel, float intlumifb, unsigned int nbins, float xlo, float xhi, bool integrated, bool usegoodrun,
+           unsigned int nbins, float xlo, float xhi, bool integrated, bool isdata);
+TH1F* Plot(const char *field, TCut sel, float intlumifb, unsigned int nbins, float xlo, float xhi, bool integrated,
            BabySample *bs);
 // These should only be used with data, where intlumifb need not be specified and 
 // most likely you aren't scaling
 TH1F* Plot(const char *pfx, TChain *chain, const char *field, TCut sel, TCut presel, float kfactor,
-           unsigned int nbins, float xlo, float xhi, bool integrated, bool usegoodrun);
+           unsigned int nbins, float xlo, float xhi, bool integrated, bool isdata);
 TH1F* Plot(const char *pfx, TChain *chain, const char *field, TCut sel, TCut presel,
-           unsigned int nbins, float xlo, float xhi, bool integrated, bool usegoodrun);
-TH1F* Plot(const char *field, TCut sel, unsigned int nbins, float xlo, float xhi, bool integrated, bool usegoodrun,
+           unsigned int nbins, float xlo, float xhi, bool integrated, bool isdata);
+TH1F* Plot(const char *field, TCut sel, unsigned int nbins, float xlo, float xhi, bool integrated,
            BabySample *bs);
 
+bool sortHistsByIntegral(TH1* h1, TH1* h2);
 TH1F* slideIntegrated(TH1F*);
 TCanvas* DrawAll(const char *field, TCut sel, float intlumifb, unsigned int nbins, float xlo, float xhi, bool integrated,
            std::vector<BabySample*> bss);

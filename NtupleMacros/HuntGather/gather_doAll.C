@@ -1,11 +1,15 @@
 #include "cuts.h"
 
 void gather_doAll() {
-    gROOT ->SetStyle("Plain");
-    gStyle->SetHistMinimumZero();
-    gStyle->SetOptStat(0);
+    gROOT->ProcessLine(".L tdrstyle.C");
+    setTDRStyle();
+
+    //gROOT ->SetStyle("Plain");
+    //gStyle->SetHistMinimumZero();
+    //gStyle->SetOptStat(0);
 
     gROOT->ProcessLine(".L goodrun.cc+");
+    gROOT->ProcessLine(".L BabyDorkIdentifier.C+");
     gROOT->ProcessLine(".L gather.C+");
 
     // this sets the json file obviously; it's
@@ -22,7 +26,7 @@ void gather_doAll() {
     // to the lumi of the json file and that it
     // is correctly scaled to /fb afterward
     float f_intlumifb = 1e-6*GetIntLumi(2790);
-    std::cout << "Integrated luminosity: " << f_intlumifb << "/fb\n";
+    std::cout << "Integrated luminosity: " << 1e3*f_intlumifb << "/pb\n";
 
     //
     // OS PLOTS
@@ -97,8 +101,6 @@ void gather_doAll() {
     TCanvas *c1 = 0;
 
     while ((c1 = (TCanvas*)iter->Next())) {
-        c1->SetWindowSize(600, 600);
-        c1->Modified();
         c1->Print(Form("%s.png", c1->GetName()));
         c1->SetLogy(1);
         c1->Print(Form("%s_log.png", c1->GetName()));
