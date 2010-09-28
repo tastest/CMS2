@@ -1797,24 +1797,28 @@ RooDataSet* ScanChain( TChain* chain,
 
   int i_permille_old = 0;
   
+  jetcorr_filenames_jpt.clear();
   jetcorr_filenames_jpt.push_back("../../../CondFormats/JetMETObjects/data/Spring10_L2Relative_AK5JPT.txt");
   jetcorr_filenames_jpt.push_back("../../../CondFormats/JetMETObjects/data/Spring10_L3Absolute_AK5JPT.txt");
   if(realData)
     jetcorr_filenames_jpt.push_back("../../../CondFormats/JetMETObjects/data/Spring10DataV2_L2L3Residual_AK5JPT.txt");
   jet_corrector_jpt= makeJetCorrector(jetcorr_filenames_jpt);
   
+  jetcorr_filenames_pf.clear();
   jetcorr_filenames_pf.push_back("../../../CondFormats/JetMETObjects/data/Spring10_L2Relative_AK5PF.txt");
   jetcorr_filenames_pf.push_back("../../../CondFormats/JetMETObjects/data/Spring10_L3Absolute_AK5PF.txt");
   if(realData)
     jetcorr_filenames_pf.push_back("../../../CondFormats/JetMETObjects/data/Spring10DataV2_L2L3Residual_AK5PF.txt");
   jet_corrector_pf= makeJetCorrector(jetcorr_filenames_pf);
 
+  jetcorr_filenames_calo.clear();
   jetcorr_filenames_calo.push_back("../../../CondFormats/JetMETObjects/data/Spring10_L2Relative_AK5Calo.txt");
   jetcorr_filenames_calo.push_back("../../../CondFormats/JetMETObjects/data/Spring10_L3Absolute_AK5Calo.txt");
   if(realData)
     jetcorr_filenames_calo.push_back("../../../CondFormats/JetMETObjects/data/Spring10DataV2_L2L3Residual_AK5Calo.txt");
   jet_corrector_calo= makeJetCorrector(jetcorr_filenames_calo);
   
+  jetcorr_filenames_trk.clear();
   jetcorr_filenames_trk.push_back("../../../CondFormats/JetMETObjects/data/Spring10_L2Relative_AK5TRK.txt");
   jetcorr_filenames_trk.push_back("../../../CondFormats/JetMETObjects/data/Spring10_L3Absolute_AK5TRK.txt");
   jet_corrector_trk= makeJetCorrector(jetcorr_filenames_trk);
@@ -1864,8 +1868,7 @@ RooDataSet* ScanChain( TChain* chain,
 
 	 if (cms2.trks_d0().size() == 0) continue;  // needed to get rid of back Monte Carlo events in CMSSW_2_X analysis
 	 if (cms2.hyp_type().size() == 0) continue; // skip events without hypothesis
-	 EventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.evt_lumiBlock() , 0, 0, 0, 0}; 
-	 //, cms2.trks_d0()[0], cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
+	 EventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.evt_lumiBlock() , cms2.trks_d0()[0], cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
 	 if (is_duplicate(id)) {
 	   duplicates_total_n++;
 	   if(!realData) duplicates_total_weight += cms2.evt_scale1fb();
