@@ -305,7 +305,7 @@ TLegend* HistogramUtilities::getLegend(sources_t theSources, TString var, TStrin
                 h1_temp->SetFillColor(sources_[i].getColor());
                 h1_temp->SetLineColor(sources_[i].getColor());
             }
-            lg->AddEntry(h1_temp, sources_[i].getName(), "f");
+            lg->AddEntry(h1_temp, sources_[i].getLegendName(), "f");
         }
     }
     return lg;

@@ -49,16 +49,12 @@ enum {
 	H_TW      ,
 	H_WJETS   ,
     H_ZJETS ,
-	H_WJET_ALP,
-	H_ZEEJET_ALP,
-	H_ZMMJET_ALP,
-	H_ZTTJET_ALP,
 	H_MU15_SINGLE,
 
-	H_ELEGUNIDEAL,
-	H_ELEGUNSTARTUP,
 	H_DATA,
     H_MINBIAS,
+
+    H_LM0,
 };
 
 /*
@@ -142,15 +138,10 @@ DataSource fH_WJETS();
 DataSource fH_ZJETS();
 DataSource fH_TW();
 DataSource fH_QCD80();
-DataSource fH_WJET_ALP();
-DataSource fH_ZEEJET_ALP();
-DataSource fH_ZMMJET_ALP();
-DataSource fH_ZTTJET_ALP();
 DataSource fH_MU15_SINGLE();
 
+DataSource fH_LM0();
 
-DataSource fH_ELEGUNIDEAL();
-DataSource fH_ELEGUNSTARTUP();
 
 #endif
 
