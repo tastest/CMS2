@@ -167,12 +167,8 @@ std::pair<float,float> getMet(const string algo, unsigned int hypIdx) {
   if(algo == "tcMET_looper") {
 
     metStruct tcmetStruct = correctedTCMET();
-    float tcmet    = tcmetStruct.met;
-    float tcsumet  = tcmetStruct.sumet;
-    float tcmetphi = tcmetStruct.metphi;
-
-    float tcmetX = tcmet * cos( tcmetphi );
-    float tcmetY = tcmet * sin( tcmetphi );
+    float tcmetX = tcmetStruct.metx;
+    float tcmetY = tcmetStruct.mety;
     
     if(abs(hyp_lt_id()[hypIdx]) == 13)
       fixMetForThisMuon(hyp_lt_index().at(hypIdx), tcmetX, tcmetY, usingTcMet_looper);

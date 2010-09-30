@@ -1,6 +1,7 @@
 #ifndef METSELECTIONS_H
 #define METSELECTIONS_H
 
+typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 //
 // met selections
 //
@@ -72,6 +73,11 @@ metStruct correctTCMETforHypMuons (int hyp_index, float met_x, float met_y, floa
 // function to calculate latest tcMET
 //---------------------------------------------
 metStruct correctedTCMET(bool printout = false, ostream& ostr = std::cout);
+
+//---------------------------------------------
+//function to perform custom Type1 correction
+//---------------------------------------------
+metStruct customType1Met( float metx , float mety , float sumet  , VofP4 jets , vector<float> cors );
 
 #endif
 

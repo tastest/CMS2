@@ -10,7 +10,7 @@
 #include "metSelections.h"
 #include "Math/LorentzVector.h"
 
-
+typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 //---------------------------------------------
@@ -18,6 +18,34 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 //---------------------------------------------
 #include "tcmet/getTcmetFromCaloMet.icc"
 #include "tcmet/getResponseFunction_fit.icc"
+
+//----------------------------------------------------------
+//this function takes met, and performs a type1 correction
+//using the given jet collection and L2L3-corrections
+//----------------------------------------------------------
+
+metStruct customType1Met( float metx , float mety , float sumet  , VofP4 jets , vector<float> cors )
+{
+  
+  for( unsigned int i = 0 ; i < jets.size() ; ++i ){
+    LorentzVector vdiff = jets.at(i) * cors.at(i) - jets.at(i);
+    metx  -= vdiff.x();
+    mety  -= vdiff.y();
+    sumet += vdiff.pt();
+  }
+
+  metStruct myStruct;
+  myStruct.metx   = metx;
+  myStruct.mety   = mety;
+  myStruct.met    = sqrt( metx * metx + mety * mety );
+  myStruct.sumet  = sumet;
+  myStruct.metphi = atan2( mety , metx );
+
+  return myStruct;
+
+}
+
+
 metStruct correctedTCMET(bool printout, ostream& ostr) 
 {
      // static because we only want to get the response function once
