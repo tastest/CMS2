@@ -267,8 +267,10 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         id_    = 11*els_charge().at(iEl);
         tcmet_ = evt_tcmet();
         tcmetphi_ = evt_tcmetPhi();
-        mcid_       = els_mc_id().at(iEl);
-        mcmotherid_ = els_mc_motherid().at(iEl);
+        if (! isData) {
+            mcid_       = els_mc_id().at(iEl);
+            mcmotherid_ = els_mc_motherid().at(iEl);
+        }
     
         // do the 3 electron charges agree?
         int iCTF = els_trkidx().at(iEl);
@@ -489,8 +491,10 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         id_   = 13*mus_charge().at(iMu);
         tcmet_ = evt_tcmet();
         tcmetphi_ = evt_tcmetPhi();
-        mcid_       = mus_mc_id().at(iMu);
-        mcmotherid_ = mus_mc_motherid().at(iMu);
+        if (! isData) {
+            mcid_       = mus_mc_id().at(iMu);
+            mcmotherid_ = mus_mc_motherid().at(iMu);
+        }
 
         //
         num_    = muonId(iMu, NominalTTbarV2);
