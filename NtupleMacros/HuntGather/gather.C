@@ -322,7 +322,7 @@ TCanvas* DrawAll(const char *field, TCut sel, float intlumifb, unsigned int nbin
 
     static BabySample *bs_vvjets_dilep    = new BabySample("vvjets","/tas05/disk00/jribnik/huntmc/VVJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kvvjets,false,10,1001);
     static BabySample *bs_wjets_dilep     = new BabySample("wjets","/tas05/disk00/jribnik/huntmc/WJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kwjets,false,kGreen-3,1001);
-    static BabySample *bs_ztautau_dilep   = new BabySample("ztautau","/tas05/disk00/jribnik/huntmc/Ztautau_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","mass<50",kzll,false,kAzure+8,1001);
+    static BabySample *bs_ztautau_dilep   = new BabySample("ztautau","/tas05/disk00/jribnik/huntmc/Ztautau_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kzll,false,kAzure+8,1001);
 
     // Note that a common prefix means
     // a common histogram when used in
