@@ -151,7 +151,7 @@ void ossusy_looper::makeTree(char *prefix)
   rootdir->cd();
 
   //Super compressed ntuple here
-  outFile   = new TFile(Form("output/%s_smallTree.root",prefix), "RECREATE");
+  outFile   = new TFile(Form("output/V01-01/%s_smallTree.root",prefix), "RECREATE");
   outFile->cd();
   outTree = new TTree("t","Tree");
 
@@ -1259,12 +1259,15 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           }
                   
           if(nkcut(cutbit,ncut,2,3)){
-                    
-            fillHistos(hsumJetPt_tcmet,          sumjetpt_jets_p4 , tcmet,               weight, myType, nJetsIdx);
-            fillHistos(hsumJetPt_tcmetsqrtsumet, sumjetpt_jets_p4 , tcmet/sqrt(tcsumet), weight, myType, nJetsIdx);
-            fillHistos(hsumJetPt_tcmetsumet,     sumjetpt_jets_p4 , tcmet/tcsumet,       weight, myType, nJetsIdx);
+            
+            fillHistos( habcd_tprof_nopresel,   theSumJetPt , tcmet/sqrt(theSumJetPt),               myType, nJetsIdx);
+            fillHistos( habcd_nopresel,         theSumJetPt , tcmet/sqrt(theSumJetPt),               weight, myType, nJetsIdx);
 
-            fillHistos(hsumJetPt_tcmetsqrtsumet_prof, sumjetpt_jets_p4 , tcmet/sqrt(tcsumet), myType, nJetsIdx);
+            fillHistos(hsumJetPt_tcmet,          theSumJetPt , tcmet,               weight, myType, nJetsIdx);
+            fillHistos(hsumJetPt_tcmetsqrtsumet, theSumJetPt , tcmet/sqrt(tcsumet), weight, myType, nJetsIdx);
+            fillHistos(hsumJetPt_tcmetsumet,     theSumJetPt , tcmet/tcsumet,       weight, myType, nJetsIdx);
+
+            fillHistos(hsumJetPt_tcmetsqrtsumet_prof, theSumJetPt , tcmet/sqrt(tcsumet), myType, nJetsIdx);
             fillHistos(htcsumet_tcmet_prof,           tcsumet ,          tcmet,               myType, nJetsIdx);
             fillHistos(hgensumet_genmet_prof,         gensumet   ,       genmet,              myType, nJetsIdx);
 
@@ -1283,7 +1286,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
             }
 
             if(nkcut(cutbit,ncut,2,3)){
-              hsusy_met_sumjetpt[ getIndexFromM0(m0) ][ getIndexFromM12(m12)]->Fill(sumjetpt_jets_p4 , tcmet/sqrt(tcsumet), weight);
+              hsusy_met_sumjetpt[ getIndexFromM0(m0) ][ getIndexFromM12(m12)]->Fill(theSumJetPt , tcmet/sqrt(tcsumet), weight);
             }
           }
         
@@ -1303,14 +1306,18 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         hyield->Fill(0.5, weight);
         hyield->Fill(1.5+myType, weight);
 
+        fillHistos( habcd,         theSumJetPt , tcmet/sqrt(theSumJetPt),               weight, myType, nJetsIdx);
+        if( theSumJetPt > 150 && tcmet/sqrt(theSumJetPt) > 4.5 )
+          fillHistos( habcd_tprof,   theSumJetPt , tcmet/sqrt(theSumJetPt),               myType, nJetsIdx);
+
         fillHistos(hetaz, fabs(etaZ) , weight, myType, nJetsIdx);
         fillHistos(hmt2jcore, mt2jcore, weight, myType, nJetsIdx);
         fillHistos(hmt2core,  mt2core,  weight, myType, nJetsIdx);
         fillHistos(hmt2j, mt2j, weight, myType, nJetsIdx);
         fillHistos(hmt,   mt,   weight, myType, nJetsIdx);
         //fillHistos(hsumJetPt, sumjetpt_jets_p4, weight, myType, nJetsIdx);
-        fillHistos(hDtcmetgenmetVsumJetPt, sumjetpt_jets_p4, tcmet-genmet, weight, myType, nJetsIdx);
-        fillHistos(hDmetmuonjesgenmetVsumJetPt, sumjetpt_jets_p4, evt_metMuonJESCorr()-genmet, weight, myType, nJetsIdx);
+        fillHistos(hDtcmetgenmetVsumJetPt, theSumJetPt, tcmet-genmet, weight, myType, nJetsIdx);
+        fillHistos(hDmetmuonjesgenmetVsumJetPt, theSumJetPt, evt_metMuonJESCorr()-genmet, weight, myType, nJetsIdx);
         fillHistos(hmeffJet, meff_jets_p4, weight, myType, nJetsIdx);
         //fillHistos(hsumJptPt, sumjetpt_jpts_p4, weight, myType, nJetsIdx);
         fillHistos(hmeffJPT, meff_jpts_p4, weight, myType, nJetsIdx);
@@ -1604,6 +1611,7 @@ void ossusy_looper::BookHistos(char *prefix)
   hyield->GetXaxis()->SetBinLabel(2,"ee");
   hyield->GetXaxis()->SetBinLabel(3,"mm");
   hyield->GetXaxis()->SetBinLabel(4,"em");
+  hyield->Sumw2();
 
   char jetbins[5][7]    = {"0", "1", "2", "3", "#geq 4"};
   char suffixall[4][4]  = {"ee", "mm", "em", "all"};
@@ -1667,7 +1675,44 @@ void ossusy_looper::BookHistos(char *prefix)
             
       hmt[i][j]   = new TH1F(Form("%s_hmt_%s",prefix,suffix),
                              Form("%s_mt_%s" ,prefix,suffix),1000,0,5000);
+
+      habcd[i][j]   = new TH2F(Form("%s_habcd_%s",prefix,suffix),
+                               Form("%s_abcd_%s" ,prefix,suffix),1500,0,1500,300,0,30);
+
+      habcd_nopresel[i][j]   = new TH2F(Form("%s_habcd_nopresel_%s",prefix,suffix),
+                                        Form("%s_abcd_nopresel_%s" ,prefix,suffix),1500,0,1500,300,0,30);
+
+      
+      
+      Double_t xbins[66];
+
+      for( unsigned int ibin = 0 ; ibin < 51 ; ++ibin ) xbins[ibin]    = 10  * ibin;
+      for( unsigned int ibin = 0 ; ibin < 10 ; ++ibin ) xbins[ibin+51] = 50  * ibin + 550;
+      for( unsigned int ibin = 0 ; ibin <  5 ; ++ibin ) xbins[ibin+61] = 100 * ibin + 1100;
+
+      //for( int ibin = 0 ; ibin < 66 ; ++ibin) cout << xbins[ibin] << endl;
+      //exit(0);
+
+      //habcd_tprof[i][j]   = new TProfile(Form("%s_habcd_tprof_%s",prefix,suffix),
+      //                                   Form("%s_abcd_tprof_%s" ,prefix,suffix),150,0,1500,0,30);
+      habcd_tprof[i][j]   = new TProfile(Form("%s_habcd_tprof_%s",prefix,suffix),
+                                         Form("%s_abcd_tprof_%s" ,prefix,suffix),65,xbins,0,30);
+
+      habcd_tprof_nopresel[i][j]   = new TProfile(Form("%s_habcd_tprof_nopresel_%s",prefix,suffix),
+                                                  Form("%s_abcd_tprof_nopresel_%s" ,prefix,suffix),150,0,1500,0,30);
             
+      habcd[i][j]->GetXaxis()->SetTitle("sumJetPt (GeV)");
+      habcd[i][j]->GetYaxis()->SetTitle("tcmet/#sqrt{sumJetPt} (GeV^{1/2})");
+            
+      habcd_tprof[i][j]->GetXaxis()->SetTitle("sumJetPt (GeV)");
+      habcd_tprof[i][j]->GetYaxis()->SetTitle("tcmet/#sqrt{sumJetPt} (GeV^{1/2})");
+
+      habcd_nopresel[i][j]->GetXaxis()->SetTitle("sumJetPt (GeV)");
+      habcd_nopresel[i][j]->GetYaxis()->SetTitle("tcmet/#sqrt{sumJetPt} (GeV^{1/2})");
+            
+      habcd_tprof_nopresel[i][j]->GetXaxis()->SetTitle("sumJetPt (GeV)");
+      habcd_tprof_nopresel[i][j]->GetYaxis()->SetTitle("tcmet/#sqrt{sumJetPt} (GeV^{1/2})");
+      
       hmt2core[i][j] = new TH1F(Form("%s_hmt2core_%s",prefix,suffix),
                                 Form("%s_mt2core_%s" ,prefix,suffix),1000,0,1000);
   
@@ -1738,7 +1783,7 @@ void ossusy_looper::BookHistos(char *prefix)
       hDtcmetgenmetVsumJetPt[i][j] = new TH2F(Form("%s_hDtcmetgenmetVsumJetPt_%s",prefix,suffix),Form("%s_DtcmetgenmetVsumJetPt_%s",prefix,suffix),5,binedges1500,40,-50.,50.);
       hDmetmuonjesgenmetVsumJetPt[i][j] = new TH2F(Form("%s_hDmetmuonjesgenmetVsumJetPt_%s",prefix,suffix),Form("%s_DmetmuonjesgenmetVsumJetPt_%s",prefix,suffix),5,binedges1500,40,-50.,50.);
 
-      hsumJptPt[i][j] = new TH1F(Form("%s_hsumJptPt_%s",prefix,suffix),Form("%s_sumJptPt_%s",prefix,suffix),5,binedges1500);
+      hsumJptPt[i][j] = new TH1F(Form("%s_hsumJptPt_%s",prefix,suffix),Form("%s_sumJptPt_%s",prefix,suffix),200,0,2000);
       hmeffJPT[i][j] = new TH1F(Form("%s_hmeffJPT_%s",prefix,suffix),Form("%s_meffJPT_%s",prefix,suffix),5,binedges1500);
 
       hsumHypPt[i][j] = new TH1F(Form("%s_hsumHypPt_%s",prefix,suffix),Form("%s_sumHypPt_%s",prefix,suffix),5,binedges1500);

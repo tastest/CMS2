@@ -141,6 +141,10 @@ class ossusy_looper
         TH2F* hDmetmuonjesgenmetVsumJetPt[4][4];
         TH1F* hmeffJet[4][4];                // scalar sum jet pt + scalar sum dil pt + (tc)met
 
+        TH2F* habcd[4][4];                   
+        TProfile* habcd_tprof[4][4];                   
+        TH2F* habcd_nopresel[4][4];                   
+        TProfile* habcd_tprof_nopresel[4][4];                   
         TH1F* hsumJptPt[4][4];               // scalar sum JPT jet Et
         TH1F* hmeffJPT[4][4];                // scalar sum JPT jet pt + scalar sum dil pt + (tc)met
 
