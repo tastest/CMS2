@@ -21,12 +21,11 @@ addpkg JetMETCorrections/Configuration V03-00-05
 # inclusive secondary vertexing
 cvs co -r V02-01-00      RecoVertex/AdaptiveVertexFinder   
 
-# HLTConfigProvider hack
-addpkg HLTrigger/HLTcore
-patch HLTrigger/HLTcore/interface/HLTConfigProvider.h CMS2/Configuration/HLTConfigProvider_384patch3.patch
-
 echo;echo checkingdeps;echo
 
 # dont forget this
 checkdeps -a
 
+# HLTConfigProvider hack
+addpkg HLTrigger/HLTcore
+patch HLTrigger/HLTcore/interface/HLTConfigProvider.h CMS2/Configuration/HLTConfigProvider_384patch3.patch
