@@ -1,7 +1,7 @@
 #ifndef METSELECTIONS_H
 #define METSELECTIONS_H
 
-typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
+typedef std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 //
 // met selections
 //
@@ -77,7 +77,7 @@ metStruct correctedTCMET(bool printout = false, ostream& ostr = std::cout);
 //---------------------------------------------
 //function to perform custom Type1 correction
 //---------------------------------------------
-metStruct customType1Met( float metx , float mety , float sumet  , VofP4 jets , vector<float> cors );
+metStruct customType1Met( float metx , float mety , float sumet  , VofP4 jets , std::vector<float> cors );
 
 #endif
 
