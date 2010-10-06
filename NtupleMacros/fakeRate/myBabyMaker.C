@@ -110,7 +110,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
   // Set the JSON file
   if(isData){
-    set_goodrun_file_json("json/Cert_TopAug13_Merged_135059-142664.txt");
+    set_goodrun_file_json("json/Cert_TopOct6_Merged_135059-146729_allPVT_extra_146804-147116.txt");
+    //set_goodrun_file_json("json/Cert_TopAug13_Merged_135059-142664.txt");
   }
 
   // The deltaR requirement between objects and jets to remove the jet trigger dependence
@@ -246,8 +247,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         if (  (!v1_) && (!v2_) && (!v3_) && 
               (!v1SS_) && (!v2SS_) && (!v3SS_) && 
               (!v1Aug9_) && (!v2Aug9_) && (!v3Aug9_) &&
-              (!v1SSAug9_) && (!v2SSAug9_) && (!v3SSAug9_) 
-              (!v1SSOct6_) && (!v2SSOct6_) && (!v3SSOct6_) 
+              (!v1SSAug9_) && (!v2SSAug9_) && (!v3SSAug9_) &&
+              (!v1Oct6_) && (!v2Oct6_) && (!v3Oct6_) 
         ) continue;
         
         // If it is above 20 GeV see if we can make a 
