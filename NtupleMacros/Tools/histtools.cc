@@ -8,6 +8,10 @@ H cumulate (const H &in, bool increasing)
      H h_out(in.GetName() + TString("tmp"), in.GetTitle(), in.GetNbinsX(), 
 	     in.GetBinLowEdge(1), in.GetBinLowEdge(in.GetNbinsX() + 1));
      h_out.Sumw2();
+     h_out.SetFillColor(in.GetFillColor());
+     h_out.SetFillStyle(in.GetFillStyle());
+     h_out.SetLineStyle(in.GetLineStyle());
+     h_out.SetLineColor(in.GetLineColor());
      double sum = 0;
      double err2 = 0;
      if (increasing) {
