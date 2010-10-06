@@ -748,6 +748,14 @@ TH1F* helRelPatIsoFailId;  // electron relative iso (trk+ecal+hcal) PAT with wei
 TH1F* hCentralBquarkEtaAfterVeto;   
 TH1F* hForwardBquarkEtaAfterVeto;   
 
+TH2F* hPFJetResponse[4]; // absolute response to Z pt
+TH2F* hPFJetRelResponse[4]; // Relative response to Z pt
+
+TH2F* hPFJetResponseWithZero[4]; // absolute response to Z pt with 0 if no btb jet is found
+TH2F* hPFJetRelResponseWithZero[4]; // Relative response to Z pt with 0 if no btb jet is found
+
+TH2F* hPFJetResidualResponse; // absolute response to Z pt
+
 // fkw September 2008 final hist used for muon tags estimate of top bkg
 TH2F* hextramuonsvsnjet[4];
 
@@ -1043,7 +1051,8 @@ void find_most_energetic_jets(int i_hyp, double weight, bool realData, double et
       if ( cms2.pfjets_p4()[i].Et() * jec < pfJetMax ) continue;
       pfJetMax = cms2.pfjets_p4()[i].Et() * jec;
     }
-        
+
+    
     // Fill the jet Et histograms
     switch (jet ) {
     case ALLJET:
@@ -1091,24 +1100,7 @@ void find_most_energetic_jets(int i_hyp, double weight, bool realData, double et
     default:
       break;
     }
-
-    /*
-    // temporary
-    // Debug the anormalous events with large Jet Et in MM channel
-    if( jet == ALLJET && (jptMax > 80 || caloJetMax > 80 || pfJetMax > 80 || trkJetMax >80)) {
-      cout
-	<< "zStudy: Large JetEt found: "
-	<<"Run: "<< cms2.evt_run()
-	<<" LS: "<< cms2.evt_lumiBlock()
-	<<" Event: "<<cms2.evt_event()
-	<<" jptJet: "<<jptMax
-	<<" caloJet: "<<caloJetMax
-	<<" pfJet: "<<pfJetMax
-	<<" trkJet: "<<trkJetMax
-	<<std::endl;
-    }
-    */
-  }
+ }
 }  
 
 void extractFakeRateSingleLepton(){
@@ -1355,6 +1347,10 @@ void hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
       find_most_energetic_jets(i_hyp,weight,realData,0.0,5.0,ALLJET, applyJEC);
       find_most_energetic_jets(i_hyp,weight,realData,0.0,3.0,HCAL, applyJEC);
       find_most_energetic_jets(i_hyp,weight,realData,3.0,5.0,HF, applyJEC);
+      
+      if(zStudy) 
+	getJetResponseFromZBalance(i_hyp, weight, realData, 0.0, 5.0, applyJEC);
+      
   }
 
   // 2D hist for muon tag counting
@@ -1644,6 +1640,15 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hmaxCaloTrkJetEtHF[i]  = new TH1F(Form("%s_hmaxCaloTrkJetEtHF_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (average of Calo + Trk Jets) JetVeto NM1", 11,jetEtbins);
     hmaxCaloTrkJet2EtHF[i]  = new TH1F(Form("%s_hmaxCaloTrkJet2EtHF_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (Max of Calo + Trk Jets) JetVeto NM1", 11,jetEtbins);
     hmaxPFJetEtHF[i]  = new TH1F(Form("%s_hmaxPFJetEtHF_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (PFJet) JetVeto NM1", 11,jetEtbins);
+   
+    hPFJetResponse[i] = new TH2F(Form("%s_hPFJetResponse_%s",prefix,HypothesisTypeName(i) ), Form("%s - PFJet response to Z pt - %s",prefix,HypothesisTypeName(i) ), 11, jetEtbins, 11, jetEtbins);
+    hPFJetRelResponse[i] = new TH2F(Form("%s_hPFJetRelResponse_%s",prefix,HypothesisTypeName(i) ), Form("%s - PFJet relative response to Z pt - %s",prefix,HypothesisTypeName(i) ), 20, 0, 100, 20, 0, 2);
+
+    hPFJetResponseWithZero[i] = new TH2F(Form("%s_hPFJetResponseWithZero_%s",prefix,HypothesisTypeName(i) ), Form("%s - PFJet response to Z pt - %s",prefix,HypothesisTypeName(i) ), 11, jetEtbins, 11, jetEtbins);
+    hPFJetRelResponseWithZero[i] = new TH2F(Form("%s_hPFJetRelResponseWithZero_%s",prefix,HypothesisTypeName(i) ), Form("%s - PFJet relative response to Z pt - %s",prefix,HypothesisTypeName(i) ), 20, 0, 100, 20, 0, 2);
+
+
+
 
     hnJet[i]->Sumw2();
     helePt[i]->Sumw2();
@@ -1691,6 +1696,12 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hmaxPFJetEtHF[i]->Sumw2();
     hmaxCaloTrkJetEtHF[i]->Sumw2();
     hmaxCaloTrkJet2EtHF[i]->Sumw2();
+
+    hPFJetResponse[i]->Sumw2();
+    hPFJetRelResponse[i]->Sumw2();
+    hPFJetResponseWithZero[i]->Sumw2();
+    hPFJetRelResponseWithZero[i]->Sumw2();
+
   }
   
   helTrkIsoPassId = new TH1F(Form("%s_helTrkIsoPassId",prefix),        Form("%s - electron trk isolation passed robust el id",prefix),  100, 0., 20.);
@@ -1760,6 +1771,8 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hIsoSingleElectron->Sumw2();
   }
 
+  hPFJetResidualResponse = new TH2F(Form("%s_hPFJetResidualResponse",prefix), Form("%s - PFJet Residual Correction",prefix), 20, 10, 50, 20, 0, 2);
+  hPFJetResidualResponse->Sumw2();
 
 }
 
@@ -1803,7 +1816,7 @@ RooDataSet* ScanChain( TChain* chain,
   if(realData)
     jetcorr_filenames_jpt.push_back("../../../CondFormats/JetMETObjects/data/Spring10DataV2_L2L3Residual_AK5JPT.txt");
   jet_corrector_jpt= makeJetCorrector(jetcorr_filenames_jpt);
-  
+
   jetcorr_filenames_pf.clear();
   jetcorr_filenames_pf.push_back("../../../CondFormats/JetMETObjects/data/Spring10_L2Relative_AK5PF.txt");
   jetcorr_filenames_pf.push_back("../../../CondFormats/JetMETObjects/data/Spring10_L3Absolute_AK5PF.txt");
@@ -1868,7 +1881,7 @@ RooDataSet* ScanChain( TChain* chain,
 
 	 if (cms2.trks_d0().size() == 0) continue;  // needed to get rid of back Monte Carlo events in CMSSW_2_X analysis
 	 if (cms2.hyp_type().size() == 0) continue; // skip events without hypothesis
-	 EventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.evt_lumiBlock() , cms2.trks_d0()[0], cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
+	 EventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.evt_lumiBlock(), cms2.trks_d0()[0], cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
 	 if (is_duplicate(id)) {
 	   duplicates_total_n++;
 	   if(!realData) duplicates_total_weight += cms2.evt_scale1fb();
@@ -2217,3 +2230,77 @@ unsigned int bestZHyp()
   return i_hyp_bestZ;
 }
 
+
+void getJetResponseFromZBalance(int i_hyp,  double weight, bool realData, double etaMin, double etaMax, bool applyJEC) 
+{ 
+  HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
+  double vetoCone = 0.3;
+  double jec = 1.0;
+  double pfJetMax(0.);
+  int pfJetMaxIndex (-1);
+  
+  for ( unsigned int i=0; i < cms2.pfjets_p4().size(); ++i) {
+    if ( TMath::Abs(cms2.pfjets_p4()[i].eta()) > etaMax ) continue;
+    if ( TMath::Abs(cms2.pfjets_p4()[i].eta()) < etaMin ) continue;
+    if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ||
+	 TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
+    if(applyJEC)
+      jec = jetCorrection(cms2.pfjets_p4()[i], jet_corrector_pf);
+    if ( cms2.pfjets_p4()[i].Et() * jec < pfJetMax ) continue;
+    pfJetMax = cms2.pfjets_p4()[i].Et() * jec;
+    pfJetMaxIndex = i;
+    
+    if(realData) 
+      hPFJetResidualResponse->Fill( cms2.pfjets_p4()[i].Et()*cms2.pfjets_cor()[i], jetCorrection(cms2.pfjets_p4()[i], jet_corrector_pf)/ cms2.pfjets_cor()[i], weight);
+  }
+
+  if(pfJetMaxIndex == -1) return;
+
+  // apply the Z+1jet selection
+  bool zPlusOneJet = true;
+  double secJetMax = 10;
+ 
+  // require the leading jet to be back-to-back with the Z
+  if ( TMath::ACos(-1.0* TMath::Cos(cms2.hyp_p4()[i_hyp].phi() - cms2.pfjets_p4()[pfJetMaxIndex].phi())) > 0.2 ) zPlusOneJet = false;
+  // require no second jet above secJetMax
+  for ( int i=0; i < (int) cms2.pfjets_p4().size(); ++i) {
+    if(i == pfJetMaxIndex) continue;
+    jec = 1.0;
+    if(applyJEC)
+      jec = jetCorrection(cms2.pfjets_p4()[i], jet_corrector_pf);
+    if ( TMath::Abs(cms2.pfjets_p4()[i].eta()) > etaMax ) continue;
+    if ( TMath::Abs(cms2.pfjets_p4()[i].eta()) < etaMin ) continue;
+    if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ||
+	 TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
+    if (cms2.pfjets_p4()[i].Et() * jec > TMath::Max(secJetMax, cms2.pfjets_p4()[i].Et()*jec*0.2) ) {
+      zPlusOneJet = false;
+    }
+  }
+
+  if (zPlusOneJet) {
+    jec = 1.0;
+    if(applyJEC)
+      jec =  jetCorrection(cms2.pfjets_p4()[pfJetMaxIndex], jet_corrector_pf);
+    
+    hPFJetResponse[type]->Fill( cms2.hyp_p4()[i_hyp].pt(), cms2.pfjets_p4()[pfJetMaxIndex].Et()*jec, weight);
+    hPFJetResponse[3]->Fill( cms2.hyp_p4()[i_hyp].pt(), cms2.pfjets_p4()[pfJetMaxIndex].Et()*jec, weight);
+    
+    hPFJetRelResponse[type]->Fill( cms2.hyp_p4()[i_hyp].pt(), cms2.pfjets_p4()[pfJetMaxIndex].Et()*jec/cms2.hyp_p4()[i_hyp].pt(), weight);
+    hPFJetRelResponse[3]->Fill( cms2.hyp_p4()[i_hyp].pt(), cms2.pfjets_p4()[pfJetMaxIndex].Et()*jec/cms2.hyp_p4()[i_hyp].pt(), weight);
+    
+    hPFJetResponseWithZero[type]->Fill( cms2.hyp_p4()[i_hyp].pt(), cms2.pfjets_p4()[pfJetMaxIndex].Et()*jec, weight);
+    hPFJetResponseWithZero[3]->Fill( cms2.hyp_p4()[i_hyp].pt(), cms2.pfjets_p4()[pfJetMaxIndex].Et()*jec, weight);
+    
+    hPFJetRelResponseWithZero[type]->Fill( cms2.hyp_p4()[i_hyp].pt(), cms2.pfjets_p4()[pfJetMaxIndex].Et()*jec/cms2.hyp_p4()[i_hyp].pt(), weight);
+    hPFJetRelResponseWithZero[3]->Fill( cms2.hyp_p4()[i_hyp].pt(), cms2.pfjets_p4()[pfJetMaxIndex].Et()*jec/cms2.hyp_p4()[i_hyp].pt(), weight);
+  }
+  
+  else {
+    hPFJetResponseWithZero[type]->Fill( cms2.hyp_p4()[i_hyp].pt(), 0.0, weight);
+    hPFJetResponseWithZero[3]->Fill( cms2.hyp_p4()[i_hyp].pt(), 0.0, weight);
+    
+    hPFJetRelResponseWithZero[type]->Fill( cms2.hyp_p4()[i_hyp].pt(), 0.0, weight);
+    hPFJetRelResponseWithZero[3]->Fill( cms2.hyp_p4()[i_hyp].pt(), 0.0, weight);
+  }
+ }
+				

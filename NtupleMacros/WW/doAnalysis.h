@@ -140,6 +140,10 @@ void getIsolationSidebandsAfterSelections(int i_hyp,
 
 enum jetregion { HCAL, HF, ALLJET};
 void find_most_energetic_jets(int i_hyp, double weight, bool realData, double etaMin, double etaMax, jetregion jet, bool applyJEC);
+
+void getJetResponseFromZBalance(int i_hyp, double weight, bool realData, double etaMin, double etaMax, bool applyJEC);
+
+				
 unsigned int bestZHyp();
 void hypo (int i_hyp, double weight, RooDataSet* dataset = 0, bool zStudy = false, bool realData = false ); 
 
