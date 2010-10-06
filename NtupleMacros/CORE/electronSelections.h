@@ -270,6 +270,25 @@ static const cuts_t electronSelection_ttbarV1 =
   (1ll<<ELEPT_010) |
   (1ll<<ELEETA_250) |
   (1ll<<ELESEED_ECAL);
+
+//---------------------------------------------------------
+// TTBarV1 selection with VBTF90 ID for pass5 TTbar selections
+// Only difference here is that SC Et goes from 10 to 15
+// When pass_electronSelection is called, you need to remove the 
+// alignment correction and NOT remove the dEta cut in the endcaps
+// if running on 38X data
+//---------------------------------------------------------
+static const cuts_t electronSelection_ttbarV1_pass5 =
+  (1ll<<ELEID_VBTF_35X_90) |
+  (1ll<<ELEIP_400) |										
+  (1ll<<ELEISO_REL015) |
+  (1ll<<ELENOMUON_010) |
+  (1ll<<ELENOTCONV_HITPATTERN) |
+  (1ll<<ELENOTCONV_DISTDCOT002) |
+  (1ll<<ELESCET_015) |
+  (1ll<<ELEPT_010) |
+  (1ll<<ELEETA_250) |
+  (1ll<<ELESEED_ECAL);
 //---------------------------------------------------------
 // TTBarV1 fakeable object definition v1
 // extrapolating in isolation and id
