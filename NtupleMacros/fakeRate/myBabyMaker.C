@@ -217,6 +217,12 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         v2SSAug9_  = pass_electronSelection(iEl, electronSelectionFO_ssVBTF80_v2, isData, true);
         v3SSAug9_  = pass_electronSelection(iEl, electronSelectionFO_ssVBTF80_v3, isData, true);
 
+	numOct6_ = pass_electronSelection( iEl, electronSelection_ttbarV1_pass5);
+	v1Oct6_  = v1_;
+	v2Oct6_  = v2_;
+	v3Oct6_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v3);
+
+
 
         // Sanity
         if (num_ && (!v1_)) cout << "bad v1" << endl;
@@ -231,12 +237,17 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         if (numAug9_ && (!v2Aug9_)) cout << "bad v2" << endl;
         if (numAug9_ && (!v3Aug9_)) cout << "bad v3" << endl;
 
+        if (numOct6_ && (!v1Oct6_)) cout << "bad v1" << endl;
+        if (numOct6_ && (!v2Oct6_)) cout << "bad v2" << endl;
+        if (numOct6_ && (!v3Oct6_)) cout << "bad v3" << endl;
+
 
         // If there is no v1/v2/v3 lepton quit
         if (  (!v1_) && (!v2_) && (!v3_) && 
               (!v1SS_) && (!v2SS_) && (!v3SS_) && 
               (!v1Aug9_) && (!v2Aug9_) && (!v3Aug9_) &&
               (!v1SSAug9_) && (!v2SSAug9_) && (!v3SSAug9_) 
+              (!v1SSOct6_) && (!v2SSOct6_) && (!v3SSOct6_) 
         ) continue;
         
         // If it is above 20 GeV see if we can make a 
@@ -676,6 +687,11 @@ void myBabyMaker::InitBabyNtuple () {
   v2Aug9_  = false;
   v3Aug9_  = false;
 
+  numOct6_ = false;
+  v1Oct6_  = false;
+  v2Oct6_  = false;
+  v3Oct6_  = false;
+
   //
   ph10_ = 0;
   ph15_ = 0;
@@ -792,6 +808,11 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("v2Aug9",         &v2Aug9_,        "v2Aug9/O"      );
     babyTree_->Branch("v3Aug9",         &v3Aug9_,        "v3Aug9/O"      );
     babyTree_->Branch("numAug9",         &numAug9_,        "numAug9/O"      );
+
+    babyTree_->Branch("v1Oct6",         &v1Oct6_,        "v1Oct6/O"      );
+    babyTree_->Branch("v2Oct6",         &v2Oct6_,        "v2Oct6/O"      );
+    babyTree_->Branch("v3Oct6",         &v3Oct6_,        "v3Oct6/O"      );
+    babyTree_->Branch("numOct6",         &numOct6_,        "numOct6/O"      );
 
     //
     babyTree_->Branch("ph10",       &ph10_,       "ph10/I"      );

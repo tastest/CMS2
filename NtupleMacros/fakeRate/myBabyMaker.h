@@ -78,6 +78,13 @@ class myBabyMaker
   Bool_t numAug9_; // (electronSelection_ttbarV1, isData, true) && (!isSpikeElectron(iEl)) (ele)
                    // NominalTTbarV2 (muons)
 
+
+  Bool_t numOct6_; // not filled for muons; electronSelection_ttbarV1_pass5 (for ele)
+  Bool_t v1Oct6_;  // identical to v1_
+  Bool_t v2Oct6_;  // identical to v2_
+  Bool_t v3Oct6_;  // electronSelectionFO_el_ttbarV1_v3
+
+
   Bool_t fo_04_;  // muonSelectionFO_mu_ttbar
   Bool_t fo_10_;  // muonSelectionFO_mu_ttbar_iso10
 
