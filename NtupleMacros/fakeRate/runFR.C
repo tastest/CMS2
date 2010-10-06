@@ -6,7 +6,7 @@ gROOT->LoadMacro("myBabyMaker.C++");
 // Data
 
   // EG
-  TChain *chain1 = ChainFromText( "input_data/eg_ucsd.txt" );
+  TChain *chain1 = ChainFromText( "input_data/eg_uaf.txt" );
   myBabyMaker * baby1 = new myBabyMaker();
   baby1->ScanChain(chain1, "EG.root", true, -1);
 

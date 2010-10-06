@@ -78,6 +78,13 @@ class myBabyMaker
   Bool_t numAug9_; // (electronSelection_ttbarV1, isData, true) && (!isSpikeElectron(iEl)) (ele)
                    // NominalTTbarV2 (muons)
 
+
+  Bool_t numOct6_; // not filled for muons; electronSelection_ttbarV1_pass5 (for ele)
+  Bool_t v1Oct6_;  // identical to v1_
+  Bool_t v2Oct6_;  // identical to v2_
+  Bool_t v3Oct6_;  // electronSelectionFO_el_ttbarV1_v3
+
+
   Bool_t fo_04_;  // muonSelectionFO_mu_ttbar
   Bool_t fo_10_;  // muonSelectionFO_mu_ttbar_iso10
 
@@ -152,12 +159,20 @@ class myBabyMaker
   Float_t ptj1_b2b_;    // highest pt jet away frmo lepton by dR >= 1.0 and dPhi > 2.5
   Float_t dphij1_b2b_;  // dphi between lepton and jet for jets away from lepton by dR >= 1.0
   Int_t   nj1_;         // number of jets above 10 GeV and away from lepton by dR >= 1.0
+  Float_t ptpfj1_;        // highest pt pfjet well separated from the lepton
+  Float_t ptpfj1_b2b_;    // highest pt pfjet away frmo lepton by dR >= 1.0 and dPhi > 2.5
+  Float_t dphipfj1_b2b_;  // dphi between lepton and pfjet for pfjets away from lepton by dR >= 1.0
+  Int_t   npfj1_;         // number of pfjets above 10 GeV and away from lepton by dR >= 1.0
 
   // transverse W mass
   Float_t mt_;
 
   // do the 3 electron charges agree?
   Bool_t q3_;
+
+  //Some MC informatio added 16 Sep 2010
+  Int_t mcid_;        // els_mc_id or mus_mc_id
+  Int_t mcmotherid_;  // els_mc_motherid or mus_mc_motherid
 
 };
 

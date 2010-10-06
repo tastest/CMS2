@@ -10,7 +10,7 @@
 #include "metSelections.h"
 #include "Math/LorentzVector.h"
 
-
+typedef std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 //---------------------------------------------
@@ -18,6 +18,34 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 //---------------------------------------------
 #include "tcmet/getTcmetFromCaloMet.icc"
 #include "tcmet/getResponseFunction_fit.icc"
+
+//----------------------------------------------------------
+//this function takes met, and performs a type1 correction
+//using the given jet collection and L2L3-corrections
+//----------------------------------------------------------
+
+metStruct customType1Met( float metx , float mety , float sumet  , VofP4 jets , vector<float> cors )
+{
+  
+  for( unsigned int i = 0 ; i < jets.size() ; ++i ){
+    LorentzVector vdiff = jets.at(i) * cors.at(i) - jets.at(i);
+    metx  -= vdiff.x();
+    mety  -= vdiff.y();
+    sumet += vdiff.pt();
+  }
+
+  metStruct myStruct;
+  myStruct.metx   = metx;
+  myStruct.mety   = mety;
+  myStruct.met    = sqrt( metx * metx + mety * mety );
+  myStruct.sumet  = sumet;
+  myStruct.metphi = atan2( mety , metx );
+
+  return myStruct;
+
+}
+
+
 metStruct correctedTCMET(bool printout, ostream& ostr) 
 {
      // static because we only want to get the response function once
@@ -34,6 +62,10 @@ bool wasMetCorrectedForThisMuon(int imu, whichMetType type) {
   switch(type) {
   case usingTcMet:
       if (cms2.mus_tcmet_flag().at(imu) == 0 || 
+          cms2.mus_tcmet_flag().at(imu) == 4) answer = false;
+      break;
+  case usingTcMet_looper:
+      if (cms2.mus_tcmet_flag().at(imu) == 0 || cms2.mus_ptErr()[imu] / cms2.mus_p4()[imu].pt() > 1 ||
           cms2.mus_tcmet_flag().at(imu) == 4) answer = false;
       break;
   case usingTcMet35X:
@@ -61,6 +93,18 @@ void fixMetForThisMuon(int imu, float& metX, float& metY, whichMetType type) {
 
       case usingTcMet:
 	if (cms2.mus_tcmet_flag()[imu] == 0) {//not corrected
+	  metX += cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x();
+	  metY += cms2.mus_met_deltay()[imu] - cms2.mus_p4()[imu].y();
+	} else if (cms2.mus_tcmet_flag()[imu] == 4) {
+	     metX += - cms2.mus_tcmet_deltax()[imu] + cms2.trks_trk_p4()[cms2.mus_trkidx()[imu]].px() // undo the pion correction
+		  + cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x(); // perform the muon correction
+	     metY += - cms2.mus_tcmet_deltay()[imu] + cms2.trks_trk_p4()[cms2.mus_trkidx()[imu]].py() // undo the pion correction
+		  + cms2.mus_met_deltay()[imu] - cms2.mus_p4()[imu].y(); // perform the muon correction
+	}
+	break;
+
+      case usingTcMet_looper:
+  	if (cms2.mus_tcmet_flag()[imu] == 0 || cms2.mus_ptErr()[imu] / cms2.mus_p4()[imu].pt() > 1) {//not corrected
 	  metX += cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x();
 	  metY += cms2.mus_met_deltay()[imu] - cms2.mus_p4()[imu].y();
 	} else if (cms2.mus_tcmet_flag()[imu] == 4) {
@@ -104,6 +148,21 @@ void fixMetForThisMuon(int imu, float& metX, float& metY, float& sumET, whichMet
 
       case usingTcMet:
 	if (cms2.mus_tcmet_flag()[imu] == 0) {
+	  metX += cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x();
+	  metY += cms2.mus_met_deltay()[imu] - cms2.mus_p4()[imu].y();
+	  sumET -= sqrt(cms2.mus_met_deltax()[imu] * cms2.mus_met_deltax()[imu] + cms2.mus_met_deltay()[imu] * cms2.mus_met_deltay()[imu]) - cms2.mus_p4()[imu].pt(); 
+	} else if (cms2.mus_tcmet_flag()[imu] == 4) {
+	     metX += - cms2.mus_tcmet_deltax()[imu] + cms2.trks_trk_p4()[cms2.mus_trkidx()[imu]].px() // undo the pion correction
+		  + cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x(); // perform the muon correction
+	     metY += - cms2.mus_tcmet_deltay()[imu] + cms2.trks_trk_p4()[cms2.mus_trkidx()[imu]].py() // undo the pion correction
+		  + cms2.mus_met_deltay()[imu] - cms2.mus_p4()[imu].y(); // perform the muon correction
+	     sumET -= sqrt(cms2.mus_met_deltax()[imu] * cms2.mus_met_deltax()[imu] + cms2.mus_met_deltay()[imu] * cms2.mus_met_deltay()[imu]) - cms2.mus_p4()[imu].pt()
+		  + sqrt(cms2.mus_tcmet_deltax()[imu] * cms2.mus_tcmet_deltax()[imu] + cms2.mus_tcmet_deltay()[imu] * cms2.mus_tcmet_deltay()[imu]) + cms2.trks_trk_p4()[cms2.mus_trkidx()[imu]].pt();
+	}
+	break;
+
+     case usingTcMet_looper:
+	if (cms2.mus_tcmet_flag()[imu] == 0 || cms2.mus_ptErr()[imu] / cms2.mus_p4()[imu].pt() > 1) {
 	  metX += cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x();
 	  metY += cms2.mus_met_deltay()[imu] - cms2.mus_p4()[imu].y();
 	  sumET -= sqrt(cms2.mus_met_deltax()[imu] * cms2.mus_met_deltax()[imu] + cms2.mus_met_deltay()[imu] * cms2.mus_met_deltay()[imu]) - cms2.mus_p4()[imu].pt(); 

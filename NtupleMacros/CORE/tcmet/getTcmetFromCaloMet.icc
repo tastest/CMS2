@@ -25,7 +25,7 @@ inline double fround(double n, double d){
   return floor(n * pow(10., d) + .5) / pow(10., d);
 }
 
-void printMet(string label, float tcmet_x_pre, float tcmet_y_pre, float tcmet_x , float tcmet_y , float tcsumet, ostream& ostr, int index = -1){
+void printMet(string label, float tcmet_x_pre, float tcmet_y_pre, float tcmet_x , float tcmet_y , float tcsumet, ostream& ostr, int index = -1, int muindex = -1){
  
   double ndec = 2.;
   
@@ -43,7 +43,22 @@ void printMet(string label, float tcmet_x_pre, float tcmet_y_pre, float tcmet_x 
     d0vtx   = trks_d0vtx().at(index);
   }
 
+  int   flag     = -1;
+  float globalpt = 0.;
+  float delx     = 0.;
+  float dely     = 0.;
+
+  if( muindex > -1 ){
+    flag      = mus_tcmet_flag().at(muindex);
+    globalpt  = mus_gfit_p4().at(muindex).pt();
+    delx      = mus_met_deltax().at(muindex);
+    dely      = mus_met_deltay().at(muindex);
+  }
+
   ostr << "|" << setw(12) << label                                            << setw(4)
+       << "|" << setw(8)  << flag                                             << setw(4)
+       << "|" << setw(8)  << delx                                             << setw(4)
+       << "|" << setw(8)  << dely                                             << setw(4)
        << "|" << setw(8)  << fround(tcmet_x - tcmet_x_pre,ndec)               << setw(4)
        << "|" << setw(8)  << fround(tcmet_y - tcmet_y_pre,ndec)               << setw(4)
        << "|" << setw(8)  << fround(tcmet_x,ndec)                             << setw(4)
@@ -52,6 +67,7 @@ void printMet(string label, float tcmet_x_pre, float tcmet_y_pre, float tcmet_x 
        << "|" << setw(8)  << fround(atan2(tcmet_y,tcmet_x),ndec)              << setw(4)       
        << "|" << setw(8)  << fround(tcsumet,ndec)                             << setw(4) 
        << "|" << setw(8)  << fround(pt,ndec)                                  << setw(4) 
+       << "|" << setw(8)  << fround(globalpt,ndec)                            << setw(4) 
        << "|" << setw(8)  << fround(phi,ndec)                                 << setw(4) 
        << "|" << setw(8)  << fround(eta,ndec)                                 << setw(4) 
        << "|" << setw(8)  << fround(d0corr,ndec)                              << setw(4)
@@ -66,6 +82,9 @@ void printHeader(ostream& ostr){
   ostr << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
 
   ostr << "|" << setw(12) << "label"   << setw(4)
+       << "|" << setw(8)  << "flag"    << setw(4)
+       << "|" << setw(8)  << "mudelx"  << setw(4)
+       << "|" << setw(8)  << "mudely"  << setw(4)
        << "|" << setw(8)  << "deltax"  << setw(4)
        << "|" << setw(8)  << "deltay"  << setw(4)
        << "|" << setw(8)  << "metx"    << setw(4)
@@ -74,6 +93,7 @@ void printHeader(ostream& ostr){
        << "|" << setw(8)  << "metphi"  << setw(4)
        << "|" << setw(8)  << "sumet"   << setw(4) 
        << "|" << setw(8)  << "pT"      << setw(4) 
+       << "|" << setw(8)  << "gpT"     << setw(4) 
        << "|" << setw(8)  << "phi"     << setw(4)
        << "|" << setw(8)  << "eta"     << setw(4)
        << "|" << setw(8)  << "d0corr"  << setw(4)
@@ -130,7 +150,7 @@ metStruct getTcmetFromCaloMet (TH2F* rf, bool printout, ostream& ostr)
 	       if(mus_gfit_validSTAHits().at(i) > 0) {
 		    correctMETforMuon  ( mus_gfit_p4().at(i), i );
 		    correctSumEtForMuon( mus_gfit_p4().at(i), i );
-                    if(printout_)       printMet("Muon",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr,mus_trkidx().at(i));
+                    if(printout_)       printMet("Muon",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr,mus_trkidx().at(i),i);
 	       }
       
 	       else if(isGoodTrack( mus_trkidx().at(i) )) {
@@ -144,7 +164,7 @@ metStruct getTcmetFromCaloMet (TH2F* rf, bool printout, ostream& ostr)
 	       if(mus_gfit_validSTAHits().at(i) > 0) {
 		    correctMETforMuon  ( mus_trk_p4().at(i), i );
 		    correctSumEtForMuon( mus_trk_p4().at(i), i );
-                    if(printout_)       printMet("Muon",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr,mus_trkidx().at(i));
+                    if(printout_)       printMet("Muon",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr,mus_trkidx().at(i),i);
 	       }
       
 	       else if(isGoodTrack( mus_trkidx().at(i) )) {
@@ -158,13 +178,13 @@ metStruct getTcmetFromCaloMet (TH2F* rf, bool printout, ostream& ostr)
 	       if(mus_gfit_validSTAHits().at(i) > 0) {
 		    correctMETforMuon  ( mus_p4().at(i), i );
 		    correctSumEtForMuon( mus_p4().at(i), i );
-                    if(printout_)       printMet("Muon",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr,mus_trkidx().at(i));
+                    if(printout_)       printMet("Muon",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr,mus_trkidx().at(i),i);
 	       }
 
 	       else if(isGoodTrack( mus_trkidx().at(i) )) {
 		    correctMETforPion  ( mus_trkidx().at(i) , rf);
 		    correctSumEtForPion( mus_trkidx().at(i) , rf);
-                    if(printout_)       printMet("Pion",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr,mus_trkidx().at(i));
+                    if(printout_)       printMet("Pion",tcmet_x_pre,tcmet_y_pre,tcmet_x,tcmet_y,tcsumet,ostr,mus_trkidx().at(i),i);
 	       }
 	  }
 	  else if( flag == 4 ) {
