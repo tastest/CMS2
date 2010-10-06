@@ -149,6 +149,7 @@ bool sortByPt(const LorentzVector &vec1,
     return vec1.pt() > vec2.pt();
 }
 
+/*
 // this is a workaround for not having unique event id's in MC
 class DorkyEvent
 {
@@ -199,13 +200,14 @@ class DorkyEventIdentifier
 
             if (! ret.second) {
                 duplicates_total_n++;
-                duplicates_total_weight += cms2.evt_scale1fb();
-                cout << "Duplicate event found. Run: " << ret.first->run() << ", Lumi: " << ret.first->lumi() << ", Event: " << ret.first->event() << endl;
-                cout.precision(10);
-                cout << "\td0:\t"  << ret.first->trks_d0()  << endl;
-                cout << "\tpt:\t"  << ret.first->trks_pt()  << endl;
-                cout << "\teta:\t" << ret.first->trks_eta() << endl;
-                cout << "\tphi:\t" << ret.first->trks_phi() << endl;
+                //duplicates_total_weight += cms2.evt_scale1fb();
+                duplicates_total_weight += 1;
+                //cout << "Duplicate event found. Run: " << ret.first->run() << ", Lumi: " << ret.first->lumi() << ", Event: " << ret.first->event() << endl;
+                //cout.precision(10);
+                //cout << "\td0:\t"  << ret.first->trks_d0()  << endl;
+                //cout << "\tpt:\t"  << ret.first->trks_pt()  << endl;
+                //cout << "\teta:\t" << ret.first->trks_eta() << endl;
+                //cout << "\tphi:\t" << ret.first->trks_phi() << endl;
             }
 
             return ! ret.second;
@@ -258,6 +260,9 @@ bool DorkyEvent::operator == (const DorkyEvent &other) const
         return false;
     return true;
 }
+<<<<<<< utilities.cc
+*/
+
 
 //this function reads in a list of events from a text file
 //and checks if the current event is present in the list
@@ -330,3 +335,4 @@ private:
   int templumi;
   int tempevent;
 };
+

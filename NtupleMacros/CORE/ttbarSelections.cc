@@ -145,7 +145,7 @@ bool isGoodDilHypJet(LorentzVector jetp4, unsigned int& hypIdx, double ptCut, do
 /******************************************************************************************/     
 std::pair<float,float> getMet(const string algo, unsigned int hypIdx) {
   
-  if(algo != "tcMET" && algo != "muCorMET" && algo != "pfMET" && algo != "tcMET35X") {
+  if(algo != "tcMET" && algo != "muCorMET" && algo != "pfMET" && algo != "tcMET35X" && algo != "tcMET_looper") {
     cout << algo << "IS NOT A RECOGNIZED MET ALGORITHM!!!!! PLEASE CHECK YOUR CODE!!!";
     return make_pair(-99999., -99999.);
   }
@@ -160,6 +160,20 @@ std::pair<float,float> getMet(const string algo, unsigned int hypIdx) {
       fixMetForThisMuon(hyp_lt_index().at(hypIdx), tcmetX, tcmetY, usingTcMet);
     if(abs(hyp_ll_id()[hypIdx]) == 13)
       fixMetForThisMuon(hyp_ll_index().at(hypIdx), tcmetX, tcmetY, usingTcMet);
+    
+    return make_pair(sqrt(tcmetX*tcmetX + tcmetY*tcmetY), atan2(tcmetY, tcmetX));
+  }
+
+  if(algo == "tcMET_looper") {
+
+    metStruct tcmetStruct = correctedTCMET();
+    float tcmetX = tcmetStruct.metx;
+    float tcmetY = tcmetStruct.mety;
+    
+    if(abs(hyp_lt_id()[hypIdx]) == 13)
+      fixMetForThisMuon(hyp_lt_index().at(hypIdx), tcmetX, tcmetY, usingTcMet_looper);
+    if(abs(hyp_ll_id()[hypIdx]) == 13)
+      fixMetForThisMuon(hyp_ll_index().at(hypIdx), tcmetX, tcmetY, usingTcMet_looper);
     
     return make_pair(sqrt(tcmetX*tcmetX + tcmetY*tcmetY), atan2(tcmetY, tcmetX));
   }

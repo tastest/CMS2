@@ -1,6 +1,7 @@
 #ifndef METSELECTIONS_H
 #define METSELECTIONS_H
 
+typedef std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 //
 // met selections
 //
@@ -17,7 +18,8 @@ struct metStruct{
 enum whichMetType {
   usingTcMet = 1,
   usingCaloMet = 2,
-  usingTcMet35X = 3
+  usingTcMet35X = 3,
+  usingTcMet_looper = 4
 };
 
 //---------------------------------------------------
@@ -71,6 +73,11 @@ metStruct correctTCMETforHypMuons (int hyp_index, float met_x, float met_y, floa
 // function to calculate latest tcMET
 //---------------------------------------------
 metStruct correctedTCMET(bool printout = false, ostream& ostr = std::cout);
+
+//---------------------------------------------
+//function to perform custom Type1 correction
+//---------------------------------------------
+metStruct customType1Met( float metx , float mety , float sumet  , VofP4 jets , std::vector<float> cors );
 
 #endif
 
