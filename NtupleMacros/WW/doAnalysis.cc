@@ -326,7 +326,7 @@ getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJ
      switch ( type ){
      case jptJet:
         for ( unsigned int i=0; i < cms2.jpts_p4().size(); ++i) {
-	 if ( cms2.jpts_p4()[i].Et() < etThreshold ) continue;
+	 if ( cms2.jpts_p4()[i].pt() < etThreshold ) continue;
 	 if ( TMath::Abs(cms2.jpts_p4()[i].eta()) > etaMax ) continue;
 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ||
 	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ) continue;
@@ -344,7 +344,7 @@ getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJ
        break;
      case GenJet:
        for ( unsigned int i=0; i < cms2.genjets_p4().size(); ++i) {
-	 if ( cms2.genjets_p4()[i].Et() < etThreshold ) continue;
+	 if ( cms2.genjets_p4()[i].pt() < etThreshold ) continue;
 	 if ( TMath::Abs(cms2.genjets_p4()[i].eta()) > etaMax ) continue;
 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.genjets_p4()[i])) < vetoCone ||
 	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.genjets_p4()[i])) < vetoCone ) continue;
@@ -353,7 +353,7 @@ getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJ
        break;
      case CaloJet:
        for ( unsigned int i=0; i < cms2.jets_pat_jet_p4().size(); ++i) {
-	 if ( cms2.jets_pat_jet_p4()[i].Et() < etThreshold ) continue;
+	 if ( cms2.jets_pat_jet_p4()[i].pt() < etThreshold ) continue;
 	 if ( TMath::Abs(cms2.jets_pat_jet_p4()[i].eta()) > etaMax ) continue;
 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jets_pat_jet_p4()[i])) < vetoCone ||
 	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jets_pat_jet_p4()[i])) < vetoCone ) continue;
@@ -362,7 +362,7 @@ getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJ
        break;
      case TrkJet:
        for ( unsigned int i=0; i < cms2.trkjets_p4().size(); ++i) {
-	 if ( cms2.trkjets_p4()[i].Et() < etThreshold ) continue;
+	 if ( cms2.trkjets_p4()[i].pt() < etThreshold ) continue;
 	 if ( TMath::Abs(cms2.trkjets_p4()[i].eta()) > etaMax ) continue;
 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.trkjets_p4()[i])) < vetoCone ||
 	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.trkjets_p4()[i])) < vetoCone ) continue;
@@ -677,31 +677,31 @@ TH2F* hFakableRateSingleElectron; // Fake rate study: rate of fakable objects
 TH2F* hFinalRateSingleElectron;   // Fake rate study: rate of final objects
 TH1F* hIsoSingleMuon;             // isolation background 
 TH1F* hIsoSingleElectron;         // isolation background 
-TH2F* hmaxBtagVsJPTEt;   // btag vs energy distribution for the most energetic jet
+TH2F* hmaxBtagVsJPTPt;   // btag vs energy distribution for the most energetic jet
 
-TH1F* hmaxJPTEt[4];         // energy distribution for the most energetic jet |eta|<5
-TH1F* hmaxCaloJetEt[4];     // energy distribution for the most energetic jet |eta|<5
-TH1F* hmaxTrkJetEt[4];      // energy distribution for the most energetic jet |eta|<5
-TH1F* hmaxCaloTrkJetEt[4];  // energy distribution for the most energetic jet |eta|<5
+TH1F* hmaxJPTPt[4];         // energy distribution for the most energetic jet |eta|<5
+TH1F* hmaxCaloJetPt[4];     // energy distribution for the most energetic jet |eta|<5
+TH1F* hmaxTrkJetPt[4];      // energy distribution for the most energetic jet |eta|<5
+TH1F* hmaxCaloTrkJetPt[4];  // energy distribution for the most energetic jet |eta|<5
 TH1F* hmaxCaloTrkJet2Et[4]; // energy distribution for the most energetic jet |eta|<5
-TH1F* hmaxGenJetEt[4];      // energy distribution for the most energetic jet |eta|<5
-TH1F* hmaxPFJetEt[4];      // energy distribution for the most energetic jet |eta|<5
+TH1F* hmaxGenJetPt[4];      // energy distribution for the most energetic jet |eta|<5
+TH1F* hmaxPFJetPt[4];      // energy distribution for the most energetic jet |eta|<5
 
-TH1F* hmaxJPTEtHCal[4];         // energy distribution for the most energetic jet |eta|<3
-TH1F* hmaxCaloJetEtHCal[4];     // energy distribution for the most energetic jet |eta|<3
-TH1F* hmaxTrkJetEtHCal[4];      // energy distribution for the most energetic jet |eta|<3
-TH1F* hmaxCaloTrkJetEtHCal[4];  // energy distribution for the most energetic jet |eta|<3
+TH1F* hmaxJPTPtHCal[4];         // energy distribution for the most energetic jet |eta|<3
+TH1F* hmaxCaloJetPtHCal[4];     // energy distribution for the most energetic jet |eta|<3
+TH1F* hmaxTrkJetPtHCal[4];      // energy distribution for the most energetic jet |eta|<3
+TH1F* hmaxCaloTrkJetPtHCal[4];  // energy distribution for the most energetic jet |eta|<3
 TH1F* hmaxCaloTrkJet2EtHCal[4]; // energy distribution for the most energetic jet |eta|<3
-TH1F* hmaxGenJetEtHCal[4];      // energy distribution for the most energetic jet |eta|<3
-TH1F* hmaxPFJetEtHCal[4];      // energy distribution for the most energetic jet |eta|<3
+TH1F* hmaxGenJetPtHCal[4];      // energy distribution for the most energetic jet |eta|<3
+TH1F* hmaxPFJetPtHCal[4];      // energy distribution for the most energetic jet |eta|<3
 
-TH1F* hmaxJPTEtHF[4];         // energy distribution for the most energetic jet 3<|eta|<5
-TH1F* hmaxCaloJetEtHF[4];     // energy distribution for the most energetic jet 3<|eta|<5
-TH1F* hmaxTrkJetEtHF[4];      // energy distribution for the most energetic jet 3<|eta|<5
-TH1F* hmaxCaloTrkJetEtHF[4];  // energy distribution for the most energetic jet 3<|eta|<5
+TH1F* hmaxJPTPtHF[4];         // energy distribution for the most energetic jet 3<|eta|<5
+TH1F* hmaxCaloJetPtHF[4];     // energy distribution for the most energetic jet 3<|eta|<5
+TH1F* hmaxTrkJetPtHF[4];      // energy distribution for the most energetic jet 3<|eta|<5
+TH1F* hmaxCaloTrkJetPtHF[4];  // energy distribution for the most energetic jet 3<|eta|<5
 TH1F* hmaxCaloTrkJet2EtHF[4]; // energy distribution for the most energetic jet 3<|eta|<5
-TH1F* hmaxGenJetEtHF[4];      // energy distribution for the most energetic jet 3<|eta|<5
-TH1F* hmaxPFJetEtHF[4];      // energy distribution for the most energetic jet 3<|eta|<5
+TH1F* hmaxGenJetPtHF[4];      // energy distribution for the most energetic jet 3<|eta|<5
+TH1F* hmaxPFJetPtHF[4];      // energy distribution for the most energetic jet 3<|eta|<5
 
 
 
@@ -957,26 +957,26 @@ void find_most_energetic_jets(int i_hyp, double weight, bool realData, double et
     {
       double genJetMax(0.);
       for ( unsigned int i=0; i < cms2.genjets_p4().size(); ++i) {
-	if ( cms2.genjets_p4()[i].Et() < genJetMax ) continue;
+	if ( cms2.genjets_p4()[i].pt() < genJetMax ) continue;
 	if ( TMath::Abs(cms2.genjets_p4()[i].eta()) > etaMax ) continue;
 	if ( TMath::Abs(cms2.genjets_p4()[i].eta()) < etaMin ) continue;
 	if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.genjets_p4()[i])) < vetoCone ||
 	     TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.genjets_p4()[i])) < vetoCone ) continue;
-	genJetMax = cms2.genjets_p4()[i].Et();
+	genJetMax = cms2.genjets_p4()[i].pt();
       }
 
       switch (jet) {
       case ALLJET :
-	hmaxGenJetEt[type]->Fill(genJetMax, weight);
-	hmaxGenJetEt[3]->Fill(genJetMax, weight);
+	hmaxGenJetPt[type]->Fill(genJetMax, weight);
+	hmaxGenJetPt[3]->Fill(genJetMax, weight);
 	break;
       case HCAL :
-	hmaxGenJetEtHCal[type]->Fill(genJetMax, weight);
-	hmaxGenJetEtHCal[3]->Fill(genJetMax, weight);
+	hmaxGenJetPtHCal[type]->Fill(genJetMax, weight);
+	hmaxGenJetPtHCal[3]->Fill(genJetMax, weight);
 	break;
       case HF :
-	hmaxGenJetEtHF[type]->Fill(genJetMax, weight);
-	hmaxGenJetEtHF[3]->Fill(genJetMax, weight);
+	hmaxGenJetPtHF[type]->Fill(genJetMax, weight);
+	hmaxGenJetPtHF[3]->Fill(genJetMax, weight);
 	break;
       default:
 	break;
@@ -996,14 +996,14 @@ void find_most_energetic_jets(int i_hyp, double weight, bool realData, double et
      if(applyJEC)
        jec = jetCorrection(cms2.jpts_p4()[i], jet_corrector_jpt);
      //jec =  cms2.jpts_cor()[i]; // use the one in CMS2 ntuple
-     if ( cms2.jpts_p4()[i].Et() * jec < jptMax ) continue;
-     jptMax = cms2.jpts_p4()[i].Et() * jec;
+     if ( cms2.jpts_p4()[i].pt() * jec < jptMax ) continue;
+     jptMax = cms2.jpts_p4()[i].pt() * jec;
      jptMaxIndex = i;
    }
    if (jptMaxIndex >= 0)
-     hmaxBtagVsJPTEt->Fill(jptMax, BTag(jptJet,jptMaxIndex), weight);
+     hmaxBtagVsJPTPt->Fill(jptMax, BTag(jptJet,jptMaxIndex), weight);
    else
-     hmaxBtagVsJPTEt->Fill(jptMax, 0.0, weight);
+     hmaxBtagVsJPTPt->Fill(jptMax, 0.0, weight);
 
    // Calo 
    jec = 1.0;
@@ -1016,10 +1016,10 @@ void find_most_energetic_jets(int i_hyp, double weight, bool realData, double et
      if(applyJEC)
        jec = jetCorrection(cms2.jets_pat_jet_uncorp4()[i], jet_corrector_calo);
      //jec = 1.0/cms2.jets_pat_noCorrF()[i]; 
-     if ( cms2.jets_pat_jet_uncorp4()[i].Et() * jec < caloJetMax ) continue;
-     caloJetMax = cms2.jets_pat_jet_uncorp4()[i].Et() * jec;
-     //if ( cms2.jets_pat_jet_p4()[i].Et() < caloJetMax ) continue;
-     //caloJetMax = cms2.jets_pat_jet_p4()[i].Et();
+     if ( cms2.jets_pat_jet_uncorp4()[i].pt() * jec < caloJetMax ) continue;
+     caloJetMax = cms2.jets_pat_jet_uncorp4()[i].pt() * jec;
+     //if ( cms2.jets_pat_jet_p4()[i].pt() < caloJetMax ) continue;
+     //caloJetMax = cms2.jets_pat_jet_p4()[i].pt();
    }
    
    // TrkJet
@@ -1033,8 +1033,8 @@ void find_most_energetic_jets(int i_hyp, double weight, bool realData, double et
 	 if(applyJEC)
 	   jec = jetCorrection(cms2.trkjets_p4()[i], jet_corrector_trk);
 	 //jec = cms2.trkjets_cor()[i];
-	 if ( cms2.trkjets_p4()[i].Et() * jec < trkJetMax ) continue;
-	 trkJetMax = cms2.trkjets_p4()[i].Et() * jec;
+	 if ( cms2.trkjets_p4()[i].pt() * jec < trkJetMax ) continue;
+	 trkJetMax = cms2.trkjets_p4()[i].pt() * jec;
     }
      
    // PFJet
@@ -1048,54 +1048,54 @@ void find_most_energetic_jets(int i_hyp, double weight, bool realData, double et
       if(applyJEC)
 	jec = jetCorrection(cms2.pfjets_p4()[i], jet_corrector_pf);
       //jec = cms2.pfjets_cor()[i];
-      if ( cms2.pfjets_p4()[i].Et() * jec < pfJetMax ) continue;
-      pfJetMax = cms2.pfjets_p4()[i].Et() * jec;
+      if ( cms2.pfjets_p4()[i].pt() * jec < pfJetMax ) continue;
+      pfJetMax = cms2.pfjets_p4()[i].pt() * jec;
     }
 
     
     // Fill the jet Et histograms
     switch (jet ) {
     case ALLJET:
-      hmaxJPTEt[type]->Fill(jptMax, weight);
-      hmaxCaloJetEt[type]->Fill(caloJetMax, weight);
-      hmaxTrkJetEt[type]->Fill(trkJetMax, weight);
-      hmaxCaloTrkJetEt[type]->Fill((caloJetMax+trkJetMax)/2, weight);
+      hmaxJPTPt[type]->Fill(jptMax, weight);
+      hmaxCaloJetPt[type]->Fill(caloJetMax, weight);
+      hmaxTrkJetPt[type]->Fill(trkJetMax, weight);
+      hmaxCaloTrkJetPt[type]->Fill((caloJetMax+trkJetMax)/2, weight);
       hmaxCaloTrkJet2Et[type]->Fill(std::max(caloJetMax,trkJetMax), weight);
-      hmaxPFJetEt[type]->Fill(pfJetMax, weight);
-      hmaxJPTEt[3]->Fill(jptMax, weight);
-      hmaxCaloJetEt[3]->Fill(caloJetMax, weight);
-      hmaxTrkJetEt[3]->Fill(trkJetMax, weight);
-      hmaxCaloTrkJetEt[3]->Fill((caloJetMax+trkJetMax)/2, weight);
+      hmaxPFJetPt[type]->Fill(pfJetMax, weight);
+      hmaxJPTPt[3]->Fill(jptMax, weight);
+      hmaxCaloJetPt[3]->Fill(caloJetMax, weight);
+      hmaxTrkJetPt[3]->Fill(trkJetMax, weight);
+      hmaxCaloTrkJetPt[3]->Fill((caloJetMax+trkJetMax)/2, weight);
       hmaxCaloTrkJet2Et[3]->Fill(std::max(caloJetMax,trkJetMax), weight);
-      hmaxPFJetEt[3]->Fill(pfJetMax, weight);
+      hmaxPFJetPt[3]->Fill(pfJetMax, weight);
       break;
     case HCAL:
-      hmaxJPTEtHCal[type]->Fill(jptMax, weight);
-      hmaxCaloJetEtHCal[type]->Fill(caloJetMax, weight);
-      hmaxTrkJetEtHCal[type]->Fill(trkJetMax, weight);
-      hmaxCaloTrkJetEtHCal[type]->Fill((caloJetMax+trkJetMax)/2, weight);
+      hmaxJPTPtHCal[type]->Fill(jptMax, weight);
+      hmaxCaloJetPtHCal[type]->Fill(caloJetMax, weight);
+      hmaxTrkJetPtHCal[type]->Fill(trkJetMax, weight);
+      hmaxCaloTrkJetPtHCal[type]->Fill((caloJetMax+trkJetMax)/2, weight);
       hmaxCaloTrkJet2EtHCal[type]->Fill(std::max(caloJetMax,trkJetMax), weight);
-      hmaxPFJetEtHCal[type]->Fill(pfJetMax, weight);
-      hmaxJPTEtHCal[3]->Fill(jptMax, weight);
-      hmaxCaloJetEtHCal[3]->Fill(caloJetMax, weight);
-      hmaxTrkJetEtHCal[3]->Fill(trkJetMax, weight);
-      hmaxCaloTrkJetEtHCal[3]->Fill((caloJetMax+trkJetMax)/2, weight);
+      hmaxPFJetPtHCal[type]->Fill(pfJetMax, weight);
+      hmaxJPTPtHCal[3]->Fill(jptMax, weight);
+      hmaxCaloJetPtHCal[3]->Fill(caloJetMax, weight);
+      hmaxTrkJetPtHCal[3]->Fill(trkJetMax, weight);
+      hmaxCaloTrkJetPtHCal[3]->Fill((caloJetMax+trkJetMax)/2, weight);
       hmaxCaloTrkJet2EtHCal[3]->Fill(std::max(caloJetMax,trkJetMax), weight);
-      hmaxPFJetEtHCal[3]->Fill(pfJetMax, weight);
+      hmaxPFJetPtHCal[3]->Fill(pfJetMax, weight);
       break;
     case HF:
-      hmaxJPTEtHF[type]->Fill(jptMax, weight);
-      hmaxCaloJetEtHF[type]->Fill(caloJetMax, weight);
-      hmaxTrkJetEtHF[type]->Fill(trkJetMax, weight);
-      hmaxCaloTrkJetEtHF[type]->Fill((caloJetMax+trkJetMax)/2, weight);
+      hmaxJPTPtHF[type]->Fill(jptMax, weight);
+      hmaxCaloJetPtHF[type]->Fill(caloJetMax, weight);
+      hmaxTrkJetPtHF[type]->Fill(trkJetMax, weight);
+      hmaxCaloTrkJetPtHF[type]->Fill((caloJetMax+trkJetMax)/2, weight);
       hmaxCaloTrkJet2EtHF[type]->Fill(std::max(caloJetMax,trkJetMax), weight);
-      hmaxPFJetEtHF[type]->Fill(pfJetMax, weight);
-      hmaxJPTEtHF[3]->Fill(jptMax, weight);
-      hmaxCaloJetEtHF[3]->Fill(caloJetMax, weight);
-      hmaxTrkJetEtHF[3]->Fill(trkJetMax, weight);
-      hmaxCaloTrkJetEtHF[3]->Fill((caloJetMax+trkJetMax)/2, weight);
+      hmaxPFJetPtHF[type]->Fill(pfJetMax, weight);
+      hmaxJPTPtHF[3]->Fill(jptMax, weight);
+      hmaxCaloJetPtHF[3]->Fill(caloJetMax, weight);
+      hmaxTrkJetPtHF[3]->Fill(trkJetMax, weight);
+      hmaxCaloTrkJetPtHF[3]->Fill((caloJetMax+trkJetMax)/2, weight);
       hmaxCaloTrkJet2EtHF[3]->Fill(std::max(caloJetMax,trkJetMax), weight);
-      hmaxPFJetEtHF[3]->Fill(pfJetMax, weight);
+      hmaxPFJetPtHF[3]->Fill(pfJetMax, weight);
       break;
     default:
       break;
@@ -1617,29 +1617,29 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     helFRfakable_fakerate[i]->Sumw2();
 
     const Double_t jetEtbins[12] = {0,10,15,20,25,30,40,50,60,80,100,200};
-    hmaxGenJetEt[i]  = new TH1F(Form("%s_hmaxGenJetEt_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<5) Et (GenJet) JetVeto NM1", 11,jetEtbins);
-    hmaxJPTEt[i]  = new TH1F(Form("%s_hmaxJPTEt_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<5) Et (JPT) JetVeto NM1", 11,jetEtbins);
-    hmaxCaloJetEt[i]  = new TH1F(Form("%s_hmaxCaloJetEt_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<5) Et (CaloJet) JetVeto NM1", 11,jetEtbins);
-    hmaxTrkJetEt[i]  = new TH1F(Form("%s_hmaxTrkJetEt_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<5) Et (TrkJet) JetVeto NM1", 11,jetEtbins);
-    hmaxCaloTrkJetEt[i]  = new TH1F(Form("%s_hmaxCaloTrkJetEt_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<5) Et (average of Calo + Trk Jets) JetVeto NM1", 11,jetEtbins);
+    hmaxGenJetPt[i]  = new TH1F(Form("%s_hmaxGenJetPt_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<5) Et (GenJet) JetVeto NM1", 11,jetEtbins);
+    hmaxJPTPt[i]  = new TH1F(Form("%s_hmaxJPTPt_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<5) Et (JPT) JetVeto NM1", 11,jetEtbins);
+    hmaxCaloJetPt[i]  = new TH1F(Form("%s_hmaxCaloJetPt_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<5) Et (CaloJet) JetVeto NM1", 11,jetEtbins);
+    hmaxTrkJetPt[i]  = new TH1F(Form("%s_hmaxTrkJetPt_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<5) Et (TrkJet) JetVeto NM1", 11,jetEtbins);
+    hmaxCaloTrkJetPt[i]  = new TH1F(Form("%s_hmaxCaloTrkJetPt_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<5) Et (average of Calo + Trk Jets) JetVeto NM1", 11,jetEtbins);
     hmaxCaloTrkJet2Et[i]  = new TH1F(Form("%s_hmaxCaloTrkJet2Et_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<5) Et (Max of Calo + Trk Jets) JetVeto NM1", 11,jetEtbins);
-    hmaxPFJetEt[i]  = new TH1F(Form("%s_hmaxPFJetEt_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<5) Et (PFJet) JetVeto NM1", 11,jetEtbins);
+    hmaxPFJetPt[i]  = new TH1F(Form("%s_hmaxPFJetPt_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<5) Et (PFJet) JetVeto NM1", 11,jetEtbins);
 
-    hmaxGenJetEtHCal[i]  = new TH1F(Form("%s_hmaxGenJetEtHCal_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (GenJet) JetVeto NM1", 11,jetEtbins);
-    hmaxJPTEtHCal[i]  = new TH1F(Form("%s_hmaxJPTEtHCal_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (JPT) JetVeto NM1", 11,jetEtbins);
-    hmaxCaloJetEtHCal[i]  = new TH1F(Form("%s_hmaxCaloJetEtHCal_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (CaloJet) JetVeto NM1", 11,jetEtbins);
-    hmaxTrkJetEtHCal[i]  = new TH1F(Form("%s_hmaxTrkJetEtHCal_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (TrkJet) JetVeto NM1", 11,jetEtbins);
-    hmaxCaloTrkJetEtHCal[i]  = new TH1F(Form("%s_hmaxCaloTrkJetEtHCal_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (average of Calo + Trk Jets) JetVeto NM1", 11,jetEtbins);
+    hmaxGenJetPtHCal[i]  = new TH1F(Form("%s_hmaxGenJetPtHCal_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (GenJet) JetVeto NM1", 11,jetEtbins);
+    hmaxJPTPtHCal[i]  = new TH1F(Form("%s_hmaxJPTPtHCal_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (JPT) JetVeto NM1", 11,jetEtbins);
+    hmaxCaloJetPtHCal[i]  = new TH1F(Form("%s_hmaxCaloJetPtHCal_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (CaloJet) JetVeto NM1", 11,jetEtbins);
+    hmaxTrkJetPtHCal[i]  = new TH1F(Form("%s_hmaxTrkJetPtHCal_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (TrkJet) JetVeto NM1", 11,jetEtbins);
+    hmaxCaloTrkJetPtHCal[i]  = new TH1F(Form("%s_hmaxCaloTrkJetPtHCal_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (average of Calo + Trk Jets) JetVeto NM1", 11,jetEtbins);
     hmaxCaloTrkJet2EtHCal[i]  = new TH1F(Form("%s_hmaxCaloTrkJet2EtHCal_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (Max of Calo + Trk Jets) JetVeto NM1", 11,jetEtbins);
-    hmaxPFJetEtHCal[i]  = new TH1F(Form("%s_hmaxPFJetEtHCal_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (PFJet) JetVeto NM1", 11,jetEtbins);
+    hmaxPFJetPtHCal[i]  = new TH1F(Form("%s_hmaxPFJetPtHCal_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (PFJet) JetVeto NM1", 11,jetEtbins);
 
-    hmaxGenJetEtHF[i]  = new TH1F(Form("%s_hmaxGenJetEtHF_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (GenJet) JetVeto NM1", 11,jetEtbins);
-    hmaxJPTEtHF[i]  = new TH1F(Form("%s_hmaxJPTEtHF_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (JPT) JetVeto NM1", 11,jetEtbins);
-    hmaxCaloJetEtHF[i]  = new TH1F(Form("%s_hmaxCaloJetEtHF_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (CaloJet) JetVeto NM1", 11,jetEtbins);
-    hmaxTrkJetEtHF[i]  = new TH1F(Form("%s_hmaxTrkJetEtHF_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (TrkJet) JetVeto NM1", 11,jetEtbins);
-    hmaxCaloTrkJetEtHF[i]  = new TH1F(Form("%s_hmaxCaloTrkJetEtHF_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (average of Calo + Trk Jets) JetVeto NM1", 11,jetEtbins);
+    hmaxGenJetPtHF[i]  = new TH1F(Form("%s_hmaxGenJetPtHF_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (GenJet) JetVeto NM1", 11,jetEtbins);
+    hmaxJPTPtHF[i]  = new TH1F(Form("%s_hmaxJPTPtHF_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (JPT) JetVeto NM1", 11,jetEtbins);
+    hmaxCaloJetPtHF[i]  = new TH1F(Form("%s_hmaxCaloJetPtHF_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (CaloJet) JetVeto NM1", 11,jetEtbins);
+    hmaxTrkJetPtHF[i]  = new TH1F(Form("%s_hmaxTrkJetPtHF_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (TrkJet) JetVeto NM1", 11,jetEtbins);
+    hmaxCaloTrkJetPtHF[i]  = new TH1F(Form("%s_hmaxCaloTrkJetPtHF_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (average of Calo + Trk Jets) JetVeto NM1", 11,jetEtbins);
     hmaxCaloTrkJet2EtHF[i]  = new TH1F(Form("%s_hmaxCaloTrkJet2EtHF_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (Max of Calo + Trk Jets) JetVeto NM1", 11,jetEtbins);
-    hmaxPFJetEtHF[i]  = new TH1F(Form("%s_hmaxPFJetEtHF_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (PFJet) JetVeto NM1", 11,jetEtbins);
+    hmaxPFJetPtHF[i]  = new TH1F(Form("%s_hmaxPFJetPtHF_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<3) Et (PFJet) JetVeto NM1", 11,jetEtbins);
    
     hPFJetResponse[i] = new TH2F(Form("%s_hPFJetResponse_%s",prefix,HypothesisTypeName(i) ), Form("%s - PFJet response to Z pt - %s",prefix,HypothesisTypeName(i) ), 11, jetEtbins, 11, jetEtbins);
     hPFJetRelResponse[i] = new TH2F(Form("%s_hPFJetRelResponse_%s",prefix,HypothesisTypeName(i) ), Form("%s - PFJet relative response to Z pt - %s",prefix,HypothesisTypeName(i) ), 20, 0, 100, 20, 0, 2);
@@ -1673,28 +1673,28 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hElRelIso[i]->Sumw2(); 
     hMuRelIso[i]->Sumw2(); 
 
-    hmaxGenJetEt[i]->Sumw2();
-    hmaxJPTEt[i]->Sumw2();
-    hmaxCaloJetEt[i]->Sumw2();
-    hmaxTrkJetEt[i]->Sumw2();
-    hmaxPFJetEt[i]->Sumw2();
-    hmaxCaloTrkJetEt[i]->Sumw2();
+    hmaxGenJetPt[i]->Sumw2();
+    hmaxJPTPt[i]->Sumw2();
+    hmaxCaloJetPt[i]->Sumw2();
+    hmaxTrkJetPt[i]->Sumw2();
+    hmaxPFJetPt[i]->Sumw2();
+    hmaxCaloTrkJetPt[i]->Sumw2();
     hmaxCaloTrkJet2Et[i]->Sumw2();
 
-    hmaxGenJetEtHCal[i]->Sumw2();
-    hmaxJPTEtHCal[i]->Sumw2();
-    hmaxCaloJetEtHCal[i]->Sumw2();
-    hmaxTrkJetEtHCal[i]->Sumw2();
-    hmaxPFJetEtHCal[i]->Sumw2();
-    hmaxCaloTrkJetEtHCal[i]->Sumw2();
+    hmaxGenJetPtHCal[i]->Sumw2();
+    hmaxJPTPtHCal[i]->Sumw2();
+    hmaxCaloJetPtHCal[i]->Sumw2();
+    hmaxTrkJetPtHCal[i]->Sumw2();
+    hmaxPFJetPtHCal[i]->Sumw2();
+    hmaxCaloTrkJetPtHCal[i]->Sumw2();
     hmaxCaloTrkJet2EtHCal[i]->Sumw2();
 
-    hmaxGenJetEtHF[i]->Sumw2();
-    hmaxJPTEtHF[i]->Sumw2();
-    hmaxCaloJetEtHF[i]->Sumw2();
-    hmaxTrkJetEtHF[i]->Sumw2();
-    hmaxPFJetEtHF[i]->Sumw2();
-    hmaxCaloTrkJetEtHF[i]->Sumw2();
+    hmaxGenJetPtHF[i]->Sumw2();
+    hmaxJPTPtHF[i]->Sumw2();
+    hmaxCaloJetPtHF[i]->Sumw2();
+    hmaxTrkJetPtHF[i]->Sumw2();
+    hmaxPFJetPtHF[i]->Sumw2();
+    hmaxCaloTrkJetPtHF[i]->Sumw2();
     hmaxCaloTrkJet2EtHF[i]->Sumw2();
 
     hPFJetResponse[i]->Sumw2();
@@ -1755,8 +1755,8 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
   helRelPatIsoFailId->Sumw2();
   helRelPatIsoNoId    = new TH1F(Form("%s_helRelPatIsoNoId",prefix),   Form("%s - electron relative iso (trk+ecal+hcal) PAT with weights 1,1,1 without el id",prefix), 120, 0., 1.2);
   helRelPatIsoNoId->Sumw2();
-  hmaxBtagVsJPTEt = new TH2F(Form("%s_hmaxBtagVsJPTEt",prefix),   Form("%s - most energetic jet Et (JPT) vs b-tagger output",prefix), 20, 0., 100, 10, 0, 1);
-  hmaxBtagVsJPTEt->Sumw2();
+  hmaxBtagVsJPTPt = new TH2F(Form("%s_hmaxBtagVsJPTPt",prefix),   Form("%s - most energetic jet Et (JPT) vs b-tagger output",prefix), 20, 0., 100, 10, 0, 1);
+  hmaxBtagVsJPTPt->Sumw2();
   hCentralBquarkEtaAfterVeto = new TH1F(Form("%s_centralBQuarkEtaAfterVeto",prefix), Form("%s - central b quark eta distribution after jet veto",prefix), 20, 0, 10);
   hForwardBquarkEtaAfterVeto = new TH1F(Form("%s_forwardBQuarkEtaAfterVeto",prefix), Form("%s - forward b quark eta distribution after jet veto",prefix), 20, 0, 10);
 
@@ -2246,12 +2246,12 @@ void getJetResponseFromZBalance(int i_hyp,  double weight, bool realData, double
 	 TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
     if(applyJEC)
       jec = jetCorrection(cms2.pfjets_p4()[i], jet_corrector_pf);
-    if ( cms2.pfjets_p4()[i].Et() * jec < pfJetMax ) continue;
-    pfJetMax = cms2.pfjets_p4()[i].Et() * jec;
+    if ( cms2.pfjets_p4()[i].pt() * jec < pfJetMax ) continue;
+    pfJetMax = cms2.pfjets_p4()[i].pt() * jec;
     pfJetMaxIndex = i;
     
     if(realData) 
-      hPFJetResidualResponse->Fill( cms2.pfjets_p4()[i].Et()*cms2.pfjets_cor()[i], jetCorrection(cms2.pfjets_p4()[i], jet_corrector_pf)/ cms2.pfjets_cor()[i], weight);
+      hPFJetResidualResponse->Fill( cms2.pfjets_p4()[i].pt()*cms2.pfjets_cor()[i], jetCorrection(cms2.pfjets_p4()[i], jet_corrector_pf)/ cms2.pfjets_cor()[i], weight);
   }
 
   if(pfJetMaxIndex == -1) return;
@@ -2272,7 +2272,7 @@ void getJetResponseFromZBalance(int i_hyp,  double weight, bool realData, double
     if ( TMath::Abs(cms2.pfjets_p4()[i].eta()) < etaMin ) continue;
     if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ||
 	 TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
-    if (cms2.pfjets_p4()[i].Et() * jec > TMath::Max(secJetMax, cms2.pfjets_p4()[i].Et()*jec*0.2) ) {
+    if (cms2.pfjets_p4()[i].pt() * jec > TMath::Max(secJetMax, cms2.pfjets_p4()[i].pt()*jec*0.2) ) {
       zPlusOneJet = false;
     }
   }
@@ -2282,17 +2282,17 @@ void getJetResponseFromZBalance(int i_hyp,  double weight, bool realData, double
     if(applyJEC)
       jec =  jetCorrection(cms2.pfjets_p4()[pfJetMaxIndex], jet_corrector_pf);
     
-    hPFJetResponse[type]->Fill( cms2.hyp_p4()[i_hyp].pt(), cms2.pfjets_p4()[pfJetMaxIndex].Et()*jec, weight);
-    hPFJetResponse[3]->Fill( cms2.hyp_p4()[i_hyp].pt(), cms2.pfjets_p4()[pfJetMaxIndex].Et()*jec, weight);
+    hPFJetResponse[type]->Fill( cms2.hyp_p4()[i_hyp].pt(), cms2.pfjets_p4()[pfJetMaxIndex].pt()*jec, weight);
+    hPFJetResponse[3]->Fill( cms2.hyp_p4()[i_hyp].pt(), cms2.pfjets_p4()[pfJetMaxIndex].pt()*jec, weight);
     
-    hPFJetRelResponse[type]->Fill( cms2.hyp_p4()[i_hyp].pt(), cms2.pfjets_p4()[pfJetMaxIndex].Et()*jec/cms2.hyp_p4()[i_hyp].pt(), weight);
-    hPFJetRelResponse[3]->Fill( cms2.hyp_p4()[i_hyp].pt(), cms2.pfjets_p4()[pfJetMaxIndex].Et()*jec/cms2.hyp_p4()[i_hyp].pt(), weight);
+    hPFJetRelResponse[type]->Fill( cms2.hyp_p4()[i_hyp].pt(), cms2.pfjets_p4()[pfJetMaxIndex].pt()*jec/cms2.hyp_p4()[i_hyp].pt(), weight);
+    hPFJetRelResponse[3]->Fill( cms2.hyp_p4()[i_hyp].pt(), cms2.pfjets_p4()[pfJetMaxIndex].pt()*jec/cms2.hyp_p4()[i_hyp].pt(), weight);
     
-    hPFJetResponseWithZero[type]->Fill( cms2.hyp_p4()[i_hyp].pt(), cms2.pfjets_p4()[pfJetMaxIndex].Et()*jec, weight);
-    hPFJetResponseWithZero[3]->Fill( cms2.hyp_p4()[i_hyp].pt(), cms2.pfjets_p4()[pfJetMaxIndex].Et()*jec, weight);
+    hPFJetResponseWithZero[type]->Fill( cms2.hyp_p4()[i_hyp].pt(), cms2.pfjets_p4()[pfJetMaxIndex].pt()*jec, weight);
+    hPFJetResponseWithZero[3]->Fill( cms2.hyp_p4()[i_hyp].pt(), cms2.pfjets_p4()[pfJetMaxIndex].pt()*jec, weight);
     
-    hPFJetRelResponseWithZero[type]->Fill( cms2.hyp_p4()[i_hyp].pt(), cms2.pfjets_p4()[pfJetMaxIndex].Et()*jec/cms2.hyp_p4()[i_hyp].pt(), weight);
-    hPFJetRelResponseWithZero[3]->Fill( cms2.hyp_p4()[i_hyp].pt(), cms2.pfjets_p4()[pfJetMaxIndex].Et()*jec/cms2.hyp_p4()[i_hyp].pt(), weight);
+    hPFJetRelResponseWithZero[type]->Fill( cms2.hyp_p4()[i_hyp].pt(), cms2.pfjets_p4()[pfJetMaxIndex].pt()*jec/cms2.hyp_p4()[i_hyp].pt(), weight);
+    hPFJetRelResponseWithZero[3]->Fill( cms2.hyp_p4()[i_hyp].pt(), cms2.pfjets_p4()[pfJetMaxIndex].pt()*jec/cms2.hyp_p4()[i_hyp].pt(), weight);
   }
   
   else {
