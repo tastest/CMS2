@@ -27,6 +27,15 @@ bool muonId(unsigned int index, SelectionType type){
         case muonSelectionFO_mu_ttbar_iso10:
             isovalue = 1.0;
             break;
+        case NominalWWV0:
+            isovalue = 0.15;
+            break;
+        case muonSelectionFO_mu_ww:
+            isovalue = 0.40;
+            break;
+        case muonSelectionFO_mu_ww_iso10:
+            isovalue = 1.0;
+            break;
         default:
             std::cout << "muonID ERROR: requested muon type is not defined. Abort." << std::endl;
 			exit(1);
@@ -112,7 +121,39 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type){
             return true;
             break;
 
+        case NominalWWV0:
+	    if ( cms2.mus_p4()[index].pt() < 20.0 )             return false; // pt cut
+            if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)  return false; // eta cut
+            if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
+            if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
+            if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
+            if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits  
+	    if (cms2.mus_gfit_validSTAHits().at(index)==0 )     return false; // Glb fit must have hits in mu chambers
+	    if (TMath::Abs(mud0PV(index)) >= 0.02)              return false; // d0 from pvtx
+            return true;
 
+         case muonSelectionFO_mu_ww:
+	    if ( cms2.mus_p4()[index].pt() < 20.0 )             return false; // pt cut
+            if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)  return false; // eta cut
+            if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
+            if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
+            if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
+            if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits  
+	    if (cms2.mus_gfit_validSTAHits().at(index)==0 )     return false; // Glb fit must have hits in mu chambers
+	    if (TMath::Abs(mud0PV(index)) >= 0.02)              return false; // d0 from pvtx
+            return true;
+	    
+         case muonSelectionFO_mu_ww_iso10:
+	    if ( cms2.mus_p4()[index].pt() < 20.0 )             return false; // pt cut
+            if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)  return false; // eta cut
+            if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
+            if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
+            if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
+            if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits  
+	    if (cms2.mus_gfit_validSTAHits().at(index)==0 )     return false; // Glb fit must have hits in mu chambers
+	    if (TMath::Abs(mud0PV(index)) >= 0.02)              return false; // d0 from pvtx
+            return true;
+	    
 
 
         default:
@@ -150,4 +191,23 @@ bool isCosmics(unsigned int index){
 bool passedMuonTriggerRequirements()
 {
     return cms2.passHLTTrigger("HLT_Mu9");
+}
+
+//------------------------------------------------------------------------------
+// Muon d0 corrected by PV
+//-------------------------------------------------------------------------------
+
+double mud0PV(unsigned int index){
+  if ( cms2.vtxs_sumpt().empty() ) return false;
+  unsigned int iMax = 0;
+  double sumPtMax = cms2.vtxs_sumpt().at(0);
+  for ( unsigned int i = iMax+1; i < cms2.vtxs_sumpt().size(); ++i )
+    if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
+      iMax = i;
+      sumPtMax = cms2.vtxs_sumpt().at(i);
+    }
+  double dxyPV = cms2.mus_d0()[index]-
+    cms2.vtxs_position()[iMax].x()*sin(cms2.mus_trk_p4()[index].phi())+
+    cms2.vtxs_position()[iMax].y()*cos(cms2.mus_trk_p4()[index].phi());
+  return dxyPV;
 }

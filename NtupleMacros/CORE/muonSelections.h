@@ -14,7 +14,10 @@ enum SelectionType {
   muonSelectionFO_mu_v1 = 4,
   muonSelectionFO_mu_ttbar = 5,
   NominalTTbarV2 = 6,
-  muonSelectionFO_mu_ttbar_iso10 = 7
+  muonSelectionFO_mu_ttbar_iso10 = 7,
+  NominalWWV0 = 8,
+  muonSelectionFO_mu_ww = 9,
+  muonSelectionFO_mu_ww_iso10 = 10,
 }; 
 
 //
@@ -40,6 +43,12 @@ bool passedMuonTriggerRequirements();
 // cosmics rejection
 //
 bool isCosmics(unsigned int index);
+
+//
+// Muon d0 corrected by PV
+//
+
+double mud0PV(unsigned int index);
 
 #endif
 
