@@ -37,6 +37,7 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if (electronIsolation_rel(index, true) < 0.15) cuts_passed |= (1ll<<ELEISO_REL015);
     if (electronIsolation_rel(index, true) < 0.40) cuts_passed |= (1ll<<ELEISO_REL040);
     if (electronIsolation_rel_ww(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_REL010_WW);
+    if (electronIsolation_rel_ww(index, true) < 0.40) cuts_passed |= (1ll<<ELEISO_REL040_WW);
 
     //
     // ip
