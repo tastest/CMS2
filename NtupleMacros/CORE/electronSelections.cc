@@ -36,6 +36,7 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if (electronIsolation_rel(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_REL010);
     if (electronIsolation_rel(index, true) < 0.15) cuts_passed |= (1ll<<ELEISO_REL015);
     if (electronIsolation_rel(index, true) < 0.40) cuts_passed |= (1ll<<ELEISO_REL040);
+    if (electronIsolation_rel_ww(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_REL010_WW);
 
     //
     // ip
@@ -43,6 +44,8 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
 
     if (fabs(cms2.els_d0corr()[index]) < 0.02) cuts_passed |= (1ll<<ELEIP_200);
     if (fabs(cms2.els_d0corr()[index]) < 0.04) cuts_passed |= (1ll<<ELEIP_400);
+    if (electron_d0PV(index, 0.02))            cuts_passed |= (1ll<<ELEIP_PV_200);
+    
 
     //
     // id
@@ -67,7 +70,7 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     // VBTF90 (optimised in 35X)
     answer_vbtf = electronId_VBTF(index, VBTF_35X_90, applyAlignmentCorrection, removedEtaCutInEndcap);
     if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_35X_90);
-    // VBTF70 (optimised in 35X)
+    // VBTF80 (optimised in 35X)
     answer_vbtf = electronId_VBTF(index, VBTF_35X_80, applyAlignmentCorrection, removedEtaCutInEndcap);
     if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_35X_80);
     // VBTF70 (optimised in 35X)
@@ -581,6 +584,20 @@ float electronIsolation_rel(const unsigned int index, bool use_calo_iso)
     return sum/max(pt, 20.);
 }
 
+
+//
+// electron isolation definitions for WW analysis
+//
+float electronIsolation_rel_ww(const unsigned int index, bool use_calo_iso)
+{
+    float sum = cms2.els_tkIso().at(index);
+    if(use_calo_iso)
+      sum += max(0., (cms2.els_ecalIso().at(index) -1.));
+    sum += cms2.els_hcalIso().at(index);
+    double pt = cms2.els_p4().at(index).pt();
+    return sum/max(pt, 20.);
+}
+
 //
 //conversion rejection
 //
@@ -714,3 +731,18 @@ void electronCorrection_pos(const unsigned int index, float &dEtaIn, float &dPhi
 
 }
 
+
+bool electron_d0PV(unsigned int index, double d0Cut){
+  if ( cms2.vtxs_sumpt().empty() ) return false;
+  unsigned int iMax = 0;
+  double sumPtMax = cms2.vtxs_sumpt().at(0);
+  for ( unsigned int i = iMax+1; i < cms2.vtxs_sumpt().size(); ++i )
+    if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
+      iMax = i;
+      sumPtMax = cms2.vtxs_sumpt().at(i);
+    }
+  double dxyPV = cms2.els_d0()[index]-
+    cms2.vtxs_position()[iMax].x()*sin(cms2.els_trk_p4()[index].phi())+
+    cms2.vtxs_position()[iMax].y()*cos(cms2.els_trk_p4()[index].phi());
+  return fabs(dxyPV) < d0Cut;
+}
