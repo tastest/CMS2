@@ -45,7 +45,7 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
 
     if (fabs(cms2.els_d0corr()[index]) < 0.02) cuts_passed |= (1ll<<ELEIP_200);
     if (fabs(cms2.els_d0corr()[index]) < 0.04) cuts_passed |= (1ll<<ELEIP_400);
-    if (electron_d0PV(index, 0.02))            cuts_passed |= (1ll<<ELEIP_PV_200);
+    if (fabs(electron_d0PV(index)) < 0.02) cuts_passed |= (1ll<<ELEIP_PV_200);
     
 
     //
@@ -733,7 +733,7 @@ void electronCorrection_pos(const unsigned int index, float &dEtaIn, float &dPhi
 }
 
 
-bool electron_d0PV(unsigned int index, double d0Cut){
+double electron_d0PV(unsigned int index){
   if ( cms2.vtxs_sumpt().empty() ) return false;
   unsigned int iMax = 0;
   double sumPtMax = cms2.vtxs_sumpt().at(0);
@@ -745,5 +745,5 @@ bool electron_d0PV(unsigned int index, double d0Cut){
   double dxyPV = cms2.els_d0()[index]-
     cms2.vtxs_position()[iMax].x()*sin(cms2.els_trk_p4()[index].phi())+
     cms2.vtxs_position()[iMax].y()*cos(cms2.els_trk_p4()[index].phi());
-  return fabs(dxyPV) < d0Cut;
+  return dxyPV;
 }
