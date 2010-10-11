@@ -424,8 +424,7 @@ static const cuts_t electronSelection_wwV0  =
 // WWV0 fakeable object baseline definition
 //---------------------------------------------------------
 static const cuts_t electronSelectionFO_wwV0_baseline =
-  electronSelection_wwV0_base |
-  electronSelection_wwV0_ip;
+  electronSelection_wwV0_base;
 
 //---------------------------------------------------------
 // WWV0 fakeable object definition v1
