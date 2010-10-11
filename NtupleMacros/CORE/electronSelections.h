@@ -653,7 +653,7 @@ void electronCorrection_pos(const unsigned int index, float &dEtaIn, float &dPhi
 //
 // d0 corrected by the primary vertex
 //
-bool electron_d0PV(unsigned int index, double d0Cut);
+double electron_d0PV(unsigned int index);
 
 #endif
 
