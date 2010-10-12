@@ -19,7 +19,11 @@
 float GetIntLumi(float lumi, int brun, int bls, int erun, int els)
 {
     TChain *c = new TChain("tree");
-    c->Add("/tas05/disk00/jribnik/hunt/dilep_baby/*.root");
+    //c->Add("/tas05/disk00/jribnik/hunt/dilep_baby/*.root");
+    c->Add("/nfs-3/userdata/yanjuntu/hunt/EG_Run2010A-Sep17ReReco_v2_RECO/dilep_baby/*.root");
+    c->Add("/nfs-3/userdata/yanjuntu/hunt/Electron_Run2010B-PromptReco-v2_RECO/dilep_baby/*.root");
+    //    c->Add("/nfs-3/userdata/yanjuntu/hunt/Mu_Run2010A-Sep17ReReco_v2_RECO/dilep_baby/*.root");
+    //c->Add("/nfs-3/userdata/yanjuntu/hunt/Mu_Run2010B-PromptReco-v2_RECO/dilep_baby/*.root");
 
     TCut c_goodrun(Form("((run>%i&&run<%i)||(run==%i&&ls>=%i)||(run==%i&&ls<=%i))&&goodrun_json(run,ls)", brun, erun, brun, bls, erun, els));
     // goodrun plus events beyond range of goodrun
@@ -300,7 +304,11 @@ TCanvas* DrawAll(const char *field, TCut sel, float intlumifb, unsigned int nbin
     //
 
     //static BabySample *bs_data_emu    = new BabySample("data","/tas05/disk00/jribnik/hunt/emu_baby/*.root","",1.,true);
-    static BabySample *bs_data_dilep  = new BabySample("data","/tas05/disk00/jribnik/hunt/dilep_baby/*.root","",1.,true);
+    //static BabySample *bs_data_dilep  = new BabySample("data","/tas05/disk00/jribnik/hunt/dilep_baby/*.root","",1.,true);
+  static BabySample *bs_data_dilep_1  = new BabySample("data","/nfs-3/userdata/yanjuntu/hunt/EG_Run2010A-Sep17ReReco_v2_RECO/dilep_baby/*.root","",1.,true);
+  static BabySample *bs_data_dilep_2  = new BabySample("data","/nfs-3/userdata/yanjuntu/hunt/Electron_Run2010B-PromptReco-v2_RECO/dilep_baby/*.root","",1.,true);
+  static BabySample *bs_data_dilep_3  = new BabySample("data","/nfs-3/userdata/yanjuntu/hunt/Mu_Run2010B-PromptReco-v2_RECO/dilep_baby/*.root","",1.,true);
+  static BabySample *bs_data_dilep_4  = new BabySample("data","/nfs-3/userdata/yanjuntu/hunt/Mu_Run2010A-Sep17ReReco_v2_RECO/dilep_baby/*.root","",1.,true);
     //static BabySample *bs_data_trilep = new BabySample("data","/tas05/disk00/jribnik/hunt/trilep_baby/*.root","",1.,true);
 
     //
@@ -317,22 +325,22 @@ TCanvas* DrawAll(const char *field, TCut sel, float intlumifb, unsigned int nbin
     float kdyll      = 3457./2659.;
 
     // dilep
-    static BabySample *bs_ttbarjets_dilep = new BabySample("ttbar","/tas05/disk00/jribnik/huntmc/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kttbarjets,false,kRed+1,1001);
-    static BabySample *bs_singletop_dilep = new BabySample("tW","/tas05/disk00/jribnik/huntmc/SingleTop_tWChannel-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",ksingletop,false,kMagenta,1001);
+    static BabySample *bs_ttbarjets_dilep = new BabySample("ttbar","/nfs-3/userdata/yanjuntu/huntmc/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kttbarjets,false,kRed+1,1001);
+    static BabySample *bs_singletop_dilep = new BabySample("tW","/nfs-3/userdata/yanjuntu/huntmc/SingleTop_tWChannel-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",ksingletop,false,kMagenta,1001);
 
-    static BabySample *bs_vvjets_dilep    = new BabySample("vvjets","/tas05/disk00/jribnik/huntmc/VVJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kvvjets,false,10,1001);
-    static BabySample *bs_wjets_dilep     = new BabySample("wjets","/tas05/disk00/jribnik/huntmc/WJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kwjets,false,kGreen-3,1001);
-    static BabySample *bs_ztautau_dilep   = new BabySample("ztautau","/tas05/disk00/jribnik/huntmc/Ztautau_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kzll,false,kAzure+8,1001);
+    static BabySample *bs_vvjets_dilep    = new BabySample("vvjets","/nfs-3/userdata/yanjuntu/huntmc/VVJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kvvjets,false,10,1001);
+    static BabySample *bs_wjets_dilep     = new BabySample("wjets","/nfs-3/userdata/yanjuntu/huntmc/WJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kwjets,false,kGreen-3,1001);
+    static BabySample *bs_ztautau_dilep   = new BabySample("ztautau","/nfs-3/userdata/yanjuntu/huntmc/Ztautau_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kzll,false,kAzure+8,1001);
 
     // Note that a common prefix means
     // a common histogram when used in
     // the same DrawAll, i.e. the five
     // samples below are combined
-    static BabySample *bs_zjets_dilep     = new BabySample("zll","/tas05/disk00/jribnik/huntmc/ZJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kzjets,false,kAzure-2,1001);
-    static BabySample *bs_zee_dilep       = new BabySample("zll","/tas05/disk00/jribnik/huntmc/Zee_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","mass<50",kzll,false,kAzure-2,1001);
-    static BabySample *bs_zmumu_dilep     = new BabySample("zll","/tas05/disk00/jribnik/huntmc/Zmumu_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","mass<50",kzll,false,kAzure-2,1001);
-    static BabySample *bs_dyee_dilep      = new BabySample("zll","/tas05/disk00/jribnik/huntmc/DYee_M10to20_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kdyll,false,kAzure-2,1001);
-    static BabySample *bs_dymumu_dilep    = new BabySample("zll","/tas05/disk00/jribnik/huntmc/DYmumu_M10to20_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kdyll,false,kAzure-2,1001);
+    static BabySample *bs_zjets_dilep     = new BabySample("zll","/nfs-3/userdata/yanjuntu/huntmc/ZJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kzjets,false,kAzure-2,1001);
+    static BabySample *bs_zee_dilep       = new BabySample("zll","/nfs-3/userdata/yanjuntu/huntmc/Zee_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","mass<50",kzll,false,kAzure-2,1001);
+    static BabySample *bs_zmumu_dilep     = new BabySample("zll","/nfs-3/userdata/yanjuntu/huntmc/Zmumu_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","mass<50",kzll,false,kAzure-2,1001);
+    static BabySample *bs_dyee_dilep      = new BabySample("zll","/nfs-3/userdata/yanjuntu/huntmc/DYee_M10to20_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kdyll,false,kAzure-2,1001);
+    static BabySample *bs_dymumu_dilep    = new BabySample("zll","/nfs-3/userdata/yanjuntu/huntmc/DYmumu_M10to20_Spring10-START3X_V26_S09-v1/dilep_baby/*.root","",kdyll,false,kAzure-2,1001);
 
-    return DrawAll(field,sel,intlumifb,nbins,xlo,xhi,integrated,bs_data_dilep,bs_ttbarjets_dilep,bs_singletop_dilep,bs_dyee_dilep,bs_dymumu_dilep,bs_vvjets_dilep,bs_wjets_dilep,bs_zjets_dilep,bs_zee_dilep,bs_zmumu_dilep,bs_ztautau_dilep);
+    return DrawAll(field,sel,intlumifb,nbins,xlo,xhi,integrated,bs_data_dilep_1,bs_data_dilep_2,bs_data_dilep_3,bs_data_dilep_4,bs_ttbarjets_dilep,bs_singletop_dilep,bs_dyee_dilep,bs_dymumu_dilep,bs_vvjets_dilep,bs_wjets_dilep,bs_zjets_dilep,bs_zee_dilep,bs_zmumu_dilep,bs_ztautau_dilep);
 }

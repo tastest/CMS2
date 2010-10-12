@@ -40,7 +40,7 @@ bool dilep_select ()
         int index2 = cms2.hyp_ll_index()[hypi];
 
         if (min(cms2.hyp_lt_p4()[hypi].pt(), cms2.hyp_ll_p4()[hypi].pt()) < 5.)
-            continue;
+	  continue;
         if (abs(cms2.hyp_lt_id()[hypi]) == 13 && !(cms2.mus_type()[index1] & 6))
             continue;
         if (abs(cms2.hyp_ll_id()[hypi]) == 13 && !(cms2.mus_type()[index2] & 6))
@@ -111,7 +111,8 @@ void nlepskim (const std::string &infile, const std::string &outfile, int nlep, 
     uint64 nEventsTotal = 0;
     uint64 nEventsSelected = 0;
 
-    TPRegexp preg("\\S+/merged_ntuple_(\\d+_\\d+).root");
+    //TPRegexp preg("\\S+/merged_ntuple_(\\d+_\\d+).root");
+    TPRegexp preg("\\S+/skimmed_ntuple_(\\d+_\\d+).root");
     // file loop
     TIter fileIter(listOfFiles);
     TFile *currentFile = 0;
@@ -123,7 +124,7 @@ void nlepskim (const std::string &infile, const std::string &outfile, int nlep, 
         //const char *name = f.GetName();
         TTree *tree = (TTree*)f.Get("Events");
 
-        chain->SetBranchStatus("EventAuxiliary",0);
+        //chain->SetBranchStatus("EventAuxiliary",0);
         // for the first file, clone the tree
         if (first)
         {

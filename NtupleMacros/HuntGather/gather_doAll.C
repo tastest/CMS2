@@ -25,7 +25,7 @@ void gather_doAll() {
     // doesn't matter so long as it corresponds
     // to the lumi of the json file and that it
     // is correctly scaled to /fb afterward
-    float f_intlumifb = 1e-6*GetIntLumi(2790);
+    float f_intlumifb = 1e-6*GetIntLumi(5860);
     std::cout << "Integrated luminosity: " << 1e3*f_intlumifb << "/pb\n";
 
     //
@@ -42,7 +42,7 @@ void gather_doAll() {
     DrawAll("mass",osanal_sf_dilep,f_intlumifb,40,0.,500.,0);
     DrawAll("jet1pt+jet2pt+jet3pt",osanal_dilep,f_intlumifb,40,0.,800.,1);
     DrawAll("tcmet",osanal_dilep,f_intlumifb,40,0.,300.,1);
-
+    
     //
     // SS PLOTS
     //
@@ -96,6 +96,7 @@ void gather_doAll() {
     DrawAll("tcmeff",base_sumjetptgt200_dilep,f_intlumifb,40,0.,1000.,1);
     DrawAll("tcmeff",base_dilptgt100_dilep,f_intlumifb,40,0.,1000.,1);
 
+    
     TSeqCollection *list = gROOT->GetListOfCanvases();
     TIterator *iter = list->MakeIterator();
     TCanvas *c1 = 0;

@@ -9,9 +9,10 @@ void makeCands() {
     //
 
     TChain *emu_chain = new TChain("tree");
-    emu_chain->Add("/store/disk00/jribnik/hunt/emu_baby/*.root");
+    // emu_chain->Add("/store/disk00/jribnik/hunt/emu_baby/*.root");
     //emu_chain->Add("/store/disk00/jribnik/hunt/prompt_emu_baby/*.root");
-
+    //emu_chain->Add("/nfs-3/userdata/yanjuntu/hunt/emu_baby/*.root");
+    emu_chain->Add("emu_baby/*.root");
     TTreePlayer *emu_tp = (TTreePlayer*)emu_chain->GetPlayer();
     emu_tp->SetScanRedirect(kTRUE);
     //emu_tp->SetScanFileName("cands/wplusjetsv1_emu.raw.cands");
@@ -36,9 +37,10 @@ void makeCands() {
     //
 
     TChain *dilep_chain = new TChain("tree");
-    dilep_chain->Add("/store/disk00/jribnik/hunt/dilep_baby/*.root");
+    //dilep_chain->Add("/store/disk00/jribnik/hunt/dilep_baby/*.root");
     //dilep_chain->Add("/store/disk00/jribnik/hunt/prompt_dilep_baby/*.root");
-
+    //dilep_chain->Add("/nfs-3/userdata/yanjuntu/hunt_old/dilep_baby/*.root");
+    dilep_chain->Add("dilep_baby/*.root");
     TTreePlayer *dilep_tp = (TTreePlayer*)dilep_chain->GetPlayer();
     dilep_tp->SetScanRedirect(kTRUE);
     //dilep_tp->SetScanFileName("cands/inclusivez_dilep.raw.cands");
@@ -101,9 +103,10 @@ void makeCands() {
     //
 
     TChain *trilep_chain = new TChain("tree");
-    trilep_chain->Add("/store/disk00/jribnik/hunt/trilep_baby/*.root");
+    //trilep_chain->Add("/store/disk00/jribnik/hunt/trilep_baby/*.root");
     //trilep_chain->Add("/store/disk00/jribnik/hunt/prompt_trilep_baby/*.root");
-
+    //trilep_chain->Add("/nfs-3/userdata/yanjuntu/hunt_old/trilep_baby/*.root");
+    trilep_chain->Add("trilep_baby/*.root");
     TTreePlayer *trilep_tp = (TTreePlayer*)trilep_chain->GetPlayer();
     trilep_tp->SetScanRedirect(kTRUE);
     trilep_tp->SetScanFileName("cands/inclusive_trilep.raw.cands");

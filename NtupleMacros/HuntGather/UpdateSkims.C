@@ -22,8 +22,10 @@
 
 void UpdateSkims(const char *inputFileName) 
 {
-    TPRegexp preg("\\S+/merged_ntuple_(\\d+_\\d+).root");
-    TString ident = ((TObjString*)preg.MatchS(TString(inputFileName))->At(1))->GetString();
+   // TPRegexp preg("\\S+/merged_ntuple_(\\d+_\\d+).root");
+  TPRegexp preg("\\S+/skimmed_ntuple_(\\d+_\\d+).root");
+  
+  TString ident = ((TObjString*)preg.MatchS(TString(inputFileName))->At(1))->GetString();
 
     // emu
 
@@ -31,16 +33,13 @@ void UpdateSkims(const char *inputFileName)
     skimFileName.Append("emu_skim/emuskim_");
     skimFileName.Append(ident);
     skimFileName.Append(".root");
-
     nlepskim(inputFileName, skimFileName.Data(), 1, true);
-
     TString babyFileName = skimFileName;
     babyFileName.ReplaceAll("emu_skim/emuskim_", "emu_baby/emuskim_baby_");
-
     std::cout << "Making a baby named " << babyFileName << std::endl;
     emubabymaker *emubaby = new emubabymaker();
     emubaby->ScanChain(skimFileName.Data(), babyFileName.Data());
-
+    
     // dilep
 
     skimFileName = "";
