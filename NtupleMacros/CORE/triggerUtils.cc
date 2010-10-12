@@ -2,10 +2,10 @@
 // Trigger utilities stolen from Derek and adapted
 //-------------------------------------------------
 
-//int nTriggeredJets(char*);
-//LorentzVector singleJetBias( char*, int) ;
 #include "TSystem.h"
 #include "triggerUtils.h"
+#include "CMS2.h"
+
 
 //--------------------------------------------------
 // EG trigger selection from 5 July 2010
@@ -16,9 +16,9 @@
 //        use Photon10 and we tighten the pt threshold)
 //--------------------------------------------------
 bool goodEGTrigger5July2010 (bool mc) {
+  
   if (mc) {
- 
-   int e10 = nHLTObjects("HLT_Ele10_LW_L1R");
+    int e10 = nHLTObjects("HLT_Ele10_LW_L1R");
     if (e10 != 0) return true;
 
     int p10 = nHLTObjects("HLT_Photon10_L1R");

@@ -1,7 +1,10 @@
 #ifndef triggerUtils_h
 #define triggerUtils_h
 
-#include "CMS2.h"
+#include "Math/LorentzVector.h"
+#include "Math/Point3D.h"
+
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 bool goodEGTrigger5July2010 (bool);
 int nHLTObjects(const char*);

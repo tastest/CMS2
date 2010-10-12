@@ -52,6 +52,11 @@ unsigned int selectHypByHighestSumPt(const vector<unsigned int> &v_goodHyps);
 bool passEGTrigger(bool mc);
 
 /*****************************************************************************************/
+//passes the Mu triggers
+/*****************************************************************************************/
+bool passMuTrigger(bool mc);
+
+/*****************************************************************************************/
 //get the impact parameter wrt the PV
 /*****************************************************************************************/
 double getd0wrtPV(LorentzVector p4, float d0);
