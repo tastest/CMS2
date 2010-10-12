@@ -5,10 +5,10 @@
 #include "TMath.h"
 #include "TLorentzVector.h"
 #include "TDatabasePDG.h"
-#include "electronSelections.h"
-#include "electronSelectionsParameters.h"
-#include "muonSelections.h"
-#include "metSelections.h"
+#include "electronSelections.cc"
+#include "electronSelectionsParameters.cc"
+#include "muonSelections.cc"
+#include "metSelections.cc"
 #include "triggerUtils.h"
 #include "CMS2.h"
 
@@ -272,21 +272,88 @@ bool passEGTrigger(bool mc) {
     if (cms2.evt_run() >= 141900 && cms2.evt_run() <= 144000) {
       int e15 = nHLTObjects("HLT_Ele15_SW_L1R");
       if (e15 != 0) 
-		   return true;
-    }
-	else if (cms2.evt_run() > 144000) {
-		 int e15caloId = nHLTObjects("HLT_Ele15_SW_CaloEleId_L1R");
-		 if (e15caloId != 0)
-			  return true;
+	return true;
+    }   
+    
+    if (cms2.evt_run() > 144000 && cms2.evt_run() <= 144114) {
 
-		 int e20 = nHLTObjects("HLT_Ele20_SW_L1R");
-		 if (e20 != 0)
-			  return true;
-	}
- 
+      int e15caloId = nHLTObjects("HLT_Ele15_SW_CaloEleId_L1R");
+      if (e15caloId != 0)
+	return true;
+      
+      int e20 = nHLTObjects("HLT_Ele20_SW_L1R");
+      if (e20 != 0)
+	return true;
+      
+      int ed10 = nHLTObjects("HLT_DoubleEle10_SW_L1R");
+      if(ed10 != 0)
+	return true;
+    }
+
+    if(cms2.evt_run() > 146000 && cms2.evt_run() <= 147120) {
+
+      if(nHLTObjects("HLT_DoubleEle10_SW_L1R") != 0 )
+	return true;
+      
+      if(nHLTObjects("HLT_Ele17_SW_CaloEleId_L1R") != 0)
+	return true;
+    }
+
+    if(cms2.evt_run() > 147120) {
+    
+      if(nHLTObjects("HLT_DoubleEle15_SW_L1R_v1") != 0)
+	return true;
+
+      if(nHLTObjects("HLT_Ele17_SW_TightCaloEleId_SC8HE_L1R_v1") != 0)
+	return true;
+      
+      if(nHLTObjects("HLT_Ele17_SW_TightEleId_L1R") != 0)
+	return true;
+
+    }
+    
+
   }
   return false;
 }
+
+/*****************************************************************************************/
+//passes the EGamma triggers
+/*****************************************************************************************/
+bool passMuTrigger(bool mc) {
+  
+
+  if(mc) {
+    if(passHLTTrigger("HLT_Mu9"))
+      return true;
+
+    
+  } else {
+
+    if(cms2.evt_run() <= 145000) {
+      if(nHLTObjects("HLT_Mu9") > 0)
+	return true;
+    }
+
+    if(cms2.evt_run() > 145000 && cms2.evt_run() <= 147120) {
+      if(nHLTObjects("HLT_Mu11") > 0)
+	return true;
+    }
+  
+    if(cms2.evt_run() > 147120) {
+      if(nHLTObjects("HLT_Mu15") > 0)
+	return true;
+    }
+
+  }
+
+
+  return false;
+
+}
+
+
+
 
 /*****************************************************************************************/
 //get the impact parameter wrt the PV
