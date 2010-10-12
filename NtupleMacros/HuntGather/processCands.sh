@@ -4,8 +4,10 @@
 # i.e. a dump, and trigger pickAnEvent.pl
 # E-mail whomever about existence of new candidate
 
-fireshotdir=/store/disk00/jribnik/fireShot
-huntdir=/store/disk00/jribnik/hunt
+#fireshotdir=/store/disk00/jribnik/fireShot
+fireshotdir=/nfs-3/userdata/yanjuntu/hunt/fireShot
+#huntdir=/store/disk00/jribnik/hunt
+huntdir=/nfs-3/userdata/yanjuntu/hunt
 cd $huntdir
 
 if [ $# -ne 1 ]
@@ -74,7 +76,8 @@ do
     # not email file or if hunt is defunct
     if [ ! -e .donotemail ] && [ $isdefunct -eq 0 ]
     then
-        echo "Check out: http://uaf-2.t2.ucsd.edu/~jribnik/hunt/index.php#${candsfiletrunc}_${run_}_${ls_}_${evt_}" >email.tmp
+        #echo "Check out: http://uaf-2.t2.ucsd.edu/~jribnik/hunt/index.php#${candsfiletrunc}_${run_}_${ls_}_${evt_}" >email.tmp
+	echo "Check out: http://uaf-2.t2.ucsd.edu/~yanjuntu/hunt/index.php#${candsfiletrunc}_${run_}_${ls_}_${evt_}" >email.tmp
         echo               >>email.tmp
         echo "Here she is:">>email.tmp
         echo               >>email.tmp
@@ -85,7 +88,8 @@ do
         #cat email.tmp | mail -s "[$candsfiletrunc ALERT] New candidate found!" jribnik@cern.ch
         #cat email.tmp | mail -s "[$candsfiletrunc ALERT] New candidate found!" fgolf@physics.ucsd.edu
         #cat email.tmp | mail -s "[$candsfiletrunc ALERT] New candidate found!" slava77@fnal.gov
-        cat email.tmp | mail -s "[$candsfiletrunc ALERT] New candidate found!" tas@fnal.gov
+        #cat email.tmp | mail -s "[$candsfiletrunc ALERT] New candidate found!" tas@fnal.gov
+	cat email.tmp | mail -s "[$candsfiletrunc ALERT] New candidate found!" yanjuntu@cern.gov
     fi
 
     # Move dump
