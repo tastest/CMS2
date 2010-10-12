@@ -33,12 +33,13 @@ void UpdateSkims(const char *inputFileName)
     skimFileName.Append("emu_skim/emuskim_");
     skimFileName.Append(ident);
     skimFileName.Append(".root");
-    nlepskim(inputFileName, skimFileName.Data(), 1, true);
+    //nlepskim(inputFileName, skimFileName.Data(), 1, true);
     TString babyFileName = skimFileName;
     babyFileName.ReplaceAll("emu_skim/emuskim_", "emu_baby/emuskim_baby_");
     std::cout << "Making a baby named " << babyFileName << std::endl;
     emubabymaker *emubaby = new emubabymaker();
-    emubaby->ScanChain(skimFileName.Data(), babyFileName.Data());
+    //emubaby->ScanChain(skimFileName.Data(), babyFileName.Data());
+    emubaby->ScanChain(inputFileName, babyFileName.Data());
     
     // dilep
 
@@ -47,14 +48,15 @@ void UpdateSkims(const char *inputFileName)
     skimFileName.Append(ident);
     skimFileName.Append(".root");
 
-    nlepskim(inputFileName, skimFileName.Data(), 2, false);
+    //nlepskim(inputFileName, skimFileName.Data(), 2, false);
 
     babyFileName = skimFileName;
     babyFileName.ReplaceAll("dilep_skim/dilepskim_", "dilep_baby/dilepskim_baby_");
 
     std::cout << "Making a baby named " << babyFileName << std::endl;
     dilepbabymaker *dilepbaby = new dilepbabymaker();
-    dilepbaby->ScanChain(skimFileName.Data(), babyFileName.Data());
+    //dilepbaby->ScanChain(skimFileName.Data(), babyFileName.Data());
+    dilepbaby->ScanChain(inputFileName, babyFileName.Data());
 
     // trilep
 
