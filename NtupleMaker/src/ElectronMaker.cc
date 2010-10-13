@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Puneeth Kalavase
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: ElectronMaker.cc,v 1.55 2010/09/01 22:21:51 fgolf Exp $
+// $Id: ElectronMaker.cc,v 1.55.2.1 2010/10/13 22:05:23 warren Exp $
 //
 //
 
@@ -596,8 +596,8 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     float q = el_track->charge();
     float pz = el_track->pz();
     float trkpterr = (el_track->charge()!=0) ? sqrt(pt*pt*p*p/pow(q, 2)*(el_track->covariance(0,0))
-						    +2*pt*p/q*pz*(el_track->covariance(0,1))
-						    + pz*pz*(el_track->covariance(1,1) ) ) : -9999.;
+													+2*pt*p/q*pz*(el_track->covariance(0,1))
+													+ pz*pz*(el_track->covariance(1,1) ) ) : -9999.;
             
     els_chi2                  ->push_back( el_track->chi2()                          );
     els_ndof                  ->push_back( el_track->ndof()                          );
@@ -623,7 +623,7 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     // Lorentz Vectors	
     //
     LorentzVector trk_p4( el_track->px(), el_track->py(), 
-			  el_track->pz(), el_track->p() );
+						  el_track->pz(), el_track->p() );
     double          mass = 0.000510998918;
     LorentzVector   p4In; 
     math::XYZVector p3In = el->trackMomentumAtVtx();
@@ -709,7 +709,7 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
 
     for(trackingRecHit_iterator ihit = el_track->recHitsBegin(); 
-	ihit != el_track->recHitsEnd(); ++ihit){
+		ihit != el_track->recHitsEnd(); ++ihit){
       if(i_layer > 1) break;
       int k = ihit-el_track->recHitsBegin();
       hit_pattern = pattern.getHitPattern(k);
@@ -723,65 +723,69 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
       if(!valid_hit) continue;
       if(pixel_hit){
 
-	const SiPixelRecHit *pixel_hit_cast = dynamic_cast<const SiPixelRecHit*>(&(**ihit));
-	assert(pixel_hit_cast != 0);
-	pixel_ClusterRef const& pixel_cluster = pixel_hit_cast->cluster();
+		const SiPixelRecHit *pixel_hit_cast = dynamic_cast<const SiPixelRecHit*>(&(**ihit));
+		//assert(pixel_hit_cast != 0); //too strict
+		if( pixel_hit_cast == 0 )
+		  continue;
+		pixel_ClusterRef const& pixel_cluster = pixel_hit_cast->cluster();
 
-	pixel_size   = (int)pixel_cluster->size(); 
-	pixel_sizeX  = (int)pixel_cluster->sizeX(); 
-	pixel_sizeY  = (int)pixel_cluster->sizeY(); 
-	pixel_charge = (float)pixel_cluster->charge();
+		pixel_size   = (int)pixel_cluster->size(); 
+		pixel_sizeX  = (int)pixel_cluster->sizeX(); 
+		pixel_sizeY  = (int)pixel_cluster->sizeY(); 
+		pixel_charge = (float)pixel_cluster->charge();
 
-	if(i_layer == 1){
-	  els_layer1_sizerphi ->push_back(pixel_sizeX);
-	  els_layer1_sizerz   ->push_back(pixel_sizeY);
-	  els_layer1_charge   ->push_back(pixel_charge);
-	  els_layer1_det      ->push_back(det);
-	  els_layer1_layer    ->push_back(layer);
-	  i_layer++;
+		if(i_layer == 1){
+		  els_layer1_sizerphi ->push_back(pixel_sizeX);
+		  els_layer1_sizerz   ->push_back(pixel_sizeY);
+		  els_layer1_charge   ->push_back(pixel_charge);
+		  els_layer1_det      ->push_back(det);
+		  els_layer1_layer    ->push_back(layer);
+		  i_layer++;
 
-	}
+		}
 
       }
 
       else if (strip_hit){
-	const SiStripRecHit1D *strip_hit_cast = dynamic_cast<const SiStripRecHit1D*>(&(**ihit));
-	const SiStripRecHit2D *strip2d_hit_cast = dynamic_cast<const SiStripRecHit2D*>(&(**ihit));
-	ClusterRef cluster;
-	if(strip_hit_cast == NULL)
-	  cluster = strip2d_hit_cast->cluster();
-	else 
-	  cluster = strip_hit_cast->cluster();
+		const SiStripRecHit1D *strip_hit_cast = dynamic_cast<const SiStripRecHit1D*>(&(**ihit));
+		const SiStripRecHit2D *strip2d_hit_cast = dynamic_cast<const SiStripRecHit2D*>(&(**ihit));
+		ClusterRef cluster;
+		if(strip_hit_cast == NULL && strip2d_hit_cast == NULL) //this was missing
+		  continue;
+		else if(strip_hit_cast == NULL)
+		  cluster = strip2d_hit_cast->cluster();
+		else 
+		  cluster = strip_hit_cast->cluster();
 
-	int cluster_size   = (int)cluster->amplitudes().size();
-	int cluster_charge = 0;
-	double   cluster_weight_size = 0.0;
-	int max_strip_i = std::max_element(cluster->amplitudes().begin(),cluster->amplitudes().end())-cluster->amplitudes().begin();
+		int cluster_size   = (int)cluster->amplitudes().size();
+		int cluster_charge = 0;
+		double   cluster_weight_size = 0.0;
+		int max_strip_i = std::max_element(cluster->amplitudes().begin(),cluster->amplitudes().end())-cluster->amplitudes().begin();
 
-	for(int istrip = 0; istrip < cluster_size; istrip++){
-	  cluster_charge += (int)cluster->amplitudes().at(istrip);
-	  cluster_weight_size += (istrip-max_strip_i)*(istrip-max_strip_i)*(cluster->amplitudes().at(istrip));
-	}
-	cluster_weight_size = sqrt(cluster_weight_size/cluster_charge);
+		for(int istrip = 0; istrip < cluster_size; istrip++){
+		  cluster_charge += (int)cluster->amplitudes().at(istrip);
+		  cluster_weight_size += (istrip-max_strip_i)*(istrip-max_strip_i)*(cluster->amplitudes().at(istrip));
+		}
+		cluster_weight_size = sqrt(cluster_weight_size/cluster_charge);
 
-	if(i_layer == 1){
-	  if(side==0) 
-	    {
-	      els_layer1_sizerphi ->push_back(cluster_size);
-	      els_layer1_sizerz   ->push_back(0);
-	    }
+		if(i_layer == 1){
+		  if(side==0) 
+			{
+			  els_layer1_sizerphi ->push_back(cluster_size);
+			  els_layer1_sizerz   ->push_back(0);
+			}
 
-	  else
-	    {
-	      els_layer1_sizerphi ->push_back(0);
-	      els_layer1_sizerz   ->push_back(cluster_size);
-	    } 
+		  else
+			{
+			  els_layer1_sizerphi ->push_back(0);
+			  els_layer1_sizerz   ->push_back(cluster_size);
+			} 
 
-	  els_layer1_charge   ->push_back(cluster_charge);
-	  els_layer1_det      ->push_back(det);
-	  els_layer1_layer    ->push_back(layer);
-	  i_layer++;
-	}
+		  els_layer1_charge   ->push_back(cluster_charge);
+		  els_layer1_det      ->push_back(det);
+		  els_layer1_layer    ->push_back(layer);
+		  i_layer++;
+		}
       }
 
     }
@@ -800,7 +804,7 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
       els_trkidx       ->push_back(static_cast<int>(ctfTkRef.key())            );
       els_trkshFrac    ->push_back(static_cast<float>(el->shFracInnerHits())     );
       dR = deltaR(gsfTkRef->eta(), gsfTkRef->phi(),
-		  ctfTkRef->eta(), ctfTkRef->phi()                             );
+				  ctfTkRef->eta(), ctfTkRef->phi()                             );
     } else {
       els_trkidx       ->push_back(-9999                                        );
       els_trkshFrac    ->push_back(-9999.                                       );

@@ -246,7 +246,7 @@ void GSFTrackMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     TrajectoryStateOnSurface tsos;
     
     /*
-    Trajectory State is at intersection of cylinder and track, 
+	  Trajectory State is at intersection of cylinder and track, 
       not state at the last hit on the track fit. Shouldn't matter that much.
       Not sure what happens for loopers. Caveat emptor!
     */
@@ -263,13 +263,13 @@ void GSFTrackMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     if(tsos.isValid()) {
       gsftrks_outer_p4->push_back( LorentzVector( tsos.globalMomentum().x(),
-						      tsos.globalMomentum().y(),
-						      tsos.globalMomentum().z(),
-						      tsos.globalMomentum().mag() ) );
+												  tsos.globalMomentum().y(),
+												  tsos.globalMomentum().z(),
+												  tsos.globalMomentum().mag() ) );
     }
     else {
       gsftrks_outer_p4->push_back( LorentzVector( 999., 0., 22004439., 22004440.) );
-   }
+	}
 
     /////hit pattern
     gsftrks_inner_position ->push_back(LorentzVector(i->innerPosition().x(), i->innerPosition().y() , i->innerPosition().z(), 0 ));
@@ -298,7 +298,7 @@ void GSFTrackMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
     for(trackingRecHit_iterator ihit = i->recHitsBegin(); 
-	ihit != i->recHitsEnd(); ++ihit){
+		ihit != i->recHitsEnd(); ++ihit){
       if(i_layer > 1) break;
       int k = ihit-i->recHitsBegin();
       hit_pattern = pattern.getHitPattern(k);
@@ -310,57 +310,61 @@ void GSFTrackMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       layer     = (int)pattern.getLayer(hit_pattern);
       if(!valid_hit) continue;
       if(pixel_hit){
-	const SiPixelRecHit *pixel_hit_cast = dynamic_cast<const SiPixelRecHit*>(&(**ihit));
-	assert(pixel_hit_cast != 0);
-	pixel_ClusterRef const& pixel_cluster = pixel_hit_cast->cluster();
-	pixel_size   = (int)pixel_cluster->size(); 
-	pixel_sizeX  = (int)pixel_cluster->sizeX(); 
-	pixel_sizeY  = (int)pixel_cluster->sizeY(); 
-	pixel_charge = (float)pixel_cluster->charge();
-	if(i_layer == 1){
-	  gsftrks_layer1_sizerphi ->push_back(pixel_sizeX);
-	  gsftrks_layer1_sizerz   ->push_back(pixel_sizeY);
-	  gsftrks_layer1_charge   ->push_back(pixel_charge);
-	  gsftrks_layer1_det      ->push_back(det);
-	  gsftrks_layer1_layer    ->push_back(layer);
-	  i_layer++;
+		const SiPixelRecHit *pixel_hit_cast = dynamic_cast<const SiPixelRecHit*>(&(**ihit));
+		//assert(pixel_hit_cast != 0); //too strict
+		if( pixel_hit_cast == 0 )
+		  continue;
+		pixel_ClusterRef const& pixel_cluster = pixel_hit_cast->cluster();
+		pixel_size   = (int)pixel_cluster->size(); 
+		pixel_sizeX  = (int)pixel_cluster->sizeX(); 
+		pixel_sizeY  = (int)pixel_cluster->sizeY(); 
+		pixel_charge = (float)pixel_cluster->charge();
+		if(i_layer == 1){
+		  gsftrks_layer1_sizerphi ->push_back(pixel_sizeX);
+		  gsftrks_layer1_sizerz   ->push_back(pixel_sizeY);
+		  gsftrks_layer1_charge   ->push_back(pixel_charge);
+		  gsftrks_layer1_det      ->push_back(det);
+		  gsftrks_layer1_layer    ->push_back(layer);
+		  i_layer++;
 
-	}
+		}
       }
       else if (strip_hit){
-	const SiStripRecHit1D *strip_hit_cast = dynamic_cast<const SiStripRecHit1D*>(&(**ihit));
-	const SiStripRecHit2D *strip2d_hit_cast = dynamic_cast<const SiStripRecHit2D*>(&(**ihit));
-	ClusterRef cluster;
-	if(strip_hit_cast == NULL)
-	  cluster = strip2d_hit_cast->cluster();
-	else 
-	  cluster = strip_hit_cast->cluster();
-	int cluster_size   = (int)cluster->amplitudes().size();
-	int cluster_charge = 0;
-	double   cluster_weight_size = 0.0;
-	int max_strip_i = std::max_element(cluster->amplitudes().begin(),cluster->amplitudes().end())-cluster->amplitudes().begin();
-	for(int istrip = 0; istrip < cluster_size; istrip++){
-	  cluster_charge += (int)cluster->amplitudes().at(istrip);
-	  cluster_weight_size += (istrip-max_strip_i)*(istrip-max_strip_i)*(cluster->amplitudes().at(istrip));
-	}
-	cluster_weight_size = sqrt(cluster_weight_size/cluster_charge);
-	if(i_layer == 1){
-	  if(side==0) 
-	    {
-	      gsftrks_layer1_sizerphi ->push_back(cluster_size);
-	      gsftrks_layer1_sizerz   ->push_back(0);
-	    }
+		const SiStripRecHit1D *strip_hit_cast = dynamic_cast<const SiStripRecHit1D*>(&(**ihit));
+		const SiStripRecHit2D *strip2d_hit_cast = dynamic_cast<const SiStripRecHit2D*>(&(**ihit));
+		ClusterRef cluster;
+		if(strip_hit_cast == NULL && strip2d_hit_cast == NULL) //this was missing
+		  continue;
+		else if(strip_hit_cast == NULL)
+		  cluster = strip2d_hit_cast->cluster();
+		else 
+		  cluster = strip_hit_cast->cluster();
+		int cluster_size   = (int)cluster->amplitudes().size();
+		int cluster_charge = 0;
+		double   cluster_weight_size = 0.0;
+		int max_strip_i = std::max_element(cluster->amplitudes().begin(),cluster->amplitudes().end())-cluster->amplitudes().begin();
+		for(int istrip = 0; istrip < cluster_size; istrip++){
+		  cluster_charge += (int)cluster->amplitudes().at(istrip);
+		  cluster_weight_size += (istrip-max_strip_i)*(istrip-max_strip_i)*(cluster->amplitudes().at(istrip));
+		}
+		cluster_weight_size = sqrt(cluster_weight_size/cluster_charge);
+		if(i_layer == 1){
+		  if(side==0) 
+			{
+			  gsftrks_layer1_sizerphi ->push_back(cluster_size);
+			  gsftrks_layer1_sizerz   ->push_back(0);
+			}
 
-	  else
-	    {
-	      gsftrks_layer1_sizerphi ->push_back(0);
-	      gsftrks_layer1_sizerz   ->push_back(cluster_size);
-	    } 
-	  gsftrks_layer1_charge   ->push_back(cluster_charge);
-	  gsftrks_layer1_det      ->push_back(det);
-	  gsftrks_layer1_layer    ->push_back(layer);
-	  i_layer++;
-	}
+		  else
+			{
+			  gsftrks_layer1_sizerphi ->push_back(0);
+			  gsftrks_layer1_sizerz   ->push_back(cluster_size);
+			} 
+		  gsftrks_layer1_charge   ->push_back(cluster_charge);
+		  gsftrks_layer1_det      ->push_back(det);
+		  gsftrks_layer1_layer    ->push_back(layer);
+		  i_layer++;
+		}
       }
     }
     gsftrks_valid_pixelhits ->push_back(pattern.numberOfValidPixelHits());
@@ -368,9 +372,9 @@ void GSFTrackMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     
     // *****************************************************
-     gsftrks_nlayers    ->push_back( i->hitPattern().trackerLayersWithMeasurement() );
-     gsftrks_nlayers3D  ->push_back( i->hitPattern().pixelLayersWithMeasurement() + i->hitPattern().numberOfValidStripLayersWithMonoAndStereo() );
-     gsftrks_nlayersLost->push_back( i->hitPattern().trackerLayersWithoutMeasurement() );
+	gsftrks_nlayers    ->push_back( i->hitPattern().trackerLayersWithMeasurement() );
+	gsftrks_nlayers3D  ->push_back( i->hitPattern().pixelLayersWithMeasurement() + i->hitPattern().numberOfValidStripLayersWithMonoAndStereo() );
+	gsftrks_nlayersLost->push_back( i->hitPattern().trackerLayersWithoutMeasurement() );
 
   }
 
