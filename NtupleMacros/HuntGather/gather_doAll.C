@@ -12,11 +12,23 @@ void gather_doAll() {
     gROOT->ProcessLine(".L BabyDorkIdentifier.C+");
     gROOT->ProcessLine(".L gather.C+");
 
+    //
+    // configuration
+    //
+
+    //const char *goodrunlist = "Cert_TopOct6_Merged_135059-146729_allPVT_extra_146804-147116.txt";
+    //float goodrunlumi = 5860;
+    
+    const char *goodrunlist = "Cert_TopOct8_Merged_135059-147116_allPVT.txt";
+    float goodrunlumi = 7090;
+
     // this sets the json file obviously; it's
     // easiest to just  soft link to  the real
     // file as json.txt
-    std::cout << "Using json.txt for goodruns\n";
-    set_goodrun_file_json("json.txt");
+    std::cout << "Using " << goodrunlist << " for goodruns\n";
+    set_goodrun_file_json(goodrunlist);
+    unsigned int lastgoodrun = max_run();
+    unsigned int lastgoodlumi = max_run_max_lumi();
 
     // calculate  integrated luminosity  in /fb
     // note that I input /nb and so get out /nb
@@ -25,8 +37,28 @@ void gather_doAll() {
     // doesn't matter so long as it corresponds
     // to the lumi of the json file and that it
     // is correctly scaled to /fb afterward
-    float f_intlumifb = 1e-6*GetIntLumi(5860);
+    float f_intlumifb = 1e-6*GetIntLumi(goodrunlumi);
+
     std::cout << "Integrated luminosity: " << 1e3*f_intlumifb << "/pb\n";
+
+    //
+    // validation plots
+    //
+
+    std::cout << "Making validation plots...\n";
+
+    // lumi that is in the good run list
+    float f_goodruns_intlumifb = 1e-6*goodrunlumi;
+    // lumi that is out of the good run list
+    float f_newruns_intlumifb = f_intlumifb - f_goodruns_intlumifb;
+
+    TCut validation_ee ("validation_ee", base_dilep+ee_dilep);
+    TCut validation_mm ("validation_mm", base_dilep+mm_dilep);
+
+    DrawAll("mass", "validation_mass_goodruns_ee", validation_ee, "", Form("run < %i || (run == %i && ls <= %i)", lastgoodrun, lastgoodrun, lastgoodlumi), f_goodruns_intlumifb, 50,0., 200., 0);
+    DrawAll("mass", "validation_mass_newruns_ee", validation_ee, "", Form("run > %i || (run == %i && ls > %i)", lastgoodrun, lastgoodrun, lastgoodlumi), f_newruns_intlumifb, 50,0., 200., 0);
+    DrawAll("mass", "validation_mass_goodruns_mm", validation_mm, "", Form("run < %i || (run == %i && ls <= %i)", lastgoodrun, lastgoodrun, lastgoodlumi), f_goodruns_intlumifb, 50,0., 200., 0);
+    DrawAll("mass", "validation_mass_newruns_mm", validation_mm, "", Form("run > %i || (run == %i && ls > %i)", lastgoodrun, lastgoodrun, lastgoodlumi), f_newruns_intlumifb, 50,0., 200., 0);
 
     //
     // OS PLOTS
@@ -34,15 +66,17 @@ void gather_doAll() {
 
     std::cout << "Making OS plots...\n";
 
-    TCut osanal_dilep   ("osanal_dilep"   ,base_dilep+os_dilep+"tcmet>50.&&(jet1pt+jet2pt+jet3pt)>150.");
+    TCut cut_sumjetptgt150   ("sumjetptgt150"       ,"TMath::Max(jet1pt,0.0)+TMath::Max(jet2pt,0.0)+TMath::Max(jet3pt,0.0) > 150.0");
+    TCut cut_sumjetptgt200   ("sumjetptgt200"       ,"TMath::Max(jet1pt,0.0)+TMath::Max(jet2pt,0.0)+TMath::Max(jet3pt,0.0) > 200.0");
+    TCut osanal_dilep   ("osanal_dilep"   ,base_dilep+os_dilep+"tcmet>50."+cut_sumjetptgt150);
     TCut osanal_of_dilep("osanal_of_dilep",osanal_dilep+of_dilep);
     TCut osanal_sf_dilep("osanal_sf_dilep",osanal_dilep+sf_dilep);
 
-    DrawAll("mass",osanal_of_dilep,f_intlumifb,40,0.,500.,0);
-    DrawAll("mass",osanal_sf_dilep,f_intlumifb,40,0.,500.,0);
-    DrawAll("jet1pt+jet2pt+jet3pt",osanal_dilep,f_intlumifb,40,0.,800.,1);
-    DrawAll("tcmet",osanal_dilep,f_intlumifb,40,0.,300.,1);
-    
+    DrawAll("mass","os_of_mass",osanal_of_dilep,"","",f_intlumifb,40,0.,500.,0);
+    DrawAll("mass","os_sf_mass",osanal_sf_dilep,"","",f_intlumifb,40,0.,500.,0);
+    DrawAll("jet1pt","os_sumjetpt_int",osanal_dilep,"","",f_intlumifb,40,0.,800.,1);
+    DrawAll("tcmet","os_tcmet_int",osanal_dilep,"","",f_intlumifb,40,0.,300.,1);
+
     //
     // SS PLOTS
     //
@@ -56,10 +90,10 @@ void gather_doAll() {
     TCut ssanal_ee_dilep("ssanal_ee_dilep",ssanal_dilep+ee_dilep);
     TCut ssanal_mm_dilep("ssanal_mm_dilep",ssanal_dilep+mm_dilep);
 
-    DrawAll("mass",ssanal_ee_dilep,f_intlumifb,40,0.,500.,0);
-    DrawAll("mass",ssanal_mm_dilep,f_intlumifb,40,0.,500.,0);
-    DrawAll("jet1pt+jet2pt+jet3pt",ssanal_dilep,f_intlumifb,40,0.,800.,1);
-    DrawAll("tcmet",ssanal_dilep,f_intlumifb,40,0.,300.,1);
+    DrawAll("mass","ss_ee_mass",ssanal_ee_dilep,"","",f_intlumifb,40,0.,500.,0);
+    DrawAll("mass","ss_mm_mass",ssanal_mm_dilep,"","",f_intlumifb,40,0.,500.,0);
+    DrawAll("jet1pt","ss_sumjetpt_int",ssanal_dilep,"","",f_intlumifb,40,0.,800.,1);
+    DrawAll("tcmet","ss_tcmet_int",ssanal_dilep,"","",f_intlumifb,40,0.,300.,1);
 
     //
     // Z+MET
@@ -71,12 +105,12 @@ void gather_doAll() {
     TCut zmet_os_1j_dilep("zmet_os_1j_dilep",inclusivez_dilep+os_dilep+"njetsClean==1");
     TCut zmet_os_2j_dilep("zmet_os_2j_dilep",inclusivez_dilep+os_dilep+"njetsClean>=2");
 
-    DrawAll("tcmet",zmet_os_0j_dilep,f_intlumifb,40,0.,300.,1);
-    DrawAll("tcmet",zmet_os_1j_dilep,f_intlumifb,40,0.,300.,1);
-    DrawAll("tcmet",zmet_os_2j_dilep,f_intlumifb,40,0.,300.,1);
-    DrawAll("pfmet",zmet_os_0j_dilep,f_intlumifb,40,0.,300.,1);
-    DrawAll("pfmet",zmet_os_1j_dilep,f_intlumifb,40,0.,300.,1);
-    DrawAll("pfmet",zmet_os_2j_dilep,f_intlumifb,40,0.,300.,1);
+    DrawAll("tcmet","zmet_os_0j_tcmet_int",zmet_os_0j_dilep,"","",f_intlumifb,40,0.,300.,1);
+    DrawAll("tcmet","zmet_os_1j_tcmet_int",zmet_os_1j_dilep,"","",f_intlumifb,40,0.,300.,1);
+    DrawAll("tcmet","zmet_os_2j_tcmet_int",zmet_os_2j_dilep,"","",f_intlumifb,40,0.,300.,1);
+    DrawAll("pfmet","zmet_os_0j_pfmet_int",zmet_os_0j_dilep,"","",f_intlumifb,40,0.,300.,1);
+    DrawAll("pfmet","zmet_os_1j_pfmet_int",zmet_os_1j_dilep,"","",f_intlumifb,40,0.,300.,1);
+    DrawAll("pfmet","zmet_os_2j_pfmet_int",zmet_os_2j_dilep,"","",f_intlumifb,40,0.,300.,1);
 
     //
     // Effective Mass
@@ -86,17 +120,16 @@ void gather_doAll() {
 
     TCut base_tcmeffgt400_dilep  ("base_tcmeffgt400_dilep",base_dilep+"tcmeff>400.");
     TCut base_tcmetgt50_dilep    ("base_tcmetgt50_dilep",base_dilep+"tcmet>50.");
-    TCut base_sumjetptgt200_dilep("base_sumjetptgt200_dilep",base_dilep+"(jet1pt+jet2pt+jet3pt)>50.");
+    TCut base_sumjetptgt200_dilep("base_sumjetptgt200_dilep",base_dilep+cut_sumjetptgt200);
     TCut base_dilptgt100_dilep   ("base_dilptgt100_dilep",base_dilep+"dilpt>100.");
 
-    DrawAll("njetsClean",base_dilep,f_intlumifb,10,-0.5,9.5,0);
-    DrawAll("njetsClean",base_tcmeffgt400_dilep,f_intlumifb,10,-0.5,9.5,0);
-    DrawAll("tcmeff",base_dilep,f_intlumifb,40,0.,1000.,1);
-    DrawAll("tcmeff",base_tcmetgt50_dilep,f_intlumifb,40,0.,1000.,1);
-    DrawAll("tcmeff",base_sumjetptgt200_dilep,f_intlumifb,40,0.,1000.,1);
-    DrawAll("tcmeff",base_dilptgt100_dilep,f_intlumifb,40,0.,1000.,1);
+    DrawAll("njetsClean","meff_njetsclean",base_dilep,"","",f_intlumifb,10,-0.5,9.5,0);
+    DrawAll("njetsClean","meff_tcmeffgt400_njetsclean",base_tcmeffgt400_dilep,"","",f_intlumifb,10,-0.5,9.5,0);
+    DrawAll("tcmeff","meff_tcmeff_int",base_dilep,"","",f_intlumifb,40,0.,1000.,1);
+    DrawAll("tcmeff","meff_tcmetgt50_tcmeff_int",base_tcmetgt50_dilep,"","",f_intlumifb,40,0.,1000.,1);
+    DrawAll("tcmeff","meff_sumjetptgt200_tcmeff_int",base_sumjetptgt200_dilep,"","",f_intlumifb,40,0.,1000.,1);
+    DrawAll("tcmeff","meff_dilptgt100_tcmeff_int",base_dilptgt100_dilep,"","",f_intlumifb,40,0.,1000.,1);
 
-    
     TSeqCollection *list = gROOT->GetListOfCanvases();
     TIterator *iter = list->MakeIterator();
     TCanvas *c1 = 0;
