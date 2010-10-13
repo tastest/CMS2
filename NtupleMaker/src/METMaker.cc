@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/4
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: METMaker.cc,v 1.25 2010/05/24 15:14:30 fgolf Exp $
+// $Id: METMaker.cc,v 1.25.4.1 2010/10/13 22:16:14 warren Exp $
 //
 //
 
@@ -65,7 +65,7 @@ METMaker::METMaker(const edm::ParameterSet& iConfig) {
      if(branchprefix.find("_") != std::string::npos)
 	  branchprefix.replace(branchprefix.find("_"),1,"");
      
-     produces<bool> (branchprefix+"hbheFilter").setBranchAlias(aliasprefix_+"_hbheFilter");
+     //produces<bool> (branchprefix+"hbheFilter").setBranchAlias(aliasprefix_+"_hbheFilter");
 
      produces<float> (branchprefix+"met"          ).setBranchAlias(aliasprefix_+"_met"          );
      produces<float> (branchprefix+"metPhi"       ).setBranchAlias(aliasprefix_+"_metPhi"       );
@@ -164,7 +164,7 @@ METMaker::METMaker(const edm::ParameterSet& iConfig) {
      caloTowerInputTag     = iConfig.getParameter<edm::InputTag>("caloTower_tag_");
      towerEtThreshold      = iConfig.getParameter<double>       ("towerEtThreshold_");
      make_eta_rings        = iConfig.getParameter<bool>         ("make_eta_rings_");
-     hbheNoiseFilterInputTag = iConfig.getParameter<edm::InputTag>("hbheNoiseFilterInputTag_");
+     //hbheNoiseFilterInputTag = iConfig.getParameter<edm::InputTag>("hbheNoiseFilterInputTag_");
 
      if( make_eta_rings ) {
 	  produces<vector<float> > (branchprefix+"towermetetaslice"         ).setBranchAlias(aliasprefix_+"_towermet_etaslice"         );
@@ -192,7 +192,7 @@ void METMaker::endJob()
 // ------------ method called to produce the data  ------------
 void METMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   
-     auto_ptr<bool>    evt_hbheFilter          (new bool      );
+  //auto_ptr<bool>    evt_hbheFilter          (new bool      );
      auto_ptr<float>   evt_met                 (new float     );
      auto_ptr<float>   evt_metPhi              (new float     );
      auto_ptr<float>   evt_metSig              (new float     );
@@ -285,7 +285,7 @@ void METMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
      edm::Handle< reco::MuonCollection > muon_h;
      edm::Handle<bool> filter_h;     
 
-     iEvent.getByLabel(hbheNoiseFilterInputTag, filter_h);
+     //iEvent.getByLabel(hbheNoiseFilterInputTag, filter_h);
      iEvent.getByLabel(met_tag      , met_h       );
      iEvent.getByLabel(metHO_tag    , metHO_h     );
      iEvent.getByLabel(metNoHF_tag  , metNoHF_h   );
@@ -302,7 +302,7 @@ void METMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
      iEvent.getByLabel(muon_vm_tag, muon_vm_h );
      iEvent.getByLabel(muon_tag   , muon_h    );
     
-     *evt_hbheFilter   = *filter_h;
+     //*evt_hbheFilter   = *filter_h;
      *evt_met          = ( met_h->front()    ).et();
      *evt_metPhi       = ( met_h->front()    ).phi();
      *evt_metSig       = ( met_h->front()    ).metSignificance();
@@ -480,7 +480,7 @@ void METMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
      if(branchprefix.find("_") != std::string::npos)
 	  branchprefix.replace(branchprefix.find("_"),1,"");
 
-     iEvent.put(evt_hbheFilter        ,branchprefix+"hbheFilter"       );
+     //iEvent.put(evt_hbheFilter        ,branchprefix+"hbheFilter"       );
      iEvent.put(evt_met               ,branchprefix+"met"              );
      iEvent.put(evt_metPhi            ,branchprefix+"metPhi"           );
      iEvent.put(evt_metSig            ,branchprefix+"metSig"           );
