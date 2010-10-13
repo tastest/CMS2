@@ -1,0 +1,30 @@
+#--------------------------------------------------------------------
+#--------------------------------------------------------------------
+#--------------------------------------------------------------------
+Use this code to prepare new electron fake rates
+
+#--------------------------------------------------------------------
+#--------------------------------------------------------------------
+I)   make -j 8 EleFakesInc.tbl
+        this produces fake rates from the EMenriched and BCtoE QCD 
+        (or incl. QCD) samples. Results are stored in the file 
+        EleFakes.root 
+
+II)  root -b -q -l prepareFakeRateHistograms.C
+        this merges the histograms from the different QCD samples. 
+        Result is again stored in EleFakes.root
+
+III) root -b -q -l makeFakeRatePlots.C
+        this divides the numerator and denominator histograms and 
+        sets the names expected by the fake rate application code. 
+        Result is stored in fakeRates.root
+
+IV) copy fakeRates.root to CMS2/NtupleMacros/data/fakeRates.root 
+        and adapt paths in CMS2/NtupleMacros/Tools/fakerates.cc
+        Remember to also update the README with a new version 
+        number and make a twiki for the new fakerates. A WJets
+        closure test (FakeTest) should be performed with the new
+        fakerates and also documented on the twiki.
+
+#--------------------------------------------------------------------
+#--------------------------------------------------------------------

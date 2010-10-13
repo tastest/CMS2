@@ -1,0 +1,24 @@
+
+===new application===
+
+- merge and strip off everything except the Events branch in one go
+
+---setup cms software environment and user project---
+
+*known, involves eval `scramv1 runtime -(c)sh`
+
+---compile standalone application---
+
+gcc `root-config --cflags` makeDietCMS22.cc -o makeDietCMS22 `root-config --libs`
+chmod 755 makeDietCMS22
+
+---usage---
+
+makeDietCMS22 <output.root> <input1.root> <input2.root> ... <inputN.root>
+
+- for input, understands all ROOT input protocols: rfio:, dcap:, dcache:, plain file
+
+example for <output.root>: ttbar.root
+example for <input1.root>: dcache:/pnfs/cms/WAX/11/store/results/fof/CMS2/RelValTTbar/USER/Skim_V01_00_00_v5/0000/F4425853-B5A6-DD11-BE26-001731A28691.root
+
+complete example: makeDietCMS22 RelValTTbar.root dcache:/pnfs/cms/WAX/11/store/results/fof/CMS2/RelValTTbar/USER/Skim_V01_00_00_v5/0000/F4425853-B5A6-DD11-BE26-001731A28691.root

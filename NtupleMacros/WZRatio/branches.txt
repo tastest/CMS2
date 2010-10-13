@@ -1,0 +1,23 @@
+unsigned int evt_event
+unsigned int evt_run
+unsigned int evt_lumiBlock
+float evt_scale1fb
+float evt_met
+float evt_metPhi
+float evt_metMuonCorr
+float evt_metMuonCorrPhi
+float evt_tcmet
+float evt_tcmetPhi
+float evt_tcsumet
+float gen_met
+float gen_metPhi
+vector<int> genps_id
+vector<int> genps_id_mother
+float hyp_met
+float hyp_metPhi
+int hyp_type
+LorentzVector hyp_p4
+LorentzVector hyp_lt_p4
+LorentzVector hyp_ll_p4
+LorentzVector genps_p4
+vector<LorentzVector> hyp_jets_p4 

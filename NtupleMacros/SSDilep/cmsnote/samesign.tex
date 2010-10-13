@@ -1,0 +1,49 @@
+\documentclass{cmspaper}
+\usepackage{graphicx}
+\usepackage{rotate}
+\usepackage{relsize}
+\newcommand{\met} {\ensuremath{E\!\!\!\!/_T}}
+\newcommand{\ttbar} {\ensuremath{t\bar{t}~}}
+\newcommand{\ptll} {\ensuremath{P_T(\ell\ell)}}
+\newcommand{\ptllres} {\ensuremath{P^{\rm res}_T(\ell\ell)}}
+
+\begin{document}
+
+%==============================================================================
+% title page for many authors
+%
+\begin{titlepage}
+\title{Data driven background study for new physics searches with same sign dileptons at $\sqrt{s} = 10 $ TeV}
+
+  \begin{Authlist}
+    D.~ Barge, C.~Campagnari, P.~Kalavase, D.~Kovalskyi, V.~Krutelyov, J.~Ribnik
+    \Instfoot{ucsb}{University of California, Santa Barbara}
+    W.~Andrews, D.~Evans, F.~Golf, J.~M\"ulmenst\"adt, S.~Padhi, Y.~Tu, F.~W\"urthwein, A.~Yagil
+    \Instfoot{ucsd}{University of California, San Diego}
+    L.~Bauerdick, I.~Bloch, K.~Burkett, I.~Fisk, O.~Gutsche
+    \Instfoot{fnal}{Fermi National Accelerator Laboratory, Batavia, Illinois}
+  \end{Authlist}
+
+\begin{abstract}
+We discuss data driven methods to estimate the number of same sign Standard Model dilepton
+events in searches for new physics characterized by large \met~ and significant hadronic
+activity.  For these searches, the dominant background is from \ttbar events. The study 
+provides a new method to estimate the charge mis-measurement of leptons. The residual
+flavor enriched background is estimated using the lepton fake rate method. We show sensitivity to  
+several SUSY benchmark points using 100 pb$^{-1}$ of integrated luminosity.
+\end{abstract}
+\end{titlepage}
+
+\input{intro.tex}
+\input{samples.tex}
+\input{selections.tex}
+\input{yields.tex}
+\input{bkgtypes.tex}
+\input{chargeMisId.tex}
+\input{leptonfake.tex}
+\input{application.tex}
+\input{conclusion.tex}
+
+\clearpage
+\input{bib.tex}
+\end{document}

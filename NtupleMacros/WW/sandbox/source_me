@@ -1,0 +1,7 @@
+export ROOTSYS=~/ROOT/root
+export MANPATH=$MANPATH:$ROOTSYS/man
+export PATH=$PATH:$ROOTSYS/bin
+export LD_LIBRARY_PATH=$ROOTSYS/lib:$LD_LIBRARY_PATH
+#export DYLD_LIBRARY_PATH=$ROOTSYS/lib:$DYLD_LIBRARY_PATH
+export CVSROOT=:ext:fkw@cmscvs.cern.ch:/cvs_server/repositories/CMSSW
+export CVS_RSH=ssh

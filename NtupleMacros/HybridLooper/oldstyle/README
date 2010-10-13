@@ -1,0 +1,16 @@
+tag: "whunt_v4":
+
+1. Required Packages:
+
+NtupleMacros/Tools
+NtupleMacros/CORE
+
+2. Run the following commands at HybridLooper/oldstyle/
+
+make b
+mkdir dir/
+./makeWSummaryPlot.py dir/
+
+Dave and Yanyan
+
+

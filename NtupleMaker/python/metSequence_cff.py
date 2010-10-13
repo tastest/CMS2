@@ -1,0 +1,12 @@
+import FWCore.ParameterSet.Config as cms
+
+
+from JetMETCorrections.Type1MET.MetType1Corrections_cff import metJESCorIC5CaloJet
+from JetMETCorrections.Configuration.JetCorrectionServices_cff import *
+
+metMuonJESCorAK5CMS2                     = metJESCorIC5CaloJet.clone()
+metMuonJESCorAK5CMS2.inputUncorJetsLabel = "ak5CaloJets"
+metMuonJESCorAK5CMS2.corrector           = "ak5CaloL2L3"
+metMuonJESCorAK5CMS2.inputUncorMetLabel  = "corMetGlobalMuons"
+
+metCorSequence = cms.Sequence(metMuonJESCorAK5CMS2)
