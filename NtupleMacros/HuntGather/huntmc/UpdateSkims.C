@@ -13,6 +13,7 @@
 #include "CORE/muonSelections.cc"
 #include "CORE/trackSelections.cc"
 #include "CORE/jetSelections.cc"
+#include "CORE/mcSelections.cc"
 
 #include "nlepskim.C"
 #include "babymakercommon.C"
@@ -31,52 +32,25 @@ void UpdateSkims(const char *sample, const char *inputFileName)
 
     // emu
 
-    TString skimFileName = "";
-    skimFileName.Append(TString(sample));
-    skimFileName.Append("/emu_skim/emuskim_");
-    skimFileName.Append(ident);
-    skimFileName.Append(".root");
-
-    nlepskim(sample, inputFileName, skimFileName.Data(), 1, true);
-
-    TString babyFileName = skimFileName;
-    babyFileName.ReplaceAll("emu_skim/emuskim_", "emu_baby/emuskim_baby_");
+    TString babyFileName = Form("%s/emu_baby/emuskim_baby_%s.root", sample, ident.Data());
 
     std::cout << "Making a baby named " << babyFileName << std::endl;
     emubabymaker *emubaby = new emubabymaker();
-    emubaby->ScanChain(skimFileName.Data(), babyFileName.Data());
+    emubaby->ScanChain(inputFileName, babyFileName.Data());
 
     // dilep
 
-    skimFileName = "";
-    skimFileName.Append(TString(sample));
-    skimFileName.Append("/dilep_skim/dilepskim_");
-    skimFileName.Append(ident);
-    skimFileName.Append(".root");
-
-    nlepskim(sample, inputFileName, skimFileName.Data(), 2, false);
-
-    babyFileName = skimFileName;
-    babyFileName.ReplaceAll("dilep_skim/dilepskim_", "dilep_baby/dilepskim_baby_");
+    babyFileName = Form("%s/dilep_baby/dilepskim_baby_%s.root", sample, ident.Data());
 
     std::cout << "Making a baby named " << babyFileName << std::endl;
     dilepbabymaker *dilepbaby = new dilepbabymaker();
-    dilepbaby->ScanChain(skimFileName.Data(), babyFileName.Data());
+    dilepbaby->ScanChain(inputFileName, babyFileName.Data());
 
     // trilep
 
-    skimFileName = "";
-    skimFileName.Append(TString(sample));
-    skimFileName.Append("/trilep_skim/trilepskim_");
-    skimFileName.Append(ident);
-    skimFileName.Append(".root");
-
-    nlepskim(sample, inputFileName, skimFileName.Data(), 3, false);
-
-    babyFileName = skimFileName;
-    babyFileName.ReplaceAll("trilep_skim/trilepskim_", "trilep_baby/trilepskim_baby_");
+    babyFileName = Form("%s/trilep_baby/trilepskim_baby_%s.root", sample, ident.Data());
 
     std::cout << "Making a baby named " << babyFileName << std::endl;
     trilepbabymaker *trilepbaby = new trilepbabymaker();
-    trilepbaby->ScanChain(skimFileName.Data(), babyFileName.Data());
+    trilepbaby->ScanChain(inputFileName, babyFileName.Data());
 }

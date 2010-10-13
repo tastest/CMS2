@@ -32,8 +32,9 @@ private:
 	 Int_t   run_;
 	 Int_t   ls_;
 	 Int_t   evt_;
-	 Float_t scale1fb_;
-	 Float_t pthat_;
+     Float_t scale1fb_;
+     Float_t pthat_;
+     Int_t   isdata_;
 	 Int_t   hyp_type_;
 	 Float_t pfmet_;
 	 Float_t tcmet_;
@@ -43,6 +44,7 @@ private:
 	 Float_t jet1pt_;
 	 Float_t jet2pt_;
 	 Float_t jet3pt_;
+     Float_t sumjetpt_;
 	 Float_t jet1eta_;
 	 Float_t jet2eta_;
 	 Float_t jet3eta_;
@@ -69,6 +71,9 @@ private:
 	 Float_t mass_;
 	 Int_t   eormu1_;
 	 Int_t   type1_;
+     Int_t   ngenels_;
+     Int_t   ngenmus_;
+     Int_t   ngentaus_;
 	 Float_t pt1_;
 	 Float_t eta1_;
 	 Float_t phi1_;

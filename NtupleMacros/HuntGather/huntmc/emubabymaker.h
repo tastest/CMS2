@@ -32,8 +32,9 @@ private:
 	 Int_t   run_;
 	 Int_t   ls_;
 	 Int_t   evt_;
-	 Float_t scale1fb_;
-	 Float_t pthat_;
+     Float_t scale1fb_;
+     Float_t pthat_;
+     Int_t   isdata_;
 	 Float_t pfmet_;
 	 Float_t tcmet_;
 	 Int_t   ntrks_;
@@ -42,6 +43,7 @@ private:
 	 Float_t jet1pt_;
 	 Float_t jet2pt_;
 	 Float_t jet3pt_;
+     Float_t sumjetpt_;
 	 Float_t jet1eta_;
 	 Float_t jet2eta_;
 	 Float_t jet3eta_;
@@ -63,8 +65,12 @@ private:
 	 // lepton stuff
 	 Int_t   ngoodlep_;
 	 Int_t   ngoodmus_;
+     Int_t   ngoodels_;
 	 Int_t   eormu_;
 	 Int_t   type_;
+     Int_t   ngenels_;
+     Int_t   ngenmus_;
+     Int_t   ngentaus_;
 	 Float_t pt_;
 	 Float_t eta_;
 	 Float_t phi_;
@@ -86,7 +92,6 @@ private:
 	 Int_t   mu_goodmask_;
 	 Float_t mu_gfitchi2_;
 	 Bool_t  mu_cosmic_;
-	 Float_t mu_maxdr_;
 	 Int_t   mu_siHits_;
 	 Int_t   mu_saHits_;
 	 Float_t mu_emVetoDep_;

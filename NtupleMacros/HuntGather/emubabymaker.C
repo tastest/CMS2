@@ -72,6 +72,10 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 					run_        = cms2.evt_run();
 					ls_         = cms2.evt_lumiBlock();
 					evt_        = cms2.evt_event();
+
+                    if (!isdata_)
+                        int nlep = leptonGenpCount_lepTauDecays(ngenels_, ngenmus_, ngentaus_);
+
 					pfmet_      = cms2.evt_pfmet();
 					tcmet_      = cms2.evt_tcmet();
 					ntrks_      = cms2.trks_trk_p4().size();
@@ -91,29 +95,24 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 
 					// loop over muons and electrons to get ngoodlep
 					ngoodlep_ = 0;
+                    ngoodmus_ = 0;
+                    ngoodels_ = 0;
 					for(unsigned muii = 0; muii < cms2.mus_p4().size(); ++muii)
-						 if (cms2.mus_p4()[muii].pt() > 20. && muonId(muii, NominalTTbarV2))
-							  ++ngoodlep_;
-					for(unsigned eli = 0; eli < cms2.els_p4().size(); ++eli)
-						 if (cms2.els_p4()[eli].pt() > 20. && pass_electronSelection(eli, electronSelection_ttbarV1))
-							  ++ngoodlep_;
-
-					// loop over muons to get ngoodmus
-					ngoodmus_ = 0;
-					VofP4 theMuons;
-					for(unsigned muii = 0; muii < cms2.mus_p4().size(); ++muii)
-						 if (cms2.mus_p4()[muii].pt() > 5. && muonId(muii, NominalTTbarV2))
-							  theMuons.push_back(cms2.mus_p4()[muii]);
-					ngoodmus_ = theMuons.size();
-
-					for (unsigned int muii = 0; muii < theMuons.size(); ++muii)
 					{
-						 for (unsigned int muj = muii+1; muj < theMuons.size(); ++muj)
+                	 if (cms2.mus_p4()[muii].pt() > 20. && muonId(muii, NominalTTbarV2))
 						 {
-							  float tmp_dr = dRbetweenVectors(theMuons[muii], theMuons[muj]);
-							  mu_maxdr_ = tmp_dr > mu_maxdr_ ? tmp_dr : mu_maxdr_;
-						 }
-					}
+                    	      ++ngoodlep_;
+                              ++ngoodmus_;
+                         }
+                    }
+					for(unsigned eli = 0; eli < cms2.els_p4().size(); ++eli)
+				    {
+		                 if (cms2.els_p4()[eli].pt() > 20. && pass_electronSelection(eli, electronSelection_ttbarV2))
+                         {
+							  ++ngoodlep_;
+                              ++ngoodels_;
+                         }
+                    }
 
 					eormu_    = 13*cms2.mus_charge()[mui]*-1; // *-1 to follow pdg conventions
 					type_     = cms2.mus_type()[mui];
@@ -132,6 +131,7 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 					// clean jets for _this_ hyp lepton
 					std::vector<unsigned int> theJetIndices;
 					njetsClean_ = 0;
+                    sumjetpt_ = 0.0;
 					for(unsigned int jeti = 0; jeti < cms2.pfjets_p4().size(); ++jeti)
 					{
 						 LorentzVector vjet = cms2.pfjets_p4()[jeti];
@@ -141,8 +141,10 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 						 if (cms2.pfjets_p4()[jeti].pt() > 30.) {
 							  theJetIndices.push_back(jeti);
 
-							  if (isGoodPFJet(jeti))
+							  if (isGoodPFJet(jeti)) {
 								   ++njetsClean_;
+                                   sumjetpt_ += vjet.Pt();  
+                              }
 						 }
 					}
 					std::sort(theJetIndices.begin(), theJetIndices.end(), sortByPFJetPt);
@@ -272,6 +274,10 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 					run_        = cms2.evt_run();
 					ls_         = cms2.evt_lumiBlock();
 					evt_        = cms2.evt_event();
+
+                    if (!isdata_) 
+                        int nlep = leptonGenpCount_lepTauDecays(ngenels_, ngenmus_, ngentaus_);
+
 					pfmet_      = cms2.evt_pfmet();
 					tcmet_      = cms2.evt_tcmet();
 					ntrks_      = cms2.trks_trk_p4().size();
@@ -279,31 +285,26 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 					float thePFMetPhi = cms2.evt_pfmetPhi();
 					float theTCMetPhi = cms2.evt_tcmetPhi();
 
-					// loop over muons and electrons to get ngoodlep
-					ngoodlep_ = 0;
-					for(unsigned mui = 0; mui < cms2.mus_p4().size(); ++mui)
-						 if (cms2.mus_p4()[mui].pt() > 20. && muonId(mui, NominalTTbarV2))
-							  ++ngoodlep_;
-					for(unsigned elii = 0; elii < cms2.els_p4().size(); ++elii)
-						 if (cms2.els_p4()[elii].pt() > 20. && pass_electronSelection(elii, electronSelection_ttbarV1))
-							  ++ngoodlep_;
-
-					// loop over muons to get ngoodmus
-					ngoodmus_ = 0;
-					VofP4 theMuons;
-					for(unsigned mui = 0; mui < cms2.mus_p4().size(); ++mui)
-						 if (cms2.mus_p4()[mui].pt() > 5. && muonId(mui, NominalTTbarV2))
-							  theMuons.push_back(cms2.mus_p4()[mui]);
-					ngoodmus_ = theMuons.size();
-
-					for (unsigned int mui = 0; mui < theMuons.size(); ++mui)
-					{
-						 for (unsigned int muj = mui+1; muj < theMuons.size(); ++muj)
-						 {
-							  float tmp_dr = dRbetweenVectors(theMuons[mui], theMuons[muj]);
-							  mu_maxdr_ = tmp_dr > mu_maxdr_ ? tmp_dr : mu_maxdr_;
-						 }
-					}
+                    // loop over muons and electrons to get ngoodlep
+                    ngoodlep_ = 0;
+                    ngoodmus_ = 0;
+                    ngoodels_ = 0;
+                    for(unsigned m = 0; m < cms2.mus_p4().size(); ++m)
+                    {
+                     if (cms2.mus_p4()[m].pt() > 20. && muonId(m, NominalTTbarV2))
+                         {
+                              ++ngoodlep_;
+                              ++ngoodmus_;
+                         }
+                    }
+                    for(unsigned e = 0; e < cms2.els_p4().size(); ++e)
+                    {
+                         if (cms2.els_p4()[e].pt() > 20. && pass_electronSelection(e, electronSelection_ttbarV2))
+                         {
+                              ++ngoodlep_;
+                              ++ngoodels_;
+                         }
+                    }
 
 					eormu_    = 11*cms2.els_charge()[eli]*-1; // *-1 to follow pdg conventions
 					type_     = cms2.els_type()[eli];
@@ -323,6 +324,7 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 					// clean jets for _this_ hyp lepton
 					std::vector<unsigned int> theJetIndices;
 					njetsClean_ = 0;
+                    sumjetpt_ = 0.0;
 					for(unsigned int jeti = 0; jeti < cms2.pfjets_p4().size(); ++jeti)
 					{
 						 LorentzVector vjet = cms2.pfjets_p4()[jeti];
@@ -332,8 +334,11 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 						 if (cms2.pfjets_p4()[jeti].pt() > 30.) {
 							  theJetIndices.push_back(jeti);
 
-							  if (isGoodPFJet(jeti))
-								   ++njetsClean_;
+                              if (isGoodPFJet(jeti)) {
+                                   ++njetsClean_;
+                                   sumjetpt_ += vjet.Pt();
+                              }
+
 						 }
 					}
 					std::sort(theJetIndices.begin(), theJetIndices.end(), sortByPFJetPt);
@@ -420,8 +425,8 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 					tcmt_         = sqrt(2.*pt_*tcmet_*(1.-cos(dphitcmet_)));
 					e_cand01full_ = pass_electronSelection(eli, electronSelection_ttbar);
 					e_cand01_     = electronId_cand(eli, CAND_01);
-					e_vbtf90full_ = pass_electronSelection(eli, electronSelection_ttbarV1);
-					e_vbtf90fullAlign_ = pass_electronSelection(eli, electronSelection_ttbarV1, true);		
+					e_vbtf90full_ = pass_electronSelection(eli, electronSelection_ttbarV2);
+					e_vbtf90fullAlign_ = pass_electronSelection(eli, electronSelection_ttbarV2, true);		
 					electronIdComponent_t answer_vbtf90 = electronId_VBTF(eli, VBTF_35X_90);
 					e_vbtf90_     = (answer_vbtf90 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
 					electronIdComponent_t answer_vbtf85 = electronId_VBTF(eli, VBTF_35X_85);
@@ -482,6 +487,7 @@ void emubabymaker::InitBabyNtuple ()
 	 run_          = -999999;
 	 ls_           = -999999;
 	 evt_          = -999999;
+     isdata_       = 1;
 	 pfmet_        = -999999.;
 	 tcmet_        = -999999.;
 	 ntrks_        = -999999;
@@ -490,6 +496,7 @@ void emubabymaker::InitBabyNtuple ()
 	 jet1pt_       = -999999.;
 	 jet2pt_       = -999999.;
 	 jet3pt_       = -999999.;
+     sumjetpt_     = -999999.;
 	 jet1eta_      = -999999.;
 	 jet2eta_      = -999999.;
 	 jet3eta_      = -999999.;
@@ -511,6 +518,10 @@ void emubabymaker::InitBabyNtuple ()
 	 // lepton stuff
 	 ngoodlep_     = -999999;
 	 ngoodmus_     = -999999;
+     ngoodels_     = -999999;
+     ngenels_      = -999999;
+     ngenmus_      = -999999;
+     ngentaus_     = -999999;
 	 eormu_        = -999999;
 	 type_         = -999999;
 	 pt_           = -999999.;
@@ -580,6 +591,7 @@ void emubabymaker::MakeBabyNtuple(const char *babyFilename)
 	 babyTree_->Branch("run",          &run_,          "run/I"         );
 	 babyTree_->Branch("ls",           &ls_,           "ls/I"          );
 	 babyTree_->Branch("evt",          &evt_,          "evt/I"         );
+     babyTree_->Branch("isdata",       &isdata_,       "isdata/I"      );
 	 babyTree_->Branch("pfmet",        &pfmet_,        "pfmet/F"       );
 	 babyTree_->Branch("tcmet",        &tcmet_,        "tcmet/F"       );
 	 babyTree_->Branch("ntrks",        &ntrks_,        "ntrks/I"       );
@@ -588,6 +600,7 @@ void emubabymaker::MakeBabyNtuple(const char *babyFilename)
 	 babyTree_->Branch("jet1pt",       &jet1pt_,       "jet1pt/F"      );
 	 babyTree_->Branch("jet2pt",       &jet2pt_,       "jet2pt/F"      );
 	 babyTree_->Branch("jet3pt",       &jet3pt_,       "jet3pt/F"      );
+     babyTree_->Branch("sumjetpt",     &sumjetpt_,     "sumjetpt/F"    );    
 	 babyTree_->Branch("jet1eta",      &jet1eta_,      "jet1eta/F"     );
 	 babyTree_->Branch("jet2eta",      &jet2eta_,      "jet2eta/F"     );
 	 babyTree_->Branch("jet3eta",      &jet3eta_,      "jet3eta/F"     );
@@ -609,6 +622,10 @@ void emubabymaker::MakeBabyNtuple(const char *babyFilename)
 	 // lepton stuff
 	 babyTree_->Branch("ngoodlep",  &ngoodlep_,  "ngoodlep/I" );
 	 babyTree_->Branch("ngoodmus",  &ngoodmus_,  "ngoodmus/I" );
+     babyTree_->Branch("ngoodels",  &ngoodels_,  "ngoodels/I" );
+     babyTree_->Branch("ngenels",   &ngenels_,   "ngenels/I" );
+     babyTree_->Branch("ngenmus",   &ngenmus_,   "ngenmus/I" );
+     babyTree_->Branch("ngentaus",  &ngentaus_,  "ngentaus/I" );
 	 babyTree_->Branch("eormu",     &eormu_,     "eormu/I"    );
 	 babyTree_->Branch("type",      &type_,      "type/I"     );
 	 babyTree_->Branch("pt",        &pt_,        "pt/F"       );
@@ -632,7 +649,6 @@ void emubabymaker::MakeBabyNtuple(const char *babyFilename)
 	 babyTree_->Branch("mu_goodmask",     &mu_goodmask_,     "mu_goodmask/I"    );
 	 babyTree_->Branch("mu_gfitchi2",     &mu_gfitchi2_,     "mu_gfitchi2/F"    );
 	 babyTree_->Branch("mu_cosmic",       &mu_cosmic_,       "mu_cosmic/O"      );
-	 babyTree_->Branch("mu_maxdr",        &mu_maxdr_,        "mu_maxdr/F"       );
 	 babyTree_->Branch("mu_siHits",       &mu_siHits_,       "mu_siHits/I"      );
 	 babyTree_->Branch("mu_saHits",       &mu_saHits_,       "mu_saHits/I"      );
 	 babyTree_->Branch("mu_emVetoDep",    &mu_emVetoDep_,    "mu_emVetoDep/F"   );

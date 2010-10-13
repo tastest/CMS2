@@ -78,8 +78,12 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 					run_        = cms2.evt_run();
 					ls_         = cms2.evt_lumiBlock();
 					evt_        = cms2.evt_event();
-					scale1fb_   = cms2.evt_scale1fb();
-					pthat_      = cms2.genps_pthat();
+                    scale1fb_   = cms2.evt_scale1fb();
+                    pthat_      = cms2.genps_pthat();
+
+                    if (!isdata_) 
+                        int nlep = leptonGenpCount_lepTauDecays(ngenels_, ngenmus_, ngentaus_);
+
 					pfmet_      = cms2.evt_pfmet();
 					tcmet_      = cms2.evt_tcmet();
 					ntrks_      = cms2.trks_trk_p4().size();
@@ -141,6 +145,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 					VofP4 theJets;
 					std::vector<unsigned int> theJetIndices;
 					njetsClean_ = 0;
+                    sumjetpt_ = 0.0;
 					for(unsigned int jeti = 0; jeti < cms2.pfjets_p4().size(); ++jeti)
 					{
 						 LorentzVector vjet = cms2.pfjets_p4()[jeti];
@@ -153,8 +158,11 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 							  theJets.push_back(cms2.pfjets_p4()[jeti]);
 							  theJetIndices.push_back(jeti);
 
-							  if (isGoodPFJet(jeti))
-								   ++njetsClean_;
+                              if (isGoodPFJet(jeti)) {
+                                   ++njetsClean_;
+                                   sumjetpt_ += vjet.Pt();
+                              }
+
 						 }
 					}
 					std::sort(theJets.begin(), theJets.end(), sortByPt);
@@ -326,8 +334,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 
 						 e2_cand01full_  = pass_electronSelection(index2, electronSelection_ttbar);
 						 e2_cand01_      = electronId_cand(index2, CAND_01);
-						 e2_vbtf90full_  = pass_electronSelection(index2, electronSelection_ttbarV1);
-						 e2_vbtf90fullAlign_  = pass_electronSelection(index2, electronSelection_ttbarV1, true);
+						 e2_vbtf90full_  = pass_electronSelection(index2, electronSelection_ttbarV2);
+						 e2_vbtf90fullAlign_  = pass_electronSelection(index2, electronSelection_ttbarV2, true);
 						 electronIdComponent_t answer_vbtf90 = electronId_VBTF(index2, VBTF_35X_90);
 						 e2_vbtf90_      = (answer_vbtf90 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
 						 electronIdComponent_t answer_vbtf85 = electronId_VBTF(index2, VBTF_35X_85);
@@ -362,8 +370,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 
 						 e1_cand01full_  = pass_electronSelection(index1, electronSelection_ttbar);
 						 e1_cand01_      = electronId_cand(index1, CAND_01);
-						 e1_vbtf90full_  = pass_electronSelection(index1, electronSelection_ttbarV1);
-						 e1_vbtf90fullAlign_  = pass_electronSelection(index1, electronSelection_ttbarV1, true);
+						 e1_vbtf90full_  = pass_electronSelection(index1, electronSelection_ttbarV2);
+						 e1_vbtf90fullAlign_  = pass_electronSelection(index1, electronSelection_ttbarV2, true);
 						 electronIdComponent_t answer_vbtf90 = electronId_VBTF(index1, VBTF_35X_90);
 						 e1_vbtf90_      = (answer_vbtf90 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
 						 electronIdComponent_t answer_vbtf85 = electronId_VBTF(index1, VBTF_35X_85);
@@ -416,8 +424,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 
 						 e1_cand01full_  = pass_electronSelection(index1, electronSelection_ttbar);
 						 e1_cand01_      = electronId_cand(index1, CAND_01);
-						 e1_vbtf90full_  = pass_electronSelection(index1, electronSelection_ttbarV1);
-						 e1_vbtf90fullAlign_  = pass_electronSelection(index1, electronSelection_ttbarV1, true);
+						 e1_vbtf90full_  = pass_electronSelection(index1, electronSelection_ttbarV2);
+						 e1_vbtf90fullAlign_  = pass_electronSelection(index1, electronSelection_ttbarV2, true);
 						 electronIdComponent_t answer_vbtf90 = electronId_VBTF(index1, VBTF_35X_90);
 						 e1_vbtf90_      = (answer_vbtf90 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
 						 electronIdComponent_t answer_vbtf85 = electronId_VBTF(index1, VBTF_35X_85);
@@ -445,8 +453,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 
 						 e2_cand01full_  = pass_electronSelection(index2, electronSelection_ttbar);
 						 e2_cand01_      = electronId_cand(index2, CAND_01);
-						 e2_vbtf90full_  = pass_electronSelection(index2, electronSelection_ttbarV1);
-						 e2_vbtf90fullAlign_  = pass_electronSelection(index2, electronSelection_ttbarV1, true);
+						 e2_vbtf90full_  = pass_electronSelection(index2, electronSelection_ttbarV2);
+						 e2_vbtf90fullAlign_  = pass_electronSelection(index2, electronSelection_ttbarV2, true);
 						 answer_vbtf90   = electronId_VBTF(index2, VBTF_35X_90);
 						 e2_vbtf90_      = (answer_vbtf90 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
 						 answer_vbtf85   = electronId_VBTF(index2, VBTF_35X_85);
@@ -500,8 +508,9 @@ void dilepbabymaker::InitBabyNtuple ()
 	 run_          = -999999;
 	 ls_           = -999999;
 	 evt_          = -999999;
-	 scale1fb_     = -999999.;
-	 pthat_        = -999999.;
+     scale1fb_     = -999999.;
+     pthat_        = -999999.;
+     isdata_       = 0;
 	 hyp_type_     = -999999;
 	 pfmet_        = -999999.;
 	 tcmet_        = -999999.;
@@ -511,6 +520,7 @@ void dilepbabymaker::InitBabyNtuple ()
 	 jet1pt_       = -999999.;
 	 jet2pt_       = -999999.;
 	 jet3pt_       = -999999.;
+     sumjetpt_     = -999999.;
 	 jet1eta_      = -999999.;
 	 jet2eta_      = -999999.;
 	 jet3eta_      = -999999.;
@@ -533,6 +543,10 @@ void dilepbabymaker::InitBabyNtuple ()
 	 tcmeff_       = -999999.;
 
 	 // lepton stuff
+     ngenels_      = -999999;
+     ngenmus_      = -999999;
+     ngentaus_     = -999999;
+
 	 dilpt_        = -999999.;
 	 mass_         = -999999.;
 	 eormu1_       = -999999;
@@ -650,8 +664,9 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 	 babyTree_->Branch("run",          &run_,         "run/I"         );
 	 babyTree_->Branch("ls",           &ls_,          "ls/I"          );
 	 babyTree_->Branch("evt",          &evt_,         "evt/I"         );
-	 babyTree_->Branch("scale1fb",     &scale1fb_,    "scale1fb/F"    );
-	 babyTree_->Branch("pthat",        &pthat_,       "pthat/F"       );
+     babyTree_->Branch("scale1fb",     &scale1fb_,    "scale1fb/F"    );
+     babyTree_->Branch("pthat",        &pthat_,       "pthat/F"       );
+     babyTree_->Branch("isdata",       &isdata_,       "isdata/I"      );
 	 babyTree_->Branch("hyp_type",     &hyp_type_,    "hyp_type/I"    );
 	 babyTree_->Branch("pfmet",        &pfmet_,       "pfmet/F"       );
 	 babyTree_->Branch("tcmet",        &tcmet_,       "tcmet/F"       );
@@ -661,6 +676,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 	 babyTree_->Branch("jet1pt",       &jet1pt_,      "jet1pt/F"      );
 	 babyTree_->Branch("jet2pt",       &jet2pt_,      "jet2pt/F"      );
 	 babyTree_->Branch("jet3pt",       &jet3pt_,      "jet3pt/F"      );
+     babyTree_->Branch("sumjetpt",     &sumjetpt_,     "sumjetpt/F"    );      
 	 babyTree_->Branch("jet1eta",      &jet1eta_,     "jet1eta/F"     );
 	 babyTree_->Branch("jet2eta",      &jet2eta_,     "jet2eta/F"     );
 	 babyTree_->Branch("jet3eta",      &jet3eta_,     "jet3eta/F"     );
@@ -688,6 +704,9 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 	 babyTree_->Branch("mass",       &mass_,       "mass/F"      );
 	 babyTree_->Branch("eormu1",     &eormu1_,     "eormu1/I"    );
 	 babyTree_->Branch("type1",      &type1_,      "type1/I"     );
+     babyTree_->Branch("ngenels",   &ngenels_,   "ngenels/I" );
+     babyTree_->Branch("ngenmus",   &ngenmus_,   "ngenmus/I" );
+     babyTree_->Branch("ngentaus",  &ngentaus_,  "ngentaus/I" );
 	 babyTree_->Branch("pt1",        &pt1_,        "pt1/F"       );
 	 babyTree_->Branch("eta1",       &eta1_,       "eta1/F"      );
 	 babyTree_->Branch("phi1",       &phi1_,       "phi1/F"      );
