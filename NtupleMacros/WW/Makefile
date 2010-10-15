@@ -54,7 +54,7 @@ LIBS = $(CORELIB) $(LIB)
 
 libs:	$(LIBS)
 
-$(CORELIB):	$(COREOBJECTS) 
+$(CORELIB):	$(CORESOURCES) $(COREOBJECTS) 
 	$(QUIET) echo "Linking $(CORELIB)"; \
 	$(LINKER) $(LINKERFLAGS) -shared $(COREOBJECTS) -o $@ 2>&1|perl -ne 'print if(!/skipping incompatible/)'
 
