@@ -239,8 +239,8 @@ TCanvas* DrawAll(TCut field, const char *savename, TCut sel, TCut presel, float 
         field.SetName(field.GetTitle());
 
     hmc->SetTitle(Form("%s, ~%.2f/pb", sel.GetName(), 1e3*intlumifb));
-    float ymax = hdata->GetMaximum() > hmc->GetMaximum() ? hdata->GetMaximum() : hmc->GetMaximum();
-    hmc->SetMaximum(ymax*1.25);
+    float ymax = hdata->GetMaximum() > hmc->GetMaximum() ? hdata->GetMaximum()+2*sqrt(hdata->GetMaximum()) : hmc->GetMaximum()*1.25;
+    hmc->SetMaximum(ymax);
     hmc->Draw("hist");
     if (integrated)
         hmc->GetXaxis()->SetTitle(Form("integrated %s",field.GetName()));
@@ -305,17 +305,9 @@ TCanvas* DrawAll(TCut field, const char *savename, TCut sel, TCut presel, float 
     return DrawAll(field,savename,sel,presel,intlumifb,nbins,xlo,xhi,integrated,tmp);
 }
 
-
-// this drawall is for legacy
-// it has no argument for a data specific selection
-TCanvas* DrawAll(TCut field, const char *savename, TCut sel, TCut presel, float intlumifb, unsigned int nbins, float xlo, float xhi, bool integrated)
-{
-    return DrawAll(field,savename,sel,presel,intlumifb,nbins,xlo,xhi,integrated);
-}
-
 // Predefines what are most likley the only BabySamples
 // one needs for gathering
-TCanvas* DrawAll(TCut field, const char *savename, TCut sel, TCut presel, TCut dsel, float intlumifb, unsigned int nbins, float xlo, float xhi, bool integrated)
+TCanvas* DrawAll(TCut field, const char *savename, TCut sel, TCut presel, float intlumifb, unsigned int nbins, float xlo, float xhi, bool integrated)
 {
     // apply base_dilep selection to dilep babies
     // this speeds things up
@@ -324,11 +316,10 @@ TCanvas* DrawAll(TCut field, const char *savename, TCut sel, TCut presel, TCut d
     // data babies
     //
 
-    // TODO Add isdata to babies so we can re static these guys and get rid of dsel
-    BabySample *bs_data_dilep_1  = new BabySample("data","/nfs-3/userdata/yanjuntu/hunt/EG_Run2010A-Sep17ReReco_v2_RECO/dilep_baby/*.root",base_dilep+dsel,1.,true);
-    BabySample *bs_data_dilep_2  = new BabySample("data","/nfs-3/userdata/yanjuntu/hunt/Electron_Run2010B-PromptReco-v2_RECO/dilep_baby/*.root",base_dilep+dsel,1.,true);
-    BabySample *bs_data_dilep_3  = new BabySample("data","/nfs-3/userdata/yanjuntu/hunt/Mu_Run2010A-Sep17ReReco_v2_RECO/dilep_baby/*.root",base_dilep+dsel,1.,true); 
-    BabySample *bs_data_dilep_4  = new BabySample("data","/nfs-3/userdata/yanjuntu/hunt/Mu_Run2010B-PromptReco-v2_RECO/dilep_baby/*.root",base_dilep+dsel,1.,true);
+    static BabySample *bs_data_dilep_1  = new BabySample("data","/nfs-3/userdata/yanjuntu/hunt/EG_Run2010A-Sep17ReReco_v2_RECO/dilep_baby/*.root",base_dilep,1.,true);
+    static BabySample *bs_data_dilep_2  = new BabySample("data","/nfs-3/userdata/yanjuntu/hunt/Electron_Run2010B-PromptReco-v2_RECO/dilep_baby/*.root",base_dilep,1.,true);
+    static BabySample *bs_data_dilep_3  = new BabySample("data","/nfs-3/userdata/yanjuntu/hunt/Mu_Run2010A-Sep17ReReco_v2_RECO/dilep_baby/*.root",base_dilep,1.,true); 
+    static BabySample *bs_data_dilep_4  = new BabySample("data","/nfs-3/userdata/yanjuntu/hunt/Mu_Run2010B-PromptReco-v2_RECO/dilep_baby/*.root",base_dilep,1.,true);
 
     //
     // mc babies
@@ -343,25 +334,34 @@ TCanvas* DrawAll(TCut field, const char *savename, TCut sel, TCut presel, TCut d
     float kzll       = 1666./1300.;
     float kdyll      = 3457./2659.;
 
-    // dilep
-    static BabySample *bs_ttbarjets_dilep = new BabySample("ttbar","/nfs-3/userdata/yanjuntu/huntmc/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,kttbarjets,false,kRed+1,1001);
-    static BabySample *bs_singletop_dilep = new BabySample("tW","/nfs-3/userdata/yanjuntu/huntmc/SingleTop_tWChannel-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,ksingletop,false,kMagenta,1001);
+    // stitching
+    TCut cut_notau("ngentaus==0");
+    TCut cut_tau("ngentaus==2");
+    TCut cut_stitch_mass("mass<50");
+    TCut cut_dilep_stitch_mass = base_dilep + cut_stitch_mass;
+    TCut cut_dilep_notau = base_dilep + cut_notau;
+    TCut cut_dilep_tau = base_dilep + cut_tau;
 
-    static BabySample *bs_vvjets_dilep    = new BabySample("vvjets","/nfs-3/userdata/yanjuntu/huntmc/VVJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,kvvjets,false,10,1001);
-    static BabySample *bs_wjets_dilep     = new BabySample("wjets","/nfs-3/userdata/yanjuntu/huntmc/WJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,kwjets,false,kGreen-3,1001);
-    static BabySample *bs_ztautau_dilep   = new BabySample("ztautau","/nfs-3/userdata/yanjuntu/huntmc/Ztautau_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,kzll,false,kAzure+8,1001);
+    // dilep
+    static BabySample *bs_ttbarjets_dilep = new BabySample("ttbar","/home/users/dlevans/gathering/HuntGather/huntmc/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,kttbarjets,false,kRed+1,1001);
+    static BabySample *bs_singletop_dilep = new BabySample("tW","/home/users/dlevans/gathering/HuntGather/huntmc/SingleTop_tWChannel-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,ksingletop,false,kMagenta,1001);
+
+    static BabySample *bs_vvjets_dilep    = new BabySample("vvjets","/home/users/dlevans/gathering/HuntGather/huntmc/VVJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,kvvjets,false,10,1001);
+    static BabySample *bs_wjets_dilep     = new BabySample("wjets","/home/users/dlevans/gathering/HuntGather/huntmc/WJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,kwjets,false,kGreen-3,1001);
+
+    static BabySample *bs_zjetstautau_dilep = new BabySample("ztautau","/home/users/dlevans/gathering/HuntGather/huntmc/ZJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root", cut_dilep_tau,kzll,false,kAzure+8,1001);
+    static BabySample *bs_ztautau_dilep     = new BabySample("ztautau","/home/users/dlevans/gathering/HuntGather/huntmc/Ztautau_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",cut_dilep_stitch_mass,kzll,false,kAzure+8,1001);
 
     // Note that a common prefix means
     // a common histogram when used in
     // the same DrawAll, i.e. the five
     // samples below are combined
-    TCut cut_stitch_mass("mass<50");
-    TCut test = base_dilep + cut_stitch_mass;
-    static BabySample *bs_zjets_dilep     = new BabySample("zll","/nfs-3/userdata/yanjuntu/huntmc/ZJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,kzjets,false,kAzure-2,1001);
-    static BabySample *bs_zee_dilep       = new BabySample("zll","/nfs-3/userdata/yanjuntu/huntmc/Zee_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",test,kzll,false,kAzure-2,1001);
-    static BabySample *bs_zmumu_dilep     = new BabySample("zll","/nfs-3/userdata/yanjuntu/huntmc/Zmumu_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",test,kzll,false,kAzure-2,1001);
-    static BabySample *bs_dyee_dilep      = new BabySample("zll","/nfs-3/userdata/yanjuntu/huntmc/DYee_M10to20_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,kdyll,false,kAzure-2,1001);
-    static BabySample *bs_dymumu_dilep    = new BabySample("zll","/nfs-3/userdata/yanjuntu/huntmc/DYmumu_M10to20_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,kdyll,false,kAzure-2,1001);
+
+    static BabySample *bs_zjets_dilep     = new BabySample("zll","/home/users/dlevans/gathering/HuntGather/huntmc/ZJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",cut_dilep_notau,kzjets,false,kAzure-2,1001);
+    static BabySample *bs_zee_dilep       = new BabySample("zll","/home/users/dlevans/gathering/HuntGather/huntmc/Zee_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",cut_dilep_stitch_mass,kzll,false,kAzure-2,1001);
+    static BabySample *bs_zmumu_dilep     = new BabySample("zll","/home/users/dlevans/gathering/HuntGather/huntmc/Zmumu_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",cut_dilep_stitch_mass,kzll,false,kAzure-2,1001);
+    static BabySample *bs_dyee_dilep      = new BabySample("zll","/home/users/dlevans/gathering/HuntGather/huntmc/DYee_M10to20_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,kdyll,false,kAzure-2,1001);
+    static BabySample *bs_dymumu_dilep    = new BabySample("zll","/home/users/dlevans/gathering/HuntGather/huntmc/DYmumu_M10to20_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,kdyll,false,kAzure-2,1001);
 
     std::vector<BabySample*> babyVector;
     babyVector.push_back(bs_data_dilep_1);
@@ -374,6 +374,7 @@ TCanvas* DrawAll(TCut field, const char *savename, TCut sel, TCut presel, TCut d
     babyVector.push_back(bs_dymumu_dilep);
     babyVector.push_back(bs_vvjets_dilep);
     babyVector.push_back(bs_wjets_dilep);
+    babyVector.push_back(bs_zjetstautau_dilep);
     babyVector.push_back(bs_zjets_dilep);
     babyVector.push_back(bs_zee_dilep);
     babyVector.push_back(bs_zmumu_dilep);
