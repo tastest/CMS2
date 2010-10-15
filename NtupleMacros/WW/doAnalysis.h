@@ -88,6 +88,8 @@ unsigned int numberOfJets(unsigned int i_hyp);
 // Various Cuts
 //
 
+bool isGoodVertex(size_t ivtx);
+
 //
 // Datasets for fakes
 // 
@@ -138,11 +140,14 @@ void getIsolationSidebandsAfterSelections(int i_hyp,
 					  RooDataSet* dataset, 
 					  bool passedAllLeptonRequirements);
 
-enum jetregion { HCAL, HF, ALLJET};
-void find_most_energetic_jets(int i_hyp, double weight, bool realData, double etaMin, double etaMax, jetregion jet, bool applyJEC);
-
+void find_leading_genjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & genJetMax);
+void find_leading_jptjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & jptMax, int &jptMaxIndex, bool applyJEC);
+void find_leading_calojet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & caloJetMax, bool applyJEC); 
+void find_leading_trkjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & trkJetMax, bool applyJEC) ;
+void find_leading_pfjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & pfJetMax, bool applyJEC);
+void find_most_energetic_jets(int i_hyp, double weight, bool realData, double etaMin, double etaMax, bool applyJEC);
 void getJetResponseFromZBalance(int i_hyp, double weight, bool realData, double etaMin, double etaMax, bool applyJEC);
-
+void fill_val_plots(int i_hyp, cuts_t cut_passed, double weight, bool applyJEC);
 				
 unsigned int bestZHyp();
 void hypo (int i_hyp, double weight, RooDataSet* dataset = 0, bool zStudy = false, bool realData = false ); 
