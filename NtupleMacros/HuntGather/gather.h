@@ -31,9 +31,6 @@ TCanvas* DrawAll(TCut field, const char *savename, TCut sel, TCut presel, float 
            BabySample *bs6 =0, BabySample *bs7 =0, BabySample *bs8 =0, BabySample *bs9 =0, BabySample *bs10=0,
            BabySample *bs11=0, BabySample *bs12=0, BabySample *bs13=0, BabySample *bs14=0, BabySample *bs15=0);
 
-// as below but with data specific selections
-TCanvas* DrawAll(TCut field, const char *savename, TCut sel, TCut presel, float intlumifb, unsigned int nbins, float xlo, float xhi, bool integrated);
-
 // Predefines and uses what are most likley the only BabySamples
 // one needs for gathering
 TCanvas* DrawAll(TCut field, const char *savename, TCut sel, TCut presel, float intlumifb, unsigned int nbins, float xlo, float xhi, bool integrated);
