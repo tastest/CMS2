@@ -7,7 +7,7 @@ import sys
 
 if len(sys.argv) != 3:
     print 'Usage: '
-    print './getOutputBecauseCrabSucks.py -c <crab directory of task>'
+    print './retrieveCrabLogFiles.py -c <crab directory of task>'
     sys.exit
 
 crabDir = ''
