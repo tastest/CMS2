@@ -1,4 +1,4 @@
-// $Id: jetSelections.cc,v 1.11 2010/08/09 06:39:43 kalavase Exp $
+// $Id: jetSelections.cc,v 1.12 2010/10/16 18:33:04 dmytro Exp $
 
 #include <algorithm>
 #include <utility>
@@ -233,7 +233,7 @@ class FactorizedJetCorrector *makeJetCorrector (const std::vector<std::string> &
 	  }
 	  assert(s == 1);
 	  JetCorrectorParameters JetCorPar(corr_name);
-	  printf("%s\n", corr_name);
+	  // printf("%s\n", corr_name);
 	  vParam.push_back(JetCorrectorParameters(corr_name));
      }
      return new FactorizedJetCorrector(vParam);
