@@ -120,6 +120,13 @@ class myBabyMaker
   Int_t el20_sw_;     // HLT_Ele20_SW_L1R
   Int_t el25_sw_;     // HLT_Ele25_SW_L1R
 
+  Int_t el17_sw_;     // HLT_Ele17_SW_L1R
+  Int_t el17_iso_;    // HLT_Ele17_Isol_L1R
+  Int_t el17_loose_;  // HLT_Ele17_SW_LooseEleId_L1R
+  Int_t el17_sw_cid_; // HLT_Ele17_SW_CaloEleId_L1R
+  Int_t el17_sw_id_;  // HLT_Ele17_SW_EleId_L1R
+  Int_t el17_tiso_;   // HLT_Ele17_SW_TightEleIdIsol_L1R_v1
+
   Int_t Del10_sw_;    // HLT_DoubleEle10_SW_L1R
 
   //  Minimm dR to the closest eg object
@@ -143,6 +150,13 @@ class myBabyMaker
 
   Float_t drel20_sw_;     // HLT_Ele20_SW_L1R
   Float_t drel25_sw_;     // HLT_Ele25_SW_L1R
+
+  Float_t drel17_sw_;     // HLT_Ele17_SW_L1R
+  Float_t drel17_iso_;    // HLT_Ele17_Isol_L1R
+  Float_t drel17_loose_;  // HLT_Ele17_SW_LooseEleId_L1R
+  Float_t drel17_sw_cid_; // HLT_Ele17_SW_CaloEleId_L1R
+  Float_t drel17_sw_id_;  // HLT_Ele17_SW_EleId_L1R
+  Float_t drel17_tiso_;   // HLT_Ele17_SW_TightEleIdIsol_L1R_v1
 
   Float_t drDel10_sw_;    // HLT_DoubleEle10_SW_L1R
 
