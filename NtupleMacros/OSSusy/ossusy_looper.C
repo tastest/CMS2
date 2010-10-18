@@ -55,6 +55,8 @@
 using namespace std;
 using namespace tas;
 
+typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
+
 //mSUGRA scan parameters-----------------------------
 
 const int   nm0points    = 81;
@@ -80,6 +82,26 @@ void fillHistos(TH2F *h2[4][4],float xvalue, float yvalue, float weight, int myT
 void fillHistos(TProfile *h2[4][4],float xvalue, float yvalue,  int myType, int nJetsIdx);
 float returnSigma(float sumJetPt, ossusy_looper::MetTypeEnum metType);
 float returnBias(float sumJetPt, ossusy_looper::MetTypeEnum metType);
+
+/*****************************************************************************************/
+//hypothesis disambiguation. Returns the hypothesis that has mass closent to MZ
+/*****************************************************************************************/
+unsigned int selectBestZHyp(const vector<unsigned int> &v_goodHyps) {
+  
+  float mindeltam         = 100;
+  unsigned int bestHypIdx = 0;
+  for(unsigned int i = 0; i < v_goodHyps.size(); i++) {
+    unsigned int index = v_goodHyps.at(i);
+    float deltam = fabs( hyp_p4()[index].mass() - 91. );
+    if( deltam < mindeltam ) {
+      mindeltam = deltam;
+      bestHypIdx = index;
+    }
+  }
+
+  return bestHypIdx;
+
+}
 
 //--------------------------------------------------------------------
 
@@ -151,42 +173,51 @@ void ossusy_looper::makeTree(char *prefix)
   rootdir->cd();
 
   //Super compressed ntuple here
-  outFile   = new TFile(Form("output/V01-01/%s_smallTree.root",prefix), "RECREATE");
+  outFile   = new TFile(Form("output/V01-03/%s_smallTree.root",prefix), "RECREATE");
+  //outFile   = new TFile("temp.root","RECREATE");
   outFile->cd();
   outTree = new TTree("t","Tree");
 
   //Set branch addresses
   //variables must be declared in ossusy_looper.h
-  outTree->Branch("weight",        &weight_,       "weight/F");
-  outTree->Branch("proc",          &proc_,         "proc/I");
-  outTree->Branch("leptype",       &leptype_,      "leptype/I");
-  outTree->Branch("dilmass",       &dilmass_,      "dilmass/F");
-  outTree->Branch("tcmet",         &tcmet_,        "tcmet/F");
-  outTree->Branch("genmet",        &genmet_,       "genmet/F");
-  outTree->Branch("pfmet",         &pfmet_,        "pfmet/F");
-  outTree->Branch("tcmet35X",      &tcmet_35X_,    "tcmet35X/F");
-  outTree->Branch("tcmetevent",    &tcmet_event_,  "tcmetevent/F");
-  outTree->Branch("tcmetlooper",   &tcmet_looper_, "tcmetlooper/F");
-  outTree->Branch("tcmetphi",      &tcmetphi_,     "tcmetphi/F");
-  outTree->Branch("tcsumet",       &tcsumet_,      "tcsumet/F");
-  outTree->Branch("mt2",           &mt2_,          "mt2/F");  
-  outTree->Branch("mt2j",          &mt2j_,         "mt2j/F");  
-  outTree->Branch("sumjetpt",      &sumjetpt_,     "sumjetpt/F");
-  outTree->Branch("dileta",        &dileta_,       "dileta/F");
-  outTree->Branch("dilpt",         &dilpt_,        "dilpt/F");
-  outTree->Branch("dildphi",       &dildphi_,      "dildphi/F");
-  outTree->Branch("njets",         &njets_,        "njets/I");
-  outTree->Branch("vecjetpt",      &vecjetpt_,     "vecjetpt/F");
-  outTree->Branch("pass",          &pass_,         "pass/I");
-  outTree->Branch("passz",         &passz_,        "passz/I");
-  outTree->Branch("m0",            &m0_,           "m0/F");
-  outTree->Branch("m12",           &m12_,          "m12/F");
-  outTree->Branch("ptl1",          &ptl1_,         "ptl1/F");
-  outTree->Branch("ptl2",          &ptl2_,         "ptl2/F");
-  outTree->Branch("ptj1",          &ptj1_,         "ptj1/F");
-  outTree->Branch("ptj2",          &ptj2_,         "ptj2/F");
-  outTree->Branch("meff",          &meff_,         "meff/F");
-  outTree->Branch("mt",            &mt_,           "mt/F");
+  outTree->Branch("costhetaweight",  &costhetaweight_,   "costhetaweight/F");
+  outTree->Branch("weight",          &weight_,           "weight/F");
+  outTree->Branch("nlep",            &nlep_,             "nlep/I");
+  outTree->Branch("mull",            &mull_,             "mull/I");
+  outTree->Branch("mult",            &mult_,             "mult/I");
+  outTree->Branch("mullgen",         &mullgen_,          "mullgen/I");
+  outTree->Branch("multgen",         &multgen_,          "multgen/I");
+  outTree->Branch("proc",            &proc_,             "proc/I");
+  outTree->Branch("leptype",         &leptype_,          "leptype/I");
+  outTree->Branch("dilmass",         &dilmass_,          "dilmass/F");
+  outTree->Branch("tcmet",           &tcmet_,            "tcmet/F");
+  outTree->Branch("genmet",          &genmet_,           "genmet/F");
+  outTree->Branch("pfmet",           &pfmet_,            "pfmet/F");
+  outTree->Branch("mucormet",        &mucormet_,         "mucormet/F");
+  outTree->Branch("mucorjesmet",     &mucorjesmet_,      "mucorjesmet/F");
+  outTree->Branch("tcmet35X",        &tcmet_35X_,        "tcmet35X/F");
+  outTree->Branch("tcmetevent",      &tcmet_event_,      "tcmetevent/F");
+  outTree->Branch("tcmetlooper",     &tcmet_looper_,     "tcmetlooper/F");
+  outTree->Branch("tcmetphi",        &tcmetphi_,         "tcmetphi/F");
+  outTree->Branch("tcsumet",         &tcsumet_,          "tcsumet/F");
+  outTree->Branch("mt2",             &mt2_,              "mt2/F");  
+  outTree->Branch("mt2j",            &mt2j_,             "mt2j/F");  
+  outTree->Branch("sumjetpt",        &sumjetpt_,         "sumjetpt/F");
+  outTree->Branch("dileta",          &dileta_,           "dileta/F");
+  outTree->Branch("dilpt",           &dilpt_,            "dilpt/F");
+  outTree->Branch("dildphi",         &dildphi_,          "dildphi/F");
+  outTree->Branch("njets",           &njets_,            "njets/I");
+  outTree->Branch("vecjetpt",        &vecjetpt_,         "vecjetpt/F");
+  outTree->Branch("pass",            &pass_,             "pass/I");
+  outTree->Branch("passz",           &passz_,            "passz/I");
+  outTree->Branch("m0",              &m0_,               "m0/F");
+  outTree->Branch("m12",             &m12_,              "m12/F");
+  outTree->Branch("ptl1",            &ptl1_,             "ptl1/F");
+  outTree->Branch("ptl2",            &ptl2_,             "ptl2/F");
+  outTree->Branch("ptj1",            &ptj1_,             "ptj1/F");
+  outTree->Branch("ptj2",            &ptj2_,             "ptj2/F");
+  outTree->Branch("meff",            &meff_,             "meff/F");
+  outTree->Branch("mt",              &mt_,               "mt/F");
 
 
 }
@@ -278,7 +309,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
     exit(0);
   }
 
-  set_goodrun_file( "Cert_TopAug30_Merged_135059-144114_recover_noESDCS_goodruns.txt" );
+  set_goodrun_file( "Cert_TopOct15_Merged_135821-147454_allPVT_json.txt" );
 
   SimpleFakeRate *fr_el=0;
   SimpleFakeRate *fr_mu=0;
@@ -386,6 +417,13 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       //find good hyps, store in v_goodHyps
       vector<unsigned int> v_goodHyps;
       v_goodHyps.clear();
+      vector<unsigned int> v_goodZHyps;
+      v_goodZHyps.clear();
+
+      bool foundMu_ll[20];
+      bool foundMu_lt[20];
+      bool foundEl_ll[20];
+      bool foundEl_lt[20];
       
       for(unsigned int i = 0; i < hyp_p4().size(); ++i) {
 
@@ -401,7 +439,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         if(type == 3 && !passEl)                                    continue;
         if((type == 1 || type == 2) && !passMu && !passEl)          continue;
         
-
         //check that hyp leptons come from same vertex
         if( !hypsFromSameVtx( i ) )    continue;
 
@@ -421,43 +458,92 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         if( TMath::Max( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < 20. )   continue;
         if( TMath::Min( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < 10. )   continue;
         if( hyp_p4()[i].mass() < 10 )                                         continue;
-
-        //nominal muon ID
+        
+        //muon ID
         if (abs(hyp_ll_id()[i]) == 13  && (! muonId(hyp_ll_index()[i] , NominalTTbarV2 ) ) )   continue;
         if (abs(hyp_lt_id()[i]) == 13  && (! muonId(hyp_lt_index()[i] , NominalTTbarV2 ) ) )   continue;
-
-        //ttbarV2 electron ID
-        if (abs(hyp_ll_id()[i]) == 11  && (! pass_electronSelection( hyp_ll_index()[i] , 
-                                                                     electronSelection_ttbarV2 , isData , true ))) continue;
-        if (abs(hyp_lt_id()[i]) == 11  && (! pass_electronSelection( hyp_lt_index()[i] , 
-                                                                     electronSelection_ttbarV2 , isData , true ))) continue;
         
-
-        //Summer09: use MC-truth-based electron ID
-        /*
-        if (abs(hyp_ll_id()[i]) == 11 ){
-          LorentzVector v_ll = els_p4().at( cms2.hyp_ll_index()[i] );
-          bool foundEl = false;
-          for( unsigned int iel = 0 ; iel < els_mc_p4().size() ; ++iel ){
-            LorentzVector v_mc = els_mc_p4().at( iel );
-            if( dRbetweenVectors(v_ll, v_mc) < 0.1) foundEl = true;
-          }
-          if( !foundEl ) continue;
-        }
-
-       if (abs(hyp_lt_id()[i]) == 11 ){
-          LorentzVector v_lt = els_p4().at( cms2.hyp_lt_index()[i] );
-          bool foundEl = false;
-          for( unsigned int iel = 0 ; iel < els_mc_p4().size() ; ++iel ){
-            LorentzVector v_mc = els_mc_p4().at( iel );
-            if( dRbetweenVectors(v_lt, v_mc) < 0.1) foundEl = true;
-          }
-          if( !foundEl ) continue;
-        }
-        */
+        //OSV1
+        if (abs(hyp_ll_id()[i]) == 11  && (! pass_electronSelection( hyp_ll_index()[i] , electronSelection_OSV1 , false , false ))) continue;
+        if (abs(hyp_lt_id()[i]) == 11  && (! pass_electronSelection( hyp_lt_index()[i] , electronSelection_OSV1 , false , false ))) continue;
 
         v_goodHyps.push_back( i );
+
+        if( hyp_ll_p4()[i].pt() > 20. && hyp_lt_p4()[i].pt() > 20 ){
+          if( hyp_p4()[i].mass() > 76. && hyp_p4()[i].mass() < 106. ){
+            v_goodZHyps.push_back(i);
+          }
+        }
       }
+
+      //loop over Z hypotheses
+      if( v_goodZHyps.size() > 0 ){
+        
+        unsigned int zhyp = selectBestZHyp(v_goodZHyps);
+
+        float weight = 1;
+        if( isData ){
+          weight = 1;
+        }else{
+          weight = kFactor * evt_scale1fb() * lumi;
+        }
+        
+        //store dilepton type in myType
+        int myType = 99;
+        if (hyp_type()[zhyp] == 3)                              myType = 0; // ee
+        if (hyp_type()[zhyp] == 0)                              myType = 1; // mm
+        if (hyp_type()[zhyp] == 1 || hyp_type()[zhyp] == 2)     myType = 2; // em
+        if (myType == 99) { 
+          cout << "Skipping unknown dilepton type = " << hyp_type()[zhyp] << endl;
+          continue;
+        }
+        
+        int njets = 0;
+        
+        for (unsigned int ijet = 0; ijet < jpts_p4().size(); ijet++) {
+          
+          LorentzVector vjet = jpts_p4().at(ijet) * jpts_cor().at(ijet); 
+          LorentzVector vlt  = hyp_lt_p4()[zhyp];
+          LorentzVector vll  = hyp_ll_p4()[zhyp];
+          
+          if( dRbetweenVectors(vjet, vll) < 0.4) continue;
+          if( dRbetweenVectors(vjet, vlt) < 0.4) continue;
+          if( vjet.pt() < 30.          )         continue;
+          if( fabs( vjet.eta() ) > 2.5 )         continue;
+          if( !passesCaloJetID( vjet ) )         continue;
+          
+          njets++;
+        }
+        
+        if( njets > 2 ) njets = 2;
+
+	pair<float, float> p_met_Z; //met and met phi
+        
+        p_met_Z = getMet( "tcMET_looper" , zhyp);
+        float tcmet_looper_Z = p_met_Z.first;
+        
+        p_met_Z = getMet( "tcMET" , zhyp);
+        float tcmet_event_Z = p_met_Z.first;
+        
+        p_met_Z = getMet( "pfMET" , zhyp);
+        float pfmet_Z = p_met_Z.first;
+        
+        p_met_Z = getMet( "muCorMET" , zhyp);
+        float mucormet_Z = p_met_Z.first;
+        
+        p_met_Z = getMet( "muCorJESMET" , zhyp);
+        float mucorjesmet_Z = p_met_Z.first;
+        
+        fillHistos(hdilMass_Z      , hyp_p4()[zhyp].mass() , weight , myType , njets);
+        fillHistos(htcmet_event_Z  , tcmet_event_Z         , weight , myType , njets);
+        fillHistos(htcmet_looper_Z , tcmet_looper_Z        , weight , myType , njets);
+        fillHistos(hpfmet_Z        , pfmet_Z               , weight , myType , njets);
+        fillHistos(hmucormet_Z     , mucormet_Z            , weight , myType , njets);
+        fillHistos(hmucorjesmet_Z  , mucorjesmet_Z         , weight , myType , njets);
+        
+      }
+
+
 
       //skip events with no good hyps
       if( v_goodHyps.size() == 0 ) continue;
@@ -503,8 +589,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
       }
       */
-
-
 
       if( v_goodHyps.size() != 1 ){
         cout << "Error, nhyps = " << v_goodHyps.size() << ", this shouldn't happen!!!!" << endl;
@@ -616,16 +700,30 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           }
         */
 
+        int nels = 0;
+        int nmus  = 0;
+        int ntaus = 0;
+        int nleps = 0;
+        
+        float dilptgen = -1;
+
         //splitting ttbar into ttdil/ttotr
         if( !isData ){
-          int nels = 0;
-          int nmus  = 0;
-          int ntaus = 0;
-          int nleps = 0;
+  
           nleps = leptonGenpCount_lepTauDecays(nels, nmus, ntaus);
 
-          if(strcmp(prefix,"ttdil") == 0 && nleps != 2 ) continue;
-          if(strcmp(prefix,"ttotr") == 0 && nleps == 2 ) continue;
+          if(strcmp(prefix,"ttem")  == 0 && ( nels + nmus ) != 2 ) continue;
+          if(strcmp(prefix,"ttdil") == 0 && nleps != 2           ) continue;
+          if(strcmp(prefix,"ttotr") == 0 && nleps == 2           ) continue;
+
+          LorentzVector vdilepton(0,0,0,0);
+          
+          for ( int igen = 0 ; igen < genps_id().size() ; igen++ ) { 
+            if ( abs( cms2.genps_id().at(igen) ) == 11) vdilepton += genps_p4().at(igen); 
+            if ( abs( cms2.genps_id().at(igen) ) == 13) vdilepton += genps_p4().at(igen); 
+          }
+          
+          if( nels + nmus == 2) dilptgen = vdilepton.pt();
         }
 
         //for tt, check if 2 leptons are from W's
@@ -706,6 +804,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           
           //Summer09: remove JPT correction
           LorentzVector vjet = jpts_p4().at(ijet) * jpts_cor().at(ijet); 
+          //LorentzVector vjet = jpts_p4().at(ijet);
           LorentzVector vlt  = hyp_lt_p4()[hypIdx];
           LorentzVector vll  = hyp_ll_p4()[hypIdx];
           
@@ -777,10 +876,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         float genmetphi = -9999;
      
         if( !isData ){
-          genmet    = gen_met();
-          gensumet  = gen_sumEt();
-          genmetphi = gen_metPhi();
-          genmet_    = gen_met();
+          genmet     = gen_met();
+          gensumet   = gen_sumEt();
+          genmetphi  = gen_metPhi();
+
         }
     
         /*
@@ -807,9 +906,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         //ttdil tcmet definition
 	pair<float, float> p_met; //met and met phi
         
-        if( isData )   p_met = getMet( "tcMET"    , hypIdx);
-        else           p_met = getMet( "tcMET35X" , hypIdx);
-        //else           p_met = getMet( "tcMET" , hypIdx);  //Summer09: use tcMET
+        //if( isData )   p_met = getMet( "tcMET"    , hypIdx);
+        //else           p_met = getMet( "tcMET35X" , hypIdx);
+        //else           p_met = getMet( "tcMET" , hypIdx);  //Summer09: use tcMET        
+        p_met = getMet( "tcMET"    , hypIdx);
         
         float tcmet    = p_met.first;
         float tcmetphi = p_met.second;
@@ -1019,8 +1119,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         }
 
         //hyp lepton pt
-        float ptll    = hyp_ll_trk_p4()[hypIdx].pt();
-        float ptlt    = hyp_lt_trk_p4()[hypIdx].pt();
+        float ptll    = hyp_ll_p4()[hypIdx].pt();
+        float ptlt    = hyp_lt_p4()[hypIdx].pt();
         float ptl1    = ( ptlt > ptll) ? ptlt : ptll; 
         float ptl2    = ( ptlt > ptll) ? ptll : ptlt; 
         float philep  = ( ptlt > ptll) ? hyp_lt_trk_p4()[hypIdx].phi() : hyp_ll_trk_p4()[hypIdx].phi() ;
@@ -1056,51 +1156,74 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         double dphilep = fabs(hyp_lt_p4()[hypIdx].phi() - hyp_ll_p4()[hypIdx].phi());
         if (dphilep > TMath::Pi()) dphilep = TMath::TwoPi() - dphilep;
 
+        //get various met types
+        
+        float tcmet_35X = -9999;
+
+        if( !isData ){
+          p_met = getMet( "tcMET35X"    , hypIdx);
+          //p_met = getMet( "tcMET"    , hypIdx); //Summer09: use tcMET
+          tcmet_35X = p_met.first;
+        }
+
+        p_met = getMet( "tcMET_looper"    , hypIdx);
+        float tcmet_looper = p_met.first;
+
+        p_met = getMet( "tcMET"    , hypIdx);
+        float tcmet_event = p_met.first;
+
+        p_met = getMet( "pfMET"    , hypIdx);
+        float pfmet = p_met.first;
+
+        p_met = getMet( "muCorMET"    , hypIdx);
+        float mucormet = p_met.first;
+
+        p_met = getMet( "muCorJESMET"    , hypIdx);
+        float mucorjesmet = p_met.first;
 
         //fill tree for baby ntuple 
         if(g_createTree){
 
-          p_met = getMet( "tcMET"    , hypIdx);
-          tcmet_event_ = p_met.first;
-
-          if( !isData ){
-            p_met = getMet( "tcMET35X"    , hypIdx);
-            //p_met = getMet( "tcMET"    , hypIdx); //Summer09: use tcMET
-            tcmet_35X_ = p_met.first;
-          }else{
-            tcmet_35X_ = -9999.;
-          }
-
-          p_met = getMet( "tcMET_looper"    , hypIdx);
-          tcmet_looper_ = p_met.first;
-
-          p_met = getMet( "pfMET"    , hypIdx);
-          pfmet_ = p_met.first;
-
-          weight_      = weight;                       //event weight
-          proc_        = getProcessType(prefix);       //integer specifying sample
-          dilmass_     = hyp_p4()[hypIdx].mass();      //dilepton mass
-          dilpt_       = hyp_p4()[hypIdx].pt();        //dilepton pT
-          dileta_      = hyp_p4()[hypIdx].eta();       //dilepton eta
-          dildphi_     = dphilep;                      //dilepton delta phi
-          tcmet_       = tcmet;                        //tcmet
-          tcsumet_     = tcsumet;                      //tcsumet
-          tcmetphi_    = tcmetphi;                     //tcmetphi
-          sumjetpt_    = theSumJetPt;                  //scalar sum jet pt
-          mt2_         = mt2core;                      //mt2 leptonic
-          mt2j_        = mt2j;                         //mt2 with jets
-          njets_       = theNJets;                     //njets w pt>30 and |eta|<2.5
-          vecjetpt_    = vecjetpt;                     //vector sum jet pt
-          pass_        = pass;                         //pass kinematic cuts
-          passz_       = passz;                        //pass Z selection
-          m0_          = m0;                           //mSUGRA m0
-          m12_         = m12;                          //mSUGRA m1/2
-          ptl1_        = ptl1;                         //highest pT lepton
-          ptl2_        = ptl2;                         //2nd highest pT lepton
-          ptj1_        = ptmax;                        //leading jet
-          ptj2_        = ptmax2;                       //2nd leading jet
-          meff_        = meff_jets_p4;                 //effective mass
-          mt_          = mt;                           //transverse mass of leading lepton+met
+          costhetaweight_ = -3;
+          if(strcmp(prefix,"ttdil") == 0 )
+            costhetaweight_ = getCosThetaStarWeight();
+        
+          mullgen_       = foundMu_ll[hypIdx] ? 1 : 0;
+          multgen_       = foundMu_lt[hypIdx] ? 1 : 0;
+          mull_          = (abs(hyp_ll_id()[hypIdx]) == 13  && (! muonId(hyp_ll_index()[hypIdx] , NominalTTbarV2 ) ) ) ? 0 : 1;
+          mult_          = (abs(hyp_lt_id()[hypIdx]) == 13  && (! muonId(hyp_lt_index()[hypIdx] , NominalTTbarV2 ) ) ) ? 0 : 1;
+          nlep_          = nels + nmus;
+          tcmet_looper_  = tcmet_looper;
+          tcmet_35X_     = tcmet_35X;
+          tcmet_event_   = tcmet_event;
+          pfmet_         = pfmet;
+          mucormet_      = mucormet;
+          mucorjesmet_   = mucorjesmet;
+          genmet_        = genmet;                       //generated met from neutrinos/LSP
+          weight_        = weight;                       //event weight
+          proc_          = getProcessType(prefix);       //integer specifying sample
+          dilmass_       = hyp_p4()[hypIdx].mass();      //dilepton mass
+          dilpt_         = hyp_p4()[hypIdx].pt();        //dilepton pT
+          dileta_        = hyp_p4()[hypIdx].eta();       //dilepton eta
+          dildphi_       = dphilep;                      //dilepton delta phi
+          tcmet_         = tcmet;                        //tcmet
+          tcsumet_       = tcsumet;                      //tcsumet
+          tcmetphi_      = tcmetphi;                     //tcmetphi
+          sumjetpt_      = theSumJetPt;                  //scalar sum jet pt
+          mt2_           = mt2core;                      //mt2 leptonic
+          mt2j_          = mt2j;                         //mt2 with jets
+          njets_         = theNJets;                     //njets w pt>30 and |eta|<2.5
+          vecjetpt_      = vecjetpt;                     //vector sum jet pt
+          pass_          = pass;                         //pass kinematic cuts
+          passz_         = passz;                        //pass Z selection
+          m0_            = m0;                           //mSUGRA m0
+          m12_           = m12;                          //mSUGRA m1/2
+          ptl1_          = ptl1;                         //highest pT lepton
+          ptl2_          = ptl2;                         //2nd highest pT lepton
+          ptj1_          = ptmax;                        //leading jet
+          ptj2_          = ptmax2;                       //2nd leading jet
+          meff_          = meff_jets_p4;                 //effective mass
+          mt_            = mt;                           //transverse mass of leading lepton+met
 
           leptype_ = -1;
           if (hyp_type()[hypIdx] == 3) leptype_ = 0; // ee
@@ -1289,6 +1412,23 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
               hsusy_met_sumjetpt[ getIndexFromM0(m0) ][ getIndexFromM12(m12)]->Fill(theSumJetPt , tcmet/sqrt(tcsumet), weight);
             }
           }
+
+          if(nkcut(cutbit,ncut,2)){//met
+            fillHistos( hdpfmet_genmet , genmet , ( pfmet - genmet ) / genmet , 1 , myType , nJetsIdx );
+            fillHistos( tdpfmet_genmet , genmet , ( pfmet - genmet ) / genmet ,     myType , nJetsIdx );
+            
+            fillHistos( hdtcmetevent_genmet , genmet , ( tcmet_event - genmet ) / genmet , 1 , myType , nJetsIdx );
+            fillHistos( tdtcmetevent_genmet , genmet , ( tcmet_event - genmet ) / genmet ,     myType , nJetsIdx );
+            
+            fillHistos( hdtcmetlooper_genmet , genmet , ( tcmet_looper - genmet ) / genmet , 1 , myType , nJetsIdx );
+            fillHistos( tdtcmetlooper_genmet , genmet , ( tcmet_looper - genmet ) / genmet ,     myType , nJetsIdx );
+            
+            fillHistos( hdmucormet_genmet , genmet , ( mucormet - genmet ) / genmet , 1 , myType , nJetsIdx );
+            fillHistos( tdmucormet_genmet , genmet , ( mucormet - genmet ) / genmet ,     myType , nJetsIdx );
+            
+            fillHistos( hdmucorjesmet_genmet , genmet , ( mucorjesmet - genmet ) / genmet , 1 , myType , nJetsIdx );
+            fillHistos( tdmucorjesmet_genmet , genmet , ( mucorjesmet - genmet ) / genmet ,     myType , nJetsIdx );
+          }
         
           if(!nkcut(cutbit,ncut)) continue; //continue if event doesn't pass ALL cuts
         }
@@ -1305,6 +1445,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
         hyield->Fill(0.5, weight);
         hyield->Fill(1.5+myType, weight);
+
+
+
 
         fillHistos( habcd,         theSumJetPt , tcmet/sqrt(theSumJetPt),               weight, myType, nJetsIdx);
         if( theSumJetPt > 150 && tcmet/sqrt(theSumJetPt) > 4.5 )
@@ -1646,13 +1789,13 @@ void ossusy_looper::BookHistos(char *prefix)
 
 
   for (int i = 0; i < 4; i++) {
-    hnJet[i] = new TH1F(Form("%s_hnJet_%s",prefix,suffixall[i]),Form("%s_nJet_%s",prefix,suffixall[i]),11,-0.5,10.5);	
+    hnJet[i] = new TH1F(Form("%s_hnJet_%s",prefix,suffixall[i]),Form("%s_nJet_%s",prefix,suffixall[i]),10,0,10);	
     hnJet[i]->GetXaxis()->SetTitle("nJets");
 
-    hnJpt[i] = new TH1F(Form("%s_hnJpt_%s",prefix,suffixall[i]),Form("%s_nJpt_%s",prefix,suffixall[i]),11,-0.5,10.5);	
+    hnJpt[i] = new TH1F(Form("%s_hnJpt_%s",prefix,suffixall[i]),Form("%s_nJpt_%s",prefix,suffixall[i]),10,0,10);
     hnJpt[i]->GetXaxis()->SetTitle("nJpts");
 
-    hnHypJet[i] = new TH1F(Form("%s_hnHypJet_%s",prefix,suffixall[i]),Form("%s_nHypJet_%s",prefix,suffixall[i]),11,-0.5,10.5);	
+    hnHypJet[i] = new TH1F(Form("%s_hnHypJet_%s",prefix,suffixall[i]),Form("%s_nHypJet_%s",prefix,suffixall[i]),10,0,10);
     hnHypJet[i]->GetXaxis()->SetTitle("nHypJets");
 
     for(int k = 0; k < 5; k++) {
@@ -1670,11 +1813,29 @@ void ossusy_looper::BookHistos(char *prefix)
       char suffix[7];
       sprintf(suffix, "%s_%s", njetCh[j], suffixall[i]);
 
+      hdilMass_Z[i][j]   = new TH1F(Form("%s_hdilMass_Z_%s",prefix,suffix),
+                                    Form("%s_dilMass_Z_%s" ,prefix,suffix),300,0,300);
+
+      htcmet_event_Z[i][j]   = new TH1F(Form("%s_htcmet_event_Z_%s",prefix,suffix),
+                                        Form("%s_tcmet_event_Z_%s" ,prefix,suffix),60,0,300);
+      
+      htcmet_looper_Z[i][j]   = new TH1F(Form("%s_htcmet_looper_Z_%s",prefix,suffix),
+                                         Form("%s_tcmet_looper_Z_%s" ,prefix,suffix),60,0,300);
+      
+      hpfmet_Z[i][j]   = new TH1F(Form("%s_hpfmet_Z_%s",prefix,suffix),
+                                  Form("%s_pfmet_Z_%s" ,prefix,suffix),60,0,300);
+      
+      hmucormet_Z[i][j]   = new TH1F(Form("%s_hmucormet_Z_%s",prefix,suffix),
+                                     Form("%s_mucormet_Z_%s" ,prefix,suffix),60,0,300);
+      
+      hmucorjesmet_Z[i][j]   = new TH1F(Form("%s_hmucorjesmet_Z_%s",prefix,suffix),
+                                        Form("%s_mucorjesmet_Z_%s" ,prefix,suffix),60,0,300);
+      
       hetaz[i][j]   = new TH1F(Form("%s_hetaz_%s",prefix,suffix),
                                Form("%s_etaz_%s" ,prefix,suffix),1000,0,5);
             
       hmt[i][j]   = new TH1F(Form("%s_hmt_%s",prefix,suffix),
-                             Form("%s_mt_%s" ,prefix,suffix),1000,0,5000);
+                             Form("%s_mt_%s" ,prefix,suffix),1000,0,500);
 
       habcd[i][j]   = new TH2F(Form("%s_habcd_%s",prefix,suffix),
                                Form("%s_abcd_%s" ,prefix,suffix),1500,0,1500,300,0,30);
@@ -1682,8 +1843,69 @@ void ossusy_looper::BookHistos(char *prefix)
       habcd_nopresel[i][j]   = new TH2F(Form("%s_habcd_nopresel_%s",prefix,suffix),
                                         Form("%s_abcd_nopresel_%s" ,prefix,suffix),1500,0,1500,300,0,30);
 
+      //delta(met-genmet)/genmet TH2, TProfile
+
+      //event-level tcmet
+      hdtcmetevent_genmet[i][j]   = new TH2F(Form("%s_hdtcmetevent_genmet_%s",prefix,suffix),
+                                             Form("%s_hdtcmetevent_genmet_%s",prefix,suffix),50,0,500,50,-1,1); 
+
+      tdtcmetevent_genmet[i][j]   = new TProfile(Form("%s_tdtcmetevent_genmet_%s",prefix,suffix),
+                                                 Form("%s_tdtcmetevent_genmet_%s",prefix,suffix),50,0,500,-1,1); 
+
+      hdtcmetevent_genmet[i][j]->GetXaxis()->SetTitle("genmet (GeV)");
+      hdtcmetevent_genmet[i][j]->GetYaxis()->SetTitle("(tcmetevent-genmet)/genmet");
+      tdtcmetevent_genmet[i][j]->GetXaxis()->SetTitle("genmet (GeV)");
+      tdtcmetevent_genmet[i][j]->GetYaxis()->SetTitle("(tcmetevent-genmet)/genmet");
+
+      //looper-level tcmet
+      hdtcmetlooper_genmet[i][j]   = new TH2F(Form("%s_hdtcmetlooper_genmet_%s",prefix,suffix),
+                                              Form("%s_hdtcmetlooper_genmet_%s",prefix,suffix),50,0,500,50,-1,1); 
       
+      tdtcmetlooper_genmet[i][j]   = new TProfile(Form("%s_tdtcmetlooper_genmet_%s",prefix,suffix),
+                                                  Form("%s_tdtcmetlooper_genmet_%s",prefix,suffix),50,0,500,-1,1); 
       
+      hdtcmetlooper_genmet[i][j]->GetXaxis()->SetTitle("genmet (GeV)");
+      hdtcmetlooper_genmet[i][j]->GetYaxis()->SetTitle("(tcmetlooper-genmet)/genmet");
+      tdtcmetlooper_genmet[i][j]->GetXaxis()->SetTitle("genmet (GeV)");
+      tdtcmetlooper_genmet[i][j]->GetYaxis()->SetTitle("(tcmetlooper-genmet)/genmet");
+
+      //muon-corrected calomet
+      hdmucormet_genmet[i][j]   = new TH2F(Form("%s_hdmucormet_genmet_%s",prefix,suffix),
+                                           Form("%s_hdmucormet_genmet_%s",prefix,suffix),50,0,500,50,-1,1); 
+      
+      tdmucormet_genmet[i][j]   = new TProfile(Form("%s_tdmucormet_genmet_%s",prefix,suffix),
+                                               Form("%s_tdmucormet_genmet_%s",prefix,suffix),50,0,500,-1,1); 
+      
+      hdmucormet_genmet[i][j]->GetXaxis()->SetTitle("genmet (GeV)");
+      hdmucormet_genmet[i][j]->GetYaxis()->SetTitle("(mucormet-genmet)/genmet");
+      tdmucormet_genmet[i][j]->GetXaxis()->SetTitle("genmet (GeV)");
+      tdmucormet_genmet[i][j]->GetYaxis()->SetTitle("(mucormet-genmet)/genmet");
+
+      //muon-corrected Type1 calomet
+      hdmucorjesmet_genmet[i][j]   = new TH2F(Form("%s_hdmucorjesmet_genmet_%s",prefix,suffix),
+                                              Form("%s_hdmucorjesmet_genmet_%s",prefix,suffix),50,0,500,50,-1,1); 
+      
+      tdmucorjesmet_genmet[i][j]   = new TProfile(Form("%s_tdmucorjesmet_genmet_%s",prefix,suffix),
+                                                  Form("%s_tdmucorjesmet_genmet_%s",prefix,suffix),50,0,500,-1,1); 
+      
+      hdmucorjesmet_genmet[i][j]->GetXaxis()->SetTitle("genmet (GeV)");
+      hdmucorjesmet_genmet[i][j]->GetYaxis()->SetTitle("(mucorjesmet-genmet)/genmet");
+      tdmucorjesmet_genmet[i][j]->GetXaxis()->SetTitle("genmet (GeV)");
+      tdmucorjesmet_genmet[i][j]->GetYaxis()->SetTitle("(mucorjesmet-genmet)/genmet");
+
+      //pfmet
+      hdpfmet_genmet[i][j]   = new TH2F(Form("%s_hdpfmet_genmet_%s",prefix,suffix),
+                                        Form("%s_hdpfmet_genmet_%s",prefix,suffix),50,0,500,50,-1,1); 
+      
+      tdpfmet_genmet[i][j]   = new TProfile(Form("%s_tdpfmet_genmet_%s",prefix,suffix),
+                                            Form("%s_tdpfmet_genmet_%s",prefix,suffix),50,0,500,-1,1); 
+      
+      hdpfmet_genmet[i][j]->GetXaxis()->SetTitle("genmet (GeV)");
+      hdpfmet_genmet[i][j]->GetYaxis()->SetTitle("(pfmet-genmet)/genmet");
+      tdpfmet_genmet[i][j]->GetXaxis()->SetTitle("genmet (GeV)");
+      tdpfmet_genmet[i][j]->GetYaxis()->SetTitle("(pfmet-genmet)/genmet");
+            
+
       Double_t xbins[66];
 
       for( unsigned int ibin = 0 ; ibin < 51 ; ++ibin ) xbins[ibin]    = 10  * ibin;
@@ -1714,13 +1936,13 @@ void ossusy_looper::BookHistos(char *prefix)
       habcd_tprof_nopresel[i][j]->GetYaxis()->SetTitle("tcmet/#sqrt{sumJetPt} (GeV^{1/2})");
       
       hmt2core[i][j] = new TH1F(Form("%s_hmt2core_%s",prefix,suffix),
-                                Form("%s_mt2core_%s" ,prefix,suffix),1000,0,1000);
+                                Form("%s_mt2core_%s" ,prefix,suffix),100,0,200);
   
       hmt2jcore[i][j] = new TH1F(Form("%s_hmt2jcore_%s",prefix,suffix),
-                                 Form("%s_mt2jcore_%s" ,prefix,suffix),1000,0,1000);
+                                 Form("%s_mt2jcore_%s" ,prefix,suffix),100,0,500);
             
       hmt2j[i][j] = new TH1F(Form("%s_hmt2j_%s",prefix,suffix),
-                             Form("%s_mt2j_%s" ,prefix,suffix),1000,0,1000);
+                             Form("%s_mt2j_%s" ,prefix,suffix),100,0,500);
 
       hmet_dilpt_all[i][j] = new TH2F(Form("%s_met_dilpt_all_%s",prefix,suffix),
                                       Form("%s_met_dilpt_all_%s" ,prefix,suffix),500,0,500,500,0,500);
@@ -1777,14 +1999,14 @@ void ossusy_looper::BookHistos(char *prefix)
                                                  Form("%s_gensumet_genmet_prof_%s",prefix,suffix),200,0,2000,0,500);
             
       //hsumJetPt[i][j] = new TH1F(Form("%s_hsumJetPt_%s",prefix,suffix),Form("%s_sumJetPt_%s",prefix,suffix),5,binedges1500);
-      hsumJetPt[i][j] = new TH1F(Form("%s_hsumJetPt_%s",prefix,suffix),Form("%s_sumJetPt_%s",prefix,suffix),200,0,2000);
+      hsumJetPt[i][j] = new TH1F(Form("%s_hsumJetPt_%s",prefix,suffix),Form("%s_sumJetPt_%s",prefix,suffix),100,0,500);
       //hmeffJet[i][j] = new TH1F(Form("%s_hmeffJet_%s",prefix,suffix),Form("%s_meffJet_%s",prefix,suffix),5,binedges1500);
-      hmeffJet[i][j] = new TH1F(Form("%s_hmeffJet_%s",prefix,suffix),Form("%s_meffJet_%s",prefix,suffix),200,0,2000);
+      hmeffJet[i][j] = new TH1F(Form("%s_hmeffJet_%s",prefix,suffix),Form("%s_meffJet_%s",prefix,suffix),100,0,1000);
       hDtcmetgenmetVsumJetPt[i][j] = new TH2F(Form("%s_hDtcmetgenmetVsumJetPt_%s",prefix,suffix),Form("%s_DtcmetgenmetVsumJetPt_%s",prefix,suffix),5,binedges1500,40,-50.,50.);
       hDmetmuonjesgenmetVsumJetPt[i][j] = new TH2F(Form("%s_hDmetmuonjesgenmetVsumJetPt_%s",prefix,suffix),Form("%s_DmetmuonjesgenmetVsumJetPt_%s",prefix,suffix),5,binedges1500,40,-50.,50.);
 
-      hsumJptPt[i][j] = new TH1F(Form("%s_hsumJptPt_%s",prefix,suffix),Form("%s_sumJptPt_%s",prefix,suffix),200,0,2000);
-      hmeffJPT[i][j] = new TH1F(Form("%s_hmeffJPT_%s",prefix,suffix),Form("%s_meffJPT_%s",prefix,suffix),5,binedges1500);
+      hsumJptPt[i][j] = new TH1F(Form("%s_hsumJptPt_%s",prefix,suffix),Form("%s_sumJptPt_%s",prefix,suffix),100,0,500);
+      hmeffJPT[i][j] = new TH1F(Form("%s_hmeffJPT_%s",prefix,suffix),Form("%s_meffJPT_%s",prefix,suffix),100,0,1000);
 
       hsumHypPt[i][j] = new TH1F(Form("%s_hsumHypPt_%s",prefix,suffix),Form("%s_sumHypPt_%s",prefix,suffix),5,binedges1500);
       hmeffHyp[i][j] = new TH1F(Form("%s_hmeffHyp_%s",prefix,suffix),Form("%s_meffJHyp_%s",prefix,suffix),5,binedges1500);
@@ -2187,3 +2409,331 @@ float returnBias(float sumJetPt, ossusy_looper::MetTypeEnum metType)
 }
 
 //--------------------------------------------------------------------
+                                                                     
+                                             
+float ossusy_looper::getCosThetaStarWeight(){
+
+
+  int nels = 0;
+  int nmus  = 0;
+  int ntaus = 0;
+  int nleps = 0;
+    
+  nleps = leptonGenpCount_lepTauDecays(nels, nmus, ntaus);
+    
+  ///////////////////////////
+  // Generator Information //
+  ///////////////////////////
+  //
+  int ntplus  = 0;
+  int ntminus = 0;
+  int nWplus  = 0;
+  int nWminus = 0;
+  int nbplus  = 0;
+  int nbminus = 0;
+  int nlplus  = 0;
+  int nlminus = 0;
+  int nnu     = 0;
+  int nnubar  = 0;
+
+  LorentzVector genp4_tplus_;
+  LorentzVector genp4_tminus_;
+  LorentzVector genp4_Wplus_;
+  LorentzVector genp4_Wminus_;
+  LorentzVector genp4_lplus_;
+  LorentzVector genp4_lminus_;
+  LorentzVector genp4_bplus_;
+  LorentzVector genp4_bminus_;
+  LorentzVector genp4_nu_;
+  LorentzVector genp4_nubar_;
+  LorentzVector genp4_Wplus_bminus_;
+  LorentzVector genp4_Wminus_bplus_;
+  LorentzVector genp4_lminus_nubar_;
+  LorentzVector genp4_lplus_nu_;
+  LorentzVector genp4_lminus_lplus_;
+  LorentzVector genp4_nu_nubar_;
+  LorentzVector genp4_Wminus_tCM_;
+  LorentzVector genp4_Wplus_tCM_;
+  LorentzVector genp4_lminus_tCM_;
+  LorentzVector genp4_nubar_tCM_;
+  LorentzVector genp4_lplus_tCM_;
+  LorentzVector genp4_nu_tCM_;
+  LorentzVector genp4_lminus_WCM_;
+  LorentzVector genp4_nubar_WCM_;
+  LorentzVector genp4_lplus_WCM_;
+  LorentzVector genp4_nu_WCM_;
+  LorentzVector genp4_lminus_nubar_WCM_;
+  LorentzVector genp4_lplus_nu_WCM_;
+  
+  float theta_lminus_nubar_WCM_;
+  float theta_lplus_nu_WCM_;
+  int   genid_lplus_;
+  int   genid_lminus_;
+
+  // loop on generator particles
+  for( unsigned int i=0; i < genps_id().size(); i++ ){
+
+    // top
+    if( genps_id().at(i) == 6 ){
+      genp4_tplus_ = genps_p4().at(i);
+      ntplus++;
+    }
+    if( genps_id().at(i) == -6 ){
+      genp4_tminus_ = genps_p4().at(i);
+      ntminus++;
+    }
+
+    // W's from top
+    if( genps_id().at(i) == 24 && genps_id_mother().at(i) == 6 ){
+      genp4_Wplus_ = genps_p4().at(i);
+      nWplus++;
+    }
+    if( genps_id().at(i) == -24 && genps_id_mother().at(i) == -6 ){
+      genp4_Wminus_ = genps_p4().at(i);
+      nWminus++;
+    }
+
+    // leptons from W+
+    if( genps_id_mother().at(i) == 24 ){
+      if( genps_id().at(i) == -11 || genps_id().at(i) == -13 ){
+        genp4_lplus_ = genps_p4().at(i);
+        nlplus++;
+        if( genps_id().at(i) == -11 ){
+          genid_lplus_ = -11;
+        } 
+        else if( genps_id().at(i) == -13 ){
+          genid_lplus_ = -13;
+        }
+      }
+      if( genps_id().at(i) == 12 || genps_id().at(i) == 14 ){
+        genp4_nu_ = genps_p4().at(i);
+        nnu++;
+      }
+    }
+
+    // leptons from W-
+    if( genps_id_mother().at(i) == -24 ){
+      if( genps_id().at(i) == 11 || genps_id().at(i) == 13 ){
+        genp4_lminus_ = genps_p4().at(i);
+        nlminus++;
+        if( genps_id().at(i) == 11 ){
+          genid_lminus_ = 11;;
+        } 
+        else if( genps_id().at(i) == 13 ){
+          genid_lminus_ = 13;
+        }
+      }
+      if( genps_id().at(i) == -12 || genps_id().at(i) == -14 ){
+        genp4_nubar_ = genps_p4().at(i);
+        nnubar++;
+      }
+    }
+
+    // b's
+    if( genps_id().at(i) == 5 && genps_id_mother().at(i) == 6){
+      nbminus++;
+      genp4_bminus_ = genps_p4().at(i);
+    }
+    if( genps_id().at(i) == -5 && genps_id_mother().at(i) == -6){
+      nbplus++;
+      genp4_bplus_ = genps_p4().at(i);
+    }
+
+  } // end loop on generator particles
+
+  // Construct some composite 4-vectors
+  genp4_Wplus_bminus_ = genp4_Wplus_  + genp4_bminus_;
+  genp4_Wminus_bplus_ = genp4_Wminus_ + genp4_bplus_;
+  genp4_lminus_nubar_ = genp4_lminus_ + genp4_nubar_;
+  genp4_lplus_nu_     = genp4_lplus_  + genp4_nu_;
+  genp4_lminus_lplus_ = genp4_lminus_ + genp4_lplus_;
+  genp4_nu_nubar_     = genp4_nu_     + genp4_nubar_;
+
+  // Sanity
+  if( ntplus != 1 ){ 
+    cout << "ERROR: did not find exactly 1 t" << endl;
+    exit(1);
+  }
+  if( ntminus != 1 ){ 
+    cout << "ERROR: did not find exactly 1 tbar" << endl;
+    exit(1);
+  }
+  if( nWplus != 1 ){ 
+    cout << "ERROR: did not find exactly 1 W+" << endl;
+    exit(1);
+  }
+  if( nWminus != 1 ){ 
+    cout << "ERROR: did not find exactly 1 W-" << endl;
+    exit(1);
+  }
+  if( nbplus != 1 ){ 
+    cout << "ERROR: did not find exactly 1 b+ from top" << endl;
+    //exit(1);
+  }
+  if( nbminus != 1 ){ 
+    cout << "ERROR: did not find exactly 1 b- from top" << endl;
+    //exit(1);
+  }
+  // 
+  if( ntaus == 0 ){
+    if( nlplus != 1 ){ 
+      cout << "ERROR: did not find exactly 1 e+ or mu+" << endl;
+      exit(1);
+    }
+    if( nlminus != 1 ){ 
+      cout << "ERROR: did not find exactly 1 e- or mu-" << endl;
+      exit(1);
+    }
+    if( nnu != 1 ){
+      cout << "ERROR: did not find exactly 1 nu" << endl;
+      exit(1);
+    }
+    if( nnubar != 1 ){
+      cout << "ERROR: did not find exactly 1 nubar" << endl;
+      exit(1);
+    }
+  } 
+  else {
+    //cout << "Unhandled Case: N Taus = " << ntaus << endl << endl;
+    return -2;
+  }
+
+
+
+      
+
+  // Boost from the LAB to the top CM
+  ROOT::Math::Boost boost_tplus_CM( genp4_tplus_.BoostToCM().x(), genp4_tplus_.BoostToCM().y(), genp4_tplus_.BoostToCM().z() );
+  ROOT::Math::Boost boost_tminus_CM( genp4_tminus_.BoostToCM().x(), genp4_tminus_.BoostToCM().y(), genp4_tminus_.BoostToCM().z() );
+  
+  // Boost from the LAB to the W CM
+  ROOT::Math::Boost boost_Wplus_CM( genp4_Wplus_.BoostToCM().x(), genp4_Wplus_.BoostToCM().y(), genp4_Wplus_.BoostToCM().z() );
+  ROOT::Math::Boost boost_Wminus_CM( genp4_Wminus_.BoostToCM().x(), genp4_Wminus_.BoostToCM().y(), genp4_Wminus_.BoostToCM().z() );
+  
+  // Get the W, lepton, and neutrino 4-vectors in the top rest frame
+  genp4_Wminus_tCM_       = boost_tminus_CM * genp4_Wminus_;
+  genp4_Wplus_tCM_        = boost_tplus_CM  * genp4_Wplus_;
+  genp4_lminus_tCM_       = boost_tminus_CM * genp4_lminus_;
+  genp4_nubar_tCM_        = boost_tminus_CM * genp4_nubar_;
+  genp4_lplus_tCM_        = boost_tplus_CM  * genp4_lplus_;
+  genp4_nu_tCM_           = boost_tplus_CM  * genp4_nu_;
+
+  // Boost from the top CM to the W CM ( tW notation )
+  ROOT::Math::Boost boost_Wplus_tWCM( genp4_Wplus_tCM_.BoostToCM().x(), genp4_Wplus_tCM_.BoostToCM().y(), genp4_Wplus_tCM_.BoostToCM().z() );
+  ROOT::Math::Boost boost_Wminus_tWCM( genp4_Wminus_tCM_.BoostToCM().x(), genp4_Wminus_tCM_.BoostToCM().y(), genp4_Wminus_tCM_.BoostToCM().z() );
+
+  // Boost from the W CM to the top CM ( Wt notation )
+  ROOT::Math::Boost boost_Wplus_WtCM  = boost_Wplus_tWCM.Inverse();
+  ROOT::Math::Boost boost_Wminus_WtCM = boost_Wminus_tWCM.Inverse();
+        
+  // Get the lepton and neutrino 4-vectors in the W rest frame
+
+  //--- LAB -> top CM -> W CM ---//
+  genp4_lminus_WCM_       = boost_Wminus_tWCM * genp4_lminus_tCM_;
+  genp4_nubar_WCM_        = boost_Wminus_tWCM * genp4_nubar_tCM_;
+  genp4_lplus_WCM_        = boost_Wplus_tWCM  * genp4_lplus_tCM_;
+  genp4_nu_WCM_           = boost_Wplus_tWCM  * genp4_nu_tCM_;
+
+  /*
+  //--- LAB -> W -> top ---//
+  genp4_lminus_WCM_       = boost_Wminus_CM * genp4_lminus_;
+  genp4_nubar_WCM_        = boost_Wminus_CM * genp4_nubar_;
+  genp4_lplus_WCM_        = boost_Wplus_CM  * genp4_lplus_;
+  genp4_nu_WCM_           = boost_Wplus_CM  * genp4_nu_;
+
+  genp4_lminus_WCM_       = boost_Wminus_WtCM * genp4_lminus_WCM_;
+  genp4_nubar_WCM_        = boost_Wminus_WtCM * genp4_nubar_WCM_;
+  genp4_lplus_WCM_        = boost_Wplus_WtCM  * genp4_lplus_WCM_;
+  genp4_nu_WCM_           = boost_Wplus_WtCM  * genp4_nu_WCM_;
+  */
+
+  // Composite 4-vectors
+  genp4_lminus_nubar_WCM_ = genp4_lminus_WCM_ + genp4_nubar_WCM_;
+  genp4_lplus_nu_WCM_     = genp4_lplus_WCM_  + genp4_nu_WCM_;
+
+  // W +/- in the lab frame here
+  // want W direction in the top rest frame
+  // NB: this says theta, but it is real cosTheta
+
+  theta_lminus_nubar_WCM_ = genp4_lminus_WCM_.Px()*genp4_Wminus_tCM_.Px() +
+    genp4_lminus_WCM_.Py()*genp4_Wminus_tCM_.Py() +
+    genp4_lminus_WCM_.Pz()*genp4_Wminus_tCM_.Pz();
+
+  theta_lplus_nu_WCM_     = genp4_lplus_WCM_.Px()*genp4_Wplus_tCM_.Px() +
+    genp4_lplus_WCM_.Py()*genp4_Wplus_tCM_.Py() +
+    genp4_lplus_WCM_.Pz()*genp4_Wplus_tCM_.Pz();
+
+  theta_lminus_nubar_WCM_ /= genp4_lminus_WCM_.P()*genp4_Wminus_tCM_.P();
+  theta_lplus_nu_WCM_     /= genp4_lplus_WCM_.P()*genp4_Wplus_tCM_.P();
+
+  float x1 = theta_lminus_nubar_WCM_;
+  float x2 = theta_lplus_nu_WCM_;
+
+  float f1 = 0.703 * (1 - x1 * x1 ) + 0.5 * 0.297 * ( 1 - x1 ) * ( 1 - x1 );
+  float f2 = 0.703 * (1 - x2 * x2 ) + 0.5 * 0.297 * ( 1 - x2 ) * ( 1 - x2 );
+
+  
+  float weight = -1;
+
+  if( f1 > 0 && f2 > 0 ) weight = 1. / ( f1 * f2 );
+
+  return weight;
+
+}
+
+
+
+
+        //Summer09: use MC-truth-based electron/muon ID  <<<--------------CHANGED!!!!!!!!!
+        /*
+        foundMu_ll[i] = false;
+        foundMu_lt[i] = false;
+        foundEl_ll[i] = false;
+        foundEl_lt[i] = false;
+          
+        if (abs(hyp_ll_id()[i]) == 11 ){
+          LorentzVector v_ll = els_p4().at( cms2.hyp_ll_index()[i] );
+          for( unsigned int iel = 0 ; iel < els_mc_p4().size() ; ++iel ){
+            LorentzVector v_mc = els_mc_p4().at( iel );
+            if( dRbetweenVectors(v_ll, v_mc) < 0.1) foundEl_ll[i] = true;
+          }
+          if( !foundEl_ll[i] ) continue;
+        }
+        
+        else if (abs(hyp_ll_id()[i]) == 13 ){
+          LorentzVector v_ll = mus_p4().at( cms2.hyp_ll_index()[i] );
+          for( unsigned int imu = 0 ; imu < mus_mc_p4().size() ; ++imu ){
+            LorentzVector v_mc = mus_mc_p4().at( imu );
+            if( dRbetweenVectors(v_ll, v_mc) < 0.1) foundMu_ll[i] = true;
+          }
+          if( !foundMu_ll[i] ) continue;
+        }
+
+        else{
+          cout << "Error unrecognized hyp_ll_id " << hyp_ll_id()[i] << ", skipping" << endl;
+          continue;
+        }
+        
+        if (abs(hyp_lt_id()[i]) == 11 ){
+          LorentzVector v_lt = els_p4().at( cms2.hyp_lt_index()[i] );
+          for( unsigned int iel = 0 ; iel < els_mc_p4().size() ; ++iel ){
+            LorentzVector v_mc = els_mc_p4().at( iel );
+            if( dRbetweenVectors(v_lt, v_mc) < 0.1) foundEl_lt[i] = true;
+          }
+          if( !foundEl_lt[i] ) continue;
+        }
+        
+        else if (abs(hyp_lt_id()[i]) == 13 ){
+          LorentzVector v_lt = mus_p4().at( cms2.hyp_lt_index()[i] );
+          for( unsigned int imu = 0 ; imu < mus_mc_p4().size() ; ++imu ){
+            LorentzVector v_mc = mus_mc_p4().at( imu );
+            if( dRbetweenVectors(v_lt, v_mc) < 0.1) foundMu_lt[i] = true;
+          }
+          if( !foundMu_lt[i] ) continue;
+        }
+     
+        else{
+          cout << "Error unrecognized hyp_lt_id " << hyp_lt_id()[i] << ", skipping" << endl;
+          continue;
+        }
+        */

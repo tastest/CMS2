@@ -84,6 +84,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // It looks like the top x-section is for mtop = 175 GeV
   float kttall    = 157.5/165.0;  
   float kttdil    = 157.5/165.0;  
+  float kttem     = 157.5/165.0;  
   float kttotr    = 157.5/165.0;  
   float kWW       = 1.;
   float kWZ       = 1.;
@@ -125,6 +126,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // Prescales
   int prettall    = 1;
   int prettdil    = 1;
+  int prettem     = 1;
   int prettotr    = 1;
   int preWW       = 1;
   int preWZ       = 1;
@@ -161,13 +163,14 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preML6      = 1;
   int preML7      = 1;
   int preML8      = 1;
-  int preLMscan = 1;
+  int preLMscan   = 1;
 
-  /*
+  
   //Flags for files to run over
   bool rundata     = 1;
   bool runttall    = 0;
   bool runttdil    = 1;
+  bool runttem     = 0;
   bool runttotr    = 1;
   bool runWW       = 1;
   bool runWZ       = 1;
@@ -205,12 +208,14 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  */
   
+
+  /*
   //Flags for files to run over
   bool rundata     = 0;
   bool runttall    = 0;
   bool runttdil    = 1;
+  bool runttem     = 0;
   bool runttotr    = 0;
   bool runWW       = 0;
   bool runWZ       = 0;
@@ -248,10 +253,27 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  
+  */
 
   TChain* chdata = new  TChain("Events");
   if(rundata){
+    
+    pickSkimIfExists(chdata,
+                     "/tas/cms2/EG_Run2010A-Sep17ReReco_v2_RECO/V03-06-09/diLepPt1020Skim/skimmed*root",
+                     "data");
+    
+    pickSkimIfExists(chdata,
+                     "/tas/cms2/Mu_Run2010A-Sep17ReReco_v2_RECO/V03-06-09/diLepPt1020Skim/skimmed*root",
+                     "data");
+    
+    pickSkimIfExists(chdata,
+                     "/tas/cms2/Electron_Run2010B-PromptReco-v2_RECO/V03-06-09/diLepPt1020Skim/skimmed*root",
+                     "data");
+    
+    pickSkimIfExists(chdata,
+                     "/tas/cms2/Mu_Run2010B-PromptReco-v2_RECO/V03-06-09/diLepPt1020Skim/skimmed*root",
+                     "data");
+    /*
     pickSkimIfExists(chdata, 
                      "/tas/fgolf/SSskims/data/dilep_skim_2.root",
                      "data");
@@ -270,6 +292,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
     pickSkimIfExists(chdata, 
                      "/tas/cms2/Mu_Run2010A-PromptReco-v4_RECO/V03-04-26-02/singleLepPt10Skim/skimmed_ntuple_139783_0.root",
                      "data");
+    */
   }
   
   TChain* chZjets = new  TChain("Events");
@@ -291,9 +314,19 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain* chtopdil = new TChain("Events");
   if (runttdil) {
     pickSkimIfExists(chtopdil, 
-                     "/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/skimmed*root",
                      //"/tas/cms2/TTbarJets-madgraph_Summer09-MC_31X_V3_7TeV-v2/V03-00-35-skim/merged*root",
-                     //"/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-07/merged*.root",
+                     //"/tas01/disk02/cms2/TTbarJets-madgraph_Summer09-MC_31X_V3_7TeV-v5/V03-00-35/merged*root",
+                     "/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/skimmed*root",
+                     //"/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*.root",
+                     "TTJets");
+  }
+
+  TChain* chtopem = new TChain("Events");
+  if (runttem) {
+    pickSkimIfExists(chtopem, 
+                     //"/tas01/disk02/cms2/TTbarJets-madgraph_Summer09-MC_31X_V3_7TeV-v5/V03-00-35/merged*root",
+                     //"/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/skimmed*root",
+                     "/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*.root",
                      "TTJets");
   }
 
@@ -616,9 +649,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   //--------------------------------
   //set luminosity to scale to
   //--------------------------------
-  //float lumi              = 2.7945e-3;  //2.8 pb-1
-  float lumi              = 0.1;        //100 pb-1
-  //float lumi              = 2.77e-3;      //2.7 pb-1
+  //float lumi              = 0.1;          //100 pb-1
+  float lumi              = 11.059e-3; 
   bool  calculateTCMET    = true; //redo tcmet calculation on the fly
 
   char* jetTypeStrings[3] = {"JPT", "calo","pfjet"};
@@ -661,6 +693,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                 looper->ScanChain(chtopdil,"ttdil", kttdil, prettdil, lumi, jetType, metType, zveto, doFakeApp, calculateTCMET);
                 cout << "Done processing ttbar dileptonic.. " << endl;
                 hist::color("ttdil", kYellow);
+              }
+              if (runttem) {
+                cout << "Processing ttbar em.. " << endl;
+                looper->ScanChain(chtopem,"ttem", kttem, prettem, lumi, jetType, metType, zveto, doFakeApp, calculateTCMET);
+                cout << "Done processing ttbar em.. " << endl;
               }
               if (runttotr) {
                 cout << "Processing ttbar no-dileptons.. " << endl;
@@ -878,7 +915,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                                            jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
               }
               else {
-                const char* outFile = Form("output/ossusy_%s_%s%s_bitmask.root", 
+                const char* outFile = Form("output/V01-03/ossusy_%s_%s%s_bitmask.root", 
                                            jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
               }
 

@@ -46,7 +46,8 @@ class ossusy_looper
         void BookHistos (char *prefix);
         bool passZSelection (int hypIdx);
         bool passTrigger (int dilType);
-      
+        float getCosThetaStarWeight();
+
         // Set globals
         void set_susybaseline (bool b) { g_susybaseline = b; }
         void set_createTree   (bool b) { g_createTree   = b; }
@@ -55,8 +56,6 @@ class ossusy_looper
         // Baby ntuple methods
         void makeTree (char *prefix);
         void closeTree ();
-
-
 
     private:
 
@@ -70,12 +69,20 @@ class ossusy_looper
         TFile  *outFile;
         TTree  *outTree;
         Float_t weight_;
+        Float_t costhetaweight_;
+        Int_t   mull_;
+        Int_t   mult_;
+        Int_t   mullgen_;
+        Int_t   multgen_;
+        Int_t   nlep_;
         Int_t   proc_;
         Int_t   leptype_;
         Int_t   njets_;
         Float_t dilmass_;
         Float_t tcmet_;
         Float_t genmet_;
+        Float_t mucormet_;
+        Float_t mucorjesmet_;
         Float_t pfmet_;
         Float_t tcmet_35X_;
         Float_t tcmet_event_;
@@ -106,7 +113,27 @@ class ossusy_looper
 /* 	SimpleFakeRate fr_mu; */
 
         // Lots and lots of histograms
+
+        //Z histos
+        TH1F* hdilMass_Z[4][4];
+        TH1F* htcmet_event_Z[4][4];
+        TH1F* htcmet_looper_Z[4][4];
+        TH1F* hpfmet_Z[4][4];
+        TH1F* hmucormet_Z[4][4];
+        TH1F* hmucorjesmet_Z[4][4];
+
         TH1F* hyield;
+
+        TH2F*     hdtcmetevent_genmet[4][4];
+        TProfile* tdtcmetevent_genmet[4][4];
+        TH2F*     hdtcmetlooper_genmet[4][4];
+        TProfile* tdtcmetlooper_genmet[4][4];
+        TH2F*     hdpfmet_genmet[4][4];
+        TProfile* tdpfmet_genmet[4][4];
+        TH2F*     hdmucormet_genmet[4][4];
+        TProfile* tdmucormet_genmet[4][4];
+        TH2F*     hdmucorjesmet_genmet[4][4];
+        TProfile* tdmucorjesmet_genmet[4][4];
 
         TH1F* hmt2j_signal[4][4];
         TH1F* hmt2j_control[4][4];
