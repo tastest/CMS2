@@ -363,7 +363,7 @@ static const cuts_t electronSelectionFO_el_OSV1_v3 =
 
 //Same as  electronSelection_ttbarV1_pass5, but uses pt 10, sc 10 cut instead of 15
 //---------------------------------------------------------
-static const cuts_t electronSelection_OSV1 = 
+static const cuts_t electronSelection_el_OSV1 = 
   (1ll<<ELEID_VBTF_35X_90) |
   (1ll<<ELEIP_400) |										
   (1ll<<ELEISO_REL015) |
