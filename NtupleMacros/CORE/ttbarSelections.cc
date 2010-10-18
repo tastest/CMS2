@@ -48,7 +48,6 @@ bool isGoodLeptonNoIso(int id, int lepIdx, bool applyAlignmentCorrection, bool r
     return false;
       
   }
-  
 
   return false;
 }

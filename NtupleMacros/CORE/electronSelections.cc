@@ -103,6 +103,7 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     // Pt
     //
     if( cms2.els_p4()[index].pt() > 10.0 ) cuts_passed |= (1ll<<ELEPT_010);
+    if( cms2.els_p4()[index].pt() > 15.0 ) cuts_passed |= (1ll<<ELEPT_015);
     if( cms2.els_p4()[index].pt() > 20.0 ) cuts_passed |= (1ll<<ELEPT_020);
 
     //
