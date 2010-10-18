@@ -223,9 +223,27 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 	v2Oct6_  = v2_;
 	v3Oct6_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v3);
 
+	numOSOct18_ = pass_electronSelection( iEl, electronSelection_el_OSV1);
+	v1OSOct18_  = pass_electronSelection( iEl, electronSelectionFO_el_OSV1_v1);
+	v2OSOct18_  = pass_electronSelection( iEl, electronSelectionFO_el_OSV1_v2);
+	v3OSOct18_  = pass_electronSelection( iEl, electronSelectionFO_el_OSV1_v3);
+
+	numSSOct18_ = pass_electronSelection( iEl, electronSelection_ss, false, false);
+	v1SSOct18_  = pass_electronSelection( iEl, electronSelectionFO_ssVBTF80_v1, false, false);
+	v2SSOct18_  = pass_electronSelection( iEl, electronSelectionFO_ssVBTF80_v2, false, false);
+	v3SSOct18_  = pass_electronSelection( iEl, electronSelectionFO_ssVBTF80_v3, false, false);
+
 
 
         // Sanity
+        if (numOSOct18_ && (!v1OSOct18_)) cout << "bad v1" << endl;
+        if (numOSOct18_ && (!v2OSOct18_)) cout << "bad v2" << endl;
+        if (numOSOct18_ && (!v3OSOct18_)) cout << "bad v3" << endl;
+
+        if (numSSOct18_ && (!v1OSOct18_)) cout << "bad v1" << endl;
+        if (numSSOct18_ && (!v2OSOct18_)) cout << "bad v2" << endl;
+        if (numSSOct18_ && (!v3OSOct18_)) cout << "bad v3" << endl;
+
         if (num_ && (!v1_)) cout << "bad v1" << endl;
         if (num_ && (!v2_)) cout << "bad v2" << endl;
         if (num_ && (!v3_)) cout << "bad v3" << endl;
@@ -248,6 +266,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
               (!v1SS_) && (!v2SS_) && (!v3SS_) && 
               (!v1Aug9_) && (!v2Aug9_) && (!v3Aug9_) &&
               (!v1SSAug9_) && (!v2SSAug9_) && (!v3SSAug9_) &&
+              (!v1OSOct18_) && (!v2OSOct18_) && (!v3OSOct18_) &&
+              (!v1SSOct18_) && (!v2SSOct18_) && (!v3SSOct18_) &&
               (!v1Oct6_) && (!v2Oct6_) && (!v3Oct6_) 
         ) continue;
         
@@ -582,12 +602,18 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         pair<int, float> pair_mu5 = TriggerMatch( mus_p4().at(iMu), "HLT_Mu5");
         pair<int, float> pair_mu7 = TriggerMatch( mus_p4().at(iMu), "HLT_Mu7");
         pair<int, float> pair_mu9 = TriggerMatch( mus_p4().at(iMu), "HLT_Mu9");
+        pair<int, float> pair_mu11 = TriggerMatch( mus_p4().at(iMu), "HLT_Mu11");
+        pair<int, float> pair_mu15 = TriggerMatch( mus_p4().at(iMu), "HLT_Mu15_v1");
         mu5_    = pair_mu5.first;
         drmu5_  = pair_mu5.second;
         mu7_    = pair_mu7.first;
         drmu7_  = pair_mu7.second;
         mu9_    = pair_mu9.first;
         drmu9_  = pair_mu9.second;
+        mu11_    = pair_mu11.first;
+        drmu11_  = pair_mu11.second;
+        mu15_    = pair_mu15.first;
+        drmu15_  = pair_mu15.second;
 
         // Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
         ptj1_       = -999.0;
@@ -693,6 +719,16 @@ void myBabyMaker::InitBabyNtuple () {
   v2Oct6_  = false;
   v3Oct6_  = false;
 
+  numOSOct18_ = false;
+  v1OSOct18_  = false;
+  v2OSOct18_  = false;
+  v3OSOct18_  = false;
+
+  numSSOct18_ = false;
+  v1SSOct18_  = false;
+  v2SSOct18_  = false;
+  v3SSOct18_  = false;
+
   //
   ph10_ = 0;
   ph15_ = 0;
@@ -731,11 +767,15 @@ void myBabyMaker::InitBabyNtuple () {
   mu5_  = 0;
   mu7_  = 0;
   mu9_  = 0;
+  mu11_  = 0;
+  mu15_  = 0;
 
   //
   drmu5_  = 99.;
   drmu7_  = 99.;
   drmu9_  = 99.;
+  drmu11_  = 99.;
+  drmu15_  = 99.;
 
   //
   nbjet_  = 0;
@@ -815,6 +855,16 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("v3Oct6",         &v3Oct6_,        "v3Oct6/O"      );
     babyTree_->Branch("numOct6",         &numOct6_,        "numOct6/O"      );
 
+    babyTree_->Branch("v1SSOct18",         &v1SSOct18_,        "v1SSOct18/O"      );
+    babyTree_->Branch("v2SSOct18",         &v2SSOct18_,        "v2SSOct18/O"      );
+    babyTree_->Branch("v3SSOct18",         &v3SSOct18_,        "v3SSOct18/O"      );
+    babyTree_->Branch("numSSOct18",         &numSSOct18_,        "numSSOct18/O"      );
+
+    babyTree_->Branch("v1OSOct18",         &v1OSOct18_,        "v1OSOct18/O"      );
+    babyTree_->Branch("v2OSOct18",         &v2OSOct18_,        "v2OSOct18/O"      );
+    babyTree_->Branch("v3OSOct18",         &v3OSOct18_,        "v3OSOct18/O"      );
+    babyTree_->Branch("numOSOct18",         &numOSOct18_,        "numOSOct18/O"      );
+
     //
     babyTree_->Branch("ph10",       &ph10_,       "ph10/I"      );
     babyTree_->Branch("ph15",       &ph15_,       "ph15/I"      );
@@ -850,11 +900,15 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("drDel10_sw",         &drDel10_sw_,         "drDel10_sw/F"      );
 
     //
+    babyTree_->Branch("mu15",       &mu15_,       "mu15/I"      );
+    babyTree_->Branch("mu11",       &mu11_,       "mu11/I"      );
     babyTree_->Branch("mu9",       &mu9_,       "mu9/I"      );
     babyTree_->Branch("mu7",       &mu7_,       "mu7/I"      );
     babyTree_->Branch("mu5",       &mu5_,       "mu5/I"      );
 
     //
+    babyTree_->Branch("drmu15",       &drmu15_,       "drmu15/F"      );
+    babyTree_->Branch("drmu11",       &drmu11_,       "drmu11/F"      );
     babyTree_->Branch("drmu9",       &drmu9_,       "drmu9/F"      );
     babyTree_->Branch("drmu7",       &drmu7_,       "drmu7/F"      );
     babyTree_->Branch("drmu5",       &drmu5_,       "drmu5/F"      );

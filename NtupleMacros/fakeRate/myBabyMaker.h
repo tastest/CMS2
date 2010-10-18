@@ -78,11 +78,20 @@ class myBabyMaker
   Bool_t numAug9_; // (electronSelection_ttbarV1, isData, true) && (!isSpikeElectron(iEl)) (ele)
                    // NominalTTbarV2 (muons)
 
-
   Bool_t numOct6_; // not filled for muons; electronSelection_ttbarV1_pass5 (for ele)
   Bool_t v1Oct6_;  // identical to v1_
   Bool_t v2Oct6_;  // identical to v2_
   Bool_t v3Oct6_;  // electronSelectionFO_el_ttbarV1_v3
+
+  Bool_t numOSOct18_; // not filled for muons; electronSelection_el_OSV1 (for electrons)
+  Bool_t v1OSOct18_;  // electronSelectionFO_el_OSV1_v1
+  Bool_t v2OSOct18_;  // electronSelectionFO_el_OSV1_v2
+  Bool_t v3OSOct18_;  // electronSelectionFO_el_OSV1_v2
+
+  Bool_t numSSOct18_; // not filled for muons; electronSelection_ss, false, false
+  Bool_t v1SSOct18_;  // electronSelectionFO_ssVBTF80_v1, false, false
+  Bool_t v2SSOct18_;  // electronSelectionFO_ssVBTF80_v2, false, false
+  Bool_t v3SSOct18_;  // electronSelectionFO_ssVBTF80_v3, false, false
 
 
   Bool_t fo_04_;  // muonSelectionFO_mu_ttbar
@@ -139,11 +148,15 @@ class myBabyMaker
 
   // What muon trigger did it pass
   // 0=fail 1="pass but no match" 2="pass and matched" -1="pass but muon trg obj missing"
-  Int_t mu9_; // HLT_Mu9
-  Int_t mu7_; // HLT_Mu7
-  Int_t mu5_; // HLT_Mu5
+  Int_t mu15_; // HLT_Mu15_v1
+  Int_t mu11_; // HLT_Mu11
+  Int_t mu9_;  // HLT_Mu9
+  Int_t mu7_;  // HLT_Mu7
+  Int_t mu5_;  // HLT_Mu5
 
   //  Minimm dR to the closest HLT mu object
+  Float_t drmu11_;
+  Float_t drmu15_;
   Float_t drmu9_;
   Float_t drmu7_;
   Float_t drmu5_;
