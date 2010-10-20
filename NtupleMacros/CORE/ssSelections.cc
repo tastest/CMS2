@@ -28,7 +28,9 @@ bool isGoodLeptonNoIsoSS (int id, int lepIdx, bool applyAlignmentCorrection, boo
 
 	 // muons
 	 if (abs(id) == 13)
-		  return (muonIdNotIsolated(lepIdx, NominalSS)) 
+		  return (muonIdNotIsolated(lepIdx, NominalSS)) ;
+
+	 return false;
 }
 
 
@@ -43,7 +45,9 @@ bool isGoodLeptonwIsoSS (int id, int lepIdx, bool applyAlignmentCorrection, bool
 
 	 // muons
 	 if (abs(id) == 13) 
-		  return (muonId(lepIdx, NominalSS))
+		  return (muonId(lepIdx, NominalSS));
+
+	 return false;
 }
 
 
@@ -240,4 +244,54 @@ bool passThreeChargeRequirement(int elIdx)
 	 }
 
 	 return false;
+}
+
+/******************************************************************************************/     
+// is it a good jet?
+/******************************************************************************************/     
+bool isGoodJet(LorentzVector jetp4, double ptCut, double absEtaCut, double dRCut, bool muJetClean) {
+
+	 if(jetp4.Pt() < ptCut)
+		  return false;  
+	 if(fabs(jetp4.Eta()) > absEtaCut)
+		  return false;
+  
+	 for (unsigned int elidx = 0; elidx < cms2.els_p4().size(); elidx++)
+	 {
+		  if (cms2.els_p4()[elidx].pt() < 10.)
+			   continue;
+		  if (fabs(cms2.els_p4()[elidx].eta()) > 2.4)
+			   continue;
+
+		  if (!isGoodLeptonNoIsoSS(11, elidx))
+			   continue;
+		  if (!isGoodLeptonwIsoSS(11, elidx))
+			   continue;
+
+		  float deltaR = ROOT::Math::VectorUtil::DeltaR(cms2.els_p4()[elidx], jetp4);
+		  if (deltaR < dRCut)
+			   return false;
+	 }
+
+	 if (muJetClean)
+	 {
+		  for (unsigned int muidx = 0; muidx < cms2.mus_p4().size(); muidx++)
+		  {
+			   if (cms2.mus_p4()[muidx].pt() < 10.)
+					continue;
+			   if (fabs(cms2.mus_p4()[muidx].eta()) > 2.4)
+					continue;
+
+			   if (!isGoodLeptonNoIsoSS(13, muidx))
+					continue;
+			   if (!isGoodLeptonwIsoSS(13, muidx))
+					continue;
+
+			   float deltaR = ROOT::Math::VectorUtil::DeltaR(cms2.mus_p4()[muidx], jetp4);
+			   if (deltaR < dRCut)
+					return false;
+		  }
+	 }
+
+	 return true;
 }
