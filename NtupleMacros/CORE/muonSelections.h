@@ -7,17 +7,18 @@
 //
 
 enum SelectionType { 
-  FakableObject = 0, 
-  Nominal = 1, 
-  Tight = 2,
-  NominalTTbar = 3,
-  muonSelectionFO_mu_v1 = 4,
-  muonSelectionFO_mu_ttbar = 5,
-  NominalTTbarV2 = 6,
-  muonSelectionFO_mu_ttbar_iso10 = 7,
-  NominalWWV0 = 8,
-  muonSelectionFO_mu_ww = 9,
-  muonSelectionFO_mu_ww_iso10 = 10,
+	 FakableObject = 0, 
+	 Nominal = 1, 
+	 Tight = 2,
+	 NominalTTbar = 3,
+	 muonSelectionFO_mu_v1 = 4,
+	 muonSelectionFO_mu_ttbar = 5,
+	 NominalTTbarV2 = 6,
+	 muonSelectionFO_mu_ttbar_iso10 = 7,
+	 NominalWWV0 = 8,
+	 muonSelectionFO_mu_ww = 9,
+	 muonSelectionFO_mu_ww_iso10 = 10,
+	 NominalSS = 11,
 }; 
 
 //
