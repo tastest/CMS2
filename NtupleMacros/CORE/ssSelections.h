@@ -46,5 +46,11 @@ bool makesExtraZ(int hypIdx, bool applyAlignmentCorrection=false, bool removedEt
 /*****************************************************************************************/
 bool passThreeChargeRequirement(int elIdx);
 
+/******************************************************************************************/     
+// is it a good jet?
+/******************************************************************************************/     
+bool isGoodJet(LorentzVector jetp4, double ptCut, double absEtaCut, double dRCut, bool muJetClean);
+
+
 #endif
 
