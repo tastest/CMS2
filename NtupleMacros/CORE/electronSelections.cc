@@ -38,6 +38,7 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if (electronIsolation_rel(index, true) < 0.40) cuts_passed |= (1ll<<ELEISO_REL040);
     if (electronIsolation_rel_ww(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_REL010_WW);
     if (electronIsolation_rel_ww(index, true) < 0.40) cuts_passed |= (1ll<<ELEISO_REL040_WW);
+    if (electronIsolation_rel_ww(index, true) < 1.00) cuts_passed |= (1ll<<ELEISO_REL100_WW);
 
     //
     // ip
@@ -90,6 +91,7 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
 
     if (!isFromConversionPartnerTrack(index)) cuts_passed |= (1ll<<ELENOTCONV_DISTDCOT002);
     if (!isFromConversionHitPattern(index)) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN);
+    if (cms2.els_exp_innerlayers().at(index) == 0) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN_0MHITS);
 
     //
     // fiduciality/other cuts
