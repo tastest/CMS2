@@ -29,7 +29,6 @@ bool passSUSYTrigger_v1( bool isData , int hypType ) {
     // But why not.
     if(nHLTObjects("HLT_DoubleMu3_v2") != 0 )   return true;
     if(nHLTObjects("HLT_DoubleMu5_v1") != 0 )   return true;
-    if(nHLTObjects("HLT_IsoMu11_v1") != 0 )     return true;
     if(nHLTObjects("HLT_Mu11") != 0 )           return true;
     if(nHLTObjects("HLT_Mu13_v1") != 0 )        return true;
     if(nHLTObjects("HLT_Mu15_v1") != 0 )        return true;
@@ -125,7 +124,6 @@ bool passSUSYTrigger_v1( bool isData , int hypType ) {
     //---------------------------
     // single muon triggers
     //---------------------------
-    if(nHLTObjects("HLT_IsoMu11_v1") != 0 )     return true;
     if(nHLTObjects("HLT_Mu11") != 0 )           return true;
     if(nHLTObjects("HLT_Mu13_v1") != 0 )        return true;
     if(nHLTObjects("HLT_Mu15_v1") != 0 )        return true;
@@ -214,7 +212,7 @@ bool passSUSYTrigger_v1( bool isData , int hypType ) {
 }
 
 /*****************************************************************************************/
-//hypothesis disambiguation. Returns the hypothesis that has mass closent to MZ
+//hypothesis disambiguation. Returns the hypothesis that has mass closest to MZ
 /*****************************************************************************************/
 unsigned int selectBestZHyp(const vector<unsigned int> &v_goodHyps) {
   
