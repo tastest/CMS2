@@ -42,6 +42,19 @@ bool cleaning_standardNoBSC(bool isData)
 }
 
 //
+// 20 October 2010
+// standard event cleaning
+// for 2010 SS analysis
+//
+bool cleaning_standardOctober2010()
+{
+    if (!cleaning_goodVertexAugust2010()) return false;
+    if (!cleaning_goodTracks()) return false;
+    
+    return true;
+}
+
+//
 // 5 August 2010
 // standard event cleaning
 // for low pt dilepton / fake rate data studies

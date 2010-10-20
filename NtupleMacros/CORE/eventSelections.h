@@ -14,6 +14,12 @@ bool inZmassWindow (float mass);
 bool cleaning_standard(bool isData);
 
 //----------------------------------------------------------------
+// 20 October 2010
+// standard event cleaning used for SS analysis
+//----------------------------------------------------------------
+bool cleaning_standardOctober2010();
+
+//----------------------------------------------------------------
 // 5 August 2010
 // standard event cleaning
 // for low pt dilepton / fake rate data studies
