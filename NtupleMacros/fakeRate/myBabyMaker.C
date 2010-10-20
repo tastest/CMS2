@@ -233,32 +233,54 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 	v2SSOct18_  = pass_electronSelection( iEl, electronSelectionFO_ssVBTF80_v2, false, false);
 	v3SSOct18_  = pass_electronSelection( iEl, electronSelectionFO_ssVBTF80_v3, false, false);
 
+        v1_wwV0_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV0_v1);
+        v2_wwV0_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV0_v2);
+        v3_wwV0_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV0_v3);
+        v4_wwV0_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV0_v4);
+        num_wwV0_ = pass_electronSelection( iEl, electronSelection_wwV0);
+
+        v1_wwV0b_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV0b_v1);
+        v2_wwV0b_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV0b_v2);
+        v3_wwV0b_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV0b_v3);
+        v4_wwV0b_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV0b_v4);
+        num_wwV0b_ = pass_electronSelection( iEl, electronSelection_wwV0b);
+
 
 
         // Sanity
-        if (numOSOct18_ && (!v1OSOct18_)) cout << "bad v1" << endl;
-        if (numOSOct18_ && (!v2OSOct18_)) cout << "bad v2" << endl;
-        if (numOSOct18_ && (!v3OSOct18_)) cout << "bad v3" << endl;
+        if (numOSOct18_ && (!v1OSOct18_)) cout << "bad v1OSOct18_" << endl;
+        if (numOSOct18_ && (!v2OSOct18_)) cout << "bad v2OSOct18_" << endl;
+        if (numOSOct18_ && (!v3OSOct18_)) cout << "bad v3OSOct18_" << endl;
 
-        if (numSSOct18_ && (!v1OSOct18_)) cout << "bad v1" << endl;
-        if (numSSOct18_ && (!v2OSOct18_)) cout << "bad v2" << endl;
-        if (numSSOct18_ && (!v3OSOct18_)) cout << "bad v3" << endl;
+        if (numSSOct18_ && (!v1SSOct18_)) cout << "bad v1SSOct18_" << endl;
+        if (numSSOct18_ && (!v2SSOct18_)) cout << "bad v2SSOct18_" << endl;
+        if (numSSOct18_ && (!v3SSOct18_)) cout << "bad v3SSOct18_" << endl;
 
-        if (num_ && (!v1_)) cout << "bad v1" << endl;
-        if (num_ && (!v2_)) cout << "bad v2" << endl;
-        if (num_ && (!v3_)) cout << "bad v3" << endl;
+        if (num_ && (!v1_)) cout << "bad v1_" << endl;
+        if (num_ && (!v2_)) cout << "bad v2_" << endl;
+        if (num_ && (!v3_)) cout << "bad v3_" << endl;
 
-        if (numSS_ && (!v1SS_)) cout << "bad v1" << endl;
-        if (numSS_ && (!v2SS_)) cout << "bad v2" << endl;
-        if (numSS_ && (!v3SS_)) cout << "bad v3" << endl;
+        if (numSS_ && (!v1SS_)) cout << "bad v1SS_" << endl;
+        if (numSS_ && (!v2SS_)) cout << "bad v2SS_" << endl;
+        if (numSS_ && (!v3SS_)) cout << "bad v3SS_" << endl;
 
-        if (numAug9_ && (!v1Aug9_)) cout << "bad v1" << endl;
-        if (numAug9_ && (!v2Aug9_)) cout << "bad v2" << endl;
-        if (numAug9_ && (!v3Aug9_)) cout << "bad v3" << endl;
+        if (numAug9_ && (!v1Aug9_)) cout << "bad v1Aug9_" << endl;
+        if (numAug9_ && (!v2Aug9_)) cout << "bad v2Aug9_" << endl;
+        if (numAug9_ && (!v3Aug9_)) cout << "bad v3Aug9_" << endl;
 
-        if (numOct6_ && (!v1Oct6_)) cout << "bad v1" << endl;
-        if (numOct6_ && (!v2Oct6_)) cout << "bad v2" << endl;
-        if (numOct6_ && (!v3Oct6_)) cout << "bad v3" << endl;
+        if (numOct6_ && (!v1Oct6_)) cout << "bad v1Oct6_" << endl;
+        if (numOct6_ && (!v2Oct6_)) cout << "bad v2Oct6_" << endl;
+        if (numOct6_ && (!v3Oct6_)) cout << "bad v3Oct6_" << endl;
+
+        if (num_wwV0_ && (!v1_wwV0_)) cout << "bad v1_wwV0_" << endl;
+        if (num_wwV0_ && (!v2_wwV0_)) cout << "bad v2_wwV0_" << endl;
+        if (num_wwV0_ && (!v3_wwV0_)) cout << "bad v3_wwV0_" << endl;
+        if (num_wwV0_ && (!v4_wwV0_)) cout << "bad v4_wwV0_" << endl;
+
+        if (num_wwV0b_ && (!v1_wwV0b_)) cout << "bad v1_wwV0b_" << endl;
+        if (num_wwV0b_ && (!v2_wwV0b_)) cout << "bad v2_wwV0b_" << endl;
+        if (num_wwV0b_ && (!v3_wwV0b_)) cout << "bad v3_wwV0b_" << endl;
+        if (num_wwV0b_ && (!v4_wwV0b_)) cout << "bad v4_wwV0b_" << endl;
 
 
         // If there is no v1/v2/v3 lepton quit
@@ -268,7 +290,9 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
               (!v1SSAug9_) && (!v2SSAug9_) && (!v3SSAug9_) &&
               (!v1OSOct18_) && (!v2OSOct18_) && (!v3OSOct18_) &&
               (!v1SSOct18_) && (!v2SSOct18_) && (!v3SSOct18_) &&
-              (!v1Oct6_) && (!v2Oct6_) && (!v3Oct6_) 
+              (!v1Oct6_) && (!v2Oct6_) && (!v3Oct6_) &&
+              (!v1_wwV0_) && (!v2_wwV0_) && (!v3_wwV0_) && (!v4_wwV0_) &&
+              (!v1_wwV0b_) && (!v2_wwV0b_) && (!v3_wwV0b_) && (!v4_wwV0b_)
         ) continue;
         
         // If it is above 20 GeV see if we can make a 
@@ -554,13 +578,18 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         num_    = muonId(iMu, NominalTTbarV2);
         numv1_  = muonId(iMu, NominalTTbar);
         numSS_  = muonId(iMu, Nominal);
+        num_wwV0_ = muonId(iMu, NominalWWV0);
+        num_wwV0b_ = muonId(iMu, NominalWWV0);
     
         fo_04_  = muonId(iMu, muonSelectionFO_mu_ttbar);
         fo_10_  = muonId(iMu, muonSelectionFO_mu_ttbar_iso10);
 
+        fo_wwV0_04_  = muonId(iMu, muonSelectionFO_mu_ww);
+        fo_wwV0_10_  = muonId(iMu, muonSelectionFO_mu_ww_iso10);
+
         numAug9_ = num_;
 
-        if( !fo_04_ && !fo_10_ ) continue;
+        if( !fo_04_ && !fo_10_ && !fo_wwV0_04_ && !fo_wwV0_10_) continue;
 
         // Now REALLY fix it (July 14, 2010)
         if (pt_ > 10.) {
@@ -714,6 +743,8 @@ void myBabyMaker::InitBabyNtuple () {
   l110u_  = 0;
   fo_04_ = false;
   fo_10_ = false;
+  fo_wwV0_04_ = false;
+  fo_wwV0_10_ = false;
 
   v1_  = false;
   v2_  = false;
@@ -750,6 +781,18 @@ void myBabyMaker::InitBabyNtuple () {
   v1SSOct18_  = false;
   v2SSOct18_  = false;
   v3SSOct18_  = false;
+
+  v1_wwV0_  = false;
+  v2_wwV0_  = false;
+  v3_wwV0_  = false;
+  v4_wwV0_  = false;
+  num_wwV0_ = false;
+
+  v1_wwV0b_  = false;
+  v2_wwV0b_  = false;
+  v3_wwV0b_  = false;
+  v4_wwV0b_  = false;
+  num_wwV0b_ = false;
 
   //
   ph10_ = 0;
@@ -865,6 +908,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
 
     babyTree_->Branch("fo_04",         &fo_04_,        "fo_04/O"      );
     babyTree_->Branch("fo_10",         &fo_10_,        "fo_10/O"      );
+    babyTree_->Branch("fo_wwV0_04",         &fo_wwV0_04_,        "fo_wwV0_04/O"      );
+    babyTree_->Branch("fo_wwV0_10",         &fo_wwV0_10_,        "fo_wwV0_10/O"      );
     babyTree_->Branch("v1",         &v1_,        "v1/O"      );
     babyTree_->Branch("v2",         &v2_,        "v2/O"      );
     babyTree_->Branch("v3",         &v3_,        "v3/O"      );
@@ -900,6 +945,18 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("v2OSOct18",         &v2OSOct18_,        "v2OSOct18/O"      );
     babyTree_->Branch("v3OSOct18",         &v3OSOct18_,        "v3OSOct18/O"      );
     babyTree_->Branch("numOSOct18",         &numOSOct18_,        "numOSOct18/O"      );
+
+    babyTree_->Branch("v1_wwV0",         &v1_wwV0_,        "v1_wwV0/O"      );
+    babyTree_->Branch("v2_wwV0",         &v2_wwV0_,        "v2_wwV0/O"      );
+    babyTree_->Branch("v3_wwV0",         &v3_wwV0_,        "v3_wwV0/O"      );
+    babyTree_->Branch("v4_wwV0",         &v4_wwV0_,        "v4_wwV0/O"      );
+    babyTree_->Branch("num_wwV0",         &num_wwV0_,        "num_wwV0/O"      );
+
+    babyTree_->Branch("v1_wwV0b",         &v1_wwV0b_,        "v1_wwV0b/O"      );
+    babyTree_->Branch("v2_wwV0b",         &v2_wwV0b_,        "v2_wwV0b/O"      );
+    babyTree_->Branch("v3_wwV0b",         &v3_wwV0b_,        "v3_wwV0b/O"      );
+    babyTree_->Branch("v4_wwV0b",         &v4_wwV0b_,        "v4_wwV0b/O"      );
+    babyTree_->Branch("num_wwV0b",         &num_wwV0b_,        "num_wwV0b/O"      );
 
     //
     babyTree_->Branch("ph10",       &ph10_,       "ph10/I"      );
