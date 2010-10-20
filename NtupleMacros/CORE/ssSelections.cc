@@ -1,4 +1,3 @@
-
 #include <assert.h>
 #include <algorithm>
 #include "Math/LorentzVector.h"
@@ -23,20 +22,13 @@ using namespace tas;
 /******************************************************************************************/
 bool isGoodLeptonNoIsoSS (int id, int lepIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap)
 {
-	 //electrons
+	 // electrons
 	 if (abs(id) == 11)
-		  return (pass_electronSelection(lepIdx, electronSelection_ss_NoIso, applyAlignmentCorrection, removedEtaCutInEndcap));
+		  return (pass_electronSelection(lepIdx, electronSelection_ssV2_NoIso, applyAlignmentCorrection, removedEtaCutInEndcap));
 
-	 //muons
+	 // muons
 	 if (abs(id) == 13)
-	 {
-		  if (muonIdNotIsolated(lepIdx, Nominal)) 
-			   return true;
-
-		  return false;
-	 }
-
-	 return false;
+		  return (muonIdNotIsolated(lepIdx, NominalSS)) 
 }
 
 
@@ -45,17 +37,13 @@ bool isGoodLeptonNoIsoSS (int id, int lepIdx, bool applyAlignmentCorrection, boo
 /******************************************************************************************/
 bool isGoodLeptonwIsoSS (int id, int lepIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap)
 {
-	 if(!isGoodLeptonNoIsoSS(id, lepIdx, applyAlignmentCorrection, removedEtaCutInEndcap))
-		  return false;
-
+	 // electrons
 	 if (abs(id)== 11)
-		  return (pass_electronSelection(lepIdx, electronSelection_ss, applyAlignmentCorrection, removedEtaCutInEndcap));
+		  return (pass_electronSelection(lepIdx, electronSelection_ssV2, applyAlignmentCorrection, removedEtaCutInEndcap));
 
+	 // muons
 	 if (abs(id) == 13) 
-		  if (muonId(lepIdx, Nominal))
-			   return true;
-
-	 return false;
+		  return (muonId(lepIdx, NominalSS))
 }
 
 
@@ -64,9 +52,9 @@ bool isGoodLeptonwIsoSS (int id, int lepIdx, bool applyAlignmentCorrection, bool
 /******************************************************************************************/
 bool isGoodHypNoIsoSS (int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap)
 {
-	 if(!isGoodLeptonNoIsoSS(hyp_lt_id()[hypIdx], hyp_lt_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))//, used0wrtPV)
+	 if(!isGoodLeptonNoIsoSS(hyp_lt_id()[hypIdx], hyp_lt_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
 		  return false;
-	 if(!isGoodLeptonNoIsoSS(hyp_ll_id()[hypIdx], hyp_ll_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))//, used0wrtPV)
+	 if(!isGoodLeptonNoIsoSS(hyp_ll_id()[hypIdx], hyp_ll_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
 		  return false;
 
 	 return true;
