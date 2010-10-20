@@ -13,7 +13,7 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 bool passSUSYTrigger_v1( bool isData , int hypType );
 
 /*****************************************************************************************/
-//hypothesis disambiguation. Returns the hypothesis that has mass closent to MZ
+//hypothesis disambiguation. Returns the hypothesis that has mass closest to MZ
 /*****************************************************************************************/
 unsigned int selectBestZHyp(const vector<unsigned int> &v_goodHyps);
 
