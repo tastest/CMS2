@@ -58,11 +58,14 @@ bool goodElectronWithoutIsolation(unsigned int i){
 }
 
 bool goodElectronIsolated(unsigned int i){
-  return ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_elIso(i);
+  return pass_electronSelection( i, electronSelection_wwV0);
+  //return ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_elIso(i);
   // return ww_eld0(i) && ww_elIso(i)<0.1;
 }
 
 bool fakableElectron(unsigned int i){
+  // extrapolate in partial id, iso and d0
+  //return pass_electronSelection( i, electronSelectionFO_el_wwV0_v4);
   // extrapolate in id
   return ww_elBase(i) && ww_eld0(i) && ww_elIso(i);
 }
@@ -1185,40 +1188,47 @@ void countFakableObjectsAfterAllSelections(unsigned int i_hyp,
 					   bool passedLTFinalRequirements,
 					   bool passedLLFinalRequirements)
 {
-  HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
-  if ( passedLTElFakableRequirements && !passedLTFinalRequirements && passedLLFinalRequirements ){
-    helFRfakable[type]->Fill(cms2.hyp_lt_p4().at(i_hyp).pt(),
-			     fabs(cms2.hyp_lt_p4().at(i_hyp).eta()),
-			     weight);
-    helFRfakable[3]->Fill(cms2.hyp_lt_p4().at(i_hyp).pt(),
-			  fabs(cms2.hyp_lt_p4().at(i_hyp).eta()),
-			  weight);
-    
-    helFRfakable_fakerate[type]->Fill(fabs(cms2.hyp_lt_p4().at(i_hyp).eta()), 
-				      cms2.hyp_lt_p4().at(i_hyp).pt(),
-				      weight);
-    helFRfakable_fakerate[3]->Fill( fabs(cms2.hyp_lt_p4().at(i_hyp).eta()),
-				    cms2.hyp_lt_p4().at(i_hyp).pt(),
-				    weight);
-    
+    HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
 
-  }
-  if ( passedLLElFakableRequirements && passedLTFinalRequirements && !passedLLFinalRequirements ){
-    helFRfakable[type]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(),
-			     fabs(cms2.hyp_ll_p4().at(i_hyp).eta()),
-			     weight);
-    helFRfakable[3]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(),
-			  fabs(cms2.hyp_ll_p4().at(i_hyp).eta()),
-			  weight);
-    
-    helFRfakable_fakerate[type]->Fill( fabs(cms2.hyp_ll_p4().at(i_hyp).eta()),
-				       cms2.hyp_ll_p4().at(i_hyp).pt(),
-				       weight);
-    helFRfakable_fakerate[3]->Fill( fabs(cms2.hyp_ll_p4().at(i_hyp).eta()),
-				    cms2.hyp_ll_p4().at(i_hyp).pt(),
-				    weight);
+    int nbins_eta = helFRfakable_fakerate[3]->GetNbinsX();
+    float max_eta = helFRfakable_fakerate[3]->GetXaxis()->GetBinLowEdge(nbins_eta+1);
+    int nbins_pt  = helFRfakable_fakerate[3]->GetNbinsY();
+    float max_pt  = helFRfakable_fakerate[3]->GetYaxis()->GetBinLowEdge(nbins_pt+1);
 
-  }
+    if ( passedLTElFakableRequirements && !passedLTFinalRequirements && passedLLFinalRequirements ){
+        helFRfakable[type]->Fill(cms2.hyp_lt_p4().at(i_hyp).pt(),
+                fabs(cms2.hyp_lt_p4().at(i_hyp).eta()),
+                weight);
+        helFRfakable[3]->Fill(cms2.hyp_lt_p4().at(i_hyp).pt(),
+                fabs(cms2.hyp_lt_p4().at(i_hyp).eta()),
+                weight);
+
+        // overflow goes into last bin
+        float eta = fabs(cms2.hyp_lt_p4().at(i_hyp).eta());
+        if (eta > max_eta) eta = max_eta-.1;
+        float pt = cms2.hyp_lt_p4().at(i_hyp).pt();
+        if (pt > max_pt) pt = max_pt-.1;
+
+        helFRfakable_fakerate[type]->Fill(eta,pt,weight);
+        helFRfakable_fakerate[3]->Fill(eta,pt,weight);
+    }
+    if ( passedLLElFakableRequirements && passedLTFinalRequirements && !passedLLFinalRequirements ){
+        helFRfakable[type]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(),
+                fabs(cms2.hyp_ll_p4().at(i_hyp).eta()),
+                weight);
+        helFRfakable[3]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(),
+                fabs(cms2.hyp_ll_p4().at(i_hyp).eta()),
+                weight);
+
+        // overflow goes into last bin
+        float eta = fabs(cms2.hyp_ll_p4().at(i_hyp).eta());
+        if (eta > max_eta) eta = max_eta-.1;
+        float pt = cms2.hyp_ll_p4().at(i_hyp).pt();
+        if (pt > max_pt) pt = max_pt-.1;
+
+        helFRfakable_fakerate[type]->Fill(eta,pt,weight);
+        helFRfakable_fakerate[3]->Fill(eta,pt,weight);
+    }
 }
 
 void hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool realData) 
@@ -1625,8 +1635,10 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
   }
   
   const Double_t ptbins[4] = {20,30,80,200};
-  const Double_t ptbins_fakerate[4] = {10,20,60,150};
-  const Double_t etabins_fakerate[4] = {0,1.479,2.5};
+  // Same binning as fake rate histograms
+  const Double_t ptbins_fakerate[6] = {10.,15.,20.,25.,30.,35.};
+  const Double_t etabins_fakerate[5] = {0.0,1.0,1.479,2.0,2.5};
+
   
   for (unsigned int i=0; i<4; i++) {
 
@@ -1662,8 +1674,7 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hextramuonsvsnjet[i]->Sumw2();
     helFRfakable[i]     = new TH2F(Form("%s_helFRfakable_%s",    prefix,HypothesisTypeName(i)), "FR study: rate of fakable objects", 3,ptbins,2,0,3.0);
     helFRfakable[i]->Sumw2();
-    // fakable object by the fakerate.cc Revision 1.15
-    helFRfakable_fakerate[i] = new TH2F(Form("%s_helFRfakable_fakerate_%s", prefix,HypothesisTypeName(i)), "FR study: rate of fakable objects",2,etabins_fakerate,3,ptbins_fakerate);
+    helFRfakable_fakerate[i] = new TH2F(Form("%s_helFRfakable_fakerate_%s", prefix,HypothesisTypeName(i)), "FR study: rate of fakable objects",4,etabins_fakerate,5,ptbins_fakerate);
     helFRfakable_fakerate[i]->Sumw2();
 
     const Double_t jetEtbins[12] = {0,10,15,20,25,30,40,50,60,80,100,200};
