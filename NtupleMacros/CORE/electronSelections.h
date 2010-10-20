@@ -34,6 +34,9 @@ enum EleSelectionType {
     // rel iso (fixed below 20 GeV) < 0.40
     // 0.3 cone size for all, 1 GeV pedestal sub in EB/EE
     ELEISO_REL040_WW,
+    // rel iso (fixed below 20 GeV) < 1.00
+    // 0.3 cone size for all, 1 GeV pedestal sub in EB/EE
+    ELEISO_REL100_WW,
 
     //
     // ip cuts
@@ -70,6 +73,8 @@ enum EleSelectionType {
     ELENOTCONV_DISTDCOT002,
     // < 2 missing hits
     ELENOTCONV_HITPATTERN,
+    // < 1 missing hits
+    ELENOTCONV_HITPATTERN_0MHITS,
     //
     // eta cuts
     //
@@ -422,7 +427,8 @@ static const cuts_t electronSelection_cand02 =
 //---------------------------------------------------------
 static const cuts_t electronSelection_wwV0_base  = 
   (1ll<<ELEPT_020) | 
-  (1ll<<ELEETA_250);
+  (1ll<<ELEETA_250) |
+  (1ll<<ELENOTCONV_DISTDCOT002);
 
 //---------------------------------------------------------
 // WWV0 impact parameter cut
@@ -434,7 +440,6 @@ static const cuts_t electronSelection_wwV0_ip  =
 // WWV0 id cut
 //---------------------------------------------------------
 static const cuts_t electronSelection_wwV0_id  = 
-  (1ll<<ELENOTCONV_DISTDCOT002) |
   (1ll<<ELEID_VBTF_35X_80) ;
 
 //---------------------------------------------------------
@@ -481,9 +486,109 @@ static const cuts_t electronSelectionFO_el_wwV0_v2 =
 static const cuts_t electronSelectionFO_el_wwV0_v3 =
   electronSelectionFO_wwV0_baseline |
   electronSelection_wwV0_id |
-  (1ll<<ELEISO_REL040_WW); 
+  (1ll<<ELEISO_REL100_WW); 
+
+//---------------------------------------------------------
+// WWV0 fakeable object definition v4
+// extrapolating in iso
+//---------------------------------------------------------
+static const cuts_t electronSelectionFO_el_wwV0_v4 =
+  electronSelectionFO_wwV0_baseline |
+  (1ll<<ELEID_VBTF_35X_90) |
+  (1ll<<ELEISO_REL100_WW); 
 
 //--------end of WW V0 cuts--------------------------------
+
+//--------beginning of WW V0b cuts--------------------------
+// At the time of this writing the only difference between V0
+// and V0b is that WW V0b additionally requires zero missing
+// hits conversion rejection in the electron selection. Conversion
+// rejection is in the baseline selection, so the following
+// is really an exact copy of the above, except that the
+// baseline includes ELENOTCONV_HITPATTERN_0MHITS, and V0 ->
+// V0b everywhere. However, I will write the selection out in
+// its full glory, rather than just set things equal to the
+// above, in recognition that we may choose to evolve V0b into
+// a real second generation selection that is more than just
+// a copy of V0 plus the 0mhits conversion rejection ;)
+
+//---------------------------------------------------------
+// WWV0b base cut
+//---------------------------------------------------------
+static const cuts_t electronSelection_wwV0b_base  = 
+  (1ll<<ELEPT_020) | 
+  (1ll<<ELEETA_250) |
+  (1ll<<ELENOTCONV_DISTDCOT002) |
+  (1ll<<ELENOTCONV_HITPATTERN_0MHITS);
+
+//---------------------------------------------------------
+// WWV0b impact parameter cut
+//---------------------------------------------------------
+static const cuts_t electronSelection_wwV0b_ip  = 
+  (1ll<<ELEIP_PV_200);
+
+//---------------------------------------------------------
+// WWV0b id cut
+//---------------------------------------------------------
+static const cuts_t electronSelection_wwV0b_id  = 
+  (1ll<<ELEID_VBTF_35X_80) ;
+
+//---------------------------------------------------------
+// WWV0b isolation cut
+//---------------------------------------------------------
+static const cuts_t electronSelection_wwV0b_iso  = 
+  (1ll<<ELEISO_REL010_WW); 
+
+//---------------------------------------------------------
+// WWV0b selection
+//--------------------------------------------------------
+static const cuts_t electronSelection_wwV0b  = 
+  electronSelection_wwV0b_base |
+  electronSelection_wwV0b_ip   |
+  electronSelection_wwV0b_id   |
+  electronSelection_wwV0b_iso;
+
+//---------------------------------------------------------
+// WWV0b fakeable object baseline definition
+//---------------------------------------------------------
+static const cuts_t electronSelectionFO_wwV0b_baseline =
+  electronSelection_wwV0b_base;
+
+//---------------------------------------------------------
+// WWV0b fakeable object definition v1
+// extrapolating in isolation and id
+//---------------------------------------------------------
+static const cuts_t electronSelectionFO_el_wwV0b_v1 =
+  electronSelectionFO_wwV0b_baseline |
+  (1ll<<ELEISO_REL040_WW); 
+
+//---------------------------------------------------------
+// WWV0b fakeable object definition v2
+// extrapolating in id
+//---------------------------------------------------------
+static const cuts_t electronSelectionFO_el_wwV0b_v2 =
+  electronSelectionFO_wwV0b_baseline |
+  electronSelection_wwV0b_iso;
+
+//---------------------------------------------------------
+// WWV0b fakeable object definition v3
+// extrapolating in iso
+//---------------------------------------------------------
+static const cuts_t electronSelectionFO_el_wwV0b_v3 =
+  electronSelectionFO_wwV0b_baseline |
+  electronSelection_wwV0b_id |
+  (1ll<<ELEISO_REL100_WW); 
+
+//---------------------------------------------------------
+// WWV0b fakeable object definition v4
+// extrapolating in iso
+//---------------------------------------------------------
+static const cuts_t electronSelectionFO_el_wwV0b_v4 =
+  electronSelectionFO_wwV0b_baseline |
+  (1ll<<ELEID_VBTF_35X_90) |
+  (1ll<<ELEISO_REL100_WW); 
+
+//--------end of WW V0b cuts--------------------------------
 
 
 // ======================== OS ============================
