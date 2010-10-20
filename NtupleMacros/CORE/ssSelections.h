@@ -9,22 +9,22 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 /******************************************************************************************/     
 // good lepton (either mu or electron, no isolation cuts)
 /******************************************************************************************/
-bool isGoodLeptonNoIsoSS(int id, int lepIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap=true);
+bool isGoodLeptonNoIsoSS(int id, int lepIdx, bool applyAlignmentCorrection=false, bool removedEtaCutInEndcap=false);
 
 /******************************************************************************************/     
-// isolated lepton (either mu or electron)
+// isolated lepton (either mu or electron, no ID cuts)
 /******************************************************************************************/
-bool isGoodLeptonwIsoSS(int id, int lepIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap=true);
+bool isGoodLeptonwIsoSS(int id, int lepIdx, bool applyAlignmentCorrection=false, bool removedEtaCutInEndcap=false);
 
 /******************************************************************************************/     
 // are the leptons in the hypothesis good (all cuts but isolation?)
 /******************************************************************************************/
-bool isGoodHypNoIsoSS(int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap=true);
+bool isGoodHypNoIsoSS(int hypIdx, bool applyAlignmentCorrection=false, bool removedEtaCutInEndcap=false);
 
 /******************************************************************************************/     
-// are the leptons in the hypothesis isolated?
+// are the leptons in the hypothesis isolated? (no ID or other cuts applied)
 /******************************************************************************************/     
-bool isGoodHypwIsoSS(int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap=true);
+bool isGoodHypwIsoSS(int hypIdx, bool applyAlignmentCorrection=false, bool removedEtaCutInEndcap=false);
 
 /*****************************************************************************************/
 //passes the EGamma triggers
