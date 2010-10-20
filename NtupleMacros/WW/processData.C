@@ -37,7 +37,8 @@ void processData()
   // You don't need it for not mixed samples.
   //
   const bool identifyDYEvents = false;
-  
+  const bool zStudy = false;
+
   //
   // Flags for files to run over 
   // (0 and 1 are easier to modify)
@@ -51,7 +52,8 @@ void processData()
   bool runDYtt  = 1;
   bool runttbar = 1;
   bool runtW    = 1;
-  bool runQCD   = 0; 
+  bool runQCD   = 1; 
+  bool runData  = 0;
 
   // 
   // Ntuple version
@@ -86,7 +88,8 @@ void processData()
   }
 
   if (runWW)
-    ProcessSample(dataset+"/WW_Spring10-START3X_V26_S09-v1_DiLep/V03-04-08/"+version+"/merged_ntuple*.root", WW, 100.0, 43, -1, fullDataSet, kRed);
+    ProcessSample("/tas/cms2/WW_Spring10-START3X_V26_S09-v1_DiLep/V03-04-08/"+version+"/merged_ntuple*.root", WW, 100.0, 43, -1, fullDataSet, kRed);
+    //ProcessSample(dataset+"/WWTo2L2Nu_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/merged_ntuple*.root", WW, 100.0, 2.93*43.0/28.0, -1, fullDataSet, kRed);
 
   if (runWZ)
     ProcessSample(dataset+"/WZ_Spring10-START3X_V26_S09-v1/V03-04-08/"+version+"/merged_ntuple*.root", WZ, 100.0, 18.2, -1, fullDataSet, kBlue);
@@ -150,9 +153,24 @@ void processData()
     hist::color("qcd", 40);
   }
   */
+  
+  // RealData
+  //TString cms2_json_file = "Cert_TopSep11_Merged_135059-144114_allPVT.txt";
+  TString cms2_json_file = "Cert_132440-147454_7TeV_StreamExpress_Collisions10.txt";
 
+  std::vector<string> dataSamples;
+  //dataSamples.push_back("/tas/yygao/dataskims/diLepPt2020wwskim.root"); // this is the skim corresponds to the 3.1/pb with Json files at Sep11
+  dataSamples.push_back("/tas/cms2/Mu_Run2010A-Sep17ReReco_v2_RECO/V03-06-09/diLepPt1020Skim/*.root");
+  dataSamples.push_back("/tas/cms2/Mu_Run2010B-PromptReco-v2_RECO/V03-06-09/diLepPt1020Skim/*.root");
+  dataSamples.push_back("/tas/cms2/EG_Run2010A-Sep17ReReco_v2_RECO/V03-06-09/diLepPt1020Skim/*.root");
+  dataSamples.push_back("/tas/cms2/Electron_Run2010B-PromptReco-v2_RECO/V03-06-09/diLepPt1020Skim/*.root");
+  
+
+  if (runData)
+    ProcessSample(dataSamples, Data, 3.1, -1, -1, fullDataSet, kBlack, false, false, zStudy, true, cms2_json_file);
+  
   if (gSystem->Getenv("SkimSamples")) return;
-
+  
   //
   // save all the histograms
   //
@@ -184,6 +202,7 @@ void processData()
     if (runttbar)  description+=" ttbar";
     if (runtW)     description+=" tW";
     if (runQCD)    description+=" QCD";
+    if (runData)    description+=" Data";
     fullDataSet->SetName("fulldataset");
     fullDataSet->SetTitle(description.c_str());
     fullDataSet->Write();
