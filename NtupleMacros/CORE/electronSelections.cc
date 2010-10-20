@@ -99,6 +99,7 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
 
     if ((cms2.els_type()[index] & (1ll<<ISECALDRIVEN))) cuts_passed |= (1ll<<ELESEED_ECAL);
     if (fabs(cms2.els_p4()[index].eta()) < 2.5) cuts_passed |= (1ll<<ELEETA_250);
+    if (fabs(cms2.els_p4()[index].eta()) < 2.4) cuts_passed |= (1ll<<ELEETA_240);
     if (electronId_noMuon(index)) cuts_passed |= (1ll<<ELENOMUON_010);
 
     //

@@ -79,6 +79,7 @@ enum EleSelectionType {
 	 //
 	 // |eta| < 2.50 where eta is the ecal eta
 	 ELEETA_250,
+	 ELEETA_240,
 	 //
 	 // Pt
 	 //
