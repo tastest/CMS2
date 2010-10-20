@@ -39,7 +39,7 @@ bool passMuTriggerSS(unsigned int hypIdx);
 /*****************************************************************************************/
 // extra Z veto
 /*****************************************************************************************/
-bool makesExtraZ(int hypIdx);
+bool makesExtraZ(int hypIdx, bool applyAlignmentCorrection=false, bool removedEtaCutInEndcap=false);
 
 /*****************************************************************************************/
 // require electron GSF, CTF and SC charges agree
