@@ -113,7 +113,24 @@ TH1F* Plot(const char *pfx, TChain *chain, TCut field, TCut sel, TCut presel, fl
     char *draw = Form("%s>>+%s", field.GetTitle(), name);
     TCut cut = scale*(c_presel+sel);
 
-    chain->Draw(draw, cut, "goff");
+    // Okay, time for someting sneaky. At the
+    // time of this commit I anticipate YJ
+    // adding a chain->Scan immediately after
+    // the chain->Draw. She will do this only
+    // for data. The Draw and Scan use exactly
+    // the same selection, so let's first
+    // create a TEventList with the selection
+    // and use that for both. Be sure to go
+    // back to the original TEventList when
+    // you're done.
+    TEventList* orig_elist = (TEventList*)chain->GetEventList()->Clone();
+    chain->Draw(">>elist", cut, "goff");
+    TEventList* elist = (TEventList*)gDirectory->Get("elist");
+    chain->SetEventList(elist);
+    chain->Draw(draw, "", "goff");
+    // chain->Scan(var1:var2...", "no cuts")
+    // All done now, revert to original event list
+    chain->SetEventList(orig_elist);
 
     // Move overflow to the last bin
     float overflow = h->GetBinContent(nbins+1);
