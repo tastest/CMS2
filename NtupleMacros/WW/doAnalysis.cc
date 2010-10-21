@@ -1369,15 +1369,6 @@ void hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   if ( passedLTFinalRequirements ) cuts_passed |= (1<<PASS_LT_FINAL);
   if ( passedLLFinalRequirements ) cuts_passed |= (1<<PASS_LL_FINAL);
 
-
-  if (CheckCutsNM1(pass_all, (1<<PASS_LT_FINAL)|(1<<PASS_LL_FINAL), cuts_passed) ) {
-    if(dataset)
-      getIsolationSidebandsAfterSelections(i_hyp, weight, dataset, passedLTFinalRequirements && passedLLFinalRequirements);
-    countFakableObjectsAfterAllSelections(i_hyp, weight, 
-					  passedLTElFakableRequirements, passedLLElFakableRequirements, 
-					  passedLTFinalRequirements, passedLLFinalRequirements);
-  }
-    
   if ( CheckCuts( (1<<PASS_ZSEL) | (1<<PASS_MET) | (1<<PASS_LT_FINAL) | (1<<PASS_LL_FINAL) , cuts_passed))
     monitor.count(cms2,type,"after previous + lepton id/iso cuts");
   
@@ -1397,10 +1388,19 @@ void hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
     cuts_passed |=   (1<<PASS_SOFTMUVETO);
   if ( numberOfExtraLeptons(i_hyp,10) == 0) 
     cuts_passed |=   (1<<PASS_EXTRALEPTONVETO);
-  
+
   // -------------------------------------------------------------------//
   // Finished checking the cuts, fill histograms before the final sel   //
   // -------------------------------------------------------------------//
+
+  if (CheckCutsNM1(pass_all, (1<<PASS_LT_FINAL)|(1<<PASS_LL_FINAL), cuts_passed) ) {
+    if(dataset)
+      getIsolationSidebandsAfterSelections(i_hyp, weight, dataset, passedLTFinalRequirements && passedLLFinalRequirements);
+    countFakableObjectsAfterAllSelections(i_hyp, weight, 
+					  passedLTElFakableRequirements, passedLLElFakableRequirements, 
+					  passedLTFinalRequirements, passedLLFinalRequirements);
+  }
+    
   // Jet-veto effciency studies
   bool applyJEC = false;
   if (CheckCutsNM1(pass_all, (1<<PASS_JETVETO) | (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO), cuts_passed)) {
