@@ -41,6 +41,8 @@ void printYields(string filename){
   mcsamples.push_back("ttotr"); 
   mcsamples.push_back("Zjets"); 
   mcsamples.push_back("wjets"); 
+  mcsamples.push_back("qcdpt15"); 
+  mcsamples.push_back("qcdpt30"); 
   mcsamples.push_back("ww"); 
   mcsamples.push_back("wz"); 
   mcsamples.push_back("zz"); 

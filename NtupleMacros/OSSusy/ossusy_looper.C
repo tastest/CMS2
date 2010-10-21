@@ -40,7 +40,6 @@
 #include "CORE/eventSelections.h"
 #include "CORE/electronSelections.h"
 #include "CORE/electronSelectionsParameters.h"
-#include "CORE/SimpleFakeRate.h"
 #include "CORE/mcSelections.h"
 #include "CORE/muonSelections.h"
 #include "CORE/MT2/MT2.h"
@@ -300,26 +299,296 @@ ossusy_looper::ossusy_looper()
 
 //--------------------------------------------------------------------
 
+bool ossusy_looper::isFakeableMuon (int index) {
+  return muonId(index, muonSelectionFO_mu_ttbar);
+}
+
+// *****************************************************************
+//get the FR weight
+// *****************************************************************
+double ossusy_looper::getFRWeight(const int hypIdx, string elFRversion, SimpleFakeRate* mufr, SimpleFakeRate * elfr, FREnum frmode, bool isData) {
+
+  //std::cout<<"Called ossusy_looper::getFRWeight"<<std::endl;
+
+  bool isGoodMut = false;
+  bool isGoodMul = false;
+  bool isFOMut   = false;
+  bool isFOMul   = false;
+
+  bool  estimateQCD   = false;
+  bool  estimateWJets = false;
+
+  // only apply alignment corr for data, but there always.
+  // remember to turn this off for 38X data.
+  bool  applyAlignmentCorrection = isData;
+  if ( frmode == e_qcd ) {
+    estimateQCD   = true;
+    estimateWJets = false;
+  } 
+  else if( frmode == e_wjets ) {
+    estimateQCD   = false;
+    estimateWJets = true;
+  }
+  else {
+    std::cout<<"ossusy_looper::getFRWeight: bad FR mode given, fix this!"<<std::endl;
+    return -9999.;
+  }
+  if(hyp_type()[hypIdx] == 0) {
+    
+    unsigned int iMut = hyp_lt_index()[hypIdx];
+    unsigned int iMul = hyp_ll_index()[hypIdx];
+    
+
+    if( muonId( iMut , NominalTTbarV2 ) ) {//isGoodLeptonwIso(13, iMut, applyAlignmentCorrection)
+      isGoodMut = true;
+    }
+    
+    if( muonId( iMul , NominalTTbarV2 ) ) {//isGoodLeptonwIso(13, iMul, applyAlignmentCorrection)
+      isGoodMul = true;
+    }
+
+    if(isFakeableMuon(iMut))
+      isFOMut = true;
+
+    if(isFakeableMuon(iMul))
+      isFOMul = true;
+
+    
+    //for both WJets and QCD, we need both to be FOs at least
+    if(!isFOMut || !isFOMul)
+      return -9999.;
+
+
+    //if we want to estimate the fakes for QCD, then we ask that 
+    //both are not num objects, and that both are FO
+    if(estimateQCD) {
+      
+      //if at least one is a Numerator lepton, we return
+      if( isGoodMut || isGoodMul) 
+        return -9999.;
+      
+      double FRMut = mufr->getFR(mus_p4()[iMut].pt(), mus_p4()[iMut].eta());
+      double FRMul = mufr->getFR(mus_p4()[iMul].pt(), mus_p4()[iMul].eta());
+      return (FRMut/(1-FRMut))*(FRMul/(1-FRMul));
+    } else if(estimateWJets) {
+      
+      //need one to be a Numerator lepton, and the other to be FO but not num
+      if( isGoodMut && !isGoodMul && isFOMul) {
+        double FR = mufr->getFR(mus_p4()[iMul].pt(), mus_p4()[iMul].eta());
+        //cout << "mm, FR and FR/(1-FR) " << FR << ", " << FR/(1-FR) << endl;
+        return FR/(1-FR);
+      }
+      
+      //check the other muon
+      if( isGoodMul && !isGoodMut && isFOMut) {
+        double FR = mufr->getFR(mus_p4()[iMut].pt(), mus_p4()[iMut].eta());
+        //cout << "mm, FR and FR/(1-FR) " << FR << ", " << FR/(1-FR) << endl;
+        return FR/(1-FR);
+      }
+    }//estimate WJets
+    return -9999.;
+  }//mumu case
+  
+
+  //now we do the ee case
+  if(hyp_type()[hypIdx] == 3) {
+	  
+    unsigned int iElt = hyp_lt_index()[hypIdx];
+    unsigned int iEll = hyp_ll_index()[hypIdx];
+	  
+    bool isGoodElt = false;
+    bool isGoodEll = false;
+    bool isFOElt   = false;
+    bool isFOEll   = false;
+
+    //    if( pass_electronSelection( iElt , electronSelection_ttbarV2 , isData , true ) ) {// isGoodLeptonwIso(11, iElt, applyAlignmentCorrection)
+    if( pass_electronSelection( iElt , electronSelection_ttbarV2 , false , false ) ) {// isGoodLeptonwIso(11, iElt, applyAlignmentCorrection)
+      isGoodElt = true;
+    }
+
+    //    if( pass_electronSelection( iEll , electronSelection_ttbarV2 , isData , true ) ) {// isGoodLeptonwIso(11, iEll, applyAlignmentCorrection)
+    if( pass_electronSelection( iEll , electronSelection_ttbarV2 , false , false ) ) {// isGoodLeptonwIso(11, iEll, applyAlignmentCorrection)
+      isGoodEll = true;
+    }
+    
+    if(elFRversion == "eFRv115u" && pass_electronSelection(iElt, electronSelectionFO_el_ttbarV1_v1, applyAlignmentCorrection))
+      isFOElt = true;
+    else if(elFRversion == "eFRv215u" && pass_electronSelection(iElt, electronSelectionFO_el_ttbarV1_v2, applyAlignmentCorrection))
+      isFOElt = true; 
+    else if(elFRversion == "eFRv315u" && pass_electronSelection(iElt, electronSelectionFO_el_ttbarV1_v3, applyAlignmentCorrection))
+      isFOElt = true;
+
+    if(elFRversion == "eFRv115u" && pass_electronSelection(iEll, electronSelectionFO_el_ttbarV1_v1, applyAlignmentCorrection))
+      isFOEll = true;
+    else if(elFRversion == "eFRv215u" && pass_electronSelection(iEll, electronSelectionFO_el_ttbarV1_v2, applyAlignmentCorrection))
+      isFOEll = true; 
+    else if(elFRversion == "eFRv315u" && pass_electronSelection(iEll, electronSelectionFO_el_ttbarV1_v3, applyAlignmentCorrection))
+      isFOEll = true;
+   
+
+    //for both WJets and QCD, we need both to be FOs at least
+    //if both are good, we continue
+    if( !isFOElt || !isFOEll)
+      return -9999.;
+
+
+    if(estimateQCD) {
+      
+      //if at least one is a Numerator object, then we return -9999.
+      if( isGoodElt || isGoodEll) 
+        return -9999.;
+      
+      double FRElt = elfr->getFR(els_p4()[iElt].pt(), els_p4()[iElt].eta());
+      double FREll = elfr->getFR(els_p4()[iEll].pt(), els_p4()[iEll].eta());
+      //      sumfr = sumfr +  (FRElt/(1-FRElt))*(FREll/(1-FREll));
+      return (FRElt/(1-FRElt))*(FREll/(1-FREll));
+    } else if(estimateWJets) {
+      
+      if(isGoodElt && !isGoodEll && isFOEll) {
+        double FR = elfr->getFR(els_p4()[iEll].pt(), els_p4()[iEll].eta());
+        //cout << "ee, FR and FR/(1-FR) " << FR << ", " << FR/(1-FR) << endl;
+        return FR/(1-FR);
+      }
+      //check the other electron 
+      if(isGoodEll && !isGoodElt && isFOElt) {
+        double FR = elfr->getFR(els_p4()[iElt].pt(), els_p4()[iElt].eta());
+        //cout << "ee, FR and FR/(1-FR) " << FR << ", " << FR/(1-FR) << endl;
+        return FR/(1-FR);
+      }
+      return -9999.;
+    }//estimateWJets
+    
+  }//ee case
+
+  if(hyp_type()[hypIdx] == 1 || hyp_type()[hypIdx] == 2) {
+    int iEl = 0;
+    int iMu = 0;
+    if(hyp_type()[hypIdx] == 2) {
+      iEl = hyp_lt_index()[hypIdx];
+      iMu = hyp_ll_index()[hypIdx];
+    } 
+    if (hyp_type()[hypIdx] == 1) {
+      iEl = hyp_ll_index()[hypIdx];
+      iMu = hyp_lt_index()[hypIdx];
+    } 
+    
+    bool isGoodEl = false;
+    bool isFOEl   = false;
+    bool isGoodMu = false;
+    bool isFOMu   = false;
+    
+//           if (abs(hyp_ll_id()[i]) == 13  && (! muonId(hyp_ll_index()[i] , NominalTTbarV2 ) ) )   continue;
+//           if (abs(hyp_lt_id()[i]) == 13  && (! muonId(hyp_lt_index()[i] , NominalTTbarV2 ) ) )   continue;
+          
+//           //ttbarV2 electron ID
+// 	  if (abs(hyp_ll_id()[i]) == 11  && (! ) continue;
+// 	  if (abs(hyp_lt_id()[i]) == 11  && (! pass_electronSelection( hyp_lt_index()[i] , 
+// 								       electronSelection_ttbarV2 , isData , true ))) continue;
+
+//    if( pass_electronSelection( iEl , electronSelection_ttbarV2 , isData , true ) ) {//isGoodLeptonwIso(11, iEl, applyAlignmentCorrection)
+    if( pass_electronSelection( iEl , electronSelection_ttbarV2 , false , false ) ) {//isGoodLeptonwIso(11, iEl, applyAlignmentCorrection)
+      isGoodEl = true;
+    }
+    if( muonId( iMu , NominalTTbarV2 ) ) { // isGoodLeptonwIso(13, iMu, applyAlignmentCorrection)
+      isGoodMu = true;
+    }
+
+    if(elFRversion == "eFRv115u" && pass_electronSelection(iEl, electronSelectionFO_el_ttbarV1_v1, applyAlignmentCorrection))
+      isFOEl = true;
+    else if(elFRversion == "eFRv215u" && pass_electronSelection(iEl, electronSelectionFO_el_ttbarV1_v2, applyAlignmentCorrection))
+      isFOEl = true; 
+    else if(elFRversion == "eFRv315u" && pass_electronSelection(iEl, electronSelectionFO_el_ttbarV1_v3, applyAlignmentCorrection))
+      isFOEl = true;
+
+    if(isFakeableMuon(iMu))
+      isFOMu = true;
+
+    
+    //if either fail FO, return!!!
+    if(!isFOMu || !isFOEl)
+      return -9999.;
+
+    
+    if(estimateQCD ) {
+      
+      //if at least one is a numerator, then we fail
+      if(isGoodMu || isGoodEl)
+        return -9999.;
+      
+      double FRMu = mufr->getFR(mus_p4()[iMu].pt(), mus_p4()[iMu].eta());
+      double FREl = elfr->getFR(els_p4()[iEl].pt(), els_p4()[iEl].eta());
+      return FRMu*FREl/(1-FRMu)/(1-FREl);
+      //if we get here somehow, we're in trouble
+      cout << "We have gotten to line: " << __LINE__  << " in the FR code.";
+      cout << "We should never get here, so something is wrong with our logic!!" << endl;
+    } else if(estimateWJets) {
+      
+      //need one to be a numerator lepton and the other to be a FO
+      if(isGoodMu && !isGoodEl && isFOEl) {
+        double FR = elfr->getFR(els_p4()[iEl].pt(), els_p4()[iEl].eta());
+        //cout << "emu, el FR, FR/(1-FR): " << FR << ", " << FR/(1-FR) << endl;
+        return FR/(1-FR);
+      }
+      
+      if(isGoodEl && !isGoodMu && isFOMu) {
+        double FR = mufr->getFR(mus_p4()[iMu].pt(), mus_p4()[iMu].eta());
+        //cout << "emu, mu FR, FR/(1-FR): " << FR << ", " << FR/(1-FR) << endl;
+        return FR/(1-FR);
+      }
+      return -9999.;
+    }
+  } //emu case
+
+  return -9999.;
+}
+
+
 int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, float lumi,
-                             JetTypeEnum jetType, MetTypeEnum metType, ZVetoEnum zveto, bool doFakeApp, bool calculateTCMET)
+                             JetTypeEnum jetType, MetTypeEnum metType, ZVetoEnum zveto, FREnum frmode, bool doFakeApp, bool calculateTCMET)
 {
 
   if( doFakeApp ){
-    cout << "Currently not set up to do fake rate calculation, quitting" << endl;
-    exit(0);
+//     cout << "Currently not set up to do fake rate calculation, quitting" << endl;
+//     exit(0);
   }
 
   set_goodrun_file( "Cert_TopOct15_Merged_135821-147454_allPVT_json.txt" );
 
-  SimpleFakeRate *fr_el=0;
-  SimpleFakeRate *fr_mu=0;
+  bool isData = false;
+  if( strcmp( prefix , "data" ) == 0 ){
+    isData = true;
+  }
+
+  //instantiate SimpleFakeRate class for electrons and muons
+  SimpleFakeRate* mufr = 0;
+  //this is the default, can change it below if needed
+  SimpleFakeRate* elfr = 0;
 
   if(doFakeApp) {
     std::cout<<"**************************"<<std::endl;
     std::cout<<"Running FR application job"<<std::endl;
     std::cout<<"**************************"<<std::endl;
-    fr_el = new SimpleFakeRate("FakeRates31May.root","eFRv215u"); 
-    fr_mu = new SimpleFakeRate("FakeRates31May.root","muFR15u"); 
+
+    //     fr_el = new SimpleFakeRate("FakeRates31May.root","eFRv215u"); 
+    //     fr_mu = new SimpleFakeRate("FakeRates31May.root","muFR15u"); 
+    //     //instantiate SimpleFakeRate class for electrons and muons
+    if(isData) {
+      std::cout<<"Using data derived FR files"<<std::endl;
+      mufr = new SimpleFakeRate("FakeRates30August.root", "muFR15u");
+      //     //this is the default
+      elfr= new SimpleFakeRate("FakeRates30August.root", "eFRv215u");
+    }
+    else {
+      std::cout<<"Using MC derived FR files"<<std::endl;
+      mufr = new SimpleFakeRate("qcd30_FakeRates30August.root", "mufr");
+      //     //this is the default
+      elfr= new SimpleFakeRate("qcd30_FakeRates30August.root", "efrV2");
+    }
+
+    //     // further options include:
+    //     elFRversion = "eFRv115u";
+    //     elFRversion = "eFRv215u";
+    //     elFRversion = "eFRv315u";
   }
 
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
@@ -385,9 +654,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
       cms2.GetEntry(z);
 
-      bool isData = false;
-      if( strcmp( prefix , "data" ) == 0 ){
-        isData = true;
+      
+      float pthat_cutoff = 30.;
+      if (strcmp( prefix , "qcdpt15" ) == 0 && genps_pthat() > pthat_cutoff) {
+        continue;
       }
 
       // skip duplicates
@@ -418,6 +688,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       vector<unsigned int> v_goodHyps;
       v_goodHyps.clear();
       vector<unsigned int> v_goodZHyps;
+      vector<float> v_weights;
+      v_weights.clear();
       v_goodZHyps.clear();
 
       bool foundMu_ll[20];
@@ -458,22 +730,42 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         if( TMath::Max( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < 20. )   continue;
         if( TMath::Min( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < 10. )   continue;
         if( hyp_p4()[i].mass() < 10 )                                         continue;
-        
-        //muon ID
-        if (abs(hyp_ll_id()[i]) == 13  && (! muonId(hyp_ll_index()[i] , NominalTTbarV2 ) ) )   continue;
-        if (abs(hyp_lt_id()[i]) == 13  && (! muonId(hyp_lt_index()[i] , NominalTTbarV2 ) ) )   continue;
-        
-        //OSV1
-        if (abs(hyp_ll_id()[i]) == 11  && (! pass_electronSelection( hyp_ll_index()[i] , electronSelection_OSV1 , false , false ))) continue;
-        if (abs(hyp_lt_id()[i]) == 11  && (! pass_electronSelection( hyp_lt_index()[i] , electronSelection_OSV1 , false , false ))) continue;
 
-        v_goodHyps.push_back( i );
+        float FRweight = 1;
+
+        if(doFakeApp) {
+          //          float FRweight = getFRWeight(hypIdx, elFRversion, mufr, elfr); 
+          FRweight = getFRWeight(i, "eFRv215u", mufr, elfr, frmode, isData); 
+          
+          // if getFRWeight returns less then 1 it means the current hyp
+          // does not fulfill the FO selections.
+          if(FRweight < -1.) 
+            continue;
+          //          std::cout << "fake rate weight = " << FRweight << std::endl;
+          //           v_goodHyps.push_back(hypIdx);
+          //           v_weights.push_back(FRweight); 
+        }
+	else{
+	  //muon ID
+	  if (abs(hyp_ll_id()[i]) == 13  && (! muonId(hyp_ll_index()[i] , NominalTTbarV2 ) ) )   continue;
+	  if (abs(hyp_lt_id()[i]) == 13  && (! muonId(hyp_lt_index()[i] , NominalTTbarV2 ) ) )   continue;	  
+    // 	  //ttbarV2
+    // 	  if (abs(hyp_ll_id()[i]) == 11  && (! pass_electronSelection( hyp_ll_index()[i] , electronSelection_ttbarV2 , false , false ))) continue;
+    // 	  if (abs(hyp_lt_id()[i]) == 11  && (! pass_electronSelection( hyp_lt_index()[i] , electronSelection_ttbarV2 , false , false ))) continue;
+ 	  //OSV1
+ 	  if (abs(hyp_ll_id()[i]) == 11  && (! pass_electronSelection( hyp_ll_index()[i] , electronSelection_OSV1 , false , false ))) continue;
+ 	  if (abs(hyp_lt_id()[i]) == 11  && (! pass_electronSelection( hyp_lt_index()[i] , electronSelection_OSV1 , false , false ))) continue;
+	}
 
         if( hyp_ll_p4()[i].pt() > 20. && hyp_lt_p4()[i].pt() > 20 ){
           if( hyp_p4()[i].mass() > 76. && hyp_p4()[i].mass() < 106. ){
             v_goodZHyps.push_back(i);
           }
         }
+
+	v_goodHyps.push_back( i );
+        v_weights.push_back( FRweight ); // this has to be multipiled to the orig weight later on! (FRweight is == 1 for std. run)
+
       }
 
       //loop over Z hypotheses
@@ -531,8 +823,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         p_met_Z = getMet( "muCorMET" , zhyp);
         float mucormet_Z = p_met_Z.first;
         
-        p_met_Z = getMet( "muCorJESMET" , zhyp);
-        float mucorjesmet_Z = p_met_Z.first;
+	//        p_met_Z = getMet( "muCorJESMET" , zhyp);
+        float mucorjesmet_Z = 123.456;
+	  //p_met_Z.first;
         
         fillHistos(hdilMass_Z      , hyp_p4()[zhyp].mass() , weight , myType , njets);
         fillHistos(htcmet_event_Z  , tcmet_event_Z         , weight , myType , njets);
@@ -549,9 +842,25 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       if( v_goodHyps.size() == 0 ) continue;
 
       //ttbar hyp disambiguation
+      //returns the index of the best hypothesis in the vector of hypotheses
       unsigned int goodHyp = selectHypByHighestSumPt(v_goodHyps);
+      vector<unsigned int>::const_iterator goodHyp_it = find(v_goodHyps.begin(), v_goodHyps.end(), goodHyp);
+      if(goodHyp_it == v_goodHyps.end()) {
+        cout << "The weight index does not correspond to the index of the best hypothesis!!!! Something is wrong" 
+             << "We will quit" << endl;
+        return -999;
+      }
+      
+      //clear this vector and put in the goodHyp vector in here so we can then save some space
+      //and loop over this vector below. Useful when we're not using the hypDisambiguation
+      //get the index of the goodHyp in the vector of goodHyps
+      unsigned int goodHyp_idx = goodHyp_it - v_goodHyps.begin();
+      //get the weight of the corresponding goodHyp
+      float goodHyp_weight = v_weights[goodHyp_idx];
       v_goodHyps.clear();
-      v_goodHyps.push_back( goodHyp );
+      v_weights.clear();
+      v_goodHyps.push_back(goodHyp);
+      v_weights.push_back(goodHyp_weight);
       
       /*
       //perform hypothesis disambiguation if >1 good hyp
@@ -612,94 +921,12 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         }
       
         if( hyp_p4()[hypIdx].mass() > 76. && hyp_p4()[hypIdx].mass() < 106. ){
+	  // this will not work in FR mode - need to update the weight_ here 101019
           if( myType == 0 ) nGoodEl+=weight_;
           if( myType == 1 ) nGoodMu+=weight_;
           if( myType == 2 ) nGoodEM+=weight_;
         }
       
-
-        /*
-        bool isNumeratorElectron_ll = false;
-        bool isNumeratorElectron_lt = false;
-        bool isNumeratorMuon_ll     = false;
-        bool isNumeratorMuon_lt     = false;
-
-        bool goodFakeApplicationCand = false;
-
-        
-        if(doFakeApp) { // only flag numerator leptons to use in FR application
-
-          //UPDATE ME TO MATCH CURRENT ELECTRON/MUON IS!!!!!!!!!!!!!!!!!!!!!!
-
-          //muon ID
-          //           if (abs(hyp_ll_id()[hypIdx]) == 13  && (fabs(hyp_ll_p4()[hypIdx].eta()) < 2.4 && muonId(hyp_ll_index()[hypIdx])))   isNumeratorMuon_ll = true;
-          //           if (abs(hyp_lt_id()[hypIdx]) == 13  && (fabs(hyp_lt_p4()[hypIdx].eta()) < 2.4 && muonId(hyp_lt_index()[hypIdx])))   isNumeratorMuon_lt = true;
-          if (abs(hyp_ll_id()[hypIdx]) == 13  && (fabs(hyp_ll_p4()[hypIdx].eta()) < 2.4 && muonId(hyp_ll_index()[hypIdx],NominalTTbar)))   isNumeratorMuon_ll = true;
-          if (abs(hyp_lt_id()[hypIdx]) == 13  && (fabs(hyp_lt_p4()[hypIdx].eta()) < 2.4 && muonId(hyp_lt_index()[hypIdx],NominalTTbar)))   isNumeratorMuon_lt = true;
-
-          //ttbar
-          //           if (abs(hyp_ll_id()[hypIdx]) == 11  && ( pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_cand01 )))  isNumeratorElectron_ll = true;
-          //           if (abs(hyp_lt_id()[hypIdx]) == 11  && ( pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_cand01 )))  isNumeratorElectron_lt = true;  
-          if (abs(hyp_ll_id()[hypIdx]) == 11  && ( pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_ttbar )))  isNumeratorElectron_ll = true;
-          if (abs(hyp_lt_id()[hypIdx]) == 11  && ( pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_ttbar )))  isNumeratorElectron_lt = true;  
-
-          // selection statements for Denominator selection (missing in zeroth implementation)
-          // more longer statements for better readability
-          // Check that one of the leptons is FO&!Den and the other is a Num: 
-          // section for fake electrons:
-          if (abs(hyp_ll_id()[hypIdx]) == 11 && abs(hyp_lt_id()[hypIdx]) == 11) {
-          if( 
-          //                ( isFakeableElectron(cms2.hyp_ll_index()[hypIdx],el_v2_cand01)  && !isNumeratorElectron_ll && isNumeratorElectron_lt) ||
-          //                ( isFakeableElectron(cms2.hyp_lt_index()[hypIdx],el_v2_cand01)  && !isNumeratorElectron_lt && isNumeratorElectron_ll)    
-          ( pass_electronSelection (cms2.hyp_ll_index()[hypIdx], electronSelectionFO_el_ttbarV1_v2) && !isNumeratorElectron_ll && isNumeratorElectron_lt) ||
-          ( pass_electronSelection (cms2.hyp_lt_index()[hypIdx], electronSelectionFO_el_ttbarV1_v2) && !isNumeratorElectron_lt && isNumeratorElectron_ll)    
-          ) goodFakeApplicationCand = true;
-          else continue;
-          }
-          if (abs(hyp_ll_id()[hypIdx]) == 11 && abs(hyp_lt_id()[hypIdx]) == 13) {
-          if( 
-          //                ( isFakeableElectron(cms2.hyp_ll_index()[hypIdx],el_v2_cand01)  && !isNumeratorElectron_ll && isNumeratorMuon_lt ) ||
-          //                ( isFakeableMuon(cms2.hyp_lt_index()[hypIdx], mu_v1) && !isNumeratorMuon_lt && isNumeratorElectron_ll )
-          ( pass_electronSelection (cms2.hyp_ll_index()[hypIdx], electronSelectionFO_el_ttbarV1_v2) && !isNumeratorElectron_ll && isNumeratorMuon_lt ) ||
-          ( muonId (cms2.hyp_lt_index()[hypIdx], muonSelectionFO_mu_ttbar)                          && !isNumeratorMuon_lt && isNumeratorElectron_ll )
-          ) goodFakeApplicationCand = true;
-          else continue;
-          }
-          // section for fake muons
-          if (abs(hyp_ll_id()[hypIdx]) == 13 && abs(hyp_lt_id()[hypIdx]) == 11) {
-          if(
-          //                ( isFakeableMuon(cms2.hyp_ll_index()[hypIdx], mu_v1) && !isNumeratorMuon_ll && isNumeratorElectron_lt ) ||
-          //                ( isFakeableElectron(cms2.hyp_lt_index()[hypIdx],el_v2_cand01)  && !isNumeratorElectron_lt && isNumeratorMuon_ll )
-          ( muonId (cms2.hyp_ll_index()[hypIdx], muonSelectionFO_mu_ttbar) && !isNumeratorMuon_ll   && isNumeratorElectron_lt ) ||
-          ( pass_electronSelection (cms2.hyp_lt_index()[hypIdx], electronSelectionFO_el_ttbarV1_v2) && !isNumeratorElectron_lt && isNumeratorMuon_ll )
-          ) goodFakeApplicationCand = true;
-          else continue;
-          }
-          if (abs(hyp_ll_id()[hypIdx]) == 13 && abs(hyp_lt_id()[hypIdx]) == 13) {
-          if(
-          //                ( isFakeableMuon(cms2.hyp_ll_index()[hypIdx], mu_v1) && !isNumeratorMuon_ll && isNumeratorMuon_lt ) ||
-          //                ( isFakeableMuon(cms2.hyp_lt_index()[hypIdx], mu_v1) && !isNumeratorMuon_lt && isNumeratorMuon_ll )
-          ( muonId (cms2.hyp_ll_index()[hypIdx], muonSelectionFO_mu_ttbar) && !isNumeratorMuon_ll && isNumeratorMuon_lt ) ||
-          ( muonId (cms2.hyp_lt_index()[hypIdx], muonSelectionFO_mu_ttbar) && !isNumeratorMuon_lt && isNumeratorMuon_ll )
-          ) goodFakeApplicationCand = true;
-          else continue;
-          }
-          //    if( goodFakeApplicationCand ) cout<< "Found a proper FR application case" << endl;
-
-          }
-          else { // default cuts
-        
-          //ttbarV2 muon ID
-          if (abs(hyp_ll_id()[hypIdx]) == 13  && (! muonId(hyp_ll_index()[hypIdx],NominalTTbarV2)))   continue;
-          if (abs(hyp_lt_id()[hypIdx]) == 13  && (! muonId(hyp_lt_index()[hypIdx],NominalTTbarV2)))   continue;
-        
-          //ttbarV2 electron ID
-          if (abs(hyp_ll_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_ttbarV2 , isData , true ))) continue;
-          if (abs(hyp_lt_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_ttbarV2 , isData , true ))) continue;
-
-          }
-        */
-
         int nels = 0;
         int nmus  = 0;
         int ntaus = 0;
@@ -1011,90 +1238,14 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           weight = kFactor * evt_scale1fb() * lumi;
         }
 
+        if( doFakeApp ) {  // multiply orig weight with FR hyp weight (1 for std running, FRweight for FR run)
+          weight *= v_weights.at(i);
+        }
 
         // This isn't quite right, and works only if both em and ppmux are in play
         // ibl: is this still applicable? Check! 100302
         if ((! strcmp(prefix, "ppMuX") || ! strcmp(prefix,"EM")) && 
             (hyp_type()[hypIdx] == 1 || hyp_type()[hypIdx] == 2)) weight *= 0.5;
-
-        /*
-        int fakeRateSet = 0;
-
-        if(doFakeApp) {
-          double fr_ll = 0;
-          // muon truth&ID/iso tags are NOT already in global cuts - need to check here
-          //           const double eta = cms2.hyp_ll_p4()[hypIdx].eta();
-          //           const double pt = cms2.hyp_ll_p4()[hypIdx].pt();
-          switch (abs(cms2.hyp_ll_id()[hypIdx])) {
-          case 11:
-            if (
-                pass_electronSelection (cms2.hyp_ll_index()[hypIdx], electronSelectionFO_el_ttbarV1_v2) &&
-                //		isFakeableElectron(cms2.hyp_ll_index()[hypIdx],el_v2_cand01) &&
-                not isNumeratorElectron_ll &&
-                (isNumeratorMuon_lt || isNumeratorElectron_lt)
-                ) {
-              //              fr_ll = elFakeProb(cms2.hyp_ll_index()[hypIdx], el_v2_cand01);
-              fr_ll = fr_el->getFR(hyp_ll_p4()[hypIdx].Pt(), hyp_ll_p4()[hypIdx].eta());
-
-              fakeRateSet+=1;
-            }
-            break;
-          case 13:
-            if (
-                muonId (cms2.hyp_ll_index()[hypIdx], muonSelectionFO_mu_ttbar) &&
-                //		isFakeableMuon(cms2.hyp_ll_index()[hypIdx], mu_v1) &&
-                not isNumeratorMuon_ll  &&
-                (isNumeratorMuon_lt || isNumeratorElectron_lt) ) {
-              //              fr_ll = muFakeProb(cms2.hyp_ll_index()[hypIdx], mu_v1);
-              fr_ll = fr_mu->getFR(hyp_ll_p4()[hypIdx].Pt(), hyp_ll_p4()[hypIdx].eta());
-              fakeRateSet+=1;
-            }
-            break;
-          default:
-            assert(0);
-          }
-
-          double fr_lt = 0;
-          //           const double eta = cms2.hyp_lt_p4()[hypIdx].eta();
-          //           const double pt = cms2.hyp_lt_p4()[hypIdx].pt();
-          switch (abs(cms2.hyp_lt_id()[hypIdx])) {
-          case 11:
-            if (
-                pass_electronSelection (cms2.hyp_lt_index()[hypIdx], electronSelectionFO_el_ttbarV1_v2) &&
-                //isFakeableElectron(cms2.hyp_lt_index()[hypIdx],el_v2_cand01) &&
-                not isNumeratorElectron_lt &&
-                (isNumeratorMuon_ll || isNumeratorElectron_ll)
-                ) {
-              //              fr_lt = elFakeProb(cms2.hyp_lt_index()[hypIdx], el_v2_cand01);
-              fr_ll = fr_el->getFR(hyp_lt_p4()[hypIdx].Pt(), hyp_lt_p4()[hypIdx].eta());
-              fakeRateSet+=1;
-            }
-            break;
-          case 13:
-            if (
-                muonId (cms2.hyp_lt_index()[hypIdx], muonSelectionFO_mu_ttbar) &&
-                //		isFakeableMuon(cms2.hyp_lt_index()[hypIdx], mu_v1) &&
-                not isNumeratorMuon_lt  &&
-                (isNumeratorMuon_ll || isNumeratorElectron_ll) ) {
-              //              fr_lt = muFakeProb(cms2.hyp_lt_index()[hypIdx], mu_v1);
-              fr_ll = fr_mu->getFR(hyp_lt_p4()[hypIdx].Pt(), hyp_lt_p4()[hypIdx].eta());
-
-              fakeRateSet+=1;
-            }
-            break;
-          default:
-            assert(0);
-          }
-
-          weight *= fr_lt / (1 - fr_lt) + fr_ll / (1 - fr_ll);
-
-          // just to make sure: only one of fr_lt and fr_ll should ever be non-zero
-          //  printf("fr_lt = %g\tfr_ll = %g\n", fr_lt, fr_ll);
-          assert(not ((fr_lt != 0) && (fr_ll != 0)));
-        }
-
-        if(fakeRateSet>1)  cout<<"Setting FR multiple times - is this a double fake? Fake Weight was set as often as: "<<fakeRateSet<<endl;
-        */
 
         VofP4 *new_jets_p4 =  &vjets_p4;
         VofP4 *new_jpts_p4 =  &vjpts_p4;
@@ -1104,7 +1255,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         //int nJptsIdx =        min(new_njpts, 2);
 
         //extra variables for baby ntuple
-        int pass   = ( theSumJetPt > 200 && theNJets >= 2 && theMet > 50. && id_lt * id_ll < 0 ) ? 1 : 0;
+        int pass   = ( theSumJetPt > 100 && theNJets >= 2 && theMet > 50. && id_lt * id_ll < 0 ) ? 1 : 0;
         int passz  = (passZSelection ( hypIdx ) ) ? 1 : 0;
         float etaZ = hyp_p4()[hypIdx].eta();
         float m0   = -9999.;
@@ -1178,8 +1329,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         p_met = getMet( "muCorMET"    , hypIdx);
         float mucormet = p_met.first;
 
-        p_met = getMet( "muCorJESMET"    , hypIdx);
-        float mucorjesmet = p_met.first;
+	//        p_met = getMet( "muCorJESMET"    , hypIdx);
+        float mucorjesmet = 234.567;
+	  //p_met.first;
 
         //fill tree for baby ntuple 
         if(g_createTree){

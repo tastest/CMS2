@@ -5,6 +5,8 @@
 #include <map>
 #include "Math/LorentzVector.h"
 #include "Math/PxPyPzE4D.h"
+#include "CORE/SimpleFakeRate.h" // will .h be ok? lets see.. 101007
+
 typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 typedef map<unsigned int, unsigned int> m_uiui;
 
@@ -35,11 +37,15 @@ class ossusy_looper
         // e_allzveto:   apply Z-veto regardless of lepton flavor
         // e_nozveto :   no Z-veto
         // e_selectz :   select Z by requiring SF OS pair in Z mass window
+        enum FREnum   { e_qcd = 0, e_wjets };
+        // e_qcd     :   derive prediction for 2 fake leptons
+        // e_wjets   :   derive prediction for 1 real and one fake lepton
 
         int  ScanChain(TChain *chain, char *prefix = "", float kFactor = 1., int prescale = 1., float lumi = 1.,
                        JetTypeEnum jetType = e_JPT, 
                        MetTypeEnum metType = e_tcmet,
                        ZVetoEnum zveto = e_standard,
+                       FREnum frmode  = e_wjets,
                        bool doFakeApp = false,
                        bool calculateTCMET = false
                        );
@@ -107,10 +113,11 @@ class ossusy_looper
         Float_t meff_;
         Float_t mt_;
 
-	// the fake rate accessors
 
-/* 	SimpleFakeRate fr_el */
-/* 	SimpleFakeRate fr_mu; */
+
+        // for fakeRates
+        bool isFakeableMuon (int index);
+        double getFRWeight(const int hypIdx, string elFRversion, SimpleFakeRate *mufr, SimpleFakeRate *elfr, FREnum frmode, bool isData);
 
         // Lots and lots of histograms
 
