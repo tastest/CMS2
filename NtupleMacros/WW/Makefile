@@ -10,8 +10,16 @@ else
 
 all: 	help
 help:
-	@echo "Available Targets:";\
-	cat Makefile | perl -ne 'printf("\t%-15s %s\n",$$1,$$2) if(/^(\S+):[^#]+(#.*)$$/)'
+	@echo "Available Parameters:";\
+	echo -e "\tVERSION - skim name for processing data.";\
+	echo -e "\tDataDir - alternative location for samples. Default is data/";\
+	echo -e "\tSkimDir - alternative location for output skims. Default is data/";\
+	echo -e "\tSkimName - name of the skim to produce when you skim data";\
+	echo "Available Targets:";\
+	cat Makefile | perl -ne 'printf("\t%-15s %s\n",$$1,$$2) if(/^(\S+):[^#]+(#.*)$$/)';\
+	echo "Example:";\
+	echo -e "\tmake DataDir=skims/ VERSION=wwskim table";\
+	echo -e "\tmake DataDir=data/ SkimDir=skims/ SkimName=ww202020 skim" 
 ifndef VERBOSE
   QUIET := @
 endif
