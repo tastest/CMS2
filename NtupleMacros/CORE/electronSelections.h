@@ -288,6 +288,40 @@ static const cuts_t electronSelection_ttbarV1_pass5 =
 static const cuts_t electronSelectionFO_el_ttbarV1_v1 =
 	 electronSelectionFO_baseline |
 	 (1ll<<ELENOTCONV_HITPATTERN) |
+	 (1ll<<ELESCET_010) |
+	 (1ll<<ELEPT_010) |
+	 (1ll<<ELEISO_REL040);
+//---------------------------------------------------------
+// TTBarV1 fakeable object definition v2
+// extrapolating in id
+//---------------------------------------------------------
+static const cuts_t electronSelectionFO_el_ttbarV1_v2 =
+	 electronSelectionFO_baseline |
+	 (1ll<<ELENOTCONV_HITPATTERN) |
+	 (1ll<<ELESCET_010) |
+	 (1ll<<ELEPT_010) |
+	 (1ll<<ELEISO_REL015);
+//---------------------------------------------------------
+// TTBarV1 fakeable object definition v3
+// extrapolating in iso
+//---------------------------------------------------------
+static const cuts_t electronSelectionFO_el_ttbarV1_v3 =
+	 electronSelectionFO_baseline |
+	 (1ll<<ELENOTCONV_HITPATTERN) |
+	 (1ll<<ELESCET_010) |
+	 (1ll<<ELEPT_010) |
+	 (1ll<<ELEID_VBTF_35X_90) |
+	 (1ll<<ELEISO_REL040);
+//---------------------------------------------------------
+
+//-------------------------------------------------------
+//    Same as the above 3 selections
+//    but with pt > 15, SCET > 15
+//    This is for the ttbar dilepton pass5
+//-------------------------------------------------------
+static const cuts_t electronSelectionFO_el_ttbarV1_v1_pass5 =
+	 electronSelectionFO_baseline |
+	 (1ll<<ELENOTCONV_HITPATTERN) |
 	 (1ll<<ELESCET_015) |
 	 (1ll<<ELEPT_015) |
 	 (1ll<<ELEISO_REL040);
@@ -295,7 +329,7 @@ static const cuts_t electronSelectionFO_el_ttbarV1_v1 =
 // TTBarV1 fakeable object definition v2
 // extrapolating in id
 //---------------------------------------------------------
-static const cuts_t electronSelectionFO_el_ttbarV1_v2 =
+static const cuts_t electronSelectionFO_el_ttbarV1_v2_pass5 =
 	 electronSelectionFO_baseline |
 	 (1ll<<ELENOTCONV_HITPATTERN) |
 	 (1ll<<ELESCET_015) |
@@ -305,7 +339,7 @@ static const cuts_t electronSelectionFO_el_ttbarV1_v2 =
 // TTBarV1 fakeable object definition v3
 // extrapolating in iso
 //---------------------------------------------------------
-static const cuts_t electronSelectionFO_el_ttbarV1_v3 =
+static const cuts_t electronSelectionFO_el_ttbarV1_v3_pass5 =
 	 electronSelectionFO_baseline |
 	 (1ll<<ELENOTCONV_HITPATTERN) |
 	 (1ll<<ELESCET_015) |
@@ -313,6 +347,8 @@ static const cuts_t electronSelectionFO_el_ttbarV1_v3 =
 	 (1ll<<ELEID_VBTF_35X_90) |
 	 (1ll<<ELEISO_REL040);
 //---------------------------------------------------------
+
+
 //---------------------------------------------------------
 // TTBarV2 selection with VBTF90 ID
 //---------------------------------------------------------
