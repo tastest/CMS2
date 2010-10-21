@@ -25,7 +25,7 @@ class BabySample
 
             if (strcmp(presel.GetTitle(),"")) {
                 chain_->Draw(">>elist", presel);
-                elist_ = ((TEventList*)gDirectory->Get("elist"))->Clone();
+                elist_ = (TEventList*)gDirectory->Get("elist")->Clone();
                 chain_->SetEventList(elist_);
             }
         }
