@@ -27,23 +27,24 @@ bool passSUSYTrigger_v1( bool isData , int hypType ) {
 
     // This is overkill, as Mu15 should be a susbset of Mu11 (for example)
     // But why not.
-    if(nHLTObjects("HLT_DoubleMu3_v2") != 0 )   return true;
-    if(nHLTObjects("HLT_DoubleMu5_v1") != 0 )   return true;
-    if(nHLTObjects("HLT_Mu11") != 0 )           return true;
-    if(nHLTObjects("HLT_Mu13_v1") != 0 )        return true;
-    if(nHLTObjects("HLT_Mu15_v1") != 0 )        return true;
+  
+    if( passUnprescaledHLTTrigger("HLT_DoubleMu3_v2") ) return true;
+    if( passUnprescaledHLTTrigger("HLT_DoubleMu5_v1") )   return true;
+    if( passUnprescaledHLTTrigger("HLT_Mu11") )           return true;
+    if( passUnprescaledHLTTrigger("HLT_Mu13_v1") )        return true;
+    if( passUnprescaledHLTTrigger("HLT_Mu15_v1") )        return true;
     
-    if( run <= 147116 ){
-      if(nHLTObjects("HLT_DoubleMu3") != 0 )    return true; //136033-147116
-      if(nHLTObjects("HLT_Mu9") != 0 )          return true; //136033-147116
-    }
-    if( run <= 144114 ){
-      if(nHLTObjects("HLT_Mu7") != 0 )          return true; //140116-144114
-    }
-    if( run <= 141882 ){
-      if(nHLTObjects("HLT_Mu5") != 0 )          return true; //136033-141882
-    }
-
+    //if( run <= 147116 ){
+    if( passUnprescaledHLTTrigger("HLT_DoubleMu3") )    return true; //136033-147116
+    if( passUnprescaledHLTTrigger("HLT_Mu9") )          return true; //136033-147116
+    //}
+    //if( run <= 144114 ){
+    if( passUnprescaledHLTTrigger("HLT_Mu7") )          return true; //140116-144114
+    //}
+    //if( run <= 141882 ){
+    if( passUnprescaledHLTTrigger("HLT_Mu5") )          return true; //136033-141882
+    //}
+    
   }
  
   //ee
@@ -51,70 +52,70 @@ bool passSUSYTrigger_v1( bool isData , int hypType ) {
 
     // This is a family of never prescaled Ele17 triggers
     // Some of them are probably prescaled at 2e32?
-    if(nHLTObjects("HLT_Ele17_SW_TightEleId_L1R") != 0 )          return true;
-    if(nHLTObjects("HLT_Ele17_SW_TighterEleId_L1R_v1") != 0 )     return true;
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TightEleId_L1R") )          return true;
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TighterEleId_L1R_v1") )     return true;
     
     // These are unprescaled double triggers
-    if(nHLTObjects("HLT_DoubleEle15_SW_L1R_v1") != 0 )                 return true;
-    if(nHLTObjects("HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v1") != 0 ) return true;
-    if(nHLTObjects("HLT_Ele17_SW_TightCaloEleId_SC8HE_L1R_v1") != 0 )  return true;
+    if( passUnprescaledHLTTrigger("HLT_DoubleEle15_SW_L1R_v1") )                 return true;
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v1") ) return true;
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TightCaloEleId_SC8HE_L1R_v1") )  return true;
 
     // These are double triggers that became prescaled at some point
-    if( run <= 147116 ){
-      if(nHLTObjects("HLT_DoubleEle10_SW_L1R") != 0 ) return true; //141956-147116
-    }
-    if( run <= 141882 ){
-      if(nHLTObjects("HLT_DoubleEle5_SW_L1R") != 0 )  return true; //136033-141882
-    }
+    //if( run <= 147116 ){
+    if( passUnprescaledHLTTrigger("HLT_DoubleEle10_SW_L1R") ) return true; //141956-147116
+    //}
+    //if( run <= 141882 ){
+    if( passUnprescaledHLTTrigger("HLT_DoubleEle5_SW_L1R") )  return true; //136033-141882
+    //}
+      
+      
+    //if( run <= 147116 ){
+    // This is a family of Ele17 triggers that are not
+    // there anymore or are not unprescaled anymore.
+    // The loosest one is indicated as master
+    // In principle, the other two could be skipped
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_CaloEleId_L1R") )                 return true; //146428-147116 <---- master
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_EleId_L1R") )                     return true; //146428-147116
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_LooseEleId_L1R") )                return true; //146428-147116
+    //}
 
-  
-    if( run <= 147116 ){
-      // This is a family of Ele17 triggers that are not
-      // there anymore or are not unprescaled anymore.
-      // The loosest one is indicated as master
-      // In principle, the other two could be skipped
-      if(nHLTObjects("HLT_Ele17_SW_CaloEleId_L1R") != 0 )                 return true; //146428-147116 <---- master
-      if(nHLTObjects("HLT_Ele17_SW_EleId_L1R") != 0 )                     return true; //146428-147116
-      if(nHLTObjects("HLT_Ele17_SW_LooseEleId_L1R") != 0 )                return true; //146428-147116
-    }
-
-    if( run <= 144114 ){
-      // This is a family of Ele15 triggers that are not
-      // there anymore or are not unprescaled anymore.
-      // The loosest one is indicated as master
-      // In principle, the other one could be skipped
-      if(nHLTObjects("HLT_Ele15_SW_CaloEleId_L1R") != 0 ) return true; //141956-144114 <---- master
-      if(nHLTObjects("HLT_Ele15_SW_EleId_L1R") != 0 )     return true; //141956-144114
-    }
-
+    //if( run <= 144114 ){
+    // This is a family of Ele15 triggers that are not
+    // there anymore or are not unprescaled anymore.
+    // The loosest one is indicated as master
+    // In principle, the other one could be skipped
+    if( passUnprescaledHLTTrigger("HLT_Ele15_SW_CaloEleId_L1R") ) return true; //141956-144114 <---- master
+    if( passUnprescaledHLTTrigger("HLT_Ele15_SW_EleId_L1R") )     return true; //141956-144114
+    //}
+    
     // These are Ele15 that got prescaled in a different
     // time frame as the previous family...use both
-    if( run <= 143962 ){
-      if(nHLTObjects("HLT_Ele15_SW_L1R") != 0 ) return true; //140058-143962
-    }
-    if( run <= 141882 ){
-      if(nHLTObjects("HLT_Ele15_LW_L1R") != 0 ) return true; //136033-141882
-    }
-
+    //if( run <= 143962 ){
+    if( passUnprescaledHLTTrigger("HLT_Ele15_SW_L1R") ) return true; //140058-143962
+    //}
+    //if( run <= 141882 ){
+    if( passUnprescaledHLTTrigger("HLT_Ele15_LW_L1R") ) return true; //136033-141882
+    //}
+    
     // This is a bonus trigger, should not be needed, but why not?
-    if( run <= 144114 ){
-      if(nHLTObjects("HLT_Ele20_SW_L1R") != 0 ) return true; //140058-144114
-    }
+    //if( run <= 144114 ){
+    if( passUnprescaledHLTTrigger("HLT_Ele20_SW_L1R") ) return true; //140058-144114
+    //}
 
     // This is the Ele10 family that came and went at ramdom times
     // Use all (although in principle the one with EleID could be
     // skipped in the subset of runs where triggers with no EleId
     // were present)
-    if( run <= 144114 ){
-      if(nHLTObjects("HLT_Ele10_SW_EleId_L1R") != 0 ) return true;      //141956-144114
-    }
-    if( run <= 141882 ){
-      if(nHLTObjects("HLT_Ele10_LW_EleId_L1R") != 0 ) return true;      //136033-141882
-    } 
-    if( run <= 139980 ){
-      if(nHLTObjects("HLT_Ele10_LW_L1R") != 0 )       return true;      //136033-139980
-      if(nHLTObjects("HLT_Ele10_SW_L1R") != 0 )       return true;      //139195-139980
-    }
+    //if( run <= 144114 ){
+    if( passUnprescaledHLTTrigger("HLT_Ele10_SW_EleId_L1R") ) return true;      //141956-144114
+    //}
+    //if( run <= 141882 ){
+    if( passUnprescaledHLTTrigger("HLT_Ele10_LW_EleId_L1R") ) return true;      //136033-141882
+    //} 
+    //if( run <= 139980 ){
+    if( passUnprescaledHLTTrigger("HLT_Ele10_LW_L1R") )       return true;      //136033-139980
+    if( passUnprescaledHLTTrigger("HLT_Ele10_SW_L1R") )       return true;      //139195-139980
+    //}
 
   }
 
@@ -124,83 +125,83 @@ bool passSUSYTrigger_v1( bool isData , int hypType ) {
     //---------------------------
     // single muon triggers
     //---------------------------
-    if(nHLTObjects("HLT_Mu11") != 0 )           return true;
-    if(nHLTObjects("HLT_Mu13_v1") != 0 )        return true;
-    if(nHLTObjects("HLT_Mu15_v1") != 0 )        return true;
+    if( passUnprescaledHLTTrigger("HLT_Mu11") )           return true;
+    if( passUnprescaledHLTTrigger("HLT_Mu13_v1") )        return true;
+    if( passUnprescaledHLTTrigger("HLT_Mu15_v1") )        return true;
     
-    if( run <= 147116 ){
-      if(nHLTObjects("HLT_Mu9") != 0 )          return true; //136033-147116
-    }
-    if( run <= 144114 ){
-      if(nHLTObjects("HLT_Mu7") != 0 )          return true; //140116-144114
-    }
-    if( run <= 141882 ){
-      if(nHLTObjects("HLT_Mu5") != 0 )          return true; //136033-141882
-    }
-
+    //if( run <= 147116 ){
+    if( passUnprescaledHLTTrigger("HLT_Mu9") )          return true; //136033-147116
+    //}
+    //if( run <= 144114 ){
+    if( passUnprescaledHLTTrigger("HLT_Mu7") )          return true; //140116-144114
+    //}
+    //if( run <= 141882 ){
+    if( passUnprescaledHLTTrigger("HLT_Mu5") )          return true; //136033-141882
+    //}
+    
     //---------------------------
     // single electron triggers
     //---------------------------
 
     // This is a family of never prescaled Ele17 triggers
     // Some of them are probably prescaled at 2e32?
-    if(nHLTObjects("HLT_Ele17_SW_TightEleId_L1R") != 0 )          return true;
-    if(nHLTObjects("HLT_Ele17_SW_TighterEleId_L1R_v1") != 0 )     return true;
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TightEleId_L1R") )          return true;
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TighterEleId_L1R_v1") )     return true;
  
-    if( run <= 147116 ){
-      // This is a family of Ele17 triggers that are not
-      // there anymore or are not unprescaled anymore.
-      // The loosest one is indicated as master
-      // In principle, the other two could be skipped
-      if(nHLTObjects("HLT_Ele17_SW_CaloEleId_L1R") != 0 )                 return true; //146428-147116 <---- master
-      if(nHLTObjects("HLT_Ele17_SW_EleId_L1R") != 0 )                     return true; //146428-147116
-      if(nHLTObjects("HLT_Ele17_SW_LooseEleId_L1R") != 0 )                return true; //146428-147116
-    }
+    //if( run <= 147116 ){
+    // This is a family of Ele17 triggers that are not
+    // there anymore or are not unprescaled anymore.
+    // The loosest one is indicated as master
+    // In principle, the other two could be skipped
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_CaloEleId_L1R") )                 return true; //146428-147116 <---- master
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_EleId_L1R") )                     return true; //146428-147116
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_LooseEleId_L1R") )                return true; //146428-147116
+    //}
     
-    if( run <= 144114 ){
-      // This is a family of Ele15 triggers that are not
-      // there anymore or are not unprescaled anymore.
-      // The loosest one is indicated as master
-      // In principle, the other one could be skipped
-      if(nHLTObjects("HLT_Ele15_SW_CaloEleId_L1R") != 0 ) return true; //141956-144114 <---- master
-      if(nHLTObjects("HLT_Ele15_SW_EleId_L1R") != 0 )     return true; //141956-144114
-    }
+    //if( run <= 144114 ){
+    // This is a family of Ele15 triggers that are not
+    // there anymore or are not unprescaled anymore.
+    // The loosest one is indicated as master
+    // In principle, the other one could be skipped
+    if( passUnprescaledHLTTrigger("HLT_Ele15_SW_CaloEleId_L1R") ) return true; //141956-144114 <---- master
+    if( passUnprescaledHLTTrigger("HLT_Ele15_SW_EleId_L1R") )     return true; //141956-144114
+    //}
     
     // These are Ele15 that got prescaled in a different
     // time frame as the previous family...use both
-    if( run <= 143962 ){
-      if(nHLTObjects("HLT_Ele15_SW_L1R") != 0 ) return true; //140058-143962
-    }
-    if( run <= 141882 ){
-      if(nHLTObjects("HLT_Ele15_LW_L1R") != 0 ) return true; //136033-141882
-    }
+    //if( run <= 143962 ){
+    if( passUnprescaledHLTTrigger("HLT_Ele15_SW_L1R") ) return true; //140058-143962
+    //}
+    //if( run <= 141882 ){
+    if( passUnprescaledHLTTrigger("HLT_Ele15_LW_L1R") ) return true; //136033-141882
+    //}
     
     // This is a bonus trigger, should not be needed, but why not?
-    if( run <= 144114 ){
-      if(nHLTObjects("HLT_Ele20_SW_L1R") != 0 ) return true; //140058-144114
-    }
+    //if( run <= 144114 ){
+    if( passUnprescaledHLTTrigger("HLT_Ele20_SW_L1R") ) return true; //140058-144114
+    //}
     
     // This is the Ele10 family that came and went at ramdom times
     // Use all (although in principle the one with EleID could be
     // skipped in the subset of runs where triggers with no EleId
     // were present)
-    if( run <= 144114 ){
-      if(nHLTObjects("HLT_Ele10_SW_EleId_L1R") != 0 ) return true;      //141956-144114
-    }
-    if( run <= 141882 ){
-      if(nHLTObjects("HLT_Ele10_LW_EleId_L1R") != 0 ) return true;      //136033-141882
-    } 
-    if( run <= 139980 ){
-      if(nHLTObjects("HLT_Ele10_LW_L1R") != 0 )       return true;      //136033-139980
-      if(nHLTObjects("HLT_Ele10_SW_L1R") != 0 )       return true;      //139195-139980
-    }
+    //if( run <= 144114 ){
+    if( passUnprescaledHLTTrigger("HLT_Ele10_SW_EleId_L1R") ) return true;      //141956-144114
+    //}
+    //if( run <= 141882 ){
+    if( passUnprescaledHLTTrigger("HLT_Ele10_LW_EleId_L1R") ) return true;      //136033-141882
+    //} 
+    //if( run <= 139980 ){
+    if( passUnprescaledHLTTrigger("HLT_Ele10_LW_L1R") )       return true;      //136033-139980
+    if( passUnprescaledHLTTrigger("HLT_Ele10_SW_L1R") )       return true;      //139195-139980
+    //}
 
     //---------------------------
     // e-mu cross triggers
     //---------------------------
     
-    if(nHLTObjects("HLT_Mu5_Ele5_v1") != 0 )          return true;
-    if(nHLTObjects("HLT_Mu5_Ele9_v1") != 0 )          return true;
+    if( passUnprescaledHLTTrigger("HLT_Mu5_Ele5_v1") )          return true;
+    if( passUnprescaledHLTTrigger("HLT_Mu5_Ele9_v1") )          return true;
   }
   
   else{
