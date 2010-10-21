@@ -642,6 +642,36 @@ static const cuts_t electronSelection_ssV2_NoIso =
 	 (1ll<<ELECHARGE_NOTFLIP3AGREE) |
 	 (1ll<<ELENOTCONV_HITPATTERN_0MHITS);
 
+
+// SS v2 electron ID, cut on d0 corrected for PV
+// instead of d0 corrected for BS
+static const cuts_t electronSelection_ssV2d0PV_NoIso =
+	 (1ll<<ELEID_VBTF_35X_80) |
+	 (1ll<<ELEIP_PV_200) |
+	 (1ll<<ELENOMUON_010) |
+	 (1ll<<ELENOTCONV_HITPATTERN) |
+	 (1ll<<ELENOTCONV_DISTDCOT002) |
+	 (1ll<<ELESCET_010) |
+	 (1ll<<ELEPT_010) |
+	 (1ll<<ELEETA_240) |
+	 (1ll<<ELESEED_ECAL) |
+	 (1ll<<ELECHARGE_NOTFLIP3AGREE) |
+	 (1ll<<ELENOTCONV_HITPATTERN_0MHITS);
+
+// SS v2 electron ID with no d0 cut
+static const cuts_t electronSelection_ssV2nod0_NoIso =
+	 (1ll<<ELEID_VBTF_35X_80) |
+	 (1ll<<ELEIP_PV_200) |
+	 (1ll<<ELENOMUON_010) |
+	 (1ll<<ELENOTCONV_HITPATTERN) |
+	 (1ll<<ELENOTCONV_DISTDCOT002) |
+	 (1ll<<ELESCET_010) |
+	 (1ll<<ELEPT_010) |
+	 (1ll<<ELEETA_240) |
+	 (1ll<<ELESEED_ECAL) |
+	 (1ll<<ELECHARGE_NOTFLIP3AGREE) |
+	 (1ll<<ELENOTCONV_HITPATTERN_0MHITS);
+
 // SS Iso selections
 
 static const cuts_t electronSelection_ss_Iso =
@@ -657,6 +687,17 @@ static const cuts_t electronSelection_ss =
 // https://twiki.cern.ch/twiki/bin/viewauth/CMS/SameSignDilepton2010
 static const cuts_t electronSelection_ssV2 =
 	 electronSelection_ssV2_NoIso |
+	 electronSelection_ss_Iso;               
+
+// SS v2 electron ID, cut on d0 corrected for PV
+// instead of d0 corrected for BS
+static const cuts_t electronSelection_ssV2d0PV =
+	 electronSelection_ssV2d0PV_NoIso |
+	 electronSelection_ss_Iso;               
+
+// SS v2 electron ID with no d0 cut
+static const cuts_t electronSelection_ssV2nod0 =
+	 electronSelection_ssV2nod0_NoIso |
 	 electronSelection_ss_Iso;               
 
 
