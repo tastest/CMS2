@@ -75,7 +75,14 @@ bool goodMuonWithoutIsolation(unsigned int i){
 }
 
 bool goodMuonIsolated(unsigned int i){
-  return ww_muBase(i) && ww_mud0PV(i) && ww_muId(i) && ww_muIso(i); 
+  return muonId(i, NominalWWV0);
+  //return ww_muBase(i) && ww_mud0PV(i) && ww_muId(i) && ww_muIso(i); 
+}
+
+bool fakableMuon(unsigned int i){
+  // extrapolate in iso
+  //return muonId(i, muonSelectionFO_mu_ww);
+  return muonId(i, muonSelectionFO_mu_ww_iso10);
 }
 
 double metValue(){    return cms2.evt_tcmet(); }
@@ -678,8 +685,11 @@ TH2F* hmetVsDilepPt[4];    // MET vs dilepton Pt
 TH2F* hmetOverPtVsDphi[4]; // MET/Lepton Pt vs DeltaPhi between MET and Lepton Pt
 TH2F* hdphillvsmll[4];     // delta phi between leptons vs dilepton mass
 TH2F* helFRfakable[4];     // Fake rate study: rate of fakable objects
+TH2F* hmuFRfakable[4];     // Fake rate study: rate of fakable objects
 TH2F* hFakableRateSingleElectron; // Fake rate study: rate of fakable objects
+TH2F* hFakableRateSingleMuon; // Fake rate study: rate of fakable objects
 TH2F* hFinalRateSingleElectron;   // Fake rate study: rate of final objects
+TH2F* hFinalRateSingleMuon;   // Fake rate study: rate of final objects
 TH1F* hIsoSingleMuon;             // isolation background 
 TH1F* hIsoSingleElectron;         // isolation background 
 TH2F* hmaxBtagVsJPTPt;   // btag vs energy distribution for the most energetic jet
@@ -721,6 +731,7 @@ TH1F* hdilMassVal[4];         // diLepton Mass after ll selection
 //
 
 TH2F* helFRfakable_fakerate[4];     // Fake rate study: rate of fakable objects using the fakerate.cc
+TH2F* hmuFRfakable_fakerate[4];     // Fake rate study: rate of fakable objects using the fakerate.cc
 TH1F* hypos_total;
 TH1F* hypos_total_weighted;
 
@@ -1167,6 +1178,13 @@ void extractFakeRateSingleLepton(){
     if ( goodElectronIsolated(i) ) 
       hFinalRateSingleElectron->Fill(cms2.els_p4().at(i).pt(), fabs(cms2.els_p4().at(i).eta()) );  
   }
+  for ( unsigned int i=0; i < cms2.mus_p4().size(); ++i ){
+    if ( cms2.mus_p4().at(i).pt() < 20 ) continue;
+    if ( fakableMuon(i) ) 
+      hFakableRateSingleMuon->Fill(cms2.mus_p4().at(i).pt(), fabs(cms2.mus_p4().at(i).eta()) );
+    if ( goodMuonIsolated(i) ) 
+      hFinalRateSingleMuon->Fill(cms2.mus_p4().at(i).pt(), fabs(cms2.mus_p4().at(i).eta()) );  
+  }
 }
 
 void extractIsoSingleLepton(){
@@ -1185,6 +1203,8 @@ void countFakableObjectsAfterAllSelections(unsigned int i_hyp,
 					   double weight, 
 					   bool passedLTElFakableRequirements, 
 					   bool passedLLElFakableRequirements,
+					   bool passedLTMuFakableRequirements, 
+					   bool passedLLMuFakableRequirements,
 					   bool passedLTFinalRequirements,
 					   bool passedLLFinalRequirements)
 {
@@ -1228,6 +1248,40 @@ void countFakableObjectsAfterAllSelections(unsigned int i_hyp,
 
         helFRfakable_fakerate[type]->Fill(eta,pt,weight);
         helFRfakable_fakerate[3]->Fill(eta,pt,weight);
+    }
+    if ( passedLTMuFakableRequirements && !passedLTFinalRequirements && passedLLFinalRequirements ){
+        hmuFRfakable[type]->Fill(cms2.hyp_lt_p4().at(i_hyp).pt(),
+                fabs(cms2.hyp_lt_p4().at(i_hyp).eta()),
+                weight);
+        hmuFRfakable[3]->Fill(cms2.hyp_lt_p4().at(i_hyp).pt(),
+                fabs(cms2.hyp_lt_p4().at(i_hyp).eta()),
+                weight);
+
+        // overflow goes into last bin
+        float eta = fabs(cms2.hyp_lt_p4().at(i_hyp).eta());
+        if (eta > max_eta) eta = max_eta-.1;
+        float pt = cms2.hyp_lt_p4().at(i_hyp).pt();
+        if (pt > max_pt) pt = max_pt-.1;
+
+        hmuFRfakable_fakerate[type]->Fill(eta,pt,weight);
+        hmuFRfakable_fakerate[3]->Fill(eta,pt,weight);
+    }
+    if ( passedLLMuFakableRequirements && passedLTFinalRequirements && !passedLLFinalRequirements ){
+        hmuFRfakable[type]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(),
+                fabs(cms2.hyp_ll_p4().at(i_hyp).eta()),
+                weight);
+        hmuFRfakable[3]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(),
+                fabs(cms2.hyp_ll_p4().at(i_hyp).eta()),
+                weight);
+
+        // overflow goes into last bin
+        float eta = fabs(cms2.hyp_ll_p4().at(i_hyp).eta());
+        if (eta > max_eta) eta = max_eta-.1;
+        float pt = cms2.hyp_ll_p4().at(i_hyp).pt();
+        if (pt > max_pt) pt = max_pt-.1;
+
+        hmuFRfakable_fakerate[type]->Fill(eta,pt,weight);
+        hmuFRfakable_fakerate[3]->Fill(eta,pt,weight);
     }
 }
 
@@ -1346,24 +1400,30 @@ void hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   bool passedLLFinalRequirements = true;
   bool passedLTElFakableRequirements = true;
   bool passedLLElFakableRequirements = true;
+  bool passedLTMuFakableRequirements = true;
+  bool passedLLMuFakableRequirements = true;
 
   // Muon quality cuts, including isolation
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13){
     if ( !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) passedLTFinalRequirements = false;
+    if ( !fakableMuon(cms2.hyp_lt_index()[i_hyp]) ) passedLTMuFakableRequirements = false;
     passedLTElFakableRequirements = false;
   }
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13){
     if ( !goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) ) passedLLFinalRequirements = false;
+    if ( !fakableMuon(cms2.hyp_ll_index()[i_hyp]) ) passedLLMuFakableRequirements = false;
     passedLLElFakableRequirements = false;
   } 
   // Electron quality cuts, including isolation
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11){
     if ( !goodElectronIsolated(cms2.hyp_lt_index()[i_hyp]) ) passedLTFinalRequirements = false;
     if ( !fakableElectron(cms2.hyp_lt_index()[i_hyp]) ) passedLTElFakableRequirements = false;
+    passedLTMuFakableRequirements = false;
   }
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11){
     if ( !goodElectronIsolated(cms2.hyp_ll_index()[i_hyp]) ) passedLLFinalRequirements = false;
     if ( !fakableElectron(cms2.hyp_ll_index()[i_hyp]) ) passedLLElFakableRequirements = false;
+    passedLLMuFakableRequirements = false;
   }
 
   if ( passedLTFinalRequirements ) cuts_passed |= (1<<PASS_LT_FINAL);
@@ -1398,6 +1458,7 @@ void hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
       getIsolationSidebandsAfterSelections(i_hyp, weight, dataset, passedLTFinalRequirements && passedLLFinalRequirements);
     countFakableObjectsAfterAllSelections(i_hyp, weight, 
 					  passedLTElFakableRequirements, passedLLElFakableRequirements, 
+					  passedLTMuFakableRequirements, passedLLMuFakableRequirements, 
 					  passedLTFinalRequirements, passedLLFinalRequirements);
   }
     
@@ -1676,6 +1737,10 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     helFRfakable[i]->Sumw2();
     helFRfakable_fakerate[i] = new TH2F(Form("%s_helFRfakable_fakerate_%s", prefix,HypothesisTypeName(i)), "FR study: rate of fakable objects",4,etabins_fakerate,5,ptbins_fakerate);
     helFRfakable_fakerate[i]->Sumw2();
+    hmuFRfakable[i]     = new TH2F(Form("%s_hmuFRfakable_%s",    prefix,HypothesisTypeName(i)), "FR study: rate of fakable objects", 3,ptbins,2,0,3.0);
+    hmuFRfakable[i]->Sumw2();
+    hmuFRfakable_fakerate[i] = new TH2F(Form("%s_hmuFRfakable_fakerate_%s", prefix,HypothesisTypeName(i)), "FR study: rate of fakable objects",4,etabins_fakerate,5,ptbins_fakerate);
+    hmuFRfakable_fakerate[i]->Sumw2();
 
     const Double_t jetEtbins[12] = {0,10,15,20,25,30,40,50,60,80,100,200};
     hmaxGenJetPt[i]  = new TH1F(Form("%s_hmaxGenJetPt_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<5) Et (GenJet) JetVeto NM1", 11,jetEtbins);
@@ -1833,6 +1898,10 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hFakableRateSingleElectron->Sumw2();
     hFinalRateSingleElectron   = new TH2F(Form("%s_hFinalRateSingleElectron",  prefix), "FR study: rate of final objects", 3,ptbins,2,0,3.0);
     hFinalRateSingleElectron->Sumw2();
+    hFakableRateSingleMuon = new TH2F(Form("%s_hFakableRateSingleMuon",prefix), "FR study: rate of fakable objects", 3,ptbins,2,0,3.0);
+    hFakableRateSingleMuon->Sumw2();
+    hFinalRateSingleMuon   = new TH2F(Form("%s_hFinalRateSingleMuon",  prefix), "FR study: rate of final objects", 3,ptbins,2,0,3.0);
+    hFinalRateSingleMuon->Sumw2();
     hIsoSingleMuon             = new TH1F(Form("%s_hIsoSingleMuon",prefix),             "Muon isolation distribution for goodMuonWithoutIsolation", 100,0,10);
     hIsoSingleMuon->Sumw2();
     hIsoSingleElectron         = new TH1F(Form("%s_hIsoSingleElectron",prefix),         "Electron isolation distribution for goodElectronWithoutIsolation", 100,0,10);
