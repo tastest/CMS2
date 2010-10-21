@@ -132,3 +132,43 @@ void PrintTriggers(){
   } 
   cout << endl;
 }
+
+//---------------------------------------------
+// Check if trigger is unprescaled and passes
+//---------------------------------------------
+bool passUnprescaledHLTTrigger(const char* arg){
+
+  // put the trigger name into a string
+  TString HLTTrigger( arg );
+
+  // Did the trigger pass?
+  if ( !(cms2.passHLTTrigger(HLTTrigger)) ) return false;
+
+  // The trigger passed, check the pre-scale
+  int trigIndx = -1;
+  vector<TString>::const_iterator begin_it = cms2.hlt_trigNames().begin();
+  vector<TString>::const_iterator end_it   = cms2.hlt_trigNames().end();
+  vector<TString>::const_iterator found_it = find(begin_it, end_it, HLTTrigger );
+  if( (found_it != end_it) ){
+    trigIndx = found_it - begin_it;
+  }
+  else {
+    //this should not happen
+    cout << "passUnprescaledTrigger: Cannot find Trigger " << arg << endl;
+    return false;
+  }
+
+  //sanity check (this should not happen)
+  if( strcmp( arg , hlt_trigNames().at(trigIndx) ) != 0 ){
+    cout << "Error! trig names don't match" << endl;
+    cout << "Found trig name " << hlt_trigNames().at(trigIndx) << endl;
+    cout << "Prescale        " << hlt_prescales().at(trigIndx) << endl;
+    exit(0);
+  }
+
+  //return true only if pre-scale = 1
+  if( hlt_prescales().at(trigIndx) == 1 ) return true;
+
+  return false;
+
+}
