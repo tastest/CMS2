@@ -34,7 +34,7 @@ bool passEGTriggerSS(unsigned int hypIdx, bool mc);
 /*****************************************************************************************/
 //passes the muon triggers
 /*****************************************************************************************/
-bool passMuTriggerSS(unsigned int hypIdx);
+bool passMuTriggerSS(unsigned int hypIdx, bool mc);
 
 /*****************************************************************************************/
 // extra Z veto
@@ -50,6 +50,30 @@ bool passThreeChargeRequirement(int elIdx);
 // is it a good jet?
 /******************************************************************************************/     
 bool isGoodJet(LorentzVector jetp4, double ptCut, double absEtaCut, double dRCut, bool muJetClean);
+
+
+
+/******************************************************************************************/     
+// good lepton (either mu or electron, no isolation cuts), d0 corrected for PV
+/******************************************************************************************/
+bool isGoodLeptonNoIsoSSd0PV(int id, int lepIdx, bool applyAlignmentCorrection=false, bool removedEtaCutInEndcap=false);
+
+/******************************************************************************************/     
+// are the leptons in the hypothesis good (all cuts but isolation?), d0 corrected for PV
+/******************************************************************************************/
+bool isGoodHypNoIsoSSd0PV(int hypIdx, bool applyAlignmentCorrection=false, bool removedEtaCutInEndcap=false);
+
+
+
+/******************************************************************************************/     
+// good lepton (either mu or electron, no isolation cuts), no d0 cut
+/******************************************************************************************/
+bool isGoodLeptonNoIsoSSnod0(int id, int lepIdx, bool applyAlignmentCorrection=false, bool removedEtaCutInEndcap=false);
+
+/******************************************************************************************/     
+// are the leptons in the hypothesis good (all cuts but isolation?), no d0 cut
+/******************************************************************************************/
+bool isGoodHypNoIsoSSnod0(int hypIdx, bool applyAlignmentCorrection=false, bool removedEtaCutInEndcap=false);
 
 
 #endif
