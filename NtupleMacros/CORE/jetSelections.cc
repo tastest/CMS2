@@ -1,4 +1,4 @@
-// $Id: jetSelections.cc,v 1.13 2010/10/21 18:50:07 fgolf Exp $
+// $Id: jetSelections.cc,v 1.14 2010/10/21 21:06:56 fgolf Exp $
 
 #include <algorithm>
 #include <utility>
@@ -305,12 +305,12 @@ bool passesPFJetID(unsigned int pfJetIdx) {
   float pfjet_nhf_  = cms2.pfjets_neutralHadronE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
   float pfjet_cef_  = cms2.pfjets_chargedEmE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
   float pfjet_nef_  = cms2.pfjets_neutralEmE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
-  float pfjet_cm_   = cms2.pfjets_chargedMultiplicity()[pfJetIdx];
-  float pfjet_mult_ = pfjet_cm_ + cms2.pfjets_neutralMultiplicity()[pfJetIdx] + cms2.pfjets_muonMultiplicity()[pfJetIdx];
+  int   pfjet_cm_   = cms2.pfjets_chargedMultiplicity()[pfJetIdx];
+  int   pfjet_mult_ = pfjet_cm_ + cms2.pfjets_neutralMultiplicity()[pfJetIdx] + cms2.pfjets_muonMultiplicity()[pfJetIdx];
 
-  if (pfjet_nef_ > 0.99)
+  if (pfjet_nef_ >= 0.99)
 	   return false;
-  if (pfjet_nhf_ > 0.99)
+  if (pfjet_nhf_ >= 0.99)
 	   return false;
   if (pfjet_mult_ < 2)
 	   return false;
@@ -321,7 +321,7 @@ bool passesPFJetID(unsigned int pfJetIdx) {
 			return false;
 	   if (pfjet_cm_ < 1)
 			return false;
-	   if (pfjet_cef_ > 0.99)
+	   if (pfjet_cef_ >= 0.99)
 			return false;
   }
 
