@@ -66,3 +66,60 @@ bool isSpikePhoton( const unsigned int index ) {
 
 }
 
+//-----------------------------------------------------------------
+//function to select a good EM object for met templates analysis
+//function returns -1 if the photon fails the selection
+//otherwise, function returns index of pfjet matched to EM object
+//this pfjet must be excluded from the njets, sumJetPt summation
+//USAGE:
+// int pfjet_index = isGoodEMObject( photon_index );
+// if( pfjet_index < 0 ) continue;
+//-----------------------------------------------------------------
+ 
+
+int isGoodEMObject( const unsigned int index ){
+
+  if ( fabs( photons_p4().at(index).eta() > 1  )  )     return -1; //eta < 1
+  if ( fabs( photons_p4().at(index).pt()  < 22 )  )     return -1; //pt > 22 GeV
+  if ( photons_hOverE().at(index)         > 0.1 )       return -1; //h/e < 0.1
+ 
+  //spike cleaning
+  float swiss   = photons_swissSeed().at(index);
+  int   scind   = photons_scindex().at(index);
+  float seed    = scs_eSeed().at(scind);
+  float s4      = swiss - seed;
+  float r4      = 1 - s4 / seed;
+  if ( ( 1. - r4 ) < 0.05 )  return -1;
+  
+  //if photon survives to this point, find pfjet nearest photon
+  //require pt > 10 GeV pfjet, eta < 2.5 within dr < 0.3 of photon
+
+  float drmin       = 100;
+  int   iMatchedJet = -1;
+
+  for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
+          
+    LorentzVector vjet = pfjets_cor().at(ijet) * pfjets_p4().at(ijet);
+    LorentzVector vg   = photons_p4().at(index);
+          
+    if( vjet.pt()  < 10  )       continue;
+    if( vjet.eta() > 2.5 )       continue;
+    
+    float dr = dRbetweenVectors(vjet, vg);
+    
+    if( dr < drmin ){
+      drmin       = dr;
+      iMatchedJet = ijet;
+    }
+  }
+
+  if( iMatchedJet < 0 ) return -1;
+  if( drmin > 0.3 )     return -1;
+
+  //require pfjet neutral EM fraction > 0.95
+  float emfrac = pfjets_neutralEmE().at(iMatchedJet) / pfjets_p4().at(iMatchedJet).energy();
+  if ( emfrac < 0.95 )               return -1; 
+
+  return iMatchedJet;
+
+}
