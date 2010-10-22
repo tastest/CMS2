@@ -128,7 +128,10 @@ int nHLTObjects(const char* arg ){
 //---------------------------------------------
 void PrintTriggers(){
   for( unsigned int i = 0; i < cms2.hlt_trigNames().size(); i++ ){
-    cout << cms2.hlt_trigNames().at(i).Data() << endl;
+    cout << cms2.passHLTTrigger(cms2.hlt_trigNames().at(i).Data()) << "\t"
+         << cms2.hlt_prescales().at(i) << "\t" 
+         << cms2.hlt_trigNames().at(i).Data() << endl;
+
   } 
   cout << endl;
 }
@@ -159,15 +162,15 @@ bool passUnprescaledHLTTrigger(const char* arg){
   }
 
   //sanity check (this should not happen)
-  if( strcmp( arg , hlt_trigNames().at(trigIndx) ) != 0 ){
+  if( strcmp( arg , cms2.hlt_trigNames().at(trigIndx) ) != 0 ){
     cout << "Error! trig names don't match" << endl;
-    cout << "Found trig name " << hlt_trigNames().at(trigIndx) << endl;
-    cout << "Prescale        " << hlt_prescales().at(trigIndx) << endl;
+    cout << "Found trig name " << cms2.hlt_trigNames().at(trigIndx) << endl;
+    cout << "Prescale        " << cms2.hlt_prescales().at(trigIndx) << endl;
     exit(0);
   }
 
   //return true only if pre-scale = 1
-  if( hlt_prescales().at(trigIndx) == 1 ) return true;
+  if( cms2.hlt_prescales().at(trigIndx) == 1 ) return true;
 
   return false;
 
