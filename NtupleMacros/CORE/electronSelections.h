@@ -752,7 +752,7 @@ static const cuts_t electronSelection_ssV2nod0 =
 
 // SS v2 electron ID with no triple charge consistency requirement
 static const cuts_t electronSelection_ssV2noTripleChargeReq =
-	 electronSelection_ssV2nod0_NoIso |
+	 electronSelection_ssV2noTripleChargeReq_NoIso |
 	 electronSelection_ss_Iso;               
 
 // SS Flip Veto 
