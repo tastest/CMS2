@@ -9,6 +9,7 @@
 #include "CMS2.h"
 
 #include "susySelections.h"
+#include "triggerUtils.cc"
 
 using namespace tas;
 
@@ -17,7 +18,7 @@ using namespace tas;
 /*****************************************************************************************/
 bool passSUSYTrigger_v1( bool isData , int hypType ) {
 
-  int run = cms2.evt_run();
+  //int run = cms2.evt_run();
 
   //currently do not require any triggers for MC
   if( !isData ) return true;
