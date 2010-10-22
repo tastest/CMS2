@@ -76,5 +76,15 @@ bool isGoodLeptonNoIsoSSnod0(int id, int lepIdx, bool applyAlignmentCorrection=f
 bool isGoodHypNoIsoSSnod0(int hypIdx, bool applyAlignmentCorrection=false, bool removedEtaCutInEndcap=false);
 
 
+/******************************************************************************************/     
+// good lepton (either mu or electron, no isolation cuts), no triple charge consistency requirement
+/******************************************************************************************/
+bool isGoodLeptonNoIsoSSnoTripleChargeReq(int id, int lepIdx, bool applyAlignmentCorrection=false, bool removedEtaCutInEndcap=false);
+
+/******************************************************************************************/     
+// are the leptons in the hypothesis good (all cuts but isolation?), no triple charge consistency requirement
+/******************************************************************************************/
+bool isGoodHypNoIsoSSnoTripleChargeReq(int hypIdx, bool applyAlignmentCorrection=false, bool removedEtaCutInEndcap=false);
+
 #endif
 

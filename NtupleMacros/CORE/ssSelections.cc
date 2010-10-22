@@ -421,3 +421,36 @@ bool isGoodHypNoIsoSSnod0 (int hypIdx, bool applyAlignmentCorrection, bool remov
 	 return true;
 }
 
+
+
+
+/******************************************************************************************/     
+// good lepton (either mu or electron, no isolation cuts), no triple charge consistency requirement
+/******************************************************************************************/
+bool isGoodLeptonNoIsoSSnoTripleChargeReq (int id, int lepIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap)
+{
+	 // electrons
+	 if (abs(id) == 11)
+		  return (pass_electronSelection(lepIdx, electronSelection_ssV2noTripleChargeReq_NoIso, applyAlignmentCorrection, removedEtaCutInEndcap));
+
+	 // muons
+	 if (abs(id) == 13)
+		  return (muonIdNotIsolated(lepIdx, NominalSS)) ;
+
+	 return false;
+}
+
+
+/******************************************************************************************/     
+// are the leptons in the hypothesis good (all cuts but isolation?), no triple charge consistency requirement
+/******************************************************************************************/
+bool isGoodHypNoIsoSSnoTripleChargeReq (int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap)
+{
+	 if(!isGoodLeptonNoIsoSSnoTripleChargeReq(hyp_lt_id()[hypIdx], hyp_lt_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
+		  return false;
+	 if(!isGoodLeptonNoIsoSSnoTripleChargeReq(hyp_ll_id()[hypIdx], hyp_ll_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
+		  return false;
+
+	 return true;
+}
+

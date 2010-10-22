@@ -708,6 +708,20 @@ static const cuts_t electronSelection_ssV2nod0_NoIso =
 	 (1ll<<ELECHARGE_NOTFLIP3AGREE) |
 	 (1ll<<ELENOTCONV_HITPATTERN_0MHITS);
 
+// SS v2 electron ID with no triple charge consistency requirement
+static const cuts_t electronSelection_ssV2noTripleChargeReq_NoIso =
+	 (1ll<<ELEID_VBTF_35X_80) |
+	 (1ll<<ELEIP_200) |
+	 (1ll<<ELENOMUON_010) |
+	 (1ll<<ELENOTCONV_HITPATTERN) |
+	 (1ll<<ELENOTCONV_DISTDCOT002) |
+	 (1ll<<ELESCET_010) |
+	 (1ll<<ELEPT_010) |
+	 (1ll<<ELEETA_240) |
+	 (1ll<<ELESEED_ECAL) |
+	 (1ll<<ELECHARGE_NOTFLIP3AGREE) |
+	 (1ll<<ELENOTCONV_HITPATTERN_0MHITS);
+
 // SS Iso selections
 
 static const cuts_t electronSelection_ss_Iso =
@@ -736,6 +750,10 @@ static const cuts_t electronSelection_ssV2nod0 =
 	 electronSelection_ssV2nod0_NoIso |
 	 electronSelection_ss_Iso;               
 
+// SS v2 electron ID with no triple charge consistency requirement
+static const cuts_t electronSelection_ssV2noTripleChargeReq =
+	 electronSelection_ssV2nod0_NoIso |
+	 electronSelection_ss_Iso;               
 
 // SS Flip Veto 
 
