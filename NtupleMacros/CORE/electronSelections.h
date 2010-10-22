@@ -719,7 +719,6 @@ static const cuts_t electronSelection_ssV2noTripleChargeReq_NoIso =
 	 (1ll<<ELEPT_010) |
 	 (1ll<<ELEETA_240) |
 	 (1ll<<ELESEED_ECAL) |
-	 (1ll<<ELECHARGE_NOTFLIP3AGREE) |
 	 (1ll<<ELENOTCONV_HITPATTERN_0MHITS);
 
 // SS Iso selections
