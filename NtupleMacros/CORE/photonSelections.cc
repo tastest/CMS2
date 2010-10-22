@@ -78,8 +78,8 @@ bool isSpikePhoton( const unsigned int index ) {
  
 
 int isGoodEMObject( const unsigned int index ){
-
-  if ( fabs( photons_p4().at(index).eta() ) > 1   )     return -1; //eta < 1
+  //apply this cut at template creation time
+  //if ( fabs( photons_p4().at(index).eta() ) > 1   )     return -1; //eta < 1
   if ( photons_p4().at(index).pt() < 22           )     return -1; //pt > 22 GeV
   if ( photons_hOverE().at(index) > 0.1           )     return -1; //h/e < 0.1
  
