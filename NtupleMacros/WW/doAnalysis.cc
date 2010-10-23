@@ -726,6 +726,13 @@ TH1F* hmetProjVal[4];         // Projected MET after ll selection
 TH1F* hmaxPFJetPtVal[4];      // leading PFJet Pt after ll selection
 TH1F* hdilMassVal[4];         // diLepton Mass after ll selection
 
+// For the DY Estimation
+
+TH1F* hmetInDYEst[4];         // MET in Z window for the DY Estimation
+TH1F* hmetOutDYEst[4];        // MET outside Z window for the DY Estimation
+TH1F* hdilMassWithMetDYEst[4];// Dilepton mass with MET requirement for DY estimation
+TH1F* hdilMassNoMetDYEst[4];  // Dilepton mass without MET requirement for DY estimation
+
 //
 // Not cleaned area
 //
@@ -1471,9 +1478,17 @@ void hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
     if(zStudy) 
       getJetResponseFromZBalance(i_hyp, weight, realData, 0.0, 5.0, applyJEC);
   }
-  // Make some validation plots 
-  fill_val_plots(i_hyp, cuts_passed, weight, applyJEC);
   
+  // Make some validation plots 
+  if(CheckCuts(  (1<<PASS_LL_FINAL) | (1<<PASS_LT_FINAL), cuts_passed)) {
+    fill_val_plots(i_hyp, cuts_passed, weight, applyJEC);
+  }
+  
+  // Do Drell Yan Estimation
+  if(CheckCutsNM1(pass_all, (1<<PASS_ZSEL) | (1<<PASS_MET) , cuts_passed))
+    fill_dyest_histograms(i_hyp, weight);
+
+
   // 2D hist for muon tag counting
   hextramuonsvsnjet[type]->Fill(countmus, nJets, weight);
   hextramuonsvsnjet[3]->Fill(countmus, nJets, weight);
@@ -1778,6 +1793,14 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hmaxPFJetPtVal[i]    = new TH1F(Form("%s_hmaxPFJetPtVal_%s",   prefix,HypothesisTypeName(i)), "Leading PFJet Pt after ll selection", 20, 0., 100.);
     hdilMassVal[i]   = new TH1F(Form("%s_hdilMassVal_%s",  prefix,HypothesisTypeName(i)), "Di-lepton mass after ll selection", 40, 0., 200.);
 
+        
+    hdilMassWithMetDYEst[i] = new TH1F(Form("%s_hdilMassWithMetDYEst_%s",  prefix,HypothesisTypeName(i)), "Di-lepton mass with MET for DY Estimation", 40, 0., 200.);
+    hdilMassNoMetDYEst[i] = new TH1F(Form("%s_hdilMassNoMetDYEst_%s",  prefix,HypothesisTypeName(i)), "Di-lepton mass without MET for DY Estimation", 40, 0., 200.);
+    hmetInDYEst[i] = new TH1F(Form("%s_hmetInDYEst_%s",  prefix,HypothesisTypeName(i)), "MET in Z mass for DY Estimation", 40, 0., 200.);
+    hmetOutDYEst[i] = new TH1F(Form("%s_hmetOutDYEst_%s",  prefix,HypothesisTypeName(i)), "MET outside Z mass for DY Estimation", 40, 0., 200.);
+
+
+
     hnJet[i]->Sumw2();
     helePt[i]->Sumw2();
     hmuPt[i]->Sumw2();
@@ -1835,6 +1858,11 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hmaxPFJetPtVal[i]->Sumw2();
     hdilMassVal[i]->Sumw2();
 
+    hdilMassWithMetDYEst[i]->Sumw2();
+    hdilMassNoMetDYEst[i]->Sumw2();
+    hmetInDYEst[i]->Sumw2();
+    hmetOutDYEst[i]->Sumw2();
+    
   }
   
   helTrkIsoPassId = new TH1F(Form("%s_helTrkIsoPassId",prefix),        Form("%s - electron trk isolation passed robust el id",prefix),  100, 0., 20.);
@@ -2466,3 +2494,22 @@ void getJetResponseFromZBalance(int i_hyp,  double weight, bool realData, double
   }
  }
 				
+void fill_dyest_histograms(int i_hyp, float weight)
+{
+  HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
+  
+  // fill the mass histogram
+  float mass = cms2.hyp_p4()[i_hyp].mass(); 
+  hdilMassNoMetDYEst[type] -> Fill(mass, weight); 
+  hdilMassNoMetDYEst[3] -> Fill(mass, weight); 
+
+  // fill the met histograms for "in" and "out" regions
+  if (inZmassWindow(mass)) {
+    hmetInDYEst[type] -> Fill(projectedMet(i_hyp), weight); 
+    hmetInDYEst[3] -> Fill(projectedMet(i_hyp), weight); 
+  }
+  else {
+    hmetOutDYEst[type] -> Fill(projectedMet(i_hyp), weight); 
+    hmetOutDYEst[3] -> Fill(projectedMet(i_hyp), weight); 
+  }
+}

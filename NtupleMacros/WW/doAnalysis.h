@@ -148,6 +148,7 @@ void find_leading_pfjet(int i_hyp, double etaMin, double etaMax, double vetoCone
 void find_most_energetic_jets(int i_hyp, double weight, bool realData, double etaMin, double etaMax, bool applyJEC);
 void getJetResponseFromZBalance(int i_hyp, double weight, bool realData, double etaMin, double etaMax, bool applyJEC);
 void fill_val_plots(int i_hyp, cuts_t cut_passed, double weight, bool applyJEC);
+void fill_dyest_histograms(int i_hyp, float weight);
 				
 unsigned int bestZHyp();
 void hypo (int i_hyp, double weight, RooDataSet* dataset = 0, bool zStudy = false, bool realData = false ); 
