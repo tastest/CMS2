@@ -78,19 +78,21 @@ bool isSpikePhoton( const unsigned int index ) {
  
 
 int isGoodEMObject( const unsigned int index ){
+
   //apply this cut at template creation time
   //if ( fabs( photons_p4().at(index).eta() ) > 1   )     return -1; //eta < 1
   if ( photons_p4().at(index).pt() < 22           )     return -1; //pt > 22 GeV
   if ( photons_hOverE().at(index) > 0.1           )     return -1; //h/e < 0.1
- 
+
   //spike cleaning
   float swiss   = photons_swissSeed().at(index);
   int   scind   = photons_scindex().at(index);
+  if( scind < 0 ) return -1;
   float seed    = scs_eSeed().at(scind);
   float s4      = swiss - seed;
   float r4      = 1 - s4 / seed;
   if ( ( 1. - r4 ) < 0.05 )  return -1;
-  
+
   //if photon survives to this point, find pfjet nearest photon
   //require pt > 10 GeV pfjet, eta < 2.5 within dr < 0.3 of photon
 
