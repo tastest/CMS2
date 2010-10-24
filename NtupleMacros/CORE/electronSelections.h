@@ -786,6 +786,41 @@ static const cuts_t electronSelectionFO_ssVBTF80_v3 =
 	 (1ll<<ELEID_VBTF_35X_80) |
 	 (1ll<<ELEISO_REL040);
 
+//---------------------------------------------------------
+//  SS V2 With VBTFID V1, V2, V3
+//---------------------------------------------------------
+
+static const cuts_t electronSelectionFOV2_ssVBTF80_v1 =
+	 electronSelectionFO_baseline |
+	 (1ll<<ELEETA_240) |
+	 (1ll<<ELESCET_010) |
+	 (1ll<<ELEPT_010) |
+	 (1ll<<ELEISO_REL040) |
+	 (1ll<<ELENOTCONV_HITPATTERN) |
+	 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
+	 (1ll<<ELECHARGE_NOTFLIP3AGREE);
+
+static const cuts_t electronSelectionFOV2_ssVBTF80_v2 =
+	 electronSelectionFO_baseline |
+	 (1ll<<ELEETA_240) |
+	 (1ll<<ELENOTCONV_HITPATTERN) |
+	 (1ll<<ELESCET_010) |
+	 (1ll<<ELEPT_010) |
+	 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
+	 (1ll<<ELECHARGE_NOTFLIP3AGREE) |
+	 (1ll<<ELEISO_REL010);
+
+static const cuts_t electronSelectionFOV2_ssVBTF80_v3 =
+	 electronSelectionFO_baseline |
+	 (1ll<<ELEETA_240) |
+	 (1ll<<ELENOTCONV_HITPATTERN) |
+	 (1ll<<ELESCET_010) |
+	 (1ll<<ELEPT_010) |
+	 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
+	 (1ll<<ELECHARGE_NOTFLIP3AGREE) |
+	 (1ll<<ELEID_VBTF_35X_80) |
+	 (1ll<<ELEISO_REL040);
+
 
 
 
