@@ -69,8 +69,9 @@ bool wasMetCorrectedForThisMuon(int imu, whichMetType type) {
           cms2.mus_tcmet_flag().at(imu) == 4) answer = false;
       break;
   case usingTcMet35X:
-    if (cms2.evt35X_mus_tcmet_flag().at(imu) == 0 || 
- 	cms2.evt35X_mus_tcmet_flag().at(imu) == 4) answer = false;
+//    if (cms2.evt35X_mus_tcmet_flag().at(imu) == 0 || 
+// 	cms2.evt35X_mus_tcmet_flag().at(imu) == 4) answer = false;
+     cout << "metSelections.cc: Now using 38x MC, usingTcMet35X does not exist" << endl;
     break;
   case usingCaloMet:
     if (cms2.mus_met_flag().at(imu) == 0) answer = false;
@@ -117,15 +118,16 @@ void fixMetForThisMuon(int imu, float& metX, float& metY, whichMetType type) {
 
 
     case usingTcMet35X:
-      if (cms2.evt35X_mus_tcmet_flag()[imu] == 0) {//not corrected
- 	metX += cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x();
- 	metY += cms2.mus_met_deltay()[imu] - cms2.mus_p4()[imu].y();
-      } else if (cms2.evt35X_mus_tcmet_flag()[imu] == 4) {
- 	metX += - cms2.evt35X_mus_tcmet_deltax()[imu] + cms2.trks_trk_p4()[cms2.mus_trkidx()[imu]].px() // undo the pion correction
- 	  + cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x(); // perform the muon correction
- 	metY += - cms2.evt35X_mus_tcmet_deltay()[imu] + cms2.trks_trk_p4()[cms2.mus_trkidx()[imu]].py() // undo the pion correction
- 	  + cms2.mus_met_deltay()[imu] - cms2.mus_p4()[imu].y(); // perform the muon correction
-      }
+//      if (cms2.evt35X_mus_tcmet_flag()[imu] == 0) {//not corrected
+// 	metX += cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x();
+// 	metY += cms2.mus_met_deltay()[imu] - cms2.mus_p4()[imu].y();
+//      } else if (cms2.evt35X_mus_tcmet_flag()[imu] == 4) {
+// 	metX += - cms2.evt35X_mus_tcmet_deltax()[imu] + cms2.trks_trk_p4()[cms2.mus_trkidx()[imu]].px() // undo the pion correction
+// 	  + cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x(); // perform the muon correction
+// 	metY += - cms2.evt35X_mus_tcmet_deltay()[imu] + cms2.trks_trk_p4()[cms2.mus_trkidx()[imu]].py() // undo the pion correction
+// 	  + cms2.mus_met_deltay()[imu] - cms2.mus_p4()[imu].y(); // perform the muon correction
+//      }
+       cout << "metSelections.cc: Now using 38x MC, usingTcMet35X does not exist" << endl;
       break;
       
 
@@ -178,18 +180,19 @@ void fixMetForThisMuon(int imu, float& metX, float& metY, float& sumET, whichMet
         
         
     case usingTcMet35X:
-      if (cms2.evt35X_mus_tcmet_flag()[imu] == 0) {
-        metX += cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x();
-        metY += cms2.mus_met_deltay()[imu] - cms2.mus_p4()[imu].y();
-        sumET -= sqrt(cms2.mus_met_deltax()[imu] * cms2.mus_met_deltax()[imu] + cms2.mus_met_deltay()[imu] * cms2.mus_met_deltay()[imu]) - cms2.mus_p4()[imu].pt(); 
-      } else if (cms2.mus_tcmet_flag()[imu] == 4) {
-        metX += - cms2.evt35X_mus_tcmet_deltax()[imu] + cms2.trks_trk_p4()[cms2.mus_trkidx()[imu]].px() // undo the pion correction
-          + cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x(); // perform the muon correction
-        metY += - cms2.evt35X_mus_tcmet_deltay()[imu] + cms2.trks_trk_p4()[cms2.mus_trkidx()[imu]].py() // undo the pion correction
-          + cms2.mus_met_deltay()[imu] - cms2.mus_p4()[imu].y(); // perform the muon correction
-        sumET -= sqrt(cms2.mus_met_deltax()[imu] * cms2.mus_met_deltax()[imu] + cms2.mus_met_deltay()[imu] * cms2.mus_met_deltay()[imu]) - cms2.mus_p4()[imu].pt()
-          + sqrt(cms2.evt35X_mus_tcmet_deltax()[imu] * cms2.evt35X_mus_tcmet_deltax()[imu] + cms2.evt35X_mus_tcmet_deltay()[imu] * cms2.evt35X_mus_tcmet_deltay()[imu]) + cms2.trks_trk_p4()[cms2.mus_trkidx()[imu]].pt();
-      }
+//      if (cms2.evt35X_mus_tcmet_flag()[imu] == 0) {
+//        metX += cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x();
+//        metY += cms2.mus_met_deltay()[imu] - cms2.mus_p4()[imu].y();
+//        sumET -= sqrt(cms2.mus_met_deltax()[imu] * cms2.mus_met_deltax()[imu] + cms2.mus_met_deltay()[imu] * cms2.mus_met_deltay()[imu]) - cms2.mus_p4()[imu].pt(); 
+//      } else if (cms2.mus_tcmet_flag()[imu] == 4) {
+//        metX += - cms2.evt35X_mus_tcmet_deltax()[imu] + cms2.trks_trk_p4()[cms2.mus_trkidx()[imu]].px() // undo the pion correction
+//          + cms2.mus_met_deltax()[imu] - cms2.mus_p4()[imu].x(); // perform the muon correction
+//        metY += - cms2.evt35X_mus_tcmet_deltay()[imu] + cms2.trks_trk_p4()[cms2.mus_trkidx()[imu]].py() // undo the pion correction
+//          + cms2.mus_met_deltay()[imu] - cms2.mus_p4()[imu].y(); // perform the muon correction
+//        sumET -= sqrt(cms2.mus_met_deltax()[imu] * cms2.mus_met_deltax()[imu] + cms2.mus_met_deltay()[imu] * cms2.mus_met_deltay()[imu]) - cms2.mus_p4()[imu].pt()
+//          + sqrt(cms2.evt35X_mus_tcmet_deltax()[imu] * cms2.evt35X_mus_tcmet_deltax()[imu] + cms2.evt35X_mus_tcmet_deltay()[imu] * cms2.evt35X_mus_tcmet_deltay()[imu]) + cms2.trks_trk_p4()[cms2.mus_trkidx()[imu]].pt();
+//      }
+        cout << "metSelections.cc: Now using 38x MC, usingTcMet35X does not exist" << endl;
       break;
       
 
