@@ -23,6 +23,8 @@
 #include "../CORE/triggerUtils.cc"
 #include "../Tools/goodrun.cc"
 #include "./myBabyMaker.h"
+#include "../CORE/jetSelections.cc"
+
 using namespace std;
 using namespace tas;
 
@@ -110,9 +112,14 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
   // Set the JSON file
   if(isData){
-    set_goodrun_file_json("json/Cert_TopOct6_Merged_135059-146729_allPVT_extra_146804-147116.txt");
+    set_goodrun_file_json("json/json_135821_148058_15.21pb.txt");
     //set_goodrun_file_json("json/Cert_TopAug13_Merged_135059-142664.txt");
   }
+
+  std::vector<std::string> jetcorr_filenames;
+  jetcorr_filenames.push_back("../CondFormats/JetMETObjects/data/Spring10_L2Relative_AK5PF.txt");
+  jetcorr_filenames.push_back("../CondFormats/JetMETObjects/data/Spring10_L3Absolute_AK5PF.txt");
+  FactorizedJetCorrector *jet_corrector = makeJetCorrector(jetcorr_filenames);
 
   // The deltaR requirement between objects and jets to remove the jet trigger dependence
   float deltaRCut   = 1.0;
@@ -184,6 +191,22 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         this_nbjet++;
         bindex.push_back(iJet);
       }
+
+// PF Jets
+
+      int this_nbpfjet = 0;
+      vector<unsigned int> bpfindex;
+      for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+        if ( !passesPFJetID(iJet)) continue;
+        LorentzVector jp4 = pfjets_p4()[iJet];
+        float jet_cor = jetCorrection(jp4, jet_corrector);
+        LorentzVector jp4cor = jp4 * jet_cor;
+        if (jp4cor.pt() < 15) continue;
+        if (pfjets_simpleSecondaryVertexHighEffBJetTag().at(iJet) < 1.74) continue;
+        this_nbpfjet++;
+        bpfindex.push_back(iJet);
+      }
+
       
 /* Electrons */
       
@@ -228,7 +251,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 	v2OSOct18_  = pass_electronSelection( iEl, electronSelectionFO_el_OSV1_v2);
 	v3OSOct18_  = pass_electronSelection( iEl, electronSelectionFO_el_OSV1_v3);
 
-	numSSOct18_ = pass_electronSelection( iEl, electronSelection_ss, false, false);
+	numSSOct18_ = pass_electronSelection( iEl, electronSelection_ss, false, false) && (!isSpikeElectron(iEl));
 	v1SSOct18_  = pass_electronSelection( iEl, electronSelectionFO_ssVBTF80_v1, false, false);
 	v2SSOct18_  = pass_electronSelection( iEl, electronSelectionFO_ssVBTF80_v2, false, false);
 	v3SSOct18_  = pass_electronSelection( iEl, electronSelectionFO_ssVBTF80_v3, false, false);
@@ -245,6 +268,10 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         v4_wwV0b_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV0b_v4);
         num_wwV0b_ = pass_electronSelection( iEl, electronSelection_wwV0b);
 
+        numSSV2_ = pass_electronSelection( iEl, electronSelection_ssV2, false, false) && (!isSpikeElectron(iEl));
+        v1SSV2_  = pass_electronSelection( iEl, electronSelectionFOV2_ssVBTF80_v1, false, false);
+        v2SSV2_  = pass_electronSelection( iEl, electronSelectionFOV2_ssVBTF80_v2, false, false);
+        v3SSV2_  = pass_electronSelection( iEl, electronSelectionFOV2_ssVBTF80_v3, false, false);
 
 
         // Sanity
@@ -282,6 +309,11 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         if (num_wwV0b_ && (!v3_wwV0b_)) cout << "bad v3_wwV0b_" << endl;
         if (num_wwV0b_ && (!v4_wwV0b_)) cout << "bad v4_wwV0b_" << endl;
 
+        if (numSSV2_ && (!v1SSV2_)) cout << "bad v1SSV2_" << endl;
+        if (numSSV2_ && (!v2SSV2_)) cout << "bad v2SSV2_" << endl;
+        if (numSSV2_ && (!v3SSV2_)) cout << "bad v3SSV2_" << endl;
+
+
 
         // If there is no v1/v2/v3 lepton quit
         if (  (!v1_) && (!v2_) && (!v3_) && 
@@ -290,6 +322,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
               (!v1SSAug9_) && (!v2SSAug9_) && (!v3SSAug9_) &&
               (!v1OSOct18_) && (!v2OSOct18_) && (!v3OSOct18_) &&
               (!v1SSOct18_) && (!v2SSOct18_) && (!v3SSOct18_) &&
+              (!v1SSV2_) && (!v2SSV2_) && (!v3SSV2_) &&
               (!v1Oct6_) && (!v2Oct6_) && (!v3Oct6_) &&
               (!v1_wwV0_) && (!v2_wwV0_) && (!v3_wwV0_) && (!v4_wwV0_) &&
               (!v1_wwV0b_) && (!v2_wwV0b_) && (!v3_wwV0b_) && (!v4_wwV0b_)
@@ -323,6 +356,9 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         id_    = 11*els_charge().at(iEl);
         tcmet_ = evt_tcmet();
         tcmetphi_ = evt_tcmetPhi();
+        pfmet_ = evt_pfmet();
+        pfmetphi_ = evt_pfmetPhi();
+
         if (! isData) {
             mcid_       = els_mc_id().at(iEl);
             mcmotherid_ = els_mc_motherid().at(iEl);
@@ -337,8 +373,15 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
           if( qCTF == qGSF && qCTF == qPIX && qGSF == qPIX ) q3_ = true;
         }
 
+       // Missing hits info
+       // Warning els_exp_innerlayers39X_ is set to 999 if this branch doesn't exits
+
+        els_exp_innerlayers_ = els_exp_innerlayers().at(iEl);
+        els_exp_innerlayers39X_ = els_exp_innerlayers39X().at(iEl);
+
         // W transverse mass
         mt_ = Mt( els_p4().at(iEl), tcmet_, tcmetphi_ );
+        pfmt_ = Mt( els_p4().at(iEl), pfmet_, pfmetphi_ );
         
         // The btag information
         nbjet_ = this_nbjet;
@@ -349,6 +392,21 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
           float dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), jets_p4().at(iJet));
           if (dr < dRbNear_) dRbNear_ = dr;
           if (dr > dRbFar_)   dRbFar_  = dr;
+        }
+
+        // btag info for corrected pfjet
+
+        nbpfcjet_ = this_nbpfjet;
+        dRbpfcNear_ = 99.;
+        dRbpfcFar_  = -99.;
+        for (int ii=0; ii<nbpfcjet_; ii++) {
+          unsigned int iJet = bpfindex[ii];
+          LorentzVector jp4 = pfjets_p4()[iJet];
+          float jet_cor = jetCorrection(jp4, jet_corrector);
+          LorentzVector jp4cor = jp4 * jet_cor;
+          float dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), jp4cor);
+          if (dr < dRbpfcNear_) dRbpfcNear_ = dr;
+          if (dr > dRbpfcFar_)   dRbpfcFar_  = dr; 
         }
           
         // Our jet trigger flags
@@ -526,6 +584,35 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
           }
         }
 
+      // Find the highest Pt PF corrected jet separated by at least dRcut from this lepton and fill the jet Pt
+
+        ptpfcj1_       = -999.0; 
+        ptpfcj1_b2b_   = -999.0;
+        dphipfcj1_b2b_ = -999.0;
+        npfcj1_        = 0;
+        btagpfc_       = false;
+
+        for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+          if ( !passesPFJetID(iJet)) continue;
+          LorentzVector jp4 = pfjets_p4()[iJet];
+          float jet_cor = jetCorrection(jp4, jet_corrector);
+          LorentzVector jp4cor = jp4 * jet_cor;
+          if (jp4cor.pt() > 15 && pfjets_simpleSecondaryVertexHighEffBJetTag().at(iJet) > 1.74 ) btagpfc_ = true;
+          double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), jp4cor );
+          if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcj1_++;
+          if ( dr > deltaRCut && jp4cor.pt() > ptpfcj1_ ){
+            ptpfcj1_ = jp4cor.pt();
+
+            // back to back in phi
+            float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iEl), jp4cor ) );
+            if( dphi > deltaPhiCut && jp4cor.pt() > ptpfcj1_b2b_ ){
+              ptpfcj1_b2b_   = jp4cor.pt();
+              dphipfcj1_b2b_ = dphi;
+            } 
+          }
+        }
+
+
 	// Time to fill the baby for the electrons
         FillBabyNtuple();
 
@@ -569,6 +656,9 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         id_   = 13*mus_charge().at(iMu);
         tcmet_ = evt_tcmet();
         tcmetphi_ = evt_tcmetPhi();
+        pfmet_ = evt_pfmet();
+        pfmetphi_ = evt_pfmetPhi();
+
         if (! isData) {
             mcid_       = mus_mc_id().at(iMu);
             mcmotherid_ = mus_mc_motherid().at(iMu);
@@ -578,18 +668,22 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         num_    = muonId(iMu, NominalTTbarV2);
         numv1_  = muonId(iMu, NominalTTbar);
         numSS_  = muonId(iMu, Nominal);
+        numNomSS_  = muonId(iMu, NominalSS);
         num_wwV0_ = muonId(iMu, NominalWWV0);
         num_wwV0b_ = muonId(iMu, NominalWWV0);
     
         fo_04_  = muonId(iMu, muonSelectionFO_mu_ttbar);
         fo_10_  = muonId(iMu, muonSelectionFO_mu_ttbar_iso10);
 
+        fo_muss04_ = muonId(iMu, muonSelectionFO_mu_ss);
+        fo_muss10_ = muonId(iMu, muonSelectionFO_mu_ss_iso10);
+
         fo_wwV0_04_  = muonId(iMu, muonSelectionFO_mu_ww);
         fo_wwV0_10_  = muonId(iMu, muonSelectionFO_mu_ww_iso10);
 
         numAug9_ = num_;
 
-        if( !fo_04_ && !fo_10_ && !fo_wwV0_04_ && !fo_wwV0_10_) continue;
+        if( !fo_04_ && !fo_10_ && !fo_wwV0_04_ && !fo_wwV0_10_ && !fo_muss04_ && !fo_muss10_) continue;
 
         // Now REALLY fix it (July 14, 2010)
         if (pt_ > 10.) {
@@ -603,6 +697,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         
         // W transverse mass
         mt_ = Mt( mus_p4().at(iMu), tcmet_, tcmetphi_ );
+        pfmt_ = Mt( mus_p4().at(iMu), pfmet_, pfmetphi_ );
         
         // The btag information
         nbjet_ = this_nbjet;
@@ -614,6 +709,21 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
           if (dr < dRbNear_) dRbNear_ = dr;
           if (dr > dRbFar_)  dRbFar_  = dr;
         }
+         // The btag information for pfjets
+
+        nbpfcjet_ = this_nbpfjet;
+        dRbpfcNear_ = 99.;
+        dRbpfcFar_  = -99.;
+        for (int ii=0; ii<nbpfcjet_; ii++) {
+          unsigned int iJet = bpfindex[ii];
+          LorentzVector jp4 = pfjets_p4()[iJet];
+          float jet_cor = jetCorrection(jp4, jet_corrector);
+          LorentzVector jp4cor = jp4 * jet_cor;
+          float dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), jp4cor);
+          if (dr < dRbpfcNear_) dRbpfcNear_ = dr;
+          if (dr > dRbpfcFar_)   dRbpfcFar_  = dr;
+        }
+
         
         // Our jet trigger flags
         hlt15u_ = min(2,nHLTObjects("HLT_Jet15U")); 
@@ -706,6 +816,35 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
           }
         }
 
+       // Find the highest Pt PF corrected jet separated by at least dRcut from this lepton and fill the jet Pt
+
+        ptpfcj1_       = -999.0;
+        ptpfcj1_b2b_   = -999.0;
+        dphipfcj1_b2b_ = -999.0;
+        npfcj1_        = 0;
+        btagpfc_       = false;
+
+        for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+       // JetID
+          if ( !passesPFJetID(iJet)) continue;
+          LorentzVector jp4 = pfjets_p4()[iJet];
+          float jet_cor = jetCorrection(jp4, jet_corrector);
+          LorentzVector jp4cor = jp4 * jet_cor;
+          if (jp4cor.pt() > 15 && pfjets_simpleSecondaryVertexHighEffBJetTag().at(iJet) > 1.74 ) btagpfc_ = true;
+          double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), jp4cor );
+          if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcj1_++;
+          if ( dr > deltaRCut && jp4cor.pt() > ptpfcj1_ ){
+            ptpfcj1_ = jp4cor.pt();
+
+            // back to back in phi
+            float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iMu), jp4cor ) );
+            if( dphi > deltaPhiCut && jp4cor.pt() > ptpfcj1_b2b_ ){
+              ptpfcj1_b2b_   = jp4cor.pt();
+              dphipfcj1_b2b_ = dphi;
+            }
+          }
+        }
+
 
         // Time to fill the baby for the muons
         FillBabyNtuple();
@@ -736,6 +875,8 @@ void myBabyMaker::InitBabyNtuple () {
   scet_ = -999.;
   tcmet_ = -999.;
   tcmetphi_ = -999.;
+  pfmet_ = -999.;
+  pfmetphi_ = -999.;
   hlt15u_ = 0;
   hlt30u_ = 0;
   hlt50u_ = 0;
@@ -743,6 +884,10 @@ void myBabyMaker::InitBabyNtuple () {
   l110u_  = 0;
   fo_04_ = false;
   fo_10_ = false;
+
+  fo_muss04_ = false;
+  fo_muss10_ = false;
+
   fo_wwV0_04_ = false;
   fo_wwV0_10_ = false;
 
@@ -755,6 +900,7 @@ void myBabyMaker::InitBabyNtuple () {
   v2SS_  = false;
   v3SS_  = false;
   numSS_ = false;
+  numNomSS_ = false;
 
   v1SSAug9_  = false;
   v2SSAug9_  = false;
@@ -781,6 +927,12 @@ void myBabyMaker::InitBabyNtuple () {
   v1SSOct18_  = false;
   v2SSOct18_  = false;
   v3SSOct18_  = false;
+
+  numSSV2_ = false;
+  v1SSV2_  = false;
+  v2SSV2_  = false;
+  v3SSV2_  = false;
+
 
   v1_wwV0_  = false;
   v2_wwV0_  = false;
@@ -860,6 +1012,11 @@ void myBabyMaker::InitBabyNtuple () {
   nbjet_  = 0;
   dRbNear_ = 99.;
   dRbFar_ = -99.;
+  nbpfcjet_  = 0;
+  dRbpfcNear_ = 99.;
+  dRbpfcFar_ = -99.;
+
+
   ptj1_   = 0.;
   nj1_    = 0;
   ptj1_b2b_ = -999.;
@@ -868,10 +1025,21 @@ void myBabyMaker::InitBabyNtuple () {
   npfj1_    = 0;
   ptpfj1_b2b_ = -999.;
   dphipfj1_b2b_ = -999.;
+
+  ptpfcj1_   = 0.;
+  npfcj1_    = 0;
+  ptpfcj1_b2b_ = -999.;
+  dphipfcj1_b2b_ = -999.;
+  btagpfc_ = false;
+
   mt_ = -999;
+  pfmt_ = -999;
 
   //
   q3_ = false;
+  els_exp_innerlayers_ = 999;
+  els_exp_innerlayers39X_ = 999;
+
 
   mcid_ = 0;
   mcmotherid_ = 0;
@@ -898,6 +1066,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("scet",          &scet_,         "scet/F"         );
     babyTree_->Branch("tcmet",          &tcmet_,         "tcmet/F"         );
     babyTree_->Branch("tcmetphi",          &tcmetphi_,         "tcmetphi/F"         );
+    babyTree_->Branch("pfmet",          &pfmet_,         "pfmet/F"         );
+    babyTree_->Branch("pfmetphi",          &pfmetphi_,         "pfmetphi/F"         );
     babyTree_->Branch("id",          &id_,         "id/I"         );
 
     babyTree_->Branch("hlt15u",       &hlt15u_,       "hlt15u/I"      );
@@ -908,6 +1078,9 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
 
     babyTree_->Branch("fo_04",         &fo_04_,        "fo_04/O"      );
     babyTree_->Branch("fo_10",         &fo_10_,        "fo_10/O"      );
+    babyTree_->Branch("fo_muss04",         &fo_muss04_,        "fo_muss04/O"      );
+    babyTree_->Branch("fo_muss10",         &fo_muss10_,        "fo_muss10/O"      );
+
     babyTree_->Branch("fo_wwV0_04",         &fo_wwV0_04_,        "fo_wwV0_04/O"      );
     babyTree_->Branch("fo_wwV0_10",         &fo_wwV0_10_,        "fo_wwV0_10/O"      );
     babyTree_->Branch("v1",         &v1_,        "v1/O"      );
@@ -920,6 +1093,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("v2SS",         &v2SS_,        "v2SS/O"      );
     babyTree_->Branch("v3SS",         &v3SS_,        "v3SS/O"      );
     babyTree_->Branch("numSS",         &numSS_,        "numSS/O"      );
+    babyTree_->Branch("numNomSS",         &numNomSS_,        "numNomSS/O"      );
 
     babyTree_->Branch("v1SSAug9",         &v1SSAug9_,        "v1SSAug9/O"      );
     babyTree_->Branch("v2SSAug9",         &v2SSAug9_,        "v2SSAug9/O"      );
@@ -940,6 +1114,12 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("v2SSOct18",         &v2SSOct18_,        "v2SSOct18/O"      );
     babyTree_->Branch("v3SSOct18",         &v3SSOct18_,        "v3SSOct18/O"      );
     babyTree_->Branch("numSSOct18",         &numSSOct18_,        "numSSOct18/O"      );
+
+    babyTree_->Branch("v1SSV2",         &v1SSV2_,        "v1SSV2/O"      );
+    babyTree_->Branch("v2SSV2",         &v2SSV2_,        "v2SSV2/O"      );
+    babyTree_->Branch("v3SSV2",         &v3SSV2_,        "v3SSV2/O"      );
+    babyTree_->Branch("numSSV2",         &numSSV2_,        "numSSV2/O"      );
+
 
     babyTree_->Branch("v1OSOct18",         &v1OSOct18_,        "v1OSOct18/O"      );
     babyTree_->Branch("v2OSOct18",         &v2OSOct18_,        "v2OSOct18/O"      );
@@ -1025,6 +1205,11 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("dRNear",       &dRbNear_,       "dRbNear/F"      );
     babyTree_->Branch("dRFar",       &dRbFar_,       "dRbFar/F"      );
 
+    babyTree_->Branch("nbpfcjet",       &nbpfcjet_,       "nbpfcjet/I"      );
+    babyTree_->Branch("dRpfcNear",       &dRbpfcNear_,       "dRbpfcNear/F"      );   
+    babyTree_->Branch("dRpfcFar",       &dRbpfcFar_,       "dRbpfcFar/F"      );
+
+
     babyTree_->Branch("ptj1",       &ptj1_,       "ptj1/F"      );
     babyTree_->Branch("nj1",       &nj1_,       "nj1/I"      );
     babyTree_->Branch("ptj1_b2b",       &ptj1_b2b_,       "ptj1_b2b/F"      );
@@ -1034,10 +1219,19 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("ptpfj1_b2b",       &ptpfj1_b2b_,       "ptpfj1_b2b/F"      );
     babyTree_->Branch("dphipfj1_b2b",       &dphipfj1_b2b_,       "dphipfj1_b2b/F"      );
 
+    babyTree_->Branch("ptpfcj1",       &ptpfcj1_,       "ptpfcj1/F"      );
+    babyTree_->Branch("npfcj1",       &npfcj1_,       "npfcj1/I"      );
+    babyTree_->Branch("ptpfcj1_b2b",       &ptpfcj1_b2b_,       "ptpfcj1_b2b/F"      );
+    babyTree_->Branch("dphipfcj1_b2b",       &dphipfcj1_b2b_,       "dphipfcj1_b2b/F"      );
+    babyTree_->Branch("btagpfc",       &btagpfc_,       "btagpfc/O"      );
+
     babyTree_->Branch("mt",          &mt_,         "mt/F"         );
+    babyTree_->Branch("pfmt",          &pfmt_,         "pfmt/F"         );
 
     babyTree_->Branch("q3",          &q3_,         "q3/O"         );
 
+    babyTree_->Branch("els_exp_innerlayers", &els_exp_innerlayers_, "els_exp_innerlayers/I" );
+    babyTree_->Branch("els_exp_innerlayers39X", &els_exp_innerlayers39X_, "els_exp_innerlayers39X/I" );
     babyTree_->Branch("mcid",       &mcid_,       "mcid/I"      );
     babyTree_->Branch("mcmotherid", &mcmotherid_, "mcmotherid/I"      );
 

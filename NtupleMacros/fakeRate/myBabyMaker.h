@@ -43,6 +43,10 @@ class myBabyMaker
   Float_t tcmet_;
   Float_t tcmetphi_;
 
+  // pfmet
+  Float_t pfmet_;
+  Float_t pfmetphi_;
+
   // did it pass the jet trigger and is this lepton unbiased
   // 0=fail 1="pass but biased" 2="pass and unbiased"  -1="pass but cant find jet trg obj"
   Int_t  hlt15u_; // HLT_Jet15U
@@ -66,6 +70,7 @@ class myBabyMaker
   Bool_t v2SS_;  // electronSelectionFO_ssVBTF80_v2
   Bool_t v3SS_;  // electronSelectionFO_ssVBTF80_v3
   Bool_t numSS_; // electronSelection_ss (eletrons) Nominal (muons)
+  Bool_t numNomSS_; // Nominal with SS cuts (muons)
 
   Bool_t v1SSAug9_;  // electronSelectionFO_ssVBTF80_v1, isData, true
   Bool_t v2SSAug9_;  // electronSelectionFO_ssVBTF80_v2, isData, true
@@ -93,6 +98,11 @@ class myBabyMaker
   Bool_t v2SSOct18_;  // electronSelectionFO_ssVBTF80_v2, false, false
   Bool_t v3SSOct18_;  // electronSelectionFO_ssVBTF80_v3, false, false
 
+  Bool_t numSSV2_; // not filled for muons; electronSelection_ss, false, false
+  Bool_t v1SSV2_;  // electronSelectionFO_ssVBTF80_v1, false, false
+  Bool_t v2SSV2_;  // electronSelectionFO_ssVBTF80_v2, false, false
+  Bool_t v3SSV2_;  // electronSelectionFO_ssVBTF80_v3, false, false
+
   Bool_t v1_wwV0_;  // electronSelectionFO_el_wwV0_v1
   Bool_t v2_wwV0_;  // electronSelectionFO_el_wwV0_v2
   Bool_t v3_wwV0_;  // electronSelectionFO_el_wwV0_v3
@@ -108,6 +118,9 @@ class myBabyMaker
 
   Bool_t fo_04_;  // muonSelectionFO_mu_ttbar
   Bool_t fo_10_;  // muonSelectionFO_mu_ttbar_iso10
+
+  Bool_t fo_muss04_;  // muonSelectionFO_mu_ss
+  Bool_t fo_muss10_;  // muonSelectionFO_mu_ss_iso10
 
   Bool_t fo_wwV0_04_;  // muonSelectionFO_mu_ww
   Bool_t fo_wwV0_10_;  // muonSelectionFO_mu_ww_iso10
@@ -195,6 +208,11 @@ class myBabyMaker
   Float_t dRbNear_; // dR between lepton and closest such jet
   Float_t dRbFar_; // dR between lepton and farthest such jet
 
+  // Btag PF Corrected information
+  Int_t nbpfcjet_; // number of btagged jet pt>15
+  Float_t dRbpfcNear_; // dR between lepton and closest such jet
+  Float_t dRbpfcFar_; // dR between lepton and farthest such jet
+
 
   // Information to do offline jet trigger selection
   Float_t ptj1_;        // highest pt jet well separated from the lepton
@@ -206,11 +224,24 @@ class myBabyMaker
   Float_t dphipfj1_b2b_;  // dphi between lepton and pfjet for pfjets away from lepton by dR >= 1.0
   Int_t   npfj1_;         // number of pfjets above 10 GeV and away from lepton by dR >= 1.0
 
+  // Same for PF Corrected jets
+
+  Float_t ptpfcj1_; // highest pt jet well separated from the lepton
+  Float_t ptpfcj1_b2b_;    // highest pt jet away frmo lepton by dR >= 1.0 and dPhi > 2.5
+  Float_t dphipfcj1_b2b_;  // dphi between lepton and jet for jets away from lepton by dR >= 1.0
+  Int_t   npfcj1_;         // number of jets above 10 GeV and away from lepton by dR >= 1.0
+  Bool_t  btagpfc_; 
+
   // transverse W mass
   Float_t mt_;
+  Float_t pfmt_;
 
   // do the 3 electron charges agree?
   Bool_t q3_;
+
+ // Missing hit info
+  Int_t els_exp_innerlayers_;
+  Int_t els_exp_innerlayers39X_;
 
   //Some MC informatio added 16 Sep 2010
   Int_t mcid_;        // els_mc_id or mus_mc_id
