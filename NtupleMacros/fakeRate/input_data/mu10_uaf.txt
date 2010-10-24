@@ -1,1 +1,1 @@
-/nfs-3/userdata/cms2/QCD_Pt-20_MuEnrichedPt-10_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/postprocessing
+/nfs-3/userdata/cms2/QCD_Pt-20_MuEnrichedPt-10_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14
