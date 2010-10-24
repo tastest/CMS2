@@ -1,0 +1,10 @@
+24-10-2010 -  Sanjay Padhi
+	* Tagged with FakeRates24Oct2010
+	* Added btag and pf corrected jet variables
+	* Added pfmet and pfmt
+	* Added pt of the highest pT btagged jet and there is a bool to ask if the jet is btagged
+	* Added dr info for the highest pT btagged jet
+	* new def. of SS codes for Muon and Electron selections
+	* Need external package cvs co -r V01-09-01-10 CondFormats/JetMETObjects for JetCorrections
+	* ELENOTCONV_HITPATTERN_0MHITS is defined as the (cms2.els_exp_innerlayers().at(index) == 0)||(cms2.els_exp_innerlayers39X().at(index) == 0)
+	
