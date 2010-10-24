@@ -21,6 +21,8 @@ enum SelectionType {
 	 NominalSS = 11,
 	 NominalSSd0PV = 12,
 	 NominalSSnod0 = 13,
+	 muonSelectionFO_mu_ss = 14,
+	 muonSelectionFO_mu_ss_iso10 = 15,
 }; 
 
 //
