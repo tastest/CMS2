@@ -811,6 +811,7 @@ static const cuts_t electronSelectionFOV2_ssVBTF80_v2 =
 //	 (1ll<<ELECHARGE_NOTFLIP3AGREE) |
 	 (1ll<<ELEISO_REL010);
 
+
 static const cuts_t electronSelectionFOV2_ssVBTF80_v3 =
 	 electronSelectionFO_baseline |
 	 (1ll<<ELEETA_240) |
