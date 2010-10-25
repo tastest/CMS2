@@ -1,4 +1,5 @@
 #include "photonSelections.h"
+#include "utilities.cc"
 #include <iostream>
 #include "TSystem.h"
 #include "Math/VectorUtil.h"
@@ -105,7 +106,7 @@ int isGoodEMObject( const unsigned int index ){
     LorentzVector vg   = photons_p4().at(index);
           
     if( vjet.pt()  < 10  )       continue;
-    if( vjet.eta() > 2.5 )       continue;
+    if( fabs(vjet.eta()) > 2.5 )       continue;
     
     float dr = dRbetweenVectors(vjet, vg);
     
@@ -115,12 +116,12 @@ int isGoodEMObject( const unsigned int index ){
     }
   }
 
-  if( iMatchedJet < 0 ) return -1;
-  if( drmin > 0.3 )     return -1;
+  if( iMatchedJet < 0 ) return -2; //change -1 to -2, etc, so i can keep track in my looper of the cut which fails
+  if( drmin > 0.3 )     return -3;
 
   //require pfjet neutral EM fraction > 0.95
   float emfrac = pfjets_neutralEmE().at(iMatchedJet) / pfjets_p4().at(iMatchedJet).energy();
-  if ( emfrac < 0.95 )               return -1; 
+  if ( emfrac < 0.95 )               return -4; 
 
   return iMatchedJet;
 
