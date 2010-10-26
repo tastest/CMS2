@@ -236,6 +236,33 @@ bool passSUSYTrigger_v1( bool isData , int hypType ) {
   return false;
 }
 
+
+//----------------------------------------------------------
+//this is a simplified version of the SUSY triggers
+//----------------------------------------------------------
+
+
+bool passSimpleSUSYTrigger_v1( bool isData ) {
+
+  //currently do not require any triggers for MC
+  if( !isData ) return true;
+
+  if( passUnprescaledHLTTrigger("HLT_Mu9") )                                    return true;            
+  if( passUnprescaledHLTTrigger("HLT_Mu15_v1 147196-148862") )                  return true;
+  if( passUnprescaledHLTTrigger("HLT_Ele10_LW_L1R") )                           return true;             
+  if( passUnprescaledHLTTrigger("HLT_Ele10_LW_EleId_L1R") )                     return true;      
+  if( passUnprescaledHLTTrigger("HLT_Ele15_SW_L1R") )                           return true; 
+  if( passUnprescaledHLTTrigger("HLT_Ele15_SW_CaloEleId_L1R") )                 return true;  
+  if( passUnprescaledHLTTrigger("HLT_Ele17_SW_CaloEleId_L1R") )                 return true; 
+  if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TightEleId_L1R") )                return true; 
+  if( passUnprescaledHLTTrigger("HLT_DoubleEle10_SW_L1R") )                     return true;     
+  if( passUnprescaledHLTTrigger("HLT_DoubleEle15_SW_L1R_v1") )                  return true; 
+  if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v1") )  return true; 
+  if( passUnprescaledHLTTrigger("HLT_Mu5_Ele5_v1") )                            return true; 
+  if( passUnprescaledHLTTrigger("HLT_Mu8_Ele8_v1") )                            return true; 
+  if( passUnprescaledHLTTrigger("HLT_Mu5_Ele17_v1") )                           return true;
+
+}
 /*****************************************************************************************/
 //hypothesis disambiguation. Returns the hypothesis that has mass closest to MZ
 /*****************************************************************************************/
