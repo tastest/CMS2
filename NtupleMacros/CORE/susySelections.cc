@@ -262,6 +262,7 @@ bool passSimpleSUSYTrigger_v1( bool isData ) {
   if( passUnprescaledHLTTrigger("HLT_Mu8_Ele8_v1") )                            return true; 
   if( passUnprescaledHLTTrigger("HLT_Mu5_Ele17_v1") )                           return true;
 
+  return false;
 }
 /*****************************************************************************************/
 //hypothesis disambiguation. Returns the hypothesis that has mass closest to MZ
