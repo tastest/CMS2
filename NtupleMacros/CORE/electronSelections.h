@@ -411,8 +411,8 @@ static const cuts_t electronSelection_el_OSV1 =
 	 (1ll<<ELENOMUON_010) |
 	 (1ll<<ELENOTCONV_HITPATTERN) |
 	 (1ll<<ELENOTCONV_DISTDCOT002) |
-	 (1ll<<ELESCET_015) |
-	 (1ll<<ELEPT_015) |
+	 (1ll<<ELESCET_010) |
+	 (1ll<<ELEPT_010) |
 	 (1ll<<ELEETA_250) |
 	 (1ll<<ELESEED_ECAL);
 
