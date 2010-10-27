@@ -19,8 +19,13 @@ void gather_doAll() {
     //const char *goodrunlist = "runlists/Cert_TopOct6_Merged_135059-146729_allPVT_extra_146804-147116.txt";
     //float goodrunlumi = 5860;
     
-    const char *goodrunlist = "runlists/Cert_TopOct8_Merged_135059-147116_allPVT.txt";
-    float goodrunlumi = 7090;
+    // const char *goodrunlist = "runlists/Cert_TopOct8_Merged_135059-147116_allPVT.txt";
+    // float goodrunlumi = 7090;
+    
+    //   const char *goodrunlist = "runlists/Cert_TopOct15_Merged_135821-147454_allPVT.txt";
+    // float goodrunlumi = 11060;
+    const char *goodrunlist = "runlists/Cert_TopOct22_Merged_135821-148058_allPVT.txt";
+    float goodrunlumi = 15210;
 
     // this sets the json file obviously; it's
     // easiest to just  soft link to  the real

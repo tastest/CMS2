@@ -72,7 +72,12 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 					run_        = cms2.evt_run();
 					ls_         = cms2.evt_lumiBlock();
 					evt_        = cms2.evt_event();
-
+					nvtx_ = 0;
+					for( unsigned int i=0; i<cms2.vtxs_isFake().size(); i++ ) {
+                                          if( !cms2.vtxs_isFake()[i] && cms2.vtxs_isValid()[i] )
+                                            ++nvtx_;
+                                        }
+                  
                     if (!isdata_)
                         int nlep = leptonGenpCount_lepTauDecays(ngenels_, ngenmus_, ngentaus_);
 
@@ -274,8 +279,12 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 					run_        = cms2.evt_run();
 					ls_         = cms2.evt_lumiBlock();
 					evt_        = cms2.evt_event();
-
-                    if (!isdata_) 
+					nvtx_ = 0;
+					for( unsigned int i=0; i<cms2.vtxs_isFake().size(); i++ ) {
+                                          if( !cms2.vtxs_isFake()[i] && cms2.vtxs_isValid()[i] )
+                                            ++nvtx_;
+                                        }
+		if (!isdata_) 
                         int nlep = leptonGenpCount_lepTauDecays(ngenels_, ngenmus_, ngentaus_);
 
 					pfmet_      = cms2.evt_pfmet();
@@ -444,6 +453,7 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 					e_sigieie_    = cms2.els_sigmaIEtaIEta()[eli];
 					e_eMe55_      = cms2.els_eMax()[eli]/cms2.els_e5x5()[eli];
 					e_nmHits_     = cms2.els_exp_innerlayers()[eli];
+					e_nmHits39X_  = cms2.els_exp_innerlayers39X()[eli];
 					e_dcot_       = cms2.els_conv_dcot()[eli];
 					e_dist_       = cms2.els_conv_dist()[eli];
 					e_drmu_       = cms2.els_closestMuon()[eli] < 0 ? -999999. : cms2.els_musdr()[eli];
@@ -451,7 +461,6 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 					e_scCharge_   = cms2.els_sccharge()[eli];
 					e_gsfCharge_  = cms2.els_trk_charge()[eli];
 					e_ctfCharge_  = cms2.els_trkidx()[eli] > -1 ? cms2.trks_charge()[cms2.els_trkidx()[eli]] : -999999;
-
 					// look for this guy in a same-flavor hyp and report
 					// hyp_mass; if found in >1 hyp report one with high-
 					// est mass
@@ -487,8 +496,10 @@ void emubabymaker::InitBabyNtuple ()
 	 run_          = -999999;
 	 ls_           = -999999;
 	 evt_          = -999999;
-     isdata_       = 1;
-	 pfmet_        = -999999.;
+	 isdata_       = 1;
+	 nvtx_         = -999999;
+     
+         pfmet_        = -999999.;
 	 tcmet_        = -999999.;
 	 ntrks_        = -999999;
 	 njets_        = -999999;
@@ -568,6 +579,7 @@ void emubabymaker::InitBabyNtuple ()
 	 e_sigieie_         = -999999.;
 	 e_eMe55_           = -999999.;
 	 e_nmHits_          = -999999;
+	 e_nmHits39X_       = -999999;
 	 e_dcot_            = -999999.;
 	 e_dist_            = -999999.;
 	 e_drmu_            = -999999.;
@@ -591,7 +603,8 @@ void emubabymaker::MakeBabyNtuple(const char *babyFilename)
 	 babyTree_->Branch("run",          &run_,          "run/I"         );
 	 babyTree_->Branch("ls",           &ls_,           "ls/I"          );
 	 babyTree_->Branch("evt",          &evt_,          "evt/I"         );
-     babyTree_->Branch("isdata",       &isdata_,       "isdata/I"      );
+	 babyTree_->Branch("nvtx",         &nvtx_,         "nvtx/I"        );
+	 babyTree_->Branch("isdata",       &isdata_,       "isdata/I"      );
 	 babyTree_->Branch("pfmet",        &pfmet_,        "pfmet/F"       );
 	 babyTree_->Branch("tcmet",        &tcmet_,        "tcmet/F"       );
 	 babyTree_->Branch("ntrks",        &ntrks_,        "ntrks/I"       );
@@ -672,6 +685,7 @@ void emubabymaker::MakeBabyNtuple(const char *babyFilename)
 	 babyTree_->Branch("e_sigieie",         &e_sigieie_,         "e_sigieie/F"        );
 	 babyTree_->Branch("e_eMe55",           &e_eMe55_,           "e_eMe55/F"          ); // for spikes
 	 babyTree_->Branch("e_nmHits",          &e_nmHits_,          "e_nmHits/I"         ); // els_exp_innerlayers
+	 babyTree_->Branch("e_nmHits39X",       &e_nmHits39X_,       "e_nmHits39X/I"      ); // els_exp_innerlayers
 	 babyTree_->Branch("e_dcot",            &e_dcot_,            "e_dcot/F"           ); // els_conv_dcot
 	 babyTree_->Branch("e_dist",            &e_dist_,            "e_dist/F"           ); // els_conv_dist
 	 babyTree_->Branch("e_drmu",            &e_drmu_,            "e_drmu/F"           );

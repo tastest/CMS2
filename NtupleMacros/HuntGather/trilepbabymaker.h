@@ -33,6 +33,7 @@ class trilepbabymaker
         Int_t   ls_;
         Int_t   evt_;
         Int_t   isdata_;
+	Int_t   nvtx_;
         Int_t   hyp_type_;
         Float_t pfmet_;
         Float_t tcmet_;
@@ -158,6 +159,7 @@ class trilepbabymaker
         Float_t e1_sigieie_; // sigmaietaieta
         Float_t e1_eMe55_;
         Int_t   e1_nmHits_;
+        Int_t   e1_nmHits39X_;
         Float_t e1_dcot_;
         Float_t e1_dist_;
         Float_t e1_drmu_;
@@ -183,6 +185,7 @@ class trilepbabymaker
         Float_t e2_sigieie_; // sigmaietaieta
         Float_t e2_eMe55_;
         Int_t   e2_nmHits_;
+	Int_t   e2_nmHits39X_;
         Float_t e2_dcot_;
         Float_t e2_dist_;
         Float_t e2_drmu_;
@@ -190,7 +193,7 @@ class trilepbabymaker
         Int_t   e2_ctfCharge_;
         Int_t   e2_scCharge_;
         Int_t   e2_gsfCharge_;
-
+	
         Bool_t  e3_cand01full_;
         Bool_t  e3_cand01_;
         Bool_t  e3_vbtf90full_;
@@ -208,6 +211,7 @@ class trilepbabymaker
         Float_t e3_sigieie_; // sigmaietaieta
         Float_t e3_eMe55_;
         Int_t   e3_nmHits_;
+        Int_t   e3_nmHits39X_;
         Float_t e3_dcot_;
         Float_t e3_dist_;
         Float_t e3_drmu_;

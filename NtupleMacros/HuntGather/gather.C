@@ -12,6 +12,7 @@
 #include "TMath.h"
 #include "TPRegexp.h"
 #include "TROOT.h"
+#include "TTreePlayer.h"
 
 #include <algorithm>
 #include <vector>
@@ -64,7 +65,7 @@ float GetIntLumi(float lumi)
     return GetIntLumi(lumi, brun, bls, erun, els);
 }
 
-TH1F* Plot(const char *pfx, TChain *chain, TCut field, TCut sel, TCut presel, float intlumifb, float kfactor,
+TH1F* Plot(const char *pfx, const char *pfx2,TChain *chain, TCut field, TCut sel, TCut presel, float intlumifb, float kfactor,
         unsigned int nbins, float xlo, float xhi, bool integrated, bool isdata, unsigned int isfx)
 {
     TCut scale;
@@ -111,7 +112,8 @@ TH1F* Plot(const char *pfx, TChain *chain, TCut field, TCut sel, TCut presel, fl
         c_presel += presel;
 
     char *draw = Form("%s>>+%s", field.GetTitle(), name);
-    TCut cut = scale*(c_presel+sel);
+    // TCut cut = scale*(c_presel+sel);
+    TCut cut = c_presel+sel;
 
     // Okay, time for someting sneaky. At the
     // time of this commit I anticipate YJ
@@ -124,13 +126,28 @@ TH1F* Plot(const char *pfx, TChain *chain, TCut field, TCut sel, TCut presel, fl
     // back to the original TEventList when
     // you're done.
     TEventList* orig_elist = (TEventList*)chain->GetEventList()->Clone();
-    chain->Draw(">>elist", cut, "goff");
-    TEventList* elist = (TEventList*)gDirectory->Get("elist");
+    chain->Draw(">>evtlist", cut, "goff");
+    TEventList* elist = (TEventList*)gDirectory->Get("evtlist");
     chain->SetEventList(elist);
-    chain->Draw(draw, "", "goff");
+    chain->Draw(draw, scale, "goff");
     // chain->Scan(var1:var2...", "no cuts")
     // All done now, revert to original event list
+   
+    if (isdata){
+      //reset_babydorkidentifier();                                                                                                                                              
+      TTreePlayer *tp = (TTreePlayer*)chain->GetPlayer();
+      tp->SetScanRedirect(kTRUE);
+      //tp->SetScanFileName(Form("%s_%s_%s_%i.out", pfx, sel.GetName(), field.GetName(), isfx));                                                                                 
+      tp->SetScanFileName(Form("%s_%s_%i_%s.out", sel.GetName(), field.GetName(), isfx,pfx2));
+      if (chain->GetBranch("pt3")) // trilep                                                                                                                                     
+        chain->Scan("dataset:run:ls:evt:pt1:pt2:pt3", "", "colsize=50");
+      else if (chain->GetBranch("pt2")) // dilep                                                                                                                                 
+        chain->Scan("dataset:run:ls:evt:pt1:pt2", "", "colsize=50");
+      else
+        chain->Scan("dataset:run:ls:evt:pt1", "", "colsize=50");
+    }
     chain->SetEventList(orig_elist);
+
 
     // Move overflow to the last bin
     float overflow = h->GetBinContent(nbins+1);
@@ -143,7 +160,7 @@ TH1F* Plot(const char *pfx, TChain *chain, TCut field, TCut sel, TCut presel, fl
 TH1F* Plot(TCut field, TCut sel, TCut presel, float intlumifb, unsigned int nbins, float xlo, float xhi, bool integrated,
         BabySample *bs, unsigned int isfx)
 {
-    return Plot(bs->pfx(),bs->chain(),field,sel,presel+bs->presel(),intlumifb,bs->kfactor(),nbins,xlo,xhi,integrated,bs->isdata(),isfx);
+  return Plot(bs->pfx(),bs->pfx2(),bs->chain(),field,sel,presel+bs->presel(),intlumifb,bs->kfactor(),nbins,xlo,xhi,integrated,bs->isdata(),isfx);
 }
 
 //
@@ -151,22 +168,23 @@ TH1F* Plot(TCut field, TCut sel, TCut presel, float intlumifb, unsigned int nbin
 // most likely you aren't scaling
 //
 
-TH1F* Plot(const char *pfx, TChain *chain, TCut field, TCut sel, TCut presel, float kfactor,
+TH1F* Plot(const char *pfx, const char *pfx2,TChain *chain, TCut field, TCut sel, TCut presel, float kfactor,
         unsigned int nbins, float xlo, float xhi, bool integrated, bool isdata, unsigned int isfx)
 {
-    return Plot(pfx,chain,field,sel,presel,1,kfactor,nbins,xlo,xhi,integrated,isdata,isfx);
+  return Plot(pfx,pfx2,chain,field,sel,presel,1,kfactor,nbins,xlo,xhi,integrated,isdata,isfx);
 }
 
-TH1F* Plot(const char *pfx, TChain *chain, TCut field, TCut sel, TCut presel,
+TH1F* Plot(const char *pfx, const char *pfx2,TChain *chain, TCut field, TCut sel, TCut presel,
         unsigned int nbins, float xlo, float xhi, bool integrated, bool isdata, unsigned int isfx)
 {
-    return Plot(pfx,chain,field,sel,presel,1,1,nbins,xlo,xhi,integrated,isdata,isfx);
+  return Plot(pfx,pfx2,chain,field,sel,presel,1,1,nbins,xlo,xhi,integrated,isdata,isfx);
 }
 
 TH1F* Plot(TCut field, TCut sel, TCut presel, unsigned int nbins, float xlo, float xhi, bool integrated,
         BabySample *bs, unsigned int isfx)
 {
-    return Plot(bs->pfx(),bs->chain(),field,sel,presel+bs->presel(),1.,bs->kfactor(),nbins,xlo,xhi,integrated,bs->isdata(),isfx);
+  // return Plot(bs->pfx(),bs->chain(),field,sel,presel+bs->presel(),1.,bs->kfactor(),nbins,xlo,xhi,integrated,bs->isdata(),isfx);
+  return Plot(bs->pfx(),bs->pfx2(),bs->chain(),field,sel,presel+bs->presel(),1.,bs->kfactor(),nbins,xlo,xhi,integrated,bs->isdata(),isfx);
 }
 
 bool sortHistsByIntegral(TH1* h1, TH1* h2)
@@ -333,10 +351,10 @@ TCanvas* DrawAll(TCut field, const char *savename, TCut sel, TCut presel, float 
     // data babies
     //
 
-    static BabySample *bs_data_dilep_1  = new BabySample("data","/nfs-3/userdata/yanjuntu/hunt/EG_Run2010A-Sep17ReReco_v2_RECO/dilep_baby/*.root",base_dilep,1.,true);
-    static BabySample *bs_data_dilep_2  = new BabySample("data","/nfs-3/userdata/yanjuntu/hunt/Electron_Run2010B-PromptReco-v2_RECO/dilep_baby/*.root",base_dilep,1.,true);
-    static BabySample *bs_data_dilep_3  = new BabySample("data","/nfs-3/userdata/yanjuntu/hunt/Mu_Run2010A-Sep17ReReco_v2_RECO/dilep_baby/*.root",base_dilep,1.,true); 
-    static BabySample *bs_data_dilep_4  = new BabySample("data","/nfs-3/userdata/yanjuntu/hunt/Mu_Run2010B-PromptReco-v2_RECO/dilep_baby/*.root",base_dilep,1.,true);
+  static BabySample *bs_data_dilep_1  = new BabySample("data","EG","/nfs-3/userdata/yanjuntu/hunt/EG_Run2010A-Sep17ReReco_v2_RECO/dilep_baby/*.root",base_dilep,1.,true);
+  static BabySample *bs_data_dilep_2  = new BabySample("data","Electron","/nfs-3/userdata/yanjuntu/hunt/Electron_Run2010B-PromptReco-v2_RECO/dilep_baby/*.root",base_dilep,1.,true);
+  static BabySample *bs_data_dilep_3  = new BabySample("data","Mu","/nfs-3/userdata/yanjuntu/hunt/Mu_Run2010A-Sep17ReReco_v2_RECO/dilep_baby/*.root",base_dilep,1.,true); 
+  static BabySample *bs_data_dilep_4  = new BabySample("data","Mu_Prompt","/nfs-3/userdata/yanjuntu/hunt/Mu_Run2010B-PromptReco-v2_RECO/dilep_baby/*.root",base_dilep,1.,true);
 
     //
     // mc babies
@@ -360,25 +378,25 @@ TCanvas* DrawAll(TCut field, const char *savename, TCut sel, TCut presel, float 
     TCut cut_dilep_tau = base_dilep + cut_tau;
 
     // dilep
-    static BabySample *bs_ttbarjets_dilep = new BabySample("ttbar","/home/users/dlevans/gathering/HuntGather/huntmc/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,kttbarjets,false,kRed+1,1001);
-    static BabySample *bs_singletop_dilep = new BabySample("tW","/home/users/dlevans/gathering/HuntGather/huntmc/SingleTop_tWChannel-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,ksingletop,false,kMagenta,1001);
+    static BabySample *bs_ttbarjets_dilep = new BabySample("ttbar","mc","/nfs-3/userdata/yanjuntu/huntmc/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,kttbarjets,false,kRed+1,1001);
+    static BabySample *bs_singletop_dilep = new BabySample("tW","mc","/nfs-3/userdata/yanjuntu/huntmc/SingleTop_tWChannel-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,ksingletop,false,kMagenta,1001);
 
-    static BabySample *bs_vvjets_dilep    = new BabySample("vvjets","/home/users/dlevans/gathering/HuntGather/huntmc/VVJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,kvvjets,false,10,1001);
-    static BabySample *bs_wjets_dilep     = new BabySample("wjets","/home/users/dlevans/gathering/HuntGather/huntmc/WJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,kwjets,false,kGreen-3,1001);
+    static BabySample *bs_vvjets_dilep    = new BabySample("vvjets","mc","/nfs-3/userdata/yanjuntu/huntmc/VVJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,kvvjets,false,10,1001);
+    static BabySample *bs_wjets_dilep     = new BabySample("wjets","mc","/nfs-3/userdata/yanjuntu/huntmc/WJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,kwjets,false,kGreen-3,1001);
 
-    static BabySample *bs_zjetstautau_dilep = new BabySample("ztautau","/home/users/dlevans/gathering/HuntGather/huntmc/ZJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root", cut_dilep_tau,kzll,false,kAzure+8,1001);
-    static BabySample *bs_ztautau_dilep     = new BabySample("ztautau","/home/users/dlevans/gathering/HuntGather/huntmc/Ztautau_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",cut_dilep_stitch_mass,kzll,false,kAzure+8,1001);
+    static BabySample *bs_zjetstautau_dilep = new BabySample("ztautau","mc","/nfs-3/userdata/yanjuntu/huntmc/ZJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root", cut_dilep_tau,kzll,false,kAzure+8,1001);
+    static BabySample *bs_ztautau_dilep     = new BabySample("ztautau","mc","/nfs-3/userdata/yanjuntu/huntmc/Ztautau_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",cut_dilep_stitch_mass,kzll,false,kAzure+8,1001);
 
     // Note that a common prefix means
     // a common histogram when used in
     // the same DrawAll, i.e. the five
     // samples below are combined
 
-    static BabySample *bs_zjets_dilep     = new BabySample("zll","/home/users/dlevans/gathering/HuntGather/huntmc/ZJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",cut_dilep_notau,kzjets,false,kAzure-2,1001);
-    static BabySample *bs_zee_dilep       = new BabySample("zll","/home/users/dlevans/gathering/HuntGather/huntmc/Zee_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",cut_dilep_stitch_mass,kzll,false,kAzure-2,1001);
-    static BabySample *bs_zmumu_dilep     = new BabySample("zll","/home/users/dlevans/gathering/HuntGather/huntmc/Zmumu_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",cut_dilep_stitch_mass,kzll,false,kAzure-2,1001);
-    static BabySample *bs_dyee_dilep      = new BabySample("zll","/home/users/dlevans/gathering/HuntGather/huntmc/DYee_M10to20_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,kdyll,false,kAzure-2,1001);
-    static BabySample *bs_dymumu_dilep    = new BabySample("zll","/home/users/dlevans/gathering/HuntGather/huntmc/DYmumu_M10to20_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,kdyll,false,kAzure-2,1001);
+    static BabySample *bs_zjets_dilep     = new BabySample("zll","mc","/nfs-3/userdata/yanjuntu/huntmc/ZJets-madgraph_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",cut_dilep_notau,kzjets,false,kAzure-2,1001);
+    static BabySample *bs_zee_dilep       = new BabySample("zll","mc","/nfs-3/userdata/yanjuntu/huntmc/Zee_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",cut_dilep_stitch_mass,kzll,false,kAzure-2,1001);
+    static BabySample *bs_zmumu_dilep     = new BabySample("zll","mc","/nfs-3/userdata/yanjuntu/huntmc/Zmumu_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",cut_dilep_stitch_mass,kzll,false,kAzure-2,1001);
+    static BabySample *bs_dyee_dilep      = new BabySample("zll","mc","/nfs-3/userdata/yanjuntu/huntmc/DYee_M10to20_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,kdyll,false,kAzure-2,1001);
+    static BabySample *bs_dymumu_dilep    = new BabySample("zll","mc","/nfs-3/userdata/yanjuntu/huntmc/DYmumu_M10to20_Spring10-START3X_V26_S09-v1/dilep_baby/*.root",base_dilep,kdyll,false,kAzure-2,1001);
 
     std::vector<BabySample*> babyVector;
     babyVector.push_back(bs_data_dilep_1);
