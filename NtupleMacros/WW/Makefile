@@ -115,6 +115,7 @@ clean: # clean up
 	$(CMSROOT)/CORE/*.o \
 	$(CMSROOT)/CORE/*.d \
 	$(CMSROOT)/CORE/*.so \
+	$(CMSROOT)/Tools/*.so \
 	$(CORELIB) $(LOOPERLIB) $(FWLIB) \
 	*.o *.d *.so LinkDef_out*; echo "Done"
 
