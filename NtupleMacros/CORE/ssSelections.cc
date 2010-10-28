@@ -454,3 +454,14 @@ bool isGoodHypNoIsoSSnoTripleChargeReq (int hypIdx, bool applyAlignmentCorrectio
 	 return true;
 }
 
+
+/******************************************************************************************/     
+// is muon a fakeable object
+/******************************************************************************************/
+bool isFakeableMuon(int index, bool useTightIsolation)
+{
+	 if (useTightIsolation)
+		  return muonId(index, muonSelectionFO_mu_ss);
+	 else
+		  return muonId(index, muonSelectionFO_mu_ss_iso10);
+}

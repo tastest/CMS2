@@ -86,5 +86,10 @@ bool isGoodLeptonNoIsoSSnoTripleChargeReq(int id, int lepIdx, bool applyAlignmen
 /******************************************************************************************/
 bool isGoodHypNoIsoSSnoTripleChargeReq(int hypIdx, bool applyAlignmentCorrection=false, bool removedEtaCutInEndcap=false);
 
+/******************************************************************************************/     
+// is muon a fakeable object
+/******************************************************************************************/
+bool isFakeableMuon(int index, bool useTightIsolation);
+
 #endif
 
