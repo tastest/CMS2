@@ -731,7 +731,7 @@ static const cuts_t electronSelection_ss_NoIso =
 	 (1ll<<ELESCET_010) |
 	 (1ll<<ELEPT_010) |
 	 (1ll<<ELEETA_250) |
-         (1ll<<ELECHARGE_NOTFLIP3AGREE) |
+	 (1ll<<ELECHARGE_NOTFLIP3AGREE) |
 	 (1ll<<ELESEED_ECAL);
 
 // second version of SS electron ID defined on SS analysis twiki
@@ -867,9 +867,9 @@ static const cuts_t electronSelectionFOV2_ssVBTF80_v1 =
 	 (1ll<<ELESCET_010) |
 	 (1ll<<ELEPT_010) |
 	 (1ll<<ELEISO_REL040) |
-	 (1ll<<ELENOTCONV_HITPATTERN);
-//	 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
-//	 (1ll<<ELECHARGE_NOTFLIP3AGREE);
+	 (1ll<<ELENOTCONV_HITPATTERN) |
+	 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
+	 (1ll<<ELECHARGE_NOTFLIP3AGREE);
 
 static const cuts_t electronSelectionFOV2_ssVBTF80_v2 =
 	 electronSelectionFO_baseline |
@@ -877,8 +877,8 @@ static const cuts_t electronSelectionFOV2_ssVBTF80_v2 =
 	 (1ll<<ELENOTCONV_HITPATTERN) |
 	 (1ll<<ELESCET_010) |
 	 (1ll<<ELEPT_010) |
-//	 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
-//	 (1ll<<ELECHARGE_NOTFLIP3AGREE) |
+	 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
+	 (1ll<<ELECHARGE_NOTFLIP3AGREE) |
 	 (1ll<<ELEISO_REL010);
 
 
@@ -888,8 +888,8 @@ static const cuts_t electronSelectionFOV2_ssVBTF80_v3 =
 	 (1ll<<ELENOTCONV_HITPATTERN) |
 	 (1ll<<ELESCET_010) |
 	 (1ll<<ELEPT_010) |
-//	 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
-//	 (1ll<<ELECHARGE_NOTFLIP3AGREE) |
+	 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
+	 (1ll<<ELECHARGE_NOTFLIP3AGREE) |
 	 (1ll<<ELEID_VBTF_35X_80) |
 	 (1ll<<ELEISO_REL040);
 
