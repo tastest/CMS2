@@ -80,6 +80,9 @@ bool isSpikePhoton( const unsigned int index ) {
 
 int isGoodEMObject( const unsigned int index ){
 
+  //Minimum cut for making into babies. Tighter cut (0.95 was previous operating point) will be applied at template making.
+  const float neutralemfcut = 0.7;
+
   //apply this cut at template creation time
   //if ( fabs( photons_p4().at(index).eta() ) > 1   )     return -1; //eta < 1
   if ( photons_p4().at(index).pt() < 22           )     return -1; //pt > 22 GeV
@@ -121,7 +124,7 @@ int isGoodEMObject( const unsigned int index ){
 
   //require pfjet neutral EM fraction > 0.95
   float emfrac = pfjets_neutralEmE().at(iMatchedJet) / pfjets_p4().at(iMatchedJet).energy();
-  if ( emfrac < 0.95 )               return -4; 
+  if ( emfrac < neutralemfcut )               return -4; 
 
   return iMatchedJet;
 
