@@ -133,4 +133,5 @@ jetbkg2: processed_data.root ../data/el_FR_3X.root # estimate jet induced backgr
 skim: data processData.C $(CORELIB) $(LIB) $(FWLIB)# skim data
 	$(QUIET) if [ ! -n "$(SkimName)" ]; then echo "Please set SkimName variable in order to proceed"; exit 1; fi; \
 	export SkimSamples=1; root -b -q processData.C
+#	export SkimSamples=1; valgrind --track-origins=yes root.exe -b -q processData.C
 endif
