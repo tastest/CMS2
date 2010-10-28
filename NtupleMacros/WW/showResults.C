@@ -5,6 +5,8 @@
 #include <iomanip>
 #include <string>
 #include "wwtypes.cc"
+#include <assert.h>
+#include <math.h>
 void showResults(const char* file = "processed_data.root")
 {
   using namespace std;
@@ -13,99 +15,60 @@ void showResults(const char* file = "processed_data.root")
   TFile *ftt = TFile::Open(file);
   assert(ftt);
 
-    //do the emu row:
-    TH1F *DYee  = dynamic_cast<TH1F*>(ftt->Get("dyee_hypos_total_weighted"));
-    TH1F *DYmm  = dynamic_cast<TH1F*>(ftt->Get("dymm_hypos_total_weighted"));
-    TH1F *DYtt  = dynamic_cast<TH1F*>(ftt->Get("dytt_hypos_total_weighted"));
-    TH1F *tt    = dynamic_cast<TH1F*>(ftt->Get("ttbar_hypos_total_weighted"));
-    TH1F *wjets = dynamic_cast<TH1F*>(ftt->Get("wjets_hypos_total_weighted"));
-    TH1F *wz    = dynamic_cast<TH1F*>(ftt->Get("wz_hypos_total_weighted"));
-    TH1F *zz    = dynamic_cast<TH1F*>(ftt->Get("zz_hypos_total_weighted"));
-    TH1F *ww    = dynamic_cast<TH1F*>(ftt->Get("ww_hypos_total_weighted"));
-    TH1F *tw    = dynamic_cast<TH1F*>(ftt->Get("tw_hypos_total_weighted"));
-  
-    cout << "\n" << Form("| %3s | %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s |",
-			 "", "*DY ee*","*DY mumu*","*DY tautau*","*ttbar*","*TW*","*Wjets*","*WZ*","*ZZ*","*Total BKG*","*WW*")
-	 << endl;
-    string pm = "+/-";
-    // string pm = "&plusmn;";
-    double bkg[4] = {0, 0, 0, 0};
-    double bkgerr2[4] = {0, 0, 0, 0};
-    for (int i=0; i<4; i++){
-      
-      cout << "|" << Form(" %3s ",HypothesisTypeName(i)) << "|";
-      if (DYee){
-	cout << Form(" %5.2f%s%4.2f ",DYee->GetBinContent(i+1),pm.c_str(),DYee->GetBinError(i+1));
-	bkg[i]     += DYee->GetBinContent(i+1);
-	bkgerr2[i] += pow(DYee->GetBinError(i+1),2);
-      }
-      else
-	cout << "    skipped   ";
-      cout << "|";
-      if (DYmm){
-	cout << Form(" %5.2f%s%4.2f ",DYmm->GetBinContent(i+1),pm.c_str(),DYmm->GetBinError(i+1));
-	bkg[i]     += DYmm->GetBinContent(i+1);
-	bkgerr2[i] += pow(DYmm->GetBinError(i+1),2);
-      }
-      else
-	cout << "    skipped   ";
-      cout << "|";
-      if (DYtt){
-	cout << Form(" %5.2f%s%4.2f ",DYtt->GetBinContent(i+1),pm.c_str(),DYtt->GetBinError(i+1));
-	bkg[i]     += DYtt->GetBinContent(i+1);
-	bkgerr2[i] += pow(DYtt->GetBinError(i+1),2);
-      }
-      else
-	cout << "    skipped   ";
-      cout << "|";
-      if (tt){
-	cout << Form(" %5.2f%s%4.2f ",tt->GetBinContent(i+1),pm.c_str(),tt->GetBinError(i+1));
-	bkg[i]     += tt->GetBinContent(i+1);
-	bkgerr2[i] += pow(tt->GetBinError(i+1),2);
-      }
-      else
-	cout << "    skipped   ";
-      cout << "|";
-      if (tw){
-	cout << Form(" %5.2f%s%4.2f ",tw->GetBinContent(i+1),pm.c_str(),tw->GetBinError(i+1));
-	bkg[i]     += tw->GetBinContent(i+1);
-	bkgerr2[i] += pow(tw->GetBinError(i+1),2);
-      }
-      else
-	cout << "    skipped   ";
-      cout << "|";
-      if (wjets){
-	cout << Form(" %5.2f%s%4.2f ",wjets->GetBinContent(i+1),pm.c_str(),wjets->GetBinError(i+1));
-	bkg[i]     += wjets->GetBinContent(i+1);
-	bkgerr2[i] += pow(wjets->GetBinError(i+1),2);
-      }
-      else
-	cout << "    skipped   ";
-      cout << "|";
-      if (wz){
-	cout << Form(" %5.2f%s%4.2f ",wz->GetBinContent(i+1),pm.c_str(),wz->GetBinError(i+1));
-	bkg[i]     += wz->GetBinContent(i+1);
-	bkgerr2[i] += pow(wz->GetBinError(i+1),2);
-      }
-      else
-	cout << "    skipped   ";
-      cout << "|";
-      if (zz){
-	cout << Form(" %5.2f%s%4.2f ",zz->GetBinContent(i+1),pm.c_str(),zz->GetBinError(i+1));
-	bkg[i]     += zz->GetBinContent(i+1);
-	bkgerr2[i] += pow(zz->GetBinError(i+1),2);
-      }
-      else
-	cout << "    skipped   ";
-      cout << "|";
-      cout << Form(" %5.2f%s%4.2f ",bkg[i],pm.c_str(),sqrt(bkgerr2[i])) << "|";
-      if (ww) 
-	cout << Form(" %5.2f%s%4.2f ",ww->GetBinContent(i+1),pm.c_str(),ww->GetBinError(i+1));
-      else
-	cout << "    skipped   ";
-      cout << "|" <<endl;
+  std::vector<std::pair<TH1F*,std::string> > bkgs;
+  if ( TH1F *hist  = dynamic_cast<TH1F*>(ftt->Get("dyee_hypos_total_weighted")) )
+    bkgs.push_back(std::pair<TH1F*,std::string>(hist,"*DY ee*"));
+  if ( TH1F *hist  = dynamic_cast<TH1F*>(ftt->Get("dymm_hypos_total_weighted")) )
+    bkgs.push_back(std::pair<TH1F*,std::string>(hist,"*DY mumu*"));
+  if ( TH1F *hist  = dynamic_cast<TH1F*>(ftt->Get("dytt_hypos_total_weighted")) )
+    bkgs.push_back(std::pair<TH1F*,std::string>(hist,"*DY tautau*"));
+  if ( TH1F *hist  = dynamic_cast<TH1F*>(ftt->Get("ttbar_hypos_total_weighted")) )
+    bkgs.push_back(std::pair<TH1F*,std::string>(hist,"*ttbar*"));
+  if ( TH1F *hist  = dynamic_cast<TH1F*>(ftt->Get("tw_hypos_total_weighted")) )
+    bkgs.push_back(std::pair<TH1F*,std::string>(hist,"*TW*"));
+  if ( TH1F *hist = dynamic_cast<TH1F*>(ftt->Get("wjets_hypos_total_weighted")) )
+    bkgs.push_back(std::pair<TH1F*,std::string>(hist,"*Wjets*"));
+  if ( TH1F *hist    = dynamic_cast<TH1F*>(ftt->Get("wz_hypos_total_weighted")) )
+    bkgs.push_back(std::pair<TH1F*,std::string>(hist,"*WZ*"));
+  if ( TH1F *hist    = dynamic_cast<TH1F*>(ftt->Get("zz_hypos_total_weighted")) )
+    bkgs.push_back(std::pair<TH1F*,std::string>(hist,"*ZZ*"));
+  TH1F *ww    = dynamic_cast<TH1F*>(ftt->Get("ww_hypos_total_weighted"));
+  TH1F *data  = dynamic_cast<TH1F*>(ftt->Get("data_hypos_total_weighted"));
+  if (!ww && !data && bkgs.empty()){
+    cout << "no data is found." << endl;
+    return;
+  }
+  const char* patternTitle = " %12s |";
+  const char* patternData  = " %5.2f%s%4.2f |";
+
+  cout << "\n" << Form("| %3s |","");
+  for (unsigned int i=0; i<bkgs.size(); ++i) cout << Form(patternTitle,bkgs.at(i).second.c_str());
+  if ( bkgs.size()>0 ) cout << Form(patternTitle,"*Total BKG*");
+  if (ww) cout << Form(patternTitle,"*WW*");
+  if (data) cout << Form(patternTitle,"*Data*");
+  cout << endl;
+  string pm = "+/-";
+  // string pm = "&plusmn;";
+
+  double bkg[4] = {0, 0, 0, 0};
+  double bkgerr2[4] = {0, 0, 0, 0};
+  for (int i=0; i<4; i++){
+    cout << "|" << Form(" %3s ",HypothesisTypeName(i)) << "|";
+    for (unsigned int j=0; j<bkgs.size(); ++j){
+      TH1F* hist = bkgs.at(j).first;
+      cout << Form(patternData,hist->GetBinContent(i+1),pm.c_str(),hist->GetBinError(i+1));
+      bkg[i]     += hist->GetBinContent(i+1);
+      bkgerr2[i] += pow(hist->GetBinError(i+1),2);
     }
+    if ( bkgs.size()>0 ) cout << Form(patternData,bkg[i],pm.c_str(),sqrt(bkgerr2[i]));
+    if (ww) 
+      cout << Form(patternData,ww->GetBinContent(i+1),pm.c_str(),ww->GetBinError(i+1));
+    if (data)
+      cout << Form(patternData,data->GetBinContent(i+1),pm.c_str(),data->GetBinError(i+1));
     cout <<endl;
+  }
+  cout <<endl;
+
 
     // top background estimate
     /*
