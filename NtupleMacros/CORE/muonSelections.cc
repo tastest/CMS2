@@ -28,6 +28,7 @@ bool muonId(unsigned int index, SelectionType type){
 		  isovalue = 1.0;
 		  break;
 	 case NominalWWV0:
+	 case NominalWWV1:
 		  isovalue = 0.15;
 		  break;
 	 case muonSelectionFO_mu_ww:
@@ -137,6 +138,7 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type){
 		  break;
 
 	 case NominalWWV0:
+	 case NominalWWV1:
 		  if ( cms2.mus_p4()[index].pt() < 20.0 )             return false; // pt cut
 		  if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)  return false; // eta cut
 		  if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
