@@ -19,7 +19,15 @@ To get tables for example, do "make table"
    CURRENT WORKING REFERENCE
 #################################################################
 
-Current working reference (ww ref v0 - PFJet20/VBTF80)
+Current working reference (ww ref v1 - PFJet25/VBTF80) 
+
+|     |         *WW* |
+|  mm |  7.43+/-0.17 |
+|  em | 22.60+/-0.30 |
+|  ee |  4.92+/-0.14 |
+| all | 34.95+/-0.38 |
+
+2010 Spring10 35X samples (ww ref v0 - PFJet20/VBTF80)
 
 |     |      *DY ee* |    *DY mumu* |  *DY tautau* |      *ttbar* |         *TW* |      *Wjets* |         *WZ* |         *ZZ* |  *Total BKG* |         *WW* |
 |  mm |  0.00+/-0.00 |  0.14+/-0.10 |  0.07+/-0.07 |  0.53+/-0.08 |  0.24+/-0.02 |  0.00+/-0.00 |  0.15+/-0.05 |  0.17+/-0.03 |  1.29+/-0.15 |  4.76+/-0.41 |

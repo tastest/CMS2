@@ -151,7 +151,7 @@ void fill_val_plots(int i_hyp, cuts_t cut_passed, double weight, bool applyJEC);
 void fill_dyest_histograms(int i_hyp, float weight);
 				
 unsigned int bestZHyp();
-void hypo (int i_hyp, double weight, RooDataSet* dataset = 0, bool zStudy = false, bool realData = false ); 
+bool hypo (int i_hyp, double weight, RooDataSet* dataset = 0, bool zStudy = false, bool realData = false ); 
 
 RooDataSet* MakeNewDataset(const char* name);
 

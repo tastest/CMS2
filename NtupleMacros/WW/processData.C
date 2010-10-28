@@ -44,15 +44,15 @@ void processData()
   // (0 and 1 are easier to modify)
   //
   bool runWW    = 1;
-  bool runWZ    = 1;
-  bool runZZ    = 1;
-  bool runWjets = 1;
-  bool runDYee  = 1;
-  bool runDYmm  = 1;
-  bool runDYtt  = 1;
-  bool runttbar = 1;
-  bool runtW    = 1;
-  bool runQCD   = 1; 
+  bool runWZ    = 0;
+  bool runZZ    = 0;
+  bool runWjets = 0;
+  bool runDYee  = 0;
+  bool runDYmm  = 0;
+  bool runDYtt  = 0;
+  bool runttbar = 0;
+  bool runtW    = 0;
+  bool runQCD   = 0; 
   bool runData  = 0;
 
   // 
@@ -88,8 +88,8 @@ void processData()
   }
 
   if (runWW)
-    ProcessSample("/tas/cms2/WW_Spring10-START3X_V26_S09-v1_DiLep/V03-04-08/"+version+"/merged_ntuple*.root", WW, 100.0, 43, -1, fullDataSet, kRed);
-    //ProcessSample(dataset+"/WWTo2L2Nu_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/merged_ntuple*.root", WW, 100.0, 2.93*43.0/28.0, -1, fullDataSet, kRed);
+    // ProcessSample(dataset+"/WW_Spring10-START3X_V26_S09-v1_DiLep/V03-04-08/"+version+"/merged_ntuple*.root", WW, 100.0, 43, -1, fullDataSet, kRed);
+    ProcessSample("/tas/yygao/WWTo2L2Nu_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/merged_ntuple*.root", WW, 100.0, 4.5, -1, fullDataSet, kRed);
 
   if (runWZ)
     ProcessSample(dataset+"/WZ_Spring10-START3X_V26_S09-v1/V03-04-08/"+version+"/merged_ntuple*.root", WZ, 100.0, 18.2, -1, fullDataSet, kBlue);
@@ -97,10 +97,28 @@ void processData()
   if (runZZ)
     ProcessSample(dataset+"/ZZ_Spring10-START3X_V26_S09-v1_DiLep/V03-04-08/"+version+"/merged_ntuple*.root", ZZ, 100.0, 5.9, -1, fullDataSet, kGreen);
  
-  if (runWjets)
-    ProcessSample(dataset+"/WJets-madgraph_Spring10-START3X_V26_S09-v1_SingleLep/V03-04-08/"+version+"/dilep-skim.root", Wjets, 100.0, 28049, -1, fullDataSet, 40);
-  // ProcessSample(dataset+"/PhotonVJets-madgraph_Spring10-START3X_V26_S09-v1-bugfix/V03-04-08-01"+version+"/merged_ntuple*.root", Wjets, 100.0, -1, -1, fullDataSet, 40);
+  if (runWjets){
+    if ( 1 ) {
+      // ProcessSample(dataset+"/WJets-madgraph_Spring10-START3X_V26_S09-v1_SingleLep/V03-04-08/"+version+"/dilep-skim.root", Wjets, 100.0, 28049, -1, fullDataSet, 40);
+      ProcessSample(dataset+"/WJets-madgraph_Spring10-START3X_V26_S09-v1_SingleLep/V03-04-13-07/"+version+"/merged_ntuple*root", Wjets, 100.0, 28049, -1, fullDataSet, 40);
+    } else {
+    // ProcessSample(dataset+"/W1Jets_Pt0to100-alpgenSpring10-START3X_V26_multilepton-v1/V03-04-08/"+version+"/*.root", Wjets, 100.0, 3790, 54751345, fullDataSet, 40);
+    // ProcessSample(dataset+"/W0Jets_Pt0to100-alpgenSummer10-START36_V10_multilepton-v1/V03-04-08/"+version+"/*.root", Wjets, 100.0, 20727.9, 3586806, fullDataSet, 40);
+    // ProcessSample(dataset+"/W2Jets_Pt0to100-alpgenSummer10-START36_V10_multilepton-v1/V03-04-08/"+version+"/*.root", Wjets, 100.0, 931, 659865, fullDataSet, 40);
+    // ProcessSample(dataset+"/Wc1Jets-alpgenSummer10-START3X_V26_S09_multilepton-v1/V03-04-08/"+version+"/*.root", Wjets, 100.0, 420.18, 335056, fullDataSet, 40);
+    // ProcessSample(dataset+"/WCJets_7TeV-madgraph_Spring10-START3X_V26-v1/V03-04-13-01/"+version+"/*.root", Wjets, 100.0, -1, -1, fullDataSet, 40);
+    // ProcessSample(dataset+"/PhotonVJets-madgraph_Spring10-START3X_V26_S09-v1-bugfix/V03-04-08-01"+version+"/merged_ntuple*.root", Wjets, 100.0, -1, -1, fullDataSet, 40);
 
+    // ProcessSample(dataset+"/W0Jets_Pt0to100-alpgenSummer10-START36_V10_multilepton-v1/V03-04-08/"+version+"/*.root", WZ, 100.0, 20727.9, 3586806, fullDataSet, 40);
+    // ProcessSample(dataset+"/W1Jets_Pt0to100-alpgenSpring10-START3X_V26_multilepton-v1/V03-04-08/"+version+"/*.root", ZZ, 100.0, 3790, 54751345, fullDataSet, 40);
+    // ProcessSample(dataset+"/W2Jets_Pt0to100-alpgenSummer10-START36_V10_multilepton-v1/V03-04-08/"+version+"/*.root", Wjets, 100.0, 931, 659865, fullDataSet, 40);
+    // ProcessSample(dataset+"/Wc0Jets-alpgenSummer10-START3X_V26_S09_multilepton-v1/V03-04-08/"+version+"/*.root", DYee, 100.0, 420.18, 335056, fullDataSet, 40);
+    // ProcessSample(dataset+"/Wc1Jets-alpgenSummer10-START3X_V26_S09_multilepton-v1/V03-04-08/"+version+"/*.root", DYmm, 100.0, 143.577, 103835, fullDataSet, 40);
+    ProcessSample(dataset+"/PhotonVJets-madgraph_Spring10-START3X_V26_S09-v1-bugfix/V03-04-08-01"+version+"/merged_ntuple*.root", DYtt, 100.0, -1, -1, fullDataSet, 40);
+    // ProcessSample(dataset+"/WCJets_7TeV-madgraph_Spring10-START3X_V26-v1/V03-04-13-01/"+version+"/*.root", ttbar, 100.0, -1, -1, fullDataSet, 40);
+    // ProcessSample(dataset+"/WJets-madgraph_Spring10-START3X_V26_S09-v1_SingleLep/V03-04-08/"+version+"/dilep-skim.root", tW, 100.0, 28049, -1, fullDataSet, 40);
+    }
+  }
   if (runDYee)
     ProcessSample(dataset+"/Zee_Spring10-START3X_V26_S09-v1/V03-04-08-01/"+version+"/merged_ntuple*.root", DYee, 100.0, 1482.0, -1, fullDataSet, kMagenta, identifyDYEvents);
  
