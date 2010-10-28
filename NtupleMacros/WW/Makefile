@@ -15,6 +15,8 @@ help:
 	echo -e "\tDataDir - alternative location for samples. Default is data/";\
 	echo -e "\tSkimDir - alternative location for output skims. Default is data/";\
 	echo -e "\tSkimName - name of the skim to produce when you skim data";\
+	echo -e "\tMerge - merge output skims during skimming by datasets/version";\
+	echo -e "\tSync - show detail information about cut application for synchronization needs";\
 	echo "Available Targets:";\
 	cat Makefile | perl -ne 'printf("\t%-15s %s\n",$$1,$$2) if(/^(\S+):[^#]+(#.*)$$/)';\
 	echo "Example:";\

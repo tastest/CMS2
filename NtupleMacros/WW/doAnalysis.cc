@@ -58,8 +58,11 @@ bool goodElectronWithoutIsolation(unsigned int i){
 }
 
 bool goodElectronIsolated(unsigned int i){
-  return pass_electronSelection( i, electronSelection_wwV0);
-  //return ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_elIso(i);
+  // if ( cms2.els_exp_innerlayers().at(index) > 0 ) return false;
+  // if ( cms2.els_exp_innerlayers39X().at(index) > 0 ) return false;
+  // return pass_electronSelection( index, electronSelection_wwV1);
+  // return pass_electronSelection( i, electronSelection_wwV1);
+  return ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_elIso(i);
   // return ww_eld0(i) && ww_elIso(i)<0.1;
 }
 
@@ -75,8 +78,8 @@ bool goodMuonWithoutIsolation(unsigned int i){
 }
 
 bool goodMuonIsolated(unsigned int i){
-  return muonId(i, NominalWWV0);
-  //return ww_muBase(i) && ww_mud0PV(i) && ww_muId(i) && ww_muIso(i); 
+  //return muonId(i, NominalWWV0);
+  return ww_muBase(i) && ww_mud0PV(i) && ww_muId(i) && ww_muIso(i); 
 }
 
 bool fakableMuon(unsigned int i){
@@ -111,7 +114,7 @@ WWJetType jetType(){
 }
 
 unsigned int numberOfJets(unsigned int i_hyp){
-  //return getJets(jetType(), i_hyp, 20, 3.0).size(); // V0
+  // return getJets(jetType(), i_hyp, 20, 3.0).size(); // V0
   return getJets(jetType(), i_hyp, 25, 5.0).size(); // V1
 }
 
@@ -151,6 +154,16 @@ bool isGoodVertex(size_t ivtx) {
     if (cms2.vtxs_position()[ivtx].Rho() > 2.0) return false;
     if (fabs(cms2.vtxs_position()[ivtx].Z()) > 24.0) return false;
     return true;
+}
+
+bool foundGoodVertex() {
+    unsigned int nVtx = 0;
+    for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
+      // if (cms2.vtxs_isFake()[i]) continue;
+      if (!isGoodVertex(i)) continue;
+      nVtx++;
+    }
+    return nVtx>0;
 }
 
 double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVector& pv){
@@ -232,6 +245,9 @@ bool ww_muId(unsigned int index){
   if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
   if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
   if (cms2.mus_gfit_validSTAHits().at(index)==0 ) return false;
+  // if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1) return false;
+  // if (cms2.trks_valid_pixelhits().at(cms2.mus_trkidx().at(index))==0) return false;
+  // if (cms2.mus_nmatches().at(index)<2) return false;
   return true;
 }
 
@@ -1386,15 +1402,9 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   monitor.count(cms2,type,"after previous + baseline cuts");
 
   // TEMPORARY
-  if (0) // Synchronization info
+  if (gSystem->Getenv("Sync")) // Synchronization info
   {
-    unsigned int nVtx = 0;
-    for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
-      // if (cms2.vtxs_isFake()[i]) continue;
-      if (!isGoodVertex(i)) continue;
-      nVtx++;
-    }
-    if (nVtx==0) return false;
+    if (!foundGoodVertex()) return false;
 
     monitor.count(cms2,type,"after previous + primary verex");
 
@@ -1443,11 +1453,32 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
     monitor.count(cms2,type,"after previous + lepton id/iso");
     if ( metValue()<20 ) return false;
     monitor.count(cms2,type,"after previous + met>20");
+    
+    if (cms2.hyp_p4().at(i_hyp).mass2()<0 || 
+	cms2.hyp_p4()[i_hyp].mass() < 12) return false;
+    monitor.count(cms2,type,"after previous + mll cuts");
+    
+    if ( type == EE || type == MM) {
+      if (inZmassWindow(cms2.hyp_p4()[i_hyp].mass())) return false;
+    }
+    monitor.count(cms2,type,"after previous + z mass cuts in EE/MM");
+    
+    if (!passedMetRequirements(i_hyp)) return false;
+    monitor.count(cms2,type,"after previous + Full MET cuts: ");
+    
+    if ( numberOfJets(i_hyp)>0 ) return false;
+    monitor.count(cms2,type,"after previous + JetVeto cuts: ");
+
+    if (numberOfSoftMuons(i_hyp,true)>0) return false;
+    monitor.count(cms2,type,"after previous + soft muon veto: ");
+
+    if (numberOfExtraLeptons(i_hyp,10)>0) return false;
+    monitor.count(cms2,type,"after previous + extra lepton veto: ");
   }
 
-  if (cms2.hyp_p4().at(i_hyp).mass2()>0 && 
+  if (!foundGoodVertex()) return false;
+  if (cms2.hyp_p4().at(i_hyp).mass2()<0 || 
       cms2.hyp_p4()[i_hyp].mass() < 12) return false;
-  monitor.count(cms2,type,"after previous + lepton pt and mll cuts");
 
   // check electron isolation and id (no selection at this point)
   checkIsolation(i_hyp, weight);
@@ -1461,9 +1492,6 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   }
   if (type == EM)     cuts_passed |= (1<<PASS_ZSEL);
 
-  if (CheckCuts( (1<<PASS_ZSEL), cuts_passed) )
-    monitor.count(cms2,type,"after previous + z mass cuts in EE/MM");
-  
   // Z veto using additional leptons in the event
   // if (additionalZveto()) return;
  
@@ -1471,7 +1499,6 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   if (zStudy) cuts_passed |= (1<<PASS_MET);
   if (!zStudy && passedMetRequirements(i_hyp)) { 
     cuts_passed |= (1<<PASS_MET);
-    monitor.count(cms2,type,"after previous + Full MET cuts: ");
   }
   
   // == letpon ID and Isolation
@@ -1508,17 +1535,12 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   if ( passedLTFinalRequirements ) cuts_passed |= (1<<PASS_LT_FINAL);
   if ( passedLLFinalRequirements ) cuts_passed |= (1<<PASS_LL_FINAL);
 
-  if ( CheckCuts( (1<<PASS_ZSEL) | (1<<PASS_MET) | (1<<PASS_LT_FINAL) | (1<<PASS_LL_FINAL) , cuts_passed))
-    monitor.count(cms2,type,"after previous + lepton id/iso cuts");
-  
   // == Jet-veto
   unsigned int nJets = numberOfJets(i_hyp);
   if (nJets==0) 
     cuts_passed |= (1<<PASS_JETVETO);
   // trkjet veto
   // if ( !passTrkJetVeto(i_hyp) ) return;
-  if(CheckCuts( (1<<PASS_ZSEL) | (1<<PASS_MET) | (1<<PASS_LL_FINAL) | (1<<PASS_LT_FINAL) | (1<<PASS_JETVETO) , cuts_passed)) 
-    monitor.count(cms2,type,"after previous + JetVeto cuts: ");
 
   // == ExtraVeto Muons
   int countmus = numberOfSoftMuons(i_hyp,true);
@@ -2031,6 +2053,11 @@ RooDataSet* ScanChain( TChain* chain,
 		       bool realData,
 		       TString cms2_json_file)
 {
+  const char *prefix = SampleName(sample);
+  if ( chain->GetListOfFiles()->GetEntries()==0 ){
+    printf("\nERROR: chain is empty for sample: %s\n\n",prefix);
+    assert(0);
+  }
   // chain->SetParallelUnzip(kTRUE);
   // gErrorIgnoreLevel = 3000; // suppress warnings about missing dictionaries 
   unsigned int nEventsChain = chain->GetEntries();  // number of entries in chain --> number of events from all files
@@ -2038,7 +2065,6 @@ RooDataSet* ScanChain( TChain* chain,
   unsigned int nEventsTotal = 0;
 
  // declare and create array of histograms
-  const char *prefix = SampleName(sample);
   ofstream selectedEvents(Form("%s.list",prefix));
   RooDataSet* dataset = MakeNewDataset(prefix);
 
@@ -2083,7 +2109,14 @@ RooDataSet* ScanChain( TChain* chain,
     cout << "\nFailed to setup correctors needed to get Jet Enetry Scale. Abort\n" << endl;
     assert(0);
   }
-
+  if(realData) {
+    if(cms2_json_file=="") {  
+      std::cout<<"\n WARNING: Running on the real Data, but not JSON file!"<<std::endl;
+      // assert(0);
+    } else {
+      set_goodrun_file_json(cms2_json_file);
+    }
+  }
   // file loop
   TObjArray *listOfFiles = chain->GetListOfFiles();
   TIter fileIter(listOfFiles);
@@ -2105,12 +2138,7 @@ RooDataSet* ScanChain( TChain* chain,
     for( unsigned int event = 0; event < nEvents; ++event) {
       cms2.GetEntry(event);  // get entries for Event number event from branches of TTree tree
       // Select the good runs from the json file
-      if(realData) {
-	if(cms2_json_file=="") {  
-	  std::cout<<"\n Running on the real Data, please provide JSON file!"<<std::endl;
-	  assert(0);
-	}
-	set_goodrun_file(cms2_json_file);
+      if(realData && cms2_json_file!="") {
 	if( !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
       }
 	 double weight = 1.0;
@@ -2327,7 +2355,10 @@ void ProcessSample( std::vector<std::string> file_patterns,
   if ( gSystem->Getenv("SkimSamples") ){
     std::cout << "Skimming " << SampleName(sample) << " with skim name " << 
       gSystem->Getenv("SkimName") << " .." << std::endl;
-    SkimChain(tchain);
+    if ( gSystem->Getenv("Merge") )
+      SkimChain(tchain,true);
+    else 
+      SkimChain(tchain,false);
   } else {
     std::cout << "Processing " << SampleName(sample) << ".." << std::endl;
     RooDataSet* data = ScanChain(tchain,sample,integratedLumi,xsec,nProcessedEvents,identifyEvents,qcdBackground,zStudy,realData,cms2_json_file);
@@ -2364,28 +2395,76 @@ void ProcessSample( std::vector<std::string> file_patterns,
   }
 }
 
-void SkimChain(TChain* chain){
+struct FileEntry{
+  std::string inputDir;
+  std::string outputDir;
+  std::string fileName;
+  unsigned int nIn;
+  unsigned int nOut;
+  bool operator<(const FileEntry& rhs) const { return inputDir < rhs.inputDir; }
+};
+
+bool passedSkimSelection2()
+{
+  unsigned int nHyps = cms2.hyp_type().size();
+  for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
+    const double min1 = 20;
+    const double min2 = 20;
+    if ( !( cms2.hyp_lt_p4().at(i_hyp).pt() > min1 && cms2.hyp_ll_p4().at(i_hyp).pt() > min2 ) &&
+	 !( cms2.hyp_lt_p4().at(i_hyp).pt() > min2 && cms2.hyp_ll_p4().at(i_hyp).pt() > min1 ) ) continue;
+
+    // charge
+    if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) continue;
+    
+    if (!foundGoodVertex()) return false;
+
+    if (cms2.hyp_p4().at(i_hyp).mass2()<0 || 
+	cms2.hyp_p4()[i_hyp].mass() < 12) return false;
+    if (inZmassWindow(cms2.hyp_p4()[i_hyp].mass())) return false;
+    if (!passedMetRequirements(i_hyp)) return false;
+    if (numberOfJets(i_hyp)>0) return false;
+    if (numberOfSoftMuons(i_hyp,true)>0) return false;
+    if (numberOfExtraLeptons(i_hyp,10)>0) return false;
+    if ( toptag(CaloJet,i_hyp,0) ) return false;
+
+    // id & iso
+    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) continue;
+    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) ) continue;
+    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_lt_index()[i_hyp]) ) continue;
+    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_ll_index()[i_hyp]) ) continue;
+
+    return true;
+  }
+  return false;
+}
+
+void SkimChain(TChain* chain,bool mergeFiles){
   TObjArray *listOfFiles = chain->GetListOfFiles();
   TIter fileIter(listOfFiles);
   TPRegexp fileNameMatchPattern("(.*?)/([^/]*)$");
   TPRegexp dataDirMatchPattern("^data");
   if ( gSystem->Getenv("DataDir") ) dataDirMatchPattern = TPRegexp(gSystem->Getenv("DataDir"));
   unsigned int nEventsTotal = 0;
-  unsigned int nEventsSelected = 0;
+  unsigned int nEventsSelectedTotal = 0;
+  std::vector<FileEntry> files;
   while (TChainElement *currentFile = (TChainElement*)fileIter.Next()) {
-    cout << "file: " << currentFile->GetTitle() << endl;
+    FileEntry file;
+    // cout << "file: " << currentFile->GetTitle() << endl;
     TObjArray* matches = fileNameMatchPattern.MatchS(currentFile->GetTitle());
     assert(matches);
-    cout << "matches->GetLast(): " << matches->GetLast() << endl;
+    // cout << "matches->GetLast(): " << matches->GetLast() << endl;
     assert(matches && matches->GetLast()==2);
     TString inputFileName(currentFile->GetTitle());
     TString fileName(((TObjString*)matches->At(2))->GetString());
+    file.fileName = fileName.Data();
     TString outputDirectory(((TObjString*)matches->At(1))->GetString());
+    file.inputDir = outputDirectory.Data();
     if ( gSystem->Getenv("SkimDir") ) 
       dataDirMatchPattern.Substitute(outputDirectory,gSystem->Getenv("SkimDir"));
     assert(gSystem->Getenv("SkimName"));
     TString skimname = gSystem->Getenv("SkimName");
     outputDirectory += "/" + skimname;
+    file.outputDir = outputDirectory.Data();
     // make output directory if it doesn't exist yet
     if ( gSystem->AccessPathName(outputDirectory.Data()) ){
       gSystem->mkdir(outputDirectory.Data(),true);
@@ -2399,7 +2478,7 @@ void SkimChain(TChain* chain){
     TFile *input = TFile::Open(inputFileName.Data());
     assert(input);
     TTree *tree = (TTree*)input->Get("Events");
-    tree->SetBranchStatus("EventAuxiliary",0);
+    // tree->SetBranchStatus("EventAuxiliary",0);
     TTree *newtree = tree->CloneTree(0);
     newtree->SetDirectory(output);
     
@@ -2408,6 +2487,7 @@ void SkimChain(TChain* chain){
     
     // Event Loop
     const unsigned int nEvents = tree->GetEntries();
+    unsigned int nEventsSelected = 0;
     int i_permille_old = 0;
     for (unsigned int event = 0; event < nEvents; ++event, ++nEventsTotal) {
       int i_permille = (int)floor(10000 * event / float(nEvents));
@@ -2422,36 +2502,100 @@ void SkimChain(TChain* chain){
       }
       cms2.GetEntry(event);
       //set condition to skip event
-      if ( not passedSkimSelection() ) continue;
+      if ( not passedSkimSelection2() ) continue;
       
       ++nEventsSelected;
       cms2.LoadAllBranches();
       // fill the new tree
       newtree->Fill();
     }
+    file.nIn = nEvents;
+    file.nOut = nEventsSelected;
+    files.push_back(file);
+    nEventsSelectedTotal += nEventsSelected;
     output->cd();
     newtree->Write();
     output->Close();
     input->Close();
   }
-  cout << Form("Processed events: %u, \tselected: %u\n",nEventsTotal,nEventsSelected) << endl;
+  cout << Form("Processed events: %u, \tselected: %u\n",nEventsTotal,nEventsSelectedTotal) << endl;
+  if (mergeFiles){
+    // split files in sets with the same directory name
+    sort(files.begin(),files.end());
+    std::vector<std::vector<FileEntry> > sets;
+    std::string previousDirectory;
+    for(std::vector<FileEntry>::const_iterator file = files.begin();
+	file != files.end(); ++ file){
+      if ( file->outputDir != previousDirectory ){
+	sets.push_back(std::vector<FileEntry>());
+      }
+      previousDirectory = file->outputDir;
+      sets.back().push_back(*file);
+    }
+    // merge sets
+    for ( std::vector<std::vector<FileEntry> >::const_iterator aSet = sets.begin();
+	  aSet != sets.end(); ++aSet )
+      {
+	if (aSet->empty()) continue;
+	std::ofstream log((aSet->front().outputDir+"/merged.log").c_str());
+	if (aSet->size()==1){
+	  // simply rename the output file
+	  log << aSet->front().inputDir + "/" + aSet->front().fileName <<
+	    " \t" << aSet->front().nIn << " \t" << aSet->front().nOut << std::endl;
+	  assert(::system(Form("mv -v %s/%s %s/merged.root", aSet->front().outputDir.c_str(),
+			       aSet->front().fileName.c_str(), aSet->front().outputDir.c_str()))==0);
+	  log.close();
+	  continue;
+	}
+	/*
+	std::string mergeCommand(Form("hadd -f %s/merged.root",aSet->front().outputDir.c_str()));
+	std::string rmCommand("rm");
+	for ( std::vector<FileEntry>::const_iterator file = aSet->begin(); 
+	      file != aSet->end(); ++file ){
+	  log << file->inputDir + "/" + file->fileName <<
+	    " \t" << file->nIn << " \t" << file->nOut << std::endl;
+	  mergeCommand += " " + file->outputDir + "/" + file->fileName;
+	  rmCommand += " " + file->outputDir + "/" + file->fileName;
+	}
+	cout << "Merging:\n" << mergeCommand << endl;
+	log.close();
+	assert(::system(mergeCommand.c_str())==0);
+	cout << "Merging is done, remove intermediate files." << endl;
+	assert(::system(rmCommand.c_str())==0);
+	*/
+	cout << "Merging " << aSet->front().outputDir << endl;
+	std::string rmCommand("rm");
+	TChain* aChain = new TChain("Events");
+	for ( std::vector<FileEntry>::const_iterator file = aSet->begin(); 
+	      file != aSet->end(); ++file ){
+	  log << file->inputDir + "/" + file->fileName <<
+	    " \t" << file->nIn << " \t" << file->nOut << std::endl;
+	  aChain->Add((file->outputDir + "/" + file->fileName).c_str());
+	  rmCommand += " " + file->outputDir + "/" + file->fileName;
+	}
+	aChain->Merge((aSet->front().outputDir + "/merged.root").c_str());
+	cout << "Merging is done, remove intermediate files.\n" << endl;
+	assert(::system(rmCommand.c_str())==0);
+      }
+  }
 }
 
 bool passedSkimSelection()
 {
   unsigned int nHyps = cms2.hyp_type().size();
   for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
-    // min lepton Pt
-    if ( cms2.hyp_lt_p4().at(i_hyp).pt() < 20 || cms2.hyp_ll_p4().at(i_hyp).pt() < 20 ) continue;
-    /*
+    const double min1 = 20;
+    const double min2 = 10;
+    if ( !( cms2.hyp_lt_p4().at(i_hyp).pt() > min1 && cms2.hyp_ll_p4().at(i_hyp).pt() > min2 ) &&
+	 !( cms2.hyp_lt_p4().at(i_hyp).pt() > min2 && cms2.hyp_ll_p4().at(i_hyp).pt() > min1 ) ) continue;
+
     // charge
     if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) continue;
     
     // met
-    if ( cms2.evt35X_tcmet() < 20 &&
-	 cms2.evt_tcmet() < 20 &&
+    if ( cms2.evt_tcmet() < 20 &&
 	 cms2.evt_pfmet() < 20 ) continue;
-    
+    /*
     // id & iso
     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) continue;
     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) ) continue;
@@ -2462,6 +2606,7 @@ bool passedSkimSelection()
   }
   return false;
 }
+
 
 bool CheckCutsNM1(cuts_t apply, cuts_t remove, cuts_t passed)
 {           

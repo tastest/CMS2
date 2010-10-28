@@ -167,7 +167,7 @@ RooDataSet* ScanChain( TChain* chain,
 		       bool zStudy = false,
 		       bool realData = false,
 		       TString cms2_json_file = "");
-void SkimChain(TChain* chain);
+void SkimChain(TChain* chain, bool mergeFiles=false);
 bool passedSkimSelection();
 
 void ProcessSample( std::string file_pattern, 
