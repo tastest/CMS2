@@ -632,12 +632,18 @@ static const cuts_t electronSelectionFO_el_wwV0b_v4 =
 
 //---------------------------------------------------------
 // WWV1 base cut
+//
+// WARNING - WARNING - WARNING - WARNING -WARNING - WARNING
+// 
+// here we have a half cooked WW V1 selection. The 0-hit
+// requirement is not applied. Do it yourself.
+// 
 //---------------------------------------------------------
 static const cuts_t electronSelection_wwV1_base  = 
 	 (1ll<<ELEPT_020) | 
 	 (1ll<<ELEETA_250) |
-	 (1ll<<ELENOTCONV_DISTDCOT002) |
-	 (1ll<<ELENOTCONV_HITPATTERN39X_0MHITS);
+	 (1ll<<ELENOTCONV_DISTDCOT002)/* |
+	 (1ll<<ELENOTCONV_HITPATTERN39X_0MHITS)*/;
 
 //---------------------------------------------------------
 // WWV1 isolation cut
