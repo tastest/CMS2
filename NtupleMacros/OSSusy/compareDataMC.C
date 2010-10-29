@@ -19,6 +19,7 @@ using namespace std;
 vector<char*> vars;
 vector<char*> xtitles; 
 vector<char*> smprefix;
+vector<char*> smleg;
 vector<char*> susyprefix;
 
 int colors[]={9,4,2,3,6,7,8,5,10,11,12};
@@ -30,36 +31,59 @@ void initialize(){
   //variables to plot
   //------------------------
   
-  vars.push_back("htcmet");      xtitles.push_back("tcmet (GeV)");
-  vars.push_back("hsumJetPt");   xtitles.push_back("scalar sum jet p_{T} (GeV)");
-  vars.push_back("hdilMass");   xtitles.push_back("dilepton mass (GeV)");
-  vars.push_back("hdilPt");     xtitles.push_back("dilepton p_{T} (GeV)");
-  //vars.push_back("hminLepPt");  xtitles.push_back("min lepton p_{T} (GeV)");
-  //vars.push_back("hmaxLepPt");  xtitles.push_back("max lepton p_{T} (GeV)");
-  //vars.push_back("hptJet1");    xtitles.push_back("leading jet p_{T} (GeV)");
-  //vars.push_back("hptJet2");    xtitles.push_back("2nd leading jet p_{T} (GeV)");
-  //vars.push_back("hptJet3");    xtitles.push_back("3rd leading jet p_{T} (GeV)");
-  //vars.push_back("hptJet4");    xtitles.push_back("4th leading jet p_{T} (GeV)");
-  //vars.push_back("hmeffJet");   xtitles.push_back("effective mass (GeV)");
-  //vars.push_back("hmt");        xtitles.push_back("transverse mass (GeV)");
-  vars.push_back("hnJet");     xtitles.push_back("Jet Multiplicity");
+  vars.push_back("htcmet");       xtitles.push_back("tcmet (GeV)");
+  vars.push_back("hsumJptPt");    xtitles.push_back("scalar sum jet p_{T} (GeV)");
+  vars.push_back("hnJpt");        xtitles.push_back("Jet Multiplicity");  
+  vars.push_back("hdilMass");     xtitles.push_back("dilepton mass (GeV)");
+  vars.push_back("hdilPt");       xtitles.push_back("dilepton p_{T} (GeV)");
+
+  vars.push_back("hmaxLepPt");    xtitles.push_back("leading lepton p_{T} (GeV)"); 
+  vars.push_back("hminLepPt");    xtitles.push_back("2nd leading lepton p_{T} (GeV)");
+  vars.push_back("hmaxLepEta");   xtitles.push_back("leading lepton #eta");
+  vars.push_back("hminLepEta");   xtitles.push_back("2nd leading lepton #eta"); 
+
+  vars.push_back("hptJpt1");      xtitles.push_back("leading jet p_{T} (GeV)");
+  vars.push_back("hptJpt2");      xtitles.push_back("2nd leading jet p_{T} (GeV)");
+  vars.push_back("hptJpt3");      xtitles.push_back("3rd leading jet p_{T} (GeV)");
+  vars.push_back("hptJpt4");      xtitles.push_back("4th leading jet p_{T} (GeV)");
+
+  vars.push_back("hetaJpt1");     xtitles.push_back("leading jet #eta");
+  vars.push_back("hetaJpt2");     xtitles.push_back("2nd leading jet #eta");
+  vars.push_back("hetaJpt3");     xtitles.push_back("3rd leading jet #eta");
+  vars.push_back("hetaJpt4");     xtitles.push_back("4th leading jet #eta");
+  
+  vars.push_back("hnBtagJpt");    xtitles.push_back("nBtags"); 
+  vars.push_back("hptBtagJpt1");  xtitles.push_back("leading b-jet p_{T} (GeV)");
+  vars.push_back("hptBtagJpt2");  xtitles.push_back("2nd leading b-jet p_{T} (GeV)");
+  vars.push_back("hptBtagJpt3");  xtitles.push_back("3rd leading b-jet p_{T} (GeV)");
+  vars.push_back("hptBtagJpt4");  xtitles.push_back("4th leading b-jet p_{T} (GeV)");
+  
+  vars.push_back("hdrLep");       xtitles.push_back("#DeltaR(lep_{1}lep_{2})"); 
+  vars.push_back("hdrJ1J2");      xtitles.push_back("#DeltaR(jet_{1}jet_{2})"); 
+  vars.push_back("hdphiLep");     xtitles.push_back("#Delta#phi(ll)");
+
+  vars.push_back("hmeffJPT");     xtitles.push_back("effective mass (GeV)");
+  vars.push_back("hmt");          xtitles.push_back("transverse mass (GeV)");
+  vars.push_back("hmt2core");     xtitles.push_back("MT2 (GeV)");
+  vars.push_back("hmt2jcore");    xtitles.push_back("MT2J (GeV)");
+  
+  
+
   //vars.push_back("hdildR");    xtitles.push_back("#DeltaR(ll)");
   //vars.push_back("hmlj3");     xtitles.push_back("M(lj)3");
-  //vars.push_back("hdphiLep");  xtitles.push_back("#Delta#phi(ll)");
-  //vars.push_back("hmt2j");     xtitles.push_back("MT2Jets");
   
   //------------------------
   //SM samples to include
   //------------------------
   
-  smprefix.push_back("ttotr");
-  smprefix.push_back("Zjets");     
-  smprefix.push_back("wjets");     
-  smprefix.push_back("ww"); 
-  smprefix.push_back("wz");
-  smprefix.push_back("zz");
-  smprefix.push_back("tW");
-  smprefix.push_back("ttdil");
+  smprefix.push_back("ttotr");   smleg.push_back("t#bar{t}#rightarrowother");
+  smprefix.push_back("Zjets");   smleg.push_back("Z+jets");
+  smprefix.push_back("wjets");   smleg.push_back("W+jets");
+  smprefix.push_back("ww");      smleg.push_back("WW");
+  smprefix.push_back("wz");      smleg.push_back("WZ");
+  smprefix.push_back("zz");      smleg.push_back("ZZ");
+  smprefix.push_back("tW");      smleg.push_back("single top");
+  smprefix.push_back("ttdil");   smleg.push_back("t#bar{t}#rightarrowdilepton");
   
   //------------------------
   //SUSY samples to include
@@ -84,7 +108,7 @@ void drawSUSYHists(TFile *file, char* varname, char* histtype);
 TH1F* getDataHist(TFile *file, char* varname, char* xtitle,char* histtype);
 void drawOverlayPlot( TH1F* h , THStack* stack );
 
-void compareDataMC(char* filename , bool printgif = false){
+void compareDataMC(char* filename , int print = 0){
   
   initialize();
 
@@ -97,8 +121,17 @@ void compareDataMC(char* filename , bool printgif = false){
   TFile *file = TFile::Open(filename);
   file->cd();
   
-  TCanvas *canArray[nVars];
-  //TCanvas *canvas;
+  TCanvas* canArray[nVars];
+  TPad*    plotPadArray[nVars];
+  TPad*    legPadArray[nVars];
+
+  TCanvas* canvas;
+
+  if( print == 2 ){
+    canvas = new TCanvas("canvas","canvas",1100,650);
+    gStyle->SetPaperSize(22,28);
+    canvas->Print("plots/datamc.ps[");
+  }
 
   TLegend *leg = getLegend();
   
@@ -106,48 +139,80 @@ void compareDataMC(char* filename , bool printgif = false){
   for(unsigned int iVar = 0 ; iVar < nVars ; iVar++ ){
 
     char* allj="allj_";
-    if(strcmp(vars[iVar],"hnJet")==0)allj="";
+    if(strcmp(vars[iVar],"hnJet")==0)     allj="";
+    if(strcmp(vars[iVar],"hnJpt")==0)     allj="";
+    if(strcmp(vars[iVar],"hnBtagJpt")==0) allj="";
 
-    canArray[iVar] = new TCanvas(Form("%s_can",vars.at(iVar)),Form("%s_can",vars.at(iVar)),1100,650);
-    canArray[iVar]->Divide(2,2);
-      
+    if( print == 2 ){
+      canvas->cd();
+    }else{
+      canArray[iVar] = new TCanvas(Form("%s_can",vars.at(iVar)),Form("%s_can",vars.at(iVar)),1100,650);
+      canArray[iVar]->cd();
+    }
+    
+    plotPadArray[iVar] = new TPad(Form("pad_%i",iVar),Form("pad_%i",iVar),0,0,0.8,1);
+    plotPadArray[iVar]->Draw();
+    plotPadArray[iVar]->cd();
+    
+    plotPadArray[iVar]->Divide(2,2);
+
+
     //tot
-    canArray[iVar]->cd(4);
+    //canArray[iVar]->cd(4);
+    plotPadArray[iVar]->cd(4);
     TH1F*    hist  = getDataHist( file , vars.at(iVar) , xtitles.at(iVar) , "all");
     THStack* stack = getSMStack(  file , vars.at(iVar) , xtitles.at(iVar) , "all");
     drawOverlayPlot( hist , stack );
     formatHist( hist , vars.at(iVar) , "all" );
-    leg->Draw();
+    //leg->Draw();
 
     //ee
-    canArray[iVar]->cd(1);
+    //canArray[iVar]->cd(1);
+    plotPadArray[iVar]->cd(1);
     TH1F*    histee  = getDataHist( file , vars.at(iVar) , xtitles.at(iVar) , "ee");
     THStack* stackee = getSMStack(  file , vars.at(iVar) , xtitles.at(iVar) , "ee");
     drawOverlayPlot( histee , stackee );
     formatHist( histee , vars.at(iVar) , "ee" );
-    leg->Draw();
+    //leg->Draw();
 
     //em
-    canArray[iVar]->cd(3);
+    //canArray[iVar]->cd(3);
+    plotPadArray[iVar]->cd(3);
     TH1F*    histem  = getDataHist( file , vars.at(iVar) , xtitles.at(iVar) , "em");
     THStack* stackem = getSMStack(  file , vars.at(iVar) , xtitles.at(iVar) , "em");
     drawOverlayPlot( histem , stackem );
     formatHist( histem , vars.at(iVar) , "em" );
-    leg->Draw();
+    //leg->Draw();
     
     //mm
-    canArray[iVar]->cd(2);
+    //canArray[iVar]->cd(2);
+    plotPadArray[iVar]->cd(2);
     TH1F*    histmm  = getDataHist( file , vars.at(iVar) , xtitles.at(iVar) , "mm");
     THStack* stackmm = getSMStack(  file , vars.at(iVar) , xtitles.at(iVar) , "mm");
     drawOverlayPlot( histmm , stackmm );
     formatHist( histmm , vars.at(iVar) , "mm" );
-    leg->Draw();
+    //leg->Draw();
     
-    if(printgif) canArray[iVar]->Print(Form("plots/%s.gif",vars.at(iVar)));
+    if( print == 2 ){
+      canvas->cd();
+    }else{
+      canArray[iVar]->cd();
+    }
+   
+    legPadArray[iVar] = new TPad(Form("legpad_%i",iVar),Form("legpad_%i",iVar),0.8,0,1,1);
+    legPadArray[iVar]->Draw();
+    legPadArray[iVar]->cd();
+    leg->Draw();
+
+    if     ( print == 1 ) canArray[iVar]->Print(Form("plots/%s.gif",vars.at(iVar)));
+    else if( print == 2 ) canvas->Print("plots/datamc.ps");
+ 
     //if(histmin < stackFS->GetMinimum() ) stackFS->SetMinimum(histmin);
     //if(histmax > stackFS->GetMaximum() ) stackFS->SetMaximum(histmax);
         
   }
+
+  if( print == 2 ) canvas->Print("plots/datamc.ps]");
 
 }
 
@@ -156,6 +221,8 @@ void drawOverlayPlot( TH1F* h , THStack* stack ){
   stack->Draw("same");
   h->Draw("sameE1");
   h->Draw("sameaxis");
+  if( stack->GetMaximum() > h->GetMaximum() + h->GetBinError(h->GetMaximumBin() ) ) 
+    h->SetMaximum( 1.1 * stack->GetMaximum() );
 }
 
 void formatHist(TH1F *hist,char* var, char* histtype){
@@ -199,7 +266,13 @@ void formatHist(TH1F *hist,char* var, char* histtype){
     float max = hist->GetBinContent( hist->GetMaximumBin() );
     max += hist->GetBinError( hist->GetMaximumBin() );
     line.DrawLine( 100 , 0 , 100 , 1.05 * max );
-    hist->GetXaxis()->SetRangeUser(0,500);
+    //hist->GetXaxis()->SetRangeUser(0,500);
+  }
+  if( strcmp(var,"hsumJptPt") == 0 ){
+    float max = hist->GetBinContent( hist->GetMaximumBin() );
+    max += hist->GetBinError( hist->GetMaximumBin() );
+    line.DrawLine( 100 , 0 , 100 , 1.05 * max );
+    //hist->GetXaxis()->SetRangeUser(0,500);
   }
   if( strcmp(var,"hdilMass") == 0 && ( histtype == "ee" || histtype == "mm" ) ){
     float max = hist->GetBinContent( hist->GetMaximumBin() );
@@ -210,9 +283,13 @@ void formatHist(TH1F *hist,char* var, char* histtype){
   if( strcmp(var,"hnJet") == 0 ){
     float max = hist->GetBinContent( hist->GetMaximumBin() );
     max += hist->GetBinError( hist->GetMaximumBin() );
-    line.DrawLine( 1.5 , 0 , 1.5 , 1.05 * max );
+    line.DrawLine( 2 , 0 , 2 , 1.05 * max );
   }
-
+  if( strcmp(var,"hnJpt") == 0 ){
+    float max = hist->GetBinContent( hist->GetMaximumBin() );
+    max += hist->GetBinError( hist->GetMaximumBin() );
+    line.DrawLine( 2 , 0 , 2 , 1.05 * max );
+  }
 }
 
 TH1F* getFSHist(TH1F* hee, TH1F* hmm, TH1F* hem, int color){
@@ -292,17 +369,18 @@ TLegend *getLegend(){
   const unsigned int nSM = smprefix.size();
   const unsigned int nSUSY = susyprefix.size();
 
-  TLegend *leg =new TLegend(0.6,0.25,0.8,0.85);
+  //TLegend *leg =new TLegend(0.6,0.35,0.8,0.85);
+  TLegend *leg =new TLegend(0.,0.3,0.7,0.8);
   
   TH1F* hdatadummy = new TH1F("hdatadummy","",1,0,1);
-  leg->AddEntry(hdatadummy,"DATA!!!");
+  leg->AddEntry(hdatadummy,"DATA");
 
   for(unsigned int i = 0 ; i < nSM ; i++){
     TH1* hdummy=new TH1("hSMdummy","",1,0,1);
     hdummy->SetLineColor(1);
     hdummy->SetMarkerColor(colors[i]);
     hdummy->SetFillColor(colors[i]);
-    leg->AddEntry(hdummy,smprefix.at(i),"f");
+    leg->AddEntry(hdummy,smleg.at(i),"f");
     
   }
   for(unsigned int i=0;i<nSUSY;i++){
@@ -314,17 +392,46 @@ TLegend *getLegend(){
   leg->SetFillColor(0);
   leg->SetBorderSize(1);
 
+  leg->SetTextSize(0.1);
   return leg;
 }
 
 int rebin(char* prefix){
   int r = 1;
-  if(strcmp(prefix,"hmt")==0)       r = 10;
+
   if(strcmp(prefix,"htcmet")==0)    r = 5;
-  if(strcmp(prefix,"hsumJetPt")==0) r = 5;
+  if(strcmp(prefix,"hsumJetPt")==0) r = 10;
+  if(strcmp(prefix,"hsumJptPt")==0) r = 10;
   if(strcmp(prefix,"hdilMass")==0)  r = 5;
   if(strcmp(prefix,"hdilPt")==0)    r = 5;
-
+  if(strcmp(prefix,"hminLepPt")==0) r = 4;
+  if(strcmp(prefix,"hmaxLepPt")==0) r = 4;
+  if(strcmp(prefix,"hminLepEta")==0) r = 6;
+  if(strcmp(prefix,"hmaxLepEta")==0) r = 6;
+  if(strcmp(prefix,"hptJpt1")==0)   r = 4;
+  if(strcmp(prefix,"hptJpt2")==0)   r = 4;
+  if(strcmp(prefix,"hptJpt3")==0)   r = 4;
+  if(strcmp(prefix,"hptJpt4")==0)   r = 4;
+  if(strcmp(prefix,"hmeffJPT")==0)  r = 5;
+  if(strcmp(prefix,"hmt")==0)       r = 50;
+  if(strcmp(prefix,"hmt2core")==0)  r = 5;
+  if(strcmp(prefix,"hmt2jcore")==0) r = 5;
+  if(strcmp(prefix,"hdphiLep")==0)  r = 5;
+  if(strcmp(prefix,"hetaJpt1")==0)  r = 5;
+  if(strcmp(prefix,"hetaJpt2")==0)  r = 5;
+  if(strcmp(prefix,"hetaJpt3")==0)  r = 5;
+  if(strcmp(prefix,"hetaJpt4")==0)  r = 5;
+  if(strcmp(prefix,"hptBtagJpt1")==0)   r = 4;
+  if(strcmp(prefix,"hptBtagJpt2")==0)   r = 4;
+  if(strcmp(prefix,"hptBtagJpt3")==0)   r = 4;
+  if(strcmp(prefix,"hptBtagJpt4")==0)   r = 4;
+  if(strcmp(prefix,"hetaBtagJpt1")==0)  r = 5;
+  if(strcmp(prefix,"hetaBtagJpt2")==0)  r = 5;
+  if(strcmp(prefix,"hetaBtagJpt3")==0)  r = 5;
+  if(strcmp(prefix,"hetaBtagJpt4")==0)  r = 5;
+  if(strcmp(prefix,"hdrLep")==0)        r = 5;
+  if(strcmp(prefix,"hdrJ1J2")==0)       r = 5;
+  
   return r;
 
 }
@@ -336,7 +443,9 @@ THStack* getSMStack(TFile *file, char* varname, char* xtitle,char* histtype){
   TH1F* h[nSM];
 
   char* allj="allj_";
-  if(strcmp(varname,"hnJet")==0)allj="";
+  if(strcmp(varname,"hnJet")==0)    allj="";
+  if(strcmp(varname,"hnJpt")==0)    allj="";
+  if(strcmp(varname,"hnBtagJpt")==0)allj="";
 
 
   
@@ -396,7 +505,9 @@ TH1F* getDataHist(TFile *file, char* varname, char* xtitle,char* histtype){
   TH1F* hist = new TH1F();
 
   char* allj="allj_";
-  if(strcmp(varname,"hnJet")==0)allj="";
+  if(strcmp(varname,"hnJet")==0)    allj="";
+  if(strcmp(varname,"hnJpt")==0)    allj="";
+  if(strcmp(varname,"hnBtagJpt")==0)allj="";
 
   
   if(strcmp(histtype,"all")==0 || strcmp(histtype,"ee")==0 || 
@@ -458,6 +569,7 @@ void drawSUSYHists(TFile *file, char* varname, char* histtype){
   TH1F* hsusy[nSUSY];
   char* allj="allj_";
   if(strcmp(varname,"hnJet")==0)allj="";
+  if(strcmp(varname,"hnJpt")==0)allj="";
   
   for(unsigned int iSUSY=0;iSUSY<nSUSY;iSUSY++){
     if(strcmp(histtype,"all")==0 || strcmp(histtype,"ee")==0 || 
