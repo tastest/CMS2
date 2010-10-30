@@ -28,10 +28,9 @@ bool isGoodLeptonNoIso(int id, int lepIdx, bool applyAlignmentCorrection, bool r
       (1ll<<ELENOMUON_010)              |
       (1ll<<ELENOTCONV_HITPATTERN)      |
       (1ll<<ELENOTCONV_DISTDCOT002)     |
-      (1ll<<ELESCET_010)                |
+      (1ll<<ELESCET_015)                |
       (1ll<<ELEPT_020)          |
-      (1ll<<ELEETA_250)         |
-      (1ll<<ELENOSPIKE_SWISS005) |
+      (1ll<<ELEETA_250)         |      
       (1ll<<ELESEED_ECAL);
     
     unsigned int answer_vbtf = electronId_VBTF(lepIdx, VBTF_35X_90, applyAlignmentCorrection, removedEtaCutInEndcap);
@@ -162,7 +161,7 @@ std::pair<float,float> getMet(const string algo, unsigned int hypIdx) {
     
     return make_pair(sqrt(tcmetX*tcmetX + tcmetY*tcmetY), atan2(tcmetY, tcmetX));
   }
-
+/*
   if(algo == "tcMET_looper") {
 
     metStruct tcmetStruct = correctedTCMET();
@@ -176,7 +175,7 @@ std::pair<float,float> getMet(const string algo, unsigned int hypIdx) {
     
     return make_pair(sqrt(tcmetX*tcmetX + tcmetY*tcmetY), atan2(tcmetY, tcmetX));
   }
-
+*/
 
   if(algo == "tcMET35X") {
 
@@ -298,7 +297,7 @@ bool passEGTrigger(bool mc) {
 	return true;
     }
 
-    if(cms2.evt_run() > 147120) {
+    if(cms2.evt_run() > 147120 && cms2.evt_run() <= 148100 ) {
     
       if(nHLTObjects("HLT_DoubleEle15_SW_L1R_v1") != 0)
 	return true;
@@ -310,10 +309,29 @@ bool passEGTrigger(bool mc) {
 	return true;
 
     }
-    
 
-  }
+    if(cms2.evt_run()  > 148100) {
+      if(nHLTObjects("HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2") != 0)
+	return true;
+
+      if(nHLTObjects("HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v1") != 0) 
+	return true;
+      
+      if(nHLTObjects("HLT_Ele22_SW_TighterEleId_L1R_v3") != 0)
+	return true;
+
+      if(nHLTObjects("HLT_Ele22_SW_TighterEleId_L1R_v2") != 0)
+	return true;
+      
+      if(nHLTObjects("HLT_Ele17_SW_TighterEleIdIsol_L1R_v3") != 0) 
+	return true;
+
+      if(nHLTObjects("HLT_Ele17_SW_TighterEleIdIsol_L1R_v2") != 0) 
+	return true;
+    }
+    
   return false;
+  
 }
 
 /*****************************************************************************************/
@@ -330,17 +348,17 @@ bool passMuTrigger(bool mc) {
   } else {
 
     if(cms2.evt_run() <= 145000) {
-      if(nHLTObjects("HLT_Mu9") > 0)
+      if(nHLTObjects("HLT_Mu9") != 0)
 	return true;
     }
 
     if(cms2.evt_run() > 145000 && cms2.evt_run() <= 147120) {
-      if(nHLTObjects("HLT_Mu11") > 0)
+      if(nHLTObjects("HLT_Mu11") != 0)
 	return true;
     }
   
     if(cms2.evt_run() > 147120) {
-      if(nHLTObjects("HLT_Mu15") > 0)
+      if(nHLTObjects("HLT_Mu15_v1") != 0)
 	return true;
     }
 
