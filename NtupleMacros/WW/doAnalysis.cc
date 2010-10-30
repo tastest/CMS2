@@ -245,9 +245,9 @@ bool ww_muId(unsigned int index){
   if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
   if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
   if (cms2.mus_gfit_validSTAHits().at(index)==0 ) return false;
-  // if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1) return false;
-  // if (cms2.trks_valid_pixelhits().at(cms2.mus_trkidx().at(index))==0) return false;
-  // if (cms2.mus_nmatches().at(index)<2) return false;
+  if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1) return false;
+  if (cms2.trks_valid_pixelhits().at(cms2.mus_trkidx().at(index))==0) return false;
+  if (cms2.mus_nmatches().at(index)<2) return false;
   return true;
 }
 
@@ -1430,6 +1430,7 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
 	! (electronId_VBTF(cms2.hyp_ll_index()[i_hyp], VBTF_35X_80) & (1<<ELEID_ID))  ) return false;
 
     monitor.count(cms2,type,"after previous + lepton id");
+    return true;
 
     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && 
 	(fabs(cms2.els_conv_dist().at(cms2.hyp_lt_index()[i_hyp])) < 0.02 &&
@@ -2502,7 +2503,7 @@ void SkimChain(TChain* chain,bool mergeFiles){
       }
       cms2.GetEntry(event);
       //set condition to skip event
-      if ( not passedSkimSelection2() ) continue;
+      if ( not passedSkimSelection() ) continue;
       
       ++nEventsSelected;
       cms2.LoadAllBranches();

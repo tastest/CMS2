@@ -46,10 +46,10 @@ void processData()
   bool runWW    = 1;
   bool runWZ    = 0;
   bool runZZ    = 0;
-  bool runWjets = 0;
-  bool runDYee  = 0;
-  bool runDYmm  = 0;
-  bool runDYtt  = 0;
+  bool runWjets = 1;
+  bool runDYee  = 1;
+  bool runDYmm  = 1;
+  bool runDYtt  = 1;
   bool runttbar = 0;
   bool runtW    = 0;
   bool runQCD   = 0; 
@@ -108,7 +108,7 @@ void processData()
       wjetsSamples.push_back(dataset+"/WToENu_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/"+version+"/*.root");
       wjetsSamples.push_back(dataset+"/WToMuNu_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/"+version+"/*.root");
       wjetsSamples.push_back(dataset+"/WToTauNu_TuneZ2_7TeV-pythia6-tauola_Fall10-START38_V12-v1/V03-06-14/"+version+"/*.root");
-      ProcessSample(wjetsSamples, Wjets, integratedLumi, 10438*0.742, -1, fullDataSet, 40);
+      ProcessSample(wjetsSamples, Wjets, integratedLumi, 10438, -1, fullDataSet, 40);
     } else {
     // ProcessSample(dataset+"/W1Jets_Pt0to100-alpgenSpring10-START3X_V26_multilepton-v1/V03-04-08/"+version+"/*.root", Wjets, 100.0, 3790, 54751345, fullDataSet, 40);
     // ProcessSample(dataset+"/W0Jets_Pt0to100-alpgenSummer10-START36_V10_multilepton-v1/V03-04-08/"+version+"/*.root", Wjets, 100.0, 20727.9, 3586806, fullDataSet, 40);
