@@ -50,7 +50,7 @@ void processData()
   bool runDYee  = 1;
   bool runDYmm  = 1;
   bool runDYtt  = 1;
-  bool runttbar = 0;
+  bool runttbar = 1;
   bool runtW    = 0;
   bool runQCD   = 0; 
   bool runData  = 0;
@@ -142,7 +142,8 @@ void processData()
  
   if (runttbar)
     //ProcessSample(dataset+"/TTbarJets-madgraph_Summer09-MC_31X_V3_7TeV-v2/"+version+"/merged_ntuple*.root", ttbar, integratedLumi, 165.0, -1, fullDataSet, kYellow);
-    ProcessSample(dataset+"/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-07/"+version+"/*.root", ttbar, integratedLumi, 165.0, -1, fullDataSet, kYellow);
+    // ProcessSample(dataset+"/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-07/"+version+"/*.root", ttbar, integratedLumi, 165.0, -1, fullDataSet, kYellow);
+    ProcessSample(dataset+"/TT_TuneZ2_7TeV-pythia6-tauola_Fall10-START38_V12-v1_GEN-SIM-RECO/V03-06-14/"+version+"/*.root", ttbar, integratedLumi, 165.0, -1, fullDataSet, kYellow);
     //ProcessSample(dataset+"/TTbar_Spring10-START3X_V26_S09-v1/V03-04-08"+version+"/merged_ntuple*.root", ttbar, integratedLumi, 165.0, -1, fullDataSet, kYellow);
 
   if (runtW)
