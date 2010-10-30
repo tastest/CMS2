@@ -9,22 +9,22 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 /******************************************************************************************/     
 // good lepton (either mu or electron, no isolation cuts)
 /******************************************************************************************/
-bool isGoodLeptonNoIso(int id, int lepIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap=true);
+bool isGoodLeptonNoIso(int id, int lepIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap=false);
 
 /******************************************************************************************/     
 // isolated lepton (either mu or electron)
 /******************************************************************************************/
-bool isGoodLeptonwIso(int id, int lepIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap=true);
+bool isGoodLeptonwIso(int id, int lepIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap=false);
 
 /******************************************************************************************/     
 // are the leptons in the hypothesis good (all cuts but isolation?)
 /******************************************************************************************/
-bool isGoodHypNoIso(int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap=true);
+bool isGoodHypNoIso(int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap=false);
 
 /******************************************************************************************/     
 // are the leptons in the hypothesis isolated?
 /******************************************************************************************/     
-bool isGoodHypwIso(int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap=true);
+bool isGoodHypwIso(int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap=false);
 
 /******************************************************************************************/     
 // is it a good jet?
