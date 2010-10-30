@@ -1381,7 +1381,7 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   // The event weight including the kFactor (scaled to 1 fb-1)
   // float weight = cms2.evt_scale1fb() * kFactor;
 
-  // monitor.nEvtProcessed = cms2.evt_nEvts();
+  if (!realData) monitor.nEvtProcessed = cms2.evt_nEvts();
   // monitor.count(cms2, type, "Total number before cuts");
   
   // if ( cms2.hyp_FVFit_prob()[i_hyp] < 0.005 ) return;
@@ -1757,6 +1757,7 @@ RooDataSet* MakeNewDataset(const char* name)
 void AddIsoSignalControlSample( int i_hyp, double weight, RooDataSet* dataset, bool realData) {
   if ( !dataset ) return;
   // Cut on lepton Pt
+
   if (cms2.hyp_lt_p4()[i_hyp].pt() < 20.0) return;
   if (cms2.hyp_ll_p4()[i_hyp].pt() < 20.0) return;
   // Require opposite sign
@@ -2067,6 +2068,7 @@ RooDataSet* ScanChain( TChain* chain,
 
  // declare and create array of histograms
   ofstream selectedEvents(Form("%s.list",prefix));
+  std::set<unsigned int> runList;
   RooDataSet* dataset = MakeNewDataset(prefix);
 
   initializeHistograms(prefix,qcdBackground);
@@ -2142,9 +2144,10 @@ RooDataSet* ScanChain( TChain* chain,
       if(realData && cms2_json_file!="") {
 	if( !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
       }
-	 double weight = 1.0;
-	 if ( !realData && integratedLumi>0 ){
-	   double mcweight = cms2.genps_weight() > 0.0 ? 1.0 : -1.0;
+      runList.insert(cms2.evt_run());
+      double weight = 1.0;
+      if ( !realData && integratedLumi>0 ){
+	double mcweight = cms2.genps_weight() > 0.0 ? 1.0 : -1.0;
 	   weight = integratedLumi * mcweight * (xsec>0?xsec:cms2.evt_xsec_excl()*cms2.evt_kfactor()) /
 	     (nProcessedEvents>0?nProcessedEvents:cms2.evt_nEvts());
 	 }       
@@ -2199,7 +2202,7 @@ RooDataSet* ScanChain( TChain* chain,
 	 // find the best candidate with m(ll) closest to the Z mass
 	 unsigned int i_hyp_bestZ = bestZHyp();
 	 for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
-	   // if(cms2.hyp_p4().at(i_hyp).mass2() < 0 ) break;
+	   if(cms2.hyp_p4().at(i_hyp).mass2() < 0 ) break;
 	   if(zStudy && (i_hyp != i_hyp_bestZ)) continue;
 	   if (hypo(i_hyp, weight, dataset, zStudy, realData))goodEvent=true;
 	   AddIsoSignalControlSample(i_hyp, weight, dataset, realData);
@@ -2238,6 +2241,20 @@ RooDataSet* ScanChain( TChain* chain,
 	 hypos_total_weighted->GetBinContent(1), hypos_total_weighted->GetBinContent(2), 
 	 hypos_total_weighted->GetBinContent(3), hypos_total_weighted->GetBinContent(4));
   selectedEvents.close();
+  if (realData){
+      ofstream json("processed.json");
+      json << "{";
+      bool firstRun(true);
+      for ( std::set<unsigned int>::const_iterator run = runList.begin();
+	    run != runList.end(); ++ run ){
+	if ( ! firstRun ) json << " ,";
+	firstRun = false;
+	json << '"' << *run << '"' << ": [[1,999999]]";
+      }
+      json << "}";
+      json << endl;
+      json.close();
+  }
   return dataset;
 }
 
