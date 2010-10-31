@@ -125,7 +125,7 @@ int isGoodEMObject( const unsigned int index ){
   //require pfjet neutral EM fraction > 0.95
   float emfrac = pfjets_neutralEmE().at(iMatchedJet) / pfjets_p4().at(iMatchedJet).energy();
   if( emfrac < neutralemfcut )               return -4; 
-  if( !passesPFJetID(ijet) )                 return -5;
+  if( !passesPFJetID(iMatchedJet) )                 return -5;
 
   return iMatchedJet;
 
