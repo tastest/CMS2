@@ -1025,10 +1025,9 @@ void find_most_energetic_jets(int i_hyp, double weight, bool realData, double et
 {
   HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
   // fill the jet region
-  jetregion jet;
-  if( etaMin == 0.0 && etaMax == 5.0) jet = ALLJET;
-  if( etaMin == 0.0 && etaMax == 3.0) jet = HCAL;
-  if( etaMin == 3.0 && etaMax == 5.0) jet = HF;
+  jetregion jet = ALLJET;
+  if( etaMin <= 0.0 && etaMax <= 3.0) jet = HCAL;
+  if( etaMin >= 3.0 && etaMax <= 5.0) jet = HF;
   
   double vetoCone = 0.3;
   
