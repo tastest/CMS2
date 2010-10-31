@@ -2246,9 +2246,9 @@ RooDataSet* ScanChain( TChain* chain,
       bool firstRun(true);
       for ( std::set<unsigned int>::const_iterator run = runList.begin();
 	    run != runList.end(); ++ run ){
-	if ( ! firstRun ) json << " ,";
+	if ( ! firstRun ) json << ", ";
 	firstRun = false;
-	json << '"' << *run << '"' << ": [[1,999999]]";
+	json << '"' << *run << '"' << ": [[1,9999]]";
       }
       json << "}";
       json << endl;
