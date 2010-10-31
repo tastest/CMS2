@@ -46,11 +46,11 @@ void processData()
   bool runWW    = 1;
   bool runWZ    = 0;
   bool runZZ    = 0;
-  bool runWjets = 1;
-  bool runDYee  = 1;
-  bool runDYmm  = 1;
-  bool runDYtt  = 1;
-  bool runttbar = 1;
+  bool runWjets = 0;
+  bool runDYee  = 0;
+  bool runDYmm  = 0;
+  bool runDYtt  = 0;
+  bool runttbar = 0;
   bool runtW    = 0;
   bool runQCD   = 0; 
   bool runData  = 0;

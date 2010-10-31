@@ -1889,9 +1889,17 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hPFJetRelResponseWithZero[i] = new TH2F(Form("%s_hPFJetRelResponseWithZero_%s",prefix,HypothesisTypeName(i) ), Form("%s - PFJet relative response to Z pt - %s",prefix,HypothesisTypeName(i) ), 20, 0, 100, 20, 0, 2);
 
     hmetVal[i]           = new TH1F(Form("%s_hmetVal_%s",      prefix,HypothesisTypeName(i)), "MET after ll selection/jetveto", 20,0.,100.);
+    hmetVal[i]->GetXaxis()->SetTitle("tcMET [GeV]");
+    hmetVal[i]->GetYaxis()->SetTitle("Events/(5 GeV)");
     hmetProjVal[i]       = new TH1F(Form("%s_hmetProjVal_%s",      prefix,HypothesisTypeName(i)), "Projected MET after ll selection/jetveto", 20,0.,100.);
+    hmetProjVal[i]->GetXaxis()->SetTitle("Projected tcMET [GeV]");
+    hmetProjVal[i]->GetYaxis()->SetTitle("Events/(5 GeV)");
     hmaxPFJetPtVal[i]    = new TH1F(Form("%s_hmaxPFJetPtVal_%s",   prefix,HypothesisTypeName(i)), "Leading PFJet Pt after ll selection", 20, 0., 100.);
+    hmaxPFJetPtVal[i]->GetXaxis()->SetTitle("Leading PF Jet Pt [GeV]");
+    hmaxPFJetPtVal[i]->GetYaxis()->SetTitle("Events/(5 GeV)");
     hdilMassVal[i]   = new TH1F(Form("%s_hdilMassVal_%s",  prefix,HypothesisTypeName(i)), "Di-lepton mass after ll selection", 40, 0., 200.);
+    hdilMassVal[i]->GetXaxis()->SetTitle("Dilepton mass [GeV/c^{2}]");
+    hdilMassVal[i]->GetYaxis()->SetTitle("Events/(5 GeV)");
 
         
     hdilMassWithMetDYEst[i] = new TH1F(Form("%s_hdilMassWithMetDYEst_%s",  prefix,HypothesisTypeName(i)), "Di-lepton mass with MET for DY Estimation", 40, 0., 200.);

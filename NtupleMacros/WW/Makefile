@@ -105,6 +105,9 @@ processed_data.root: data processData.C $(CORELIB) $(LIB) $(FWLIB)
 fakeIsoControlSamples.root: makeFakeIsoControlSamples.C
 	$(QUIET) root -b -q makeFakeIsoControlSamples.C+
 
+processed_data.eps: processed_data.root makePSFile.C
+	$(QUIET) root -q -b 'makePSFile.C+("processed_data.root")'
+
 #################################################################
 #                       User Targets 
 #################################################################
@@ -113,12 +116,13 @@ build: $(LIBS) # compile code
 b: build
 
 clean: # clean up 
-	$(QUIET) rm -f \
+	$(QUIET) rm -v -f \
 	$(CMSROOT)/CORE/*.o \
 	$(CMSROOT)/CORE/*.d \
 	$(CMSROOT)/CORE/*.so \
 	$(CMSROOT)/Tools/*.so \
 	$(CORELIB) $(LOOPERLIB) $(FWLIB) \
+	processed_data.* *.list \
 	*.o *.d *.so LinkDef_out*; echo "Done"
 
 table: processed_data.root # show results
@@ -131,6 +135,9 @@ jetbkg: processed_data.root  # estimate jet induced background
 
 jetbkg2: processed_data.root ../data/el_FR_3X.root # estimate jet induced background from FR group
 	$(QUIET) root -q -l 'estimateJetBkg_fakes.C+("processed_data.root","../data/el_FR_3X.root","QCD30_el_v2_cand02_FR_etavspt")'
+
+plots: processed_data.eps # make plots based on processed data
+	$(QUIET) epstopdf processed_data.eps
 
 skim: data processData.C $(CORELIB) $(LIB) $(FWLIB)# skim data
 	$(QUIET) if [ ! -n "$(SkimName)" ]; then echo "Please set SkimName variable in order to proceed"; exit 1; fi; \

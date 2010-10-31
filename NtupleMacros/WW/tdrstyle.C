@@ -1,7 +1,7 @@
 #include "TStyle.h"
 
 // tdrGrid: Turns the grid lines on (true) or off (false)
-
+TStyle *tdrStyle = new TStyle("tdrStyle","Style for P-TDR");
 void tdrGrid(bool gridOn) {
   tdrStyle->SetPadGridX(gridOn);
   tdrStyle->SetPadGridY(gridOn);
@@ -14,7 +14,7 @@ void fixOverlay() {
 }
 
 void setTDRStyle() {
-  TStyle *tdrStyle = new TStyle("tdrStyle","Style for P-TDR");
+  
 
 // For the canvas:
   tdrStyle->SetCanvasBorderMode(0);
@@ -53,8 +53,10 @@ void setTDRStyle() {
   // tdrStyle->SetNumberContours(Int_t number = 20);
 
   tdrStyle->SetEndErrorSize(2);
-  //  tdrStyle->SetErrorMarker(20);
+	// remarked out DLE
+  //tdrStyle->SetErrorMarker(20);
   tdrStyle->SetErrorX(0.);
+
   
   tdrStyle->SetMarkerStyle(20);
 
@@ -89,7 +91,7 @@ void setTDRStyle() {
   tdrStyle->SetPadTopMargin(0.05);
   tdrStyle->SetPadBottomMargin(0.13);
   tdrStyle->SetPadLeftMargin(0.16);
-  tdrStyle->SetPadRightMargin(0.02);
+  tdrStyle->SetPadRightMargin(0.035);
 
 // For the Global title:
 
@@ -129,7 +131,8 @@ void setTDRStyle() {
   tdrStyle->SetAxisColor(1, "XYZ");
   tdrStyle->SetStripDecimals(kTRUE);
   tdrStyle->SetTickLength(0.03, "XYZ");
-  tdrStyle->SetNdivisions(510, "XYZ");
+  tdrStyle->SetNdivisions(505, "XYZ");
+//  tdrStyle->SetNdivisions(510, "XYZ");
   tdrStyle->SetPadTickX(1);  // To get tick marks on the opposite side of the frame
   tdrStyle->SetPadTickY(1);
 
@@ -153,5 +156,17 @@ void setTDRStyle() {
   // tdrStyle->SetHistMinimumZero(kTRUE);
 
   tdrStyle->cd();
+
+}
+
+void unsetErrorX() {
+  
+  tdrStyle->SetErrorX(0.5);
+
+}
+
+void resetErrorX() {
+
+  tdrStyle->SetErrorX(0.0);
 
 }
