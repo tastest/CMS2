@@ -311,25 +311,59 @@ bool passEGTrigger(bool mc) {
     }
 
     if(cms2.evt_run()  > 148100) {
-      if(nHLTObjects("HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2") != 0)
-	return true;
 
-      if(nHLTObjects("HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v1") != 0) 
+      vector<TString>::const_iterator begin_it = cms2.hlt_trigNames().begin();
+      vector<TString>::const_iterator end_it = cms2.hlt_trigNames().end();
+
+      TString HLTTrigger = "HLT_DoubleEle17_SW_L1R_v1";
+      if(find(begin_it, end_it, HLTTrigger ) != end_it )  {
+	if(nHLTObjects(HLTTrigger) != 0)
 	return true;
+      }
       
-      if(nHLTObjects("HLT_Ele22_SW_TighterEleId_L1R_v3") != 0)
+      HLTTrigger = "HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2";
+      if(find(begin_it, end_it, HLTTrigger ) != end_it )  {
+	if(nHLTObjects(HLTTrigger) != 0)
 	return true;
+      }
 
-      if(nHLTObjects("HLT_Ele22_SW_TighterEleId_L1R_v2") != 0)
+      HLTTrigger = "HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v1";
+      if(find(begin_it, end_it, HLTTrigger ) != end_it )  {
+	if(nHLTObjects(HLTTrigger) != 0)
 	return true;
+      }
+
       
-      if(nHLTObjects("HLT_Ele17_SW_TighterEleIdIsol_L1R_v3") != 0) 
+      HLTTrigger = "HLT_Ele22_SW_TighterEleId_L1R_v3";
+      if(find(begin_it, end_it, HLTTrigger ) != end_it )  {
+	if(nHLTObjects(HLTTrigger) != 0)
 	return true;
+      }
 
-      if(nHLTObjects("HLT_Ele17_SW_TighterEleIdIsol_L1R_v2") != 0) 
+
+      HLTTrigger = "HLT_Ele22_SW_TighterEleId_L1R_v2";
+      if(find(begin_it, end_it, HLTTrigger ) != end_it )  {
+	if(nHLTObjects(HLTTrigger) != 0)
+	  return true;
+      }
+
+      
+      HLTTrigger = "HLT_Ele17_SW_TighterEleIdIsol_L1R_v3";
+      if(find(begin_it, end_it, HLTTrigger ) != end_it )  {
+	if(nHLTObjects(HLTTrigger) != 0)
 	return true;
+      }
+
+
+      HLTTrigger = "HLT_Ele17_SW_TighterEleIdIsol_L1R_v2";
+      if(find(begin_it, end_it, HLTTrigger ) != end_it )  {
+	if(nHLTObjects(HLTTrigger) != 0)
+	return true;
+      }
+
     }
     
+  }
   return false;
   
   }
@@ -338,7 +372,7 @@ bool passEGTrigger(bool mc) {
 /*****************************************************************************************/
 //passes the EGamma triggers
 /*****************************************************************************************/
-bool passMuTrigger(bool mc) {
+  bool passMuTrigger(bool mc) {
   
 
   if(mc) {
