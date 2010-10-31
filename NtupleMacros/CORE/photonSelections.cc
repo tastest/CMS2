@@ -90,13 +90,7 @@ int isGoodEMObject( const unsigned int index ){
   if ( photons_hOverE().at(index) > 0.1           )     return -1; //h/e < 0.1
 
   //spike cleaning
-  float swiss   = photons_swissSeed().at(index);
-  int   scind   = photons_scindex().at(index);
-  if( scind < 0 ) return -1;
-  float seed    = scs_eSeed().at(scind);
-  float s4      = swiss - seed;
-  float r4      = 1 - s4 / seed;
-  if ( ( 1. - r4 ) < 0.05 )  return -1;
+  if( isSpikePhoton( index ) )                          return -1;
 
   //if photon survives to this point, find pfjet nearest photon
   //require pt > 10 GeV pfjet, eta < 2.5 within dr < 0.3 of photon
@@ -126,7 +120,8 @@ int isGoodEMObject( const unsigned int index ){
   //require pfjet neutral EM fraction > 0.95
   float emfrac = pfjets_neutralEmE().at(iMatchedJet) / pfjets_p4().at(iMatchedJet).energy();
   if( emfrac < neutralemfcut )               return -4; 
-  if( !passesPFJetID(iMatchedJet) )                 return -5;
+  //too tight
+  //if( !passesPFJetID(iMatchedJet) )                 return -5;
 
   return iMatchedJet;
 
