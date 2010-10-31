@@ -1,4 +1,5 @@
 #include "photonSelections.h"
+#include "jetSelections.cc"
 #include "utilities.cc"
 #include <iostream>
 #include "TSystem.h"
