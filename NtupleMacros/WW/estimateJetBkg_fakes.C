@@ -103,7 +103,7 @@ void getIntegral(const TH2F* h, double& integral, double& error, const TH2F* fak
 }
 
 void printLine( const char*name,
-		TH2F* DYee, TH2F* DYmm, TH2F* DYtt, TH2F* tt, TH2F* wjets, TH2F* wz, TH2F* zz, TH2F* ww, TH2F* tw,
+		TH2F* DYee, TH2F* DYmm, TH2F* DYtt, TH2F* tt, TH2F* wjets, TH2F* wz, TH2F* zz, TH2F* ww, TH2F* tw, TH2F* data,
 		TH2F* fakeRate)
 {
   string pm = "+/-";
@@ -174,6 +174,13 @@ void printLine( const char*name,
   }
   else
     cout << "    skipped   ";
+  cout << "|";
+  if (data) {
+    getIntegral(data, integral, error, fakeRate);
+    cout << Form(" %5.2f%s%4.2f ", integral, pm.c_str(), error);
+  }
+  else
+    cout << "    skipped   ";
   cout << "|" <<endl;
   
 }
@@ -217,17 +224,19 @@ void estimateJetBkg_fakes(const char* file = "processed_data.root",
   TH2F *ww_em    = dynamic_cast<TH2F*>(ftt->Get(TString("ww_helFRfakable"+prefix+"_em")));
   TH2F *tw_ee    = dynamic_cast<TH2F*>(ftt->Get(TString("tw_helFRfakable"+prefix+"_ee")));
   TH2F *tw_em    = dynamic_cast<TH2F*>(ftt->Get(TString("tw_helFRfakable"+prefix+"_em")));
+  TH2F *data_ee  = dynamic_cast<TH2F*>(ftt->Get(TString("data_helFRfakable"+prefix+"_ee")));
+  TH2F *data_em  = dynamic_cast<TH2F*>(ftt->Get(TString("data_helFRfakable"+prefix+"_em")));
 
   if( externalElFakeRate )
     cout <<"Electron fake count for external fakerates:" <<endl;
   else
     cout <<"Electron fake count for ad-hoc fakerates:" <<endl;
 
-  cout << "\n" << Form("| %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s |",
-		       "", "*DY ee*","*DY mumu*","*DY tautau*","*ttbar*","*Wjets*","*WZ*","*ZZ*","*WW*","*TW*")
+  cout << "\n" << Form("| %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s |",
+		       "", "*DY ee*","*DY mumu*","*DY tautau*","*ttbar*","*Wjets*","*WZ*","*ZZ*","*WW*","*TW*","*Data*")
        << endl;
-  printLine("ee fakes", DYee_ee, DYmm_ee, DYtt_ee, tt_ee, wjets_ee, wz_ee, zz_ee, ww_ee, tw_ee, 0);
-  printLine("em fakes", DYee_em, DYmm_em, DYtt_em, tt_em, wjets_em, wz_em, zz_em, ww_em, tw_em, 0);
+  printLine("ee fakes", DYee_ee, DYmm_ee, DYtt_ee, tt_ee, wjets_ee, wz_ee, zz_ee, ww_ee, tw_ee, data_ee, 0);
+  printLine("em fakes", DYee_em, DYmm_em, DYtt_em, tt_em, wjets_em, wz_em, zz_em, ww_em, tw_em, data_em, 0);
   cout <<endl;
 
   //
@@ -258,8 +267,8 @@ void estimateJetBkg_fakes(const char* file = "processed_data.root",
       cout << "Fake rates are not available from NtupleMacros/data to estimate jet induced background. Please check" << endl;
     cout <<"Jet induced electron fake background estimation (external fake rate) :\n" <<endl;    
   }
-  printLine("ee bkg", DYee_ee, DYmm_ee, DYtt_ee, tt_ee, wjets_ee, wz_ee, zz_ee, ww_ee, tw_ee, fakeRate);
-  printLine("em bkg", DYee_em, DYmm_em, DYtt_em, tt_em, wjets_em, wz_em, zz_em, ww_em, tw_em, fakeRate);
+  printLine("ee bkg", DYee_ee, DYmm_ee, DYtt_ee, tt_ee, wjets_ee, wz_ee, zz_ee, ww_ee, tw_ee, data_ee, fakeRate);
+  printLine("em bkg", DYee_em, DYmm_em, DYtt_em, tt_em, wjets_em, wz_em, zz_em, ww_em, tw_em, data_em, fakeRate);
   cout <<endl;
 
   //
@@ -286,17 +295,19 @@ void estimateJetBkg_fakes(const char* file = "processed_data.root",
   TH2F *ww_me    = dynamic_cast<TH2F*>(ftt->Get(TString("ww_hmuFRfakable"+prefix+"_em")));
   TH2F *tw_mm    = dynamic_cast<TH2F*>(ftt->Get(TString("tw_hmuFRfakable"+prefix+"_mm")));
   TH2F *tw_me    = dynamic_cast<TH2F*>(ftt->Get(TString("tw_hmuFRfakable"+prefix+"_em")));
+  TH2F *data_mm  = dynamic_cast<TH2F*>(ftt->Get(TString("data_hmuFRfakable"+prefix+"_mm")));
+  TH2F *data_me  = dynamic_cast<TH2F*>(ftt->Get(TString("data_hmuFRfakable"+prefix+"_em")));
 
   if( externalMuFakeRate )
     cout <<"Muon fake count for external fakerates:" <<endl;
   else
     cout <<"Muon fake count for ad-hoc fakerates:" <<endl;
 
-  cout << "\n" << Form("| %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s |",
-		       "", "*DY ee*","*DY mumu*","*DY tautau*","*ttbar*","*Wjets*","*WZ*","*ZZ*","*WW*","*TW*")
+  cout << "\n" << Form("| %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s | %12s |",
+		       "", "*DY ee*","*DY mumu*","*DY tautau*","*ttbar*","*Wjets*","*WZ*","*ZZ*","*WW*","*TW*","*Data*")
        << endl;
-  printLine("mm fakes", DYee_mm, DYmm_mm, DYtt_mm, tt_mm, wjets_mm, wz_mm, zz_mm, ww_mm, tw_mm, 0);
-  printLine("em fakes", DYee_me, DYmm_me, DYtt_me, tt_me, wjets_me, wz_me, zz_me, ww_me, tw_me, 0);
+  printLine("mm fakes", DYee_mm, DYmm_mm, DYtt_mm, tt_mm, wjets_mm, wz_mm, zz_mm, ww_mm, tw_mm, data_mm, 0);
+  printLine("em fakes", DYee_me, DYmm_me, DYtt_me, tt_me, wjets_me, wz_me, zz_me, ww_me, tw_me, data_me, 0);
   cout <<endl;
 
   //
@@ -325,7 +336,7 @@ void estimateJetBkg_fakes(const char* file = "processed_data.root",
       cout << "Fake rates are not available from NtupleMacros/data to estimate jet induced background. Please check" << endl;
     cout <<"Jet induced muon fake background estimation (external fake rate) :\n" <<endl;    
   }
-  printLine("mm bkg", DYee_mm, DYmm_mm, DYtt_mm, tt_mm, wjets_mm, wz_mm, zz_mm, ww_mm, tw_mm, fakeRate);
-  printLine("em bkg", DYee_me, DYmm_me, DYtt_me, tt_me, wjets_me, wz_me, zz_me, ww_me, tw_me, fakeRate);
+  printLine("mm bkg", DYee_mm, DYmm_mm, DYtt_mm, tt_mm, wjets_mm, wz_mm, zz_mm, ww_mm, tw_mm, data_mm, fakeRate);
+  printLine("em bkg", DYee_me, DYmm_me, DYtt_me, tt_me, wjets_me, wz_me, zz_me, ww_me, tw_me, data_me, fakeRate);
   cout <<endl;
 }
