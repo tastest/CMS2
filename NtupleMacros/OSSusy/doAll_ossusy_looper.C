@@ -59,6 +59,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
   // Load various tools  
   gROOT->ProcessLine(Form(".x setup.C(%d)", skipFWLite));
+  gROOT->ProcessLine(".L ../CORE/topmass/ttdilepsolve.cpp+");
 
   // Load FWLite
   gSystem->Load("Tools/MiniFWLite/libMiniFWLite.so");
@@ -182,33 +183,33 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runttdil    = 1;
   bool runttem     = 0;
   bool runttotr    = 1;
-  bool runWW       = 0;
-  bool runWZ       = 0;
-  bool runZZ       = 0;
+  bool runWW       = 1;
+  bool runWZ       = 1;
+  bool runZZ       = 1;
   bool runWjets    = 1;
   bool runWcharm   = 0;
-  bool runZjets    = 0;
+  bool runZjets    = 1;
   bool runDYee     = 0;
   bool runDYmm     = 0;
   bool runDYtautau = 0;
   bool runppMuX    = 0;
   bool runEM       = 0;
-  bool runtW       = 0;
+  bool runtW       = 1;
   bool runVQQ      = 0;
-  bool runLM0      = 0;
+  bool runLM0      = 1;
   bool runLM1      = 1;
-  bool runLM2      = 0;
-  bool runLM3      = 0;
-  bool runLM4      = 0;
-  bool runLM5      = 0;
-  bool runLM6      = 0;
-  bool runLM7      = 0;
-  bool runLM8      = 0;
-  bool runLM9      = 0;
-  bool runLM10     = 0;
-  bool runLM11     = 0;
-  bool runLM12     = 0;
-  bool runLM13     = 0;
+  bool runLM2      = 1;
+  bool runLM3      = 1;
+  bool runLM4      = 1;
+  bool runLM5      = 1;
+  bool runLM6      = 1;
+  bool runLM7      = 1;
+  bool runLM8      = 1;
+  bool runLM9      = 1;
+  bool runLM10     = 1;
+  bool runLM11     = 1;
+  bool runLM12     = 1;
+  bool runLM13     = 1;
   bool runML1      = 0;
   bool runML2      = 0;
   bool runML3      = 0;
@@ -224,7 +225,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   //Flags for files to run over
   bool rundata     = 0;
   bool runttall    = 0;
-  bool runttdil    = 1;
+  bool runttdil    = 0;
   bool runttem     = 0;
   bool runttotr    = 0;
   bool runWW       = 0;
@@ -267,7 +268,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
   TChain* chdata = new  TChain("Events");
   if(rundata){
-    
+  
     pickSkimIfExists(chdata,
                      "/tas/cms2/EG_Run2010A-Sep17ReReco_v2_RECO/V03-06-09/diLepPt1020Skim/skimmed*root",
                      "data");
@@ -283,26 +284,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
     pickSkimIfExists(chdata,
                      "/tas/cms2/Mu_Run2010B-PromptReco-v2_RECO/V03-06-09/diLepPt1020Skim/skimmed*root",
                      "data");
-    /*
-    pickSkimIfExists(chdata, 
-                     "/tas/fgolf/SSskims/data/dilep_skim_2.root",
-                     "data");
-    pickSkimIfExists(chdata, 
-                     "/tas/fgolf/SSskims/data/skimmed_ntuple*.root",
-                     "data");
-    pickSkimIfExists(chdata, 
-                     "/tas/cms2/Mu_Run2010A-PromptReco-v4_RECO/V03-04-26-12/diLepPt1020Skim/skimmed_ntuple*.root",
-                     "data");
-    pickSkimIfExists(chdata, 
-                     "/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-12/diLepPt1020Skim/skimmed_ntuple*.root",
-                     "data");
-    pickSkimIfExists(chdata, 
-                     "/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-02/singleLepPt10Skim/skimmed_ntuple_139783_0.root",
-                     "data");
-    pickSkimIfExists(chdata, 
-                     "/tas/cms2/Mu_Run2010A-PromptReco-v4_RECO/V03-04-26-02/singleLepPt10Skim/skimmed_ntuple_139783_0.root",
-                     "data");
-    */
+
   }
   
    TChain* chQCDpt15 = new  TChain("Events");
@@ -319,10 +301,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                      "QCDpt30");
   }
 
- TChain* chZjets = new  TChain("Events");
+  TChain* chZjets = new  TChain("Events");
   if(runZjets){
     pickSkimIfExists(chZjets, 
-                     "/tas/cms2/ZJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-08/merged*root",
+                     //"/tas/cms2/ZJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-08/merged*root",
+                     "/tas/cms2/ZJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/dilepPt2010Skim/skimmed*root",
                      "Zjets");
   }
 
@@ -350,7 +333,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
     pickSkimIfExists(chtopem, 
                      //"/tas01/disk02/cms2/TTbarJets-madgraph_Summer09-MC_31X_V3_7TeV-v5/V03-00-35/merged*root",
                      //"/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/skimmed*root",
-                     "/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*.root",
+                     "/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/skimmed*root",
                      "TTJets");
   }
 
@@ -365,28 +348,32 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain* chww = new TChain("Events");
   if(runWW){
     pickSkimIfExists(chww, 
-                     "/tas/cms2/WW_Spring10-START3X_V26_S09-v1_DiLep/V03-04-08/merged*root",
+                     "/tas/cms2/WW_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*root",
+                     //"/tas/cms2/WW_Spring10-START3X_V26_S09-v1_DiLep/V03-04-08/merged*root",
                      "WW");
   }
 
   TChain* chWZ = new TChain("Events");
   if(runWZ){
     pickSkimIfExists(chWZ, 
-                     "/tas/cms2/WZ_Spring10-START3X_V26_S09-v1/V03-04-08/merged*root",
+                     "/tas/cms2/WZ_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*root",
+                     //"/tas/cms2/WZ_Spring10-START3X_V26_S09-v1/V03-04-08/merged*root",
                      "WZ_incl"); // can try WZ_3l-Pythia
   }
 
   TChain* chZZ = new TChain("Events");
   if(runZZ){
     pickSkimIfExists(chZZ, 
-                     "/tas/cms2/ZZ_Spring10-START3X_V26_S09-v1_DiLep/V03-04-08/merged*.root", 
+                     "/tas/cms2/ZZ_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*root",
+                     //"/tas/cms2/ZZ_Spring10-START3X_V26_S09-v1_DiLep/V03-04-08/merged*.root", 
                      "ZZ");
   }
 
   TChain* chWjets = new  TChain("Events");
   if(runWjets){
     pickSkimIfExists(chWjets, 
-                     "/tas/cms2/WJets-madgraph_Spring10-START3X_V26_S09-v1_SingleLep/V03-04-08/merged*.root",
+                     "/tas/cms2/WJets-madgraph_Spring10-START3X_V26_S09-v1_SingleLep/V03-04-13-07/diLepPt2010Skim/skimmed*root",
+                     //"/tas/cms2/WJets-madgraph_Spring10-START3X_V26_S09-v1_SingleLep/V03-04-08/merged*.root",
                      "WJets");
   }
 
@@ -470,7 +457,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                      "/tas/cms2/SingleTop_tChannel-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*.root",
                      "SingleTop_tChannel"); 
     pickSkimIfExists(chtW, 
-                     "/tas/cms2/SingleTop_tWChannel-madgraph_Spring10-START3X_V26_S09-v1/V03-04-07/merged*.root",
+                     "/tas/cms2/SingleTop_tWChannel-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*.root",
                      "SingleTop_tWChannel"); 
   }
 
@@ -674,7 +661,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   //set luminosity to scale to
   //--------------------------------
   //float lumi              = 0.1;          //100 pb-1
-  float lumi              = 11.059e-3; 
+  float lumi              = 11.06e-3; 
+  //  float lumi              = 11.06; 
   bool  calculateTCMET    = true; //redo tcmet calculation on the fly
 
   char* jetTypeStrings[3] = {"JPT", "calo","pfjet"};
@@ -692,25 +680,25 @@ void doAll_ossusy_looper(bool skipFWLite = true)
             {
               for (int frmodeIdx = 0; frmodeIdx < (2-(1*!doFakeApp)); ++frmodeIdx)
                 {
-		  
-		  ossusy_looper::JetTypeEnum  jetType(jetTypeIdx);
-		  ossusy_looper::MetTypeEnum  metType(metTypeIdx);
-		  ossusy_looper::ZVetoEnum    zveto(zvetoIdx);
-		  ossusy_looper::FREnum       frmode(frmodeIdx);
-		  
-		  if (rundata) {
-		    cout << "Processing data" << endl;
-		    looper->ScanChain(chdata,"data", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing data" << endl;
-		    hist::color("data", kBlack);
-		  }
-		  if (runZjets) {
-		    cout << "Processing Zjets" << endl;
-		    looper->ScanChain(chZjets,"Zjets", kZjets, preZjets, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing Zjets" << endl;
-		    hist::color("Zjets", kBlack);
-		  }
-                 if (runQCDpt15) {
+                  
+                  ossusy_looper::JetTypeEnum  jetType(jetTypeIdx);
+                  ossusy_looper::MetTypeEnum  metType(metTypeIdx);
+                  ossusy_looper::ZVetoEnum    zveto(zvetoIdx);
+                  ossusy_looper::FREnum       frmode(frmodeIdx);
+                  
+                  if (rundata) {
+                    cout << "Processing data" << endl;
+                    looper->ScanChain(chdata,"data", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing data" << endl;
+                    hist::color("data", kBlack);
+                  }
+                  if (runZjets) {
+                    cout << "Processing Zjets" << endl;
+                    looper->ScanChain(chZjets,"Zjets", kZjets, preZjets, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing Zjets" << endl;
+                    hist::color("Zjets", kBlack);
+                  }
+                  if (runQCDpt15) {
                     cout << "Processing QCDpt15.. " << endl;
                     looper->ScanChain(chQCDpt15,"qcdpt15", kqcdpt15, preqcdpt15, lumi, jetType, metType, zveto,frmode, doFakeApp, calculateTCMET);
                     cout << "Done processing  QCDpt15.. " << endl;
@@ -723,259 +711,254 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                     cout << "Done processing  QCDpt30.. " << endl;
                     hist::color("qcdpt30", kOrange);
                   }
+                  if (runttall) {
+                    cout << "Processing ttbar all.. " << endl;
+                    looper->ScanChain(chtopall,"ttall", kttall, prettall, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing ttbar all.. " << endl;
+                    hist::color("ttall", kYellow);
+                  }
+                  if (runttdil) {
+                    cout << "Processing ttbar dileptonic.. " << endl;
+                    looper->ScanChain(chtopdil,"ttdil", kttdil, prettdil, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing ttbar dileptonic.. " << endl;
+                    hist::color("ttdil", kYellow);
+                  }
+                  if (runttem) {
+                    cout << "Processing ttbar em.. " << endl;
+                    looper->ScanChain(chtopem,"ttem", kttem, prettem, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing ttbar em.. " << endl;
+                  }
+                  if (runttotr) {
+                    cout << "Processing ttbar no-dileptons.. " << endl;
+                    looper->ScanChain(chtopotr,"ttotr", kttotr, prettotr, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing ttbar no-dileptons.. " << endl;
+                    hist::color("ttotr", 30);
+                  }
+                  if (runWW) {
+                    cout << "Processing WW.." << endl;
+                    looper->ScanChain(chww,"ww", kWW, preWW, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing WW.." << endl;
+                    hist::color("ww", kRed);
+                  }
+                  if (runWZ) {
+                    cout << "Processing WZ.." << endl;
+                    looper->ScanChain(chWZ,"wz", kWZ, preWZ, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing WZ.." << endl;
+                    hist::color("wz", kBlue);
+                  }
+                  if (runZZ) {
+                    cout << "Processing ZZ.." << endl;
+                    looper->ScanChain(chZZ,"zz", kZZ, preZZ, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing ZZ.." << endl;
+                    hist::color("zz", kGreen);
+                  }
+                  if (runWjets) {
+                    cout << "Processing Wjets.." << endl;
+                    looper->ScanChain(chWjets,"wjets", kWjets, preWjets, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing Wjets.." << endl;
+                    hist::color("wjets", 40);
+                  }
+                  if (runWcharm) {
+                    cout << "Processing Wcharm.." << endl;
+                    looper->ScanChain(chWcharm, "wcharm", kWcharm, preWcharm, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing Wcharm.." << endl;
+                    hist::color("wcharm", 50);
+                  }
+                  if (runDYtautau) {
+                    cout << "Processing DY->tautau" << endl;
+                    looper->ScanChain(chDYtautau,"DYtautau", kDYtautau, preDYtautau, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing DY->tautau" << endl;
+                    hist::color("DYtautau", kBlack);
+                  }
+                  if (runDYee) {
+                    cout << "Processing DY->ee" << endl;
+                    looper->ScanChain(chDYee,"DYee", kDYee, preDYee, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done rocessing DY->ee" << endl;
+                    hist::color("DYee", kMagenta);
+                  }
+                  if (runDYmm) {
+                    cout << "Processing DY->mm" << endl;
+                    looper->ScanChain(chDYmm,"DYmm", kDYmm, preDYmm, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing DY->mm" << endl;
+                    hist::color("DYmm", kCyan);
+                  }
+                  if (runppMuX) {
+                    cout << "Processing ppMuX" << endl;
+                    looper->ScanChain(chppMuX,"ppMuX", kppMuX, preppMuX, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing ppMuX" << endl;
+                    hist::color("ppMuX", 51);
+                  }
+                  if (runEM) {
+                    cout << "Processing EM" << endl;
+                    looper->ScanChain(chEM,"EM", kEM, preEM, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing EM" << endl;
+                    hist::color("EM", 49);
+                  }
+                  if (runtW) {
+                    cout << "Processing tW" << endl;
+                    looper->ScanChain(chtW,"tW", ktW, pretW, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing tW" << endl;
+                    hist::color("tW", 63);
+                  }
+                  if (runVQQ) { 
+                    cout << "Processing VQQ" << endl;
+                    looper->ScanChain(chVQQ,"VQQ", kVQQ, preVQQ, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing VQQ" << endl;
+                    hist::color("VQQ", 45);
+                  }
+                  if (runLM0) {
+                    cout << "Processing LM0" << endl;
+                    looper->ScanChain(chLM0, "LM0", kLM0, preLM0, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing LM0" << endl;
+                    hist::color("LM0", kOrange);
+                  }
+                  if (runLM1) {
+                    cout << "Processing LM1" << endl;
+                    looper->ScanChain(chLM1, "LM1", kLM1, preLM1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing LM1" << endl;
+                    hist::color("LM1", kOrange+1);
+                  }
+                  if (runLM2) {
+                    cout << "Processing LM2" << endl;
+                    looper->ScanChain(chLM2, "LM2", kLM2, preLM2, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing LM2" << endl;
+                    hist::color("LM2", kOrange+2);
+                  }
+                  if (runLM3) {
+                    cout << "Processing LM3" << endl;
+                    looper->ScanChain(chLM3, "LM3", kLM3, preLM3, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing LM3" << endl;
+                    hist::color("LM3", kOrange+3);
+                  }
+                  if (runLM4) {
+                    cout << "Processing LM4" << endl;
+                    looper->ScanChain(chLM4, "LM4", kLM4, preLM4, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing LM4" << endl;
+                    hist::color("LM4", kOrange+4);
+                  }
+                  if (runLM5) {
+                    cout << "Processing LM5" << endl;
+                    looper->ScanChain(chLM5, "LM5", kLM5, preLM5, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing LM5" << endl;
+                    hist::color("LM5", kOrange+5);
+                  }
+                  if (runLM6) {
+                    cout << "Processing LM6" << endl;
+                    looper->ScanChain(chLM6, "LM6", kLM6, preLM6, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing LM6" << endl;
+                    hist::color("LM6", kOrange+6);
+                  }
+                  if (runLM7) {
+                    cout << "Processing LM7" << endl;
+                    looper->ScanChain(chLM7, "LM7", kLM7, preLM7, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing LM7" << endl;
+                    hist::color("LM7", kOrange+7);
+                  }
+                  if (runLM8) {
+                    cout << "Processing LM8" << endl;
+                    looper->ScanChain(chLM8, "LM8", kLM8, preLM8, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing LM8" << endl;
+                    hist::color("LM8", kOrange+8);
+                  }
+                  if (runLM9) {
+                    cout << "Processing LM9" << endl;
+                    looper->ScanChain(chLM9, "LM9", kLM9, preLM9, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing LM9" << endl;
+                    hist::color("LM9", kOrange+9);
+                  }
+                  if (runLM10) {
+                    cout << "Processing LM10" << endl;
+                    looper->ScanChain(chLM10, "LM10", kLM10, preLM10, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing LM10" << endl;
+                    hist::color("LM10", kOrange+10);
+                  }
+                  if (runLM11) { 
+                    cout << "Processing LM11" << endl;
+                    looper->ScanChain(chLM11, "LM11", kLM11, preLM11, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing LM11" << endl;
+                    hist::color("LM11", kOrange-7);
+                  }
+                  if (runLM12) {
+                    cout << "Processing LM12" << endl;
+                    looper->ScanChain(chLM12, "LM12", kLM12, preLM12, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing LM12" << endl;
+                    hist::color("LM12", kOrange-7);
+                  }
+                  if (runLM13) {
+                    cout << "Processing LM13" << endl;
+                    looper->ScanChain(chLM13, "LM13", kLM13, preLM13, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing LM13" << endl;
+                    hist::color("LM13", kOrange-7);
+                  }
+                  if (runML1) {
+                    cout << "Processing ML1" << endl;
+                    looper->ScanChain(chML1, "ML1", kML1, preML1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing ML1" << endl;
+                  }
+                  if (runML2) {
+                    cout << "Processing ML2" << endl;
+                    looper->ScanChain(chML2, "ML2", kML2, preML2, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing ML2" << endl;
+                  }
+                  if (runML3) {
+                    cout << "Processing ML3" << endl;
+                    looper->ScanChain(chML3, "ML3", kML3, preML3, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing ML3" << endl;
+                  }
+                  if (runML4) {
+                    cout << "Processing ML4" << endl;
+                    looper->ScanChain(chML4, "ML4", kML4, preML4, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing ML4" << endl;
+                  }
+                  if (runML5) {
+                    cout << "Processing ML5" << endl;
+                    looper->ScanChain(chML5, "ML5", kML5, preML5, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing ML5" << endl;
+                  }
+                  if (runML6) {
+                    cout << "Processing ML6" << endl;
+                    looper->ScanChain(chML6, "ML6", kML6, preML6, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing ML6" << endl;
+                  }
+                  if (runML7) {
+                    cout << "Processing ML7" << endl;
+                    looper->ScanChain(chML7, "ML7", kML7, preML7, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing ML7" << endl;
+                  }
+                  if (runML8) {
+                    cout << "Processing ML8" << endl;
+                    looper->ScanChain(chML8, "ML8", kML8, preML8, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing ML8" << endl;
+                  }
+                  if (runLMscan) {
+                    cout << "Processing LMscan" << endl;
+                    looper->ScanChain(chLMscan, "LMscan", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing LMscan" << endl;
+                    hist::color("LMscan", kOrange-7);
+                  }
                   
-		  if (runttall) {
-		    cout << "Processing ttbar all.. " << endl;
-		    looper->ScanChain(chtopall,"ttall", kttall, prettall, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing ttbar all.. " << endl;
-		    hist::color("ttall", kYellow);
-		  }
-		  if (runttdil) {
-		    cout << "Processing ttbar dileptonic.. " << endl;
-		    looper->ScanChain(chtopdil,"ttdil", kttdil, prettdil, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing ttbar dileptonic.. " << endl;
-		    hist::color("ttdil", kYellow);
-		  }
-		  if (runttem) {
-		    cout << "Processing ttbar em.. " << endl;
-		    looper->ScanChain(chtopem,"ttem", kttem, prettem, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing ttbar em.. " << endl;
-		  }
-		  if (runttotr) {
-		    cout << "Processing ttbar no-dileptons.. " << endl;
-		    looper->ScanChain(chtopotr,"ttotr", kttotr, prettotr, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing ttbar no-dileptons.. " << endl;
-		    hist::color("ttotr", 30);
-		  }
-		  if (runWW) {
-		    cout << "Processing WW.." << endl;
-		    looper->ScanChain(chww,"ww", kWW, preWW, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing WW.." << endl;
-		    hist::color("ww", kRed);
-		  }
-		  if (runWZ) {
-		    cout << "Processing WZ.." << endl;
-		    looper->ScanChain(chWZ,"wz", kWZ, preWZ, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing WZ.." << endl;
-		    hist::color("wz", kBlue);
-		  }
-		  if (runZZ) {
-		    cout << "Processing ZZ.." << endl;
-		    looper->ScanChain(chZZ,"zz", kZZ, preZZ, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing ZZ.." << endl;
-		    hist::color("zz", kGreen);
-		  }
-		  if (runWjets) {
-		    cout << "Processing Wjets.." << endl;
-		    looper->ScanChain(chWjets,"wjets", kWjets, preWjets, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing Wjets.." << endl;
-		    hist::color("wjets", 40);
-		  }
-		  if (runWcharm) {
-		    cout << "Processing Wcharm.." << endl;
-		    looper->ScanChain(chWcharm, "wcharm", kWcharm, preWcharm, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing Wcharm.." << endl;
-		    hist::color("wcharm", 50);
-		  }
-		  if (runDYtautau) {
-		    cout << "Processing DY->tautau" << endl;
-		    looper->ScanChain(chDYtautau,"DYtautau", kDYtautau, preDYtautau, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing DY->tautau" << endl;
-		    hist::color("DYtautau", kBlack);
-		  }
-		  if (runDYee) {
-		    cout << "Processing DY->ee" << endl;
-		    looper->ScanChain(chDYee,"DYee", kDYee, preDYee, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done rocessing DY->ee" << endl;
-		    hist::color("DYee", kMagenta);
-		  }
-		  if (runDYmm) {
-		    cout << "Processing DY->mm" << endl;
-		    looper->ScanChain(chDYmm,"DYmm", kDYmm, preDYmm, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing DY->mm" << endl;
-		    hist::color("DYmm", kCyan);
-		  }
-		  if (runppMuX) {
-		    cout << "Processing ppMuX" << endl;
-		    looper->ScanChain(chppMuX,"ppMuX", kppMuX, preppMuX, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing ppMuX" << endl;
-		    hist::color("ppMuX", 51);
-		  }
-		  if (runEM) {
-		    cout << "Processing EM" << endl;
-		    looper->ScanChain(chEM,"EM", kEM, preEM, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing EM" << endl;
-		    hist::color("EM", 49);
-		  }
-		  if (runtW) {
-		    cout << "Processing tW" << endl;
-		    looper->ScanChain(chtW,"tW", ktW, pretW, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing tW" << endl;
-		    hist::color("tW", 63);
-		  }
-		  if (runVQQ) { 
-		    cout << "Processing VQQ" << endl;
-		    looper->ScanChain(chVQQ,"VQQ", kVQQ, preVQQ, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing VQQ" << endl;
-		    hist::color("VQQ", 45);
-		  }
-		  if (runLM0) {
-		    cout << "Processing LM0" << endl;
-		    looper->ScanChain(chLM0, "LM0", kLM0, preLM0, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing LM0" << endl;
-		    hist::color("LM0", kOrange);
-		  }
-		  if (runLM1) {
-		    cout << "Processing LM1" << endl;
-		    looper->ScanChain(chLM1, "LM1", kLM1, preLM1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing LM1" << endl;
-		    hist::color("LM1", kOrange+1);
-		  }
-		  if (runLM2) {
-		    cout << "Processing LM2" << endl;
-		    looper->ScanChain(chLM2, "LM2", kLM2, preLM2, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing LM2" << endl;
-		    hist::color("LM2", kOrange+2);
-		  }
-		  if (runLM3) {
-		    cout << "Processing LM3" << endl;
-		    looper->ScanChain(chLM3, "LM3", kLM3, preLM3, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing LM3" << endl;
-		    hist::color("LM3", kOrange+3);
-		  }
-		  if (runLM4) {
-		    cout << "Processing LM4" << endl;
-		    looper->ScanChain(chLM4, "LM4", kLM4, preLM4, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing LM4" << endl;
-		    hist::color("LM4", kOrange+4);
-		  }
-		  if (runLM5) {
-		    cout << "Processing LM5" << endl;
-		    looper->ScanChain(chLM5, "LM5", kLM5, preLM5, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing LM5" << endl;
-		    hist::color("LM5", kOrange+5);
-		  }
-		  if (runLM6) {
-		    cout << "Processing LM6" << endl;
-		    looper->ScanChain(chLM6, "LM6", kLM6, preLM6, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing LM6" << endl;
-		    hist::color("LM6", kOrange+6);
-		  }
-		  if (runLM7) {
-		    cout << "Processing LM7" << endl;
-		    looper->ScanChain(chLM7, "LM7", kLM7, preLM7, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing LM7" << endl;
-		    hist::color("LM7", kOrange+7);
-		  }
-		  if (runLM8) {
-		    cout << "Processing LM8" << endl;
-		    looper->ScanChain(chLM8, "LM8", kLM8, preLM8, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing LM8" << endl;
-		    hist::color("LM8", kOrange+8);
-		  }
-		  if (runLM9) {
-		    cout << "Processing LM9" << endl;
-		    looper->ScanChain(chLM9, "LM9", kLM9, preLM9, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing LM9" << endl;
-		    hist::color("LM9", kOrange+9);
-		  }
-		  if (runLM10) {
-		    cout << "Processing LM10" << endl;
-		    looper->ScanChain(chLM10, "LM10", kLM10, preLM10, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing LM10" << endl;
-		    hist::color("LM10", kOrange+10);
-		  }
-		  if (runLM11) { 
-		    cout << "Processing LM11" << endl;
-		    looper->ScanChain(chLM11, "LM11", kLM11, preLM11, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing LM11" << endl;
-		    hist::color("LM11", kOrange-7);
-		  }
-		  if (runLM12) {
-		    cout << "Processing LM12" << endl;
-		    looper->ScanChain(chLM12, "LM12", kLM12, preLM12, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing LM12" << endl;
-		    hist::color("LM12", kOrange-7);
-		  }
-		  if (runLM13) {
-		    cout << "Processing LM13" << endl;
-		    looper->ScanChain(chLM13, "LM13", kLM13, preLM13, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing LM13" << endl;
-		    hist::color("LM13", kOrange-7);
-		  }
-		  if (runML1) {
-		    cout << "Processing ML1" << endl;
-		    looper->ScanChain(chML1, "ML1", kML1, preML1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing ML1" << endl;
-		  }
-		  if (runML2) {
-		    cout << "Processing ML2" << endl;
-		    looper->ScanChain(chML2, "ML2", kML2, preML2, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing ML2" << endl;
-		  }
-		  if (runML3) {
-		    cout << "Processing ML3" << endl;
-		    looper->ScanChain(chML3, "ML3", kML3, preML3, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing ML3" << endl;
-		  }
-		  if (runML4) {
-		    cout << "Processing ML4" << endl;
-		    looper->ScanChain(chML4, "ML4", kML4, preML4, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing ML4" << endl;
-		  }
-		  if (runML5) {
-		    cout << "Processing ML5" << endl;
-		    looper->ScanChain(chML5, "ML5", kML5, preML5, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing ML5" << endl;
-		  }
-		  if (runML6) {
-		    cout << "Processing ML6" << endl;
-		    looper->ScanChain(chML6, "ML6", kML6, preML6, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing ML6" << endl;
-		  }
-		  if (runML7) {
-		    cout << "Processing ML7" << endl;
-		    looper->ScanChain(chML7, "ML7", kML7, preML7, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing ML7" << endl;
-		  }
-		  if (runML8) {
-		    cout << "Processing ML8" << endl;
-		    looper->ScanChain(chML8, "ML8", kML8, preML8, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing ML8" << endl;
-		  }
-		  if (runLMscan) {
-		    cout << "Processing LMscan" << endl;
-		    looper->ScanChain(chLMscan, "LMscan", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing LMscan" << endl;
-		    hist::color("LMscan", kOrange-7);
-		  }
-
-
-		  // save all the histograms
-		  if(doFakeApp) {
-
-        const char* outFile = Form("output/ossusy_%s_%s%s_%s_FakeApp.root", 
-                                   jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx],frmodeStrings[frmode]);
-
-// 		    const char* outFile = Form("output/ossusy_%s_%s%s_FakeApp.root", 
-// 					       jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
-		  }
-		  else {
-		    const char* outFile = Form("output/V01-03/ossusy_%s_%s%s_bitmask.root", 
-					       jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
-		  }
-
-		  //const char* outFile = Form("victory_baseline_genmetgt50_nosumjetptcut_%s_%s_pleasework_varbins.root", 
-		  //jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx]);
-		  TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
-		  rootdir->cd();
-		  saveHist(outFile);
-		  deleteHistos();
-
-		} // frmodeIdx
-	    }//zvetoIdx
+                  
+                  // save all the histograms
+                  if(doFakeApp) {
+                    const char* outFile = Form("output/temp/ossusy_%s_%s%s_%s_FakeApp.root", 
+                                               jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx],frmodeStrings[frmode]);
+                  }
+                  else {
+                    const char* outFile = Form("output/temp/ossusy_%s_%s%s_bitmask.root", 
+                                               jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
+                  }
+                  
+                  //const char* outFile = Form("victory_baseline_genmetgt50_nosumjetptcut_%s_%s_pleasework_varbins.root", 
+                  //jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx]);
+                  TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
+                  rootdir->cd();
+                  saveHist(outFile);
+                  deleteHistos();
+                  
+                } // frmodeIdx
+            }//zvetoIdx
         } // metTypeIdx
     } // jetTypeIdx
-
+  
   gSystem->Exit(0);
 }

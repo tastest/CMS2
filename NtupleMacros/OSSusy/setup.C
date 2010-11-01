@@ -7,6 +7,7 @@ void setup( bool skipFWLite = false ) {
 
     gSystem->Load("libGui.so");
     gSystem->Load("libPhysics.so");
+    gSystem->Load("/tas07/disk00/jribnik/lhapdf-5.8.3/lib/.libs/libLHAPDF.so");
 
     // Load and compile something to allow proper treatment of vectors
     // Not clear that it is needed
@@ -27,6 +28,7 @@ void setup( bool skipFWLite = false ) {
     // Punch in more quesses where NtupleMacros are -- don't keep multiple copies ;)
     gSystem->AddIncludePath(Form(" -w -I./ -I./CORE -I%s/CORE -I../CMS2/NtupleMacros/CORE -I../../CMS2/NtupleMacros/CORE\
                 -I../../../CMS2/NtupleMacros/CORE -I../../../../CMS2/NtupleMacros/CORE\
+                -I../CORE/topmass -I/tas07/disk00/jribnik/lhapdf/include\
                 -I%s -I../CMS2/NtupleMacros -I../../CMS2/NtupleMacros  -I../../../CMS2/NtupleMacros -I../../../../CMS2/NtupleMacros", 
                 cms2Location.c_str(),cms2Location.c_str() ));
 }
