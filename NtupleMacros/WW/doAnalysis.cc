@@ -2075,7 +2075,7 @@ RooDataSet* ScanChain( TChain* chain,
 
  // declare and create array of histograms
   ofstream selectedEvents(Form("%s.list",prefix));
-  std::set<unsigned int> runList;
+  std::map<unsigned int, std::set<unsigned int> > runList;
   RooDataSet* dataset = MakeNewDataset(prefix);
 
   initializeHistograms(prefix,qcdBackground);
@@ -2151,7 +2151,7 @@ RooDataSet* ScanChain( TChain* chain,
       if(realData && cms2_json_file!="") {
 	if( !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
       }
-      runList.insert(cms2.evt_run());
+      runList[cms2.evt_run()].insert(cms2.evt_lumiBlock());
       double weight = 1.0;
       if ( !realData && integratedLumi>0 ){
 	double mcweight = cms2.genps_weight() > 0.0 ? 1.0 : -1.0;
@@ -2250,17 +2250,53 @@ RooDataSet* ScanChain( TChain* chain,
   selectedEvents.close();
   if (realData){
       ofstream json("processed.json");
+      ofstream json2("processed_detailed.json");
       json << "{";
+      json2 << "{";
       bool firstRun(true);
-      for ( std::set<unsigned int>::const_iterator run = runList.begin();
+      for ( std::map<unsigned int, std::set<unsigned int> >::const_iterator run = runList.begin();
 	    run != runList.end(); ++ run ){
-	if ( ! firstRun ) json << ", ";
+	if ( ! firstRun ) { 
+	  json << " ,";
+	  json2 << " ,";
+	}
 	firstRun = false;
-	json << '"' << *run << '"' << ": [[1,9999]]";
+	json << '"' << run->first << '"' << ": [[1,9999]]";
+	const std::set<unsigned int>& lumis(run->second);
+	unsigned int firstLumi = 0;
+	unsigned int nLumis = 0;
+	json2 << '"' << run->first << '"' << ": [";
+	unsigned int nRanges = 0;
+	for ( std::set<unsigned int>::const_iterator lumi=lumis.begin();
+	      lumi!=lumis.end(); ++lumi )
+	  { 
+	    if ( firstLumi == 0 ){
+	      firstLumi = *lumi;
+	      nLumis = 1;
+	      continue;
+	    }
+	    if ( firstLumi+nLumis == *lumi ){
+	      nLumis++;
+	      continue;
+	    }
+	    if (nRanges>0) json2 << " ,";
+	    json2 << "[" << firstLumi << ", " << firstLumi+nLumis-1 << "]";
+	    ++nRanges;
+	    firstLumi = *lumi;
+	    nLumis = 1;
+	  }
+	if ( firstLumi != 0 ) {
+	  if (nRanges>0) json2 << " ,";
+	  json2 << "[" << firstLumi << ", " << firstLumi+nLumis-1 << "]";
+	}
+	json2 << "]";
       }
       json << "}";
+      json2 << "}";
       json << endl;
+      json2 << endl;
       json.close();
+      json2.close();
   }
   return dataset;
 }

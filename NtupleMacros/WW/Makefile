@@ -152,4 +152,8 @@ skim: data processData.C $(CORELIB) $(LIB) $(FWLIB)# skim data
 	$(QUIET) if [ ! -n "$(SkimName)" ]; then echo "Please set SkimName variable in order to proceed"; exit 1; fi; \
 	export SkimSamples=1; root -b -q processData.C
 #	export SkimSamples=1; valgrind --track-origins=yes root.exe -b -q processData.C
+lumi: processed_data.root processed.json # estimated integrated luminosity looking at processed runs
+	$(QUIET) lumiCalc.py -c frontier://LumiProd/CMS_LUMI_PROD -i processed.json overview
+lumi2: processed_data.root processed_detailed.json # estimated integrated luminosity looking at processed runs and lumis
+	$(QUIET) lumiCalc.py -c frontier://LumiProd/CMS_LUMI_PROD -i processed_detailed.json overview
 endif
