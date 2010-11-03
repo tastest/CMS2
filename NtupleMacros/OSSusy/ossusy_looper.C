@@ -139,7 +139,7 @@ void ossusy_looper::makeTree(char *prefix)
   rootdir->cd();
 
   //Super compressed ntuple here
-  outFile   = new TFile(Form("output/temp/%s_smallTree.root",prefix), "RECREATE");
+  outFile   = new TFile(Form("output/oct15th_v2/%s_smallTree.root",prefix), "RECREATE");
   //outFile   = new TFile("temp.root","RECREATE");
   outFile->cd();
   outTree = new TTree("t","Tree");
@@ -176,7 +176,7 @@ void ossusy_looper::makeTree(char *prefix)
   outTree->Branch("dildphi",         &dildphi_,          "dildphi/F");
   outTree->Branch("njets",           &njets_,            "njets/I");
   outTree->Branch("nvtx",            &nvtx_,             "nvtx/I");
-  outTree->Branch("nbtags",            &nbtags_,             "nbtags/I");
+  outTree->Branch("nbtags",          &nbtags_,           "nbtags/I");
   outTree->Branch("vecjetpt",        &vecjetpt_,         "vecjetpt/F");
   outTree->Branch("pass",            &pass_,             "pass/I");
   outTree->Branch("passz",           &passz_,            "passz/I");
@@ -186,12 +186,13 @@ void ossusy_looper::makeTree(char *prefix)
   outTree->Branch("ptl2",            &ptl2_,             "ptl2/F");
   outTree->Branch("ptj1",            &ptj1_,             "ptj1/F");
   outTree->Branch("ptj2",            &ptj2_,             "ptj2/F");
-  outTree->Branch("etal1",            &etal1_,             "etal1/F");
-  outTree->Branch("etal2",            &etal2_,             "etal2/F");
-  outTree->Branch("phil1",            &phil1_,             "phil1/F");
-  outTree->Branch("phil2",            &phil2_,             "phil2/F");
+  outTree->Branch("etal1",           &etal1_,            "etal1/F");
+  outTree->Branch("etal2",           &etal2_,            "etal2/F");
+  outTree->Branch("phil1",           &phil1_,            "phil1/F");
+  outTree->Branch("phil2",           &phil2_,            "phil2/F");
   outTree->Branch("meff",            &meff_,             "meff/F");
   outTree->Branch("mt",              &mt_,               "mt/F");
+  outTree->Branch("dataset",         &dataset_,          "dataset[200]/C");
   outTree->Branch("run",             &run_,              "run/I");
   outTree->Branch("lumi",            &lumi_,             "lumi/I");
   outTree->Branch("event",           &event_,            "event/I");
@@ -1269,7 +1270,11 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         float m12  = -9999.;
 
         int nvtx = 0;
-        nvtx  = count_goodVertexAugust2010();
+    
+        for (size_t v = 0; v < cms2.vtxs_position().size(); ++v){
+          if(isGoodVertex(v)) ++nvtx;
+        }
+             
         
         if(strcmp(prefix,"LMscan") == 0){
           //m0  = sparm_m0();
@@ -1335,9 +1340,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         float tcmet_35X = -9999;
 
         if( !isData ){
-          p_met = getMet( "tcMET35X"    , hypIdx);
+          //p_met = getMet( "tcMET35X"    , hypIdx);
           //p_met = getMet( "tcMET"    , hypIdx); //Summer09: use tcMET
-          tcmet_35X = p_met.first;
+          //tcmet_35X = p_met.first;
         }
 
         p_met = getMet( "tcMET_looper"    , hypIdx);
@@ -1400,12 +1405,13 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           ptl2_          = ptl2;                         //2nd highest pT lepton
           ptj1_          = ptmax;                        //leading jet
           ptj2_          = ptmax2;                       //2nd leading jet
-          etal1_          = etal1;                         //highest pT lepton
-          etal2_          = etal2;                         //2nd highest pT lepton
-          phil1_          = phil1;                         //highest phi lepton
-          phil2_          = phil2;                         //2nd highest phi lepton
+          etal1_         = etal1;                        //highest pT lepton
+          etal2_         = etal2;                        //2nd highest pT lepton
+          phil1_         = phil1;                        //highest phi lepton
+          phil2_         = phil2;                        //2nd highest phi lepton
           meff_          = meff_jets_p4;                 //effective mass
           mt_            = mt;                           //transverse mass of leading lepton+met
+          strcpy(dataset_, cms2.evt_dataset().Data());   //dataset name
           run_           = evt_run();
           lumi_          = evt_lumiBlock();
           event_         = evt_event();

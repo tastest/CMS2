@@ -122,11 +122,10 @@ class ossusy_looper
         Float_t phil2_;
         Float_t meff_;
         Float_t mt_;
+        char    dataset_[200];
         Int_t   run_;
         Int_t   lumi_;
         Int_t   event_;
-
-
 
         // for fakeRates
         bool isFakeableMuon (int index);
