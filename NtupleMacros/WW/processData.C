@@ -44,8 +44,8 @@ void processData()
   // (0 and 1 are easier to modify)
   //
   bool runWW    = 1;
-  bool runWZ    = 0;
-  bool runZZ    = 0;
+  bool runWZ    = 1;
+  bool runZZ    = 1;
   bool runWjets = 0;
   bool runDYee  = 0;
   bool runDYmm  = 0;
@@ -95,10 +95,12 @@ void processData()
   // ProcessSample("/tas/yygao/WWTo2L2Nu_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/merged_ntuple*.root", WW, integratedLumi, 4.5, -1, fullDataSet, kRed);
 
   if (runWZ)
-    ProcessSample(dataset+"/WZ_Spring10-START3X_V26_S09-v1/V03-04-08/"+version+"/*.root", WZ, integratedLumi, 18.2, -1, fullDataSet, kBlue);
+    // ProcessSample(dataset+"/WZ_Spring10-START3X_V26_S09-v1/V03-04-08/"+version+"/*.root", WZ, integratedLumi, 18.2, -1, fullDataSet, kBlue);
+    ProcessSample(dataset+"/WZtoAnything_TuneZ2_7TeV-pythia6-tauola_Fall10-START38_V12-v1/V03-06-14/"+version+"/*.root", WZ, integratedLumi, 18.2, -1, fullDataSet, kBlue);
   
   if (runZZ)
-    ProcessSample(dataset+"/ZZ_Spring10-START3X_V26_S09-v1_DiLep/V03-04-08/"+version+"/*.root", ZZ, integratedLumi, 5.9, -1, fullDataSet, kGreen);
+    // ProcessSample(dataset+"/ZZ_Spring10-START3X_V26_S09-v1_DiLep/V03-04-08/"+version+"/*.root", ZZ, integratedLumi, 5.9, -1, fullDataSet, kGreen);
+    ProcessSample(dataset+"/ZZtoAnything_TuneZ2_7TeV-pythia6-tauola_Fall10-START38_V12-v1/V03-06-14/"+version+"/*.root", ZZ, integratedLumi, 5.9, -1, fullDataSet, kGreen);
  
   if (runWjets){
     if ( 1 ) {
@@ -188,7 +190,7 @@ void processData()
   // RealData
   //TString cms2_json_file = "Cert_TopSep11_Merged_135059-144114_allPVT.txt";
   TString cms2_json_file;// = "Cert_132440-147454_7TeV_StreamExpress_Collisions10_JSON.txt";
-  // TString cms2_json_file = "Cert_132440-148058_7TeV_StreamExpress_Collisions10_JSON.txt";
+  // TString cms2_json_file = "Cert_132440-148864_7TeV_StreamExpress_Collisions10_JSON.txt";
 
   std::vector<string> dataSamples;
   //dataSamples.push_back("/tas/yygao/dataskims/diLepPt2020wwskim.root"); // this is the skim corresponds to the 3.1/pb with Json files at Sep11
@@ -196,11 +198,15 @@ void processData()
   // dataSamples.push_back(dataset+"/Mu_Run2010A-Sep17ReReco_v2_RECO/V03-06-09/singleLepPt10Skim/*.root");
   // dataSamples.push_back(dataset+"/Mu_Run2010A-Sep17ReReco_v2_RECO/V03-06-09/diLepPt1020Skim/skimmed_ntuple_142132*.root");
   // dataSamples.push_back(dataset+"/Mu_Run2010A-Sep17ReReco_v2_RECO/V03-06-09/diLepPt1020Skim/"+version+"/*.root");
-  // dataSamples.push_back(dataset+"/Mu_Run2010B-PromptReco-v2_RECO/V03-06-09/diLepPt1020Skim/"+version+"/*.root");
+  dataSamples.push_back(dataset+"/Mu_Run2010A-Sep17ReReco_v2_RECO/V03-06-14/diLepPt1020Skim/"+version+"/*.root");
+  dataSamples.push_back(dataset+"/Mu_Run2010B-PromptReco-v2_RECO/V03-06-14-00/diLepPt1020Skim/"+version+"/*.root");
   dataSamples.push_back(dataset+"/Mu_Run2010B-PromptReco-v2_RECO/V03-06-14/diLepPt1020Skim/"+version+"/*.root");
   // dataSamples.push_back(dataset+"/EG_Run2010A-Sep17ReReco_v2_RECO/V03-06-09/diLepPt1020Skim/"+version+"/*.root");
+  dataSamples.push_back(dataset+"/EG_Run2010A-Sep17ReReco_v2_RECO/V03-06-14/diLepPt1020Skim/"+version+"/*.root");
   // dataSamples.push_back(dataset+"/Electron_Run2010B-PromptReco-v2_RECO/V03-06-09/diLepPt1020Skim/"+version+"/*.root");
+  dataSamples.push_back(dataset+"/Electron_Run2010B-PromptReco-v2_RECO/V03-06-14-00/diLepPt1020Skim/"+version+"/*.root");
   dataSamples.push_back(dataset+"/Electron_Run2010B-PromptReco-v2_RECO/V03-06-14/diLepPt1020Skim/"+version+"/*.root");
+  // dataSamples.push_back(dataset+"/Electron_Run2010B-PromptReco-v2_RECO/V03-06-09/diLepPt1020Skim/"+version+"/*.root");
   
   if (runData)
     ProcessSample(dataSamples, Data, 3.1, -1, -1, fullDataSet, kBlack, false, false, zStudy, true, cms2_json_file);
