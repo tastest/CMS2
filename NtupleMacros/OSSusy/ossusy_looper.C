@@ -35,7 +35,8 @@
 #include "CORE/jetSelections.cc"
 //#include "CORE/triggerUtils.cc"
 
-#include "../CORE/topmass/getTopMassEstimate.icc"
+//#include "../CORE/topmass/getTopMassEstimate.icc"
+#include "CORE/topmass/getTopMassEstimate.icc"
 
 using namespace std;
 using namespace tas;
@@ -1292,13 +1293,13 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         float phill    = hyp_ll_p4()[hypIdx].phi();
         float philt    = hyp_lt_p4()[hypIdx].phi();
 
-        float ptl1    = ( ptlt > ptll) ? ptlt : ptll; 
-        float ptl2    = ( ptlt > ptll) ? ptll : ptlt; 
-        float etal1    = ( etalt > etall) ? etalt : etall; 
-        float etal2    = ( etalt > etall) ? etall : etalt; 
-        float phil1    = ( philt > phill) ? philt : phill; 
-        float phil2    = ( philt > phill) ? phill : philt; 
-        float philep  = ( ptlt > ptll) ? hyp_lt_trk_p4()[hypIdx].phi() : hyp_ll_trk_p4()[hypIdx].phi() ;
+        float ptl1    = ( ptlt > ptll ) ? ptlt  : ptll; 
+        float ptl2    = ( ptlt > ptll ) ? ptll  : ptlt; 
+        float etal1   = ( ptlt > ptll ) ? etalt : etall; 
+        float etal2   = ( ptlt > ptll ) ? etall : etalt; 
+        float phil1   = ( ptlt > ptll ) ? philt : phill; 
+        float phil2   = ( ptlt > ptll ) ? phill : philt; 
+        float philep  = ( ptlt > ptll ) ? hyp_lt_trk_p4()[hypIdx].phi() : hyp_ll_trk_p4()[hypIdx].phi() ;
 
         //find leading jet pT
         int   imax  = -9999;
@@ -1883,7 +1884,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
   
   if (nEventsChain != nEventsTotal)
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
-  
+ 
+  delete d_llsol;
+ 
   return 0;
 }
 
