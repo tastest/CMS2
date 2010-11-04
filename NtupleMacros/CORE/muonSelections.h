@@ -25,7 +25,9 @@ enum SelectionType {
 	 muonSelectionFO_mu_ss_iso10 = 15,
 	 NominalWWV1 = 16,
 	 muonSelectionFO_mu_wwV1 = 17,
-	 muonSelectionFO_mu_wwV1_iso10 = 18
+	 muonSelectionFO_mu_wwV1_iso10 = 18,
+	 OSGeneric_v1 = 19,
+	 OSZ_v1 = 20
 }; 
 
 //
