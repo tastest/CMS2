@@ -58,12 +58,10 @@ bool goodElectronWithoutIsolation(unsigned int i){
 }
 
 bool goodElectronIsolated(unsigned int i){
-  // if ( cms2.els_exp_innerlayers().at(index) > 0 ) return false;
-  // if ( cms2.els_exp_innerlayers39X().at(index) > 0 ) return false;
-  // return pass_electronSelection( index, electronSelection_wwV1);
-  // return pass_electronSelection( i, electronSelection_wwV1);
-  return ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_elIso(i);
-  // return ww_eld0(i) && ww_elIso(i)<0.1;
+  bool core = pass_electronSelection( i, electronSelection_wwV1);
+  bool internal = ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_elIso(i);
+  assert(core==internal);
+  return core;
 }
 
 bool fakableElectron(unsigned int i){
@@ -78,8 +76,10 @@ bool goodMuonWithoutIsolation(unsigned int i){
 }
 
 bool goodMuonIsolated(unsigned int i){
-  //return muonId(i, NominalWWV0);
-  return ww_muBase(i) && ww_mud0PV(i) && ww_muId(i) && ww_muIso(i); 
+  bool core = muonId(i, NominalWWV1);
+  bool internal = ww_muBase(i) && ww_mud0PV(i) && ww_muId(i) && ww_muIso(i); 
+  assert(core==internal);
+  return core;
 }
 
 bool fakableMuon(unsigned int i){
@@ -90,8 +90,6 @@ bool fakableMuon(unsigned int i){
 
 double metValue(){    return cms2.evt_tcmet(); }
 double metPhiValue(){ return cms2.evt_tcmetPhi(); }
-//double metValue(){    return cms2.evt35X_tcmet(); }
-//double metPhiValue(){ return cms2.evt35X_tcmetPhi(); }
 
 bool passedMetRequirements(unsigned int i_hyp){
   // if ( cms2.hyp_p4().at(i_hyp).mass()>130 ) return true;
