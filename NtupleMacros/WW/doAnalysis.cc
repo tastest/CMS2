@@ -226,6 +226,7 @@ bool ww_mud0PV(unsigned int index){
   int iMax = -1;
   for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
     if (cms2.vtxs_isFake()[i]) continue;
+    if (!isGoodVertex(i)) continue;
     if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
       iMax = i;
       sumPtMax = cms2.vtxs_sumpt().at(i);
