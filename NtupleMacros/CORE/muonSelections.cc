@@ -31,9 +31,11 @@ bool muonId(unsigned int index, SelectionType type){
 	 case NominalWWV1:
 		  isovalue = 0.15;
 		  break;
+	 case muonSelectionFO_mu_wwV1:
 	 case muonSelectionFO_mu_ww:
 		  isovalue = 0.40;
 		  break;
+	 case muonSelectionFO_mu_wwV1_iso10:
 	 case muonSelectionFO_mu_ww_iso10:
 		  isovalue = 1.0;
 		  break;
@@ -138,7 +140,6 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type){
 		  break;
 
 	 case NominalWWV0:
-	 case NominalWWV1:
 		  if ( cms2.mus_p4()[index].pt() < 20.0 )             return false; // pt cut
 		  if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)  return false; // eta cut
 		  if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
@@ -148,6 +149,25 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type){
 		  if (cms2.mus_gfit_validSTAHits().at(index)==0 )     return false; // Glb fit must have hits in mu chambers
 		  if (TMath::Abs(mud0PV(index)) >= 0.02)              return false; // d0 from pvtx
 		  return true;
+		  break;
+
+	 case muonSelectionFO_mu_wwV1:
+	 case muonSelectionFO_mu_wwV1_iso10:
+	 case NominalWWV1:
+		  if ( cms2.mus_p4()[index].pt() < 20.0 )             return false; // pt cut
+		  if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)  return false; // eta cut
+		  if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
+		  if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
+		  if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
+		  if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits  
+		  if (cms2.mus_gfit_validSTAHits().at(index)==0 )     return false; // Glb fit must have hits in mu chambers
+		  if (TMath::Abs(mud0PV_wwV1(index)) >= 0.02)         return false; // d0 from pvtx
+		  if (TMath::Abs(mudzPV_wwV1(index)) >= 1.0)          return false; // dz from pvtx
+		  if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1) return false;
+		  if (cms2.trks_valid_pixelhits().at(cms2.mus_trkidx().at(index))==0) return false;
+		  if (cms2.mus_nmatches().at(index)<2) return false;
+		  return true;
+		  break;
 
 	 case muonSelectionFO_mu_ww:
 		  if ( cms2.mus_p4()[index].pt() < 20.0 )             return false; // pt cut
@@ -170,7 +190,8 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type){
 		  if (cms2.mus_gfit_validSTAHits().at(index)==0 )     return false; // Glb fit must have hits in mu chambers
 		  if (TMath::Abs(mud0PV(index)) >= 0.02)              return false; // d0 from pvtx
 		  return true;
-	    
+
+    
 	 case NominalSS:
 		  if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)  return false; // eta cut
 		  if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
@@ -283,4 +304,58 @@ double mud0PV(unsigned int index){
 		  cms2.vtxs_position()[iMax].x()*sin(cms2.mus_trk_p4()[index].phi())+
 		  cms2.vtxs_position()[iMax].y()*cos(cms2.mus_trk_p4()[index].phi());
 	 return dxyPV;
+}
+
+
+double mud0PV_wwV1(unsigned int index){
+  if ( cms2.vtxs_sumpt().empty() ) return false;
+  double sumPtMax = -1;
+  int iMax = -1;
+  for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
+    // if (!isGoodVertex(i)) continue;
+    // Copied from eventSelections.cc 
+    if (cms2.vtxs_isFake()[i]) continue;
+    if (cms2.vtxs_ndof()[i] < 4.) continue;
+    if (cms2.vtxs_position()[i].Rho() > 2.0) continue;
+    if (fabs(cms2.vtxs_position()[i].Z()) > 24.0) continue;
+    if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
+      iMax = i;
+      sumPtMax = cms2.vtxs_sumpt().at(i);
+    }
+  }
+  if (iMax<0) return false;
+  double dxyPV = cms2.mus_d0()[index]-
+    cms2.vtxs_position()[iMax].x()*sin(cms2.mus_trk_p4()[index].phi())+
+    cms2.vtxs_position()[iMax].y()*cos(cms2.mus_trk_p4()[index].phi());
+  return dxyPV;
+}
+
+
+double mudzPV_wwV1(unsigned int index){
+  if ( cms2.vtxs_sumpt().empty() ) return false;
+  double sumPtMax = -1;
+  int iMax = -1;
+  for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
+    // if (!isGoodVertex(i)) continue;
+    // Copied from eventSelections.cc 
+    if (cms2.vtxs_isFake()[i]) continue;
+    if (cms2.vtxs_ndof()[i] < 4.) continue;
+    if (cms2.vtxs_position()[i].Rho() > 2.0) continue;
+    if (fabs(cms2.vtxs_position()[i].Z()) > 24.0) continue;
+    if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
+      iMax = i;
+      sumPtMax = cms2.vtxs_sumpt().at(i);
+    }
+  }
+  if (iMax<0) return false;
+  // double dzpv = cms2.mus_z0corr()[index]-cms2.vtxs_position()[iMax].z();
+  const LorentzVector& vtx = cms2.mus_vertex_p4()[index];
+  const LorentzVector& p4 = cms2.mus_trk_p4()[index];
+  const LorentzVector& pv = cms2.vtxs_position()[iMax];
+  return (vtx.z()-pv.z()) - ((vtx.x()-pv.x())*p4.x()+(vtx.y()-pv.y())*p4.y())/p4.pt() * p4.z()/p4.pt(); 
+  /* directly from NtupleMacros/WW/doAnalysis.cc
+  double dzpv = dzPV(cms2.mus_vertex_p4()[index], cms2.mus_trk_p4()[index], cms2.vtxs_position()[iMax]);
+  double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVector& pv){
+  return (vtx.z()-pv.z()) - ((vtx.x()-pv.x())*p4.x()+(vtx.y()-pv.y())*p4.y())/p4.pt() * p4.z()/p4.pt();
+  }*/
 }

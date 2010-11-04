@@ -23,7 +23,9 @@ enum SelectionType {
 	 NominalSSnod0 = 13,
 	 muonSelectionFO_mu_ss = 14,
 	 muonSelectionFO_mu_ss_iso10 = 15,
-	 NominalWWV1 = 16
+	 NominalWWV1 = 16,
+	 muonSelectionFO_mu_wwV1 = 17,
+	 muonSelectionFO_mu_wwV1_iso10 = 18
 }; 
 
 //
@@ -55,6 +57,7 @@ bool isCosmics(unsigned int index);
 //
 
 double mud0PV(unsigned int index);
-
+double mud0PV_wwV1(unsigned int index);
+double mudzPV_wwV1(unsigned int index);
 #endif
 
