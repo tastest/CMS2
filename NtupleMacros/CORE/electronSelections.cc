@@ -758,7 +758,7 @@ double electron_d0PV(unsigned int index){
 
 
 double electron_dzPV_wwV1(unsigned int index){ 
-  if ( cms2.vtxs_sumpt().empty() ) return false;
+  if ( cms2.vtxs_sumpt().empty() ) return 9999.;
   double sumPtMax = -1;
   int iMax = -1;
   for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
@@ -773,7 +773,7 @@ double electron_dzPV_wwV1(unsigned int index){
       sumPtMax = cms2.vtxs_sumpt().at(i);
     }
   }
-  if (iMax<0) return false;
+  if (iMax<0) return 9999.;
   
   const LorentzVector& vtx = cms2.els_vertex_p4()[index];
   const LorentzVector& p4 = cms2.els_trk_p4()[index];
@@ -788,7 +788,7 @@ double electron_dzPV_wwV1(unsigned int index){
 
 
 double electron_d0PV_wwV1(unsigned int index){ 
-  if ( cms2.vtxs_sumpt().empty() ) return false;
+  if ( cms2.vtxs_sumpt().empty() ) return 9999.;
   double sumPtMax = -1;
   int iMax = -1;
   for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
@@ -803,7 +803,7 @@ double electron_d0PV_wwV1(unsigned int index){
       sumPtMax = cms2.vtxs_sumpt().at(i);
     }
   }
-  if (iMax<0) return false;
+  if (iMax<0) return 9999.;
   double dxyPV = cms2.els_d0()[index]-
     cms2.vtxs_position()[iMax].x()*sin(cms2.els_trk_p4()[index].phi())+
     cms2.vtxs_position()[iMax].y()*cos(cms2.els_trk_p4()[index].phi());

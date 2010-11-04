@@ -325,7 +325,7 @@ bool passedMuonTriggerRequirements()
 //-------------------------------------------------------------------------------
 
 double mud0PV(unsigned int index){
-	 if ( cms2.vtxs_sumpt().empty() ) return false;
+	 if ( cms2.vtxs_sumpt().empty() ) return 9999.;
 	 unsigned int iMax = 0;
 	 double sumPtMax = cms2.vtxs_sumpt().at(0);
 	 for ( unsigned int i = iMax+1; i < cms2.vtxs_sumpt().size(); ++i )
@@ -341,7 +341,7 @@ double mud0PV(unsigned int index){
 
 
 double mud0PV_wwV1(unsigned int index){
-  if ( cms2.vtxs_sumpt().empty() ) return false;
+  if ( cms2.vtxs_sumpt().empty() ) return 9999.;
   double sumPtMax = -1;
   int iMax = -1;
   for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
@@ -356,7 +356,7 @@ double mud0PV_wwV1(unsigned int index){
       sumPtMax = cms2.vtxs_sumpt().at(i);
     }
   }
-  if (iMax<0) return false;
+  if (iMax<0) return 9999.;
   double dxyPV = cms2.mus_d0()[index]-
     cms2.vtxs_position()[iMax].x()*sin(cms2.mus_trk_p4()[index].phi())+
     cms2.vtxs_position()[iMax].y()*cos(cms2.mus_trk_p4()[index].phi());
@@ -365,7 +365,7 @@ double mud0PV_wwV1(unsigned int index){
 
 
 double mudzPV_wwV1(unsigned int index){
-  if ( cms2.vtxs_sumpt().empty() ) return false;
+  if ( cms2.vtxs_sumpt().empty() ) return 9999.;
   double sumPtMax = -1;
   int iMax = -1;
   for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
@@ -380,7 +380,7 @@ double mudzPV_wwV1(unsigned int index){
       sumPtMax = cms2.vtxs_sumpt().at(i);
     }
   }
-  if (iMax<0) return false;
+  if (iMax<0) return 9999.;
   // double dzpv = cms2.mus_z0corr()[index]-cms2.vtxs_position()[iMax].z();
   const LorentzVector& vtx = cms2.mus_vertex_p4()[index];
   const LorentzVector& p4 = cms2.mus_trk_p4()[index];
