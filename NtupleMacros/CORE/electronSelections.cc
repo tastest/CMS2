@@ -7,6 +7,7 @@
 #include "CMS2.h"
 
 
+
 bool pass_electronSelectionCompareMask(const cuts_t cuts_passed, const cuts_t selectionType)
 {
     if ((cuts_passed & selectionType) == selectionType) return true;
@@ -48,6 +49,7 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if (fabs(cms2.els_d0corr()[index]) < 0.02) cuts_passed |= (1ll<<ELEIP_200);
     if (fabs(cms2.els_d0corr()[index]) < 0.04) cuts_passed |= (1ll<<ELEIP_400);
     if (fabs(electron_d0PV(index)) < 0.02) cuts_passed |= (1ll<<ELEIP_PV_200);
+    if (fabs(electron_d0PV_wwV1(index)) < 0.02 && fabs(electron_dzPV_wwV1(index)) < 1.0 ) cuts_passed |= (1ll<<ELEIP_PV_wwV1);
     
 
     //
@@ -93,8 +95,7 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if (!isFromConversionPartnerTrack(index)) cuts_passed |= (1ll<<ELENOTCONV_DISTDCOT002);
     if (!isFromConversionHitPattern(index)) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN);
     if (cms2.els_exp_innerlayers().at(index) == 0) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN_0MHITS);
-    // if ( cms2.evt_CMS2tag()=="V03-06-14" &&
-    // cms2.els_exp_innerlayers39X().at(index) == 0 ) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN39X_0MHITS);
+    if (cms2.els_exp_innerlayers39X().at(index) == 0 ) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN39X_0MHITS);
 
     //
     // fiduciality/other cuts
@@ -749,6 +750,60 @@ double electron_d0PV(unsigned int index){
       iMax = i;
       sumPtMax = cms2.vtxs_sumpt().at(i);
     }
+  double dxyPV = cms2.els_d0()[index]-
+    cms2.vtxs_position()[iMax].x()*sin(cms2.els_trk_p4()[index].phi())+
+    cms2.vtxs_position()[iMax].y()*cos(cms2.els_trk_p4()[index].phi());
+  return dxyPV;
+}
+
+
+double electron_dzPV_wwV1(unsigned int index){ 
+  if ( cms2.vtxs_sumpt().empty() ) return false;
+  double sumPtMax = -1;
+  int iMax = -1;
+  for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
+    // if (!isGoodVertex(i)) continue;
+    // Copied from eventSelections.cc 
+    if (cms2.vtxs_isFake()[i]) continue;
+    if (cms2.vtxs_ndof()[i] < 4.) continue;
+    if (cms2.vtxs_position()[i].Rho() > 2.0) continue;
+    if (fabs(cms2.vtxs_position()[i].Z()) > 24.0) continue;
+    if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
+      iMax = i;
+      sumPtMax = cms2.vtxs_sumpt().at(i);
+    }
+  }
+  if (iMax<0) return false;
+  
+  const LorentzVector& vtx = cms2.els_vertex_p4()[index];
+  const LorentzVector& p4 = cms2.els_trk_p4()[index];
+  const LorentzVector& pv = cms2.vtxs_position()[iMax]; 
+  return (vtx.z()-pv.z()) - ((vtx.x()-pv.x())*p4.x()+(vtx.y()-pv.y())*p4.y())/p4.pt() * p4.z()/p4.pt(); 
+  /* directly from NtupleMacros/WW/doAnalysis.cc
+  double dzpv = dzPV(cms2.els_vertex_p4()[index], cms2.els_trk_p4()[index], cms2.vtxs_position()[iMax]);
+  double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVector& pv){
+  return (vtx.z()-pv.z()) - ((vtx.x()-pv.x())*p4.x()+(vtx.y()-pv.y())*p4.y())/p4.pt() * p4.z()/p4.pt();
+  }*/
+}
+
+
+double electron_d0PV_wwV1(unsigned int index){ 
+  if ( cms2.vtxs_sumpt().empty() ) return false;
+  double sumPtMax = -1;
+  int iMax = -1;
+  for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
+    // if (!isGoodVertex(i)) continue;
+    // Copied from eventSelections.cc 
+    if (cms2.vtxs_isFake()[i]) continue;
+    if (cms2.vtxs_ndof()[i] < 4.) continue;
+    if (cms2.vtxs_position()[i].Rho() > 2.0) continue;
+    if (fabs(cms2.vtxs_position()[i].Z()) > 24.0) continue;
+    if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
+      iMax = i;
+      sumPtMax = cms2.vtxs_sumpt().at(i);
+    }
+  }
+  if (iMax<0) return false;
   double dxyPV = cms2.els_d0()[index]-
     cms2.vtxs_position()[iMax].x()*sin(cms2.els_trk_p4()[index].phi())+
     cms2.vtxs_position()[iMax].y()*cos(cms2.els_trk_p4()[index].phi());

@@ -49,6 +49,10 @@ enum EleSelectionType {
 	 ELEIP_400,
 	 // d0 corrected for primary vertex < 0.02
 	 ELEIP_PV_200,
+	 // d0 (PV) < 0.02 and dz (PV) < 1.0
+	 ELEIP_PV_wwV1,
+
+
 	 //
 	 // id cuts
 	 //
@@ -632,30 +636,30 @@ static const cuts_t electronSelectionFO_el_wwV0b_v4 =
 
 //---------------------------------------------------------
 // WWV1 base cut
-//
-// WARNING - WARNING - WARNING - WARNING -WARNING - WARNING
-// 
-// here we have a half cooked WW V1 selection. The 0-hit
-// requirement is not applied. Do it yourself.
-// 
 //---------------------------------------------------------
 static const cuts_t electronSelection_wwV1_base  = 
 	 (1ll<<ELEPT_020) | 
-	 (1ll<<ELEETA_250) |
-	 (1ll<<ELENOTCONV_DISTDCOT002)/* |
-	 (1ll<<ELENOTCONV_HITPATTERN39X_0MHITS)*/;
+         (1ll<<ELEETA_250) ;
 
 //---------------------------------------------------------
-// WWV0 impact parameter cut
+// WWV1 convrej
+//---------------------------------------------------------
+static const cuts_t electronSelection_wwV1_convrej  = 
+	 (1ll<<ELENOTCONV_DISTDCOT002) | 
+	 (1ll<<ELENOTCONV_HITPATTERN39X_0MHITS);
+
+//---------------------------------------------------------
+// WWV1 impact parameter cut
 //---------------------------------------------------------
 static const cuts_t electronSelection_wwV1_ip  = 
-	 (1ll<<ELEIP_PV_200);
+	 (1ll<<ELEIP_PV_wwV1);
 
 //---------------------------------------------------------
-// WWV0 id cut
+// WWV1 id cut
 //---------------------------------------------------------
 static const cuts_t electronSelection_wwV1_id  = 
 	 (1ll<<ELEID_VBTF_35X_80) ;
+
 //---------------------------------------------------------
 // WWV1 isolation cut
 //---------------------------------------------------------
@@ -667,6 +671,7 @@ static const cuts_t electronSelection_wwV1_iso  =
 //--------------------------------------------------------
 static const cuts_t electronSelection_wwV1  = 
 	 electronSelection_wwV1_base |
+	 electronSelection_wwV1_convrej |
 	 electronSelection_wwV1_ip   |
 	 electronSelection_wwV1_id   |
 	 electronSelection_wwV1_iso;
@@ -675,7 +680,9 @@ static const cuts_t electronSelection_wwV1  =
 // WWV1 fakeable object baseline definition
 //---------------------------------------------------------
 static const cuts_t electronSelectionFO_wwV1_baseline =
-	 electronSelection_wwV1_base;
+	 electronSelection_wwV1_base | 
+         electronSelection_wwV1_convrej;
+
 
 //---------------------------------------------------------
 // WWV1 fakeable object definition v1
@@ -1028,6 +1035,8 @@ void electronCorrection_pos(const unsigned int index, float &dEtaIn, float &dPhi
 // d0 corrected by the primary vertex
 //
 double electron_d0PV(unsigned int index);
+double electron_d0PV_wwV1(unsigned int index);
+double electron_dzPV_wwV1(unsigned int index);
 
 #endif
 
