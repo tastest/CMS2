@@ -1563,7 +1563,7 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   }
     
   // Jet-veto effciency studies
-  bool applyJEC = false;
+  bool applyJEC = true;
   if (CheckCutsNM1(pass_all, (1<<PASS_JETVETO) | (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO), cuts_passed)) {
     find_most_energetic_jets(i_hyp,weight,realData,0.0,5.0, applyJEC);
     find_most_energetic_jets(i_hyp,weight,realData,0.0,3.0, applyJEC);
@@ -2090,29 +2090,29 @@ RooDataSet* ScanChain( TChain* chain,
   
   try {
     jetcorr_filenames_jpt.clear();
-    jetcorr_filenames_jpt.push_back("../../../CondFormats/JetMETObjects/data/Spring10_L2Relative_AK5JPT.txt");
-    jetcorr_filenames_jpt.push_back("../../../CondFormats/JetMETObjects/data/Spring10_L3Absolute_AK5JPT.txt");
+    jetcorr_filenames_jpt.push_back("files/Spring10_L2Relative_AK5JPT.txt");
+    jetcorr_filenames_jpt.push_back("files/Spring10_L3Absolute_AK5JPT.txt");
     if(realData)
-      jetcorr_filenames_jpt.push_back("../../../CondFormats/JetMETObjects/data/Spring10DataV2_L2L3Residual_AK5JPT.txt");
+      jetcorr_filenames_jpt.push_back("files/Spring10DataV2_L2L3Residual_AK5JPT.txt");
     jet_corrector_jpt= makeJetCorrector(jetcorr_filenames_jpt);
     
     jetcorr_filenames_pf.clear();
-    jetcorr_filenames_pf.push_back("../../../CondFormats/JetMETObjects/data/Spring10_L2Relative_AK5PF.txt");
-    jetcorr_filenames_pf.push_back("../../../CondFormats/JetMETObjects/data/Spring10_L3Absolute_AK5PF.txt");
+    jetcorr_filenames_pf.push_back("files/Spring10_L2Relative_AK5PF.txt");
+    jetcorr_filenames_pf.push_back("files/Spring10_L3Absolute_AK5PF.txt");
     if(realData)
-      jetcorr_filenames_pf.push_back("../../../CondFormats/JetMETObjects/data/Spring10DataV2_L2L3Residual_AK5PF.txt");
+      jetcorr_filenames_pf.push_back("files/Spring10DataV2_L2L3Residual_AK5PF.txt");
     jet_corrector_pf= makeJetCorrector(jetcorr_filenames_pf);
     
     jetcorr_filenames_calo.clear();
-    jetcorr_filenames_calo.push_back("../../../CondFormats/JetMETObjects/data/Spring10_L2Relative_AK5Calo.txt");
-    jetcorr_filenames_calo.push_back("../../../CondFormats/JetMETObjects/data/Spring10_L3Absolute_AK5Calo.txt");
+    jetcorr_filenames_calo.push_back("files/Spring10_L2Relative_AK5Calo.txt");
+    jetcorr_filenames_calo.push_back("files/Spring10_L3Absolute_AK5Calo.txt");
     if(realData)
-      jetcorr_filenames_calo.push_back("../../../CondFormats/JetMETObjects/data/Spring10DataV2_L2L3Residual_AK5Calo.txt");
+      jetcorr_filenames_calo.push_back("files/Spring10DataV2_L2L3Residual_AK5Calo.txt");
     jet_corrector_calo= makeJetCorrector(jetcorr_filenames_calo);
     
     jetcorr_filenames_trk.clear();
-    jetcorr_filenames_trk.push_back("../../../CondFormats/JetMETObjects/data/Spring10_L2Relative_AK5TRK.txt");
-    jetcorr_filenames_trk.push_back("../../../CondFormats/JetMETObjects/data/Spring10_L3Absolute_AK5TRK.txt");
+    jetcorr_filenames_trk.push_back("files/Spring10_L2Relative_AK5TRK.txt");
+    jetcorr_filenames_trk.push_back("files/Spring10_L3Absolute_AK5TRK.txt");
     jet_corrector_trk= makeJetCorrector(jetcorr_filenames_trk);
   } catch (...){
     cout << "\nFailed to setup correctors needed to get Jet Enetry Scale. Abort\n" << endl;
