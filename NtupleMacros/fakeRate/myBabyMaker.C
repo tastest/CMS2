@@ -268,6 +268,12 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         v4_wwV0b_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV0b_v4);
         num_wwV0b_ = pass_electronSelection( iEl, electronSelection_wwV0b);
 
+        v1_wwV1_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV1_v1);
+        v2_wwV1_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV1_v2);
+        v3_wwV1_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV1_v3);
+        v4_wwV1_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV1_v4);
+        num_wwV1_ = pass_electronSelection( iEl, electronSelection_wwV1);
+
         numSSV2_ = pass_electronSelection( iEl, electronSelection_ssV2, false, false) && (!isSpikeElectron(iEl));
         v1SSV2_  = pass_electronSelection( iEl, electronSelectionFOV2_ssVBTF80_v1, false, false);
         v2SSV2_  = pass_electronSelection( iEl, electronSelectionFOV2_ssVBTF80_v2, false, false);
@@ -309,6 +315,11 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         if (num_wwV0b_ && (!v3_wwV0b_)) cout << "bad v3_wwV0b_" << endl;
         if (num_wwV0b_ && (!v4_wwV0b_)) cout << "bad v4_wwV0b_" << endl;
 
+        if (num_wwV1_ && (!v1_wwV1_)) cout << "bad v1_wwV1_" << endl;
+        if (num_wwV1_ && (!v2_wwV1_)) cout << "bad v2_wwV1_" << endl;
+        if (num_wwV1_ && (!v3_wwV1_)) cout << "bad v3_wwV1_" << endl;
+        if (num_wwV1_ && (!v4_wwV1_)) cout << "bad v4_wwV1_" << endl;
+
         if (numSSV2_ && (!v1SSV2_)) cout << "bad v1SSV2_" << endl;
         if (numSSV2_ && (!v2SSV2_)) cout << "bad v2SSV2_" << endl;
         if (numSSV2_ && (!v3SSV2_)) cout << "bad v3SSV2_" << endl;
@@ -325,7 +336,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
               (!v1SSV2_) && (!v2SSV2_) && (!v3SSV2_) &&
               (!v1Oct6_) && (!v2Oct6_) && (!v3Oct6_) &&
               (!v1_wwV0_) && (!v2_wwV0_) && (!v3_wwV0_) && (!v4_wwV0_) &&
-              (!v1_wwV0b_) && (!v2_wwV0b_) && (!v3_wwV0b_) && (!v4_wwV0b_)
+              (!v1_wwV0b_) && (!v2_wwV0b_) && (!v3_wwV0b_) && (!v4_wwV0b_) &&
+              (!v1_wwV1_) && (!v2_wwV1_) && (!v3_wwV1_) && (!v4_wwV1_)
         ) continue;
         
         // If it is above 20 GeV see if we can make a 
@@ -671,6 +683,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         numNomSS_  = muonId(iMu, NominalSS);
         num_wwV0_  = muonId(iMu, NominalWWV0);
         num_wwV0b_ = muonId(iMu, NominalWWV0);
+        num_wwV1_  = muonId(iMu, NominalWWV1);
         num_OSGv1_ = muonId(iMu, OSGeneric_v1);
         num_OSZv1_ = muonId(iMu, OSZ_v1);
     
@@ -682,10 +695,12 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
         fo_wwV0_04_  = muonId(iMu, muonSelectionFO_mu_ww);
         fo_wwV0_10_  = muonId(iMu, muonSelectionFO_mu_ww_iso10);
+        fo_wwV1_04_  = muonId(iMu, muonSelectionFO_mu_wwV1);
+        fo_wwV1_10_  = muonId(iMu, muonSelectionFO_mu_wwV1_iso10);
 
         numAug9_ = num_;
 
-        if( !fo_04_ && !fo_10_ && !fo_wwV0_04_ && !fo_wwV0_10_ && !fo_muss04_ && !fo_muss10_) continue;
+        if( !fo_04_ && !fo_10_ && !fo_wwV0_04_ && !fo_wwV0_10_ && !fo_wwV1_04_ && !fo_wwV1_10_ && !fo_muss04_ && !fo_muss10_) continue;
 
         // Now REALLY fix it (July 14, 2010)
         if (pt_ > 10.) {
@@ -892,6 +907,8 @@ void myBabyMaker::InitBabyNtuple () {
 
   fo_wwV0_04_ = false;
   fo_wwV0_10_ = false;
+  fo_wwV1_04_ = false;
+  fo_wwV1_10_ = false;
 
   v1_  = false;
   v2_  = false;
@@ -947,6 +964,12 @@ void myBabyMaker::InitBabyNtuple () {
   v3_wwV0b_  = false;
   v4_wwV0b_  = false;
   num_wwV0b_ = false;
+
+  v1_wwV1_  = false;
+  v2_wwV1_  = false;
+  v3_wwV1_  = false;
+  v4_wwV1_  = false;
+  num_wwV1_ = false;
 
   num_OSGv1_ = false;
   num_OSZv1_ = false;
@@ -1088,6 +1111,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
 
     babyTree_->Branch("fo_wwV0_04",         &fo_wwV0_04_,        "fo_wwV0_04/O"      );
     babyTree_->Branch("fo_wwV0_10",         &fo_wwV0_10_,        "fo_wwV0_10/O"      );
+    babyTree_->Branch("fo_wwV1_04",         &fo_wwV1_04_,        "fo_wwV1_04/O"      );
+    babyTree_->Branch("fo_wwV1_10",         &fo_wwV1_10_,        "fo_wwV1_10/O"      );
     babyTree_->Branch("v1",         &v1_,        "v1/O"      );
     babyTree_->Branch("v2",         &v2_,        "v2/O"      );
     babyTree_->Branch("v3",         &v3_,        "v3/O"      );
@@ -1142,6 +1167,12 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("v3_wwV0b",         &v3_wwV0b_,        "v3_wwV0b/O"      );
     babyTree_->Branch("v4_wwV0b",         &v4_wwV0b_,        "v4_wwV0b/O"      );
     babyTree_->Branch("num_wwV0b",         &num_wwV0b_,        "num_wwV0b/O"      );
+
+    babyTree_->Branch("v1_wwV1",         &v1_wwV1_,        "v1_wwV1/O"      );
+    babyTree_->Branch("v2_wwV1",         &v2_wwV1_,        "v2_wwV1/O"      );
+    babyTree_->Branch("v3_wwV1",         &v3_wwV1_,        "v3_wwV1/O"      );
+    babyTree_->Branch("v4_wwV1",         &v4_wwV1_,        "v4_wwV1/O"      );
+    babyTree_->Branch("num_wwV1",         &num_wwV1_,        "num_wwV1/O"      );
 
     babyTree_->Branch("num_OSGv1",         &num_OSGv1_,        "num_OSGv1/O"      );
     babyTree_->Branch("num_OSZv1",         &num_OSZv1_,        "num_OSZv1/O"      );

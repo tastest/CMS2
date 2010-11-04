@@ -115,6 +115,12 @@ class myBabyMaker
   Bool_t v4_wwV0b_;  // electronSelectionFO_el_wwV0b_v4
   Bool_t num_wwV0b_; // electronSelection_wwV0b | NominalWWV0 (muons)
 
+  Bool_t v1_wwV1_;  // electronSelectionFO_el_wwV1_v1
+  Bool_t v2_wwV1_;  // electronSelectionFO_el_wwV1_v2
+  Bool_t v3_wwV1_;  // electronSelectionFO_el_wwV1_v3
+  Bool_t v4_wwV1_;  // electronSelectionFO_el_wwV1_v4
+  Bool_t num_wwV1_; // electronSelection_wwV1 | NominalWWV1 (muons)
+
   Bool_t num_OSGv1_; // OSGeneric_v1 (muons) | nothing for ele
   Bool_t num_OSZv1_; // OSZ_v1 (muons)       | nothing for ele
 
@@ -127,6 +133,8 @@ class myBabyMaker
 
   Bool_t fo_wwV0_04_;  // muonSelectionFO_mu_ww
   Bool_t fo_wwV0_10_;  // muonSelectionFO_mu_ww_iso10
+  Bool_t fo_wwV1_04_;  // muonSelectionFO_mu_wwV1
+  Bool_t fo_wwV1_10_;  // muonSelectionFO_mu_wwV1_iso10
 
   // What electron trigger did it pass and is the electron matched to a egamma trg object
   // 0=fail 1="pass but no match" 2="pass and matched" -1="pass but egamm trg obj missing"
