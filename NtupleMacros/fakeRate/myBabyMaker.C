@@ -669,8 +669,10 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         numv1_  = muonId(iMu, NominalTTbar);
         numSS_  = muonId(iMu, Nominal);
         numNomSS_  = muonId(iMu, NominalSS);
-        num_wwV0_ = muonId(iMu, NominalWWV0);
+        num_wwV0_  = muonId(iMu, NominalWWV0);
         num_wwV0b_ = muonId(iMu, NominalWWV0);
+        num_OSGv1_ = muonId(iMu, OSGeneric_v1);
+        num_OSZv1_ = muonId(iMu, OSZ_v1);
     
         fo_04_  = muonId(iMu, muonSelectionFO_mu_ttbar);
         fo_10_  = muonId(iMu, muonSelectionFO_mu_ttbar_iso10);
@@ -946,6 +948,9 @@ void myBabyMaker::InitBabyNtuple () {
   v4_wwV0b_  = false;
   num_wwV0b_ = false;
 
+  num_OSGv1_ = false;
+  num_OSZv1_ = false;
+
   //
   ph10_ = 0;
   ph15_ = 0;
@@ -1137,6 +1142,11 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("v3_wwV0b",         &v3_wwV0b_,        "v3_wwV0b/O"      );
     babyTree_->Branch("v4_wwV0b",         &v4_wwV0b_,        "v4_wwV0b/O"      );
     babyTree_->Branch("num_wwV0b",         &num_wwV0b_,        "num_wwV0b/O"      );
+
+    babyTree_->Branch("num_OSGv1",         &num_OSGv1_,        "num_OSGv1/O"      );
+    babyTree_->Branch("num_OSZv1",         &num_OSZv1_,        "num_OSZv1/O"      );
+
+
 
     //
     babyTree_->Branch("ph10",       &ph10_,       "ph10/I"      );

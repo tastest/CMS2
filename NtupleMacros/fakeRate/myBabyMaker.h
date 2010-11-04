@@ -115,6 +115,9 @@ class myBabyMaker
   Bool_t v4_wwV0b_;  // electronSelectionFO_el_wwV0b_v4
   Bool_t num_wwV0b_; // electronSelection_wwV0b | NominalWWV0 (muons)
 
+  Bool_t num_OSGv1_; // OSGeneric_v1 (muons) | nothing for ele
+  Bool_t num_OSZv1_; // OSZ_v1 (muons)       | nothing for ele
+
 
   Bool_t fo_04_;  // muonSelectionFO_mu_ttbar
   Bool_t fo_10_;  // muonSelectionFO_mu_ttbar_iso10
