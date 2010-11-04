@@ -646,6 +646,17 @@ static const cuts_t electronSelection_wwV1_base  =
 	 (1ll<<ELENOTCONV_HITPATTERN39X_0MHITS)*/;
 
 //---------------------------------------------------------
+// WWV0 impact parameter cut
+//---------------------------------------------------------
+static const cuts_t electronSelection_wwV1_ip  = 
+	 (1ll<<ELEIP_PV_200);
+
+//---------------------------------------------------------
+// WWV0 id cut
+//---------------------------------------------------------
+static const cuts_t electronSelection_wwV1_id  = 
+	 (1ll<<ELEID_VBTF_35X_80) ;
+//---------------------------------------------------------
 // WWV1 isolation cut
 //---------------------------------------------------------
 static const cuts_t electronSelection_wwV1_iso  = 
@@ -656,8 +667,8 @@ static const cuts_t electronSelection_wwV1_iso  =
 //--------------------------------------------------------
 static const cuts_t electronSelection_wwV1  = 
 	 electronSelection_wwV1_base |
-	 electronSelection_wwV0_ip   |
-	 electronSelection_wwV0_id   |
+	 electronSelection_wwV1_ip   |
+	 electronSelection_wwV1_id   |
 	 electronSelection_wwV1_iso;
 
 //---------------------------------------------------------
@@ -688,7 +699,7 @@ static const cuts_t electronSelectionFO_el_wwV1_v2 =
 //---------------------------------------------------------
 static const cuts_t electronSelectionFO_el_wwV1_v3 =
 	 electronSelectionFO_wwV1_baseline |
-	 electronSelection_wwV0_id |
+	 electronSelection_wwV1_id |
 	 (1ll<<ELEISO_REL100); 
 
 //---------------------------------------------------------
