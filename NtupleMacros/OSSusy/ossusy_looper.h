@@ -214,7 +214,8 @@ class ossusy_looper
         TH1F* hdrJ1J2[4][4];                 // dR between 2 leading jets
         TH1F* heleEta[4][4];                 // electron eta
         TH1F* hmuEta[4][4];                  // muon eta
-        TH1F* htopMass[4][4];                // top mass estimate
+        TH1F* htopMass[4][4];                // top mass estimate for 2 highest pt jets
+        TH1F* htopMassAllComb[4][4];         // top mass estimate for all jets
         TH1F* hdilMass[4][4];                // dilepton mass
         TH1F* hdilPt[4][4];                  // dilepton Pt
         TH1F* hdilPt_zveto[4][4];            // dilepton Pt with z-veto applied

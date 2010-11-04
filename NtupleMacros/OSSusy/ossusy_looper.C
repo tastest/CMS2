@@ -140,7 +140,7 @@ void ossusy_looper::makeTree(char *prefix)
   rootdir->cd();
 
   //Super compressed ntuple here
-  outFile   = new TFile(Form("output/oct15th_v2/%s_smallTree.root",prefix), "RECREATE");
+  outFile   = new TFile(Form("output/temp/%s_smallTree.root",prefix), "RECREATE");
   //outFile   = new TFile("temp.root","RECREATE");
   outFile->cd();
   outTree = new TTree("t","Tree");
@@ -1336,6 +1336,25 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         float topMass = getTopMassEstimate(d_llsol, hypIdx, vjpts_p4, tcmet, tcmetphi);
         if(topMass != -999 && 42 != 42) std::cout<<"And top mass from exteral: "<<topMass<<std::endl;
 
+        vector<float> topMassAllComb;
+        VofP4 vjpts_p4_Comb;
+        int topMassCounter = 0;
+        for(int jet1 =  0; jet1 < vjpts_p4.size(); ++jet1) {
+          for(int jet2 =  jet1+1; jet2 < vjpts_p4.size(); ++jet2) {
+            vjpts_p4_Comb.clear();
+            vjpts_p4_Comb.push_back(vjpts_p4.at(jet1));
+            vjpts_p4_Comb.push_back(vjpts_p4.at(jet2));
+            topMassAllComb.push_back( getTopMassEstimate(d_llsol, hypIdx, vjpts_p4_Comb, tcmet, tcmetphi) );
+            //             std::cout<<
+            //               "We have "<<vjpts_p4.size()<<
+            //               " jets. This is combination: "<<jet1<<
+            //               " with "<<jet2<<
+            //               "  and topmass "<<topMassAllComb.at(topMassCounter)<<
+            //               std::endl;
+            ++topMassCounter;
+          }
+        }
+
         //get various met types
         
         float tcmet_35X = -9999;
@@ -1715,6 +1734,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         //fillHistos(hdilMass, hyp_p4()[hypIdx].mass(), weight, myType, nJetsIdx);
         // top mass
         if(topMass > 0.) fillHistos(htopMass, topMass, weight, myType, nJetsIdx);
+
+        for(int imass = 0; imass < topMassAllComb.size(); ++imass) {
+          if( topMassAllComb.at(imass) > 0. ) fillHistos(htopMassAllComb, topMassAllComb.at(imass), weight, myType, nJetsIdx);
+        }
 
         // delta phi btw leptons
         double dphi = fabs(hyp_lt_p4()[hypIdx].phi() - hyp_ll_p4()[hypIdx].phi());
@@ -2249,6 +2272,9 @@ void ossusy_looper::BookHistos(char *prefix)
       htopMass[i][j] = new TH1F(Form("%s_htopMass_%s",prefix,suffix),Form("%s_topMass_%s",prefix,suffix),100,0.,400.);
       htopMass[i][j]->GetXaxis()->SetTitle("Top Mass Estimate (GeV)");
 
+      htopMassAllComb[i][j] = new TH1F(Form("%s_htopMassAllComb_%s",prefix,suffix),Form("%s_topMassAllComb_%s",prefix,suffix),100,0.,400.);
+      htopMassAllComb[i][j]->GetXaxis()->SetTitle("Top Mass Estimate for all jet combinations (GeV)");
+
       //dilepton pT with z-veto applied
       hdilPt_zveto[i][j] = new TH1F(Form("%s_hdilPt_zveto_%s",prefix,suffix),Form("%s_dilPt_zveto_%s",prefix,suffix),60,0.,300.);
       hdilPt_zveto[i][j]->GetXaxis()->SetTitle("Pt (GeV)");
@@ -2434,6 +2460,7 @@ void ossusy_looper::BookHistos(char *prefix)
       hdilMass[i][j]->Sumw2();
       hdilPt[i][j]->Sumw2();
       htopMass[i][j]->Sumw2();
+      htopMassAllComb[i][j]->Sumw2();
       hdilPt_zveto[i][j]->Sumw2();
       hdilPtSmeared[i][j]->Sumw2();
       hgenmet[i][j]->Sumw2();
