@@ -59,7 +59,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
   // Load various tools  
   gROOT->ProcessLine(Form(".x setup.C(%d)", skipFWLite));
-  gROOT->ProcessLine(".L ../CORE/topmass/ttdilepsolve.cpp+");
+  gROOT->ProcessLine(".L ./CORE/topmass/ttdilepsolve.cpp+");
 
   // Load FWLite
   gSystem->Load("Tools/MiniFWLite/libMiniFWLite.so");
@@ -174,11 +174,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preML8      = 1;
   int preLMscan   = 1;
 
-  
+  /*
   //Flags for files to run over
   bool rundata     = 1;
-  bool runQCDpt15  = 1;
-  bool runQCDpt30  = 1;
+  bool runQCDpt15  = 0;
+  bool runQCDpt30  = 0;
   bool runttall    = 0;
   bool runttdil    = 1;
   bool runttem     = 0;
@@ -219,14 +219,16 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  
+  */
 
-  /*
+  
   //Flags for files to run over
   bool rundata     = 0;
+  bool runQCDpt15  = 0;
+  bool runQCDpt30  = 0;
   bool runttall    = 0;
   bool runttdil    = 0;
-  bool runttem     = 0;
+  bool runttem     = 1;
   bool runttotr    = 0;
   bool runWW       = 0;
   bool runWZ       = 0;
@@ -241,7 +243,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runEM       = 0;
   bool runtW       = 0;
   bool runVQQ      = 0;
-  bool runLM0      = 1;
+  bool runLM0      = 0;
   bool runLM1      = 0;
   bool runLM2      = 0;
   bool runLM3      = 0;
@@ -264,7 +266,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  */
+  
 
   TChain* chdata = new  TChain("Events");
   if(rundata){
@@ -944,7 +946,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx],frmodeStrings[frmode]);
                   }
                   else {
-                    const char* outFile = Form("output/temp/ossusy_%s_%s%s_bitmask.root", 
+                    const char* outFile = Form("output/oct15th_v2/ossusy_%s_%s%s_ttem_bitmask.root", 
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
                   }
                   
