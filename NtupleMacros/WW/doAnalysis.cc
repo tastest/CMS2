@@ -1428,7 +1428,6 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
 	! (electronId_VBTF(cms2.hyp_ll_index()[i_hyp], VBTF_35X_80) & (1<<ELEID_ID))  ) return false;
 
     monitor.count(cms2,type,"after previous + lepton id");
-    return true;
 
     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && 
 	(fabs(cms2.els_conv_dist().at(cms2.hyp_lt_index()[i_hyp])) < 0.02 &&
