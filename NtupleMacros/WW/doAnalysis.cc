@@ -311,14 +311,24 @@ unsigned int numberOfExtraLeptons(int i_hyp, double minPt){
 //
 // Triger
 //
+bool passedTrigger(TString trigName) {
+  if ( find(cms2.hlt_trigNames().begin(), cms2.hlt_trigNames().end(), trigName)
+       == cms2.hlt_trigNames().end() ) return false;
+  return cms2.passHLTTrigger(trigName);
+}
 
 bool passedTriggerRequirements(HypTypeInNtuples type) {
-  return true;
-  bool hlt_ele15_lw_l1r = cms2.passHLTTrigger("HLT_Ele15_LW_L1R");
-  //bool hlt_ele15_lw_l1r = cms2.passHLTTrigger("HLT_Ele17_SW_L1R");
-  bool hltMu9           = cms2.passHLTTrigger("HLT_Mu9");
-  return hlt_ele15_lw_l1r || hltMu9;
-
+  if ( passedTrigger("HLT_Mu9") ) return true;
+  if ( passedTrigger("HLT_Mu15_v1") ) return true;
+  if ( passedTrigger("HLT_Ele10_LW_L1R") ) return true;
+  if ( passedTrigger("HLT_Ele15_LW_L1R") ) return true;
+  if ( passedTrigger("HLT_Ele15_SW_L1R") ) return true;
+  if ( passedTrigger("HLT_Ele15_SW_CaloEleId_L1R") ) return true;
+  if ( passedTrigger("HLT_Ele17_SW_CaloEleId_L1R") ) return true;
+  if ( passedTrigger("HLT_Ele17_SW_TightEleId_L1R") ) return true;
+  if ( passedTrigger("HLT_Ele17_SW_TighterEleIdIsol_L1R_v2") ) return true;
+  if ( passedTrigger("HLT_Ele17_SW_TighterEleIdIsol_L1R_v3") ) return true;
+  return false;
 }
 
 //
@@ -1385,7 +1395,7 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   // if ( cms2.hyp_FVFit_prob()[i_hyp] < 0.005 ) return;
   // monitor.count(cms2, type, "after vertex cut");
   
-  if ( ! passedTriggerRequirements( hypType(i_hyp) ) )return false;
+  if ( realData && ! passedTriggerRequirements( hypType(i_hyp) ) )return false;
   monitor.count(cms2, type, "after trigger requirements");
 
   // Require same sign
