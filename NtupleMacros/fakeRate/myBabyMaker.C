@@ -681,6 +681,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         numv1_  = muonId(iMu, NominalTTbar);
         numSS_  = muonId(iMu, Nominal);
         numNomSS_  = muonId(iMu, NominalSS);
+		numNomSSv2_ = muonId(iMu, NominalSSv2);
         num_wwV0_  = muonId(iMu, NominalWWV0);
         num_wwV0b_ = muonId(iMu, NominalWWV0);
         num_wwV1_  = muonId(iMu, NominalWWV1);
@@ -692,6 +693,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
         fo_muss04_ = muonId(iMu, muonSelectionFO_mu_ss);
         fo_muss10_ = muonId(iMu, muonSelectionFO_mu_ss_iso10);
+        fo_mussV2_04_ = muonId(iMu, muonSelectionFO_mu_ssV2);
+        fo_mussV2_10_ = muonId(iMu, muonSelectionFO_mu_ssV2_iso10);
 
         fo_wwV0_04_  = muonId(iMu, muonSelectionFO_mu_ww);
         fo_wwV0_10_  = muonId(iMu, muonSelectionFO_mu_ww_iso10);
@@ -700,7 +703,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
         numAug9_ = num_;
 
-        if( !fo_04_ && !fo_10_ && !fo_wwV0_04_ && !fo_wwV0_10_ && !fo_wwV1_04_ && !fo_wwV1_10_ && !fo_muss04_ && !fo_muss10_) continue;
+        if( !fo_04_ && !fo_10_ && !fo_wwV0_04_ && !fo_wwV0_10_ && !fo_wwV1_04_ && !fo_wwV1_10_ && !fo_muss04_ && !fo_muss10_ && !fo_mussV2_04_ && !fo_mussV2_10_) continue;
 
         // Now REALLY fix it (July 14, 2010)
         if (pt_ > 10.) {
@@ -904,6 +907,8 @@ void myBabyMaker::InitBabyNtuple () {
 
   fo_muss04_ = false;
   fo_muss10_ = false;
+  fo_mussV2_04_ = false;
+  fo_mussV2_10_ = false;
 
   fo_wwV0_04_ = false;
   fo_wwV0_10_ = false;
@@ -920,6 +925,7 @@ void myBabyMaker::InitBabyNtuple () {
   v3SS_  = false;
   numSS_ = false;
   numNomSS_ = false;
+  numNomSSv2_ = false;
 
   v1SSAug9_  = false;
   v2SSAug9_  = false;
@@ -1108,6 +1114,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("fo_10",         &fo_10_,        "fo_10/O"      );
     babyTree_->Branch("fo_muss04",         &fo_muss04_,        "fo_muss04/O"      );
     babyTree_->Branch("fo_muss10",         &fo_muss10_,        "fo_muss10/O"      );
+    babyTree_->Branch("fo_mussV2_04",         &fo_mussV2_04_,        "fo_mussV2_04/O"      );
+    babyTree_->Branch("fo_mussV2_10",         &fo_mussV2_10_,        "fo_mussV2_10/O"      );
 
     babyTree_->Branch("fo_wwV0_04",         &fo_wwV0_04_,        "fo_wwV0_04/O"      );
     babyTree_->Branch("fo_wwV0_10",         &fo_wwV0_10_,        "fo_wwV0_10/O"      );
@@ -1124,6 +1132,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("v3SS",         &v3SS_,        "v3SS/O"      );
     babyTree_->Branch("numSS",         &numSS_,        "numSS/O"      );
     babyTree_->Branch("numNomSS",         &numNomSS_,        "numNomSS/O"      );
+    babyTree_->Branch("numNomSSv2",         &numNomSSv2_,        "numNomSSv2/O"      );
 
     babyTree_->Branch("v1SSAug9",         &v1SSAug9_,        "v1SSAug9/O"      );
     babyTree_->Branch("v2SSAug9",         &v2SSAug9_,        "v2SSAug9/O"      );

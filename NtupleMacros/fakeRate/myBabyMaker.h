@@ -71,6 +71,7 @@ class myBabyMaker
   Bool_t v3SS_;  // electronSelectionFO_ssVBTF80_v3
   Bool_t numSS_; // electronSelection_ss (eletrons) Nominal (muons)
   Bool_t numNomSS_; // Nominal with SS cuts (muons)
+  Bool_t numNomSSv2_; // NominalSSv2 (muons)
 
   Bool_t v1SSAug9_;  // electronSelectionFO_ssVBTF80_v1, isData, true
   Bool_t v2SSAug9_;  // electronSelectionFO_ssVBTF80_v2, isData, true
@@ -130,6 +131,9 @@ class myBabyMaker
 
   Bool_t fo_muss04_;  // muonSelectionFO_mu_ss
   Bool_t fo_muss10_;  // muonSelectionFO_mu_ss_iso10
+
+  Bool_t fo_mussV2_04_;  // muonSelectionFO_mu_ssV2
+  Bool_t fo_mussV2_10_;  // muonSelectionFO_mu_ssV2_iso10
 
   Bool_t fo_wwV0_04_;  // muonSelectionFO_mu_ww
   Bool_t fo_wwV0_10_;  // muonSelectionFO_mu_ww_iso10
