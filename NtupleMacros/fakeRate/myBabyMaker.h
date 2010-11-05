@@ -32,6 +32,9 @@ class myBabyMaker
         Int_t   ls_;
         Int_t   evt_;
 
+		// event weight
+		Float_t weight_;
+
   // Lepton pt and eta and phi
   Float_t pt_;
   Float_t eta_;

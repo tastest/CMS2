@@ -662,6 +662,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         run_  = evt_run();
         ls_   = evt_lumiBlock();
         evt_  = evt_event();
+		weight_ = evt_scale1fb();
         pt_   = mus_p4().at(iMu).pt();
         eta_  = mus_p4().at(iMu).eta();
         phi_  = mus_p4().at(iMu).phi();
@@ -888,6 +889,7 @@ void myBabyMaker::InitBabyNtuple () {
   run_ = -1;
   ls_  = -1;
   evt_ = -1;
+  weight_ = 1.;
   id_  = -1;
   pt_  = -999.;
   eta_ = -999.;
@@ -1093,6 +1095,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("run",          &run_,         "run/I"         );
     babyTree_->Branch("ls",           &ls_,          "ls/I"          );
     babyTree_->Branch("evt",          &evt_,         "evt/I"         );
+	babyTree_->Branch("weight",       &weight_,      "weight/F"      );
 
     babyTree_->Branch("pt",           &pt_,          "pt/F"         );
     babyTree_->Branch("eta",          &eta_,         "eta/F"         );
