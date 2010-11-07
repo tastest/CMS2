@@ -5,10 +5,10 @@
 #include "TMath.h"
 #include "TLorentzVector.h"
 #include "TDatabasePDG.h"
-#include "electronSelections.cc"
-#include "electronSelectionsParameters.cc"
-#include "muonSelections.cc"
-#include "metSelections.cc"
+#include "electronSelections.h"
+#include "electronSelectionsParameters.h"
+#include "muonSelections.h"
+#include "metSelections.h"
 #include "triggerUtils.h"
 #include "CMS2.h"
 
@@ -175,7 +175,6 @@ std::pair<float,float> getMet(const string algo, unsigned int hypIdx) {
     
     return make_pair(sqrt(tcmetX*tcmetX + tcmetY*tcmetY), atan2(tcmetY, tcmetX));
   }
-*/
 
   if(algo == "tcMET35X") {
 
@@ -189,7 +188,7 @@ std::pair<float,float> getMet(const string algo, unsigned int hypIdx) {
     
     return make_pair(sqrt(tcmetX*tcmetX + tcmetY*tcmetY), atan2(tcmetY, tcmetX));
   }
-
+*/
   
   if(algo == "muCorMET") {
 
