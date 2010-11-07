@@ -1042,9 +1042,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
         for (unsigned int ijet = 0; ijet < jpts_p4().size(); ijet++) {
           
-          //Summer09: remove JPT correction
           LorentzVector vjet = jpts_p4().at(ijet) * jpts_cor().at(ijet); 
-          //LorentzVector vjet = jpts_p4().at(ijet);
           LorentzVector vlt  = hyp_lt_p4()[hypIdx];
           LorentzVector vll  = hyp_ll_p4()[hypIdx];
 
@@ -2192,10 +2190,10 @@ void ossusy_looper::BookHistos(char *prefix)
                                 Form("%s_mt2core_%s" ,prefix,suffix),100,0,200);
   
       hmt2jcore[i][j] = new TH1F(Form("%s_hmt2jcore_%s",prefix,suffix),
-                                 Form("%s_mt2jcore_%s" ,prefix,suffix),100,0,500);
+                                 Form("%s_mt2jcore_%s" ,prefix,suffix),100,0,400);
             
       hmt2j[i][j] = new TH1F(Form("%s_hmt2j_%s",prefix,suffix),
-                             Form("%s_mt2j_%s" ,prefix,suffix),100,0,500);
+                             Form("%s_mt2j_%s" ,prefix,suffix),100,0,400);
 
       hmet_dilpt_all[i][j] = new TH2F(Form("%s_met_dilpt_all_%s",prefix,suffix),
                                       Form("%s_met_dilpt_all_%s" ,prefix,suffix),500,0,500,500,0,500);
@@ -2295,10 +2293,10 @@ void ossusy_looper::BookHistos(char *prefix)
       hdphiLep[i][j]  = new TH1F(Form("%s_hdphiLep_%s",prefix,suffix),Form("%s_dphiLep_%s",prefix,suffix),50,0.,TMath::Pi());
       hdphiLep[i][j]->GetXaxis()->SetTitle("#delta#phi_{ll}");
 
-      hdrLep[i][j]  = new TH1F(Form("%s_hdrLep_%s",prefix,suffix),Form("%s_drLep_%s",prefix,suffix),50,0.,TMath::Pi());
+      hdrLep[i][j]  = new TH1F(Form("%s_hdrLep_%s",prefix,suffix),Form("%s_drLep_%s",prefix,suffix),50,0.,5)
       hdrLep[i][j]->GetXaxis()->SetTitle("#DeltaR(ll)");
 
-      hdrJ1J2[i][j]  = new TH1F(Form("%s_hdrJ1J2_%s",prefix,suffix),Form("%s_drJ1J2_%s",prefix,suffix),50,0.,TMath::Pi());
+      hdrJ1J2[i][j]  = new TH1F(Form("%s_hdrJ1J2_%s",prefix,suffix),Form("%s_drJ1J2_%s",prefix,suffix),50,0.,5);
       hdrJ1J2[i][j]->GetXaxis()->SetTitle("#DeltaR(J1J2)");
 
       heleEta[i][j] = new TH1F(Form("%s_heleEta_%s",prefix,suffix),Form("%s_eleEta_%s",prefix,suffix),60,-3.,3.);
