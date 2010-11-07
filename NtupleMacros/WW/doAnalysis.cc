@@ -90,6 +90,8 @@ bool fakableMuon(unsigned int i){
 
 double metValue(){    return cms2.evt_tcmet(); }
 double metPhiValue(){ return cms2.evt_tcmetPhi(); }
+double pfMetValue(){    return cms2.evt_pfmet(); }
+double pfMetPhiValue(){ return cms2.evt_pfmetPhi(); }
 
 bool passedMetRequirements(unsigned int i_hyp){
   // if ( cms2.hyp_p4().at(i_hyp).mass()>130 ) return true;
@@ -105,6 +107,18 @@ bool passedMetRequirements(unsigned int i_hyp){
   }
   return true;
 }
+
+
+bool passedPFMetRequirements(unsigned int i_hyp){
+  HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
+  double pMet = projectedPFMet(i_hyp);
+  if ( pMet < 20 ) return false;
+  if (type == EE || type == MM) {
+    if ( pMet < 35 ) return false;
+  }
+  return true;
+}
+
 
 WWJetType jetType(){
   return pfJet;
@@ -348,6 +362,13 @@ double projectedMet(unsigned int i_hyp)
   double DeltaPhi = nearestDeltaPhi(metPhiValue(),i_hyp);
   if (DeltaPhi < TMath::Pi()/2) return metValue()*TMath::Sin(DeltaPhi);
   return metValue();
+}
+
+double projectedPFMet(unsigned int i_hyp)
+{
+  double DeltaPhi = nearestDeltaPhi(pfMetPhiValue(),i_hyp);
+  if (DeltaPhi < TMath::Pi()/2) return pfMetValue()*TMath::Sin(DeltaPhi);
+  return pfMetValue();
 }
 
 bool metBalance (unsigned int i_hyp) {
@@ -784,7 +805,10 @@ TH1F* hdilMassVal[4];         // diLepton Mass after ll selection
 
 TH1F* hmetInDYEst[4];         // MET in Z window for the DY Estimation
 TH1F* hmetOutDYEst[4];        // MET outside Z window for the DY Estimation
+TH1F* hpfMetInDYEst[4];       // PFMET in Z window for the DY Estimation
+TH1F* hpfMetOutDYEst[4];      // PFMET outside Z window for the DY Estimation
 TH1F* hdilMassWithMetDYEst[4];// Dilepton mass with MET requirement for DY estimation
+TH1F* hdilMassWithPFMetDYEst[4];// Dilepton mass with PFMET requirement for DY estimation
 TH1F* hdilMassNoMetDYEst[4];  // Dilepton mass without MET requirement for DY estimation
 
 //
@@ -1572,7 +1596,7 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   }
     
   // Jet-veto effciency studies
-  bool applyJEC = true;
+  bool applyJEC = false;
   if (CheckCutsNM1(pass_all, (1<<PASS_JETVETO) | (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO), cuts_passed)) {
     find_most_energetic_jets(i_hyp,weight,realData,0.0,5.0, applyJEC);
     find_most_energetic_jets(i_hyp,weight,realData,0.0,3.0, applyJEC);
@@ -1914,8 +1938,9 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hdilMassNoMetDYEst[i] = new TH1F(Form("%s_hdilMassNoMetDYEst_%s",  prefix,HypothesisTypeName(i)), "Di-lepton mass without MET for DY Estimation", 40, 0., 200.);
     hmetInDYEst[i] = new TH1F(Form("%s_hmetInDYEst_%s",  prefix,HypothesisTypeName(i)), "MET in Z mass for DY Estimation", 40, 0., 200.);
     hmetOutDYEst[i] = new TH1F(Form("%s_hmetOutDYEst_%s",  prefix,HypothesisTypeName(i)), "MET outside Z mass for DY Estimation", 40, 0., 200.);
-
-
+    hdilMassWithPFMetDYEst[i] = new TH1F(Form("%s_hdilMassWithPFMetDYEst_%s",  prefix,HypothesisTypeName(i)), "Di-lepton mass with PFMET for DY Estimation", 40, 0., 200.);
+    hpfMetInDYEst[i] = new TH1F(Form("%s_hpfMetInDYEst_%s",  prefix,HypothesisTypeName(i)), "PFMET in Z mass for DY Estimation", 40, 0., 200.);
+    hpfMetOutDYEst[i] = new TH1F(Form("%s_hpfMetOutDYEst_%s",  prefix,HypothesisTypeName(i)), "PFMET outside Z mass for DY Estimation", 40, 0., 200.);
 
     hnJet[i]->Sumw2();
     helePt[i]->Sumw2();
@@ -1978,7 +2003,9 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hdilMassNoMetDYEst[i]->Sumw2();
     hmetInDYEst[i]->Sumw2();
     hmetOutDYEst[i]->Sumw2();
-    
+    hdilMassWithPFMetDYEst[i]->Sumw2();
+    hpfMetInDYEst[i]->Sumw2();
+    hpfMetOutDYEst[i]->Sumw2();
   }
   
   helTrkIsoPassId = new TH1F(Form("%s_helTrkIsoPassId",prefix),        Form("%s - electron trk isolation passed robust el id",prefix),  100, 0., 20.);
@@ -2658,12 +2685,14 @@ bool passedSkimSelection()
     if ( !( cms2.hyp_lt_p4().at(i_hyp).pt() > min1 && cms2.hyp_ll_p4().at(i_hyp).pt() > min2 ) &&
 	 !( cms2.hyp_lt_p4().at(i_hyp).pt() > min2 && cms2.hyp_ll_p4().at(i_hyp).pt() > min1 ) ) continue;
 
+    
     // charge
     if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) continue;
     
     // met
     if ( cms2.evt_tcmet() < 20 &&
 	 cms2.evt_pfmet() < 20 ) continue;
+    
     /*
     // id & iso
     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) continue;
@@ -2671,6 +2700,7 @@ bool passedSkimSelection()
     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_lt_index()[i_hyp]) ) continue;
     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_ll_index()[i_hyp]) ) continue;
     */
+
     return true;
   }
   return false;
@@ -2785,14 +2815,24 @@ void fill_dyest_histograms(int i_hyp, float weight)
   float mass = cms2.hyp_p4()[i_hyp].mass(); 
   hdilMassNoMetDYEst[type] -> Fill(mass, weight); 
   hdilMassNoMetDYEst[3] -> Fill(mass, weight); 
+  
+  if (passedMetRequirements (i_hyp) )
+    hdilMassWithMetDYEst[type] -> Fill(mass, weight); 
+  
+  if (passedPFMetRequirements (i_hyp) )
+    hdilMassWithPFMetDYEst[type] -> Fill(mass, weight); 
 
   // fill the met histograms for "in" and "out" regions
   if (inZmassWindow(mass)) {
     hmetInDYEst[type] -> Fill(projectedMet(i_hyp), weight); 
     hmetInDYEst[3] -> Fill(projectedMet(i_hyp), weight); 
+    hpfMetInDYEst[type] -> Fill(projectedPFMet(i_hyp), weight); 
+    hpfMetInDYEst[3] -> Fill(projectedPFMet(i_hyp), weight); 
   }
   else {
     hmetOutDYEst[type] -> Fill(projectedMet(i_hyp), weight); 
     hmetOutDYEst[3] -> Fill(projectedMet(i_hyp), weight); 
+    hpfMetOutDYEst[type] -> Fill(projectedPFMet(i_hyp), weight); 
+    hpfMetOutDYEst[3] -> Fill(projectedPFMet(i_hyp), weight); 
   }
 }
