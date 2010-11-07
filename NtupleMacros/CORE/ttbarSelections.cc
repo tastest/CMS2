@@ -161,7 +161,7 @@ std::pair<float,float> getMet(const string algo, unsigned int hypIdx) {
     
     return make_pair(sqrt(tcmetX*tcmetX + tcmetY*tcmetY), atan2(tcmetY, tcmetX));
   }
-/*
+
   if(algo == "tcMET_looper") {
 
     metStruct tcmetStruct = correctedTCMET();
@@ -188,7 +188,7 @@ std::pair<float,float> getMet(const string algo, unsigned int hypIdx) {
     
     return make_pair(sqrt(tcmetX*tcmetX + tcmetY*tcmetY), atan2(tcmetY, tcmetX));
   }
-*/
+
   
   if(algo == "muCorMET") {
 
