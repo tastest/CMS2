@@ -45,6 +45,7 @@ typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 
 //mSUGRA scan parameters-----------------------------
 
+const bool  generalLeptonVeto = true;
 const int   nm0points    = 81;
 const float m0min        = 0.;
 const float m0max        = 4050.;
@@ -140,7 +141,7 @@ void ossusy_looper::makeTree(char *prefix)
   rootdir->cd();
 
   //Super compressed ntuple here
-  outFile   = new TFile(Form("output/temp/%s_smallTree.root",prefix), "RECREATE");
+  outFile   = new TFile(Form("output/nov5th/%s_smallTree.root",prefix), "RECREATE");
   //outFile   = new TFile("temp.root","RECREATE");
   outFile->cd();
   outTree = new TTree("t","Tree");
@@ -535,7 +536,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 //     exit(0);
   }
 
-  set_goodrun_file( "Cert_TopOct15_Merged_135821-147454_allPVT_V2_goodruns.txt" );
+  set_goodrun_file( "Cert_TopNov5_Merged_135821-149442_allPVT_goodruns.txt");
 
   bool isData = false;
   if( strcmp( prefix , "data" ) == 0 ){
@@ -690,6 +691,25 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       bool foundMu_lt[20];
       bool foundEl_ll[20];
       bool foundEl_lt[20];
+
+
+      VofP4 goodLeptons;
+
+      if( generalLeptonVeto ){
+        
+        for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
+          if( els_p4().at(iel).pt() < 10 )                                                 continue;
+          if( !pass_electronSelection( iel , electronSelection_el_OSV1 , false , false ) ) continue;
+          goodLeptons.push_back( els_p4().at(iel) );
+        }
+        
+        for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
+          if( mus_p4().at(imu).pt() < 10 )           continue;
+          if( !muonId( imu , OSGeneric_v1 ))         continue;
+          goodLeptons.push_back( mus_p4().at(imu) );
+        }
+
+      }
       
       for(unsigned int i = 0; i < hyp_p4().size(); ++i) {
 
@@ -731,8 +751,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         else{
           
           //muon ID
-          if (abs(hyp_ll_id()[i]) == 13  && !( fabs( hyp_ll_p4()[i].eta() ) < 2.4 && muonId(hyp_ll_index()[i] , NominalTTbarV2 ) ) )   continue;
-          if (abs(hyp_lt_id()[i]) == 13  && !( fabs( hyp_lt_p4()[i].eta() ) < 2.4 && muonId(hyp_lt_index()[i] , NominalTTbarV2 ) ) )   continue;
+          if (abs(hyp_ll_id()[i]) == 13  && !( muonId(hyp_ll_index()[i] , OSGeneric_v1 ) ) )   continue;
+          if (abs(hyp_lt_id()[i]) == 13  && !( muonId(hyp_lt_index()[i] , OSGeneric_v1 ) ) )   continue;
           
           //OSV1
           if (abs(hyp_ll_id()[i]) == 11  && !( pass_electronSelection( hyp_ll_index()[i] , electronSelection_el_OSV1 , false , false ))) continue;
@@ -996,6 +1016,14 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           LorentzVector vlt  = hyp_lt_p4()[hypIdx];
           LorentzVector vll  = hyp_ll_p4()[hypIdx];
           
+          if( generalLeptonVeto ){
+            bool rejectJet = false;
+            for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+              if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+            }
+            if( rejectJet ) continue;
+          }
+
           if( dRbetweenVectors(vjet, vll) < 0.4) continue;
           if( dRbetweenVectors(vjet, vlt) < 0.4) continue;
           if( vjet.pt() < 30.          )         continue;
@@ -1019,6 +1047,14 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           //LorentzVector vjet = jpts_p4().at(ijet);
           LorentzVector vlt  = hyp_lt_p4()[hypIdx];
           LorentzVector vll  = hyp_ll_p4()[hypIdx];
+
+          if( generalLeptonVeto ){
+            bool rejectJet = false;
+            for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+              if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+            }
+            if( rejectJet ) continue;
+          }
           
           if( dRbetweenVectors(vjet, vll) < 0.4) continue;
           if( dRbetweenVectors(vjet, vlt) < 0.4) continue;
@@ -1059,6 +1095,14 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           LorentzVector vjet = pfjets_cor().at(ijet) * pfjets_p4().at(ijet);
           LorentzVector vlt  = hyp_lt_p4()[hypIdx];
           LorentzVector vll  = hyp_ll_p4()[hypIdx];
+
+          if( generalLeptonVeto ){
+            bool rejectJet = false;
+            for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+              if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+            }
+            if( rejectJet ) continue;
+          }
           
           if( dRbetweenVectors(vjet, vll) < 0.4 )  continue;
           if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
@@ -1848,16 +1892,16 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           fillHistos(hptJpt1,  my_jpts_p4[0].Pt(),  weight, myType, nJetsIdx);
           fillHistos(hetaJpt1, my_jpts_p4[0].Eta(), weight, myType, nJetsIdx);
 
-          if (new_njets > 1) {
+          if (new_njpts > 1) {
             fillHistos(hptJpt2,  my_jpts_p4[1].Pt(),  weight, myType, nJetsIdx);
             fillHistos(hetaJpt2, my_jpts_p4[1].Eta(), weight, myType, nJetsIdx);
             fillHistos(hdrJ1J2, dRbetweenVectors( my_jpts_p4[0] , my_jpts_p4[1] ) , weight, myType, nJetsIdx);
           }
-          if (new_njets > 2) {
+          if (new_njpts > 2) {
             fillHistos(hptJpt3,  my_jpts_p4[2].Pt(),  weight, myType, nJetsIdx);
             fillHistos(hetaJpt3, my_jpts_p4[2].Eta(), weight, myType, nJetsIdx);
           }
-          if (new_njets > 3) {
+          if (new_njpts > 3) {
             fillHistos(hptJpt4,  my_jpts_p4[3].Pt(),  weight, myType, nJetsIdx);
             fillHistos(hetaJpt4, my_jpts_p4[3].Eta(), weight, myType, nJetsIdx);
           }
