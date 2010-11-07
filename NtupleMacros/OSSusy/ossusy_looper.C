@@ -141,7 +141,7 @@ void ossusy_looper::makeTree(char *prefix)
   rootdir->cd();
 
   //Super compressed ntuple here
-  outFile   = new TFile(Form("output/nov5th/%s_smallTree.root",prefix), "RECREATE");
+  outFile   = new TFile(Form("output/nov5th_v2/%s_smallTree.root",prefix), "RECREATE");
   //outFile   = new TFile("temp.root","RECREATE");
   outFile->cd();
   outTree = new TTree("t","Tree");
@@ -2293,7 +2293,7 @@ void ossusy_looper::BookHistos(char *prefix)
       hdphiLep[i][j]  = new TH1F(Form("%s_hdphiLep_%s",prefix,suffix),Form("%s_dphiLep_%s",prefix,suffix),50,0.,TMath::Pi());
       hdphiLep[i][j]->GetXaxis()->SetTitle("#delta#phi_{ll}");
 
-      hdrLep[i][j]  = new TH1F(Form("%s_hdrLep_%s",prefix,suffix),Form("%s_drLep_%s",prefix,suffix),50,0.,5)
+      hdrLep[i][j]  = new TH1F(Form("%s_hdrLep_%s",prefix,suffix),Form("%s_drLep_%s",prefix,suffix),5,0.,5);
       hdrLep[i][j]->GetXaxis()->SetTitle("#DeltaR(ll)");
 
       hdrJ1J2[i][j]  = new TH1F(Form("%s_hdrJ1J2_%s",prefix,suffix),Form("%s_drJ1J2_%s",prefix,suffix),50,0.,5);
