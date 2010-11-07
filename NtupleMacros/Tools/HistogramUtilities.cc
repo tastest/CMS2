@@ -125,7 +125,7 @@ THStack* HistogramUtilities::getStack(sources_t theSources, TString var, TString
     for (int i = sources_.size() - 1; i >= 0; --i)
     {
         if ((theSources & makeBit(sources_[i].getSource()) ) == makeBit(sources_[i].getSource()) ) {
-            std::cout << "getting " << sources_[i].getName() + histNameSuffix << std::endl;
+            //std::cout << "getting " << sources_[i].getName() + histNameSuffix << std::endl;
             //std::cout << "reading file " << file_->GetName() << std::endl;
             //file_->cd(); //we used this at one point to debug why we couldn't find a hist
             //gDirectory->ls();
