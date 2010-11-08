@@ -11,12 +11,13 @@ if ( !f1 ) {
   exit(1);
 }
 
-RooDataSet* dataset = (RooDataSet*)f1->Get("fulldataset");
+// RooDataSet* dataset = (RooDataSet*)f1->Get("fulldataset");
+RooDataSet* dataset = (RooDataSet*)f1->Get("data");
 if ( !dataset ) {
   std::cout << "Failed to get dataset" << std::endl;
   exit(1);
 }
-
+/*
 TFile* f2 = TFile::Open("fakeIsoControlSamples.root") ;
 if ( !f2 ) {
   std::cout << "Failed to open fakeIsoControlSamples.root" << std::endl;
@@ -35,7 +36,14 @@ TH1F* h_electron_qcd170 = (TH1F*)f2->Get("h_electron_qcd170");
 assert(h_electron_qcd170);
 TH1F* h_muon_qcd170     = (TH1F*)f2->Get("h_muon_qcd170");
 assert(h_muon_qcd170);
-
+*/
+    TCanvas* c1 = new TCanvas("wjetsBackgroundEstimates_sidebandfit","",800,800);
+    c1->Divide(1,2);
+    c1->cd(1);
+    fit_isolation(dataset,0,1,"Wjets e-fake background (flat background)");
+    c1->cd(2);
+    fit_isolation(dataset,1,1,"Wjets mu-fake background (flat background)");
+    /*
 if ( h_electron_qcd30 && h_muon_qcd30 &&
      h_electron_qcd80 && h_electron_qcd80 &&
      h_electron_qcd170 && h_muon_qcd170 ){
@@ -71,4 +79,5 @@ if ( h_electron_qcd30 && h_muon_qcd30 &&
     }
   }
 }
+    */
 }

@@ -15,6 +15,7 @@
 #include "RooHistPdf.h"
 #include "RooFitResult.h"
 #include "TPaveText.h"
+#include "RooExponential.h"
 // best for asymmetrical distributions with long tails
 // fake type:
 //   0 - electron fakes
@@ -27,25 +28,30 @@
 //   3 - non-parametric QCD based background pdf
 
 
-TPaveText* estimate_background(int pdf_type, RooFitResult* result, float xmin, float xsig){
+TPaveText* estimate_background(int pdf_type, RooFitResult* result, float xmax, float xsig){
   RooRealVar* Nbkg   = dynamic_cast<RooRealVar*>(result->floatParsFinal().find("Nbkg"));
   RooRealVar* bkg_c  = dynamic_cast<RooRealVar*>(result->floatParsFinal().find("bkg_c"));
   RooRealVar* bkg_a1 = dynamic_cast<RooRealVar*>(result->floatParsFinal().find("bkg_a1"));
   char text[1024];
   text[0]=0;
-
+  
+  /*
+  // FIXME !!!
   if ( pdf_type == 2 ){
-    double c = (1-xsig)/(1-xmin);
+    double c = 0 (1-xsig)/(1-xmin);
     double central_value = pow(c,bkg_c->getVal()+1)*Nbkg->getVal();
     double a1 = Nbkg->getError()*pow(c,bkg_c->getVal()+1);
     double a2 = bkg_c->getError()*pow(c,bkg_c->getVal()+1)*log(c)*Nbkg->getVal();
     double variance = a1*a1 + a2*a2 + result->correlation("Nbkg","bkg_c")*a1*a2;
     sprintf(text, "%0.1f +/- %0.1f", central_value, sqrt(variance));
   }
+  */
   if ( pdf_type == 1 ){
-    double c = (1-xsig)/(1-xmin);
+    double c = xsig/(1-xmax);
     sprintf(text, "%0.1f +/- %0.1f", c*Nbkg->getVal(), c*Nbkg->getError() );
   }
+  /*
+  // FIXME !!!
   if ( pdf_type == 0 ){
     double c1 = 1-pow(xsig,2);
     double c2 = 1-pow(xmin,2);
@@ -57,7 +63,7 @@ TPaveText* estimate_background(int pdf_type, RooFitResult* result, float xmin, f
     double variance = a1*a1 + a2*a2 + result->correlation("Nbkg","bkg_a1")*a1*a2;
     sprintf(text, "%0.1f +/- %0.1f", cv*Nbkg->getVal(), sqrt(variance));
   }
-
+  */
   TPaveText* pText = new TPaveText(0.15,0.75,0.45,0.85,"NDC");
   if (text[0]!=0){
     std::cout << "\t" << text << std::endl;
@@ -74,27 +80,29 @@ RooFitResult* fit_isolation(RooAbsData* control_sample,
 			    TH1F* bkg_control_sample)
 {
   float xmin=0.5;
-  float xsig=0.92;
+  float xsig=0.1;
+  if ( fake_type == 1 ) xsig=0.15;
   using namespace RooFit;
   RooFitResult* result(0);
   
   // data
-  RooRealVar x("iso","iso",0.5,1.0);
+  RooRealVar x("iso","iso",0.0,1.0);
   
   // signal pdf
   RooAbsData* control_sample_reduced(0);
   RooAbsData* data = 0;
   if ( fake_type == 0 ) {
-    control_sample_reduced = control_sample->reduce("fake_type==0&&iso>0.5");
-    data = analysis_sample->reduce("fake_type==0&&iso>0.5");
+    control_sample_reduced = control_sample->reduce("fake_type==0&&iso<1.0");
+    data = analysis_sample->reduce("fake_type==0&&iso<1.0");
   } else {
-    control_sample_reduced = control_sample->reduce("fake_type==1&&iso>0.5");
-    data = analysis_sample->reduce("fake_type==1&&iso>0.5");
+    control_sample_reduced = control_sample->reduce("fake_type==1&&iso<1.0");
+    data = analysis_sample->reduce("fake_type==1&&iso<1.0");
   }
-  
   RooDataHist control_sample_reduced_binned("ref_data","ref_data",RooArgSet(x),*control_sample_reduced);
-  RooHistPdf sig_pdf("sig_pdf","sig_pdf",RooArgSet(x), control_sample_reduced_binned,2);
-  
+  // RooHistPdf sig_pdf("sig_pdf","sig_pdf",RooArgSet(x), control_sample_reduced_binned,2);
+  RooRealVar exp_a("a","a",-100.0,0.0);
+  RooExponential sig_pdf("sig_pdf","sig_pdf",x,exp_a);
+
   // background pdf
   RooAbsPdf* bkg_pdf(0);
   RooRealVar bkg_a1("bkg_a1","bkg_a1",-.8);
@@ -118,7 +126,7 @@ RooFitResult* fit_isolation(RooAbsData* control_sample,
     bkg_pdf = new RooHistPdf("bkg","Background",RooArgSet(x), *bkg_ref,2);
     break;
   default:
-    std::cout << "ERROR: unsupported backgroun pdf type" << std::endl;
+    std::cout << "ERROR: unsupported background pdf type" << std::endl;
   }
   
   // full pdf
@@ -172,7 +180,12 @@ RooFitResult* fit_isolation(RooAbsData* full_sample,
 			    const char* title,
 			    TH1F* bkg_control_sample){
   RooAbsData* control_sample = full_sample->reduce("sample_type==1");
-  if ( bkg_control_sample->GetEntries() < 1 ) {
+  if ( !bkg_control_sample && pdf_type!=1 ){
+    std::cout << "No background mode sample is provided.\n" <<
+      "Only flat background pdf can be used in this case. Abort" << std::endl; 
+    exit(1);
+  }
+  if ( bkg_control_sample && bkg_control_sample->GetEntries() < 1 ){
     std::cout << "Bad background reference histogram: " << bkg_control_sample->GetName()<< std::endl;
     std::cout << "Number of entries: " << bkg_control_sample->GetEntries() << std::endl;
     exit(1);
@@ -182,7 +195,7 @@ RooFitResult* fit_isolation(RooAbsData* full_sample,
     exit(1);
   }
   RooAbsData* analysis_sample = full_sample->reduce("sample_type==0");
-  // std::cout << "Number of entries in the signal isolation control sample: " << control_sample->numEntries() << std::endl;
-  // std::cout << "Number of entries in the analysis sample: " << analysis_sample->numEntries() << std::endl;
+  std::cout << "Number of entries in the signal isolation control sample: " << control_sample->numEntries() << std::endl;
+  std::cout << "Number of entries in the analysis sample: " << analysis_sample->numEntries() << std::endl;
   return fit_isolation(control_sample, analysis_sample, fake_type, pdf_type, title, bkg_control_sample);
 }
