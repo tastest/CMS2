@@ -149,7 +149,6 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type){
 		  break;
 
 	 case NominalWWV0:
-		  if ( cms2.mus_p4()[index].pt() < 20.0 )             return false; // pt cut
 		  if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)  return false; // eta cut
 		  if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
 		  if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
@@ -163,7 +162,6 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type){
 	 case muonSelectionFO_mu_wwV1:
 	 case muonSelectionFO_mu_wwV1_iso10:
 	 case NominalWWV1:
-		  if ( cms2.mus_p4()[index].pt() < 20.0 )             return false; // pt cut
 		  if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)  return false; // eta cut
 		  if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
 		  if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon

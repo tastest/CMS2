@@ -470,7 +470,6 @@ static const cuts_t electronSelection_cand02 =
 // WWV0 base cut
 //---------------------------------------------------------
 static const cuts_t electronSelection_wwV0_base  = 
-	 (1ll<<ELEPT_020) | 
 	 (1ll<<ELEETA_250) |
 	 (1ll<<ELENOTCONV_DISTDCOT002);
 
@@ -560,7 +559,6 @@ static const cuts_t electronSelectionFO_el_wwV0_v4 =
 // WWV0b base cut
 //---------------------------------------------------------
 static const cuts_t electronSelection_wwV0b_base  = 
-	 (1ll<<ELEPT_020) | 
 	 (1ll<<ELEETA_250) |
 	 (1ll<<ELENOTCONV_DISTDCOT002) |
 	 (1ll<<ELENOTCONV_HITPATTERN_0MHITS);
@@ -638,7 +636,6 @@ static const cuts_t electronSelectionFO_el_wwV0b_v4 =
 // WWV1 base cut
 //---------------------------------------------------------
 static const cuts_t electronSelection_wwV1_base  = 
-	 (1ll<<ELEPT_020) | 
          (1ll<<ELEETA_250) ;
 
 //---------------------------------------------------------
