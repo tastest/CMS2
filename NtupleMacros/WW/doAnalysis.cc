@@ -59,15 +59,17 @@ bool goodElectronWithoutIsolation(unsigned int i){
 }
 
 bool goodElectronIsolated(unsigned int i){
-  bool core = pass_electronSelection( i, electronSelection_wwV1);
+  bool ptcut = cms2.els_p4().at(i).pt() >= 20.0;
+  bool core = ptcut && pass_electronSelection( i, electronSelection_wwV1);
   bool internal = ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_elIso(i);
   assert(core==internal);
   return core;
 }
 
 bool fakableElectron(unsigned int i){
+  bool ptcut = cms2.els_p4().at(i).pt() >= 20.0;
   // extrapolate in partial id, iso and d0
-  return pass_electronSelection( i, electronSelectionFO_el_wwV1_v2);
+  return ptcut && pass_electronSelection( i, electronSelectionFO_el_wwV1_v2);
   // extrapolate in id
   // return ww_elBase(i) && ww_eld0(i) && ww_elIso(i);
 }
@@ -77,16 +79,18 @@ bool goodMuonWithoutIsolation(unsigned int i){
 }
 
 bool goodMuonIsolated(unsigned int i){
-  bool core = muonId(i, NominalWWV1);
+  bool ptcut = cms2.mus_p4().at(i).pt() >= 20.0;
+  bool core = ptcut && muonId(i, NominalWWV1);
   bool internal = ww_muBase(i) && ww_mud0PV(i) && ww_muId(i) && ww_muIso(i); 
   assert(core==internal);
   return core;
 }
 
 bool fakableMuon(unsigned int i){
+  bool ptcut = cms2.mus_p4().at(i).pt() >= 20.0;
   // extrapolate in iso
   // return muonId(i, muonSelectionFO_mu_ww);
-  return muonId(i, muonSelectionFO_mu_ww_iso10);
+  return ptcut && muonId(i, muonSelectionFO_mu_ww_iso10);
   // return ww_muBase(i) && ww_muId(i) && ww_muIsoVal(i)<1.0 && fabs(cms2.mus_d0corr()[i]) < 2; 
 }
 
