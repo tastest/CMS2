@@ -133,17 +133,17 @@ jetbkg: processed_data.root  # estimate jet induced background
 	$(QUIET) root -q -l estimateJetBkg_fakes.C+; \
 	root -q -l estimateJetBkg_sideband.C+
 
-jetbkg2: processed_data.root # el_fr_v1_wwV0b, mu_fr_fo_wwV0_10
-	$(QUIET) root -q -l 'estimateJetBkg_fakes.C+("processed_data.root","../fakeRate/ww_el_fr_qcd30.root","el_fr_v1_wwV0b","../fakeRate/ww_mu_fr_Mu.root","mu_fr_fo_wwV0_10")'
+jetbkg2: processed_data.root # el_fr_v1_wwV1, mu_fr_fo_wwV1_10
+	$(QUIET) root -q -l 'estimateJetBkg_fakes.C+("processed_data.root","files/ww_el_fr_EG.root","el_fr_v1_wwV1","files/ww_mu_fr_Mu.root","mu_fr_fo_wwV1_10")'
 
-jetbkg3: processed_data.root # el_fr_v2_wwV0b, mu_fr_fo_wwV0_10
-	$(QUIET) root -q -l 'estimateJetBkg_fakes.C+("processed_data.root","../fakeRate/ww_el_fr_qcd30.root","el_fr_v2_wwV0b","../fakeRate/ww_mu_fr_Mu.root","mu_fr_fo_wwV0_10")'
+jetbkg3: processed_data.root # el_fr_v2_wwV1, mu_fr_fo_wwV1_10
+	$(QUIET) root -q -l 'estimateJetBkg_fakes.C+("processed_data.root","files/ww_el_fr_EG.root","el_fr_v2_wwV1","files/ww_mu_fr_Mu.root","mu_fr_fo_wwV1_10")'
 
-jetbkg4: processed_data.root # el_fr_v3_wwV0b, mu_fr_fo_wwV0_10
-	$(QUIET) root -q -l 'estimateJetBkg_fakes.C+("processed_data.root","../fakeRate/ww_el_fr_qcd30.root","el_fr_v3_wwV0b","../fakeRate/ww_mu_fr_Mu.root","mu_fr_fo_wwV0_10")'
+jetbkg4: processed_data.root # el_fr_v3_wwV1, mu_fr_fo_wwV1_10
+	$(QUIET) root -q -l 'estimateJetBkg_fakes.C+("processed_data.root","files/ww_el_fr_EG.root","el_fr_v3_wwV1","files/ww_mu_fr_Mu.root","mu_fr_fo_wwV1_10")'
 
-jetbkg5: processed_data.root # el_fr_v4_wwV0b, mu_fr_fo_wwV0_10
-	$(QUIET) root -q -l 'estimateJetBkg_fakes.C+("processed_data.root","../fakeRate/ww_el_fr_qcd30.root","el_fr_v4_wwV0b","../fakeRate/ww_mu_fr_Mu.root","mu_fr_fo_wwV0_10")'
+jetbkg5: processed_data.root # el_fr_v4_wwV1, mu_fr_fo_wwV1_10
+	$(QUIET) root -q -l 'estimateJetBkg_fakes.C+("processed_data.root","files/ww_el_fr_EG.root","el_fr_v4_wwV1","files/ww_mu_fr_Mu.root","mu_fr_fo_wwV1_10")'
 
 plots: processed_data.eps # make plots based on processed data
 	$(QUIET) epstopdf processed_data.eps

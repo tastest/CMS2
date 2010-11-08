@@ -46,14 +46,14 @@ void processData()
   bool runWW    = 1;
   bool runWZ    = 1;
   bool runZZ    = 1;
-  bool runWjets = 0;
-  bool runDYee  = 0;
-  bool runDYmm  = 0;
-  bool runDYtt  = 0;
-  bool runttbar = 0;
+  bool runWjets = 1;
+  bool runDYee  = 1;
+  bool runDYmm  = 1;
+  bool runDYtt  = 1;
+  bool runttbar = 1;
   bool runtW    = 0;
   bool runQCD   = 0; 
-  bool runData  = 0;
+  bool runData  = 1;
 
   // 
   // Ntuple version
@@ -87,7 +87,7 @@ void processData()
     cout << "Dataset directory: " << dataset << endl;
   }
   
-  const double integratedLumi = 100; // pb^1
+  const double integratedLumi = 34.9; // pb^1
 
   if (runWW)
     // ProcessSample(dataset+"/WW_Spring10-START3X_V26_S09-v1_DiLep/V03-04-08/"+version+"/*.root", WW, integratedLumi, 43, -1, fullDataSet, kRed);
@@ -189,24 +189,17 @@ void processData()
   
   // RealData
   //TString cms2_json_file = "Cert_TopSep11_Merged_135059-144114_allPVT.txt";
-  TString cms2_json_file;// = "Cert_132440-147454_7TeV_StreamExpress_Collisions10_JSON.txt";
+  TString cms2_json_file = "files/Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON-34.9ipb.txt";
+  // "Cert_132440-147454_7TeV_StreamExpress_Collisions10_JSON.txt";
   // TString cms2_json_file = "Cert_132440-148864_7TeV_StreamExpress_Collisions10_JSON.txt";
 
   std::vector<string> dataSamples;
-  //dataSamples.push_back("/tas/yygao/dataskims/diLepPt2020wwskim.root"); // this is the skim corresponds to the 3.1/pb with Json files at Sep11
-  // dataSamples.push_back(dataset+"/Mu_Run2010A-Sep17ReReco_v2_RECO/V03-06-09/diLepPt1020Skim/*.root");
-  // dataSamples.push_back(dataset+"/Mu_Run2010A-Sep17ReReco_v2_RECO/V03-06-09/singleLepPt10Skim/*.root");
-  // dataSamples.push_back(dataset+"/Mu_Run2010A-Sep17ReReco_v2_RECO/V03-06-09/diLepPt1020Skim/skimmed_ntuple_142132*.root");
-  // dataSamples.push_back(dataset+"/Mu_Run2010A-Sep17ReReco_v2_RECO/V03-06-09/diLepPt1020Skim/"+version+"/*.root");
   dataSamples.push_back(dataset+"/Mu_Run2010A-Sep17ReReco_v2_RECO/V03-06-14/diLepPt1020Skim/"+version+"/*.root");
   dataSamples.push_back(dataset+"/Mu_Run2010B-PromptReco-v2_RECO/V03-06-14-00/diLepPt1020Skim/"+version+"/*.root");
   dataSamples.push_back(dataset+"/Mu_Run2010B-PromptReco-v2_RECO/V03-06-14/diLepPt1020Skim/"+version+"/*.root");
-  // dataSamples.push_back(dataset+"/EG_Run2010A-Sep17ReReco_v2_RECO/V03-06-09/diLepPt1020Skim/"+version+"/*.root");
   dataSamples.push_back(dataset+"/EG_Run2010A-Sep17ReReco_v2_RECO/V03-06-14/diLepPt1020Skim/"+version+"/*.root");
-  // dataSamples.push_back(dataset+"/Electron_Run2010B-PromptReco-v2_RECO/V03-06-09/diLepPt1020Skim/"+version+"/*.root");
   dataSamples.push_back(dataset+"/Electron_Run2010B-PromptReco-v2_RECO/V03-06-14-00/diLepPt1020Skim/"+version+"/*.root");
   dataSamples.push_back(dataset+"/Electron_Run2010B-PromptReco-v2_RECO/V03-06-14/diLepPt1020Skim/"+version+"/*.root");
-  // dataSamples.push_back(dataset+"/Electron_Run2010B-PromptReco-v2_RECO/V03-06-09/diLepPt1020Skim/"+version+"/*.root");
   
   if (runData)
     ProcessSample(dataSamples, Data, 3.1, -1, -1, fullDataSet, kBlack, false, false, zStudy, true, cms2_json_file);

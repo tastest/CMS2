@@ -45,6 +45,7 @@ enum hyp_selection {
   PASS_LL_FINAL,
   PASS_SOFTMUVETO,
   PASS_EXTRALEPTONVETO,
+  PASS_TOPVETO
 };
 
 const cuts_t pass_all =    (1<< PASS_ZSEL)    |  (1<<PASS_MET)  | (1<<PASS_JETVETO) | (1<<PASS_LT_FINAL) 
@@ -66,9 +67,9 @@ bool goodElectronIsolated(unsigned int i){
 
 bool fakableElectron(unsigned int i){
   // extrapolate in partial id, iso and d0
-  //return pass_electronSelection( i, electronSelectionFO_el_wwV0_v4);
+  return pass_electronSelection( i, electronSelectionFO_el_wwV1_v2);
   // extrapolate in id
-  return ww_elBase(i) && ww_eld0(i) && ww_elIso(i);
+  // return ww_elBase(i) && ww_eld0(i) && ww_elIso(i);
 }
 
 bool goodMuonWithoutIsolation(unsigned int i){
@@ -84,8 +85,9 @@ bool goodMuonIsolated(unsigned int i){
 
 bool fakableMuon(unsigned int i){
   // extrapolate in iso
-  //return muonId(i, muonSelectionFO_mu_ww);
+  // return muonId(i, muonSelectionFO_mu_ww);
   return muonId(i, muonSelectionFO_mu_ww_iso10);
+  // return ww_muBase(i) && ww_muId(i) && ww_muIsoVal(i)<1.0 && fabs(cms2.mus_d0corr()[i]) < 2; 
 }
 
 double metValue(){    return cms2.evt_tcmet(); }
@@ -1581,6 +1583,8 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
     cuts_passed |=   (1<<PASS_SOFTMUVETO);
   if ( numberOfExtraLeptons(i_hyp,10) == 0) 
     cuts_passed |=   (1<<PASS_EXTRALEPTONVETO);
+  // if ( toptag(CaloJet,i_hyp,0) ) return false;
+
 
   // -------------------------------------------------------------------//
   // Finished checking the cuts, fill histograms before the final sel   //
