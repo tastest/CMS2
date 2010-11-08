@@ -361,7 +361,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         run_   = evt_run();
         ls_    = evt_lumiBlock();
         evt_   = evt_event();
-		weight_ = evt_scale1fb();
+		weight_ = isData ? 1. : evt_scale1fb();
         pt_    = els_p4().at(iEl).pt();
         eta_   = els_p4().at(iEl).eta();
         phi_   = els_p4().at(iEl).phi();
@@ -663,7 +663,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         run_  = evt_run();
         ls_   = evt_lumiBlock();
         evt_  = evt_event();
-		weight_ = evt_scale1fb();
+		weight_ = isData ? 1. : evt_scale1fb();
         pt_   = mus_p4().at(iMu).pt();
         eta_  = mus_p4().at(iMu).eta();
         phi_  = mus_p4().at(iMu).phi();
