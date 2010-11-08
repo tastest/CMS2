@@ -174,9 +174,10 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preML8      = 1;
   int preLMscan   = 1;
 
-  /*
+  
   //Flags for files to run over
   bool rundata     = 1;
+  bool rundataskim = 1;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runttall    = 0;
@@ -219,16 +220,17 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  */
-
   
+
+  /*
   //Flags for files to run over
-  bool rundata     = 0;
+  bool rundata     = 1;
+  bool rundataskim = 1;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runttall    = 0;
   bool runttdil    = 0;
-  bool runttem     = 1;
+  bool runttem     = 0;
   bool runttotr    = 0;
   bool runWW       = 0;
   bool runWZ       = 0;
@@ -266,27 +268,52 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  
+  */
+
+  TChain* chdataskim = new  TChain("Events");
+  if(rundataskim){
+    
+    pickSkimIfExists(chdataskim,
+                     "/tas/cms2/dilepSkim35pb/els.root",
+                     "dataskim");
+
+    pickSkimIfExists(chdataskim,
+                     "/tas/cms2/dilepSkim35pb/mus.root",
+                     "dataskim");
+  }
 
   TChain* chdata = new  TChain("Events");
   if(rundata){
-  
-    pickSkimIfExists(chdata,
-                     "/tas/cms2/EG_Run2010A-Sep17ReReco_v2_RECO/V03-06-09/diLepPt1020Skim/skimmed*root",
-                     "data");
-    
-    pickSkimIfExists(chdata,
-                     "/tas/cms2/Mu_Run2010A-Sep17ReReco_v2_RECO/V03-06-09/diLepPt1020Skim/skimmed*root",
-                     "data");
-    
-    pickSkimIfExists(chdata,
-                     "/tas/cms2/Electron_Run2010B-PromptReco-v2_RECO/V03-06-09/diLepPt1020Skim/skimmed*root",
-                     "data");
-    
-    pickSkimIfExists(chdata,
-                     "/tas/cms2/Mu_Run2010B-PromptReco-v2_RECO/V03-06-09/diLepPt1020Skim/skimmed*root",
-                     "data");
 
+//     pickSkimIfExists(chdata,
+//                      "/tas/cms2/EG_Run2010A-Sep17ReReco_v2_RECO/V03-06-14/diLepPt1020Skim/skimmed_ntuple_143727_5.root",
+//                      "data");
+    
+    
+    pickSkimIfExists(chdata,
+                     "/tas/cms2/EG_Run2010A-Sep17ReReco_v2_RECO/V03-06-14/diLepPt1020Skim/skimmed*root",
+                     "data");
+    
+    pickSkimIfExists(chdata,
+                     "/tas/cms2/Electron_Run2010B-PromptReco-v2_RECO/V03-06-14-00/diLepPt1020Skim/skimmed*root",
+                     "data");
+    
+    pickSkimIfExists(chdata,
+                     "/tas/cms2/Electron_Run2010B-PromptReco-v2_RECO/V03-06-14/diLepPt1020Skim/skimmed*root",
+                     "data");
+    
+    pickSkimIfExists(chdata,
+                     "/tas/cms2/Mu_Run2010A-Sep17ReReco_v2_RECO/V03-06-14/diLepPt1020Skim/skimmed*root",
+                     "data");
+    
+    pickSkimIfExists(chdata,
+                     "/tas/cms2/Mu_Run2010B-PromptReco-v2_RECO/V03-06-14-00/diLepPt1020Skim/skimmed*root",
+                     "data");
+    
+    pickSkimIfExists(chdata,
+                     "/tas/cms2/Mu_Run2010B-PromptReco-v2_RECO/V03-06-14/diLepPt1020Skim/skimmed*root",
+                     "data");
+    
   }
   
    TChain* chQCDpt15 = new  TChain("Events");
@@ -662,9 +689,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   //--------------------------------
   //set luminosity to scale to
   //--------------------------------
-  //float lumi              = 0.1;          //100 pb-1
-  float lumi              = 11.06e-3; 
-  //  float lumi              = 11.06; 
+  float lumi              = 34.85e-3; 
   bool  calculateTCMET    = true; //redo tcmet calculation on the fly
 
   char* jetTypeStrings[3] = {"JPT", "calo","pfjet"};
@@ -687,7 +712,13 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                   ossusy_looper::MetTypeEnum  metType(metTypeIdx);
                   ossusy_looper::ZVetoEnum    zveto(zvetoIdx);
                   ossusy_looper::FREnum       frmode(frmodeIdx);
-                  
+   
+                  if (rundataskim) {
+                    cout << "Processing data skim" << endl;
+                    looper->ScanChain(chdataskim,"dataskim", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing data skim" << endl;
+                    hist::color("dataskim", kBlack);
+                  }            
                   if (rundata) {
                     cout << "Processing data" << endl;
                     looper->ScanChain(chdata,"data", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
@@ -946,7 +977,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx],frmodeStrings[frmode]);
                   }
                   else {
-                    const char* outFile = Form("output/oct15th_v2/ossusy_%s_%s%s_ttem_bitmask.root", 
+                    const char* outFile = Form("output/nov5th_v3/ossusy_%s_%s%s_bitmask.root", 
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
                   }
                   

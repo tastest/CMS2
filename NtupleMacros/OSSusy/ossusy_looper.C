@@ -141,7 +141,7 @@ void ossusy_looper::makeTree(char *prefix)
   rootdir->cd();
 
   //Super compressed ntuple here
-  outFile   = new TFile(Form("output/nov5th_v2/%s_smallTree.root",prefix), "RECREATE");
+  outFile   = new TFile(Form("output/nov5th_v3/%s_smallTree.root",prefix), "RECREATE");
   //outFile   = new TFile("temp.root","RECREATE");
   outFile->cd();
   outTree = new TTree("t","Tree");
@@ -528,7 +528,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
                              JetTypeEnum jetType, MetTypeEnum metType, ZVetoEnum zveto, FREnum frmode, bool doFakeApp, bool calculateTCMET)
 {
 
-
+  
   bool isLM = TString(prefix).Contains("LM");
 
   if( doFakeApp ){
@@ -539,7 +539,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
   set_goodrun_file( "Cert_TopNov5_Merged_135821-149442_allPVT_goodruns.txt");
 
   bool isData = false;
-  if( strcmp( prefix , "data" ) == 0 ){
+  if( TString(prefix).Contains("data")  ){
+    cout << "DATA!!!" << endl;
     isData = true;
   }
   // instanciate topmass solver
@@ -648,7 +649,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
       //if( nEventsTotal % 100 != 0 ) continue;
       cms2.GetEntry(z);
-
+  
       
       float pthat_cutoff = 30.;
       if (strcmp( prefix , "qcdpt15" ) == 0 && genps_pthat() > pthat_cutoff) {
@@ -669,7 +670,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           skipEvent = true;
         }
       }
-    
+             
       if( skipEvent ){
         nSkip_els_conv_dist++;
         continue;
@@ -692,7 +693,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       bool foundEl_ll[20];
       bool foundEl_lt[20];
 
-
+         
       VofP4 goodLeptons;
 
       if( generalLeptonVeto ){
@@ -710,7 +711,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         }
 
       }
-      
+               
       for(unsigned int i = 0; i < hyp_p4().size(); ++i) {
 
         if( !passSUSYTrigger_v1( isData , hyp_type()[i] ) ) continue;
@@ -735,7 +736,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         if( TMath::Min( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < 10. )   continue;
         if( hyp_p4()[i].mass() < 10 )                                         continue;
         float FRweight = 1;
-        
+                 
         if(doFakeApp) {
           //          float FRweight = getFRWeight(hypIdx, elFRversion, mufr, elfr); 
           FRweight = getFRWeight(i, "eFRv215u", mufr, elfr, frmode, isData); 
@@ -770,7 +771,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         }
         
       }
-
+         
       //loop over Z hypotheses
       if( v_goodZHyps.size() > 0 ){
         
@@ -782,7 +783,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         }else{
           weight = kFactor * evt_scale1fb() * lumi;
         }
-        
+          
         //store dilepton type in myType
         int myType = 99;
         if (hyp_type()[zhyp] == 3)                              myType = 0; // ee
@@ -810,6 +811,14 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           if( vjet.pt() < 30.          )         continue;
           if( fabs( vjet.eta() ) > 2.5 )         continue;
           if( !passesCaloJetID( vjet ) )         continue;
+
+          if( generalLeptonVeto ){
+            bool rejectJet = false;
+            for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+              if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+            }
+            if( rejectJet ) continue;
+          }
           
           njets++;
         }
@@ -936,7 +945,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         int nleps = 0;
         
         float dilptgen = -1;
-
+  
         //splitting ttbar into ttdil/ttotr
         if( !isData ){
   
@@ -1084,7 +1093,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
             }
           }
         }
-
+  
         //pfjets
         VofP4 vpfjets_p4;
 
@@ -2293,7 +2302,7 @@ void ossusy_looper::BookHistos(char *prefix)
       hdphiLep[i][j]  = new TH1F(Form("%s_hdphiLep_%s",prefix,suffix),Form("%s_dphiLep_%s",prefix,suffix),50,0.,TMath::Pi());
       hdphiLep[i][j]->GetXaxis()->SetTitle("#delta#phi_{ll}");
 
-      hdrLep[i][j]  = new TH1F(Form("%s_hdrLep_%s",prefix,suffix),Form("%s_drLep_%s",prefix,suffix),5,0.,5);
+      hdrLep[i][j]  = new TH1F(Form("%s_hdrLep_%s",prefix,suffix),Form("%s_drLep_%s",prefix,suffix),50,0.,5);
       hdrLep[i][j]->GetXaxis()->SetTitle("#DeltaR(ll)");
 
       hdrJ1J2[i][j]  = new TH1F(Form("%s_hdrJ1J2_%s",prefix,suffix),Form("%s_drJ1J2_%s",prefix,suffix),50,0.,5);
