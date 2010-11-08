@@ -1,5 +1,78 @@
-void makeWWFakeRates(bool doels = true, bool domus = true) {
-    gROOT->LoadMacro("eff2.C");
+#include "TH2F.h"
+#include "TTree.h"
+#include "TFile.h"
+#include "TList.h"
+#include "TIterator.h"
+#include <iostream>
+#include "TStyle.h"
+#include "TChain.h"
+#include "TCut.h"
+
+using namespace std;
+
+void makeWWFakeRates(bool doels = true, bool domus = true);
+
+// Method by pointer
+TH2F* eff2(TH2F* h1, TH2F* h2, const char* name="eff"){
+
+  // first, verify that all histograms have same binning
+  // nx is the number of visible bins
+  // nxtot = nx+2 includes underflow and overflow
+  Int_t nx = h1->GetNbinsX();
+  if (h2->GetNbinsX() != nx) {
+    cout << "Histograms must have same number of bins" << endl;
+    return 0;
+  }
+
+  // get the new histogram
+  TH2F* temp = (TH2F*) h1->Clone(name);
+  temp->SetTitle(name);
+  temp->Reset();
+  temp->Sumw2();
+
+  // Do the calculation
+  temp->Divide(h2,h1,1.,1.,"B");
+
+  // Done
+  return temp;
+}
+
+
+// Method by name
+TH2F* eff2(const char* name1, const char* name2, const char* name="eff"){
+
+  // Get a list of object and their iterator
+  TList* list = gDirectory->GetList() ;
+  TIterator* iter = list->MakeIterator();
+
+  // Loop over objects, set the pointers
+  TObject* obj;
+  TH2F* h1=0;
+  TH2F* h2=0;
+  TString str1 = Form("%s",name1);
+  TString str2 = Form("%s",name2);
+  while((obj=iter->Next())) {
+    TString objName = obj->GetName();
+    if (objName == str1) h1 = (TH2F*) obj;
+    if (objName == str2) h2 = (TH2F*) obj;
+  }
+
+  // quit if not found
+  if (h1 == 0) {
+    cout << "Histogram " << name1 << " not found" << endl;
+    return 0;
+  }
+  if (h2 == 0) {
+    cout << "Histogram " << name2 << " not found" << endl;
+    return 0;
+  }
+
+  // Call the method by pointer
+  TH2F* temp = eff2(h1, h2, name);
+  return temp;
+}
+
+void makeWWFakeRates(bool doels, bool domus) {
     gStyle->SetOptStat(0);
 
     //--------------------------------------------------------------------------
@@ -9,15 +82,17 @@ void makeWWFakeRates(bool doels = true, bool domus = true) {
     //--------------------------------------------------------------------------
 
     TChain *ch_el = new TChain("tree");
+    TFile* fout_el(0);
     if (doels) {
-        ch_el->Add("EG.root");
-        //ch_el->Add("qcd30.root");
+        ch_el->Add("EG31_20101105.root");
+	fout_el = TFile::Open("ww_el_fr_EG.root","RECREATE");
     }
 
     TChain *ch_mu = new TChain("tree");
+    TFile* fout_mu(0);
     if (domus) {
-        ch_mu->Add("Mu.root");
-        //ch_mu->Add("inclMu.root");
+        ch_mu->Add("Mu31_20101105.root");
+	fout_mu = TFile::Open("ww_mu_fr_MU.root","RECREATE");
     }
 
     //--------------------------------------------------------------------------
@@ -41,24 +116,16 @@ void makeWWFakeRates(bool doels = true, bool domus = true) {
     TCut trgCutMu = "mu9>1 || mu11>1 || mu15>1";
 
     // Numerator selections
-    TCut is_el_num_wwV0  = "num_wwV0&&abs(id)==11"+trgCutEl+jetCut+ptCut+notWCut;
-    TCut is_el_num_wwV0b = "num_wwV0b&&abs(id)==11"+trgCutEl+jetCut+ptCut+notWCut;
-
-    TCut is_mu_num_wwV0  = "num_wwV0&&abs(id)==13"+trgCutMu+jetCut+ptCut+notWCut;
+    TCut is_el_num_wwV1 = "num_wwV1&&abs(id)==11"+trgCutEl+jetCut+ptCut+notWCut;
+    TCut is_mu_num_wwV1 = "num_wwV1&&abs(id)==13"+trgCutMu+jetCut+ptCut+notWCut;
 
     // Denominator selections
-    TCut is_el_v1_wwV0    = "v1_wwV0&&abs(id)==11"+trgCutEl+jetCut+ptCut+notWCut;
-    TCut is_el_v2_wwV0    = "v2_wwV0&&abs(id)==11"+trgCutEl+jetCut+ptCut+notWCut;
-    TCut is_el_v3_wwV0    = "v3_wwV0&&abs(id)==11"+trgCutEl+jetCut+ptCut+notWCut;
-    TCut is_el_v4_wwV0    = "v4_wwV0&&abs(id)==11"+trgCutEl+jetCut+ptCut+notWCut;
-
-    TCut is_el_v1_wwV0b   = "v1_wwV0b&&abs(id)==11"+trgCutEl+jetCut+ptCut+notWCut;
-    TCut is_el_v2_wwV0b   = "v2_wwV0b&&abs(id)==11"+trgCutEl+jetCut+ptCut+notWCut;
-    TCut is_el_v3_wwV0b   = "v3_wwV0b&&abs(id)==11"+trgCutEl+jetCut+ptCut+notWCut;
-    TCut is_el_v4_wwV0b   = "v4_wwV0b&&abs(id)==11"+trgCutEl+jetCut+ptCut+notWCut;
-
-    TCut is_mu_fo_wwV0_04 = "fo_wwV0_04&&abs(id)==13"+trgCutMu+jetCut+ptCut+notWCut;
-    TCut is_mu_fo_wwV0_10 = "fo_wwV0_10&&abs(id)==13"+trgCutMu+jetCut+ptCut+notWCut;
+    TCut is_el_v1_wwV1    = "v1_wwV1&&abs(id)==11"+trgCutEl+jetCut+ptCut+notWCut;
+    TCut is_el_v2_wwV1    = "v2_wwV1&&abs(id)==11"+trgCutEl+jetCut+ptCut+notWCut;
+    TCut is_el_v3_wwV1    = "v3_wwV1&&abs(id)==11"+trgCutEl+jetCut+ptCut+notWCut;
+    TCut is_el_v4_wwV1    = "v4_wwV1&&abs(id)==11"+trgCutEl+jetCut+ptCut+notWCut;
+    TCut is_mu_fo_wwV1_04 = "fo_wwV1_04&&abs(id)==13"+trgCutMu+jetCut+ptCut+notWCut;
+    TCut is_mu_fo_wwV1_10 = "fo_wwV1_10&&abs(id)==13"+trgCutMu+jetCut+ptCut+notWCut;
 
     //--------------------------------------------------------------------------
     // Define pt and eta bins of fake rate histograms
@@ -75,44 +142,36 @@ void makeWWFakeRates(bool doels = true, bool domus = true) {
     // Book numerator and denominator histograms
     //--------------------------------------------------------------------------
 
-    TH2F* el_num_wwV0   = new TH2F("el_num_wwV0","el_num_wwV0",nbinsx,xbin,nbinsy,ybin);
-    TH2F* el_v1_wwV0    = new TH2F("el_v1_wwV0","el_v1_wwV0",nbinsx,xbin,nbinsy,ybin);
-    TH2F* el_v2_wwV0    = new TH2F("el_v2_wwV0","el_v2_wwV0",nbinsx,xbin,nbinsy,ybin);
-    TH2F* el_v3_wwV0    = new TH2F("el_v3_wwV0","el_v3_wwV0",nbinsx,xbin,nbinsy,ybin);
-    TH2F* el_v4_wwV0    = new TH2F("el_v4_wwV0","el_v4_wwV0",nbinsx,xbin,nbinsy,ybin);
+    if (doels) fout_el->cd();
+    TH2F* el_num_wwV1   = new TH2F("el_num_wwV1","el_num_wwV1",nbinsx,xbin,nbinsy,ybin);
+    TH2F* el_v1_wwV1    = new TH2F("el_v1_wwV1","el_v1_wwV1",nbinsx,xbin,nbinsy,ybin);
+    TH2F* el_v2_wwV1    = new TH2F("el_v2_wwV1","el_v2_wwV1",nbinsx,xbin,nbinsy,ybin);
+    TH2F* el_v3_wwV1    = new TH2F("el_v3_wwV1","el_v3_wwV1",nbinsx,xbin,nbinsy,ybin);
+    TH2F* el_v4_wwV1    = new TH2F("el_v4_wwV1","el_v4_wwV1",nbinsx,xbin,nbinsy,ybin);
 
-    TH2F* el_num_wwV0b  = new TH2F("el_num_wwV0b","el_num_wwV0b",nbinsx,xbin,nbinsy,ybin);
-    TH2F* el_v1_wwV0b   = new TH2F("el_v1_wwV0b","el_v1_wwV0b",nbinsx,xbin,nbinsy,ybin);
-    TH2F* el_v2_wwV0b   = new TH2F("el_v2_wwV0b","el_v2_wwV0b",nbinsx,xbin,nbinsy,ybin);
-    TH2F* el_v3_wwV0b   = new TH2F("el_v3_wwV0b","el_v3_wwV0b",nbinsx,xbin,nbinsy,ybin);
-    TH2F* el_v4_wwV0b   = new TH2F("el_v4_wwV0b","el_v4_wwV0b",nbinsx,xbin,nbinsy,ybin);
-
-    TH2F* mu_num_wwV0   = new TH2F("mu_num_wwV0","mu_num_wwV0",nbinsx,xbin,nbinsy,ybin);
-    TH2F* mu_fo_wwV0_04 = new TH2F("mu_fo_wwV0_04","mu_fo_wwV0_04",nbinsx,xbin,nbinsy,ybin);
-    TH2F* mu_fo_wwV0_10 = new TH2F("mu_fo_wwV0_10","mu_fo_wwV0_10",nbinsx,xbin,nbinsy,ybin);
+    if (domus) fout_mu->cd();
+    TH2F* mu_num_wwV1   = new TH2F("mu_num_wwV1","mu_num_wwV1",nbinsx,xbin,nbinsy,ybin);
+    TH2F* mu_fo_wwV1_04 = new TH2F("mu_fo_wwV1_04","mu_fo_wwV1_04",nbinsx,xbin,nbinsy,ybin);
+    TH2F* mu_fo_wwV1_10 = new TH2F("mu_fo_wwV1_10","mu_fo_wwV1_10",nbinsx,xbin,nbinsy,ybin);
 
     //--------------------------------------------------------------------------
     // Fill Histograms
     //--------------------------------------------------------------------------
 
     if (doels) {
-        ch_el->Draw("pt:abs(eta)>>el_num_wwV0",is_el_num_wwV0);
-        ch_el->Draw("pt:abs(eta)>>el_v1_wwV0",is_el_v1_wwV0);
-        ch_el->Draw("pt:abs(eta)>>el_v2_wwV0",is_el_v2_wwV0);
-        ch_el->Draw("pt:abs(eta)>>el_v3_wwV0",is_el_v3_wwV0);
-        ch_el->Draw("pt:abs(eta)>>el_v4_wwV0",is_el_v4_wwV0);
-
-        ch_el->Draw("pt:abs(eta)>>el_num_wwV0b",is_el_num_wwV0b);
-        ch_el->Draw("pt:abs(eta)>>el_v1_wwV0b",is_el_v1_wwV0b);
-        ch_el->Draw("pt:abs(eta)>>el_v2_wwV0b",is_el_v2_wwV0b);
-        ch_el->Draw("pt:abs(eta)>>el_v3_wwV0b",is_el_v3_wwV0b);
-        ch_el->Draw("pt:abs(eta)>>el_v4_wwV0b",is_el_v4_wwV0b);
+        fout_el->cd();
+        ch_el->Draw("pt:abs(eta)>>el_num_wwV1",is_el_num_wwV1);
+        ch_el->Draw("pt:abs(eta)>>el_v1_wwV1",is_el_v1_wwV1);
+        ch_el->Draw("pt:abs(eta)>>el_v2_wwV1",is_el_v2_wwV1);
+        ch_el->Draw("pt:abs(eta)>>el_v3_wwV1",is_el_v3_wwV1);
+        ch_el->Draw("pt:abs(eta)>>el_v4_wwV1",is_el_v4_wwV1);
     }
 
     if (domus) {
-        ch_mu->Draw("pt:abs(eta)>>mu_num_wwV0",is_mu_num_wwV0);
-        ch_mu->Draw("pt:abs(eta)>>mu_fo_wwV0_04",is_mu_fo_wwV0_04);
-        ch_mu->Draw("pt:abs(eta)>>mu_fo_wwV0_10",is_mu_fo_wwV0_10);
+        fout_mu->cd();
+        ch_mu->Draw("pt:abs(eta)>>mu_num_wwV1",is_mu_num_wwV1);
+        ch_mu->Draw("pt:abs(eta)>>mu_fo_wwV1_04",is_mu_fo_wwV1_04);
+        ch_mu->Draw("pt:abs(eta)>>mu_fo_wwV1_10",is_mu_fo_wwV1_10);
     }
 
     //--------------------------------------------------------------------------
@@ -120,26 +179,21 @@ void makeWWFakeRates(bool doels = true, bool domus = true) {
     // the histogram name
     //--------------------------------------------------------------------------
 
-    TH2F* el_fr_v1_wwV0    = doels ? eff2(el_v1_wwV0,el_num_wwV0,"el_fr_v1_wwV0") : 0;
-    TH2F* el_fr_v2_wwV0    = doels ? eff2(el_v2_wwV0,el_num_wwV0,"el_fr_v2_wwV0") : 0;
-    TH2F* el_fr_v3_wwV0    = doels ? eff2(el_v3_wwV0,el_num_wwV0,"el_fr_v3_wwV0") : 0;
-    TH2F* el_fr_v4_wwV0    = doels ? eff2(el_v4_wwV0,el_num_wwV0,"el_fr_v4_wwV0") : 0;
-
-    TH2F* el_fr_v1_wwV0b   = doels ? eff2(el_v1_wwV0b,el_num_wwV0b,"el_fr_v1_wwV0b") : 0;
-    TH2F* el_fr_v2_wwV0b   = doels ? eff2(el_v2_wwV0b,el_num_wwV0b,"el_fr_v2_wwV0b") : 0;
-    TH2F* el_fr_v3_wwV0b   = doels ? eff2(el_v3_wwV0b,el_num_wwV0b,"el_fr_v3_wwV0b") : 0;
-    TH2F* el_fr_v4_wwV0b   = doels ? eff2(el_v4_wwV0b,el_num_wwV0b,"el_fr_v4_wwV0b") : 0;
-
-    TH2F* mu_fr_fo_wwV0_04 = domus ? eff2(mu_fo_wwV0_04,mu_num_wwV0,"mu_fr_fo_wwV0_04") : 0;
-    TH2F* mu_fr_fo_wwV0_10 = domus ? eff2(mu_fo_wwV0_10,mu_num_wwV0,"mu_fr_fo_wwV0_10") : 0;
-
-    if (doels) {
-        saveHist("ww_el_fr_EG.root", "el_*");
-        //saveHist("ww_el_fr_qcd30.root", "el_*");
+    if (doels){
+      fout_el->cd();
+      eff2(el_v1_wwV1,el_num_wwV1,"el_fr_v1_wwV1");
+      eff2(el_v2_wwV1,el_num_wwV1,"el_fr_v2_wwV1");
+      eff2(el_v3_wwV1,el_num_wwV1,"el_fr_v3_wwV1");
+      eff2(el_v4_wwV1,el_num_wwV1,"el_fr_v4_wwV1");
+      fout_el->Write();
+      fout_el->Close();
     }
 
-    if (domus) {
-        saveHist("ww_mu_fr_Mu.root", "mu_*");
-        //saveHist("ww_mu_fr_inclMu.root", "mu_*");
+    if (domus){
+      fout_mu->cd();
+      eff2(mu_fo_wwV1_04,mu_num_wwV1,"mu_fr_fo_wwV1_04");
+      eff2(mu_fo_wwV1_10,mu_num_wwV1,"mu_fr_fo_wwV1_10");
+      fout_mu->Write();
+      fout_mu->Close();
     }
 }
