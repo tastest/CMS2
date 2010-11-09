@@ -45,11 +45,14 @@ enum hyp_selection {
   PASS_LL_FINAL,
   PASS_SOFTMUVETO,
   PASS_EXTRALEPTONVETO,
-  PASS_TOPVETO
+  PASS_TOPVETO,
+  PASS_1BJET,
+  PASS_1JET
 };
 
-const cuts_t pass_all =    (1<< PASS_ZSEL)    |  (1<<PASS_MET)  | (1<<PASS_JETVETO) | (1<<PASS_LT_FINAL) 
-  | (1<<PASS_LL_FINAL) |  (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO);
+const cuts_t pass_all = (1<< PASS_ZSEL) | (1<<PASS_MET) | (1<<PASS_JETVETO) | (1<<PASS_LT_FINAL) 
+  | (1<<PASS_LL_FINAL) | (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO) | (1<<PASS_TOPVETO);
+
 //
 // Key analysis method implementation
 //
@@ -131,11 +134,13 @@ WWJetType jetType(){
   // return jptJet;
 }
 
-unsigned int numberOfJets(unsigned int i_hyp){
-  // return getJets(jetType(), i_hyp, 20, 3.0).size(); // V0
-  return getJets(jetType(), i_hyp, 25, 5.0).size(); // V1
+std::vector<LorentzVector> getDefaultJets(unsigned int i_hyp, bool btagged=false){
+  return getJets(jetType(), i_hyp, 25, 5.0, false, btagged); // V1
 }
 
+unsigned int numberOfJets(unsigned int i_hyp){
+  return getDefaultJets(i_hyp).size(); 
+}
 
 //
 // Electron Id
@@ -280,7 +285,9 @@ double ww_muIsoVal(unsigned int index){
 bool ww_muIso(unsigned int index){
   return ww_muIsoVal(index)<0.15;
 }
-unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated){
+unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated,
+			       const std::vector<LorentzVector>& vetojets)
+{
   unsigned int nMuons = 0;
   for (int imu=0; imu < int(cms2.mus_charge().size()); ++imu) {
     // quality cuts
@@ -292,6 +299,11 @@ unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated){
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == imu ) continue;
     if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == imu ) continue;
     if ( nonisolated && ww_muIsoVal(imu)<0.1 && cms2.mus_p4()[imu].pt()>20 ) continue;
+    bool skip = false;
+    for ( std::vector<LorentzVector>::const_iterator ijet = vetojets.begin();
+	  ijet != vetojets.end(); ++ijet )
+      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(*ijet,cms2.mus_p4()[imu])) < 0.3 ) skip=true;
+    if ( skip ) continue;
     ++nMuons;
   }
   return nMuons;
@@ -411,7 +423,7 @@ Bool_t comparePt(LorentzVector lv1, LorentzVector lv2) {
 }
 
 std::vector<LorentzVector> 
-getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJets)
+getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJets, bool btag)
 {
      std::vector<LorentzVector> jets;
      const double vetoCone = 0.4;
@@ -420,6 +432,7 @@ getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJ
      case jptJet:
         for ( unsigned int i=0; i < cms2.jpts_p4().size(); ++i) {
 	 if ( cms2.jpts_p4()[i].pt() < etThreshold ) continue;
+	 if ( btag && !defaultBTag(type,i) ) continue;
 	 if ( TMath::Abs(cms2.jpts_p4()[i].eta()) > etaMax ) continue;
 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ||
 	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ) continue;
@@ -429,6 +442,7 @@ getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJ
      case pfJet:
        for ( unsigned int i=0; i < cms2.pfjets_p4().size(); ++i) {
 	 if ( cms2.pfjets_p4()[i].pt() < etThreshold ) continue;
+	 if ( btag && !defaultBTag(type,i) ) continue;
 	 if ( TMath::Abs(cms2.pfjets_p4()[i].eta()) > etaMax ) continue;
 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ||
 	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
@@ -438,6 +452,7 @@ getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJ
      case GenJet:
        for ( unsigned int i=0; i < cms2.genjets_p4().size(); ++i) {
 	 if ( cms2.genjets_p4()[i].pt() < etThreshold ) continue;
+	 if ( btag && !defaultBTag(type,i) ) continue;
 	 if ( TMath::Abs(cms2.genjets_p4()[i].eta()) > etaMax ) continue;
 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.genjets_p4()[i])) < vetoCone ||
 	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.genjets_p4()[i])) < vetoCone ) continue;
@@ -447,6 +462,7 @@ getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJ
      case CaloJet:
        for ( unsigned int i=0; i < cms2.jets_pat_jet_p4().size(); ++i) {
 	 if ( cms2.jets_pat_jet_p4()[i].pt() < etThreshold ) continue;
+	 if ( btag && !defaultBTag(type,i) ) continue;
 	 if ( TMath::Abs(cms2.jets_pat_jet_p4()[i].eta()) > etaMax ) continue;
 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jets_pat_jet_p4()[i])) < vetoCone ||
 	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jets_pat_jet_p4()[i])) < vetoCone ) continue;
@@ -456,6 +472,7 @@ getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJ
      case TrkJet:
        for ( unsigned int i=0; i < cms2.trkjets_p4().size(); ++i) {
 	 if ( cms2.trkjets_p4()[i].pt() < etThreshold ) continue;
+	 if ( btag && !defaultBTag(type,i) ) continue;
 	 if ( TMath::Abs(cms2.trkjets_p4()[i].eta()) > etaMax ) continue;
 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.trkjets_p4()[i])) < vetoCone ||
 	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.trkjets_p4()[i])) < vetoCone ) continue;
@@ -487,13 +504,16 @@ double BTag(WWJetType type, unsigned int iJet){
     jetP4 = cms2.jpts_p4().at(iJet);
     break;
   case CaloJet:
-    // return cms2.jets_jetProbabilityBJetTag().at(iJet);
-    return cms2.jets_combinedSecondaryVertexBJetTag().at(iJet);
+    return cms2.jets_trackCountingHighEffBJetTag()[iJet];
+    break;
+  case pfJet:
+    return cms2.pfjets_trackCountingHighEffBJetTag()[iJet];
     break;
   default:
     std::cout << "ERROR: not supported jet type is requested: " << type << " FixIt!" << std::endl;
     assert(0);
   }
+
   int refJet = -1;
   for ( unsigned int i=0; i < cms2.jets_p4().size(); ++i) {
     if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(jetP4,cms2.jets_p4()[i])) > 0.3 ) continue;
@@ -503,8 +523,11 @@ double BTag(WWJetType type, unsigned int iJet){
     // std::cout << "Warning: failed to find a matching jet for b-tagging." << std::endl; 
     return 0.0;
   }
-  // return cms2.jets_jetProbabilityBJetTag().at(refJet);
-  return cms2.jets_combinedSecondaryVertexBJetTag().at(refJet);
+  return cms2.jets_trackCountingHighEffBJetTag().at(refJet);
+}
+
+bool defaultBTag(WWJetType type, unsigned int iJet){
+  return BTag(type,iJet)>2.1;
 }
 
 //
@@ -774,7 +797,8 @@ TH2F* hFinalRateSingleMuon;   // Fake rate study: rate of final objects
 TH1F* hIsoSingleMuon;             // isolation background 
 TH1F* hIsoSingleElectron;         // isolation background 
 TH2F* hmaxBtagVsJPTPt;   // btag vs energy distribution for the most energetic jet
-
+TH2F* htoptagz[4];
+TH2F* htoptag[4];
 
 // Histograms without the full selections
 TH1F* hmaxJPTPt[4];         // energy distribution for the most energetic jet |eta|<5
@@ -1100,6 +1124,7 @@ void find_most_energetic_jets(int i_hyp, double weight, bool realData, double et
     hmaxBtagVsJPTPt->Fill(jptMax, BTag(jptJet,jptMaxIndex), weight);
   else
     hmaxBtagVsJPTPt->Fill(jptMax, 0.0, weight);
+
   // Calo 
   double caloJetMax(0.);
   find_leading_calojet(i_hyp, etaMin, etaMax, vetoCone, caloJetMax, applyJEC);
@@ -1376,26 +1401,41 @@ void countFakableObjectsAfterAllSelections(unsigned int i_hyp,
 }
 
 bool 
-toptag(WWJetType type, int i_hyp, double minPt)
+toptag(WWJetType type, int i_hyp, double minPt,
+       std::vector<LorentzVector> ignoreJets=std::vector<LorentzVector>())
 {
      std::vector<LorentzVector> jets;
      const double vetoCone    = 0.3;
-     
+
      switch ( type ){
      case pfJet:
        for ( unsigned int i=0; i < cms2.pfjets_p4().size(); ++i) {
 	 if ( cms2.pfjets_p4()[i].pt() < minPt ) continue;
+	 bool ignoreJet = false;
+	 for ( std::vector<LorentzVector>::const_iterator ijet = ignoreJets.begin();
+	       ijet != ignoreJets.end(); ++ijet )
+	   if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(*ijet,cms2.pfjets_p4()[i])) < vetoCone ) ignoreJet=true;
+	 if ( ignoreJet ) continue;
 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ||
 	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
-	 if ( cms2.pfjets_trackCountingHighEffBJetTag()[i]>2.1 ) return true;
+	 if ( defaultBTag(type,i) ) return true;
        }
        break;
      case CaloJet:
        for ( unsigned int i=0; i < cms2.jets_p4().size(); ++i) {
 	 if ( cms2.jets_p4()[i].pt() < minPt ) continue;
+	 bool ignoreJet = false;
+	 for ( std::vector<LorentzVector>::const_iterator ijet = ignoreJets.begin();
+	       ijet != ignoreJets.end(); ++ijet )
+	   if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(*ijet,cms2.jets_p4()[i])) < vetoCone ) ignoreJet=true;
+	 if ( ignoreJet ) continue;
 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jets_p4()[i])) < vetoCone ||
 	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jets_p4()[i])) < vetoCone ) continue;
-	 if ( cms2.jets_trackCountingHighEffBJetTag()[i]>2.1 ) return true;
+// 	 if ( defaultBTag(type,i) && ignoreJets.size()==1 ){
+// 	   cout << "b-tagged jet pt: " << cms2.jets_p4()[i].pt() << " \teta: " << cms2.jets_p4()[i].eta() <<
+// 	     " \tphi: " << cms2.jets_p4()[i].phi() << endl;
+// 	 }
+	 if ( defaultBTag(type,i) ) return true;
        }
        break;
      default:
@@ -1574,21 +1614,27 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   if ( passedLLFinalRequirements ) cuts_passed |= (1<<PASS_LL_FINAL);
 
   // == Jet-veto
-  unsigned int nJets = numberOfJets(i_hyp);
+  const std::vector<LorentzVector>& vetojets(getDefaultJets(i_hyp));
+  unsigned int nJets = vetojets.size();
   if (nJets==0) 
     cuts_passed |= (1<<PASS_JETVETO);
+  if (nJets==1){
+    cuts_passed |= (1<<PASS_1JET);
+    if ( getDefaultJets(i_hyp,true).size()==1 ){
+      cuts_passed |= (1<<PASS_1BJET);
+    }
+  }
   // trkjet veto
   // if ( !passTrkJetVeto(i_hyp) ) return;
-
   // == ExtraVeto Muons
   int countmus = numberOfSoftMuons(i_hyp,true);
-  int nExtraVetoMuons = numberOfSoftMuons(i_hyp,true);
+  int nExtraVetoMuons = numberOfSoftMuons(i_hyp,true,vetojets);
   if ( nExtraVetoMuons == 0) 
     cuts_passed |=   (1<<PASS_SOFTMUVETO);
   if ( numberOfExtraLeptons(i_hyp,10) == 0) 
     cuts_passed |=   (1<<PASS_EXTRALEPTONVETO);
-  // if ( toptag(CaloJet,i_hyp,0) ) return false;
-
+  if ( ! toptag(CaloJet,i_hyp,0,vetojets) )
+    cuts_passed |=   (1<<PASS_TOPVETO);
 
   // -------------------------------------------------------------------//
   // Finished checking the cuts, fill histograms before the final sel   //
@@ -1622,11 +1668,47 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   if(CheckCutsNM1(pass_all, (1<<PASS_ZSEL) | (1<<PASS_MET) , cuts_passed))
     fill_dyest_histograms(i_hyp, weight);
 
+  // top background related histograms
+  if ( CheckCutsNM1( pass_all, 
+		     (1<<PASS_SOFTMUVETO) | (1<<PASS_TOPVETO) | (1<<PASS_JETVETO) | (1<< PASS_ZSEL) | (1<<PASS_MET), 
+		     cuts_passed ) ){
+    // 2D hist for muon tag counting
+    hextramuonsvsnjet[type]->Fill(countmus, nJets, weight);
+    hextramuonsvsnjet[3]->Fill(countmus, nJets, weight);
+    float tag = 1; // not tagged
+    if ( ! CheckCuts(1<<PASS_SOFTMUVETO, cuts_passed) ){
+      if ( ! CheckCuts(1<<PASS_TOPVETO, cuts_passed) )
+	tag = 4; // both
+      else
+	tag = 2; // soft muon
+    } else {
+      if ( ! CheckCuts(1<<PASS_TOPVETO, cuts_passed) )
+	tag = 3; // b-tagged
+    }
+    float evtType = 1; // passed jet veto
+    if ( ! CheckCuts(1<<PASS_JETVETO, cuts_passed) ){
+    if ( CheckCuts(1<<PASS_1JET,cuts_passed) ){
+      if ( CheckCuts(1<<PASS_1BJET,cuts_passed) ){
+	  evtType = 3; // have 1 btagged jet
+	} else { 
+	  evtType = 2; // have 1 non-btagged jet
+	}
+      } else {
+	evtType = 4; // more than 1 jet
+      }
+    }
+    bool zevent = (type == EE || type == MM);
+    if ( CheckCuts((1<< PASS_ZSEL), cuts_passed) ) zevent = false;
+    if ( zevent ) {
+      htoptagz[type]->Fill(tag-0.5,evtType-0.5,weight);
+      htoptagz[3]->Fill(tag-0.5,evtType-0.5,weight);
+    }
+    if ( CheckCuts((1<<PASS_ZSEL)|(1<<PASS_MET), cuts_passed) ){
+      htoptag[type]->Fill(tag-0.5,evtType-0.5,weight);
+      htoptag[3]->Fill(tag-0.5,evtType-0.5,weight);
+    }
+  }
 
-  // 2D hist for muon tag counting
-  hextramuonsvsnjet[type]->Fill(countmus, nJets, weight);
-  hextramuonsvsnjet[3]->Fill(countmus, nJets, weight);
-  
   if ( !realData && CheckCutsNM1( pass_all, (1<<PASS_SOFTMUVETO), cuts_passed ) ) {
     // loop over gen particles
     float centralBQuarkEta(100);
@@ -1649,8 +1731,8 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   
   // if ( toptag(jetType(),i_hyp,0) ) return false;
   // if (nExtraVetoMuons) return false;
-  if ( toptag(CaloJet,i_hyp,0) ) return false;
-  monitor.count(cms2,type,"after all cuts + top tagging");
+  // if ( toptag(CaloJet,i_hyp,0) ) return false;
+  // monitor.count(cms2,type,"after all cuts + top tagging");
 
   // -------------------------------------------------------------------//
   // If we made it to here, we passed all cuts and we are ready to fill // 
@@ -1940,7 +2022,6 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hdilMassVal[i]   = new TH1F(Form("%s_hdilMassVal_%s",  prefix,HypothesisTypeName(i)), "Di-lepton mass after ll selection", 40, 0., 200.);
     hdilMassVal[i]->GetXaxis()->SetTitle("Dilepton mass [GeV/c^{2}]");
     hdilMassVal[i]->GetYaxis()->SetTitle("Events/(5 GeV)");
-
         
     hdilMassWithMetDYEst[i] = new TH1F(Form("%s_hdilMassWithMetDYEst_%s",  prefix,HypothesisTypeName(i)), "Di-lepton mass with MET for DY Estimation", 40, 0., 200.);
     hdilMassNoMetDYEst[i] = new TH1F(Form("%s_hdilMassNoMetDYEst_%s",  prefix,HypothesisTypeName(i)), "Di-lepton mass without MET for DY Estimation", 40, 0., 200.);
@@ -1949,6 +2030,13 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hdilMassWithPFMetDYEst[i] = new TH1F(Form("%s_hdilMassWithPFMetDYEst_%s",  prefix,HypothesisTypeName(i)), "Di-lepton mass with PFMET for DY Estimation", 40, 0., 200.);
     hpfMetInDYEst[i] = new TH1F(Form("%s_hpfMetInDYEst_%s",  prefix,HypothesisTypeName(i)), "PFMET in Z mass for DY Estimation", 40, 0., 200.);
     hpfMetOutDYEst[i] = new TH1F(Form("%s_hpfMetOutDYEst_%s",  prefix,HypothesisTypeName(i)), "PFMET outside Z mass for DY Estimation", 40, 0., 200.);
+
+    htoptagz[i] = new TH2F(Form("%s_htoptagz_%s",prefix,HypothesisTypeName(i)),
+			   "Top tagging on Z-sample",4,0,4,4,0,4);
+    htoptagz[i]->Sumw2();
+    htoptag[i]  = new TH2F(Form("%s_htoptag_%s",prefix,HypothesisTypeName(i)),
+			   "Top tagging for final selection",4,0,4,4,0,4);
+    htoptag[i]->Sumw2();
 
     hnJet[i]->Sumw2();
     helePt[i]->Sumw2();

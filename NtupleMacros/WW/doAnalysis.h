@@ -7,6 +7,7 @@
 #include "wwtypes.h"
 #include "TChain.h"
 #include <fstream>
+#include <vector>
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 typedef ULong64_t  cuts_t;
@@ -37,7 +38,8 @@ double ww_muIsoVal(unsigned int i);
 bool   ww_mud0(unsigned int i);
 bool   ww_mud0PV(unsigned int i);
 
-unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated);
+unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated,
+			       const std::vector<LorentzVector>& = std::vector<LorentzVector>());
 
 // combined analysis selectors
 bool goodMuonWithoutIsolation(unsigned int i);
@@ -81,7 +83,8 @@ std::vector<LorentzVector> getJets(WWJetType type,
 				   int i_hyp, 
 				   double etThreshold,
 				   double maxEta,
-				   bool sorted = false);
+				   bool sorted = false,
+				   bool btag = false);
 
 // analysis jet type is set here.
 WWJetType jetType();
@@ -102,6 +105,7 @@ bool isGoodVertex(size_t ivtx);
 //
 // Tools
 //
+bool defaultBTag(WWJetType type, unsigned int iJet);
 
 HypTypeInNtuples hypType(unsigned int i_hyp);
 
