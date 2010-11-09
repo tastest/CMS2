@@ -17,9 +17,9 @@ const double m_W      = 80.4;
 //Center-of-Mass Energy
 const double e_com = 7000;
 
-const int nMassPts  = 400;
+const int nMassPts  = 2500;
 const int RangeLow  = 0;
-const int RangeHigh = 400;
+const int RangeHigh = 2500;
 
 const int SENTINEL = -1000;
 const int NCHAN    = 4;
@@ -27,10 +27,10 @@ const int NCHAN    = 4;
 
 ttdilepsolve::ttdilepsolve() 
 {
-    cout << "ttdilepsolve_class: constructor executing!" << endl;
+  //cout << "ttdilepsolve_class: constructor executing!" << endl;
 
   //PDF initialization
-  LHAPDF::initPDFSet("/afs/cern.ch/user/i/ibloch/tashome/CMSSW_4OSSusy_3_6_3_testLHA/CMSSW_3_6_3/src/CMS2/NtupleMacros/CORE/topmass/pdfs/cteq61.LHgrid");
+  LHAPDF::initPDFSet("../CORE/topmass/pdfs/cteq61.LHgrid");
   
   return;
 }
