@@ -1,3 +1,4 @@
+#include "triggerSuperModel.h"
 #include "Math/LorentzVector.h"
 #include "Math/VectorUtil.h"
 #include "TMath.h"
@@ -11,6 +12,7 @@
 //
 // Claudio, Jae, Avi  3 Nov 2010
 //----------------------------------------
+
 float triggerSuperModelEffic(int hyp) {
 
   //----------------------------------------------
@@ -28,14 +30,15 @@ float triggerSuperModelEffic(int hyp) {
   // Fraction of luminosity where mu9 was prescaled and mu11
   // was unprescaled
   // 147196 <= run <= 148058
-  float f11=0.4;
+  float f11=0.273;
 
   // Fraction of luminosity where mu9 and mu11 were prescaled 
   // and mu15 was not
+  // 148058 <= run <= 149442
   //float f15 = 1.0 - f9 - f11;
 
   // Fraction of luminosity with 100% efficient ele10 trigger
-  // run <= 139980
+  // 136033 <= run <= 139980
   float e10=0.002;
 
   //Fraction of luminosity with 100% efficienct ele15 GeV trigger
@@ -43,7 +46,7 @@ float triggerSuperModelEffic(int hyp) {
   float e15=0.086;
 
   //Fraction of luminosity with 100% efficient ele17 trigger
-  // 14114<run<=147116
+  // 144114<run<=147116
   float e17=0.127;
 
   //Fraction of luminosity with somewhat inefficient (~93%) ele17 trigger
