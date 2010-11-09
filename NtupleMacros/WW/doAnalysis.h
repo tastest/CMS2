@@ -59,17 +59,13 @@ bool passedTriggerRequirements(HypTypeInNtuples type);
 // all other selectors and functions
 double metValue();
 double metPhiValue();
-double pfmetValue();
-double pfmetPhiValue();
 
 bool ww2009_met(unsigned int i_hyp);
 
 // analysis MET requirements
 bool passedMetRequirements(unsigned int i_hyp);
-bool passedPFMetRequirements(unsigned int i_hyp);
 
 double projectedMet(unsigned int i_hyp);
-double projectedPFMet(unsigned int i_hyp);
 
 bool metBalance (unsigned int i_hyp);
 
