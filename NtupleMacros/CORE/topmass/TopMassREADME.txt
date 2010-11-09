@@ -4,6 +4,11 @@ Base requirement:
 You need a version of LHAPDF installed. On our tas machines you can
 find it at: /tas07/disk00/jribnik/lhapdf-5.8.3/
 
+LHAPDF source code is 32b, to compile it at the UAF ( 64b arch ) use:
+  > CFLAGS="-m32" CXXFLAGS="-m32" LDFLAGS="-m32" ./configure --prefix=/home/users/dbarge/LHAPD --disable-pyext
+  > make
+  > make install
+
 Download your favourite PDF and direct the code to use it:
  - download from http://projects.hepforge.org/lhapdf/
  (e.g. 
