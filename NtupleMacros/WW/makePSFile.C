@@ -83,7 +83,7 @@ void makePSFile(const TString dataFName,
     v_styles.push_back(1001);    
   }
 
-  if (sampleIsPresent("tt_*")){
+  if (sampleIsPresent("ttbar_*")){
     v_samples.push_back("ttbar");
     v_colors.push_back(kMagenta);
     v_legEntries.push_back("#font[12]{t#bar{t}}");
