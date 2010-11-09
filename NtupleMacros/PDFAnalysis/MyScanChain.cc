@@ -187,7 +187,7 @@ int MyScanChain::ScanChain(std::string sampleName, TChain *chain, float kFactor,
     // for the pdf used to generate sample
     //
 
-    Int_t nbins_meff = 500;
+    Int_t nbins_meff = 2000;
     Float_t min_meff = 0.0;
     Float_t max_meff = 2000.0;
     TH1F   *histArr[MAXWEIGHT];
@@ -202,8 +202,9 @@ int MyScanChain::ScanChain(std::string sampleName, TChain *chain, float kFactor,
         histArr[i] = new TH1F(Form("h1_pass_%i", i), Form("pass_%i", i), nbins_meff, min_meff, max_meff);
     }
 
-    TH1F *h1_up   = new TH1F(Form("%s_h1_up", sampleName.c_str()),  "up", nbins_meff, min_meff, max_meff);
-    TH1F *h1_down  = new TH1F(Form("%s_h1_down", sampleName.c_str()), "down", nbins_meff, min_meff, max_meff);
+    TH1F *h1_centre   = new TH1F(Form("%s_h1_centre_all", sampleName.c_str()),  "centre", nbins_meff, min_meff, max_meff);
+    TH1F *h1_up   = new TH1F(Form("%s_h1_up_all", sampleName.c_str()),  "up", nbins_meff, min_meff, max_meff);
+    TH1F *h1_down  = new TH1F(Form("%s_h1_down_all", sampleName.c_str()), "down", nbins_meff, min_meff, max_meff);
 
     //
     // and for the other specified pdf
@@ -441,8 +442,9 @@ int MyScanChain::ScanChain(std::string sampleName, TChain *chain, float kFactor,
         plus_max = sqrt(plus_max);
         minus_max = sqrt(minus_max);
 
-        std::cout <<  "doing bin " << bin << " $\\pm$ " << plus_max/X0 << " " << minus_max/X0 << std::endl;
+        //std::cout <<  "doing bin " << bin << " $\\pm$ " << plus_max/X0 << " " << minus_max/X0 << std::endl;
 
+        h1_centre->SetBinContent(bin, X0);
         h1_down->SetBinContent(bin, X0 - minus_max);
         h1_up->SetBinContent(bin, X0 + plus_max);
 

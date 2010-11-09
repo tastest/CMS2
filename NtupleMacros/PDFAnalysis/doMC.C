@@ -82,7 +82,8 @@ void doMC() {
     //
 
     looper->ScanChain("ttbar", chain_ttbarmg, (157.5/165.0));
-    looper->ScanChain("dy", chain_dy, (1666.0/1300.0));
+    looper->ScanChain("dyee", chain_zee, (1666.0/1300.0));
+    looper->ScanChain("dymm", chain_zmumu, (1666.0/1300.0));
 
     //
     // write histograms
