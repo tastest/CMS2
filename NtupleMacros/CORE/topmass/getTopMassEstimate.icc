@@ -4,7 +4,6 @@
 #define GETTOPMASSESTIMATE_ICC
 
 #include "TH2.h"
-//#include "../CORE/topmass/ttdilsolve.h"
 
 using namespace std;
 using namespace tas;
