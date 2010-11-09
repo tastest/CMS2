@@ -51,7 +51,7 @@ void processData()
   bool runDYmm  = 1;
   bool runDYtt  = 1;
   bool runttbar = 1;
-  bool runtW    = 0;
+  bool runtW    = 1;
   bool runQCD   = 0; 
   bool runData  = 1;
 
@@ -149,7 +149,8 @@ void processData()
     //ProcessSample(dataset+"/TTbar_Spring10-START3X_V26_S09-v1/V03-04-08"+version+"/merged_ntuple*.root", ttbar, integratedLumi, 165.0, -1, fullDataSet, kYellow);
 
   if (runtW)
-    ProcessSample(dataset+"/SingleTop_tWChannel-madgraph_Spring10-START3X_V26_S09-v1/V03-04-07/"+version+"/*.root", tW, integratedLumi, 10.6, -1, fullDataSet, 63);
+    // ProcessSample(dataset+"/SingleTop_tWChannel-madgraph_Spring10-START3X_V26_S09-v1/V03-04-07/"+version+"/*.root", tW, integratedLumi, 10.6, -1, fullDataSet, 63);
+    ProcessSample(dataset+"/TToBLNu_TuneZ2_tW-channel_7TeV-madgraph_Fall10-START38_V12-v2/V03-06-14/"+version+"/*.root", tW, integratedLumi, 10.6, -1, fullDataSet, 63);
   
   std::vector<string> qcdSamples;
   //qcdSamples.push_back(dataset+"/QCD_Pt30_Summer09-MC_31X_V3_7TeV-v1/"+version+"/merged_ntuple*.root");
