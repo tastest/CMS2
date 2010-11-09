@@ -308,13 +308,19 @@ bool passThreeChargeRequirement(int elIdx)
 /******************************************************************************************/     
 // is it a good jet?
 /******************************************************************************************/     
-bool isGoodJet(LorentzVector jetp4, double ptCut, double absEtaCut, double dRCut, bool muJetClean) {
+bool isGoodJet(LorentzVector jetp4, int hypIdx, double ptCut, double absEtaCut, double dRCut, bool muJetClean) {
 
 	 if(jetp4.Pt() < ptCut)
 		  return false;  
 	 if(fabs(jetp4.Eta()) > absEtaCut)
 		  return false;
   
+	 float deltaR_lt = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[hypIdx], jetp4);
+	 float deltaR_ll = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[hypIdx], jetp4);
+	 
+	 if (deltaR_lt < dRCut || deltaR_ll < dRCut)
+		  return false;
+
 	 for (unsigned int elidx = 0; elidx < cms2.els_p4().size(); elidx++)
 	 {
 		  if (cms2.els_p4()[elidx].pt() < 10.)

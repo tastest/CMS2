@@ -49,7 +49,7 @@ bool passThreeChargeRequirement(int elIdx);
 /******************************************************************************************/     
 // is it a good jet?
 /******************************************************************************************/     
-bool isGoodJet(LorentzVector jetp4, double ptCut, double absEtaCut, double dRCut, bool muJetClean);
+bool isGoodJet(LorentzVector jetp4, int hypIdx, double ptCut, double absEtaCut, double dRCut, bool muJetClean);
 
 
 
