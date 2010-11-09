@@ -90,7 +90,7 @@ bool fakableMuon(unsigned int i){
   bool ptcut = cms2.mus_p4().at(i).pt() >= 20.0;
   // extrapolate in iso
   // return muonId(i, muonSelectionFO_mu_ww);
-  return ptcut && muonId(i, muonSelectionFO_mu_ww_iso10);
+  return ptcut && muonId(i, muonSelectionFO_mu_wwV1_iso10);
   // return ww_muBase(i) && ww_muId(i) && ww_muIsoVal(i)<1.0 && fabs(cms2.mus_d0corr()[i]) < 2; 
 }
 
