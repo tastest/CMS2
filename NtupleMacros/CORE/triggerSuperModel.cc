@@ -21,7 +21,8 @@ float triggerSuperModelEffic(int hyp) {
   // Plateau efficiency of muon trigger
   // (For now we ignore the fact that in the mu9 period 
   //  it was not quite as good)
-  float effmu = 0.93;  
+  float effmu   = 0.93;   // eta<2.1  
+  float effmu24 = 0.40;   // 2.1<eta<2.4
 
   // Fraction of luminosity where mu9 was not prescaled
   // run <= 147116 
@@ -129,14 +130,28 @@ float triggerSuperModelEffic(int hyp) {
 
     // both at high eta
     if (eta1>2.1 && eta2>2.1) {
-      float eff = effmu*effmu;
+      float eff = effmu*effmu;  // this neglects the trigger at high eta
+      if (pt2>=15) {
+	eff = eff + 2*(1.-effmu)*effmu24;
+      } else if (pt2>=11) {
+	eff = eff + (1.+f9+f11)*(1-effmu)*effmu24;
+      } else {
+	eff = eff + (1.+f9)*(1-effmu)*effmu24;
+      }
       return eff;
     }
 
     // One with pt>15 eta<2.1.  The other with eta>2.1
     if ( (pt1>=15 && eta1<=2.1 && eta2>2.1) || 
          (pt2>=15 && eta2<=2.1 && eta1>2.1)    ) {
-      float eff = effmu;
+      float eff = effmu;   // this neglects the trigger at high eta
+      if ( (pt1>=15 && eta1>2.1) || (pt2>=15 && eta2>2.1) ) {
+	eff = eff + (1-effmu)*effmu24;
+      } else if ( (pt1>=11 && eta1>2.1) || (pt2>=11 && eta2>2.1) ) {
+	eff = eff + (f9+f11)*(1-effmu)*effmu24;
+      } else {
+	eff = eff + f9*(1-effmu)*effmu24;
+      }
       return eff;
     }
     
@@ -144,7 +159,8 @@ float triggerSuperModelEffic(int hyp) {
     // First with 11<pt<15 eta<2.1.  Second one with eta>2.1
     if ( (pt1>=11 && pt1<15 && eta1<=2.1 && eta2>2.1) || 
 	 (pt2>=11 && pt2<15 && eta2<=2.1 && eta1>2.1)   ) {
-      float eff = (f9+f11)*effmu + (1-f9-f11)*effmu*effmu;
+      float eff = (f9+f11)*effmu + (1-f9-f11)*effmu*effmu; 
+      eff = eff + (1-effmu)*effmu24; // allow trigger at high eta
       return eff;
     }
 
@@ -152,6 +168,7 @@ float triggerSuperModelEffic(int hyp) {
     if ( (pt1<11 && eta1<=2.1 && eta2>2.1) || 
 	 (pt2<11 && eta2<=2.1 && eta1>2.1)   ) {
       float eff = f9*effmu + (1-f9)*effmu*effmu;
+      eff = eff + (1-effmu)*effmu24;  // allow trigger at high eta
       return eff;
     }
 
@@ -237,6 +254,14 @@ float triggerSuperModelEffic(int hyp) {
 	eff = e10 + e15 + e17 + e17b*eff17b + emess*eff27to32;
       } else {
 	eff = e10 + e15 + e17 + e17b*eff17b + emess*eff32andUp;
+      }
+      // now allow for the possibility of a muon trigger
+      if (ptmu>=15) {
+	eff = eff + (1-eff)*effmu24;
+      } else if (ptmu>=11) {
+	eff = eff + (f9+f11)*(1-eff)*effmu24;
+      } else {
+	eff = eff + f9*(1-eff)*effmu24;
       }
       return eff;
     }
