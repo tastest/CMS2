@@ -241,7 +241,7 @@ bool makesExtraZ (int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutI
 			   if (cms2.mus_p4()[imu].pt() < 10.)
 					continue;
 
-			   if (!isGoodLeptonwIsoSS(13, imu, applyAlignmentCorrection, removedEtaCutInEndcap))
+			   if (!isGoodLeptonwIsoSS(13, imu, applyAlignmentCorrection, removedEtaCutInEndcap) || !isGoodLeptonNoIsoSS(13, imu, applyAlignmentCorrection, removedEtaCutInEndcap))
 					continue;
 
 			   if (ltid == 13 && ltch * cms2.mus_charge()[imu] < 0)
@@ -267,7 +267,7 @@ bool makesExtraZ (int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutI
 			   if (cms2.els_p4()[iel].pt() < 10.)
 					continue;
 
-			   if (!isGoodLeptonwIsoSS(11, iel, applyAlignmentCorrection, removedEtaCutInEndcap))
+			   if (!isGoodLeptonwIsoSS(11, iel, applyAlignmentCorrection, removedEtaCutInEndcap) || !isGoodLeptonNoIsoSS(11, iel, applyAlignmentCorrection, removedEtaCutInEndcap))
 					continue;
 
 			   if (ltid == 11 && ltch * cms2.els_charge()[iel] < 0)
