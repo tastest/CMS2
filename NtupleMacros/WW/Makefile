@@ -21,7 +21,7 @@ help:
 	cat Makefile | perl -ne 'printf("\t%-15s %s\n",$$1,$$2) if(/^(\S+):[^#]+(#.*)$$/)';\
 	echo "Example:";\
 	echo -e "\tmake DataDir=skims/ VERSION=wwskim table";\
-	echo -e "\tmake DataDir=data/ SkimDir=skims/ SkimName=ww202020 skim" 
+	echo -e "\tmake DataDir=data/ SkimDir=skims/ SkimName=ww202020 skim"
 ifndef VERBOSE
   QUIET := @
 endif
@@ -133,18 +133,13 @@ jetbkg: processed_data.root  # estimate jet induced background
 	$(QUIET) root -q -l estimateJetBkg_fakes.C+; \
 	root -q -l estimateJetBkg_sideband.C+
 
-jetbkg2: processed_data.root # el_fr_v1_wwV1, mu_fr_fo_wwV1_10
-	$(QUIET) root -q -l 'estimateJetBkg_fakes.C+("processed_data.root","files/ww_el_fr_EG.root","el_fr_v1_wwV1","files/ww_mu_fr_Mu.root","mu_fr_fo_wwV1_10")'
+ElFrVer = el_fr_v2_wwV1
+MuFrVer = mu_fr_fo_wwV1_10
+ElFrFile = ww_el_fr_EG.root
+MuFrFile = ww_mu_fr_Mu.root
 
-jetbkg3: processed_data.root # el_fr_v2_wwV1, mu_fr_fo_wwV1_10
-	$(QUIET) root -q -l 'estimateJetBkg_fakes.C+("processed_data.root","files/ww_el_fr_EG.root","el_fr_v2_wwV1","files/ww_mu_fr_Mu.root","mu_fr_fo_wwV1_10")'
-
-jetbkg4: processed_data.root # el_fr_v3_wwV1, mu_fr_fo_wwV1_10
-	$(QUIET) root -q -l 'estimateJetBkg_fakes.C+("processed_data.root","files/ww_el_fr_EG.root","el_fr_v3_wwV1","files/ww_mu_fr_Mu.root","mu_fr_fo_wwV1_10")'
-
-jetbkg5: processed_data.root # el_fr_v4_wwV1, mu_fr_fo_wwV1_10
-	$(QUIET) root -q -l 'estimateJetBkg_fakes.C+("processed_data.root","files/ww_el_fr_EG.root","el_fr_v4_wwV1","files/ww_mu_fr_Mu.root","mu_fr_fo_wwV1_10")'
-
+jetbkg2: processed_data.root # fake rate method
+	$(QUIET) root -q -l 'estimateJetBkg_fakes.C+("processed_data.root","files/$(ElFrFile)","$(ElFrVer)","files/$(MuFrFile)","$(MuFrVer)")'
 plots: processed_data.eps # make plots based on processed data
 	$(QUIET) epstopdf processed_data.eps
 
