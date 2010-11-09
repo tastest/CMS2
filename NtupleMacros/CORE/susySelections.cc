@@ -293,7 +293,7 @@ bool passSimpleSUSYTrigger_v1( bool isData ) {
 /*****************************************************************************************/
 unsigned int selectBestZHyp(const vector<unsigned int> &v_goodHyps) {
   
-  float mindeltam         = 100;
+  float mindeltam         = 100000;
   unsigned int bestHypIdx = 0;
   for(unsigned int i = 0; i < v_goodHyps.size(); i++) {
     unsigned int index = v_goodHyps.at(i);
