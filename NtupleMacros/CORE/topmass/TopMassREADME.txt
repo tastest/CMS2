@@ -22,13 +22,16 @@ The following additions are needed:
 //------------------------
 -- in your root setup:
 // Load the LHA library
- gSystem->Load("/tas07/disk00/jribnik/lhapdf-5.8.3/lib/.libs/libLHAPDF.so");
+gSystem->Load("/tas07/disk00/jribnik/lhapdf-5.8.3/lib/.libs/libLHAPDF.so"); //on tas
+gSystem->Load("/nfs-3/userdata/kalavase/lhapdf-5.8.3/lib/.libs/libLHAPDF.so"); //on uaf
 // your root Include Path should have at leas this - look e.g. at
 setup.C in OSSusy:
- gSystem->AddIncludePath(" -w -I../CORE/topmass -I/tas07/disk00/jribnik/lhapdf/include");
-
+gSystem->AddIncludePath(" -w -I../CORE/topmass -I/tas07/disk00/jribnik/lhapdf/include"); //tas
+gSystem->AddIncludePath(" -w -I../CORE/topmass -I/nfs-3/userdata/kalavase/lhapdf/include"); //uaf
 -- in your macro, before looper->ScanChain(...
 	 and after you set the stuff above:
+
+
 //Load the ttbar mass solver (incl. LHA lib)
  gROOT->ProcessLine(".L ../CORE/topmass/ttdilepsolve.cpp+");
 
