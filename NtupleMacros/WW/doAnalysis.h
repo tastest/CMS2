@@ -151,7 +151,7 @@ void find_leading_trkjet(int i_hyp, double etaMin, double etaMax, double vetoCon
 void find_leading_pfjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & pfJetMax);
 void find_most_energetic_jets(int i_hyp, double weight, bool realData, double etaMin, double etaMax);
 void getJetResponseFromZBalance(int i_hyp, double weight, bool realData, double etaMin, double etaMax);
-void fill_val_plots(int i_hyp, cuts_t cut_passed, double weight);
+void fill_val_plots(int i_hyp, cuts_t cuts_passed, double weight);
 void fill_dyest_histograms(int i_hyp, float weight);
 				
 unsigned int bestZHyp();
