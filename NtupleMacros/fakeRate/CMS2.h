@@ -2350,7 +2350,6 @@ protected:
 	vector<int> els_exp_innerlayers39X_;
 	TBranch *els_exp_innerlayers39X_branch;
 	bool els_exp_innerlayers39X_isLoaded;
-        vector<int> dummy999;
 	vector<int> els_closestJet_;
 	TBranch *els_closestJet_branch;
 	bool els_closestJet_isLoaded;
@@ -3060,7 +3059,6 @@ protected:
 	TBranch *evt_filt_eff_branch;
 	bool evt_filt_eff_isLoaded;
 public: 
-       CMS2() : dummy999 ( 1000, int(999) ) {}
 void Init(TTree *tree) {
 	evt_bsp4_branch = 0;
 	if (tree->GetAlias("evt_bsp4") != 0) {
@@ -20281,9 +20279,8 @@ void LoadAllBranches()
 			if (els_exp_innerlayers39X_branch != 0) {
 				els_exp_innerlayers39X_branch->GetEntry(index);
 			} else { 
-//				printf("branch els_exp_innerlayers39X_branch does not exist!\n");
-//				exit(1);
-                                return dummy999;
+				printf("branch els_exp_innerlayers39X_branch does not exist!\n");
+				exit(1);
 			}
 			els_exp_innerlayers39X_isLoaded = true;
 		}
@@ -23365,7 +23362,7 @@ void LoadAllBranches()
 		if(found_it != end_it)
 			trigIndx = found_it - begin_it;
 		else {
-//			cout << "Cannot find Trigger " << trigName << endl; 
+			//cout << "Cannot find Trigger " << trigName << endl; 
 			return 0;
 		}
 
