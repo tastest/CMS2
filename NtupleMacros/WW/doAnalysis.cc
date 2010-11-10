@@ -53,7 +53,7 @@ enum hyp_selection {
 const cuts_t pass_all = (1<< PASS_ZSEL) | (1<<PASS_MET) | (1<<PASS_JETVETO) | (1<<PASS_LT_FINAL) 
   | (1<<PASS_LL_FINAL) | (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO) | (1<<PASS_TOPVETO);
 
-bool applyJEC = true;
+bool applyJEC = false;
 
 std::vector<std::string> jetcorr_filenames_jpt;
 FactorizedJetCorrector *jet_corrector_jpt;
@@ -129,7 +129,6 @@ bool passedMetRequirements(unsigned int i_hyp){
   }
   return true;
 }
-
 
 WWJetType jetType(){
   return pfJet;
@@ -891,8 +890,9 @@ TH2F* hPFJetRelResponseWithZero[4]; // Relative response to Z pt with 0 if no bt
 TH2F* hPFJetResidualResponse; // absolute response to Z pt
 TH1F* hnGoodVertex;      // number of good vertexes after baseline selections
 
-// fkw September 2008 final hist used for muon tags estimate of top bkg
 TH2F* hextramuonsvsnjet[4];
+TH2F* hbtagvsnjet[4];
+TH2F* htoptagvsnjet[4];
 
 hypo_monitor monitor;
 
@@ -1665,9 +1665,6 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   if ( CheckCutsNM1( pass_all, 
 		     (1<<PASS_SOFTMUVETO) | (1<<PASS_TOPVETO) | (1<<PASS_JETVETO) | (1<< PASS_ZSEL) | (1<<PASS_MET), 
 		     cuts_passed ) ){
-    // 2D hist for muon tag counting
-    hextramuonsvsnjet[type]->Fill(countmus, nJets, weight);
-    hextramuonsvsnjet[3]->Fill(countmus, nJets, weight);
     float tag = 1; // not tagged
     if ( ! CheckCuts(1<<PASS_SOFTMUVETO, cuts_passed) ){
       if ( ! CheckCuts(1<<PASS_TOPVETO, cuts_passed) )
@@ -1699,6 +1696,14 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
     if ( CheckCuts((1<<PASS_ZSEL)|(1<<PASS_MET), cuts_passed) ){
       htoptag[type]->Fill(tag-0.5,evtType-0.5,weight);
       htoptag[3]->Fill(tag-0.5,evtType-0.5,weight);
+      // 2D hist for muon tag counting
+      hextramuonsvsnjet[type]->Fill(countmus, nJets, weight);
+      hextramuonsvsnjet[3]->Fill(countmus, nJets, weight);
+      double nTags = getJets(jetType(), i_hyp, 25, 5.0, false, true).size();
+      hbtagvsnjet[type]->Fill(nJets, nTags, weight);
+      hbtagvsnjet[3]->Fill(nJets, nTags, weight);
+      htoptagvsnjet[type]->Fill(nJets, nTags+countmus>0, weight);
+      htoptagvsnjet[3]->Fill(nJets, nTags+countmus>0, weight);
     }
   }
 
@@ -1963,6 +1968,10 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hdphillvsmll[i]->Sumw2();
     hextramuonsvsnjet[i]= new TH2F(Form("%s_extramuonsvsnjet_%s",prefix,HypothesisTypeName(i)), "Number of extra muon vs number of jets", 10,0.0,10.0,10,0.0,10.0);
     hextramuonsvsnjet[i]->Sumw2();
+    hbtagvsnjet[i]= new TH2F(Form("%s_btagvsnjet_%s",prefix,HypothesisTypeName(i)), "Number of b-jets vs number of jets", 10,0.0,10.0,10,0.0,10.0);
+    hbtagvsnjet[i]->Sumw2();
+    htoptagvsnjet[i]= new TH2F(Form("%s_toptagvsnjet_%s",prefix,HypothesisTypeName(i)), "Top tag vs number of jets", 10,0.0,10.0,2,0.0,2);
+    htoptagvsnjet[i]->Sumw2();
     helFRfakable[i]     = new TH2F(Form("%s_helFRfakable_%s",    prefix,HypothesisTypeName(i)), "FR study: rate of fakable objects", 3,ptbins,2,0,3.0);
     helFRfakable[i]->Sumw2();
     helFRfakable_fakerate[i] = new TH2F(Form("%s_helFRfakable_fakerate_%s", prefix,HypothesisTypeName(i)), "FR study: rate of fakable objects",4,etabins_fakerate,5,ptbins_fakerate);
