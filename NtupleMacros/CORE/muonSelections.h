@@ -30,7 +30,8 @@ enum SelectionType {
 	 OSZ_v1 = 20,
 	 NominalSSv2 = 21,
 	 muonSelectionFO_mu_ssV2 = 22,
-	 muonSelectionFO_mu_ssV2_iso10
+	 muonSelectionFO_mu_ssV2_iso10 = 23,
+	 muonSelectionFO_mu_wwV1_iso10_d0 = 24
 }; 
 
 //
