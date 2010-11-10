@@ -11,4 +11,6 @@ int nHLTObjects(const char*);
 LorentzVector p4HLTObject(const char*, int) ;
 void PrintTriggers();
 bool passUnprescaledHLTTrigger(const char* arg);
+int HLT_prescale( const char* arg );
+
 #endif

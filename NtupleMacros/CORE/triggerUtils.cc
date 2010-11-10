@@ -175,3 +175,41 @@ bool passUnprescaledHLTTrigger(const char* arg){
   return false;
 
 }
+
+//this function returns the HLT pre-scale for a given trigger name
+
+int HLT_prescale( const char* arg ){
+
+ // put the trigger name into a string
+  TString HLTTrigger( arg );
+
+  // Did the trigger pass?
+  if ( !(cms2.passHLTTrigger(HLTTrigger)) ) return -1;
+
+  // The trigger passed, check the pre-scale
+  int trigIndx = -1;
+  vector<TString>::const_iterator begin_it = cms2.hlt_trigNames().begin();
+  vector<TString>::const_iterator end_it   = cms2.hlt_trigNames().end();
+  vector<TString>::const_iterator found_it = find(begin_it, end_it, HLTTrigger );
+  if( (found_it != end_it) ){
+    trigIndx = found_it - begin_it;
+  }
+  else {
+    //this should not happen
+    cout << "passUnprescaledTrigger: Cannot find Trigger " << arg << endl;
+    return false;
+  }
+
+  //sanity check (this should not happen)
+  if( strcmp( arg , cms2.hlt_trigNames().at(trigIndx) ) != 0 ){
+    cout << "Error! trig names don't match" << endl;
+    cout << "Found trig name " << cms2.hlt_trigNames().at(trigIndx) << endl;
+    cout << "Prescale        " << cms2.hlt_prescales().at(trigIndx) << endl;
+    exit(0);
+  }
+
+  //return prescale
+  return cms2.hlt_prescales().at(trigIndx);
+
+
+}
