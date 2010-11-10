@@ -1275,7 +1275,7 @@ void fill_val_plots(int i_hyp, cuts_t cuts_passed, double weight)
   // Fill Leading Jet Pt
   if(CheckCuts(  (1<<PASS_LL_FINAL) | (1<<PASS_LT_FINAL)  , cuts_passed)) {
     double pfJetMax(0.);
-    find_leading_pfjet(i_hyp, 0.0, 0.5, 0.3, pfJetMax);
+    find_leading_pfjet(i_hyp, 0.0, 5.0, 0.3, pfJetMax);
     hmaxPFJetPtVal[type]->Fill(pfJetMax, weight);
     hmaxPFJetPtVal[3]->Fill(pfJetMax, weight);
     hdilMassVal[type]->Fill(cms2.hyp_p4()[i_hyp].mass(), weight);
@@ -1292,7 +1292,7 @@ void fill_val_plots(int i_hyp, cuts_t cuts_passed, double weight)
 
   if (CheckCutsNM1(pass_all, (1<<PASS_JETVETO), cuts_passed) ) {
     double pfJetMax(0.);
-    find_leading_pfjet(i_hyp, 0.0, 0.5, 0.3, pfJetMax);
+    find_leading_pfjet(i_hyp, 0.0, 5.0, 0.3, pfJetMax);
     hmaxPFJetPtNM1[type]->Fill(pfJetMax, weight);
     hmaxPFJetPtNM1[3]->Fill(pfJetMax, weight);
   }
@@ -1753,6 +1753,7 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   // make the final selections
   if(! CheckCuts(pass_all, cuts_passed)) return false;
   monitor.count(cms2,type,"after all cuts (including soft and extra lepton veto)");
+  
   
   // if ( toptag(jetType(),i_hyp,0) ) return false;
   // if (nExtraVetoMuons) return false;
@@ -2281,9 +2282,8 @@ RooDataSet* ScanChain( TChain* chain,
     //jetcorr_filenames_jpt.push_back("files/Spring10_L3Absolute_AK5JPT.txt");
     jetcorr_filenames_jpt.push_back("files/START38_V13_AK5JPT_L2Relative.txt");
     jetcorr_filenames_jpt.push_back("files/START38_V13_AK5JPT_L3Absolute.txt");
-    // FIXME jpt residual file not ready
-    //if(realData)
-    //jetcorr_filenames_jpt.push_back("files/Spring10DataV2_L2L3Residual_AK5JPT.txt");
+    if(realData)
+      jetcorr_filenames_jpt.push_back("files/START38_V13_AK5JPT_L2L3Residual.txt");
     jet_corrector_jpt= makeJetCorrector(jetcorr_filenames_jpt);
     
     jetcorr_filenames_pf.clear();
