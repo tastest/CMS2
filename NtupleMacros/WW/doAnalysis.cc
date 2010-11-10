@@ -53,6 +53,21 @@ enum hyp_selection {
 const cuts_t pass_all = (1<< PASS_ZSEL) | (1<<PASS_MET) | (1<<PASS_JETVETO) | (1<<PASS_LT_FINAL) 
   | (1<<PASS_LL_FINAL) | (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO) | (1<<PASS_TOPVETO);
 
+bool applyJEC = true;
+
+std::vector<std::string> jetcorr_filenames_jpt;
+FactorizedJetCorrector *jet_corrector_jpt;
+
+std::vector<std::string> jetcorr_filenames_pf;
+FactorizedJetCorrector *jet_corrector_pf;
+
+std::vector<std::string> jetcorr_filenames_calo;
+FactorizedJetCorrector *jet_corrector_calo;
+
+std::vector<std::string> jetcorr_filenames_trk;
+FactorizedJetCorrector *jet_corrector_trk;
+
+
 //
 // Key analysis method implementation
 //
@@ -126,7 +141,7 @@ std::vector<LorentzVector> getDefaultJets(unsigned int i_hyp, bool btagged=false
 }
 
 unsigned int numberOfJets(unsigned int i_hyp){
-  return getDefaultJets(i_hyp).size(); 
+  return getDefaultJets(i_hyp, false).size(); 
 }
 
 //
@@ -166,14 +181,14 @@ bool isGoodVertex(size_t ivtx) {
     return true;
 }
 
-bool foundGoodVertex() {
-    unsigned int nVtx = 0;
-    for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
-      // if (cms2.vtxs_isFake()[i]) continue;
-      if (!isGoodVertex(i)) continue;
-      nVtx++;
-    }
-    return nVtx>0;
+unsigned int nGoodVertex() {
+  unsigned int nVtx = 0;
+  for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
+    // if (cms2.vtxs_isFake()[i]) continue;
+    if (!isGoodVertex(i)) continue;
+    nVtx++;
+  }
+  return nVtx;
 }
 
 double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVector& pv){
@@ -406,27 +421,32 @@ std::vector<LorentzVector>
 getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJets, bool btag)
 {
      std::vector<LorentzVector> jets;
-     const double vetoCone = 0.4;
+     const double vetoCone = 0.3;
+     double jec = 1.0;
      
      switch ( type ){
      case jptJet:
         for ( unsigned int i=0; i < cms2.jpts_p4().size(); ++i) {
-	 if ( cms2.jpts_p4()[i].pt() < etThreshold ) continue;
+	  if(applyJEC)
+	    jec = jetCorrection(cms2.jpts_p4()[i], jet_corrector_jpt);
+	 if ( cms2.jpts_p4()[i].pt() * jec < etThreshold ) continue;
 	 if ( btag && !defaultBTag(type,i) ) continue;
 	 if ( TMath::Abs(cms2.jpts_p4()[i].eta()) > etaMax ) continue;
 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ||
 	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ) continue;
-	 jets.push_back(cms2.jpts_p4()[i]);
+	 jets.push_back(cms2.jpts_p4()[i] * jec);
        }
        break;
      case pfJet:
        for ( unsigned int i=0; i < cms2.pfjets_p4().size(); ++i) {
-	 if ( cms2.pfjets_p4()[i].pt() < etThreshold ) continue;
-	 if ( btag && !defaultBTag(type,i) ) continue;
-	 if ( TMath::Abs(cms2.pfjets_p4()[i].eta()) > etaMax ) continue;
-	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ||
-	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
-	 jets.push_back(cms2.pfjets_p4()[i]);
+	  if(applyJEC)
+	    jec = jetCorrection(cms2.pfjets_p4()[i], jet_corrector_pf);
+	  if ( cms2.pfjets_p4()[i].pt() * jec < etThreshold ) continue;
+	  if ( btag && !defaultBTag(type,i) ) continue;
+	  if ( TMath::Abs(cms2.pfjets_p4()[i].eta()) > etaMax ) continue;
+	  if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ||
+	       TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
+	  jets.push_back(cms2.pfjets_p4()[i] * jec);
        }
        break;
      case GenJet:
@@ -441,7 +461,7 @@ getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJ
        break;
      case CaloJet:
        for ( unsigned int i=0; i < cms2.jets_pat_jet_p4().size(); ++i) {
-	 if ( cms2.jets_pat_jet_p4()[i].pt() < etThreshold ) continue;
+	 if ( cms2.jets_pat_jet_p4()[i].pt() < etThreshold ) continue; // note that this is already corrected
 	 if ( btag && !defaultBTag(type,i) ) continue;
 	 if ( TMath::Abs(cms2.jets_pat_jet_p4()[i].eta()) > etaMax ) continue;
 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jets_pat_jet_p4()[i])) < vetoCone ||
@@ -451,12 +471,14 @@ getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJ
        break;
      case TrkJet:
        for ( unsigned int i=0; i < cms2.trkjets_p4().size(); ++i) {
+	 if(applyJEC)
+	   jec = jetCorrection(cms2.trkjets_p4()[i], jet_corrector_trk);
 	 if ( cms2.trkjets_p4()[i].pt() < etThreshold ) continue;
 	 if ( btag && !defaultBTag(type,i) ) continue;
 	 if ( TMath::Abs(cms2.trkjets_p4()[i].eta()) > etaMax ) continue;
 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.trkjets_p4()[i])) < vetoCone ||
 	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.trkjets_p4()[i])) < vetoCone ) continue;
-	 jets.push_back(cms2.trkjets_p4()[i]);
+	 jets.push_back(cms2.trkjets_p4()[i] * jec);
        }
        break;
      default:
@@ -867,24 +889,12 @@ TH2F* hPFJetResponseWithZero[4]; // absolute response to Z pt with 0 if no btb j
 TH2F* hPFJetRelResponseWithZero[4]; // Relative response to Z pt with 0 if no btb jet is found
 
 TH2F* hPFJetResidualResponse; // absolute response to Z pt
+TH1F* hnGoodVertex;      // number of good vertexes after baseline selections
 
 // fkw September 2008 final hist used for muon tags estimate of top bkg
 TH2F* hextramuonsvsnjet[4];
 
 hypo_monitor monitor;
-
-
-std::vector<std::string> jetcorr_filenames_jpt;
-FactorizedJetCorrector *jet_corrector_jpt;
-
-std::vector<std::string> jetcorr_filenames_pf;
-FactorizedJetCorrector *jet_corrector_pf;
-
-std::vector<std::string> jetcorr_filenames_calo;
-FactorizedJetCorrector *jet_corrector_calo;
-
-std::vector<std::string> jetcorr_filenames_trk;
-FactorizedJetCorrector *jet_corrector_trk;
 
 void checkIsolation(int i_hyp, double weight){
   // LT
@@ -1061,7 +1071,8 @@ void getIsolationSidebandsAfterSelections(int i_hyp, double weight, RooDataSet* 
   }
 }
 
-void find_most_energetic_jets(int i_hyp, double weight, bool realData, double etaMin, double etaMax, bool applyJEC)
+
+void find_most_energetic_jets(int i_hyp, double weight, bool realData, double etaMin, double etaMax)
 {
   HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
   // fill the jet region
@@ -1096,7 +1107,7 @@ void find_most_energetic_jets(int i_hyp, double weight, bool realData, double et
   // JPT
   double jptMax(0.);
   int jptMaxIndex(-1);
-  find_leading_jptjet(i_hyp, etaMin, etaMax, vetoCone, jptMax, jptMaxIndex, applyJEC);
+  find_leading_jptjet(i_hyp, etaMin, etaMax, vetoCone, jptMax, jptMaxIndex);
   if (jptMaxIndex >= 0)
     hmaxBtagVsJPTPt->Fill(jptMax, BTag(jptJet,jptMaxIndex), weight);
   else
@@ -1104,13 +1115,13 @@ void find_most_energetic_jets(int i_hyp, double weight, bool realData, double et
 
   // Calo 
   double caloJetMax(0.);
-  find_leading_calojet(i_hyp, etaMin, etaMax, vetoCone, caloJetMax, applyJEC);
+  find_leading_calojet(i_hyp, etaMin, etaMax, vetoCone, caloJetMax);
   // TrkJet
   double trkJetMax(0.);
-  find_leading_trkjet(i_hyp, etaMin, etaMax, vetoCone, trkJetMax, applyJEC);
+  find_leading_trkjet(i_hyp, etaMin, etaMax, vetoCone, trkJetMax);
   // PFJet 
   double pfJetMax(0.);
-  find_leading_pfjet(i_hyp, etaMin, etaMax, vetoCone, pfJetMax, applyJEC);
+  find_leading_pfjet(i_hyp, etaMin, etaMax, vetoCone, pfJetMax);
  
   // Fill the jet Pt histograms
   switch (jet ) {
@@ -1161,6 +1172,9 @@ void find_most_energetic_jets(int i_hyp, double weight, bool realData, double et
   }
 }
 
+// ===
+// This is duplicating the getJets, FIXME
+// ===
 
 void find_leading_genjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & genJetMax) 
 {
@@ -1174,7 +1188,7 @@ void find_leading_genjet(int i_hyp, double etaMin, double etaMax, double vetoCon
   }
 }
 
-void find_leading_jptjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & jptMax, int &jptMaxIndex, bool applyJEC)
+void find_leading_jptjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & jptMax, int &jptMaxIndex)
 {
   double jec = 1.0; 
   for ( unsigned int i=0; i < cms2.jpts_p4().size(); ++i) {
@@ -1191,7 +1205,7 @@ void find_leading_jptjet(int i_hyp, double etaMin, double etaMax, double vetoCon
    }
 }
 
-void find_leading_calojet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & caloJetMax, bool applyJEC) 
+void find_leading_calojet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & caloJetMax)
 {
   double jec = 1.0;
   for ( unsigned int i=0; i < cms2.jets_pat_jet_uncorp4().size(); ++i) {
@@ -1209,7 +1223,7 @@ void find_leading_calojet(int i_hyp, double etaMin, double etaMax, double vetoCo
   }
 }
 
-void find_leading_trkjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & trkJetMax, bool applyJEC) 
+void find_leading_trkjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & trkJetMax)
 {
   double jec = 1.0;
   for ( unsigned int i=0; i < cms2.trkjets_p4().size(); ++i) {
@@ -1225,7 +1239,7 @@ void find_leading_trkjet(int i_hyp, double etaMin, double etaMax, double vetoCon
   }
 }
 
-void find_leading_pfjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & pfJetMax, bool applyJEC) 
+void find_leading_pfjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & pfJetMax)
 {
   double jec = 1.0;
   for ( unsigned int i=0; i < cms2.pfjets_p4().size(); ++i) {
@@ -1241,7 +1255,7 @@ void find_leading_pfjet(int i_hyp, double etaMin, double etaMax, double vetoCone
   }
 }
 
-void fill_val_plots(int i_hyp, cuts_t cut_passed, double weight, bool applyJEC)
+void fill_val_plots(int i_hyp, cuts_t cut_passed, double weight)
 {
   HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
   // Fill MET related plots
@@ -1254,7 +1268,7 @@ void fill_val_plots(int i_hyp, cuts_t cut_passed, double weight, bool applyJEC)
   // Fill Leading Jet Pt
   if(CheckCuts(  (1<<PASS_LL_FINAL) | (1<<PASS_LT_FINAL)  , cut_passed)) {
     double pfJetMax(0.);
-    find_leading_pfjet(i_hyp, 0.0, 0.5, 0.3, pfJetMax, applyJEC);
+    find_leading_pfjet(i_hyp, 0.0, 0.5, 0.3, pfJetMax);
     hmaxPFJetPtVal[type]->Fill(pfJetMax, weight);
     hmaxPFJetPtVal[3]->Fill(pfJetMax, weight);
     hdilMassVal[type]->Fill(cms2.hyp_p4()[i_hyp].mass(), weight);
@@ -1455,11 +1469,11 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !ww_elBase(cms2.hyp_ll_index()[i_hyp]) ) return false;
   
   monitor.count(cms2,type,"after previous + baseline cuts");
-
+ 
   // TEMPORARY
   if (gSystem->Getenv("Sync")) // Synchronization info
   {
-    if (!foundGoodVertex()) return false;
+    if (nGoodVertex()<1) return false;
 
     monitor.count(cms2,type,"after previous + primary verex");
 
@@ -1529,9 +1543,11 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
 
     if (numberOfExtraLeptons(i_hyp,10)>0) return false;
     monitor.count(cms2,type,"after previous + extra lepton veto: ");
-  }
+  } // end of Synchronization info
 
-  if (!foundGoodVertex()) return false;
+  if (nGoodVertex()<1) return false;
+  hnGoodVertex -> Fill(nGoodVertex(), weight);
+  
   if (cms2.hyp_p4().at(i_hyp).mass2()<0 || 
       cms2.hyp_p4()[i_hyp].mass() < 12) return false;
 
@@ -1591,7 +1607,7 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   if ( passedLLFinalRequirements ) cuts_passed |= (1<<PASS_LL_FINAL);
 
   // == Jet-veto
-  const std::vector<LorentzVector>& vetojets(getDefaultJets(i_hyp));
+  const std::vector<LorentzVector>& vetojets(getDefaultJets(i_hyp, false));
   unsigned int nJets = vetojets.size();
   if (nJets==0) 
     cuts_passed |= (1<<PASS_JETVETO);
@@ -1627,18 +1643,18 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   }
     
   // Jet-veto effciency studies
-  bool applyJEC = false;
+
   if (CheckCutsNM1(pass_all, (1<<PASS_JETVETO) | (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO), cuts_passed)) {
-    find_most_energetic_jets(i_hyp,weight,realData,0.0,5.0, applyJEC);
-    find_most_energetic_jets(i_hyp,weight,realData,0.0,3.0, applyJEC);
-    find_most_energetic_jets(i_hyp,weight,realData,3.0,5.0, applyJEC);
+    find_most_energetic_jets(i_hyp,weight,realData,0.0,5.0);
+    find_most_energetic_jets(i_hyp,weight,realData,0.0,3.0);
+    find_most_energetic_jets(i_hyp,weight,realData,3.0,5.0);
     if(zStudy) 
-      getJetResponseFromZBalance(i_hyp, weight, realData, 0.0, 5.0, applyJEC);
+      getJetResponseFromZBalance(i_hyp, weight, realData, 0.0, 5.0);
   }
   
   // Make some validation plots 
   if(CheckCuts(  (1<<PASS_LL_FINAL) | (1<<PASS_LT_FINAL), cuts_passed)) {
-    fill_val_plots(i_hyp, cuts_passed, weight, applyJEC);
+    fill_val_plots(i_hyp, cuts_passed, weight);
   }
   
   // Do Drell Yan Estimation
@@ -2005,12 +2021,16 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hmetInDYEst[i] = new TH1F(Form("%s_hmetInDYEst_%s",  prefix,HypothesisTypeName(i)), "MET in Z mass for DY Estimation", 40, 0., 200.);
     hmetOutDYEst[i] = new TH1F(Form("%s_hmetOutDYEst_%s",  prefix,HypothesisTypeName(i)), "MET outside Z mass for DY Estimation", 40, 0., 200.);
 
+
+    
     htoptagz[i] = new TH2F(Form("%s_htoptagz_%s",prefix,HypothesisTypeName(i)),
 			   "Top tagging on Z-sample",4,0,4,4,0,4);
     htoptagz[i]->Sumw2();
     htoptag[i]  = new TH2F(Form("%s_htoptag_%s",prefix,HypothesisTypeName(i)),
 			   "Top tagging for final selection",4,0,4,4,0,4);
     htoptag[i]->Sumw2();
+
+
 
     hnJet[i]->Sumw2();
     helePt[i]->Sumw2();
@@ -2073,6 +2093,7 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hdilMassNoMetDYEst[i]->Sumw2();
     hmetInDYEst[i]->Sumw2();
     hmetOutDYEst[i]->Sumw2();
+   
   }
   
   helTrkIsoPassId = new TH1F(Form("%s_helTrkIsoPassId",prefix),        Form("%s - electron trk isolation passed robust el id",prefix),  100, 0., 20.);
@@ -2148,7 +2169,8 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
 
   hPFJetResidualResponse = new TH2F(Form("%s_hPFJetResidualResponse",prefix), Form("%s - PFJet Residual Correction",prefix), 20, 10, 50, 20, 0, 2);
   hPFJetResidualResponse->Sumw2();
-
+  hnGoodVertex      = new TH1F(Form("%s_hnGoodVertex",     prefix), "Number of good vertexes after baseline selections" , 50,0.,50.);	
+  hnGoodVertex -> Sumw2();
 }
 
 
@@ -2298,13 +2320,6 @@ RooDataSet* ScanChain( TChain* chain,
 	   }
 	 }
 
-	 // check the leading vertex
-	 bool goodVertex = false;
-	 for (size_t v = 0; v < cms2.vtxs_position().size(); ++v)  {
-	   if(isGoodVertex(v)) goodVertex = true;
-	 }
-	 //if(!goodVertex) continue;
-	 
 	 // loop over hypothesis candidates
 	 unsigned int nHyps = cms2.hyp_type().size();
 	 bool goodEvent = false;
@@ -2579,7 +2594,7 @@ bool passedSkimSelection2()
     // charge
     if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) continue;
     
-    if (!foundGoodVertex()) return false;
+    if (nGoodVertex()<1) return false;
 
     if (cms2.hyp_p4().at(i_hyp).mass2()<0 || 
 	cms2.hyp_p4()[i_hyp].mass() < 12) return false;
@@ -2801,7 +2816,7 @@ unsigned int bestZHyp()
   return i_hyp_bestZ;
 }
 
-void getJetResponseFromZBalance(int i_hyp,  double weight, bool realData, double etaMin, double etaMax, bool applyJEC) 
+void getJetResponseFromZBalance(int i_hyp,  double weight, bool realData, double etaMin, double etaMax)
 { 
   HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
   double vetoCone = 0.3;

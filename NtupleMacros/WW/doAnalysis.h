@@ -145,13 +145,13 @@ void getIsolationSidebandsAfterSelections(int i_hyp,
 					  bool passedAllLeptonRequirements);
 
 void find_leading_genjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & genJetMax);
-void find_leading_jptjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & jptMax, int &jptMaxIndex, bool applyJEC);
-void find_leading_calojet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & caloJetMax, bool applyJEC); 
-void find_leading_trkjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & trkJetMax, bool applyJEC) ;
-void find_leading_pfjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & pfJetMax, bool applyJEC);
-void find_most_energetic_jets(int i_hyp, double weight, bool realData, double etaMin, double etaMax, bool applyJEC);
-void getJetResponseFromZBalance(int i_hyp, double weight, bool realData, double etaMin, double etaMax, bool applyJEC);
-void fill_val_plots(int i_hyp, cuts_t cut_passed, double weight, bool applyJEC);
+void find_leading_jptjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & jptMax, int &jptMaxIndex);
+void find_leading_calojet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & caloJetMax);
+void find_leading_trkjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & trkJetMax);
+void find_leading_pfjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & pfJetMax);
+void find_most_energetic_jets(int i_hyp, double weight, bool realData, double etaMin, double etaMax);
+void getJetResponseFromZBalance(int i_hyp, double weight, bool realData, double etaMin, double etaMax);
+void fill_val_plots(int i_hyp, cuts_t cut_passed, double weight);
 void fill_dyest_histograms(int i_hyp, float weight);
 				
 unsigned int bestZHyp();
