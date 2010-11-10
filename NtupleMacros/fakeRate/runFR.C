@@ -22,6 +22,22 @@ gROOT->LoadMacro("myBabyMaker.C++");
 
 // Monte Carlo
 
+  // QCD 30to50
+  TChain *chain4 = ChainFromText( "input_data/qcd_pt_30to50_fall10_uaf.txt" );
+  myBabyMaker * baby4 = new myBabyMaker();
+  baby4->ScanChain(chain4, "qcd_pt_30to50_fall10.root", false, -1);
+
+  // QCD 50to80
+  TChain *chain5 = ChainFromText( "input_data/qcd_pt_50to80_fall10_uaf.txt" );
+  myBabyMaker * baby5 = new myBabyMaker();
+  baby5->ScanChain(chain5, "qcd_pt_50to80_fall10.root", false, -1);
+
+  // QCD 80to120
+  TChain *chain6 = ChainFromText( "input_data/qcd_pt_80to120_fall10_uaf.txt" );
+  myBabyMaker * baby6 = new myBabyMaker();
+  baby6->ScanChain(chain6, "qcd_pt_80to120_fall10.root", false, -1);
+
+  /*
   // QCD 30
   TChain *chain4 = ChainFromText( "input_data/qcd30_uaf.txt" );
   myBabyMaker * baby4 = new myBabyMaker();
@@ -36,6 +52,7 @@ gROOT->LoadMacro("myBabyMaker.C++");
   TChain *chain6 = ChainFromText( "input_data/qcd80_uaf.txt" );
   myBabyMaker * baby6 = new myBabyMaker();
   baby6->ScanChain(chain6, "qcd80.root", false, -1);
+  */
 
   // MuEnriched 10
   TChain *chain7 = ChainFromText( "input_data/mu10_uaf.txt" );
