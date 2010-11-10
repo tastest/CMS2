@@ -38,8 +38,12 @@ bool vetoZmumuGamma( unsigned int hypIdx , float emax , float minmass , float ma
     return false;
 
   //get ecal deposits for each muon
-  float ell = cms2.mus_iso_ecalvetoDep().at( cms2.hyp_ll_index().at(hypIdx ));
-  float elt = cms2.mus_iso_ecalvetoDep().at( cms2.hyp_lt_index().at(hypIdx ));
+  int ill = cms2.hyp_ll_index().at( hypIdx );
+  int ilt = cms2.hyp_lt_index().at( hypIdx );
+
+  //energy = ET * cosh(eta)
+  float ell = cms2.mus_iso_ecalvetoDep().at(ill) * cosh( cms2.mus_p4().at(ill).eta() ) ;
+  float elt = cms2.mus_iso_ecalvetoDep().at(ilt) * cosh( cms2.mus_p4().at(ilt).eta() ) ;
 
   //don't veto event if ecal deposits are both less than emax
   if( ell < emax && elt < emax ) return false;
