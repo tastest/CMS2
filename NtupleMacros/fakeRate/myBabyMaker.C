@@ -297,6 +297,10 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         if (numSS_ && (!v2SS_)) cout << "bad v2SS_" << endl;
         if (numSS_ && (!v3SS_)) cout << "bad v3SS_" << endl;
 
+        if (numSSAug9_ && (!v1SSAug9_)) cout << "bad v1SSAug9_" << endl;
+        if (numSSAug9_ && (!v2SSAug9_)) cout << "bad v2SSAug9_" << endl;
+        if (numSSAug9_ && (!v3SSAug9_)) cout << "bad v3SSAug9_" << endl;
+
         if (numAug9_ && (!v1Aug9_)) cout << "bad v1Aug9_" << endl;
         if (numAug9_ && (!v2Aug9_)) cout << "bad v2Aug9_" << endl;
         if (numAug9_ && (!v3Aug9_)) cout << "bad v3Aug9_" << endl;
@@ -371,6 +375,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         tcmetphi_ = evt_tcmetPhi();
         pfmet_ = evt_pfmet();
         pfmetphi_ = evt_pfmetPhi();
+        iso_ = electronIsolation_rel(iEl, true);
 
         if (! isData) {
             mcid_       = els_mc_id().at(iEl);
@@ -459,6 +464,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         // Fill electron & photon triggers
         pair<int, float> pair_el10_lw     = TriggerMatch( els_p4().at(iEl), "HLT_Ele10_LW_L1R");
         pair<int, float> pair_el10_sw     = TriggerMatch( els_p4().at(iEl), "HLT_Ele10_SW_L1R");
+        pair<int, float> pair_el10_sw_v2  = TriggerMatch( els_p4().at(iEl), "HLT_Ele10_SW_L1R_v2");
 
         pair<int, float> pair_el10_lw_id  = TriggerMatch( els_p4().at(iEl), "HLT_Ele10_LW_EleId_L1R");
         pair<int, float> pair_el10_sw_id  = TriggerMatch( els_p4().at(iEl), "HLT_Ele10_SW_EleId_L1R");
@@ -483,11 +489,13 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         pair<int, float> pair_ph20C   = TriggerMatch( els_p4().at(iEl), "HLT_Photon20_Cleaned_L1R");
 
         pair<int, float> pair_el17_sw     = TriggerMatch( els_p4().at(iEl), "HLT_Ele17_SW_L1R");
+        pair<int, float> pair_el17_sw_v2  = TriggerMatch( els_p4().at(iEl), "HLT_Ele17_SW_L1R_v2");
         pair<int, float> pair_el17_iso    = TriggerMatch( els_p4().at(iEl), "HLT_Ele17_Isol_L1R");
         pair<int, float> pair_el17_loose  = TriggerMatch( els_p4().at(iEl), "HLT_Ele17_SW_LooseEleId_L1R");
         pair<int, float> pair_el17_sw_cid = TriggerMatch( els_p4().at(iEl), "HLT_Ele17_SW_CaloEleId_L1R");
         pair<int, float> pair_el17_sw_id  = TriggerMatch( els_p4().at(iEl), "HLT_Ele17_SW_EleId_L1R");
-        pair<int, float> pair_el17_tiso   = TriggerMatch( els_p4().at(iEl), "HLT_Ele17_SW_TightEleidIsol_L1R_v1");
+        pair<int, float> pair_el17_tiso   = TriggerMatch( els_p4().at(iEl), "HLT_Ele17_SW_TightEleIdIsol_L1R");
+        pair<int, float> pair_el17_tiso_v1  = TriggerMatch( els_p4().at(iEl), "HLT_Ele17_SW_TightEleIdIsol_L1R_v1");
 
 
         int   ph10    = max( pair_ph10.first, pair_ph10C.first );
@@ -497,14 +505,17 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
         // trigger matching
         el17_sw_       = pair_el17_sw.first;
+        el17_sw_v2_    = pair_el17_sw_v2.first;
         el17_iso_      = pair_el17_iso.first;
         el17_loose_    = pair_el17_loose.first;
         el17_sw_cid_   = pair_el17_sw_cid.first;
         el17_sw_id_    = pair_el17_sw_id.first;
         el17_tiso_     = pair_el17_tiso.first;
+        el17_tiso_v1_  = pair_el17_tiso_v1.first;
 
         el10_lw_      = pair_el10_lw.first;
         el10_sw_      = pair_el10_sw.first;
+        el10_sw_v2_   = pair_el10_sw_v2.first;
 
         el10_lw_id_   = pair_el10_lw_id.first;
         el10_sw_id_   = pair_el10_sw_id.first;
@@ -528,14 +539,17 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
         // dr between lepton and closest jet
         drel17_sw_       = pair_el17_sw.second;
+        drel17_sw_v2_    = pair_el17_sw_v2.second;
         drel17_iso_      = pair_el17_iso.second;
         drel17_loose_    = pair_el17_loose.second;
         drel17_sw_cid_   = pair_el17_sw_cid.second;
         drel17_sw_id_    = pair_el17_sw_id.second;
         drel17_tiso_     = pair_el17_tiso.second;
+        drel17_tiso_v1_  = pair_el17_tiso_v1.second;
 
         drel10_lw_      = pair_el10_lw.second;
         drel10_sw_      = pair_el10_sw.second;
+        drel10_sw_v2_   = pair_el10_sw_v2.second;
 
         drel10_lw_id_   = pair_el10_lw_id.second;
         drel10_sw_id_   = pair_el10_sw_id.second;
@@ -672,6 +686,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         tcmetphi_ = evt_tcmetPhi();
         pfmet_ = evt_pfmet();
         pfmetphi_ = evt_pfmetPhi();
+        iso_ = muonIsoValue(iMu);
 
         if (! isData) {
             mcid_       = mus_mc_id().at(iMu);
@@ -702,10 +717,16 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         fo_wwV0_10_  = muonId(iMu, muonSelectionFO_mu_ww_iso10);
         fo_wwV1_04_  = muonId(iMu, muonSelectionFO_mu_wwV1);
         fo_wwV1_10_  = muonId(iMu, muonSelectionFO_mu_wwV1_iso10);
+        fo_wwV1_10_d0_  = muonId(iMu, muonSelectionFO_mu_wwV1_iso10_d0);
 
         numAug9_ = num_;
 
-        if( !fo_04_ && !fo_10_ && !fo_wwV0_04_ && !fo_wwV0_10_ && !fo_wwV1_04_ && !fo_wwV1_10_ && !fo_muss04_ && !fo_muss10_ && !fo_mussV2_04_ && !fo_mussV2_10_) continue;
+        if( !fo_04_ && !fo_10_ &&
+            !fo_wwV0_04_ && !fo_wwV0_10_ &&
+            !fo_wwV1_04_ && !fo_wwV1_10_ && !fo_wwV1_10_d0_ &&
+            !fo_muss04_ && !fo_muss10_ &&
+            !fo_mussV2_04_ && !fo_mussV2_10_
+           ) continue;
 
         // Now REALLY fix it (July 14, 2010)
         if (pt_ > 10.) {
@@ -786,17 +807,23 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         pair<int, float> pair_mu7 = TriggerMatch( mus_p4().at(iMu), "HLT_Mu7");
         pair<int, float> pair_mu9 = TriggerMatch( mus_p4().at(iMu), "HLT_Mu9");
         pair<int, float> pair_mu11 = TriggerMatch( mus_p4().at(iMu), "HLT_Mu11");
+        pair<int, float> pair_mu13 = TriggerMatch( mus_p4().at(iMu), "HLT_Mu13_v1");
         pair<int, float> pair_mu15 = TriggerMatch( mus_p4().at(iMu), "HLT_Mu15_v1");
-        mu5_    = pair_mu5.first;
-        drmu5_  = pair_mu5.second;
-        mu7_    = pair_mu7.first;
-        drmu7_  = pair_mu7.second;
-        mu9_    = pair_mu9.first;
-        drmu9_  = pair_mu9.second;
+        pair<int, float> pair_mu17 = TriggerMatch( mus_p4().at(iMu), "HLT_Mu17_v1");
+        mu5_     = pair_mu5.first;
+        drmu5_   = pair_mu5.second;
+        mu7_     = pair_mu7.first;
+        drmu7_   = pair_mu7.second;
+        mu9_     = pair_mu9.first;
+        drmu9_   = pair_mu9.second;
         mu11_    = pair_mu11.first;
         drmu11_  = pair_mu11.second;
+        mu13_    = pair_mu13.first;
+        drmu13_  = pair_mu13.second;
         mu15_    = pair_mu15.first;
         drmu15_  = pair_mu15.second;
+        mu17_    = pair_mu17.first;
+        drmu17_  = pair_mu17.second;
 
         // Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
         ptj1_       = -999.0;
@@ -900,6 +927,7 @@ void myBabyMaker::InitBabyNtuple () {
   tcmetphi_ = -999.;
   pfmet_ = -999.;
   pfmetphi_ = -999.;
+  iso_ = -999.;
   hlt15u_ = 0;
   hlt30u_ = 0;
   hlt50u_ = 0;
@@ -917,6 +945,7 @@ void myBabyMaker::InitBabyNtuple () {
   fo_wwV0_10_ = false;
   fo_wwV1_04_ = false;
   fo_wwV1_10_ = false;
+  fo_wwV1_10_d0_ = false;
 
   v1_  = false;
   v2_  = false;
@@ -989,6 +1018,7 @@ void myBabyMaker::InitBabyNtuple () {
   ph20_ = 0;
   el10_lw_ = 0;
   el10_sw_ = 0;
+  el10_sw_v2_ = 0;
   el10_lw_id_ = 0;
   el10_sw_id_ = 0;
   el15_lw_ = 0;
@@ -1001,11 +1031,13 @@ void myBabyMaker::InitBabyNtuple () {
   Del10_sw_ = 0;
 
   el17_sw_ = 0;
+  el17_sw_v2_ = 0;
   el17_iso_ =0;
   el17_loose_ =0;
   el17_sw_cid_ =0;
   el17_sw_id_ =0;
   el17_tiso_ =0;
+  el17_tiso_v1_ =0;
 
   //
   drph10_ = 99.;
@@ -1013,6 +1045,7 @@ void myBabyMaker::InitBabyNtuple () {
   drph20_ = 99.;
   drel10_lw_ = 99.;
   drel10_sw_ = 99.;
+  drel10_sw_v2_ = 99.;
   drel10_lw_id_ = 99.;
   drel10_sw_id_ = 99.;
   drel15_lw_ = 99.;
@@ -1024,11 +1057,13 @@ void myBabyMaker::InitBabyNtuple () {
   drel25_sw_ = 99.;
   drDel10_sw_ = 99.;
   drel17_sw_ = 99;
+  drel17_sw_v2_ = 99;
   drel17_iso_ =99;
   drel17_loose_ =99;
   drel17_sw_cid_ =99;
   drel17_sw_id_ =99;
   drel17_tiso_ =99;
+  drel17_tiso_v1_ =99;
 
 
   //
@@ -1036,14 +1071,18 @@ void myBabyMaker::InitBabyNtuple () {
   mu7_  = 0;
   mu9_  = 0;
   mu11_  = 0;
+  mu13_  = 0;
   mu15_  = 0;
+  mu17_  = 0;
 
   //
   drmu5_  = 99.;
   drmu7_  = 99.;
   drmu9_  = 99.;
   drmu11_  = 99.;
+  drmu13_  = 99.;
   drmu15_  = 99.;
+  drmu17_  = 99.;
 
   //
   nbjet_  = 0;
@@ -1106,6 +1145,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("tcmetphi",          &tcmetphi_,         "tcmetphi/F"         );
     babyTree_->Branch("pfmet",          &pfmet_,         "pfmet/F"         );
     babyTree_->Branch("pfmetphi",          &pfmetphi_,         "pfmetphi/F"         );
+    babyTree_->Branch("iso",          &iso_,         "iso/F"         );
     babyTree_->Branch("id",          &id_,         "id/I"         );
 
     babyTree_->Branch("hlt15u",       &hlt15u_,       "hlt15u/I"      );
@@ -1125,6 +1165,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("fo_wwV0_10",         &fo_wwV0_10_,        "fo_wwV0_10/O"      );
     babyTree_->Branch("fo_wwV1_04",         &fo_wwV1_04_,        "fo_wwV1_04/O"      );
     babyTree_->Branch("fo_wwV1_10",         &fo_wwV1_10_,        "fo_wwV1_10/O"      );
+    babyTree_->Branch("fo_wwV1_10_d0",         &fo_wwV1_10_d0_,        "fo_wwV1_10_d0/O"      );
     babyTree_->Branch("v1",         &v1_,        "v1/O"      );
     babyTree_->Branch("v2",         &v2_,        "v2/O"      );
     babyTree_->Branch("v3",         &v3_,        "v3/O"      );
@@ -1198,6 +1239,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("ph20",       &ph20_,       "ph20/I"      );
     babyTree_->Branch("el10_lw",         &el10_lw_,         "el10_lw/I"      );
     babyTree_->Branch("el10_sw",         &el10_sw_,         "el10_sw/I"      );
+    babyTree_->Branch("el10_sw_v2",         &el10_sw_v2_,         "el10_sw_v2/I"      );
     babyTree_->Branch("el10_lw_id",         &el10_lw_id_,         "el10_lw_id/I"      );
     babyTree_->Branch("el10_sw_id",         &el10_sw_id_,         "el10_sw_id/I"      );
     babyTree_->Branch("el15_lw",         &el15_lw_,         "el15_lw/I"      );
@@ -1210,11 +1252,13 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("Del10_sw",         &Del10_sw_,         "Del10_sw/I"      );
 
     babyTree_->Branch("el17_sw",         &el17_sw_,         "el17_sw/I"      );
+    babyTree_->Branch("el17_sw_v2",         &el17_sw_v2_,         "el17_sw_v2/I"      );
     babyTree_->Branch("el17_iso",         &el17_iso_,         "el17_iso/I"      );
     babyTree_->Branch("el17_loose",         &el17_loose_,         "el17_loose/I"      );
     babyTree_->Branch("el17_sw_cid",         &el17_sw_cid_,         "el17_sw_cid/I"      );
     babyTree_->Branch("el17_sw_id",         &el17_sw_id_,         "el17_sw_id/I"      );
     babyTree_->Branch("el17_tiso",         &el17_tiso_,         "el17_tiso/I"      );
+    babyTree_->Branch("el17_tiso_v1",         &el17_tiso_v1_,         "el17_tiso_v1/I"      );
 
 
     //
@@ -1223,6 +1267,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("drph20",       &drph20_,       "drph20/F"      );
     babyTree_->Branch("drel10_lw",         &drel10_lw_,         "drel10_lw/F"      );
     babyTree_->Branch("drel10_sw",         &drel10_sw_,         "drel10_sw/F"      );
+    babyTree_->Branch("drel10_sw_v2",         &drel10_sw_v2_,         "drel10_sw_v2/F"      );
     babyTree_->Branch("drel10_lw_id",         &drel10_lw_id_,         "drel10_lw_id/F"      );
     babyTree_->Branch("drel10_sw_id",         &drel10_sw_id_,         "drel10_sw_id/F"      );
     babyTree_->Branch("drel15_lw",         &drel15_lw_,         "drel15_lw/F"      );
@@ -1235,21 +1280,27 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("drDel10_sw",         &drDel10_sw_,         "drDel10_sw/F"      );
 
     babyTree_->Branch("drel17_sw",         &drel17_sw_,         "drel17_sw/F"      );
+    babyTree_->Branch("drel17_sw_v2",         &drel17_sw_v2_,         "drel17_sw_v2/F"      );
     babyTree_->Branch("drel17_iso",         &drel17_iso_,         "drel17_iso/F"      );
     babyTree_->Branch("drel17_loose",         &drel17_loose_,         "drel17_loose/F"      );
     babyTree_->Branch("drel17_sw_cid",         &drel17_sw_cid_,         "drel17_sw_cid/F"      );
     babyTree_->Branch("drel17_sw_id",         &drel17_sw_id_,         "drel17_sw_id/F"      );
     babyTree_->Branch("drel17_tiso",         &drel17_tiso_,         "drel17_tiso/F"      );
+    babyTree_->Branch("drel17_tiso_v1",         &drel17_tiso_v1_,         "drel17_tiso_v1/F"      );
 
     //
+    babyTree_->Branch("mu17",       &mu17_,       "mu17/I"      );
     babyTree_->Branch("mu15",       &mu15_,       "mu15/I"      );
+    babyTree_->Branch("mu13",       &mu13_,       "mu13/I"      );
     babyTree_->Branch("mu11",       &mu11_,       "mu11/I"      );
     babyTree_->Branch("mu9",       &mu9_,       "mu9/I"      );
     babyTree_->Branch("mu7",       &mu7_,       "mu7/I"      );
     babyTree_->Branch("mu5",       &mu5_,       "mu5/I"      );
 
     //
+    babyTree_->Branch("drmu17",       &drmu17_,       "drmu17/F"      );
     babyTree_->Branch("drmu15",       &drmu15_,       "drmu15/F"      );
+    babyTree_->Branch("drmu13",       &drmu13_,       "drmu13/F"      );
     babyTree_->Branch("drmu11",       &drmu11_,       "drmu11/F"      );
     babyTree_->Branch("drmu9",       &drmu9_,       "drmu9/F"      );
     babyTree_->Branch("drmu7",       &drmu7_,       "drmu7/F"      );
