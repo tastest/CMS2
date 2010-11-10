@@ -140,6 +140,10 @@ MuFrFile = ww_mu_fr_Mu.root
 
 jetbkg2: processed_data.root # fake rate method
 	$(QUIET) root -q -l 'estimateJetBkg_fakes.C+("processed_data.root","files/$(ElFrFile)","$(ElFrVer)","files/$(MuFrFile)","$(MuFrVer)")'
+
+topbkg: processed_data.root  # estimate top background
+	$(QUIET) root -q -l estimateTopBkg.C+
+
 plots: processed_data.eps # make plots based on processed data
 	$(QUIET) epstopdf processed_data.eps
 
