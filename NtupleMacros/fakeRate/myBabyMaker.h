@@ -50,6 +50,9 @@ class myBabyMaker
   Float_t pfmet_;
   Float_t pfmetphi_;
 
+  // isolation
+  Float_t iso_;
+
   // did it pass the jet trigger and is this lepton unbiased
   // 0=fail 1="pass but biased" 2="pass and unbiased"  -1="pass but cant find jet trg obj"
   Int_t  hlt15u_; // HLT_Jet15U
@@ -142,6 +145,7 @@ class myBabyMaker
   Bool_t fo_wwV0_10_;  // muonSelectionFO_mu_ww_iso10
   Bool_t fo_wwV1_04_;  // muonSelectionFO_mu_wwV1
   Bool_t fo_wwV1_10_;  // muonSelectionFO_mu_wwV1_iso10
+  Bool_t fo_wwV1_10_d0_;  // muonSelectionFO_mu_wwV1_iso10_d0
 
   // What electron trigger did it pass and is the electron matched to a egamma trg object
   // 0=fail 1="pass but no match" 2="pass and matched" -1="pass but egamm trg obj missing"
@@ -151,6 +155,7 @@ class myBabyMaker
 
   Int_t el10_lw_;     // HLT_Ele10_LW_L1R
   Int_t el10_sw_;     // HLT_Ele10_SW_L1R
+  Int_t el10_sw_v2_;  // HLT_Ele10_SW_L1R_v2
 
   Int_t el10_lw_id_;  // HLT_Ele10_LW_EleId_L1R
   Int_t el10_sw_id_;  // HLT_Ele10_SW_EleId_L1R
@@ -167,11 +172,13 @@ class myBabyMaker
   Int_t el25_sw_;     // HLT_Ele25_SW_L1R
 
   Int_t el17_sw_;     // HLT_Ele17_SW_L1R
+  Int_t el17_sw_v2_;  // HLT_Ele17_SW_L1R_v2
   Int_t el17_iso_;    // HLT_Ele17_Isol_L1R
   Int_t el17_loose_;  // HLT_Ele17_SW_LooseEleId_L1R
   Int_t el17_sw_cid_; // HLT_Ele17_SW_CaloEleId_L1R
   Int_t el17_sw_id_;  // HLT_Ele17_SW_EleId_L1R
-  Int_t el17_tiso_;   // HLT_Ele17_SW_TightEleIdIsol_L1R_v1
+  Int_t el17_tiso_;   // HLT_Ele17_SW_TightEleIdIsol_L1R
+  Int_t el17_tiso_v1_;// HLT_Ele17_SW_TightEleIdIsol_L1R_v1
 
   Int_t Del10_sw_;    // HLT_DoubleEle10_SW_L1R
 
@@ -182,6 +189,7 @@ class myBabyMaker
 
   Float_t drel10_lw_;    // HLT_Ele10_LW_L1R
   Float_t drel10_sw_;    // HLT_Ele10_SW_L1R
+  Float_t drel10_sw_v2_; // HLT_Ele10_SW_L1R_v2
 
   Float_t drel10_lw_id_; // HLT_Ele10_LW_EleId_L1R
   Float_t drel10_sw_id_; // HLT_Ele10_SW_EleId_L1R
@@ -198,28 +206,34 @@ class myBabyMaker
   Float_t drel25_sw_;     // HLT_Ele25_SW_L1R
 
   Float_t drel17_sw_;     // HLT_Ele17_SW_L1R
+  Float_t drel17_sw_v2_;  // HLT_Ele17_SW_L1R_v2
   Float_t drel17_iso_;    // HLT_Ele17_Isol_L1R
   Float_t drel17_loose_;  // HLT_Ele17_SW_LooseEleId_L1R
   Float_t drel17_sw_cid_; // HLT_Ele17_SW_CaloEleId_L1R
   Float_t drel17_sw_id_;  // HLT_Ele17_SW_EleId_L1R
-  Float_t drel17_tiso_;   // HLT_Ele17_SW_TightEleIdIsol_L1R_v1
+  Float_t drel17_tiso_;   // HLT_Ele17_SW_TightEleIdIsol_L1R
+  Float_t drel17_tiso_v1_;// HLT_Ele17_SW_TightEleIdIsol_L1R_v1
 
   Float_t drDel10_sw_;    // HLT_DoubleEle10_SW_L1R
 
   // What muon trigger did it pass
   // 0=fail 1="pass but no match" 2="pass and matched" -1="pass but muon trg obj missing"
+  Int_t mu17_; // HLT_Mu17_v1
   Int_t mu15_; // HLT_Mu15_v1
+  Int_t mu13_; // HLT_Mu13_v1
   Int_t mu11_; // HLT_Mu11
   Int_t mu9_;  // HLT_Mu9
   Int_t mu7_;  // HLT_Mu7
   Int_t mu5_;  // HLT_Mu5
 
   //  Minimm dR to the closest HLT mu object
-  Float_t drmu11_;
-  Float_t drmu15_;
-  Float_t drmu9_;
-  Float_t drmu7_;
-  Float_t drmu5_;
+  Float_t drmu17_; // HLT_Mu17_v1
+  Float_t drmu15_; // HLT_Mu15_v1
+  Float_t drmu13_; // HLT_Mu13_v1
+  Float_t drmu11_; // HLT_Mu11
+  Float_t drmu9_;  // HLT_Mu9
+  Float_t drmu7_;  // HLT_Mu7
+  Float_t drmu5_;  // HLT_Mu5
   
   // Btag information
   Int_t nbjet_; // number of btagged jet pt>15
