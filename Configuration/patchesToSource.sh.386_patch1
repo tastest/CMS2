@@ -19,13 +19,13 @@ for f in $(find MitEdm/Filters/ -type f); do sed 's!FWCore/ParameterSet/interfac
 # inclusive secondary vertexing
 cvs co -r V02-01-00      RecoVertex/AdaptiveVertexFinder   
 
-echo;echo checkingdeps;echo
-
-# dont forget this
-checkdeps -a
 
 # packages needed to use the new missing hits in 38X
 cvs co -r V00-04-08 DataFormats/GeometrySurface
 cvs co -r V08-11-01 RecoTracker/MeasurementDet
 cvs co -r V00-03-00 TrackingTools/MeasurementDet
 
+
+echo;echo checkingdeps;echo
+
+checkdeps -a
