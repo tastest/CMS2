@@ -112,7 +112,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
   // Set the JSON file
   if(isData){
-    set_goodrun_file_json("json/json_135821_148058_15.21pb.txt");
+    set_goodrun_file_json("json/Cert_TopNov5_Merged_135821-149442_allPVT.txt");
+    //set_goodrun_file_json("json/json_135821_148058_15.21pb.txt");
     //set_goodrun_file_json("json/Cert_TopAug13_Merged_135059-142664.txt");
   }
 
