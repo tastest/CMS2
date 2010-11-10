@@ -10,8 +10,96 @@
 
 #include "susySelections.h"
 #include "triggerUtils.cc"
+#include "electronSelections.h"
+#include "muonSelections.h"
 
 using namespace tas;
+
+/*****************************************************************************************/
+//print event info
+/*****************************************************************************************/
+void printEventInfo(){
+  cout << cms2.evt_dataset() << endl;
+  cout << cms2.evt_run() << " " << cms2.evt_lumiBlock() << " " << cms2.evt_event() << endl;
+}
+
+
+/*****************************************************************************************/
+//veto Z->mumugamma events                                                                
+/*****************************************************************************************/
+bool vetoZmumuGamma( unsigned int hypIdx , float emax , float minmass , float maxmass ){
+
+  //we only care about mumu hyp types
+  if( cms2.hyp_type().at(hypIdx) != 0 ) return false; 
+
+  //we only want to veto events that started *outside* of Z window 
+  //and moved inside after including ecal deposit
+  if( cms2.hyp_p4().at(hypIdx).mass() > minmass && cms2.hyp_p4().at(hypIdx).mass() < maxmass )
+    return false;
+
+  //get ecal deposits for each muon
+  float ell = cms2.mus_iso_ecalvetoDep().at( cms2.hyp_ll_index().at(hypIdx ));
+  float elt = cms2.mus_iso_ecalvetoDep().at( cms2.hyp_lt_index().at(hypIdx ));
+
+  //don't veto event if ecal deposits are both less than emax
+  if( ell < emax && elt < emax ) return false;
+
+  LorentzVector vll = cms2.hyp_ll_p4().at(hypIdx);
+  LorentzVector vlt = cms2.hyp_lt_p4().at(hypIdx);
+
+  //if ecal deposit is greater than emax, scale muon momentum up
+  if( ell > emax ) vll = vll * ( 1 + ell / vll.energy() );
+  if( elt > emax ) vlt = vlt * ( 1 + elt / vlt.energy() );
+
+  float mass = ( vll + vlt ).mass();
+
+  //check if dimuon mass, including extra ecal energy, is inside Z mass window
+  if( mass > minmass && mass < maxmass ){
+    //cout << "Veto Z->mumugamma event!" << endl;
+    //cout << cms2.evt_run() << " " << cms2.evt_lumiBlock() << " " << cms2.evt_event() << endl;
+    return true;
+  }
+
+  return false;
+}
+
+/*****************************************************************************************/
+//generalized Z veto
+/*****************************************************************************************/
+bool ZVetoGeneral( float ptcut , float minmass ,  float maxmass , SelectionType mutype ){
+
+  for(unsigned int i = 0; i < hyp_p4().size(); ++i) {
+
+    //check that hyp leptons come from same vertex
+    if( !hypsFromSameVtx( i ) )    continue;
+
+    //opposite-sign, same-flavor
+    if( cms2.hyp_lt_id().at(i)     *  cms2.hyp_ll_id().at(i) > 0 ) continue;
+    if( cms2.hyp_type().at(i) == 1 || cms2.hyp_type().at(i) == 2 ) continue;
+
+    //check that both lepton pt's > ptcut
+    if( cms2.hyp_ll_p4().at(i).pt() < ptcut ) continue; 
+    if( cms2.hyp_lt_p4().at(i).pt() < ptcut ) continue; 
+          
+    //muon ID
+    if ( abs( cms2.hyp_ll_id().at(i) ) == 13  && !( muonId( cms2.hyp_ll_index().at(i) , mutype ) ) )   continue;
+    if ( abs( cms2.hyp_lt_id().at(i) ) == 13  && !( muonId( cms2.hyp_lt_index().at(i) , mutype ) ) )   continue;
+          
+    //electron ID
+    if ( abs( cms2.hyp_ll_id().at(i) ) == 11  && !( pass_electronSelection( cms2.hyp_ll_index().at(i) , electronSelection_el_OSV1 , false , false ))) continue;
+    if ( abs( cms2.hyp_lt_id().at(i) ) == 11  && !( pass_electronSelection( cms2.hyp_lt_index().at(i) , electronSelection_el_OSV1 , false , false ))) continue;
+          
+    if( cms2.hyp_p4().at(i).mass() > minmass && cms2.hyp_p4().at(i).mass() < maxmass ){
+      //cout << "General Z veto: mass " << cms2.hyp_p4().at(i).mass() << endl;
+      //printEventInfo();
+      return true; 
+    }
+  }
+
+  return false;
+}
+
+
 
 /*****************************************************************************************/
 //passes the OS SUSY trigger selection
