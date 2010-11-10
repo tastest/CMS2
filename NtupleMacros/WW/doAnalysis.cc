@@ -776,6 +776,7 @@ TH1F* hmuEta[4];     // muon eta
 TH1F* hdilMass[4];   // dilepton mass
 TH1F* hdilPt[4];     // dilepton Pt
 TH1F* hmet[4];       // MET
+TH1F* hmetProj[4];   // Projected MET
 TH1F* hmetPhi[4];    // MET phi
 TH1F* hptJet1[4];    // Pt of 1st jet
 TH1F* hptJet2[4];    // Pt of 2nd jet
@@ -832,8 +833,14 @@ TH1F* hmetProjVal[4];         // Projected MET after ll selection
 TH1F* hmaxPFJetPtVal[4];      // leading PFJet Pt after ll selection
 TH1F* hdilMassVal[4];         // diLepton Mass after ll selection
 
-// For the DY Estimation
+// N-1 plots
+TH1F* hmetNM1[4];             // N-1 MET validation 
+TH1F* hmetProjNM1[4];         // N-1 Projected MET
+TH1F* hmaxPFJetPtNM1[4];      // N-1 leading PFJet Pt 
+TH1F* hdilMassNM1[4];         // N-1 diLepton Mass
 
+
+// For the DY Estimation
 TH1F* hmetInDYEst[4];         // MET in Z window for the DY Estimation
 TH1F* hmetOutDYEst[4];        // MET outside Z window for the DY Estimation
 TH1F* hdilMassWithMetDYEst[4];// Dilepton mass with MET requirement for DY estimation
@@ -1255,18 +1262,18 @@ void find_leading_pfjet(int i_hyp, double etaMin, double etaMax, double vetoCone
   }
 }
 
-void fill_val_plots(int i_hyp, cuts_t cut_passed, double weight)
+void fill_val_plots(int i_hyp, cuts_t cuts_passed, double weight)
 {
   HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
   // Fill MET related plots
-  if(CheckCuts( (1<<PASS_JETVETO) | (1<<PASS_LL_FINAL) | (1<<PASS_LT_FINAL)  , cut_passed)) {
+  if(CheckCuts( (1<<PASS_JETVETO) | (1<<PASS_LL_FINAL) | (1<<PASS_LT_FINAL)  , cuts_passed)) {
     hmetVal[type] -> Fill(metValue(), weight);
     hmetVal[3] -> Fill(metValue(), weight);
     hmetProjVal[type] -> Fill(projectedMet(i_hyp), weight);
     hmetProjVal[3] -> Fill(projectedMet(i_hyp), weight);
   }
   // Fill Leading Jet Pt
-  if(CheckCuts(  (1<<PASS_LL_FINAL) | (1<<PASS_LT_FINAL)  , cut_passed)) {
+  if(CheckCuts(  (1<<PASS_LL_FINAL) | (1<<PASS_LT_FINAL)  , cuts_passed)) {
     double pfJetMax(0.);
     find_leading_pfjet(i_hyp, 0.0, 0.5, 0.3, pfJetMax);
     hmaxPFJetPtVal[type]->Fill(pfJetMax, weight);
@@ -1274,7 +1281,27 @@ void fill_val_plots(int i_hyp, cuts_t cut_passed, double weight)
     hdilMassVal[type]->Fill(cms2.hyp_p4()[i_hyp].mass(), weight);
     hdilMassVal[3]->Fill(cms2.hyp_p4()[i_hyp].mass(), weight);
   }
+
+  // Fill the N-1 plots
+  if (CheckCutsNM1(pass_all, (1<<PASS_MET), cuts_passed) ) {
+    hmetNM1[type] -> Fill(metValue(), weight);
+    hmetNM1[3] -> Fill(metValue(), weight);
+    hmetProjNM1[type] -> Fill(projectedMet(i_hyp), weight);
+    hmetProjNM1[3] -> Fill(projectedMet(i_hyp), weight);    
+  }
+
+  if (CheckCutsNM1(pass_all, (1<<PASS_JETVETO), cuts_passed) ) {
+    double pfJetMax(0.);
+    find_leading_pfjet(i_hyp, 0.0, 0.5, 0.3, pfJetMax);
+    hmaxPFJetPtNM1[type]->Fill(pfJetMax, weight);
+    hmaxPFJetPtNM1[3]->Fill(pfJetMax, weight);
+  }
+  if (CheckCutsNM1(pass_all, (1<<PASS_ZSEL), cuts_passed) ) {
+    hdilMassNM1[type]->Fill(cms2.hyp_p4()[i_hyp].mass(), weight);
+    hdilMassNM1[3]->Fill(cms2.hyp_p4()[i_hyp].mass(), weight);
+  }
 }
+
 void extractFakeRateSingleLepton(){
   // weights are ignore. see no reason to complicate stuff
   for ( unsigned int i=0; i < cms2.els_p4().size(); ++i ){
@@ -1806,7 +1833,9 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
      hmet[type]->Fill(metValue(), weight);      
      hmetPhi[type]->Fill(metPhiValue(), weight);      
      hmet[3]->Fill(metValue(), weight);      
-     hmetPhi[3]->Fill(metPhiValue(), weight);      
+     hmetPhi[3]->Fill(metPhiValue(), weight);   
+     hmetProj[type]->Fill(projectedMet(i_hyp), weight);         
+     hmetProj[3]->Fill(projectedMet(i_hyp), weight);         
     
      // Met vs dilepton Pt
      hmetVsDilepPt[type]->Fill(metValue(), cms2.hyp_p4()[i_hyp].pt(), weight);
@@ -1948,9 +1977,16 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hdphiLep[i]   = new TH1F(Form("%s_hdphiLep_%s",  prefix,HypothesisTypeName(i)), "Delta Phi of the two leptons after all cuts", 64, 0, 3.2);
     heleEta[i]    = new TH1F(Form("%s_heleEta_%s",   prefix,HypothesisTypeName(i)), "Electron eta after all cuts", 60, -3., 3.);
     hmuEta[i]     = new TH1F(Form("%s_hmuEta_%s",    prefix,HypothesisTypeName(i)), "Muon eta after all cuts", 60, -3., 3.);
-    hdilMass[i]   = new TH1F(Form("%s_hdilMass_%s",  prefix,HypothesisTypeName(i)), "Di-lepton mass after all cuts", 300, 0., 300.);
+    hdilMass[i]   = new TH1F(Form("%s_hdilMass_%s",  prefix,HypothesisTypeName(i)), "Di-lepton mass after all cuts", 40, 0., 200.);
+    hdilMass[i]->GetXaxis()->SetTitle("Dilepton mass [GeV/c^{2}]");
+    hdilMass[i]->GetYaxis()->SetTitle("Events/(5 GeV)");
     hdilPt[i]     = new TH1F(Form("%s_hdilPt_%s",    prefix,HypothesisTypeName(i)), "Di-lepton pt", 300, 0., 300.);
-    hmet[i]       = new TH1F(Form("%s_hmet_%s",      prefix,HypothesisTypeName(i)), "MET after all cuts", 100,0.,200.);
+    hmet[i]       = new TH1F(Form("%s_hmet_%s",      prefix,HypothesisTypeName(i)), "MET after all cuts", 20,0.,100.);
+    hmet[i]->GetXaxis()->SetTitle("MET [GeV]");
+    hmet[i]->GetYaxis()->SetTitle("Events/(5 GeV)");
+    hmetProj[i]       = new TH1F(Form("%s_hmetProj_%s",      prefix,HypothesisTypeName(i)), "Projected MET after all cuts", 20,0.,100.);
+    hmetProj[i]->GetXaxis()->SetTitle("Projected MET [GeV]");
+    hmetProj[i]->GetYaxis()->SetTitle("Events/(5 GeV)");
     hmetPhi[i]    = new TH1F(Form("%s_hmetPhi_%s",   prefix,HypothesisTypeName(i)), "MET phi after all cuts", 64, -3.2, 3.2);
     hptJet1[i]    = new TH1F(Form("%s_hptJet1_%s",   prefix,HypothesisTypeName(i)), "Leading jet Pt after all cuts", 300, 0., 300.);
     hptJet2[i]    = new TH1F(Form("%s_hptJet2_%s",   prefix,HypothesisTypeName(i)), "Second jet Pt after all cuts", 300, 0., 300.);
@@ -2013,10 +2049,10 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hPFJetRelResponseWithZero[i] = new TH2F(Form("%s_hPFJetRelResponseWithZero_%s",prefix,HypothesisTypeName(i) ), Form("%s - PFJet relative response to Z pt - %s",prefix,HypothesisTypeName(i) ), 20, 0, 100, 20, 0, 2);
 
     hmetVal[i]           = new TH1F(Form("%s_hmetVal_%s",      prefix,HypothesisTypeName(i)), "MET after ll selection/jetveto", 20,0.,100.);
-    hmetVal[i]->GetXaxis()->SetTitle("tcMET [GeV]");
+    hmetVal[i]->GetXaxis()->SetTitle("MET [GeV]");
     hmetVal[i]->GetYaxis()->SetTitle("Events/(5 GeV)");
     hmetProjVal[i]       = new TH1F(Form("%s_hmetProjVal_%s",      prefix,HypothesisTypeName(i)), "Projected MET after ll selection/jetveto", 20,0.,100.);
-    hmetProjVal[i]->GetXaxis()->SetTitle("Projected tcMET [GeV]");
+    hmetProjVal[i]->GetXaxis()->SetTitle("Projected MET [GeV]");
     hmetProjVal[i]->GetYaxis()->SetTitle("Events/(5 GeV)");
     hmaxPFJetPtVal[i]    = new TH1F(Form("%s_hmaxPFJetPtVal_%s",   prefix,HypothesisTypeName(i)), "Leading PFJet Pt after ll selection", 20, 0., 100.);
     hmaxPFJetPtVal[i]->GetXaxis()->SetTitle("Leading PF Jet Pt [GeV]");
@@ -2024,13 +2060,24 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hdilMassVal[i]   = new TH1F(Form("%s_hdilMassVal_%s",  prefix,HypothesisTypeName(i)), "Di-lepton mass after ll selection", 40, 0., 200.);
     hdilMassVal[i]->GetXaxis()->SetTitle("Dilepton mass [GeV/c^{2}]");
     hdilMassVal[i]->GetYaxis()->SetTitle("Events/(5 GeV)");
-        
+
+    hmetNM1[i]           = new TH1F(Form("%s_hmetNM1_%s",      prefix,HypothesisTypeName(i)), "N-1 MET", 20,0.,100.);
+    hmetNM1[i]->GetXaxis()->SetTitle("MET [GeV]");
+    hmetNM1[i]->GetYaxis()->SetTitle("Events/(5 GeV)");
+    hmetProjNM1[i]       = new TH1F(Form("%s_hmetProjNM1_%s",      prefix,HypothesisTypeName(i)), "N-1 Projected MET", 20,0.,100.);
+    hmetProjNM1[i]->GetXaxis()->SetTitle("Projected MET [GeV]");
+    hmetProjNM1[i]->GetYaxis()->SetTitle("Events/(5 GeV)");
+    hmaxPFJetPtNM1[i]    = new TH1F(Form("%s_hmaxPFJetPtNM1_%s",   prefix,HypothesisTypeName(i)), "N-1 Leading PFJet Pt", 20, 0., 100.);
+    hmaxPFJetPtNM1[i]->GetXaxis()->SetTitle("Leading PF Jet Pt [GeV]");
+    hmaxPFJetPtNM1[i]->GetYaxis()->SetTitle("Events/(5 GeV)");
+    hdilMassNM1[i]   = new TH1F(Form("%s_hdilMassNM1_%s",  prefix,HypothesisTypeName(i)), "N-1 Di-lepton mass", 40, 0., 200.);
+    hdilMassNM1[i]->GetXaxis()->SetTitle("Dilepton mass [GeV/c^{2}]");
+    hdilMassNM1[i]->GetYaxis()->SetTitle("Events/(5 GeV)");
+ 
     hdilMassWithMetDYEst[i] = new TH1F(Form("%s_hdilMassWithMetDYEst_%s",  prefix,HypothesisTypeName(i)), "Di-lepton mass with MET for DY Estimation", 40, 0., 200.);
     hdilMassNoMetDYEst[i] = new TH1F(Form("%s_hdilMassNoMetDYEst_%s",  prefix,HypothesisTypeName(i)), "Di-lepton mass without MET for DY Estimation", 40, 0., 200.);
     hmetInDYEst[i] = new TH1F(Form("%s_hmetInDYEst_%s",  prefix,HypothesisTypeName(i)), "MET in Z mass for DY Estimation", 40, 0., 200.);
     hmetOutDYEst[i] = new TH1F(Form("%s_hmetOutDYEst_%s",  prefix,HypothesisTypeName(i)), "MET outside Z mass for DY Estimation", 40, 0., 200.);
-
-
     
     htoptagz[i] = new TH2F(Form("%s_htoptagz_%s",prefix,HypothesisTypeName(i)),
 			   "Top tagging on Z-sample",4,0,4,4,0,4);
@@ -2054,6 +2101,7 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hdilMass[i]->Sumw2();
     hdilPt[i]->Sumw2();
     hmet[i]->Sumw2();
+    hmetProj[i]->Sumw2();
     hmetPhi[i]->Sumw2();
     hptJet1[i]->Sumw2();
     hptJet2[i]->Sumw2();
@@ -2097,6 +2145,11 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hmetProjVal[i]->Sumw2();
     hmaxPFJetPtVal[i]->Sumw2();
     hdilMassVal[i]->Sumw2();
+
+    hmetNM1[i]->Sumw2();
+    hmetProjNM1[i]->Sumw2();
+    hmaxPFJetPtNM1[i]->Sumw2();
+    hdilMassNM1[i]->Sumw2();
 
     hdilMassWithMetDYEst[i]->Sumw2();
     hdilMassNoMetDYEst[i]->Sumw2();
@@ -2222,31 +2275,42 @@ RooDataSet* ScanChain( TChain* chain,
 
   int i_permille_old = 0;
   
-  try {
+  try { 
     jetcorr_filenames_jpt.clear();
-    jetcorr_filenames_jpt.push_back("files/Spring10_L2Relative_AK5JPT.txt");
-    jetcorr_filenames_jpt.push_back("files/Spring10_L3Absolute_AK5JPT.txt");
-    if(realData)
-      jetcorr_filenames_jpt.push_back("files/Spring10DataV2_L2L3Residual_AK5JPT.txt");
+    //jetcorr_filenames_jpt.push_back("files/Spring10_L2Relative_AK5JPT.txt");
+    //jetcorr_filenames_jpt.push_back("files/Spring10_L3Absolute_AK5JPT.txt");
+    jetcorr_filenames_jpt.push_back("files/START38_V13_AK5JPT_L2Relative.txt");
+    jetcorr_filenames_jpt.push_back("files/START38_V13_AK5JPT_L3Absolute.txt");
+    // FIXME jpt residual file not ready
+    //if(realData)
+    //jetcorr_filenames_jpt.push_back("files/Spring10DataV2_L2L3Residual_AK5JPT.txt");
     jet_corrector_jpt= makeJetCorrector(jetcorr_filenames_jpt);
     
     jetcorr_filenames_pf.clear();
-    jetcorr_filenames_pf.push_back("files/Spring10_L2Relative_AK5PF.txt");
-    jetcorr_filenames_pf.push_back("files/Spring10_L3Absolute_AK5PF.txt");
-    if(realData)
-      jetcorr_filenames_pf.push_back("files/Spring10DataV2_L2L3Residual_AK5PF.txt");
+    //jetcorr_filenames_pf.push_back("files/Spring10_L2Relative_AK5PF.txt");
+    //jetcorr_filenames_pf.push_back("files/Spring10_L3Absolute_AK5PF.txt");
+    jetcorr_filenames_pf.push_back("files/START38_V13_AK5PF_L2Relative.txt");
+    jetcorr_filenames_pf.push_back("files/START38_V13_AK5PF_L3Absolute.txt");
+    if (realData) 
+      //jetcorr_filenames_pf.push_back("files/Spring10DataV2_L2L3Residual_AK5PF.txt");
+      jetcorr_filenames_pf.push_back("files/START38_V13_AK5PF_L2L3Residual.txt");
     jet_corrector_pf= makeJetCorrector(jetcorr_filenames_pf);
     
     jetcorr_filenames_calo.clear();
-    jetcorr_filenames_calo.push_back("files/Spring10_L2Relative_AK5Calo.txt");
-    jetcorr_filenames_calo.push_back("files/Spring10_L3Absolute_AK5Calo.txt");
+    //jetcorr_filenames_calo.push_back("files/Spring10_L2Relative_AK5Calo.txt");
+    //jetcorr_filenames_calo.push_back("files/Spring10_L3Absolute_AK5Calo.txt");
+    jetcorr_filenames_calo.push_back("files/START38_V13_AK5Calo_L2Relative.txt");
+    jetcorr_filenames_calo.push_back("files/START38_V13_AK5Calo_L3Absolute.txt");
     if(realData)
-      jetcorr_filenames_calo.push_back("files/Spring10DataV2_L2L3Residual_AK5Calo.txt");
+      //jetcorr_filenames_calo.push_back("files/Spring10DataV2_L2L3Residual_AK5Calo.txt");
+      jetcorr_filenames_calo.push_back("files/START38_V13_AK5Calo_L2L3Residual.txt");
     jet_corrector_calo= makeJetCorrector(jetcorr_filenames_calo);
     
     jetcorr_filenames_trk.clear();
-    jetcorr_filenames_trk.push_back("files/Spring10_L2Relative_AK5TRK.txt");
-    jetcorr_filenames_trk.push_back("files/Spring10_L3Absolute_AK5TRK.txt");
+    //jetcorr_filenames_trk.push_back("files/Spring10_L2Relative_AK5TRK.txt");
+    //jetcorr_filenames_trk.push_back("files/Spring10_L3Absolute_AK5TRK.txt");
+    jetcorr_filenames_trk.push_back("files/START38_V13_AK5TRK_L2Relative.txt");
+    jetcorr_filenames_trk.push_back("files/START38_V13_AK5TRK_L3Absolute.txt");
     jet_corrector_trk= makeJetCorrector(jetcorr_filenames_trk);
   } catch (...){
     cout << "\nFailed to setup correctors needed to get Jet Enetry Scale. Abort\n" << endl;
