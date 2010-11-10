@@ -77,6 +77,7 @@ class ossusy_looper
         TFile  *outFile;
         TTree  *outTree;
         Float_t weight_;
+        Float_t dypthat_;
         Float_t costhetaweight_;
         Int_t   mull_;
         Int_t   mult_;

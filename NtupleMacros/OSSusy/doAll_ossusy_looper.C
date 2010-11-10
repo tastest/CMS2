@@ -190,8 +190,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runWjets    = 1;
   bool runWcharm   = 0;
   bool runZjets    = 1;
-  bool runDYee     = 0;
-  bool runDYmm     = 0;
+  bool runDYee     = 1;
+  bool runDYmm     = 1;
   bool runDYtautau = 0;
   bool runppMuX    = 0;
   bool runEM       = 0;
@@ -285,9 +285,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain* chdata = new  TChain("Events");
   if(rundata){
 
-//     pickSkimIfExists(chdata,
-//                      "/tas/cms2/EG_Run2010A-Sep17ReReco_v2_RECO/V03-06-14/diLepPt1020Skim/skimmed_ntuple_143727_5.root",
-//                      "data");
+    //pickSkimIfExists(chdata,
+    //                 "/tas/cms2/EG_Run2010A-Sep17ReReco_v2_RECO/V03-06-14/diLepPt1020Skim/skimmed_ntuple_143727_5.root",
+    //                 "data");
     
     
     pickSkimIfExists(chdata,
@@ -313,7 +313,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
     pickSkimIfExists(chdata,
                      "/tas/cms2/Mu_Run2010B-PromptReco-v2_RECO/V03-06-14/diLepPt1020Skim/skimmed*root",
                      "data");
-    
+
   }
   
    TChain* chQCDpt15 = new  TChain("Events");
@@ -413,34 +413,58 @@ void doAll_ossusy_looper(bool skipFWLite = true)
    		     "/tas/cms2/WCJets_7TeV-madgraph_Spring10-START3X_V26-v1/V03-04-13-01/merged*root",
                      "Wc");
   }
+
+
   
   TChain* chDYtautau = new  TChain("Events");
   if(runDYtautau){
+    
     pickSkimIfExists(chDYtautau, 
-                     "/tas/cms2/Ztautau_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged*.root", 
+                     "/tas/cms2/Ztautau_Spring10-START3X_V26_S09-v1/V03-04-13-07_diLep2010_ZMassLessThan50Skim/skimmed*root",
+                     //"/tas/cms2/Ztautau_Spring10-START3X_V26_S09-v1/V03-04-13-07/*.root",
+                     "DYtautau");
+
+    pickSkimIfExists(chDYtautau, 
+                     "/tas/cms2/ZJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/dilepPt2010Skim/skimmed_ntuple.root",
                      "DYtautau");
   }
   
-  // the low-mass splice has no choice other than the skim
-  //    pickSkimIfExists(chDYtautau, "data/Ztautau_M20_Summer08_IDEAL_V11_redigi_v1/merged*.root", "Ztautau_M20");
-
   TChain* chDYee = new  TChain("Events");
   if(runDYee){
+
     pickSkimIfExists(chDYee, 
-                     "/tas/cms2/Zee_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged*.root", 
+                     "/tas/cms2/Zee_Spring10-START3X_V26_S09-v1/V03-04-13-07_diLep2010_ZMassLessThan50Skim/skimmed_ntuple.root",
+                     //"/tas/cms2/Zee_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged_ntuple*.root",
                      "DYee");
+    
+    pickSkimIfExists(chDYee, 
+                     "/tas/cms2/DYee_M10to20_Spring10-START3X_V26_S09-v1/V03-04-13-07/dilepPt2010Skim/skimmed_ntuple.root",
+                     "DYee");
+    
+    pickSkimIfExists(chDYee, 
+                     "/tas/cms2/ZJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/dilepPt2010Skim/skimmed_ntuple.root",
+                     "DYee"); 
+    
   }
-  // the low-mass splice has no choice other than the skim
-  //    pickSkimIfExists(chDYee, "data/Zee_M20_Summer08_IDEAL_V11_redigi_v1/merged*.root", "Zee_M20");
-  
+
   if(runDYmm){
     TChain* chDYmm = new  TChain("Events");
+ 
     pickSkimIfExists(chDYmm, 
-                     "/tas/cms2/Zmumu_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged*.root", 
+                     "/tas/cms2/Zee_Spring10-START3X_V26_S09-v1/V03-04-13-07_diLep2010_ZMassLessThan50Skim/skimmed_ntuple.root",
+                     //"/tas/cms2/Zmumu_Spring10-START3X_V26_S09-v1/V03-04-13-07/*.root",
+                     "DYmm");
+    
+    pickSkimIfExists(chDYmm, 
+                     "/tas/cms2/DYmumu_M10to20_Spring10-START3X_V26_S09-v1/V03-04-13-07/dilepPt2010Skim/skimmed_ntuple.root",
+                     "DYmm");
+    
+    pickSkimIfExists(chDYmm, 
+                     "/tas/cms2/ZJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/dilepPt2010Skim/skimmed_ntuple.root",
                      "DYmm");
   }
-  // the low-mass splice has no choice other than the skim
-  //    pickSkimIfExists(chDYmm, "data/Zmumu_M20_Summer08_IDEAL_V11_redigi_v1/merged*.root", "Zmumu_M20");
+
+
   
   
   // ppMuX
@@ -797,12 +821,6 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                     cout << "Done processing Wcharm.." << endl;
                     hist::color("wcharm", 50);
                   }
-                  if (runDYtautau) {
-                    cout << "Processing DY->tautau" << endl;
-                    looper->ScanChain(chDYtautau,"DYtautau", kDYtautau, preDYtautau, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-                    cout << "Done processing DY->tautau" << endl;
-                    hist::color("DYtautau", kBlack);
-                  }
                   if (runDYee) {
                     cout << "Processing DY->ee" << endl;
                     looper->ScanChain(chDYee,"DYee", kDYee, preDYee, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
@@ -814,6 +832,12 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                     looper->ScanChain(chDYmm,"DYmm", kDYmm, preDYmm, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
                     cout << "Done processing DY->mm" << endl;
                     hist::color("DYmm", kCyan);
+                  }
+                  if (runDYtautau) {
+                    cout << "Processing DY->tautau" << endl;
+                    looper->ScanChain(chDYtautau,"DYtautau", kDYtautau, preDYtautau, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing DY->tautau" << endl;
+                    hist::color("DYtautau", kBlack);
                   }
                   if (runppMuX) {
                     cout << "Processing ppMuX" << endl;
@@ -977,7 +1001,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx],frmodeStrings[frmode]);
                   }
                   else {
-                    const char* outFile = Form("output/nov5th_v3/ossusy_%s_%s%s_bitmask.root", 
+                    const char* outFile = Form("output/nov5th_v4/ossusy_%s_%s%s_bitmask.root", 
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
                   }
                   

@@ -141,7 +141,7 @@ void ossusy_looper::makeTree(char *prefix)
   rootdir->cd();
 
   //Super compressed ntuple here
-  outFile   = new TFile(Form("output/nov5th_v3/%s_smallTree.root",prefix), "RECREATE");
+  outFile   = new TFile(Form("output/nov5th_v4/%s_smallTree.root",prefix), "RECREATE");
   //outFile   = new TFile("temp.root","RECREATE");
   outFile->cd();
   outTree = new TTree("t","Tree");
@@ -150,6 +150,7 @@ void ossusy_looper::makeTree(char *prefix)
   //variables must be declared in ossusy_looper.h
   outTree->Branch("costhetaweight",  &costhetaweight_,   "costhetaweight/F");
   outTree->Branch("weight",          &weight_,           "weight/F");
+  outTree->Branch("dypthat",         &dypthat_,          "dypthat/F");
   outTree->Branch("nlep",            &nlep_,             "nlep/I");
   outTree->Branch("mull",            &mull_,             "mull/I");
   outTree->Branch("mult",            &mult_,             "mult/I");
@@ -649,8 +650,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
       //if( nEventsTotal % 100 != 0 ) continue;
       cms2.GetEntry(z);
-  
-      
+        
       float pthat_cutoff = 30.;
       if (strcmp( prefix , "qcdpt15" ) == 0 && genps_pthat() > pthat_cutoff) {
         continue;
@@ -727,10 +727,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         //OS, pt > (20,10) GeV, dilmass > 10 GeV
         if( hyp_lt_id()[i] * hyp_ll_id()[i] > 0 )  continue;
         
-        //Summer09: use pt > (20,20) GeV
-        //if( hyp_ll_p4()[i].pt() < 20. )                                  continue;
-        //if( hyp_lt_p4()[i].pt() < 20. )                                  continue;
-        
         //pt > (20,10) GeV
         if( TMath::Max( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < 20. )   continue;
         if( TMath::Min( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < 10. )   continue;
@@ -759,10 +755,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           if (abs(hyp_ll_id()[i]) == 11  && !( pass_electronSelection( hyp_ll_index()[i] , electronSelection_el_OSV1 , false , false ))) continue;
           if (abs(hyp_lt_id()[i]) == 11  && !( pass_electronSelection( hyp_lt_index()[i] , electronSelection_el_OSV1 , false , false ))) continue;
           
-          //ttbarV2
-          //if (abs(hyp_ll_id()[i]) == 11  && (! pass_electronSelection( hyp_ll_index()[i] , electronSelection_ttbarV2 , isData , true ))) continue;
-          //if (abs(hyp_lt_id()[i]) == 11  && (! pass_electronSelection( hyp_lt_index()[i] , electronSelection_ttbarV2 , isData , true ))) continue;
         }
+        
         v_goodHyps.push_back( i );
         v_weights.push_back( FRweight ); // this has to be multipiled to the orig weight later on! (FRweight is == 1 for std. run)
        
@@ -945,10 +939,11 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         int nleps = 0;
         
         float dilptgen = -1;
-  
-        //splitting ttbar into ttdil/ttotr
+        dypthat_ = -1;
+
         if( !isData ){
-  
+
+          //splitting ttbar into ttdil/ttotr
           nleps = leptonGenpCount_lepTauDecays(nels, nmus, ntaus);
 
           if(strcmp(prefix,"ttem")  == 0 && ( nels + nmus ) != 2 ) continue;
@@ -963,7 +958,43 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           }
           
           if( nels + nmus == 2) dilptgen = vdilepton.pt();
+
+          /*
+          //cout << "prefix " << prefix << endl;
+
+          if (prefix == "DYee"     &&  nels != 2  ) continue;
+          if (prefix == "DYmm"     &&  nmus != 2  ) continue;
+          if (prefix == "DYtautau" &&  ntaus != 2 ) continue;
+
+          //splice together the DY samples - if its madgraph, then we do nothing
+          if(TString(prefix).Contains("DY") && TString(evt_dataset()).Contains("madgraph") == false) {	
+            bool doNotContinue = false;
+            for(unsigned int i = 0; i < genps_p4().size(); i++){
+              if(abs(genps_id()[i]) == 23 && genps_p4()[i].M() > 50.)
+                doNotContinue = true;
+            }
+            if(doNotContinue)
+              continue;	
+          }
+
+          //extract pthat
+          if(TString(prefix).Contains("DY")){
+            for(unsigned int i = 0; i < genps_p4().size(); i++){
+              if(abs(genps_id()[i]) == 23){
+                dypthat_ = genps_p4()[i].M();
+              }
+            }
+          }
+
+          if( dypthat_ > 50 ){
+            cout << "ERROR" << endl;
+            exit(0);
+          }
+          */
         }
+
+
+
 
         //for tt, check if 2 leptons are from W's
         //if(strcmp(prefix,"ttdil") == 0 && ttbarconstituents(hypIdx) != 1 ) continue;
@@ -1079,7 +1110,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           int   icalo = -1;
 
           for (unsigned int icalojet = 0; icalojet < jets_p4().size(); icalojet++) {
-            LorentzVector vcalojet = jets_p4().at(ijet);
+            LorentzVector vcalojet = jets_p4().at(icalojet);
             float dr = dRbetweenVectors( vjet , vcalojet );
             if( dr < drmin_calojet ){
               drmin_calojet = dr;
@@ -1298,6 +1329,27 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           weight = kFactor * evt_scale1fb() * lumi;
         }
 
+        if( !isData ){
+          
+          if(TString(prefix).Contains("DY") ) {
+            
+            //mll > 50
+            if(TString(evt_dataset()).Contains("madgraph") == true) { 
+              weight = weight*3048./2400.;
+            } 
+
+            //10 < mll < 20 
+            else if(TString(evt_dataset()).Contains("M10to20") == true) { 
+              weight = weight*3457./2659.;
+            } 
+            
+            // 20 < mll < 50
+            else {
+              weight = weight * 1666./1300.;
+            }
+          }
+        }
+
         if( doFakeApp ) {  // multiply orig weight with FR hyp weight (1 for std running, FRweight for FR run)
           weight *= v_weights.at(i);
         }
@@ -1316,7 +1368,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
         //extra variables for baby ntuple
         int pass   = ( theSumJetPt > 100 && theNJets >= 2 && theMet > 50. && id_lt * id_ll < 0 ) ? 1 : 0;
-        int passz  = (passZSelection ( hypIdx ) ) ? 1 : 0;
+        int passz  = (passZSelection ( hypIdx ) || vetoZmumuGamma( hypIdx ) ) ? 1 : 0;
         float etaZ = hyp_p4()[hypIdx].eta();
         float m0   = -9999.;
         float m12  = -9999.;
@@ -1496,6 +1548,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           outTree->Fill();
         }
 
+
+
         //selection (continue statements)-------------------------------
         if(!g_useBitMask){
         
@@ -1510,14 +1564,19 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
          
           
           if (zveto == e_standard) {
+          
             //veto same-flavor OS dileptons in Z mass window
             if ( ( hyp_type()[hypIdx] == 3 || hyp_type()[hypIdx] == 0 ) 
                  && hyp_p4()[hypIdx].mass() > 76. && hyp_p4()[hypIdx].mass() < 106.) continue;
+
+            if( vetoZmumuGamma( hypIdx ) ) continue;     
           }
         
           else if(zveto == e_allzveto){
             //veto dileptons in Z mass window regardless of flavor
             if (hyp_p4()[hypIdx].mass() > 76. && hyp_p4()[hypIdx].mass() < 106.)   continue;
+
+            if( vetoZmumuGamma( hypIdx ) ) continue;  
           }
         
           else if(zveto == e_nozveto){
@@ -1578,10 +1637,14 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
             //veto same-flavor OS dileptons in Z mass window
             cut[1] = (hyp_type()[hypIdx]==3 || hyp_type()[hypIdx]==0) ? 
               (hyp_p4()[hypIdx].mass() < 76. || hyp_p4()[hypIdx].mass() > 106.) : true; 
+
+            if( vetoZmumuGamma( hypIdx ) ) cut[1] = false;
           }
           else if(zveto == e_allzveto){
             //veto OS dileptons in Z mass window regardless of flavor
             cut[1] = (hyp_p4()[hypIdx].mass() < 76. || hyp_p4()[hypIdx].mass() > 106.);
+
+            if( vetoZmumuGamma( hypIdx ) ) cut[1] = false;
           }
           else if(zveto == e_nozveto){
             //no Z-veto
@@ -1699,7 +1762,11 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         
           if(!nkcut(cutbit,ncut)) continue; //continue if event doesn't pass ALL cuts
         }
-              
+
+        if( ZVetoGeneral() ){
+          cout << "veto Z event!!" << endl;
+          printEventInfo();
+        }
               
         //-------------------------------------------------------------
         // Lots of histograms
@@ -1956,6 +2023,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
   if(g_createTree) closeTree();
   
+  already_seen.clear();
+
   if (nEventsChain != nEventsTotal)
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
  
@@ -2199,10 +2268,10 @@ void ossusy_looper::BookHistos(char *prefix)
                                 Form("%s_mt2core_%s" ,prefix,suffix),100,0,200);
   
       hmt2jcore[i][j] = new TH1F(Form("%s_hmt2jcore_%s",prefix,suffix),
-                                 Form("%s_mt2jcore_%s" ,prefix,suffix),100,0,400);
+                                 Form("%s_mt2jcore_%s" ,prefix,suffix),1000,0,1000);
             
       hmt2j[i][j] = new TH1F(Form("%s_hmt2j_%s",prefix,suffix),
-                             Form("%s_mt2j_%s" ,prefix,suffix),100,0,400);
+                             Form("%s_mt2j_%s" ,prefix,suffix),1000,0,1000);
 
       hmet_dilpt_all[i][j] = new TH2F(Form("%s_met_dilpt_all_%s",prefix,suffix),
                                       Form("%s_met_dilpt_all_%s" ,prefix,suffix),500,0,500,500,0,500);
@@ -2320,10 +2389,10 @@ void ossusy_looper::BookHistos(char *prefix)
       hdilPt[i][j] = new TH1F(Form("%s_hdilPt_%s",prefix,suffix),Form("%s_dilPt_%s",prefix,suffix),60,0.,300.);
       hdilPt[i][j]->GetXaxis()->SetTitle("Pt (GeV)");
 
-      htopMass[i][j] = new TH1F(Form("%s_htopMass_%s",prefix,suffix),Form("%s_topMass_%s",prefix,suffix),100,0.,400.);
+      htopMass[i][j] = new TH1F(Form("%s_htopMass_%s",prefix,suffix),Form("%s_topMass_%s",prefix,suffix),1000,0.,1000.);
       htopMass[i][j]->GetXaxis()->SetTitle("Top Mass Estimate (GeV)");
 
-      htopMassAllComb[i][j] = new TH1F(Form("%s_htopMassAllComb_%s",prefix,suffix),Form("%s_topMassAllComb_%s",prefix,suffix),100,0.,400.);
+      htopMassAllComb[i][j] = new TH1F(Form("%s_htopMassAllComb_%s",prefix,suffix),Form("%s_topMassAllComb_%s",prefix,suffix),1000,0.,1000.);
       htopMassAllComb[i][j]->GetXaxis()->SetTitle("Top Mass Estimate for all jet combinations (GeV)");
 
       //dilepton pT with z-veto applied
