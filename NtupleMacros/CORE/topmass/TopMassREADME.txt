@@ -51,3 +51,9 @@ ttdilepsolve * d_llsol = new ttdilepsolve;
 -- and where you want the top mass use:
 
 float topMassEst = getTopMassEstimate(d_llsol, hypIdx, Yourjets_p4(), tcmet, tcmetphi);
+
+-- to enable jet smearing:
+search for 
+ SM_JetMET in CORE/topmass/getTopMassEstimate.icc
+It is set to 1 == no jet smearing now. Set it to 100 for MC or 1000 for data (recommendation from Aram)
+to enable smearing. Code will be very slow (seconds per ttbar event)
