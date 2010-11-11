@@ -17,6 +17,10 @@ wget http://svn.hepforge.org/lhapdf/pdfsets/5/cteq61.LHgrid
 and point LHAPDF::initPDFSet in ttdilepsolve.cpp to where you saved
 the file. The default location is CORE/topmass/pdfs
 
+Also maybe adjust the resolution file path:
+string JR_Standalone_Path = "CORE/topmass/JR_Standalone/txts/";
+in getTopMassEstimate.icc
+
 //------------------------
 The following additions are needed:
 //------------------------
