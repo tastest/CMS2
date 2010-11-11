@@ -77,7 +77,7 @@ class ossusy_looper
         TFile  *outFile;
         TTree  *outTree;
         Float_t weight_;
-        Float_t dypthat_;
+        Float_t mllgen_;
         Float_t costhetaweight_;
         Int_t   mull_;
         Int_t   mult_;
@@ -229,6 +229,7 @@ class ossusy_looper
         TH1F* hmetmuonjes[4][4];             // MET corrected for muons and JES
         TH1F* hmetmuonjesPhi[4][4];          // MET corrected for muons and JES phi
         TH1F* htcmet[4][4];                  // tc MET
+        TH1F* htcmet_sqrtht[4][4];           // tc MET
         TH1F* htcmetPhi[4][4];               // tc MET phi
         TH1F* hpfmet[4][4];                  // tc MET
         TH1F* hpfmetPhi[4][4];               // tc MET phi

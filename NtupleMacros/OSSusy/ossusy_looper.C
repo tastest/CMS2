@@ -141,7 +141,7 @@ void ossusy_looper::makeTree(char *prefix)
   rootdir->cd();
 
   //Super compressed ntuple here
-  outFile   = new TFile(Form("output/nov5th_v4/%s_smallTree.root",prefix), "RECREATE");
+  outFile   = new TFile(Form("output/temp/%s_smallTree.root",prefix), "RECREATE");
   //outFile   = new TFile("temp.root","RECREATE");
   outFile->cd();
   outTree = new TTree("t","Tree");
@@ -150,7 +150,7 @@ void ossusy_looper::makeTree(char *prefix)
   //variables must be declared in ossusy_looper.h
   outTree->Branch("costhetaweight",  &costhetaweight_,   "costhetaweight/F");
   outTree->Branch("weight",          &weight_,           "weight/F");
-  outTree->Branch("dypthat",         &dypthat_,          "dypthat/F");
+  outTree->Branch("mllgen",          &mllgen_,           "mllgen/F");
   outTree->Branch("nlep",            &nlep_,             "nlep/I");
   outTree->Branch("mull",            &mull_,             "mull/I");
   outTree->Branch("mult",            &mult_,             "mult/I");
@@ -538,7 +538,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
   }
 
   set_goodrun_file( "Cert_TopNov5_Merged_135821-149442_allPVT_goodruns.txt");
-
+  //set_goodrun_file( "Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON_v2_goodruns.txt" );
+  
   bool isData = false;
   if( TString(prefix).Contains("data")  ){
     cout << "DATA!!!" << endl;
@@ -650,7 +651,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
       //if( nEventsTotal % 100 != 0 ) continue;
       cms2.GetEntry(z);
-        
+
+      //if( evt_run() != 147929 || evt_event() != 537145133 ) continue;
+
       float pthat_cutoff = 30.;
       if (strcmp( prefix , "qcdpt15" ) == 0 && genps_pthat() > pthat_cutoff) {
         continue;
@@ -939,7 +942,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         int nleps = 0;
         
         float dilptgen = -1;
-        dypthat_ = -1;
+        mllgen_ = -1;
 
         if( !isData ){
 
@@ -959,7 +962,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           
           if( nels + nmus == 2) dilptgen = vdilepton.pt();
 
-          /*
+          
           //cout << "prefix " << prefix << endl;
 
           if (prefix == "DYee"     &&  nels != 2  ) continue;
@@ -981,16 +984,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           if(TString(prefix).Contains("DY")){
             for(unsigned int i = 0; i < genps_p4().size(); i++){
               if(abs(genps_id()[i]) == 23){
-                dypthat_ = genps_p4()[i].M();
+                mllgen_ = genps_p4()[i].M();
               }
             }
           }
-
-          if( dypthat_ > 50 ){
-            cout << "ERROR" << endl;
-            exit(0);
-          }
-          */
         }
 
 
@@ -1764,10 +1761,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         }
 
         if( ZVetoGeneral() ){
-          cout << "veto Z event!!" << endl;
-          printEventInfo();
+          //cout << "veto Z event!!" << endl;
+          //printEventInfo();
         }
-              
+
         //-------------------------------------------------------------
         // Lots of histograms
         //-------------------------------------------------------------
@@ -1783,6 +1780,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
 
 
+        fillHistos( htcmet_sqrtht,               tcmet/sqrt(theSumJetPt),               weight, myType, nJetsIdx);
         fillHistos( habcd,         theSumJetPt , tcmet/sqrt(theSumJetPt),               weight, myType, nJetsIdx);
         if( theSumJetPt > 150 && tcmet/sqrt(theSumJetPt) > 4.5 )
           fillHistos( habcd_tprof,   theSumJetPt , tcmet/sqrt(theSumJetPt),               myType, nJetsIdx);
@@ -2268,10 +2266,10 @@ void ossusy_looper::BookHistos(char *prefix)
                                 Form("%s_mt2core_%s" ,prefix,suffix),100,0,200);
   
       hmt2jcore[i][j] = new TH1F(Form("%s_hmt2jcore_%s",prefix,suffix),
-                                 Form("%s_mt2jcore_%s" ,prefix,suffix),1000,0,1000);
+                                 Form("%s_mt2jcore_%s" ,prefix,suffix),500,0,500);
             
       hmt2j[i][j] = new TH1F(Form("%s_hmt2j_%s",prefix,suffix),
-                             Form("%s_mt2j_%s" ,prefix,suffix),1000,0,1000);
+                             Form("%s_mt2j_%s" ,prefix,suffix),500,0,500);
 
       hmet_dilpt_all[i][j] = new TH2F(Form("%s_met_dilpt_all_%s",prefix,suffix),
                                       Form("%s_met_dilpt_all_%s" ,prefix,suffix),500,0,500,500,0,500);
@@ -2389,7 +2387,7 @@ void ossusy_looper::BookHistos(char *prefix)
       hdilPt[i][j] = new TH1F(Form("%s_hdilPt_%s",prefix,suffix),Form("%s_dilPt_%s",prefix,suffix),60,0.,300.);
       hdilPt[i][j]->GetXaxis()->SetTitle("Pt (GeV)");
 
-      htopMass[i][j] = new TH1F(Form("%s_htopMass_%s",prefix,suffix),Form("%s_topMass_%s",prefix,suffix),1000,0.,1000.);
+      htopMass[i][j] = new TH1F(Form("%s_htopMass_%s",prefix,suffix),Form("%s_topMass_%s",prefix,suffix),500,0.,500.);
       htopMass[i][j]->GetXaxis()->SetTitle("Top Mass Estimate (GeV)");
 
       htopMassAllComb[i][j] = new TH1F(Form("%s_htopMassAllComb_%s",prefix,suffix),Form("%s_topMassAllComb_%s",prefix,suffix),1000,0.,1000.);
@@ -2447,6 +2445,9 @@ void ossusy_looper::BookHistos(char *prefix)
       // tc
       htcmet[i][j] = new TH1F(Form("%s_htcmet_%s",prefix,suffix),Form("%s_tcmet_%s",prefix,suffix),60,0.,300.);
       htcmet[i][j]->GetXaxis()->SetTitle("MET (GeV)");
+
+      htcmet_sqrtht[i][j] = new TH1F(Form("%s_htcmet_sqrtht_%s",prefix,suffix),Form("%s_tcmet_sqrtht_%s",prefix,suffix),200,0.,20.);
+      htcmet_sqrtht[i][j]->GetXaxis()->SetTitle("tcmet/#sqrt{sumJetPt} (GeV^{1/2})");
 
       htcmetPhi[i][j] = new TH1F(Form("%s_htcmetPhi_%s",prefix,suffix),Form("%s_tcmetPhi_%s",prefix,suffix),50,-1*TMath::Pi(),TMath::Pi());
       htcmetPhi[i][j]->GetXaxis()->SetTitle("#phi");

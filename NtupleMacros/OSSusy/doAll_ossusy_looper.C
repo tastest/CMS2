@@ -91,6 +91,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   float kqcdpt30    = 1.;  
   float kttall    = 157.5/165.0;  
   float kttdil    = 157.5/165.0;  
+  float kttrelval = 1;  
   float kttem     = 157.5/165.0;  
   float kttotr    = 157.5/165.0;  
   float kWW       = 1.;
@@ -136,6 +137,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int prettall    = 1;
   int prettdil    = 1;
   int prettem     = 1;
+  int prettrelval = 1;
   int prettotr    = 1;
   int preWW       = 1;
   int preWZ       = 1;
@@ -174,7 +176,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preML8      = 1;
   int preLMscan   = 1;
 
-  
+  /*
   //Flags for files to run over
   bool rundata     = 1;
   bool rundataskim = 1;
@@ -183,6 +185,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runttall    = 0;
   bool runttdil    = 1;
   bool runttem     = 0;
+  bool runttrelval = 1;
   bool runttotr    = 1;
   bool runWW       = 1;
   bool runWZ       = 1;
@@ -220,16 +223,17 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  
+  */
 
-  /*
+  
   //Flags for files to run over
-  bool rundata     = 1;
+  bool rundata     = 0;
   bool rundataskim = 1;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runttall    = 0;
   bool runttdil    = 0;
+  bool runttrelval = 0;
   bool runttem     = 0;
   bool runttotr    = 0;
   bool runWW       = 0;
@@ -238,7 +242,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runWjets    = 0;
   bool runWcharm   = 0;
   bool runZjets    = 0;
-  bool runDYee     = 0;
+  bool runDYee     = 1;
   bool runDYmm     = 0;
   bool runDYtautau = 0;
   bool runppMuX    = 0;
@@ -268,7 +272,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  */
+ 
 
   TChain* chdataskim = new  TChain("Events");
   if(rundataskim){
@@ -354,6 +358,13 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                      //"/tas01/disk02/cms2/TTbarJets-madgraph_Summer09-MC_31X_V3_7TeV-v5/V03-00-35/merged*root",
                      "/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/skimmed*root",
                      //"/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*.root",
+                     "TTJets");
+  }
+
+  TChain* chttrelval = new TChain("Events");
+  if (runttrelval) {
+    pickSkimIfExists(chttrelval, 
+                     "/tas/cms2/RelValProdTTbar_CMSSW_3_8_5-MC_38Y_V12-v1/V03-06-14/ntuple.root",
                      "TTJets");
   }
 
@@ -780,6 +791,12 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                     cout << "Done processing ttbar dileptonic.. " << endl;
                     hist::color("ttdil", kYellow);
                   }
+                  if (runttrelval) {
+                    cout << "Processing ttbar relval.. " << endl;
+                    looper->ScanChain(chttrelval,"ttrelval", kttrelval, prettrelval, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing ttbar dileptonic.. " << endl;
+                    hist::color("ttrelval", kYellow);
+                  }
                   if (runttem) {
                     cout << "Processing ttbar em.. " << endl;
                     looper->ScanChain(chtopem,"ttem", kttem, prettem, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
@@ -1001,7 +1018,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx],frmodeStrings[frmode]);
                   }
                   else {
-                    const char* outFile = Form("output/nov5th_v4/ossusy_%s_%s%s_bitmask.root", 
+                    const char* outFile = Form("output/temp/ossusy_%s_%s%s_bitmask.root", 
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
                   }
                   
