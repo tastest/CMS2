@@ -152,7 +152,7 @@ double GetMinimum(const vector<TH1F*> &v_hists) {
     return 5e-3;
   else 
     return 
-      0.5*(h->GetMinimum());
+      0.2*(h->GetMinimum());
 
 }
       
@@ -205,22 +205,27 @@ TLegend* makeLegend(const vector<TH1F*> &v_hists, vector<TString> v_legEntries, 
     }
   }
       
-  //cout << "max: " << max << endl;
+  cout << "max: " << max << endl;
   rangeY = hdata->GetMinimum();
   if(hdata->GetMaximum() > hmax->GetMinimum())
     rangeY = hdata->GetMaximum() - rangeY;
   else 
     rangeY = hmax->GetMaximum() - rangeY;
+  
+  //if((histName.Contains("nJet") || histName.Contains("bTag")) && drawLogY) {
 
   if(drawLogY) {
-    lowY = 5*max;
-    highY = lowY + 10*rangeY;
+    lowY = 1.5*max;
+    if(histName == "hdilMass" || histName == "hdilMassNM1" || histName == "hmaxPFJetPtNM1" || histName == "hmetProj")
+      highY = lowY + 1000*rangeY;
+    else 
+      highY = lowY + 30*rangeY;
   } else {
     lowY = 1.2*max;
     highY = lowY + 0.3*rangeY;
   }
   
-  //cout << "lowY, highY: "<< lowY << "," <<  highY << endl;
+  cout << "lowY, highY: "<< lowY << "," <<  highY << endl;
   TLegend *leg;
   if(drawLogY)
     leg = new TLegend(lowX,lowY,highX,highY, "", "br"); 
@@ -1218,7 +1223,7 @@ namespace hist {
 void browseStacks(vector<TString> v_samples, vector<Color_t> v_colors, 
 		  TString outfile, vector<TString> v_legEntries, bool drawLogY = false, 
 		  vector<Style_t> v_style = vector<Style_t>(), bool drawFullErrors = false, float lumi = 1.0) {
-		     
+
   assert(!v_samples.empty());
   if(v_samples.size() != v_colors.size()) {
     cout << "Number of entries in the vector of samples is not the same as the number of entries in the vector of Color_t" << endl;
@@ -1271,6 +1276,7 @@ void browseStacks(vector<TString> v_samples, vector<Color_t> v_colors,
 	htemp->SetFillColor(v_colors.at(i_prefix));
 	htemp->SetLineColor(kBlack);
 	TString plot(myNames->At(i)->GetName());
+	
 	//cout << htemp->GetXaxis()->GetTitle() << endl;
 	
 	/*
