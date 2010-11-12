@@ -123,7 +123,7 @@ if len(sys.argv) < 5 :
     print '\nOptional arguments:'
     print '\t-strElem\tpreferred storage element. Default is T2_US_UCSD if left unspecified'
     print '\t-nEvts\t\tNumber of events you want to run on. Default is -1'
-    print '\t-evtsPerJob\tNumber of events per job. Default is 5000'
+    print '\t-evtsPerJob\tNumber of events per job. Default is 20000'
     #print '\t-n\t\tName of output Ntuple file. Default is ntuple.root'
     print '\t-m\t\tsubmission mode (possible: condor_g, condor, glite). Default is glidein'
     print '\t-dbs\t\tdbs url'
