@@ -54,6 +54,7 @@ const cuts_t pass_all = (1<< PASS_ZSEL) | (1<<PASS_MET) | (1<<PASS_JETVETO) | (1
   | (1<<PASS_LL_FINAL) | (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO) | (1<<PASS_TOPVETO);
 
 bool applyJEC = false;
+bool lockToCoreSelectors = true;
 
 std::vector<std::string> jetcorr_filenames_jpt;
 FactorizedJetCorrector *jet_corrector_jpt;
@@ -80,7 +81,7 @@ bool goodElectronIsolated(unsigned int i){
   bool ptcut = cms2.els_p4().at(i).pt() >= 20.0;
   bool core = ptcut && pass_electronSelection( i, electronSelection_wwV1);
   bool internal = ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_elIso(i);
-  assert(core==internal);
+  assert(!lockToCoreSelectors || core==internal);
   return core;
 }
 
@@ -100,7 +101,7 @@ bool goodMuonIsolated(unsigned int i){
   bool ptcut = cms2.mus_p4().at(i).pt() >= 20.0;
   bool core = ptcut && muonId(i, NominalWWV1);
   bool internal = ww_muBase(i) && ww_mud0PV(i) && ww_muId(i) && ww_muIso(i); 
-  assert(core==internal);
+  assert(!lockToCoreSelectors || core==internal);
   return core;
 }
 
@@ -1764,6 +1765,29 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   // If we made it to here, we passed all cuts and we are ready to fill // 
   // histograms after the full selection                                //
   // -------------------------------------------------------------------//
+  
+//   printf("lt_p4.pt(): %0.2f, \tlt_id: %d, \tlt_mc_id: %d, \tlt_p4.pt(): %0.2f, \tll_id: %d, \tll_mc_id: %d\n",
+// 	 cms2.hyp_lt_p4()[i_hyp].pt(), cms2.hyp_lt_id()[i_hyp], cms2.hyp_lt_mc_id()[i_hyp],
+// 	 cms2.hyp_ll_p4()[i_hyp].pt(), cms2.hyp_ll_id()[i_hyp], cms2.hyp_ll_mc_id()[i_hyp]);
+//   if ( abs(cms2.hyp_lt_id()[i_hyp])==11 ) 
+//     printf("\tlt_mc3_id: %d, \tlt_mc_motherid: %d\n",
+// 	   cms2.els_mc3_id().at(cms2.hyp_lt_index().at(i_hyp)),
+// 	   cms2.els_mc_motherid().at(cms2.hyp_lt_index().at(i_hyp)));
+//   if ( abs(cms2.hyp_ll_id()[i_hyp])==11 ) 
+//     printf("\tll_mc3_id: %d, \tll_mc_motherid: %d\n",
+// 	   cms2.els_mc3_id().at(cms2.hyp_ll_index().at(i_hyp)),
+// 	   cms2.els_mc_motherid().at(cms2.hyp_ll_index().at(i_hyp)));
+//   if ( abs(cms2.hyp_lt_id()[i_hyp])==13 ) 
+//     printf("\tlt_mc3_id: %d, \tlt_mc_motherid: %d\n",
+// 	   cms2.mus_mc3_id().at(cms2.hyp_lt_index().at(i_hyp)),
+// 	   cms2.mus_mc_motherid().at(cms2.hyp_lt_index().at(i_hyp)));
+//   if ( abs(cms2.hyp_ll_id()[i_hyp])==13 ) 
+//     printf("\tll_mc3_id: %d, \tll_mc_motherid: %d\n",
+// 	   cms2.mus_mc3_id().at(cms2.hyp_ll_index().at(i_hyp)),
+// 	   cms2.mus_mc_motherid().at(cms2.hyp_ll_index().at(i_hyp)));
+//   for ( unsigned int i=0; i<cms2.genps_id().size(); ++i )
+//     printf("genps_id: %d, \tgenps_id_mother: %d\n",
+// 	   cms2.genps_id().at(i), cms2.genps_id_mother().at(i));
 
   hypos_total->Fill(type);
   hypos_total->Fill(3);
@@ -2377,7 +2401,7 @@ RooDataSet* ScanChain( TChain* chain,
 	 if (i_permille != i_permille_old) {
 	   // xterm magic from L. Vacavant and A. Cerri
 	   printf("\015\033[32m ---> \033[1m\033[31m%4.1f%%"
-		  "\033[0m\033[32m <---\033[0m\015", i_permille/10.);
+	   "\033[0m\033[32m <---\033[0m\015", i_permille/10.);
 	   fflush(stdout);
 	   i_permille_old = i_permille;
 	 }
