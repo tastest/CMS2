@@ -84,6 +84,9 @@ class ossusy_looper
         Int_t   mullgen_;
         Int_t   multgen_;
         Int_t   nlep_;
+        Int_t   ngoodlep_;
+        Int_t   ngoodel_;
+        Int_t   ngoodmu_;
         Int_t   proc_;
         Int_t   leptype_;
         Int_t   njets_;

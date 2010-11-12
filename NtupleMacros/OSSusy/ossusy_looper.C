@@ -141,7 +141,7 @@ void ossusy_looper::makeTree(char *prefix)
   rootdir->cd();
 
   //Super compressed ntuple here
-  outFile   = new TFile(Form("output/temp/%s_smallTree.root",prefix), "RECREATE");
+  outFile   = new TFile(Form("output/nov5th_v6/%s_smallTree.root",prefix), "RECREATE");
   //outFile   = new TFile("temp.root","RECREATE");
   outFile->cd();
   outTree = new TTree("t","Tree");
@@ -152,6 +152,9 @@ void ossusy_looper::makeTree(char *prefix)
   outTree->Branch("weight",          &weight_,           "weight/F");
   outTree->Branch("mllgen",          &mllgen_,           "mllgen/F");
   outTree->Branch("nlep",            &nlep_,             "nlep/I");
+  outTree->Branch("ngoodlep",        &ngoodlep_,         "ngoodlep/I");
+  outTree->Branch("ngoodel",         &ngoodel_,          "ngoodel/I");
+  outTree->Branch("ngoodmu",         &ngoodmu_,          "ngoodmu/I");
   outTree->Branch("mull",            &mull_,             "mull/I");
   outTree->Branch("mult",            &mult_,             "mult/I");
   outTree->Branch("mullgen",         &mullgen_,          "mullgen/I");
@@ -699,18 +702,26 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
          
       VofP4 goodLeptons;
 
+      ngoodlep_ = 0;
+      ngoodel_  = 0;
+      ngoodmu_  = 0;
+
       if( generalLeptonVeto ){
         
         for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
           if( els_p4().at(iel).pt() < 10 )                                                 continue;
           if( !pass_electronSelection( iel , electronSelection_el_OSV1 , false , false ) ) continue;
           goodLeptons.push_back( els_p4().at(iel) );
+          ngoodel_++;
+          ngoodlep_++;
         }
         
         for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
           if( mus_p4().at(imu).pt() < 10 )           continue;
           if( !muonId( imu , OSGeneric_v1 ))         continue;
           goodLeptons.push_back( mus_p4().at(imu) );
+          ngoodmu_++;
+          ngoodlep_++;
         }
 
       }
@@ -949,9 +960,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           //splitting ttbar into ttdil/ttotr
           nleps = leptonGenpCount_lepTauDecays(nels, nmus, ntaus);
 
-          if(strcmp(prefix,"ttem")  == 0 && ( nels + nmus ) != 2 ) continue;
-          if(strcmp(prefix,"ttdil") == 0 && nleps != 2           ) continue;
-          if(strcmp(prefix,"ttotr") == 0 && nleps == 2           ) continue;
+          if( strcmp(prefix,"ttem")  == 0 && ( nels + nmus ) != 2 ) continue;
+          if( strcmp(prefix,"ttdil") == 0 && nleps != 2           ) continue;
+          if( strcmp(prefix,"ttotr") == 0 && nleps == 2           ) continue;
 
           LorentzVector vdilepton(0,0,0,0);
           
@@ -962,12 +973,12 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           
           if( nels + nmus == 2) dilptgen = vdilepton.pt();
 
+          //if( strcmp(prefix , "DYee"     ) == 0 )  cout << "PREFIX DYEE" << endl;
+          //cout << prefix << endl;
           
-          //cout << "prefix " << prefix << endl;
-
-          if (prefix == "DYee"     &&  nels != 2  ) continue;
-          if (prefix == "DYmm"     &&  nmus != 2  ) continue;
-          if (prefix == "DYtautau" &&  ntaus != 2 ) continue;
+          if ( strcmp(prefix , "DYee"     ) == 0 &&  nels  != 2  ) continue;
+          if ( strcmp(prefix , "DYmm"     ) == 0 &&  nmus  != 2  ) continue;
+          if ( strcmp(prefix , "DYtautau" ) == 0 &&  ntaus != 2  ) continue;
 
           //splice together the DY samples - if its madgraph, then we do nothing
           if(TString(prefix).Contains("DY") && TString(evt_dataset()).Contains("madgraph") == false) {	
@@ -982,11 +993,14 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
           //extract pthat
           if(TString(prefix).Contains("DY")){
+            int nz = 0;
             for(unsigned int i = 0; i < genps_p4().size(); i++){
               if(abs(genps_id()[i]) == 23){
                 mllgen_ = genps_p4()[i].M();
+                nz++;
               }
             }
+            if(nz != 1 ) cout << "ERROR NZ " << nz << endl;
           }
         }
 
