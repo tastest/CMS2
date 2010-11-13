@@ -82,7 +82,7 @@ bool goodElectronIsolated(unsigned int i){
   bool core = ptcut && pass_electronSelection( i, electronSelection_wwV1);
   bool internal = ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_elIso(i);
   assert(!lockToCoreSelectors || core==internal);
-  return core;
+  return internal;
 }
 
 bool fakableElectron(unsigned int i){
@@ -102,7 +102,7 @@ bool goodMuonIsolated(unsigned int i){
   bool core = ptcut && muonId(i, NominalWWV1);
   bool internal = ww_muBase(i) && ww_mud0PV(i) && ww_muId(i) && ww_muIso(i); 
   assert(!lockToCoreSelectors || core==internal);
-  return core;
+  return internal;
 }
 
 bool fakableMuon(unsigned int i){
@@ -2425,11 +2425,17 @@ RooDataSet* ScanChain( TChain* chain,
 	 for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
 	   if(cms2.hyp_p4().at(i_hyp).mass2() < 0 ) break;
 	   if(zStudy && (i_hyp != i_hyp_bestZ)) continue;
-	   if (hypo(i_hyp, weight, dataset, zStudy, realData))goodEvent=true;
+	   if (hypo(i_hyp, weight, dataset, zStudy, realData)){
+	     goodEvent=true;
+	     selectedEvents << cms2.evt_run() << " " <<
+	       cms2.evt_lumiBlock() << " " << cms2.evt_event() << " " <<
+	       cms2.hyp_lt_p4().at(i_hyp).pt() << " " << cms2.hyp_ll_p4().at(i_hyp).pt() << " " <<
+	       projectedMet(i_hyp) <<endl;
+	   }
 	   AddIsoSignalControlSample(i_hyp, weight, dataset, realData);
 	 }
-	 if (goodEvent) selectedEvents << cms2.evt_run() << " " <<
-	   cms2.evt_lumiBlock() << " " << cms2.evt_event() << endl;
+	 // if (goodEvent)   selectedEvents << cms2.evt_run() << " " <<
+	 // cms2.evt_lumiBlock() << " " << cms2.evt_event() << endl;
        }
        t.Stop();
        printf("Finished processing file: %s\n",currentFile->GetTitle());
