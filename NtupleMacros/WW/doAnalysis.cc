@@ -38,7 +38,7 @@ using namespace std;
 enum jetregion { HCAL, HF, ALLJET};
 
 enum hyp_selection {
-  PASS_ZSEL,
+  PASS_ZVETO,
   PASS_MET,
   PASS_JETVETO,  
   PASS_LT_FINAL,
@@ -47,11 +47,14 @@ enum hyp_selection {
   PASS_EXTRALEPTONVETO,
   PASS_TOPVETO,
   PASS_1BJET,
-  PASS_1JET
+  PASS_1JET,
+  PASS_ZControlSample,   // within Z mass window
+  PASS_TopControlSample, // 2 or more jets
+  PASS_PROBE             // passed only 1 leg final selection.
 };
 
-const cuts_t pass_all = (1<< PASS_ZSEL) | (1<<PASS_MET) | (1<<PASS_JETVETO) | (1<<PASS_LT_FINAL) 
-  | (1<<PASS_LL_FINAL) | (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO) | (1<<PASS_TOPVETO);
+cuts_t pass_all = (1<<PASS_ZVETO) | (1<<PASS_MET) | (1<<PASS_JETVETO) | (1<<PASS_LT_FINAL) | (1<<PASS_LL_FINAL) | 
+ (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO) | (1<<PASS_TOPVETO);
 
 bool applyJEC = false;
 bool lockToCoreSelectors = true;
@@ -492,9 +495,9 @@ getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJ
 // Various other cuts
 //
 
-bool inZmassWindow(float mass){
+bool inZmassWindow(float mass, double delta=15.0){
   // return ( mass > 76. && mass < 106. );
-  return fabs(mass - 91.1876) < 15;
+  return fabs(mass - 91.1876) < delta;
 }
 
 double BTag(WWJetType type, unsigned int iJet){
@@ -1297,7 +1300,7 @@ void fill_val_plots(int i_hyp, cuts_t cuts_passed, double weight)
     hmaxPFJetPtNM1[type]->Fill(pfJetMax, weight);
     hmaxPFJetPtNM1[3]->Fill(pfJetMax, weight);
   }
-  if (CheckCutsNM1(pass_all, (1<<PASS_ZSEL), cuts_passed) ) {
+  if (CheckCutsNM1(pass_all, (1<<PASS_ZVETO), cuts_passed) ) {
     hdilMassNM1[type]->Fill(cms2.hyp_p4()[i_hyp].mass(), weight);
     hdilMassNM1[3]->Fill(cms2.hyp_p4()[i_hyp].mass(), weight);
   }
@@ -1498,7 +1501,6 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   
   monitor.count(cms2,type,"after previous + baseline cuts");
  
-  // TEMPORARY
   if (gSystem->Getenv("Sync")) // Synchronization info
   {
     if (nGoodVertex()<1) return false;
@@ -1586,11 +1588,12 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   
   // == Z mass veto using hyp_leptons for ee and mumu final states
   if ( type == EE || type == MM) {
-    if ( !zStudy && !inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))    cuts_passed |= (1<<PASS_ZSEL);
-    if ( zStudy  && inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))     cuts_passed |= (1<<PASS_ZSEL);
+    if ( !zStudy && !inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))    cuts_passed |= (1<<PASS_ZVETO);
+    if ( zStudy  && inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))     cuts_passed |= (1<<PASS_ZVETO);
   }
-  if (type == EM)     cuts_passed |= (1<<PASS_ZSEL);
-
+  if (type == EM)     cuts_passed |= (1<<PASS_ZVETO);
+  if ( inZmassWindow(cms2.hyp_p4()[i_hyp].mass(),10))  cuts_passed |= (1<<PASS_ZControlSample);
+    
   // Z veto using additional leptons in the event
   // if (additionalZveto()) return;
  
@@ -1633,12 +1636,15 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
 
   if ( passedLTFinalRequirements ) cuts_passed |= (1<<PASS_LT_FINAL);
   if ( passedLLFinalRequirements ) cuts_passed |= (1<<PASS_LL_FINAL);
+  if ( passedLTFinalRequirements || passedLLFinalRequirements ) cuts_passed |= (1<<PASS_PROBE);
 
   // == Jet-veto
   const std::vector<LorentzVector>& vetojets(getDefaultJets(i_hyp, false));
   unsigned int nJets = vetojets.size();
   if (nJets==0) 
     cuts_passed |= (1<<PASS_JETVETO);
+  if (nJets>1) 
+    cuts_passed |= (1<<PASS_TopControlSample);
   if (nJets==1){
     cuts_passed |= (1<<PASS_1JET);
     if ( getDefaultJets(i_hyp,true).size()==1 ){
@@ -1686,12 +1692,12 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   }
   
   // Do Drell Yan Estimation
-  if(CheckCutsNM1(pass_all, (1<<PASS_ZSEL) | (1<<PASS_MET) , cuts_passed))
+  if(CheckCutsNM1(pass_all, (1<<PASS_ZVETO) | (1<<PASS_MET) , cuts_passed))
     fill_dyest_histograms(i_hyp, weight);
 
   // top background related histograms
   if ( CheckCutsNM1( pass_all, 
-		     (1<<PASS_SOFTMUVETO) | (1<<PASS_TOPVETO) | (1<<PASS_JETVETO) | (1<< PASS_ZSEL) | (1<<PASS_MET), 
+		     (1<<PASS_SOFTMUVETO) | (1<<PASS_TOPVETO) | (1<<PASS_JETVETO) | (1<< PASS_ZVETO) | (1<<PASS_MET), 
 		     cuts_passed ) ){
     float tag = 1; // not tagged
     if ( ! CheckCuts(1<<PASS_SOFTMUVETO, cuts_passed) ){
@@ -1716,12 +1722,12 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
       }
     }
     bool zevent = (type == EE || type == MM);
-    if ( CheckCuts((1<< PASS_ZSEL), cuts_passed) ) zevent = false;
+    if ( CheckCuts((1<< PASS_ZVETO), cuts_passed) ) zevent = false;
     if ( zevent ) {
       htoptagz[type]->Fill(tag-0.5,evtType-0.5,weight);
       htoptagz[3]->Fill(tag-0.5,evtType-0.5,weight);
     }
-    if ( CheckCuts((1<<PASS_ZSEL)|(1<<PASS_MET), cuts_passed) ){
+    if ( CheckCuts((1<<PASS_ZVETO)|(1<<PASS_MET), cuts_passed) ){
       htoptag[type]->Fill(tag-0.5,evtType-0.5,weight);
       htoptag[3]->Fill(tag-0.5,evtType-0.5,weight);
       // 2D hist for muon tag counting
@@ -2278,6 +2284,18 @@ RooDataSet* ScanChain( TChain* chain,
     printf("\nERROR: chain is empty for sample: %s\n\n",prefix);
     assert(0);
   }
+
+  if ( gSystem->Getenv("ZSelection") )
+    pass_all = (1<<PASS_ZControlSample) | (1<<PASS_JETVETO) | (1<<PASS_LT_FINAL) | (1<<PASS_LL_FINAL) | 
+      (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO) | (1<<PASS_TOPVETO);
+  
+  if ( gSystem->Getenv("ZProbeSelection") )
+    pass_all = (1<<PASS_ZControlSample) | (1<<PASS_JETVETO) | (1<<PASS_PROBE);
+
+  if ( gSystem->Getenv("TopSelection") )
+    pass_all = (1<<PASS_TopControlSample) | (1<<PASS_MET) | (1<<PASS_LT_FINAL) | (1<<PASS_LL_FINAL) | 
+      (1<<PASS_EXTRALEPTONVETO) ;
+
   // chain->SetParallelUnzip(kTRUE);
   // gErrorIgnoreLevel = 3000; // suppress warnings about missing dictionaries 
   unsigned int nEventsChain = chain->GetEntries();  // number of entries in chain --> number of events from all files
