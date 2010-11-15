@@ -87,7 +87,7 @@ void makeWWFakeRates(bool doels, bool domus) {
     if (doels) {
         ch_el   ->Add("/tas/cms2/FRBabies/FakeRates10November2010-v2/EG.root");
         ch_egmon->Add("/tas/cms2/FRBabies/FakeRates10November2010-v2/EGMon.root");
-        fout_el = TFile::Open("test_ww_el_fr_EGandEGMon.root","RECREATE");
+        fout_el = TFile::Open("ww_el_fr_EGandEGMon.root","RECREATE");
         //ch_el->Add("/tas/cms2/FRBabies/FakeRates10November2010-v2/qcd_pt_30to50_fall10.root");
         //fout_el = TFile::Open("ww_el_fr_qcd_pt_30to50_fall10.root","RECREATE");
     }
