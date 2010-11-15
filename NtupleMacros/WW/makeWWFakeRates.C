@@ -82,17 +82,26 @@ void makeWWFakeRates(bool doels, bool domus) {
     //--------------------------------------------------------------------------
 
     TChain *ch_el = new TChain("tree");
+    TChain *ch_egmon = new TChain("tree");
     TFile* fout_el(0);
     if (doels) {
-        ch_el->Add("EG31_20101105.root");
-	fout_el = TFile::Open("ww_el_fr_EG.root","RECREATE");
+        ch_el   ->Add("/tas/cms2/FRBabies/FakeRates10November2010-v2/EG.root");
+        ch_egmon->Add("/tas/cms2/FRBabies/FakeRates10November2010-v2/EGMon.root");
+        fout_el = TFile::Open("test_ww_el_fr_EGandEGMon.root","RECREATE");
+        //ch_el->Add("/tas/cms2/FRBabies/FakeRates10November2010-v2/qcd_pt_30to50_fall10.root");
+        //fout_el = TFile::Open("ww_el_fr_qcd_pt_30to50_fall10.root","RECREATE");
     }
 
     TChain *ch_mu = new TChain("tree");
     TFile* fout_mu(0);
     if (domus) {
-        ch_mu->Add("Mu31_20101105.root");
-	fout_mu = TFile::Open("ww_mu_fr_MU.root","RECREATE");
+        ch_mu->Add("/tas/cms2/FRBabies/FakeRates10November2010-v2/Mu.root");
+        fout_mu = TFile::Open("ww_mu_fr_Mu.root","RECREATE");
+        //ch_mu->Add("/tas/cms2/FRBabies/FakeRates10November2010-v2/mu15.root");
+        //ch_mu->Add("/tas/cms2/FRBabies/FakeRates10November2010-v2/mu15_1.root");
+        //fout_mu = TFile::Open("ww_mu_fr_mu15.root","RECREATE");
+        //ch_mu->Add("/tas/cms2/FRBabies/FakeRates10November2010-v2/mu10.root");
+        //fout_mu = TFile::Open("ww_mu_fr_mu10.root","RECREATE");
     }
 
     //--------------------------------------------------------------------------
@@ -111,21 +120,31 @@ void makeWWFakeRates(bool doels, bool domus) {
     // above a threshold separated by at least dR
     TCut jetCut   = "ptpfj1>15";
 
+    //
     // The trigger selections
-    TCut trgCutEl = "el10_lw>1 || el10_sw>1 || el15_lw>1 || el15_sw>1 || el17_sw>1 || el20_sw>1";
+    //
+
+    // For EG
+    TCut trgCutEl_eg = "((el10_lw>1 || el10_sw>1 || el15_lw>1) && run < 141956) ||\
+                        ((el15_sw>1 || el20_sw>1) && run <= 145761)";
+    // For EGMon
+    TCut trgCutEl_egmon = "((el10_sw>1 || el17_sw>1) && run < 149181) ||\
+                           (el10_sw_v2>1 || el17_sw_v2>1)";
+    // For Mu
     TCut trgCutMu = "mu9>1 || mu11>1 || mu15>1";
 
     // Numerator selections
-    TCut is_el_num_wwV1 = "num_wwV1&&abs(id)==11"+trgCutEl+jetCut+ptCut+notWCut;
+    TCut is_el_num_wwV1 = "num_wwV1&&abs(id)==11"+jetCut+ptCut+notWCut;
     TCut is_mu_num_wwV1 = "num_wwV1&&abs(id)==13"+trgCutMu+jetCut+ptCut+notWCut;
 
     // Denominator selections
-    TCut is_el_v1_wwV1    = "v1_wwV1&&abs(id)==11"+trgCutEl+jetCut+ptCut+notWCut;
-    TCut is_el_v2_wwV1    = "v2_wwV1&&abs(id)==11"+trgCutEl+jetCut+ptCut+notWCut;
-    TCut is_el_v3_wwV1    = "v3_wwV1&&abs(id)==11"+trgCutEl+jetCut+ptCut+notWCut;
-    TCut is_el_v4_wwV1    = "v4_wwV1&&abs(id)==11"+trgCutEl+jetCut+ptCut+notWCut;
+    TCut is_el_v1_wwV1    = "v1_wwV1&&abs(id)==11"+jetCut+ptCut+notWCut;
+    TCut is_el_v2_wwV1    = "v2_wwV1&&abs(id)==11"+jetCut+ptCut+notWCut;
+    TCut is_el_v3_wwV1    = "v3_wwV1&&abs(id)==11"+jetCut+ptCut+notWCut;
+    TCut is_el_v4_wwV1    = "v4_wwV1&&abs(id)==11"+jetCut+ptCut+notWCut;
     TCut is_mu_fo_wwV1_04 = "fo_wwV1_04&&abs(id)==13"+trgCutMu+jetCut+ptCut+notWCut;
     TCut is_mu_fo_wwV1_10 = "fo_wwV1_10&&abs(id)==13"+trgCutMu+jetCut+ptCut+notWCut;
+    TCut is_mu_fo_wwV1_10_d0 = "fo_wwV1_10_d0&&abs(id)==13"+trgCutMu+jetCut+ptCut+notWCut;
 
     //--------------------------------------------------------------------------
     // Define pt and eta bins of fake rate histograms
@@ -153,6 +172,7 @@ void makeWWFakeRates(bool doels, bool domus) {
     TH2F* mu_num_wwV1   = new TH2F("mu_num_wwV1","mu_num_wwV1",nbinsx,xbin,nbinsy,ybin);
     TH2F* mu_fo_wwV1_04 = new TH2F("mu_fo_wwV1_04","mu_fo_wwV1_04",nbinsx,xbin,nbinsy,ybin);
     TH2F* mu_fo_wwV1_10 = new TH2F("mu_fo_wwV1_10","mu_fo_wwV1_10",nbinsx,xbin,nbinsy,ybin);
+    TH2F* mu_fo_wwV1_10_d0 = new TH2F("mu_fo_wwV1_10_d0","mu_fo_wwV1_10_d0",nbinsx,xbin,nbinsy,ybin);
 
     //--------------------------------------------------------------------------
     // Fill Histograms
@@ -160,11 +180,16 @@ void makeWWFakeRates(bool doels, bool domus) {
 
     if (doels) {
         fout_el->cd();
-        ch_el->Draw("pt:abs(eta)>>el_num_wwV1",is_el_num_wwV1);
-        ch_el->Draw("pt:abs(eta)>>el_v1_wwV1",is_el_v1_wwV1);
-        ch_el->Draw("pt:abs(eta)>>el_v2_wwV1",is_el_v2_wwV1);
-        ch_el->Draw("pt:abs(eta)>>el_v3_wwV1",is_el_v3_wwV1);
-        ch_el->Draw("pt:abs(eta)>>el_v4_wwV1",is_el_v4_wwV1);
+        ch_el->Draw("pt:abs(eta)>>el_num_wwV1",trgCutEl_eg&&is_el_num_wwV1);
+        ch_el->Draw("pt:abs(eta)>>el_v1_wwV1",trgCutEl_eg&&is_el_v1_wwV1);
+        ch_el->Draw("pt:abs(eta)>>el_v2_wwV1",trgCutEl_eg&&is_el_v2_wwV1);
+        ch_el->Draw("pt:abs(eta)>>el_v3_wwV1",trgCutEl_eg&&is_el_v3_wwV1);
+        ch_el->Draw("pt:abs(eta)>>el_v4_wwV1",trgCutEl_eg&&is_el_v4_wwV1);
+        ch_egmon->Draw("pt:abs(eta)>>+el_num_wwV1",trgCutEl_egmon&&is_el_num_wwV1);
+        ch_egmon->Draw("pt:abs(eta)>>+el_v1_wwV1",trgCutEl_egmon&&is_el_v1_wwV1);
+        ch_egmon->Draw("pt:abs(eta)>>+el_v2_wwV1",trgCutEl_egmon&&is_el_v2_wwV1);
+        ch_egmon->Draw("pt:abs(eta)>>+el_v3_wwV1",trgCutEl_egmon&&is_el_v3_wwV1);
+        ch_egmon->Draw("pt:abs(eta)>>+el_v4_wwV1",trgCutEl_egmon&&is_el_v4_wwV1);
     }
 
     if (domus) {
@@ -172,6 +197,7 @@ void makeWWFakeRates(bool doels, bool domus) {
         ch_mu->Draw("pt:abs(eta)>>mu_num_wwV1",is_mu_num_wwV1);
         ch_mu->Draw("pt:abs(eta)>>mu_fo_wwV1_04",is_mu_fo_wwV1_04);
         ch_mu->Draw("pt:abs(eta)>>mu_fo_wwV1_10",is_mu_fo_wwV1_10);
+        ch_mu->Draw("pt:abs(eta)>>mu_fo_wwV1_10_d0",is_mu_fo_wwV1_10_d0);
     }
 
     //--------------------------------------------------------------------------
@@ -193,6 +219,7 @@ void makeWWFakeRates(bool doels, bool domus) {
       fout_mu->cd();
       eff2(mu_fo_wwV1_04,mu_num_wwV1,"mu_fr_fo_wwV1_04");
       eff2(mu_fo_wwV1_10,mu_num_wwV1,"mu_fr_fo_wwV1_10");
+      eff2(mu_fo_wwV1_10_d0,mu_num_wwV1,"mu_fr_fo_wwV1_10_d0");
       fout_mu->Write();
       fout_mu->Close();
     }
