@@ -141,7 +141,7 @@ void ossusy_looper::makeTree(char *prefix)
   rootdir->cd();
 
   //Super compressed ntuple here
-  outFile   = new TFile(Form("output/nov5th_v6/%s_smallTree.root",prefix), "RECREATE");
+  outFile   = new TFile(Form("output/nov5th_v7/%s_smallTree.root",prefix), "RECREATE");
   //outFile   = new TFile("temp.root","RECREATE");
   outFile->cd();
   outTree = new TTree("t","Tree");
@@ -1543,7 +1543,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           etal2_         = etal2;                        //2nd highest pT lepton
           phil1_         = phil1;                        //highest phi lepton
           phil2_         = phil2;                        //2nd highest phi lepton
-          meff_          = meff_jets_p4;                 //effective mass
+          meff_          = meff_jpts_p4;                 //effective mass
           mt_            = mt;                           //transverse mass of leading lepton+met
           strcpy(dataset_, cms2.evt_dataset().Data());   //dataset name
           run_           = evt_run();
