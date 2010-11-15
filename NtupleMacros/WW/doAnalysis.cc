@@ -48,9 +48,11 @@ enum hyp_selection {
   PASS_TOPVETO,
   PASS_1BJET,
   PASS_1JET,
-  PASS_ZControlSample,   // within Z mass window
-  PASS_TopControlSample, // 2 or more jets
-  PASS_PROBE             // passed only 1 leg final selection.
+  PASS_ZControlSampleVeryTight,   // within Z mass window +/- 5GeV
+  PASS_ZControlSampleTight,       // within Z mass window +/- 10GeV
+  PASS_ZControlSampleLoose,       // within Z mass window +/- 20GeV
+  PASS_TopControlSample,          // 2 or more jets
+  PASS_PROBE                      // passed only 1 leg final selection.
 };
 
 cuts_t pass_all = (1<<PASS_ZVETO) | (1<<PASS_MET) | (1<<PASS_JETVETO) | (1<<PASS_LT_FINAL) | (1<<PASS_LL_FINAL) | 
@@ -1592,7 +1594,9 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
     if ( zStudy  && inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))     cuts_passed |= (1<<PASS_ZVETO);
   }
   if (type == EM)     cuts_passed |= (1<<PASS_ZVETO);
-  if ( inZmassWindow(cms2.hyp_p4()[i_hyp].mass(),10))  cuts_passed |= (1<<PASS_ZControlSample);
+  if ( inZmassWindow(cms2.hyp_p4()[i_hyp].mass(),5))  cuts_passed |= (1<<PASS_ZControlSampleVeryTight);
+  if ( inZmassWindow(cms2.hyp_p4()[i_hyp].mass(),10))  cuts_passed |= (1<<PASS_ZControlSampleTight);
+  if ( inZmassWindow(cms2.hyp_p4()[i_hyp].mass(),20))  cuts_passed |= (1<<PASS_ZControlSampleLoose);
     
   // Z veto using additional leptons in the event
   // if (additionalZveto()) return;
@@ -1613,13 +1617,15 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
 
   // Muon quality cuts, including isolation
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13){
-    if ( !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) passedLTFinalRequirements = false;
-    if ( !fakableMuon(cms2.hyp_lt_index()[i_hyp]) ) passedLTMuFakableRequirements = false;
+    unsigned int index = cms2.hyp_lt_index()[i_hyp];
+    if ( !goodMuonIsolated(index) ) passedLTFinalRequirements = false;
+    if ( !fakableMuon(index) ) passedLTMuFakableRequirements = false;
     passedLTElFakableRequirements = false;
   }
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13){
-    if ( !goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) ) passedLLFinalRequirements = false;
-    if ( !fakableMuon(cms2.hyp_ll_index()[i_hyp]) ) passedLLMuFakableRequirements = false;
+    unsigned int index = cms2.hyp_ll_index()[i_hyp];
+    if ( !goodMuonIsolated(index) ) passedLLFinalRequirements = false;
+    if ( !fakableMuon(index) ) passedLLMuFakableRequirements = false;
     passedLLElFakableRequirements = false;
   } 
   // Electron quality cuts, including isolation
@@ -2286,11 +2292,21 @@ RooDataSet* ScanChain( TChain* chain,
   }
 
   if ( gSystem->Getenv("ZSelection") )
-    pass_all = (1<<PASS_ZControlSample) | (1<<PASS_JETVETO) | (1<<PASS_LT_FINAL) | (1<<PASS_LL_FINAL) | 
+    pass_all = (1<<PASS_ZControlSampleTight) | (1<<PASS_JETVETO) | (1<<PASS_LT_FINAL) | (1<<PASS_LL_FINAL) | 
       (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO) | (1<<PASS_TOPVETO);
   
-  if ( gSystem->Getenv("ZProbeSelection") )
-    pass_all = (1<<PASS_ZControlSample) | (1<<PASS_JETVETO) | (1<<PASS_PROBE);
+  if ( gSystem->Getenv("ZSelectionVeryTight") )
+    pass_all = (1<<PASS_ZControlSampleVeryTight) | (1<<PASS_JETVETO) | (1<<PASS_LT_FINAL) | (1<<PASS_LL_FINAL) | 
+      (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO) | (1<<PASS_TOPVETO);
+
+  if ( gSystem->Getenv("ZProbeSelectionVeryTight") )
+    pass_all = (1<<PASS_ZControlSampleVeryTight) | (1<<PASS_JETVETO) | (1<<PASS_PROBE);
+
+  if ( gSystem->Getenv("ZProbeSelectionTight") )
+    pass_all = (1<<PASS_ZControlSampleTight) | (1<<PASS_JETVETO) | (1<<PASS_PROBE);
+  
+  if ( gSystem->Getenv("ZProbeSelectionLoose") )
+    pass_all = (1<<PASS_ZControlSampleLoose) | (1<<PASS_JETVETO) | (1<<PASS_PROBE);
 
   if ( gSystem->Getenv("TopSelection") )
     pass_all = (1<<PASS_TopControlSample) | (1<<PASS_MET) | (1<<PASS_LT_FINAL) | (1<<PASS_LL_FINAL) | 
