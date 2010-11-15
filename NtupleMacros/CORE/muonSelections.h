@@ -31,7 +31,8 @@ enum SelectionType {
 	 NominalSSv2 = 21,
 	 muonSelectionFO_mu_ssV2 = 22,
 	 muonSelectionFO_mu_ssV2_iso10 = 23,
-	 muonSelectionFO_mu_wwV1_iso10_d0 = 24
+	 muonSelectionFO_mu_wwV1_iso10_d0 = 24,
+         NominalTTbar_pass6 = 25
 }; 
 
 //

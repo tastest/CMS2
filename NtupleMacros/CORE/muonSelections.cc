@@ -64,6 +64,9 @@ bool muonId(unsigned int index, SelectionType type){
 	 case OSZ_v1:
 		  isovalue = 0.15;
 		  break;
+	 case NominalTTbar_pass6:
+                  isovalue = 0.15;
+		  break;
 	 default:
 		  std::cout << "muonID ERROR: requested muon type is not defined. Abort." << std::endl;
 		  exit(1);
@@ -323,6 +326,15 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type){
 		  if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1) return false;
 		  return true;
 		  break;
+	 case NominalTTbar_pass6:
+		  if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)  return false; // eta cut
+		  if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
+		  if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
+		  if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
+		  if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
+		  if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.02) return false; // d0 from beamspot
+		  return true;
+
 
 	 default:
 		  std::cout << "muonID ERROR: requested muon type is not defined. Abort." << std::endl;
