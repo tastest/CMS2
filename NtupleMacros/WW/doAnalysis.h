@@ -26,6 +26,7 @@ double ww_elIsoVal(unsigned int i);
 // combined analysis selectors
 bool goodElectronWithoutIsolation(unsigned int i);
 bool goodElectronIsolated(unsigned int i);
+bool fakableElectron(unsigned int i);
 
 //
 // Muon Id
@@ -44,6 +45,7 @@ unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated,
 // combined analysis selectors
 bool goodMuonWithoutIsolation(unsigned int i);
 bool goodMuonIsolated(unsigned int i);
+bool fakableMuon(unsigned int i);
 
 //
 // trigger

@@ -83,6 +83,7 @@ bool goodElectronWithoutIsolation(unsigned int i){
 }
 
 bool goodElectronIsolated(unsigned int i){
+  // return fakableElectron(i);
   bool ptcut = cms2.els_p4().at(i).pt() >= 20.0;
   bool core = ptcut && pass_electronSelection( i, electronSelection_wwV1);
   bool internal = ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_elIso(i);
@@ -103,6 +104,7 @@ bool goodMuonWithoutIsolation(unsigned int i){
 }
 
 bool goodMuonIsolated(unsigned int i){
+  // return fakableMuon(i);
   bool ptcut = cms2.mus_p4().at(i).pt() >= 20.0;
   bool core = ptcut && muonId(i, NominalWWV1);
   bool internal = ww_muBase(i) && ww_mud0PV(i) && ww_muId(i) && ww_muIso(i); 
@@ -367,6 +369,9 @@ bool passedTriggerRequirements(HypTypeInNtuples type) {
   if ( passedTrigger("HLT_Ele17_SW_TightEleId_L1R") ) return true;
   if ( passedTrigger("HLT_Ele17_SW_TighterEleIdIsol_L1R_v2") ) return true;
   if ( passedTrigger("HLT_Ele17_SW_TighterEleIdIsol_L1R_v3") ) return true;
+//   if ( passedTrigger("HLT_DoubleEle17_SW_L1R_v1") ) return true;
+//   if ( passedTrigger("HLT_DoubleEle15_SW_L1R_v1") ) return true;
+//   if ( passedTrigger("HLT_DoubleEle10_SW_L1R") ) return true;
   return false;
 }
 
