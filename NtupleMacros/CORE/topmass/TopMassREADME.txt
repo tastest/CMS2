@@ -17,10 +17,6 @@ wget http://svn.hepforge.org/lhapdf/pdfsets/5/cteq61.LHgrid
 and point LHAPDF::initPDFSet in ttdilepsolve.cpp to where you saved
 the file. The default location is CORE/topmass/pdfs
 
-Also maybe adjust the resolution file path:
-string JR_Standalone_Path = "CORE/topmass/JR_Standalone/txts/";
-in getTopMassEstimate.icc
-
 //------------------------
 The following additions are needed:
 //------------------------
@@ -51,11 +47,3 @@ ttdilepsolve * d_llsol = new ttdilepsolve;
 -- and where you want the top mass use:
 
 float topMassEst = getTopMassEstimate(d_llsol, hypIdx, Yourjets_p4(), tcmet, tcmetphi);
-
--- to enable jet smearing:
-Call the Estimator this way:
-float topMassEst = getTopMassEstimate(d_llsol, hypIdx, Yourjets_p4(), tcmet, tcmetphi, 100);
-The "100" at the end is the number of smear iterations. Aram recommends
-100 for MC or 1000 for data 
-The smearing code is horribly slow (seconds per ttbar event) - so run it only on the final set of
-a few skimmed events... or compile it properly.
