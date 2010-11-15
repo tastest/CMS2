@@ -58,7 +58,7 @@ enum hyp_selection {
 cuts_t pass_all = (1<<PASS_ZVETO) | (1<<PASS_MET) | (1<<PASS_JETVETO) | (1<<PASS_LT_FINAL) | (1<<PASS_LL_FINAL) | 
  (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO) | (1<<PASS_TOPVETO);
 
-bool applyJEC = false;
+bool applyJEC = true;
 bool lockToCoreSelectors = true;
 
 std::vector<std::string> jetcorr_filenames_jpt;
