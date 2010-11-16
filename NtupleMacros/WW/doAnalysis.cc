@@ -2324,8 +2324,8 @@ RooDataSet* ScanChain( TChain* chain,
     pass_all = (1<<PASS_ZControlSampleLoose) | (1<<PASS_JETVETO) | (1<<PASS_PROBE);
 
   if ( gSystem->Getenv("TopSelection") )
-    pass_all = (1<<PASS_TopControlSample) | (1<<PASS_MET) | (1<<PASS_LT_FINAL) | (1<<PASS_LL_FINAL) | 
-      (1<<PASS_EXTRALEPTONVETO) ;
+    pass_all = (1<<PASS_ZVETO) | (1<<PASS_TopControlSample) | (1<<PASS_MET) | 
+      (1<<PASS_LT_FINAL) | (1<<PASS_LL_FINAL) | (1<<PASS_EXTRALEPTONVETO) ;
 
   // chain->SetParallelUnzip(kTRUE);
   // gErrorIgnoreLevel = 3000; // suppress warnings about missing dictionaries 
