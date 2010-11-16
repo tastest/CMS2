@@ -1366,18 +1366,6 @@ void countFakableObjectsAfterAllSelections(unsigned int i_hyp,
     int nbins_pt  = helFRfakable_fakerate[3]->GetNbinsY();
     float max_pt  = helFRfakable_fakerate[3]->GetYaxis()->GetBinLowEdge(nbins_pt+1);
 
-    if ( !externalElFakeRates ){
-      TFile* f = TFile::Open("files/ww_el_fr_EG.root");
-      assert(f);
-      externalElFakeRates = dynamic_cast<TH2F*>( f->Get("el_fr_v2_wwV1") );
-      assert(externalElFakeRates);
-    }      
-    if ( !externalMuFakeRates ){
-      TFile* f = TFile::Open("files/ww_mu_fr_Mu.root");
-      assert(f);
-      externalMuFakeRates = dynamic_cast<TH2F*>( f->Get("mu_fr_fo_wwV1_10") );
-      assert(externalMuFakeRates);
-    }      
     // overflow goes into last bin
     float lt_eta = fabs(cms2.hyp_lt_p4().at(i_hyp).eta());
     if (lt_eta > max_eta) lt_eta = max_eta-.1;
@@ -2351,6 +2339,19 @@ RooDataSet* ScanChain( TChain* chain,
   RooDataSet* dataset = MakeNewDataset(prefix);
 
   initializeHistograms(prefix,qcdBackground);
+
+  if ( !externalElFakeRates ){
+    TFile* f = TFile::Open("files/ww_el_fr_EG.root");
+    assert(f);
+    externalElFakeRates = dynamic_cast<TH2F*>( f->Get("el_fr_v2_wwV1") );
+    assert(externalElFakeRates);
+  }      
+  if ( !externalMuFakeRates ){
+    TFile* f = TFile::Open("files/ww_mu_fr_Mu.root");
+    assert(f);
+    externalMuFakeRates = dynamic_cast<TH2F*>( f->Get("mu_fr_fo_wwV1_10") );
+    assert(externalMuFakeRates);
+  }      
 
   // clear list of duplicates
   already_seen.clear();
