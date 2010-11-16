@@ -83,7 +83,6 @@ bool goodElectronWithoutIsolation(unsigned int i){
 }
 
 bool goodElectronIsolated(unsigned int i){
-  // return fakableElectron(i);
   bool ptcut = cms2.els_p4().at(i).pt() >= 20.0;
   bool core = ptcut && pass_electronSelection( i, electronSelection_wwV1);
   bool internal = ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_elIso(i);
@@ -104,7 +103,6 @@ bool goodMuonWithoutIsolation(unsigned int i){
 }
 
 bool goodMuonIsolated(unsigned int i){
-  // return fakableMuon(i);
   bool ptcut = cms2.mus_p4().at(i).pt() >= 20.0;
   bool core = ptcut && muonId(i, NominalWWV1);
   bool internal = ww_muBase(i) && ww_mud0PV(i) && ww_muId(i) && ww_muIso(i); 
@@ -369,9 +367,9 @@ bool passedTriggerRequirements(HypTypeInNtuples type) {
   if ( passedTrigger("HLT_Ele17_SW_TightEleId_L1R") ) return true;
   if ( passedTrigger("HLT_Ele17_SW_TighterEleIdIsol_L1R_v2") ) return true;
   if ( passedTrigger("HLT_Ele17_SW_TighterEleIdIsol_L1R_v3") ) return true;
-//   if ( passedTrigger("HLT_DoubleEle17_SW_L1R_v1") ) return true;
-//   if ( passedTrigger("HLT_DoubleEle15_SW_L1R_v1") ) return true;
-//   if ( passedTrigger("HLT_DoubleEle10_SW_L1R") ) return true;
+  if ( passedTrigger("HLT_DoubleEle17_SW_L1R_v1") ) return true;
+  if ( passedTrigger("HLT_DoubleEle15_SW_L1R_v1") ) return true;
+  if ( passedTrigger("HLT_DoubleEle10_SW_L1R") ) return true;
   return false;
 }
 
@@ -861,8 +859,12 @@ TH1F* hdilMassNoMetDYEst[4];  // Dilepton mass without MET requirement for DY es
 // Not cleaned area
 //
 
-TH2F* helFRfakable_fakerate[4];     // Fake rate study: rate of fakable objects using the fakerate.cc
-TH2F* hmuFRfakable_fakerate[4];     // Fake rate study: rate of fakable objects using the fakerate.cc
+TH2F* helFRfakable_fakerate[4];     // Fake rate study: rate of fakable objects using extrernal FRs
+TH2F* hmuFRfakable_fakerate[4];     // Fake rate study: rate of fakable objects using extrernal FRs
+TH1F* hdoubleFakes[4];              // do double fakes contribution estimation (need fakerates!) Errors from FRs are ignored
+TH2F* externalMuFakeRates = 0;
+TH2F* externalElFakeRates = 0;
+
 TH1F* hypos_total;
 TH1F* hypos_total_weighted;
 
@@ -1343,6 +1345,11 @@ void extractIsoSingleLepton(){
   }
 }
 
+double getFakeRatePrime(TH2F* fakerates, double eta, double pt){
+  double fr = fakerates->GetBinContent(fakerates->FindBin(eta,pt));
+  return fr/(1-fr);
+}
+
 void countFakableObjectsAfterAllSelections(unsigned int i_hyp, 
 					   double weight, 
 					   bool passedLTElFakableRequirements, 
@@ -1359,73 +1366,81 @@ void countFakableObjectsAfterAllSelections(unsigned int i_hyp,
     int nbins_pt  = helFRfakable_fakerate[3]->GetNbinsY();
     float max_pt  = helFRfakable_fakerate[3]->GetYaxis()->GetBinLowEdge(nbins_pt+1);
 
+    if ( !externalElFakeRates ){
+      TFile* f = TFile::Open("files/ww_el_fr_EG.root");
+      assert(f);
+      externalElFakeRates = dynamic_cast<TH2F*>( f->Get("el_fr_v2_wwV1") );
+      assert(externalElFakeRates);
+    }      
+    if ( !externalMuFakeRates ){
+      TFile* f = TFile::Open("files/ww_mu_fr_Mu.root");
+      assert(f);
+      externalMuFakeRates = dynamic_cast<TH2F*>( f->Get("mu_fr_fo_wwV1_10") );
+      assert(externalMuFakeRates);
+    }      
+    // overflow goes into last bin
+    float lt_eta = fabs(cms2.hyp_lt_p4().at(i_hyp).eta());
+    if (lt_eta > max_eta) lt_eta = max_eta-.1;
+    float lt_pt = cms2.hyp_lt_p4().at(i_hyp).pt();
+    if (lt_pt > max_pt) lt_pt = max_pt-.1;
+    float ll_eta = fabs(cms2.hyp_ll_p4().at(i_hyp).eta());
+    if (ll_eta > max_eta) ll_eta = max_eta-.1;
+    float ll_pt = cms2.hyp_ll_p4().at(i_hyp).pt();
+    if (ll_pt > max_pt) ll_pt = max_pt-.1;
+    
     if ( passedLTElFakableRequirements && !passedLTFinalRequirements && passedLLFinalRequirements ){
-        helFRfakable[type]->Fill(cms2.hyp_lt_p4().at(i_hyp).pt(),
-                fabs(cms2.hyp_lt_p4().at(i_hyp).eta()),
-                weight);
-        helFRfakable[3]->Fill(cms2.hyp_lt_p4().at(i_hyp).pt(),
-                fabs(cms2.hyp_lt_p4().at(i_hyp).eta()),
-                weight);
-
-        // overflow goes into last bin
-        float eta = fabs(cms2.hyp_lt_p4().at(i_hyp).eta());
-        if (eta > max_eta) eta = max_eta-.1;
-        float pt = cms2.hyp_lt_p4().at(i_hyp).pt();
-        if (pt > max_pt) pt = max_pt-.1;
-
-        helFRfakable_fakerate[type]->Fill(eta,pt,weight);
-        helFRfakable_fakerate[3]->Fill(eta,pt,weight);
+        helFRfakable[type]->Fill(cms2.hyp_lt_p4().at(i_hyp).pt(), fabs(cms2.hyp_lt_p4().at(i_hyp).eta()), weight);
+        helFRfakable[3]->Fill(cms2.hyp_lt_p4().at(i_hyp).pt(), fabs(cms2.hyp_lt_p4().at(i_hyp).eta()), weight);
+        helFRfakable_fakerate[type]->Fill(lt_eta,lt_pt,weight);
+        helFRfakable_fakerate[3]->Fill(lt_eta,lt_pt,weight);
+	hdoubleFakes[type]->Fill(1.5,weight*getFakeRatePrime(externalElFakeRates,lt_eta,lt_pt));
+	hdoubleFakes[3]->Fill(1.5,weight*getFakeRatePrime(externalElFakeRates,lt_eta,lt_pt));
     }
     if ( passedLLElFakableRequirements && passedLTFinalRequirements && !passedLLFinalRequirements ){
-        helFRfakable[type]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(),
-                fabs(cms2.hyp_ll_p4().at(i_hyp).eta()),
-                weight);
-        helFRfakable[3]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(),
-                fabs(cms2.hyp_ll_p4().at(i_hyp).eta()),
-                weight);
-
-        // overflow goes into last bin
-        float eta = fabs(cms2.hyp_ll_p4().at(i_hyp).eta());
-        if (eta > max_eta) eta = max_eta-.1;
-        float pt = cms2.hyp_ll_p4().at(i_hyp).pt();
-        if (pt > max_pt) pt = max_pt-.1;
-
-        helFRfakable_fakerate[type]->Fill(eta,pt,weight);
-        helFRfakable_fakerate[3]->Fill(eta,pt,weight);
+        helFRfakable[type]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(), fabs(cms2.hyp_ll_p4().at(i_hyp).eta()), weight);
+        helFRfakable[3]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(), fabs(cms2.hyp_ll_p4().at(i_hyp).eta()), weight);
+        helFRfakable_fakerate[type]->Fill(ll_eta,ll_pt,weight);
+        helFRfakable_fakerate[3]->Fill(ll_eta,ll_pt,weight);
+	hdoubleFakes[type]->Fill(1.5,weight*getFakeRatePrime(externalElFakeRates,ll_eta,ll_pt));
+	hdoubleFakes[3]->Fill(1.5,weight*getFakeRatePrime(externalElFakeRates,ll_eta,ll_pt));
     }
     if ( passedLTMuFakableRequirements && !passedLTFinalRequirements && passedLLFinalRequirements ){
-        hmuFRfakable[type]->Fill(cms2.hyp_lt_p4().at(i_hyp).pt(),
-                fabs(cms2.hyp_lt_p4().at(i_hyp).eta()),
-                weight);
-        hmuFRfakable[3]->Fill(cms2.hyp_lt_p4().at(i_hyp).pt(),
-                fabs(cms2.hyp_lt_p4().at(i_hyp).eta()),
-                weight);
-
-        // overflow goes into last bin
-        float eta = fabs(cms2.hyp_lt_p4().at(i_hyp).eta());
-        if (eta > max_eta) eta = max_eta-.1;
-        float pt = cms2.hyp_lt_p4().at(i_hyp).pt();
-        if (pt > max_pt) pt = max_pt-.1;
-
-        hmuFRfakable_fakerate[type]->Fill(eta,pt,weight);
-        hmuFRfakable_fakerate[3]->Fill(eta,pt,weight);
+        hmuFRfakable[type]->Fill(cms2.hyp_lt_p4().at(i_hyp).pt(), fabs(cms2.hyp_lt_p4().at(i_hyp).eta()), weight);
+        hmuFRfakable[3]->Fill(cms2.hyp_lt_p4().at(i_hyp).pt(), fabs(cms2.hyp_lt_p4().at(i_hyp).eta()), weight);
+        hmuFRfakable_fakerate[type]->Fill(lt_eta,lt_pt,weight);
+        hmuFRfakable_fakerate[3]->Fill(lt_eta,lt_pt,weight);
+	hdoubleFakes[type]->Fill(1.5,weight*getFakeRatePrime(externalMuFakeRates,lt_eta,lt_pt));
+	hdoubleFakes[3]->Fill(1.5,weight*getFakeRatePrime(externalMuFakeRates,lt_eta,lt_pt));
     }
     if ( passedLLMuFakableRequirements && passedLTFinalRequirements && !passedLLFinalRequirements ){
-        hmuFRfakable[type]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(),
-                fabs(cms2.hyp_ll_p4().at(i_hyp).eta()),
-                weight);
-        hmuFRfakable[3]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(),
-                fabs(cms2.hyp_ll_p4().at(i_hyp).eta()),
-                weight);
-
-        // overflow goes into last bin
-        float eta = fabs(cms2.hyp_ll_p4().at(i_hyp).eta());
-        if (eta > max_eta) eta = max_eta-.1;
-        float pt = cms2.hyp_ll_p4().at(i_hyp).pt();
-        if (pt > max_pt) pt = max_pt-.1;
-
-        hmuFRfakable_fakerate[type]->Fill(eta,pt,weight);
-        hmuFRfakable_fakerate[3]->Fill(eta,pt,weight);
+        hmuFRfakable[type]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(), fabs(cms2.hyp_ll_p4().at(i_hyp).eta()), weight);
+        hmuFRfakable[3]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(), fabs(cms2.hyp_ll_p4().at(i_hyp).eta()), weight);
+        hmuFRfakable_fakerate[type]->Fill(ll_eta,ll_pt,weight);
+        hmuFRfakable_fakerate[3]->Fill(ll_eta,ll_pt,weight);
+	hdoubleFakes[type]->Fill(1.5,weight*getFakeRatePrime(externalMuFakeRates,ll_eta,ll_pt));
+	hdoubleFakes[3]->Fill(1.5,weight*getFakeRatePrime(externalMuFakeRates,ll_eta,ll_pt));
+    }
+    if ( !passedLTFinalRequirements && !passedLLFinalRequirements ){
+      if ( passedLTElFakableRequirements && passedLLElFakableRequirements ){
+	// printf("\tElEl\n");
+	hdoubleFakes[type]->Fill(2.5,weight*getFakeRatePrime(externalElFakeRates,lt_eta,lt_pt)*getFakeRatePrime(externalElFakeRates,ll_eta,ll_pt));
+	hdoubleFakes[3]->Fill(2.5,weight*getFakeRatePrime(externalElFakeRates,lt_eta,lt_pt)*getFakeRatePrime(externalElFakeRates,ll_eta,ll_pt));
+      }
+      if ( passedLTMuFakableRequirements && passedLLMuFakableRequirements ){
+	// printf("\tMuMu\n");
+	hdoubleFakes[type]->Fill(2.5,weight*getFakeRatePrime(externalMuFakeRates,lt_eta,lt_pt)*getFakeRatePrime(externalMuFakeRates,ll_eta,ll_pt));
+	hdoubleFakes[3]->Fill(2.5,weight*getFakeRatePrime(externalMuFakeRates,lt_eta,lt_pt)*getFakeRatePrime(externalMuFakeRates,ll_eta,ll_pt));
+      }
+      if ( passedLTElFakableRequirements && passedLLMuFakableRequirements ){
+	// printf("\tElMu\n");
+	hdoubleFakes[type]->Fill(2.5,weight*getFakeRatePrime(externalElFakeRates,lt_eta,lt_pt)*getFakeRatePrime(externalMuFakeRates,ll_eta,ll_pt));
+	hdoubleFakes[3]->Fill(2.5,weight*getFakeRatePrime(externalElFakeRates,lt_eta,lt_pt)*getFakeRatePrime(externalMuFakeRates,ll_eta,ll_pt));
+      }
+      if ( passedLTMuFakableRequirements && passedLLElFakableRequirements ){
+	// printf("\tMuMu\n");
+	hdoubleFakes[type]->Fill(2.5,weight*getFakeRatePrime(externalMuFakeRates,lt_eta,lt_pt)*getFakeRatePrime(externalElFakeRates,ll_eta,ll_pt));
+	hdoubleFakes[3]->Fill(2.5,weight*getFakeRatePrime(externalMuFakeRates,lt_eta,lt_pt)*getFakeRatePrime(externalElFakeRates,ll_eta,ll_pt));
+      }
     }
 }
 
@@ -2003,6 +2018,8 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
   
   const Double_t ptbins[4] = {20,30,80,200};
   // Same binning as fake rate histograms
+  // WARNING: use the same binning for muons and electrons or
+  // you will bring the code internal logic !!!
   const Double_t ptbins_fakerate[6] = {10.,15.,20.,25.,30.,35.};
   const Double_t etabins_fakerate[5] = {0.0,1.0,1.479,2.0,2.5};
 
@@ -2058,6 +2075,11 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hmuFRfakable[i]->Sumw2();
     hmuFRfakable_fakerate[i] = new TH2F(Form("%s_hmuFRfakable_fakerate_%s", prefix,HypothesisTypeName(i)), "FR study: rate of fakable objects",4,etabins_fakerate,5,ptbins_fakerate);
     hmuFRfakable_fakerate[i]->Sumw2();
+    hdoubleFakes[i] = new TH1F(Form("%s_hdoubleFakes_%s", prefix,HypothesisTypeName(i)), "Fake estimation",3,0,3);
+    hdoubleFakes[i]->Sumw2();
+    hdoubleFakes[i]->GetXaxis()->SetBinLabel(1,"Tight-Tight");
+    hdoubleFakes[i]->GetXaxis()->SetBinLabel(2,"Tight-LooseNotTight");
+    hdoubleFakes[i]->GetXaxis()->SetBinLabel(3,"LooseNotTight-LooseNotTight");
 
     const Double_t jetEtbins[12] = {0,10,15,20,25,30,40,50,60,80,100,200};
     hmaxGenJetPt[i]  = new TH1F(Form("%s_hmaxGenJetPt_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<5) Et (GenJet) JetVeto NM1", 11,jetEtbins);
