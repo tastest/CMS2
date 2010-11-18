@@ -32,6 +32,7 @@
 #include "histtools.h"
 #include "CORE/ttbarSelections.cc"
 #include "CORE/susySelections.cc"
+#include "CORE/triggerSuperModel.cc"
 #include "CORE/jetSelections.cc"
 //#include "CORE/triggerUtils.cc"
 
@@ -141,7 +142,7 @@ void ossusy_looper::makeTree(char *prefix)
   rootdir->cd();
 
   //Super compressed ntuple here
-  outFile   = new TFile(Form("output/nov5th_v7/%s_smallTree.root",prefix), "RECREATE");
+  outFile   = new TFile(Form("output/nov5th_v8/%s_smallTree.root",prefix), "RECREATE");
   //outFile   = new TFile("temp.root","RECREATE");
   outFile->cd();
   outTree = new TTree("t","Tree");
@@ -150,6 +151,7 @@ void ossusy_looper::makeTree(char *prefix)
   //variables must be declared in ossusy_looper.h
   outTree->Branch("costhetaweight",  &costhetaweight_,   "costhetaweight/F");
   outTree->Branch("weight",          &weight_,           "weight/F");
+  outTree->Branch("smeff",           &smeff_,            "smeff/F");
   outTree->Branch("mllgen",          &mllgen_,           "mllgen/F");
   outTree->Branch("nlep",            &nlep_,             "nlep/I");
   outTree->Branch("ngoodlep",        &ngoodlep_,         "ngoodlep/I");
@@ -534,6 +536,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
   
   bool isLM = TString(prefix).Contains("LM");
+  int nSS = 0;
+  int nOS = 0;
 
   if( doFakeApp ){
 //     cout << "Currently not set up to do fake rate calculation, quitting" << endl;
@@ -947,6 +951,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
          
         }
       
+        if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 ) nSS++;
+        else nOS++;
+
+
         int nels = 0;
         int nmus  = 0;
         int ntaus = 0;
@@ -1514,6 +1522,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           mucorjesmet_   = mucorjesmet;
           genmet_        = genmet;                       //generated met from neutrinos/LSP
           weight_        = weight;                       //event weight
+          smeff_         = isData ? 1 : triggerSuperModelEffic( hypIdx ); //trigger supermodel efficiency
           proc_          = getProcessType(prefix);       //integer specifying sample
           topmass_       = topMass;                      //topepton mass
           dilmass_       = hyp_p4()[hypIdx].mass();      //dilepton mass
@@ -2027,6 +2036,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
   cout << "nmm " << nmm << endl;
   cout << "nem " << nem << endl;
   cout << "tot " << nee+nmm+nem << endl;
+
+  //cout << "nSS " << nSS << endl;
+  //cout << "nOS " << nOS << endl;
 
 //   cout << endl << endl;
 //   cout << "nGoodEl " << nGoodEl << endl;

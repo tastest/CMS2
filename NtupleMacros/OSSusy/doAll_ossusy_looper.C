@@ -176,9 +176,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preML8      = 1;
   int preLMscan   = 1;
 
-  
+  /*  
   //Flags for files to run over
-  bool rundata     = 0;
+  bool rundata     = 1;
   bool rundataskim = 1;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
@@ -200,69 +200,20 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runEM       = 0;
   bool runtW       = 1;
   bool runVQQ      = 0;
-  bool runLM0      = 0;
-  bool runLM1      = 0;
-  bool runLM2      = 0;
-  bool runLM3      = 0;
-  bool runLM4      = 0;
-  bool runLM5      = 0;
-  bool runLM6      = 0;
-  bool runLM7      = 0;
-  bool runLM8      = 0;
-  bool runLM9      = 0;
-  bool runLM10     = 0;
-  bool runLM11     = 0;
-  bool runLM12     = 0;
-  bool runLM13     = 0;
-  bool runML1      = 0;
-  bool runML2      = 0;
-  bool runML3      = 0;
-  bool runML4      = 0;
-  bool runML5      = 0;
-  bool runML6      = 0;
-  bool runML7      = 0;
-  bool runML8      = 0;
-  bool runLMscan   = 0; 
-   
-
-  /*
-  //Flags for files to run over
-  bool rundata     = 0;
-  bool rundataskim = 0;
-  bool runQCDpt15  = 0;
-  bool runQCDpt30  = 0;
-  bool runttall    = 0;
-  bool runttdil    = 0;
-  bool runttrelval = 0;
-  bool runttem     = 0;
-  bool runttotr    = 0;
-  bool runWW       = 0;
-  bool runWZ       = 0;
-  bool runZZ       = 0;
-  bool runWjets    = 0;
-  bool runWcharm   = 0;
-  bool runZjets    = 0;
-  bool runDYee     = 0;
-  bool runDYmm     = 1;
-  bool runDYtautau = 0;
-  bool runppMuX    = 0;
-  bool runEM       = 0;
-  bool runtW       = 0;
-  bool runVQQ      = 0;
-  bool runLM0      = 0;
-  bool runLM1      = 0;
-  bool runLM2      = 0;
-  bool runLM3      = 0;
-  bool runLM4      = 0;
-  bool runLM5      = 0;
-  bool runLM6      = 0;
-  bool runLM7      = 0;
-  bool runLM8      = 0;
-  bool runLM9      = 0;
-  bool runLM10     = 0;
-  bool runLM11     = 0;
-  bool runLM12     = 0;
-  bool runLM13     = 0;
+  bool runLM0      = 1;
+  bool runLM1      = 1;
+  bool runLM2      = 1;
+  bool runLM3      = 1;
+  bool runLM4      = 1;
+  bool runLM5      = 1;
+  bool runLM6      = 1;
+  bool runLM7      = 1;
+  bool runLM8      = 1;
+  bool runLM9      = 1;
+  bool runLM10     = 1;
+  bool runLM11     = 1;
+  bool runLM12     = 1;
+  bool runLM13     = 1;
   bool runML1      = 0;
   bool runML2      = 0;
   bool runML3      = 0;
@@ -273,6 +224,55 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML8      = 0;
   bool runLMscan   = 0; 
   */
+
+  
+  //Flags for files to run over
+  bool rundata     = 0;
+  bool rundataskim = 0;
+  bool runQCDpt15  = 0;
+  bool runQCDpt30  = 0;
+  bool runttall    = 0;
+  bool runttdil    = 1;
+  bool runttrelval = 0;
+  bool runttem     = 0;
+  bool runttotr    = 0;
+  bool runWW       = 0;
+  bool runWZ       = 0;
+  bool runZZ       = 0;
+  bool runWjets    = 0;
+  bool runWcharm   = 0;
+  bool runZjets    = 0;
+  bool runDYee     = 0;
+  bool runDYmm     = 0;
+  bool runDYtautau = 0;
+  bool runppMuX    = 0;
+  bool runEM       = 0;
+  bool runtW       = 0;
+  bool runVQQ      = 0;
+  bool runLM0      = 1;
+  bool runLM1      = 1;
+  bool runLM2      = 0;
+  bool runLM3      = 0;
+  bool runLM4      = 0;
+  bool runLM5      = 0;
+  bool runLM6      = 0;
+  bool runLM7      = 0;
+  bool runLM8      = 0;
+  bool runLM9      = 0;
+  bool runLM10     = 0;
+  bool runLM11     = 0;
+  bool runLM12     = 0;
+  bool runLM13     = 0;
+  bool runML1      = 0;
+  bool runML2      = 0;
+  bool runML3      = 0;
+  bool runML4      = 0;
+  bool runML5      = 0;
+  bool runML6      = 0;
+  bool runML7      = 0;
+  bool runML8      = 0;
+  bool runLMscan   = 0; 
+  
 
   TChain* chdataskim = new  TChain("Events");
   if(rundataskim){
@@ -736,7 +736,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // Process files one at a time, and color them as needed
   for (int jetTypeIdx = 0; jetTypeIdx < 1; ++jetTypeIdx)
     {
-      for (int metTypeIdx = 0; metTypeIdx < 1; ++metTypeIdx)
+      for (int metTypeIdx = 3; metTypeIdx < 4; ++metTypeIdx)
         {
           for (int zvetoIdx = 0; zvetoIdx < 1; ++zvetoIdx)
             {
@@ -1014,11 +1014,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                   
                   // save all the histograms
                   if(doFakeApp) {
-                    const char* outFile = Form("output/nov5th_v6/ossusy_%s_%s%s_%s_FakeApp.root", 
+                    const char* outFile = Form("output/nov5th_v8/ossusy_%s_%s%s_%s_FakeApp.root", 
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx],frmodeStrings[frmode]);
                   }
                   else {
-                    const char* outFile = Form("output/temp/ossusy_%s_%s%s_bitmask.root", 
+                    const char* outFile = Form("output/nov5th_v8/ossusy_%s_%s%s_bitmask.root", 
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
                   }
                   
