@@ -1,9 +1,12 @@
 #!/bin/bash
 TOOL_DIR=$1
-SUB_DIR=$2
+DATA_DIR=$2
+cms2_tag=$3
+SUB_DIR=` echo $DATA_DIR/$cms2_tag `
 while [ 1 ]
 do
-[ ! -d " ~/public_html/hunt/$SUB_DIR" ] && echo Create  ~/public_html/hunt/$SUB_DIR && mkdir ~/public_html/hunt/$SUB_DIR
+#[ ! -d " ~/public_html/hunt/$SUB_DIR" ] && echo Create  ~/public_html/hunt/$SUB_DIR && mkdir ~/public_html/hunt/$SUB_DIR
+[ ! -d "$DATA_DIR" ] && echo Create $DATA_DIR && mkdir $DATA_DIR
 [ ! -d "$SUB_DIR" ] && echo Create $SUB_DIR && mkdir $SUB_DIR
 [ ! -d "$SUB_DIR/cands" ] && echo Create $SUB_DIR/cands && mkdir $SUB_DIR/cands
 [ ! -d "$SUB_DIR/dumps" ] && echo Create $SUB_DIR/dumps && mkdir $SUB_DIR/dumps
@@ -30,9 +33,11 @@ cd $SUB_DIR
     #find /nfs-3/userdata/cms2/$SUB_DIR/V03-06-09 -follow -maxdepth 1 -name "merged_ntuple_[0-9]*.root" -printf "%p %s %C@\n"  >>  AllRunsAvailable.txt
    # echo /nfs-3/userdata/cms2/$SUB_DIR/V03-06-14/singleLepPt10Skim
    # find /nfs-3/userdata/cms2/$SUB_DIR/V03-06-14/singleLepPt10Skim -follow -maxdepth 1 -name "skimmed_ntuple_[0-9]*.root" -printf "%p %s %C@\n"  >>  AllRunsAvailable.txt
-    echo /nfs-3/userdata/cms2/$SUB_DIR/V03-06-14
-    find /nfs-3/userdata/cms2/$SUB_DIR/V03-06-14 -follow -maxdepth 1 -name "merged_ntuple_[0-9]*.root" -printf "%p %s %C@\n"  >>  AllRunsAvailable.txt
-    #find /nfs-3/userdata/cms2/$SUB_DIR/V03-06-14 -follow -maxdepth 1 -name "merged_ntuple_148031_1.root" -printf "%p %s %C@\n"  >>  AllRunsAvailable.txt
+    #echo /nfs-3/userdata/cms2/$SUB_DIR/singleLepPt10Skim
+    #find /nfs-3/userdata/cms2/$SUB_DIR/singleLepPt10Skim -follow -maxdepth 1 -name "skimmed_ntuple_[0-9]*.root" -printf "%p %s %C@\n"  >>  AllRunsAvailable.txt
+    echo /nfs-3/userdata/cms2/$SUB_DIR   
+    find /nfs-3/userdata/cms2/$SUB_DIR -follow -maxdepth 1 -name "merged_ntuple_[0-9]*.root" -printf "%p %s %C@\n"  >>  AllRunsAvailable.txt
+ #find /nfs-3/userdata/cms2/$SUB_DIR/V03-06-14 -follow -maxdepth 1 -name "merged_ntuple_148031_1.root" -printf "%p %s %C@\n"  >>  AllRunsAvailable.txt
 #     find /nfs-3/userdata/cms2/Mu_Run2010A-PromptReco-v4_RECO/V03-04-26-12/singleLepPt10Skim -follow -maxdepth 1 -name "skimmed_ntuple_[0-9]*.root" -printf "%p %s %C@\n"  >AllRunsAvailable.txt
     # The awk above is used because these two processings overlap
     # and we don't want to deal with the duplication
@@ -73,6 +78,7 @@ cd $SUB_DIR
             if [ $? -ne 0 ]
             then
                 echo "Error processing $file"
+		exit 55
             else
                 echo $line >> RunsProcessed.txt
             fi
@@ -98,4 +104,4 @@ cd $SUB_DIR
     fi
     cd $TOOL_DIR
     sleep 3600;
-done  &> $TOOL_DIR/log/$SUB_DIR.log.`date '+%Y.%m.%d-%H.%M.%S'`   
+done  &> $TOOL_DIR/log/$DATA_DIR.log.`date '+%Y.%m.%d-%H.%M.%S'`   

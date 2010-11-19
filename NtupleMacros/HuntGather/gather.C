@@ -22,10 +22,12 @@ float GetIntLumi(float lumi, int brun, int bls, int erun, int els)
 {
     TChain *c = new TChain("tree");
     //c->Add("/tas05/disk00/jribnik/hunt/dilep_baby/*.root");
-    c->Add("/nfs-3/userdata/yanjuntu/hunt/EG_Run2010A-Sep17ReReco_v2_RECO/dilep_baby/*.root");
-    c->Add("/nfs-3/userdata/yanjuntu/hunt/Electron_Run2010B-PromptReco-v2_RECO/dilep_baby/*.root");
-    c->Add("/nfs-3/userdata/yanjuntu/hunt/Mu_Run2010A-Sep17ReReco_v2_RECO/dilep_baby/*.root");
-    c->Add("/nfs-3/userdata/yanjuntu/hunt/Mu_Run2010B-PromptReco-v2_RECO/dilep_baby/*.root");
+    c->Add("/nfs-3/userdata/yanjuntu/hunt/EG_Run2010A-Sep17ReReco_v2_RECO/V03-06-14/dilep_baby/*.root");
+    c->Add("/nfs-3/userdata/yanjuntu/hunt/Electron_Run2010B-PromptReco-v2_RECO/V03-06-14-00/dilep_baby/*.root");
+    c->Add("/nfs-3/userdata/yanjuntu/hunt/Electron_Run2010B-PromptReco-v2_RECO/V03-06-14/dilep_baby/*.root");
+    c->Add("/nfs-3/userdata/yanjuntu/hunt/Mu_Run2010A-Sep17ReReco_v2_RECO/V03-06-14/dilep_baby/*.root");
+    c->Add("/nfs-3/userdata/yanjuntu/hunt/Mu_Run2010B-PromptReco-v2_RECO/V03-06-14-00/dilep_baby/*.root");
+    c->Add("/nfs-3/userdata/yanjuntu/hunt/Mu_Run2010B-PromptReco-v2_RECO/V03-06-14/dilep_baby/*.root");
 
     TCut c_goodrun(Form("((run>%i&&run<%i)||(run==%i&&ls>=%i)||(run==%i&&ls<=%i))&&goodrun_json(run,ls)", brun, erun, brun, bls, erun, els));
     // goodrun plus events beyond range of goodrun
@@ -326,13 +328,14 @@ TCanvas* DrawAll(TCut field, const char *savename, TCut sel, TCut presel, float 
 }
 
 TCanvas* DrawAll(TCut field, const char *savename, TCut sel, TCut presel, float intlumifb, unsigned int nbins, float xlo, float xhi, bool integrated,
-        BabySample* bs1,  BabySample* bs2,  BabySample* bs3,  BabySample* bs4,  BabySample* bs5,
-        BabySample* bs6,  BabySample* bs7,  BabySample* bs8,  BabySample* bs9,  BabySample* bs10,
-        BabySample* bs11, BabySample* bs12, BabySample* bs13, BabySample* bs14, BabySample* bs15)
+		 BabySample* bs1,  BabySample* bs2,  BabySample* bs3,  BabySample* bs4,  BabySample* bs5,
+		 BabySample* bs6,  BabySample* bs7,  BabySample* bs8,  BabySample* bs9,  BabySample* bs10,
+		 BabySample* bs11, BabySample* bs12, BabySample* bs13, BabySample* bs14, BabySample* bs15,
+		 BabySample* bs16, BabySample* bs17, BabySample* bs18, BabySample* bs19, BabySample* bs20)
 {
     std::vector<BabySample*> tmp;
-    BabySample* bss[15] = {bs1,bs2,bs3,bs4,bs5,bs6,bs7,bs8,bs9,bs10,bs11,bs12,bs13,bs14,bs15};
-    for(unsigned int i = 0; i < 15; ++i) {
+    BabySample* bss[20] = {bs1,bs2,bs3,bs4,bs5,bs6,bs7,bs8,bs9,bs10,bs11,bs12,bs13,bs14,bs15,bs16,bs17,bs18,bs19,bs20};
+    for(unsigned int i = 0; i < 20; ++i) {
         if (bss[i])
             tmp.push_back(bss[i]);
     }
@@ -351,10 +354,12 @@ TCanvas* DrawAll(TCut field, const char *savename, TCut sel, TCut presel, float 
     // data babies
     //
 
-  static BabySample *bs_data_dilep_1  = new BabySample("data","EG","/nfs-3/userdata/yanjuntu/hunt/EG_Run2010A-Sep17ReReco_v2_RECO/dilep_baby/*.root",base_dilep,1.,true);
-  static BabySample *bs_data_dilep_2  = new BabySample("data","Electron","/nfs-3/userdata/yanjuntu/hunt/Electron_Run2010B-PromptReco-v2_RECO/dilep_baby/*.root",base_dilep,1.,true);
-  static BabySample *bs_data_dilep_3  = new BabySample("data","Mu","/nfs-3/userdata/yanjuntu/hunt/Mu_Run2010A-Sep17ReReco_v2_RECO/dilep_baby/*.root",base_dilep,1.,true); 
-  static BabySample *bs_data_dilep_4  = new BabySample("data","Mu_Prompt","/nfs-3/userdata/yanjuntu/hunt/Mu_Run2010B-PromptReco-v2_RECO/dilep_baby/*.root",base_dilep,1.,true);
+  static BabySample *bs_data_dilep_1  = new BabySample("data","Electron1","/nfs-3/userdata/yanjuntu/hunt/EG_Run2010A-Sep17ReReco_v2_RECO/V03-06-14/dilep_baby/*.root",base_dilep,1.,true);
+  static BabySample *bs_data_dilep_2  = new BabySample("data","Electron2","/nfs-3/userdata/yanjuntu/hunt/Electron_Run2010B-PromptReco-v2_RECO/V03-06-14-00/dilep_baby/*.root",base_dilep,1.,true);
+  static BabySample *bs_data_dilep_3  = new BabySample("data","Electron3","/nfs-3/userdata/yanjuntu/hunt/Electron_Run2010B-PromptReco-v2_RECO/V03-06-14/dilep_baby/*.root",base_dilep,1.,true);
+  static BabySample *bs_data_dilep_4  = new BabySample("data","Mu1","/nfs-3/userdata/yanjuntu/hunt/Mu_Run2010A-Sep17ReReco_v2_RECO/V03-06-14/dilep_baby/*.root",base_dilep,1.,true); 
+  static BabySample *bs_data_dilep_5  = new BabySample("data","Mu2","/nfs-3/userdata/yanjuntu/hunt/Mu_Run2010B-PromptReco-v2_RECO/V03-06-14-00/dilep_baby/*.root",base_dilep,1.,true);
+  static BabySample *bs_data_dilep_6  = new BabySample("data","Mu3","/nfs-3/userdata/yanjuntu/hunt/Mu_Run2010B-PromptReco-v2_RECO/V03-06-14/dilep_baby/*.root",base_dilep,1.,true);
 
     //
     // mc babies
@@ -403,6 +408,8 @@ TCanvas* DrawAll(TCut field, const char *savename, TCut sel, TCut presel, float 
     babyVector.push_back(bs_data_dilep_2);
     babyVector.push_back(bs_data_dilep_3);
     babyVector.push_back(bs_data_dilep_4);
+    babyVector.push_back(bs_data_dilep_5);
+    babyVector.push_back(bs_data_dilep_6);
     babyVector.push_back(bs_ttbarjets_dilep);
     babyVector.push_back(bs_singletop_dilep);
     babyVector.push_back(bs_dyee_dilep);

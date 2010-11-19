@@ -24,8 +24,10 @@ void gather_doAll() {
     
     //   const char *goodrunlist = "runlists/Cert_TopOct15_Merged_135821-147454_allPVT.txt";
     // float goodrunlumi = 11060;
-    const char *goodrunlist = "runlists/Cert_TopOct22_Merged_135821-148058_allPVT.txt";
-    float goodrunlumi = 15210;
+    //const char *goodrunlist = "runlists/Cert_TopOct22_Merged_135821-148058_allPVT.txt";
+    //    float goodrunlumi = 15210;
+    const char *goodrunlist = "runlists/json_135821_148864_22.02pb.txt";
+    float goodrunlumi = 22020;
 
     // this sets the json file obviously; it's
     // easiest to just  soft link to  the real
@@ -78,7 +80,10 @@ void gather_doAll() {
     DrawAll("mass","os_sf_mass",osanal_sf_dilep,"",f_intlumifb,40,0.,500.,0);
     DrawAll("sumjetpt","os_sumjetpt_int",osanal_dilep,"",f_intlumifb,40,0.,800.,1);
     DrawAll("tcmet","os_tcmet_int",osanal_dilep,"",f_intlumifb,40,0.,300.,1);
-
+    
+    // 4 Lepton events search
+    // TCut exotic_4lepton   ("exotic_4lepton"   ,exotic_dilep);
+    // DrawAll("mass","exotic_dilep_mass",exotic_4lepton,"",f_intlumifb,40,0.,500.,0);
     //
     // SS PLOTS
     //

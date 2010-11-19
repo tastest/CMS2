@@ -72,6 +72,8 @@ TCut ee_dilep("abs(eormu1)==11&&abs(eormu2)==11");
 TCut mm_dilep("abs(eormu1)==13&&abs(eormu2)==13");
 TCut em_dilep("(abs(eormu1)==11&&abs(eormu2)==13)||(abs(eormu1)==13&&abs(eormu2)==11)");
 
+//TCut exotic_dilep1("(pt1 > 20. && pt2 > 10.) || (pt1 > 10. && pt2 > 20.)");
+ 
 TCut inclusivez_dilep1("mass > 76. && mass < 106.");
 TCut inclusivez_dilep("inclusivez_dilep",base_dilep+sf_dilep+inclusivez_dilep1);
 
