@@ -46,6 +46,7 @@ void jakes() {
     // ww vs. ttbar
     //
 
+    /*
     TH2F* hSigmavNevts_deta  = new TH2F("hSigmavNevts_deta","hSigmavNevts_deta",11,-5.,105.,100,0.,100.);
     TH2F* hSigmavNevts_dilpt = new TH2F("hSigmavNevts_dilpt","hSigmavNevts_dilpt",11,-5.,105.,100,0.,100.);
     TH2F* hSigmavNevts_dphi  = new TH2F("hSigmavNevts_dphi","hSigmavNevts_dphi",11,-5.,105.,100,0.,100.);
@@ -185,7 +186,6 @@ void jakes() {
             nll_ww = 0;
             nll_tt = 0;
 
-            /*
             ww_red = pdf_ww_pt1vdeta->generate(RooArgSet(*var_pt1,*var_deta),ii);
             nll_ww = pdf_ww_pt1vdeta->createNLL(*ww_red);
             nll_tt = pdf_tt_pt1vdeta->createNLL(*ww_red);
@@ -281,14 +281,15 @@ void jakes() {
             ww_red = 0;
             nll_ww = 0;
             nll_tt = 0;
-            */
         }
     }
+    */
 
     //
     // ww + ttbar at a ratio of 4:1
     //
 
+    /*
     TH2F* hDiffNSigvNevts = new TH2F("hDiffNSigvNevts","hDiffNSigvNevts",11,-5.,105.,100,-10.,10.);
     TH2F* hDiffNBkgvNevts = new TH2F("hDiffNBkgvNevts","hDiffNBkgvNevts",11,-5.,105.,100,-10.,10.);
     RooDataSet* ww_red = 0;
@@ -328,6 +329,7 @@ void jakes() {
             tt_red = 0;
         }
     }
+    */
 
     //
     // 10 -> ~30/pb, 30 -> ~100/pb, 100 -> ~300/pb
