@@ -135,7 +135,7 @@ jetbkg: processed_data.root  # estimate jet induced background
 
 ElFrVer = el_fr_v2_wwV1
 MuFrVer = mu_fr_fo_wwV1_10
-ElFrFile = ww_el_fr_EG.root
+ElFrFile = ww_el_fr_EGandEGMon.root
 MuFrFile = ww_mu_fr_Mu.root
 
 jetbkg2: processed_data.root # fake rate method

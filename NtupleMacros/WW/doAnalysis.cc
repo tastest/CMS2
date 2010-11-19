@@ -2341,7 +2341,7 @@ RooDataSet* ScanChain( TChain* chain,
   initializeHistograms(prefix,qcdBackground);
 
   if ( !externalElFakeRates ){
-    TFile* f = TFile::Open("files/ww_el_fr_EG.root");
+    TFile* f = TFile::Open("files/ww_el_fr_EGandEGMon.root");
     assert(f);
     externalElFakeRates = dynamic_cast<TH2F*>( f->Get("el_fr_v2_wwV1") );
     assert(externalElFakeRates);
