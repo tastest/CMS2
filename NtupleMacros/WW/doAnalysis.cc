@@ -1023,6 +1023,27 @@ void getIsolationSidebandsAfterSelections(int i_hyp, double weight, RooDataSet* 
   set.setRealValue("run",cms2.evt_run());
   set.setRealValue("lumi",cms2.evt_lumiBlock());
   set.setCatLabel("sample_type","data_relaxed_iso");
+
+  // aTGC
+  set.setRealValue("dilpt",cms2.hyp_p4()[i_hyp].pt());
+  set.setRealValue("mass",cms2.hyp_p4()[i_hyp].mass2() > 0 ? cms2.hyp_p4()[i_hyp].mass() : TMath::Sqrt(-1.*cms2.hyp_p4()[i_hyp].mass2()));
+  set.setRealValue("pt1",TMath::Max(cms2.hyp_lt_p4()[i_hyp].pt(),cms2.hyp_ll_p4()[i_hyp].pt()));
+  set.setRealValue("pt2",TMath::Min(cms2.hyp_lt_p4()[i_hyp].pt(),cms2.hyp_ll_p4()[i_hyp].pt()));
+
+  double dphi = fabs(cms2.hyp_lt_p4()[i_hyp].phi() - cms2.hyp_ll_p4()[i_hyp].phi());
+  if (dphi > TMath::Pi()) dphi = TMath::TwoPi() - dphi;
+  set.setRealValue("dphi",dphi);
+
+  set.setRealValue("deta",fabs(cms2.hyp_lt_p4()[i_hyp].eta() - cms2.hyp_ll_p4()[i_hyp].eta()));
+  set.setRealValue("met",metValue());
+  //set.setRealValue("lambdaz",cms2.atgc_lambdaz());
+  //set.setRealValue("deltag1z",cms2.atgc_deltag1z());
+  //set.setRealValue("deltakg",cms2.atgc_deltakg());
+
+  set.setRealValue("unique",1);
+  dataset->add(set,weight);
+  // anything after this is not new
+  set.setRealValue("unique",0);
   
   // em case
   if ( type == EM ){
@@ -1926,6 +1947,25 @@ RooDataSet* MakeNewDataset(const char* name)
   set_selected.defineType("true",1);
   set_selected.defineType("false",0);
 
+  // a given hyp can be added multiple times
+  // use this to prevent hyp double counting
+  RooRealVar set_unique("unique","unique",0);
+
+  // aTGC
+  RooRealVar set_dilpt("dilpt","dilpt",0);
+  RooRealVar set_mass("mass","mass",0);
+  RooRealVar set_pt1("pt1","pt1",0);
+  RooRealVar set_pt2("pt2","pt2",0);
+  RooRealVar set_dphi("dphi","dphi",0);
+  RooRealVar set_deta("deta","deta",0);
+  RooRealVar set_met("met","met",0);
+  /* these exist only in the atgc samples and
+     will remain commented out for now
+     */
+  //RooRealVar set_lambdaz("lambdaz","lambdaz",0);
+  //RooRealVar set_deltag1z("deltag1z","deltag1z",0);
+  //RooRealVar set_deltakg("deltakg","deltakg",0);
+
   RooCategory set_hyp_type("hyp_type","Hypothesis type");
   set_hyp_type.defineType(HypothesisTypeName(MM),MM);
   set_hyp_type.defineType(HypothesisTypeName(EM),EM);
@@ -1939,11 +1979,24 @@ RooDataSet* MakeNewDataset(const char* name)
   set_sample_type.defineType("data_relaxed_iso",0);  // full sample with final selection 
   set_sample_type.defineType("control_sample_signal_iso",1);
 
-  RooDataSet* dataset = new RooDataSet(name, "N-1 dataset",
-				       RooArgSet(set_event,set_run,set_lumi,
-						 set_iso,set_selected,set_weight,
-						 set_hyp_type,set_fake_type,set_sample_type),
-				       RooFit::WeightVar(set_weight) );
+  RooArgSet argset(set_event,set_run,set_lumi,
+                   set_iso,set_selected,set_weight,
+                   set_hyp_type,set_fake_type,set_sample_type);
+  argset.add(set_unique);
+  argset.add(set_dilpt);
+  argset.add(set_mass);
+  argset.add(set_pt1);
+  argset.add(set_pt2);
+  argset.add(set_dphi);
+  argset.add(set_deta);
+  argset.add(set_met);
+  //argset.add(set_lambdaz);
+  //argset.add(set_deltag1z);
+  //argset.add(set_deltakg);
+
+  RooDataSet* dataset = new RooDataSet(name, "N-1 dataset",argset,
+                       RooFit::WeightVar(set_weight) );
+
   return dataset;
 }
 
