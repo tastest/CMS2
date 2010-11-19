@@ -142,7 +142,7 @@ void ossusy_looper::makeTree(char *prefix)
   rootdir->cd();
 
   //Super compressed ntuple here
-  outFile   = new TFile(Form("output/nov5th_v8/%s_smallTree.root",prefix), "RECREATE");
+  outFile   = new TFile(Form("output/temp/%s_smallTree.root",prefix), "RECREATE");
   //outFile   = new TFile("temp.root","RECREATE");
   outFile->cd();
   outTree = new TTree("t","Tree");
@@ -609,6 +609,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
   int nGoodEM = 0;
   int nSkip_els_conv_dist = 0;
 
+  int nevent = 0;
   float nee = 0.;
   float nmm = 0.;
   float nem = 0.;
@@ -667,11 +668,13 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       }
 
       // skip duplicates
-      if( isData ) {
- 	DorkyEventIdentifier id = { evt_run(),evt_event(), evt_lumiBlock() };
- 	if (is_duplicate(id) )
- 	  continue;
-      }
+      //if( isData ) {
+//  	DorkyEventIdentifier id = { evt_run(),evt_event(), evt_lumiBlock() };
+//  	if (is_duplicate(id) ){
+//           cout << "Found duplicate! " << evt_dataset()<< " " << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
+//  	  continue;
+//         }
+        //}
    
       //skip events with bad els_conv_dist 
       bool skipEvent = false;
@@ -685,6 +688,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         nSkip_els_conv_dist++;
         continue;
       }
+
+      //dumpDocLines();
 
       //goodrun list + event cleaning
       if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
@@ -2192,6 +2197,8 @@ void ossusy_looper::BookHistos(char *prefix)
 
       habcd[i][j]   = new TH2F(Form("%s_habcd_%s",prefix,suffix),
                                Form("%s_abcd_%s" ,prefix,suffix),1500,0,1500,300,0,30);
+
+      habcd[i][j]->Sumw2();
 
       habcd_nopresel[i][j]   = new TH2F(Form("%s_habcd_nopresel_%s",prefix,suffix),
                                         Form("%s_abcd_nopresel_%s" ,prefix,suffix),1500,0,1500,300,0,30);

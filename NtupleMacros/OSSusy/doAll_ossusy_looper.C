@@ -232,7 +232,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runttall    = 0;
-  bool runttdil    = 1;
+  bool runttdil    = 0;
   bool runttrelval = 0;
   bool runttem     = 0;
   bool runttotr    = 0;
@@ -250,7 +250,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runtW       = 0;
   bool runVQQ      = 0;
   bool runLM0      = 1;
-  bool runLM1      = 1;
+  bool runLM1      = 0;
   bool runLM2      = 0;
   bool runLM3      = 0;
   bool runLM4      = 0;
@@ -736,7 +736,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // Process files one at a time, and color them as needed
   for (int jetTypeIdx = 0; jetTypeIdx < 1; ++jetTypeIdx)
     {
-      for (int metTypeIdx = 3; metTypeIdx < 4; ++metTypeIdx)
+      for (int metTypeIdx = 0; metTypeIdx < 1; ++metTypeIdx)
         {
           for (int zvetoIdx = 0; zvetoIdx < 1; ++zvetoIdx)
             {
@@ -1018,7 +1018,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx],frmodeStrings[frmode]);
                   }
                   else {
-                    const char* outFile = Form("output/nov5th_v8/ossusy_%s_%s%s_bitmask.root", 
+                    const char* outFile = Form("output/temp/ossusy_%s_%s%s_bitmask.root", 
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
                   }
                   
