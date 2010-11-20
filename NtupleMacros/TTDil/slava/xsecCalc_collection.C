@@ -1,4 +1,6 @@
 #include <iostream>
+#include <math.h>
+#include <limits>
 
 double oplus(double a, double b){
   return sqrt(a*a + b*b);
@@ -18,7 +20,7 @@ void xsecCalc(double obs, double expS, double expSErr, double bg, double bgErr){
   double sigmaErrSystFrac = oplus(bgErr/obsS, expSErr/expS);
   double sigmaErrFrac =  oplus(sigmaErrStatFrac, sigmaErrSystFrac);
   
-  double sigmaErrFracLum = 0.11;
+  double sigmaErrFracLum = 0.06;
 
   double sigmaErrStat = sigma* sigmaErrStatFrac;
   double sigmaErrSyst = sigma* sigmaErrSystFrac;
@@ -42,9 +44,19 @@ void xsecCalc(double obs, double expS, double expSErr, double bg, double bgErr){
 
 }
 
+enum TTChannel {
+  ee_ch = 1,
+  mm_ch = 2,
+  em_ch = 4,
+  eemm_ch = 3,
+  eeem_ch = 5,
+  mmem_ch = 6,
+  eemmem_ch = 7
+};
 
 class TTxsecStruct {
 public:
+  TTChannel channel;
   double data;
 
   double tt_exp;       double tt_stat;
@@ -110,36 +122,108 @@ public:
   }
 
 
-//   void simpleAdd(TTxsecStruct& t){
-//     data;
+  void simpleAdd(TTxsecStruct& t, bool corrSyst=true){
+    TTChannel oldChannel = channel;
+    int aChI = (int)channel;
+    int bChI = (int)t.channel;
+    int chI = aChI | bChI;
+    TTChannel newChannel = (TTChannel)chI;
+    std::cout<<"Combining "<<aChI<<" and "<<bChI<<" into "<<chI<<std::endl;
+    if (((aChI&1) == (bChI&1) && (aChI&1)==1)
+	|| ((aChI&2) == (bChI&2) && (aChI&2)==2)
+	|| ((aChI&4) == (bChI&4) && (aChI&4)==4)
+	){
+      std::cout<<"Can't simple-combine the same channels"<<std::endl;
+      return;
+    }
+    channel = newChannel;
+
+//     double dataOld = data;
+    double tt_exp_old = tt_exp;
+    data      += t.data;
     
-//     tt_exp;       tt_stat;
+    tt_exp    += t.tt_exp;
+    tt_stat = oplus(tt_stat, t.tt_stat);
     
-//     dytt_exp;     dytt_stat;    dytt_syst; 
-//     vv_exp;       vv_stat;      vv_syst;
-//     tw_exp;       tw_stat;      tw_syst;
-//     mcbg_exp;     mcbg_stat;    mcbg_syst;  mcbg_e;
+    dytt_exp  += t.dytt_exp;
+    dytt_stat = oplus(dytt_stat, t.dytt_stat);
+    if (corrSyst) dytt_syst += t.dytt_syst; 
+    else dytt_syst = oplus(dytt_syst, t.dytt_syst);
+
+    vv_exp    += t.vv_exp;
+    vv_stat   = oplus(vv_stat, t.vv_stat);
+    if (corrSyst) vv_syst += t.vv_syst; 
+    else vv_syst = oplus(vv_syst, t.vv_syst);
+
+    tw_exp    += t.tw_exp;
+    tw_stat   = oplus(tw_stat, t.tw_stat);
+    if (corrSyst) tw_syst += t.tw_syst; 
+    else tw_syst = oplus(tw_syst, t.tw_syst);
+
+    mcbg_exp  = dytt_exp + vv_exp + tw_exp;
+    mcbg_stat = oplus(dytt_stat, vv_stat, tw_stat);
+    mcbg_syst = oplus(dytt_syst, vv_syst, tw_syst);
+    mcbg_e    = oplus(mcbg_stat, mcbg_syst);
     
-//     sr_exp;       sr_stat;      sr_syst;
-//     spill_exp;    spill_stat;   spill_syst; spill_e;
-//     qcd_exp;      qcd_stat;     qcd_syst;
-//     wjraw_exp;    wjraw_stat;
-//     wjf_exp;      wjf_stat;     wjf_syst;
-//     wjf_systFrac;
-//     fake_exp;     fake_stat;    fake_syst;  fake_e;
+    sr_exp=std::numeric_limits<double>::quiet_NaN();    
+    sr_stat=std::numeric_limits<double>::quiet_NaN();      
+    sr_syst=std::numeric_limits<double>::quiet_NaN();
+
+    spill_exp += t.spill_exp;
+    spill_stat= oplus(spill_stat, t.spill_stat);
+    if ((oldChannel == ee_ch && t.channel == mm_ch) 
+	|| (oldChannel == ee_ch && t.channel == mm_ch) ){
+      spill_syst =  oplus(spill_syst, t.spill_syst);
+    } 
+    else if (corrSyst) spill_syst += t.spill_syst; 
+    else spill_syst = oplus(spill_syst, t.spill_syst);
+    spill_e   = oplus(spill_stat, spill_syst);
+
+    qcd_exp   += t.qcd_exp;
+    qcd_stat  = oplus(qcd_stat, t.qcd_stat);
+    if ((oldChannel == ee_ch && t.channel == mm_ch) 
+	|| (oldChannel == ee_ch && t.channel == mm_ch) ){
+      qcd_syst = oplus(qcd_syst, t.qcd_syst);
+    }    
+    else if (corrSyst) qcd_syst += t.qcd_syst; 
+    else qcd_syst = oplus(qcd_syst, t.qcd_syst);
+
+    wjraw_exp += t.wjraw_exp;
+    wjraw_stat= oplus(wjraw_stat, t.wjraw_stat);
+
+    wjf_exp   = wjraw_exp - 2.* qcd_exp - spill_exp;
+    if (wjf_exp< 0) std::cout<<"Warning: negative wj estimate: "<<wjf_exp<<std::endl;
+    wjf_stat  = oplus(wjf_stat, t.wjf_stat);
+    if ((oldChannel == ee_ch && t.channel == mm_ch) 
+	|| (oldChannel == ee_ch && t.channel == mm_ch) ){
+      wjf_syst = oplus(wjf_syst, t.wjf_syst);
+    }
+    else if (corrSyst) wjf_syst += t.wjf_syst; 
+    else wjf_syst = oplus(wjf_syst, t.wjf_syst);
+    wjf_systFrac = std::numeric_limits<double>::quiet_NaN();
+
+    fake_exp  = wjf_exp + qcd_exp;
+    fake_stat = oplus(wjraw_stat, qcd_stat, spill_stat);
+    fake_syst = oplus(wjf_syst, qcd_syst, spill_syst);  
+    fake_e    = oplus(fake_stat, fake_syst);
     
-//     dy_exp;       dy_stat;      dy_syst;    dy_e;
+    dy_exp    += t.dy_exp;
+    dy_stat   = oplus(dy_stat, t.dy_stat);
+    dy_syst   = oplus(dy_syst, t.dy_syst);    
+    dy_e      = oplus(dy_stat, dy_syst);
     
-//     bg_exp;                                               bg_e;
+    bg_exp    += t.bg_exp;
+    bg_e      = oplus(mcbg_e, fake_e, dy_e);
     
-//     sf_exp;//
-//     tt_AE_eRel;
+    //use simple average here
+    sf_exp    = (sf_exp*tt_exp_old + t.sf_exp*t.tt_exp)/(tt_exp_old+t.tt_exp);
+    tt_AE_eRel= (tt_AE_eRel*tt_exp_old + t.tt_AE_eRel*t.tt_exp)/(tt_exp_old+t.tt_exp);
 
 
-//   }
+  }
 
   void printSummary(){
-    std::cout<<"Data: "<<data
+    std::cout<<"Data: "<<data<<" in "<<channel
 	     <<"\n\t   MCBG: "<<mcbg_exp <<" +/- " << mcbg_e
 	     <<"\n\t   Fake: "<<fake_exp <<" +/- " << fake_stat <<" +/- "<< fake_syst
 	     <<"\n\t     DY: "<<dy_exp <<" +/- " << dy_stat <<" +/- "<< dy_syst
@@ -149,8 +233,8 @@ public:
   }
 };
 
-void xsecCalc_inStruct(TTxsecStruct& tt){
-  tt.setDependentPars_v0();
+void xsecCalc_inStruct(TTxsecStruct& tt, bool setDepPars = true){
+  if (setDepPars) tt.setDependentPars_v0();
   
   tt.printSummary();
 
@@ -162,6 +246,7 @@ void xsecCalc_35pb_pass5(){
   std::cout<<"Doing JPT/TC"<<std::endl;
   std::cout<<"EMU (no MET)"<<std::endl;
   TTxsecStruct tem;
+  tem.channel = em_ch;
   tem.tt_exp   = 55.057; tem.tt_stat    =    0.452;
   tem.dytt_exp = 0.787 ;  tem.dytt_stat =    0.278;
   tem.vv_exp   = 1.050 ;  tem.vv_stat   =    0.041;
@@ -186,6 +271,7 @@ void xsecCalc_35pb_pass5(){
   std::cout<<"Doing JPT/TC"<<std::endl;
   std::cout<<"EMU (w MET)"<<std::endl;
   TTxsecStruct teme;
+  teme.channel = em_ch;
   teme.tt_exp   = 50.542; teme.tt_stat    =    0.433;
   teme.dytt_exp = 0.787 ;  teme.dytt_stat =    0.278;
   teme.vv_exp   = 0.890 ;  teme.vv_stat   =    0.038;
@@ -210,6 +296,7 @@ void xsecCalc_35pb_pass5(){
   std::cout<<"Doing JPT/TC"<<std::endl;
   std::cout<<"EE (w MET)"<<std::endl;
   TTxsecStruct tee;
+  tee.channel = ee_ch;
   tee.tt_exp   = 16.849; tee.tt_stat    =   0.250;
   tee.dytt_exp = 0.492;  tee.dytt_stat =   0.220;
   tee.vv_exp   = 0.320;  tee.vv_stat   =   0.023;
@@ -235,6 +322,7 @@ void xsecCalc_35pb_pass5(){
   std::cout<<"Doing JPT/TC"<<std::endl;
   std::cout<<"MM (w MET)"<<std::endl;
   TTxsecStruct tmm;
+  tmm.channel = mm_ch;
   tmm.tt_exp   = 18.886; tmm.tt_stat    =   0.265;
   tmm.dytt_exp = 0.787;  tmm.dytt_stat =   0.278;
   tmm.vv_exp   = 0.289;  tmm.vv_stat   =   0.022;
@@ -256,6 +344,7 @@ void xsecCalc_35pb_pass5(){
  
   xsecCalc_inStruct(tmm);
 
+
   //=====================================================================================
   // NOW PF
   //=====================================================================================
@@ -263,6 +352,7 @@ void xsecCalc_35pb_pass5(){
   std::cout<<"Doing PF"<<std::endl;
   std::cout<<"EM (no MET)"<<std::endl;
   TTxsecStruct pem;
+  pem.channel = em_ch;
   pem.tt_exp   = 54.310; pem.tt_stat    =   0.449;
   pem.dytt_exp = 0.885;  pem.dytt_stat =   0.295;
   pem.vv_exp   = 0.952;  pem.vv_stat   =   0.039;
@@ -288,6 +378,7 @@ void xsecCalc_35pb_pass5(){
   std::cout<<"Doing PF"<<std::endl;
   std::cout<<"EM (w MET)"<<std::endl;
   TTxsecStruct peme;
+  peme.channel = em_ch;
   peme.tt_exp   = 50.181; peme.tt_stat    =   0.432;
   peme.dytt_exp = 0.787;  peme.dytt_stat =   0.278;
   peme.vv_exp   = 0.828;  peme.vv_stat   =   0.037;
@@ -313,6 +404,7 @@ void xsecCalc_35pb_pass5(){
   std::cout<<"Doing PF"<<std::endl;
   std::cout<<"EE (w MET)"<<std::endl;
   TTxsecStruct pee;
+  pee.channel = ee_ch;
   pee.tt_exp   = 16.849; pee.tt_stat    =   0.250;
   pee.dytt_exp = 0.590;  pee.dytt_stat =   0.241;
   pee.vv_exp   = 0.281;  pee.vv_stat   =   0.021;
@@ -337,6 +429,7 @@ void xsecCalc_35pb_pass5(){
   std::cout<<"Doing PF"<<std::endl;
   std::cout<<"MM (w MET)"<<std::endl;
   TTxsecStruct pmm;
+  pmm.channel = mm_ch;
   pmm.tt_exp   = 18.622; pmm.tt_stat    =   0.263;
   pmm.dytt_exp = 0.813;  pmm.dytt_stat =   0.279;
   pmm.vv_exp   = 0.286;  pmm.vv_stat   =   0.022;
@@ -358,6 +451,20 @@ void xsecCalc_35pb_pass5(){
  
   xsecCalc_inStruct(pmm);
 
+
+  //combine
+  std::cout<<"======================================="<<std::endl;
+  std::cout<<"EEMM (wMET) PF"<<std::endl;
+  TTxsecStruct peemm(pee);
+  peemm.simpleAdd(pmm);
+  xsecCalc_inStruct(peemm, false);
+
+  std::cout<<"EEMMEM (wMET) PF"<<std::endl;
+  TTxsecStruct peemmem(peemm);
+  peemmem.simpleAdd(pem);
+  xsecCalc_inStruct(peemmem, false);
+
+  
 
 //   std::cout<<"Doing JPT/TC"<<std::endl;
 //   std::cout<<"EE (w MET)"<<std::endl;
