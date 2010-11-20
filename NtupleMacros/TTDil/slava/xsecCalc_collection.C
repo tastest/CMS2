@@ -1,5 +1,13 @@
 #include <iostream>
 
+double oplus(double a, double b){
+  return sqrt(a*a + b*b);
+}
+double oplus(double a, double b, double c){
+  return sqrt(a*a + b*b + c*c);
+}
+
+
 void xsecCalc(double obs, double expS, double expSErr, double bg, double bgErr){
   double obsS = obs - bg;
   //notused  double obsSErr = sqrt( obs + bgErr*bgErr);
@@ -7,8 +15,8 @@ void xsecCalc(double obs, double expS, double expSErr, double bg, double bgErr){
   double sigma = 157.5 * (obs - bg)/ expS;
 
   double sigmaErrStatFrac = sqrt(obs)/obsS;
-  double sigmaErrSystFrac = sqrt(bgErr*bgErr/obsS/obsS + expSErr*expSErr/expS/expS);
-  double sigmaErrFrac = sqrt(sigmaErrStatFrac*sigmaErrStatFrac + sigmaErrSystFrac*sigmaErrSystFrac);
+  double sigmaErrSystFrac = oplus(bgErr/obsS, expSErr/expS);
+  double sigmaErrFrac =  oplus(sigmaErrStatFrac, sigmaErrSystFrac);
   
   double sigmaErrFracLum = 0.11;
 
@@ -17,7 +25,7 @@ void xsecCalc(double obs, double expS, double expSErr, double bg, double bgErr){
   double sigmaErr = sigma*sigmaErrFrac;
   double sigmaErrLum = sigma*sigmaErrFracLum;
 
-  double sigmaErrWLum = sigma * sqrt( sigmaErrFrac*sigmaErrFrac + sigmaErrFracLum*sigmaErrFracLum);
+  double sigmaErrWLum = sigma * oplus(sigmaErrFrac, sigmaErrFracLum);
 
   std::cout<<"sigma = "
 	   << sigma << " \\pm "<< sigmaErrStat << " (stat) \\pm " << sigmaErrSyst 
@@ -35,7 +43,8 @@ void xsecCalc(double obs, double expS, double expSErr, double bg, double bgErr){
 }
 
 
-struct TTxsecStruct {
+class TTxsecStruct {
+public:
   double data;
 
   double tt_exp;       double tt_stat;
@@ -57,7 +66,7 @@ struct TTxsecStruct {
 
   double bg_exp;                                               double bg_e;
 
-  double SF_e;//
+  double sf_exp;//
   double tt_AE_eRel;
 
   void setDependentPars_mcbg_v0(){
@@ -66,50 +75,68 @@ struct TTxsecStruct {
     tw_syst   = 0.5*tw_exp;
 
     mcbg_exp = dytt_exp + vv_exp + tw_exp;
-    mcbg_stat= sqrt(dytt_stat*dytt_stat
-		       + vv_stat*vv_stat
-		       + tw_stat*tw_stat);
-    mcbg_syst= sqrt(dytt_syst*dytt_syst
-		       + vv_syst*vv_syst
-		       + tw_syst*tw_syst);
-    mcbg_e   = sqrt(mcbg_stat*mcbg_stat
-		       + mcbg_stat*mcbg_stat);     
+    mcbg_stat= oplus(dytt_stat, vv_stat, tw_stat);
+    mcbg_syst= oplus(dytt_syst, vv_syst, tw_syst);
+    mcbg_e   = oplus(mcbg_stat, mcbg_syst);
   }
 
   void setDependentPars_fake_v0(){
-    spill_exp = sr_exp * data;
-    spill_stat = sqrt( data* sr_exp*sr_exp );
-    spill_syst = sqrt(  (data * sr_stat)* (data * sr_stat)
-			   + (sr_syst * data)*(sr_syst * data)
-			   );
-    spill_e = sqrt(spill_stat*spill_stat  +  spill_syst*spill_syst );
+    spill_exp  = sr_exp * data;
+    spill_stat = sqrt( data )*sr_exp;
+    spill_syst = oplus(sr_stat, sr_syst)*data;
+    spill_e    = oplus(spill_stat, spill_syst);
 
     wjf_exp = wjraw_exp - 2.* qcd_exp - spill_exp;
     if (wjf_exp< 0) std::cout<<"Warning: negative wj estimate: "<<wjf_exp<<std::endl;
     wjf_syst = wjf_systFrac*wjf_exp;
 
     fake_exp  = wjf_exp + qcd_exp;
-    fake_stat = sqrt( wjraw_stat*wjraw_stat 
-			 + qcd_stat*qcd_stat
-			 + spill_stat*spill_stat);
-    fake_syst = sqrt(wjf_syst*wjf_syst
-			+ qcd_syst*qcd_syst
-			+ spill_syst*spill_syst );
+    fake_stat = oplus(wjraw_stat, qcd_stat, spill_stat);
+    fake_syst = oplus(wjf_syst, qcd_syst, spill_syst);
 
-    fake_e = sqrt(fake_stat * fake_stat 
-		     + fake_syst*fake_syst );
+    fake_e    = oplus(fake_stat, fake_syst);
   }
+
   void setDependentPars_v0(){
     setDependentPars_mcbg_v0();
     setDependentPars_fake_v0();
 
-    dy_e = sqrt(dy_stat*dy_stat + dy_syst*dy_syst);
+    dy_e = oplus(dy_stat, dy_syst);
 
     bg_exp = mcbg_exp + fake_exp + dy_exp;
-    bg_e = sqrt(mcbg_e*mcbg_e + fake_e*fake_e + dy_e*dy_e );
+    bg_e = oplus(mcbg_e, fake_e, dy_e);
 
-    //this is it:    
+    //this is it
   }
+
+
+//   void simpleAdd(TTxsecStruct& t){
+//     data;
+    
+//     tt_exp;       tt_stat;
+    
+//     dytt_exp;     dytt_stat;    dytt_syst; 
+//     vv_exp;       vv_stat;      vv_syst;
+//     tw_exp;       tw_stat;      tw_syst;
+//     mcbg_exp;     mcbg_stat;    mcbg_syst;  mcbg_e;
+    
+//     sr_exp;       sr_stat;      sr_syst;
+//     spill_exp;    spill_stat;   spill_syst; spill_e;
+//     qcd_exp;      qcd_stat;     qcd_syst;
+//     wjraw_exp;    wjraw_stat;
+//     wjf_exp;      wjf_stat;     wjf_syst;
+//     wjf_systFrac;
+//     fake_exp;     fake_stat;    fake_syst;  fake_e;
+    
+//     dy_exp;       dy_stat;      dy_syst;    dy_e;
+    
+//     bg_exp;                                               bg_e;
+    
+//     sf_exp;//
+//     tt_AE_eRel;
+
+
+//   }
 
   void printSummary(){
     std::cout<<"Data: "<<data
@@ -117,8 +144,8 @@ struct TTxsecStruct {
 	     <<"\n\t   Fake: "<<fake_exp <<" +/- " << fake_stat <<" +/- "<< fake_syst
 	     <<"\n\t     DY: "<<dy_exp <<" +/- " << dy_stat <<" +/- "<< dy_syst
 	     <<"\n\t All BG: "<<bg_exp <<" +/- " << bg_e
-	     <<"\n\t tt exp: "<<tt_exp*SF_e<<" +/- "<<tt_exp*SF_e*tt_AE_eRel
-	     <<"\tS/B: "<<tt_exp*SF_e/bg_exp<<std::endl;    
+	     <<"\n\t tt exp: "<<tt_exp*sf_exp<<" +/- "<<tt_exp*sf_exp*tt_AE_eRel
+	     <<"\tS/B: "<<tt_exp*sf_exp/bg_exp<<std::endl;    
   }
 };
 
@@ -127,7 +154,7 @@ void xsecCalc_inStruct(TTxsecStruct& tt){
   
   tt.printSummary();
 
-  xsecCalc(tt.data, tt.tt_exp*tt.SF_e, tt.tt_exp*tt.SF_e*tt.tt_AE_eRel, tt.bg_exp, tt.bg_e );
+  xsecCalc(tt.data, tt.tt_exp*tt.sf_exp, tt.tt_exp*tt.sf_exp*tt.tt_AE_eRel, tt.bg_exp, tt.bg_e );
   
 }
 
@@ -151,7 +178,7 @@ void xsecCalc_35pb_pass5(){
 
   tem.dy_exp = 0; tem.dy_stat = 0; tem.dy_syst = 0;
 
-  tem.SF_e = (0.108*9.)*(0.108*9.);//multiply MC by this. This is for Madgraph !
+  tem.sf_exp = (0.108*9.)*(0.108*9.);//multiply MC by this. This is for Madgraph !
   tem.tt_AE_eRel = 0.062;
 
   xsecCalc_inStruct(tem);
@@ -175,7 +202,7 @@ void xsecCalc_35pb_pass5(){
 
   teme.dy_exp = 0; teme.dy_stat = 0; teme.dy_syst = 0;
 
-  teme.SF_e = (0.108*9.)*(0.108*9.);//multiply MC by this. This is for Madgraph !
+  teme.sf_exp = (0.108*9.)*(0.108*9.);//multiply MC by this. This is for Madgraph !
   teme.tt_AE_eRel = 0.062;
  
   xsecCalc_inStruct(teme);
@@ -199,7 +226,7 @@ void xsecCalc_35pb_pass5(){
 
   tee.dy_exp = 4.033; tee.dy_stat = 1.194; tee.dy_syst = 0.5*tee.dy_exp;
 
-  tee.SF_e = (0.108*9.)*(0.108*9.);//multiply MC by this. This is for Madgraph !
+  tee.sf_exp = (0.108*9.)*(0.108*9.);//multiply MC by this. This is for Madgraph !
   tee.tt_AE_eRel = 0.086;
  
   xsecCalc_inStruct(tee);
@@ -224,7 +251,7 @@ void xsecCalc_35pb_pass5(){
 
   tmm.dy_exp = 7.723; tmm.dy_stat = 1.794; tmm.dy_syst = 0.5*tmm.dy_exp;
 
-  tmm.SF_e = (0.108*9.)*(0.108*9.);//multiply MC by this. This is for Madgraph !
+  tmm.sf_exp = (0.108*9.)*(0.108*9.);//multiply MC by this. This is for Madgraph !
   tmm.tt_AE_eRel = 0.071;
  
   xsecCalc_inStruct(tmm);
@@ -252,7 +279,7 @@ void xsecCalc_35pb_pass5(){
 
   pem.dy_exp = 0; pem.dy_stat = 0; pem.dy_syst = 0;
 
-  pem.SF_e = (0.108*9.)*(0.108*9.);//multiply MC by this. This is for Madgraph !
+  pem.sf_exp = (0.108*9.)*(0.108*9.);//multiply MC by this. This is for Madgraph !
   pem.tt_AE_eRel = 0.062;
  
   xsecCalc_inStruct(pem);
@@ -277,7 +304,7 @@ void xsecCalc_35pb_pass5(){
 
   peme.dy_exp = 0; peme.dy_stat = 0; peme.dy_syst = 0;
 
-  peme.SF_e = (0.108*9.)*(0.108*9.);//multiply MC by this. This is for Madgraph !
+  peme.sf_exp = (0.108*9.)*(0.108*9.);//multiply MC by this. This is for Madgraph !
   peme.tt_AE_eRel = 0.062;
  
   xsecCalc_inStruct(peme);
@@ -302,7 +329,7 @@ void xsecCalc_35pb_pass5(){
 
   pee.dy_exp = 2.495; pee.dy_stat = 0.987; pee.dy_syst = 0.5* pee.dy_exp;
 
-  pee.SF_e = (0.108*9.)*(0.108*9.);//multiply MC by this. This is for Madgraph !
+  pee.sf_exp = (0.108*9.)*(0.108*9.);//multiply MC by this. This is for Madgraph !
   pee.tt_AE_eRel = 0.086;
  
   xsecCalc_inStruct(pee);
@@ -326,7 +353,7 @@ void xsecCalc_35pb_pass5(){
 
   pmm.dy_exp = 4.636; pmm.dy_stat = 1.451; pmm.dy_syst = 0.5*pmm.dy_exp;
 
-  pmm.SF_e = (0.108*9.)*(0.108*9.);//multiply MC by this. This is for Madgraph !
+  pmm.sf_exp = (0.108*9.)*(0.108*9.);//multiply MC by this. This is for Madgraph !
   pmm.tt_AE_eRel = 0.071;
  
   xsecCalc_inStruct(pmm);
@@ -351,7 +378,7 @@ void xsecCalc_35pb_pass5(){
 
 //   tee.dy_exp = ; tee.dy_stat = ; tee.dy_syst = ;
 
-//   tee.SF_e = (0.108*9.)*(0.108*9.);//multiply MC by this. This is for Madgraph !
+//   tee.sf_exp = (0.108*9.)*(0.108*9.);//multiply MC by this. This is for Madgraph !
 //   tee.tt_AE_eRel = ;
  
 //   xsecCalc_inStruct(tee);
