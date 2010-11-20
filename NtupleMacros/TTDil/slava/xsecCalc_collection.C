@@ -60,7 +60,7 @@ struct TTxsecStruct {
   double SF_e;//
   double tt_AE_eRel;
 
-  void setDependetnPars_v0(){
+  void setDependentPars_mcbg_v0(){
     dytt_syst = 0.5*dytt_exp;
     vv_syst   = 0.5*vv_exp;
     tw_syst   = 0.5*tw_exp;
@@ -73,8 +73,10 @@ struct TTxsecStruct {
 		       + vv_syst*vv_syst
 		       + tw_syst*tw_syst);
     mcbg_e   = sqrt(mcbg_stat*mcbg_stat
-		       + mcbg_stat*mcbg_stat); 
+		       + mcbg_stat*mcbg_stat);     
+  }
 
+  void setDependentPars_fake_v0(){
     spill_exp = sr_exp * data;
     spill_stat = sqrt( data* sr_exp*sr_exp );
     spill_syst = sqrt(  (data * sr_stat)* (data * sr_stat)
@@ -96,6 +98,10 @@ struct TTxsecStruct {
 
     fake_e = sqrt(fake_stat * fake_stat 
 		     + fake_syst*fake_syst );
+  }
+  void setDependentPars_v0(){
+    setDependentPars_mcbg_v0();
+    setDependentPars_fake_v0();
 
     dy_e = sqrt(dy_stat*dy_stat + dy_syst*dy_syst);
 
@@ -117,7 +123,7 @@ struct TTxsecStruct {
 };
 
 void xsecCalc_inStruct(TTxsecStruct& tt){
-  tt.setDependetnPars_v0();
+  tt.setDependentPars_v0();
   
   tt.printSummary();
 
