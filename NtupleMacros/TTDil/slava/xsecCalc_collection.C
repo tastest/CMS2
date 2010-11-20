@@ -20,7 +20,7 @@ void xsecCalc(double obs, double expS, double expSErr, double bg, double bgErr){
   double sigmaErrSystFrac = oplus(bgErr/obsS, expSErr/expS);
   double sigmaErrFrac =  oplus(sigmaErrStatFrac, sigmaErrSystFrac);
   
-  double sigmaErrFracLum = 0.06;
+  double sigmaErrFracLum = 0.11;
 
   double sigmaErrStat = sigma* sigmaErrStatFrac;
   double sigmaErrSyst = sigma* sigmaErrSystFrac;
