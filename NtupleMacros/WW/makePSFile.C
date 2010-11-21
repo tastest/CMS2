@@ -26,7 +26,8 @@ bool sampleIsPresent(const char* pattern){
 }
 
 void makePSFile(const TString dataFName,
-		float scaleMC=1,  bool drawLogY = true, bool drawFullErrors = false) {
+		float scaleMC=0.355 /*with respect to 100/pb*/,  
+		bool drawLogY = true, bool drawFullErrors = false) {
   
   setTDRStyle();
 
@@ -44,6 +45,7 @@ void makePSFile(const TString dataFName,
   hist::loadHist(dataFName.Data(), 0, "*_hmetProj_*");
   hist::loadHist(dataFName.Data(), 0, "*_hdilMass_*");
 
+  /*
   hist::scale("ww_*", scaleMC);     
   hist::scale("dyee_*", scaleMC);     
   hist::scale("dymm_*", scaleMC);     
@@ -53,7 +55,7 @@ void makePSFile(const TString dataFName,
   hist::scale("wjets_*", scaleMC);     
   hist::scale("wz_*", scaleMC);     
   hist::scale("zz_*", scaleMC);     
-
+  */
   vector<TString> v_prfxsToCombine;
   if (sampleIsPresent("dyee_*")&&sampleIsPresent("dymm_*")){
     v_prfxsToCombine.clear();
@@ -81,14 +83,16 @@ void makePSFile(const TString dataFName,
   
   if (sampleIsPresent("ww_*")){
     v_samples.push_back("ww");
-    v_colors.push_back(kRed);
+    // v_colors.push_back(kRed);
+    v_colors.push_back(kYellow+2);
     v_legEntries.push_back("#font[12]{WW} signal");
     v_styles.push_back(1001);
   }
 
   if (sampleIsPresent("wjets_*")){
     v_samples.push_back("wjets");
-    v_colors.push_back(kGreen);
+    // v_colors.push_back(kGreen);
+    v_colors.push_back(kCyan);
     v_legEntries.push_back("#font[12]{W}#rightarrowl#nu");
     v_styles.push_back(1001);    
   }
@@ -116,14 +120,16 @@ void makePSFile(const TString dataFName,
 
   if (sampleIsPresent("DYeemm_*")){
     v_samples.push_back("DYeemm");
-    v_colors.push_back(kAzure - 2);
+    // v_colors.push_back(kAzure - 2);
+    v_colors.push_back(kBlue);
     v_legEntries.push_back("Z/#gamma*#rightarrowl^{+}l^{-}");
     v_styles.push_back(1001);
   }
 
   if (sampleIsPresent("VZ_*")){
     v_samples.push_back("VZ");
-    v_colors.push_back(kWhite);
+    // v_colors.push_back(kWhite);
+    v_colors.push_back(kGreen);
     v_legEntries.push_back("(W/Z)Z#rightarrowl^{+}l^{-}");
     v_styles.push_back(1001);
   }
