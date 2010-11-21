@@ -79,7 +79,7 @@ void processData()
   enum EColor { kWhite, kBlack, kRed, kGreen, kBlue, kYellow, kMagenta, kCyan };
 
   RooDataSet *fullDataSet(0);
-  
+
   // read dataset prefix
   string dataset = "data";
   if (gSystem->Getenv("DataDir")){
@@ -87,11 +87,14 @@ void processData()
     cout << "Dataset directory: " << dataset << endl;
   }
   
-  const double integratedLumi = 34.9; // pb^1
+  const double integratedLumi = 35.5; // pb^1  
+  cout << "Integrated luminosity to scale to: " << integratedLumi << endl;
 
   if (runWW)
     // ProcessSample(dataset+"/WW_Spring10-START3X_V26_S09-v1_DiLep/V03-04-08/"+version+"/*.root", WW, integratedLumi, 43, -1, fullDataSet, kRed);
-    ProcessSample(dataset+"/WWTo2L2Nu_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/"+version+"/*.root", WW, integratedLumi, 4.5, -1, fullDataSet, kRed);
+    // ProcessSample(dataset+"/WWTo2L2Nu_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/"+version+"/*.root", WW, integratedLumi, 4.5, -1, fullDataSet, kRed);
+    ProcessSample(dataset+"/VVJetsTo4L_TuneD6T_7TeV-madgraph-tauola_Fall10-START38_V12-v1/V03-06-14/*.root", WW, integratedLumi, 4.5*0.919, 
+		  962976*(637763./900979.), fullDataSet, kRed, true);
   // ProcessSample("/tas/yygao/WWTo2L2Nu_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/merged_ntuple*.root", WW, integratedLumi, 4.5, -1, fullDataSet, kRed);
 
   if (runWZ)
@@ -145,7 +148,8 @@ void processData()
   if (runttbar)
     //ProcessSample(dataset+"/TTbarJets-madgraph_Summer09-MC_31X_V3_7TeV-v2/"+version+"/merged_ntuple*.root", ttbar, integratedLumi, 165.0, -1, fullDataSet, kYellow);
     // ProcessSample(dataset+"/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-07/"+version+"/*.root", ttbar, integratedLumi, 165.0, -1, fullDataSet, kYellow);
-    ProcessSample(dataset+"/TT_TuneZ2_7TeV-pythia6-tauola_Fall10-START38_V12-v1_GEN-SIM-RECO/V03-06-14/"+version+"/*.root", ttbar, integratedLumi, 157.5, -1, fullDataSet, kYellow);
+    // ProcessSample(dataset+"/TT_TuneZ2_7TeV-pythia6-tauola_Fall10-START38_V12-v1_GEN-SIM-RECO/V03-06-14/"+version+"/*.root", ttbar, integratedLumi, 157.5, -1, fullDataSet, kYellow);
+    ProcessSample(dataset+"/TTJets_TuneZ2_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-14/"+version+"/*.root", ttbar, integratedLumi, 157.5, -1, fullDataSet, kYellow);
     //ProcessSample(dataset+"/TTbar_Spring10-START3X_V26_S09-v1/V03-04-08"+version+"/merged_ntuple*.root", ttbar, integratedLumi, 165.0, -1, fullDataSet, kYellow);
 
   if (runtW)
@@ -189,11 +193,7 @@ void processData()
   */
   
   // RealData
-  //TString cms2_json_file = "Cert_TopSep11_Merged_135059-144114_allPVT.txt";
-  TString cms2_json_file = "files/Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON-34.9ipb.txt";
-  // TString cms2_json_file = "files/Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON_v3.txt";
-  // "Cert_132440-147454_7TeV_StreamExpress_Collisions10_JSON.txt";
-  // TString cms2_json_file = "Cert_132440-148864_7TeV_StreamExpress_Collisions10_JSON.txt";
+  TString cms2_json_file = "files/merged_JsonReRecoSep17_JsonStreamExpressV2_35.49.txt";
 
   std::vector<string> dataSamples;
   dataSamples.push_back(dataset+"/Mu_Run2010A-Sep17ReReco_v2_RECO/V03-06-14/diLepPt1020Skim/"+version+"/*.root");
