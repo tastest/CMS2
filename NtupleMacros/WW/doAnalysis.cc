@@ -2402,7 +2402,7 @@ RooDataSet* ScanChain( TChain* chain,
   if ( !externalMuFakeRates ){
     TFile* f = TFile::Open("files/ww_mu_fr_Mu.root");
     assert(f);
-    externalMuFakeRates = dynamic_cast<TH2F*>( f->Get("mu_fr_fo_wwV1_10") );
+    externalMuFakeRates = dynamic_cast<TH2F*>( f->Get("mu_fr_fo_wwV1_10_d0") );
     assert(externalMuFakeRates);
   }      
 

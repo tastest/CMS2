@@ -134,7 +134,7 @@ jetbkg: processed_data.root  # estimate jet induced background
 	root -q -l estimateJetBkg_sideband.C+
 
 ElFrVer = el_fr_v2_wwV1
-MuFrVer = mu_fr_fo_wwV1_10
+MuFrVer = mu_fr_fo_wwV1_10_d0
 ElFrFile = ww_el_fr_EGandEGMon.root
 MuFrFile = ww_mu_fr_Mu.root
 
