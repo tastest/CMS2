@@ -918,36 +918,45 @@ bool idIsBeauty(int id) {
 // this equivalently or more better. 
 // -------------------------------------
 bool isNotPromptSusyLeptonHyp(int idx) {
-	 bool continuePastLM0 = false; // name is historical
 
-	 // require status 3 mother to be a SUSY particle or a W
+	 // require lepton matched to lepton of same flavor at status 1
+	 if (abs(cms2.hyp_lt_id()[idx]) == 11 && abs(cms2.els_mc_id()[cms2.hyp_lt_index()[idx]]) != 11)
+		  return true;
+	 if (abs(cms2.hyp_ll_id()[idx]) == 11 && abs(cms2.els_mc_id()[cms2.hyp_ll_index()[idx]]) != 11)
+		  return true;
+	 if (abs(cms2.hyp_lt_id()[idx]) == 13 && abs(cms2.mus_mc_id()[cms2.hyp_lt_index()[idx]]) != 13)
+		  return true;
+	 if (abs(cms2.hyp_ll_id()[idx]) == 13 && abs(cms2.mus_mc_id()[cms2.hyp_ll_index()[idx]]) != 13)
+		  return true;
+
+	 // require status 3 mother to be a SUSY particle or a W or Z
 	 if (abs(cms2.hyp_lt_id()[idx]) == 11)
-		  if (abs(cms2.els_mc3_motherid()[cms2.hyp_lt_index()[idx]]) < 1000000 && abs(cms2.els_mc3_motherid()[cms2.hyp_lt_index()[idx]]) != 24)
-			   continuePastLM0 = true;						 
+		  if (abs(cms2.els_mc3_motherid()[cms2.hyp_lt_index()[idx]]) < 1000000 && abs(cms2.els_mc3_motherid()[cms2.hyp_lt_index()[idx]]) != 24 && abs(cms2.els_mc3_motherid()[cms2.hyp_lt_index()[idx]]) != 23)
+			   return true;						 
 	 if (abs(cms2.hyp_ll_id()[idx]) == 11)
-		  if (abs(cms2.els_mc3_motherid()[cms2.hyp_ll_index()[idx]]) < 1000000 && abs(cms2.els_mc3_motherid()[cms2.hyp_ll_index()[idx]]) != 24)
-			   continuePastLM0 = true;
+		  if (abs(cms2.els_mc3_motherid()[cms2.hyp_ll_index()[idx]]) < 1000000 && abs(cms2.els_mc3_motherid()[cms2.hyp_ll_index()[idx]]) != 24 && abs(cms2.els_mc3_motherid()[cms2.hyp_ll_index()[idx]]) != 23)
+			   return true;
 	 if (abs(cms2.hyp_lt_id()[idx]) == 13)
-		  if (abs(cms2.mus_mc3_motherid()[cms2.hyp_lt_index()[idx]]) < 1000000 && abs(cms2.mus_mc3_motherid()[cms2.hyp_lt_index()[idx]]) != 24)
-			   continuePastLM0 = true;
+		  if (abs(cms2.mus_mc3_motherid()[cms2.hyp_lt_index()[idx]]) < 1000000 && abs(cms2.mus_mc3_motherid()[cms2.hyp_lt_index()[idx]]) != 24 && abs(cms2.mus_mc3_motherid()[cms2.hyp_lt_index()[idx]]) != 23)
+			   return true;
 	 if (abs(cms2.hyp_ll_id()[idx]) == 13)
-		  if (abs(cms2.mus_mc3_motherid()[cms2.hyp_ll_index()[idx]]) < 1000000 && abs(cms2.mus_mc3_motherid()[cms2.hyp_ll_index()[idx]]) != 24)
-			   continuePastLM0 = true;
+		  if (abs(cms2.mus_mc3_motherid()[cms2.hyp_ll_index()[idx]]) < 1000000 && abs(cms2.mus_mc3_motherid()[cms2.hyp_ll_index()[idx]]) != 24 && abs(cms2.mus_mc3_motherid()[cms2.hyp_ll_index()[idx]]) != 23)
+			   return true;
 
-	 // require status 1 mother to be a SUSY particle, a W or a tau
+	 // require status 1 mother to be a SUSY particle, W, Z or tau
 	 if (abs(cms2.hyp_lt_id()[idx]) == 11)
-		  if (abs(cms2.els_mc_motherid()[cms2.hyp_lt_index()[idx]]) < 1000000 && abs(cms2.els_mc_motherid()[cms2.hyp_lt_index()[idx]]) != 24 && abs(cms2.els_mc_motherid()[cms2.hyp_lt_index()[idx]]) != 15)
-			   continuePastLM0 = true;						 
+		  if (abs(cms2.els_mc_motherid()[cms2.hyp_lt_index()[idx]]) < 1000000 && abs(cms2.els_mc_motherid()[cms2.hyp_lt_index()[idx]]) != 24 && abs(cms2.els_mc_motherid()[cms2.hyp_lt_index()[idx]]) != 15 && abs(cms2.els_mc_motherid()[cms2.hyp_lt_index()[idx]]) != 23)
+			   return true;						 
 	 if (abs(cms2.hyp_ll_id()[idx]) == 11)
-		  if (abs(cms2.els_mc_motherid()[cms2.hyp_ll_index()[idx]]) < 1000000 && abs(cms2.els_mc_motherid()[cms2.hyp_ll_index()[idx]]) != 24 && abs(cms2.els_mc_motherid()[cms2.hyp_ll_index()[idx]]) != 24)
-			   continuePastLM0 = true;
+		  if (abs(cms2.els_mc_motherid()[cms2.hyp_ll_index()[idx]]) < 1000000 && abs(cms2.els_mc_motherid()[cms2.hyp_ll_index()[idx]]) != 24 && abs(cms2.els_mc_motherid()[cms2.hyp_ll_index()[idx]]) != 15 && abs(cms2.els_mc_motherid()[cms2.hyp_ll_index()[idx]]) != 23)
+			   return true;
 	 if (abs(cms2.hyp_lt_id()[idx]) == 13)
-		  if (abs(cms2.mus_mc_motherid()[cms2.hyp_lt_index()[idx]]) < 1000000 && abs(cms2.mus_mc_motherid()[cms2.hyp_lt_index()[idx]]) != 24 && abs(cms2.mus_mc_motherid()[cms2.hyp_lt_index()[idx]]) != 24)
-			   continuePastLM0 = true;
+		  if (abs(cms2.mus_mc_motherid()[cms2.hyp_lt_index()[idx]]) < 1000000 && abs(cms2.mus_mc_motherid()[cms2.hyp_lt_index()[idx]]) != 24 && abs(cms2.mus_mc_motherid()[cms2.hyp_lt_index()[idx]]) != 15 && abs(cms2.mus_mc_motherid()[cms2.hyp_lt_index()[idx]]) != 23)
+			   return true;
 	 if (abs(cms2.hyp_ll_id()[idx]) == 13)
-		  if (abs(cms2.mus_mc_motherid()[cms2.hyp_ll_index()[idx]]) < 1000000 && abs(cms2.mus_mc_motherid()[cms2.hyp_ll_index()[idx]]) != 24 && abs(cms2.mus_mc_motherid()[cms2.hyp_ll_index()[idx]]) != 24)
-			   continuePastLM0 = true;
+		  if (abs(cms2.mus_mc_motherid()[cms2.hyp_ll_index()[idx]]) < 1000000 && abs(cms2.mus_mc_motherid()[cms2.hyp_ll_index()[idx]]) != 24 && abs(cms2.mus_mc_motherid()[cms2.hyp_ll_index()[idx]]) != 15 && abs(cms2.mus_mc_motherid()[cms2.hyp_ll_index()[idx]]) != 23)
+			   return true;
 
 
-	 return continuePastLM0;
+	 return false;
 }
