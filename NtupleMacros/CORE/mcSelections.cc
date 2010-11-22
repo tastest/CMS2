@@ -904,3 +904,50 @@ bool idIsBeauty(int id) {
   }
   else return false;
 }
+
+// -------------------------------------
+// quick and dirty function to see if
+// lepton is prompt (approximately)
+// 
+// Note: As I re-read this with a fresher
+// eye this certainly isn't perfect as 
+// there will be real leptons I miss
+// as well as fake leptons I pick up when
+// the matching messes up.  I suppose there
+// are a couple different ways to implement
+// this equivalently or more better. 
+// -------------------------------------
+bool isNotPromptSusyLeptonHyp(int idx) {
+	 bool continuePastLM0 = false; // name is historical
+
+	 // require status 3 mother to be a SUSY particle or a W
+	 if (abs(cms2.hyp_lt_id()[idx]) == 11)
+		  if (abs(cms2.els_mc3_motherid()[cms2.hyp_lt_index()[idx]]) < 1000000 && abs(cms2.els_mc3_motherid()[cms2.hyp_lt_index()[idx]]) != 24)
+			   continuePastLM0 = true;						 
+	 if (abs(cms2.hyp_ll_id()[idx]) == 11)
+		  if (abs(cms2.els_mc3_motherid()[cms2.hyp_ll_index()[idx]]) < 1000000 && abs(cms2.els_mc3_motherid()[cms2.hyp_ll_index()[idx]]) != 24)
+			   continuePastLM0 = true;
+	 if (abs(cms2.hyp_lt_id()[idx]) == 13)
+		  if (abs(cms2.mus_mc3_motherid()[cms2.hyp_lt_index()[idx]]) < 1000000 && abs(cms2.mus_mc3_motherid()[cms2.hyp_lt_index()[idx]]) != 24)
+			   continuePastLM0 = true;
+	 if (abs(cms2.hyp_ll_id()[idx]) == 13)
+		  if (abs(cms2.mus_mc3_motherid()[cms2.hyp_ll_index()[idx]]) < 1000000 && abs(cms2.mus_mc3_motherid()[cms2.hyp_ll_index()[idx]]) != 24)
+			   continuePastLM0 = true;
+
+	 // require status 1 mother to be a SUSY particle, a W or a tau
+	 if (abs(cms2.hyp_lt_id()[idx]) == 11)
+		  if (abs(cms2.els_mc_motherid()[cms2.hyp_lt_index()[idx]]) < 1000000 && abs(cms2.els_mc_motherid()[cms2.hyp_lt_index()[idx]]) != 24 && abs(cms2.els_mc_motherid()[cms2.hyp_lt_index()[idx]]) != 15)
+			   continuePastLM0 = true;						 
+	 if (abs(cms2.hyp_ll_id()[idx]) == 11)
+		  if (abs(cms2.els_mc_motherid()[cms2.hyp_ll_index()[idx]]) < 1000000 && abs(cms2.els_mc_motherid()[cms2.hyp_ll_index()[idx]]) != 24 && abs(cms2.els_mc_motherid()[cms2.hyp_ll_index()[idx]]) != 24)
+			   continuePastLM0 = true;
+	 if (abs(cms2.hyp_lt_id()[idx]) == 13)
+		  if (abs(cms2.mus_mc_motherid()[cms2.hyp_lt_index()[idx]]) < 1000000 && abs(cms2.mus_mc_motherid()[cms2.hyp_lt_index()[idx]]) != 24 && abs(cms2.mus_mc_motherid()[cms2.hyp_lt_index()[idx]]) != 24)
+			   continuePastLM0 = true;
+	 if (abs(cms2.hyp_ll_id()[idx]) == 13)
+		  if (abs(cms2.mus_mc_motherid()[cms2.hyp_ll_index()[idx]]) < 1000000 && abs(cms2.mus_mc_motherid()[cms2.hyp_ll_index()[idx]]) != 24 && abs(cms2.mus_mc_motherid()[cms2.hyp_ll_index()[idx]]) != 24)
+			   continuePastLM0 = true;
+
+
+	 return continuePastLM0;
+}

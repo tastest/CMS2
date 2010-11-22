@@ -63,5 +63,11 @@ int muFakeMCCategory(int i_mu);
 bool idIsCharm(int id);
 bool idIsBeauty(int id);
 
+// -------------------------------------
+// quick and dirty function to see if
+// lepton is prompt (approximately)
+// -------------------------------------
+bool isNotPromptSusyLeptonHyp(int idx);
+
 #endif
 
