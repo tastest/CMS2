@@ -41,8 +41,15 @@ int dumpDocLines();
 //         -3 = lepton from some other source
 //        
 // Authors: Claudio in consultation with fkw 22-july-09    
+//
+// 22-nov-2010...by "accident" this code returns "fromW" (1 or 2)
+// in many of the cases where the lepton is from a susy particle,
+// because it looks at whether or not it is matched to a status==3
+// lepton.  By this procedure is not 100% efficient.  We have now
+// added a flag to try to do this more systematically.
+//    Claudio & Derek
 //---------------------------------------------------------
-int leptonIsFromW(int idx, int id);
+int leptonIsFromW(int idx, int id, bool alsoSusy=false);
 int ttbarconstituents(int i_hyp);
 
 bool trueGammaFromMuon(int electron);

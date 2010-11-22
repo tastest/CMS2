@@ -427,8 +427,15 @@ int ttbarconstituents(int i_hyp){
 //         -3 = lepton from some other source
 //        
 // Authors: Claudio in consultation with fkw 22-july-09    
+//
+// 22-nov-2010...by "accident" this code returns "fromW" (1 or 2)
+// in many of the cases where the lepton is from a susy particle,
+// because it looks at whether or not it is matched to a status==3
+// lepton.  By this procedure is not 100% efficient.  We have now
+// added a flag to try to do this more systematically.
+//    Claudio & Derek
 //---------------------------------------------------------
-int leptonIsFromW(int idx, int id) {
+int leptonIsFromW(int idx, int id, bool alsoSusy) {
 
   // get the matches to status=1 and status=3
   int st1_id = 0;
@@ -525,13 +532,17 @@ int leptonIsFromW(int idx, int id) {
   if (st1_id == -id && abs(st1_motherid) == 24) return 2; // W
   if (st1_id ==  id &&   st1_motherid    == 23) return 1; // Z
   if (st1_id == -id &&   st1_motherid    == 23) return 2; // Z
-  
+  if ( alsoSusy ) {
+    if (st1_id ==  id && abs(st1_motherid) > 1e6) return 1; // exotica
+    if (st1_id == -id && abs(st1_motherid) > 1e6) return 2; // exotica
+  }
+
   // Step 4
   // Another no-brainer: pick up leptons matched to status=3
   // leptons.  This should take care of collinear FSR
+  // This also picks up a bunch of SUSY decays
   if (st3_id ==  id) return 1;
   if (st3_id == -id) return 2;
-
  
   // Step 5
   // Now we need to go after the W->tau->lepton.  

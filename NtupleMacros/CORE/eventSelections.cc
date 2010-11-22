@@ -5,6 +5,33 @@
 
 #include "CMS2.h"
 
+
+struct DuplicateEventIdentifier {
+  unsigned long int run, event,lumi;
+  bool operator < (const DuplicateEventIdentifier &) const;
+  bool operator == (const DuplicateEventIdentifier &) const;
+};
+
+bool DuplicateEventIdentifier::operator < (const DuplicateEventIdentifier &other) const {
+  if (run != other.run)     { return run < other.run; }
+  if (event != other.event) { return event < other.event; }
+  if(lumi != other.lumi)    { return lumi < other.lumi; }
+  return false;
+}
+
+bool DuplicateEventIdentifier::operator == (const DuplicateEventIdentifier &other) const {
+  if (run != other.run)     { return false; }
+  if (event != other.event) { return false; }
+  return true;
+}
+
+std::set<DuplicateEventIdentifier> duplicate_seen;
+bool isDuplicate (const DuplicateEventIdentifier &id) {
+  std::pair<std::set<DuplicateEventIdentifier>::const_iterator, bool> ret = duplicate_seen.insert(id);
+  return !ret.second;
+}
+
+
 //----------------------------------------------------------------
 // A ridicolusly simple function, but since the Z veto is used 
 // in two places, might as well centralize it to keep consistency

@@ -177,7 +177,8 @@ std::pair<float,float> getMet(const string algo, unsigned int hypIdx) {
   }
 
   if(algo == "tcMET35X") {
-
+  
+    /*
     float tcmetX = evt35X_tcmet()*cos(evt35X_tcmetPhi());
     float tcmetY = evt35X_tcmet()*sin(evt35X_tcmetPhi());
     
@@ -187,6 +188,9 @@ std::pair<float,float> getMet(const string algo, unsigned int hypIdx) {
       fixMetForThisMuon(hyp_ll_index().at(hypIdx), tcmetX, tcmetY, usingTcMet35X);
     
     return make_pair(sqrt(tcmetX*tcmetX + tcmetY*tcmetY), atan2(tcmetY, tcmetX));
+    */
+    cout << "ERROR: no tcMET35X" << endl;
+    exit(1);
   }
 
   
