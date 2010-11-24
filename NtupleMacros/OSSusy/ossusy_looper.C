@@ -287,7 +287,7 @@ ossusy_looper::ossusy_looper()
 //--------------------------------------------------------------------
 
 bool ossusy_looper::isFakeableMuon (int index) {
-  return muonId(index, muonSelectionFO_mu_ttbar);
+  return muonId(index, muonSelectionFO_mu_ttbar); // ok for OSG and Z 101108
 }
 
 // *****************************************************************
@@ -326,11 +326,11 @@ double ossusy_looper::getFRWeight(const int hypIdx, string elFRversion, SimpleFa
     unsigned int iMul = hyp_ll_index()[hypIdx];
     
 
-    if( muonId( iMut , NominalTTbarV2 ) ) {//isGoodLeptonwIso(13, iMut, applyAlignmentCorrection)
+    if( muonId( iMut , OSGeneric_v1 ) ) {//needs to be made adjustable - currently only for OSG!!
       isGoodMut = true;
     }
     
-    if( muonId( iMul , NominalTTbarV2 ) ) {//isGoodLeptonwIso(13, iMul, applyAlignmentCorrection)
+    if( muonId( iMul , OSGeneric_v1 ) ) {//needs to be made adjustable - currently only for OSG!!
       isGoodMul = true;
     }
 
@@ -389,27 +389,30 @@ double ossusy_looper::getFRWeight(const int hypIdx, string elFRversion, SimpleFa
     bool isFOEll   = false;
 
     //    if( pass_electronSelection( iElt , electronSelection_ttbarV2 , isData , true ) ) {// isGoodLeptonwIso(11, iElt, applyAlignmentCorrection)
-    if( pass_electronSelection( iElt , electronSelection_ttbarV2 , false , false ) ) {// isGoodLeptonwIso(11, iElt, applyAlignmentCorrection)
+    if( pass_electronSelection( iElt , electronSelection_el_OSV1 , false , false ) ) {// isGoodLeptonwIso(11, iElt, applyAlignmentCorrection)
       isGoodElt = true;
     }
 
     //    if( pass_electronSelection( iEll , electronSelection_ttbarV2 , isData , true ) ) {// isGoodLeptonwIso(11, iEll, applyAlignmentCorrection)
-    if( pass_electronSelection( iEll , electronSelection_ttbarV2 , false , false ) ) {// isGoodLeptonwIso(11, iEll, applyAlignmentCorrection)
+    if( pass_electronSelection( iEll , electronSelection_el_OSV1 , false , false ) ) {// isGoodLeptonwIso(11, iEll, applyAlignmentCorrection)
       isGoodEll = true;
     }
     
-    if(elFRversion == "eFRv115u" && pass_electronSelection(iElt, electronSelectionFO_el_ttbarV1_v1, applyAlignmentCorrection))
+
+    //electronSelectionFO_el_OSV1_v2
+
+    if(elFRversion == "eFRv1" && pass_electronSelection(iElt, electronSelectionFO_el_OSV1_v1, false))
       isFOElt = true;
-    else if(elFRversion == "eFRv215u" && pass_electronSelection(iElt, electronSelectionFO_el_ttbarV1_v2, applyAlignmentCorrection))
+    else if(elFRversion == "eFRv2" && pass_electronSelection(iElt, electronSelectionFO_el_OSV1_v2, false))
       isFOElt = true; 
-    else if(elFRversion == "eFRv315u" && pass_electronSelection(iElt, electronSelectionFO_el_ttbarV1_v3, applyAlignmentCorrection))
+    else if(elFRversion == "eFRv3" && pass_electronSelection(iElt, electronSelectionFO_el_OSV1_v3, false))
       isFOElt = true;
 
-    if(elFRversion == "eFRv115u" && pass_electronSelection(iEll, electronSelectionFO_el_ttbarV1_v1, applyAlignmentCorrection))
+    if(elFRversion == "eFRv1" && pass_electronSelection(iEll, electronSelectionFO_el_OSV1_v1, false))
       isFOEll = true;
-    else if(elFRversion == "eFRv215u" && pass_electronSelection(iEll, electronSelectionFO_el_ttbarV1_v2, applyAlignmentCorrection))
+    else if(elFRversion == "eFRv2" && pass_electronSelection(iEll, electronSelectionFO_el_OSV1_v2, false))
       isFOEll = true; 
-    else if(elFRversion == "eFRv315u" && pass_electronSelection(iEll, electronSelectionFO_el_ttbarV1_v3, applyAlignmentCorrection))
+    else if(elFRversion == "eFRv3" && pass_electronSelection(iEll, electronSelectionFO_el_OSV1_v3, false))
       isFOEll = true;
    
 
@@ -473,18 +476,18 @@ double ossusy_looper::getFRWeight(const int hypIdx, string elFRversion, SimpleFa
 // 								       electronSelection_ttbarV2 , isData , true ))) continue;
 
 //    if( pass_electronSelection( iEl , electronSelection_ttbarV2 , isData , true ) ) {//isGoodLeptonwIso(11, iEl, applyAlignmentCorrection)
-    if( pass_electronSelection( iEl , electronSelection_ttbarV2 , false , false ) ) {//isGoodLeptonwIso(11, iEl, applyAlignmentCorrection)
+    if( pass_electronSelection( iEl , electronSelection_el_OSV1 , false , false ) ) {//isGoodLeptonwIso(11, iEl, applyAlignmentCorrection)
       isGoodEl = true;
     }
-    if( muonId( iMu , NominalTTbarV2 ) ) { // isGoodLeptonwIso(13, iMu, applyAlignmentCorrection)
+    if( muonId( iMu , OSGeneric_v1 ) ) { //needs to be made adjustable - currently only for OSG!!
       isGoodMu = true;
     }
 
-    if(elFRversion == "eFRv115u" && pass_electronSelection(iEl, electronSelectionFO_el_ttbarV1_v1, applyAlignmentCorrection))
+    if(elFRversion == "eFRv1" && pass_electronSelection(iEl, electronSelectionFO_el_ttbarV1_v1, false))
       isFOEl = true;
-    else if(elFRversion == "eFRv215u" && pass_electronSelection(iEl, electronSelectionFO_el_ttbarV1_v2, applyAlignmentCorrection))
+    else if(elFRversion == "eFRv2" && pass_electronSelection(iEl, electronSelectionFO_el_ttbarV1_v2, false))
       isFOEl = true; 
-    else if(elFRversion == "eFRv315u" && pass_electronSelection(iEl, electronSelectionFO_el_ttbarV1_v3, applyAlignmentCorrection))
+    else if(elFRversion == "eFRv3" && pass_electronSelection(iEl, electronSelectionFO_el_ttbarV1_v3, false))
       isFOEl = true;
 
     if(isFakeableMuon(iMu))
@@ -571,15 +574,19 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
     //     //instantiate SimpleFakeRate class for electrons and muons
     if(isData) {
       std::cout<<"Using data derived FR files"<<std::endl;
-      mufr = new SimpleFakeRate("FakeRates30August.root", "muFR15u");
+      //      mufr = new SimpleFakeRate("OSFR_101108.root", "Mu_OSGv1_fr");
+      mufr = new SimpleFakeRate("OSFR_101112.root", "Mu_OSGv1_fr");
       //     //this is the default
-      elfr= new SimpleFakeRate("FakeRates30August.root", "eFRv215u");
+      //      elfr= new SimpleFakeRate("OSFR_101108.root", "EG_OSv2_fr");
+      elfr= new SimpleFakeRate("OSFR_101112.root", "EG_OSv3_fr");
     }
     else {
       std::cout<<"Using MC derived FR files"<<std::endl;
-      mufr = new SimpleFakeRate("qcd30_FakeRates30August.root", "mufr");
+      //      mufr = new SimpleFakeRate("QCD_noWeightAdd_OSFR_101108.root", "QCD_Mu_OSGv1_fr");
+      mufr = new SimpleFakeRate("QCD_OSFR_101112.root", "QCD_Mu_OSGv1_fr");
       //     //this is the default
-      elfr= new SimpleFakeRate("qcd30_FakeRates30August.root", "efrV2");
+      //      elfr= new SimpleFakeRate("QCD_noWeightAdd_OSFR_101108.root", "QCD_EG_OSv2_fr");
+      elfr= new SimpleFakeRate("QCD_OSFR_101112.root", "QCD_EG_OSv3_fr");
     }
 
     //     // further options include:
@@ -758,7 +765,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
                  
         if(doFakeApp) {
           //          float FRweight = getFRWeight(hypIdx, elFRversion, mufr, elfr); 
-          FRweight = getFRWeight(i, "eFRv215u", mufr, elfr, frmode, isData); 
+          FRweight = getFRWeight(i, "eFRv3", mufr, elfr, frmode, isData); 
           
           // if getFRWeight returns less then 1 it means the current hyp
           // does not fulfill the FO selections.
@@ -1516,8 +1523,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         
           mullgen_       = foundMu_ll[hypIdx] ? 1 : 0;
           multgen_       = foundMu_lt[hypIdx] ? 1 : 0;
-          mull_          = (abs(hyp_ll_id()[hypIdx]) == 13  && (! muonId(hyp_ll_index()[hypIdx] , NominalTTbarV2 ) ) ) ? 0 : 1;
-          mult_          = (abs(hyp_lt_id()[hypIdx]) == 13  && (! muonId(hyp_lt_index()[hypIdx] , NominalTTbarV2 ) ) ) ? 0 : 1;
+          mull_          = (abs(hyp_ll_id()[hypIdx]) == 13  && (! muonId(hyp_ll_index()[hypIdx] , OSGeneric_v1 ) ) ) ? 0 : 1;
+          mult_          = (abs(hyp_lt_id()[hypIdx]) == 13  && (! muonId(hyp_lt_index()[hypIdx] , OSGeneric_v1 ) ) ) ? 0 : 1;
           nlep_          = nels + nmus;
           tcmet_looper_  = tcmet_looper;
           tcmet_35X_     = tcmet_35X;
@@ -2059,6 +2066,11 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
  
   delete d_llsol;
  
+  // newly delete the FR pointers at job end. 101115. Will this fix the 9.66/9.75 discrepancy in FRWJets application?
+  delete mufr;
+  delete elfr;
+
+
   return 0;
 }
 
