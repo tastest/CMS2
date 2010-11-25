@@ -1713,7 +1713,8 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
     
   // Jet-veto effciency studies
 
-  if (CheckCutsNM1(pass_all, (1<<PASS_JETVETO) | (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO), cuts_passed)) {
+  //if (CheckCutsNM1(pass_all, (1<<PASS_JETVETO) | (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO), cuts_passed)) {
+  if (CheckCutsNM1(pass_all, (1<<PASS_JETVETO), cuts_passed)) {
     find_most_energetic_jets(i_hyp,weight,realData,0.0,5.0);
     find_most_energetic_jets(i_hyp,weight,realData,0.0,3.0);
     find_most_energetic_jets(i_hyp,weight,realData,3.0,5.0);
@@ -2520,7 +2521,7 @@ RooDataSet* ScanChain( TChain* chain,
 	   fflush(stdout);
 	   i_permille_old = i_permille;
 	 }
-	 
+
 	 if ( identifyEvents ){
 	   // check if we know what we are looking at
 	   if ( ! isIdentified(sample) ) nFailedIdentification++;
