@@ -452,7 +452,11 @@ void xsecCalc_35pb_pass5(){
   xsecCalc_inStruct(pmm);
 
 
+
+
   //combine
+  std::cout<<"======================================="<<std::endl;
+  std::cout<<"======       COMBINATIONS      ========"<<std::endl; 
   std::cout<<"======================================="<<std::endl;
   std::cout<<"EEMM (wMET) PF"<<std::endl;
   TTxsecStruct peemm(pee);
@@ -464,7 +468,136 @@ void xsecCalc_35pb_pass5(){
   peemmem.simpleAdd(pem);
   xsecCalc_inStruct(peemmem, false);
 
+  std::cout<<"======================================="<<std::endl;
+  std::cout<<"======       BTAGGING          ========"<<std::endl; 
+  std::cout<<"======================================="<<std::endl;
+  /* Current strategy (how soon this comment goes out of sync with what's below?)
+   * Use the same SR as in pre-tagged sample
+   * simply add 5% to the acceptance systematics, based on +/-10% tag, +/-25% mistag values
+   ( note that these will be averaged out in combination, which is not quite correct in 
+   combination of tagged and untagged result)
+  */
+
+  std::cout<<"Doing PF w BTAG "<<std::endl;
+  std::cout<<"EM (no MET)"<<std::endl;
+  TTxsecStruct pbem;
+  pbem.channel = em_ch;
+  pbem.tt_exp   = 50.349;  pbem.tt_stat   =   0.433;
+  pbem.dytt_exp =  0.197;  pbem.dytt_stat =   0.139;
+  pbem.vv_exp   =  0.222;  pbem.vv_stat   =   0.019;
+  pbem.tw_exp   =  1.526;  pbem.tw_stat   =   0.035;
+
+  pbem.data = 52;
+
+  pbem.sr_exp  = 0.0544; pbem.sr_stat = 0.0056; pbem.sr_syst = fabs(0.0544 - 0.0307)*0.5;
+
+
+  pbem.qcd_exp   = 0.1792; pbem.qcd_stat  =  0.1273; pbem.qcd_syst = pbem.qcd_exp;
+  pbem.wjraw_exp = 2.4110; pbem.wjraw_stat= 0.8263;
+  pbem.wjf_systFrac = 0.75;
+
+  pbem.dy_exp = 0; pbem.dy_stat = 0; pbem.dy_syst = 0;
+
+  pbem.sf_exp = (0.108*9.)*(0.108*9.);//multiply MC by this. This is for Madgraph !
+  pbem.tt_AE_eRel = oplus(0.062, 0.05);
+ 
+  xsecCalc_inStruct(pbem);
+
+
+  std::cout<<"Doing PF w BTAG"<<std::endl;
+  std::cout<<"EM (w MET)"<<std::endl;
+  TTxsecStruct pbeme;
+  pbeme.channel = em_ch;
+  pbeme.tt_exp   = 46.499;  pbeme.tt_stat   =   0.416;
+  pbeme.dytt_exp =  0.197;  pbeme.dytt_stat =   0.139;
+  pbeme.vv_exp   =  0.211;  pbeme.vv_stat   =   0.019;
+  pbeme.tw_exp   =  1.408;  pbeme.tw_stat   =   0.033;
+
+  pbeme.data = 46;
+
+  pbeme.sr_exp  = 0.0544; pbeme.sr_stat = 0.0056; pbeme.sr_syst = fabs(0.0544 - 0.0307)*0.5;
+
+
+  pbeme.qcd_exp   = 0.0985; pbeme.qcd_stat  = 0.0985; pbeme.qcd_syst = pbeme.qcd_exp;
+  pbeme.wjraw_exp = 2.4110; pbeme.wjraw_stat= 0.8263;
+  pbeme.wjf_systFrac = 0.75;
+
+  pbeme.dy_exp = 0; pbeme.dy_stat = 0; pbeme.dy_syst = 0;
+
+  pbeme.sf_exp = (0.108*9.)*(0.108*9.);//multiply MC by this. This is for Madgraph !
+  pbeme.tt_AE_eRel = oplus(0.062, 0.05);
+ 
+  xsecCalc_inStruct(pbeme);
+
+
+  std::cout<<"Doing PF w BTAG"<<std::endl;
+  std::cout<<"EE (w MET)"<<std::endl;
+  TTxsecStruct pbee;
+  pbee.channel = ee_ch;
+  pbee.tt_exp   = 15.623;  pbee.tt_stat   =   0.241;
+  pbee.dytt_exp =  0.295;  pbee.dytt_stat =   0.197;
+  pbee.vv_exp   =  0.065;  pbee.vv_stat   =   0.082;
+  pbee.tw_exp   =  0.487;  pbee.tw_stat   =   0.506;
+
+  pbee.data = 15;
+
+  pbee.sr_exp  = 0.0795; pbee.sr_stat = 0.0106; pbee.sr_syst = fabs(0.0795 - 0.0425)*0.5;
+
+
+  pbee.qcd_exp   = 0.0953; pbee.qcd_stat  = 0.0953; pbee.qcd_syst = pbee.qcd_exp;
+  pbee.wjraw_exp = 1.7113; pbee.wjraw_stat= 0.6696;
+  pbee.wjf_systFrac = 0.5;
+
+  pbee.dy_exp = 0.677; pbee.dy_stat = 0.586; pbee.dy_syst = 0.5* pbee.dy_exp;
+
+  pbee.sf_exp = (0.108*9.)*(0.108*9.);//multiply MC by this. This is for Madgraph !
+  pbee.tt_AE_eRel = oplus(0.086, 0.05);
+ 
+  xsecCalc_inStruct(pbee);
+
+  std::cout<<"Doing PF w BTAG"<<std::endl;
+  std::cout<<"MM (w MET)"<<std::endl;
+  TTxsecStruct pbmm;
+  pbmm.channel = mm_ch;
+  pbmm.tt_exp   = 17.306;  pbmm.tt_stat   =   0.254;
+  pbmm.dytt_exp =  0.197;  pbmm.dytt_stat =   0.197;
+  pbmm.vv_exp   =  0.082;  pbmm.vv_stat   =   0.211;
+  pbmm.tw_exp   =  0.506;  pbmm.tw_stat   =   1.408;
+
+  pbmm.data = 20;
+
+  pbmm.sr_exp  = 0.0293; pbmm.sr_stat = 0.0056; pbmm.sr_syst = fabs(0.0293 - 0.0188)*0.5;
+
+  //!!!!! asymmetric error would be better
+  pbmm.qcd_exp   = 0.0000; pbmm.qcd_stat  = 0.09; pbmm.qcd_syst = pbmm.qcd_exp;
+  pbmm.wjraw_exp = 1.0140; pbmm.wjraw_stat = 0.6082;
+  pbmm.wjf_systFrac = 0.75;
+
+  pbmm.dy_exp = 1.365; pbmm.dy_stat = 0.820; pbmm.dy_syst = 0.5*pbmm.dy_exp;
+
+  pbmm.sf_exp = (0.108*9.)*(0.108*9.);//multiply MC by this. This is for Madgraph !
+  pbmm.tt_AE_eRel = oplus(0.071, 0.05);
+ 
+  xsecCalc_inStruct(pbmm);
   
+  //combine
+  std::cout<<"======================================="<<std::endl;
+  std::cout<<"======       COMBINATIONS      ========"<<std::endl; 
+  std::cout<<"======================================="<<std::endl;
+  std::cout<<"EEMM (wMET) PF w BTAG"<<std::endl;
+  TTxsecStruct pbeemm(pbee);
+  pbeemm.simpleAdd(pbmm);
+  xsecCalc_inStruct(pbeemm, false);
+
+  std::cout<<"EEMMEM (wMET) PF w BTAG"<<std::endl;
+  TTxsecStruct pbeemmem(pbeemm);
+  pbeemmem.simpleAdd(pbem);
+  xsecCalc_inStruct(pbeemmem, false);
+
+  std::cout<<"EEMMEM PF: eemm wMET,BTAG em noMET"<<std::endl;
+  TTxsecStruct pbeemmNoBem(pbeemm);
+  pbeemmNoBem.simpleAdd(pem);
+  xsecCalc_inStruct(pbeemmNoBem, false);
 
 //   std::cout<<"Doing JPT/TC"<<std::endl;
 //   std::cout<<"EE (w MET)"<<std::endl;
