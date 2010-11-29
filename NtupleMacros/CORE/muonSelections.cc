@@ -67,6 +67,9 @@ bool muonId(unsigned int index, SelectionType type){
 	 case NominalTTbar_pass6:
                   isovalue = 0.15;
 		  break;
+	 case muonSelectionFO_mu_ttbar_pass6:
+        	  isovalue = 0.4;
+		  break; 
 	 default:
 		  std::cout << "muonID ERROR: requested muon type is not defined. Abort." << std::endl;
 		  exit(1);
@@ -334,9 +337,16 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type){
 		  if (cms2.mus_gfit_validSTAHits().at(index) == 0)    return false; // Glb fit must have hits in mu chambers
 		  if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.02) return false; // d0 from beamspot
 		  return true;
+		  break;
+	 case muonSelectionFO_mu_ttbar_pass6:
+		  if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)  return false; // eta cut
+		  if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 50) return false; //glb fit chisq
+		  if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
+		  if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
+		  if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
+		  if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.2) return false; // d0 from beamspot
 		  return true;
-
-
+		  break;
 	 default:
 		  std::cout << "muonID ERROR: requested muon type is not defined. Abort." << std::endl;
 		  return false;
