@@ -350,7 +350,7 @@ static const cuts_t electronSelectionFO_el_ttbarV1_v2_pass5 =
 
 //just defining a new FO object for pass6 for consistency with the muon FO ttbar naming scheme
 //nothing has changed from pass5 -> pass6 however.
-static const cuts_t electronSelectionFO_el_ttbarV1_v2_pass5 =  electronSelectionFO_el_ttbarV1_v2_pass5;
+static const cuts_t electronSelectionFO_el_ttbarV1_v2_pass6 =  electronSelectionFO_el_ttbarV1_v2_pass5;
 //---------------------------------------------------------
 // TTBarV1 fakeable object definition v3
 // extrapolating in iso
