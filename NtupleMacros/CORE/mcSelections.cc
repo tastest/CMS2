@@ -374,9 +374,9 @@ int dumpDocLines()
        << "status " << "Mother  " << endl;     
   std::cout << "---------------------------------------------------------------------" << std::endl;
   for (int j=0; j<size; j++) {
-  float m2 = cms2.genps_p4().at(j).M2();
-  float m = m2 >= 0 ? sqrt(m2) : 0.0;
-  cout << setw(4) << left << j << " "
+    float m2 = cms2.genps_p4().at(j).M2();
+    float m = m2 >= 0 ? sqrt(m2) : 0.0;
+    cout << setw(4) << left << j << " "
          << setw(10) << left << pdg->GetParticle(cms2.genps_id().at(j))->GetName() << " "
 	 << setw(7) << right << setprecision(4) << cms2.genps_p4().at(j).pt() << "  "
 	 << setw(7) << right << setprecision(4) << cms2.genps_p4().at(j).phi() << "  "
@@ -384,7 +384,22 @@ int dumpDocLines()
 	 << setw(7) << right << setprecision(4) << m << "  "
          << setw(4) << right << cms2.genps_status().at(j) << " "
          << setw(10) << left << pdg->GetParticle(cms2.genps_id_mother().at(j))->GetName() 
-         << " " << endl;
+	 << " " << endl;
+    if(cms2.genps_lepdaughter_id()[j].size() > 0) {
+      cout << "Daughters:" << endl;
+      for(unsigned int i = 0; i < cms2.genps_lepdaughter_id()[j].size(); i++) {
+        float m2 = cms2.genps_lepdaughter_p4().at(j).at(i).M2();
+	float m = m2 >= 0 ? sqrt(m2) : 0.0;
+	cout << "  " << setw(2) << left << i 
+	     << setw(10) << left << pdg->GetParticle(cms2.genps_lepdaughter_id().at(j).at(i))->GetName() << " "
+	     << setw(7) << right<< setprecision(4) << cms2.genps_lepdaughter_p4().at(j).at(i).pt() << "  "
+	     << setw(7) << right << setprecision(4) << cms2.genps_lepdaughter_p4().at(j).at(i).phi() << "  "
+	     << setw(10) << right << setprecision(4) << cms2.genps_lepdaughter_p4().at(j).at(i).eta() << "  "
+	     << setw(7) << right << setprecision(4) << m << "  " << endl;
+      
+      }
+    }
+  
   }
   delete pdg;
   return 0;
