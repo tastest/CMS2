@@ -9,6 +9,10 @@
 #include "electronSelectionsParameters.h"
 #include "muonSelections.h"
 #include "metSelections.h"
+
+
+
+
 #include "triggerUtils.h"
 #include "CMS2.h"
 
@@ -41,7 +45,7 @@ bool isGoodLeptonNoIso(int id, int lepIdx, bool applyAlignmentCorrection, bool r
   //muons
   if(abs(id) == 13) {
 
-    if(muonIdNotIsolated(lepIdx, NominalTTbarV2)) 
+    if(muonIdNotIsolated(lepIdx, NominalTTbar_pass6)) 
       return true;
 
     return false;
@@ -161,7 +165,7 @@ std::pair<float,float> getMet(const string algo, unsigned int hypIdx) {
     
     return make_pair(sqrt(tcmetX*tcmetX + tcmetY*tcmetY), atan2(tcmetY, tcmetX));
   }
-
+/*
   if(algo == "tcMET_looper") {
 
     metStruct tcmetStruct = correctedTCMET();
@@ -176,8 +180,9 @@ std::pair<float,float> getMet(const string algo, unsigned int hypIdx) {
     return make_pair(sqrt(tcmetX*tcmetX + tcmetY*tcmetY), atan2(tcmetY, tcmetX));
   }
 
+
   if(algo == "tcMET35X") {
-  
+
     float tcmetX = evt35X_tcmet()*cos(evt35X_tcmetPhi());
     float tcmetY = evt35X_tcmet()*sin(evt35X_tcmetPhi());
     
@@ -188,6 +193,7 @@ std::pair<float,float> getMet(const string algo, unsigned int hypIdx) {
     
     return make_pair(sqrt(tcmetX*tcmetX + tcmetY*tcmetY), atan2(tcmetY, tcmetX));
   }
+*/
 
   
   if(algo == "muCorMET") {
@@ -243,9 +249,9 @@ bool passEGTrigger(bool mc) {
 
   if (mc) {
  
-    int e10 = nHLTObjects("HLT_Ele10_LW_L1R");
+    int e10 = nHLTObjects("HLT_Ele10_SW_L1R");
     for (int i=0; i<e10; i++) {
-      LorentzVector p4 = p4HLTObject("HLT_Ele10_LW_L1R", i);
+      LorentzVector p4 = p4HLTObject("HLT_Ele10_SW_L1R", i);
       if (p4.Pt() > 15.) return true;
     }
 
@@ -463,19 +469,19 @@ int getNbtags(const vector<unsigned int> v_jetsIdx, const string jetAlgo, const 
     int ntags = 0;
     if(bTagDiscriminator == "trackCountingHighEffBJetTag") {
       for(unsigned int i = 0; i < v_jetsIdx.size(); i++) {
-	if(jets_trackCountingHighEffBJetTag()[v_jetsIdx.at(i)] > 1.7)
+	if(jpts_trackCountingHighEffBJetTag()[v_jetsIdx.at(i)] > 1.7)
 	  ntags++;
       }
       return ntags;
     }else if(bTagDiscriminator == "simpleSecondaryVertexHighEffBJetTag") {
       for(unsigned int i = 0; i < v_jetsIdx.size(); i++) {
-	if(jets_simpleSecondaryVertexHighEffBJetTag()[v_jetsIdx.at(i)] > 1.74)
+	if(jpts_simpleSecondaryVertexHighEffBJetTag()[v_jetsIdx.at(i)] > 1.74)
 	  ntags++;
       }
       return ntags;
     } else if(bTagDiscriminator == "simpleSecondaryVertexHighPurBJetTag") {
       for(unsigned int i = 0; i < v_jetsIdx.size(); i++) {
-	if(jets_simpleSecondaryVertexHighPurBJetTags()[v_jetsIdx.at(i)] > 2)
+	if(jpts_simpleSecondaryVertexHighPurBJetTags()[v_jetsIdx.at(i)] > 2)
 	  ntags++;
       }
       return ntags;
