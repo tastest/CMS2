@@ -333,6 +333,8 @@ static const cuts_t electronSelectionFO_el_ttbarV1_v1_pass5 =
 	 (1ll<<ELESCET_015) |
 	 (1ll<<ELEPT_015) |
 	 (1ll<<ELEISO_REL040);
+
+static const cuts_t electronSelectionFO_el_ttbarV1_v1_pass6 = electronSelectionFO_el_ttbarV1_v1_pass5;
 //---------------------------------------------------------
 // TTBarV1 fakeable object definition v2
 // extrapolating in id
@@ -343,6 +345,8 @@ static const cuts_t electronSelectionFO_el_ttbarV1_v2_pass5 =
 	 (1ll<<ELESCET_015) |
 	 (1ll<<ELEPT_015) |
 	 (1ll<<ELEISO_REL015);
+
+static const cuts_t electronSelectionFO_el_ttbarV1_v2_pass5 =  electronSelectionFO_el_ttbarV1_v2_pass5;
 //---------------------------------------------------------
 // TTBarV1 fakeable object definition v3
 // extrapolating in iso
@@ -354,6 +358,8 @@ static const cuts_t electronSelectionFO_el_ttbarV1_v3_pass5 =
 	 (1ll<<ELEPT_015) |
 	 (1ll<<ELEID_VBTF_35X_90) |
 	 (1ll<<ELEISO_REL040);
+
+static const cuts_t electronSelectionFO_el_ttbarV1_v3_pass6 = electronSelectionFO_el_ttbarV1_v3_pass5;
 //---------------------------------------------------------
 
 
