@@ -142,7 +142,7 @@ void ossusy_looper_38X::makeTree(char *prefix)
   rootdir->cd();
 
   //Super compressed ntuple here
-  outFile   = new TFile(Form("output_38X/nov5th_v2/%s_smallTree.root",prefix), "RECREATE");
+  outFile   = new TFile(Form("output_38X/temp/%s_smallTree.root",prefix), "RECREATE");
   //outFile   = new TFile("temp.root","RECREATE");
   outFile->cd();
   outTree = new TTree("t","Tree");
@@ -152,6 +152,7 @@ void ossusy_looper_38X::makeTree(char *prefix)
   outTree->Branch("costhetaweight",  &costhetaweight_,   "costhetaweight/F");
   outTree->Branch("weight",          &weight_,           "weight/F");
   outTree->Branch("smeff",           &smeff_,            "smeff/F");
+  outTree->Branch("k",               &k_,                "k/F");
   outTree->Branch("mllgen",          &mllgen_,           "mllgen/F");
   outTree->Branch("nlep",            &nlep_,             "nlep/I");
   outTree->Branch("ngoodlep",        &ngoodlep_,         "ngoodlep/I");
@@ -192,6 +193,10 @@ void ossusy_looper_38X::makeTree(char *prefix)
   outTree->Branch("dilpt",           &dilpt_,            "dilpt/F");
   outTree->Branch("dildphi",         &dildphi_,          "dildphi/F");
   outTree->Branch("njets",           &njets_,            "njets/I");
+  outTree->Branch("njetsUp",         &njetsUp_,          "njetsUp/I");
+  outTree->Branch("njetsDown",       &njetsDown_,        "njetsDown/I");
+  outTree->Branch("sumjetptUp",      &sumjetptUp_,       "sumjetptUp/F");
+  outTree->Branch("sumjetptDown",    &sumjetptDown_,     "sumjetptDown/F");
   outTree->Branch("nvtx",            &nvtx_,             "nvtx/I");
   outTree->Branch("nbtags",          &nbtags_,           "nbtags/I");
   outTree->Branch("vecjetpt",        &vecjetpt_,         "vecjetpt/F");
@@ -575,7 +580,8 @@ int ossusy_looper_38X::ScanChain(TChain* chain, char *prefix, float kFactor, int
 //     exit(0);
   }
 
-  set_goodrun_file( "Cert_TopNov5_Merged_135821-149442_allPVT_goodruns.txt");
+  set_goodrun_file("Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON_v3_goodrun.txt");
+  //set_goodrun_file( "Cert_TopNov5_Merged_135821-149442_allPVT_goodruns.txt");
   //set_goodrun_file( "Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON_v2_goodruns.txt" );
   
   bool isData = false;
@@ -713,6 +719,12 @@ int ossusy_looper_38X::ScanChain(TChain* chain, char *prefix, float kFactor, int
       bool skipEvent = false;
       for( unsigned int iEl = 0 ; iEl < els_conv_dist().size() ; ++iEl ){
         if( els_conv_dist().at(iEl) != els_conv_dist().at(iEl) ){
+          skipEvent = true;
+        }
+        if( els_sigmaIEtaIEta().at(iEl) != els_sigmaIEtaIEta().at(iEl) ){
+          skipEvent = true;
+        }
+        if( els_sigmaIEtaIEtaSC().at(iEl) != els_sigmaIEtaIEtaSC().at(iEl) ){
           skipEvent = true;
         }
       }
@@ -1151,11 +1163,18 @@ int ossusy_looper_38X::ScanChain(TChain* chain, char *prefix, float kFactor, int
         LorentzVector  vjpts_p4_tot(0,0,0,0);
         VofP4 vjpts_noetacut_p4;
 
+        njetsUp_      = 0;
+        njetsDown_    = 0;
+        sumjetptUp_   = 0.;
+        sumjetptDown_ = 0.;
+
         for (unsigned int ijet = 0; ijet < jpts_p4().size(); ijet++) {
           
-          LorentzVector vjet = jpts_p4().at(ijet) * jpts_cor().at(ijet); 
-          LorentzVector vlt  = hyp_lt_p4()[hypIdx];
-          LorentzVector vll  = hyp_ll_p4()[hypIdx];
+          LorentzVector vjet     = jpts_p4().at(ijet) * jpts_cor().at(ijet); 
+          LorentzVector vjetUp   = jpts_p4().at(ijet) * jpts_cor().at(ijet) * 1.05; 
+          LorentzVector vjetDown = jpts_p4().at(ijet) * jpts_cor().at(ijet) * 0.95; 
+          LorentzVector vlt      = hyp_lt_p4()[hypIdx];
+          LorentzVector vll      = hyp_ll_p4()[hypIdx];
 
           if( generalLeptonVeto ){
             bool rejectJet = false;
@@ -1167,8 +1186,19 @@ int ossusy_looper_38X::ScanChain(TChain* chain, char *prefix, float kFactor, int
           
           if( dRbetweenVectors(vjet, vll) < 0.4) continue;
           if( dRbetweenVectors(vjet, vlt) < 0.4) continue;
-          if( vjet.pt() < 30.          )         continue;
           if( !passesCaloJetID( vjet ) )         continue;
+
+          if( vjetUp.pt() > 30. && fabs( vjetUp.eta() ) < 2.5 ){
+            njetsUp_++;
+            sumjetptUp_ += vjetUp.pt();
+          }
+
+          if( vjetDown.pt() > 30. && fabs( vjetDown.eta() ) < 2.5 ){
+            njetsDown_++;
+            sumjetptDown_ += vjetDown.pt();
+          }
+          
+          if( vjet.pt() < 30.          )         continue;
 
           vjpts_noetacut_p4.push_back( vjet );
 
@@ -1398,8 +1428,14 @@ int ossusy_looper_38X::ScanChain(TChain* chain, char *prefix, float kFactor, int
           weight = 1;
         }else{
           weight = kFactor * evt_scale1fb() * lumi * triggerSuperModelEffic( hypIdx );
+
+          if( TString(prefix).Contains("LM") ){
+            if( strcmp( prefix , "LM0" ) == 0 ) weight *= kfactorSUSY( "lm0" );
+            if( strcmp( prefix , "LM1" ) == 0 ) weight *= kfactorSUSY( "lm1" );
+          }
         }
 
+        /*
         if( !isData ){
           
           if(TString(prefix).Contains("DY") ) {
@@ -1420,6 +1456,7 @@ int ossusy_looper_38X::ScanChain(TChain* chain, char *prefix, float kFactor, int
             }
           }
         }
+        */
 
         if( doFakeApp ) {  // multiply orig weight with FR hyp weight (1 for std running, FRweight for FR run)
           weight *= v_weights.at(i);
@@ -1591,6 +1628,9 @@ int ossusy_looper_38X::ScanChain(TChain* chain, char *prefix, float kFactor, int
           mucorjesmet_   = mucorjesmet;
           genmet_        = genmet;                       //generated met from neutrinos/LSP
           weight_        = weight;                       //event weight
+          k_             = 1;
+          if( strcmp( prefix , "LM0" )  == 0 ) k_ = kfactorSUSY( "lm0" );
+          if( strcmp( prefix , "LM1" )  == 0 ) k_ = kfactorSUSY( "lm1" );
           smeff_         = isData ? 1 : triggerSuperModelEffic( hypIdx ); //trigger supermodel efficiency
           proc_          = getProcessType(prefix);       //integer specifying sample
           topmass_       = topMass;                      //topepton mass

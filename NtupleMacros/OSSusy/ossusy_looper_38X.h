@@ -79,6 +79,7 @@ class ossusy_looper_38X
         TTree  *outTree;
         Float_t weight_;
         Float_t smeff_;
+        Float_t k_;
         Float_t mllgen_;
         Float_t costhetaweight_;
         Int_t   mull_;
@@ -92,6 +93,10 @@ class ossusy_looper_38X
         Int_t   proc_;
         Int_t   leptype_;
         Int_t   njets_;
+        Int_t   njetsUp_;
+        Int_t   njetsDown_;
+        Float_t sumjetptUp_;
+        Float_t sumjetptDown_;
         Int_t   nvtx_;
         Int_t   nbtags_;
         Float_t dilmass_;

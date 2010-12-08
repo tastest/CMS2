@@ -89,11 +89,11 @@ void doAll_ossusy_looper_38X(bool skipFWLite = true)
   // 	    * (490779./381623.); // ratio of number events with pt-hat < 30 to total with pt-hat > 15 ;; for the early data sample qcdPt15 and qcdPt30 MC
   float kqcdpt15    = (8.158/8.762)*(490779./381623.);  
   float kqcdpt30    = 1.;  
-  float kttall    = 157.5/165.0;  
-  float kttdil    = 157.5/165.0;  
+  float kttall    = 1.;  //157.5/165.0;  
+  float kttdil    = 1.;  //157.5/165.0;  
   float kttrelval = 1;  
-  float kttem     = 157.5/165.0;  
-  float kttotr    = 157.5/165.0;  
+  float kttem     = 1.;  //157.5/165.0;  
+  float kttotr    = 1.;  //157.5/165.0;  
   float kVV       = 1.3;
   float kWW       = 1.;
   float kWZ       = 1.;
@@ -180,9 +180,9 @@ void doAll_ossusy_looper_38X(bool skipFWLite = true)
   int preML8      = 1;
   int preLMscan   = 1;
 
-
+  /*
   //Flags for files to run over
-  bool rundata     = 0;
+  bool rundata     = 1;
   bool rundataskim = 1;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
@@ -191,7 +191,7 @@ void doAll_ossusy_looper_38X(bool skipFWLite = true)
   bool runttem     = 0;
   bool runttrelval = 0;
   bool runttotr    = 1;
-  bool runVV       = 1;
+  bool runVV       = 0;
   bool runWW       = 1;
   bool runWZ       = 1;
   bool runZZ       = 1;
@@ -229,19 +229,19 @@ void doAll_ossusy_looper_38X(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
+*/
 
-
-  /*
+  
   //Flags for files to run over
   bool rundata     = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runttall    = 0;
-  bool runttdil    = 1;
+  bool runttdil    = 0;
   bool runttrelval = 0;
   bool runttem     = 0;
-  bool runttotr    = 1;
+  bool runttotr    = 0;
   bool runVV       = 0;
   bool runWW       = 0;
   bool runWZ       = 0;
@@ -250,15 +250,15 @@ void doAll_ossusy_looper_38X(bool skipFWLite = true)
   bool runWcharm   = 0;
   bool runZjets    = 0;
   bool runDYtot    = 0;
-  bool runDYee     = 1;
-  bool runDYmm     = 1;
-  bool runDYtautau = 1;
+  bool runDYee     = 0;
+  bool runDYmm     = 0;
+  bool runDYtautau = 0;
   bool runppMuX    = 0;
   bool runEM       = 0;
   bool runtW       = 0;
   bool runVQQ      = 0;
-  bool runLM0      = 0;
-  bool runLM1      = 0;
+  bool runLM0      = 1;
+  bool runLM1      = 1;
   bool runLM2      = 0;
   bool runLM3      = 0;
   bool runLM4      = 0;
@@ -280,7 +280,7 @@ void doAll_ossusy_looper_38X(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  */
+
 
   char* dir = "";
 
@@ -612,8 +612,11 @@ void doAll_ossusy_looper_38X(bool skipFWLite = true)
   TChain *chLM0 = new TChain("Events");
   if (runLM0) {
     pickSkimIfExists(chLM0, 
+                     //"/tas/cms2/LM0_SUSY_sftsht_7TeV-pythia6_Fall10-START38_V12-v1_fullGen/V03-06-14/merged*root",
                      "/tas/cms2/LM0_SUSY_sftsht_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/merged*root",
                      "SUSY_LM0");
+
+    //cout << "USING LM0 FULL GEN!!!!!!!!!!!!!" << endl;
   }
   
   // LM1
@@ -796,7 +799,7 @@ void doAll_ossusy_looper_38X(bool skipFWLite = true)
   //--------------------------------
   //set luminosity to scale to
   //--------------------------------
-  float lumi              = 34.85e-3; 
+  float lumi              = 33.96e-3; 
   bool  calculateTCMET    = true; //redo tcmet calculation on the fly
 
   char* jetTypeStrings[3] = {"JPT", "calo","pfjet"};
@@ -1103,7 +1106,7 @@ void doAll_ossusy_looper_38X(bool skipFWLite = true)
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx],frmodeStrings[frmode]);
                   }
                   else {
-                    const char* outFile = Form("output_38X/nov5th_v2/ossusy_%s_%s%s_bitmask.root", 
+                    const char* outFile = Form("output_38X/temp/ossusy_%s_%s%s_bitmask.root", 
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
                   }
                   
