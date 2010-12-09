@@ -48,6 +48,49 @@ static const char jetbin_names[][128] = { "0j", "1j", "2j", "allj"};
 // functions
 //
 
+bool MyScanChain::PassAnalysisSelection()
+{
+
+    //
+    // does this event pass the analysis selection
+    //
+
+    // mc leptons
+    std::vector<unsigned int> mcLeptonIndices;
+    int nGoodLep = 0;
+    for (size_t i = 0; i < cms2.genps_id().size(); ++i)
+    {
+        if (!(abs(cms2.genps_id()[i]) == 11 || abs(cms2.genps_id()[i]) == 13)) continue;
+        if ( cms2.genps_p4()[i].Pt() < 20.0 || abs(cms2.genps_p4()[i].Eta()) > 2.5) continue;
+        nGoodLep++;
+        mcLeptonIndices.push_back(i);
+    }
+
+    // mc jets
+    /*
+    int nGoodJet = 0;
+    for (size_t j = 0; j < cms2.evt_ngenjets(); ++j) 
+    {
+        if (cms2.genjets_p4()[j].Pt() < 30.0) continue;
+        if (fabs(cms2.genjets_p4()[j].Eta()) > 2.5) continue;
+        bool clean = true;
+        for ( size_t i = 0; i < mcLeptonIndices.size(); ++i) 
+        {
+            if (ROOT::Math::VectorUtil::DeltaR(cms2.genjets_p4()[j], cms2.genps_p4()[mcLeptonIndices[i]]) < 0.4) {
+                clean = false;
+                break;
+            }
+        }
+        if (clean) nGoodJet ++;
+    }
+    */
+
+    //if (nGoodLep == 2 && nGoodJet >= 2) return = true;
+    if (nGoodLep == 2) return true;
+    return false;
+
+}
+
 float MyScanChain::GetGenMeff()
 {
     //
@@ -191,7 +234,6 @@ int MyScanChain::ScanChain(std::string sampleName, TChain *chain, float kFactor,
     Float_t min_meff = 0.0;
     Float_t max_meff = 2000.0;
     TH1F   *histArr[MAXWEIGHT];
-
     double acceptance[MAXWEIGHT];
     double nTotal[MAXWEIGHT];
     double nPass[MAXWEIGHT];
@@ -292,45 +334,6 @@ int MyScanChain::ScanChain(std::string sampleName, TChain *chain, float kFactor,
 
             }
 
-
-            //
-            // does this event pass the analysis selection
-            //
-
-            // mc leptons
-            std::vector<unsigned int> mcLeptonIndices;
-            int nGoodLep = 0;
-            for (size_t i = 0; i < cms2.genps_id().size(); ++i) 
-            {
-                if (!(abs(cms2.genps_id()[i]) == 11 || abs(cms2.genps_id()[i]) == 13)) continue;
-                if ( cms2.genps_p4()[i].Pt() < 20.0 || abs(cms2.genps_p4()[i].Eta()) > 2.5) continue;
-                nGoodLep++;
-                mcLeptonIndices.push_back(i);
-            }
-
-            /*
-            // mc jets
-            int nGoodJet = 0;
-            for (size_t j = 0; j < cms2.evt_ngenjets(); ++j) 
-            {
-            if (cms2.genjets_p4()[j].Pt() < 30.0) continue;
-            if (fabs(cms2.genjets_p4()[j].Eta()) > 2.5) continue;
-            bool clean = true;
-            for ( size_t i = 0; i < mcLeptonIndices.size(); ++i) 
-            {
-            if (ROOT::Math::VectorUtil::DeltaR(cms2.genjets_p4()[j], cms2.genps_p4()[mcLeptonIndices[i]]) < 0.4) {
-            clean = false;
-            break;
-            }
-            }
-            if (clean) nGoodJet ++;
-            }
-             */
-
-            bool passSelection = false;
-            //if (nGoodLep == 2 && nGoodJet >= 2) passSelection = true;
-            if (nGoodLep < 2) continue;
-
             //
             // do PDF analysis
             //
@@ -363,24 +366,28 @@ int MyScanChain::ScanChain(std::string sampleName, TChain *chain, float kFactor,
             }
 
             //
-            // histogram the observable quantities
-            // or record in some other way
+            // histogram the observable quantities for each eigenvector variation weight
+            // and record the acceptance for passing the analysis selection for each eigenvector variation weight
             //
 
+            bool passAnalysisSelection = PassAnalysisSelection();
             float genmeff = GetGenMeff();
 
             for (unsigned int subset = 0; subset < nsets; ++subset) 
             {
 
-                // distribution calculations
-                histArr[subset]->Fill(genmeff, pdfWeights[subset]*weight);
-
-                // acceptance calculations
+                // acceptance calculation
                 nTotal[subset] += pdfWeights[subset];
                 nTotalOther += pdfWeightOther;
-                if (passSelection) {
+                if (passAnalysisSelection) {
                     nPass[subset] += pdfWeights[subset];
                     nPassOther += pdfWeightOther;
+                }
+
+                // distribution calculations
+                // in this case it's the meff w.r.t. events passing the analysis selection
+                if (passAnalysisSelection) {
+                    histArr[subset]->Fill(genmeff, pdfWeights[subset]*weight);
                 }
 
             }
@@ -397,10 +404,19 @@ int MyScanChain::ScanChain(std::string sampleName, TChain *chain, float kFactor,
     // Analyse the observables
     //
 
+    //
+    // calculate the weighted acceptance for each eigenvector variation
+    //
+
     acceptanceOther = nPassOther / nTotalOther;
     for (unsigned int i = 0; i < nsets; ++i) {
         acceptance[i] = nPass[i] / nTotal[i];
     } 
+
+    //
+    // calculate the variation in the acceptance from the maximum variation
+    // of all the eigenvector variations
+    //
 
     double plus_max = 0.0;
     double minus_max = 0.0;
@@ -418,7 +434,8 @@ int MyScanChain::ScanChain(std::string sampleName, TChain *chain, float kFactor,
     minus_max = sqrt(minus_max);
 
     //
-    // now do the histograms
+    // now do the same for the quantities as a function of some variable
+    // (histograms)
     //
 
     for (Int_t bin = 1; bin <= nbins_meff; ++bin)
@@ -442,13 +459,16 @@ int MyScanChain::ScanChain(std::string sampleName, TChain *chain, float kFactor,
         plus_max = sqrt(plus_max);
         minus_max = sqrt(minus_max);
 
-        //std::cout <<  "doing bin " << bin << " $\\pm$ " << plus_max/X0 << " " << minus_max/X0 << std::endl;
-
         h1_centre->SetBinContent(bin, X0);
         h1_down->SetBinContent(bin, X0 - minus_max);
         h1_up->SetBinContent(bin, X0 + plus_max);
 
     }
+
+    //
+    // print out the acceptance results
+    // (the results for the histograms are written to a root file)
+    //
 
     std::cout << "[MyScanChain::ScanChain] " << sampleName << std::endl;
     std::cout << "[MyScanChain::ScanChain] Analysing PDF uncertainty on the acceptance" << std::endl;
