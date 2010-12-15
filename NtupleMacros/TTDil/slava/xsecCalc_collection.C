@@ -99,7 +99,10 @@ public:
     spill_e    = oplus(spill_stat, spill_syst);
 
     wjf_exp = wjraw_exp - 2.* qcd_exp - spill_exp;
-    if (wjf_exp< 0) std::cout<<"Warning: negative wj estimate: "<<wjf_exp<<std::endl;
+    if (wjf_exp< 0){ 
+      std::cout<<"Warning: negative wj estimate: "<<wjf_exp<<" truncate to 0"<<std::endl;
+      wjf_exp = 0;
+    }
     wjf_syst = wjf_systFrac*wjf_exp;
 
     fake_exp  = wjf_exp + qcd_exp;
