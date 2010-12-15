@@ -31,22 +31,27 @@ mv CORE/CMS2.h.new CORE/CMS2.h
 # email notifications are not sent for
 # new candidates
 
-# For the gathering... this is all new
+# For the gathering...
+
 # First, you need a goodruns JSON file.
 cp /afs/cern.ch/user/s/slava77/public/jsons/august30/special/Cert_TopAug30_Merged_135059-144114_recover_noESDCS.txt ./json.txt
+# You can also try
+# /nfs-3/userdata/yanjuntu/hunt/runlists/
+# for runlists.
 
-# In my test I did the above but didn't
-# rename it to json.txt, rather, I made
-# a symbolic link to it called json.txt
+# Put this in at the appropriate place
+# at the top of gather_doAll.C
 
-# Now, as of my typing this,  there  is
-# just a gather example, I run it thusly:
-root [0] .L goodrun.cc+
-root [1] .L gather.C+
-root [2] // for a single MC and data plot:
-root [3] .x gather_example_doAll.C+
-root [4] // or for a set of a few plots comparing with the full ttbar MC set
-root [5] .x gather_several_doAll.C+
+# Both gather_example_doAll.C, and
+# gather_several_doAll.C have been
+# deprecated. Instead, I recommend you
+# run the full gathering code, which is
+# found in the file gather_doAll.C, and
+# if necessary, tailor it to your needs.
 
-# Have a look, I think this  technology
-# is sufficient for gathering
+# Just do
+# root gather_doAll.C
+
+# This calls functions which are defined
+# in gather.C. That in turn uses 
+# BabySample.h, and other code.
