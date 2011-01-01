@@ -2,8 +2,8 @@
   gSystem->CompileMacro("RooATGCPdf.C","k");
   gSystem->CompileMacro("wwfit.C","k");
   setDefaults();
-  setSigPdf_LZ_GZ();
-  // setSigPdf_LZ_KG();
+  // setSigPdf_LZ_GZ();
+  setSigPdf_LZ_KG();
   // setBkgPdf();
   // sensitivity();
   // ww1DFits();
