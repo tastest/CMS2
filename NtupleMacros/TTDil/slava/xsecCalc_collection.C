@@ -1200,3 +1200,40 @@ void xsecCalc_36pb_pass6(){
   
   
 }
+
+void xsecCalc_comb_pass6_normLum(){
+  double mean_a = 157.628;
+  double k_b = 1./1.01360;
+  double mean_b = mean_a*k_b;
+
+  double mean_[2] = {mean_a, mean_b};
+
+  double sig_a = oplus(0.14736* mean_a, 0.11*mean_a);
+  double sig_aa = sig_a*sig_a;
+  double sig_b = oplus(0.14736* mean_a*k_b, 0.052*mean_a*k_b); 
+  double sig_bb = sig_b*sig_b;
+  double sig_ab = k_b*0.14736* mean_a*0.14736* mean_a;
+  double det = (sig_aa*sig_bb - sig_ab*sig_ab);
+  double h_ab[2][2] = {
+    {sig_bb/det,    -sig_ab/det},
+    {-sig_ab/det,   sig_aa/det}
+  };
+
+  double mean = 0;
+  double sumH = 0;
+  for (int i =0;i<2; ++i){
+    for(int j = 0; j<2; ++j){
+      sumH += h_ab[i][j];
+      mean += h_ab[i][j]*mean_[j];
+    }
+  }
+  mean /= sumH;
+
+  double sigma = sqrt(1./sumH);
+  double sigma_normC = sqrt(sigma*sigma -  mean*0.14736*mean*0.14736);
+
+  std::cout<<mean<<" \\pm "<<sigma
+	   <<"\t = "<<mean<<" \\pm "<<mean*0.119603<<"(stat) \\pm "<<mean*0.0860817<<"(syst) \\pm "<< sigma_normC<<"(norm)" 
+	   <<"\t = "<<mean<<" \\pm "<<mean*0.14736<<"(stat+syst) \\pm "<<sigma_normC<<std::endl;
+  
+}
