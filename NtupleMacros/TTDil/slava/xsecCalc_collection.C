@@ -61,10 +61,13 @@ public:
 
   double tt_exp;       double tt_stat;
 
-  double dytt_exp;     double dytt_stat;    double dytt_syst; 
-  double vv_exp;       double vv_stat;      double vv_syst;
-  double tw_exp;       double tw_stat;      double tw_syst;
+  double dytt_exp;     double dytt_stat;    double dytt_syst_self;  double dytt_syst_corr;  double dytt_syst;  
+  double vv_exp;       double vv_stat;      double vv_syst_self;    double vv_syst_corr;    double vv_syst;    
+  double tw_exp;       double tw_stat;      double tw_syst_self;    double tw_syst_corr;    double tw_syst;    
   double mcbg_exp;     double mcbg_stat;    double mcbg_syst;  double mcbg_e;
+
+  double ttotr_mc;     double ttotr_mc_stat;
+  double wj_mc;        double wj_mc_stat;
 
   double sr_exp;       double sr_stat;      double sr_syst;
   double spill_exp;    double spill_stat;   double spill_syst; double spill_e;
@@ -74,22 +77,42 @@ public:
   double wjf_systFrac;
   double fake_exp;     double fake_stat;    double fake_syst;  double fake_e;
 
+  double dy_mc;        double dy_mc_stat;
   double dy_exp;       double dy_stat;      double dy_syst;    double dy_e;
 
   double bg_exp;                                               double bg_e;
 
+  double all_mc;       double all_mc_stat;
+
   double sf_exp;//
   double tt_AE_eRel;
 
+  double tt_xsecTh_eRel;
+  double lum_eRel;
+
   void setDependentPars_mcbg_v0(){
-    dytt_syst = 0.5*dytt_exp;
-    vv_syst   = 0.5*vv_exp;
-    tw_syst   = 0.5*tw_exp;
+    dytt_syst_self = 0.3*dytt_exp;
+    vv_syst_self   = 0.3*vv_exp;
+    tw_syst_self   = 0.3*tw_exp;
+
+//     dytt_syst_corr = oplus(0.11,0.1)*dytt_exp;
+//     vv_syst_corr   = oplus(0.11,0.1)*vv_exp;
+//     tw_syst_corr   = oplus(0.11,0.1)*tw_exp;
+
+    //this is only interesting by itself, don't use in combinations with the rest
+    dytt_syst      = oplus(dytt_syst_self, dytt_syst_corr);
+    vv_syst      = oplus(vv_syst_self, vv_syst_corr);
+    tw_syst      = oplus(tw_syst_self, tw_syst_corr);
 
     mcbg_exp = dytt_exp + vv_exp + tw_exp;
     mcbg_stat= oplus(dytt_stat, vv_stat, tw_stat);
-    mcbg_syst= oplus(dytt_syst, vv_syst, tw_syst);
+    mcbg_syst= oplus(dytt_syst_self, vv_syst_self, tw_syst_self);
+    mcbg_syst= oplus(mcbg_syst, dytt_syst_corr+vv_syst_corr+tw_syst_corr);
     mcbg_e   = oplus(mcbg_stat, mcbg_syst);
+
+    all_mc = mcbg_exp + ttotr_mc + wj_mc + dy_mc + tt_exp;
+    all_mc_stat = oplus(mcbg_stat, ttotr_mc_stat, wj_mc_stat);
+    all_mc_stat = oplus(all_mc_stat, dy_mc_stat, tt_stat);
   }
 
   void setDependentPars_fake_v0(){
@@ -150,24 +173,40 @@ public:
     
     dytt_exp  += t.dytt_exp;
     dytt_stat = oplus(dytt_stat, t.dytt_stat);
-    if (corrSyst) dytt_syst += t.dytt_syst; 
-    else dytt_syst = oplus(dytt_syst, t.dytt_syst);
+    dytt_syst_self += t.dytt_syst_self;
+    dytt_syst_corr += t.dytt_syst_corr;
+    dytt_syst = oplus(dytt_syst_self,  dytt_syst_corr);
 
     vv_exp    += t.vv_exp;
     vv_stat   = oplus(vv_stat, t.vv_stat);
-    if (corrSyst) vv_syst += t.vv_syst; 
-    else vv_syst = oplus(vv_syst, t.vv_syst);
+    vv_syst_self += t.vv_syst_self;
+    vv_syst_corr += t.vv_syst_corr;
+    vv_syst = oplus(vv_syst_self,  vv_syst_corr);
 
     tw_exp    += t.tw_exp;
     tw_stat   = oplus(tw_stat, t.tw_stat);
-    if (corrSyst) tw_syst += t.tw_syst; 
-    else tw_syst = oplus(tw_syst, t.tw_syst);
+    tw_syst_self += t.tw_syst_self;
+    tw_syst_corr += t.tw_syst_corr;
+    tw_syst = oplus(tw_syst_self,  tw_syst_corr);
 
     mcbg_exp  = dytt_exp + vv_exp + tw_exp;
     mcbg_stat = oplus(dytt_stat, vv_stat, tw_stat);
-    mcbg_syst = oplus(dytt_syst, vv_syst, tw_syst);
+    mcbg_syst= oplus(dytt_syst_self, vv_syst_self, tw_syst_self);
+    mcbg_syst= oplus(mcbg_syst, dytt_syst_corr+vv_syst_corr+tw_syst_corr);
     mcbg_e    = oplus(mcbg_stat, mcbg_syst);
     
+    ttotr_mc       += t.ttotr_mc;
+    ttotr_mc_stat   = oplus(ttotr_mc_stat, t.ttotr_mc_stat);
+    wj_mc          += wj_mc;
+    wj_mc_stat      = oplus(wj_mc_stat, t.wj_mc_stat);
+    dy_mc          += t.dy_mc;
+    dy_mc_stat      = oplus(dy_mc_stat, t.dy_mc_stat);
+
+    //just recalculate from the above
+    all_mc = mcbg_exp + ttotr_mc + wj_mc + dy_mc + tt_exp;
+    all_mc_stat = oplus(mcbg_stat, ttotr_mc_stat, wj_mc_stat);
+    all_mc_stat = oplus(all_mc_stat, dy_mc_stat, tt_stat);
+
     sr_exp=std::numeric_limits<double>::quiet_NaN();    
     sr_stat=std::numeric_limits<double>::quiet_NaN();      
     sr_syst=std::numeric_limits<double>::quiet_NaN();
@@ -228,11 +267,28 @@ public:
   void printSummary(){
     std::cout<<"Data: "<<data<<" in "<<channel
 	     <<"\n\t   MCBG: "<<mcbg_exp <<" +/- " << mcbg_e
+	     <<"\n\t\t  = ( DYtt "<<dytt_exp<<" +/- "<<oplus(dytt_stat,dytt_syst)
+	     <<"\n\t\t      VV   "<<vv_exp<<" +/- "<<oplus(vv_stat,vv_syst)
+	     <<"\n\t\t      tW   "<<tw_exp<<" +/- "<<oplus(tw_stat,tw_syst) <<"   )"
 	     <<"\n\t   Fake: "<<fake_exp <<" +/- " << fake_stat <<" +/- "<< fake_syst
+	     <<"\n\t\t  ( QCDraw " << qcd_exp <<" +/- "<<qcd_stat<<" +/- "<<qcd_syst 
+	     <<"\n\t\t\t WJraw "<<wjraw_exp<<" +/- "<<wjraw_stat
+	     <<"\n\t\t\t Spill "<<spill_exp<<" +/- "<<spill_stat<<" +/- "<<spill_syst<< " )"
+	     <<"\n\tFake MC: "<<ttotr_mc+wj_mc <<" +/- " << oplus(ttotr_mc_stat, wj_mc_stat)
 	     <<"\n\t     DY: "<<dy_exp <<" +/- " << dy_stat <<" +/- "<< dy_syst
+	     <<"\n\t  DY MC: "<<dy_mc <<" +/- " << dy_mc_stat
 	     <<"\n\t All BG: "<<bg_exp <<" +/- " << bg_e
-	     <<"\n\t tt exp: "<<tt_exp*sf_exp<<" +/- "<<tt_exp*sf_exp*tt_AE_eRel
+	     <<"\n\t All MC: "<<all_mc <<" +/- "<<all_mc_stat
+
+	     <<"\n\t tt exp: "<<tt_exp*sf_exp
+	     <<" +/- "<<tt_exp*sf_exp*tt_AE_eRel<<"(syst) +/- "<<tt_exp*sf_exp*tt_xsecTh_eRel
+	     <<"(th) +/- "<<tt_exp*sf_exp*lum_eRel<<"(lum)  "
 	     <<"\tS/B: "<<tt_exp*sf_exp/bg_exp<<std::endl;    
+  }
+  
+  TTxsecStruct(){
+    tt_xsecTh_eRel = 0.15;
+    lum_eRel       = 0.11;
   }
 };
 
@@ -242,6 +298,8 @@ void xsecCalc_inStruct(TTxsecStruct& tt, bool setDepPars = true){
   tt.printSummary();
 
   xsecCalc(tt.data, tt.tt_exp*tt.sf_exp, tt.tt_exp*tt.sf_exp*tt.tt_AE_eRel, tt.bg_exp, tt.bg_e );
+  std::cout<<"\nExpected performance: "<<std::endl;
+  xsecCalc(tt.bg_exp+tt.tt_exp*tt.sf_exp, tt.tt_exp*tt.sf_exp, tt.tt_exp*tt.sf_exp*tt.tt_AE_eRel, tt.bg_exp, tt.bg_e );
   
 }
 
@@ -250,7 +308,7 @@ void xsecCalc_35pb_pass5(){
   std::cout<<"EMU (no MET)"<<std::endl;
   TTxsecStruct tem;
   tem.channel = em_ch;
-  tem.tt_exp   = 55.057; tem.tt_stat    =    0.452;
+  tem.tt_exp   = 55.057;  tem.tt_stat   =    0.452;
   tem.dytt_exp = 0.787 ;  tem.dytt_stat =    0.278;
   tem.vv_exp   = 1.050 ;  tem.vv_stat   =    0.041;
   tem.tw_exp   = 1.804 ;  tem.tw_stat   =    0.038;
@@ -601,6 +659,519 @@ void xsecCalc_35pb_pass5(){
   TTxsecStruct pbeemmNoBem(pbeemm);
   pbeemmNoBem.simpleAdd(pem);
   xsecCalc_inStruct(pbeemmNoBem, false);
+
+//   std::cout<<"Doing JPT/TC"<<std::endl;
+//   std::cout<<"EE (w MET)"<<std::endl;
+//   TTxsecStruct tee;
+//   tee.tt_exp   = ; tee.tt_stat    =   ;
+//   tee.dytt_exp = ;  tee.dytt_stat =   ;
+//   tee.vv_exp   = ;  tee.vv_stat   =   ;
+//   tee.tw_exp   = ;  tee.tw_stat   =   ;
+
+//   tee.data = ;
+
+//   tee.sr_exp  = ; tee.sr_stat = ; tee.sr_syst = fabs( - )*; //syst is 0.5 of |sr_exp-sr_inclusive|
+
+
+//   tee.qcd_exp   = ; tee.qcd_stat       = ; tee.qcd_syst = tee.qcd_exp;
+//   tee.wjraw_exp =  ; tee.wjraw_stat = ;
+//   tee.wjf_systFrac = ;
+
+//   tee.dy_exp = ; tee.dy_stat = ; tee.dy_syst = ;
+
+//   tee.sf_exp = (0.108*9.)*(0.108*9.);//multiply MC by this. This is for Madgraph !
+//   tee.tt_AE_eRel = ;
+ 
+//   xsecCalc_inStruct(tee);
+ 
+  
+  
+}
+
+
+void xsecCalc_36pb_pass6(){
+  //=====================================================================================
+  // NOW PF
+  //=====================================================================================
+  
+  std::cout<<"#=============================================================#"<<std::endl;
+  std::cout<<"# It's all PF                                                 #"<<std::endl;
+  std::cout<<"#-------------------------------------------------------------#"<<std::endl;
+
+  std::cout<<"\n=======\n\t EE 0 jets\n========="<<std::endl;
+  TTxsecStruct pee0j;
+  double lum_eRel = pee0j.lum_eRel;
+  pee0j.channel = ee_ch;
+  pee0j.tt_exp   = 0.673;  pee0j.tt_stat    =   0.052;
+  pee0j.dytt_exp = 0.618;  pee0j.dytt_stat =   0.165; pee0j.dytt_syst_corr = oplus(0.1,lum_eRel)*pee0j.dytt_exp;
+  pee0j.vv_exp   = 3.122;  pee0j.vv_stat   =   0.543; pee0j.vv_syst_corr = oplus(0.1,lum_eRel)*pee0j.vv_exp;
+  pee0j.tw_exp   = 0.199;  pee0j.tw_stat   =   0.012; pee0j.tw_syst_corr = oplus(0.1,lum_eRel)*pee0j.tw_exp;    
+
+  pee0j.data = 12;
+
+  pee0j.sr_exp  = 0.0331; pee0j.sr_stat = 0.0011; pee0j.sr_syst = 0.0004; 
+
+  pee0j.ttotr_mc = 0.012;  pee0j.ttotr_mc_stat  =   0.007;
+  pee0j.wj_mc    = 3.346;  pee0j.wj_mc_stat     =   0.543;
+
+  pee0j.qcd_exp   = 0.3730; pee0j.qcd_stat  =  0.1558; pee0j.qcd_syst = pee0j.qcd_exp;
+  pee0j.wjraw_exp = 4.8377; pee0j.wjraw_stat=  1.1990;
+  pee0j.wjf_systFrac = 0.5;
+
+  pee0j.dy_mc  =    1.79;  pee0j.dy_mc_stat = 0.36;
+  pee0j.dy_exp = 3.58; pee0j.dy_stat = 1.27; pee0j.dy_syst = pee0j.dy_exp*0.5;
+
+  pee0j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9231* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
+  pee0j.tt_AE_eRel = 0.073; //not filled yet
+ 
+  xsecCalc_inStruct(pee0j);
+
+  std::cout<<"\n=======\n\t EE 1 jets\n========="<<std::endl;
+  TTxsecStruct pee1j;
+  pee1j.channel = ee_ch;
+  pee1j.tt_exp   = 5.459; pee1j.tt_stat    =   0.149;
+  pee1j.dytt_exp = 1.500;  pee1j.dytt_stat =   0.257; pee1j.dytt_syst_corr = oplus(0.1,lum_eRel)*pee1j.dytt_exp;
+  pee1j.vv_exp   = 0.975;  pee1j.vv_stat   =   0.035; pee1j.vv_syst_corr = oplus(0.1,lum_eRel)*pee1j.vv_exp;	
+  pee1j.tw_exp   = 0.913;  pee1j.tw_stat   =   0.027; pee1j.tw_syst_corr = oplus(0.1,lum_eRel)*pee1j.tw_exp;    
+
+  pee1j.data = 19;
+
+  pee1j.sr_exp   = 0.0340; pee1j.sr_stat = 0.0030; pee1j.sr_syst = 0.0001; 
+
+  pee1j.ttotr_mc = 0.098;  pee1j.ttotr_mc_stat  =   0.020;
+  pee1j.wj_mc    = 1.639;  pee1j.wj_mc_stat     =   0.377;
+
+  pee1j.qcd_exp   = 0.5508; pee1j.qcd_stat  =  0.2193; pee1j.qcd_syst = pee1j.qcd_exp;
+  pee1j.wjraw_exp = 3.4900; pee1j.wjraw_stat=  0.9813;
+  pee1j.wjf_systFrac = 0.5;
+
+  pee1j.dy_mc  =    1.31;  pee1j.dy_mc_stat = 0.285;
+  pee1j.dy_exp =    3.23; pee1j.dy_stat =    0.98; pee1j.dy_syst =   pee1j.dy_exp*0.5;
+
+  pee1j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9231* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
+  pee1j.tt_AE_eRel = 0.073; //mind the correlations
+ 
+  xsecCalc_inStruct(pee1j);
+
+
+  std::cout<<"\n=======\n\t EE 2 jets\n========="<<std::endl;
+  TTxsecStruct pee2j;
+  pee2j.channel = ee_ch;
+  pee2j.tt_exp   =16.659; pee2j.tt_stat    =   0.261;
+  pee2j.dytt_exp = 0.574;  pee2j.dytt_stat =   0.159; pee2j.dytt_syst_corr = oplus(0.1,lum_eRel)*pee2j.dytt_exp;
+  pee2j.vv_exp   = 0.282;  pee2j.vv_stat   =   0.018; pee2j.vv_syst_corr = oplus(0.1,lum_eRel)*pee2j.vv_exp;	
+  pee2j.tw_exp   = 0.562;  pee2j.tw_stat   =   0.021; pee2j.tw_syst_corr = oplus(0.1,lum_eRel)*pee2j.tw_exp;    
+
+  pee2j.data = 23;
+
+  pee2j.sr_exp  = 0.063; pee2j.sr_stat = 0.009; pee2j.sr_syst = 0.01455; 
+
+  pee2j.ttotr_mc = 0.379;  pee2j.ttotr_mc_stat  =   0.039;
+  pee2j.wj_mc    = 0.178;  pee2j.wj_mc_stat     =   0.126;
+
+  pee2j.qcd_exp   = 0.2587; pee2j.qcd_stat  =  0.1665; pee2j.qcd_syst = pee2j.qcd_exp;
+  pee2j.wjraw_exp = 3.6512; pee2j.wjraw_stat=  1.0043;
+  pee2j.wjf_systFrac = 0.5;
+
+  pee2j.dy_mc  =    1.72;  pee2j.dy_mc_stat = 0.34;
+  pee2j.dy_exp =    3.00; pee2j.dy_stat =  0.97; pee2j.dy_syst =   pee2j.dy_exp*0.5;
+
+  pee2j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9231* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
+  pee2j.tt_AE_eRel = 0.073; //mind the correlations
+ 
+  xsecCalc_inStruct(pee2j);
+
+
+
+
+  std::cout<<"\n=======\n\t MM 0 jets\n========="<<std::endl;
+  TTxsecStruct pmm0j;
+  pmm0j.channel = mm_ch;
+  pmm0j.tt_exp   = 0.754; pmm0j.tt_stat    =   0.055;
+  pmm0j.dytt_exp = 0.574;  pmm0j.dytt_stat =   0.159; pmm0j.dytt_syst_corr = oplus(0.1,lum_eRel)*pmm0j.dytt_exp;
+  pmm0j.vv_exp   = 3.931;  pmm0j.vv_stat   =   0.073; pmm0j.vv_syst_corr = oplus(0.1,lum_eRel)*pmm0j.vv_exp;	
+  pmm0j.tw_exp   = 0.223;  pmm0j.tw_stat   =   0.013; pmm0j.tw_syst_corr = oplus(0.1,lum_eRel)*pmm0j.tw_exp;    
+
+  pmm0j.data = 11;
+
+  pmm0j.sr_exp  = 0.0165; pmm0j.sr_stat = 0.0007; pmm0j.sr_syst = 0.0004; 
+
+  pmm0j.ttotr_mc = 0.000;  pmm0j.ttotr_mc_stat  =   0.004;
+  pmm0j.wj_mc    = 0.000;  pmm0j.wj_mc_stat     =   0.111;
+
+  pmm0j.qcd_exp   = 0.0000; pmm0j.qcd_stat  =  0.09; pmm0j.qcd_syst = pmm0j.qcd_exp;
+  pmm0j.wjraw_exp = 0.4874; pmm0j.wjraw_stat=  0.4874;
+  pmm0j.wjf_systFrac = 0.75;
+
+  pmm0j.dy_mc  =  4.59;  pmm0j.dy_mc_stat = 0.575;
+  pmm0j.dy_exp =  14.505; pmm0j.dy_stat = 3.225; pmm0j.dy_syst = pmm0j.dy_exp*0.5;
+
+  pmm0j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9613* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
+  pmm0j.tt_AE_eRel = 0.0717; //mind the correlations
+ 
+  xsecCalc_inStruct(pmm0j);
+
+  std::cout<<"\n=======\n\t MM 1 jets\n========="<<std::endl;
+  TTxsecStruct pmm1j;
+  pmm1j.channel = mm_ch;
+  pmm1j.tt_exp   = 6.458; pmm1j.tt_stat    =   0.162;
+  pmm1j.dytt_exp = 1.897;  pmm1j.dytt_stat =   0.289; pmm1j.dytt_syst_corr = oplus(0.1,lum_eRel)*pmm1j.dytt_exp;
+  pmm1j.vv_exp   = 1.163;  pmm1j.vv_stat   =   0.038; pmm1j.vv_syst_corr = oplus(0.1,lum_eRel)*pmm1j.vv_exp;	
+  pmm1j.tw_exp   = 1.066;  pmm1j.tw_stat   =   0.029; pmm1j.tw_syst_corr = oplus(0.1,lum_eRel)*pmm1j.tw_exp;    
+
+  pmm1j.data = 19;
+
+  pmm1j.sr_exp   = 0.0220; pmm1j.sr_stat = 0.0023; pmm1j.sr_syst = 0.0023; 
+
+  pmm1j.ttotr_mc = 0.012;  pmm1j.ttotr_mc_stat  =   0.007;
+  pmm1j.wj_mc    = 0.111;  pmm1j.wj_mc_stat     =   0.111;
+
+  pmm1j.qcd_exp   = 0.2225; pmm1j.qcd_stat  =  0.1573; pmm1j.qcd_syst = pmm1j.qcd_exp;
+  pmm1j.wjraw_exp = 0.2892; pmm1j.wjraw_stat=  0.2892;
+  pmm1j.wjf_systFrac = 0.75;
+
+  pmm1j.dy_mc  =    6.185;  pmm1j.dy_mc_stat = 0.665;
+  pmm1j.dy_exp =    13.18; pmm1j.dy_stat =    2.775; pmm1j.dy_syst =   pmm1j.dy_exp*0.5;
+
+  pmm1j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9613* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
+  pmm1j.tt_AE_eRel = 0.0717; //mind the correlations
+ 
+  xsecCalc_inStruct(pmm1j);
+
+
+  std::cout<<"\n=======\n\t MM 2 jets\n========="<<std::endl;
+  TTxsecStruct pmm2j;
+  pmm2j.channel = mm_ch;
+  pmm2j.tt_exp   =19.925; pmm2j.tt_stat    =   0.285;
+  pmm2j.dytt_exp = 0.515;  pmm2j.dytt_stat =   0.149; pmm2j.dytt_syst_corr = oplus(0.1,lum_eRel)*pmm2j.dytt_exp;
+  pmm2j.vv_exp   = 0.313;  pmm2j.vv_stat   =   0.018; pmm2j.vv_syst_corr = oplus(0.1,lum_eRel)*pmm2j.vv_exp;	
+  pmm2j.tw_exp   = 0.658;  pmm2j.tw_stat   =   0.023; pmm2j.tw_syst_corr = oplus(0.1,lum_eRel)*pmm2j.tw_exp;    
+
+  pmm2j.data = 28;
+
+  pmm2j.sr_exp  = 0.033; pmm2j.sr_stat = 0.005; pmm2j.sr_syst = 0.0060; 
+
+  pmm2j.ttotr_mc = 0.077;  pmm2j.ttotr_mc_stat  =   0.018;
+  pmm2j.wj_mc    = 0.000;  pmm2j.wj_mc_stat     =   0.111;
+
+  pmm2j.qcd_exp   = 0.0841; pmm2j.qcd_stat  =  0.0841; pmm2j.qcd_syst = pmm2j.qcd_exp;
+  pmm2j.wjraw_exp = 2.0411; pmm2j.wjraw_stat=  0.8397;
+  pmm2j.wjf_systFrac = 0.75;
+
+  pmm2j.dy_mc  =    3.345;  pmm2j.dy_mc_stat = 0.49;
+  pmm2j.dy_exp =     7.44;  pmm2j.dy_stat =    1.825; pmm2j.dy_syst =   pmm2j.dy_exp*0.5;
+
+  pmm2j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9613* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
+  pmm2j.tt_AE_eRel = 0.0717; //mind the correlations
+ 
+  xsecCalc_inStruct(pmm2j);
+
+
+
+  std::cout<<"\n=======\n\t EM 0 jets\n========="<<std::endl;
+  TTxsecStruct pem0j;
+  pem0j.channel = em_ch;
+  pem0j.tt_exp   = 2.100; pem0j.tt_stat    =   0.093;
+  pem0j.dytt_exp = 65.567;  pem0j.dytt_stat =   1.701; pem0j.dytt_syst_corr = oplus(0.1,lum_eRel)*pem0j.dytt_exp;
+  pem0j.vv_exp   = 13.943;  pem0j.vv_stat   =   0.140; pem0j.vv_syst_corr = oplus(0.1,lum_eRel)*pem0j.vv_exp;	
+  pem0j.tw_exp   = 0.688;  pem0j.tw_stat   =   0.023;  pem0j.tw_syst_corr = oplus(0.1,lum_eRel)*pem0j.tw_exp;    
+
+  pem0j.data = 79;
+
+  pem0j.sr_exp  = 0.0248; pem0j.sr_stat = 0.0007; pem0j.sr_syst = 0.0004; 
+
+  pem0j.ttotr_mc = 0.029;  pem0j.ttotr_mc_stat  =   0.011;
+  pem0j.wj_mc    = 13.747;  pem0j.wj_mc_stat    =   1.221;
+
+  pem0j.qcd_exp   = 5.3854; pem0j.qcd_stat  =  0.7161; pem0j.qcd_syst = pem0j.qcd_exp;
+  pem0j.wjraw_exp = 23.9090; pem0j.wjraw_stat=  2.7220;
+  pem0j.wjf_systFrac = 0.5;
+
+  pem0j.dy_mc  =3.331;  pem0j.dy_mc_stat = 0.375;
+  pem0j.dy_exp =  0.0;  pem0j.dy_stat =    0.0; pem0j.dy_syst = pem0j.dy_exp*0.5;
+
+  pem0j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9444* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
+  pem0j.tt_AE_eRel = 0.0646; //mind the correlations
+ 
+  xsecCalc_inStruct(pem0j);
+
+  std::cout<<"\n=======\n\t EM 1 jets\n========="<<std::endl;
+  TTxsecStruct pem1j;
+  pem1j.channel = em_ch;
+  pem1j.tt_exp   = 17.936; pem1j.tt_stat    =   0.270;
+  pem1j.dytt_exp = 10.487;  pem1j.dytt_stat =   0.680; pem1j.dytt_syst_corr = oplus(0.1,lum_eRel)*pem1j.dytt_exp;
+  pem1j.vv_exp   = 3.852;  pem1j.vv_stat   =   0.069;  pem1j.vv_syst_corr = oplus(0.1,lum_eRel)*pem1j.vv_exp;	
+  pem1j.tw_exp   = 3.130;  pem1j.tw_stat   =   0.049;  pem1j.tw_syst_corr = oplus(0.1,lum_eRel)*pem1j.tw_exp;    
+
+  pem1j.data = 37;
+
+  pem1j.sr_exp   = 0.028; pem1j.sr_stat = 0.002; pem1j.sr_syst = 0.0012; 
+
+  pem1j.ttotr_mc = 0.220;  pem1j.ttotr_mc_stat  =   0.030;
+  pem1j.wj_mc    = 2.199;  pem1j.wj_mc_stat     =   0.484;
+
+  pem1j.qcd_exp   = 1.6999; pem1j.qcd_stat  =  0.3630; pem1j.qcd_syst = pem1j.qcd_exp;
+  pem1j.wjraw_exp = 12.4671; pem1j.wjraw_stat=  1.9140;
+  pem1j.wjf_systFrac = 0.5;
+
+  pem1j.dy_mc  =    0.804;  pem1j.dy_mc_stat = 0.185;
+  pem1j.dy_exp =    0.0; pem1j.dy_stat =     0.0; pem1j.dy_syst =   pem1j.dy_exp*0.5;
+
+  pem1j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9444* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
+  pem1j.tt_AE_eRel = 0.0646; //mind the correlations
+ 
+  xsecCalc_inStruct(pem1j);
+
+
+  std::cout<<"\n=======\n\t EM 2 jets\n========="<<std::endl;
+  TTxsecStruct pem2j;
+  pem2j.channel = em_ch;
+  pem2j.tt_exp   = 58.203; pem2j.tt_stat    =   0.487;
+  pem2j.dytt_exp = 2.500;  pem2j.dytt_stat =   0.331; pem2j.dytt_syst_corr = oplus(0.1,lum_eRel)*pem2j.dytt_exp;
+  pem2j.vv_exp   = 0.896;  pem2j.vv_stat   =   0.032; pem2j.vv_syst_corr = oplus(0.1,lum_eRel)*pem2j.vv_exp;	
+  pem2j.tw_exp   = 1.862;  pem2j.tw_stat   =   0.038; pem2j.tw_syst_corr = oplus(0.1,lum_eRel)*pem2j.tw_exp;    
+
+  pem2j.data = 60;
+
+  pem2j.sr_exp  = 0.048; pem2j.sr_stat = 0.0052; pem2j.sr_syst = 0.0079; 
+
+  pem2j.ttotr_mc = 0.934;  pem2j.ttotr_mc_stat  =   0.062;
+  pem2j.wj_mc    = 0.646;  pem2j.wj_mc_stat     =   0.264;
+
+  pem2j.qcd_exp   = 0.5717; pem2j.qcd_stat  =  0.2541; pem2j.qcd_syst = pem2j.qcd_exp;
+  pem2j.wjraw_exp = 4.9342; pem2j.wjraw_stat=  1.2022;
+  pem2j.wjf_systFrac = 0.5;
+
+  pem2j.dy_mc  =    0.423;  pem2j.dy_mc_stat = 0.134;
+  pem2j.dy_exp =    0.0;  pem2j.dy_stat =    0.0; pem2j.dy_syst =   pem2j.dy_exp*0.5;
+
+  pem2j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9444* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
+  pem2j.tt_AE_eRel = 0.0646; //mind the correlations
+ 
+  xsecCalc_inStruct(pem2j);
+
+
+  std::cout<<"\n\n\n\n"<<std::endl;
+  std::cout<<"#=============================================================#"<<std::endl;
+  std::cout<<"# It's all PF with b-tags                                     #"<<std::endl;
+  std::cout<<"#-------------------------------------------------------------#"<<std::endl;
+
+  std::cout<<"\n=======\n\t EE 1 jets with b-tags\n========="<<std::endl;
+  TTxsecStruct pee1j1bj;
+  pee1j1bj.channel = ee_ch;
+  pee1j1bj.tt_exp   = 3.918; pee1j1bj.tt_stat    =   0.126;
+  pee1j1bj.dytt_exp = 0.088;  pee1j1bj.dytt_stat =   0.062; pee1j1bj.dytt_syst_corr = oplus(0.1,lum_eRel,0.25)*pee1j1bj.dytt_exp;
+  pee1j1bj.vv_exp   = 0.104;  pee1j1bj.vv_stat   =   0.012; pee1j1bj.vv_syst_corr = oplus(0.1,lum_eRel,0.25)*pee1j1bj.vv_exp;
+  pee1j1bj.tw_exp   = 0.637;  pee1j1bj.tw_stat   =   0.022; pee1j1bj.tw_syst_corr = oplus(0.1,lum_eRel,0.10)*pee1j1bj.tw_exp;    
+
+  pee1j1bj.data = 8;
+
+  pee1j1bj.sr_exp   = 0.0340; pee1j1bj.sr_stat = 0.0030; pee1j1bj.sr_syst = 0.0001; 
+
+  pee1j1bj.ttotr_mc = 0.061;  pee1j1bj.ttotr_mc_stat  =   0.016;
+  pee1j1bj.wj_mc    = 0.161;  pee1j1bj.wj_mc_stat     =   0.115;
+
+  pee1j1bj.qcd_exp   = 0.0990; pee1j1bj.qcd_stat  =  0.0990; pee1j1bj.qcd_syst = pee1j1bj.qcd_exp;
+  pee1j1bj.wjraw_exp = 0.7193; pee1j1bj.wjraw_stat=  0.4505;
+  pee1j1bj.wjf_systFrac = 0.5;
+
+  pee1j1bj.dy_mc  =    (0.254+0.059)*0.5;  pee1j1bj.dy_mc_stat = (0.104+0.042)*0.5;
+  pee1j1bj.dy_exp =    (0.975+0.214)*0.5;  pee1j1bj.dy_stat  =   (0.565+0.176)*0.5; 
+  pee1j1bj.dy_syst =   pee1j1bj.dy_exp*0.5;
+
+  pee1j1bj.sf_exp = (0.108*9.)*(0.108*9.) * 0.9231* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
+  pee1j1bj.tt_AE_eRel = 0.0914; //mind the correlations
+ 
+  xsecCalc_inStruct(pee1j1bj);
+
+
+  std::cout<<"\n=======\n\t EE 2 jets with b-tags\n========="<<std::endl;
+  TTxsecStruct pee2j1bj;
+  pee2j1bj.channel = ee_ch;
+  pee2j1bj.tt_exp   =15.285; pee2j1bj.tt_stat    =   0.250;
+  pee2j1bj.dytt_exp = 0.176;  pee2j1bj.dytt_stat =   0.088; pee2j1bj.dytt_syst_corr = oplus(0.1,lum_eRel,0.25)*pee2j1bj.dytt_exp; 
+  pee2j1bj.vv_exp   = 0.083;  pee2j1bj.vv_stat   =   0.010; pee2j1bj.vv_syst_corr = oplus(0.1,lum_eRel,0.25)*pee2j1bj.vv_exp;	 
+  pee2j1bj.tw_exp   = 0.481;  pee2j1bj.tw_stat   =   0.019; pee2j1bj.tw_syst_corr = oplus(0.1,lum_eRel,0.10)*pee2j1bj.tw_exp;    
+
+  pee2j1bj.data = 15;
+
+  pee2j1bj.sr_exp  = 0.063; pee2j1bj.sr_stat = 0.009; pee2j1bj.sr_syst = 0.01455; 
+
+  pee2j1bj.ttotr_mc = 0.342;  pee2j1bj.ttotr_mc_stat  =   0.037;
+  pee2j1bj.wj_mc    = 0.000;  pee2j1bj.wj_mc_stat     =   0.111;
+
+  pee2j1bj.qcd_exp   = 0.0000; pee2j1bj.qcd_stat  =  0.0900; pee2j1bj.qcd_syst = pee2j1bj.qcd_exp;
+  pee2j1bj.wjraw_exp = 2.5821; pee2j1bj.wjraw_stat=  0.8366;
+  pee2j1bj.wjf_systFrac = 0.5;
+
+  pee2j1bj.dy_mc  =    (0.417+0.720)*0.5;  pee2j1bj.dy_mc_stat = (0.135+0.273)*0.5;
+  pee2j1bj.dy_exp =    (0.589+0.929)*0.5;  pee2j1bj.dy_stat   =  (0.438+0.717)*0.5; 
+  pee2j1bj.dy_syst =   pee2j1bj.dy_exp*0.5;
+
+  pee2j1bj.sf_exp = (0.108*9.)*(0.108*9.) * 0.9231* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
+  pee2j1bj.tt_AE_eRel = 0.0914; //mind the correlations
+ 
+  xsecCalc_inStruct(pee2j1bj);
+
+
+  std::cout<<"\n=======\n\t MM 1 jets with b-tag\n========="<<std::endl;
+  TTxsecStruct pmm1j1bj;
+  pmm1j1bj.channel = mm_ch;
+  pmm1j1bj.tt_exp   = 4.721; pmm1j1bj.tt_stat    =   0.139;
+  pmm1j1bj.dytt_exp = 0.309;  pmm1j1bj.dytt_stat =   0.117; pmm1j1bj.dytt_syst_corr = oplus(0.1,lum_eRel,0.25)*pmm1j1bj.dytt_exp;
+  pmm1j1bj.vv_exp   = 0.114;  pmm1j1bj.vv_stat   =   0.012; pmm1j1bj.vv_syst_corr = oplus(0.1,lum_eRel,0.25)*pmm1j1bj.vv_exp;	 
+  pmm1j1bj.tw_exp   = 0.795;  pmm1j1bj.tw_stat   =   0.025; pmm1j1bj.tw_syst_corr = oplus(0.1,lum_eRel,0.10)*pmm1j1bj.tw_exp;    
+
+  pmm1j1bj.data = 7;
+
+  pmm1j1bj.sr_exp   = 0.0220; pmm1j1bj.sr_stat = 0.0023; pmm1j1bj.sr_syst = 0.0023; 
+
+  pmm1j1bj.ttotr_mc = 0.004;  pmm1j1bj.ttotr_mc_stat  =   0.004;
+  pmm1j1bj.wj_mc    = 0.000;  pmm1j1bj.wj_mc_stat     =   0.111;
+
+  pmm1j1bj.qcd_exp   = 0.0000; pmm1j1bj.qcd_stat  =  0.0900; pmm1j1bj.qcd_syst = pmm1j1bj.qcd_exp;
+  pmm1j1bj.wjraw_exp = 0.2892; pmm1j1bj.wjraw_stat=  0.2892;
+  pmm1j1bj.wjf_systFrac = 0.75;
+
+  pmm1j1bj.dy_mc  =    (0.683+0.953)*0.5;  pmm1j1bj.dy_mc_stat = (0.173+0.307)*0.5;
+  pmm1j1bj.dy_exp =    (2.909+2.842)*0.5;  pmm1j1bj.dy_stat =    (1.212+1.314)*0.5; 
+  pmm1j1bj.dy_syst =   pmm1j1bj.dy_exp*0.5;
+
+  pmm1j1bj.sf_exp = (0.108*9.)*(0.108*9.) * 0.9613* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
+  pmm1j1bj.tt_AE_eRel = 0.0904; //mind the correlations
+ 
+  xsecCalc_inStruct(pmm1j1bj);
+
+
+  std::cout<<"\n=======\n\t MM 2 jets with b-tags\n========="<<std::endl;
+  TTxsecStruct pmm2j1bj;
+  pmm2j1bj.channel = mm_ch;
+  pmm2j1bj.tt_exp   =18.527; pmm2j1bj.tt_stat    =   0.275;
+  pmm2j1bj.dytt_exp = 0.250;  pmm2j1bj.dytt_stat =   0.103; pmm2j1bj.dytt_syst_corr = oplus(0.1,lum_eRel,0.25)*pmm2j1bj.dytt_exp;
+  pmm2j1bj.vv_exp   = 0.082;  pmm2j1bj.vv_stat   =   0.009; pmm2j1bj.vv_syst_corr = oplus(0.1,lum_eRel,0.25)*pmm2j1bj.vv_exp;	 
+  pmm2j1bj.tw_exp   = 0.562;  pmm2j1bj.tw_stat   =   0.021; pmm2j1bj.tw_syst_corr = oplus(0.1,lum_eRel,0.10)*pmm2j1bj.tw_exp;    
+
+  pmm2j1bj.data = 24;
+
+  pmm2j1bj.sr_exp  = 0.033; pmm2j1bj.sr_stat = 0.005; pmm2j1bj.sr_syst = 0.0060; 
+
+  pmm2j1bj.ttotr_mc = 0.069;  pmm2j1bj.ttotr_mc_stat  =   0.017;
+  pmm2j1bj.wj_mc    = 0.000;  pmm2j1bj.wj_mc_stat     =   0.111;
+
+  pmm2j1bj.qcd_exp   = 0.0000; pmm2j1bj.qcd_stat  =  0.0900; pmm2j1bj.qcd_syst = pmm2j1bj.qcd_exp;
+  pmm2j1bj.wjraw_exp = 1.2856; pmm2j1bj.wjraw_stat=  0.6478;
+  pmm2j1bj.wjf_systFrac = 0.75;
+
+  pmm2j1bj.dy_mc  =    (1.081+1.432)*0.5;  pmm2j1bj.dy_mc_stat = (0.210+0.387)*0.5;
+  pmm2j1bj.dy_exp =    (6.086+3.004)*0.5;  pmm2j1bj.dy_stat =    (1.785+1.361)*0.5; 
+  pmm2j1bj.dy_syst =   pmm2j1bj.dy_exp*0.5;
+
+  pmm2j1bj.sf_exp = (0.108*9.)*(0.108*9.) * 0.9613* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
+  pmm2j1bj.tt_AE_eRel = 0.0904; //mind the correlations
+ 
+  xsecCalc_inStruct(pmm2j1bj);
+
+
+  std::cout<<"\n=======\n\t EM 1 jets with b-tag\n========="<<std::endl;
+  TTxsecStruct pem1j1bj;
+  pem1j1bj.channel = em_ch;
+  pem1j1bj.tt_exp   =13.496; pem1j1bj.tt_stat    =   0.235;
+  pem1j1bj.dytt_exp = 1.235;  pem1j1bj.dytt_stat =   0.233; pem1j1bj.dytt_syst_corr = oplus(0.1,lum_eRel,0.25)*pem1j1bj.dytt_exp;
+  pem1j1bj.vv_exp   = 0.371;  pem1j1bj.vv_stat   =   0.022; pem1j1bj.vv_syst_corr = oplus(0.1,lum_eRel,0.25)*pem1j1bj.vv_exp;	 
+  pem1j1bj.tw_exp   = 2.291;  pem1j1bj.tw_stat   =   0.042; pem1j1bj.tw_syst_corr = oplus(0.1,lum_eRel,0.10)*pem1j1bj.tw_exp;    
+
+  pem1j1bj.data = 14;
+
+  pem1j1bj.sr_exp   = 0.028; pem1j1bj.sr_stat = 0.002; pem1j1bj.sr_syst = 0.0012; 
+
+  pem1j1bj.ttotr_mc = 0.159;  pem1j1bj.ttotr_mc_stat  =   0.025;
+  pem1j1bj.wj_mc    = 0.111;  pem1j1bj.wj_mc_stat     =   0.111;
+
+  pem1j1bj.qcd_exp   = 0.5974; pem1j1bj.qcd_stat  =  0.2278; pem1j1bj.qcd_syst = pem1j1bj.qcd_exp;
+  pem1j1bj.wjraw_exp = 2.2868; pem1j1bj.wjraw_stat=  0.8257;
+  pem1j1bj.wjf_systFrac = 0.5;
+
+  pem1j1bj.dy_mc  =    0.085;  pem1j1bj.dy_mc_stat = 0.060;
+  pem1j1bj.dy_exp =    0.0; pem1j1bj.dy_stat =     0.0; pem1j1bj.dy_syst =   pem1j1bj.dy_exp*0.5;
+
+  pem1j1bj.sf_exp = (0.108*9.)*(0.108*9.) * 0.9444* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
+  pem1j1bj.tt_AE_eRel = 0.0848; //mind the correlations
+ 
+  xsecCalc_inStruct(pem1j1bj);
+
+
+  std::cout<<"\n=======\n\t EM 2 jets with b-tags\n========="<<std::endl;
+  TTxsecStruct pem2j1bj;
+  pem2j1bj.channel = em_ch;
+  pem2j1bj.tt_exp   =53.825; pem2j1bj.tt_stat    =   0.468;
+  pem2j1bj.dytt_exp = 0.647;  pem2j1bj.dytt_stat =   0.168; pem2j1bj.dytt_syst_corr = oplus(0.1,lum_eRel,0.25)*pem2j1bj.dytt_exp;
+  pem2j1bj.vv_exp   = 0.226;  pem2j1bj.vv_stat   =   0.017; pem2j1bj.vv_syst_corr = oplus(0.1,lum_eRel,0.25)*pem2j1bj.vv_exp;	 
+  pem2j1bj.tw_exp   = 1.563;  pem2j1bj.tw_stat   =   0.035; pem2j1bj.tw_syst_corr = oplus(0.1,lum_eRel,0.10)*pem2j1bj.tw_exp;    
+
+  pem2j1bj.data = 51;
+
+  pem2j1bj.sr_exp  = 0.048; pem2j1bj.sr_stat = 0.0052; pem2j1bj.sr_syst = 0.0079; 
+
+  pem2j1bj.ttotr_mc = 0.856;  pem2j1bj.ttotr_mc_stat  =   0.059;
+  pem2j1bj.wj_mc    = 0.111;  pem2j1bj.wj_mc_stat     =   0.111;
+
+  pem2j1bj.qcd_exp   = 0.2191; pem2j1bj.qcd_stat  =  0.1611; pem2j1bj.qcd_syst = pem2j1bj.qcd_exp;
+  pem2j1bj.wjraw_exp = 2.9343; pem2j1bj.wjraw_stat=  0.9498;
+  pem2j1bj.wjf_systFrac = 0.5;
+
+  pem2j1bj.dy_mc  =    0.085;  pem2j1bj.dy_mc_stat = 0.060;
+  pem2j1bj.dy_exp =    0.0;  pem2j1bj.dy_stat =    0.0; pem2j1bj.dy_syst =   pem2j1bj.dy_exp*0.5;
+
+  pem2j1bj.sf_exp = (0.108*9.)*(0.108*9.) * 0.9444* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
+  pem2j1bj.tt_AE_eRel = 0.0848; //mind the correlations
+ 
+  xsecCalc_inStruct(pem2j1bj);
+
+
+  TTxsecStruct pee;
+  TTxsecStruct pmm;
+  TTxsecStruct pem;
+
+  //combine
+  std::cout<<"====================================================="<<std::endl;
+  std::cout<<"======       COMBINATIONS without b-tags     ========"<<std::endl; 
+  std::cout<<"====================================================="<<std::endl;
+  std::cout<<"EEMM 2jets no tags"<<std::endl;
+  TTxsecStruct peemm2j(pee2j);
+  peemm2j.simpleAdd(pmm2j);
+  xsecCalc_inStruct(peemm2j, false);
+
+  std::cout<<"EE-MM-EM 2 jets no tags"<<std::endl;
+  TTxsecStruct peemmem2j(peemm2j);
+  peemmem2j.simpleAdd(pem2j);
+  xsecCalc_inStruct(peemmem2j, false);
+
+  std::cout<<"===================================================="<<std::endl;
+  std::cout<<"======       COMBINATIONS  with b-tags      ========"<<std::endl; 
+  std::cout<<"===================================================="<<std::endl;
+  std::cout<<"EE-MM 2jets with tags"<<std::endl;
+  TTxsecStruct peemm2j1bj(pee2j1bj);
+  peemm2j1bj.simpleAdd(pmm2j1bj);
+  xsecCalc_inStruct(peemm2j1bj, false);
+
+  std::cout<<"EE-MM-EM 2 jets with tags"<<std::endl;
+  TTxsecStruct peemmem2j1bj(peemm2j1bj);
+  peemmem2j1bj.simpleAdd(pem2j1bj);
+  xsecCalc_inStruct(peemmem2j1bj, false);
+
+
+
+  std::cout<<"\n\n\nFINAL\n(EE-MM with tag)-(EM no tag) 2 jets"<<std::endl;
+  TTxsecStruct peemmem2jFinal(peemm2j1bj);
+  peemmem2jFinal.simpleAdd(pem2j); 
+  // now a hack: start from the untagged uncertainty
+  peemmem2jFinal.tt_AE_eRel = (peemm2j.tt_AE_eRel*peemm2j1bj.tt_exp 
+			       + pem2j.tt_AE_eRel*pem2j.tt_exp)/(peemm2j1bj.tt_exp+pem2j.tt_exp);
+  peemmem2jFinal.tt_AE_eRel = oplus(peemmem2jFinal.tt_AE_eRel, 0.055*peemm2j1bj.tt_exp/(peemm2j1bj.tt_exp+pem2j.tt_exp));
+  xsecCalc_inStruct(peemmem2jFinal, false);
+
+  return;
+
 
 //   std::cout<<"Doing JPT/TC"<<std::endl;
 //   std::cout<<"EE (w MET)"<<std::endl;
