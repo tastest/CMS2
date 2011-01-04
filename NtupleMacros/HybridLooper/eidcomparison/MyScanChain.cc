@@ -56,6 +56,7 @@ void MyScanChain::InitBaby()
     reco_ptlt_  = -999.;
     reco_etalt_ = -999.;
     reco_philt_ = -999.;
+    reco_isolt_ = -999.;
     reco_typelt_ = -999;
     reco_mctypelt_ = -999;
     reco_algolt_ = -999;
@@ -63,6 +64,7 @@ void MyScanChain::InitBaby()
     reco_ptll_  = -999.;
     reco_etall_ = -999.;
     reco_phill_ = -999.;
+    reco_isoll_ = -999.;
     reco_typell_ = -999;
     reco_mctypell_ = -999;
     reco_algoll_ = -999;
@@ -268,7 +270,11 @@ void MyScanChain::AnalyseDilepton(const float &weight)
         reco_algolt_ = cms2.els_type()[cms2.hyp_lt_index()[h]];
         reco_pfmvalt_ = cms2.els_mva()[cms2.hyp_lt_index()[h]];
         reco_lhlt_ = likelihoodUtil_->getValue(cms2.hyp_lt_index()[h]);
-    } 
+        reco_isolt_ = electronIsolation_rel(cms2.hyp_lt_index()[h], true);
+    } if (reco_typelt_ == 13) {
+        reco_isolt_ = muonIsoValue(cms2.hyp_lt_index()[h]);
+    }
+
 
     reco_ptll_ = cms2.hyp_ll_p4()[h].Pt();
     reco_etall_ = cms2.hyp_ll_p4()[h].Eta();
@@ -279,7 +285,10 @@ void MyScanChain::AnalyseDilepton(const float &weight)
         reco_algoll_ = cms2.els_type()[cms2.hyp_ll_index()[h]];
         reco_pfmvall_ = cms2.els_mva()[cms2.hyp_ll_index()[h]];
         reco_lhll_ = likelihoodUtil_->getValue(cms2.hyp_ll_index()[h]);
-    } 
+        reco_isoll_ = electronIsolation_rel(cms2.hyp_ll_index()[h], true);
+    } if (reco_typell_ == 13) {
+        reco_isoll_ = muonIsoValue(cms2.hyp_ll_index()[h]);
+    }
 
     // event properties
     reco_tcmet_ = cms2.evt_tcmet();
@@ -331,6 +340,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, f
     babyTree_->Branch("reco_ptlt",          &reco_ptlt_,    "reco_ptlt/F"       );
     babyTree_->Branch("reco_etalt",         &reco_etalt_,   "reco_etalt/F"      );
     babyTree_->Branch("reco_philt",         &reco_philt_,   "reco_philt/F"      );
+    babyTree_->Branch("reco_isolt",         &reco_isolt_,   "reco_isolt/F"      );
     babyTree_->Branch("reco_typelt",          &reco_typelt_,    "reco_typelt/I"       );
     babyTree_->Branch("reco_mctypelt",          &reco_mctypelt_,    "reco_mctypelt/I"       );
     babyTree_->Branch("reco_algolt",          &reco_algolt_,    "reco_algolt/I"       );
@@ -338,6 +348,7 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, f
     babyTree_->Branch("reco_ptll",          &reco_ptll_,            "reco_ptll/F"          );
     babyTree_->Branch("reco_etall",         &reco_etall_,           "reco_etall/F"         );
     babyTree_->Branch("reco_phill",         &reco_phill_,           "reco_phill/F"         );
+    babyTree_->Branch("reco_isoll",         &reco_isoll_,   "reco_isoll/F"      );    
     babyTree_->Branch("reco_typell",          &reco_typell_,    "reco_typell/I"       );
     babyTree_->Branch("reco_mctypell",          &reco_mctypell_,    "reco_mctypell/I"       );
     babyTree_->Branch("reco_algoll",          &reco_algoll_,    "reco_algoll/I"       );
