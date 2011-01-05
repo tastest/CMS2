@@ -60,6 +60,10 @@ void MyScanChain::InitBaby()
     reco_typelt_ = -999;
     reco_mctypelt_ = -999;
     reco_algolt_ = -999;
+    reco_vbtf95lt_ = -999;
+    reco_vbtf90lt_ = -999;
+    reco_vbtf80lt_ = -999;
+    reco_vbtf70lt_ = -999;
 
     reco_ptll_  = -999.;
     reco_etall_ = -999.;
@@ -68,6 +72,10 @@ void MyScanChain::InitBaby()
     reco_typell_ = -999;
     reco_mctypell_ = -999;
     reco_algoll_ = -999;
+    reco_vbtf95ll_ = -999;
+    reco_vbtf90ll_ = -999;
+    reco_vbtf80ll_ = -999;
+    reco_vbtf70ll_ = -999;
 
     reco_mdil_ = -999.;
     reco_vdilpt_ = -999.;
@@ -260,6 +268,8 @@ void MyScanChain::AnalyseDilepton(const float &weight)
     // which have not yet been set
     //
 
+    electronIdComponent_t answer_vbtf = 0;
+
     // kinematics
     reco_ptlt_ = cms2.hyp_lt_p4()[h].Pt();
     reco_etalt_ = cms2.hyp_lt_p4()[h].Eta();
@@ -271,6 +281,13 @@ void MyScanChain::AnalyseDilepton(const float &weight)
         reco_pfmvalt_ = cms2.els_mva()[cms2.hyp_lt_index()[h]];
         reco_lhlt_ = likelihoodUtil_->getValue(cms2.hyp_lt_index()[h]);
         reco_isolt_ = electronIsolation_rel(cms2.hyp_lt_index()[h], true);
+
+        cuts_t cuts_passed = electronSelection(cms2.hyp_lt_index()[h], applyAlignmentCorrection, removedEtaCutInEndcap);
+        reco_vbtf95lt_ = pass_electronSelectionCompareMask(cuts_passed, (1<<ELEID_VBTF_35X_95));
+        reco_vbtf90lt_ = pass_electronSelectionCompareMask(cuts_passed, (1<<ELEID_VBTF_35X_90));
+        reco_vbtf80lt_ = pass_electronSelectionCompareMask(cuts_passed, (1<<ELEID_VBTF_35X_80));
+        reco_vbtf70lt_ = pass_electronSelectionCompareMask(cuts_passed, (1<<ELEID_VBTF_35X_70));
+
     } if (reco_typelt_ == 13) {
         reco_isolt_ = muonIsoValue(cms2.hyp_lt_index()[h]);
     }
@@ -286,6 +303,13 @@ void MyScanChain::AnalyseDilepton(const float &weight)
         reco_pfmvall_ = cms2.els_mva()[cms2.hyp_ll_index()[h]];
         reco_lhll_ = likelihoodUtil_->getValue(cms2.hyp_ll_index()[h]);
         reco_isoll_ = electronIsolation_rel(cms2.hyp_ll_index()[h], true);
+
+        cuts_t cuts_passed = electronSelection(cms2.hyp_ll_index()[h], applyAlignmentCorrection, removedEtaCutInEndcap);
+        reco_vbtf95ll_ = pass_electronSelectionCompareMask(cuts_passed, (1<<ELEID_VBTF_35X_95));
+        reco_vbtf90ll_ = pass_electronSelectionCompareMask(cuts_passed, (1<<ELEID_VBTF_35X_90));
+        reco_vbtf80ll_ = pass_electronSelectionCompareMask(cuts_passed, (1<<ELEID_VBTF_35X_80));
+        reco_vbtf70ll_ = pass_electronSelectionCompareMask(cuts_passed, (1<<ELEID_VBTF_35X_70));
+
     } if (reco_typell_ == 13) {
         reco_isoll_ = muonIsoValue(cms2.hyp_ll_index()[h]);
     }
@@ -344,6 +368,10 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, f
     babyTree_->Branch("reco_typelt",          &reco_typelt_,    "reco_typelt/I"       );
     babyTree_->Branch("reco_mctypelt",          &reco_mctypelt_,    "reco_mctypelt/I"       );
     babyTree_->Branch("reco_algolt",          &reco_algolt_,    "reco_algolt/I"       );
+    babyTree_->Branch("reco_vbtf95lt",          &reco_vbtf95lt_,    "reco_vbtf95lt/I"       );
+    babyTree_->Branch("reco_vbtf90lt",          &reco_vbtf90lt_,    "reco_vbtf90lt/I"       );
+    babyTree_->Branch("reco_vbtf80lt",          &reco_vbtf80lt_,    "reco_vbtf80lt/I"       );
+    babyTree_->Branch("reco_vbtf70lt",          &reco_vbtf70lt_,    "reco_vbtf70lt/I"       );
 
     babyTree_->Branch("reco_ptll",          &reco_ptll_,            "reco_ptll/F"          );
     babyTree_->Branch("reco_etall",         &reco_etall_,           "reco_etall/F"         );
@@ -352,6 +380,10 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, f
     babyTree_->Branch("reco_typell",          &reco_typell_,    "reco_typell/I"       );
     babyTree_->Branch("reco_mctypell",          &reco_mctypell_,    "reco_mctypell/I"       );
     babyTree_->Branch("reco_algoll",          &reco_algoll_,    "reco_algoll/I"       );
+    babyTree_->Branch("reco_vbtf95ll",          &reco_vbtf95ll_,    "reco_vbtf95ll/I"       );
+    babyTree_->Branch("reco_vbtf90ll",          &reco_vbtf90ll_,    "reco_vbtf90ll/I"       );
+    babyTree_->Branch("reco_vbtf80ll",          &reco_vbtf80ll_,    "reco_vbtf80ll/I"       );
+    babyTree_->Branch("reco_vbtf70ll",          &reco_vbtf70ll_,    "reco_vbtf70ll/I"       );
 
     babyTree_->Branch("reco_tcmet",         &reco_tcmet_,           "reco_tcmet/F"          );
     babyTree_->Branch("reco_pfmet",         &reco_pfmet_,           "reco_pfmet/F"          );
