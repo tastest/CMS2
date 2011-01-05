@@ -1063,7 +1063,7 @@ void xsecCalc_36pb_pass6(){
   pmm2j1bj.wjf_systFrac = 0.75;
 
   pmm2j1bj.dy_mc  =    (1.081+1.432)*0.5;  pmm2j1bj.dy_mc_stat = (0.210+0.387)*0.5;
-  pmm2j1bj.dy_exp =    (6.086+3.004)*0.5;  pmm2j1bj.dy_stat =    (1.785+1.361)*0.5; 
+  pmm2j1bj.dy_exp =    (3.251+3.004)*0.5;  pmm2j1bj.dy_stat =    (1.339+1.361)*0.5; 
   pmm2j1bj.dy_syst =   pmm2j1bj.dy_exp*0.5;
 
   pmm2j1bj.sf_exp = (0.108*9.)*(0.108*9.) * 0.9613* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
