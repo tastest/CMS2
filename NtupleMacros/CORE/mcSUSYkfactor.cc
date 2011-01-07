@@ -7,8 +7,106 @@
 #include "mcSUSYkfactor.h"
 #include "Math/LorentzVector.h"
 #include "mcSelections.h"
+#include "TSystem.h"
+#include "TFile.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TAxis.h"
+#include <iostream>
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
+
+float kfactorSUSY(float m0, float m12, string sample){
+
+ char* filename;
+ float kfactor = 1.0; 
+ char *flavor[10] = {"ng", "ns", "nn", "ll", "sb", "ss", "tb", "bb", "gg", "sg"};
+
+ if (sample == "tanbeta3") filename="../data/nlotanbeta3.root";
+ else if (sample == "tanbeta3Scale05") filename="../data/nlotanbeta305.root"; 
+ else if (sample == "tanbeta3Scale20") filename="../data/nlotanbeta320.root"; 
+ else if (sample == "tanbeta10") filename="../data/nlotanbeta10.root";
+ else if (sample == "tanbeta10Scale05") filename="../data/nlotanbeta1005.root";
+ else if (sample == "tanbeta10Scale20") filename="../data/nlotanbeta1020.root";
+ else {
+  return kfactor;
+  cout << "WARNING:: CORE/kfactorSUSY wrong string given, using kfactor=1" << endl; 
+ }
+
+  TFile infile(filename);
+  if (infile.IsZombie()) {
+    cout << "Error opening file " << filename << endl;
+    gSystem->Exit(1);
+  }
+
+// determine the process
+
+  TDatabasePDG *pdg = new TDatabasePDG(); 
+  std::vector<int> interactions; 
+ 
+   for (int j=0; j<cms2.genps_id().size(); j++) { 
+    if (cms2.genps_status().at(j) != 3) continue; 
+    int ID = abs(cms2.genps_id().at(j)); 
+    int mID = abs(cms2.genps_id_mother().at(j)); 
+    if (ID > 1000000 && ID < 2000016 && (mID < 7 || mID ==21 || mID == 22 || mID == 23 || mID == 24)) { // kept the bosons in case of screw ups 
+ 
+     // Check the mother of the SM is a proton 
+       bool isProton = false;        
+       for (int k=0; k < j; k++) { 
+            int pID = abs(cms2.genps_id().at(k)); 
+            int mpID = abs(cms2.genps_id_mother().at(k)); 
+         if ((pID < 7 || pID ==21 || pID == 22 || pID == 23 || pID == 24)&&(mpID == 2212)) isProton = true;  
+       } 
+//      if (!isProton) continue;   
+      if (!isProton) { 
+          dumpDocLines(); 
+          continue; 
+       } 
+      interactions.push_back(cms2.genps_id().at(j)); 
+ 
+    if (interactions.size() > 2)  
+         cout << setw(4) << left << j << " WARNING mcSUSYkfactor: Something is wrong with " 
+         << setw(10) << left << pdg->GetParticle(cms2.genps_id().at(j))->GetName() << " " 
+         << setw(10) << left << cms2.genps_id().at(j) << " " 
+         << setw(7) << right << setprecision(4) << cms2.genps_p4().at(j).pt() << "  " 
+         << setw(7) << right << setprecision(4) << cms2.genps_p4().at(j).phi() << "  " 
+         << setw(10) << right << setprecision(4) << cms2.genps_p4().at(j).eta() << "  " 
+         << setw(4) << right << cms2.genps_status().at(j) << " " 
+         << setw(10) << left << pdg->GetParticle(cms2.genps_id_mother().at(j))->GetName() 
+         << " using k=1 " << endl; 
+   } 
+  } 
+ 
+  delete pdg; 
+ 
+  if (interactions.size() == 2 ) { 
+      int index = sfinalState(interactions[0], interactions[1]); 
+      if (index < 0) return 1.0; 
+      TH2F* thisHist = dynamic_cast<TH2F *>( infile.Get( Form("h%s", flavor[index])) );
+      if ( thisHist == 0) {
+        cout << "Cannot find histogram in file " << filename << endl;
+        gSystem->Exit(1);
+      }
+      kfactor = GetValueTH2FS(m0, m12, thisHist);
+    delete thisHist;
+    infile.Close();
+
+   } else { 
+    cout << "WARNING mcSUSYkfactor: Number of sparticles found: " << interactions.size() << " using kfactor=1" <<endl; 
+    kfactor = 1.0; 
+   } 
+ 
+  return kfactor; 
+}
+
+Float_t GetValueTH2FS(Float_t x, Float_t y, TH2F* h) 
+{ 
+  Int_t binx = h->GetXaxis()->FindBin(x);
+  Int_t biny = h->GetYaxis()->FindBin(y);
+  return h->GetBinContent(binx, biny);
+ 
+} 
+
 
 float kfactorSUSY(string sample)
 {
@@ -29,7 +127,11 @@ float kfactorSUSY(string sample)
             int mpID = abs(cms2.genps_id_mother().at(k));
          if ((pID < 7 || pID ==21 || pID == 22 || pID == 23 || pID == 24)&&(mpID == 2212)) isProton = true; 
        }
-      if (!isProton) continue;  
+//      if (!isProton) continue;  
+      if (!isProton) {
+          dumpDocLines();
+          continue;
+       }
       interactions.push_back(cms2.genps_id().at(j));
 
     if (interactions.size() > 2) 
