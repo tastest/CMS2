@@ -403,20 +403,18 @@ unsigned int selectBestZHyp(const vector<unsigned int> &v_goodHyps) {
 
 }
 
-
+/*
 int sfinalState(int ipart1, int ipart2) {
-/* 
-#                   ng     neutralino/chargino + gluino                     #
-#                   ns     neutralino/chargino + squark                     #
-#                   nn     neutralino/chargino pair combinations            #
-#                   ll     slepton pair combinations                        #
-#                   sb     squark-antisquark                                #
-#                   ss     squark-squark                                    #
-#                   tb     stop-antistop                                    #
-#                   bb     sbottom-antisbottom                              #
-#                   gg     gluino pair                                      #
-#                   sg     squark + gluino                                  #
-*/
+//#                   ng     neutralino/chargino + gluino                     #
+//#                   ns     neutralino/chargino + squark                     #
+//#                   nn     neutralino/chargino pair combinations            #
+//#                   ll     slepton pair combinations                        #
+//#                   sb     squark-antisquark                                #
+//#                   ss     squark-squark                                    #
+//#                   tb     stop-antistop                                    #
+//#                   bb     sbottom-antisbottom                              #
+//#                   gg     gluino pair                                      #
+//#                   sg     squark + gluino                                  #
 
  int index = -1;
 
@@ -454,8 +452,9 @@ int sfinalState(int ipart1, int ipart2) {
 
   return index;
 }
+*/
 
-
+/*
 double lmdata(int ipart1, int ipart2, string prefix) {
 
   static const Double_t lm0[10] = {1.06604, 1.00369, 1.27186, 1.19103, 1.44681, 1.22883, 1.5649, 1.70195, 1.99721, 1.33951};
@@ -538,3 +537,4 @@ float kfactorSUSY(string sample)
 
   return kfactor;
 }
+*/

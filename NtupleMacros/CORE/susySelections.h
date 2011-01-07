@@ -42,7 +42,7 @@ bool ZVetoGeneral( float ptcut = 20 , float minmass = 76 ,  float maxmass = 106 
 /*****************************************************************************************/
 //get k-factor for LM points
 /*****************************************************************************************/
-float kfactorSUSY(string sample);
+//float kfactorSUSY(string sample);
 
 #endif
 
