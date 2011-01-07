@@ -16,6 +16,64 @@
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
+int sfinalState(int ipart1, int ipart2) {
+// #                   ng     neutralino/chargino + gluino                     #
+// #                   ns     neutralino/chargino + squark                     #
+// #                   nn     neutralino/chargino pair combinations            #
+// #                   ll     slepton pair combinations                        #
+// #                   sb     squark-antisquark                                #
+// #                   ss     squark-squark                                    #
+// #                   tb     stop-antistop                                    #
+// #                   bb     sbottom-antisbottom                              #
+// #                   gg     gluino pair                                      #
+// #                   sg     squark + gluino                                  #
+
+ int index = -1;
+
+// Ugly can be done in a better way using list/objects ... oh well
+ // ng case
+ if ((abs(ipart1) > 1000021 && abs(ipart1) < 1000039 && abs(ipart2) == 1000021) ||
+      (abs(ipart2) > 1000021 && abs(ipart2) < 1000039 && abs(ipart1) == 1000021)) index = 0;
+// ns case 
+ else if ((abs(ipart1) > 1000021 && abs(ipart1) < 1000039 && (abs(ipart2) < 1000007 || (abs(ipart2) > 2000000 && abs(ipart2) < 2000007))) ||
+    (abs(ipart2) > 1000021 && abs(ipart2) < 1000039 && (abs(ipart1) < 1000007 || (abs(ipart1) > 2000000 && abs(ipart1) < 2000007)))) index = 1;
+// nn case 
+ else if (abs(ipart1) > 1000021 && abs(ipart1) < 1000039 &&  abs(ipart2) > 1000021 && abs(ipart2) < 1000039) index = 2;
+// ll case
+ else if (((abs(ipart1) > 1000010 && abs(ipart1) < 1000017) || (abs(ipart1) > 2000010 && abs(ipart1) < 2000016)) &&
+         ((abs(ipart2) > 1000010 && abs(ipart2) < 1000017) || (abs(ipart2) > 2000010 && abs(ipart2) < 2000016))) index = 3;
+// tb case
+ else if ((abs(ipart1) == 1000006 || abs(ipart1) == 2000006) && (abs(ipart2) == 1000006 || abs(ipart2) == 2000006)) index = 6;
+// bb case
+ else if ((abs(ipart1) == 1000005 || abs(ipart1) == 2000005) && (abs(ipart2) == 1000005 || abs(ipart2) == 2000005)) index = 7;
+// sb case
+ else if ((ipart1 * ipart2 < 0) &&
+         (abs(ipart1) < 1000007 || (abs(ipart1) > 2000000 && abs(ipart1) < 2000007)) &&
+         (abs(ipart2) < 1000007 || (abs(ipart2) > 2000000 && abs(ipart2) < 2000007))) index = 4;
+// ss case
+ else if ((ipart1 * ipart2 > 0) &&
+         (abs(ipart1) < 1000007 || (abs(ipart1) > 2000000 && abs(ipart1) < 2000007)) &&
+         (abs(ipart2) < 1000007 || (abs(ipart2) > 2000000 && abs(ipart2) < 2000007))) index = 5;
+// gg case 
+  else if (ipart1 == 1000021 && ipart2 == 1000021) index = 8;
+// sg case 
+ else if ((abs(ipart1) == 1000021 && (abs(ipart2) < 1000007 || (abs(ipart2) > 2000000 && abs(ipart2) < 2000007))) ||
+    (abs(ipart2) == 1000021 && (abs(ipart1) < 1000007 || (abs(ipart1) > 2000000 && abs(ipart1) < 2000007)))) index = 9;
+ else
+   cout << "Warning mcSUSYkfactor: index not defined " << ipart1 << "  " << ipart2 << endl;
+
+  return index;
+}
+
+
+Float_t GetValueTH2FS(Float_t x, Float_t y, TH2F* h)
+{
+  Int_t binx = h->GetXaxis()->FindBin(x);
+  Int_t biny = h->GetYaxis()->FindBin(y);
+  return h->GetBinContent(binx, biny);
+
+}
+
 float kfactorSUSY(float m0, float m12, string sample){
 
  char* filename;
@@ -99,6 +157,7 @@ float kfactorSUSY(float m0, float m12, string sample){
   return kfactor; 
 }
 
+/*
 Float_t GetValueTH2FS(Float_t x, Float_t y, TH2F* h) 
 { 
   Int_t binx = h->GetXaxis()->FindBin(x);
@@ -106,7 +165,7 @@ Float_t GetValueTH2FS(Float_t x, Float_t y, TH2F* h)
   return h->GetBinContent(binx, biny);
  
 } 
-
+*/
 
 float kfactorSUSY(string sample)
 {
@@ -190,56 +249,5 @@ double lmdata(int ipart1, int ipart2, string prefix) {
   else if (prefix == "lm0scale") return lm0scale[index];
 
   return 1.0;
-}
-
-int sfinalState(int ipart1, int ipart2) {
-/* 
-#                   ng     neutralino/chargino + gluino                     #
-#                   ns     neutralino/chargino + squark                     #
-#                   nn     neutralino/chargino pair combinations            #
-#                   ll     slepton pair combinations                        #
-#                   sb     squark-antisquark                                #
-#                   ss     squark-squark                                    #
-#                   tb     stop-antistop                                    #
-#                   bb     sbottom-antisbottom                              #
-#                   gg     gluino pair                                      #
-#                   sg     squark + gluino                                  #
-*/
-
- int index = -1;
-
-// Ugly can be done in a better way using list/objects ... oh well
- // ng case
- if ((abs(ipart1) > 1000021 && abs(ipart1) < 1000039 && abs(ipart2) == 1000021) ||
-      (abs(ipart2) > 1000021 && abs(ipart2) < 1000039 && abs(ipart1) == 1000021)) index = 0;
-// ns case 
- else if ((abs(ipart1) > 1000021 && abs(ipart1) < 1000039 && (abs(ipart2) < 1000007 || (abs(ipart2) > 2000000 && abs(ipart2) < 2000007))) ||
-    (abs(ipart2) > 1000021 && abs(ipart2) < 1000039 && (abs(ipart1) < 1000007 || (abs(ipart1) > 2000000 && abs(ipart1) < 2000007)))) index = 1;
-// nn case 
- else if (abs(ipart1) > 1000021 && abs(ipart1) < 1000039 &&  abs(ipart2) > 1000021 && abs(ipart2) < 1000039) index = 2;
-// ll case
- else if (((abs(ipart1) > 1000010 && abs(ipart1) < 1000017) || (abs(ipart1) > 2000010 && abs(ipart1) < 2000016)) &&
-         ((abs(ipart2) > 1000010 && abs(ipart2) < 1000017) || (abs(ipart2) > 2000010 && abs(ipart2) < 2000016))) index = 3;
-// tb case
- else if ((abs(ipart1) == 1000006 || abs(ipart1) == 2000006) && (abs(ipart2) == 1000006 || abs(ipart2) == 2000006)) index = 6;
-// bb case
- else if ((abs(ipart1) == 1000005 || abs(ipart1) == 2000005) && (abs(ipart2) == 1000005 || abs(ipart2) == 2000005)) index = 7;
-// sb case
- else if ((ipart1 * ipart2 < 0) &&
-         (abs(ipart1) < 1000007 || (abs(ipart1) > 2000000 && abs(ipart1) < 2000007)) &&
-         (abs(ipart2) < 1000007 || (abs(ipart2) > 2000000 && abs(ipart2) < 2000007))) index = 4;
-// ss case
- else if ((ipart1 * ipart2 > 0) &&
-         (abs(ipart1) < 1000007 || (abs(ipart1) > 2000000 && abs(ipart1) < 2000007)) &&
-         (abs(ipart2) < 1000007 || (abs(ipart2) > 2000000 && abs(ipart2) < 2000007))) index = 5;
-// gg case 
-  else if (ipart1 == 1000021 && ipart2 == 1000021) index = 8;
-// sg case 
- else if ((abs(ipart1) == 1000021 && (abs(ipart2) < 1000007 || (abs(ipart2) > 2000000 && abs(ipart2) < 2000007))) ||
-    (abs(ipart2) == 1000021 && (abs(ipart1) < 1000007 || (abs(ipart1) > 2000000 && abs(ipart1) < 2000007)))) index = 9;
- else
-   cout << "Warning mcSUSYkfactor: index not defined " << ipart1 << "  " << ipart2 << endl;
-
-  return index;
 }
 
