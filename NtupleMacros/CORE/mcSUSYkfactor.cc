@@ -16,6 +16,180 @@
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
+
+/* 
+  -------- PDF uncertainties --------
+
+  Based on: http://www.t2.ucsd.edu/tastwiki/bin/view/CMS/PDFUncertaintyAnalysis
+
+
+  1. Load Shared Object Library
+
+    gSystem->Load("/nfs-3/userdata/kalavase/lhapdf-5.8.3/lib/.libs/libLHAPDF.so");
+  
+  2. Add include paths
+
+    gSystem->AddIncludePath("-w -I/nfs-3/userdata/kalavase/lhapdf-5.8.3 -I/nfs-3/userdata/kalavase/lhapdf-5.8.3/include -I/nfs-3/userdata/kalavase/lhapdf-5.8.3/include/LHAPDF");
+
+  3. Include the header in your looper
+
+    #include "/nfs-3/userdata/kalavase/lhapdf-5.8.3/include/LHAPDF/LHAPDF.h"
+
+  4. Once before looping:
+
+    // Set up LHAPDF 
+      // initialise the pdf - pdfName1_ and pdfName2_ are pdf sets from: http://projects.hepforge.org/lhapdf/pdfsets
+      const int pdfSubset = 0;
+      LHAPDF::initPDFSet(1, pdfName1_, LHAPDF::LHGRID, pdfSubset);  
+      LHAPDF::initPDFSet(2, pdfName2_, LHAPDF::LHGRID, pdfSubset);
+      
+      // the weight for the central value for some other pdf
+      double pdfWeightOther = 1.0;
+      // set up array to hold the weights for each event for the pdf used to generate the sample size is set to maximum possible
+      double pdfWeights[101];
+      unsigned int nsets = 1;
+      int genPdf = 1;
+      int otherPdf = 2;
+      if (LHAPDF::numberPDF(genPdf) > 1) nsets += LHAPDF::numberPDF(genPdf);
+
+  5. For each event:
+
+    //
+    // do PDF analysis
+    //
+
+    // central value for the weight for the pdf used to generate the sample
+    // is always going to be one
+    pdfWeights[0] = 1.0;
+
+    // calculate the central value of the other pdf specified for this event
+    LHAPDF::usePDFMember(otherPdf, 0);
+    double fx1Q0Other = LHAPDF::xfx( cms2.pdfinfo_x1(), cms2.pdfinfo_scale(), cms2.pdfinfo_id1()) / cms2.pdfinfo_x1();
+    double fx2Q0Other = LHAPDF::xfx( cms2.pdfinfo_x2(), cms2.pdfinfo_scale(), cms2.pdfinfo_id2()) / cms2.pdfinfo_x2();
+
+    // calculate the central value of the pdf used to generate the sample
+    LHAPDF::usePDFMember(genPdf, 0);
+    double fx1Q0 = LHAPDF::xfx( cms2.pdfinfo_x1(), cms2.pdfinfo_scale(), cms2.pdfinfo_id1()) / cms2.pdfinfo_x1();
+    double fx2Q0 = LHAPDF::xfx( cms2.pdfinfo_x2(), cms2.pdfinfo_scale(), cms2.pdfinfo_id2()) / cms2.pdfinfo_x2();
+
+    // calculate a weight for this events central value into the other pdf
+    //pdfWeightOther = (fx1Q0Other*fx2Q0Other)/(fx1Q0*fx2Q0);
+    double pdfWeightOther = (fx1Q0Other*fx2Q0Other)/(fx1Q0*fx2Q0);
+
+    // calculate the weight for the ith subset
+    // for this event
+    for (unsigned int subset = 1; subset < nsets; ++subset)
+    {
+        LHAPDF::initPDF(subset);
+        double fx1Qi = LHAPDF::xfx( cms2.pdfinfo_x1(), cms2.pdfinfo_scale(), cms2.pdfinfo_id1()) / cms2.pdfinfo_x1();
+        double fx2Qi = LHAPDF::xfx( cms2.pdfinfo_x2(), cms2.pdfinfo_scale(), cms2.pdfinfo_id2()) / cms2.pdfinfo_x2();
+        pdfWeights[subset] = (fx1Qi*fx2Qi)/(fx1Q0*fx2Q0);
+    }
+
+    //
+    // histogram the observable quantities for each eigenvector variation weight
+    // and record the acceptance for passing the analysis selection for each eigenvector variation weight
+    //
+
+    //bool passAnalysisSelection = PassAnalysisSelection();
+    //float genmeff = GetGenMeff();
+
+    for (unsigned int subset = 0; subset < nsets; ++subset)
+    {
+
+        // acceptance calculation
+        nTotal[subset] += pdfWeights[subset];
+        nTotalOther += pdfWeightOther;
+        //if (passAnalysisSelection) {
+            nPass[subset] += pdfWeights[subset];
+            nPassOther += pdfWeightOther;
+        //}
+
+        // distribution calculations
+        // in this case it's the meff w.r.t. events passing the analysis selection
+        //if (passAnalysisSelection) {
+        //    histArr[subset]->Fill(genmeff, pdfWeights[subset]*weight);
+        //}
+
+    }
+
+  6. After looping:
+
+    //
+    // calculate the weighted acceptance for each eigenvector variation
+    //
+
+    acceptanceOther = nPassOther / nTotalOther;
+    for (unsigned int i = 0; i < nsets; ++i) {
+        acceptance[i] = nPass[i] / nTotal[i];
+    }
+
+    //
+    // calculate the variation in the acceptance from the maximum variation
+    // of all the eigenvector variations
+    //
+
+    double plus_max = 0.0;
+    double minus_max = 0.0;
+    double X0 = acceptance[0];
+
+    for (unsigned int subset = 0; subset < ((nsets - 1)/2); ++subset)
+    {
+        double Xi_up = acceptance[(subset*2) + 1];
+        double Xi_down = acceptance[(subset*2) + 2];
+        plus_max += pow(max(max(Xi_up - X0, Xi_down - X0), 0.0), 2);
+        minus_max += pow(max(max(X0 - Xi_up, X0 - Xi_down), 0.0), 2);
+    }
+
+    plus_max = sqrt(plus_max);
+    minus_max = sqrt(minus_max);
+
+    //
+    // now do the same for the quantities as a function of some variable
+    // (histograms)
+    //
+
+    for (Int_t bin = 1; bin <= nbins_meff; ++bin)
+    {
+
+        Double_t plus_max = 0;
+        Double_t minus_max = 0;
+        Double_t X0 = histArr[0]->GetBinContent(bin);
+        Double_t binCenter = histArr[0]->GetBinCenter(bin);
+
+        if (X0 == 0) continue;
+
+        for (unsigned int subset = 0; subset < ((nsets - 1)/2); ++subset)
+        {
+            Double_t Xi_up = histArr[(subset*2) + 1]->GetBinContent(bin);
+            Double_t Xi_down = histArr[(subset*2) + 2]->GetBinContent(bin);
+            plus_max += pow(max(max(Xi_up - X0, Xi_down - X0), 0.0), 2);
+            minus_max += pow(max(max(X0 - Xi_up, X0 - Xi_down), 0.0), 2);
+        }
+
+        plus_max = sqrt(plus_max);
+        minus_max = sqrt(minus_max);
+
+        h1_centre->SetBinContent(bin, X0);
+        h1_down->SetBinContent(bin, X0 - minus_max);
+        h1_up->SetBinContent(bin, X0 + plus_max);
+
+    }
+
+    //
+    // print out the acceptance results
+    // (the results for the histograms are written to a root file)
+    //
+
+    std::cout << "[MyScanChain::ScanChain] " << sampleName << std::endl;
+    std::cout << "[MyScanChain::ScanChain] Analysing PDF uncertainty on the acceptance" << std::endl;
+    std::cout << "[MyScanChain::ScanChain] Central value is         : " << X0 << "$^{+" << plus_max << "}_{-" << minus_max << "}" << std::endl;
+    std::cout << "[MyScanChain::ScanChain] Relative uncertainty is  : $^{+" << plus_max/X0 << "}_{-" << minus_max/X0 << "}" << std::endl;
+    std::cout << "[MyScanChain::ScanChain] Central value for " << pdfName2_ << ": " << acceptanceOther << std::endl;
+
+
+*/
+
 int sfinalState(int ipart1, int ipart2) {
 // #                   ng     neutralino/chargino + gluino                     #
 // #                   ns     neutralino/chargino + squark                     #
