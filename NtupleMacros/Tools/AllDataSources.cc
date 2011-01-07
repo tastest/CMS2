@@ -45,7 +45,7 @@ DataSource fH_MU15()       { return DataSource("InclusiveMuPt15",       H_MU15);
 
 
 // old stuff?
-DataSource fH_TW()      { return DataSource("tw",       H_TW);          }
+DataSource fH_TW()      { return DataSource("tw",       H_TW, kMagenta, "tW");          }
 DataSource fH_MU15_SINGLE() { return DataSource("InclusiveMuPt15", H_MU15_SINGLE, 28); }
 DataSource fH_QCD80()      { return DataSource("QCDpt80",       H_QCD80, kBlue);          }
 
@@ -55,5 +55,30 @@ DataSource fH_DATA()      { return DataSource("data",       H_DATA, kRed);      
 DataSource fH_MINBIAS()      { return DataSource("minbias",       H_MINBIAS, kGray);          }
 
 DataSource fH_LM0()   { return DataSource("lm0",    H_LM0, kGray);       }
+DataSource fH_LM1()   { return DataSource("lm1",    H_LM1, kGray);       }
+DataSource fH_LM2()   { return DataSource("lm2",    H_LM2, kGray);       }
+DataSource fH_LM3()   { return DataSource("lm3",    H_LM3, kGray);       }
+DataSource fH_LM4()   { return DataSource("lm4",    H_LM4, kGray);       }
+DataSource fH_LM5()   { return DataSource("lm5",    H_LM5, kGray);       }
+DataSource fH_LM6()   { return DataSource("lm6",    H_LM6, kGray);       }
+DataSource fH_LM7()   { return DataSource("lm7",    H_LM7, kGray);       }
+DataSource fH_LM8()   { return DataSource("lm8",    H_LM8, kGray);       }
+DataSource fH_LM9()   { return DataSource("lm9",    H_LM9, kGray);       }
+DataSource fH_LM10()   { return DataSource("lm10",    H_LM10, kGray);       }
+
+DataSource fH_LQCM300()   { return DataSource("lqcm300",    H_LQCM300, kGray, "LQToCMu_M-300");       }
+DataSource fH_LQCM500()   { return DataSource("lqcm500",    H_LQCM500, kGray, "LQToCMu_M-500");       }
+DataSource fH_LQUE300()   { return DataSource("lque300",    H_LQUE300, kGray, "LQToUE_M-300");       }
+DataSource fH_LQUE500()   { return DataSource("lque500",    H_LQUE500, kGray, "LQToUE_M-500");       }
+
+DataSource fH_D2000LQ1500E()   { return DataSource("d2000lq1500e",    H_D2000LQ1500E, kGray, "D2000LQ1500e");       }
+DataSource fH_D1200LQ1100E()   { return DataSource("d1200lq1100e",    H_D1200LQ1100E, kGray, "D1200LQ1100e");       }
+DataSource fH_D2000LQ1500M()   { return DataSource("d2000lq1500m",    H_D2000LQ1500M, kGray, "D2000LQ1500m");       }
+DataSource fH_D1200LQ1100M()   { return DataSource("d1200lq1100m",    H_D1200LQ1100M, kGray, "D1200LQ1100m");       }
+
+DataSource fH_DQ2500_LDQ2400E()   { return DataSource("dq2500_ldq2400e",    H_DQ2500_LDQ2400E, kGray, "dq2500_ldq2400e");       }
+DataSource fH_DQ2500_LDQ2400M()   { return DataSource("dq2500_ldq2400m",    H_DQ2500_LDQ2400M, kGray, "dq2500_ldq2400m");       }
+DataSource fH_DQ3500_LDQ1000E()   { return DataSource("dq3500_ldq1000e",    H_DQ3500_LDQ1000E, kGray, "dq3500_ldq1000e");       }
+DataSource fH_DQ3500_LDQ1000M()   { return DataSource("dq3500_ldq1000m",    H_DQ3500_LDQ1000M, kGray, "dq3500_ldq1000m");       }
 
 
