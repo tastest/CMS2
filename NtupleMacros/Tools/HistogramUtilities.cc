@@ -143,6 +143,7 @@ THStack* HistogramUtilities::getStack(sources_t theSources, TString var, TString
             if (sources_[i].getColor() != 0) {
                 h1_temp->SetFillColor(sources_[i].getColor());
                 h1_temp->SetLineColor(sources_[i].getColor());
+                h1_temp->SetFillStyle(sources_[i].getFillStyle());
             }
             st_temp->Add(h1_temp);
         }
@@ -304,6 +305,7 @@ TLegend* HistogramUtilities::getLegend(sources_t theSources, TString var, TStrin
             if (sources_[i].getColor() != 0) {
                 h1_temp->SetFillColor(sources_[i].getColor());
                 h1_temp->SetLineColor(sources_[i].getColor());
+                h1_temp->SetFillStyle(sources_[i].getFillStyle());
             }
             lg->AddEntry(h1_temp, sources_[i].getLegendName(), "f");
         }
