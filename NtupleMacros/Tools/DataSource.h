@@ -13,20 +13,22 @@ class DataSource {
 
 	public:
 		DataSource();
-		DataSource(TString name, sources_t source, Color_t color = 0, TString legendName = "");
+		DataSource(TString name, sources_t source, Color_t color = 0, Int_t fillStyle = 1001, TString legendName = "");
 		~DataSource();
 
 		TString         getName()       { return sourceName_; }
         TString         getLegendName();
 		sources_t       getSource()     { return source_; }
-		sources_t 	getBit()	{ return 1ll << source_; }
-		Color_t		getColor()	{ return color_; }
+		sources_t 	    getBit()	    { return 1ll << source_; }
+		Color_t		    getColor()	    { return color_; }
+        Int_t           getFillStyle()  { return fillStyle_; }
+
 	private:
 		TString         sourceName_;
         TString         legendName_;
 		sources_t       source_;
-		Color_t		color_;
-
+		Color_t		    color_;
+        Int_t           fillStyle_;
 };
 
 #endif
