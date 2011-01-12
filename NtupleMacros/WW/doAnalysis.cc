@@ -1519,7 +1519,7 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   // monitor.count(cms2, type, "after vertex cut");
   
   if ( realData && ! passedTriggerRequirements( hypType(i_hyp) ) )return false;
-  monitor.count(cms2, type, "after trigger requirements");
+  monitor.count(cms2, type, "trigger requirements",weight);
 
   // Require same sign
   if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) return false;
@@ -1530,27 +1530,27 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !ww_elBase(cms2.hyp_lt_index()[i_hyp]) ) return false;
   if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !ww_elBase(cms2.hyp_ll_index()[i_hyp]) ) return false;
   
-  monitor.count(cms2,type,"after previous + baseline cuts");
+  monitor.count(cms2,type,"baseline cuts",weight);
  
   if (gSystem->Getenv("Sync")) // Synchronization info
   {
     if (nGoodVertex()<1) return false;
 
-    monitor.count(cms2,type,"after previous + primary verex");
+    monitor.count(cms2,type,"primary verex",weight);
 
     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_mud0PV(cms2.hyp_lt_index()[i_hyp]) ) return false;
     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_mud0PV(cms2.hyp_ll_index()[i_hyp]) ) return false;
     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !ww_eld0PV(cms2.hyp_lt_index()[i_hyp]) ) return false;
     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !ww_eld0PV(cms2.hyp_ll_index()[i_hyp]) ) return false;
 
-    monitor.count(cms2,type,"after previous + d0");
+    monitor.count(cms2,type,"d0",weight);
 
     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && ww_muIsoVal(cms2.hyp_lt_index()[i_hyp])>0.15 ) return false;
     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && ww_muIsoVal(cms2.hyp_ll_index()[i_hyp])>0.15 ) return false;
     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && ww_elIsoVal(cms2.hyp_lt_index()[i_hyp])>0.1 ) return false;
     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && ww_elIsoVal(cms2.hyp_ll_index()[i_hyp])>0.1 ) return false;
 
-    monitor.count(cms2,type,"after previous + iso");
+    monitor.count(cms2,type,"iso",weight);
     
     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_muId(cms2.hyp_lt_index()[i_hyp]) ) return false;
     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_muId(cms2.hyp_ll_index()[i_hyp]) ) return false;
@@ -1559,7 +1559,7 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && 
 	! (electronId_VBTF(cms2.hyp_ll_index()[i_hyp], VBTF_35X_80) & (1<<ELEID_ID))  ) return false;
 
-    monitor.count(cms2,type,"after previous + lepton id");
+    monitor.count(cms2,type,"lepton id",weight);
 
     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && 
 	(fabs(cms2.els_conv_dist().at(cms2.hyp_lt_index()[i_hyp])) < 0.02 &&
@@ -1573,37 +1573,37 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && 
 	cms2.els_exp_innerlayers39X().at(cms2.hyp_ll_index()[i_hyp]) != 0) return false;
 
-    monitor.count(cms2,type,"after previous + conv rejection");
+    monitor.count(cms2,type,"conv rejection",weight);
 
     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) return false;
     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) ) return false;
     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_lt_index()[i_hyp]) ) return false;
     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_ll_index()[i_hyp]) ) return false;
 
-    monitor.count(cms2,type,"after previous + lepton id/iso");
+    monitor.count(cms2,type,"lepton id/iso",weight);
     if ( metValue()<20 ) return false;
-    monitor.count(cms2,type,"after previous + met>20");
+    monitor.count(cms2,type,"met>20",weight);
     
     if (cms2.hyp_p4().at(i_hyp).mass2()<0 || 
 	cms2.hyp_p4()[i_hyp].mass() < 12) return false;
-    monitor.count(cms2,type,"after previous + mll cuts");
+    monitor.count(cms2,type,"mll>12",weight);
     
     if ( type == EE || type == MM) {
       if (inZmassWindow(cms2.hyp_p4()[i_hyp].mass())) return false;
     }
-    monitor.count(cms2,type,"after previous + z mass cuts in EE/MM");
+    monitor.count(cms2,type,"z veto",weight);
     
     if (!passedMetRequirements(i_hyp)) return false;
-    monitor.count(cms2,type,"after previous + Full MET cuts: ");
+    monitor.count(cms2,type,"Full MET cuts",weight);
     
     if ( numberOfJets(i_hyp)>0 ) return false;
-    monitor.count(cms2,type,"after previous + JetVeto cuts: ");
+    monitor.count(cms2,type,"JetVeto cuts",weight);
 
     if (numberOfSoftMuons(i_hyp,true)>0) return false;
-    monitor.count(cms2,type,"after previous + soft muon veto: ");
+    monitor.count(cms2,type,"soft muon veto",weight);
 
     if (numberOfExtraLeptons(i_hyp,10)>0) return false;
-    monitor.count(cms2,type,"after previous + extra lepton veto: ");
+    monitor.count(cms2,type,"extra lepton veto",weight);
   } // end of Synchronization info
 
   if (nGoodVertex()<1) return false;
@@ -1795,7 +1795,7 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   
   // make the final selections
   if(! CheckCuts(pass_all, cuts_passed)) return false;
-  monitor.count(cms2,type,"after all cuts (including soft and extra lepton veto)");
+  monitor.count(cms2,type,"all cuts (including soft and extra lepton veto)",weight);
   
   
   // if ( toptag(jetType(),i_hyp,0) ) return false;
@@ -2564,6 +2564,7 @@ RooDataSet* ScanChain( TChain* chain,
        delete f;
   }
   monitor.print();
+  monitor.makeHistograms(prefix);
   // monitor.printEvents(3);
   if ( nEventsChain != nEventsTotal ) {
     printf("ERROR: number of events from files (%d) is not equal to total number"
