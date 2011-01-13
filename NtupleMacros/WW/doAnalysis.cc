@@ -301,7 +301,8 @@ unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated,
     // if (  ((cms2.mus_goodmask()[imu]) & (1<<14)) == 0 ) continue; // TMLastStationOptimizedLowPtTight
     if (  ((cms2.mus_goodmask()[imu]) & (1<<19)) == 0 ) continue; // TMLastStationAngTight
     if ( cms2.mus_p4()[imu].pt() < 3 ) continue;
-    if ( TMath::Abs(cms2.mus_d0corr()[imu]) > 0.2) continue;
+    // if ( TMath::Abs(cms2.mus_d0corr()[imu]) > 0.2) continue;
+    if ( TMath::Abs(ww_mud0PV(imu)) > 0.2) continue;
     if ( cms2.mus_validHits()[imu] < 11) continue;
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == imu ) continue;
     if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == imu ) continue;
