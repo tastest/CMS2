@@ -14,11 +14,12 @@
 
 #include "vector.h"
 
+bool removePoints = false;
 
-void CleanExclusionPlot();
+void CleanExclusionPlot( char* filename );
   
 
-void CommandMSUGRA(TString plotName);
+void CommandMSUGRA(TString plotName , char* filename);
 
 TGraph* set_sneutrino_d0_1(){
   double sn_m0[9]={0,0,55,90,100,110,100,55,0};
@@ -199,10 +200,17 @@ TLatex* constant_squark_text(Int_t it,TF1& lnsq){
   char legnm[200];
 
   sprintf(legnm,"#font[92]{#tilde{q}(%i)GeV}",500+150*(it-1));
-  TLatex* t3 = new TLatex(180+10*(it-1),lnsq.Eval(180+10*(it-1))-12,legnm);
+  TLatex *t3;
+ 
+  if( it == 1 ){
+    t3 = new TLatex(220+10*(it-1),lnsq.Eval(220+10*(it-1))+10,legnm);
+    t3->SetTextAngle(-12);
+  }
+  else{
+    t3 = new TLatex(180+10*(it-1),lnsq.Eval(180+10*(it-1))-12,legnm);
+    t3->SetTextAngle(-10);
+  }
   t3->SetTextSize(0.04);
-  t3->SetTextAngle(-10);
-
 
   
   return t3;
@@ -224,7 +232,7 @@ TLatex* constant_gluino_text(Int_t it,TF1& lngl){
 
 
 TLegend* makeStauLegend(Double_t txtsz){
-  TLegend* legst = new TLegend(0.20,0.83,0.18,0.85);
+  TLegend* legst = new TLegend(0.22,0.83,0.2,0.85);
   legst->SetHeader("#tilde{#tau} = LSP");
   legst->SetFillStyle(0);
   legst->SetBorderSize(0);
@@ -236,21 +244,27 @@ TLegend* makeStauLegend(Double_t txtsz){
 }
 
 TLegend* makeExpLegend(TGraph& sg_gr, TGraph& sgd_gr,TGraph& ch_gr,TGraph& sl_gr,TGraph& tev_sn,Double_t txtsz){
-  TLegend* legexp = new TLegend(0.6796657,0.6718346,0.9791086,0.9509044,NULL,"brNDC");
+  //TLegend* legexp = new TLegend(0.6796657,0.6718346,0.9791086,0.9509044,NULL,"brNDC");
+  //TLegend* legexp = new TLegend(0.61,0.65,0.93,0.92,NULL,"brNDC");
+  //TLegend* myleg = new TLegend(0.35,0.81,0.6,0.91,NULL,"brNDC");
+  TLegend* legexp = new TLegend(0.61,0.67,0.9,0.92,NULL,"brNDC");
+
   legexp->SetFillColor(0);
-  legexp->AddEntry(&sg_gr,"CDF   #tilde{#font[12]{g}}, #tilde{#font[12]{q}},   2 fb^{-1}","f");  
-  legexp->AddEntry(&sgd_gr,"D0   #tilde{#font[12]{g}}, #tilde{#font[12]{q}},   2.1 fb^{-1}","f");  
+  legexp->AddEntry(&sg_gr,"CDF   #tilde{#font[12]{g}}, #tilde{#font[12]{q}}, tan#beta = 5,  2 fb^{-1}","f");  
+  legexp->AddEntry(&sgd_gr,"D0   #tilde{#font[12]{g}}, #tilde{#font[12]{q}}, tan#beta = 3,  2.1 fb^{-1}","f");  
   legexp->AddEntry(&ch_gr,"LEP2   #tilde{#chi}_{1}^{#pm}","f");  
   legexp->AddEntry(&sl_gr,"LEP2   #tilde{#font[12]{l}}^{#pm}","f"); 
-  legexp->AddEntry(&tev_sn,"D0  #tilde{#nu}","f");  
+  //legexp->AddEntry(&tev_sn,"D0  #tilde{#nu}","f");  
+  legexp->AddEntry(&tev_sn,"D0  #tilde{#chi}_{1}^{#pm}, #tilde{#chi}_{2}^{0}","f");  
   legexp->SetShadowColor(0);
+  txtsz-=0.015;
   legexp->SetTextSize(txtsz);
 
   return legexp;
 
 }
 
-
+/*
 TGraphErrors* getLO_signalCont(){
 
 
@@ -301,12 +315,10 @@ TGraphErrors* getLO_signalCont(){
   
 
   return gr1;
-
-
-
 }
+*/
 
-
+/*
 TGraphErrors* getExpected_NLOunc(){
 
  Int_t nl = 11;
@@ -363,11 +375,12 @@ TGraphErrors* getExpected_NLOunc(){
 
 
 }
+*/
 
-
+/*
 TGraphErrors* getObserved_NLOunc(){
 
- Int_t nl = 11;
+  Int_t nl = 11;
   Double_t xl[nl];
   Double_t yl[nl];
   Double_t exl[nl];
@@ -416,10 +429,91 @@ TGraphErrors* getObserved_NLOunc(){
 
   return gr1;
 
+}
+*/
 
+TGraphErrors* getObserved_NLOunc( char* filename ){
 
+  cout << "Retrieving observed NLO exclusion curve from " << filename << endl;
+  TFile *f = TFile::Open(filename);
+  TGraphErrors *gre = (TGraphErrors*) f->Get("limitgraph_NLO_obs");
+  gre->SetMarkerColor(kWhite);
 
+  if( removePoints ){
+    Double_t xp;
+    Double_t yp;
+    
+    for( int i = 12 ; i < 50 ; i++ ){
+      gre->GetPoint(i,xp,yp);
+      gre->SetPoint(i,xp,100);
+    }
+  }
+
+  return gre;
+}
+
+TGraphErrors* getExpected_NLOunc( char* filename ){
+
+  //cout get observed contour, reduce reach by 10 GeV
+  cout << "Retrieving expected NLO exclusion curve from " << filename << endl;
+  TFile *f = TFile::Open(filename);
+  TGraphErrors *gre = (TGraphErrors*) f->Get("limitgraph_NLO_obs");
+  gre->SetMarkerColor(kWhite);
+
+  Double_t xp;
+  Double_t yp;
+    
+  for( int i = 0 ; i < 50 ; i++ ){
+    gre->GetPoint(i,xp,yp);
+    gre->SetPoint(i,xp,yp-10);
+  }
+
+  return gre;
+
+  /*
+  cout << "Retrieving expected NLO exclusion curve from " << filename << endl;
+  TFile *f = TFile::Open(filename);
+  TGraphErrors *gre = (TGraphErrors*) f->Get("limitgraph_NLO_exp");
+  gre->SetMarkerColor(kWhite);
+
+  if( removePoints ){
+    
+    Double_t xp;
+    Double_t yp;
+    
+    for( int i = 12 ; i < 50 ; i++ ){
+      gre->GetPoint(i,xp,yp);
+      gre->SetPoint(i,xp,100);
+    }
+  }
+
+  return gre;
+  */
 
 }
+
+TGraphErrors* getLO_signalCont( char* filename ){
+
+  cout << "Retrieving observed LO exclusion curve from " << filename << endl;
+  TFile *f = TFile::Open(filename);
+  TGraphErrors *gre = (TGraphErrors*) f->Get("limitgraph_LO_obs");
+  gre->SetMarkerColor(kGreen+2);
+  gre->SetMarkerStyle(21);
+
+  if( removePoints ){
+
+    Double_t xp;
+    Double_t yp;
+    
+    for( int i = 12 ; i < 50 ; i++ ){
+      gre->GetPoint(i,xp,yp);
+      gre->SetPoint(i,xp,100);
+    }
+  }
+
+  return gre;
+
+}
+
 
 #endif

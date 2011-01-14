@@ -12,15 +12,15 @@
 #include "vector.h"
 #include "TMath.h"
 
-void CleanExclusionPlot(){
+void CleanExclusionPlot( char* filename ){
   gStyle->SetPalette(1);
 
-  CommandMSUGRA("35pb_expected_11.root");
-
+  CommandMSUGRA("35pb_expected_11.root" , filename );
+  
 
 }
 
-void CommandMSUGRA(TString plotName_){
+void CommandMSUGRA(TString plotName_ , char* filename ){
 
   // Output file
   TFile* output = new TFile( plotName_, "RECREATE" );
@@ -57,10 +57,11 @@ void CommandMSUGRA(TString plotName_){
   TLegend* legexp = makeExpLegend( *TEV_sg_cdf,*TEV_sg_d0,*LEP_ch,*LEP_sl,*TEV_sn_d0_1,0.04);
 
   //set Addition text in plot
-  TLatex* mytext = new TLatex(135.,458.,"CMS preliminary 2010, L_{int} = 35 pb^{-1}, #sqrt{s} = 7 TeV");
+  TLatex* mytext = new TLatex(135.,458.,"CMS preliminary 2010, L_{int} = 34 pb^{-1}, #sqrt{s} = 7 TeV");
   mytext->SetTextSize(0.03);
 
   TLatex* mytext_two = new TLatex(80,355,"tan#beta = 3, A_{0} = 0, sign(#mu)>0");
+  //TLatex* mytext_two = new TLatex(80,355,"tan#beta = 10, A_{0} = 0, sign(#mu)>0");
   mytext_two->SetTextSize(0.03);
 
   //make Canvas
@@ -69,9 +70,11 @@ void CommandMSUGRA(TString plotName_){
 
  
   //the exclusion plots  
-  TGraphErrors* First = getObserved_NLOunc();
-  TGraphErrors* Second = getExpected_NLOunc();//getLO_jetMultis();
-  TGraphErrors* Third = getLO_signalCont();
+  TGraphErrors* First = getObserved_NLOunc(  filename );
+  TGraphErrors* Second = getExpected_NLOunc( filename );//getLO_jetMultis();
+  TGraphErrors* Third = getLO_signalCont(    filename );
+
+  TH2F* hdummy = new TH2F("hdummy","dummy hist",100,0,500,100,80,450);
 
   First->GetXaxis()->SetRangeUser(0,500);
   First->GetYaxis()->SetRangeUser(80,450);
@@ -81,35 +84,52 @@ void CommandMSUGRA(TString plotName_){
   TSpline3 *sFirst = new TSpline3("sFirst",First);
   sFirst->SetLineColor(kRed);
   sFirst->SetLineWidth(3);
+  First->SetLineColor(kRed);
+  First->SetLineWidth(3);
 
   TSpline3 *sSecond = new TSpline3("sSecond",Second);
   sSecond->SetLineColor(kBlue);
   sSecond->SetLineStyle(2);
   sSecond->SetLineWidth(3);
+  Second->SetLineColor(kBlue);
+  Second->SetLineStyle(2);
+  Second->SetLineWidth(3);
   
   TSpline3 *sThird = new TSpline3("sThird",Third);
   sThird->SetLineColor(kGreen+2);
   sThird->SetLineStyle(4);
   sThird->SetLineWidth(3);
- 
+  Third->SetLineColor(kGreen+2);
+  Third->SetLineStyle(4);
+  Third->SetLineWidth(3);
   
 
   //Set Legend for Exclusion lines
-  TLegend* myleg = new TLegend(0.3966245,0.8271605,0.6666667,0.9485597,NULL,"brNDC");
+  //TLegend* myleg = new TLegend(0.3966245,0.8271605,0.6666667,0.9485597,NULL,"brNDC");
+  TLegend* myleg = new TLegend(0.35,0.81,0.6,0.92,NULL,"brNDC");
   myleg->SetFillColor(0);
   myleg->SetShadowColor(0);
   myleg->SetTextSize(0.03);
-  myleg->AddEntry(sSecond,"NLO Expected Limit");
-  myleg->AddEntry(sFirst,"NLO Observed Limit"); 
-  myleg->AddEntry(sThird,"LO Observed Limit");
+  myleg->AddEntry(sSecond,"NLO Expected Limit","l");
+  myleg->AddEntry(sFirst,"NLO Observed Limit","l"); 
+  myleg->AddEntry(sThird,"LO Observed Limit","l");
 
   //Now start drawing-------------------------------------------------
   First->Draw("AP");//graph with white dots just for setting the axis right
+  
+  bool smooth = true;
 
-  //the exclusion lines
-  //  sFirst->Draw("same");
-  // sSecond->Draw("same");
-  //sThird->Draw("same");
+  if( smooth ){
+    //the exclusion lines (smoothed)
+    sFirst->Draw("same");
+    sSecond->Draw("same");
+    sThird->Draw("same");
+  }else{
+    //the exclusion lines (un-smoothed)
+    First->Draw("same");
+    Second->Draw("same");
+    Third->Draw("same");
+  }
 
   //the squark and gluino lines plus text
   for (int it=1;it<4;it++) {   
@@ -139,8 +159,17 @@ void CommandMSUGRA(TString plotName_){
   mytext->Draw("same");
   mytext_two->Draw("same");
 
+  //LM0, LM1
+//   float m0[2]  = {200,60};
+//   float m12[2] = {160,250};
+//   TGraph *gr = new TGraph(2,m0,m12);
+//   gr->Draw("sameP");
+
+  hdummy->Draw("axissame");
+  //First->Draw("sameP");
+  
   //write out canvas
-  cvsSys->Write();
+  cvsSys->Write("exclusion.pdf");
   
 
   output->Write();
