@@ -51,7 +51,8 @@ enum TTChannel {
   eemm_ch = 3,
   eeem_ch = 5,
   mmem_ch = 6,
-  eemmem_ch = 7
+  eemmem_ch = 7,
+  other_ch = 8
 };
 
 class TTxsecStruct {
@@ -79,6 +80,7 @@ public:
 
   double dy_mc;        double dy_mc_stat;
   double dy_exp;       double dy_stat;      double dy_syst;    double dy_e;
+  double dy_roi;       double dy_roi_stat;
 
   double bg_exp;                                               double bg_e;
 
@@ -116,9 +118,16 @@ public:
   }
 
   void setDependentPars_fake_v0(){
-    spill_exp  = sr_exp * data;
-    spill_stat = sqrt( data )*sr_exp;
-    spill_syst = oplus(sr_stat, sr_syst)*data;
+    double real_dils = data;
+    // correct for fakes 
+//     real_dils = real_dils - ( wjraw_exp - qcd_exp );
+//     if (real_dils < 0 ){
+//       std::cout<<"Warning: negative real_dils estimate: "<<real_dils<<" truncate to 0"<<std::endl;
+//       real_dils = 0;      
+//     }
+    spill_exp  = sr_exp * real_dils;
+    spill_stat = sqrt( real_dils )*sr_exp;
+    spill_syst = oplus(sr_stat, sr_syst)*real_dils;
     spill_e    = oplus(spill_stat, spill_syst);
 
     wjf_exp = wjraw_exp - 2.* qcd_exp - spill_exp;
@@ -276,7 +285,7 @@ public:
 	     <<"\n\t\t\t Spill "<<spill_exp<<" +/- "<<spill_stat<<" +/- "<<spill_syst<< " )"
 	     <<"\n\tFake MC: "<<ttotr_mc+wj_mc <<" +/- " << oplus(ttotr_mc_stat, wj_mc_stat)
 	     <<"\n\t     DY: "<<dy_exp <<" +/- " << dy_stat <<" +/- "<< dy_syst
-	     <<"\n\t  DY MC: "<<dy_mc <<" +/- " << dy_mc_stat
+	     <<"\n\t  DY MC: "<<dy_mc <<" +/- " << dy_mc_stat<<"\t R_{out/in}: "<<dy_roi<<" +/- "<< dy_roi_stat
 	     <<"\n\t All BG: "<<bg_exp <<" +/- " << bg_e
 	     <<"\n\t All MC: "<<all_mc <<" +/- "<<all_mc_stat
 
@@ -514,7 +523,7 @@ void xsecCalc_35pb_pass5(){
 
 
 
-
+  bool bgSystIsCorr = false;
   //combine
   std::cout<<"======================================="<<std::endl;
   std::cout<<"======       COMBINATIONS      ========"<<std::endl; 
@@ -528,6 +537,7 @@ void xsecCalc_35pb_pass5(){
   TTxsecStruct peemmem(peemm);
   peemmem.simpleAdd(pem);
   xsecCalc_inStruct(peemmem, false);
+
 
   std::cout<<"======================================="<<std::endl;
   std::cout<<"======       BTAGGING          ========"<<std::endl; 
@@ -720,6 +730,7 @@ void xsecCalc_36pb_pass6(){
 
   pee0j.dy_mc  =    1.79;  pee0j.dy_mc_stat = 0.36;
   pee0j.dy_exp = 3.58; pee0j.dy_stat = 1.27; pee0j.dy_syst = pee0j.dy_exp*0.5;
+  pee0j.dy_roi = (0.2807+0.1630)*0.5; pee0j.dy_roi_stat = (0.0513+0.0358)*0.5;
 
   pee0j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9231* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
   pee0j.tt_AE_eRel = 0.073; //not filled yet
@@ -747,6 +758,7 @@ void xsecCalc_36pb_pass6(){
 
   pee1j.dy_mc  =    1.31;  pee1j.dy_mc_stat = 0.285;
   pee1j.dy_exp =    3.23; pee1j.dy_stat =    0.98; pee1j.dy_syst =   pee1j.dy_exp*0.5;
+  pee1j.dy_roi = (0.1729+0.0870)*0.5; pee1j.dy_roi_stat = (0.0306+0.0239)*0.5;
 
   pee1j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9231* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
   pee1j.tt_AE_eRel = 0.073; //mind the correlations
@@ -775,6 +787,7 @@ void xsecCalc_36pb_pass6(){
 
   pee2j.dy_mc  =    1.72;  pee2j.dy_mc_stat = 0.34;
   pee2j.dy_exp =    3.00; pee2j.dy_stat =  0.97; pee2j.dy_syst =   pee2j.dy_exp*0.5;
+  pee2j.dy_roi = (0.1174+0.1610)*0.5; pee2j.dy_roi_stat = (0.0221+0.0345)*0.5;
 
   pee2j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9231* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
   pee2j.tt_AE_eRel = 0.073; //mind the correlations
@@ -805,6 +818,7 @@ void xsecCalc_36pb_pass6(){
 
   pmm0j.dy_mc  =  4.59;  pmm0j.dy_mc_stat = 0.575;
   pmm0j.dy_exp =  14.505; pmm0j.dy_stat = 3.225; pmm0j.dy_syst = pmm0j.dy_exp*0.5;
+  pmm0j.dy_roi = (0.6044+0.2058)*0.5; pmm0j.dy_roi_stat = (0.0660+0.0293)*0.5;
 
   pmm0j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9613* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
   pmm0j.tt_AE_eRel = 0.0717; //mind the correlations
@@ -832,6 +846,7 @@ void xsecCalc_36pb_pass6(){
 
   pmm1j.dy_mc  =    6.185;  pmm1j.dy_mc_stat = 0.665;
   pmm1j.dy_exp =    13.18; pmm1j.dy_stat =    2.775; pmm1j.dy_syst =   pmm1j.dy_exp*0.5;
+  pmm1j.dy_roi = (0.4493+0.3013)*0.5; pmm1j.dy_roi_stat = (0.0391+0.0385)*0.5;
 
   pmm1j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9613* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
   pmm1j.tt_AE_eRel = 0.0717; //mind the correlations
@@ -860,6 +875,7 @@ void xsecCalc_36pb_pass6(){
 
   pmm2j.dy_mc  =    3.345;  pmm2j.dy_mc_stat = 0.49;
   pmm2j.dy_exp =     7.44;  pmm2j.dy_stat =    1.825; pmm2j.dy_syst =   pmm2j.dy_exp*0.5;
+  pmm2j.dy_roi = (0.2431+0.1909)*0.5; pmm2j.dy_roi_stat = (0.0285+0.0324)*0.5;
 
   pmm2j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9613* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
   pmm2j.tt_AE_eRel = 0.0717; //mind the correlations
@@ -889,6 +905,7 @@ void xsecCalc_36pb_pass6(){
 
   pem0j.dy_mc  =3.331;  pem0j.dy_mc_stat = 0.375;
   pem0j.dy_exp =  0.0;  pem0j.dy_stat =    0.0; pem0j.dy_syst = pem0j.dy_exp*0.5;
+  pem0j.dy_roi = 0;     pem0j.dy_roi_stat = 0;
 
   pem0j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9444* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
   pem0j.tt_AE_eRel = 0.0646; //mind the correlations
@@ -916,6 +933,7 @@ void xsecCalc_36pb_pass6(){
 
   pem1j.dy_mc  =    0.804;  pem1j.dy_mc_stat = 0.185;
   pem1j.dy_exp =    0.0; pem1j.dy_stat =     0.0; pem1j.dy_syst =   pem1j.dy_exp*0.5;
+  pem1j.dy_roi = 0;     pem1j.dy_roi_stat = 0;
 
   pem1j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9444* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
   pem1j.tt_AE_eRel = 0.0646; //mind the correlations
@@ -944,6 +962,7 @@ void xsecCalc_36pb_pass6(){
 
   pem2j.dy_mc  =    0.423;  pem2j.dy_mc_stat = 0.134;
   pem2j.dy_exp =    0.0;  pem2j.dy_stat =    0.0; pem2j.dy_syst =   pem2j.dy_exp*0.5;
+  pem2j.dy_roi = 0;     pem2j.dy_roi_stat = 0;
 
   pem2j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9444* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
   pem2j.tt_AE_eRel = 0.0646; //mind the correlations
@@ -978,9 +997,10 @@ void xsecCalc_36pb_pass6(){
   pee1j1bj.dy_mc  =    (0.254+0.059)*0.5;  pee1j1bj.dy_mc_stat = (0.104+0.042)*0.5;
   pee1j1bj.dy_exp =    (0.975+0.214)*0.5;  pee1j1bj.dy_stat  =   (0.565+0.176)*0.5; 
   pee1j1bj.dy_syst =   pee1j1bj.dy_exp*0.5;
+  pee1j1bj.dy_roi = (0.1364+0.0300)*0.5; pee1j1bj.dy_roi_stat = (0.0566+0.0215)*0.5;
 
   pee1j1bj.sf_exp = (0.108*9.)*(0.108*9.) * 0.9231* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
-  pee1j1bj.tt_AE_eRel = 0.0914; //mind the correlations
+  pee1j1bj.tt_AE_eRel = 0.1417; //mind the correlations; JES=6.64, b-tag=11
  
   xsecCalc_inStruct(pee1j1bj);
 
@@ -1007,6 +1027,7 @@ void xsecCalc_36pb_pass6(){
   pee2j1bj.dy_mc  =    (0.417+0.720)*0.5;  pee2j1bj.dy_mc_stat = (0.135+0.273)*0.5;
   pee2j1bj.dy_exp =    (0.589+0.929)*0.5;  pee2j1bj.dy_stat   =  (0.438+0.717)*0.5; 
   pee2j1bj.dy_syst =   pee2j1bj.dy_exp*0.5;
+  pee2j1bj.dy_roi = (0.1120+0.1767)*0.5; pee2j1bj.dy_roi_stat = (0.0368+0.0686)*0.5;
 
   pee2j1bj.sf_exp = (0.108*9.)*(0.108*9.) * 0.9231* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
   pee2j1bj.tt_AE_eRel = 0.0914; //mind the correlations
@@ -1036,9 +1057,10 @@ void xsecCalc_36pb_pass6(){
   pmm1j1bj.dy_mc  =    (0.683+0.953)*0.5;  pmm1j1bj.dy_mc_stat = (0.173+0.307)*0.5;
   pmm1j1bj.dy_exp =    (2.909+2.842)*0.5;  pmm1j1bj.dy_stat =    (1.212+1.314)*0.5; 
   pmm1j1bj.dy_syst =   pmm1j1bj.dy_exp*0.5;
+  pmm1j1bj.dy_roi = (0.2688+0.2626)*0.5; pmm1j1bj.dy_roi_stat = (0.0686+0.0852)*0.5;
 
   pmm1j1bj.sf_exp = (0.108*9.)*(0.108*9.) * 0.9613* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
-  pmm1j1bj.tt_AE_eRel = 0.0904; //mind the correlations
+  pmm1j1bj.tt_AE_eRel = 0.1410; //mind the correlations; JES=6.64, b-tag=11
  
   xsecCalc_inStruct(pmm1j1bj);
 
@@ -1065,6 +1087,7 @@ void xsecCalc_36pb_pass6(){
   pmm2j1bj.dy_mc  =    (1.081+1.432)*0.5;  pmm2j1bj.dy_mc_stat = (0.210+0.387)*0.5;
   pmm2j1bj.dy_exp =    (3.251+3.004)*0.5;  pmm2j1bj.dy_stat =    (1.339+1.361)*0.5; 
   pmm2j1bj.dy_syst =   pmm2j1bj.dy_exp*0.5;
+  pmm2j1bj.dy_roi = (0.2387+0.2206)*0.5; pmm2j1bj.dy_roi_stat = (0.0467+0.0600)*0.5;
 
   pmm2j1bj.sf_exp = (0.108*9.)*(0.108*9.) * 0.9613* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
   pmm2j1bj.tt_AE_eRel = 0.0904; //mind the correlations
@@ -1093,9 +1116,10 @@ void xsecCalc_36pb_pass6(){
 
   pem1j1bj.dy_mc  =    0.085;  pem1j1bj.dy_mc_stat = 0.060;
   pem1j1bj.dy_exp =    0.0; pem1j1bj.dy_stat =     0.0; pem1j1bj.dy_syst =   pem1j1bj.dy_exp*0.5;
+  pem1j1bj.dy_roi = 0;      pem1j1bj.dy_roi_stat = 0;
 
   pem1j1bj.sf_exp = (0.108*9.)*(0.108*9.) * 0.9444* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
-  pem1j1bj.tt_AE_eRel = 0.0848; //mind the correlations
+  pem1j1bj.tt_AE_eRel = 0.1427; //mind the correlations; JES=6.64, b-tag=11
  
   xsecCalc_inStruct(pem1j1bj);
 
@@ -1121,6 +1145,7 @@ void xsecCalc_36pb_pass6(){
 
   pem2j1bj.dy_mc  =    0.085;  pem2j1bj.dy_mc_stat = 0.060;
   pem2j1bj.dy_exp =    0.0;  pem2j1bj.dy_stat =    0.0; pem2j1bj.dy_syst =   pem2j1bj.dy_exp*0.5;
+  pem2j1bj.dy_roi = 0;       pem2j1bj.dy_roi_stat = 0;
 
   pem2j1bj.sf_exp = (0.108*9.)*(0.108*9.) * 0.9444* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
   pem2j1bj.tt_AE_eRel = 0.0848; //mind the correlations
@@ -1146,6 +1171,11 @@ void xsecCalc_36pb_pass6(){
   peemmem2j.simpleAdd(pem2j);
   xsecCalc_inStruct(peemmem2j, false);
 
+  std::cout<<"EE-MM-EM 2 jets no tags, uncorr backgrounds"<<std::endl;
+  TTxsecStruct peemmem2jUC(peemm2j);
+  peemmem2jUC.simpleAdd(pem2j, false);
+  xsecCalc_inStruct(peemmem2jUC, false);
+
   std::cout<<"===================================================="<<std::endl;
   std::cout<<"======       COMBINATIONS  with b-tags      ========"<<std::endl; 
   std::cout<<"===================================================="<<std::endl;
@@ -1159,6 +1189,16 @@ void xsecCalc_36pb_pass6(){
   peemmem2j1bj.simpleAdd(pem2j1bj);
   xsecCalc_inStruct(peemmem2j1bj, false);
 
+  std::cout<<"EE-MM 1jet with a tag"<<std::endl;
+  TTxsecStruct peemm1j1bj(pee1j1bj);
+  peemm1j1bj.simpleAdd(pmm1j1bj);
+  xsecCalc_inStruct(peemm1j1bj, false);
+
+  std::cout<<"EE-MM-EM 1 jet with a tag"<<std::endl;
+  TTxsecStruct peemmem1j1bj(peemm1j1bj);
+  peemmem1j1bj.simpleAdd(pem1j1bj);
+  xsecCalc_inStruct(peemmem1j1bj, false);
+
 
 
   std::cout<<"\n\n\nFINAL\n(EE-MM with tag)-(EM no tag) 2 jets"<<std::endl;
@@ -1169,6 +1209,13 @@ void xsecCalc_36pb_pass6(){
 			       + pem2j.tt_AE_eRel*pem2j.tt_exp)/(peemm2j1bj.tt_exp+pem2j.tt_exp);
   peemmem2jFinal.tt_AE_eRel = oplus(peemmem2jFinal.tt_AE_eRel, 0.055*peemm2j1bj.tt_exp/(peemm2j1bj.tt_exp+pem2j.tt_exp));
   xsecCalc_inStruct(peemmem2jFinal, false);
+
+
+  std::cout<<"\n\n\nFINAL\n(EE-MM with tag)-(EM no tag) 2 jets and EE-MM-EM tag 1 jet"<<std::endl;
+  TTxsecStruct peemmem1n2jFinal(peemmem2jFinal);
+  peemmem1n2jFinal.channel = other_ch;
+  peemmem1n2jFinal.simpleAdd(peemmem1j1bj); 
+  xsecCalc_inStruct(peemmem1n2jFinal, false);
 
   return;
 
