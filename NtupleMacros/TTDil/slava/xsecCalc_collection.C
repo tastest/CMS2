@@ -92,6 +92,9 @@ public:
   double tt_xsecTh_eRel;
   double lum_eRel;
 
+  double tt_sigma;
+  double lum_total;
+
   void setDependentPars_mcbg_v0(){
     dytt_syst_self = 0.3*dytt_exp;
     vv_syst_self   = 0.3*vv_exp;
@@ -292,12 +295,19 @@ public:
 	     <<"\n\t tt exp: "<<tt_exp*sf_exp
 	     <<" +/- "<<tt_exp*sf_exp*tt_AE_eRel<<"(syst) +/- "<<tt_exp*sf_exp*tt_xsecTh_eRel
 	     <<"(th) +/- "<<tt_exp*sf_exp*lum_eRel<<"(lum)  "
-	     <<"\tS/B: "<<tt_exp*sf_exp/bg_exp<<std::endl;    
+	     <<"\n\t\t= "<<tt_exp*sf_exp
+	     <<" +/- " <<tt_exp*sf_exp*tt_AE_eRel 
+	     <<"(syst) +/- "
+	     <<oplus(tt_exp*sf_exp*tt_xsecTh_eRel, tt_exp*sf_exp*lum_eRel) << "(th+lum)"
+	     <<"\n\tA: "<<tt_exp*sf_exp/tt_sigma/lum_total*100.
+	     <<" +/- "<<tt_exp*sf_exp/tt_sigma/lum_total*100.*tt_AE_eRel
+	     <<" \tS/B: "<<tt_exp*sf_exp/bg_exp<<std::endl;    
   }
   
   TTxsecStruct(){
     tt_xsecTh_eRel = 0.15;
     lum_eRel       = 0.11;
+    tt_sigma       = 157.5;
   }
 };
 
@@ -710,6 +720,7 @@ void xsecCalc_36pb_pass6(){
 
   std::cout<<"\n=======\n\t EE 0 jets\n========="<<std::endl;
   TTxsecStruct pee0j;
+  pee0j.lum_total = 36.1;
   double lum_eRel = pee0j.lum_eRel;
   pee0j.channel = ee_ch;
   pee0j.tt_exp   = 0.673;  pee0j.tt_stat    =   0.052;
@@ -739,6 +750,7 @@ void xsecCalc_36pb_pass6(){
 
   std::cout<<"\n=======\n\t EE 1 jets\n========="<<std::endl;
   TTxsecStruct pee1j;
+  pee1j.lum_total = 36.1;
   pee1j.channel = ee_ch;
   pee1j.tt_exp   = 5.459; pee1j.tt_stat    =   0.149;
   pee1j.dytt_exp = 1.500;  pee1j.dytt_stat =   0.257; pee1j.dytt_syst_corr = oplus(0.1,lum_eRel)*pee1j.dytt_exp;
@@ -768,6 +780,7 @@ void xsecCalc_36pb_pass6(){
 
   std::cout<<"\n=======\n\t EE 2 jets\n========="<<std::endl;
   TTxsecStruct pee2j;
+  pee2j.lum_total = 36.1;
   pee2j.channel = ee_ch;
   pee2j.tt_exp   =16.659; pee2j.tt_stat    =   0.261;
   pee2j.dytt_exp = 0.574;  pee2j.dytt_stat =   0.159; pee2j.dytt_syst_corr = oplus(0.1,lum_eRel)*pee2j.dytt_exp;
@@ -799,6 +812,7 @@ void xsecCalc_36pb_pass6(){
 
   std::cout<<"\n=======\n\t MM 0 jets\n========="<<std::endl;
   TTxsecStruct pmm0j;
+  pmm0j.lum_total = 36.1;
   pmm0j.channel = mm_ch;
   pmm0j.tt_exp   = 0.754; pmm0j.tt_stat    =   0.055;
   pmm0j.dytt_exp = 0.574;  pmm0j.dytt_stat =   0.159; pmm0j.dytt_syst_corr = oplus(0.1,lum_eRel)*pmm0j.dytt_exp;
@@ -827,6 +841,7 @@ void xsecCalc_36pb_pass6(){
 
   std::cout<<"\n=======\n\t MM 1 jets\n========="<<std::endl;
   TTxsecStruct pmm1j;
+  pmm1j.lum_total = 36.1;
   pmm1j.channel = mm_ch;
   pmm1j.tt_exp   = 6.458; pmm1j.tt_stat    =   0.162;
   pmm1j.dytt_exp = 1.897;  pmm1j.dytt_stat =   0.289; pmm1j.dytt_syst_corr = oplus(0.1,lum_eRel)*pmm1j.dytt_exp;
@@ -856,6 +871,7 @@ void xsecCalc_36pb_pass6(){
 
   std::cout<<"\n=======\n\t MM 2 jets\n========="<<std::endl;
   TTxsecStruct pmm2j;
+  pmm2j.lum_total = 36.1;
   pmm2j.channel = mm_ch;
   pmm2j.tt_exp   =19.925; pmm2j.tt_stat    =   0.285;
   pmm2j.dytt_exp = 0.515;  pmm2j.dytt_stat =   0.149; pmm2j.dytt_syst_corr = oplus(0.1,lum_eRel)*pmm2j.dytt_exp;
@@ -886,6 +902,7 @@ void xsecCalc_36pb_pass6(){
 
   std::cout<<"\n=======\n\t EM 0 jets\n========="<<std::endl;
   TTxsecStruct pem0j;
+  pem0j.lum_total = 36.1;
   pem0j.channel = em_ch;
   pem0j.tt_exp   = 2.100; pem0j.tt_stat    =   0.093;
   pem0j.dytt_exp = 65.567;  pem0j.dytt_stat =   1.701; pem0j.dytt_syst_corr = oplus(0.1,lum_eRel)*pem0j.dytt_exp;
@@ -914,6 +931,7 @@ void xsecCalc_36pb_pass6(){
 
   std::cout<<"\n=======\n\t EM 1 jets\n========="<<std::endl;
   TTxsecStruct pem1j;
+  pem1j.lum_total = 36.1;
   pem1j.channel = em_ch;
   pem1j.tt_exp   = 17.936; pem1j.tt_stat    =   0.270;
   pem1j.dytt_exp = 10.487;  pem1j.dytt_stat =   0.680; pem1j.dytt_syst_corr = oplus(0.1,lum_eRel)*pem1j.dytt_exp;
@@ -943,6 +961,7 @@ void xsecCalc_36pb_pass6(){
 
   std::cout<<"\n=======\n\t EM 2 jets\n========="<<std::endl;
   TTxsecStruct pem2j;
+  pem2j.lum_total = 36.1;
   pem2j.channel = em_ch;
   pem2j.tt_exp   = 58.203; pem2j.tt_stat    =   0.487;
   pem2j.dytt_exp = 2.500;  pem2j.dytt_stat =   0.331; pem2j.dytt_syst_corr = oplus(0.1,lum_eRel)*pem2j.dytt_exp;
@@ -977,6 +996,7 @@ void xsecCalc_36pb_pass6(){
 
   std::cout<<"\n=======\n\t EE 1 jets with b-tags\n========="<<std::endl;
   TTxsecStruct pee1j1bj;
+  pee1j1bj.lum_total = 36.1;
   pee1j1bj.channel = ee_ch;
   pee1j1bj.tt_exp   = 3.918; pee1j1bj.tt_stat    =   0.126;
   pee1j1bj.dytt_exp = 0.088;  pee1j1bj.dytt_stat =   0.062; pee1j1bj.dytt_syst_corr = oplus(0.1,lum_eRel,0.25)*pee1j1bj.dytt_exp;
@@ -1007,6 +1027,7 @@ void xsecCalc_36pb_pass6(){
 
   std::cout<<"\n=======\n\t EE 2 jets with b-tags\n========="<<std::endl;
   TTxsecStruct pee2j1bj;
+  pee2j1bj.lum_total = 36.1;
   pee2j1bj.channel = ee_ch;
   pee2j1bj.tt_exp   =15.285; pee2j1bj.tt_stat    =   0.250;
   pee2j1bj.dytt_exp = 0.176;  pee2j1bj.dytt_stat =   0.088; pee2j1bj.dytt_syst_corr = oplus(0.1,lum_eRel,0.25)*pee2j1bj.dytt_exp; 
@@ -1037,6 +1058,7 @@ void xsecCalc_36pb_pass6(){
 
   std::cout<<"\n=======\n\t MM 1 jets with b-tag\n========="<<std::endl;
   TTxsecStruct pmm1j1bj;
+  pmm1j1bj.lum_total = 36.1;
   pmm1j1bj.channel = mm_ch;
   pmm1j1bj.tt_exp   = 4.721; pmm1j1bj.tt_stat    =   0.139;
   pmm1j1bj.dytt_exp = 0.309;  pmm1j1bj.dytt_stat =   0.117; pmm1j1bj.dytt_syst_corr = oplus(0.1,lum_eRel,0.25)*pmm1j1bj.dytt_exp;
@@ -1067,6 +1089,7 @@ void xsecCalc_36pb_pass6(){
 
   std::cout<<"\n=======\n\t MM 2 jets with b-tags\n========="<<std::endl;
   TTxsecStruct pmm2j1bj;
+  pmm2j1bj.lum_total = 36.1;
   pmm2j1bj.channel = mm_ch;
   pmm2j1bj.tt_exp   =18.527; pmm2j1bj.tt_stat    =   0.275;
   pmm2j1bj.dytt_exp = 0.250;  pmm2j1bj.dytt_stat =   0.103; pmm2j1bj.dytt_syst_corr = oplus(0.1,lum_eRel,0.25)*pmm2j1bj.dytt_exp;
@@ -1097,6 +1120,7 @@ void xsecCalc_36pb_pass6(){
 
   std::cout<<"\n=======\n\t EM 1 jets with b-tag\n========="<<std::endl;
   TTxsecStruct pem1j1bj;
+  pem1j1bj.lum_total = 36.1;
   pem1j1bj.channel = em_ch;
   pem1j1bj.tt_exp   =13.496; pem1j1bj.tt_stat    =   0.235;
   pem1j1bj.dytt_exp = 1.235;  pem1j1bj.dytt_stat =   0.233; pem1j1bj.dytt_syst_corr = oplus(0.1,lum_eRel,0.25)*pem1j1bj.dytt_exp;
@@ -1126,6 +1150,7 @@ void xsecCalc_36pb_pass6(){
 
   std::cout<<"\n=======\n\t EM 2 jets with b-tags\n========="<<std::endl;
   TTxsecStruct pem2j1bj;
+  pem2j1bj.lum_total = 36.1;
   pem2j1bj.channel = em_ch;
   pem2j1bj.tt_exp   =53.825; pem2j1bj.tt_stat    =   0.468;
   pem2j1bj.dytt_exp = 0.647;  pem2j1bj.dytt_stat =   0.168; pem2j1bj.dytt_syst_corr = oplus(0.1,lum_eRel,0.25)*pem2j1bj.dytt_exp;
@@ -1153,9 +1178,113 @@ void xsecCalc_36pb_pass6(){
   xsecCalc_inStruct(pem2j1bj);
 
 
+
+  std::cout<<"\n\n\n\n"<<std::endl;
+  std::cout<<"#=============================================================#"<<std::endl;
+  std::cout<<"# It's all PF in 1 jet FOM cuts                               #"<<std::endl;
+  std::cout<<"#-------------------------------------------------------------#"<<std::endl;
+
+  std::cout<<"\n=======\n\t EE 1 jet with FOM cuts\n========="<<std::endl;
+  TTxsecStruct pee1jFOM;
+  pee1jFOM.lum_total = 36.1;
+  pee1jFOM.channel = ee_ch;
+  pee1jFOM.tt_exp   = 3.930;  pee1jFOM.tt_stat   =   0.127;
+  pee1jFOM.dytt_exp = 0.662;  pee1jFOM.dytt_stat =   0.171; pee1jFOM.dytt_syst_corr = oplus(0.1,lum_eRel)*pee1jFOM.dytt_exp;
+  pee1jFOM.vv_exp   = 0.549;  pee1jFOM.vv_stat   =   0.026; pee1jFOM.vv_syst_corr   = oplus(0.1,lum_eRel)*pee1jFOM.vv_exp;
+  pee1jFOM.tw_exp   = 0.648;  pee1jFOM.tw_stat   =   0.022; pee1jFOM.tw_syst_corr   = oplus(0.1,lum_eRel)*pee1jFOM.tw_exp;    
+
+  pee1jFOM.data = 8;
+
+  pee1jFOM.sr_exp   = 0.0340; pee1jFOM.sr_stat = 0.0030; pee1jFOM.sr_syst = 0.0001; 
+
+  pee1jFOM.ttotr_mc = 0.077;  pee1jFOM.ttotr_mc_stat  =   0.018;
+  pee1jFOM.wj_mc    = 0.945;  pee1jFOM.wj_mc_stat     =   0.286;
+
+  pee1jFOM.qcd_exp   = 0.2862; pee1jFOM.qcd_stat  =  0.1654; pee1jFOM.qcd_syst = pee1jFOM.qcd_exp;
+  pee1jFOM.wjraw_exp = 0.9267; pee1jFOM.wjraw_stat=  0.4827;
+  pee1jFOM.wjf_systFrac = 0.5;
+
+  pee1jFOM.dy_mc  =    (0.085+0.085)*0.5;  pee1jFOM.dy_mc_stat = (0.060+0.060)*0.5;
+  pee1jFOM.dy_exp =    (0.141+0.299)*0.5;  pee1jFOM.dy_stat  =   (0.251+0.531)*0.5; 
+  pee1jFOM.dy_syst =   pee1jFOM.dy_exp*0.5;
+  pee1jFOM.dy_roi =    (0.118+0.250)*0.5; pee1jFOM.dy_roi_stat = (0.084+0.170)*0.5;
+
+  pee1jFOM.sf_exp = (0.108*9.)*(0.108*9.) * 0.9231* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
+  pee1jFOM.tt_AE_eRel = 0.0681; //JES=3.6 from PK (should I be using Pedram's value ~8.7? since it's larger)
+ 
+  xsecCalc_inStruct(pee1jFOM);
+
+
+  std::cout<<"\n=======\n\t MM 1 jet with FOM cuts\n========="<<std::endl;
+  TTxsecStruct pmm1jFOM;
+  pmm1jFOM.lum_total = 36.1;
+  pmm1jFOM.channel = mm_ch;
+  pmm1jFOM.tt_exp   = 4.778; pmm1jFOM.tt_stat    =   0.140;
+  pmm1jFOM.dytt_exp = 0.574;  pmm1jFOM.dytt_stat =   0.159; pmm1jFOM.dytt_syst_corr = oplus(0.1,lum_eRel)*pmm1jFOM.dytt_exp;
+  pmm1jFOM.vv_exp   = 0.712;  pmm1jFOM.vv_stat   =   0.030; pmm1jFOM.vv_syst_corr   = oplus(0.1,lum_eRel)*pmm1jFOM.vv_exp;	 
+  pmm1jFOM.tw_exp   = 0.743;  pmm1jFOM.tw_stat   =   0.024; pmm1jFOM.tw_syst_corr   = oplus(0.1,lum_eRel)*pmm1jFOM.tw_exp;    
+
+  pmm1jFOM.data = 10;
+
+  pmm1jFOM.sr_exp   = 0.0220; pmm1jFOM.sr_stat = 0.0023; pmm1jFOM.sr_syst = 0.0023; 
+
+  pmm1jFOM.ttotr_mc = 0.008;  pmm1jFOM.ttotr_mc_stat  =   0.006;
+  pmm1jFOM.wj_mc    = 0.111;  pmm1jFOM.wj_mc_stat     =   0.111;
+
+  pmm1jFOM.qcd_exp   = 0.0000; pmm1jFOM.qcd_stat  =  0.0900; pmm1jFOM.qcd_syst = pmm1jFOM.qcd_exp;
+  pmm1jFOM.wjraw_exp = 0.2892; pmm1jFOM.wjraw_stat=  0.2892;
+  pmm1jFOM.wjf_systFrac = 0.75;
+
+  pmm1jFOM.dy_mc  =    (1.451+1.32)*0.5;  pmm1jFOM.dy_mc_stat = (0.246+0.22)*0.5;
+  pmm1jFOM.dy_exp =    (6.068+3.825)*0.5;  pmm1jFOM.dy_stat =    (3.841+2.42)*0.5; 
+  pmm1jFOM.dy_syst =   pmm1jFOM.dy_exp*0.5;
+  pmm1jFOM.dy_roi =   (1.2692+0.800)*0.5; pmm1jFOM.dy_roi_stat = (0.255039+0.21)*0.5;
+
+  pmm1jFOM.sf_exp = (0.108*9.)*(0.108*9.) * 0.9613* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
+  pmm1jFOM.tt_AE_eRel = 0.0695; //JES=3.6 from PK (should I be using Pedram's value ~8.7? since it's larger)
+ 
+  xsecCalc_inStruct(pmm1jFOM);
+
+
+
+
+  std::cout<<"\n=======\n\t EM 1 jet with FOM cuts\n========="<<std::endl;
+  TTxsecStruct pem1jFOM;
+  pem1jFOM.lum_total = 36.1;
+  pem1jFOM.channel = em_ch;
+  pem1jFOM.tt_exp   =11.999; pem1jFOM.tt_stat    =   0.221;
+  pem1jFOM.dytt_exp = 0.000;  pem1jFOM.dytt_stat =   0.044; pem1jFOM.dytt_syst_corr = oplus(0.1,lum_eRel)*pem1jFOM.dytt_exp;
+  pem1jFOM.vv_exp   = 1.878;  pem1jFOM.vv_stat   =   0.049; pem1jFOM.vv_syst_corr   = oplus(0.1,lum_eRel)*pem1jFOM.vv_exp;	 
+  pem1jFOM.tw_exp   = 2.036;  pem1jFOM.tw_stat   =   0.040; pem1jFOM.tw_syst_corr   = oplus(0.1,lum_eRel)*pem1jFOM.tw_exp;    
+
+  pem1jFOM.data = 18;
+
+  pem1jFOM.sr_exp   = 0.028; pem1jFOM.sr_stat = 0.002; pem1jFOM.sr_syst = 0.0012; 
+
+  pem1jFOM.ttotr_mc = 0.106;  pem1jFOM.ttotr_mc_stat  =   0.021;
+  pem1jFOM.wj_mc    = 0.869;  pem1jFOM.wj_mc_stat     =   0.308;
+
+  pem1jFOM.qcd_exp   = 0.3223; pem1jFOM.qcd_stat  =  0.1613; pem1jFOM.qcd_syst = pem1jFOM.qcd_exp;
+  pem1jFOM.wjraw_exp = 1.6467; pem1jFOM.wjraw_stat=  0.6898;
+  pem1jFOM.wjf_systFrac = 0.5;
+
+  pem1jFOM.dy_mc  =    0.127;  pem1jFOM.dy_mc_stat = 0.073;
+  pem1jFOM.dy_exp =    0.0; pem1jFOM.dy_stat =     0.0; pem1jFOM.dy_syst =   pem1jFOM.dy_exp*0.5;
+  pem1jFOM.dy_roi = 0;      pem1jFOM.dy_roi_stat = 0;
+
+  pem1jFOM.sf_exp = (0.108*9.)*(0.108*9.) * 0.9444* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
+  pem1jFOM.tt_AE_eRel = 0.0905; //JES=6.97 (cf Pedram's value ~ 6.5: using a larger value) to be conservative
+                                // and, most importantly, to retain coherent correlations with other bins
+ 
+  xsecCalc_inStruct(pem1jFOM);
+
+
   TTxsecStruct pee;
   TTxsecStruct pmm;
   TTxsecStruct pem;
+
+
+
 
   //combine
   std::cout<<"====================================================="<<std::endl;
@@ -1163,16 +1292,19 @@ void xsecCalc_36pb_pass6(){
   std::cout<<"====================================================="<<std::endl;
   std::cout<<"EEMM 2jets no tags"<<std::endl;
   TTxsecStruct peemm2j(pee2j);
+  peemm2j.lum_total = 36.1;
   peemm2j.simpleAdd(pmm2j);
   xsecCalc_inStruct(peemm2j, false);
 
   std::cout<<"EE-MM-EM 2 jets no tags"<<std::endl;
   TTxsecStruct peemmem2j(peemm2j);
+  peemmem2j.lum_total = 36.1;
   peemmem2j.simpleAdd(pem2j);
   xsecCalc_inStruct(peemmem2j, false);
 
   std::cout<<"EE-MM-EM 2 jets no tags, uncorr backgrounds"<<std::endl;
   TTxsecStruct peemmem2jUC(peemm2j);
+  peemmem2jUC.lum_total = 36.1;
   peemmem2jUC.simpleAdd(pem2j, false);
   xsecCalc_inStruct(peemmem2jUC, false);
 
@@ -1181,21 +1313,25 @@ void xsecCalc_36pb_pass6(){
   std::cout<<"===================================================="<<std::endl;
   std::cout<<"EE-MM 2jets with tags"<<std::endl;
   TTxsecStruct peemm2j1bj(pee2j1bj);
+  peemm2j1bj.lum_total = 36.1;
   peemm2j1bj.simpleAdd(pmm2j1bj);
   xsecCalc_inStruct(peemm2j1bj, false);
 
   std::cout<<"EE-MM-EM 2 jets with tags"<<std::endl;
   TTxsecStruct peemmem2j1bj(peemm2j1bj);
+  peemmem2j1bj.lum_total = 36.1;
   peemmem2j1bj.simpleAdd(pem2j1bj);
   xsecCalc_inStruct(peemmem2j1bj, false);
 
   std::cout<<"EE-MM 1jet with a tag"<<std::endl;
   TTxsecStruct peemm1j1bj(pee1j1bj);
+  peemm1j1bj.lum_total = 36.1;
   peemm1j1bj.simpleAdd(pmm1j1bj);
   xsecCalc_inStruct(peemm1j1bj, false);
 
   std::cout<<"EE-MM-EM 1 jet with a tag"<<std::endl;
   TTxsecStruct peemmem1j1bj(peemm1j1bj);
+  peemmem1j1bj.lum_total = 36.1;
   peemmem1j1bj.simpleAdd(pem1j1bj);
   xsecCalc_inStruct(peemmem1j1bj, false);
 
@@ -1203,6 +1339,7 @@ void xsecCalc_36pb_pass6(){
 
   std::cout<<"\n\n\nFINAL\n(EE-MM with tag)-(EM no tag) 2 jets"<<std::endl;
   TTxsecStruct peemmem2jFinal(peemm2j1bj);
+  peemmem2jFinal.lum_total = 36.1;
   peemmem2jFinal.simpleAdd(pem2j); 
   // now a hack: start from the untagged uncertainty
   peemmem2jFinal.tt_AE_eRel = (peemm2j.tt_AE_eRel*peemm2j1bj.tt_exp 
@@ -1213,6 +1350,7 @@ void xsecCalc_36pb_pass6(){
 
   std::cout<<"\n\n\nFINAL\n(EE-MM with tag)-(EM no tag) 2 jets and EE-MM-EM tag 1 jet"<<std::endl;
   TTxsecStruct peemmem1n2jFinal(peemmem2jFinal);
+  peemmem1n2jFinal.lum_total = 36.1;
   peemmem1n2jFinal.channel = other_ch;
   peemmem1n2jFinal.simpleAdd(peemmem1j1bj); 
   xsecCalc_inStruct(peemmem1n2jFinal, false);
