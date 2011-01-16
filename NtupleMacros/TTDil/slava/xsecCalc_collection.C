@@ -1204,10 +1204,10 @@ void xsecCalc_36pb_pass6(){
   pee1jFOM.wjraw_exp = 0.9267; pee1jFOM.wjraw_stat=  0.4827;
   pee1jFOM.wjf_systFrac = 0.5;
 
-  pee1jFOM.dy_mc  =    (0.085+0.085)*0.5;  pee1jFOM.dy_mc_stat = (0.060+0.060)*0.5;
-  pee1jFOM.dy_exp =    (0.141+0.299)*0.5;  pee1jFOM.dy_stat  =   (0.251+0.531)*0.5; 
+  pee1jFOM.dy_mc  =    (0.085+0.220)*0.5;  pee1jFOM.dy_mc_stat = (0.060+0.156)*0.5;
+  pee1jFOM.dy_exp =    (0.141+0.299)*0.5;  pee1jFOM.dy_stat  =   (0.251+0.535)*0.5; 
   pee1jFOM.dy_syst =   pee1jFOM.dy_exp*0.5;
-  pee1jFOM.dy_roi =    (0.118+0.250)*0.5; pee1jFOM.dy_roi_stat = (0.084+0.170)*0.5;
+  pee1jFOM.dy_roi =    (0.118+0.250)*0.5; pee1jFOM.dy_roi_stat = (0.084+0.182)*0.5;
 
   pee1jFOM.sf_exp = (0.108*9.)*(0.108*9.) * 0.9231* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
   pee1jFOM.tt_AE_eRel = 0.0681; //JES=3.6 from PK (should I be using Pedram's value ~8.7? since it's larger)
@@ -1235,10 +1235,10 @@ void xsecCalc_36pb_pass6(){
   pmm1jFOM.wjraw_exp = 0.2892; pmm1jFOM.wjraw_stat=  0.2892;
   pmm1jFOM.wjf_systFrac = 0.75;
 
-  pmm1jFOM.dy_mc  =    (1.451+1.32)*0.5;  pmm1jFOM.dy_mc_stat = (0.246+0.22)*0.5;
-  pmm1jFOM.dy_exp =    (6.068+3.825)*0.5;  pmm1jFOM.dy_stat =    (3.841+2.42)*0.5; 
+  pmm1jFOM.dy_mc  =    (1.451+1.32)*0.5;  pmm1jFOM.dy_mc_stat = (0.246+0.38)*0.5;
+  pmm1jFOM.dy_exp =    (6.068+3.825)*0.5;  pmm1jFOM.dy_stat =    (3.841+2.59)*0.5; 
   pmm1jFOM.dy_syst =   pmm1jFOM.dy_exp*0.5;
-  pmm1jFOM.dy_roi =   (1.2692+0.800)*0.5; pmm1jFOM.dy_roi_stat = (0.255039+0.21)*0.5;
+  pmm1jFOM.dy_roi =   (1.2692+0.800)*0.5; pmm1jFOM.dy_roi_stat = (0.255039+0.249)*0.5;
 
   pmm1jFOM.sf_exp = (0.108*9.)*(0.108*9.) * 0.9613* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
   pmm1jFOM.tt_AE_eRel = 0.0695; //JES=3.6 from PK (should I be using Pedram's value ~8.7? since it's larger)
