@@ -744,7 +744,7 @@ void xsecCalc_36pb_pass6(){
   pee0j.dy_roi = (0.2807+0.1630)*0.5; pee0j.dy_roi_stat = (0.0513+0.0358)*0.5;
 
   pee0j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9231* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
-  pee0j.tt_AE_eRel = 0.073; //not filled yet
+  pee0j.tt_AE_eRel = 0.113; //use the same as 1 jet
  
   xsecCalc_inStruct(pee0j);
 
@@ -773,7 +773,7 @@ void xsecCalc_36pb_pass6(){
   pee1j.dy_roi = (0.1729+0.0870)*0.5; pee1j.dy_roi_stat = (0.0306+0.0239)*0.5;
 
   pee1j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9231* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
-  pee1j.tt_AE_eRel = 0.073; //mind the correlations
+  pee1j.tt_AE_eRel = 0.113; //using FOM-based systematics (too lazy to redo it here for these )
  
   xsecCalc_inStruct(pee1j);
 
@@ -803,7 +803,7 @@ void xsecCalc_36pb_pass6(){
   pee2j.dy_roi = (0.1174+0.1610)*0.5; pee2j.dy_roi_stat = (0.0221+0.0345)*0.5;
 
   pee2j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9231* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
-  pee2j.tt_AE_eRel = 0.073; //mind the correlations
+  pee2j.tt_AE_eRel = 0.082; //mind the correlations
  
   xsecCalc_inStruct(pee2j);
 
@@ -835,7 +835,7 @@ void xsecCalc_36pb_pass6(){
   pmm0j.dy_roi = (0.6044+0.2058)*0.5; pmm0j.dy_roi_stat = (0.0660+0.0293)*0.5;
 
   pmm0j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9613* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
-  pmm0j.tt_AE_eRel = 0.0717; //mind the correlations
+  pmm0j.tt_AE_eRel = 0.112; //use the same as 1 jet
  
   xsecCalc_inStruct(pmm0j);
 
@@ -864,7 +864,7 @@ void xsecCalc_36pb_pass6(){
   pmm1j.dy_roi = (0.4493+0.3013)*0.5; pmm1j.dy_roi_stat = (0.0391+0.0385)*0.5;
 
   pmm1j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9613* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
-  pmm1j.tt_AE_eRel = 0.0717; //mind the correlations
+  pmm1j.tt_AE_eRel = 0.112; //use FOM-based values, too lazy to recompute for these specific cuts
  
   xsecCalc_inStruct(pmm1j);
 
@@ -894,7 +894,7 @@ void xsecCalc_36pb_pass6(){
   pmm2j.dy_roi = (0.2431+0.1909)*0.5; pmm2j.dy_roi_stat = (0.0285+0.0324)*0.5;
 
   pmm2j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9613* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
-  pmm2j.tt_AE_eRel = 0.0717; //mind the correlations
+  pmm2j.tt_AE_eRel = 0.081; //mind the correlations
  
   xsecCalc_inStruct(pmm2j);
 
@@ -925,7 +925,7 @@ void xsecCalc_36pb_pass6(){
   pem0j.dy_roi = 0;     pem0j.dy_roi_stat = 0;
 
   pem0j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9444* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
-  pem0j.tt_AE_eRel = 0.0646; //mind the correlations
+  pem0j.tt_AE_eRel = 0.138; //use the same as 1jet in FOM (this isn't quite right though)
  
   xsecCalc_inStruct(pem0j);
 
@@ -954,7 +954,7 @@ void xsecCalc_36pb_pass6(){
   pem1j.dy_roi = 0;     pem1j.dy_roi_stat = 0;
 
   pem1j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9444* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
-  pem1j.tt_AE_eRel = 0.0646; //mind the correlations
+  pem1j.tt_AE_eRel = 0.138; //use the same as for the FOM Njet=1 cuts
  
   xsecCalc_inStruct(pem1j);
 
@@ -984,7 +984,7 @@ void xsecCalc_36pb_pass6(){
   pem2j.dy_roi = 0;     pem2j.dy_roi_stat = 0;
 
   pem2j.sf_exp = (0.108*9.)*(0.108*9.) * 0.9444* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
-  pem2j.tt_AE_eRel = 0.0646; //mind the correlations
+  pem2j.tt_AE_eRel = 0.063; //mind the correlations
  
   xsecCalc_inStruct(pem2j);
 
@@ -1020,7 +1020,7 @@ void xsecCalc_36pb_pass6(){
   pee1j1bj.dy_roi = (0.1364+0.0300)*0.5; pee1j1bj.dy_roi_stat = (0.0566+0.0215)*0.5;
 
   pee1j1bj.sf_exp = (0.108*9.)*(0.108*9.) * 0.9231* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
-  pee1j1bj.tt_AE_eRel = 0.1417; //mind the correlations; JES=6.64, b-tag=11
+  pee1j1bj.tt_AE_eRel = oplus(0.055,0.113); //use the same as FOM Njet=1
  
   xsecCalc_inStruct(pee1j1bj);
 
@@ -1051,7 +1051,7 @@ void xsecCalc_36pb_pass6(){
   pee2j1bj.dy_roi = (0.1120+0.1767)*0.5; pee2j1bj.dy_roi_stat = (0.0368+0.0686)*0.5;
 
   pee2j1bj.sf_exp = (0.108*9.)*(0.108*9.) * 0.9231* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
-  pee2j1bj.tt_AE_eRel = 0.0914; //mind the correlations
+  pee2j1bj.tt_AE_eRel = 0.099; //mind the correlations
  
   xsecCalc_inStruct(pee2j1bj);
 
@@ -1082,7 +1082,7 @@ void xsecCalc_36pb_pass6(){
   pmm1j1bj.dy_roi = (0.2688+0.2626)*0.5; pmm1j1bj.dy_roi_stat = (0.0686+0.0852)*0.5;
 
   pmm1j1bj.sf_exp = (0.108*9.)*(0.108*9.) * 0.9613* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
-  pmm1j1bj.tt_AE_eRel = 0.1410; //mind the correlations; JES=6.64, b-tag=11
+  pmm1j1bj.tt_AE_eRel = oplus(0.055,0.112); //use the same as FOM Njet=1
  
   xsecCalc_inStruct(pmm1j1bj);
 
@@ -1113,7 +1113,7 @@ void xsecCalc_36pb_pass6(){
   pmm2j1bj.dy_roi = (0.2387+0.2206)*0.5; pmm2j1bj.dy_roi_stat = (0.0467+0.0600)*0.5;
 
   pmm2j1bj.sf_exp = (0.108*9.)*(0.108*9.) * 0.9613* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
-  pmm2j1bj.tt_AE_eRel = 0.0904; //mind the correlations
+  pmm2j1bj.tt_AE_eRel = 0.098; //mind the correlations
  
   xsecCalc_inStruct(pmm2j1bj);
 
@@ -1143,7 +1143,7 @@ void xsecCalc_36pb_pass6(){
   pem1j1bj.dy_roi = 0;      pem1j1bj.dy_roi_stat = 0;
 
   pem1j1bj.sf_exp = (0.108*9.)*(0.108*9.) * 0.9444* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
-  pem1j1bj.tt_AE_eRel = 0.1427; //mind the correlations; JES=6.64, b-tag=11
+  pem1j1bj.tt_AE_eRel = oplus(0.055, 0.138); //use the same as with cuts in FOM=1jet +btagging
  
   xsecCalc_inStruct(pem1j1bj);
 
@@ -1173,7 +1173,7 @@ void xsecCalc_36pb_pass6(){
   pem2j1bj.dy_roi = 0;       pem2j1bj.dy_roi_stat = 0;
 
   pem2j1bj.sf_exp = (0.108*9.)*(0.108*9.) * 0.9444* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
-  pem2j1bj.tt_AE_eRel = 0.0848; //mind the correlations
+  pem2j1bj.tt_AE_eRel = 0.083; //mind the correlations
  
   xsecCalc_inStruct(pem2j1bj);
 
@@ -1210,7 +1210,7 @@ void xsecCalc_36pb_pass6(){
   pee1jFOM.dy_roi =    (0.118+0.250)*0.5; pee1jFOM.dy_roi_stat = (0.084+0.182)*0.5;
 
   pee1jFOM.sf_exp = (0.108*9.)*(0.108*9.) * 0.9231* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
-  pee1jFOM.tt_AE_eRel = 0.0681; //JES=3.6 from PK (should I be using Pedram's value ~8.7? since it's larger)
+  pee1jFOM.tt_AE_eRel = 0.113; //
  
   xsecCalc_inStruct(pee1jFOM);
 
@@ -1241,7 +1241,7 @@ void xsecCalc_36pb_pass6(){
   pmm1jFOM.dy_roi =   (1.2692+0.800)*0.5; pmm1jFOM.dy_roi_stat = (0.255039+0.249)*0.5;
 
   pmm1jFOM.sf_exp = (0.108*9.)*(0.108*9.) * 0.9613* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
-  pmm1jFOM.tt_AE_eRel = 0.0695; //JES=3.6 from PK (should I be using Pedram's value ~8.7? since it's larger)
+  pmm1jFOM.tt_AE_eRel = 0.112; //JES=3.6 from PK (should I be using Pedram's value ~8.7? since it's larger)
  
   xsecCalc_inStruct(pmm1jFOM);
 
@@ -1273,8 +1273,109 @@ void xsecCalc_36pb_pass6(){
   pem1jFOM.dy_roi = 0;      pem1jFOM.dy_roi_stat = 0;
 
   pem1jFOM.sf_exp = (0.108*9.)*(0.108*9.) * 0.9444* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
-  pem1jFOM.tt_AE_eRel = 0.0905; //JES=6.97 (cf Pedram's value ~ 6.5: using a larger value) to be conservative
-                                // and, most importantly, to retain coherent correlations with other bins
+  pem1jFOM.tt_AE_eRel = 0.138; //
+ 
+  xsecCalc_inStruct(pem1jFOM);
+
+
+
+
+
+  std::cout<<"\n\n\n\n"<<std::endl;
+  std::cout<<"#=============================================================#"<<std::endl;
+  std::cout<<"# It's all PF in 1 jet FOM with numbers from LIP              #"<<std::endl;
+  std::cout<<"#-------------------------------------------------------------#"<<std::endl;
+
+  std::cout<<"\n=======\n\t EE 1 jet with FOM cuts\n========="<<std::endl;
+  TTxsecStruct pee1jFOM;
+  pee1jFOM.lum_total = 36.1;
+  pee1jFOM.channel = ee_ch;
+  pee1jFOM.tt_exp   = 3.930;  pee1jFOM.tt_stat   =   0.127;
+  pee1jFOM.dytt_exp = 0.662;  pee1jFOM.dytt_stat =   0.171; pee1jFOM.dytt_syst_corr = oplus(0.1,lum_eRel)*pee1jFOM.dytt_exp;
+  pee1jFOM.vv_exp   = 0.549;  pee1jFOM.vv_stat   =   0.026; pee1jFOM.vv_syst_corr   = oplus(0.1,lum_eRel)*pee1jFOM.vv_exp;
+  pee1jFOM.tw_exp   = 0.648;  pee1jFOM.tw_stat   =   0.022; pee1jFOM.tw_syst_corr   = oplus(0.1,lum_eRel)*pee1jFOM.tw_exp;    
+
+  pee1jFOM.data = 8;
+
+  pee1jFOM.sr_exp   = 0.0340; pee1jFOM.sr_stat = 0.0030; pee1jFOM.sr_syst = 0.0001; 
+
+  pee1jFOM.ttotr_mc = 0.077;  pee1jFOM.ttotr_mc_stat  =   0.018;
+  pee1jFOM.wj_mc    = 0.945;  pee1jFOM.wj_mc_stat     =   0.286;
+
+  pee1jFOM.qcd_exp   = 0.2862; pee1jFOM.qcd_stat  =  0.1654; pee1jFOM.qcd_syst = pee1jFOM.qcd_exp;
+  pee1jFOM.wjraw_exp = 0.9267; pee1jFOM.wjraw_stat=  0.4827;
+  pee1jFOM.wjf_systFrac = 0.5;
+
+  pee1jFOM.dy_mc  =    (0.085+0.220)*0.5;  pee1jFOM.dy_mc_stat = (0.060+0.156)*0.5;
+  pee1jFOM.dy_exp =    (0.141+0.299)*0.5;  pee1jFOM.dy_stat  =   (0.251+0.535)*0.5; 
+  pee1jFOM.dy_syst =   pee1jFOM.dy_exp*0.5;
+  pee1jFOM.dy_roi =    (0.118+0.250)*0.5; pee1jFOM.dy_roi_stat = (0.084+0.182)*0.5;
+
+  pee1jFOM.sf_exp = (0.108*9.)*(0.108*9.) * 0.9231* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
+  pee1jFOM.tt_AE_eRel = 0.113; //
+ 
+  xsecCalc_inStruct(pee1jFOM);
+
+
+  std::cout<<"\n=======\n\t MM 1 jet with FOM cuts\n========="<<std::endl;
+  TTxsecStruct pmm1jFOM;
+  pmm1jFOM.lum_total = 36.1;
+  pmm1jFOM.channel = mm_ch;
+  pmm1jFOM.tt_exp   = 4.778; pmm1jFOM.tt_stat    =   0.140;
+  pmm1jFOM.dytt_exp = 0.574;  pmm1jFOM.dytt_stat =   0.159; pmm1jFOM.dytt_syst_corr = oplus(0.1,lum_eRel)*pmm1jFOM.dytt_exp;
+  pmm1jFOM.vv_exp   = 0.712;  pmm1jFOM.vv_stat   =   0.030; pmm1jFOM.vv_syst_corr   = oplus(0.1,lum_eRel)*pmm1jFOM.vv_exp;	 
+  pmm1jFOM.tw_exp   = 0.743;  pmm1jFOM.tw_stat   =   0.024; pmm1jFOM.tw_syst_corr   = oplus(0.1,lum_eRel)*pmm1jFOM.tw_exp;    
+
+  pmm1jFOM.data = 10;
+
+  pmm1jFOM.sr_exp   = 0.0220; pmm1jFOM.sr_stat = 0.0023; pmm1jFOM.sr_syst = 0.0023; 
+
+  pmm1jFOM.ttotr_mc = 0.008;  pmm1jFOM.ttotr_mc_stat  =   0.006;
+  pmm1jFOM.wj_mc    = 0.111;  pmm1jFOM.wj_mc_stat     =   0.111;
+
+  pmm1jFOM.qcd_exp   = 0.0000; pmm1jFOM.qcd_stat  =  0.0900; pmm1jFOM.qcd_syst = pmm1jFOM.qcd_exp;
+  pmm1jFOM.wjraw_exp = 0.2892; pmm1jFOM.wjraw_stat=  0.2892;
+  pmm1jFOM.wjf_systFrac = 0.75;
+
+  pmm1jFOM.dy_mc  =    (1.451+1.32)*0.5;  pmm1jFOM.dy_mc_stat = (0.246+0.38)*0.5;
+  pmm1jFOM.dy_exp =    (6.068+3.825)*0.5;  pmm1jFOM.dy_stat =    (3.841+2.59)*0.5; 
+  pmm1jFOM.dy_syst =   pmm1jFOM.dy_exp*0.5;
+  pmm1jFOM.dy_roi =   (1.2692+0.800)*0.5; pmm1jFOM.dy_roi_stat = (0.255039+0.249)*0.5;
+
+  pmm1jFOM.sf_exp = (0.108*9.)*(0.108*9.) * 0.9613* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
+  pmm1jFOM.tt_AE_eRel = 0.112; //JES=3.6 from PK (should I be using Pedram's value ~8.7? since it's larger)
+ 
+  xsecCalc_inStruct(pmm1jFOM);
+
+
+
+
+  std::cout<<"\n=======\n\t EM 1 jet with FOM cuts\n========="<<std::endl;
+  TTxsecStruct pem1jFOM;
+  pem1jFOM.lum_total = 36.1;
+  pem1jFOM.channel = em_ch;
+  pem1jFOM.tt_exp   =11.999; pem1jFOM.tt_stat    =   0.221;
+  pem1jFOM.dytt_exp = 0.000;  pem1jFOM.dytt_stat =   0.044; pem1jFOM.dytt_syst_corr = oplus(0.1,lum_eRel)*pem1jFOM.dytt_exp;
+  pem1jFOM.vv_exp   = 1.878;  pem1jFOM.vv_stat   =   0.049; pem1jFOM.vv_syst_corr   = oplus(0.1,lum_eRel)*pem1jFOM.vv_exp;	 
+  pem1jFOM.tw_exp   = 2.036;  pem1jFOM.tw_stat   =   0.040; pem1jFOM.tw_syst_corr   = oplus(0.1,lum_eRel)*pem1jFOM.tw_exp;    
+
+  pem1jFOM.data = 18;
+
+  pem1jFOM.sr_exp   = 0.028; pem1jFOM.sr_stat = 0.002; pem1jFOM.sr_syst = 0.0012; 
+
+  pem1jFOM.ttotr_mc = 0.106;  pem1jFOM.ttotr_mc_stat  =   0.021;
+  pem1jFOM.wj_mc    = 0.869;  pem1jFOM.wj_mc_stat     =   0.308;
+
+  pem1jFOM.qcd_exp   = 0.3223; pem1jFOM.qcd_stat  =  0.1613; pem1jFOM.qcd_syst = pem1jFOM.qcd_exp;
+  pem1jFOM.wjraw_exp = 1.6467; pem1jFOM.wjraw_stat=  0.6898;
+  pem1jFOM.wjf_systFrac = 0.5;
+
+  pem1jFOM.dy_mc  =    0.127;  pem1jFOM.dy_mc_stat = 0.073;
+  pem1jFOM.dy_exp =    0.0; pem1jFOM.dy_stat =     0.0; pem1jFOM.dy_syst =   pem1jFOM.dy_exp*0.5;
+  pem1jFOM.dy_roi = 0;      pem1jFOM.dy_roi_stat = 0;
+
+  pem1jFOM.sf_exp = (0.108*9.)*(0.108*9.) * 0.9444* 1.0126;//(0.108*9.) is for Madgraph ! 1.0126 is PU
+  pem1jFOM.tt_AE_eRel = 0.138; //
  
   xsecCalc_inStruct(pem1jFOM);
 
@@ -1387,12 +1488,12 @@ void xsecCalc_36pb_pass6(){
 }
 
 void xsecCalc_comb_pass6_normLum(){
-  double mean_a = 160.314;
-  double k_b = 1./1.01360;
+  double mean_a = 164.313;//160.314;
+  double k_b    = 1./1.01360;
   double mean_b = mean_a*k_b;
 
-  double relStat = 0.117599;
-  double relSyst = 0.0828106;
+  double relStat = 0.108245;
+  double relSyst = 0.074684;
   double relComb = oplus(relStat, relSyst);
   double mean_[2] = {mean_a, mean_b};
 
