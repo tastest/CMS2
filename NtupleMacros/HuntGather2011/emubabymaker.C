@@ -19,7 +19,7 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 	 TObjArray *listOfFiles = chain->GetListOfFiles();
 
 	 unsigned int nEventsChain=0;
-	 if (nEvents==-1) 
+	 if (nEvents == -1) 
 		  nEvents = chain->GetEntries();
 	 nEventsChain = nEvents;
 	 unsigned int nEventsTotal = 0;
@@ -38,12 +38,12 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 
 		  //Event Loop
 		  unsigned int nEvents = tree->GetEntries();
-		  for(unsigned int event = 0; event < nEvents; ++event)
+		  for (unsigned int event = 0; event < nEvents; ++event)
 		  {
 			   cms2.GetEntry(event);
 			   ++nEventsTotal;
 			   // Progress feedback to the user
-			   if(nEventsTotal%1000 == 0)
+			   if (nEventsTotal%1000 == 0)
 			   {
 					// xterm magic from L. Vacavant and A. Cerri
 					if (isatty(1))
@@ -55,13 +55,13 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 			   }
 
 			   // muon stuff
-			   for(unsigned mui = 0; mui < cms2.mus_p4().size(); ++mui)
+			   for (unsigned mui = 0; mui < cms2.mus_p4().size(); ++mui)
 			   {
 					// global and tracker muons only
-					if (! (cms2.mus_type()[mui] & 6))
+					if (!(cms2.mus_type()[mui] & 6))
 						 continue;
 					// pt > 20
-					if (cms2.mus_p4()[mui].pt() <= 20)
+					if (cms2.mus_p4()[mui].pt() <= 20.)
 						 continue;
 
 					// initialize baby quantities
@@ -72,48 +72,49 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 					run_        = cms2.evt_run();
 					ls_         = cms2.evt_lumiBlock();
 					evt_        = cms2.evt_event();
+					isdata_     = cms2.evt_isRealData();
 					nvtx_ = 0;
-					for( unsigned int i=0; i<cms2.vtxs_isFake().size(); i++ ) {
-                                          if( !cms2.vtxs_isFake()[i] && cms2.vtxs_isValid()[i] )
-                                            ++nvtx_;
-                                        }
-                  
-                    if (!isdata_)
-                        int nlep = leptonGenpCount_lepTauDecays(ngenels_, ngenmus_, ngentaus_);
+					for (unsigned int i = 0; i < cms2.vtxs_isFake().size(); i++) {
+						 if (!cms2.vtxs_isFake()[i] && cms2.vtxs_isValid()[i])
+							  ++nvtx_;
+					}										
+
+                    if (!isdata_) {
+						int nlep  = leptonGenpCount_lepTauDecays(ngenels_, ngenmus_, ngentaus_); // what is this doing exactly???
+						scale1fb_ = cms2.evt_scale1fb();
+						pthat_    = cms2.genps_pthat();
+					}
 
 					pfmet_      = cms2.evt_pfmet();
-					tcmet_      = cms2.evt_tcmet();
+					tcmet_      = cms2.evt_pf_tcmet();
+					calotcmet_  = cms2.evt_tcmet();
 					ntrks_      = cms2.trks_trk_p4().size();
 
-					float thePFMetPhi = cms2.evt_pfmetPhi();
-					float theTCMetPhi = cms2.evt_tcmetPhi();
+					float thePFMetPhi     = cms2.evt_pfmetPhi();
+					float theTCMetPhi     = cms2.evt_pf_tcmetPhi();
+					float theCaloTCMetPhi = cms2.evt_tcmetPhi();
 
-					if (!wasMetCorrectedForThisMuon(mui, usingTcMet) && muonIdNotIsolated(mui, NominalTTbarV2))
-					{
-						 float metx = tcmet_ * cos(theTCMetPhi);
-						 float mety = tcmet_ * sin(theTCMetPhi);
-						 fixMetForThisMuon(mui, metx, mety, usingTcMet);
-
-						 tcmet_ = sqrt(metx * metx + mety * mety);
-						 theTCMetPhi = atan2(mety, metx);
+					float metx = tcmet_ * cos(theTCMetPhi);
+					float mety = tcmet_ * sin(theTCMetPhi);
+					for (unsigned int muj = 0; muj < cms2.mus_p4().size(); ++muj) {
+						 if (!wasMetCorrectedForThisMuon(muj, usingTcMet) && muonIdNotIsolated(muj, NominalTTbarV2))
+							  fixMetForThisMuon(muj, metx, mety, usingTcMet);
 					}
+					tcmet_ = sqrt(metx * metx + mety * mety);
+					theTCMetPhi = atan2(mety, metx);
 
 					// loop over muons and electrons to get ngoodlep
 					ngoodlep_ = 0;
                     ngoodmus_ = 0;
                     ngoodels_ = 0;
-					for(unsigned muii = 0; muii < cms2.mus_p4().size(); ++muii)
-					{
-                	 if (cms2.mus_p4()[muii].pt() > 20. && muonId(muii, NominalTTbarV2))
-						 {
+					for (unsigned muii = 0; muii < cms2.mus_p4().size(); ++muii) {
+						 if (cms2.mus_p4()[muii].pt() > 20. && muonId(muii, NominalTTbarV2)) {
                     	      ++ngoodlep_;
                               ++ngoodmus_;
                          }
                     }
-					for(unsigned eli = 0; eli < cms2.els_p4().size(); ++eli)
-				    {
-		                 if (cms2.els_p4()[eli].pt() > 20. && pass_electronSelection(eli, electronSelection_ttbarV2))
-                         {
+					for (unsigned eli = 0; eli < cms2.els_p4().size(); ++eli) {
+		                 if (cms2.els_p4()[eli].pt() > 20. && pass_electronSelection(eli, electronSelection_ttbarV2)) {
 							  ++ngoodlep_;
                               ++ngoodels_;
                          }
@@ -127,21 +128,31 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 					iso_      = muonIsoValue(mui);
 					d0corr_   = cms2.mus_d0corr()[mui];
 
-					int trkidx= cms2.mus_trkidx()[mui];
-					d0vtx_    = cms2.trks_d0vtx()[trkidx];
+					int trkidx = cms2.mus_trkidx()[mui];
+					d0vtx_     = cms2.trks_d0vtx()[trkidx];
 
-					dphipfmet_= deltaPhi(thePFMetPhi, cms2.mus_p4()[mui].phi());
-					dphitcmet_= deltaPhi(theTCMetPhi, cms2.mus_p4()[mui].phi());
+					dphipfmet_ = deltaPhi(thePFMetPhi, cms2.mus_p4()[mui].phi());
+					dphitcmet_ = deltaPhi(theTCMetPhi, cms2.mus_p4()[mui].phi());
 
 					// clean jets for _this_ hyp lepton
 					std::vector<unsigned int> theJetIndices;
 					njetsClean_ = 0;
-                    sumjetpt_ = 0.0;
-					for(unsigned int jeti = 0; jeti < cms2.pfjets_p4().size(); ++jeti)
-					{
+                    sumjetpt_ = 0.;
+					for (unsigned int jeti = 0; jeti < cms2.pfjets_p4().size(); ++jeti) {
 						 LorentzVector vjet = cms2.pfjets_p4()[jeti];
-						 LorentzVector vlep = cms2.mus_p4()[mui];
-						 if (dRbetweenVectors(vjet, vlep) < 0.4) continue;
+
+						 bool jetIsLep = false;
+						 for (unsigned int muj = 0; muj < cms2.mus_p4().size(); ++muj) {
+							  LorentzVector vlep = cms2.mus_p4()[muj];
+							  if (dRbetweenVectors(vjet, vlep) < 0.4)
+								   jetIsLep = true;
+						 }
+						 for (unsigned int elj = 0; elj < cms2.els_p4().size(); ++elj) {
+							  LorentzVector vlep = cms2.els_p4()[elj];
+							  if (dRbetweenVectors(vjet, vlep) < 0.4)
+								   jetIsLep = true;
+						 }
+						 if (jetIsLep) continue;
 
 						 if (cms2.pfjets_p4()[jeti].pt() > 30.) {
 							  theJetIndices.push_back(jeti);
@@ -176,10 +187,10 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 					double mindphitcmet = 999999.;
 					neffbtags_  = 0;
 					npurbtags_  = 0;
-					//jet1isBtag_ = 0;
-					//jet2isBtag_ = 0;
-					//jet3isBtag_ = 0;
-					for(unsigned int jeti = 0; jeti < theJetIndices.size(); ++jeti)
+					jet1isBtag_ = 0;
+					jet2isBtag_ = 0;
+					jet3isBtag_ = 0;
+					for (unsigned int jeti = 0; jeti < theJetIndices.size(); ++jeti)
 					{
 						 if (cms2.pfjets_simpleSecondaryVertexHighEffBJetTag_branch) {
 							  if (cms2.pfjets_simpleSecondaryVertexHighEffBJetTag()[theJetIndices[jeti]] > 1.74)
@@ -279,37 +290,49 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 					run_        = cms2.evt_run();
 					ls_         = cms2.evt_lumiBlock();
 					evt_        = cms2.evt_event();
+					isdata_     = cms2.evt_isRealData();
 					nvtx_ = 0;
-					for( unsigned int i=0; i<cms2.vtxs_isFake().size(); i++ ) {
-                                          if( !cms2.vtxs_isFake()[i] && cms2.vtxs_isValid()[i] )
-                                            ++nvtx_;
-                                        }
-		if (!isdata_) 
-                        int nlep = leptonGenpCount_lepTauDecays(ngenels_, ngenmus_, ngentaus_);
+					for (unsigned int i = 0; i < cms2.vtxs_isFake().size(); i++) {
+						 if (!cms2.vtxs_isFake()[i] && cms2.vtxs_isValid()[i])
+							  ++nvtx_;
+					}										
+
+                    if (!isdata_) {
+						int nlep  = leptonGenpCount_lepTauDecays(ngenels_, ngenmus_, ngentaus_); // what is this doing exactly???
+						scale1fb_ = cms2.evt_scale1fb();
+						pthat_    = cms2.genps_pthat();
+					}
 
 					pfmet_      = cms2.evt_pfmet();
-					tcmet_      = cms2.evt_tcmet();
+					tcmet_      = cms2.evt_pf_tcmet();
+					calotcmet_  = cms2.evt_tcmet();
 					ntrks_      = cms2.trks_trk_p4().size();
 
-					float thePFMetPhi = cms2.evt_pfmetPhi();
-					float theTCMetPhi = cms2.evt_tcmetPhi();
+					float thePFMetPhi     = cms2.evt_pfmetPhi();
+					float theTCMetPhi     = cms2.evt_pf_tcmetPhi();
+					float theCaloTCMetPhi = cms2.evt_tcmetPhi();
+
+					float metx = tcmet_ * cos(theTCMetPhi);
+					float mety = tcmet_ * sin(theTCMetPhi);
+					for (unsigned int muj = 0; muj < cms2.mus_p4().size(); ++muj) {
+						 if (!wasMetCorrectedForThisMuon(muj, usingTcMet) && muonIdNotIsolated(muj, NominalTTbarV2))
+							  fixMetForThisMuon(muj, metx, mety, usingTcMet);
+					}
+					tcmet_ = sqrt(metx * metx + mety * mety);
+					theTCMetPhi = atan2(mety, metx);
 
                     // loop over muons and electrons to get ngoodlep
                     ngoodlep_ = 0;
                     ngoodmus_ = 0;
                     ngoodels_ = 0;
-                    for(unsigned m = 0; m < cms2.mus_p4().size(); ++m)
-                    {
-                     if (cms2.mus_p4()[m].pt() > 20. && muonId(m, NominalTTbarV2))
-                         {
+                    for (unsigned m = 0; m < cms2.mus_p4().size(); ++m) {
+						 if (cms2.mus_p4()[m].pt() > 20. && muonId(m, NominalTTbarV2)) {
                               ++ngoodlep_;
                               ++ngoodmus_;
                          }
                     }
-                    for(unsigned e = 0; e < cms2.els_p4().size(); ++e)
-                    {
-                         if (cms2.els_p4()[e].pt() > 20. && pass_electronSelection(e, electronSelection_ttbarV2))
-                         {
+                    for (unsigned e = 0; e < cms2.els_p4().size(); ++e) {
+                         if (cms2.els_p4()[e].pt() > 20. && pass_electronSelection(e, electronSelection_ttbarV2)) {
                               ++ngoodlep_;
                               ++ngoodels_;
                          }
@@ -334,20 +357,29 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 					std::vector<unsigned int> theJetIndices;
 					njetsClean_ = 0;
                     sumjetpt_ = 0.0;
-					for(unsigned int jeti = 0; jeti < cms2.pfjets_p4().size(); ++jeti)
-					{
+					for (unsigned int jeti = 0; jeti < cms2.pfjets_p4().size(); ++jeti) {
 						 LorentzVector vjet = cms2.pfjets_p4()[jeti];
-						 LorentzVector vlep = cms2.els_p4()[eli];
-						 if (dRbetweenVectors(vjet, vlep) < 0.4) continue;
+
+						 bool jetIsLep = false;
+						 for (unsigned int muj = 0; muj < cms2.mus_p4().size(); ++muj) {
+							  LorentzVector vlep = cms2.mus_p4()[muj];
+							  if (dRbetweenVectors(vjet, vlep) < 0.4)
+								   jetIsLep = true;
+						 }
+						 for (unsigned int elj = 0; elj < cms2.els_p4().size(); ++elj) {
+							  LorentzVector vlep = cms2.els_p4()[elj];
+							  if (dRbetweenVectors(vjet, vlep) < 0.4)
+								   jetIsLep = true;
+						 }
+						 if (jetIsLep) continue;
 
 						 if (cms2.pfjets_p4()[jeti].pt() > 30.) {
 							  theJetIndices.push_back(jeti);
 
-                              if (isGoodPFJet(jeti)) {
-                                   ++njetsClean_;
-                                   sumjetpt_ += vjet.Pt();
+							  if (isGoodPFJet(jeti)) {
+								   ++njetsClean_;
+                                   sumjetpt_ += vjet.Pt();  
                               }
-
 						 }
 					}
 					std::sort(theJetIndices.begin(), theJetIndices.end(), sortByPFJetPt);
@@ -374,10 +406,10 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 					double mindphitcmet = 999999.;
 					neffbtags_  = 0;
 					npurbtags_  = 0;
-					//jet1isBtag_ = 0;
-					//jet2isBtag_ = 0;
-					//jet3isBtag_ = 0;
-					for(unsigned int jeti = 0; jeti < theJetIndices.size(); ++jeti)
+					jet1isBtag_ = 0;
+					jet2isBtag_ = 0;
+					jet3isBtag_ = 0;
+					for (unsigned int jeti = 0; jeti < theJetIndices.size(); ++jeti)
 					{
 						 if (cms2.pfjets_simpleSecondaryVertexHighEffBJetTag_branch) {
 							  if (cms2.pfjets_simpleSecondaryVertexHighEffBJetTag()[theJetIndices[jeti]] > 1.74)
@@ -420,7 +452,7 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 					dphitcmetjet_ = mindphitcmet;
 
 					float mindrjet = 999999.;
-					for(unsigned int jeti = 0; jeti < theJetIndices.size(); ++jeti)
+					for (unsigned int jeti = 0; jeti < theJetIndices.size(); ++jeti)
 					{
 						 float deta = cms2.els_p4()[eli].eta()-cms2.pfjets_p4()[theJetIndices[jeti]].eta();
 						 float dphi = deltaPhi(cms2.els_p4()[eli].phi(), cms2.pfjets_p4()[theJetIndices[jeti]].phi());
@@ -497,10 +529,13 @@ void emubabymaker::InitBabyNtuple ()
 	 ls_           = -999999;
 	 evt_          = -999999;
 	 isdata_       = 1;
+	 scale1fb_     = -999999.;
+	 pthat_        = -999999.;
 	 nvtx_         = -999999;
      
-         pfmet_        = -999999.;
+	 pfmet_        = -999999.;
 	 tcmet_        = -999999.;
+	 calotcmet_    = -999999.;	 
 	 ntrks_        = -999999;
 	 njets_        = -999999;
 	 njetsClean_   = -999999;
@@ -605,8 +640,11 @@ void emubabymaker::MakeBabyNtuple(const char *babyFilename)
 	 babyTree_->Branch("evt",          &evt_,          "evt/I"         );
 	 babyTree_->Branch("nvtx",         &nvtx_,         "nvtx/I"        );
 	 babyTree_->Branch("isdata",       &isdata_,       "isdata/I"      );
+	 babyTree_->Branch("scale1fb",     &scale1fb_,     "scale1fb/F"    );
+	 babyTree_->Branch("pthat",        &pthat_,        "pthat/F"       );
 	 babyTree_->Branch("pfmet",        &pfmet_,        "pfmet/F"       );
 	 babyTree_->Branch("tcmet",        &tcmet_,        "tcmet/F"       );
+	 babyTree_->Branch("calotcmet",    &calotcmet_,    "calotcmet/F"   );
 	 babyTree_->Branch("ntrks",        &ntrks_,        "ntrks/I"       );
 	 babyTree_->Branch("njets",        &njets_,        "njets/I"       ); // uncorrected pt > 20
 	 babyTree_->Branch("njetsClean",   &njetsClean_,   "njetsClean/I"  ); // uncorrected pt > 20

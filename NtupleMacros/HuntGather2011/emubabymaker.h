@@ -32,10 +32,13 @@ private:
 	 Int_t   run_;
 	 Int_t   ls_;
 	 Int_t   evt_;
-     Int_t   isdata_;
+     Int_t   isdata_;	 
      Int_t   nvtx_;
+	 Float_t scale1fb_;
+	 Float_t pthat_;
      Float_t pfmet_;
 	 Float_t tcmet_;
+	 Float_t calotcmet_;
 	 Int_t   ntrks_;
 	 Int_t   njets_;
 	 Int_t   njetsClean_;
