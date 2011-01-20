@@ -18,8 +18,8 @@
 #include "nlepskim.C"
 #include "babymakercommon.C"
 #include "emubabymaker.C"
-#include "dilepbabymaker.C"
-#include "trilepbabymaker.C"
+//#include "dilepbabymaker.C"
+//#include "trilepbabymaker.C"
 
 void UpdateSkims(const char *inputFileName) 
 {
@@ -38,10 +38,13 @@ void UpdateSkims(const char *inputFileName)
     TString babyFileName = skimFileName;
     babyFileName.ReplaceAll("emu_skim/emuskim_", "emu_baby/emuskim_baby_");
     std::cout << "Making a baby named " << babyFileName << std::endl;
-    emubabymaker *emubaby = new emubabymaker();
-    //emubaby->ScanChain(skimFileName.Data(), babyFileName.Data());
-    emubaby->ScanChain(inputFileName, babyFileName.Data());
-    
+
+    //emubabymaker *emubaby = new emubabymaker();
+   // emubaby->ScanChain(inputFileName, babyFileName.Data());
+   
+
+
+/* 
     // dilep
 
     skimFileName = "";
@@ -74,4 +77,6 @@ void UpdateSkims(const char *inputFileName)
     std::cout << "Making a baby named " << babyFileName << std::endl;
     trilepbabymaker *trilepbaby = new trilepbabymaker();
     trilepbaby->ScanChain(inputFileName, babyFileName.Data());
+*/
+
 }

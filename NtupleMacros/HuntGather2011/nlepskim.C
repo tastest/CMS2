@@ -14,7 +14,7 @@
 #include "TString.h"
 #include "TTree.h"
 
-#include "CORE/CMS2.h"
+#include "../CORE/CMS2.h"
 
 #include "Rtypes.h"
 typedef ULong64_t uint64;

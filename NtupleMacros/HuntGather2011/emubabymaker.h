@@ -10,10 +10,7 @@ class emubabymaker
 {
 public:
 	 emubabymaker() {};
-	 ~emubabymaker() {
-		  delete babyFile_;
-		  delete babyTree_;
-	 };
+	 ~emubabymaker();
 	 void MakeBabyNtuple (const char *);
 	 void InitBabyNtuple ();
 	 void FillBabyNtuple ();
