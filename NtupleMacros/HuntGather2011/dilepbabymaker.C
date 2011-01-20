@@ -168,7 +168,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 					VofP4 theJets;
 					std::vector<unsigned int> theJetIndices;
 					njetsClean_ = 0;
-                    sumjetpt_ = 0.;
+                    sumjetpt_   = 0.;
 					for (unsigned int jeti = 0; jeti < cms2.pfjets_p4().size(); ++jeti)
 					{
 						 LorentzVector vjet = cms2.pfjets_p4()[jeti];
@@ -198,6 +198,30 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 					}
 					std::sort(theJets.begin(), theJets.end(), sortByPt);
 					std::sort(theJetIndices.begin(), theJetIndices.end(), sortByPFJetPt);
+
+					// count jets for same sign analysis
+					njetsSS_    = 0;
+					for (unsigned int jeti = 0; jeti < cms2.pfjets_p4().size(); ++jeti)
+					{
+						 LorentzVector vjet = cms2.pfjets_p4()[jeti];
+						 bool jetIsLep = false;
+						 for (unsigned int muj = 0; muj < cms2.mus_p4().size(); ++muj) {
+							  LorentzVector vlep = cms2.mus_p4()[muj];
+							  if (dRbetweenVectors(vjet, vlep) < 0.4 && cms2.mus_p4()[muj].pt() > 10. && muonId(muj, NominalSSv2) && fabs(cms2.mus_p4()[muj].eta()) < 2.4)
+								   jetIsLep = true;
+						 }
+						 for (unsigned int elj = 0; elj < cms2.els_p4().size(); ++elj) {
+							  LorentzVector vlep = cms2.els_p4()[elj];
+							  if (dRbetweenVectors(vjet, vlep) < 0.4 && cms2.els_p4()[elj].pt() > 10. && pass_electronSelection(elj, electronSelection_ssV2) && fabs(cms2.els_p4()[elj].eta()) < 2.4)
+								   jetIsLep = true;
+						 }
+						 if (jetIsLep) continue;
+
+						 if (cms2.pfjets_p4()[jeti].pt() > 30. && fabs(cms2.pfjets_p4()[jeti].eta()) < 2.5 && isGoodPFJet(jeti)) {
+							  ++njetsSS_;
+							  sumjetptSS_ += vjet.Pt();
+						 }
+					}					
 
 					njets_        = theJetIndices.size();
 					jet1pt_       = theJetIndices.size() > 0 ? cms2.pfjets_p4()[theJetIndices[0]].pt()  : -999999.;
@@ -548,10 +572,12 @@ void dilepbabymaker::InitBabyNtuple ()
 	 ntrks_        = -999999;
 	 njets_        = -999999;
 	 njetsClean_   = -999999;
+	 njetsSS_      = -999999;
 	 jet1pt_       = -999999.;
 	 jet2pt_       = -999999.;
 	 jet3pt_       = -999999.;
      sumjetpt_     = -999999.;
+     sumjetptSS_   = -999999.;
 	 jet1eta_      = -999999.;
 	 jet2eta_      = -999999.;
 	 jet3eta_      = -999999.;
@@ -711,10 +737,12 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 	 babyTree_->Branch("ntrks",        &ntrks_,       "ntrks/I"       );
 	 babyTree_->Branch("njets",        &njets_,       "njets/I"       ); // uncorrected pt > 20
 	 babyTree_->Branch("njetsClean",   &njetsClean_,  "njetsClean/I"  ); // uncorrected pt > 20
+	 babyTree_->Branch("njetsSS",      &njetsSS_,     "njetsSS/I"     );
 	 babyTree_->Branch("jet1pt",       &jet1pt_,      "jet1pt/F"      );
 	 babyTree_->Branch("jet2pt",       &jet2pt_,      "jet2pt/F"      );
 	 babyTree_->Branch("jet3pt",       &jet3pt_,      "jet3pt/F"      );
-     babyTree_->Branch("sumjetpt",     &sumjetpt_,    "sumjetpt/F"    );      
+     babyTree_->Branch("sumjetpt",     &sumjetpt_,    "sumjetpt/F"    );
+	 babyTree_->Branch("sumjetptSS",   &sumjetptSS_,  "sumjetptSS/F"  );
 	 babyTree_->Branch("jet1eta",      &jet1eta_,     "jet1eta/F"     );
 	 babyTree_->Branch("jet2eta",      &jet2eta_,     "jet2eta/F"     );
 	 babyTree_->Branch("jet3eta",      &jet3eta_,     "jet3eta/F"     );

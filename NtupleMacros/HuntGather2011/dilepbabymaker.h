@@ -43,10 +43,12 @@ private:
 	 Int_t   ntrks_;
 	 Int_t   njets_;
 	 Int_t   njetsClean_;
+	 Int_t   njetsSS_;
 	 Float_t jet1pt_;
 	 Float_t jet2pt_;
 	 Float_t jet3pt_;
      Float_t sumjetpt_;
+	 Float_t sumjetptSS_;
 	 Float_t jet1eta_;
 	 Float_t jet2eta_;
 	 Float_t jet3eta_;
