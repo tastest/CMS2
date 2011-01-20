@@ -70,9 +70,9 @@ void CommandMSUGRA(TString plotName_ , char* filename ){
 
  
   //the exclusion plots  
-  TGraphErrors* First = getObserved_NLOunc(  filename );
+  TGraphErrors* First  = getObserved_NLOunc(  filename );
   TGraphErrors* Second = getExpected_NLOunc( filename );//getLO_jetMultis();
-  TGraphErrors* Third = getLO_signalCont(    filename );
+  TGraphErrors* Third  = getLO_signalCont(    filename );
 
   TH2F* hdummy = new TH2F("hdummy","dummy hist",100,0,500,100,80,450);
 
@@ -117,7 +117,7 @@ void CommandMSUGRA(TString plotName_ , char* filename ){
   //Now start drawing-------------------------------------------------
   First->Draw("AP");//graph with white dots just for setting the axis right
   
-  bool smooth = true;
+  bool smooth = false;
 
   if( smooth ){
     //the exclusion lines (smoothed)
@@ -126,9 +126,9 @@ void CommandMSUGRA(TString plotName_ , char* filename ){
     sThird->Draw("same");
   }else{
     //the exclusion lines (un-smoothed)
-    First->Draw("same");
-    Second->Draw("same");
-    Third->Draw("same");
+    First->Draw("samec");
+    Second->Draw("samec");
+    Third->Draw("samec");
   }
 
   //the squark and gluino lines plus text
