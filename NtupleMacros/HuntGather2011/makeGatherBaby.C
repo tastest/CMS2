@@ -13,8 +13,6 @@ void makeGatherBaby(const char *inputFileName, const char *outputFileName)
     emubabymaker *emubaby = new emubabymaker();
     std::cout << "about to do scanchain" << std::endl;
     emubaby->ScanChain(inputFileName, outputFileName);
-    delete emubaby;
-
 }
 
 
