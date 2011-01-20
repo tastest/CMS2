@@ -1,4 +1,3 @@
-#include "BabyDorkIdentifier.h"
 #include "BabySample.h"
 #include "cuts.h"
 #include "gather.h"
@@ -34,15 +33,12 @@ float GetIntLumi(float lumi, int brun, int bls, int erun, int els)
     // which are not goodrun penalized
     TCut c_goodrunplus(Form("(((run>%i&&run<%i)||(run==%i&&ls>=%i)||(run==%i&&ls<=%i))&&goodrun_json(run,ls))||(run>%i||(run==%i&&ls>%i))", brun, erun, brun, bls, erun, els, erun, erun, els));
 
-    // this is of course particular to dilep babies
-    TCut c_notduplicate("! is_duplicate(run,evt,ls,pt1,pt2)");
-
     // brun:bls -> erun:els
     reset_babydorkidentifier();
-    int n_goodrun = c->GetEntries(c_goodrun+c_notduplicate+inclusivez_dilep); 
+    int n_goodrun = c->GetEntries(c_goodrun+inclusivez_dilep); 
     // total
     reset_babydorkidentifier();
-    int n_total   = c->GetEntries(c_goodrunplus+c_notduplicate+inclusivez_dilep);
+    int n_total   = c->GetEntries(c_goodrunplus+inclusivez_dilep);
     // that which is new
     int n_new     = n_total-n_goodrun;
 
@@ -93,23 +89,13 @@ TH1F* Plot(const char *pfx, const char *pfx2,TChain *chain, TCut field, TCut sel
 
     // Used for data only
     TCut c_goodrunplus(Form("(((run>%i&&run<%i)||(run==%i&&ls>=%i)||(run==%i&&ls<=%i))&&goodrun_json(run,ls))||(run>%i||(run==%i&&ls>%i))", brun, erun, brun, bls, erun, els, erun, erun, els));
-    TCut c_notduplicate = "";
-
-    // is this an emu, dilep or trilep baby?
-    if (chain->GetBranch("pt3")) // trilep
-        c_notduplicate = ("! is_duplicate(run,evt,ls,pt1,pt2,pt3)");
-    else if (chain->GetBranch("pt2")) // dilep
-        c_notduplicate = ("! is_duplicate(run,evt,ls,pt1,pt2)");
-    else
-        c_notduplicate = ("! is_duplicate(run,evt,ls,pt1)");
 
     TCut c_presel = "";
     // apply goodrun selection to data where
     // applicable, i.e. the range covered by
     // the goodrun json file
-    // also apply BabyDork duplicate removal
     if (isdata)
-        c_presel += c_goodrunplus+c_notduplicate+presel;
+        c_presel += c_goodrunplus+presel;
     else
         c_presel += presel;
 
@@ -214,10 +200,6 @@ TCanvas* DrawAll(TCut field, const char *savename, TCut sel, TCut presel, float 
     std::vector<TH1F*> hmcs;
     std::vector<TH1F*> hdatas;
     TH1F* buffer;
-
-    // reset BabyDorkIdentifier here so that
-    // it is used for all data BabySamples
-    reset_babydorkidentifier();
 
     for(unsigned int i = 0; i < bss.size(); ++i) {
         if (bss[i]) {

@@ -9,7 +9,6 @@ void gather_doAll() {
     //gStyle->SetOptStat(0);
 
     gROOT->ProcessLine(".L ../Tools/goodrun.cc+");
-    gROOT->ProcessLine(".L BabyDorkIdentifier.C+");
     gROOT->ProcessLine(".L gather.C+");
 
     //
