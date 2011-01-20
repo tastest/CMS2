@@ -2,7 +2,7 @@
 #include "BabySample.h"
 #include "cuts.h"
 #include "gather.h"
-#include "goodrun.h"
+#include "../Tools/goodrun.h"
 
 #include "TCanvas.h"
 #include "TChain.h"
