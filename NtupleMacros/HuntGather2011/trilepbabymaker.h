@@ -33,10 +33,13 @@ class trilepbabymaker
         Int_t   ls_;
         Int_t   evt_;
         Int_t   isdata_;
-	Int_t   nvtx_;
+		Int_t   nvtx_;
+		Float_t scale1fb_;
+		Float_t pthat_;
         Int_t   hyp_type_;
         Float_t pfmet_;
         Float_t tcmet_;
+		Float_t calotcmet_;
         Int_t   ntrks_;
         Int_t   njets_;
         Int_t   njetsClean_;
@@ -65,11 +68,14 @@ class trilepbabymaker
 		Float_t tcmeff_;
 
         // lepton stuff
-        Int_t   eormu1_;
-        Int_t   type1_;
+		Int_t   ngoodlep_;
+		Int_t   ngoodmus_;
+		Int_t   ngoodels_;
         Int_t   ngenels_;
         Int_t   ngenmus_;
         Int_t   ngentaus_;
+        Int_t   eormu1_;
+        Int_t   type1_;
         Float_t pt1_;
         Float_t eta1_;
         Float_t phi1_;
@@ -145,7 +151,6 @@ class trilepbabymaker
         Bool_t  e1_cand01full_;
         Bool_t  e1_cand01_;
         Bool_t  e1_vbtf90full_;
-        Bool_t  e1_vbtf90fullAlign_;
         Bool_t  e1_vbtf90_;
         Bool_t  e1_vbtf85_;
         Bool_t  e1_vbtf80_;
@@ -171,7 +176,6 @@ class trilepbabymaker
         Bool_t  e2_cand01full_;
         Bool_t  e2_cand01_;
         Bool_t  e2_vbtf90full_;
-        Bool_t  e2_vbtf90fullAlign_;
         Bool_t  e2_vbtf90_;
         Bool_t  e2_vbtf85_;
         Bool_t  e2_vbtf80_;
@@ -185,7 +189,7 @@ class trilepbabymaker
         Float_t e2_sigieie_; // sigmaietaieta
         Float_t e2_eMe55_;
         Int_t   e2_nmHits_;
-	Int_t   e2_nmHits39X_;
+		Int_t   e2_nmHits39X_;
         Float_t e2_dcot_;
         Float_t e2_dist_;
         Float_t e2_drmu_;
@@ -197,7 +201,6 @@ class trilepbabymaker
         Bool_t  e3_cand01full_;
         Bool_t  e3_cand01_;
         Bool_t  e3_vbtf90full_;
-        Bool_t  e3_vbtf90fullAlign_;
         Bool_t  e3_vbtf90_;
         Bool_t  e3_vbtf85_;
         Bool_t  e3_vbtf80_;

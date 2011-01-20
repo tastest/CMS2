@@ -80,7 +80,7 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 					}										
 
                     if (!isdata_) {
-						int nlep  = leptonGenpCount_lepTauDecays(ngenels_, ngenmus_, ngentaus_); // what is this doing exactly???
+						int nlep  = leptonGenpCount_lepTauDecays(ngenels_, ngenmus_, ngentaus_);
 						scale1fb_ = cms2.evt_scale1fb();
 						pthat_    = cms2.genps_pthat();
 					}
@@ -94,14 +94,20 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 					float theTCMetPhi     = cms2.evt_pf_tcmetPhi();
 					float theCaloTCMetPhi = cms2.evt_tcmetPhi();
 
-					float metx = tcmet_ * cos(theTCMetPhi);
-					float mety = tcmet_ * sin(theTCMetPhi);
+					float metx  = tcmet_ * cos(theTCMetPhi);
+					float mety  = tcmet_ * sin(theTCMetPhi);
+					float cmetx = calotcmet_ * cos(theCaloTCMetPhi);
+					float cmety = calotcmet_ * sin(theCaloTCMetPhi);
 					for (unsigned int muj = 0; muj < cms2.mus_p4().size(); ++muj) {
-						 if (!wasMetCorrectedForThisMuon(muj, usingTcMet) && muonIdNotIsolated(muj, NominalTTbarV2))
+						 if (!wasMetCorrectedForThisMuon(muj, usingTcMet) && muonIdNotIsolated(muj, NominalTTbarV2)) {
 							  fixMetForThisMuon(muj, metx, mety, usingTcMet);
+							  fixMetForThisMuon(muj, cmetx, cmety, usingTcMet);
+						 }
 					}
 					tcmet_ = sqrt(metx * metx + mety * mety);
 					theTCMetPhi = atan2(mety, metx);
+					calotcmet_ = sqrt(cmetx * cmetx + cmety * cmety);
+					theCaloTCMetPhi = atan2(cmety, cmetx);
 
 					// loop over muons and electrons to get ngoodlep
 					ngoodlep_ = 0;
@@ -144,12 +150,12 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 						 bool jetIsLep = false;
 						 for (unsigned int muj = 0; muj < cms2.mus_p4().size(); ++muj) {
 							  LorentzVector vlep = cms2.mus_p4()[muj];
-							  if (dRbetweenVectors(vjet, vlep) < 0.4)
+							  if (dRbetweenVectors(vjet, vlep) < 0.4 && cms2.mus_p4()[muj].pt() > 20. && muonId(muj, NominalTTbarV2))
 								   jetIsLep = true;
 						 }
 						 for (unsigned int elj = 0; elj < cms2.els_p4().size(); ++elj) {
 							  LorentzVector vlep = cms2.els_p4()[elj];
-							  if (dRbetweenVectors(vjet, vlep) < 0.4)
+							  if (dRbetweenVectors(vjet, vlep) < 0.4 && cms2.els_p4()[elj].pt() > 20. && pass_electronSelection(elj, electronSelection_ttbarV2))
 								   jetIsLep = true;
 						 }
 						 if (jetIsLep) continue;
@@ -233,8 +239,7 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 					dphitcmetjet_ = mindphitcmet;
 
 					float mindrjet = 999999.;
-					for(unsigned int jeti = 0; jeti < theJetIndices.size(); ++jeti)
-					{
+					for (unsigned int jeti = 0; jeti < theJetIndices.size(); ++jeti) {
 						 float deta = cms2.mus_p4()[mui].eta()-cms2.pfjets_p4()[theJetIndices[jeti]].eta();
 						 float dphi = deltaPhi(cms2.mus_p4()[mui].phi(), cms2.pfjets_p4()[theJetIndices[jeti]].phi());
 						 float currdrjet = sqrt(deta*deta+dphi*dphi);
@@ -260,7 +265,7 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 					// look for this guy in a same-flavor hyp and report
 					// hyp_mass; if found in >1 hyp report one with high-
 					// est mass
-					for(unsigned int hypi = 0; hypi < cms2.hyp_p4().size(); ++hypi)
+					for (unsigned int hypi = 0; hypi < cms2.hyp_p4().size(); ++hypi)
 					{
 						 // mumu
 						 if (cms2.hyp_type()[hypi] == 0)
@@ -276,10 +281,10 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 			   }
 
 			   // electron stuff
-			   for(unsigned eli = 0; eli < cms2.els_p4().size(); ++eli)
+			   for (unsigned eli = 0; eli < cms2.els_p4().size(); ++eli)
 			   {
 					// pt > 20
-					if (cms2.els_p4()[eli].pt() <= 20)
+					if (cms2.els_p4()[eli].pt() <= 20.)
 						 continue;
 
 					// initialize baby quantities
@@ -298,7 +303,7 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 					}										
 
                     if (!isdata_) {
-						int nlep  = leptonGenpCount_lepTauDecays(ngenels_, ngenmus_, ngentaus_); // what is this doing exactly???
+						int nlep  = leptonGenpCount_lepTauDecays(ngenels_, ngenmus_, ngentaus_);
 						scale1fb_ = cms2.evt_scale1fb();
 						pthat_    = cms2.genps_pthat();
 					}
@@ -312,15 +317,21 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 					float theTCMetPhi     = cms2.evt_pf_tcmetPhi();
 					float theCaloTCMetPhi = cms2.evt_tcmetPhi();
 
-					float metx = tcmet_ * cos(theTCMetPhi);
-					float mety = tcmet_ * sin(theTCMetPhi);
+					float metx  = tcmet_ * cos(theTCMetPhi);
+					float mety  = tcmet_ * sin(theTCMetPhi);
+					float cmetx = calotcmet_ * cos(theCaloTCMetPhi);
+					float cmety = calotcmet_ * sin(theCaloTCMetPhi);
 					for (unsigned int muj = 0; muj < cms2.mus_p4().size(); ++muj) {
-						 if (!wasMetCorrectedForThisMuon(muj, usingTcMet) && muonIdNotIsolated(muj, NominalTTbarV2))
+						 if (!wasMetCorrectedForThisMuon(muj, usingTcMet) && muonIdNotIsolated(muj, NominalTTbarV2)) {
 							  fixMetForThisMuon(muj, metx, mety, usingTcMet);
+							  fixMetForThisMuon(muj, cmetx, cmety, usingTcMet);
+						 }
 					}
 					tcmet_ = sqrt(metx * metx + mety * mety);
 					theTCMetPhi = atan2(mety, metx);
-
+					calotcmet_ = sqrt(cmetx * cmetx + cmety * cmety);
+					theCaloTCMetPhi = atan2(cmety, cmetx);
+					
                     // loop over muons and electrons to get ngoodlep
                     ngoodlep_ = 0;
                     ngoodmus_ = 0;
@@ -363,12 +374,12 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 						 bool jetIsLep = false;
 						 for (unsigned int muj = 0; muj < cms2.mus_p4().size(); ++muj) {
 							  LorentzVector vlep = cms2.mus_p4()[muj];
-							  if (dRbetweenVectors(vjet, vlep) < 0.4)
+							  if (dRbetweenVectors(vjet, vlep) < 0.4 && cms2.mus_p4()[muj].pt() > 20. && muonId(muj, NominalTTbarV2))
 								   jetIsLep = true;
 						 }
 						 for (unsigned int elj = 0; elj < cms2.els_p4().size(); ++elj) {
 							  LorentzVector vlep = cms2.els_p4()[elj];
-							  if (dRbetweenVectors(vjet, vlep) < 0.4)
+							  if (dRbetweenVectors(vjet, vlep) < 0.4 && cms2.els_p4()[elj].pt() > 20. && pass_electronSelection(elj, electronSelection_ttbarV2))
 								   jetIsLep = true;
 						 }
 						 if (jetIsLep) continue;
@@ -467,7 +478,6 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 					e_cand01full_ = pass_electronSelection(eli, electronSelection_ttbar);
 					e_cand01_     = electronId_cand(eli, CAND_01);
 					e_vbtf90full_ = pass_electronSelection(eli, electronSelection_ttbarV2);
-					e_vbtf90fullAlign_ = pass_electronSelection(eli, electronSelection_ttbarV2, true);		
 					electronIdComponent_t answer_vbtf90 = electronId_VBTF(eli, VBTF_35X_90);
 					e_vbtf90_     = (answer_vbtf90 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
 					electronIdComponent_t answer_vbtf85 = electronId_VBTF(eli, VBTF_35X_85);
@@ -600,7 +610,6 @@ void emubabymaker::InitBabyNtuple ()
 	 e_cand01full_      = 0;
 	 e_cand01_          = 0;
 	 e_vbtf90full_      = 0;
-	 e_vbtf90fullAlign_ = 0;
 	 e_vbtf90_          = 0;
 	 e_vbtf85_          = 0;
 	 e_vbtf80_          = 0;
@@ -709,7 +718,6 @@ void emubabymaker::MakeBabyNtuple(const char *babyFilename)
 	 babyTree_->Branch("e_cand01full",      &e_cand01full_,      "e_cand01full/O"     );
 	 babyTree_->Branch("e_cand01",          &e_cand01_,          "e_cand01/O"         );
 	 babyTree_->Branch("e_vbtf90full",      &e_vbtf90full_,      "e_vbtf90full/O"     );
-	 babyTree_->Branch("e_vbtf90fullAlign", &e_vbtf90fullAlign_, "e_vbtf90fullAlign/O");
 	 babyTree_->Branch("e_vbtf90",          &e_vbtf90_,          "e_vbtf90/O"         );
 	 babyTree_->Branch("e_vbtf85",          &e_vbtf85_,          "e_vbtf85/O"         );
 	 babyTree_->Branch("e_vbtf80",          &e_vbtf80_,          "e_vbtf80/O"         );

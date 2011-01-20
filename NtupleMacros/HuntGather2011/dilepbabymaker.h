@@ -34,9 +34,12 @@ private:
 	 Int_t   evt_;
      Int_t   isdata_;
      Int_t   nvtx_;
+	 Float_t scale1fb_;
+	 Float_t pthat_;
      Int_t   hyp_type_;
 	 Float_t pfmet_;
 	 Float_t tcmet_;
+	 Float_t calotcmet_;
 	 Int_t   ntrks_;
 	 Int_t   njets_;
 	 Int_t   njetsClean_;
@@ -66,6 +69,9 @@ private:
 	 Float_t tcmeff_;
 
 	 // lepton stuff
+	 Int_t   ngoodlep_;
+	 Int_t   ngoodmus_;
+     Int_t   ngoodels_;
 	 Float_t dilpt_;
 	 Float_t mass_;
 	 Int_t   eormu1_;
@@ -125,7 +131,6 @@ private:
 	 Bool_t  e1_cand01full_;
 	 Bool_t  e1_cand01_;
 	 Bool_t  e1_vbtf90full_;
-	 Bool_t  e1_vbtf90fullAlign_;
 	 Bool_t  e1_vbtf90_;
 	 Bool_t  e1_vbtf85_;
 	 Bool_t  e1_vbtf80_;
@@ -151,7 +156,6 @@ private:
 	 Bool_t  e2_cand01full_;
 	 Bool_t  e2_cand01_;
 	 Bool_t  e2_vbtf90full_;
-	 Bool_t  e2_vbtf90fullAlign_;
 	 Bool_t  e2_vbtf90_;
 	 Bool_t  e2_vbtf85_;
 	 Bool_t  e2_vbtf80_;

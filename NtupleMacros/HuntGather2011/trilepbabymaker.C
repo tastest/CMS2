@@ -54,7 +54,7 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
 			   }
 
 			   // trilepton hypothesis stuff
-			   for(unsigned hypi = 0; hypi < cms2.hyp_trilep_bucket().size(); ++hypi)
+			   for (unsigned hypi = 0; hypi < cms2.hyp_trilep_bucket().size(); ++hypi)
 			   {
 					int index1 = cms2.hyp_trilep_first_index()[hypi];
 					int index2 = cms2.hyp_trilep_second_index()[hypi];
@@ -80,6 +80,7 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
 					run_        = cms2.evt_run();
 					ls_         = cms2.evt_lumiBlock();
 					evt_        = cms2.evt_event();
+					isdata_     = cms2.evt_isRealData();
 					nvtx_ = 0;
 					for( unsigned int i=0; i<cms2.vtxs_isFake().size(); i++ ) {
                                           if( !cms2.vtxs_isFake()[i] && cms2.vtxs_isValid()[i] )
@@ -87,43 +88,52 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
                                         }
 
 
-                    if (!isdata_) 
-                        int nlep = leptonGenpCount_lepTauDecays(ngenels_, ngenmus_, ngentaus_);
+                    if (!isdata_) {
+                        int nlep  = leptonGenpCount_lepTauDecays(ngenels_, ngenmus_, ngentaus_);
+						scale1fb_ = cms2.evt_scale1fb();
+						pthat_    = cms2.genps_pthat();
+					}
 
 					pfmet_      = cms2.evt_pfmet();
-					tcmet_      = cms2.evt_tcmet();
+					tcmet_      = cms2.evt_pf_tcmet();
+					calotcmet_  = cms2.evt_tcmet();
 					ntrks_      = cms2.trks_trk_p4().size();
 
-					float thePFMetPhi = cms2.evt_pfmetPhi();
-					float theTCMetPhi = cms2.evt_tcmetPhi();
+					float thePFMetPhi     = cms2.evt_pfmetPhi();
+					float theTCMetPhi     = cms2.evt_pf_tcmetPhi();
+					float theCaloTCMetPhi = cms2.evt_tcmetPhi();
 
-					if (type1 == 1 && !wasMetCorrectedForThisMuon(index1, usingTcMet) && muonIdNotIsolated(index1, NominalTTbarV2))
-					{
-						 float metx = tcmet_ * cos(theTCMetPhi);
-						 float mety = tcmet_ * sin(theTCMetPhi);
-						 fixMetForThisMuon(index1, metx, mety, usingTcMet);
-
-						 tcmet_ = sqrt(metx * metx + mety * mety);
-						 theTCMetPhi = atan2(mety, metx);
+					float metx  = tcmet_ * cos(theTCMetPhi);
+					float mety  = tcmet_ * sin(theTCMetPhi);
+					float cmetx = calotcmet_ * cos(theCaloTCMetPhi);
+					float cmety = calotcmet_ * sin(theCaloTCMetPhi);
+					for (unsigned int muj = 0; muj < cms2.mus_p4().size(); ++muj) {
+						 if (!wasMetCorrectedForThisMuon(muj, usingTcMet) && muonIdNotIsolated(muj, NominalTTbarV2)) {
+							  fixMetForThisMuon(muj, metx, mety, usingTcMet);
+							  fixMetForThisMuon(muj, cmetx, cmety, usingTcMet);
+						 }
 					}
-					if (type2 == 1 && !wasMetCorrectedForThisMuon(index2, usingTcMet) && muonIdNotIsolated(index2, NominalTTbarV2))
-					{
-						 float metx = tcmet_ * cos(theTCMetPhi);
-						 float mety = tcmet_ * sin(theTCMetPhi);
-						 fixMetForThisMuon(index2, metx, mety, usingTcMet);
+					tcmet_ = sqrt(metx * metx + mety * mety);
+					theTCMetPhi = atan2(mety, metx);
+					calotcmet_ = sqrt(cmetx * cmetx + cmety * cmety);
+					theCaloTCMetPhi = atan2(cmety, cmetx);
 
-						 tcmet_ = sqrt(metx * metx + mety * mety);
-						 theTCMetPhi = atan2(mety, metx);
-					}
-					if (type3 == 1 && !wasMetCorrectedForThisMuon(index3, usingTcMet) && muonIdNotIsolated(index3, NominalTTbarV2))
-					{
-						 float metx = tcmet_ * cos(theTCMetPhi);
-						 float mety = tcmet_ * sin(theTCMetPhi);
-						 fixMetForThisMuon(index3, metx, mety, usingTcMet);
-
-						 tcmet_ = sqrt(metx * metx + mety * mety);
-						 theTCMetPhi = atan2(mety, metx);
-					}
+					// loop over muons and electrons to get ngoodlep
+					ngoodlep_ = 0;
+                    ngoodmus_ = 0;
+                    ngoodels_ = 0;
+					for (unsigned muii = 0; muii < cms2.mus_p4().size(); ++muii) {
+						 if (cms2.mus_p4()[muii].pt() > 20. && muonId(muii, NominalTTbarV2)) {
+                    	      ++ngoodlep_;
+                              ++ngoodmus_;
+                         }
+                    }
+					for (unsigned eli = 0; eli < cms2.els_p4().size(); ++eli) {
+		                 if (cms2.els_p4()[eli].pt() > 20. && pass_electronSelection(eli, electronSelection_ttbarV2)) {
+							  ++ngoodlep_;
+                              ++ngoodels_;
+                         }
+                    }
 
 					// initialize meff to 0
 					pfmeff_ = 0.;
@@ -165,15 +175,21 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
 					std::vector<unsigned int> theJetIndices;
 					njetsClean_ = 0;
                     sumjetpt_ = 0.0;
-					for(unsigned int jeti = 0; jeti < cms2.pfjets_p4().size(); ++jeti)
+					for (unsigned int jeti = 0; jeti < cms2.pfjets_p4().size(); ++jeti)
 					{
 						 LorentzVector vjet = cms2.pfjets_p4()[jeti];
-						 LorentzVector v1   = type1 == 1 ? cms2.mus_p4()[index1] : cms2.els_p4()[index1];
-						 LorentzVector v2   = type2 == 1 ? cms2.mus_p4()[index2] : cms2.els_p4()[index2];
-						 LorentzVector v3   = type3 == 1 ? cms2.mus_p4()[index3] : cms2.els_p4()[index3];
-						 if (dRbetweenVectors(vjet, v1) < 0.4) continue;
-						 if (dRbetweenVectors(vjet, v2) < 0.4) continue;
-						 if (dRbetweenVectors(vjet, v3) < 0.4) continue;
+						 bool jetIsLep = false;
+						 for (unsigned int muj = 0; muj < cms2.mus_p4().size(); ++muj) {
+							  LorentzVector vlep = cms2.mus_p4()[muj];
+							  if (dRbetweenVectors(vjet, vlep) < 0.4 && cms2.mus_p4()[muj].pt() > 20. && muonId(muj, NominalTTbarV2))
+								   jetIsLep = true;
+						 }
+						 for (unsigned int elj = 0; elj < cms2.els_p4().size(); ++elj) {
+							  LorentzVector vlep = cms2.els_p4()[elj];
+							  if (dRbetweenVectors(vjet, vlep) < 0.4 && cms2.els_p4()[elj].pt() > 20. && pass_electronSelection(elj, electronSelection_ttbarV2))
+								   jetIsLep = true;
+						 }
+						 if (jetIsLep) continue;
 
 						 if (cms2.pfjets_p4()[jeti].pt() > 30.) {
 							  theJets.push_back(cms2.pfjets_p4()[jeti]);
@@ -210,10 +226,10 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
 					double mindphitcmet = 999999.;
 					neffbtags_  = 0;
 					npurbtags_  = 0;
-					//jet1isBtag_ = 0;
-					//jet2isBtag_ = 0;
-					//jet3isBtag_ = 0;
-					for(unsigned int jeti = 0; jeti < theJetIndices.size(); ++jeti)
+					jet1isBtag_ = 0;
+					jet2isBtag_ = 0;
+					jet3isBtag_ = 0;
+					for (unsigned int jeti = 0; jeti < theJetIndices.size(); ++jeti)
 					{
 						 if (cms2.pfjets_simpleSecondaryVertexHighEffBJetTag_branch) {
 							  if (cms2.pfjets_simpleSecondaryVertexHighEffBJetTag()[theJetIndices[jeti]] > 1.74)
@@ -266,7 +282,7 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
 					float mindrjet1 = 999999.;
 					float mindrjet2 = 999999.;
 					float mindrjet3 = 999999.;
-					for(unsigned int jeti = 0; jeti < theJetIndices.size(); ++jeti)
+					for (unsigned int jeti = 0; jeti < theJetIndices.size(); ++jeti)
 					{
 						 // for the first lepton
 						 float deta1 = type1 == 1 ? cms2.mus_p4()[index1].eta()-cms2.pfjets_p4()[theJetIndices[jeti]].eta() : cms2.els_p4()[index1].eta()-cms2.pfjets_p4()[theJetIndices[jeti]].eta();
@@ -321,7 +337,6 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
 						 e1_cand01full_  = pass_electronSelection(index1, electronSelection_ttbar);
 						 e1_cand01_      = electronId_cand(index1, CAND_01);
 						 e1_vbtf90full_  = pass_electronSelection(index1, electronSelection_ttbarV2);
-						 e1_vbtf90fullAlign_  = pass_electronSelection(index1, electronSelection_ttbarV2, true);
 						 electronIdComponent_t answer_vbtf90 = electronId_VBTF(index1, VBTF_35X_90);
 						 e1_vbtf90_      = (answer_vbtf90 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
 						 electronIdComponent_t answer_vbtf85 = electronId_VBTF(index1, VBTF_35X_85);
@@ -349,7 +364,7 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
 						 e1_ctfCharge_   = cms2.els_trkidx()[index1] > -1 ? cms2.trks_charge()[cms2.els_trkidx()[index1]] : -999999;
 
 						 int trkidx1 = cms2.els_trkidx()[index1];
-						 if(trkidx1 >= 0)
+						 if (trkidx1 >= 0)
 							  d0vtx1_ = cms2.trks_d0vtx()[trkidx1];
 					}
 
@@ -380,7 +395,6 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
 						 e2_cand01full_  = pass_electronSelection(index2, electronSelection_ttbar);
 						 e2_cand01_      = electronId_cand(index2, CAND_01);
 						 e2_vbtf90full_  = pass_electronSelection(index2, electronSelection_ttbarV2);
-						 e2_vbtf90fullAlign_  = pass_electronSelection(index2, electronSelection_ttbarV2, true);
 						 electronIdComponent_t answer_vbtf90 = electronId_VBTF(index2, VBTF_35X_90);
 						 e2_vbtf90_      = (answer_vbtf90 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
 						 electronIdComponent_t answer_vbtf85 = electronId_VBTF(index2, VBTF_35X_85);
@@ -408,7 +422,7 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
 						 e2_ctfCharge_   = cms2.els_trkidx()[index2] > -1 ? cms2.trks_charge()[cms2.els_trkidx()[index2]] : -999999;
 
 						 int trkidx2 = cms2.els_trkidx()[index2];
-						 if(trkidx2 >= 0)
+						 if (trkidx2 >= 0)
 							  d0vtx2_ = cms2.trks_d0vtx()[trkidx2];
 					}
 
@@ -439,7 +453,6 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
 						 e3_cand01full_  = pass_electronSelection(index3, electronSelection_ttbar);
 						 e3_cand01_      = electronId_cand(index3, CAND_01);
 						 e3_vbtf90full_  = pass_electronSelection(index3, electronSelection_ttbarV2);
-						 e3_vbtf90fullAlign_  = pass_electronSelection(index3, electronSelection_ttbarV2, true);
 						 electronIdComponent_t answer_vbtf90 = electronId_VBTF(index3, VBTF_35X_90);
 						 e3_vbtf90_      = (answer_vbtf90 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
 						 electronIdComponent_t answer_vbtf85 = electronId_VBTF(index3, VBTF_35X_85);
@@ -467,19 +480,16 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
 						 e3_ctfCharge_   = cms2.els_trkidx()[index3] > -1 ? cms2.trks_charge()[cms2.els_trkidx()[index3]] : -999999;
 
 						 int trkidx3 = cms2.els_trkidx()[index3];
-						 if(trkidx3 >= 0)
+						 if (trkidx3 >= 0)
 							  d0vtx3_ = cms2.trks_d0vtx()[trkidx3];
 					}
-
 
 					FillBabyNtuple();
 			   }
 		  }
 
 		  if (nEventsChain != nEventsTotal)
-		  {
 			   std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
-		  }
 	 }
 
 	 CloseBabyNtuple();
@@ -494,9 +504,12 @@ void trilepbabymaker::InitBabyNtuple ()
 	 evt_          = -999999;
 	 nvtx_         = -999999;
 	 isdata_       = 1;
+	 scale1fb_     = -999999.;
+	 pthat_        = -999999.;
 	 hyp_type_     = -999999;
 	 pfmet_        = -999999.;
 	 tcmet_        = -999999.;
+	 calotcmet_    = -999999.;
 	 ntrks_        = -999999;
 	 njets_        = -999999;
 	 njetsClean_   = -999999;
@@ -525,6 +538,9 @@ void trilepbabymaker::InitBabyNtuple ()
 	 tcmeff_       = -999999.;
 
 	 // lepton stuff
+	 ngoodlep_     = -999999;
+	 ngoodmus_     = -999999;
+     ngoodels_     = -999999;
      ngenels_      = -999999;
      ngenmus_      = -999999;
      ngentaus_     = -999999;
@@ -606,7 +622,6 @@ void trilepbabymaker::InitBabyNtuple ()
 	 e1_cand01full_  = 0;
 	 e1_cand01_      = 0;
 	 e1_vbtf90full_  = 0;
-	 e1_vbtf90fullAlign_ = 0;
 	 e1_vbtf90_      = 0;
 	 e1_vbtf85_      = 0;
 	 e1_vbtf80_      = 0;
@@ -632,7 +647,6 @@ void trilepbabymaker::InitBabyNtuple ()
 	 e2_cand01full_  = 0;
 	 e2_cand01_      = 0;
 	 e2_vbtf90full_  = 0;
-	 e2_vbtf90fullAlign_ = 0;
 	 e2_vbtf90_      = 0;
 	 e2_vbtf85_      = 0;
 	 e2_vbtf80_      = 0;
@@ -658,7 +672,6 @@ void trilepbabymaker::InitBabyNtuple ()
 	 e3_cand01full_  = 0;
 	 e3_cand01_      = 0;
 	 e3_vbtf90full_  = 0;
-	 e3_vbtf90fullAlign_ = 0;
 	 e3_vbtf90_      = 0;
 	 e3_vbtf85_      = 0;
 	 e3_vbtf80_      = 0;
@@ -697,17 +710,20 @@ void trilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 	 babyTree_->Branch("ls",           &ls_,          "ls/I"          );
 	 babyTree_->Branch("evt",          &evt_,         "evt/I"         );
 	 babyTree_->Branch("nvtx",         &nvtx_,        "nvtx/I"        );
-	 babyTree_->Branch("isdata",       &isdata_,       "isdata/I"      );
+	 babyTree_->Branch("isdata",       &isdata_,      "isdata/I"      );
+	 babyTree_->Branch("scale1fb",     &scale1fb_,    "scale1fb/F"    );
+	 babyTree_->Branch("pthat",        &pthat_,       "pthat/F"       );
 	 babyTree_->Branch("hyp_type",     &hyp_type_,    "hyp_type/I"    );
 	 babyTree_->Branch("pfmet",        &pfmet_,       "pfmet/F"       );
 	 babyTree_->Branch("tcmet",        &tcmet_,       "tcmet/F"       );
+	 babyTree_->Branch("calotcmet",    &calotcmet_,   "calotcmet/F"   );
 	 babyTree_->Branch("ntrks",        &ntrks_,       "ntrks/I"       );
 	 babyTree_->Branch("njets",        &njets_,       "njets/I"       ); // uncorrected pt > 20
 	 babyTree_->Branch("njetsClean",   &njetsClean_,  "njetsClean/I"  ); // uncorrected pt > 20
 	 babyTree_->Branch("jet1pt",       &jet1pt_,      "jet1pt/F"      );
 	 babyTree_->Branch("jet2pt",       &jet2pt_,      "jet2pt/F"      );
 	 babyTree_->Branch("jet3pt",       &jet3pt_,      "jet3pt/F"      );
-     babyTree_->Branch("sumjetpt",     &sumjetpt_,     "sumjetpt/F"    );      
+     babyTree_->Branch("sumjetpt",     &sumjetpt_,    "sumjetpt/F"    );      
 	 babyTree_->Branch("jet1eta",      &jet1eta_,     "jet1eta/F"     );
 	 babyTree_->Branch("jet2eta",      &jet2eta_,     "jet2eta/F"     );
 	 babyTree_->Branch("jet3eta",      &jet3eta_,     "jet3eta/F"     );
@@ -730,9 +746,12 @@ void trilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 
 
 	 // lepton stuff
-     babyTree_->Branch("ngenels",   &ngenels_,   "ngenels/I" );
-     babyTree_->Branch("ngenmus",   &ngenmus_,   "ngenmus/I" );
-     babyTree_->Branch("ngentaus",  &ngentaus_,  "ngentaus/I" );
+	 babyTree_->Branch("ngoodlep",   &ngoodlep_,   "ngoodlep/I"  );
+	 babyTree_->Branch("ngoodmus",   &ngoodmus_,   "ngoodmus/I"  );
+     babyTree_->Branch("ngoodels",   &ngoodels_,   "ngoodels/I"  );
+     babyTree_->Branch("ngenels",    &ngenels_,    "ngenels/I"   );
+     babyTree_->Branch("ngenmus",    &ngenmus_,    "ngenmus/I"   );
+     babyTree_->Branch("ngentaus",   &ngentaus_,   "ngentaus/I"  );
 
 	 babyTree_->Branch("eormu1",     &eormu1_,     "eormu1/I"    );
 	 babyTree_->Branch("type1",      &type1_,      "type1/I"     );
@@ -811,7 +830,6 @@ void trilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 	 babyTree_->Branch("e1_cand01full", &e1_cand01full_, "e1_cand01full/O");
 	 babyTree_->Branch("e1_cand01",     &e1_cand01_,     "e1_cand01/O"    );
 	 babyTree_->Branch("e1_vbtf90full", &e1_vbtf90full_, "e1_vbtf90full/O");
-	 babyTree_->Branch("e1_vbtf90fullAlign", &e1_vbtf90fullAlign_, "e1_vbtf90fullAlign/O");
 	 babyTree_->Branch("e1_vbtf90",     &e1_vbtf90_,     "e1_vbtf90/O"    );
 	 babyTree_->Branch("e1_vbtf85",     &e1_vbtf85_,     "e1_vbtf85/O"    );
 	 babyTree_->Branch("e1_vbtf80",     &e1_vbtf80_,     "e1_vbtf80/O"    );
@@ -837,7 +855,6 @@ void trilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 	 babyTree_->Branch("e2_cand01full", &e2_cand01full_, "e2_cand01full/O");
 	 babyTree_->Branch("e2_cand01",     &e2_cand01_,     "e2_cand01/O"    );
 	 babyTree_->Branch("e2_vbtf90full", &e2_vbtf90full_, "e2_vbtf90full/O");
-	 babyTree_->Branch("e2_vbtf90fullAlign", &e2_vbtf90fullAlign_, "e2_vbtf90fullAlign/O");
 	 babyTree_->Branch("e2_vbtf90",     &e2_vbtf90_,     "e2_vbtf90/O"    );
 	 babyTree_->Branch("e2_vbtf85",     &e2_vbtf85_,     "e2_vbtf85/O"    );
 	 babyTree_->Branch("e2_vbtf80",     &e2_vbtf80_,     "e2_vbtf80/O"    );
@@ -863,7 +880,6 @@ void trilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 	 babyTree_->Branch("e3_cand01full", &e3_cand01full_, "e3_cand01full/O");
 	 babyTree_->Branch("e3_cand01",     &e3_cand01_,     "e3_cand01/O"    );
 	 babyTree_->Branch("e3_vbtf90full", &e3_vbtf90full_, "e3_vbtf90full/O");
-	 babyTree_->Branch("e3_vbtf90fullAlign", &e3_vbtf90fullAlign_, "e3_vbtf90fullAlign/O");
 	 babyTree_->Branch("e3_vbtf90",     &e3_vbtf90_,     "e3_vbtf90/O"    );
 	 babyTree_->Branch("e3_vbtf85",     &e3_vbtf85_,     "e3_vbtf85/O"    );
 	 babyTree_->Branch("e3_vbtf80",     &e3_vbtf80_,     "e3_vbtf80/O"    );

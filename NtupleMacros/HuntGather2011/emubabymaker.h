@@ -102,7 +102,6 @@ private:
 	 // electron stuff
 	 Bool_t  e_cand01full_;
 	 Bool_t  e_cand01_;
-	 Bool_t  e_vbtf90fullAlign_;
 	 Bool_t  e_vbtf90full_;
 	 Bool_t  e_vbtf90_;
 	 Bool_t  e_vbtf85_;
