@@ -301,6 +301,9 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 					if (theJets.size() > 1)
 						 mt2j_ = MT2J(pfmet_, thePFMetPhi, cms2.hyp_ll_p4()[hypi], cms2.hyp_lt_p4()[hypi], theJets);
 
+					// check if hypothesis makes an extra Z
+					extraZveto_ = makesExtraZ(hypi, false, false);
+
 					// figure out hypothesis type and fill appropriate iso, type variables
 					if (hyp_type_ == 0)
 					{
@@ -604,6 +607,7 @@ void dilepbabymaker::InitBabyNtuple ()
 	 drjet2_       = -999999.;
 	 mt2_          = -999999.;
 	 mt2j_         = -999999.;
+	 extraZveto_   = 0;
 
 	 // muon stuff
 	 mu1_muonidfull_   = 0;
@@ -766,6 +770,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 	 babyTree_->Branch("drjet2",     &drjet2_,     "drjet2/F"    );
 	 babyTree_->Branch("mt2",        &mt2_,        "mt2/F"       );
 	 babyTree_->Branch("mt2j",       &mt2j_,       "mt2j/F"      );
+	 babyTree_->Branch("extraZveto", &extraZveto_, "extraZveto/O");
 
 	 // muon stuff
 	 babyTree_->Branch("mu1_muonidfull",   &mu1_muonidfull_,   "mu1_muonidfull/O"  );

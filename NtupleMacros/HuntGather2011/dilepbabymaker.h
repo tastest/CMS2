@@ -101,6 +101,7 @@ private:
 	 Float_t drjet2_;
 	 Float_t mt2_;
 	 Float_t mt2j_;
+	 Bool_t  extraZveto_;
 
 	 // muon stuff
 	 Bool_t  mu1_muonidfull_;
