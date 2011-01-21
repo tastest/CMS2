@@ -10,9 +10,9 @@ void makeGatherBaby(const char *inputFileName, const char *outputFileName)
     gSystem->Load("libCMS2NtupleMacrosLooper.so");
     gSystem->Load("../Tools/MiniFWLite/libMiniFWLite.so");
 
-    emubabymaker *emubaby = new emubabymaker();
+    dilepbabymaker *dilepbaby = new dilepbabymaker();
     std::cout << "about to do scanchain" << std::endl;
-    emubaby->ScanChain(inputFileName, outputFileName);
+    dilepbaby->ScanChain(inputFileName, outputFileName);
 }
 
 
