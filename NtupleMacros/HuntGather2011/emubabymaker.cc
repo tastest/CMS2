@@ -484,7 +484,6 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
                 e_sigieie_    = cms2.els_sigmaIEtaIEta()[eli];
                 e_eMe55_      = cms2.els_eMax()[eli]/cms2.els_e5x5()[eli];
                 e_nmHits_     = cms2.els_exp_innerlayers()[eli];
-                e_nmHits39X_  = cms2.els_exp_innerlayers39X()[eli];
                 e_dcot_       = cms2.els_conv_dcot()[eli];
                 e_dist_       = cms2.els_conv_dist()[eli];
                 e_drmu_       = cms2.els_closestMuon()[eli] < 0 ? -999999. : cms2.els_musdr()[eli];
@@ -610,7 +609,6 @@ void emubabymaker::InitBabyNtuple ()
     e_sigieie_         = -999999.;
     e_eMe55_           = -999999.;
     e_nmHits_          = -999999;
-    e_nmHits39X_       = -999999;
     e_dcot_            = -999999.;
     e_dist_            = -999999.;
     e_drmu_            = -999999.;
@@ -714,7 +712,6 @@ void emubabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e_sigieie",         &e_sigieie_,         "e_sigieie/F"        );
     babyTree_->Branch("e_eMe55",           &e_eMe55_,           "e_eMe55/F"          ); // for spikes
     babyTree_->Branch("e_nmHits",          &e_nmHits_,          "e_nmHits/I"         ); // els_exp_innerlayers
-    babyTree_->Branch("e_nmHits39X",       &e_nmHits39X_,       "e_nmHits39X/I"      ); // els_exp_innerlayers
     babyTree_->Branch("e_dcot",            &e_dcot_,            "e_dcot/F"           ); // els_conv_dcot
     babyTree_->Branch("e_dist",            &e_dist_,            "e_dist/F"           ); // els_conv_dist
     babyTree_->Branch("e_drmu",            &e_drmu_,            "e_drmu/F"           );

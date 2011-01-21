@@ -109,7 +109,6 @@ private:
 	 Float_t e_sigieie_; // sigmaietaieta
 	 Float_t e_eMe55_;
 	 Int_t   e_nmHits_;
-	 Int_t   e_nmHits39X_;
 	 Float_t e_dcot_;
 	 Float_t e_dist_;
 	 Float_t e_drmu_;
