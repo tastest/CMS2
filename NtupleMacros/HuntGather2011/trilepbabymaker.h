@@ -60,6 +60,8 @@ class trilepbabymaker
         Float_t dphitcmetjet_;
         Int_t   neffbtags_;
         Int_t   npurbtags_;
+        Int_t   ntceffbtags_;
+        Int_t   ntcpurbtags_;
 		Float_t pfmeff_;
 		Float_t tcmeff_;
 

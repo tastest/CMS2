@@ -246,11 +246,13 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 
                 double mindphipfmet = 999999.;
                 double mindphitcmet = 999999.;
-                neffbtags_  = 0;
-                npurbtags_  = 0;
-                jet1isBtag_ = 0;
-                jet2isBtag_ = 0;
-                jet3isBtag_ = 0;
+                neffbtags_   = 0;
+                npurbtags_   = 0;
+                ntceffbtags_ = 0;
+                ntcpurbtags_ = 0;
+                jet1isBtag_  = 0;
+                jet2isBtag_  = 0;
+                jet3isBtag_  = 0;
                 for (unsigned int jeti = 0; jeti < theJetIndices.size(); ++jeti)
                 {
                     if (cms2.pfjets_simpleSecondaryVertexHighEffBJetTag()[theJetIndices[jeti]] > 1.74)
@@ -275,6 +277,10 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                         else if (jeti == 2)
                             jet3isBtag_ = 1;
                     }
+					if (cms2.pfjets_trackCountingHighEffBJetTag()[jeti] > 1.7)
+						 ++ntceffbtags_;
+					if (cms2.pfjets_trackCountingHighPurBJetTag()[jeti] > 1.19)
+						 ++ntcpurbtags_;
 
                     float currdphipfmet = deltaPhi(thePFMetPhi, cms2.pfjets_p4()[theJetIndices[jeti]].phi());
                     if (currdphipfmet < mindphipfmet)
@@ -586,6 +592,8 @@ void dilepbabymaker::InitBabyNtuple ()
     deltaphi_     = -999999.;
     neffbtags_    = -999999;
     npurbtags_    = -999999;
+    ntceffbtags_  = -999999;
+    ntcpurbtags_  = -999999;
     pfmeff_       = -999999.;
     tcmeff_       = -999999.;
 
@@ -745,6 +753,8 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("deltaphi",     &deltaphi_,    "deltaphi/F"    );
     babyTree_->Branch("neffbtags",    &neffbtags_,   "neffbtags/I"   );
     babyTree_->Branch("npurbtags",    &npurbtags_,   "npurbtags/I"   );
+    babyTree_->Branch("ntceffbtags",  &ntceffbtags_, "ntceffbtags/I" );
+    babyTree_->Branch("ntcpurbtags",  &ntcpurbtags_, "ntcpurbtags/I" );
     babyTree_->Branch("pfmeff",       &pfmeff_,      "pfmeff/F"      );
     babyTree_->Branch("tcmeff",       &tcmeff_,      "tcmeff/F"      );
 

@@ -56,6 +56,8 @@ private:
 	 Float_t dphitcmetjet_;
 	 Int_t   neffbtags_;
 	 Int_t   npurbtags_;
+	 Int_t   ntceffbtags_;
+	 Int_t   ntcpurbtags_;
 
 	 // lepton stuff
 	 Int_t   ngoodlep_;

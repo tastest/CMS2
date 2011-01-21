@@ -215,40 +215,41 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
 
 					double mindphipfmet = 999999.;
 					double mindphitcmet = 999999.;
-					neffbtags_  = 0;
-					npurbtags_  = 0;
-					jet1isBtag_ = 0;
-					jet2isBtag_ = 0;
-					jet3isBtag_ = 0;
+					neffbtags_   = 0;
+					npurbtags_   = 0;
+					ntceffbtags_ = 0;
+					ntcpurbtags_ = 0;
+					jet1isBtag_  = 0;
+					jet2isBtag_  = 0;
+					jet3isBtag_  = 0;
 					for (unsigned int jeti = 0; jeti < theJetIndices.size(); ++jeti)
 					{
-						 if (cms2.pfjets_simpleSecondaryVertexHighEffBJetTag_branch) {
-							  if (cms2.pfjets_simpleSecondaryVertexHighEffBJetTag()[theJetIndices[jeti]] > 1.74)
-							  {
-								   ++neffbtags_;
+						 if (cms2.pfjets_simpleSecondaryVertexHighEffBJetTag()[theJetIndices[jeti]] > 1.74)
+						 {
+							  ++neffbtags_;
 
-								   if (jeti == 0)
-										jet1isBtag_ = 1;
-								   else if (jeti == 1)
-										jet2isBtag_ = 1;
-								   else if (jeti == 2)
-										jet3isBtag_ = 1;
-							  }
-							  if (cms2.pfjets_simpleSecondaryVertexHighPurBJetTags()[theJetIndices[jeti]] > 2.)
-							  {
-								   ++npurbtags_;
-
-								   if (jeti == 0)
-										jet1isBtag_ = 1;
-								   else if (jeti == 1)
-										jet2isBtag_ = 1;
-								   else if (jeti == 2)
-										jet3isBtag_ = 1;
-							  }
-						 } else {
-							  neffbtags_ = -1337;
-							  npurbtags_ = -1337;
+							  if (jeti == 0)
+								   jet1isBtag_ = 1;
+							  else if (jeti == 1)
+								   jet2isBtag_ = 1;
+							  else if (jeti == 2)
+								   jet3isBtag_ = 1;
 						 }
+						 if (cms2.pfjets_simpleSecondaryVertexHighPurBJetTags()[theJetIndices[jeti]] > 2.)
+						 {
+							  ++npurbtags_;
+
+							  if (jeti == 0)
+								   jet1isBtag_ = 1;
+							  else if (jeti == 1)
+								   jet2isBtag_ = 1;
+							  else if (jeti == 2)
+								   jet3isBtag_ = 1;
+						 }
+						 if (cms2.pfjets_trackCountingHighEffBJetTag()[jeti] > 1.7)
+							  ++ntceffbtags_;
+						 if (cms2.pfjets_trackCountingHighPurBJetTag()[jeti] > 1.19)
+							  ++ntcpurbtags_;
 
 						 float currdphipfmet = deltaPhi(thePFMetPhi, cms2.pfjets_p4()[theJetIndices[jeti]].phi());
 						 if (currdphipfmet < mindphipfmet)
@@ -715,6 +716,8 @@ void trilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 	 babyTree_->Branch("dphitcmetjet", &dphitcmetjet_,"dphitcmetjet/F");
 	 babyTree_->Branch("neffbtags",    &neffbtags_,   "neffbtags/I"   );
 	 babyTree_->Branch("npurbtags",    &npurbtags_,   "npurbtags/I"   );
+	 babyTree_->Branch("ntceffbtags",  &ntceffbtags_, "ntceffbtags/I" );
+	 babyTree_->Branch("ntcpurbtags",  &ntcpurbtags_, "ntcpurbtags/I" );
 	 babyTree_->Branch("pfmeff",       &pfmeff_,      "pfmeff/F"      );
 	 babyTree_->Branch("tcmeff",       &tcmeff_,      "tcmeff/F"      );
 
