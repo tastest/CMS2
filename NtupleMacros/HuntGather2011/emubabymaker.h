@@ -38,7 +38,6 @@ private:
 	 Float_t calotcmet_;
 	 Int_t   ntrks_;
 	 Int_t   njets_;
-	 Int_t   njetsClean_;
 	 Float_t jet1pt_;
 	 Float_t jet2pt_;
 	 Float_t jet3pt_;
@@ -50,9 +49,6 @@ private:
 	 Float_t jet2phi_;
 	 Float_t jet3phi_;
 	 Float_t jetmass_;
-	 Bool_t  jet1passesID_;
-	 Bool_t  jet2passesID_;
-	 Bool_t  jet3passesID_;
 	 Bool_t  jet1isBtag_;
 	 Bool_t  jet2isBtag_;
 	 Bool_t  jet3isBtag_;

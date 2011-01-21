@@ -154,7 +154,6 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 
                 // clean jets for _this_ hyp lepton
                 std::vector<unsigned int> theJetIndices;
-                njetsClean_ = 0;
                 sumjetpt_ = 0.;
                 for (unsigned int jeti = 0; jeti < cms2.pfjets_p4().size(); ++jeti) {
                     LorentzVector vjet = cms2.pfjets_p4()[jeti];
@@ -173,14 +172,10 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
                     }
                     if (jetIsLep) continue;
 
-                    if (cms2.pfjets_p4()[jeti].pt() > 30.) {
-                        theJetIndices.push_back(jeti);
-
-                        if (isGoodPFJet(jeti)) {
-                            ++njetsClean_;
-                            sumjetpt_ += vjet.Pt();  
-                        }
-                    }
+                    if (cms2.pfjets_p4()[jeti].pt() > 30. && fabs(cms2.pfjets_p4()[jeti].eta()) < 2.5 && isGoodPFJet(jeti)) {
+						 theJetIndices.push_back(jeti);
+						 sumjetpt_ += vjet.Pt();  
+					}
                 }
                 std::sort(theJetIndices.begin(), theJetIndices.end(), sortByPFJetPt);
 
@@ -188,15 +183,12 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
                 jet1pt_       = theJetIndices.size() > 0 ? cms2.pfjets_p4()[theJetIndices[0]].pt()  : -999999.;
                 jet1eta_      = theJetIndices.size() > 0 ? cms2.pfjets_p4()[theJetIndices[0]].eta() : -999999.;
                 jet1phi_      = theJetIndices.size() > 0 ? cms2.pfjets_p4()[theJetIndices[0]].phi() : -999999.;
-                jet1passesID_ = theJetIndices.size() > 0 ? isGoodPFJet(theJetIndices[0])            : 0;
                 jet2pt_       = theJetIndices.size() > 1 ? cms2.pfjets_p4()[theJetIndices[1]].pt()  : -999999.;
                 jet2eta_      = theJetIndices.size() > 1 ? cms2.pfjets_p4()[theJetIndices[1]].eta() : -999999.;
                 jet2phi_      = theJetIndices.size() > 1 ? cms2.pfjets_p4()[theJetIndices[1]].phi() : -999999.;
-                jet2passesID_ = theJetIndices.size() > 1 ? isGoodPFJet(theJetIndices[1])            : 0;
                 jet3pt_       = theJetIndices.size() > 2 ? cms2.pfjets_p4()[theJetIndices[2]].pt()  : -999999.;
                 jet3eta_      = theJetIndices.size() > 2 ? cms2.pfjets_p4()[theJetIndices[2]].eta() : -999999.;
                 jet3phi_      = theJetIndices.size() > 2 ? cms2.pfjets_p4()[theJetIndices[2]].phi() : -999999.;
-                jet3passesID_ = theJetIndices.size() > 2 ? isGoodPFJet(theJetIndices[2])            : 0;
 
                 LorentzVector dijetP4;
                 jetmass_ = theJetIndices.size() > 1 ? sqrt((cms2.pfjets_p4()[theJetIndices[0]]+cms2.pfjets_p4()[theJetIndices[1]]).M2()) : -999999.; 
@@ -376,7 +368,6 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
 
                 // clean jets for _this_ hyp lepton
                 std::vector<unsigned int> theJetIndices;
-                njetsClean_ = 0;
                 sumjetpt_ = 0.0;
                 for (unsigned int jeti = 0; jeti < cms2.pfjets_p4().size(); ++jeti) {
                     LorentzVector vjet = cms2.pfjets_p4()[jeti];
@@ -394,13 +385,9 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
                     }
                     if (jetIsLep) continue;
 
-                    if (cms2.pfjets_p4()[jeti].pt() > 30.) {
+                    if (cms2.pfjets_p4()[jeti].pt() > 30. && fabs(cms2.pfjets_p4()[jeti].eta()) < 2.5 && isGoodPFJet(jeti)) {
                         theJetIndices.push_back(jeti);
-
-                        if (isGoodPFJet(jeti)) {
-                            ++njetsClean_;
-                            sumjetpt_ += vjet.Pt();  
-                        }
+						sumjetpt_ += vjet.Pt();  
                     }
                 }
                 std::sort(theJetIndices.begin(), theJetIndices.end(), sortByPFJetPt);
@@ -409,15 +396,12 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
                 jet1pt_       = theJetIndices.size() > 0 ? cms2.pfjets_p4()[theJetIndices[0]].pt()  : -999999.;
                 jet1eta_      = theJetIndices.size() > 0 ? cms2.pfjets_p4()[theJetIndices[0]].eta() : -999999.;
                 jet1phi_      = theJetIndices.size() > 0 ? cms2.pfjets_p4()[theJetIndices[0]].phi() : -999999.;
-                jet1passesID_ = theJetIndices.size() > 0 ? isGoodPFJet(theJetIndices[0])            : 0;
                 jet2pt_       = theJetIndices.size() > 1 ? cms2.pfjets_p4()[theJetIndices[1]].pt()  : -999999.;
                 jet2eta_      = theJetIndices.size() > 1 ? cms2.pfjets_p4()[theJetIndices[1]].eta() : -999999.;
                 jet2phi_      = theJetIndices.size() > 1 ? cms2.pfjets_p4()[theJetIndices[1]].phi() : -999999.;
-                jet2passesID_ = theJetIndices.size() > 1 ? isGoodPFJet(theJetIndices[1])            : 0;
                 jet3pt_       = theJetIndices.size() > 2 ? cms2.pfjets_p4()[theJetIndices[2]].pt()  : -999999.;
                 jet3eta_      = theJetIndices.size() > 2 ? cms2.pfjets_p4()[theJetIndices[2]].eta() : -999999.;
                 jet3phi_      = theJetIndices.size() > 2 ? cms2.pfjets_p4()[theJetIndices[2]].phi() : -999999.;
-                jet3passesID_ = theJetIndices.size() > 2 ? isGoodPFJet(theJetIndices[2])            : 0;
 
                 LorentzVector dijetP4;
                 jetmass_ = theJetIndices.size() > 1 ? sqrt((cms2.pfjets_p4()[theJetIndices[0]]+cms2.pfjets_p4()[theJetIndices[1]]).M2()) : -999999.; 
@@ -555,7 +539,6 @@ void emubabymaker::InitBabyNtuple ()
     calotcmet_    = -999999.;	 
     ntrks_        = -999999;
     njets_        = -999999;
-    njetsClean_   = -999999;
     jet1pt_       = -999999.;
     jet2pt_       = -999999.;
     jet3pt_       = -999999.;
@@ -567,9 +550,6 @@ void emubabymaker::InitBabyNtuple ()
     jet2phi_      = -999999.;
     jet3phi_      = -999999.;
     jetmass_      = -999999.;
-    jet1passesID_ = 0;
-    jet2passesID_ = 0;
-    jet3passesID_ = 0;
     jet1isBtag_   = 0;
     jet2isBtag_   = 0;
     jet3isBtag_   = 0;
@@ -663,7 +643,6 @@ void emubabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("calotcmet",    &calotcmet_,    "calotcmet/F"   );
     babyTree_->Branch("ntrks",        &ntrks_,        "ntrks/I"       );
     babyTree_->Branch("njets",        &njets_,        "njets/I"       ); // uncorrected pt > 20
-    babyTree_->Branch("njetsClean",   &njetsClean_,   "njetsClean/I"  ); // uncorrected pt > 20
     babyTree_->Branch("jet1pt",       &jet1pt_,       "jet1pt/F"      );
     babyTree_->Branch("jet2pt",       &jet2pt_,       "jet2pt/F"      );
     babyTree_->Branch("jet3pt",       &jet3pt_,       "jet3pt/F"      );
@@ -675,9 +654,6 @@ void emubabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("jet2phi",      &jet2phi_,      "jet2phi/F"     );
     babyTree_->Branch("jet3phi",      &jet3phi_,      "jet3phi/F"     );
     babyTree_->Branch("jetmass",      &jetmass_,      "jetmass/F"     );
-    babyTree_->Branch("jet1passesID", &jet1passesID_, "jet1passesID/O");
-    babyTree_->Branch("jet2passesID", &jet2passesID_, "jet2passesID/O");
-    babyTree_->Branch("jet3passesID", &jet3passesID_, "jet3passesID/O");
     babyTree_->Branch("jet1isBtag",   &jet1isBtag_,   "jet1isBtag/O"  );
     babyTree_->Branch("jet2isBtag",   &jet2isBtag_,   "jet2isBtag/O"  );
     babyTree_->Branch("jet3isBtag",   &jet3isBtag_,   "jet3isBtag/O"  );

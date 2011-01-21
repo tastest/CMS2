@@ -42,7 +42,6 @@ private:
 	 Float_t calotcmet_;
 	 Int_t   ntrks_;
 	 Int_t   njets_;
-	 Int_t   njetsClean_;
 	 Int_t   njetsSS_;
 	 Float_t jet1pt_;
 	 Float_t jet2pt_;
@@ -56,9 +55,6 @@ private:
 	 Float_t jet2phi_;
 	 Float_t jet3phi_;
 	 Float_t jetmass_;
-	 Bool_t  jet1passesID_;
-	 Bool_t  jet2passesID_;
-	 Bool_t  jet3passesID_;
 	 Bool_t  jet1isBtag_;
 	 Bool_t  jet2isBtag_;
 	 Bool_t  jet3isBtag_;
@@ -74,13 +70,13 @@ private:
 	 Int_t   ngoodlep_;
 	 Int_t   ngoodmus_;
      Int_t   ngoodels_;
+     Int_t   ngenels_;
+     Int_t   ngenmus_;
+     Int_t   ngentaus_;
 	 Float_t dilpt_;
 	 Float_t mass_;
 	 Int_t   eormu1_;
 	 Int_t   type1_;
-     Int_t   ngenels_;
-     Int_t   ngenmus_;
-     Int_t   ngentaus_;
 	 Float_t pt1_;
 	 Float_t eta1_;
 	 Float_t phi1_;
