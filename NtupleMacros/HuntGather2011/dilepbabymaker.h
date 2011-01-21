@@ -114,6 +114,7 @@ private:
 	 Int_t   mu1_saHits_;
 	 Float_t mu1_emVetoDep_;
 	 Float_t mu1_hadVetoDep_;
+	 Bool_t  mu1_isPFmuon_;
 
 	 Bool_t  mu1_cosmic_;
 	 Bool_t  mu2_cosmic_;
@@ -127,6 +128,7 @@ private:
 	 Int_t   mu2_saHits_;
 	 Float_t mu2_emVetoDep_;
 	 Float_t mu2_hadVetoDep_;
+	 Bool_t  mu2_isPFmuon_;
 
 	 // electron stuff
 	 Bool_t  e1_cand01full_;

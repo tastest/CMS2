@@ -314,6 +314,8 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
 						 mu1_saHits_       = cms2.mus_gfit_validSTAHits()[index1];
 						 mu1_emVetoDep_    = cms2.mus_iso_ecalvetoDep()[index1];
 						 mu1_hadVetoDep_   = cms2.mus_iso_hcalvetoDep()[index1];
+						 if (cms2.mus_pfmusidx()[index1] > -1)
+							  mu1_isPFmuon_ = 1;
 
 						 int trkidx1 = cms2.mus_trkidx()[index1];
 						 d0vtx1_ = cms2.trks_d0vtx()[trkidx1];
@@ -371,6 +373,8 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
 						 mu2_saHits_       = cms2.mus_gfit_validSTAHits()[index2];
 						 mu2_emVetoDep_    = cms2.mus_iso_ecalvetoDep()[index2];
 						 mu2_hadVetoDep_   = cms2.mus_iso_hcalvetoDep()[index2];
+						 if (cms2.mus_pfmusidx()[index2] > -1)
+							  mu2_isPFmuon_ = 1;
 
 						 int trkidx2 = cms2.mus_trkidx()[index2];
 						 d0vtx2_ = cms2.trks_d0vtx()[trkidx2];
@@ -428,6 +432,8 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
 						 mu3_saHits_       = cms2.mus_gfit_validSTAHits()[index3];
 						 mu3_emVetoDep_    = cms2.mus_iso_ecalvetoDep()[index3];
 						 mu3_hadVetoDep_   = cms2.mus_iso_hcalvetoDep()[index3];
+						 if (cms2.mus_pfmusidx()[index3] > -1)
+							  mu3_isPFmuon_ = 1;
 
 						 int trkidx3 = cms2.mus_trkidx()[index3];
 						 d0vtx3_ = cms2.trks_d0vtx()[trkidx3];
@@ -778,6 +784,7 @@ void trilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 	 babyTree_->Branch("mu1_saHits",       &mu1_saHits_,       "mu1_saHits/I"      );
 	 babyTree_->Branch("mu1_emVetoDep",    &mu1_emVetoDep_,    "mu1_emVetoDep/F"   );
 	 babyTree_->Branch("mu1_hadVetoDep",   &mu1_hadVetoDep_,   "mu1_hadVetoDep/F"  );
+	 babyTree_->Branch("mu1_isPFmuon",     &mu1_isPFmuon_,     "mu1_isPFmuon/O"    );
 
 	 babyTree_->Branch("mu2_muonidfull",   &mu2_muonidfull_,   "mu2_muonidfull/O"  );
 	 babyTree_->Branch("mu2_muonid",       &mu2_muonid_,       "mu2_muonid/O"      );
@@ -790,6 +797,7 @@ void trilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 	 babyTree_->Branch("mu2_saHits",       &mu2_saHits_,       "mu2_saHits/I"      );
 	 babyTree_->Branch("mu2_emVetoDep",    &mu2_emVetoDep_,    "mu2_emVetoDep/F"   );
 	 babyTree_->Branch("mu2_hadVetoDep",   &mu2_hadVetoDep_,   "mu2_hadVetoDep/F"  );
+	 babyTree_->Branch("mu2_isPFmuon",     &mu2_isPFmuon_,     "mu2_isPFmuon/O"    );
 
 	 babyTree_->Branch("mu3_muonidfull",   &mu3_muonidfull_,   "mu3_muonidfull/O"  );
 	 babyTree_->Branch("mu3_muonid",       &mu3_muonid_,       "mu3_muonid/O"      );
@@ -802,6 +810,7 @@ void trilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 	 babyTree_->Branch("mu3_saHits",       &mu3_saHits_,       "mu3_saHits/I"      );
 	 babyTree_->Branch("mu3_emVetoDep",    &mu3_emVetoDep_,    "mu3_emVetoDep/F"   );
 	 babyTree_->Branch("mu3_hadVetoDep",   &mu3_hadVetoDep_,   "mu3_hadVetoDep/F"  );
+	 babyTree_->Branch("mu3_isPFmuon",     &mu3_isPFmuon_,     "mu3_isPFmuon/O"    );
 
 	 // electron stuff
 	 babyTree_->Branch("e1_cand01full", &e1_cand01full_, "e1_cand01full/O");

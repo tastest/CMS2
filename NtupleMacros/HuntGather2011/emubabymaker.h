@@ -93,6 +93,7 @@ private:
 	 Int_t   mu_saHits_;
 	 Float_t mu_emVetoDep_;
 	 Float_t mu_hadVetoDep_;
+	 Bool_t  mu_isPFmuon_;
 
 	 // electron stuff
 	 Bool_t  e_cand01full_;

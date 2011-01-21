@@ -120,6 +120,7 @@ class trilepbabymaker
 		Int_t   mu1_saHits_;
 		Float_t mu1_emVetoDep_;
 		Float_t mu1_hadVetoDep_;
+		Bool_t  mu1_isPFmuon_;
 
         Bool_t  mu2_cosmic_;
         Bool_t  mu2_muonidfull_;
@@ -132,6 +133,7 @@ class trilepbabymaker
 		Int_t   mu2_saHits_;
 		Float_t mu2_emVetoDep_;
 		Float_t mu2_hadVetoDep_;
+		Bool_t  mu2_isPFmuon_;
 
         Bool_t  mu3_cosmic_;
         Bool_t  mu3_muonidfull_;
@@ -144,6 +146,7 @@ class trilepbabymaker
 		Int_t   mu3_saHits_;
 		Float_t mu3_emVetoDep_;
 		Float_t mu3_hadVetoDep_;
+		Bool_t  mu3_isPFmuon_;
 
         // electron stuff
         Bool_t  e1_cand01full_;

@@ -349,6 +349,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     mu1_saHits_       = cms2.mus_gfit_validSTAHits()[index1];
                     mu1_emVetoDep_    = cms2.mus_iso_ecalvetoDep()[index1];
                     mu1_hadVetoDep_   = cms2.mus_iso_hcalvetoDep()[index1];
+					if (cms2.mus_pfmusidx()[index1] > -1)
+						 mu1_isPFmuon_ = 1;
 
                     mu2_muonidfull_   = muonId(index2, NominalTTbarV2);
                     mu2_muonid_       = muonIdNotIsolated(index2, NominalTTbarV2);
@@ -361,6 +363,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     mu2_saHits_       = cms2.mus_gfit_validSTAHits()[index2];
                     mu2_emVetoDep_    = cms2.mus_iso_ecalvetoDep()[index2];
                     mu2_hadVetoDep_   = cms2.mus_iso_hcalvetoDep()[index2];
+					if (cms2.mus_pfmusidx()[index2] > -1)
+						 mu2_isPFmuon_ = 1;
 
                     int trkidx1 = cms2.mus_trkidx()[index1];
                     int trkidx2 = cms2.mus_trkidx()[index2];
@@ -385,6 +389,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     mu1_saHits_       = cms2.mus_gfit_validSTAHits()[index1];
                     mu1_emVetoDep_    = cms2.mus_iso_ecalvetoDep()[index1];
                     mu1_hadVetoDep_   = cms2.mus_iso_hcalvetoDep()[index1];
+					if (cms2.mus_pfmusidx()[index1] > -1)
+						 mu1_isPFmuon_ = 1;
 
                     int trkidx1 = cms2.mus_trkidx()[index1];
                     int trkidx2 = cms2.els_trkidx()[index2];
@@ -464,6 +470,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     mu2_saHits_       = cms2.mus_gfit_validSTAHits()[index2];
                     mu2_emVetoDep_    = cms2.mus_iso_ecalvetoDep()[index2];
                     mu2_hadVetoDep_   = cms2.mus_iso_hcalvetoDep()[index2];
+					if (cms2.mus_pfmusidx()[index2] > -1)
+						 mu2_isPFmuon_ = 1;
 
                     int trkidx1 = cms2.els_trkidx()[index1];
                     int trkidx2 = cms2.mus_trkidx()[index2];
@@ -645,6 +653,7 @@ void dilepbabymaker::InitBabyNtuple ()
     mu1_saHits_       = -999999;
     mu1_emVetoDep_    = -999999.;
     mu1_hadVetoDep_   = -999999.;
+	mu1_isPFmuon_     = 0;
 
     mu2_muonidfull_   = 0;
     mu2_muonid_       = 0;
@@ -657,6 +666,7 @@ void dilepbabymaker::InitBabyNtuple ()
     mu2_saHits_       = -999999;
     mu2_emVetoDep_    = -999999.;
     mu2_hadVetoDep_   = -999999.;
+	mu2_isPFmuon_     = 0;
 
     // electron stuff
     e1_cand01full_  = 0;
@@ -806,6 +816,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("mu1_saHits",       &mu1_saHits_,       "mu1_saHits/I"      );
     babyTree_->Branch("mu1_emVetoDep",    &mu1_emVetoDep_,    "mu1_emVetoDep/F"   );
     babyTree_->Branch("mu1_hadVetoDep",   &mu1_hadVetoDep_,   "mu1_hadVetoDep/F"  );
+	babyTree_->Branch("mu1_isPFmuon",     &mu1_isPFmuon_,     "mu1_isPFmuon/O"    );
 
     babyTree_->Branch("mu2_muonidfull",   &mu2_muonidfull_,   "mu2_muonidfull/O"  );
     babyTree_->Branch("mu2_muonid",       &mu2_muonid_,       "mu2_muonid/O"      );
@@ -818,6 +829,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("mu2_saHits",       &mu2_saHits_,       "mu2_saHits/I"      );
     babyTree_->Branch("mu2_emVetoDep",    &mu2_emVetoDep_,    "mu2_emVetoDep/F"   );
     babyTree_->Branch("mu2_hadVetoDep",   &mu2_hadVetoDep_,   "mu2_hadVetoDep/F"  );
+	babyTree_->Branch("mu2_isPFmuon",     &mu2_isPFmuon_,     "mu2_isPFmuon/O"    );
 
     // electron stuff
 

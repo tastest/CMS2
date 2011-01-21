@@ -267,6 +267,8 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
                 mu_saHits_       = cms2.mus_gfit_validSTAHits()[mui];
                 mu_emVetoDep_    = cms2.mus_iso_ecalvetoDep()[mui];
                 mu_hadVetoDep_   = cms2.mus_iso_hcalvetoDep()[mui];
+				if (cms2.mus_pfmusidx()[mui] > -1)
+					 mu_isPFmuon_ = 1;
 
                 // look for this guy in a same-flavor hyp and report
                 // hyp_mass; if found in >1 hyp report one with high-
@@ -605,6 +607,7 @@ void emubabymaker::InitBabyNtuple ()
     mu_saHits_      = -999999;
     mu_emVetoDep_   = -999999.;
     mu_hadVetoDep_  = -999999.;
+	mu_isPFmuon_    = 0;
 
     // electron stuff
     e_cand01full_      = 0;
@@ -710,6 +713,7 @@ void emubabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("mu_saHits",       &mu_saHits_,       "mu_saHits/I"      );
     babyTree_->Branch("mu_emVetoDep",    &mu_emVetoDep_,    "mu_emVetoDep/F"   );
     babyTree_->Branch("mu_hadVetoDep",   &mu_hadVetoDep_,   "mu_hadVetoDep/F"  );
+	babyTree_->Branch("mu_isPFmuon",     &mu_isPFmuon_,     "mu_isPFmuon/O"    );
 
     // electron stuff
     babyTree_->Branch("e_cand01full",      &e_cand01full_,      "e_cand01full/O"     );
