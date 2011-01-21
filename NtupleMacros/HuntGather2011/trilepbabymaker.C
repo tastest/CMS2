@@ -259,11 +259,8 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
 							  mindphitcmet = currdphitcmet;
 
 						 // add jet pt to meff
-						 if (isGoodPFJet(theJetIndices[jeti]))
-						 {
-							  pfmeff_ += cms2.pfjets_p4()[theJetIndices[jeti]].pt();
-							  tcmeff_ += cms2.pfjets_p4()[theJetIndices[jeti]].pt();
-						 }						 
+						 pfmeff_ += cms2.pfjets_p4()[theJetIndices[jeti]].pt();
+						 tcmeff_ += cms2.pfjets_p4()[theJetIndices[jeti]].pt();
 					}
 
 					dphipfmetjet_ = mindphipfmet;

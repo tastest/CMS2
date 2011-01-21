@@ -68,7 +68,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
             for (unsigned hypi = 0; hypi < cms2.hyp_p4().size(); ++hypi)
             {
                 // require 5/5 hypothesis
-                if (min(cms2.hyp_lt_p4()[hypi].pt(), cms2.hyp_ll_p4()[hypi].pt()) < 5.)
+                if (min(cms2.hyp_lt_p4()[hypi].pt(), cms2.hyp_ll_p4()[hypi].pt()) < 10.)
                     continue;
 
                 int index1 = cms2.hyp_lt_index()[hypi];
@@ -285,11 +285,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                         mindphitcmet = currdphitcmet;
 
                     // add jet pt to meff
-                    if (isGoodPFJet(theJetIndices[jeti]))
-                    {
-                        pfmeff_ += cms2.pfjets_p4()[theJetIndices[jeti]].pt();
-                        tcmeff_ += cms2.pfjets_p4()[theJetIndices[jeti]].pt();
-                    }
+					pfmeff_ += cms2.pfjets_p4()[theJetIndices[jeti]].pt();
+					tcmeff_ += cms2.pfjets_p4()[theJetIndices[jeti]].pt();
                 }
 
                 dphipfmetjet_ = mindphipfmet;
