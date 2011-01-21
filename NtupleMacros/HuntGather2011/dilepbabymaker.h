@@ -40,6 +40,8 @@ private:
 	 Float_t pfmet_;
 	 Float_t tcmet_;
 	 Float_t calotcmet_;
+	 Float_t proj_pfmet_;
+	 Float_t proj_tcmet_;
 	 Int_t   ntrks_;
 	 Int_t   njets_;
 	 Int_t   njetsSS_;

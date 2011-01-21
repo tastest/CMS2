@@ -163,6 +163,19 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 dilpt_       = cms2.hyp_p4()[hypi].pt();		 
                 deltaphi_    = deltaPhi(phi1_, phi2_);
 
+				// calculate projected pfmet
+				float mindphi_pfmet = min(dphipfmet1_, dphipfmet2_);
+				if (mindphi_pfmet < TMath::Pi()/2.)
+					 proj_pfmet_ = pfmet_ * sin(mindphi_pfmet);
+				else
+					 proj_pfmet_ = pfmet_;
+				// calculate projected pfmet
+				float mindphi_tcmet = min(dphitcmet1_, dphitcmet2_);
+				if (mindphi_tcmet < TMath::Pi()/2.)
+					 proj_tcmet_ = tcmet_ * sin(mindphi_tcmet);
+				else
+					 proj_tcmet_ = tcmet_;				
+
                 // initialize meff to 0
                 pfmeff_ = 0.;
                 tcmeff_ = 0.;
@@ -577,6 +590,8 @@ void dilepbabymaker::InitBabyNtuple ()
     pfmet_        = -999999.;
     tcmet_        = -999999.;
     calotcmet_    = -999999.;
+    proj_pfmet_   = -999999.;
+    proj_tcmet_   = -999999.;
     ntrks_        = -999999;
     njets_        = -999999;
     njetsSS_      = -999999;
@@ -740,6 +755,8 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("pfmet",        &pfmet_,       "pfmet/F"       );
     babyTree_->Branch("tcmet",        &tcmet_,       "tcmet/F"       );
     babyTree_->Branch("calotcmet",    &calotcmet_,   "calotcmet/F"   );
+    babyTree_->Branch("proj_pfmet",   &proj_pfmet_,  "proj_pfmet/F"  );
+    babyTree_->Branch("proj_tcmet",   &proj_tcmet_,  "proj_tcmet/F"  );
     babyTree_->Branch("ntrks",        &ntrks_,       "ntrks/I"       );
     babyTree_->Branch("njets",        &njets_,       "njets/I"       ); // uncorrected pt > 20
     babyTree_->Branch("njetsSS",      &njetsSS_,     "njetsSS/I"     );
