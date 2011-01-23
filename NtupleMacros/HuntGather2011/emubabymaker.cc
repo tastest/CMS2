@@ -52,17 +52,9 @@ void emubabymaker::ScanChain (const char *inputFilename, const char *babyFilenam
         {
             cms2.GetEntry(event);
             ++nEventsTotal;
+
             // Progress feedback to the user
-            if (nEventsTotal%1000 == 0)
-            {
-                // xterm magic from L. Vacavant and A. Cerri
-                if (isatty(1))
-                {
-                    printf("\015\033[32m ---> \033[1m\033[31m%4.1f%%"
-                            "\033[0m\033[32m <---\033[0m\015", (float)nEventsTotal/(nEventsChain*0.01));
-                    fflush(stdout);
-                }
-            }
+            CMS2::progress(nEventsTotal, nEventsChain );
 
             // muon stuff
             for (unsigned mui = 0; mui < cms2.mus_p4().size(); ++mui)
