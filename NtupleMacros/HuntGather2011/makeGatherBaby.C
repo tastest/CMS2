@@ -8,6 +8,7 @@ void makeGatherBaby(const char *inputFileName, const char *outputFileName)
     gSystem->Load("libMathCore.so");
     gSystem->Load("libCMS2NtupleMacrosCORE.so");
     gSystem->Load("libCMS2NtupleMacrosLooper.so");
+    gSystem->Load("libCMS2NtupleMacrosMT2.so");
     gSystem->Load("../Tools/MiniFWLite/libMiniFWLite.so");
 
     dilepbabymaker *dilepbaby = new dilepbabymaker();

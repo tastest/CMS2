@@ -11,7 +11,7 @@
 #include "TObjArray.h"
 #include "TTree.h"
 
-#include "../CORE/MT2/MT2.cc"
+#include "../CORE/MT2/MT2.h"
 #include "../CORE/CMS2.h"
 #include "../CORE/mcSelections.h"
 #include "../CORE/electronSelections.h"

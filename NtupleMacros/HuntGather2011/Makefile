@@ -37,7 +37,6 @@ endif
 #TOOLSSOURCES = $(wildcard $(CMSROOT)/Tools/*.cc)
 TOOLSSOURCES = $(CMSROOT)/Tools/tools.cc \
 			   $(CMSROOT)/Tools/goodrun.cc 
-
 TOOLSOBJECTS = $(TOOLSSOURCES:.cc=.o)
 TOOLSLIB = libCMS2NtupleMacrosTOOLS.so
 
@@ -54,7 +53,6 @@ CORESOURCES = \
 	$(CMSROOT)/CORE/triggerUtils.cc \
     $(CMSROOT)/CORE/metSelections.cc \
     $(CMSROOT)/CORE/ssSelections.cc
-
 COREOBJECTS = $(CORESOURCES:.cc=.o) 
 CORELIB = libCMS2NtupleMacrosCORE.so
 
@@ -62,9 +60,13 @@ SOURCES = $(wildcard *.cc)
 OBJECTS = $(SOURCES:.cc=.o) LinkDef_out.o
 LIB = libCMS2NtupleMacrosLooper.so
 
+MT2SOURCES = $(CMSROOT)/CORE/MT2/MT2.cc
+MT2OBJECTS = $(MT2SOURCES:.cc=.o)
+MT2LIB = libCMS2NtupleMacrosMT2.so
+
 FWLIB = ../Tools/MiniFWLite/libMiniFWLite.so
 
-LIBS = $(CORELIB) $(TOOLSLIB) $(LIB) $(FWLIB)
+LIBS = $(CORELIB) $(TOOLSLIB) $(LIB) $(FWLIB) $(MT2LIB)
 
 .PHONY: all help compile clean cms2env
 
@@ -86,6 +88,10 @@ $(FWLIB) :
 	$(QUITE) echo "making MiniFWLite"; \
 	cd ../Tools/MiniFWLite; \
 	$(MAKE) -f Makefile;
+
+$(MT2LIB): $(MT2OBJECTS)
+	$(QUIET) echo "Linking $(MT2LIB)"; \
+	$(LINKER) $(LINKERFLAGS) -shared $(MT2OBJECTS) -o $@ 2>&1|perl -ne 'print if(!/skipping incompatible/)'
 
 LinkDef_out.cxx: LinkDef.h
 	$(QUIET) echo "Making CINT dictionaries"; \
