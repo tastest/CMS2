@@ -1,5 +1,9 @@
+#ifndef MT2_H
+#define MT2_H
+
 #include "MT2Utility.cc"
 #include "Math/LorentzVector.h"
+#include "TMath.h"
 
 enum enum_mt2_method { BISECT, GRID };
 
@@ -34,4 +38,5 @@ vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > CleanJets(
   const float
 );
 
+#endif
 

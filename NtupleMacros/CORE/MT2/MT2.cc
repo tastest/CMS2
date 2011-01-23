@@ -1,5 +1,4 @@
 #include "MT2.h"
-#include "TMath.h"
 #include "math.h"
 #include "Math/VectorUtil.h"
 
