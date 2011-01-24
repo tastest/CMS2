@@ -68,10 +68,10 @@ class dilepbabymaker
         Float_t dphipfmetjet_;
         Float_t dphitcmetjet_;
         Float_t deltaphi_;	
-        Int_t   neffbtags_;
-        Int_t   npurbtags_;
-        Int_t   ntceffbtags_;
-        Int_t   ntcpurbtags_;
+        Int_t ntchelbtags_;
+        Int_t nssvhembtags_;
+        Int_t nssvhetbtags_;
+        Int_t nssvhptbtags_;
         Float_t pfmeff_;
         Float_t tcmeff_;
 

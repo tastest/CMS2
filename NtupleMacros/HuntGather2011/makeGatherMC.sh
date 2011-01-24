@@ -20,7 +20,7 @@ do
     mkdir -p $GATHER_MC_OUTPUT/$SAMPLE
 
     # construct the input and output file name for making these babies
-    FILE_IN=$GATHER_MC_INPUT/$SAMPLE/*.root
+    FILE_IN=$GATHER_MC_INPUT/$SAMPLE/merged_ntuple.root
     FILE_OUT=$GATHER_MC_OUTPUT/$SAMPLE/baby_gather.root
 
     # run root to make the baby
