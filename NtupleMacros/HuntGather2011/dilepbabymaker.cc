@@ -101,33 +101,15 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 // Fill event level information
                 //
 
-                strcpy(dataset_, cms2.evt_dataset().Data());
-                run_        = cms2.evt_run();
-                ls_         = cms2.evt_lumiBlock();
-                evt_        = cms2.evt_event();
-                isdata_     = cms2.evt_isRealData();
+                SetEventLevelInfo();
 
-                evt_clean082010_ = cleaning_standardAugust2010(isdata_);
-                evt_clean102010_ = cleaning_standardOctober2010();
-
-                nvtx_ = 0;
-                for (unsigned int i=0; i<cms2.vtxs_isFake().size(); i++) {
-                    // isGoodVertex is defined in CORE/eventSelections.cc
-                    // !isFake, ndof >= 4, rho <= 2, Z <= 24.
-                    if (isGoodVertex(i))
-                        ++nvtx_;
-                }
-
-                if (!isdata_) {
-                    int nlep  = leptonGenpCount_lepTauDecays(ngenels_, ngenmus_, ngentaus_);
-                    scale1fb_ = cms2.evt_scale1fb();
-                    pthat_    = cms2.genps_pthat();
-                }
+                // 
+                // Fill MET information
+                //
 
                 pfmet_      = cms2.evt_pfmet();
                 tcmet_      = cms2.evt_pf_tcmet();
                 calotcmet_  = cms2.evt_tcmet();
-                ntrks_      = cms2.trks_trk_p4().size();
 
                 float thePFMetPhi     = cms2.evt_pfmetPhi();
                 float theTCMetPhi     = cms2.evt_pf_tcmetPhi();
@@ -149,23 +131,58 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 calotcmet_ = sqrt(cmetx * cmetx + cmety * cmety);
                 theCaloTCMetPhi = atan2(cmety, cmetx);
 
-                // loop over muons and electrons to get ngoodlep
+                //
+                // Fill lepton counters
+                //
+
+                //
+                // note that this is also used to define what leptons the jets
+                // will be cleaned for
+                //
+
                 ngoodlep_ = 0;
                 ngoodmus_ = 0;
                 ngoodels_ = 0;
+
+                std::vector<unsigned int> goodElectronIndicesTTBarV2;
+                std::vector<unsigned int> goodMuonIndicesTTBarV2;
+                std::vector<unsigned int> goodElectronIndicesSSV2;
+                std::vector<unsigned int> goodMuonIndicesSSV2;
+
+                // muon loop
                 for (unsigned muii = 0; muii < cms2.mus_p4().size(); ++muii) {
-                    if (cms2.mus_p4()[muii].pt() <= 20.) continue;
-                    if (muonId(muii, NominalTTbarV2)) {
+                    if (cms2.mus_p4()[muii].pt() <= 10.) continue;
+                    // for SS
+                    if (muonId(muii, NominalSSv2) && fabs(cms2.mus_p4()[muii].eta()) < 2.4) {
+                        goodMuonIndicesSSV2.push_back(muii);
+                    }
+                    // for TTBarV2
+                    if (cms2.mus_p4()[muii].pt() > 20. && muonId(muii, NominalTTbarV2)) {
+                        goodMuonIndicesTTBarV2.push_back(muii);
                         ++ngoodlep_;
                         ++ngoodmus_;
                     }
                 }
+
+                // electron loop
                 for (unsigned eli = 0; eli < cms2.els_p4().size(); ++eli) {
-                    if (cms2.els_p4()[eli].pt() > 20. && pass_electronSelection(eli, electronSelection_ttbarV2)) {
+                    if (cms2.els_p4()[eli].pt() <= 10.) continue;
+                    cuts_t cuts_passed = electronSelection(eli);
+                    // for SS
+                    if(pass_electronSelectionCompareMask(cuts_passed, electronSelection_ssV2) && fabs(cms2.els_p4()[eli].eta()) < 2.4) {
+                        goodElectronIndicesSSV2.push_back(eli);
+                    }
+                    // for TTBarV2
+                    if(cms2.els_p4()[eli].pt() > 20.0 && pass_electronSelectionCompareMask(cuts_passed, electronSelection_ttbarV2)) {
+                        goodElectronIndicesTTBarV2.push_back(eli);
                         ++ngoodlep_;
                         ++ngoodels_;
                     }
                 }
+
+                //
+                // hypothesis stuff
+                //
 
                 hyp_type_    = cms2.hyp_type()[hypi];
                 pt1_         = cms2.hyp_lt_p4()[hypi].pt();
@@ -211,7 +228,10 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 pfmeff_ += (pt1_ + pt2_);
                 tcmeff_ += (pt1_ + pt2_);
 
-                // clean jets for hyp leptons
+                //
+                // clean jets for ALL leptons
+                //
+
                 VofP4 theJets;
                 std::vector<unsigned int> theJetIndices;
                 sumjetpt_   = 0.;
@@ -219,15 +239,14 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 {
                     LorentzVector vjet = cms2.pfjets_p4()[jeti];
                     bool jetIsLep = false;
-                    for (unsigned int muj = 0; muj < cms2.mus_p4().size(); ++muj) {
-                        LorentzVector vlep = cms2.mus_p4()[muj];
-                        if (cms2.mus_p4()[muj].pt() <= 20.0) continue;
-                        if (dRbetweenVectors(vjet, vlep) < 0.4 && muonId(muj, NominalTTbarV2))
+                    for (unsigned int muj = 0; muj < goodMuonIndicesTTBarV2.size(); ++muj) {
+                        LorentzVector vlep = cms2.mus_p4()[goodMuonIndicesTTBarV2[muj]];
+                        if (dRbetweenVectors(vjet, vlep) < 0.4)
                             jetIsLep = true;
                     }
-                    for (unsigned int elj = 0; elj < cms2.els_p4().size(); ++elj) {
-                        LorentzVector vlep = cms2.els_p4()[elj];
-                        if (dRbetweenVectors(vjet, vlep) < 0.4 && cms2.els_p4()[elj].pt() > 20. && pass_electronSelection(elj, electronSelection_ttbarV2))
+                    for (unsigned int elj = 0; elj < goodElectronIndicesTTBarV2.size(); ++elj) {
+                        LorentzVector vlep = cms2.els_p4()[goodElectronIndicesTTBarV2[elj]];
+                        if (dRbetweenVectors(vjet, vlep) < 0.4)
                             jetIsLep = true;
                     }
                     if (jetIsLep) continue;
@@ -241,21 +260,24 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 std::sort(theJets.begin(), theJets.end(), sortByPt);
                 std::sort(theJetIndices.begin(), theJetIndices.end(), sortByPFJetPt);
 
+                //
+                // jet counting
+                //
+
                 // count jets for same sign analysis
                 njetsSS_    = 0;
                 for (unsigned int jeti = 0; jeti < cms2.pfjets_p4().size(); ++jeti)
                 {
                     LorentzVector vjet = cms2.pfjets_p4()[jeti];
                     bool jetIsLep = false;
-                    for (unsigned int muj = 0; muj < cms2.mus_p4().size(); ++muj) {
-                        LorentzVector vlep = cms2.mus_p4()[muj];
-                        if (cms2.mus_p4()[muj].pt() <= 10.) continue;
-                        if (dRbetweenVectors(vjet, vlep) < 0.4 && muonId(muj, NominalSSv2) && fabs(cms2.mus_p4()[muj].eta()) < 2.4)
+                    for (unsigned int muj = 0; muj < goodMuonIndicesSSV2.size(); ++muj) {
+                        LorentzVector vlep = cms2.mus_p4()[goodMuonIndicesSSV2[muj]];
+                        if (dRbetweenVectors(vjet, vlep) < 0.4)
                             jetIsLep = true;
                     }
-                    for (unsigned int elj = 0; elj < cms2.els_p4().size(); ++elj) {
-                        LorentzVector vlep = cms2.els_p4()[elj];
-                        if (dRbetweenVectors(vjet, vlep) < 0.4 && cms2.els_p4()[elj].pt() > 10. && pass_electronSelection(elj, electronSelection_ssV2) && fabs(cms2.els_p4()[elj].eta()) < 2.4)
+                    for (unsigned int elj = 0; elj < goodElectronIndicesSSV2.size(); ++elj) {
+                        LorentzVector vlep = cms2.els_p4()[goodElectronIndicesSSV2[elj]];
+                        if (dRbetweenVectors(vjet, vlep) < 0.4)
                             jetIsLep = true;
                     }
                     if (jetIsLep) continue;
@@ -265,6 +287,11 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                         sumjetptSS_ += vjet.Pt();
                     }
                 }					
+
+                //
+                // jet kinematic quantities 
+                // for TTBarV2 selection cleaning
+                // 
 
                 njets_        = theJetIndices.size();
                 jet1pt_       = theJetIndices.size() > 0 ? cms2.pfjets_p4()[theJetIndices[0]].pt()  : -999999.;
@@ -923,6 +950,36 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e2_ctfCharge",  &e2_ctfCharge_,  "e2_ctfCharge/I" );
     babyTree_->Branch("e2_gsfCharge",  &e2_gsfCharge_,  "e2_gsfCharge/I" );
     babyTree_->Branch("e2_scCharge",   &e2_scCharge_,   "e2_scCharge/I"  );
+}
+
+void dilepbabymaker::SetEventLevelInfo ()
+{
+
+    strcpy(dataset_, cms2.evt_dataset().Data());
+    run_        = cms2.evt_run();
+    ls_         = cms2.evt_lumiBlock();
+    evt_        = cms2.evt_event();
+    isdata_     = cms2.evt_isRealData();
+
+    evt_clean082010_ = cleaning_standardAugust2010(isdata_);
+    evt_clean102010_ = cleaning_standardOctober2010();
+
+    nvtx_ = 0;
+    for (unsigned int i=0; i<cms2.vtxs_isFake().size(); i++) {
+        // isGoodVertex is defined in CORE/eventSelections.cc
+        // !isFake, ndof >= 4, rho <= 2, Z <= 24.
+        if (isGoodVertex(i))
+            ++nvtx_;
+    }
+
+    if (!isdata_) {
+        int nlep  = leptonGenpCount_lepTauDecays(ngenels_, ngenmus_, ngentaus_);
+        scale1fb_ = cms2.evt_scale1fb();
+        pthat_    = cms2.genps_pthat();
+    }
+
+    ntrks_      = cms2.trks_trk_p4().size();
+
 }
 
 void dilepbabymaker::FillBabyNtuple()

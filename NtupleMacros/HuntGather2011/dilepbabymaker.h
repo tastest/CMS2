@@ -16,6 +16,9 @@ class dilepbabymaker
         };
         void MakeBabyNtuple (const char *);
         void InitBabyNtuple ();
+
+        void SetEventLevelInfo ();
+
         void FillBabyNtuple ();
         void CloseBabyNtuple ();
         void ScanChain (const char *, const char *, int nEvents = -1);
