@@ -410,107 +410,38 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 // check if hypothesis makes an extra Z
                 extraZveto_ = makesExtraZ(hypi, false, false);
 
-                // figure out hypothesis type and fill appropriate iso, type variables
-                if (hyp_type_ == 0)
-                {
-                    iso1_   = muonIsoValue(index1);
-                    iso2_   = muonIsoValue(index2);
-                    type1_  = cms2.mus_type()[index1];
-                    type2_  = cms2.mus_type()[index2];
+                //
+                // Now fill the detailed electron/muon specific variables
+                // for each leg of the hypothesis
+                //
 
-                    mu1_muonidfull_   = muonId(index1, NominalTTbarV2); 
-                    mu1_muonid_       = muonIdNotIsolated(index1, NominalTTbarV2); 
-                    mu1_muonidfullV1_ = muonId(index1, NominalTTbar); 
-                    mu1_muonidV1_     = muonIdNotIsolated(index1, NominalTTbar); 
+                //
+                // First do LT
+                //
+
+                // if LT is a mu, fill mu info
+                if (abs(cms2.hyp_lt_id()[hypi]) == 13) {
+                    iso1_   = muonIsoValue(index1);
+                    type1_  = cms2.mus_type()[index1];
+                    mu1_muonidfull_   = muonId(index1, NominalTTbarV2);
+                    mu1_muonid_       = muonIdNotIsolated(index1, NominalTTbarV2);
+                    mu1_muonidfullV1_ = muonId(index1, NominalTTbar);
+                    mu1_muonidV1_     = muonIdNotIsolated(index1, NominalTTbar);
                     mu1_goodmask_     = cms2.mus_goodmask()[index1];
                     mu1_gfitchi2_     = cms2.mus_gfit_chi2()[index1] < -9000. ? -999999. : cms2.mus_gfit_chi2()[index1]/cms2.mus_gfit_ndof()[index1];
-                    mu1_cosmic_       = isCosmics(index1); 
+                    mu1_cosmic_       = isCosmics(index1);
                     mu1_siHits_       = cms2.mus_validHits()[index1];
                     mu1_saHits_       = cms2.mus_gfit_validSTAHits()[index1];
                     mu1_emVetoDep_    = cms2.mus_iso_ecalvetoDep()[index1];
                     mu1_hadVetoDep_   = cms2.mus_iso_hcalvetoDep()[index1];
-                    if (cms2.mus_pfmusidx()[index1] > -1)
-                        mu1_isPFmuon_ = 1;
-
-                    mu2_muonidfull_   = muonId(index2, NominalTTbarV2);
-                    mu2_muonid_       = muonIdNotIsolated(index2, NominalTTbarV2);
-                    mu2_muonidfullV1_ = muonId(index2, NominalTTbar);
-                    mu2_muonidV1_     = muonIdNotIsolated(index2, NominalTTbar);
-                    mu2_goodmask_     = cms2.mus_goodmask()[index2];
-                    mu2_gfitchi2_     = cms2.mus_gfit_chi2()[index2] < -9000. ? -999999. : cms2.mus_gfit_chi2()[index2]/cms2.mus_gfit_ndof()[index2];
-                    mu2_cosmic_       = isCosmics(index2); 
-                    mu2_siHits_       = cms2.mus_validHits()[index2];
-                    mu2_saHits_       = cms2.mus_gfit_validSTAHits()[index2];
-                    mu2_emVetoDep_    = cms2.mus_iso_ecalvetoDep()[index2];
-                    mu2_hadVetoDep_   = cms2.mus_iso_hcalvetoDep()[index2];
-                    if (cms2.mus_pfmusidx()[index2] > -1)
-                        mu2_isPFmuon_ = 1;
-
+                    if (cms2.mus_pfmusidx()[index1] > -1) mu1_isPFmuon_ = 1;
                     int trkidx1 = cms2.mus_trkidx()[index1];
-                    int trkidx2 = cms2.mus_trkidx()[index2];
                     d0vtx1_ = cms2.trks_d0vtx()[trkidx1];
-                    d0vtx2_ = cms2.trks_d0vtx()[trkidx2];
                 }
-                else if (hyp_type_ == 1)
-                {
-                    iso1_   = muonIsoValue(index1);
-                    iso2_   = electronIsolation_rel(index2, true);
-                    type1_  = cms2.mus_type()[index1];
-                    type2_  = cms2.els_type()[index2];
-
-                    mu1_muonidfull_   = muonId(index1, NominalTTbarV2); 
-                    mu1_muonid_       = muonIdNotIsolated(index1, NominalTTbarV2); 
-                    mu1_muonidfullV1_ = muonId(index1, NominalTTbar); 
-                    mu1_muonidV1_     = muonIdNotIsolated(index1, NominalTTbar); 
-                    mu1_goodmask_     = cms2.mus_goodmask()[index1];
-                    mu1_gfitchi2_     = cms2.mus_gfit_chi2()[index1] < -9000. ? -999999. : cms2.mus_gfit_chi2()[index1]/cms2.mus_gfit_ndof()[index1];
-                    mu1_cosmic_       = isCosmics(index1); 
-                    mu1_siHits_       = cms2.mus_validHits()[index1];
-                    mu1_saHits_       = cms2.mus_gfit_validSTAHits()[index1];
-                    mu1_emVetoDep_    = cms2.mus_iso_ecalvetoDep()[index1];
-                    mu1_hadVetoDep_   = cms2.mus_iso_hcalvetoDep()[index1];
-                    if (cms2.mus_pfmusidx()[index1] > -1)
-                        mu1_isPFmuon_ = 1;
-
-                    int trkidx1 = cms2.mus_trkidx()[index1];
-                    int trkidx2 = cms2.els_trkidx()[index2];
-                    d0vtx1_ = cms2.trks_d0vtx()[trkidx1];
-                    if (trkidx2 >= 0)
-                        d0vtx2_ = cms2.trks_d0vtx()[trkidx2];
-                    e2_cand01full_  = pass_electronSelection(index2, electronSelection_ttbar);
-                    e2_cand01_      = electronId_cand(index2, CAND_01);
-                    e2_vbtf90full_  = pass_electronSelection(index2, electronSelection_ttbarV2);
-                    electronIdComponent_t answer_vbtf90 = electronId_VBTF(index2, VBTF_35X_90);
-                    e2_vbtf90_      = (answer_vbtf90 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
-                    electronIdComponent_t answer_vbtf85 = electronId_VBTF(index2, VBTF_35X_85);
-                    e2_vbtf85_      = (answer_vbtf85 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
-                    electronIdComponent_t answer_vbtf80 = electronId_VBTF(index2, VBTF_35X_80);
-                    e2_vbtf80_      = (answer_vbtf80 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
-                    electronIdComponent_t answer_vbtf70 = electronId_VBTF(index2, VBTF_35X_70);
-                    e2_vbtf70_      = (answer_vbtf70 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
-                    e2_scet_        = cms2.els_eSC()[index2] / cosh(cms2.els_etaSC()[index2]);
-                    e2_eopin_       = cms2.els_eOverPIn()[index2];
-                    e2_hoe_         = cms2.els_hOverE()[index2];
-                    e2_dphiin_      = cms2.els_dPhiIn()[index2];
-                    e2_detain_      = cms2.els_dEtaIn()[index2];
-                    e2_e25Me55_     = cms2.els_e2x5Max()[index2] / cms2.els_e5x5()[index2];
-                    e2_sigieie_     = cms2.els_sigmaIEtaIEta()[index2];
-                    e2_eMe55_       = cms2.els_eMax()[index2] / cms2.els_e5x5()[index2];
-                    e2_nmHits_      = cms2.els_exp_innerlayers()[index2];
-                    e2_dcot_        = cms2.els_conv_dcot()[index2];
-                    e2_dist_        = cms2.els_conv_dist()[index2];
-                    e2_drmu_        = cms2.els_closestMuon()[index2] < 0 ? -999999. : cms2.els_musdr()[index2];
-                    e2_isspike_     = isSpikeElectron(index2);
-                    e2_scCharge_   = cms2.els_sccharge()[index2];
-                    e2_gsfCharge_  = cms2.els_trk_charge()[index2];
-                    e2_ctfCharge_  = cms2.els_trkidx()[index2] > -1 ? cms2.trks_charge()[cms2.els_trkidx()[index2]] : -999999;
-                }
-                else if (hyp_type_ == 2)
-                {
+                // if LT is an ele, fill ele info
+                if (abs(cms2.hyp_lt_id()[hypi]) == 11) {
                     iso1_   = electronIsolation_rel(index1, true);
-                    iso2_   = muonIsoValue(index2);
                     type1_  = cms2.els_type()[index1];
-                    type2_  = cms2.mus_type()[index2];
                     e1_cand01full_  = pass_electronSelection(index1, electronSelection_ttbar);
                     e1_cand01_      = electronId_cand(index1, CAND_01);
                     e1_vbtf90full_  = pass_electronSelection(index1, electronSelection_ttbarV2);
@@ -538,77 +469,53 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e1_scCharge_   = cms2.els_sccharge()[index1];
                     e1_gsfCharge_  = cms2.els_trk_charge()[index1];
                     e1_ctfCharge_  = cms2.els_trkidx()[index1] > -1 ? cms2.trks_charge()[cms2.els_trkidx()[index1]] : -999999;
+                    int trkidx1 = cms2.els_trkidx()[index1];
+                    if(trkidx1 >= 0) d0vtx1_ = cms2.trks_d0vtx()[trkidx1];
+                }
 
-                    mu2_muonidfull_   = muonId(index2, NominalTTbarV2); 
-                    mu2_muonid_       = muonIdNotIsolated(index2, NominalTTbarV2); 
-                    mu2_muonidfullV1_ = muonId(index2, NominalTTbar); 
-                    mu2_muonidV1_     = muonIdNotIsolated(index2, NominalTTbar); 
+                //
+                // Now do LL...
+                //
+    
+                // if LL is a mu, fill mu info
+                if (abs(cms2.hyp_ll_id()[hypi]) == 13) {
+                    iso2_   = muonIsoValue(index2);
+                    type2_  = cms2.mus_type()[index2];
+                    mu2_muonidfull_   = muonId(index2, NominalTTbarV2);
+                    mu2_muonid_       = muonIdNotIsolated(index2, NominalTTbarV2);
+                    mu2_muonidfullV1_ = muonId(index2, NominalTTbar);
+                    mu2_muonidV1_     = muonIdNotIsolated(index2, NominalTTbar);
                     mu2_goodmask_     = cms2.mus_goodmask()[index2];
                     mu2_gfitchi2_     = cms2.mus_gfit_chi2()[index2] < -9000. ? -999999. : cms2.mus_gfit_chi2()[index2]/cms2.mus_gfit_ndof()[index2];
-                    mu2_cosmic_       = isCosmics(index2); 
+                    mu2_cosmic_       = isCosmics(index2);
                     mu2_siHits_       = cms2.mus_validHits()[index2];
                     mu2_saHits_       = cms2.mus_gfit_validSTAHits()[index2];
                     mu2_emVetoDep_    = cms2.mus_iso_ecalvetoDep()[index2];
                     mu2_hadVetoDep_   = cms2.mus_iso_hcalvetoDep()[index2];
-                    if (cms2.mus_pfmusidx()[index2] > -1)
-                        mu2_isPFmuon_ = 1;
-
-                    int trkidx1 = cms2.els_trkidx()[index1];
+                    if (cms2.mus_pfmusidx()[index2] > -1) mu2_isPFmuon_ = 1;
                     int trkidx2 = cms2.mus_trkidx()[index2];
-                    if(trkidx1 >= 0)
-                        d0vtx1_ = cms2.trks_d0vtx()[trkidx1];
                     d0vtx2_ = cms2.trks_d0vtx()[trkidx2];
                 }
-                else if (hyp_type_ == 3)
-                {
-                    iso1_   = electronIsolation_rel(index1, true);
+                // if LL is an ele, fill ele info
+                if (abs(cms2.hyp_ll_id()[hypi]) == 11) {
                     iso2_   = electronIsolation_rel(index2, true);
-                    type1_  = cms2.els_type()[index1];
                     type2_  = cms2.els_type()[index2];
-                    e1_cand01full_  = pass_electronSelection(index1, electronSelection_ttbar);
-                    e1_cand01_      = electronId_cand(index1, CAND_01);
-                    e1_vbtf90full_  = pass_electronSelection(index1, electronSelection_ttbarV2);
-                    electronIdComponent_t answer_vbtf90 = electronId_VBTF(index1, VBTF_35X_90);
-                    e1_vbtf90_      = (answer_vbtf90 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
-                    electronIdComponent_t answer_vbtf85 = electronId_VBTF(index1, VBTF_35X_85);
-                    e1_vbtf85_      = (answer_vbtf85 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
-                    electronIdComponent_t answer_vbtf80 = electronId_VBTF(index1, VBTF_35X_80);
-                    e1_vbtf80_      = (answer_vbtf80 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
-                    electronIdComponent_t answer_vbtf70 = electronId_VBTF(index1, VBTF_35X_70);
-                    e1_vbtf70_      = (answer_vbtf70 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
-                    e1_scet_        = cms2.els_eSC()[index1] / cosh(cms2.els_etaSC()[index1]);
-                    e1_eopin_       = cms2.els_eOverPIn()[index1];
-                    e1_hoe_         = cms2.els_hOverE()[index1];
-                    e1_dphiin_      = cms2.els_dPhiIn()[index1];
-                    e1_detain_      = cms2.els_dEtaIn()[index1];
-                    e1_e25Me55_     = cms2.els_e2x5Max()[index1] / cms2.els_e5x5()[index1];
-                    e1_sigieie_     = cms2.els_sigmaIEtaIEta()[index1];
-                    e1_eMe55_       = cms2.els_eMax()[index1] / cms2.els_e5x5()[index1];
-                    e1_nmHits_      = cms2.els_exp_innerlayers()[index1];
-                    e1_dcot_        = cms2.els_conv_dcot()[index1];
-                    e1_dist_        = cms2.els_conv_dist()[index1];
-                    e1_drmu_        = cms2.els_closestMuon()[index1] < 0 ? -999999. : cms2.els_musdr()[index1];
-                    e1_isspike_     = isSpikeElectron(index1);
-                    e1_scCharge_    = cms2.els_sccharge()[index1];
-                    e1_gsfCharge_   = cms2.els_trk_charge()[index1];
-                    e1_ctfCharge_   = cms2.els_trkidx()[index1] > -1 ? cms2.trks_charge()[cms2.els_trkidx()[index1]] : -999999;
-
                     e2_cand01full_  = pass_electronSelection(index2, electronSelection_ttbar);
                     e2_cand01_      = electronId_cand(index2, CAND_01);
                     e2_vbtf90full_  = pass_electronSelection(index2, electronSelection_ttbarV2);
-                    answer_vbtf90   = electronId_VBTF(index2, VBTF_35X_90);
+                    electronIdComponent_t answer_vbtf90   = electronId_VBTF(index2, VBTF_35X_90);
                     e2_vbtf90_      = (answer_vbtf90 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
-                    answer_vbtf85   = electronId_VBTF(index2, VBTF_35X_85);
+                    electronIdComponent_t answer_vbtf85   = electronId_VBTF(index2, VBTF_35X_85);
                     e2_vbtf85_      = (answer_vbtf85 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
-                    answer_vbtf80   = electronId_VBTF(index2, VBTF_35X_80);
+                    electronIdComponent_t answer_vbtf80   = electronId_VBTF(index2, VBTF_35X_80);
                     e2_vbtf80_      = (answer_vbtf80 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
-                    answer_vbtf70   = electronId_VBTF(index2, VBTF_35X_70);
+                    electronIdComponent_t answer_vbtf70   = electronId_VBTF(index2, VBTF_35X_70);
                     e2_vbtf70_      = (answer_vbtf70 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
                     e2_scet_        = cms2.els_eSC()[index2] / cosh(cms2.els_etaSC()[index2]);
                     e2_eopin_       = cms2.els_eOverPIn()[index2];
                     e2_hoe_         = cms2.els_hOverE()[index2];
                     e2_dphiin_      = cms2.els_dPhiIn()[index2];
-                    e2_detain_      = cms2.els_dEtaIn()[index2];
+                    e2_detain_      = cms2.els_dEtaIn()[index2]; 
                     e2_e25Me55_     = cms2.els_e2x5Max()[index2] / cms2.els_e5x5()[index2];
                     e2_sigieie_     = cms2.els_sigmaIEtaIEta()[index2];
                     e2_eMe55_       = cms2.els_eMax()[index2] / cms2.els_e5x5()[index2];
@@ -618,16 +525,15 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e2_drmu_        = cms2.els_closestMuon()[index2] < 0 ? -999999. : cms2.els_musdr()[index2];
                     e2_isspike_     = isSpikeElectron(index2);
                     e2_scCharge_    = cms2.els_sccharge()[index2];
-                    e2_gsfCharge_   = cms2.els_trk_charge()[index2];
+                    e2_gsfCharge_   = cms2.els_trk_charge()[index2]; 
                     e2_ctfCharge_   = cms2.els_trkidx()[index2] > -1 ? cms2.trks_charge()[cms2.els_trkidx()[index2]] : -999999;
-
-                    int trkidx1 = cms2.els_trkidx()[index1];
                     int trkidx2 = cms2.els_trkidx()[index2];
-                    if (trkidx1 >= 0)
-                        d0vtx1_ = cms2.trks_d0vtx()[trkidx1];
-                    if (trkidx2 >= 0)
-                        d0vtx2_ = cms2.trks_d0vtx()[trkidx2];
+                    if (trkidx2 >= 0) d0vtx2_ = cms2.trks_d0vtx()[trkidx2];
                 }
+
+                //
+                // Now write everything to the baby
+                //
 
                 FillBabyNtuple();
             }
