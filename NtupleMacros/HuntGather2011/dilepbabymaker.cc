@@ -11,6 +11,7 @@
 #include "TObjArray.h"
 #include "TTree.h"
 
+// CMS2 CORE includes 
 #include "../CORE/MT2/MT2.h"
 #include "../CORE/CMS2.h"
 #include "../CORE/mcSelections.h"
@@ -20,7 +21,11 @@
 #include "../CORE/muonSelections.h"
 #include "../CORE/trackSelections.h"
 #include "../CORE/ssSelections.h"
+#include "../CORE/eventSelections.h"
 
+// tools include is for
+// the duplicate cleaning
+#include "../Tools/tools.cc"
 
 void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilename, int nEvents)
 {
@@ -59,7 +64,11 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
             // dilepton hypothesis stuff
             for (unsigned hypi = 0; hypi < cms2.hyp_p4().size(); ++hypi)
             {
-                // require 5/5 hypothesis
+
+                //
+                // select a basic 10/10 hypothesis
+                //
+
                 if (min(cms2.hyp_lt_p4()[hypi].pt(), cms2.hyp_ll_p4()[hypi].pt()) < 10.)
                     continue;
 
@@ -71,21 +80,43 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 if (abs(cms2.hyp_ll_id()[hypi]) == 13 && !(cms2.mus_type()[index2] & 6))
                     continue;
 
+                //
+                // duplicate removal for data
+                //
+
+                if (cms2.evt_isRealData()) {
+                    DorkyEventIdentifier id(cms2.evt_run(), cms2.evt_event(), cms2.evt_lumiBlock());
+                    if (is_duplicate(id)) {
+                        continue;
+                    }
+                }
+
+                //
                 // initialize baby quantities
+                //
+
                 InitBabyNtuple();
 
-                // event stuff
+                //
+                // Fill event level information
+                //
+
                 strcpy(dataset_, cms2.evt_dataset().Data());
                 run_        = cms2.evt_run();
                 ls_         = cms2.evt_lumiBlock();
                 evt_        = cms2.evt_event();
                 isdata_     = cms2.evt_isRealData();
+
+                evt_clean082010_ = cleaning_standardAugust2010(isdata_);
+                evt_clean102010_ = cleaning_standardOctober2010();
+
                 nvtx_ = 0;
                 for (unsigned int i=0; i<cms2.vtxs_isFake().size(); i++) {
-                    if (!cms2.vtxs_isFake()[i] && cms2.vtxs_isValid()[i])
+                    // isGoodVertex is defined in CORE/eventSelections.cc
+                    // !isFake, ndof >= 4, rho <= 2, Z <= 24.
+                    if (isGoodVertex(i))
                         ++nvtx_;
                 }
-
 
                 if (!isdata_) {
                     int nlep  = leptonGenpCount_lepTauDecays(ngenels_, ngenmus_, ngentaus_);
@@ -155,18 +186,18 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 dilpt_       = cms2.hyp_p4()[hypi].pt();		 
                 deltaphi_    = deltaPhi(phi1_, phi2_);
 
-				// calculate projected pfmet
-				float mindphi_pfmet = min(dphipfmet1_, dphipfmet2_);
-				if (mindphi_pfmet < TMath::Pi()/2.)
-					 proj_pfmet_ = pfmet_ * sin(mindphi_pfmet);
-				else
-					 proj_pfmet_ = pfmet_;
-				// calculate projected pfmet
-				float mindphi_tcmet = min(dphitcmet1_, dphitcmet2_);
-				if (mindphi_tcmet < TMath::Pi()/2.)
-					 proj_tcmet_ = tcmet_ * sin(mindphi_tcmet);
-				else
-					 proj_tcmet_ = tcmet_;				
+                // calculate projected pfmet
+                float mindphi_pfmet = min(dphipfmet1_, dphipfmet2_);
+                if (mindphi_pfmet < TMath::Pi()/2.)
+                    proj_pfmet_ = pfmet_ * sin(mindphi_pfmet);
+                else
+                    proj_pfmet_ = pfmet_;
+                // calculate projected pfmet
+                float mindphi_tcmet = min(dphitcmet1_, dphitcmet2_);
+                if (mindphi_tcmet < TMath::Pi()/2.)
+                    proj_tcmet_ = tcmet_ * sin(mindphi_tcmet);
+                else
+                    proj_tcmet_ = tcmet_;				
 
                 // initialize meff to 0
                 pfmeff_ = 0.;
@@ -204,7 +235,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     if (cms2.pfjets_p4()[jeti].pt() > 30. && fabs(cms2.pfjets_p4()[jeti].eta()) < 2.5 && isGoodPFJet(jeti)) {
                         theJets.push_back(cms2.pfjets_p4()[jeti]);
                         theJetIndices.push_back(jeti);
-						sumjetpt_ += vjet.Pt();
+                        sumjetpt_ += vjet.Pt();
                     }
                 }
                 std::sort(theJets.begin(), theJets.end(), sortByPt);
@@ -282,10 +313,10 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                         else if (jeti == 2)
                             jet3isBtag_ = 1;
                     }
-					if (cms2.pfjets_trackCountingHighEffBJetTag()[jeti] > 1.7)
-						 ++ntceffbtags_;
-					if (cms2.pfjets_trackCountingHighPurBJetTag()[jeti] > 1.19)
-						 ++ntcpurbtags_;
+                    if (cms2.pfjets_trackCountingHighEffBJetTag()[jeti] > 1.7)
+                        ++ntceffbtags_;
+                    if (cms2.pfjets_trackCountingHighPurBJetTag()[jeti] > 1.19)
+                        ++ntcpurbtags_;
 
                     float currdphipfmet = deltaPhi(thePFMetPhi, cms2.pfjets_p4()[theJetIndices[jeti]].phi());
                     if (currdphipfmet < mindphipfmet)
@@ -296,8 +327,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                         mindphitcmet = currdphitcmet;
 
                     // add jet pt to meff
-					pfmeff_ += cms2.pfjets_p4()[theJetIndices[jeti]].pt();
-					tcmeff_ += cms2.pfjets_p4()[theJetIndices[jeti]].pt();
+                    pfmeff_ += cms2.pfjets_p4()[theJetIndices[jeti]].pt();
+                    tcmeff_ += cms2.pfjets_p4()[theJetIndices[jeti]].pt();
                 }
 
                 dphipfmetjet_ = mindphipfmet;
@@ -354,8 +385,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     mu1_saHits_       = cms2.mus_gfit_validSTAHits()[index1];
                     mu1_emVetoDep_    = cms2.mus_iso_ecalvetoDep()[index1];
                     mu1_hadVetoDep_   = cms2.mus_iso_hcalvetoDep()[index1];
-					if (cms2.mus_pfmusidx()[index1] > -1)
-						 mu1_isPFmuon_ = 1;
+                    if (cms2.mus_pfmusidx()[index1] > -1)
+                        mu1_isPFmuon_ = 1;
 
                     mu2_muonidfull_   = muonId(index2, NominalTTbarV2);
                     mu2_muonid_       = muonIdNotIsolated(index2, NominalTTbarV2);
@@ -368,8 +399,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     mu2_saHits_       = cms2.mus_gfit_validSTAHits()[index2];
                     mu2_emVetoDep_    = cms2.mus_iso_ecalvetoDep()[index2];
                     mu2_hadVetoDep_   = cms2.mus_iso_hcalvetoDep()[index2];
-					if (cms2.mus_pfmusidx()[index2] > -1)
-						 mu2_isPFmuon_ = 1;
+                    if (cms2.mus_pfmusidx()[index2] > -1)
+                        mu2_isPFmuon_ = 1;
 
                     int trkidx1 = cms2.mus_trkidx()[index1];
                     int trkidx2 = cms2.mus_trkidx()[index2];
@@ -394,8 +425,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     mu1_saHits_       = cms2.mus_gfit_validSTAHits()[index1];
                     mu1_emVetoDep_    = cms2.mus_iso_ecalvetoDep()[index1];
                     mu1_hadVetoDep_   = cms2.mus_iso_hcalvetoDep()[index1];
-					if (cms2.mus_pfmusidx()[index1] > -1)
-						 mu1_isPFmuon_ = 1;
+                    if (cms2.mus_pfmusidx()[index1] > -1)
+                        mu1_isPFmuon_ = 1;
 
                     int trkidx1 = cms2.mus_trkidx()[index1];
                     int trkidx2 = cms2.els_trkidx()[index2];
@@ -475,8 +506,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     mu2_saHits_       = cms2.mus_gfit_validSTAHits()[index2];
                     mu2_emVetoDep_    = cms2.mus_iso_ecalvetoDep()[index2];
                     mu2_hadVetoDep_   = cms2.mus_iso_hcalvetoDep()[index2];
-					if (cms2.mus_pfmusidx()[index2] > -1)
-						 mu2_isPFmuon_ = 1;
+                    if (cms2.mus_pfmusidx()[index2] > -1)
+                        mu2_isPFmuon_ = 1;
 
                     int trkidx1 = cms2.els_trkidx()[index1];
                     int trkidx2 = cms2.mus_trkidx()[index2];
@@ -575,6 +606,8 @@ void dilepbabymaker::InitBabyNtuple ()
     ls_           = -999999;
     evt_          = -999999;
     isdata_       = 1;
+    evt_clean082010_ = -999999;
+    evt_clean102010_ = -999999;    
     nvtx_         = -999999;
     scale1fb_     = -999999.;
     pthat_        = -999999.;
@@ -660,7 +693,7 @@ void dilepbabymaker::InitBabyNtuple ()
     mu1_saHits_       = -999999;
     mu1_emVetoDep_    = -999999.;
     mu1_hadVetoDep_   = -999999.;
-	mu1_isPFmuon_     = 0;
+    mu1_isPFmuon_     = 0;
 
     mu2_muonidfull_   = 0;
     mu2_muonid_       = 0;
@@ -673,7 +706,7 @@ void dilepbabymaker::InitBabyNtuple ()
     mu2_saHits_       = -999999;
     mu2_emVetoDep_    = -999999.;
     mu2_hadVetoDep_   = -999999.;
-	mu2_isPFmuon_     = 0;
+    mu2_isPFmuon_     = 0;
 
     // electron stuff
     e1_cand01full_  = 0;
@@ -741,6 +774,8 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("evt",          &evt_,         "evt/I"         );
     babyTree_->Branch("nvtx",         &nvtx_,        "nvtx/I"        );
     babyTree_->Branch("isdata",       &isdata_,      "isdata/I"      );
+    babyTree_->Branch("evt_clean082010",       &evt_clean082010_,      "evt_clean082010/I"      );
+    babyTree_->Branch("evt_clean102010",       &evt_clean102010_,      "evt_clean102010/I"      );
     babyTree_->Branch("scale1fb",     &scale1fb_,    "scale1fb/F"    );
     babyTree_->Branch("pthat",        &pthat_,       "pthat/F"       );
     babyTree_->Branch("hyp_type",     &hyp_type_,    "hyp_type/I"    );
@@ -825,7 +860,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("mu1_saHits",       &mu1_saHits_,       "mu1_saHits/I"      );
     babyTree_->Branch("mu1_emVetoDep",    &mu1_emVetoDep_,    "mu1_emVetoDep/F"   );
     babyTree_->Branch("mu1_hadVetoDep",   &mu1_hadVetoDep_,   "mu1_hadVetoDep/F"  );
-	babyTree_->Branch("mu1_isPFmuon",     &mu1_isPFmuon_,     "mu1_isPFmuon/O"    );
+    babyTree_->Branch("mu1_isPFmuon",     &mu1_isPFmuon_,     "mu1_isPFmuon/O"    );
 
     babyTree_->Branch("mu2_muonidfull",   &mu2_muonidfull_,   "mu2_muonidfull/O"  );
     babyTree_->Branch("mu2_muonid",       &mu2_muonid_,       "mu2_muonid/O"      );
@@ -838,7 +873,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("mu2_saHits",       &mu2_saHits_,       "mu2_saHits/I"      );
     babyTree_->Branch("mu2_emVetoDep",    &mu2_emVetoDep_,    "mu2_emVetoDep/F"   );
     babyTree_->Branch("mu2_hadVetoDep",   &mu2_hadVetoDep_,   "mu2_hadVetoDep/F"  );
-	babyTree_->Branch("mu2_isPFmuon",     &mu2_isPFmuon_,     "mu2_isPFmuon/O"    );
+    babyTree_->Branch("mu2_isPFmuon",     &mu2_isPFmuon_,     "mu2_isPFmuon/O"    );
 
     // electron stuff
 
