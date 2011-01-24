@@ -157,7 +157,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                         goodMuonIndicesSSV2.push_back(muii);
                     }
                     // for TTBarV2
-                    if (cms2.mus_p4()[muii].pt() > 20. && muonId(muii, NominalTTbarV2)) {
+                    if (cms2.mus_p4()[muii].pt() > 10. && muonId(muii, NominalTTbarV2)) {
                         goodMuonIndicesTTBarV2.push_back(muii);
                         ++ngoodlep_;
                         ++ngoodmus_;
@@ -173,7 +173,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                         goodElectronIndicesSSV2.push_back(eli);
                     }
                     // for TTBarV2
-                    if(cms2.els_p4()[eli].pt() > 20.0 && pass_electronSelectionCompareMask(cuts_passed, electronSelection_ttbarV2)) {
+                    if(cms2.els_p4()[eli].pt() > 10. && pass_electronSelectionCompareMask(cuts_passed, electronSelection_ttbarV2)) {
                         goodElectronIndicesTTBarV2.push_back(eli);
                         ++ngoodlep_;
                         ++ngoodels_;
