@@ -62,9 +62,9 @@ class dilepbabymaker
         Float_t jet2phi_;
         Float_t jet3phi_;
         Float_t jetmass_;
-        Bool_t  jet1isBtag_;
-        Bool_t  jet2isBtag_;
-        Bool_t  jet3isBtag_;
+        Int_t  jet1isBtag_;
+        Int_t  jet2isBtag_;
+        Int_t  jet3isBtag_;
         Float_t dphipfmetjet_;
         Float_t dphitcmetjet_;
         Float_t deltaphi_;	

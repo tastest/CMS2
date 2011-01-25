@@ -753,9 +753,9 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("jet2phi",      &jet2phi_,     "jet2phi/F"     );
     babyTree_->Branch("jet3phi",      &jet3phi_,     "jet3phi/F"     );
     babyTree_->Branch("jetmass",      &jetmass_,     "jetmass/F"     );
-    babyTree_->Branch("jet1isBtag",   &jet1isBtag_,  "jet1isBtag/O"  );
-    babyTree_->Branch("jet2isBtag",   &jet2isBtag_,  "jet2isBtag/O"  );
-    babyTree_->Branch("jet3isBtag",   &jet3isBtag_,  "jet3isBtag/O"  );
+    babyTree_->Branch("jet1isBtag",   &jet1isBtag_,  "jet1isBtag/I"  );
+    babyTree_->Branch("jet2isBtag",   &jet2isBtag_,  "jet2isBtag/I"  );
+    babyTree_->Branch("jet3isBtag",   &jet3isBtag_,  "jet3isBtag/I"  );
     babyTree_->Branch("dphipfmetjet", &dphipfmetjet_,"dphipfmetjet/F");
     babyTree_->Branch("dphitcmetjet", &dphitcmetjet_,"dphitcmetjet/F");
     babyTree_->Branch("deltaphi",     &deltaphi_,    "deltaphi/F"    );
