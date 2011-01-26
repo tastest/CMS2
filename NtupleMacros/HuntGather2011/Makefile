@@ -1,10 +1,13 @@
 
 CC = g++
-INCLUDE = -I../
+INCLUDE = -I../ -I./
 CFLAGS = -Wall -g -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS) -DTOOLSLIB
 LINKER = g++
 LINKERFLAGS = $(shell root-config --ldflags)
 CMSROOT=../
+PLOTTERSRC=./plotter/
+BABYMAKERSRC=./babymaker/
+LIBDIR=libs
 
 CORESOURCES = \
     $(CMSROOT)/CORE/CMS2.cc \
@@ -20,20 +23,24 @@ CORESOURCES = \
     $(CMSROOT)/CORE/metSelections.cc \
     $(CMSROOT)/CORE/ssSelections.cc
 COREOBJECTS = $(CORESOURCES:.cc=.o) 
-CORELIB = libCMS2NtupleMacrosCORE.so
+CORELIB = $(LIBDIR)/libCMS2NtupleMacrosCORE.so
 
 TOOLSSOURCES = $(CMSROOT)/Tools/tools.cc \
 			   $(CMSROOT)/Tools/goodrun.cc 
-TOOLSOBJECTS = $(TOOLSSOURCES:.cc=.o) 
-TOOLSLIB = libCMS2NtupleMacrosTools.so
+TOOLSOBJECTS = $(TOOLSSOURCES:.cc=.o)
+TOOLSLIB = $(LIBDIR)/libCMS2NtupleMacrosTools.so
 
 MT2SOURCES = $(CMSROOT)/CORE/MT2/MT2.cc
 MT2OBJECTS = $(MT2SOURCES:.cc=.o)
-MT2LIB = libCMS2NtupleMacrosMT2.so
+MT2LIB = $(LIBDIR)/libCMS2NtupleMacrosCOREMT2.so
 
-LOOPERSOURCES = $(wildcard *.cc) 
-LOOPEROBJECTS = $(LOOPERSOURCES:.cc=.o) LinkDef_out.o
-LOOPERLIB = libCMS2NtupleMacrosLooper.so
+BABYMAKERSOURCES = $(wildcard $(BABYMAKERSRC)/*.cc) 
+BABYMAKEROBJECTS = $(BABYMAKERSOURCES:.cc=.o) $(LIBDIR)/LinkDef_out.o
+BABYMAKERLIB = $(LIBDIR)/libHuntGather2011Babymaker.so
+
+PLOTTERSOURCES = $(wildcard $(PLOTTERSRC)/*.cc)
+PLOTTEROBJECTS = $(PLOTTERSOURCES:.cc=.o) 
+PLOTTERLIB = $(LIBDIR)/libHuntGather2011Plotter.so
 
 FWLIB = ../Tools/MiniFWLite/libMiniFWLite.so
 
@@ -43,19 +50,23 @@ $(TOOLSLIB):	$(TOOLSOBJECTS)
 $(CORELIB):	$(COREOBJECTS) 
 	$(LINKER) $(LINKERFLAGS) -shared $(COREOBJECTS) -o $@ 
 
-$(LOOPERLIB):	$(LOOPEROBJECTS) 
-	$(LINKER) $(LINKERFLAGS) -shared $(LOOPEROBJECTS) -o $@ 
+$(BABYMAKERLIB):	$(BABYMAKEROBJECTS) 
+	$(LINKER) $(LINKERFLAGS) -shared $(BABYMAKEROBJECTS) -o $@ 
 
 $(MT2LIB):   $(MT2OBJECTS)
 	$(LINKER) $(LINKERFLAGS) -shared $(MT2OBJECTS) -o $@ 
+
+$(PLOTTERLIB):   $(PLOTTEROBJECTS)
+	$(LINKER) $(LINKERFLAGS) -shared $(PLOTTEROBJECTS) -o $@ 
+
 
 $(FWLIB) :
 	$(QUITE) echo "making MiniFWLite"; \
 	cd ../Tools/MiniFWLite; \
 	$(MAKE) -f Makefile;
 
-LinkDef_out.cxx: LinkDef.h emubabymaker.h dilepbabymaker.h
-	rootcint -f $@ -c $(INCLUDE) emubabymaker.h dilepbabymaker.h $<
+$(LIBDIR)/LinkDef_out.cxx: $(LIBDIR)/LinkDef.h  $(CMSROOT)/Tools/goodrun.h $(PLOTTERSRC)/BabyDorkIdentifier.h $(PLOTTERSRC)/BabySample.h $(PLOTTERSRC)/gather.h $(BABYMAKERSRC)/emubabymaker.h $(BABYMAKERSRC)/dilepbabymaker.h 
+	rootcint -f $@ -c $(INCLUDE)  $(CMSROOT)/Tools/goodrun.h $(PLOTTERSRC)/BabyDorkIdentifier.h $(PLOTTERSRC)/BabySample.h $(PLOTTERSRC)/gather.h $(BABYMAKERSRC)/emubabymaker.h $(BABYMAKERSRC)/dilepbabymaker.h $<
 
 # General rule for making object files
 %.d:	%.cc
@@ -71,23 +82,26 @@ LinkDef_out.cxx: LinkDef.h emubabymaker.h dilepbabymaker.h
 %.o: 	%.cxx
 	$(CC) $(CFLAGS) $< -c -o $@
 
-LIBS = $(CORELIB) $(TOOLSLIB) $(LOOPERLIB) $(FWLIB) $(MT2LIB)
+LIBS = $(CORELIB) $(TOOLSLIB) $(BABYMAKERLIB) $(FWLIB) $(MT2LIB) $(PLOTTERLIB)
 
 .PHONY: all
 all:	$(LIBS)  
+
+.PHONY: plotter
+plotter: $(PLOTTERLIB)
 
 .PHONY: clean
 clean:  
 	rm -f $(CMSROOT)/Tools/*.o $(CMSROOT)/Tools/*.d $(TOOLSLIB) \
 		$(CMSROOT)/CORE/*.o $(CMSROOT)/NtupleMacros/CORE/*.d $(CORELIB) \
 		$(CMSROOT)/CORE/MT2/*.o $(CMSROOT)/NtupleMacros/CORE/MT2/*.d $(MT2LIB) \
-		*.o *.d LinkDef_out.* $(LOOPERLIB)
+		plotter/*.o plotter/*.d $(PLOTTERLIB) \
+		babymaker/*.o babymaker/*.d $(LIBDIR)/LinkDef_out.* $(BABYMAKERLIB)
 
 -include $(TOOLSSOURCES:.cc=.d)
 -include $(CORESOURCES:.cc=.d)
--include $(LOOPERSOURCES:.cc=.d)
+-include $(BABYMAKERSOURCES:.cc=.d)
 -include $(MT2SOURCES:.cc=.d)
--include LinkDef_out.d
-
-.PRECIOUS: $(wildcard *.tbl) $(wildcard *.log) $(wildcard *.root)
+-include $(PLOTTERSOURCES:.cc=.d)
+-include $(LIBDIR)/LinkDef_out.d
 
