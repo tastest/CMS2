@@ -240,7 +240,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 for (unsigned int jeti = 0; jeti < cms2.pfjets_p4().size(); ++jeti)
                 {
 
-                    LorentzVector vjet = cms2.pfjets_p4()[jeti];
+                    LorentzVector vjet = cms2.pfjets_p4()[jeti]*cms2.pfjets_cor()[jeti];
                     bool jetIsLepTTBarV2 = false;
                     bool jetIsLepSSV2 = false;
 
@@ -257,13 +257,13 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     }
 
                     // 30 GeV TTBarV2 cleaning
-                    if (!jetIsLepTTBarV2 && cms2.pfjets_p4()[jeti].pt() > 30. && fabs(cms2.pfjets_p4()[jeti].eta()) < 2.5 && isGoodPFJet(jeti)) {
+                    if (!jetIsLepTTBarV2 && vjet.Pt() > 30. && fabs(cms2.pfjets_p4()[jeti].eta()) < 2.5 && isGoodPFJet(jeti)) {
                         theJets.push_back(cms2.pfjets_p4()[jeti]);
                         theJetIndices.push_back(jeti);
                         sumjetpt_ += vjet.Pt();
                     }
                     // 25 GeV TTBarV2 cleaning
-                    if (!jetIsLepTTBarV2 && cms2.pfjets_p4()[jeti].pt() > 25. && fabs(cms2.pfjets_p4()[jeti].eta()) < 2.5 && isGoodPFJet(jeti)) {
+                    if (!jetIsLepTTBarV2 && vjet.Pt() > 25. && fabs(cms2.pfjets_p4()[jeti].eta()) < 2.5 && isGoodPFJet(jeti)) {
                         sumjetpt25_ += vjet.Pt();
                     }
 
@@ -278,7 +278,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                         if (!jetIsLepSSV2 && dRbetweenVectors(vjet, vlep) < 0.4)
                             jetIsLepSSV2 = true;
                     }
-                    if (!jetIsLepSSV2 && cms2.pfjets_p4()[jeti].pt() > 30. && fabs(cms2.pfjets_p4()[jeti].eta()) < 2.5 && isGoodPFJet(jeti)) {
+                    if (!jetIsLepSSV2 && vjet.Pt() > 30. && fabs(cms2.pfjets_p4()[jeti].eta()) < 2.5 && isGoodPFJet(jeti)) {
                         ++njetsSS_;
                         sumjetptSS_ += vjet.Pt();
                     }
@@ -293,18 +293,19 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 // 
 
                 njets_        = theJetIndices.size();
-                jet1pt_       = theJetIndices.size() > 0 ? cms2.pfjets_p4()[theJetIndices[0]].pt()  : -999999.;
+                jet1pt_       = theJetIndices.size() > 0 ? cms2.pfjets_p4()[theJetIndices[0]].pt()*cms2.pfjets_cor()[theJetIndices[0]] : -999999.;
                 jet1eta_      = theJetIndices.size() > 0 ? cms2.pfjets_p4()[theJetIndices[0]].eta() : -999999.;
                 jet1phi_      = theJetIndices.size() > 0 ? cms2.pfjets_p4()[theJetIndices[0]].phi() : -999999.;
-                jet2pt_       = theJetIndices.size() > 1 ? cms2.pfjets_p4()[theJetIndices[1]].pt()  : -999999.;
+                jet2pt_       = theJetIndices.size() > 1 ? cms2.pfjets_p4()[theJetIndices[1]].pt()*cms2.pfjets_cor()[theJetIndices[1]] : -999999.;
                 jet2eta_      = theJetIndices.size() > 1 ? cms2.pfjets_p4()[theJetIndices[1]].eta() : -999999.;
                 jet2phi_      = theJetIndices.size() > 1 ? cms2.pfjets_p4()[theJetIndices[1]].phi() : -999999.;
-                jet3pt_       = theJetIndices.size() > 2 ? cms2.pfjets_p4()[theJetIndices[2]].pt()  : -999999.;
+                jet3pt_       = theJetIndices.size() > 2 ? cms2.pfjets_p4()[theJetIndices[2]].pt()*cms2.pfjets_cor()[theJetIndices[2]] : -999999.;
                 jet3eta_      = theJetIndices.size() > 2 ? cms2.pfjets_p4()[theJetIndices[2]].eta() : -999999.;
                 jet3phi_      = theJetIndices.size() > 2 ? cms2.pfjets_p4()[theJetIndices[2]].phi() : -999999.;
 
                 LorentzVector dijetP4;
-                jetmass_ = theJetIndices.size() > 1 ? sqrt((cms2.pfjets_p4()[theJetIndices[0]]+cms2.pfjets_p4()[theJetIndices[1]]).M2()) : -999999.; 
+                jetmass_ = theJetIndices.size() > 1 ? sqrt((cms2.pfjets_p4()[theJetIndices[0]]*cms2.pfjets_cor()[theJetIndices[0]] 
+                                    + cms2.pfjets_p4()[theJetIndices[1]]*cms2.pfjets_cor()[theJetIndices[1]]).M2()) : -999999.; 
 
                 double mindphipfmet = 999999.;
                 double mindphitcmet = 999999.;
@@ -370,8 +371,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                         mindphitcmet = currdphitcmet;
 
                     // add jet pt to meff
-                    pfmeff_ += cms2.pfjets_p4()[theJetIndices[jeti]].pt();
-                    tcmeff_ += cms2.pfjets_p4()[theJetIndices[jeti]].pt();
+                    pfmeff_ += cms2.pfjets_p4()[theJetIndices[jeti]].pt() * cms2.pfjets_cor()[theJetIndices[jeti]];
+                    tcmeff_ += cms2.pfjets_p4()[theJetIndices[jeti]].pt() * cms2.pfjets_cor()[theJetIndices[jeti]];
                 }
 
                 dphipfmetjet_ = mindphipfmet;
