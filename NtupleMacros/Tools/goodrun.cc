@@ -1,10 +1,7 @@
-// $Id: goodrun.cc,v 1.8 2010/08/14 20:07:26 jmuelmen Exp $
+// $Id: goodrun.cc,v 1.9 2011/01/26 17:49:47 dlevans Exp $
 
 // CINT is allowed to see this, but nothing else:
-bool goodrun (unsigned int run, unsigned int lumi_block);
-bool goodrun_json (unsigned int run, unsigned int lumi_block);
-void set_goodrun_file (const char* filename);
-void set_goodrun_file_json (const char* filename);
+#include "goodrun.h"
 
 #ifndef __CINT__
 
@@ -263,4 +260,27 @@ void set_goodrun_file_json (const char* filename)
      good_runs_loaded_ = true;
 }
 
+int min_run_min_lumi ()
+{
+     if (not good_runs_loaded_)
+      return -1;
+     set_t::const_iterator first = good_runs_.begin();
+     if (first != good_runs_.end())
+      return first->lumi_min;
+     return -1;
+}
+
+int max_run_max_lumi ()
+{
+     if (not good_runs_loaded_)
+      return -1;
+     set_t::const_iterator last = good_runs_.end();
+     if (last != good_runs_.begin()) {
+      last--;
+      return last->lumi_max;
+     }
+     return -1;
+}
+
 #endif // __CUNT__
+
