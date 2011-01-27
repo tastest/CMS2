@@ -238,7 +238,7 @@ TH1F* Plot(const BabySample *bs, TCut var, TCut selection, float intlumipb,
     if (bs->type() == DATA) {
         TTreePlayer *tp = (TTreePlayer*)bs->chain()->GetPlayer();
         tp->SetScanRedirect(kTRUE);
-        tp->SetScanFileName(Form("%s_%s_%i_%s.out", selection.GetName(), var.GetName(), bs->pfx(), bs->pfx2()));
+        tp->SetScanFileName(Form("../output/%s_%s_%i_%s.out", selection.GetName(), var.GetName(), bs->pfx(), bs->pfx2()));
         // trileptons
         if (bs->chain()->GetBranch("pt3"))
             bs->chain()->Scan("dataset:run:ls:evt:pt1:pt2:pt3", "", "colsize=20");
