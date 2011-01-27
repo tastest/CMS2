@@ -4,21 +4,43 @@
 # set up locations needed by the script
 #
 
-# location of the gathering scripts
-TOOL_DIR=$1
-# name of the dataset to process
-DATASET=$2
+# ucsd or cern
+GATHER_SITE=$1
+# location of the gathering tools
+GATHER_TOOL=$2
+# list of samples in input location to process
+GATHER_SAMPLE=$3
+# input ntuple prefix
+NTUPLE_PFX=$4
 
-# location of the ntuples
-BASE=/tas/cms2
+#
+# check input exists
+#
 
-# full location of the input ntuples
-# and the output babies
-INPUT_DATA_DIR=$BASE/$DATASET
-OUTPUT_DATA_DIR=$BASE/gather/data/$DATASET
+if [ ! $# -eq 4 ]; then
+    echo "USAGE: ./makeGatherPromptData.sh GATHER_SITE GATHER_TOOL GATHER_SAMPLE 
+    GATHER_SITE - UCSD or CERN: e.g. CERN
+    GATHER_TOOL - location of gathering scripts: e.g. /home/username/gathering/CMS2/HuntGather2011/babymaker/
+    GATHER_SAMPLE - sample: e.g. Electron_Run2010B-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/
+    NTUPLE_PFX - ntuple prexif: e.g. if ntuples called merged_ntuple_run_n.root then 'merged_ntuple'"
+    exit 1
+fi
 
-# location of ROOT
-export ROOTSYS=/afs/cern.ch/sw/lcg/app/releases/ROOT/5.26.00/x86_64-slc5-gcc34-opt/root/
+INPUT_DATA_DIR=""
+OUTPUT_DATA_DIR=""
+if [ "$GATHER_SITE" == "UCSD" ]; then
+    INPUT_DATA_DIR=/nfs-3/userdata/cms2/$GATHER_SAMPLE
+    OUTPUT_DATA_DIR=/nfs-3/userdata/cms2/gather/data/$GATHER_SAMPLE
+    export ROOTSYS=/code/osgcode/UCSD_root/root_v5.24.00
+elif [ "$GATHER_SITE" == "CERN" ]; then
+    INPUT_DATA_DIR=/tas/cms2/$GATHER_SAMPLE
+    OUTPUT_DATA_DIR=/tas/cms2/gather/data/$GATHER_SAMPLE
+    export ROOTSYS=/afs/cern.ch/sw/lcg/app/releases/ROOT/5.26.00/x86_64-slc5-gcc34-opt/root/
+else 
+    echo "ERROR: GATHER_SITE either UCSD or CERN"
+    exit 1
+fi
+
 export PATH=$ROOTSYS/bin:$PATH
 export LD_LIBRARY_PATH=$ROOTSYS/lib
 
@@ -34,10 +56,12 @@ do
 
     # all the runs/ntuples available for this dataset will be re listed
     # so start by clearing it
+    touch   $OUTPUT_DATA_DIR/AllRunsAvailable.txt
     rm      $OUTPUT_DATA_DIR/AllRunsAvailable.txt
     touch   $OUTPUT_DATA_DIR/AllRunsAvailable.txt
 
     # likewise the list of what needs to be processed because it is new
+    touch   $OUTPUT_DATA_DIR/RunsToProcess.txt
     rm      $OUTPUT_DATA_DIR/RunsToProcess.txt
     touch   $OUTPUT_DATA_DIR/RunsProcessed.txt
 
@@ -47,7 +71,7 @@ do
 
     # get the list of all available files and write them to AllRunsAvailable.txt
     echo "Checking for new files to process in $INPUT_DATA_DIR"
-    find $INPUT_DATA_DIR -follow -maxdepth 1 -name "merged_ntuple_[0-9]*.root" -printf "%p %s %C@\n"  >>  $OUTPUT_DATA_DIR/AllRunsAvailable.txt
+    find $INPUT_DATA_DIR -follow -maxdepth 1 -name ""$NTUPLE_PFX"_[0-9]*.root" -printf "%p %s %C@\n" >>  $OUTPUT_DATA_DIR/AllRunsAvailable.txt
 
     # loop over all AllRunsAvailable.txt, check RunsProcessed.txt,
     # if not there, add to RunsToProcess.txt
@@ -91,7 +115,7 @@ do
             OUTPUT_FILE=$OUTPUT_DATA_DIR/baby_gather_$NTUPLE_NAME
 
             # run the baby maker for this ntuple
-            CMD="root -b -l -q '$TOOL_DIR/makeGatherBaby.C(\"$INPUT_FILE\", \"$OUTPUT_FILE\")'"
+            CMD="root -b -l -q '$GATHER_TOOL/makeGatherBaby.C(\"$INPUT_FILE\", \"$OUTPUT_FILE\")'"
             eval $CMD
 
             # check the baby maker ran correctly

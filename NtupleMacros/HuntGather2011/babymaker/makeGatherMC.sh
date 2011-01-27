@@ -1,41 +1,55 @@
 
 #!/bin/bash
 
-# base location of input ntuples
-GATHER_MC_INPUT="/tas/cms2"
-
-# base location of output babies
-GATHER_MC_OUTPUT="/tas/cms2/gather/mc"
-
+# ucsd or cern
+GATHER_SITE=$1
 # list of samples in input location to process
-GATHER_MC_SAMPLES="
-WZtoAnything_TuneZ2_7TeV-pythia6-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/
-WWTo2L2Nu_TuneZ2_7TeV-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-14/
-GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/"
+GATHER_SAMPLE=$2
 
-#ZZtoAnything_TuneZ2_7TeV-pythia6-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/
-#WZtoAnything_TuneZ2_7TeV-pythia6-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/"
-#DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/diLepPt2020
-#GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/
-#PhotonVJets_7TeV-madgraph_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/
-#TTJets_TuneD6T_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/
-#WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/diLepPt2020
-#WWTo2L2Nu_TuneZ2_7TeV-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-14/
+#
+# check input exists
+#
 
-# loop on input samples
-for SAMPLE in $GATHER_MC_SAMPLES;
-do
+if [ ! $# -eq 2 ]; then
+    echo "USAGE: ./makeGatherMC.sh GATHER_SITE GATHER_SAMPLE
+    GATHER_SITE - UCSD or CERN: e.g. CERN
+    GATHER_SAMPLE - sample: e.g. WZtoAnything_TuneZ2_7TeV-pythia6-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/"
+    exit 1
+fi
 
-    # make a directory to hold the babies for this samples
-    mkdir -p $GATHER_MC_OUTPUT/$SAMPLE
+GATHER_INPUT=""
+GATHER_OUTPUT=""
+if [ "$GATHER_SITE" == "UCSD" ]; then
+    GATHER_INPUT="/nfs-3/userdata/cms2/"
+    GATHER_OUTPUT="/nfs-3/userdata/cms2/gather/mc/"
+    export ROOTSYS=/code/osgcode/UCSD_root/root_v5.24.00
+elif [ "$GATHER_SITE" == "CERN" ]; then
+    GATHER_INPUT="/tas/cms2/"
+    GATHER_OUTPUT="/tas/cms2/gather/mc/"
+    export ROOTSYS=/afs/cern.ch/sw/lcg/app/releases/ROOT/5.26.00/x86_64-slc5-gcc34-opt/root/
+else
+    echo "ERROR: GATHER_SITE either UCSD or CERN"
+    exit 1
+fi
 
-    # construct the input and output file name for making these babies
-    FILE_IN=$GATHER_MC_INPUT/$SAMPLE/*.root
-    FILE_OUT=$GATHER_MC_OUTPUT/$SAMPLE/baby_gather.root
+export PATH=$ROOTSYS/bin:$PATH
+export LD_LIBRARY_PATH=$ROOTSYS/lib
 
-    # run root to make the baby
-    CMD="root -b -l -q 'makeGatherBaby.C(\"$FILE_IN\",\"$FILE_OUT\")'"
-    eval $CMD
 
-done
+#
+# done with checks, now make the baby
+#
+
+# make a directory to hold the babies for this samples
+mkdir -p $GATHER_OUTPUT/$GATHER_SAMPLE
+
+# construct the input and output file name for making these babies
+FILE_IN=$GATHER_INPUT/$GATHER_SAMPLE/*.root
+FILE_OUT=$GATHER_OUTPUT/$GATHER_SAMPLE/baby_gather.root
+
+# run root to make the baby
+CMD="root -b -l -q 'makeGatherBaby.C(\"$FILE_IN\",\"$FILE_OUT\")'"
+eval $CMD
+
+exit 0
 
