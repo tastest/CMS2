@@ -129,17 +129,35 @@ void makeGatherPlots() {
     babyVectorSM.push_back(bs_data_el2010b);
     babyVectorSM.push_back(bs_data_mu2010b);
 
-    std::vector<BabySample*>babyVectorHiggs = babyVectorSM;
+    std::vector<BabySample*> babyVectorHiggs;
+    babyVectorHiggs.push_back(bs_dilep_ww);
+    babyVectorHiggs.push_back(bs_dilep_wz);
+    babyVectorHiggs.push_back(bs_dilep_zz);
+    babyVectorHiggs.push_back(bs_dilep_dy);
+    babyVectorHiggs.push_back(bs_dilep_gammajets);
+    babyVectorHiggs.push_back(bs_dilep_ttbar);
+    babyVectorHiggs.push_back(bs_dilep_wjets);
+    babyVectorHiggs.push_back(bs_data_el2010b);
+    babyVectorHiggs.push_back(bs_data_mu2010b);
     babyVectorHiggs.push_back(bs_dilep_hww160);    
     babyVectorHiggs.push_back(bs_dilep_hww160x50);
 
-    std::vector<BabySample*>babyVectorSusy = babyVectorSM;
-    babyVectorHiggs.push_back(bs_dilep_lm0);
+    std::vector<BabySample*> babyVectorSusy;
+    babyVectorSusy.push_back(bs_dilep_ww);
+    babyVectorSusy.push_back(bs_dilep_wz);
+    babyVectorSusy.push_back(bs_dilep_zz);
+    babyVectorSusy.push_back(bs_dilep_dy);
+    babyVectorSusy.push_back(bs_dilep_gammajets);
+    babyVectorSusy.push_back(bs_dilep_ttbar);
+    babyVectorSusy.push_back(bs_dilep_wjets);
+    babyVectorSusy.push_back(bs_data_el2010b);
+    babyVectorSusy.push_back(bs_data_mu2010b);
+    babyVectorSusy.push_back(bs_dilep_lm0);
 
     //
     // Make the plots
     //
-/*
+
     TCut validation_ee ("validation_ee", base_dilep+ee_dilep);
     TCut validation_mm ("validation_mm", base_dilep+mm_dilep);
 
@@ -155,7 +173,7 @@ void makeGatherPlots() {
     DrawAll("mass", "validation_mass_newruns_mm", validation_mm, 
         Form("!isdata||(run > %i || (run == %i && ls > %i))", 
         lastgoodrun, lastgoodrun, lastgoodlumi), est_newruns_lumi, 50,0., 200., 0, babyVectorSM);
-*/
+
     //
     // OS PLOTS
     //
@@ -169,7 +187,7 @@ void makeGatherPlots() {
     DrawAll("mass","os_sf_mass",osanal_sf_dilep,"",est_lumi,40,0.,500.,0, babyVectorSusy);
     DrawAll("sumjetpt","os_sumjetpt_int",osanal_dilep,"",est_lumi,40,0.,800.,1, babyVectorSusy);
     DrawAll("tcmet","os_tcmet_int",osanal_dilep,"",est_lumi,40,0.,300.,1, babyVectorSusy);
-/*
+
     //
     // SS PLOTS
     //
@@ -236,7 +254,7 @@ void makeGatherPlots() {
     TCut cut_z_highptdijets   ("z_highptdijets", inclusivez_dilep+"njets>=2&&jet1pt>150.&&jet2pt>150.");
     DrawAll("jetmass","exotica_z_highptdijets",cut_z_highptdijets,"",est_lumi,40,0.,2000.,0, babyVectorSM);
     DrawAll("jetmass","exotica_z_dijets",cut_z_dijets,"",est_lumi,40,0.,2000.,0, babyVectorSM);
-*/
+
 
     //
     // Save the plots
