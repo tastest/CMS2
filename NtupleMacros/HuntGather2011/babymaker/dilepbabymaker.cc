@@ -110,7 +110,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 pfmet_      = cms2.evt_pfmet();
 
                 float theTCMetPhi     = 0.0;
-                if (cms2.evt_CMS2tag() != "V03-06-14") {
+                if (cms2.evt_CMS2tag() != "V03-06-14" && cms2.evt_dataset() != "/Mu/Run2010B-Nov4ReReco_v1/RECO") {
                     tcmet_          = cms2.evt_pf_tcmet();
                     theTCMetPhi     = cms2.evt_pf_tcmetPhi();
                 }
