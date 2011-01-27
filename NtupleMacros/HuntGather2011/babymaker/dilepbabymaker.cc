@@ -108,11 +108,15 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 //
 
                 pfmet_      = cms2.evt_pfmet();
-                tcmet_      = cms2.evt_pf_tcmet();
+
+                float theTCMetPhi     = 0.0;
+                if (cms2.evt_CMS2tag() != "V03-06-14") {
+                    tcmet_          = cms2.evt_pf_tcmet();
+                    theTCMetPhi     = cms2.evt_pf_tcmetPhi();
+                }
                 calotcmet_  = cms2.evt_tcmet();
 
                 float thePFMetPhi     = cms2.evt_pfmetPhi();
-                float theTCMetPhi     = cms2.evt_pf_tcmetPhi();
                 float theCaloTCMetPhi = cms2.evt_tcmetPhi();
 
                 float metx  = tcmet_ * cos(theTCMetPhi);
