@@ -17,6 +17,7 @@
 bool removePoints = false;
 
 void CleanExclusionPlot( char* filename );
+void CleanExclusionPlot();
   
 
 void CommandMSUGRA(TString plotName , char* filename);
@@ -979,8 +980,11 @@ TGraphErrors* getExpected_NLOunc(char* filename){
 
 }
 
-TGraphErrors* getLO(char* filename){
+TGraphErrors* getLO_signalCont(char* filename){
+ //TGraphErrors* getLO(char* filename){
   
+  TFile *f = TFile::Open(filename);
+
   Int_t nLO=39;
   Double_t xLO[nLO],yLO[nLO];
   Double_t xerr[nLO],yerr[nLO];
@@ -1157,17 +1161,17 @@ TGraphErrors* getLO(char* filename){
 }
 
 
-TGraphErrors* getLO_signalCont(char* filename){
+// TGraphErrors* getLO_signalCont(char* filename){
 
-    cout << "Retrieving observed LO exclusion curve from " << filename << endl;
-    TFile *f = TFile::Open(filename);
+//     cout << "Retrieving observed LO exclusion curve from " << filename << endl;
+//     TFile *f = TFile::Open(filename);
 
-    // yes, I realize it is retarded to define the TGraph elsewhere and read it in here. \
-    // This was the only way I could get the axis tick marks to draw. Fucking root.
-    TGraphErrors *gre = getLO(filename);
-    return gre;
+//     // yes, I realize it is retarded to define the TGraph elsewhere and read it in here. \
+//     // This was the only way I could get the axis tick marks to draw. Fucking root.
+//     TGraphErrors *gre = getLO(filename);
+//     return gre;
   
-}
+// }
 
 
 #endif

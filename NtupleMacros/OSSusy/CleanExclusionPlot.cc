@@ -14,10 +14,11 @@
 
 void CleanExclusionPlot( char* filename ){
   gStyle->SetPalette(1);
-
   CommandMSUGRA("35pb_expected_11.root" , filename );
-  
-
+}
+void CleanExclusionPlot(){
+  gStyle->SetPalette(1);
+  CommandMSUGRA("35pb_expected_11.root" , "NULL" );
 }
 
 void CommandMSUGRA(TString plotName_ , char* filename ){
