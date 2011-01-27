@@ -115,7 +115,7 @@ TCanvas* DrawAll(TCut var, const char *savename, TCut sel, TCut presel, float in
     // set up the legend
     //
 
-    TLegend* leg = new TLegend(0.82,0.61,0.96,0.93);
+    TLegend* leg = new TLegend(0.7,0.5,0.95,0.90);
     leg->SetBorderSize(0);
     leg->SetFillStyle(0);
     leg->SetShadowColor(0);
@@ -124,14 +124,18 @@ TCanvas* DrawAll(TCut var, const char *savename, TCut sel, TCut presel, float in
     // do the drawing
     //
 
-    TCanvas *c1 = new TCanvas();
+    TCanvas *c1 = new TCanvas(savename);
+    c1->SetTopMargin(0.08);
     c1->cd();
 
     // do the background MC histograms
     for(unsigned int i = 0; i < vh_background.size(); ++i) 
     { 
         // the zeroth sets the axis
-        if (i == 0) vh_background[0]->Draw("hist");
+        if (i == 0) {
+            vh_background[0]->Draw("hist");
+            vh_background[0]->GetXaxis()->SetNdivisions(504);
+        }
         // the others are drawn the same
         else vh_background[i]->Draw("histsame");
         // add each histogram to the legend
@@ -184,6 +188,9 @@ TH1F* Plot(const BabySample *bs, TCut var, TCut selection, float intlumipb,
     int els  = max_run_max_lumi();
     TCut c_goodrunplus(Form("(((run>%i&&run<%i)||(run==%i&&ls>=%i)||(run==%i&&ls<=%i))&&goodrun(run,ls))||(run>%i||(run==%i&&ls>%i))", 
                 brun, erun, brun, bls, erun, els, erun, erun, els));
+
+    if (!strcmp("CUT", var.GetName()))
+        var.SetName(var.GetTitle());
 
     // construct the duplicate removal cut according
     // to the type of baby hypothesis
@@ -259,6 +266,7 @@ TH1F* Plot(const BabySample *bs, TCut var, TCut selection, float intlumipb,
         h->SetFillStyle(bs->style());
     } else if (bs->type() == SIGNAL) {
         h->SetLineColor(bs->color());
+        h->SetLineStyle(bs->style());
         h->SetLineWidth(2);
     }
 
