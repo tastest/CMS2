@@ -681,7 +681,7 @@ sigma = 157.5 \pm 57.2194 (stat) \pm 28.8598 (syst) \pm 17.325 (lum)
 =======
 	 EE 1 jet with FOMLIP cuts
 =========
-Data: 7 in 1
+Data: 8 in 1
 	   MCBG: 1.6176 +/- 0.406618
 		  = ( DYtt 0.5539 +/- 0.249029
 		      VV   0.4985 +/- 0.168917
@@ -698,10 +698,10 @@ Data: 7 in 1
 	 tt exp: 3.3911 +/- 0.383194(syst) +/- 0.508665(th) +/- 0.373021(lum)  
 		= 3.3911 +/- 0.383194(syst) +/- 0.630781(th+lum)
 	A: 0.0596421 +/- 0.00673956 	S/B: 1.276
-sigma = 201.683 \pm 122.882 (stat) \pm 42.3165 (syst) \pm 22.1852 (lum)
-	 = 201.683 \pm 129.964 (syst+stat) \pm 22.1852 (lum)	 = 201.683 \pm 131.844
-	 = 201.683 ( 1 \pm 0.609283 (stat) \pm 0.209816 (syst) \pm 0.11 (lum) )
-	 = 201.683 ( 1 \pm 0.644398 (syst+stat) \pm 0.11 )	 = 201.683 ( 1 \pm 0.653719 )
+sigma = 248.128 \pm 131.367 (stat) \pm 45.3591 (syst) \pm 27.2941 (lum)
+	 = 248.128 \pm 138.977 (syst+stat) \pm 27.2941 (lum)	 = 248.128 \pm 141.632
+	 = 248.128 ( 1 \pm 0.52943 (stat) \pm 0.182805 (syst) \pm 0.11 (lum) )
+	 = 248.128 ( 1 \pm 0.560102 (syst+stat) \pm 0.11 )	 = 248.128 ( 1 \pm 0.570801 )
 
 Expected performance: 
 sigma = 157.5 \pm 114.228 (stat) \pm 39.8502 (syst) \pm 17.325 (lum)
@@ -712,7 +712,7 @@ sigma = 157.5 \pm 114.228 (stat) \pm 39.8502 (syst) \pm 17.325 (lum)
 =======
 	 MM 1 jet with FOMLIP cuts
 =========
-Data: 9 in 2
+Data: 10 in 2
 	   MCBG: 1.7769 +/- 0.426317
 		  = ( DYtt 0.4903 +/- 0.203343
 		      VV   0.6152 +/- 0.20815
@@ -729,10 +729,10 @@ Data: 9 in 2
 	 tt exp: 4.368 +/- 0.489216(syst) +/- 0.6552(th) +/- 0.48048(lum)  
 		= 4.368 +/- 0.489216(syst) +/- 0.812495(th+lum)
 	A: 0.0768236 +/- 0.00860425 	S/B: 0.744516
-sigma = 112.972 \pm 108.173 (stat) \pm 98.9045 (syst) \pm 12.427 (lum)
-	 = 112.972 \pm 146.573 (syst+stat) \pm 12.427 (lum)	 = 112.972 \pm 147.098
-	 = 112.972 ( 1 \pm 0.957518 (stat) \pm 0.875475 (syst) \pm 0.11 (lum) )
-	 = 112.972 ( 1 \pm 1.29742 (syst+stat) \pm 0.11 )	 = 112.972 ( 1 \pm 1.30207 )
+sigma = 149.03 \pm 114.024 (stat) \pm 99.5018 (syst) \pm 16.3933 (lum)
+	 = 149.03 \pm 151.335 (syst+stat) \pm 16.3933 (lum)	 = 149.03 \pm 152.22
+	 = 149.03 ( 1 \pm 0.76511 (stat) \pm 0.667663 (syst) \pm 0.11 (lum) )
+	 = 149.03 ( 1 \pm 1.01546 (syst+stat) \pm 0.11 )	 = 149.03 ( 1 \pm 1.0214 )
 
 Expected performance: 
 sigma = 157.5 \pm 115.356 (stat) \pm 99.6653 (syst) \pm 17.325 (lum)
@@ -743,7 +743,7 @@ sigma = 157.5 \pm 115.356 (stat) \pm 99.6653 (syst) \pm 17.325 (lum)
 =======
 	 EM 1 jet with FOMLIP cuts
 =========
-Data: 19 in 4
+Data: 18 in 4
 	   MCBG: 3.6631 +/- 0.934118
 		  = ( DYtt 0.12 +/- 0.0807108
 		      VV   1.6999 +/- 0.571255
@@ -760,10 +760,10 @@ Data: 19 in 4
 	 tt exp: 10.7968 +/- 1.48996(syst) +/- 1.61952(th) +/- 1.18765(lum)  
 		= 10.7968 +/- 1.48996(syst) +/- 2.00832(th+lum)
 	A: 0.189892 +/- 0.0262051 	S/B: 2.0952
-sigma = 201.994 \pm 63.5861 (stat) \pm 33.2013 (syst) \pm 22.2193 (lum)
-	 = 201.994 \pm 71.7323 (syst+stat) \pm 22.2193 (lum)	 = 201.994 \pm 75.0947
-	 = 201.994 ( 1 \pm 0.314792 (stat) \pm 0.164368 (syst) \pm 0.11 (lum) )
-	 = 201.994 ( 1 \pm 0.355121 (syst+stat) \pm 0.11 )	 = 201.994 ( 1 \pm 0.371767 )
+sigma = 187.406 \pm 61.8902 (stat) \pm 31.5301 (syst) \pm 20.6147 (lum)
+	 = 187.406 \pm 69.4589 (syst+stat) \pm 20.6147 (lum)	 = 187.406 \pm 72.4535
+	 = 187.406 ( 1 \pm 0.330246 (stat) \pm 0.168245 (syst) \pm 0.11 (lum) )
+	 = 187.406 ( 1 \pm 0.370633 (syst+stat) \pm 0.11 )	 = 187.406 ( 1 \pm 0.386612 )
 
 Expected performance: 
 sigma = 157.5 \pm 58.2592 (stat) \pm 28.2438 (syst) \pm 17.325 (lum)

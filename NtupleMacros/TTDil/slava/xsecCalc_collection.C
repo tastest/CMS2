@@ -1387,7 +1387,7 @@ void xsecCalc_36pb_pass6(){
   pee1jFOMLIP.vv_exp   = 0.4985;  pee1jFOMLIP.vv_stat   =   0.026; pee1jFOMLIP.vv_syst_corr   = oplus(0.1,lum_eRel)*pee1jFOMLIP.vv_exp;
   pee1jFOMLIP.tw_exp   = 0.5652;  pee1jFOMLIP.tw_stat   =   0.022; pee1jFOMLIP.tw_syst_corr   = oplus(0.1,lum_eRel)*pee1jFOMLIP.tw_exp;
 
-  pee1jFOMLIP.data = 7;
+  pee1jFOMLIP.data = 8;
 
   pee1jFOMLIP.sr_exp   = 0.0; pee1jFOMLIP.sr_stat = 0.0; pee1jFOMLIP.sr_syst = 0.0; 
 
@@ -1418,7 +1418,7 @@ void xsecCalc_36pb_pass6(){
   pmm1jFOMLIP.vv_exp   = 0.6152;  pmm1jFOMLIP.vv_stat   =   0.03; pmm1jFOMLIP.vv_syst_corr   = oplus(0.1,lum_eRel)*pmm1jFOMLIP.vv_exp;	 
   pmm1jFOMLIP.tw_exp   = 0.6714;  pmm1jFOMLIP.tw_stat   =   0.02; pmm1jFOMLIP.tw_syst_corr   = oplus(0.1,lum_eRel)*pmm1jFOMLIP.tw_exp;    
 
-  pmm1jFOMLIP.data = 9;
+  pmm1jFOMLIP.data = 10;
 
   pmm1jFOMLIP.sr_exp   = 0.0; pmm1jFOMLIP.sr_stat = 0.0; pmm1jFOMLIP.sr_syst = 0.0; 
 
@@ -1451,7 +1451,7 @@ void xsecCalc_36pb_pass6(){
   pem1jFOMLIP.vv_exp   = 1.6999;  pem1jFOMLIP.vv_stat   =   0.049; pem1jFOMLIP.vv_syst_corr   = oplus(0.1,lum_eRel)*pem1jFOMLIP.vv_exp;	 
   pem1jFOMLIP.tw_exp   = 1.8432;  pem1jFOMLIP.tw_stat   =   0.040; pem1jFOMLIP.tw_syst_corr   = oplus(0.1,lum_eRel)*pem1jFOMLIP.tw_exp;    
 
-  pem1jFOMLIP.data = 19;
+  pem1jFOMLIP.data = 18;
 
   pem1jFOMLIP.sr_exp   = 0.0; pem1jFOMLIP.sr_stat = 0.0; pem1jFOMLIP.sr_syst = 0.0; 
 
