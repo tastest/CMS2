@@ -35,8 +35,8 @@ void makeGatherPlots() {
     float k_ttbar = 1.0;
     float k_wjets = 1.0;
 
-    //TString base = "/nfs-3/userdata/cms2/gather/";
-    TString base = "/tas/cms2/gather/";
+    TString base = "/nfs-3/userdata/cms2/gather/";
+    //TString base = "/tas/cms2/gather/";
 
     BabySample *bs_dilep_wz  = new BabySample("wz", "mc", 
             base+"/mc/WZtoAnything_TuneZ2_7TeV-pythia6-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root", 
