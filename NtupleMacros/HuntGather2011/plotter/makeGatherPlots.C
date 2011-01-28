@@ -283,9 +283,17 @@ void makeGatherPlots() {
     TCanvas *c1 = 0;
 
     while ((c1 = (TCanvas*)iter->Next())) {
+
+        // lin
         c1->Print(Form("../output/%s.png", c1->GetName()));
+        c1->Print(Form("../output/%s.root", c1->GetName()));
+
+        // log
+        //TList *l1 = (TList*)c1->GetListOfPrimitives();
+        //l1->At(1)->GetYaxis()->SetMaximum(l1->At(1)->GetMaximum()*20);
         c1->SetLogy(1);
         c1->Print(Form("../output/%s_log.png", c1->GetName()));
+        //delete l1;
     }
 
     //
