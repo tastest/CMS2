@@ -241,6 +241,12 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 VofP4 theJets;
                 std::vector<unsigned int> theJetIndices;
                 sumjetpt_   = 0.;
+                sumjetpt25_ = 0.;
+                sumjetptSS_ = 0.;
+                njets25_ = 0;
+                njetsSS_ = 0;
+                njets_ = 0;
+        
                 for (unsigned int jeti = 0; jeti < cms2.pfjets_p4().size(); ++jeti)
                 {
 
@@ -269,6 +275,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     // 25 GeV TTBarV2 cleaning
                     if (!jetIsLepTTBarV2 && vjet.Pt() > 25. && fabs(cms2.pfjets_p4()[jeti].eta()) < 2.5 && isGoodPFJet(jeti)) {
                         sumjetpt25_ += vjet.Pt();
+                        njets25_ ++;
                     }
 
                     // check if jet is a lepton that passes the ss selection
