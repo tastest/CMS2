@@ -23,7 +23,7 @@ TH1F* slideIntegrated(TH1F* h1);
 //
 
 float GetIntLumi(TChain *c, float lumi, int brun, int bls, int erun, int els);
-float GetIntLumi(TChain *c, float lumi);
+float GetIntLumi(BabySample *bs, float lumi);
 
 //
 // drawing functions

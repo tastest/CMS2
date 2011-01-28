@@ -17,6 +17,7 @@ class BabySample
         BabySample(const char *pfx,const char *pfx2, const char* babies, TCut presel, float kfactor, SampleType type, Color_t color = kBlack, Style_t style = 20);
         ~BabySample() {}
 
+        void    add(const char* babies);
         Color_t color()   const { return color_; }
         Style_t style()   const { return style_; }
         TChain* chain()   const { return chain_; }

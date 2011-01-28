@@ -20,3 +20,8 @@ BabySample::BabySample(const char *pfx,const char *pfx2, const char* babies, TCu
     }
 }
 
+void BabySample::add(const char* babies) 
+{
+    chain_->Add(babies);
+}
+
