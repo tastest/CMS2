@@ -45,14 +45,14 @@ float GetIntLumi(TChain *c, float lumi, int brun, int bls, int erun, int els)
     return lumi+newlumi;
 }
 
-float GetIntLumi(TChain *c, float lumi)
+float GetIntLumi(BabySample *bs, float lumi)
 {
     int brun = min_run();
     int bls  = min_run_min_lumi();
     int erun = max_run();
     int els  = max_run_max_lumi();
     std::cout << brun << ", " << bls << " : " << erun << ", " << els << std::endl;
-    return GetIntLumi(c, lumi, brun, bls, erun, els);
+    return GetIntLumi(bs->chain(), lumi, brun, bls, erun, els);
 }
 
 TCanvas* DrawAll(TCut var, const char *savename, TCut sel, TCut presel, float intlumipb, unsigned int nbins, float xlo, float xhi, bool integrated,
@@ -155,13 +155,19 @@ TCanvas* DrawAll(TCut var, const char *savename, TCut sel, TCut presel, float in
 
     // set the optimum y axis scale
     float ymax = vh_data[0]->GetMaximum() > vh_background[0]->GetMaximum() 
-        ? vh_data[0]->GetMaximum()+2*sqrt(vh_data[0]->GetMaximum()) : vh_background[0]->GetMaximum()*1.25;
+        ? vh_data[0]->GetMaximum()+2*sqrt(vh_data[0]->GetMaximum()) : 
+        vh_background[0]->GetMaximum() + 2*sqrt(vh_background[0]->GetMaximum());
+    if (vh_signal.size() > 0) {
+        ymax = ymax > vh_signal[0]->GetMaximum() ? ymax : 
+            vh_signal[0]->GetMaximum() + 2*sqrt(vh_signal[0]->GetMaximum());
+    }
     vh_background[0]->SetMaximum(ymax);
 
     // draw the legend and tidy up
     leg->Draw();
     c1->RedrawAxis();
     gDrawAllCount++;
+    reset_babydorkidentifier();
 
     return c1;
 }
@@ -174,6 +180,9 @@ TH1F* Plot(const BabySample *bs, TCut var, TCut selection, float intlumipb,
     // Construct the name and title
     // and command to draw
     // 
+
+    if (!strcmp("CUT", var.GetName()))
+        var.SetName(var.GetTitle());
     
     char *name = 0;
     if (integrated) name = Form("%s_%s_%s_%i_int", bs->pfx(), selection.GetName(), var.GetName(), gDrawAllCount);
@@ -188,9 +197,6 @@ TH1F* Plot(const BabySample *bs, TCut var, TCut selection, float intlumipb,
     int els  = max_run_max_lumi();
     TCut c_goodrunplus(Form("(((run>%i&&run<%i)||(run==%i&&ls>=%i)||(run==%i&&ls<=%i))&&goodrun(run,ls))||(run>%i||(run==%i&&ls>%i))", 
                 brun, erun, brun, bls, erun, els, erun, erun, els));
-
-    if (!strcmp("CUT", var.GetName()))
-        var.SetName(var.GetTitle());
 
     // construct the duplicate removal cut according
     // to the type of baby hypothesis
@@ -253,6 +259,7 @@ TH1F* Plot(const BabySample *bs, TCut var, TCut selection, float intlumipb,
     // reset to an empty list
     TEventList* emptylist = 0;
     bs->chain()->SetEventList(emptylist);
+    elist->Reset();
 
     //
     // Set style options
@@ -262,6 +269,7 @@ TH1F* Plot(const BabySample *bs, TCut var, TCut selection, float intlumipb,
         h->SetMarkerColor(bs->color());
         h->SetMarkerStyle(bs->style());
     } else if (bs->type() == BACKGROUND) {
+        h->SetLineColor(bs->color());
         h->SetFillColor(bs->color());
         h->SetFillStyle(bs->style());
     } else if (bs->type() == SIGNAL) {
