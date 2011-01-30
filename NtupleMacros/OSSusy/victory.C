@@ -25,18 +25,22 @@ using namespace std;
 const int   width1      = 20;
 const int   width2      = 4;
 
-const string plottitle  = "control region (125 < sumJetPt < 300 GeV)";
-//const string plottitle  = "signal region (sumJetPt > 300 GeV)";
+//const string plottitle  = "signal region (H_{T} > 300 GeV)";
 //const string plottitle  = "SM MC";
 
 //const char* iter        = "output/nov5th_v7";
 //const char* iter        = "output_38X/nov5th_v2";
-const char* iter        = "output_38X/nov5th_v4_skim";
+const char* iter        = "output_38X/nov5th_v5_skim";
 //const char* iter        = "oct15th_v2";
 
 const bool plotData     = true;
 const int  nprec        = 2;
 const char* data        = "dataskim";
+
+const bool issignal       = true; //signal/control?
+
+string plottitle  = "control region (125 < H_{T} < 300 GeV)";
+
 
 //-------------------------------------------------------
 
@@ -86,6 +90,8 @@ void printHeader(){
 }
 
 void victory( bool printgif =false ){
+
+  if( issignal ) plottitle  = "signal region (H_{T} > 300 GeV)";
 
   if( makeLatexPlot ){
     pm         = " $\\pm$ ";
@@ -168,7 +174,10 @@ void victory( bool printgif =false ){
   hmety_data->Sumw2();
 
   //declare cuts for event selection
-  TCut jetcut("sumjetpt>300&&njets>1");
+  char* jetcutstring = "sumjetpt>125&&sumjetpt<300&&njets>1";
+  if( issignal ) jetcutstring = "sumjetpt>300&&njets>1";
+  TCut jetcut(jetcutstring);
+  //TCut jetcut("sumjetpt>300&&njets>1");
   //TCut jetcut("sumjetpt>125&&sumjetpt<300&&njets>1");
   TCut zcut("passz==0");  
   TCut metcut("tcmet>50");
@@ -271,7 +280,7 @@ void victory( bool printgif =false ){
   c1->cd();  
   
   plotHist( hdilpty_mctot , hmety_mctot , hdilpty_data , hmety_data , 
-            plottitle , "#slash{E}_{T} / #sqrt{sumJetPt}   (GeV^{1/2})" , 4 , 8.5 );
+            plottitle , "y   (GeV^{1/2})" , 4 , 8.5 );
 
   if( printgif ) c1->Print("plots/victory.gif");
 
@@ -453,6 +462,10 @@ void plotHist( TH1F* hpred , TH1F* hobs , TH1F* hpred_data, TH1F* hobs_data,
   hobs ->SetFillColor(0);
   hpred->SetTitle( title.c_str() );
   hpred->GetXaxis()->SetTitle( xtitle.c_str() );
+  hpred->GetXaxis()->SetTitleSize(0.055);
+  hpred->GetYaxis()->SetTitle( "Events   " );
+  hpred->GetYaxis()->SetTitleSize(0.055);
+  hpred->GetYaxis()->SetTitleOffset(1);
   //hpred->GetYaxis()->SetTitle( "Entries / 2.125 GeV" );
 
   int metbin = hobs->FindBin( metcut );
@@ -518,7 +531,7 @@ void plotHist( TH1F* hpred , TH1F* hobs , TH1F* hpred_data, TH1F* hobs_data,
   //t.SetNDC();
   //t.DrawLatex(0.55,0.65,Form("obs/pred = %.2f",obs/pred));
 
-  TLegend *leg = new TLegend(0.65,0.65,0.9,0.9);
+  TLegend *leg = new TLegend(0.66,0.67,0.98,0.95);
   //leg->AddEntry(hpred, Form("pred>%.1f GeV = %.3f",metcut,pred) ,"l");
   //leg->AddEntry(hobs,  Form("obs>%.1f GeV = %.3f",metcut,obs)  ,"l");
   leg->AddEntry(hpred, "MC predicted" ,"l");
@@ -528,6 +541,7 @@ void plotHist( TH1F* hpred , TH1F* hobs , TH1F* hpred_data, TH1F* hobs_data,
     leg->AddEntry(hobs_data,  "data observed" );
   }
   leg->SetFillColor(0);
+  leg->SetBorderSize(1);
   leg->Draw();
 
   TLine line;
@@ -537,5 +551,14 @@ void plotHist( TH1F* hpred , TH1F* hobs , TH1F* hpred_data, TH1F* hobs_data,
   line.DrawLine( metcut , 0.5 * TMath::Min( hobs->GetMinimum() , hpred->GetMinimum() ),
                  metcut , 2 *   TMath::Max( hobs->GetMaximum() , hpred->GetMaximum() ) );
 
+  TLatex *t = new TLatex();
+  t->SetNDC();
+  t->SetTextSize(0.04);
+  t->DrawLatex(0.18,0.32,"CMS");
+  t->DrawLatex(0.18,0.27,"34.0 pb^{-1} at #sqrt{s} = 7 TeV");
+  t->DrawLatex(0.18,0.22,"Events with ee/#mu#mu/e#mu");
 
+  if( issignal ) t->DrawLatex(0.18,0.17,"H_{T} > 300 GeV (signal)");
+  else           t->DrawLatex(0.18,0.17,"125 < H_{T} < 300 GeV (control)");
+ 
 }
