@@ -4,6 +4,7 @@
 
 #include "TMath.h"
 #include <set>
+#include <math.h>
 
 struct BabyDorkIdentifier {
     BabyDorkIdentifier (unsigned int run, unsigned int lumi, unsigned int event, float pt1, float pt2 = -999999., float pt3 = -999999.);
