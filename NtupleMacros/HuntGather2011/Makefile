@@ -70,8 +70,8 @@ $(FWLIB) :
 	cd ../Tools/MiniFWLite; \
 	$(MAKE) -f Makefile;
 
-$(LIBDIR)/LinkDef_out.cxx: $(LIBDIR)/LinkDef.h  $(CMSROOT)/Tools/goodrun.h $(PLOTTERSRC)/BabyDorkIdentifier.h $(PLOTTERSRC)/BabySample.h $(PLOTTERSRC)/gather.h $(BABYMAKERSRC)/emubabymaker.h $(BABYMAKERSRC)/dilepbabymaker.h 
-	rootcint -f $@ -c $(INCLUDE)  $(CMSROOT)/Tools/goodrun.h $(PLOTTERSRC)/BabyDorkIdentifier.h $(PLOTTERSRC)/BabySample.h $(PLOTTERSRC)/gather.h $(BABYMAKERSRC)/emubabymaker.h $(BABYMAKERSRC)/dilepbabymaker.h $<
+$(LIBDIR)/LinkDef_out.cxx: $(LIBDIR)/LinkDef.h  $(CMSROOT)/Tools/goodrun.h $(PLOTTERSRC)/BabyDorkIdentifier.h $(PLOTTERSRC)/BabySample.h $(PLOTTERSRC)/gather.h $(BABYMAKERSRC)/dilepbabymaker.h 
+	rootcint -f $@ -c $(INCLUDE)  $(CMSROOT)/Tools/goodrun.h $(PLOTTERSRC)/BabyDorkIdentifier.h $(PLOTTERSRC)/BabySample.h $(PLOTTERSRC)/gather.h $(BABYMAKERSRC)/dilepbabymaker.h $<
 
 # General rule for making object files
 %.d:	%.cc
