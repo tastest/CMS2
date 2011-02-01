@@ -27,12 +27,16 @@ void makeGatherPlots() {
     // define samples
     //
 
+    TCut cut_notau("cut_notau", "ngentaus==0");
+    TCut cut_tau("cut_tau", "ngentaus==2");
+
     float k_ww = 1.0;
     float k_wz = 1.0;
     float k_zz = 1.0;    
     float k_dy = 1.0;
     float k_gammajets = 1.0;
     float k_ttbar = 1.0;
+    float k_tw = 1.0;
     float k_wjets = 1.0;
 
     TString base = "/nfs-3/userdata/cms2/gather/";
@@ -46,9 +50,16 @@ void makeGatherPlots() {
             base+"/mc/ZZtoAnything_TuneZ2_7TeV-pythia6-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root", 
             "", k_zz, BACKGROUND, 10, 1001);
 
-    BabySample *bs_dilep_dy  = new BabySample("dy", "mc", 
+    BabySample *bs_dilep_dyeemm  = new BabySample("dyeemm", "mc", 
             base+"/mc/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root", 
-            "", k_dy, BACKGROUND, kAzure-2, 1001);
+            cut_notau, k_dy, BACKGROUND, kAzure-2, 1001);
+    bs_dilep_dyeemm->add(base+"/mc/DYToEE_M-20_TuneZ2_7TeV-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/dilep2010_ZMassLessThan50Skim/baby_gather.root");
+    bs_dilep_dyeemm->add(base+"/mc/DYToMuMu_M-20_TuneZ2_7TeV-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/diLep2010_ZMassLessThan50Skim/baby_gather.root");
+
+    BabySample *bs_dilep_dytt  = new BabySample("dytt", "mc",
+            base+"/mc/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root",
+            cut_tau, k_dy, BACKGROUND, kCyan, 1001);
+    bs_dilep_dytt->add(base+"/mc/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/diLep2010_ZMassLessThan50Skim/baby_gather.root");
 
     BabySample *bs_dilep_gammajets  = new BabySample("gammajets", "mc", 
             base+"/mc/PhotonVJets_7TeV-madgraph_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root", 
@@ -57,6 +68,10 @@ void makeGatherPlots() {
     BabySample *bs_dilep_ttbar  = new BabySample("ttbar", "mc", 
             base+"/mc/TTJets_TuneD6T_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root", 
             "", k_ttbar, BACKGROUND, kRed+1, 1001);
+
+    BabySample *bs_dilep_tw  = new BabySample("tw", "mc",
+            base+"/mc/TToBLNu_TuneZ2_tW-channel_7TeV-madgraph_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root",
+            "", k_tw, BACKGROUND, kMagenta, 1001);
 
     BabySample *bs_dilep_wjets  = new BabySample("wjets", "mc", 
             base+"/mc/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/baby_gather.root", 
@@ -80,7 +95,7 @@ void makeGatherPlots() {
             "", k_hww160, SIGNAL, kBlack, kSolid);
     BabySample *bs_dilep_hww130  = new BabySample("hww130", "mc",
             base+"/mc/GluGluToHToWWTo2L2Nu_M-130_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/baby_gather.root",
-            "", k_hww130, SIGNAL, kMagenta, kSolid);
+            "", k_hww130, SIGNAL, kGray, kSolid);
     BabySample *bs_dilep_hww200  = new BabySample("hww200", "mc",
             base+"/mc/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/baby_gather.root",
             "", k_hww200, SIGNAL, kCyan, kSolid);
@@ -121,9 +136,11 @@ void makeGatherPlots() {
     babyVectorSM.push_back(bs_dilep_ww);
     babyVectorSM.push_back(bs_dilep_wz);
     babyVectorSM.push_back(bs_dilep_zz);
-    babyVectorSM.push_back(bs_dilep_dy);
+    babyVectorSM.push_back(bs_dilep_dyeemm);
+    babyVectorSM.push_back(bs_dilep_dytt);
     babyVectorSM.push_back(bs_dilep_gammajets);
     babyVectorSM.push_back(bs_dilep_ttbar);
+    babyVectorSM.push_back(bs_dilep_tw);
     babyVectorSM.push_back(bs_dilep_wjets);
     babyVectorSM.push_back(bs_data);
 
@@ -131,9 +148,11 @@ void makeGatherPlots() {
     babyVectorHiggs.push_back(bs_dilep_ww);
     babyVectorHiggs.push_back(bs_dilep_wz);
     babyVectorHiggs.push_back(bs_dilep_zz);
-    babyVectorHiggs.push_back(bs_dilep_dy);
+    babyVectorHiggs.push_back(bs_dilep_dyeemm);
+    babyVectorHiggs.push_back(bs_dilep_dytt);
     babyVectorHiggs.push_back(bs_dilep_gammajets);
     babyVectorHiggs.push_back(bs_dilep_ttbar);
+    babyVectorHiggs.push_back(bs_dilep_tw);
     babyVectorHiggs.push_back(bs_dilep_wjets);
     babyVectorHiggs.push_back(bs_data);
     babyVectorHiggs.push_back(bs_dilep_hww160);    
@@ -144,9 +163,11 @@ void makeGatherPlots() {
     babyVectorSusy.push_back(bs_dilep_ww);
     babyVectorSusy.push_back(bs_dilep_wz);
     babyVectorSusy.push_back(bs_dilep_zz);
-    babyVectorSusy.push_back(bs_dilep_dy);
+    babyVectorSusy.push_back(bs_dilep_dyeemm);
+    babyVectorSusy.push_back(bs_dilep_dytt);
     babyVectorSusy.push_back(bs_dilep_gammajets);
     babyVectorSusy.push_back(bs_dilep_ttbar);
+    babyVectorSusy.push_back(bs_dilep_tw);
     babyVectorSusy.push_back(bs_dilep_wjets);
     babyVectorSusy.push_back(bs_data);
     babyVectorSusy.push_back(bs_dilep_lm0);
@@ -157,26 +178,21 @@ void makeGatherPlots() {
     
        TCut validation_ee ("validation_ee", base_dilep+ee_dilep);
        TCut validation_mm ("validation_mm", base_dilep+mm_dilep);
+       TCut validation_newrun("validation_newrun", Form("!isdata||(run > %i || (run == %i && ls > %i))", lastgoodrun, lastgoodrun, lastgoodlumi));
+       TCut validation_goodrun("validation_goodrun", Form("!isdata||(run < %i || (run == %i && ls <= %i))", lastgoodrun, lastgoodrun, lastgoodlumi));
 
-       DrawAll("mass", "validation_mass_goodruns_ee", validation_ee, 
-       Form("!isdata||(run < %i || (run == %i && ls <= %i))", 
-       lastgoodrun, lastgoodrun, lastgoodlumi), goodruns_lumi, 50,0., 200., 0, babyVectorSM);
-       DrawAll("mass", "validation_mass_newruns_ee", validation_ee, 
-       Form("!isdata||(run > %i || (run == %i && ls > %i))", 
-       lastgoodrun, lastgoodrun, lastgoodlumi), est_newruns_lumi, 50,0., 200., 0, babyVectorSM);
-       DrawAll("mass", "validation_mass_goodruns_mm", validation_mm, 
-       Form("!isdata||(run < %i || (run == %i && ls <= %i))", 
-       lastgoodrun, lastgoodrun, lastgoodlumi), goodruns_lumi, 50,0., 200., 0, babyVectorSM);
-       DrawAll("mass", "validation_mass_newruns_mm", validation_mm, 
-       Form("!isdata||(run > %i || (run == %i && ls > %i))", 
-       lastgoodrun, lastgoodrun, lastgoodlumi), est_newruns_lumi, 50,0., 200., 0, babyVectorSM);
+       DrawAll("mass", "validation_mass_goodruns_ee", validation_ee+validation_goodrun, goodruns_lumi, 50,0., 200., 0, babyVectorSM);
+       DrawAll("mass", "validation_mass_newruns_ee", validation_ee+validation_newrun, est_newruns_lumi, 50,0., 200., 0, babyVectorSM);
+       DrawAll("mass", "validation_mass_goodruns_mm", validation_mm+validation_goodrun, goodruns_lumi, 50,0., 200., 0, babyVectorSM);
+       DrawAll("mass", "validation_mass_newruns_mm", validation_mm+validation_newrun, est_newruns_lumi, 50,0., 200., 0, babyVectorSM);
 
     //
     // OS PLOTS
     //
+
     std::cout << "Making OS plots...\n";
 
-    TCut osanal_dilep   ("osanal_dilep"   ,base_dilep+os_dilep+"tcmet>50.&&sumjetpt>150.");
+    TCut osanal_dilep   ("osanal_dilep"   ,inclusivenonz_dilep1+base_dilep+os_dilep+"tcmet>50.&&sumjetpt>100.");
     TCut osanal_of_dilep("osanal_of_dilep",osanal_dilep+of_dilep);
     TCut osanal_sf_dilep("osanal_sf_dilep",osanal_dilep+sf_dilep);
 
@@ -303,9 +319,11 @@ void makeGatherPlots() {
     delete bs_dilep_ww;
     delete bs_dilep_wz;
     delete bs_dilep_zz;
-    delete bs_dilep_dy;
+    delete bs_dilep_dyeemm;
+    delete bs_dilep_dytt;
     delete bs_dilep_gammajets;
     delete bs_dilep_ttbar;
+    delete bs_dilep_tw;
     delete bs_dilep_wjets;
     delete bs_dilep_hww160;
     delete bs_dilep_lm0;

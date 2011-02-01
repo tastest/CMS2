@@ -55,7 +55,7 @@ float GetIntLumi(BabySample *bs, float lumi)
     return GetIntLumi(bs->chain(), lumi, brun, bls, erun, els);
 }
 
-TCanvas* DrawAll(TCut var, const char *savename, TCut sel, TCut presel, float intlumipb, unsigned int nbins, float xlo, float xhi, bool integrated,
+TCanvas* DrawAll(TCut var, const char *savename, TCut sel, float intlumipb, unsigned int nbins, float xlo, float xhi, bool integrated,
         std::vector<BabySample*> bss)
 {
 
@@ -72,7 +72,7 @@ TCanvas* DrawAll(TCut var, const char *savename, TCut sel, TCut presel, float in
 
         // construct the selection for this sample
         // and get the plot of that selection
-        TCut selection = sel + presel;
+        TCut selection = sel + bss[i]->presel();
         buffer = Plot (bss[i], var, selection, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
 
         // if the plot doesn't already exist then

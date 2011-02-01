@@ -1,5 +1,6 @@
 
 #include "BabySample.h"
+#include <iostream>
 
 BabySample::BabySample(const char *pfx,const char *pfx2, const char* babies, TCut presel, float kfactor, SampleType type, Color_t color, Style_t style)
 {
@@ -13,15 +14,17 @@ BabySample::BabySample(const char *pfx,const char *pfx2, const char* babies, TCu
     type_ = type;
     kfactor_ = kfactor;
 
-    if (strcmp(presel.GetTitle(),"")) {
-        chain_->Draw(">>elist", presel);
-        elist_ = (TEventList*)gDirectory->Get("elist")->Clone();
-        chain_->SetEventList(elist_);
-    }
+// this should be called from elsewhere
+//    if (strcmp(presel.GetTitle(),"")) {
+//        chain_->Draw(">>elist", presel);
+//        elist_ = (TEventList*)gDirectory->Get("elist")->Clone();
+//        chain_->SetEventList(elist_);
+//    }
 }
 
 void BabySample::add(const char* babies) 
 {
+    std::cout << "adding: " << babies << std::endl;
     chain_->Add(babies);
 }
 

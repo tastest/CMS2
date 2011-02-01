@@ -29,7 +29,7 @@ float GetIntLumi(BabySample *bs, float lumi);
 // drawing functions
 //
 
-TCanvas* DrawAll(TCut field, const char *savename, TCut sel, TCut presel, float intlumipb, unsigned int nbins, float xlo, float xhi, bool integrated,
+TCanvas* DrawAll(TCut field, const char *savename, TCut sel, float intlumipb, unsigned int nbins, float xlo, float xhi, bool integrated,
            std::vector<BabySample*> bss);
 
 TH1F* Plot(const BabySample *bs, TCut var, TCut selection, float intlumipb,
