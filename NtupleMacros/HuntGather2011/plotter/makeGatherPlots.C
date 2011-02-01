@@ -39,8 +39,8 @@ void makeGatherPlots() {
     float k_tw = 1.0;
     float k_wjets = 1.0;
 
-    TString base = "/nfs-3/userdata/cms2/gather/";
-    //TString base = "/tas/cms2/gather/";
+    //TString base = "/nfs-3/userdata/cms2/gather/";
+    TString base = "/tas/cms2/gather/";
 
     BabySample *bs_dilep_wz  = new BabySample("wz", "mc", 
             base+"/mc/WZtoAnything_TuneZ2_7TeV-pythia6-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root", 
@@ -197,10 +197,10 @@ void makeGatherPlots() {
     TCut osanal_sf_dilep("osanal_sf_dilep",osanal_dilep+sf_dilep);
 
 
-    DrawAll("mass","os_of_mass",osanal_of_dilep,"",est_lumi,40,0.,500.,0, babyVectorSusy);
-    DrawAll("mass","os_sf_mass",osanal_sf_dilep,"",est_lumi,40,0.,500.,0, babyVectorSusy);
-    DrawAll("sumjetpt","os_sumjetpt_int",osanal_dilep,"",est_lumi,40,0.,800.,1, babyVectorSusy);
-    DrawAll("tcmet","os_tcmet_int",osanal_dilep,"",est_lumi,40,0.,300.,1, babyVectorSusy);
+    DrawAll("mass","os_of_mass",osanal_of_dilep,est_lumi,40,0.,500.,0, babyVectorSusy);
+    DrawAll("mass","os_sf_mass",osanal_sf_dilep,est_lumi,40,0.,500.,0, babyVectorSusy);
+    DrawAll("sumjetpt","os_sumjetpt_int",osanal_dilep,est_lumi,40,0.,800.,1, babyVectorSusy);
+    DrawAll("tcmet","os_tcmet_int",osanal_dilep,est_lumi,40,0.,300.,1, babyVectorSusy);
 
     //
     // Higgs PLOTS
@@ -218,10 +218,10 @@ void makeGatherPlots() {
     TCut hww_incldilep("hww_incldilep", base_hwwpt+base_hwwid1+base_hwwid2+base_hwwclean+base_hwwmet+base_hwwnoz);
     TCut hww_excldilep("hww_excldilep", base_hwwpt+base_hwwid1+base_hwwid2+base_hwwclean+base_hwwmet+base_hwwnoz+base_hwwnjets);
 
-    DrawAll("njets","hww_njets", hww_incldilep, "", est_lumi, 10, -0.5, 9.5, 0, babyVectorHiggs);
-    DrawAll("deltaphi","hww_deltaphi", hww_excldilep, "", est_lumi, 16, 0.0, 3.2, 0, babyVectorHiggs);
-    DrawAll("mass","hww_mass", hww_excldilep, "", est_lumi, 20, 0.0, 400.0, 0, babyVectorHiggs);
-    DrawAll("tcmth","hww_tcmth", hww_excldilep, "", est_lumi, 20, 0.0, 400.0, 0, babyVectorHiggs);
+    DrawAll("njets","hww_njets", hww_incldilep, est_lumi, 10, -0.5, 9.5, 0, babyVectorHiggs);
+    DrawAll("deltaphi","hww_deltaphi", hww_excldilep, est_lumi, 16, 0.0, 3.2, 0, babyVectorHiggs);
+    DrawAll("mass","hww_mass", hww_excldilep, est_lumi, 20, 0.0, 400.0, 0, babyVectorHiggs);
+    DrawAll("tcmth","hww_tcmth", hww_excldilep, est_lumi, 20, 0.0, 400.0, 0, babyVectorHiggs);
 
     //
     // SS PLOTS
@@ -235,10 +235,10 @@ void makeGatherPlots() {
     TCut ssanal_ee_dilep("ssanal_ee_dilep",ssanal_dilep+ee_dilep);
     TCut ssanal_mm_dilep("ssanal_mm_dilep",ssanal_dilep+mm_dilep);
 
-    DrawAll("mass","ss_ee_mass",ssanal_ee_dilep,"",est_lumi,40,0.,500.,0, babyVectorSusy);
-    DrawAll("mass","ss_mm_mass",ssanal_mm_dilep,"",est_lumi,40,0.,500.,0, babyVectorSusy);
-    TCanvas *c1 = DrawAll("sumjetpt","ss_sumjetpt_int",ssanal_dilep,"",est_lumi,40,0.,800.,1, babyVectorSusy);
-    TCanvas *c2 = DrawAll("tcmet","ss_tcmet_int",ssanal_dilep,"",est_lumi,40,0.,300.,1, babyVectorSusy);
+    DrawAll("mass","ss_ee_mass",ssanal_ee_dilep,est_lumi,40,0.,500.,0, babyVectorSusy);
+    DrawAll("mass","ss_mm_mass",ssanal_mm_dilep,est_lumi,40,0.,500.,0, babyVectorSusy);
+    TCanvas *c1 = DrawAll("sumjetpt","ss_sumjetpt_int",ssanal_dilep,est_lumi,40,0.,800.,1, babyVectorSusy);
+    TCanvas *c2 = DrawAll("tcmet","ss_tcmet_int",ssanal_dilep,est_lumi,40,0.,300.,1, babyVectorSusy);
     c1->Draw();
     c2->Draw();
 
@@ -252,16 +252,16 @@ void makeGatherPlots() {
     TCut zmet_os_2j_dilep("zmet_os_2j_dilep",inclusivez_dilep+os_dilep+"njets>=2");
     TCut zmet_sumjetptgt100_os_ee_dilep("zmet_sumjetptgt100_os_ee_dilep",inclusivez_dilep+os_dilep+ee_dilep+"sumjetpt>100.");
     TCut zmet_sumjetptgt100_os_mm_dilep("zmet_sumjetptgt100_os_ee_dilep",inclusivez_dilep+os_dilep+mm_dilep+"sumjetpt>100.");
-    DrawAll("tcmet","zmet_os_0j_tcmet_int",zmet_os_0j_dilep,"",est_lumi,40,0.,300.,1, babyVectorSusy);
-    DrawAll("tcmet","zmet_os_1j_tcmet_int",zmet_os_1j_dilep,"",est_lumi,40,0.,300.,1, babyVectorSusy);
-    DrawAll("tcmet","zmet_os_2j_tcmet_int",zmet_os_2j_dilep,"",est_lumi,40,0.,300.,1, babyVectorSusy);
-    DrawAll("pfmet","zmet_os_0j_pfmet_int",zmet_os_0j_dilep,"",est_lumi,40,0.,300.,1, babyVectorSusy);
-    DrawAll("pfmet","zmet_os_1j_pfmet_int",zmet_os_1j_dilep,"",est_lumi,40,0.,300.,1, babyVectorSusy);
-    DrawAll("pfmet","zmet_os_2j_pfmet_int",zmet_os_2j_dilep,"",est_lumi,40,0.,300.,1, babyVectorSusy);
-    DrawAll("tcmet","zmet_sumjetptgt100_os_ee_tcmet_int",zmet_sumjetptgt100_os_ee_dilep,"",est_lumi,40,0.,300.,1, babyVectorSusy);
-    DrawAll("pfmet","zmet_sumjetptgt100_os_ee_pfmet_int",zmet_sumjetptgt100_os_ee_dilep,"",est_lumi,40,0.,300.,1, babyVectorSusy);
-    DrawAll("tcmet","zmet_sumjetptgt100_os_mm_tcmet_int",zmet_sumjetptgt100_os_mm_dilep,"",est_lumi,40,0.,300.,1, babyVectorSusy);
-    DrawAll("pfmet","zmet_sumjetptgt100_os_mm_pfmet_int",zmet_sumjetptgt100_os_mm_dilep,"",est_lumi,40,0.,300.,1, babyVectorSusy);
+    DrawAll("tcmet","zmet_os_0j_tcmet_int",zmet_os_0j_dilep,est_lumi,40,0.,300.,1, babyVectorSusy);
+    DrawAll("tcmet","zmet_os_1j_tcmet_int",zmet_os_1j_dilep,est_lumi,40,0.,300.,1, babyVectorSusy);
+    DrawAll("tcmet","zmet_os_2j_tcmet_int",zmet_os_2j_dilep,est_lumi,40,0.,300.,1, babyVectorSusy);
+    DrawAll("pfmet","zmet_os_0j_pfmet_int",zmet_os_0j_dilep,est_lumi,40,0.,300.,1, babyVectorSusy);
+    DrawAll("pfmet","zmet_os_1j_pfmet_int",zmet_os_1j_dilep,est_lumi,40,0.,300.,1, babyVectorSusy);
+    DrawAll("pfmet","zmet_os_2j_pfmet_int",zmet_os_2j_dilep,est_lumi,40,0.,300.,1, babyVectorSusy);
+    DrawAll("tcmet","zmet_sumjetptgt100_os_ee_tcmet_int",zmet_sumjetptgt100_os_ee_dilep,est_lumi,40,0.,300.,1, babyVectorSusy);
+    DrawAll("pfmet","zmet_sumjetptgt100_os_ee_pfmet_int",zmet_sumjetptgt100_os_ee_dilep,est_lumi,40,0.,300.,1, babyVectorSusy);
+    DrawAll("tcmet","zmet_sumjetptgt100_os_mm_tcmet_int",zmet_sumjetptgt100_os_mm_dilep,est_lumi,40,0.,300.,1, babyVectorSusy);
+    DrawAll("pfmet","zmet_sumjetptgt100_os_mm_pfmet_int",zmet_sumjetptgt100_os_mm_dilep,est_lumi,40,0.,300.,1, babyVectorSusy);
 
     //
     // Effective Mass
@@ -273,12 +273,12 @@ void makeGatherPlots() {
     TCut base_tcmetgt50_dilep    ("base_tcmetgt50_dilep",base_dilep+"tcmet>50.");
     TCut base_sumjetptgt200_dilep("base_sumjetptgt200_dilep",base_dilep+"sumjetpt>200.");
     TCut base_dilptgt100_dilep   ("base_dilptgt100_dilep",base_dilep+"dilpt>100.");
-    DrawAll("njets","meff_njetsclean",base_dilep,"",est_lumi,10,-0.5,9.5,0, babyVectorSusy);
-    DrawAll("njets","meff_tcmeffgt400_njetsclean",base_tcmeffgt400_dilep,"",est_lumi,10,-0.5,9.5,0, babyVectorSusy);
-    DrawAll("tcmeff","meff_tcmeff_int",base_dilep,"",est_lumi,40,0.,1000.,1, babyVectorSusy);
-    DrawAll("tcmeff","meff_tcmetgt50_tcmeff_int",base_tcmetgt50_dilep,"",est_lumi,40,0.,1000.,1, babyVectorSusy);
-    DrawAll("tcmeff","meff_sumjetptgt200_tcmeff_int",base_sumjetptgt200_dilep,"",est_lumi,40,0.,1000.,1, babyVectorSusy);
-    DrawAll("tcmeff","meff_dilptgt100_tcmeff_int",base_dilptgt100_dilep,"",est_lumi,40,0.,1000.,1, babyVectorSusy);
+    DrawAll("njets","meff_njetsclean",base_dilep,est_lumi,10,-0.5,9.5,0, babyVectorSusy);
+    DrawAll("njets","meff_tcmeffgt400_njetsclean",base_tcmeffgt400_dilep,est_lumi,10,-0.5,9.5,0, babyVectorSusy);
+    DrawAll("tcmeff","meff_tcmeff_int",base_dilep,est_lumi,40,0.,1000.,1, babyVectorSusy);
+    DrawAll("tcmeff","meff_tcmetgt50_tcmeff_int",base_tcmetgt50_dilep,est_lumi,40,0.,1000.,1, babyVectorSusy);
+    DrawAll("tcmeff","meff_sumjetptgt200_tcmeff_int",base_sumjetptgt200_dilep,est_lumi,40,0.,1000.,1, babyVectorSusy);
+    DrawAll("tcmeff","meff_dilptgt100_tcmeff_int",base_dilptgt100_dilep,est_lumi,40,0.,1000.,1, babyVectorSusy);
 
     //
     // Exotica 
@@ -287,8 +287,8 @@ void makeGatherPlots() {
     std::cout << "Making additional plots...\n";
     TCut cut_z_dijets         ("z_dijets", inclusivez_dilep+"njets>=2");
     TCut cut_z_highptdijets   ("z_highptdijets", inclusivez_dilep+"njets>=2&&jet1pt>150.&&jet2pt>150.");
-    DrawAll("jetmass","exotica_z_highptdijets",cut_z_highptdijets,"",est_lumi,40,0.,2000.,0, babyVectorSM);
-    DrawAll("jetmass","exotica_z_dijets",cut_z_dijets,"",est_lumi,40,0.,2000.,0, babyVectorSM);
+    DrawAll("jetmass","exotica_z_highptdijets",cut_z_highptdijets,est_lumi,40,0.,2000.,0, babyVectorSM);
+    DrawAll("jetmass","exotica_z_dijets",cut_z_dijets,est_lumi,40,0.,2000.,0, babyVectorSM);
 
     //
     // Save the plots
