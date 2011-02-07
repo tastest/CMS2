@@ -25,7 +25,7 @@ vector<char*> smprefix;
 vector<char*> smleg;
 vector<char*> susyprefix;
 
-int colors[]={9,4,2,3,6,7,8,5,10,11,12};
+int colors[]={0,3,7,4,2,5,-1,11,12};
 int susycolors[]={2,4,4,6};
 
 void initialize(){
@@ -33,13 +33,21 @@ void initialize(){
   //------------------------
   //variables to plot
   //------------------------
-  
-  vars.push_back("htcmet");         xtitles.push_back("#slash{E}_{T} (GeV)");
+
   vars.push_back("hsumJptPt");      xtitles.push_back("H_{T} (GeV)");
-  vars.push_back("htcmet_sqrtht");  xtitles.push_back("#slash{E}_{T} / #sqrt{H_{T}} (GeV^{1/2})"); 
+  vars.push_back("htcmet_sqrtht");  xtitles.push_back("y (GeV^{1/2})"); 
+  vars.push_back("hdilMass");       xtitles.push_back("M(ll) (GeV)");
+  vars.push_back("hdilPt");         xtitles.push_back("p_{T}(ll) (GeV)");
+
+  /*
+  vars.push_back("htcmet");         xtitles.push_back("#slash{E}_{T} (GeV)");
+  
+  vars.push_back("hsumJptPt");      xtitles.push_back("H_{T} (GeV)");
+  vars.push_back("htcmet_sqrtht");  xtitles.push_back("#slash{E}_{T}  /  #sqrt{H_{T}} (GeV^{1/2})"); 
+  //vars.push_back("htcmet_sqrtht");  xtitles.push_back("y (GeV^{1/2})"); 
   vars.push_back("hnJpt");          xtitles.push_back("Jet Multiplicity");  
-  vars.push_back("hdilMass");       xtitles.push_back("dilepton mass (GeV)");
-  vars.push_back("hdilPt");         xtitles.push_back("dilepton p_{T} (GeV)");
+  vars.push_back("hdilMass");       xtitles.push_back("M(ll) (GeV)");
+  vars.push_back("hdilPt");         xtitles.push_back("p_{T}(ll) (GeV)");
 
   
   vars.push_back("hmt2core");       xtitles.push_back("MT2 (GeV)");
@@ -71,7 +79,7 @@ void initialize(){
   vars.push_back("hdrLep");         xtitles.push_back("#DeltaR(lep_{1}lep_{2})"); 
   vars.push_back("hdrJ1J2");        xtitles.push_back("#DeltaR(jet_{1}jet_{2})"); 
   vars.push_back("hdphiLep");       xtitles.push_back("#Delta#phi(ll)");
-
+  */  
 
   
 
@@ -98,21 +106,26 @@ void initialize(){
   //SM samples to include
   //------------------------
   
-  smprefix.push_back("ttotr");    smleg.push_back("t#bar{t}#rightarrowother");
+
   //smprefix.push_back("Zjets");   smleg.push_back("Z+jets");
-  smprefix.push_back("DYall");    smleg.push_back("Z^{0} #rightarrow l^{+}l^{-}");
-  smprefix.push_back("wjets");    smleg.push_back("W+jets");
-  smprefix.push_back("ww");       smleg.push_back("WW");
-  smprefix.push_back("wz");       smleg.push_back("WZ");
-  smprefix.push_back("zz");       smleg.push_back("ZZ");
+  smprefix.push_back("wjets");    smleg.push_back("#font[12]{W} + jets");
+  smprefix.push_back("VV");       smleg.push_back("#font[12]{VV}");
+  //smprefix.push_back("ww");       smleg.push_back("WW");
+  //smprefix.push_back("wz");       smleg.push_back("WZ");
+  //smprefix.push_back("zz");       smleg.push_back("ZZ");
   smprefix.push_back("tW");       smleg.push_back("single top");
-  smprefix.push_back("ttdil");    smleg.push_back("t#bar{t}#rightarrow l^{+}l^{-}");
+  smprefix.push_back("DYall");    smleg.push_back("#font[12]{Z^{0} #rightarrow l^{+}l^{-}}");
+  smprefix.push_back("ttotr");    smleg.push_back("#font[12]{t#bar{t}#rightarrow}other");
+  //smprefix.push_back("ttdil");    smleg.push_back("t#bar{t}#rightarrow l^{+}l^{-}");
+  smprefix.push_back("ttdil");    smleg.push_back("#font[12]{t}#bar{#font[12]{t}}#rightarrow #font[12]{l}^{+}#font[12]{l}^{-}");
+
+
   //smprefix.push_back("DYee");     smleg.push_back("DYee");
   //smprefix.push_back("DYmm");     smleg.push_back("DYmm");
   //smprefix.push_back("DYtautau"); smleg.push_back("DYtautau");
 
   //smprefix.push_back("LM0");     smleg.push_back("LM0");
-  //smprefix.push_back("LM1");     smleg.push_back("LM1");
+  smprefix.push_back("LM1");     smleg.push_back("LM1");
   
   //------------------------
   //SUSY samples to include
@@ -168,12 +181,15 @@ void compareDataMC(char* filename , int print = 0){
   }
 
 
+  TLatex *text = new TLatex();
+  text->SetNDC();
+  text->SetTextSize(0.07);
 
   TLegend *leg = getLegend();
   
   //loop over variables-----------------------------------------------------
-  for(unsigned int iVar = 0 ; iVar < nVars ; iVar++ ){
-  //for(unsigned int iVar = 0 ; iVar < 1 ; iVar++ ){
+  //for(unsigned int iVar = 0 ; iVar < nVars ; iVar++ ){
+  for(unsigned int iVar = 0 ; iVar < 1 ; iVar++ ){
 
     char* allj="allj_";
     if(strcmp(vars[iVar],"hnJet")==0)     allj="";
@@ -186,38 +202,50 @@ void compareDataMC(char* filename , int print = 0){
       canArray[iVar] = new TCanvas(Form("%s_can",vars.at(iVar)),Form("%s_can",vars.at(iVar)),1100,650);
       canArray[iVar]->cd();
     }
-    
-    plotPadArray[iVar] = new TPad(Form("pad_%i",iVar),Form("pad_%i",iVar),0,0.1,0.8,1);
+
+
+    //plotPadArray[iVar] = new TPad(Form("pad_%i",iVar),Form("pad_%i",iVar),0,0.1,0.8,1);
+    plotPadArray[iVar] = new TPad(Form("pad_%i",iVar),Form("pad_%i",iVar),0,0,0.8,1);
     plotPadArray[iVar]->Draw();
     plotPadArray[iVar]->cd();
     
-    plotPadArray[iVar]->Divide(2,2);
-    /*
-    plotPadArray[iVar]->cd(1);
+    //plotPadArray[iVar]->Divide(2,2);
+    
+    //plotPadArray[iVar]->cd(1);
     TH1F*    hist0  = getDataHist( file , vars.at(0) , xtitles.at(0) , "all");
     THStack* stack0 = getSMStack(  file , vars.at(0) , xtitles.at(0) , "all");
     drawOverlayPlot( hist0 , stack0 );
     formatHist( hist0 , vars.at(0) , "all" );
+    text->DrawLatex(0.8,0.5,"(a)");
 
+    /*
     plotPadArray[iVar]->cd(2);
     TH1F*    hist1  = getDataHist( file , vars.at(1) , xtitles.at(1) , "all");
     THStack* stack1 = getSMStack(  file , vars.at(1) , xtitles.at(1) , "all");
     drawOverlayPlot( hist1 , stack1 );
     formatHist( hist1 , vars.at(1) , "all" );
+    text->DrawLatex(0.8,0.5,"(b)");
 
     plotPadArray[iVar]->cd(3);
     TH1F*    hist2  = getDataHist( file , vars.at(2) , xtitles.at(2) , "all");
     THStack* stack2 = getSMStack(  file , vars.at(2) , xtitles.at(2) , "all");
     drawOverlayPlot( hist2 , stack2 );
     formatHist( hist2 , vars.at(2) , "all" );
+    text->DrawLatex(0.8,0.5,"(c)");
 
     plotPadArray[iVar]->cd(4);
     TH1F*    hist3  = getDataHist( file , vars.at(3) , xtitles.at(3) , "all");
     THStack* stack3 = getSMStack(  file , vars.at(3) , xtitles.at(3) , "all");
     drawOverlayPlot( hist3 , stack3 );
     formatHist( hist3 , vars.at(3) , "all" );
+    text->DrawLatex(0.8,0.5,"(d)");    
     */
-    
+
+    /*
+    plotPadArray[iVar] = new TPad(Form("pad_%i",iVar),Form("pad_%i",iVar),0,0.1,0.8,1);
+    plotPadArray[iVar]->Draw();
+    plotPadArray[iVar]->cd();
+    plotPadArray[iVar]->Divide(2,2);
 
     //tot
     //canArray[iVar]->cd(4);
@@ -250,7 +278,7 @@ void compareDataMC(char* filename , int print = 0){
     if( drawSUSY ) drawSUSYHists( file, vars.at(iVar) , "em" );
     formatHist( histem , vars.at(iVar) , "em" );
     //leg->Draw();
-    
+ 
     //mm
     //canArray[iVar]->cd(2);
     plotPadArray[iVar]->cd(2);
@@ -260,7 +288,7 @@ void compareDataMC(char* filename , int print = 0){
     if( drawSUSY ) drawSUSYHists( file, vars.at(iVar) , "mm" );
     formatHist( histmm , vars.at(iVar) , "mm" );
     //leg->Draw();
-    
+    */
 
     if( print == 2 ){
       canvas->cd();
@@ -278,14 +306,16 @@ void compareDataMC(char* filename , int print = 0){
     }else{
       canArray[iVar]->cd();
     }
-
+    
+    /*
     captionPadArray[iVar] = new TPad(Form("captionpad_%i",iVar),Form("captionpad_%i",iVar),0,0,0.8,0.1);
     captionPadArray[iVar]->Draw();
     captionPadArray[iVar]->cd();
     t.SetTextSize(0.35);
     t.SetTextAlign(22);
-    //t.DrawLatex(0.5,0.5,Form("Fig. A%i: %s",iVar+1,caption(vars.at(iVar))));
-
+    t.DrawLatex(0.5,0.5,Form("Fig. C%i: %s",iVar+1,caption(vars.at(iVar))));
+    */
+    
     if     ( print == 1 ) canArray[iVar]->Print(Form("plots/%s.png",vars.at(iVar)));
     else if( print == 2 ) {
       canvas->Print("plots/datamc.ps");
@@ -489,6 +519,16 @@ void formatHist(TH1F *hist,char* var, char* histtype){
     max += hist->GetBinError( hist->GetMaximumBin() );
     line.DrawLine( 2 , 0 , 2 , 1.05 * max );
   }
+  TLatex *t = new TLatex();
+  t->SetNDC();
+
+  t->SetTextSize(0.05);
+  t->DrawLatex(0.6,0.86,"CMS");
+  t->DrawLatex(0.6,0.78,"34.0 pb^{-1} at #sqrt{s} = 7 TeV");
+  if( histtype == "all" ) t->DrawLatex(0.6,0.7,"Events with ee/#mu#mu/e#mu");
+  if( histtype == "ee"  ) t->DrawLatex(0.6,0.7,"Events with ee");
+  if( histtype == "mm"  ) t->DrawLatex(0.6,0.7,"Events with #mu#mu");
+  if( histtype == "em"  ) t->DrawLatex(0.6,0.7,"Events with e#mu");
 }
 
 TH1F* getFSHist(TH1F* hee, TH1F* hmm, TH1F* hem, int color){
@@ -543,9 +583,16 @@ TH1F* getCloneHist(TH1F* hin, int color){
   for(int ibin=1;ibin<=hin->GetNbinsX();ibin++)
     hout->SetBinContent(ibin,hin->GetBinContent(ibin));
 
+  if( color < 0 ){
+    hout->SetLineColor(1);
+    hout->SetMarkerColor(1);
+    hout->SetFillColor(0);
+    hout->SetLineStyle(2);
+  }else{
     hout->SetLineColor(1);
     hout->SetMarkerColor(color);
     hout->SetFillColor(color);
+  }
 
   return hout;
 }
@@ -565,16 +612,18 @@ TH1F* getSUSYCloneHist(TH1F* hin, int color){
 
 TLegend *getLegend(){
 
-  const unsigned int nSM = smprefix.size();
+  const unsigned int nSM   = smprefix.size();
   const unsigned int nSUSY = susyprefix.size();
 
   //TLegend *leg =new TLegend(0.6,0.35,0.8,0.85);
-  TLegend *leg =new TLegend(0.,0.3,0.6,0.8);
+  TLegend *leg =new TLegend(0.1,0.3,0.7,0.8);
   
   TH1F* hdatadummy = new TH1F("hdatadummy","",1,0,1);
-  leg->AddEntry(hdatadummy,"DATA");
+  leg->AddEntry(hdatadummy,"data");
 
-  for(unsigned int i = 0 ; i < nSM ; i++){
+  //SM MC
+  for(int i = nSM - 1 ; i >= 0 ; i--){
+    if( TString( smprefix.at(i) ).Contains("LM") ) continue;
     TH1* hdummy=new TH1("hSMdummy","",1,0,1);
     hdummy->SetLineColor(1);
     hdummy->SetMarkerColor(colors[i]);
@@ -582,6 +631,19 @@ TLegend *getLegend(){
     leg->AddEntry(hdummy,smleg.at(i),"f");
     
   }
+
+  //LM MC
+  for(int i = nSM - 1 ; i >= 0 ; i--){
+    if( !TString( smprefix.at(i) ).Contains("LM") ) continue;
+    TH1* hdummy=new TH1("hSMdummy","",1,0,1);
+    hdummy->SetLineColor(1);
+    hdummy->SetLineStyle(2);;
+    hdummy->SetMarkerColor(0);
+    hdummy->SetFillColor(0);
+    leg->AddEntry(hdummy,smleg.at(i),"f");
+    
+  }
+
   for(unsigned int i=0;i<nSUSY;i++){
     TH1* hdummy=new TH1("hdummy","",1,0,1);
     hdummy->SetLineColor(i+1);
@@ -671,6 +733,15 @@ THStack* getSMStack(TFile *file, char* varname, char* xtitle,char* histtype){
         TH1F *temp1 = getCloneHist((TH1F*)(file->Get(Form("DYee_%s_%s%s",    varname,allj,histtype))), colors[iSM]);
         TH1F *temp2 = getCloneHist((TH1F*)(file->Get(Form("DYmm_%s_%s%s",    varname,allj,histtype))), colors[iSM]);
         TH1F *temp3 = getCloneHist((TH1F*)(file->Get(Form("DYtautau_%s_%s%s",varname,allj,histtype))), colors[iSM]);
+        h[iSM] = (TH1F*) temp1->Clone();
+        h[iSM]->Add(temp2);
+        h[iSM]->Add(temp3);
+      }
+
+      else if( strcmp( smprefix.at(iSM) , "VV" ) == 0 ){
+        TH1F *temp1 = getCloneHist((TH1F*)(file->Get(Form("ww_%s_%s%s",    varname,allj,histtype))), colors[iSM]);
+        TH1F *temp2 = getCloneHist((TH1F*)(file->Get(Form("wz_%s_%s%s",    varname,allj,histtype))), colors[iSM]);
+        TH1F *temp3 = getCloneHist((TH1F*)(file->Get(Form("zz_%s_%s%s",    varname,allj,histtype))), colors[iSM]);
         h[iSM] = (TH1F*) temp1->Clone();
         h[iSM]->Add(temp2);
         h[iSM]->Add(temp3);
@@ -769,6 +840,11 @@ TH1F* getDataHist(TFile *file, char* varname, char* xtitle,char* histtype){
   
   //if(strcmp(histtype,"all")==0) hist->SetTitle(Form("%s (ee + #mu#mu + e#mu)",xtitle));
   hist->GetXaxis()->SetTitle(xtitle);
+  hist->GetYaxis()->SetTitle("Events   ");
+  hist->GetYaxis()->SetTitleSize(0.07);
+  hist->GetYaxis()->SetTitleOffset(0.8);
+  hist->GetXaxis()->SetTitleSize(0.07);
+  hist->GetXaxis()->SetTitleOffset(0.8);
   hist->SetMarkerStyle(20);
   hist->SetMarkerSize(1);
   if(strcmp(histtype,"all")==0) hist->SetTitle("tot");
