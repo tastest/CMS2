@@ -367,7 +367,8 @@ void getPrediction(char* filename, bool display,
         h[isample]->GetXaxis()->SetTitle("tcmet");
         h[isample]->GetXaxis()->SetRangeUser(0,1500);
         h[isample]->GetYaxis()->SetRangeUser(0,30);
-        h[isample]->GetYaxis()->SetTitle("#slash{E}_{T} / #sqrt{H_{T}} (GeV^{1/2})");
+        //h[isample]->GetYaxis()->SetTitle("#slash{E}_{T}  /  #sqrt{H_{T}} (GeV^{1/2})");
+        h[isample]->GetYaxis()->SetTitle("y (GeV^{1/2})");
         h[isample]->GetYaxis()->SetTitleOffset(1);
         h[isample]->GetXaxis()->SetTitle("H_{T} (GeV)");
       }else{
@@ -384,7 +385,7 @@ void getPrediction(char* filename, bool display,
     //hall->Draw("colz");
     hall->Draw("box");
     hall->SetLineColor(4);
-    hall->SetMarkerColor(4);
+    hall->SetMarkerColor(0);
     hall->SetFillColor(0);
     hall->RebinX(20);
     hall->RebinY(4);
@@ -392,7 +393,8 @@ void getPrediction(char* filename, bool display,
     hall->GetXaxis()->SetTitle("tcmet");
     hall->GetXaxis()->SetRangeUser(0,1500);
     hall->GetYaxis()->SetRangeUser(0,30);
-    hall->GetYaxis()->SetTitle("#slash{E}_{T} / #sqrt{H_{T}} (GeV^{1/2})");
+    //hall->GetYaxis()->SetTitle("#slash{E}_{T}  /  #sqrt{H_{T}} (GeV^{1/2})");
+    hall->GetYaxis()->SetTitle("y (GeV^{1/2})");
     hall->GetYaxis()->SetTitleOffset(1);
     hall->GetXaxis()->SetTitle("H_{T} (GeV)");
     hdata->SetMarkerColor(2);
@@ -401,8 +403,8 @@ void getPrediction(char* filename, bool display,
     hdata->Draw("same");
 
     if( drawLegend ){
-      TLegend *legall = new TLegend(0.6,0.6,0.8,0.8);
-      legall->AddEntry(hall,"SM MC","l");
+      TLegend *legall = new TLegend(0.7,0.7,0.9,0.9);
+      legall->AddEntry(hall,"SM MC","f");
       legall->AddEntry(hdata,"Data","p");
       legall->SetFillColor(0);
       legall->SetBorderSize(1);
@@ -421,12 +423,17 @@ void getPrediction(char* filename, bool display,
   drawSquare(x3,y3,x4,y4);
   
   TLatex *t=new TLatex();
-  t->SetTextSize(0.04);
+  t->SetTextSize(0.05);
   t->SetTextColor(1);
-  t->DrawLatex(x1+50,y1+2,"B");
+  t->DrawLatex(x1+50,y1+1.5,"B");
   t->DrawLatex(x1+50,y3+10,"A");
-  t->DrawLatex(x3+50,y1+2,"C");
+  t->DrawLatex(x3+50,y1+1.5,"C");
   t->DrawLatex(x3+50,y3+10,"D");
+
+  t->SetTextSize(0.04);
+  t->DrawLatex(350,27,"CMS");
+  t->DrawLatex(350,25,"34.0 pb^{-1} at #sqrt{s} = 7 TeV");
+  t->DrawLatex(350,23,"Events with ee/#mu#mu/e#mu");
   
   //TH2F *hcut=(TH2F*) h[0]->Clone();
 
