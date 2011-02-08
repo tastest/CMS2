@@ -103,6 +103,20 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 
                 SetEventLevelInfo();
 
+				//
+				// Fill mc id of hypothesis leptons if this is MC
+				//
+				if (!isdata_) {
+					 int lt_id = cms2.hyp_lt_id()[hypi];
+					 int ll_id = cms2.hyp_ll_id()[hypi];
+
+					 int lt_idx = cms2.hyp_lt_index()[hypi];
+					 int ll_idx = cms2.hyp_ll_index()[hypi];
+
+					 mcid1_ = abs(lt_id) == 13 ? cms2.mus_mc_id()[lt_idx] : cms2.els_mc_id()[lt_idx];
+					 mcid2_ = abs(ll_id) == 13 ? cms2.mus_mc_id()[ll_idx] : cms2.els_mc_id()[ll_idx];
+				}
+
                 // 
                 // Fill MET information
                 //
@@ -650,6 +664,7 @@ void dilepbabymaker::InitBabyNtuple ()
     dphipfmet1_   = -999999.;
     dphitcmet1_   = -999999.;
     drjet1_       = -999999.;
+	mcid1_        = -999999;
     eormu2_       = -999999;
     type2_        = -999999;
     pt2_          = -999999.;
@@ -661,6 +676,7 @@ void dilepbabymaker::InitBabyNtuple ()
     dphipfmet2_   = -999999.;
     dphitcmet2_   = -999999.;
     drjet2_       = -999999.;
+	mcid2_        = -999999;
     mt2_          = -999999.;
     mt2j_         = -999999.;
     extraZveto_   = 0;
@@ -823,6 +839,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("dphipfmet1", &dphipfmet1_, "dphipfmet1/F");
     babyTree_->Branch("dphitcmet1", &dphitcmet1_, "dphitcmet1/F");
     babyTree_->Branch("drjet1",     &drjet1_,     "drjet1/F"    );
+	babyTree_->Branch("mcid1",      &mcid1_,      "mcid1/F"     );
     babyTree_->Branch("eormu2",     &eormu2_,     "eormu2/I"    );
     babyTree_->Branch("type2",      &type2_,      "type2/I"     );
     babyTree_->Branch("pt2",        &pt2_,        "pt2/F"       );
@@ -834,6 +851,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("dphipfmet2", &dphipfmet2_, "dphipfmet2/F");
     babyTree_->Branch("dphitcmet2", &dphitcmet2_, "dphitcmet2/F");
     babyTree_->Branch("drjet2",     &drjet2_,     "drjet2/F"    );
+	babyTree_->Branch("mcid2",      &mcid2_,      "mcid2/F"     );
     babyTree_->Branch("mt2",        &mt2_,        "mt2/F"       );
     babyTree_->Branch("mt2j",       &mt2j_,       "mt2j/F"      );
     babyTree_->Branch("extraZveto", &extraZveto_, "extraZveto/O");

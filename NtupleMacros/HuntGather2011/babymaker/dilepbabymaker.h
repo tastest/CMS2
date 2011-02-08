@@ -99,6 +99,7 @@ class dilepbabymaker
         Float_t dphipfmet1_;
         Float_t dphitcmet1_;
         Float_t drjet1_;
+		Int_t   mcid1_;
         Int_t   eormu2_;
         Int_t   type2_;
         Float_t pt2_;
@@ -110,6 +111,7 @@ class dilepbabymaker
         Float_t dphipfmet2_;
         Float_t dphitcmet2_;
         Float_t drjet2_;
+		Int_t   mcid2_;
         Float_t mt2_;
         Float_t mt2j_;
         Bool_t  extraZveto_;
