@@ -265,175 +265,13 @@ TLegend* makeExpLegend(TGraph& sg_gr, TGraph& sgd_gr,TGraph& ch_gr,TGraph& sl_gr
 
 }
 
-/*
-TGraphErrors* getLO_signalCont(){
-
-
-
-  Int_t nl = 10;
-  Double_t xl[nl];
-  Double_t yl[nl];
-  Double_t exl[nl];
-  Double_t eyl[nl];
-  
-  // cout << " n " << hist->GetXaxis()->GetNbins() << endl;
-  
-
-  xl[0] = 0;
-  yl[0] = 270;
-  xl[1] = 100;
-  yl[1] = 263;
-  xl[2] = 200;
-  yl[2] = 254;
-  xl[3] = 250;
-  yl[3] = 246;
-  xl[4] = 300;
-  yl[4] = 212;
-  xl[5] = 340;
-  yl[5] = 176;
-  xl[6] = 400;
-  yl[6] = 143;
-  xl[7] = 430;
-  yl[7] = 134;
-  xl[8] = 450;
-  yl[8] = 130;
-  xl[9] = 490;
-  yl[9] = 50;
-  
-  
-  
-  TGraphErrors* gr1 = new TGraphErrors(nl,xl,yl,exl,eyl);
-  gr1->SetMarkerColor(kGreen+2);
-  gr1->SetMarkerStyle(21);
-  
-  
-  //gr1->Draw("LP");
-
-  TSpline3 *s = new TSpline3("grs",gr1);
-  s->SetLineColor(kGreen+2);
-  s->SetLineStyle(4);
-  s->SetLineWidth(3);
-  
-
-  return gr1;
-}
-*/
-
-/*
-TGraphErrors* getExpected_NLOunc(){
-
- Int_t nl = 11;
-  Double_t xl[nl];
-  Double_t yl[nl];
-  Double_t exl[nl];
-  Double_t eyl[nl];
-  
-  // cout << " n " << hist->GetXaxis()->GetNbins() << endl;
-  
-
-  xl[0] = 35;
-  yl[0] = 285;
-  xl[1] = 100;
-  yl[1] = 280;
-  xl[2] = 150;
-  yl[2] = 276;
-  xl[3] = 200;
-  yl[3] = 275;
-  xl[4] = 250;
-  yl[4] = 270;
-  xl[5] = 300;
-  yl[5] = 255;
-  xl[6] = 350;
-  yl[6] = 230;
-  xl[7] = 400;
-  yl[7] = 195;
-  xl[8] = 450;
-  yl[8] = 175;
-  xl[9] = 500;
-  yl[9] = 155;
-  xl[10] = 550;
-  yl[10] = 50;
-  
-  
-  
-  TGraphErrors* gr1 = new TGraphErrors(nl,xl,yl,exl,eyl);
-  gr1->SetMarkerColor(kWhite);
-  //gr1->SetMarkerStyle(21);
-  
-  
-  //gr1->Draw("LP");
-
-  //  TSpline3 *s = new TSpline3("grs",gr1);
-  // s->SetLineColor(kBlue);
-  // s->SetLineStyle(2);
-  // s->SetLineWidth(3);
-  
-
-  return gr1;
 
 
 
 
 
-}
-*/
 
-/*
-TGraphErrors* getObserved_NLOunc(){
 
-  Int_t nl = 11;
-  Double_t xl[nl];
-  Double_t yl[nl];
-  Double_t exl[nl];
-  Double_t eyl[nl];
-  
-  // cout << " n " << hist->GetXaxis()->GetNbins() << endl;
-  
-
-  xl[0] = 35;
-  yl[0] = 275;
-  xl[1] = 100;
-  yl[1] = 270;
-  xl[2] = 150;
-  yl[2] = 268;
-  xl[3] = 200;
-  yl[3] = 265;
-  xl[4] = 250;
-  yl[4] = 255;
-  xl[5] = 300;
-  yl[5] = 236;
-  xl[6] = 350;
-  yl[6] = 200;
-  xl[7] = 400;
-  yl[7] = 172;
-  xl[8] = 450;
-  yl[8] = 158;
-  xl[9] = 500;
-  yl[9] = 132;
-  xl[10] = 510;
-  yl[10] = 120;
-  
-  
-  
-  TGraphErrors* gr1 = new TGraphErrors(nl,xl,yl,exl,eyl);
-  gr1->SetMarkerColor(kWhite);
-  // gr1->SetMarkerStyle(21);
-  
-  
-  //gr1->Draw("LP");
-
-  TSpline3 *s = new TSpline3("grs",gr1);
-  s->SetLineColor(kRed);
-  //  s->SetLineStyle(2);
-  s->SetLineWidth(3);
-  
-
-  return gr1;
-
-}
-*/
-
-/*
 TGraphErrors* getObserved_NLOunc( char* filename ){
 
   cout << "Retrieving observed NLO exclusion curve from " << filename << endl;
@@ -453,8 +291,8 @@ TGraphErrors* getObserved_NLOunc( char* filename ){
 
   return gre;
 }
-*/
-/*
+
+
 TGraphErrors* getExpected_NLOunc( char* filename ){
 
   //cout get observed contour, reduce reach by 10 GeV
@@ -494,8 +332,8 @@ TGraphErrors* getExpected_NLOunc( char* filename ){
   
 
 }
-*/
-/*
+
+
 TGraphErrors* getLO_signalCont( char* filename ){
 
   cout << "Retrieving observed LO exclusion curve from " << filename << endl;
@@ -518,9 +356,9 @@ TGraphErrors* getLO_signalCont( char* filename ){
   return gre;
 
 }
-*/
 
 
+/*
 TGraphErrors* getObserved_NLOunc(char* filename){
 
   Int_t n=67;
@@ -981,7 +819,7 @@ TGraphErrors* getExpected_NLOunc(char* filename){
 }
 
 TGraphErrors* getLO_signalCont(char* filename){
- //TGraphErrors* getLO(char* filename){
+  //TGraphErrors* getLO(char* filename){
   
   TFile *f = TFile::Open(filename);
 
@@ -1120,9 +958,6 @@ TGraphErrors* getLO_signalCont(char* filename){
   grLO->SetMarkerColor(kGreen+2);
   grLO->SetMarkerStyle(21);
   return grLO;
-
-
-
   
 //     Double_t xxLO[9],yyLO[9];
 //     xxLO[0]=345.;
@@ -1159,19 +994,7 @@ TGraphErrors* getLO_signalCont(char* filename){
 //     grLO2.Draw("C");
 
 }
-
-
-// TGraphErrors* getLO_signalCont(char* filename){
-
-//     cout << "Retrieving observed LO exclusion curve from " << filename << endl;
-//     TFile *f = TFile::Open(filename);
-
-//     // yes, I realize it is retarded to define the TGraph elsewhere and read it in here. \
-//     // This was the only way I could get the axis tick marks to draw. Fucking root.
-//     TGraphErrors *gre = getLO(filename);
-//     return gre;
-  
-// }
+*/
 
 
 #endif

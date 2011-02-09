@@ -118,19 +118,32 @@ void CommandMSUGRA(TString plotName_ , char* filename ){
   //Now start drawing-------------------------------------------------
   First->Draw("AP");//graph with white dots just for setting the axis right
   
-  bool smooth = false;
+//   bool smooth = false;
 
-  if( smooth ){
-    //the exclusion lines (smoothed)
-    sFirst->Draw("same");
-    sSecond->Draw("same");
-    sThird->Draw("same");
-  }else{
-    //the exclusion lines (un-smoothed)
-    First->Draw("samec");
-    Second->Draw("samec");
-    Third->Draw("samec");
-  }
+
+//   if( smooth ){
+//     //the exclusion lines (smoothed)
+//     sFirst->Draw("same");
+//     sSecond->Draw("same");
+//     sThird->Draw("same");
+//   }else{
+//     //the exclusion lines (un-smoothed)
+//     First->Draw("samec");
+//     Second->Draw("samec");
+//     Third->Draw("samec");
+//   }
+
+  sFirst->Draw("same");
+  sSecond->Draw("same");
+  sThird->Draw("same");
+  
+//   First->Draw("samec");
+//   Second->Draw("samec");
+//   Third->Draw("samec");
+  
+//   First->Draw("same");
+//   Second->Draw("same");
+//   Third->Draw("same");
 
   //the squark and gluino lines plus text
   for (int it=1;it<4;it++) {   
