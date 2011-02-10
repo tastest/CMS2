@@ -219,7 +219,13 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
       }*/
 
   
-  TLegend* myleg = new TLegend(0.33,0.75,0.58,0.9,NULL,"brNDC");
+  TLegend* myleg;
+
+  if( plotLO_ ) myleg = new TLegend(0.33,0.75,0.58,0.9,NULL,"brNDC");
+  else          myleg = new TLegend(0.28,0.75,0.58,0.9,NULL,"brNDC");
+
+
+
   myleg->SetFillColor(0); 
   myleg->SetShadowColor(0);
   myleg->SetTextSize(0.03);
@@ -347,10 +353,13 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   cvsSys->Update();
   cvsSys->Write();
   
-  
-  cvsSys->SaveAs("RA1_ExclusionLimit_tanb"+tanb+".pdf");
-  cvsSys->SaveAs("RA1_ExclusionLimit_tanb"+tanb+".png");
-  
+  if( plotLO_ ){
+    cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+"_LO.pdf");
+    cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+"_LO.png");
+  }else{
+    cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".pdf");
+    cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".png");
+  }
   
   output->Write();
   output->Close();
@@ -819,18 +828,26 @@ TLegend* makeStauLegend(Double_t txtsz,Int_t tanBeta_){
 
 
 TLegend* makeExpLegend(TGraph& sg_gr, TGraph& sgd_gr,TGraph& ch_gr,TGraph& sl_gr,TGraph& tev_sn,Double_t txtsz,Int_t tanbeta){
-  TLegend* legexp = new TLegend(0.61,0.65,0.91,0.9,NULL,"brNDC");
+
+  //TLegend* legexp = new TLegend(0.61,0.65,0.91,0.9,NULL,"brNDC");
+  TLegend* legexp = new TLegend(0.57,0.65,0.91,0.9,NULL,"brNDC");
+
   legexp->SetFillColor(0);
   legexp->SetShadowColor(0);
   legexp->SetTextSize(txtsz);
   legexp->SetBorderSize(0);
 
   sg_gr.SetLineColor(1);
-  legexp->AddEntry(&sg_gr,"CDF  #tilde{#font[12]{g}}, #tilde{#font[12]{q}}, #scale[0.8]{tan#beta=5, 2 fb^{-1}}","f"); 
+  
+  //legexp->AddEntry(&sg_gr,"CDF  #tilde{#font[12]{g}}, #tilde{#font[12]{q}}, #scale[0.8]{tan#beta=5, 2 fb^{-1}}","f"); 
+  legexp->AddEntry(&sg_gr,"CDF  #tilde{#font[12]{g}}, #tilde{#font[12]{q}}, #scale[0.8]{tan#beta=5, #mu<0, 2 fb^{-1}}","f");   
+
   //  sgd_gr.SetLineColor(1);
   //  sgd_gr.SetLineWidth(1);
 
-  legexp->AddEntry(&sgd_gr,"D0   #tilde{#font[12]{g}}, #tilde{#font[12]{q}}, #scale[0.8]{tan#beta=3, 2.1 fb^{-1}}","f");  
+  //legexp->AddEntry(&sgd_gr,"D0   #tilde{#font[12]{g}}, #tilde{#font[12]{q}}, #scale[0.8]{tan#beta=3, 2.1 fb^{-1}}","f");  
+  legexp->AddEntry(&sgd_gr,"D0   #tilde{#font[12]{g}}, #tilde{#font[12]{q}}, #scale[0.8]{tan#beta=3, #mu<0, 2.1 fb^{-1}}","f");  
+
   ch_gr.SetLineColor(1);
   legexp->AddEntry(&ch_gr,"LEP2   #tilde{#chi}_{1}^{#pm}","f");  
   
