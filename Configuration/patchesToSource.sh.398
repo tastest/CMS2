@@ -1,0 +1,7 @@
+cvs co -r V02-02-03      JetMETCorrections/Algorithms                     
+cvs co -r V03-02-07      JetMETCorrections/Configuration                  
+cvs co -r V05-00-17      JetMETCorrections/Modules     
+
+echo;echo checkingdeps;echo
+
+checkdeps -a
