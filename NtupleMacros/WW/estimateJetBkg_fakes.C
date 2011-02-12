@@ -339,4 +339,10 @@ void estimateJetBkg_fakes(const char* file = "processed_data.root",
   printLine("mm bkg", DYee_mm, DYmm_mm, DYtt_mm, tt_mm, wjets_mm, wz_mm, zz_mm, ww_mm, tw_mm, data_mm, fakeRate);
   printLine("em bkg", DYee_me, DYmm_me, DYtt_me, tt_me, wjets_me, wz_me, zz_me, ww_me, tw_me, data_me, fakeRate);
   cout <<endl;
+
+  if (TH1F* hist = dynamic_cast<TH1F*>(ftt->Get("data_hdoubleFakes_all"))){
+    cout << "Cross-check from the looper calculated fake estimation (fake rate erros are ignored)" << endl;
+    cout << Form("Single fakes total: %0.2f +/- %0.2f", hist->GetBinContent(2), hist->GetBinError(2)) << endl;
+    cout << Form("Double fakes total: %0.2f +/- %0.2f", hist->GetBinContent(3), hist->GetBinError(3)) << endl;
+  }
 }

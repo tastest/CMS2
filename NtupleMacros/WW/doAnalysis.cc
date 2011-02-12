@@ -38,17 +38,42 @@ using namespace std;
 enum jetregion { HCAL, HF, ALLJET};
 
 enum hyp_selection {
-  PASS_ZSEL,
+  PASS_ZVETO,
   PASS_MET,
   PASS_JETVETO,  
   PASS_LT_FINAL,
   PASS_LL_FINAL,
   PASS_SOFTMUVETO,
   PASS_EXTRALEPTONVETO,
+  PASS_TOPVETO,
+  PASS_1BJET,
+  PASS_1JET,
+  PASS_ZControlSampleVeryTight,   // within Z mass window +/- 5GeV
+  PASS_ZControlSampleTight,       // within Z mass window +/- 10GeV
+  PASS_ZControlSampleLoose,       // within Z mass window +/- 20GeV
+  PASS_TopControlSample,          // 2 or more jets
+  PASS_PROBE                      // passed only 1 leg final selection.
 };
 
-const cuts_t pass_all =    (1<< PASS_ZSEL)    |  (1<<PASS_MET)  | (1<<PASS_JETVETO) | (1<<PASS_LT_FINAL) 
-  | (1<<PASS_LL_FINAL) |  (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO);
+cuts_t pass_all = (1<<PASS_ZVETO) | (1<<PASS_MET) | (1<<PASS_JETVETO) | (1<<PASS_LT_FINAL) | (1<<PASS_LL_FINAL) | 
+ (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO) | (1<<PASS_TOPVETO);
+
+bool applyJEC = true;
+bool lockToCoreSelectors = true;
+
+std::vector<std::string> jetcorr_filenames_jpt;
+FactorizedJetCorrector *jet_corrector_jpt;
+
+std::vector<std::string> jetcorr_filenames_pf;
+FactorizedJetCorrector *jet_corrector_pf;
+
+std::vector<std::string> jetcorr_filenames_calo;
+FactorizedJetCorrector *jet_corrector_calo;
+
+std::vector<std::string> jetcorr_filenames_trk;
+FactorizedJetCorrector *jet_corrector_trk;
+
+
 //
 // Key analysis method implementation
 //
@@ -58,17 +83,19 @@ bool goodElectronWithoutIsolation(unsigned int i){
 }
 
 bool goodElectronIsolated(unsigned int i){
-  bool core = pass_electronSelection( i, electronSelection_wwV1);
+  bool ptcut = cms2.els_p4().at(i).pt() >= 20.0;
+  bool core = ptcut && pass_electronSelection( i, electronSelection_wwV1);
   bool internal = ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_elIso(i);
-  assert(core==internal);
-  return core;
+  assert(!lockToCoreSelectors || core==internal);
+  return internal;
 }
 
 bool fakableElectron(unsigned int i){
+  bool ptcut = cms2.els_p4().at(i).pt() >= 20.0;
   // extrapolate in partial id, iso and d0
-  //return pass_electronSelection( i, electronSelectionFO_el_wwV0_v4);
+  return ptcut && pass_electronSelection( i, electronSelectionFO_el_wwV1_v2);
   // extrapolate in id
-  return ww_elBase(i) && ww_eld0(i) && ww_elIso(i);
+  // return ww_elBase(i) && ww_eld0(i) && ww_elIso(i);
 }
 
 bool goodMuonWithoutIsolation(unsigned int i){
@@ -76,22 +103,23 @@ bool goodMuonWithoutIsolation(unsigned int i){
 }
 
 bool goodMuonIsolated(unsigned int i){
-  bool core = muonId(i, NominalWWV1);
+  bool ptcut = cms2.mus_p4().at(i).pt() >= 20.0;
+  bool core = ptcut && muonId(i, NominalWWV1);
   bool internal = ww_muBase(i) && ww_mud0PV(i) && ww_muId(i) && ww_muIso(i); 
-  assert(core==internal);
-  return core;
+  assert(!lockToCoreSelectors || core==internal);
+  return internal;
 }
 
 bool fakableMuon(unsigned int i){
+  bool ptcut = cms2.mus_p4().at(i).pt() >= 20.0;
   // extrapolate in iso
-  //return muonId(i, muonSelectionFO_mu_ww);
-  return muonId(i, muonSelectionFO_mu_ww_iso10);
+  // return muonId(i, muonSelectionFO_mu_ww);
+  return ptcut && muonId(i, muonSelectionFO_mu_wwV1_iso10);
+  // return ww_muBase(i) && ww_muId(i) && ww_muIsoVal(i)<1.0 && fabs(cms2.mus_d0corr()[i]) < 2; 
 }
 
 double metValue(){    return cms2.evt_tcmet(); }
 double metPhiValue(){ return cms2.evt_tcmetPhi(); }
-double pfMetValue(){    return cms2.evt_pfmet(); }
-double pfMetPhiValue(){ return cms2.evt_pfmetPhi(); }
 
 bool passedMetRequirements(unsigned int i_hyp){
   // if ( cms2.hyp_p4().at(i_hyp).mass()>130 ) return true;
@@ -108,28 +136,18 @@ bool passedMetRequirements(unsigned int i_hyp){
   return true;
 }
 
-
-bool passedPFMetRequirements(unsigned int i_hyp){
-  HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
-  double pMet = projectedPFMet(i_hyp);
-  if ( pMet < 20 ) return false;
-  if (type == EE || type == MM) {
-    if ( pMet < 35 ) return false;
-  }
-  return true;
-}
-
-
 WWJetType jetType(){
   return pfJet;
   // return jptJet;
 }
 
-unsigned int numberOfJets(unsigned int i_hyp){
-  // return getJets(jetType(), i_hyp, 20, 3.0).size(); // V0
-  return getJets(jetType(), i_hyp, 25, 5.0).size(); // V1
+std::vector<LorentzVector> getDefaultJets(unsigned int i_hyp, bool btagged=false){
+  return getJets(jetType(), i_hyp, 25, 5.0, false, btagged); // V1
 }
 
+unsigned int numberOfJets(unsigned int i_hyp){
+  return getDefaultJets(i_hyp, false).size(); 
+}
 
 //
 // Electron Id
@@ -168,14 +186,14 @@ bool isGoodVertex(size_t ivtx) {
     return true;
 }
 
-bool foundGoodVertex() {
-    unsigned int nVtx = 0;
-    for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
-      // if (cms2.vtxs_isFake()[i]) continue;
-      if (!isGoodVertex(i)) continue;
-      nVtx++;
-    }
-    return nVtx>0;
+unsigned int nGoodVertex() {
+  unsigned int nVtx = 0;
+  for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
+    // if (cms2.vtxs_isFake()[i]) continue;
+    if (!isGoodVertex(i)) continue;
+    nVtx++;
+  }
+  return nVtx;
 }
 
 double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVector& pv){
@@ -274,18 +292,26 @@ double ww_muIsoVal(unsigned int index){
 bool ww_muIso(unsigned int index){
   return ww_muIsoVal(index)<0.15;
 }
-unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated){
+unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated,
+			       const std::vector<LorentzVector>& vetojets)
+{
   unsigned int nMuons = 0;
   for (int imu=0; imu < int(cms2.mus_charge().size()); ++imu) {
     // quality cuts
     // if (  ((cms2.mus_goodmask()[imu]) & (1<<14)) == 0 ) continue; // TMLastStationOptimizedLowPtTight
     if (  ((cms2.mus_goodmask()[imu]) & (1<<19)) == 0 ) continue; // TMLastStationAngTight
     if ( cms2.mus_p4()[imu].pt() < 3 ) continue;
-    if ( TMath::Abs(cms2.mus_d0corr()[imu]) > 0.2) continue;
+    // if ( TMath::Abs(cms2.mus_d0corr()[imu]) > 0.2) continue;
+    if ( TMath::Abs(ww_mud0PV(imu)) > 0.2) continue;
     if ( cms2.mus_validHits()[imu] < 11) continue;
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == imu ) continue;
     if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == imu ) continue;
     if ( nonisolated && ww_muIsoVal(imu)<0.1 && cms2.mus_p4()[imu].pt()>20 ) continue;
+    bool skip = false;
+    for ( std::vector<LorentzVector>::const_iterator ijet = vetojets.begin();
+	  ijet != vetojets.end(); ++ijet )
+      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(*ijet,cms2.mus_p4()[imu])) < 0.3 ) skip=true;
+    if ( skip ) continue;
     ++nMuons;
   }
   return nMuons;
@@ -342,6 +368,9 @@ bool passedTriggerRequirements(HypTypeInNtuples type) {
   if ( passedTrigger("HLT_Ele17_SW_TightEleId_L1R") ) return true;
   if ( passedTrigger("HLT_Ele17_SW_TighterEleIdIsol_L1R_v2") ) return true;
   if ( passedTrigger("HLT_Ele17_SW_TighterEleIdIsol_L1R_v3") ) return true;
+  if ( passedTrigger("HLT_DoubleEle17_SW_L1R_v1") ) return true;
+  if ( passedTrigger("HLT_DoubleEle15_SW_L1R_v1") ) return true;
+  if ( passedTrigger("HLT_DoubleEle10_SW_L1R") ) return true;
   return false;
 }
 
@@ -362,13 +391,6 @@ double projectedMet(unsigned int i_hyp)
   double DeltaPhi = nearestDeltaPhi(metPhiValue(),i_hyp);
   if (DeltaPhi < TMath::Pi()/2) return metValue()*TMath::Sin(DeltaPhi);
   return metValue();
-}
-
-double projectedPFMet(unsigned int i_hyp)
-{
-  double DeltaPhi = nearestDeltaPhi(pfMetPhiValue(),i_hyp);
-  if (DeltaPhi < TMath::Pi()/2) return pfMetValue()*TMath::Sin(DeltaPhi);
-  return pfMetValue();
 }
 
 bool metBalance (unsigned int i_hyp) {
@@ -405,33 +427,41 @@ Bool_t comparePt(LorentzVector lv1, LorentzVector lv2) {
 }
 
 std::vector<LorentzVector> 
-getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJets)
+getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJets, bool btag)
 {
      std::vector<LorentzVector> jets;
-     const double vetoCone = 0.4;
+     const double vetoCone = 0.3;
+     double jec = 1.0;
      
      switch ( type ){
      case jptJet:
         for ( unsigned int i=0; i < cms2.jpts_p4().size(); ++i) {
-	 if ( cms2.jpts_p4()[i].pt() < etThreshold ) continue;
+	  if(applyJEC)
+	    jec = jetCorrection(cms2.jpts_p4()[i], jet_corrector_jpt);
+	 if ( cms2.jpts_p4()[i].pt() * jec < etThreshold ) continue;
+	 if ( btag && !defaultBTag(type,i) ) continue;
 	 if ( TMath::Abs(cms2.jpts_p4()[i].eta()) > etaMax ) continue;
 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ||
 	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ) continue;
-	 jets.push_back(cms2.jpts_p4()[i]);
+	 jets.push_back(cms2.jpts_p4()[i] * jec);
        }
        break;
      case pfJet:
        for ( unsigned int i=0; i < cms2.pfjets_p4().size(); ++i) {
-	 if ( cms2.pfjets_p4()[i].pt() < etThreshold ) continue;
-	 if ( TMath::Abs(cms2.pfjets_p4()[i].eta()) > etaMax ) continue;
-	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ||
-	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
-	 jets.push_back(cms2.pfjets_p4()[i]);
+	  if(applyJEC)
+	    jec = jetCorrection(cms2.pfjets_p4()[i], jet_corrector_pf);
+	  if ( cms2.pfjets_p4()[i].pt() * jec < etThreshold ) continue;
+	  if ( btag && !defaultBTag(type,i) ) continue;
+	  if ( TMath::Abs(cms2.pfjets_p4()[i].eta()) > etaMax ) continue;
+	  if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ||
+	       TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
+	  jets.push_back(cms2.pfjets_p4()[i] * jec);
        }
        break;
      case GenJet:
        for ( unsigned int i=0; i < cms2.genjets_p4().size(); ++i) {
 	 if ( cms2.genjets_p4()[i].pt() < etThreshold ) continue;
+	 if ( btag && !defaultBTag(type,i) ) continue;
 	 if ( TMath::Abs(cms2.genjets_p4()[i].eta()) > etaMax ) continue;
 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.genjets_p4()[i])) < vetoCone ||
 	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.genjets_p4()[i])) < vetoCone ) continue;
@@ -440,7 +470,8 @@ getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJ
        break;
      case CaloJet:
        for ( unsigned int i=0; i < cms2.jets_pat_jet_p4().size(); ++i) {
-	 if ( cms2.jets_pat_jet_p4()[i].pt() < etThreshold ) continue;
+	 if ( cms2.jets_pat_jet_p4()[i].pt() < etThreshold ) continue; // note that this is already corrected
+	 if ( btag && !defaultBTag(type,i) ) continue;
 	 if ( TMath::Abs(cms2.jets_pat_jet_p4()[i].eta()) > etaMax ) continue;
 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jets_pat_jet_p4()[i])) < vetoCone ||
 	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jets_pat_jet_p4()[i])) < vetoCone ) continue;
@@ -449,11 +480,14 @@ getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJ
        break;
      case TrkJet:
        for ( unsigned int i=0; i < cms2.trkjets_p4().size(); ++i) {
+	 if(applyJEC)
+	   jec = jetCorrection(cms2.trkjets_p4()[i], jet_corrector_trk);
 	 if ( cms2.trkjets_p4()[i].pt() < etThreshold ) continue;
+	 if ( btag && !defaultBTag(type,i) ) continue;
 	 if ( TMath::Abs(cms2.trkjets_p4()[i].eta()) > etaMax ) continue;
 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.trkjets_p4()[i])) < vetoCone ||
 	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.trkjets_p4()[i])) < vetoCone ) continue;
-	 jets.push_back(cms2.trkjets_p4()[i]);
+	 jets.push_back(cms2.trkjets_p4()[i] * jec);
        }
        break;
      default:
@@ -467,9 +501,9 @@ getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJ
 // Various other cuts
 //
 
-bool inZmassWindow(float mass){
+bool inZmassWindow(float mass, double delta=15.0){
   // return ( mass > 76. && mass < 106. );
-  return fabs(mass - 91.1876) < 15;
+  return fabs(mass - 91.1876) < delta;
 }
 
 double BTag(WWJetType type, unsigned int iJet){
@@ -481,13 +515,16 @@ double BTag(WWJetType type, unsigned int iJet){
     jetP4 = cms2.jpts_p4().at(iJet);
     break;
   case CaloJet:
-    // return cms2.jets_jetProbabilityBJetTag().at(iJet);
-    return cms2.jets_combinedSecondaryVertexBJetTag().at(iJet);
+    return cms2.jets_trackCountingHighEffBJetTag()[iJet];
+    break;
+  case pfJet:
+    return cms2.pfjets_trackCountingHighEffBJetTag()[iJet];
     break;
   default:
     std::cout << "ERROR: not supported jet type is requested: " << type << " FixIt!" << std::endl;
     assert(0);
   }
+
   int refJet = -1;
   for ( unsigned int i=0; i < cms2.jets_p4().size(); ++i) {
     if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(jetP4,cms2.jets_p4()[i])) > 0.3 ) continue;
@@ -497,8 +534,11 @@ double BTag(WWJetType type, unsigned int iJet){
     // std::cout << "Warning: failed to find a matching jet for b-tagging." << std::endl; 
     return 0.0;
   }
-  // return cms2.jets_jetProbabilityBJetTag().at(refJet);
-  return cms2.jets_combinedSecondaryVertexBJetTag().at(refJet);
+  return cms2.jets_trackCountingHighEffBJetTag().at(refJet);
+}
+
+bool defaultBTag(WWJetType type, unsigned int iJet){
+  return BTag(type,iJet)>2.1;
 }
 
 //
@@ -746,6 +786,7 @@ TH1F* hmuEta[4];     // muon eta
 TH1F* hdilMass[4];   // dilepton mass
 TH1F* hdilPt[4];     // dilepton Pt
 TH1F* hmet[4];       // MET
+TH1F* hmetProj[4];   // Projected MET
 TH1F* hmetPhi[4];    // MET phi
 TH1F* hptJet1[4];    // Pt of 1st jet
 TH1F* hptJet2[4];    // Pt of 2nd jet
@@ -768,7 +809,8 @@ TH2F* hFinalRateSingleMuon;   // Fake rate study: rate of final objects
 TH1F* hIsoSingleMuon;             // isolation background 
 TH1F* hIsoSingleElectron;         // isolation background 
 TH2F* hmaxBtagVsJPTPt;   // btag vs energy distribution for the most energetic jet
-
+TH2F* htoptagz[4];
+TH2F* htoptag[4];
 
 // Histograms without the full selections
 TH1F* hmaxJPTPt[4];         // energy distribution for the most energetic jet |eta|<5
@@ -801,22 +843,29 @@ TH1F* hmetProjVal[4];         // Projected MET after ll selection
 TH1F* hmaxPFJetPtVal[4];      // leading PFJet Pt after ll selection
 TH1F* hdilMassVal[4];         // diLepton Mass after ll selection
 
-// For the DY Estimation
+// N-1 plots
+TH1F* hmetNM1[4];             // N-1 MET validation 
+TH1F* hmetProjNM1[4];         // N-1 Projected MET
+TH1F* hmaxPFJetPtNM1[4];      // N-1 leading PFJet Pt 
+TH1F* hdilMassNM1[4];         // N-1 diLepton Mass
 
+
+// For the DY Estimation
 TH1F* hmetInDYEst[4];         // MET in Z window for the DY Estimation
 TH1F* hmetOutDYEst[4];        // MET outside Z window for the DY Estimation
-TH1F* hpfMetInDYEst[4];       // PFMET in Z window for the DY Estimation
-TH1F* hpfMetOutDYEst[4];      // PFMET outside Z window for the DY Estimation
 TH1F* hdilMassWithMetDYEst[4];// Dilepton mass with MET requirement for DY estimation
-TH1F* hdilMassWithPFMetDYEst[4];// Dilepton mass with PFMET requirement for DY estimation
 TH1F* hdilMassNoMetDYEst[4];  // Dilepton mass without MET requirement for DY estimation
 
 //
 // Not cleaned area
 //
 
-TH2F* helFRfakable_fakerate[4];     // Fake rate study: rate of fakable objects using the fakerate.cc
-TH2F* hmuFRfakable_fakerate[4];     // Fake rate study: rate of fakable objects using the fakerate.cc
+TH2F* helFRfakable_fakerate[4];     // Fake rate study: rate of fakable objects using extrernal FRs
+TH2F* hmuFRfakable_fakerate[4];     // Fake rate study: rate of fakable objects using extrernal FRs
+TH1F* hdoubleFakes[4];              // do double fakes contribution estimation (need fakerates!) Errors from FRs are ignored
+TH2F* externalMuFakeRates = 0;
+TH2F* externalElFakeRates = 0;
+
 TH1F* hypos_total;
 TH1F* hypos_total_weighted;
 
@@ -860,24 +909,13 @@ TH2F* hPFJetResponseWithZero[4]; // absolute response to Z pt with 0 if no btb j
 TH2F* hPFJetRelResponseWithZero[4]; // Relative response to Z pt with 0 if no btb jet is found
 
 TH2F* hPFJetResidualResponse; // absolute response to Z pt
+TH1F* hnGoodVertex;      // number of good vertexes after baseline selections
 
-// fkw September 2008 final hist used for muon tags estimate of top bkg
 TH2F* hextramuonsvsnjet[4];
+TH2F* hbtagvsnjet[4];
+TH2F* htoptagvsnjet[4];
 
 hypo_monitor monitor;
-
-
-std::vector<std::string> jetcorr_filenames_jpt;
-FactorizedJetCorrector *jet_corrector_jpt;
-
-std::vector<std::string> jetcorr_filenames_pf;
-FactorizedJetCorrector *jet_corrector_pf;
-
-std::vector<std::string> jetcorr_filenames_calo;
-FactorizedJetCorrector *jet_corrector_calo;
-
-std::vector<std::string> jetcorr_filenames_trk;
-FactorizedJetCorrector *jet_corrector_trk;
 
 void checkIsolation(int i_hyp, double weight){
   // LT
@@ -986,6 +1024,27 @@ void getIsolationSidebandsAfterSelections(int i_hyp, double weight, RooDataSet* 
   set.setRealValue("run",cms2.evt_run());
   set.setRealValue("lumi",cms2.evt_lumiBlock());
   set.setCatLabel("sample_type","data_relaxed_iso");
+
+  // aTGC
+  set.setRealValue("dilpt",cms2.hyp_p4()[i_hyp].pt());
+  set.setRealValue("mass",cms2.hyp_p4()[i_hyp].mass2() > 0 ? cms2.hyp_p4()[i_hyp].mass() : TMath::Sqrt(-1.*cms2.hyp_p4()[i_hyp].mass2()));
+  set.setRealValue("pt1",TMath::Max(cms2.hyp_lt_p4()[i_hyp].pt(),cms2.hyp_ll_p4()[i_hyp].pt()));
+  set.setRealValue("pt2",TMath::Min(cms2.hyp_lt_p4()[i_hyp].pt(),cms2.hyp_ll_p4()[i_hyp].pt()));
+
+  double dphi = fabs(cms2.hyp_lt_p4()[i_hyp].phi() - cms2.hyp_ll_p4()[i_hyp].phi());
+  if (dphi > TMath::Pi()) dphi = TMath::TwoPi() - dphi;
+  set.setRealValue("dphi",dphi);
+
+  set.setRealValue("deta",fabs(cms2.hyp_lt_p4()[i_hyp].eta() - cms2.hyp_ll_p4()[i_hyp].eta()));
+  set.setRealValue("met",metValue());
+  //set.setRealValue("lambdaz",cms2.atgc_lambdaz());
+  //set.setRealValue("deltag1z",cms2.atgc_deltag1z());
+  //set.setRealValue("deltakg",cms2.atgc_deltakg());
+
+  set.setRealValue("unique",1);
+  dataset->add(set,weight);
+  // anything after this is not new
+  set.setRealValue("unique",0);
   
   // em case
   if ( type == EM ){
@@ -1054,7 +1113,8 @@ void getIsolationSidebandsAfterSelections(int i_hyp, double weight, RooDataSet* 
   }
 }
 
-void find_most_energetic_jets(int i_hyp, double weight, bool realData, double etaMin, double etaMax, bool applyJEC)
+
+void find_most_energetic_jets(int i_hyp, double weight, bool realData, double etaMin, double etaMax)
 {
   HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
   // fill the jet region
@@ -1089,20 +1149,21 @@ void find_most_energetic_jets(int i_hyp, double weight, bool realData, double et
   // JPT
   double jptMax(0.);
   int jptMaxIndex(-1);
-  find_leading_jptjet(i_hyp, etaMin, etaMax, vetoCone, jptMax, jptMaxIndex, applyJEC);
+  find_leading_jptjet(i_hyp, etaMin, etaMax, vetoCone, jptMax, jptMaxIndex);
   if (jptMaxIndex >= 0)
     hmaxBtagVsJPTPt->Fill(jptMax, BTag(jptJet,jptMaxIndex), weight);
   else
     hmaxBtagVsJPTPt->Fill(jptMax, 0.0, weight);
+
   // Calo 
   double caloJetMax(0.);
-  find_leading_calojet(i_hyp, etaMin, etaMax, vetoCone, caloJetMax, applyJEC);
+  find_leading_calojet(i_hyp, etaMin, etaMax, vetoCone, caloJetMax);
   // TrkJet
   double trkJetMax(0.);
-  find_leading_trkjet(i_hyp, etaMin, etaMax, vetoCone, trkJetMax, applyJEC);
+  find_leading_trkjet(i_hyp, etaMin, etaMax, vetoCone, trkJetMax);
   // PFJet 
   double pfJetMax(0.);
-  find_leading_pfjet(i_hyp, etaMin, etaMax, vetoCone, pfJetMax, applyJEC);
+  find_leading_pfjet(i_hyp, etaMin, etaMax, vetoCone, pfJetMax);
  
   // Fill the jet Pt histograms
   switch (jet ) {
@@ -1153,6 +1214,9 @@ void find_most_energetic_jets(int i_hyp, double weight, bool realData, double et
   }
 }
 
+// ===
+// This is duplicating the getJets, FIXME
+// ===
 
 void find_leading_genjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & genJetMax) 
 {
@@ -1166,7 +1230,7 @@ void find_leading_genjet(int i_hyp, double etaMin, double etaMax, double vetoCon
   }
 }
 
-void find_leading_jptjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & jptMax, int &jptMaxIndex, bool applyJEC)
+void find_leading_jptjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & jptMax, int &jptMaxIndex)
 {
   double jec = 1.0; 
   for ( unsigned int i=0; i < cms2.jpts_p4().size(); ++i) {
@@ -1183,7 +1247,7 @@ void find_leading_jptjet(int i_hyp, double etaMin, double etaMax, double vetoCon
    }
 }
 
-void find_leading_calojet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & caloJetMax, bool applyJEC) 
+void find_leading_calojet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & caloJetMax)
 {
   double jec = 1.0;
   for ( unsigned int i=0; i < cms2.jets_pat_jet_uncorp4().size(); ++i) {
@@ -1201,7 +1265,7 @@ void find_leading_calojet(int i_hyp, double etaMin, double etaMax, double vetoCo
   }
 }
 
-void find_leading_trkjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & trkJetMax, bool applyJEC) 
+void find_leading_trkjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & trkJetMax)
 {
   double jec = 1.0;
   for ( unsigned int i=0; i < cms2.trkjets_p4().size(); ++i) {
@@ -1217,7 +1281,7 @@ void find_leading_trkjet(int i_hyp, double etaMin, double etaMax, double vetoCon
   }
 }
 
-void find_leading_pfjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & pfJetMax, bool applyJEC) 
+void find_leading_pfjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & pfJetMax)
 {
   double jec = 1.0;
   for ( unsigned int i=0; i < cms2.pfjets_p4().size(); ++i) {
@@ -1233,26 +1297,46 @@ void find_leading_pfjet(int i_hyp, double etaMin, double etaMax, double vetoCone
   }
 }
 
-void fill_val_plots(int i_hyp, cuts_t cut_passed, double weight, bool applyJEC)
+void fill_val_plots(int i_hyp, cuts_t cuts_passed, double weight)
 {
   HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
   // Fill MET related plots
-  if(CheckCuts( (1<<PASS_JETVETO) | (1<<PASS_LL_FINAL) | (1<<PASS_LT_FINAL)  , cut_passed)) {
+  if(CheckCuts( (1<<PASS_JETVETO) | (1<<PASS_LL_FINAL) | (1<<PASS_LT_FINAL)  , cuts_passed)) {
     hmetVal[type] -> Fill(metValue(), weight);
     hmetVal[3] -> Fill(metValue(), weight);
     hmetProjVal[type] -> Fill(projectedMet(i_hyp), weight);
     hmetProjVal[3] -> Fill(projectedMet(i_hyp), weight);
   }
   // Fill Leading Jet Pt
-  if(CheckCuts(  (1<<PASS_LL_FINAL) | (1<<PASS_LT_FINAL)  , cut_passed)) {
+  if(CheckCuts(  (1<<PASS_LL_FINAL) | (1<<PASS_LT_FINAL)  , cuts_passed)) {
     double pfJetMax(0.);
-    find_leading_pfjet(i_hyp, 0.0, 0.5, 0.3, pfJetMax, applyJEC);
+    find_leading_pfjet(i_hyp, 0.0, 5.0, 0.3, pfJetMax);
     hmaxPFJetPtVal[type]->Fill(pfJetMax, weight);
     hmaxPFJetPtVal[3]->Fill(pfJetMax, weight);
     hdilMassVal[type]->Fill(cms2.hyp_p4()[i_hyp].mass(), weight);
     hdilMassVal[3]->Fill(cms2.hyp_p4()[i_hyp].mass(), weight);
   }
+
+  // Fill the N-1 plots
+  if (CheckCutsNM1(pass_all, (1<<PASS_MET), cuts_passed) ) {
+    hmetNM1[type] -> Fill(metValue(), weight);
+    hmetNM1[3] -> Fill(metValue(), weight);
+    hmetProjNM1[type] -> Fill(projectedMet(i_hyp), weight);
+    hmetProjNM1[3] -> Fill(projectedMet(i_hyp), weight);    
+  }
+
+  if (CheckCutsNM1(pass_all, (1<<PASS_JETVETO), cuts_passed) ) {
+    double pfJetMax(0.);
+    find_leading_pfjet(i_hyp, 0.0, 5.0, 0.3, pfJetMax);
+    hmaxPFJetPtNM1[type]->Fill(pfJetMax, weight);
+    hmaxPFJetPtNM1[3]->Fill(pfJetMax, weight);
+  }
+  if (CheckCutsNM1(pass_all, (1<<PASS_ZVETO), cuts_passed) ) {
+    hdilMassNM1[type]->Fill(cms2.hyp_p4()[i_hyp].mass(), weight);
+    hdilMassNM1[3]->Fill(cms2.hyp_p4()[i_hyp].mass(), weight);
+  }
 }
+
 void extractFakeRateSingleLepton(){
   // weights are ignore. see no reason to complicate stuff
   for ( unsigned int i=0; i < cms2.els_p4().size(); ++i ){
@@ -1283,6 +1367,11 @@ void extractIsoSingleLepton(){
   }
 }
 
+double getFakeRatePrime(TH2F* fakerates, double eta, double pt){
+  double fr = fakerates->GetBinContent(fakerates->FindBin(eta,pt));
+  return fr/(1-fr);
+}
+
 void countFakableObjectsAfterAllSelections(unsigned int i_hyp, 
 					   double weight, 
 					   bool passedLTElFakableRequirements, 
@@ -1299,97 +1388,108 @@ void countFakableObjectsAfterAllSelections(unsigned int i_hyp,
     int nbins_pt  = helFRfakable_fakerate[3]->GetNbinsY();
     float max_pt  = helFRfakable_fakerate[3]->GetYaxis()->GetBinLowEdge(nbins_pt+1);
 
+    // overflow goes into last bin
+    float lt_eta = fabs(cms2.hyp_lt_p4().at(i_hyp).eta());
+    if (lt_eta > max_eta) lt_eta = max_eta-.1;
+    float lt_pt = cms2.hyp_lt_p4().at(i_hyp).pt();
+    if (lt_pt > max_pt) lt_pt = max_pt-.1;
+    float ll_eta = fabs(cms2.hyp_ll_p4().at(i_hyp).eta());
+    if (ll_eta > max_eta) ll_eta = max_eta-.1;
+    float ll_pt = cms2.hyp_ll_p4().at(i_hyp).pt();
+    if (ll_pt > max_pt) ll_pt = max_pt-.1;
+    
     if ( passedLTElFakableRequirements && !passedLTFinalRequirements && passedLLFinalRequirements ){
-        helFRfakable[type]->Fill(cms2.hyp_lt_p4().at(i_hyp).pt(),
-                fabs(cms2.hyp_lt_p4().at(i_hyp).eta()),
-                weight);
-        helFRfakable[3]->Fill(cms2.hyp_lt_p4().at(i_hyp).pt(),
-                fabs(cms2.hyp_lt_p4().at(i_hyp).eta()),
-                weight);
-
-        // overflow goes into last bin
-        float eta = fabs(cms2.hyp_lt_p4().at(i_hyp).eta());
-        if (eta > max_eta) eta = max_eta-.1;
-        float pt = cms2.hyp_lt_p4().at(i_hyp).pt();
-        if (pt > max_pt) pt = max_pt-.1;
-
-        helFRfakable_fakerate[type]->Fill(eta,pt,weight);
-        helFRfakable_fakerate[3]->Fill(eta,pt,weight);
+        helFRfakable[type]->Fill(cms2.hyp_lt_p4().at(i_hyp).pt(), fabs(cms2.hyp_lt_p4().at(i_hyp).eta()), weight);
+        helFRfakable[3]->Fill(cms2.hyp_lt_p4().at(i_hyp).pt(), fabs(cms2.hyp_lt_p4().at(i_hyp).eta()), weight);
+        helFRfakable_fakerate[type]->Fill(lt_eta,lt_pt,weight);
+        helFRfakable_fakerate[3]->Fill(lt_eta,lt_pt,weight);
+	hdoubleFakes[type]->Fill(1.5,weight*getFakeRatePrime(externalElFakeRates,lt_eta,lt_pt));
+	hdoubleFakes[3]->Fill(1.5,weight*getFakeRatePrime(externalElFakeRates,lt_eta,lt_pt));
     }
     if ( passedLLElFakableRequirements && passedLTFinalRequirements && !passedLLFinalRequirements ){
-        helFRfakable[type]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(),
-                fabs(cms2.hyp_ll_p4().at(i_hyp).eta()),
-                weight);
-        helFRfakable[3]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(),
-                fabs(cms2.hyp_ll_p4().at(i_hyp).eta()),
-                weight);
-
-        // overflow goes into last bin
-        float eta = fabs(cms2.hyp_ll_p4().at(i_hyp).eta());
-        if (eta > max_eta) eta = max_eta-.1;
-        float pt = cms2.hyp_ll_p4().at(i_hyp).pt();
-        if (pt > max_pt) pt = max_pt-.1;
-
-        helFRfakable_fakerate[type]->Fill(eta,pt,weight);
-        helFRfakable_fakerate[3]->Fill(eta,pt,weight);
+        helFRfakable[type]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(), fabs(cms2.hyp_ll_p4().at(i_hyp).eta()), weight);
+        helFRfakable[3]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(), fabs(cms2.hyp_ll_p4().at(i_hyp).eta()), weight);
+        helFRfakable_fakerate[type]->Fill(ll_eta,ll_pt,weight);
+        helFRfakable_fakerate[3]->Fill(ll_eta,ll_pt,weight);
+	hdoubleFakes[type]->Fill(1.5,weight*getFakeRatePrime(externalElFakeRates,ll_eta,ll_pt));
+	hdoubleFakes[3]->Fill(1.5,weight*getFakeRatePrime(externalElFakeRates,ll_eta,ll_pt));
     }
     if ( passedLTMuFakableRequirements && !passedLTFinalRequirements && passedLLFinalRequirements ){
-        hmuFRfakable[type]->Fill(cms2.hyp_lt_p4().at(i_hyp).pt(),
-                fabs(cms2.hyp_lt_p4().at(i_hyp).eta()),
-                weight);
-        hmuFRfakable[3]->Fill(cms2.hyp_lt_p4().at(i_hyp).pt(),
-                fabs(cms2.hyp_lt_p4().at(i_hyp).eta()),
-                weight);
-
-        // overflow goes into last bin
-        float eta = fabs(cms2.hyp_lt_p4().at(i_hyp).eta());
-        if (eta > max_eta) eta = max_eta-.1;
-        float pt = cms2.hyp_lt_p4().at(i_hyp).pt();
-        if (pt > max_pt) pt = max_pt-.1;
-
-        hmuFRfakable_fakerate[type]->Fill(eta,pt,weight);
-        hmuFRfakable_fakerate[3]->Fill(eta,pt,weight);
+        hmuFRfakable[type]->Fill(cms2.hyp_lt_p4().at(i_hyp).pt(), fabs(cms2.hyp_lt_p4().at(i_hyp).eta()), weight);
+        hmuFRfakable[3]->Fill(cms2.hyp_lt_p4().at(i_hyp).pt(), fabs(cms2.hyp_lt_p4().at(i_hyp).eta()), weight);
+        hmuFRfakable_fakerate[type]->Fill(lt_eta,lt_pt,weight);
+        hmuFRfakable_fakerate[3]->Fill(lt_eta,lt_pt,weight);
+	hdoubleFakes[type]->Fill(1.5,weight*getFakeRatePrime(externalMuFakeRates,lt_eta,lt_pt));
+	hdoubleFakes[3]->Fill(1.5,weight*getFakeRatePrime(externalMuFakeRates,lt_eta,lt_pt));
     }
     if ( passedLLMuFakableRequirements && passedLTFinalRequirements && !passedLLFinalRequirements ){
-        hmuFRfakable[type]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(),
-                fabs(cms2.hyp_ll_p4().at(i_hyp).eta()),
-                weight);
-        hmuFRfakable[3]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(),
-                fabs(cms2.hyp_ll_p4().at(i_hyp).eta()),
-                weight);
-
-        // overflow goes into last bin
-        float eta = fabs(cms2.hyp_ll_p4().at(i_hyp).eta());
-        if (eta > max_eta) eta = max_eta-.1;
-        float pt = cms2.hyp_ll_p4().at(i_hyp).pt();
-        if (pt > max_pt) pt = max_pt-.1;
-
-        hmuFRfakable_fakerate[type]->Fill(eta,pt,weight);
-        hmuFRfakable_fakerate[3]->Fill(eta,pt,weight);
+        hmuFRfakable[type]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(), fabs(cms2.hyp_ll_p4().at(i_hyp).eta()), weight);
+        hmuFRfakable[3]->Fill(cms2.hyp_ll_p4().at(i_hyp).pt(), fabs(cms2.hyp_ll_p4().at(i_hyp).eta()), weight);
+        hmuFRfakable_fakerate[type]->Fill(ll_eta,ll_pt,weight);
+        hmuFRfakable_fakerate[3]->Fill(ll_eta,ll_pt,weight);
+	hdoubleFakes[type]->Fill(1.5,weight*getFakeRatePrime(externalMuFakeRates,ll_eta,ll_pt));
+	hdoubleFakes[3]->Fill(1.5,weight*getFakeRatePrime(externalMuFakeRates,ll_eta,ll_pt));
+    }
+    if ( !passedLTFinalRequirements && !passedLLFinalRequirements ){
+      if ( passedLTElFakableRequirements && passedLLElFakableRequirements ){
+	// printf("\tElEl\n");
+	hdoubleFakes[type]->Fill(2.5,weight*getFakeRatePrime(externalElFakeRates,lt_eta,lt_pt)*getFakeRatePrime(externalElFakeRates,ll_eta,ll_pt));
+	hdoubleFakes[3]->Fill(2.5,weight*getFakeRatePrime(externalElFakeRates,lt_eta,lt_pt)*getFakeRatePrime(externalElFakeRates,ll_eta,ll_pt));
+      }
+      if ( passedLTMuFakableRequirements && passedLLMuFakableRequirements ){
+	// printf("\tMuMu\n");
+	hdoubleFakes[type]->Fill(2.5,weight*getFakeRatePrime(externalMuFakeRates,lt_eta,lt_pt)*getFakeRatePrime(externalMuFakeRates,ll_eta,ll_pt));
+	hdoubleFakes[3]->Fill(2.5,weight*getFakeRatePrime(externalMuFakeRates,lt_eta,lt_pt)*getFakeRatePrime(externalMuFakeRates,ll_eta,ll_pt));
+      }
+      if ( passedLTElFakableRequirements && passedLLMuFakableRequirements ){
+	// printf("\tElMu\n");
+	hdoubleFakes[type]->Fill(2.5,weight*getFakeRatePrime(externalElFakeRates,lt_eta,lt_pt)*getFakeRatePrime(externalMuFakeRates,ll_eta,ll_pt));
+	hdoubleFakes[3]->Fill(2.5,weight*getFakeRatePrime(externalElFakeRates,lt_eta,lt_pt)*getFakeRatePrime(externalMuFakeRates,ll_eta,ll_pt));
+      }
+      if ( passedLTMuFakableRequirements && passedLLElFakableRequirements ){
+	// printf("\tMuMu\n");
+	hdoubleFakes[type]->Fill(2.5,weight*getFakeRatePrime(externalMuFakeRates,lt_eta,lt_pt)*getFakeRatePrime(externalElFakeRates,ll_eta,ll_pt));
+	hdoubleFakes[3]->Fill(2.5,weight*getFakeRatePrime(externalMuFakeRates,lt_eta,lt_pt)*getFakeRatePrime(externalElFakeRates,ll_eta,ll_pt));
+      }
     }
 }
 
 bool 
-toptag(WWJetType type, int i_hyp, double minPt)
+toptag(WWJetType type, int i_hyp, double minPt,
+       std::vector<LorentzVector> ignoreJets=std::vector<LorentzVector>())
 {
      std::vector<LorentzVector> jets;
      const double vetoCone    = 0.3;
-     
+
      switch ( type ){
      case pfJet:
        for ( unsigned int i=0; i < cms2.pfjets_p4().size(); ++i) {
 	 if ( cms2.pfjets_p4()[i].pt() < minPt ) continue;
+	 bool ignoreJet = false;
+	 for ( std::vector<LorentzVector>::const_iterator ijet = ignoreJets.begin();
+	       ijet != ignoreJets.end(); ++ijet )
+	   if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(*ijet,cms2.pfjets_p4()[i])) < vetoCone ) ignoreJet=true;
+	 if ( ignoreJet ) continue;
 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ||
 	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
-	 if ( cms2.pfjets_trackCountingHighEffBJetTag()[i]>2.1 ) return true;
+	 if ( defaultBTag(type,i) ) return true;
        }
        break;
      case CaloJet:
        for ( unsigned int i=0; i < cms2.jets_p4().size(); ++i) {
 	 if ( cms2.jets_p4()[i].pt() < minPt ) continue;
+	 bool ignoreJet = false;
+	 for ( std::vector<LorentzVector>::const_iterator ijet = ignoreJets.begin();
+	       ijet != ignoreJets.end(); ++ijet )
+	   if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(*ijet,cms2.jets_p4()[i])) < vetoCone ) ignoreJet=true;
+	 if ( ignoreJet ) continue;
 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jets_p4()[i])) < vetoCone ||
 	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jets_p4()[i])) < vetoCone ) continue;
-	 if ( cms2.jets_trackCountingHighEffBJetTag()[i]>2.1 ) return true;
+// 	 if ( defaultBTag(type,i) && ignoreJets.size()==1 ){
+// 	   cout << "b-tagged jet pt: " << cms2.jets_p4()[i].pt() << " \teta: " << cms2.jets_p4()[i].eta() <<
+// 	     " \tphi: " << cms2.jets_p4()[i].phi() << endl;
+// 	 }
+	 if ( defaultBTag(type,i) ) return true;
        }
        break;
      default:
@@ -1420,7 +1520,7 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   // monitor.count(cms2, type, "after vertex cut");
   
   if ( realData && ! passedTriggerRequirements( hypType(i_hyp) ) )return false;
-  monitor.count(cms2, type, "after trigger requirements");
+  monitor.count(cms2, type, "trigger requirements",weight);
 
   // Require same sign
   if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) return false;
@@ -1431,28 +1531,27 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !ww_elBase(cms2.hyp_lt_index()[i_hyp]) ) return false;
   if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !ww_elBase(cms2.hyp_ll_index()[i_hyp]) ) return false;
   
-  monitor.count(cms2,type,"after previous + baseline cuts");
-
-  // TEMPORARY
+  monitor.count(cms2,type,"baseline cuts",weight);
+ 
   if (gSystem->Getenv("Sync")) // Synchronization info
   {
-    if (!foundGoodVertex()) return false;
+    if (nGoodVertex()<1) return false;
 
-    monitor.count(cms2,type,"after previous + primary verex");
+    monitor.count(cms2,type,"primary verex",weight);
 
     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_mud0PV(cms2.hyp_lt_index()[i_hyp]) ) return false;
     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_mud0PV(cms2.hyp_ll_index()[i_hyp]) ) return false;
     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !ww_eld0PV(cms2.hyp_lt_index()[i_hyp]) ) return false;
     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !ww_eld0PV(cms2.hyp_ll_index()[i_hyp]) ) return false;
 
-    monitor.count(cms2,type,"after previous + d0");
+    monitor.count(cms2,type,"d0",weight);
 
     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && ww_muIsoVal(cms2.hyp_lt_index()[i_hyp])>0.15 ) return false;
     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && ww_muIsoVal(cms2.hyp_ll_index()[i_hyp])>0.15 ) return false;
     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && ww_elIsoVal(cms2.hyp_lt_index()[i_hyp])>0.1 ) return false;
     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && ww_elIsoVal(cms2.hyp_ll_index()[i_hyp])>0.1 ) return false;
 
-    monitor.count(cms2,type,"after previous + iso");
+    monitor.count(cms2,type,"iso",weight);
     
     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_muId(cms2.hyp_lt_index()[i_hyp]) ) return false;
     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_muId(cms2.hyp_ll_index()[i_hyp]) ) return false;
@@ -1461,7 +1560,7 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && 
 	! (electronId_VBTF(cms2.hyp_ll_index()[i_hyp], VBTF_35X_80) & (1<<ELEID_ID))  ) return false;
 
-    monitor.count(cms2,type,"after previous + lepton id");
+    monitor.count(cms2,type,"lepton id",weight);
 
     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && 
 	(fabs(cms2.els_conv_dist().at(cms2.hyp_lt_index()[i_hyp])) < 0.02 &&
@@ -1475,40 +1574,42 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && 
 	cms2.els_exp_innerlayers39X().at(cms2.hyp_ll_index()[i_hyp]) != 0) return false;
 
-    monitor.count(cms2,type,"after previous + conv rejection");
+    monitor.count(cms2,type,"conv rejection",weight);
 
     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) return false;
     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) ) return false;
     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_lt_index()[i_hyp]) ) return false;
     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_ll_index()[i_hyp]) ) return false;
 
-    monitor.count(cms2,type,"after previous + lepton id/iso");
+    monitor.count(cms2,type,"lepton id/iso",weight);
     if ( metValue()<20 ) return false;
-    monitor.count(cms2,type,"after previous + met>20");
+    monitor.count(cms2,type,"met>20",weight);
     
     if (cms2.hyp_p4().at(i_hyp).mass2()<0 || 
 	cms2.hyp_p4()[i_hyp].mass() < 12) return false;
-    monitor.count(cms2,type,"after previous + mll cuts");
+    monitor.count(cms2,type,"mll>12",weight);
     
     if ( type == EE || type == MM) {
       if (inZmassWindow(cms2.hyp_p4()[i_hyp].mass())) return false;
     }
-    monitor.count(cms2,type,"after previous + z mass cuts in EE/MM");
+    monitor.count(cms2,type,"z veto",weight);
     
     if (!passedMetRequirements(i_hyp)) return false;
-    monitor.count(cms2,type,"after previous + Full MET cuts: ");
+    monitor.count(cms2,type,"Full MET cuts",weight);
     
     if ( numberOfJets(i_hyp)>0 ) return false;
-    monitor.count(cms2,type,"after previous + JetVeto cuts: ");
+    monitor.count(cms2,type,"JetVeto cuts",weight);
 
     if (numberOfSoftMuons(i_hyp,true)>0) return false;
-    monitor.count(cms2,type,"after previous + soft muon veto: ");
+    monitor.count(cms2,type,"soft muon veto",weight);
 
     if (numberOfExtraLeptons(i_hyp,10)>0) return false;
-    monitor.count(cms2,type,"after previous + extra lepton veto: ");
-  }
+    monitor.count(cms2,type,"extra lepton veto",weight);
+  } // end of Synchronization info
 
-  if (!foundGoodVertex()) return false;
+  if (nGoodVertex()<1) return false;
+  hnGoodVertex -> Fill(nGoodVertex(), weight);
+  
   if (cms2.hyp_p4().at(i_hyp).mass2()<0 || 
       cms2.hyp_p4()[i_hyp].mass() < 12) return false;
 
@@ -1519,11 +1620,14 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   
   // == Z mass veto using hyp_leptons for ee and mumu final states
   if ( type == EE || type == MM) {
-    if ( !zStudy && !inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))    cuts_passed |= (1<<PASS_ZSEL);
-    if ( zStudy  && inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))     cuts_passed |= (1<<PASS_ZSEL);
+    if ( !zStudy && !inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))    cuts_passed |= (1<<PASS_ZVETO);
+    if ( zStudy  && inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))     cuts_passed |= (1<<PASS_ZVETO);
   }
-  if (type == EM)     cuts_passed |= (1<<PASS_ZSEL);
-
+  if (type == EM)     cuts_passed |= (1<<PASS_ZVETO);
+  if ( inZmassWindow(cms2.hyp_p4()[i_hyp].mass(),5))  cuts_passed |= (1<<PASS_ZControlSampleVeryTight);
+  if ( inZmassWindow(cms2.hyp_p4()[i_hyp].mass(),10))  cuts_passed |= (1<<PASS_ZControlSampleTight);
+  if ( inZmassWindow(cms2.hyp_p4()[i_hyp].mass(),20))  cuts_passed |= (1<<PASS_ZControlSampleLoose);
+    
   // Z veto using additional leptons in the event
   // if (additionalZveto()) return;
  
@@ -1543,13 +1647,15 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
 
   // Muon quality cuts, including isolation
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13){
-    if ( !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) passedLTFinalRequirements = false;
-    if ( !fakableMuon(cms2.hyp_lt_index()[i_hyp]) ) passedLTMuFakableRequirements = false;
+    unsigned int index = cms2.hyp_lt_index()[i_hyp];
+    if ( !goodMuonIsolated(index) ) passedLTFinalRequirements = false;
+    if ( !fakableMuon(index) ) passedLTMuFakableRequirements = false;
     passedLTElFakableRequirements = false;
   }
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13){
-    if ( !goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) ) passedLLFinalRequirements = false;
-    if ( !fakableMuon(cms2.hyp_ll_index()[i_hyp]) ) passedLLMuFakableRequirements = false;
+    unsigned int index = cms2.hyp_ll_index()[i_hyp];
+    if ( !goodMuonIsolated(index) ) passedLLFinalRequirements = false;
+    if ( !fakableMuon(index) ) passedLLMuFakableRequirements = false;
     passedLLElFakableRequirements = false;
   } 
   // Electron quality cuts, including isolation
@@ -1566,21 +1672,32 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
 
   if ( passedLTFinalRequirements ) cuts_passed |= (1<<PASS_LT_FINAL);
   if ( passedLLFinalRequirements ) cuts_passed |= (1<<PASS_LL_FINAL);
+  if ( passedLTFinalRequirements || passedLLFinalRequirements ) cuts_passed |= (1<<PASS_PROBE);
 
   // == Jet-veto
-  unsigned int nJets = numberOfJets(i_hyp);
+  const std::vector<LorentzVector>& vetojets(getDefaultJets(i_hyp, false));
+  unsigned int nJets = vetojets.size();
   if (nJets==0) 
     cuts_passed |= (1<<PASS_JETVETO);
+  if (nJets>1) 
+    cuts_passed |= (1<<PASS_TopControlSample);
+  if (nJets==1){
+    cuts_passed |= (1<<PASS_1JET);
+    if ( getDefaultJets(i_hyp,true).size()==1 ){
+      cuts_passed |= (1<<PASS_1BJET);
+    }
+  }
   // trkjet veto
   // if ( !passTrkJetVeto(i_hyp) ) return;
-
   // == ExtraVeto Muons
   int countmus = numberOfSoftMuons(i_hyp,true);
-  int nExtraVetoMuons = numberOfSoftMuons(i_hyp,true);
+  int nExtraVetoMuons = numberOfSoftMuons(i_hyp,true,vetojets);
   if ( nExtraVetoMuons == 0) 
     cuts_passed |=   (1<<PASS_SOFTMUVETO);
   if ( numberOfExtraLeptons(i_hyp,10) == 0) 
     cuts_passed |=   (1<<PASS_EXTRALEPTONVETO);
+  if ( ! toptag(CaloJet,i_hyp,0,vetojets) )
+    cuts_passed |=   (1<<PASS_TOPVETO);
 
   // -------------------------------------------------------------------//
   // Finished checking the cuts, fill histograms before the final sel   //
@@ -1596,29 +1713,71 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   }
     
   // Jet-veto effciency studies
-  bool applyJEC = false;
-  if (CheckCutsNM1(pass_all, (1<<PASS_JETVETO) | (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO), cuts_passed)) {
-    find_most_energetic_jets(i_hyp,weight,realData,0.0,5.0, applyJEC);
-    find_most_energetic_jets(i_hyp,weight,realData,0.0,3.0, applyJEC);
-    find_most_energetic_jets(i_hyp,weight,realData,3.0,5.0, applyJEC);
+
+  //if (CheckCutsNM1(pass_all, (1<<PASS_JETVETO) | (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO), cuts_passed)) {
+  if (CheckCutsNM1(pass_all, (1<<PASS_JETVETO), cuts_passed)) {
+    find_most_energetic_jets(i_hyp,weight,realData,0.0,5.0);
+    find_most_energetic_jets(i_hyp,weight,realData,0.0,3.0);
+    find_most_energetic_jets(i_hyp,weight,realData,3.0,5.0);
     if(zStudy) 
-      getJetResponseFromZBalance(i_hyp, weight, realData, 0.0, 5.0, applyJEC);
+      getJetResponseFromZBalance(i_hyp, weight, realData, 0.0, 5.0);
   }
   
   // Make some validation plots 
   if(CheckCuts(  (1<<PASS_LL_FINAL) | (1<<PASS_LT_FINAL), cuts_passed)) {
-    fill_val_plots(i_hyp, cuts_passed, weight, applyJEC);
+    fill_val_plots(i_hyp, cuts_passed, weight);
   }
   
   // Do Drell Yan Estimation
-  if(CheckCutsNM1(pass_all, (1<<PASS_ZSEL) | (1<<PASS_MET) , cuts_passed))
+  if(CheckCutsNM1(pass_all, (1<<PASS_ZVETO) | (1<<PASS_MET) , cuts_passed))
     fill_dyest_histograms(i_hyp, weight);
 
+  // top background related histograms
+  if ( CheckCutsNM1( pass_all, 
+		     (1<<PASS_SOFTMUVETO) | (1<<PASS_TOPVETO) | (1<<PASS_JETVETO) | (1<< PASS_ZVETO) | (1<<PASS_MET), 
+		     cuts_passed ) ){
+    float tag = 1; // not tagged
+    if ( ! CheckCuts(1<<PASS_SOFTMUVETO, cuts_passed) ){
+      if ( ! CheckCuts(1<<PASS_TOPVETO, cuts_passed) )
+	tag = 4; // both
+      else
+	tag = 2; // soft muon
+    } else {
+      if ( ! CheckCuts(1<<PASS_TOPVETO, cuts_passed) )
+	tag = 3; // b-tagged
+    }
+    float evtType = 1; // passed jet veto
+    if ( ! CheckCuts(1<<PASS_JETVETO, cuts_passed) ){
+    if ( CheckCuts(1<<PASS_1JET,cuts_passed) ){
+      if ( CheckCuts(1<<PASS_1BJET,cuts_passed) ){
+	  evtType = 3; // have 1 btagged jet
+	} else { 
+	  evtType = 2; // have 1 non-btagged jet
+	}
+      } else {
+	evtType = 4; // more than 1 jet
+      }
+    }
+    bool zevent = (type == EE || type == MM);
+    if ( CheckCuts((1<< PASS_ZVETO), cuts_passed) ) zevent = false;
+    if ( zevent ) {
+      htoptagz[type]->Fill(tag-0.5,evtType-0.5,weight);
+      htoptagz[3]->Fill(tag-0.5,evtType-0.5,weight);
+    }
+    if ( CheckCuts((1<<PASS_ZVETO)|(1<<PASS_MET), cuts_passed) ){
+      htoptag[type]->Fill(tag-0.5,evtType-0.5,weight);
+      htoptag[3]->Fill(tag-0.5,evtType-0.5,weight);
+      // 2D hist for muon tag counting
+      hextramuonsvsnjet[type]->Fill(countmus, nJets, weight);
+      hextramuonsvsnjet[3]->Fill(countmus, nJets, weight);
+      double nTags = getJets(jetType(), i_hyp, 25, 5.0, false, true).size();
+      hbtagvsnjet[type]->Fill(nJets, nTags, weight);
+      hbtagvsnjet[3]->Fill(nJets, nTags, weight);
+      htoptagvsnjet[type]->Fill(nJets, nTags+countmus>0, weight);
+      htoptagvsnjet[3]->Fill(nJets, nTags+countmus>0, weight);
+    }
+  }
 
-  // 2D hist for muon tag counting
-  hextramuonsvsnjet[type]->Fill(countmus, nJets, weight);
-  hextramuonsvsnjet[3]->Fill(countmus, nJets, weight);
-  
   if ( !realData && CheckCutsNM1( pass_all, (1<<PASS_SOFTMUVETO), cuts_passed ) ) {
     // loop over gen particles
     float centralBQuarkEta(100);
@@ -1637,17 +1796,41 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   
   // make the final selections
   if(! CheckCuts(pass_all, cuts_passed)) return false;
-  monitor.count(cms2,type,"after all cuts (including soft and extra lepton veto)");
+  monitor.count(cms2,type,"all cuts (including soft and extra lepton veto)",weight);
+  
   
   // if ( toptag(jetType(),i_hyp,0) ) return false;
   // if (nExtraVetoMuons) return false;
-  if ( toptag(CaloJet,i_hyp,0) ) return false;
-  monitor.count(cms2,type,"after all cuts + top tagging");
+  // if ( toptag(CaloJet,i_hyp,0) ) return false;
+  // monitor.count(cms2,type,"after all cuts + top tagging");
 
   // -------------------------------------------------------------------//
   // If we made it to here, we passed all cuts and we are ready to fill // 
   // histograms after the full selection                                //
   // -------------------------------------------------------------------//
+  
+//   printf("lt_p4.pt(): %0.2f, \tlt_id: %d, \tlt_mc_id: %d, \tlt_p4.pt(): %0.2f, \tll_id: %d, \tll_mc_id: %d\n",
+// 	 cms2.hyp_lt_p4()[i_hyp].pt(), cms2.hyp_lt_id()[i_hyp], cms2.hyp_lt_mc_id()[i_hyp],
+// 	 cms2.hyp_ll_p4()[i_hyp].pt(), cms2.hyp_ll_id()[i_hyp], cms2.hyp_ll_mc_id()[i_hyp]);
+//   if ( abs(cms2.hyp_lt_id()[i_hyp])==11 ) 
+//     printf("\tlt_mc3_id: %d, \tlt_mc_motherid: %d\n",
+// 	   cms2.els_mc3_id().at(cms2.hyp_lt_index().at(i_hyp)),
+// 	   cms2.els_mc_motherid().at(cms2.hyp_lt_index().at(i_hyp)));
+//   if ( abs(cms2.hyp_ll_id()[i_hyp])==11 ) 
+//     printf("\tll_mc3_id: %d, \tll_mc_motherid: %d\n",
+// 	   cms2.els_mc3_id().at(cms2.hyp_ll_index().at(i_hyp)),
+// 	   cms2.els_mc_motherid().at(cms2.hyp_ll_index().at(i_hyp)));
+//   if ( abs(cms2.hyp_lt_id()[i_hyp])==13 ) 
+//     printf("\tlt_mc3_id: %d, \tlt_mc_motherid: %d\n",
+// 	   cms2.mus_mc3_id().at(cms2.hyp_lt_index().at(i_hyp)),
+// 	   cms2.mus_mc_motherid().at(cms2.hyp_lt_index().at(i_hyp)));
+//   if ( abs(cms2.hyp_ll_id()[i_hyp])==13 ) 
+//     printf("\tll_mc3_id: %d, \tll_mc_motherid: %d\n",
+// 	   cms2.mus_mc3_id().at(cms2.hyp_ll_index().at(i_hyp)),
+// 	   cms2.mus_mc_motherid().at(cms2.hyp_ll_index().at(i_hyp)));
+//   for ( unsigned int i=0; i<cms2.genps_id().size(); ++i )
+//     printf("genps_id: %d, \tgenps_id_mother: %d\n",
+// 	   cms2.genps_id().at(i), cms2.genps_id_mother().at(i));
 
   hypos_total->Fill(type);
   hypos_total->Fill(3);
@@ -1718,7 +1901,9 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
      hmet[type]->Fill(metValue(), weight);      
      hmetPhi[type]->Fill(metPhiValue(), weight);      
      hmet[3]->Fill(metValue(), weight);      
-     hmetPhi[3]->Fill(metPhiValue(), weight);      
+     hmetPhi[3]->Fill(metPhiValue(), weight);   
+     hmetProj[type]->Fill(projectedMet(i_hyp), weight);         
+     hmetProj[3]->Fill(projectedMet(i_hyp), weight);         
     
      // Met vs dilepton Pt
      hmetVsDilepPt[type]->Fill(metValue(), cms2.hyp_p4()[i_hyp].pt(), weight);
@@ -1764,6 +1949,25 @@ RooDataSet* MakeNewDataset(const char* name)
   set_selected.defineType("true",1);
   set_selected.defineType("false",0);
 
+  // a given hyp can be added multiple times
+  // use this to prevent hyp double counting
+  RooRealVar set_unique("unique","unique",0);
+
+  // aTGC
+  RooRealVar set_dilpt("dilpt","dilpt",0);
+  RooRealVar set_mass("mass","mass",0);
+  RooRealVar set_pt1("pt1","pt1",0);
+  RooRealVar set_pt2("pt2","pt2",0);
+  RooRealVar set_dphi("dphi","dphi",0);
+  RooRealVar set_deta("deta","deta",0);
+  RooRealVar set_met("met","met",0);
+  /* these exist only in the atgc samples and
+     will remain commented out for now
+     */
+  //RooRealVar set_lambdaz("lambdaz","lambdaz",0);
+  //RooRealVar set_deltag1z("deltag1z","deltag1z",0);
+  //RooRealVar set_deltakg("deltakg","deltakg",0);
+
   RooCategory set_hyp_type("hyp_type","Hypothesis type");
   set_hyp_type.defineType(HypothesisTypeName(MM),MM);
   set_hyp_type.defineType(HypothesisTypeName(EM),EM);
@@ -1777,11 +1981,24 @@ RooDataSet* MakeNewDataset(const char* name)
   set_sample_type.defineType("data_relaxed_iso",0);  // full sample with final selection 
   set_sample_type.defineType("control_sample_signal_iso",1);
 
-  RooDataSet* dataset = new RooDataSet(name, "N-1 dataset",
-				       RooArgSet(set_event,set_run,set_lumi,
-						 set_iso,set_selected,set_weight,
-						 set_hyp_type,set_fake_type,set_sample_type),
-				       RooFit::WeightVar(set_weight) );
+  RooArgSet argset(set_event,set_run,set_lumi,
+                   set_iso,set_selected,set_weight,
+                   set_hyp_type,set_fake_type,set_sample_type);
+  argset.add(set_unique);
+  argset.add(set_dilpt);
+  argset.add(set_mass);
+  argset.add(set_pt1);
+  argset.add(set_pt2);
+  argset.add(set_dphi);
+  argset.add(set_deta);
+  argset.add(set_met);
+  //argset.add(set_lambdaz);
+  //argset.add(set_deltag1z);
+  //argset.add(set_deltakg);
+
+  RooDataSet* dataset = new RooDataSet(name, "N-1 dataset",argset,
+                       RooFit::WeightVar(set_weight) );
+
   return dataset;
 }
 
@@ -1844,6 +2061,8 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
   
   const Double_t ptbins[4] = {20,30,80,200};
   // Same binning as fake rate histograms
+  // WARNING: use the same binning for muons and electrons or
+  // you will bring the code internal logic !!!
   const Double_t ptbins_fakerate[6] = {10.,15.,20.,25.,30.,35.};
   const Double_t etabins_fakerate[5] = {0.0,1.0,1.479,2.0,2.5};
 
@@ -1860,9 +2079,16 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hdphiLep[i]   = new TH1F(Form("%s_hdphiLep_%s",  prefix,HypothesisTypeName(i)), "Delta Phi of the two leptons after all cuts", 64, 0, 3.2);
     heleEta[i]    = new TH1F(Form("%s_heleEta_%s",   prefix,HypothesisTypeName(i)), "Electron eta after all cuts", 60, -3., 3.);
     hmuEta[i]     = new TH1F(Form("%s_hmuEta_%s",    prefix,HypothesisTypeName(i)), "Muon eta after all cuts", 60, -3., 3.);
-    hdilMass[i]   = new TH1F(Form("%s_hdilMass_%s",  prefix,HypothesisTypeName(i)), "Di-lepton mass after all cuts", 300, 0., 300.);
+    hdilMass[i]   = new TH1F(Form("%s_hdilMass_%s",  prefix,HypothesisTypeName(i)), "Di-lepton mass after all cuts", 40, 0., 200.);
+    hdilMass[i]->GetXaxis()->SetTitle("Dilepton mass [GeV/c^{2}]");
+    hdilMass[i]->GetYaxis()->SetTitle("Events/(5 GeV)");
     hdilPt[i]     = new TH1F(Form("%s_hdilPt_%s",    prefix,HypothesisTypeName(i)), "Di-lepton pt", 300, 0., 300.);
-    hmet[i]       = new TH1F(Form("%s_hmet_%s",      prefix,HypothesisTypeName(i)), "MET after all cuts", 100,0.,200.);
+    hmet[i]       = new TH1F(Form("%s_hmet_%s",      prefix,HypothesisTypeName(i)), "MET after all cuts", 20,0.,100.);
+    hmet[i]->GetXaxis()->SetTitle("MET [GeV]");
+    hmet[i]->GetYaxis()->SetTitle("Events/(5 GeV)");
+    hmetProj[i]       = new TH1F(Form("%s_hmetProj_%s",      prefix,HypothesisTypeName(i)), "Projected MET after all cuts", 20,0.,100.);
+    hmetProj[i]->GetXaxis()->SetTitle("Projected MET [GeV]");
+    hmetProj[i]->GetYaxis()->SetTitle("Events/(5 GeV)");
     hmetPhi[i]    = new TH1F(Form("%s_hmetPhi_%s",   prefix,HypothesisTypeName(i)), "MET phi after all cuts", 64, -3.2, 3.2);
     hptJet1[i]    = new TH1F(Form("%s_hptJet1_%s",   prefix,HypothesisTypeName(i)), "Leading jet Pt after all cuts", 300, 0., 300.);
     hptJet2[i]    = new TH1F(Form("%s_hptJet2_%s",   prefix,HypothesisTypeName(i)), "Second jet Pt after all cuts", 300, 0., 300.);
@@ -1880,6 +2106,10 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hdphillvsmll[i]->Sumw2();
     hextramuonsvsnjet[i]= new TH2F(Form("%s_extramuonsvsnjet_%s",prefix,HypothesisTypeName(i)), "Number of extra muon vs number of jets", 10,0.0,10.0,10,0.0,10.0);
     hextramuonsvsnjet[i]->Sumw2();
+    hbtagvsnjet[i]= new TH2F(Form("%s_btagvsnjet_%s",prefix,HypothesisTypeName(i)), "Number of b-jets vs number of jets", 10,0.0,10.0,10,0.0,10.0);
+    hbtagvsnjet[i]->Sumw2();
+    htoptagvsnjet[i]= new TH2F(Form("%s_toptagvsnjet_%s",prefix,HypothesisTypeName(i)), "Top tag vs number of jets", 10,0.0,10.0,2,0.0,2);
+    htoptagvsnjet[i]->Sumw2();
     helFRfakable[i]     = new TH2F(Form("%s_helFRfakable_%s",    prefix,HypothesisTypeName(i)), "FR study: rate of fakable objects", 3,ptbins,2,0,3.0);
     helFRfakable[i]->Sumw2();
     helFRfakable_fakerate[i] = new TH2F(Form("%s_helFRfakable_fakerate_%s", prefix,HypothesisTypeName(i)), "FR study: rate of fakable objects",4,etabins_fakerate,5,ptbins_fakerate);
@@ -1888,6 +2118,11 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hmuFRfakable[i]->Sumw2();
     hmuFRfakable_fakerate[i] = new TH2F(Form("%s_hmuFRfakable_fakerate_%s", prefix,HypothesisTypeName(i)), "FR study: rate of fakable objects",4,etabins_fakerate,5,ptbins_fakerate);
     hmuFRfakable_fakerate[i]->Sumw2();
+    hdoubleFakes[i] = new TH1F(Form("%s_hdoubleFakes_%s", prefix,HypothesisTypeName(i)), "Fake estimation",3,0,3);
+    hdoubleFakes[i]->Sumw2();
+    hdoubleFakes[i]->GetXaxis()->SetBinLabel(1,"Tight-Tight");
+    hdoubleFakes[i]->GetXaxis()->SetBinLabel(2,"Tight-LooseNotTight");
+    hdoubleFakes[i]->GetXaxis()->SetBinLabel(3,"LooseNotTight-LooseNotTight");
 
     const Double_t jetEtbins[12] = {0,10,15,20,25,30,40,50,60,80,100,200};
     hmaxGenJetPt[i]  = new TH1F(Form("%s_hmaxGenJetPt_%s", prefix,HypothesisTypeName(i)), "most energetic jet (|eta|<5) Et (GenJet) JetVeto NM1", 11,jetEtbins);
@@ -1921,10 +2156,10 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hPFJetRelResponseWithZero[i] = new TH2F(Form("%s_hPFJetRelResponseWithZero_%s",prefix,HypothesisTypeName(i) ), Form("%s - PFJet relative response to Z pt - %s",prefix,HypothesisTypeName(i) ), 20, 0, 100, 20, 0, 2);
 
     hmetVal[i]           = new TH1F(Form("%s_hmetVal_%s",      prefix,HypothesisTypeName(i)), "MET after ll selection/jetveto", 20,0.,100.);
-    hmetVal[i]->GetXaxis()->SetTitle("tcMET [GeV]");
+    hmetVal[i]->GetXaxis()->SetTitle("MET [GeV]");
     hmetVal[i]->GetYaxis()->SetTitle("Events/(5 GeV)");
     hmetProjVal[i]       = new TH1F(Form("%s_hmetProjVal_%s",      prefix,HypothesisTypeName(i)), "Projected MET after ll selection/jetveto", 20,0.,100.);
-    hmetProjVal[i]->GetXaxis()->SetTitle("Projected tcMET [GeV]");
+    hmetProjVal[i]->GetXaxis()->SetTitle("Projected MET [GeV]");
     hmetProjVal[i]->GetYaxis()->SetTitle("Events/(5 GeV)");
     hmaxPFJetPtVal[i]    = new TH1F(Form("%s_hmaxPFJetPtVal_%s",   prefix,HypothesisTypeName(i)), "Leading PFJet Pt after ll selection", 20, 0., 100.);
     hmaxPFJetPtVal[i]->GetXaxis()->SetTitle("Leading PF Jet Pt [GeV]");
@@ -1933,14 +2168,32 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hdilMassVal[i]->GetXaxis()->SetTitle("Dilepton mass [GeV/c^{2}]");
     hdilMassVal[i]->GetYaxis()->SetTitle("Events/(5 GeV)");
 
-        
+    hmetNM1[i]           = new TH1F(Form("%s_hmetNM1_%s",      prefix,HypothesisTypeName(i)), "N-1 MET", 20,0.,100.);
+    hmetNM1[i]->GetXaxis()->SetTitle("MET [GeV]");
+    hmetNM1[i]->GetYaxis()->SetTitle("Events/(5 GeV)");
+    hmetProjNM1[i]       = new TH1F(Form("%s_hmetProjNM1_%s",      prefix,HypothesisTypeName(i)), "N-1 Projected MET", 20,0.,100.);
+    hmetProjNM1[i]->GetXaxis()->SetTitle("Projected MET [GeV]");
+    hmetProjNM1[i]->GetYaxis()->SetTitle("Events/(5 GeV)");
+    hmaxPFJetPtNM1[i]    = new TH1F(Form("%s_hmaxPFJetPtNM1_%s",   prefix,HypothesisTypeName(i)), "N-1 Leading PFJet Pt", 20, 0., 100.);
+    hmaxPFJetPtNM1[i]->GetXaxis()->SetTitle("Leading PF Jet Pt [GeV]");
+    hmaxPFJetPtNM1[i]->GetYaxis()->SetTitle("Events/(5 GeV)");
+    hdilMassNM1[i]   = new TH1F(Form("%s_hdilMassNM1_%s",  prefix,HypothesisTypeName(i)), "N-1 Di-lepton mass", 40, 0., 200.);
+    hdilMassNM1[i]->GetXaxis()->SetTitle("Dilepton mass [GeV/c^{2}]");
+    hdilMassNM1[i]->GetYaxis()->SetTitle("Events/(5 GeV)");
+ 
     hdilMassWithMetDYEst[i] = new TH1F(Form("%s_hdilMassWithMetDYEst_%s",  prefix,HypothesisTypeName(i)), "Di-lepton mass with MET for DY Estimation", 40, 0., 200.);
     hdilMassNoMetDYEst[i] = new TH1F(Form("%s_hdilMassNoMetDYEst_%s",  prefix,HypothesisTypeName(i)), "Di-lepton mass without MET for DY Estimation", 40, 0., 200.);
     hmetInDYEst[i] = new TH1F(Form("%s_hmetInDYEst_%s",  prefix,HypothesisTypeName(i)), "MET in Z mass for DY Estimation", 40, 0., 200.);
     hmetOutDYEst[i] = new TH1F(Form("%s_hmetOutDYEst_%s",  prefix,HypothesisTypeName(i)), "MET outside Z mass for DY Estimation", 40, 0., 200.);
-    hdilMassWithPFMetDYEst[i] = new TH1F(Form("%s_hdilMassWithPFMetDYEst_%s",  prefix,HypothesisTypeName(i)), "Di-lepton mass with PFMET for DY Estimation", 40, 0., 200.);
-    hpfMetInDYEst[i] = new TH1F(Form("%s_hpfMetInDYEst_%s",  prefix,HypothesisTypeName(i)), "PFMET in Z mass for DY Estimation", 40, 0., 200.);
-    hpfMetOutDYEst[i] = new TH1F(Form("%s_hpfMetOutDYEst_%s",  prefix,HypothesisTypeName(i)), "PFMET outside Z mass for DY Estimation", 40, 0., 200.);
+    
+    htoptagz[i] = new TH2F(Form("%s_htoptagz_%s",prefix,HypothesisTypeName(i)),
+			   "Top tagging on Z-sample",4,0,4,4,0,4);
+    htoptagz[i]->Sumw2();
+    htoptag[i]  = new TH2F(Form("%s_htoptag_%s",prefix,HypothesisTypeName(i)),
+			   "Top tagging for final selection",4,0,4,4,0,4);
+    htoptag[i]->Sumw2();
+
+
 
     hnJet[i]->Sumw2();
     helePt[i]->Sumw2();
@@ -1955,6 +2208,7 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hdilMass[i]->Sumw2();
     hdilPt[i]->Sumw2();
     hmet[i]->Sumw2();
+    hmetProj[i]->Sumw2();
     hmetPhi[i]->Sumw2();
     hptJet1[i]->Sumw2();
     hptJet2[i]->Sumw2();
@@ -1999,13 +2253,16 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
     hmaxPFJetPtVal[i]->Sumw2();
     hdilMassVal[i]->Sumw2();
 
+    hmetNM1[i]->Sumw2();
+    hmetProjNM1[i]->Sumw2();
+    hmaxPFJetPtNM1[i]->Sumw2();
+    hdilMassNM1[i]->Sumw2();
+
     hdilMassWithMetDYEst[i]->Sumw2();
     hdilMassNoMetDYEst[i]->Sumw2();
     hmetInDYEst[i]->Sumw2();
     hmetOutDYEst[i]->Sumw2();
-    hdilMassWithPFMetDYEst[i]->Sumw2();
-    hpfMetInDYEst[i]->Sumw2();
-    hpfMetOutDYEst[i]->Sumw2();
+   
   }
   
   helTrkIsoPassId = new TH1F(Form("%s_helTrkIsoPassId",prefix),        Form("%s - electron trk isolation passed robust el id",prefix),  100, 0., 20.);
@@ -2081,7 +2338,8 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
 
   hPFJetResidualResponse = new TH2F(Form("%s_hPFJetResidualResponse",prefix), Form("%s - PFJet Residual Correction",prefix), 20, 10, 50, 20, 0, 2);
   hPFJetResidualResponse->Sumw2();
-
+  hnGoodVertex      = new TH1F(Form("%s_hnGoodVertex",     prefix), "Number of good vertexes after baseline selections" , 50,0.,50.);	
+  hnGoodVertex -> Sumw2();
 }
 
 
@@ -2102,6 +2360,28 @@ RooDataSet* ScanChain( TChain* chain,
     printf("\nERROR: chain is empty for sample: %s\n\n",prefix);
     assert(0);
   }
+
+  if ( gSystem->Getenv("ZSelection") )
+    pass_all = (1<<PASS_ZControlSampleTight) | (1<<PASS_JETVETO) | (1<<PASS_LT_FINAL) | (1<<PASS_LL_FINAL) | 
+      (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO) | (1<<PASS_TOPVETO);
+  
+  if ( gSystem->Getenv("ZSelectionVeryTight") )
+    pass_all = (1<<PASS_ZControlSampleVeryTight) | (1<<PASS_JETVETO) | (1<<PASS_LT_FINAL) | (1<<PASS_LL_FINAL) | 
+      (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO) | (1<<PASS_TOPVETO);
+
+  if ( gSystem->Getenv("ZProbeSelectionVeryTight") )
+    pass_all = (1<<PASS_ZControlSampleVeryTight) | (1<<PASS_JETVETO) | (1<<PASS_PROBE);
+
+  if ( gSystem->Getenv("ZProbeSelectionTight") )
+    pass_all = (1<<PASS_ZControlSampleTight) | (1<<PASS_JETVETO) | (1<<PASS_PROBE);
+  
+  if ( gSystem->Getenv("ZProbeSelectionLoose") )
+    pass_all = (1<<PASS_ZControlSampleLoose) | (1<<PASS_JETVETO) | (1<<PASS_PROBE);
+
+  if ( gSystem->Getenv("TopSelection") )
+    pass_all = (1<<PASS_ZVETO) | (1<<PASS_TopControlSample) | (1<<PASS_MET) | 
+      (1<<PASS_LT_FINAL) | (1<<PASS_LL_FINAL) | (1<<PASS_EXTRALEPTONVETO) ;
+
   // chain->SetParallelUnzip(kTRUE);
   // gErrorIgnoreLevel = 3000; // suppress warnings about missing dictionaries 
   unsigned int nEventsChain = chain->GetEntries();  // number of entries in chain --> number of events from all files
@@ -2115,6 +2395,19 @@ RooDataSet* ScanChain( TChain* chain,
 
   initializeHistograms(prefix,qcdBackground);
 
+  if ( !externalElFakeRates ){
+    TFile* f = TFile::Open("files/ww_el_fr_EGandEGMon.root");
+    assert(f);
+    externalElFakeRates = dynamic_cast<TH2F*>( f->Get("el_fr_v2_wwV1") );
+    assert(externalElFakeRates);
+  }      
+  if ( !externalMuFakeRates ){
+    TFile* f = TFile::Open("files/ww_mu_fr_Mu.root");
+    assert(f);
+    externalMuFakeRates = dynamic_cast<TH2F*>( f->Get("mu_fr_fo_wwV1_10_d0") );
+    assert(externalMuFakeRates);
+  }      
+
   // clear list of duplicates
   already_seen.clear();
   int duplicates_total_n = 0;
@@ -2124,31 +2417,41 @@ RooDataSet* ScanChain( TChain* chain,
 
   int i_permille_old = 0;
   
-  try {
+  try { 
     jetcorr_filenames_jpt.clear();
-    jetcorr_filenames_jpt.push_back("files/Spring10_L2Relative_AK5JPT.txt");
-    jetcorr_filenames_jpt.push_back("files/Spring10_L3Absolute_AK5JPT.txt");
+    //jetcorr_filenames_jpt.push_back("files/Spring10_L2Relative_AK5JPT.txt");
+    //jetcorr_filenames_jpt.push_back("files/Spring10_L3Absolute_AK5JPT.txt");
+    jetcorr_filenames_jpt.push_back("files/START38_V13_AK5JPT_L2Relative.txt");
+    jetcorr_filenames_jpt.push_back("files/START38_V13_AK5JPT_L3Absolute.txt");
     if(realData)
-      jetcorr_filenames_jpt.push_back("files/Spring10DataV2_L2L3Residual_AK5JPT.txt");
+      jetcorr_filenames_jpt.push_back("files/START38_V13_AK5JPT_L2L3Residual.txt");
     jet_corrector_jpt= makeJetCorrector(jetcorr_filenames_jpt);
     
     jetcorr_filenames_pf.clear();
-    jetcorr_filenames_pf.push_back("files/Spring10_L2Relative_AK5PF.txt");
-    jetcorr_filenames_pf.push_back("files/Spring10_L3Absolute_AK5PF.txt");
-    if(realData)
-      jetcorr_filenames_pf.push_back("files/Spring10DataV2_L2L3Residual_AK5PF.txt");
+    //jetcorr_filenames_pf.push_back("files/Spring10_L2Relative_AK5PF.txt");
+    //jetcorr_filenames_pf.push_back("files/Spring10_L3Absolute_AK5PF.txt");
+    jetcorr_filenames_pf.push_back("files/START38_V13_AK5PF_L2Relative.txt");
+    jetcorr_filenames_pf.push_back("files/START38_V13_AK5PF_L3Absolute.txt");
+    if (realData) 
+      //jetcorr_filenames_pf.push_back("files/Spring10DataV2_L2L3Residual_AK5PF.txt");
+      jetcorr_filenames_pf.push_back("files/START38_V13_AK5PF_L2L3Residual.txt");
     jet_corrector_pf= makeJetCorrector(jetcorr_filenames_pf);
     
     jetcorr_filenames_calo.clear();
-    jetcorr_filenames_calo.push_back("files/Spring10_L2Relative_AK5Calo.txt");
-    jetcorr_filenames_calo.push_back("files/Spring10_L3Absolute_AK5Calo.txt");
+    //jetcorr_filenames_calo.push_back("files/Spring10_L2Relative_AK5Calo.txt");
+    //jetcorr_filenames_calo.push_back("files/Spring10_L3Absolute_AK5Calo.txt");
+    jetcorr_filenames_calo.push_back("files/START38_V13_AK5Calo_L2Relative.txt");
+    jetcorr_filenames_calo.push_back("files/START38_V13_AK5Calo_L3Absolute.txt");
     if(realData)
-      jetcorr_filenames_calo.push_back("files/Spring10DataV2_L2L3Residual_AK5Calo.txt");
+      //jetcorr_filenames_calo.push_back("files/Spring10DataV2_L2L3Residual_AK5Calo.txt");
+      jetcorr_filenames_calo.push_back("files/START38_V13_AK5Calo_L2L3Residual.txt");
     jet_corrector_calo= makeJetCorrector(jetcorr_filenames_calo);
     
     jetcorr_filenames_trk.clear();
-    jetcorr_filenames_trk.push_back("files/Spring10_L2Relative_AK5TRK.txt");
-    jetcorr_filenames_trk.push_back("files/Spring10_L3Absolute_AK5TRK.txt");
+    //jetcorr_filenames_trk.push_back("files/Spring10_L2Relative_AK5TRK.txt");
+    //jetcorr_filenames_trk.push_back("files/Spring10_L3Absolute_AK5TRK.txt");
+    jetcorr_filenames_trk.push_back("files/START38_V13_AK5TRK_L2Relative.txt");
+    jetcorr_filenames_trk.push_back("files/START38_V13_AK5TRK_L3Absolute.txt");
     jet_corrector_trk= makeJetCorrector(jetcorr_filenames_trk);
   } catch (...){
     cout << "\nFailed to setup correctors needed to get Jet Enetry Scale. Abort\n" << endl;
@@ -2215,11 +2518,11 @@ RooDataSet* ScanChain( TChain* chain,
 	 if (i_permille != i_permille_old) {
 	   // xterm magic from L. Vacavant and A. Cerri
 	   printf("\015\033[32m ---> \033[1m\033[31m%4.1f%%"
-		  "\033[0m\033[32m <---\033[0m\015", i_permille/10.);
+	   "\033[0m\033[32m <---\033[0m\015", i_permille/10.);
 	   fflush(stdout);
 	   i_permille_old = i_permille;
 	 }
-	 
+
 	 if ( identifyEvents ){
 	   // check if we know what we are looking at
 	   if ( ! isIdentified(sample) ) nFailedIdentification++;
@@ -2231,13 +2534,6 @@ RooDataSet* ScanChain( TChain* chain,
 	   }
 	 }
 
-	 // check the leading vertex
-	 bool goodVertex = false;
-	 for (size_t v = 0; v < cms2.vtxs_position().size(); ++v)  {
-	   if(isGoodVertex(v)) goodVertex = true;
-	 }
-	 //if(!goodVertex) continue;
-	 
 	 // loop over hypothesis candidates
 	 unsigned int nHyps = cms2.hyp_type().size();
 	 bool goodEvent = false;
@@ -2246,11 +2542,17 @@ RooDataSet* ScanChain( TChain* chain,
 	 for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
 	   if(cms2.hyp_p4().at(i_hyp).mass2() < 0 ) break;
 	   if(zStudy && (i_hyp != i_hyp_bestZ)) continue;
-	   if (hypo(i_hyp, weight, dataset, zStudy, realData))goodEvent=true;
+	   if (hypo(i_hyp, weight, dataset, zStudy, realData)){
+	     goodEvent=true;
+	     selectedEvents << cms2.evt_run() << " " <<
+	       cms2.evt_lumiBlock() << " " << cms2.evt_event() << " " <<
+	       cms2.hyp_lt_p4().at(i_hyp).pt() << " " << cms2.hyp_ll_p4().at(i_hyp).pt() << " " <<
+	       projectedMet(i_hyp) <<endl;
+	   }
 	   AddIsoSignalControlSample(i_hyp, weight, dataset, realData);
 	 }
-	 if (goodEvent) selectedEvents << cms2.evt_run() << " " <<
-	   cms2.evt_lumiBlock() << " " << cms2.evt_event() << endl;
+	 // if (goodEvent)   selectedEvents << cms2.evt_run() << " " <<
+	 // cms2.evt_lumiBlock() << " " << cms2.evt_event() << endl;
        }
        t.Stop();
        printf("Finished processing file: %s\n",currentFile->GetTitle());
@@ -2263,6 +2565,7 @@ RooDataSet* ScanChain( TChain* chain,
        delete f;
   }
   monitor.print();
+  monitor.makeHistograms(prefix);
   // monitor.printEvents(3);
   if ( nEventsChain != nEventsTotal ) {
     printf("ERROR: number of events from files (%d) is not equal to total number"
@@ -2512,7 +2815,7 @@ bool passedSkimSelection2()
     // charge
     if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) continue;
     
-    if (!foundGoodVertex()) return false;
+    if (nGoodVertex()<1) return false;
 
     if (cms2.hyp_p4().at(i_hyp).mass2()<0 || 
 	cms2.hyp_p4()[i_hyp].mass() < 12) return false;
@@ -2734,7 +3037,7 @@ unsigned int bestZHyp()
   return i_hyp_bestZ;
 }
 
-void getJetResponseFromZBalance(int i_hyp,  double weight, bool realData, double etaMin, double etaMax, bool applyJEC) 
+void getJetResponseFromZBalance(int i_hyp,  double weight, bool realData, double etaMin, double etaMax)
 { 
   HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
   double vetoCone = 0.3;
@@ -2819,20 +3122,13 @@ void fill_dyest_histograms(int i_hyp, float weight)
   if (passedMetRequirements (i_hyp) )
     hdilMassWithMetDYEst[type] -> Fill(mass, weight); 
   
-  if (passedPFMetRequirements (i_hyp) )
-    hdilMassWithPFMetDYEst[type] -> Fill(mass, weight); 
-
   // fill the met histograms for "in" and "out" regions
   if (inZmassWindow(mass)) {
     hmetInDYEst[type] -> Fill(projectedMet(i_hyp), weight); 
     hmetInDYEst[3] -> Fill(projectedMet(i_hyp), weight); 
-    hpfMetInDYEst[type] -> Fill(projectedPFMet(i_hyp), weight); 
-    hpfMetInDYEst[3] -> Fill(projectedPFMet(i_hyp), weight); 
   }
   else {
     hmetOutDYEst[type] -> Fill(projectedMet(i_hyp), weight); 
     hmetOutDYEst[3] -> Fill(projectedMet(i_hyp), weight); 
-    hpfMetOutDYEst[type] -> Fill(projectedPFMet(i_hyp), weight); 
-    hpfMetOutDYEst[3] -> Fill(projectedPFMet(i_hyp), weight); 
   }
 }

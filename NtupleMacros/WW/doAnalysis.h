@@ -7,6 +7,7 @@
 #include "wwtypes.h"
 #include "TChain.h"
 #include <fstream>
+#include <vector>
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 typedef ULong64_t  cuts_t;
@@ -25,6 +26,7 @@ double ww_elIsoVal(unsigned int i);
 // combined analysis selectors
 bool goodElectronWithoutIsolation(unsigned int i);
 bool goodElectronIsolated(unsigned int i);
+bool fakableElectron(unsigned int i);
 
 //
 // Muon Id
@@ -37,11 +39,13 @@ double ww_muIsoVal(unsigned int i);
 bool   ww_mud0(unsigned int i);
 bool   ww_mud0PV(unsigned int i);
 
-unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated);
+unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated,
+			       const std::vector<LorentzVector>& = std::vector<LorentzVector>());
 
 // combined analysis selectors
 bool goodMuonWithoutIsolation(unsigned int i);
 bool goodMuonIsolated(unsigned int i);
+bool fakableMuon(unsigned int i);
 
 //
 // trigger
@@ -57,17 +61,13 @@ bool passedTriggerRequirements(HypTypeInNtuples type);
 // all other selectors and functions
 double metValue();
 double metPhiValue();
-double pfmetValue();
-double pfmetPhiValue();
 
 bool ww2009_met(unsigned int i_hyp);
 
 // analysis MET requirements
 bool passedMetRequirements(unsigned int i_hyp);
-bool passedPFMetRequirements(unsigned int i_hyp);
 
 double projectedMet(unsigned int i_hyp);
-double projectedPFMet(unsigned int i_hyp);
 
 bool metBalance (unsigned int i_hyp);
 
@@ -81,7 +81,8 @@ std::vector<LorentzVector> getJets(WWJetType type,
 				   int i_hyp, 
 				   double etThreshold,
 				   double maxEta,
-				   bool sorted = false);
+				   bool sorted = false,
+				   bool btag = false);
 
 // analysis jet type is set here.
 WWJetType jetType();
@@ -102,6 +103,7 @@ bool isGoodVertex(size_t ivtx);
 //
 // Tools
 //
+bool defaultBTag(WWJetType type, unsigned int iJet);
 
 HypTypeInNtuples hypType(unsigned int i_hyp);
 
@@ -145,13 +147,13 @@ void getIsolationSidebandsAfterSelections(int i_hyp,
 					  bool passedAllLeptonRequirements);
 
 void find_leading_genjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & genJetMax);
-void find_leading_jptjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & jptMax, int &jptMaxIndex, bool applyJEC);
-void find_leading_calojet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & caloJetMax, bool applyJEC); 
-void find_leading_trkjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & trkJetMax, bool applyJEC) ;
-void find_leading_pfjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & pfJetMax, bool applyJEC);
-void find_most_energetic_jets(int i_hyp, double weight, bool realData, double etaMin, double etaMax, bool applyJEC);
-void getJetResponseFromZBalance(int i_hyp, double weight, bool realData, double etaMin, double etaMax, bool applyJEC);
-void fill_val_plots(int i_hyp, cuts_t cut_passed, double weight, bool applyJEC);
+void find_leading_jptjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & jptMax, int &jptMaxIndex);
+void find_leading_calojet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & caloJetMax);
+void find_leading_trkjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & trkJetMax);
+void find_leading_pfjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & pfJetMax);
+void find_most_energetic_jets(int i_hyp, double weight, bool realData, double etaMin, double etaMax);
+void getJetResponseFromZBalance(int i_hyp, double weight, bool realData, double etaMin, double etaMax);
+void fill_val_plots(int i_hyp, cuts_t cuts_passed, double weight);
 void fill_dyest_histograms(int i_hyp, float weight);
 				
 unsigned int bestZHyp();

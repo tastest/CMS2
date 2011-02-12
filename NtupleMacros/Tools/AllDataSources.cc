@@ -16,7 +16,6 @@ DataSource fH_TTBAR()   { return DataSource("ttbar",    H_TTBAR, kRed+1, "t#bar{
 DataSource fH_ZZ()  { return DataSource("zz",   H_ZZ, kGreen);      }
 DataSource fH_WZ()  { return DataSource("wz",   H_WZ, kBlue);      }
 DataSource fH_WW()      { return DataSource("ww",       H_WW, kRed);          }
-DataSource fH_VV()      { return DataSource("vv",       H_VV, kWhite, "VV");          }
 
 DataSource fH_BC20_30()      { return DataSource("QCDBCtoEPt20to30",       H_BC20_30);          }
 DataSource fH_BC30_80()      { return DataSource("QCDBCtoEPt30to80",       H_BC30_80);          }

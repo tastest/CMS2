@@ -7,8 +7,6 @@
 #include "Math/PxPyPzE4D.h"
 #include "CORE/SimpleFakeRate.h" // will .h be ok? lets see.. 101007
 
-#include "../CORE/topmass/ttdilepsolve.h"
-
 typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 typedef map<unsigned int, unsigned int> m_uiui;
 
@@ -86,10 +84,7 @@ class ossusy_looper
         Int_t   proc_;
         Int_t   leptype_;
         Int_t   njets_;
-        Int_t   nvtx_;
-        Int_t   nbtags_;
         Float_t dilmass_;
-        Float_t topmass_;
         Float_t tcmet_;
         Float_t genmet_;
         Float_t mucormet_;
@@ -102,7 +97,6 @@ class ossusy_looper
         Float_t tcmetphi_;
         Float_t mt2_;
         Float_t mt2j_;
-        Float_t mt2jcore_;
         Float_t sumjetpt_;
         Float_t dileta_;
         Float_t dilpt_;
@@ -116,16 +110,10 @@ class ossusy_looper
         Float_t ptl2_;
         Float_t ptj1_;
         Float_t ptj2_;
-        Float_t etal1_;
-        Float_t etal2_;
-        Float_t phil1_;
-        Float_t phil2_;
         Float_t meff_;
         Float_t mt_;
-        char    dataset_[200];
-        Int_t   run_;
-        Int_t   lumi_;
-        Int_t   event_;
+
+
 
         // for fakeRates
         bool isFakeableMuon (int index);
@@ -199,23 +187,16 @@ class ossusy_looper
 
         TH1F* hnJet[4];                      // Njet distributions
         TH1F* hnJpt[4];                      // Njpt distributions
-        TH1F* hnBtagJpt[4];                  // N btag jpts
         TH1F* hnHypJet[4];                   // Hyp Njet distributions
         TH1F* helePt[4][4];                  // electron Pt
         TH1F* hmuPt[4][4];                   // muon Pt
         TH1F* hminLepPt[4][4];               // minimum lepton Pt
         TH1F* hmaxLepPt[4][4];               // maximum lepton Pt
-        TH1F* hminLepEta[4][4];              // minimum lepton eta
-        TH1F* hmaxLepEta[4][4];              // maximum lepton eta
         TH1F* helePhi[4][4];                 // electron phi
         TH1F* hmuPhi[4][4];                  // muon phi
         TH1F* hdphiLep[4][4];                // delta phi between leptons
-        TH1F* hdrLep[4][4];                  // dR between leptons
-        TH1F* hdrJ1J2[4][4];                 // dR between 2 leading jets
         TH1F* heleEta[4][4];                 // electron eta
         TH1F* hmuEta[4][4];                  // muon eta
-        TH1F* htopMass[4][4];                // top mass estimate for 2 highest pt jets
-        TH1F* htopMassAllComb[4][4];         // top mass estimate for all jets
         TH1F* hdilMass[4][4];                // dilepton mass
         TH1F* hdilPt[4][4];                  // dilepton Pt
         TH1F* hdilPt_zveto[4][4];            // dilepton Pt with z-veto applied
@@ -252,10 +233,6 @@ class ossusy_looper
         TH1F* hptJpt2[4][4];                 // Pt of 2nd JPT jet
         TH1F* hptJpt3[4][4];                 // Pt of 3rd JPT jet
         TH1F* hptJpt4[4][4];                 // Pt of 4th JPT jet
-        TH1F* hptBtagJpt1[4][4];             // Pt of 1st JPT jet
-        TH1F* hptBtagJpt2[4][4];             // Pt of 2nd JPT jet
-        TH1F* hptBtagJpt3[4][4];             // Pt of 3rd JPT jet
-        TH1F* hptBtagJpt4[4][4];             // Pt of 4th JPT jet
         TH1F* hetaJpt1[4][4];                // eta of 1st JPT jet
         TH1F* hetaJpt2[4][4];                // eta of 2nd JPT jet
         TH1F* hetaJpt3[4][4];                // eta of 3rd JPT jet

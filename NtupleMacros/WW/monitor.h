@@ -26,6 +26,8 @@ struct MonitorEventId {
 struct Entry {
   unsigned int nhyp[4];
   unsigned int nevt[4];
+  double nhyp_weighted[4];
+  double nevt_weighted[4];
   bool seen[4];
   MonitorEventId lastEvent;
   std::string name;
@@ -34,8 +36,9 @@ struct Entry {
 };
 
 struct hypo_monitor{
-  void count(CMS2&, HypothesisType type, const char* name);
+  void count(CMS2&, HypothesisType type, const char* name, double weight=1.0);
   void print() const;
+  void makeHistograms(const char* prefix) const;
   hypo_monitor():nEvtProcessed(0){}
   // -------------------------------------- //
   std::vector<Entry> counters;

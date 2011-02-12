@@ -27,9 +27,6 @@ int susycolors[]={1,2,4,6};
 
 void initialize(){
 
-  gROOT->SetStyle("Plain");
-
-
   //------------------------
   //variables to plot
   //------------------------
@@ -39,9 +36,6 @@ void initialize(){
   vars.push_back("hnJpt");        xtitles.push_back("Jet Multiplicity");  
   vars.push_back("hdilMass");     xtitles.push_back("dilepton mass (GeV)");
   vars.push_back("hdilPt");       xtitles.push_back("dilepton p_{T} (GeV)");
-
-  vars.push_back("htopMass");     xtitles.push_back("top mass estimate (GeV)");
-
 
   vars.push_back("hmaxLepPt");    xtitles.push_back("leading lepton p_{T} (GeV)"); 
   vars.push_back("hminLepPt");    xtitles.push_back("2nd leading lepton p_{T} (GeV)");
@@ -211,20 +205,14 @@ void compareDataMC(char* filename , int print = 0){
     leg->Draw();
 
     if     ( print == 1 ) canArray[iVar]->Print(Form("plots/%s.gif",vars.at(iVar)));
-    else if( print == 2 ) {
-      canvas->Print("plots/datamc.ps");
-      canvas->Clear();
-    }
+    else if( print == 2 ) canvas->Print("plots/datamc.ps");
  
     //if(histmin < stackFS->GetMinimum() ) stackFS->SetMinimum(histmin);
     //if(histmax > stackFS->GetMaximum() ) stackFS->SetMaximum(histmax);
         
   }
 
-  if( print == 2 ) {
-    canvas->Print("plots/datamc.ps]");
-    canvas->Clear();
-  }
+  if( print == 2 ) canvas->Print("plots/datamc.ps]");
 
 }
 
@@ -292,14 +280,6 @@ void formatHist(TH1F *hist,char* var, char* histtype){
     line.DrawLine( 76  , 0 , 76  , 1.05 * max );
     line.DrawLine( 106 , 0 , 106 , 1.05 * max );
   }
-
-  if( strcmp(var,"htopMass") == 0 && ( histtype == "ee" || histtype == "mm" ) ){
-    float max = hist->GetBinContent( hist->GetMaximumBin() );
-    max += hist->GetBinError( hist->GetMaximumBin() );
-    //    line.DrawLine( 76  , 0 , 76  , 1.05 * max );
-    //    line.DrawLine( 106 , 0 , 106 , 1.05 * max );
-  }
-
   if( strcmp(var,"hnJet") == 0 ){
     float max = hist->GetBinContent( hist->GetMaximumBin() );
     max += hist->GetBinError( hist->GetMaximumBin() );
@@ -423,9 +403,6 @@ int rebin(char* prefix){
   if(strcmp(prefix,"hsumJetPt")==0) r = 10;
   if(strcmp(prefix,"hsumJptPt")==0) r = 10;
   if(strcmp(prefix,"hdilMass")==0)  r = 5;
-
-  if(strcmp(prefix,"htopMass")==0)  r = 5;
-
   if(strcmp(prefix,"hdilPt")==0)    r = 5;
   if(strcmp(prefix,"hminLepPt")==0) r = 4;
   if(strcmp(prefix,"hmaxLepPt")==0) r = 4;
