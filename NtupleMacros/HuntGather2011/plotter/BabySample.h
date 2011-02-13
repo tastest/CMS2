@@ -9,6 +9,7 @@
 
 #include <cstdio>
 #include "SampleType.h"
+#include <iostream>
 
 class BabySample
 {
@@ -17,7 +18,10 @@ class BabySample
         BabySample(const char *pfx,const char *pfx2, const char* babies, TCut presel, float kfactor, SampleType type, Color_t color = kBlack, Style_t style = 20);
         ~BabySample() {}
 
+        void setEventList(TCut cut);
+        void resetEventList();
         void    add(const char* babies);
+
         Color_t color()   const { return color_; }
         Style_t style()   const { return style_; }
         TChain* chain()   const { return chain_; }
@@ -32,11 +36,12 @@ class BabySample
         Style_t style_;
         TChain* chain_;
         TCut    presel_;
-        TEventList* elist_;
         TString pfx_;
         TString pfx2_;
         SampleType  type_;
         float kfactor_;
+        TEventList* elist_;
+
 };
 
 #endif

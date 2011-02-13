@@ -17,6 +17,7 @@ bool sortHistsByIntegral(TH1* h1, TH1* h2);
 void addToLegend(TLegend *leg, TH1F *hist, TString opt);
 void makeStack(std::vector<TH1F*> &v_hists);
 TH1F* slideIntegrated(TH1F* h1);
+void PreselectBabies(std::vector<BabySample*> bss, TCut cut);
 
 //
 // luminosity functions
@@ -32,7 +33,7 @@ float GetIntLumi(BabySample *bs, float lumi);
 TCanvas* DrawAll(TCut field, const char *savename, TCut sel, float intlumipb, unsigned int nbins, float xlo, float xhi, bool integrated,
            std::vector<BabySample*> bss);
 
-TH1F* Plot(const BabySample *bs, TCut var, TCut selection, float intlumipb,
+TH1F* Plot(BabySample *bs, TCut var, TCut selection, float intlumipb,
         unsigned int nbins, float xlo, float xhi, bool integrated, unsigned int isfx);
 
 static unsigned int gDrawAllCount = 0;

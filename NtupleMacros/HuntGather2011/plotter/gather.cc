@@ -72,7 +72,7 @@ TCanvas* DrawAll(TCut var, const char *savename, TCut sel, float intlumipb, unsi
 
         // construct the selection for this sample
         // and get the plot of that selection
-        TCut selection = sel + bss[i]->presel();
+        TCut selection = sel;// + bss[i]->presel();
         buffer = Plot (bss[i], var, selection, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
 
         // if the plot doesn't already exist then
@@ -172,7 +172,7 @@ TCanvas* DrawAll(TCut var, const char *savename, TCut sel, float intlumipb, unsi
     return c1;
 }
 
-TH1F* Plot(const BabySample *bs, TCut var, TCut selection, float intlumipb, 
+TH1F* Plot(BabySample *bs, TCut var, TCut selection, float intlumipb, 
         unsigned int nbins, float xlo, float xhi, bool integrated, unsigned int isfx)
 {
 
@@ -189,27 +189,6 @@ TH1F* Plot(const BabySample *bs, TCut var, TCut selection, float intlumipb,
     else name = Form("%s_%s_%s_%i", bs->pfx(), selection.GetName(), var.GetName(), gDrawAllCount);
     char *title = Form("%s_%s_%s, ~%.2f/pb", bs->pfx(), selection.GetName(), var.GetName(), 1e3*intlumipb);
     char *drawcommand = Form("%s>>+%s", var.GetTitle(), name);
-
-    // set up the good run list
-    int brun = min_run();
-    int bls  = min_run_min_lumi();
-    int erun = max_run();
-    int els  = max_run_max_lumi();
-    TCut c_goodrunplus(Form("(((run>%i&&run<%i)||(run==%i&&ls>=%i)||(run==%i&&ls<=%i))&&goodrun(run,ls))||(run>%i||(run==%i&&ls>%i))", 
-                brun, erun, brun, bls, erun, els, erun, erun, els));
-
-    // construct the duplicate removal cut according
-    // to the type of baby hypothesis
-    TCut c_notduplicate = "";
-    if (bs->chain()->GetBranch("pt3"))        c_notduplicate = ("! is_duplicate(run,evt,ls,pt1,pt2,pt3)");
-    else if (bs->chain()->GetBranch("pt2"))   c_notduplicate = ("! is_duplicate(run,evt,ls,pt1,pt2)");
-    else                                c_notduplicate = ("! is_duplicate(run,evt,ls,pt1)");
-
-    // assemble the cut
-    if (bs->type() == DATA) {
-        selection += c_goodrunplus + c_notduplicate;
-        std::cout << selection << std::endl;
-    }
 
     //
     // set the normalisation scale
@@ -244,7 +223,7 @@ TH1F* Plot(const BabySample *bs, TCut var, TCut selection, float intlumipb,
     if (bs->type() == DATA) {
         TTreePlayer *tp = (TTreePlayer*)bs->chain()->GetPlayer();
         tp->SetScanRedirect(kTRUE);
-        tp->SetScanFileName(Form("../output/%s_%s_%i_%s.out", selection.GetName(), var.GetName(), bs->pfx(), bs->pfx2()));
+        tp->SetScanFileName(Form("../output/%s_%s_%s_%s.out", selection.GetName(), var.GetName(), bs->pfx(), bs->pfx2()));
         // trileptons
         if (bs->chain()->GetBranch("pt3"))
             bs->chain()->Scan("dataset:run:ls:evt:pt1:pt2:pt3", "", "colsize=20");
@@ -256,9 +235,10 @@ TH1F* Plot(const BabySample *bs, TCut var, TCut selection, float intlumipb,
             bs->chain()->Scan("dataset:run:ls:evt:pt1", "", "colsize=20");
     }
 
-    // reset to an empty list
-    TEventList* emptylist = 0;
-    bs->chain()->SetEventList(emptylist);
+    // reset the event list for this baby
+    // to the one internally stored
+    // usually corresponding to a common preselection
+    bs->resetEventList();
     elist->Reset();
 
     //
@@ -338,5 +318,15 @@ TH1F* slideIntegrated(TH1F* h1)
     }
 
     return h1;
+}
+
+void PreselectBabies(std::vector<BabySample*> bss, TCut cut)
+{
+
+    std::cout << "Preselecting Babies..." << std::endl;
+    for (unsigned int i = 0; i < bss.size(); ++i) {
+        bss[i]->setEventList(cut);
+    }
+
 }
 
