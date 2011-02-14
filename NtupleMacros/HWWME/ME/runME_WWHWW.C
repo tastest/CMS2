@@ -51,7 +51,7 @@ float  NLOXsec[kNProc] = {  4.5, 31314.0/2.0, 31314.0/2.0, 5.9, 0.8664429};
 float  MCFMXsec[kNProc] = { 28.4, 11270, 11270.0, 4.3, 3.25};
 
 float acceptance [kNProc][3];
-float lumi=35.5;
+float lumi=1000.0;
 
 int CalculateAcceptance(){
     for (int i=0; i<kNProc; i++){
@@ -203,7 +203,7 @@ void NeutrinoIntegration(int process,TString inputFileName,int seed, int SmearLe
       cms_event.MetX = MetX;
       cms_event.MetY = MetY;
       
-      if (lep1_E>lep2_E){
+      if (lep1_Charge>lep2_Charge){
 	cms_event.p[0].SetXYZM(lep1_Px,lep1_Py,lep1_Pz,0.0);
 	cms_event.p[1].SetXYZM(lep2_Px,lep2_Py,lep2_Pz,0.0);
       }
