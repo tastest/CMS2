@@ -29,6 +29,19 @@
 
 using namespace tas;
 
+bool applyJEC = true;
+
+std::vector<std::string> jetcorr_filenames_jpt;
+FactorizedJetCorrector *jet_corrector_jpt;
+
+std::vector<std::string> jetcorr_filenames_pf;
+FactorizedJetCorrector *jet_corrector_pf;
+
+std::vector<std::string> jetcorr_filenames_calo;
+FactorizedJetCorrector *jet_corrector_calo;
+
+std::vector<std::string> jetcorr_filenames_trk;
+FactorizedJetCorrector *jet_corrector_trk;
 
 
 int getHypothesisType( int NTtype ){
@@ -77,7 +90,7 @@ void progress( int nEventsTotal, int nEventsChain ){
   }
 }
 
-int ScanChain(std::string process, TChain* chain, int nEvents = -1, double IntLumi=100, double Xsect=1.0, int nProcessedEvents=-1, std::string skimFilePrefix=""){
+int ScanChain(std::string process, TChain* chain, int nEvents = -1, double IntLumi=100, double Xsect=1.0, int nProcessedEvents=-1, std::string skimFilePrefix="", bool realData=false){
 
   _cutWord = new TBitSet(kNCuts);
 
@@ -95,6 +108,40 @@ int ScanChain(std::string process, TChain* chain, int nEvents = -1, double IntLu
   for ( int count=0; count < kNdilepFlav; count++) {
   eventCount[count]=0;
   eventYield[count]=0;
+  }
+
+  // Apply the JEC
+  if (applyJEC) {
+    try { 
+      jetcorr_filenames_jpt.clear();
+      jetcorr_filenames_jpt.push_back("CORE/jetcorr/START38_V13_AK5JPT_L2Relative.txt");
+      jetcorr_filenames_jpt.push_back("CORE/jetcorr/START38_V13_AK5JPT_L3Absolute.txt");
+      if(realData)
+	jetcorr_filenames_jpt.push_back("CORE/jetcorr/START38_V13_AK5JPT_L2L3Residual.txt");
+      jet_corrector_jpt= makeJetCorrector(jetcorr_filenames_jpt);
+      
+      jetcorr_filenames_pf.clear();
+      jetcorr_filenames_pf.push_back("CORE/jetcorr/START38_V13_AK5PF_L2Relative.txt");
+      jetcorr_filenames_pf.push_back("CORE/jetcorr/START38_V13_AK5PF_L3Absolute.txt");
+      if (realData) 
+	jetcorr_filenames_pf.push_back("CORE/jetcorr/START38_V13_AK5PF_L2L3Residual.txt");
+      jet_corrector_pf= makeJetCorrector(jetcorr_filenames_pf);
+      
+      jetcorr_filenames_calo.clear();
+      jetcorr_filenames_calo.push_back("CORE/jetcorr/START38_V13_AK5Calo_L2Relative.txt");
+      jetcorr_filenames_calo.push_back("CORE/jetcorr/START38_V13_AK5Calo_L3Absolute.txt");
+      if(realData)
+	jetcorr_filenames_calo.push_back("CORE/jetcorr/START38_V13_AK5Calo_L2L3Residual.txt");
+      jet_corrector_calo= makeJetCorrector(jetcorr_filenames_calo);
+      
+      jetcorr_filenames_trk.clear();
+      jetcorr_filenames_trk.push_back("CORE/jetcorr/START38_V13_AK5TRK_L2Relative.txt");
+      jetcorr_filenames_trk.push_back("CORE/jetcorr/START38_V13_AK5TRK_L3Absolute.txt");
+      jet_corrector_trk= makeJetCorrector(jetcorr_filenames_trk);
+    } catch (...){
+      cout << "\nFailed to setup correctors needed to get Jet Enetry Scale. Abort\n" << endl;
+      assert(0);
+    }
   }
 
   // File Loop
@@ -268,7 +315,7 @@ int ApplyEventSelection( unsigned int i_hyp){
   
   
   // Jet Veto
-  int njets = getJets(pfJet, i_hyp, 25, 5.0, true).size(); 
+  int njets = getJets(pfJet, i_hyp, 25, 5.0, true, false).size(); 
   if ( njets == 0 ) _cutWord->SetTrue(kcut_jetveto);
 
   // ==Soft Muon Veto                                                                                                                                        
@@ -353,54 +400,66 @@ double nearestDeltaPhi(double Phi, int i_hyp)
 }
 
 
-std::vector<LorentzVector> getJets(int type, int i_hyp, double etThreshold, double etaMax, bool sortJets){
+std::vector<LorentzVector> getJets(int type, int i_hyp, double etThreshold, double etaMax, bool sortJets, bool btag){
      std::vector<LorentzVector> jets;
      const double vetoCone = 0.3;
-
+     double jec = 1.0;
+     
      switch ( type ){
      case jptJet:
         for ( unsigned int i=0; i < cms2.jpts_p4().size(); ++i) {
-         if ( cms2.jpts_p4()[i].pt() < etThreshold ) continue;
-         if ( TMath::Abs(cms2.jpts_p4()[i].eta()) > etaMax ) continue;
-         if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ||
-              TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ) continue;
-         jets.push_back(cms2.jpts_p4()[i]);
+	  if(applyJEC)
+	    jec = jetCorrection(cms2.jpts_p4()[i], jet_corrector_jpt);
+	 if ( cms2.jpts_p4()[i].pt() * jec < etThreshold ) continue;
+	 if ( btag && !defaultBTag(type,i) ) continue;
+	 if ( TMath::Abs(cms2.jpts_p4()[i].eta()) > etaMax ) continue;
+	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ||
+	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ) continue;
+	 jets.push_back(cms2.jpts_p4()[i] * jec);
        }
        break;
      case pfJet:
        for ( unsigned int i=0; i < cms2.pfjets_p4().size(); ++i) {
-         if ( cms2.pfjets_p4()[i].pt() < etThreshold ) continue;
-         if ( TMath::Abs(cms2.pfjets_p4()[i].eta()) > etaMax ) continue;
-         if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ||
-              TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
-         jets.push_back(cms2.pfjets_p4()[i]);
+	  if(applyJEC)
+	    jec = jetCorrection(cms2.pfjets_p4()[i], jet_corrector_pf);
+	  if ( cms2.pfjets_p4()[i].pt() * jec < etThreshold ) continue;
+	  if ( btag && !defaultBTag(type,i) ) continue;
+	  if ( TMath::Abs(cms2.pfjets_p4()[i].eta()) > etaMax ) continue;
+	  if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ||
+	       TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
+	  jets.push_back(cms2.pfjets_p4()[i] * jec);
        }
        break;
      case GenJet:
        for ( unsigned int i=0; i < cms2.genjets_p4().size(); ++i) {
-         if ( cms2.genjets_p4()[i].pt() < etThreshold ) continue;
-         if ( TMath::Abs(cms2.genjets_p4()[i].eta()) > etaMax ) continue;
-         if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.genjets_p4()[i])) < vetoCone ||
-              TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.genjets_p4()[i])) < vetoCone ) continue;
-         jets.push_back(cms2.genjets_p4()[i]);
+	 if ( cms2.genjets_p4()[i].pt() < etThreshold ) continue;
+	 if ( btag && !defaultBTag(type,i) ) continue;
+	 if ( TMath::Abs(cms2.genjets_p4()[i].eta()) > etaMax ) continue;
+	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.genjets_p4()[i])) < vetoCone ||
+	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.genjets_p4()[i])) < vetoCone ) continue;
+	 jets.push_back(cms2.genjets_p4()[i]);
        }
        break;
      case CaloJet:
        for ( unsigned int i=0; i < cms2.jets_pat_jet_p4().size(); ++i) {
-         if ( cms2.jets_pat_jet_p4()[i].pt() < etThreshold ) continue;
-         if ( TMath::Abs(cms2.jets_pat_jet_p4()[i].eta()) > etaMax ) continue;
-         if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jets_pat_jet_p4()[i])) < vetoCone ||
-              TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jets_pat_jet_p4()[i])) < vetoCone ) continue;
-         jets.push_back(cms2.jets_pat_jet_p4()[i]);
+	 if ( cms2.jets_pat_jet_p4()[i].pt() < etThreshold ) continue; // note that this is already corrected
+	 if ( btag && !defaultBTag(type,i) ) continue;
+	 if ( TMath::Abs(cms2.jets_pat_jet_p4()[i].eta()) > etaMax ) continue;
+	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jets_pat_jet_p4()[i])) < vetoCone ||
+	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jets_pat_jet_p4()[i])) < vetoCone ) continue;
+	 jets.push_back(cms2.jets_pat_jet_p4()[i]);
        }
        break;
      case TrkJet:
        for ( unsigned int i=0; i < cms2.trkjets_p4().size(); ++i) {
-         if ( cms2.trkjets_p4()[i].pt() < etThreshold ) continue;
-         if ( TMath::Abs(cms2.trkjets_p4()[i].eta()) > etaMax ) continue;
-         if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.trkjets_p4()[i])) < vetoCone ||
-              TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.trkjets_p4()[i])) < vetoCone ) continue;
-         jets.push_back(cms2.trkjets_p4()[i]);
+	 if(applyJEC)
+	   jec = jetCorrection(cms2.trkjets_p4()[i], jet_corrector_trk);
+	 if ( cms2.trkjets_p4()[i].pt() < etThreshold ) continue;
+	 if ( btag && !defaultBTag(type,i) ) continue;
+	 if ( TMath::Abs(cms2.trkjets_p4()[i].eta()) > etaMax ) continue;
+	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.trkjets_p4()[i])) < vetoCone ||
+	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.trkjets_p4()[i])) < vetoCone ) continue;
+	 jets.push_back(cms2.trkjets_p4()[i] * jec);
        }
        break;
      default:
@@ -696,4 +755,38 @@ void CalculateFakeRateProb(){
          << " " << endl;
   }
 
+}
+double BTag(int type, unsigned int iJet){
+  // find a jet in the jets list
+  // that matches the current type jet
+  LorentzVector jetP4;
+  switch ( type ) {
+  case jptJet:
+    jetP4 = cms2.jpts_p4().at(iJet);
+    break;
+  case CaloJet:
+    return cms2.jets_trackCountingHighEffBJetTag()[iJet];
+    break;
+  case pfJet:
+    return cms2.pfjets_trackCountingHighEffBJetTag()[iJet];
+    break;
+  default:
+    std::cout << "ERROR: not supported jet type is requested: " << type << " FixIt!" << std::endl;
+    assert(0);
+  }
+
+  int refJet = -1;
+  for ( unsigned int i=0; i < cms2.jets_p4().size(); ++i) {
+    if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(jetP4,cms2.jets_p4()[i])) > 0.3 ) continue;
+    refJet = i;
+  }
+  if (refJet == -1){
+    // std::cout << "Warning: failed to find a matching jet for b-tagging." << std::endl; 
+    return 0.0;
+  }
+  return cms2.jets_trackCountingHighEffBJetTag().at(refJet);
+}
+
+bool defaultBTag(int type, unsigned int iJet){
+  return BTag(type,iJet)>2.1;
 }

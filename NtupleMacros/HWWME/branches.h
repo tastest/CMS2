@@ -165,9 +165,12 @@ bool inZmassWindow(float);
 double projectedMet(int);
 double nearestDeltaPhi(double Phi, int i_hyp);
 bool comparePt(LorentzVector lv1, LorentzVector lv2);
-std::vector<LorentzVector> getJets(int type, int i_hyp, double etThreshold, double etaMax, bool sortJets);
+std::vector<LorentzVector> getJets(int type, int i_hyp, double etThreshold, double etaMax, bool sortJets, bool btag);
 //trigger
 bool passedTriggerRequirements();
+bool defaultBTag(int type, unsigned int iJet); 
+double BTag(int type, unsigned int iJet); 
+
 //muon ID
 bool goodMuonIsolated(unsigned int i);
 bool ww_muBase(unsigned int index);
