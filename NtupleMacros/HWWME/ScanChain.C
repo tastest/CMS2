@@ -203,7 +203,7 @@ int ScanChain(std::string process, TChain* chain, int nEvents = -1, double IntLu
 	if(dphi > 60./180.*TMath::Pi()) accept = false;
 	
 	// ------------------------------------------
-1.36024	// pt (30, 25) cuts
+	// pt (30, 25) cuts
 	// ------------------------------------------
 	const double min1 = 30;
 	const double min2 = 25;
