@@ -1,3 +1,4 @@
+
 #include "TMCFM.hh"
 #include "KinematicSolver.hh"
 #include "PolySolver.hpp"
@@ -23,7 +24,7 @@ void WWL1L2Sol_MHiggsMw1( cdf_event_type* temp,
  double nbY=qY-epY-emY-nuY; 
 
 			
- double limits[2]={-2*3500,2*3500};
+ double limits[2]={-EBEAM,EBEAM};
  double roots_nuZ [2];
  double roots_nbZ [2][2];
  double jacobian[4];
@@ -234,7 +235,7 @@ void WWL1L2Sol_MHiggs( cdf_event_type* temp,
     sol[1].pswt=-2; 
 
 /*
- double limits[2]={-3500,3500};
+ double limits[2]={-EBEAM,EBEAM};
  PolySolver::FindRoots(2,k,limits,roots);
 
    double eval =k[0]
@@ -484,7 +485,7 @@ void WWL1L2Sol_Mw1Mw2( cdf_event_type* temp,
  k[1]= Q*Q*p4+2*P*Q*p6  	 +N*T+O*S;
  k[0]= Q*Q*p6			     +O*T;
  
- double limits[2]={-3500,3500};
+ double limits[2]={-EBEAM,EBEAM};
  double roots [10];
  PolySolver::FindRoots(4,k,limits,roots);
  
@@ -650,7 +651,7 @@ void WWL1L2Sol_Mw ( cdf_event_type* temp,
 //cout <<"Debug gam1 "<< gamX <<" " << gamY <<" "<< gamZ <<" "<<gamE <<endl;
 
 //cout <<"Debug eqn " << k[2] <<" "<<k[1] <<" "<< k[0] <<endl; 
-   double limits[2]={-3500,3500};
+   double limits[2]={-EBEAM,EBEAM};
    double roots [2];
    PolySolver::FindRoots(2,k,limits,roots);
 
@@ -851,7 +852,7 @@ void WWL1L2Sol_Mw1( event_type* temp
  k[1]= -2*A*nu_Z;
  k[0]= (nu_E*nb_T-A)*(nu_E*nb_T+A);
  
- double limits[2]={-3500,3500};
+ double limits[2]={-EBEAM,EBEAM};
  double roots [2];
  PolySolver::FindRoots(2,k,limits,roots);
 
@@ -948,7 +949,7 @@ void WWL1L2Sol_Mw1Mw2( event_type* temp
  k[1]= Q*Q*p4+2*P*Q*p6  	 +N*T+O*S;
  k[0]= Q*Q*p6			     +O*T;
  
- double limits[2]={-3500,3500};
+ double limits[2]={-EBEAM,EBEAM};
  double roots [10];
  PolySolver::FindRoots(4,k,limits,roots);
  
@@ -1185,7 +1186,7 @@ cout << "Debug2: Sol x= " << xx
      << " coef1: " << k[0]/k[4] <<" "<<k[1]/k[4]<<" "<<k[2]/k[4] <<" "<<k[3]/k[4]
      << " eqn1=" <<eval1<<endl;
      
- double limits[2]={-3500,3500};
+ double limits[2]={-EBEAM,EBEAM};
  double roots [10];
  //PolySolver::FindRoots4thOrder(k,roots,flag);
  //PolySolver::FindRoots4thOrder(k,roots,flag);
@@ -1320,7 +1321,7 @@ void WWL1L2Sol_MHiggs( event_type* temp
  k[0]=(A/2-sumE*nbT)*(A/2+sumE*nbT);
  
  
- double limits[2]={-3500,3500};
+ double limits[2]={-EBEAM,EBEAM};
  double roots [10];
  PolySolver::FindRoots(2,k,limits,roots);
  
