@@ -39,6 +39,29 @@ bool debug          = false;
 bool looseIdWJets   = false;
 
 //--------------------------------------------------------------------
+
+double muonIsoValue_flat(unsigned int index){
+  double sum =  cms2.mus_iso03_sumPt().at(index) +
+    cms2.mus_iso03_emEt().at(index)  +
+    cms2.mus_iso03_hadEt().at(index);
+  double pt  = cms2.mus_p4().at(index).pt();
+  return sum/pt;
+}
+
+//--------------------------------------------------------------------
+
+float electronIsolation_rel_ww_flat(const unsigned int index, bool use_calo_iso){
+
+    float sum = cms2.els_tkIso().at(index);
+    if(use_calo_iso)
+      sum += max(0., (cms2.els_ecalIso().at(index) -1.));
+    sum += cms2.els_hcalIso().at(index);
+    double pt = cms2.els_p4().at(index).pt();
+    return sum/pt;
+}
+
+//--------------------------------------------------------------------
+
 struct DorkyEventIdentifier {
   // this is a workaround for not having unique event id's in MC
   unsigned long int run, event,lumi;
@@ -246,13 +269,30 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
 	//store the info of who is the trailing lepton
 	bool minLL = hyp_ll_p4()[i].pt() < hyp_lt_p4()[i].pt();
 
+        bool useFlatIso = true;
+
 	//leptons have to pass WWv1 ID cuts (special treatment for trainling electrons in WJetsToLNu sample)
         if (abs(hyp_ll_id()[i])==13 && (! muonId(hyp_ll_index()[i] , NominalWWV1 ) ) )   continue;
         if (abs(hyp_lt_id()[i])==13 && (! muonId(hyp_lt_index()[i] , NominalWWV1 ) ) )   continue;          
+
+        //require isolation_sum/pt < 0.15
+        if( useFlatIso ){
+          if (abs(hyp_ll_id()[i])==13 && muonIsoValue(hyp_ll_index()[i]) > 0.15 ) continue;
+          if (abs(hyp_lt_id()[i])==13 && muonIsoValue(hyp_lt_index()[i]) > 0.15 ) continue;
+        }
+
 	if (!(prefixstr.Contains("WJetsToLNu") && looseIdWJets)) {//standard
 	  if (abs(hyp_ll_id()[i])==11 && (!pass_electronSelection(hyp_ll_index()[i], electronSelection_wwV1, false, false))) continue;
 	  if (abs(hyp_lt_id()[i])==11 && (!pass_electronSelection(hyp_lt_index()[i], electronSelection_wwV1, false, false))) continue;
-	} else { //WJetsToLNu, looseIdWJets==1 => apply FO selection on trailing electron
+ 
+          //require isolation_sum/pt < 0.15
+          if( useFlatIso ){
+            if (abs(hyp_ll_id()[i])==11 && electronIsolation_rel_ww_flat(hyp_ll_index()[i],true) > 0.1 ) continue;
+            if (abs(hyp_lt_id()[i])==11 && electronIsolation_rel_ww_flat(hyp_lt_index()[i],true) > 0.1 ) continue;
+          }
+        }
+        
+        else { //WJetsToLNu, looseIdWJets==1 => apply FO selection on trailing electron
 	  if (minLL) {
 	    if (abs(hyp_ll_id()[i])==11 && (!pass_electronSelection(hyp_ll_index()[i], electronSelectionFO_el_wwV1_v4, false, false))) continue;
 	    //if (abs(hyp_ll_id()[i])==11 && (!pass_electronSelection(hyp_ll_index()[i], electronSelection_wwV1_WP95, false, false))) continue;
