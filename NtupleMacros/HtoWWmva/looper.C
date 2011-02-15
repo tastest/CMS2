@@ -88,10 +88,10 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
 
   std::vector<std::string> jetcorr_filenames_pf;
   jetcorr_filenames_pf.clear();
-  jetcorr_filenames_pf.push_back("files/START38_V13_AK5PF_L2Relative.txt");
-  jetcorr_filenames_pf.push_back("files/START38_V13_AK5PF_L3Absolute.txt");
+  jetcorr_filenames_pf.push_back("CORE/jetcorr/START38_V13_AK5PF_L2Relative.txt");
+  jetcorr_filenames_pf.push_back("CORE/jetcorr/START38_V13_AK5PF_L3Absolute.txt");
   if (isData) 
-    jetcorr_filenames_pf.push_back("files/START38_V13_AK5PF_L2L3Residual.txt");
+    jetcorr_filenames_pf.push_back("CORE/jetcorr/START38_V13_AK5PF_L2L3Residual.txt");
   jet_corrector_pf= makeJetCorrector(jetcorr_filenames_pf);    
 
   if (isData) {
