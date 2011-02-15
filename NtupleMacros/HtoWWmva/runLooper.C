@@ -1,0 +1,114 @@
+#include "TChain.h"
+#include "looper.C"
+
+void runLooper(char* prefix){
+
+  TChain* ch = new TChain("Events");
+  bool isData = false;
+  
+
+  if( strcmp( prefix , "WToENu" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/WToENu_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "WJetsToLNu" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Fall10-START38_V12-v1/V03-06-18/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "WJetsToLNu_PU" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "WWTo2L2Nu" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/WWTo2L2Nu_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "WWTo2L2Nu_PU" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/WWTo2L2Nu_TuneZ2_7TeV-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-14/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "GluGluToWWTo4L_PU" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/GluGluToWWTo4L_TuneZ2_7TeV-gg2ww-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "VVJetsTo4L_PU" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/VVJetsTo4L_TuneD6T_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "TTJets" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Fall10-START38_V12-v3/V03-06-18/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "TTJets_PU" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v3/V03-06-18/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "tW_PU" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/TToBLNu_TuneZ2_tW-channel_7TeV-madgraph_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "ZZ_PU" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/ZZtoAnything_TuneZ2_7TeV-pythia6-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "WZ_PU" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/WZtoAnything_TuneZ2_7TeV-pythia6-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "DYToEEM10To20_PU" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/DYToEE_M-10To20_TuneZ2_7TeV-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "DYToEEM20_PU" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/DYToEE_M-20_TuneZ2_7TeV-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "DYToMuMuM10To20_PU" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/DYToMuMu_M-10To20_TuneZ2_7TeV-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "DYToMuMuM20_PU" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/DYToMuMu_M-20_TuneZ2_7TeV-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "DYToTauTauM10To20_PU" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/DYToTauTau_M-10To20_TuneZ2_7TeV-pythia6-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "DYToTauTauM20_PU" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "HToWWTo2L2NuM130" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/GluGluToHToWWTo2L2Nu_M-130_7TeV-powheg-pythia6_Fall10-START38_V12-v1/V03-06-18/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "HToWWTo2L2NuM130_PU" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/GluGluToHToWWTo2L2Nu_M-130_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "HToWWTo2Tau2NuM130_PU" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/GluGluToHToWWTo2Tau2Nu_M-130_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "HToWWToLNuTauNuM130_PU" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/GluGluToHToWWToLNuTauNu_M-130_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "HToWWTo2L2NuM160" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Fall10-START38_V12-v1/V03-06-18/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "HToWWTo2L2NuM160_PU" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "HToWWTo2Tau2NuM160_PU" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/GluGluToHToWWTo2Tau2Nu_M-160_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "HToWWToLNuTauNuM160_PU" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/GluGluToHToWWToLNuTauNu_M-160_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "HToWWTo2L2NuM200" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6_Fall10-START38_V12-v1/V03-06-18/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "HToWWTo2L2NuM200_PU" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "HToWWTo2Tau2NuM200_PU" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/GluGluToHToWWTo2Tau2Nu_M-200_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "HToWWToLNuTauNuM200_PU" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/GluGluToHToWWToLNuTauNu_M-200_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "MinBias" ) == 0 ){
+    ch->Add("/tas/cerati/PostProcMinBias/merged*root");
+    isData = true;
+  }
+  else{
+    cout << "UNRECOGNIZED SAMPLE " << prefix << ", QUITTING" << endl;
+    exit(0);
+  }
+  
+  looper* mylooper = new looper();
+  
+  cout << "Running on sample " << prefix << endl;
+  mylooper->ScanChain(ch, prefix, isData);
+  
+}
