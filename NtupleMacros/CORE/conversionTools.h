@@ -5,6 +5,25 @@
 #include "Math/LorentzVector.h"
 #include "Math/VectorUtil.h"
 
+
+/*
+  Example of how to use this code:
+
+//electron loop
+for(unsigned int elidx = 0; elidx < els_p4().size(); elidx++) {
+
+  vector<ConversionInfo> v_convInfos = getConversionInfos(elidx, evt_bField(), 0.45);	
+  ConversionInfo blah = findBestConversionMatch(v_convInfos);
+    cout << "Electron Pt: " << els_p4()[elidx].Pt() << endl;
+    cout << "dist: " << blah.dist() << endl;
+    cout << "dcot: " << blah.dcot() << endl;
+    cout << "flag: " << blah.flag() << endl;
+    cout << "rad. of conv" << blah.radiusOfConversion() << endl;
+  }
+  
+*/
+
+
 typedef ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<double> > XYZPoint;
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
