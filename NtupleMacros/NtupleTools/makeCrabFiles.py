@@ -76,9 +76,13 @@ def makeCrabConfig():
 #
 def makeCMSSWConfig(cmsswSkelFile):
     foundOutNtupleFile = False
-    foundreportEvery = False
+    foundreportEvery   = False
+    foundcmsPath       = False
     inFile = open(cmsswSkelFile, 'r').read().split('\n')
+    nlines = 0
+    iline  = 0
     for i in inFile:
+        nlines += 1
         if i.find(outNtupleName) != -1:
             foundOutNtupleFile = True
         if i.find('reportEvery') != -1:
@@ -93,20 +97,23 @@ def makeCMSSWConfig(cmsswSkelFile):
     outFile = open(outFileName, 'w')
     outFile.write( 'import sys, os' + '\n' + 'sys.path.append( os.getenv("CMSSW_BASE") + "/src/CMS2/NtupleMaker/test" )' + '\n' )
     for i in inFile:
-
+        iline += 1
         if i.find('reportEvery') != -1:
             outFile.write('process.MessageLogger.cerr.FwkReport.reportEvery = ' + str(report_every) + '\n'); continue
 
         if i.find('globaltag') != -1:
             outFile.write('process.GlobalTag.globaltag = "' + global_tag + '"\n'); continue
 
-        outFile.write(i+'\n')
-        
         if i.find('cms.Path') != -1:
-            outFile.write('process.eventMaker.datasetName = cms.string(\"' +
-                          dataSet+'\")\n')
-            outFile.write('process.eventMaker.CMS2tag     = cms.string(\"' +
-                          tag+'\")\n')
+            foundcmsPath = True            
+
+        outFile.write(i)
+        if iline < nlines:
+            outFile.write('\n')
+
+    if foundcmsPath == True:
+      outFile.write('process.eventMaker.datasetName                   = cms.string(\"' + dataSet+'\")\n')
+      outFile.write('process.eventMaker.CMS2tag                       = cms.string(\"' + tag+'\")\n')
 
     outFile.close()
 
