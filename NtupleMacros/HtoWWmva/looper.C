@@ -430,6 +430,14 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
 	mt_lephardmet_= (lepHardP4+metP4).mt();
 	mt_lepsoftmet_= (lepSoftP4+metP4).mt();
 	mt_dilmet_= (lepHardP4+lepSoftP4+metP4).mt();
+        //dphi(lep,met)
+        if( minLL ){
+          dphi_lephardmet_ = tightDPhi;
+          dphi_lepsoftmet_ = looseDPhi;
+        }else{
+          dphi_lephardmet_ = looseDPhi;
+          dphi_lepsoftmet_ = tightDPhi;
+        }
 
 	//jet and b-tag stuff
 	vector<unsigned int> jetsForVeto = getJetIdVector(i, 25., 100000., 5.0);
@@ -625,6 +633,8 @@ void looper::InitBabyNtuple ()
   mt_lephardmet_= -999999;
   mt_lepsoftmet_= -999999;
   mt_dilmet_= -999999;
+  dphi_lephardmet_= -999999;
+  dphi_lepsoftmet_= -999999;
 
   llm_sumpt_= -999999;
   llmj_sumpt_= -999999;
@@ -782,6 +792,8 @@ void looper::MakeBabyNtuple (const char* babyFileName)
 
   eventTree_->Branch("mt_lephardmet_"        , &mt_lephardmet_            , "mt_lephardmet/F");
   eventTree_->Branch("mt_lepsoftmet_"        , &mt_lepsoftmet_            , "mt_lepsoftmet/F");
+  eventTree_->Branch("dphi_lephardmet_"      , &dphi_lephardmet_          , "dphi_lephardmet/F");
+  eventTree_->Branch("dphi_lepsoftmet_"      , &dphi_lepsoftmet_          , "dphi_lepsoftmet/F");
   eventTree_->Branch("mt_dilmet_"        , &mt_dilmet_            , "mt_dilmet/F");
 
   eventTree_->Branch("llm_sumpt_"        , &llm_sumpt_            , "llm_sumpt/F");

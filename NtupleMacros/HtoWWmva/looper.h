@@ -161,6 +161,8 @@ class looper
 
 	Float_t mt_lephardmet_;
 	Float_t mt_lepsoftmet_;
+	Float_t dphi_lephardmet_;
+	Float_t dphi_lepsoftmet_;
 	Float_t mt_dilmet_;
 
 	Float_t llm_sumpt_;
