@@ -96,6 +96,11 @@ class looper
         Float_t lephard_fbrem_;
 	Int_t   lephard_genId_;
 	Int_t   lephard_genMotherId_;
+        Float_t lephard_mva_;
+        Float_t lephard_newconv_dist_;
+        Float_t lephard_newconv_dcot_;
+        Float_t lephard_newconv_rad_;
+        Float_t lephard_newconv_dmh_;
 
 	Int_t   lepsoft_q_;
 	Int_t   lepsoft_id_;
@@ -118,6 +123,11 @@ class looper
 	Int_t   lepsoft_genMotherId_;
 	Int_t   lepsoft_passTighterId_;
         Float_t lepsoft_fr_;
+        Float_t lepsoft_mva_;
+        Float_t lepsoft_newconv_dist_;
+        Float_t lepsoft_newconv_dcot_;
+        Float_t lepsoft_newconv_rad_;
+        Float_t lepsoft_newconv_dmh_;
         
 	Float_t met_pt_;
 	Float_t met_phi_;

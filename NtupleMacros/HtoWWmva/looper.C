@@ -26,6 +26,7 @@
 #include "Tools/goodrun.cc"
 #include "CORE/utilities.cc"
 #include "histtools.h"
+#include "CORE/conversionTools.cc"
 
 #include "Math/LorentzVector.h"
 #include "Math/VectorUtil.h"
@@ -357,6 +358,13 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
 	  lephard_genId_= els_mc_id().at(lephard_index);
 	  lephard_genMotherId_= els_mc_motherid().at(lephard_index);
 	  if (event_type_>1.5 && event_type_<2.5) event_type_=1;//0=mu+mu;1=el+mu;2=mu+el;3=el+el (where 2nd is lowerPt)
+	  lephard_mva_   = els_mva().at(lephard_index);
+	  vector<ConversionInfo> v_convInfos = getConversionInfos(lephard_index, evt_bField(), 0.45);   
+	  ConversionInfo bestConv = findBestConversionMatch(v_convInfos);
+	  lephard_newconv_dist_=bestConv.dist();
+	  lephard_newconv_dcot_=bestConv.dcot();
+	  lephard_newconv_rad_=bestConv.radiusOfConversion();
+	  lephard_newconv_dmh_=bestConv.deltaMissingHits();
 	}
 
 	//soft lepton variables
@@ -381,13 +389,23 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
 	  lepsoft_fbrem_= els_fbrem().at(lepsoft_index);
 	  lepsoft_genId_= els_mc_id().at(lepsoft_index);
 	  lepsoft_genMotherId_= els_mc_motherid().at(lepsoft_index);
-	  lepsoft_passTighterId_= 0;
-	  if ( lepsoft_pt_>20 || (lepsoft_pt_<20 && (lepsoft_fbrem_>0.2 || (lepsoft_fbrem_<0.2&&fabs(lepsoft_etaSC_)<1.479 && lepsoft_eOverPIn_>0.95) ) ) 
-	       ) lepsoft_passTighterId_= 1;
 	  //set the fake rate in case of WJetsToLNu, looseIdWJets==1
 	  if (prefixstr.Contains("WJetsToLNu") && looseIdWJets) lepsoft_fr_ = frHisto->GetBinContent(frHisto->GetXaxis()->FindBin(fabs(lepsoft_eta_)),
 												     frHisto->GetYaxis()->FindBin(min(lepsoft_pt_,(static_cast<float>(34.9)))));
 	  else lepsoft_fr_ = 1.;
+	  lepsoft_mva_   = els_mva().at(lepsoft_index);
+	  vector<ConversionInfo> v_convInfos = getConversionInfos(lepsoft_index, evt_bField(), 0.45);   
+	  ConversionInfo bestConv = findBestConversionMatch(v_convInfos);
+	  lepsoft_newconv_dist_=bestConv.dist();
+	  lepsoft_newconv_dcot_=bestConv.dcot();
+	  lepsoft_newconv_rad_=bestConv.radiusOfConversion();
+	  lepsoft_newconv_dmh_=bestConv.deltaMissingHits();
+	  lepsoft_passTighterId_= 0;
+	  bool fbeopdphi = lepsoft_fbrem_>0.2 || (fabs(lepsoft_etaSC_)<1.479&&lepsoft_eOverPIn_>0.95&&fabs(lepsoft_dPhiIn_*lepsoft_q_)<0.006);
+	  bool eta = fabs(lepsoft_etaSC_)<2.2;
+	  bool mva = lepsoft_mva_>0.4;
+	  bool newconv = fabs(lepsoft_newconv_dist_)>0.05 || fabs(lepsoft_newconv_dcot_)>0.02 || fabs(lepsoft_newconv_dmh_)>1;
+	  if ( lepsoft_pt_>20 || (fbeopdphi&&eta&&mva&&newconv) ) lepsoft_passTighterId_= 1;
 	} else if (abs(lepsoft_id_)==13) {
 	  lepsoft_passTighterId_= 1;
 	  lepsoft_fr_ = 1.;
@@ -546,6 +564,11 @@ void looper::InitBabyNtuple ()
   lephard_fbrem_= -999999;
   lephard_genId_= -999999;
   lephard_genMotherId_= -999999;
+  lephard_mva_ = -999.; 
+  lephard_newconv_dist_ = -999.; 
+  lephard_newconv_dcot_ = -999.; 
+  lephard_newconv_rad_ = -999.; 
+  lephard_newconv_dmh_ = -999.; 
   lepsoft_passTighterId_= -999999;
   lepsoft_q_= -999999;
   lepsoft_id_= -999999;
@@ -566,6 +589,11 @@ void looper::InitBabyNtuple ()
   lepsoft_fbrem_= -999999;
   lepsoft_genId_= -999999;
   lepsoft_genMotherId_= -999999;
+  lepsoft_mva_ = -999.; 
+  lepsoft_newconv_dist_ = -999.; 
+  lepsoft_newconv_dcot_ = -999.; 
+  lepsoft_newconv_rad_ = -999.; 
+  lepsoft_newconv_dmh_ = -999.; 
   met_pt_= -999999;
   met_phi_= -999999;
   met_projpt_= -999999;
@@ -689,6 +717,11 @@ void looper::MakeBabyNtuple (const char* babyFileName)
   eventTree_->Branch("lephard_fbrem_"        , &lephard_fbrem_            , "lephard_fbrem/F");
   eventTree_->Branch("lephard_genId_"        , &lephard_genId_            , "lephard_genId/I");
   eventTree_->Branch("lephard_genMotherId_"        , &lephard_genMotherId_            , "lephard_genMotherId/I");
+  eventTree_->Branch("lephard_mva",                 &lephard_mva_,               "lephard_mva/F");
+  eventTree_->Branch("lephard_newconv_dist",        &lephard_newconv_dist_,              "lephard_newconv_dist/F");
+  eventTree_->Branch("lephard_newconv_dcot",        &lephard_newconv_dcot_,              "lephard_newconv_dcot/F");
+  eventTree_->Branch("lephard_newconv_rad",         &lephard_newconv_rad_,               "lephard_newconv_rad/F");
+  eventTree_->Branch("lephard_newconv_dmh",         &lephard_newconv_dmh_,               "lephard_newconv_dmh/F");
  
   eventTree_->Branch("lepsoft_q_"        , &lepsoft_q_            , "lepsoft_q/I");
   eventTree_->Branch("lepsoft_id_"        , &lepsoft_id_            , "lepsoft_id/I");
@@ -711,7 +744,12 @@ void looper::MakeBabyNtuple (const char* babyFileName)
   eventTree_->Branch("lepsoft_genMotherId_"        , &lepsoft_genMotherId_            , "lepsoft_genMotherId/I");
   eventTree_->Branch("lepsoft_passTighterId_"        , &lepsoft_passTighterId_            , "lepsoft_passTighterId/I");
   eventTree_->Branch("lepsoft_fr_"        , &lepsoft_fr_            , "lepsoft_fr/F");
-
+  eventTree_->Branch("lepsoft_mva",                 &lepsoft_mva_,               "lepsoft_mva/F");
+  eventTree_->Branch("lepsoft_newconv_dist",        &lepsoft_newconv_dist_,              "lepsoft_newconv_dist/F");
+  eventTree_->Branch("lepsoft_newconv_dcot",        &lepsoft_newconv_dcot_,              "lepsoft_newconv_dcot/F");
+  eventTree_->Branch("lepsoft_newconv_rad",         &lepsoft_newconv_rad_,               "lepsoft_newconv_rad/F");
+  eventTree_->Branch("lepsoft_newconv_dmh",         &lepsoft_newconv_dmh_,               "lepsoft_newconv_dmh/F");
+  
   eventTree_->Branch("met_pt_"        , &met_pt_            , "met_pt/F");
   eventTree_->Branch("met_phi_"        , &met_phi_            , "met_phi/F");
   eventTree_->Branch("met_projpt_"        , &met_projpt_            , "met_projpt/F");
