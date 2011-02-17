@@ -22,21 +22,10 @@
 
 using namespace std;
 
-const float nev     = 4.7;   // UL assuming 20% acceptance uncertainty
-const float kfact   = 1.4;   // approx k-factor
-const float fudge   = 1.;    // pb/fb conversion
-const float lumierr = 0.11;  // 11% lumi error
-const float leperr  = 0.05;  // 5% error from lepton efficiency
-const float pdferr  = 0.13;  // place-holder for PDF error
-const int   rebin   = 1;     // rebin yield histos
-
-const float yieldA  =  12.;
-const float yieldB  =  37.;
-const float yieldC  =   4.;
-
-const bool calculateExpectedUL = true;
-
+//-------------------------------------------
 //parameters for CL95 function
+//-------------------------------------------
+
 const Double_t ilum            = 34.0;  // lumi
 const Double_t slum            = 0.;    // lumi uncertainty (=0 b/c uncertainty is included in sig acceptance)
 const Double_t eff             = 1.;    // sig efficiency
@@ -45,6 +34,40 @@ const Double_t bck             = 1.40;  // expected background
 const Double_t sbck            = 0.77;  // background error
 const int      n               = 1;     // observed yield
 const int      nuissanceModel  = 1;     // nuissance model (0 - Gaussian, 1 - lognormal, 2 - gamma)
+
+//-------------------------------------------
+// uncertainties
+//-------------------------------------------
+
+const float lumierr = 0.11;  // 11% lumi error
+const float leperr  = 0.05;  // 5% error from lepton efficiency
+const float pdferr  = 0.13;  // PDF uncertainty
+
+
+//-------------------------------------------
+//ABCD yields
+//-------------------------------------------
+
+const float yieldA  =  12.;
+const float yieldB  =  37.;
+const float yieldC  =   4.;
+
+
+//calculate the expected UL? this is time-consuming so turn off if not needed
+const bool calculateExpectedUL = true;
+
+//rebin the TH2 yield histos (NOT RECOMMENDED)
+const int   rebin   = 1;     // rebin yield histos
+
+
+
+
+
+//const float nev     = 4.7;   // UL assuming 20% acceptance uncertainty
+//const float kfact   = 1.4;   // approx k-factor
+//const float fudge   = 1.;    // pb/fb conversion
+
+
 
 TH1F* getCurve               ( TH2I *hist , char* name );
 TGraphErrors* getCurve_TGraph( TH2I *hist , char* name );
@@ -209,6 +232,10 @@ void msugra( char* filename ){
 //      }
 
 
+     //-------------------------------------------------
+     // this can save a lot of time, turned off here
+     //-------------------------------------------------
+
      /*
      //a point with LO yield > 10 is definitely excluded
      if( yield > 10. ){
@@ -260,7 +287,7 @@ void msugra( char* filename ){
 
      htotuncertainty->Fill( accerr_NLO[m0bin-1][m12bin-1] );
 
-     /*
+     
      //calculate observed NLO UL (including k-factor uncertainty)
      cout << "NLO UL: CL95( " << ilum << " , " << slum << " , " << eff << " , " << accerr_NLO[m0bin-1][m12bin-1] << " , " 
 	  << bck << " , " << sbck << " , " << n << " , " << "false" << " , " << nuissanceModel << " )" << endl;
@@ -270,6 +297,12 @@ void msugra( char* filename ){
      cout << "NLO UL (no bkg): CL95( " << ilum << " , " << slum << " , " << eff << " , " << accerr_NLO[m0bin-1][m12bin-1] << " , " 
 	  << 0.01 << " , " << 0.01 << " , " << n << " , " << "false" << " , " << nuissanceModel << " )" << endl;
      ul_NLO_nobkg[m0bin-1][m12bin-1] = ilum * CL95( ilum, slum, eff, accerr_NLO[m0bin-1][m12bin-1], 0.01, 0.01, n, false, nuissanceModel );
+
+     /*
+       //----------------------------------------------------------------
+       //this is for signal contamination study using ABCD method
+       //----------------------------------------------------------------
+
 
      //calculate observed NLO UL (with signal contamination)
      float A = yieldA - hyield_A->GetBinContent( m0bin , m12bin );
@@ -312,7 +345,7 @@ void msugra( char* filename ){
 
      cout << "UL with sig cont " << ul_NLO_SC[m0bin-1][m12bin-1] << endl;
 
-
+     */
 
      //calculate expected NLO UL (including k-factor uncertainty)
      if( calculateExpectedUL ){
@@ -329,7 +362,7 @@ void msugra( char* filename ){
      else{
        ul_NLO_exp[m0bin-1][m12bin-1] = 100.;
      }
-     */
+     
 
      //add up LO uncertainties (NOT including k-factor uncertainty)
      float err2_LO = 0.;
@@ -592,7 +625,7 @@ TH1F* getCurve( TH2I *hist , char* name){
 
    for (int iy=ny; iy>0; iy--) {
      float this_ = hist->GetBinContent(ix,iy);
-     this_ = kfact*fudge*this_;
+     //this_ = kfact*fudge*this_;
      //if (this_ > nev) {
      if (this_ > 0.5) {
        float yupperedge = ymin + iy*ybinsize;
@@ -653,7 +686,7 @@ TGraphErrors* getCurve_TGraph( TH2I *hist , char* name ){
 
    for (int iy=ny; iy>0; iy--) {
      float this_ = hist->GetBinContent(ix,iy);
-     this_ = kfact*fudge*this_;
+     //this_ = kfact*fudge*this_;
      //if (this_ > nev) {
      if (this_ > 0.5) {
        float yupperedge = ymin + iy*ybinsize;
