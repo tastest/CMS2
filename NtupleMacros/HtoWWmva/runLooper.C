@@ -5,10 +5,15 @@ void runLooper(char* prefix){
 
   TChain* ch = new TChain("Events");
   bool isData = false;
-  
 
   if( strcmp( prefix , "WToENu" ) == 0 ){
     ch->Add("/nfs-3/userdata/cms2/WToENu_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "WToMuNu" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/WToMuNu_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/merged_ntuple*.root");
+  }
+  else if( strcmp( prefix , "WToTauNu" ) == 0 ){
+    ch->Add("/nfs-3/userdata/cms2/WToTauNu_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/merged_ntuple*.root");
   }
   else if( strcmp( prefix , "WJetsToLNu" ) == 0 ){
     ch->Add("/nfs-3/userdata/cms2/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Fall10-START38_V12-v1/V03-06-18/merged_ntuple*.root");
