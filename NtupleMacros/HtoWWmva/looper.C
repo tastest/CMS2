@@ -401,11 +401,10 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
 	  lepsoft_newconv_rad_=bestConv.radiusOfConversion();
 	  lepsoft_newconv_dmh_=bestConv.deltaMissingHits();
 	  lepsoft_passTighterId_= 0;
-	  bool fbeopdphi = lepsoft_fbrem_>0.2 || (fabs(lepsoft_etaSC_)<1.479&&lepsoft_eOverPIn_>0.95&&fabs(lepsoft_dPhiIn_*lepsoft_q_)<0.006);
-	  bool eta = fabs(lepsoft_etaSC_)<2.2;
+	  bool fbeopdphi = lepsoft_fbrem_>0.15 || (fabs(lepsoft_etaSC_)<1.&&lepsoft_eOverPIn_>0.95&&fabs(lepsoft_dPhiIn_*lepsoft_q_)<0.006);
 	  bool mva = lepsoft_mva_>0.4;
 	  bool newconv = fabs(lepsoft_newconv_dist_)>0.05 || fabs(lepsoft_newconv_dcot_)>0.02 || fabs(lepsoft_newconv_dmh_)>1;
-	  if ( lepsoft_pt_>20 || (fbeopdphi&&eta&&mva&&newconv) ) lepsoft_passTighterId_= 1;
+	  if ( lepsoft_pt_>20 || (fbeopdphi&&mva&&newconv) ) lepsoft_passTighterId_= 1;
 	} else if (abs(lepsoft_id_)==13) {
 	  lepsoft_passTighterId_= 1;
 	  lepsoft_fr_ = 1.;
