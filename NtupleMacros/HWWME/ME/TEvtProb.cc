@@ -100,18 +100,29 @@ void   TEvtProb::NeutrinoIntegrate(TVar::Process proc,
     
     int count_PS=0;
     double sumW=0,sumW2=0;
-    // Yanyan
-    // Main work horse to do the integration! 
-    // Need to check out some algorithm 
+
+    // == Yanyan: pull out the extraction of acceptance efficiency from the integral
+    TString effFileName;
+    if(TVar::ProcessName(proc) == "HWW") effFileName = "../ggH160_MCUtil.root";
+    if(TVar::ProcessName(proc) == "WW") effFileName = "../WW_MCUtil.root";
+    double probAcceptanceEfficiency = getProbAcceptanceEfficiency(effFileName,cdf_event);
+    //double probAcceptanceEfficiency = 1.0;
+    if(probAcceptanceEfficiency == 0) return;
+    if(probAcceptanceEfficiency<0) {
+      cout <<"Error: " << probAcceptanceEfficiency <<endl;
+      return;
+    }
+
     for(int idx=0;idx<_ncalls;idx++){
       count_PS++;
       myRandom.RndmArray(NDim,r); // generate NDim random numbers and set the first NDim entries of r arrary
       double dXsec=0;
-      dXsec=Integrand_NeutrinoIntegration(r,NDim,0);
+      // dXsec=Integrand_NeutrinoIntegration(r,NDim,0);
+      dXsec=Integrand_NeutrinoIntegration(r,NDim,0)*probAcceptanceEfficiency;
       if (dXsec<=0) continue;
       sumW  += dXsec;
       sumW2 += dXsec*dXsec;
-      //       cout<<"process= "<<TVar::ProcessName(Global_process)<<" dXsec="<<dXsec<<"  Sum= "<< sumW<<"\n";
+      //cout<<"process= "<<TVar::ProcessName(Global_process)<<" dXsec="<<dXsec<<"  Sum= "<< sumW<<"\n";
     }
     
     // cout << "TEvtProb:: count_PS = "<< count_PS <<" Line "<<__LINE__<<endl;
@@ -139,7 +150,7 @@ double Integrand_NeutrinoIntegration(double * r, unsigned int NDim, void * param
 
 
     //Weight calculation
-    double probAcceptanceEfficiency;
+    // double probAcceptanceEfficiency;
     double PSWeight=1.;
     double flux=1.;
     double dXsec=0.;
@@ -174,13 +185,13 @@ double Integrand_NeutrinoIntegration(double * r, unsigned int NDim, void * param
       if(mcfm_event.pswt<=0) continue;
       
       //Apply Conversion And FakeRate
-      probAcceptanceEfficiency=1;
-      
-      if (probAcceptanceEfficiency==0) {mcfm_event.pswt=0; continue;}
-      
-      if(probAcceptanceEfficiency<0) {
-	cout <<"Error: " << probAcceptanceEfficiency <<endl;
-      }
+      // probAcceptanceEfficiency=1;
+      // cout << "Global_cdf_event: " << Global_cdf_event.PdgCode[0] << ": Pt = "<< Global_cdf_event.p[0].Pt()<<endl;
+      // if (probAcceptanceEfficiency==0) {mcfm_event.pswt=0; continue;}  // this check was done prior to the integral
+      // 
+      // if(probAcceptanceEfficiency<0) {
+      //	cout <<"Error: " << probAcceptanceEfficiency <<endl;
+      //}
       
       //Matrix Element evaluation in qX=qY=0 frame
       //Evaluate f(x1)f(x2)|M(q)|/x1/x2 
@@ -206,7 +217,8 @@ double Integrand_NeutrinoIntegration(double * r, unsigned int NDim, void * param
       //for(int ipt=2;ipt<npart_.npart+2;ipt++) msqjk = msqjk/mcfm_event.p[ipt].Energy();
       
       flux=fbGeV2/(mcfm_event.p[0].Energy()*mcfm_event.p[1].Energy())	/(4*W);
-      dXsec=msqjk*flux*mcfm_event.pswt*PSWeight*probAcceptanceEfficiency;
+      //dXsec=msqjk*flux*mcfm_event.pswt*PSWeight*probAcceptanceEfficiency;
+      dXsec=msqjk*flux*mcfm_event.pswt*PSWeight;
       
       if (dXsec>0.0){
 	sumW  += dXsec;
@@ -222,7 +234,7 @@ double Integrand_NeutrinoIntegration(double * r, unsigned int NDim, void * param
 	       <<" flux="<<flux 
 	       <<" wgt="<<mcfm_event.pswt
 	       <<" PS=" <<PSWeight
-	       <<" eff="<<probAcceptanceEfficiency
+	    //<<" eff="<<probAcceptanceEfficiency
 	       <<endl;
 	}
     }//loop solutions
