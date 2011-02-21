@@ -175,7 +175,7 @@ void eidGetVBTF(const vbtf_tightness tightness, std::vector<double> &cutdeta, st
     return;
 }
 
-void eidGetCIC_V06(const cic_tightness tightness, std::vector<double>cutiso_sum, std::vector<double>cutiso_sumoet, std::vector<double>cuthoe, std::vector<double>cutsee, std::vector<double>cutdphiin, std::vector<double>cutdetain, std::vector<double>cuteseedopcor, std::vector<double>cutfmishits, std::vector<double>cutdcotdist, std::vector<double>cutip_gsf, std::vector<double>cutiso_sumoetl, std::vector<double> cuthoel, std::vector<double>cutseel, std::vector<double>cutdphiinl, std::vector<double>cutdetainl, std::vector<double>cutip_gsfl)
+void eidGetCIC_V06(const cic_tightness tightness, std::vector<double>& cutiso_sum, std::vector<double>& cutiso_sumoet, std::vector<double>& cuthoe, std::vector<double>& cutsee, std::vector<double>& cutdphiin, std::vector<double>& cutdetain, std::vector<double>& cuteseedopcor, std::vector<double>& cutfmishits, std::vector<double>& cutdcotdist, std::vector<double>& cutip_gsf, std::vector<double>& cutiso_sumoetl, std::vector<double> & cuthoel, std::vector<double>& cutseel, std::vector<double>& cutdphiinl, std::vector<double>& cutdetainl, std::vector<double>& cutip_gsfl)
 {
 
     switch (tightness) {

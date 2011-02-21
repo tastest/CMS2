@@ -997,7 +997,9 @@ electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tight
 // "CIC" id
 //
 electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned int version, const cic_tightness tightness, bool applyAlignementCorrection = false, bool removedEtaCutInEndcap =false);
-unsigned int classify(const unsigned int version, const unsigned int index);
+
+unsigned int eidClassify(const unsigned int version, const unsigned int index);
+bool eidComputeCut(double x, double et, double cut_min, double cut_max, bool gtn=false);
 
 //
 // relative isolation 
