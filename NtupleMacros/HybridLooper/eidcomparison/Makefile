@@ -83,7 +83,7 @@ $(LIB):	$(OBJECTS)
 
 $(FWLIB) :
 	$(QUITE) echo "making MiniFWLite"; \
-	cd ../Tools/MiniFWLite; \
+	cd ../../Tools/MiniFWLite; \
 	$(MAKE) -f Makefile;
 
 LinkDef_out.cxx: LinkDef.h

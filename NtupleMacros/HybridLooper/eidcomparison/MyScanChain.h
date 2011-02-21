@@ -51,6 +51,9 @@ class MyScanChain {
         Int_t reco_vbtf90lt_;
         Int_t reco_vbtf80lt_;
         Int_t reco_vbtf70lt_;
+        Int_t reco_cic03mediumlt_;
+        Int_t reco_cic04mediumlt_;
+        Int_t reco_cic06mediumlt_;
 
         Float_t reco_ptll_ ;
         Float_t reco_etall_;
@@ -63,6 +66,9 @@ class MyScanChain {
         Int_t reco_vbtf90ll_;
         Int_t reco_vbtf80ll_;
         Int_t reco_vbtf70ll_;
+        Int_t reco_cic03mediumll_;
+        Int_t reco_cic04mediumll_;
+        Int_t reco_cic06mediumll_;
 
         Float_t reco_mdil_;
         Float_t reco_vdilpt_;

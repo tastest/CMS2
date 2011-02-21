@@ -64,6 +64,9 @@ void MyScanChain::InitBaby()
     reco_vbtf90lt_ = -999;
     reco_vbtf80lt_ = -999;
     reco_vbtf70lt_ = -999;
+    reco_cic03mediumlt_ = -999;
+    reco_cic04mediumlt_ = -999;
+    reco_cic06mediumlt_ = -999;
 
     reco_ptll_  = -999.;
     reco_etall_ = -999.;
@@ -76,6 +79,9 @@ void MyScanChain::InitBaby()
     reco_vbtf90ll_ = -999;
     reco_vbtf80ll_ = -999;
     reco_vbtf70ll_ = -999;
+    reco_cic03mediumll_ = -999;
+    reco_cic04mediumll_ = -999;
+    reco_cic06mediumll_ = -999;
 
     reco_mdil_ = -999.;
     reco_vdilpt_ = -999.;
@@ -287,6 +293,9 @@ void MyScanChain::AnalyseDilepton(const float &weight)
         reco_vbtf90lt_ = pass_electronSelectionCompareMask(cuts_passed, (1<<ELEID_VBTF_35X_90));
         reco_vbtf80lt_ = pass_electronSelectionCompareMask(cuts_passed, (1<<ELEID_VBTF_35X_80));
         reco_vbtf70lt_ = pass_electronSelectionCompareMask(cuts_passed, (1<<ELEID_VBTF_35X_70));
+        reco_cic03mediumlt_ = electronId_CIC(cms2.hyp_lt_index()[h], 3, CIC_MEDIUM);
+        reco_cic04mediumlt_ = electronId_CIC(cms2.hyp_lt_index()[h], 4, CIC_MEDIUM);
+        reco_cic06mediumlt_ = electronId_CIC(cms2.hyp_lt_index()[h], 6, CIC_MEDIUM);
 
     } if (reco_typelt_ == 13) {
         reco_isolt_ = muonIsoValue(cms2.hyp_lt_index()[h]);
@@ -309,6 +318,9 @@ void MyScanChain::AnalyseDilepton(const float &weight)
         reco_vbtf90ll_ = pass_electronSelectionCompareMask(cuts_passed, (1<<ELEID_VBTF_35X_90));
         reco_vbtf80ll_ = pass_electronSelectionCompareMask(cuts_passed, (1<<ELEID_VBTF_35X_80));
         reco_vbtf70ll_ = pass_electronSelectionCompareMask(cuts_passed, (1<<ELEID_VBTF_35X_70));
+        reco_cic03mediumll_ = electronId_CIC(cms2.hyp_ll_index()[h], 3, CIC_MEDIUM);
+        reco_cic04mediumll_ = electronId_CIC(cms2.hyp_ll_index()[h], 4, CIC_MEDIUM);
+        reco_cic06mediumll_ = electronId_CIC(cms2.hyp_ll_index()[h], 6, CIC_MEDIUM);
 
     } if (reco_typell_ == 13) {
         reco_isoll_ = muonIsoValue(cms2.hyp_ll_index()[h]);
@@ -372,6 +384,9 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, f
     babyTree_->Branch("reco_vbtf90lt",          &reco_vbtf90lt_,    "reco_vbtf90lt/I"       );
     babyTree_->Branch("reco_vbtf80lt",          &reco_vbtf80lt_,    "reco_vbtf80lt/I"       );
     babyTree_->Branch("reco_vbtf70lt",          &reco_vbtf70lt_,    "reco_vbtf70lt/I"       );
+    babyTree_->Branch("reco_cic03mediumlt",          &reco_cic03mediumlt_,    "reco_cic03mediumlt/I"       );
+    babyTree_->Branch("reco_cic04mediumlt",          &reco_cic04mediumlt_,    "reco_cic04mediumlt/I"       );
+    babyTree_->Branch("reco_cic06mediumlt",          &reco_cic06mediumlt_,    "reco_cic06mediumlt/I"       );
 
     babyTree_->Branch("reco_ptll",          &reco_ptll_,            "reco_ptll/F"          );
     babyTree_->Branch("reco_etall",         &reco_etall_,           "reco_etall/F"         );
@@ -384,6 +399,9 @@ int MyScanChain::ScanChain(bool isData, std::string sampleName, TChain *chain, f
     babyTree_->Branch("reco_vbtf90ll",          &reco_vbtf90ll_,    "reco_vbtf90ll/I"       );
     babyTree_->Branch("reco_vbtf80ll",          &reco_vbtf80ll_,    "reco_vbtf80ll/I"       );
     babyTree_->Branch("reco_vbtf70ll",          &reco_vbtf70ll_,    "reco_vbtf70ll/I"       );
+    babyTree_->Branch("reco_cic03mediumll",          &reco_cic03mediumll_,    "reco_cic03mediumll/I"       );
+    babyTree_->Branch("reco_cic04mediumll",          &reco_cic04mediumll_,    "reco_cic04mediumll/I"       );
+    babyTree_->Branch("reco_cic06mediumll",          &reco_cic06mediumll_,    "reco_cic06mediumll/I"       );
 
     babyTree_->Branch("reco_tcmet",         &reco_tcmet_,           "reco_tcmet/F"          );
     babyTree_->Branch("reco_pfmet",         &reco_pfmet_,           "reco_pfmet/F"          );
