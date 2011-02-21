@@ -2,6 +2,8 @@
 #define EvtProb_VAR
 
 #include <TLorentzVector.h>
+#include "TH2F.h"
+
 #define EBEAM 3500.0
 #define fbGeV2 0.389379E12
 #define sixteen_2Pi_to_8 3.88650230418250561e+07
@@ -165,7 +167,7 @@ class TVar{
   return TString("UnKnown");
     
   };
-
+ 
   ClassDef(TVar,0)
 };
 
@@ -237,5 +239,11 @@ struct rand_type{
 struct anomcoup{
 	   double delg1_z, delg1_g, lambda_g, lambda_z, delk_g, delk_z_,tevscale;
 };
+
+struct EffHist{
+  TH2F* els_eff_mc;
+  TH2F* mus_eff_mc;
+};
+
 
 #endif
