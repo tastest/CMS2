@@ -244,8 +244,8 @@ electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned in
     double hOverE = cms2.els_hOverE()[index];
     double sigmaee = cms2.els_sigmaIEtaIEta()[index];
     int mishits = cms2.els_exp_innerlayers()[index];
-    double dist = cms2.els_conv_dist()[index];
-    double dcot = cms2.els_conv_dcot()[index];
+    double dist = -9999.? 9999:cms2.els_conv_dist()[index];
+    double dcot = -9999.? 9999:cms2.els_conv_dcot()[index];
     double dcotdistcomb = ((0.04 - std::max(dist, dcot)) > 0?(0.04 - std::max(dist, dcot)):0);
     double tkIso = cms2.els_tkIso()[index];
     double ecalIso = cms2.els_ecalIso04()[index];
