@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REV=edm-20Oct2010
+REV=edm-Feb2011
 PDFS=/afs/cern.ch/user/e/emanuele/public/4Likelihood/PDFsSQLite/CMSSW_3_5_X/pdfs_MC.root
 
 # likelihood id
