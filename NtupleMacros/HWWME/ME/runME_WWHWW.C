@@ -29,10 +29,6 @@ enum process {
   kNProc
 };
 
-// declare efficiency histgrams as global variable
-TH2F *_els_eff_mc;
-TH2F *_mus_eff_mc;
-
 // The number of events expected from MC in the mm/em/ee channels
 
 // Applying Z veto and mll < 100
@@ -116,7 +112,7 @@ void NeutrinoIntegration(int process,TString inputFileName,int seed, int SmearLe
     if(TVar::ProcessName(process) == "HWW") effFileName = "../ggH160_MCUtil.root";
     if(TVar::ProcessName(process) == "WW") effFileName = "../WW_MCUtil.root";
 	
-    cout << effFileName << endl;
+
     TEvtProb Xcal2;  
  
     Xcal2.SetApplyFake(1);
@@ -126,7 +122,7 @@ void NeutrinoIntegration(int process,TString inputFileName,int seed, int SmearLe
     Xcal2.SetNcalls(ncalls);
     Xcal2.SetEffHist(effFileName);
 
-    cout <<"Integration Seed= "<< Xcal2._seed << " SmearLevel= "<< Xcal2._smearLevel << " Ncalls = " << Xcal2._ncalls << endl;  
+    cout <<"Integration Seed= "<< Xcal2._seed << " SmearLevel= "<< Xcal2._smearLevel << " Ncalls = " << Xcal2._ncalls << " EffHistName " << effFileName <<  endl;  
 
     TTree* ch=(TTree*)fin->Get("Events"); 
     if (ch==0x0) ch=(TTree*)fin->Get("ev");
