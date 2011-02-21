@@ -33,6 +33,12 @@
 #include "PhaseSpace.hh"
 #include "foam/TFoamIntegrand.hh"
 
+#include "TH2F.h"
+#include "TH1F.h"
+#include "assert.h"
+
+
+
 
 //----------------------------------------
 // Class TEvtProb
@@ -51,7 +57,8 @@ public:
   TVar::Process _process;
   TVar::MatrixElement _matrixElement;
   TVar::HWWPhaseSpace _hwwPhaseSpace;
-
+  EffHist _effhist;
+  
   //---------------------------------------------------------------------------
   // Constructors and Destructor
   //---------------------------------------------------------------------------
@@ -68,7 +75,17 @@ public:
   void SetProcess(TVar::Process tmp) { _process = tmp; }
   void SetMatrixElement(TVar::MatrixElement tmp){ _matrixElement = tmp; }
   void SetHWWPhaseSpace(TVar::HWWPhaseSpace tmp){ _hwwPhaseSpace = tmp; }
-   
+  void SetEffHist(TString inputFile) {
+    std::cout << "TEvtProb::SetEffHist: " <<  inputFile << std::endl;
+    TFile *f = TFile::Open(inputFile, "READ");
+    assert(f);
+    _effhist.els_eff_mc = (TH2F*) f->Get("els_eff_mc");
+    _effhist.mus_eff_mc = (TH2F*) f->Get("mus_eff_mc");
+    f->Close();
+  }
+  
+
+
   void LOXsec(double* Xsec,double* Err);
   void LOXsec_foam(double* Xsec,double* Err); 
  
@@ -82,7 +99,8 @@ public:
     masses_mcfm_.hwidth=HiggsWidth(mass);
 }
 
-
+ 
+  
   ClassDef(TEvtProb,0);
 };
 
@@ -100,4 +118,5 @@ class  Integrand_LOXsec_foam : public TFoamIntegrand{
 
 double Integrand_NeutrinoIntegration(double * r, unsigned int NDim, void * param);
 
+   
 #endif

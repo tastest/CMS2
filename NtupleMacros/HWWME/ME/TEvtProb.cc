@@ -101,11 +101,7 @@ void   TEvtProb::NeutrinoIntegrate(TVar::Process proc,
     int count_PS=0;
     double sumW=0,sumW2=0;
 
-    // == Yanyan: pull out the extraction of acceptance efficiency from the integral
-    TString effFileName;
-    if(TVar::ProcessName(proc) == "HWW") effFileName = "../ggH160_MCUtil.root";
-    if(TVar::ProcessName(proc) == "WW") effFileName = "../WW_MCUtil.root";
-    double probAcceptanceEfficiency = getProbAcceptanceEfficiency(effFileName,cdf_event);
+    double probAcceptanceEfficiency = getProbAcceptanceEfficiency(cdf_event, _effhist);
     //double probAcceptanceEfficiency = 1.0;
     if(probAcceptanceEfficiency == 0) return;
     if(probAcceptanceEfficiency<0) {

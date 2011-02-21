@@ -681,25 +681,18 @@ if(i==6)return anomcoup_.tevscale;
 return 999;
 }
 
-double getProbAcceptanceEfficiency(TString inputFile, cdf_event_type cdf_event)
+
+double getProbAcceptanceEfficiency(cdf_event_type cdf_event, EffHist effhist)
 {
-  TFile *f = TFile::Open(inputFile, "READ");
-  TH2F *effHist;
   double eff = 1.0; 
 
   for (int i=0;i<2;i++) {
-    if ( TMath::Abs(cdf_event.PdgCode[i]) == 11 )    effHist = (TH2F *) f->Get("els_eff_mc");
-    if ( TMath::Abs(cdf_event.PdgCode[i]) == 13 )    effHist = (TH2F *) f->Get("mus_eff_mc");
+    if ( TMath::Abs(cdf_event.PdgCode[i]) == 11 && ! effhist.els_eff_mc)    
+      eff = eff * lookupHist(effhist.els_eff_mc, cdf_event.p[i].Eta(), cdf_event.p[i].Pt());
     
-    if(!effHist) { 
-      cout << "TUtil.cc: WARNING: AccetpanceEfficiency input is not found, setting probAcceptanceEfficiency to 1.0"<<endl;
-      return 1.0;
-    }
-    eff = eff * lookupHist(effHist, cdf_event.p[i].Eta(), cdf_event.p[i].Pt());
+    if ( TMath::Abs(cdf_event.PdgCode[i]) == 13 && ! effhist.mus_eff_mc ) 
+      eff = eff * lookupHist(effhist.mus_eff_mc, cdf_event.p[i].Eta(), cdf_event.p[i].Pt());
   }
-  //  cout << "eff = " << eff<<endl;
-  delete effHist;
-  f->Close();
   return eff;
 }
 

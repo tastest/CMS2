@@ -1,5 +1,6 @@
 #include "TVar.hh"
 
+
 double ERRORthreshold=1.0;
 
 struct dXsecCal{
@@ -27,6 +28,10 @@ enum process {
   proc_HWW160,
   kNProc
 };
+
+// declare efficiency histgrams as global variable
+TH2F *_els_eff_mc;
+TH2F *_mus_eff_mc;
 
 // The number of events expected from MC in the mm/em/ee channels
 
@@ -65,8 +70,6 @@ int CalculateAcceptance(){
     return 0;
 }
 
-
-
 //###################
 //# Utitlity function
 //###################
@@ -92,7 +95,7 @@ gSystem->Load("./libME.so");
 
  ERRORthreshold=Error;
  int process=TVar::HWW;
- int maxevt=50;
+ int maxevt=1000;
  
  cout <<"=== Neutrino Integration ==========" <<endl;  
  NeutrinoIntegration(process,inputFileName,seed, SmearLevel,ncalls,maxevt, Mass); 
@@ -109,16 +112,22 @@ void NeutrinoIntegration(int process,TString inputFileName,int seed, int SmearLe
     outFileName.ReplaceAll(".root","_ME.root");
 
     TFile *newfile = new TFile(outFileName,"recreate");
+    TString effFileName;
+    if(TVar::ProcessName(process) == "HWW") effFileName = "../ggH160_MCUtil.root";
+    if(TVar::ProcessName(process) == "WW") effFileName = "../WW_MCUtil.root";
 	
+    cout << effFileName << endl;
     TEvtProb Xcal2;  
-  
+ 
     Xcal2.SetApplyFake(1);
     Xcal2.SetSmearLevel(SmearLevel);
     Xcal2.SetSeed(seed);
     Xcal2.SetMatrixElement(TVar::MCFM);
     Xcal2.SetNcalls(ncalls);
+    Xcal2.SetEffHist(effFileName);
+
     cout <<"Integration Seed= "<< Xcal2._seed << " SmearLevel= "<< Xcal2._smearLevel << " Ncalls = " << Xcal2._ncalls << endl;  
- 
+
     TTree* ch=(TTree*)fin->Get("Events"); 
     if (ch==0x0) ch=(TTree*)fin->Get("ev");
     TTree* evt_tree=(TTree*) ch->CloneTree(0);
@@ -385,5 +394,4 @@ void NeutrinoIntegration(int process,TString inputFileName,int seed, int SmearLe
     newfile->Close();
     
 }  
-
 
