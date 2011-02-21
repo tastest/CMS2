@@ -685,46 +685,15 @@ return 999;
 double getProbAcceptanceEfficiency(cdf_event_type cdf_event, EffHist effhist)
 {
   double eff = 1.0; 
-
+  
   for (int i=0;i<2;i++) {
-    if ( TMath::Abs(cdf_event.PdgCode[i]) == 11 && ! effhist.els_eff_mc)    
-      eff = eff * lookupHist(effhist.els_eff_mc, cdf_event.p[i].Eta(), cdf_event.p[i].Pt());
+    if ( TMath::Abs(cdf_event.PdgCode[i]) == 11 && ! effhist.els_eff_mc)       
+      eff = eff * effhist.els_eff_mc->GetBinContent( effhist.els_eff_mc->GetXaxis()->FindBin(cdf_event.p[i].Eta()), effhist.els_eff_mc->GetYaxis()->FindBin(cdf_event.p[i].Pt()) );
     
     if ( TMath::Abs(cdf_event.PdgCode[i]) == 13 && ! effhist.mus_eff_mc ) 
-      eff = eff * lookupHist(effhist.mus_eff_mc, cdf_event.p[i].Eta(), cdf_event.p[i].Pt());
+      eff = eff * effhist.mus_eff_mc->GetBinContent( effhist.mus_eff_mc->GetXaxis()->FindBin(cdf_event.p[i].Eta()), effhist.mus_eff_mc->GetYaxis()->FindBin(cdf_event.p[i].Pt()) );
   }
   return eff;
 }
 
-double lookupHist(TH2F* & hist, double xVal, double yVal)
-{
-  if(!hist) return 1.0;
-
-  int iX_sel, iY_sel;
-  
-  if(xVal < hist->GetXaxis()->GetXmin()) iX_sel = 0;
-  if(xVal > hist->GetXaxis()->GetXmax()) iX_sel = hist->GetNbinsX()+1;
-
-  if(yVal < hist->GetYaxis()->GetXmin()) iY_sel = 0;
-  if(yVal > hist->GetYaxis()->GetXmax()) iY_sel = hist->GetNbinsY()+1;
-
-  for(int iX=0;iX<hist->GetNbinsX();iX++) {
-    double bin_lowX = hist->GetXaxis()->GetBinLowEdge(iX);
-    double bin_upX = hist->GetXaxis()->GetBinUpEdge(iX);
-    if( xVal < bin_lowX || xVal >= bin_upX) continue;
-    iX_sel = iX;
-  }
- 
-  for(int iY=0;iY<hist->GetNbinsY();iY++) {
-    double bin_lowY = hist->GetYaxis()->GetBinLowEdge(iY);
-    double bin_upY = hist->GetYaxis()->GetBinUpEdge(iY);
-    if( yVal < bin_lowY || yVal >= bin_upY) continue;
-    iY_sel = iY; 
-  }
-  
-  // cout << "xVal = " << xVal << "; yVal = " << yVal << "; found at bin (" << iX_sel << ", " << iY_sel << "); value = "<< hist->GetBinContent(iX_sel, iY_sel) <<endl;
-  
-  return hist->GetBinContent(iX_sel, iY_sel);
-  
-}
 

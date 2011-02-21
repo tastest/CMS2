@@ -57,5 +57,4 @@ double HiggsWidth(double);
 double SetTGCParameter(TString ,double par);
 double GetTGCParameter(int i);
 double getProbAcceptanceEfficiency(cdf_event_type cdf_event, EffHist effhist);
-double lookupHist(TH2F*& hist, double xVal, double yVal);
 #endif
