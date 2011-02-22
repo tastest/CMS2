@@ -95,7 +95,7 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if (!isFromConversionPartnerTrack(index)) cuts_passed |= (1ll<<ELENOTCONV_DISTDCOT002);
     if (!isFromConversionHitPattern(index)) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN);
     if (cms2.els_exp_innerlayers().at(index) == 0) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN_0MHITS);
-    if (cms2.els_exp_innerlayers39X().at(index) == 0 ) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN39X_0MHITS);
+    //if (cms2.els_exp_innerlayers39X().at(index) == 0 ) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN39X_0MHITS);
 
     //
     // fiduciality/other cuts
@@ -244,17 +244,21 @@ electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned in
     double hOverE = cms2.els_hOverE()[index];
     double sigmaee = cms2.els_sigmaIEtaIEta()[index];
     int mishits = cms2.els_exp_innerlayers()[index];
-    double dist = -9999.? 9999:cms2.els_conv_dist()[index];
-    double dcot = -9999.? 9999:cms2.els_conv_dcot()[index];
-    double dcotdistcomb = ((0.04 - std::max(dist, dcot)) > 0?(0.04 - std::max(dist, dcot)):0);
+    double dist = (cms2.els_conv_dist()[index] == -9999.? 9999:cms2.els_conv_dist()[index]);
+    double dcot = (cms2.els_conv_dcot()[index] == -9999.? 9999:cms2.els_conv_dcot()[index]);
+    float dcotdistcomb = ((0.04 - std::max(dist, dcot)) > 0?(0.04 - std::max(dist, dcot)):0);
     double tkIso = cms2.els_tkIso()[index];
     double ecalIso = cms2.els_ecalIso04()[index];
     double hcalIso = cms2.els_hcalIso04()[index];
-    double ip = fabs(cms2.els_d0corr()[index]);
-    // should be sigmaIEtaIEta with respect to the SC...
-    // (in the EE it is with respect to the seed BC...)
-    if (cms2.els_fiduciality()[index] & (1<<ISEB))
-        sigmaee = cms2.els_sigmaIEtaIEtaSC()[index];
+
+    double ip = fabs(cms2.els_d0()[index]);
+    if (cms2.vtxs_sumpt().size() > 0) {
+        const float vx = cms2.vtxs_position()[0].x();
+        const float vy = cms2.vtxs_position()[0].y();
+        const float px = cms2.els_trk_p4()[index].px();
+        const float py = cms2.els_trk_p4()[index].py();
+        ip = fabs(-1*cms2.els_d0()[index] + (vx*py - vy*px) / cms2.els_trk_p4()[index].pt());
+    }
 
     //
     // get corrected dEtaIn and dPhiIn
@@ -492,6 +496,7 @@ electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned in
                     cut_results[cut] = (dcotdistcomb < cutdcotdist[cat]);
                     break;
             }
+
         }
 
         // ID part
