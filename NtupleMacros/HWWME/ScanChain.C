@@ -92,7 +92,7 @@ void progress( int nEventsTotal, int nEventsChain ){
   }
 }
 
-int ScanChain(std::string process, TChain* chain, int nEvents = -1, double IntLumi=100, double Xsect=1.0, int nProcessedEvents=-1, std::string skimFilePrefix="", bool realData=false){
+void ScanChain(std::string process, TChain *chain,  int nEvents = -1, double IntLumi=100, double Xsect=1.0, int nProcessedEvents=-1, std::string skimFilePrefix="", bool realData=false, bool identifyEvents=false){
 
   _cutWord = new TBitSet(kNCuts);
 
@@ -170,6 +170,11 @@ int ScanChain(std::string process, TChain* chain, int nEvents = -1, double IntLu
     
       // Get Event Content
       cms2.GetEntry(event);	
+      
+      // identifyEvents by MC truth
+      if ( !realData && identifyEvents ){
+	if(!isIdentified (process)) continue;
+       }
       if (cms2.trks_d0().size() == 0) continue;  // needed to get rid of back Monte Carlo events in CMSSW_2_X analysis
       if (cms2.hyp_type().size() == 0) continue; // skip events without hypothesis
       EventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.evt_lumiBlock(), cms2.trks_d0()[0], cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
@@ -189,7 +194,7 @@ int ScanChain(std::string process, TChain* chain, int nEvents = -1, double IntLu
       
       //      CalculateFakeRateProb();
 
-      if(!realData) FillMCUtilHist(TString(process), weight);
+      if(!realData) FillEffHist(TString(process), weight);
 
       unsigned int nHyps = cms2.hyp_type().size();
 
@@ -225,7 +230,7 @@ int ScanChain(std::string process, TChain* chain, int nEvents = -1, double IntLu
 	*/
 
         if (accept){
-
+	  if(!realData) FillKtHist(TString(process), weight);
 	  FillNeededVariables(i_hyp);
 	  eventCount[type]++;
 	  eventYield[type]+=weight;
@@ -274,7 +279,7 @@ int ScanChain(std::string process, TChain* chain, int nEvents = -1, double IntLu
   
   //  samplehisto->Draw();
   
-  return 0;
+  cout<<"Total Events Before Selection "<<chain->GetEntries()<<"\n";
 }
 
 
@@ -795,7 +800,7 @@ bool defaultBTag(int type, unsigned int iJet){
   return BTag(type,iJet)>2.1;
 }
 
-void FillMCUtilHist(TString process, double weight) {
+void FillEffHist(TString process, double weight) {
   
   if(!isIdentified(process)) return;
   
@@ -833,8 +838,9 @@ void FillMCUtilHist(TString process, double weight) {
       }
     }   // ==== End of Electron Efficiency
   }
-
-  // Fill the kx/ky/kt distributions
+}
+void FillKtHist(TString process, double weight) {
+  if(!isIdentified(process)) return;
   // Currently only implemented for WW/HWW/WZ/ZZ
   LorentzVector systP4(0.,0.,0.,0.);
   for (unsigned int i = 6;  i < cms2.genps_id().size(); ++i) {
@@ -848,7 +854,7 @@ void FillMCUtilHist(TString process, double weight) {
   }
   
   kx->Fill(systP4.Px(), weight);
-  ky->Fill(systP4.Px(), weight);
+  ky->Fill(systP4.Py(), weight);
   kt->Fill(systP4.Pt(), weight);
 }
 
@@ -986,3 +992,21 @@ bool isIdentified( TString process) {
   else  return false;
 }
 
+
+
+void ProcessSample(std::string process, std::vector<std::string> file_patterns, int nEvents = -1, double IntLumi=100, double Xsect=1.0, int nProcessedEvents=-1, std::string skimFilePrefix="", bool realData=false, bool identifyEvents=false){
+
+  TChain *tchain = new TChain("Events");
+  for ( std::vector<std::string>::const_iterator pattern = file_patterns.begin();
+	pattern != file_patterns.end(); ++pattern )
+    tchain->Add(pattern->c_str());
+  
+  ScanChain(process, tchain, nEvents, IntLumi, Xsect, nProcessedEvents, skimFilePrefix, realData, identifyEvents);
+
+}
+
+void ProcessSample(std::string process, std::string file_pattern, int nEvents = -1, double IntLumi=100, double Xsect=1.0, int nProcessedEvents=-1, std::string skimFilePrefix="", bool realData=false, bool identifyEvents=false){
+  std::vector<std::string> vec;
+  vec.push_back(file_pattern);
+  ProcessSample(process, vec, nEvents, IntLumi, Xsect, nProcessedEvents, skimFilePrefix, realData, identifyEvents);
+}
