@@ -9,8 +9,6 @@
 #include "Math/LorentzVector.h"
 #include "Math/VectorUtil.h"
 
-
-
 inline double fast_sign(double f) {
     if (f > 0) return 1;
     return (f == 0) ? 0 : -1;
@@ -166,6 +164,9 @@ double projectedMet(int);
 double nearestDeltaPhi(double Phi, int i_hyp);
 bool comparePt(LorentzVector lv1, LorentzVector lv2);
 std::vector<LorentzVector> getJets(int type, int i_hyp, double etThreshold, double etaMax, bool sortJets, bool btag);
+bool isGoodVertex(size_t ivtx);
+double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVector& pv);
+
 //trigger
 bool passedTriggerRequirements();
 bool defaultBTag(int type, unsigned int iJet); 
@@ -173,23 +174,20 @@ double BTag(int type, unsigned int iJet);
 
 //muon ID
 bool goodMuonIsolated(unsigned int i);
-bool ww_muBase(unsigned int index);
 bool ww_mud0PV(unsigned int index);
 bool ww_muId(unsigned int index);
 double ww_muIsoVal(unsigned int index);
 bool ww_muIso(unsigned int index);
+
 //electron ID
 bool goodElectronIsolated(unsigned int i);
-bool ww_elBase(unsigned int index);
 bool ww_eld0PV(unsigned int index);
 bool ww_elId(unsigned int index);
 double ww_elIsoVal(unsigned int index);
 bool ww_elIso(unsigned int index);
 
 
-double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVector& pv);
-bool isGoodVertex(size_t ivtx);
-unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated);
+unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated, const std::vector<LorentzVector>& = std::vector<LorentzVector>());
 unsigned int numberOfExtraLeptons(int i_hyp, double minPt);
 bool toptag(int type, int i_hyp, double minPt);
 

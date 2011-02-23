@@ -75,12 +75,13 @@ void InitMCUtilHist(std::string process) {
   mus_denom_mc_pt = new TH1F("mus_denom_mc_pt", "mus_denom_mc_pt", 20, 10, 100);
   mus_eff_mc_pt = new TH1F("mus_eff_mc_pt", "mus_eff_mc_pt", 20, 10, 100);
 
-  kx = new TH1F("kx", "kx", 100, -200, 200);
-  ky = new TH1F("ky", "ky", 100, -200, 200);
-  kt = new TH1F("kt", "kt", 100, 0, 200);
+  kx = new TH1F("kx", "kx", 50, -50, 50);
+  ky = new TH1F("ky", "ky", 50, -50, 50);
+  kt = new TH1F("kt", "kt", 100, 0, 100);
 }
  
-void FillMCUtilHist(TString process, double weight);
+void FillEffHist(TString process, double weight);
+void FillKtHist(TString process, double weight);
 
 // Utility Functions
 unsigned int getVVType();
