@@ -33,11 +33,12 @@ enum process {
 
 // Applying Z veto and mll < 100
 
-float yield [kNProc][3] = {{ 1.41161, 4.48317, 0.94543},
+float yield [kNProc][3] = {//{ 1.41161, 4.48317, 0.94543},
+                           { 36.1939, 110.983, 23.1874}, 
 			   { 0.0001, 11.35, 7.22 }, // MM 0; EM 22.7089; EE 14.4511
 			   { 0.0001, 11.35, 7.22 }, 
 			   { 1.0,  0.158, 0.6 },
-			   { 0.709043, 1.36024, 0.488206}
+			   { 18.2133, 34.9456, 12.5212},
 };
 
 // The following calculations seem to start with the WW->2l2nu xsection rather than the WW->All
@@ -48,7 +49,7 @@ float BR [kNProc][3] =   {{ (1.0+0.1736)*(1.0+0.1736)/9, (1.0+0.1736)*(1.0+0.178
 			  { (1.0+0.1736)*(1.0+0.1736)/9, (1.0+0.1736)*(1.0+0.1784)/9*2, (1.0+0.1784)*(1.0+0.1784)/9 },
 };
 
-float  NLOXsec[kNProc] = {  4.5, 31314.0/2.0, 31314.0/2.0, 5.9, 0.8664429}; 
+float  NLOXsec[kNProc] = {  4.5*0.919, 31314.0/2.0, 31314.0/2.0, 5.9, 0.8664429}; 
 float  MCFMXsec[kNProc] = { 28.4, 11270, 11270.0, 4.3, 3.25};
 
 float acceptance [kNProc][3];
@@ -91,7 +92,7 @@ gSystem->Load("./libME.so");
 
  ERRORthreshold=Error;
  int process=TVar::HWW;
- int maxevt=1000;
+ int maxevt=5000;
  
  cout <<"=== Neutrino Integration ==========" <<endl;  
  NeutrinoIntegration(process,inputFileName,seed, SmearLevel,ncalls,maxevt, Mass); 
@@ -108,10 +109,7 @@ void NeutrinoIntegration(int process,TString inputFileName,int seed, int SmearLe
     outFileName.ReplaceAll(".root","_ME.root");
 
     TFile *newfile = new TFile(outFileName,"recreate");
-    TString effFileName;
-    if(TVar::ProcessName(process) == "HWW") effFileName = "../ggH160_MCUtil.root";
-    if(TVar::ProcessName(process) == "WW") effFileName = "../WW_MCUtil.root";
-	
+   	
 
     TEvtProb Xcal2;  
  
@@ -120,9 +118,8 @@ void NeutrinoIntegration(int process,TString inputFileName,int seed, int SmearLe
     Xcal2.SetSeed(seed);
     Xcal2.SetMatrixElement(TVar::MCFM);
     Xcal2.SetNcalls(ncalls);
-    Xcal2.SetEffHist(effFileName);
 
-    cout <<"Integration Seed= "<< Xcal2._seed << " SmearLevel= "<< Xcal2._smearLevel << " Ncalls = " << Xcal2._ncalls << " EffHistName " << effFileName <<  endl;  
+    cout <<"Integration Seed= "<< Xcal2._seed << " SmearLevel= "<< Xcal2._smearLevel << " Ncalls = " << Xcal2._ncalls <<  endl;  
 
     TTree* ch=(TTree*)fin->Get("Events"); 
     if (ch==0x0) ch=(TTree*)fin->Get("ev");
@@ -238,6 +235,7 @@ void NeutrinoIntegration(int process,TString inputFileName,int seed, int SmearLe
 	time_t time1 = time(NULL);  
 	double Xsec=0, XsecErr=0, Ratio=0;      
 	Xcal2.SetNcalls(ncalls);
+	
 	
 	printf(" Calculate Evt %4i Run %9i Evt %8i Proc %4i %s Lep %4i %4i\n", ievt, runNumber, eventNumber, ProcIdx, TVar::ProcessName(ProcIdx).Data(),lep1_Type,lep2_Type);
 	
@@ -367,7 +365,7 @@ void NeutrinoIntegration(int process,TString inputFileName,int seed, int SmearLe
       yield_bg = yield[proc_WW][dilflavor];
 
       cout<<"bg_yield="<<yield_bg<<"\n";
-
+      
       numer=1/(MCFMXsec[proc_HWW160]*acceptance[proc_HWW160][dilflavor]) * dXsecList[TVar::HWW160];
       denom  = numer;
       cout<<" PHHWW160= "<<numer<<"\n";
