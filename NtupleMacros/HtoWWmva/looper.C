@@ -38,6 +38,8 @@ bool makehist       = false;
 bool maketext       = false;
 bool debug          = false;
 bool looseIdWJets   = false;
+int  FO             = -1;
+
 
 //--------------------------------------------------------------------
 
@@ -123,13 +125,51 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
   }
   if (maketext) ofile.open( Form( "output/%s_%s_events.txt" , prefix , iter) );
 
-  TH2F* frHisto = 0;
-  TFile* rfFile = 0;
-  if (prefixstr.Contains("WJetsToLNu") && looseIdWJets) {
+
+  //-------------------------------------------
+  // FO stuff
+  //-------------------------------------------
+
+  cuts_t FOselection;
+  TH2F*  frHisto         = 0;
+  TFile* rfFile          = 0;
+  char*  frhisto         = "";
+
+  if( prefixstr.Contains("FO") ){
+    looseIdWJets = true;
+    
+    if     ( prefixstr.Contains("v1") ){
+      FO            = 1;
+      frhisto       = "el_fr_v1_wwV1";
+      FOselection   = electronSelectionFO_el_wwV1_v1;
+    }
+    else if( prefixstr.Contains("v2") ){
+      FO            = 2;
+      frhisto       = "el_fr_v2_wwV1";
+      FOselection   = electronSelectionFO_el_wwV1_v2;
+    }
+    else if( prefixstr.Contains("v3") ){
+      FO            = 3;
+      frhisto       = "el_fr_v3_wwV1";
+      FOselection   = electronSelectionFO_el_wwV1_v3;    
+    }
+    else if( prefixstr.Contains("v4") ){
+      FO            = 4;
+      frhisto       = "el_fr_v4_wwV1";
+      FOselection   = electronSelectionFO_el_wwV1_v4;
+    }
+    else {
+      cout << "Error, unrecognized FO version, quitting..." << endl;
+      exit(0);
+    }
+
+    cout << "Using FO selection version " << FO << ", reading from histo " << frhisto << endl;
+
     rfFile = TFile::Open("ww_el_fr_EGandEGMon.root");
-    frHisto = (TH2F*) rfFile->Get("el_fr_v4_wwV1");
+    frHisto = (TH2F*) rfFile->Get( frhisto );
   }
 
+ 
   TObjArray *listOfFiles = chain->GetListOfFiles();
 
   unsigned int nEventsChain = 0;
@@ -282,7 +322,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
           if (abs(hyp_lt_id()[i])==13 && muonIsoValue(hyp_lt_index()[i]) > 0.15 ) continue;
         }
 
-	if (!(prefixstr.Contains("WJetsToLNu") && looseIdWJets)) {//standard
+	if (!looseIdWJets) {//standard
 	  if (abs(hyp_ll_id()[i])==11 && (!pass_electronSelection(hyp_ll_index()[i], electronSelection_wwV1, false, false))) continue;
 	  if (abs(hyp_lt_id()[i])==11 && (!pass_electronSelection(hyp_lt_index()[i], electronSelection_wwV1, false, false))) continue;
  
@@ -295,11 +335,11 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
         
         else { //WJetsToLNu, looseIdWJets==1 => apply FO selection on trailing electron
 	  if (minLL) {
-	    if (abs(hyp_ll_id()[i])==11 && (!pass_electronSelection(hyp_ll_index()[i], electronSelectionFO_el_wwV1_v4, false, false))) continue;
+	    if (abs(hyp_ll_id()[i])==11 && (!pass_electronSelection(hyp_ll_index()[i], FOselection, false, false))) continue;
 	    //if (abs(hyp_ll_id()[i])==11 && (!pass_electronSelection(hyp_ll_index()[i], electronSelection_wwV1_WP95, false, false))) continue;
 	    if (abs(hyp_lt_id()[i])==11 && (!pass_electronSelection(hyp_lt_index()[i], electronSelection_wwV1, false, false))) continue;
 	  } else {
-	    if (abs(hyp_lt_id()[i])==11 && (!pass_electronSelection(hyp_lt_index()[i], electronSelectionFO_el_wwV1_v4, false, false))) continue;
+	    if (abs(hyp_lt_id()[i])==11 && (!pass_electronSelection(hyp_lt_index()[i], FOselection, false, false))) continue;
 	    //if (abs(hyp_lt_id()[i])==11 && (!pass_electronSelection(hyp_lt_index()[i], electronSelection_wwV1_WP95, false, false))) continue;
 	    if (abs(hyp_ll_id()[i])==11 && (!pass_electronSelection(hyp_ll_index()[i], electronSelection_wwV1, false, false))) continue;
 	  }
@@ -390,8 +430,8 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
 	  lepsoft_genId_= els_mc_id().at(lepsoft_index);
 	  lepsoft_genMotherId_= els_mc_motherid().at(lepsoft_index);
 	  //set the fake rate in case of WJetsToLNu, looseIdWJets==1
-	  if (prefixstr.Contains("WJetsToLNu") && looseIdWJets) lepsoft_fr_ = frHisto->GetBinContent(frHisto->GetXaxis()->FindBin(fabs(lepsoft_eta_)),
-												     frHisto->GetYaxis()->FindBin(min(lepsoft_pt_,(static_cast<float>(34.9)))));
+	  if (looseIdWJets) lepsoft_fr_ = frHisto->GetBinContent(frHisto->GetXaxis()->FindBin(fabs(lepsoft_eta_)),
+                                                                 frHisto->GetYaxis()->FindBin(min(lepsoft_pt_,(static_cast<float>(34.9)))));
 	  else lepsoft_fr_ = 1.;
 	  lepsoft_mva_   = els_mva().at(lepsoft_index);
 	  vector<ConversionInfo> v_convInfos = getConversionInfos(lepsoft_index, evt_bField(), 0.45);   
@@ -514,7 +554,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
   
   CloseBabyNtuple();
 
-  if (prefixstr.Contains("WJetsToLNu") && looseIdWJets) {
+  if (looseIdWJets) {
     rfFile->Close();
   }
 
