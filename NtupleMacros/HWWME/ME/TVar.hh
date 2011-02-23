@@ -3,6 +3,7 @@
 
 #include <TLorentzVector.h>
 #include "TH2F.h"
+#include "TH1F.h"
 
 #define EBEAM 3500.0
 #define fbGeV2 0.389379E12
@@ -243,6 +244,11 @@ struct anomcoup{
 struct EffHist{
   TH2F* els_eff_mc;
   TH2F* mus_eff_mc;
+};
+
+struct BoostHist{
+  TH1F* kx;
+  TH1F* ky;
 };
 
 

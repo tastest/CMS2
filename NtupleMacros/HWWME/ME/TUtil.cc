@@ -697,3 +697,18 @@ double getProbAcceptanceEfficiency(cdf_event_type cdf_event, EffHist effhist)
 }
 
 
+void KtPdf(double x0, double* kX, double *wt, TH1F *hkx)
+{
+  double sign=1.;
+  if(x0>0.5) { 
+    sign=-1.;
+    x0=(x0-0.5)*2.;
+  }else{
+    x0=x0*2.;
+  }
+
+  *kX = sign*x0*TMath::Abs(hkx->GetXaxis()->GetXmax());
+  *wt = hkx->GetBinContent(hkx->GetXaxis()->FindBin(*kX))/hkx->Integral(0, 1000);
+  
+  if(*wt == 0) cout << "hkx->GetXaxis()->FindBin(" << *kX << ") = " <<hkx->GetXaxis()->FindBin(*kX) <<endl; 
+}

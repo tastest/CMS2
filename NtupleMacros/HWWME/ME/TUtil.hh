@@ -57,4 +57,6 @@ double HiggsWidth(double);
 double SetTGCParameter(TString ,double par);
 double GetTGCParameter(int i);
 double getProbAcceptanceEfficiency(cdf_event_type cdf_event, EffHist effhist);
+void KtPdf(double x0, double* kX, double *wt, TH1F *hkx);
+
 #endif
