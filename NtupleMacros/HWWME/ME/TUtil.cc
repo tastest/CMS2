@@ -711,6 +711,6 @@ void KtPdf(double x0, double* kX, double *wt, TH1F *hkx)
 
   *kX = sign*x0*TMath::Abs(hkx->GetXaxis()->GetXmax());
   *wt = hkx->GetBinContent(hkx->GetXaxis()->FindBin(*kX))/hkx->Integral(0, 1000);
-  
-  if(*wt == 0) cout << "hkx->GetXaxis()->FindBin(" << *kX << ") = " <<hkx->GetXaxis()->FindBin(*kX) <<endl; 
+ 
+  // if(*wt == 0) cout << "hkx->GetXaxis()->FindBin(" << *kX << ") = " <<hkx->GetXaxis()->FindBin(*kX) <<endl; 
 }
