@@ -846,6 +846,13 @@ void FillKtHist(TString process, double weight) {
   for (unsigned int i = 6;  i < cms2.genps_id().size(); ++i) {
     if (process=="WW" || process.Contains("ggH",TString::kExact)) {
       if(TMath::Abs(cms2.genps_id().at(i)) == 24) 	systP4 += cms2.genps_p4().at(i);
+      
+      if(TMath::Abs(cms2.genps_id().at(i)) ==  12 && cms2.genps_status().at(i) == 3 && TMath::Abs(cms2.genps_id_mother().at(i)) == 24) {
+	nux->Fill(cms2.genps_p4().at(i).Px(), weight);
+	nuy->Fill(cms2.genps_p4().at(i).Py(), weight);
+	nuz->Fill(cms2.genps_p4().at(i).Pz(), weight);
+      }
+      
     }
     
     if (process=="WZ" || process == "ZZ") {

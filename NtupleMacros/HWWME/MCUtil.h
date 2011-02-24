@@ -43,6 +43,11 @@ TH1F *kx;
 TH1F *ky;
 TH1F *kt;
 
+TH1F *nux;
+TH1F *nuy;
+TH1F *nuz;
+
+
 void InitMCUtilHist(std::string process) {
   cout << "InitMCUtilHist()"<<endl; 
 
@@ -75,9 +80,17 @@ void InitMCUtilHist(std::string process) {
   mus_denom_mc_pt = new TH1F("mus_denom_mc_pt", "mus_denom_mc_pt", 20, 10, 100);
   mus_eff_mc_pt = new TH1F("mus_eff_mc_pt", "mus_eff_mc_pt", 20, 10, 100);
 
-  kx = new TH1F("kx", "kx", 50, -50, 50);
-  ky = new TH1F("ky", "ky", 50, -50, 50);
+  kx = new TH1F("kx", "kx", 100, -100, 100);
+  ky = new TH1F("ky", "ky", 100, -100, 100);
   kt = new TH1F("kt", "kt", 100, 0, 100);
+
+
+  nux = new TH1F("nux", "nux", 100, -100, 100);
+  nuy = new TH1F("nuy", "nuy", 100, -100, 100);
+  nuz = new TH1F("nuz", "nuz", 100, -300, 300);
+
+
+
 }
  
 void FillEffHist(TString process, double weight);
@@ -190,6 +203,10 @@ void saveMCUtilOutput()
     kx->Write();
     ky->Write();
     kt->Write();
+
+    nux->Write();
+    nuy->Write();
+    nuz->Write();
     
     mcutilFile_->Close();
   
