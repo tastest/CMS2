@@ -463,12 +463,12 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
 	double DeltaPhi =  TMath::Min(tightDPhi, looseDPhi);
 	if (DeltaPhi < TMath::Pi()/2) met_projpt_= evt_tcmet()*TMath::Sin(DeltaPhi);
 	//MT variables
-	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > lepHardP4 = minLL ? hyp_lt_p4()[i] : hyp_ll_p4()[i];
-	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > lepSoftP4 = minLL ? hyp_ll_p4()[i] : hyp_lt_p4()[i];
-	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > metP4(met_pt_*cos(met_phi_),met_pt_*sin(met_phi_),0,met_pt_);
-	mt_lephardmet_= (lepHardP4+metP4).mt();
-	mt_lepsoftmet_= (lepSoftP4+metP4).mt();
-	mt_dilmet_= (lepHardP4+lepSoftP4+metP4).mt();
+	//ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > lepHardP4 = minLL ? hyp_lt_p4()[i] : hyp_ll_p4()[i];
+	//ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > lepSoftP4 = minLL ? hyp_ll_p4()[i] : hyp_lt_p4()[i];
+	//ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > metP4(met_pt_*cos(met_phi_),met_pt_*sin(met_phi_),0,met_pt_);
+	//mt_lephardmet_= (lepHardP4+metP4).mt();
+	//mt_lepsoftmet_= (lepSoftP4+metP4).mt();
+	//mt_dilmet_= (lepHardP4+lepSoftP4+metP4).mt();
         //dphi(lep,met)
         if( minLL ){
           dphi_lephardmet_ = tightDPhi;
@@ -477,6 +477,24 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
           dphi_lephardmet_ = looseDPhi;
           dphi_lepsoftmet_ = tightDPhi;
         }
+        //MT variables
+        mt_lephardmet_ = sqrt( 2 * lephard_pt_ * met_pt_ * ( 1 - cos( dphi_lephardmet_ ) ) );
+        mt_lepsoftmet_ = sqrt( 2 * lepsoft_pt_ * met_pt_ * ( 1 - cos( dphi_lepsoftmet_ ) ) );
+
+	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > dilepton = hyp_p4()[i];
+        float enell   = TMath::Sqrt( dilepton.Pt() * dilepton.Pt() + dilepton.Mt() * dilepton.Mt() );
+        float enenn   = TMath::Sqrt( met_pt_ * met_pt_ + 0.0 * 0.0 );
+        float enex    = dilepton.Px() + met_pt_ * cos( met_phi_ );
+        float eney    = dilepton.Py() + met_pt_ * sin( met_phi_ );
+        float mll     = dilepton.mass();
+        float mnu     = 0.0;
+        
+        mthiggs_ = mll*mll + mnu*mnu + 2.0*(enell*enenn - enex*enex - eney*eney);
+
+        if( mthiggs_ <= 0 ) mthiggs_ = 0.0;
+        else                mthiggs_ = TMath::Sqrt( mthiggs_ );
+
+        
 
 	//jet and b-tag stuff
 	vector<unsigned int> jetsForVeto = getJetIdVector(i, 25., 100000., 5.0);
@@ -671,6 +689,7 @@ void looper::InitBabyNtuple ()
 
   mt_lephardmet_= -999999;
   mt_lepsoftmet_= -999999;
+  mthiggs_ = -999999;
   mt_dilmet_= -999999;
   dphi_lephardmet_= -999999;
   dphi_lepsoftmet_= -999999;
@@ -834,6 +853,7 @@ void looper::MakeBabyNtuple (const char* babyFileName)
   eventTree_->Branch("dphi_lephardmet_"      , &dphi_lephardmet_          , "dphi_lephardmet/F");
   eventTree_->Branch("dphi_lepsoftmet_"      , &dphi_lepsoftmet_          , "dphi_lepsoftmet/F");
   eventTree_->Branch("mt_dilmet_"        , &mt_dilmet_            , "mt_dilmet/F");
+  eventTree_->Branch("mthiggs_"          , &mthiggs_            , "mthiggs/F");
 
   eventTree_->Branch("llm_sumpt_"        , &llm_sumpt_            , "llm_sumpt/F");
   eventTree_->Branch("llmj_sumpt_"        , &llmj_sumpt_            , "llmj_sumpt/F");

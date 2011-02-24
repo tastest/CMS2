@@ -164,6 +164,7 @@ class looper
 	Float_t dphi_lephardmet_;
 	Float_t dphi_lepsoftmet_;
 	Float_t mt_dilmet_;
+	Float_t mthiggs_;
 
 	Float_t llm_sumpt_;
 	Float_t llmj_sumpt_;

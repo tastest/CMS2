@@ -13,9 +13,10 @@
   gSystem->Load("Tools/MiniFWLite/libMiniFWLite.so");
 
   //choose samples to run over----------------------
-/*************** BACKGROUND SAMPLES ***************/
-  runLooper("TTJets_PU");
-  runLooper("WJetsToLNu_PU");
+  /*************** BACKGROUND SAMPLES ***************/
+  //  runLooper("TTJets_PU");
+  runLooper("WJetsToLNu_PU");  //madgraph wjets
+  runLooper("WToLNu");         //pythia wjets
   runLooper("WWTo2L2Nu_PU");
   runLooper("tW_PU");
   runLooper("ZZ_PU");
@@ -32,21 +33,24 @@
   runLooper("HToWWTo2L2NuM130_PU");
   runLooper("HToWWTo2L2NuM160_PU");
   runLooper("HToWWTo2L2NuM200_PU");
-/*************** SIGNAL SAMPLES (TAUS) ***************/
+  /*************** SIGNAL SAMPLES (TAUS) ***************/
   runLooper("HToWWTo2Tau2NuM130_PU");
   runLooper("HToWWToLNuTauNuM130_PU");
   runLooper("HToWWTo2Tau2NuM160_PU");
   runLooper("HToWWToLNuTauNuM160_PU");
   runLooper("HToWWTo2Tau2NuM200_PU");
   runLooper("HToWWToLNuTauNuM200_PU");
+  /*************** FO SAMPLES*********** ***************/
+  runLooper("WJetsToLNu_PU_FOv3");
+  runLooper("WToLNu_FOv3");
 
 
-/*************** SAMPLES NO PU ***************/
-//   runLooper("HToWWTo2L2NuM130");
-//   runLooper("HToWWTo2L2NuM160");
-//   runLooper("HToWWTo2L2NuM200");
-//   runLooper("TTJets");
-//   runLooper("WJetsToLNu");
-//   runLooper("WWTo2L2Nu");
+  /*************** SAMPLES NO PU ***************/
+  //   runLooper("HToWWTo2L2NuM130");
+  //   runLooper("HToWWTo2L2NuM160");
+  //   runLooper("HToWWTo2L2NuM200");
+  //   runLooper("TTJets");
+  //   runLooper("WJetsToLNu");
+  //   runLooper("WWTo2L2Nu");
 
 }
