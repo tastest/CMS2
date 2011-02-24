@@ -101,9 +101,9 @@ void genMHiggsYHiggs(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_eve
 // Higgs PhaseSpace
 //============================================
 
-void genMHiggs(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_type* PSList){
+void genMHiggs(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_type* PSList, BoostHist boosthist) {
 
-    double wt[4];
+    double wt[6];
      
     double nu_X,nu_Y,nu_Z;
     EtExponential(20.,r[0],&nu_X,&wt[0]);  
@@ -120,15 +120,20 @@ void genMHiggs(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_typ
 
 
     double PSWeight=wt[0]*wt[1]*wt[2]*wt[3];
-   
+       
+    double qX (0.0), qY (0.0);
 
-    //System Pt
-      double qX=0.,qY=0.;
-    
+    if(SmearLevel >= 1) {
+      KtPdf(r[4], & qX, & wt[4], boosthist.kx);
+      KtPdf(r[5], & qY, & wt[5], boosthist.ky);
+      PSWeight = PSWeight*wt[4]*wt[5];
+    }
+    // cout << "PhaseSpace::genMHiggs = " << qX <<"; qY = " <<qY <<endl;
     WWL1L2Sol_MHiggs( &cdf_event,
                       qX, qY, msqHiggs, nu_X, nu_Y, nu_Z,
                       PSList);
 
+    
     for(int i=0;i<2;i++){
     
        mcfm_event_type& temp = PSList[i];
@@ -247,10 +252,10 @@ void genDY(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_type* P
 //
 //============================================
 
-void genMw1Mw2(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_type* PSList){
+void genMw1Mw2(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_type* PSList, BoostHist boosthist){
 
 //    double sixteen_twopi_to_eighth=16*TMath::Power(2*TMath::Pi(),8);
-    double wt[4];
+    double wt[6];
      
     double nu_Z,nb_Z;
     EtExponential(80.,r[0],&nu_Z,&wt[0]);  
@@ -270,8 +275,14 @@ void genMw1Mw2(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_typ
     //  test how pT shift affects the Event prob
     //  double qX=10.,qY=10.;
     double qX=0, qY=0;
+    if(SmearLevel >= 1) {
+      KtPdf(r[4], & qX, & wt[4], boosthist.kx);
+      KtPdf(r[5], & qY, & wt[5], boosthist.ky);
+      PSWeight = PSWeight*wt[4]*wt[5];
+    }
     
-//    mcfm_event_type  sol[4];
+    // cout << "PhaseSpace::genMw1Mw2 qX = " << qX <<"; qY = " <<qY <<endl;
+    //    mcfm_event_type  sol[4];
 
 //nu_Z=-0.62694; nb_Z=16.8335;
 //Mw1=81.0633; Mw2=78.2776;
