@@ -22,6 +22,7 @@
 #include "CORE/trackSelections.h"
 #include "CORE/ssSelections.h"
 #include "CORE/eventSelections.h"
+#include "CORE/triggerUtils.h"
 
 // tools include is for
 // the duplicate cleaning
@@ -60,6 +61,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 
             // call progress counted
             CMS2::progress(nEventsTotal, nEventsChain );
+            if (event == 0) PrintTriggers();
 
             // dilepton hypothesis stuff
             for (unsigned hypi = 0; hypi < cms2.hyp_p4().size(); ++hypi)
@@ -103,22 +105,40 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 
                 SetEventLevelInfo();
 
-				//
-				// Fill mc id of hypothesis leptons if this is MC
-				//
-				if (!isdata_) {
-					 int lt_id = cms2.hyp_lt_id()[hypi];
-					 int ll_id = cms2.hyp_ll_id()[hypi];
+                //
+                // Fill mc id of hypothesis leptons if this is MC
+                //
+                if (!isdata_) {
+                    int lt_id = cms2.hyp_lt_id()[hypi];
+                    int ll_id = cms2.hyp_ll_id()[hypi];
 
-					 int lt_idx = cms2.hyp_lt_index()[hypi];
-					 int ll_idx = cms2.hyp_ll_index()[hypi];
+                    int lt_idx = cms2.hyp_lt_index()[hypi];
+                    int ll_idx = cms2.hyp_ll_index()[hypi];
 
-					 mcid1_ = abs(lt_id) == 13 ? cms2.mus_mc_id()[lt_idx] : cms2.els_mc_id()[lt_idx];
-					 mcid2_ = abs(ll_id) == 13 ? cms2.mus_mc_id()[ll_idx] : cms2.els_mc_id()[ll_idx];
-                     mcmotherid1_ = abs(lt_id) == 13 ? cms2.mus_mc_motherid()[lt_idx] : cms2.els_mc_motherid()[lt_idx];
-                     mcmotherid2_ = abs(ll_id) == 13 ? cms2.mus_mc_motherid()[ll_idx] : cms2.els_mc_motherid()[ll_idx];
+                    mcid1_ = abs(lt_id) == 13 ? cms2.mus_mc_id()[lt_idx] : cms2.els_mc_id()[lt_idx];
+                    mcid2_ = abs(ll_id) == 13 ? cms2.mus_mc_id()[ll_idx] : cms2.els_mc_id()[ll_idx];
+                    mcmotherid1_ = abs(lt_id) == 13 ? cms2.mus_mc_motherid()[lt_idx] : cms2.els_mc_motherid()[lt_idx];
+                    mcmotherid2_ = abs(ll_id) == 13 ? cms2.mus_mc_motherid()[ll_idx] : cms2.els_mc_motherid()[ll_idx];
 
-				}
+                }
+
+                //
+                // Fill trigger information
+                //
+
+                if (isdata_) {
+                    trg_single_e_ = PassSingleElectron();
+                    trg_single_mu_ = PassSingleElectron();
+                    trg_double_e_ = PassSingleElectron();
+                    trg_double_mu_ = PassSingleElectron();
+                    trg_cross_emu_ = PassSingleElectron();
+                } else {
+                    trg_single_e_ = true;
+                    trg_single_mu_ = true;
+                    trg_double_e_ = true;
+                    trg_double_mu_ = true;
+                    trg_cross_emu_ = true;
+                }
 
                 // 
                 // Fill MET information
@@ -266,7 +286,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 njets25_ = 0;
                 njetsSS_ = 0;
                 njets_ = 0;
-        
+
                 for (unsigned int jeti = 0; jeti < cms2.pfjets_p4().size(); ++jeti)
                 {
 
@@ -336,7 +356,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 
                 LorentzVector dijetP4;
                 jetmass_ = theJetIndices.size() > 1 ? sqrt((cms2.pfjets_p4()[theJetIndices[0]]*cms2.pfjets_cor()[theJetIndices[0]] 
-                                    + cms2.pfjets_p4()[theJetIndices[1]]*cms2.pfjets_cor()[theJetIndices[1]]).M2()) : -999999.; 
+                            + cms2.pfjets_p4()[theJetIndices[1]]*cms2.pfjets_cor()[theJetIndices[1]]).M2()) : -999999.; 
 
                 double mindphipfmet = 999999.;
                 double mindphitcmet = 999999.;
@@ -519,7 +539,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 //
                 // Now do LL...
                 //
-    
+
                 // if LL is a mu, fill mu info
                 if (abs(cms2.hyp_ll_id()[hypi]) == 13) {
                     iso2_   = muonIsoValue(index2);
@@ -667,7 +687,7 @@ void dilepbabymaker::InitBabyNtuple ()
     dphipfmet1_   = -999999.;
     dphitcmet1_   = -999999.;
     drjet1_       = -999999.;
-	mcid1_        = -999999;
+    mcid1_        = -999999;
     mcmotherid1_  = -999999;
     eormu2_       = -999999;
     type2_        = -999999;
@@ -680,7 +700,7 @@ void dilepbabymaker::InitBabyNtuple ()
     dphipfmet2_   = -999999.;
     dphitcmet2_   = -999999.;
     drjet2_       = -999999.;
-	mcid2_        = -999999;
+    mcid2_        = -999999;
     mcmotherid2_  = -999999;
     mt2_          = -999999.;
     mt2j_         = -999999.;
@@ -761,6 +781,13 @@ void dilepbabymaker::InitBabyNtuple ()
     e2_ctfCharge_   = -999999;
     e2_gsfCharge_   = -999999;
     e2_scCharge_    = -999999;
+
+    trg_single_e_ = 0;
+    trg_single_mu_ = 0;
+    trg_double_e_ = 0;
+    trg_double_mu_ = 0;
+    trg_cross_emu_ = 0;
+
 }
 
 void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
@@ -844,7 +871,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("dphipfmet1", &dphipfmet1_, "dphipfmet1/F");
     babyTree_->Branch("dphitcmet1", &dphitcmet1_, "dphitcmet1/F");
     babyTree_->Branch("drjet1",     &drjet1_,     "drjet1/F"    );
-	babyTree_->Branch("mcid1",      &mcid1_,      "mcid1/F"     );
+    babyTree_->Branch("mcid1",      &mcid1_,      "mcid1/F"     );
     babyTree_->Branch("mcmotherid1",&mcmotherid1_,"mcmotherid1/F");
     babyTree_->Branch("eormu2",     &eormu2_,     "eormu2/I"    );
     babyTree_->Branch("type2",      &type2_,      "type2/I"     );
@@ -857,7 +884,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("dphipfmet2", &dphipfmet2_, "dphipfmet2/F");
     babyTree_->Branch("dphitcmet2", &dphitcmet2_, "dphitcmet2/F");
     babyTree_->Branch("drjet2",     &drjet2_,     "drjet2/F"    );
-	babyTree_->Branch("mcid2",      &mcid2_,      "mcid2/F"     );
+    babyTree_->Branch("mcid2",      &mcid2_,      "mcid2/F"     );
     babyTree_->Branch("mcmotherid2",&mcmotherid2_,"mcmotherid2/F");
     babyTree_->Branch("mt2",        &mt2_,        "mt2/F"       );
     babyTree_->Branch("mt2j",       &mt2j_,       "mt2j/F"      );
@@ -938,6 +965,85 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e2_ctfCharge",  &e2_ctfCharge_,  "e2_ctfCharge/I" );
     babyTree_->Branch("e2_gsfCharge",  &e2_gsfCharge_,  "e2_gsfCharge/I" );
     babyTree_->Branch("e2_scCharge",   &e2_scCharge_,   "e2_scCharge/I"  );
+
+    // trigger stuff
+    babyTree_->Branch("trg_single_mu",   &trg_single_mu_,   "trg_single_mu/I"  );
+    babyTree_->Branch("trg_single_e",   &trg_single_e_,   "trg_single_e/I"  );
+    babyTree_->Branch("trg_double_mu",   &trg_double_mu_,   "trg_double_mu/I"  );
+    babyTree_->Branch("trg_double_e",   &trg_double_e_,   "trg_double_e/I"  );
+    babyTree_->Branch("trg_cross_emu",   &trg_cross_emu_,   "trg_cross_emu/I"  );
+
+}
+
+bool dilepbabymaker::PassSingleMuon()
+{
+    if( passUnprescaledHLTTrigger("HLT_Mu11") )           return true;
+    if( passUnprescaledHLTTrigger("HLT_Mu13_v1") )        return true;
+    if( passUnprescaledHLTTrigger("HLT_Mu15_v1") )        return true;
+    if( passUnprescaledHLTTrigger("HLT_Mu9") )          return true; //136033-147116
+    if( passUnprescaledHLTTrigger("HLT_Mu7") )          return true; //140116-144114
+    if( passUnprescaledHLTTrigger("HLT_Mu5") )          return true; //136033-141882
+    if( passUnprescaledHLTTrigger("HLT_Mu17_v1") )        return true; //<<<---Added 2e32
+    if( passUnprescaledHLTTrigger("HLT_Mu19_v1") )        return true; //<<<---Added 2e32
+    return false;
+}
+
+bool dilepbabymaker::PassSingleElectron()
+{
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TighterEleIdIsol_L1R_v1")) return true;
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TighterEleIdIsol_L1R_v2")) return true;
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TighterEleIdIsol_L1R_v3")) return true;
+    if( passUnprescaledHLTTrigger("HLT_Ele22_SW_TighterEleId_L1R_v2"))     return true;
+    if( passUnprescaledHLTTrigger("HLT_Ele22_SW_TighterEleId_L1R_v3")) return true;
+    if( passUnprescaledHLTTrigger("HLT_Ele22_SW_TighterCaloIdIsol_L1R_v2")) return true;
+    if( passUnprescaledHLTTrigger("HLT_Ele27_SW_TightCaloEleIdTrack_L1R_v1")) return true;
+    if( passUnprescaledHLTTrigger("HLT_Ele32_SW_TightCaloEleIdTrack_L1R_v1")) return true;
+    if( passUnprescaledHLTTrigger("HLT_Ele32_SW_TighterEleId_L1R_v2")) return true;
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v1") ) return true; // 147390-->
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2") ) return true; // 147390-->
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TightCaloEleId_SC8HE_L1R_v1") )  return true; // 147196-148058 
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_CaloEleId_L1R") )                 return true; //146428-147116 <---- master
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_EleId_L1R") )                     return true; //146428-147116
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_LooseEleId_L1R") )                return true; //146428-147116
+    if( passUnprescaledHLTTrigger("HLT_Ele15_SW_CaloEleId_L1R") ) return true; //141956-144114 <---- master
+    if( passUnprescaledHLTTrigger("HLT_Ele15_SW_EleId_L1R") )     return true; //141956-144114
+    if( passUnprescaledHLTTrigger("HLT_Ele15_SW_L1R") ) return true; //140058-143962
+    if( passUnprescaledHLTTrigger("HLT_Ele15_LW_L1R") ) return true; //136033-141882
+    if( passUnprescaledHLTTrigger("HLT_Ele20_SW_L1R") ) return true; //140058-144114
+    if( passUnprescaledHLTTrigger("HLT_Ele10_SW_EleId_L1R") ) return true;      //141956-144114
+    if( passUnprescaledHLTTrigger("HLT_Ele10_LW_EleId_L1R") ) return true;      //136033-141882
+    if( passUnprescaledHLTTrigger("HLT_Ele10_LW_L1R") )       return true;      //136033-139980
+    if( passUnprescaledHLTTrigger("HLT_Ele10_SW_L1R") )       return true;      //139195-139980
+    return false;
+}
+
+bool dilepbabymaker::PassDoubleMuon()
+{
+    if( passUnprescaledHLTTrigger("HLT_DoubleMu3_v2") )     return true;
+    if( passUnprescaledHLTTrigger("HLT_DoubleMu5_v1") )     return true;
+    if( passUnprescaledHLTTrigger("HLT_DoubleMu3") )        return true; //136033-147116
+    return false;
+}
+
+bool dilepbabymaker::PassDoubleElectron()
+{
+    if( passUnprescaledHLTTrigger("HLT_DoubleEle15_SW_L1R_v1") )    return true;
+    if( passUnprescaledHLTTrigger("HLT_DoubleEle17_SW_L1R_v1") )    return true; //    
+    if( passUnprescaledHLTTrigger("HLT_DoubleEle10_SW_L1R") )       return true; //141956-147116
+    if( passUnprescaledHLTTrigger("HLT_DoubleEle5_SW_L1R") )        return true; //136033-141882
+    return false;
+}
+
+bool dilepbabymaker::PassElectronMuon()
+{
+    if( passUnprescaledHLTTrigger("HLT_Mu5_Ele5_v1") )          return true;
+    if( passUnprescaledHLTTrigger("HLT_Mu5_Ele9_v1") )          return true;
+    if( passUnprescaledHLTTrigger("HLT_Mu11_Ele8_v1") )     return true;    // Mu3 L1 Seed
+    if( passUnprescaledHLTTrigger("HLT_Mu8_Ele8_v1") )      return true;    // Mu3 L1 Seed
+    if( passUnprescaledHLTTrigger("HLT_Mu5_Ele13_v2") )     return true;    // EG8 L1 Seed
+    if( passUnprescaledHLTTrigger("HLT_Mu5_Ele17_v1") )     return true;    // EG8 L1 Seed & open mu Seed
+    if( passUnprescaledHLTTrigger("HLT_Mu5_Ele17_v2") )     return true;    // EG8 L1 Seed & open mu Seed
+    return false;
 }
 
 void dilepbabymaker::SetEventLevelInfo ()

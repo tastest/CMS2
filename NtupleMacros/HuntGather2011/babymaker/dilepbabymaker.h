@@ -17,7 +17,13 @@ class dilepbabymaker
         void MakeBabyNtuple (const char *);
         void InitBabyNtuple ();
 
-        void SetEventLevelInfo ();
+        bool PassSingleMuon();
+        bool PassSingleElectron();
+        bool PassDoubleMuon();
+        bool PassDoubleElectron();
+        bool PassElectronMuon();
+
+        void SetEventLevelInfo();
 
         void FillBabyNtuple ();
         void CloseBabyNtuple ();
@@ -193,6 +199,14 @@ class dilepbabymaker
         Int_t   e2_ctfCharge_;
         Int_t   e2_scCharge_;
         Int_t   e2_gsfCharge_;
+
+        // triggers
+        Int_t trg_single_mu_;
+        Int_t trg_single_e_;
+        Int_t trg_double_mu_;
+        Int_t trg_double_e_;
+        Int_t trg_cross_emu_;
+
 };
 
 #endif
