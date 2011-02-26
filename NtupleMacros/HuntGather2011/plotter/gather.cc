@@ -58,8 +58,6 @@ float GetIntLumi(BabySample *bs, float lumi)
 TCanvas* TriggerMonitor(const char *savename, TCut sel, TCut trig, float intlumipb, unsigned int nbins, float xlo, float xhi, bool integrated, BabySample *bs)
 {
 
-    std::vector<TH1F*> vh_data_total;
-    std::vector<TH1F*> vh_data_pass;
     TH1F* h1_pass;
     TH1F* h1_total;
     TH1F* h1_eff;

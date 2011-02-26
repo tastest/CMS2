@@ -9,7 +9,7 @@
 
 #include <vector>
 
-void makeGatherPlots(TString base) {
+void makeGatherPlots(TString base, bool debug = false) {
 
     gROOT->ProcessLine(".L tdrstyle.C");
     gROOT->ProcessLine("setTDRStyle()");
@@ -195,18 +195,19 @@ void makeGatherPlots(TString base) {
     // Make the plots
     //
 
-/*
-    makeGatherPlotsValidation(babyVectorSM, goodruns_lumi, est_newruns_lumi);
-    makeGatherPlotsHiggs(babyVectorHiggs, est_lumi);
-    makeGatherPlotsOS(babyVectorSusy, est_lumi);
-    makeGatherPlotsZMet(babyVectorSusy, est_lumi);
-    makeGatherPlotsSS(babyVectorSusy, est_lumi);
-    makeGatherPlotsST(babyVectorSusy, est_lumi);
-    makeGatherPlotsExotica(babyVectorSM, est_lumi);
-*/  
+    if (debug) {
+        makeGatherTriggerMonitor(babyVectorSM, bs_data, est_lumi);
+    }
+    else {
+        makeGatherPlotsValidation(babyVectorSM, goodruns_lumi, est_newruns_lumi);
+        makeGatherPlotsHiggs(babyVectorHiggs, est_lumi);
+        makeGatherPlotsOS(babyVectorSusy, est_lumi);
+        makeGatherPlotsZMet(babyVectorSusy, est_lumi);
+        makeGatherPlotsSS(babyVectorSusy, est_lumi);
+        makeGatherPlotsST(babyVectorSusy, est_lumi);
+        makeGatherPlotsExotica(babyVectorSM, est_lumi);
+    } 
 
-    makeGatherTriggerMonitor(babyVectorSM, bs_data, est_lumi);
- 
     //
     // Save the plots
     //
