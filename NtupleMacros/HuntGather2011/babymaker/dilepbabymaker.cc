@@ -128,10 +128,10 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 
                 if (isdata_) {
                     trg_single_e_ = PassSingleElectron();
-                    trg_single_mu_ = PassSingleElectron();
-                    trg_double_e_ = PassSingleElectron();
-                    trg_double_mu_ = PassSingleElectron();
-                    trg_cross_emu_ = PassSingleElectron();
+                    trg_single_mu_ = PassSingleMuon();
+                    trg_double_e_ = PassDoubleElectron();
+                    trg_double_mu_ = PassDoubleMuon();
+                    trg_cross_emu_ = PassElectronMuon();
                 } else {
                     trg_single_e_ = true;
                     trg_single_mu_ = true;
