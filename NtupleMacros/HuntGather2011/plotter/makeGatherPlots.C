@@ -23,6 +23,7 @@ void makeGatherPlots(TString base) {
     gROOT->ProcessLine(".L ../libs/libCMS2NtupleMacrosTools.so");
     gROOT->ProcessLine(".L ../libs/libHuntGather2011Babymaker.so");
 
+    gROOT->ProcessLine(".L makeGatherTriggerMonitor.C");
     gROOT->ProcessLine(".L makeGatherPlotsValidation.C");
     gROOT->ProcessLine(".L makeGatherPlotsHiggs.C");
     gROOT->ProcessLine(".L makeGatherPlotsOS.C");
@@ -127,7 +128,7 @@ void makeGatherPlots(TString base) {
     TCut c_datapresel = c_goodrunplus + c_notduplicate;
 
     BabySample *bs_data = new BabySample("data", "data", 
-            base+"/data/Electron_Run2010B-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/baby_gather_skimmed_ntuple*.root",
+            base+"/data/Electron_Run2010B-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/baby_gather.root",
             c_datapresel, 1.0, DATA);
     bs_data->add(base+"/data/Mu_Run2010B-Nov4ReReco_v1_RECO/V03-06-17/diLepPt1020Skim/baby_gather.root");
 
@@ -194,6 +195,7 @@ void makeGatherPlots(TString base) {
     // Make the plots
     //
 
+/*
     makeGatherPlotsValidation(babyVectorSM, goodruns_lumi, est_newruns_lumi);
     makeGatherPlotsHiggs(babyVectorHiggs, est_lumi);
     makeGatherPlotsOS(babyVectorSusy, est_lumi);
@@ -201,7 +203,10 @@ void makeGatherPlots(TString base) {
     makeGatherPlotsSS(babyVectorSusy, est_lumi);
     makeGatherPlotsST(babyVectorSusy, est_lumi);
     makeGatherPlotsExotica(babyVectorSM, est_lumi);
-    
+*/  
+
+    makeGatherTriggerMonitor(babyVectorSM, bs_data, est_lumi);
+ 
     //
     // Save the plots
     //

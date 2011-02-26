@@ -55,6 +55,47 @@ float GetIntLumi(BabySample *bs, float lumi)
     return GetIntLumi(bs->chain(), lumi, brun, bls, erun, els);
 }
 
+TCanvas* TriggerMonitor(const char *savename, TCut sel, TCut trig, float intlumipb, unsigned int nbins, float xlo, float xhi, bool integrated, BabySample *bs)
+{
+
+    std::vector<TH1F*> vh_data_total;
+    std::vector<TH1F*> vh_data_pass;
+    TH1F* h1_pass;
+    TH1F* h1_total;
+    TH1F* h1_eff;
+
+    //
+    // compute the efficiency
+    //
+
+    TCut cut_pass = sel + trig;
+    cut_pass.SetName(TString(sel.GetName())+"_"+TString(trig.GetName()));
+
+    h1_total    = Plot(bs, "run", sel, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
+    h1_pass     = Plot(bs, "run", cut_pass, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
+    h1_eff = (TH1F*)h1_pass->Clone("");
+    h1_eff->Divide(h1_pass, h1_total, 1.0, 1.0, "B");
+
+    //
+    // do the drawing
+    //
+
+    TCanvas *c1 = new TCanvas(savename);
+    c1->SetTopMargin(0.08);
+    c1->cd();
+
+    // do the data histogram
+    h1_eff->Draw("E1");
+    h1_eff->GetXaxis()->SetNdivisions(504);
+ 
+    // draw the legend and tidy up
+    c1->RedrawAxis();
+    gDrawAllCount++;
+    reset_babydorkidentifier();
+
+    return c1;
+}
+
 TCanvas* DrawAll(TCut var, const char *savename, TCut sel, float intlumipb, unsigned int nbins, float xlo, float xhi, bool integrated,
         std::vector<BabySample*> bss)
 {
@@ -202,7 +243,10 @@ TH1F* Plot(BabySample *bs, TCut var, TCut selection, float intlumipb,
     //
 
     TH1F *h = 0;
-    if (!(h = (TH1F*)gROOT->FindObjectAny(name))) h = new TH1F(name, title, nbins, xlo, xhi);
+    if (!(h = (TH1F*)gROOT->FindObjectAny(name))) {
+        h = new TH1F(name, title, nbins, xlo, xhi);
+        h->Sumw2();
+    }
 
     //
     // Draw the histogram

@@ -30,6 +30,9 @@ float GetIntLumi(BabySample *bs, float lumi);
 // drawing functions
 //
 
+TCanvas* TriggerMonitor(const char *savename, TCut sel, TCut trig, float intlumipb, unsigned int nbins, float xlo, float xhi, bool integrated, 
+            BabySample *bs);
+
 TCanvas* DrawAll(TCut field, const char *savename, TCut sel, float intlumipb, unsigned int nbins, float xlo, float xhi, bool integrated,
            std::vector<BabySample*> bss);
 
