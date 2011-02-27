@@ -21,7 +21,8 @@
 void ExclusionPlot();
   
 
-void CommandMSUGRA(TString plotName,Int_t tanBeta, Bool_t plotLO);
+void CommandMSUGRA(TString plotName,Int_t tanBeta, Bool_t plotLO, 
+Bool_t plotAlphat);
 
  
 

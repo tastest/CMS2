@@ -24,6 +24,7 @@ void ExclusionPlot(){
 
   Int_t tanBeta = 3;
   Bool_t plotLO = true;
+  Bool_t plotAlphat=true;
    
   /* TH1F* First = getHisto_1d("./","ExclusionLimit","Significance_NLO_expected_tanBeta50.root");
   setPlottingStyle(*First);
@@ -47,14 +48,15 @@ void ExclusionPlot(){
     exclusionPlots.push_back(Third);*/
   
   
-  CommandMSUGRA("35pb_expected_11.root",tanBeta, plotLO);
+  CommandMSUGRA("35pb_expected_11.root",tanBeta, plotLO, plotAlphat);
 
 
 }
 
 
 
-void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
+void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_, 
+Bool_t plotAlphat_){
   
   gStyle->SetOptTitle(0);
   gStyle->SetOptStat(0);
@@ -150,11 +152,12 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   if (tanBeta_ == 3) {
     First  = getObserved_NLOunc();
     FirstDummy  = getObserved_NLOunc();
+    Third = getObserved_NLO_tanBeta3(); // alphaT
   } else {
     First  = getNLOobsTanbeta10();
     FirstDummy  = getObserved_NLOunc();
+    Third = getObserved_NLO_tanBeta10(); // alphaT
   }
-  Third = getExpected_NLOunc();//getLO_jetMultis();
   Second  = getLO_signalCont();
 
 
@@ -238,6 +241,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   } else {
     myleg->AddEntry(sFirst,"CMS OS Dilepton Limit","L"); 
   }
+  if (plotAlphat_) myleg->AddEntry(sThird,"CMS #alpha_{T} Limit","L"); 
 
       
  
@@ -256,6 +260,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   First->Draw("samec");
   // if (tanBeta_ == 3) Third->Draw("samec");
   if (tanBeta_ == 3 && plotLO_) Second->Draw("samec");
+  if (plotAlphat_) sThird->Draw("same");
 
    
     
