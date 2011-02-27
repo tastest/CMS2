@@ -108,18 +108,17 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 //
                 // Fill mc id of hypothesis leptons if this is MC
                 //
-                if (!isdata_) {
-                    int lt_id = cms2.hyp_lt_id()[hypi];
-                    int ll_id = cms2.hyp_ll_id()[hypi];
 
+                int lt_id = cms2.hyp_lt_id()[hypi];
+                int ll_id = cms2.hyp_ll_id()[hypi];
+
+                if (!isdata_) {
                     int lt_idx = cms2.hyp_lt_index()[hypi];
                     int ll_idx = cms2.hyp_ll_index()[hypi];
-
                     mcid1_ = abs(lt_id) == 13 ? cms2.mus_mc_id()[lt_idx] : cms2.els_mc_id()[lt_idx];
                     mcid2_ = abs(ll_id) == 13 ? cms2.mus_mc_id()[ll_idx] : cms2.els_mc_id()[ll_idx];
                     mcmotherid1_ = abs(lt_id) == 13 ? cms2.mus_mc_motherid()[lt_idx] : cms2.els_mc_motherid()[lt_idx];
                     mcmotherid2_ = abs(ll_id) == 13 ? cms2.mus_mc_motherid()[ll_idx] : cms2.els_mc_motherid()[ll_idx];
-
                 }
 
                 //
@@ -127,17 +126,39 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 //
 
                 if (isdata_) {
-                    trg_single_e_ = PassSingleElectron();
-                    trg_single_mu_ = PassSingleMuon();
-                    trg_double_e_ = PassDoubleElectron();
-                    trg_double_mu_ = PassDoubleMuon();
+
+                    // do electrons (single)
+                    if (abs(lt_id) == 11)
+                        if (PassSingleElectron(cms2.hyp_lt_p4()[hypi])) trg_single_e_ |= (1<<0);
+                    if (abs(ll_id) == 11)
+                        if (PassSingleElectron(cms2.hyp_ll_p4()[hypi])) trg_single_e_ |= (1<<1);
+
+                    // do muons (single)
+                    if (abs(lt_id) == 13)
+                        if (PassSingleMuon(cms2.hyp_lt_p4()[hypi])) trg_single_mu_ |= (1<<0);
+                    if (abs(ll_id) == 13) 
+                        if (PassSingleMuon(cms2.hyp_ll_p4()[hypi])) trg_single_mu_ |= (1<<1);
+
+                    // do double electron
+                    if (abs(lt_id) == 11 && abs(ll_id) == 11)
+                        trg_double_e_ = PassDoubleElectron();
+
+                    // do double muon
+                    if (abs(lt_id) == 13 && abs(ll_id) == 13)
+                        trg_double_mu_ = PassDoubleMuon();
+
+                    // do cross trigger (e-mu)
                     trg_cross_emu_ = PassElectronMuon();
+                    if (abs(lt_id) != abs(ll_id))
+                        trg_double_mu_ = PassElectronMuon();
+
+
                 } else {
-                    trg_single_e_ = true;
-                    trg_single_mu_ = true;
-                    trg_double_e_ = true;
-                    trg_double_mu_ = true;
-                    trg_cross_emu_ = true;
+                    trg_single_e_ = ((1<<0) | (1<<1));
+                    trg_single_mu_ = ((1<<0) | (1<<1));
+                    trg_double_e_ = 1;
+                    trg_double_mu_ = 1;
+                    trg_cross_emu_ = 1;
                 }
 
                 // 
@@ -975,45 +996,45 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 
 }
 
-bool dilepbabymaker::PassSingleMuon()
+bool dilepbabymaker::PassSingleMuon(const LorentzVector &obj)
 {
-    if( passUnprescaledHLTTrigger("HLT_Mu11") )           return true;
-    if( passUnprescaledHLTTrigger("HLT_Mu13_v1") )        return true;
-    if( passUnprescaledHLTTrigger("HLT_Mu15_v1") )        return true;
-    if( passUnprescaledHLTTrigger("HLT_Mu9") )          return true; //136033-147116
-    if( passUnprescaledHLTTrigger("HLT_Mu7") )          return true; //140116-144114
-    if( passUnprescaledHLTTrigger("HLT_Mu5") )          return true; //136033-141882
-    if( passUnprescaledHLTTrigger("HLT_Mu17_v1") )        return true; //<<<---Added 2e32
-    if( passUnprescaledHLTTrigger("HLT_Mu19_v1") )        return true; //<<<---Added 2e32
+    if( passUnprescaledHLTTrigger("HLT_Mu11", obj) )           return true;
+    if( passUnprescaledHLTTrigger("HLT_Mu13_v1", obj) )        return true;
+    if( passUnprescaledHLTTrigger("HLT_Mu15_v1", obj) )        return true;
+    if( passUnprescaledHLTTrigger("HLT_Mu9", obj) )          return true; //136033-147116
+    if( passUnprescaledHLTTrigger("HLT_Mu7", obj) )          return true; //140116-144114
+    if( passUnprescaledHLTTrigger("HLT_Mu5", obj) )          return true; //136033-141882
+    if( passUnprescaledHLTTrigger("HLT_Mu17_v1", obj) )        return true; //<<<---Added 2e32
+    if( passUnprescaledHLTTrigger("HLT_Mu19_v1", obj) )        return true; //<<<---Added 2e32
     return false;
 }
 
-bool dilepbabymaker::PassSingleElectron()
+bool dilepbabymaker::PassSingleElectron(const LorentzVector &obj)
 {
-    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TighterEleIdIsol_L1R_v1")) return true;
-    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TighterEleIdIsol_L1R_v2")) return true;
-    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TighterEleIdIsol_L1R_v3")) return true;
-    if( passUnprescaledHLTTrigger("HLT_Ele22_SW_TighterEleId_L1R_v2"))     return true;
-    if( passUnprescaledHLTTrigger("HLT_Ele22_SW_TighterEleId_L1R_v3")) return true;
-    if( passUnprescaledHLTTrigger("HLT_Ele22_SW_TighterCaloIdIsol_L1R_v2")) return true;
-    if( passUnprescaledHLTTrigger("HLT_Ele27_SW_TightCaloEleIdTrack_L1R_v1")) return true;
-    if( passUnprescaledHLTTrigger("HLT_Ele32_SW_TightCaloEleIdTrack_L1R_v1")) return true;
-    if( passUnprescaledHLTTrigger("HLT_Ele32_SW_TighterEleId_L1R_v2")) return true;
-    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v1") ) return true; // 147390-->
-    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2") ) return true; // 147390-->
-    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TightCaloEleId_SC8HE_L1R_v1") )  return true; // 147196-148058 
-    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_CaloEleId_L1R") )                 return true; //146428-147116 <---- master
-    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_EleId_L1R") )                     return true; //146428-147116
-    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_LooseEleId_L1R") )                return true; //146428-147116
-    if( passUnprescaledHLTTrigger("HLT_Ele15_SW_CaloEleId_L1R") ) return true; //141956-144114 <---- master
-    if( passUnprescaledHLTTrigger("HLT_Ele15_SW_EleId_L1R") )     return true; //141956-144114
-    if( passUnprescaledHLTTrigger("HLT_Ele15_SW_L1R") ) return true; //140058-143962
-    if( passUnprescaledHLTTrigger("HLT_Ele15_LW_L1R") ) return true; //136033-141882
-    if( passUnprescaledHLTTrigger("HLT_Ele20_SW_L1R") ) return true; //140058-144114
-    if( passUnprescaledHLTTrigger("HLT_Ele10_SW_EleId_L1R") ) return true;      //141956-144114
-    if( passUnprescaledHLTTrigger("HLT_Ele10_LW_EleId_L1R") ) return true;      //136033-141882
-    if( passUnprescaledHLTTrigger("HLT_Ele10_LW_L1R") )       return true;      //136033-139980
-    if( passUnprescaledHLTTrigger("HLT_Ele10_SW_L1R") )       return true;      //139195-139980
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TighterEleIdIsol_L1R_v1", obj)) return true;
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TighterEleIdIsol_L1R_v2", obj)) return true;
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TighterEleIdIsol_L1R_v3", obj)) return true;
+    if( passUnprescaledHLTTrigger("HLT_Ele22_SW_TighterEleId_L1R_v2", obj))     return true;
+    if( passUnprescaledHLTTrigger("HLT_Ele22_SW_TighterEleId_L1R_v3", obj)) return true;
+    if( passUnprescaledHLTTrigger("HLT_Ele22_SW_TighterCaloIdIsol_L1R_v2", obj)) return true;
+    if( passUnprescaledHLTTrigger("HLT_Ele27_SW_TightCaloEleIdTrack_L1R_v1", obj)) return true;
+    if( passUnprescaledHLTTrigger("HLT_Ele32_SW_TightCaloEleIdTrack_L1R_v1", obj)) return true;
+    if( passUnprescaledHLTTrigger("HLT_Ele32_SW_TighterEleId_L1R_v2", obj)) return true;
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v1", obj) ) return true; // 147390-->
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2", obj) ) return true; // 147390-->
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_TightCaloEleId_SC8HE_L1R_v1", obj) )  return true; // 147196-148058 
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_CaloEleId_L1R", obj) )                 return true; //146428-147116 <---- master
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_EleId_L1R", obj) )                     return true; //146428-147116
+    if( passUnprescaledHLTTrigger("HLT_Ele17_SW_LooseEleId_L1R", obj) )                return true; //146428-147116
+    if( passUnprescaledHLTTrigger("HLT_Ele15_SW_CaloEleId_L1R", obj) ) return true; //141956-144114 <---- master
+    if( passUnprescaledHLTTrigger("HLT_Ele15_SW_EleId_L1R", obj) )     return true; //141956-144114
+    if( passUnprescaledHLTTrigger("HLT_Ele15_SW_L1R", obj) ) return true; //140058-143962
+    if( passUnprescaledHLTTrigger("HLT_Ele15_LW_L1R", obj) ) return true; //136033-141882
+    if( passUnprescaledHLTTrigger("HLT_Ele20_SW_L1R", obj) ) return true; //140058-144114
+    if( passUnprescaledHLTTrigger("HLT_Ele10_SW_EleId_L1R", obj) ) return true;      //141956-144114
+    if( passUnprescaledHLTTrigger("HLT_Ele10_LW_EleId_L1R", obj) ) return true;      //136033-141882
+    if( passUnprescaledHLTTrigger("HLT_Ele10_LW_L1R", obj) )       return true;      //136033-139980
+    if( passUnprescaledHLTTrigger("HLT_Ele10_SW_L1R", obj) )       return true;      //139195-139980
     return false;
 }
 

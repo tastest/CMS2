@@ -3,8 +3,12 @@
 
 #include "TFile.h"
 #include "TTree.h"
+#include "TChain.h"
 
-class TChain;
+#include "Math/LorentzVector.h"
+#include "Math/PxPyPzE4D.h"
+
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 class dilepbabymaker
 {
@@ -17,8 +21,8 @@ class dilepbabymaker
         void MakeBabyNtuple (const char *);
         void InitBabyNtuple ();
 
-        bool PassSingleMuon();
-        bool PassSingleElectron();
+        bool PassSingleMuon(const LorentzVector &obj);
+        bool PassSingleElectron(const LorentzVector &obj);
         bool PassDoubleMuon();
         bool PassDoubleElectron();
         bool PassElectronMuon();

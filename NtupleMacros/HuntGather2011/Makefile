@@ -27,6 +27,7 @@ CORESOURCES = \
 	$(CMSROOT)/CORE/triggerUtils.cc \
     $(CMSROOT)/CORE/metSelections.cc \
     $(CMSROOT)/CORE/ssSelections.cc
+
 COREOBJECTS = $(CORESOURCES:.cc=.o) 
 CORELIB = $(LIBDIR)/libCMS2NtupleMacrosCORE.so
 
