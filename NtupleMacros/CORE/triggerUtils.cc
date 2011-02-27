@@ -5,7 +5,7 @@
 #include "TSystem.h"
 #include "triggerUtils.h"
 #include "CMS2.h"
-
+#include "Math/VectorUtil.h"
 
 //--------------------------------------------------
 // EG trigger selection from 5 July 2010
@@ -175,6 +175,60 @@ bool passUnprescaledHLTTrigger(const char* arg){
   return false;
 
 }
+
+//---------------------------------------------
+// Check if trigger is unprescaled and passes
+// for a specific object, specified by a p4
+//---------------------------------------------
+bool passUnprescaledHLTTrigger(const char* arg, const LorentzVector &obj){
+
+  // put the trigger name into a string
+  TString HLTTrigger( arg );
+
+  // find the index of this trigger
+  int trigIdx = -1;
+  vector<TString>::const_iterator begin_it = cms2.hlt_trigNames().begin();
+  vector<TString>::const_iterator end_it = cms2.hlt_trigNames().end();
+  vector<TString>::const_iterator found_it = find(begin_it, end_it, HLTTrigger);
+  if(found_it != end_it) trigIdx = found_it - begin_it;
+  else return false; // trigger was not found
+
+  // get the vector of p4 passing this trigger
+  std::vector<LorentzVector> trigObjs = cms2.hlt_trigObjs_p4()[trigIdx];
+
+  // if no trigger objects then fail
+  if (trigObjs.size() == 0) return false; 
+
+  // does the trigger match this lepton
+  float drMin = 999.99;
+  for (size_t i = 0; i < trigObjs.size(); ++i)
+  {
+    float dr = ROOT::Math::VectorUtil::DeltaR(trigObjs[i], obj);
+    if (dr < drMin) drMin = dr;
+  }
+
+  // if the closest trigger object
+  // is further than 0.1 then fail
+  if (drMin > 0.1) return false;
+
+  // if we got to here then
+  // the trigger passed, check the pre-scale
+
+  //sanity check (this should not happen)
+  if( strcmp( arg , cms2.hlt_trigNames().at(trigIdx) ) != 0 ){
+    cout << "Error! trig names don't match" << endl;
+    cout << "Found trig name " << cms2.hlt_trigNames().at(trigIdx) << endl;
+    cout << "Prescale        " << cms2.hlt_prescales().at(trigIdx) << endl;
+    exit(0);
+  }
+
+  //return true only if pre-scale = 1
+  if( cms2.hlt_prescales().at(trigIdx) == 1 ) return true;
+
+  return false;
+
+}
+
 
 //this function returns the HLT pre-scale for a given trigger name
 

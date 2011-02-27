@@ -10,7 +10,10 @@ bool goodEGTrigger5July2010 (bool);
 int nHLTObjects(const char*);
 LorentzVector p4HLTObject(const char*, int) ;
 void PrintTriggers();
+
 bool passUnprescaledHLTTrigger(const char* arg);
+bool passUnprescaledHLTTrigger(const char* arg, const LorentzVector &obj);
+
 int HLT_prescale( const char* arg );
 
 #endif
