@@ -23,6 +23,7 @@ void makeGatherPlots(TString base, bool debug = false) {
     gROOT->ProcessLine(".L ../libs/libCMS2NtupleMacrosTools.so");
     gROOT->ProcessLine(".L ../libs/libHuntGather2011Babymaker.so");
 
+    gROOT->ProcessLine(".L makeGatherPlotsElectrons.C");
     gROOT->ProcessLine(".L makeGatherTriggerMonitor.C");
     gROOT->ProcessLine(".L makeGatherPlotsValidation.C");
     gROOT->ProcessLine(".L makeGatherPlotsHiggs.C");
@@ -196,8 +197,9 @@ void makeGatherPlots(TString base, bool debug = false) {
     //
 
     if (debug) {
-//        makeGatherTriggerMonitor(babyVectorSM, est_lumi);
-        makeGatherPlotsValidation(babyVectorSM, goodruns_lumi, est_newruns_lumi);
+        //makeGatherTriggerMonitor(babyVectorSM, est_lumi);
+        //makeGatherPlotsValidation(babyVectorSM, goodruns_lumi, est_newruns_lumi);
+        makeGatherPlotsElectrons(babyVectorSM, est_lumi);
     }
     else {
         makeGatherPlotsValidation(babyVectorSM, goodruns_lumi, est_newruns_lumi);
