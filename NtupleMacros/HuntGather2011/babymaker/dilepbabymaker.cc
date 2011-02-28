@@ -83,17 +83,6 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     continue;
 
                 //
-                // duplicate removal for data
-                //
-
-                if (cms2.evt_isRealData()) {
-                    DorkyEventIdentifier id(cms2.evt_run(), cms2.evt_event(), cms2.evt_lumiBlock());
-                    if (is_duplicate(id)) {
-                        continue;
-                    }
-                }
-
-                //
                 // initialize baby quantities
                 //
 
