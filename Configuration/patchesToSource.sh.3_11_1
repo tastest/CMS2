@@ -3,10 +3,14 @@ cvs co -r V03-02-07      JetMETCorrections/Configuration
 cvs co -r V05-00-17      JetMETCorrections/Modules     
 cvs co -r V03-01-21      CondFormats/JetMETObjects
 
+# Masked ECAL Cells
+cvs co -r V101118_BE -d DataFormats/AnomalousEcalDataFormats UserCode/gebbert/DataFormats/AnomalousEcalDataFormats
+cvs co -r V101118_BE -d PhysicsTools/EcalAnomalousEventFilter UserCode/gebbert/PhysicsTools/EcalAnomalousEventFilter
+
 #MIT conversion stuff
-cvs co -d MitCommon  -r ConvRejection-10-06-09 UserCode/MitCommon
-cvs co -d MitEdm     -r ConvRejection-10-06-09 UserCode/MitEdm
-for f in $(find MitEdm/Filters/ -type f); do sed 's!FWCore/ParameterSet/interface/InputTag!FWCore/Utilities/interface/InputTag!g' $f > blah; mv blah $f; done
+#cvs co -d MitCommon  -r ConvRejection-10-06-09 UserCode/MitCommon
+#cvs co -d MitEdm     -r ConvRejection-10-06-09 UserCode/MitEdm
+#for f in $(find MitEdm/Filters/ -type f); do sed 's!FWCore/ParameterSet/interface/InputTag!FWCore/Utilities/interface/InputTag!g' $f > blah; mv blah $f; done
 
 echo;echo checkingdeps;echo
 
