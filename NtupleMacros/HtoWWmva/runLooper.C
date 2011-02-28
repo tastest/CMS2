@@ -10,14 +10,14 @@ void runLooper(char* prefix){
   const char* path = "/tas/cms2";
   
 
-  if( TString(prefix).Contains("WToLNu") ){
+  if( strcmp( prefix , "WToLNu" ) == 0 ){
     cout << "Running pythia wjets sample" << endl;
     ch->Add(Form("%s/WToENu_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/merged_ntuple*.root",path));
     ch->Add(Form("%s/WToMuNu_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/merged_ntuple*.root",path));
     ch->Add(Form("%s/WToTauNu_TuneZ2_7TeV-pythia6-tauola_Fall10-START38_V12-v1/V03-06-14/merged_ntuple*.root",path));
   }
 
-  else if( TString(prefix).Contains("WJetsToLNu_PU") ){
+  else if( strcmp( prefix , "WJetsToLNu_PU") == 0 ){
     cout << "Running madgraph wjets sample" << endl;
     ch->Add(Form("%s/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/merged_ntuple*.root",path));
   }
@@ -100,6 +100,7 @@ void runLooper(char* prefix){
   }
 
   else if( strcmp( prefix , "HToWWToLNuTauNuM130_PU" ) == 0 ){
+    cout << "RUNNING" << endl;
     ch->Add(Form("%s/GluGluToHToWWToLNuTauNu_M-130_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/merged_ntuple*.root",path));
   }
 
@@ -138,6 +139,18 @@ void runLooper(char* prefix){
   else if( strcmp( prefix , "MinBias" ) == 0 ){
     ch->Add("/tas/cerati/PostProcMinBias/merged*root");
     isData = true;
+  }
+
+  else if( TString(prefix).Contains("WToLNu_FO") ){
+    cout << "Running pythia wjets sample" << endl;
+    ch->Add(Form("%s/WToENu_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/merged_ntuple*.root",path));
+    ch->Add(Form("%s/WToMuNu_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/merged_ntuple*.root",path));
+    ch->Add(Form("%s/WToTauNu_TuneZ2_7TeV-pythia6-tauola_Fall10-START38_V12-v1/V03-06-14/merged_ntuple*.root",path));
+  }
+
+  else if( TString(prefix).Contains("WJetsToLNu_PU_FO") ){
+    cout << "Running madgraph wjets sample" << endl;
+    ch->Add(Form("%s/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/merged_ntuple*.root",path));
   }
 
   else{
