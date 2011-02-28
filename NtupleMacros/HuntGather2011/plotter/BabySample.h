@@ -20,7 +20,7 @@ class BabySample
 
         void setEventList(TCut cut);
         void resetEventList();
-        void    add(const char* babies);
+        void add(const char* babies);
 
         Color_t color()   const { return color_; }
         Style_t style()   const { return style_; }

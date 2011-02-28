@@ -28,10 +28,15 @@ void makeGatherPlotsValidation(const std::vector<BabySample*> &babyVector, const
     // Make the plots
     //
 
+    // mass in new and goodruns
     DrawAll("mass", "validation_mass_goodruns_ee", validation_ee+validation_goodrun, goodruns_lumi, 50,0., 200., 0, babyVector);
     DrawAll("mass", "validation_mass_newruns_ee", validation_ee+validation_newrun, est_newruns_lumi, 50,0., 200., 0, babyVector);
     DrawAll("mass", "validation_mass_goodruns_mm", validation_mm+validation_goodrun, goodruns_lumi, 50,0., 200., 0, babyVector);
     DrawAll("mass", "validation_mass_newruns_mm", validation_mm+validation_newrun, est_newruns_lumi, 50,0., 200., 0, babyVector);
+
+    // hyps with ttbar and dy like selection
+    DrawAll("hyp_type", "validation_hyp_type_top", dileptonictopv4_dilep, goodruns_lumi+est_newruns_lumi, 7, -0.5, 7.5, 0, babyVector);
+    DrawAll("hyp_type", "validation_hyp_type_base", base_dilep, goodruns_lumi+est_newruns_lumi, 7, -0.5, 6.5, 0, babyVector);
 
 }
 

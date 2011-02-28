@@ -138,6 +138,7 @@ void makeGatherPlots(TString base, bool debug = false) {
     //
 
     std::vector<BabySample*> babyVectorSM;
+    babyVectorSM.push_back(bs_data);
     babyVectorSM.push_back(bs_dilep_ww);
     babyVectorSM.push_back(bs_dilep_wz);
     babyVectorSM.push_back(bs_dilep_zz);
@@ -147,7 +148,6 @@ void makeGatherPlots(TString base, bool debug = false) {
     babyVectorSM.push_back(bs_dilep_ttbar);
     babyVectorSM.push_back(bs_dilep_tw);
     babyVectorSM.push_back(bs_dilep_wjets);
-    babyVectorSM.push_back(bs_data);
 
     std::vector<BabySample*> babyVectorHiggs;
     babyVectorHiggs.push_back(bs_dilep_ww);
@@ -196,10 +196,12 @@ void makeGatherPlots(TString base, bool debug = false) {
     //
 
     if (debug) {
-        makeGatherTriggerMonitor(babyVectorSM, bs_data, est_lumi);
+//        makeGatherTriggerMonitor(babyVectorSM, est_lumi);
+        makeGatherPlotsValidation(babyVectorSM, goodruns_lumi, est_newruns_lumi);
     }
     else {
         makeGatherPlotsValidation(babyVectorSM, goodruns_lumi, est_newruns_lumi);
+        makeGatherTriggerMonitor(babyVectorSM, est_lumi);
         makeGatherPlotsHiggs(babyVectorHiggs, est_lumi);
         makeGatherPlotsOS(babyVectorSusy, est_lumi);
         makeGatherPlotsZMet(babyVectorSusy, est_lumi);

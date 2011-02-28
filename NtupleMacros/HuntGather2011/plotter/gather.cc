@@ -8,6 +8,7 @@
 #include "TChain.h"
 #include "TCut.h"
 #include "TH1F.h"
+#include "TGraphAsymmErrors.h"
 #include "TLegend.h"
 #include "TMath.h"
 #include "TPRegexp.h"
@@ -60,7 +61,6 @@ TCanvas* TriggerMonitor(const char *savename, TCut sel, TCut trig, float intlumi
 
     TH1F* h1_pass;
     TH1F* h1_total;
-    TH1F* h1_eff;
 
     //
     // compute the efficiency
@@ -71,8 +71,11 @@ TCanvas* TriggerMonitor(const char *savename, TCut sel, TCut trig, float intlumi
 
     h1_total    = Plot(bs, "run", sel, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
     h1_pass     = Plot(bs, "run", cut_pass, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
-    h1_eff = (TH1F*)h1_pass->Clone("");
-    h1_eff->Divide(h1_pass, h1_total, 1.0, 1.0, "B");
+
+    TGraphAsymmErrors* gr_eff = new TGraphAsymmErrors();
+    gr_eff->SetName(TString("gr_") + h1_pass->GetName());
+    gr_eff->SetTitle(TString(savename));
+    gr_eff->BayesDivide(h1_pass, h1_total);
 
     //
     // do the drawing
@@ -83,13 +86,17 @@ TCanvas* TriggerMonitor(const char *savename, TCut sel, TCut trig, float intlumi
     c1->cd();
 
     // do the data histogram
-    h1_eff->Draw("E1");
-    h1_eff->GetXaxis()->SetNdivisions(504);
+    gr_eff->Draw("AP");
+    gr_eff->GetXaxis()->SetTitle("run");
+    gr_eff->GetYaxis()->SetTitle("Efficiency");
+    gr_eff->GetXaxis()->SetNdivisions(504);
  
     // draw the legend and tidy up
     c1->RedrawAxis();
     gDrawAllCount++;
     reset_babydorkidentifier();
+    delete h1_pass;
+    delete h1_total;
 
     return c1;
 }
