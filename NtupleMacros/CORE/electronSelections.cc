@@ -16,7 +16,7 @@ bool pass_electronSelectionCompareMask(const cuts_t cuts_passed, const cuts_t se
 
 bool pass_electronSelection(const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection, bool removedEtaCutInEndcap)
 {
-    cuts_t cuts_passed = electronSelection(index, applyAlignmentCorrection, removedEtaCutInEndcap);
+  cuts_t cuts_passed = electronSelection(index, applyAlignmentCorrection, removedEtaCutInEndcap);
     if ((cuts_passed & selectionType) == selectionType) return true;
     return false;
 }
@@ -50,7 +50,7 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if (fabs(cms2.els_d0corr()[index]) < 0.04) cuts_passed |= (1ll<<ELEIP_400);
     if (fabs(electron_d0PV(index)) < 0.02) cuts_passed |= (1ll<<ELEIP_PV_200);
     if (fabs(electron_d0PV_wwV1(index)) < 0.02 && fabs(electron_dzPV_wwV1(index)) < 1.0 ) cuts_passed |= (1ll<<ELEIP_PV_wwV1);
-
+    
 
     //
     // id
@@ -181,18 +181,18 @@ bool electronId_cand(const unsigned int index, const cand_tightness tightness, b
     float dEtaIn = cms2.els_dEtaIn()[index];
     float dPhiIn = cms2.els_dPhiIn()[index];
     if (applyAlignementCorrection) electronCorrection_pos(index, dEtaIn, dPhiIn);
-
+    
     //
     // apply cuts
     //
     if (fabs(cms2.els_etaSC()[index]) < 1.479) {
-        if (fabs(dEtaIn) > dEtaInThresholds[0]) 	return false;
+      if (fabs(dEtaIn) > dEtaInThresholds[0]) 	return false;
         if (fabs(dPhiIn) > dPhiInThresholds[0]) 	return false;
         if (cms2.els_hOverE()[index] > hoeThresholds[0]) 		    return false;
         if ((cms2.els_e2x5Max()[index]/cms2.els_e5x5()[index]) < latThresholds[0]) return false;
     }
     if (fabs(cms2.els_etaSC()[index]) > 1.479) {
-        if (!removedEtaCutInEndcap && (fabs(dEtaIn) > dEtaInThresholds[1])) 	return false;
+      if (!removedEtaCutInEndcap && (fabs(dEtaIn) > dEtaInThresholds[1])) 	return false;
         if (fabs(dPhiIn) > dPhiInThresholds[1]) 	return false;
         if (cms2.els_hOverE()[index] > hoeThresholds[1]) 		    return false;
         if (cms2.els_sigmaIEtaIEta()[index] > latThresholds[1])  return false;	
@@ -227,8 +227,8 @@ electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned in
 {
 
     // check that a valid version number was supplied
-    if (version != 2 && version != 3 && version != 4 && version != 6) {
-        std::cout << "[electronId_CIC] Error! Version must be 2, 3, 4 or 6 - fail" << std::endl;
+    if (version != 2 && version != 3 && version != 4) {
+        std::cout << "[electronId_CIC] Error! Version must be 2, 3 or 4 - fail" << std::endl;
         return 0;
     }
 
@@ -238,38 +238,32 @@ electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned in
 
     double scTheta = (2*atan(exp(-1*cms2.els_etaSC()[index])));
     double scEt = cms2.els_eSC()[index]*sin(scTheta); 
-    double scEta = cms2.els_etaSC()[index];
     double eSeedOverPin = cms2.els_eSeedOverPIn()[index];
     double fBrem = cms2.els_fbrem()[index];
     double hOverE = cms2.els_hOverE()[index];
     double sigmaee = cms2.els_sigmaIEtaIEta()[index];
     int mishits = cms2.els_exp_innerlayers()[index];
-    double dist = (cms2.els_conv_dist()[index] == -9999.? 9999:cms2.els_conv_dist()[index]);
-    double dcot = (cms2.els_conv_dcot()[index] == -9999.? 9999:cms2.els_conv_dcot()[index]);
-    float dcotdistcomb = ((0.04 - std::max(dist, dcot)) > 0?(0.04 - std::max(dist, dcot)):0);
+    double dist = cms2.els_conv_dist()[index];
+    double dcot = cms2.els_conv_dcot()[index];
     double tkIso = cms2.els_tkIso()[index];
     double ecalIso = cms2.els_ecalIso04()[index];
     double hcalIso = cms2.els_hcalIso04()[index];
-
-    double ip = fabs(cms2.els_d0()[index]);
-    if (cms2.vtxs_sumpt().size() > 0) {
-        const float vx = cms2.vtxs_position()[0].x();
-        const float vy = cms2.vtxs_position()[0].y();
-        const float px = cms2.els_trk_p4()[index].px();
-        const float py = cms2.els_trk_p4()[index].py();
-        ip = fabs(-1*cms2.els_d0()[index] + (vx*py - vy*px) / cms2.els_trk_p4()[index].pt());
-    }
+    double ip = fabs(cms2.els_d0corr()[index]);
+    // should be sigmaIEtaIEta with respect to the SC...
+    // (in the EE it is with respect to the seed BC...)
+    if (cms2.els_fiduciality()[index] & (1<<ISEB))
+        sigmaee = cms2.els_sigmaIEtaIEtaSC()[index];
 
     //
     // get corrected dEtaIn and dPhiIn
     //
-
+    
     float deltaEtaIn = cms2.els_dEtaIn()[index];
     float deltaPhiIn = cms2.els_dPhiIn()[index];
     if (applyAlignementCorrection) electronCorrection_pos(index, deltaEtaIn, deltaPhiIn);
 
     // find the catagory for this electron
-    unsigned int cat = eidClassify(version, index);
+    unsigned int cat = classify(version, index);
 
     // determine if in EB or EE
     int eb;
@@ -298,7 +292,7 @@ electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned in
         std::vector<double> cutmishits;
         std::vector<double> cutsee;
 
-        eidGetCIC_V02(tightness, cutdeta, cutdphi, cuteopin, cutet, cuthoe, 
+       eidGetCIC_V02(tightness, cutdeta, cutdphi, cuteopin, cutet, cuthoe, 
                 cutip, cutisoecal, cutisohcal, cutisotk, cutmishits, cutsee);
 
 
@@ -326,26 +320,26 @@ electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned in
             result |= (1<<ELEID_ISO);
 
         if (fBrem < -2)
-            return result;
-
-        bool passdEtaCut = fabs(deltaEtaIn) < cutdeta[cat+3*eb+bin*6];
-
-
-        if(removedEtaCutInEndcap && eb == 1) passdEtaCut = true;
-        if (hOverE < cuthoe[cat+3*eb+bin*6] &&
-                sigmaee < cutsee[cat+3*eb+bin*6] &&
-                fabs(deltaPhiIn) < cutdphi[cat+3*eb+bin*6] &&
-                passdEtaCut &&
-                eSeedOverPin > cuteopin[cat+3*eb+bin*6])
-            result |= (1<<ELEID_ID);
-
-        if (ip < cutip[cat+3*eb+bin*6])
-            result |= (1<<ELEID_IP);
-
-        if (mishits < cutmishits[cat+3*eb+bin*6])
-            result |= (1<<ELEID_CONV);
-
-        return result;
+	  return result;
+		
+	bool passdEtaCut = fabs(deltaEtaIn) < cutdeta[cat+3*eb+bin*6];
+			    
+			    
+	if(removedEtaCutInEndcap && eb == 1) passdEtaCut = true;
+	if (hOverE < cuthoe[cat+3*eb+bin*6] &&
+	    sigmaee < cutsee[cat+3*eb+bin*6] &&
+	    fabs(deltaPhiIn) < cutdphi[cat+3*eb+bin*6] &&
+	    passdEtaCut &&
+	    eSeedOverPin > cuteopin[cat+3*eb+bin*6])
+	  result |= (1<<ELEID_ID);
+	
+	if (ip < cutip[cat+3*eb+bin*6])
+	  result |= (1<<ELEID_IP);
+	
+	if (mishits < cutmishits[cat+3*eb+bin*6])
+	  result |= (1<<ELEID_CONV);
+	
+	return result;
     }
 
     //
@@ -420,6 +414,7 @@ electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned in
         if (ip < cutip_gsf[cat+bin*9])
             result |= (1<<ELEID_IP);
 
+        float dcotdistcomb = ((0.4 - std::max(dist, dcot)) > 0?(0.4 - std::max(dist, dcot)):0);
         if ((mishits < cutfmishits[cat+bin*9]) and 
                 (dcotdistcomb < cutdcotdist[cat+bin*9]))
             result |= (1<<ELEID_CONV);
@@ -427,100 +422,12 @@ electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned in
         return result;
     }
 
-    if (version == 6) {
-
-        std::vector<double> cutIsoSum;
-        std::vector<double> cutIsoSumCorr;
-        std::vector<double> cuthoe;
-        std::vector<double> cutsee;
-        std::vector<double> cutdphi;
-        std::vector<double> cutdeta;
-        std::vector<double> cuteopin;
-        std::vector<double> cutmishits;
-        std::vector<double> cutdcotdist;
-        std::vector<double> cutip;
-        std::vector<double> cutIsoSumCorrl;
-        std::vector<double> cuthoel;
-        std::vector<double> cutseel;
-        std::vector<double> cutdphil;
-        std::vector<double> cutdetal;
-        std::vector<double> cutipl;
-
-        eidGetCIC_V06(tightness, cutIsoSum, cutIsoSumCorr, cuthoe, cutsee, cutdphi, 
-                cutdeta, cuteopin, cutmishits, cutdcotdist, cutip, cutIsoSumCorrl, 
-                cuthoel, cutseel, cutdphil, cutdetal, cutipl);
-
-        int result = 0;
-        const int ncuts = 10;
-        std::vector<bool> cut_results(ncuts, false);
-
-        float iso_sum = tkIso + ecalIso + hcalIso;
-        if(fabs(scEta)>1.5) 
-            iso_sum += (fabs(scEta)-1.5)*1.09;
-
-        float iso_sumoet = iso_sum*(40./scEt);
-        float eseedopincor = eSeedOverPin + fBrem;
-        if(fBrem < 0) eseedopincor = eSeedOverPin;
-
-        for (int cut=0; cut<ncuts; cut++) {
-
-            switch (cut) {
-                case 0:
-                    cut_results[cut] = eidComputeCut(fabs(deltaEtaIn), scEt, cutdetal[cat], cutdeta[cat]);
-                    break;
-                case 1:
-                    cut_results[cut] = eidComputeCut(fabs(deltaPhiIn), scEt, cutdphil[cat], cutdphi[cat]);
-                    break;
-                case 2:
-                    cut_results[cut] = (eseedopincor > cuteopin[cat]);
-                    break;
-                case 3:
-                    cut_results[cut] = eidComputeCut(hOverE, scEt, cuthoel[cat], cuthoe[cat]);
-                    break;
-                case 4:
-                    cut_results[cut] = eidComputeCut(sigmaee, scEt, cutseel[cat], cutsee[cat]);
-                    break;
-                case 5:
-                    cut_results[cut] = eidComputeCut(iso_sumoet, scEt, cutIsoSumCorrl[cat], cutIsoSumCorr[cat]);
-                    break;
-                case 6:
-                    cut_results[cut] = (iso_sum < cutIsoSum[cat]);
-                    break;
-                case 7:
-                    cut_results[cut] = eidComputeCut(fabs(ip), scEt, cutipl[cat], cutip[cat]);
-                    break;
-                case 8:
-                    cut_results[cut] = (mishits < cutmishits[cat]);
-                    break;
-                case 9:
-                    cut_results[cut] = (dcotdistcomb < cutdcotdist[cat]);
-                    break;
-            }
-
-        }
-
-        // ID part
-        if (cut_results[0] & cut_results[1] & cut_results[2] & cut_results[3] & cut_results[4]) result |= (1<<ELEID_ID);   
-
-        // ISO part
-        if (cut_results[5] & cut_results[6]) result |= (1<<ELEID_ISO);
-
-        // IP part
-        if (cut_results[7]) result |= (1<<ELEID_IP);
-
-        // Conversion part
-        if (cut_results[8] and cut_results[9]) result |= (1<<ELEID_CONV);
-
-        return result;
-
-    }
-
     std::cout << "[electronId_CIC] Error! got to the end and didn't apply any cuts - fail" << std::endl;
     return 0;
 
 }
 
-unsigned int eidClassify(const unsigned int version, const unsigned int index) {
+unsigned int classify(const unsigned int version, const unsigned int index) {
 
     // variables used for classification
     double eta = fabs(cms2.els_etaSC()[index]);
@@ -572,17 +479,13 @@ unsigned int eidClassify(const unsigned int version, const unsigned int index) {
     // version V03, V04 or V05
     // took this from V00-03-07-02 of 
     // ElectronIdentification/src/CutBasedElectronID.cc
-    // NOTE - DLE - now adding version 6
-    // this means newCategories is switched on
     //
 
-
-    if (version == 3 || version == 4 || version == 5 || version == 6) {
+    if (version == 3 || version == 4 || version == 5) {
 
         // this is certainly true for V03 and V04
         // not sure about V05
         bool newCategories = false;
-        if (version == 6) newCategories = true;
 
         if (isEB) {
             if ((fBrem >= 0.12) && (eOverP > 0.9) && (eOverP < 1.2))
@@ -619,38 +522,11 @@ unsigned int eidClassify(const unsigned int version, const unsigned int index) {
 
 }
 
-bool eidComputeCut(double x, double et, double cut_min, double cut_max, bool gtn)
-{
-
-  float et_min = 10;
-  float et_max = 40;
-  bool accept = false;
-  float cut = cut_max; //  the cut at et=40 GeV
-
-  if(et < et_max) {
-    cut = cut_min + (1/et_min - 1/et)*(cut_max - cut_min)/(1/et_min - 1/et_max);
-  } 
-  
-  if(et < et_min) {
-    cut = cut_min;
-  } 
-
-  if(gtn) {   // useful for e/p cut which is gt
-    accept = (x >= cut);
-  } 
-  else {
-    accept = (x <= cut);
-  }
-
-  //std::cout << x << " " << cut_min << " " << cut << " " << cut_max << " " << et << " " << accept << std::endl;
-  return accept;
-}
-
 //
 // VBTF stuff
 //
 
-electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tightness tightness, bool applyAlignementCorrection, bool removedEtaCutInEndcap)
+ electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tightness tightness, bool applyAlignementCorrection, bool removedEtaCutInEndcap)
 {
 
     unsigned int answer = 0;
@@ -689,8 +565,8 @@ electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tight
     if (fabs(cms2.els_etaSC()[index]) > 1.479) {
         if (electronIsolation_rel(index, true) < relisoThresholds[1])
             answer |= (1<<ELEID_ISO);
-        bool passdEtaCut = fabs(dEtaIn) < dEtaInThresholds[1];
-        if(removedEtaCutInEndcap) passdEtaCut = true;
+	bool passdEtaCut = fabs(dEtaIn) < dEtaInThresholds[1];
+	if(removedEtaCutInEndcap) passdEtaCut = true;
         if ( passdEtaCut &&
                 fabs(dPhiIn) < dPhiInThresholds[1] &&
                 cms2.els_hOverE()[index] < hoeThresholds[1] &&
@@ -725,7 +601,7 @@ float electronIsolation_rel_ww(const unsigned int index, bool use_calo_iso)
 {
     float sum = cms2.els_tkIso().at(index);
     if(use_calo_iso)
-        sum += max(0., (cms2.els_ecalIso().at(index) -1.));
+      sum += max(0., (cms2.els_ecalIso().at(index) -1.));
     sum += cms2.els_hcalIso().at(index);
     double pt = cms2.els_p4().at(index).pt();
     return sum/max(pt, 20.);
@@ -771,14 +647,14 @@ bool isChargeFlip3agree(int elIndex){
 
     if (cms2.els_trkidx().at(elIndex) >= 0) 
     {
-        // false if 3 charge measurements agree
-        if(
-                (cms2.els_trk_charge().at(elIndex)          // gsf
-                 == cms2.trks_charge().at(cms2.els_trkidx().at(elIndex))) // ctf 
-                &&
-                (cms2.trks_charge().at(cms2.els_trkidx().at(elIndex)) // ctf 
-                 == cms2.els_sccharge().at(elIndex)) )      // sc
-            return false;  
+      // false if 3 charge measurements agree
+      if(
+           (cms2.els_trk_charge().at(elIndex)          // gsf
+           == cms2.trks_charge().at(cms2.els_trkidx().at(elIndex))) // ctf 
+           &&
+           (cms2.trks_charge().at(cms2.els_trkidx().at(elIndex)) // ctf 
+           == cms2.els_sccharge().at(elIndex)) )      // sc
+      return false;  
     }
 
     return true;
@@ -843,14 +719,14 @@ void electronCorrection_pos(const unsigned int index, float &dEtaIn, float &dPhi
     //
 
     if (cms2.els_etaSC()[index] < 0) {
-        corrected_pos = LorentzVector(  initial_pos.x() + scPositionCorrectionEEM[0],
-                initial_pos.y() + scPositionCorrectionEEM[1],
-                initial_pos.z() + scPositionCorrectionEEM[2], 0.0);
+            corrected_pos = LorentzVector(  initial_pos.x() + scPositionCorrectionEEM[0],
+                                            initial_pos.y() + scPositionCorrectionEEM[1],
+                                            initial_pos.z() + scPositionCorrectionEEM[2], 0.0);
     }
     if (cms2.els_etaSC()[index] > 0) {
-        corrected_pos = LorentzVector(  initial_pos.x() + scPositionCorrectionEEP[0],
-                initial_pos.y() + scPositionCorrectionEEP[1],
-                initial_pos.z() + scPositionCorrectionEEP[2], 0.0);
+            corrected_pos = LorentzVector(  initial_pos.x() + scPositionCorrectionEEP[0],
+                                            initial_pos.y() + scPositionCorrectionEEP[1],
+                                            initial_pos.z() + scPositionCorrectionEEP[2], 0.0);
     }
 
     //
@@ -866,70 +742,70 @@ void electronCorrection_pos(const unsigned int index, float &dEtaIn, float &dPhi
 
 
 double electron_d0PV(unsigned int index){
-    if ( cms2.vtxs_sumpt().empty() ) return false;
-    unsigned int iMax = 0;
-    double sumPtMax = cms2.vtxs_sumpt().at(0);
-    for ( unsigned int i = iMax+1; i < cms2.vtxs_sumpt().size(); ++i )
-        if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
-            iMax = i;
-            sumPtMax = cms2.vtxs_sumpt().at(i);
-        }
-    double dxyPV = cms2.els_d0()[index]-
-        cms2.vtxs_position()[iMax].x()*sin(cms2.els_trk_p4()[index].phi())+
-        cms2.vtxs_position()[iMax].y()*cos(cms2.els_trk_p4()[index].phi());
-    return dxyPV;
+  if ( cms2.vtxs_sumpt().empty() ) return false;
+  unsigned int iMax = 0;
+  double sumPtMax = cms2.vtxs_sumpt().at(0);
+  for ( unsigned int i = iMax+1; i < cms2.vtxs_sumpt().size(); ++i )
+    if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
+      iMax = i;
+      sumPtMax = cms2.vtxs_sumpt().at(i);
+    }
+  double dxyPV = cms2.els_d0()[index]-
+    cms2.vtxs_position()[iMax].x()*sin(cms2.els_trk_p4()[index].phi())+
+    cms2.vtxs_position()[iMax].y()*cos(cms2.els_trk_p4()[index].phi());
+  return dxyPV;
 }
 
 
 double electron_dzPV_wwV1(unsigned int index){ 
-    if ( cms2.vtxs_sumpt().empty() ) return 9999.;
-    double sumPtMax = -1;
-    int iMax = -1;
-    for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
-        // if (!isGoodVertex(i)) continue;
-        // Copied from eventSelections.cc 
-        if (cms2.vtxs_isFake()[i]) continue;
-        if (cms2.vtxs_ndof()[i] < 4.) continue;
-        if (cms2.vtxs_position()[i].Rho() > 2.0) continue;
-        if (fabs(cms2.vtxs_position()[i].Z()) > 24.0) continue;
-        if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
-            iMax = i;
-            sumPtMax = cms2.vtxs_sumpt().at(i);
-        }
+  if ( cms2.vtxs_sumpt().empty() ) return 9999.;
+  double sumPtMax = -1;
+  int iMax = -1;
+  for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
+    // if (!isGoodVertex(i)) continue;
+    // Copied from eventSelections.cc 
+    if (cms2.vtxs_isFake()[i]) continue;
+    if (cms2.vtxs_ndof()[i] < 4.) continue;
+    if (cms2.vtxs_position()[i].Rho() > 2.0) continue;
+    if (fabs(cms2.vtxs_position()[i].Z()) > 24.0) continue;
+    if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
+      iMax = i;
+      sumPtMax = cms2.vtxs_sumpt().at(i);
     }
-    if (iMax<0) return 9999.;
-
-    const LorentzVector& vtx = cms2.els_vertex_p4()[index];
-    const LorentzVector& p4 = cms2.els_trk_p4()[index];
-    const LorentzVector& pv = cms2.vtxs_position()[iMax]; 
-    return (vtx.z()-pv.z()) - ((vtx.x()-pv.x())*p4.x()+(vtx.y()-pv.y())*p4.y())/p4.pt() * p4.z()/p4.pt(); 
-    /* directly from NtupleMacros/WW/doAnalysis.cc
-       double dzpv = dzPV(cms2.els_vertex_p4()[index], cms2.els_trk_p4()[index], cms2.vtxs_position()[iMax]);
-       double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVector& pv){
-       return (vtx.z()-pv.z()) - ((vtx.x()-pv.x())*p4.x()+(vtx.y()-pv.y())*p4.y())/p4.pt() * p4.z()/p4.pt();
-       }*/
+  }
+  if (iMax<0) return 9999.;
+  
+  const LorentzVector& vtx = cms2.els_vertex_p4()[index];
+  const LorentzVector& p4 = cms2.els_trk_p4()[index];
+  const LorentzVector& pv = cms2.vtxs_position()[iMax]; 
+  return (vtx.z()-pv.z()) - ((vtx.x()-pv.x())*p4.x()+(vtx.y()-pv.y())*p4.y())/p4.pt() * p4.z()/p4.pt(); 
+  /* directly from NtupleMacros/WW/doAnalysis.cc
+  double dzpv = dzPV(cms2.els_vertex_p4()[index], cms2.els_trk_p4()[index], cms2.vtxs_position()[iMax]);
+  double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVector& pv){
+  return (vtx.z()-pv.z()) - ((vtx.x()-pv.x())*p4.x()+(vtx.y()-pv.y())*p4.y())/p4.pt() * p4.z()/p4.pt();
+  }*/
 }
 
 
 double electron_d0PV_wwV1(unsigned int index){ 
-    if ( cms2.vtxs_sumpt().empty() ) return 9999.;
-    double sumPtMax = -1;
-    int iMax = -1;
-    for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
-        // if (!isGoodVertex(i)) continue;
-        // Copied from eventSelections.cc 
-        if (cms2.vtxs_isFake()[i]) continue;
-        if (cms2.vtxs_ndof()[i] < 4.) continue;
-        if (cms2.vtxs_position()[i].Rho() > 2.0) continue;
-        if (fabs(cms2.vtxs_position()[i].Z()) > 24.0) continue;
-        if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
-            iMax = i;
-            sumPtMax = cms2.vtxs_sumpt().at(i);
-        }
+  if ( cms2.vtxs_sumpt().empty() ) return 9999.;
+  double sumPtMax = -1;
+  int iMax = -1;
+  for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
+    // if (!isGoodVertex(i)) continue;
+    // Copied from eventSelections.cc 
+    if (cms2.vtxs_isFake()[i]) continue;
+    if (cms2.vtxs_ndof()[i] < 4.) continue;
+    if (cms2.vtxs_position()[i].Rho() > 2.0) continue;
+    if (fabs(cms2.vtxs_position()[i].Z()) > 24.0) continue;
+    if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
+      iMax = i;
+      sumPtMax = cms2.vtxs_sumpt().at(i);
     }
-    if (iMax<0) return 9999.;
-    double dxyPV = cms2.els_d0()[index]-
-        cms2.vtxs_position()[iMax].x()*sin(cms2.els_trk_p4()[index].phi())+
-        cms2.vtxs_position()[iMax].y()*cos(cms2.els_trk_p4()[index].phi());
-    return dxyPV;
+  }
+  if (iMax<0) return 9999.;
+  double dxyPV = cms2.els_d0()[index]-
+    cms2.vtxs_position()[iMax].x()*sin(cms2.els_trk_p4()[index].phi())+
+    cms2.vtxs_position()[iMax].y()*cos(cms2.els_trk_p4()[index].phi());
+  return dxyPV;
 }
