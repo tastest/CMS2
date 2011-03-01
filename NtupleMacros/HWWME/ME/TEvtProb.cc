@@ -71,16 +71,14 @@ void   TEvtProb::NeutrinoIntegrate(TVar::Process proc,
     SetProcess(Global_process);
     My_choose(Global_process);
 
-    // nwz_.nwz=1; //- this is only valid for Tevatron, at the LHC there is no W+/W- symmetry
-
-
     //delta(L1) delta(L2)
     int NDim = bveg1_mcfm_.ndim-6;
     //qx,qy
     if (Global_SmearLevel>=1) NDim+=2;
     //dE1,dE2
     if (Global_SmearLevel>=2) NDim+=2;
-    
+
+ 
     cout <<" [NeutrinoIntegrate]: Evaluate " << TVar::ProcessName(proc)
      <<" Ncalls " << Global_Ncalls
      <<" npart._npart=" << npart_.npart
@@ -120,11 +118,8 @@ void   TEvtProb::NeutrinoIntegrate(TVar::Process proc,
       if (dXsec<=0) continue;
       sumW  += dXsec;
       sumW2 += dXsec*dXsec;
-      //cout<<"process= "<<TVar::ProcessName(Global_process)<<" dXsec="<<dXsec<<"  Sum= "<< sumW<<"\n";
     }
     
-    // cout << "TEvtProb:: count_PS = "<< count_PS <<" Line "<<__LINE__<<endl;
-
     *Xsec = sumW/count_PS;
  
     *XsecErr = sumW2/count_PS-sumW/count_PS*sumW/count_PS;
@@ -158,7 +153,6 @@ void   TEvtProb::NeutrinoIntegrate(TVar::Process proc,
     
     count_PS++;
     
-    //myRandom.RndmArray(NDim,r);
     PSWeight=1.;
   
     
@@ -203,7 +197,7 @@ void   TEvtProb::NeutrinoIntegrate(TVar::Process proc,
       if((qX*qX+qY*qY)>0){
 	double qE = mcfm_event.p[0].Energy()+mcfm_event.p[1].Energy();
 	TVector3 boostV(qX/qE,qY/qE,0);
-	for(int ipt=0;ipt<6;ipt++)mcfm_event.p[ipt].Boost(-boostV);
+	for(int ipt=0;ipt<6;ipt++) mcfm_event.p[ipt].Boost(-boostV);
       }
       
       //event selections in Lab Frame
