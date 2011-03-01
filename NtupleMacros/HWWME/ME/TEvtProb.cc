@@ -80,10 +80,7 @@ void   TEvtProb::NeutrinoIntegrate(TVar::Process proc,
     if (Global_SmearLevel>=1) NDim+=2;
     //dE1,dE2
     if (Global_SmearLevel>=2) NDim+=2;
-
-    //breitw_flat
-    if(proc==TVar::HWW || (proc>=TVar::HWW110 && proc<=TVar::HWW300)){ NDim+=2;}
-
+    
     cout <<" [NeutrinoIntegrate]: Evaluate " << TVar::ProcessName(proc)
      <<" Ncalls " << Global_Ncalls
      <<" npart._npart=" << npart_.npart
@@ -104,8 +101,7 @@ void   TEvtProb::NeutrinoIntegrate(TVar::Process proc,
     double sumW=0,sumW2=0;
 
     double probAcceptanceEfficiency = getProbAcceptanceEfficiency(cdf_event, _effhist);
-
-    cout << "probAcceptanceEfficency = " << probAcceptanceEfficiency << endl;
+    // cout << "probAcceptanceEfficency = " << probAcceptanceEfficiency << endl;
     //double probAcceptanceEfficiency = 1.0;
     if(probAcceptanceEfficiency == 0) return;
     if(probAcceptanceEfficiency<0) {
@@ -117,8 +113,10 @@ void   TEvtProb::NeutrinoIntegrate(TVar::Process proc,
       count_PS++;
       myRandom.RndmArray(NDim,r); // generate NDim random numbers and set the first NDim entries of r arrary
       double dXsec=0;
+    
       // dXsec=Integrand_NeutrinoIntegration(r,NDim,0);
       dXsec=Integrand_NeutrinoIntegration(r,NDim,0, _boosthist)*probAcceptanceEfficiency;
+  
       if (dXsec<=0) continue;
       sumW  += dXsec;
       sumW2 += dXsec*dXsec;
@@ -182,7 +180,7 @@ void   TEvtProb::NeutrinoIntegrate(TVar::Process proc,
     for(int jps=0;jps<Global_NSol;jps++){
       
       mcfm_event_type& mcfm_event=Global_mcfm_event[jps];
-      
+    
       // cout << "mcfm_event.pswt = " << mcfm_event.pswt << endl;
       if(mcfm_event.pswt<=0) continue;
       
