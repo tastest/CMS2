@@ -277,31 +277,38 @@ public:
   }
 
   void printSummary(){
+    double l_sig_exp = tt_exp*sf_exp;
+    double l_dytt_err = oplus(dytt_stat,dytt_syst);
+    double l_vv_err = oplus(vv_stat,vv_syst);
+    double l_tw_err = oplus(tw_stat,tw_syst);
+    double l_fake_err = oplus(fake_stat, fake_syst);
+    double l_dy_err = oplus(dy_stat, dy_syst);
+    double l_sig_obs = data - bg_exp;
     std::cout<<"Data: "<<data<<" in "<<channel
 	     <<"\n\t   MCBG: "<<mcbg_exp <<" +/- " << mcbg_e
-	     <<"\n\t\t  = ( DYtt "<<dytt_exp<<" +/- "<<oplus(dytt_stat,dytt_syst)
-	     <<"\n\t\t      VV   "<<vv_exp<<" +/- "<<oplus(vv_stat,vv_syst)
-	     <<"\n\t\t      tW   "<<tw_exp<<" +/- "<<oplus(tw_stat,tw_syst) <<"   )"
-	     <<"\n\t   Fake: "<<fake_exp <<" +/- " << fake_stat <<" +/- "<< fake_syst
+	     <<"\n\t\t  = ( DYtt "<<dytt_exp<<" +/- "<<l_dytt_err << " ( "<<l_dytt_err/l_sig_obs<<" )"
+	     <<"\n\t\t      VV   "<<vv_exp<<" +/- "<<l_vv_err << " ( "<<l_vv_err/l_sig_obs<<" )"
+	     <<"\n\t\t      tW   "<<tw_exp<<" +/- "<<l_tw_err  << " ( "<<l_tw_err/l_sig_obs<<" )" <<"   )"
+	     <<"\n\t   Fake: "<<fake_exp <<" +/- " << fake_stat <<" +/- "<< fake_syst  << " ( "<<l_fake_err/l_sig_obs<<" )"
 	     <<"\n\t\t  ( QCDraw " << qcd_exp <<" +/- "<<qcd_stat<<" +/- "<<qcd_syst 
 	     <<"\n\t\t\t WJraw "<<wjraw_exp<<" +/- "<<wjraw_stat
 	     <<"\n\t\t\t Spill "<<spill_exp<<" +/- "<<spill_stat<<" +/- "<<spill_syst<< " )"
 	     <<"\n\tFake MC: "<<ttotr_mc+wj_mc <<" +/- " << oplus(ttotr_mc_stat, wj_mc_stat)
-	     <<"\n\t     DY: "<<dy_exp <<" +/- " << dy_stat <<" +/- "<< dy_syst
+	     <<"\n\t     DY: "<<dy_exp <<" +/- " << dy_stat <<" +/- "<< dy_syst  << " ( "<<l_dy_err/l_sig_obs<<" )"
 	     <<"\n\t  DY MC: "<<dy_mc <<" +/- " << dy_mc_stat<<"\t R_{out/in}: "<<dy_roi<<" +/- "<< dy_roi_stat
 	     <<"\n\t All BG: "<<bg_exp <<" +/- " << bg_e
 	     <<"\n\t All MC: "<<all_mc <<" +/- "<<all_mc_stat
 
-	     <<"\n\t tt exp: "<<tt_exp*sf_exp
-	     <<" +/- "<<tt_exp*sf_exp*tt_AE_eRel<<"(syst) +/- "<<tt_exp*sf_exp*tt_xsecTh_eRel
-	     <<"(th) +/- "<<tt_exp*sf_exp*lum_eRel<<"(lum)  "
-	     <<"\n\t\t= "<<tt_exp*sf_exp
-	     <<" +/- " <<tt_exp*sf_exp*tt_AE_eRel 
+	     <<"\n\t tt exp: "<<l_sig_exp
+	     <<" +/- "<<l_sig_exp*tt_AE_eRel<<"(syst) +/- "<<l_sig_exp*tt_xsecTh_eRel
+	     <<"(th) +/- "<<l_sig_exp*lum_eRel<<"(lum)  "
+	     <<"\n\t\t= "<<l_sig_exp
+	     <<" +/- " <<l_sig_exp*tt_AE_eRel 
 	     <<"(syst) +/- "
-	     <<oplus(tt_exp*sf_exp*tt_xsecTh_eRel, tt_exp*sf_exp*lum_eRel) << "(th+lum)"
-	     <<"\n\tA: "<<tt_exp*sf_exp/tt_sigma/lum_total*100.
-	     <<" +/- "<<tt_exp*sf_exp/tt_sigma/lum_total*100.*tt_AE_eRel
-	     <<" \tS/B: "<<tt_exp*sf_exp/bg_exp<<std::endl;    
+	     <<oplus(l_sig_exp*tt_xsecTh_eRel, l_sig_exp*lum_eRel) << "(th+lum)"
+	     <<"\n\tA: "<<l_sig_exp/tt_sigma/lum_total*100.
+	     <<" +/- "<<l_sig_exp/tt_sigma/lum_total*100.*tt_AE_eRel
+	     <<" \tS/B: "<<l_sig_exp/bg_exp<<std::endl;    
   }
   
   TTxsecStruct(){
@@ -1382,10 +1389,10 @@ void xsecCalc_36pb_pass6(){
   TTxsecStruct pee1jFOMLIP;
   pee1jFOMLIP.lum_total = 36.1;
   pee1jFOMLIP.channel = ee_ch;
-  pee1jFOMLIP.tt_exp   = 3.3911;  pee1jFOMLIP.tt_stat   =   0.127;
-  pee1jFOMLIP.dytt_exp = 0.5539; pee1jFOMLIP.dytt_stat =   0.1662; pee1jFOMLIP.dytt_syst_corr =  oplus(0.1,lum_eRel)*pee1jFOMLIP.dytt_exp;
-  pee1jFOMLIP.vv_exp   = 0.4985;  pee1jFOMLIP.vv_stat   =   0.026; pee1jFOMLIP.vv_syst_corr   = oplus(0.1,lum_eRel)*pee1jFOMLIP.vv_exp;
-  pee1jFOMLIP.tw_exp   = 0.5652;  pee1jFOMLIP.tw_stat   =   0.022; pee1jFOMLIP.tw_syst_corr   = oplus(0.1,lum_eRel)*pee1jFOMLIP.tw_exp;
+  pee1jFOMLIP.tt_exp   = 3.4794;  pee1jFOMLIP.tt_stat   =   0.127;
+  pee1jFOMLIP.dytt_exp = 0.5000;  pee1jFOMLIP.dytt_stat =   0.1200; pee1jFOMLIP.dytt_syst_corr =  oplus(0.1,lum_eRel)*pee1jFOMLIP.dytt_exp;
+  pee1jFOMLIP.vv_exp   = 0.5400;  pee1jFOMLIP.vv_stat   =   0.0277; pee1jFOMLIP.vv_syst_corr   = oplus(0.1,lum_eRel)*pee1jFOMLIP.vv_exp;
+  pee1jFOMLIP.tw_exp   = 0.5700;  pee1jFOMLIP.tw_stat   =   0.0177; pee1jFOMLIP.tw_syst_corr   = oplus(0.1,lum_eRel)*pee1jFOMLIP.tw_exp;
 
   pee1jFOMLIP.data = 8;
 
@@ -1395,11 +1402,11 @@ void xsecCalc_36pb_pass6(){
   pee1jFOMLIP.wj_mc    = 0.945;  pee1jFOMLIP.wj_mc_stat     =   0.286;
 
   pee1jFOMLIP.qcd_exp   = 0.000; pee1jFOMLIP.qcd_stat  =  0.000; pee1jFOMLIP.qcd_syst = pee1jFOMLIP.qcd_exp;
-  pee1jFOMLIP.wjraw_exp = 1.02; pee1jFOMLIP.wjraw_stat=  0.64;
+  pee1jFOMLIP.wjraw_exp = 0.29; pee1jFOMLIP.wjraw_stat=  0.49;
   pee1jFOMLIP.wjf_systFrac = 0.0;
 
   pee1jFOMLIP.dy_mc  =    (0.085+0.220)*0.5;  pee1jFOMLIP.dy_mc_stat = (0.060+0.156)*0.5;
-  pee1jFOMLIP.dy_exp =    0.02;  pee1jFOMLIP.dy_stat  =   0.12; 
+  pee1jFOMLIP.dy_exp =    0.16;  pee1jFOMLIP.dy_stat  =   0.29; 
   pee1jFOMLIP.dy_syst =   0;
   pee1jFOMLIP.dy_roi =    (0.118+0.250)*0.5; pee1jFOMLIP.dy_roi_stat = (0.084+0.182)*0.5;
 
@@ -1413,10 +1420,10 @@ void xsecCalc_36pb_pass6(){
   TTxsecStruct pmm1jFOMLIP;
   pmm1jFOMLIP.lum_total = 36.1;
   pmm1jFOMLIP.channel = mm_ch;
-  pmm1jFOMLIP.tt_exp   = 4.368; pmm1jFOMLIP.tt_stat    =   0.140;
-  pmm1jFOMLIP.dytt_exp = 0.4903;  pmm1jFOMLIP.dytt_stat =   0.12; pmm1jFOMLIP.dytt_syst_corr = oplus(0.1,lum_eRel)*pmm1jFOMLIP.dytt_exp;
-  pmm1jFOMLIP.vv_exp   = 0.6152;  pmm1jFOMLIP.vv_stat   =   0.03; pmm1jFOMLIP.vv_syst_corr   = oplus(0.1,lum_eRel)*pmm1jFOMLIP.vv_exp;	 
-  pmm1jFOMLIP.tw_exp   = 0.6714;  pmm1jFOMLIP.tw_stat   =   0.02; pmm1jFOMLIP.tw_syst_corr   = oplus(0.1,lum_eRel)*pmm1jFOMLIP.tw_exp;    
+  pmm1jFOMLIP.tt_exp   = 4.4147; pmm1jFOMLIP.tt_stat    =   0.140;
+  pmm1jFOMLIP.dytt_exp = 0.5300; pmm1jFOMLIP.dytt_stat =   0.1190; pmm1jFOMLIP.dytt_syst_corr = oplus(0.1,lum_eRel)*pmm1jFOMLIP.dytt_exp;
+  pmm1jFOMLIP.vv_exp   = 0.6400; pmm1jFOMLIP.vv_stat   =   0.0298; pmm1jFOMLIP.vv_syst_corr   = oplus(0.1,lum_eRel)*pmm1jFOMLIP.vv_exp;	 
+  pmm1jFOMLIP.tw_exp   = 0.6800; pmm1jFOMLIP.tw_stat   =   0.0184; pmm1jFOMLIP.tw_syst_corr   = oplus(0.1,lum_eRel)*pmm1jFOMLIP.tw_exp;    
 
   pmm1jFOMLIP.data = 10;
 
@@ -1426,11 +1433,11 @@ void xsecCalc_36pb_pass6(){
   pmm1jFOMLIP.wj_mc    = 0.111;  pmm1jFOMLIP.wj_mc_stat     =   0.111;
 
   pmm1jFOMLIP.qcd_exp   = 0.0000; pmm1jFOMLIP.qcd_stat  =  0.00; pmm1jFOMLIP.qcd_syst = pmm1jFOMLIP.qcd_exp;
-  pmm1jFOMLIP.wjraw_exp = 0.0; pmm1jFOMLIP.wjraw_stat=  0.3;
+  pmm1jFOMLIP.wjraw_exp = 0.07; pmm1jFOMLIP.wjraw_stat=  0.38;
   pmm1jFOMLIP.wjf_systFrac = 0.0;
 
   pmm1jFOMLIP.dy_mc  =    (1.451+1.32)*0.5;  pmm1jFOMLIP.dy_mc_stat = (0.246+0.38)*0.5;
-  pmm1jFOMLIP.dy_exp =    4.09;  pmm1jFOMLIP.dy_stat =    2.67; 
+  pmm1jFOMLIP.dy_exp =    5.19;  pmm1jFOMLIP.dy_stat =    4.28; 
   pmm1jFOMLIP.dy_syst =   0;
   pmm1jFOMLIP.dy_roi =   (1.2692+0.800)*0.5; pmm1jFOMLIP.dy_roi_stat = (0.255039+0.249)*0.5;
 
@@ -1446,10 +1453,10 @@ void xsecCalc_36pb_pass6(){
   TTxsecStruct pem1jFOMLIP;
   pem1jFOMLIP.lum_total = 36.1;
   pem1jFOMLIP.channel = em_ch;
-  pem1jFOMLIP.tt_exp   =10.7968 ; pem1jFOMLIP.tt_stat    =   0.221;
-  pem1jFOMLIP.dytt_exp = 0.12;  pem1jFOMLIP.dytt_stat =   0.07; pem1jFOMLIP.dytt_syst_corr = oplus(0.1,lum_eRel)*pem1jFOMLIP.dytt_exp;
-  pem1jFOMLIP.vv_exp   = 1.6999;  pem1jFOMLIP.vv_stat   =   0.049; pem1jFOMLIP.vv_syst_corr   = oplus(0.1,lum_eRel)*pem1jFOMLIP.vv_exp;	 
-  pem1jFOMLIP.tw_exp   = 1.8432;  pem1jFOMLIP.tw_stat   =   0.040; pem1jFOMLIP.tw_syst_corr   = oplus(0.1,lum_eRel)*pem1jFOMLIP.tw_exp;    
+  pem1jFOMLIP.tt_exp   =10.9028; pem1jFOMLIP.tt_stat    =   0.221;
+  pem1jFOMLIP.dytt_exp = 0.0500; pem1jFOMLIP.dytt_stat =   0.0500; pem1jFOMLIP.dytt_syst_corr = oplus(0.1,lum_eRel)*pem1jFOMLIP.dytt_exp;
+  pem1jFOMLIP.vv_exp   = 1.7700; pem1jFOMLIP.vv_stat   =   0.0472; pem1jFOMLIP.vv_syst_corr   = oplus(0.1,lum_eRel)*pem1jFOMLIP.vv_exp;	 
+  pem1jFOMLIP.tw_exp   = 1.8600; pem1jFOMLIP.tw_stat   =   0.0362; pem1jFOMLIP.tw_syst_corr   = oplus(0.1,lum_eRel)*pem1jFOMLIP.tw_exp;    
 
   pem1jFOMLIP.data = 18;
 
@@ -1459,7 +1466,7 @@ void xsecCalc_36pb_pass6(){
   pem1jFOMLIP.wj_mc    = 0.869;  pem1jFOMLIP.wj_mc_stat     =   0.308;
 
   pem1jFOMLIP.qcd_exp   = 0.0; pem1jFOMLIP.qcd_stat  =  0.0; pem1jFOMLIP.qcd_syst = pem1jFOMLIP.qcd_exp;
-  pem1jFOMLIP.wjraw_exp = 1.49; pem1jFOMLIP.wjraw_stat=  0.81;
+  pem1jFOMLIP.wjraw_exp = 1.25; pem1jFOMLIP.wjraw_stat=  1.28;
   pem1jFOMLIP.wjf_systFrac = 0.0;
 
   pem1jFOMLIP.dy_mc  =    0.127;  pem1jFOMLIP.dy_mc_stat = 0.073;
@@ -1580,7 +1587,7 @@ void xsecCalc_36pb_pass6(){
 }
 
 void xsecCalc_comb_pass6_normLum(bool forAN410 = true){
-  double mean_a = 165.374;//160.314;
+  double mean_a = 165.926;//160.314;
   double k_b    = 1./0.9848;
   if (forAN410){
     mean_a = 159.791;
@@ -1588,8 +1595,8 @@ void xsecCalc_comb_pass6_normLum(bool forAN410 = true){
   }
   double mean_b = mean_a*k_b;
 
-  double relStat = 17.529/mean_a;
-  double relSyst = 13.660/mean_a;
+  double relStat = 17.5814/mean_a;
+  double relSyst = 13.7953/mean_a;
   if (forAN410){
     relStat = 0.117599;
     relSyst = 0.08432;
