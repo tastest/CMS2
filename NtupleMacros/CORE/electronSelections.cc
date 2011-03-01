@@ -214,6 +214,9 @@ bool electronId_cand(const unsigned int index, const cand_tightness tightness, b
 
 bool electronId_smurf_v1(const unsigned int index)
 {
+
+  if (cms2.els_p4()[index].pt() > 20.0) return true;
+
   if (cms2.els_fbrem()[index] > 0.15) return true;
   
   if (fabs(cms2.els_etaSC()[index]) < 1.) {
