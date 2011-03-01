@@ -34,6 +34,10 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     // isolation
     //
 
+    if( cms2.els_p4()[index].pt() < 15.0 && electronIsolation_rel_v1(index, true) < 0.05) cuts_passed |= (1ll<<ELEISO_SMURFV1);
+    else if( cms2.els_p4()[index].pt() < 20.0 && electronIsolation_rel_v1(index, true) < 0.07) cuts_passed |= (1ll<<ELEISO_SMURFV1);
+    else if( electronIsolation_rel_v1(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_SMURFV1);
+
     if (electronIsolation_rel(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_REL010);
     if (electronIsolation_rel(index, true) < 0.15) cuts_passed |= (1ll<<ELEISO_REL015);
     if (electronIsolation_rel(index, true) < 0.40) cuts_passed |= (1ll<<ELEISO_REL040);
@@ -55,6 +59,12 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     //
     // id
     //
+
+
+    //
+    // SMURF ID
+    //
+    if (electronId_smurf_v1(index)) cuts_passed |= (1ll<<ELEID_SMURFV1_EXTRA);
 
     // 
     // "CAND" ID
@@ -200,6 +210,17 @@ bool electronId_cand(const unsigned int index, const cand_tightness tightness, b
 
     return true;
 
+}
+
+bool electronId_smurf_v1(const unsigned int index)
+{
+  if (cms2.els_fbrem()[index] > 0.15) return true;
+  
+  if (fabs(cms2.els_etaSC()[index]) < 1.) {
+    if (cms2.els_eOverPIn()[index] > 0.95 && fabs(cms2.els_dPhiIn()[index]*cms2.els_charge()[index]) < 0.006) return true; 
+  }
+
+  return false;
 }
 
 //
@@ -705,6 +726,8 @@ electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tight
 //
 // electron isolation definitions 
 //
+
+//relative truncated
 float electronIsolation_rel(const unsigned int index, bool use_calo_iso)
 {
     float sum = cms2.els_tkIso().at(index);
@@ -715,6 +738,19 @@ float electronIsolation_rel(const unsigned int index, bool use_calo_iso)
     }
     double pt = cms2.els_p4().at(index).pt();
     return sum/max(pt, 20.);
+}
+
+//relative non-truncated
+float electronIsolation_rel_v1(const unsigned int index, bool use_calo_iso)
+{
+    float sum = cms2.els_tkIso().at(index);
+    if (use_calo_iso) {
+        if (fabs(cms2.els_etaSC().at(index)) > 1.479) sum += cms2.els_ecalIso().at(index);
+        if (fabs(cms2.els_etaSC().at(index)) <= 1.479) sum += max(0., (cms2.els_ecalIso().at(index) -1.));
+        sum += cms2.els_hcalIso().at(index);
+    }
+    double pt = cms2.els_p4().at(index).pt();
+    return sum/pt;
 }
 
 
@@ -730,6 +766,7 @@ float electronIsolation_rel_ww(const unsigned int index, bool use_calo_iso)
     double pt = cms2.els_p4().at(index).pt();
     return sum/max(pt, 20.);
 }
+
 
 //
 //conversion rejection

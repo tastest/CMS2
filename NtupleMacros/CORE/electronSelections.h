@@ -39,6 +39,8 @@ enum EleSelectionType {
 	 // rel iso (fixed below 20 GeV) < 1.00
 	 // 0.3 cone size for all, 1 GeV pedestal sub in EB/EE
 	 ELEISO_REL100_WW,
+	 // non-truncated relative iso with cut [0.05,0.07,0.10] for pT [10,15,20]
+	 ELEISO_SMURFV1,
 
 	 //
 	 // ip cuts
@@ -56,6 +58,8 @@ enum EleSelectionType {
 	 //
 	 // id cuts
 	 //
+	 // pass smurf v1 electron ID
+	 ELEID_SMURFV1_EXTRA,
 	 // pass "CAND01" electron ID
 	 ELEID_CAND01,
 	 // pass "CAND02" electron ID
@@ -717,7 +721,7 @@ static const cuts_t electronSelectionFO_el_wwV1_v2 =
 // extrapolating in iso
 //---------------------------------------------------------
 static const cuts_t electronSelectionFO_el_wwV1_v3 =
-	 electronSelectionFO_wwV1_baseline |
+         electronSelectionFO_wwV1_baseline |
 	 electronSelection_wwV1_id |
 	 (1ll<<ELEISO_REL100); 
 
@@ -731,6 +735,28 @@ static const cuts_t electronSelectionFO_el_wwV1_v4 =
 	 (1ll<<ELEISO_REL100); 
 
 //--------end of WW V1 cuts--------------------------------
+
+//--------SMURF V1 cuts--------------------------------
+
+static const cuts_t electronSelection_smurfV1_baseline  = 
+	 electronSelection_wwV1_base |
+	 electronSelection_wwV1_convrej |
+	 electronSelection_wwV1_ip;
+static const cuts_t electronSelection_smurfV1_iso  = 
+         (1ll<<ELEISO_SMURFV1);
+static const cuts_t electronSelection_smurfV1_id  = 
+	 electronSelection_wwV1_id |
+         (1ll<<ELEID_SMURFV1_EXTRA);
+static const cuts_t electronSelection_smurfV1  = 
+         electronSelection_smurfV1_baseline |
+         electronSelection_smurfV1_iso |
+         electronSelection_smurfV1_id;
+
+
+//--------end of SMURF V1 cuts--------------------------------
+
+
+
 
 
 // ======================== OS ============================
@@ -976,6 +1002,11 @@ bool pass_electronSelection(const unsigned int index, const cuts_t selectionType
 cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection = false, bool removedEtaCutInEndcap = false);
 
 //
+// "smurf" electron id
+//
+bool electronId_smurf_v1(const unsigned int index);
+
+//
 // "cand" electron id
 //
 bool electronId_cand(const unsigned int index, const cand_tightness tightness, bool applyAlignementCorrection = false, bool removedEtaCutInEndcap = false);
@@ -1009,6 +1040,8 @@ bool eidComputeCut(double x, double et, double cut_min, double cut_max, bool gtn
 // - ecal pedestal of 1 GeV subtracted in EB as Max(0, ecalIso - 1.0)
 // - hcal iso as usual
 float electronIsolation_rel(const unsigned int index, bool use_calo_iso);
+//non-truncated relative iso
+float electronIsolation_rel_v1(const unsigned int index, bool use_calo_iso);
 
 // the difference from above is that the pedestal sub is applied on both EB/EE
 float electronIsolation_rel_ww(const unsigned int index, bool use_calo_iso);
