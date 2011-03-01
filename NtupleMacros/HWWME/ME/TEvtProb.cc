@@ -26,7 +26,6 @@ TEvtProb::TEvtProb() {
   TMatrixElement::inst()->SetMatrixElement(_matrixElement);
   _hwwPhaseSpace=TVar::MH;
   mcfm_init_();
-  // cout<<"TEvtProb::TEvtProb Line "<<__LINE__<<endl;
 }
 
 TEvtProb::~TEvtProb() {}
@@ -156,36 +155,64 @@ void   TEvtProb::NeutrinoIntegrate(TVar::Process proc,
     PSWeight=1.;
   
     
-    if (Global_process==TVar::WW              ){ Global_NSol=4;         genMw1Mw2    (r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist);}
-    if(Global_process==TVar::HWW             ){
-      if(Global_HWWPhaseSpace==TVar::MWMW    ){ Global_NSol=4;         genMw1Mw2    (r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist);}
-      else if(Global_HWWPhaseSpace==TVar::MHMW    ){ Global_NSol=4;         genMHiggsMw1 (r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);}
-      else if(Global_HWWPhaseSpace==TVar::MHYH    ){ Global_NSol=2;       genMHiggsYHiggs(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);}
-      else if(Global_HWWPhaseSpace==TVar::MH      ){ Global_NSol=2;         genMHiggs    (r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist);}
-    }
-    else if(Global_process==TVar::Wp_gamma||
-	    Global_process==TVar::Wm_gamma ){ Global_NSol=2;      genMw_Wgamma (r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);}
-    else if(Global_process==TVar::Wp_1jet ||
-	    Global_process==TVar::Wm_1jet  ){ Global_NSol=2;      genMw_W1jet  (r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);}
-    else if(Global_process==TVar::ZZ       ){ Global_NSol=2;      genMzNu3     (r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);}
-    else if(Global_process==TVar::Z_2l     ){ Global_NSol=1;      genDY        (r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);} 
+    if (Global_process==TVar::WW)
+      {
+	Global_NSol=4;         
+	genMw1Mw2(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist);
+      }
+
+    if (Global_process==TVar::HWW)
+      {
+	if(Global_HWWPhaseSpace==TVar::MWMW)
+	  { 
+	    Global_NSol=4;
+	    genMw1Mw2(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist);
+	  }
+	else if (Global_HWWPhaseSpace==TVar::MHMW)
+	  { 
+	    Global_NSol=4;
+	    genMHiggsMw1(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);
+	  }
+	else if (Global_HWWPhaseSpace==TVar::MHYH)
+	  { 
+	    Global_NSol=2;
+	    genMHiggsYHiggs(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);
+	  }
+	else if (Global_HWWPhaseSpace==TVar::MH)
+	  { 
+	    Global_NSol=2;
+	    genMHiggs(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist);
+	  }
+      }
+
+    else if (Global_process==TVar::Wp_gamma || Global_process==TVar::Wm_gamma )
+      { 
+	Global_NSol=2;  
+	genMw_Wgamma(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);
+      }
+    else if (Global_process==TVar::Wp_1jet || Global_process==TVar::Wm_1jet  )
+      { 
+	Global_NSol=2; 
+	genMw_W1jet(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);
+      }
+    else if (Global_process==TVar::ZZ)
+      { 
+	Global_NSol=2;
+	genMzNu3     (r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);
+      }
+    else if (Global_process==TVar::Z_2l)
+      { 
+	Global_NSol=1;    
+	genDY(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);
+      } 
     
-    //loop four solutions
+    //loop over solutions
     for(int jps=0;jps<Global_NSol;jps++){
       
       mcfm_event_type& mcfm_event=Global_mcfm_event[jps];
     
       // cout << "mcfm_event.pswt = " << mcfm_event.pswt << endl;
       if(mcfm_event.pswt<=0) continue;
-      
-      //Apply Conversion And FakeRate
-      // probAcceptanceEfficiency=1;
-      // cout << "Global_cdf_event: " << Global_cdf_event.PdgCode[0] << ": Pt = "<< Global_cdf_event.p[0].Pt()<<endl;
-      // if (probAcceptanceEfficiency==0) {mcfm_event.pswt=0; continue;}  // this check was done prior to the integral
-      // 
-      // if(probAcceptanceEfficiency<0) {
-      //	cout <<"Error: " << probAcceptanceEfficiency <<endl;
-      //}
       
       //Matrix Element evaluation in qX=qY=0 frame
       //Evaluate f(x1)f(x2)|M(q)|/x1/x2 
