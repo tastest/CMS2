@@ -142,7 +142,7 @@ void ossusy_looper::makeTree(char *prefix)
   rootdir->cd();
 
   //Super compressed ntuple here
-  outFile   = new TFile(Form("output/nov5th_v6_skim/%s_smallTree.root",prefix), "RECREATE");
+  outFile   = new TFile(Form("output/%s/%s_smallTree.root",g_version,prefix), "RECREATE");
   //outFile   = new TFile("temp.root","RECREATE");
   outFile->cd();
   outTree = new TTree("t","Tree");

@@ -5,7 +5,7 @@
 #include "TSystem.h"
 
 #include "histtools.h"
-#include "ossusy_looper_38X.h"
+#include "ossusy_looper.h"
 
 #include <iostream>
 #endif
@@ -42,8 +42,14 @@ void pickSkimIfExists( TChain *ch, const std::string& base, const std::string& s
   return;
 }
 
-void doAll_ossusy_looper_38X(bool skipFWLite = true)
+void doAll_ossusy_looper(bool skipFWLite = true)
 {
+
+  //---------------------------------------------------------------
+  // choose version, output will be written to output/[version]
+  //---------------------------------------------------------------
+
+  const char* version = "V00-00-00";
 
   //Load CORE stuff
   gROOT->ProcessLine(".L CORE/CMS2.cc+");
@@ -65,9 +71,9 @@ void doAll_ossusy_looper_38X(bool skipFWLite = true)
   gSystem->Load("Tools/MiniFWLite/libMiniFWLite.so");
 
   // Load and compile the looping code
-  gSystem->CompileMacro("ossusy_looper_38X.C","++k", "libossusy_looper_38X");
+  gSystem->CompileMacro("ossusy_looper.C","++k", "libossusy_looper");
 
-  ossusy_looper_38X* looper = new ossusy_looper_38X();
+  ossusy_looper* looper = new ossusy_looper();
   //use OS/SS baseline selection as documented in:
   //http://www.t2.ucsd.edu/tastwiki/bin/view/CMS/SusyStudies3x
   looper->set_susybaseline(0);
@@ -75,7 +81,8 @@ void doAll_ossusy_looper_38X(bool skipFWLite = true)
   looper->set_createTree(1);
   //use bitmask selection
   looper->set_useBitMask(0);
-
+  //set version
+  looper->set_version(version);
 
   // K-factors
   // these have been k-factors NLO/LO before
@@ -180,7 +187,7 @@ void doAll_ossusy_looper_38X(bool skipFWLite = true)
   int preML8      = 1;
   int preLMscan   = 1;
 
-  
+  /*  
   //Flags for files to run over
   bool rundata     = 0;
   bool rundataskim = 1;
@@ -229,9 +236,9 @@ void doAll_ossusy_looper_38X(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  
+  */  
 
-  /*
+  
   //Flags for files to run over
   bool rundata     = 0;
   bool rundataskim = 1;
@@ -280,7 +287,7 @@ void doAll_ossusy_looper_38X(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  */
+
 
   char* dir = "";
 
@@ -818,10 +825,10 @@ void doAll_ossusy_looper_38X(bool skipFWLite = true)
               for (int frmodeIdx = 0; frmodeIdx < (2-(1*!doFakeApp)); ++frmodeIdx)
                 {
                   
-                  ossusy_looper_38X::JetTypeEnum  jetType(jetTypeIdx);
-                  ossusy_looper_38X::MetTypeEnum  metType(metTypeIdx);
-                  ossusy_looper_38X::ZVetoEnum    zveto(zvetoIdx);
-                  ossusy_looper_38X::FREnum       frmode(frmodeIdx);
+                  ossusy_looper::JetTypeEnum  jetType(jetTypeIdx);
+                  ossusy_looper::MetTypeEnum  metType(metTypeIdx);
+                  ossusy_looper::ZVetoEnum    zveto(zvetoIdx);
+                  ossusy_looper::FREnum       frmode(frmodeIdx);
    
                   if (rundataskim) {
                     cout << "Processing data skim" << endl;
@@ -1102,11 +1109,11 @@ void doAll_ossusy_looper_38X(bool skipFWLite = true)
                   
                   // save all the histograms
                   if(doFakeApp) {
-                    const char* outFile = Form("output_38X/nov5th_v1_skim/ossusy_%s_%s%s_%s_FakeApp.root", 
+                    const char* outFile = Form("output/%s/ossusy_%s_%s%s_%s_FakeApp.root", version,
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx],frmodeStrings[frmode]);
                   }
                   else {
-                    const char* outFile = Form("output_38X/nov5th_v6_skim/ossusy_%s_%s%s.root", 
+                    const char* outFile = Form("output/%s/ossusy_%s_%s%s.root", version,
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
                   }
                   

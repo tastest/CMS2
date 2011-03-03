@@ -58,9 +58,10 @@ class ossusy_looper
         float smearMet( float met , float sumjetpt , float metscale );
 
         // Set globals
-        void set_susybaseline (bool b) { g_susybaseline = b; }
-        void set_createTree   (bool b) { g_createTree   = b; }
-        void set_useBitMask   (bool b) { g_useBitMask   = b; }
+        void set_susybaseline (bool  b) { g_susybaseline = b; }
+        void set_createTree   (bool  b) { g_createTree   = b; }
+        void set_useBitMask   (bool  b) { g_useBitMask   = b; }
+        void set_version      (char* v) { g_version      = v; }
 
         // Baby ntuple methods
         void makeTree (char *prefix);
@@ -69,9 +70,10 @@ class ossusy_looper
     private:
 
         // Globals
-        bool g_susybaseline;
-        bool g_createTree;
-        bool g_useBitMask;
+        bool  g_susybaseline;
+        bool  g_createTree;
+        bool  g_useBitMask;
+        char* g_version;
         TRandom3 *random3_;
 
         // Baby ntuple variables
