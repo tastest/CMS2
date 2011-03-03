@@ -55,6 +55,7 @@ class ossusy_looper
         bool passZSelection (int hypIdx);
         bool passTrigger (int dilType);
         float getCosThetaStarWeight();
+        float smearMet( float met , float sumjetpt , float metscale );
 
         // Set globals
         void set_susybaseline (bool b) { g_susybaseline = b; }
@@ -78,6 +79,7 @@ class ossusy_looper
         TTree  *outTree;
         Float_t weight_;
         Float_t smeff_;
+        Float_t k_;
         Float_t mllgen_;
         Float_t costhetaweight_;
         Int_t   mull_;
@@ -91,11 +93,21 @@ class ossusy_looper
         Int_t   proc_;
         Int_t   leptype_;
         Int_t   njets_;
+        Int_t   njetsUp_;
+        Int_t   njetsDown_;
+        Float_t sumjetptUp_;
+        Float_t sumjetptDown_;
         Int_t   nvtx_;
         Int_t   nbtags_;
         Float_t dilmass_;
         Float_t topmass_;
         Float_t tcmet_;
+        Float_t tcmet00_;
+        Float_t tcmet10_;
+        Float_t tcmet20_;
+        Float_t tcmet30_;
+        Float_t tcmet40_;
+        Float_t tcmet50_;
         Float_t genmet_;
         Float_t mucormet_;
         Float_t mucorjesmet_;
@@ -103,6 +115,9 @@ class ossusy_looper
         Float_t tcmet_35X_;
         Float_t tcmet_event_;
         Float_t tcmet_looper_;
+        Float_t tcmetUp_;
+        Float_t tcmetDown_;
+        Float_t tcmetTest_;
         Float_t tcsumet_;
         Float_t tcmetphi_;
         Float_t mt2_;
@@ -147,6 +162,10 @@ class ossusy_looper
         TH1F* hmucorjesmet_Z[4][4];
 
         TH1F* hyield;
+        TH1F* hyield_weight;
+        TH1F* hyieldsig;
+        TH1F* hyield_unweighted;
+        TH1F* hyieldsig_unweighted;
 
         TH2F*     hdtcmetevent_genmet[4][4];
         TProfile* tdtcmetevent_genmet[4][4];
@@ -188,6 +207,7 @@ class ossusy_looper
         TH1F* hmt2jcore[4][4];               // MT2J from CORE
         TH1F* hmt2j[4][4];                   // potentially custom MT2J
         TH1F* hsumJetPt[4][4];               // scalar sum jet Et
+        TH1F* hsumJetPt_cut[4][4];               // scalar sum jet Et
         TH2F* hDtcmetgenmetVsumJetPt[4][4];
         TH2F* hDmetmuonjesgenmetVsumJetPt[4][4];
         TH1F* hmeffJet[4][4];                // scalar sum jet pt + scalar sum dil pt + (tc)met
@@ -197,6 +217,7 @@ class ossusy_looper
         TH2F* habcd_nopresel[4][4];                   
         TProfile* habcd_tprof_nopresel[4][4];                   
         TH1F* hsumJptPt[4][4];               // scalar sum JPT jet Et
+        TH1F* hsumJptPt_cut[4][4];               // scalar sum JPT jet Et
         TH1F* hmeffJPT[4][4];                // scalar sum JPT jet pt + scalar sum dil pt + (tc)met
 
         TH1F* hsumHypPt[4][4];               // scalar sum JPT jet Et
@@ -222,6 +243,7 @@ class ossusy_looper
         TH1F* htopMass[4][4];                // top mass estimate for 2 highest pt jets
         TH1F* htopMassAllComb[4][4];         // top mass estimate for all jets
         TH1F* hdilMass[4][4];                // dilepton mass
+        TH1F* hdilMass_cut[4][4];            // dilepton mass
         TH1F* hdilPt[4][4];                  // dilepton Pt
         TH1F* hdilPt_zveto[4][4];            // dilepton Pt with z-veto applied
         TH1F* hdilPtSmeared[4][4];           // dilepton Pt with Gaussian smearing

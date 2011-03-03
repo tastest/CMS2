@@ -5,7 +5,7 @@
 #include "TSystem.h"
 
 #include "histtools.h"
-#include "ossusy_looper.h"
+#include "ossusy_looper_38X.h"
 
 #include <iostream>
 #endif
@@ -42,7 +42,7 @@ void pickSkimIfExists( TChain *ch, const std::string& base, const std::string& s
   return;
 }
 
-void doAll_ossusy_looper(bool skipFWLite = true)
+void doAll_ossusy_looper_38X(bool skipFWLite = true)
 {
 
   //Load CORE stuff
@@ -65,16 +65,16 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   gSystem->Load("Tools/MiniFWLite/libMiniFWLite.so");
 
   // Load and compile the looping code
-  gSystem->CompileMacro("ossusy_looper.C","++k", "libossusy_looper");
+  gSystem->CompileMacro("ossusy_looper_38X.C","++k", "libossusy_looper_38X");
 
-  ossusy_looper* looper = new ossusy_looper();
+  ossusy_looper_38X* looper = new ossusy_looper_38X();
   //use OS/SS baseline selection as documented in:
   //http://www.t2.ucsd.edu/tastwiki/bin/view/CMS/SusyStudies3x
   looper->set_susybaseline(0);
   //make baby ntuple
   looper->set_createTree(1);
   //use bitmask selection
-  looper->set_useBitMask(1);
+  looper->set_useBitMask(0);
 
 
   // K-factors
@@ -89,17 +89,19 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // 	    * (490779./381623.); // ratio of number events with pt-hat < 30 to total with pt-hat > 15 ;; for the early data sample qcdPt15 and qcdPt30 MC
   float kqcdpt15    = (8.158/8.762)*(490779./381623.);  
   float kqcdpt30    = 1.;  
-  float kttall    = 157.5/165.0;  
-  float kttdil    = 157.5/165.0;  
+  float kttall    = 1.;  //157.5/165.0;  
+  float kttdil    = 1.;  //157.5/165.0;  
   float kttrelval = 1;  
-  float kttem     = 157.5/165.0;  
-  float kttotr    = 157.5/165.0;  
+  float kttem     = 1.;  //157.5/165.0;  
+  float kttotr    = 1.;  //157.5/165.0;  
+  float kVV       = 1.3;
   float kWW       = 1.;
   float kWZ       = 1.;
   float kZZ       = 1.;
   float kWjets    = 1.;  // 11850 pb, 980000 events processed
   float kWcharm   = 1.1;
   float kZjets    = 1.;  
+  float kDYtot    = 1.;  
   float kDYee     = 1.;  // 1230 pb,  970360 events processed
   float kDYmm     = 1.;  // 1230 pb,  970360 events processed
   float kDYtautau = 1.;  // 1230 pb,  970360 events processed
@@ -139,6 +141,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int prettem     = 1;
   int prettrelval = 1;
   int prettotr    = 1;
+  int preVV       = 1;
   int preWW       = 1;
   int preWZ       = 1;
   int preZZ       = 1;
@@ -146,6 +149,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preWcharm   = 1;
   int preZjets    = 1;
   int preDYee     = 1;
+  int preDYtot    = 1;
   int preDYmm     = 1;
   int preDYtautau = 1;
   int preppMuX    = 1;
@@ -176,9 +180,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preML8      = 1;
   int preLMscan   = 1;
 
-  /*  
+  
   //Flags for files to run over
-  bool rundata     = 1;
+  bool rundata     = 0;
   bool rundataskim = 1;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
@@ -187,12 +191,14 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runttem     = 0;
   bool runttrelval = 0;
   bool runttotr    = 1;
+  bool runVV       = 0;
   bool runWW       = 1;
   bool runWZ       = 1;
   bool runZZ       = 1;
   bool runWjets    = 1;
   bool runWcharm   = 0;
   bool runZjets    = 1;
+  bool runDYtot    = 1;
   bool runDYee     = 1;
   bool runDYmm     = 1;
   bool runDYtautau = 1;
@@ -202,18 +208,18 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runVQQ      = 0;
   bool runLM0      = 1;
   bool runLM1      = 1;
-  bool runLM2      = 1;
-  bool runLM3      = 1;
-  bool runLM4      = 1;
-  bool runLM5      = 1;
-  bool runLM6      = 1;
-  bool runLM7      = 1;
-  bool runLM8      = 1;
-  bool runLM9      = 1;
-  bool runLM10     = 1;
-  bool runLM11     = 1;
-  bool runLM12     = 1;
-  bool runLM13     = 1;
+  bool runLM2      = 0;
+  bool runLM3      = 0;
+  bool runLM4      = 0;
+  bool runLM5      = 0;
+  bool runLM6      = 0;
+  bool runLM7      = 0;
+  bool runLM8      = 0;
+  bool runLM9      = 0;
+  bool runLM10     = 0;
+  bool runLM11     = 0;
+  bool runLM12     = 0;
+  bool runLM13     = 0;
   bool runML1      = 0;
   bool runML2      = 0;
   bool runML3      = 0;
@@ -223,12 +229,12 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  */
-
   
+
+  /*
   //Flags for files to run over
   bool rundata     = 0;
-  bool rundataskim = 0;
+  bool rundataskim = 1;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runttall    = 0;
@@ -236,12 +242,14 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runttrelval = 0;
   bool runttem     = 0;
   bool runttotr    = 0;
+  bool runVV       = 0;
   bool runWW       = 0;
   bool runWZ       = 0;
   bool runZZ       = 0;
   bool runWjets    = 0;
   bool runWcharm   = 0;
   bool runZjets    = 0;
+  bool runDYtot    = 0;
   bool runDYee     = 0;
   bool runDYmm     = 0;
   bool runDYtautau = 0;
@@ -272,7 +280,18 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  
+  */
+
+  char* dir = "";
+
+  bool useMCSkims = true;
+  if( useMCSkims ){
+    cout << "Using MC skims" << endl;
+    dir = "skim201050/";
+  }
+  else{
+    cout << "Using full MC samples" << endl;
+  }
 
   TChain* chdataskim = new  TChain("Events");
   if(rundataskim){
@@ -337,28 +356,29 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain* chZjets = new  TChain("Events");
   if(runZjets){
     pickSkimIfExists(chZjets, 
-                     //"/tas/cms2/ZJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-08/merged*root",
-                     "/tas/cms2/ZJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/dilepPt2010Skim/skimmed*root",
+                     //Form("/tas/cms2/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-14/%smerged*root",dir),
+                     Form("/tas/cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-17/%smerged*root",dir),
                      "Zjets");
+
+    cout << "Replace ZJets with skim" << endl;
   }
 
   TChain* chtopall = new TChain("Events");
   if (runttall) {
     pickSkimIfExists(chtopall, 
-                     "/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/skimmed*root",
-                     //"/tas/cms2/TTbarJets-madgraph_Summer09-MC_31X_V3_7TeV-v2/V03-00-35-skim-skim/merged*root",
-                     //"/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-07/merged*.root",
+                     //Form("/tas/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-14/%smerged*root",dir),
+                     "/tas/cms2/TTJets_TuneD6T_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-17/merged*root",
                      "TTJets");
+
   }
 
   TChain* chtopdil = new TChain("Events");
   if (runttdil) {
-    pickSkimIfExists(chtopdil, 
-                     //"/tas/cms2/TTbarJets-madgraph_Summer09-MC_31X_V3_7TeV-v2/V03-00-35-skim/merged*root",
-                     //"/tas01/disk02/cms2/TTbarJets-madgraph_Summer09-MC_31X_V3_7TeV-v5/V03-00-35/merged*root",
-                     "/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/skimmed*root",
-                     //"/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*.root",
+    pickSkimIfExists(chtopdil,
+                     //Form("/tas/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-14/%smerged*root",dir), 
+                     Form("/tas/cms2/TTJets_TuneD6T_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-17/%smerged*root",dir),
                      "TTJets");
+
   }
 
   TChain* chttrelval = new TChain("Events");
@@ -371,41 +391,46 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain* chtopem = new TChain("Events");
   if (runttem) {
     pickSkimIfExists(chtopem, 
-                     //"/tas01/disk02/cms2/TTbarJets-madgraph_Summer09-MC_31X_V3_7TeV-v5/V03-00-35/merged*root",
-                     //"/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/skimmed*root",
-                     "/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/skimmed*root",
+                     //Form("/tas/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-14/%smerged*root",dir),
+                     "/tas/cms2/TTJets_TuneD6T_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-17/merged*root",
                      "TTJets");
+
   }
 
   TChain* chtopotr = new TChain("Events");
   if(runttotr){
     pickSkimIfExists(chtopotr, 
-                     "/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/skimmed*root",
-                     //"/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-07/merged*.root",
+                     //Form("/tas/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-14/%smerged*root",dir),
+                     Form("/tas/cms2/TTJets_TuneD6T_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-17/%smerged*root",dir),
                      "TTJets");
+
+  }
+
+  TChain* chvv = new TChain("Events");
+  if(runVV){
+    pickSkimIfExists(chvv, 
+                     Form("/tas/cms2/VVJetsTo4L_TuneD6T_7TeV-madgraph-tauola_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
+                     "VV");
   }
 
   TChain* chww = new TChain("Events");
   if(runWW){
     pickSkimIfExists(chww, 
-                     "/tas/cms2/WW_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*root",
-                     //"/tas/cms2/WW_Spring10-START3X_V26_S09-v1_DiLep/V03-04-08/merged*root",
+                     Form("/tas/cms2/WWTo2L2Nu_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
                      "WW");
   }
 
   TChain* chWZ = new TChain("Events");
   if(runWZ){
     pickSkimIfExists(chWZ, 
-                     "/tas/cms2/WZ_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*root",
-                     //"/tas/cms2/WZ_Spring10-START3X_V26_S09-v1/V03-04-08/merged*root",
-                     "WZ_incl"); // can try WZ_3l-Pythia
+                     "/tas/cms2/WZTo3LNu_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/merged*root",
+                     "WZ_incl");
   }
 
   TChain* chZZ = new TChain("Events");
   if(runZZ){
     pickSkimIfExists(chZZ, 
-                     "/tas/cms2/ZZ_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*root",
-                     //"/tas/cms2/ZZ_Spring10-START3X_V26_S09-v1_DiLep/V03-04-08/merged*.root", 
+                     Form("/tas/cms2/ZZtoAnything_TuneZ2_7TeV-pythia6-tauola_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
                      "ZZ");
   }
 
@@ -415,6 +440,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                      "/tas/cms2/WJets-madgraph_Spring10-START3X_V26_S09-v1_SingleLep/V03-04-13-07/diLepPt2010Skim/skimmed*root",
                      //"/tas/cms2/WJets-madgraph_Spring10-START3X_V26_S09-v1_SingleLep/V03-04-08/merged*.root",
                      "WJets");
+
+    cout << "Using 36X Wjets MC" << endl;
   }
 
   TChain* chWcharm = new TChain("Events");
@@ -426,53 +453,95 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   }
 
 
+  TChain* chDYtot = new  TChain("Events");
+  if(runDYtot){
+
+    pickSkimIfExists(chDYtot, 
+                     Form("/tas/cms2/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
+                     "DYtot");
+    
+    pickSkimIfExists(chDYtot, 
+                     Form("/tas/cms2/DYToTauTau_M-10To20_TuneZ2_7TeV-pythia6-tauola_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
+                     "DYtot");
+    
+    pickSkimIfExists(chDYtot, 
+                     Form("/tas/cms2/DYToEE_M-20_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
+                     "DYtot");
+    
+    pickSkimIfExists(chDYtot, 
+                     Form("/tas/cms2/DYToEE_M-10To20_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
+                     "DYtot");
+
+    pickSkimIfExists(chDYtot, 
+                     Form("/tas/cms2/DYToMuMu_M-20_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
+                     "DYtot");
+    
+    pickSkimIfExists(chDYtot, 
+                     Form("/tas/cms2/DYToMuMu_M-10To20_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
+                     "DYtot");
+    
+    pickSkimIfExists(chDYtot, 
+                     //Form("/tas/cms2/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-14/%smerged*root",dir),
+                     Form("/tas/cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-17/%smerged*root",dir),
+                     "DYtot"); 
+  }
+
+
+
+
   
   TChain* chDYtautau = new  TChain("Events");
   if(runDYtautau){
-    
-    pickSkimIfExists(chDYtautau, 
-                     "/tas/cms2/Ztautau_Spring10-START3X_V26_S09-v1/V03-04-13-07_diLep2010_ZMassLessThan50Skim/skimmed*root",
-                     //"/tas/cms2/Ztautau_Spring10-START3X_V26_S09-v1/V03-04-13-07/*.root",
-                     "DYtautau");
 
     pickSkimIfExists(chDYtautau, 
-                     "/tas/cms2/ZJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/dilepPt2010Skim/skimmed_ntuple.root",
+                     Form("/tas/cms2/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
                      "DYtautau");
+    
+    pickSkimIfExists(chDYtautau, 
+                     Form("/tas/cms2/DYToTauTau_M-10To20_TuneZ2_7TeV-pythia6-tauola_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
+                     "DYtautau");
+    
+    pickSkimIfExists(chDYtautau, 
+                     //Form("/tas/cms2/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-14/%smerged*root",dir),
+                     Form("/tas/cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-17/%smerged*root",dir),
+                     "DYtautau"); 
+
   }
   
   TChain* chDYee = new  TChain("Events");
   if(runDYee){
 
     pickSkimIfExists(chDYee, 
-                     "/tas/cms2/Zee_Spring10-START3X_V26_S09-v1/V03-04-13-07_diLep2010_ZMassLessThan50Skim/skimmed_ntuple.root",
-                     //"/tas/cms2/Zee_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged_ntuple*.root",
+                     Form("/tas/cms2/DYToEE_M-20_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
                      "DYee");
     
     pickSkimIfExists(chDYee, 
-                     "/tas/cms2/DYee_M10to20_Spring10-START3X_V26_S09-v1/V03-04-13-07/dilepPt2010Skim/skimmed_ntuple.root",
+                     Form("/tas/cms2/DYToEE_M-10To20_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
                      "DYee");
     
     pickSkimIfExists(chDYee, 
-                     "/tas/cms2/ZJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/dilepPt2010Skim/skimmed_ntuple.root",
+                     //Form("/tas/cms2/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-14/%smerged*root",dir),
+                     Form("/tas/cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-17/%smerged*root",dir),
                      "DYee"); 
-    
+
   }
 
   if(runDYmm){
     TChain* chDYmm = new  TChain("Events");
- 
+
     pickSkimIfExists(chDYmm, 
-                     "/tas/cms2/Zmumu_Spring10-START3X_V26_S09-v1/V03-04-13-07_diLep2010_ZMassLessThan50Skim/skimmed_ntuple.root",
-                     //"/tas/cms2/Zmumu_Spring10-START3X_V26_S09-v1/V03-04-13-07/*.root",
+                     Form("/tas/cms2/DYToMuMu_M-20_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
                      "DYmm");
     
     pickSkimIfExists(chDYmm, 
-                     "/tas/cms2/DYmumu_M10to20_Spring10-START3X_V26_S09-v1/V03-04-13-07/dilepPt2010Skim/skimmed_ntuple.root",
+                     Form("/tas/cms2/DYToMuMu_M-10To20_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
                      "DYmm");
     
     pickSkimIfExists(chDYmm, 
-                     "/tas/cms2/ZJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/dilepPt2010Skim/skimmed_ntuple.root",
-                     "DYmm");
+                     //Form("/tas/cms2/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-14/%smerged*root",dir),
+                     Form("/tas/cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-17/%smerged*root",dir),
+                     "DYmm"); 
+
   }
 
 
@@ -515,14 +584,17 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain* chtW = new  TChain("Events");
   if (runtW) {
     pickSkimIfExists(chtW, 
-                     "/tas/cms2/SingleTop_sChannel-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*.root",
-                     "SingleTop_sChannel"); 
-    pickSkimIfExists(chtW, 
-                     "/tas/cms2/SingleTop_tChannel-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*.root",
-                     "SingleTop_tChannel"); 
-    pickSkimIfExists(chtW, 
-                     "/tas/cms2/SingleTop_tWChannel-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*.root",
+                     Form("/tas/cms2/TToBLNu_TuneZ2_tW-channel_7TeV-madgraph_Fall10-START38_V12-v2/V03-06-14/%smerged*root",dir),
                      "SingleTop_tWChannel"); 
+
+    pickSkimIfExists(chtW, 
+                     Form("/tas/cms2/TToBLNu_TuneZ2_t-channel_7TeV-madgraph_Fall10-START38_V12-v2/V03-06-17/merged*root",dir),
+                     "SingleTop_tChannel"); 
+
+    pickSkimIfExists(chtW, 
+                     Form("/tas/cms2/TToBLNu_TuneZ2_s-channel_7TeV-madgraph_Fall10-START38_V12-v1/V03-06-17/merged*root",dir),
+                     "SingleTop_sChannel"); 
+
   }
 
   // VQQ
@@ -540,15 +612,18 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM0 = new TChain("Events");
   if (runLM0) {
     pickSkimIfExists(chLM0, 
-                     "/tas/cms2/LM0_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
+                     //"/tas/cms2/LM0_SUSY_sftsht_7TeV-pythia6_Fall10-START38_V12-v1_fullGen/V03-06-14/merged*root",
+                     "/tas/cms2/LM0_SUSY_sftsht_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/merged*root",
                      "SUSY_LM0");
+
+    //cout << "USING LM0 FULL GEN!!!!!!!!!!!!!" << endl;
   }
   
   // LM1
   TChain *chLM1 = new TChain("Events");
   if (runLM1) {
     pickSkimIfExists(chLM1, 
-                     "/tas/cms2/LM1_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
+                     "/tas/cms2/LM1_SUSY_sftsht_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/merged*root",
                      "SUSY_LM1");
   }
 
@@ -724,7 +799,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   //--------------------------------
   //set luminosity to scale to
   //--------------------------------
-  float lumi              = 34.85e-3; 
+  float lumi              = 33.96e-3; 
   bool  calculateTCMET    = true; //redo tcmet calculation on the fly
 
   char* jetTypeStrings[3] = {"JPT", "calo","pfjet"};
@@ -743,10 +818,10 @@ void doAll_ossusy_looper(bool skipFWLite = true)
               for (int frmodeIdx = 0; frmodeIdx < (2-(1*!doFakeApp)); ++frmodeIdx)
                 {
                   
-                  ossusy_looper::JetTypeEnum  jetType(jetTypeIdx);
-                  ossusy_looper::MetTypeEnum  metType(metTypeIdx);
-                  ossusy_looper::ZVetoEnum    zveto(zvetoIdx);
-                  ossusy_looper::FREnum       frmode(frmodeIdx);
+                  ossusy_looper_38X::JetTypeEnum  jetType(jetTypeIdx);
+                  ossusy_looper_38X::MetTypeEnum  metType(metTypeIdx);
+                  ossusy_looper_38X::ZVetoEnum    zveto(zvetoIdx);
+                  ossusy_looper_38X::FREnum       frmode(frmodeIdx);
    
                   if (rundataskim) {
                     cout << "Processing data skim" << endl;
@@ -759,6 +834,30 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                     looper->ScanChain(chdata,"data", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
                     cout << "Done processing data" << endl;
                     hist::color("data", kBlack);
+                  }
+                  if (runDYtot) {
+                    cout << "Processing DY->all" << endl;
+                    looper->ScanChain(chDYtot,"DYtot", kDYtot, preDYtot, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done rocessing DY->ee" << endl;
+                    hist::color("DYtot", kMagenta);
+                  }
+                  if (runDYee) {
+                    cout << "Processing DY->ee" << endl;
+                    looper->ScanChain(chDYee,"DYee", kDYee, preDYee, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done rocessing DY->ee" << endl;
+                    hist::color("DYee", kMagenta);
+                  }
+                  if (runDYmm) {
+                    cout << "Processing DY->mm" << endl;
+                    looper->ScanChain(chDYmm,"DYmm", kDYmm, preDYmm, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing DY->mm" << endl;
+                    hist::color("DYmm", kCyan);
+                  }
+                  if (runDYtautau) {
+                    cout << "Processing DY->tautau" << endl;
+                    looper->ScanChain(chDYtautau,"DYtautau", kDYtautau, preDYtautau, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing DY->tautau" << endl;
+                    hist::color("DYtautau", kBlack);
                   }
                   if (runZjets) {
                     cout << "Processing Zjets" << endl;
@@ -808,6 +907,12 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                     cout << "Done processing ttbar no-dileptons.. " << endl;
                     hist::color("ttotr", 30);
                   }
+                  if (runVV) {
+                    cout << "Processing VV.." << endl;
+                    looper->ScanChain(chvv,"vv", kVV, preVV, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing VV.." << endl;
+                    hist::color("vv", kRed);
+                  }
                   if (runWW) {
                     cout << "Processing WW.." << endl;
                     looper->ScanChain(chww,"ww", kWW, preWW, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
@@ -838,24 +943,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                     cout << "Done processing Wcharm.." << endl;
                     hist::color("wcharm", 50);
                   }
-                  if (runDYee) {
-                    cout << "Processing DY->ee" << endl;
-                    looper->ScanChain(chDYee,"DYee", kDYee, preDYee, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-                    cout << "Done rocessing DY->ee" << endl;
-                    hist::color("DYee", kMagenta);
-                  }
-                  if (runDYmm) {
-                    cout << "Processing DY->mm" << endl;
-                    looper->ScanChain(chDYmm,"DYmm", kDYmm, preDYmm, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-                    cout << "Done processing DY->mm" << endl;
-                    hist::color("DYmm", kCyan);
-                  }
-                  if (runDYtautau) {
-                    cout << "Processing DY->tautau" << endl;
-                    looper->ScanChain(chDYtautau,"DYtautau", kDYtautau, preDYtautau, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-                    cout << "Done processing DY->tautau" << endl;
-                    hist::color("DYtautau", kBlack);
-                  }
+
                   if (runppMuX) {
                     cout << "Processing ppMuX" << endl;
                     looper->ScanChain(chppMuX,"ppMuX", kppMuX, preppMuX, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
@@ -1014,11 +1102,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                   
                   // save all the histograms
                   if(doFakeApp) {
-                    const char* outFile = Form("output/nov5th_v8/ossusy_%s_%s%s_%s_FakeApp.root", 
+                    const char* outFile = Form("output_38X/nov5th_v1_skim/ossusy_%s_%s%s_%s_FakeApp.root", 
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx],frmodeStrings[frmode]);
                   }
                   else {
-                    const char* outFile = Form("output/temp/ossusy_%s_%s%s_bitmask.root", 
+                    const char* outFile = Form("output_38X/nov5th_v6_skim/ossusy_%s_%s%s.root", 
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
                   }
                   
