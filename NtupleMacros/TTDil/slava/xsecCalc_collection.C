@@ -720,6 +720,7 @@ void xsecCalc_36pb_pass6(){
   //=====================================================================================
   // NOW PF
   //=====================================================================================
+  bool ignoreFakeSyst = false;
 
   double rescaleMuSF = (0.992/0.9889);
   
@@ -747,6 +748,11 @@ void xsecCalc_36pb_pass6(){
   pee0j.qcd_exp   = 0.3730; pee0j.qcd_stat  =  0.1558; pee0j.qcd_syst = pee0j.qcd_exp;
   pee0j.wjraw_exp = 4.8377; pee0j.wjraw_stat=  1.1990;
   pee0j.wjf_systFrac = 0.5;
+  if (ignoreFakeSyst){
+    pee0j.sr_syst = 0.0;
+    pee0j.qcd_syst = 0.0;
+    pee0j.wjf_systFrac = 0.0;
+  }
 
   pee0j.dy_mc  =    1.79;  pee0j.dy_mc_stat = 0.36;
   pee0j.dy_exp = 3.58; pee0j.dy_stat = 1.27; pee0j.dy_syst = pee0j.dy_exp*0.5;
@@ -776,6 +782,11 @@ void xsecCalc_36pb_pass6(){
   pee1j.qcd_exp   = 0.5508; pee1j.qcd_stat  =  0.2193; pee1j.qcd_syst = pee1j.qcd_exp;
   pee1j.wjraw_exp = 3.4900; pee1j.wjraw_stat=  0.9813;
   pee1j.wjf_systFrac = 0.5;
+  if (ignoreFakeSyst){
+    pee1j.sr_syst = 0.0;
+    pee1j.qcd_syst = 0.0;
+    pee1j.wjf_systFrac = 0.0;
+  }
 
   pee1j.dy_mc  =    1.31;  pee1j.dy_mc_stat = 0.285;
   pee1j.dy_exp =    3.23; pee1j.dy_stat =    0.98; pee1j.dy_syst =   pee1j.dy_exp*0.5;
@@ -806,6 +817,11 @@ void xsecCalc_36pb_pass6(){
   pee2j.qcd_exp   = 0.2587; pee2j.qcd_stat  =  0.1665; pee2j.qcd_syst = pee2j.qcd_exp;
   pee2j.wjraw_exp = 3.6512; pee2j.wjraw_stat=  1.0043;
   pee2j.wjf_systFrac = 0.5;
+  if (ignoreFakeSyst){
+    pee2j.sr_syst = 0.0;
+    pee2j.qcd_syst = 0.0;
+    pee2j.wjf_systFrac = 0.0;
+  }
 
   pee2j.dy_mc  =    1.72;  pee2j.dy_mc_stat = 0.34;
   pee2j.dy_exp =    3.00; pee2j.dy_stat =  0.97; pee2j.dy_syst =   pee2j.dy_exp*0.5;
@@ -836,6 +852,11 @@ void xsecCalc_36pb_pass6(){
   pee2jFComb.qcd_exp   = 0.0; pee2jFComb.qcd_stat  =  0.0; pee2jFComb.qcd_syst = pee2jFComb.qcd_exp;
   pee2jFComb.wjraw_exp = 1.06; pee2jFComb.wjraw_stat=  1.44;
   pee2jFComb.wjf_systFrac = 0.0;
+  if (ignoreFakeSyst){
+    pee2jFComb.sr_syst = 0.0;
+    pee2jFComb.qcd_syst = 0.0;
+    pee2jFComb.wjf_systFrac = 0.0;
+  }
 
   pee2jFComb.dy_mc  =    1.72;  pee2jFComb.dy_mc_stat = 0.34;
   pee2jFComb.dy_exp =    3.00; pee2jFComb.dy_stat =  0.97; pee2jFComb.dy_syst =   pee2jFComb.dy_exp*0.5;
@@ -868,6 +889,11 @@ void xsecCalc_36pb_pass6(){
   pmm0j.qcd_exp   = 0.0000; pmm0j.qcd_stat  =  0.09; pmm0j.qcd_syst = pmm0j.qcd_exp;
   pmm0j.wjraw_exp = 0.4874; pmm0j.wjraw_stat=  0.4874;
   pmm0j.wjf_systFrac = 0.75;
+  if (ignoreFakeSyst){
+    pmm0j.sr_syst = 0.0;
+    pmm0j.qcd_syst = 0.0;
+    pmm0j.wjf_systFrac = 0.0;
+  }
 
   pmm0j.dy_mc  =  4.59;  pmm0j.dy_mc_stat = 0.575;
   pmm0j.dy_exp =  14.505; pmm0j.dy_stat = 3.225; pmm0j.dy_syst = pmm0j.dy_exp*0.5;
@@ -897,6 +923,11 @@ void xsecCalc_36pb_pass6(){
   pmm1j.qcd_exp   = 0.2225; pmm1j.qcd_stat  =  0.1573; pmm1j.qcd_syst = pmm1j.qcd_exp;
   pmm1j.wjraw_exp = 0.2892; pmm1j.wjraw_stat=  0.2892;
   pmm1j.wjf_systFrac = 0.75;
+  if (ignoreFakeSyst){
+    pmm1j.sr_syst = 0.0;
+    pmm1j.qcd_syst = 0.0;
+    pmm1j.wjf_systFrac = 0.0;
+  }
 
   pmm1j.dy_mc  =    6.185;  pmm1j.dy_mc_stat = 0.665;
   pmm1j.dy_exp =    13.18; pmm1j.dy_stat =    2.775; pmm1j.dy_syst =   pmm1j.dy_exp*0.5;
@@ -927,6 +958,11 @@ void xsecCalc_36pb_pass6(){
   pmm2j.qcd_exp   = 0.0841; pmm2j.qcd_stat  =  0.0841; pmm2j.qcd_syst = pmm2j.qcd_exp;
   pmm2j.wjraw_exp = 2.0411; pmm2j.wjraw_stat=  0.8397;
   pmm2j.wjf_systFrac = 0.75;
+  if (ignoreFakeSyst){
+    pmm2j.sr_syst = 0.0;
+    pmm2j.qcd_syst = 0.0;
+    pmm2j.wjf_systFrac = 0.0;
+  }
 
   pmm2j.dy_mc  =    3.345;  pmm2j.dy_mc_stat = 0.49;
   pmm2j.dy_exp =     7.44;  pmm2j.dy_stat =    1.825; pmm2j.dy_syst =   pmm2j.dy_exp*0.5;
@@ -957,6 +993,11 @@ void xsecCalc_36pb_pass6(){
   pmm2jFComb.qcd_exp   = 0.0; pmm2jFComb.qcd_stat  =  0.0; pmm2jFComb.qcd_syst = pmm2jFComb.qcd_exp;
   pmm2jFComb.wjraw_exp = 0.60; pmm2jFComb.wjraw_stat=  1.14;
   pmm2jFComb.wjf_systFrac = 0.0;
+  if (ignoreFakeSyst){
+    pmm2jFComb.sr_syst = 0.0;
+    pmm2jFComb.qcd_syst = 0.0;
+    pmm2jFComb.wjf_systFrac = 0.0;
+  }
 
   pmm2jFComb.dy_mc  =    3.345;  pmm2jFComb.dy_mc_stat = 0.49;
   pmm2jFComb.dy_exp =     7.44;  pmm2jFComb.dy_stat =    1.825; pmm2jFComb.dy_syst =   pmm2jFComb.dy_exp*0.5;
@@ -988,6 +1029,11 @@ void xsecCalc_36pb_pass6(){
   pem0j.qcd_exp   = 5.3854; pem0j.qcd_stat  =  0.7161; pem0j.qcd_syst = pem0j.qcd_exp;
   pem0j.wjraw_exp = 23.9090; pem0j.wjraw_stat=  2.7220;
   pem0j.wjf_systFrac = 0.5;
+  if (ignoreFakeSyst){
+    pem0j.sr_syst = 0.0;
+    pem0j.qcd_syst = 0.0;
+    pem0j.wjf_systFrac = 0.0;
+  }
 
   pem0j.dy_mc  =3.331;  pem0j.dy_mc_stat = 0.375;
   pem0j.dy_exp =  0.0;  pem0j.dy_stat =    0.0; pem0j.dy_syst = pem0j.dy_exp*0.5;
@@ -1017,6 +1063,11 @@ void xsecCalc_36pb_pass6(){
   pem1j.qcd_exp   = 1.6999; pem1j.qcd_stat  =  0.3630; pem1j.qcd_syst = pem1j.qcd_exp;
   pem1j.wjraw_exp = 12.4671; pem1j.wjraw_stat=  1.9140;
   pem1j.wjf_systFrac = 0.5;
+  if (ignoreFakeSyst){
+    pem1j.sr_syst = 0.0;
+    pem1j.qcd_syst = 0.0;
+    pem1j.wjf_systFrac = 0.0;
+  }
 
   pem1j.dy_mc  =    0.804;  pem1j.dy_mc_stat = 0.185;
   pem1j.dy_exp =    0.0; pem1j.dy_stat =     0.0; pem1j.dy_syst =   pem1j.dy_exp*0.5;
@@ -1047,6 +1098,11 @@ void xsecCalc_36pb_pass6(){
   pem2j.qcd_exp   = 0.5717; pem2j.qcd_stat  =  0.2541; pem2j.qcd_syst = pem2j.qcd_exp;
   pem2j.wjraw_exp = 4.9342; pem2j.wjraw_stat=  1.2022;
   pem2j.wjf_systFrac = 0.5;
+  if (ignoreFakeSyst){
+    pem2j.sr_syst = 0.0;
+    pem2j.qcd_syst = 0.0;
+    pem2j.wjf_systFrac = 0.0;
+  }
 
   pem2j.dy_mc  =    0.423;  pem2j.dy_mc_stat = 0.134;
   pem2j.dy_exp =    0.0;  pem2j.dy_stat =    0.0; pem2j.dy_syst =   pem2j.dy_exp*0.5;
@@ -1077,6 +1133,11 @@ void xsecCalc_36pb_pass6(){
   pem2jFComb.qcd_exp   = 0.0; pem2jFComb.qcd_stat  =  0.0; pem2jFComb.qcd_syst = pem2jFComb.qcd_exp;
   pem2jFComb.wjraw_exp = 1.44; pem2jFComb.wjraw_stat=  1.58;
   pem2jFComb.wjf_systFrac = 0.0;
+  if (ignoreFakeSyst){
+    pem2jFComb.sr_syst = 0.0;
+    pem2jFComb.qcd_syst = 0.0;
+    pem2jFComb.wjf_systFrac = 0.0;
+  }
 
   pem2jFComb.dy_mc  =    0.423;  pem2jFComb.dy_mc_stat = 0.134;
   pem2jFComb.dy_exp =    0.0;  pem2jFComb.dy_stat =    0.0; pem2jFComb.dy_syst =   pem2jFComb.dy_exp*0.5;
@@ -1112,6 +1173,11 @@ void xsecCalc_36pb_pass6(){
   pee1j1bj.qcd_exp   = 0.0990; pee1j1bj.qcd_stat  =  0.0990; pee1j1bj.qcd_syst = pee1j1bj.qcd_exp;
   pee1j1bj.wjraw_exp = 0.7193; pee1j1bj.wjraw_stat=  0.4505;
   pee1j1bj.wjf_systFrac = 0.5;
+  if (ignoreFakeSyst){
+    pee1j1bj.sr_syst = 0.0;
+    pee1j1bj.qcd_syst = 0.0;
+    pee1j1bj.wjf_systFrac = 0.0;
+  }
 
   pee1j1bj.dy_mc  =    (0.254+0.059)*0.5;  pee1j1bj.dy_mc_stat = (0.104+0.042)*0.5;
   pee1j1bj.dy_exp =    (0.975+0.214)*0.5;  pee1j1bj.dy_stat  =   (0.565+0.176)*0.5; 
@@ -1143,6 +1209,11 @@ void xsecCalc_36pb_pass6(){
   pee2j1bj.qcd_exp   = 0.0000; pee2j1bj.qcd_stat  =  0.0900; pee2j1bj.qcd_syst = pee2j1bj.qcd_exp;
   pee2j1bj.wjraw_exp = 2.5821; pee2j1bj.wjraw_stat=  0.8366;
   pee2j1bj.wjf_systFrac = 0.5;
+  if (ignoreFakeSyst){
+    pee2j1bj.sr_syst = 0.0;
+    pee2j1bj.qcd_syst = 0.0;
+    pee2j1bj.wjf_systFrac = 0.0;
+  }
 
   pee2j1bj.dy_mc  =    (0.417+0.720)*0.5;  pee2j1bj.dy_mc_stat = (0.135+0.273)*0.5;
   pee2j1bj.dy_exp =    (0.589+0.929)*0.5;  pee2j1bj.dy_stat   =  (0.438+0.717)*0.5; 
@@ -1173,6 +1244,11 @@ void xsecCalc_36pb_pass6(){
   pee2j1bjFComb.qcd_exp   = 0.0000; pee2j1bjFComb.qcd_stat  =  0.0000; pee2j1bjFComb.qcd_syst = pee2j1bjFComb.qcd_exp;
   pee2j1bjFComb.wjraw_exp = 0.89; pee2j1bjFComb.wjraw_stat=  1.23;
   pee2j1bjFComb.wjf_systFrac = 0.0;
+  if (ignoreFakeSyst){
+    pee2j1bjFComb.sr_syst = 0.0;
+    pee2j1bjFComb.qcd_syst = 0.0;
+    pee2j1bjFComb.wjf_systFrac = 0.0;
+  }
 
   pee2j1bjFComb.dy_mc  =    (0.45+0.51)*0.5;  pee2j1bjFComb.dy_mc_stat = (0.135+0.273)*0.5;
   pee2j1bjFComb.dy_exp =    (0.67+0.64)*0.5;  pee2j1bjFComb.dy_stat   =  (0.6+0.6)*0.5; 
@@ -1204,6 +1280,11 @@ void xsecCalc_36pb_pass6(){
   pmm1j1bj.qcd_exp   = 0.0000; pmm1j1bj.qcd_stat  =  0.0900; pmm1j1bj.qcd_syst = pmm1j1bj.qcd_exp;
   pmm1j1bj.wjraw_exp = 0.2892; pmm1j1bj.wjraw_stat=  0.2892;
   pmm1j1bj.wjf_systFrac = 0.75;
+  if (ignoreFakeSyst){
+    pmm1j1bj.sr_syst = 0.0;
+    pmm1j1bj.qcd_syst = 0.0;
+    pmm1j1bj.wjf_systFrac = 0.0;
+  }
 
   pmm1j1bj.dy_mc  =    (0.683+0.953)*0.5;  pmm1j1bj.dy_mc_stat = (0.173+0.307)*0.5;
   pmm1j1bj.dy_exp =    (2.909+2.842)*0.5;  pmm1j1bj.dy_stat =    (1.212+1.314)*0.5; 
@@ -1235,6 +1316,11 @@ void xsecCalc_36pb_pass6(){
   pmm2j1bj.qcd_exp   = 0.0000; pmm2j1bj.qcd_stat  =  0.0900; pmm2j1bj.qcd_syst = pmm2j1bj.qcd_exp;
   pmm2j1bj.wjraw_exp = 1.2856; pmm2j1bj.wjraw_stat=  0.6478;
   pmm2j1bj.wjf_systFrac = 0.75;
+  if (ignoreFakeSyst){
+    pmm2j1bj.sr_syst = 0.0;
+    pmm2j1bj.qcd_syst = 0.0;
+    pmm2j1bj.wjf_systFrac = 0.0;
+  }
 
   pmm2j1bj.dy_mc  =    (1.081+1.432)*0.5;  pmm2j1bj.dy_mc_stat = (0.210+0.387)*0.5;
   pmm2j1bj.dy_exp =    (3.251+3.004)*0.5;  pmm2j1bj.dy_stat =    (1.339+1.361)*0.5; 
@@ -1266,6 +1352,11 @@ void xsecCalc_36pb_pass6(){
   pmm2j1bjFComb.qcd_exp   = 0.0000; pmm2j1bjFComb.qcd_stat  =  0.0000; pmm2j1bjFComb.qcd_syst = pmm2j1bjFComb.qcd_exp;
   pmm2j1bjFComb.wjraw_exp = 0.28; pmm2j1bjFComb.wjraw_stat=  0.785;
   pmm2j1bjFComb.wjf_systFrac = 0.0;
+  if (ignoreFakeSyst){
+    pmm2j1bjFComb.sr_syst = 0.0;
+    pmm2j1bjFComb.qcd_syst = 0.0;
+    pmm2j1bjFComb.wjf_systFrac = 0.0;
+  }
 
   pmm2j1bjFComb.dy_mc  =    (1.1+1.1)*0.5;  pmm2j1bjFComb.dy_mc_stat = (0.210+0.387)*0.5;
   pmm2j1bjFComb.dy_exp =    (2.9+2.4)*0.5;  pmm2j1bjFComb.dy_stat =    (1.4+1.1)*0.5; 
@@ -1297,6 +1388,11 @@ void xsecCalc_36pb_pass6(){
   pem1j1bj.qcd_exp   = 0.5974; pem1j1bj.qcd_stat  =  0.2278; pem1j1bj.qcd_syst = pem1j1bj.qcd_exp;
   pem1j1bj.wjraw_exp = 2.2868; pem1j1bj.wjraw_stat=  0.8257;
   pem1j1bj.wjf_systFrac = 0.5;
+  if (ignoreFakeSyst){
+    pem1j1bj.sr_syst = 0.0;
+    pem1j1bj.qcd_syst = 0.0;
+    pem1j1bj.wjf_systFrac = 0.0;
+  }
 
   pem1j1bj.dy_mc  =    0.085;  pem1j1bj.dy_mc_stat = 0.060;
   pem1j1bj.dy_exp =    0.0; pem1j1bj.dy_stat =     0.0; pem1j1bj.dy_syst =   pem1j1bj.dy_exp*0.5;
@@ -1327,6 +1423,11 @@ void xsecCalc_36pb_pass6(){
   pem2j1bj.qcd_exp   = 0.2191; pem2j1bj.qcd_stat  =  0.1611; pem2j1bj.qcd_syst = pem2j1bj.qcd_exp;
   pem2j1bj.wjraw_exp = 2.9343; pem2j1bj.wjraw_stat=  0.9498;
   pem2j1bj.wjf_systFrac = 0.5;
+  if (ignoreFakeSyst){
+    pem2j1bj.sr_syst = 0.0;
+    pem2j1bj.qcd_syst = 0.0;
+    pem2j1bj.wjf_systFrac = 0.0;
+  }
 
   pem2j1bj.dy_mc  =    0.085;  pem2j1bj.dy_mc_stat = 0.060;
   pem2j1bj.dy_exp =    0.0;  pem2j1bj.dy_stat =    0.0; pem2j1bj.dy_syst =   pem2j1bj.dy_exp*0.5;
@@ -1356,6 +1457,11 @@ void xsecCalc_36pb_pass6(){
   pem2j1bjFComb.qcd_exp   = 0.0; pem2j1bjFComb.qcd_stat  =  0.0; pem2j1bjFComb.qcd_syst = pem2j1bjFComb.qcd_exp;
   pem2j1bjFComb.wjraw_exp = 0.48; pem2j1bjFComb.wjraw_stat=  1.149;
   pem2j1bjFComb.wjf_systFrac = 0.0;
+  if (ignoreFakeSyst){
+    pem2j1bjFComb.sr_syst = 0.0;
+    pem2j1bjFComb.qcd_syst = 0.0;
+    pem2j1bjFComb.wjf_systFrac = 0.0;
+  }
 
   pem2j1bjFComb.dy_mc  =    0.085;  pem2j1bjFComb.dy_mc_stat = 0.060;
   pem2j1bjFComb.dy_exp =    0.0;  pem2j1bjFComb.dy_stat =    0.0; pem2j1bjFComb.dy_syst =   pem2j1bjFComb.dy_exp*0.5;
@@ -1392,6 +1498,11 @@ void xsecCalc_36pb_pass6(){
   pee1jFOM.qcd_exp   = 0.2862; pee1jFOM.qcd_stat  =  0.1654; pee1jFOM.qcd_syst = pee1jFOM.qcd_exp;
   pee1jFOM.wjraw_exp = 0.9267; pee1jFOM.wjraw_stat=  0.4827;
   pee1jFOM.wjf_systFrac = 0.5;
+  if (ignoreFakeSyst){
+    pee1jFOM.sr_syst = 0.0;
+    pee1jFOM.qcd_syst = 0.0;
+    pee1jFOM.wjf_systFrac = 0.0;
+  }
 
   pee1jFOM.dy_mc  =    (0.085+0.220)*0.5;  pee1jFOM.dy_mc_stat = (0.060+0.156)*0.5;
   pee1jFOM.dy_exp =    (0.141+0.299)*0.5;  pee1jFOM.dy_stat  =   (0.251+0.535)*0.5; 
@@ -1423,6 +1534,11 @@ void xsecCalc_36pb_pass6(){
   pmm1jFOM.qcd_exp   = 0.0000; pmm1jFOM.qcd_stat  =  0.0900; pmm1jFOM.qcd_syst = pmm1jFOM.qcd_exp;
   pmm1jFOM.wjraw_exp = 0.2892; pmm1jFOM.wjraw_stat=  0.2892;
   pmm1jFOM.wjf_systFrac = 0.75;
+  if (ignoreFakeSyst){
+    pmm1jFOM.sr_syst = 0.0;
+    pmm1jFOM.qcd_syst = 0.0;
+    pmm1jFOM.wjf_systFrac = 0.0;
+  }
 
   pmm1jFOM.dy_mc  =    (1.451+1.32)*0.5;  pmm1jFOM.dy_mc_stat = (0.246+0.38)*0.5;
   pmm1jFOM.dy_exp =    (6.068+3.825)*0.5;  pmm1jFOM.dy_stat =    (3.841+2.59)*0.5; 
@@ -1456,6 +1572,11 @@ void xsecCalc_36pb_pass6(){
   pem1jFOM.qcd_exp   = 0.3223; pem1jFOM.qcd_stat  =  0.1613; pem1jFOM.qcd_syst = pem1jFOM.qcd_exp;
   pem1jFOM.wjraw_exp = 1.6467; pem1jFOM.wjraw_stat=  0.6898;
   pem1jFOM.wjf_systFrac = 0.5;
+  if (ignoreFakeSyst){
+    pem1jFOM.sr_syst = 0.0;
+    pem1jFOM.qcd_syst = 0.0;
+    pem1jFOM.wjf_systFrac = 0.0;
+  }
 
   pem1jFOM.dy_mc  =    0.127;  pem1jFOM.dy_mc_stat = 0.073;
   pem1jFOM.dy_exp =    0.0; pem1jFOM.dy_stat =     0.0; pem1jFOM.dy_syst =   pem1jFOM.dy_exp*0.5;
@@ -1494,6 +1615,11 @@ void xsecCalc_36pb_pass6(){
   pee1jFOMLIP.qcd_exp   = 0.000; pee1jFOMLIP.qcd_stat  =  0.000; pee1jFOMLIP.qcd_syst = pee1jFOMLIP.qcd_exp;
   pee1jFOMLIP.wjraw_exp = 0.29; pee1jFOMLIP.wjraw_stat=  0.49;
   pee1jFOMLIP.wjf_systFrac = 0.0;
+  if (ignoreFakeSyst){
+    pee1jFOMLIP.sr_syst = 0.0;
+    pee1jFOMLIP.qcd_syst = 0.0;
+    pee1jFOMLIP.wjf_systFrac = 0.0;
+  }
 
   pee1jFOMLIP.dy_mc  =    (0.085+0.220)*0.5;  pee1jFOMLIP.dy_mc_stat = (0.060+0.156)*0.5;
   pee1jFOMLIP.dy_exp =    0.16;  pee1jFOMLIP.dy_stat  =   0.29; 
@@ -1525,6 +1651,11 @@ void xsecCalc_36pb_pass6(){
   pmm1jFOMLIP.qcd_exp   = 0.0000; pmm1jFOMLIP.qcd_stat  =  0.00; pmm1jFOMLIP.qcd_syst = pmm1jFOMLIP.qcd_exp;
   pmm1jFOMLIP.wjraw_exp = 0.07; pmm1jFOMLIP.wjraw_stat=  0.38;
   pmm1jFOMLIP.wjf_systFrac = 0.0;
+  if (ignoreFakeSyst){
+    pmm1jFOMLIP.sr_syst = 0.0;
+    pmm1jFOMLIP.qcd_syst = 0.0;
+    pmm1jFOMLIP.wjf_systFrac = 0.0;
+  }
 
   pmm1jFOMLIP.dy_mc  =    (1.451+1.32)*0.5;  pmm1jFOMLIP.dy_mc_stat = (0.246+0.38)*0.5;
   pmm1jFOMLIP.dy_exp =    5.19;  pmm1jFOMLIP.dy_stat =    4.28; 
@@ -1558,6 +1689,11 @@ void xsecCalc_36pb_pass6(){
   pem1jFOMLIP.qcd_exp   = 0.0; pem1jFOMLIP.qcd_stat  =  0.0; pem1jFOMLIP.qcd_syst = pem1jFOMLIP.qcd_exp;
   pem1jFOMLIP.wjraw_exp = 1.25; pem1jFOMLIP.wjraw_stat=  1.28;
   pem1jFOMLIP.wjf_systFrac = 0.0;
+  if (ignoreFakeSyst){
+    pem1jFOMLIP.sr_syst = 0.0;
+    pem1jFOMLIP.qcd_syst = 0.0;
+    pem1jFOMLIP.wjf_systFrac = 0.0;
+  }
 
   pem1jFOMLIP.dy_mc  =    0.127;  pem1jFOMLIP.dy_mc_stat = 0.073;
   pem1jFOMLIP.dy_exp =    0.0; pem1jFOMLIP.dy_stat =     0.0; pem1jFOMLIP.dy_syst =   pem1jFOMLIP.dy_exp*0.5;
