@@ -8,3 +8,7 @@ cp Configuration/CMS2.h  CORE/.
 
 #Fix path to top mass code
 cp Configuration/ttdilepsolve.cpp CORE/topmass/.
+
+#Remove 39X electron branch
+cp Configuration/electronSelections.cc CORE/.
+
