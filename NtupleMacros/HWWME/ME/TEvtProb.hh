@@ -60,7 +60,7 @@ public:
   TVar::HWWPhaseSpace _hwwPhaseSpace;
   EffHist _effhist;
   BoostHist _boosthist;
-  
+  NeutHist _neuthist;
   //---------------------------------------------------------------------------
   // Constructors and Destructor
   //---------------------------------------------------------------------------
@@ -81,6 +81,8 @@ public:
     TString effFileName;
     if(TVar::ProcessName(proc) == "HWW") effFileName = "../ggH160_MCUtil.root";
     if(TVar::ProcessName(proc) == "WW")  effFileName = "../WW_MCUtil.root";
+    if(TVar::ProcessName(proc) == "Wp_1jet")  effFileName = "../WW_MCUtil.root";
+    if(TVar::ProcessName(proc) == "Wm_1jet")  effFileName = "../WW_MCUtil.root";
     if(TVar::ProcessName(proc) == "ZZ")  effFileName = "../ZZ_MCUtil.root";
     if(TVar::ProcessName(proc) == "WZ")  effFileName = "../ZZ_MCUtil.root";
     
@@ -91,7 +93,11 @@ public:
     _effhist.els_eff_mc = (TH2F*) f->Get("els_eff_mc")->Clone();
     _effhist.mus_eff_mc = (TH2F*) f->Get("mus_eff_mc")->Clone();
     _boosthist.kx = (TH1F*) f->Get("kx")->Clone();
-    _boosthist.ky = (TH1F*) f->Get("ky")->Clone();  
+    _boosthist.ky = (TH1F*) f->Get("ky")->Clone();
+
+    _neuthist.kx = (TH1F*) f->Get("nux")->Clone();
+    _neuthist.ky = (TH1F*) f->Get("nuy")->Clone();
+    _neuthist.kz = (TH1F*) f->Get("nuz")->Clone();  
     f->Close();
   }
   
@@ -126,7 +132,6 @@ class  Integrand_LOXsec_foam : public TFoamIntegrand{
 };
 
 
-double Integrand_NeutrinoIntegration(double * r, unsigned int NDim, void * param, BoostHist boosthist);
-
-   
+double Integrand_NeutrinoIntegration(double * r, unsigned int NDim, void * param, BoostHist boosthist, NeutHist neuthist);
+  
 #endif

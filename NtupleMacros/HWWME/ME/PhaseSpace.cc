@@ -101,14 +101,19 @@ void genMHiggsYHiggs(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_eve
 // Higgs PhaseSpace
 //============================================
 
-void genMHiggs(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_type* PSList, BoostHist boosthist) {
+void genMHiggs(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_type* PSList, BoostHist boosthist, NeutHist neuthist) {
 
     double wt[6];
      
     double nu_X,nu_Y,nu_Z;
-    EtExponential(20.,r[0],&nu_X,&wt[0]);  
-    EtExponential(20.,r[1],&nu_Y,&wt[1]);
-    EtExponential(80.,r[2],&nu_Z,&wt[2]);
+    //        EtExponential(20.,r[0],&nu_X,&wt[0]);  
+    //        EtExponential(20.,r[1],&nu_Y,&wt[1]);
+    //        EtExponential(80.,r[2],&nu_Z,&wt[2]);
+
+      NeutMom(r[0], & nu_X, & wt[0], neuthist.kx);
+      NeutMom(r[1], & nu_Y, & wt[1], neuthist.ky);
+      NeutMom(r[2], & nu_Z, & wt[2], neuthist.kz);
+
 
     TLorentzVector P4ll=cdf_event.p[0]+cdf_event.p[1];
     double Mll=P4ll.M();
@@ -252,14 +257,17 @@ void genDY(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_type* P
 //
 //============================================
 
-void genMw1Mw2(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_type* PSList, BoostHist boosthist){
+void genMw1Mw2(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_type* PSList, BoostHist boosthist, NeutHist neuthist ){
 
 //    double sixteen_twopi_to_eighth=16*TMath::Power(2*TMath::Pi(),8);
     double wt[6];
      
     double nu_Z,nb_Z;
-    EtExponential(80.,r[0],&nu_Z,&wt[0]);  
-    EtExponential(80.,r[1],&nb_Z,&wt[1]);
+    //    EtExponential(80.,r[0],&nu_Z,&wt[0]);  
+    //    EtExponential(80.,r[1],&nb_Z,&wt[1]);
+
+        NeutMom(r[0], & nu_Z, & wt[0], neuthist.kz);
+        NeutMom(r[1], & nb_Z, & wt[1], neuthist.kz);
 
     double mminsq=1e-15;
     double mmaxsq=EBEAM*EBEAM;

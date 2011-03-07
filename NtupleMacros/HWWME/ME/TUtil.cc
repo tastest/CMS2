@@ -714,3 +714,21 @@ void KtPdf(double x0, double* kX, double *wt, TH1F *hkx)
  
   // if(*wt == 0) cout << "hkx->GetXaxis()->FindBin(" << *kX << ") = " <<hkx->GetXaxis()->FindBin(*kX) <<endl; 
 }
+
+void NeutMom(double x0, double* k, double *wt, TH1F *hk)
+{
+  double sign=1.;
+  if(x0>0.5) {
+    sign=-1.;
+    x0=(x0-0.5)*2.;
+  }else{
+   x0=x0*2.;
+  }
+  
+  *k = sign*x0*TMath::Abs(hk->GetXaxis()->GetXmax());
+  *wt = hk->GetBinContent(hk->GetXaxis()->FindBin(*k))/hk->Integral(0, 1000);
+
+  //  cout << "hkx->GetXaxis()->FindBin(" << *k << ") = " <<hk->GetXaxis()->FindBin(*k) <<" weight= "<<wt[0]<<endl;
+  // if(*wt == 0) cout << "hkx->GetXaxis()->FindBin(" << *kX << ") = " <<hkx->GetXaxis()->FindBin(*kX) <<endl;
+}
+

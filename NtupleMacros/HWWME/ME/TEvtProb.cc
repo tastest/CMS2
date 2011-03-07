@@ -112,7 +112,7 @@ void   TEvtProb::NeutrinoIntegrate(TVar::Process proc,
       double dXsec=0;
     
       // dXsec=Integrand_NeutrinoIntegration(r,NDim,0);
-      dXsec=Integrand_NeutrinoIntegration(r,NDim,0, _boosthist)*probAcceptanceEfficiency;
+      dXsec=Integrand_NeutrinoIntegration(r,NDim,0, _boosthist, _neuthist)*probAcceptanceEfficiency;
   
       if (dXsec<=0) continue;
       sumW  += dXsec;
@@ -131,7 +131,7 @@ void   TEvtProb::NeutrinoIntegrate(TVar::Process proc,
 //=======================================
 // Integrand
 //=======================================
- double Integrand_NeutrinoIntegration(double * r, unsigned int NDim, void * param, BoostHist boosthist){
+double Integrand_NeutrinoIntegration(double * r, unsigned int NDim, void * param, BoostHist boosthist, NeutHist neuthist){
 
     //constants
     double sqrts = 2.*EBEAM;
@@ -158,7 +158,7 @@ void   TEvtProb::NeutrinoIntegrate(TVar::Process proc,
     if (Global_process==TVar::WW)
       {
 	Global_NSol=4;         
-	genMw1Mw2(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist);
+	genMw1Mw2(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist, neuthist);
       }
 
     if (Global_process==TVar::HWW)
@@ -166,22 +166,22 @@ void   TEvtProb::NeutrinoIntegrate(TVar::Process proc,
 	if(Global_HWWPhaseSpace==TVar::MWMW)
 	  { 
 	    Global_NSol=4;
-	    genMw1Mw2(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist);
+	    genMw1Mw2(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist, neuthist);
 	  }
 	else if (Global_HWWPhaseSpace==TVar::MHMW)
 	  { 
 	    Global_NSol=4;
-	    genMHiggsMw1(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);
+	    genMHiggsMw1(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist, neuthist);
 	  }
 	else if (Global_HWWPhaseSpace==TVar::MHYH)
 	  { 
 	    Global_NSol=2;
-	    genMHiggsYHiggs(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);
+	    genMHiggsYHiggs(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist, neuthist);
 	  }
 	else if (Global_HWWPhaseSpace==TVar::MH)
 	  { 
 	    Global_NSol=2;
-	    genMHiggs(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist);
+	    genMHiggs(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist, neuthist);
 	  }
       }
 
