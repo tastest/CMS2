@@ -1116,19 +1116,19 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                     const char* outFile = Form("output/%s/ossusy_%s_%s%s.root", version,
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
                   }
-                  cout << __LINE__ << endl;
+                  
                   //const char* outFile = Form("victory_baseline_genmetgt50_nosumjetptcut_%s_%s_pleasework_varbins.root", 
                   //jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx]);
                   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
                   rootdir->cd();
                   saveHist(outFile);
                   deleteHistos();
-                                    cout << __LINE__ << endl;
+                  
                 } // frmodeIdx
             }//zvetoIdx
         } // metTypeIdx
     } // jetTypeIdx
-                    cout << __LINE__ << endl;
-                    gSystem->Exit(0);
-                  cout << __LINE__ << endl;
+  
+  gSystem->Exit(0);
+  
 }

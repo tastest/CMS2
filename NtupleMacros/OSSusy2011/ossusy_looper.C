@@ -735,21 +735,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         continue;
       }
   
-//       if( evt_event() == 1660011 
-//           || evt_event() == 940648
-//           || evt_event() == 1545956
-//           || evt_event() == 5871735 
-//           || evt_event() == 1547638
-//           || evt_event() == 755980 
-//           || evt_event() == 5580456
-//           || evt_event() == 5009541 ){
-
-//         cout << evt_dataset() << " " << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl; 
-//         dumpDocLines();
-//       }
-
-      //dumpDocLines();
-
       //goodrun list + event cleaning
       if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
       if( !cleaning_standardAugust2010( isData) )                    continue;
@@ -2162,19 +2147,12 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
   } // currentFile
   if( nSkip_els_conv_dist > 0 )
     cout << "Skipped " << nSkip_els_conv_dist << " events due to nan in els_conv_dist" << endl;
-  
+
+  cout << "Preselection yields" << endl;
   cout << "nee " << nee << endl;
   cout << "nmm " << nmm << endl;
   cout << "nem " << nem << endl;
   cout << "tot " << nee+nmm+nem << endl;
-
-  //cout << "nSS " << nSS << endl;
-  //cout << "nOS " << nOS << endl;
-
-//   cout << endl << endl;
-//   cout << "nGoodEl " << nGoodEl << endl;
-//   cout << "nGoodMu " << nGoodMu << endl;
-//   cout << "nGoodEM " << nGoodEM << endl;
 
   if(g_createTree) closeTree();
   
@@ -2182,11 +2160,11 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
   if (nEventsChain != nEventsTotal)
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
-  cout << __LINE__ << endl; 
+
   delete d_llsol;
-   cout << __LINE__ << endl; 
+
   return 0;
-  cout << __LINE__ << endl; 
+
 }
 
 //--------------------------------------------------------------------
