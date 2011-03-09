@@ -6,6 +6,8 @@ cvs co -r V03-01-21      CondFormats/JetMETObjects
 # Masked ECAL Cells
 cvs co -r V101118_BE -d DataFormats/AnomalousEcalDataFormats UserCode/gebbert/DataFormats/AnomalousEcalDataFormats
 cvs co -r V101118_BE -d PhysicsTools/EcalAnomalousEventFilter UserCode/gebbert/PhysicsTools/EcalAnomalousEventFilter
+#cvs co -r V110105_BE -d DataFormats/AnomalousEcalDataFormats UserCode/gebbert/DataFormats/AnomalousEcalDataFormats
+#cvs co -r V110105_BE -d PhysicsTools/EcalAnomalousEventFilter UserCode/gebbert/PhysicsTools/EcalAnomalousEventFilter
 
 #MIT conversion stuff
 #cvs co -d MitCommon  -r ConvRejection-10-06-09 UserCode/MitCommon
