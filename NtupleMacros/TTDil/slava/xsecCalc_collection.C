@@ -9,18 +9,22 @@ double oplus(double a, double b, double c){
   return sqrt(a*a + b*b + c*c);
 }
 
+double globalLumiScale(){ return 35.9/36.1;}
+double lumiError(){ return 0.04;}
 
 void xsecCalc(double obs, double expS, double expSErr, double bg, double bgErr){
   double obsS = obs - bg;
   //notused  double obsSErr = sqrt( obs + bgErr*bgErr);
-
-  double sigma = 157.5 * (obs - bg)/ expS;
+  // expS = Lum*expSigma; 
+  double sigmaExp = 157.5;
+  expS = globalLumiScale()*expS; //correction for 2010 original lumi
+  double sigma = sigmaExp * (obs - bg)/ expS;
 
   double sigmaErrStatFrac = sqrt(obs)/obsS;
   double sigmaErrSystFrac = oplus(bgErr/obsS, expSErr/expS);
   double sigmaErrFrac =  oplus(sigmaErrStatFrac, sigmaErrSystFrac);
   
-  double sigmaErrFracLum = 0.11;
+  double sigmaErrFracLum = lumiError();
 
   double sigmaErrStat = sigma* sigmaErrStatFrac;
   double sigmaErrSyst = sigma* sigmaErrSystFrac;
@@ -95,10 +99,18 @@ public:
   double tt_sigma;
   double lum_total;
 
-  void setDependentPars_mcbg_v0(){
+  void setDependentPars_mcbg_v0(bool applyLumiRescale = true){
+    //rescale if necessary
+    if (applyLumiRescale){
+      tt_exp   *= globalLumiScale(); tt_stat   *= globalLumiScale();
+      dytt_exp *= globalLumiScale(); dytt_stat *= globalLumiScale();  dytt_syst_corr *= globalLumiScale();
+      vv_exp   *= globalLumiScale(); vv_stat   *= globalLumiScale();  vv_syst_corr   *= globalLumiScale();
+      tw_exp   *= globalLumiScale(); tw_stat   *= globalLumiScale();  tw_syst_corr   *= globalLumiScale();
+    }
+
     dytt_syst_self = 0.3*dytt_exp;
-    vv_syst_self   = 0.3*vv_exp;
-    tw_syst_self   = 0.3*tw_exp;
+    vv_syst_self   = 0.3*vv_exp  ;
+    tw_syst_self   = 0.3*tw_exp  ;
 
 //     dytt_syst_corr = oplus(0.11,0.1)*dytt_exp;
 //     vv_syst_corr   = oplus(0.11,0.1)*vv_exp;
@@ -114,6 +126,13 @@ public:
     mcbg_syst= oplus(dytt_syst_self, vv_syst_self, tw_syst_self);
     mcbg_syst= oplus(mcbg_syst, dytt_syst_corr+vv_syst_corr+tw_syst_corr);
     mcbg_e   = oplus(mcbg_stat, mcbg_syst);
+
+    if (applyLumiRescale){
+      ttotr_mc *= globalLumiScale(); ttotr_mc_stat *= globalLumiScale();
+      wj_mc    *= globalLumiScale(); wj_mc_stat    *= globalLumiScale();
+      
+      dy_mc    *= globalLumiScale(); dy_mc_stat    *= globalLumiScale();
+    }
 
     all_mc = mcbg_exp + ttotr_mc + wj_mc + dy_mc + tt_exp;
     all_mc_stat = oplus(mcbg_stat, ttotr_mc_stat, wj_mc_stat);
@@ -289,31 +308,33 @@ public:
 	     <<"\n\t\t  = ( DYtt "<<dytt_exp<<" +/- "<<l_dytt_err << " ( "<<l_dytt_err/l_sig_obs<<" )"
 	     <<"\n\t\t      VV   "<<vv_exp<<" +/- "<<l_vv_err << " ( "<<l_vv_err/l_sig_obs<<" )"
 	     <<"\n\t\t      tW   "<<tw_exp<<" +/- "<<l_tw_err  << " ( "<<l_tw_err/l_sig_obs<<" )" <<"   )"
-	     <<"\n\t   Fake: "<<fake_exp <<" +/- " << fake_stat <<" +/- "<< fake_syst  << " ( "<<l_fake_err/l_sig_obs<<" )"
+	     <<"\n\t   Fake: "<<fake_exp <<" +/- " << fake_stat <<" +/- "<< fake_syst  
+	     << " = +/- "<<l_fake_err<<" ( "<<l_fake_err/l_sig_obs<<" )"
 	     <<"\n\t\t  ( QCDraw " << qcd_exp <<" +/- "<<qcd_stat<<" +/- "<<qcd_syst 
 	     <<"\n\t\t\t WJraw "<<wjraw_exp<<" +/- "<<wjraw_stat
 	     <<"\n\t\t\t Spill "<<spill_exp<<" +/- "<<spill_stat<<" +/- "<<spill_syst<< " )"
 	     <<"\n\tFake MC: "<<ttotr_mc+wj_mc <<" +/- " << oplus(ttotr_mc_stat, wj_mc_stat)
-	     <<"\n\t     DY: "<<dy_exp <<" +/- " << dy_stat <<" +/- "<< dy_syst  << " ( "<<l_dy_err/l_sig_obs<<" )"
+	     <<"\n\t     DY: "<<dy_exp <<" +/- " << dy_stat <<" +/- "<< dy_syst  
+	     <<" = +/- "<<l_dy_err<<" ( "<< " ( "<<l_dy_err/l_sig_obs<<" )"
 	     <<"\n\t  DY MC: "<<dy_mc <<" +/- " << dy_mc_stat<<"\t R_{out/in}: "<<dy_roi<<" +/- "<< dy_roi_stat
 	     <<"\n\t All BG: "<<bg_exp <<" +/- " << bg_e
 	     <<"\n\t All MC: "<<all_mc <<" +/- "<<all_mc_stat
 
-	     <<"\n\t tt exp: "<<l_sig_exp
+	     <<"\n\t tt exp: (raw "<<(l_sig_exp/sf_exp)<<") "<<l_sig_exp
 	     <<" +/- "<<l_sig_exp*tt_AE_eRel<<"(syst) +/- "<<l_sig_exp*tt_xsecTh_eRel
 	     <<"(th) +/- "<<l_sig_exp*lum_eRel<<"(lum)  "
 	     <<"\n\t\t= "<<l_sig_exp
 	     <<" +/- " <<l_sig_exp*tt_AE_eRel 
 	     <<"(syst) +/- "
 	     <<oplus(l_sig_exp*tt_xsecTh_eRel, l_sig_exp*lum_eRel) << "(th+lum)"
-	     <<"\n\tA: "<<l_sig_exp/tt_sigma/lum_total*100.
+	     <<"\n\tA: "<<l_sig_exp/tt_sigma/lum_total*100./globalLumiScale()
 	     <<" +/- "<<l_sig_exp/tt_sigma/lum_total*100.*tt_AE_eRel
 	     <<" \tS/B: "<<l_sig_exp/bg_exp<<std::endl;    
   }
   
   TTxsecStruct(){
     tt_xsecTh_eRel = 0.15;
-    lum_eRel       = 0.11;
+    lum_eRel       = lumiError();
     tt_sigma       = 157.5;
   }
 };
@@ -325,7 +346,9 @@ void xsecCalc_inStruct(TTxsecStruct& tt, bool setDepPars = true){
 
   xsecCalc(tt.data, tt.tt_exp*tt.sf_exp, tt.tt_exp*tt.sf_exp*tt.tt_AE_eRel, tt.bg_exp, tt.bg_e );
   std::cout<<"\nExpected performance: "<<std::endl;
-  xsecCalc(tt.bg_exp+tt.tt_exp*tt.sf_exp, tt.tt_exp*tt.sf_exp, tt.tt_exp*tt.sf_exp*tt.tt_AE_eRel, tt.bg_exp, tt.bg_e );
+  xsecCalc(tt.bg_exp+tt.tt_exp*tt.sf_exp, 
+	   tt.tt_exp*tt.sf_exp/globalLumiScale(), tt.tt_exp*tt.sf_exp*tt.tt_AE_eRel/globalLumiScale(), 
+	   tt.bg_exp, tt.bg_e );
   
 }
 
@@ -1359,7 +1382,7 @@ void xsecCalc_36pb_pass6(){
   }
 
   pmm2j1bjFComb.dy_mc  =    (1.1+1.1)*0.5;  pmm2j1bjFComb.dy_mc_stat = (0.210+0.387)*0.5;
-  pmm2j1bjFComb.dy_exp =    (2.9+2.4)*0.5;  pmm2j1bjFComb.dy_stat =    (1.4+1.1)*0.5; 
+  pmm2j1bjFComb.dy_exp =    (2.88+2.38)*0.5;  pmm2j1bjFComb.dy_stat =    (1.38+1.08)*0.5; //match AN406
   pmm2j1bjFComb.dy_syst =   pmm2j1bjFComb.dy_exp*0.5;
   pmm2j1bjFComb.dy_roi = (0.2387+0.2206)*0.5; pmm2j1bjFComb.dy_roi_stat = (0.0467+0.0600)*0.5;
 
@@ -1601,7 +1624,7 @@ void xsecCalc_36pb_pass6(){
   pee1jFOMLIP.lum_total = 36.1;
   pee1jFOMLIP.channel = ee_ch;
   pee1jFOMLIP.tt_exp   = 3.3227;  pee1jFOMLIP.tt_stat   =   0.127;
-  pee1jFOMLIP.dytt_exp = 0.5000;  pee1jFOMLIP.dytt_stat =   0.1200; pee1jFOMLIP.dytt_syst_corr =  oplus(0.1,lum_eRel)*pee1jFOMLIP.dytt_exp;
+  pee1jFOMLIP.dytt_exp = 0.54;  pee1jFOMLIP.dytt_stat =   0.12;     pee1jFOMLIP.dytt_syst_corr =  oplus(0.1,lum_eRel)*pee1jFOMLIP.dytt_exp;
   pee1jFOMLIP.vv_exp   = 0.5400;  pee1jFOMLIP.vv_stat   =   0.0277; pee1jFOMLIP.vv_syst_corr   = oplus(0.1,lum_eRel)*pee1jFOMLIP.vv_exp;
   pee1jFOMLIP.tw_exp   = 0.5700;  pee1jFOMLIP.tw_stat   =   0.0177; pee1jFOMLIP.tw_syst_corr   = oplus(0.1,lum_eRel)*pee1jFOMLIP.tw_exp;
 
@@ -1637,7 +1660,7 @@ void xsecCalc_36pb_pass6(){
   pmm1jFOMLIP.lum_total = 36.1;
   pmm1jFOMLIP.channel = mm_ch; // 4.4147*0.967/1.0126
   pmm1jFOMLIP.tt_exp   = 4.2159; pmm1jFOMLIP.tt_stat    =   0.140;
-  pmm1jFOMLIP.dytt_exp = 0.5300; pmm1jFOMLIP.dytt_stat =   0.1190; pmm1jFOMLIP.dytt_syst_corr = oplus(0.1,lum_eRel)*pmm1jFOMLIP.dytt_exp;
+  pmm1jFOMLIP.dytt_exp = 0.58; pmm1jFOMLIP.dytt_stat =   0.1190; pmm1jFOMLIP.dytt_syst_corr = oplus(0.1,lum_eRel)*pmm1jFOMLIP.dytt_exp;
   pmm1jFOMLIP.vv_exp   = 0.6400; pmm1jFOMLIP.vv_stat   =   0.0298; pmm1jFOMLIP.vv_syst_corr   = oplus(0.1,lum_eRel)*pmm1jFOMLIP.vv_exp;	 
   pmm1jFOMLIP.tw_exp   = 0.6800; pmm1jFOMLIP.tw_stat   =   0.0184; pmm1jFOMLIP.tw_syst_corr   = oplus(0.1,lum_eRel)*pmm1jFOMLIP.tw_exp;    
 
@@ -1675,7 +1698,7 @@ void xsecCalc_36pb_pass6(){
   pem1jFOMLIP.lum_total = 36.1;
   pem1jFOMLIP.channel = em_ch;
   pem1jFOMLIP.tt_exp   =10.4118; pem1jFOMLIP.tt_stat    =   0.221;
-  pem1jFOMLIP.dytt_exp = 0.0500; pem1jFOMLIP.dytt_stat =   0.0500; pem1jFOMLIP.dytt_syst_corr = oplus(0.1,lum_eRel)*pem1jFOMLIP.dytt_exp;
+  pem1jFOMLIP.dytt_exp = 0.0; pem1jFOMLIP.dytt_stat =   0.0500; pem1jFOMLIP.dytt_syst_corr = oplus(0.1,lum_eRel)*pem1jFOMLIP.dytt_exp;
   pem1jFOMLIP.vv_exp   = 1.7700; pem1jFOMLIP.vv_stat   =   0.0472; pem1jFOMLIP.vv_syst_corr   = oplus(0.1,lum_eRel)*pem1jFOMLIP.vv_exp;	 
   pem1jFOMLIP.tw_exp   = 1.8600; pem1jFOMLIP.tw_stat   =   0.0362; pem1jFOMLIP.tw_syst_corr   = oplus(0.1,lum_eRel)*pem1jFOMLIP.tw_exp;    
 
@@ -1813,35 +1836,35 @@ void xsecCalc_36pb_pass6(){
 }
 
 void xsecCalc_comb_pass6_normLum(bool forAN410 = true){
-  double mean_a = 166.589;//160.314;
-  double k_b    = 1./0.9848;
+  double mean_a = 167.514;//160.314;
+  double k_b    = 1./(0.9829/globalLumiScale());
   if (forAN410){
-    //159.791 \pm 18.7913 (stat) \pm 13.2933 (syst) \pm 17.577 (lum)
-    // 1 \pm 0.117599 (stat) \pm 0.0831918 (syst) \pm 0.11 (lum)
-    mean_a = 159.791;
-    k_b    = 1./0.9838;
+    //161.649 \pm 19.0013 (stat) \pm 13.4257 (syst) \pm 6.46598 (lum)
+    //1 \pm 0.117546 (stat) \pm 0.0830542 (syst) \pm 0.04 (lum)
+    mean_a = 161.649;
+    k_b    = 1./0.98936;
   }
   double mean_b = mean_a*k_b;
 
-  double relStat = 17.6322/mean_a;
-  double relSyst = 13.5952/mean_a;
+  double relStat = 17.7304/mean_a;
+  double relSyst = 13.6707/mean_a;
   if (forAN410){
-    relStat = 0.117599;
-    relSyst = 0.0831918;
+    relStat = 0.117546;
+    relSyst = 0.0830542;
   }
   std::cout<<"Val b: "<<mean_b<<" \t\\pm "<<relStat*mean_b<<" \t\\pm "<<relSyst*mean_b;
-  if (forAN410) std::cout <<" \t\\pm "<<0.052*mean_b<< "(= \t\\pm "<<oplus(relStat*mean_b,relSyst*mean_b);
-  else std::cout <<" \t\\pm "<<0.05*mean_b <<"(= \t\\pm "<<oplus(relStat*mean_b,relSyst*mean_b);
+  if (forAN410) std::cout <<" \t\\pm "<<0.049*mean_b<< "(= \t\\pm "<<oplus(relStat*mean_b,relSyst*mean_b);
+  else std::cout <<" \t\\pm "<<0.049*mean_b <<"(= \t\\pm "<<oplus(relStat*mean_b,relSyst*mean_b);
   std::cout<<std::endl;
   
   double relComb = oplus(relStat, relSyst);
   double mean_[2] = {mean_a, mean_b};
 
-  double sig_a = oplus(relComb* mean_a, 0.11*mean_a);
+  double sig_a = oplus(relComb* mean_a, lumiError()*mean_a);
   double sig_aa = sig_a*sig_a;
-  double sig_b = oplus(relComb* mean_a*k_b, 0.05*mean_a*k_b); 
+  double sig_b = oplus(relComb* mean_a*k_b, 0.049*mean_a*k_b); 
   if (forAN410){
-    sig_b = oplus(relComb* mean_a*k_b, 0.052*mean_a*k_b); 
+    sig_b = oplus(relComb* mean_a*k_b, 0.049*mean_a*k_b); 
   }
   double sig_bb = sig_b*sig_b;
   double sig_ab = k_b*relComb* mean_a*relComb* mean_a;
