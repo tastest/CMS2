@@ -51,32 +51,25 @@ bool select (bool isData)
         // one of the legs must pass isolation and ID
         //
 
-        bool tagged = false;
-
         // electron case
         cuts_t electron_tag = ((1ll<<ELEISO_REL015) | (1ll<<ELEID_VBTF_35X_70));
-        if (!tagged && abs(cms2.hyp_lt_id()[i]) == 11) {
+        if (abs(cms2.hyp_lt_id()[i]) == 11) {
             cuts_t cuts_passed = electronSelection(cms2.hyp_lt_index()[i]);
-            if (((cuts_passed & electron_tag) == electron_tag) && cms2.hyp_lt_p4()[i].pt() > 20.0) tagged = true;
+            if (((cuts_passed & electron_tag) == electron_tag) && cms2.hyp_lt_p4()[i].pt() > 20.0) return true;
         }
-        if (!tagged && abs(cms2.hyp_ll_id()[i]) == 11) {
+        if (abs(cms2.hyp_ll_id()[i]) == 11) {
             cuts_t cuts_passed = electronSelection(cms2.hyp_ll_index()[i]);
-            if (((cuts_passed & electron_tag) == electron_tag) && cms2.hyp_ll_p4()[i].pt() > 20.0) tagged = true;
+            if (((cuts_passed & electron_tag) == electron_tag) && cms2.hyp_ll_p4()[i].pt() > 20.0) return true;
         }
 
         // muon case
-        if (!tagged && abs(cms2.hyp_lt_id()[i]) == 13) {
-            if (muonId(cms2.hyp_lt_index()[i], NominalTTbarV2) && cms2.hyp_lt_p4()[i].pt() > 20.0) tagged = true;
+        if (abs(cms2.hyp_lt_id()[i]) == 13) {
+            if (muonId(cms2.hyp_lt_index()[i], NominalTTbarV2) && cms2.hyp_lt_p4()[i].pt() > 20.0) return true;
         }
-        if (!tagged && abs(cms2.hyp_ll_id()[i]) == 13) {
-            if (muonId(cms2.hyp_ll_index()[i], NominalTTbarV2) && cms2.hyp_ll_p4()[i].pt() > 20.0) tagged = true;
+        if (abs(cms2.hyp_ll_id()[i]) == 13) {
+            if (muonId(cms2.hyp_ll_index()[i], NominalTTbarV2) && cms2.hyp_ll_p4()[i].pt() > 20.0) return true;
         }
 
-        std::cout << tagged << std::endl;
-
-        // if no leg met the tag requirements
-        // then fail
-        if (tagged) return true;
     }
 
     return false;
@@ -139,6 +132,8 @@ void ntupleFilter (TChain *chain, const std::string &outfile, bool printPass=fal
         // init
         cms2.Init(newtree);
         cms2.Init(tree);
+
+        if (nEventsTotal > 10000) continue;
 
         // Event Loop
         const unsigned int nEvents = tree->GetEntries();
