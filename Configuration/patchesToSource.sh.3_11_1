@@ -2,7 +2,7 @@ cvs co -r V02-02-03      JetMETCorrections/Algorithms
 cvs co -r V03-02-07      JetMETCorrections/Configuration                  
 cvs co -r V05-00-17      JetMETCorrections/Modules     
 cvs co -r V03-01-21      CondFormats/JetMETObjects
-
+cvs co -r V08-11-08      RecoEgamma/EgammaTools
 # Masked ECAL Cells
 cvs co -r V101118_BE -d DataFormats/AnomalousEcalDataFormats UserCode/gebbert/DataFormats/AnomalousEcalDataFormats
 cvs co -r V101118_BE -d PhysicsTools/EcalAnomalousEventFilter UserCode/gebbert/PhysicsTools/EcalAnomalousEventFilter
