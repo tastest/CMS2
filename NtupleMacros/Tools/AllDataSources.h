@@ -20,6 +20,7 @@ enum {
 	H_ZZ      ,
 	H_WZ,
 	H_WW      ,
+    H_VV    ,
 
 	H_WENU,
 	H_WMUNU,
@@ -108,6 +109,7 @@ DataSource fH_TTBAR();
 DataSource fH_ZZ();
 DataSource fH_WZ();
 DataSource fH_WW();
+DataSource fH_VV();
 
 DataSource fH_WENU();
 DataSource fH_WMUNU();
