@@ -1,2 +1,0 @@
-/nfs-3/userdata/cms2/EGMonitor_Run2010B-PromptReco-v2_RECO/V03-06-09
-/nfs-3/userdata/cms2/EGMonitor_Run2010B-PromptReco-v2_RECO/V03-06-14
