@@ -28,7 +28,7 @@ void doMC() {
     //
     //looper->specifyPDF("/tas07/disk00/jribnik/lhapdf/share/lhapdf/PDFsets/cteq61");
     //looper->specifyPDF("pdfs/MSTW2008nlo90cl");
-    looper->specifyPDF("pdfs/cteq61", "pdfs/cteq66");
+    looper->specifyPDF("/tas07/disk00/jribnik/lhapdf/share/lhapdf/PDFsets/cteq61", "/tas07/disk00/jribnik/lhapdf/share/lhapdf/PDFsets/cteq66");
     //looper->specifyPDF("pdfs/cteq61", "pdfs/MSTW2008nlo68cl");
     //looper->specifyPDF("pdfs/cteq61", "pdfs/NNPDF20_100");
 
@@ -36,6 +36,18 @@ void doMC() {
     // chains for input files
     //TString ntuple_location = "/nfs-3/userdata/cms2/";
     TString ntuple_location = "/tas/cms2/";
+
+    // zee FALL10 PU
+    TChain *chain_zeefall10pu = new TChain("Events");
+    chain_zeefall10pu->Add(ntuple_location +"DYToEE_M-20_TuneZ2_7TeV-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/diLepPt2020/merged_ntuple*.root");
+
+    // zmm FALL10 PU
+    TChain *chain_zmumufall10pu = new TChain("Events");
+    chain_zmumufall10pu->Add(ntuple_location +"DYToMuMu_M-20_TuneZ2_7TeV-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/diLepPt2020/merged_ntuple*.root");
+
+    // ttbar FALL10 PU
+    TChain *chain_ttbarfall10pu = new TChain("Events");
+    chain_ttbarfall10pu->Add(ntuple_location + "TTJets_TuneD6T_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/merged_ntuple*.root");
 
     // ttbar
     TChain *chain_ttbar = new TChain("Events");
@@ -66,7 +78,6 @@ void doMC() {
     chain_zmumu->Add(ntuple_location +"DYmumu_M10to20_Spring10-START3X_V26_S09-v1/V03-04-13-07/dilepPt2010Skim/skimmed_ntuple.root");
     chain_zmumu->Add(ntuple_location +"ZJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/dilepPt2010Skim/skimmed_ntuple.root");
 
-
     // dy combined
     TChain *chain_dy = new TChain("Events");
     chain_dy->Add("/tas/dlevans/data_skim/zee_skim_2020.root");
@@ -82,8 +93,12 @@ void doMC() {
     //
 
     looper->ScanChain("ttbar", chain_ttbarmg, (157.5/165.0));
-    //looper->ScanChain("dyee", chain_zee, (1666.0/1300.0));
-    //looper->ScanChain("dymm", chain_zmumu, (1666.0/1300.0));
+    looper->ScanChain("dyee", chain_zee, (1666.0/1300.0));
+    looper->ScanChain("dymm", chain_zmumu, (1666.0/1300.0));
+
+    looper->ScanChain("ttbarfall10pu", chain_ttbarfall10pu, 1.0);
+    looper->ScanChain("dyeefall10pu", chain_zeefall10pu, 1.0);
+    looper->ScanChain("dymmfall10pu", chain_zmumufall10pu, 1.0);
 
     //
     // write histograms
