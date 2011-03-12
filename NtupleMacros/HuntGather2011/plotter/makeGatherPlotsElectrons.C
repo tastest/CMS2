@@ -27,10 +27,17 @@ void makeGatherPlotsElectrons(const std::vector<BabySample*> &babyVector, const 
     // Define stuff
     //
 
-    // cuts
+    // example for VBTF90 efficiency
     TCut tp_id_1("tp_id_1", "e1_vbtf90");
     TCut tp_id_2("tp_id_2", "e2_vbtf90");
-    TagAndProbe("tp_ele_id_pt", "pt1", "pt2", tp_tag1, tp_tag2, tp_probe1, tp_probe2, tp_id_1, tp_id_2, luminosity, 25, 0.0, 100.0, false, babyVector);
+
+    // no run range restriction
+    TCut tp_event("tp_event", "");
+    TagAndProbe("tp_ele_id_pt", tp_event, "pt1", "pt2", tp_tag1, tp_tag2, tp_probe1, tp_probe2, tp_id_1, tp_id_2, luminosity, 25, 0.0, 100.0, false, babyVector);
+
+    // run range restriction 
+    tp_event = TCut("tp_event", "!isdata || run > 149000");
+    TagAndProbe("tp_ele149000_id_pt", tp_event, "pt1", "pt2", tp_tag1, tp_tag2, tp_probe1, tp_probe2, tp_id_1, tp_id_2, luminosity, 25, 0.0, 100.0, false, babyVector);
 
 }
 

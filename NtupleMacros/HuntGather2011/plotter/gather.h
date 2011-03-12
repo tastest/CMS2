@@ -30,7 +30,7 @@ float GetIntLumi(BabySample *bs, float lumi);
 // drawing functions
 //
 
-TCanvas* TagAndProbe(const char *savename, TCut var1, TCut var2,
+TCanvas* TagAndProbe(const char *savename, TCut evsel, TCut var1, TCut var2,
         TCut tag1, TCut tag2, TCut probe1, TCut probe2, TCut sel1, TCut sel2,
         float intlumipb, unsigned int nbins, float xlo, float xhi, bool integrated, std::vector<BabySample*> bss);
 

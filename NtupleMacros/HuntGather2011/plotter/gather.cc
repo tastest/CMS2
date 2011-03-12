@@ -56,7 +56,7 @@ float GetIntLumi(BabySample *bs, float lumi)
     return GetIntLumi(bs->chain(), lumi, brun, bls, erun, els);
 }
 
-TCanvas* TagAndProbe(const char *savename, TCut var1, TCut var2,
+TCanvas* TagAndProbe(const char *savename, TCut evsel, TCut var1, TCut var2,
         TCut tag1, TCut tag2, TCut probe1, TCut probe2, TCut sel1, TCut sel2, 
         float intlumipb, unsigned int nbins, float xlo, float xhi, bool integrated, std::vector<BabySample*> bss)
 {
@@ -86,17 +86,17 @@ TCanvas* TagAndProbe(const char *savename, TCut var1, TCut var2,
     // permutations have to be defined
 
     // 2TT means both legs are tags
-    TCut cut_2TT = tag1 && tag2;
+    TCut cut_2TT = tag1 && tag2 && evsel;
     cut_2TT.SetName(TString("2TT"));
     // TP means one leg is a tag and the other is a probe that passes the selection
     // Note: TP is exclusive from 2TT
-    TCut cut_TP_1 = (tag2 && probe1 && sel1) && !cut_2TT;
-    TCut cut_TP_2 = (tag1 && probe2 && sel2) && !cut_2TT;
+    TCut cut_TP_1 = (tag2 && probe1 && sel1 && evsel) && !cut_2TT;
+    TCut cut_TP_2 = (tag1 && probe2 && sel2 && evsel) && !cut_2TT;
     cut_TP_1.SetName(TString("TP_1"));
     cut_TP_2.SetName(TString("TP_2"));
     // TF means one lef is a tag and the other is a probe that fails the selection
-    TCut cut_TF_1 = (tag2 && probe1 && !sel1) && !cut_2TT;
-    TCut cut_TF_2 = (tag1 && probe2 && !sel2) && !cut_2TT;
+    TCut cut_TF_1 = (tag2 && probe1 && !sel1 && evsel) && !cut_2TT;
+    TCut cut_TF_2 = (tag1 && probe2 && !sel2 && evsel) && !cut_2TT;
     cut_TF_1.SetName(TString("TF_1"));
     cut_TF_2.SetName(TString("TF_2"));
 

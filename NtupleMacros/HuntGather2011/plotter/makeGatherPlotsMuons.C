@@ -27,11 +27,18 @@ void makeGatherPlotsMuons(const std::vector<BabySample*> &babyVector, const floa
     // Define stuff
     //
 
-    // cuts
+    // example for TTbarV2 ID efficiency
     TCut tp_id_1("tp_id_1", "mu1_muonid && ! mu1_cosmic");
     TCut tp_id_2("tp_id_2", "mu2_muonid && ! mu2_cosmic");
 
-    TagAndProbe("tp_mu_id_pt", "pt1", "pt2", tp_tag1, tp_tag2, tp_probe1, tp_probe2, tp_id_1, tp_id_2, luminosity, 25, 0.0, 100.0, false, babyVector);
+    // no run range restriction
+    TCut tp_event("tp_event", "");
+    TagAndProbe("tp_mu_id_pt", tp_event, "pt1", "pt2", tp_tag1, tp_tag2, tp_probe1, tp_probe2, tp_id_1, tp_id_2, luminosity, 25, 0.0, 100.0, false, babyVector);
+
+    // run range restriction 
+    tp_event = TCut("tp_event", "!isdata || run > 149000");
+    TagAndProbe("tp_mu149000_id_pt", tp_event, "pt1", "pt2", tp_tag1, tp_tag2, tp_probe1, tp_probe2, tp_id_1, tp_id_2, luminosity, 25, 0.0, 100.0, false, babyVector);
+
 
 }
 
