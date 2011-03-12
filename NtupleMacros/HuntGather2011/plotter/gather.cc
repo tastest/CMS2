@@ -195,6 +195,13 @@ TCanvas* TagAndProbe(const char *savename, TCut var1, TCut var2,
     gr_eff_mc->BayesDivide(h1_mc_numer, h1_mc_denom);
     gr_eff_mc->SetMarkerColor(kBlue);    
 
+    TLegend* leg = new TLegend(0.7,0.25,0.95,0.45);
+    leg->SetBorderSize(0);
+    leg->SetFillStyle(0);
+    leg->SetShadowColor(0);
+    leg->AddEntry(gr_eff_mc, "MC", "lp");
+    leg->AddEntry(gr_eff_data, "Data", "lp");
+
     //
     // do the drawing
     //
@@ -258,6 +265,7 @@ TCanvas* TagAndProbe(const char *savename, TCut var1, TCut var2,
     gr_eff_data->Draw("AP");
     gr_eff_data->GetYaxis()->SetRangeUser(0.0, 1.1);
     gr_eff_mc->Draw("P");
+    leg->Draw("SAME");
 
     // draw the legend and tidy up
     c1->RedrawAxis();
