@@ -66,6 +66,45 @@ std::pair<double, double> trks_dz_pv (int itrk, int ipv)
 
   return std::pair<double, double>(value, error);
 }
+
+std::pair<double, double> gsftrks_dz_pv (int itrk, int ipv)
+{
+  LorentzVector tkp = cms2.gsftrks_p4().at(itrk);
+  LorentzVector tkv = cms2.gsftrks_vertex_p4().at(itrk);
+  LorentzVector pv = cms2.vtxs_position().at(ipv);
+  double pt = cms2.gsftrks_p4().at(itrk).pt();
+  double phi = cms2.gsftrks_p4().at(itrk).phi();
+  double theta = cms2.gsftrks_p4().at(itrk).theta();
+
+  double ddzdpvx = cos(phi)*1./tan(theta);
+  double ddzdpvy = sin(phi)*1./tan(theta);
+  double ddzdphi = -1*pv.x()*sin(phi)*1./tan(theta) + pv.y()*cos(phi)*1./tan(theta);
+  double ddzdtheta = -1*1/sin(theta)*1/sin(theta) * (pv.x()*cos(phi) + pv.y()*sin(phi));
+  ddzdpvx   *= ddzdpvx;
+  ddzdpvy   *= ddzdpvy;
+  ddzdphi   *= ddzdphi;
+  ddzdtheta *= ddzdtheta;
+  double z0Err  = cms2.gsftrks_z0Err().at(itrk);
+  double phiErr = cms2.gsftrks_phiErr().at(itrk);
+  double thetaErr = cms2.gsftrks_etaErr().at(itrk)*sin(theta);
+  double pvxErr = cms2.vtxs_xError().at(ipv);
+  double pvyErr = cms2.vtxs_yError().at(ipv);
+  double pvzErr = cms2.vtxs_zError().at(ipv);
+  z0Err    *= z0Err;
+  phiErr   *= phiErr;
+  thetaErr *= thetaErr;
+  pvxErr *= pvxErr;
+  pvyErr *= pvyErr;
+  pvzErr *= pvzErr;
+
+  double value = cms2.gsftrks_z0().at(itrk) - pv.z() + (pv.x()*cos(phi) + pv.y()*sin(phi) )*1./tan(theta);
+  //note that the error does not account for correlations since we do not store the track covariance matrix
+  double error = sqrt(z0Err + pvzErr + ddzdpvx*pvxErr + ddzdpvy*pvyErr + ddzdphi*phiErr + ddzdtheta*thetaErr);
+
+  return std::pair<double, double>(value, error);
+}
+
+
 //----------------------------------------------------------------
 // Simple function that tells you whether or not a track passed 
 // a particular quality flag.
