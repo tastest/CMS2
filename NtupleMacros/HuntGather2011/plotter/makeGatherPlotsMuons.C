@@ -20,7 +20,7 @@ void makeGatherPlotsMuons(const std::vector<BabySample*> &babyVector, const floa
     TCut tp_probe1("tp_probe1", "iso1<0.15 && pt1>20 && abs(eormu1) == 13");
     TCut tp_probe2("tp_probe2", "iso2<0.15 && pt2>20 && abs(eormu2) == 13");
 
-    TCut tp_base = inclusivez_dilep1 && (tp_tag1 || tp_tag2 || TCut("notdata", "!isdata"));
+    TCut tp_base = inclusivez_dilep1 && (tp_tag1 || tp_tag2);
     PreselectBabies(babyVector, tp_base);
 
     //
