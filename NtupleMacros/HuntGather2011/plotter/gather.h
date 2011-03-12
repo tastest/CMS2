@@ -30,6 +30,11 @@ float GetIntLumi(BabySample *bs, float lumi);
 // drawing functions
 //
 
+TCanvas* TagAndProbe(const char *savename, TCut var1, TCut var2,
+        TCut tag1, TCut tag2, TCut probe1, TCut probe2, TCut sel1, TCut sel2,
+        float intlumipb, unsigned int nbins, float xlo, float xhi, bool integrated, std::vector<BabySample*> bss);
+
+
 TCanvas* TriggerMonitor(const char *savename, TCut sel, TCut trig, float intlumipb, unsigned int nbins, float xlo, float xhi, bool integrated, 
             BabySample *bs);
 

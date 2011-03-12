@@ -42,10 +42,5 @@ void makeGatherPlotsOS(const std::vector<BabySample*> &babyVector, const float &
     DrawAll("sumjetpt",                "os_sumjetpt_int",    os_preselection, luminosity ,40, 0., 500, 1, babyVector);
     DrawAll("njets",                   "os_njets_int",       os_preselection, luminosity , 5, 0.,   5, 1, babyVector);
 
-
-
-  
-  
-
 }
 

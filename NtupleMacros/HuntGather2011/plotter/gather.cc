@@ -56,6 +56,219 @@ float GetIntLumi(BabySample *bs, float lumi)
     return GetIntLumi(bs->chain(), lumi, brun, bls, erun, els);
 }
 
+TCanvas* TagAndProbe(const char *savename, TCut var1, TCut var2,
+        TCut tag1, TCut tag2, TCut probe1, TCut probe2, TCut sel1, TCut sel2, 
+        float intlumipb, unsigned int nbins, float xlo, float xhi, bool integrated, std::vector<BabySample*> bss)
+{
+
+    std::vector<TH1F*> vh_mc_2TT;
+    std::vector<TH1F*> vh_mc_TP;
+    std::vector<TH1F*> vh_mc_TF;
+    std::vector<TH1F*> vh_data_2TT;
+    std::vector<TH1F*> vh_data_TP;
+    std::vector<TH1F*> vh_data_TF;
+    TH1F* h1_2TT_1;
+    TH1F* h1_TP_1;
+    TH1F* h1_TF_1;
+    TH1F* h1_2TT_2;
+    TH1F* h1_TP_2;
+    TH1F* h1_TF_2;
+    TH1F* h1_2TT;
+    TH1F* h1_TP;
+    TH1F* h1_TF;
+
+    //
+    // define the categories
+    //
+
+    // remember we need to plot the variable for the probe
+    // when the other leg is the tag... so this means a few
+    // permutations have to be defined
+
+    // 2TT means both legs are tags
+    TCut cut_2TT = tag1 && tag2;
+    cut_2TT.SetName(TString("2TT"));
+    // TP means one leg is a tag and the other is a probe that passes the selection
+    // Note: TP is exclusive from 2TT
+    TCut cut_TP_1 = (tag2 && probe1 && sel1) && !cut_2TT;
+    TCut cut_TP_2 = (tag1 && probe2 && sel2) && !cut_2TT;
+    cut_TP_1.SetName(TString("TP_1"));
+    cut_TP_2.SetName(TString("TP_2"));
+    // TF means one lef is a tag and the other is a probe that fails the selection
+    TCut cut_TF_1 = (tag2 && probe1 && !sel1) && !cut_2TT;
+    TCut cut_TF_2 = (tag1 && probe2 && !sel2) && !cut_2TT;
+    cut_TF_1.SetName(TString("TF_1"));
+    cut_TF_2.SetName(TString("TF_2"));
+
+    //
+    // loop on baby samples
+    //
+
+    for(unsigned int i = 0; i < bss.size(); ++i) {
+
+        // construct the selection for this sample
+        // and get the plot of that selection
+
+        // fill the right leg variable depending 
+        // which leg is the tag
+
+        h1_2TT_1    = Plot(bss[i], var1, cut_2TT, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
+        h1_TP_1    = Plot(bss[i], var1, cut_TP_1, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);   
+        h1_TF_1    = Plot(bss[i], var1, cut_TF_1, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
+        h1_2TT_2    = Plot(bss[i], var2, cut_2TT, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
+        h1_TP_2    = Plot(bss[i], var2, cut_TP_2, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
+        h1_TF_2    = Plot(bss[i], var2, cut_TF_2, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
+
+        // now combine them
+
+        h1_2TT = (TH1F*)h1_2TT_1->Clone();
+        h1_TP = (TH1F*)h1_TP_1->Clone();
+        h1_TF = (TH1F*)h1_TF_1->Clone();
+        h1_2TT->Add(h1_2TT_2);
+        h1_TP->Add(h1_TP_2);
+        h1_TF->Add(h1_TF_2);
+
+        // if the plot doesn't already exist then
+        // add it to the appropriate vector of plots
+        if (bss[i]->type() == DATA && (find(vh_data_2TT.begin(), vh_data_2TT.end(), h1_2TT) == vh_data_2TT.end())) {
+            vh_data_2TT.push_back(h1_2TT);
+            vh_data_TP.push_back(h1_TP);
+            vh_data_TF.push_back(h1_TF);
+        } else if (bss[i]->type() == BACKGROUND && find(vh_mc_2TT.begin(), vh_mc_2TT.end(), h1_2TT) == vh_mc_2TT.end()) {
+            vh_mc_2TT.push_back(h1_2TT);
+            vh_mc_TP.push_back(h1_TP);
+            vh_mc_TF.push_back(h1_TF);
+        }
+
+    }
+
+    // MUST have at least one data and at least one MC
+    if (vh_mc_2TT.size() == 0 || vh_data_2TT.size() == 0) {
+        std::cout << "[DrawAll] ERROR - MUST have at least one MC and at least one data" << std::endl;
+        return 0;
+    }
+
+    //
+    // sort histograms by their total contributions
+    // makes for prettier stack plots
+    //
+
+    sort(vh_mc_2TT.begin(), vh_mc_2TT.end(), sortHistsByIntegral);
+    sort(vh_mc_TP.begin(), vh_mc_TP.end(), sortHistsByIntegral);
+    sort(vh_mc_TF.begin(), vh_mc_TF.end(), sortHistsByIntegral);
+    sort(vh_data_2TT.begin(), vh_data_2TT.end(), sortHistsByIntegral);
+    sort(vh_data_TP.begin(), vh_data_TP.end(), sortHistsByIntegral);
+    sort(vh_data_TF.begin(), vh_data_TF.end(), sortHistsByIntegral);
+
+    //
+    // do the stacking
+    // NOTE - signals are overlaid NOT stacked
+    //
+
+    makeStack(vh_mc_2TT);
+    makeStack(vh_mc_TP);
+    makeStack(vh_mc_TF);
+    makeStack(vh_data_2TT);
+    makeStack(vh_data_TP);
+    makeStack(vh_data_TF);
+
+    // data denominator and numerator for eff
+    TH1F *h1_data_denom = (TH1F*)vh_data_2TT[0]->Clone();
+    h1_data_denom->Add(vh_data_TP[0]);
+    TH1F *h1_data_numer = (TH1F*)h1_data_denom->Clone();
+    h1_data_denom->Add(vh_data_TF[0]);
+    // mc denominator and numerator for eff
+    TH1F *h1_mc_denom = (TH1F*)vh_mc_2TT[0]->Clone();
+    h1_mc_denom->Add(vh_mc_TP[0]);
+    TH1F *h1_mc_numer = (TH1F*)h1_mc_denom->Clone();
+    h1_mc_denom->Add(vh_mc_TF[0]);
+
+    TGraphAsymmErrors* gr_eff_data = new TGraphAsymmErrors();
+    gr_eff_data->SetName(TString("gr_") + h1_data_denom->GetName());
+    gr_eff_data->SetTitle(TString(savename));
+    gr_eff_data->BayesDivide(h1_data_numer, h1_data_denom);
+    gr_eff_data->SetMarkerColor(kRed);
+
+    TGraphAsymmErrors* gr_eff_mc = new TGraphAsymmErrors();
+    gr_eff_mc->SetName(TString("gr_") + h1_mc_denom->GetName());
+    gr_eff_mc->SetTitle(TString(savename));
+    gr_eff_mc->BayesDivide(h1_mc_numer, h1_mc_denom);
+    gr_eff_mc->SetMarkerColor(kBlue);    
+
+    //
+    // do the drawing
+    //
+
+    TCanvas *c1 = new TCanvas(savename);
+    c1->SetTopMargin(0.08);
+    c1->Divide(2, 2);
+   
+    // do the background MC histograms
+    for(unsigned int i = 0; i < vh_mc_2TT.size(); ++i)
+    {
+
+        // 2TT
+        c1->cd(1);
+        if (i == 0) {
+            vh_mc_2TT[0]->Draw("hist");
+            vh_mc_2TT[0]->GetXaxis()->SetNdivisions(504);
+        } else vh_mc_2TT[i]->Draw("histsame");
+        // TP
+        c1->cd(2);
+        if (i == 0) {
+            vh_mc_TP[0]->Draw("hist");
+            vh_mc_TP[0]->GetXaxis()->SetNdivisions(504);
+        } else vh_mc_TP[i]->Draw("histsame");
+        // TF
+        c1->cd(3);
+        if (i == 0) {
+            vh_mc_TF[0]->Draw("hist");
+            vh_mc_TF[0]->GetXaxis()->SetNdivisions(504);
+        } else vh_mc_TF[i]->Draw("histsame");
+
+    }
+
+    // do the data histogram
+    // 2TT
+    c1->cd(1);
+    vh_data_2TT[0]->Draw("samee1");
+    float ymax = vh_data_2TT[0]->GetMaximum() > vh_mc_2TT[0]->GetMaximum()
+        ? vh_data_2TT[0]->GetMaximum()+2*sqrt(vh_data_2TT[0]->GetMaximum()) : 
+        vh_mc_2TT[0]->GetMaximum() + 2*sqrt(vh_mc_2TT[0]->GetMaximum());
+    vh_mc_2TT[0]->SetMaximum(ymax);
+
+    // TP
+    c1->cd(2);
+    vh_data_TP[0]->Draw("samee1");
+    ymax = vh_data_TP[0]->GetMaximum() > vh_mc_TP[0]->GetMaximum()
+        ? vh_data_TP[0]->GetMaximum()+2*sqrt(vh_data_TP[0]->GetMaximum()) :
+        vh_mc_TP[0]->GetMaximum() + 2*sqrt(vh_mc_TP[0]->GetMaximum());
+    vh_mc_TP[0]->SetMaximum(ymax);
+
+    // TF
+    c1->cd(3);
+    vh_data_TF[0]->Draw("samee1");
+    ymax = vh_data_TF[0]->GetMaximum() > vh_mc_TF[0]->GetMaximum()
+        ? vh_data_TF[0]->GetMaximum()+2*sqrt(vh_data_TF[0]->GetMaximum()) :
+        vh_mc_TF[0]->GetMaximum() + 2*sqrt(vh_mc_TF[0]->GetMaximum());
+    vh_mc_TF[0]->SetMaximum(ymax);
+
+    // now the efficiency
+    c1->cd(4);
+    gr_eff_data->Draw("AP");
+    gr_eff_data->GetYaxis()->SetRangeUser(0.0, 1.1);
+    gr_eff_mc->Draw("P");
+
+    // draw the legend and tidy up
+    c1->RedrawAxis();
+    gDrawAllCount++;
+    reset_babydorkidentifier();
+
+    return c1;
+}
+
+
+
 TCanvas* TriggerMonitor(const char *savename, TCut sel, TCut trig, float intlumipb, unsigned int nbins, float xlo, float xhi, bool integrated, BabySample *bs)
 {
 
