@@ -52,22 +52,24 @@ void makeGatherTriggerMonitor(const std::vector<BabySample*> &babyVector, const 
     DrawAll("njets", "trigger_cross_emu_njets", inclusivenonz_dilep1+base_dilep+os_dilep+of_dilep, luminosity, 5, -0.5, 4.5, 0, babyVector);
 
     // single object triggers.  Efficiency is ~ unbiassed tag and probe
-    TriggerMonitor("trigger_single_e", cut_trg_zee+cut_trg_single_e, cut_trg_double_single_e, luminosity, n_run_bins, run_start, run_end, false, data);
-    TriggerMonitor("trigger_single_mu", cut_trg_zmm+cut_trg_single_mu, cut_trg_double_single_mu, luminosity, n_run_bins, run_start, run_end, false, data);
+    TriggerMonitor("trigger_single_e", "run", cut_trg_zee+cut_trg_single_e, cut_trg_double_single_e, luminosity, n_run_bins, run_start, run_end, false, data);
+    TriggerMonitor("trigger_single_mu", "run", cut_trg_zmm+cut_trg_single_mu, cut_trg_double_single_mu, luminosity, n_run_bins, run_start, run_end, false, data);
+    TriggerMonitor("trigger_single_e_vtx", "nvtx", cut_trg_zee+cut_trg_single_e, cut_trg_double_single_e, luminosity, 20, -0.5, 19.5, false, data);
+    TriggerMonitor("trigger_single_mu_vtx", "nvtx", cut_trg_zmm+cut_trg_single_mu, cut_trg_double_single_mu, luminosity, 20, -0.5, 19.5, false, data);
 
     // double object triggers wrt single
-    TriggerMonitor("trigger_singledenom_double_e", cut_trg_zee+cut_trg_single_e, cut_trg_double_e, luminosity, n_run_bins, run_start, run_end, false, data);
-    TriggerMonitor("trigger_singledenom_double_mu", cut_trg_zmm+cut_trg_single_mu, cut_trg_double_mu, luminosity, n_run_bins, run_start, run_end, false, data);
+    TriggerMonitor("trigger_singledenom_double_e", "run", cut_trg_zee+cut_trg_single_e, cut_trg_double_e, luminosity, n_run_bins, run_start, run_end, false, data);
+    TriggerMonitor("trigger_singledenom_double_mu", "run", cut_trg_zmm+cut_trg_single_mu, cut_trg_double_mu, luminosity, n_run_bins, run_start, run_end, false, data);
 
     // double object triggers wrt reco... this is just fraction of events that passed a double trigger
     // however since we monitor for bin by bin changes, rather than absolute "efficiency" it's ok
-    TriggerMonitor("trigger_recodenom_double_e", cut_trg_zee, cut_trg_double_e, luminosity, n_run_bins, run_start, run_end, false, data);
-    TriggerMonitor("trigger_recodenom_double_mu", cut_trg_zmm, cut_trg_double_mu, luminosity, n_run_bins, run_start, run_end, false, data);
+    TriggerMonitor("trigger_recodenom_double_e", "run", cut_trg_zee, cut_trg_double_e, luminosity, n_run_bins, run_start, run_end, false, data);
+    TriggerMonitor("trigger_recodenom_double_mu", "run", cut_trg_zmm, cut_trg_double_mu, luminosity, n_run_bins, run_start, run_end, false, data);
 
     // now the e-mu wrt reco denominator and single e and single mu
-    TriggerMonitor("trigger_recodenom_cross_emu", cut_trg_ttof, cut_trg_cross_emu, luminosity, n_run_bins, run_start, run_end, false, data);
-    TriggerMonitor("trigger_singleedenom_cross_emu", cut_trg_ttof+cut_trg_single_e, cut_trg_cross_emu, luminosity, n_run_bins, run_start, run_end, false, data);
-    TriggerMonitor("trigger_singlemudenom_cross_emu", cut_trg_ttof+cut_trg_single_mu, cut_trg_cross_emu, luminosity, n_run_bins, run_start, run_end, false, data);
+    TriggerMonitor("trigger_recodenom_cross_emu", "run", cut_trg_ttof, cut_trg_cross_emu, luminosity, n_run_bins, run_start, run_end, false, data);
+    TriggerMonitor("trigger_singleedenom_cross_emu", "run", cut_trg_ttof+cut_trg_single_e, cut_trg_cross_emu, luminosity, n_run_bins, run_start, run_end, false, data);
+    TriggerMonitor("trigger_singlemudenom_cross_emu", "run", cut_trg_ttof+cut_trg_single_mu, cut_trg_cross_emu, luminosity, n_run_bins, run_start, run_end, false, data);
 
 }
 

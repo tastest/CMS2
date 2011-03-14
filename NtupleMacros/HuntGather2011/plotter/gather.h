@@ -35,7 +35,7 @@ TCanvas* TagAndProbe(const char *savename, TCut evsel, TCut var1, TCut var2,
         float intlumipb, unsigned int nbins, float xlo, float xhi, bool integrated, std::vector<BabySample*> bss);
 
 
-TCanvas* TriggerMonitor(const char *savename, TCut sel, TCut trig, float intlumipb, unsigned int nbins, float xlo, float xhi, bool integrated, 
+TCanvas* TriggerMonitor(const char *savename, TCut var, TCut sel, TCut trig, float intlumipb, unsigned int nbins, float xlo, float xhi, bool integrated, 
             BabySample *bs);
 
 TCanvas* DrawAll(TCut field, const char *savename, TCut sel, float intlumipb, unsigned int nbins, float xlo, float xhi, bool integrated,

@@ -277,7 +277,7 @@ TCanvas* TagAndProbe(const char *savename, TCut evsel, TCut var1, TCut var2,
 
 
 
-TCanvas* TriggerMonitor(const char *savename, TCut sel, TCut trig, float intlumipb, unsigned int nbins, float xlo, float xhi, bool integrated, BabySample *bs)
+TCanvas* TriggerMonitor(const char *savename, TCut var, TCut sel, TCut trig, float intlumipb, unsigned int nbins, float xlo, float xhi, bool integrated, BabySample *bs)
 {
 
     TH1F* h1_pass;
@@ -290,8 +290,8 @@ TCanvas* TriggerMonitor(const char *savename, TCut sel, TCut trig, float intlumi
     TCut cut_pass = sel + trig;
     cut_pass.SetName(TString(sel.GetName())+"_"+TString(trig.GetName()));
 
-    h1_total    = Plot(bs, "run", sel, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
-    h1_pass     = Plot(bs, "run", cut_pass, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
+    h1_total    = Plot(bs, var, sel, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
+    h1_pass     = Plot(bs, var, cut_pass, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
 
     TGraphAsymmErrors* gr_eff = new TGraphAsymmErrors();
     gr_eff->SetName(TString("gr_") + h1_pass->GetName());
@@ -308,7 +308,7 @@ TCanvas* TriggerMonitor(const char *savename, TCut sel, TCut trig, float intlumi
 
     // do the data histogram
     gr_eff->Draw("AP");
-    gr_eff->GetXaxis()->SetTitle("run");
+    gr_eff->GetXaxis()->SetTitle(var.GetTitle());
     gr_eff->GetYaxis()->SetTitle("Efficiency");
     gr_eff->GetXaxis()->SetNdivisions(504);
  
