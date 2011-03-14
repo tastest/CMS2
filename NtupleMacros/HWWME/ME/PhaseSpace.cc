@@ -160,13 +160,16 @@ void genMHiggs(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_typ
 // HiggsW* PhaseSpace
 //============================================
 
-void genMHiggsMw1(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_type* PSList){
+void genMHiggsMw1(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_type* PSList,  BoostHist boosthist, NeutHist neuthist){
 
-    double wt[4];
+    double wt[6];
      
     double nu_X,nu_Y;
-    EtExponential(20.,r[0],&nu_X,&wt[0]);  
-    EtExponential(20.,r[1],&nu_Y,&wt[1]);
+    //    EtExponential(20.,r[0],&nu_X,&wt[0]);  
+    //    EtExponential(20.,r[1],&nu_Y,&wt[1]);
+
+    NeutMom(r[0], & nu_X, & wt[0], neuthist.kx);
+    NeutMom(r[1], & nu_Y, & wt[1], neuthist.ky);
 
     TLorentzVector P4ll=cdf_event.p[0]+cdf_event.p[1];
     double Mll=P4ll.M();
@@ -186,7 +189,13 @@ void genMHiggsMw1(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_
     double PSWeight=wt[0]*wt[1]*wt[2]*wt[3];
 
     //System Pt
-      double qX=0.,qY=0.;
+    double qX (0.0), qY (0.0);
+
+      if(SmearLevel >= 1) {
+	KtPdf(r[4], & qX, & wt[4], boosthist.kx);
+	KtPdf(r[5], & qY, & wt[5], boosthist.ky);
+	PSWeight = PSWeight*wt[4]*wt[5];
+      }
 
 
     WWL1L2Sol_MHiggsMw1( &cdf_event,
@@ -289,8 +298,7 @@ void genMw1Mw2(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_typ
       PSWeight = PSWeight*wt[4]*wt[5];
     }
     
-    // cout << "PhaseSpace::genMw1Mw2 qX = " << qX <<"; qY = " <<qY <<endl;
-    //    mcfm_event_type  sol[4];
+
 
 //nu_Z=-0.62694; nb_Z=16.8335;
 //Mw1=81.0633; Mw2=78.2776;
