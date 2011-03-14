@@ -710,7 +710,7 @@ void KtPdf(double x0, double* kX, double *wt, TH1F *hkx)
   }
 
   *kX = sign*x0*TMath::Abs(hkx->GetXaxis()->GetXmax());
-  *wt = hkx->GetBinContent(hkx->GetXaxis()->FindBin(*kX))/hkx->Integral(0, 1000);
+  *wt = hkx->GetBinContent(hkx->GetXaxis()->FindBin(*kX))/hkx->Integral(0, 1000)*hkx->GetNbinsX();
  
   // if(*wt == 0) cout << "hkx->GetXaxis()->FindBin(" << *kX << ") = " <<hkx->GetXaxis()->FindBin(*kX) <<endl; 
 }
@@ -726,7 +726,7 @@ void NeutMom(double x0, double* k, double *wt, TH1F *hk)
   }
   
   *k = sign*x0*TMath::Abs(hk->GetXaxis()->GetXmax());
-  *wt = hk->GetBinContent(hk->GetXaxis()->FindBin(*k))/hk->Integral(0, 1000);
+  *wt = hk->GetBinContent(hk->GetXaxis()->FindBin(*k))/hk->Integral(0, 1000)*hk->GetNbinsX();
 
   //  cout << "hkx->GetXaxis()->FindBin(" << *k << ") = " <<hk->GetXaxis()->FindBin(*k) <<" weight= "<<wt[0]<<endl;
   // if(*wt == 0) cout << "hkx->GetXaxis()->FindBin(" << *kX << ") = " <<hkx->GetXaxis()->FindBin(*kX) <<endl;
