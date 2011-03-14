@@ -1,0 +1,98 @@
+#
+# GATHERING trigger menu
+# specify: run_min run_max name type
+# type can be e, m, ee, mm or em
+#
+#
+# Run2011
+#
+#
+# single muon triggers
+#
+160325 9999999 HLT_Mu8_v1 m
+#
+# single electron triggers
+#
+160325 9999999 HLT_Ele17_CaloIdL_CaloIsoVL_v1 e
+160325 9999999 HLT_Ele8_CaloIdL_CaloIsoVL_v1 e
+#
+# double muon triggers
+#
+160325 9999999 HLT_DoubleMu7_v1 mm
+#
+# double electron triggers
+#
+160325 9999999 HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1 ee
+160325 9999999 HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v1 ee
+160325 9999999 HLT_Ele32_CaloIdL_CaloIsoVL_SC17_v1 ee
+160325 9999999 HLT_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v1 ee
+#
+# cross triggers
+#
+160325 9999999 HLT_Mu17_Ele8_CaloIdL_v1 em
+160325 9999999 HLT_Mu8_Ele17_CaloIdL_v1 em
+160325 9999999 HLT_Mu8_Photon20_CaloIdVT_IsoT_v1 em
+#
+# Run2010
+#
+#
+# single muon triggers
+#
+148819 149442 HLT_Mu17_v1 m
+148819 149442 HLT_Mu19_v1 m
+146428 148058 HLT_Mu11 m
+147196 148058 HLT_Mu13_v1 m
+147196 149442 HLT_Mu15_v1 m
+136033 147116 HLT_Mu9 m
+140116 144114 HLT_Mu7 m
+136033 141882 HLT_Mu5 m
+#
+# single electron triggers
+#
+147196 148058 HLT_Ele17_SW_TighterEleIdIsol_L1R_v1 e
+148819 149064 HLT_Ele17_SW_TighterEleIdIsol_L1R_v2 e
+149181 149442 HLT_Ele17_SW_TighterEleIdIsol_L1R_v3 e
+148819 149064 HLT_Ele22_SW_TighterEleId_L1R_v2 e
+149181 149442 HLT_Ele22_SW_TighterEleId_L1R_v3 e
+149181 149442 HLT_Ele22_SW_TighterCaloIdIsol_L1R_v2 e
+147196 148058 HLT_Ele27_SW_TightCaloEleIdTrack_L1R_v1 e
+147196 148058 HLT_Ele32_SW_TightCaloEleIdTrack_L1R_v1 e
+148819 149442 HLT_Ele32_SW_TighterEleId_L1R_v2 e
+147390 149064 HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v1 e
+149181 149442 HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2 e
+147196 148058 HLT_Ele17_SW_TightCaloEleId_SC8HE_L1R_v1 e
+146428 147116 HLT_Ele17_SW_CaloEleId_L1R e
+146428 147116 HLT_Ele17_SW_EleId_L1R e
+146428 147116 HLT_Ele17_SW_LooseEleId_L1R e
+141956 144114 HLT_Ele15_SW_CaloEleId_L1R e
+141956 144114 HLT_Ele15_SW_EleId_L1R e
+140058 143962 HLT_Ele15_SW_L1R e
+136033 141882 HLT_Ele15_LW_L1R e
+140058 144114 HLT_Ele20_SW_L1R e
+141956 144114 HLT_Ele10_SW_EleId_L1R e
+136033 141882 HLT_Ele10_LW_EleId_L1R e
+136033 139980 HLT_Ele10_LW_L1R e
+139195 139980 HLT_Ele10_SW_L1R e
+#
+# double muon triggers
+#
+147196 149442 HLT_DoubleMu3_v2 mm
+147196-149442 HLT_DoubleMu5_v1 mm
+136033-147116 HLT_DoubleMu3 mm
+#
+# double electron triggers
+#
+147196 148058 HLT_DoubleEle15_SW_L1R_v1 ee
+148819 149442 HLT_DoubleEle17_SW_L1R_v1 ee
+141956 147116 HLT_DoubleEle10_SW_L1R ee
+136033-141882 HLT_DoubleEle5_SW_L1R ee
+#
+# cross triggers
+#
+147196-148058 HLT_Mu5_Ele5_v1 em
+147196-148058 HLT_Mu5_Ele9_v1 em
+148819-149442 HLT_Mu11_Ele8_v1 em
+148819-149442 HLT_Mu8_Ele8_v1 em
+148819-149442 HLT_Mu5_Ele13_v2 em
+148819-149064 HLT_Mu5_Ele17_v1 em
+148819-149064 HLT_Mu5_Ele17_v2 em
