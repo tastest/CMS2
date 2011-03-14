@@ -21,13 +21,11 @@ class dilepbabymaker
         void MakeBabyNtuple (const char *);
         void InitBabyNtuple ();
 
-        bool PassSingleMuon(const LorentzVector &obj);
-        bool PassSingleElectron(const LorentzVector &obj);
-        bool PassDoubleMuon();
-        bool PassDoubleElectron();
-        bool PassElectronMuon();
+        bool PassTriggerGroup(const std::vector<std::string> &triggers, const LorentzVector &obj);
+        bool PassTriggerGroup(const std::vector<std::string> &triggers);
 
         void SetEventLevelInfo();
+        void NewRun();
 
         void FillBabyNtuple ();
         void CloseBabyNtuple ();
@@ -39,6 +37,12 @@ class dilepbabymaker
         //
         TFile *babyFile_;
         TTree *babyTree_;
+
+        std::vector<std::string> triggers_e_;
+        std::vector<std::string> triggers_m_;
+        std::vector<std::string> triggers_ee_;
+        std::vector<std::string> triggers_mm_;
+        std::vector<std::string> triggers_em_;
 
         // event stuff
         char    dataset_[200];
@@ -109,7 +113,7 @@ class dilepbabymaker
         Float_t dphipfmet1_;
         Float_t dphitcmet1_;
         Float_t drjet1_;
-		Int_t   mcid1_;
+        Int_t   mcid1_;
         Int_t   mcmotherid1_;
         Int_t   eormu2_;
         Int_t   type2_;
@@ -122,7 +126,7 @@ class dilepbabymaker
         Float_t dphipfmet2_;
         Float_t dphitcmet2_;
         Float_t drjet2_;
-		Int_t   mcid2_;
+        Int_t   mcid2_;
         Int_t   mcmotherid2_;
         Float_t mt2_;
         Float_t mt2j_;
