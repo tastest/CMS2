@@ -4,10 +4,9 @@ cvs co -r V05-00-17      JetMETCorrections/Modules
 cvs co -r V03-01-21      CondFormats/JetMETObjects
 cvs co -r V08-11-08      RecoEgamma/EgammaTools
 # Masked ECAL Cells
-cvs co -r V101118_BE -d DataFormats/AnomalousEcalDataFormats UserCode/gebbert/DataFormats/AnomalousEcalDataFormats
-cvs co -r V101118_BE -d PhysicsTools/EcalAnomalousEventFilter UserCode/gebbert/PhysicsTools/EcalAnomalousEventFilter
-#cvs co -r V110105_BE -d DataFormats/AnomalousEcalDataFormats UserCode/gebbert/DataFormats/AnomalousEcalDataFormats
-#cvs co -r V110105_BE -d PhysicsTools/EcalAnomalousEventFilter UserCode/gebbert/PhysicsTools/EcalAnomalousEventFilter
+cvs co -r V031411 -d DataFormats/AnomalousEcalDataFormats  UserCode/gebbert/DataFormats/AnomalousEcalDataFormats
+cvs co -r V031411 -d PhysicsTools/EcalAnomalousEventFilter UserCode/gebbert/PhysicsTools/EcalAnomalousEventFilter
+cvs co -r V031411 -d UserCode/EcalDeadCellEventFilter      UserCode/KHatakeyama/EcalDeadCellEventFilter
 
 # add the annoying, missing reco::
 sed '576 s/CaloMETCollection/reco::CaloMETCollection/' <$CMSSW_BASE/src/PhysicsTools/EcalAnomalousEventFilter/src/EcalAnomalousEventFilter.cc >blah
