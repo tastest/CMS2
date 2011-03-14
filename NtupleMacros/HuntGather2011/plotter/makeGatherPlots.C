@@ -205,8 +205,9 @@ void makeGatherPlots(TString base, bool debug = false) {
     //
 
     if (debug) {
-        makeGatherPlotsElectrons(babyVectorTP, est_lumi);
-        makeGatherPlotsMuons(babyVectorTP, est_lumi);
+        //makeGatherPlotsElectrons(babyVectorTP, est_lumi);
+        //makeGatherPlotsMuons(babyVectorTP, est_lumi);
+        makeGatherTriggerMonitor(babyVectorSM, est_lumi);
     }
     else {
         makeGatherPlotsValidation(babyVectorSM, goodruns_lumi, est_newruns_lumi);
