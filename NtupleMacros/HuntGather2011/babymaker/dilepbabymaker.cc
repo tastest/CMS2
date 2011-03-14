@@ -1,5 +1,6 @@
 #include "babymakercommon.h"
 #include "dilepbabymaker.h" 
+#include "readTriggerList.h"
 
 #include <algorithm>
 #include <iostream>
@@ -30,6 +31,15 @@
 
 void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilename, int nEvents)
 {
+
+    // set trigger file
+    set_trigger_file("../runlists/trigger.txt");
+    std::vector<std::string> trignames_ee = get_trigger_names(149003, "ee");
+
+
+    for (unsigned int i = 0; i < trignames_ee.size(); ++i) std::cout << trignames_ee[i] << std::endl;
+
+
     TChain *chain = new TChain("Events");
     chain->Add(inputFilename);
     TObjArray *listOfFiles = chain->GetListOfFiles();    
