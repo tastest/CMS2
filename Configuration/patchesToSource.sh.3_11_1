@@ -3,11 +3,18 @@ cvs co -r V03-02-07      JetMETCorrections/Configuration
 cvs co -r V05-00-17      JetMETCorrections/Modules     
 cvs co -r V03-01-21      CondFormats/JetMETObjects
 cvs co -r V08-11-08      RecoEgamma/EgammaTools
+
 # Masked ECAL Cells
-cvs co -r V101118_BE -d DataFormats/AnomalousEcalDataFormats UserCode/gebbert/DataFormats/AnomalousEcalDataFormats
-cvs co -r V101118_BE -d PhysicsTools/EcalAnomalousEventFilter UserCode/gebbert/PhysicsTools/EcalAnomalousEventFilter
-#cvs co -r V110105_BE -d DataFormats/AnomalousEcalDataFormats UserCode/gebbert/DataFormats/AnomalousEcalDataFormats
-#cvs co -r V110105_BE -d PhysicsTools/EcalAnomalousEventFilter UserCode/gebbert/PhysicsTools/EcalAnomalousEventFilter
+cvs co -r V031411 -d DataFormats/AnomalousEcalDataFormats  UserCode/gebbert/DataFormats/AnomalousEcalDataFormats
+cvs co -r V031411 -d PhysicsTools/EcalAnomalousEventFilter UserCode/gebbert/PhysicsTools/EcalAnomalousEventFilter
+cvs co -r V031411 -d UserCode/EcalDeadCellEventFilter      UserCode/KHatakeyama/EcalDeadCellEventFilter
+
+# add the annoying, missing reco::
+sed '576 s/CaloMETCollection/reco::CaloMETCollection/' <$CMSSW_BASE/src/PhysicsTools/EcalAnomalousEventFilter/src/EcalAnomalousEventFilter.cc >blah
+mv blah $CMSSW_BASE/src/PhysicsTools/EcalAnomalousEventFilter/src/EcalAnomalousEventFilter.cc
+
+sed '18 s/^/\n#include \"CondFormats\/EcalObjects\/interface\/EcalChannelStatus.h\"\n#include \"Geometry\/CaloGeometry\/interface\/CaloSubdetectorGeometry.h\"\n/' <$CMSSW_BASE/src/PhysicsTools/EcalAnomalousEventFilter/interface/EcalBoundaryInfoCalculator.h >blah2
+mv blah2 $CMSSW_BASE/src/PhysicsTools/EcalAnomalousEventFilter/interface/EcalBoundaryInfoCalculator.h
 
 #MIT conversion stuff
 #cvs co -d MitCommon  -r ConvRejection-10-06-09 UserCode/MitCommon
