@@ -13,7 +13,7 @@
 //
 // Original Author:  Puneeth Kalavase
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: TCMETMaker.h,v 1.6 2010/11/09 10:21:30 benhoob Exp $
+// $Id: TCMETMaker.h,v 1.6.2.1 2011/03/15 23:14:09 fgolf Exp $
 //
 //
 
@@ -45,10 +45,9 @@ private:
   virtual void endJob() ;
 
   // ----------member data ---------------------------
-  edm::InputTag muon_tag;
-  edm::InputTag tcmet_tag;
-  edm::InputTag pftcmet_tag;
-  edm::InputTag tcmet_vm_tag;  
+    edm::InputTag muon_tag;
+    edm::InputTag tcmet_tag;
+    edm::InputTag tcmet_vm_tag;  
 	std::string aliasprefix_;
 };
 
