@@ -92,6 +92,7 @@ class dilepbabymaker
         Int_t nssvhptbtags_;
         Float_t pfmeff_;
         Float_t tcmeff_;
+        Float_t intLumiPerLS_;
 
         // lepton stuff
         Int_t   ngoodlep_;
@@ -131,6 +132,12 @@ class dilepbabymaker
         Float_t mt2_;
         Float_t mt2j_;
         Bool_t  extraZveto_;
+        Float_t trkIso1_;
+        Float_t ecalIso1_;
+        Float_t hcalIso1_;
+        Float_t trkIso2_;
+        Float_t ecalIso2_;
+        Float_t hcalIso2_;
 
         // muon stuff
         Bool_t  mu1_muonidfull_;
@@ -183,6 +190,7 @@ class dilepbabymaker
         Int_t   e1_ctfCharge_;
         Int_t   e1_scCharge_;
         Int_t   e1_gsfCharge_;
+        Float_t e1_fbrem_;
 
         Bool_t  e2_cand01full_;
         Bool_t  e2_cand01_;
@@ -207,6 +215,7 @@ class dilepbabymaker
         Int_t   e2_ctfCharge_;
         Int_t   e2_scCharge_;
         Int_t   e2_gsfCharge_;
+        Float_t e2_fbrem_;
 
         // triggers
         Int_t trg_single_mu_;

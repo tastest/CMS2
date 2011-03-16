@@ -167,6 +167,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     if (abs(lt_id) != abs(ll_id))
                         trg_cross_emu_ = PassTriggerGroup(triggers_em_);
 
+                    // integrated luminosity per luminosity section
+                    intLumiPerLS_ = cms2.ls_lumiSectionLength() * cms2.ls_avgInsRecLumi();
 
                 } else {
                     trg_single_e_ = ((1<<0) | (1<<1));
@@ -536,6 +538,9 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     if (cms2.mus_pfmusidx()[index1] > -1) mu1_isPFmuon_ = 1;
                     int trkidx1 = cms2.mus_trkidx()[index1];
                     d0vtx1_ = cms2.trks_d0vtx()[trkidx1];
+                    trkIso1_ = cms2.mus_iso03_sumPt()[index1];
+                    ecalIso1_ = cms2.mus_iso03_emEt()[index1];
+                    hcalIso1_ - cms2.mus_iso03_hadEt()[index1];
                 }
                 // if LT is an ele, fill ele info
                 if (abs(cms2.hyp_lt_id()[hypi]) == 11) {
@@ -570,6 +575,10 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e1_ctfCharge_  = cms2.els_trkidx()[index1] > -1 ? cms2.trks_charge()[cms2.els_trkidx()[index1]] : -999999;
                     int trkidx1 = cms2.els_trkidx()[index1];
                     if(trkidx1 >= 0) d0vtx1_ = cms2.trks_d0vtx()[trkidx1];
+                    e1_fbrem_ = cms2.els_fbrem()[index1];
+                    trkIso1_ = cms2.els_tkIso()[index1];
+                    hcalIso1_ = cms2.els_hcalIso()[index1];
+                    ecalIso1_ = cms2.els_ecalIso()[index1];
                 }
 
                 //
@@ -594,6 +603,9 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     if (cms2.mus_pfmusidx()[index2] > -1) mu2_isPFmuon_ = 1;
                     int trkidx2 = cms2.mus_trkidx()[index2];
                     d0vtx2_ = cms2.trks_d0vtx()[trkidx2];
+                    trkIso2_ = cms2.mus_iso03_sumPt()[index2];
+                    ecalIso2_ = cms2.mus_iso03_emEt()[index2];
+                    hcalIso2_ - cms2.mus_iso03_hadEt()[index2];
                 }
                 // if LL is an ele, fill ele info
                 if (abs(cms2.hyp_ll_id()[hypi]) == 11) {
@@ -628,6 +640,10 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e2_ctfCharge_   = cms2.els_trkidx()[index2] > -1 ? cms2.trks_charge()[cms2.els_trkidx()[index2]] : -999999;
                     int trkidx2 = cms2.els_trkidx()[index2];
                     if (trkidx2 >= 0) d0vtx2_ = cms2.trks_d0vtx()[trkidx2];
+                    e2_fbrem_ = cms2.els_fbrem()[index2];
+                    trkIso2_ = cms2.els_tkIso()[index2];
+                    hcalIso2_ = cms2.els_hcalIso()[index2];
+                    ecalIso2_ = cms2.els_ecalIso()[index2];
                 }
 
                 //
@@ -702,6 +718,8 @@ void dilepbabymaker::InitBabyNtuple ()
     pfmeff_       = -999999.;
     tcmeff_       = -999999.;
 
+    intLumiPerLS_ = -999999.;
+
     // lepton stuff
     ngoodlep_     = -999999;
     ngoodmus_     = -999999;
@@ -741,6 +759,12 @@ void dilepbabymaker::InitBabyNtuple ()
     mt2_          = -999999.;
     mt2j_         = -999999.;
     extraZveto_   = 0;
+    trkIso1_      = -999999.;
+    ecalIso1_     = -999999.;
+    hcalIso1_     = -999999.;
+    trkIso2_      = -999999.;
+    ecalIso2_     = -999999.;
+    hcalIso2_     = -999999.;
 
     // muon stuff
     mu1_muonidfull_   = 0;
@@ -793,6 +817,7 @@ void dilepbabymaker::InitBabyNtuple ()
     e1_ctfCharge_   = -999999;
     e1_gsfCharge_   = -999999;
     e1_scCharge_    = -999999;
+    e1_fbrem_       = -999999.;
 
     e2_cand01full_  = 0;
     e2_cand01_      = 0;
@@ -817,6 +842,7 @@ void dilepbabymaker::InitBabyNtuple ()
     e2_ctfCharge_   = -999999;
     e2_gsfCharge_   = -999999;
     e2_scCharge_    = -999999;
+    e2_fbrem_       = -999999.;
 
     trg_single_e_ = 0;
     trg_single_mu_ = 0;
@@ -885,7 +911,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 
     babyTree_->Branch("pfmeff",       &pfmeff_,      "pfmeff/F"      );
     babyTree_->Branch("tcmeff",       &tcmeff_,      "tcmeff/F"      );
-
+    babyTree_->Branch("intLumiPerLS", &intLumiPerLS_, "intLumiPerLS/F");
 
     // lepton stuff
     babyTree_->Branch("ngoodlep",   &ngoodlep_,   "ngoodlep/I"  );
@@ -925,6 +951,12 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("mt2",        &mt2_,        "mt2/F"       );
     babyTree_->Branch("mt2j",       &mt2j_,       "mt2j/F"      );
     babyTree_->Branch("extraZveto", &extraZveto_, "extraZveto/O");
+    babyTree_->Branch("trkIso1", &trkIso1_, "trkIso1/F");
+    babyTree_->Branch("ecalIso1", &ecalIso1_, "ecalIso1/F");
+    babyTree_->Branch("hcalIso1", &hcalIso1_, "hcalIso1/F");
+    babyTree_->Branch("trkIso2", &trkIso2_, "trkIso2/F");
+    babyTree_->Branch("ecalIso2", &ecalIso2_, "ecalIso2/F");
+    babyTree_->Branch("hcalIso2", &hcalIso2_, "hcalIso2/F");
 
     // muon stuff
     babyTree_->Branch("mu1_muonidfull",   &mu1_muonidfull_,   "mu1_muonidfull/O"  );
@@ -978,6 +1010,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e1_ctfCharge",  &e1_ctfCharge_,  "e1_ctfCharge/I" );
     babyTree_->Branch("e1_gsfCharge",  &e1_gsfCharge_,  "e1_gsfCharge/I" );
     babyTree_->Branch("e1_scCharge",   &e1_scCharge_,   "e1_scCharge/I"  );
+    babyTree_->Branch("e1_fbrem", &e1_fbrem_, "e1_fbrem/F");
     babyTree_->Branch("e2_cand01full", &e2_cand01full_, "e2_cand01full/O");
     babyTree_->Branch("e2_cand01",     &e2_cand01_,     "e2_cand01/O"    );
     babyTree_->Branch("e2_vbtf90full", &e2_vbtf90full_, "e2_vbtf90full/O");
@@ -1001,6 +1034,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e2_ctfCharge",  &e2_ctfCharge_,  "e2_ctfCharge/I" );
     babyTree_->Branch("e2_gsfCharge",  &e2_gsfCharge_,  "e2_gsfCharge/I" );
     babyTree_->Branch("e2_scCharge",   &e2_scCharge_,   "e2_scCharge/I"  );
+    babyTree_->Branch("e2_fbrem", &e2_fbrem_, "e2_fbrem/F");
 
     // trigger stuff
     babyTree_->Branch("trg_single_mu",   &trg_single_mu_,   "trg_single_mu/I"  );
