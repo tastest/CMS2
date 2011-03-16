@@ -21,6 +21,12 @@ mv blah2 $CMSSW_BASE/src/PhysicsTools/EcalAnomalousEventFilter/interface/EcalBou
 #cvs co -d MitEdm     -r ConvRejection-10-06-09 UserCode/MitEdm
 #for f in $(find MitEdm/Filters/ -type f); do sed 's!FWCore/ParameterSet/interface/InputTag!FWCore/Utilities/interface/InputTag!g' $f > blah; mv blah $f; done
 
+#TrackingTools/TrajectoryState bug fix needed for DA vertexing
+addpkg TrackingTools/TrajectoryState
+cvs up -r 1.5 TrackingTools/TrajectoryState/src/TrajectoryStateClosestToBeamLine.cc
+cvs co -r 1.2 TrackingTools/TrajectoryState/BuildFile.xml
+rm TrackingTools/TrajectoryState/BuildFile
+
 echo;echo checkingdeps;echo
 
 checkdeps -a
