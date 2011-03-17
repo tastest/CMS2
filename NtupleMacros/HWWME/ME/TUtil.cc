@@ -698,37 +698,10 @@ double getProbAcceptanceEfficiency(cdf_event_type cdf_event, EffHist effhist)
   return eff;
 }
 
-
-void KtPdf(double x0, double* kX, double *wt, TH1F *hkx)
+void getProbFromHist(double x0, double* kX, double *wt, TH1F *hkx)
 {
-  double sign=1.;
-  if(x0>0.5) { 
-    sign=-1.;
-    x0=(x0-0.5)*2.;
-  }else{
-    x0=x0*2.;
-  }
-
-  *kX = sign*x0*TMath::Abs(hkx->GetXaxis()->GetXmax());
-  *wt = hkx->GetBinContent(hkx->GetXaxis()->FindBin(*kX))/hkx->Integral(0, 1000)*hkx->GetNbinsX();
- 
-  // if(*wt == 0) cout << "hkx->GetXaxis()->FindBin(" << *kX << ") = " <<hkx->GetXaxis()->FindBin(*kX) <<endl; 
-}
-
-void NeutMom(double x0, double* k, double *wt, TH1F *hk)
-{
-  double sign=1.;
-  if(x0>0.5) {
-    sign=-1.;
-    x0=(x0-0.5)*2.;
-  }else{
-   x0=x0*2.;
-  }
-  
-  *k = sign*x0*TMath::Abs(hk->GetXaxis()->GetXmax());
-  *wt = hk->GetBinContent(hk->GetXaxis()->FindBin(*k))/hk->Integral(0, 1000)*hk->GetNbinsX();
-
-  //  cout << "hkx->GetXaxis()->FindBin(" << *k << ") = " <<hk->GetXaxis()->FindBin(*k) <<" weight= "<<wt[0]<<endl;
-  // if(*wt == 0) cout << "hkx->GetXaxis()->FindBin(" << *kX << ") = " <<hkx->GetXaxis()->FindBin(*kX) <<endl;
+  double c = hkx->GetXaxis()->GetXmax() - hkx->GetXaxis()->GetXmin();
+  *kX = hkx->GetXaxis()->GetXmin() + x0*c;
+  *wt = hkx->GetBinContent(hkx->GetXaxis()->FindBin(*kX))/hkx->Integral(1, hkx->GetNbinsX())*c/hkx->GetBinWidth(1);
 }
 

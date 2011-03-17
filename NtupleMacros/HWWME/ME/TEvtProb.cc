@@ -99,7 +99,7 @@ void   TEvtProb::NeutrinoIntegrate(TVar::Process proc,
 
     double probAcceptanceEfficiency = getProbAcceptanceEfficiency(cdf_event, _effhist);
     // cout << "probAcceptanceEfficency = " << probAcceptanceEfficiency << endl;
-    //double probAcceptanceEfficiency = 1.0;
+    // double probAcceptanceEfficiency = 1.0;
     if(probAcceptanceEfficiency == 0) return;
     if(probAcceptanceEfficiency<0) {
       cout <<"Error: " << probAcceptanceEfficiency <<endl;
@@ -112,15 +112,17 @@ void   TEvtProb::NeutrinoIntegrate(TVar::Process proc,
       double dXsec=0;
     
       // dXsec=Integrand_NeutrinoIntegration(r,NDim,0);
-      dXsec=Integrand_NeutrinoIntegration(r,NDim,0, _boosthist, _neuthist)*probAcceptanceEfficiency;
+      dXsec=Integrand_NeutrinoIntegration(r,NDim,0, _boosthist)*probAcceptanceEfficiency;
   
       if (dXsec<=0) continue;
+      // count_PS++;
       sumW  += dXsec;
       sumW2 += dXsec*dXsec;
     }
     
     *Xsec = sumW/count_PS;
- 
+    cout << "TEvtProb:: count_PS = " << count_PS << "; _ncalls = " << _ncalls << endl;
+    
     *XsecErr = sumW2/count_PS-sumW/count_PS*sumW/count_PS;
     if(*XsecErr>0.0) *XsecErr = sqrt(*XsecErr/count_PS);
     else             *XsecErr = -1;  
@@ -131,7 +133,7 @@ void   TEvtProb::NeutrinoIntegrate(TVar::Process proc,
 //=======================================
 // Integrand
 //=======================================
-double Integrand_NeutrinoIntegration(double * r, unsigned int NDim, void * param, BoostHist boosthist, NeutHist neuthist){
+double Integrand_NeutrinoIntegration(double * r, unsigned int NDim, void * param, BoostHist boosthist){
 
     //constants
     double sqrts = 2.*EBEAM;
@@ -158,7 +160,7 @@ double Integrand_NeutrinoIntegration(double * r, unsigned int NDim, void * param
     if (Global_process==TVar::WW)
       {
 	Global_NSol=4;         
-	genMw1Mw2(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist, neuthist);
+	genMw1Mw2(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist);
       }
 
     if (Global_process==TVar::HWW)
@@ -166,22 +168,22 @@ double Integrand_NeutrinoIntegration(double * r, unsigned int NDim, void * param
 	if(Global_HWWPhaseSpace==TVar::MWMW)
 	  { 
 	    Global_NSol=4;
-	    genMw1Mw2(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist, neuthist);
+	    genMw1Mw2(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist);
 	  }
 	else if (Global_HWWPhaseSpace==TVar::MHMW)
 	  { 
 	    Global_NSol=4;
-	    genMHiggsMw1(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist, neuthist);
+	    genMHiggsMw1(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist);
 	  }
 	else if (Global_HWWPhaseSpace==TVar::MHYH)
 	  { 
 	    Global_NSol=2;
-	    genMHiggsYHiggs(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist, neuthist);
+	    genMHiggsYHiggs(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist);
 	  }
 	else if (Global_HWWPhaseSpace==TVar::MH)
 	  { 
 	    Global_NSol=2;
-	    genMHiggs(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist, neuthist);
+	    genMHiggs(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist);
 	  }
       }
 

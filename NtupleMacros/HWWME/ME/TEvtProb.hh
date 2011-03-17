@@ -60,7 +60,7 @@ public:
   TVar::HWWPhaseSpace _hwwPhaseSpace;
   EffHist _effhist;
   BoostHist _boosthist;
-  NeutHist _neuthist;
+
   //---------------------------------------------------------------------------
   // Constructors and Destructor
   //---------------------------------------------------------------------------
@@ -78,27 +78,30 @@ public:
   void SetMatrixElement(TVar::MatrixElement tmp){ _matrixElement = tmp; }
   void SetHWWPhaseSpace(TVar::HWWPhaseSpace tmp){ _hwwPhaseSpace = tmp; }
   void SetMCHist(TVar::Process proc) {
-    TString effFileName;
-    if(TVar::ProcessName(proc) == "HWW") effFileName = "../ggH160_MCUtil.root";
-    if(TVar::ProcessName(proc) == "WW")  effFileName = "../WW_MCUtil.root";
-    if(TVar::ProcessName(proc) == "Wp_1jet")  effFileName = "../WW_MCUtil.root";
-    if(TVar::ProcessName(proc) == "Wm_1jet")  effFileName = "../WW_MCUtil.root";
-    if(TVar::ProcessName(proc) == "ZZ")  effFileName = "../ZZ_MCUtil.root";
-    if(TVar::ProcessName(proc) == "WZ")  effFileName = "../ZZ_MCUtil.root";
-    
-    std::cout << "TEvtProb::SetMCHist: " << effFileName << std::endl;
-    TFile *f = TFile::Open(effFileName, "READ");
-    assert(f);
-    gROOT->cd();
-    _effhist.els_eff_mc = (TH2F*) f->Get("els_eff_mc")->Clone();
-    _effhist.mus_eff_mc = (TH2F*) f->Get("mus_eff_mc")->Clone();
-    _boosthist.kx = (TH1F*) f->Get("kx")->Clone();
-    _boosthist.ky = (TH1F*) f->Get("ky")->Clone();
 
-    _neuthist.kx = (TH1F*) f->Get("nux")->Clone();
-    _neuthist.ky = (TH1F*) f->Get("nuy")->Clone();
-    _neuthist.kz = (TH1F*) f->Get("nuz")->Clone();  
-    f->Close();
+    TFile *feff = TFile::Open("../WW_MCUtil.root", "READ");
+    assert(feff);
+    gROOT->cd();
+    _effhist.els_eff_mc = (TH2F*) feff->Get("els_eff_mc")->Clone();
+    _effhist.mus_eff_mc = (TH2F*) feff->Get("mus_eff_mc")->Clone();
+    feff->Close();
+
+    TString ktFileName;
+    cout << TVar::ProcessName(proc) << "\t";
+    if(TVar::ProcessName(proc) == "HWW") ktFileName = "../ggH160_MCUtil.root";
+    if(TVar::ProcessName(proc) == "WW")  ktFileName = "../WW_MCUtil.root";
+    if(TVar::ProcessName(proc) == "Wp_1jet")  ktFileName = "../WW_MCUtil.root";
+    if(TVar::ProcessName(proc) == "Wm_1jet")  ktFileName = "../WW_MCUtil.root";
+    if(TVar::ProcessName(proc) == "ZZ")  ktFileName = "../ZZ_MCUtil.root";
+    if(TVar::ProcessName(proc) == "WZ")  ktFileName = "../ZZ_MCUtil.root";
+    std::cout << "TEvtProb::SetMCHist: ktFileName " << ktFileName << std::endl;
+    
+    TFile *fkt = TFile::Open(ktFileName, "READ");
+    assert(fkt);
+    gROOT->cd();
+    _boosthist.kx = (TH1F*) fkt->Get("kx")->Clone();
+    _boosthist.ky = (TH1F*) fkt->Get("ky")->Clone();
+    fkt->Close();
   }
   
 
@@ -132,6 +135,6 @@ class  Integrand_LOXsec_foam : public TFoamIntegrand{
 };
 
 
-double Integrand_NeutrinoIntegration(double * r, unsigned int NDim, void * param, BoostHist boosthist, NeutHist neuthist);
+double Integrand_NeutrinoIntegration(double * r, unsigned int NDim, void * param, BoostHist boosthist);
   
 #endif

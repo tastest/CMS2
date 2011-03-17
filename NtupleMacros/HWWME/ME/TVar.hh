@@ -251,10 +251,4 @@ struct BoostHist{
   TH1F* ky;
 };
 
-struct NeutHist{
-  TH1F* kx;
-  TH1F* ky;
-  TH1F* kz;
-};
-
 #endif
