@@ -24,6 +24,8 @@ mv blah2 $CMSSW_BASE/src/PhysicsTools/EcalAnomalousEventFilter/interface/EcalBou
 
 #tag to fix tracking bug for DA vertexing
 cvs co -r V06-04-07-01 TrackingTools/TrajectoryState
+#tag to fix bug for track belonging to multiple pv
+cvs co -rV01-04-05 RecoVertex/PrimaryVertexProducer
 
 echo;echo checkingdeps;echo
 
