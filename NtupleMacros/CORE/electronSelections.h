@@ -41,6 +41,8 @@ enum EleSelectionType {
 	 ELEISO_REL100_WW,
 	 // non-truncated relative iso with cut [0.05,0.07,0.10] for pT [10,15,20]
 	 ELEISO_SMURFV1,
+	 // non-truncated relative iso rel iso < 0.10, 0.3 cone size for all, 1 GeV pedestal sub in EB
+	 ELEISO_RELNT010,
 
 	 //
 	 // ip cuts
@@ -60,6 +62,8 @@ enum EleSelectionType {
 	 //
 	 // pass smurf v1 electron ID
 	 ELEID_SMURFV1_EXTRA,
+	 // pass smurf v1 electron ID
+	 ELEID_SMURFV2_EXTRA,
 	 // pass "CAND01" electron ID
 	 ELEID_CAND01,
 	 // pass "CAND02" electron ID
@@ -737,7 +741,6 @@ static const cuts_t electronSelectionFO_el_wwV1_v4 =
 //--------end of WW V1 cuts--------------------------------
 
 //--------SMURF V1 cuts--------------------------------
-
 static const cuts_t electronSelection_smurfV1_baseline  = 
 	 electronSelection_wwV1_base |
 	 electronSelection_wwV1_convrej |
@@ -751,9 +754,23 @@ static const cuts_t electronSelection_smurfV1  =
          electronSelection_smurfV1_baseline |
          electronSelection_smurfV1_iso |
          electronSelection_smurfV1_id;
-
-
 //--------end of SMURF V1 cuts--------------------------------
+
+//--------SMURF V2 cuts--------------------------------
+static const cuts_t electronSelection_smurfV2_baseline  = 
+	 electronSelection_wwV1_base |
+	 electronSelection_wwV1_convrej |
+	 electronSelection_wwV1_ip;
+static const cuts_t electronSelection_smurfV2_iso  = 
+         (1ll<<ELEISO_RELNT010);
+static const cuts_t electronSelection_smurfV2_id  = 
+	 electronSelection_wwV1_id |
+         (1ll<<ELEID_SMURFV2_EXTRA);
+static const cuts_t electronSelection_smurfV2  = 
+         electronSelection_smurfV2_baseline |
+         electronSelection_smurfV2_iso |
+         electronSelection_smurfV2_id;
+//--------end of SMURF V2 cuts--------------------------------
 
 
 
@@ -1005,6 +1022,7 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
 // "smurf" electron id
 //
 bool electronId_smurf_v1(const unsigned int index);
+bool electronId_smurf_v2(const unsigned int index);
 
 //
 // "cand" electron id

@@ -34,10 +34,10 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     // isolation
     //
 
-    if( cms2.els_p4()[index].pt() < 15.0 && electronIsolation_rel_v1(index, true) < 0.05) cuts_passed |= (1ll<<ELEISO_SMURFV1);
-    else if( cms2.els_p4()[index].pt() < 20.0 && electronIsolation_rel_v1(index, true) < 0.07) cuts_passed |= (1ll<<ELEISO_SMURFV1);
-    else if( electronIsolation_rel_v1(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_SMURFV1);
+    //relative isolation non truncated
+    if( electronIsolation_rel_v1(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_RELNT010);
 
+    //relative isolation truncated
     if (electronIsolation_rel(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_REL010);
     if (electronIsolation_rel(index, true) < 0.15) cuts_passed |= (1ll<<ELEISO_REL015);
     if (electronIsolation_rel(index, true) < 0.40) cuts_passed |= (1ll<<ELEISO_REL040);
@@ -45,6 +45,11 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if (electronIsolation_rel_ww(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_REL010_WW);
     if (electronIsolation_rel_ww(index, true) < 0.40) cuts_passed |= (1ll<<ELEISO_REL040_WW);
     if (electronIsolation_rel_ww(index, true) < 1.00) cuts_passed |= (1ll<<ELEISO_REL100_WW);
+
+    //sliding isolation
+    if( cms2.els_p4()[index].pt() < 15.0 && electronIsolation_rel_v1(index, true) < 0.05) cuts_passed |= (1ll<<ELEISO_SMURFV1);
+    else if( cms2.els_p4()[index].pt() < 20.0 && electronIsolation_rel_v1(index, true) < 0.07) cuts_passed |= (1ll<<ELEISO_SMURFV1);
+    else if( electronIsolation_rel_v1(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_SMURFV1);
 
     //
     // ip
@@ -65,6 +70,7 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     // SMURF ID
     //
     if (electronId_smurf_v1(index)) cuts_passed |= (1ll<<ELEID_SMURFV1_EXTRA);
+    if (electronId_smurf_v2(index)) cuts_passed |= (1ll<<ELEID_SMURFV2_EXTRA);
 
     // 
     // "CAND" ID
@@ -221,6 +227,20 @@ bool electronId_smurf_v1(const unsigned int index)
   
   if (fabs(cms2.els_etaSC()[index]) < 1.) {
     if (cms2.els_eOverPIn()[index] > 0.95 && fabs(cms2.els_dPhiIn()[index]*cms2.els_charge()[index]) < 0.006) return true; 
+  }
+
+  return false;
+}
+
+bool electronId_smurf_v2(const unsigned int index)
+{
+
+  if (cms2.els_p4()[index].pt() > 20.0) return true;
+
+  if (cms2.els_fbrem()[index] > 0.15) return true;
+  
+  if (fabs(cms2.els_etaSC()[index]) < 1.) {
+    if (cms2.els_eOverPIn()[index] > 0.95) return true; 
   }
 
   return false;
