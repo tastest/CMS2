@@ -12,8 +12,8 @@ void makeGatherPlotsElectrons(const std::vector<BabySample*> &babyVector, const 
 
     // tag criteria
     // generally, do not change
-    TCut tp_tag1("tp_tag1", "pt1>20 && abs(eormu1) == 11 && e1_vbtf90full && (trg_single_e & (1<<0) || !isdata)");
-    TCut tp_tag2("tp_tag2", "pt2>20 && abs(eormu2) == 11 && e2_vbtf90full && (trg_single_e & (1<<1) || !isdata)");
+    TCut tp_tag1("tp_tag1", "pt1>20 && abs(eormu1) == 11 && e1_vbtf90full && ((trg_single_e & (1<<0)) || !isdata)");
+    TCut tp_tag2("tp_tag2", "pt2>20 && abs(eormu2) == 11 && e2_vbtf90full && ((trg_single_e & (1<<1)) || !isdata)");
 
     // probe criteria
     // generally, do not change
@@ -28,16 +28,17 @@ void makeGatherPlotsElectrons(const std::vector<BabySample*> &babyVector, const 
     //
 
     // example for VBTF90 efficiency
-    TCut tp_id_1("tp_id_1", "e1_vbtf90");
-    TCut tp_id_2("tp_id_2", "e2_vbtf90");
+    TCut tp_id_1("tp_id_1", "e1_vbtf80");
+    TCut tp_id_2("tp_id_2", "e2_vbtf80");
 
     // no run range restriction
     TCut tp_event("tp_event", "");
     TagAndProbe("tp_ele_id_pt", tp_event, "pt1", "pt2", tp_tag1, tp_tag2, tp_probe1, tp_probe2, tp_id_1, tp_id_2, luminosity, 25, 0.0, 100.0, false, babyVector);
+    //TagAndProbe("tp_ele_id_eta", tp_event, "eta1", "eta2", tp_tag1, tp_tag2, tp_probe1, tp_probe2, tp_id_1, tp_id_2, luminosity, 30, -3.0, 3.0, false, babyVector);
 
     // run range restriction 
-    tp_event = TCut("tp_event", "!isdata || run > 149000");
-    TagAndProbe("tp_ele149000_id_pt", tp_event, "pt1", "pt2", tp_tag1, tp_tag2, tp_probe1, tp_probe2, tp_id_1, tp_id_2, luminosity, 25, 0.0, 100.0, false, babyVector);
+    //tp_event = TCut("tp_event", "!isdata || run > 149000");
+    //TagAndProbe("tp_ele149000_id_pt", tp_event, "pt1", "pt2", tp_tag1, tp_tag2, tp_probe1, tp_probe2, tp_id_1, tp_id_2, luminosity, 25, 0.0, 100.0, false, babyVector);
 
 }
 
