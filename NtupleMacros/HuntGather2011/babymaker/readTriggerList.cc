@@ -18,6 +18,7 @@ struct run_and_trig {
     unsigned int run_max;
     std::string trig;
     std::string type;
+    unsigned int bit;
 };
 
 typedef std::vector<struct run_and_trig> set_t;
@@ -69,6 +70,7 @@ static int load_triggers (const char *fname)
             unsigned int run_max = -1;
             char trig[1024] = "";
             char type[1024] = "";
+            unsigned int bit = -1;
 
             // get run min
             char *pbuf = buf;
@@ -107,6 +109,15 @@ static int load_triggers (const char *fname)
             }
             pbuf += n;
 
+            // get bit position
+            s = sscanf(pbuf, " %u%n", &bit, &n);
+            if (s != 1) {
+                fprintf(stderr, "Expected a bit position (unsigned int)"
+                        " in the forth position of line %d: %s\n", line, buf);
+                assert(s == 1);
+            }   
+            pbuf += n;  
+
             // check for trailing characters
             char trail[1024] = "";
             s = sscanf(pbuf, " %s", trail);
@@ -116,8 +127,8 @@ static int load_triggers (const char *fname)
             }
 
             // if we got here all is ok
-            struct run_and_trig new_entry = { run_min, run_max, trig, type };
-            //printf("read %u %u %s %s\n", run_min, run_max, trig, type);
+            struct run_and_trig new_entry = { run_min, run_max, trig, type, bit };
+            //printf("read %u %u %s %s %u\n", run_min, run_max, trig, type, bit);
             trigger_list_.push_back(new_entry);
         }
         // advance past the newline 
@@ -139,15 +150,15 @@ void set_trigger_file (const char* filename)
     trigger_list_loaded_ = true;
 }
 
-std::vector<std::string> get_trigger_names(unsigned int run, const char *type)
+std::vector<std::pair<std::string, unsigned int> > get_trigger_names(unsigned int run, const char *type)
 {
-    std::vector<std::string> triggers;
+    std::vector<std::pair<std::string, unsigned int> > triggers;
      if (trigger_list_loaded_) {
         for (unsigned int i = 0; i < trigger_list_.size(); ++i) 
         {
             //printf("%u\n", trigger_list_[i].run_min);
             if (run >= trigger_list_[i].run_min && run <= trigger_list_[i].run_max) {
-                if (trigger_list_[i].type == type) triggers.push_back(trigger_list_[i].trig);
+                if (trigger_list_[i].type == type) triggers.push_back(std::make_pair<std::string, unsigned int>(trigger_list_[i].trig, trigger_list_[i].bit));
             }
         }
     }

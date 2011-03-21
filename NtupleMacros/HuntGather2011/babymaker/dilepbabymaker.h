@@ -21,8 +21,8 @@ class dilepbabymaker
         void MakeBabyNtuple (const char *);
         void InitBabyNtuple ();
 
-        bool PassTriggerGroup(const std::vector<std::string> &triggers, const LorentzVector &obj);
-        bool PassTriggerGroup(const std::vector<std::string> &triggers);
+        bool PassTriggerGroup(const std::vector<std::pair<std::string, unsigned int> > &triggers, const LorentzVector &obj);
+        void PassTriggerGroup(const std::vector<std::pair<std::string, unsigned int> > &triggers, Int_t &mask);
 
         void SetEventLevelInfo();
         void NewRun();
@@ -38,11 +38,11 @@ class dilepbabymaker
         TFile *babyFile_;
         TTree *babyTree_;
 
-        std::vector<std::string> triggers_e_;
-        std::vector<std::string> triggers_m_;
-        std::vector<std::string> triggers_ee_;
-        std::vector<std::string> triggers_mm_;
-        std::vector<std::string> triggers_em_;
+        std::vector<std::pair<std::string, unsigned int> > triggers_e_;
+        std::vector<std::pair<std::string, unsigned int> > triggers_m_;
+        std::vector<std::pair<std::string, unsigned int> > triggers_ee_;
+        std::vector<std::pair<std::string, unsigned int> > triggers_mm_;
+        std::vector<std::pair<std::string, unsigned int> > triggers_em_;
 
         // event stuff
         char    dataset_[200];

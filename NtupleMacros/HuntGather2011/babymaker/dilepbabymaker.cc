@@ -157,15 +157,15 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 
                     // do double electron
                     if (abs(lt_id) == 11 && abs(ll_id) == 11)
-                        trg_double_e_ = PassTriggerGroup(triggers_ee_);
+                        PassTriggerGroup(triggers_ee_, trg_double_e_);
 
                     // do double muon
                     if (abs(lt_id) == 13 && abs(ll_id) == 13)
-                        trg_double_mu_ = PassTriggerGroup(triggers_mm_);
+                        PassTriggerGroup(triggers_mm_, trg_double_mu_);
 
                     // do cross trigger (e-mu)
                     if (abs(lt_id) != abs(ll_id))
-                        trg_cross_emu_ = PassTriggerGroup(triggers_em_);
+                        PassTriggerGroup(triggers_em_, trg_cross_emu_);
 
                     // integrated luminosity per luminosity section
                     intLumiPerLS_ = cms2.ls_lumiSectionLength() * cms2.ls_avgInsRecLumi();
@@ -1045,20 +1045,20 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 
 }
 
-bool dilepbabymaker::PassTriggerGroup(const std::vector<std::string> &triggers, const LorentzVector &obj)
+bool dilepbabymaker::PassTriggerGroup(const std::vector<std::pair<std::string, unsigned int> > &triggers, const LorentzVector &obj)
 {
     for (unsigned int i = 0; i < triggers.size(); ++i) {
-        if (passUnprescaledHLTTrigger(triggers[i].c_str(), obj)) return true;
+        if (passUnprescaledHLTTrigger(triggers[i].first.c_str(), obj)) return true;
     }
     return false;
 }
 
-bool dilepbabymaker::PassTriggerGroup(const std::vector<std::string> &triggers)
+void dilepbabymaker::PassTriggerGroup(const std::vector<std::pair<std::string, unsigned int> > &triggers, Int_t &mask)
 {
     for (unsigned int i = 0; i < triggers.size(); ++i) {
-        if (passUnprescaledHLTTrigger(triggers[i].c_str())) return true;
+        if (passUnprescaledHLTTrigger(triggers[i].first.c_str())) mask |= (1<<triggers[i].second);
     }    
-    return false;
+
 }  
 
 void dilepbabymaker::SetEventLevelInfo ()
