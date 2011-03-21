@@ -89,7 +89,7 @@ enum EleSelectionType {
 	 ELENOTCONV_HITPATTERN,
 	 // < 1 missing hits
 	 ELENOTCONV_HITPATTERN_0MHITS,
-	 ELENOTCONV_HITPATTERN39X_0MHITS,
+	 //ELENOTCONV_HITPATTERN39X_0MHITS,
 	 //
 	 // eta cuts
 	 //
@@ -666,7 +666,8 @@ static const cuts_t electronSelection_wwV1_base  =
 //---------------------------------------------------------
 static const cuts_t electronSelection_wwV1_convrej  = 
 	 (1ll<<ELENOTCONV_DISTDCOT002) | 
-	 (1ll<<ELENOTCONV_HITPATTERN39X_0MHITS);
+       //(1ll<<ELENOTCONV_HITPATTERN39X_0MHITS);
+	 (1ll<<ELENOTCONV_HITPATTERN_0MHITS);
 
 //---------------------------------------------------------
 // WWV1 impact parameter cut
