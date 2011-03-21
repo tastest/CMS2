@@ -90,13 +90,13 @@ TCanvas* TagAndProbe(const char *savename, TCut evsel, TCut var1, TCut var2,
     cut_2TT.SetName(TString("2TT"));
     // TP means one leg is a tag and the other is a probe that passes the selection
     // Note: TP is exclusive from 2TT
-    TCut cut_TP_1 = (tag2 && probe1 && sel1 && evsel) && !cut_2TT;
-    TCut cut_TP_2 = (tag1 && probe2 && sel2 && evsel) && !cut_2TT;
+    TCut cut_TP_1 = (tag2 && probe1 && sel1 && evsel) && !(tag1) && evsel;
+    TCut cut_TP_2 = (tag1 && probe2 && sel2 && evsel) && !(tag2) && evsel;
     cut_TP_1.SetName(TString("TP_1"));
     cut_TP_2.SetName(TString("TP_2"));
     // TF means one lef is a tag and the other is a probe that fails the selection
-    TCut cut_TF_1 = (tag2 && probe1 && !sel1 && evsel) && !cut_2TT;
-    TCut cut_TF_2 = (tag1 && probe2 && !sel2 && evsel) && !cut_2TT;
+    TCut cut_TF_1 = (tag2 && probe1 && !sel1 && evsel) && !(tag1) && evsel;
+    TCut cut_TF_2 = (tag1 && probe2 && !sel2 && evsel) && !(tag2) && evsel;
     cut_TF_1.SetName(TString("TF_1"));
     cut_TF_2.SetName(TString("TF_2"));
 
@@ -183,13 +183,13 @@ TCanvas* TagAndProbe(const char *savename, TCut evsel, TCut var1, TCut var2,
     TH1F *h1_mc_numer = (TH1F*)h1_mc_denom->Clone();
     h1_mc_denom->Add(vh_mc_TF[0]);
 
-    TGraphAsymmErrors* gr_eff_data = new TGraphAsymmErrors();
+    TGraphAsymmErrors* gr_eff_data = new TGraphAsymmErrors(nbins);
     gr_eff_data->SetName(TString("gr_") + h1_data_denom->GetName());
     gr_eff_data->SetTitle(TString(savename));
     gr_eff_data->BayesDivide(h1_data_numer, h1_data_denom);
     gr_eff_data->SetMarkerColor(kRed);
 
-    TGraphAsymmErrors* gr_eff_mc = new TGraphAsymmErrors();
+    TGraphAsymmErrors* gr_eff_mc = new TGraphAsymmErrors(nbins);
     gr_eff_mc->SetName(TString("gr_") + h1_mc_denom->GetName());
     gr_eff_mc->SetTitle(TString(savename));
     gr_eff_mc->BayesDivide(h1_mc_numer, h1_mc_denom);
@@ -311,6 +311,7 @@ TCanvas* TriggerMonitor(const char *savename, TCut var, TCut sel, TCut trig, flo
     gr_eff->GetXaxis()->SetTitle(var.GetTitle());
     gr_eff->GetYaxis()->SetTitle("Efficiency");
     gr_eff->GetXaxis()->SetNdivisions(504);
+    gr_eff->GetYaxis()->SetRangeUser(0.10, 1.10);
  
     // draw the legend and tidy up
     c1->RedrawAxis();
