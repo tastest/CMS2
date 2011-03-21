@@ -246,22 +246,6 @@ bool electronId_smurf_v2(const unsigned int index)
   return false;
 }
 
-//
-// class based electron id that we have used before
-// this was optimised in the 2X series of CMSSW
-// and should be considered depracated
-//
-bool electronId_classBasedLoose(const unsigned int index)
-{
-    if (cms2.els_egamma_looseId()[index]) return true;
-    return false;
-}
-
-bool electronId_classBasedTight(const unsigned int index)
-{
-    if (cms2.els_egamma_tightId()[index]) return true;
-    return false;
-}
 
 //
 // class based id that is new/experimental

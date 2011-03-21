@@ -1031,12 +1031,6 @@ bool electronId_smurf_v2(const unsigned int index);
 bool electronId_cand(const unsigned int index, const cand_tightness tightness, bool applyAlignementCorrection = false, bool removedEtaCutInEndcap = false);
 bool electronId_extra(const unsigned int index);
 
-//
-// class based electron id that we have used before
-// e.g. Jim Branson V01
-//
-bool electronId_classBasedLoose(const unsigned int index);
-bool electronId_classBasedTight(const unsigned int index);
 
 //
 // "VBTF" id
