@@ -129,10 +129,18 @@ void makeGatherPlots(TString base, bool debug = false) {
     TCut c_notduplicate = ("! is_duplicate(run,evt,ls,pt1,pt2)");
     TCut c_datapresel = c_goodrunplus + c_notduplicate;
 
-    BabySample *bs_data = new BabySample("data", "data", 
-            base+"/data/Electron_Run2010B-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/baby_gather.root",
+    //BabySample *bs_data = new BabySample("data", "data", 
+    //        base+"/data/Electron_Run2010B-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/baby_gather.root",
+    //        c_datapresel, 1.0, DATA);
+    //bs_data->add(base+"/data/Mu_Run2010B-Nov4ReReco_v1_RECO/V03-06-17/diLepPt1020Skim/baby_gather.root");
+
+    BabySample *bs_data = new BabySample("data", "data",
+            base+"mc/ExpressPhysicsRun2011A-Express-v1FEVT/V04-00-08/baby_gather.root",
             c_datapresel, 1.0, DATA);
-    bs_data->add(base+"/data/Mu_Run2010B-Nov4ReReco_v1_RECO/V03-06-17/diLepPt1020Skim/baby_gather.root");
+  
+    //bs_data->add(base + "mc/ExpressPhysicsRun2011A-Express-v1FEVT/V04-00-08/baby_gather.root");
+
+  
 
     //
     // Define the mixtures of signals, background 
@@ -183,20 +191,24 @@ void makeGatherPlots(TString base, bool debug = false) {
     babyVectorSusy.push_back(bs_dilep_ttbar);
     babyVectorSusy.push_back(bs_dilep_tw);
     babyVectorSusy.push_back(bs_dilep_wjets);
-    babyVectorSusy.push_back(bs_data);
     babyVectorSusy.push_back(bs_dilep_lm0);
+    babyVectorSusy.push_back(bs_data);
 
     //
     // Luminosity determination
     //
     const char *goodrunlist = "../runlists/Cert_TopNov5_Merged_135821-149442_allPVT.txt";
-    float goodruns_lumi = 35.0;
+  float goodruns_lumi = 0.0;
+//  float goodruns_lumi = 35.0;
 
     std::cout << "[The Gathering] Determining luminosity" << std::endl;
     std::cout << "[The Gathering] " << goodrunlist << std::endl;
     set_goodrun_file(goodrunlist);
-    float est_lumi = GetIntLumi(bs_data, goodruns_lumi);
-    float est_newruns_lumi = est_lumi - goodruns_lumi;
+    float est_lumi = 7.5;//GetIntLumi(bs_data, goodruns_lumi);
+    float est_newruns_lumi = 7.5;// = est_lumi - goodruns_lumi;
+    //float est_lumi = GetIntLumi(bs_data, goodruns_lumi);
+    //float est_newruns_lumi = est_lumi - goodruns_lumi;
+
     std::cout << "[The Gathering] Estimated L = " << est_lumi << std::endl;
     std::cout << std::endl;
 
@@ -205,13 +217,15 @@ void makeGatherPlots(TString base, bool debug = false) {
     //
 
     if (debug) {
-        //makeGatherPlotsElectrons(babyVectorTP, est_lumi);
+        makeGatherPlotsElectrons(babyVectorTP, est_lumi);
         //makeGatherPlotsMuons(babyVectorTP, est_lumi);
-        makeGatherTriggerMonitor(babyVectorSM, est_lumi);
+        //makeGatherTriggerMonitor(babyVectorSM, est_lumi);
     }
     else {
-        makeGatherPlotsValidation(babyVectorSM, goodruns_lumi, est_newruns_lumi);
-        makeGatherTriggerMonitor(babyVectorSM, est_lumi);
+        //makeGatherPlotsElectrons(babyVectorTP, est_lumi);
+        //makeGatherPlotsMuons(babyVectorTP, est_lumi);
+        //makeGatherTriggerMonitor(babyVectorSM, est_lumi);
+        //makeGatherPlotsValidation(babyVectorSM, goodruns_lumi, est_newruns_lumi);
         makeGatherPlotsHiggs(babyVectorHiggs, est_lumi);
         makeGatherPlotsOS(babyVectorSusy, est_lumi);
         makeGatherPlotsZMet(babyVectorSusy, est_lumi);
