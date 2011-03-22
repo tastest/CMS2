@@ -64,6 +64,7 @@ bool cleaning_goodTracks();
 // checks whether a vertex is good or not
 //----------------------------------------------------------------
 bool isGoodVertex(size_t ivtx);
+bool isGoodDAVertex(size_t ivtx);
 
 //----------------------------------------------------------------
 // checks whether the leptons of a given
