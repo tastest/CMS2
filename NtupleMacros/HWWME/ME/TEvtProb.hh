@@ -27,6 +27,7 @@
 #include "TChain.h"
 #include "TH1D.h"
 #include "TFile.h"
+#include "TString.h"
 
 #include "TMCFM.hh"
 #include "TVar.hh"
@@ -78,30 +79,18 @@ public:
   void SetMatrixElement(TVar::MatrixElement tmp){ _matrixElement = tmp; }
   void SetHWWPhaseSpace(TVar::HWWPhaseSpace tmp){ _hwwPhaseSpace = tmp; }
   void SetMCHist(TVar::Process proc) {
-
-    TFile *feff = TFile::Open("../WW_MCUtil.root", "READ");
-    assert(feff);
+    std::cout << "TEvtProb::SetMCHist for process " << TVar::ProcessName(proc) << std::endl;
+    TFile *fUtil = TFile::Open("../Util.root", "READ");
+    assert(fUtil);
     gROOT->cd();
-    _effhist.els_eff_mc = (TH2F*) feff->Get("els_eff_mc")->Clone();
-    _effhist.mus_eff_mc = (TH2F*) feff->Get("mus_eff_mc")->Clone();
-    feff->Close();
-
-    TString ktFileName;
-    cout << TVar::ProcessName(proc) << "\t";
-    if(TVar::ProcessName(proc) == "HWW") ktFileName = "../ggH160_MCUtil.root";
-    if(TVar::ProcessName(proc) == "WW")  ktFileName = "../WW_MCUtil.root";
-    if(TVar::ProcessName(proc) == "Wp_1jet")  ktFileName = "../WW_MCUtil.root";
-    if(TVar::ProcessName(proc) == "Wm_1jet")  ktFileName = "../WW_MCUtil.root";
-    if(TVar::ProcessName(proc) == "ZZ")  ktFileName = "../ZZ_MCUtil.root";
-    if(TVar::ProcessName(proc) == "WZ")  ktFileName = "../ZZ_MCUtil.root";
-    std::cout << "TEvtProb::SetMCHist: ktFileName " << ktFileName << std::endl;
+    // lepton efficiencies are taken from the WW MC
+    _effhist.els_eff_mc = (TH2F*) fUtil->Get("WW_heleEff")->Clone();
+    _effhist.mus_eff_mc = (TH2F*) fUtil->Get("WW_hmuEff")->Clone();
+    // boosts are taken according to the process
+    _boosthist.kx = (TH1F*) fUtil->Get(TString(TVar::ProcessName(proc)+"_kx"))->Clone();
+    _boosthist.ky = (TH1F*) fUtil->Get(TString(TVar::ProcessName(proc)+"_ky"))->Clone();
+    fUtil->Close();
     
-    TFile *fkt = TFile::Open(ktFileName, "READ");
-    assert(fkt);
-    gROOT->cd();
-    _boosthist.kx = (TH1F*) fkt->Get("kx")->Clone();
-    _boosthist.ky = (TH1F*) fkt->Get("ky")->Clone();
-    fkt->Close();
   }
   
 

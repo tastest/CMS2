@@ -4,9 +4,10 @@
 //
 //   EventProb Module
 //
-// Jun 30 2007
-// Shih-Chieh Hsu
-// S. Jindariani
+// March 21 2011
+// S. Jindariani (sergo@fnal.gov)
+// Y. Gao (ygao@fnal.gov)
+// K. Burkett (burkett@fnal.gov)
 //-----------------------------------------------------------------------------
 
 #include "TEvtProb.hh"
@@ -64,8 +65,7 @@ void   TEvtProb::NeutrinoIntegrate(TVar::Process proc,
     Global_SmearLevel = _smearLevel;
     Global_Ncalls= _ncalls;
     Global_IsApplyFake=_isApplyFake;
-    TEvtProb::SetMCHist(proc);
-
+    
     //Initialize Process
     SetProcess(Global_process);
     My_choose(Global_process);
