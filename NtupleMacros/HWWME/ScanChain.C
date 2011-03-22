@@ -232,6 +232,13 @@ void ScanChain(const char* process, TChain *chain, TFile *utilFile_,  int nEvent
         if (accept){
 	  if(!realData) FillKtHist(TString(process), weight);
 	  FillNeededVariables(i_hyp);
+	  if (getHypothesisType(cms2.hyp_type()[i_hyp]) == ee ) 
+	    dilmass_ee_->Fill(cms2.hyp_p4().at(i_hyp).mass(), weight);
+	  if (getHypothesisType(cms2.hyp_type()[i_hyp]) == emu ) 
+	    dilmass_em_->Fill(cms2.hyp_p4().at(i_hyp).mass(), weight);
+	  if (getHypothesisType(cms2.hyp_type()[i_hyp]) == mumu ) 
+	    dilmass_mm_->Fill(cms2.hyp_p4().at(i_hyp).mass(), weight);
+	  
 	  eventCount[type]++;
 	  eventYield[type]+=weight;
 	  eventCount[all]++;
@@ -855,7 +862,7 @@ void FillKtHist(TString process, double weight) {
   // Currently only implemented for WW/HWW/WZ/ZZ
   LorentzVector systP4(0.,0.,0.,0.);
   for (unsigned int i = 6;  i < cms2.genps_id().size(); ++i) {
-    if (process=="WW" || process.Contains("ggH",TString::kExact)) {
+    if (process=="WW" || process.Contains("HWW",TString::kExact)) {
       if(TMath::Abs(cms2.genps_id().at(i)) == 24) 	systP4 += cms2.genps_p4().at(i);
     }
     else if (process=="WZ" || process == "ZZ") {
@@ -868,7 +875,7 @@ void FillKtHist(TString process, double weight) {
 
 bool isIdentified( TString process) {
   // std::cout << "ScanChain::isIdentified()"<<endl;
-  if(process == "WW" || process.Contains("ggH", TString::kExact)) 
+  if(process == "WW" || process.Contains("HWW", TString::kExact)) 
     return getVVType()==0;
   else  if (process == "WZ")       return getVVType()==1;
   else  if (process == "ZZ")       return getVVType()==2;

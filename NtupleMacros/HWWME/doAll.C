@@ -33,13 +33,13 @@ int doAll() {
   bool runData  = 0;
   
   if (runHWW160)
-    ProcessSample("ggH160", "data/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/*.root", utilFile,  -1 ,Lumi, 0.8664429*4.0/9.0, -1); 
+    ProcessSample("HWW160", "data/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/*.root", utilFile,  -1 ,Lumi, 0.8664429*4.0/9.0, -1); 
   
   if (runHWW130)
-    ProcessSample("ggH130","data/GluGluToHToWWTo2L2Nu_M-130_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/*.root", utilFile,  -1 ,Lumi, 0.4520899*4.0/9.0, -1); 
+    ProcessSample("HWW130","data/GluGluToHToWWTo2L2Nu_M-130_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/*.root", utilFile,  -1 ,Lumi, 0.4520899*4.0/9.0, -1); 
   
   if (runHWW200) 
-    ProcessSample("ggH200","data/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/*.root", utilFile,  -1 ,Lumi, 0.4083049*4.0/9.0, -1); 
+    ProcessSample("HWW200","data/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/*.root", utilFile,  -1 ,Lumi, 0.4083049*4.0/9.0, -1); 
 
   if (runWW) {
     //ch->Add("data/WWTo2L2Nu_TuneZ2_7TeV-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-14/merged*.root");
