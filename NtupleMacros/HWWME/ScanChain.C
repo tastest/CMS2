@@ -15,6 +15,10 @@
 #include "TDirectory.h"
 #include "TROOT.h"
 #include "TDatabasePDG.h"
+#include "TFile.h"
+#include "TH2F.h"
+#include "TH1F.h"
+#include "TAxis.h"
 
 // CMS2
 #include "branches.h"
@@ -24,6 +28,7 @@
 #include "CORE/electronSelectionsParameters.cc"
 #include "CORE/muonSelections.cc"
 #include "CORE/jetSelections.cc"
+#include "CORE/mcSelections.cc"
 #include "MCUtil.h"
 
 // ME related
@@ -92,18 +97,13 @@ void progress( int nEventsTotal, int nEventsChain ){
   }
 }
 
-void ScanChain(std::string process, TChain *chain,  int nEvents = -1, double IntLumi=100, double Xsect=1.0, int nProcessedEvents=-1, std::string skimFilePrefix="", bool realData=false, bool identifyEvents=false){
+void ScanChain(const char* process, TChain *chain, TFile *utilFile_,  int nEvents = -1, double IntLumi=100, double Xsect=1.0, int nProcessedEvents=-1, std::string skimFilePrefix="", bool realData=false, bool identifyEvents=false){
 
   _cutWord = new TBitSet(kNCuts);
 
   _cutMask = new TBitSet(kNCuts);
   _cutMask->SetAll();
   //_cutMask->SetFalse(kcut_zsel);
-
-  // Example Histograms
-  TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
-  TH1F *samplehisto = new TH1F("samplehisto", "Example histogram", 200,0,200);
-  samplehisto->SetDirectory(rootdir);
 
   already_seen.clear();
 
@@ -151,7 +151,7 @@ void ScanChain(std::string process, TChain *chain,  int nEvents = -1, double Int
   unsigned int nEventsChain = nEvents;
   unsigned int nEventsTotal = 0;
   InitSkimmedTree(process);
-  if(!realData) InitMCUtilHist(process);
+  if(!realData) InitMCUtilHist(process, utilFile_);
 
   TObjArray *listOfFiles = chain->GetListOfFiles();
   TIter fileIter(listOfFiles);
@@ -169,7 +169,7 @@ void ScanChain(std::string process, TChain *chain,  int nEvents = -1, double Int
     for( unsigned int event = 0; event < nEvents; ++event) {
     
       // Get Event Content
-      cms2.GetEntry(event);	
+      cms2.GetEntry(event);
       
       // identifyEvents by MC truth
       if ( !realData && identifyEvents ){
@@ -270,12 +270,20 @@ void ScanChain(std::string process, TChain *chain,  int nEvents = -1, double Int
 
   outGlobalTree_->Fill();
 
+  // std::cout << "tree is filled..." << std::endl;
+  // std::cout << "listing utilFile_" << std::endl;
+  // utilFile_->ls();
+
   outFile_->cd();
   outTree_->Write();
   outGlobalTree_->Write();
   outFile_->Close();
   
-  if(!realData) saveMCUtilOutput();
+  // std::cout << "outFile_ is now closed" << std::endl;
+  // std::cout << "now listing utilFile_ again" << std::endl;
+  // utilFile_->ls();
+
+  if(!realData) saveMCUtilOutput(utilFile_);
   
   //  samplehisto->Draw();
   
@@ -803,6 +811,7 @@ bool defaultBTag(int type, unsigned int iJet){
 void FillEffHist(TString process, double weight) {
   
   if(!isIdentified(process)) return;
+  // if(process != "WW") return;
   
   // Fill the lepton efficiency histograms
   for (unsigned int i = 6;  i < cms2.genps_id().size(); ++i) {
@@ -811,209 +820,77 @@ void FillEffHist(TString process, double weight) {
     if (TMath::Abs(cms2.genps_id_mother().at(i)) != 24 && cms2.genps_id_mother().at(i) != 23) continue;
     // ==== Electron Efficiency
     if(TMath::Abs(cms2.genps_id().at(i)) == 11) {
-      els_denom_mc->Fill(cms2.genps_p4().at(i).eta(),cms2.genps_p4().at(i).pt());
-      els_denom_mc_eta->Fill(cms2.genps_p4().at(i).eta());
-      els_denom_mc_pt->Fill(cms2.genps_p4().at(i).pt());
+      els_denom_mc_->Fill(cms2.genps_p4().at(i).eta(),cms2.genps_p4().at(i).pt());
+      els_denom_mc_eta_->Fill(cms2.genps_p4().at(i).eta());
+      els_denom_mc_pt_->Fill(cms2.genps_p4().at(i).pt());
       
       for(int i_els=0;i_els<cms2.els_charge().size();++i_els) {
 	if( goodElectronIsolated(i_els) && cms2.els_mc3idx().at(i_els) == i) {
-	  els_numer_mc->Fill(cms2.genps_p4().at(i).eta(),cms2.genps_p4().at(i).pt());
-	  els_numer_mc_eta->Fill(cms2.genps_p4().at(i).eta());
-	  els_numer_mc_pt->Fill(cms2.genps_p4().at(i).pt());
+	  els_numer_mc_->Fill(cms2.genps_p4().at(i).eta(),cms2.genps_p4().at(i).pt());
+	  els_numer_mc_eta_->Fill(cms2.genps_p4().at(i).eta());
+	  els_numer_mc_pt_->Fill(cms2.genps_p4().at(i).pt());
 	}
       }
     }    // ==== End of Electron Efficiency
     // ==== Muon Efficiency
     if(TMath::Abs(cms2.genps_id().at(i)) == 13) {
-      mus_denom_mc->Fill(cms2.genps_p4().at(i).eta(),cms2.genps_p4().at(i).pt());
-      mus_denom_mc_eta->Fill(cms2.genps_p4().at(i).eta());
-      mus_denom_mc_pt->Fill(cms2.genps_p4().at(i).pt());
+      mus_denom_mc_->Fill(cms2.genps_p4().at(i).eta(),cms2.genps_p4().at(i).pt());
+      mus_denom_mc_eta_->Fill(cms2.genps_p4().at(i).eta());
+      mus_denom_mc_pt_->Fill(cms2.genps_p4().at(i).pt());
       
       for(int i_mus=0;i_mus<cms2.mus_charge().size();++i_mus) {
 	if( goodMuonIsolated(i_mus) && cms2.mus_mc3idx().at(i_mus) == i) {
-	  mus_numer_mc->Fill(cms2.genps_p4().at(i).eta(),cms2.genps_p4().at(i).pt());
-	  mus_numer_mc_eta->Fill(cms2.genps_p4().at(i).eta());
-	  mus_numer_mc_pt->Fill(cms2.genps_p4().at(i).pt());
+	  mus_numer_mc_->Fill(cms2.genps_p4().at(i).eta(),cms2.genps_p4().at(i).pt());
+	  mus_numer_mc_eta_->Fill(cms2.genps_p4().at(i).eta());
+	  mus_numer_mc_pt_->Fill(cms2.genps_p4().at(i).pt());
 	}
       }
-    }   // ==== End of Electron Efficiency
+    }   // ==== End of Muon Efficiency
   }
+  // cout << "ScanChain:: " << __LINE__ << " els_denom_mc_pt->GetBinContent(10) =  " <<  els_denom_mc_pt->GetBinContent(10)  << endl;
+  
 }
 void FillKtHist(TString process, double weight) {
-  if(!isIdentified(process)) return;
+  // if(!isIdentified(process)) return;
   // Currently only implemented for WW/HWW/WZ/ZZ
   LorentzVector systP4(0.,0.,0.,0.);
   for (unsigned int i = 6;  i < cms2.genps_id().size(); ++i) {
     if (process=="WW" || process.Contains("ggH",TString::kExact)) {
       if(TMath::Abs(cms2.genps_id().at(i)) == 24) 	systP4 += cms2.genps_p4().at(i);
-      
-      if(TMath::Abs(cms2.genps_id().at(i)) ==  12 && cms2.genps_status().at(i) == 3 && TMath::Abs(cms2.genps_id_mother().at(i)) == 24) {
-	nux->Fill(cms2.genps_p4().at(i).Px(), weight);
-	nuy->Fill(cms2.genps_p4().at(i).Py(), weight);
-	nuz->Fill(cms2.genps_p4().at(i).Pz(), weight);
-      }
-      
     }
-    
-    if (process=="WZ" || process == "ZZ") {
+    else if (process=="WZ" || process == "ZZ") {
       if(TMath::Abs(cms2.genps_id().at(i)) == 24 || cms2.genps_id().at(i) == 23 ) systP4 += cms2.genps_p4().at(i);
     }
   }
-  
-  kx->Fill(systP4.Px(), weight);
-  ky->Fill(systP4.Py(), weight);
-  kt->Fill(systP4.Pt(), weight);
+  kx_->Fill(systP4.Px(), weight);
+  ky_->Fill(systP4.Py(), weight);
 }
 
-// Identify the events by MC truth
-// hard copied from doAnalysis.cc 
-
-unsigned int getVVType() {
-  // types:
-  //   0 - WW
-  //   1 - WZ
-  //   2 - ZZ
-
-  unsigned int nZ(0);
-  unsigned int nW(0);
-  std::vector<std::vector<int> > leptons;
-  std::vector<int> mothers;
-
-  bool verbose = false;
-
-  for (unsigned int i = 0; i < cms2.genps_id().size(); ++i) {
-    if (cms2.genps_status()[i] != 3 || cms2.genps_id_mother()[i] == 21212 ) continue;
-    int pid = cms2.genps_id().at(i);
-    int mid = cms2.genps_id_mother().at(i);
-    if ( verbose ) std::cout << "Gen particle id: " << pid << ",\t mother id: " << mid <<std::endl;
-    if ( abs(pid)<11 || abs(pid)>16 ) continue;
-    if ( mid == 23 ) ++nZ;
-    if ( abs(mid) == 24 ) ++nW;
-    // now we need to really understand the pattern.
-    unsigned int mIndex = 0;
-    while ( mIndex < mothers.size() && mid != mothers[mIndex] ) ++mIndex;
-    if ( mIndex == mothers.size() ) {
-      mothers.push_back(mid);
-      leptons.push_back(std::vector<int>());
-    }
-    leptons[mIndex].push_back(pid);
-    if (mothers.size()>3){
-      if (verbose) std::cout << "WARNING: failed to identify event (too many mothers)" << std::endl;
-      return 999;
-    }
-  }
-
-  if ( nZ == 4 ) {
-    if ( verbose ) std::cout << "Event type ZZ" << std::endl;
-    return 2;
-  }
-  if ( nW == 4 ) {
-    if ( verbose ) std::cout << "Event type WW" << std::endl;
-    return 0;
-  }
-  if ( nW == 2 && nZ == 2 ) {
-    if ( verbose ) std::cout << "Event type WZ" << std::endl;
-    return 1;
-  }
-  unsigned int nNus(0);
-  for ( unsigned int i=0; i<mothers.size(); ++i ){
-      nNus += leptons[i].size();
-  }
-  if ( mothers.size() < 3 && nNus == 4){
-    for ( unsigned int i=0; i<mothers.size(); ++i ){
-      if ( mothers[i] != 23 && abs(mothers[i]) != 24 ){
-	if( leptons[i].size() != 2 && leptons[i].size() != 4){
-	  if (verbose) std::cout << "WARNING: failed to identify event (unexpected number of daughters)" << std::endl;
-	  if (verbose) std::cout << "\tnumber of daughters for first mother: " <<  leptons[0].size() << std::endl;
-	  if (verbose) std::cout << "\tnumber of daughters for second mother: " <<  leptons[1].size() << std::endl;
-	  return 999;
-	}
-	if ( abs(leptons[i][0]) == abs(leptons[i][1]) )
-	  nZ += 2;
-	else
-	  nW += 2;
-	if ( leptons[i].size()==4 ){
-	  // now it's a wild guess, it's fraction should be small
-	  if ( abs(leptons[i][2]) == abs(leptons[i][3]) )
-	    nZ += 2;
-	  else
-	    nW += 2;
-	}
-      }
-    }
-  } else {
-    // here be dragons
-    
-    // if we have 2 leptons and 3 neutrinos and they all of the same
-    // generation, we assume it's ZZ (can be WZ also), but if
-    // neutrinos are from different generations, than we conclude it's
-    // WZ. 
-    
-    std::set<int> nus;
-    for ( unsigned int i=0; i<mothers.size(); ++i )
-      for ( unsigned int j=0; j<leptons[i].size(); ++j ) 
-	if ( abs(leptons[i][j]) == 12 ||
-	     abs(leptons[i][j]) == 14 ||
-	     abs(leptons[i][j]) == 16 )
-	  nus.insert(abs(leptons[i][j]));
-    
-    if ( nNus == 5 ){
-      if ( nus.size() == 1 ) return 2;
-      if ( nus.size() == 2 ) return 1;
-    }
-    
-    if ( verbose ) std::cout << "WARNING: failed to identify event" << std::endl;
-    return 999;
-  }
-
-  if ( nZ+nW != 4 ){
-    if (verbose) std::cout << "WARNING: failed to identify event (wrong number of bosons)" << std::endl;
-    if (verbose) std::cout << "\tfirst mother id: " << mothers[0] << std::endl;
-    if (verbose) std::cout << "\tsecond mother id: " << mothers[1] << std::endl;
-    if (verbose) std::cout << "\tnumber of daughters for first mother: " << leptons[0].size() << std::endl;
-    if (verbose) std::cout << "\tnumber of daughters for second mother: " << leptons[1].size() << std::endl;
-    if (verbose) std::cout << "\tnumber of Zs: " << nZ << std::endl;
-    if (verbose) std::cout << "\tnumber of Ws: " << nW << std::endl;
-    return 999;
-  }
-
-  if ( nZ == 4 ) {
-    if ( verbose ) std::cout << "Event type ZZ" << std::endl;
-    return 2;
-  }
-  if ( nW == 4 ) {
-    if ( verbose ) std::cout << "Event type WW" << std::endl;
-    return 0;
-  }
-  // this covers screws in logic, i.e. most hard to identify events end up being WZ
-  if ( verbose ) std::cout << "Event type WZ (can be wrong)" << std::endl;
-  return 1;
-}
-
-  
 bool isIdentified( TString process) {
+  // std::cout << "ScanChain::isIdentified()"<<endl;
   if(process == "WW" || process.Contains("ggH", TString::kExact)) 
     return getVVType()==0;
   else  if (process == "WZ")       return getVVType()==1;
   else  if (process == "ZZ")       return getVVType()==2;
-  else  return false;
+  else  return true;
 }
 
 
 
-void ProcessSample(std::string process, std::vector<std::string> file_patterns, int nEvents = -1, double IntLumi=100, double Xsect=1.0, int nProcessedEvents=-1, std::string skimFilePrefix="", bool realData=false, bool identifyEvents=false){
+void ProcessSample(const char *process, std::vector<std::string> file_patterns, TFile *utilFile_,  int nEvents = -1, double IntLumi=100, double Xsect=1.0, int nProcessedEvents=-1, std::string skimFilePrefix="", bool realData=false, bool identifyEvents=false){
 
   TChain *tchain = new TChain("Events");
   for ( std::vector<std::string>::const_iterator pattern = file_patterns.begin();
 	pattern != file_patterns.end(); ++pattern )
     tchain->Add(pattern->c_str());
   
-  ScanChain(process, tchain, nEvents, IntLumi, Xsect, nProcessedEvents, skimFilePrefix, realData, identifyEvents);
+  ScanChain(process, tchain, utilFile_, nEvents, IntLumi, Xsect, nProcessedEvents, skimFilePrefix, realData, identifyEvents);
 
 }
 
-void ProcessSample(std::string process, std::string file_pattern, int nEvents = -1, double IntLumi=100, double Xsect=1.0, int nProcessedEvents=-1, std::string skimFilePrefix="", bool realData=false, bool identifyEvents=false){
+void ProcessSample(const char* process, std::string file_pattern, TFile *utilFile_, int nEvents = -1, double IntLumi=100, double Xsect=1.0, int nProcessedEvents=-1, std::string skimFilePrefix="", bool realData=false, bool identifyEvents=false){
   std::vector<std::string> vec;
   vec.push_back(file_pattern);
-  ProcessSample(process, vec, nEvents, IntLumi, Xsect, nProcessedEvents, skimFilePrefix, realData, identifyEvents);
+  ProcessSample(process, vec, utilFile_, nEvents, IntLumi, Xsect, nProcessedEvents, skimFilePrefix, realData, identifyEvents);
 }
+
