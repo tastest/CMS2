@@ -121,7 +121,7 @@ void   TEvtProb::NeutrinoIntegrate(TVar::Process proc,
     }
     
     *Xsec = sumW/count_PS;
-    cout << "TEvtProb:: count_PS = " << count_PS << "; _ncalls = " << _ncalls << endl;
+    //    cout << "TEvtProb:: count_PS = " << count_PS << "; _ncalls = " << _ncalls << endl;
     
     *XsecErr = sumW2/count_PS-sumW/count_PS*sumW/count_PS;
     if(*XsecErr>0.0) *XsecErr = sqrt(*XsecErr/count_PS);
