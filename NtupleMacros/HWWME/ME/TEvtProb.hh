@@ -78,7 +78,7 @@ public:
   void SetProcess(TVar::Process tmp) { _process = tmp; }
   void SetMatrixElement(TVar::MatrixElement tmp){ _matrixElement = tmp; }
   void SetHWWPhaseSpace(TVar::HWWPhaseSpace tmp){ _hwwPhaseSpace = tmp; }
-  void SetMCHist(TVar::Process proc) {
+  void SetMCHist(int proc) {
     std::cout << "TEvtProb::SetMCHist for process " << TVar::ProcessName(proc) << std::endl;
     TFile *fUtil = TFile::Open("../Util.root", "READ");
     assert(fUtil);
