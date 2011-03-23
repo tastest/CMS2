@@ -4,7 +4,7 @@ int doAll() {
 
   gROOT->ProcessLine(".L TBitSet.cc+");
   gROOT->ProcessLine(".L ScanChain.C+");
-  gROOT->ProcessLine(".L ../Tools/MiniFWLite/libMiniFWLite.so");
+  // gROOT->ProcessLine(".L ../Tools/MiniFWLite/libMiniFWLite.so");
 
   using namespace std;
  
