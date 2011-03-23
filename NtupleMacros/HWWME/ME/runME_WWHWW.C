@@ -143,6 +143,7 @@ void NeutrinoIntegration(int process,TString inputFileName,int seed, int SmearLe
     Xcal2.SetSeed(seed);
     Xcal2.SetMatrixElement(TVar::MCFM);
     Xcal2.SetNcalls(ncalls);
+    
 
     cout <<"Integration Seed= "<< Xcal2._seed << " SmearLevel= "<< Xcal2._smearLevel << " Ncalls = " << Xcal2._ncalls <<  endl;  
 
@@ -263,7 +264,7 @@ void NeutrinoIntegration(int process,TString inputFileName,int seed, int SmearLe
 	
 	ProcInt=processList[iproc];
 	Xcal2.SetNcalls(ncalls);
-	
+	Xcal2.SetMCHist(ProcInt); 
 	
 	printf(" Calculate Evt %4i Run %9i Evt %8i Proc %4i %s Lep %4i %4i\n", ievt, runNumber, eventNumber, ProcIdx, TVar::ProcessName(ProcIdx).Data(),lep1_Type,lep2_Type);
 	
@@ -287,8 +288,7 @@ void NeutrinoIntegration(int process,TString inputFileName,int seed, int SmearLe
       int l2 = TVar::HWW160;
       
       for(i = l1; i<=l2; i++){
-
-
+	Xcal2.SetMCHist(i);     
 	InitializeYields(TVar::ProcessName(i).Data());
 	CalculateAcceptance();
 	int HiggsMASS;
