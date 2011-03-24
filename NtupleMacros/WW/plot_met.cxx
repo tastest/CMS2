@@ -1,46 +1,47 @@
 {
-  f = TFile::Open("processed_data_tag.root");
+  f = TFile::Open("processed_data.root");
   gROOT->ProcessLine(".L tdrstyle.C");
   setTDRStyle();
   //  gROOT->SetStyle("Plain");
   c1 = new TCanvas("c1","c1",500,500);
   s = new THStack("s","");
+  unsigned int nRebin = 1;
   
-  ttbar_hmet_all->Rebin(10);
+  ttbar_hmet_all->Rebin(nRebin);
   ttbar_hmet_all->SetFillColor(kMagenta);
   ttbar_hmet_all->SetLineColor(kBlack);
   ttbar_hmet_all->SetMarkerColor(kBlack);
   tw_hmet_all = (TH1F*)f->Get("tw_hmet_all");
-  tw_hmet_all->Rebin(10);
+  tw_hmet_all->Rebin(nRebin);
   ttbar_hmet_all->Add(tw_hmet_all);
   s->Add(ttbar_hmet_all);
   
-  dytt_hmet_all->Rebin(10);
+  dytt_hmet_all->Rebin(nRebin);
   dyee_hmet_all = (TH1F*)f->Get("dyee_hmet_all");
-  dyee_hmet_all->Rebin(10);
+  dyee_hmet_all->Rebin(nRebin);
   dytt_hmet_all->Add(dyee_hmet_all);
   dymm_hmet_all = (TH1F*)f->Get("dymm_hmet_all");
-  dymm_hmet_all->Rebin(10);
+  dymm_hmet_all->Rebin(nRebin);
   dytt_hmet_all->Add(dymm_hmet_all);
   dytt_hmet_all->SetFillColor(kBlack);
   s->Add(dytt_hmet_all);
   
-  wz_hmet_all->Rebin(10);
+  wz_hmet_all->Rebin(nRebin);
   zz_hmet_all = (TH1F*)f->Get("zz_hmet_all");
-  zz_hmet_all->Rebin(10);
+  zz_hmet_all->Rebin(nRebin);
   wz_hmet_all->Add(zz_hmet_all);
   wz_hmet_all->SetFillColor(kBlue);
   wz_hmet_all->SetMarkerColor(kBlack);
   wz_hmet_all->SetLineColor(kBlack);
   s->Add(wz_hmet_all);
 
-  wjets_hmet_all->Rebin(10);
+  wjets_hmet_all->Rebin(nRebin);
   wjets_hmet_all->SetFillColor(kGray);
   wjets_hmet_all->SetMarkerColor(kBlack);
   wjets_hmet_all->SetLineColor(kBlack);
   s->Add(wjets_hmet_all);
     
-  ww_hmet_all->Rebin(10);
+  ww_hmet_all->Rebin(nRebin);
   ww_hmet_all->SetFillColor(kRed);
   ww_hmet_all->SetLineColor(kBlack);
   s->Add(ww_hmet_all);
