@@ -31,6 +31,12 @@ void makeGatherPlotsValidation(const std::vector<BabySample*> &babyVector, const
     // mass in new and goodruns
     DrawAll("mass", "validation_mass_goodruns_ee", validation_ee+validation_goodrun, goodruns_lumi, 50,0., 200., 0, babyVector);
     DrawAll("mass", "validation_mass_newruns_ee", validation_ee+validation_newrun, est_newruns_lumi, 50,0., 200., 0, babyVector);
+
+    DrawAll("mass", "validation_mass_newruns_EBEB_ee", validation_ee+validation_newrun+"abs(eta1) < 1.5 && abs(eta2) < 1.5", est_newruns_lumi, 50,0., 200., 0, babyVector);
+    DrawAll("mass", "validation_mass_newruns_EBEE_ee", validation_ee+validation_newrun+"(abs(eta1) > 1.5 && abs(eta2) < 1.5) || (abs(eta1) < 1.5 && abs(eta2) > 1.5)", est_newruns_lumi, 50,0., 200., 0, babyVector);
+    DrawAll("mass", "validation_mass_newruns_EEEE_ee", validation_ee+validation_newrun+"abs(eta1) > 1.5 && abs(eta2) > 1.5", est_newruns_lumi, 50,0., 200., 0, babyVector);
+
+
     DrawAll("mass", "validation_mass_goodruns_mm", validation_mm+validation_goodrun, goodruns_lumi, 50,0., 200., 0, babyVector);
     DrawAll("mass", "validation_mass_newruns_mm", validation_mm+validation_newrun, est_newruns_lumi, 50,0., 200., 0, babyVector);
 
