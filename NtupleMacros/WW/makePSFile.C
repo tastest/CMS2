@@ -44,7 +44,15 @@ void makePSFile(const TString dataFName,
   hist::loadHist(dataFName.Data(), 0, "*_hmet_*");
   hist::loadHist(dataFName.Data(), 0, "*_hmetProj_*");
   hist::loadHist(dataFName.Data(), 0, "*_hdilMass_*");
+  hist::loadHist(dataFName.Data(), 0, "*_hmaxLepPt_*");
+  hist::loadHist(dataFName.Data(), 0, "*_hminLepPt_*");
+  hist::loadHist(dataFName.Data(), 0, "*_hdphiLep_*");
 
+  hist::rebin("*_hmet_*",2);
+  hist::rebin("*_hmetProj_*",2);
+  hist::rebin("*_hmaxLepPt_*",10);
+  hist::rebin("*_hminLepPt_*",10);
+  hist::rebin("*_hdphiLep_*",8);
   /*
   hist::scale("ww_*", scaleMC);     
   hist::scale("dyee_*", scaleMC);     
