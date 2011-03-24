@@ -1515,7 +1515,8 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
       cms2.hyp_p4()[i_hyp].mass() < 12) return false;
 
   // check electron isolation and id (no selection at this point)
-  
+  // checkIsolation(i_hyp, weight);
+
   cuts_t cuts_passed = 0;
   
   // == Z mass veto using hyp_leptons for ee and mumu final states
