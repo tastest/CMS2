@@ -140,12 +140,6 @@ bool isIdentified( enum Sample sample );
 
 void checkIsolation(int i_hyp, double weight);
 
-class RooDataSet;
-void getIsolationSidebandsAfterSelections(int i_hyp, 
-					  double weight, 
-					  RooDataSet* dataset, 
-					  bool passedAllLeptonRequirements);
-
 void find_leading_genjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & genJetMax);
 void find_leading_jptjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & jptMax, int &jptMaxIndex);
 void find_leading_calojet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & caloJetMax);
@@ -157,22 +151,19 @@ void fill_val_plots(int i_hyp, cuts_t cuts_passed, double weight);
 void fill_dyest_histograms(int i_hyp, float weight);
 				
 unsigned int bestZHyp();
-bool hypo (int i_hyp, double weight, RooDataSet* dataset = 0, bool zStudy = false, bool realData = false ); 
+bool hypo (int i_hyp, double weight, bool zStudy = false, bool realData = false ); 
 
-RooDataSet* MakeNewDataset(const char* name);
-
-void AddIsoSignalControlSample( int i_hyp, double weight, RooDataSet* dataset = 0, bool realData = false );
 class TChain;
-RooDataSet* ScanChain( TChain* chain, 
-		       Sample sample, 
-		       double integratedLumi,
-		       double xsec,
-		       int nProcessedEvents,
-		       bool identifyEvents,
-		       bool qcdBackground = false,
-		       bool zStudy = false,
-		       bool realData = false,
-		       TString cms2_json_file = "");
+void ScanChain( TChain* chain, 
+	   Sample sample, 
+	   double integratedLumi,
+	   double xsec,
+	   int nProcessedEvents,
+	   bool identifyEvents,
+	   bool qcdBackground = false,
+	   bool zStudy = false,
+	   bool realData = false,
+	   TString cms2_json_file = "");
 void SkimChain(TChain* chain, bool mergeFiles=false);
 bool passedSkimSelection();
 
@@ -181,7 +172,6 @@ void ProcessSample( std::string file_pattern,
 		    double integratedLumi,
 		    double xsec,
 		    int nProcessedEvents,
-		    RooDataSet* output_dataset, 
 		    Color_t color, 
 		    bool identifyEvents = false,
 		    bool qcdBackground = false,
@@ -193,7 +183,6 @@ void ProcessSample( std::vector<std::string> file_patterns,
 		    double integratedLumi,
 		    double xsec,
 		    int nProcessedEvents,
-		    RooDataSet* output_dataset, 
 		    Color_t color, 
 		    bool identifyEvents = false,
 		    bool qcdBackground = false,

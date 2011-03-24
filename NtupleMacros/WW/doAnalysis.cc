@@ -1,3 +1,4 @@
+const char* config_info = "WW2010 selection; JetVeto 30; 20/10; Winter10 FlatPU samples";
 //now make the source file
 #include "doAnalysis.h"
 #include <algorithm>
@@ -18,14 +19,12 @@
 #include "TRegexp.h"
 #include "TLorentzVector.h"
 #include "TDatabasePDG.h"
-#include "RooDataSet.h"
-#include "RooRealVar.h"
-#include "RooCategory.h"
 #include "Math/VectorUtil.h"
 #include "TSystem.h"
 #include "TPRegexp.h"
 #include "monitor.h"
 #include "../Tools/goodrun.cc"
+#include "../../../Smurf/Core/SmurfTree.h"
 using namespace std;
 
 #ifndef __CINT__
@@ -59,7 +58,7 @@ cuts_t pass_all = (1<<PASS_ZVETO) | (1<<PASS_MET) | (1<<PASS_JETVETO) | (1<<PASS
  (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO) | (1<<PASS_TOPVETO);
 
 bool applyJEC = true;
-bool lockToCoreSelectors = true;
+bool lockToCoreSelectors = false;
 
 std::vector<std::string> jetcorr_filenames_jpt;
 FactorizedJetCorrector *jet_corrector_jpt;
@@ -1016,104 +1015,6 @@ void checkIsolation(int i_hyp, double weight){
   }
 }
 
-void getIsolationSidebandsAfterSelections(int i_hyp, double weight, RooDataSet* dataset, bool passedAllLeptonRequirements){
-  HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
-  RooArgSet set( *(dataset->get()) );
-  set.setCatIndex("selected",passedAllLeptonRequirements?1:0);
-  set.setRealValue("event",cms2.evt_event());
-  set.setRealValue("run",cms2.evt_run());
-  set.setRealValue("lumi",cms2.evt_lumiBlock());
-  set.setCatLabel("sample_type","data_relaxed_iso");
-
-  // aTGC
-  set.setRealValue("dilpt",cms2.hyp_p4()[i_hyp].pt());
-  set.setRealValue("mass",cms2.hyp_p4()[i_hyp].mass2() > 0 ? cms2.hyp_p4()[i_hyp].mass() : TMath::Sqrt(-1.*cms2.hyp_p4()[i_hyp].mass2()));
-  set.setRealValue("pt1",TMath::Max(cms2.hyp_lt_p4()[i_hyp].pt(),cms2.hyp_ll_p4()[i_hyp].pt()));
-  set.setRealValue("pt2",TMath::Min(cms2.hyp_lt_p4()[i_hyp].pt(),cms2.hyp_ll_p4()[i_hyp].pt()));
-
-  double dphi = fabs(cms2.hyp_lt_p4()[i_hyp].phi() - cms2.hyp_ll_p4()[i_hyp].phi());
-  if (dphi > TMath::Pi()) dphi = TMath::TwoPi() - dphi;
-  set.setRealValue("dphi",dphi);
-
-  set.setRealValue("deta",fabs(cms2.hyp_lt_p4()[i_hyp].eta() - cms2.hyp_ll_p4()[i_hyp].eta()));
-  set.setRealValue("met",metValue());
-  //set.setRealValue("lambdaz",cms2.atgc_lambdaz());
-  //set.setRealValue("deltag1z",cms2.atgc_deltag1z());
-  //set.setRealValue("deltakg",cms2.atgc_deltakg());
-
-  set.setRealValue("unique",1);
-  dataset->add(set,weight);
-  // anything after this is not new
-  set.setRealValue("unique",0);
-  
-  // em case
-  if ( type == EM ){
-    unsigned int imu = cms2.hyp_lt_index()[i_hyp];
-    unsigned int iel = cms2.hyp_ll_index()[i_hyp];
-    if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp])==11 ){
-      imu = cms2.hyp_ll_index()[i_hyp];
-      iel = cms2.hyp_lt_index()[i_hyp];
-    }
-    if ( goodElectronWithoutIsolation(iel) && 
-	 goodMuonIsolated(imu) ) {
-      hElRelIso[type]->Fill( ww_elIsoVal(iel), weight );
-      set.setCatLabel("hyp_type","em");
-      set.setCatLabel("fake_type","electron");
-      set.setRealValue("iso", ww_elIsoVal(iel) );
-      dataset->add(set,weight);
-    
-    }
-    if ( goodElectronIsolated(iel) && goodMuonWithoutIsolation(imu) ) {
-      hMuRelIso[type]->Fill( ww_muIsoVal(imu), weight );
-      set.setCatLabel("hyp_type","em");
-      set.setCatLabel("fake_type","muon");
-      set.setRealValue("iso",ww_muIsoVal(imu));
-      dataset->add(set,weight);
-    }
-  }
-
-  // mm case
-  if ( type == MM ){
-    unsigned int imu1 = cms2.hyp_lt_index()[i_hyp];
-    unsigned int imu2 = cms2.hyp_ll_index()[i_hyp];
-    if ( goodMuonWithoutIsolation(imu1) && goodMuonIsolated(imu2) ) {
-      hMuRelIso[type]->Fill( ww_muIsoVal(imu1), weight );
-      set.setCatLabel("hyp_type","mm");
-      set.setCatLabel("fake_type","muon");
-      set.setRealValue("iso",ww_muIsoVal(imu1));
-      dataset->add(set,weight);
-    }
-    if ( goodMuonIsolated(imu1) && goodMuonWithoutIsolation(imu2) ) {
-      hMuRelIso[type]->Fill( ww_muIsoVal(imu2), weight );
-      set.setCatLabel("hyp_type","mm");
-      set.setCatLabel("fake_type","muon");
-      set.setRealValue("iso",ww_muIsoVal(imu2));
-      dataset->add(set,weight);
-    }
-  }
-
-  // ee case
-  if ( type == EE){
-    unsigned int iel1 = cms2.hyp_lt_index()[i_hyp];
-    unsigned int iel2 = cms2.hyp_ll_index()[i_hyp];
-    if ( goodElectronWithoutIsolation(iel1) && goodElectronIsolated(iel2) ) {
-      hElRelIso[type]->Fill( ww_elIsoVal(iel1), weight );
-      set.setCatLabel("hyp_type","ee");
-      set.setCatLabel("fake_type","electron");
-      set.setRealValue("iso",ww_elIsoVal(iel1));
-      dataset->add(set,weight);
-    }
-    if ( goodElectronIsolated(iel1) && goodElectronWithoutIsolation(iel2) ) {
-      hElRelIso[type]->Fill( ww_elIsoVal(iel2), weight );
-      set.setCatLabel("hyp_type","ee");
-      set.setCatLabel("fake_type","electron");
-      set.setRealValue("iso",ww_elIsoVal(iel2));
-      dataset->add(set,weight);
-    }
-  }
-}
-
-
 void find_most_energetic_jets(int i_hyp, double weight, bool realData, double etaMin, double etaMax)
 {
   HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
@@ -1157,7 +1058,7 @@ void find_most_energetic_jets(int i_hyp, double weight, bool realData, double et
 
   // Calo 
   double caloJetMax(0.);
-  find_leading_calojet(i_hyp, etaMin, etaMax, vetoCone, caloJetMax);
+  // find_leading_calojet(i_hyp, etaMin, etaMax, vetoCone, caloJetMax);
   // TrkJet
   double trkJetMax(0.);
   find_leading_trkjet(i_hyp, etaMin, etaMax, vetoCone, trkJetMax);
@@ -1498,7 +1399,7 @@ toptag(WWJetType type, int i_hyp, double minPt,
      return false;
 }
 
-bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool realData) 
+bool hypo (int i_hyp, double weight, bool zStudy, bool realData) 
 {
   /*
   unsigned int nGenLeptons = 0;
@@ -1614,7 +1515,6 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
       cms2.hyp_p4()[i_hyp].mass() < 12) return false;
 
   // check electron isolation and id (no selection at this point)
-  checkIsolation(i_hyp, weight);
   
   cuts_t cuts_passed = 0;
   
@@ -1704,8 +1604,6 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
   // -------------------------------------------------------------------//
 
   if (CheckCutsNM1(pass_all, (1<<PASS_LT_FINAL)|(1<<PASS_LL_FINAL), cuts_passed) ) {
-    if(dataset)
-      getIsolationSidebandsAfterSelections(i_hyp, weight, dataset, passedLTFinalRequirements && passedLLFinalRequirements);
     countFakableObjectsAfterAllSelections(i_hyp, weight, 
 					  passedLTElFakableRequirements, passedLLElFakableRequirements, 
 					  passedLTMuFakableRequirements, passedLLMuFakableRequirements, 
@@ -1937,117 +1835,6 @@ bool hypo (int i_hyp, double weight, RooDataSet* dataset, bool zStudy, bool real
      }
      return true;
 }//end of void hypo
-
-RooDataSet* MakeNewDataset(const char* name)
-{
-  RooRealVar set_iso("iso","iso",0.,10.);
-  RooRealVar set_event("event","event",0);
-  RooRealVar set_run("run","run",0);
-  RooRealVar set_lumi("lumi","lumi",0);
-  RooRealVar set_weight("weight","weight",0);
-  RooCategory set_selected("selected","Passed final WW selection requirements");
-  set_selected.defineType("true",1);
-  set_selected.defineType("false",0);
-
-  // a given hyp can be added multiple times
-  // use this to prevent hyp double counting
-  RooRealVar set_unique("unique","unique",0);
-
-  // aTGC
-  RooRealVar set_dilpt("dilpt","dilpt",0);
-  RooRealVar set_mass("mass","mass",0);
-  RooRealVar set_pt1("pt1","pt1",0);
-  RooRealVar set_pt2("pt2","pt2",0);
-  RooRealVar set_dphi("dphi","dphi",0);
-  RooRealVar set_deta("deta","deta",0);
-  RooRealVar set_met("met","met",0);
-  /* these exist only in the atgc samples and
-     will remain commented out for now
-     */
-  //RooRealVar set_lambdaz("lambdaz","lambdaz",0);
-  //RooRealVar set_deltag1z("deltag1z","deltag1z",0);
-  //RooRealVar set_deltakg("deltakg","deltakg",0);
-
-  RooCategory set_hyp_type("hyp_type","Hypothesis type");
-  set_hyp_type.defineType(HypothesisTypeName(MM),MM);
-  set_hyp_type.defineType(HypothesisTypeName(EM),EM);
-  set_hyp_type.defineType(HypothesisTypeName(EE),EE);
-  
-  RooCategory set_fake_type("fake_type","Define type of lepton for which isolation is extracted");
-  set_fake_type.defineType("electron",0);
-  set_fake_type.defineType("muon",1);
-
-  RooCategory set_sample_type("sample_type","Sample type");
-  set_sample_type.defineType("data_relaxed_iso",0);  // full sample with final selection 
-  set_sample_type.defineType("control_sample_signal_iso",1);
-
-  RooArgSet argset(set_event,set_run,set_lumi,
-                   set_iso,set_selected,set_weight,
-                   set_hyp_type,set_fake_type,set_sample_type);
-  argset.add(set_unique);
-  argset.add(set_dilpt);
-  argset.add(set_mass);
-  argset.add(set_pt1);
-  argset.add(set_pt2);
-  argset.add(set_dphi);
-  argset.add(set_deta);
-  argset.add(set_met);
-  //argset.add(set_lambdaz);
-  //argset.add(set_deltag1z);
-  //argset.add(set_deltakg);
-
-  RooDataSet* dataset = new RooDataSet(name, "N-1 dataset",argset,
-                       RooFit::WeightVar(set_weight) );
-
-  return dataset;
-}
-
-void AddIsoSignalControlSample( int i_hyp, double weight, RooDataSet* dataset, bool realData) {
-  if ( !dataset ) return;
-  // Cut on lepton Pt
-
-  if (cms2.hyp_lt_p4()[i_hyp].pt() < 20.0) return;
-  if (cms2.hyp_ll_p4()[i_hyp].pt() < 20.0) return;
-  // Require opposite sign
-  if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) return;
-  // Z mass veto using hyp_leptons for ee and mumu final states
-  if ( cms2.hyp_type()[i_hyp] == 1 || cms2.hyp_type()[i_hyp] == 2 ) return;
-  if (! inZmassWindow(cms2.hyp_p4()[i_hyp].mass())) return;
-  RooArgSet set( *(dataset->get()) );
-  set.setCatIndex("selected",0);
-  set.setRealValue("event",cms2.evt_event());
-  set.setRealValue("run",cms2.evt_run());
-  set.setRealValue("lumi",cms2.evt_lumiBlock());
-  set.setCatLabel("sample_type","control_sample_signal_iso");
-	
-  if ( cms2.hyp_type()[i_hyp] == 3 ){
-    set.setCatLabel("hyp_type","ee");
-    set.setCatLabel("fake_type","electron");
-    if ( goodElectronIsolated(cms2.hyp_lt_index()[i_hyp]) &&
-	 goodElectronWithoutIsolation(cms2.hyp_ll_index()[i_hyp]) ){
-      set.setRealValue("iso",ww_elIsoVal(cms2.hyp_ll_index()[i_hyp]));
-      dataset->add(set,weight);
-    }
-    if ( goodElectronIsolated(cms2.hyp_ll_index()[i_hyp]) &&
-	 goodElectronWithoutIsolation(cms2.hyp_lt_index()[i_hyp]) ){
-      set.setRealValue("iso",ww_elIsoVal(cms2.hyp_lt_index()[i_hyp]));
-      dataset->add(set,weight);
-    }
-  } else {
-    set.setCatLabel("hyp_type","mm");
-    set.setCatLabel("fake_type","muon");
-    if ( goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) &&
-	 goodMuonWithoutIsolation(cms2.hyp_ll_index()[i_hyp]) ){
-      set.setRealValue("iso",ww_muIsoVal(cms2.hyp_ll_index()[i_hyp]));
-      dataset->add(set,weight);
-    }
-    if ( goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) &&
-	 goodMuonWithoutIsolation(cms2.hyp_lt_index()[i_hyp]) ){
-      set.setRealValue("iso",ww_muIsoVal(cms2.hyp_lt_index()[i_hyp]));
-      dataset->add(set,weight);
-    }
-  }
-}
 
 void initializeHistograms(const char *prefix, bool qcdBackground){
   hypos_total          = new TH1F(Form("%s_hypos_total",prefix),"Total number of hypothesis counts",4,0,4);
@@ -2342,18 +2129,111 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
   hnGoodVertex -> Sumw2();
 }
 
+double mt(double pt1, double pt2, double dphi){
+  return 2*sqrt(pt1*pt2)*fabs(sin(dphi/2));
+}
+void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp, double weight, enum Sample sample){
+  tree.InitVariables();
+  tree.run_   = cms2.evt_run();
+  tree.event_ = cms2.evt_event();
+  tree.lumi_  = cms2.evt_lumiBlock();
+  tree.nvtx_  = nGoodVertex();
+  tree.scale1fb_ = weight;
+  tree.met_    = metValue();
+  tree.metPhi_ = metPhiValue();
+  // sumet_;
+  bool ltIsFirst = true;
+  if ( cms2.hyp_lt_p4().at(i_hyp).pt()<cms2.hyp_ll_p4().at(i_hyp).pt() ) ltIsFirst = false;
+  tree.type_ = SmurfTree::Type(cms2.hyp_type().at(i_hyp));
+  if ( tree.type_ == SmurfTree::em || tree.type_ == SmurfTree::me ){
+    if ( ltIsFirst )
+      tree.type_ = abs(cms2.hyp_lt_id().at(i_hyp))==11 ? SmurfTree::em : SmurfTree::me;
+    else
+      tree.type_ = abs(cms2.hyp_lt_id().at(i_hyp))==11 ? SmurfTree::me : SmurfTree::em;
+  }
+  tree.lep1_ = ltIsFirst ? cms2.hyp_lt_p4().at(i_hyp) : cms2.hyp_ll_p4().at(i_hyp);
+  tree.lep2_ = ltIsFirst ? cms2.hyp_ll_p4().at(i_hyp) : cms2.hyp_lt_p4().at(i_hyp);
+  tree.lq1_   = ltIsFirst ? cms2.hyp_lt_charge().at(i_hyp) : cms2.hyp_ll_charge().at(i_hyp);
+  tree.lq2_   = ltIsFirst ? cms2.hyp_ll_charge().at(i_hyp) : cms2.hyp_lt_charge().at(i_hyp);
+  tree.lid1_  = 1;
+  tree.lid2_  = 1;
+  const std::vector<LorentzVector>& jets = getDefaultJets(i_hyp);
+  if (jets.size()>0) tree.jet1_ = jets.at(0);
+  if (jets.size()>1) tree.jet2_ = jets.at(1);
+  // jet1_btag_;
+  // jet2_btag_;
+  tree.njets_ = jets.size();
+  tree.evtype_ = SmurfTree::ZeroJet;
+  tree.dilep_ = cms2.hyp_p4().at(i_hyp);
+  tree.pmet_ = projectedMet(i_hyp);
+  tree.dPhi_ = fabs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_lt_p4().at(i_hyp),cms2.hyp_ll_p4().at(i_hyp)));
+  tree.dR_   = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4().at(i_hyp),cms2.hyp_ll_p4().at(i_hyp));
+  if (jets.size()>0) {
+    tree.dPhiLep1Jet1_ = fabs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_lt_p4().at(i_hyp),jets.at(0)));
+    tree.dRLep1Jet1_   = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4().at(i_hyp),jets.at(0));
+    tree.dPhiLep2Jet1_ = fabs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_ll_p4().at(i_hyp),jets.at(0)));
+    tree.dRLep2Jet1_   = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4().at(i_hyp),jets.at(0));
+    tree.dPhiDiLepJet1_= fabs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_p4().at(i_hyp),jets.at(0)));
+    if (!ltIsFirst){
+      std::swap(tree.dPhiLep1Jet1_,tree.dPhiLep2Jet1_);
+      std::swap(tree.dRLep1Jet1_,tree.dRLep2Jet1_);
+    }
+  }
+  tree.dPhiDiLepMET_ = acos(cos(cms2.hyp_p4().at(i_hyp).phi()-metPhiValue()));
+  tree.dPhiLep1MET_ = acos(cos(tree.lep1_.phi()-metPhiValue()));
+  tree.dPhiLep2MET_ = acos(cos(tree.lep2_.phi()-metPhiValue()));
+
+  tree.mt_ = mt(tree.dilep_.pt(),tree.met_,tree.dPhiDiLepMET_);
+  tree.mt1_ = mt(tree.lep1_.pt(),tree.met_,tree.dPhiLep1MET_);
+  tree.mt2_ = mt(tree.lep2_.pt(),tree.met_,tree.dPhiLep2MET_);
+
+  if (sample!=Data){
+    tree.genmet_ = cms2.gen_met();
+    tree.genmetPhi_ = cms2.gen_metPhi();
+    tree.lep1McId_ = ltIsFirst ? cms2.hyp_lt_mc_id().at(i_hyp) : cms2.hyp_ll_mc_id().at(i_hyp);
+    tree.lep2McId_ = ltIsFirst ? cms2.hyp_ll_mc_id().at(i_hyp) : cms2.hyp_lt_mc_id().at(i_hyp);
+  }
+
+  // jet1McId_;
+  // jet2McId_;
+
+  switch (sample){
+  case WW: tree.dstype_      = SmurfTree::qqww;
+  case WZ: tree.dstype_      = SmurfTree::wz;
+  case ZZ: tree.dstype_      = SmurfTree::zz;
+  case Wjets: tree.dstype_   = SmurfTree::wjets;
+  case DYee: tree.dstype_    = SmurfTree::dyee;
+  case DYmm: tree.dstype_    = SmurfTree::dymm;
+  case DYtt: tree.dstype_    = SmurfTree::dytt;
+  case ttbar: tree.dstype_   = SmurfTree::ttbar;
+  case tW: tree.dstype_      = SmurfTree::tw;
+  case qcd: tree.dstype_     = SmurfTree::qcd;
+  case Data: tree.dstype_    = SmurfTree::data;
+  case hWW120: tree.dstype_  = SmurfTree::hww120;
+  case hWW130: tree.dstype_  = SmurfTree::hww130;
+  case hWW140: tree.dstype_  = SmurfTree::hww140;
+  case hWW150: tree.dstype_  = SmurfTree::hww150;
+  case hWW160: tree.dstype_  = SmurfTree::hww160;
+  case hWW170: tree.dstype_  = SmurfTree::hww170;
+  case hWW180: tree.dstype_  = SmurfTree::hww180;
+  case hWW190: tree.dstype_  = SmurfTree::hww190;
+  case hWW200: tree.dstype_  = SmurfTree::hww200;
+
+  default: tree.dstype_    = SmurfTree::other;
+  }
+}
 
 
-RooDataSet* ScanChain( TChain* chain, 
-		       enum Sample sample, 
-		       double integratedLumi, // in unit of pb^-1, if negative the weight is 1.
-		       double xsec,           // in unit of pb, if negative take it from evt_xsec_excl*evt_kfactor
-		       int nProcessedEvents,  // if negative, take it from evt_nEvts
-		       bool identifyEvents, 
-		       bool qcdBackground,
-		       bool zStudy,
-		       bool realData,
-		       TString cms2_json_file)
+void ScanChain( TChain* chain, 
+		enum Sample sample, 
+		double integratedLumi, // in unit of pb^-1, if negative the weight is 1.
+		double xsec,           // in unit of pb, if negative take it from evt_xsec_excl*evt_kfactor
+		int nProcessedEvents,  // if negative, take it from evt_nEvts
+		bool identifyEvents, 
+		bool qcdBackground,
+		bool zStudy,
+		bool realData,
+		TString cms2_json_file)
 {
   const char *prefix = SampleName(sample);
   if ( chain->GetListOfFiles()->GetEntries()==0 ){
@@ -2387,12 +2267,14 @@ RooDataSet* ScanChain( TChain* chain,
   unsigned int nEventsChain = chain->GetEntries();  // number of entries in chain --> number of events from all files
   gErrorIgnoreLevel = -1;
   unsigned int nEventsTotal = 0;
-
- // declare and create array of histograms
-  ofstream selectedEvents(Form("%s.list",prefix));
+  
+  // make smurf ntuples
+  SmurfTree smurfTree;
+  smurfTree.CreateTree();
+  smurfTree.tree_->SetDirectory(0);
   std::map<unsigned int, std::set<unsigned int> > runList;
-  RooDataSet* dataset = MakeNewDataset(prefix);
 
+  // declare and create array of histograms
   initializeHistograms(prefix,qcdBackground);
 
   if ( !externalElFakeRates ){
@@ -2542,17 +2424,12 @@ RooDataSet* ScanChain( TChain* chain,
 	 for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
 	   if(cms2.hyp_p4().at(i_hyp).mass2() < 0 ) break;
 	   if(zStudy && (i_hyp != i_hyp_bestZ)) continue;
-	   if (hypo(i_hyp, weight, dataset, zStudy, realData)){
+	   if (hypo(i_hyp, weight, zStudy, realData)){
 	     goodEvent=true;
-	     selectedEvents << cms2.evt_run() << " " <<
-	       cms2.evt_lumiBlock() << " " << cms2.evt_event() << " " <<
-	       cms2.hyp_lt_p4().at(i_hyp).pt() << " " << cms2.hyp_ll_p4().at(i_hyp).pt() << " " <<
-	       projectedMet(i_hyp) <<endl;
+	     FillSmurfNtuple(smurfTree,i_hyp,weight,sample);
+	     smurfTree.tree_->Fill();
 	   }
-	   AddIsoSignalControlSample(i_hyp, weight, dataset, realData);
 	 }
-	 // if (goodEvent)   selectedEvents << cms2.evt_run() << " " <<
-	 // cms2.evt_lumiBlock() << " " << cms2.evt_event() << endl;
        }
        t.Stop();
        printf("Finished processing file: %s\n",currentFile->GetTitle());
@@ -2585,7 +2462,13 @@ RooDataSet* ScanChain( TChain* chain,
 	 HypothesisTypeName(2), HypothesisTypeName(3),
 	 hypos_total_weighted->GetBinContent(1), hypos_total_weighted->GetBinContent(2), 
 	 hypos_total_weighted->GetBinContent(3), hypos_total_weighted->GetBinContent(4));
-  selectedEvents.close();
+  gSystem->MakeDirectory("smurf");
+  TFile* fSmurf = TFile::Open(Form("smurf/%s.root",prefix),"RECREATE");
+  assert(fSmurf);
+  smurfTree.tree_->Write();
+  smurfTree.info_.SetTitle(config_info);
+  smurfTree.info_.Write();
+  fSmurf->Close();
   if (realData){
       ofstream json("processed.json");
       ofstream json2("processed_detailed.json");
@@ -2636,7 +2519,6 @@ RooDataSet* ScanChain( TChain* chain,
       json.close();
       json2.close();
   }
-  return dataset;
 }
 
 bool EventIdentifier::operator < (const EventIdentifier &other) const
@@ -2721,7 +2603,6 @@ void ProcessSample( std::string file_pattern,
 		    double integratedLumi,
 		    double xsec,
 		    int nProcessedEvents,
-		    RooDataSet* output_dataset, 
 		    Color_t color, 
 		    bool identifyEvents,
 		    bool qcdBackground,
@@ -2731,7 +2612,7 @@ void ProcessSample( std::string file_pattern,
 {
   std::vector<string> vec;
   vec.push_back(file_pattern);
-  ProcessSample(vec,sample,integratedLumi,xsec,nProcessedEvents,output_dataset,color,identifyEvents,qcdBackground,zStudy,realData,cms2_json_file);
+  ProcessSample(vec,sample,integratedLumi,xsec,nProcessedEvents,color,identifyEvents,qcdBackground,zStudy,realData,cms2_json_file);
 }
 
 void ProcessSample( std::vector<std::string> file_patterns, 
@@ -2739,7 +2620,6 @@ void ProcessSample( std::vector<std::string> file_patterns,
 		    double integratedLumi,
 		    double xsec,
 		    int nProcessedEvents,
-		    RooDataSet* output_dataset, 
 		    Color_t color, 
 		    bool identifyEvents,
 		    bool qcdBackground,
@@ -2760,14 +2640,7 @@ void ProcessSample( std::vector<std::string> file_patterns,
       SkimChain(tchain,false);
   } else {
     std::cout << "Processing " << SampleName(sample) << ".." << std::endl;
-    RooDataSet* data = ScanChain(tchain,sample,integratedLumi,xsec,nProcessedEvents,identifyEvents,qcdBackground,zStudy,realData,cms2_json_file);
-    if( data ){
-      if ( output_dataset )
-	output_dataset->append(*data);
-      else
-	output_dataset=data;
-    }
-    
+    ScanChain(tchain,sample,integratedLumi,xsec,nProcessedEvents,identifyEvents,qcdBackground,zStudy,realData,cms2_json_file);
     const char* sampleName = SampleName(sample);
     TRegexp reg(sampleName, kFALSE);
     
