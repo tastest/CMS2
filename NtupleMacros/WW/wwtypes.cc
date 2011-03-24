@@ -35,6 +35,51 @@ const char* SampleName(Sample sample){
   case Data:
     return "data";
     break;
+  case ggWW:
+    return "ggww";
+    break;
+  case hWW120:
+    return "hww120";
+    break;
+  case hWW130:
+    return "hww130";
+    break;
+  case hWW140:
+    return "hww140";
+    break;
+  case hWW150:
+    return "hww150";
+    break;
+  case hWW160:
+    return "hww160";
+    break;
+  case hWW170:
+    return "hww170";
+    break;
+  case hWW180:
+    return "hww180";
+    break;
+  case hWW190:
+    return "hww190";
+    break;
+  case hWW200:
+    return "hww200";
+    break;
+  case hWW210:
+    return "hww210";
+    break;
+  case hWW220:
+    return "hww220";
+    break;
+  case hWW230:
+    return "hww230";
+    break;
+  case hWW240:
+    return "hww240";
+    break;
+  case hWW250:
+    return "hww250";
+    break;
   }
   std::cout << "ERROR: unknown sample name is requested: " << sample << std::endl;
   return "";
