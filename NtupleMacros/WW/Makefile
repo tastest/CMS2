@@ -37,13 +37,14 @@ CFLAGS = -Wall -Wno-unused-function -g -O2 -fPIC $(shell root-config --cflags) $
 
 LINKER = g++
 LINKERFLAGS = $(shell root-config --ldflags)
+ifdef CMSSW_RELEASE_BASE
+	LINKERLIBS = -L$(CMSSW_RELEASE_BASE)/lib/$(SCRAM_ARCH)/ -L$(CMSSW_RELEASE_BASE)/external/$(SCRAM_ARCH)/lib $(shell root-config --libs) -lEG -lGenVector
+else
+	LINKERLIBS = $(shell root-config --libs) -lEG -lGenVector
+endif
 
 ifeq ($(shell root-config --platform),macosx)
-ifdef CMSSW_RELEASE_BASE
-	LINKERFLAGS = -dynamiclib -undefined dynamic_lookup -Wl,-x -O -Xlinker -bind_at_load -flat_namespace -L$(CMSSW_RELEASE_BASE)/lib/$(SCRAM_ARCH)/ -L$(CMSSW_RELEASE_BASE)/external/$(SCRAM_ARCH)/lib $(shell root-config --libs) -lEG -lGenVector
-else
-	LINKERFLAGS = -dynamiclib -undefined dynamic_lookup -Wl,-x -O -Xlinker -bind_at_load -flat_namespace $(shell root-config --libs) -lEG -lGenVector
-endif
+	MACOSXFLAGS = -dynamiclib -undefined dynamic_lookup -Wl,-x -O -Xlinker -bind_at_load -flat_namespace
 endif
 
 CORESOURCES = $(CMSROOT)/CORE/CMS2.cc $(CMSROOT)/CORE/muonSelections.cc $(CMSROOT)/CORE/electronSelections.cc $(CMSROOT)/CORE/electronSelectionsParameters.cc $(CMSROOT)/CORE/jetSelections.cc 
@@ -66,11 +67,11 @@ libs:	$(LIBS)
 
 $(CORELIB):	$(CORESOURCES) $(COREOBJECTS) 
 	$(QUIET) echo "Linking $(CORELIB)"; \
-	$(LINKER) $(LINKERFLAGS) -shared $(COREOBJECTS) -o $@ 2>&1|perl -ne 'print if(!/skipping incompatible/)'
+	$(LINKER) $(LINKERFLAGS) $(MACOSXFLAGS) $(LINKERLIBS) -shared $(COREOBJECTS) -o $@ 2>&1|perl -ne 'print if(!/skipping incompatible/)'
 
 $(LIB):	$(OBJECTS) 
 	$(QUIET) echo "Linking $(LIB)"; \
-	$(LINKER) $(LINKERFLAGS) -shared $(OBJECTS) -o $@ 2>&1|perl -ne 'print if(!/skipping incompatible/)'
+	$(LINKER) $(LINKERFLAGS) $(MACOSXFLAGS) $(LINKERLIBS) -shared $(OBJECTS) -o $@ 2>&1|perl -ne 'print if(!/skipping incompatible/)'
 
 $(FWLIB):
 	$(QUIET) echo "making MiniFWLite"; \
@@ -123,6 +124,7 @@ clean: # clean up
 	$(CMSROOT)/Tools/*.so \
 	$(CORELIB) $(LOOPERLIB) $(FWLIB) \
 	processed_data.* *.list \
+	smurf/* \
 	*.o *.d *.so LinkDef_out*; echo "Done"
 
 table: processed_data.root # show results
