@@ -329,6 +329,7 @@ namespace hist {
   
    void normalize(const char* patORpfx);
    void scale(const char* patORpfx, Double_t scale);
+   void rebin(const char* patORpfx, Int_t scale);
    void setrangey(TCanvas* canvas);
 
    void stack(const char* stackHistName, const char* patORpfx, Bool_t addColor = kFALSE, Option_t* drawOption = "", 
@@ -657,6 +658,28 @@ namespace hist {
       if( ((TH1*)obj)->GetSumw2()->GetSize() == 0)
 	  ((TH1*)obj)->Sumw2();
       ((TH1*)obj)->Scale(scale);
+    }
+  }
+  void rebin(const char* patORpfx, Int_t nRebin) {
+    TRegexp reg(patORpfx, kTRUE);
+
+    TList* list = gDirectory->GetList()   ;
+    TIterator* iter = list->MakeIterator();
+
+    TObject* obj = 0;
+
+    while ((obj = iter->Next())) {
+      if (! obj->InheritsFrom(TH1::Class())) continue;
+
+      TString name = obj->GetName();
+
+      if (TString(patORpfx).MaybeRegexp()) {
+	if (TString(obj->GetName()).Index(reg) < 0 ) continue;
+      } else if (! name.BeginsWith(patORpfx)) continue;
+
+      if( ((TH1*)obj)->GetSumw2()->GetSize() == 0)
+	  ((TH1*)obj)->Sumw2();
+      ((TH1*)obj)->Rebin(nRebin);
     }
   }
 
@@ -1505,10 +1528,11 @@ void browseStacks(vector<TString> v_samples, vector<Color_t> v_colors,
       tempstring = tempstring + "_withErrors";
     //c->SaveAs((tempstring + ".C").Data());
 
-    if(i != myNames->GetEntries() - 1) 
-      c->Print((tempstring + ".eps(").Data());
-    else
-    c->Print((tempstring + ".eps)").Data());
+    //if(i != myNames->GetEntries() - 1) 
+    //  c->Print((tempstring + ".eps(").Data());
+    //else
+    c->Print((tempstring + Form("-%d.png",i)).Data());
+    c->Print((tempstring + Form("-%d.root",i)).Data());
 
     
 
