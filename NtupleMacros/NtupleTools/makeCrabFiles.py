@@ -179,9 +179,9 @@ else :
     global_tag = '';
     dbs_result = '';
     if dbs_url == '' :
-      command = 'dbsql find config.name,config.content where dataset=' + dataSet + '>config.content; while read line; do globaltag=`echo $line | sed -n \'s/^.*process.GlobalTag.globaltag = \([^p]*\).*$/\\1/p\'`; if [ "$globaltag" != "" ]; then echo $globaltag; break; fi; done <config.content; rm config.content';
+      command = 'dbsql find config.name,config.content where dataset=' + dataSet.replace("AODSIM", "GEN-SIM-RECO") + '>config.content; while read line; do globaltag=`echo $line | sed -n \'s/^.*process.GlobalTag.globaltag = \([^p]*\).*$/\\1/p\'`; if [ "$globaltag" != "" ]; then echo $globaltag; break; fi; done <config.content; rm config.content';
     else:
-      command = 'python $DBSCMD_HOME/dbsCommandLine.py -c search --url=' + dbs_url + ' --query="find config.name,config.content where dataset=' + dataSet + '">config.content; while read line; do globaltag=`echo $line | sed -n \'s/^.*process.GlobalTag.globaltag = \([^p]*\).*$/\\1/p\'`; if [ "$globaltag" != "" ]; then echo $globaltag; break; fi; done <config.content; rm config.content';
+      command = 'python $DBSCMD_HOME/dbsCommandLine.py -c search --url=' + dbs_url + ' --query="find config.name,config.content where dataset=' + dataSet.replace("AODSIM", "GEN-SIM-RECO") + '">config.content; while read line; do globaltag=`echo $line | sed -n \'s/^.*process.GlobalTag.globaltag = \([^p]*\).*$/\\1/p\'`; if [ "$globaltag" != "" ]; then echo $globaltag; break; fi; done <config.content; rm config.content';
 
     #print command
 
