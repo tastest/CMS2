@@ -33,18 +33,20 @@ void showResults(const char* file = "processed_data.root")
   if ( TH1F *hist    = dynamic_cast<TH1F*>(ftt->Get("zz_hypos_total_weighted")) )
     bkgs.push_back(std::pair<TH1F*,std::string>(hist,"*ZZ*"));
   TH1F *ww    = dynamic_cast<TH1F*>(ftt->Get("ww_hypos_total_weighted"));
+  TH1F *hww130 = dynamic_cast<TH1F*>(ftt->Get("hww130_hypos_total_weighted"));
   TH1F *data  = dynamic_cast<TH1F*>(ftt->Get("data_hypos_total_weighted"));
-  if (!ww && !data && bkgs.empty()){
+  if (!hww130 && !ww && !data && bkgs.empty()){
     cout << "no data is found." << endl;
     return;
   }
-  const char* patternTitle = " %12s |";
-  const char* patternData  = " %5.2f%s%4.2f |";
+  const char* patternTitle = " %16s |";
+  const char* patternData  = " %7.2f%s%6.2f |";
 
   cout << "\n" << Form("| %3s |","");
   for (unsigned int i=0; i<bkgs.size(); ++i) cout << Form(patternTitle,bkgs.at(i).second.c_str());
   if ( bkgs.size()>0 ) cout << Form(patternTitle,"*Total BKG*");
   if (ww) cout << Form(patternTitle,"*WW*");
+  if (hww130) cout << Form(patternTitle,"*HWW130*");
   if (data) cout << Form(patternTitle,"*Data*");
   cout << endl;
   string pm = "+/-";
@@ -63,6 +65,8 @@ void showResults(const char* file = "processed_data.root")
     if ( bkgs.size()>0 ) cout << Form(patternData,bkg[i],pm.c_str(),sqrt(bkgerr2[i]));
     if (ww) 
       cout << Form(patternData,ww->GetBinContent(i+1),pm.c_str(),ww->GetBinError(i+1));
+    if (hww130) 
+      cout << Form(patternData,hww130->GetBinContent(i+1),pm.c_str(),hww130->GetBinError(i+1));
     if (data)
       cout << Form(patternData,data->GetBinContent(i+1),pm.c_str(),data->GetBinError(i+1));
     cout <<endl;
