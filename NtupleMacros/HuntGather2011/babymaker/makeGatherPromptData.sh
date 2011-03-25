@@ -28,21 +28,28 @@ fi
 
 INPUT_DATA_DIR=""
 OUTPUT_DATA_DIR=""
+
+export SCRAM_ARCH=slc5_amd64_gcc434
+    source /code/osgcode/cmssoft/cms/cmsset_default.sh
+    eval `scramv1 runtime -sh`
+
 if [ "$GATHER_SITE" == "UCSD" ]; then
-    INPUT_DATA_DIR=/nfs-3/userdata/cms2/$GATHER_SAMPLE
+    #INPUT_DATA_DIR=/nfs-3/userdata/cms2/$GATHER_SAMPLE
+    INPUT_DATA_DIR=/hadoop/cms/store/user/yanjuntu/$GATHER_SAMPLE
     OUTPUT_DATA_DIR=/nfs-3/userdata/cms2/gather/data/$GATHER_SAMPLE
-    export ROOTSYS=/code/osgcode/UCSD_root/root_v5.24.00
+    #export ROOTSYS=/code/osgcode/UCSD_root/root_v5.24.00
+
+
 elif [ "$GATHER_SITE" == "CERN" ]; then
     INPUT_DATA_DIR=/tas/cms2/$GATHER_SAMPLE
     OUTPUT_DATA_DIR=/tas/cms2/gather/data/$GATHER_SAMPLE
-    export ROOTSYS=/afs/cern.ch/sw/lcg/app/releases/ROOT/5.26.00/x86_64-slc5-gcc34-opt/root/
 else 
     echo "ERROR: GATHER_SITE either UCSD or CERN"
     exit 1
 fi
 
-export PATH=$ROOTSYS/bin:$PATH
-export LD_LIBRARY_PATH=$ROOTSYS/lib
+#export PATH=$ROOTSYS/bin:$PATH
+#export LD_LIBRARY_PATH=$ROOTSYS/lib
 
 #
 # this script is now going to run forever
@@ -100,6 +107,8 @@ do
     if [ $N_FILES -lt 1 ]
     then
         echo "No new runs to process..."
+        sleep 3600
+
     else
 
         # there are new files to process
