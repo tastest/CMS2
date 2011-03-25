@@ -138,7 +138,7 @@ bool CheckCuts(cuts_t apply, cuts_t passed);
 bool filterByProcess( enum Sample sample );
 bool isIdentified( enum Sample sample );
 
-void checkIsolation(int i_hyp, double weight);
+// void checkIsolation(int i_hyp, double weight);
 
 void find_leading_genjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & genJetMax);
 void find_leading_jptjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & jptMax, int &jptMaxIndex);

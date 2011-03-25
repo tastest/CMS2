@@ -916,6 +916,7 @@ TH2F* htoptagvsnjet[4];
 
 hypo_monitor monitor;
 
+/*
 void checkIsolation(int i_hyp, double weight){
   // LT
   if ( abs(cms2.hyp_lt_id()[i_hyp]) == 11 ) { 
@@ -1014,7 +1015,7 @@ void checkIsolation(int i_hyp, double weight){
     }
   }
 }
-
+*/
 void find_most_energetic_jets(int i_hyp, double weight, bool realData, double etaMin, double etaMax)
 {
   HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
