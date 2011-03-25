@@ -13,7 +13,9 @@
 #
 # single electron triggers
 #
-160325 9999999 HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1 e 0
+160329 161176 HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1 e 0
+161210 999999 HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2 e 0
+
 #
 # double muon triggers
 #
@@ -21,7 +23,9 @@
 #
 # double electron triggers
 #
-160325 9999999 HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1 ee 0
+160329 161176 HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1 ee 0
+161210 999999 HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v2 ee 0
+
 #note that these next two are identical except for version number
 #so I assign them to the same bit so run range consistently covered
 160325 9999999 HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v1 ee 1
@@ -31,9 +35,11 @@
 #
 # cross triggers
 #
-160325 9999999 HLT_Mu17_Ele8_CaloIdL_v1 em 0
-160325 9999999 HLT_Mu8_Ele17_CaloIdL_v1 em 1
-160325 9999999 HLT_Mu8_Photon20_CaloIdVT_IsoT_v2 em 2
+160329 161176 HLT_Mu17_Ele8_CaloIdL_v1 em 0
+161210 999999 HLT_Mu17_Ele8_CaloIdL_v2 em 0
+160329 161176 HLT_Mu8_Ele17_CaloIdL_v1 em 1
+161210 999999 HLT_Mu8_Ele17_CaloIdL_v2 em 1
+160325 999999 HLT_Mu8_Photon20_CaloIdVT_IsoT_v2 em 2
 #
 # Run2010
 #
