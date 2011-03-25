@@ -22,6 +22,7 @@ class dilepbabymaker
         void InitBabyNtuple ();
 
         bool PassTriggerGroup(const std::vector<std::pair<std::string, unsigned int> > &triggers, const LorentzVector &obj);
+        void PassTriggerGroup(const std::vector<std::pair<std::string, unsigned int> > &triggers, const LorentzVector &obj, Int_t &mask);
         void PassTriggerGroup(const std::vector<std::pair<std::string, unsigned int> > &triggers, Int_t &mask);
 
         void SetEventLevelInfo();
@@ -220,8 +221,15 @@ class dilepbabymaker
         // triggers
         Int_t trg_single_mu_;
         Int_t trg_single_e_;
-        Int_t trg_double_mu_;
-        Int_t trg_double_e_;
+
+        // need to distinguish legs
+        Int_t trg_double_mu1_;
+        Int_t trg_double_mu2_;
+
+        // need to distinguish legs
+        Int_t trg_double_e1_;
+        Int_t trg_double_e2_;
+
         Int_t trg_cross_emu_;
 
 };

@@ -156,12 +156,16 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                         if (PassTriggerGroup(triggers_m_, cms2.hyp_ll_p4()[hypi])) trg_single_mu_ |= (1<<1);
 
                     // do double electron
-                    if (abs(lt_id) == 11 && abs(ll_id) == 11)
-                        PassTriggerGroup(triggers_ee_, trg_double_e_);
+                    if (abs(lt_id) == 11 && abs(ll_id) == 11) {
+                        PassTriggerGroup(triggers_ee_, cms2.hyp_lt_p4()[hypi], trg_double_e1_);
+                        PassTriggerGroup(triggers_ee_, cms2.hyp_ll_p4()[hypi], trg_double_e2_);
+                    }
 
                     // do double muon
-                    if (abs(lt_id) == 13 && abs(ll_id) == 13)
-                        PassTriggerGroup(triggers_mm_, trg_double_mu_);
+                    if (abs(lt_id) == 13 && abs(ll_id) == 13) {
+                        PassTriggerGroup(triggers_mm_, cms2.hyp_lt_p4()[hypi], trg_double_mu1_);
+                        PassTriggerGroup(triggers_mm_, cms2.hyp_ll_p4()[hypi], trg_double_mu2_);
+                    }
 
                     // do cross trigger (e-mu)
                     if (abs(lt_id) != abs(ll_id))
@@ -173,8 +177,10 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 } else {
                     trg_single_e_ = ((1<<0) | (1<<1));
                     trg_single_mu_ = ((1<<0) | (1<<1));
-                    trg_double_e_ = 1;
-                    trg_double_mu_ = 1;
+                    trg_double_e1_ = 1;
+                    trg_double_e2_ = 1;
+                    trg_double_mu1_ = 1;
+                    trg_double_mu2_ = 1;
                     trg_cross_emu_ = 1;
                 }
 
@@ -540,7 +546,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     d0vtx1_ = cms2.trks_d0vtx()[trkidx1];
                     trkIso1_ = cms2.mus_iso03_sumPt()[index1];
                     ecalIso1_ = cms2.mus_iso03_emEt()[index1];
-                    hcalIso1_ - cms2.mus_iso03_hadEt()[index1];
+                    hcalIso1_ = cms2.mus_iso03_hadEt()[index1];
                 }
                 // if LT is an ele, fill ele info
                 if (abs(cms2.hyp_lt_id()[hypi]) == 11) {
@@ -605,7 +611,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     d0vtx2_ = cms2.trks_d0vtx()[trkidx2];
                     trkIso2_ = cms2.mus_iso03_sumPt()[index2];
                     ecalIso2_ = cms2.mus_iso03_emEt()[index2];
-                    hcalIso2_ - cms2.mus_iso03_hadEt()[index2];
+                    hcalIso2_ = cms2.mus_iso03_hadEt()[index2];
                 }
                 // if LL is an ele, fill ele info
                 if (abs(cms2.hyp_ll_id()[hypi]) == 11) {
@@ -846,8 +852,10 @@ void dilepbabymaker::InitBabyNtuple ()
 
     trg_single_e_ = 0;
     trg_single_mu_ = 0;
-    trg_double_e_ = 0;
-    trg_double_mu_ = 0;
+    trg_double_e1_ = 0;
+    trg_double_e2_ = 0;
+    trg_double_mu1_ = 0;
+    trg_double_mu2_ = 0;
     trg_cross_emu_ = 0;
 
 }
@@ -1039,8 +1047,13 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     // trigger stuff
     babyTree_->Branch("trg_single_mu",   &trg_single_mu_,   "trg_single_mu/I"  );
     babyTree_->Branch("trg_single_e",   &trg_single_e_,   "trg_single_e/I"  );
-    babyTree_->Branch("trg_double_mu",   &trg_double_mu_,   "trg_double_mu/I"  );
-    babyTree_->Branch("trg_double_e",   &trg_double_e_,   "trg_double_e/I"  );
+
+    babyTree_->Branch("trg_double_mu1",   &trg_double_mu1_,   "trg_double_mu1/I"  );
+    babyTree_->Branch("trg_double_mu2",   &trg_double_mu2_,   "trg_double_mu2/I"  );
+
+    babyTree_->Branch("trg_double_e1",   &trg_double_e1_,   "trg_double_e1/I"  );
+    babyTree_->Branch("trg_double_e2",   &trg_double_e2_,   "trg_double_e2/I"  );
+
     babyTree_->Branch("trg_cross_emu",   &trg_cross_emu_,   "trg_cross_emu/I"  );
 
 }
@@ -1053,13 +1066,21 @@ bool dilepbabymaker::PassTriggerGroup(const std::vector<std::pair<std::string, u
     return false;
 }
 
+void dilepbabymaker::PassTriggerGroup(const std::vector<std::pair<std::string, unsigned int> > &triggers, const LorentzVector &obj, Int_t &mask)
+{
+    for (unsigned int i = 0; i < triggers.size(); ++i) {
+        if (passUnprescaledHLTTrigger(triggers[i].first.c_str(), obj)) mask |= (1<<triggers[i].second);
+    }    
+
+}  
+
 void dilepbabymaker::PassTriggerGroup(const std::vector<std::pair<std::string, unsigned int> > &triggers, Int_t &mask)
 {
     for (unsigned int i = 0; i < triggers.size(); ++i) {
         if (passUnprescaledHLTTrigger(triggers[i].first.c_str())) mask |= (1<<triggers[i].second);
-    }    
+    }
 
-}  
+}
 
 void dilepbabymaker::SetEventLevelInfo ()
 {
