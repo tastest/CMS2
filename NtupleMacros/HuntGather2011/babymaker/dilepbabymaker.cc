@@ -168,7 +168,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                         PassTriggerGroup(triggers_em_, trg_cross_emu_);
 
                     // integrated luminosity per luminosity section
-                    intLumiPerLS_ = cms2.ls_lumiSectionLength() * cms2.ls_avgInsRecLumi();
+                    //intLumiPerLS_ = cms2.ls_lumiSectionLength() * cms2.ls_avgInsRecLumi();
 
                 } else {
                     trg_single_e_ = ((1<<0) | (1<<1));
@@ -933,8 +933,8 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("dphipfmet1", &dphipfmet1_, "dphipfmet1/F");
     babyTree_->Branch("dphitcmet1", &dphitcmet1_, "dphitcmet1/F");
     babyTree_->Branch("drjet1",     &drjet1_,     "drjet1/F"    );
-    babyTree_->Branch("mcid1",      &mcid1_,      "mcid1/F"     );
-    babyTree_->Branch("mcmotherid1",&mcmotherid1_,"mcmotherid1/F");
+    babyTree_->Branch("mcid1",      &mcid1_,      "mcid1/I"     );
+    babyTree_->Branch("mcmotherid1",&mcmotherid1_,"mcmotherid1/I");
     babyTree_->Branch("eormu2",     &eormu2_,     "eormu2/I"    );
     babyTree_->Branch("type2",      &type2_,      "type2/I"     );
     babyTree_->Branch("pt2",        &pt2_,        "pt2/F"       );
@@ -946,8 +946,8 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("dphipfmet2", &dphipfmet2_, "dphipfmet2/F");
     babyTree_->Branch("dphitcmet2", &dphitcmet2_, "dphitcmet2/F");
     babyTree_->Branch("drjet2",     &drjet2_,     "drjet2/F"    );
-    babyTree_->Branch("mcid2",      &mcid2_,      "mcid2/F"     );
-    babyTree_->Branch("mcmotherid2",&mcmotherid2_,"mcmotherid2/F");
+    babyTree_->Branch("mcid2",      &mcid2_,      "mcid2/I"     );
+    babyTree_->Branch("mcmotherid2",&mcmotherid2_,"mcmotherid2/I");
     babyTree_->Branch("mt2",        &mt2_,        "mt2/F"       );
     babyTree_->Branch("mt2j",       &mt2j_,       "mt2j/F"      );
     babyTree_->Branch("extraZveto", &extraZveto_, "extraZveto/O");
