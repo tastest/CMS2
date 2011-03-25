@@ -57,14 +57,14 @@ void makeGatherTriggerMonitor(const std::vector<BabySample*> &babyVector, const 
     //
 
     // monitor denominator distributions
-
+/*
     DrawAll("njets", "trigger_cross_emu_njets", inclusivenonz_dilep1+base_dilep+os_dilep+of_dilep, luminosity, 5, -0.5, 4.5, 0, babyVector);
     DrawAll("nvtx", "trigger_single_nvtx", inclusivez_dilep+os_dilep+sf_dilep, luminosity, 20, -0.5, 19.5, 0, babyVector);
 
     // single object triggers.  Efficiency is ~ unbiassed tag and probe
-    TriggerMonitor("trigger_single_e", "run","pt1>30&&pt2>30"+cut_trg_zee+cut_trg_single_e, cut_trg_double_single_e, luminosity, n_run_bins, run_start, run_end, false, data);
+    TriggerMonitor("trigger_single_e", "run","e1_scet>30&&e2_scet>30"+cut_trg_zee+cut_trg_single_e, cut_trg_double_single_e, luminosity, n_run_bins, run_start, run_end, false, data);
     TriggerMonitor("trigger_single_mu", "run", "pt1>20&&pt2>20"+cut_trg_zmm+cut_trg_single_mu, cut_trg_double_single_mu, luminosity, n_run_bins, run_start, run_end, false, data);
-    TriggerMonitor("trigger_single_e_vtx", "nvtx", "pt1>30&&pt2>30"+cut_trg_zee+cut_trg_single_e, cut_trg_double_single_e, luminosity, 20, -0.5, 19.5, false, data);
+    TriggerMonitor("trigger_single_e_vtx", "nvtx", "e1_scet>30&&e2_scet>30"+cut_trg_zee+cut_trg_single_e, cut_trg_double_single_e, luminosity, 20, -0.5, 19.5, false, data);
     TriggerMonitor("trigger_single_mu_vtx", "nvtx", "pt1>20&&pt2>20"+cut_trg_zmm+cut_trg_single_mu, cut_trg_double_single_mu, luminosity, 20, -0.5, 19.5, false, data);
 
     //
@@ -74,36 +74,36 @@ void makeGatherTriggerMonitor(const std::vector<BabySample*> &babyVector, const 
     // e denom
     // run
     TriggerMonitor("trigger_singleedenom_cross_emu_trg_Mu17_Ele8_CaloIdL_v1", "run", 
-            "((abs(eormu1)==11&&pt1>30)||(abs(eormu2)==11&&pt2>30))"+cut_trg_ttof+cut_trg_single_e, cut_trg_Mu17_Ele8_CaloIdL_v1, luminosity, n_run_bins, run_start, run_end, false, data);
+            "((abs(eormu1)==11&&e1_scet>30)||(abs(eormu2)==11&&e2_scet>30))"+cut_trg_ttof+cut_trg_single_e, cut_trg_Mu17_Ele8_CaloIdL_v1, luminosity, n_run_bins, run_start, run_end, false, data);
     TriggerMonitor("trigger_singleedenom_cross_emu_trg_cut_trg_Mu8_Ele17_CaloIdL_v1", "run",
-            "((abs(eormu1)==11&&pt1>30)||(abs(eormu2)==11&&pt2>30))"+cut_trg_ttof+cut_trg_single_e, cut_trg_Mu8_Ele17_CaloIdL_v1, luminosity, n_run_bins, run_start, run_end, false, data);
+            "((abs(eormu1)==11&&e1_scet>30)||(abs(eormu2)==11&&e2_scet>30))"+cut_trg_ttof+cut_trg_single_e, cut_trg_Mu8_Ele17_CaloIdL_v1, luminosity, n_run_bins, run_start, run_end, false, data);
     TriggerMonitor("trigger_singleedenom_cross_emu_trg_Mu8_Photon20_CaloIdVT_IsoT_v2", "run",
-            "((abs(eormu1)==11&&pt1>30)||(abs(eormu2)==11&&pt2>30)) && TMath::Min(pt1, pt2)>20"+cut_trg_ttof+cut_trg_single_e, cut_trg_Mu8_Photon20_CaloIdVT_IsoT_v2, luminosity, n_run_bins, run_start, run_end, false, data);
+            "((abs(eormu1)==11&&e1_scet>30)||(abs(eormu2)==11&&e2_scet>30)) && ((abs(eormu1)==13&&pt1>10)||(abs(eormu2)==13&&pt2>10))"+cut_trg_ttof+cut_trg_single_e, cut_trg_Mu8_Photon20_CaloIdVT_IsoT_v2, luminosity, n_run_bins, run_start, run_end, false, data);
 
     // nvtx
     TriggerMonitor("trigger_nvtx_singleedenom_cross_emu_trg_Mu17_Ele8_CaloIdL_v1", "nvtx",
-            "((abs(eormu1)==11&&pt1>30)||(abs(eormu2)==11&&pt2>30))"+cut_trg_ttof+cut_trg_single_e, cut_trg_Mu17_Ele8_CaloIdL_v1, luminosity, 20, -0.5, 19.5, false, data);
+            "((abs(eormu1)==11&&e1_scet>30)||(abs(eormu2)==11&&e2_scet>30))"+cut_trg_ttof+cut_trg_single_e, cut_trg_Mu17_Ele8_CaloIdL_v1, luminosity, 20, -0.5, 19.5, false, data);
     TriggerMonitor("trigger_nvtx_singleedenom_cross_emu_trg_cut_trg_Mu8_Ele17_CaloIdL_v1", "nvtx",
-            "((abs(eormu1)==11&&pt1>30)||(abs(eormu2)==11&&pt2>30))"+cut_trg_ttof+cut_trg_single_e, cut_trg_Mu8_Ele17_CaloIdL_v1, luminosity, 20, -0.5, 19.5, false, data);
+            "((abs(eormu1)==11&&e1_scet>30)||(abs(eormu2)==11&&e2_scet>30))"+cut_trg_ttof+cut_trg_single_e, cut_trg_Mu8_Ele17_CaloIdL_v1, luminosity, 20, -0.5, 19.5, false, data);
     TriggerMonitor("trigger_nvtx_singleedenom_cross_emu_trg_Mu8_Photon20_CaloIdVT_IsoT_v2", "nvtx",
-            "((abs(eormu1)==11&&pt1>30)||(abs(eormu2)==11&&pt2>30)) && TMath::Min(pt1, pt2)>20"+cut_trg_ttof+cut_trg_single_e, cut_trg_Mu8_Photon20_CaloIdVT_IsoT_v2, luminosity, 20, -0.5, 19.5, false, data);
+            "((abs(eormu1)==11&&e1_scet>30)||(abs(eormu2)==11&&e2_scet>30)) && ((abs(eormu1)==13&&pt1>10)||(abs(eormu2)==13&&pt2>10))"+cut_trg_ttof+cut_trg_single_e, cut_trg_Mu8_Photon20_CaloIdVT_IsoT_v2, luminosity, 20, -0.5, 19.5, false, data);
 
     // mu denom
     // run
     TriggerMonitor("trigger_singlemudenom_cross_emu_trg_Mu17_Ele8_CaloIdL_v1", "run",
-            "((abs(eormu1)==11&&pt1>20)||(abs(eormu2)==11&&pt2>20))"+cut_trg_ttof+cut_trg_single_mu, cut_trg_Mu17_Ele8_CaloIdL_v1, luminosity, n_run_bins, run_start, run_end, false, data);
+            "((abs(eormu1)==13&&pt1>20)||(abs(eormu2)==13&&pt2>20))"+cut_trg_ttof+cut_trg_single_mu, cut_trg_Mu17_Ele8_CaloIdL_v1, luminosity, n_run_bins, run_start, run_end, false, data);
     TriggerMonitor("trigger_singlemudenom_cross_emu_trg_cut_trg_Mu8_Ele17_CaloIdL_v1", "run",
-            "((abs(eormu1)==11&&pt1>20)||(abs(eormu2)==11&&pt2>20)) && TMath::Min(pt1, pt2)>20"+cut_trg_ttof+cut_trg_single_mu, cut_trg_Mu8_Ele17_CaloIdL_v1, luminosity, n_run_bins, run_start, run_end, false, data);
+            "((abs(eormu1)==13&&pt1>20)||(abs(eormu2)==13&&pt2>20)) && ((abs(eormu1)==11&&e1_scet>20)||(abs(eormu2)==11&&e2_scet>20))"+cut_trg_ttof+cut_trg_single_mu, cut_trg_Mu8_Ele17_CaloIdL_v1, luminosity, n_run_bins, run_start, run_end, false, data);
     TriggerMonitor("trigger_singlemudenom_cross_emu_trg_Mu8_Photon20_CaloIdVT_IsoT_v2", "run",
-            "((abs(eormu1)==11&&pt1>20)||(abs(eormu2)==11&&pt2>20)) && TMath::Min(pt1, pt2)>20"+cut_trg_ttof+cut_trg_single_mu, cut_trg_Mu8_Photon20_CaloIdVT_IsoT_v2, luminosity, n_run_bins, run_start, run_end, false, data);
+            "((abs(eormu1)==13&&pt1>20)||(abs(eormu2)==13&&pt2>20)) && ((abs(eormu1)==11&&e1_scet>20)||(abs(eormu2)==11&&e2_scet>20))"+cut_trg_ttof+cut_trg_single_mu, cut_trg_Mu8_Photon20_CaloIdVT_IsoT_v2, luminosity, n_run_bins, run_start, run_end, false, data);
 
     // nvtx
     TriggerMonitor("trigger_nvtx_singlemudenom_cross_emu_trg_Mu17_Ele8_CaloIdL_v1", "nvtx",
-            "((abs(eormu1)==11&&pt1>20)||(abs(eormu2)==11&&pt2>20))"+cut_trg_ttof+cut_trg_single_mu, cut_trg_Mu17_Ele8_CaloIdL_v1, luminosity, 20, -0.5, 19.5, false, data);
+            "((abs(eormu1)==13&&pt1>20)||(abs(eormu2)==13&&pt2>20))"+cut_trg_ttof+cut_trg_single_mu, cut_trg_Mu17_Ele8_CaloIdL_v1, luminosity, 20, -0.5, 19.5, false, data);
     TriggerMonitor("trigger_nvtx_singlemudenom_cross_emu_trg_cut_trg_Mu8_Ele17_CaloIdL_v1", "nvtx",
-            "((abs(eormu1)==11&&pt1>20)||(abs(eormu2)==11&&pt2>20))&& TMath::Min(pt1, pt2)>20"+cut_trg_ttof+cut_trg_single_mu, cut_trg_Mu8_Ele17_CaloIdL_v1, luminosity, 20, -0.5, 19.5, false, data);
+            "((abs(eormu1)==13&&pt1>20)||(abs(eormu2)==13&&pt2>20))&& ((abs(eormu1)==11&&e1_scet>20)||(abs(eormu2)==11&&e2_scet>20))"+cut_trg_ttof+cut_trg_single_mu, cut_trg_Mu8_Ele17_CaloIdL_v1, luminosity, 20, -0.5, 19.5, false, data);
     TriggerMonitor("trigger_nvtx_singlemudenom_cross_emu_trg_Mu8_Photon20_CaloIdVT_IsoT_v2", "nvtx",
-            "((abs(eormu1)==11&&pt1>20)||(abs(eormu2)==11&&pt2>20))&& TMath::Min(pt1, pt2)>20"+cut_trg_ttof+cut_trg_single_mu, cut_trg_Mu8_Photon20_CaloIdVT_IsoT_v2, luminosity, 20, -0.5, 19.5, false, data);
+            "((abs(eormu1)==13&&pt1>20)||(abs(eormu2)==13&&pt2>20))&& ((abs(eormu1)==11&&e1_scet>20)||(abs(eormu2)==11&&e2_scet>20))"+cut_trg_ttof+cut_trg_single_mu, cut_trg_Mu8_Photon20_CaloIdVT_IsoT_v2, luminosity, 20, -0.5, 19.5, false, data);
 
     //
     // double muons
@@ -121,23 +121,23 @@ void makeGatherTriggerMonitor(const std::vector<BabySample*> &babyVector, const 
     //
     // run
     TriggerMonitor("trigger_singledenom_trg_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1", "run", 
-            cut_trg_zee+cut_trg_single_e, "(pt1>30||pt2>30)"+cut_trg_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1, luminosity, n_run_bins, run_start, run_end, false, data);
+            cut_trg_zee+cut_trg_single_e, "(e1_scet>30||e2_scet>30)"+cut_trg_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1, luminosity, n_run_bins, run_start, run_end, false, data);
     TriggerMonitor("trigger_singledenom_trg_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v1", "run",
-            cut_trg_zee+cut_trg_single_e, "(pt1>30||pt2>30)"+cut_trg_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v1, luminosity, n_run_bins, run_start, run_end, false, data);
+            cut_trg_zee+cut_trg_single_e, "(e1_scet>30||e2_scet>30)"+cut_trg_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v1, luminosity, n_run_bins, run_start, run_end, false, data);
     TriggerMonitor("trigger_singledenom_trg_Ele32_CaloIdL_CaloIsoVL_SC17_v1", "run",
-            cut_trg_zee+cut_trg_single_e, "(pt1>30||pt2>30)"+cut_trg_Ele32_CaloIdL_CaloIsoVL_SC17_v1, luminosity, n_run_bins, run_start, run_end, false, data);
+            cut_trg_zee+cut_trg_single_e, "(e1_scet>30||e2_scet>30) && TMath::Min(e1_scet,e2_scet)>20"+cut_trg_Ele32_CaloIdL_CaloIsoVL_SC17_v1, luminosity, n_run_bins, run_start, run_end, false, data);
     TriggerMonitor("trigger_singledenom_trg_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v1", "run",
-            cut_trg_zee+cut_trg_single_e, "(pt1>30||pt2>30)"+cut_trg_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v1, luminosity, n_run_bins, run_start, run_end, false, data);
+            cut_trg_zee+cut_trg_single_e, "(e1_scet>30||e2_scet>30)"+cut_trg_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v1, luminosity, n_run_bins, run_start, run_end, false, data);
 
     // nvtx
     TriggerMonitor("trigger_nvtx_singledenom_trg_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1", "nvtx",
-            cut_trg_zee+cut_trg_single_e, "(pt1>30||pt2>30)"+cut_trg_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1, luminosity, 20, -0.5, 19.5, false, data);
+            cut_trg_zee+cut_trg_single_e, "(e1_scet>30||e2_scet>30)"+cut_trg_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1, luminosity, 20, -0.5, 19.5, false, data);
     TriggerMonitor("trigger_nvtx_singledenom_trg_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v1", "nvtx",
-            cut_trg_zee+cut_trg_single_e, "(pt1>30||pt2>30)"+cut_trg_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v1, luminosity, 20, -0.5, 19.5, false, data);
+            cut_trg_zee+cut_trg_single_e, "(e1_scet>30||e2_scet>30)"+cut_trg_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v1, luminosity, 20, -0.5, 19.5, false, data);
     TriggerMonitor("trigger_nvtx_singledenom_trg_Ele32_CaloIdL_CaloIsoVL_SC17_v1", "nvtx",
-            cut_trg_zee+cut_trg_single_e, "(pt1>30||pt2>30)"+cut_trg_Ele32_CaloIdL_CaloIsoVL_SC17_v1, luminosity, 20, -0.5, 19.5, false, data);
+            cut_trg_zee+cut_trg_single_e, "(e1_scet>30||e2_scet>30)&& TMath::Min(e1_scet,e2_scet)>20"+cut_trg_Ele32_CaloIdL_CaloIsoVL_SC17_v1, luminosity, 20, -0.5, 19.5, false, data);
    TriggerMonitor("trigger_nvtx_singledenom_trg_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v1", "nvtx",
-            cut_trg_zee+cut_trg_single_e, "(pt1>30||pt2>30)"+cut_trg_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v1, luminosity, 20, -0.5, 19.5, false, data);
-
+            cut_trg_zee+cut_trg_single_e, "(e1_scet>30||e2_scet>30)"+cut_trg_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v1, luminosity, 20, -0.5, 19.5, false, data);
+*/
 }
 

@@ -6,6 +6,7 @@ enum SampleType {
     BACKGROUND,
     SIGNAL,
     DATA,
+    TPMC,
 };
 
 #endif

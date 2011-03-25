@@ -9,6 +9,8 @@
 
 #include <vector>
 
+class TGraphAsymmErrors;
+
 //
 // utility functions
 //
@@ -18,6 +20,10 @@ void addToLegend(TLegend *leg, TH1F *hist, TString opt);
 void makeStack(std::vector<TH1F*> &v_hists);
 TH1F* slideIntegrated(TH1F* h1);
 void PreselectBabies(std::vector<BabySample*> bss, TCut cut);
+void PrintBins(const TH1F *h1);
+void PrintBins(const TGraphAsymmErrors *h1);
+void ZeroBinError(TH1F *h1);
+void ComputeEfficiency(TH1F *gr_eff_data, const TH1F *h1_data_denom, const TH1F *h1_data_numer);
 
 //
 // luminosity functions

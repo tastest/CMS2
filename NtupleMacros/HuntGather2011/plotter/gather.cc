@@ -73,9 +73,9 @@ TCanvas* TagAndProbe(const char *savename, TCut evsel, TCut var1, TCut var2,
     TH1F* h1_2TT_2;
     TH1F* h1_TP_2;
     TH1F* h1_TF_2;
-    TH1F* h1_2TT;
-    TH1F* h1_TP;
-    TH1F* h1_TF;
+    //TH1F* h1_2TT;
+    //TH1F* h1_TP;
+    //TH1F* h1_TF;
 
     //
     // define the categories
@@ -112,32 +112,32 @@ TCanvas* TagAndProbe(const char *savename, TCut evsel, TCut var1, TCut var2,
         // fill the right leg variable depending 
         // which leg is the tag
 
-        h1_2TT_1    = Plot(bss[i], var1, cut_2TT, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
+        h1_2TT_1   = Plot(bss[i], var1, cut_2TT, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
         h1_TP_1    = Plot(bss[i], var1, cut_TP_1, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);   
         h1_TF_1    = Plot(bss[i], var1, cut_TF_1, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
-        h1_2TT_2    = Plot(bss[i], var2, cut_2TT, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
+        h1_2TT_2   = Plot(bss[i], var2, cut_2TT, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
         h1_TP_2    = Plot(bss[i], var2, cut_TP_2, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
         h1_TF_2    = Plot(bss[i], var2, cut_TF_2, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
 
         // now combine them
 
-        h1_2TT = (TH1F*)h1_2TT_1->Clone();
-        h1_TP = (TH1F*)h1_TP_1->Clone();
-        h1_TF = (TH1F*)h1_TF_1->Clone();
-        h1_2TT->Add(h1_2TT_2);
-        h1_TP->Add(h1_TP_2);
-        h1_TF->Add(h1_TF_2);
+        //h1_2TT = (TH1F*)h1_2TT_1->Clone();
+        //h1_TP = (TH1F*)h1_TP_1->Clone();
+        //h1_TF = (TH1F*)h1_TF_1->Clone();
+        h1_2TT_1->Add(h1_2TT_2);
+        h1_TP_1->Add(h1_TP_2);
+        h1_TF_1->Add(h1_TF_2);
 
         // if the plot doesn't already exist then
         // add it to the appropriate vector of plots
-        if (bss[i]->type() == DATA && (find(vh_data_2TT.begin(), vh_data_2TT.end(), h1_2TT) == vh_data_2TT.end())) {
-            vh_data_2TT.push_back(h1_2TT);
-            vh_data_TP.push_back(h1_TP);
-            vh_data_TF.push_back(h1_TF);
-        } else if (bss[i]->type() == BACKGROUND && find(vh_mc_2TT.begin(), vh_mc_2TT.end(), h1_2TT) == vh_mc_2TT.end()) {
-            vh_mc_2TT.push_back(h1_2TT);
-            vh_mc_TP.push_back(h1_TP);
-            vh_mc_TF.push_back(h1_TF);
+        if (bss[i]->type() == DATA && (find(vh_data_2TT.begin(), vh_data_2TT.end(), h1_2TT_1) == vh_data_2TT.end())) {
+            vh_data_2TT.push_back(h1_2TT_1);
+            vh_data_TP.push_back(h1_TP_1);
+            vh_data_TF.push_back(h1_TF_1);
+        } else if (bss[i]->type() == BACKGROUND && find(vh_mc_2TT.begin(), vh_mc_2TT.end(), h1_2TT_1) == vh_mc_2TT.end()) {
+            vh_mc_2TT.push_back(h1_2TT_1);
+            vh_mc_TP.push_back(h1_TP_1);
+            vh_mc_TF.push_back(h1_TF_1);
         }
 
     }
@@ -173,33 +173,38 @@ TCanvas* TagAndProbe(const char *savename, TCut evsel, TCut var1, TCut var2,
     makeStack(vh_data_TF);
 
     // data denominator and numerator for eff
-    TH1F *h1_data_denom = (TH1F*)vh_data_2TT[0]->Clone();
+    TH1F *h1_data_denom = (TH1F*)vh_data_2TT[0]->Clone("data_denom");
     h1_data_denom->Add(vh_data_TP[0]);
-    TH1F *h1_data_numer = (TH1F*)h1_data_denom->Clone();
     h1_data_denom->Add(vh_data_TF[0]);
-    // mc denominator and numerator for eff
-    TH1F *h1_mc_denom = (TH1F*)vh_mc_2TT[0]->Clone();
-    h1_mc_denom->Add(vh_mc_TP[0]);
-    TH1F *h1_mc_numer = (TH1F*)h1_mc_denom->Clone();
-    h1_mc_denom->Add(vh_mc_TF[0]);
+    TH1F *h1_data_numer = (TH1F*)vh_data_2TT[0]->Clone("data_numer");
+    h1_data_numer->Add(vh_data_TP[0]);
 
-    TGraphAsymmErrors* gr_eff_data = new TGraphAsymmErrors(nbins);
+    // mc denominator and numerator for eff
+    TH1F *h1_mc_denom = (TH1F*)vh_mc_2TT[0]->Clone("mc_denom");
+    h1_mc_denom->Add(vh_mc_TP[0]);
+    h1_mc_denom->Add(vh_mc_TF[0]);
+    TH1F *h1_mc_numer = (TH1F*)vh_mc_2TT[0]->Clone("mc_numer");
+    h1_mc_numer->Add(vh_mc_TF[0]);
+
+    //TGraphAsymmErrors* gr_eff_data = new TGraphAsymmErrors(nbins);
+    TH1F *gr_eff_data = (TH1F*)h1_data_numer->Clone();
     gr_eff_data->SetName(TString("gr_") + h1_data_denom->GetName());
     gr_eff_data->SetTitle(TString(savename));
-    gr_eff_data->BayesDivide(h1_data_numer, h1_data_denom);
+    //gr_eff_data->BayesDivide(h1_data_numer, h1_data_denom);
+    ComputeEfficiency(gr_eff_data, h1_data_denom, h1_data_numer);
     gr_eff_data->SetMarkerColor(kRed);
 
     TGraphAsymmErrors* gr_eff_mc = new TGraphAsymmErrors(nbins);
     gr_eff_mc->SetName(TString("gr_") + h1_mc_denom->GetName());
     gr_eff_mc->SetTitle(TString(savename));
-    gr_eff_mc->BayesDivide(h1_mc_numer, h1_mc_denom);
+    //gr_eff_mc->Divide(h1_mc_numer, h1_mc_denom);
     gr_eff_mc->SetMarkerColor(kBlue);    
 
     TLegend* leg = new TLegend(0.7,0.25,0.95,0.45);
     leg->SetBorderSize(0);
     leg->SetFillStyle(0);
     leg->SetShadowColor(0);
-    leg->AddEntry(gr_eff_mc, "MC", "lp");
+    //leg->AddEntry(gr_eff_mc, "MC", "lp");
     leg->AddEntry(gr_eff_data, "Data", "lp");
 
     //
@@ -209,7 +214,8 @@ TCanvas* TagAndProbe(const char *savename, TCut evsel, TCut var1, TCut var2,
     TCanvas *c1 = new TCanvas(savename);
     c1->SetTopMargin(0.08);
     c1->Divide(2, 2);
-   
+
+/*   
     // do the background MC histograms
     for(unsigned int i = 0; i < vh_mc_2TT.size(); ++i)
     {
@@ -234,38 +240,47 @@ TCanvas* TagAndProbe(const char *savename, TCut evsel, TCut var1, TCut var2,
         } else vh_mc_TF[i]->Draw("histsame");
 
     }
+*/
 
     // do the data histogram
     // 2TT
     c1->cd(1);
-    vh_data_2TT[0]->Draw("samee1");
-    float ymax = vh_data_2TT[0]->GetMaximum() > vh_mc_2TT[0]->GetMaximum()
-        ? vh_data_2TT[0]->GetMaximum()+2*sqrt(vh_data_2TT[0]->GetMaximum()) : 
-        vh_mc_2TT[0]->GetMaximum() + 2*sqrt(vh_mc_2TT[0]->GetMaximum());
-    vh_mc_2TT[0]->SetMaximum(ymax);
+    vh_data_2TT[0]->Draw("e1");
+    //h1_data_denom->Draw();
+    //float ymax = vh_data_2TT[0]->GetMaximum() > vh_mc_2TT[0]->GetMaximum()
+    //    ? vh_data_2TT[0]->GetMaximum()+2*sqrt(vh_data_2TT[0]->GetMaximum()) : 
+    //    vh_mc_2TT[0]->GetMaximum() + 2*sqrt(vh_mc_2TT[0]->GetMaximum());
+    //vh_mc_2TT[0]->SetMaximum(ymax);
 
     // TP
     c1->cd(2);
-    vh_data_TP[0]->Draw("samee1");
-    ymax = vh_data_TP[0]->GetMaximum() > vh_mc_TP[0]->GetMaximum()
-        ? vh_data_TP[0]->GetMaximum()+2*sqrt(vh_data_TP[0]->GetMaximum()) :
-        vh_mc_TP[0]->GetMaximum() + 2*sqrt(vh_mc_TP[0]->GetMaximum());
-    vh_mc_TP[0]->SetMaximum(ymax);
+    vh_data_TP[0]->Draw("e1");
+    //h1_data_numer->Draw();
+    //ymax = vh_data_TP[0]->GetMaximum() > vh_mc_TP[0]->GetMaximum()
+    //    ? vh_data_TP[0]->GetMaximum()+2*sqrt(vh_data_TP[0]->GetMaximum()) :
+    //    vh_mc_TP[0]->GetMaximum() + 2*sqrt(vh_mc_TP[0]->GetMaximum());
+    //vh_mc_TP[0]->SetMaximum(ymax);
 
     // TF
     c1->cd(3);
-    vh_data_TF[0]->Draw("samee1");
-    ymax = vh_data_TF[0]->GetMaximum() > vh_mc_TF[0]->GetMaximum()
-        ? vh_data_TF[0]->GetMaximum()+2*sqrt(vh_data_TF[0]->GetMaximum()) :
-        vh_mc_TF[0]->GetMaximum() + 2*sqrt(vh_mc_TF[0]->GetMaximum());
-    vh_mc_TF[0]->SetMaximum(ymax);
+    vh_data_TF[0]->Draw("e1");
+    //ymax = vh_data_TF[0]->GetMaximum() > vh_mc_TF[0]->GetMaximum()
+    //    ? vh_data_TF[0]->GetMaximum()+2*sqrt(vh_data_TF[0]->GetMaximum()) :
+    //    vh_mc_TF[0]->GetMaximum() + 2*sqrt(vh_mc_TF[0]->GetMaximum());
+    //vh_mc_TF[0]->SetMaximum(ymax);
 
     // now the efficiency
     c1->cd(4);
-    gr_eff_data->Draw("AP");
+    //gr_eff_data->Draw("AP");
+    gr_eff_data->Draw("HIST E1");
     gr_eff_data->GetYaxis()->SetRangeUser(0.0, 1.1);
-    gr_eff_mc->Draw("P");
+    //gr_eff_mc->Draw("P");
     leg->Draw("SAME");
+
+    PrintBins(h1_data_denom);
+    PrintBins(h1_data_numer);
+    std::cout << "---" << std::endl;
+    PrintBins(gr_eff_data);
 
     // draw the legend and tidy up
     c1->RedrawAxis();
@@ -451,7 +466,7 @@ TH1F* Plot(BabySample *bs, TCut var, TCut selection, float intlumipb,
 
     if (!strcmp("CUT", var.GetName()))
         var.SetName(var.GetTitle());
-    
+   
     char *name = 0;
     if (integrated) name = Form("%s_%s_%s_%i_int", bs->pfx(), selection.GetName(), var.GetName(), gDrawAllCount);
     else name = Form("%s_%s_%s_%i", bs->pfx(), selection.GetName(), var.GetName(), gDrawAllCount);
@@ -462,7 +477,7 @@ TH1F* Plot(BabySample *bs, TCut var, TCut selection, float intlumipb,
     // set the normalisation scale
     //
     TCut scale = Form("scale1fb*(%f/1000.0)*%f", intlumipb, bs->kfactor());
-    if (bs->type() == DATA) scale = "1.0";
+    if (bs->type() == DATA || bs->type() == TPMC) scale = "1.0";
 
     //
     // If the histogram does not already exist
@@ -519,7 +534,7 @@ TH1F* Plot(BabySample *bs, TCut var, TCut selection, float intlumipb,
     if (bs->type() == DATA) {
         h->SetMarkerColor(bs->color());
         h->SetMarkerStyle(bs->style());
-    } else if (bs->type() == BACKGROUND) {
+    } else if (bs->type() == BACKGROUND || bs->type() == TPMC) {
         h->SetLineColor(bs->color());
         h->SetFillColor(bs->color());
         h->SetFillStyle(bs->style());
@@ -541,9 +556,14 @@ TH1F* Plot(BabySample *bs, TCut var, TCut selection, float intlumipb,
     // Move overflow to the last bin
     //
 
+    float overflowerr = h->GetBinError(nbins+1);
     float overflow = h->GetBinContent(nbins+1);
-    h->SetBinContent(nbins,overflow);
+    float endbinerr = h->GetBinError(nbins);
+    float endbin = h->GetBinContent(nbins);
+    h->SetBinContent(nbins,overflow+endbin);
+    h->SetBinError(nbins, sqrt(overflow+endbin));
     h->SetBinContent(nbins+1,0.);
+    h->SetEntries(h->GetEntries() - overflow);
 
     return h;
 
@@ -600,4 +620,67 @@ void PreselectBabies(std::vector<BabySample*> bss, TCut cut)
     }
 
 }
+
+void PrintBins(const TH1F *h1)
+{
+
+    unsigned int nbins = h1->GetNbinsX();
+    for (unsigned int i = 1; i <= nbins; ++i)
+    {
+        float low = h1->GetBinLowEdge(i);
+        float high = h1->GetBinWidth(i);
+        std::cout << "Bin: " << low << " - " << high << ": " << h1->GetBinContent(i) << " \\pm " << h1->GetBinError(i) << std::endl; 
+    }
+
+}
+
+void PrintBins(const TGraphAsymmErrors *h1)
+{
+
+    unsigned int nbins = h1->GetN();
+    for (unsigned int i = 0; i < nbins; ++i)
+    {
+        float low = h1->GetErrorXlow(i);
+        float high = h1->GetErrorXhigh(i);
+        Double_t x, y;
+        h1->GetPoint(i, x, y);
+        std::cout << "Bin: " << x - low << " - " << x + high << ": " << y << " - " << h1->GetErrorYlow(i) << " + " << h1->GetErrorYhigh(i) << std::endl;
+    }
+
+}
+
+void ZeroBinError(TH1F *h1)
+{
+
+    unsigned int nbins = h1->GetNbinsX();
+    for (unsigned int i = 1; i <= nbins; ++i)
+    {
+        h1->SetBinContent(i, int(h1->GetBinContent(i)));
+        h1->SetBinError(i, sqrt(int(h1->GetBinContent(i))));
+    }
+
+}
+
+void ComputeEfficiency(TH1F *gr_eff_data, const TH1F *h1_data_denom, const TH1F *h1_data_numer)
+{
+
+    unsigned int nbins = h1_data_denom->GetNbinsX();
+    for (unsigned int i = 1; i <= nbins; ++i)
+    {
+
+        float eff = 0.0;
+        float err = 0.0;
+        if (h1_data_denom->GetBinContent(i) != 0) {
+            eff = h1_data_numer->GetBinContent(i) / h1_data_denom->GetBinContent(i);
+            err = sqrt(eff*(1-eff)/h1_data_denom->GetBinContent(i));
+        }
+        gr_eff_data->SetBinContent(i, eff);
+        gr_eff_data->SetBinError(i, err);
+        std::cout << "setting (" << i << "): " << eff << " \\pm " << err << std::endl;
+    }
+
+}
+
+
+
 

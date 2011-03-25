@@ -40,6 +40,8 @@ void makeGatherPlots(TString base, bool debug = false) {
 
     TCut cut_notau("cut_notau", "ngentaus==0");
     TCut cut_tau("cut_tau", "ngentaus==2");
+    TCut cut_dyee("cut_dyee", "ngenels==2");
+    TCut cut_dymm("cut_dymm", "ngenmus==2");
 
     float k_ww = 1.0;
     float k_wz = 1.0;
@@ -63,6 +65,18 @@ void makeGatherPlots(TString base, bool debug = false) {
             cut_notau, k_dy, BACKGROUND, kAzure-2, 1001);
     bs_dilep_dyeemm->add(base+"/mc/DYToEE_M-20_TuneZ2_7TeV-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/dilep2010_ZMassLessThan50Skim/baby_gather.root");
     bs_dilep_dyeemm->add(base+"/mc/DYToMuMu_M-20_TuneZ2_7TeV-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/diLep2010_ZMassLessThan50Skim/baby_gather.root");
+
+    // special for Tag and Probe
+    
+    BabySample *bs_dilep_dyee  = new BabySample("dyee", "mc",
+            base+"/mc/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root",
+            cut_dymm, k_dy, BACKGROUND, kAzure-2, 1001);
+
+    BabySample *bs_dilep_dymm  = new BabySample("dymm", "mc",
+            base+"/mc/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root",
+            cut_dymm, k_dy, BACKGROUND, kAzure-2, 1001);
+
+    // end special for Tag and Probe
 
     BabySample *bs_dilep_dytt  = new BabySample("dytt", "mc",
             base+"/mc/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root",
@@ -134,25 +148,23 @@ void makeGatherPlots(TString base, bool debug = false) {
     //        c_datapresel, 1.0, DATA);
     //bs_data->add(base+"/data/Mu_Run2010B-Nov4ReReco_v1_RECO/V03-06-17/diLepPt1020Skim/baby_gather.root");
 
-    BabySample *bs_data = new BabySample("data", "data",
+     BabySample *bs_data = new BabySample("data", "data",
             base+"mc/ExpressPhysicsRun2011A-Express-v1FEVT/V04-00-08/baby_gather.root",
             c_datapresel, 1.0, DATA);
   
     //bs_data->add(base + "mc/ExpressPhysicsRun2011A-Express-v1FEVT/V04-00-08/baby_gather.root");
-
-  
 
     //
     // Define the mixtures of signals, background 
     // and data that can be plotted
     //
 
-    std::vector<BabySample*> babyVectorTP;
-    babyVectorTP.push_back(bs_data);
-    babyVectorTP.push_back(bs_dilep_dyeemm);
-    babyVectorTP.push_back(bs_dilep_dytt);
-    babyVectorTP.push_back(bs_dilep_ttbar);
-    babyVectorTP.push_back(bs_dilep_wjets);
+    std::vector<BabySample*> babyVectorTPee;
+    babyVectorTPee.push_back(bs_data);
+    babyVectorTPee.push_back(bs_dilep_dyee);
+    std::vector<BabySample*> babyVectorTPmm;
+    babyVectorTPmm.push_back(bs_data);
+    babyVectorTPmm.push_back(bs_dilep_dymm);
 
     std::vector<BabySample*> babyVectorSM;
     babyVectorSM.push_back(bs_data);
@@ -198,14 +210,14 @@ void makeGatherPlots(TString base, bool debug = false) {
     // Luminosity determination
     //
     const char *goodrunlist = "../runlists/Cert_TopNov5_Merged_135821-149442_allPVT.txt";
-  float goodruns_lumi = 0.0;
-//  float goodruns_lumi = 35.0;
+    float goodruns_lumi = 0.0;
+    //float goodruns_lumi = 35.0;
 
     std::cout << "[The Gathering] Determining luminosity" << std::endl;
     std::cout << "[The Gathering] " << goodrunlist << std::endl;
     set_goodrun_file(goodrunlist);
-    float est_lumi = 7.5;//GetIntLumi(bs_data, goodruns_lumi);
-    float est_newruns_lumi = 7.5;// = est_lumi - goodruns_lumi;
+    float est_lumi = 20.0;//GetIntLumi(bs_data, goodruns_lumi);
+    float est_newruns_lumi = 20.0;// = est_lumi - goodruns_lumi;
     //float est_lumi = GetIntLumi(bs_data, goodruns_lumi);
     //float est_newruns_lumi = est_lumi - goodruns_lumi;
 
@@ -217,15 +229,17 @@ void makeGatherPlots(TString base, bool debug = false) {
     //
 
     if (debug) {
-        makeGatherPlotsElectrons(babyVectorTP, est_lumi);
-        //makeGatherPlotsMuons(babyVectorTP, est_lumi);
+        makeGatherPlotsElectrons(babyVectorTPee, est_lumi);
+        //makeGatherPlotsMuons(babyVectorTPmm, est_lumi);
         //makeGatherTriggerMonitor(babyVectorSM, est_lumi);
+        //makeGatherPlotsValidation(babyVectorSM, goodruns_lumi, est_newruns_lumi);
+
     }
     else {
         //makeGatherPlotsElectrons(babyVectorTP, est_lumi);
         //makeGatherPlotsMuons(babyVectorTP, est_lumi);
         //makeGatherTriggerMonitor(babyVectorSM, est_lumi);
-        //makeGatherPlotsValidation(babyVectorSM, goodruns_lumi, est_newruns_lumi);
+        makeGatherPlotsValidation(babyVectorSM, goodruns_lumi, est_newruns_lumi);
         makeGatherPlotsHiggs(babyVectorHiggs, est_lumi);
         makeGatherPlotsOS(babyVectorSusy, est_lumi);
         makeGatherPlotsZMet(babyVectorSusy, est_lumi);
@@ -269,5 +283,7 @@ void makeGatherPlots(TString base, bool debug = false) {
     delete bs_dilep_hww160;
     delete bs_dilep_lm0;
     delete bs_data;
+    delete bs_dilep_dyee;
+    delete bs_dilep_dymm;
 
 }
