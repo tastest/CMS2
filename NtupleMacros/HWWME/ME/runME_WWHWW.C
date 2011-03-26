@@ -12,12 +12,27 @@ enum process {
   proc_WW,
   proc_Wpj,
   proc_Wmj,
+  proc_Wpg,
+  proc_Wmg,
   proc_ZZ,
+  proc_HWW120,
+  proc_HWW130,
+  proc_HWW140,
+  proc_HWW150,
   proc_HWW160,
+  proc_HWW170,
+  proc_HWW180,
+  proc_HWW190,
+  proc_HWW200,
+  proc_HWW210,
+  proc_HWW220,
+  proc_HWW230,
+  proc_HWW250,
+  proc_HWW300,
   kNProc
 };
 
-enum { kNDilep=3}; 
+enum { kNDilep=3 }; 
 
 
 float lumi=1000.0;
@@ -27,13 +42,27 @@ float acceptance [kNProc][kNDilep];
 float BR [kNProc][kNDilep] = {{ (1.0+0.1736)*(1.0+0.1736)/9, (1.0+0.1736)*(1.0+0.1784)/9*2, (1.0+0.1784)*(1.0+0.1784)/9 },
 			      { (1.0+0.1784)/3, (2.0+0.1736+0.1784)/3, (1+0.1784)/3},
 			      { (1.0+0.1784)/3, (2.0+0.1736+0.1784)/3, (1+0.1784)/3},
+			      { (1.0+0.1784)/3, (2.0+0.1736+0.1784)/3, (1+0.1784)/3}, //Wpgamma placeholder
+                              { (1.0+0.1784)/3, (2.0+0.1736+0.1784)/3, (1+0.1784)/3}, //Wmgamma placefolder 
 			      { 2*0.2*(0.0363+0.0370*0.1736*0.1736), 0.0, 2*0.2*(0.0363+0.0370*0.1784*0.1784) },
 			      { (1.0+0.1736)*(1.0+0.1736)/9, (1.0+0.1736)*(1.0+0.1784)/9*2, (1.0+0.1784)*(1.0+0.1784)/9 },
+			      { (1.0+0.1736)*(1.0+0.1736)/9, (1.0+0.1736)*(1.0+0.1784)/9*2, (1.0+0.1784)*(1.0+0.1784)/9 },
+			      { (1.0+0.1736)*(1.0+0.1736)/9, (1.0+0.1736)*(1.0+0.1784)/9*2, (1.0+0.1784)*(1.0+0.1784)/9 },
+			      { (1.0+0.1736)*(1.0+0.1736)/9, (1.0+0.1736)*(1.0+0.1784)/9*2, (1.0+0.1784)*(1.0+0.1784)/9 },
+			      { (1.0+0.1736)*(1.0+0.1736)/9, (1.0+0.1736)*(1.0+0.1784)/9*2, (1.0+0.1784)*(1.0+0.1784)/9 },
+			      { (1.0+0.1736)*(1.0+0.1736)/9, (1.0+0.1736)*(1.0+0.1784)/9*2, (1.0+0.1784)*(1.0+0.1784)/9 },
+			      { (1.0+0.1736)*(1.0+0.1736)/9, (1.0+0.1736)*(1.0+0.1784)/9*2, (1.0+0.1784)*(1.0+0.1784)/9 },
+			      { (1.0+0.1736)*(1.0+0.1736)/9, (1.0+0.1736)*(1.0+0.1784)/9*2, (1.0+0.1784)*(1.0+0.1784)/9 },
+			      { (1.0+0.1736)*(1.0+0.1736)/9, (1.0+0.1736)*(1.0+0.1784)/9*2, (1.0+0.1784)*(1.0+0.1784)/9 },
+			      { (1.0+0.1736)*(1.0+0.1736)/9, (1.0+0.1736)*(1.0+0.1784)/9*2, (1.0+0.1784)*(1.0+0.1784)/9 },
+			      { (1.0+0.1736)*(1.0+0.1736)/9, (1.0+0.1736)*(1.0+0.1784)/9*2, (1.0+0.1784)*(1.0+0.1784)/9 },
+			      { (1.0+0.1736)*(1.0+0.1736)/9, (1.0+0.1736)*(1.0+0.1784)/9*2, (1.0+0.1784)*(1.0+0.1784)/9 },
+			      { (1.0+0.1736)*(1.0+0.1736)/9, (1.0+0.1736)*(1.0+0.1784)/9*2, (1.0+0.1784)*(1.0+0.1784)/9 },
+			      { (1.0+0.1736)*(1.0+0.1736)/9, (1.0+0.1736)*(1.0+0.1784)/9*2, (1.0+0.1784)*(1.0+0.1784)/9 }
 };
 
-float NLOXsec[kNProc] = {  4.5*0.919, 31314.0/2.0, 31314.0/2.0, 5.9, 0.8664429};
-float MCFMXsec[kNProc] = { 28.4, 11270, 11270.0, 4.3, 3.25};
-
+float NLOXsec[kNProc] = {  4.5*0.919, 31314.0/2.0, 31314.0/2.0, 31314.0/2.0, 31314.0/2.0, 5.9, 0.8664429, 0.8664429, 0.8664429, 0.8664429, 0.8664429, 0.8664429, 0.8664429, 0.8664429, 0.8664429, 0.8664429, 0.8664429, 0.8664429, 0.8664429, 0.8664429};
+float MCFMXsec[kNProc] = { 28.4, 11270, 11270.0,  11270, 11270.0, 4.3, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25};
 
 
 
@@ -69,7 +98,7 @@ void InitializeYields(){
 
 */
 
-void InitializeYields(TString Higgs){
+void InitializeYields(){
 
   TString FileName;
   FileName = "../Util.root";
@@ -79,7 +108,8 @@ void InitializeYields(TString Higgs){
 
   TString histName;
   
-  TString procName[kNProc] = {  "WW" , "Wpj", "Wmj", "ZZ", Higgs };
+  TString procName[kNProc] = {  "WW" , "Wpj", "Wmj", "Wpg", "Wmg", "ZZ", "HWW120", "HWW130", "HWW140", "HWW150", "HWW160",
+				"HWW170", "HWW180", "HWW190", "HWW200", "HWW210", "HWW220", "HWW230", "HWW250", "HWW300"};
   TString dilName[kNDilep]={"mm", "em", "ee" };
 
  for (int i=0; i<kNProc; i++){                                                                                                                           
@@ -105,20 +135,13 @@ void NeutrinoIntegration(int process,TString inputFileName,int seed, int SmearLe
 //# main function
 //###################
 void runME_WWHWW(TString inputFileName,int seed,int SmearLevel,int ncalls,double Error, int Mass, int nev){
-  /*
-    gSystem->SetIncludePath("-I$ROOTSYS/include"); 
-    gSystem->Load("./libgfortran.so");
-    gSystem->Load("libPhysics.so");
-    gSystem->Load("libEG.so");
-    gSystem->Load("./libmcfm.so");
-    gSystem->Load("./libME.so");
-
-  */
 
   ERRORthreshold=Error;
   int process=TVar::HWW;
   int maxevt=nev;
 
+  InitializeYields();
+  CalculateAcceptance();
 
   cout <<"=== Neutrino Integration ==========" <<endl;  
   NeutrinoIntegration(process,inputFileName,seed, SmearLevel,ncalls,maxevt, Mass); 
@@ -166,19 +189,6 @@ void NeutrinoIntegration(int process,TString inputFileName,int seed, int SmearLe
     evt_tree->Branch("dXsecErr"   ,dXsecErrList        ,"dXsecErr[nProc]/D");
     evt_tree->Branch("LR"   ,      LR                  ,"LR[nProc]/D");
     
-    // SM Models to Process
-    int NProcessCalculate=0;
-    TVar::Process processList[10];
-    
-    processList[ NProcessCalculate++]=TVar::WW;  
-    //processList[ NProcessCalculate++]=TVar::ZZ;  
-    //processList[ NProcessCalculate++]=TVar::Wp_1jet;
-    //processList[ NProcessCalculate++]=TVar::Wm_1jet;
-  
-
-    TVar::Process ProcInt;
-    TVar::Process Vproc;
-    
     cdf_event_type cms_event;
     
     //==========================================
@@ -203,8 +213,8 @@ void NeutrinoIntegration(int process,TString inputFileName,int seed, int SmearLe
       
       
       int Njets             = ch->GetLeaf("Njets"       )->GetValue();
-      double MetX   	 = ch->GetLeaf("MetX"	    )->GetValue();
-      double MetY	         = ch->GetLeaf("MetY"	    )->GetValue();
+      double MetX   	    = ch->GetLeaf("MetX"	    )->GetValue();
+      double MetY	    = ch->GetLeaf("MetY"	    )->GetValue();
       
       double lep1_Px	 = ch->GetLeaf("lep1_Px"      )->GetValue();
       double lep1_Py	 = ch->GetLeaf("lep1_Py"      )->GetValue();
@@ -244,7 +254,6 @@ void NeutrinoIntegration(int process,TString inputFileName,int seed, int SmearLe
       cout<<endl<<endl<<endl;
       cout <<"========================================================="<<endl;
       cout<<"Entry: "<<ievt<<"   Run: "<<runNumber<<"   Event: "<<eventNumber<<endl;
-      //      cout<<ProcIdx<<"   "<<TVar::ProcessName(ProcIdx).Data()<<"   "<<lep1_Type<<"   "<<lep2_Type<<endl;
 
       cout <<"Input: =================================================="<<endl;
       for(int lep=0;lep<2;lep++){
@@ -255,10 +264,25 @@ void NeutrinoIntegration(int process,TString inputFileName,int seed, int SmearLe
       } 
       cout <<"========================================================="<<endl;
       
+
+      // SM Models to Process                                                                                                                            
+      int NProcessCalculate=0;
+      TVar::Process processList[10];
+      processList[ NProcessCalculate++]=TVar::WW;
+      processList[ NProcessCalculate++]=TVar::HWW160;
+
+      //processList[ NProcessCalculate++]=TVar::ZZ;                                                                                                  
+      //processList[ NProcessCalculate++]=TVar::Wp_1jet;                                                                                             
+      //processList[ NProcessCalculate++]=TVar::Wm_1jet;                                                                                              
+
+      TVar::Process ProcInt;
+      TVar::Process Vproc;
+
       double Xsec=0;
       double XsecErr=0;
       double Ratio=0;
 
+      int HiggsMASS[20]={0,0,0,0,0,0,120,130,140,150,160,170,180,190,200,210,220,230,250,300};
 
       for(int iproc=0; iproc<NProcessCalculate; iproc++){ 
 	
@@ -267,8 +291,21 @@ void NeutrinoIntegration(int process,TString inputFileName,int seed, int SmearLe
 	Xcal2.SetMCHist(ProcInt); 
 	
 	printf(" Calculate Evt %4i Run %9i Evt %8i Proc %4i %s Lep %4i %4i\n", ievt, runNumber, eventNumber, ProcIdx, TVar::ProcessName(ProcIdx).Data(),lep1_Type,lep2_Type);
-	
-	Xcal2.NeutrinoIntegrate(ProcInt,cms_event, &Xsec, &XsecErr);
+
+	if ((processList[iproc]>=TVar::HWW120) && (processList[iproc]<=TVar::HWW300)){
+	  Xcal2.SetProcess(TVar::HWW);
+	  Xcal2.SetHiggsMass(HiggsMASS[processList[iproc]]);
+	  cout<<HiggsMASS[processList[iproc]]<<"\n";
+	  
+	  if ( HiggsMASS[processList[iproc]]<160.8 )
+	    Xcal2.SetHWWPhaseSpace(TVar::MH);
+	  else
+	    Xcal2.SetHWWPhaseSpace(TVar::MHMW);
+
+	  Xcal2.NeutrinoIntegrate(TVar::HWW,cms_event, &Xsec, &XsecErr);
+	} 
+	else Xcal2.NeutrinoIntegrate(ProcInt,cms_event, &Xsec, &XsecErr);
+	 
 	dXsecList[ProcInt]=Xsec;  
 	dXsecErrList[ProcInt]=XsecErr;
 	if (Xsec>0) Ratio = XsecErr/Xsec;
@@ -279,73 +316,7 @@ void NeutrinoIntegration(int process,TString inputFileName,int seed, int SmearLe
 	}
       }
             
-      //The Higgs calculations now : 
-      ProcInt =  Vproc = TVar::HWW;
-      
-      int i;
-      
-      int l1 = TVar::HWW160;
-      int l2 = TVar::HWW160;
-      
-      for(i = l1; i<=l2; i++){
-	Xcal2.SetMCHist(i);     
-	InitializeYields(TVar::ProcessName(i).Data());
-	CalculateAcceptance();
-	int HiggsMASS;
-	
-	if (i==TVar::HWW110) HiggsMASS = 110;
-	if (i==TVar::HWW120) HiggsMASS = 120;
-	if (i==TVar::HWW130) HiggsMASS = 130;
-	if (i==TVar::HWW140) HiggsMASS = 140;
-	if (i==TVar::HWW150) HiggsMASS = 150;
-	if (i==TVar::HWW160) HiggsMASS = 160;
-	if (i==TVar::HWW170) HiggsMASS = 170;
-	if (i==TVar::HWW180) HiggsMASS = 180;
-	if (i==TVar::HWW190) HiggsMASS = 190;
-	if (i==TVar::HWW200) HiggsMASS = 200;
-	
-	if (i==TVar::HWW115) HiggsMASS = 115;
-	if (i==TVar::HWW125) HiggsMASS = 125;
-	if (i==TVar::HWW135) HiggsMASS = 135;
-	if (i==TVar::HWW145) HiggsMASS = 145;
-	if (i==TVar::HWW155) HiggsMASS = 155;
-	if (i==TVar::HWW165) HiggsMASS = 165;
-	if (i==TVar::HWW175) HiggsMASS = 175;
-	if (i==TVar::HWW185) HiggsMASS = 185;
-	if (i==TVar::HWW195) HiggsMASS = 195;
-	
-	if (i==TVar::HWW210) HiggsMASS = 210;
-	if (i==TVar::HWW220) HiggsMASS = 220;
-	if (i==TVar::HWW230) HiggsMASS = 230;
-	if (i==TVar::HWW240) HiggsMASS = 240;
-	if (i==TVar::HWW250) HiggsMASS = 250;
-	if (i==TVar::HWW260) HiggsMASS = 260;
-	if (i==TVar::HWW270) HiggsMASS = 270;
-	if (i==TVar::HWW280) HiggsMASS = 280;
-	if (i==TVar::HWW290) HiggsMASS = 290;
-	if (i==TVar::HWW300) HiggsMASS = 300;
-	
-	
-	cout<<i<<"   "<<HiggsMASS<<"   "<<"\n";
-	Xcal2.SetNcalls(ncalls);
-	Xcal2.SetProcess(TVar::HWW);
-	Xcal2.SetHiggsMass(HiggsMASS); 
-	
-	if ( HiggsMASS<160.8 ) 
-	  Xcal2.SetHWWPhaseSpace(TVar::MH);  
-	else	
-	  Xcal2.SetHWWPhaseSpace(TVar::MHMW);
-	
-	printf(" Calculate Evt %4i Run %9i Evt %8i Proc %4i %s Lep %4i %4i\n", ievt, runNumber, eventNumber, ProcIdx, TVar::ProcessName(ProcIdx).Data(),lep1_Type,lep2_Type);
-	
-	Xcal2.NeutrinoIntegrate(ProcInt,cms_event, &Xsec, &XsecErr);
-	dXsecList[i]=Xsec; 
-	dXsecErrList[i]=XsecErr; 
-	if (Xsec>0) Ratio = XsecErr/Xsec;
-      }
-      
-      dXsecList[0]=dXsecList[0];
-            
+
       cout << "START summary ====================" <<endl;
       printf(" Evt %4i/%4i Run %9i Evt %8i Proc %4i %s lep %4i %4i Njets %d \n", ievt,Ntot, runNumber, eventNumber, ProcIdx, TVar::ProcessName(ProcIdx).Data(),lep1_Type,lep2_Type,Njets);
       printf(" MetX %8.8f MetY %8.8f Mll %8.8f Phill %8.8f\n",cms_event.MetX, cms_event.MetY,Mll,Phill);
@@ -359,15 +330,6 @@ void NeutrinoIntegration(int process,TString inputFileName,int seed, int SmearLe
 	if(dXsecList[processList[j]]>0) ratio=dXsecErrList[processList[j]]/dXsecList[processList[j]];
 	cout <<  dXsecList[processList[j]] << " +- " << dXsecErrList[processList[j]] << " ( " << ratio <<" ) "<<endl;
       }
-      
-      
-      for( int ii = l1; ii<=l2; ii++){
-	double ratio=0;
-	printf("%2i  %8s  :", ii,TVar::ProcessName(ii).Data());
-	if(dXsecList[ii]>0) ratio=dXsecErrList[ii]/dXsecList[ii];
-	cout <<  dXsecList[ii] << " +- " << dXsecErrList[ii]<< " ( " << ratio <<" ) "<<endl;
-      }
-      
       cout << "END summary =====================" <<endl;
       
       
@@ -376,21 +338,26 @@ void NeutrinoIntegration(int process,TString inputFileName,int seed, int SmearLe
       
       // Begin HWW likelihood
 
-      yield_bg = yield[proc_WW][dilflavor];
+      for(int k=proc_HWW120; k<proc_HWW300; k++){
 
-      cout<<"bg_yield="<<yield_bg<<"\n";
+        yield_bg = yield[proc_WW][dilflavor];
+
+	cout<<"bg_yield="<<yield_bg<<"\n";
       
-      numer=1/(MCFMXsec[proc_HWW160]*acceptance[proc_HWW160][dilflavor]) * dXsecList[TVar::HWW160];
-      denom  = numer;
-      cout<<" PHHWW160= "<<numer<<"\n";
+	numer=1/(MCFMXsec[k]*acceptance[k][dilflavor]) * dXsecList[k];
+	denom  = numer;
+	cout<<" PHWW= "<<numer<<"\n";
       
-      denom += 1/(MCFMXsec[proc_WW ]*acceptance[proc_WW ][dilflavor]) * dXsecList[proc_WW ] * yield[proc_WW][dilflavor]/yield_bg;
-      cout<<" PWW= "<< 1/(MCFMXsec[proc_WW]*acceptance[proc_WW][dilflavor]) * dXsecList[proc_WW] * yield[proc_WW][dilflavor]/yield_bg <<"\n";	
-      
-      if(denom!=0)
-	LR[proc_HWW160]=numer/denom;
-      cout<<"LR_HWW160= "<<LR[proc_HWW160]<<"\n";
-      evt_tree->Fill();
+	denom += 1/(MCFMXsec[proc_WW ]*acceptance[proc_WW ][dilflavor]) * dXsecList[proc_WW ] * yield[proc_WW][dilflavor]/yield_bg;
+	cout<<" PWW= "<< 1/(MCFMXsec[proc_WW]*acceptance[proc_WW][dilflavor]) * dXsecList[proc_WW] * yield[proc_WW][dilflavor]/yield_bg <<"\n";	
+	
+	if(denom!=0)
+	  LR[k]=numer/denom;
+	//cout<<"LR_HWW["<<k<<"]= "<<LR[k]<<"\n";
+      }      
+
+
+	evt_tree->Fill();
       
     }//nevent
     
