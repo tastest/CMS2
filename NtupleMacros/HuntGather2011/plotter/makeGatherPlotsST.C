@@ -1,6 +1,6 @@
 #include "cuts.h"
 
-void makeGatherPlotsST(const std::vector<BabySample*> &babyVector, const float &luminosity)
+void makeGatherPlotsST(TString prefix, const std::vector<BabySample*> &babyVector, const float &luminosity)
 {
 
     std::cout << "Making ST plots...\n";
@@ -25,12 +25,12 @@ void makeGatherPlotsST(const std::vector<BabySample*> &babyVector, const float &
     // Make the plots
     //
 
-    DrawAll("njets","meff_njetsclean",base_dilep,luminosity,10,-0.5,9.5,0, babyVector);
-    DrawAll("njets","meff_tcmeffgt400_njetsclean",base_tcmeffgt400_dilep,luminosity,10,-0.5,9.5,0, babyVector);
-    DrawAll("tcmeff","meff_tcmeff_int",base_dilep,luminosity,40,0.,1000.,1, babyVector);
-    DrawAll("tcmeff","meff_tcmetgt50_tcmeff_int",base_tcmetgt50_dilep,luminosity,40,0.,1000.,1, babyVector);
-    DrawAll("tcmeff","meff_sumjetptgt200_tcmeff_int",base_sumjetptgt200_dilep,luminosity,40,0.,1000.,1, babyVector);
-    DrawAll("tcmeff","meff_dilptgt100_tcmeff_int",base_dilptgt100_dilep,luminosity,40,0.,1000.,1, babyVector);
+    DrawAll("njets", prefix+"_meff_njetsclean",base_dilep,luminosity,10,-0.5,9.5,0, babyVector);
+    DrawAll("njets", prefix+"_meff_tcmeffgt400_njetsclean",base_tcmeffgt400_dilep,luminosity,10,-0.5,9.5,0, babyVector);
+    DrawAll("tcmeff", prefix+"_meff_tcmeff_int",base_dilep,luminosity,40,0.,1000.,1, babyVector);
+    DrawAll("tcmeff", prefix+"_meff_tcmetgt50_tcmeff_int",base_tcmetgt50_dilep,luminosity,40,0.,1000.,1, babyVector);
+    DrawAll("tcmeff", prefix+"_meff_sumjetptgt200_tcmeff_int",base_sumjetptgt200_dilep,luminosity,40,0.,1000.,1, babyVector);
+    DrawAll("tcmeff", prefix+"_meff_dilptgt100_tcmeff_int",base_dilptgt100_dilep,luminosity,40,0.,1000.,1, babyVector);
 
 }
 

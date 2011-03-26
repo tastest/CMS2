@@ -1,6 +1,6 @@
 #include "cuts.h"
 
-void makeGatherPlotsSS(const std::vector<BabySample*> &babyVector, const float &luminosity)
+void makeGatherPlotsSS(TString prefix, const std::vector<BabySample*> &babyVector, const float &luminosity)
 {
 
     std::cout << "Making SS plots...\n";
@@ -27,10 +27,10 @@ void makeGatherPlotsSS(const std::vector<BabySample*> &babyVector, const float &
     // Make the plots
     //
 
-    DrawAll("mass","ss_ee_mass",ssanal_ee_dilep,luminosity,40,0.,500.,0, babyVector);
-    DrawAll("mass","ss_mm_mass",ssanal_mm_dilep,luminosity,40,0.,500.,0, babyVector);
-    DrawAll("sumjetpt","ss_sumjetpt_int",ssanal_dilep,luminosity,40,0.,800.,1, babyVector);
-    DrawAll("tcmet","ss_tcmet_int",ssanal_dilep,luminosity,40,0.,300.,1, babyVector);
+    DrawAll("mass",prefix+"_ss_ee_mass",ssanal_ee_dilep,luminosity,40,0.,500.,0, babyVector);
+    DrawAll("mass",prefix+"_ss_mm_mass",ssanal_mm_dilep,luminosity,40,0.,500.,0, babyVector);
+    DrawAll("sumjetpt",prefix+"_ss_sumjetpt_int",ssanal_dilep,luminosity,40,0.,800.,1, babyVector);
+    DrawAll("tcmet",prefix+"_ss_tcmet_int",ssanal_dilep,luminosity,40,0.,300.,1, babyVector);
 
 }
 

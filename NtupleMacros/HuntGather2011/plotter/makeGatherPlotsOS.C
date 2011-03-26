@@ -1,6 +1,6 @@
 #include "cuts.h"
 
-void makeGatherPlotsOS(const std::vector<BabySample*> &babyVector, const float &luminosity)
+void makeGatherPlotsOS(TString prefix, const std::vector<BabySample*> &babyVector, const float &luminosity)
 {
 
     std::cout << "Making OS plots...\n";
@@ -30,17 +30,17 @@ void makeGatherPlotsOS(const std::vector<BabySample*> &babyVector, const float &
     // Make the plots
     //
 
-    DrawAll("mass",                    "os_mass",            os_preselection, luminosity, 40, 0., 500, 0, babyVector);
-    DrawAll("tcmet",                   "os_tcmet",           os_preselection, luminosity, 40, 0., 300, 0, babyVector);
-    DrawAll( y,                        "os_y",               os_preselection, luminosity, 40, 0.,  20, 0, babyVector);
-    DrawAll("sumjetpt",                "os_sumjetpt",        os_preselection, luminosity ,40, 0., 500, 0, babyVector);
-    DrawAll("njets",                   "os_njets",           os_preselection, luminosity , 5, 0.,   5, 0, babyVector);
+    DrawAll("mass",                    prefix+"_os_mass",            os_preselection, luminosity, 40, 0., 500, 0, babyVector);
+    DrawAll("tcmet",                   prefix+"_os_tcmet",           os_preselection, luminosity, 40, 0., 300, 0, babyVector);
+    DrawAll( y,                        prefix+"_os_y",               os_preselection, luminosity, 40, 0.,  20, 0, babyVector);
+    DrawAll("sumjetpt",                prefix+"_os_sumjetpt",        os_preselection, luminosity ,40, 0., 500, 0, babyVector);
+    DrawAll("njets",                   prefix+"_os_njets",           os_preselection, luminosity , 5, 0.,   5, 0, babyVector);
 
-    DrawAll("mass",                    "os_mass_int",        os_preselection, luminosity, 40, 0., 500, 1, babyVector);
-    DrawAll("tcmet",                   "os_tcmet_int",       os_preselection, luminosity, 40, 0., 300, 1, babyVector);
-    DrawAll( y,                        "os_y_int",           os_preselection, luminosity, 40, 0.,  20, 1, babyVector);
-    DrawAll("sumjetpt",                "os_sumjetpt_int",    os_preselection, luminosity ,40, 0., 500, 1, babyVector);
-    DrawAll("njets",                   "os_njets_int",       os_preselection, luminosity , 5, 0.,   5, 1, babyVector);
+    DrawAll("mass",                    prefix+"_os_mass_int",        os_preselection, luminosity, 40, 0., 500, 1, babyVector);
+    DrawAll("tcmet",                   prefix+"_os_tcmet_int",       os_preselection, luminosity, 40, 0., 300, 1, babyVector);
+    DrawAll( y,                        prefix+"_os_y_int",           os_preselection, luminosity, 40, 0.,  20, 1, babyVector);
+    DrawAll("sumjetpt",                prefix+"_os_sumjetpt_int",    os_preselection, luminosity ,40, 0., 500, 1, babyVector);
+    DrawAll("njets",                   prefix+"_os_njets_int",       os_preselection, luminosity , 5, 0.,   5, 1, babyVector);
 
 }
 

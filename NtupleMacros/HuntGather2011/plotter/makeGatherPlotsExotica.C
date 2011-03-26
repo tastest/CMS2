@@ -1,6 +1,6 @@
 #include "cuts.h"
 
-void makeGatherPlotsExotica(const std::vector<BabySample*> &babyVector, const float &luminosity)
+void makeGatherPlotsExotica(TString prefix, const std::vector<BabySample*> &babyVector, const float &luminosity)
 {
 
     std::cout << "Making Exotica plots...\n";
@@ -23,8 +23,8 @@ void makeGatherPlotsExotica(const std::vector<BabySample*> &babyVector, const fl
     // Make the plots
     //
 
-    DrawAll("jetmass","exotica_z_highptdijets",cut_z_highptdijets,luminosity,40,0.,2000.,0, babyVector);
-    DrawAll("jetmass","exotica_z_dijets",cut_z_dijets,luminosity,40,0.,2000.,0, babyVector);
+    DrawAll("jetmass",prefix+"_exotica_z_highptdijets",cut_z_highptdijets,luminosity,40,0.,2000.,0, babyVector);
+    DrawAll("jetmass",prefix+"_exotica_z_dijets",cut_z_dijets,luminosity,40,0.,2000.,0, babyVector);
 
 }
 
