@@ -61,8 +61,11 @@ float BR [kNProc][kNDilep] = {{ (1.0+0.1736)*(1.0+0.1736)/9, (1.0+0.1736)*(1.0+0
 			      { (1.0+0.1736)*(1.0+0.1736)/9, (1.0+0.1736)*(1.0+0.1784)/9*2, (1.0+0.1784)*(1.0+0.1784)/9 }
 };
 
-float NLOXsec[kNProc] = {  4.5*0.919, 31314.0/2.0, 31314.0/2.0, 31314.0/2.0, 31314.0/2.0, 5.9, 0.8664429, 0.8664429, 0.8664429, 0.8664429, 0.8664429, 0.8664429, 0.8664429, 0.8664429, 0.8664429, 0.8664429, 0.8664429, 0.8664429, 0.8664429, 0.8664429};
-float MCFMXsec[kNProc] = { 28.4, 11270, 11270.0,  11270, 11270.0, 4.3, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25};
+// The NLO xsec includes the W->l BR, where l includes e/mu/tau
+// The values are obtained through http://ceballos.web.cern.ch/ceballos/hwwlnln/sigma_hww_2l2n_ecm7tev.txt
+float NLOXsec[kNProc] = {  4.5*0.919, 31314.0/2.0, 31314.0/2.0, 31314.0/2.0, 31314.0/2.0, 5.9, 0.249642, 0.452090, 0.641773, 0.770471, 0.866443, 0.782962, 0.659328, 0.486486, 0.408305, 0.358465, 0.321398, 0.290454, 0.243724, 0.175652};
+// Note that MCFMXsec is obtained from a standalone MCFM calculations with no generator cuts applied, excluding the W->l B.R.
+float MCFMXsec[kNProc] = { 28.4, 11270, 11270.0,  11270, 11270.0, 4.3, 0.6619, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25, 3.25};
 
 
 
@@ -221,14 +224,14 @@ void NeutrinoIntegration(int process,TString inputFileName,int seed, int SmearLe
       double lep1_Pz	 = ch->GetLeaf("lep1_Pz"      )->GetValue();
       double lep1_E	 = ch->GetLeaf("lep1_E"       )->GetValue();
       double lep1_Charge    = (int)ch->GetLeaf("lep1_Charge"  )->GetValue();
-      double lep1_Type      = (int)ch->GetLeaf("lep1_Type"    )->GetValue();
+      int lep1_Type      = (int)ch->GetLeaf("lep1_Type"    )->GetValue();
       
       double lep2_Px	 = ch->GetLeaf("lep2_Px"      )->GetValue();
       double lep2_Py	 = ch->GetLeaf("lep2_Py"      )->GetValue();
       double lep2_Pz	 = ch->GetLeaf("lep2_Pz"      )->GetValue();
       double lep2_E	 = ch->GetLeaf("lep2_E"      )->GetValue();
       double lep2_Charge    = (int)ch->GetLeaf("lep2_Charge"  )->GetValue();
-      double lep2_Type      = (int)ch->GetLeaf("lep2_Type"    )->GetValue();
+      int lep2_Type      = (int)ch->GetLeaf("lep2_Type"    )->GetValue();
       
       double weight      = (double)ch->GetLeaf("weight"    )->GetValue();
       int dilflavor      = (int)ch->GetLeaf("dilflavor"    )->GetValue();
