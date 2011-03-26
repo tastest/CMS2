@@ -107,7 +107,7 @@ do
     if [ $N_FILES -lt 1 ]
     then
         echo "No new runs to process..."
-        sleep 3600
+        sleep 7200
 
     else
 
@@ -146,7 +146,7 @@ do
     fi
 
     # wait an hour and then start again
-    echo sleep 3600;
+    echo sleep 7200;
 
 # repeat while loop
 done
