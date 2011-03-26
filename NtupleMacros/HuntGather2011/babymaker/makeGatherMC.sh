@@ -18,8 +18,6 @@ if [ ! $# -eq 2 ]; then
 fi
 
 export SCRAM_ARCH=slc5_amd64_gcc434
-source /afs/cern.ch/cms/cmsset_default.sh
-    eval `scramv1 runtime -sh`
 
 GATHER_INPUT=""
 GATHER_OUTPUT=""
@@ -27,14 +25,19 @@ if [ "$GATHER_SITE" == "UCSD" ]; then
     GATHER_INPUT="/nfs-3/userdata/cms2/"
     GATHER_OUTPUT="/nfs-3/userdata/cms2/gather/mc/"
     export ROOTSYS=/code/osgcode/UCSD_root/root_v5.24.00
+    source /code/osgcode/cmssoft/cms/cmsset_default.sh
 elif [ "$GATHER_SITE" == "CERN" ]; then
     GATHER_INPUT="/tas/cms2/"
     GATHER_OUTPUT="/tas/cms2/gather/mc/"
     #export ROOTSYS=/afs/cern.ch/sw/lcg/app/releases/ROOT/5.26.00/x86_64-slc5-gcc34-opt/root/
+    source /afs/cern.ch/cms/cmsset_default.sh
+
 else
     echo "ERROR: GATHER_SITE either UCSD or CERN"
     exit 1
 fi
+
+    eval `scramv1 runtime -sh`
 
 #export PATH=$ROOTSYS/bin:$PATH
 #export LD_LIBRARY_PATH=$ROOTSYS/lib
