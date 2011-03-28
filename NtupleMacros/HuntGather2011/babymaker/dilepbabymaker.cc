@@ -291,6 +291,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 dphitcmet2_  = deltaPhi(cms2.hyp_ll_p4()[hypi].phi(), theTCMetPhi);
                 mass_        = cms2.hyp_p4()[hypi].mass2() > 0 ? cms2.hyp_p4()[hypi].mass() : TMath::Sqrt(-1 * cms2.hyp_p4()[hypi].mass2());
                 dilpt_       = cms2.hyp_p4()[hypi].pt();		 
+                dileta_      = cms2.hyp_p4()[hypi].eta();
                 deltaphi_    = deltaPhi(phi1_, phi2_);
 
                 // calculate projected pfmet
@@ -401,6 +402,13 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 LorentzVector dijetP4;
                 jetmass_ = theJetIndices.size() > 1 ? sqrt((cms2.pfjets_p4()[theJetIndices[0]]*cms2.pfjets_cor()[theJetIndices[0]] 
                             + cms2.pfjets_p4()[theJetIndices[1]]*cms2.pfjets_cor()[theJetIndices[1]]).M2()) : -999999.; 
+
+                mlljj_ = theJetIndices.size() > 1 ? sqrt((cms2.hyp_p4()[hypi] + cms2.pfjets_p4()[theJetIndices[0]]*cms2.pfjets_cor()[theJetIndices[0]]
+                            + cms2.pfjets_p4()[theJetIndices[1]]*cms2.pfjets_cor()[theJetIndices[1]]).M2()) : -999999.;
+
+                mllj_ = theJetIndices.size() == 1 ? sqrt((cms2.hyp_p4()[hypi] 
+                            + cms2.pfjets_p4()[theJetIndices[0]]*cms2.pfjets_cor()[theJetIndices[0]]).M2()) : -999999.;
+
 
                 double mindphipfmet = 999999.;
                 double mindphitcmet = 999999.;
@@ -707,6 +715,8 @@ void dilepbabymaker::InitBabyNtuple ()
     jet2phi_      = -999999.;
     jet3phi_      = -999999.;
     jetmass_      = -999999.;
+    mllj_         = -999999.;
+    mlljj_        = -999999.;
     pfmth_          = -999999.;
     tcmth_          = -999999.;
     jet1isBtag_   = 0;
@@ -735,6 +745,7 @@ void dilepbabymaker::InitBabyNtuple ()
     ngentaus_     = -999999;
 
     dilpt_        = -999999.;
+    dileta_        = -999999.;
     mass_         = -999999.;
     eormu1_       = -999999;
     type1_        = -999999;
@@ -926,7 +937,10 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("ngoodmus",   &ngoodmus_,   "ngoodmus/I"  );
     babyTree_->Branch("ngoodels",   &ngoodels_,   "ngoodels/I"  );
     babyTree_->Branch("dilpt",      &dilpt_,      "dilpt/F"     );
+    babyTree_->Branch("dileta",      &dileta_,      "dileta/F"     );
     babyTree_->Branch("mass",       &mass_,       "mass/F"      );
+    babyTree_->Branch("mlljj",       &mlljj_,       "mlljj/F"      );
+    babyTree_->Branch("mllj",       &mllj_,       "mllj/F"      );
     babyTree_->Branch("eormu1",     &eormu1_,     "eormu1/I"    );
     babyTree_->Branch("type1",      &type1_,      "type1/I"     );
     babyTree_->Branch("ngenels",    &ngenels_,    "ngenels/I"   );

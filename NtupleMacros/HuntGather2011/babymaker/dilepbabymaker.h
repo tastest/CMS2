@@ -103,7 +103,10 @@ class dilepbabymaker
         Int_t   ngenmus_;
         Int_t   ngentaus_;
         Float_t dilpt_;
+        Float_t dileta_;
         Float_t mass_;
+        Float_t mlljj_;
+        Float_t mllj_;
         Int_t   eormu1_;
         Int_t   type1_;
         Float_t pt1_;

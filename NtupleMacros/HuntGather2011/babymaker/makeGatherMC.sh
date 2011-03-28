@@ -23,12 +23,12 @@ GATHER_INPUT=""
 GATHER_OUTPUT=""
 if [ "$GATHER_SITE" == "UCSD" ]; then
     GATHER_INPUT="/nfs-3/userdata/cms2/"
-    GATHER_OUTPUT="/nfs-3/userdata/cms2/gather/mc/"
+    GATHER_OUTPUT="/nfs-3/userdata/cms2/gather/mctmp/"
     export ROOTSYS=/code/osgcode/UCSD_root/root_v5.24.00
     source /code/osgcode/cmssoft/cms/cmsset_default.sh
 elif [ "$GATHER_SITE" == "CERN" ]; then
     GATHER_INPUT="/tas/cms2/"
-    GATHER_OUTPUT="/tas/cms2/gather/mc/"
+    GATHER_OUTPUT="/tas/cms2/gather/mctmp/"
     #export ROOTSYS=/afs/cern.ch/sw/lcg/app/releases/ROOT/5.26.00/x86_64-slc5-gcc34-opt/root/
     source /afs/cern.ch/cms/cmsset_default.sh
 
