@@ -1,0 +1,11 @@
+Instructions,
+http://www.t2.ucsd.edu/tastwiki/bin/view/Sandbox/JindarianiMEInstructions
+
+Practical lines to make it easier to run,
+
+- Run the baby maker code
+root -l doAll.C 
+
+- Run the ME Code
+nohup root -l runME_WWHWW.C\+\(\"../WW_skimmednTuple.root\"\,10\,1\,100000\,1.0\,0.0\,10\) >&ww_ME.log&
+nohup root -l runME_WWHWW.C\+\(\"../HWW160_skimmednTuple.root\"\,10\,1\,100000\,1.0\,0.0\,10\) >&HWW160_ME.log&
