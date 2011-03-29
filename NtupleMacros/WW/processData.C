@@ -39,18 +39,18 @@ void processData()
   // (0 and 1 are easier to modify)
   //
   bool runWW    = 1;
-  bool runHWW   = 0;
-  bool runGGWW  = 0;
-  bool runWZ    = 0;
-  bool runZZ    = 0;
-  bool runWjets = 0;
-  bool runDYee  = 0;
-  bool runDYmm  = 0;
-  bool runDYtt  = 0;
-  bool runttbar = 0;
-  bool runtW    = 0;
+  bool runHWW   = 1;
+  bool runGGWW  = 1;
+  bool runWZ    = 1;
+  bool runZZ    = 1;
+  bool runWjets = 1;
+  bool runDYee  = 1;
+  bool runDYmm  = 1;
+  bool runDYtt  = 1;
+  bool runttbar = 1;
+  bool runtW    = 1;
   bool runQCD   = 0; 
-  bool runData  = 0;
+  bool runData  = 1;
 
   // 
   // Ntuple version
@@ -82,7 +82,7 @@ void processData()
     cout << "Dataset directory: " << dataset << endl;
   }
   
-  const double integratedLumi = 35.5; // pb^1  
+  const double integratedLumi = 1000.0; // pb^1  
   cout << "Integrated luminosity to scale to: " << integratedLumi << endl;
 
   if (runWW)
@@ -109,13 +109,13 @@ void processData()
   }
 
   if (runDYee)
-    ProcessSample(dataset+"/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/diLepPt2020/*.root", DYee, integratedLumi, 1666, -1, kMagenta, identifyDYEvents);
+    ProcessSample(dataset+"/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/"+version+"/merged_ntuple*root", DYee, integratedLumi, 1666, -1, kMagenta, identifyDYEvents);
   
   if (runDYmm)
-    ProcessSample(dataset+"/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/diLepPt2020/*.root", DYmm, integratedLumi, 1666, -1, kMagenta, identifyDYEvents);
+    ProcessSample(dataset+"/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/"+version+"/merged_ntuple*root", DYmm, integratedLumi, 1666, -1, kMagenta, identifyDYEvents);
   
   if (runDYtt)
-    ProcessSample(dataset+"/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/diLepPt2020/*.root", DYtt, integratedLumi, 1666, -1, kMagenta, identifyDYEvents);
+    ProcessSample(dataset+"/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/"+version+"/merged_ntuple*root", DYtt, integratedLumi, 1666, -1, kMagenta, identifyDYEvents);
  
   if (runttbar)
     ProcessSample(dataset+"/TTJets_TuneD6T_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/*.root", ttbar, integratedLumi, 157.5, -1, kYellow);

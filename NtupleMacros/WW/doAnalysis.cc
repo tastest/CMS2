@@ -1,4 +1,4 @@
-const char* config_info = "WW2010 selection; JetVeto 30; 20/10; Winter10 FlatPU samples";
+const char* config_info = "Smurf HWW V1 selection; Winter10 FlatPU samples; 35.5/pb Run2010A (Sep17ReReco) & Run2010B (PromptReco)";
 //now make the source file
 #include "doAnalysis.h"
 #include <algorithm>
@@ -82,7 +82,7 @@ bool goodElectronWithoutIsolation(unsigned int i){
 }
 
 bool goodElectronIsolated(unsigned int i){
-  bool ptcut = cms2.els_p4().at(i).pt() >= 20.0;
+  bool ptcut = cms2.els_p4().at(i).pt() >= 15.0;
   bool core = ptcut && pass_electronSelection( i, electronSelection_wwV1);
   bool internal = ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_elIso(i);
   assert(!lockToCoreSelectors || core==internal);
@@ -90,7 +90,7 @@ bool goodElectronIsolated(unsigned int i){
 }
 
 bool fakableElectron(unsigned int i){
-  bool ptcut = cms2.els_p4().at(i).pt() >= 20.0;
+  bool ptcut = cms2.els_p4().at(i).pt() >= 15.0;
   // extrapolate in partial id, iso and d0
   return ptcut && pass_electronSelection( i, electronSelectionFO_el_wwV1_v2);
   // extrapolate in id
@@ -102,7 +102,7 @@ bool goodMuonWithoutIsolation(unsigned int i){
 }
 
 bool goodMuonIsolated(unsigned int i){
-  bool ptcut = cms2.mus_p4().at(i).pt() >= 20.0;
+  bool ptcut = cms2.mus_p4().at(i).pt() >= 10.0;
   bool core = ptcut && muonId(i, NominalWWV1);
   bool internal = ww_muBase(i) && ww_mud0PV(i) && ww_muId(i) && ww_muIso(i); 
   assert(!lockToCoreSelectors || core==internal);
@@ -110,7 +110,7 @@ bool goodMuonIsolated(unsigned int i){
 }
 
 bool fakableMuon(unsigned int i){
-  bool ptcut = cms2.mus_p4().at(i).pt() >= 20.0;
+  bool ptcut = cms2.mus_p4().at(i).pt() >= 10.0;
   // extrapolate in iso
   // return muonId(i, muonSelectionFO_mu_ww);
   return ptcut && muonId(i, muonSelectionFO_mu_wwV1_iso10);
@@ -125,7 +125,7 @@ bool passedMetRequirements(unsigned int i_hyp){
   HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
   double pMet = projectedMet(i_hyp);
   // if ( type == EM && cms2.hyp_p4().at(i_hyp).mass()>90 ) return true;
-  if ( pMet < 20 ) return false;
+  if ( pMet < 35 ) return false;
   if (type == EE || type == MM) {
     // double dmass = fabs(cms2.hyp_p4()[i_hyp].mass()-91);
     // if ( metValue() < 45 ) return false;
@@ -153,7 +153,7 @@ unsigned int numberOfJets(unsigned int i_hyp){
 //
 
 bool ww_elBase(unsigned int index){
-  if (cms2.els_p4().at(index).pt() < 20.0) return false;
+  // if (cms2.els_p4().at(index).pt() < 20.0) return false;
   if (fabs(cms2.els_p4().at(index).eta()) > 2.5) return false;
   return true;
 }
@@ -170,6 +170,7 @@ bool ww_elId(unsigned int index){
   //  int ctfIndex = cms2.els_trkidx().at(index);
   // if ( ctfIndex >=0 && 
   //     cms2.els_charge().at(index)!=cms2.trks_charge().at(ctfIndex) ) return false;
+  if ( !electronId_smurf_v2(index) ) return false;
   return true;
 }
  
@@ -241,7 +242,7 @@ bool ww_elIso(unsigned int index){
 //
 
 bool ww_muBase(unsigned int index){
-  if (cms2.mus_p4().at(index).pt() < 20.0) return false;
+  // if (cms2.mus_p4().at(index).pt() < 20.0) return false;
   if (fabs(cms2.mus_p4().at(index).eta()) > 2.4) return false;
   if (cms2.mus_type().at(index) == 8) return false; // not STA
   return true;
@@ -267,6 +268,8 @@ bool ww_mud0PV(unsigned int index){
     cms2.vtxs_position()[iMax].y()*cos(cms2.mus_trk_p4()[index].phi());
   // double dzpv = cms2.mus_z0corr()[index]-cms2.vtxs_position()[iMax].z();
   double dzpv = dzPV(cms2.mus_vertex_p4()[index], cms2.mus_trk_p4()[index], cms2.vtxs_position()[iMax]);
+  if ( cms2.mus_p4().at(index).pt() < 20. )
+    return fabs(dxyPV) < 0.01 && fabs(dzpv)<1.0;
   return fabs(dxyPV) < 0.02 && fabs(dzpv)<1.0;
 }
 bool ww_muId(unsigned int index){
@@ -289,6 +292,8 @@ double ww_muIsoVal(unsigned int index){
   return sum/pt;
 }
 bool ww_muIso(unsigned int index){
+  if ( cms2.mus_p4().at(index).pt() < 20. )
+    return ww_muIsoVal(index)<0.1;
   return ww_muIsoVal(index)<0.15;
 }
 unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated,
@@ -1402,6 +1407,9 @@ toptag(WWJetType type, int i_hyp, double minPt,
 
 bool hypo (int i_hyp, double weight, bool zStudy, bool realData) 
 {
+  if ( std::max(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<20 ) return false;
+  if ( std::min(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<10 ) return false;
+
   /*
   unsigned int nGenLeptons = 0;
   for ( unsigned int i=0; i<cms2.genps_id().size(); ++i)
@@ -2157,8 +2165,8 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp, double weight, enum Sa
   tree.lep2_ = ltIsFirst ? cms2.hyp_ll_p4().at(i_hyp) : cms2.hyp_lt_p4().at(i_hyp);
   tree.lq1_   = ltIsFirst ? cms2.hyp_lt_charge().at(i_hyp) : cms2.hyp_ll_charge().at(i_hyp);
   tree.lq2_   = ltIsFirst ? cms2.hyp_ll_charge().at(i_hyp) : cms2.hyp_lt_charge().at(i_hyp);
-  tree.lid1_  = 1;
-  tree.lid2_  = 1;
+  tree.lid1_  = ltIsFirst ? cms2.hyp_lt_id().at(i_hyp) : cms2.hyp_ll_id().at(i_hyp);
+  tree.lid2_  = ltIsFirst ? cms2.hyp_ll_id().at(i_hyp) : cms2.hyp_lt_id().at(i_hyp);
   const std::vector<LorentzVector>& jets = getDefaultJets(i_hyp);
   if (jets.size()>0) tree.jet1_ = jets.at(0);
   if (jets.size()>1) tree.jet2_ = jets.at(1);

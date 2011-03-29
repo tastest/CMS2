@@ -32,11 +32,14 @@ TH1F* getYields(const char* file, const char* cut = 0, const char* tree = "tree"
 
 double getValue(const TH1F* hist, unsigned int type){
   switch (type){
-  case 1:
+  case 0:
     return hist->GetBinContent(1);
     break;
+  case 1:
+    return hist->GetBinContent(2);
+    break;
   case 2:
-    return hist->GetBinContent(2)+hist->GetBinContent(3);
+    return hist->GetBinContent(3);
     break;
   case 3:
     return hist->GetBinContent(4);
@@ -48,11 +51,14 @@ double getValue(const TH1F* hist, unsigned int type){
  
 double getError(const TH1F* hist, unsigned int type){
   switch (type){
-  case 1:
+  case 0:
     return hist->GetBinError(1);
     break;
+  case 1:
+    return hist->GetBinError(2);
+    break;
   case 2:
-    return sqrt(pow(hist->GetBinError(2),2)+pow(hist->GetBinError(3),2));
+    return hist->GetBinError(3);
     break;
   case 3:
     return hist->GetBinError(4);
@@ -86,9 +92,12 @@ void showResults2(const char* cut = 0, bool showTotalBkg=true)
     bkgs.push_back(std::pair<TH1F*,std::string>(hist,"*ZZ*"));
   TH1F *ww     = getYields("smurf/ww.root",cut);
   TH1F *hww130 = getYields("smurf/hww130.root",cut);
+  TH1F *hww160 = getYields("smurf/hww160.root",cut);
   TH1F *hww200 = getYields("smurf/hww200.root",cut);
+  TH1F *hww250 = getYields("smurf/hww250.root",cut);
   TH1F *data   = getYields("smurf/data.root",cut);
-  if (!hww130 && !ww && !data && bkgs.empty()){
+  if (!hww130 && !hww160 && !hww200 && !hww250 && 
+      !ww && !data && bkgs.empty()){
     cout << "no data is found." << endl;
     return;
   }
@@ -98,37 +107,52 @@ void showResults2(const char* cut = 0, bool showTotalBkg=true)
   cout << "\n" << Form("| %3s |","");
   for (unsigned int i=0; i<bkgs.size(); ++i) cout << Form(patternTitle,bkgs.at(i).second.c_str());
   if ( showTotalBkg && bkgs.size()>0 ) cout << Form(patternTitle,"*Total BKG*");
-  if (ww) cout << Form(patternTitle,"*WW*");
-  if (hww130) cout << Form(patternTitle,"*HWW130*");
-  if (hww200) cout << Form(patternTitle,"*HWW200*");
-  if (data) cout << Form(patternTitle,"*Data*");
   cout << endl;
-  string pm = "+/-";
-  // string pm = "&plusmn;";
+  // string pm = "+/-";
+  string pm = "&plusmn;";
 
-  double bkg[4] = {0, 0, 0, 0};
-  double bkgerr2[4] = {0, 0, 0, 0};
-  for (int i=0; i<4; i++){
-    cout << "|" << Form(" %3s ",HypothesisTypeName(i)) << "|";
+  double bkg[5] = {0, 0, 0, 0, 0};
+  double bkgerr2[5] = {0, 0, 0, 0, 0};
+  const char* names[5] = {"mm","me","em","ee","all"};
+  for (int i=0; i<5; i++){
+    cout << "|" << Form(" %3s ",names[i]) << "|";
     for (unsigned int j=0; j<bkgs.size(); ++j){
       TH1F* hist = bkgs.at(j).first;
-      cout << Form(patternData,getValue(hist,i+1),pm.c_str(),getError(hist,i+1));
-      bkg[i]     += getValue(hist,i+1);
-      bkgerr2[i] += pow(getError(hist,i+1),2);
+      cout << Form(patternData,getValue(hist,i),pm.c_str(),getError(hist,i));
+      bkg[i]     += getValue(hist,i);
+      bkgerr2[i] += pow(getError(hist,i),2);
     }
     if ( showTotalBkg && bkgs.size()>0 ) cout << Form(patternData,bkg[i],pm.c_str(),sqrt(bkgerr2[i]));
-    if (ww) 
-      cout << Form(patternData,getValue(ww,i+1),pm.c_str(),getError(ww,i+1));
-    if (hww130) 
-      cout << Form(patternData,getValue(hww130,i+1),pm.c_str(),getError(hww130,i+1));
-    if (hww200) 
-      cout << Form(patternData,getValue(hww200,i+1),pm.c_str(),getError(hww200,i+1));
-    if (data)
-      cout << Form(patternData,getValue(data,i+1),pm.c_str(),getError(data,i+1));
     cout <<endl;
   }
   cout <<endl;
 
+  cout << "\n" << Form("| %3s |","");
+  if (ww) cout << Form(patternTitle,"*WW*");
+  if (hww130) cout << Form(patternTitle,"*HWW130*");
+  if (hww160) cout << Form(patternTitle,"*HWW160*");
+  if (hww200) cout << Form(patternTitle,"*HWW200*");
+  if (hww250) cout << Form(patternTitle,"*HWW250*");
+  if (data) cout << Form(patternTitle,"*Data*");
+  cout << endl;
+
+  for (int i=0; i<5; i++){
+    cout << "|" << Form(" %3s ",names[i]) << "|";
+    if (ww) 
+      cout << Form(patternData,getValue(ww,i),pm.c_str(),getError(ww,i));
+    if (hww130) 
+      cout << Form(patternData,getValue(hww130,i),pm.c_str(),getError(hww130,i));
+    if (hww160) 
+      cout << Form(patternData,getValue(hww160,i),pm.c_str(),getError(hww160,i));
+    if (hww200) 
+      cout << Form(patternData,getValue(hww200,i),pm.c_str(),getError(hww200,i));
+    if (hww250) 
+      cout << Form(patternData,getValue(hww250,i),pm.c_str(),getError(hww250,i));
+    if (data)
+      cout << Form(patternData,getValue(data,i),pm.c_str(),getError(data,i));
+    cout <<endl;
+  }
+  cout <<endl;
 
     // top background estimate
     /*
