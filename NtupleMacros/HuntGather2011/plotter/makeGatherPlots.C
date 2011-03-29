@@ -165,6 +165,16 @@ void makeGatherPlots(TString base, bool debug = false) {
     bs_data2011->add(base+"/data/CMSSW_4_1_2_patch1_V04-00-13/DoubleMu_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/baby_gather*.root");
     bs_data2011->add(base+"/data/CMSSW_4_1_2_patch1_V04-00-13/MuEG_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/baby_gather*.root");
 
+    // 2010 only
+    BabySample *bs_data2010 = new BabySample("data", "data",
+            base+"/data/Electron_Run2010B-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/baby_gather.root",
+            c_datapresel, 1.0, DATA, kBlack);
+    // add in 2010B
+    bs_data2010->add(base+"/data/Mu_Run2010B-Nov4ReReco_v1_RECO/V03-06-17/diLepPt1020Skim/baby_gather.root");
+    // add in 2010A
+    bs_data2010->add(base+"/data/EG_Run2010A-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/baby_gather.root");
+    bs_data2010->add(base+"/data/Mu_Run2010A-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/baby_gather.root");
+
     // 2011 Express
     BabySample *bs_data_express = new BabySample("express", "data",
             base+"mc/ExpressPhysicsRun2011A-Express-v1FEVT/V04-00-08/baby_gather.root",
@@ -176,10 +186,10 @@ void makeGatherPlots(TString base, bool debug = false) {
     //
 
     std::vector<BabySample*> babyVectorTPee;
-    babyVectorTPee.push_back(bs_data);
+    babyVectorTPee.push_back(bs_data_express);
     babyVectorTPee.push_back(bs_dilep_dyee);
     std::vector<BabySample*> babyVectorTPmm;
-    babyVectorTPmm.push_back(bs_data);
+    babyVectorTPmm.push_back(bs_data_express);
     babyVectorTPmm.push_back(bs_dilep_dymm);
 
     //
@@ -221,6 +231,19 @@ void makeGatherPlots(TString base, bool debug = false) {
     babyVectorSM2011.push_back(bs_dilep_ttbar);
     babyVectorSM2011.push_back(bs_dilep_tw);
     babyVectorSM2011.push_back(bs_dilep_wjets);
+
+    std::vector<BabySample*> babyVectorSM2010;
+    babyVectorSM2010.push_back(bs_data2010);
+    babyVectorSM2010.push_back(bs_dilep_ww);
+    babyVectorSM2010.push_back(bs_dilep_wz);
+    babyVectorSM2010.push_back(bs_dilep_zz);
+    babyVectorSM2010.push_back(bs_dilep_dyeemm);
+    babyVectorSM2010.push_back(bs_dilep_dytt);
+    babyVectorSM2010.push_back(bs_dilep_vgammajets);
+    babyVectorSM2010.push_back(bs_dilep_ttbar);
+    babyVectorSM2010.push_back(bs_dilep_tw);
+    babyVectorSM2010.push_back(bs_dilep_wjets);
+
 
     //
     // Higgs
@@ -309,10 +332,16 @@ void makeGatherPlots(TString base, bool debug = false) {
     //
 
     if (debug) {
-        //makeGatherPlotsElectrons(babyVectorTP, est_lumi);
+        //makeGatherPlotsElectrons(babyVectorTPee, est_lumi);
         //makeGatherPlotsMuons(babyVectorTP, est_lumi);
         //makeGatherTriggerMonitor(babyVectorSM, est_lumi);
         //makeGatherPlotsValidation("express", babyVectorSM_express, goodruns_lumi, est_newruns_lumi);
+
+        makeGatherPlotsExotica("run2011", babyVectorSM2011, est_newruns_lumi);
+        makeGatherPlotsExotica("run2010", babyVectorSM2010, goodruns_lumi);
+        makeGatherPlotsExotica("all", babyVectorSM, est_lumi);
+
+
     }
     else {
 
@@ -384,5 +413,6 @@ void makeGatherPlots(TString base, bool debug = false) {
     delete bs_data2011;
     delete bs_dilep_dyee;
     delete bs_dilep_dymm;
+    delete bs_data2010;
 
 }

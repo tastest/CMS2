@@ -44,13 +44,11 @@ void makeGatherPlotsElectrons(const std::vector<BabySample*> &babyVector, const 
     TCut tp_trg_single2("tp_trg_single2", "(trg_single_e & (1<<1))");
     TCut tp_trg_HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL("tp_trg_HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL", "(trg_double_e & (1<<0))");
 
-
     // no run range restriction
     //TCut tp_event("tp_event", "");
     //TagAndProbe("tp_ele_id_pt", tp_event, "pt1", "pt2", tp_tag1, tp_tag2, tp_probe1, tp_probe2, tp_id_1, tp_id_2, luminosity, 25, 0.0, 100.0, false, babyVector);
     //TagAndProbe("tp_ele_id_eta", tp_event, "eta1", "eta2", tp_tag1, tp_tag2, tp_probe1, tp_probe2, tp_id_1, tp_id_2, luminosity, 30, -3.0, 3.0, false, babyVector);
     //TagAndProbe("tp_ele_trg_single_nvtx", tp_event, "nvtx", "nvtx", tp_tag1, tp_tag2, tp_trg_probe1, tp_trg_probe2, tp_trg_single1, tp_trg_single2, luminosity, 20, -0.5, 19.5, false, babyVector);
-
 
     //
     // trigger before and after spike killing
@@ -66,12 +64,20 @@ void makeGatherPlotsElectrons(const std::vector<BabySample*> &babyVector, const 
     TCut abs_eta2("abs_eta2", "abs(eta2)");
 
     std::cout << "photons" << std::endl;
-    //TagAndProbe("tp_HLT_Photon26_IsoVL_Photon18_nvtx", "run>0", "nvtx", "nvtx", tp_tag1, tp_tag2, tp_trg_probe1, tp_trg_probe2, 
-    //        "trg_double_e1 & (1<<4)", "trg_double_e2 & (1<<4)", luminosity, 20, -0.5, 19.5, false, babyVector);
 
-    TriggerMonitor("tm_HLT_Photon26_IsoVL_Photon18_nvtx", "nvtx", "mass>76&&mass<106"+((tp_tag1+tp_trg_probe2+"e2_scet>20")||(tp_tag2+tp_trg_probe1+"e1_scet>20")), (tp_tag2+"(trg_double_e1 & (1<<4))")||(tp_tag1+"(trg_double_e2 & (1<<4))") , luminosity, 20, -0.5, 19.5, false, data);
+    TagAndProbe("tp_HLT_Photon26_IsoVL_Photon18_nokill_nvtx", tp_nokill, "e1_scet", "e2_scet", tp_tag1+"trg_double_e1 & (1<<4)", tp_tag2+"trg_double_e2 & (1<<4)", tp_trg_probe1+"e1_scet>15.0", tp_trg_probe2+"e2_scet>15.0", 
+            "trg_double_e1 & (1<<4)", "trg_double_e2 & (1<<4)", luminosity, 25, 0.0, 50.0, false, babyVector);
 
+/*
+    TagAndProbe("tp_HLT_Photon26_IsoVL_Photon18_kill_nvtx", tp_kill, abs_eta1, abs_eta2, tp_tag1, tp_tag2, tp_trg_probe1+"e1_scet>20.0", tp_trg_probe2+"e2_scet>20.0",
+            "trg_double_e1 & (1<<4)", "trg_double_e2 & (1<<4)", luminosity, 2, 0, 3.0, false, babyVector);
+*/
 
+    TriggerMonitor("tm_HLT_Photon26_IsoVL_Photon18_barrel_nvtx", "run", "mass>76&&mass<106"+((tp_tag1+tp_trg_probe2+"e2_scet>30&&abs(eta2)<1.5")||(tp_tag2+tp_trg_probe1+"e1_scet>20&&abs(eta1)<1.5")), 
+            (tp_tag2+"(trg_double_e1 & (1<<4))")||(tp_tag1+"(trg_double_e2 & (1<<4))") , luminosity, 2, 161310-10000, 161310+10000, false, data);
+
+    TriggerMonitor("tm_HLT_Photon26_IsoVL_Photon18_endcap_nvtx", "run", "mass>76&&mass<106"+((tp_tag1+tp_trg_probe2+"e2_scet>30&&abs(eta2)>1.5")||(tp_tag2+tp_trg_probe1+"e1_scet>20&&abs(eta1)>1.5")),
+            (tp_tag2+"(trg_double_e1 & (1<<4))")||(tp_tag1+"(trg_double_e2 & (1<<4))") , luminosity, 2, 161310-10000, 161310+10000, false, data);
 
 /*
     std::cout << "SINGLE - NO KILL" << std::endl;
@@ -83,8 +89,7 @@ void makeGatherPlotsElectrons(const std::vector<BabySample*> &babyVector, const 
            tp_trg_single1, tp_trg_single2, luminosity, 2, 0.0, 3.0, false, babyVector);
 */
 
-    // double trigger
-
+// double trigger
 //    std::cout << "DOUBLE - NO KILL" << std::endl;
 //    TagAndProbe("tp_HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_nokill_ptgt10_eta", tp_nokill, abs_eta1, abs_eta2, tp_tag1, tp_tag2, tp_trg_probe1+"pt1>10", tp_trg_probe2+"pt2>10", 
 //            tp_trg_HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL, tp_trg_HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL, luminosity, 2, 0.0, 3.0, false, babyVector);

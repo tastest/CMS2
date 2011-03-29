@@ -313,6 +313,7 @@ TCanvas* TriggerMonitor(const char *savename, TCut var, TCut sel, TCut trig, flo
     gr_eff->SetName(TString("gr_") + h1_pass->GetName());
     gr_eff->SetTitle(TString(savename));
     gr_eff->BayesDivide(h1_pass, h1_total);
+    PrintBins(gr_eff);
 
     //
     // do the drawing
