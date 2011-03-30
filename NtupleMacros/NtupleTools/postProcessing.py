@@ -210,8 +210,9 @@ def makeRootMacros(outpath):
         outFile.write("  doPostProcessing("+finPath + "," + foutPath+temp)
     outFile.write("\n}\n\n\n")
     outFile.write("void mergeAll() {\n")
-    outFile.write("  TChain *chain = new TChain(\"Events\");\n\n")
-
+    outFile.write("  TChain *chain = new TChain(\"Events\");\n")
+    outFile.write("  chain->SetMaxTreeSize(5000000000LL); //default is 100000000000LL\n\n")
+  
     for i in goodRootFiles:
         fname = i.split("/")[len(i.split("/"))-1]
         outFile.write("  chain->Add(\"" + outpath + "postprocessing/" + fname+"\");\n")
