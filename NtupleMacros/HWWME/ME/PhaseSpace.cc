@@ -101,15 +101,15 @@ void genMHiggsYHiggs(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_eve
 // Higgs PhaseSpace
 //============================================
 
-void genMHiggs(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_type* PSList, BoostHist boosthist) {
+void genMHiggs(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_type* PSList){
 
-    double wt[6];
+    double wt[4];
      
     double nu_X,nu_Y,nu_Z;
     EtExponential(20.,r[0],&nu_X,&wt[0]);  
     EtExponential(20.,r[1],&nu_Y,&wt[1]);
     EtExponential(80.,r[2],&nu_Z,&wt[2]);
-    
+
     TLorentzVector P4ll=cdf_event.p[0]+cdf_event.p[1];
     double Mll=P4ll.M();
 
@@ -117,25 +117,18 @@ void genMHiggs(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_typ
     double mmaxsq=EBEAM*EBEAM;
     double msqHiggs=1.;
     breitw(r[3],mminsq,mmaxsq,masses_mcfm_.hmass,masses_mcfm_.hwidth,&msqHiggs,&wt[3]);
+
+
     double PSWeight=wt[0]*wt[1]*wt[2]*wt[3];
-    
-    double qX (0.0), qY (0.0);
+   
 
-    if(SmearLevel >= 1) {
-      getProbFromHist(r[4], & qX, & wt[4], boosthist.kx);
-      getProbFromHist(r[5], & qY, & wt[5], boosthist.ky);
-      PSWeight = PSWeight*wt[4]*wt[5];
-      // cout << "; " << wt[4] << "; " << wt[5] ;  
-    }
+    //System Pt
+      double qX=0.,qY=0.;
     
-    // cout << "\n" ;
-
-    // cout << "PhaseSpace::genMHiggs = " << qX <<"; qY = " <<qY <<endl;
     WWL1L2Sol_MHiggs( &cdf_event,
                       qX, qY, msqHiggs, nu_X, nu_Y, nu_Z,
                       PSList);
 
-    
     for(int i=0;i<2;i++){
     
        mcfm_event_type& temp = PSList[i];
@@ -157,9 +150,9 @@ void genMHiggs(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_typ
 // HiggsW* PhaseSpace
 //============================================
 
-void genMHiggsMw1(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_type* PSList,  BoostHist boosthist) {
+void genMHiggsMw1(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_type* PSList){
 
-    double wt[6];
+    double wt[4];
      
     double nu_X,nu_Y;
     EtExponential(20.,r[0],&nu_X,&wt[0]);  
@@ -183,13 +176,7 @@ void genMHiggsMw1(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_
     double PSWeight=wt[0]*wt[1]*wt[2]*wt[3];
 
     //System Pt
-    double qX (0.0), qY (0.0);
-
-      if(SmearLevel >= 1) {
-	getProbFromHist(r[4], & qX, & wt[4], boosthist.kx);
-	getProbFromHist(r[5], & qY, & wt[5], boosthist.ky);
-	PSWeight = PSWeight*wt[4]*wt[5];
-      }
+      double qX=0.,qY=0.;
 
 
     WWL1L2Sol_MHiggsMw1( &cdf_event,
@@ -260,8 +247,11 @@ void genDY(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_type* P
 //
 //============================================
 
-void genMw1Mw2(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_type* PSList, BoostHist boosthist) {
-    double wt[6];
+void genMw1Mw2(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_type* PSList){
+
+//    double sixteen_twopi_to_eighth=16*TMath::Power(2*TMath::Pi(),8);
+    double wt[4];
+     
     double nu_Z,nb_Z;
     EtExponential(80.,r[0],&nu_Z,&wt[0]);  
     EtExponential(80.,r[1],&nb_Z,&wt[1]);
@@ -275,18 +265,13 @@ void genMw1Mw2(double* r,int SmearLevel,cdf_event_type cdf_event, mcfm_event_typ
 
     double PSWeight=wt[0]*wt[1]*wt[2]*wt[3];
    
+
     //System Pt
     //  test how pT shift affects the Event prob
     //  double qX=10.,qY=10.;
     double qX=0, qY=0;
-    if(SmearLevel >= 1) {
-      getProbFromHist(r[4], & qX, & wt[4], boosthist.kx);
-      getProbFromHist(r[5], & qY, & wt[5], boosthist.ky);
-      PSWeight = PSWeight*wt[4]*wt[5];
-      // cout << "; " << wt[4] << "; " << wt[5] ;  
-    }
-    //    cout << "\n" ;
     
+//    mcfm_event_type  sol[4];
 
 //nu_Z=-0.62694; nb_Z=16.8335;
 //Mw1=81.0633; Mw2=78.2776;

@@ -542,28 +542,6 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
     headerf << "\t" << "}" << endl;
   }//if(haveL1Info)
     
-  headerf << endl;
-  headerf << "  static void progress( int nEventsTotal, int nEventsChain ){" << endl;
-  headerf << "    int period = 1000;" << endl;
-  headerf << "    if(nEventsTotal%1000 == 0) {" << endl;
-  headerf << "      // xterm magic from L. Vacavant and A. Cerri" << endl;
-  headerf << "      if (isatty(1)) {" << endl;
-  headerf << "        if( ( nEventsChain - nEventsTotal ) > period ){" << endl;
-  headerf << "          float frac = (float)nEventsTotal/(nEventsChain*0.01);" << endl;
-  headerf << "          printf(\"\\015\\033[32m ---> \\033[1m\\033[31m%4.1f%%\"" << endl;
-  headerf << "               \"\\033[0m\\033[32m <---\\033[0m\\015\", frac);" << endl;
-  headerf << "          fflush(stdout);" << endl;
-  headerf << "        }" << endl;
-  headerf << "        else {" << endl;
-  headerf << "          printf(\"\\015\\033[32m ---> \\033[1m\\033[31m%4.1f%%\"" << endl;
-  headerf << "                 \"\\033[0m\\033[32m <---\\033[0m\\015\", 100.);" << endl;
-  headerf << "          cout << endl;" << endl;
-  headerf << "        }" << endl;
-  headerf << "      }" << endl;
-  headerf << "    }" << endl;
-  headerf << "  }" << endl;
-  headerf << "  " << endl;
-
   headerf << "};" << endl << endl;
     
   headerf << "#ifndef __CINT__" << endl;
@@ -629,7 +607,7 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
     headerf << "\t" << "bool passL1Trigger(TString trigName);" << endl;
     implf   << "\t" << "bool passL1Trigger(TString trigName) { return cms2.passL1Trigger(trigName); }" << endl;
   }//if(haveL1Info)
- 
+    
 }
   
 //-------------------------------------------------------------------------------------------------
@@ -660,7 +638,26 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile) {
     codef << "#include \"branches.h\"" << endl;
   codef << "using namespace tas;" << endl;
   codef << endl;
-  codef << endl;
+  codef << "void progress( int nEventsTotal, int nEventsChain ){" << endl;
+  codef << "  int period = 1000;" << endl;
+  codef << "  if(nEventsTotal%1000 == 0) {" << endl;
+  codef << "    // xterm magic from L. Vacavant and A. Cerri" << endl;
+  codef << "    if (isatty(1)) {" << endl;
+  codef << "      if( ( nEventsChain - nEventsTotal ) > period ){" << endl;
+  codef << "        float frac = (float)nEventsTotal/(nEventsChain*0.01);" << endl;
+  codef << "        printf(\"\\015\\033[32m ---> \\033[1m\\033[31m%4.1f%%\"" << endl;
+  codef << "             \"\\033[0m\\033[32m <---\\033[0m\\015\", frac);" << endl;
+  codef << "        fflush(stdout);" << endl;
+  codef << "      }" << endl;
+  codef << "      else {" << endl;
+  codef << "        printf(\"\\015\\033[32m ---> \\033[1m\\033[31m%4.1f%%\"" << endl;
+  codef << "               \"\\033[0m\\033[32m <---\\033[0m\\015\", 100.);" << endl;
+  codef << "        cout << endl;" << endl;
+  codef << "      }" << endl;
+  codef << "    }" << endl;
+  codef << "  }" << endl;
+  codef << "}" << endl;
+  codef << "" << endl;
   codef << "int ScanChain( TChain* chain, int nEvents = -1, std::string skimFilePrefix=\"\") {" << endl;
   codef << "" << endl;
   codef << "  // Example Histograms" << endl;

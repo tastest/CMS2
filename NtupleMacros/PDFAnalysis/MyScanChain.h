@@ -26,9 +26,6 @@ class MyScanChain {
 
     private:
 
-        float GetGenMeff();
-        bool PassAnalysisSelection();
-
         void Fill(TH1F** hist, const unsigned int hyp, const float &val, const float &weight);
         void FormatHist(TH1F** hist, std::string sampleName, std::string name, int n, float min, float max);
         std::string pdfName1_;

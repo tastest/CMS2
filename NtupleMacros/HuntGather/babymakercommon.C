@@ -2,7 +2,7 @@
 #include "CORE/CMS2.h"
 
 #include "TMath.h"
-//#include "CORE/jetSelections.cc"
+
 float deltaPhi (float phi1, float phi2)
 {
     float dphi = phi1-phi2;
@@ -27,7 +27,7 @@ bool sortByPFJetPt (const unsigned int &index1, const unsigned int &index2)
 {
     return cms2.pfjets_p4()[index1].pt() > cms2.pfjets_p4()[index2].pt();
 }
-/*
+
 bool isGoodPFJet(unsigned int pfjeti) {
     bool pfjetisGood = false;
 
@@ -49,18 +49,3 @@ bool isGoodPFJet(unsigned int pfjeti) {
 
     return pfjetisGood;
 }
-*/
-
-bool isGoodPFJet(unsigned int pfjeti) {                                                                                                                                                      
-  bool pfjetisGood = false;                                                                                                                                                                
-                                                                                                                                                                                             
-  float pfjet_pt_   = cms2.pfjets_p4()[pfjeti].pt();                                                                                                                                       
-  float pfjet_eta_  = cms2.pfjets_p4()[pfjeti].eta();                                                                                                                                      
-                                                                                                                                                                                              
-  if (pfjet_pt_ > 25. && fabs(pfjet_eta_) < 3.0 )                                                                                  
-    {                                         
-      if( passesPFJetID(pfjeti) )
-	pfjetisGood = true;
-    }                                                                                                                                                                                        
-  return pfjetisGood;                                                                                                                                                                      
-}      

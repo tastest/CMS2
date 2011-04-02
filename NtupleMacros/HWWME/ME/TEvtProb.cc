@@ -1,19 +1,17 @@
+
 //-----------------------------------------------------------------------------
 //
 // Class EventProb Module
 //
 //   EventProb Module
 //
-// March 21 2011
-// S. Jindariani (sergo@fnal.gov)
-// Y. Gao (ygao@fnal.gov)
-// K. Burkett (burkett@fnal.gov)
+// Jun 30 2007
+// Shih-Chieh Hsu
+// S. Jindariani
 //-----------------------------------------------------------------------------
 
 #include "TEvtProb.hh"
-#include "TVar.hh"
 #include "TMatrixElement.hh"
-
 
 ClassImp(TEvtProb)
 
@@ -27,6 +25,7 @@ TEvtProb::TEvtProb() {
   TMatrixElement::inst()->SetMatrixElement(_matrixElement);
   _hwwPhaseSpace=TVar::MH;
   mcfm_init_();
+  // cout<<"TEvtProb::TEvtProb Line "<<__LINE__<<endl;
 }
 
 TEvtProb::~TEvtProb() {}
@@ -65,10 +64,13 @@ void   TEvtProb::NeutrinoIntegrate(TVar::Process proc,
     Global_SmearLevel = _smearLevel;
     Global_Ncalls= _ncalls;
     Global_IsApplyFake=_isApplyFake;
-    
+
     //Initialize Process
     SetProcess(Global_process);
     My_choose(Global_process);
+
+    // nwz_.nwz=1; //- this is only valid for Tevatron, at the LHC there is no W+/W- symmetry
+
 
     //delta(L1) delta(L2)
     int NDim = bveg1_mcfm_.ndim-6;
@@ -77,7 +79,9 @@ void   TEvtProb::NeutrinoIntegrate(TVar::Process proc,
     //dE1,dE2
     if (Global_SmearLevel>=2) NDim+=2;
 
- 
+    //breitw_flat
+    if(proc==TVar::HWW || (proc>=TVar::HWW110 && proc<=TVar::HWW300)){ NDim+=2;}
+
     cout <<" [NeutrinoIntegrate]: Evaluate " << TVar::ProcessName(proc)
      <<" Ncalls " << Global_Ncalls
      <<" npart._npart=" << npart_.npart
@@ -96,33 +100,24 @@ void   TEvtProb::NeutrinoIntegrate(TVar::Process proc,
     
     int count_PS=0;
     double sumW=0,sumW2=0;
-
-    double probAcceptanceEfficiency = getProbAcceptanceEfficiency(cdf_event, _effhist);
-    // cout << "probAcceptanceEfficency = " << probAcceptanceEfficiency << endl;
-    // double probAcceptanceEfficiency = 1.0;
-    if(probAcceptanceEfficiency == 0) return;
-    if(probAcceptanceEfficiency<0) {
-      cout <<"Error: " << probAcceptanceEfficiency <<endl;
-      return;
-    }
-
+    // Yanyan
+    // Main work horse to do the integration! 
+    // Need to check out some algorithm 
     for(int idx=0;idx<_ncalls;idx++){
       count_PS++;
       myRandom.RndmArray(NDim,r); // generate NDim random numbers and set the first NDim entries of r arrary
       double dXsec=0;
-    
-      // dXsec=Integrand_NeutrinoIntegration(r,NDim,0);
-      dXsec=Integrand_NeutrinoIntegration(r,NDim,0, _boosthist)*probAcceptanceEfficiency;
-  
+      dXsec=Integrand_NeutrinoIntegration(r,NDim,0);
       if (dXsec<=0) continue;
-      // count_PS++;
       sumW  += dXsec;
       sumW2 += dXsec*dXsec;
+      //       cout<<"process= "<<TVar::ProcessName(Global_process)<<" dXsec="<<dXsec<<"  Sum= "<< sumW<<"\n";
     }
     
+    // cout << "TEvtProb:: count_PS = "<< count_PS <<" Line "<<__LINE__<<endl;
+
     *Xsec = sumW/count_PS;
-    //    cout << "TEvtProb:: count_PS = " << count_PS << "; _ncalls = " << _ncalls << endl;
-    
+ 
     *XsecErr = sumW2/count_PS-sumW/count_PS*sumW/count_PS;
     if(*XsecErr>0.0) *XsecErr = sqrt(*XsecErr/count_PS);
     else             *XsecErr = -1;  
@@ -133,7 +128,7 @@ void   TEvtProb::NeutrinoIntegrate(TVar::Process proc,
 //=======================================
 // Integrand
 //=======================================
-double Integrand_NeutrinoIntegration(double * r, unsigned int NDim, void * param, BoostHist boosthist){
+double Integrand_NeutrinoIntegration(double * r, unsigned int NDim, void * param){
 
     //constants
     double sqrts = 2.*EBEAM;
@@ -144,7 +139,7 @@ double Integrand_NeutrinoIntegration(double * r, unsigned int NDim, void * param
 
 
     //Weight calculation
-    // double probAcceptanceEfficiency;
+    double probAcceptanceEfficiency;
     double PSWeight=1.;
     double flux=1.;
     double dXsec=0.;
@@ -154,79 +149,50 @@ double Integrand_NeutrinoIntegration(double * r, unsigned int NDim, void * param
     
     count_PS++;
     
+    //myRandom.RndmArray(NDim,r);
     PSWeight=1.;
-  
     
-    if (Global_process==TVar::WW)
-      {
-	Global_NSol=4;         
-	genMw1Mw2(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist);
-      }
-
-    if (Global_process==TVar::HWW)
-      {
-	if(Global_HWWPhaseSpace==TVar::MWMW)
-	  { 
-	    Global_NSol=4;
-	    genMw1Mw2(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist);
-	  }
-	else if (Global_HWWPhaseSpace==TVar::MHMW)
-	  { 
-	    Global_NSol=4;
-	    genMHiggsMw1(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist);
-	  }
-	else if (Global_HWWPhaseSpace==TVar::MHYH)
-	  { 
-	    Global_NSol=2;
-	    genMHiggsYHiggs(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist);
-	  }
-	else if (Global_HWWPhaseSpace==TVar::MH)
-	  { 
-	    Global_NSol=2;
-	    genMHiggs(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event, boosthist);
-	  }
-      }
-
-    else if (Global_process==TVar::Wp_gamma || Global_process==TVar::Wm_gamma )
-      { 
-	Global_NSol=2;  
-	genMw_Wgamma(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);
-      }
-    else if (Global_process==TVar::Wp_1jet || Global_process==TVar::Wm_1jet  )
-      { 
-	Global_NSol=2; 
-	genMw_W1jet(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);
-      }
-    else if (Global_process==TVar::ZZ)
-      { 
-	Global_NSol=2;
-	genMzNu3     (r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);
-      }
-    else if (Global_process==TVar::Z_2l)
-      { 
-	Global_NSol=1;    
-	genDY(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);
-      } 
+    if (Global_process==TVar::WW              ){ Global_NSol=4;         genMw1Mw2    (r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);}
+    if(Global_process==TVar::HWW             ){
+      if(Global_HWWPhaseSpace==TVar::MWMW    ){ Global_NSol=4;         genMw1Mw2    (r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);}
+      else if(Global_HWWPhaseSpace==TVar::MHMW    ){ Global_NSol=4;         genMHiggsMw1 (r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);}
+      else if(Global_HWWPhaseSpace==TVar::MHYH    ){ Global_NSol=2;       genMHiggsYHiggs(r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);}
+      else if(Global_HWWPhaseSpace==TVar::MH      ){ Global_NSol=2;         genMHiggs    (r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);}
+    }
+    else if(Global_process==TVar::Wp_gamma||
+	    Global_process==TVar::Wm_gamma ){ Global_NSol=2;      genMw_Wgamma (r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);}
+    else if(Global_process==TVar::Wp_1jet ||
+	    Global_process==TVar::Wm_1jet  ){ Global_NSol=2;      genMw_W1jet  (r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);}
+    else if(Global_process==TVar::ZZ       ){ Global_NSol=2;      genMzNu3     (r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);}
+    else if(Global_process==TVar::Z_2l     ){ Global_NSol=1;      genDY        (r,Global_SmearLevel,Global_cdf_event,Global_mcfm_event);} 
     
-    //loop over solutions
+    //loop four solutions
     for(int jps=0;jps<Global_NSol;jps++){
       
       mcfm_event_type& mcfm_event=Global_mcfm_event[jps];
-    
-      // cout << "mcfm_event.pswt = " << mcfm_event.pswt << endl;
+      
       if(mcfm_event.pswt<=0) continue;
+      
+      //Apply Conversion And FakeRate
+      probAcceptanceEfficiency=1;
+      
+      if (probAcceptanceEfficiency==0) {mcfm_event.pswt=0; continue;}
+      
+      if(probAcceptanceEfficiency<0) {
+	cout <<"Error: " << probAcceptanceEfficiency <<endl;
+      }
       
       //Matrix Element evaluation in qX=qY=0 frame
       //Evaluate f(x1)f(x2)|M(q)|/x1/x2 
       // 
       double qX=mcfm_event.p[0].Px()+mcfm_event.p[1].Px();
       double qY=mcfm_event.p[0].Py()+mcfm_event.p[1].Py();
-      // cout<< "TEvtProb:: qX = " << qX<< "qY = "<<qY<<"\n";
+      //cout<<qX<<"   "<<qY<<"\n";
       
       if((qX*qX+qY*qY)>0){
 	double qE = mcfm_event.p[0].Energy()+mcfm_event.p[1].Energy();
 	TVector3 boostV(qX/qE,qY/qE,0);
-	for(int ipt=0;ipt<6;ipt++) mcfm_event.p[ipt].Boost(-boostV);
+	for(int ipt=0;ipt<6;ipt++)mcfm_event.p[ipt].Boost(-boostV);
       }
       
       //event selections in Lab Frame
@@ -240,8 +206,7 @@ double Integrand_NeutrinoIntegration(double * r, unsigned int NDim, void * param
       //for(int ipt=2;ipt<npart_.npart+2;ipt++) msqjk = msqjk/mcfm_event.p[ipt].Energy();
       
       flux=fbGeV2/(mcfm_event.p[0].Energy()*mcfm_event.p[1].Energy())	/(4*W);
-      //dXsec=msqjk*flux*mcfm_event.pswt*PSWeight*probAcceptanceEfficiency;
-      dXsec=msqjk*flux*mcfm_event.pswt*PSWeight;
+      dXsec=msqjk*flux*mcfm_event.pswt*PSWeight*probAcceptanceEfficiency;
       
       if (dXsec>0.0){
 	sumW  += dXsec;
@@ -249,7 +214,6 @@ double Integrand_NeutrinoIntegration(double * r, unsigned int NDim, void * param
       }  
       else
 	{
-	  /*
 	  cout <<" NeutrinoIntegrate Warning: dXsec " << dXsec
 	       << " dXsec==dXsec " << (dXsec==dXsec)
 	       << " dXsec>0.0 " << (dXsec>0.0)<<" "
@@ -258,9 +222,8 @@ double Integrand_NeutrinoIntegration(double * r, unsigned int NDim, void * param
 	       <<" flux="<<flux 
 	       <<" wgt="<<mcfm_event.pswt
 	       <<" PS=" <<PSWeight
-	    //<<" eff="<<probAcceptanceEfficiency
+	       <<" eff="<<probAcceptanceEfficiency
 	       <<endl;
-	  */
 	}
     }//loop solutions
     

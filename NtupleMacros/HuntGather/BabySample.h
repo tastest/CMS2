@@ -12,8 +12,7 @@ class BabySample
 {
     public:
         BabySample() {}
-        //BabySample(const char *pfx, const char* babies, TCut presel, float kfactor, bool isdata, Color_t color = kBlack, Style_t style = 20)
-	BabySample(const char *pfx,const char *pfx2, const char* babies, TCut presel, float kfactor, bool isdata, Color_t color = kBlack, Style_t style = 20)
+        BabySample(const char *pfx, const char* babies, TCut presel, float kfactor, bool isdata, Color_t color = kBlack, Style_t style = 20)
         {
             color_ = color;
             style_ = style;
@@ -21,13 +20,12 @@ class BabySample
             chain_->Add(babies);
             presel_ = presel;
             pfx_ = pfx;
-	    pfx2_ = pfx2;
             isdata_ = isdata;
             kfactor_ = kfactor;
 
             if (strcmp(presel.GetTitle(),"")) {
                 chain_->Draw(">>elist", presel);
-                elist_ = (TEventList*)gDirectory->Get("elist")->Clone();
+                elist_ = (TEventList*)gDirectory->Get("elist");
                 chain_->SetEventList(elist_);
             }
         }
@@ -38,7 +36,6 @@ class BabySample
         TChain* chain()   const { return chain_; }
         TCut    presel()  const { return presel_;}
         const char* pfx() const { return pfx_.Data(); }
-	const char* pfx2() const { return pfx2_.Data(); }
         bool    isdata()  const { return isdata_;  }
         float   kfactor() const { return kfactor_; }
 
@@ -49,7 +46,6 @@ class BabySample
         TCut    presel_;
         TEventList* elist_;
         TString pfx_;
-	TString pfx2_;
 
         bool  isdata_;
         float kfactor_;

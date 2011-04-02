@@ -1,12 +1,9 @@
 #!/bin/bash
 TOOL_DIR=$1
-DATA_DIR=$2
-cms2_tag=$3
-SUB_DIR=` echo $DATA_DIR/$cms2_tag `
+SUB_DIR=$2
 while [ 1 ]
 do
 #[ ! -d " ~/public_html/hunt/$SUB_DIR" ] && echo Create  ~/public_html/hunt/$SUB_DIR && mkdir ~/public_html/hunt/$SUB_DIR
-[ ! -d "$DATA_DIR" ] && echo Create $DATA_DIR && mkdir $DATA_DIR
 [ ! -d "$SUB_DIR" ] && echo Create $SUB_DIR && mkdir $SUB_DIR
 [ ! -d "$SUB_DIR/cands" ] && echo Create $SUB_DIR/cands && mkdir $SUB_DIR/cands
 [ ! -d "$SUB_DIR/dumps" ] && echo Create $SUB_DIR/dumps && mkdir $SUB_DIR/dumps
@@ -28,16 +25,9 @@ cd $SUB_DIR
     echo $DATE
 
     echo "Checking for new files to process..."
-   
-    #echo /nfs-3/userdata/cms2/$SUB_DIR/V03-06-09
-    #find /nfs-3/userdata/cms2/$SUB_DIR/V03-06-09 -follow -maxdepth 1 -name "merged_ntuple_[0-9]*.root" -printf "%p %s %C@\n"  >>  AllRunsAvailable.txt
-   # echo /nfs-3/userdata/cms2/$SUB_DIR/V03-06-14/singleLepPt10Skim
-   # find /nfs-3/userdata/cms2/$SUB_DIR/V03-06-14/singleLepPt10Skim -follow -maxdepth 1 -name "skimmed_ntuple_[0-9]*.root" -printf "%p %s %C@\n"  >>  AllRunsAvailable.txt
-    #echo /nfs-3/userdata/cms2/$SUB_DIR/singleLepPt10Skim
-    #find /nfs-3/userdata/cms2/$SUB_DIR/singleLepPt10Skim -follow -maxdepth 1 -name "skimmed_ntuple_[0-9]*.root" -printf "%p %s %C@\n"  >>  AllRunsAvailable.txt
-    echo /nfs-3/userdata/cms2/$SUB_DIR   
-    find /nfs-3/userdata/cms2/$SUB_DIR -follow -maxdepth 1 -name "merged_ntuple_[0-9]*.root" -printf "%p %s %C@\n"  >>  AllRunsAvailable.txt
- #find /nfs-3/userdata/cms2/$SUB_DIR/V03-06-14 -follow -maxdepth 1 -name "merged_ntuple_148031_1.root" -printf "%p %s %C@\n"  >>  AllRunsAvailable.txt
+    #find /nfs-3/userdata/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-25/singleLepPt5Skim -follow -maxdepth 1 -name "skimmed_ntuple_[0-9]*.root" -printf "%p %s %C@\n"  >AllRunsAvailable.txt
+    echo /nfs-3/userdata/cms2/$SUB_DIR/V03-06-09/singleLepPt10Skim
+    find /nfs-3/userdata/cms2/$SUB_DIR/V03-06-09/singleLepPt10Skim -follow -maxdepth 1 -name "skimmed_ntuple_[0-9]*.root" -printf "%p %s %C@\n"  >>  AllRunsAvailable.txt
 #     find /nfs-3/userdata/cms2/Mu_Run2010A-PromptReco-v4_RECO/V03-04-26-12/singleLepPt10Skim -follow -maxdepth 1 -name "skimmed_ntuple_[0-9]*.root" -printf "%p %s %C@\n"  >AllRunsAvailable.txt
     # The awk above is used because these two processings overlap
     # and we don't want to deal with the duplication
@@ -73,12 +63,10 @@ cd $SUB_DIR
         do
             file=`echo $line | awk '{print $1}'`
             cmd="root -b -l -q '$TOOL_DIR/UpdateSkims.C+(\"$file\")'"
-#	    cmd="root -b -l -q '$TOOL_DIR/UpdateSkims.C+(\"$SUB_DIR\",\"$file\")'"
             eval $cmd
             if [ $? -ne 0 ]
             then
                 echo "Error processing $file"
-		exit 55
             else
                 echo $line >> RunsProcessed.txt
             fi
@@ -86,7 +74,81 @@ cd $SUB_DIR
 
         # slava's [re-]merging may remove files in which case we
         # will have duplicates so rm parentless babies and skims
-
+        echo "Cleaning out parentless babies and skims"
+        # emu
+        for baby in `ls emu_baby/*.root`
+        do
+            ident=`echo $baby | sed 's!^.*/emuskim_baby_\(.*\).root$!\1!'`
+            grep $ident AllRunsAvailable.txt >/dev/null 2>&1
+            if [ $? -ne 0 ]
+            then
+                echo "Found parentless baby, removing $baby"
+                rm $baby
+            fi
+        done
+        for skim in `ls emu_skim/*.root`
+        do
+            ident=`echo $skim | sed 's!^.*/emuskim_\(.*\).root$!\1!'`
+            grep $ident AllRunsAvailable.txt >/dev/null 2>&1
+            if [ $? -ne 0 ]
+            then
+                echo "Found parentless skim, removing $skim"
+                rm $skim
+            fi
+        done
+        # dilep
+        for baby in `ls dilep_baby/*.root`
+        do
+            ident=`echo $baby | sed 's!^.*/dilepskim_baby_\(.*\).root$!\1!'`
+            grep $ident AllRunsAvailable.txt >/dev/null 2>&1
+            if [ $? -ne 0 ]
+            then
+                echo "Found parentless baby, removing $baby"
+                rm $baby
+            fi
+        done
+        for skim in `ls dilep_skim/*.root`
+        do
+            ident=`echo $skim | sed 's!^.*/dilepskim_\(.*\).root$!\1!'`
+            grep $ident AllRunsAvailable.txt >/dev/null 2>&1
+            if [ $? -ne 0 ]
+            then
+                echo "Found parentless skim, removing $skim"
+                rm $skim
+            fi
+        done
+        # trilep
+        for baby in `ls trilep_baby/*.root`
+        do
+            ident=`echo $baby | sed 's!^.*/trilepskim_baby_\(.*\).root$!\1!'`
+            grep $ident AllRunsAvailable.txt >/dev/null 2>&1
+            if [ $? -ne 0 ]
+            then
+                echo "Found parentless baby, removing $baby"
+                rm $baby
+            fi
+        done
+        for skim in `ls trilep_skim/*.root`
+        do
+            ident=`echo $skim | sed 's!^.*/trilepskim_\(.*\).root$!\1!'`
+            grep $ident AllRunsAvailable.txt >/dev/null 2>&1
+            if [ $? -ne 0 ]
+            then
+                echo "Found parentless skim, removing $skim"
+                rm $skim
+            fi
+        done
+        # clean logs as well
+        for log in `ls logs/*.txt`
+        do
+            ident=`echo $log | sed 's!^.*/log_\(.*\).txt$!\1!'`
+            grep $ident AllRunsAvailable.txt >/dev/null 2>&1
+            if [ $? -ne 0 ]
+            then
+                echo "Found parentless log, removing $log"
+                rm $log
+            fi
+        done
 
         # Produce cands.txts and do some basic plotting
         # in a separate process so that if it stalls it
@@ -97,11 +159,10 @@ cd $SUB_DIR
 
         # Last run processed
         #cat RunsProcessed.txt | cut -d '_' -f 6 | sort -n -r | head -n 1 >lastrun.txt
-	#cat RunsProcessed.txt | cut -d '_' -f 5 | sort -n -r | head -n 1 >lastrun.txt
-	cat RunsProcessed.txt | cut -d '_' -f 3 | sort -n -r | head -n 1 >lastrun.txt
+	cat RunsProcessed.txt | cut -d '_' -f 5 | sort -n -r | head -n 1 >lastrun.txt
         #scp lastrun.txt uaf-4.t2.ucsd.edu:~/public_html/hunt
 	#cp lastrun.txt ~/public_html/hunt/$SUB_DIR
     fi
     cd $TOOL_DIR
-    sleep 3600;
-done  &> $TOOL_DIR/log/$DATA_DIR.log.`date '+%Y.%m.%d-%H.%M.%S'`   
+    sleep 600;
+done  &> $TOOL_DIR/log/$SUB_DIR.log.`date '+%Y.%m.%d-%H.%M.%S'`   

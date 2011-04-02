@@ -33,8 +33,7 @@ private:
 	 Int_t   ls_;
 	 Int_t   evt_;
      Int_t   isdata_;
-     Int_t   nvtx_;
-     Float_t pfmet_;
+	 Float_t pfmet_;
 	 Float_t tcmet_;
 	 Int_t   ntrks_;
 	 Int_t   njets_;
@@ -114,7 +113,6 @@ private:
 	 Float_t e_sigieie_; // sigmaietaieta
 	 Float_t e_eMe55_;
 	 Int_t   e_nmHits_;
-	 Int_t   e_nmHits39X_;
 	 Float_t e_dcot_;
 	 Float_t e_dist_;
 	 Float_t e_drmu_;

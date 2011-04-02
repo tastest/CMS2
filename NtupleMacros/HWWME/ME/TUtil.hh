@@ -56,7 +56,4 @@ double SumMatrixElementPDF(TVar::Process procees, mcfm_event_type* mcfm_event,do
 double HiggsWidth(double);
 double SetTGCParameter(TString ,double par);
 double GetTGCParameter(int i);
-double getProbAcceptanceEfficiency(cdf_event_type cdf_event, EffHist effhist);
-void getProbFromHist(double x0, double* kX, double *wt, TH1F *hkx);
-
 #endif

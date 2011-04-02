@@ -80,12 +80,6 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
 					run_        = cms2.evt_run();
 					ls_         = cms2.evt_lumiBlock();
 					evt_        = cms2.evt_event();
-					nvtx_ = 0;
-					for( unsigned int i=0; i<cms2.vtxs_isFake().size(); i++ ) {
-                                          if( !cms2.vtxs_isFake()[i] && cms2.vtxs_isValid()[i] )
-                                            ++nvtx_;
-                                        }
-
 
                     if (!isdata_) 
                         int nlep = leptonGenpCount_lepTauDecays(ngenels_, ngenmus_, ngentaus_);
@@ -339,7 +333,6 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
 						 e1_sigieie_     = cms2.els_sigmaIEtaIEta()[index1];
 						 e1_eMe55_       = cms2.els_eMax()[index1] / cms2.els_e5x5()[index1];
 						 e1_nmHits_      = cms2.els_exp_innerlayers()[index1];
-						 e1_nmHits39X_   = cms2.els_exp_innerlayers39X()[index1];
 						 e1_dcot_        = cms2.els_conv_dcot()[index1];
 						 e1_dist_        = cms2.els_conv_dist()[index1];
 						 e1_drmu_        = cms2.els_closestMuon()[index1] < 0 ? -999999. : cms2.els_musdr()[index1];
@@ -398,7 +391,6 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
 						 e2_sigieie_     = cms2.els_sigmaIEtaIEta()[index2];
 						 e2_eMe55_       = cms2.els_eMax()[index2] / cms2.els_e5x5()[index2];
 						 e2_nmHits_      = cms2.els_exp_innerlayers()[index2];
-						 e2_nmHits39X_   = cms2.els_exp_innerlayers39X()[index2];
 						 e2_dcot_        = cms2.els_conv_dcot()[index2];
 						 e2_dist_        = cms2.els_conv_dist()[index2];
 						 e2_drmu_        = cms2.els_closestMuon()[index2] < 0 ? -999999. : cms2.els_musdr()[index2];
@@ -457,7 +449,6 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
 						 e3_sigieie_     = cms2.els_sigmaIEtaIEta()[index3];
 						 e3_eMe55_       = cms2.els_eMax()[index3] / cms2.els_e5x5()[index3];
 						 e3_nmHits_      = cms2.els_exp_innerlayers()[index3];
-						 e3_nmHits39X_   = cms2.els_exp_innerlayers39X()[index3];
 						 e3_dcot_        = cms2.els_conv_dcot()[index3];
 						 e3_dist_        = cms2.els_conv_dist()[index3];
 						 e3_drmu_        = cms2.els_closestMuon()[index3] < 0 ? -999999. : cms2.els_musdr()[index3];
@@ -492,8 +483,7 @@ void trilepbabymaker::InitBabyNtuple ()
 	 run_          = -999999;
 	 ls_           = -999999;
 	 evt_          = -999999;
-	 nvtx_         = -999999;
-	 isdata_       = 1;
+     isdata_       = 1;
 	 hyp_type_     = -999999;
 	 pfmet_        = -999999.;
 	 tcmet_        = -999999.;
@@ -620,7 +610,6 @@ void trilepbabymaker::InitBabyNtuple ()
 	 e1_sigieie_     = -999999.;
 	 e1_eMe55_       = -999999.;
 	 e1_nmHits_      = -999999;
-	 e1_nmHits39X_   = -999999;
 	 e1_dcot_        = -999999.;
 	 e1_dist_        = -999999.;
 	 e1_drmu_        = -999999.;
@@ -646,7 +635,6 @@ void trilepbabymaker::InitBabyNtuple ()
 	 e2_sigieie_     = -999999.;
 	 e2_eMe55_       = -999999.;
 	 e2_nmHits_      = -999999;
-	 e2_nmHits39X_   = -999999;
 	 e2_dcot_        = -999999.;
 	 e2_dist_        = -999999.;
 	 e2_drmu_        = -999999.;
@@ -672,7 +660,6 @@ void trilepbabymaker::InitBabyNtuple ()
 	 e3_sigieie_     = -999999.;
 	 e3_eMe55_       = -999999.;
 	 e3_nmHits_      = -999999;
-	 e3_nmHits39X_   = -999999;
 	 e3_dcot_        = -999999.;
 	 e3_dist_        = -999999.;
 	 e3_drmu_        = -999999.;
@@ -696,8 +683,7 @@ void trilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 	 babyTree_->Branch("run",          &run_,         "run/I"         );
 	 babyTree_->Branch("ls",           &ls_,          "ls/I"          );
 	 babyTree_->Branch("evt",          &evt_,         "evt/I"         );
-	 babyTree_->Branch("nvtx",         &nvtx_,        "nvtx/I"        );
-	 babyTree_->Branch("isdata",       &isdata_,       "isdata/I"      );
+     babyTree_->Branch("isdata",       &isdata_,       "isdata/I"      );
 	 babyTree_->Branch("hyp_type",     &hyp_type_,    "hyp_type/I"    );
 	 babyTree_->Branch("pfmet",        &pfmet_,       "pfmet/F"       );
 	 babyTree_->Branch("tcmet",        &tcmet_,       "tcmet/F"       );
@@ -825,7 +811,6 @@ void trilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 	 babyTree_->Branch("e1_sigieie",    &e1_sigieie_,    "e1_sigieie/F"   );
 	 babyTree_->Branch("e1_eMe55",      &e1_eMe55_,      "e1_eMe55/F"     ); // for spikes
 	 babyTree_->Branch("e1_nmHits",     &e1_nmHits_,     "e1_nmHits/I"    );
-	 babyTree_->Branch("e1_nmHits39X",  &e1_nmHits39X_,  "e1_nmHits39X/I" );
 	 babyTree_->Branch("e1_dcot",       &e1_dcot_,       "e1_dcot/F"      );
 	 babyTree_->Branch("e1_dist",       &e1_dist_,       "e1_dist/F"      );
 	 babyTree_->Branch("e1_drmu",       &e1_drmu_,       "e1_drmu/F"      );
@@ -851,7 +836,6 @@ void trilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 	 babyTree_->Branch("e2_sigieie",    &e2_sigieie_,    "e2_sigieie/F"   );
 	 babyTree_->Branch("e2_eMe55",      &e2_eMe55_,      "e2_eMe55/F"     ); // for spikes
 	 babyTree_->Branch("e2_nmHits",     &e2_nmHits_,     "e2_nmHits/I"    );
-	 babyTree_->Branch("e2_nmHits39X",  &e2_nmHits39X_,  "e2_nmHits39X/I" );
 	 babyTree_->Branch("e2_dcot",       &e2_dcot_,       "e2_dcot/F"      );
 	 babyTree_->Branch("e2_dist",       &e2_dist_,       "e2_dist/F"      );
 	 babyTree_->Branch("e2_drmu",       &e2_drmu_,       "e2_drmu/F"      );
@@ -877,7 +861,6 @@ void trilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 	 babyTree_->Branch("e3_sigieie",    &e3_sigieie_,    "e3_sigieie/F"   );
 	 babyTree_->Branch("e3_eMe55",      &e3_eMe55_,      "e3_eMe55/F"     ); // for spikes
 	 babyTree_->Branch("e3_nmHits",     &e3_nmHits_,     "e3_nmHits/I"    );
-	 babyTree_->Branch("e3_nmHits39X",  &e3_nmHits39X_,  "e3_nmHits39X/I" );
 	 babyTree_->Branch("e3_dcot",       &e3_dcot_,       "e3_dcot/F"      );
 	 babyTree_->Branch("e3_dist",       &e3_dist_,       "e3_dist/F"      );
 	 babyTree_->Branch("e3_drmu",       &e3_drmu_,       "e3_drmu/F"      );

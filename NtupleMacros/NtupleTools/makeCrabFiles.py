@@ -76,13 +76,9 @@ def makeCrabConfig():
 #
 def makeCMSSWConfig(cmsswSkelFile):
     foundOutNtupleFile = False
-    foundreportEvery   = False
-    foundcmsPath       = False
+    foundreportEvery = False
     inFile = open(cmsswSkelFile, 'r').read().split('\n')
-    nlines = 0
-    iline  = 0
     for i in inFile:
-        nlines += 1
         if i.find(outNtupleName) != -1:
             foundOutNtupleFile = True
         if i.find('reportEvery') != -1:
@@ -95,25 +91,21 @@ def makeCMSSWConfig(cmsswSkelFile):
     outFileName = dataSet.split('/')[1]+'_'+dataSet.split('/')[2] + '_cfg.py'
     print 'Writing CMS2 CMSSW python config file : ' + outFileName
     outFile = open(outFileName, 'w')
-    outFile.write( 'import sys, os' + '\n' + 'sys.path.append( os.getenv("CMSSW_BASE") + "/src/CMS2/NtupleMaker/test" )' + '\n' )
     for i in inFile:
-        iline += 1
+
         if i.find('reportEvery') != -1:
             outFile.write('process.MessageLogger.cerr.FwkReport.reportEvery = ' + str(report_every) + '\n'); continue
 
         if i.find('globaltag') != -1:
             outFile.write('process.GlobalTag.globaltag = "' + global_tag + '"\n'); continue
 
+        outFile.write(i+'\n')
+        
         if i.find('cms.Path') != -1:
-            foundcmsPath = True            
-
-        outFile.write(i)
-        if iline < nlines:
-            outFile.write('\n')
-
-    if foundcmsPath == True:
-      outFile.write('process.eventMaker.datasetName                   = cms.string(\"' + dataSet+'\")\n')
-      outFile.write('process.eventMaker.CMS2tag                       = cms.string(\"' + tag+'\")\n')
+            outFile.write('process.eventMaker.datasetName = cms.string(\"' +
+                          dataSet+'\")\n')
+            outFile.write('process.eventMaker.CMS2tag     = cms.string(\"' +
+                          tag+'\")\n')
 
     outFile.close()
 
@@ -131,7 +123,7 @@ if len(sys.argv) < 5 :
     print '\nOptional arguments:'
     print '\t-strElem\tpreferred storage element. Default is T2_US_UCSD if left unspecified'
     print '\t-nEvts\t\tNumber of events you want to run on. Default is -1'
-    print '\t-evtsPerJob\tNumber of events per job. Default is 20000'
+    print '\t-evtsPerJob\tNumber of events per job. Default is 5000'
     #print '\t-n\t\tName of output Ntuple file. Default is ntuple.root'
     print '\t-m\t\tsubmission mode (possible: condor_g, condor, glite). Default is glidein'
     print '\t-dbs\t\tdbs url'
@@ -179,9 +171,9 @@ else :
     global_tag = '';
     dbs_result = '';
     if dbs_url == '' :
-      command = 'dbsql find config.name,config.content where dataset=' + dataSet.replace("AODSIM", "GEN-SIM-RECO") + '>config.content; while read line; do globaltag=`echo $line | sed -n \'s/^.*process.GlobalTag.globaltag = \([^p]*\).*$/\\1/p\'`; if [ "$globaltag" != "" ]; then echo $globaltag; break; fi; done <config.content; rm config.content';
+      command = 'dbsql find config.name,config.content where dataset=' + dataSet + '>config.content; while read line; do globaltag=`echo $line | sed -n \'s/^.*process.GlobalTag.globaltag = \([^p]*\).*$/\\1/p\'`; if [ "$globaltag" != "" ]; then echo $globaltag; break; fi; done <config.content; rm config.content';
     else:
-      command = 'python $DBSCMD_HOME/dbsCommandLine.py -c search --url=' + dbs_url + ' --query="find config.name,config.content where dataset=' + dataSet.replace("AODSIM", "GEN-SIM-RECO") + '">config.content; while read line; do globaltag=`echo $line | sed -n \'s/^.*process.GlobalTag.globaltag = \([^p]*\).*$/\\1/p\'`; if [ "$globaltag" != "" ]; then echo $globaltag; break; fi; done <config.content; rm config.content';
+      command = 'python $DBSCMD_HOME/dbsCommandLine.py -c search --url=' + dbs_url + ' --query="find config.name,config.content where dataset=' + dataSet + '">config.content; while read line; do globaltag=`echo $line | sed -n \'s/^.*process.GlobalTag.globaltag = \([^p]*\).*$/\\1/p\'`; if [ "$globaltag" != "" ]; then echo $globaltag; break; fi; done <config.content; rm config.content';
 
     #print command
 

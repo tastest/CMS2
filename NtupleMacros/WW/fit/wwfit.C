@@ -143,7 +143,7 @@ void setSigPdf_LZ_GZ()
   Int_t i=0;
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg100_lg0_gg100_kz100_lz0_gz1000000.root",
+  samples[i] = Sample("processed_data_WW_1j_kg100_lg0_gg100_kz100_lz0_gz100_fastsim386_v1.root",
 		      "sm_sm",0,0);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
@@ -153,81 +153,81 @@ void setSigPdf_LZ_GZ()
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg100_lg0_gg100_kz175_lz0_gz1750000.root",
+  samples[i] = Sample("processed_data_WW_1j_kg100_lg0_gg100_kz175_lz0_gz175_fastsim386_v1.root",
 		      "sm_p",0,0.75);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
-  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*6.12261, 0.112729*norm),
+  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*5.13491, 0.0936874*norm),
 		samples[i].hist_keys);
   i++;			    
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg100_lg0_gg100_kz25_lz0_gz250000.root",
+  samples[i] = Sample("processed_data_WW_1j_kg100_lg0_gg100_kz25_lz0_gz25_fastsim386_v1.root",
 		      "sm_m",0,-0.75);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
-  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*6.01277, 0.112194*norm),
+  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*5.15558, 0.0952175*norm),
 		samples[i].hist_keys);
   i++;			    
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg100_lg50_gg100_kz100_lz50_gz1000000.root",
+  samples[i] = Sample("processed_data_WW_1j_kg100_lg50_gg100_kz100_lz50_gz100_fastsim386_v1.root",
 		      "p_sm", 0.5, 0);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
-  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*5.53635, 0.103594*norm),
+  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*4.63728, 0.0851496*norm),
 		samples[i].hist_keys);
   i++;			    
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg100_lg50_gg100_kz175_lz50_gz1750000.root",
+  samples[i] = Sample("processed_data_WW_1j_kg100_lg50_gg100_kz175_lz50_gz175_fastsim386_v1.root",
 		      "p_p",0.5,0.75);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
-  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*9.43854, 0.178215*norm),
+  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*7.99794, 0.207583*norm),
 		samples[i].hist_keys);
   i++;			    
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg100_lg50_gg100_kz25_lz50_gz250000.root",
+  samples[i] = Sample("processed_data_WW_1j_kg100_lg50_gg100_kz25_lz50_gz25_fastsim386_v1.root",
 		      "p_m",0.5,-0.75);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
-  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*7.22219, 0.13752*norm),
+  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*5.83903, 0.10877*norm),
 		samples[i].hist_keys);
   i++;			    
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg100_lgm50_gg100_kz100_lzm50_gz1000000.root",
+  samples[i] = Sample("processed_data_WW_1j_kg100_lgm50_gg100_kz100_lzm50_gz100_fastsim386_v1.root",
 		      "m_sm",-0.5,0);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
-  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*5.20204, 0.0981948*norm),
+  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*4.30013, 0.113107*norm),
 		samples[i].hist_keys);
   i++;			    
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg100_lgm50_gg100_kz175_lzm50_gz1750000.root",
+  samples[i] = Sample("processed_data_WW_1j_kg100_lgm50_gg100_kz175_lzm50_gz175_fastsim386_v1.root",
 		      "m_p",-0.5,0.75);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
-  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*6.89533, 0.131155*norm),
+  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*5.78909, 0.150733*norm),
 		samples[i].hist_keys);
   i++;			    
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg100_lgm50_gg100_kz25_lzm50_gz250000.root",
+  samples[i] = Sample("processed_data_WW_1j_kg100_lgm50_gg100_kz25_lzm50_gz25_fastsim386_v1.root",
 		      "m_m",-0.5,-0.75);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
-  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*9.72764, 0.183288*norm),
+  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*7.64633, 0.142466*norm),
 		samples[i].hist_keys);
   i++;			    
   pdf->build();
@@ -321,7 +321,7 @@ void setSigPdf_LZ_KG()
   Int_t i=0;
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg100_lg0_gg100_kz100_lz0_gz1000000.root",
+  samples[i] = Sample("samples/processed_data_WW_1j_kg100_lg0_gg100_kz100_lz0_gz100_fastsim386_v1.root",
 		      "sm_sm",0,0);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
@@ -331,103 +331,101 @@ void setSigPdf_LZ_KG()
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg170_lg0_gg100_kz779311_lz0_gz100.root",
+  samples[i] = Sample("samples/processed_data_WW_1j_kg170_lg0_gg100_kz779311_lz0_gz100.root", 
 		      "sm_p",0,0.70);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
-  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*3.2987, 0.0592563*norm),
+  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*3.22078, 0.0574623*norm),
 		samples[i].hist_keys);
   i++;			    
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg30_lg0_gg100_kz1220689_lz0_gz100.root",
+  samples[i] = Sample("samples/processed_data_WW_1j_kg30_lg0_gg100_kz1220689_lz0_gz100.root",
 		      "sm_m",0,-0.70);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
-  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*3.35685 , 0.0604608*norm),
+  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*3.33483 , 0.0593443*norm),
 		samples[i].hist_keys);
   i++;			    
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg100_lg50_gg100_kz100_lz50_gz1000000.root",
+  samples[i] = Sample("samples/processed_data_WW_1j_kg100_lg50_gg100_kz100_lz50_gz100_fastsim386_v1.root",
 		      "p_sm", 0.5, 0);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
-  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*5.53635, 0.103594*norm),
+  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*4.63728, 0.0851496*norm),
 		samples[i].hist_keys);
   i++;			    
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg170_lg50_gg100_kz779311_lz50_gz100.root",
+  samples[i] = Sample("samples/processed_data_WW_1j_kg170_lg50_gg100_kz779311_lz50_gz100.root",
 		      "p_p",0.5,0.70);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
-  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*5.82764, 0.108893*norm),
+  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*4.76538, 0.0876757*norm),
 		samples[i].hist_keys);
   i++;			    
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg170_lg100_gg100_kz779311_lz100_gz100.root",
+  samples[i] = Sample("samples/processed_data_WW_1j_kg170_lg100_gg100_kz779311_lz100_gz100.root",
 		      "p_p",1.0,0.70);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
-  // FIXME - WRONG X-section
-  // pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*12.8868, 0.247537*norm),
+  // pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*9.36554, 0.176392*norm),
   // samples[i].hist_keys);
   i++;			    
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg30_lg50_gg100_kz1220689_lz50_gz100.root",
+  samples[i] = Sample("samples/processed_data_WW_1j_kg30_lg50_gg100_kz1220689_lz50_gz100.root",
 		      "p_m",0.5,-0.70);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
-  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*5.76679, 0.108426*norm),
+  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*4.83833, 0.0891237*norm),
 		samples[i].hist_keys);
   i++;			    
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg30_lg100_gg100_kz1220689_lz100_gz100.root",
+  samples[i] = Sample("samples/processed_data_WW_1j_kg30_lg100_gg100_kz1220689_lz100_gz100.root",
 		      "p_m",1.0,-0.70);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
-  // FIXME - WRONG X-section
-  // pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*12.9291, 0.248591*norm),
+  // pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*9.49625, 0.178795*norm),
   // samples[i].hist_keys);
   i++;			    
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg100_lgm50_gg100_kz100_lzm50_gz1000000.root",
+  samples[i] = Sample("samples/processed_data_WW_1j_kg100_lgm50_gg100_kz100_lzm50_gz100_fastsim386_v1.root",
 		      "m_sm",-0.5,0);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
-  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*5.20204, 0.0981948*norm),
+  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*4.30013, 0.113107*norm),
 		samples[i].hist_keys);
   i++;			    
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg170_lgm50_gg100_kz779311_lzm50_gz100.root",
+  samples[i] = Sample("samples/processed_data_WW_1j_kg170_lgm50_gg100_kz779311_lzm50_gz100.root",
 		      "m_p",-0.5,0.70);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
-  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*5.76225, 0.107762*norm),
+  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*4.89485, 0.0893001*norm),
 		samples[i].hist_keys);
   i++;			    
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg30_lgm50_gg100_kz1220689_lzm50_gz100.root",
+  samples[i] = Sample("samples/processed_data_WW_1j_kg30_lgm50_gg100_kz1220689_lzm50_gz100.root",
 		      "m_m",-0.5,-0.70);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
-  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*5.75791, 0.107823*norm),
+  pdf->addPoint(Measurement(samples[i].x, samples[i].y, norm*4.6274, 0.0857245*norm),
 		samples[i].hist_keys);
   i++;			    
   pdf->build();
@@ -511,7 +509,7 @@ void setBkgPdf()
   TCanvas* c9 = new TCanvas("c9","c9",600,900);
   c9->Divide(2,3);
 
-  TFile* f = TFile::Open("samples/processed_data_final.root");
+  TFile* f = TFile::Open("processed_data_final.root");
   assert(f);
   
   c9->cd(1);
@@ -745,7 +743,7 @@ void sensitivity()
 
 void ww1DFits()
 {
-  TFile* f = TFile::Open("samples/processed_data_final.root");
+  TFile* f = TFile::Open("processed_data_final.root");
   assert(f);
   RooAbsData* ds = (RooAbsData*)f->Get("ww");
   ds->SetName("ds_ww");
@@ -918,7 +916,7 @@ void fitData()
 {
   TCanvas* c10 = new TCanvas("c10","c10",1000,500);
   c10->Divide(2,1);
-  TFile* f = TFile::Open("samples/processed_data_final.root");
+  TFile* f = TFile::Open("processed_data_final.root");
   assert(f);
   RooAbsData* ds_data = (RooAbsData*)f->Get("data");
   ds_data->SetName("ds_data");
@@ -1072,7 +1070,7 @@ void fitData()
 
 void fitTop()
 {
-  TFile* f = TFile::Open("samples/processed_data_final.root");
+  TFile* f = TFile::Open("processed_data_final.root");
   assert(f);
   RooAbsData* ds_ttbar = (RooAbsData*)f->Get("ttbar");
   ds_ttbar->SetName("ds_ttbar");

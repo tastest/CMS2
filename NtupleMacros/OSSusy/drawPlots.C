@@ -28,7 +28,7 @@ void initialize(){
   //variables to plot
   //vars.push_back("htcmet");    xtitles.push_back("tcmet (GeV)");
   vars.push_back("hdilMass");  xtitles.push_back("dilepton mass (GeV)");
-  //vars.push_back("hdilPt");    xtitles.push_back("dilepton p_{T} (GeV)");
+  vars.push_back("hdilPt");    xtitles.push_back("dilepton p_{T} (GeV)");
   //vars.push_back("hnJet");     xtitles.push_back("Jet Multiplicity");
   //vars.push_back("hdildR");    xtitles.push_back("#DeltaR(ll)");
   //vars.push_back("hmlj3");     xtitles.push_back("M(lj)3");
@@ -47,9 +47,9 @@ void initialize(){
   //SUSY samples to include
   susyprefix.push_back("LM0");
   susyprefix.push_back("LM1");
-  //susyprefix.push_back("LM4");
-  //susyprefix.push_back("LM9");
-  //susyprefix.push_back("LM10");
+  susyprefix.push_back("LM4");
+  susyprefix.push_back("LM9");
+  susyprefix.push_back("LM10");
 }
 
 TH1F* getCloneHist(TH1F* hin, int color);

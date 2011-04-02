@@ -125,7 +125,7 @@ THStack* HistogramUtilities::getStack(sources_t theSources, TString var, TString
     for (int i = sources_.size() - 1; i >= 0; --i)
     {
         if ((theSources & makeBit(sources_[i].getSource()) ) == makeBit(sources_[i].getSource()) ) {
-            //std::cout << "getting " << sources_[i].getName() + histNameSuffix << std::endl;
+            std::cout << "getting " << sources_[i].getName() + histNameSuffix << std::endl;
             //std::cout << "reading file " << file_->GetName() << std::endl;
             //file_->cd(); //we used this at one point to debug why we couldn't find a hist
             //gDirectory->ls();
@@ -143,7 +143,6 @@ THStack* HistogramUtilities::getStack(sources_t theSources, TString var, TString
             if (sources_[i].getColor() != 0) {
                 h1_temp->SetFillColor(sources_[i].getColor());
                 h1_temp->SetLineColor(sources_[i].getColor());
-                h1_temp->SetFillStyle(sources_[i].getFillStyle());
             }
             st_temp->Add(h1_temp);
         }
@@ -305,7 +304,6 @@ TLegend* HistogramUtilities::getLegend(sources_t theSources, TString var, TStrin
             if (sources_[i].getColor() != 0) {
                 h1_temp->SetFillColor(sources_[i].getColor());
                 h1_temp->SetLineColor(sources_[i].getColor());
-                h1_temp->SetFillStyle(sources_[i].getFillStyle());
             }
             lg->AddEntry(h1_temp, sources_[i].getLegendName(), "f");
         }

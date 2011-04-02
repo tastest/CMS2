@@ -2,9 +2,6 @@
 #define EvtProb_VAR
 
 #include <TLorentzVector.h>
-#include "TH2F.h"
-#include "TH1F.h"
-
 #define EBEAM 3500.0
 #define fbGeV2 0.389379E12
 #define sixteen_2Pi_to_8 3.88650230418250561e+07
@@ -21,49 +18,64 @@ class TVar{
 
        enum Process{
           WW      = 0,
-          Wp_1jet = 1,
-          Wm_1jet = 2,
-          Wp_gamma= 3,
-          Wm_gamma= 4,
+          Wp_gamma= 1,
+          Wm_gamma= 2,
+          Wp_1jet = 3,
+          Wm_1jet = 4,
           ZZ      = 5,
-          HWW120  = 6,
-          HWW130  = 7,
-          HWW140  = 8,
-          HWW150  = 9,
-          HWW160  =10,
-          HWW170  =11,
-          HWW180  =12,
-          HWW190  =13,
-          HWW200  =14,
-          HWW210  =15,
-          HWW220  =16,
-          HWW230  =17,
-          HWW250  =18,
-          HWW300  =19,
-          HWW     =20,
-	  Z_2l    =21,
-          WpZ_lostW=22,
-          WpZ_lostZ=23,
-          ZZ_4l    =24,
-          Wgamma   =25,
-	  Wegamma  =26,
-	  Wmugamma =27,
-	  Wtaugamma=28,
-          ttbar    =29,
-          Zee      =30,
-          Zmumu    =31,
-          Ztautau  =32,
-          Data     =33,
-	  Data_runFakes=34,
-          Wenu     =35,
-          Wmunu    =36,
-          Wtaunu   =37,
-          We1jet   =38,
-          WZ       =39,
-          HZZ      =40,
-          Wmu1jet  =41,
-	  WWj      =42,
-	  HWWj     =43,
+	  Z_2l      =6,
+          HWW     = 7,
+          WpZ_lostW= 8,
+          WpZ_lostZ= 9,
+          ZZ_4l   =10,
+          Wgamma  =11,
+	  Wegamma  =12,
+	  Wmugamma =13,
+	  Wtaugamma =14,
+          ttbar   =15,
+          Zee     =16,
+          Zmumu   =17,
+          Ztautau =18,
+          Data    =19,
+	  Data_runFakes=20,
+          Wenu      =21,
+          Wmunu    =22,
+          Wtaunu   =23,
+          We1jet    =24,
+          HWW110    =26,
+          HWW120    =27,
+          HWW130    =28,
+          HWW140    =29,
+          HWW150    =30,
+          HWW160  = 31,
+          HWW170    =32,
+          HWW180    =33,
+          HWW190    =34,
+          HWW200    =35,
+	  HWW115    =36,
+	  HWW125    =37,
+	  HWW135    =38,
+	  HWW145    =39,
+	  HWW155    =40,
+          HWW165    =41,
+          HWW175    =42,
+          HWW185    =43,
+          HWW195    =44,
+          HWW210    =45,    
+          HWW220    =46,    
+          HWW230    =47,    
+          HWW240    =48,    
+          HWW250    =49,    
+          HWW260    =50,    
+          HWW270    =51,    
+          HWW280    =52,    
+          HWW290    =53,    
+          HWW300    =54,    
+          WZ        =55,
+          HZZ       =56,
+          Wmu1jet   =57,
+	  WWj       =58,
+	  HWWj      =59,
 	  Null
        };
 
@@ -114,6 +126,7 @@ class TVar{
   else if(temp==TVar::Ztautau ) return TString("Ztautau");
   else if(temp==TVar::ttbar   ) return TString("ttbar");
 
+  else if(temp==TVar::HWW110  ) return TString("HWW110");
   else if(temp==TVar::HWW120  ) return TString("HWW120");
   else if(temp==TVar::HWW130  ) return TString("HWW130");
   else if(temp==TVar::HWW140  ) return TString("HWW140");
@@ -127,8 +140,24 @@ class TVar{
   else if(temp==TVar::HWW210  ) return TString("HWW210");
   else if(temp==TVar::HWW220  ) return TString("HWW220");
   else if(temp==TVar::HWW230  ) return TString("HWW230");
+  else if(temp==TVar::HWW240  ) return TString("HWW240");
   else if(temp==TVar::HWW250  ) return TString("HWW250");
+  else if(temp==TVar::HWW260  ) return TString("HWW260");
+  else if(temp==TVar::HWW270  ) return TString("HWW270");
+  else if(temp==TVar::HWW280  ) return TString("HWW280");
+  else if(temp==TVar::HWW290  ) return TString("HWW290");
   else if(temp==TVar::HWW300  ) return TString("HWW300");
+
+
+  else if(temp==TVar::HWW115  ) return TString("HWW115"); 
+  else if(temp==TVar::HWW125  ) return TString("HWW125"); 
+  else if(temp==TVar::HWW135  ) return TString("HWW135");
+  else if(temp==TVar::HWW145  ) return TString("HWW145");
+  else if(temp==TVar::HWW155  ) return TString("HWW155");
+  else if(temp==TVar::HWW165  ) return TString("HWW165");
+  else if(temp==TVar::HWW175  ) return TString("HWW175");
+  else if(temp==TVar::HWW185  ) return TString("HWW185");
+  else if(temp==TVar::HWW195  ) return TString("HWW195");
 
   else if(temp==TVar::WWj      ) return TString("WWj");
   else if(temp==TVar::HWWj     ) return TString("HWWj");
@@ -136,7 +165,7 @@ class TVar{
   return TString("UnKnown");
     
   };
- 
+
   ClassDef(TVar,0)
 };
 
@@ -207,16 +236,6 @@ struct rand_type{
 
 struct anomcoup{
 	   double delg1_z, delg1_g, lambda_g, lambda_z, delk_g, delk_z_,tevscale;
-};
-
-struct EffHist{
-  TH2F* els_eff_mc;
-  TH2F* mus_eff_mc;
-};
-
-struct BoostHist{
-  TH1F* kx;
-  TH1F* ky;
 };
 
 #endif

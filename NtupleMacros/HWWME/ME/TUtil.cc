@@ -682,26 +682,3 @@ return 999;
 }
 
 
-double getProbAcceptanceEfficiency(cdf_event_type cdf_event, EffHist effhist)
-{
-  double eff = 1.0; 
-  
-  for (int i=0;i<2;i++) {
-
-    if ( TMath::Abs(cdf_event.PdgCode[i]) == 11)
-      eff = eff * effhist.els_eff_mc->GetBinContent( effhist.els_eff_mc->GetXaxis()->FindBin(cdf_event.p[i].Eta()), effhist.els_eff_mc->GetYaxis()->FindBin(cdf_event.p[i].Pt()) );
-    
-    if ( TMath::Abs(cdf_event.PdgCode[i]) == 13)
-      eff = eff * effhist.mus_eff_mc->GetBinContent( effhist.mus_eff_mc->GetXaxis()->FindBin(cdf_event.p[i].Eta()), effhist.mus_eff_mc->GetYaxis()->FindBin(cdf_event.p[i].Pt()) );
-  }
-  
-  return eff;
-}
-
-void getProbFromHist(double x0, double* kX, double *wt, TH1F *hkx)
-{
-  double c = hkx->GetXaxis()->GetXmax() - hkx->GetXaxis()->GetXmin();
-  *kX = hkx->GetXaxis()->GetXmin() + x0*c;
-  *wt = hkx->GetBinContent(hkx->GetXaxis()->FindBin(*kX))/hkx->Integral(1, hkx->GetNbinsX())*c/hkx->GetBinWidth(1);
-}
-

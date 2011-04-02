@@ -64,10 +64,9 @@ LinkDef_out.cxx: LinkDef.h
 	$(QUIET) echo "Compiling $<"; \
 	$(CC) $(CFLAGS) $< -c -o $@
 
-clean:   
-	$(QUIET) rm -v -f \
+clean:  $(QUIET) rm -v -f \
 	processed_data.* *.list \
-	*.o *.d libME.so LinkDef_out*; echo "Done"
+        *.o *.d *.so LinkDef_out*; echo "Done"
 
 
 endif
