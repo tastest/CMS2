@@ -1,4 +1,4 @@
-const char* config_info = "Smurf HWW V1 selection; Winter10 FlatPU samples; 35.5/pb Run2010A (Sep17ReReco) & Run2010B (PromptReco)";
+const char* config_info = "Smurf HWW V1 selection; Fall10 samples; 35.5/pb Run2010A (Sep17ReReco) & Run2010B (PromptReco)";
 //now make the source file
 #include "doAnalysis.h"
 #include <algorithm>
@@ -125,7 +125,7 @@ bool passedMetRequirements(unsigned int i_hyp){
   HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
   double pMet = projectedMet(i_hyp);
   // if ( type == EM && cms2.hyp_p4().at(i_hyp).mass()>90 ) return true;
-  if ( pMet < 35 ) return false;
+  if ( pMet < 20 ) return false;
   if (type == EE || type == MM) {
     // double dmass = fabs(cms2.hyp_p4()[i_hyp].mass()-91);
     // if ( metValue() < 45 ) return false;
