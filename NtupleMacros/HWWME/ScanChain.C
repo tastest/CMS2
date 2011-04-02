@@ -1,4 +1,12 @@
-/* Usage:
+/* 
+=== Description
+
+  This is the looper for the H->WW analysis using the ME method, written by Sergo Yanyan and Kevin.
+  The main goals of this looper are
+  1. producing "Util.root" containing a bunch of histograms needed for ME calculation
+  2. Producing Smurf ntuples 
+
+=== Usage:
    root [0] .L ScanChain.C++
    root [1] TChain *chain = new TChain("Events")
    root [2] chain->Add("merged_ntuple.root")
@@ -30,12 +38,14 @@
 #include "CORE/jetSelections.cc"
 #include "CORE/mcSelections.cc"
 #include "MCUtil.h"
-
-// ME related
-
-
 using namespace tas;
 
+// Smurf
+const char* config_info = "Smurf HWW V1 selection; Winter10 FlatPU samples; 35.5/pb Run2010A (Sep17ReReco) & Run2010B (PromptReco)";
+#include "../../../Smurf/Core/SmurfTree.h"
+
+
+// JEC 
 bool applyJEC = true;
 
 std::vector<std::string> jetcorr_filenames_jpt;
@@ -98,9 +108,8 @@ void progress( int nEventsTotal, int nEventsChain ){
 }
 
 void ScanChain(const char* process, TChain *chain, TFile *utilFile_,  int nEvents = -1, double IntLumi=100, double Xsect=1.0, int nProcessedEvents=-1, std::string skimFilePrefix="", bool realData=false, bool identifyEvents=false){
-
+  
   _cutWord = new TBitSet(kNCuts);
-
   _cutMask = new TBitSet(kNCuts);
   _cutMask->SetAll();
   //_cutMask->SetFalse(kcut_zsel);
@@ -146,13 +155,18 @@ void ScanChain(const char* process, TChain *chain, TFile *utilFile_,  int nEvent
     }
   }
 
-  // File Loop
   if( nEvents == -1 ) nEvents = chain->GetEntries();
   unsigned int nEventsChain = nEvents;
   unsigned int nEventsTotal = 0;
-  InitSkimmedTree(process);
+  
   if(!realData) InitMCUtilHist(process, utilFile_);
+  // make smurf ntuples
+  SmurfTree smurfTree;
+  smurfTree.CreateTree();
+  smurfTree.tree_->SetDirectory(0);
 
+
+  // File Loop
   TObjArray *listOfFiles = chain->GetListOfFiles();
   TIter fileIter(listOfFiles);
   TFile *currentFile = 0;
@@ -167,19 +181,22 @@ void ScanChain(const char* process, TChain *chain, TFile *utilFile_,  int nEvent
 
     cout<<"Opened file "<<currentFile->GetTitle()<<" with events = "<<nEvents<<"\n";
     for( unsigned int event = 0; event < nEvents; ++event) {
-    
-      // Get Event Content
       cms2.GetEntry(event);
       
-      // identifyEvents by MC truth
-      if ( !realData && identifyEvents ){
-	if(!isIdentified (process)) continue;
-       }
-      if (cms2.trks_d0().size() == 0) continue;  // needed to get rid of back Monte Carlo events in CMSSW_2_X analysis
-      if (cms2.hyp_type().size() == 0) continue; // skip events without hypothesis
+      // identifyEvents by MC truth if specified
+      if ( (!realData && identifyEvents) && !isIdentified (process)) continue;
+      
+      // Get fake-rate related histograms
+      if(!realData && TString(process) == "wjets") fillFOHist();
+      
+      // skip events without hypothesis
+      if (cms2.hyp_type().size() == 0) continue; 
+
+      // duplicate event removal
       EventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.evt_lumiBlock(), cms2.trks_d0()[0], cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
       if (is_duplicate(id)) continue;
-      
+
+      // Calculate event weight for MC
       double mcweight;
       if ((process!="data")){
 	mcweight = cms2.genps_weight() > 0.0 ? 1.0 : -1.0;
@@ -187,63 +204,32 @@ void ScanChain(const char* process, TChain *chain, TFile *utilFile_,  int nEvent
 	  (nProcessedEvents>0?nProcessedEvents:cms2.evt_nEvts());
       } else weight =1;
       
-      // cout << "weight = " << weight <<endl;
+      // fill lepton efficiency and system boost histograms which are needed for ME calculations
+      if(!realData) 	fillEffHist(process, weight);
       
-      // ==== select one particular event ====
-      // if(cms2.evt_event()!=20791) continue;
-      
-      //      CalculateFakeRateProb();
-
-      if(!realData) FillEffHist(TString(process), weight);
-
+      // Start Event selection based on the hypothesis
       unsigned int nHyps = cms2.hyp_type().size();
 
       for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
 	if(cms2.hyp_p4().at(i_hyp).mass2() < 0 ) break;
 	_cutWord->SetAllBitsFalse();
-	ApplyEventSelection(i_hyp);
+	ApplyEventSelection(i_hyp, realData);
 	
 	int type =  getHypothesisType(cms2.hyp_type()[i_hyp]);
-
-
 	bool accept = true;
 	for (int j = 0; j < kNCuts; j++) {
 	  if (_cutMask->IsTrue(j)) accept &= _cutWord->IsTrue (j);
         }
 
-	/*
-	// Additional event cut for the HWW cut-based cross-check to Table~4 of EWK-10-009
-	// ------------------------------------------
-	// delta phi btw leptons
-	// ------------------------------------------
-	double dphi = fabs(cms2.hyp_lt_p4()[i_hyp].phi() - cms2.hyp_ll_p4()[i_hyp].phi());
-	if (dphi > TMath::Pi()) dphi = TMath::TwoPi() - dphi;
-	if(dphi > 60./180.*TMath::Pi()) accept = false;
-	
-	// ------------------------------------------
-	// pt (30, 25) cuts
-	// ------------------------------------------
-	const double min1 = 30;
-	const double min2 = 25;
-	if ( !( cms2.hyp_lt_p4().at(i_hyp).pt() > min1 && cms2.hyp_ll_p4().at(i_hyp).pt() > min2 ) &&
-	     !( cms2.hyp_lt_p4().at(i_hyp).pt() > min2 && cms2.hyp_ll_p4().at(i_hyp).pt() > min1 ) ) accept = false;
-	*/
-
         if (accept){
-	  if(!realData) FillKtHist(TString(process), weight);
-	  FillNeededVariables(i_hyp);
-	  if (getHypothesisType(cms2.hyp_type()[i_hyp]) == ee ) 
-	    dilmass_ee_->Fill(cms2.hyp_p4().at(i_hyp).mass(), weight);
-	  if (getHypothesisType(cms2.hyp_type()[i_hyp]) == emu ) 
-	    dilmass_em_->Fill(cms2.hyp_p4().at(i_hyp).mass(), weight);
-	  if (getHypothesisType(cms2.hyp_type()[i_hyp]) == mumu ) 
-	    dilmass_mm_->Fill(cms2.hyp_p4().at(i_hyp).mass(), weight);
-	  
+	  if(!realData) fillKtHist(process, weight);
+	  FillSmurfNtuple(smurfTree,i_hyp,weight,process);
+	  smurfTree.tree_->Fill();
+
 	  eventCount[type]++;
 	  eventYield[type]+=weight;
 	  eventCount[all]++;
 	  eventYield[all]+=weight;
-	  outTree_->Fill();
 	}
       }
 
@@ -274,145 +260,225 @@ void ScanChain(const char* process, TChain *chain, TFile *utilFile_,  int nEvent
        << "; EM "<< eventYield[emu]
        << "; EE "<< eventYield[ee] <<endl;
     
-
-  outGlobalTree_->Fill();
-
-  // std::cout << "tree is filled..." << std::endl;
-  // std::cout << "listing utilFile_" << std::endl;
-  // utilFile_->ls();
-
-  outFile_->cd();
-  outTree_->Write();
-  outGlobalTree_->Write();
-  outFile_->Close();
+  TFile* fSmurf = TFile::Open(Form("%s.root",process),"RECREATE");
+  assert(fSmurf);
+  smurfTree.tree_->Write();
+  smurfTree.info_.SetTitle(config_info);
+  smurfTree.info_.Write();
+  fSmurf->Close();
   
-  // std::cout << "outFile_ is now closed" << std::endl;
-  // std::cout << "now listing utilFile_ again" << std::endl;
-  // utilFile_->ls();
-
-  if(!realData) saveMCUtilOutput(utilFile_);
-  
-  //  samplehisto->Draw();
+  if(!realData) saveMCUtilOutput(process, utilFile_);
   
   cout<<"Total Events Before Selection "<<chain->GetEntries()<<"\n";
 }
 
 
+int ApplyEventSelection( unsigned int i_hyp, bool realData){
 
-
-int ApplyEventSelection( unsigned int i_hyp){
+  if ( std::max(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<20 ) return false;
+  if ( std::min(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<10 ) return false;
 
   int type =  getHypothesisType(cms2.hyp_type()[i_hyp]);
-
-  // Trigger
-  //if ( passedTriggerRequirements())
+  
+  // Apply trigger requirements in data
   _cutWord->SetTrue(kcut_Trigger);
+  if (realData && ! passedTriggerRequirements())   _cutWord->SetFalse(kcut_Trigger);
 
   // OS
   if ( fast_sign (cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] ) < 0)  _cutWord->SetTrue(kcut_OS);
+ 
+  // Require at least one good reconstructed primary vertex
+  if (nGoodVertex() >= 1) _cutWord->SetTrue(kcut_GoodVertex);
   
-  // Leading Lepton requirements:
-  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13){
-    if ( goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) _cutWord->SetTrue(kcut_LT);}
-  
-  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11){
-    if ( goodElectronIsolated(cms2.hyp_lt_index()[i_hyp]) ) _cutWord->SetTrue(kcut_LT);}
-  
-  // Sub-Leading Lepton requirements:
-  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13){
-    if ( goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) ) _cutWord->SetTrue(kcut_LL);}
-  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11){
-    if ( goodElectronIsolated(cms2.hyp_ll_index()[i_hyp]) ) _cutWord->SetTrue(kcut_LL);}
-  
-  // Mll cut at mH = 160
-  if ( cms2.hyp_p4()[i_hyp].mass() > 12 && cms2.hyp_p4()[i_hyp].mass() < 100 ) _cutWord->SetTrue(kcut_Mll); 
+  // di-lepton mass cut
+  if ( cms2.hyp_p4()[i_hyp].mass() > 12 ) _cutWord->SetTrue(kcut_Mll); 
   
   // Z window veto
   if ( type == ee || type == mumu ) {
     if (!inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))   _cutWord->SetTrue(kcut_zsel);
   }
   if (type == emu) _cutWord->SetTrue(kcut_zsel);
+
+  // == letpon ID and Isolation
+  bool passedLTFinalRequirements = true;
+  bool passedLLFinalRequirements = true;
+  bool passedLTElFakableRequirements = true;
+  bool passedLLElFakableRequirements = true;
+  bool passedLTMuFakableRequirements = true;
+  bool passedLLMuFakableRequirements = true;
   
+  // muon selections
+
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13){
+    unsigned int index = cms2.hyp_lt_index()[i_hyp];
+    if ( !goodMuonIsolated(index))  passedLTFinalRequirements = false;
+    if ( !fakableMuon(index) ) passedLTMuFakableRequirements = false;
+    passedLTElFakableRequirements = false;
+  }
+  
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13){
+    unsigned int index = cms2.hyp_ll_index()[i_hyp];
+    if ( !goodMuonIsolated(index) ) passedLLFinalRequirements = false;
+    if ( !fakableMuon(index) ) passedLLMuFakableRequirements = false;
+    passedLLElFakableRequirements = false;
+  } 
+
+  
+  // electron selections
+  
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11){
+    unsigned int index = cms2.hyp_lt_index()[i_hyp];
+    if ( ! goodElectronIsolated(index) ) passedLTFinalRequirements = false;
+    if ( !fakableElectron(index)) passedLTElFakableRequirements = false;
+    passedLTMuFakableRequirements = false;
+  }
+
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11){
+    unsigned int index = cms2.hyp_ll_index()[i_hyp];
+    if ( ! goodElectronIsolated(index) ) passedLLFinalRequirements = false;
+    if ( !fakableElectron(index)) passedLLElFakableRequirements = false;
+    passedLLMuFakableRequirements = false;
+  }
+
+  if ( passedLTFinalRequirements )     _cutWord->SetTrue(kcut_LT);
+  if ( passedLLFinalRequirements )     _cutWord->SetTrue(kcut_LL);
+
   // MET cut
   double pMet = projectedMet(i_hyp);
   if  (( type == ee || type == mumu ) && ( pMet > 35 )) _cutWord->SetTrue(kcut_met);
   if  ((type == emu ) && ( pMet > 20 )) _cutWord->SetTrue(kcut_met);
   
-  
   // Jet Veto
   int njets = getJets(pfJet, i_hyp, 25, 5.0, true, false).size(); 
   if ( njets == 0 ) _cutWord->SetTrue(kcut_jetveto);
 
-  // ==Soft Muon Veto                                                                                                                                        
+  // ==Soft Muon Veto
   if ( numberOfSoftMuons(i_hyp,true) == 0) _cutWord->SetTrue(kcut_softmuonveto);
-  // == Extra Lepton Veto  
   
+  // == Extra Lepton Veto  
   if ( numberOfExtraLeptons(i_hyp,10) == 0) _cutWord->SetTrue(kcut_extraleptonveto);
   
   // Top tagging
-  
   if ( !toptag(CaloJet,i_hyp,0) ) _cutWord->SetTrue(kcut_toptag);
   
   return 0;
 }
 
+void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp, double weight, const char* process) {
+  tree.InitVariables();
+  tree.run_   = cms2.evt_run();
+  tree.event_ = cms2.evt_event();
+  tree.lumi_  = cms2.evt_lumiBlock();
+  tree.nvtx_  = nGoodVertex();
+  tree.scale1fb_ = weight;
+  tree.met_    = metValue();
+  tree.metPhi_ = metPhiValue();
+  // sumet_;
+  bool ltIsFirst = true;
+  if ( cms2.hyp_lt_p4().at(i_hyp).pt()<cms2.hyp_ll_p4().at(i_hyp).pt() ) ltIsFirst = false;
+  tree.type_ = SmurfTree::Type(cms2.hyp_type().at(i_hyp));
+  if ( tree.type_ == SmurfTree::em || tree.type_ == SmurfTree::me ){
+    if ( ltIsFirst )
+      tree.type_ = abs(cms2.hyp_lt_id().at(i_hyp))==11 ? SmurfTree::em : SmurfTree::me;
+    else
+      tree.type_ = abs(cms2.hyp_lt_id().at(i_hyp))==11 ? SmurfTree::me : SmurfTree::em;
+  }
+  tree.lep1_ = ltIsFirst ? cms2.hyp_lt_p4().at(i_hyp) : cms2.hyp_ll_p4().at(i_hyp);
+  tree.lep2_ = ltIsFirst ? cms2.hyp_ll_p4().at(i_hyp) : cms2.hyp_lt_p4().at(i_hyp);
+  tree.lq1_   = ltIsFirst ? cms2.hyp_lt_charge().at(i_hyp) : cms2.hyp_ll_charge().at(i_hyp);
+  tree.lq2_   = ltIsFirst ? cms2.hyp_ll_charge().at(i_hyp) : cms2.hyp_lt_charge().at(i_hyp);
+  tree.lid1_  = ltIsFirst ? cms2.hyp_lt_id().at(i_hyp) : cms2.hyp_ll_id().at(i_hyp);
+  tree.lid2_  = ltIsFirst ? cms2.hyp_ll_id().at(i_hyp) : cms2.hyp_lt_id().at(i_hyp);
+  const std::vector<LorentzVector>& jets = getJets(pfJet, i_hyp, 25, 5.0, true, false);
+  if (jets.size()>0) tree.jet1_ = jets.at(0);
+  if (jets.size()>1) tree.jet2_ = jets.at(1);
+  // jet1_btag_;
+  // jet2_btag_;
+  tree.njets_ = jets.size();
+  tree.evtype_ = SmurfTree::ZeroJet;
+  tree.dilep_ = cms2.hyp_p4().at(i_hyp);
+  tree.pmet_ = projectedMet(i_hyp);
+  tree.dPhi_ = fabs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_lt_p4().at(i_hyp),cms2.hyp_ll_p4().at(i_hyp)));
+  tree.dR_   = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4().at(i_hyp),cms2.hyp_ll_p4().at(i_hyp));
+  if (jets.size()>0) {
+    tree.dPhiLep1Jet1_ = fabs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_lt_p4().at(i_hyp),jets.at(0)));
+    tree.dRLep1Jet1_   = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4().at(i_hyp),jets.at(0));
+    tree.dPhiLep2Jet1_ = fabs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_ll_p4().at(i_hyp),jets.at(0)));
+    tree.dRLep2Jet1_   = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4().at(i_hyp),jets.at(0));
+    tree.dPhiDiLepJet1_= fabs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_p4().at(i_hyp),jets.at(0)));
+    if (!ltIsFirst){
+      std::swap(tree.dPhiLep1Jet1_,tree.dPhiLep2Jet1_);
+      std::swap(tree.dRLep1Jet1_,tree.dRLep2Jet1_);
+    }
+  }
+  tree.dPhiDiLepMET_ = acos(cos(cms2.hyp_p4().at(i_hyp).phi()-metPhiValue()));
+  tree.dPhiLep1MET_ = acos(cos(tree.lep1_.phi()-metPhiValue()));
+  tree.dPhiLep2MET_ = acos(cos(tree.lep2_.phi()-metPhiValue()));
 
-int FillNeededVariables(unsigned int i_hyp){
+  tree.mt_ = mt(tree.dilep_.pt(),tree.met_,tree.dPhiDiLepMET_);
+  tree.mt1_ = mt(tree.lep1_.pt(),tree.met_,tree.dPhiLep1MET_);
+  tree.mt2_ = mt(tree.lep2_.pt(),tree.met_,tree.dPhiLep2MET_);
 
-
-  _evInfo.eventNumber = cms2.evt_event();
-  _evInfo.runNumber = cms2.evt_run();
-  _evInfo.lumiblockNumber = cms2.evt_lumiBlock();
-  _evInfo.weight = weight;
-  _evInfo.dilflavor = getHypothesisType(cms2.hyp_type()[i_hyp]);
-  _evInfo.tcMet = cms2.evt_tcmet();
-  _evInfo.tcMetSpec = projectedMet(i_hyp);
-  _evInfo.tcMetX = cms2.evt_tcmet()* cos(cms2.evt_tcmetPhi());
-  _evInfo.tcMetY = cms2.evt_tcmet()* sin(cms2.evt_tcmetPhi());
-  _evInfo.Njets = 0;
-  _evInfo.Qprod = fast_sign (cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] );
-  _evInfo.dimass = cms2.hyp_p4()[i_hyp].mass();
-  _evInfo.dPhiLeptons =  fabs(cms2.hyp_lt_p4()[i_hyp].phi() - cms2.hyp_ll_p4()[i_hyp].phi());
-  if ( _evInfo.dPhiLeptons > TMath::Pi()) _evInfo.dPhiLeptons= 2*TMath::Pi() - _evInfo.dPhiLeptons;
-  _evInfo.dEtaLeptons =  fabs(cms2.hyp_lt_p4()[i_hyp].eta() - cms2.hyp_ll_p4()[i_hyp].eta());
-  _evInfo.dRLeptons =  sqrt(_evInfo.dPhiLeptons*_evInfo.dPhiLeptons+_evInfo.dEtaLeptons*_evInfo.dEtaLeptons);
-
-  _evInfo.lep1_Type = TMath::Abs(cms2.hyp_lt_id()[i_hyp]);
-  _evInfo.lep1_FakeType = 0;
-  _evInfo.lep1_Px = cms2.hyp_lt_p4().at(i_hyp).px();
-  _evInfo.lep1_Py = cms2.hyp_lt_p4().at(i_hyp).py();
-  _evInfo.lep1_Pz = cms2.hyp_lt_p4().at(i_hyp).pz();
-  _evInfo.lep1_E  = cms2.hyp_lt_p4().at(i_hyp).E();
-  _evInfo.lep1_Charge = fast_sign (cms2.hyp_lt_id()[i_hyp] );
-
-  _evInfo.lep2_Type = TMath::Abs(cms2.hyp_ll_id()[i_hyp]);
-  _evInfo.lep2_FakeType = 0;
-  _evInfo.lep2_Px = cms2.hyp_ll_p4().at(i_hyp).px();
-  _evInfo.lep2_Py = cms2.hyp_ll_p4().at(i_hyp).py();
-  _evInfo.lep2_Pz = cms2.hyp_ll_p4().at(i_hyp).pz();
-  _evInfo.lep2_E  = cms2.hyp_ll_p4().at(i_hyp).E();
-  _evInfo.lep2_Charge = fast_sign (cms2.hyp_ll_id()[i_hyp] );
-
-
-  return 0;
+  if (process!="data"){
+    tree.genmet_ = cms2.gen_met();
+    tree.genmetPhi_ = cms2.gen_metPhi();
+    tree.lep1McId_ = ltIsFirst ? cms2.hyp_lt_mc_id().at(i_hyp) : cms2.hyp_ll_mc_id().at(i_hyp);
+    tree.lep2McId_ = ltIsFirst ? cms2.hyp_ll_mc_id().at(i_hyp) : cms2.hyp_lt_mc_id().at(i_hyp);
+  }
+  
+  /*
+  switch (sample){
+  case WW: tree.dstype_      = SmurfTree::qqww;
+  case WZ: tree.dstype_      = SmurfTree::wz;
+  case ZZ: tree.dstype_      = SmurfTree::zz;
+  case Wjets: tree.dstype_   = SmurfTree::wjets;
+  case DYee: tree.dstype_    = SmurfTree::dyee;
+  case DYmm: tree.dstype_    = SmurfTree::dymm;
+  case DYtt: tree.dstype_    = SmurfTree::dytt;
+  case ttbar: tree.dstype_   = SmurfTree::ttbar;
+  case tW: tree.dstype_      = SmurfTree::tw;
+  case qcd: tree.dstype_     = SmurfTree::qcd;
+  case Data: tree.dstype_    = SmurfTree::data;
+  case hWW120: tree.dstype_  = SmurfTree::hww120;
+  case hWW130: tree.dstype_  = SmurfTree::hww130;
+  case hWW140: tree.dstype_  = SmurfTree::hww140;
+  case hWW150: tree.dstype_  = SmurfTree::hww150;
+  case hWW160: tree.dstype_  = SmurfTree::hww160;
+  case hWW170: tree.dstype_  = SmurfTree::hww170;
+  case hWW180: tree.dstype_  = SmurfTree::hww180;
+  case hWW190: tree.dstype_  = SmurfTree::hww190;
+  case hWW200: tree.dstype_  = SmurfTree::hww200;
+  default: tree.dstype_    = SmurfTree::other;
+  }
+  */
+  
 }
 
 
 
-//Utility fucntions
 
+// == Utility fucntions
+
+double mt(double pt1, double pt2, double dphi){
+  return 2*sqrt(pt1*pt2)*fabs(sin(dphi/2));
+}
 
 bool inZmassWindow(float mass){
   // return ( mass > 76. && mass < 106. );  
   return fabs(mass - 91.1876) < 15;
 }
 
-
-double projectedMet(int i_hyp){
-  double DeltaPhi = nearestDeltaPhi(cms2.evt_tcmetPhi(),i_hyp);
-  if (DeltaPhi < TMath::Pi()/2) return cms2.evt_tcmet()*TMath::Sin(DeltaPhi);
-  return cms2.evt_tcmet();
+double projectedMet(int i_hyp)
+{
+  double DeltaPhi = nearestDeltaPhi(metPhiValue(),i_hyp);
+  if (DeltaPhi < TMath::Pi()/2) return metValue()*TMath::Sin(DeltaPhi);
+  return metValue();
 }
+
+
+double metValue(){    return cms2.evt_tcmet(); }
+double metPhiValue(){ return cms2.evt_tcmetPhi(); }
+
 
 
 double nearestDeltaPhi(double Phi, int i_hyp)
@@ -434,57 +500,57 @@ std::vector<LorentzVector> getJets(int type, int i_hyp, double etThreshold, doub
   case jptJet:
     for ( unsigned int i=0; i < cms2.jpts_p4().size(); ++i) {
       if(applyJEC)
-	jec = jetCorrection(cms2.jpts_p4()[i], jet_corrector_jpt);
-      if ( cms2.jpts_p4()[i].pt() * jec < etThreshold ) continue;
+	jec = jetCorrection(cms2.jpts_p4().at(i), jet_corrector_jpt);
+      if ( cms2.jpts_p4().at(i).pt() * jec < etThreshold ) continue;
       if ( btag && !defaultBTag(type,i) ) continue;
-      if ( TMath::Abs(cms2.jpts_p4()[i].eta()) > etaMax ) continue;
-      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ||
-	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ) continue;
-      jets.push_back(cms2.jpts_p4()[i] * jec);
+      if ( TMath::Abs(cms2.jpts_p4().at(i).eta()) > etaMax ) continue;
+      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jpts_p4().at(i))) < vetoCone ||
+	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jpts_p4().at(i))) < vetoCone ) continue;
+      jets.push_back(cms2.jpts_p4().at(i) * jec);
     }
     break;
   case pfJet:
     for ( unsigned int i=0; i < cms2.pfjets_p4().size(); ++i) {
       if(applyJEC)
-	jec = jetCorrection(cms2.pfjets_p4()[i], jet_corrector_pf);
-      if ( cms2.pfjets_p4()[i].pt() * jec < etThreshold ) continue;
+	jec = jetCorrection(cms2.pfjets_p4().at(i), jet_corrector_pf);
+      if ( cms2.pfjets_p4().at(i).pt() * jec < etThreshold ) continue;
       if ( btag && !defaultBTag(type,i) ) continue;
-      if ( TMath::Abs(cms2.pfjets_p4()[i].eta()) > etaMax ) continue;
-      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ||
-	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
-      jets.push_back(cms2.pfjets_p4()[i] * jec);
+      if ( TMath::Abs(cms2.pfjets_p4().at(i).eta()) > etaMax ) continue;
+      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4().at(i))) < vetoCone ||
+	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4().at(i))) < vetoCone ) continue;
+      jets.push_back(cms2.pfjets_p4().at(i) * jec);
     }
     break;
   case GenJet:
     for ( unsigned int i=0; i < cms2.genjets_p4().size(); ++i) {
-      if ( cms2.genjets_p4()[i].pt() < etThreshold ) continue;
+      if ( cms2.genjets_p4().at(i).pt() < etThreshold ) continue;
       if ( btag && !defaultBTag(type,i) ) continue;
-      if ( TMath::Abs(cms2.genjets_p4()[i].eta()) > etaMax ) continue;
-      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.genjets_p4()[i])) < vetoCone ||
-	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.genjets_p4()[i])) < vetoCone ) continue;
-      jets.push_back(cms2.genjets_p4()[i]);
+      if ( TMath::Abs(cms2.genjets_p4().at(i).eta()) > etaMax ) continue;
+      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.genjets_p4().at(i))) < vetoCone ||
+	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.genjets_p4().at(i))) < vetoCone ) continue;
+      jets.push_back(cms2.genjets_p4().at(i));
     }
     break;
   case CaloJet:
     for ( unsigned int i=0; i < cms2.jets_pat_jet_p4().size(); ++i) {
-      if ( cms2.jets_pat_jet_p4()[i].pt() < etThreshold ) continue; // note that this is already corrected
+      if ( cms2.jets_pat_jet_p4().at(i).pt() < etThreshold ) continue; // note that this is already corrected
       if ( btag && !defaultBTag(type,i) ) continue;
-      if ( TMath::Abs(cms2.jets_pat_jet_p4()[i].eta()) > etaMax ) continue;
-      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jets_pat_jet_p4()[i])) < vetoCone ||
-	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jets_pat_jet_p4()[i])) < vetoCone ) continue;
-      jets.push_back(cms2.jets_pat_jet_p4()[i]);
+      if ( TMath::Abs(cms2.jets_pat_jet_p4().at(i).eta()) > etaMax ) continue;
+      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jets_pat_jet_p4().at(i))) < vetoCone ||
+	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jets_pat_jet_p4().at(i))) < vetoCone ) continue;
+      jets.push_back(cms2.jets_pat_jet_p4().at(i));
     }
     break;
   case TrkJet:
     for ( unsigned int i=0; i < cms2.trkjets_p4().size(); ++i) {
       if(applyJEC)
-	jec = jetCorrection(cms2.trkjets_p4()[i], jet_corrector_trk);
-      if ( cms2.trkjets_p4()[i].pt() < etThreshold ) continue;
+	jec = jetCorrection(cms2.trkjets_p4().at(i), jet_corrector_trk);
+      if ( cms2.trkjets_p4().at(i).pt() < etThreshold ) continue;
       if ( btag && !defaultBTag(type,i) ) continue;
-      if ( TMath::Abs(cms2.trkjets_p4()[i].eta()) > etaMax ) continue;
-      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.trkjets_p4()[i])) < vetoCone ||
-	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.trkjets_p4()[i])) < vetoCone ) continue;
-      jets.push_back(cms2.trkjets_p4()[i] * jec);
+      if ( TMath::Abs(cms2.trkjets_p4().at(i).eta()) > etaMax ) continue;
+      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.trkjets_p4().at(i))) < vetoCone ||
+	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.trkjets_p4().at(i))) < vetoCone ) continue;
+      jets.push_back(cms2.trkjets_p4().at(i) * jec);
     }
     break;
   default:
@@ -497,6 +563,16 @@ std::vector<LorentzVector> getJets(int type, int i_hyp, double etThreshold, doub
 bool comparePt(LorentzVector lv1, LorentzVector lv2) {
    return lv1.pt() > lv2.pt();
 }
+
+unsigned int nGoodVertex() {
+  unsigned int nVtx = 0;
+  for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
+    if (!isGoodVertex(i)) continue;
+    nVtx++;
+  }
+  return nVtx;
+}
+
 
 bool isGoodVertex(size_t ivtx) {
     if (cms2.vtxs_isFake()[ivtx]) return false;
@@ -511,10 +587,6 @@ double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVect
   return (vtx.z()-pv.z()) - ((vtx.x()-pv.x())*p4.x()+(vtx.y()-pv.y())*p4.y())/p4.pt() * p4.z()/p4.pt();
 }
 
-
-
-
-
 //
 // Muon selections
 //
@@ -523,12 +595,18 @@ bool goodMuonIsolated(unsigned int i){
   return ptcut && muonId(i, NominalWWV1);
 }
 
+bool fakableMuon(unsigned int i){
+  bool ptcut = cms2.mus_p4().at(i).pt() >= 10.0;
+  return ptcut && muonId(i, muonSelectionFO_mu_wwV1_iso10);
+}
+
+
 bool ww_mud0PV(unsigned int index){
   if ( cms2.vtxs_sumpt().empty() ) return false;
   double sumPtMax = -1;
   int iMax = -1;
   for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
-    if (cms2.vtxs_isFake()[i]) continue;
+    if (cms2.vtxs_isFake().at(i)) continue;
     if (!isGoodVertex(i)) continue;
     if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
       iMax = i;
@@ -573,8 +651,15 @@ bool ww_muId(unsigned int index){
 //
 
 bool goodElectronIsolated(unsigned int i){
-  bool ptcut = cms2.els_p4().at(i).pt() >= 20.0;
-  return ptcut && pass_electronSelection( i, electronSelection_wwV1);
+  bool ptcut = cms2.els_p4().at(i).pt() >= 15.0;
+  // return  ptcut && pass_electronSelection( i, electronSelection_wwV1);
+  return  ptcut && pass_electronSelection( i, electronSelection_smurfV2);
+}
+
+bool fakableElectron(unsigned int i){
+  bool ptcut = cms2.els_p4().at(i).pt() >= 15.0;
+  // extrapolate in partial id, iso and d0
+  return ptcut && pass_electronSelection( i, electronSelectionFO_el_wwV1_v2);
 }
 
 bool ww_elId(unsigned int index){
@@ -582,6 +667,7 @@ bool ww_elId(unsigned int index){
       fabs(cms2.els_conv_dcot().at(index)) < 0.02) return false;
   if (! (electronId_VBTF(index, VBTF_35X_80) & (1<<ELEID_ID)) ) return false;
   if ( cms2.els_exp_innerlayers39X().at(index) > 0 ) return false;
+  if ( !electronId_smurf_v2(index) ) return false;
   return true;
 }
 
@@ -649,7 +735,7 @@ unsigned int numberOfExtraLeptons(int i_hyp, double minPt){
   unsigned int nMuons = 0;
   for (int i=0; i < int(cms2.mus_charge().size()); ++i) {
     // printf("Muon: %u, pt: %0.2f\n",i,cms2.mus_p4().at(i).pt());
-    if ( cms2.mus_p4()[i].pt() < minPt ) continue;
+    if ( cms2.mus_p4().at(i).pt() < minPt ) continue;
     // printf("\tpassed minPt\n");
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == i ) continue;
     if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == i ) continue;
@@ -662,7 +748,7 @@ unsigned int numberOfExtraLeptons(int i_hyp, double minPt){
   unsigned int nElectrons = 0;
   for (int i=0; i < int(cms2.els_charge().size()); ++i) {
     // printf("Electron: %u, pt: %0.2f\n",i,cms2.els_p4().at(i).pt());
-    if ( cms2.els_p4()[i].pt() < minPt ) continue;
+    if ( cms2.els_p4().at(i).pt() < minPt ) continue;
     // printf("\tpassed minPt\n");
     if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.els_p4().at(i)) <0.1) ) continue;
     if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.els_p4().at(i)) <0.1) ) continue;
@@ -682,18 +768,18 @@ bool toptag(int type, int i_hyp, double minPt){
   switch ( type ){
   case pfJet:
     for ( unsigned int i=0; i < cms2.pfjets_p4().size(); ++i) {
-      if ( cms2.pfjets_p4()[i].pt() < minPt ) continue;
-      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ||
-	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
-      if ( cms2.pfjets_trackCountingHighEffBJetTag()[i]>2.1 ) return true;
+      if ( cms2.pfjets_p4().at(i).pt() < minPt ) continue;
+      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4().at(i))) < vetoCone ||
+	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4().at(i))) < vetoCone ) continue;
+      if ( cms2.pfjets_trackCountingHighEffBJetTag().at(i)>2.1 ) return true;
     }
     break;
   case CaloJet:
     for ( unsigned int i=0; i < cms2.jets_p4().size(); ++i) {
-      if ( cms2.jets_p4()[i].pt() < minPt ) continue;
-      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jets_p4()[i])) < vetoCone ||
-	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jets_p4()[i])) < vetoCone ) continue;
-      if ( cms2.jets_trackCountingHighEffBJetTag()[i]>2.1 ) return true;
+      if ( cms2.jets_p4().at(i).pt() < minPt ) continue;
+      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jets_p4().at(i))) < vetoCone ||
+	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jets_p4().at(i))) < vetoCone ) continue;
+      if ( cms2.jets_trackCountingHighEffBJetTag().at(i)>2.1 ) return true;
     }
     break;
   default:
@@ -703,13 +789,30 @@ bool toptag(int type, int i_hyp, double minPt){
 }
 
 
+//
+// Triger
+//
+bool passedTrigger(TString trigName) {
+  if ( find(cms2.hlt_trigNames().begin(), cms2.hlt_trigNames().end(), trigName)
+       == cms2.hlt_trigNames().end() ) return false;
+  return cms2.passHLTTrigger(trigName);
+}
+
 bool passedTriggerRequirements() {
-  return true;
-  bool hlt_ele15_lw_l1r = cms2.passHLTTrigger("HLT_Ele15_LW_L1R");
-  //bool hlt_ele15_lw_l1r = cms2.passHLTTrigger("HLT_Ele17_SW_L1R");
-  bool hltMu9           = cms2.passHLTTrigger("HLT_Mu9");
-  // return hlt_ele15_lw_l1r || hltMu9;
-  return true;
+  if ( passedTrigger("HLT_Mu9") ) return true;
+  if ( passedTrigger("HLT_Mu15_v1") ) return true;
+  if ( passedTrigger("HLT_Ele10_LW_L1R") ) return true;
+  if ( passedTrigger("HLT_Ele15_LW_L1R") ) return true;
+  if ( passedTrigger("HLT_Ele15_SW_L1R") ) return true;
+  if ( passedTrigger("HLT_Ele15_SW_CaloEleId_L1R") ) return true;
+  if ( passedTrigger("HLT_Ele17_SW_CaloEleId_L1R") ) return true;
+  if ( passedTrigger("HLT_Ele17_SW_TightEleId_L1R") ) return true;
+  if ( passedTrigger("HLT_Ele17_SW_TighterEleIdIsol_L1R_v2") ) return true;
+  if ( passedTrigger("HLT_Ele17_SW_TighterEleIdIsol_L1R_v3") ) return true;
+  if ( passedTrigger("HLT_DoubleEle17_SW_L1R_v1") ) return true;
+  if ( passedTrigger("HLT_DoubleEle15_SW_L1R_v1") ) return true;
+  if ( passedTrigger("HLT_DoubleEle10_SW_L1R") ) return true;
+  return false;
 }
 
 bool EventIdentifier::operator < (const EventIdentifier &other) const
@@ -801,7 +904,7 @@ double BTag(int type, unsigned int iJet){
 
   int refJet = -1;
   for ( unsigned int i=0; i < cms2.jets_p4().size(); ++i) {
-    if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(jetP4,cms2.jets_p4()[i])) > 0.3 ) continue;
+    if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(jetP4,cms2.jets_p4().at(i))) > 0.3 ) continue;
     refJet = i;
   }
   if (refJet == -1){
@@ -815,11 +918,8 @@ bool defaultBTag(int type, unsigned int iJet){
   return BTag(type,iJet)>2.1;
 }
 
-void FillEffHist(TString process, double weight) {
-  
-  if(!isIdentified(process)) return;
-  // if(process != "WW") return;
-  
+void fillEffHist(const char* process, double weight) {
+  if(TString(process) != "ww" || !isIdentified(process)) return;
   // Fill the lepton efficiency histograms
   for (unsigned int i = 6;  i < cms2.genps_id().size(); ++i) {
     if (cms2.genps_status().at(i) != 3 || cms2.genps_id_mother().at(i) == 21212 ) continue;
@@ -838,7 +938,7 @@ void FillEffHist(TString process, double weight) {
 	  els_numer_mc_pt_->Fill(cms2.genps_p4().at(i).pt());
 	}
       }
-    }    // ==== End of Electron Efficiency
+    } // ==== End of Electron Efficiency
     // ==== Muon Efficiency
     if(TMath::Abs(cms2.genps_id().at(i)) == 13) {
       mus_denom_mc_->Fill(cms2.genps_p4().at(i).eta(),cms2.genps_p4().at(i).pt());
@@ -852,20 +952,51 @@ void FillEffHist(TString process, double weight) {
 	  mus_numer_mc_pt_->Fill(cms2.genps_p4().at(i).pt());
 	}
       }
-    }   // ==== End of Muon Efficiency
+    } // ==== End of Muon Efficiency
   }
-  // cout << "ScanChain:: " << __LINE__ << " els_denom_mc_pt->GetBinContent(10) =  " <<  els_denom_mc_pt->GetBinContent(10)  << endl;
-  
 }
-void FillKtHist(TString process, double weight) {
-  // if(!isIdentified(process)) return;
-  // Currently only implemented for WW/HWW/WZ/ZZ
+
+void findClosestEleFO(LorentzVector v_parton, double& minDR, int& idx_minDR) {
+  minDR = 999.0;
+  idx_minDR = -999;
+  
+  for (int i=0; i < int(cms2.els_charge().size()); ++i) {
+    // if ( TMath::Abs(cms2.els_p4().at(i).eta()) > 2.0) continue; 
+    if (cms2.els_p4().at(i).pt() < 10) continue; 
+    if (goodElectronIsolated(i)) continue;
+    if (! pass_electronSelection(i, electronSelectionFO_el_wwV1_v2))  continue;
+    if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(v_parton, cms2.els_p4().at(i))) < minDR ) {
+      minDR = TMath::Abs(ROOT::Math::VectorUtil::DeltaR(v_parton,cms2.els_p4().at(i)));
+      idx_minDR = i;
+    }
+  }
+}
+
+void findClosestMuFO(LorentzVector v_parton, double& minDR, int& idx_minDR) {
+  minDR = 999.0;
+  idx_minDR = -999;
+  
+  for (int i=0; i < int(cms2.mus_charge().size()); ++i) {
+    // if ( TMath::Abs(cms2.mus_p4().at(i).eta()) > 2.0) continue; 
+    if (cms2.mus_p4().at(i).pt() < 10 ) continue; // just to av<oid the warning messages in the muonID code for low pt muons
+    if (goodMuonIsolated(i)) continue;
+    if (!muonId(i, muonSelectionFO_mu_wwV1_iso10)) continue;
+    if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(v_parton, cms2.mus_p4().at(i))) < minDR ) {
+      minDR = TMath::Abs(ROOT::Math::VectorUtil::DeltaR(v_parton,cms2.mus_p4().at(i)));
+      idx_minDR = i;
+    }
+  }
+}
+
+  
+
+void fillKtHist(const char* process, double weight) {
   LorentzVector systP4(0.,0.,0.,0.);
   for (unsigned int i = 6;  i < cms2.genps_id().size(); ++i) {
-    if (process=="WW" || process.Contains("HWW",TString::kExact)) {
+    if (TString(process).Contains("ww",TString::kExact)) {
       if(TMath::Abs(cms2.genps_id().at(i)) == 24) 	systP4 += cms2.genps_p4().at(i);
     }
-    else if (process=="WZ" || process == "ZZ") {
+    else if (TString(process) == "wz" || TString(process) == "zz") {
       if(TMath::Abs(cms2.genps_id().at(i)) == 24 || cms2.genps_id().at(i) == 23 ) systP4 += cms2.genps_p4().at(i);
     }
   }
@@ -873,18 +1004,62 @@ void FillKtHist(TString process, double weight) {
   ky_->Fill(systP4.Py(), weight);
 }
 
-bool isIdentified( TString process) {
+void fillFOHist() {
+  // skipping the first 6 genparticles which are the incoming partons
+  for (unsigned int i = 6;  i < cms2.genps_id().size(); ++i) {
+    // selecting status = 3 colored objects
+    if (cms2.genps_status().at(i) != 3 || (cms2.genps_id().at(i) != 21 && TMath::Abs(cms2.genps_id().at(i)) >= 8 )) continue;
+    // apply acceptance cuts, which must be looser than the FO definition
+    if (cms2.genps_p4().at(i).pt() < 10 ) continue;
+
+    parton_->Fill(TMath::Abs(genps_p4().at(i).eta()), genps_p4().at(i).pt());
+    parton_eta_->Fill(TMath::Abs(genps_p4().at(i).eta()));
+    parton_pt_->Fill(genps_p4().at(i).pt());
+
+    double minDREleFO = 999.0;
+    int idx_minDREleFO = -1;
+    findClosestEleFO( cms2.genps_p4().at(i), minDREleFO, idx_minDREleFO); 
+    
+    if( minDREleFO < 0.2 ) {
+      els_fake_->Fill(TMath::Abs(genps_p4().at(i).eta()), genps_p4().at(i).pt());
+      els_fake_eta_->Fill(TMath::Abs(genps_p4().at(i).eta()));
+      els_fake_pt_->Fill(genps_p4().at(i).pt());
+      els_fo_parton_->Fill(els_p4().at(idx_minDREleFO).pt(), genps_p4().at(i).pt()/els_p4().at(idx_minDREleFO).pt());
+      els_fo_parton_eta_->Fill(genps_p4().at(i).eta(), els_p4().at(idx_minDREleFO).eta());
+      els_fo_parton_pt_->Fill(genps_p4().at(i).pt(), els_p4().at(idx_minDREleFO).pt());
+      els_fo_parton_pt_->Fill(els_p4().at(idx_minDREleFO).pt(), genps_p4().at(i).pt());
+      els_fo_MCType_->Fill(elFakeMCCategory(idx_minDREleFO));
+      els_fo_partonID_->Fill(genps_id().at(i));
+    }
+    double minDRMuFO = 999.0;
+    int idx_minDRMuFO = -1;
+    findClosestMuFO( cms2.genps_p4().at(i), minDRMuFO, idx_minDRMuFO); 
+    if( minDRMuFO < 0.2 ) {
+      mus_fake_->Fill(TMath::Abs(genps_p4().at(i).eta()), genps_p4().at(i).pt());
+      mus_fake_eta_->Fill(TMath::Abs(genps_p4().at(i).eta()));
+      mus_fake_pt_->Fill(genps_p4().at(i).pt());
+      mus_fo_parton_->Fill(mus_p4().at(idx_minDRMuFO).pt(), genps_p4().at(i).pt()/mus_p4().at(idx_minDRMuFO).pt());
+      mus_fo_parton_eta_->Fill(genps_p4().at(i).eta(), mus_p4().at(idx_minDRMuFO).eta());
+      mus_fo_parton_pt_->Fill(genps_p4().at(i).pt(), mus_p4().at(idx_minDRMuFO).pt());
+      mus_fo_MCType_->Fill(muFakeMCCategory(idx_minDRMuFO));
+      mus_fo_partonID_->Fill(genps_id().at(i));
+    }
+    
+  }
+
+}
+
+bool isIdentified(const char* process) {
   // std::cout << "ScanChain::isIdentified()"<<endl;
-  if(process == "WW" || process.Contains("HWW", TString::kExact)) 
+  if(TString(process).Contains("ww", TString::kExact)) 
     return getVVType()==0;
-  else  if (process == "WZ")       return getVVType()==1;
-  else  if (process == "ZZ")       return getVVType()==2;
+  else  if (TString(process) == "wz")       return getVVType()==1;
+  else  if (TString(process) == "zz")       return getVVType()==2;
   else  return true;
 }
 
 
-
-void ProcessSample(const char *process, std::vector<std::string> file_patterns, TFile *utilFile_,  int nEvents = -1, double IntLumi=100, double Xsect=1.0, int nProcessedEvents=-1, std::string skimFilePrefix="", bool realData=false, bool identifyEvents=false){
+void ProcessSample(const char* process, std::vector<std::string> file_patterns, TFile *utilFile_,  int nEvents = -1, double IntLumi=100, double Xsect=1.0, int nProcessedEvents=-1, std::string skimFilePrefix="", bool realData=false, bool identifyEvents=false){
 
   TChain *tchain = new TChain("Events");
   for ( std::vector<std::string>::const_iterator pattern = file_patterns.begin();

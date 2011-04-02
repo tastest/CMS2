@@ -13,6 +13,9 @@
 #include "TH1F.h"
 #include "TAxis.h"
 
+
+// Histograms to calculate real lepton efficiencies
+
 TH2F  *els_numer_mc_;
 TH2F  *els_denom_mc_;
 TH2F  *els_eff_mc_;
@@ -37,60 +40,136 @@ TH1F  *mus_numer_mc_pt_;
 TH1F  *mus_denom_mc_pt_;
 TH1F  *mus_eff_mc_pt_;
 
+// System boost
+
 TH1F *kx_;
 TH1F *ky_;
 
-// These histograms are used for the yield counting in ME
-TH1F *dilmass_ee_;
-TH1F *dilmass_mm_;
-TH1F *dilmass_em_;
+// Histograms to calculate the probablitiy of a parton -> lepton
+
+TH2F *parton_;
+TH2F *els_fake_;
+TH2F *els_genfr_;
+TH2F *mus_fake_;
+TH2F *mus_genfr_;
+
+TH1F *parton_eta_;
+TH1F *els_fake_eta_;
+TH1F *els_genfr_eta_;
+TH1F *mus_fake_eta_;
+TH1F *mus_genfr_eta_;
+
+TH1F *parton_pt_;
+TH1F *els_fake_pt_;
+TH1F *els_genfr_pt_;
+TH1F *mus_fake_pt_;
+TH1F *mus_genfr_pt_;
+
+// Not clean area
+
+TH2F *els_fo_parton_;
+TH2F *mus_fo_parton_;
+
+TH2F *els_fo_parton_eta_;
+TH2F *mus_fo_parton_eta_;
+
+TH2F *els_fo_parton_pt_;
+TH2F *mus_fo_parton_pt_;
+
+TH1F *els_fo_MCType_;
+TH1F *els_fo_partonID_;
+
+TH1F *mus_fo_MCType_;
+TH1F *mus_fo_partonID_;
+
+
 
 void InitMCUtilHist(const char* process, TFile *utilFile_) {
   cout << "InitMCUtilHist(): " << " process = " << process <<endl; 
 
-  utilFile_->cd();
-  els_numer_mc_ = new TH2F(Form("%s_heleNumer", process), "Number of electron numerators", 20, -2.5, 2.5, 20, 0, 100);
-  els_denom_mc_ = new TH2F(Form("%s_heleDenom",process),  "Number of electron denominators", 20, -2.5, 2.5, 20, 0, 100);
-  els_eff_mc_ = new TH2F(Form("%s_heleEff",process),  "Electron Efficiency", 20, -2.5, 2.5, 20, 0, 100);
+  utilFile_->cd();  
 
-  els_numer_mc_eta_ = new TH1F(Form("%s_heleNumerEta",process), "Number of electron numerators", 20, -2.5, 2.5);
-  els_denom_mc_eta_ = new TH1F(Form("%s_heleDenomEta",process), "Number of electron denominators", 20, -2.5, 2.5);
-  els_eff_mc_eta_ = new TH1F(Form("%s_heleEffEta",process), "Electron Efficiency", 20, -2.5, 2.5);
-
-  els_numer_mc_pt_ = new TH1F(Form("%s_heleNumerPt",process), "Number of electron numerators", 20, 0, 100);
-  els_denom_mc_pt_ = new TH1F(Form("%s_heleDenomPt",process), "Number of electron denominators", 20, 0, 100);
-  els_eff_mc_pt_ = new TH1F(Form("%s_heleEffPt",process), "Electron Efficiency", 20, 0, 100);
-
-  mus_numer_mc_ = new TH2F(Form("%s_hmuNumer",process), "Number of muon numerators", 20, -2.5, 2.5, 20, 0, 100);
-  mus_denom_mc_ = new TH2F(Form("%s_hmuDenom",process), "Number of muon denominators", 20, -2.5, 2.5, 20, 0, 100);
-  mus_eff_mc_ = new TH2F(Form("%s_hmuEff",process), "Muon Efficiency", 20, -2.5, 2.5, 20, 0, 100);
-
-  mus_numer_mc_eta_ = new TH1F(Form("%s_hmuNumerEta",process), "Number of muon numerators", 20, -2.5, 2.5);
-  mus_denom_mc_eta_ = new TH1F(Form("%s_hmuDenomEta",process), "Number of muon denominators", 20, -2.5, 2.5);
-  mus_eff_mc_eta_ = new TH1F(Form("%s_hmuEffEta",process),  "Muon Efficiency", 20, -2.5, 2.5);
-
-  mus_numer_mc_pt_ = new TH1F(Form("%s_hmuNumerPt",process), "Number of muon numerators", 20, 0, 100);
-  mus_denom_mc_pt_ = new TH1F(Form("%s_hmuDenomPt",process), "Number of muon denominators", 20, 0, 100);
-  mus_eff_mc_pt_ = new TH1F(Form("%s_hmuEffPt",process), "Muon Efficiency", 20, 0, 100);
-
+  if( TString(process) == "ww") {
+  
+    els_numer_mc_ = new TH2F(Form("%s_heleNumer", process), "electron numerators", 20, -2.5, 2.5, 20, 0, 100);
+    els_denom_mc_ = new TH2F(Form("%s_heleDenom",process),  "electron denominators", 20, -2.5, 2.5, 20, 0, 100);
+    els_eff_mc_ = new TH2F(Form("%s_heleEff",process),  "Electron Efficiency", 20, -2.5, 2.5, 20, 0, 100);
+    
+    els_numer_mc_eta_ = new TH1F(Form("%s_heleNumerEta",process), "electron numerators", 20, -2.5, 2.5);
+    els_denom_mc_eta_ = new TH1F(Form("%s_heleDenomEta",process), "electron denominators", 20, -2.5, 2.5);
+    els_eff_mc_eta_ = new TH1F(Form("%s_heleEffEta",process), "Electron Efficiency", 20, -2.5, 2.5);
+    
+    els_numer_mc_pt_ = new TH1F(Form("%s_heleNumerPt",process), "electron numerators", 20, 0, 100);
+    els_denom_mc_pt_ = new TH1F(Form("%s_heleDenomPt",process), "electron denominators", 20, 0, 100);
+    els_eff_mc_pt_ = new TH1F(Form("%s_heleEffPt",process), "Electron Efficiency", 20, 0, 100);
+    
+    mus_numer_mc_ = new TH2F(Form("%s_hmuNumer",process), "muon numerators", 20, -2.5, 2.5, 20, 0, 100);
+    mus_denom_mc_ = new TH2F(Form("%s_hmuDenom",process), "muon denominators", 20, -2.5, 2.5, 20, 0, 100);
+    mus_eff_mc_ = new TH2F(Form("%s_hmuEff",process), "Muon Efficiency", 20, -2.5, 2.5, 20, 0, 100);
+    
+    mus_numer_mc_eta_ = new TH1F(Form("%s_hmuNumerEta",process), "muon numerators", 20, -2.5, 2.5);
+    mus_denom_mc_eta_ = new TH1F(Form("%s_hmuDenomEta",process), "muon denominators", 20, -2.5, 2.5);
+    mus_eff_mc_eta_ = new TH1F(Form("%s_hmuEffEta",process),  "Muon Efficiency", 20, -2.5, 2.5);
+    
+    mus_numer_mc_pt_ = new TH1F(Form("%s_hmuNumerPt",process), "muon numerators", 20, 0, 100);
+    mus_denom_mc_pt_ = new TH1F(Form("%s_hmuDenomPt",process), "muon denominators", 20, 0, 100);
+    mus_eff_mc_pt_ = new TH1F(Form("%s_hmuEffPt",process), "Muon Efficiency", 20, 0, 100);
+    
+  }
+  
   kx_ = new TH1F(Form("%s_kx",process), "System Boost in X", 50, -50, 50);
   ky_ = new TH1F(Form("%s_ky",process), "System Boost in Y", 50, -50, 50);
 
-  dilmass_ee_ = new TH1F(Form("%s_dilmass_ee",process), "Di-lepton mass in ee", 50, 0, 250);
-  dilmass_ee_ ->Sumw2();
-  dilmass_em_ = new TH1F(Form("%s_dilmass_em",process), "Di-lepton mass in em", 50, 0, 250);
-  dilmass_em_ ->Sumw2();
-  dilmass_mm_ = new TH1F(Form("%s_dilmass_mm",process), "Di-lepton mass in mm", 50, 0, 250);
-  dilmass_mm_ ->Sumw2();
-
-
+  if (TString(process) == "wjets") {
+    const Double_t ptbins_fakerate[11] = {10.,15.,20.,25.,30.,35., 40., 50., 75., 100., 200. };
+    const Double_t etabins_fakerate[6] = {0.0, 0.5, 1.0, 1.479, 2.0, 2.5};
+    
+    parton_ = new TH2F(Form("%s_hparton",process), "Generator Parton", 5,etabins_fakerate,10,ptbins_fakerate);
+    els_fake_ = new TH2F(Form("%s_heleFake",process), "FO Electrons",  5,etabins_fakerate,10,ptbins_fakerate);
+    els_genfr_ = new TH2F(Form("%s_heleGenFR",process), "Parton to Electron Generator FR",  5,etabins_fakerate,10,ptbins_fakerate);
+    mus_fake_ = new TH2F(Form("%s_hmuFake",process), "FO Muons", 5,etabins_fakerate,10,ptbins_fakerate);
+    mus_genfr_ = new TH2F(Form("%s_hmuGenFR",process), "Parton to Muon Generator FR", 5,etabins_fakerate,10,ptbins_fakerate);
+    
+    parton_eta_ = new TH1F(Form("%s_hpartonEta",process), "Generator Parton Eta", 5, etabins_fakerate);
+    els_fake_eta_ = new TH1F(Form("%s_heleFakeEta",process), "FO electrons", 5, etabins_fakerate);
+    els_genfr_eta_ = new TH1F(Form("%s_heleGenFREta",process), "Parton to Electron Generator FR", 5, etabins_fakerate);
+    mus_fake_eta_ = new TH1F(Form("%s_hmuFakeEta",process), "FO muons", 5, etabins_fakerate);
+    mus_genfr_eta_ = new TH1F(Form("%s_hmuGenFREta",process), "Parton to Muon Generator FR", 5, etabins_fakerate);
+    
+    
+    parton_pt_ = new TH1F(Form("%s_hpartonPt",process), "Generator Parton Pt", 10,ptbins_fakerate);
+    els_fake_pt_ = new TH1F(Form("%s_heleFakePt",process), "FO electrons",10,ptbins_fakerate);
+    els_genfr_pt_ = new TH1F(Form("%s_heleGenFRPt",process), "Parton to Electron Generator FR", 10,ptbins_fakerate);
+    mus_fake_pt_ = new TH1F(Form("%s_hmuFakePt",process), "FO muons", 10,ptbins_fakerate);
+    mus_genfr_pt_ = new TH1F(Form("%s_hmuGenFRPt",process), "Parton to Muon Generator FR", 10,ptbins_fakerate);
+    
+    
+    els_fo_parton_ = new TH2F(Form("%s_heleFOResponse",process), "matched parton pt / Electron FO pT", 10,ptbins_fakerate, 10, 0.5, 10);
+    mus_fo_parton_ = new TH2F(Form("%s_hmuFOResponse",process), "matched parton pt / Muon FO pT", 10,ptbins_fakerate, 10, 0.5, 10);
+    
+    els_fo_parton_eta_ = new TH2F(Form("%s_hEtaEleFOvsParton",process), "Parton Eta vs Electron FO eta", 10, -2.5, 2.5, 10, -2.5, 2.5);
+    mus_fo_parton_eta_ = new TH2F(Form("%s_hEtaMuFOvsParton",process), "Parton Eta vs Muon FO eta", 10, -2.5, 2.5, 10, -2.5, 2.5);
+    
+    els_fo_parton_pt_ = new TH2F(Form("%s_hPtEleFOvsParton",process), "Parton tt vs Electron FO pt",  10,ptbins_fakerate,  10,ptbins_fakerate); 
+    mus_fo_parton_pt_ = new TH2F(Form("%s_hPtMuFOvsParton",process), "Parton Eta vs Muon FO eta",  10,ptbins_fakerate,  10,ptbins_fakerate);
+    
+    els_fo_MCType_ = new TH1F(Form("%s_heleFakeMCType",process), "Electron FO MC Type", 7,-1,6);
+    els_fo_partonID_ = new TH1F(Form("%s_helePartonID",process), "Electron FO Matched Parton ID",35, -10, 25);
+    
+    mus_fo_MCType_ = new TH1F(Form("%s_hmuFakeMCType",process), "Muctron FO MC Type", 7,-1,6);
+    mus_fo_partonID_ = new TH1F(Form("%s_hmuPartonID",process), "Muctron FO Matched Parton ID",35, -10, 25);
+  }
+  
 }
  
-void FillEffHist(TString process, double weight);
-void FillKtHist(TString process, double weight);
+void fillEffHist(const char* process, double weight);
+void fillKtHist(const char* process, double weight);
+void fillFOHist();
+void findClosestEleFO(LorentzVector v_parton, double& minDR, int& idx_minDR);
+void findClosestMuFO(LorentzVector v_parton, double& minDR, int& idx_minDR);
 
 // Utility Functions
-bool isIdentified( TString process);
+bool isIdentified(const char* process);
 
 void getEff(double & numer, double & denom, double & eff, double & efferr ) 
 {
@@ -104,8 +183,8 @@ void getEff(double & numer, double & denom, double & eff, double & efferr )
 // than weighted event counts
 // 
 
-void Fill2DEffHist(TH2F* hist_numer, TH2F* hist_denom, TH2F* hist_eff) {
-  cout << "Fill2DEffHist()" << endl;
+void fill2DEffHist(TH2F* hist_numer, TH2F* hist_denom, TH2F* hist_eff) {
+  cout << "fill2DEffHist()" << endl;
   if(!hist_numer || !hist_denom ) return;
   
   // check the hist_numer and hist_denom have the same bin structures
@@ -136,8 +215,8 @@ void Fill2DEffHist(TH2F* hist_numer, TH2F* hist_denom, TH2F* hist_eff) {
 // than weighted event counts
 // 
 
-void Fill1DEffHist(TH1F* hist_numer, TH1F* hist_denom, TH1F* hist_eff) {
-  // cout << "Fill1DEffHist()" << endl;
+void fill1DEffHist(TH1F* hist_numer, TH1F* hist_denom, TH1F* hist_eff) {
+  // cout << "fill1DEffHist()" << endl;
   if(!hist_numer || !hist_denom ) return;
   // check the hist_numer and hist_denom have the same bin structures
   if(    hist_numer->GetNbinsX() != hist_denom->GetNbinsX() 
@@ -157,50 +236,93 @@ void Fill1DEffHist(TH1F* hist_numer, TH1F* hist_denom, TH1F* hist_eff) {
 }
 
 
-void saveMCUtilOutput(TFile *utilFile_)
+void saveMCUtilOutput(const char* process, TFile *utilFile_)
 {
   cout << "saveMCUtilHist()" << endl;
   utilFile_->cd();
   
-  Fill2DEffHist(els_numer_mc_, els_denom_mc_, els_eff_mc_);
-  Fill1DEffHist(els_numer_mc_eta_, els_denom_mc_eta_, els_eff_mc_eta_);
-  Fill1DEffHist(els_numer_mc_pt_, els_denom_mc_pt_, els_eff_mc_pt_);
-  
-  Fill2DEffHist(mus_numer_mc_, mus_denom_mc_, mus_eff_mc_);
-  Fill1DEffHist(mus_numer_mc_eta_, mus_denom_mc_eta_, mus_eff_mc_eta_);
-  Fill1DEffHist(mus_numer_mc_pt_, mus_denom_mc_pt_, mus_eff_mc_pt_);
-  
-  els_denom_mc_->Write();
-  els_numer_mc_->Write();
-  els_eff_mc_->Write();
-  
-  els_denom_mc_eta_->Write();
-  els_numer_mc_eta_->Write();
-  els_eff_mc_eta_->Write();
-  
-  els_denom_mc_pt_->Write();
-  els_numer_mc_pt_->Write();
-  els_eff_mc_pt_->Write();
-  
-  mus_denom_mc_->Write();
-  mus_numer_mc_->Write();
-  mus_eff_mc_->Write();
-  
-  mus_denom_mc_eta_->Write();
-  mus_numer_mc_eta_->Write();
-  mus_eff_mc_eta_->Write();
-  
-  mus_denom_mc_pt_->Write();
-  mus_numer_mc_pt_->Write();
-  mus_eff_mc_pt_->Write();
+  if(TString(process) == "ww") {
+    fill2DEffHist(els_numer_mc_, els_denom_mc_, els_eff_mc_);
+    fill1DEffHist(els_numer_mc_eta_, els_denom_mc_eta_, els_eff_mc_eta_);
+    fill1DEffHist(els_numer_mc_pt_, els_denom_mc_pt_, els_eff_mc_pt_);
+    
+    fill2DEffHist(mus_numer_mc_, mus_denom_mc_, mus_eff_mc_);
+    fill1DEffHist(mus_numer_mc_eta_, mus_denom_mc_eta_, mus_eff_mc_eta_);
+    fill1DEffHist(mus_numer_mc_pt_, mus_denom_mc_pt_, mus_eff_mc_pt_);
+    
+    els_denom_mc_->Write();
+    els_numer_mc_->Write();
+    els_eff_mc_->Write();
+    
+    els_denom_mc_eta_->Write();
+    els_numer_mc_eta_->Write();
+    els_eff_mc_eta_->Write();
+    
+    els_denom_mc_pt_->Write();
+    els_numer_mc_pt_->Write();
+    els_eff_mc_pt_->Write();
+    
+    mus_denom_mc_->Write();
+    mus_numer_mc_->Write();
+    mus_eff_mc_->Write();
+    
+    mus_denom_mc_eta_->Write();
+    mus_numer_mc_eta_->Write();
+    mus_eff_mc_eta_->Write();
+    
+    mus_denom_mc_pt_->Write();
+    mus_numer_mc_pt_->Write();
+    mus_eff_mc_pt_->Write();
+  }
   
   kx_->Write();
   ky_->Write();
 
-  dilmass_ee_->Write();
-  dilmass_mm_->Write();
-  dilmass_em_->Write();
+  // Fake rate related histograms filled only for wjets MC
+  if(TString(process) == "wjets") {
+    fill2DEffHist(els_fake_, parton_, els_genfr_);
+    fill2DEffHist(mus_fake_, parton_, mus_genfr_);
+    fill1DEffHist(els_fake_eta_, parton_eta_, els_genfr_eta_);
+    fill1DEffHist(mus_fake_eta_, parton_eta_, mus_genfr_eta_);
+    fill1DEffHist(els_fake_pt_, parton_pt_, els_genfr_pt_);
+    fill1DEffHist(mus_fake_pt_, parton_pt_, mus_genfr_pt_);
+    
+    parton_->Write();
+    els_fake_->Write();
+    els_genfr_->Write();
+    mus_fake_->Write();
+    mus_genfr_->Write();
+
+    parton_eta_->Write();
+    els_fake_eta_->Write();
+    els_genfr_eta_->Write();
+    mus_fake_eta_->Write();
+    mus_genfr_eta_->Write();
+    
+    parton_pt_->Write();
+    els_fake_pt_->Write();
+    els_genfr_pt_->Write();
+    mus_fake_pt_->Write();
+    mus_genfr_pt_->Write();
+    
+    els_fo_parton_->Write();
+    mus_fo_parton_->Write();
+    
+    els_fo_parton_eta_->Write();
+    mus_fo_parton_eta_->Write();
+    
+    els_fo_parton_pt_->Write();
+    mus_fo_parton_pt_->Write();
+    
+    els_fo_MCType_->Write();
+    els_fo_partonID_->Write();
+    
+    mus_fo_MCType_->Write();
+    mus_fo_partonID_->Write();
+  }
   
+ 
+
 }
 
 
