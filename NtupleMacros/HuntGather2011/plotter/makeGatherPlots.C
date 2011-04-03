@@ -349,8 +349,8 @@ void makeGatherPlots(TString base, bool debug = false) {
         makeGatherPlotsValidation("all", babyVectorSM, goodruns_lumi, est_newruns_lumi);
 
         // higgs for all data and for 2010 + 2011
-        makeGatherPlotsHiggs("all", babyVectorHiggs, est_lumi);
-        makeGatherPlotsHiggs("run2011", babyVectorHiggs2011, est_newruns_lumi);
+        makeGatherPlotsHiggs("all", babyVectorSM, est_lumi);
+        makeGatherPlotsHiggs("run2011", babyVectorSM2011, est_newruns_lumi);
 
         // OS for all data and for 2010 + 2011
         makeGatherPlotsOS("all", babyVectorSusy, est_lumi);

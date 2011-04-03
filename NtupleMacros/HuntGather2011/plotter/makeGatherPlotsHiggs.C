@@ -31,9 +31,7 @@ void makeGatherPlotsHiggs(TString prefix, const std::vector<BabySample*> &babyVe
     //
 
     DrawAll("njets",prefix+"_hww_njets", hww_incldilep, luminosity, 10, -0.5, 9.5, 0, babyVector);
-    DrawAll("deltaphi",prefix+"_hww_deltaphi", hww_excldilep, luminosity, 16, 0.0, 3.2, 0, babyVector);
     DrawAll("mass",prefix+"_hww_mass", hww_excldilep, luminosity, 20, 0.0, 400.0, 0, babyVector);
-    DrawAll("tcmth",prefix+"_hww_tcmth", hww_excldilep, luminosity, 20, 0.0, 400.0, 0, babyVector);
 
 }
 
