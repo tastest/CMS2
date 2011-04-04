@@ -1,6 +1,6 @@
 //
 // Original Author:  Fedor Ratnikov Nov 9, 2007
-// $Id: JetCorrectorParameters.icc,v 1.1 2010/07/09 12:20:21 jmuelmen Exp $
+// $Id: JetCorrectorParameters.icc,v 1.2 2011/04/04 18:45:38 warren Exp $
 //
 // Generic parameters for Jet corrections
 //
@@ -124,18 +124,18 @@ JetCorrectorParameters::JetCorrectorParameters(const std::string& fFile, const s
               currentDefinitions = tmp;
               continue; 
             }
-          Definitions definitions(currentDefinitions);
-          if (!(definitions.nBinVar()==0 && definitions.formula()==""))
-            mDefinitions = definitions;
-          Record record(line,mDefinitions.nBinVar());
+          Definitions def(currentDefinitions);
+          if (!(def.nBinVar()==0 && def.formula()==""))
+            mDefinitions = def;
+          Record rec(line,mDefinitions.nBinVar());
           bool check(true);
           for(unsigned i=0;i<mDefinitions.nBinVar();++i)
-            if (record.xMin(i)==0 && record.xMax(i)==0)
+            if (rec.xMin(i)==0 && rec.xMax(i)==0)
               check = false;
-          if (record.nParameters() == 0)
+          if (rec.nParameters() == 0)
             check = false;  
           if (check)
-            mRecords.push_back(record);
+            mRecords.push_back(rec);
         } 
     }
   if (currentDefinitions=="")
