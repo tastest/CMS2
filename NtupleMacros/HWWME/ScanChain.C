@@ -647,7 +647,8 @@ bool ww_muId(unsigned int index){
 }
 
 //
-// Electron selections
+// Electron selectionsS
+
 //
 
 bool goodElectronIsolated(unsigned int i){
@@ -863,7 +864,7 @@ void CalculateFakeRateProb(){
   int size = cms2.genps_id().size();
 
   TDatabasePDG *pdg = new TDatabasePDG();
-  // static TDatabasePDG *pdg = new TDatabasePDG();                                                                                          
+  // static TDatabasePDG *pdg = new TDatabasePDG();    
 
   cout << "                " << "   pt    " << "  phi  " << "      eta   " << "    mass  "
        << "status " << "Mother  " << endl;
@@ -961,10 +962,8 @@ void findClosestEleFO(LorentzVector v_parton, double& minDR, int& idx_minDR) {
   idx_minDR = -999;
   
   for (int i=0; i < int(cms2.els_charge().size()); ++i) {
-    // if ( TMath::Abs(cms2.els_p4().at(i).eta()) > 2.0) continue; 
     if (cms2.els_p4().at(i).pt() < 10) continue; 
-    if (goodElectronIsolated(i)) continue;
-    if (! pass_electronSelection(i, electronSelectionFO_el_wwV1_v2))  continue;
+    if (!fakableElectron(i)) continue;
     if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(v_parton, cms2.els_p4().at(i))) < minDR ) {
       minDR = TMath::Abs(ROOT::Math::VectorUtil::DeltaR(v_parton,cms2.els_p4().at(i)));
       idx_minDR = i;
@@ -977,18 +976,14 @@ void findClosestMuFO(LorentzVector v_parton, double& minDR, int& idx_minDR) {
   idx_minDR = -999;
   
   for (int i=0; i < int(cms2.mus_charge().size()); ++i) {
-    // if ( TMath::Abs(cms2.mus_p4().at(i).eta()) > 2.0) continue; 
-    if (cms2.mus_p4().at(i).pt() < 10 ) continue; // just to av<oid the warning messages in the muonID code for low pt muons
-    if (goodMuonIsolated(i)) continue;
-    if (!muonId(i, muonSelectionFO_mu_wwV1_iso10)) continue;
+    if (cms2.mus_p4().at(i).pt() < 10 ) continue; 
+    if (!fakableMuon(i)) continue;
     if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(v_parton, cms2.mus_p4().at(i))) < minDR ) {
       minDR = TMath::Abs(ROOT::Math::VectorUtil::DeltaR(v_parton,cms2.mus_p4().at(i)));
       idx_minDR = i;
     }
   }
 }
-
-  
 
 void fillKtHist(const char* process, double weight) {
   LorentzVector systP4(0.,0.,0.,0.);
@@ -999,23 +994,46 @@ void fillKtHist(const char* process, double weight) {
     else if (TString(process) == "wz" || TString(process) == "zz") {
       if(TMath::Abs(cms2.genps_id().at(i)) == 24 || cms2.genps_id().at(i) == 23 ) systP4 += cms2.genps_p4().at(i);
     }
+    else if(TString(process) == "wjets") {
+      if(TMath::Abs(cms2.genps_id().at(i)) == 24) systP4 += cms2.genps_p4().at(i);
+    }
   }
+
+  // add the leading status(3) parton 4-momemtum as well for wjets
+  if(TString(process) == "wjets") {
+    unsigned int idx_maxpt = -1;
+    double maxpt = -1.0;
+    for (unsigned int i = 6;  i < cms2.genps_id().size(); ++i) {
+      // selecting status = 3 colored objects
+      if (cms2.genps_status().at(i) != 3 || (cms2.genps_id().at(i) != 21 && TMath::Abs(cms2.genps_id().at(i)) > 8 )) continue;
+      if( maxpt < cms2.genps_p4().at(i).pt() ) {
+	maxpt = cms2.genps_p4().at(i).pt();
+	idx_maxpt = i;
+      }
+    }
+    if( idx_maxpt != -1) systP4 += cms2.genps_p4().at(idx_maxpt);
+  }
+  
   kx_->Fill(systP4.Px(), weight);
   ky_->Fill(systP4.Py(), weight);
 }
 
 void fillFOHist() {
+
+  // == Fill the parton-lepton FO related histograms
+
   // skipping the first 6 genparticles which are the incoming partons
   for (unsigned int i = 6;  i < cms2.genps_id().size(); ++i) {
     // selecting status = 3 colored objects
     if (cms2.genps_status().at(i) != 3 || (cms2.genps_id().at(i) != 21 && TMath::Abs(cms2.genps_id().at(i)) > 8 )) continue;
     // apply acceptance cuts, which must be looser than the FO definition
-    if (cms2.genps_p4().at(i).pt() < 10 ) continue;
+    if (cms2.genps_p4().at(i).pt() < 10 || TMath::Abs(cms2.genps_p4().at(i).eta()) > 2.5 ) continue;
 
     parton_->Fill(TMath::Abs(genps_p4().at(i).eta()), genps_p4().at(i).pt());
     parton_eta_->Fill(TMath::Abs(genps_p4().at(i).eta()));
     parton_pt_->Fill(genps_p4().at(i).pt());
-
+    
+    // for electron FO
     double minDREleFO = 999.0;
     int idx_minDREleFO = -1;
     findClosestEleFO( cms2.genps_p4().at(i), minDREleFO, idx_minDREleFO); 
@@ -1025,11 +1043,13 @@ void fillFOHist() {
       els_fake_eta_->Fill(TMath::Abs(genps_p4().at(i).eta()));
       els_fake_pt_->Fill(genps_p4().at(i).pt());
       els_fo_parton_->Fill(els_p4().at(idx_minDREleFO).pt(), genps_p4().at(i).pt()/els_p4().at(idx_minDREleFO).pt());
-      els_fo_parton_eta_->Fill(genps_p4().at(i).eta(), els_p4().at(idx_minDREleFO).eta());
-      els_fo_parton_pt_->Fill(genps_p4().at(i).pt(), els_p4().at(idx_minDREleFO).pt());
+      els_fo_parton_dEta_->Fill(TMath::Abs( cms2.els_p4().at(idx_minDREleFO).eta() - cms2.genps_p4().at(i).eta() ));
+      els_fo_parton_dPhi_->Fill(TMath::Abs( cms2.els_p4().at(idx_minDREleFO).phi() - cms2.genps_p4().at(i).phi() ));
       els_fo_MCType_->Fill(elFakeMCCategory(idx_minDREleFO));
       els_fo_partonID_->Fill(genps_id().at(i));
     }
+
+    // for muon FO
     double minDRMuFO = 999.0;
     int idx_minDRMuFO = -1;
     findClosestMuFO( cms2.genps_p4().at(i), minDRMuFO, idx_minDRMuFO); 
@@ -1038,14 +1058,35 @@ void fillFOHist() {
       mus_fake_eta_->Fill(TMath::Abs(genps_p4().at(i).eta()));
       mus_fake_pt_->Fill(genps_p4().at(i).pt());
       mus_fo_parton_->Fill(mus_p4().at(idx_minDRMuFO).pt(), genps_p4().at(i).pt()/mus_p4().at(idx_minDRMuFO).pt());
-      mus_fo_parton_eta_->Fill(genps_p4().at(i).eta(), mus_p4().at(idx_minDRMuFO).eta());
-      mus_fo_parton_pt_->Fill(genps_p4().at(i).pt(), mus_p4().at(idx_minDRMuFO).pt());
+      mus_fo_parton_dEta_->Fill(TMath::Abs( cms2.mus_p4().at(idx_minDRMuFO).eta() - cms2.genps_p4().at(i).eta() ));
+      mus_fo_parton_dPhi_->Fill(TMath::Abs( cms2.mus_p4().at(idx_minDRMuFO).phi() - cms2.genps_p4().at(i).phi() ));
       mus_fo_MCType_->Fill(muFakeMCCategory(idx_minDRMuFO));
       mus_fo_partonID_->Fill(genps_id().at(i));
     }
-    
   }
 
+  // == Fill the lepton FO - lepton histograms
+  // electrons
+  for (int i=0; i < int(cms2.els_charge().size()); ++i) {
+    // veto the good leptons from the W decays
+    if ( TMath::Abs(cms2.els_mc3_motherid().at(i)) == 24) continue;
+    if ( fakableElectron (i) ) {
+      els_fo_->Fill(cms2.els_p4().at(i).eta(), cms2.els_p4().at(i).pt());
+      if( goodElectronIsolated(i))
+	els_good_->Fill(cms2.els_p4().at(i).eta(), cms2.els_p4().at(i).pt());
+    }
+  }
+
+  // muons
+  for (int i=0; i < int(cms2.mus_charge().size()); ++i) {
+    // veto the good leptons from the W decays
+    if ( TMath::Abs(cms2.mus_mc3_motherid().at(i)) == 24) continue;
+    if ( fakableMuon(i)) {
+      mus_fo_->Fill(cms2.mus_p4().at(i).eta(), cms2.mus_p4().at(i).pt());
+      if( goodMuonIsolated(i))
+	mus_good_->Fill(cms2.mus_p4().at(i).eta(), cms2.mus_p4().at(i).pt());
+    }
+  }
 }
 
 bool isIdentified(const char* process) {
