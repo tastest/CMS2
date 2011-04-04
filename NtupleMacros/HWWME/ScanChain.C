@@ -425,32 +425,32 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp, double weight, const c
     tree.lep1McId_ = ltIsFirst ? cms2.hyp_lt_mc_id().at(i_hyp) : cms2.hyp_ll_mc_id().at(i_hyp);
     tree.lep2McId_ = ltIsFirst ? cms2.hyp_ll_mc_id().at(i_hyp) : cms2.hyp_lt_mc_id().at(i_hyp);
   }
-  
-  /*
-  switch (sample){
-  case WW: tree.dstype_      = SmurfTree::qqww;
-  case WZ: tree.dstype_      = SmurfTree::wz;
-  case ZZ: tree.dstype_      = SmurfTree::zz;
-  case Wjets: tree.dstype_   = SmurfTree::wjets;
-  case DYee: tree.dstype_    = SmurfTree::dyee;
-  case DYmm: tree.dstype_    = SmurfTree::dymm;
-  case DYtt: tree.dstype_    = SmurfTree::dytt;
-  case ttbar: tree.dstype_   = SmurfTree::ttbar;
-  case tW: tree.dstype_      = SmurfTree::tw;
-  case qcd: tree.dstype_     = SmurfTree::qcd;
-  case Data: tree.dstype_    = SmurfTree::data;
-  case hWW120: tree.dstype_  = SmurfTree::hww120;
-  case hWW130: tree.dstype_  = SmurfTree::hww130;
-  case hWW140: tree.dstype_  = SmurfTree::hww140;
-  case hWW150: tree.dstype_  = SmurfTree::hww150;
-  case hWW160: tree.dstype_  = SmurfTree::hww160;
-  case hWW170: tree.dstype_  = SmurfTree::hww170;
-  case hWW180: tree.dstype_  = SmurfTree::hww180;
-  case hWW190: tree.dstype_  = SmurfTree::hww190;
-  case hWW200: tree.dstype_  = SmurfTree::hww200;
-  default: tree.dstype_    = SmurfTree::other;
-  }
-  */
+
+  tree.dstype_    = SmurfTree::other;
+  if(TString(process) == "ww")  tree.dstype_ = SmurfTree::qqww;
+  if(TString(process) == "wz")  tree.dstype_ = SmurfTree::wz;
+  if(TString(process) == "zz")  tree.dstype_ = SmurfTree::zz;
+  if(TString(process) == "wjets")  tree.dstype_ = SmurfTree::wjets;
+  if(TString(process) == "dyee")  tree.dstype_ = SmurfTree::dyee;
+  if(TString(process) == "dymm")  tree.dstype_ = SmurfTree::dymm;
+  if(TString(process) == "dytt")  tree.dstype_ = SmurfTree::dytt;
+  if(TString(process) == "ttbar")  tree.dstype_ = SmurfTree::ttbar;
+  if(TString(process) == "tw")  tree.dstype_ = SmurfTree::tw;
+  if(TString(process) == "qcd")  tree.dstype_ = SmurfTree::qcd;
+  if(TString(process) == "data")  tree.dstype_ = SmurfTree::data;
+  if(TString(process) == "hww120")  tree.dstype_ = SmurfTree::hww120;
+  if(TString(process) == "hww130")  tree.dstype_ = SmurfTree::hww130;
+  if(TString(process) == "hww140")  tree.dstype_ = SmurfTree::hww140;
+  if(TString(process) == "hww150")  tree.dstype_ = SmurfTree::hww150;
+  if(TString(process) == "hww160")  tree.dstype_ = SmurfTree::hww160;
+  if(TString(process) == "hww170")  tree.dstype_ = SmurfTree::hww170;
+  if(TString(process) == "hww180")  tree.dstype_ = SmurfTree::hww180;
+  if(TString(process) == "hww190")  tree.dstype_ = SmurfTree::hww190;
+  if(TString(process) == "hww200")  tree.dstype_ = SmurfTree::hww200;
+  if(TString(process) == "hww210")  tree.dstype_ = SmurfTree::hww210;
+  if(TString(process) == "hww220")  tree.dstype_ = SmurfTree::hww220;
+  if(TString(process) == "hww230")  tree.dstype_ = SmurfTree::hww230;
+  if(TString(process) == "hww250")  tree.dstype_ = SmurfTree::hww250;
   
 }
 
@@ -1008,7 +1008,7 @@ void fillFOHist() {
   // skipping the first 6 genparticles which are the incoming partons
   for (unsigned int i = 6;  i < cms2.genps_id().size(); ++i) {
     // selecting status = 3 colored objects
-    if (cms2.genps_status().at(i) != 3 || (cms2.genps_id().at(i) != 21 && TMath::Abs(cms2.genps_id().at(i)) >= 8 )) continue;
+    if (cms2.genps_status().at(i) != 3 || (cms2.genps_id().at(i) != 21 && TMath::Abs(cms2.genps_id().at(i)) > 8 )) continue;
     // apply acceptance cuts, which must be looser than the FO definition
     if (cms2.genps_p4().at(i).pt() < 10 ) continue;
 
@@ -1027,7 +1027,6 @@ void fillFOHist() {
       els_fo_parton_->Fill(els_p4().at(idx_minDREleFO).pt(), genps_p4().at(i).pt()/els_p4().at(idx_minDREleFO).pt());
       els_fo_parton_eta_->Fill(genps_p4().at(i).eta(), els_p4().at(idx_minDREleFO).eta());
       els_fo_parton_pt_->Fill(genps_p4().at(i).pt(), els_p4().at(idx_minDREleFO).pt());
-      els_fo_parton_pt_->Fill(els_p4().at(idx_minDREleFO).pt(), genps_p4().at(i).pt());
       els_fo_MCType_->Fill(elFakeMCCategory(idx_minDREleFO));
       els_fo_partonID_->Fill(genps_id().at(i));
     }
