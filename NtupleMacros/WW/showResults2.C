@@ -91,8 +91,14 @@ void showResults2(const char* cut = 0, bool showTotalBkg=true)
   if ( TH1F *hist  = getYields("smurf/zz.root",cut) )
     bkgs.push_back(std::pair<TH1F*,std::string>(hist,"*ZZ*"));
   TH1F *ww     = getYields("smurf/ww.root",cut);
+  TH1F *hww120 = getYields("smurf/hww120.root",cut);
   TH1F *hww130 = getYields("smurf/hww130.root",cut);
+  TH1F *hww140 = getYields("smurf/hww140.root",cut);
+  TH1F *hww150 = getYields("smurf/hww150.root",cut);
   TH1F *hww160 = getYields("smurf/hww160.root",cut);
+  TH1F *hww170 = getYields("smurf/hww170.root",cut);
+  TH1F *hww180 = getYields("smurf/hww180.root",cut);
+  TH1F *hww190 = getYields("smurf/hww190.root",cut);
   TH1F *hww200 = getYields("smurf/hww200.root",cut);
   TH1F *hww250 = getYields("smurf/hww250.root",cut);
   TH1F *data   = getYields("smurf/data.root",cut);
@@ -108,8 +114,8 @@ void showResults2(const char* cut = 0, bool showTotalBkg=true)
   for (unsigned int i=0; i<bkgs.size(); ++i) cout << Form(patternTitle,bkgs.at(i).second.c_str());
   if ( showTotalBkg && bkgs.size()>0 ) cout << Form(patternTitle,"*Total BKG*");
   cout << endl;
-  // string pm = "+/-";
-  string pm = "&plusmn;";
+  string pm = "+/-";
+  // string pm = "&plusmn;";
 
   double bkg[5] = {0, 0, 0, 0, 0};
   double bkgerr2[5] = {0, 0, 0, 0, 0};
@@ -129,8 +135,14 @@ void showResults2(const char* cut = 0, bool showTotalBkg=true)
 
   cout << "\n" << Form("| %3s |","");
   if (ww) cout << Form(patternTitle,"*WW*");
+  if (hww120) cout << Form(patternTitle,"*HWW120*");
   if (hww130) cout << Form(patternTitle,"*HWW130*");
+  if (hww140) cout << Form(patternTitle,"*HWW140*");
+  if (hww150) cout << Form(patternTitle,"*HWW150*");
   if (hww160) cout << Form(patternTitle,"*HWW160*");
+  if (hww170) cout << Form(patternTitle,"*HWW170*");
+  if (hww180) cout << Form(patternTitle,"*HWW180*");
+  if (hww190) cout << Form(patternTitle,"*HWW190*");
   if (hww200) cout << Form(patternTitle,"*HWW200*");
   if (hww250) cout << Form(patternTitle,"*HWW250*");
   if (data) cout << Form(patternTitle,"*Data*");
@@ -138,18 +150,18 @@ void showResults2(const char* cut = 0, bool showTotalBkg=true)
 
   for (int i=0; i<5; i++){
     cout << "|" << Form(" %3s ",names[i]) << "|";
-    if (ww) 
-      cout << Form(patternData,getValue(ww,i),pm.c_str(),getError(ww,i));
-    if (hww130) 
-      cout << Form(patternData,getValue(hww130,i),pm.c_str(),getError(hww130,i));
-    if (hww160) 
-      cout << Form(patternData,getValue(hww160,i),pm.c_str(),getError(hww160,i));
-    if (hww200) 
-      cout << Form(patternData,getValue(hww200,i),pm.c_str(),getError(hww200,i));
-    if (hww250) 
-      cout << Form(patternData,getValue(hww250,i),pm.c_str(),getError(hww250,i));
-    if (data)
-      cout << Form(patternData,getValue(data,i),pm.c_str(),getError(data,i));
+    if (ww) cout << Form(patternData,getValue(ww,i),pm.c_str(),getError(ww,i));
+    if (hww120) cout << Form(patternData,getValue(hww120,i),pm.c_str(),getError(hww120,i));
+    if (hww130) cout << Form(patternData,getValue(hww130,i),pm.c_str(),getError(hww130,i));
+    if (hww140) cout << Form(patternData,getValue(hww140,i),pm.c_str(),getError(hww140,i));
+    if (hww150) cout << Form(patternData,getValue(hww150,i),pm.c_str(),getError(hww150,i));
+    if (hww160) cout << Form(patternData,getValue(hww160,i),pm.c_str(),getError(hww160,i));
+    if (hww170) cout << Form(patternData,getValue(hww170,i),pm.c_str(),getError(hww170,i));
+    if (hww180) cout << Form(patternData,getValue(hww180,i),pm.c_str(),getError(hww180,i));
+    if (hww190) cout << Form(patternData,getValue(hww190,i),pm.c_str(),getError(hww190,i));
+    if (hww200) cout << Form(patternData,getValue(hww200,i),pm.c_str(),getError(hww200,i));
+    if (hww250) cout << Form(patternData,getValue(hww250,i),pm.c_str(),getError(hww250,i));
+    if (data)   cout << Form(patternData,getValue(data,i),pm.c_str(),getError(data,i));
     cout <<endl;
   }
   cout <<endl;
