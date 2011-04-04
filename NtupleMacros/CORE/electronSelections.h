@@ -62,8 +62,10 @@ enum EleSelectionType {
 	 //
 	 // pass smurf v1 electron ID
 	 ELEID_SMURFV1_EXTRA,
-	 // pass smurf v1 electron ID
+	 // pass smurf v2 electron ID
 	 ELEID_SMURFV2_EXTRA,
+	 // pass smurf v2 electron ID
+	 ELEID_SMURFV3_EXTRA,
 	 // pass "CAND01" electron ID
 	 ELEID_CAND01,
 	 // pass "CAND02" electron ID
@@ -78,11 +80,18 @@ enum EleSelectionType {
 	 ELEID_VBTF_35X_80,
 	 // VBTF70 electron ID (35X)
 	 ELEID_VBTF_35X_70,
+	 // VBTF80 electron ID no HoE in endcap
+	 ELEID_VBTF_80_NOHOEEND,
+	 // VBTF70 electron ID no HoE in endcap
+	 ELEID_VBTF_70_NOHOEEND,
 	 // CIC_MEDIUM electron ID (V03)
 	 ELEID_CIC_V03_MEDIUM,
 	 //
 	 // conv rej cuts
 	 //
+	 // mit conversion rejection v11 
+	 //(maxhitsbeforevtx, minprob, minlxy, allowckfmatch, requirearbitratedmerged) = (0,   1e-6,   2.0,   true,  false)
+	 ELENOTCONV_MIT,
 	 // dist < 0.02 && dcot(theta) < 0.02
 	 ELENOTCONV_DISTDCOT002,
 	 // < 2 missing hits
@@ -773,7 +782,24 @@ static const cuts_t electronSelection_smurfV2  =
          electronSelection_smurfV2_id;
 //--------end of SMURF V2 cuts--------------------------------
 
-
+//--------SMURF V3 cuts--------------------------------
+static const cuts_t electronSelection_smurfV3_baseline  = 
+	 electronSelection_wwV1_base |
+	 electronSelection_wwV1_ip;
+static const cuts_t electronSelection_smurfV3_convrej  = 
+	 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
+         (1ll<<ELENOTCONV_MIT);
+static const cuts_t electronSelection_smurfV3_iso  = 
+         (1ll<<ELEISO_RELNT010);
+static const cuts_t electronSelection_smurfV3_id  = 
+	 (1ll<<ELEID_VBTF_80_NOHOEEND) |
+         (1ll<<ELEID_SMURFV3_EXTRA);
+static const cuts_t electronSelection_smurfV3  = 
+         electronSelection_smurfV3_baseline |
+         electronSelection_smurfV3_convrej |
+         electronSelection_smurfV3_iso |
+         electronSelection_smurfV3_id;
+//--------end of SMURF V3 cuts--------------------------------
 
 
 
@@ -1021,9 +1047,11 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
 
 //
 // "smurf" electron id
+// WARNING!!! this is not the full smurf selection, just the additional ID on top of VBTF80 for low pt guys
 //
 bool electronId_smurf_v1(const unsigned int index);
 bool electronId_smurf_v2(const unsigned int index);
+bool electronId_smurf_v3(const unsigned int index);
 
 //
 // "cand" electron id
@@ -1069,6 +1097,7 @@ bool electronId_noMuon(const unsigned int index);
 //
 bool isFromConversionHitPattern(const unsigned int index);
 bool isFromConversionPartnerTrack(const unsigned int index);
+bool isFromConversionMIT(const unsigned int index);
 
 //
 //electron charge using the majority logic of the egamma group
@@ -1096,6 +1125,8 @@ void electronCorrection_pos(const unsigned int index, float &dEtaIn, float &dPhi
 //
 double electron_d0PV(unsigned int index);
 double electron_d0PV_wwV1(unsigned int index);
+double electron_d0PV_mindz(unsigned int index);
+double electron_d0PV_first(unsigned int index);
 double electron_dzPV_wwV1(unsigned int index);
 
 #endif

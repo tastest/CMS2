@@ -5,6 +5,7 @@
 // CMS2 includes
 #include "electronSelections.h"
 #include "CMS2.h"
+#include "MITConversionUtilities.h"
 
 
 
@@ -71,6 +72,7 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     //
     if (electronId_smurf_v1(index)) cuts_passed |= (1ll<<ELEID_SMURFV1_EXTRA);
     if (electronId_smurf_v2(index)) cuts_passed |= (1ll<<ELEID_SMURFV2_EXTRA);
+    if (electronId_smurf_v3(index)) cuts_passed |= (1ll<<ELEID_SMURFV3_EXTRA);
 
     // 
     // "CAND" ID
@@ -97,6 +99,12 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     // VBTF70 (optimised in 35X)
     answer_vbtf = electronId_VBTF(index, VBTF_35Xr2_70, applyAlignmentCorrection, removedEtaCutInEndcap);
     if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_35X_70);
+    // VBTF80 no H/E in endcap
+    answer_vbtf = electronId_VBTF(index, VBTF_80_NOHOEEND, applyAlignmentCorrection, removedEtaCutInEndcap);
+    if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_80_NOHOEEND);
+    // VBTF70 no H/E in endcap
+    answer_vbtf = electronId_VBTF(index, VBTF_70_NOHOEEND, applyAlignmentCorrection, removedEtaCutInEndcap);
+    if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_70_NOHOEEND);
     //
     // CIC ID  
     //
@@ -112,7 +120,7 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if (!isFromConversionHitPattern(index)) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN);
     if (cms2.els_exp_innerlayers().at(index) == 0) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN_0MHITS);
     //if (cms2.els_exp_innerlayers39X().at(index) == 0 ) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN39X_0MHITS);
-
+    if(!isFromConversionMIT(index)) cuts_passed |= (1ll<<ELENOTCONV_MIT);
     //
     // fiduciality/other cuts
     //
@@ -241,6 +249,26 @@ bool electronId_smurf_v2(const unsigned int index)
   
   if (fabs(cms2.els_etaSC()[index]) < 1.) {
     if (cms2.els_eOverPIn()[index] > 0.95) return true; 
+  }
+
+  return false;
+}
+
+bool electronId_smurf_v3(const unsigned int index)
+{
+
+  if (cms2.els_p4()[index].pt() > 20.0) return true;
+
+  electronIdComponent_t answer_vbtf = 0;
+  answer_vbtf = electronId_VBTF(index, VBTF_70_NOHOEEND, false, false);
+  if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) {
+
+    if (cms2.els_fbrem()[index] > 0.15) return true;
+
+    if (fabs(cms2.els_etaSC()[index]) < 1.) {
+      if (cms2.els_eOverPIn()[index] > 0.95) return true; 
+    }
+
   }
 
   return false;
@@ -976,4 +1004,46 @@ double electron_d0PV_wwV1(unsigned int index){
         cms2.vtxs_position()[iMax].x()*sin(cms2.els_trk_p4()[index].phi())+
         cms2.vtxs_position()[iMax].y()*cos(cms2.els_trk_p4()[index].phi());
     return dxyPV;
+}
+
+double electron_d0PV_mindz(unsigned int index){ 
+    if ( cms2.vtxs_sumpt().empty() ) return 9999.;
+    double minDz = 999.;
+    int iMin = -1;
+    for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
+        // if (!isGoodVertex(i)) continue;
+        // Copied from eventSelections.cc 
+
+//       if (cms2.vtxs_isFake()[i]) continue;
+//       if (cms2.vtxs_ndof()[i] < 4.) continue;
+//       if (cms2.vtxs_position()[i].Rho() > 2.0) continue;
+//       if (fabs(cms2.vtxs_position()[i].Z()) > 24.0) continue;
+      
+      const LorentzVector& vtx = cms2.gsftrks_vertex_p4().at(cms2.els_gsftrkidx()[index]);
+      const LorentzVector& p4 = cms2.gsftrks_p4().at(cms2.els_gsftrkidx()[index]);
+      const LorentzVector& pv = cms2.vtxs_position()[i]; 
+      float dz = fabs((vtx.z()-pv.z()) - ((vtx.x()-pv.x())*p4.x()+(vtx.y()-pv.y())*p4.y())/p4.pt() * p4.z()/p4.pt()); 
+      
+      if ( dz < minDz ){
+	iMin = i;
+	minDz = dz;
+      }
+    }
+    if (iMin<0) return 9999.;
+    double dxyPV = cms2.els_d0()[index]-
+        cms2.vtxs_position()[iMin].x()*sin(cms2.els_trk_p4()[index].phi())+
+        cms2.vtxs_position()[iMin].y()*cos(cms2.els_trk_p4()[index].phi());
+    return dxyPV;
+}
+
+double electron_d0PV_first(unsigned int index){ 
+    if ( cms2.vtxs_sumpt().empty() ) return 9999.;
+    double dxyPV = cms2.els_d0()[index]-
+        cms2.vtxs_position()[0].x()*sin(cms2.els_trk_p4()[index].phi())+
+        cms2.vtxs_position()[0].y()*cos(cms2.els_trk_p4()[index].phi());
+    return dxyPV;
+}
+
+bool isFromConversionMIT(const unsigned int index){
+  return isMITConversion(index, 0,   1e-6,   2.0,   true,  false);
 }

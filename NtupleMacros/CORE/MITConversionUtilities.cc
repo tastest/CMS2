@@ -20,10 +20,10 @@ bool isMITConversion(unsigned int elidx,
     bool conversionMatchFound = false;
     for(unsigned int itk = 0; itk < cms2.convs_tkidx()[iconv].size(); itk++) {
 
-      if(cms2.convs_tkalgo()[iconv][itk] == 29 && cms2.convs_tkidx()[iconv][itk] == els_gsftrkidx()[elidx])
+      if(cms2.convs_tkalgo()[iconv][itk] == 29 && cms2.convs_tkidx()[iconv][itk] == cms2.els_gsftrkidx()[elidx])
 	conversionMatchFound = true;
       if(matchCTF) {
-	if(cms2.convs_tkalgo()[iconv][itk] > 3 && cms2.convs_tkalgo()[iconv][itk] < 14 && cms2.convs_tkidx()[iconv][itk] == els_trkidx()[elidx])
+	if(cms2.convs_tkalgo()[iconv][itk] > 3 && cms2.convs_tkalgo()[iconv][itk] < 14 && cms2.convs_tkidx()[iconv][itk] == cms2.els_trkidx()[elidx])
 	  conversionMatchFound = true;
       }
     
