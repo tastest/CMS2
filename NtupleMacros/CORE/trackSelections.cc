@@ -35,7 +35,7 @@ std::pair<double, double> trks_dz_pv (int itrk, int ipv)
   LorentzVector tkp = cms2.trks_trk_p4().at(itrk);
   LorentzVector tkv = cms2.trks_vertex_p4().at(itrk);
   LorentzVector pv = cms2.vtxs_position().at(ipv);
-  double pt = cms2.trks_trk_p4().at(itrk).pt();
+  //double pt = cms2.trks_trk_p4().at(itrk).pt();
   double phi = cms2.trks_trk_p4().at(itrk).phi();
   double theta = cms2.trks_trk_p4().at(itrk).theta();
 
@@ -72,7 +72,7 @@ std::pair<double, double> gsftrks_dz_pv (int itrk, int ipv)
   LorentzVector tkp = cms2.gsftrks_p4().at(itrk);
   LorentzVector tkv = cms2.gsftrks_vertex_p4().at(itrk);
   LorentzVector pv = cms2.vtxs_position().at(ipv);
-  double pt = cms2.gsftrks_p4().at(itrk).pt();
+  //double pt = cms2.gsftrks_p4().at(itrk).pt();
   double phi = cms2.gsftrks_p4().at(itrk).phi();
   double theta = cms2.gsftrks_p4().at(itrk).theta();
 
@@ -150,7 +150,7 @@ std::pair<double, double> trks_dz_dapv (int itrk, int idapv)
   LorentzVector tkp = cms2.trks_trk_p4().at(itrk);
   LorentzVector tkv = cms2.trks_vertex_p4().at(itrk);
   LorentzVector dapv = cms2.davtxs_position().at(idapv);
-  double pt = cms2.trks_trk_p4().at(itrk).pt();
+  //double pt = cms2.trks_trk_p4().at(itrk).pt();
   double phi = cms2.trks_trk_p4().at(itrk).phi();
   double theta = cms2.trks_trk_p4().at(itrk).theta();
 
@@ -187,7 +187,7 @@ std::pair<double, double> gsftrks_dz_dapv (int itrk, int idapv)
   LorentzVector tkp = cms2.gsftrks_p4().at(itrk);
   LorentzVector tkv = cms2.gsftrks_vertex_p4().at(itrk);
   LorentzVector dapv = cms2.davtxs_position().at(idapv);
-  double pt = cms2.gsftrks_p4().at(itrk).pt();
+  //double pt = cms2.gsftrks_p4().at(itrk).pt();
   double phi = cms2.gsftrks_p4().at(itrk).phi();
   double theta = cms2.gsftrks_p4().at(itrk).theta();
 
