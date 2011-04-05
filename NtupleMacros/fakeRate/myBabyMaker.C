@@ -396,7 +396,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
        // Warning els_exp_innerlayers39X_ is set to 999 if this branch doesn't exits
 
         els_exp_innerlayers_ = els_exp_innerlayers().at(iEl);
-        els_exp_innerlayers39X_ = els_exp_innerlayers39X().at(iEl);
+        //els_exp_innerlayers39X_ = els_exp_innerlayers39X().at(iEl);
 
         // W transverse mass
         mt_ = Mt( els_p4().at(iEl), tcmet_, tcmetphi_ );
