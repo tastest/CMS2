@@ -767,7 +767,7 @@ float electronIsolation_rel(const unsigned int index, bool use_calo_iso)
 
 /*
 //relative non-truncated
-float electronIsolation_rel_v1(const unsigned int index, bool use_calo_iso)
+float electronIsolation_rel_v1Original(const unsigned int index, bool use_calo_iso)
 {
     float sum = cms2.els_tkIso().at(index);
     if (use_calo_iso) {
@@ -781,7 +781,7 @@ float electronIsolation_rel_v1(const unsigned int index, bool use_calo_iso)
 */
 
 // Relative Isolation, Non-Truncated
-float electronIsolation_rel_v1Original(const unsigned int index, bool use_calo_iso){
+float electronIsolation_rel_v1(const unsigned int index, bool use_calo_iso){
     float pt               = cms2.els_p4().at(index).pt();          // Electron Pt
     float TRCK_sum_over_pt = cms2.els_tkIso().at(index) / pt;       // Tracker Relative Isolation, Non-Truncated
     float ECAL_sum_over_pt = electronIsolation_ECAL_rel_v1(index);  // ECAL    Relative Isolation, Non-Truncated

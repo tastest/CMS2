@@ -1144,7 +1144,7 @@ bool eidComputeCut(double x, double et, double cut_min, double cut_max, bool gtn
 // - hcal iso as usual
 float electronIsolation_rel(const unsigned int index, bool use_calo_iso);
 //non-truncated relative iso
-float electronIsolation_rel_v1Original(const unsigned int index, bool use_calo_iso);
+//float electronIsolation_rel_v1Original(const unsigned int index, bool use_calo_iso);
 float electronIsolation_rel_v1(const unsigned int, bool);
 float electronIsolation_ECAL_rel_v1(const unsigned int);
 float electronIsolation_HCAL_rel_v1(const unsigned int);
