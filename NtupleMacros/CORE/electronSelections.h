@@ -909,7 +909,12 @@ static const cuts_t electronSelection_ssV2noTripleChargeReq_NoIso =
 /////////////////////////////////////
 
 // Analysis Selection (fake rate numerator)
-static const cuts_t electronSelection_ssV3 = electronSelection_smurfV3 | (1ll<<ELECHARGE_NOTFLIP3AGREE);               
+static const cuts_t electronSelection_ssV3 = 
+  electronSelection_smurfV3      | 
+  (1ll<<ELECHARGE_NOTFLIP3AGREE) |
+  (1ll<<ELEISO_TRK_RELNT020)     |
+  (1ll<<ELEISO_ECAL_RELNT020)    |
+  (1ll<<ELEISO_HCAL_RELNT020);               
 
 // Loose "Fakeable Object" Selection (fake rate denominators)
 
@@ -922,9 +927,8 @@ static const cuts_t electronSelectionFOV3_ssVBTF80_v1 =       // V1 - relaxed Id
   (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
   (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
   //(1ll<<ELEISO_TRK_RELNT020)          |
-  //(1ll<<ELEISO_ECAL_RELNT020)         |
-  //(1ll<<ELEISO_HCAL_RELNT020)         |
-   
+  (1ll<<ELEISO_ECAL_RELNT020)         |
+  (1ll<<ELEISO_HCAL_RELNT020)         |
   (1ll<<ELEISO_RELNT040);
 
 static const cuts_t electronSelectionFOV3_ssVBTF80_v2 =       // V2 - relaxed Id
@@ -936,9 +940,8 @@ static const cuts_t electronSelectionFOV3_ssVBTF80_v2 =       // V2 - relaxed Id
   (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
   (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
   //(1ll<<ELEISO_TRK_RELNT020)          |
-  //(1ll<<ELEISO_ECAL_RELNT020)         |
-  //(1ll<<ELEISO_HCAL_RELNT020)         |
-
+  (1ll<<ELEISO_ECAL_RELNT020)         |
+  (1ll<<ELEISO_HCAL_RELNT020)         |
   (1ll<<ELEISO_RELNT010);
 
 static const cuts_t electronSelectionFOV3_ssVBTF80_v3 =       // V3 - relaxed isolation
@@ -950,9 +953,8 @@ static const cuts_t electronSelectionFOV3_ssVBTF80_v3 =       // V3 - relaxed is
   (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
   (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
   //(1ll<<ELEISO_TRK_RELNT020)          |
-  //(1ll<<ELEISO_ECAL_RELNT020)         |
-  //(1ll<<ELEISO_HCAL_RELNT020)         |
-
+  (1ll<<ELEISO_ECAL_RELNT020)         |
+  (1ll<<ELEISO_HCAL_RELNT020)         |
   (1ll<<ELEID_VBTF_35X_80)            |
   (1ll<<ELEISO_RELNT040);
 
