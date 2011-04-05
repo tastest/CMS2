@@ -784,8 +784,8 @@ float electronIsolation_rel_v1(const unsigned int index, bool use_calo_iso)
 float electronIsolation_rel_v1Original(const unsigned int index, bool use_calo_iso){
     float pt               = cms2.els_p4().at(index).pt();          // Electron Pt
     float TRCK_sum_over_pt = cms2.els_tkIso().at(index) / pt;       // Tracker Relative Isolation, Non-Truncated
-    float ECAL_sum_over_pt = electronIsolation_ECAL_rel_v2(index);  // ECAL    Relative Isolation, Non-Truncated
-    float HCAL_sum_over_pt = electronIsolation_HCAL_rel_v2(index);  // HCAL    Relative Isolation, Non-Truncated
+    float ECAL_sum_over_pt = electronIsolation_ECAL_rel_v1(index);  // ECAL    Relative Isolation, Non-Truncated
+    float HCAL_sum_over_pt = electronIsolation_HCAL_rel_v1(index);  // HCAL    Relative Isolation, Non-Truncated
 
     float sum_over_pt      = TRCK_sum_over_pt;                      // Combined Subdetector Relative Isolation, Non-Truncated
     if(use_calo_iso){
