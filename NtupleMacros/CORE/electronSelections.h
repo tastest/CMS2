@@ -41,8 +41,12 @@ enum EleSelectionType {
 	 ELEISO_REL100_WW,
 	 // non-truncated relative iso with cut [0.05,0.07,0.10] for pT [10,15,20]
 	 ELEISO_SMURFV1,
-	 // non-truncated relative iso rel iso < 0.10, 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_RELNT010,
+
+   ELEISO_RELNT010,       // non-truncated relative iso < 0.10, 0.3 cone size for all, 1 GeV pedestal sub in EB
+   ELEISO_RELNT040,       // non-truncated relative iso < 0.40, 0.3 cone size for all, 1 GeV pedestal sub in EB
+   ELEISO_TRK_RELNT020,   // non-truncated relative Tracker iso < 0.20, 0.3 cone size for all
+   ELEISO_ECAL_RELNT020,  // non-truncated relative ECAL    iso < 0.20, 0.3 cone size for all, 1 GeV pedestal sub in EB
+   ELEISO_HCAL_RELNT020,  // non-truncated relative HCAL    iso < 0.20, 0.3 cone size for all
 
 	 //
 	 // ip cuts
@@ -900,6 +904,65 @@ static const cuts_t electronSelection_ssV2noTripleChargeReq_NoIso =
 
 // SS Iso selections
 
+/////////////////////////////////////
+// 2011 SS Selections              //
+/////////////////////////////////////
+
+// Analysis Selection (fake rate numerator)
+static const cuts_t electronSelection_ssV3 = electronSelection_smurfV3 | (1ll<<ELECHARGE_NOTFLIP3AGREE);               
+
+// Loose "Fakeable Object" Selection (fake rate denominators)
+
+static const cuts_t electronSelectionFOV3_ssVBTF80_v1 =       // V1 - relaxed Id & Isolation
+  electronSelectionFO_baseline        |
+  (1ll<<ELEPT_010)                    |
+  (1ll<<ELESCET_010)                  |
+  (1ll<<ELEETA_240)                   |
+  (1ll<<ELENOTCONV_HITPATTERN)        |
+  (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
+  (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
+  //(1ll<<ELEISO_TRK_RELNT020)          |
+  //(1ll<<ELEISO_ECAL_RELNT020)         |
+  //(1ll<<ELEISO_HCAL_RELNT020)         |
+   
+  (1ll<<ELEISO_RELNT040);
+
+static const cuts_t electronSelectionFOV3_ssVBTF80_v2 =       // V2 - relaxed Id
+  electronSelectionFO_baseline        |
+  (1ll<<ELEPT_010)                    |
+  (1ll<<ELESCET_010)                  |
+  (1ll<<ELEETA_240)                   |
+  (1ll<<ELENOTCONV_HITPATTERN)        |
+  (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
+  (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
+  //(1ll<<ELEISO_TRK_RELNT020)          |
+  //(1ll<<ELEISO_ECAL_RELNT020)         |
+  //(1ll<<ELEISO_HCAL_RELNT020)         |
+
+  (1ll<<ELEISO_RELNT010);
+
+static const cuts_t electronSelectionFOV3_ssVBTF80_v3 =       // V3 - relaxed isolation
+  electronSelectionFO_baseline        |
+  (1ll<<ELEPT_010)                    |
+  (1ll<<ELESCET_010)                  |
+  (1ll<<ELEETA_240)                   |
+  (1ll<<ELENOTCONV_HITPATTERN)        |
+  (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
+  (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
+  //(1ll<<ELEISO_TRK_RELNT020)          |
+  //(1ll<<ELEISO_ECAL_RELNT020)         |
+  //(1ll<<ELEISO_HCAL_RELNT020)         |
+
+  (1ll<<ELEID_VBTF_35X_80)            |
+  (1ll<<ELEISO_RELNT040);
+
+/////////////////////////////////////
+// End 2011 SS Selections          //
+/////////////////////////////////////
+
+
+
+
 static const cuts_t electronSelection_ss_Iso =
 	 (1ll<<ELEISO_REL010);
 
@@ -932,9 +995,8 @@ static const cuts_t electronSelection_ssV2noTripleChargeReq =
 	 electronSelection_ss_Iso;               
 
 // SS Flip Veto 
-
 const cuts_t electronSelection_ss_Flip =
-	 (1ll<<ELECHARGE_NOTFLIP3AGREE);
+       (1ll<<ELECHARGE_NOTFLIP3AGREE);
 
 
 //---------------------------------------------------------
@@ -1082,7 +1144,10 @@ bool eidComputeCut(double x, double et, double cut_min, double cut_max, bool gtn
 // - hcal iso as usual
 float electronIsolation_rel(const unsigned int index, bool use_calo_iso);
 //non-truncated relative iso
-float electronIsolation_rel_v1(const unsigned int index, bool use_calo_iso);
+float electronIsolation_rel_v1Original(const unsigned int index, bool use_calo_iso);
+float electronIsolation_rel_v1(const unsigned int, bool);
+float electronIsolation_ECAL_rel_v1(const unsigned int);
+float electronIsolation_HCAL_rel_v1(const unsigned int);
 
 // the difference from above is that the pedestal sub is applied on both EB/EE
 float electronIsolation_rel_ww(const unsigned int index, bool use_calo_iso);

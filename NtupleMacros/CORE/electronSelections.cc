@@ -24,19 +24,17 @@ bool pass_electronSelection(const unsigned int index, const cuts_t selectionType
 
 cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection, bool removedEtaCutInEndcap) 
 {
-
-    //
     // keep track of which cuts passed
-    //
-
     cuts_t cuts_passed = 0;
 
-    //
     // isolation
-    //
 
-    //relative isolation non truncated
-    if( electronIsolation_rel_v1(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_RELNT010);
+    // relative isolation non truncated
+    if( electronIsolation_rel_v1(index, true ) < 0.10) cuts_passed |= (1ll<<ELEISO_RELNT010);       // Relative Isolation
+    if( electronIsolation_rel_v1(index, true ) < 0.40) cuts_passed |= (1ll<<ELEISO_RELNT040);       //
+    if( electronIsolation_rel_v1(index, false) < 0.20) cuts_passed |= (1ll<<ELEISO_TRK_RELNT020);   // Tracker Relative Isolation
+    if( electronIsolation_ECAL_rel_v1(index)   < 0.20) cuts_passed |= (1ll<<ELEISO_ECAL_RELNT020);  // ECAL    Relative Isolation
+    if( electronIsolation_HCAL_rel_v1(index)   < 0.20) cuts_passed |= (1ll<<ELEISO_HCAL_RELNT020);  // HCAL    Relative Isolation
 
     //relative isolation truncated
     if (electronIsolation_rel(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_REL010);
@@ -52,24 +50,16 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     else if( cms2.els_p4()[index].pt() < 20.0 && electronIsolation_rel_v1(index, true) < 0.07) cuts_passed |= (1ll<<ELEISO_SMURFV1);
     else if( electronIsolation_rel_v1(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_SMURFV1);
 
-    //
     // ip
-    //
 
     if (fabs(cms2.els_d0corr()[index]) < 0.02) cuts_passed |= (1ll<<ELEIP_200);
     if (fabs(cms2.els_d0corr()[index]) < 0.04) cuts_passed |= (1ll<<ELEIP_400);
     if (fabs(electron_d0PV(index)) < 0.02) cuts_passed |= (1ll<<ELEIP_PV_200);
     if (fabs(electron_d0PV_wwV1(index)) < 0.02 && fabs(electron_dzPV_wwV1(index)) < 1.0 ) cuts_passed |= (1ll<<ELEIP_PV_wwV1);
 
-
-    //
     // id
-    //
 
-
-    //
     // SMURF ID
-    //
     if (electronId_smurf_v1(index)) cuts_passed |= (1ll<<ELEID_SMURFV1_EXTRA);
     if (electronId_smurf_v2(index)) cuts_passed |= (1ll<<ELEID_SMURFV2_EXTRA);
     if (electronId_smurf_v3(index)) cuts_passed |= (1ll<<ELEID_SMURFV3_EXTRA);
@@ -775,6 +765,7 @@ float electronIsolation_rel(const unsigned int index, bool use_calo_iso)
     return sum/max(pt, 20.);
 }
 
+/*
 //relative non-truncated
 float electronIsolation_rel_v1(const unsigned int index, bool use_calo_iso)
 {
@@ -787,6 +778,40 @@ float electronIsolation_rel_v1(const unsigned int index, bool use_calo_iso)
     double pt = cms2.els_p4().at(index).pt();
     return sum/pt;
 }
+*/
+
+// Relative Isolation, Non-Truncated
+float electronIsolation_rel_v1Original(const unsigned int index, bool use_calo_iso){
+    float pt               = cms2.els_p4().at(index).pt();          // Electron Pt
+    float TRCK_sum_over_pt = cms2.els_tkIso().at(index) / pt;       // Tracker Relative Isolation, Non-Truncated
+    float ECAL_sum_over_pt = electronIsolation_ECAL_rel_v2(index);  // ECAL    Relative Isolation, Non-Truncated
+    float HCAL_sum_over_pt = electronIsolation_HCAL_rel_v2(index);  // HCAL    Relative Isolation, Non-Truncated
+
+    float sum_over_pt      = TRCK_sum_over_pt;                      // Combined Subdetector Relative Isolation, Non-Truncated
+    if(use_calo_iso){
+      sum_over_pt += ECAL_sum_over_pt;
+      sum_over_pt += HCAL_sum_over_pt;
+    }
+    return sum_over_pt;
+}
+
+// ECAL Relative Isolation, Non-Truncated
+float electronIsolation_ECAL_rel_v1(const unsigned int index){
+  float pt               = cms2.els_p4().at(index).pt();                                                                  // Electron Pt
+  float ecal_sum_over_pt = 0.0;                                                                                           // ECAL Relative Isolation, NT
+  if( fabs(cms2.els_etaSC().at(index)) > 1.479  ) ecal_sum_over_pt += cms2.els_ecalIso().at(index);                       // EE: Ecal Endcap
+  if( fabs(cms2.els_etaSC().at(index)) <= 1.479 ) ecal_sum_over_pt += max( 0.0, ( cms2.els_ecalIso().at(index) - 1.0 ) ); // EB: Ecal Barrel
+  ecal_sum_over_pt /= pt;
+  return ecal_sum_over_pt;
+}
+
+// HCAL Relative Isolation, Non-Truncated
+float electronIsolation_HCAL_rel_v1(const unsigned int index){
+  float pt               = cms2.els_p4().at(index).pt();      // Electron Pt
+  float hcal_sum_over_pt = cms2.els_hcalIso().at(index) / pt; // HCAL Relative Isolation, NT
+  return hcal_sum_over_pt;
+}
+
 
 
 //
