@@ -378,6 +378,45 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         pfmetphi_ = evt_pfmetPhi();
         iso_ = electronIsolation_rel(iEl, true);
 
+        // Pileup - PUSummaryInfoMaker
+        pu_nPUvertices_ = puInfo_nPUvertices();
+        pu_zpositions_  = puInfo_zpositions();
+        pu_sumptlowpt_  = puInfo_sumpt_lowpt();
+        pu_sumpthighpt_ = puInfo_sump_highpt();
+        pu_instLumi_    = puInfo_instLumi();
+        pu_ntrkslowpt_  = puInfo_ntrks_lowpt();
+        pu_ntrkshighpt_ = puInfo_ntrks_highpt();
+
+        // Pileup - VertexMaker
+        evt_nvtxs_       = evt_nvtxs();
+        vtxs_xError_     = vtxs_xError();
+        vtxs_yError_     = vtxs_yError();
+        vtxs_zError_     = vtxs_zError();
+        vtxs_chi2_       = vtxs_chi2();
+        vtxs_ndof_       = vtxs_ndof();
+        vtxs_sumpt_      = vtxs_sumpt();
+        vtxs_isFake_     = vtxs_isFake();
+        vtxs_isValid_    = vtxs_isValid();
+        vtxs_tracksSize_ = vtxs_tracksSize();
+        vtxs_covMatrix_  = vtxs_covMatrix();
+        vtxs_position_   = vtxs_position();
+
+        // Pileup - VertexMaker
+        evt_ndavtxs_       = evt_ndavtxs();
+        davtxs_xError_     = davtxs_xError();
+        davtxs_yError_     = davtxs_yError();
+        davtxs_zError_     = davtxs_zError();
+        davtxs_chi2_       = davtxs_chi2();
+        davtxs_ndof_       = davtxs_ndof();
+        davtxs_sumpt_      = davtxs_sumpt();
+        davtxs_isFake_     = davtxs_isFake();
+        davtxs_isValid_    = davtxs_isValid();
+        davtxs_tracksSize_ = davtxs_tracksSize();
+        davtxs_covMatrix_  = davtxs_covMatrix();
+        davtxs_position_   = davtxs_position();
+
+
+
         if (! isData) {
             mcid_       = els_mc_id().at(iEl);
             mcmotherid_ = els_mc_motherid().at(iEl);
@@ -689,6 +728,45 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         pfmetphi_ = evt_pfmetPhi();
         iso_ = muonIsoValue(iMu);
 
+        // Pileup - PUSummaryInfoMaker
+        pu_nPUvertices_ = puInfo_nPUvertices();
+        pu_zpositions_  = puInfo_zpositions();
+        pu_sumptlowpt_  = puInfo_sumpt_lowpt();
+        pu_sumpthighpt_ = puInfo_sump_highpt();
+        pu_instLumi_    = puInfo_instLumi();
+        pu_ntrkslowpt_  = puInfo_ntrks_lowpt();
+        pu_ntrkshighpt_ = puInfo_ntrks_highpt();
+
+        // Pileup - VertexMaker
+        evt_nvtxs_       = evt_nvtxs();
+        vtxs_xError_     = vtxs_xError();
+        vtxs_yError_     = vtxs_yError();
+        vtxs_zError_     = vtxs_zError();
+        vtxs_chi2_       = vtxs_chi2();
+        vtxs_ndof_       = vtxs_ndof();
+        vtxs_sumpt_      = vtxs_sumpt();
+        vtxs_isFake_     = vtxs_isFake();
+        vtxs_isValid_    = vtxs_isValid();
+        vtxs_tracksSize_ = vtxs_tracksSize();
+        vtxs_covMatrix_  = vtxs_covMatrix();
+        vtxs_position_   = vtxs_position();
+
+        // Pileup - VertexMaker
+        evt_ndavtxs_       = evt_ndavtxs();
+        davtxs_xError_     = davtxs_xError();
+        davtxs_yError_     = davtxs_yError();
+        davtxs_zError_     = davtxs_zError();
+        davtxs_chi2_       = davtxs_chi2();
+        davtxs_ndof_       = davtxs_ndof();
+        davtxs_sumpt_      = davtxs_sumpt();
+        davtxs_isFake_     = davtxs_isFake();
+        davtxs_isValid_    = davtxs_isValid();
+        davtxs_tracksSize_ = davtxs_tracksSize();
+        davtxs_covMatrix_  = davtxs_covMatrix();
+        davtxs_position_   = davtxs_position();
+
+
+
         if (! isData) {
             mcid_       = mus_mc_id().at(iMu);
             mcmotherid_ = mus_mc_motherid().at(iMu);
@@ -919,6 +997,45 @@ void myBabyMaker::InitBabyNtuple () {
   ls_  = -1;
   evt_ = -1;
   weight_ = 1.;
+
+  // Pileup - PUSummaryInfoMaker
+  pu_nPUvertices_ = -1;
+  pu_sumptlowpt_.clear();
+  pu_sumpthighpt_.clear();
+  pu_instLumi_.clear();
+  pu_ntrkslowpt_.clear();
+  pu_ntrkshighpt_.clear();
+
+  // Pileup - VertexMaker
+  evt_nvtxs_ = -1;
+  vtxs_xError_.clear();
+  vtxs_yError_.clear();
+  vtxs_zError_.clear();
+  vtxs_chi2_.clear();
+  vtxs_ndof_.clear();
+  vtxs_sumpt_.clear();
+  vtxs_isFake_.clear();
+  vtxs_isValid_.clear();
+  vtxs_tracksSize_.clear();
+  vtxs_covMatrix_.clear();
+  vtxs_position_.clear();
+
+  // Pileup - VertexMaker
+  evt_ndavtxs_ = -1;
+  davtxs_xError_.clear();
+  davtxs_yError_.clear();
+  davtxs_zError_.clear();
+  davtxs_chi2_.clear();
+  davtxs_ndof_.clear();
+  davtxs_sumpt_.clear();
+  davtxs_isFake_.clear();
+  davtxs_isValid_.clear();
+  davtxs_tracksSize_.clear();
+  davtxs_covMatrix_.clear();
+  davtxs_position_.clear();
+
+
+
   id_  = -1;
   pt_  = -999.;
   eta_ = -999.;
@@ -1136,7 +1253,46 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("run",          &run_,         "run/I"         );
     babyTree_->Branch("ls",           &ls_,          "ls/I"          );
     babyTree_->Branch("evt",          &evt_,         "evt/I"         );
-	babyTree_->Branch("weight",       &weight_,      "weight/F"      );
+	  babyTree_->Branch("weight",       &weight_,      "weight/F"      );
+
+    // Pileup - PUSummaryInfoMaker
+    babyTree_->Branch("pu_nPUvertices", &pu_nPUvertices_ );
+    babyTree_->Branch("pu_zpositions" , &pu_zpositions_  );
+    babyTree_->Branch("pu_sumptlowpt" , &pu_sumptlowpt_  );
+    babyTree_->Branch("pu_sumpthighpt", &pu_sumpthighpt_ );
+    babyTree_->Branch("pu_instLumi"   , &pu_instLumi_    );
+    babyTree_->Branch("pu_ntrkslowpt" , &pu_ntrkslowpt_  );
+    babyTree_->Branch("pu_ntrkshighpt", &pu_ntrkshighpt_ );
+
+    // Pileup - VertexMaker
+    babyTree_->Branch("evt_nvtxs"      , &evt_nvtxs_      );
+    babyTree_->Branch("vtxs_xError"    , &vtxs_xError_    );
+    babyTree_->Branch("vtxs_yError"    , &vtxs_yError_    );
+    babyTree_->Branch("vtxs_zError"    , &vtxs_zError_    );
+    babyTree_->Branch("vtxs_chi2"      , &vtxs_chi2_      );
+    babyTree_->Branch("vtxs_ndof"      , &vtxs_ndof_      );
+    babyTree_->Branch("vtxs_sumpt"     , &vtxs_sumpt_     );
+    babyTree_->Branch("vtxs_isFake"    , &vtxs_isFake_    );
+    babyTree_->Branch("vtxs_isValid"   , &vtxs_isValid_   );
+    babyTree_->Branch("vtxs_tracksSize", &vtxs_tracksSize_);
+    babyTree_->Branch("vtxs_covMatrix" , &vtxs_covMatrix_ );
+    babyTree_->Branch("vtxs_position"  , &vtxs_position_  );
+
+    // Pileup - VertexMaker
+    babyTree_->Branch("evt_ndavtxs"      , &evt_ndavtxs_      );
+    babyTree_->Branch("davtxs_xError"    , &davtxs_xError_    );
+    babyTree_->Branch("davtxs_yError"    , &davtxs_yError_    );
+    babyTree_->Branch("davtxs_zError"    , &davtxs_zError_    );
+    babyTree_->Branch("davtxs_chi2"      , &davtxs_chi2_      );
+    babyTree_->Branch("davtxs_ndof"      , &davtxs_ndof_      );
+    babyTree_->Branch("davtxs_sumpt"     , &davtxs_sumpt_     );
+    babyTree_->Branch("davtxs_isFake"    , &davtxs_isFake_    );
+    babyTree_->Branch("davtxs_isValid"   , &davtxs_isValid_   );
+    babyTree_->Branch("davtxs_tracksSize", &davtxs_tracksSize_);
+    babyTree_->Branch("davtxs_covMatrix" , &davtxs_covMatrix_ );
+    babyTree_->Branch("davtxs_position"  , &davtxs_position_  );
+
+
 
     babyTree_->Branch("pt",           &pt_,          "pt/F"         );
     babyTree_->Branch("eta",          &eta_,         "eta/F"         );

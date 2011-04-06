@@ -6,34 +6,69 @@
 
 //class TChain;
 
-class myBabyMaker
-{
-    public:
-        myBabyMaker() {};
-        ~myBabyMaker() {
-            delete babyFile_;
-            delete babyTree_;
-        };
-        void MakeBabyNtuple (const char *);
-        void InitBabyNtuple ();
-        void FillBabyNtuple ();
-        void CloseBabyNtuple ();
-        void ScanChain (TChain *, const char *, bool, int);
+class myBabyMaker {
 
-    private:
-        //
-        // BABY NTUPLE VARIABLES
-        //
-        TFile *babyFile_;
-        TTree *babyTree_;
+ public:
+    myBabyMaker() {};
+    ~myBabyMaker() {
+      delete babyFile_;
+      delete babyTree_;
+    };
+    void MakeBabyNtuple (const char *);
+    void InitBabyNtuple ();
+    void FillBabyNtuple ();
+    void CloseBabyNtuple ();
+    void ScanChain (TChain *, const char *, bool, int);
+  
+ private:
+      
+  // BABY NTUPLE VARIABLES
+  TFile *babyFile_;
+  TTree *babyTree_;
+      
+  // event information
+  Int_t   run_;
+  Int_t   ls_;
+  Int_t   evt_;
+  Float_t weight_;
 
-        // event identification
-        Int_t   run_;
-        Int_t   ls_;
-        Int_t   evt_;
+  // Pileup - PUSummaryInfoMaker
+  Int_t         pu_nPUvertices_;
+  vector<float> pu_zpositions_;
+  vector<float> pu_sumptlowpt_;
+  vector<float> pu_sumpthighpt_;
+  vector<float> pu_instLumi_;
+  vector<int>   pu_ntrkslowpt_;
+  vector<int>   pu_ntrkshighpt_;
 
-		// event weight
-		Float_t weight_;
+  // Pileup - VertexMaker
+  Int_t                   evt_nvtxs_;
+  vector<float>           vtxs_xError_;
+  vector<float>           vtxs_yError_;
+  vector<float>           vtxs_zError_;
+  vector<float>           vtxs_chi2_;
+  vector<float>           vtxs_ndof_;
+  vector<float>           vtxs_sumpt_;
+  vector<int>             vtxs_isFake_;
+  vector<int>             vtxs_isValid_;
+  vector<int>             vtxs_tracksSize_;
+  vector< vector<float> > vtxs_covMatrix_;
+  vector<LorentzVector>   vtxs_position_;
+
+  // Pileup - VertexMaker
+  Int_t                   evt_ndavtxs_;
+  vector<float>           davtxs_xError_;
+  vector<float>           davtxs_yError_;
+  vector<float>           davtxs_zError_;
+  vector<float>           davtxs_chi2_;
+  vector<float>           davtxs_ndof_;
+  vector<float>           davtxs_sumpt_;
+  vector<int>             davtxs_isFake_;
+  vector<int>             davtxs_isValid_;
+  vector<int>             davtxs_tracksSize_;
+  vector< vector<float> > davtxs_covMatrix_;
+  vector<LorentzVector>   davtxs_position_;
+
 
   // Lepton pt and eta and phi
   Float_t pt_;
