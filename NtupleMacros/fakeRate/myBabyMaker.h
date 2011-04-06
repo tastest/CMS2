@@ -137,18 +137,6 @@ class myBabyMaker {
   Bool_t v2SSV2_;  // electronSelectionFO_ssVBTF80_v2, false, false
   Bool_t v3SSV2_;  // electronSelectionFO_ssVBTF80_v3, false, false
 
-  Bool_t v1_wwV0_;  // electronSelectionFO_el_wwV0_v1
-  Bool_t v2_wwV0_;  // electronSelectionFO_el_wwV0_v2
-  Bool_t v3_wwV0_;  // electronSelectionFO_el_wwV0_v3
-  Bool_t v4_wwV0_;  // electronSelectionFO_el_wwV0_v4
-  Bool_t num_wwV0_; // electronSelection_wwV0 | NominalWWV0 (muons)
-
-  Bool_t v1_wwV0b_;  // electronSelectionFO_el_wwV0b_v1
-  Bool_t v2_wwV0b_;  // electronSelectionFO_el_wwV0b_v2
-  Bool_t v3_wwV0b_;  // electronSelectionFO_el_wwV0b_v3
-  Bool_t v4_wwV0b_;  // electronSelectionFO_el_wwV0b_v4
-  Bool_t num_wwV0b_; // electronSelection_wwV0b | NominalWWV0 (muons)
-
   Bool_t v1_wwV1_;  // electronSelectionFO_el_wwV1_v1
   Bool_t v2_wwV1_;  // electronSelectionFO_el_wwV1_v2
   Bool_t v3_wwV1_;  // electronSelectionFO_el_wwV1_v3
@@ -168,8 +156,6 @@ class myBabyMaker {
   Bool_t fo_mussV2_04_;  // muonSelectionFO_mu_ssV2
   Bool_t fo_mussV2_10_;  // muonSelectionFO_mu_ssV2_iso10
 
-  Bool_t fo_wwV0_04_;  // muonSelectionFO_mu_ww
-  Bool_t fo_wwV0_10_;  // muonSelectionFO_mu_ww_iso10
   Bool_t fo_wwV1_04_;  // muonSelectionFO_mu_wwV1
   Bool_t fo_wwV1_10_;  // muonSelectionFO_mu_wwV1_iso10
   Bool_t fo_wwV1_10_d0_;  // muonSelectionFO_mu_wwV1_iso10_d0
