@@ -1,8 +1,16 @@
 #ifndef myBabyMaker_h
 #define myBabyMaker_h
 
+// C++ Includes
+#include <vector>
+
+// ROOT Includes
 #include "TFile.h"
 #include "TTree.h"
+
+// TAS Includes
+#include "CMS2.cc"
+
 
 class myBabyMaker {
 
@@ -72,6 +80,7 @@ class myBabyMaker {
     vector< vector<float> > davtxs_covMatrix_;
     vector<LorentzVector>   davtxs_position_;
 
+
   /////////////////////////// 
   // End Event Information //
   ///////////////////////////
@@ -99,6 +108,10 @@ class myBabyMaker {
   
     // isolation
     Float_t iso_;
+
+    // Id
+    Bool_t  el_id_vbtf80_;
+    Bool_t  el_id_vbtf90_;
 
   //////////////////////////
   // End Lepton Variables //

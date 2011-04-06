@@ -1,3 +1,4 @@
+// C++ includes
 #include <iostream>
 #include <set>
 
@@ -11,19 +12,20 @@
 #include "Math/VectorUtil.h"
 
 // TAS includes
-#include "./CMS2.cc"
-#include "../CORE/trackSelections.cc"
-#include "../CORE/eventSelections.cc"
-#include "../CORE/muonSelections.cc"
+#include "myBabyMaker.h"
+//#include "CMS2.cc"
 #include "../CORE/electronSelections.cc"
-#include "../CORE/MITConversionUtilities.cc"
 #include "../CORE/electronSelectionsParameters.cc"
+#include "../CORE/eventSelections.cc"
+#include "../CORE/jetSelections.cc"
 #include "../CORE/metSelections.cc"
+#include "../CORE/MITConversionUtilities.cc"
+#include "../CORE/muonSelections.cc"
+#include "../CORE/trackSelections.cc"
 #include "../CORE/triggerUtils.cc"
 #include "../Tools/goodrun.cc"
-#include "./myBabyMaker.h"
-#include "../CORE/jetSelections.cc"
 
+// namespaces
 using namespace std;
 using namespace tas;
 
@@ -112,8 +114,6 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
   // Set the JSON file
   if(isData){
     set_goodrun_file_json("json/Cert_TopNov5_Merged_135821-149442_allPVT.txt");
-    //set_goodrun_file_json("json/json_135821_148058_15.21pb.txt");
-    //set_goodrun_file_json("json/Cert_TopAug13_Merged_135059-142664.txt");
   }
 
   std::vector<std::string> jetcorr_filenames;
@@ -271,7 +271,19 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
           v3_wwV1_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV1_v3);
           v4_wwV1_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV1_v4);
 
-          // Sanity
+          // loosest denominator - used for Z veto
+          bool loosest = 
+            v1Oct6_        | v2Oct6_     | v3Oct6_        |                   // ttbar
+            v1SSV2_        | v2SSV2_     | v3SSV2_        |                   // SS 2010
+            v1_el_ssV3_    | v2_el_ssV3_ | v3_el_ssV3_    |                   // SS 2011
+            v1OSOct18_     | v2OSOct18_  | v3OSOct18_     |                   // OS
+            v1_wwV1_       | v2_wwV1_    | v3_wwV1_       | v4_wwV1_        | // WW 2010
+            v1_el_smurfV1_ |               v3_el_smurfV1_ | v4_el_smurfV1_  ; // WW 2011
+
+
+        ////////////////////////////////////////////////////////////
+        // Skip this electron if it fails the loosest denominator //
+        ////////////////////////////////////////////////////////////
 
             // ttbar
             if (numOct6_ && (!v1Oct6_)) cout << "bad v1Oct6_" << endl;
@@ -294,21 +306,24 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
             if (num_wwV1_ && (!v3_wwV1_)) cout << "bad v3_wwV1_" << endl;
             if (num_wwV1_ && (!v4_wwV1_)) cout << "bad v4_wwV1_" << endl;
 
-          // If there is no fakeable lepton quit
-          if (  
-            (!v1Oct6_)    && (!v2Oct6_)    && (!v3Oct6_)    &&              // ttbar
-            (!v1SSV2_)    && (!v2SSV2_)    && (!v3SSV2_)    &&              // SS
-            (!v1OSOct18_) && (!v2OSOct18_) && (!v3OSOct18_) &&              // OS
-            (!v1_wwV1_)   && (!v2_wwV1_)   && (!v3_wwV1_)   && (!v4_wwV1_)  // WW
-          ) continue;
+            // 
+            if (  
+              (!v1Oct6_)        && (!v2Oct6_)        && (!v3Oct6_)        &&                      // ttbar
+              (!v1SSV2_)        && (!v2SSV2_)        && (!v3SSV2_)        &&                      // SS 2010
+              (!v1_el_ssV3_)    && (!v2_el_ssV3_)    && (!v3_el_ssV3_)    &&                      // SS 2011
+              (!v1OSOct18_)     && (!v2OSOct18_)     && (!v3OSOct18_)     &&                      // OS
+              (!v1_wwV1_)       && (!v2_wwV1_)       && (!v3_wwV1_)       && (!v4_wwV1_)       && // WW 2010
+              (!v1_el_smurfV1_) &&                      (!v3_el_smurfV1_) && (!v4_el_smurfV1_)    // WW 2011
+            ) continue;
  
         //////////////////////////////////////////////////////
         // End Fake Rate Numerator & Denominator Selections //
         //////////////////////////////////////////////////////
 
 
-
-
+////////////////////////////////////////////////////////////////////////
+// NEED TO THINK ABOUT THIS... Z'S ARE VETOED BASED ON TOP SELECTIONS //
+////////////////////////////////////////////////////////////////////////
        
         // If it is above 20 GeV see if we can make a 
         // Z with another pt>20 FO.  Will use the v1 FO since 
@@ -327,112 +342,104 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         }
         if (isaZ) continue;
     
-        // Load the electron and event quantities
-        run_   = evt_run();
-        ls_    = evt_lumiBlock();
-        evt_   = evt_event();
-        weight_ = isData ? 1. : evt_scale1fb();
-        pt_    = els_p4().at(iEl).pt();
-        eta_   = els_p4().at(iEl).eta();
-        phi_   = els_p4().at(iEl).phi();
-        scet_  = els_eSC()[iEl] / cosh( els_etaSC()[iEl] );
-        id_    = 11*els_charge().at(iEl);
-        tcmet_ = evt_tcmet();
-        tcmetphi_ = evt_tcmetPhi();
-        pfmet_ = evt_pfmet();
-        pfmetphi_ = evt_pfmetPhi();
-        iso_ = electronIsolation_rel(iEl, true);
 
-        // Pileup - PUSummaryInfoMaker
-        pu_nPUvertices_ = puInfo_nPUvertices();
-        pu_zpositions_  = puInfo_zpositions();
-        pu_sumptlowpt_  = puInfo_sumpt_lowpt();
-        pu_sumpthighpt_ = puInfo_sump_highpt();
-        pu_instLumi_    = puInfo_instLumi();
-        pu_ntrkslowpt_  = puInfo_ntrks_lowpt();
-        pu_ntrkshighpt_ = puInfo_ntrks_highpt();
+        /////////////////////////// 
+        // Event Information     //
+        ///////////////////////////
 
-        // Pileup - VertexMaker
-        evt_nvtxs_       = evt_nvtxs();
-        vtxs_xError_     = vtxs_xError();
-        vtxs_yError_     = vtxs_yError();
-        vtxs_zError_     = vtxs_zError();
-        vtxs_chi2_       = vtxs_chi2();
-        vtxs_ndof_       = vtxs_ndof();
-        vtxs_sumpt_      = vtxs_sumpt();
-        vtxs_isFake_     = vtxs_isFake();
-        vtxs_isValid_    = vtxs_isValid();
-        vtxs_tracksSize_ = vtxs_tracksSize();
-        vtxs_covMatrix_  = vtxs_covMatrix();
-        vtxs_position_   = vtxs_position();
+          // Load the electron and event quantities
+          run_   = evt_run();
+          ls_    = evt_lumiBlock();
+          evt_   = evt_event();
+          weight_ = isData ? 1. : evt_scale1fb();
+  
+          // Pileup - PUSummaryInfoMaker
+          pu_nPUvertices_ = puInfo_nPUvertices();
+          pu_zpositions_  = puInfo_zpositions();
+          pu_sumptlowpt_  = puInfo_sumpt_lowpt();
+          pu_sumpthighpt_ = puInfo_sump_highpt();
+          pu_instLumi_    = puInfo_instLumi();
+          pu_ntrkslowpt_  = puInfo_ntrks_lowpt();
+          pu_ntrkshighpt_ = puInfo_ntrks_highpt();
+  
+          // Pileup - VertexMaker
+          evt_nvtxs_       = evt_nvtxs();
+          vtxs_xError_     = vtxs_xError();
+          vtxs_yError_     = vtxs_yError();
+          vtxs_zError_     = vtxs_zError();
+          vtxs_chi2_       = vtxs_chi2();
+          vtxs_ndof_       = vtxs_ndof();
+          vtxs_sumpt_      = vtxs_sumpt();
+          vtxs_isFake_     = vtxs_isFake();
+          vtxs_isValid_    = vtxs_isValid();
+          vtxs_tracksSize_ = vtxs_tracksSize();
+          vtxs_covMatrix_  = vtxs_covMatrix();
+          vtxs_position_   = vtxs_position();
+  
+          // Pileup - VertexMaker
+          evt_ndavtxs_       = evt_ndavtxs();
+          davtxs_xError_     = davtxs_xError();
+          davtxs_yError_     = davtxs_yError();
+          davtxs_zError_     = davtxs_zError();
+          davtxs_chi2_       = davtxs_chi2();
+          davtxs_ndof_       = davtxs_ndof();
+          davtxs_sumpt_      = davtxs_sumpt();
+          davtxs_isFake_     = davtxs_isFake();
+          davtxs_isValid_    = davtxs_isValid();
+          davtxs_tracksSize_ = davtxs_tracksSize();
+          davtxs_covMatrix_  = davtxs_covMatrix();
+          davtxs_position_   = davtxs_position();
 
-        // Pileup - VertexMaker
-        evt_ndavtxs_       = evt_ndavtxs();
-        davtxs_xError_     = davtxs_xError();
-        davtxs_yError_     = davtxs_yError();
-        davtxs_zError_     = davtxs_zError();
-        davtxs_chi2_       = davtxs_chi2();
-        davtxs_ndof_       = davtxs_ndof();
-        davtxs_sumpt_      = davtxs_sumpt();
-        davtxs_isFake_     = davtxs_isFake();
-        davtxs_isValid_    = davtxs_isValid();
-        davtxs_tracksSize_ = davtxs_tracksSize();
-        davtxs_covMatrix_  = davtxs_covMatrix();
-        davtxs_position_   = davtxs_position();
-
+        /////////////////////////// 
+        // End Event Information //
+        ///////////////////////////
 
 
-        if (! isData) {
-            mcid_       = els_mc_id().at(iEl);
-            mcmotherid_ = els_mc_motherid().at(iEl);
-        }
-    
-        // do the 3 electron charges agree?
-        int iCTF = els_trkidx().at(iEl);
-        if( iCTF >= 0 ){
-          int qCTF = trks_charge().at( iCTF );
-          int qGSF = els_trk_charge().at(iEl);
-          int qPIX = els_sccharge().at(iEl);
-          if( qCTF == qGSF && qCTF == qPIX && qGSF == qPIX ) q3_ = true;
-        }
 
-        // Missing hits info
-        // Warning els_exp_innerlayers39X_ is set to 999 if this branch doesn't exits
+        //////////////////////////// 
+        // Lepton Information     //
+        ////////////////////////////
 
-        els_exp_innerlayers_ = els_exp_innerlayers().at(iEl);
-        //els_exp_innerlayers39X_ = els_exp_innerlayers39X().at(iEl);
+          // Basic Quantities
+          pt_           = els_p4().at(iEl).pt();
+          eta_          = els_p4().at(iEl).eta();
+          phi_          = els_p4().at(iEl).phi();
+          scet_         = els_eSC()[iEl] / cosh( els_etaSC()[iEl] );
+          id_           = 11*els_charge().at(iEl);
+          tcmet_        = evt_tcmet();
+          tcmetphi_     = evt_tcmetPhi();
+          pfmet_        = evt_pfmet();
+          pfmetphi_     = evt_pfmetPhi();
+          iso_          = electronIsolation_rel(iEl, true);
+          el_id_vbtf80_ = electronId_VBTF(iEl, VBTF_35X_80, false, false);
+          el_id_vbtf90_ = electronId_VBTF(iEl, VBTF_35X_90, false, false);
+          if (! isData) {
+              mcid_       = els_mc_id().at(iEl);
+              mcmotherid_ = els_mc_motherid().at(iEl);
+          }
+      
+          // Do the 3 electron charges agree?
+          int iCTF = els_trkidx().at(iEl);
+          if( iCTF >= 0 ){
+            int qCTF = trks_charge().at( iCTF );
+            int qGSF = els_trk_charge().at(iEl);
+            int qPIX = els_sccharge().at(iEl);
+            if( qCTF == qGSF && qCTF == qPIX && qGSF == qPIX ) q3_ = true;
+          }
+  
+          // Missing hits info
+          els_exp_innerlayers_ = els_exp_innerlayers().at(iEl);
+  
+          // W transverse mass
+          mt_   = Mt( els_p4().at(iEl), tcmet_, tcmetphi_ );
+          pfmt_ = Mt( els_p4().at(iEl), pfmet_, pfmetphi_ );
 
-        // W transverse mass
-        mt_ = Mt( els_p4().at(iEl), tcmet_, tcmetphi_ );
-        pfmt_ = Mt( els_p4().at(iEl), pfmet_, pfmetphi_ );
-        
-        // The btag information
-        nbjet_ = this_nbjet;
-        dRbNear_ = 99.;
-        dRbFar_  = -99.;
-        for (int ii=0; ii<nbjet_; ii++) {
-          unsigned int iJet = bindex[ii];
-          float dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), jets_p4().at(iJet));
-          if (dr < dRbNear_) dRbNear_ = dr;
-          if (dr > dRbFar_)   dRbFar_  = dr;
-        }
+        //////////////////////////// 
+        // End Lepton Information //
+        ////////////////////////////
 
-        // btag info for corrected pfjet
-        nbpfcjet_ = this_nbpfjet;
-        dRbpfcNear_ = 99.;
-        dRbpfcFar_  = -99.;
-        for (int ii=0; ii<nbpfcjet_; ii++) {
-          unsigned int iJet = bpfindex[ii];
-          LorentzVector jp4 = pfjets_p4()[iJet];
-          float jet_cor = jetCorrection(jp4, jet_corrector);
-          LorentzVector jp4cor = jp4 * jet_cor;
-          float dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), jp4cor);
-          if (dr < dRbpfcNear_) dRbpfcNear_ = dr;
-          if (dr > dRbpfcFar_)   dRbpfcFar_  = dr; 
-        }
-         
- 
- 
+
+
         ///////////////////////  
         // 2011 Triggers     //
         ///////////////////////
@@ -598,6 +605,31 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         // Jets     //
         //////////////
 
+        // The btag information
+        nbjet_ = this_nbjet;
+        dRbNear_ = 99.;
+        dRbFar_  = -99.;
+        for (int ii=0; ii<nbjet_; ii++) {
+          unsigned int iJet = bindex[ii];
+          float dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), jets_p4().at(iJet));
+          if (dr < dRbNear_) dRbNear_ = dr;
+          if (dr > dRbFar_)   dRbFar_  = dr;
+        }
+
+        // btag info for corrected pfjet
+        nbpfcjet_ = this_nbpfjet;
+        dRbpfcNear_ = 99.;
+        dRbpfcFar_  = -99.;
+        for (int ii=0; ii<nbpfcjet_; ii++) {
+          unsigned int iJet = bpfindex[ii];
+          LorentzVector jp4 = pfjets_p4()[iJet];
+          float jet_cor = jetCorrection(jp4, jet_corrector);
+          LorentzVector jp4cor = jp4 * jet_cor;
+          float dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iEl), jp4cor);
+          if (dr < dRbpfcNear_) dRbpfcNear_ = dr;
+          if (dr > dRbpfcFar_)   dRbpfcFar_  = dr; 
+        }
+         
         // Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
         ptj1_       = -999.0;
         ptj1_b2b_   = -999.0;
@@ -684,6 +716,10 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         // Apply a pt cut --- moved the cut to 10 GeV (Claudio, 10 Jul 2010)
         if ( mus_p4().at(iMu).pt() < 10.) continue;
         
+////////////////////////////////////////////////////////////////////////
+// NEED TO THINK ABOUT THIS... Z'S ARE VETOED BASED ON TOP SELECTIONS //
+////////////////////////////////////////////////////////////////////////
+
         // If it is above 20 GeV see if we can make a 
         // Z with another pt>20 FO.  
         bool isaZ = false;
@@ -702,64 +738,98 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         
         // Initialize baby ntuple
         InitBabyNtuple();
-        
-        // Load the muon and event quantities
-        run_  = evt_run();
-        ls_   = evt_lumiBlock();
-        evt_  = evt_event();
-        weight_ = isData ? 1. : evt_scale1fb();
-        pt_   = mus_p4().at(iMu).pt();
-        eta_  = mus_p4().at(iMu).eta();
-        phi_  = mus_p4().at(iMu).phi();
-        id_   = 13*mus_charge().at(iMu);
-        tcmet_ = evt_tcmet();
-        tcmetphi_ = evt_tcmetPhi();
-        pfmet_ = evt_pfmet();
-        pfmetphi_ = evt_pfmetPhi();
-        iso_ = muonIsoValue(iMu);
+ 
+       
 
-        // Pileup - PUSummaryInfoMaker
-        pu_nPUvertices_ = puInfo_nPUvertices();
-        pu_zpositions_  = puInfo_zpositions();
-        pu_sumptlowpt_  = puInfo_sumpt_lowpt();
-        pu_sumpthighpt_ = puInfo_sump_highpt();
-        pu_instLumi_    = puInfo_instLumi();
-        pu_ntrkslowpt_  = puInfo_ntrks_lowpt();
-        pu_ntrkshighpt_ = puInfo_ntrks_highpt();
+        /////////////////////////// 
+        // Event Information     //
+        ///////////////////////////
 
-        // Pileup - VertexMaker
-        evt_nvtxs_       = evt_nvtxs();
-        vtxs_xError_     = vtxs_xError();
-        vtxs_yError_     = vtxs_yError();
-        vtxs_zError_     = vtxs_zError();
-        vtxs_chi2_       = vtxs_chi2();
-        vtxs_ndof_       = vtxs_ndof();
-        vtxs_sumpt_      = vtxs_sumpt();
-        vtxs_isFake_     = vtxs_isFake();
-        vtxs_isValid_    = vtxs_isValid();
-        vtxs_tracksSize_ = vtxs_tracksSize();
-        vtxs_covMatrix_  = vtxs_covMatrix();
-        vtxs_position_   = vtxs_position();
+          // Load the electron and event quantities
+          run_   = evt_run();
+          ls_    = evt_lumiBlock();
+          evt_   = evt_event();
+          weight_ = isData ? 1. : evt_scale1fb();
 
-        // Pileup - VertexMaker
-        evt_ndavtxs_       = evt_ndavtxs();
-        davtxs_xError_     = davtxs_xError();
-        davtxs_yError_     = davtxs_yError();
-        davtxs_zError_     = davtxs_zError();
-        davtxs_chi2_       = davtxs_chi2();
-        davtxs_ndof_       = davtxs_ndof();
-        davtxs_sumpt_      = davtxs_sumpt();
-        davtxs_isFake_     = davtxs_isFake();
-        davtxs_isValid_    = davtxs_isValid();
-        davtxs_tracksSize_ = davtxs_tracksSize();
-        davtxs_covMatrix_  = davtxs_covMatrix();
-        davtxs_position_   = davtxs_position();
+          // Pileup - PUSummaryInfoMaker
+          pu_nPUvertices_ = puInfo_nPUvertices();
+          pu_zpositions_  = puInfo_zpositions();
+          pu_sumptlowpt_  = puInfo_sumpt_lowpt();
+          pu_sumpthighpt_ = puInfo_sump_highpt();
+          pu_instLumi_    = puInfo_instLumi();
+          pu_ntrkslowpt_  = puInfo_ntrks_lowpt();
+          pu_ntrkshighpt_ = puInfo_ntrks_highpt();
 
-        //
-        if (! isData) {
-            mcid_       = mus_mc_id().at(iMu);
-            mcmotherid_ = mus_mc_motherid().at(iMu);
-        }
+          // Pileup - VertexMaker
+          evt_nvtxs_       = evt_nvtxs();
+          vtxs_xError_     = vtxs_xError();
+          vtxs_yError_     = vtxs_yError();
+          vtxs_zError_     = vtxs_zError();
+          vtxs_chi2_       = vtxs_chi2();
+          vtxs_ndof_       = vtxs_ndof();
+          vtxs_sumpt_      = vtxs_sumpt();
+          vtxs_isFake_     = vtxs_isFake();
+          vtxs_isValid_    = vtxs_isValid();
+          vtxs_tracksSize_ = vtxs_tracksSize();
+          vtxs_covMatrix_  = vtxs_covMatrix();
+          vtxs_position_   = vtxs_position();
+
+          // Pileup - VertexMaker
+          evt_ndavtxs_       = evt_ndavtxs();
+          davtxs_xError_     = davtxs_xError();
+          davtxs_yError_     = davtxs_yError();
+          davtxs_zError_     = davtxs_zError();
+          davtxs_chi2_       = davtxs_chi2();
+          davtxs_ndof_       = davtxs_ndof();
+          davtxs_sumpt_      = davtxs_sumpt();
+          davtxs_isFake_     = davtxs_isFake();
+          davtxs_isValid_    = davtxs_isValid();
+          davtxs_tracksSize_ = davtxs_tracksSize();
+          davtxs_covMatrix_  = davtxs_covMatrix();
+          davtxs_position_   = davtxs_position();
+
+        /////////////////////////// 
+        // End Event Information //
+        ///////////////////////////
+
+
+
+        //////////////////////////// 
+        // Lepton Information     //
+        ////////////////////////////
+
+          // Basic Quantities
+          pt_       = mus_p4().at(iMu).pt();
+          eta_      = mus_p4().at(iMu).eta();
+          phi_      = mus_p4().at(iMu).phi();
+          id_       = 13*mus_charge().at(iMu);
+          tcmet_    = evt_tcmet();
+          tcmetphi_ = evt_tcmetPhi();
+          pfmet_    = evt_pfmet();
+          pfmetphi_ = evt_pfmetPhi();
+          iso_      = muonIsoValue(iMu);
+          if (! isData) {
+              mcid_       = mus_mc_id().at(iMu);
+              mcmotherid_ = mus_mc_motherid().at(iMu);
+          }
+
+          // Correct tcmet (July 14, 2010)
+          if (pt_ > 10.) {
+            if (!wasMetCorrectedForThisMuon(iMu, usingTcMet)) {
+              float metX = tcmet_ * cos(evt_tcmetPhi());
+              float metY = tcmet_ * sin(evt_tcmetPhi());
+              fixMetForThisMuon(iMu, metX, metY, usingTcMet);
+              tcmet_ = sqrt(metX*metX + metY*metY);
+            }
+          }
+
+          // W transverse mass
+          mt_   = Mt( mus_p4().at(iMu), tcmet_, tcmetphi_ );
+          pfmt_ = Mt( mus_p4().at(iMu), pfmet_, pfmetphi_ );
+
+        //////////////////////////// 
+        // End Lepton Information //
+        ////////////////////////////
 
 
 
@@ -767,76 +837,36 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         // Fake Rate Numerator & Denominator Selections     //
         //////////////////////////////////////////////////////
 
-        // ttbar
-        num_            = muonId(iMu, NominalTTbarV2                    );
-        fo_04_          = muonId(iMu, muonSelectionFO_mu_ttbar          );
-        fo_10_          = muonId(iMu, muonSelectionFO_mu_ttbar_iso10    );
-
-        // Same Sign Susy
-        numNomSSv2_     = muonId(iMu, NominalSSv2                       );
-        fo_mussV2_04_   = muonId(iMu, muonSelectionFO_mu_ssV2           );
-        fo_mussV2_10_   = muonId(iMu, muonSelectionFO_mu_ssV2_iso10     );
-
-        // Opposite Sign Susy
-        num_OSGv1_      = muonId(iMu, OSGeneric_v1                      );
-        num_OSZv1_      = muonId(iMu, OSZ_v1                            );
-
-        // WW
-        num_wwV1_       = muonId(iMu, NominalWWV1                       );
-        fo_wwV1_04_     = muonId(iMu, muonSelectionFO_mu_wwV1           );
-        fo_wwV1_10_     = muonId(iMu, muonSelectionFO_mu_wwV1_iso10     );
-        fo_wwV1_10_d0_  = muonId(iMu, muonSelectionFO_mu_wwV1_iso10_d0  );
-
-        // 
-        if( !fo_04_ && !fo_10_ &&                                       // ttbar
-            !fo_mussV2_04_ && !fo_mussV2_10_ &&                         // SS
-            !fo_wwV1_04_ && !fo_wwV1_10_ && !fo_wwV1_10_d0_             // WW
-        ) continue;
-
+          // ttbar
+          num_            = muonId(iMu, NominalTTbarV2                    );
+          fo_04_          = muonId(iMu, muonSelectionFO_mu_ttbar          );
+          fo_10_          = muonId(iMu, muonSelectionFO_mu_ttbar_iso10    );
+  
+          // Same Sign Susy
+          numNomSSv2_     = muonId(iMu, NominalSSv2                       );
+          fo_mussV2_04_   = muonId(iMu, muonSelectionFO_mu_ssV2           );
+          fo_mussV2_10_   = muonId(iMu, muonSelectionFO_mu_ssV2_iso10     );
+  
+          // Opposite Sign Susy
+          num_OSGv1_      = muonId(iMu, OSGeneric_v1                      );
+          num_OSZv1_      = muonId(iMu, OSZ_v1                            );
+  
+          // WW
+          num_wwV1_       = muonId(iMu, NominalWWV1                       );
+          fo_wwV1_04_     = muonId(iMu, muonSelectionFO_mu_wwV1           );
+          fo_wwV1_10_     = muonId(iMu, muonSelectionFO_mu_wwV1_iso10     );
+          fo_wwV1_10_d0_  = muonId(iMu, muonSelectionFO_mu_wwV1_iso10_d0  );
+  
+          // 
+          if( 
+              !fo_04_ && !fo_10_ &&                                       // ttbar
+              !fo_mussV2_04_ && !fo_mussV2_10_ &&                         // SS
+              !fo_wwV1_04_ && !fo_wwV1_10_ && !fo_wwV1_10_d0_             // WW
+          ) continue;
+  
         //////////////////////////////////////////////////////
         // End Fake Rate Numerator & Denominator Selections //
         //////////////////////////////////////////////////////
-
-
-
-        // Now REALLY fix it (July 14, 2010)
-        if (pt_ > 10.) {
-          if (!wasMetCorrectedForThisMuon(iMu, usingTcMet)) {
-            float metX = tcmet_ * cos(evt_tcmetPhi());
-            float metY = tcmet_ * sin(evt_tcmetPhi());
-            fixMetForThisMuon(iMu, metX, metY, usingTcMet);
-            tcmet_ = sqrt(metX*metX + metY*metY);
-          }
-        }
-        
-        // W transverse mass
-        mt_ = Mt( mus_p4().at(iMu), tcmet_, tcmetphi_ );
-        pfmt_ = Mt( mus_p4().at(iMu), pfmet_, pfmetphi_ );
-        
-        // The btag information
-        nbjet_ = this_nbjet;
-        dRbNear_ =  99.;
-        dRbFar_  = -99.;
-        for (int ii=0; ii<nbjet_; ii++) {
-          unsigned int iJet = bindex[ii];
-          float dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), jets_p4().at(iJet));
-          if (dr < dRbNear_) dRbNear_ = dr;
-          if (dr > dRbFar_)  dRbFar_  = dr;
-        }
-         
-        // The btag information for pfjets
-        nbpfcjet_ = this_nbpfjet;
-        dRbpfcNear_ = 99.;
-        dRbpfcFar_  = -99.;
-        for (int ii=0; ii<nbpfcjet_; ii++) {
-          unsigned int iJet = bpfindex[ii];
-          LorentzVector jp4 = pfjets_p4()[iJet];
-          float jet_cor = jetCorrection(jp4, jet_corrector);
-          LorentzVector jp4cor = jp4 * jet_cor;
-          float dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), jp4cor);
-          if (dr < dRbpfcNear_) dRbpfcNear_ = dr;
-          if (dr > dRbpfcFar_)   dRbpfcFar_  = dr;
-        }
 
 
 
@@ -953,6 +983,31 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         // Jets     //
         //////////////
 
+        // The btag information
+        nbjet_ = this_nbjet;
+        dRbNear_ =  99.;
+        dRbFar_  = -99.;
+        for (int ii=0; ii<nbjet_; ii++) {
+          unsigned int iJet = bindex[ii];
+          float dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), jets_p4().at(iJet));
+          if (dr < dRbNear_) dRbNear_ = dr;
+          if (dr > dRbFar_)  dRbFar_  = dr;
+        }
+         
+        // The btag information for pfjets
+        nbpfcjet_ = this_nbpfjet;
+        dRbpfcNear_ = 99.;
+        dRbpfcFar_  = -99.;
+        for (int ii=0; ii<nbpfcjet_; ii++) {
+          unsigned int iJet = bpfindex[ii];
+          LorentzVector jp4 = pfjets_p4()[iJet];
+          float jet_cor = jetCorrection(jp4, jet_corrector);
+          LorentzVector jp4cor = jp4 * jet_cor;
+          float dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iMu), jp4cor);
+          if (dr < dRbpfcNear_) dRbpfcNear_ = dr;
+          if (dr > dRbpfcFar_)   dRbpfcFar_  = dr;
+        }
+
         // Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
         ptj1_       = -999.0;
         ptj1_b2b_   = -999.0;
@@ -1023,7 +1078,6 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         //////////////
         // End Jets //
         //////////////
-
 
 
         // Time to fill the baby for the muons
@@ -1097,6 +1151,10 @@ void myBabyMaker::InitBabyNtuple () {
   pfmet_ = -999.;
   pfmetphi_ = -999.;
   iso_ = -999.;
+  el_id_vbtf80_ = false;
+  el_id_vbtf90_ = false;
+
+
   hlt15u_ = 0;
   hlt30u_ = 0;
   hlt50u_ = 0;
@@ -1394,17 +1452,19 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("davtxs_position"  , &davtxs_position_  );
 
 
+    babyTree_->Branch("pt",           &pt_,       "pt/F"      );
+    babyTree_->Branch("eta",          &eta_,      "eta/F"     );
+    babyTree_->Branch("phi",          &phi_,      "phi/F"     );
+    babyTree_->Branch("scet",         &scet_,     "scet/F"    );
+    babyTree_->Branch("tcmet",        &tcmet_,    "tcmet/F"   );
+    babyTree_->Branch("tcmetphi",     &tcmetphi_, "tcmetphi/F");
+    babyTree_->Branch("pfmet",        &pfmet_,    "pfmet/F"   );
+    babyTree_->Branch("pfmetphi",     &pfmetphi_, "pfmetphi/F");
+    babyTree_->Branch("iso",          &iso_,      "iso/F"     );
+    babyTree_->Branch("id",           &id_,       "id/I"      );
+    babyTree_->Branch("el_id_vbtf80", &el_id_vbtf80_ );
+    babyTree_->Branch("el_id_vbtf90", &el_id_vbtf90_ );
 
-    babyTree_->Branch("pt",           &pt_,          "pt/F"         );
-    babyTree_->Branch("eta",          &eta_,         "eta/F"         );
-    babyTree_->Branch("phi",          &phi_,         "phi/F"         );
-    babyTree_->Branch("scet",          &scet_,         "scet/F"         );
-    babyTree_->Branch("tcmet",          &tcmet_,         "tcmet/F"         );
-    babyTree_->Branch("tcmetphi",          &tcmetphi_,         "tcmetphi/F"         );
-    babyTree_->Branch("pfmet",          &pfmet_,         "pfmet/F"         );
-    babyTree_->Branch("pfmetphi",          &pfmetphi_,         "pfmetphi/F"         );
-    babyTree_->Branch("iso",          &iso_,         "iso/F"         );
-    babyTree_->Branch("id",          &id_,         "id/I"         );
 
     babyTree_->Branch("hlt15u",       &hlt15u_,       "hlt15u/I"      );
     babyTree_->Branch("hlt30u",       &hlt30u_,       "hlt30u/I"      );
