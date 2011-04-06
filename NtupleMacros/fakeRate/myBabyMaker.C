@@ -14,13 +14,11 @@
 #include "./CMS2.cc"
 #include "../CORE/trackSelections.cc"
 #include "../CORE/eventSelections.cc"
-
 #include "../CORE/muonSelections.cc"
 #include "../CORE/electronSelections.cc"
 #include "../CORE/MITConversionUtilities.cc"
 #include "../CORE/electronSelectionsParameters.cc"
 #include "../CORE/metSelections.cc"
-
 #include "../CORE/triggerUtils.cc"
 #include "../Tools/goodrun.cc"
 #include "./myBabyMaker.h"
@@ -208,9 +206,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         this_nbpfjet++;
         bpfindex.push_back(iJet);
       }
-
       
-/* Electrons */
+// Electrons
       
       if (eormu == -1 || eormu==11) {
       for (unsigned int iEl = 0 ; iEl < els_p4().size(); iEl++) {
@@ -221,105 +218,80 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         // Initialize baby ntuple
         InitBabyNtuple();
 
-        // Add spike veto
-        num_ = pass_electronSelection( iEl, electronSelection_ttbarV1 ) && (!isSpikeElectron(iEl));
-        numv1_ = pass_electronSelection( iEl, electronSelection_ttbarV1 );
-        v1_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v1 );
-        v2_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v2 );
-        v3_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v3 );
-
-        numSS_ = pass_electronSelection(iEl, electronSelection_ss);
-        v1SS_  = pass_electronSelection(iEl, electronSelectionFO_ssVBTF80_v1);
-        v2SS_  = pass_electronSelection(iEl, electronSelectionFO_ssVBTF80_v2);
-        v3SS_  = pass_electronSelection(iEl, electronSelectionFO_ssVBTF80_v3);
-
-        numAug9_ = pass_electronSelection( iEl, electronSelection_ttbarV1, isData, true ) && (!isSpikeElectron(iEl));
-        v1Aug9_  = v1_;
-        v2Aug9_  = v2_;
-        v3Aug9_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v3, isData, true );
-
-        numSSAug9_ = pass_electronSelection(iEl, electronSelection_ss, isData, true);
-        v1SSAug9_  = pass_electronSelection(iEl, electronSelectionFO_ssVBTF80_v1, isData, true);
-        v2SSAug9_  = pass_electronSelection(iEl, electronSelectionFO_ssVBTF80_v2, isData, true);
-        v3SSAug9_  = pass_electronSelection(iEl, electronSelectionFO_ssVBTF80_v3, isData, true);
-
-        numOct6_ = pass_electronSelection( iEl, electronSelection_ttbarV1_pass5);
-        v1Oct6_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v1_pass5);
-        v2Oct6_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v2_pass5);
-        v3Oct6_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v3_pass5);
-
-        numOSOct18_ = pass_electronSelection( iEl, electronSelection_el_OSV1);
-        v1OSOct18_  = pass_electronSelection( iEl, electronSelectionFO_el_OSV1_v1);
-        v2OSOct18_  = pass_electronSelection( iEl, electronSelectionFO_el_OSV1_v2);
-        v3OSOct18_  = pass_electronSelection( iEl, electronSelectionFO_el_OSV1_v3);
-
-        numSSOct18_ = pass_electronSelection( iEl, electronSelection_ss, false, false) && (!isSpikeElectron(iEl));
-        v1SSOct18_  = pass_electronSelection( iEl, electronSelectionFO_ssVBTF80_v1, false, false);
-        v2SSOct18_  = pass_electronSelection( iEl, electronSelectionFO_ssVBTF80_v2, false, false);
-        v3SSOct18_  = pass_electronSelection( iEl, electronSelectionFO_ssVBTF80_v3, false, false);
-
-        v1_wwV1_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV1_v1);
-        v2_wwV1_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV1_v2);
-        v3_wwV1_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV1_v3);
-        v4_wwV1_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV1_v4);
-        num_wwV1_ = pass_electronSelection( iEl, electronSelection_wwV1);
-
-        numSSV2_ = pass_electronSelection( iEl, electronSelection_ssV2, false, false) && (!isSpikeElectron(iEl));
-        v1SSV2_  = pass_electronSelection( iEl, electronSelectionFOV2_ssVBTF80_v1, false, false);
-        v2SSV2_  = pass_electronSelection( iEl, electronSelectionFOV2_ssVBTF80_v2, false, false);
-        v3SSV2_  = pass_electronSelection( iEl, electronSelectionFOV2_ssVBTF80_v3, false, false);
 
 
-        // Sanity
-        if (numOSOct18_ && (!v1OSOct18_)) cout << "bad v1OSOct18_" << endl;
-        if (numOSOct18_ && (!v2OSOct18_)) cout << "bad v2OSOct18_" << endl;
-        if (numOSOct18_ && (!v3OSOct18_)) cout << "bad v3OSOct18_" << endl;
+        //////////////////////////////////////////////////////
+        // Fake Rate Numerator & Denominator Selections     //
+        //////////////////////////////////////////////////////
 
-        if (numSSOct18_ && (!v1SSOct18_)) cout << "bad v1SSOct18_" << endl;
-        if (numSSOct18_ && (!v2SSOct18_)) cout << "bad v2SSOct18_" << endl;
-        if (numSSOct18_ && (!v3SSOct18_)) cout << "bad v3SSOct18_" << endl;
+        //////////
+        // 2010 //
+        //////////
 
-        if (num_ && (!v1_)) cout << "bad v1_" << endl;
-        if (num_ && (!v2_)) cout << "bad v2_" << endl;
-        if (num_ && (!v3_)) cout << "bad v3_" << endl;
+          // ttbar
+          numOct6_ = pass_electronSelection( iEl, electronSelection_ttbarV1_pass5         );
+          v1Oct6_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v1_pass5 );
+          v2Oct6_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v2_pass5 );
+          v3Oct6_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v3_pass5 );
 
-        if (numSS_ && (!v1SS_)) cout << "bad v1SS_" << endl;
-        if (numSS_ && (!v2SS_)) cout << "bad v2SS_" << endl;
-        if (numSS_ && (!v3SS_)) cout << "bad v3SS_" << endl;
+          // Same Sign Susy
+          numSSV2_ = pass_electronSelection( iEl, electronSelection_ssV2, false, false            ) && (!isSpikeElectron(iEl));
+          v1SSV2_  = pass_electronSelection( iEl, electronSelectionFOV2_ssVBTF80_v1, false, false );
+          v2SSV2_  = pass_electronSelection( iEl, electronSelectionFOV2_ssVBTF80_v2, false, false );
+          v3SSV2_  = pass_electronSelection( iEl, electronSelectionFOV2_ssVBTF80_v3, false, false );
 
-        if (numSSAug9_ && (!v1SSAug9_)) cout << "bad v1SSAug9_" << endl;
-        if (numSSAug9_ && (!v2SSAug9_)) cout << "bad v2SSAug9_" << endl;
-        if (numSSAug9_ && (!v3SSAug9_)) cout << "bad v3SSAug9_" << endl;
+          // Opposite Sign Susy
+          numOSOct18_ = pass_electronSelection( iEl, electronSelection_el_OSV1);
+          v1OSOct18_  = pass_electronSelection( iEl, electronSelectionFO_el_OSV1_v1);
+          v2OSOct18_  = pass_electronSelection( iEl, electronSelectionFO_el_OSV1_v2);
+          v3OSOct18_  = pass_electronSelection( iEl, electronSelectionFO_el_OSV1_v3);
 
-        if (numAug9_ && (!v1Aug9_)) cout << "bad v1Aug9_" << endl;
-        if (numAug9_ && (!v2Aug9_)) cout << "bad v2Aug9_" << endl;
-        if (numAug9_ && (!v3Aug9_)) cout << "bad v3Aug9_" << endl;
+          // WW
+          num_wwV1_ = pass_electronSelection( iEl, electronSelection_wwV1);
+          v1_wwV1_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV1_v1);
+          v2_wwV1_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV1_v2);
+          v3_wwV1_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV1_v3);
+          v4_wwV1_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV1_v4);
 
-        if (numOct6_ && (!v1Oct6_)) cout << "bad v1Oct6_" << endl;
-        if (numOct6_ && (!v2Oct6_)) cout << "bad v2Oct6_" << endl;
-        if (numOct6_ && (!v3Oct6_)) cout << "bad v3Oct6_" << endl;
+          // Sanity
 
-        if (num_wwV1_ && (!v1_wwV1_)) cout << "bad v1_wwV1_" << endl;
-        if (num_wwV1_ && (!v2_wwV1_)) cout << "bad v2_wwV1_" << endl;
-        if (num_wwV1_ && (!v3_wwV1_)) cout << "bad v3_wwV1_" << endl;
-        if (num_wwV1_ && (!v4_wwV1_)) cout << "bad v4_wwV1_" << endl;
+            // ttbar
+            if (numOct6_ && (!v1Oct6_)) cout << "bad v1Oct6_" << endl;
+            if (numOct6_ && (!v2Oct6_)) cout << "bad v2Oct6_" << endl;
+            if (numOct6_ && (!v3Oct6_)) cout << "bad v3Oct6_" << endl;
+  
+            // SS
+            if (numSSV2_ && (!v1SSV2_)) cout << "bad v1SSV2_" << endl;
+            if (numSSV2_ && (!v2SSV2_)) cout << "bad v2SSV2_" << endl;
+            if (numSSV2_ && (!v3SSV2_)) cout << "bad v3SSV2_" << endl;
+  
+            // OS
+            if (numOSOct18_ && (!v1OSOct18_)) cout << "bad v1OSOct18_" << endl;
+            if (numOSOct18_ && (!v2OSOct18_)) cout << "bad v2OSOct18_" << endl;
+            if (numOSOct18_ && (!v3OSOct18_)) cout << "bad v3OSOct18_" << endl;
+    
+            // WW
+            if (num_wwV1_ && (!v1_wwV1_)) cout << "bad v1_wwV1_" << endl;
+            if (num_wwV1_ && (!v2_wwV1_)) cout << "bad v2_wwV1_" << endl;
+            if (num_wwV1_ && (!v3_wwV1_)) cout << "bad v3_wwV1_" << endl;
+            if (num_wwV1_ && (!v4_wwV1_)) cout << "bad v4_wwV1_" << endl;
 
-        if (numSSV2_ && (!v1SSV2_)) cout << "bad v1SSV2_" << endl;
-        if (numSSV2_ && (!v2SSV2_)) cout << "bad v2SSV2_" << endl;
-        if (numSSV2_ && (!v3SSV2_)) cout << "bad v3SSV2_" << endl;
+          // If there is no fakeable lepton quit
+          if (  
+            (!v1Oct6_)    && (!v2Oct6_)    && (!v3Oct6_)    &&              // ttbar
+            (!v1SSV2_)    && (!v2SSV2_)    && (!v3SSV2_)    &&              // SS
+            (!v1OSOct18_) && (!v2OSOct18_) && (!v3OSOct18_) &&              // OS
+            (!v1_wwV1_)   && (!v2_wwV1_)   && (!v3_wwV1_)   && (!v4_wwV1_)  // WW
+          ) continue;
+ 
+        //////////////////////////////////////////////////////
+        // End Fake Rate Numerator & Denominator Selections //
+        //////////////////////////////////////////////////////
 
-        // If there is no v1/v2/v3 lepton quit
-        if (  (!v1_) && (!v2_) && (!v3_) && 
-              (!v1SS_) && (!v2SS_) && (!v3SS_) && 
-              (!v1Aug9_) && (!v2Aug9_) && (!v3Aug9_) &&
-              (!v1SSAug9_) && (!v2SSAug9_) && (!v3SSAug9_) &&
-              (!v1OSOct18_) && (!v2OSOct18_) && (!v3OSOct18_) &&
-              (!v1SSOct18_) && (!v2SSOct18_) && (!v3SSOct18_) &&
-              (!v1SSV2_) && (!v2SSV2_) && (!v3SSV2_) &&
-              (!v1Oct6_) && (!v2Oct6_) && (!v3Oct6_) &&
-              (!v1_wwV1_) && (!v2_wwV1_) && (!v3_wwV1_) && (!v4_wwV1_)
-        ) continue;
-        
+
+
+
+       
         // If it is above 20 GeV see if we can make a 
         // Z with another pt>20 FO.  Will use the v1 FO since 
         // these are the loosest
@@ -329,7 +301,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
             if (iEl == jEl)                             continue;
             if (els_p4().at(jEl).pt() < 20.)            continue;
             if ( ! pass_electronSelection( jEl, electronSelectionFO_el_ttbarV1_v1 ) ) continue;
-            if ( ! v1_ ) continue;
+            if ( ! v1Oct6_ ) continue;
             LorentzVector w = els_p4().at(iEl) + els_p4().at(jEl);
             if (abs(w.mass()-91.) > 20.) continue;
             isaZ = true;
@@ -686,7 +658,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
       } // closes loop over electrons
       } // closes if statements about whether we want to fill electrons
 
-/* Muons */
+// Muons
 
       if (eormu == -1 || eormu==13) {
       for ( unsigned int iMu = 0; iMu < mus_p4().size(); iMu++) {
@@ -765,42 +737,49 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         davtxs_covMatrix_  = davtxs_covMatrix();
         davtxs_position_   = davtxs_position();
 
-
-
+        //
         if (! isData) {
             mcid_       = mus_mc_id().at(iMu);
             mcmotherid_ = mus_mc_motherid().at(iMu);
         }
 
-        //
-        num_    = muonId(iMu, NominalTTbarV2);
-        numv1_  = muonId(iMu, NominalTTbar);
-        numSS_  = muonId(iMu, Nominal);
-        numNomSS_  = muonId(iMu, NominalSS);
-        numNomSSv2_ = muonId(iMu, NominalSSv2);
-        num_wwV1_  = muonId(iMu, NominalWWV1);
-        num_OSGv1_ = muonId(iMu, OSGeneric_v1);
-        num_OSZv1_ = muonId(iMu, OSZ_v1);
-    
-        fo_04_  = muonId(iMu, muonSelectionFO_mu_ttbar);
-        fo_10_  = muonId(iMu, muonSelectionFO_mu_ttbar_iso10);
 
-        fo_muss04_ = muonId(iMu, muonSelectionFO_mu_ss);
-        fo_muss10_ = muonId(iMu, muonSelectionFO_mu_ss_iso10);
-        fo_mussV2_04_ = muonId(iMu, muonSelectionFO_mu_ssV2);
-        fo_mussV2_10_ = muonId(iMu, muonSelectionFO_mu_ssV2_iso10);
 
-        fo_wwV1_04_  = muonId(iMu, muonSelectionFO_mu_wwV1);
-        fo_wwV1_10_  = muonId(iMu, muonSelectionFO_mu_wwV1_iso10);
-        fo_wwV1_10_d0_  = muonId(iMu, muonSelectionFO_mu_wwV1_iso10_d0);
+        //////////////////////////////////////////////////////
+        // Fake Rate Numerator & Denominator Selections     //
+        //////////////////////////////////////////////////////
 
-        numAug9_ = num_;
+        // ttbar
+        num_            = muonId(iMu, NominalTTbarV2                    );
+        fo_04_          = muonId(iMu, muonSelectionFO_mu_ttbar          );
+        fo_10_          = muonId(iMu, muonSelectionFO_mu_ttbar_iso10    );
 
-        if( !fo_04_ && !fo_10_ &&
-            !fo_wwV1_04_ && !fo_wwV1_10_ && !fo_wwV1_10_d0_ &&
-            !fo_muss04_ && !fo_muss10_ &&
-            !fo_mussV2_04_ && !fo_mussV2_10_
-           ) continue;
+        // Same Sign Susy
+        numNomSSv2_     = muonId(iMu, NominalSSv2                       );
+        fo_mussV2_04_   = muonId(iMu, muonSelectionFO_mu_ssV2           );
+        fo_mussV2_10_   = muonId(iMu, muonSelectionFO_mu_ssV2_iso10     );
+
+        // Opposite Sign Susy
+        num_OSGv1_      = muonId(iMu, OSGeneric_v1                      );
+        num_OSZv1_      = muonId(iMu, OSZ_v1                            );
+
+        // WW
+        num_wwV1_       = muonId(iMu, NominalWWV1                       );
+        fo_wwV1_04_     = muonId(iMu, muonSelectionFO_mu_wwV1           );
+        fo_wwV1_10_     = muonId(iMu, muonSelectionFO_mu_wwV1_iso10     );
+        fo_wwV1_10_d0_  = muonId(iMu, muonSelectionFO_mu_wwV1_iso10_d0  );
+
+        // 
+        if( !fo_04_ && !fo_10_ &&                                       // ttbar
+            !fo_mussV2_04_ && !fo_mussV2_10_ &&                         // SS
+            !fo_wwV1_04_ && !fo_wwV1_10_ && !fo_wwV1_10_d0_             // WW
+        ) continue;
+
+        //////////////////////////////////////////////////////
+        // End Fake Rate Numerator & Denominator Selections //
+        //////////////////////////////////////////////////////
+
+
 
         // Now REALLY fix it (July 14, 2010)
         if (pt_ > 10.) {
@@ -848,15 +827,15 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         ///////////////////////
   
           // Muons
-          pair<int, float> pair_mu3_v3       = TriggerMatch( els_p4().at(iEl), "HLT_Mu3_v3"       );
-          pair<int, float> pair_mu5_v3       = TriggerMatch( els_p4().at(iEl), "HLT_Mu5_v3"       );
-          pair<int, float> pair_mu8_v1       = TriggerMatch( els_p4().at(iEl), "HLT_Mu8_v1"       );
-          pair<int, float> pair_mu12_v1      = TriggerMatch( els_p4().at(iEl), "HLT_Mu12_v1"      );
-          pair<int, float> pair_mu15_v2      = TriggerMatch( els_p4().at(iEl), "HLT_Mu15_v2"      );
-          pair<int, float> pair_mu20_v1      = TriggerMatch( els_p4().at(iEl), "HLT_Mu20_v1"      );
-          pair<int, float> pair_mu24_v1      = TriggerMatch( els_p4().at(iEl), "HLT_Mu24_v1"      );
-          pair<int, float> pair_mu30_v1      = TriggerMatch( els_p4().at(iEl), "HLT_Mu30_v1"      );
-          pair<int, float> pair_mu8_Jet40_v3 = TriggerMatch( els_p4().at(iEl), "HLT_Mu8_Jet40_v3" );
+          pair<int, float> pair_mu3_v3       = TriggerMatch( mus_p4().at(iMu), "HLT_Mu3_v3"       );
+          pair<int, float> pair_mu5_v3       = TriggerMatch( mus_p4().at(iMu), "HLT_Mu5_v3"       );
+          pair<int, float> pair_mu8_v1       = TriggerMatch( mus_p4().at(iMu), "HLT_Mu8_v1"       );
+          pair<int, float> pair_mu12_v1      = TriggerMatch( mus_p4().at(iMu), "HLT_Mu12_v1"      );
+          pair<int, float> pair_mu15_v2      = TriggerMatch( mus_p4().at(iMu), "HLT_Mu15_v2"      );
+          pair<int, float> pair_mu20_v1      = TriggerMatch( mus_p4().at(iMu), "HLT_Mu20_v1"      );
+          pair<int, float> pair_mu24_v1      = TriggerMatch( mus_p4().at(iMu), "HLT_Mu24_v1"      );
+          pair<int, float> pair_mu30_v1      = TriggerMatch( mus_p4().at(iMu), "HLT_Mu30_v1"      );
+          pair<int, float> pair_mu8_Jet40_v3 = TriggerMatch( mus_p4().at(iMu), "HLT_Mu8_Jet40_v3" );
 
           mu3_v3_         = pair_mu3_v3.first;
           mu5_v3_         = pair_mu5_v3.first;
@@ -1106,69 +1085,62 @@ void myBabyMaker::InitBabyNtuple () {
   hlt50u_ = 0;
   l16u_   = 0;
   l110u_  = 0;
-  fo_04_ = false;
-  fo_10_ = false;
 
-  fo_muss04_ = false;
-  fo_muss10_ = false;
-  fo_mussV2_04_ = false;
-  fo_mussV2_10_ = false;
 
-  fo_wwV1_04_ = false;
-  fo_wwV1_10_ = false;
-  fo_wwV1_10_d0_ = false;
+  //////////////////////////////////////////////////////
+  // Fake Rate Numerator & Denominator Selections     //
+  //////////////////////////////////////////////////////
 
-  v1_  = false;
-  v2_  = false;
-  v3_  = false;
-  num_ = false;
+    //////////
+    // 2011 //
+    //////////
 
-  v1SS_  = false;
-  v2SS_  = false;
-  v3SS_  = false;
-  numSS_ = false;
-  numNomSS_ = false;
-  numNomSSv2_ = false;
+    //////////
+    // 2010 //
+    //////////
 
-  v1SSAug9_  = false;
-  v2SSAug9_  = false;
-  v3SSAug9_  = false;
-  numSSAug9_ = false;
+    // ttbar
+    numOct6_ = false;
+    v1Oct6_  = false;
+    v2Oct6_  = false;
+    v3Oct6_  = false;
+    num_     = false;
+    fo_04_   = false;
+    fo_10_   = false;
 
-  numv1_ = false;
-  numAug9_ = false;
-  v1Aug9_  = false;
-  v2Aug9_  = false;
-  v3Aug9_  = false;
+    // SS
+    numSSV2_      = false;
+    v1SSV2_       = false;
+    v2SSV2_       = false;
+    v3SSV2_       = false;
+    numNomSSv2_   = false;
+    fo_mussV2_04_ = false;
+    fo_mussV2_10_ = false;
 
-  numOct6_ = false;
-  v1Oct6_  = false;
-  v2Oct6_  = false;
-  v3Oct6_  = false;
+    // OS
+    num_OSGv1_ = false;
+    num_OSZv1_ = false;
+    numOSOct18_ = false;
+    v1OSOct18_  = false;
+    v2OSOct18_  = false;
+    v3OSOct18_  = false;
 
-  numOSOct18_ = false;
-  v1OSOct18_  = false;
-  v2OSOct18_  = false;
-  v3OSOct18_  = false;
+    // WW
+    num_wwV1_ = false;
 
-  numSSOct18_ = false;
-  v1SSOct18_  = false;
-  v2SSOct18_  = false;
-  v3SSOct18_  = false;
+    v1_wwV1_  = false;
+    v2_wwV1_  = false;
+    v3_wwV1_  = false;
+    v4_wwV1_  = false;
+  
+    fo_wwV1_04_    = false;
+    fo_wwV1_10_    = false;
+    fo_wwV1_10_d0_ = false;
 
-  numSSV2_ = false;
-  v1SSV2_  = false;
-  v2SSV2_  = false;
-  v3SSV2_  = false;
+  //////////////////////////////////////////////////////
+  // End Fake Rate Numerator & Denominator Selections //
+  //////////////////////////////////////////////////////
 
-  v1_wwV1_  = false;
-  v2_wwV1_  = false;
-  v3_wwV1_  = false;
-  v4_wwV1_  = false;
-  num_wwV1_ = false;
-
-  num_OSGv1_ = false;
-  num_OSZv1_ = false;
 
   //
   ph10_ = 0;
@@ -1351,68 +1323,58 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("l16u",         &l16u_,         "l16uu/I"      );
     babyTree_->Branch("l110",         &l110u_,        "l110u/I"      );
 
-    babyTree_->Branch("fo_04",         &fo_04_,        "fo_04/O"      );
-    babyTree_->Branch("fo_10",         &fo_10_,        "fo_10/O"      );
-    babyTree_->Branch("fo_muss04",         &fo_muss04_,        "fo_muss04/O"      );
-    babyTree_->Branch("fo_muss10",         &fo_muss10_,        "fo_muss10/O"      );
-    babyTree_->Branch("fo_mussV2_04",         &fo_mussV2_04_,        "fo_mussV2_04/O"      );
-    babyTree_->Branch("fo_mussV2_10",         &fo_mussV2_10_,        "fo_mussV2_10/O"      );
+    //////////////////////////////////////////////////////
+    // Fake Rate Numerator & Denominator Selections     //
+    //////////////////////////////////////////////////////
 
-    babyTree_->Branch("fo_wwV1_04",         &fo_wwV1_04_,        "fo_wwV1_04/O"      );
-    babyTree_->Branch("fo_wwV1_10",         &fo_wwV1_10_,        "fo_wwV1_10/O"      );
-    babyTree_->Branch("fo_wwV1_10_d0",         &fo_wwV1_10_d0_,        "fo_wwV1_10_d0/O"      );
-    babyTree_->Branch("v1",         &v1_,        "v1/O"      );
-    babyTree_->Branch("v2",         &v2_,        "v2/O"      );
-    babyTree_->Branch("v3",         &v3_,        "v3/O"      );
-    babyTree_->Branch("num",         &num_,        "num/O"      );
-    babyTree_->Branch("numv1",         &numv1_,        "numv1/O"      );
+      //////////
+      // 2011 //
+      //////////
 
-    babyTree_->Branch("v1SS",         &v1SS_,        "v1SS/O"      );
-    babyTree_->Branch("v2SS",         &v2SS_,        "v2SS/O"      );
-    babyTree_->Branch("v3SS",         &v3SS_,        "v3SS/O"      );
-    babyTree_->Branch("numSS",         &numSS_,        "numSS/O"      );
-    babyTree_->Branch("numNomSS",         &numNomSS_,        "numNomSS/O"      );
-    babyTree_->Branch("numNomSSv2",         &numNomSSv2_,        "numNomSSv2/O"      );
+      //////////
+      // 2010 //
+      //////////
 
-    babyTree_->Branch("v1SSAug9",         &v1SSAug9_,        "v1SSAug9/O"      );
-    babyTree_->Branch("v2SSAug9",         &v2SSAug9_,        "v2SSAug9/O"      );
-    babyTree_->Branch("v3SSAug9",         &v3SSAug9_,        "v3SSAug9/O"      );
-    babyTree_->Branch("numSSAug9",         &numSSAug9_,        "numSSAug9/O"      );
+      // ttbar
+      babyTree_->Branch("numOct6",         &numOct6_,        "numOct6/O"      );
+      babyTree_->Branch("v1Oct6",         &v1Oct6_,        "v1Oct6/O"      );
+      babyTree_->Branch("v2Oct6",         &v2Oct6_,        "v2Oct6/O"      );
+      babyTree_->Branch("v3Oct6",         &v3Oct6_,        "v3Oct6/O"      );
+      babyTree_->Branch("num",         &num_,        "num/O"      );
+      babyTree_->Branch("fo_04",         &fo_04_,        "fo_04/O"      );
+      babyTree_->Branch("fo_10",         &fo_10_,        "fo_10/O"      );
 
-    babyTree_->Branch("v1Aug9",         &v1Aug9_,        "v1Aug9/O"      );
-    babyTree_->Branch("v2Aug9",         &v2Aug9_,        "v2Aug9/O"      );
-    babyTree_->Branch("v3Aug9",         &v3Aug9_,        "v3Aug9/O"      );
-    babyTree_->Branch("numAug9",         &numAug9_,        "numAug9/O"      );
+      // SS
+      babyTree_->Branch("v1SSV2",         &v1SSV2_,        "v1SSV2/O"      );
+      babyTree_->Branch("v2SSV2",         &v2SSV2_,        "v2SSV2/O"      );
+      babyTree_->Branch("v3SSV2",         &v3SSV2_,        "v3SSV2/O"      );
+      babyTree_->Branch("numSSV2",         &numSSV2_,        "numSSV2/O"      );
+      babyTree_->Branch("numNomSSv2",         &numNomSSv2_,        "numNomSSv2/O"      );
+      babyTree_->Branch("fo_mussV2_04",         &fo_mussV2_04_,        "fo_mussV2_04/O"      );
+      babyTree_->Branch("fo_mussV2_10",         &fo_mussV2_10_,        "fo_mussV2_10/O"      );
 
-    babyTree_->Branch("v1Oct6",         &v1Oct6_,        "v1Oct6/O"      );
-    babyTree_->Branch("v2Oct6",         &v2Oct6_,        "v2Oct6/O"      );
-    babyTree_->Branch("v3Oct6",         &v3Oct6_,        "v3Oct6/O"      );
-    babyTree_->Branch("numOct6",         &numOct6_,        "numOct6/O"      );
-
-    babyTree_->Branch("v1SSOct18",         &v1SSOct18_,        "v1SSOct18/O"      );
-    babyTree_->Branch("v2SSOct18",         &v2SSOct18_,        "v2SSOct18/O"      );
-    babyTree_->Branch("v3SSOct18",         &v3SSOct18_,        "v3SSOct18/O"      );
-    babyTree_->Branch("numSSOct18",         &numSSOct18_,        "numSSOct18/O"      );
-
-    babyTree_->Branch("v1SSV2",         &v1SSV2_,        "v1SSV2/O"      );
-    babyTree_->Branch("v2SSV2",         &v2SSV2_,        "v2SSV2/O"      );
-    babyTree_->Branch("v3SSV2",         &v3SSV2_,        "v3SSV2/O"      );
-    babyTree_->Branch("numSSV2",         &numSSV2_,        "numSSV2/O"      );
+      // OS
+      babyTree_->Branch("num_OSGv1",         &num_OSGv1_,        "num_OSGv1/O"      );
+      babyTree_->Branch("num_OSZv1",         &num_OSZv1_,        "num_OSZv1/O"      );
+      babyTree_->Branch("numOSOct18",         &numOSOct18_,        "numOSOct18/O"      );
+      babyTree_->Branch("v1OSOct18",         &v1OSOct18_,        "v1OSOct18/O"      );
+      babyTree_->Branch("v2OSOct18",         &v2OSOct18_,        "v2OSOct18/O"      );
+      babyTree_->Branch("v3OSOct18",         &v3OSOct18_,        "v3OSOct18/O"      );
 
 
-    babyTree_->Branch("v1OSOct18",         &v1OSOct18_,        "v1OSOct18/O"      );
-    babyTree_->Branch("v2OSOct18",         &v2OSOct18_,        "v2OSOct18/O"      );
-    babyTree_->Branch("v3OSOct18",         &v3OSOct18_,        "v3OSOct18/O"      );
-    babyTree_->Branch("numOSOct18",         &numOSOct18_,        "numOSOct18/O"      );
+      // WW
+      babyTree_->Branch("num_wwV1",         &num_wwV1_,        "num_wwV1/O"      );
+      babyTree_->Branch("v1_wwV1",         &v1_wwV1_,        "v1_wwV1/O"      );
+      babyTree_->Branch("v2_wwV1",         &v2_wwV1_,        "v2_wwV1/O"      );
+      babyTree_->Branch("v3_wwV1",         &v3_wwV1_,        "v3_wwV1/O"      );
+      babyTree_->Branch("v4_wwV1",         &v4_wwV1_,        "v4_wwV1/O"      );
+      babyTree_->Branch("fo_wwV1_04",         &fo_wwV1_04_,        "fo_wwV1_04/O"      );
+      babyTree_->Branch("fo_wwV1_10",         &fo_wwV1_10_,        "fo_wwV1_10/O"      );
+      babyTree_->Branch("fo_wwV1_10_d0",         &fo_wwV1_10_d0_,        "fo_wwV1_10_d0/O"      );
 
-    babyTree_->Branch("v1_wwV1",         &v1_wwV1_,        "v1_wwV1/O"      );
-    babyTree_->Branch("v2_wwV1",         &v2_wwV1_,        "v2_wwV1/O"      );
-    babyTree_->Branch("v3_wwV1",         &v3_wwV1_,        "v3_wwV1/O"      );
-    babyTree_->Branch("v4_wwV1",         &v4_wwV1_,        "v4_wwV1/O"      );
-    babyTree_->Branch("num_wwV1",         &num_wwV1_,        "num_wwV1/O"      );
-
-    babyTree_->Branch("num_OSGv1",         &num_OSGv1_,        "num_OSGv1/O"      );
-    babyTree_->Branch("num_OSZv1",         &num_OSZv1_,        "num_OSZv1/O"      );
+    //////////////////////////////////////////////////////
+    // End Fake Rate Numerator & Denominator Selections //
+    //////////////////////////////////////////////////////
 
 
 
