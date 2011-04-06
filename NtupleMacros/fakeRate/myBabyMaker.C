@@ -225,6 +225,24 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         //////////////////////////////////////////////////////
 
         //////////
+        // 2011 //
+        //////////
+
+          // variable naming convention:  [num or vX]_[el or mu]_[analysis][version]
+
+          // SS
+          num_el_ssV3_    = pass_electronSelection( iEl, electronSelection_ssV3             );
+          v1_el_ssV3_     = pass_electronSelection( iEl, electronSelectionFOV3_ssVBTF80_v1  );
+          v2_el_ssV3_     = pass_electronSelection( iEl, electronSelectionFOV3_ssVBTF80_v2  );
+          v3_el_ssV3_     = pass_electronSelection( iEl, electronSelectionFOV3_ssVBTF80_v3  );
+
+          // WW
+          num_el_smurfV3_ = pass_electronSelection( iEl, electronSelection_smurfV3          );
+          v1_el_smurfV1_  = pass_electronSelection( iEl, electronSelectionFO_el_smurf_v1    );
+          v3_el_smurfV1_  = pass_electronSelection( iEl, electronSelectionFO_el_smurf_v3    );
+          v4_el_smurfV1_  = pass_electronSelection( iEl, electronSelectionFO_el_smurf_v4    );
+
+        //////////
         // 2010 //
         //////////
 
@@ -1094,6 +1112,18 @@ void myBabyMaker::InitBabyNtuple () {
     // 2011 //
     //////////
 
+      // SS
+      num_el_ssV3_    = false;
+      v1_el_ssV3_     = false;
+      v2_el_ssV3_     = false;
+      v3_el_ssV3_     = false;
+
+      // WW
+      num_el_smurfV3_ = false;
+      v1_el_smurfV1_  = false;
+      v3_el_smurfV1_  = false;
+      v4_el_smurfV1_  = false;
+
     //////////
     // 2010 //
     //////////
@@ -1324,7 +1354,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("run",          &run_,         "run/I"         );
     babyTree_->Branch("ls",           &ls_,          "ls/I"          );
     babyTree_->Branch("evt",          &evt_,         "evt/I"         );
-	  babyTree_->Branch("weight",       &weight_,      "weight/F"      );
+    babyTree_->Branch("weight",       &weight_,      "weight/F"      );
 
     // Pileup - PUSummaryInfoMaker
     babyTree_->Branch("pu_nPUvertices", &pu_nPUvertices_ );
@@ -1389,6 +1419,20 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
       //////////
       // 2011 //
       //////////
+
+        // SS
+        babyTree_->Branch("num_el_ssV3"   , &num_el_ssV3_    );
+        babyTree_->Branch("v1_el_ssV3"    , &v1_el_ssV3_     );
+        babyTree_->Branch("v2_el_ssV3"    , &v2_el_ssV3_     );
+        babyTree_->Branch("v3_el_ssV3"    , &v3_el_ssV3_     );
+ 
+        // OS
+ 
+        // WW
+        babyTree_->Branch("num_el_smurfV3", &num_el_smurfV3_ );
+        babyTree_->Branch("v1_el_smurfV1" , &v1_el_smurfV1_  );
+        babyTree_->Branch("v3_el_smurfV1" , &v3_el_smurfV1_  );
+        babyTree_->Branch("v4_el_smurfV1" , &v4_el_smurfV1_  );
 
       //////////
       // 2010 //

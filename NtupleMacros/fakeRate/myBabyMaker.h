@@ -114,6 +114,18 @@ class myBabyMaker {
     // 2011 //
     //////////
   
+      // SS
+      Bool_t num_el_ssV3_;
+      Bool_t v1_el_ssV3_;
+      Bool_t v2_el_ssV3_;
+      Bool_t v3_el_ssV3_;
+
+      // WW
+      Bool_t num_el_smurfV3_;
+      Bool_t v1_el_smurfV1_;
+      Bool_t v3_el_smurfV1_;
+      Bool_t v4_el_smurfV1_;
+
     //////////
     // 2010 //
     //////////
