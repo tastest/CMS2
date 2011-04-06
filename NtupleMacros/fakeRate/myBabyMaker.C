@@ -1027,6 +1027,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 // Initialize baby ntuple variables
 //------------------------------------------
 void myBabyMaker::InitBabyNtuple () {
+
   run_ = -1;
   ls_  = -1;
   evt_ = -1;
@@ -1067,8 +1068,6 @@ void myBabyMaker::InitBabyNtuple () {
   davtxs_tracksSize_.clear();
   davtxs_covMatrix_.clear();
   davtxs_position_.clear();
-
-
 
   id_  = -1;
   pt_  = -999.;
@@ -1118,8 +1117,8 @@ void myBabyMaker::InitBabyNtuple () {
     fo_mussV2_10_ = false;
 
     // OS
-    num_OSGv1_ = false;
-    num_OSZv1_ = false;
+    num_OSGv1_  = false;
+    num_OSZv1_  = false;
     numOSOct18_ = false;
     v1OSOct18_  = false;
     v2OSOct18_  = false;
@@ -1127,7 +1126,6 @@ void myBabyMaker::InitBabyNtuple () {
 
     // WW
     num_wwV1_ = false;
-
     v1_wwV1_  = false;
     v2_wwV1_  = false;
     v3_wwV1_  = false;
@@ -1141,78 +1139,135 @@ void myBabyMaker::InitBabyNtuple () {
   // End Fake Rate Numerator & Denominator Selections //
   //////////////////////////////////////////////////////
 
+   
+  
+  ///////////////////////  
+  // 2011 Triggers     //
+  ///////////////////////
 
-  //
-  ph10_ = 0;
-  ph15_ = 0;
-  ph20_ = 0;
-  el10_lw_ = 0;
-  el10_sw_ = 0;
-  el10_sw_v2_ = 0;
-  el10_lw_id_ = 0;
-  el10_sw_id_ = 0;
-  el15_lw_ = 0;
-  el15_sw_ = 0;
-  el15_lw_id_ = 0;
-  el15_sw_id_ = 0;
-  el15_sw_cid_ = 0;
-  el20_sw_ = 0;
-  el25_sw_ = 0;
-  Del10_sw_ = 0;
+    // Electrons
+    ele8_v2_                                             = 0;
+    ele8_CaloIdL_TrkIdVL_v2_                             = 0;
+    ele8_CaloIdL_CaloIsoVL_Jet40_v2_                     = 0;
+    ele8_CaloIdL_CaloIsoVL_v2_                           = 0;
+    ele17_CaloIdL_CaloIsoVL_v2_                          = 0;
+    photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_    = 0;
 
-  el17_sw_ = 0;
-  el17_sw_v2_ = 0;
-  el17_iso_ =0;
-  el17_loose_ =0;
-  el17_sw_cid_ =0;
-  el17_sw_id_ =0;
-  el17_tiso_ =0;
-  el17_tiso_v1_ =0;
+    dr_ele8_v2_                                          = 99.0; 
+    dr_ele8_CaloIdL_TrkIdVL_v2_                          = 99.0; 
+    dr_ele8_CaloIdL_CaloIsoVL_Jet40_v2_                  = 99.0; 
+    dr_ele8_CaloIdL_CaloIsoVL_v2_                        = 99.0; 
+    dr_ele17_CaloIdL_CaloIsoVL_v2_                       = 99.0;    
+    dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_ = 99.0; 
 
-  //
-  drph10_ = 99.;
-  drph15_ = 99.;
-  drph20_ = 99.;
-  drel10_lw_ = 99.;
-  drel10_sw_ = 99.;
-  drel10_sw_v2_ = 99.;
-  drel10_lw_id_ = 99.;
-  drel10_sw_id_ = 99.;
-  drel15_lw_ = 99.;
-  drel15_sw_ = 99.;
-  drel15_lw_id_ = 99.;
-  drel15_sw_id_ = 99.;
-  drel15_sw_cid_ = 99.;
-  drel20_sw_ = 99.;
-  drel25_sw_ = 99.;
-  drDel10_sw_ = 99.;
-  drel17_sw_ = 99;
-  drel17_sw_v2_ = 99;
-  drel17_iso_ =99;
-  drel17_loose_ =99;
-  drel17_sw_cid_ =99;
-  drel17_sw_id_ =99;
-  drel17_tiso_ =99;
-  drel17_tiso_v1_ =99;
+    // Muons
+    mu3_v3_          = 0;  
+    mu5_v3_          = 0;  
+    mu8_v1_          = 0;  
+    mu12_v1_         = 0;  
+    mu15_v2_         = 0;  
+    mu20_v1_         = 0;  
+    mu24_v1_         = 0;  
+    mu30_v1_         = 0;  
+    mu8_Jet40_v3_    = 0;    
+
+    dr_mu3_v3_       = 99.0;
+    dr_mu5_v3_       = 99.0;
+    dr_mu8_v1_       = 99.0;
+    dr_mu12_v1_      = 99.0; 
+    dr_mu15_v2_      = 99.0;
+    dr_mu20_v1_      = 99.0;
+    dr_mu24_v1_      = 99.0;
+    dr_mu30_v1_      = 99.0;
+    dr_mu8_Jet40_v3_ = 99.0;
+
+  ///////////////////////  
+  // End 2011 Triggers //
+  ///////////////////////
 
 
-  //
-  mu5_  = 0;
-  mu7_  = 0;
-  mu9_  = 0;
-  mu11_  = 0;
-  mu13_  = 0;
-  mu15_  = 0;
-  mu17_  = 0;
 
-  //
-  drmu5_  = 99.;
-  drmu7_  = 99.;
-  drmu9_  = 99.;
-  drmu11_  = 99.;
-  drmu13_  = 99.;
-  drmu15_  = 99.;
-  drmu17_  = 99.;
+  ///////////////////////  
+  // 2010 Triggers     //
+  ///////////////////////
+
+    // Electrons
+    ph10_           = 0;
+    ph15_           = 0;
+    ph20_           = 0;
+    el10_lw_        = 0;
+    el10_sw_        = 0;
+    el10_sw_v2_     = 0;
+    el10_lw_id_     = 0;
+    el10_sw_id_     = 0;
+    el15_lw_        = 0;
+    el15_sw_        = 0;
+    el15_lw_id_     = 0;
+    el15_sw_id_     = 0;
+    el15_sw_cid_    = 0;
+    el20_sw_        = 0;
+    el25_sw_        = 0;
+    Del10_sw_       = 0;
+    el17_sw_        = 0;
+    el17_sw_v2_     = 0;
+    el17_iso_       = 0;
+    el17_loose_     = 0;
+    el17_sw_cid_    = 0;
+    el17_sw_id_     = 0;
+    el17_tiso_      = 0;
+    el17_tiso_v1_   = 0;
+  
+    drph10_         = 99.0;
+    drph15_         = 99.0;
+    drph20_         = 99.0;
+    drel10_lw_      = 99.0;
+    drel10_sw_      = 99.0;
+    drel10_sw_v2_   = 99.0;
+    drel10_lw_id_   = 99.0;
+    drel10_sw_id_   = 99.0;
+    drel15_lw_      = 99.0;
+    drel15_sw_      = 99.0;
+    drel15_lw_id_   = 99.0;
+    drel15_sw_id_   = 99.0;
+    drel15_sw_cid_  = 99.0;
+    drel20_sw_      = 99.0;
+    drel25_sw_      = 99.0;
+    drDel10_sw_     = 99.0;
+    drel17_sw_      = 99.0;
+    drel17_sw_v2_   = 99.0;
+    drel17_iso_     = 99.0;
+    drel17_loose_   = 99.0;
+    drel17_sw_cid_  = 99.0;
+    drel17_sw_id_   = 99.0;
+    drel17_tiso_    = 99.0;
+    drel17_tiso_v1_ = 99.0;
+  
+    // Muons
+    mu5_    = 0;
+    mu7_    = 0;
+    mu9_    = 0;
+    mu11_   = 0;
+    mu13_   = 0;
+    mu15_   = 0;
+    mu17_   = 0;
+  
+    drmu5_  = 99.0;
+    drmu7_  = 99.0;
+    drmu9_  = 99.0;
+    drmu11_ = 99.0;
+    drmu13_ = 99.0;
+    drmu15_ = 99.0;
+    drmu17_ = 99.0;
+   
+  ///////////////////////  
+  // End 2010 Triggers //
+  ///////////////////////
+
+
+
+  //////////////
+  // Jets     //
+  //////////////
 
   //
   nbjet_  = 0;
@@ -1221,7 +1276,6 @@ void myBabyMaker::InitBabyNtuple () {
   nbpfcjet_  = 0;
   dRbpfcNear_ = 99.;
   dRbpfcFar_ = -99.;
-
 
   ptj1_   = 0.;
   nj1_    = 0;
@@ -1237,6 +1291,11 @@ void myBabyMaker::InitBabyNtuple () {
   ptpfcj1_b2b_ = -999.;
   dphipfcj1_b2b_ = -999.;
   btagpfc_ = false;
+
+  //////////////
+  // End Jets //
+  //////////////
+
 
   mt_ = -999;
   pfmt_ = -999;
