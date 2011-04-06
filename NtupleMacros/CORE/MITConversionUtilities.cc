@@ -10,7 +10,7 @@ bool isMITConversion(unsigned int elidx,
 		     bool matchCTF,
 		     bool requireArbitratedMerged) {
 
-  int nconvs = cms2.convs_isConverted().size();
+  unsigned int nconvs = cms2.convs_isConverted().size();
   if(nconvs == 0) 
     return false;
   bool isGoodConversion = false;
