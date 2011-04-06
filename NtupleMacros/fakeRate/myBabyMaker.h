@@ -113,6 +113,11 @@ class myBabyMaker {
     Bool_t  el_id_vbtf80_;
     Bool_t  el_id_vbtf90_;
 
+    // Conversion Rejection
+    Bool_t convHitPattern_;   // isFromConversionHitPattern(iEl)
+    Bool_t convPartnerTrack_; // isFromConversionPartnerTrack(iEl)
+    Bool_t convMIT_;          // isFromConversionMIT(iEl)
+
   //////////////////////////
   // End Lepton Variables //
   //////////////////////////
