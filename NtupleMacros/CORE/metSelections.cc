@@ -9,6 +9,7 @@
 #include "trackSelections.h"
 #include "metSelections.h"
 #include "Math/LorentzVector.h"
+#include "Math/VectorUtil.h"
 
 typedef std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
@@ -295,4 +296,38 @@ metStruct correctTCMETforHypMuons (int hyp_index, float met_x, float met_y, floa
      tcmetStruct.sumet   = sumet; 
 
      return tcmetStruct;
+}
+
+double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVector& pv){
+  return (vtx.z()-pv.z()) - ((vtx.x()-pv.x())*p4.x()+(vtx.y()-pv.y())*p4.y())/p4.pt() * p4.z()/p4.pt();
+}
+
+metStruct trackerMET( int hyp_index, double deltaZCut ){
+  if ( cms2.davtxs_sumpt().empty() ) return metStruct();
+  double pX(0), pY(0);
+  pX -= cms2.hyp_lt_p4().at(hyp_index).px();
+  pY -= cms2.hyp_lt_p4().at(hyp_index).py();
+  pX -= cms2.hyp_ll_p4().at(hyp_index).px();
+  pY -= cms2.hyp_ll_p4().at(hyp_index).py();
+
+  for (unsigned int i=0; i<cms2.pfcands_particleId().size(); ++i){
+    if ( cms2.pfcands_charge().at(i)==0 ) continue;
+    if ( fabs(ROOT::Math::VectorUtil::DeltaR(cms2.pfcands_p4().at(i),cms2.hyp_lt_p4().at(hyp_index)))<0.1 ) continue;
+    if ( fabs(ROOT::Math::VectorUtil::DeltaR(cms2.pfcands_p4().at(i),cms2.hyp_ll_p4().at(hyp_index)))<0.1 ) continue;
+    
+    unsigned int trkIndex = cms2.pfcands_trkidx().at(i);
+    
+    double dzpv = dzPV(cms2.trks_vertex_p4()[trkIndex], cms2.trks_trk_p4()[trkIndex], cms2.davtxs_position().front());
+
+    if ( fabs(dzpv) > deltaZCut) continue;
+    
+    pX -= cms2.pfcands_p4().at(i).px();
+    pY -= cms2.pfcands_p4().at(i).py();
+  }
+  metStruct met;
+  met.met     = sqrt(pX * pX + pY * pY);
+  met.metphi  = atan2(pY, pX);
+  met.metx = pX;
+  met.mety = pY;
+  return met;
 }
