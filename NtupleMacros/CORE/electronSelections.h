@@ -88,6 +88,9 @@ enum EleSelectionType {
 	 ELEID_VBTF_80_NOHOEEND,
 	 // VBTF70 electron ID no HoE in endcap
 	 ELEID_VBTF_70_NOHOEEND,
+	 // VBTF90 electron ID with HoE and dPhiIn cuts tuned to 
+	 // represent HLT requirements for CaloIdL_TrkIdVL
+	 ELEID_VBTF_90_HLT,
 	 // CIC_MEDIUM electron ID (V03)
 	 ELEID_CIC_V03_MEDIUM,
 	 //
@@ -805,6 +808,36 @@ static const cuts_t electronSelection_smurfV3  =
          electronSelection_smurfV3_id;
 //--------end of SMURF V3 cuts--------------------------------
 
+//--------SMURF FakableObject cuts--------------------------------
+static const cuts_t electronSelectionFO_el_smurf_base =
+  (1ll<<ELEETA_250) |
+  electronSelection_smurfV3_convrej;
+//---------------------------------------------------------
+// Fakeable object definition (option V3)
+// extrapolating in isolation as much as the trigger allows
+// *! USE WITH CARE !*
+//---------------------------------------------------------
+static const cuts_t electronSelectionFO_el_smurf_v3 =
+  electronSelectionFO_el_smurf_base |
+  (1ll<<ELEID_VBTF_80_NOHOEEND);
+//---------------------------------------------------------
+// Fakeable object definition (option V1)
+// extrapolating in isolation as much as the trigger allows
+// and in partial id
+// *! USE WITH CARE !*
+//---------------------------------------------------------
+static const cuts_t electronSelectionFO_el_smurf_v1 =
+  electronSelectionFO_el_smurf_base |
+  (1ll<<ELEID_VBTF_90_HLT);
+//---------------------------------------------------------
+// Fakeable object definition (option V4)
+// extrapolating in partial id and partial isolation
+//---------------------------------------------------------
+static const cuts_t electronSelectionFO_el_smurf_v4 =
+  electronSelectionFO_el_smurf_base |
+  (1ll<<ELEID_VBTF_90_HLT) |
+  (1ll<<ELEISO_REL040); 
+//--------end of SMURF FakableObject cuts------------------
 
 
 // ======================== OS ============================

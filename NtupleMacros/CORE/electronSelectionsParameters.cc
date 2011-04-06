@@ -197,6 +197,20 @@ void eidGetVBTF(const vbtf_tightness tightness, std::vector<double> &cutdeta, st
                 eidAssign(cutsee, sigmaIEtaIEtaThresholds_tmp, 2);
                 return;
             }
+        case VBTF_90_HLT:
+            {
+                double isoThresholds_tmp[2]                 = {0.1,     0.07};
+                double sigmaIEtaIEtaThresholds_tmp[2]       = {0.01,    0.03};
+                double dPhiInThresholds_tmp[2]              = {0.15,    0.10};
+                double dEtaInThresholds_tmp[2]              = {0.007,   0.009};
+                double hoeThresholds_tmp[2]                 = {0.12,    0.10};
+                eidAssign(cutreliso, isoThresholds_tmp, 2);
+                eidAssign(cutdeta, dEtaInThresholds_tmp, 2);
+                eidAssign(cutdphi, dPhiInThresholds_tmp, 2);
+                eidAssign(cuthoe, hoeThresholds_tmp, 2);
+                eidAssign(cutsee, sigmaIEtaIEtaThresholds_tmp, 2);
+                return;
+            }   
 
         default:
             std::cout << "[eidGetVBTF] ERROR! Invalid tightness level" << std::endl;
