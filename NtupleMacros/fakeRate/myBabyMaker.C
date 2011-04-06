@@ -467,6 +467,74 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
           if (dr > dRbpfcFar_)   dRbpfcFar_  = dr; 
         }
           
+ 
+        ///////////////////////  
+        // 2011 Triggers     //
+        ///////////////////////
+
+          // Electrons
+          pair<int, float> pair_ele8_v2                                           = TriggerMatch( els_p4().at(iEl), "HLT_Ele8_v2"                                         );
+          pair<int, float> pair_ele8_CaloIdL_TrkIdVL_v2                           = TriggerMatch( els_p4().at(iEl), "HLT_Ele8_CaloIdL_TrkIdVL_v2"                         );
+          pair<int, float> pair_ele8_CaloIdL_CaloIsoVL_Jet40_v2                   = TriggerMatch( els_p4().at(iEl), "HLT_Ele8_CaloIdL_CaloIsoVL_Jet40_v2"                 );
+          pair<int, float> pair_ele8_CaloIdL_CaloIsoVL_v2                         = TriggerMatch( els_p4().at(iEl), "HLT_Ele8_CaloIdL_CaloIsoVL_v2"                       );
+          pair<int, float> pair_ele17_CaloIdL_CaloIsoVL_v2                        = TriggerMatch( els_p4().at(iEl), "HLT_Ele17_CaloIdL_CaloIsoVL_v2"                      );  
+          //pair<int, float> pair_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2  = TriggerMatch( els_p4().at(iEl), "HLT_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2");
+  
+          ele8_v2_                                              = pair_ele8_v2.first;
+          ele8_CaloIdL_TrkIdVL_v2_                              = pair_ele8_CaloIdL_TrkIdVL_v2.first; 
+          ele8_CaloIdL_CaloIsoVL_Jet40_v2_                      = pair_ele8_CaloIdL_CaloIsoVL_Jet40_v2.first;
+          ele8_CaloIdL_CaloIsoVL_v2_                            = pair_ele8_CaloIdL_CaloIsoVL_v2.first;
+          ele17_CaloIdL_CaloIsoVL_v2_                           = pair_ele17_CaloIdL_CaloIsoVL_v2.first; 
+          //photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_     = pair_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2.first;
+          
+          dr_ele8_v2_                                           = pair_ele8_v2.second;
+          dr_ele8_CaloIdL_TrkIdVL_v2_                           = pair_ele8_CaloIdL_TrkIdVL_v2.second;
+          dr_ele8_CaloIdL_CaloIsoVL_Jet40_v2_                   = pair_ele8_CaloIdL_CaloIsoVL_Jet40_v2.second;
+          dr_ele8_CaloIdL_CaloIsoVL_v2_                         = pair_ele8_CaloIdL_CaloIsoVL_v2.second;
+          dr_ele17_CaloIdL_CaloIsoVL_v2_                        = pair_ele17_CaloIdL_CaloIsoVL_v2.second;
+          //dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_  = pair_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2.second; 
+
+          // Muons
+          pair<int, float> pair_mu3_v3       = TriggerMatch( els_p4().at(iEl), "HLT_Mu3_v3"       );
+          pair<int, float> pair_mu5_v3       = TriggerMatch( els_p4().at(iEl), "HLT_Mu5_v3"       );
+          pair<int, float> pair_mu8_v1       = TriggerMatch( els_p4().at(iEl), "HLT_Mu8_v1"       );
+          pair<int, float> pair_mu12_v1      = TriggerMatch( els_p4().at(iEl), "HLT_Mu12_v1"      );
+          pair<int, float> pair_mu15_v2      = TriggerMatch( els_p4().at(iEl), "HLT_Mu15_v2"      );
+          pair<int, float> pair_mu20_v1      = TriggerMatch( els_p4().at(iEl), "HLT_Mu20_v1"      );
+          pair<int, float> pair_mu24_v1      = TriggerMatch( els_p4().at(iEl), "HLT_Mu24_v1"      );
+          pair<int, float> pair_mu30_v1      = TriggerMatch( els_p4().at(iEl), "HLT_Mu30_v1"      );
+          pair<int, float> pair_mu8_Jet40_v3 = TriggerMatch( els_p4().at(iEl), "HLT_Mu8_Jet40_v3" );
+
+          mu3_v3_         = pair_mu3_v3.first;
+          mu5_v3_         = pair_mu5_v3.first;
+          mu8_v1_         = pair_mu8_v1.first;
+          mu12_v1_        = pair_mu12_v1.first;
+          mu15_v2_        = pair_mu15_v2.first;
+          mu20_v1_        = pair_mu20_v1.first;
+          mu24_v1_        = pair_mu24_v1.first;
+          mu30_v1_        = pair_mu30_v1.first;
+          mu8_Jet40_v3_   = pair_mu8_Jet40_v3.first;
+
+          dr_mu3_v3_       = pair_mu3_v3.second;                                                
+          dr_mu5_v3_       = pair_mu5_v3.second;                                                
+          dr_mu8_v1_       = pair_mu8_v1.second;                                                
+          dr_mu12_v1_      = pair_mu12_v1.second;                                               
+          dr_mu15_v2_      = pair_mu15_v2.second;                                               
+          dr_mu20_v1_      = pair_mu20_v1.second;  
+          dr_mu24_v1_      = pair_mu24_v1.second;
+          dr_mu30_v1_      = pair_mu30_v1.second;                                               
+          dr_mu8_Jet40_v3_ = pair_mu8_Jet40_v3.second;
+
+        ///////////////////////  
+        // 2011 Triggers     //
+        ///////////////////////
+
+
+
+        ///////////////////////  
+        // 2010 Triggers     //
+        ///////////////////////
+
         // Our jet trigger flags
         hlt15u_ = min(2,nHLTObjects("HLT_Jet15U")); 
         hlt30u_ = min(2,nHLTObjects("HLT_Jet30U")); 
@@ -609,6 +677,13 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         drph10_     = drph10;
         drph15_     = drph15;
         drph20_     = pair_ph20C.second;
+
+        ///////////////////////  
+        // End 2010 Triggers //
+        ///////////////////////
+
+
+
 
 
         // Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt

@@ -220,14 +220,15 @@ class myBabyMaker {
     Int_t mu30_v1_;                                               // HLT_Mu30_v1
     Int_t mu8_Jet40_v3_;                                          // HLT_Mu8_Jet40_v3
 
-    Float_t dr_mu5_v3_;                                          // HLT_Mu5_v3
-    Float_t dr_mu8_v1_;                                          // HLT_Mu8_v1
-    Float_t dr_mu12_v1_;                                         // HLT_Mu12_v1
-    Float_t dr_mu15_v2_;                                         // HLT_Mu15_v2
-    Float_t dr_mu20_v1_;                                         // HLT_Mu20_v1
-    Float_t dr_mu24_v1_;                                         // HLT_Mu24_v1
-    Float_t dr_mu30_v1_;                                         // HLT_Mu30_v1
-    Float_t dr_mu8_Jet40_v3_;                                    // HLT_Mu8_Jet40_v3
+    Float_t dr_mu3_v3_;                                           // HLT_Mu3_v3
+    Float_t dr_mu5_v3_;                                           // HLT_Mu5_v3
+    Float_t dr_mu8_v1_;                                           // HLT_Mu8_v1
+    Float_t dr_mu12_v1_;                                          // HLT_Mu12_v1
+    Float_t dr_mu15_v2_;                                          // HLT_Mu15_v2
+    Float_t dr_mu20_v1_;                                          // HLT_Mu20_v1
+    Float_t dr_mu24_v1_;                                          // HLT_Mu24_v1
+    Float_t dr_mu30_v1_;                                          // HLT_Mu30_v1
+    Float_t dr_mu8_Jet40_v3_;                                     // HLT_Mu8_Jet40_v3
 
   ///////////////////////  
   // End 2011 Triggers //
