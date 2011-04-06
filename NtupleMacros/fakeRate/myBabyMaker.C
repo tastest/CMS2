@@ -17,6 +17,7 @@
 
 #include "../CORE/muonSelections.cc"
 #include "../CORE/electronSelections.cc"
+#include "../CORE/MITConversionUtilities.cc"
 #include "../CORE/electronSelectionsParameters.cc"
 #include "../CORE/metSelections.cc"
 
