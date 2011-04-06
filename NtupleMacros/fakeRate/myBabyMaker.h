@@ -88,14 +88,6 @@ class myBabyMaker {
   // isolation
   Float_t iso_;
 
-  // did it pass the jet trigger and is this lepton unbiased
-  // 0=fail 1="pass but biased" 2="pass and unbiased"  -1="pass but cant find jet trg obj"
-  Int_t  hlt15u_; // HLT_Jet15U
-  Int_t  hlt30u_; // HLT_Jet30U
-  Int_t  hlt50u_; // HLT_Jet50U
-  Int_t  l16u_;   // HLT_L1Jet6U
-  Int_t  l110u_;   // HLT_L1Jet10U
-
   // What type of selection did it pass
   // v1xx_  v2xx_ v3xx_ are electron FO
   // fo_xx_ are muon fakeable objects
@@ -182,30 +174,100 @@ class myBabyMaker {
   Bool_t fo_wwV1_10_;  // muonSelectionFO_mu_wwV1_iso10
   Bool_t fo_wwV1_10_d0_;  // muonSelectionFO_mu_wwV1_iso10_d0
 
+
+
+  ///////////////////////  
+  // 2011 Triggers     //
+  ///////////////////////
+
+    // Triggers & HLT matching
+    // 0  = fail 
+    // 1  = "pass but no match" 
+    // 2  = "pass and matched"
+    // -1 = "pass but egamm trg obj missing"
+
+    // 2011 Trigger Documenation Rules 
+    //
+    //  1. The trigger variable name = the trigger name with:
+    //      "HLT_Ele" -> "ele"  (electrons)
+    //      "HLT_Mu"  -> "mu"   (muons)
+    //  2. Each trigger variable name should be commented with the trigger name
+    //  3. Delta R to the closest trigger object should be stored for each trigger by prepending "dr_" to the trigger variable name
+
+    // Electrons
+    Int_t ele8_v2_;                                               // HLT_Ele8_v2
+    Int_t ele8_CaloIdL_TrkIdVL_v2_;                               // HLT_Ele8_CaloIdL_TrkIdVL_v2
+    Int_t ele8_CaloIdL_CaloIsoVL_Jet40_v2_;                       // HLT_Ele8_CaloIdL_CaloIsoVL_Jet40_v2
+    Int_t ele8_CaloIdL_CaloIsoVL_v2_;                             // HLT_Ele8_CaloIdL_CaloIsoVL_v2
+    Int_t ele17_CaloIdL_CaloIsoVL_v2_;                            // HLT_Ele17_CaloIdL_CaloIsoVL_v2  
+    Int_t photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_;      // HLT_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2
+
+    Float_t dr_ele8_v2_;                                          // HLT_Ele8_v2
+    Float_t dr_ele8_CaloIdL_TrkIdVL_v2_;                          // HLT_Ele8_CaloIdL_TrkIdVL_v2
+    Float_t dr_ele8_CaloIdL_CaloIsoVL_Jet40_v2_;                  // HLT_Ele8_CaloIdL_CaloIsoVL_Jet40_v2
+    Float_t dr_ele8_CaloIdL_CaloIsoVL_v2_;                        // HLT_Ele8_CaloIdL_CaloIsoVL_v2
+    Float_t dr_ele17_CaloIdL_CaloIsoVL_v2_;                       // HLT_Ele17_CaloIdL_CaloIsoVL_v2  
+    Float_t dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_; // HLT_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2
+
+    // Muons
+    Int_t mu3_v3_;                                                // HLT_Mu3_v3
+    Int_t mu5_v3_;                                                // HLT_Mu5_v3
+    Int_t mu8_v1_;                                                // HLT_Mu8_v1
+    Int_t mu12_v1_;                                               // HLT_Mu12_v1
+    Int_t mu15_v2_;                                               // HLT_Mu15_v2
+    Int_t mu20_v1_;                                               // HLT_Mu20_v1
+    Int_t mu24_v1_;                                               // HLT_Mu24_v1
+    Int_t mu30_v1_;                                               // HLT_Mu30_v1
+    Int_t mu8_Jet40_v3_;                                          // HLT_Mu8_Jet40_v3
+
+    Float_t dr_mu5_v3_;                                          // HLT_Mu5_v3
+    Float_t dr_mu8_v1_;                                          // HLT_Mu8_v1
+    Float_t dr_mu12_v1_;                                         // HLT_Mu12_v1
+    Float_t dr_mu15_v2_;                                         // HLT_Mu15_v2
+    Float_t dr_mu20_v1_;                                         // HLT_Mu20_v1
+    Float_t dr_mu24_v1_;                                         // HLT_Mu24_v1
+    Float_t dr_mu30_v1_;                                         // HLT_Mu30_v1
+    Float_t dr_mu8_Jet40_v3_;                                    // HLT_Mu8_Jet40_v3
+
+  ///////////////////////  
+  // End 2011 Triggers //
+  ///////////////////////
+
+
+
+  ///////////////////////  
+  // 2010 Triggers     //
+  ///////////////////////
+
+  // Jet Triggers
+
+  // did it pass the jet trigger and is this lepton unbiased
+  // 0=fail 1="pass but biased" 2="pass and unbiased"  -1="pass but cant find jet trg obj"
+  Int_t  hlt15u_; // HLT_Jet15U
+  Int_t  hlt30u_; // HLT_Jet30U
+  Int_t  hlt50u_; // HLT_Jet50U
+  Int_t  l16u_;   // HLT_L1Jet6U
+  Int_t  l110u_;   // HLT_L1Jet10U
+
+  // Electron Triggers
+
   // What electron trigger did it pass and is the electron matched to a egamma trg object
   // 0=fail 1="pass but no match" 2="pass and matched" -1="pass but egamm trg obj missing"
   Int_t ph10_;    // HLT_Photon10_L1R or HLT_Photon10_Cleaned_L1R
   Int_t ph15_;    // HLT_Photon15_L1R or HLT_Photon15_Cleaned_L1R
   Int_t ph20_;    // HLT_Photon20_Cleaned_L1R
-
   Int_t el10_lw_;     // HLT_Ele10_LW_L1R
   Int_t el10_sw_;     // HLT_Ele10_SW_L1R
   Int_t el10_sw_v2_;  // HLT_Ele10_SW_L1R_v2
-
   Int_t el10_lw_id_;  // HLT_Ele10_LW_EleId_L1R
   Int_t el10_sw_id_;  // HLT_Ele10_SW_EleId_L1R
-
   Int_t el15_lw_;     // HLT_Ele15_LW_L1R
   Int_t el15_sw_;     // HLT_Ele15_SW_L1R
-
   Int_t el15_lw_id_;  // HLT_Ele15_LW_EleId_L1R
   Int_t el15_sw_id_;  // HLT_Ele15_SW_EleId_L1R
-
   Int_t el15_sw_cid_; // HLT_Ele15_SW_CaloEleId_L1R
-
   Int_t el20_sw_;     // HLT_Ele20_SW_L1R
   Int_t el25_sw_;     // HLT_Ele25_SW_L1R
-
   Int_t el17_sw_;     // HLT_Ele17_SW_L1R
   Int_t el17_sw_v2_;  // HLT_Ele17_SW_L1R_v2
   Int_t el17_iso_;    // HLT_Ele17_Isol_L1R
@@ -214,32 +276,24 @@ class myBabyMaker {
   Int_t el17_sw_id_;  // HLT_Ele17_SW_EleId_L1R
   Int_t el17_tiso_;   // HLT_Ele17_SW_TightEleIdIsol_L1R
   Int_t el17_tiso_v1_;// HLT_Ele17_SW_TightEleIdIsol_L1R_v1
-
   Int_t Del10_sw_;    // HLT_DoubleEle10_SW_L1R
 
   //  Minimm dR to the closest eg object
   Float_t drph10_;    // HLT_Photon10_L1R or HLT_Photon10_Cleaned_L1R
   Float_t drph15_;    // HLT_Photon15_L1R or HLT_Photon15_Cleaned_L1R
   Float_t drph20_;    // HLT_Photon20_Cleaned_L1R
-
   Float_t drel10_lw_;    // HLT_Ele10_LW_L1R
   Float_t drel10_sw_;    // HLT_Ele10_SW_L1R
   Float_t drel10_sw_v2_; // HLT_Ele10_SW_L1R_v2
-
   Float_t drel10_lw_id_; // HLT_Ele10_LW_EleId_L1R
   Float_t drel10_sw_id_; // HLT_Ele10_SW_EleId_L1R
-
   Float_t drel15_lw_;    // HLT_Ele15_LW_L1R
   Float_t drel15_sw_;    // HLT_Ele15_SW_L1R
-
   Float_t drel15_lw_id_; // HLT_Ele15_LW_EleId_L1R
   Float_t drel15_sw_id_; // HLT_Ele15_SW_EleId_L1R
-
   Float_t drel15_sw_cid_; // HLT_Ele15_SW_CaloEleId_L1R
-
   Float_t drel20_sw_;     // HLT_Ele20_SW_L1R
   Float_t drel25_sw_;     // HLT_Ele25_SW_L1R
-
   Float_t drel17_sw_;     // HLT_Ele17_SW_L1R
   Float_t drel17_sw_v2_;  // HLT_Ele17_SW_L1R_v2
   Float_t drel17_iso_;    // HLT_Ele17_Isol_L1R
@@ -248,28 +302,40 @@ class myBabyMaker {
   Float_t drel17_sw_id_;  // HLT_Ele17_SW_EleId_L1R
   Float_t drel17_tiso_;   // HLT_Ele17_SW_TightEleIdIsol_L1R
   Float_t drel17_tiso_v1_;// HLT_Ele17_SW_TightEleIdIsol_L1R_v1
-
   Float_t drDel10_sw_;    // HLT_DoubleEle10_SW_L1R
+
+  // Muon Triggers
 
   // What muon trigger did it pass
   // 0=fail 1="pass but no match" 2="pass and matched" -1="pass but muon trg obj missing"
-  Int_t mu17_; // HLT_Mu17_v1
-  Int_t mu15_; // HLT_Mu15_v1
-  Int_t mu13_; // HLT_Mu13_v1
-  Int_t mu11_; // HLT_Mu11
-  Int_t mu9_;  // HLT_Mu9
-  Int_t mu7_;  // HLT_Mu7
-  Int_t mu5_;  // HLT_Mu5
+  Int_t mu17_;      // HLT_Mu17_v1
+  Int_t mu15_;      // HLT_Mu15_v1
+  Int_t mu13_;      // HLT_Mu13_v1
+  Int_t mu11_;      // HLT_Mu11
+  Int_t mu9_;       // HLT_Mu9
+  Int_t mu7_;       // HLT_Mu7
+  Int_t mu5_;       // HLT_Mu5
 
   //  Minimm dR to the closest HLT mu object
-  Float_t drmu17_; // HLT_Mu17_v1
-  Float_t drmu15_; // HLT_Mu15_v1
-  Float_t drmu13_; // HLT_Mu13_v1
-  Float_t drmu11_; // HLT_Mu11
-  Float_t drmu9_;  // HLT_Mu9
-  Float_t drmu7_;  // HLT_Mu7
-  Float_t drmu5_;  // HLT_Mu5
+  Float_t drmu17_;  // HLT_Mu17_v1
+  Float_t drmu15_;  // HLT_Mu15_v1
+  Float_t drmu13_;  // HLT_Mu13_v1
+  Float_t drmu11_;  // HLT_Mu11
+  Float_t drmu9_;   // HLT_Mu9
+  Float_t drmu7_;   // HLT_Mu7
+  Float_t drmu5_;   // HLT_Mu5
   
+  ///////////////////////  
+  // End 2010 Triggers //
+  ///////////////////////
+
+
+
+
+
+
+
+
   // Btag information
   Int_t nbjet_; // number of btagged jet pt>15
   Float_t dRbNear_; // dR between lepton and closest such jet
