@@ -305,9 +305,17 @@ TCanvas* TriggerMonitor(const char *savename, TCut var, TCut sel, TCut trig, flo
 
     TCut cut_pass = sel + trig;
     cut_pass.SetName(TString(sel.GetName())+"_"+TString(trig.GetName()));
+    TCut cut_fail = sel + !trig;
+    cut_fail.SetName(TString(sel.GetName())+"_not_"+TString(trig.GetName()));
 
     h1_total    = Plot(bs, var, sel, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
     h1_pass     = Plot(bs, var, cut_pass, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
+
+    // make a failing histogram in order to get list of
+    // failing events
+    TH1F *h1_fail = Plot(bs, var, cut_fail, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
+    //
+    //
 
     TGraphAsymmErrors* gr_eff = new TGraphAsymmErrors();
     gr_eff->SetName(TString("gr_") + h1_pass->GetName());
@@ -411,7 +419,8 @@ TCanvas* DrawAll(TCut var, const char *savename, TCut sel, float intlumipb, unsi
 
     TCanvas *c1 = new TCanvas(savename);
     c1->SetTopMargin(0.08);
-    c1->cd();
+    c1->Divide(1, 2);
+    c1->cd(1);
 
     // do the background MC histograms
     for(unsigned int i = 0; i < vh_background.size(); ++i) 
@@ -450,6 +459,13 @@ TCanvas* DrawAll(TCut var, const char *savename, TCut sel, float intlumipb, unsi
 
     // draw the legend and tidy up
     leg->Draw();
+
+    c1->cd(2);
+    TH1F *h1_data_sub = (TH1F*)vh_data[0]->Clone("data_sub");
+    h1_data_sub->Add(vh_background[0], -1.0);
+    h1_data_sub->GetYaxis()->SetTitle("Data - MC");
+    h1_data_sub->Draw();
+
     c1->RedrawAxis();
     gDrawAllCount++;
     reset_babydorkidentifier();
