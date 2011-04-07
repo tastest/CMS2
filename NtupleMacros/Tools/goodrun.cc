@@ -1,4 +1,4 @@
-// $Id: goodrun.cc,v 1.10 2011/03/30 22:20:27 warren Exp $
+// $Id: goodrun.cc,v 1.9 2011/01/26 17:49:47 dlevans Exp $
 
 // CINT is allowed to see this, but nothing else:
 #include "goodrun.h"
@@ -140,7 +140,7 @@ static int load_runs (const char *fname, enum file_type type)
 	       // printf("Read a line from the good run list: %s\n", buf);
 	       unsigned int run;
 	       char *pbuf = buf;
-		   s = sscanf(pbuf, " %u%n", &run, &n);
+	       int s = sscanf(pbuf, " %u%n", &run, &n);
 	       if (s != 1) {
 		    fprintf(stderr, "Expected a run number (unsigned int)"
 			    " in the first position of line %d: %s\n", line, buf);
