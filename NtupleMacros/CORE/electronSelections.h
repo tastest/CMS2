@@ -836,7 +836,7 @@ static const cuts_t electronSelectionFO_el_smurf_v1 =
 static const cuts_t electronSelectionFO_el_smurf_v4 =
   electronSelectionFO_el_smurf_base |
   (1ll<<ELEID_VBTF_90_HLT) |
-  (1ll<<ELEISO_REL040); 
+  (1ll<<ELEISO_RELNT040); 
 //--------end of SMURF FakableObject cuts------------------
 
 
