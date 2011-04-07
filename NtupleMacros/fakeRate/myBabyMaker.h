@@ -108,8 +108,13 @@ class myBabyMaker {
   
     // isolation
     Float_t iso_;
+    Float_t nt_iso_;
+    Float_t trck_nt_iso_;
+    Float_t ecal_nt_iso_;
+    Float_t hcal_nt_iso_;
 
     // Id
+    Bool_t  el_id_smurfV3_;
     Bool_t  el_id_vbtf80_;
     Bool_t  el_id_vbtf90_;
 
@@ -502,6 +507,11 @@ void myBabyMaker::InitBabyNtuple () {
     pfmet_            = -999.;
     pfmetphi_         = -999.;
     iso_              = -999.;
+    nt_iso_           = -999.;
+    trck_nt_iso_      = -999.;
+    ecal_nt_iso_      = -999.;
+    hcal_nt_iso_      = -999.;
+    el_id_smurfV3_    = false;
     el_id_vbtf80_     = false;
     el_id_vbtf90_     = false;
     convHitPattern_   = false;
@@ -834,7 +844,14 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
       babyTree_->Branch("pfmet"           , &pfmet_   , "pfmet/F"   );
       babyTree_->Branch("pfmetphi"        , &pfmetphi_, "pfmetphi/F");
       babyTree_->Branch("iso"             , &iso_     , "iso/F"     );
+      babyTree_->Branch("nt_iso"          , &nt_iso_                );
+      babyTree_->Branch("trck_nt_iso"     , &trck_nt_iso_           );
+      babyTree_->Branch("ecal_nt_iso"     , &ecal_nt_iso_           );
+      babyTree_->Branch("hcal_nt_iso"     , &hcal_nt_iso_           );
       babyTree_->Branch("id"              , &id_      , "id/I"      );
+
+
+      babyTree_->Branch("el_id_smurfV3"   , &el_id_smurfV3_   );
       babyTree_->Branch("el_id_vbtf80"    , &el_id_vbtf80_     );
       babyTree_->Branch("el_id_vbtf90"    , &el_id_vbtf90_     );
       babyTree_->Branch("convHitPattern"  , &convHitPattern_   );

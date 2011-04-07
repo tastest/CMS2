@@ -420,18 +420,23 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         ////////////////////////////
 
           // Basic Quantities
-          pt_           = els_p4().at(iEl).pt();
-          eta_          = els_p4().at(iEl).eta();
-          phi_          = els_p4().at(iEl).phi();
-          scet_         = els_eSC()[iEl] / cosh( els_etaSC()[iEl] );
-          id_           = 11*els_charge().at(iEl);
-          tcmet_        = evt_tcmet();
-          tcmetphi_     = evt_tcmetPhi();
-          pfmet_        = evt_pfmet();
-          pfmetphi_     = evt_pfmetPhi();
-          iso_          = electronIsolation_rel(iEl, true);
-          el_id_vbtf80_ = electronId_VBTF(iEl, VBTF_35X_80, false, false);
-          el_id_vbtf90_ = electronId_VBTF(iEl, VBTF_35X_90, false, false);
+          pt_             = els_p4().at(iEl).pt();
+          eta_            = els_p4().at(iEl).eta();
+          phi_            = els_p4().at(iEl).phi();
+          scet_           = els_eSC()[iEl] / cosh( els_etaSC()[iEl] );
+          id_             = 11*els_charge().at(iEl);
+          tcmet_          = evt_tcmet();
+          tcmetphi_       = evt_tcmetPhi();
+          pfmet_          = evt_pfmet();
+          pfmetphi_       = evt_pfmetPhi();
+          iso_            = electronIsolation_rel(iEl, true);
+          nt_iso_         = electronIsolation_rel_v1(iEl, true);
+          trck_nt_iso_    = electronIsolation_rel_v1(iEl, false);
+          ecal_nt_iso_    = electronIsolation_ECAL_rel_v1(iEl);
+          hcal_nt_iso_    = electronIsolation_HCAL_rel_v1(iEl);
+          el_id_smurfV3_  = pass_electronSelection( iEl, electronSelection_smurfV3_id );
+          el_id_vbtf80_   = electronId_VBTF(iEl, VBTF_35X_80, false, false);
+          el_id_vbtf90_   = electronId_VBTF(iEl, VBTF_35X_90, false, false);
           if (! isData) {
               mcid_       = els_mc_id().at(iEl);
               mcmotherid_ = els_mc_motherid().at(iEl);
