@@ -234,6 +234,39 @@ bool electronId_smurf_v1(const unsigned int index)
   return false;
 }
 
+bool electronId_smurf_v2(const unsigned int index)	 
+ {	 
+ 	 
+   if (cms2.els_p4()[index].pt() > 20.0) return true;	 
+ 	 
+   if (cms2.els_fbrem()[index] > 0.15) return true;	 
+ 	 
+   if (fabs(cms2.els_etaSC()[index]) < 1.) {	 
+     if (cms2.els_eOverPIn()[index] > 0.95) return true;	 
+   }	 
+ 	 
+   return false;	 
+ }	 
+ 	 
+ bool electronId_smurf_v3(const unsigned int index)	 
+ {	 
+ 	 
+   if (cms2.els_p4()[index].pt() > 20.0) return true;	 
+ 	 
+   electronIdComponent_t answer_vbtf = 0;	 
+   answer_vbtf = electronId_VBTF(index, VBTF_70_NOHOEEND, false, false);	 
+   if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) {	 
+ 	 
+     if (cms2.els_fbrem()[index] > 0.15) return true;	 
+ 	 
+     if (fabs(cms2.els_etaSC()[index]) < 1.) {	 
+       if (cms2.els_eOverPIn()[index] > 0.95) return true;	 
+     }	 
+ 	 
+   }	 
+ 	 
+   return false;	 
+ }
 //
 // class based id that is new/experimental
 //
