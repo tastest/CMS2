@@ -171,7 +171,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
       if(isData){
         // Good  Runs
         //if(!goodrun( evt_run(), evt_lumiBlock() )) continue;
-        if(!goodrun_json( evt_run(), evt_lumiBlock() )) continue;
+        //if(!goodrun_json( evt_run(), evt_lumiBlock() )) continue;
 
         // check for duplicated
         DorkyEventIdentifier id = { evt_run(),evt_event(), evt_lumiBlock() };
@@ -233,8 +233,6 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         // Initialize baby ntuple
         InitBabyNtuple();
 
-
-
         //////////////////////////////////////////////////////
         // Fake Rate Numerator & Denominator Selections     //
         //////////////////////////////////////////////////////
@@ -286,6 +284,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
           v3_wwV1_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV1_v3);
           v4_wwV1_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV1_v4);
 
+          /*
           // loosest denominator - used for Z veto
           bool loosest = 
             v1Oct6_        | v2Oct6_     | v3Oct6_        |                   // ttbar
@@ -294,6 +293,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
             v1OSOct18_     | v2OSOct18_  | v3OSOct18_     |                   // OS
             v1_wwV1_       | v2_wwV1_    | v3_wwV1_       | v4_wwV1_        | // WW 2010
             v1_el_smurfV1_ |               v3_el_smurfV1_ | v4_el_smurfV1_  ; // WW 2011
+          */
 
 
         ////////////////////////////////////////////////////////////
@@ -368,42 +368,46 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
           evt_   = evt_event();
           weight_ = isData ? 1. : evt_scale1fb();
   
-          // Pileup - PUSummaryInfoMaker
-          pu_nPUvertices_ = puInfo_nPUvertices();
-          pu_zpositions_  = puInfo_zpositions();
-          pu_sumptlowpt_  = puInfo_sumpt_lowpt();
-          pu_sumpthighpt_ = puInfo_sump_highpt();
-          pu_instLumi_    = puInfo_instLumi();
-          pu_ntrkslowpt_  = puInfo_ntrks_lowpt();
-          pu_ntrkshighpt_ = puInfo_ntrks_highpt();
+          if(!isData){
+            // Pileup - PUSummaryInfoMaker
+            pu_nPUvertices_ = puInfo_nPUvertices();
+            pu_zpositions_  = puInfo_zpositions();
+            pu_sumptlowpt_  = puInfo_sumpt_lowpt();
+            pu_sumpthighpt_ = puInfo_sump_highpt();
+            pu_instLumi_    = puInfo_instLumi();
+            pu_ntrkslowpt_  = puInfo_ntrks_lowpt();
+            pu_ntrkshighpt_ = puInfo_ntrks_highpt();
+          } else {
   
-          // Pileup - VertexMaker
-          evt_nvtxs_       = evt_nvtxs();
-          vtxs_xError_     = vtxs_xError();
-          vtxs_yError_     = vtxs_yError();
-          vtxs_zError_     = vtxs_zError();
-          vtxs_chi2_       = vtxs_chi2();
-          vtxs_ndof_       = vtxs_ndof();
-          vtxs_sumpt_      = vtxs_sumpt();
-          vtxs_isFake_     = vtxs_isFake();
-          vtxs_isValid_    = vtxs_isValid();
-          vtxs_tracksSize_ = vtxs_tracksSize();
-          vtxs_covMatrix_  = vtxs_covMatrix();
-          vtxs_position_   = vtxs_position();
-  
-          // Pileup - VertexMaker
-          evt_ndavtxs_       = evt_ndavtxs();
-          davtxs_xError_     = davtxs_xError();
-          davtxs_yError_     = davtxs_yError();
-          davtxs_zError_     = davtxs_zError();
-          davtxs_chi2_       = davtxs_chi2();
-          davtxs_ndof_       = davtxs_ndof();
-          davtxs_sumpt_      = davtxs_sumpt();
-          davtxs_isFake_     = davtxs_isFake();
-          davtxs_isValid_    = davtxs_isValid();
-          davtxs_tracksSize_ = davtxs_tracksSize();
-          davtxs_covMatrix_  = davtxs_covMatrix();
-          davtxs_position_   = davtxs_position();
+            // Pileup - VertexMaker
+            evt_nvtxs_       = evt_nvtxs();
+            vtxs_xError_     = vtxs_xError();
+            vtxs_yError_     = vtxs_yError();
+            vtxs_zError_     = vtxs_zError();
+            vtxs_chi2_       = vtxs_chi2();
+            vtxs_ndof_       = vtxs_ndof();
+            vtxs_sumpt_      = vtxs_sumpt();
+            vtxs_isFake_     = vtxs_isFake();
+            vtxs_isValid_    = vtxs_isValid();
+            vtxs_tracksSize_ = vtxs_tracksSize();
+            vtxs_covMatrix_  = vtxs_covMatrix();
+            vtxs_position_   = vtxs_position();
+    
+            // Pileup - VertexMaker
+            evt_ndavtxs_       = evt_ndavtxs();
+            davtxs_xError_     = davtxs_xError();
+            davtxs_yError_     = davtxs_yError();
+            davtxs_zError_     = davtxs_zError();
+            davtxs_chi2_       = davtxs_chi2();
+            davtxs_ndof_       = davtxs_ndof();
+            davtxs_sumpt_      = davtxs_sumpt();
+            davtxs_isFake_     = davtxs_isFake();
+            davtxs_isValid_    = davtxs_isValid();
+            davtxs_tracksSize_ = davtxs_tracksSize();
+            davtxs_covMatrix_  = davtxs_covMatrix();
+            davtxs_position_   = davtxs_position();
+
+        }
 
         /////////////////////////// 
         // End Event Information //
@@ -848,42 +852,45 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
           evt_   = evt_event();
           weight_ = isData ? 1. : evt_scale1fb();
 
-          // Pileup - PUSummaryInfoMaker
-          pu_nPUvertices_ = puInfo_nPUvertices();
-          pu_zpositions_  = puInfo_zpositions();
-          pu_sumptlowpt_  = puInfo_sumpt_lowpt();
-          pu_sumpthighpt_ = puInfo_sump_highpt();
-          pu_instLumi_    = puInfo_instLumi();
-          pu_ntrkslowpt_  = puInfo_ntrks_lowpt();
-          pu_ntrkshighpt_ = puInfo_ntrks_highpt();
-
-          // Pileup - VertexMaker
-          evt_nvtxs_       = evt_nvtxs();
-          vtxs_xError_     = vtxs_xError();
-          vtxs_yError_     = vtxs_yError();
-          vtxs_zError_     = vtxs_zError();
-          vtxs_chi2_       = vtxs_chi2();
-          vtxs_ndof_       = vtxs_ndof();
-          vtxs_sumpt_      = vtxs_sumpt();
-          vtxs_isFake_     = vtxs_isFake();
-          vtxs_isValid_    = vtxs_isValid();
-          vtxs_tracksSize_ = vtxs_tracksSize();
-          vtxs_covMatrix_  = vtxs_covMatrix();
-          vtxs_position_   = vtxs_position();
-
-          // Pileup - VertexMaker
-          evt_ndavtxs_       = evt_ndavtxs();
-          davtxs_xError_     = davtxs_xError();
-          davtxs_yError_     = davtxs_yError();
-          davtxs_zError_     = davtxs_zError();
-          davtxs_chi2_       = davtxs_chi2();
-          davtxs_ndof_       = davtxs_ndof();
-          davtxs_sumpt_      = davtxs_sumpt();
-          davtxs_isFake_     = davtxs_isFake();
-          davtxs_isValid_    = davtxs_isValid();
-          davtxs_tracksSize_ = davtxs_tracksSize();
-          davtxs_covMatrix_  = davtxs_covMatrix();
-          davtxs_position_   = davtxs_position();
+          if(!isData){
+            // Pileup - PUSummaryInfoMaker
+            pu_nPUvertices_ = puInfo_nPUvertices();
+            pu_zpositions_  = puInfo_zpositions();
+            pu_sumptlowpt_  = puInfo_sumpt_lowpt();
+            pu_sumpthighpt_ = puInfo_sump_highpt();
+            pu_instLumi_    = puInfo_instLumi();
+            pu_ntrkslowpt_  = puInfo_ntrks_lowpt();
+            pu_ntrkshighpt_ = puInfo_ntrks_highpt();
+          } 
+          else {
+            // Pileup - VertexMaker
+            evt_nvtxs_       = evt_nvtxs();
+            vtxs_xError_     = vtxs_xError();
+            vtxs_yError_     = vtxs_yError();
+            vtxs_zError_     = vtxs_zError();
+            vtxs_chi2_       = vtxs_chi2();
+            vtxs_ndof_       = vtxs_ndof();
+            vtxs_sumpt_      = vtxs_sumpt();
+            vtxs_isFake_     = vtxs_isFake();
+            vtxs_isValid_    = vtxs_isValid();
+            vtxs_tracksSize_ = vtxs_tracksSize();
+            vtxs_covMatrix_  = vtxs_covMatrix();
+            vtxs_position_   = vtxs_position();
+  
+            // Pileup - VertexMaker
+            evt_ndavtxs_       = evt_ndavtxs();
+            davtxs_xError_     = davtxs_xError();
+            davtxs_yError_     = davtxs_yError();
+            davtxs_zError_     = davtxs_zError();
+            davtxs_chi2_       = davtxs_chi2();
+            davtxs_ndof_       = davtxs_ndof();
+            davtxs_sumpt_      = davtxs_sumpt();
+            davtxs_isFake_     = davtxs_isFake();
+            davtxs_isValid_    = davtxs_isValid();
+            davtxs_tracksSize_ = davtxs_tracksSize();
+            davtxs_covMatrix_  = davtxs_covMatrix();
+            davtxs_position_   = davtxs_position();
+          }
 
         /////////////////////////// 
         // End Event Information //
