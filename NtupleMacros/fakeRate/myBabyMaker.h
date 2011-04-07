@@ -928,7 +928,40 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     // End Fake Rate Numerator & Denominator Selections //
     //////////////////////////////////////////////////////
 
-    
+      // Electrons
+      babyTree_->Branch("ele8_v2_"                                            , &ele8_v2_                                             );
+      babyTree_->Branch("ele8_CaloIdL_TrkIdVL_v2_"                            , &ele8_CaloIdL_TrkIdVL_v2_                             );
+      babyTree_->Branch("ele8_CaloIdL_CaloIsoVL_Jet40_v2_"                    , &ele8_CaloIdL_CaloIsoVL_Jet40_v2_                     );
+      babyTree_->Branch("ele8_CaloIdL_CaloIsoVL_v2_"                          , &ele8_CaloIdL_CaloIsoVL_v2__                          );
+      babyTree_->Branch("ele17_CaloIdL_CaloIsoVL_v2_"                         , &ele17_CaloIdL_CaloIsoVL_v2__                         );
+      babyTree_->Branch("photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_"   , &photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_    );
+
+      babyTree_->Branch("dr_ele8_v2_"                                         , &dr_ele8_v2_                                          );
+      babyTree_->Branch("dr_ele8_CaloIdL_TrkIdVL_v2_"                         , &dr_ele8_CaloIdL_TrkIdVL_v2_                          );
+      babyTree_->Branch("dr_ele8_CaloIdL_CaloIsoVL_Jet40_v2_"                 , &dr_ele8_CaloIdL_CaloIsoVL_Jet40_v2_                  );
+      babyTree_->Branch("dr_ele8_CaloIdL_CaloIsoVL_v2_"                       , &dr_ele8_CaloIdL_CaloIsoVL_v2_                        );
+      babyTree_->Branch("dr_ele17_CaloIdL_CaloIsoVL_v2_"                      , &dr_ele17_CaloIdL_CaloIsoVL_v2_                       );
+      babyTree_->Branch("dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_", &dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_ );
+
+      babyTree_->Branch("mu3_v3"          , &mu3_v3_          );
+      babyTree_->Branch("mu5_v3"          , &mu5_v3_          );
+      babyTree_->Branch("mu8_v1"          , &mu8_v1_          );
+      babyTree_->Branch("mu12_v1"         , &mu12_v1_         );
+      babyTree_->Branch("mu15_v2"         , &mu15_v2_         );
+      babyTree_->Branch("mu20_v1"         , &mu20_v1_         );
+      babyTree_->Branch("mu24_v1"         , &mu24_v1_         );
+      babyTree_->Branch("mu30_v1"         , &mu30_v1_         );
+      babyTree_->Branch("mu8_Jet40_v3"    , &mu8_Jet40_v3_    );
+
+      babyTree_->Branch("dr_mu3_v3"       , &dr_mu3_v3_       );
+      babyTree_->Branch("dr_mu5_v3"       , &dr_mu5_v3_       );
+      babyTree_->Branch("dr_mu8_v1"       , &dr_mu8_v1_       );
+      babyTree_->Branch("dr_mu12_v1"      , &dr_mu12_v1_      );
+      babyTree_->Branch("dr_mu15_v2"      , &dr_mu15_v2_      );
+      babyTree_->Branch("dr_mu20_v1"      , &dr_mu20_v1_      );
+      babyTree_->Branch("dr_mu24_v1"      , &dr_mu24_v1_      );
+      babyTree_->Branch("dr_mu30_v1"      , &dr_mu30_v1_      );
+      babyTree_->Branch("dr_mu8_Jet40_v3" , &dr_mu8_Jet40_v3_ );
   
     ///////////////////////  
     // End 2010 Triggers //
