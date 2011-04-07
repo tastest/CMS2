@@ -942,29 +942,35 @@ static const cuts_t electronSelection_ssV2noTripleChargeReq_NoIso =
 // 2011 SS Selections              //
 /////////////////////////////////////
 
+//baseline SS FO selections
+static const cuts_t electronSelectionFO_SS_baseline =
+           (1ll<<ELEETA_250) |
+           (1ll<<ELENOMUON_010);
+
 // Analysis Selection (fake rate numerator)
 static const cuts_t electronSelection_ssV3 = 
            electronSelection_smurfV3_baseline |
            electronSelection_smurfV3_convrej  |
            electronSelection_smurfV3_id       |
            (1ll<<ELEISO_RELNT015)             |
-           (1ll<<ELECHARGE_NOTFLIP3AGREE);               
+           (1ll<<ELECHARGE_NOTFLIP3AGREE)     |
+           (1ll<<ELENOMUON_010);
 
 // Loose "Fakeable Object" Selection (fake rate denominators)
 
 static const cuts_t electronSelectionFOV3_ssVBTF80_v1 =       // V1 - relaxed Id & Isolation (same story here for the relIso cut)
-                 electronSelectionFO_baseline       |
+                 electronSelectionFO_SS_baseline    |
                  electronSelection_smurfV3_convrej  |                
                  (1ll<<ELECHARGE_NOTFLIP3AGREE);
 
 static const cuts_t electronSelectionFOV3_ssVBTF80_v2 =       // V2 - relaxed Id
-                 electronSelectionFO_baseline       |
+                 electronSelectionFO_SS_baseline    |
                  electronSelection_smurfV3_convrej  |                
                  (1ll<<ELECHARGE_NOTFLIP3AGREE)     |
                  (1ll<<ELEISO_RELNT015);
 
 static const cuts_t electronSelectionFOV3_ssVBTF80_v3 =       // V3 - relaxed isolation (relaxed all the way; we store the relIso and can cut on it separately in the babies or elsewhere)
-                 electronSelectionFO_baseline       |
+                 electronSelectionFO_SS_baseline    |
                  electronSelection_smurfV3_convrej  |
                  electronSelection_smurfV3_id       |              
                  (1ll<<ELECHARGE_NOTFLIP3AGREE);
