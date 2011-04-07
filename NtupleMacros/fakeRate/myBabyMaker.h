@@ -118,6 +118,14 @@ class myBabyMaker {
     Bool_t convPartnerTrack_; // isFromConversionPartnerTrack(iEl)
     Bool_t convMIT_;          // isFromConversionMIT(iEl)
 
+    // HT
+    float ht_calo_;          
+    float ht_calo_L2L3_;     
+    float ht_jpt_L2L3_;      
+    float ht_pf_;            
+    float ht_pf_L2L3_;       
+    float ht_pf_L1FastL2L3_;  
+
   //////////////////////////
   // End Lepton Variables //
   //////////////////////////
@@ -369,21 +377,36 @@ class myBabyMaker {
     Float_t dRbpfcFar_; // dR between lepton and farthest such jet
   
     // Information to do offline jet trigger selection
-    Float_t ptj1_;        // highest pt jet well separated from the lepton
-    Float_t ptj1_b2b_;    // highest pt jet away frmo lepton by dR >= 1.0 and dPhi > 2.5
-    Float_t dphij1_b2b_;  // dphi between lepton and jet for jets away from lepton by dR >= 1.0
-    Int_t   nj1_;         // number of jets above 10 GeV and away from lepton by dR >= 1.0
+    Float_t ptj1_;          // highest pt jet well separated from the lepton
+    Float_t ptj1_b2b_;      // highest pt jet away frmo lepton by dR >= 1.0 and dPhi > 2.5
+    Float_t dphij1_b2b_;    // dphi between lepton and jet for jets away from lepton by dR >= 1.0
+    Int_t   nj1_;           // number of jets above 10 GeV and away from lepton by dR >= 1.0
     Float_t ptpfj1_;        // highest pt pfjet well separated from the lepton
     Float_t ptpfj1_b2b_;    // highest pt pfjet away frmo lepton by dR >= 1.0 and dPhi > 2.5
     Float_t dphipfj1_b2b_;  // dphi between lepton and pfjet for pfjets away from lepton by dR >= 1.0
     Int_t   npfj1_;         // number of pfjets above 10 GeV and away from lepton by dR >= 1.0
   
     // Same for PF Corrected jets
-    Float_t ptpfcj1_; // highest pt jet well separated from the lepton
-    Float_t ptpfcj1_b2b_;    // highest pt jet away frmo lepton by dR >= 1.0 and dPhi > 2.5
-    Float_t dphipfcj1_b2b_;  // dphi between lepton and jet for jets away from lepton by dR >= 1.0
-    Int_t   npfcj1_;         // number of jets above 10 GeV and away from lepton by dR >= 1.0
+    Float_t ptpfcj1_;       // highest pt jet well separated from the lepton
+    Float_t ptpfcj1_b2b_;   // highest pt jet away frmo lepton by dR >= 1.0 and dPhi > 2.5
+    Float_t dphipfcj1_b2b_; // dphi between lepton and jet for jets away from lepton by dR >= 1.0
+    Int_t   npfcj1_;        // number of jets above 10 GeV and away from lepton by dR >= 1.0
     Bool_t  btagpfc_; 
+
+    // Same for PF Corrected jets
+    Float_t ptpfcL1Fj1_;       // highest pt jet well separated from the lepton
+    Float_t ptpfcL1Fj1_b2b_;   // highest pt jet away frmo lepton by dR >= 1.0 and dPhi > 2.5
+    Float_t dphipfcL1Fj1_b2b_; // dphi between lepton and jet for jets away from lepton by dR >= 1.0
+    Int_t   npfcL1Fj1_;        // number of jets above 10 GeV and away from lepton by dR >= 1.0
+    Bool_t  btagpfcL1F_;
+
+
+    // Same for PF Corrected jets
+    Float_t ptjptcj1_;       // highest pt jet well separated from the lepton
+    Float_t ptjptcj1_b2b_;   // highest pt jet away frmo lepton by dR >= 1.0 and dPhi > 2.5
+    Float_t dphijptcj1_b2b_; // dphi between lepton and jet for jets away from lepton by dR >= 1.0
+    Int_t   njptcj1_;        // number of jets above 10 GeV and away from lepton by dR >= 1.0
+    Bool_t  btagjptc_; 
 
   //////////////
   // End Jets //
@@ -400,7 +423,6 @@ class myBabyMaker {
 
  // Missing hit info
   Int_t els_exp_innerlayers_;
-  Int_t els_exp_innerlayers39X_;
 
   //Some MC informatio added 16 Sep 2010
   Int_t mcid_;        // els_mc_id or mus_mc_id
@@ -492,7 +514,14 @@ void myBabyMaker::InitBabyNtuple () {
     els_exp_innerlayers_  = 999;
     mcid_                 = 0;
     mcmotherid_           = 0;
-
+      
+    // HT
+    ht_calo_          = -999;           
+    ht_calo_L2L3_     = -999;      
+    ht_jpt_L2L3_      = -999;       
+    ht_pf_            = -999;            
+    ht_pf_L2L3_       = -999;        
+    ht_pf_L1FastL2L3_ = -999;  
 
   //////////////////////////// 
   // End Lepton Information //
@@ -816,11 +845,16 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
       babyTree_->Branch("pfmt",          &pfmt_,         "pfmt/F"         );
       babyTree_->Branch("q3",          &q3_,         "q3/O"         );
       babyTree_->Branch("els_exp_innerlayers", &els_exp_innerlayers_, "els_exp_innerlayers/I" );
-      //babyTree_->Branch("els_exp_innerlayers39X", &els_exp_innerlayers39X_, "els_exp_innerlayers39X/I" );
       babyTree_->Branch("mcid",       &mcid_,       "mcid/I"      );
       babyTree_->Branch("mcmotherid", &mcmotherid_, "mcmotherid/I"      );
 
-
+      // HT
+      babyTree_->Branch("ht_calo"         , &ht_calo_          );
+      babyTree_->Branch("ht_calo_L2L3"    , &ht_calo_L2L3_     );
+      babyTree_->Branch("ht_jpt_L2L3"     , &ht_jpt_L2L3_      );
+      babyTree_->Branch("ht_pf"           , &ht_pf_            );
+      babyTree_->Branch("ht_pf_L2L3"      , &ht_pf_L2L3_       );
+      babyTree_->Branch("ht_pf_L1FastL2L3", &ht_pf_L1FastL2L3_ );
 
     //////////////////////////// 
     // End Lepton Information //
