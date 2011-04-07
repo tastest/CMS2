@@ -932,8 +932,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
       babyTree_->Branch("ele8_v2_"                                            , &ele8_v2_                                             );
       babyTree_->Branch("ele8_CaloIdL_TrkIdVL_v2_"                            , &ele8_CaloIdL_TrkIdVL_v2_                             );
       babyTree_->Branch("ele8_CaloIdL_CaloIsoVL_Jet40_v2_"                    , &ele8_CaloIdL_CaloIsoVL_Jet40_v2_                     );
-      babyTree_->Branch("ele8_CaloIdL_CaloIsoVL_v2_"                          , &ele8_CaloIdL_CaloIsoVL_v2__                          );
-      babyTree_->Branch("ele17_CaloIdL_CaloIsoVL_v2_"                         , &ele17_CaloIdL_CaloIsoVL_v2__                         );
+      babyTree_->Branch("ele8_CaloIdL_CaloIsoVL_v2_"                          , &ele8_CaloIdL_CaloIsoVL_v2_                           );
+      babyTree_->Branch("ele17_CaloIdL_CaloIsoVL_v2_"                         , &ele17_CaloIdL_CaloIsoVL_v2_                          );
       babyTree_->Branch("photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_"   , &photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_    );
 
       babyTree_->Branch("dr_ele8_v2_"                                         , &dr_ele8_v2_                                          );
