@@ -31,6 +31,7 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
 
     // relative isolation non truncated
     if( electronIsolation_rel_v1(index, true ) < 0.10) cuts_passed |= (1ll<<ELEISO_RELNT010);       // Relative Isolation
+    if( electronIsolation_rel_v1(index, true ) < 0.15) cuts_passed |= (1ll<<ELEISO_RELNT015);       //
     if( electronIsolation_rel_v1(index, true ) < 0.40) cuts_passed |= (1ll<<ELEISO_RELNT040);       //
     if( electronIsolation_rel_v1(index, false) < 0.20) cuts_passed |= (1ll<<ELEISO_TRK_RELNT020);   // Tracker Relative Isolation
     if( electronIsolation_ECAL_rel_v1(index)   < 0.20) cuts_passed |= (1ll<<ELEISO_ECAL_RELNT020);  // ECAL    Relative Isolation
@@ -112,8 +113,8 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if (!isFromConversionPartnerTrack(index)) cuts_passed |= (1ll<<ELENOTCONV_DISTDCOT002);
     if (!isFromConversionHitPattern(index)) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN);
     if (cms2.els_exp_innerlayers().at(index) == 0) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN_0MHITS);
-    //if (cms2.els_exp_innerlayers39X().at(index) == 0 ) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN39X_0MHITS);
     if(!isFromConversionMIT(index)) cuts_passed |= (1ll<<ELENOTCONV_MIT);
+
     //
     // fiduciality/other cuts
     //
@@ -232,41 +233,6 @@ bool electronId_smurf_v1(const unsigned int index)
 
   return false;
 }
-
-bool electronId_smurf_v2(const unsigned int index)
-{
-
-  if (cms2.els_p4()[index].pt() > 20.0) return true;
-
-  if (cms2.els_fbrem()[index] > 0.15) return true;
-  
-  if (fabs(cms2.els_etaSC()[index]) < 1.) {
-    if (cms2.els_eOverPIn()[index] > 0.95) return true; 
-  }
-
-  return false;
-}
-
-bool electronId_smurf_v3(const unsigned int index)
-{
-
-  if (cms2.els_p4()[index].pt() > 20.0) return true;
-
-  electronIdComponent_t answer_vbtf = 0;
-  answer_vbtf = electronId_VBTF(index, VBTF_70_NOHOEEND, false, false);
-  if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) {
-
-    if (cms2.els_fbrem()[index] > 0.15) return true;
-
-    if (fabs(cms2.els_etaSC()[index]) < 1.) {
-      if (cms2.els_eOverPIn()[index] > 0.95) return true; 
-    }
-
-  }
-
-  return false;
-}
-
 
 //
 // class based id that is new/experimental

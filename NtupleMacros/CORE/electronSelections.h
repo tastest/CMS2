@@ -42,11 +42,12 @@ enum EleSelectionType {
 	 // non-truncated relative iso with cut [0.05,0.07,0.10] for pT [10,15,20]
 	 ELEISO_SMURFV1,
 
-   ELEISO_RELNT010,       // non-truncated relative iso < 0.10, 0.3 cone size for all, 1 GeV pedestal sub in EB
-   ELEISO_RELNT040,       // non-truncated relative iso < 0.40, 0.3 cone size for all, 1 GeV pedestal sub in EB
-   ELEISO_TRK_RELNT020,   // non-truncated relative Tracker iso < 0.20, 0.3 cone size for all
-   ELEISO_ECAL_RELNT020,  // non-truncated relative ECAL    iso < 0.20, 0.3 cone size for all, 1 GeV pedestal sub in EB
-   ELEISO_HCAL_RELNT020,  // non-truncated relative HCAL    iso < 0.20, 0.3 cone size for all
+     ELEISO_RELNT010,       // non-truncated relative iso < 0.10, 0.3 cone size for all, 1 GeV pedestal sub in EB
+     ELEISO_RELNT015,       // non-truncated relative iso < 0.15, 0.3 cone size for all, 1 GeV pedestal sub in EB
+     ELEISO_RELNT040,       // non-truncated relative iso < 0.40, 0.3 cone size for all, 1 GeV pedestal sub in EB
+     ELEISO_TRK_RELNT020,   // non-truncated relative Tracker iso < 0.20, 0.3 cone size for all
+     ELEISO_ECAL_RELNT020,  // non-truncated relative ECAL    iso < 0.20, 0.3 cone size for all, 1 GeV pedestal sub in EB
+     ELEISO_HCAL_RELNT020,  // non-truncated relative HCAL    iso < 0.20, 0.3 cone size for all
 
 	 //
 	 // ip cuts
@@ -943,53 +944,30 @@ static const cuts_t electronSelection_ssV2noTripleChargeReq_NoIso =
 
 // Analysis Selection (fake rate numerator)
 static const cuts_t electronSelection_ssV3 = 
-  electronSelection_smurfV3      | 
-  (1ll<<ELECHARGE_NOTFLIP3AGREE) |
-  (1ll<<ELEISO_TRK_RELNT020)     |
-  (1ll<<ELEISO_ECAL_RELNT020)    |
-  (1ll<<ELEISO_HCAL_RELNT020);               
+           electronSelection_smurfV3_baseline |
+           electronSelection_smurfV3_convrej  |
+           electronSelection_smurfV3_id       |
+           (1ll<<ELEISO_RELNT015)             |
+           (1ll<<ELECHARGE_NOTFLIP3AGREE);               
 
 // Loose "Fakeable Object" Selection (fake rate denominators)
 
-static const cuts_t electronSelectionFOV3_ssVBTF80_v1 =       // V1 - relaxed Id & Isolation
-  electronSelectionFO_baseline        |
-  (1ll<<ELEPT_010)                    |
-  (1ll<<ELESCET_010)                  |
-  (1ll<<ELEETA_240)                   |
-  (1ll<<ELENOTCONV_HITPATTERN)        |
-  (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
-  (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
-  //(1ll<<ELEISO_TRK_RELNT020)          |
-  (1ll<<ELEISO_ECAL_RELNT020)         |
-  (1ll<<ELEISO_HCAL_RELNT020)         |
-  (1ll<<ELEISO_RELNT040);
+static const cuts_t electronSelectionFOV3_ssVBTF80_v1 =       // V1 - relaxed Id & Isolation (same story here for the relIso cut)
+                 electronSelectionFO_baseline       |
+                 electronSelection_smurfV3_convrej  |                
+                 (1ll<<ELECHARGE_NOTFLIP3AGREE);
 
 static const cuts_t electronSelectionFOV3_ssVBTF80_v2 =       // V2 - relaxed Id
-  electronSelectionFO_baseline        |
-  (1ll<<ELEPT_010)                    |
-  (1ll<<ELESCET_010)                  |
-  (1ll<<ELEETA_240)                   |
-  (1ll<<ELENOTCONV_HITPATTERN)        |
-  (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
-  (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
-  //(1ll<<ELEISO_TRK_RELNT020)          |
-  (1ll<<ELEISO_ECAL_RELNT020)         |
-  (1ll<<ELEISO_HCAL_RELNT020)         |
-  (1ll<<ELEISO_RELNT010);
+                 electronSelectionFO_baseline       |
+                 electronSelection_smurfV3_convrej  |                
+                 (1ll<<ELECHARGE_NOTFLIP3AGREE)     |
+                 (1ll<<ELEISO_RELNT015);
 
-static const cuts_t electronSelectionFOV3_ssVBTF80_v3 =       // V3 - relaxed isolation
-  electronSelectionFO_baseline        |
-  (1ll<<ELEPT_010)                    |
-  (1ll<<ELESCET_010)                  |
-  (1ll<<ELEETA_240)                   |
-  (1ll<<ELENOTCONV_HITPATTERN)        |
-  (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
-  (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
-  //(1ll<<ELEISO_TRK_RELNT020)          |
-  (1ll<<ELEISO_ECAL_RELNT020)         |
-  (1ll<<ELEISO_HCAL_RELNT020)         |
-  (1ll<<ELEID_VBTF_35X_80)            |
-  (1ll<<ELEISO_RELNT040);
+static const cuts_t electronSelectionFOV3_ssVBTF80_v3 =       // V3 - relaxed isolation (relaxed all the way; we store the relIso and can cut on it separately in the babies or elsewhere)
+                 electronSelectionFO_baseline       |
+                 electronSelection_smurfV3_convrej  |
+                 electronSelection_smurfV3_id       |              
+                 (1ll<<ELECHARGE_NOTFLIP3AGREE);
 
 /////////////////////////////////////
 // End 2011 SS Selections          //
