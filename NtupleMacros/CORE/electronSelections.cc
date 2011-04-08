@@ -4,6 +4,7 @@
 
 // CMS2 includes
 #include "electronSelections.h"
+#include "eventSelections.h"
 #include "CMS2.h"
 #include "MITConversionUtilities.h"
 
@@ -985,12 +986,7 @@ double electron_dzPV_wwV1(unsigned int index){
     double sumPtMax = -1;
     int iMax = -1;
     for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
-        // if (!isGoodVertex(i)) continue;
-        // Copied from eventSelections.cc 
-        if (cms2.vtxs_isFake()[i]) continue;
-        if (cms2.vtxs_ndof()[i] < 4.) continue;
-        if (cms2.vtxs_position()[i].Rho() > 2.0) continue;
-        if (fabs(cms2.vtxs_position()[i].Z()) > 24.0) continue;
+        if (!isGoodVertex(i)) continue;
         if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
             iMax = i;
             sumPtMax = cms2.vtxs_sumpt().at(i);
@@ -1015,12 +1011,7 @@ double electron_d0PV_wwV1(unsigned int index){
     double sumPtMax = -1;
     int iMax = -1;
     for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
-        // if (!isGoodVertex(i)) continue;
-        // Copied from eventSelections.cc 
-        if (cms2.vtxs_isFake()[i]) continue;
-        if (cms2.vtxs_ndof()[i] < 4.) continue;
-        if (cms2.vtxs_position()[i].Rho() > 2.0) continue;
-        if (fabs(cms2.vtxs_position()[i].Z()) > 24.0) continue;
+        if (!isGoodVertex(i)) continue;
         if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
             iMax = i;
             sumPtMax = cms2.vtxs_sumpt().at(i);
@@ -1038,13 +1029,7 @@ double electron_d0PV_mindz(unsigned int index){
     double minDz = 999.;
     int iMin = -1;
     for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
-        // if (!isGoodVertex(i)) continue;
-        // Copied from eventSelections.cc 
-
-//       if (cms2.vtxs_isFake()[i]) continue;
-//       if (cms2.vtxs_ndof()[i] < 4.) continue;
-//       if (cms2.vtxs_position()[i].Rho() > 2.0) continue;
-//       if (fabs(cms2.vtxs_position()[i].Z()) > 24.0) continue;
+        if (!isGoodVertex(i)) continue;
       
       const LorentzVector& vtx = cms2.gsftrks_vertex_p4().at(cms2.els_gsftrkidx()[index]);
       const LorentzVector& p4 = cms2.gsftrks_p4().at(cms2.els_gsftrkidx()[index]);
@@ -1060,14 +1045,6 @@ double electron_d0PV_mindz(unsigned int index){
     double dxyPV = cms2.els_d0()[index]-
         cms2.vtxs_position()[iMin].x()*sin(cms2.els_trk_p4()[index].phi())+
         cms2.vtxs_position()[iMin].y()*cos(cms2.els_trk_p4()[index].phi());
-    return dxyPV;
-}
-
-double electron_d0PV_first(unsigned int index){ 
-    if ( cms2.vtxs_sumpt().empty() ) return 9999.;
-    double dxyPV = cms2.els_d0()[index]-
-        cms2.vtxs_position()[0].x()*sin(cms2.els_trk_p4()[index].phi())+
-        cms2.vtxs_position()[0].y()*cos(cms2.els_trk_p4()[index].phi());
     return dxyPV;
 }
 
