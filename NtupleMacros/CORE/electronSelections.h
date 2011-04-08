@@ -49,6 +49,7 @@ enum EleSelectionType {
      ELEISO_ECAL_RELNT020,  // non-truncated relative ECAL    iso < 0.20, 0.3 cone size for all, 1 GeV pedestal sub in EB
      ELEISO_HCAL_RELNT020,  // non-truncated relative HCAL    iso < 0.20, 0.3 cone size for all
 
+
 	 //
 	 // ip cuts
 	 //
@@ -837,7 +838,17 @@ static const cuts_t electronSelectionFO_el_smurf_v1 =
 static const cuts_t electronSelectionFO_el_smurf_v4 =
   electronSelectionFO_el_smurf_base |
   (1ll<<ELEID_VBTF_90_HLT) |
-  (1ll<<ELEISO_RELNT040); 
+  (1ll<<ELEISO_TRK_RELNT020) |
+  (1ll<<ELEISO_ECAL_RELNT020) |
+  (1ll<<ELEISO_HCAL_RELNT020);
+//---------------------------------------------------------
+// Fakeable object definition (option V2)
+// extrapolating in partial id
+//---------------------------------------------------------
+static const cuts_t electronSelectionFO_el_smurf_v2 =
+  electronSelectionFO_el_smurf_base |
+  (1ll<<ELEID_VBTF_90_HLT) |
+  (1ll<<ELEISO_RELNT010); 
 //--------end of SMURF FakableObject cuts------------------
 
 
