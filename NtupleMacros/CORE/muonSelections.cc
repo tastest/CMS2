@@ -355,13 +355,32 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type){
 //------------------------------------------------------------------------------
 // Calculate relative muon isolation variable.  Below 20 GeV, special treatment
 //-------------------------------------------------------------------------------
-double muonIsoValue(unsigned int index){
-	 double sum =  cms2.mus_iso03_sumPt().at(index) +
-		  cms2.mus_iso03_emEt().at(index)  +
-		  cms2.mus_iso03_hadEt().at(index);
-	 double pt  = cms2.mus_p4().at(index).pt();
+double muonIsoValueOriginal(unsigned int index){
+  double sum =  cms2.mus_iso03_sumPt().at(index) + cms2.mus_iso03_emEt().at(index) + cms2.mus_iso03_hadEt().at(index);
+  double pt  = cms2.mus_p4().at(index).pt();
 	 return sum/max(pt,20.);
 }
+
+double muonIsoValue(unsigned int index, bool truncated ){
+  return ( muonIsoValue_TRK( index, truncated ) + muonIsoValue_ECAL( index, truncated ) + muonIsoValue_HCAL( index, truncated ) );
+}
+double muonIsoValue_TRK(unsigned int index, bool truncated ){
+  double pt        = cms2.mus_p4().at(index).pt();
+  if(truncated) pt = max( pt, 20.0 );
+  return cms2.mus_iso03_sumPt().at(index) / pt;
+}
+double muonIsoValue_ECAL(unsigned int index, bool truncated ){
+  double pt  = cms2.mus_p4().at(index).pt();
+  if(truncated) pt = max( pt, 20.0 );
+  return cms2.mus_iso03_emEt().at(index) / pt;
+}
+double muonIsoValue_HCAL(unsigned int index, bool truncated){
+  double pt  = cms2.mus_p4().at(index).pt();
+  if(truncated) pt = max( pt, 20.0 );
+  return cms2.mus_iso03_hadEt().at(index) / pt;
+}
+
+
 
 //--------------------------------------------------------------
 //  Remove cosmics by looking for back-to-back muon-track pairs

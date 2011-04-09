@@ -47,7 +47,11 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type = Nominal);
 //
 // relative isolation
 //
-double muonIsoValue(unsigned int index);
+double muonIsoValueOriginal( unsigned int index );
+double muonIsoValue     ( unsigned int, bool = true );
+double muonIsoValue_TRK ( unsigned int, bool = true );
+double muonIsoValue_ECAL( unsigned int, bool = true );
+double muonIsoValue_HCAL( unsigned int, bool = true );
 
 //
 // Trigger
