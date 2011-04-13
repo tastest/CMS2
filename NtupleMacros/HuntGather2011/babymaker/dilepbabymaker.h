@@ -222,8 +222,11 @@ class dilepbabymaker
         Float_t e2_fbrem_;
 
         // triggers
-        Int_t trg_single_mu_;
-        Int_t trg_single_e_;
+        Int_t trg_single_mu1_;
+        Int_t trg_single_mu2_;
+
+        Int_t trg_single_e1_;
+        Int_t trg_single_e2_;
 
         // need to distinguish legs
         Int_t trg_double_mu1_;

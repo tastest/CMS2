@@ -145,15 +145,15 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 
                     // do electrons (single)
                     if (abs(lt_id) == 11)
-                        if (PassTriggerGroup(triggers_e_, cms2.hyp_lt_p4()[hypi])) trg_single_e_ |= (1<<0);
+                        PassTriggerGroup(triggers_e_, cms2.hyp_lt_p4()[hypi], trg_single_e1_);
                     if (abs(ll_id) == 11)
-                        if (PassTriggerGroup(triggers_e_, cms2.hyp_ll_p4()[hypi])) trg_single_e_ |= (1<<1);
+                        PassTriggerGroup(triggers_e_, cms2.hyp_ll_p4()[hypi], trg_single_e2_);
 
                     // do muons (single)
                     if (abs(lt_id) == 13)
-                        if (PassTriggerGroup(triggers_m_, cms2.hyp_lt_p4()[hypi])) trg_single_mu_ |= (1<<0);
+                        PassTriggerGroup(triggers_m_, cms2.hyp_lt_p4()[hypi], trg_single_mu1_);
                     if (abs(ll_id) == 13) 
-                        if (PassTriggerGroup(triggers_m_, cms2.hyp_ll_p4()[hypi])) trg_single_mu_ |= (1<<1);
+                        PassTriggerGroup(triggers_m_, cms2.hyp_ll_p4()[hypi], trg_single_mu2_);
 
                     // do double electron
                     if (abs(lt_id) == 11 && abs(ll_id) == 11) {
@@ -175,8 +175,10 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     //intLumiPerLS_ = cms2.ls_lumiSectionLength() * cms2.ls_avgInsRecLumi();
 
                 } else {
-                    trg_single_e_ = ((1<<0) | (1<<1));
-                    trg_single_mu_ = ((1<<0) | (1<<1));
+                    trg_single_e1_ = 1;
+                    trg_single_e2_ = 1;
+                    trg_single_mu1_ = 1;
+                    trg_single_mu2_ = 1;
                     trg_double_e1_ = 1;
                     trg_double_e2_ = 1;
                     trg_double_mu1_ = 1;
@@ -861,8 +863,10 @@ void dilepbabymaker::InitBabyNtuple ()
     e2_scCharge_    = -999999;
     e2_fbrem_       = -999999.;
 
-    trg_single_e_ = 0;
-    trg_single_mu_ = 0;
+    trg_single_e1_ = 0;
+    trg_single_e2_ = 0;
+    trg_single_mu1_ = 0;
+    trg_single_mu2_ = 0;
     trg_double_e1_ = 0;
     trg_double_e2_ = 0;
     trg_double_mu1_ = 0;
@@ -1059,8 +1063,11 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e2_fbrem", &e2_fbrem_, "e2_fbrem/F");
 
     // trigger stuff
-    babyTree_->Branch("trg_single_mu",   &trg_single_mu_,   "trg_single_mu/I"  );
-    babyTree_->Branch("trg_single_e",   &trg_single_e_,   "trg_single_e/I"  );
+    babyTree_->Branch("trg_single_mu1",   &trg_single_mu1_,   "trg_single_mu1/I"  );
+    babyTree_->Branch("trg_single_mu2",   &trg_single_mu2_,   "trg_single_mu2/I"  );
+
+    babyTree_->Branch("trg_single_e1",   &trg_single_e1_,   "trg_single_e1/I"  );
+    babyTree_->Branch("trg_single_e2",   &trg_single_e2_,   "trg_single_e2/I"  );
 
     babyTree_->Branch("trg_double_mu1",   &trg_double_mu1_,   "trg_double_mu1/I"  );
     babyTree_->Branch("trg_double_mu2",   &trg_double_mu2_,   "trg_double_mu2/I"  );

@@ -10,6 +10,7 @@
 # single muon triggers
 #
 160325 9999999 HLT_Mu15_v2 m 0
+160329 9999999 HLT_Mu30_v1 m 1
 #
 # single electron triggers
 #
