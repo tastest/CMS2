@@ -26,6 +26,7 @@ CORESOURCES = \
 	$(CMSROOT)/CORE/jetSelections.cc \
 	$(CMSROOT)/CORE/triggerUtils.cc \
     $(CMSROOT)/CORE/metSelections.cc \
+	$(CMSROOT)/CORE/MITConversionUtilities.cc \
     $(CMSROOT)/CORE/ssSelections.cc
 
 COREOBJECTS = $(CORESOURCES:.cc=.o) 
