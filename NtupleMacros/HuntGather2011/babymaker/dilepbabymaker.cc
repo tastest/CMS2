@@ -11,6 +11,7 @@
 #include "TFile.h"
 #include "TObjArray.h"
 #include "TTree.h"
+#include "TRandom3.h"
 
 // CMS2 CORE includes 
 #include "CORE/MT2/MT2.h"
@@ -61,6 +62,9 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 
     // make a baby ntuple
     MakeBabyNtuple(babyFilename);
+
+    // make a random number generator
+    TRandom3 rndm;
 
     // file loop
     TIter fileIter(listOfFiles);
@@ -120,6 +124,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 //
 
                 SetEventLevelInfo();
+                rndm_ = rndm.Uniform();
 
                 //
                 // Fill mc id of hypothesis leptons if this is MC
@@ -409,7 +414,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 mlljj_ = theJetIndices.size() > 1 ? sqrt((cms2.hyp_p4()[hypi] + cms2.pfjets_p4()[theJetIndices[0]]*cms2.pfjets_cor()[theJetIndices[0]]
                             + cms2.pfjets_p4()[theJetIndices[1]]*cms2.pfjets_cor()[theJetIndices[1]]).M2()) : -999999.;
 
-                mllj_ = theJetIndices.size() == 1 ? sqrt((cms2.hyp_p4()[hypi] 
+                mllj_ = theJetIndices.size() > 0 ? sqrt((cms2.hyp_p4()[hypi] 
                             + cms2.pfjets_p4()[theJetIndices[0]]*cms2.pfjets_cor()[theJetIndices[0]]).M2()) : -999999.;
 
 
@@ -566,9 +571,6 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     iso1_   = electronIsolation_rel(index1, true);
                     ntiso1_ = electronIsolation_rel_v1(index1, true);
                     type1_  = cms2.els_type()[index1];
-                    e1_cand01full_  = pass_electronSelection(index1, electronSelection_ttbar);
-                    e1_cand01_      = electronId_cand(index1, CAND_01);
-                    e1_vbtf90full_  = pass_electronSelection(index1, electronSelection_ttbarV2);
                     electronIdComponent_t answer_vbtf90 = electronId_VBTF(index1, VBTF_35X_90);
                     e1_vbtf90_      = (answer_vbtf90 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
                     electronIdComponent_t answer_vbtf85 = electronId_VBTF(index1, VBTF_35X_85);
@@ -577,7 +579,14 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e1_vbtf80_      = (answer_vbtf80 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
                     electronIdComponent_t answer_vbtf70 = electronId_VBTF(index1, VBTF_35X_70);
                     e1_vbtf70_      = (answer_vbtf70 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
-                    e1_smurfV3_     = pass_electronSelection(index1, electronSelection_smurfV3_id);
+
+                    cuts_t electron_selection = electronSelection(index1);
+                    e1_vbtf90full_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ttbarV2);
+                    if (pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_baseline)) e1_smurfV3_ |= (1<<0);
+                    if (pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_convrej)) e1_smurfV3_ |= (1<<1);
+                    if (pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_iso)) e1_smurfV3_ |= (1<<2);
+                    if (pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_id)) e1_smurfV3_ |= (1<<3);
+
                     e1_scet_        = cms2.els_eSC()[index1] / cosh(cms2.els_etaSC()[index1]);
                     e1_eopin_       = cms2.els_eOverPIn()[index1];
                     e1_hoe_         = cms2.els_hOverE()[index1];
@@ -637,9 +646,6 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     iso2_   = electronIsolation_rel(index2, true);
                     ntiso2_ = electronIsolation_rel_v1(index2, true);
                     type2_  = cms2.els_type()[index2];
-                    e2_cand01full_  = pass_electronSelection(index2, electronSelection_ttbar);
-                    e2_cand01_      = electronId_cand(index2, CAND_01);
-                    e2_vbtf90full_  = pass_electronSelection(index2, electronSelection_ttbarV2);
                     electronIdComponent_t answer_vbtf90   = electronId_VBTF(index2, VBTF_35X_90);
                     e2_vbtf90_      = (answer_vbtf90 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
                     electronIdComponent_t answer_vbtf85   = electronId_VBTF(index2, VBTF_35X_85);
@@ -648,7 +654,14 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e2_vbtf80_      = (answer_vbtf80 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
                     electronIdComponent_t answer_vbtf70   = electronId_VBTF(index2, VBTF_35X_70);
                     e2_vbtf70_      = (answer_vbtf70 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
-                    e2_smurfV3_     = pass_electronSelection(index2, electronSelection_smurfV3_id);
+
+                    cuts_t electron_selection = electronSelection(index2);
+                    e2_vbtf90full_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ttbarV2);
+                    if (pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_baseline)) e2_smurfV3_ |= (1<<0);
+                    if (pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_convrej)) e2_smurfV3_ |= (1<<1);
+                    if (pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_iso)) e2_smurfV3_ |= (1<<2);
+                    if (pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_id)) e2_smurfV3_ |= (1<<3);
+
                     e2_scet_        = cms2.els_eSC()[index2] / cosh(cms2.els_etaSC()[index2]);
                     e2_eopin_       = cms2.els_eOverPIn()[index2];
                     e2_hoe_         = cms2.els_hOverE()[index2];
@@ -698,6 +711,8 @@ void dilepbabymaker::InitBabyNtuple ()
 {
     // event stuff
     memset(dataset_, '\0', 200);
+
+    rndm_         = -999999.;
     run_          = -999999;
     ls_           = -999999;
     evt_          = -999999;
@@ -832,8 +847,6 @@ void dilepbabymaker::InitBabyNtuple ()
     mu2_isPFmuon_     = 0;
 
     // electron stuff
-    e1_cand01full_  = 0;
-    e1_cand01_      = 0;
     e1_vbtf90full_  = 0;
     e1_vbtf90_      = 0;
     e1_vbtf85_      = 0;
@@ -859,8 +872,6 @@ void dilepbabymaker::InitBabyNtuple ()
     e1_fbrem_       = -999999.;
     e1_mitConv_     = 0;
 
-    e2_cand01full_  = 0;
-    e2_cand01_      = 0;
     e2_vbtf90full_  = 0;
     e2_vbtf90_      = 0;
     e2_vbtf85_      = 0;
@@ -908,6 +919,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_ = new TTree("tree", "A Baby Ntuple");
 
     // event stuff
+    babyTree_->Branch("rndm",          &rndm_,         "rndm/F"         );
     babyTree_->Branch("dataset",      &dataset_,     "dataset[200]/C");
     babyTree_->Branch("run",          &run_,         "run/I"         );
     babyTree_->Branch("ls",           &ls_,          "ls/I"          );
@@ -999,7 +1011,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("dphitcmet2", &dphitcmet2_, "dphitcmet2/F");
     babyTree_->Branch("drjet2",     &drjet2_,     "drjet2/F"    );
     babyTree_->Branch("mcid2",      &mcid2_,      "mcid2/I"     );
-    Babytree_->Branch("mcmotherid2",&mcmotherid2_,"mcmotherid2/I");
+    babyTree_->Branch("mcmotherid2",&mcmotherid2_,"mcmotherid2/I");
     babyTree_->Branch("mt2",        &mt2_,        "mt2/F"       );
     babyTree_->Branch("mt2j",       &mt2j_,       "mt2j/F"      );
     babyTree_->Branch("extraZveto", &extraZveto_, "extraZveto/O");
@@ -1042,14 +1054,12 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 
     // electron stuff
 
-    babyTree_->Branch("e1_cand01full", &e1_cand01full_, "e1_cand01full/O");
-    babyTree_->Branch("e1_cand01",     &e1_cand01_,     "e1_cand01/O"    );
     babyTree_->Branch("e1_vbtf90full", &e1_vbtf90full_, "e1_vbtf90full/O");
     babyTree_->Branch("e1_vbtf90",     &e1_vbtf90_,     "e1_vbtf90/O"    );
     babyTree_->Branch("e1_vbtf85",     &e1_vbtf85_,     "e1_vbtf85/O"    );
     babyTree_->Branch("e1_vbtf80",     &e1_vbtf80_,     "e1_vbtf80/O"    );
     babyTree_->Branch("e1_vbtf70",     &e1_vbtf70_,     "e1_vbtf70/O"    );
-    babyTree_->Branch("e1_smurfV3",    &e1_smurfV3_,    "e1_smurfV3/O"   );
+    babyTree_->Branch("e1_smurfV3",    &e1_smurfV3_,    "e1_smurfV3/I"   );
     babyTree_->Branch("e1_scet",       &e1_scet_,       "e1_scet/F"      );
     babyTree_->Branch("e1_eopin",      &e1_eopin_,      "e1_eopin/F"     );
     babyTree_->Branch("e1_hoe",        &e1_hoe_,        "e1_hoe/F"       );
@@ -1068,14 +1078,12 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e1_scCharge",   &e1_scCharge_,   "e1_scCharge/I"  );
     babyTree_->Branch("e1_fbrem",      &e1_fbrem_,      "e1_fbrem/F"     );
     babyTree_->Branch("e1_mitConv",    &e1_mitConv_,    "e1_mitConv/O"   );
-    babyTree_->Branch("e2_cand01full", &e2_cand01full_, "e2_cand01full/O");
-    babyTree_->Branch("e2_cand01",     &e2_cand01_,     "e2_cand01/O"    );
     babyTree_->Branch("e2_vbtf90full", &e2_vbtf90full_, "e2_vbtf90full/O");
     babyTree_->Branch("e2_vbtf90",     &e2_vbtf90_,     "e2_vbtf90/O"    );
     babyTree_->Branch("e2_vbtf85",     &e2_vbtf85_,     "e2_vbtf85/O"    );
     babyTree_->Branch("e2_vbtf80",     &e2_vbtf80_,     "e2_vbtf80/O"    );
     babyTree_->Branch("e2_vbtf70",     &e2_vbtf70_,     "e2_vbtf70/O"    );
-    babyTree_->Branch("e2_smurfV3",    &e2_smurfV3_,    "e2_smurfV3/O"   );
+    babyTree_->Branch("e2_smurfV3",    &e2_smurfV3_,    "e2_smurfV3/I"   );
     babyTree_->Branch("e2_scet",       &e2_scet_,       "e2_scet/F"      );
     babyTree_->Branch("e2_eopin",      &e2_eopin_,      "e2_eopin/F"     );
     babyTree_->Branch("e2_hoe",        &e2_hoe_,        "e2_hoe/F"       );
