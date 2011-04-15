@@ -99,12 +99,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
             {
 
                 //
-                // select a basic 10/10 hypothesis
+                // select a basic hypothesis (5 GeV cut on muon pT, 10 GeV cut on electron pT)
                 //
-
-                if (min(cms2.hyp_lt_p4()[hypi].pt(), cms2.hyp_ll_p4()[hypi].pt()) < 10.)
-                    continue;
-
                 int index1 = cms2.hyp_lt_index()[hypi];
                 int index2 = cms2.hyp_ll_index()[hypi];
 
@@ -250,7 +246,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 for (unsigned muii = 0; muii < cms2.mus_p4().size(); ++muii) {
                     if (cms2.mus_p4()[muii].pt() <= 10.) continue;
                     // for SS
-                    if (muonId(muii, NominalSSv2) && fabs(cms2.mus_p4()[muii].eta()) < 2.4) {
+                    if (cms2.mus_p4()[muii].pt() > 5. && muonId(muii, NominalSSv2) && fabs(cms2.mus_p4()[muii].eta()) < 2.4) {
                         goodMuonIndicesSSV2.push_back(muii);
                     }
                     // for TTBarV2
@@ -266,7 +262,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     if (cms2.els_p4()[eli].pt() <= 10.) continue;
                     cuts_t cuts_passed = electronSelection(eli);
                     // for SS
-                    if(pass_electronSelectionCompareMask(cuts_passed, electronSelection_ssV2) && fabs(cms2.els_p4()[eli].eta()) < 2.4) {
+                    if (cms2.els_p4()[eli].pt() > 10. && pass_electronSelectionCompareMask(cuts_passed, electronSelection_ssV3) && fabs(cms2.els_p4()[eli].eta()) < 2.4) {
                         goodElectronIndicesSSV2.push_back(eli);
                     }
                     // for TTBarV2
@@ -328,6 +324,11 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 tcmeff_ += (pt1_ + pt2_);
 
                 //
+                // check if leptons are from the same vertex
+                //
+                lepsFromSameVtx_ = hypsFromSameVtx2011(hypIdx);
+
+                //
                 // clean jets for ALL leptons
                 //
 
@@ -343,9 +344,24 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 for (unsigned int jeti = 0; jeti < cms2.pfjets_p4().size(); ++jeti)
                 {
 
-                    LorentzVector vjet = cms2.pfjets_p4()[jeti]*cms2.pfjets_cor()[jeti];
+                    LorentzVector vjet = cms2.pfjets_p4()[jeti]*cms2.pfjets_corL1FastL2L3()[jeti];
                     bool jetIsLepTTBarV2 = false;
                     bool jetIsLepSSV2 = false;
+                    
+                    // we previously weren't performing jet-lepton overlap removal wiht the hypothesis leptons
+                    // but we should have been; fixing this now
+                    if (abs(cms2.hyp_lt_id()[hypi]) == 11)
+                        if (dRbetweenVectors(vjet, cms2.els_p4()[cms2.hyp_lt_index()[hypi]]) < 0.4)
+                            continue;
+                    if (abs(cms2.hyp_lt_id()[hypi]) == 13)
+                        if (dRbetweenVectors(vjet, cms2.mus_p4()[cms2.hyp_lt_index()[hypi]]) < 0.4)
+                            continue;
+                    if (abs(cms2.hyp_ll_id()[hypi]) == 11)
+                        if (dRbetweenVectors(vjet, cms2.els_p4()[cms2.hyp_ll_index()[hypi]]) < 0.4)
+                            continue;
+                    if (abs(cms2.hyp_ll_id()[hypi]) == 13)
+                        if (dRbetweenVectors(vjet, cms2.mus_p4()[cms2.hyp_ll_index()[hypi]]) < 0.4)
+                            continue;
 
                     // check if jet is a lepton that passes the ttbar selection
                     for (unsigned int muj = 0; muj < goodMuonIndicesTTBarV2.size(); ++muj) {
@@ -409,13 +425,13 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 
                 LorentzVector dijetP4;
                 jetmass_ = theJetIndices.size() > 1 ? sqrt((cms2.pfjets_p4()[theJetIndices[0]]*cms2.pfjets_cor()[theJetIndices[0]] 
-                            + cms2.pfjets_p4()[theJetIndices[1]]*cms2.pfjets_cor()[theJetIndices[1]]).M2()) : -999999.; 
+                                                            + cms2.pfjets_p4()[theJetIndices[1]]*cms2.pfjets_cor()[theJetIndices[1]]).M2()) : -999999.; 
 
                 mlljj_ = theJetIndices.size() > 1 ? sqrt((cms2.hyp_p4()[hypi] + cms2.pfjets_p4()[theJetIndices[0]]*cms2.pfjets_cor()[theJetIndices[0]]
-                            + cms2.pfjets_p4()[theJetIndices[1]]*cms2.pfjets_cor()[theJetIndices[1]]).M2()) : -999999.;
+                                                          + cms2.pfjets_p4()[theJetIndices[1]]*cms2.pfjets_cor()[theJetIndices[1]]).M2()) : -999999.;
 
                 mllj_ = theJetIndices.size() > 0 ? sqrt((cms2.hyp_p4()[hypi] 
-                            + cms2.pfjets_p4()[theJetIndices[0]]*cms2.pfjets_cor()[theJetIndices[0]]).M2()) : -999999.;
+                                                         + cms2.pfjets_p4()[theJetIndices[0]]*cms2.pfjets_cor()[theJetIndices[0]]).M2()) : -999999.;
 
 
                 double mindphipfmet = 999999.;
@@ -818,6 +834,7 @@ void dilepbabymaker::InitBabyNtuple ()
     ecalIso1ps_   = -999999.;
     ecalIso2ps_   = -999999.;
     rho_          = -999999.;
+    lepsFromSameVtx_ = 0;
 
     // muon stuff
     mu1_muonidfull_   = 0;
@@ -1024,6 +1041,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("ecalIso1ps", &ecalIso1ps_, "ecalIso1ps/F");
     babyTree_->Branch("ecalIso2ps", &ecalIso2ps_, "ecalIso2ps/F");
     babyTree_->Branch("rho", &rho_, "rho/F");
+    babyTreE_->Branch("lepsFromSameVtx", &lepsFromSameVtx_, "lepsFromSameVtx/O");
 
     // Muon stuff
     babyTree_->Branch("mu1_muonidfull",   &mu1_muonidfull_,   "mu1_muonidfull/O"  );

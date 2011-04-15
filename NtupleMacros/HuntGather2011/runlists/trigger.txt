@@ -26,7 +26,7 @@
 #
 160329 161176 HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1 ee 0
 161210 999999 HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v2 ee 0
-
+#
 #note that these next two are identical except for version number
 #so I assign them to the same bit so run range consistently covered
 160325 9999999 HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v1 ee 1
@@ -41,6 +41,27 @@
 160329 161176 HLT_Mu8_Ele17_CaloIdL_v1 em 1
 161210 999999 HLT_Mu8_Ele17_CaloIdL_v2 em 1
 160325 999999 HLT_Mu8_Photon20_CaloIdVT_IsoT_v2 em 2
+#
+# electron had triggers
+#
+160329 161176 HLT_DoubleEle8_CaloIdL_TrkIdVL_HT160_v2 0
+161210 999999 HLT_DoubleEle8_CaloIdL_TrkIdVL_HT160_v3 0
+160329 161176 HLT_DoubleEle8_CaloIdT_TrkIdVL_HT160_v2 1
+161210 999999 HLT_DoubleEle8_CaloIdT_TrkIdVL_HT160_v3 1
+#
+# muon had triggers
+#
+160329 161176 HLT_DoubleMu3_HT160_v2 0
+161210 999999 HLT_DoubleMu3_HT160_v3 0
+160329 161176 HLT_DoubleMu3_HT200_v2 1
+161210 999999 HLT_DoubleMu3_HT200_v3 1
+#
+# muon had cross triggers
+#
+160329 161176 HLT_Mu3_Ele8_CaloIdL_TrkIdVL_HT160_v2 0
+161210 999999 HLT_Mu3_Ele8_CaloIdL_TrkIdVL_HT160_v3 0
+160329 161176 HLT_Mu3_Ele8_CaloIdT_TrkIdVL_HT160_v2 1
+161210 999999 HLT_Mu3_Ele8_CaloIdT_TrkIdVL_HT160_v3 1
 #
 # Run2010
 #
