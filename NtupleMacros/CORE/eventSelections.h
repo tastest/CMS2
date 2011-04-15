@@ -69,10 +69,19 @@ bool isGoodDAVertex(size_t ivtx);
 //----------------------------------------------------------------
 // checks whether the leptons of a given
 // hypothesis come from the same good vertex
+// by checking if both leptons are within dz
+// of 1cm of the same PV
 //----------------------------------------------------------------
 bool hypsFromSameVtx(size_t hypIdx);
 
-
+//----------------------------------------------------------------
+// checks whether the leptons of a given
+// hypothesis come from the same good vertex
+// by checking if both leptons are within dz
+// of 0.2 cm of the same PV and if that PV is
+// the closest vertex to each lepton
+//----------------------------------------------------------------
+bool hypsFromSameVtx2011(size_t hypIdx, float dz = 0.2, bool requireClosest = true);
 
 
 #endif

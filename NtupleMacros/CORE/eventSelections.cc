@@ -206,3 +206,83 @@ bool hypsFromSameVtx(size_t hypIdx) {
   return false;
 }
 
+//----------------------------------------------------------------
+// checks whether the leptons of a given
+// hypothesis come from the same good vertex
+// by checking if both leptons are within dz
+// of 0.2 cm of the same PV and if that PV is
+// the closest vertex to each lepton
+//----------------------------------------------------------------
+bool hypsFromSameVtx2011(size_t hypIdx, float dz, bool requireClosest)
+{
+    int lt_trkidx = -1;
+    int ll_trkidx = -1;
+    bool lt_isGsf = false;
+    bool ll_isGsf = false;
+
+    if (abs(cms2.hyp_lt_id()[hypIdx]) == 13)
+        lt_trkidx = cms2.mus_trkidx()[cms2.hyp_lt_index()[hypIdx]];
+    if (abs(cms2.hyp_lt_id()[hypIdx]) == 11) {
+        lt_trkidx = cms2.els_trkidx()[cms2.hyp_lt_index()[hypIdx]] > -1 ? cms2.els_trkidx()[cms2.hyp_lt_index()[hypIdx]] : cms2.els_gsftrkidx()[cms2.hyp_lt_index()[hypIdx]];
+        lt_isGsf  = cms2.els_trkidx()[cms2.hyp_lt_index()[hypIdx]] > -1 ? false : true;
+    }
+    if (abs(cms2.hyp_ll_id()[hypIdx]) == 13)
+        ll_trkidx = cms2.mus_trkidx()[cms2.hyp_ll_index()[hypIdx]];
+    if (abs(cms2.hyp_ll_id()[hypIdx]) == 11) {
+        ll_trkidx = cms2.els_trkidx()[cms2.hyp_ll_index()[hypIdx]] > -1 ? cms2.els_trkidx()[cms2.hyp_ll_index()[hypIdx]] : cms2.els_gsftrkidx()[cms2.hyp_ll_index()[hypIdx]];
+        ll_isGsf  = cms2.els_trkidx()[cms2.hyp_ll_index()[hypIdx]] > -1 ? false : true;
+    }
+
+    if (lt_trkidx < 0 || ll_trkidx < 0)
+        return false;
+
+    float lt_dz = 999.;
+    float ll_dz = 999.;
+    int lt_vidx = -999;
+    int ll_vidx = -999;
+
+    for (int vtxi = 0; vtxi < cms2.vtxs_position().size(); vtxi++) {
+        
+        if (!isGoodVertex(vtxi))
+            continue;
+
+        // first take care of lt
+        if (lt_isGsf) {
+            if (gsftrks_dz_pv(lt_trkidx, vtxi).first < lt_dz) {
+                lt_dz = gsftrks_dz_pv(lt_trkidx, vtxi).first;
+                lt_vidx = vtxi;
+            }            
+        }
+        else {
+            if (trks_dz_pv(lt_trkidx, vtxi).first < lt_dz) {
+                lt_dz = trks_dz_pv(lt_trkidx, vtxi).first;
+                lt_vidx = vtxi;
+            }
+        }
+
+        // now same thing for ll
+        if (ll_isGsf) {
+            if (gsftrks_dz_pv(ll_trkidx, vtxi).first < ll_dz) {
+                ll_dz = gsftrks_dz_pv(ll_trkidx, vtxi).first;
+                ll_vidx = vtxi;
+            }            
+        }
+        else {
+            if (trks_dz_pv(ll_trkidx, vtxi).first < ll_dz) {
+                ll_dz = trks_dz_pv(ll_trkidx, vtxi).first;
+                ll_vidx = vtxi;
+            }
+        }
+    } // end loop over vertices
+
+    if (lt_vidx < 0 || ll_vidx < 0)
+        return false;
+
+    if (lt_vidx != ll_vidx && requireClosest)
+        return false;
+
+    if (fabs(lt_dz) > dz || fabs(ll_dz) > dz)
+        return false;
+
+    return true;
+}
