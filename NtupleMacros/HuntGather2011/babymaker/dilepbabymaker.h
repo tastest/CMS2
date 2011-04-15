@@ -44,9 +44,9 @@ private:
     std::vector<std::pair<std::string, unsigned int> > triggers_ee_;
     std::vector<std::pair<std::string, unsigned int> > triggers_mm_;
     std::vector<std::pair<std::string, unsigned int> > triggers_em_;
-    std::vector<std::pair<std::string, unsigned int> > triggers_ehad_ee;
-    std::vector<std::pair<std::string, unsigned int> > triggers_mhad_mm;
-    std::vector<std::pair<std::string, unsigned int> > triggers_mhad_em;
+    std::vector<std::pair<std::string, unsigned int> > triggers_ehad_ee_;
+    std::vector<std::pair<std::string, unsigned int> > triggers_mhad_mm_;
+    std::vector<std::pair<std::string, unsigned int> > triggers_mhad_em_;
 
     // event stuff
     char    dataset_[200];

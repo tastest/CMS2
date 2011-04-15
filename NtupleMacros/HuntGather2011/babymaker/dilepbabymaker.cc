@@ -39,6 +39,9 @@ void dilepbabymaker::NewRun()
     triggers_ee_ = get_trigger_names(cms2.evt_run(), "ee");
     triggers_mm_ = get_trigger_names(cms2.evt_run(), "mm");
     triggers_em_ = get_trigger_names(cms2.evt_run(), "em");
+    triggers_ehad_ee_ = get_trigger_names(cms2.evt_run(), "eehad");
+    triggers_mhad_mm_ = get_trigger_names(cms2.evt_run(), "mmhad");
+    triggers_mhad_em_ = get_trigger_names(cms2.evt_run(), "emhad");
     //std::cout << "[dilepbabymaker::NewRun] " << cms2.evt_run() << std::endl;
     //for (unsigned int i = 0; i < triggers_m_.size(); ++i) std::cout << triggers_m_[i] << std::endl;
 
@@ -924,6 +927,11 @@ void dilepbabymaker::InitBabyNtuple ()
     trg_double_mu2_ = 0;
     trg_cross_emu_ = 0;
 
+    trg_had_double_e1_  = 0;
+    trg_had_double_e2_  = 0;
+    trg_had_double_mu1_ = 0;
+    trg_had_double_mu2_ = 0;
+    trg_had_double_emu_ = 0;
 }
 
 void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
@@ -1135,6 +1143,13 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("trg_double_e2",   &trg_double_e2_,   "trg_double_e2/I"  );
 
     babyTree_->Branch("trg_cross_emu",   &trg_cross_emu_,   "trg_cross_emu/I"  );
+
+    babyTree_->Branch("trg_had_double_e1" , &trg_had_double_e1_ , "trg_had_double_e1/I" );
+    babyTree_->Branch("trg_had_double_e2" , &trg_had_double_e2_ , "trg_had_double_e2/I" );
+
+    babyTree_->Branch("trg_had_double_mu1", &trg_had_double_mu1_, "trg_had_double_mu1/I");
+    babyTree_->Branch("trg_had_double_mu2", &trg_had_double_mu2_, "trg_had_double_mu2/I");
+    babyTree_->Branch("trg_had_double_emu", &trg_had_double_emu_, "trg_had_double_emu/I");
 
 }
 
