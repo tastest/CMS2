@@ -187,7 +187,7 @@ private:
     Bool_t  e1_vbtf85_;
     Bool_t  e1_vbtf80_;
     Bool_t  e1_vbtf70_;
-    Int_t  e1_smurfV3_;
+    Bool_t  e1_smurfV3_;
     Float_t e1_scet_;
     Float_t e1_eopin_;
     Float_t e1_hoe_;
@@ -212,7 +212,7 @@ private:
     Bool_t  e2_vbtf85_;
     Bool_t  e2_vbtf80_;
     Bool_t  e2_vbtf70_;
-    Int_t  e2_smurfV3_;
+    Bool_t  e2_smurfV3_;
     Float_t e2_scet_;
     Float_t e2_eopin_;
     Float_t e2_hoe_;
@@ -255,7 +255,8 @@ private:
     // need to distinguish legs
     Int_t trg_had_double_mu1_;
     Int_t trg_had_double_mu2_;
-    Int_t trg_had_double_emu_;
+    Int_t trg_had_cross_emu_;
+
 };
 
 #endif

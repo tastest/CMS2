@@ -163,17 +163,25 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     if (abs(lt_id) == 11 && abs(ll_id) == 11) {
                         PassTriggerGroup(triggers_ee_, cms2.hyp_lt_p4()[hypi], trg_double_e1_);
                         PassTriggerGroup(triggers_ee_, cms2.hyp_ll_p4()[hypi], trg_double_e2_);
+                        PassTriggerGroup(triggers_ehad_ee_, cms2.hyp_lt_p4()[hypi], trg_had_double_e1_);
+                        PassTriggerGroup(triggers_ehad_ee_, cms2.hyp_ll_p4()[hypi], trg_had_double_e2_);                        
                     }
 
                     // do double muon
                     if (abs(lt_id) == 13 && abs(ll_id) == 13) {
                         PassTriggerGroup(triggers_mm_, cms2.hyp_lt_p4()[hypi], trg_double_mu1_);
                         PassTriggerGroup(triggers_mm_, cms2.hyp_ll_p4()[hypi], trg_double_mu2_);
+                        PassTriggerGroup(triggers_mhad_mm_, cms2.hyp_lt_p4()[hypi], trg_had_double_mu1_);
+                        PassTriggerGroup(triggers_mhad_mm_, cms2.hyp_ll_p4()[hypi], trg_had_double_mu2_);                    
                     }
 
                     // do cross trigger (e-mu)
-                    if (abs(lt_id) != abs(ll_id))
+                    if (abs(lt_id) != abs(ll_id)) {
                         PassTriggerGroup(triggers_em_, trg_cross_emu_);
+                        PassTriggerGroup(triggers_mhad_em_, trg_had_cross_emu_);
+                    }
+
+
 
                     // integrated luminosity per luminosity section
                     //intLumiPerLS_ = cms2.ls_lumiSectionLength() * cms2.ls_avgInsRecLumi();
@@ -329,7 +337,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 //
                 // check if leptons are from the same vertex
                 //
-                lepsFromSameVtx_ = hypsFromSameVtx2011(hypIdx);
+                lepsFromSameVtx_ = hypsFromSameVtx2011(hypi);
 
                 //
                 // clean jets for ALL leptons
@@ -601,10 +609,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 
                     cuts_t electron_selection = electronSelection(index1);
                     e1_vbtf90full_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ttbarV2);
-                    if (pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_baseline)) e1_smurfV3_ |= (1<<0);
-                    if (pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_convrej)) e1_smurfV3_ |= (1<<1);
-                    if (pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_iso)) e1_smurfV3_ |= (1<<2);
-                    if (pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_id)) e1_smurfV3_ |= (1<<3);
+                    e1_smurfV3_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_id);
 
                     e1_scet_        = cms2.els_eSC()[index1] / cosh(cms2.els_etaSC()[index1]);
                     e1_eopin_       = cms2.els_eOverPIn()[index1];
@@ -676,10 +681,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 
                     cuts_t electron_selection = electronSelection(index2);
                     e2_vbtf90full_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ttbarV2);
-                    if (pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_baseline)) e2_smurfV3_ |= (1<<0);
-                    if (pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_convrej)) e2_smurfV3_ |= (1<<1);
-                    if (pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_iso)) e2_smurfV3_ |= (1<<2);
-                    if (pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_id)) e2_smurfV3_ |= (1<<3);
+                    e1_smurfV3_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_id);
 
                     e2_scet_        = cms2.els_eSC()[index2] / cosh(cms2.els_etaSC()[index2]);
                     e2_eopin_       = cms2.els_eOverPIn()[index2];
@@ -931,7 +933,7 @@ void dilepbabymaker::InitBabyNtuple ()
     trg_had_double_e2_  = 0;
     trg_had_double_mu1_ = 0;
     trg_had_double_mu2_ = 0;
-    trg_had_double_emu_ = 0;
+    trg_had_cross_emu_ = 0;
 }
 
 void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
@@ -1049,7 +1051,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("ecalIso1ps", &ecalIso1ps_, "ecalIso1ps/F");
     babyTree_->Branch("ecalIso2ps", &ecalIso2ps_, "ecalIso2ps/F");
     babyTree_->Branch("rho", &rho_, "rho/F");
-    babyTreE_->Branch("lepsFromSameVtx", &lepsFromSameVtx_, "lepsFromSameVtx/O");
+    babyTree_->Branch("lepsFromSameVtx", &lepsFromSameVtx_, "lepsFromSameVtx/O");
 
     // Muon stuff
     babyTree_->Branch("mu1_muonidfull",   &mu1_muonidfull_,   "mu1_muonidfull/O"  );
@@ -1085,7 +1087,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e1_vbtf85",     &e1_vbtf85_,     "e1_vbtf85/O"    );
     babyTree_->Branch("e1_vbtf80",     &e1_vbtf80_,     "e1_vbtf80/O"    );
     babyTree_->Branch("e1_vbtf70",     &e1_vbtf70_,     "e1_vbtf70/O"    );
-    babyTree_->Branch("e1_smurfV3",    &e1_smurfV3_,    "e1_smurfV3/I"   );
+    babyTree_->Branch("e1_smurfV3",    &e1_smurfV3_,    "e1_smurfV3/O"   );
     babyTree_->Branch("e1_scet",       &e1_scet_,       "e1_scet/F"      );
     babyTree_->Branch("e1_eopin",      &e1_eopin_,      "e1_eopin/F"     );
     babyTree_->Branch("e1_hoe",        &e1_hoe_,        "e1_hoe/F"       );
@@ -1109,7 +1111,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e2_vbtf85",     &e2_vbtf85_,     "e2_vbtf85/O"    );
     babyTree_->Branch("e2_vbtf80",     &e2_vbtf80_,     "e2_vbtf80/O"    );
     babyTree_->Branch("e2_vbtf70",     &e2_vbtf70_,     "e2_vbtf70/O"    );
-    babyTree_->Branch("e2_smurfV3",    &e2_smurfV3_,    "e2_smurfV3/I"   );
+    babyTree_->Branch("e2_smurfV3",    &e2_smurfV3_,    "e2_smurfV3/O"   );
     babyTree_->Branch("e2_scet",       &e2_scet_,       "e2_scet/F"      );
     babyTree_->Branch("e2_eopin",      &e2_eopin_,      "e2_eopin/F"     );
     babyTree_->Branch("e2_hoe",        &e2_hoe_,        "e2_hoe/F"       );
@@ -1149,7 +1151,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 
     babyTree_->Branch("trg_had_double_mu1", &trg_had_double_mu1_, "trg_had_double_mu1/I");
     babyTree_->Branch("trg_had_double_mu2", &trg_had_double_mu2_, "trg_had_double_mu2/I");
-    babyTree_->Branch("trg_had_double_emu", &trg_had_double_emu_, "trg_had_double_emu/I");
+    babyTree_->Branch("trg_had_cross_emu", &trg_had_cross_emu_, "trg_had_cross_emu/I");
 
 }
 
