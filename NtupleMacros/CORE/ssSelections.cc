@@ -244,6 +244,12 @@ bool makesExtraZ (int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutI
 			   if (!isGoodLeptonwIsoSS(13, imu, applyAlignmentCorrection, removedEtaCutInEndcap) || !isGoodLeptonNoIsoSS(13, imu, applyAlignmentCorrection, removedEtaCutInEndcap))
 					continue;
 
+               if (ltid == 13 && imu == cms2.hyp_lt_index()[hypIdx])
+                   continue;
+
+               if (llid == 13 && imu == cms2.hyp_ll_index()[hypIdx])
+                   continue;
+
 			   if (ltid == 13 && ltch * cms2.mus_charge()[imu] < 0)
 			   {
 					LorentzVector temp = ltp4 + cms2.mus_p4()[imu];
@@ -269,6 +275,12 @@ bool makesExtraZ (int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutI
 
 			   if (!isGoodLeptonwIsoSS(11, iel, applyAlignmentCorrection, removedEtaCutInEndcap) || !isGoodLeptonNoIsoSS(11, iel, applyAlignmentCorrection, removedEtaCutInEndcap))
 					continue;
+
+               if (ltid == 11 && iel == cms2.hyp_lt_index()[hypIdx])
+                   continue;
+
+               if (llid == 11 && iel == cms2.hyp_ll_index()[hypIdx])
+                   continue;
 
 			   if (ltid == 11 && ltch * cms2.els_charge()[iel] < 0)
 			   {
