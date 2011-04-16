@@ -103,6 +103,9 @@ private:
     Int_t   ngoodlep_;
     Int_t   ngoodmus_;
     Int_t   ngoodels_;
+    Int_t   ngoodlepSS_;
+    Int_t   ngoodmusSS_;
+    Int_t   ngoodelsSS_;
     Int_t   ngenels_;
     Int_t   ngenmus_;
     Int_t   ngentaus_;

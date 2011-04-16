@@ -163,16 +163,31 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     if (abs(lt_id) == 11 && abs(ll_id) == 11) {
                         PassTriggerGroup(triggers_ee_, cms2.hyp_lt_p4()[hypi], trg_double_e1_);
                         PassTriggerGroup(triggers_ee_, cms2.hyp_ll_p4()[hypi], trg_double_e2_);
+
+                        // for now, don't require matching of leptons and trigger legs due to bug in CMS2
+                        // however, once the bug is fixed, revert back to matching
+/*
                         PassTriggerGroup(triggers_ehad_ee_, cms2.hyp_lt_p4()[hypi], trg_had_double_e1_);
                         PassTriggerGroup(triggers_ehad_ee_, cms2.hyp_ll_p4()[hypi], trg_had_double_e2_);                        
+*/  
+                        PassTriggerGroup(triggers_ehad_ee_, trg_had_double_e1_);
+                        PassTriggerGroup(triggers_ehad_ee_, trg_had_double_e2_);
                     }
 
                     // do double muon
                     if (abs(lt_id) == 13 && abs(ll_id) == 13) {
                         PassTriggerGroup(triggers_mm_, cms2.hyp_lt_p4()[hypi], trg_double_mu1_);
                         PassTriggerGroup(triggers_mm_, cms2.hyp_ll_p4()[hypi], trg_double_mu2_);
+
+                        // for now, don't require matching of leptons and trigger legs due to bug in CMS2
+                        // however, once the bug is fixed, revert back to matching
+/*
                         PassTriggerGroup(triggers_mhad_mm_, cms2.hyp_lt_p4()[hypi], trg_had_double_mu1_);
                         PassTriggerGroup(triggers_mhad_mm_, cms2.hyp_ll_p4()[hypi], trg_had_double_mu2_);                    
+*/
+                        PassTriggerGroup(triggers_mhad_mm_, trg_had_double_mu1_);
+                        PassTriggerGroup(triggers_mhad_mm_, trg_had_double_mu2_);                    
+
                     }
 
                     // do cross trigger (e-mu)
@@ -184,18 +199,24 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 
 
                     // integrated luminosity per luminosity section
-                    //intLumiPerLS_ = cms2.ls_lumiSectionLength() * cms2.ls_avgInsRecLumi();
+                    if (isdata_)
+                        intLumiPerLS_ = cms2.ls_lumiSectionLength() * cms2.ls_avgInsRecLumi();
 
                 } else {
-                    trg_single_e1_ = 1;
-                    trg_single_e2_ = 1;
-                    trg_single_mu1_ = 1;
-                    trg_single_mu2_ = 1;
-                    trg_double_e1_ = 1;
-                    trg_double_e2_ = 1;
-                    trg_double_mu1_ = 1;
-                    trg_double_mu2_ = 1;
-                    trg_cross_emu_ = 1;
+                    trg_single_e1_      = 1;
+                    trg_single_e2_      = 1;
+                    trg_single_mu1_     = 1;
+                    trg_single_mu2_     = 1;
+                    trg_double_e1_      = 1;
+                    trg_double_e2_      = 1;
+                    trg_double_mu1_     = 1;
+                    trg_double_mu2_     = 1;
+                    trg_cross_emu_      = 1;
+                    trg_had_double_e1_  = 1;
+                    trg_had_double_e2_  = 1;
+                    trg_had_double_mu1_ = 1;
+                    trg_had_double_mu2_ = 1;
+                    trg_had_cross_emu_  = 1;
                 }
 
                 // 
@@ -217,10 +238,10 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 float thePFMetPhi     = cms2.evt_pfmetPhi();
                 float theCaloTCMetPhi = cms2.evt_tcmetPhi();
 
-                float metx  = tcmet_ * cos(theTCMetPhi);
-                float mety  = tcmet_ * sin(theTCMetPhi);
-                float cmetx = calotcmet_ * cos(theCaloTCMetPhi);
-                float cmety = calotcmet_ * sin(theCaloTCMetPhi);
+                float metx   = tcmet_ * cos(theTCMetPhi);
+                float mety   = tcmet_ * sin(theTCMetPhi);
+                float cmetx  = calotcmet_ * cos(theCaloTCMetPhi);
+                float cmety  = calotcmet_ * sin(theCaloTCMetPhi);
                 float pfmetx = pfmet_ * cos(thePFMetPhi);
                 float pfmety = pfmet_ * sin(thePFMetPhi);
                 for (unsigned int muj = 0; muj < cms2.mus_p4().size(); ++muj) {
@@ -230,9 +251,9 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                         fixMetForThisMuon(muj, cmetx, cmety, usingTcMet);
                     }
                 }
-                tcmet_ = sqrt(metx * metx + mety * mety);
-                theTCMetPhi = atan2(mety, metx);
-                calotcmet_ = sqrt(cmetx * cmetx + cmety * cmety);
+                tcmet_          = sqrt(metx * metx + mety * mety);
+                theTCMetPhi     = atan2(mety, metx);
+                calotcmet_      = sqrt(cmetx * cmetx + cmety * cmety);
                 theCaloTCMetPhi = atan2(cmety, cmetx);
 
                 //
@@ -244,9 +265,12 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 // will be cleaned for
                 //
 
-                ngoodlep_ = 0;
-                ngoodmus_ = 0;
-                ngoodels_ = 0;
+                ngoodlep_   = 0;
+                ngoodmus_   = 0;
+                ngoodels_   = 0;
+                ngoodlepSS_ = 0;
+                ngoodmusSS_ = 0;
+                ngoodelsSS_ = 0;
 
                 std::vector<unsigned int> goodElectronIndicesTTBarV2;
                 std::vector<unsigned int> goodMuonIndicesTTBarV2;
@@ -259,6 +283,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     // for SS
                     if (cms2.mus_p4()[muii].pt() > 5. && muonId(muii, NominalSSv2) && fabs(cms2.mus_p4()[muii].eta()) < 2.4) {
                         goodMuonIndicesSSV2.push_back(muii);
+                        ++ngoodlepSS_;
+                        ++ngoodmusSS_;
                     }
                     // for TTBarV2
                     if (cms2.mus_p4()[muii].pt() > 10. && muonId(muii, NominalTTbarV2)) {
@@ -275,6 +301,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     // for SS
                     if (cms2.els_p4()[eli].pt() > 10. && pass_electronSelectionCompareMask(cuts_passed, electronSelection_ssV3) && fabs(cms2.els_p4()[eli].eta()) < 2.4) {
                         goodElectronIndicesSSV2.push_back(eli);
+                        ++ngoodlepSS_;
+                        ++ngoodelsSS_;
                     }
                     // for TTBarV2
                     if(cms2.els_p4()[eli].pt() > 10. && pass_electronSelectionCompareMask(cuts_passed, electronSelection_ttbarV2)) {
@@ -348,9 +376,9 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 sumjetpt_   = 0.;
                 sumjetpt25_ = 0.;
                 sumjetptSS_ = 0.;
-                njets25_ = 0;
-                njetsSS_ = 0;
-                njets_ = 0;
+                njets25_    = 0;
+                njetsSS_    = 0;
+                njets_      = 0;
 
                 for (unsigned int jeti = 0; jeti < cms2.pfjets_p4().size(); ++jeti)
                 {
@@ -359,20 +387,12 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     bool jetIsLepTTBarV2 = false;
                     bool jetIsLepSSV2 = false;
                     
-                    // we previously weren't performing jet-lepton overlap removal wiht the hypothesis leptons
+                    // we previously weren't performing jet-lepton overlap removal with the hypothesis leptons
                     // but we should have been; fixing this now
-                    if (abs(cms2.hyp_lt_id()[hypi]) == 11)
-                        if (dRbetweenVectors(vjet, cms2.els_p4()[cms2.hyp_lt_index()[hypi]]) < 0.4)
-                            continue;
-                    if (abs(cms2.hyp_lt_id()[hypi]) == 13)
-                        if (dRbetweenVectors(vjet, cms2.mus_p4()[cms2.hyp_lt_index()[hypi]]) < 0.4)
-                            continue;
-                    if (abs(cms2.hyp_ll_id()[hypi]) == 11)
-                        if (dRbetweenVectors(vjet, cms2.els_p4()[cms2.hyp_ll_index()[hypi]]) < 0.4)
-                            continue;
-                    if (abs(cms2.hyp_ll_id()[hypi]) == 13)
-                        if (dRbetweenVectors(vjet, cms2.mus_p4()[cms2.hyp_ll_index()[hypi]]) < 0.4)
-                            continue;
+                    if (dRbetweenVectors(vjet, cms2.hyp_lt_p4()[hypi]) < 0.4)
+                        continue;
+                    if (dRbetweenVectors(vjet, cms2.hyp_ll_p4()[hypi]) < 0.4)
+                        continue;
 
                     // check if jet is a lepton that passes the ttbar selection
                     for (unsigned int muj = 0; muj < goodMuonIndicesTTBarV2.size(); ++muj) {
@@ -424,36 +444,36 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 // 
 
                 njetsSS_      = theJetIndices.size();
-                jet1pt_       = theJetIndices.size() > 0 ? cms2.pfjets_p4()[theJetIndices[0]].pt()*cms2.pfjets_cor()[theJetIndices[0]] : -999999.;
+                jet1pt_       = theJetIndices.size() > 0 ? cms2.pfjets_p4()[theJetIndices[0]].pt()*cms2.pfjets_corL1FastL2L3()[theJetIndices[0]] : -999999.;
                 jet1eta_      = theJetIndices.size() > 0 ? cms2.pfjets_p4()[theJetIndices[0]].eta() : -999999.;
                 jet1phi_      = theJetIndices.size() > 0 ? cms2.pfjets_p4()[theJetIndices[0]].phi() : -999999.;
-                jet2pt_       = theJetIndices.size() > 1 ? cms2.pfjets_p4()[theJetIndices[1]].pt()*cms2.pfjets_cor()[theJetIndices[1]] : -999999.;
+                jet2pt_       = theJetIndices.size() > 1 ? cms2.pfjets_p4()[theJetIndices[1]].pt()*cms2.pfjets_corL1FastL2L3()[theJetIndices[1]] : -999999.;
                 jet2eta_      = theJetIndices.size() > 1 ? cms2.pfjets_p4()[theJetIndices[1]].eta() : -999999.;
                 jet2phi_      = theJetIndices.size() > 1 ? cms2.pfjets_p4()[theJetIndices[1]].phi() : -999999.;
-                jet3pt_       = theJetIndices.size() > 2 ? cms2.pfjets_p4()[theJetIndices[2]].pt()*cms2.pfjets_cor()[theJetIndices[2]] : -999999.;
+                jet3pt_       = theJetIndices.size() > 2 ? cms2.pfjets_p4()[theJetIndices[2]].pt()*cms2.pfjets_corL1FastL2L3()[theJetIndices[2]] : -999999.;
                 jet3eta_      = theJetIndices.size() > 2 ? cms2.pfjets_p4()[theJetIndices[2]].eta() : -999999.;
                 jet3phi_      = theJetIndices.size() > 2 ? cms2.pfjets_p4()[theJetIndices[2]].phi() : -999999.;
 
                 LorentzVector dijetP4;
-                jetmass_ = theJetIndices.size() > 1 ? sqrt((cms2.pfjets_p4()[theJetIndices[0]]*cms2.pfjets_cor()[theJetIndices[0]] 
-                                                            + cms2.pfjets_p4()[theJetIndices[1]]*cms2.pfjets_cor()[theJetIndices[1]]).M2()) : -999999.; 
+                jetmass_ = theJetIndices.size() > 1 ? sqrt((cms2.pfjets_p4()[theJetIndices[0]]*cms2.pfjets_corL1FastL2L3()[theJetIndices[0]] 
+                                                            + cms2.pfjets_p4()[theJetIndices[1]]*cms2.pfjets_corL1FastL2L3()[theJetIndices[1]]).M2()) : -999999.; 
 
-                mlljj_ = theJetIndices.size() > 1 ? sqrt((cms2.hyp_p4()[hypi] + cms2.pfjets_p4()[theJetIndices[0]]*cms2.pfjets_cor()[theJetIndices[0]]
-                                                          + cms2.pfjets_p4()[theJetIndices[1]]*cms2.pfjets_cor()[theJetIndices[1]]).M2()) : -999999.;
+                mlljj_ = theJetIndices.size() > 1 ? sqrt((cms2.hyp_p4()[hypi] + cms2.pfjets_p4()[theJetIndices[0]]*cms2.pfjets_corL1FastL2L3()[theJetIndices[0]]
+                                                          + cms2.pfjets_p4()[theJetIndices[1]]*cms2.pfjets_corL1FastL2L3()[theJetIndices[1]]).M2()) : -999999.;
 
                 mllj_ = theJetIndices.size() > 0 ? sqrt((cms2.hyp_p4()[hypi] 
-                                                         + cms2.pfjets_p4()[theJetIndices[0]]*cms2.pfjets_cor()[theJetIndices[0]]).M2()) : -999999.;
+                                                         + cms2.pfjets_p4()[theJetIndices[0]]*cms2.pfjets_corL1FastL2L3()[theJetIndices[0]]).M2()) : -999999.;
 
 
                 double mindphipfmet = 999999.;
                 double mindphitcmet = 999999.;
-                ntchelbtags_    = 0;
-                nssvhembtags_   = 0;
-                nssvhetbtags_   = 0;
-                nssvhptbtags_   = 0;
-                jet1isBtag_  = 0;
-                jet2isBtag_  = 0;
-                jet3isBtag_  = 0;
+                ntchelbtags_  = 0;
+                nssvhembtags_ = 0;
+                nssvhetbtags_ = 0;
+                nssvhptbtags_ = 0;
+                jet1isBtag_   = 0;
+                jet2isBtag_   = 0;
+                jet3isBtag_   = 0;
 
                 //
                 // loop on the jets
@@ -634,7 +654,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     hcalIso1_ = cms2.els_hcalIso()[index1];
                     ecalIso1_ = cms2.els_ecalIso()[index1];
                     e1_mitConv_ = !isFromConversionMIT(index1);
-                    ecalIso1ps_ = fabs(cms2.els_p4()[index1].eta()) < 1.479 ? cms2.els_ecalIso()[index1] - 1. : cms2.els_ecalIso()[index1];
+                    ecalIso1ps_ = fabs(cms2.els_p4()[index1].eta()) < 1.479 ? max(cms2.els_ecalIso()[index1] - 1., 0.) : cms2.els_ecalIso()[index1];
                 }
 
                 //
@@ -681,7 +701,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 
                     cuts_t electron_selection = electronSelection(index2);
                     e2_vbtf90full_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ttbarV2);
-                    e1_smurfV3_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_id);
+                    e2_smurfV3_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_id);
 
                     e2_scet_        = cms2.els_eSC()[index2] / cosh(cms2.els_etaSC()[index2]);
                     e2_eopin_       = cms2.els_eOverPIn()[index2];
@@ -706,7 +726,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     hcalIso2_ = cms2.els_hcalIso()[index2];
                     ecalIso2_ = cms2.els_ecalIso()[index2];
                     e2_mitConv_ = !isFromConversionMIT(index2);
-                    ecalIso2ps_ = fabs(cms2.els_p4()[index2].eta()) < 1.479 ? cms2.els_ecalIso()[index2] - 1. : cms2.els_ecalIso()[index2];
+                    ecalIso2ps_ = fabs(cms2.els_p4()[index2].eta()) < 1.479 ? max(cms2.els_ecalIso()[index2] - 1., 0.) : cms2.els_ecalIso()[index2];
                 }
 
                 //
@@ -791,6 +811,9 @@ void dilepbabymaker::InitBabyNtuple ()
     ngoodlep_     = -999999;
     ngoodmus_     = -999999;
     ngoodels_     = -999999;
+    ngoodlepSS_   = -999999;
+    ngoodmusSS_   = -999999;
+    ngoodelsSS_   = -999999;
     ngenels_      = -999999;
     ngenmus_      = -999999;
     ngentaus_     = -999999;
@@ -1002,6 +1025,9 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("ngoodlep",   &ngoodlep_,   "ngoodlep/I"  );
     babyTree_->Branch("ngoodmus",   &ngoodmus_,   "ngoodmus/I"  );
     babyTree_->Branch("ngoodels",   &ngoodels_,   "ngoodels/I"  );
+    babyTree_->Branch("ngoodlepSS", &ngoodlepSS_, "ngoodlepSS/I"  );
+    babyTree_->Branch("ngoodmusSS", &ngoodmusSS_, "ngoodmusSS/I"  );
+    babyTree_->Branch("ngoodelsSS", &ngoodelsSS_, "ngoodelsSS/I"  );
     babyTree_->Branch("dilpt",      &dilpt_,      "dilpt/F"     );
     babyTree_->Branch("dileta",      &dileta_,      "dileta/F"     );
     babyTree_->Branch("dilphi",     &dilphi_,     "dilphi/F"    );
