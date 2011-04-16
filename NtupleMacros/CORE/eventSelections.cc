@@ -276,28 +276,28 @@ bool hypsFromSameVtx2011(size_t hypIdx, float dz, bool requireClosest)
 
         // first take care of lt
         if (lt_isGsf) {
-            if (gsftrks_dz_pv(lt_trkidx, vtxi).first < lt_dz) {
-                lt_dz = gsftrks_dz_pv(lt_trkidx, vtxi).first;
+            if (fabs(gsftrks_dz_pv(lt_trkidx, vtxi).first) < lt_dz) {
+                lt_dz = fabs(gsftrks_dz_pv(lt_trkidx, vtxi).first);
                 lt_vidx = vtxi;
             }            
         }
         else {
-            if (trks_dz_pv(lt_trkidx, vtxi).first < lt_dz) {
-                lt_dz = trks_dz_pv(lt_trkidx, vtxi).first;
+            if (fabs(trks_dz_pv(lt_trkidx, vtxi).first) < lt_dz) {
+                lt_dz = fabs(trks_dz_pv(lt_trkidx, vtxi).first);
                 lt_vidx = vtxi;
             }
         }
 
         // now same thing for ll
         if (ll_isGsf) {
-            if (gsftrks_dz_pv(ll_trkidx, vtxi).first < ll_dz) {
-                ll_dz = gsftrks_dz_pv(ll_trkidx, vtxi).first;
+            if (fabs(gsftrks_dz_pv(ll_trkidx, vtxi).first) < ll_dz) {
+                ll_dz = fabs(gsftrks_dz_pv(ll_trkidx, vtxi).first);
                 ll_vidx = vtxi;
             }            
         }
         else {
-            if (trks_dz_pv(ll_trkidx, vtxi).first < ll_dz) {
-                ll_dz = trks_dz_pv(ll_trkidx, vtxi).first;
+            if (fabs(trks_dz_pv(ll_trkidx, vtxi).first) < ll_dz) {
+                ll_dz = fabs(trks_dz_pv(ll_trkidx, vtxi).first);
                 ll_vidx = vtxi;
             }
         }
