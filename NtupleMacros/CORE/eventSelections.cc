@@ -193,9 +193,9 @@ bool hypsFromSameVtx(size_t hypIdx) {
   for (size_t v = 0; v < cms2.vtxs_position().size(); ++v)  {
     if(!isGoodVertex(v))
       continue;
-    if(fabs(lt_vz - cms2.vtxs_position()[v].Z()) > 1)
+    if(fabs(lt_vz - cms2.vtxs_position()[v].Z()) > 1.)
       continue;
-    if(fabs(ll_vz - cms2.vtxs_position()[v].Z()) > 1)
+    if(fabs(ll_vz - cms2.vtxs_position()[v].Z()) > 1.)
       continue;
 
     //if we've gotten here, then the vertex is good
@@ -235,6 +235,34 @@ bool hypsFromSameVtx2011(size_t hypIdx, float dz, bool requireClosest)
 
     if (lt_trkidx < 0 || ll_trkidx < 0)
         return false;
+
+    if (!requireClosest) {
+        for (size_t v = 0; v < cms2.vtxs_position().size(); ++v)  {
+            if(!isGoodVertex(v))
+                continue;
+            if (lt_isGsf) {
+                if (gsftrks_dz_pv(lt_trkidx, v).first > dz)
+                    continue;
+            }
+            else {
+                if (trks_dz_pv(lt_trkidx, v).first > dz)
+                    continue;
+            }
+            if (ll_isGsf) {
+                if (gsftrks_dz_pv(ll_trkidx, v).first > dz)
+                    continue;
+            }
+            else {
+                if (trks_dz_pv(ll_trkidx, v).first > dz)
+                    continue;
+            }
+            //if we've gotten here, then the vertex is good
+            //and both leptons belong to it
+            return true;
+        }
+
+        return false;
+    }
 
     float lt_dz = 999.;
     float ll_dz = 999.;
@@ -278,7 +306,7 @@ bool hypsFromSameVtx2011(size_t hypIdx, float dz, bool requireClosest)
     if (lt_vidx < 0 || ll_vidx < 0)
         return false;
 
-    if (lt_vidx != ll_vidx && requireClosest)
+    if (lt_vidx != ll_vidx)
         return false;
 
     if (fabs(lt_dz) > dz || fabs(ll_dz) > dz)
