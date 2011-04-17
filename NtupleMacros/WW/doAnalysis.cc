@@ -1,4 +1,4 @@
-const char* config_info = "Smurf HWW V1 selection; Fall10 samples; 35.5/pb Run2010A (Sep17ReReco) & Run2010B (PromptReco)";
+const char* config_info = "Smurf HWW V3 selection; Spring11 samples";
 //now make the source file
 #include "doAnalysis.h"
 #include <algorithm>
@@ -32,6 +32,7 @@ using namespace std;
 #include "CORE/electronSelections.h"
 #include "CORE/muonSelections.h"
 #include "CORE/jetSelections.h"
+#include "CORE/metSelections.h"
 #endif
 
 enum jetregion { HCAL, HF, ALLJET};
@@ -55,10 +56,12 @@ enum hyp_selection {
 };
 
 cuts_t pass_all = (1<<PASS_ZVETO) | (1<<PASS_MET) | (1<<PASS_JETVETO) | (1<<PASS_LT_FINAL) | (1<<PASS_LL_FINAL) | 
- (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO) | (1<<PASS_TOPVETO);
+  (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO) | (1<<PASS_TOPVETO);
 
-bool applyJEC = true;
+bool applyJEC = false;
+bool applyFastJetCorrection = true;
 bool lockToCoreSelectors = false;
+const unsigned int prescale = 1; // DON'T USE ANYTHING BUT 1, unless you know what you are doing
 
 std::vector<std::string> jetcorr_filenames_jpt;
 FactorizedJetCorrector *jet_corrector_jpt;
@@ -78,13 +81,13 @@ FactorizedJetCorrector *jet_corrector_trk;
 //
 
 bool goodElectronWithoutIsolation(unsigned int i){
-  return ww_elBase(i) && ww_elId(i) && ww_eld0PV(i);
+  return ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_eldZPV(i);
 }
 
 bool goodElectronIsolated(unsigned int i){
   bool ptcut = cms2.els_p4().at(i).pt() >= 15.0;
   bool core = ptcut && pass_electronSelection( i, electronSelection_wwV1);
-  bool internal = ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_elIso(i);
+  bool internal = ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_eldZPV(i) && ww_elIso(i);
   assert(!lockToCoreSelectors || core==internal);
   return internal;
 }
@@ -98,13 +101,13 @@ bool fakableElectron(unsigned int i){
 }
 
 bool goodMuonWithoutIsolation(unsigned int i){
-  return ww_muBase(i) && ww_mud0PV(i) && ww_muId(i);
+  return ww_muBase(i) && ww_mud0PV(i) && ww_mudZPV(i) && ww_muId(i);
 }
 
 bool goodMuonIsolated(unsigned int i){
   bool ptcut = cms2.mus_p4().at(i).pt() >= 10.0;
   bool core = ptcut && muonId(i, NominalWWV1);
-  bool internal = ww_muBase(i) && ww_mud0PV(i) && ww_muId(i) && ww_muIso(i); 
+  bool internal = ww_muBase(i) && ww_mud0PV(i) && ww_mudZPV(i) && ww_muId(i) && ww_muIso(i); 
   assert(!lockToCoreSelectors || core==internal);
   return internal;
 }
@@ -117,13 +120,15 @@ bool fakableMuon(unsigned int i){
   // return ww_muBase(i) && ww_muId(i) && ww_muIsoVal(i)<1.0 && fabs(cms2.mus_d0corr()[i]) < 2; 
 }
 
-double metValue(){    return cms2.evt_tcmet(); }
-double metPhiValue(){ return cms2.evt_tcmetPhi(); }
+double metValue(){    return cms2.evt_pfmet(); }
+double metPhiValue(){ return cms2.evt_pfmetPhi(); }
 
 bool passedMetRequirements(unsigned int i_hyp){
   // if ( cms2.hyp_p4().at(i_hyp).mass()>130 ) return true;
   HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
-  double pMet = projectedMet(i_hyp);
+  metStruct trkMET = trackerMET(i_hyp);
+  double pMet = std::min(projectedMet(i_hyp, metValue(), metPhiValue()),
+			 projectedMet(i_hyp, trkMET.met, trkMET.metphi));
   // if ( type == EM && cms2.hyp_p4().at(i_hyp).mass()>90 ) return true;
   if ( pMet < 20 ) return false;
   if (type == EE || type == MM) {
@@ -141,7 +146,7 @@ WWJetType jetType(){
 }
 
 std::vector<LorentzVector> getDefaultJets(unsigned int i_hyp, bool btagged=false){
-  return getJets(jetType(), i_hyp, 25, 5.0, false, btagged); // V1
+  return getJets(jetType(), i_hyp, 30, 5.0, false, btagged); // V1
 }
 
 unsigned int numberOfJets(unsigned int i_hyp){
@@ -153,24 +158,30 @@ unsigned int numberOfJets(unsigned int i_hyp){
 //
 
 bool ww_elBase(unsigned int index){
-  // if (cms2.els_p4().at(index).pt() < 20.0) return false;
+  if (cms2.els_p4().at(index).pt() < 15.0) return false;
   if (fabs(cms2.els_p4().at(index).eta()) > 2.5) return false;
   return true;
 }
 bool ww_elId(unsigned int index){
-  if( fabs(cms2.els_conv_dist().at(index)) < 0.02 &&
-      fabs(cms2.els_conv_dcot().at(index)) < 0.02) return false;
-  if (! (electronId_VBTF(index, VBTF_35X_80) & (1<<ELEID_ID)) ) return false;
+  // if( fabs(cms2.els_conv_dist().at(index)) < 0.02 &&
+  //     fabs(cms2.els_conv_dcot().at(index)) < 0.02) return false;
+  // if (! (electronId_VBTF(index, VBTF_35X_80) & (1<<ELEID_ID)) ) return false;
   // if (! (electronId_VBTF(index, VBTF_35X_70) & (1<<ELEID_ID)) ) return false;
   // if (! (electronId_CIC(index, 4, CIC_SUPERTIGHT) & (1<<ELEID_ID)) ) return false;
+  if (! pass_electronSelection(index, electronSelection_smurfV3_id, false, false) ) return false;
   
+  // MIT conversion
+  if ( isFromConversionMIT(index) ) return false;
+
   // conversion rejection - hit based
-  // if ( cms2.els_exp_innerlayers().at(index) > 0 ) return false;
-  if ( cms2.els_exp_innerlayers39X().at(index) > 0 ) return false;
+  if ( cms2.els_exp_innerlayers().at(index) > 0 ) return false;
+  // MIT conversion
+  // if (! pass_electronSelection(index, (1ll<<ELENOTCONV_MIT), false, false) ) return false;
+  // if ( cms2.els_exp_innerlayers39X().at(index) > 0 ) return false;
   //  int ctfIndex = cms2.els_trkidx().at(index);
   // if ( ctfIndex >=0 && 
   //     cms2.els_charge().at(index)!=cms2.trks_charge().at(ctfIndex) ) return false;
-  if ( !electronId_smurf_v2(index) ) return false;
+  // if ( !electronId_smurf_v2(index) ) return false;
   return true;
 }
  
@@ -179,16 +190,16 @@ bool ww_eld0(unsigned int index){
 }
 
 bool isGoodVertex(size_t ivtx) {
-    if (cms2.vtxs_isFake()[ivtx]) return false;
-    if (cms2.vtxs_ndof()[ivtx] < 4.) return false;
-    if (cms2.vtxs_position()[ivtx].Rho() > 2.0) return false;
-    if (fabs(cms2.vtxs_position()[ivtx].Z()) > 24.0) return false;
+    if (cms2.davtxs_isFake()[ivtx]) return false;
+    if (cms2.davtxs_ndof()[ivtx] < 4.) return false;
+    if (cms2.davtxs_position()[ivtx].Rho() > 2.0) return false;
+    if (fabs(cms2.davtxs_position()[ivtx].Z()) > 24.0) return false;
     return true;
 }
 
 unsigned int nGoodVertex() {
   unsigned int nVtx = 0;
-  for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
+  for ( unsigned int i = 0; i < cms2.davtxs_sumpt().size(); ++i ){
     // if (cms2.vtxs_isFake()[i]) continue;
     if (!isGoodVertex(i)) continue;
     nVtx++;
@@ -196,29 +207,40 @@ unsigned int nGoodVertex() {
   return nVtx;
 }
 
+int primaryVertex(){
+  //  double sumPtMax = -1;
+  //   int iMax = -1;
+  //   for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
+  //     // if (cms2.vtxs_isFake()[i]) continue;
+  //     if (!isGoodVertex(i)) continue;
+  //     if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
+  //       iMax = i;
+  //       sumPtMax = cms2.vtxs_sumpt().at(i);
+  //     }
+  //   }
+  //   if (iMax<0) return false;
+  return 0;
+}
+
 double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVector& pv){
   return (vtx.z()-pv.z()) - ((vtx.x()-pv.x())*p4.x()+(vtx.y()-pv.y())*p4.y())/p4.pt() * p4.z()/p4.pt();
 }
 
 bool ww_eld0PV(unsigned int index){
-  if ( cms2.vtxs_sumpt().empty() ) return false;
-  double sumPtMax = -1;
-  int iMax = -1;
-  for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
-    // if (cms2.vtxs_isFake()[i]) continue;
-    if (!isGoodVertex(i)) continue;
-    if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
-      iMax = i;
-      sumPtMax = cms2.vtxs_sumpt().at(i);
-    }
-  }
-  if (iMax<0) return false;
+  int vtxIndex = primaryVertex();
+  if (vtxIndex<0) return false;
   double dxyPV = cms2.els_d0()[index]-
-    cms2.vtxs_position()[iMax].x()*sin(cms2.els_trk_p4()[index].phi())+
-    cms2.vtxs_position()[iMax].y()*cos(cms2.els_trk_p4()[index].phi());
+    cms2.davtxs_position()[vtxIndex].x()*sin(cms2.els_trk_p4()[index].phi())+
+    cms2.davtxs_position()[vtxIndex].y()*cos(cms2.els_trk_p4()[index].phi());
+  return fabs(dxyPV) < 0.02;
+}
+
+bool ww_eldZPV(unsigned int index){
+  int vtxIndex = primaryVertex();
+  if (vtxIndex<0) return false;
   // double dzPV = cms2.els_z0corr()[index]-cms2.vtxs_position()[iMax].z();
-  double dzpv = dzPV(cms2.els_vertex_p4()[index], cms2.els_trk_p4()[index], cms2.vtxs_position()[iMax]);
-  return fabs(dxyPV) < 0.02 && fabs(dzpv)<1.0;
+  double dzpv = dzPV(cms2.els_vertex_p4()[index], cms2.els_trk_p4()[index], cms2.davtxs_position()[vtxIndex]);
+  return fabs(dzpv)<0.2;
 }
 
 double ww_elIsoVal(unsigned int index){
@@ -242,7 +264,7 @@ bool ww_elIso(unsigned int index){
 //
 
 bool ww_muBase(unsigned int index){
-  // if (cms2.mus_p4().at(index).pt() < 20.0) return false;
+  if (cms2.mus_p4().at(index).pt() < 10.0) return false;
   if (fabs(cms2.mus_p4().at(index).eta()) > 2.4) return false;
   if (cms2.mus_type().at(index) == 8) return false; // not STA
   return true;
@@ -251,26 +273,21 @@ bool ww_mud0(unsigned int index){
   return fabs(cms2.mus_d0corr()[index]) < 0.02;
 }
 bool ww_mud0PV(unsigned int index){
-  if ( cms2.vtxs_sumpt().empty() ) return false;
-  double sumPtMax = -1;
-  int iMax = -1;
-  for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
-    if (cms2.vtxs_isFake()[i]) continue;
-    if (!isGoodVertex(i)) continue;
-    if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
-      iMax = i;
-      sumPtMax = cms2.vtxs_sumpt().at(i);
-    }
-  }
-  if (iMax<0) return false;
+  int vtxIndex = primaryVertex();
+  if (vtxIndex<0) return false;
   double dxyPV = cms2.mus_d0()[index]-
-    cms2.vtxs_position()[iMax].x()*sin(cms2.mus_trk_p4()[index].phi())+
-    cms2.vtxs_position()[iMax].y()*cos(cms2.mus_trk_p4()[index].phi());
-  // double dzpv = cms2.mus_z0corr()[index]-cms2.vtxs_position()[iMax].z();
-  double dzpv = dzPV(cms2.mus_vertex_p4()[index], cms2.mus_trk_p4()[index], cms2.vtxs_position()[iMax]);
+    cms2.davtxs_position()[vtxIndex].x()*sin(cms2.mus_trk_p4()[index].phi())+
+    cms2.davtxs_position()[vtxIndex].y()*cos(cms2.mus_trk_p4()[index].phi());
   if ( cms2.mus_p4().at(index).pt() < 20. )
-    return fabs(dxyPV) < 0.01 && fabs(dzpv)<1.0;
-  return fabs(dxyPV) < 0.02 && fabs(dzpv)<1.0;
+    return fabs(dxyPV) < 0.01;
+  return fabs(dxyPV) < 0.02;
+}
+bool ww_mudZPV(unsigned int index){
+  int vtxIndex = primaryVertex();
+  if (vtxIndex<0) return false;
+  // double dzpv = cms2.mus_z0corr()[index]-cms2.vtxs_position()[iMax].z();
+  double dzpv = dzPV(cms2.mus_vertex_p4()[index], cms2.mus_trk_p4()[index], cms2.davtxs_position()[vtxIndex]);
+  return fabs(dzpv)<0.2;
 }
 bool ww_muId(unsigned int index){
   if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
@@ -356,6 +373,7 @@ unsigned int numberOfExtraLeptons(int i_hyp, double minPt){
 // Triger
 //
 bool passedTrigger(TString trigName) {
+  return true;
   if ( find(cms2.hlt_trigNames().begin(), cms2.hlt_trigNames().end(), trigName)
        == cms2.hlt_trigNames().end() ) return false;
   return cms2.passHLTTrigger(trigName);
@@ -390,11 +408,11 @@ double nearestDeltaPhi(double Phi, int i_hyp)
   return TMath::Min(tightDPhi, looseDPhi);
 }
 
-double projectedMet(unsigned int i_hyp)
+double projectedMet(unsigned int i_hyp, double met, double phi)
 {
-  double DeltaPhi = nearestDeltaPhi(metPhiValue(),i_hyp);
-  if (DeltaPhi < TMath::Pi()/2) return metValue()*TMath::Sin(DeltaPhi);
-  return metValue();
+  double DeltaPhi = nearestDeltaPhi(phi,i_hyp);
+  if (DeltaPhi < TMath::Pi()/2) return met*TMath::Sin(DeltaPhi);
+  return met;
 }
 
 bool metBalance (unsigned int i_hyp) {
@@ -411,7 +429,7 @@ HypTypeInNtuples hypType(unsigned int i_hyp){
 
 bool ww2009_met(unsigned int i_hyp){
   HypTypeInNtuples type = hypType(i_hyp);
-  double pMet = projectedMet(i_hyp);
+  double pMet = projectedMet(i_hyp, metValue(), metPhiValue());
 
   if ( pMet < 20 ) return false;
 
@@ -454,6 +472,11 @@ getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJ
        for ( unsigned int i=0; i < cms2.pfjets_p4().size(); ++i) {
 	  if(applyJEC)
 	    jec = jetCorrection(cms2.pfjets_p4()[i], jet_corrector_pf);
+	  if(applyFastJetCorrection)
+	    // jec *= 1 - 0.5*0.5*M_PI*cms2.evt_rho()/cms2.pfjets_p4().at(i).pt();
+	    // jec *= cms2.pfjets_corL1FastL2L3().at(i)/cms2.pfjets_corL1L2L3().at(i);
+	    // jec *= cms2.pfjets_corL1FastL2L3().at(i);
+	    jec = (1-cms2.evt_rho()*M_PI*0.5*0.5/cms2.pfjets_p4().at(i).pt())*cms2.pfjets_cor().at(i);// It's full L1Fast*L2*L3
 	  if ( cms2.pfjets_p4()[i].pt() * jec < etThreshold ) continue;
 	  if ( btag && !defaultBTag(type,i) ) continue;
 	  if ( TMath::Abs(cms2.pfjets_p4()[i].eta()) > etaMax ) continue;
@@ -472,16 +495,16 @@ getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJ
 	 jets.push_back(cms2.genjets_p4()[i]);
        }
        break;
-     case CaloJet:
-       for ( unsigned int i=0; i < cms2.jets_pat_jet_p4().size(); ++i) {
-	 if ( cms2.jets_pat_jet_p4()[i].pt() < etThreshold ) continue; // note that this is already corrected
-	 if ( btag && !defaultBTag(type,i) ) continue;
-	 if ( TMath::Abs(cms2.jets_pat_jet_p4()[i].eta()) > etaMax ) continue;
-	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jets_pat_jet_p4()[i])) < vetoCone ||
-	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jets_pat_jet_p4()[i])) < vetoCone ) continue;
-	 jets.push_back(cms2.jets_pat_jet_p4()[i]);
-       }
-       break;
+//      case CaloJet:
+//        for ( unsigned int i=0; i < cms2.jets_pat_jet_p4().size(); ++i) {
+// 	 if ( cms2.jets_pat_jet_p4()[i].pt() < etThreshold ) continue; // note that this is already corrected
+// 	 if ( btag && !defaultBTag(type,i) ) continue;
+// 	 if ( TMath::Abs(cms2.jets_pat_jet_p4()[i].eta()) > etaMax ) continue;
+// 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jets_pat_jet_p4()[i])) < vetoCone ||
+// 	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jets_pat_jet_p4()[i])) < vetoCone ) continue;
+// 	 jets.push_back(cms2.jets_pat_jet_p4()[i]);
+//        }
+//        break;
      case TrkJet:
        for ( unsigned int i=0; i < cms2.trkjets_p4().size(); ++i) {
 	 if(applyJEC)
@@ -1154,23 +1177,23 @@ void find_leading_jptjet(int i_hyp, double etaMin, double etaMax, double vetoCon
    }
 }
 
-void find_leading_calojet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & caloJetMax)
-{
-  double jec = 1.0;
-  for ( unsigned int i=0; i < cms2.jets_pat_jet_uncorp4().size(); ++i) {
-    if ( TMath::Abs(cms2.jets_pat_jet_uncorp4()[i].eta()) > etaMax ) continue;
-    if ( TMath::Abs(cms2.jets_pat_jet_uncorp4()[i].eta()) < etaMin ) continue;
-    if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jets_pat_jet_uncorp4()[i])) < vetoCone ||
-	 TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jets_pat_jet_uncorp4()[i])) < vetoCone ) continue;   
-    if(applyJEC)
-      jec = jetCorrection(cms2.jets_pat_jet_uncorp4()[i], jet_corrector_calo);
-    //jec = 1.0/cms2.jets_pat_noCorrF()[i]; 
-    if ( cms2.jets_pat_jet_uncorp4()[i].pt() * jec < caloJetMax ) continue;
-    caloJetMax = cms2.jets_pat_jet_uncorp4()[i].pt() * jec;
-    //if ( cms2.jets_pat_jet_p4()[i].pt() < caloJetMax ) continue;
-    //caloJetMax = cms2.jets_pat_jet_p4()[i].pt();
-  }
-}
+// void find_leading_calojet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & caloJetMax)
+// {
+//   double jec = 1.0;
+//   for ( unsigned int i=0; i < cms2.jets_pat_jet_uncorp4().size(); ++i) {
+//     if ( TMath::Abs(cms2.jets_pat_jet_uncorp4()[i].eta()) > etaMax ) continue;
+//     if ( TMath::Abs(cms2.jets_pat_jet_uncorp4()[i].eta()) < etaMin ) continue;
+//     if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jets_pat_jet_uncorp4()[i])) < vetoCone ||
+// 	 TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jets_pat_jet_uncorp4()[i])) < vetoCone ) continue;   
+//     if(applyJEC)
+//       jec = jetCorrection(cms2.jets_pat_jet_uncorp4()[i], jet_corrector_calo);
+//     //jec = 1.0/cms2.jets_pat_noCorrF()[i]; 
+//     if ( cms2.jets_pat_jet_uncorp4()[i].pt() * jec < caloJetMax ) continue;
+//     caloJetMax = cms2.jets_pat_jet_uncorp4()[i].pt() * jec;
+//     //if ( cms2.jets_pat_jet_p4()[i].pt() < caloJetMax ) continue;
+//     //caloJetMax = cms2.jets_pat_jet_p4()[i].pt();
+//   }
+// }
 
 void find_leading_trkjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & trkJetMax)
 {
@@ -1211,8 +1234,8 @@ void fill_val_plots(int i_hyp, cuts_t cuts_passed, double weight)
   if(CheckCuts( (1<<PASS_JETVETO) | (1<<PASS_LL_FINAL) | (1<<PASS_LT_FINAL)  , cuts_passed)) {
     hmetVal[type] -> Fill(metValue(), weight);
     hmetVal[3] -> Fill(metValue(), weight);
-    hmetProjVal[type] -> Fill(projectedMet(i_hyp), weight);
-    hmetProjVal[3] -> Fill(projectedMet(i_hyp), weight);
+    hmetProjVal[type] -> Fill(projectedMet(i_hyp, metValue(), metPhiValue()), weight);
+    hmetProjVal[3] -> Fill(projectedMet(i_hyp, metValue(), metPhiValue()), weight);
   }
   // Fill Leading Jet Pt
   if(CheckCuts(  (1<<PASS_LL_FINAL) | (1<<PASS_LT_FINAL)  , cuts_passed)) {
@@ -1228,8 +1251,8 @@ void fill_val_plots(int i_hyp, cuts_t cuts_passed, double weight)
   if (CheckCutsNM1(pass_all, (1<<PASS_MET), cuts_passed) ) {
     hmetNM1[type] -> Fill(metValue(), weight);
     hmetNM1[3] -> Fill(metValue(), weight);
-    hmetProjNM1[type] -> Fill(projectedMet(i_hyp), weight);
-    hmetProjNM1[3] -> Fill(projectedMet(i_hyp), weight);    
+    hmetProjNM1[type] -> Fill(projectedMet(i_hyp, metValue(), metPhiValue()), weight);
+    hmetProjNM1[3] -> Fill(projectedMet(i_hyp, metValue(), metPhiValue()), weight);    
   }
 
   if (CheckCutsNM1(pass_all, (1<<PASS_JETVETO), cuts_passed) ) {
@@ -1405,9 +1428,103 @@ toptag(WWJetType type, int i_hyp, double minPt,
      return false;
 }
 
+bool hypoSync(int i_hyp, double weight, bool zStudy, bool realData) 
+{
+  HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
+  if (nGoodVertex()<1) return false;
+  
+  monitor.count(cms2,type,"primary verex",weight);
+  
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_mud0PV(cms2.hyp_lt_index()[i_hyp]) ) return false;
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_mud0PV(cms2.hyp_ll_index()[i_hyp]) ) return false;
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !ww_eld0PV(cms2.hyp_lt_index()[i_hyp]) ) return false;
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !ww_eld0PV(cms2.hyp_ll_index()[i_hyp]) ) return false;
+  
+  monitor.count(cms2,type,"d0",weight);
+  
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_mudZPV(cms2.hyp_lt_index()[i_hyp]) ) return false;
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_mudZPV(cms2.hyp_ll_index()[i_hyp]) ) return false;
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !ww_eldZPV(cms2.hyp_lt_index()[i_hyp]) ) return false;
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !ww_eldZPV(cms2.hyp_ll_index()[i_hyp]) ) return false;
+  
+  monitor.count(cms2,type,"dZ",weight);
+
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_muIso(cms2.hyp_lt_index()[i_hyp]) ) return false;
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_muIso(cms2.hyp_ll_index()[i_hyp]) ) return false;
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !ww_elIso(cms2.hyp_lt_index()[i_hyp]) ) return false;
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !ww_elIso(cms2.hyp_ll_index()[i_hyp]) ) return false;
+
+  monitor.count(cms2,type,"iso",weight);
+  
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_muId(cms2.hyp_lt_index()[i_hyp]) ) return false;
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_muId(cms2.hyp_ll_index()[i_hyp]) ) return false;
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && 
+      ! pass_electronSelection(cms2.hyp_lt_index()[i_hyp], electronSelection_smurfV3_id, false, false) ) return false;
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && 
+      ! pass_electronSelection(cms2.hyp_ll_index()[i_hyp], electronSelection_smurfV3_id, false, false) ) return false;
+  
+  monitor.count(cms2,type,"lepton id",weight);
+
+//   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && 
+//       (fabs(cms2.els_conv_dist().at(cms2.hyp_lt_index()[i_hyp])) < 0.02 &&
+//        fabs(cms2.els_conv_dcot().at(cms2.hyp_lt_index()[i_hyp])) < 0.02 )) return false;
+//   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && 
+//       (fabs(cms2.els_conv_dist().at(cms2.hyp_ll_index()[i_hyp])) < 0.02 &&
+//        fabs(cms2.els_conv_dcot().at(cms2.hyp_ll_index()[i_hyp])) < 0.02 )) return false;
+  
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && 
+      cms2.els_exp_innerlayers().at(cms2.hyp_lt_index()[i_hyp]) != 0) return false;
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && 
+      cms2.els_exp_innerlayers().at(cms2.hyp_ll_index()[i_hyp]) != 0) return false;
+
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && 
+      isFromConversionMIT(cms2.hyp_lt_index()[i_hyp]))
+      // ! pass_electronSelection(cms2.hyp_lt_index()[i_hyp], (1ll<<ELENOTCONV_MIT), false, false) )
+    return false;
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && 
+      isFromConversionMIT(cms2.hyp_ll_index()[i_hyp]))
+      // ! pass_electronSelection(cms2.hyp_ll_index()[i_hyp], (1ll<<ELENOTCONV_MIT), false, false) )
+    return false;
+  
+  monitor.count(cms2,type,"conv rejection",weight);
+  
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) return false;
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) ) return false;
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_lt_index()[i_hyp]) ) return false;
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_ll_index()[i_hyp]) ) return false;
+  
+  monitor.count(cms2,type,"lepton id/iso",weight);
+  // if ( std::min(metValue(),double(trackerMET(i_hyp,0.2).met))<20 ) return false;
+  if ( metValue()<20 ) return false;
+  monitor.count(cms2,type,"met>20",weight);
+  
+  if ( std::max(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<20 ) return false;
+  if (cms2.hyp_p4().at(i_hyp).mass2()<0 || 
+      cms2.hyp_p4()[i_hyp].mass() < 12) return false;
+  monitor.count(cms2,type,"tight_pt>20 && mll>12",weight);
+  
+  if ( type == EE || type == MM) {
+    if (inZmassWindow(cms2.hyp_p4()[i_hyp].mass())) return false;
+  }
+  monitor.count(cms2,type,"z veto",weight);
+  
+  if (!passedMetRequirements(i_hyp)) return false;
+  monitor.count(cms2,type,"Full MET cuts",weight);
+    
+  if ( numberOfJets(i_hyp)>0 ) return false;
+  monitor.count(cms2,type,"JetVeto cuts",weight);
+
+  if (numberOfSoftMuons(i_hyp,true)>0) return false;
+  monitor.count(cms2,type,"soft muon veto",weight);
+
+  if (numberOfExtraLeptons(i_hyp,10)>0) return false;
+  monitor.count(cms2,type,"extra lepton veto",weight);
+  return true;
+} // end of Synchronization info
+
 bool hypo (int i_hyp, double weight, bool zStudy, bool realData) 
 {
-  if ( std::max(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<20 ) return false;
+  //  if ( std::max(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<20 ) return false;
   if ( std::min(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<10 ) return false;
 
   /*
@@ -1444,79 +1561,9 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
   monitor.count(cms2,type,"baseline cuts",weight);
  
   if (gSystem->Getenv("Sync")) // Synchronization info
-  {
-    if (nGoodVertex()<1) return false;
+    if (!hypoSync(i_hyp,weight,zStudy,realData)) return false;
 
-    monitor.count(cms2,type,"primary verex",weight);
-
-    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_mud0PV(cms2.hyp_lt_index()[i_hyp]) ) return false;
-    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_mud0PV(cms2.hyp_ll_index()[i_hyp]) ) return false;
-    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !ww_eld0PV(cms2.hyp_lt_index()[i_hyp]) ) return false;
-    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !ww_eld0PV(cms2.hyp_ll_index()[i_hyp]) ) return false;
-
-    monitor.count(cms2,type,"d0",weight);
-
-    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && ww_muIsoVal(cms2.hyp_lt_index()[i_hyp])>0.15 ) return false;
-    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && ww_muIsoVal(cms2.hyp_ll_index()[i_hyp])>0.15 ) return false;
-    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && ww_elIsoVal(cms2.hyp_lt_index()[i_hyp])>0.1 ) return false;
-    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && ww_elIsoVal(cms2.hyp_ll_index()[i_hyp])>0.1 ) return false;
-
-    monitor.count(cms2,type,"iso",weight);
-    
-    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_muId(cms2.hyp_lt_index()[i_hyp]) ) return false;
-    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_muId(cms2.hyp_ll_index()[i_hyp]) ) return false;
-    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && 
-	! (electronId_VBTF(cms2.hyp_lt_index()[i_hyp], VBTF_35X_80) & (1<<ELEID_ID))  ) return false;
-    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && 
-	! (electronId_VBTF(cms2.hyp_ll_index()[i_hyp], VBTF_35X_80) & (1<<ELEID_ID))  ) return false;
-
-    monitor.count(cms2,type,"lepton id",weight);
-
-    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && 
-	(fabs(cms2.els_conv_dist().at(cms2.hyp_lt_index()[i_hyp])) < 0.02 &&
-	 fabs(cms2.els_conv_dcot().at(cms2.hyp_lt_index()[i_hyp])) < 0.02 )) return false;
-    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && 
-	(fabs(cms2.els_conv_dist().at(cms2.hyp_ll_index()[i_hyp])) < 0.02 &&
-	 fabs(cms2.els_conv_dcot().at(cms2.hyp_ll_index()[i_hyp])) < 0.02 )) return false;
-
-    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && 
-	cms2.els_exp_innerlayers39X().at(cms2.hyp_lt_index()[i_hyp]) != 0) return false;
-    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && 
-	cms2.els_exp_innerlayers39X().at(cms2.hyp_ll_index()[i_hyp]) != 0) return false;
-
-    monitor.count(cms2,type,"conv rejection",weight);
-
-    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) return false;
-    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) ) return false;
-    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_lt_index()[i_hyp]) ) return false;
-    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_ll_index()[i_hyp]) ) return false;
-
-    monitor.count(cms2,type,"lepton id/iso",weight);
-    if ( metValue()<20 ) return false;
-    monitor.count(cms2,type,"met>20",weight);
-    
-    if (cms2.hyp_p4().at(i_hyp).mass2()<0 || 
-	cms2.hyp_p4()[i_hyp].mass() < 12) return false;
-    monitor.count(cms2,type,"mll>12",weight);
-    
-    if ( type == EE || type == MM) {
-      if (inZmassWindow(cms2.hyp_p4()[i_hyp].mass())) return false;
-    }
-    monitor.count(cms2,type,"z veto",weight);
-    
-    if (!passedMetRequirements(i_hyp)) return false;
-    monitor.count(cms2,type,"Full MET cuts",weight);
-    
-    if ( numberOfJets(i_hyp)>0 ) return false;
-    monitor.count(cms2,type,"JetVeto cuts",weight);
-
-    if (numberOfSoftMuons(i_hyp,true)>0) return false;
-    monitor.count(cms2,type,"soft muon veto",weight);
-
-    if (numberOfExtraLeptons(i_hyp,10)>0) return false;
-    monitor.count(cms2,type,"extra lepton veto",weight);
-  } // end of Synchronization info
-
+  if ( std::max(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<20 ) return false;
   if (nGoodVertex()<1) return false;
   hnGoodVertex -> Fill(nGoodVertex(), weight);
   
@@ -1810,8 +1857,8 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
      hmetPhi[type]->Fill(metPhiValue(), weight);      
      hmet[3]->Fill(metValue(), weight);      
      hmetPhi[3]->Fill(metPhiValue(), weight);   
-     hmetProj[type]->Fill(projectedMet(i_hyp), weight);         
-     hmetProj[3]->Fill(projectedMet(i_hyp), weight);         
+     hmetProj[type]->Fill(projectedMet(i_hyp, metValue(), metPhiValue()), weight);         
+     hmetProj[3]->Fill(projectedMet(i_hyp, metValue(), metPhiValue()), weight);         
     
      // Met vs dilepton Pt
      hmetVsDilepPt[type]->Fill(metValue(), cms2.hyp_p4()[i_hyp].pt(), weight);
@@ -2175,7 +2222,7 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp, double weight, enum Sa
   tree.njets_ = jets.size();
   tree.evtype_ = SmurfTree::ZeroJet;
   tree.dilep_ = cms2.hyp_p4().at(i_hyp);
-  tree.pmet_ = projectedMet(i_hyp);
+  tree.pmet_ = projectedMet(i_hyp, metValue(), metPhiValue());
   tree.dPhi_ = fabs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_lt_p4().at(i_hyp),cms2.hyp_ll_p4().at(i_hyp)));
   tree.dR_   = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4().at(i_hyp),cms2.hyp_ll_p4().at(i_hyp));
   if (jets.size()>0) {
@@ -2377,6 +2424,7 @@ void ScanChain( TChain* chain,
   
     for( unsigned int event = 0; event < nEvents; ++event) {
       cms2.GetEntry(event);  // get entries for Event number event from branches of TTree tree
+      if (cms2.evt_event()%prescale!=0) continue;
       // Select the good runs from the json file
       if(realData && cms2_json_file!="") {
 	if( !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
@@ -3007,11 +3055,11 @@ void fill_dyest_histograms(int i_hyp, float weight)
   
   // fill the met histograms for "in" and "out" regions
   if (inZmassWindow(mass)) {
-    hmetInDYEst[type] -> Fill(projectedMet(i_hyp), weight); 
-    hmetInDYEst[3] -> Fill(projectedMet(i_hyp), weight); 
+    hmetInDYEst[type] -> Fill(projectedMet(i_hyp, metValue(), metPhiValue()), weight); 
+    hmetInDYEst[3] -> Fill(projectedMet(i_hyp, metValue(), metPhiValue()), weight); 
   }
   else {
-    hmetOutDYEst[type] -> Fill(projectedMet(i_hyp), weight); 
-    hmetOutDYEst[3] -> Fill(projectedMet(i_hyp), weight); 
+    hmetOutDYEst[type] -> Fill(projectedMet(i_hyp, metValue(), metPhiValue()), weight); 
+    hmetOutDYEst[3] -> Fill(projectedMet(i_hyp, metValue(), metPhiValue()), weight); 
   }
 }
