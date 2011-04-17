@@ -20,6 +20,7 @@ bool   ww_elBase(unsigned int i);
 bool   ww_elId(unsigned int i);
 bool   ww_eld0(unsigned int i);
 bool   ww_eld0PV(unsigned int i);
+bool   ww_eldZPV(unsigned int i);
 bool   ww_elIso(unsigned int i);
 double ww_elIsoVal(unsigned int i);
 
@@ -38,6 +39,7 @@ bool   ww_muIso(unsigned int i);
 double ww_muIsoVal(unsigned int i);
 bool   ww_mud0(unsigned int i);
 bool   ww_mud0PV(unsigned int i);
+bool   ww_mudZPV(unsigned int i);
 
 unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated,
 			       const std::vector<LorentzVector>& = std::vector<LorentzVector>());
@@ -67,7 +69,7 @@ bool ww2009_met(unsigned int i_hyp);
 // analysis MET requirements
 bool passedMetRequirements(unsigned int i_hyp);
 
-double projectedMet(unsigned int i_hyp);
+double projectedMet(unsigned int i_hyp, double met, double phi);
 
 bool metBalance (unsigned int i_hyp);
 

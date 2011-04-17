@@ -60,8 +60,8 @@ void hypo_monitor::print() const
   std::cout << "Total number of processed events: \t" << nEvtProcessed << std::endl;
   for ( unsigned int i=0; i<counters.size(); ++i ) 
     std::cout << Form("%-40s \thyps: %u/%u/%u/%u \tnevts: %u/%u/%u/%u", counters[i].name.c_str(),
-		      counters[i].nhyp[EE],counters[i].nhyp[EM],counters[i].nhyp[MM],counters[i].nhyp[ALL],
-		      counters[i].nevt[EE],counters[i].nevt[EM],counters[i].nevt[MM],counters[i].nevt[ALL]) 
+		      counters[i].nhyp[MM],counters[i].nhyp[EE],counters[i].nhyp[EM],counters[i].nhyp[ALL],
+		      counters[i].nevt[MM],counters[i].nevt[EE],counters[i].nevt[EM],counters[i].nevt[ALL]) 
 	      << std::endl;
 }
 

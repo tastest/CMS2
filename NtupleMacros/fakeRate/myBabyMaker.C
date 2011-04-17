@@ -243,20 +243,20 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         v2SSAug9_  = pass_electronSelection(iEl, electronSelectionFO_ssVBTF80_v2, isData, true);
         v3SSAug9_  = pass_electronSelection(iEl, electronSelectionFO_ssVBTF80_v3, isData, true);
 
-        numOct6_ = pass_electronSelection( iEl, electronSelection_ttbarV1_pass5);
-        v1Oct6_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v1_pass5);
-        v2Oct6_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v2_pass5);
-        v3Oct6_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v3_pass5);
+	numOct6_ = pass_electronSelection( iEl, electronSelection_ttbarV1_pass5);
+	v1Oct6_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v1_pass5);
+	v2Oct6_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v2_pass5);
+	v3Oct6_  = pass_electronSelection( iEl, electronSelectionFO_el_ttbarV1_v3_pass5);
 
-        numOSOct18_ = pass_electronSelection( iEl, electronSelection_el_OSV1);
-        v1OSOct18_  = pass_electronSelection( iEl, electronSelectionFO_el_OSV1_v1);
-        v2OSOct18_  = pass_electronSelection( iEl, electronSelectionFO_el_OSV1_v2);
-        v3OSOct18_  = pass_electronSelection( iEl, electronSelectionFO_el_OSV1_v3);
+	numOSOct18_ = pass_electronSelection( iEl, electronSelection_el_OSV1);
+	v1OSOct18_  = pass_electronSelection( iEl, electronSelectionFO_el_OSV1_v1);
+	v2OSOct18_  = pass_electronSelection( iEl, electronSelectionFO_el_OSV1_v2);
+	v3OSOct18_  = pass_electronSelection( iEl, electronSelectionFO_el_OSV1_v3);
 
-        numSSOct18_ = pass_electronSelection( iEl, electronSelection_ss, false, false) && (!isSpikeElectron(iEl));
-        v1SSOct18_  = pass_electronSelection( iEl, electronSelectionFO_ssVBTF80_v1, false, false);
-        v2SSOct18_  = pass_electronSelection( iEl, electronSelectionFO_ssVBTF80_v2, false, false);
-        v3SSOct18_  = pass_electronSelection( iEl, electronSelectionFO_ssVBTF80_v3, false, false);
+	numSSOct18_ = pass_electronSelection( iEl, electronSelection_ss, false, false) && (!isSpikeElectron(iEl));
+	v1SSOct18_  = pass_electronSelection( iEl, electronSelectionFO_ssVBTF80_v1, false, false);
+	v2SSOct18_  = pass_electronSelection( iEl, electronSelectionFO_ssVBTF80_v2, false, false);
+	v3SSOct18_  = pass_electronSelection( iEl, electronSelectionFO_ssVBTF80_v3, false, false);
 
         v1_wwV1_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV1_v1);
         v2_wwV1_  = pass_electronSelection( iEl, electronSelectionFO_el_wwV1_v2);
@@ -308,6 +308,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         if (numSSV2_ && (!v2SSV2_)) cout << "bad v2SSV2_" << endl;
         if (numSSV2_ && (!v3SSV2_)) cout << "bad v3SSV2_" << endl;
 
+
+
         // If there is no v1/v2/v3 lepton quit
         if (  (!v1_) && (!v2_) && (!v3_) && 
               (!v1SS_) && (!v2SS_) && (!v3SS_) && 
@@ -341,7 +343,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         run_   = evt_run();
         ls_    = evt_lumiBlock();
         evt_   = evt_event();
-        weight_ = isData ? 1. : evt_scale1fb();
+		weight_ = isData ? 1. : evt_scale1fb();
         pt_    = els_p4().at(iEl).pt();
         eta_   = els_p4().at(iEl).eta();
         phi_   = els_p4().at(iEl).phi();
@@ -406,8 +408,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
           if( qCTF == qGSF && qCTF == qPIX && qGSF == qPIX ) q3_ = true;
         }
 
-        // Missing hits info
-        // Warning els_exp_innerlayers39X_ is set to 999 if this branch doesn't exits
+       // Missing hits info
+       // Warning els_exp_innerlayers39X_ is set to 999 if this branch doesn't exits
 
         els_exp_innerlayers_ = els_exp_innerlayers().at(iEl);
         //els_exp_innerlayers39X_ = els_exp_innerlayers39X().at(iEl);
@@ -428,6 +430,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         }
 
         // btag info for corrected pfjet
+
         nbpfcjet_ = this_nbpfjet;
         dRbpfcNear_ = 99.;
         dRbpfcFar_  = -99.;
@@ -440,8 +443,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
           if (dr < dRbpfcNear_) dRbpfcNear_ = dr;
           if (dr > dRbpfcFar_)   dRbpfcFar_  = dr; 
         }
-         
- 
+          
  
         ///////////////////////  
         // 2011 Triggers     //
@@ -468,6 +470,37 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
           dr_ele8_CaloIdL_CaloIsoVL_v2_                         = pair_ele8_CaloIdL_CaloIsoVL_v2.second;
           dr_ele17_CaloIdL_CaloIsoVL_v2_                        = pair_ele17_CaloIdL_CaloIsoVL_v2.second;
           //dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_  = pair_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2.second; 
+
+          // Muons
+          pair<int, float> pair_mu3_v3       = TriggerMatch( els_p4().at(iEl), "HLT_Mu3_v3"       );
+          pair<int, float> pair_mu5_v3       = TriggerMatch( els_p4().at(iEl), "HLT_Mu5_v3"       );
+          pair<int, float> pair_mu8_v1       = TriggerMatch( els_p4().at(iEl), "HLT_Mu8_v1"       );
+          pair<int, float> pair_mu12_v1      = TriggerMatch( els_p4().at(iEl), "HLT_Mu12_v1"      );
+          pair<int, float> pair_mu15_v2      = TriggerMatch( els_p4().at(iEl), "HLT_Mu15_v2"      );
+          pair<int, float> pair_mu20_v1      = TriggerMatch( els_p4().at(iEl), "HLT_Mu20_v1"      );
+          pair<int, float> pair_mu24_v1      = TriggerMatch( els_p4().at(iEl), "HLT_Mu24_v1"      );
+          pair<int, float> pair_mu30_v1      = TriggerMatch( els_p4().at(iEl), "HLT_Mu30_v1"      );
+          pair<int, float> pair_mu8_Jet40_v3 = TriggerMatch( els_p4().at(iEl), "HLT_Mu8_Jet40_v3" );
+
+          mu3_v3_         = pair_mu3_v3.first;
+          mu5_v3_         = pair_mu5_v3.first;
+          mu8_v1_         = pair_mu8_v1.first;
+          mu12_v1_        = pair_mu12_v1.first;
+          mu15_v2_        = pair_mu15_v2.first;
+          mu20_v1_        = pair_mu20_v1.first;
+          mu24_v1_        = pair_mu24_v1.first;
+          mu30_v1_        = pair_mu30_v1.first;
+          mu8_Jet40_v3_   = pair_mu8_Jet40_v3.first;
+
+          dr_mu3_v3_       = pair_mu3_v3.second;                                                
+          dr_mu5_v3_       = pair_mu5_v3.second;                                                
+          dr_mu8_v1_       = pair_mu8_v1.second;                                                
+          dr_mu12_v1_      = pair_mu12_v1.second;                                               
+          dr_mu15_v2_      = pair_mu15_v2.second;                                               
+          dr_mu20_v1_      = pair_mu20_v1.second;  
+          dr_mu24_v1_      = pair_mu24_v1.second;
+          dr_mu30_v1_      = pair_mu30_v1.second;                                               
+          dr_mu8_Jet40_v3_ = pair_mu8_Jet40_v3.second;
 
         ///////////////////////  
         // 2011 Triggers     //
@@ -517,21 +550,29 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         pair<int, float> pair_el10_lw     = TriggerMatch( els_p4().at(iEl), "HLT_Ele10_LW_L1R");
         pair<int, float> pair_el10_sw     = TriggerMatch( els_p4().at(iEl), "HLT_Ele10_SW_L1R");
         pair<int, float> pair_el10_sw_v2  = TriggerMatch( els_p4().at(iEl), "HLT_Ele10_SW_L1R_v2");
+
         pair<int, float> pair_el10_lw_id  = TriggerMatch( els_p4().at(iEl), "HLT_Ele10_LW_EleId_L1R");
         pair<int, float> pair_el10_sw_id  = TriggerMatch( els_p4().at(iEl), "HLT_Ele10_SW_EleId_L1R");
+
         pair<int, float> pair_el15_lw     = TriggerMatch( els_p4().at(iEl), "HLT_Ele15_LW_L1R");
         pair<int, float> pair_el15_sw     = TriggerMatch( els_p4().at(iEl), "HLT_Ele15_SW_L1R");
+
         pair<int, float> pair_el15_lw_id  = TriggerMatch( els_p4().at(iEl), "HLT_Ele15_LW_EleId_L1R");
         pair<int, float> pair_el15_sw_id  = TriggerMatch( els_p4().at(iEl), "HLT_Ele15_SW_EleId_L1R");
+
         pair<int, float> pair_el15_sw_cid = TriggerMatch( els_p4().at(iEl), "HLT_Ele15_SW_CaloEleId_L1R");
+
         pair<int, float> pair_el20_sw     = TriggerMatch( els_p4().at(iEl), "HLT_Ele20_SW_L1R");
         pair<int, float> pair_el25_sw     = TriggerMatch( els_p4().at(iEl), "HLT_Ele25_SW_L1R");
+
         pair<int, float> pair_Del10_sw    = TriggerMatch( els_p4().at(iEl), "HLT_DoubleEle10_SW_L1R");
+
         pair<int, float> pair_ph10    = TriggerMatch( els_p4().at(iEl), "HLT_Photon10_L1R");
         pair<int, float> pair_ph10C   = TriggerMatch( els_p4().at(iEl), "HLT_Photon10_Cleaned_L1R");
         pair<int, float> pair_ph15    = TriggerMatch( els_p4().at(iEl), "HLT_Photon15_L1R");
         pair<int, float> pair_ph15C   = TriggerMatch( els_p4().at(iEl), "HLT_Photon15_Cleaned_L1R");
         pair<int, float> pair_ph20C   = TriggerMatch( els_p4().at(iEl), "HLT_Photon20_Cleaned_L1R");
+
         pair<int, float> pair_el17_sw     = TriggerMatch( els_p4().at(iEl), "HLT_Ele17_SW_L1R");
         pair<int, float> pair_el17_sw_v2  = TriggerMatch( els_p4().at(iEl), "HLT_Ele17_SW_L1R_v2");
         pair<int, float> pair_el17_iso    = TriggerMatch( els_p4().at(iEl), "HLT_Ele17_Isol_L1R");
@@ -540,6 +581,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         pair<int, float> pair_el17_sw_id  = TriggerMatch( els_p4().at(iEl), "HLT_Ele17_SW_EleId_L1R");
         pair<int, float> pair_el17_tiso   = TriggerMatch( els_p4().at(iEl), "HLT_Ele17_SW_TightEleIdIsol_L1R");
         pair<int, float> pair_el17_tiso_v1  = TriggerMatch( els_p4().at(iEl), "HLT_Ele17_SW_TightEleIdIsol_L1R_v1");
+
 
         int   ph10    = max( pair_ph10.first, pair_ph10C.first );
         int   ph15    = max( pair_ph15.first, pair_ph15C.first );
@@ -555,22 +597,30 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         el17_sw_id_    = pair_el17_sw_id.first;
         el17_tiso_     = pair_el17_tiso.first;
         el17_tiso_v1_  = pair_el17_tiso_v1.first;
+
         el10_lw_      = pair_el10_lw.first;
         el10_sw_      = pair_el10_sw.first;
         el10_sw_v2_   = pair_el10_sw_v2.first;
+
         el10_lw_id_   = pair_el10_lw_id.first;
         el10_sw_id_   = pair_el10_sw_id.first;
+
         el15_lw_      = pair_el15_lw.first;
         el15_sw_      = pair_el15_sw.first;
+
         el15_lw_id_   = pair_el15_lw_id.first;
         el15_sw_id_   = pair_el15_sw_id.first;
+
         el15_sw_cid_  = pair_el15_sw_cid.first;
+
         el20_sw_      = pair_el20_sw.first;
         el25_sw_      = pair_el25_sw.first;
         Del10_sw_     = pair_Del10_sw.first;
-        ph10_         = ph10;
-        ph15_         = ph15;
-        ph20_         = pair_ph20C.first;
+
+
+        ph10_     = ph10;
+        ph15_     = ph15;
+        ph20_     = pair_ph20C.first;
 
         // dr between lepton and closest jet
         drel17_sw_       = pair_el17_sw.second;
@@ -581,22 +631,29 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         drel17_sw_id_    = pair_el17_sw_id.second;
         drel17_tiso_     = pair_el17_tiso.second;
         drel17_tiso_v1_  = pair_el17_tiso_v1.second;
+
         drel10_lw_      = pair_el10_lw.second;
         drel10_sw_      = pair_el10_sw.second;
         drel10_sw_v2_   = pair_el10_sw_v2.second;
+
         drel10_lw_id_   = pair_el10_lw_id.second;
         drel10_sw_id_   = pair_el10_sw_id.second;
+
         drel15_lw_      = pair_el15_lw.second;
         drel15_sw_      = pair_el15_sw.second;
+
         drel15_lw_id_   = pair_el15_lw_id.second;
         drel15_sw_id_   = pair_el15_sw_id.second;
+
         drel15_sw_cid_  = pair_el15_sw_cid.second;
+
         drel20_sw_      = pair_el20_sw.second;
         drel25_sw_      = pair_el25_sw.second;
         drDel10_sw_     = pair_Del10_sw.second;
-        drph10_         = drph10;
-        drph15_         = drph15;
-        drph20_         = pair_ph20C.second;
+
+        drph10_     = drph10;
+        drph15_     = drph15;
+        drph20_     = pair_ph20C.second;
 
         ///////////////////////  
         // End 2010 Triggers //
@@ -604,9 +661,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
 
 
-        //////////////
-        // Jets     //
-        //////////////
+
 
         // Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
         ptj1_       = -999.0;
@@ -648,12 +703,14 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
           }
         }
 
-        // Find the highest Pt PF corrected jet separated by at least dRcut from this lepton and fill the jet Pt
+      // Find the highest Pt PF corrected jet separated by at least dRcut from this lepton and fill the jet Pt
+
         ptpfcj1_       = -999.0; 
         ptpfcj1_b2b_   = -999.0;
         dphipfcj1_b2b_ = -999.0;
         npfcj1_        = 0;
         btagpfc_       = false;
+
         for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
           if ( !passesPFJetID(iJet)) continue;
           LorentzVector jp4 = pfjets_p4()[iJet];
@@ -674,13 +731,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
           }
         }
 
-        //////////////
-        // End Jets //
-        //////////////
 
-
-
-        // Time to fill the baby for the electrons
+	// Time to fill the baby for the electrons
         FillBabyNtuple();
 
       } // closes loop over electrons
@@ -717,7 +769,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         run_  = evt_run();
         ls_   = evt_lumiBlock();
         evt_  = evt_event();
-        weight_ = isData ? 1. : evt_scale1fb();
+		weight_ = isData ? 1. : evt_scale1fb();
         pt_   = mus_p4().at(iMu).pt();
         eta_  = mus_p4().at(iMu).eta();
         phi_  = mus_p4().at(iMu).phi();
@@ -777,7 +829,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         numv1_  = muonId(iMu, NominalTTbar);
         numSS_  = muonId(iMu, Nominal);
         numNomSS_  = muonId(iMu, NominalSS);
-        numNomSSv2_ = muonId(iMu, NominalSSv2);
+		numNomSSv2_ = muonId(iMu, NominalSSv2);
         num_wwV1_  = muonId(iMu, NominalWWV1);
         num_OSGv1_ = muonId(iMu, OSGeneric_v1);
         num_OSZv1_ = muonId(iMu, OSZ_v1);
@@ -826,8 +878,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
           if (dr < dRbNear_) dRbNear_ = dr;
           if (dr > dRbFar_)  dRbFar_  = dr;
         }
-         
-        // The btag information for pfjets
+         // The btag information for pfjets
+
         nbpfcjet_ = this_nbpfjet;
         dRbpfcNear_ = 99.;
         dRbpfcFar_  = -99.;
@@ -841,53 +893,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
           if (dr > dRbpfcFar_)   dRbpfcFar_  = dr;
         }
 
-
-
-        ///////////////////////  
-        // 2011 Triggers     //
-        ///////////////////////
-  
-          // Muons
-          pair<int, float> pair_mu3_v3       = TriggerMatch( els_p4().at(iEl), "HLT_Mu3_v3"       );
-          pair<int, float> pair_mu5_v3       = TriggerMatch( els_p4().at(iEl), "HLT_Mu5_v3"       );
-          pair<int, float> pair_mu8_v1       = TriggerMatch( els_p4().at(iEl), "HLT_Mu8_v1"       );
-          pair<int, float> pair_mu12_v1      = TriggerMatch( els_p4().at(iEl), "HLT_Mu12_v1"      );
-          pair<int, float> pair_mu15_v2      = TriggerMatch( els_p4().at(iEl), "HLT_Mu15_v2"      );
-          pair<int, float> pair_mu20_v1      = TriggerMatch( els_p4().at(iEl), "HLT_Mu20_v1"      );
-          pair<int, float> pair_mu24_v1      = TriggerMatch( els_p4().at(iEl), "HLT_Mu24_v1"      );
-          pair<int, float> pair_mu30_v1      = TriggerMatch( els_p4().at(iEl), "HLT_Mu30_v1"      );
-          pair<int, float> pair_mu8_Jet40_v3 = TriggerMatch( els_p4().at(iEl), "HLT_Mu8_Jet40_v3" );
-
-          mu3_v3_         = pair_mu3_v3.first;
-          mu5_v3_         = pair_mu5_v3.first;
-          mu8_v1_         = pair_mu8_v1.first;
-          mu12_v1_        = pair_mu12_v1.first;
-          mu15_v2_        = pair_mu15_v2.first;
-          mu20_v1_        = pair_mu20_v1.first;
-          mu24_v1_        = pair_mu24_v1.first;
-          mu30_v1_        = pair_mu30_v1.first;
-          mu8_Jet40_v3_   = pair_mu8_Jet40_v3.first;
-
-          dr_mu3_v3_       = pair_mu3_v3.second;
-          dr_mu5_v3_       = pair_mu5_v3.second;
-          dr_mu8_v1_       = pair_mu8_v1.second;
-          dr_mu12_v1_      = pair_mu12_v1.second;
-          dr_mu15_v2_      = pair_mu15_v2.second;
-          dr_mu20_v1_      = pair_mu20_v1.second;
-          dr_mu24_v1_      = pair_mu24_v1.second;
-          dr_mu30_v1_      = pair_mu30_v1.second;
-          dr_mu8_Jet40_v3_ = pair_mu8_Jet40_v3.second;
-
-        ///////////////////////  
-        // End 2011 Triggers //
-        ///////////////////////
-
-
-
-        ///////////////////////  
-        // 2010 Triggers     //
-        ///////////////////////
-
+        
         // Our jet trigger flags
         hlt15u_ = min(2,nHLTObjects("HLT_Jet15U")); 
         hlt30u_ = min(2,nHLTObjects("HLT_Jet30U")); 
@@ -945,17 +951,6 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         mu17_    = pair_mu17.first;
         drmu17_  = pair_mu17.second;
 
-        ///////////////////////  
-        // End 2010 Triggers //
-        ///////////////////////
-
-
-
-
-        //////////////
-        // Jets     //
-        //////////////
-
         // Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
         ptj1_       = -999.0;
         ptj1_b2b_   = -999.0;
@@ -977,7 +972,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         }
 
         // Find the highest Pt pfjet separated by at least dRcut from this lepton and fill the pfjet Pt
-        ptpfj1_       = -999.0;
+	ptpfj1_       = -999.0;
         ptpfj1_b2b_   = -999.0;
         dphipfj1_b2b_ = -999.0;
         npfj1_        = 0;
@@ -996,14 +991,16 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
           }
         }
 
-        // Find the highest Pt PF corrected jet separated by at least dRcut from this lepton and fill the jet Pt
+       // Find the highest Pt PF corrected jet separated by at least dRcut from this lepton and fill the jet Pt
+
         ptpfcj1_       = -999.0;
         ptpfcj1_b2b_   = -999.0;
         dphipfcj1_b2b_ = -999.0;
         npfcj1_        = 0;
         btagpfc_       = false;
+
         for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
-        // JetID
+       // JetID
           if ( !passesPFJetID(iJet)) continue;
           LorentzVector jp4 = pfjets_p4()[iJet];
           float jet_cor = jetCorrection(jp4, jet_corrector);
@@ -1022,11 +1019,6 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
             }
           }
         }
-
-        //////////////
-        // End Jets //
-        //////////////
-
 
 
         // Time to fill the baby for the muons
