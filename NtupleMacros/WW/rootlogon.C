@@ -2,6 +2,8 @@
    gROOT->SetStyle("Plain");
    gStyle->SetPalette(1);
    gStyle->SetOptStat("nemruoi");
+   gSystem->Load("../Tools/MiniFWLite/libMiniFWLite.so");
+
 //    if ( gSystem->Getenv("CMSSW_VERSION") ){
 //      TString line;
 //      FILE *fp = gSystem->OpenPipe("scramv1 tool info roofitcore | grep INCLUDE | sed 's/^INCLUDE=/-I/'", "r");
