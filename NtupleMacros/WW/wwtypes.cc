@@ -80,6 +80,9 @@ const char* SampleName(Sample sample){
   case hWW250:
     return "hww250";
     break;
+  case hWW300:
+    return "hww300";
+    break;
   }
   std::cout << "ERROR: unknown sample name is requested: " << sample << std::endl;
   return "";

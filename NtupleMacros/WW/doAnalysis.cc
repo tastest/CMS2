@@ -1,4 +1,4 @@
-const char* config_info = "Smurf HWW V3 selection; Spring11 samples";
+const char* config_info = "SmurfV3 selection; Spring11 samples";
 //now make the source file
 #include "doAnalysis.h"
 #include <algorithm>
@@ -2275,6 +2275,11 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp, double weight, enum Sa
   case hWW180: tree.dstype_  = SmurfTree::hww180;
   case hWW190: tree.dstype_  = SmurfTree::hww190;
   case hWW200: tree.dstype_  = SmurfTree::hww200;
+  case hWW210: tree.dstype_  = SmurfTree::hww210;
+  case hWW220: tree.dstype_  = SmurfTree::hww220;
+  case hWW230: tree.dstype_  = SmurfTree::hww230;
+  case hWW250: tree.dstype_  = SmurfTree::hww250;
+  case hWW300: tree.dstype_  = SmurfTree::hww300;
 
   default: tree.dstype_    = SmurfTree::other;
   }
