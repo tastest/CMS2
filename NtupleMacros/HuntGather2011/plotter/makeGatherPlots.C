@@ -9,12 +9,11 @@
 
 #include <vector>
 
-enum Mode {
+Mode {
     EXPRESS,
-    DEBUG,
     PROMPT,
+    DEBUG
 };
-
 
 void makeGatherPlots(TString base, Mode mode = PROMPT) {
 
@@ -190,7 +189,7 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
 
     // 2011 Express Post Tech Stop
     BabySample *bs_data_express_post_tech_stop = new BabySample("express", "data",
-            base+"mctmp/ExpressPhysics_Run2011A-Express-v2_FEVT/V04-01-02/*.root",
+            base+"data/ExpressPhysics_Run2011A-Express-v2_FEVT/V04-01-02/baby_gather_merged_ntuple*.root",
             c_datapresel, 1.0, DATA, kRed);
 
 
@@ -351,7 +350,7 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
     float est_lumi = 0.0;
     float est_extra_lumi = 0.0;
     if (mode == PROMPT || mode == DEBUG) {
-        est_extra_lumi = GetNewLumi(bs_data->chain(), zPerPb)
+        est_extra_lumi = GetNewLumi(bs_data->chain(), zPerPb);
         est_lumi = est_extra_lumi + goodruns_lumi;
         std::cout << "[The Gathering] Estimated L = " << est_lumi << std::endl;
         std::cout << std::endl;
