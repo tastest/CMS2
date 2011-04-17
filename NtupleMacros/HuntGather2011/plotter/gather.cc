@@ -19,6 +19,52 @@
 #include <vector>
 #include <iostream>
 
+float GetNewLumi(TChain *c, float zPerPb)
+{
+
+    int brun = min_run();
+    int bls  = min_run_min_lumi();
+    int erun = max_run();
+    int els  = max_run_max_lumi();
+    // goodrun plus events beyond range of goodrun
+    // which are not goodrun penalized
+    TCut c_goodrunplus(Form("(((run>%i&&run<%i)||(run==%i&&ls>=%i)||(run==%i&&ls<=%i))&&goodrun_json(run,ls))||(run>%i||(run==%i&&ls>%i))", brun, erun, brun, bls, erun, els, erun, erun, els));
+    TCut c_remove_end2010bad("remove_end2010bad", "run <= 149294 || run >= 160325");
+
+    reset_babydorkidentifier();
+    int n_new = c->GetEntries(c_goodrunplus+c_remove_end2010bad+inclusivez_dilep);
+    reset_babydorkidentifier();
+    float lumi = ((float)(n_new))/zPerPb;
+    return lumi;
+
+}
+
+float GetZPerPb(TChain *c, float lumi)
+{
+
+    int brun = min_run();
+    int bls  = min_run_min_lumi();
+    int erun = max_run();
+    int els  = max_run_max_lumi();
+    TCut c_goodrun(Form("((run>%i&&run<%i)||(run==%i&&ls>=%i)||(run==%i&&ls<=%i))&&goodrun_json(run,ls)", brun, erun, brun, bls, erun, els));
+
+    // goodrun plus events beyond range of goodrun
+    // which are not goodrun penalized
+
+    // brun:bls -> erun:els
+    reset_babydorkidentifier();
+    int n_goodrun = c->GetEntries(c_goodrun+inclusivez_dilep);
+    // total
+    reset_babydorkidentifier();
+    // that which is new
+
+    float zPerPb = ((float)(n_goodrun))/lumi;
+    std::cout << "in the good run list for " << lumi << " there are " << n_goodrun/lumi << " Z/pb" << std::endl;
+
+    return zPerPb;
+}
+
+
 float GetIntLumi(TChain *c, float lumi, int brun, int bls, int erun, int els)
 {
 
@@ -419,7 +465,6 @@ TCanvas* DrawAll(TCut var, const char *savename, TCut sel, float intlumipb, unsi
 
     TCanvas *c1 = new TCanvas(savename);
     c1->SetTopMargin(0.08);
-    c1->Divide(1, 2);
     c1->cd(1);
 
     // do the background MC histograms
@@ -459,12 +504,6 @@ TCanvas* DrawAll(TCut var, const char *savename, TCut sel, float intlumipb, unsi
 
     // draw the legend and tidy up
     leg->Draw();
-
-    c1->cd(2);
-    TH1F *h1_data_sub = (TH1F*)vh_data[0]->Clone("data_sub");
-    h1_data_sub->Add(vh_background[0], -1.0);
-    h1_data_sub->GetYaxis()->SetTitle("Data - MC");
-    h1_data_sub->Draw();
 
     c1->RedrawAxis();
     gDrawAllCount++;

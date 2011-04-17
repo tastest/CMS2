@@ -9,7 +9,14 @@
 
 #include <vector>
 
-void makeGatherPlots(TString base, bool debug = false) {
+enum Mode {
+    EXPRESS,
+    DEBUG,
+    PROMPT,
+};
+
+
+void makeGatherPlots(TString base, Mode mode = PROMPT) {
 
     gROOT->ProcessLine(".L tdrstyle.C");
     gROOT->ProcessLine("setTDRStyle()");
@@ -33,6 +40,7 @@ void makeGatherPlots(TString base, bool debug = false) {
     gROOT->ProcessLine(".L makeGatherPlotsSS.C");
     gROOT->ProcessLine(".L makeGatherPlotsST.C");
     gROOT->ProcessLine(".L makeGatherPlotsExotica.C");
+    gROOT->ProcessLine(".L makeGatherPlotsExpress.C");
 
     //
     // define samples
@@ -175,10 +183,16 @@ void makeGatherPlots(TString base, bool debug = false) {
     bs_data2010->add(base+"/data/EG_Run2010A-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/baby_gather.root");
     bs_data2010->add(base+"/data/Mu_Run2010A-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/baby_gather.root");
 
-    // 2011 Express
+    // 2011 Express Pre Tech Stop
     BabySample *bs_data_express = new BabySample("express", "data",
             base+"mc/ExpressPhysicsRun2011A-Express-v1FEVT/V04-00-08/baby_gather.root",
             c_datapresel, 1.0, DATA, kRed);
+
+    // 2011 Express Post Tech Stop
+    BabySample *bs_data_express_post_tech_stop = new BabySample("express", "data",
+            base+"mctmp/ExpressPhysics_Run2011A-Express-v2_FEVT/V04-01-02/*.root",
+            c_datapresel, 1.0, DATA, kRed);
+
 
     //
     // Define the mixtures of signals, background 
@@ -219,6 +233,18 @@ void makeGatherPlots(TString base, bool debug = false) {
     babyVectorSM_express.push_back(bs_dilep_ttbar);
     babyVectorSM_express.push_back(bs_dilep_tw);
     babyVectorSM_express.push_back(bs_dilep_wjets);
+
+    std::vector<BabySample*> babyVectorSM2011PostTechStopExpress;
+    babyVectorSM2011PostTechStopExpress.push_back(bs_data_express_post_tech_stop);
+    babyVectorSM2011PostTechStopExpress.push_back(bs_dilep_ww);
+    babyVectorSM2011PostTechStopExpress.push_back(bs_dilep_wz);
+    babyVectorSM2011PostTechStopExpress.push_back(bs_dilep_zz);
+    babyVectorSM2011PostTechStopExpress.push_back(bs_dilep_dyeemm);
+    babyVectorSM2011PostTechStopExpress.push_back(bs_dilep_dytt);
+    babyVectorSM2011PostTechStopExpress.push_back(bs_dilep_vgammajets);
+    babyVectorSM2011PostTechStopExpress.push_back(bs_dilep_ttbar);
+    babyVectorSM2011PostTechStopExpress.push_back(bs_dilep_tw);
+    babyVectorSM2011PostTechStopExpress.push_back(bs_dilep_wjets);
 
     std::vector<BabySample*> babyVectorSM2011;
     babyVectorSM2011.push_back(bs_data2011);
@@ -317,60 +343,68 @@ void makeGatherPlots(TString base, bool debug = false) {
     //const char *goodrunlist = "../runlists/Cert_TopNov5_Merged_135821-149442_allPVT.txt";
     const char *goodrunlist = "../runlists/top_nov22.txt";
     float goodruns_lumi = 36.1; // (I missed 2010A for the time being)
-
     std::cout << "[The Gathering] Determining luminosity" << std::endl;
     std::cout << "[The Gathering] " << goodrunlist << std::endl;
     set_goodrun_file(goodrunlist);
-    float est_lumi = GetIntLumi(bs_data, goodruns_lumi);
-    float est_newruns_lumi = est_lumi - goodruns_lumi;
 
-    std::cout << "[The Gathering] Estimated L = " << est_lumi << std::endl;
-    std::cout << std::endl;
+    float zPerPb = GetZPerPb(bs_data->chain(), goodruns_lumi);
+    float est_lumi = 0.0;
+    float est_extra_lumi = 0.0;
+    if (mode == PROMPT || mode == DEBUG) {
+        est_extra_lumi = GetNewLumi(bs_data->chain(), zPerPb)
+        est_lumi = est_extra_lumi + goodruns_lumi;
+        std::cout << "[The Gathering] Estimated L = " << est_lumi << std::endl;
+        std::cout << std::endl;
+    }
 
     //
     // Make the plots
     //
 
-    if (debug) {
+    if (mode == EXPRESS) {
+        float est_extra_lumi_express = GetNewLumi(bs_data_express_post_tech_stop->chain(), zPerPb);
+        std::cout << "[The Gathering] Estimated L in EXPRESS = " << est_extra_lumi_express << std::endl;
+        makeGatherPlotsExpress("post_techstop", babyVectorSM2011PostTechStopExpress, goodruns_lumi, est_extra_lumi_express);
+    }
+
+    if (mode == DEBUG) {
         //makeGatherPlotsElectrons(babyVectorTPee, est_lumi);
         //makeGatherPlotsMuons(babyVectorTP, est_lumi);
         //makeGatherTriggerMonitor(babyVectorSM, est_lumi);
-        //makeGatherPlotsValidation("express", babyVectorSM_express, goodruns_lumi, est_newruns_lumi);
-
-        makeGatherPlotsExotica("run2011", babyVectorSM2011, est_newruns_lumi);
+        //makeGatherPlotsValidation("express", babyVectorSM_express, goodruns_lumi, est_extra_lumi);
+        makeGatherPlotsExotica("run2011", babyVectorSM2011, est_extra_lumi);
         makeGatherPlotsExotica("run2010", babyVectorSM2010, goodruns_lumi);
         makeGatherPlotsExotica("all", babyVectorSM, est_lumi);
-
-
     }
-    else {
+
+    if (mode == PROMPT) {
 
         // validation for all
-        makeGatherPlotsValidation("all", babyVectorSM, goodruns_lumi, est_newruns_lumi);
+        makeGatherPlotsValidation("all", babyVectorSM, goodruns_lumi, est_extra_lumi);
 
         // higgs for all data and for 2010 + 2011
         makeGatherPlotsHiggs("all", babyVectorSM, est_lumi);
-        makeGatherPlotsHiggs("run2011", babyVectorSM2011, est_newruns_lumi);
+        makeGatherPlotsHiggs("run2011", babyVectorSM2011, est_extra_lumi);
 
         // OS for all data and for 2010 + 2011
         makeGatherPlotsOS("all", babyVectorSusy, est_lumi);
-        makeGatherPlotsOS("run2011", babyVectorSusy2011, est_newruns_lumi);
+        makeGatherPlotsOS("run2011", babyVectorSusy2011, est_extra_lumi);
 
         // ZMet for all data and for 2010 + 2011
         makeGatherPlotsZMet("all", babyVectorSusy, est_lumi);
-        makeGatherPlotsZMet("run2011", babyVectorSusy2011, est_newruns_lumi);
+        makeGatherPlotsZMet("run2011", babyVectorSusy2011, est_extra_lumi);
 
         // SS plots for all data and for 2010 + 2011
         makeGatherPlotsSS("all", babyVectorSusy, est_lumi);
-        makeGatherPlotsSS("run2011", babyVectorSusy2011, est_newruns_lumi);
+        makeGatherPlotsSS("run2011", babyVectorSusy2011, est_extra_lumi);
 
         // ST plots for all data and for 2010 + 2011
         makeGatherPlotsST("all", babyVectorSusy, est_lumi);
-        makeGatherPlotsST("run2011", babyVectorSusy2011, est_newruns_lumi);
+        makeGatherPlotsST("run2011", babyVectorSusy2011, est_extra_lumi);
         
         // Exotica (in this context... Misc) for all data and for 2010 + 2011
         makeGatherPlotsExotica("all", babyVectorSM, est_lumi);
-        makeGatherPlotsExotica("run2011", babyVectorSM2011, est_newruns_lumi);
+        makeGatherPlotsExotica("run2011", babyVectorSM2011, est_extra_lumi);
 
     } 
 
@@ -410,6 +444,7 @@ void makeGatherPlots(TString base, bool debug = false) {
     delete bs_dilep_lm0;
     delete bs_data;
     delete bs_data_express;
+    delete bs_data_express_post_tech_stop;
     delete bs_data2011;
     delete bs_dilep_dyee;
     delete bs_dilep_dymm;

@@ -29,6 +29,9 @@ void ComputeEfficiency(TH1F *gr_eff_data, const TH1F *h1_data_denom, const TH1F 
 // luminosity functions
 //
 
+float GetNewLumi(TChain *c, float zPerPb);
+float GetZPerPb(TChain *c, float lumi);
+
 float GetIntLumi(TChain *c, float lumi, int brun, int bls, int erun, int els);
 float GetIntLumi(BabySample *bs, float lumi);
 
