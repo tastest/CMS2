@@ -87,16 +87,23 @@ TH1F *els_fo_parton_dEta_;
 TH1F *els_fo_parton_dPhi_;
 TH1F *els_fo_MCType_;
 TH1F *els_fo_partonID_;
+TH2F *els_fo_MCType_pt_;
+TH2F *els_fo_partonID_pt_;
 
 TH1F *mus_fo_parton_dEta_;
 TH1F *mus_fo_parton_dPhi_;
 TH1F *mus_fo_MCType_;
 TH1F *mus_fo_partonID_;
+TH2F *mus_fo_MCType_pt_;
+TH2F *mus_fo_partonID_pt_;
+
+TH1F *dR_parton_lepton_;
 
 void InitMCUtilHist(const char* process, TFile *utilFile_) {
   cout << "InitMCUtilHist(): " << " process = " << process <<endl; 
 
   utilFile_->cd();  
+  gROOT->cd();
 
   if( TString(process) == "ww") {
   
@@ -130,62 +137,69 @@ void InitMCUtilHist(const char* process, TFile *utilFile_) {
   ky_ = new TH1F(Form("%s_ky",process), "System Boost in Y", 50, -50, 50);
 
   if (TString(process) == "wjets") {
-    
-    const Double_t ptbins_fakerate[10] = {10.,15.,20.,25.,30.,35., 40., 50., 75., 100.};
-    const int nptbins = 9;
-    const Double_t etabins_fakerate[6] = {0.0, 0.5, 1.0, 1.479, 2.0, 2.5};
-    const int netabins = 5;
+    const Double_t ptbins_genfr[10] = {10.,15.,20.,25.,30.,35., 40., 50., 75., 100.};
+    const int nptbins_genfr = 9;
+    const Double_t etabins_genfr[5] = {0.0, 1.0, 1.479, 2.0, 2.5};
+    const int netabins_genfr = 4;
     
     // parton to lepton FO
 
-    parton_ = new TH2F(Form("%s_hparton",process), "Generator Parton", netabins,etabins_fakerate,nptbins,ptbins_fakerate);
-    els_fake_ = new TH2F(Form("%s_heleFake",process), "FO Electrons",  netabins,etabins_fakerate,nptbins,ptbins_fakerate);
-    mus_fake_ = new TH2F(Form("%s_hmuFake",process), "FO Muons", netabins,etabins_fakerate,nptbins,ptbins_fakerate);
+    parton_ = new TH2F(Form("%s_hparton",process), "Generator Parton", netabins_genfr,etabins_genfr,nptbins_genfr,ptbins_genfr);
+    els_fake_ = new TH2F(Form("%s_heleFake",process), "FO Electrons",  netabins_genfr,etabins_genfr,nptbins_genfr,ptbins_genfr);
+    mus_fake_ = new TH2F(Form("%s_hmuFake",process), "FO Muons", netabins_genfr,etabins_genfr,nptbins_genfr,ptbins_genfr);
 
-    els_genfr_ = new TH2F(Form("%s_heleGenFR",process), "Parton to Electron Generator FR",  netabins,etabins_fakerate,nptbins,ptbins_fakerate);
-    els_fo_parton_ = new TH2F(Form("%s_heleFOResponse",process), "matched parton pt / Electron FO pT", nptbins,ptbins_fakerate, 10, 0.5, 4.5);
-    mus_genfr_ = new TH2F(Form("%s_hmuGenFR",process), "Parton to Muon Generator FR", netabins,etabins_fakerate,nptbins,ptbins_fakerate);
-    mus_fo_parton_ = new TH2F(Form("%s_hmuFOResponse",process), "matched parton pt / Muon FO pT", nptbins,ptbins_fakerate, 10, 0.5, 4.5);
+    els_genfr_ = new TH2F(Form("%s_heleGenFR",process), "Parton to Electron Generator FR",  netabins_genfr,etabins_genfr,nptbins_genfr,ptbins_genfr);
+    els_fo_parton_ = new TH2F(Form("%s_heleFOResponse",process), "matched parton pt / Electron FO pT", nptbins_genfr,ptbins_genfr, 10, 0.5, 4.5);
+    
+    mus_genfr_ = new TH2F(Form("%s_hmuGenFR",process), "Parton to Muon Generator FR", netabins_genfr,etabins_genfr,nptbins_genfr,ptbins_genfr);
+    mus_fo_parton_ = new TH2F(Form("%s_hmuFOResponse",process), "matched parton pt / Muon FO pT", nptbins_genfr,ptbins_genfr, 10, 0.5, 4.5);
+    
 
     // lepton FO to lepton 
+    // due to the limited stat., truncate at 35
+    const Double_t ptbins_fr[6] = {10.,15.,20.,25.,30.,35.};
+    const int nptbins_fr = 5;
 
-    els_fo_ = new TH2F(Form("%s_heleFO",process), "Electron FO", netabins,etabins_fakerate,nptbins,ptbins_fakerate);
-    els_good_ = new TH2F(Form("%s_heleGood",process), "Electron Passing Analysis Cuts", netabins,etabins_fakerate,nptbins,ptbins_fakerate);
-    els_fr_ = new TH2F(Form("%s_heleFR",process), "Electron FO to Good Electron FR",  netabins,etabins_fakerate,nptbins,ptbins_fakerate);
+    els_fo_ = new TH2F(Form("%s_heleFO",process), "Electron FO", netabins_genfr,etabins_genfr,nptbins_fr,ptbins_fr);
+    els_good_ = new TH2F(Form("%s_heleGood",process), "Electron Passing Analysis Cuts", netabins_genfr,etabins_genfr,nptbins_fr,ptbins_fr);
+    els_fr_ = new TH2F(Form("%s_heleFR",process), "Electron FO to Good Electron FR",  netabins_genfr,etabins_genfr,nptbins_fr,ptbins_fr);
 
-    mus_fo_ = new TH2F(Form("%s_hmuFO",process), "Muon FO", netabins,etabins_fakerate,nptbins,ptbins_fakerate);
-    mus_good_ = new TH2F(Form("%s_hmuGood",process), "Muon Passing Analysis Cuts", netabins,etabins_fakerate,nptbins,ptbins_fakerate);
-    mus_fr_ = new TH2F(Form("%s_hmuFR",process), "Muon FO to Good Muon FR",  netabins,etabins_fakerate,nptbins,ptbins_fakerate);
+    mus_fo_ = new TH2F(Form("%s_hmuFO",process), "Muon FO", netabins_genfr,etabins_genfr,nptbins_fr,ptbins_fr);
+    mus_good_ = new TH2F(Form("%s_hmuGood",process), "Muon Passing Analysis Cuts", netabins_genfr,etabins_genfr,nptbins_fr,ptbins_fr);
+    mus_fr_ = new TH2F(Form("%s_hmuFR",process), "Muon FO to Good Muon FR",  netabins_genfr,etabins_genfr,nptbins_fr,ptbins_fr);
 	
     // 1-d parton - lepton FO histograms
+    parton_eta_ = new TH1F(Form("%s_hpartonEta",process), "Generator Parton Eta", netabins_genfr, etabins_genfr);
+    els_fake_eta_ = new TH1F(Form("%s_heleFakeEta",process), "FO electrons", netabins_genfr, etabins_genfr);
+    els_genfr_eta_ = new TH1F(Form("%s_heleGenFREta",process), "Parton to Electron Generator FR", netabins_genfr, etabins_genfr);
+    mus_fake_eta_ = new TH1F(Form("%s_hmuFakeEta",process), "FO muons", netabins_genfr, etabins_genfr);
+    mus_genfr_eta_ = new TH1F(Form("%s_hmuGenFREta",process), "Parton to Muon Generator FR", netabins_genfr, etabins_genfr);
     
-    parton_eta_ = new TH1F(Form("%s_hpartonEta",process), "Generator Parton Eta", netabins, etabins_fakerate);
-    els_fake_eta_ = new TH1F(Form("%s_heleFakeEta",process), "FO electrons", netabins, etabins_fakerate);
-    els_genfr_eta_ = new TH1F(Form("%s_heleGenFREta",process), "Parton to Electron Generator FR", netabins, etabins_fakerate);
-    mus_fake_eta_ = new TH1F(Form("%s_hmuFakeEta",process), "FO muons", netabins, etabins_fakerate);
-    mus_genfr_eta_ = new TH1F(Form("%s_hmuGenFREta",process), "Parton to Muon Generator FR", netabins, etabins_fakerate);
-    
-    
-    parton_pt_ = new TH1F(Form("%s_hpartonPt",process), "Generator Parton Pt", nptbins,ptbins_fakerate);
-    els_fake_pt_ = new TH1F(Form("%s_heleFakePt",process), "FO electrons",nptbins,ptbins_fakerate);
-    els_genfr_pt_ = new TH1F(Form("%s_heleGenFRPt",process), "Parton to Electron Generator FR", nptbins,ptbins_fakerate);
-    mus_fake_pt_ = new TH1F(Form("%s_hmuFakePt",process), "FO muons", nptbins,ptbins_fakerate);
-    mus_genfr_pt_ = new TH1F(Form("%s_hmuGenFRPt",process), "Parton to Muon Generator FR", nptbins,ptbins_fakerate);
+    parton_pt_ = new TH1F(Form("%s_hpartonPt",process), "Generator Parton Pt", nptbins_genfr,ptbins_genfr);
+    els_fake_pt_ = new TH1F(Form("%s_heleFakePt",process), "FO electrons",nptbins_genfr,ptbins_genfr);
+    els_genfr_pt_ = new TH1F(Form("%s_heleGenFRPt",process), "Parton to Electron Generator FR", nptbins_genfr,ptbins_genfr);
+    mus_fake_pt_ = new TH1F(Form("%s_hmuFakePt",process), "FO muons", nptbins_genfr,ptbins_genfr);
+    mus_genfr_pt_ = new TH1F(Form("%s_hmuGenFRPt",process), "Parton to Muon Generator FR", nptbins_genfr,ptbins_genfr);
      
     // Diagonistic histograms
     els_fo_parton_dEta_ = new TH1F(Form("%s_hdEtaEleFOParton",process), "#Delta#eta(Lepton FO, Parton)", 20,0,0.2);
     els_fo_parton_dPhi_ = new TH1F(Form("%s_hdPhiEleFOParton",process), "#Delta#eta(Lepton FO, Parton)", 20,0,0.2);
     els_fo_MCType_ = new TH1F(Form("%s_heleFakeMCType",process), "Electron FO MC Type", 7,-1,6);
     els_fo_partonID_ = new TH1F(Form("%s_helePartonID",process), "Electron FO Matched Parton ID",35, -10, 25);
+    els_fo_MCType_pt_ = new TH2F(Form("%s_heleFakeMCTypeVsPt",process), "Electron FO MC Type",nptbins_genfr,ptbins_genfr, 7,-1,6);
+    els_fo_partonID_pt_ = new TH2F(Form("%s_helePartonIDVsPt",process), "Electron FO Matched Parton ID",nptbins_genfr,ptbins_genfr, 35, -10, 25);
 
     mus_fo_parton_dEta_ = new TH1F(Form("%s_hdEtaMuFOParton",process), "#Delta#eta(Lepton FO, Parton)", 20,0,0.2);
     mus_fo_parton_dPhi_ = new TH1F(Form("%s_hdPhiMuFOParton",process), "#Delta#eta(Lepton FO, Parton)", 20,0,0.2);
     mus_fo_MCType_ = new TH1F(Form("%s_hmuFakeMCType",process), "Muctron FO MC Type", 7,-1,6);
     mus_fo_partonID_ = new TH1F(Form("%s_hmuPartonID",process), "Muctron FO Matched Parton ID",35, -10, 25);
+    mus_fo_MCType_pt_ = new TH2F(Form("%s_hmuFakeMCTypeVsPt",process), "Muon FO MC Type",nptbins_genfr,ptbins_genfr, 7,-1,6);
+    mus_fo_partonID_pt_ = new TH2F(Form("%s_hmuPartonIDVsPt",process), "Muon FO Matched Parton ID",nptbins_genfr,ptbins_genfr, 35, -10, 25);
 
-    
+    // mininum distrance between a status parton and status 3 leptons/photons
+    dR_parton_lepton_ = new TH1F(Form("%s_hdRPartonLepton",process), "Min dR(Parton,lepton or photon)", 50, 0, 5);
+	
   }
-  
 }
  
 void fillEffHist(const char* process, double weight);
@@ -193,6 +207,7 @@ void fillKtHist(const char* process, double weight);
 void fillFOHist();
 void findClosestEleFO(LorentzVector v_parton, double& minDR, int& idx_minDR);
 void findClosestMuFO(LorentzVector v_parton, double& minDR, int& idx_minDR);
+void findClosestGenPs(LorentzVector v_parton, double& minDR, int& idx_minDR);
 
 // Utility Functions
 bool isIdentified(const char* process);
@@ -315,7 +330,7 @@ void saveMCUtilOutput(const char* process, TFile *utilFile_)
    
     fill2DEffHist(els_good_, els_fo_, els_fr_);
     fill2DEffHist(mus_good_, mus_fo_, mus_fr_);
- 
+        
     parton_->Write();
     els_fake_->Write();
     els_genfr_->Write();
@@ -349,11 +364,18 @@ void saveMCUtilOutput(const char* process, TFile *utilFile_)
     els_fo_parton_dPhi_->Write();
     els_fo_MCType_->Write();
     els_fo_partonID_->Write();
-    
+    els_fo_MCType_pt_->Write();
+    els_fo_partonID_pt_->Write();
+
     mus_fo_parton_dEta_->Write();
     mus_fo_parton_dPhi_->Write();
     mus_fo_MCType_->Write();
     mus_fo_partonID_->Write();
+    mus_fo_MCType_pt_->Write();
+    mus_fo_partonID_pt_->Write(); 
+    
+    dR_parton_lepton_->Write();
+
   }
   
  

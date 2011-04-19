@@ -41,7 +41,7 @@
 using namespace tas;
 
 // Smurf
-const char* config_info = "Smurf HWW V1 selection; Winter10 FlatPU samples; 35.5/pb Run2010A (Sep17ReReco) & Run2010B (PromptReco)";
+const char* config_info = "Smurf HWW V1 selection; Fall10 samples; 1/fb";
 #include "../../../Smurf/Core/SmurfTree.h"
 
 
@@ -164,8 +164,7 @@ void ScanChain(const char* process, TChain *chain, TFile *utilFile_,  int nEvent
   SmurfTree smurfTree;
   smurfTree.CreateTree();
   smurfTree.tree_->SetDirectory(0);
-
-
+  
   // File Loop
   TObjArray *listOfFiles = chain->GetListOfFiles();
   TIter fileIter(listOfFiles);
@@ -182,6 +181,8 @@ void ScanChain(const char* process, TChain *chain, TFile *utilFile_,  int nEvent
     cout<<"Opened file "<<currentFile->GetTitle()<<" with events = "<<nEvents<<"\n";
     for( unsigned int event = 0; event < nEvents; ++event) {
       cms2.GetEntry(event);
+      //if(cms2.evt_event()!=24358327) continue;
+      //dumpDocLines();
       
       // identifyEvents by MC truth if specified
       if ( (!realData && identifyEvents) && !isIdentified (process)) continue;
@@ -591,8 +592,18 @@ double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVect
 // Muon selections
 //
 bool goodMuonIsolated(unsigned int i){  
-  bool ptcut = cms2.mus_p4().at(i).pt() >= 20.0;
-  return ptcut && muonId(i, NominalWWV1);
+  bool ptcut = cms2.mus_p4().at(i).pt() >= 10.0;
+  // SmurfV1
+  bool internal = ww_muBase(i) && ww_mud0PV(i) && ww_muId(i) && ww_muIso(i); 
+  return ptcut && internal;
+  // return ptcut && muonId(i, NominalWWV1);
+}
+
+bool ww_muBase(unsigned int index){
+  // if (cms2.mus_p4().at(index).pt() < 20.0) return false;
+  if (fabs(cms2.mus_p4().at(index).eta()) > 2.4) return false;
+  if (cms2.mus_type().at(index) == 8) return false; // not STA
+  return true;
 }
 
 bool fakableMuon(unsigned int i){
@@ -600,13 +611,12 @@ bool fakableMuon(unsigned int i){
   return ptcut && muonId(i, muonSelectionFO_mu_wwV1_iso10);
 }
 
-
 bool ww_mud0PV(unsigned int index){
   if ( cms2.vtxs_sumpt().empty() ) return false;
   double sumPtMax = -1;
   int iMax = -1;
   for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
-    if (cms2.vtxs_isFake().at(i)) continue;
+    if (cms2.vtxs_isFake()[i]) continue;
     if (!isGoodVertex(i)) continue;
     if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
       iMax = i;
@@ -617,7 +627,10 @@ bool ww_mud0PV(unsigned int index){
   double dxyPV = cms2.mus_d0()[index]-
     cms2.vtxs_position()[iMax].x()*sin(cms2.mus_trk_p4()[index].phi())+
     cms2.vtxs_position()[iMax].y()*cos(cms2.mus_trk_p4()[index].phi());
+  // double dzpv = cms2.mus_z0corr()[index]-cms2.vtxs_position()[iMax].z();
   double dzpv = dzPV(cms2.mus_vertex_p4()[index], cms2.mus_trk_p4()[index], cms2.vtxs_position()[iMax]);
+  if ( cms2.mus_p4().at(index).pt() < 20. )
+    return fabs(dxyPV) < 0.01 && fabs(dzpv)<1.0;
   return fabs(dxyPV) < 0.02 && fabs(dzpv)<1.0;
 }
 
@@ -630,9 +643,10 @@ double ww_muIsoVal(unsigned int index){
 }
 
 bool ww_muIso(unsigned int index){
+  if ( cms2.mus_p4().at(index).pt() < 20. )
+    return ww_muIsoVal(index)<0.1;
   return ww_muIsoVal(index)<0.15;
 }
-
 
 bool ww_muId(unsigned int index){
   if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq  
@@ -654,13 +668,13 @@ bool ww_muId(unsigned int index){
 bool goodElectronIsolated(unsigned int i){
   bool ptcut = cms2.els_p4().at(i).pt() >= 15.0;
   // return  ptcut && pass_electronSelection( i, electronSelection_wwV1);
-  return  ptcut && pass_electronSelection( i, electronSelection_smurfV2);
+  return  ptcut && pass_electronSelection( i, electronSelection_smurfV1);
 }
 
 bool fakableElectron(unsigned int i){
   bool ptcut = cms2.els_p4().at(i).pt() >= 15.0;
   // extrapolate in partial id, iso and d0
-  return ptcut && pass_electronSelection( i, electronSelectionFO_el_wwV1_v2);
+  return ptcut && pass_electronSelection( i, electronSelectionFO_el_wwV1_v4);
 }
 
 bool ww_elId(unsigned int index){
@@ -962,6 +976,7 @@ void findClosestEleFO(LorentzVector v_parton, double& minDR, int& idx_minDR) {
   idx_minDR = -999;
   
   for (int i=0; i < int(cms2.els_charge().size()); ++i) {
+    if ( leptonIsFromW(i, 11, false) > 0) continue;
     if (cms2.els_p4().at(i).pt() < 10) continue; 
     if (!fakableElectron(i)) continue;
     if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(v_parton, cms2.els_p4().at(i))) < minDR ) {
@@ -975,7 +990,8 @@ void findClosestMuFO(LorentzVector v_parton, double& minDR, int& idx_minDR) {
   minDR = 999.0;
   idx_minDR = -999;
   
-  for (int i=0; i < int(cms2.mus_charge().size()); ++i) {
+  for (int i=0; i < int(cms2.mus_charge().size()); ++i) {  
+    if ( leptonIsFromW(i, 13, false) > 0) continue;
     if (cms2.mus_p4().at(i).pt() < 10 ) continue; 
     if (!fakableMuon(i)) continue;
     if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(v_parton, cms2.mus_p4().at(i))) < minDR ) {
@@ -1019,20 +1035,27 @@ void fillKtHist(const char* process, double weight) {
 }
 
 void fillFOHist() {
-
+  
   // == Fill the parton-lepton FO related histograms
 
   // skipping the first 6 genparticles which are the incoming partons
   for (unsigned int i = 6;  i < cms2.genps_id().size(); ++i) {
     // selecting status = 3 colored objects
     if (cms2.genps_status().at(i) != 3 || (cms2.genps_id().at(i) != 21 && TMath::Abs(cms2.genps_id().at(i)) > 8 )) continue;
+    // just concentrate on the gluons
+    // if (cms2.genps_status().at(i) != 3 || cms2.genps_id().at(i) != 21 ) continue;
     // apply acceptance cuts, which must be looser than the FO definition
     if (cms2.genps_p4().at(i).pt() < 10 || TMath::Abs(cms2.genps_p4().at(i).eta()) > 2.5 ) continue;
 
     parton_->Fill(TMath::Abs(genps_p4().at(i).eta()), genps_p4().at(i).pt());
     parton_eta_->Fill(TMath::Abs(genps_p4().at(i).eta()));
     parton_pt_->Fill(genps_p4().at(i).pt());
-    
+
+    double minDRGenPs = 999.0; 
+    int idx_minDRGenPs = -1;
+    findClosestGenPs( cms2.genps_p4().at(i), minDRGenPs, idx_minDRGenPs); 
+    dR_parton_lepton_->Fill(minDRGenPs);
+
     // for electron FO
     double minDREleFO = 999.0;
     int idx_minDREleFO = -1;
@@ -1047,6 +1070,8 @@ void fillFOHist() {
       els_fo_parton_dPhi_->Fill(TMath::Abs( cms2.els_p4().at(idx_minDREleFO).phi() - cms2.genps_p4().at(i).phi() ));
       els_fo_MCType_->Fill(elFakeMCCategory(idx_minDREleFO));
       els_fo_partonID_->Fill(genps_id().at(i));
+      els_fo_MCType_pt_->Fill(els_p4().at(idx_minDREleFO).pt(), elFakeMCCategory(idx_minDREleFO));
+      els_fo_partonID_pt_->Fill(els_p4().at(idx_minDREleFO).pt(), genps_id().at(i));
     }
 
     // for muon FO
@@ -1062,14 +1087,19 @@ void fillFOHist() {
       mus_fo_parton_dPhi_->Fill(TMath::Abs( cms2.mus_p4().at(idx_minDRMuFO).phi() - cms2.genps_p4().at(i).phi() ));
       mus_fo_MCType_->Fill(muFakeMCCategory(idx_minDRMuFO));
       mus_fo_partonID_->Fill(genps_id().at(i));
+      mus_fo_MCType_pt_->Fill(mus_p4().at(idx_minDRMuFO).pt(), muFakeMCCategory(idx_minDRMuFO));
+      mus_fo_partonID_pt_->Fill(mus_p4().at(idx_minDRMuFO).pt(), genps_id().at(i));
     }
   }
-
+  
+  
   // == Fill the lepton FO - lepton histograms
   // electrons
   for (int i=0; i < int(cms2.els_charge().size()); ++i) {
     // veto the good leptons from the W decays
-    if ( TMath::Abs(cms2.els_mc3_motherid().at(i)) == 24) continue;
+    // if ( TMath::Abs(cms2.els_mc3_motherid().at(i)) == 24) continue;
+    // From UserCode/JRibnik/CMS2/NtupleMacros/CORE/mcSelections.cc
+    if ( leptonIsFromW(i, 11, false) > 0) continue;
     if ( fakableElectron (i) ) {
       els_fo_->Fill(cms2.els_p4().at(i).eta(), cms2.els_p4().at(i).pt());
       if( goodElectronIsolated(i))
@@ -1077,10 +1107,12 @@ void fillFOHist() {
     }
   }
 
+
   // muons
   for (int i=0; i < int(cms2.mus_charge().size()); ++i) {
     // veto the good leptons from the W decays
-    if ( TMath::Abs(cms2.mus_mc3_motherid().at(i)) == 24) continue;
+    // if ( TMath::Abs(cms2.mus_mc3_motherid().at(i)) == 24) continue;
+    if ( leptonIsFromW(i, 13, false) > 0) continue;
     if ( fakableMuon(i)) {
       mus_fo_->Fill(cms2.mus_p4().at(i).eta(), cms2.mus_p4().at(i).pt());
       if( goodMuonIsolated(i))
@@ -1116,3 +1148,17 @@ void ProcessSample(const char* process, std::string file_pattern, TFile *utilFil
   ProcessSample(process, vec, utilFile_, nEvents, IntLumi, Xsect, nProcessedEvents, skimFilePrefix, realData, identifyEvents);
 }
 
+void findClosestGenPs(LorentzVector v_parton, double& minDR, int& idx_minDR) {
+  minDR = 999.0;
+  idx_minDR = -999;
+  
+  for (unsigned int i = 6;  i < cms2.genps_id().size(); ++i) {
+    if (cms2.genps_p4().at(i).pt() < 10) continue; 
+    if ( TMath::Abs(cms2.genps_id().at(i)) == 11 || TMath::Abs(cms2.genps_id().at(i)) == 13 ||  TMath::Abs(cms2.genps_id().at(i)) == 15 || cms2.genps_id().at(i) == 22 ) {
+      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(v_parton, cms2.genps_p4().at(i))) < minDR ) {
+	minDR = TMath::Abs(ROOT::Math::VectorUtil::DeltaR(v_parton,cms2.genps_p4().at(i)));
+	idx_minDR = i;
+      }
+    }
+  }
+}

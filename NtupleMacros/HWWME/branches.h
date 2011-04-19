@@ -187,6 +187,7 @@ double BTag(int type, unsigned int iJet);
 //muon ID
 bool goodMuonIsolated(unsigned int i);
 bool fakableMuon(unsigned int i);
+bool ww_muBase(unsigned int index);
 bool ww_mud0PV(unsigned int index);
 bool ww_muId(unsigned int index);
 double ww_muIsoVal(unsigned int index);
