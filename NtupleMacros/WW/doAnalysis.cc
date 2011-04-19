@@ -24,7 +24,6 @@ const char* config_info = "SmurfV3 selection; Spring11 samples";
 #include "TPRegexp.h"
 #include "monitor.h"
 #include "../Tools/goodrun.cc"
-#include "../../../Smurf/Core/SmurfTree.h"
 using namespace std;
 
 #ifndef __CINT__
@@ -55,7 +54,7 @@ enum hyp_selection {
   PASS_PROBE                      // passed only 1 leg final selection.
 };
 
-cuts_t pass_all = (1<<PASS_ZVETO) | (1<<PASS_MET) | (1<<PASS_JETVETO) | (1<<PASS_LT_FINAL) | (1<<PASS_LL_FINAL) | 
+cuts_t pass_all = (1<<PASS_ZVETO) | (1<<PASS_MET) |/* (1<<PASS_JETVETO) |*/ (1<<PASS_LT_FINAL) | (1<<PASS_LL_FINAL) | 
   (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO) | (1<<PASS_TOPVETO);
 
 bool applyJEC = false;
@@ -1549,7 +1548,7 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
   if ( realData && ! passedTriggerRequirements( hypType(i_hyp) ) )return false;
   monitor.count(cms2, type, "trigger requirements",weight);
 
-  // Require same sign
+  // Require opposite sign
   if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) return false;
 
   // Baseline cuts
@@ -2189,7 +2188,7 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
 double mt(double pt1, double pt2, double dphi){
   return 2*sqrt(pt1*pt2)*fabs(sin(dphi/2));
 }
-void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp, double weight, enum Sample sample){
+void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp, double weight, enum SmurfTree::DataType sample){
   tree.InitVariables();
   tree.run_   = cms2.evt_run();
   tree.event_ = cms2.evt_event();
@@ -2244,7 +2243,7 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp, double weight, enum Sa
   tree.mt1_ = mt(tree.lep1_.pt(),tree.met_,tree.dPhiLep1MET_);
   tree.mt2_ = mt(tree.lep2_.pt(),tree.met_,tree.dPhiLep2MET_);
 
-  if (sample!=Data){
+  if (sample!=SmurfTree::data){
     tree.genmet_ = cms2.gen_met();
     tree.genmetPhi_ = cms2.gen_metPhi();
     tree.lep1McId_ = ltIsFirst ? cms2.hyp_lt_mc_id().at(i_hyp) : cms2.hyp_ll_mc_id().at(i_hyp);
@@ -2253,41 +2252,12 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp, double weight, enum Sa
 
   // jet1McId_;
   // jet2McId_;
-
-  switch (sample){
-  case WW: tree.dstype_      = SmurfTree::qqww;
-  case WZ: tree.dstype_      = SmurfTree::wz;
-  case ZZ: tree.dstype_      = SmurfTree::zz;
-  case Wjets: tree.dstype_   = SmurfTree::wjets;
-  case DYee: tree.dstype_    = SmurfTree::dyee;
-  case DYmm: tree.dstype_    = SmurfTree::dymm;
-  case DYtt: tree.dstype_    = SmurfTree::dytt;
-  case ttbar: tree.dstype_   = SmurfTree::ttbar;
-  case tW: tree.dstype_      = SmurfTree::tw;
-  case qcd: tree.dstype_     = SmurfTree::qcd;
-  case Data: tree.dstype_    = SmurfTree::data;
-  case hWW120: tree.dstype_  = SmurfTree::hww120;
-  case hWW130: tree.dstype_  = SmurfTree::hww130;
-  case hWW140: tree.dstype_  = SmurfTree::hww140;
-  case hWW150: tree.dstype_  = SmurfTree::hww150;
-  case hWW160: tree.dstype_  = SmurfTree::hww160;
-  case hWW170: tree.dstype_  = SmurfTree::hww170;
-  case hWW180: tree.dstype_  = SmurfTree::hww180;
-  case hWW190: tree.dstype_  = SmurfTree::hww190;
-  case hWW200: tree.dstype_  = SmurfTree::hww200;
-  case hWW210: tree.dstype_  = SmurfTree::hww210;
-  case hWW220: tree.dstype_  = SmurfTree::hww220;
-  case hWW230: tree.dstype_  = SmurfTree::hww230;
-  case hWW250: tree.dstype_  = SmurfTree::hww250;
-  case hWW300: tree.dstype_  = SmurfTree::hww300;
-
-  default: tree.dstype_    = SmurfTree::other;
-  }
+  tree.dstype_ = sample;
 }
 
 
 void ScanChain( TChain* chain, 
-		enum Sample sample, 
+		enum SmurfTree::DataType sample, 
 		double integratedLumi, // in unit of pb^-1, if negative the weight is 1.
 		double xsec,           // in unit of pb, if negative take it from evt_xsec_excl*evt_kfactor
 		int nProcessedEvents,  // if negative, take it from evt_nEvts
@@ -2297,9 +2267,9 @@ void ScanChain( TChain* chain,
 		bool realData,
 		TString cms2_json_file)
 {
-  const char *prefix = SampleName(sample);
+  std::string prefix = SmurfTree::name(sample);
   if ( chain->GetListOfFiles()->GetEntries()==0 ){
-    printf("\nERROR: chain is empty for sample: %s\n\n",prefix);
+    printf("\nERROR: chain is empty for sample: %s\n\n",prefix.c_str());
     assert(0);
   }
 
@@ -2337,7 +2307,7 @@ void ScanChain( TChain* chain,
   std::map<unsigned int, std::set<unsigned int> > runList;
 
   // declare and create array of histograms
-  initializeHistograms(prefix,qcdBackground);
+  initializeHistograms(prefix.c_str(),qcdBackground);
 
   if ( !externalElFakeRates ){
     TFile* f = TFile::Open("files/ww_el_fr_EGandEGMon.root");
@@ -2505,7 +2475,7 @@ void ScanChain( TChain* chain,
        delete f;
   }
   monitor.print();
-  monitor.makeHistograms(prefix);
+  monitor.makeHistograms(prefix.c_str());
   // monitor.printEvents(3);
   if ( nEventsChain != nEventsTotal ) {
     printf("ERROR: number of events from files (%d) is not equal to total number"
@@ -2526,7 +2496,7 @@ void ScanChain( TChain* chain,
 	 hypos_total_weighted->GetBinContent(1), hypos_total_weighted->GetBinContent(2), 
 	 hypos_total_weighted->GetBinContent(3), hypos_total_weighted->GetBinContent(4));
   gSystem->MakeDirectory("smurf");
-  TFile* fSmurf = TFile::Open(Form("smurf/%s.root",prefix),"RECREATE");
+  TFile* fSmurf = TFile::Open(Form("smurf/%s.root",prefix.c_str()),"RECREATE");
   assert(fSmurf);
   smurfTree.tree_->Write();
   smurfTree.info_.SetTitle(config_info);
@@ -2627,34 +2597,34 @@ bool EventIdentifier::operator == (const EventIdentifier &other) const
 }
 
 // filter events by process
-bool filterByProcess( enum Sample sample ) {
+bool filterByProcess( enum SmurfTree::DataType sample ) {
   switch (sample) {
-  case DYee: 
+  case SmurfTree::dyee: 
     return isDYee();
-  case DYmm:
+  case SmurfTree::dymm:
     return isDYmm();
-  case DYtt:
+  case SmurfTree::dytt:
     return isDYtt();
-  case WW:
+  case SmurfTree::qqww:
     return isWW();
-  case WZ:
+  case SmurfTree::wz:
     return isWZ();
-  case ZZ:
+  case SmurfTree::zz:
     return isZZ();
   default:
     return true;
   }
 }
   
-bool isIdentified( enum Sample sample ) {
+bool isIdentified( enum SmurfTree::DataType sample ) {
   switch (sample) {
-  case DYee:
-  case DYmm:
-  case DYtt:
+  case SmurfTree::dyee:
+  case SmurfTree::dymm:
+  case SmurfTree::dytt:
     return getDrellYanType()!=999;
-  case WW:
-  case WZ:
-  case ZZ:
+  case SmurfTree::qqww:
+  case SmurfTree::wz:
+  case SmurfTree::zz:
     return getVVType()!=999;
   default:
     return true;
@@ -2662,7 +2632,7 @@ bool isIdentified( enum Sample sample ) {
 }
 
 void ProcessSample( std::string file_pattern, 
-		    Sample sample, 
+		    SmurfTree::DataType sample, 
 		    double integratedLumi,
 		    double xsec,
 		    int nProcessedEvents,
@@ -2679,7 +2649,7 @@ void ProcessSample( std::string file_pattern,
 }
 
 void ProcessSample( std::vector<std::string> file_patterns, 
-		    Sample sample, 
+		    SmurfTree::DataType sample, 
 		    double integratedLumi,
 		    double xsec,
 		    int nProcessedEvents,
@@ -2695,16 +2665,16 @@ void ProcessSample( std::vector<std::string> file_patterns,
 	pattern != file_patterns.end(); ++pattern )
     tchain->Add(pattern->c_str());
   if ( gSystem->Getenv("SkimSamples") ){
-    std::cout << "Skimming " << SampleName(sample) << " with skim name " << 
+    std::cout << "Skimming " << SmurfTree::name(sample) << " with skim name " << 
       gSystem->Getenv("SkimName") << " .." << std::endl;
     if ( gSystem->Getenv("Merge") )
       SkimChain(tchain,true);
     else 
       SkimChain(tchain,false);
   } else {
-    std::cout << "Processing " << SampleName(sample) << ".." << std::endl;
+    std::cout << "Processing " << SmurfTree::name(sample) << ".." << std::endl;
     ScanChain(tchain,sample,integratedLumi,xsec,nProcessedEvents,identifyEvents,qcdBackground,zStudy,realData,cms2_json_file);
-    const char* sampleName = SampleName(sample);
+    TString sampleName = SmurfTree::name(sample).c_str();
     TRegexp reg(sampleName, kFALSE);
     
     TList* list = gDirectory->GetList() ;

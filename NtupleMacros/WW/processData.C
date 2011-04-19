@@ -38,17 +38,17 @@ void processData()
   // Flags for files to run over 
   // (0 and 1 are easier to modify)
   //
-  bool runWW    = 1;
+  bool runWW    = 0;
   bool runHWW   = 1;
-  bool runGGWW  = 1;
-  bool runWZ    = 1;
-  bool runZZ    = 1;
-  bool runWjets = 1;
-  bool runDYee  = 1;
-  bool runDYmm  = 1;
-  bool runDYtt  = 1;
-  bool runttbar = 1;
-  bool runtW    = 1;
+  bool runGGWW  = 0;
+  bool runWZ    = 0;
+  bool runZZ    = 0;
+  bool runWjets = 0;
+  bool runDYee  = 0;
+  bool runDYmm  = 0;
+  bool runDYtt  = 0;
+  bool runttbar = 0;
+  bool runtW    = 0;
   bool runQCD   = 0; 
   bool runData  = 0;
 
@@ -86,62 +86,81 @@ void processData()
   cout << "Integrated luminosity to scale to: " << integratedLumi << endl;
 
   if (runWW)
-    ProcessSample(dataset+"/VVJetsTo4L_TuneD6T_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", WW, integratedLumi, 4.5*0.919, 963356*(682015./963356.), kRed, true);
+    ProcessSample(dataset+"/VVJetsTo4L_TuneD6T_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", 
+		  SmurfTree::qqww, integratedLumi, 4.5*0.919, 963356*(682015./963356.), kRed, true);
 
   if (runGGWW)
-    ProcessSample(dataset+"/GluGluToWWTo4L_TuneZ2_7TeV-gg2ww-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/*.root", ggWW, integratedLumi, 0.153, -1, kRed, true);
+    ProcessSample(dataset+"/GluGluToWWTo4L_TuneZ2_7TeV-gg2ww-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/*.root", 
+		  SmurfTree::ggww, integratedLumi, 0.153, -1, kRed, true);
 
   if (runHWW){
-    ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-120_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v2/V04-01-01/"+version+"/*.root", hWW120, integratedLumi, -1, -1, kBlue);
-    ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-130_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", hWW130, integratedLumi, -1, -1, kBlue);
-    ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-140_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", hWW140, integratedLumi, -1, -1, kBlue);
-    ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-150_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", hWW150, integratedLumi, -1, -1, kBlue);
-    ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", hWW160, integratedLumi, -1, -1, kBlue);
-    ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-170_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", hWW170, integratedLumi, -1, -1, kBlue);
-    ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-180_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", hWW180, integratedLumi, -1, -1, kBlue);
-    ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-190_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", hWW190, integratedLumi, -1, -1, kBlue);
-    ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", hWW200, integratedLumi, -1, -1, kBlue);
-    ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-210_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", hWW210, integratedLumi, -1, -1, kBlue);
-    ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-220_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", hWW220, integratedLumi, -1, -1, kBlue);
-    ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-230_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", hWW230, integratedLumi, -1, -1, kBlue);
-    ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-250_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", hWW250, integratedLumi, -1, -1, kBlue);
-    ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-300_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", hWW300, integratedLumi, -1, -1, kBlue);
+//     ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-120_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v2/V04-01-01/"+version+"/*.root", SmurfTree::hww120, integratedLumi, -1, -1, kBlue);
+//     ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-130_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::hww130, integratedLumi, -1, -1, kBlue);
+//     ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-140_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::hww140, integratedLumi, -1, -1, kBlue);
+//     ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-150_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::hww150, integratedLumi, -1, -1, kBlue);
+//     ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::hww160, integratedLumi, -1, -1, kBlue);
+//     ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-170_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::hww170, integratedLumi, -1, -1, kBlue);
+//     ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-180_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::hww180, integratedLumi, -1, -1, kBlue);
+//     ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-190_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::hww190, integratedLumi, -1, -1, kBlue);
+//     ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::hww200, integratedLumi, -1, -1, kBlue);
+//     ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-210_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::hww210, integratedLumi, -1, -1, kBlue);
+//     ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-220_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::hww220, integratedLumi, -1, -1, kBlue);
+//     ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-230_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::hww230, integratedLumi, -1, -1, kBlue);
+//     ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-250_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::hww250, integratedLumi, -1, -1, kBlue);
+//     ProcessSample(dataset+"/GluGluToHToWWTo2L2Nu_M-300_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::hww300, integratedLumi, -1, -1, kBlue);
+    
+//     ProcessSample(dataset+"/VBF_HToWWTo2L2Nu_M-120_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::vbfhww120, integratedLumi, -1, -1, kBlue);
+//     ProcessSample(dataset+"/VBF_HToWWTo2L2Nu_M-130_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::vbfhww130, integratedLumi, -1, -1, kBlue);
+//     ProcessSample(dataset+"/VBF_HToWWTo2L2Nu_M-140_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::vbfhww140, integratedLumi, -1, -1, kBlue);
+//     ProcessSample(dataset+"/VBF_HToWWTo2L2Nu_M-150_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::vbfhww150, integratedLumi, -1, -1, kBlue);
+//     ProcessSample(dataset+"/VBF_HToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::vbfhww160, integratedLumi, -1, -1, kBlue);
+//     ProcessSample(dataset+"/VBF_HToWWTo2L2Nu_M-170_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::vbfhww170, integratedLumi, -1, -1, kBlue);
+//     ProcessSample(dataset+"/VBF_HToWWTo2L2Nu_M-180_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::vbfhww180, integratedLumi, -1, -1, kBlue);
+//     ProcessSample(dataset+"/VBF_HToWWTo2L2Nu_M-190_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::vbfhww190, integratedLumi, -1, -1, kBlue);
+//     ProcessSample(dataset+"/VBF_HToWWTo2L2Nu_M-200_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::vbfhww200, integratedLumi, -1, -1, kBlue);
+    ProcessSample(dataset+"/VBF_HToWWTo2L2Nu_M-250_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::vbfhww250, integratedLumi, -1, -1, kBlue);
+    ProcessSample(dataset+"/VBF_HToWWTo2L2Nu_M-300_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::vbfhww300, integratedLumi, -1, -1, kBlue);
   }
 
   if (runWZ)
-    ProcessSample(dataset+"/WZtoAnything_TuneZ2_7TeV-pythia6-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", WZ, integratedLumi, -1, -1, kBlue);
+    ProcessSample(dataset+"/WZtoAnything_TuneZ2_7TeV-pythia6-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::wz, integratedLumi, -1, -1, kBlue);
   
   if (runZZ)
-    ProcessSample(dataset+"/ZZtoAnything_TuneZ2_7TeV-pythia6-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01"+version+"/*.root", ZZ, integratedLumi, -1, -1, kGreen);
+    ProcessSample(dataset+"/ZZtoAnything_TuneZ2_7TeV-pythia6-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01"+version+"/*.root", SmurfTree::zz, integratedLumi, -1, -1, kGreen);
  
   if (runWjets){
     std::vector<string> wSamples;
     wSamples.push_back(dataset+"/WToENu_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
     wSamples.push_back(dataset+"/WToMuNu_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
     wSamples.push_back(dataset+"/WToTauNu_TuneZ2_7TeV-pythia6-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    ProcessSample(wSamples, Wjets,  integratedLumi , -1, -1, 40);
+    ProcessSample(wSamples, SmurfTree::wjets,  integratedLumi , -1, -1, 40);
   }
 
   if (runDYee)
-    ProcessSample(dataset+"/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/"+version+"/*root", DYee, integratedLumi, -1, -1, kMagenta, identifyDYEvents);
+    ProcessSample(dataset+"/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/"+version+"/*root", 
+		  SmurfTree::dyee, integratedLumi, -1, -1, kMagenta, identifyDYEvents);
   
   if (runDYmm)
-    ProcessSample(dataset+"/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/"+version+"/*root", DYmm, integratedLumi, -1, -1, kMagenta, identifyDYEvents);
+    ProcessSample(dataset+"/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/"+version+"/*root", 
+		  SmurfTree::dymm, integratedLumi, -1, -1, kMagenta, identifyDYEvents);
   
   if (runDYtt)
-    ProcessSample(dataset+"/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*root", DYtt, integratedLumi, -1, -1, kMagenta, identifyDYEvents);
+    ProcessSample(dataset+"/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*root", 
+		  SmurfTree::dytt, integratedLumi, -1, -1, kMagenta, identifyDYEvents);
  
   if (runttbar)
-    ProcessSample(dataset+"/TTJets_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*root", ttbar, integratedLumi, -1, -1, kYellow);
+    ProcessSample(dataset+"/TTJets_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*root", 
+		  SmurfTree::ttbar, integratedLumi, -1, -1, kYellow);
 
   if (runtW)
-    ProcessSample(dataset+"/TToBLNu_TuneZ2_tW-channel_7TeV-madgraph_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", tW, integratedLumi, -1, -1, 63);
+    ProcessSample(dataset+"/TToBLNu_TuneZ2_tW-channel_7TeV-madgraph_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", 
+		  SmurfTree::tw, integratedLumi, -1, -1, 63);
   
   std::vector<string> qcdSamples;
   qcdSamples.push_back(dataset+"/QCD_Pt30_Spring10-START3X_V26_S09-v1/V03-04-08/"+version+"/merged_ntuple*.root");
   qcdSamples.push_back(dataset+"/QCD_Pt80_Spring10-START3X_V26_S09-v1/V03-04-08/"+version+"/merged_ntuple*.root");
   if (runQCD)
-    ProcessSample(qcdSamples, qcd, integratedLumi, -1, -1, 40, false, true);
+    ProcessSample(qcdSamples, SmurfTree::qcd, integratedLumi, -1, -1, 40, false, true);
   
   // RealData
   TString cms2_json_file = "files/merged_JsonReRecoSep17_JsonStreamExpressV2_35.49.txt";
@@ -155,7 +174,7 @@ void processData()
   dataSamples.push_back(dataset+"/Electron_Run2010B-PromptReco-v2_RECO/V03-06-14/diLepPt1020Skim/"+version+"/*.root");
   
   if (runData)
-    ProcessSample(dataSamples, Data, 3.1, -1, -1, kBlack, false, false, zStudy, true, cms2_json_file);
+    ProcessSample(dataSamples, SmurfTree::data, 3.1, -1, -1, kBlack, false, false, zStudy, true, cms2_json_file);
   
   if (gSystem->Getenv("SkimSamples")) return;
   

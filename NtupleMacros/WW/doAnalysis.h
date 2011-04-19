@@ -8,6 +8,7 @@
 #include "TChain.h"
 #include <fstream>
 #include <vector>
+#include "../../../Smurf/Core/SmurfTree.h"
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 typedef ULong64_t  cuts_t;
@@ -137,8 +138,8 @@ bool CheckCuts(cuts_t apply, cuts_t passed);
 
  
 // filter events by process
-bool filterByProcess( enum Sample sample );
-bool isIdentified( enum Sample sample );
+bool filterByProcess( enum SmurfTree::DataType sample );
+bool isIdentified( enum SmurfTree::DataType sample );
 
 // void checkIsolation(int i_hyp, double weight);
 
@@ -157,7 +158,7 @@ bool hypo (int i_hyp, double weight, bool zStudy = false, bool realData = false 
 
 class TChain;
 void ScanChain( TChain* chain, 
-	   Sample sample, 
+	   SmurfTree::DataType sample, 
 	   double integratedLumi,
 	   double xsec,
 	   int nProcessedEvents,
@@ -170,7 +171,7 @@ void SkimChain(TChain* chain, bool mergeFiles=false);
 bool passedSkimSelection();
 
 void ProcessSample( std::string file_pattern, 
-		    Sample sample, 
+		    SmurfTree::DataType sample, 
 		    double integratedLumi,
 		    double xsec,
 		    int nProcessedEvents,
@@ -181,7 +182,7 @@ void ProcessSample( std::string file_pattern,
 		    bool realData = false,
 		    TString cms2_json_file = "");
 void ProcessSample( std::vector<std::string> file_patterns, 
-		    Sample sample,
+		    SmurfTree::DataType sample,
 		    double integratedLumi,
 		    double xsec,
 		    int nProcessedEvents,
