@@ -80,7 +80,8 @@ metStruct correctedTCMET(bool printout = false, ostream& ostr = std::cout);
 metStruct customType1Met( float metx , float mety , float sumet  , VofP4 jets , std::vector<float> cors );
 
 //
-metStruct trackerMET( int hyp_index, double deltaZCut = 0.2 );
+metStruct trackerMET( int hyp_index, double deltaZCut = 0.2, 
+		      const std::vector<LorentzVector>* jets = 0 );
 
 #endif
 
