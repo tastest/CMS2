@@ -1222,6 +1222,8 @@ double electron_d0PV(unsigned int index);
 double electron_d0PV_wwV1(unsigned int index);
 double electron_d0PV_mindz(unsigned int index);
 double electron_dzPV_wwV1(unsigned int index);
+double electron_d0PV_smurfV3(unsigned int index);
+double electron_dzPV_smurfV3(unsigned int index);
 
 #endif
 

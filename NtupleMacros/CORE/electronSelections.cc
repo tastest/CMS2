@@ -981,6 +981,25 @@ double electron_d0PV(unsigned int index){
 }
 
 
+double electron_d0PV_smurfV3(unsigned int index){
+  int vtxIndex = 0;
+  double dxyPV = cms2.els_d0()[index]-
+    cms2.davtxs_position()[vtxIndex].x()*sin(cms2.els_trk_p4()[index].phi())+
+    cms2.davtxs_position()[vtxIndex].y()*cos(cms2.els_trk_p4()[index].phi());
+  return dxyPV;
+}
+
+double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVector& pv){
+  return (vtx.z()-pv.z()) - ((vtx.x()-pv.x())*p4.x()+(vtx.y()-pv.y())*p4.y())/p4.pt() * p4.z()/p4.pt();
+}
+
+double electron_dzPV_smurfV3(unsigned int index){
+  int vtxIndex = 0;
+  double dzpv = dzPV(cms2.els_vertex_p4()[index], cms2.els_trk_p4()[index], cms2.davtxs_position()[vtxIndex]);
+  return dzpv;
+}
+
+
 double electron_dzPV_wwV1(unsigned int index){ 
     if ( cms2.vtxs_sumpt().empty() ) return 9999.;
     double sumPtMax = -1;
