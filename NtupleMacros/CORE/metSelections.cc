@@ -333,10 +333,12 @@ metStruct trackerMET( int hyp_index, double deltaZCut,
     pX -= cms2.pfcands_p4().at(i).px();
     pY -= cms2.pfcands_p4().at(i).py();
   }
-  for ( std::vector<LorentzVector>::const_iterator jet = jets->begin();
-	jet != jets->end(); ++jet ){
-    pX -= jet->px();
-    pY -= jet->py();
+  if (jets){
+    for ( std::vector<LorentzVector>::const_iterator jet = jets->begin();
+	  jet != jets->end(); ++jet ){
+      pX -= jet->px();
+      pY -= jet->py();
+    }
   }
   metStruct met;
   met.met     = sqrt(pX * pX + pY * pY);
