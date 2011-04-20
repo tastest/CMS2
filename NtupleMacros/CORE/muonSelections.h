@@ -71,5 +71,8 @@ bool isCosmics(unsigned int index);
 double mud0PV(unsigned int index);
 double mud0PV_wwV1(unsigned int index);
 double mudzPV_wwV1(unsigned int index);
+double mud0PV_smurfV3(unsigned int index);
+double mudzPV_smurfV3(unsigned int index);
+
 #endif
 
