@@ -58,6 +58,7 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if (fabs(cms2.els_d0corr()[index]) < 0.04) cuts_passed |= (1ll<<ELEIP_400);
     if (fabs(electron_d0PV(index)) < 0.02) cuts_passed |= (1ll<<ELEIP_PV_200);
     if (fabs(electron_d0PV_wwV1(index)) < 0.02 && fabs(electron_dzPV_wwV1(index)) < 1.0 ) cuts_passed |= (1ll<<ELEIP_PV_wwV1);
+    if (fabs(electron_d0PV_smurfV3(index)) < 0.02 && fabs(electron_dzPV_smurfV3(index)) < 0.2 ) cuts_passed |= (1ll<<ELEIP_PV_SMURFV3);
 
     // id
 

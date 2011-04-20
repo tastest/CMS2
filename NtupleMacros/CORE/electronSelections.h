@@ -61,7 +61,8 @@ enum EleSelectionType {
 	 ELEIP_PV_200,
 	 // d0 (PV) < 0.02 and dz (PV) < 1.0
 	 ELEIP_PV_wwV1,
-
+	 // d0 (PV) < 0.02 and dz (PV) < 0.2, using first DA PV
+	 ELEIP_PV_SMURFV3,
 
 	 //
 	 // id cuts
