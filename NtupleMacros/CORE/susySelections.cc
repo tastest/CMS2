@@ -104,6 +104,118 @@ bool ZVetoGeneral( float ptcut , float minmass ,  float maxmass , SelectionType 
 }
 
 
+//-------------------------------------------------------
+// get exact trigger name corresponding to given pattern
+//-------------------------------------------------------
+TString triggerName(TString triggerPattern){
+
+  bool    foundTrigger  = false;
+  TString exact_hltname = "";
+
+  for( unsigned int itrig = 0 ; itrig < hlt_trigNames().size() ; ++itrig ){
+    if( TString( hlt_trigNames().at(itrig) ).Contains( triggerPattern ) ){
+      foundTrigger  = true;
+      exact_hltname = hlt_trigNames().at(itrig);
+      break;
+    }
+  }
+
+  if( !foundTrigger) return "TRIGGER_NOT_FOUND";
+
+  return exact_hltname;
+
+}
+
+
+//---------------------------------------------
+// Check if trigger is unprescaled and passes
+//---------------------------------------------
+bool passUnprescaledHLTTriggerPattern(const char* arg){
+
+  //cout << "Checking for pattern " << arg << endl;
+
+  TString HLTTriggerPattern(arg);
+
+  TString HLTTrigger = triggerName( HLTTriggerPattern );
+
+  //cout << "Found trigger " << HLTTrigger << endl;
+
+  if( HLTTrigger.Contains("TRIGGER_NOT_FOUND")){
+    //cout << "Didn't find trigger!" << endl;
+    return false;
+  }
+  return passUnprescaledHLTTrigger( HLTTrigger );
+
+}
+
+/*****************************************************************************************/
+//passes the OS SUSY trigger selection 2011
+/*****************************************************************************************/
+
+bool passSUSYTrigger2011_v1( bool isData , int hypType ) {
+  
+  //----------------------------------------
+  // no trigger requirements applied to MC
+  //----------------------------------------
+  
+  if( !isData ) return true; 
+  
+  //---------------------------------
+  // triggers for lepton-HT datasets
+  //---------------------------------
+  
+  if( TString( cms2.evt_dataset() ).Contains("Had") ) {
+
+    //mm
+    if( hypType == 0 ){
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu3_HT150_v") )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu3_HT160_v") )   return true;
+    }
+    
+    //em
+    else if( hypType == 1 || hypType == 2 ){
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdL_TrkIdVL_HT150_v") )     return true; 
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdT_TrkIdVL_HT150_v") )     return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdL_TrkIdVL_HT160_v") )     return true; 
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdT_TrkIdVL_HT160_v") )     return true;
+    }
+    
+    //ee
+    else if( hypType == 3 ){
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdL_TrkIdVL_HT150_v") )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_HT150_v") )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdL_TrkIdVL_HT160_v") )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_HT160_v") )   return true;
+    }
+  }
+  
+  //---------------------------------
+  // triggers for dilepton datasets
+  //---------------------------------
+  
+  else{
+
+    //mm
+    if( hypType == 0 ){
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu7_v") )   return true;
+    }
+    
+    //em
+    else if( hypType == 1 || hypType == 2 ){
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdL_v") )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdL_v") )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu10_Ele10_CaloIdL_v") )  return true;
+    }
+    
+    //ee
+    else if( hypType == 3 ){
+      if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v") )   return true;
+    }
+  }
+  
+  return false;
+    
+}
 
 /*****************************************************************************************/
 //passes the OS SUSY trigger selection
@@ -121,7 +233,7 @@ bool passSUSYTrigger_v1( bool isData , int hypType ) {
     // This is overkill, as Mu15 should be a susbset of Mu11 (for example)
     // But why not.
   
-    if( passUnprescaledHLTTrigger("HLT_DoubleMu3_v2") ) return true;
+    if( passUnprescaledHLTTrigger("HLT_DoubleMu3_v2") )   return true;
     if( passUnprescaledHLTTrigger("HLT_DoubleMu5_v1") )   return true;
     if( passUnprescaledHLTTrigger("HLT_Mu11") )           return true;
     if( passUnprescaledHLTTrigger("HLT_Mu13_v1") )        return true;
