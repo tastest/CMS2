@@ -19,6 +19,11 @@ bool vetoZmumuGamma( unsigned int hypIdx , float emax = 6. ,
                      float minmass = 76. , float maxmass = 106.);
 
 /*****************************************************************************************/
+//passes the SUSY 2011 trigger selections
+/*****************************************************************************************/
+bool passSUSYTrigger2011_v1( bool isData , int hypType );
+
+/*****************************************************************************************/
 //passes the SUSY trigger selections
 /*****************************************************************************************/
 bool passSUSYTrigger_v1( bool isData , int hypType );
