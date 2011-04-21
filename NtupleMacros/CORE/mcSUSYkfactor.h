@@ -10,7 +10,7 @@
 //--------------------------------------------------------
 
 #include "CMS2.h"
-
+#include "TH2F.h"
 
 float kfactorSUSY(string sample);
 float kfactorSUSY(float m0, float m12, string sample);
