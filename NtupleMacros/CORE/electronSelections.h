@@ -42,12 +42,14 @@ enum EleSelectionType {
 	 // non-truncated relative iso with cut [0.05,0.07,0.10] for pT [10,15,20]
 	 ELEISO_SMURFV1,
 
-     ELEISO_RELNT010,       // non-truncated relative iso < 0.10, 0.3 cone size for all, 1 GeV pedestal sub in EB
-     ELEISO_RELNT015,       // non-truncated relative iso < 0.15, 0.3 cone size for all, 1 GeV pedestal sub in EB
-     ELEISO_RELNT040,       // non-truncated relative iso < 0.40, 0.3 cone size for all, 1 GeV pedestal sub in EB
-     ELEISO_TRK_RELNT020,   // non-truncated relative Tracker iso < 0.20, 0.3 cone size for all
-     ELEISO_ECAL_RELNT020,  // non-truncated relative ECAL    iso < 0.20, 0.3 cone size for all, 1 GeV pedestal sub in EB
-     ELEISO_HCAL_RELNT020,  // non-truncated relative HCAL    iso < 0.20, 0.3 cone size for all
+	 ELEISO_RELNT010,       // non-truncated relative iso < 0.10, 0.3 cone size for all, 1 GeV pedestal sub in EB
+	 ELEISO_RELNT015,       // non-truncated relative iso < 0.15, 0.3 cone size for all, 1 GeV pedestal sub in EB
+	 ELEISO_RELNT040,       // non-truncated relative iso < 0.40, 0.3 cone size for all, 1 GeV pedestal sub in EB
+	 ELEISO_TRK_RELNT020,   // non-truncated relative Tracker iso < 0.20, 0.3 cone size for all
+	 ELEISO_ECAL_RELNT020,  // non-truncated relative ECAL    iso < 0.20, 0.3 cone size for all, 1 GeV pedestal sub in EB
+	 ELEISO_HCAL_RELNT020,  // non-truncated relative HCAL    iso < 0.20, 0.3 cone size for all
+	 ELEISO_ECAL_REL020,    // truncated relative ECAL    iso < 0.20, 0.3 cone size for all, 1 GeV pedestal sub in EB
+	 ELEISO_HCAL_REL020,    // truncated relative HCAL    iso < 0.20, 0.3 cone size for all
 
 
 	 //
@@ -484,8 +486,8 @@ static const cuts_t electronSelection_el_OSV2_noiso =
   (1ll<<ELEETA_250);                    // |eta| < 2.5
 
 static const cuts_t electronSelection_el_OSV2_iso = 
-  (1ll<<ELEISO_ECAL_RELNT020)         | // ECAL relative isolation
-  (1ll<<ELEISO_HCAL_RELNT020)         | // HCAL relative isolation
+  (1ll<<ELEISO_ECAL_REL020)           | // ECAL relative isolation
+  (1ll<<ELEISO_HCAL_REL020)           | // HCAL relative isolation
   (1ll<<ELEISO_REL015);                 // reliso < 0.15, non-truncated, 1 GeV EB PS
 
 static const cuts_t electronSelection_el_OSV2 = 
@@ -1199,6 +1201,8 @@ float electronIsolation_rel(const unsigned int index, bool use_calo_iso);
 float electronIsolation_rel_v1(const unsigned int, bool);
 float electronIsolation_ECAL_rel_v1(const unsigned int);
 float electronIsolation_HCAL_rel_v1(const unsigned int);
+float electronIsolation_ECAL_rel(const unsigned int);
+float electronIsolation_HCAL_rel(const unsigned int);
 
 // the difference from above is that the pedestal sub is applied on both EB/EE
 float electronIsolation_rel_ww(const unsigned int index, bool use_calo_iso);

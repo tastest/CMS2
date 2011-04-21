@@ -37,6 +37,8 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if( electronIsolation_rel_v1(index, false) < 0.20) cuts_passed |= (1ll<<ELEISO_TRK_RELNT020);   // Tracker Relative Isolation
     if( electronIsolation_ECAL_rel_v1(index)   < 0.20) cuts_passed |= (1ll<<ELEISO_ECAL_RELNT020);  // ECAL    Relative Isolation
     if( electronIsolation_HCAL_rel_v1(index)   < 0.20) cuts_passed |= (1ll<<ELEISO_HCAL_RELNT020);  // HCAL    Relative Isolation
+    if( electronIsolation_ECAL_rel(index)      < 0.20) cuts_passed |= (1ll<<ELEISO_ECAL_REL020);    // ECAL    Relative Isolation (truncated)
+    if( electronIsolation_HCAL_rel(index)      < 0.20) cuts_passed |= (1ll<<ELEISO_HCAL_REL020);    // HCAL    Relative Isolation (truncated)
 
     //relative isolation truncated
     if (electronIsolation_rel(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_REL010);
@@ -819,6 +821,24 @@ float electronIsolation_ECAL_rel_v1(const unsigned int index){
 float electronIsolation_HCAL_rel_v1(const unsigned int index){
   float pt               = cms2.els_p4().at(index).pt();      // Electron Pt
   float hcal_sum_over_pt = cms2.els_hcalIso().at(index) / pt; // HCAL Relative Isolation, NT
+  return hcal_sum_over_pt;
+}
+
+
+// ECAL Relative Isolation, Truncated
+float electronIsolation_ECAL_rel(const unsigned int index){
+  float pt               = cms2.els_p4().at(index).pt();                                                                  // Electron Pt
+  float ecal_sum_over_pt = 0.0;                                                                                           // ECAL Relative Isolation
+  if( fabs(cms2.els_etaSC().at(index)) > 1.479  ) ecal_sum_over_pt += cms2.els_ecalIso().at(index);                       // EE: Ecal Endcap
+  if( fabs(cms2.els_etaSC().at(index)) <= 1.479 ) ecal_sum_over_pt += max( 0.0, ( cms2.els_ecalIso().at(index) - 1.0 ) ); // EB: Ecal Barrel
+  ecal_sum_over_pt /= max(pt,(float)20.0);
+  return ecal_sum_over_pt;
+}
+
+// HCAL Relative Isolation, Truncated
+float electronIsolation_HCAL_rel(const unsigned int index){
+  float pt               = max( cms2.els_p4().at(index).pt() , (float) 20.0 ) ;      // Electron Pt
+  float hcal_sum_over_pt = cms2.els_hcalIso().at(index) / pt;                        // HCAL Relative Isolation, NT
   return hcal_sum_over_pt;
 }
 
