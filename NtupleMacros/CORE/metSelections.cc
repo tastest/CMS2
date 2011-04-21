@@ -8,11 +8,9 @@
 #include "CMS2.h"
 #include "trackSelections.h"
 #include "metSelections.h"
+//#include "electronSelections.h"
 #include "Math/LorentzVector.h"
 #include "Math/VectorUtil.h"
-
-typedef std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
-typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 //---------------------------------------------
 // function to calculate latest tcMET
@@ -298,9 +296,11 @@ metStruct correctTCMETforHypMuons (int hyp_index, float met_x, float met_y, floa
      return tcmetStruct;
 }
 
+/*
 double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVector& pv){
   return (vtx.z()-pv.z()) - ((vtx.x()-pv.x())*p4.x()+(vtx.y()-pv.y())*p4.y())/p4.pt() * p4.z()/p4.pt();
 }
+*/
 
 metStruct trackerMET( int hyp_index, double deltaZCut,
 		      const std::vector<LorentzVector>* jets )

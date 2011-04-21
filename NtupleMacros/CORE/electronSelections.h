@@ -4,12 +4,14 @@
 #include <stdint.h>
 #include <vector>
 #include "TMath.h"
+#include "CMS2.h"
 
 #include "electronSelectionsParameters.h"
 
 typedef ULong64_t   uint64;
 typedef uint64      cuts_t;
 typedef uint64      electronIdComponent_t;
+
 //
 // This is the menu of electron selections
 //
@@ -1249,6 +1251,8 @@ double electron_d0PV_mindz(unsigned int index);
 double electron_dzPV_wwV1(unsigned int index);
 double electron_d0PV_smurfV3(unsigned int index);
 double electron_dzPV_smurfV3(unsigned int index);
+
+double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVector& pv);
 
 #endif
 
