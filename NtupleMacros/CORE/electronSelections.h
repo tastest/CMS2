@@ -89,6 +89,10 @@ enum EleSelectionType {
 	 ELEID_VBTF_35X_70,
 	 // VBTF80 electron ID no HoE in endcap
 	 ELEID_VBTF_80_NOHOEEND,
+	 // VBTF85 electron ID no HoE in endcap
+	 ELEID_VBTF_85_NOHOEEND,
+	 // VBTF85 electron ID
+	 ELEID_VBTF_85,
 	 // VBTF70 electron ID no HoE in endcap
 	 ELEID_VBTF_70_NOHOEEND,
 	 // VBTF90 electron ID with HoE and dPhiIn cuts tuned to 
@@ -467,9 +471,25 @@ static const cuts_t electronSelection_el_OSV1 =
    (1ll<<ELEISO_REL015) | electronSelection_el_OSV1_noiso;
 
 //---------------------------------------------------------
+// baseline selection for OS 2011 analysis
 //---------------------------------------------------------
 
+static const cuts_t electronSelection_el_OSV2_noiso = 
+  (1ll<<ELEID_VBTF_85_NOHOEEND)       | // VBTF85, no H/E in endcap
+  (1ll<<ELEIP_PV_SMURFV3)             | // d0(PV) < 0.02 cm, dz(PV) < 0.2 cm
+  (1ll<<ELENOMUON_010)                | // no muon dR < 0.1
+  (1ll<<ELENOTCONV_HITPATTERN)        | // <=1 missing hits
+  (1ll<<ELENOTCONV_MIT)               | // MIT conversion rejection
+  (1ll<<ELEPT_010)                    | // electron p_T > 10 GeV
+  (1ll<<ELEETA_250);                    // |eta| < 2.5
 
+static const cuts_t electronSelection_el_OSV2_iso = 
+  (1ll<<ELEISO_ECAL_RELNT020)         | // ECAL relative isolation
+  (1ll<<ELEISO_HCAL_RELNT020)         | // HCAL relative isolation
+  (1ll<<ELEISO_REL015);                 // reliso < 0.15, non-truncated, 1 GeV EB PS
+
+static const cuts_t electronSelection_el_OSV2 = 
+  electronSelection_el_OSV2_iso | electronSelection_el_OSV2_noiso;
 
 //
 // ======================== WW ============================
