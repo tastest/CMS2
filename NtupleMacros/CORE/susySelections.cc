@@ -12,6 +12,7 @@
 #include "triggerUtils.cc"
 #include "electronSelections.h"
 #include "muonSelections.h"
+#include "eventSelections.h"
 
 using namespace tas;
 
