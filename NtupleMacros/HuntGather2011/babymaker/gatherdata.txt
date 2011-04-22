@@ -1,2 +1,0 @@
-./makeGatherMC.sh UCSD Mu_Run2010B-Nov4ReReco_v1_RECO/V03-06-17/diLepPt1020Skim/
-./makeGatherMC.sh UCSD Electron_Run2010B-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/
