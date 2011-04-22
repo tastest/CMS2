@@ -119,13 +119,27 @@ bool fakableMuon(unsigned int i){
   // return ww_muBase(i) && ww_muId(i) && ww_muIsoVal(i)<1.0 && fabs(cms2.mus_d0corr()[i]) < 2; 
 }
 
+WWJetType jetType(){
+  return pfJet;
+  // return jptJet;
+}
+
+std::vector<LorentzVector> getDefaultJets(unsigned int i_hyp, bool btagged=false){
+  return getJets(jetType(), i_hyp, 30, 5.0, false, btagged); // V1
+}
+
+unsigned int numberOfJets(unsigned int i_hyp){
+  return getDefaultJets(i_hyp, false).size(); 
+}
+
 double metValue(){    return cms2.evt_pfmet(); }
 double metPhiValue(){ return cms2.evt_pfmetPhi(); }
 
 bool passedMetRequirements(unsigned int i_hyp){
   // if ( cms2.hyp_p4().at(i_hyp).mass()>130 ) return true;
   HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
-  metStruct trkMET = trackerMET(i_hyp);
+  // std::vector<LorentzVector> jets = getDefaultJets(i_hyp);
+  metStruct trkMET = trackerMET(i_hyp,0.2); //,&jets);
   double pMet = std::min(projectedMet(i_hyp, metValue(), metPhiValue()),
 			 projectedMet(i_hyp, trkMET.met, trkMET.metphi));
   // if ( type == EM && cms2.hyp_p4().at(i_hyp).mass()>90 ) return true;
@@ -139,18 +153,6 @@ bool passedMetRequirements(unsigned int i_hyp){
   return true;
 }
 
-WWJetType jetType(){
-  return pfJet;
-  // return jptJet;
-}
-
-std::vector<LorentzVector> getDefaultJets(unsigned int i_hyp, bool btagged=false){
-  return getJets(jetType(), i_hyp, 30, 5.0, false, btagged); // V1
-}
-
-unsigned int numberOfJets(unsigned int i_hyp){
-  return getDefaultJets(i_hyp, false).size(); 
-}
 
 //
 // Electron Id
@@ -2213,12 +2215,12 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp, double weight, enum Sm
   tree.lq2_   = ltIsFirst ? cms2.hyp_ll_charge().at(i_hyp) : cms2.hyp_lt_charge().at(i_hyp);
   tree.lid1_  = ltIsFirst ? cms2.hyp_lt_id().at(i_hyp) : cms2.hyp_ll_id().at(i_hyp);
   tree.lid2_  = ltIsFirst ? cms2.hyp_ll_id().at(i_hyp) : cms2.hyp_lt_id().at(i_hyp);
-  const std::vector<LorentzVector>& jets = getDefaultJets(i_hyp);
+  const std::vector<LorentzVector>& jets = getJets(jetType(), i_hyp, 0, 5.0, false, false);
   if (jets.size()>0) tree.jet1_ = jets.at(0);
   if (jets.size()>1) tree.jet2_ = jets.at(1);
   // jet1_btag_;
   // jet2_btag_;
-  tree.njets_ = jets.size();
+  tree.njets_ = numberOfJets(i_hyp);
   tree.evtype_ = SmurfTree::ZeroJet;
   tree.dilep_ = cms2.hyp_p4().at(i_hyp);
   tree.pmet_ = projectedMet(i_hyp, metValue(), metPhiValue());
