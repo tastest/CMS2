@@ -21,7 +21,12 @@ export SCRAM_ARCH=slc5_amd64_gcc434
 
 GATHER_INPUT=""
 GATHER_OUTPUT=""
-if [ "$GATHER_SITE" == "UCSD" ]; then
+if [ "$GATHER_SITE" == "HADOOP" ]; then
+    GATHER_INPUT="/hadoop/cms/store/user/yanjuntu/"
+    GATHER_OUTPUT="/nfs-3/userdata/cms2/gather/mctmp/"
+    export ROOTSYS=/code/osgcode/UCSD_root/root_v5.24.00
+    source /code/osgcode/cmssoft/cms/cmsset_default.sh
+elif [ "$GATHER_SITE" == "UCSD" ]; then
     GATHER_INPUT="/nfs-3/userdata/cms2/"
     GATHER_OUTPUT="/nfs-3/userdata/cms2/gather/mctmp/"
     export ROOTSYS=/code/osgcode/UCSD_root/root_v5.24.00

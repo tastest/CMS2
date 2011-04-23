@@ -9,7 +9,7 @@
 
 #include <vector>
 
-Mode {
+enum Mode {
     EXPRESS,
     PROMPT,
     DEBUG
@@ -58,57 +58,24 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
     float k_ttbar = 1.0;
     float k_tw = 1.0;
     float k_wjets = 1.0;
-
-    BabySample *bs_dilep_wz  = new BabySample("wz", "mc", 
-            base+"/mc/WZtoAnything_TuneZ2_7TeV-pythia6-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root", 
-            "", k_wz, BACKGROUND, kGray, 1001);
-
-    BabySample *bs_dilep_zz  = new BabySample("zz", "mc", 
-            base+"/mc/ZZtoAnything_TuneZ2_7TeV-pythia6-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root", 
-            "", k_zz, BACKGROUND, 10, 1001);
-
-    BabySample *bs_dilep_dyeemm  = new BabySample("dyeemm", "mc", 
-            base+"/mc/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root", 
-            cut_notau, k_dy, BACKGROUND, kAzure-2, 1001);
-    bs_dilep_dyeemm->add(base+"/mc/DYToEE_M-20_TuneZ2_7TeV-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/dilep2010_ZMassLessThan50Skim/baby_gather.root");
-    bs_dilep_dyeemm->add(base+"/mc/DYToMuMu_M-20_TuneZ2_7TeV-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/diLep2010_ZMassLessThan50Skim/baby_gather.root");
+/*
+    BabySample *bs_dilep_wz  = new BabySample("wz", "mc",                   base+"/mc/WZtoAnything_TuneZ2_7TeV-pythia6-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root", "", k_wz, BACKGROUND, kGray, 1001);
+    BabySample *bs_dilep_zz  = new BabySample("zz", "mc",                   base+"/mc/ZZtoAnything_TuneZ2_7TeV-pythia6-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root", "", k_zz, BACKGROUND, 10, 1001);
+    BabySample *bs_dilep_dyeemm  = new BabySample("dyeemm", "mc",           base+"/mc/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root", cut_notau, k_dy, BACKGROUND, kAzure-2, 1001);
+    bs_dilep_dyeemm->add(   base+"/mc/DYToEE_M-20_TuneZ2_7TeV-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/dilep2010_ZMassLessThan50Skim/baby_gather.root");
+    bs_dilep_dyeemm->add(   base+"/mc/DYToMuMu_M-20_TuneZ2_7TeV-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/diLep2010_ZMassLessThan50Skim/baby_gather.root");
+    BabySample *bs_dilep_dytt  = new BabySample("dytt", "mc",               base+"/mc/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root", cut_tau, k_dy, BACKGROUND, kCyan, 1001);
+    bs_dilep_dytt->add(base+"/mc/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/diLep2010_ZMassLessThan50Skim/baby_gather.root");
+    BabySample *bs_dilep_vgammajets  = new BabySample("vgammajets", "mc",   base+"/mc/PhotonVJets_7TeV-madgraph_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root", "", k_vgammajets, BACKGROUND, kOrange-3, 1001);
+    BabySample *bs_dilep_ttbar  = new BabySample("ttbar", "mc",             base+"/mc/TTJets_TuneD6T_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root", "", k_ttbar, BACKGROUND, kRed+1, 1001);
+    BabySample *bs_dilep_tw  = new BabySample("tw", "mc",                   base+"/mc/TToBLNu_TuneZ2_tW-channel_7TeV-madgraph_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root", "", k_tw, BACKGROUND, kMagenta, 1001);
+    BabySample *bs_dilep_wjets  = new BabySample("wjets", "mc",             base+"/mc/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/baby_gather.root", "", k_dy, BACKGROUND, kGreen-3, 1001);
+    BabySample *bs_dilep_ww  = new BabySample("ww", "mc",                   base+"/mc/WWTo2L2Nu_TuneZ2_7TeV-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-14/baby_gather.root", "", k_ww, BACKGROUND, kGray+1, 1001);
 
     // special for Tag and Probe
-    
-    BabySample *bs_dilep_dyee  = new BabySample("dyee", "mc",
-            base+"/mc/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root",
-            cut_dymm, k_dy, BACKGROUND, kAzure-2, 1001);
-
-    BabySample *bs_dilep_dymm  = new BabySample("dymm", "mc",
-            base+"/mc/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root",
-            cut_dymm, k_dy, BACKGROUND, kAzure-2, 1001);
-
+    BabySample *bs_dilep_dyee  = new BabySample("dyee", "mc",               base+"/mc/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root", cut_dymm, k_dy, BACKGROUND, kAzure-2, 1001);
+    BabySample *bs_dilep_dymm  = new BabySample("dymm", "mc",               base+"/mc/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root", cut_dymm, k_dy, BACKGROUND, kAzure-2, 1001);
     // end special for Tag and Probe
-
-    BabySample *bs_dilep_dytt  = new BabySample("dytt", "mc",
-            base+"/mc/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root",
-            cut_tau, k_dy, BACKGROUND, kCyan, 1001);
-    bs_dilep_dytt->add(base+"/mc/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/diLep2010_ZMassLessThan50Skim/baby_gather.root");
-
-    BabySample *bs_dilep_vgammajets  = new BabySample("vgammajets", "mc", 
-            base+"/mc/PhotonVJets_7TeV-madgraph_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root", 
-            "", k_vgammajets, BACKGROUND, kOrange-3, 1001);
-
-    BabySample *bs_dilep_ttbar  = new BabySample("ttbar", "mc", 
-            base+"/mc/TTJets_TuneD6T_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root", 
-            "", k_ttbar, BACKGROUND, kRed+1, 1001);
-
-    BabySample *bs_dilep_tw  = new BabySample("tw", "mc",
-            base+"/mc/TToBLNu_TuneZ2_tW-channel_7TeV-madgraph_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/baby_gather.root",
-            "", k_tw, BACKGROUND, kMagenta, 1001);
-
-    BabySample *bs_dilep_wjets  = new BabySample("wjets", "mc", 
-            base+"/mc/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/baby_gather.root", 
-            "", k_dy, BACKGROUND, kGreen-3, 1001);
-
-    BabySample *bs_dilep_ww  = new BabySample("ww", "mc",
-            base+"/mc/WWTo2L2Nu_TuneZ2_7TeV-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-14/baby_gather.root",
-            "", k_ww, BACKGROUND, kGray+1, 1001);
 
     //
     // BSM
@@ -119,19 +86,49 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
     float k_hww200 = 1.0;
     float k_lm0 = 1.0;
 
-    BabySample *bs_dilep_hww160  = new BabySample("hww160", "mc", 
-            base+"/mc/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/baby_gather.root", 
-            "", k_hww160, SIGNAL, kBlack, kSolid);
-    BabySample *bs_dilep_hww130  = new BabySample("hww130", "mc",
-            base+"/mc/GluGluToHToWWTo2L2Nu_M-130_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/baby_gather.root",
-            "", k_hww130, SIGNAL, kGray, kSolid);
-    BabySample *bs_dilep_hww200  = new BabySample("hww200", "mc",
-            base+"/mc/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/baby_gather.root",
+    BabySample *bs_dilep_hww160  = new BabySample("hww160", "mc",           base+"/mc/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/baby_gather.root", "", k_hww160, SIGNAL, kBlack, kSolid);
+    BabySample *bs_dilep_hww130  = new BabySample("hww130", "mc",           base+"/mc/GluGluToHToWWTo2L2Nu_M-130_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/baby_gather.root", "", k_hww130, SIGNAL, kGray, kSolid);
+    BabySample *bs_dilep_hww200  = new BabySample("hww200", "mc",           base+"/mc/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-18/baby_gather.root",
             "", k_hww200, SIGNAL, kCyan, kSolid);
 
-    BabySample *bs_dilep_lm0  = new BabySample("LM0", "mc",
-            base+"/mc/LM0_SUSY_sftsht_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-18/baby_gather.root",
-            "", k_lm0, SIGNAL, kGray, kSolid);
+    BabySample *bs_dilep_lm0  = new BabySample("LM0", "mc",                 base+"/mc/LM0_SUSY_sftsht_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-18/baby_gather.root", "", k_lm0, SIGNAL, kGray, kSolid);
+*/
+
+    BabySample *bs_dilep_dyeemm  = new BabySample("dyeemm", "mc",           base+"/mctmp/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/baby_gather.root", cut_notau, k_dy, BACKGROUND, kAzure-2, 1001);
+    //bs_dilep_dyeemm->add(   base+"/mc/DYToEE_M-20_TuneZ2_7TeV-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/dilep2010_ZMassLessThan50Skim/baby_gather.root");
+    //bs_dilep_dyeemm->add(   base+"/mc/DYToMuMu_M-20_TuneZ2_7TeV-pythia6_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/diLep2010_ZMassLessThan50Skim/baby_gather.root");
+    BabySample *bs_dilep_dytt  = new BabySample("dytt", "mc",               base+"/mctmp/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/baby_gather.root", cut_tau, k_dy, BACKGROUND, kCyan, 1001);
+    //bs_dilep_dytt->add(base+"/mc/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola_Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/V03-06-17/diLep2010_ZMassLessThan50Skim/baby_gather.root");
+
+    BabySample *bs_dilep_wz  = new BabySample("wz", "mc",                   base+"/mctmp/WZtoAnything_TuneZ2_7TeV-pythia6-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/baby_gather.root", "", k_wz, BACKGROUND, kGray, 1001);
+    BabySample *bs_dilep_zz  = new BabySample("zz", "mc",                   base+"/mctmp/ZZtoAnything_TuneZ2_7TeV-pythia6-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/baby_gather.root", "", k_zz, BACKGROUND, 10, 1001);
+    BabySample *bs_dilep_vgammajets  = new BabySample("vgammajets", "mc",   base+"/mctmp/PhotonVJets_7TeV-madgraph_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/baby_gather.root", "", k_vgammajets, BACKGROUND, kOrange-3, 1001);
+    BabySample *bs_dilep_ttbar  = new BabySample("ttbar", "mc",             base+"/mctmp/TTJets_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/baby_gather.root", "", k_ttbar, BACKGROUND, kRed+1, 1001);
+    BabySample *bs_dilep_tw  = new BabySample("tw", "mc",                   base+"/mctmp/TToBLNu_TuneZ2_tW-channel_7TeV-madgraph_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/baby_gather.root", "", k_tw, BACKGROUND, kMagenta, 1001);
+    BabySample *bs_dilep_wjets  = new BabySample("wjets", "mc",             base+"/mctmp/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/baby_gather.root", "", k_dy, BACKGROUND, kGreen-3, 1001);
+    BabySample *bs_dilep_ww  = new BabySample("ww", "mc",                   base+"/mctmp/WWTo2L2Nu_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/baby_gather.root", "", k_ww, BACKGROUND, kGray+1, 1001);
+    
+    // special for Tag and Probe
+    BabySample *bs_dilep_dyee  = new BabySample("dyee", "mc",               base+"/mctmp/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/baby_gather.root", cut_dymm, k_dy, BACKGROUND, kAzure-2, 1001);
+    BabySample *bs_dilep_dymm  = new BabySample("dymm", "mc",               base+"/mctmp/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/baby_gather.root", cut_dymm, k_dy, BACKGROUND, kAzure-2, 1001);
+    // end special for Tag and Probe
+
+    //
+    // BSM
+    //
+
+    float k_hww160 = 1.0;
+    float k_hww130 = 1.0;
+    float k_hww200 = 1.0;
+    float k_lm0 = 1.0;
+
+    BabySample *bs_dilep_hww160  = new BabySample("hww160", "mc",           base+"/mctmp/GluGluToHToWWToLNuTauNu_M-130_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/baby_gather.root", "", k_hww160, SIGNAL, kBlack, kSolid);
+    BabySample *bs_dilep_hww130  = new BabySample("hww130", "mc",           base+"/mctmp/GluGluToHToWWToLNuTauNu_M-160_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/baby_gather.root", "", k_hww130, SIGNAL, kGray, kSolid);
+    BabySample *bs_dilep_hww200  = new BabySample("hww200", "mc",           base+"/mctmp/GluGluToHToWWToLNuTauNu_M-200_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/baby_gather.root",
+            "", k_hww200, SIGNAL, kCyan, kSolid);
+
+    BabySample *bs_dilep_lm0  = new BabySample("LM0", "mc",                 base+"/mctmp/LM0_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/baby_gather.root", "", k_lm0, SIGNAL, kGray, kSolid);
+
 
     //
     // Data
@@ -151,31 +148,27 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
     TCut c_notduplicate("! is_duplicate(run,evt,ls,pt1,pt2)");
     TCut c_datapresel = c_goodrunplus + c_notduplicate + c_remove_end2010bad;
 
-    // 2011
-    BabySample *bs_data = new BabySample("data", "data", 
-            base+"/data/CMSSW_4_1_2_patch1_V04-00-13/DoubleElectron_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/baby_gather*.root",
-            c_datapresel, 1.0, DATA, kBlack);
-    bs_data->add(base+"/data/CMSSW_4_1_2_patch1_V04-00-13/DoubleMu_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/baby_gather*.root");
-    bs_data->add(base+"/data/CMSSW_4_1_2_patch1_V04-00-13/MuEG_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/baby_gather*.root");
-
+    // ALL
+    BabySample *bs_data = new BabySample("data", "data", base+"/mctmp/CMSSW_4_1_2_patch1_V04-00-13/DoubleElectron_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/baby_gather*.root", c_datapresel, 1.0, DATA, kBlack);
+    bs_data->add(base+"/mctmp/CMSSW_4_1_2_patch1_V04-00-13/DoubleMu_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/baby_gather*.root");
+    bs_data->add(base+"/mctmp/CMSSW_4_1_2_patch1_V04-00-13/MuEG_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/baby_gather*.root");
     // add in 2010B
     bs_data->add(base+"/data/Electron_Run2010B-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/baby_gather.root");
     bs_data->add(base+"/data/Mu_Run2010B-Nov4ReReco_v1_RECO/V03-06-17/diLepPt1020Skim/baby_gather.root");
     // add in 2010A
     bs_data->add(base+"/data/EG_Run2010A-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/baby_gather.root");
-    bs_data->add(base+"data/Mu_Run2010A-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/baby_gather.root");
+    bs_data->add(base+"/data/Mu_Run2010A-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/baby_gather.root");
 
     // 2011 only
-    BabySample *bs_data2011 = new BabySample("data", "data",
-            base+"/data/CMSSW_4_1_2_patch1_V04-00-13/DoubleElectron_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/baby_gather*.root",
-            c_datapresel, 1.0, DATA, kBlack);
-    bs_data2011->add(base+"/data/CMSSW_4_1_2_patch1_V04-00-13/DoubleMu_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/baby_gather*.root");
-    bs_data2011->add(base+"/data/CMSSW_4_1_2_patch1_V04-00-13/MuEG_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/baby_gather*.root");
+    BabySample *bs_data2011 = new BabySample("data", "data", base+"/mctmp/CMSSW_4_1_2_patch1_V04-00-13/DoubleElectron_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/baby_gather*.root", c_datapresel, 1.0, DATA, kBlack);
+    bs_data2011->add(base+"/mctmp/CMSSW_4_1_2_patch1_V04-00-13/DoubleMu_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/baby_gather*.root");
+    bs_data2011->add(base+"/mctmp/CMSSW_4_1_2_patch1_V04-00-13/MuEG_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/baby_gather*.root");
+    bs_data2011->add(base+"/data/CMSSW_4_1_2_patch1_V04-01-03/DoubleElectron_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/baby_gather*.root");
+    bs_data2011->add(base+"/data/CMSSW_4_1_2_patch1_V04-01-03/DoubleMu_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/baby_gather*.root");
+    bs_data2011->add(base+"/data/CMSSW_4_1_2_patch1_V04-01-03/MuEG_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/baby_gather*.root");
 
     // 2010 only
-    BabySample *bs_data2010 = new BabySample("data", "data",
-            base+"/data/Electron_Run2010B-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/baby_gather.root",
-            c_datapresel, 1.0, DATA, kBlack);
+    BabySample *bs_data2010 = new BabySample("data", "data", base+"/data/Electron_Run2010B-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/baby_gather.root", c_datapresel, 1.0, DATA, kBlack);
     // add in 2010B
     bs_data2010->add(base+"/data/Mu_Run2010B-Nov4ReReco_v1_RECO/V03-06-17/diLepPt1020Skim/baby_gather.root");
     // add in 2010A
@@ -183,15 +176,10 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
     bs_data2010->add(base+"/data/Mu_Run2010A-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/baby_gather.root");
 
     // 2011 Express Pre Tech Stop
-    BabySample *bs_data_express = new BabySample("express", "data",
-            base+"mc/ExpressPhysicsRun2011A-Express-v1FEVT/V04-00-08/baby_gather.root",
-            c_datapresel, 1.0, DATA, kRed);
+    BabySample *bs_data_express = new BabySample("express", "data", base+"mc/ExpressPhysicsRun2011A-Express-v1FEVT/V04-00-08/baby_gather.root", c_datapresel, 1.0, DATA, kRed);
 
     // 2011 Express Post Tech Stop
-    BabySample *bs_data_express_post_tech_stop = new BabySample("express", "data",
-            base+"data/ExpressPhysics_Run2011A-Express-v2_FEVT/V04-01-02/baby_gather_merged_ntuple*.root",
-            c_datapresel, 1.0, DATA, kRed);
-
+    BabySample *bs_data_express_post_tech_stop = new BabySample("express", "data", base+"data/ExpressPhysics_Run2011A-Express-v2_FEVT/V04-01-02/baby_gather_merged_ntuple*.root", c_datapresel, 1.0, DATA, kRed);
 
     //
     // Define the mixtures of signals, background 
@@ -379,30 +367,31 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
     if (mode == PROMPT) {
 
         // validation for all
-        makeGatherPlotsValidation("all", babyVectorSM, goodruns_lumi, est_extra_lumi);
+        //makeGatherPlotsValidation("all", babyVectorSM, goodruns_lumi, est_extra_lumi);
+        makeGatherPlotsValidation("run2011", babyVectorSM2011, goodruns_lumi, est_extra_lumi);
 
         // higgs for all data and for 2010 + 2011
-        makeGatherPlotsHiggs("all", babyVectorSM, est_lumi);
+        //makeGatherPlotsHiggs("all", babyVectorSM, est_lumi);
         makeGatherPlotsHiggs("run2011", babyVectorSM2011, est_extra_lumi);
 
         // OS for all data and for 2010 + 2011
-        makeGatherPlotsOS("all", babyVectorSusy, est_lumi);
+        //makeGatherPlotsOS("all", babyVectorSusy, est_lumi);
         makeGatherPlotsOS("run2011", babyVectorSusy2011, est_extra_lumi);
 
         // ZMet for all data and for 2010 + 2011
-        makeGatherPlotsZMet("all", babyVectorSusy, est_lumi);
+        //makeGatherPlotsZMet("all", babyVectorSusy, est_lumi);
         makeGatherPlotsZMet("run2011", babyVectorSusy2011, est_extra_lumi);
 
         // SS plots for all data and for 2010 + 2011
-        makeGatherPlotsSS("all", babyVectorSusy, est_lumi);
+        //makeGatherPlotsSS("all", babyVectorSusy, est_lumi);
         makeGatherPlotsSS("run2011", babyVectorSusy2011, est_extra_lumi);
 
         // ST plots for all data and for 2010 + 2011
-        makeGatherPlotsST("all", babyVectorSusy, est_lumi);
+        //makeGatherPlotsST("all", babyVectorSusy, est_lumi);
         makeGatherPlotsST("run2011", babyVectorSusy2011, est_extra_lumi);
         
         // Exotica (in this context... Misc) for all data and for 2010 + 2011
-        makeGatherPlotsExotica("all", babyVectorSM, est_lumi);
+        //makeGatherPlotsExotica("all", babyVectorSM, est_lumi);
         makeGatherPlotsExotica("run2011", babyVectorSM2011, est_extra_lumi);
 
     } 
