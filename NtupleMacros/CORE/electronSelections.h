@@ -817,9 +817,11 @@ static const cuts_t electronSelection_smurfV2  =
 //--------end of SMURF V2 cuts--------------------------------
 
 //--------SMURF V3 cuts--------------------------------
+static const cuts_t electronSelection_smurfV3_ip  = 
+         (1ll<<ELEIP_PV_SMURFV3);
 static const cuts_t electronSelection_smurfV3_baseline  = 
 	 electronSelection_wwV1_base |
-	 electronSelection_wwV1_ip;
+	 electronSelection_smurfV3_ip;
 static const cuts_t electronSelection_smurfV3_convrej  = 
 	 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
          (1ll<<ELENOTCONV_MIT);
