@@ -71,6 +71,12 @@ void makeGatherPlotsExotica(TString prefix, const std::vector<BabySample*> &baby
     DrawAll("mllj",prefix+"_exotica_R2_zmm_mllj", cut_r2mm_1, luminosity, 40, 0., 500., 0, babyVector);
     //DrawAll("mllj",prefix+"_exotica_R2_zll_mllj", cut_r2ll_1, luminosity, 40, 0., 500., 0, babyVector);
 
+    // SLAVA
+TCut cut_r3("Region 3 (Slavas cuts)", "eormu1*eormu2==-169 && mu1_muonidfull && mu2_muonidfull && abs(mass-91)<10 && njets==1 &&abs(dileta)<1 &&pt1>15 &&pt2>15 &&acos(cos(phi2-phi1))>1&&acos(cos(phi2-phi1))<2.25 && pfmet<20 && mu1_emVetoDep<4&&mu2_emVetoDep<4 &&mu1_hadVetoDep<6&&mu2_hadVetoDep<6 && mu1_saHits>10&&mu2_saHits>10 && ecalIso1<2 && ecalIso2<2 && hcalIso1<2 && hcalIso2<2 && trkIso1<3 && trkIso2<3");
+    DrawAll("mllj",prefix+"_exotica_R3_zmm", cut_r3, luminosity, 32, 40., 200., 0, babyVector);
+
+
+
 /*
     TCut zprime_1("zprime_1", "pt1 > 30 && (abs(eormu1) == 11 && e1_vbtf90full) || (abs(eormu1) == 13 && mu1_muonidfull && ! mu1_cosmic)");
     TCut zprime_2("zprime_2", "pt2 > 30 && (abs(eormu2) == 11 && e2_vbtf90full) || (abs(eormu2) == 13 && mu2_muonidfull && ! mu2_cosmic)");
