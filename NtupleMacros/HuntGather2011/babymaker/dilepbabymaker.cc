@@ -139,6 +139,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     mcid2_ = abs(ll_id) == 13 ? cms2.mus_mc_id()[ll_idx] : cms2.els_mc_id()[ll_idx];
                     mcmotherid1_ = abs(lt_id) == 13 ? cms2.mus_mc_motherid()[lt_idx] : cms2.els_mc_motherid()[lt_idx];
                     mcmotherid2_ = abs(ll_id) == 13 ? cms2.mus_mc_motherid()[ll_idx] : cms2.els_mc_motherid()[ll_idx];
+                    lep1isFromW_ = leptonIsFromW(lt_idx, lt_id, true);
+                    lep2isFromW_ = leptonIsFromW(ll_idx, ll_id, true);
                 }
 
                 //
@@ -279,7 +281,6 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 
                 // muon loop
                 for (unsigned muii = 0; muii < cms2.mus_p4().size(); ++muii) {
-                    if (cms2.mus_p4()[muii].pt() <= 10.) continue;
                     // for SS
                     if (cms2.mus_p4()[muii].pt() > 5. && muonId(muii, NominalSSv2) && fabs(cms2.mus_p4()[muii].eta()) < 2.4) {
                         goodMuonIndicesSSV2.push_back(muii);
@@ -296,7 +297,6 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 
                 // electron loop
                 for (unsigned eli = 0; eli < cms2.els_p4().size(); ++eli) {
-                    if (cms2.els_p4()[eli].pt() <= 10.) continue;
                     cuts_t cuts_passed = electronSelection(eli);
                     // for SS
                     if (cms2.els_p4()[eli].pt() > 10. && pass_electronSelectionCompareMask(cuts_passed, electronSelection_ssV3) && fabs(cms2.els_p4()[eli].eta()) < 2.4) {
@@ -605,6 +605,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     mu1_saHits_       = cms2.mus_gfit_validSTAHits()[index1];
                     mu1_emVetoDep_    = cms2.mus_iso_ecalvetoDep()[index1];
                     mu1_hadVetoDep_   = cms2.mus_iso_hcalvetoDep()[index1];
+                    mu1_relPtErr_     = cms2.mus_ptErr()[index1]/cms2.mus_p4()[index1].pt();
                     if (cms2.mus_pfmusidx()[index1] > -1) mu1_isPFmuon_ = 1;
                     int trkidx1 = cms2.mus_trkidx()[index1];
                     d0vtx1_ = cms2.trks_d0vtx()[trkidx1];
@@ -677,6 +678,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     mu2_saHits_       = cms2.mus_gfit_validSTAHits()[index2];
                     mu2_emVetoDep_    = cms2.mus_iso_ecalvetoDep()[index2];
                     mu2_hadVetoDep_   = cms2.mus_iso_hcalvetoDep()[index2];
+                    mu2_relPtErr_     = cms2.mus_ptErr()[index2]/cms2.mus_p4()[index2].pt();
                     if (cms2.mus_pfmusidx()[index2] > -1) mu2_isPFmuon_ = 1;
                     int trkidx2 = cms2.mus_trkidx()[index2];
                     d0vtx2_ = cms2.trks_d0vtx()[trkidx2];
@@ -863,6 +865,8 @@ void dilepbabymaker::InitBabyNtuple ()
     ecalIso2ps_   = -999999.;
     rho_          = -999999.;
     lepsFromSameVtx_ = 0;
+    lep1isFromW_ = -999999;
+    lep2isFromW_ = -999999;
 
     // muon stuff
     mu1_muonidfull_   = 0;
@@ -877,6 +881,7 @@ void dilepbabymaker::InitBabyNtuple ()
     mu1_emVetoDep_    = -999999.;
     mu1_hadVetoDep_   = -999999.;
     mu1_isPFmuon_     = 0;
+    mu1_relPtErr_     = -999999.;
 
     mu2_muonidfull_   = 0;
     mu2_muonid_       = 0;
@@ -890,6 +895,7 @@ void dilepbabymaker::InitBabyNtuple ()
     mu2_emVetoDep_    = -999999.;
     mu2_hadVetoDep_   = -999999.;
     mu2_isPFmuon_     = 0;
+    mu2_relPtErr_     = -999999.;
 
     // electron stuff
     e1_vbtf90full_  = 0;
@@ -1078,6 +1084,8 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("ecalIso2ps", &ecalIso2ps_, "ecalIso2ps/F");
     babyTree_->Branch("rho", &rho_, "rho/F");
     babyTree_->Branch("lepsFromSameVtx", &lepsFromSameVtx_, "lepsFromSameVtx/O");
+    babyTree_->Branch("lep1isFromW", &lep1isFromW_, "lep1isFromW/I");
+    babyTree_->Branch("lep2isFromW", &lep2isFromW_, "lep2isFromW/I");
 
     // Muon stuff
     babyTree_->Branch("mu1_muonidfull",   &mu1_muonidfull_,   "mu1_muonidfull/O"  );
@@ -1092,6 +1100,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("mu1_emVetoDep",    &mu1_emVetoDep_,    "mu1_emVetoDep/F"   );
     babyTree_->Branch("mu1_hadVetoDep",   &mu1_hadVetoDep_,   "mu1_hadVetoDep/F"  );
     babyTree_->Branch("mu1_isPFmuon",     &mu1_isPFmuon_,     "mu1_isPFmuon/O"    );
+    babyTree_->Branch("mu1_relPtErr",     &mu1_relPtErr_,     "mu1_relPtErr/F"    );
 
     babyTree_->Branch("mu2_muonidfull",   &mu2_muonidfull_,   "mu2_muonidfull/O"  );
     babyTree_->Branch("mu2_muonid",       &mu2_muonid_,       "mu2_muonid/O"      );
@@ -1105,6 +1114,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("mu2_emVetoDep",    &mu2_emVetoDep_,    "mu2_emVetoDep/F"   );
     babyTree_->Branch("mu2_hadVetoDep",   &mu2_hadVetoDep_,   "mu2_hadVetoDep/F"  );
     babyTree_->Branch("mu2_isPFmuon",     &mu2_isPFmuon_,     "mu2_isPFmuon/O"    );
+    babyTree_->Branch("mu2_relPtErr",     &mu2_relPtErr_,     "mu1_relPtErr/F"    );
 
     // electron stuff
 

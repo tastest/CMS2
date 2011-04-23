@@ -156,6 +156,8 @@ private:
     Float_t ecalIso2ps_;
     Float_t rho_;
     Bool_t  lepsFromSameVtx_;
+    Int_t   lep1isFromW_;
+    Int_t   lep2isFromW_;
 
     // muon stuff
     Bool_t  mu1_muonidfull_;
@@ -169,6 +171,7 @@ private:
     Float_t mu1_emVetoDep_;
     Float_t mu1_hadVetoDep_;
     Bool_t  mu1_isPFmuon_;
+    Float_t mu1_relPtErr_;
 
     Bool_t  mu1_cosmic_;
     Bool_t  mu2_cosmic_;
@@ -183,6 +186,7 @@ private:
     Float_t mu2_emVetoDep_;
     Float_t mu2_hadVetoDep_;
     Bool_t  mu2_isPFmuon_;
+    Float_t mu2_relPtErr_;
 
     // electron stuff
     Bool_t  e1_vbtf90full_;
