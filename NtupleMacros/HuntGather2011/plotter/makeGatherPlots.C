@@ -338,7 +338,7 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
     float est_lumi = 0.0;
     float est_extra_lumi = 0.0;
     if (mode == PROMPT || mode == DEBUG) {
-        est_extra_lumi = GetNewLumi(bs_data->chain(), zPerPb);
+        est_extra_lumi = GetNewLumi(bs_data2011->chain(), zPerPb);
         est_lumi = est_extra_lumi + goodruns_lumi;
         std::cout << "[The Gathering] Estimated L = " << est_lumi << std::endl;
         std::cout << std::endl;

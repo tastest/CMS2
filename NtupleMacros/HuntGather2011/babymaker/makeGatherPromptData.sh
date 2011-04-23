@@ -33,12 +33,17 @@ export SCRAM_ARCH=slc5_amd64_gcc434
     source /code/osgcode/cmssoft/cms/cmsset_default.sh
     eval `scramv1 runtime -sh`
 
-if [ "$GATHER_SITE" == "UCSD" ]; then
-    #INPUT_DATA_DIR=/nfs-3/userdata/cms2/$GATHER_SAMPLE
+if [ "$GATHER_SITE" == "HADOOP" ]; then
     INPUT_DATA_DIR=/hadoop/cms/store/user/yanjuntu/$GATHER_SAMPLE
     OUTPUT_DATA_DIR=/nfs-3/userdata/cms2/gather/data/$GATHER_SAMPLE
-    #export ROOTSYS=/code/osgcode/UCSD_root/root_v5.24.00
 
+elif [ "$GATHER_SITE" == "NFS3" ]; then
+    INPUT_DATA_DIR=/nfs-3/userdata/cms2/$GATHER_SAMPLE
+    OUTPUT_DATA_DIR=/nfs-3/userdata/cms2/gather/data/$GATHER_SAMPLE
+
+elif [ "$GATHER_SITE" == "NFS4" ]; then
+    INPUT_DATA_DIR=/nfs-4/userdata/cms2/$GATHER_SAMPLE
+    OUTPUT_DATA_DIR=/nfs-3/userdata/cms2/gather/data/$GATHER_SAMPLE
 
 elif [ "$GATHER_SITE" == "CERN" ]; then
     INPUT_DATA_DIR=/tas/cms2/$GATHER_SAMPLE
